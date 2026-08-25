@@ -52,23 +52,26 @@ namespace εNFA
 
 /-- Membership in the `εClosure` of a set, namely reachability by taking a finite string of
 ε-transitions from an element of the set. -/
-inductive MemεClosure (S : Set σ) : σ → Prop
+private inductive MemεClosure (S : Set σ) : σ → Prop
   | base : ∀ s ∈ S, MemεClosure S s
   | step : ∀ (s), ∀ t ∈ M.step s none, MemεClosure S s → MemεClosure S t
 
 /-- The `εClosure` of a set is the set of states which can be reached by taking a finite string of
 ε-transitions from an element of the set. -/
+@[no_expose]
 def εClosure (S : Set σ) : Set σ := {s | MemεClosure M S s}
 
 @[simp] lemma subset_εClosure (S : Set σ) : S ⊆ M.εClosure S := MemεClosure.base
 
-@[deprecated subset_εClosure (since := "2026-07-07")] alias εClosure.base := MemεClosure.base
+@[deprecated subset_εClosure (since := "2026-07-07")]
+lemma εClosure.base (s : σ) (hs : s ∈ S) : s ∈ M.εClosure S := M.subset_εClosure S hs
 
 lemma mem_εClosure_of_mem_step (hts : t ∈ M.step s none) (hs : s ∈ M.εClosure S) :
     t ∈ M.εClosure S := MemεClosure.step _ _ hts hs
 
 @[deprecated mem_εClosure_of_mem_step (since := "2026-07-07")]
-alias εClosure.step := MemεClosure.step
+lemma εClosure.step (s t : σ) (hts : t ∈ M.step s none) (hs : s ∈ M.εClosure S) :
+    t ∈ M.εClosure S := M.mem_εClosure_of_mem_step hts hs
 
 /-- An induction principle for membership of `M.εClosure S`. If `motive` holds of all elements of
 `S` and is preserved under ε-transitions, then it holds of all elements of `M.εClosure S`. -/
