@@ -185,9 +185,6 @@ noncomputable def ofBijective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair
   (ofInjective f hf.injective).trans <| ofTop _ <|
     LinearMap.range_eq_top.2 hf.surjective
 
-@[simp] theorem coe_ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} :
-    ⇑(ofBijective f hf) = f := rfl
-
 @[simp]
 theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} (x : M) :
     ofBijective f hf x = f x :=
