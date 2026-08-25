@@ -216,7 +216,7 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
   refine IsConnected.union ?nonempty ?upper ?lower
   case nonempty =>
     have := Filter.NeBot.nonempty_of_mem inferInstance <| Filter.mem_map.mp <|
-      Complex.isometry_ofReal.antilipschitz.tendsto_cobounded (spectrum.isBounded a |>.compl)
+      Complex.isometry_ofReal.antilipschitzWith.tendsto_cobounded (spectrum.isBounded a |>.compl)
     exact this.image Complex.ofReal |>.mono <| by simp
   case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ <| Set.inter_subset_right
   case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ <| Set.inter_subset_right
@@ -278,7 +278,7 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
     suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
       rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
         at this
-    exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
+    exact iSup_le_iSup_of_subset (NonUnitalAlgHom.quasispectrum_apply_subset ψ s)
   simpa [nnnorm_inr] using h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (φ : A →⋆ₙₐ[ℂ] B))) a
 
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
@@ -317,7 +317,7 @@ end
 
 namespace WeakDual
 
-open ContinuousMap Complex
+open Complex
 
 open scoped ComplexStarModule
 
