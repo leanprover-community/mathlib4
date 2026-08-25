@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.VectorBundle.HomBilinear
 
 /-! # Existence of a Riemannian bundle metric
 
@@ -353,46 +354,6 @@ Transferring symmetry, positive definiteness and von Neumann boundedness from (2
 
 noncomputable section
 
-lemma inCoordinates_apply_eq₂_spec
-    {x₀ x : B} {ϕ : E x →L[ℝ] E x →L[ℝ] ℝ} {v w : F}
-    (h₁x : x ∈ (trivializationAt F E x₀).baseSet) :
-    ContinuousLinearMap.inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x₀ x x₀ x ϕ v w =
-    ϕ ((trivializationAt F E x₀).symm x v) ((trivializationAt F E x₀).symm x w) := by
-  rw [inCoordinates_apply_eq₂ h₁x h₁x (by simp [Trivial.fiberBundle_trivializationAt'])]
-  simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
-
-lemma inCoordinates_apply_eq₂_spec_symm
-    (x₀ x : B) (hb : x ∈ (trivializationAt F E x₀).baseSet)
-    (ϕ : F →L[ℝ] F →L[ℝ] ℝ) (u v : E x) :
-    (trivializationAt (F →L[ℝ] F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) x₀).symm x ϕ u v =
-    ϕ (trivializationAt F E x₀ |>.continuousLinearMapAt ℝ x u)
-      (trivializationAt F E x₀ |>.continuousLinearMapAt ℝ x v) := by
-  letI ψ := FiberBundle.trivializationAt (F →L[ℝ] F →L[ℝ] ℝ)
-      (fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ) x₀
-  letI χ := trivializationAt F E x₀
-  letI w := ψ.symm x ϕ
-  have hc : x ∈ ψ.baseSet := by
-    rw [hom_trivializationAt_baseSet]
-    simp only [hom_trivializationAt_baseSet, Trivial.fiberBundle_trivializationAt',
-    Trivial.trivialization_baseSet, inter_univ, inter_self]
-    exact mem_of_subset_of_mem (fun ⦃a⦄ a_1 ↦ a_1) hb
-  have h1 : ∀ u v,
-      (((continuousLinearMapAt ℝ ψ x) (ψ.symmL ℝ x ϕ)) u) v = ϕ u v :=
-    fun u v => by rw [continuousLinearMapAt_symmL ψ hc]
-  have h2 : ∀ u v, ϕ u v = w (χ.symm x u) (χ.symm x v) := fun u v => by
-    rw [← h1, continuousLinearMapAt_apply, linearMapAt_apply, hom_trivializationAt_apply,
-      if_pos hc, ← inCoordinates_apply_eq₂_spec hb]
-    rw [symmL_apply]
-    exact hc
-  have h3 := symmL_continuousLinearMapAt (R := ℝ) (trivializationAt F E x₀) hb u
-  rw [symmL_apply] at h3
-  · have h4 := symmL_continuousLinearMapAt (R := ℝ) (trivializationAt F E x₀) hb v
-    rw [symmL_apply] at h4
-    · rw [show w u v = ϕ (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v) from by
-        rw [h2 (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v), h3, h4]]
-    · exact hb
-  · exact hb
-
 lemma g_global_bilin_eq
     (f : SmoothPartitionOfUnity B IB B)
     (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
@@ -422,7 +383,7 @@ lemma g_global_bilin_eq
       change (g_bilin (F := F) (E := E) j p).snd u v = g_bilin_aux F j p u v
       rw [g_bilin_aux_apply hsupp.1 u v]
       unfold g_bilin
-      conv_lhs => rw [inCoordinates_apply_eq₂_spec_symm j p hsupp.1 (innerSL ℝ) u v]
+      conv_lhs => rw [trivializationAt_symm_apply_bilin j p hsupp.1 (innerSL ℝ) u v]
       rw [innerSL_apply_apply, coe_continuousLinearEquivAt_eq _ hsupp.1]
   rw [this]
 

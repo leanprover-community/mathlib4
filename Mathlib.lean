@@ -8259,6 +8259,7 @@ public import Mathlib.Topology.VectorBundle.Constructions
 public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 public import Mathlib.Topology.VectorBundle.Hom
+public import Mathlib.Topology.VectorBundle.HomBilinear
 public import Mathlib.Topology.VectorBundle.Riemannian
 public import Mathlib.Topology.WithTopology
 public import Mathlib.Util.AddRelatedDecl
