@@ -105,4 +105,4 @@ theorem isCyclicWithZero_iff_exists_zpowers₀_eq_top :
       exact @IsCyclicWithZero.mk _ _ isCyclic_of_subsingleton
     · refine @IsCyclicWithZero.mk _ _
         ((isCyclic_iff_exists_zpowers_eq_top (α := G₀ˣ)).2 ⟨Units.mk0 g hg0, ?_⟩)
-      rw [← SubgroupWithZero.units_zpowers₀_of_ne_zero hg0, hg, SubgroupWithZero.units_top]
+      rw [← SubgroupWithZero.units_zpowers₀, Units.val_mk0, hg, SubgroupWithZero.units_top]

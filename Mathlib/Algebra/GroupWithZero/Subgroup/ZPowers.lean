@@ -67,8 +67,7 @@ lemma zpowers₀_eq_bot : zpowers₀ g = ⊥ ↔ g = 0 ∨ g = 1 := by
 @[simp] lemma zpowers₀_one : zpowers₀ (1 : G₀) = ⊥ := zpowers₀_eq_bot.2 (.inr rfl)
 
 /-- Taking units turns `zpowers₀` into `Subgroup.zpowers`. Every `Subgroup.zpowers` fact
-transfers through this. The `simp`-normal form has the generator as a unit; see
-`units_zpowers₀_of_ne_zero` for a nonzero element of `G₀`. -/
+transfers through this. For a nonzero `g : G₀`, use it with `Units.mk0 g hg`. -/
 @[simp]
 lemma units_zpowers₀ (u : G₀ˣ) : (zpowers₀ (u : G₀)).units = Subgroup.zpowers u := by
   rw [zpowers₀, units_closure, Subgroup.zpowers_eq_closure]
@@ -76,20 +75,15 @@ lemma units_zpowers₀ (u : G₀ˣ) : (zpowers₀ (u : G₀)).units = Subgroup.z
   ext v
   simp [Units.ext_iff]
 
-lemma units_zpowers₀_of_ne_zero (hg : g ≠ 0) :
-    (zpowers₀ g).units = Subgroup.zpowers (Units.mk0 g hg) := by
-  rw [← units_zpowers₀ (Units.mk0 g hg), Units.val_mk0]
-
-/-- `zpowers₀ g` is `0` together with the integer powers of `g`. Compare `mem_closure_iff`: for
-`g ≠ 0` the units of `zpowers₀ g` are `Subgroup.zpowers (Units.mk0 g hg)`. -/
+/-- `zpowers₀ g` is `0` together with the integer powers of `g`. Compare `mem_closure_iff`. -/
 lemma mem_zpowers₀_iff : x ∈ zpowers₀ g ↔ x = 0 ∨ ∃ n : ℤ, g ^ n = x := by
   rcases eq_or_ne g 0 with rfl | hg
   · rw [zpowers₀_zero, mem_bot]
     refine ⟨fun h ↦ h.imp_right fun h ↦ ⟨0, by simp [h]⟩, fun h ↦ h.elim .inl fun ⟨n, hn⟩ ↦ ?_⟩
     rw [← hn, zero_zpow_eq]; split_ifs <;> simp
-  · rw [← withZero_units (zpowers₀ g), units_zpowers₀_of_ne_zero hg, Subgroup.mem_withZero]
-    simp only [Subgroup.mem_zpowers_iff, exists_exists_eq_and, Units.val_zpow_eq_zpow_val,
-      Units.val_mk0]
+  · lift g to G₀ˣ using isUnit_iff_ne_zero.2 hg
+    rw [← withZero_units (zpowers₀ _), units_zpowers₀, Subgroup.mem_withZero]
+    simp only [Subgroup.mem_zpowers_iff, exists_exists_eq_and, Units.val_zpow_eq_zpow_val]
 
 lemma mem_zpowers₀_iff_of_ne_zero (hx : x ≠ 0) :
     x ∈ zpowers₀ g ↔ ∃ n : ℤ, g ^ n = x := by simp [mem_zpowers₀_iff, hx]
