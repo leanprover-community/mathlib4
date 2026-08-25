@@ -239,10 +239,9 @@ theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
         congrm ?_ + ?_
         · congr
           all_goals
-            ext
             norm_cast
-            rw [← Nat.add_one_mul_choose_eq]
-            group
+            simp_rw [← Nat.add_one_mul_choose_eq]
+            grind
         · simp [Finset.sum_range_succ']
       _ = ∑ x ∈ Finset.range (n + 2), (n + 1).choose x * x * p.val ^ (x + 1) *
             (1 - p) ^ (n + 1 - x) * (n + 2) +
