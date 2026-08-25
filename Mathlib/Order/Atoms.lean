@@ -5,14 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
-public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.Nontriviality
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+public import Mathlib.Tactic.Nontriviality.Core
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
