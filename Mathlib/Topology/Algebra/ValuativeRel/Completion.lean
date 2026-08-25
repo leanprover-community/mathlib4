@@ -31,7 +31,7 @@ This file defines the extension of a valuation on a field `K` to its uniform com
 
 ## TODO
 
-The current approach relies on the field structure of `K`, it can be genralized to
+The current approach relies on the field structure of `K`, it can be generalized to
 arbitrary commutative rings.
 
 - Upgrade `WithZeroTopology.topologicalSpace` to `WithZeroTopology.uniformSpace`.
@@ -101,11 +101,6 @@ instance (priority := 100) t2Space : T2Space K := by
   use Units.mk0 (restrict₀ _ x) ((valuation K).restrict.ne_zero_iff.mpr x_ne)
   intro y hy
   simpa [restrict_lt_iff_lt_embedding] using hy
-
-/-- The restriction of a compatible valuation to its image group is compatible. -/
-instance [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) [v.Compatible] :
-    v.restrict.Compatible where
-  vle_iff_le x y := by rw [v.vle_iff_le, restrict_le_iff]
 
 section ContinuousAt
 
@@ -334,7 +329,7 @@ lemma closure_image_coe_le : closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K
     exact ⟨(r, s), hU, (r, s), by simpa [hvr, hvs] using h, rfl⟩
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
-theorem closure_coe_completion_v_lt {r : Γ₀} (hr : r ≠ 0) :
+theorem closure_image_coe_ofPred_map_lt {r : Γ₀} (hr : r ≠ 0) :
     closure ((↑) '' { x : K | v x < r }) =
     { x : Completion K | v.extension x < r } := by
   ext x
@@ -348,11 +343,11 @@ theorem closure_coe_completion_v_lt {r : Γ₀} (hr : r ≠ 0) :
   · obtain ⟨y, hy, hy'⟩ := v.exists_coe_mem_extension_eq ht
     exact ⟨y, hy, y, by simpa [← hy'] using hx, rfl⟩
 
-theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0) :
+theorem closure_image_coe_ofPred_map_mul_map_lt_map {r s : K} (hr : r ≠ 0) (hs : s ≠ 0) :
     closure ((↑) '' { x : K | v x * v r < v s }) =
     { x : Completion K | v.extension x * v r < v s } := by
   have hrs : v s / v r ≠ 0 := by simp [hr, hs]
-  convert v.closure_coe_completion_v_lt hrs using 3
+  convert v.closure_image_coe_ofPred_map_lt hrs using 3
   all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
 
 /-- The function underlying `Valuation.valueGroup₀ExtensionHom`: it sends `v.restrict x` to
@@ -407,13 +402,13 @@ theorem embedding_valueGroup₀ExtensionEquiv_symm (a : ValueGroup₀ (.ofClass 
     embedding (v.valueGroup₀ExtensionEquiv.symm a) = embedding a := by
   rw [← v.embedding_valueGroup₀ExtensionEquiv, MulEquiv.apply_symm_apply]
 
-/-- `Valuation.closure_coe_completion_v_lt`, stated for the open balls of `v.restrict`. -/
-theorem closure_coe_ball_restrict (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+/-- `Valuation.closure_image_coe_ofPred_map_lt`, stated for the open balls of `v.restrict`. -/
+theorem closure_image_coe_ofPred_restrict_lt (γ : (ValueGroup₀ (.ofClass v))ˣ) :
     closure ((↑) '' { x : K | v.restrict x < γ.1 }) =
       { x : Completion K | v.extension x < embedding γ.1 } := by
   rw [show { x : K | v.restrict x < γ.1 } = { x : K | v x < embedding γ.1 } from
     Set.ext fun _ ↦ v.restrict_lt_iff_lt_embedding]
-  exact v.closure_coe_completion_v_lt (by simp)
+  exact v.closure_image_coe_ofPred_map_lt (by simp)
 
 /-- The neighbourhoods of `0` in the completion of `K` have a basis given by the open balls of
 `v.extension.restrict`. This is `Valuation.hasBasis_nhds_zero` for `v.extension`, proved before
@@ -423,7 +418,7 @@ theorem extension_hasBasis_nhds_zero :
       fun γ : (ValueGroup₀ (.ofClass v.extension))ˣ ↦ { x | v.extension.restrict x < γ.1 } := by
   have h := v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
   rw [Completion.coe_zero] at h
-  simp only [closure_coe_ball_restrict] at h
+  simp only [closure_image_coe_ofPred_restrict_lt] at h
   refine h.to_hasBasis (fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀ExtensionEquiv γ.1) (by simp),
       trivial, fun x hx ↦ ?_⟩) fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀ExtensionEquiv.symm γ.1)
       (by simp), trivial, fun x hx ↦ ?_⟩
@@ -439,11 +434,14 @@ variable [IsUniformAddGroup K]
 noncomputable instance UniformSpace.Completion.valuativeRel : ValuativeRel (Completion K) :=
   .ofValuation (ValuativeRel.valuation K).extension
 
-instance Valuation.extension.compatible' :
+/-- This declaration is only used in `Valuation.compatible_extension`. -/
+local instance Valuation.compatible_extension' :
     (ValuativeRel.valuation K).extension.Compatible := Valuation.Compatible.ofValuation _
 
+namespace UniformSpace.Completion
+
 @[simp]
-theorem UniformSpace.Completion.vle_iff_vle {x y : K} :
+theorem coe_vle_coe_iff {x y : K} :
     (x : Completion K) ≤ᵥ (y : Completion K) ↔ x ≤ᵥ y :=
   calc
     _ ↔ (valuation K).extension x ≤ (valuation K).extension y := vle_iff_le _
@@ -451,17 +449,19 @@ theorem UniformSpace.Completion.vle_iff_vle {x y : K} :
     _ ↔ x ≤ᵥ y := (vle_iff_le _).symm
 
 @[simp]
-theorem UniformSpace.Completion.extension_veq_extension_iff {x y : K} :
+theorem coe_veq_coe_iff {x y : K} :
     (x : Completion K) =ᵥ (y : Completion K) ↔ x =ᵥ y :=
-  Iff.and vle_iff_vle vle_iff_vle
+  Iff.and coe_vle_coe_iff coe_vle_coe_iff
 
 @[simp]
-theorem UniformSpace.Completion.extension_vlt_extension_iff {x y : K} :
+theorem coe_vlt_coe_iff {x y : K} :
     (x : Completion K) <ᵥ (y : Completion K) ↔ x <ᵥ y :=
-  Iff.not vle_iff_vle
+  Iff.not coe_vle_coe_iff
 
-instance UniformSpace.Completion.valuativeExtension : ValuativeExtension K (Completion K) where
-  vle_iff_vle _ _ := vle_iff_vle
+instance valuativeExtension : ValuativeExtension K (Completion K) where
+  vle_iff_vle _ _ := coe_vle_coe_iff
+
+end UniformSpace.Completion
 
 variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   [LinearOrderedCommGroupWithZero Γ₀'] (v : Valuation K Γ₀) [v.Compatible]
@@ -471,15 +471,17 @@ instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Comp
   IsValuativeTopology.of_mem_nhds_zero_iff_vle (valuation K).extension fun {s} ↦ by
     simpa only [true_and] using (valuation K).extension_hasBasis_nhds_zero.mem_iff
 
-theorem Valuation.extension.isEquiv : v.extension.IsEquiv v'.extension := by
+namespace Valuation
+
+theorem isEquiv_extension : v.extension.IsEquiv v'.extension := by
   have h := v.closure_image_coe_le
   rw [show {(x, y) : K × K | v x ≤ v y} = {(x, y) : K × K | v' x ≤ v' y} from
     Set.ext fun ⟨_, _⟩ ↦ ValuativeRel.isEquiv v v' _ _, v'.closure_image_coe_le] at h
   exact fun x y ↦ (Set.ext_iff.1 h (x, y)).symm
 
-instance Valuation.extension.compatible : v.extension.Compatible := by
+instance compatible_extension : v.extension.Compatible := by
   apply IsEquiv.compatible (v₁ := (valuation K).extension)
-  exact Valuation.extension.isEquiv _ _
+  exact Valuation.isEquiv_extension _ _
 
 lemma extension_surjective_iff :
     Function.Surjective (v.extension : Completion K → Γ₀) ↔
@@ -490,10 +492,7 @@ lemma extension_surjective_iff :
   · obtain ⟨a, ha⟩ := h γ
     exact ⟨a, by simp [ha]⟩
 
-instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
-    [FaithfulSMul R K] : FaithfulSMul R (Completion K) := by
-  rw [faithfulSMul_iff_algebraMap_injective]
-  exact (FaithfulSMul.algebraMap_injective K _).comp (FaithfulSMul.algebraMap_injective R K)
+end Valuation
 
 end Completion
 

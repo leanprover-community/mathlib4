@@ -551,11 +551,6 @@ lemma valuedCompletion_surjective_iff :
     · exact ⟨_, by simpa using ha⟩
   · exact ⟨a, by simp [ha]⟩
 
-instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
-    [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
-  rw [faithfulSMul_iff_algebraMap_injective R (hat K)]
-  exact (FaithfulSMul.algebraMap_injective K (hat K)).comp (FaithfulSMul.algebraMap_injective R K)
-
 end Valued
 
 section Notation

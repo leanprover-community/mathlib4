@@ -759,6 +759,12 @@ lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
 lemma apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
   zero_lt_iff.mpr <| v.apply_posSubmonoid_ne_zero x
 
+variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible]
+
+/-- The restriction of a compatible valuation to its image group is compatible. -/
+instance restrict_compatible : v.restrict.Compatible where
+  vle_iff_le x y := by rw [v.vle_iff_le, restrict_le_iff]
+
 end Valuation
 
 namespace ValuativeRel
