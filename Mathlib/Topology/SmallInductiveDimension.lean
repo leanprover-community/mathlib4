@@ -5,13 +5,9 @@ Authors: Fernando Chu, Andrew Yang, Felix Pernegger
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Clopen
-public import Mathlib.Topology.Connected.PathConnected
 public import Mathlib.Topology.Instances.Real.Lemmas
 
-import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Small inductive dimension
