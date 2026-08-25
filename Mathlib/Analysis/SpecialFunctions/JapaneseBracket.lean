@@ -79,7 +79,7 @@ variable {E}
 theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ) < r) :
     (∫⁻ x : ℝ in Ioc 0 1, ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n)) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt n.cast_nonneg hnr
-  have h_int x (hx : x ∈ Ioc (0 : ℝ) 1) := by
+  have h_int x (hx : x ∈ Ioc (0 : ℝ) 1) :=
     calc
       ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ .ofReal ((x ^ (-r⁻¹) - 0) ^ n) := by
         gcongr

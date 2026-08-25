@@ -218,7 +218,7 @@ alias sum_card_slice_div_choose_le_one := lubell_yamamoto_meshalkin_inequality_s
 If `𝒜` is an antichain, then the sum of `(#α.choose #s)⁻¹` over `s ∈ 𝒜` is less than `1`. -/
 theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose
     (h𝒜 : IsAntichain (· ⊆ ·) (SetLike.coe 𝒜)) :
-    ∑ s ∈ 𝒜, ((Fintype.card α).choose #s : 𝕜)⁻¹ ≤ 1 := by
+    ∑ s ∈ 𝒜, ((Fintype.card α).choose #s : 𝕜)⁻¹ ≤ 1 :=
   calc
     _ = ∑ r ∈ range (Fintype.card α + 1),
         ∑ s ∈ 𝒜 with #s = r, ((Fintype.card α).choose r : 𝕜)⁻¹ := by

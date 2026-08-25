@@ -171,7 +171,7 @@ def ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
   sets_of_superset := h_mono _ _
   inter_sets {s t} hs ht := sInter_pair s t ▸ by
     apply hl _ (?_) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
-    have : #({s, t} : Set (Set α)) ≤ 2 := by
+    have : #({s, t} : Set (Set α)) ≤ 2 :=
       calc
       _ ≤ #({t} : Set (Set α)) + 1 := Cardinal.mk_insert_le
       _ = 2 := by norm_num

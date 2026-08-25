@@ -63,7 +63,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     have I1 :
         ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s x‖ ≤
           ‖B‖ * ∑ i ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
-            ‖iteratedFDerivWithin 𝕜 (n + 1 - i) g s x‖ := by
+            ‖iteratedFDerivWithin 𝕜 (n + 1 - i) g s x‖ :=
       calc
         ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s x‖ ≤
             ‖B.precompR Du‖ * ∑ i ∈ Finset.range (n + 1),

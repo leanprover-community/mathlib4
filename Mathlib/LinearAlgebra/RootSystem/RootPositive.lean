@@ -81,7 +81,7 @@ lemma apply_reflection_reflection (x y : M) :
 
 @[simp]
 lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)] :
-    B.form (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 := by
+    B.form (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 :=
   calc B.form (P.root i) (P.root j) = 0
       ↔ 2 * B.form (P.root i) (P.root j) = 0 := by simp [two_ne_zero]
     _ ↔ P.pairing i j * B.form (P.root j) (P.root j) = 0 := by rw [B.two_mul_apply_root_root i j]

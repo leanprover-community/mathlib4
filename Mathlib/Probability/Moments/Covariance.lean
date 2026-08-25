@@ -154,7 +154,7 @@ lemma covariance_fun_div_right (c : ℝ) :
   simp_rw [← inv_mul_eq_div, covariance_const_mul_right]
 
 @[simp]
-lemma covariance_neg_left : cov[-X, Y; μ] = -cov[X, Y; μ] := by
+lemma covariance_neg_left : cov[-X, Y; μ] = -cov[X, Y; μ] :=
   calc cov[-X, Y; μ]
   _ = cov[(-1 : ℝ) • X, Y; μ] := by simp
   _ = -cov[X, Y; μ] := by rw [covariance_smul_left]; simp
@@ -164,7 +164,7 @@ lemma covariance_fun_neg_left : cov[fun ω ↦ -X ω, Y; μ] = -cov[X, Y; μ] :=
   covariance_neg_left
 
 @[simp]
-lemma covariance_neg_right : cov[X, -Y; μ] = -cov[X, Y; μ] := by
+lemma covariance_neg_right : cov[X, -Y; μ] = -cov[X, Y; μ] :=
   calc cov[X, -Y; μ]
   _ = cov[X, (-1 : ℝ) • Y; μ] := by simp
   _ = -cov[X, Y; μ] := by rw [covariance_smul_right]; simp

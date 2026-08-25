@@ -32,7 +32,7 @@ x ⊗ y ⊗ ?_ -/
 #guard_msgs in
 example {x y z w : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⊗ y ⊗ w ⟶ y ⊗ z ⊗ w)
     (η : f ⊗ₘ (g ▷ w) = h) :
-    (f ⊗ₘ g) ▷ w = 𝟙 _ ⊗≫ h ⊗≫ 𝟙 _ := by
+    (f ⊗ₘ g) ▷ w = 𝟙 _ ⊗≫ h ⊗≫ 𝟙 _ :=
   calc
     (f ⊗ₘ g) ▷ w = 𝟙 _ ⊗≫ (f ⊗ₘ g ▷ _) ⊗≫ 𝟙 _ := by monoidal
       _ = 𝟙 _ ⊗≫ h ⊗≫ 𝟙 _ := by rw [η]

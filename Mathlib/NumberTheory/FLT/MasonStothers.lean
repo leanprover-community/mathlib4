@@ -34,7 +34,7 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
   have abc_nz := mul_ne_zero ab_nz hc
   -- bound the degree of `divRadical (a * b * c)` using Wronskian `w`
   set abc_dr := divRadical (a * b * c)
-  have abc_dr_ndeg_lt : abc_dr.natDegree < a.natDegree + b.natDegree := by
+  have abc_dr_ndeg_lt : abc_dr.natDegree < a.natDegree + b.natDegree :=
     calc
       abc_dr.natDegree ≤ w.natDegree := Polynomial.natDegree_le_of_dvd abc_dr_dvd_w hw
       _ < a.natDegree + b.natDegree := by rw [wab] at hw ⊢; exact natDegree_wronskian_lt_add hw

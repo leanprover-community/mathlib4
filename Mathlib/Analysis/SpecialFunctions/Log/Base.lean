@@ -422,7 +422,7 @@ lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
   rw [Real.floor_logb_natCast (Nat.cast_nonneg a), Int.log_natCast, Int.cast_natCast]
 
-lemma log2_le_logb (n : ℕ) : Nat.log2 n ≤ Real.logb 2 n := by
+lemma log2_le_logb (n : ℕ) : Nat.log2 n ≤ Real.logb 2 n :=
   calc (Nat.log2 n : ℝ) = Nat.log 2 n := mod_cast Nat.log2_eq_log_two
   _ ≤ Real.logb 2 n := natLog_le_logb _ _
 

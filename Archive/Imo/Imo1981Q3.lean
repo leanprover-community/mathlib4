@@ -69,7 +69,7 @@ theorem reduction {m n : ℤ} (h1 : ProblemPredicate N m n) (h2 : 1 < n) :
     { n_range := h1.m_range
       m_range := by
         have h5 : 0 < n - m := sub_pos.mpr h3
-        have h6 : n - m < N := by
+        have h6 : n - m < N :=
           calc
             _ < n := sub_lt_self n h1.m_range.left
             _ ≤ N := h1.n_range.right

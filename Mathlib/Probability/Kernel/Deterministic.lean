@@ -147,7 +147,7 @@ lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel
     treated. We prove it here by using the fact that the hypothesis implies that
     `((η ∘ₖ κ) a) sᶜ = 0`, and thus that the integral of `1 - (η b) s` over `κ a` is zero. -/
     rw [h₁, one_mul]
-    have integral_le_kernel : ∫⁻ b in t, (η b) s ∂κ a ≤ κ a t := by
+    have integral_le_kernel : ∫⁻ b in t, (η b) s ∂κ a ≤ κ a t :=
       calc
       _ ≤ ∫⁻ a in t, 1 ∂κ a := by
         refine lintegral_mono ?_

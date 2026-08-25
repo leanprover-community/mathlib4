@@ -720,7 +720,7 @@ lemma realPart.norm_le (x : A) : ‖realPart x‖ ≤ ‖x‖ := by
   gcongr
   exact norm_add_le _ _ |>.trans <| by simp [two_mul]
 
-lemma imaginaryPart.norm_le (x : A) : ‖imaginaryPart x‖ ≤ ‖x‖ := by
+lemma imaginaryPart.norm_le (x : A) : ‖imaginaryPart x‖ ≤ ‖x‖ :=
   calc ‖imaginaryPart x‖ = ‖realPart (Complex.I • (-x))‖ := by simp
     _ ≤ ‖x‖ := by simpa only [smul_neg, map_neg, realPart_I_smul, neg_neg,
         AddSubgroupClass.coe_norm, norm_neg, norm_smul, Complex.norm_I, one_mul] using
