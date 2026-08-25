@@ -5183,6 +5183,7 @@ public import Mathlib.LinearAlgebra.Matrix.DualNumber
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
+public import Mathlib.LinearAlgebra.Matrix.ElementaryRowOperations
 public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
