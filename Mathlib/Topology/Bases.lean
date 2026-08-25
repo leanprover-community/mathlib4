@@ -9,6 +9,7 @@ public import Mathlib.Data.Set.Constructions
 public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.NhdsWithin
 
 /-!
@@ -627,10 +628,36 @@ theorem isTopologicalBasis_pi {ι : Type*} {X : ι → Type*} [∀ i, Topologica
       (∀ i, i ∈ F → U i ∈ T i) ∧ S = (F : Set ι).pi U } := by
   simpa only [Set.pi_def] using! IsTopologicalBasis.iInf_induced cond eval
 
-theorem isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α] [DiscreteTopology α] :
+theorem DiscreteTopology.isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α]
+    [DiscreteTopology α] :
     IsTopologicalBasis { s | ∃ x : α, (s : Set α) = {x} } :=
   isTopologicalBasis_of_isOpen_of_nhds (fun _ _ => isOpen_discrete _) fun x _ hx _ =>
     ⟨{x}, ⟨x, rfl⟩, mem_singleton x, singleton_subset_iff.2 hx⟩
+
+@[deprecated (since := "2026-08-25")]
+alias isTopologicalBasis_singletons := DiscreteTopology.isTopologicalBasis_singletons
+
+theorem discreteTopology_iff_isTopologicalBasis_univ {α : Type*} [TopologicalSpace α] :
+    DiscreteTopology α ↔ IsTopologicalBasis (univ : Set (Set α)) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · refine isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
+    · simp
+    · intro a s as _
+      exact ⟨s, by simp [as]⟩
+  · refine discreteTopology_iff_forall_isOpen.mpr fun s ↦ ?_
+    rw [h.open_iff_eq_sUnion]
+    exact ⟨{s}, by simp⟩
+
+theorem indiscreteTopology_iff_isTopologicalBasis {α : Type*} [TopologicalSpace α] :
+    IndiscreteTopology α ↔ TopologicalSpace.IsTopologicalBasis ({∅, univ} : Set (Set α)) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · refine isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
+    · simp
+    · intro _ s _ hs
+      rcases (IndiscreteTopology.isOpen_iff s).mp hs with rfl | rfl <;> simp_all
+  · rw [indiscreteTopology_iff']
+    intro s hs
+    grind [h.open_eq_sUnion hs]
 
 theorem isTopologicalBasis_subtype
     {α : Type*} [TopologicalSpace α] {B : Set (Set α)}
