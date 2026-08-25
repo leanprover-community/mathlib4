@@ -392,11 +392,8 @@ namespace Int
 /-- An integer is squarefree iff no prime square divides it. -/
 theorem squarefree_iff_prime_sq_not_dvd {n : ℤ} :
     Squarefree n ↔ ∀ p : ℕ, p.Prime → ¬ (p : ℤ) ^ 2 ∣ n := by
-  have bridge : ∀ p : ℕ, (p : ℤ) ^ 2 ∣ n ↔ p * p ∣ n.natAbs := fun p => by
-    rw [show ((p : ℤ) ^ 2) = ((p * p : ℕ) : ℤ) by push_cast; ring, Int.natCast_dvd]
-  rw [← Int.squarefree_natAbs, Nat.squarefree_iff_prime_squarefree]
-  exact ⟨fun h p hp hdvd => h p hp ((bridge p).mp hdvd),
-         fun h x hx hdvd => h x hx ((bridge x).mpr hdvd)⟩
+  simp [← Int.squarefree_natAbs, Nat.squarefree_iff_prime_squarefree, ← Int.natCast_dvd,
+    pow_two]
 
 end Int
 
