@@ -5,9 +5,10 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
+public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
@@ -57,7 +58,7 @@ artifact, really.
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 open Filter (Tendsto)
 
@@ -310,7 +311,7 @@ theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedL
 
 namespace IsBoundedLinearMap
 
-variable {f g : E → F}
+variable {f : E → F}
 
 /-- A map between normed spaces is linear and continuous if and only if it is bounded. -/
 theorem isLinearMap_and_continuous_iff_isBoundedLinearMap (f : E → F) :

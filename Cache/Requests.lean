@@ -284,6 +284,12 @@ all repos use `cs` instead.
 -/
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
+/-- Pair each container in a lookup chain with its read URL. The result keeps
+the chain's trust order. -/
+private def chainWithGetURLs (containers : List Container) :
+    IO (List (Option Container × String)) :=
+  containers.mapM fun c => do return (some c, ← c.getURL)
+
 /--
 Compute the trust-ordered list of container base URLs to try when downloading
 files for a given GitHub repo.
@@ -298,14 +304,17 @@ Precedence (most specific wins):
    not here.
 4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
    overrides it.
+
+An empty value means unset for both variables here, as it does for
+`MATHLIB_CACHE_BASE_URL`. `nonEmptyEnvValue` holds that rule.
 -/
 def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
-  if let some url ← IO.getEnv "MATHLIB_CACHE_GET_URL" then
+  if let some url := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL") then
     return [(none, url)]
   if let some cliOverride ← cacheFromOverride.get then
-    return cliOverride.map fun c => (some c, c.azureURL)
+    return ← chainWithGetURLs cliOverride
   let envOverride? ← do
-    match (← IO.getEnv "MATHLIB_CACHE_FROM") with
+    match (← getEnvNonEmpty "MATHLIB_CACHE_FROM") with
     | none => pure none
     | some s =>
       match parseCacheFromList s with
@@ -315,8 +324,20 @@ def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) :=
           (unrecognized container name). Known containers: \
           {", ".intercalate (Container.all.map Container.name)}."
         pure none
-  let containers := envOverride?.getD (defaultContainersForRepo repo)
-  return containers.map fun c => (some c, c.azureURL)
+  chainWithGetURLs (envOverride?.getD (defaultContainersForRepo repo))
+
+/--
+`curl` flags that let a cache read follow a redirect, so a read base may answer
+with the blob's current home. `%{http_code}` reports the final response, so a
+hit reads as a hit and a miss as a miss.
+
+A redirect may target only `https`, and the chain is short. These bounds limit
+the transport rather than the trust: the host that answers a read serves the
+artifact bytes in either case. They keep a redirect from moving a transfer to a
+plaintext protocol or through a long chain of hops.
+-/
+def curlFollowRedirectArgs : Array String :=
+  #["--location", "--proto-redir", "=https", "--max-redirs", "5"]
 
 /-- Authentication method used for cache upload operations. -/
 inductive UploadAuth where
@@ -325,14 +346,10 @@ inductive UploadAuth where
 
 /-- Retrieves upload credentials from the environment. -/
 def getUploadAuth : IO UploadAuth := do
-  if let some token ← IO.getEnv "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
-    let token := token.trimAscii.copy
-    if !token.isEmpty then
-      return .azureBearer token
-  if let some token ← IO.getEnv "MATHLIB_CACHE_SAS" then
-    let token := token.trimAscii.copy
-    if !token.isEmpty then
-      return .azureSas token
+  if let some token ← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
+    return .azureBearer token
+  if let some token ← getEnvNonEmpty "MATHLIB_CACHE_SAS" then
+    return .azureSas token
   throw <| IO.userError
     "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
 
@@ -378,12 +395,7 @@ SHA-scoped read"; the non-default-scope warning fires for either.
 def getRepoScope : IO (Option String) := do
   if let some s ← scopeOverride.get then
     return some s
-  let s? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
-  match s? with
-  | some s =>
-    let trimmed := s.trimAscii.toString
-    pure (if trimmed.isEmpty then none else some trimmed)
-  | none => pure none
+  getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
 
 def getGitCommitHash : IO String :=
   return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
@@ -409,10 +421,11 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
     -- ```
     -- If this becomes an issue we can implement the curl spec.
 
-    -- Note we append a '.part' to the filenames here,
-    -- which `downloadFiles` then removes when the download is successful.
+    -- Note we append `IO.PARTSUFFIX` to the filenames here, which `downloadFiles` then
+    -- removes when the download is successful. The suffix carries this process's tag, so a
+    -- concurrent `cache` run sharing this `CACHEDIR` writes its own in-flight files, not ours.
     pure <| acc ++ s!"url = {mkFileURL container repo containerURL fileName scope?}\n\
-      -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
+      -o {(IO.CACHEDIR / (fileName ++ IO.PARTSUFFIX)).toString.quote}\n"
 
 /--
 Whether an HTTP status returned for a single-file read should be treated as a
@@ -448,12 +461,12 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
-  let partFileName := fileName ++ ".part"
+  let partFileName := fileName ++ IO.PARTSUFFIX
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
-      args := #[url, "--fail", "--silent", "--write-out", "%{http_code}",
-        "-o", partPath.toString] }
+      args := #[url, "--fail", "--silent"] ++ curlFollowRedirectArgs ++
+        #["--write-out", "%{http_code}", "-o", partPath.toString] }
   if out.exitCode = 0 then
     IO.FS.rename partPath path
     return .served
@@ -464,12 +477,14 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   return if isCacheMissStatus httpCode treatForbiddenAsMiss then .miss else .failed
 
 /-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345).
-    Handles both `.ltar` and `.ltar.part` files using `FilePath.fileStem`. -/
-def hashFromFileName (path : FilePath) : Option UInt64 := do
-  let some stem := path.fileStem | .none
-  -- For .ltar.part files, fileStem gives "hash.ltar"; apply fileStem again to strip .ltar
-  let stem := (FilePath.mk (toString stem)).fileStem.getD stem
-  (toString stem).parseHexToUInt64?
+    Handles a finished `<hash>.ltar`, an in-flight `<hash>.ltar<PARTSUFFIX>`, and a
+    `<hash>.ltar.part` left in the cache by a version that wrote untagged temporaries. -/
+def hashFromFileName (path : FilePath) : Option UInt64 :=
+  let peel (name : String) := (FilePath.mk name).fileStem.getD name
+  let name := path.fileName.getD path.toString
+  -- Peel one extension at a time — `.part`, this process's tag, `.ltar` — and take the first stem
+  -- that parses as a hash, so all three shapes above resolve without knowing which one this is.
+  [name, peel name, peel (peel name), peel (peel (peel name))].findSome? String.parseHexToUInt64?
 
 /-- Decompress a batch of files using a single leantar invocation -/
 def decompressBatch (files : Array (FilePath × Lean.Name))
@@ -611,8 +626,10 @@ def monitorCurl (args : Array String) (size : Nat)
         | .ok 200
         | .ok 201 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
-            if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-              let finalPath := (fn.dropEnd 5).copy
+            -- Match this process's own suffix, not a bare `.part`: a concurrent run's
+            -- in-flight file is not ours to rename, and curl only reports our transfers.
+            if (← System.FilePath.pathExists fn) && fn.endsWith IO.PARTSUFFIX then
+              let finalPath := (fn.dropEnd IO.PARTSUFFIX.length).copy
               IO.FS.rename fn finalPath
               let hash? := hashFromFileName finalPath
               if let some hash := hash? then servedRef.modify (·.insert hash)
@@ -712,8 +729,8 @@ private def downloadFilesFromContainer
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
     let args := #["--request", "GET", "--parallel",
         -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
-        "--silent",
-        "--retry", "5", -- there seem to be some intermittent failures
+        "--silent"] ++ curlFollowRedirectArgs ++
+      #["--retry", "5", -- there seem to be some intermittent failures
         "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
     -- `legacy` answers reads with 403 once its public access is revoked ahead
     -- of retirement; treat that as a miss so the chain stays quiet for clients
@@ -1033,7 +1050,10 @@ section Put
 Resolve the upload base URL.
 
 Precedence:
-1. `MATHLIB_CACHE_PUT_URL` env var, if set.
+1. `MATHLIB_CACHE_PUT_URL` env var, if set. Any value counts here, an empty one
+   included: a misconfigured endpoint fails the upload rather than divert it to
+   the fallback container below. The read variables take the opposite rule,
+   where an empty value means unset.
 2. The Azure URL for the explicitly chosen `container`.
 3. With neither set, fall back to `Container.legacy` (the bare `mathlib4`
    container) and warn. RBAC still scopes each identity to its own container,
