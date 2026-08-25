@@ -294,26 +294,6 @@ theorem DiffContOnCl.circleAverage_poissonKernel_smul' [CompleteSpace E] {c : �
 ## Derivative of the Herglotz–Riesz Kernel Integral
 -/
 
-/-
-For `w ∉ sphere c |R|`, there is a radius `d > 0` such that all points of `ball w d` keep
-distance at least `d` from the circle `sphere c |R|`. This replicates the relevant half of the
-private helper `exists_ball_forall_le_norm_circleMap_sub` in
-`Mathlib/Analysis/Complex/CauchyIntegral.lean`.
--/
-private lemma exists_ball_forall_le_norm_circleMap_sub (hw : w ∉ sphere c |R|) :
-    ∃ d > 0, ∀ x ∈ ball w d, ∀ θ : ℝ, d ≤ ‖circleMap c R θ - x‖ := by
-  have hd₀ : 0 < abs (dist w c - |R|) :=
-    abs_pos.2 (sub_ne_zero.2 fun h ↦ hw (mem_sphere.2 h))
-  refine ⟨abs (dist w c - |R|) / 2, by positivity, fun x hx θ ↦ ?_⟩
-  rw [mem_ball] at hx
-  have h₁ : dist (circleMap c R θ) c = |R| := mem_sphere.1 (circleMap_mem_sphere' c R θ)
-  have h₂ : abs (dist w c - |R|) ≤ dist (circleMap c R θ) w := by
-    calc abs (dist w c - |R|) = |dist (circleMap c R θ) c - dist w c| := by rw [h₁, abs_sub_comm]
-      _ ≤ dist (circleMap c R θ) w := abs_dist_sub_le _ _ _
-  have h₃ := dist_triangle (circleMap c R θ) x w
-  rw [← dist_eq_norm]
-  linarith
-
 /--
 **Derivative of the Herglotz–Riesz kernel integral**: if `f` is circle integrable and `w` does
 not lie on the circle, then `w ↦ circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • f ζ) 0 R`
