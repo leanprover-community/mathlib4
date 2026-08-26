@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Thomas Browning
+Authors: Chris Hughes, Thomas Browning, Snir Broshi
 -/
 module
 
@@ -30,39 +30,123 @@ variable {p} {G}
 
 namespace IsPGroup
 
-theorem iff_orderOf [hp : Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k : ℕ, orderOf g = p ^ k :=
-  forall_congr' fun g =>
-    ⟨fun ⟨_, hk⟩ =>
-      Exists.imp (fun _ h => h.right)
-        ((Nat.dvd_prime_pow hp.out).mp (orderOf_dvd_of_pow_eq_one hk)),
-      Exists.imp fun k hk => by rw [← hk, pow_orderOf_eq_one]⟩
+theorem _root_.isPGroup_iff_pow_pow_eq_one : IsPGroup p G ↔ ∀ g : G, ∃ k, g ^ p ^ k = 1 :=
+  .rfl
+
+alias ⟨exists_pow_pow_eq_one, _⟩ := isPGroup_iff_pow_pow_eq_one
+
+theorem _root_.isPGroup_iff_orderOf_dvd_pow : IsPGroup p G ↔ ∀ g : G, ∃ k, orderOf g ∣ p ^ k := by
+  simp_rw [isPGroup_iff_pow_pow_eq_one, orderOf_dvd_iff_pow_eq_one]
+
+alias ⟨exists_orderOf_dvd_pow, _⟩ := isPGroup_iff_orderOf_dvd_pow
+
+theorem iff_orderOf [Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k, orderOf g = p ^ k := by
+  simp_rw [isPGroup_iff_orderOf_dvd_pow, Nat.dvd_prime_pow Fact.out]
+  exact forall_congr' fun g ↦ ⟨by grind, .imp <| by grind⟩
+
+alias ⟨exists_orderOf_eq_pow, _⟩ := iff_orderOf
+
+theorem of_card_dvd_pow {n : ℕ} (hG : Nat.card G ∣ p ^ n) : IsPGroup p G := by
+  refine fun g ↦ ⟨n, ?_⟩
+  grw [← orderOf_dvd_iff_pow_eq_one, ← hG, orderOf_dvd_natCard]
+
+theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Nat.card G ∣ p ^ n := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card_dvd_pow hn⟩
+  rcases eq_or_ne p 0 with rfl | hp
+  · exact ⟨1, by simp⟩
+  refine ⟨Nat.card G, Nat.dvd_pow_self_iff NeZero.out hp |>.mpr fun q hq ↦ ?_⟩
+  have ⟨hqp, hqdvd, _⟩ := Nat.mem_primeFactors.mp hq
+  have ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q (hp := ⟨hqp⟩) hqdvd
+  have ⟨k, hk⟩ := h.exists_orderOf_dvd_pow g
+  exact Nat.mem_primeFactors.mpr ⟨hqp, hqp.dvd_of_dvd_pow <| hg ▸ hk, hp⟩
+
+alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
 
 theorem dvd_orderOf [Fact p.Prime] (hG : IsPGroup p G) {g : G} (hg : g ≠ 1) : p ∣ orderOf g := by
-  have ⟨k, hk⟩ := IsPGroup.iff_orderOf.mp hG g
+  have ⟨k, hk⟩ := hG.exists_orderOf_eq_pow g
   rw [hk]
   refine dvd_pow_self _ fun hk0 ↦ hg ?_
   rw [← orderOf_eq_one_iff, hk, hk0, pow_zero]
 
-theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G := fun g =>
-  ⟨n, by rw [← hG, pow_card_eq_one']⟩
+theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G :=
+  of_card_dvd_pow hG.dvd
+
+variable (p G) in
+theorem of_subsingleton [Subsingleton G] : IsPGroup p G :=
+  of_card (n := 0) (by simp)
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
-  of_card (n := 0) (by rw [Subgroup.card_bot, pow_zero])
+  .of_subsingleton p _
+
+variable (G) in
+@[simp]
+protected theorem zero : IsPGroup 0 G :=
+  fun g ↦ ⟨1, by simp⟩
+
+@[simp]
+theorem _root_.isPGroup_one_iff_subsingleton : IsPGroup 1 G ↔ Subsingleton G := by
+  refine ⟨?_, fun h ↦ .of_subsingleton 1 G⟩
+  simpa [isPGroup_iff_pow_pow_eq_one] using subsingleton_of_forall_eq 1
+
+protected theorem card : IsPGroup (Nat.card G) G :=
+  fun g ↦ ⟨1, by simp⟩
+
+@[gcongr]
+protected theorem mono {q : ℕ} (hpq : p ∣ q) (hp : IsPGroup p G) : IsPGroup q G := by
+  rw [isPGroup_iff_orderOf_dvd_pow] at hp ⊢
+  exact fun g ↦ (hp g).imp fun k hk ↦ hk.trans <| pow_dvd_pow_of_dvd hpq k
+
+theorem of_pow {n : ℕ} (h : IsPGroup (p ^ n) G) : IsPGroup p G :=
+  fun g ↦ (h g).imp' (n * ·) <| by simp [pow_mul]
 
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
-  have hG : Nat.card G ≠ 0 := Nat.card_pos.ne'
-  refine ⟨fun h => ?_, fun ⟨n, hn⟩ => of_card hn⟩
-  suffices ∀ q ∈ (Nat.card G).primeFactorsList, q = p by
-    use (Nat.card G).primeFactorsList.length
-    rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_primeFactorsList hG]
-  intro q hq
-  obtain ⟨hq1, hq2⟩ := (Nat.mem_primeFactorsList hG).mp hq
-  haveI : Fact q.Prime := ⟨hq1⟩
-  obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q hq2
-  obtain ⟨k, hk⟩ := (iff_orderOf.mp h) g
-  exact (hq1.pow_eq_iff.mp (hg.symm.trans hk).symm).1.symm
+  simp_rw [isPGroup_iff_card_dvd_pow, Nat.dvd_prime_pow Fact.out]
+  exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
 
 alias ⟨exists_card_eq, _⟩ := iff_card
+
+theorem _root_.isPGroup_iff_exists_orderOf_dvd_pow [Finite G] :
+    IsPGroup p G ↔ ∃ k, ∀ g : G, orderOf g ∣ p ^ k := by
+  refine isPGroup_iff_orderOf_dvd_pow.trans ⟨fun h ↦ ?_, fun ⟨k, hk⟩ ↦ fun g ↦ ⟨k, hk g⟩⟩
+  choose k hk using h
+  have := Fintype.ofFinite G
+  have ⟨g, _, hg⟩ := Finset.exists_max_image .univ k Finset.univ_nonempty
+  refine ⟨k g, fun g' ↦ ?_⟩
+  grw [← Nat.pow_dvd_pow p <| hg g' <| Finset.mem_univ g']
+  exact hk g'
+
+theorem _root_.isPGroup_iff_exists_pow_pow_eq_one [Finite G] :
+    IsPGroup p G ↔ ∃ k, ∀ g : G, g ^ p ^ k = 1 := by
+  simp_rw [isPGroup_iff_exists_orderOf_dvd_pow, orderOf_dvd_iff_pow_eq_one]
+
+theorem of_exponent_dvd_pow {n : ℕ} (h : Monoid.exponent G ∣ p ^ n) : IsPGroup p G :=
+  fun g ↦ ⟨n, Monoid.exponent_dvd_iff_forall_pow_eq_one.mp h g⟩
+
+theorem _root_.isPGroup_iff_exponent_dvd_pow [Finite G] :
+    IsPGroup p G ↔ ∃ n, Monoid.exponent G ∣ p ^ n := by
+  simp_rw [isPGroup_iff_exists_orderOf_dvd_pow, Monoid.exponent_dvd]
+
+alias ⟨exists_exponent_dvd_pow, _⟩ := isPGroup_iff_exponent_dvd_pow
+
+theorem _root_.isPGroup_iff_exponent_eq_pow [Finite G] [Fact p.Prime] :
+    IsPGroup p G ↔ ∃ n, Monoid.exponent G = p ^ n := by
+  simp_rw [isPGroup_iff_exponent_dvd_pow, Nat.dvd_prime_pow Fact.out]
+  exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
+
+alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_iff_exponent_eq_pow
+
+theorem _root_.isPGroup_iff_isPGroup_prod_primeFactors (h : p ≠ 0) :
+    IsPGroup p G ↔ IsPGroup (p.primeFactors.prod id) G :=
+  ⟨(.of_pow <| ·.mono <| p.dvd_prod_primeFactors_pow_self h), .mono p.prod_primeFactors_dvd⟩
+
+theorem _root_.isPGroup_iff_primeFactors_card_subset [Finite G] (h : p ≠ 0) :
+    IsPGroup p G ↔ (Nat.card G).primeFactors ⊆ p.primeFactors := by
+  refine isPGroup_iff_card_dvd_pow.trans ⟨fun ⟨n, hn⟩ ↦ ?_, fun hG ↦ ?_⟩
+  · rcases eq_or_ne n 0 with (rfl | hn0)
+    · simp_all
+    grw [← Nat.primeFactors_pow p hn0, Nat.primeFactors_mono hn <| pow_ne_zero n h]
+  · refine ⟨Nat.card G, Nat.dvd_prod_primeFactors_pow_self NeZero.out |>.trans ?_⟩
+    grw [Finset.prod_dvd_prod_of_subset _ _ (·) hG, p.prod_primeFactors_dvd]
 
 section GIsPGroup
 
@@ -87,6 +171,9 @@ theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
 
 theorem of_equiv {H : Type*} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
   hG.of_surjective ϕ.toMonoidHom ϕ.surjective
+
+theorem isOfFinOrder (hp : p ≠ 0) (g : G) : IsOfFinOrder g :=
+  hG g |>.elim (isOfFinOrder_iff_pow_eq_one.mpr ⟨_, pow_ne_zero · hp |>.pos, ·⟩)
 
 theorem orderOf_coprime {n : ℕ} (hn : p.Coprime n) (g : G) : (orderOf g).Coprime n :=
   let ⟨k, hk⟩ := hG g
@@ -152,8 +239,8 @@ variable {α : Type*} [MulAction G α]
 
 theorem card_orbit (a : α) [Finite (orbit G a)] : ∃ n : ℕ, Nat.card (orbit G a) = p ^ n := by
   let ϕ := orbitEquivQuotientStabilizer G a
-  haveI := Finite.of_equiv (orbit G a) ϕ
-  haveI := (stabilizer G a).finiteIndex_of_finite_quotient
+  have := Finite.of_equiv (orbit G a) ϕ
+  have := (stabilizer G a).finiteIndex_of_finite_quotient
   rw [Nat.card_congr ϕ]
   exact hG.index (stabilizer G a)
 
@@ -220,18 +307,17 @@ theorem exists_fixed_point_of_prime_dvd_card_of_fixed_point (hpα : p ∣ Nat.ca
     ⟨b, hb, fun hab => hba (by simp_rw [hab])⟩
 
 theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.center G) := by
-  classical
-    have := (hG.of_equiv ConjAct.toConjAct).exists_fixed_point_of_prime_dvd_card_of_fixed_point G
-    rw [ConjAct.fixedPoints_eq_center] at this
-    have dvd : p ∣ Nat.card G := by
-      obtain ⟨n, hn0, hn⟩ := hG.nontrivial_iff_card.mp inferInstance
-      exact hn.symm ▸ dvd_pow_self _ (ne_of_gt hn0)
-    obtain ⟨g, hg⟩ := this dvd (Subgroup.center G).one_mem
-    exact ⟨⟨1, ⟨g, hg.1⟩, mt Subtype.ext_iff.mp hg.2⟩⟩
+  have := (hG.of_equiv ConjAct.toConjAct).exists_fixed_point_of_prime_dvd_card_of_fixed_point G
+  rw [ConjAct.fixedPoints_eq_center] at this
+  have dvd : p ∣ Nat.card G := by
+    obtain ⟨n, hn0, hn⟩ := hG.nontrivial_iff_card.mp inferInstance
+    exact hn.symm ▸ dvd_pow_self _ (ne_of_gt hn0)
+  obtain ⟨g, hg⟩ := this dvd (Subgroup.center G).one_mem
+  exact ⟨⟨1, ⟨g, hg.1⟩, mt Subtype.ext_iff.mp hg.2⟩⟩
 
 theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
-  haveI := center_nontrivial hG
-  classical exact
+  have := center_nontrivial hG
+  exact
       bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Finite.one_lt_card)
 
 end GIsPGroup
@@ -251,8 +337,9 @@ theorem to_inf_right {H K : Subgroup G} (hK : IsPGroup p K) : IsPGroup p (H ⊓ 
 theorem map {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K] (ϕ : G →* K) :
     IsPGroup p (H.map ϕ) := by
   rw [← H.range_subtype, MonoidHom.map_range]
-  exact hH.of_surjective (ϕ.restrict H).rangeRestrict (ϕ.restrict H).rangeRestrict_surjective
+  exact hH.of_surjective (ϕ.domRestrict H).rangeRestrict (ϕ.domRestrict H).rangeRestrict_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K]
     (ϕ : K →* G) (hϕ : IsPGroup p ϕ.ker) : IsPGroup p (H.comap ϕ) := by
   intro g
@@ -358,7 +445,7 @@ theorem card_center_eq_prime_pow (hGpn : Nat.card G = p ^ n) (hn : 0 < n) :
   have : Finite G := Nat.finite_of_card_ne_zero (hGpn ▸ pow_ne_zero n (NeZero.ne p))
   have hcG := to_subgroup (of_card hGpn) (center G)
   rcases iff_card.1 hcG with _
-  haveI : Nontrivial G := (nontrivial_iff_card <| of_card hGpn).2 ⟨n, hn, hGpn⟩
+  have : Nontrivial G := (nontrivial_iff_card <| of_card hGpn).2 ⟨n, hn, hGpn⟩
   exact (nontrivial_iff_card hcG).mp (center_nontrivial (of_card hGpn))
 
 /-- The quotient by the center of a group of cardinality `p ^ 2` is cyclic. -/
@@ -379,7 +466,7 @@ theorem isMulCommutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : IsMulCo
 
 /-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commutative_of_card_eq_prime_sq`
 for just the proof that `∀ a b, a * b = b * a` -/
-@[implicit_reducible]
+@[instance_reducible]
 def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
   let := cyclic_center_quotient_of_card_eq_prime_sq hG
   commGroupOfCyclicCenterQuotient _ (QuotientGroup.ker_mk' <| center G).le
