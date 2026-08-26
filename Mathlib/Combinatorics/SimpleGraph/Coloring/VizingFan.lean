@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan.Rotation
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan.Adjacency
 
 /-!
 # Vizing Fan Rotation
