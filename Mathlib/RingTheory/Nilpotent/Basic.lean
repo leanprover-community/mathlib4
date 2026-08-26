@@ -224,13 +224,27 @@ variable [Semiring R] {x y : R}
 theorem sq_eq_sq_of_add_eq_zero (h : x + y = 0) : x ^ 2 = y ^ 2 := by
   simpa [h] using show x ^ 2 + (x + y) * y = x * (x + y) + y ^ 2 by grind
 
+/-- If two elements of a semiring sum to zero and a power of the right one vanishes,
+then the same power of the left one vanishes. -/
+theorem pow_eq_zero_of_add_eq_zero_left {n : ℕ} (h : x + y = 0) (hy : y ^ n = 0) :
+    x ^ n = 0 := by
+  obtain ⟨k, rfl | rfl⟩ := Nat.even_or_odd' n
+  · simpa [pow_mul, sq_eq_sq_of_add_eq_zero h] using hy
+  · have hpow : x ^ (2 * k + 1) + y ^ (2 * k + 1) = 0 := by
+      calc
+        x ^ (2 * k + 1) + y ^ (2 * k + 1) =
+            (x ^ 2) ^ k * x + (y ^ 2) ^ k * y := by rw [pow_add, pow_add, pow_mul, pow_mul,
+              pow_one, pow_one]
+        _ = (y ^ 2) ^ k * x + (y ^ 2) ^ k * y := by rw [sq_eq_sq_of_add_eq_zero h]
+        _ = 0 := by rw [← mul_add, h, mul_zero]
+    simpa [hy] using hpow
+
 /-- If two elements of a semiring sum to zero and the right one is nilpotent,
 then so is the left one. -/
 theorem IsNilpotent.of_add_eq_zero_left (h : x + y = 0) (hy : IsNilpotent y) :
     IsNilpotent x := by
   obtain ⟨n, hn⟩ := hy
-  use 2 * n
-  rw [pow_mul, sq_eq_sq_of_add_eq_zero h, pow_right_comm, hn, pow_two, mul_zero]
+  exact ⟨n, pow_eq_zero_of_add_eq_zero_left h hn⟩
 
 theorem isNilpotent_iff_of_add_eq_zero (h : x + y = 0) :
     IsNilpotent x ↔ IsNilpotent y :=
