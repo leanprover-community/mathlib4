@@ -198,7 +198,7 @@ lemma buffon_integral :
   rw [
     ← MeasureTheory.integral_map hBₘ.aemeasurable
       (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable,
-    hB, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
+    hB.map_eq, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
     ← ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
     ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
   ]
@@ -221,8 +221,8 @@ lemma buffon_integral :
         -(Real.sin θ * l) / 2 ≤ x ∧ x ≤ Real.sin θ * l / 2 := by
       rw [neg_div, and_comm, ← tsub_le_iff_right, zero_sub]
     by_cases h : x ≤ Real.sin θ * l / 2 ∧ 0 ≤ x + Real.sin θ * l / 2
-    · rw [if_pos h, if_pos (this.mp h)]
-    · rw [if_neg h, if_neg (this.not.mp h)]
+    · rw [ite_eq_left h, ite_eq_left (this.mp h)]
+    · rw [ite_eq_right h, ite_eq_right (this.not.mp h)]
   simp_rw [indicator_eq, MeasureTheory.setIntegral_indicator measurableSet_Icc, Pi.one_apply]
 
 include hl in

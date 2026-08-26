@@ -24,7 +24,7 @@ proofs about these definitions, those are contained in other files in `Data.List
 
 namespace List
 
-open Function Nat
+open Nat
 
 universe u v w x
 
