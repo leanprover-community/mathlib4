@@ -6,7 +6,6 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Topology.Algebra.ProperAction.Basic
-public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
