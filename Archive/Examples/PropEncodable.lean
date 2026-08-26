@@ -22,8 +22,7 @@ From the definition (using `sum`, `unit`, and an encodable type), Lean can infer
 that it is encodable. We then define a map from propositional formulas to the
 corresponding `Wfin` type, and show that map has a left inverse.
 
-We mark the auxiliary constructions `private`, since their only purpose is to
-show encodability.
+The auxiliary constructions are private, since their only purpose is to show encodability.
 -/
 
 namespace PropEncodable

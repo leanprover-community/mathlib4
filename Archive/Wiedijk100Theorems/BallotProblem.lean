@@ -168,6 +168,7 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
+-- This instance needs to be public, for (public) theorem statements to make sense.
 local instance measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
 private local instance measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
