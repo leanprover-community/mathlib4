@@ -301,7 +301,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
         obtain ⟨N, hN⟩ : ∃ N : ℕ, X ω ≤ N := exists_nat_ge (X ω)
         exact Set.mem_iUnion.2 ⟨N, hω, hN⟩
       · simp +contextual only [Set.mem_Ioc, Set.mem_Ioi,
-          Set.iUnion_subset_iff, Set.setOf_subset_setOf, imp_true_iff]
+          Set.iUnion_subset_iff, Set.ofPred_subset_ofPred, imp_true_iff]
     rw [this]
     apply tendsto_measure_iUnion_atTop
     intro m n hmn x hx

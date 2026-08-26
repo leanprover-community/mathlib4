@@ -183,7 +183,7 @@ open Set
 
 theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
     @supp.{u} _ P.Obj _ α (⟨a, f⟩ : P α) i = f i '' univ := by
-  ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
+  ext x; simp only [supp, image_univ, mem_range, mem_ofPred_eq]
   constructor <;> intro h
   · apply @h fun i x => ∃ y : P.B a i, f i y = x
     rw [liftP_iff']

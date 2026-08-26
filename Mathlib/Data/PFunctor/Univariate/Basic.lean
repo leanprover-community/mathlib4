@@ -135,7 +135,7 @@ theorem fst_map (x : P α) (f : α → β) : (P.map f x).1 = x.1 := by cases x; 
 @[simp]
 theorem iget_map [DecidableEq P.A] [Inhabited α] [Inhabited β] (x : P α)
     (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (P.map f x).iget i = f (x.iget i) := by
-  simp only [Obj.iget, fst_map, *, dif_pos]
+  simp only [Obj.iget, fst_map, *, dite_eq_left]
   cases x
   rfl
 
@@ -219,7 +219,7 @@ open Set
 
 theorem supp_eq {α : Type u} (a : P.A) (f : P.B a → α) :
     @supp.{u} P.Obj _ α (⟨a, f⟩ : P α) = f '' univ := by
-  ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
+  ext x; simp only [supp, image_univ, mem_range, mem_ofPred_eq]
   constructor <;> intro h
   · apply @h fun x => ∃ y : P.B a, f y = x
     rw [liftp_iff']
