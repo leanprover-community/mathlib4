@@ -493,6 +493,7 @@ lemma exists_isMaximal_dvd_of_dvd_absNorm'
 
 theorem finite_setOfPred_absNorm_le (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I ≤ n}.Finite := by
+  have : Ring.HasFiniteQuotients S := .of_module_finite ℤ _
   simpa [absNorm_apply] using Ring.HasFiniteQuotients.finite_cardQuot_le (S := S) n
 
 @[deprecated (since := "2026-07-09")] alias finite_setOf_absNorm_le := finite_setOfPred_absNorm_le
