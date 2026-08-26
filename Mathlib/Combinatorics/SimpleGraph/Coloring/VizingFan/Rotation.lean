@@ -177,7 +177,7 @@ set_option linter.unusedFintypeInType false in
     the last fan edge to `γ`, shortening the fan and producing a new free
     color for the next step. -/
 lemma IsFan.rotateTermA
-    [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+    [DecidableEq V]
     {u v : V} (e_uv : G.edgeSet) (he_uv : e_uv.val = s(u, v))
     {c : (G.deleteEdges {e_uv.val}).lineGraph.Coloring α}
     {l : List V} (h_fan : IsFan c u v l) (h_ne : l ≠ [])
