@@ -35,10 +35,10 @@ def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α :=
   .onFinset s (fun i ↦ haveI := Classical.decEq ι; if H : i ∈ s then f i H else 0) (by grind)
 
 theorem indicator_of_mem (hi : i ∈ s) (f : ∀ i ∈ s, α) : indicator s f i = f i hi :=
-  dif_pos hi
+  dite_eq_left hi
 
 theorem indicator_of_notMem (hi : i ∉ s) (f : ∀ i ∈ s, α) : indicator s f i = 0 :=
-  dif_neg hi
+  dite_eq_right hi
 
 variable (s i)
 
