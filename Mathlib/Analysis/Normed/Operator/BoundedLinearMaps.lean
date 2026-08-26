@@ -5,9 +5,10 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
+public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
@@ -57,7 +58,7 @@ artifact, really.
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 open Filter (Tendsto)
 
