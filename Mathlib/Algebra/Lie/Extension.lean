@@ -151,7 +151,8 @@ def ofProd : L × M ≃ ofTwoCocycle c where
 
 -- transport instances along the equivalence
 instance : AddCommGroup (ofTwoCocycle c) := (ofProd c).symm.addCommGroup
-instance : Module R (ofTwoCocycle c) := (ofProd c).symm.module R
+instance : Module R (ofTwoCocycle c) :=
+  ({ (ofProd c).symm with map_add' _ _ := rfl : ofTwoCocycle c ≃+ L × M}).module R
 
 @[simp] lemma of_zero : ofProd c (0 : L × M) = 0 := rfl
 @[simp] lemma of_add (x y : L × M) : ofProd c (x + y) = ofProd c x + ofProd c y := rfl
@@ -313,7 +314,6 @@ noncomputable def toKer (E : Extension R M L) :
     rfl
   right_inv x := by simpa [Subtype.ext_iff] using! Equiv.apply_ofInjective_symm E.incl_injective _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma lie_toKer_apply (E : Extension R M L) (x : M) (y : E.L) :
     ⁅y, (E.toKer x : E.L)⁆ = ⁅y, E.incl x⁆ := by
   rfl

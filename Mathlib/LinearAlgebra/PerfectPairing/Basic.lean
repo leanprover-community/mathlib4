@@ -27,11 +27,11 @@ to connect 1 and 2.
 open Function Module
 
 namespace LinearMap
-variable {R K M M' N N' : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup M']
-  [AddCommGroup N']
 
-section CommRing
-variable [CommRing R] [Module R M] [Module R M'] [Module R N] [Module R N']
+section CommSemiring
+
+variable {R M M' N N' : Type*} [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid M']
+  [AddCommMonoid N'] [CommSemiring R] [Module R M] [Module R M'] [Module R N] [Module R N']
   {p : M →ₗ[R] N →ₗ[R] R} {x : M} {y : N}
 
 /-- For a ring `R` and two modules `M` and `N`, a perfect pairing is a bilinear map `M × N → R`
@@ -111,10 +111,11 @@ instance [inst : p.IsPerfPair] : Fact p.Nondegenerate := ⟨by
   simpa only [Nondegenerate, ← flip_separatingLeft, separatingLeft_iff_ker_eq_bot, ker_eq_bot]
     using ⟨inst.bijective_left.injective, inst.bijective_right.injective⟩⟩
 
-end CommRing
+end CommSemiring
 
 section Field
-variable [Field K] [Module K M] [Module K N] {p : M →ₗ[K] N →ₗ[K] K} {x : M} {y : N}
+variable {K M N : Type*} [Field K] [AddCommGroup M] [AddCommGroup N]
+  [Module K M] [Module K N] {p : M →ₗ[K] N →ₗ[K] K}
 
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
 to check only injectivity instead of bijectivity of the bilinear pairing. -/
@@ -131,13 +132,16 @@ lemma IsPerfPair.of_injective' [FiniteDimensional K N] (h : Injective p) (h' : I
     p.IsPerfPair := .flip <| .of_injective h' h
 
 end Field
+
 end LinearMap
 
 noncomputable section
 
-variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  [AddCommMonoid N] [Module R N]
 
 namespace LinearMap
+
 variable {p : M →ₗ[R] N →ₗ[R] R} [p.IsPerfPair]
 
 variable (p) in
@@ -149,6 +153,7 @@ structure IsPerfectCompl (U : Submodule R M) (V : Submodule R N) : Prop where
   isCompl_right : IsCompl V (U.dualAnnihilator.map (p.flip.toPerfPair.symm : Dual R M →ₗ[R] N))
 
 namespace IsPerfectCompl
+
 variable {U : Submodule R M} {V : Submodule R N}
 
 protected lemma flip (h : p.IsPerfectCompl U V) :
