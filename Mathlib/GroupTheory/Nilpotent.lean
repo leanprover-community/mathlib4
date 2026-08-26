@@ -1039,7 +1039,9 @@ lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass {a : ℕ}
 end Subgroup
 
 /-- Any nontrivial normal subgroup of a nilpotent group intersects the center nontrivially. -/
-@[to_additive] theorem Group.IsNilpotent.inf_center_ne_bot_of_normal [Group.IsNilpotent G]
+@[to_additive /-- Any nontrivial normal subgroup of a nilpotent group intersects the center
+nontrivially. -/]
+theorem Group.IsNilpotent.inf_center_ne_bot_of_normal [Group.IsNilpotent G]
     {H : Subgroup G} [H.Normal] (hH : H ≠ ⊥) : H ⊓ center G ≠ ⊥ := by
   classical
   have hk : ∃ n, H ⊓ lowerCentralSeries ⊤ n ≠ ⊥ ∧ H ⊓ lowerCentralSeries ⊤ (n + 1) = ⊥ := by
