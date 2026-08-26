@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Logic.Basic
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Tauto
