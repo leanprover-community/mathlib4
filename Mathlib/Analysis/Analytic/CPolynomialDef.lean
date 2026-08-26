@@ -7,7 +7,10 @@ module
 
 public import Mathlib.Analysis.Analytic.ChangeOrigin
 
-/-! We specialize the theory of analytic functions to the case of functions that admit a
+/-!
+# Continuously polynomial functions
+
+We specialize the theory of analytic functions to the case of functions that admit a
 development given by a *finite* formal multilinear series. We call them "continuously polynomial",
 which is abbreviated to `CPolynomial`. One reason to do that is that we no longer need a
 completeness assumption on the target space `F` to make the series converge, so some of the results
@@ -50,9 +53,9 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open scoped Topology
-open Set Filter Asymptotics NNReal ENNReal
+open Set Filter ENNReal
 
-variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
+variable {f g : E → F} {p pf : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
 
 section FiniteFPowerSeries
 

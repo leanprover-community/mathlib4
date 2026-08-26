@@ -119,7 +119,6 @@ variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 variable [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
 variable [HasFiniteProducts.{v} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` preserves the terminal object and binary products, then it preserves products indexed by
 `Fin n` for any `n`.
@@ -245,7 +244,6 @@ variable [PreservesColimitsOfShape (Discrete WalkingPair) F]
 variable [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
 variable [HasFiniteCoproducts.{v} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` preserves the initial object and binary coproducts, then it preserves products indexed by
 `Fin n` for any `n`.
@@ -276,6 +274,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
     · rintro i _
       dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]
       rw [comp_id, ← F.map_comp]
+      rfl
 
 /-- If `F` preserves the initial object and binary coproducts, then it preserves colimits of shape
 `Discrete (Fin n)`.
