@@ -343,7 +343,7 @@ instance liftNatTrans [HasShift E A]
     NatTrans.CommShift (Localization.liftNatTrans L W F₁ F₂ F₁' F₂' τ) A where
   shift_comm m :=
     Localization.natTrans_ext L W (fun X ↦ by
-      simp [← cancel_epi (F₁'.map ((Functor.commShiftIso L m).hom.app X)),
+      simp [← cancel_epi (F₁'.map ((L.commShiftIso m).hom.app X)),
         shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
         ← Functor.map_comp_assoc])
 
