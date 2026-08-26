@@ -64,7 +64,7 @@ lemma lift_surjective : Function.Surjective P.lift :=
 alias lift_val_surjective := lift_surjective
 
 @[simp]
-lemma lift_range_eq_top : P.lift.range = ⊤ := MonoidHom.range_eq_top.mpr P.lift_surjective
+lemma range_lift_eq_top : P.lift.range = ⊤ := MonoidHom.range_eq_top.mpr P.lift_surjective
 
 /-- If two homomorphisms coincide on the elements of a generating family, then they are equal. -/
 theorem hom_ext {M : Type*} [Monoid M] (f g : G →* M) (h : ∀ i, f (P.val i) = g (P.val i)) :
