@@ -150,7 +150,7 @@ instance : Finite 𝓀[K] :=
     (inferInstanceAs (CompactSpace 𝒪[K]))).2.2
 
 instance (n : ℕ) : Finite (𝒪[K] ⧸ 𝓂[K] ^ n) :=
-  haveI : Finite (𝒪[K] ⧸ 𝓂[K]) := inferInstanceAs (Finite 𝓀[K])
+  have : Finite (𝒪[K] ⧸ 𝓂[K]) := inferInstanceAs (Finite 𝓀[K])
   Ideal.finite_quotient_pow (IsNoetherian.noetherian _) n
 
 end TopologicalSpace
