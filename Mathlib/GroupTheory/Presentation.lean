@@ -93,7 +93,7 @@ noncomputable def presentedGroupEquiv : PresentedGroup P.rel ≃* G :=
   (QuotientGroup.quotientMulEquivOfEq P.ker_lift.symm).trans
     (QuotientGroup.quotientKerEquivOfSurjective P.lift P.lift_surjective)
 
-/-- A finite presentation is finitely presented. -/
+/-- A group with a finite presentation is finitely presented. -/
 theorem isFinitelyPresented [Finite ι] (hrel : P.rel.Finite) : Group.IsFinitelyPresented G :=
   .of_surjective P.lift P.lift_surjective (P.isFinitelyNormallyGenerated_ker_lift hrel)
 
