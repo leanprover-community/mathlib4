@@ -58,6 +58,40 @@ def mapDomainFixedEquivSubtype :
 namespace mapDomainFixed
 variable [FiniteDimensional F K] [Normal F K]
 
+open Classical in
+/-- The element of `mapDomainFixed F R K` given by `a` on `x` and `0` elsewhere. -/
+def single (x : ConjRootClass F K) (a : R) :
+    mapDomainFixed F R K :=
+  ⟨.ofCoeff <| Finsupp.indicator x.carrier.toFinset fun _ _ => a, by
+    rw [mem_mapDomainFixed_iff]
+    rintro i j h
+    simp_rw [Finsupp.indicator_apply, Set.mem_toFinset, dite_eq_ite]
+    congr 1
+    simp_rw [ConjRootClass.mem_carrier, eq_iff_iff]
+    apply Eq.congr_left
+    rwa [ConjRootClass.mk_eq_mk, isConjRoot_iff_exists_algEquiv]⟩
+
+theorem coeff_single_mul_single_zero_ne_zero_iff [CharZero F] [NoZeroDivisors R]
+    (x : ConjRootClass F K) {a : R} (ha : a ≠ 0) (y : ConjRootClass F K) {b : R} (hb : b ≠ 0) :
+    (mapDomainFixed.single x a * mapDomainFixed.single y b).val.coeff 0 ≠ 0 ↔ x = -y := by
+  classical
+  simp_rw [mapDomainFixed.single, MulMemClass.mk_mul_mk]
+  have : IsAddTorsionFree R := .of_isTorsionFree F R
+  simp_rw [Finsupp.indicator_eq_sum_single, AddMonoidAlgebra.ofCoeff_sum,
+    sum_mul, mul_sum, AddMonoidAlgebra.ofCoeff_single, AddMonoidAlgebra.single_mul_single,
+    AddMonoidAlgebra.coeff_sum, Finsupp.coe_finsetSum, Finset.sum_apply,
+    AddMonoidAlgebra.coeff_single, Finsupp.single_apply, ← sum_product',
+    sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
+    iff_true_intro ha, iff_true_intro hb, and_true, Ne, card_eq_zero, filter_eq_empty_iff,
+    not_forall, not_not, exists_prop', nonempty_prop, Prod.exists, mem_product, Set.mem_toFinset]
+  convert ConjRootClass.exists_mem_carrier_add_eq_zero x y
+  tauto
+
+theorem coeff_single_mul_single_zero_eq_zero_iff [CharZero F] [NoZeroDivisors R]
+    (x : ConjRootClass F K) {a : R} (ha : a ≠ 0) (y : ConjRootClass F K) {b : R} (hb : b ≠ 0) :
+    (mapDomainFixed.single x a * mapDomainFixed.single y b).val.coeff 0 = 0 ↔ x ≠ -y :=
+  (coeff_single_mul_single_zero_ne_zero_iff x ha y hb).not_right
+
 /-- Auxiliary definition for `mapDomainFixed.toFinsupp`. -/
 def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
   classical
@@ -97,8 +131,8 @@ def toFinsupp : mapDomainFixed F R K ≃ₗ[R] ConjRootClass F K →₀ R where
       Finsupp.smul_apply]
 
 @[simp]
-theorem toFinsupp_apply (f : mapDomainFixed F R K) (i : K) :
-    f.val.coeff i = toFinsupp f (ConjRootClass.mk F i) :=
+theorem toFinsupp_apply_zero (f : mapDomainFixed F R K) :
+    toFinsupp f 0 = f.val.coeff 0 :=
   rfl
 
 theorem toFinsupp_apply_mk (f : mapDomainFixed F R K) (i : K) :
@@ -109,19 +143,6 @@ theorem toFinsupp_apply_mk (f : mapDomainFixed F R K) (i : K) :
 theorem toFinsupp_mk_apply_zero_eq (f : R[K]) (hf : f ∈ mapDomainFixed F R K) :
     toFinsupp (⟨f, hf⟩ : mapDomainFixed F R K) 0 = f.coeff 0 :=
   rfl
-
-open Classical in
-/-- The element of `mapDomainFixed F R K` given by `a` on `x` and `0` elsewhere. -/
-def single (x : ConjRootClass F K) (a : R) :
-    mapDomainFixed F R K :=
-  ⟨.ofCoeff <| Finsupp.indicator x.carrier.toFinset fun _ _ => a, by
-    rw [mem_mapDomainFixed_iff]
-    rintro i j h
-    simp_rw [Finsupp.indicator_apply, Set.mem_toFinset, dite_eq_ite]
-    congr 1
-    simp_rw [ConjRootClass.mem_carrier, eq_iff_iff]
-    apply Eq.congr_left
-    rwa [ConjRootClass.mk_eq_mk, isConjRoot_iff_exists_algEquiv]⟩
 
 theorem toFinsupp_single (x : ConjRootClass F K) (a : R) :
     toFinsupp (mapDomainFixed.single x a) = Finsupp.single x a := by
@@ -136,27 +157,6 @@ theorem toFinsupp_single (x : ConjRootClass F K) (a : R) :
 theorem toFinsupp_sum_single (x : mapDomainFixed F R K) :
     (toFinsupp x).sum (mapDomainFixed.single (F := F) (K := K)) = x := by
   simp_rw [← toFinsupp.injective.eq_iff, map_finsuppSum, toFinsupp_single, Finsupp.sum_single]
-
-theorem single_mul_single_apply_zero_ne_zero_iff [CharZero F] [NoZeroDivisors R]
-    (x : ConjRootClass F K) {a : R} (ha : a ≠ 0) (y : ConjRootClass F K) {b : R} (hb : b ≠ 0) :
-    toFinsupp (mapDomainFixed.single x a * mapDomainFixed.single y b) 0 ≠ 0 ↔ x = -y := by
-  classical
-  simp_rw [mapDomainFixed.single, MulMemClass.mk_mul_mk]
-  have : IsAddTorsionFree R := .of_isTorsionFree F R
-  simp_rw [Finsupp.indicator_eq_sum_single, AddMonoidAlgebra.ofCoeff_sum,
-    sum_mul, mul_sum, AddMonoidAlgebra.ofCoeff_single, AddMonoidAlgebra.single_mul_single,
-    toFinsupp_mk_apply_zero_eq, AddMonoidAlgebra.coeff_sum, Finsupp.coe_finsetSum, Finset.sum_apply,
-    AddMonoidAlgebra.coeff_single, Finsupp.single_apply, ← sum_product',
-    sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
-    iff_true_intro ha, iff_true_intro hb, and_true, Ne, card_eq_zero, filter_eq_empty_iff,
-    not_forall, not_not, exists_prop', nonempty_prop, Prod.exists, mem_product, Set.mem_toFinset]
-  convert ConjRootClass.exists_mem_carrier_add_eq_zero x y
-  tauto
-
-theorem single_mul_single_apply_zero_eq_zero_iff [CharZero F] [NoZeroDivisors R]
-    (x : ConjRootClass F K) {a : R} (ha : a ≠ 0) (y : ConjRootClass F K) {b : R} (hb : b ≠ 0) :
-    toFinsupp (mapDomainFixed.single x a * mapDomainFixed.single y b) 0 = 0 ↔ x ≠ -y :=
-  (single_mul_single_apply_zero_ne_zero_iff x ha y hb).not_right
 
 open Classical in
 theorem lift_eq_sum_toFinsupp (A : Type*) [Semiring A] [Algebra R A]
@@ -249,17 +249,18 @@ theorem linearIndependent_exp_aux2_2 {F K S : Type*}
   have hx' : mapDomainFixed.toFinsupp x' 0 ≠ 0 := by
     rw [x'_def, ← mapDomainFixed.toFinsupp_sum_single x,
       Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul, map_add,
-      Finsupp.add_apply]
-    convert_to (mapDomainFixed.toFinsupp (mapDomainFixed.single i (mapDomainFixed.toFinsupp x i) *
-      mapDomainFixed.single (-i) 1) 0 + 0 : F) ≠ 0
+      Finsupp.add_apply, mapDomainFixed.toFinsupp_apply_zero, mapDomainFixed.toFinsupp_apply_zero]
+    convert_to ((mapDomainFixed.single i (mapDomainFixed.toFinsupp x i) *
+      mapDomainFixed.single (-i) 1).val.coeff 0 + 0 : F) ≠ 0
     · congr 1
-      rw [map_sum, Finsupp.finsetSum_apply]
+      rw [AddSubmonoidClass.coe_finsetSum, AddMonoidAlgebra.coeff_sum,
+        Finsupp.coe_finsetSum, Finset.sum_apply]
       refine sum_eq_zero fun j hj => ?_
       rw [mem_erase, Finsupp.mem_support_iff] at hj
-      rw [mapDomainFixed.single_mul_single_apply_zero_eq_zero_iff _ hj.2]
+      rw [mapDomainFixed.coeff_single_mul_single_zero_eq_zero_iff _ hj.2]
       · rw [neg_neg]; exact hj.1
       · exact one_ne_zero
-    rw [add_zero, mapDomainFixed.single_mul_single_apply_zero_ne_zero_iff]
+    rw [add_zero, mapDomainFixed.coeff_single_mul_single_zero_ne_zero_iff]
     · rw [neg_neg]
     · rwa [Finsupp.mem_support_iff] at hi
     · exact one_ne_zero
@@ -299,15 +300,14 @@ theorem linearIndependent_exp_aux_rat {K S : Type*}
       Finsupp.sum_mapDomain_index_inj u'_inj]
     simp [Finsupp.sum_fintype, Algebra.smul_def]
 
-theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
+theorem linearIndependent_exp_aux_int (R : Type*) {F S ι : Type*}
     [CommRing R] [Nontrivial R] [Field F] [Algebra R F] [IsFractionRing R F]
-    [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K]
     [Semiring S] [Algebra R S] [Algebra F S] [IsScalarTower R F S]
-    (f : ConjRootClass F K → S)
-    (w : F) (w0 : w ≠ 0) (w' : ConjRootClass F K →₀ F) (hw' : w' 0 = 0)
+    (f : ι → S)
+    (w : F) (w0 : w ≠ 0) (w' : ι →₀ F)
     (h : (algebraMap F S w + w'.sum fun c wc ↦ wc • f c) = 0) :
-    ∃ (w : R) (_w0 : w ≠ 0) (w' : ConjRootClass F K →₀ R) (_hw' : w' 0 = 0),
-      (algebraMap R S w + w'.sum fun c wc ↦ wc • f c) = 0 := by
+    ∃ (w : R) (_w0 : w ≠ 0) (w'' : ι →₀ R), w''.support ⊆ w'.support ∧
+      (algebraMap R S w + w''.sum fun c wc ↦ wc • f c) = 0 := by
   classical
   obtain ⟨⟨N, N0⟩, hN⟩ :=
     IsLocalization.exist_integer_multiples_of_finset (nonZeroDivisors R) ({w} ∪ w'.frange)
@@ -326,22 +326,22 @@ theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
   have x0 : x ≠ 0 := by
     rintro ⟨rfl⟩
     simp [eq_comm, N0, w0] at hx
-  use x, x0, w'', by simp [w'', hw']
+  use x, x0, w'', Finsupp.support_indicator_subset _ _
   rw [Finsupp.sum] at h
   rw [Finsupp.sum_of_support_subset _ (Finsupp.support_indicator_subset _ _) _ (by simp), ← w''_def]
   simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R F S, hx, hw'', Algebra.smul_def,
     map_mul, mul_assoc, ← mul_sum, ← mul_add, ← Algebra.smul_def, h, smul_zero]
 
 open Classical in
-theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}
+theorem linearIndependent_exp_aux_aroots_rat {R F K S : Type*}
     [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K] [CharZero F]
     [Field S] [Algebra K S] [Algebra F S] [IsScalarTower F K S]
-    (φ : Multiplicative S →* S)
-    (w : ℤ) (w' : ConjRootClass F K →₀ ℤ) (hw' : w' 0 = 0)
-    (h : (w + w'.sum fun c wc ↦ wc • ∑ x ∈ c.carrier,
-      φ.comp (algebraMap K S).toAddMonoidHom.toMultiplicative (.ofAdd x)) = 0) :
-    ∃ (w' : F[X] →₀ ℤ), (∀ p ∈ w'.support, p.eval 0 ≠ 0) ∧
-      w + w'.sum (fun p c ↦ c • ((p.aroots S).map fun x => φ (.ofAdd x)).sum) = 0 := by
+    [CommSemiring R] [Algebra R S]
+    (φ : Multiplicative S →* S) (w' : ConjRootClass F K →₀ R) (hw' : w' 0 = 0) :
+    ∃ (w'' : F[X] →₀ R), (∀ p ∈ w''.support, p.eval 0 ≠ 0) ∧
+      (w'.sum fun c wc ↦ wc • ∑ x ∈ c.carrier,
+          φ.comp (algebraMap K S).toAddMonoidHom.toMultiplicative (.ofAdd x)) =
+        w''.sum (fun p c ↦ c • ((p.aroots S).map fun x => φ (.ofAdd x)).sum) := by
   refine ⟨w'.mapDomain ConjRootClass.minpoly, ?_, ?_⟩
   · intro p hp
     classical
@@ -355,7 +355,7 @@ theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}
     rw [Set.mem_toFinset, ConjRootClass.mem_carrier, ConjRootClass.mk_zero] at ha
     rw [← ha] at hc
     simp [hw'] at hc
-  · rw [← h, add_right_inj, Finsupp.sum_mapDomain_index (by simp) (by simp [add_mul])]
+  · rw [Finsupp.sum_mapDomain_index (by simp) (by simp [add_smul])]
     refine sum_congr rfl fun c _hc => ?_
     dsimp
     rw [← c.splits_minpoly.map_aroots_algebraMap, c.aroots_minpoly_eq_carrier_val]
@@ -429,6 +429,6 @@ public theorem linearIndependent_exp_aux {S : Type*}
     AddMonoidAlgebra.lift_mapRingHom_algebraMap] at hf
   obtain ⟨f, f0, hf⟩ := linearIndependent_exp_aux2_1 _ f f0 hf
   obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux2_2 _ f f0 hf
-  obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux_int ℤ _ w w0 w' hw' h
-  obtain ⟨w', hw', h⟩ := linearIndependent_exp_aux_aroots_rat _ w w' hw' h
-  exact ⟨w, w0, linearIndependent_exp_aux_aroots_int ℤ _ w w' hw' h⟩
+  obtain ⟨w', hw', h'⟩ := linearIndependent_exp_aux_aroots_rat φ w' hw'
+  obtain ⟨w, w0, w', hw'', h⟩ := linearIndependent_exp_aux_int ℤ _ w w0 w' (h' ▸ h)
+  exact ⟨w, w0, linearIndependent_exp_aux_aroots_int ℤ _ w w' (fun p hp ↦ hw' p (hw'' hp)) h⟩
