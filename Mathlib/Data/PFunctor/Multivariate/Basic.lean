@@ -20,7 +20,7 @@ they guarantee that occurrences of `α` are positive.
 @[expose] public section
 
 
-universe u v
+universe u v uA uB uA₁ uB₁ uA₂ uB₂ v₁ v₂ v₃
 
 open MvFunctor
 
@@ -29,63 +29,69 @@ open MvFunctor
 @[pp_with_univ]
 structure MvPFunctor (n : ℕ) where
   /-- The head type -/
-  A : Type u
+  A : Type uA
   /-- The child family of types -/
-  B : A → TypeVec.{u} n
+  B : A → TypeVec.{uB} n
 
 namespace MvPFunctor
 
 open MvFunctor (LiftP LiftR)
 
-variable {n m : ℕ} (P : MvPFunctor.{u} n)
+instance (n : ℕ) : Inhabited (MvPFunctor.{uA, uB} n) :=
+  ⟨⟨default, default⟩⟩
+
+variable {n m : ℕ} (P : MvPFunctor.{uA, uB} n)
+    {α : TypeVec.{v₁} n} {β : TypeVec.{v₂} n} {γ : TypeVec.{v₃} n}
 
 /-- Applying `P` to an object of `Type` -/
 @[coe]
-def Obj (α : TypeVec.{u} n) : Type u :=
+def Obj (α : TypeVec.{v} n) : Type (max uA uB v) :=
   Σ a : P.A, P.B a ⟹ α
 
-instance : CoeFun (MvPFunctor.{u} n) (fun _ => TypeVec.{u} n → Type u) where
+instance : CoeFun (MvPFunctor.{uA, uB} n) (fun _ => TypeVec.{v} n → Type (max v uA uB)) where
   coe := Obj
 
 /-- Applying `P` to a morphism of `Type` -/
-def map {α β : TypeVec n} (f : α ⟹ β) : P α → P β := fun ⟨a, g⟩ => ⟨a, TypeVec.comp f g⟩
+def map (f : α ⟹ β) : P α → P β := fun ⟨a, g⟩ => ⟨a, TypeVec.comp f g⟩
 
-instance : Inhabited (MvPFunctor n) :=
-  ⟨⟨default, default⟩⟩
-
-instance Obj.inhabited {α : TypeVec n} [Inhabited P.A] [∀ i, Inhabited (α i)] :
+instance Obj.inhabited [Inhabited P.A] [∀ i, Inhabited (α i)] :
     Inhabited (P α) :=
   ⟨⟨default, fun _ _ => default⟩⟩
 
-instance : MvFunctor.{u} P.Obj :=
+instance : MvFunctor P.Obj :=
   ⟨@MvPFunctor.map n P⟩
 
-theorem map_eq {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f : P.B a ⟹ α) :
-    @MvFunctor.map _ P.Obj _ _ _ g ⟨a, f⟩ = ⟨a, g ⊚ f⟩ :=
+/-- We prefer `MvPFunctor.map` to `MvFunctor.map` because it is universe-polymorphic. -/
+@[simp]
+theorem map_eq_map {α β : TypeVec n} (f : α ⟹ β) (x : P α) : f <$$> x = P.map f x :=
   rfl
 
-theorem id_map {α : TypeVec n} : ∀ x : P α, TypeVec.id <$$> x = x
+theorem map_eq (g : α ⟹ β) (a : P.A) (f : P.B a ⟹ α) :
+    P.map g ⟨a, f⟩ = ⟨a, g ⊚ f⟩ :=
+  rfl
+
+theorem id_map : ∀ x : P α, P.map TypeVec.id x = x
   | ⟨_, _⟩ => rfl
 
-theorem comp_map {α β γ : TypeVec n} (f : α ⟹ β) (g : β ⟹ γ) :
-    ∀ x : P α, (g ⊚ f) <$$> x = g <$$> f <$$> x
+theorem comp_map (f : α ⟹ β) (g : β ⟹ γ) :
+    ∀ x : P α, P.map (g ⊚ f) x = P.map g (P.map f x)
   | ⟨_, _⟩ => rfl
 
-instance : LawfulMvFunctor.{u} P.Obj where
+instance : LawfulMvFunctor P.Obj where
   id_map := @id_map _ P
   comp_map := @comp_map _ P
 
 /-- Constant functor where the input object does not affect the output -/
-def const (n : ℕ) (A : Type u) : MvPFunctor n :=
+def const (n : ℕ) (A : Type v) : MvPFunctor.{v, u} n :=
   { A
     B := fun _ _ => PEmpty }
 
 section Const
 
-variable (n) {A : Type u} {α β : TypeVec.{u} n}
+variable (n) {A : Type u}
 
 /-- Constructor for the constant functor -/
-def const.mk (x : A) {α} : const n A α :=
+def const.mk (x : A) : const n A α :=
   ⟨x, fun _ a => PEmpty.elim a⟩
 
 variable {n}
@@ -95,7 +101,8 @@ def const.get (x : const n A α) : A :=
   x.1
 
 @[simp]
-theorem const.get_map (f : α ⟹ β) (x : const n A α) : const.get (f <$$> x) = const.get x := by
+theorem const.get_map (f : α ⟹ β) (x : const n A α) :
+    const.get ((const n A).map f x) = const.get x := by
   cases x
   rfl
 
@@ -110,12 +117,14 @@ theorem const.mk_get (x : const n A α) : const.mk n (const.get x) = x := by
 
 end Const
 
+section Comp
+
 /-- Functor composition on polynomial functors -/
-def comp (P : MvPFunctor.{u} n) (Q : Fin2 n → MvPFunctor.{u} m) : MvPFunctor m where
+def comp (P : MvPFunctor.{uA₂, uB₂} m) (Q : Fin2 m → MvPFunctor.{uA₁, uB₁} n) : MvPFunctor n where
   A := Σ a₂ : P.1, ∀ i, P.2 a₂ i → (Q i).1
   B a i := Σ (j : _) (b : P.2 a.1 j), (Q j).2 (a.snd j b) i
 
-variable {P} {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}
+variable {P : MvPFunctor.{uA₂, uB₂} m} {Q : Fin2 m → MvPFunctor.{uA₁, uB₁} n}
 
 /-- Constructor for functor composition -/
 def comp.mk (x : P (fun i => Q i α)) : comp P Q α :=
@@ -123,10 +132,10 @@ def comp.mk (x : P (fun i => Q i α)) : comp P Q α :=
 
 /-- Destructor for functor composition -/
 def comp.get (x : comp P Q α) : P (fun i => Q i α) :=
-  ⟨x.1.1, fun i a => ⟨x.fst.snd i a, fun (j : Fin2 m) (b : (Q i).B _ j) => x.snd j ⟨i, ⟨a, b⟩⟩⟩⟩
+  ⟨x.1.1, fun i a => ⟨x.fst.snd i a, fun (j : Fin2 n) (b : (Q i).B _ j) => x.snd j ⟨i, ⟨a, b⟩⟩⟩⟩
 
 theorem comp.get_map (f : α ⟹ β) (x : comp P Q α) :
-    comp.get (f <$$> x) = (fun i (x : Q i α) => f <$$> x) <$$> comp.get x := by
+    comp.get ((comp P Q).map f x) = P.map (fun i (x : Q i α) => (Q i).map f x) (comp.get x) := by
   rfl
 
 @[simp]
@@ -136,6 +145,8 @@ theorem comp.get_mk (x : P (fun i => Q i α)) : comp.get (comp.mk x) = x := by
 @[simp]
 theorem comp.mk_get (x : comp P Q α) : comp.mk (comp.get x) = x := by
   rfl
+
+end Comp
 
 set_option backward.isDefEq.respectTransparency false in
 /-
@@ -147,7 +158,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P α) :
   · rintro ⟨y, hy⟩
     rcases h : y with ⟨a, f⟩
     refine ⟨a, fun i j => (f i j).val, ?_, fun i j => (f i j).property⟩
-    rw [← hy, h, map_eq]
+    rw [← hy, h, map_eq_map, map_eq]
     rfl
   rintro ⟨a, f, xeq, pf⟩
   use ⟨a, fun i j => ⟨f i j, pf i j⟩⟩
