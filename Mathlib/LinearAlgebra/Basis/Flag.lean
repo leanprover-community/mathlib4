@@ -56,7 +56,7 @@ theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
 theorem flag_map {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
     (b : Basis (Fin n) R M) (e : M ≃ₗ[R] M₂) (k : Fin (n + 1)) :
     (b.map e).flag k = (b.flag k).map (e : M →ₗ[R] M₂) := by
-  simp [flag, Submodule.map_span, Set.image_image]
+  simp [flag, Submodule.map_span, Set.image_image, coe_map]
 
 theorem self_mem_flag (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} (h : i.castSucc < k) :
     b i ∈ b.flag k :=
