@@ -223,6 +223,13 @@ protected lemma of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsEmbeddi
 lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Continuous f)
     (hg : Continuous g) : IsEmbedding g := .of_comp hg hf <| h.comp_eq_id.symm ▸ .id
 
+lemma of_leftInverse_of_isInducting {f : X → Y} {g : Y → X}
+    (h : LeftInverse f g) (hf : IsInducing f) :
+    IsEmbedding g := by
+  apply of_leftInverse h hf.continuous <| continuous_def.mpr fun s hs ↦ ?_
+  obtain ⟨t, _, ts⟩ := hf.isOpen_iff.mp hs
+  rwa [← ts, h.preimage_preimage t]
+
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
 
 lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
