@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.LinearAlgebra.Basis.Flag
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Triangularizable linear endomorphisms
@@ -103,7 +102,7 @@ private theorem charpoly_splits_of_forall_flag_mem_invtSubmodule [FiniteDimensio
     (hb : ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) :
     f.charpoly.Splits := by
   rw [← LinearMap.charpoly_toMatrix (f := f) b]
-  rw [Matrix.charpoly_of_upperTriangular _
+  rw [Matrix.charpoly_of_isUpperTriangular _
     (forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mp hb)]
   exact Polynomial.Splits.prod fun i _ => by
     simpa [sub_eq_add_neg] using Polynomial.Splits.X_add_C (-(LinearMap.toMatrix b b f i i))
@@ -262,7 +261,7 @@ theorem exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_t
         rw [← Submodule.ker_mkQ L]
         exact LinearMap.mem_ker.mpr (by
           simpa using congr_arg (fun x => x - L.mkQ (g w : V)) hq))
-  · haveI : Subsingleton V := not_nontrivial_iff_subsingleton.mp hV
+  · have : Subsingleton V := not_nontrivial_iff_subsingleton.mp hV
     exact exists_basis_forall_flag_mem_invtSubmodule_of_subsingleton f
 termination_by Module.finrank K V
 decreasing_by
