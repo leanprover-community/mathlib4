@@ -32,8 +32,9 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 
 -/
 
-@[expose] public section
+set_option linter.style.longFile 1600
 
+@[expose] public section
 
 -- TODO: If possible, uniformize lemma names, taking special care of `'`,
 -- after the `ordered`-refactor is done.
@@ -381,6 +382,24 @@ theorem MulLeftStrictMono.toIsLeftCancelMul [MulLeftStrictMono α] : IsLeftCance
 @[to_additive]
 theorem MulRightStrictMono.toIsRightCancelMul [MulRightStrictMono α] : IsRightCancelMul α where
   mul_right_cancel _ _ _ h := mul_left_strictMono.injective h
+
+/-- Left multiplication is strictly monotone if and only if it is monotone and
+left-cancellative. -/
+@[to_additive /-- Left addition is strictly monotone if and only if it is monotone and
+left-cancellative. -/]
+theorem mulLeftStrictMono_iff_mulLeftMono_and_isLeftCancelMul :
+    MulLeftStrictMono α ↔ MulLeftMono α ∧ IsLeftCancelMul α where
+  mp _ := ⟨mulLeftMono_of_mulLeftStrictMono α, MulLeftStrictMono.toIsLeftCancelMul⟩
+  mpr := by rintro ⟨_, _⟩; infer_instance
+
+/-- Right multiplication is strictly monotone if and only if it is monotone and
+right-cancellative. -/
+@[to_additive /-- Right addition is strictly monotone if and only if it is monotone and
+right-cancellative. -/]
+theorem mulRightStrictMono_iff_mulRightMono_and_isRightCancelMul :
+    MulRightStrictMono α ↔ MulRightMono α ∧ IsRightCancelMul α where
+  mp _ := ⟨mulRightMono_of_mulRightStrictMono α, MulRightStrictMono.toIsRightCancelMul⟩
+  mpr := by rintro ⟨_, _⟩; infer_instance
 
 end LinearOrder
 
@@ -1394,24 +1413,40 @@ theorem mulLECancellable_one [MulOneClass α] [LE α] : MulLECancellable (1 : α
 namespace MulLECancellable
 
 @[to_additive]
-protected theorem Injective [Mul α] [PartialOrder α] {a : α} (ha : MulLECancellable a) :
-    Injective (a * ·) :=
-  fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
+protected theorem injective_right [Mul α] [PartialOrder α] {a : α} (ha : MulLECancellable a) :
+    Injective (a * ·) := fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
+
+@[deprecated (since := "2026-07-07")]
+protected alias _root_.MulLECancellable.Injective := MulLECancellable.injective_right
+
+@[deprecated (since := "2026-07-07")]
+protected alias _root_.AddLECancellable.Injective := AddLECancellable.injective_right
 
 @[to_additive]
 protected theorem isLeftRegular [Mul α] [PartialOrder α] {a : α}
     (ha : MulLECancellable a) : IsLeftRegular a :=
-  ha.Injective
+  ha.injective_right
 
 @[to_additive]
-protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancellable a) :
+protected theorem inj_right [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancellable a) :
     a * b = a * c ↔ b = c :=
-  ha.Injective.eq_iff
+  ha.injective_right.eq_iff
+
+@[deprecated (since := "2026-07-07")]
+protected alias _root_.MulLECancellable.inj := MulLECancellable.inj_right
+
+@[deprecated (since := "2026-07-07")]
+protected alias _root_.AddLECancellable.inj := AddLECancellable.inj_right
 
 @[to_additive]
 protected theorem injective_left [Mul α] [IsMulCommutative α] [PartialOrder α] {a : α}
     (ha : MulLECancellable a) : Injective (· * a) :=
-  fun b c h ↦ ha.Injective <| by dsimp; rwa [mul_comm' a, mul_comm' a]
+  fun b c h ↦ ha.injective_right <| by dsimp; rwa [mul_comm' a, mul_comm' a]
+
+@[to_additive]
+protected theorem isRightRegular [Mul α] [IsMulCommutative α] [PartialOrder α] {a : α}
+    (ha : MulLECancellable a) : IsRightRegular a :=
+  ha.injective_left
 
 @[to_additive]
 protected theorem inj_left [Mul α] [IsMulCommutative α] [PartialOrder α] {a b c : α}
