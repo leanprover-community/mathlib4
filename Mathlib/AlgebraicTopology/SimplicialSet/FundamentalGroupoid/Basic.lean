@@ -93,7 +93,7 @@ lemma homMk_id (x : X _⦋0⦌₂) : homMk (Edge.id x) = 𝟙 (mk x) :=
 of a `2`-truncated simplicial set: in order to prove a property
 of all morphisms, it suffices to do it for morphisms induced
 by edges and show that the property is stable by inverses and
-by composition; -/
+by composition. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma hom_rec {motive : ∀ ⦃x y : FundamentalGroupoid X⦄, (x ⟶ y) → Prop}
     (homMk : ∀ ⦃x y : X _⦋0⦌₂⦄ (e : Edge x y), motive (homMk e))
