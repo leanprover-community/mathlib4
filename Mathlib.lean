@@ -6405,6 +6405,7 @@ public import Mathlib.Probability.Independence.Process.HasIndepIncrements
 public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic
 public import Mathlib.Probability.Independence.Process.HasIndepIncrements.IsGaussianProcess
 public import Mathlib.Probability.Independence.ZeroOne
+public import Mathlib.Probability.Indistinguishable
 public import Mathlib.Probability.Kernel.Basic
 public import Mathlib.Probability.Kernel.Category.SFinKer
 public import Mathlib.Probability.Kernel.Category.Stoch
