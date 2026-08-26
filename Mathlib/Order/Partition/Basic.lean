@@ -5,6 +5,7 @@ Authors: Peter Nelson, Hyeokjun Kwon
 -/
 module
 
+public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.SupIndep
 
