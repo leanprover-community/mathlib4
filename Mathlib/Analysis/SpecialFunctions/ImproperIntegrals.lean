@@ -166,6 +166,12 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
     exact hs.not_gt this
 
+theorem not_integrableOn_Ioi_rpow_of_neg_one_le {a s : ℝ} (hs : -1 ≤ s) :
+    ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi a) := by
+  refine fun h ↦ not_lt.mpr hs ?_
+  rw [← integrableAtFilter_rpow_atTop_iff]
+  exact ⟨Ioi a, Ioi_mem_atTop a, h⟩
+
 theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
 
@@ -287,6 +293,33 @@ theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
   (by ring : π = (π / 2) - (-(π / 2))) ▸ integral_of_hasDerivAt_of_tendsto hasDerivAt_arctan'
     integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atBot)
     (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)
+
+theorem integrable_inv_one_add_mul_sq {b : ℝ} (hb : b ≠ 0) :
+    Integrable fun x ↦ (1 + (b * x) ^ 2)⁻¹ :=
+  (integrable_inv_one_add_sq.comp_mul_left' hb).congr (by simp)
+
+@[simp]
+theorem integral_univ_inv_one_add_mul_sq (b : ℝ) :
+    ∫ x, (1 + (b * x) ^ 2)⁻¹ = π / |b| := by
+  rw [Measure.integral_comp_mul_left (fun x ↦ (1 + x ^ 2)⁻¹) b, integral_univ_inv_one_add_sq]
+  simp [div_eq_inv_mul]
+
+theorem integrableOn_Ioi_zero_inv_mul_one_add_log_sq {b : ℝ} (hb : b ≠ 0) :
+    IntegrableOn (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) (Ioi 0) := by
+  have : (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ := by
+    ext; simp [mul_comm]
+  rw [this, integrableOn_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹)]
+  exact integrable_inv_one_add_mul_sq hb
+
+/-- The total mass of the log-Cauchy density on `Ioi 0`.
+
+This is not `@[simp]`: `simp` rewrites the left-hand side with `mul_inv_rev`. -/
+theorem integral_Ioi_zero_inv_mul_one_add_log_sq (b : ℝ) :
+    ∫ t in Ioi 0, (t * (1 + (b * log t) ^ 2))⁻¹ = π / |b| := by
+  have : (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ := by
+    ext; simp [mul_comm]
+  rw [this, integral_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹),
+    integral_univ_inv_one_add_mul_sq b]
 
 @[simp]
 theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :

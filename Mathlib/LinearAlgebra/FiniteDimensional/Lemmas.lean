@@ -33,7 +33,7 @@ variable {K : Type u} {V : Type v}
 
 namespace Submodule
 
-open IsNoetherian Module
+open Module
 
 section DivisionRing
 
@@ -229,8 +229,7 @@ namespace Submodule
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=
@@ -309,7 +308,7 @@ theorem coe_basisOfPiSpaceOfLinearIndependent
     ⇑(basisOfPiSpaceOfLinearIndependent hb) = b := by
   by_cases hι : Nonempty ι
   · simp [hι, basisOfPiSpaceOfLinearIndependent]
-  · rw [basisOfPiSpaceOfLinearIndependent, dif_neg hι]
+  · rw [basisOfPiSpaceOfLinearIndependent, dite_eq_right hι]
     ext i
     exact ((not_nonempty_iff.mp hι).false i).elim
 

@@ -46,9 +46,8 @@ open Polynomial
 
 section zero_ne_one
 
-variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
-variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
-variable [IsScalarTower R S A]
+variable {R : Type u} {A : Type v} [CommRing R]
+variable [Ring A] [Algebra R A]
 
 /-- An integral element of an algebra is algebraic. -/
 theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlgebraic R x :=
@@ -140,7 +139,7 @@ end
 
 variable {R S A : Type*} [CommRing R] [CommRing S] [Ring A]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable {z : A} {z' : S}
+variable {z : A}
 
 namespace IsAlgebraic
 
