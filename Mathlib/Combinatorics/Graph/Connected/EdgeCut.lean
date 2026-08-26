@@ -98,7 +98,7 @@ lemma IsEdgeCut.symmDiff (hF : G.IsEdgeCut F) (hF' : G.IsEdgeCut F') : G.IsEdgeC
   obtain ⟨S', rfl⟩ := hF'
   use S ∆ S', edgeCut_symmDiff
 
-@[grind .]
+@[grind →]
 lemma IsEdgeCut.of_symmDiff (hF : G.IsEdgeCut F) (hsymmDiff : G.IsEdgeCut (F ∆ F')) :
     G.IsEdgeCut F' := by simpa using hF.symmDiff hsymmDiff
 
