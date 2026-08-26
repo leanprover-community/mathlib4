@@ -41,7 +41,8 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   -- This implies we have a similar sum `w + ∑ p, w' p • ∑ u ∈ p.aroots ℂ, exp u = 0` where
   -- `w` and `w' p` are integers, `w ≠ 0`, and the `p` in the support of `w'` are integral
   -- polynomials with nonzero constant coefficients.
-  obtain ⟨w, w0, w'', p0, h⟩ := linearIndependent_exp_aux expMonoidHom u hu u_inj v hv v0 h
+  obtain ⟨w, w0, w'', p0, h⟩ :=
+    LindemannWeierstrass.exists_sum_map_aroots expMonoidHom u hu u_inj v hv v0 h
   simp_rw [expMonoidHom_apply, toAdd_ofAdd] at h
   let p : w''.support → ℤ[X] := Subtype.val
   let w' := w'' ∘ p

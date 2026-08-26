@@ -22,9 +22,11 @@ import Mathlib.FieldTheory.Minpoly.ConjRootClass
 
 noncomputable section
 
+namespace LindemannWeierstrass
+
 open scoped AddMonoidAlgebra
 
-open Finset Polynomial
+open Finset
 
 section mapDomainFixed
 
@@ -139,11 +141,6 @@ theorem toFinsupp_apply_mk (f : mapDomainFixed F R K) (i : K) :
     toFinsupp f (ConjRootClass.mk F i) = f.val.coeff i :=
   rfl
 
-@[simp]
-theorem toFinsupp_mk_apply_zero_eq (f : R[K]) (hf : f ∈ mapDomainFixed F R K) :
-    toFinsupp (⟨f, hf⟩ : mapDomainFixed F R K) 0 = f.coeff 0 :=
-  rfl
-
 theorem toFinsupp_single (x : ConjRootClass F K) (a : R) :
     toFinsupp (mapDomainFixed.single x a) = Finsupp.single x a := by
   classical
@@ -179,7 +176,7 @@ end mapDomainFixed
 
 open Complex
 
-theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
+theorem descend_coeff (F : Type*) {K G S : Type*}
     [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] [IsGalois F K]
     [AddCommMonoid G] [Semiring S] [NoZeroDivisors K[G]]
     (f : K[G] →+* S)
@@ -201,27 +198,24 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
       convert this
       exact (mul_prod_erase (univ : Finset Gal(K/F)) _ (mem_univ _)).symm
     simp [map_one, hfx]
-  have y_mem : ∀ i : G, y.coeff i ∈ IntermediateField.fixedField (⊤ : Subgroup Gal(K/F)) := by
-    intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
-    rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
-    replace hy : (y.mapAlgAut _ _ f).coeff i = y.coeff i := by rw [hy f]
-    simpa using hy
-  obtain ⟨y', hy'⟩ : y ∈ Set.range (AddMonoidAlgebra.mapRingHom _ (algebraMap F K)) := by
-    simp [((IsGalois.tfae (F := F) (E := K)).out 1 2).mp (by infer_instance),
-      IntermediateField.mem_bot] at y_mem
+  clear_value y
+  have y_mem : ∀ i : G, y.coeff i ∈ Set.range (algebraMap F K) := by
+    intro i
+    rw [IsGalois.mem_range_algebraMap_iff_fixed]
+    intro f
+    simpa using congr($(hy f).coeff i)
+  obtain ⟨y, rfl⟩ : y ∈ Set.range (AddMonoidAlgebra.mapRingHom _ (algebraMap F K)) := by
     rwa [AddMonoidAlgebra.coe_mapRingHom, AddMonoidAlgebra.range_map]
-  rw [← hy'] at y0 y_mem hfy
-  rw [map_ne_zero_iff _
-    (by simpa [AddMonoidAlgebra.coe_mapRingHom] using
-      AddMonoidAlgebra.map_injective _ (algebraMap F K).injective)] at y0
-  exact ⟨y', y0, hfy⟩
+  refine ⟨y, (map_ne_zero_iff _ ?_).mp y0, hfy⟩
+  simpa [AddMonoidAlgebra.coe_mapRingHom] using
+    AddMonoidAlgebra.map_injective _ (algebraMap F K).injective
 
-theorem linearIndependent_exp_aux2_1 {F K S : Type*}
+theorem exists_mapDomainFixed {F K S : Type*}
     [Field F] [Field K] [Algebra F K] [FiniteDimensional F K]
     [NoZeroDivisors F[K]] [Semiring S] [Algebra F S]
     (f : F[K] →ₐ[F] S)
     (x : F[K]) (x0 : x ≠ 0) (hfx : f x = 0) :
-    ∃ (y : mapDomainFixed F F K) (_ : y ≠ 0), f y = 0 := by
+    ∃ (y : mapDomainFixed F F K), y ≠ 0 ∧ f y = 0 := by
   classical
   refine ⟨⟨∏ f : Gal(K/F), x.domCongr F _ (f : K ≃+ K), ?_⟩,
     fun h => absurd (Subtype.mk.inj h) ?_, ?_⟩
@@ -236,7 +230,7 @@ theorem linearIndependent_exp_aux2_1 {F K S : Type*}
       AlgEquiv.coe_refl, id_def, map_mul, hfx, zero_mul]
 
 open Classical in
-theorem linearIndependent_exp_aux2_2 {F K S : Type*}
+theorem exists_conjRootClass_sum {F K S : Type*}
     [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K] [CharZero F]
     [Semiring S] [Algebra F S]
     (φ : Multiplicative K →* S)
@@ -276,7 +270,7 @@ theorem linearIndependent_exp_aux2_2 {F K S : Type*}
 
 variable {ι : Type*} [Fintype ι]
 
-theorem linearIndependent_exp_aux_rat {K S : Type*}
+theorem exists_addMonoidAlgebra {K S : Type*}
     [Field K] [Semiring S] [Algebra K S]
     (φ : Multiplicative K →* S)
     (u' : ι → K) (u'_inj : Function.Injective u')
@@ -293,14 +287,14 @@ theorem linearIndependent_exp_aux_rat {K S : Type*}
       rw [AddMonoidAlgebra.coeff_mapDomain, AddMonoidAlgebra.coeff_ofCoeff,
         Finsupp.mapDomain_apply u'_inj]
       simpa
-    intro f0
-    rw [f0, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply] at h
-    exact absurd rfl h
+    clear_value f
+    rintro rfl
+    simp at h
   · rw [AddMonoidAlgebra.lift_apply, ← h, AddMonoidAlgebra.coeff_mapDomain,
       Finsupp.sum_mapDomain_index_inj u'_inj]
     simp [Finsupp.sum_fintype, Algebra.smul_def]
 
-theorem linearIndependent_exp_aux_int (R : Type*) {F S ι : Type*}
+theorem clear_coefficient_denominator (R : Type*) {F S ι : Type*}
     [CommRing R] [Nontrivial R] [Field F] [Algebra R F] [IsFractionRing R F]
     [Semiring S] [Algebra R S] [Algebra F S] [IsScalarTower R F S]
     (f : ι → S)
@@ -332,8 +326,10 @@ theorem linearIndependent_exp_aux_int (R : Type*) {F S ι : Type*}
   simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R F S, hx, hw'', Algebra.smul_def,
     map_mul, mul_assoc, ← mul_sum, ← mul_add, ← Algebra.smul_def, h, smul_zero]
 
+open Polynomial
+
 open Classical in
-theorem linearIndependent_exp_aux_aroots_rat {R F K S : Type*}
+theorem sum_conjRootClass_eq_sum_map_aroots {R F K S : Type*}
     [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K] [CharZero F]
     [Field S] [Algebra K S] [Algebra F S] [IsScalarTower F K S]
     [CommSemiring R] [Algebra R S]
@@ -353,7 +349,7 @@ theorem linearIndependent_exp_aux_aroots_rat {R F K S : Type*}
     rw [eval_sub, eval_X, eval_C, sub_ne_zero]
     rintro rfl
     rw [Set.mem_toFinset, ConjRootClass.mem_carrier, ConjRootClass.mk_zero] at ha
-    rw [← ha] at hc
+    subst ha
     simp [hw'] at hc
   · rw [Finsupp.sum_mapDomain_index (by simp) (by simp [add_smul])]
     refine sum_congr rfl fun c _hc => ?_
@@ -361,7 +357,7 @@ theorem linearIndependent_exp_aux_aroots_rat {R F K S : Type*}
     rw [← c.splits_minpoly.map_aroots_algebraMap, c.aroots_minpoly_eq_carrier_val]
     simp
 
-theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
+theorem clear_polynomial_denominator (R : Type*) {F S : Type*}
     [CommRing R] [Nontrivial R] [Field F] [Algebra R F] [IsFractionRing R F]
     [CommRing S] [IsDomain S] [Algebra R S] [Algebra F S] [IsScalarTower R F S]
     (f : S → S)
@@ -380,7 +376,7 @@ theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
     rw [map_zero, ← eval_map_algebraMap, hbp, eval_smul, smul_ne_zero_iff]
     exact ⟨nonZeroDivisors.ne_zero (hb _), hw' q hq⟩
   · rw [← h, add_right_inj, Finsupp.sum_mapDomain_index (by simp) (by simp [add_mul])]
-    refine sum_congr rfl fun j _hj => congrArg _ (congrArg _ (Multiset.map_congr ?_ fun _ _ => rfl))
+    congr!
     change roots _ = roots _
     rw [IsScalarTower.algebraMap_eq R F S, ← Polynomial.map_map, hbp,
       Algebra.smul_def, Polynomial.algebraMap_apply, Polynomial.map_mul, map_C, roots_C_mul]
@@ -388,7 +384,7 @@ theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
       map_ne_zero_iff _ (IsFractionRing.injective R F)]
     exact nonZeroDivisors.ne_zero (hb _)
 
-public theorem linearIndependent_exp_aux {S : Type*}
+public theorem exists_sum_map_aroots {S : Type*}
     [Field S] [Algebra ℚ S] [IsAlgClosed S]
     (φ : Multiplicative S →* S)
     (u : ι → S) (hu : ∀ i, IsIntegral ℚ (u i))
@@ -419,16 +415,17 @@ public theorem linearIndependent_exp_aux {S : Type*}
   obtain ⟨f, f0, hf⟩ : ∃ (f : K[K]), f ≠ 0 ∧
     AddMonoidAlgebra.lift _ _ _
       (φ.comp (algebraMap K S).toAddMonoidHom.toMultiplicative) f = 0 := by
-    refine linearIndependent_exp_aux_rat _ u' ?_ v' ?_ ?_
+    refine exists_addMonoidAlgebra _ u' ?_ v' ?_ ?_
     · exact fun i j hij ↦ u_inj (Subtype.mk.inj hij)
     · simp_rw [Ne, funext_iff, Pi.zero_apply] at v0 ⊢; push Not at v0 ⊢
       exact v0.imp fun i hvi ↦ by rwa [Ne, ← ZeroMemClass.coe_eq_zero]
     · simpa [algebraMap_K_apply, u', v']
-  obtain ⟨f, f0, hf⟩ := linearIndependent_range_aux ℚ _ f f0 hf
-  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-    AddMonoidAlgebra.lift_mapRingHom_algebraMap] at hf
-  obtain ⟨f, f0, hf⟩ := linearIndependent_exp_aux2_1 _ f f0 hf
-  obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux2_2 _ f f0 hf
-  obtain ⟨w', hw', h'⟩ := linearIndependent_exp_aux_aroots_rat φ w' hw'
-  obtain ⟨w, w0, w', hw'', h⟩ := linearIndependent_exp_aux_int ℤ _ w w0 w' (h' ▸ h)
-  exact ⟨w, w0, linearIndependent_exp_aux_aroots_int ℤ _ w w' (fun p hp ↦ hw' p (hw'' hp)) h⟩
+  obtain ⟨f, f0, hf⟩ := descend_coeff ℚ _ f f0 hf
+  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AddMonoidAlgebra.lift_mapRingHom_algebraMap] at hf
+  obtain ⟨f, f0, hf⟩ := exists_mapDomainFixed _ f f0 hf
+  obtain ⟨w, w0, w', hw', h⟩ := exists_conjRootClass_sum _ f f0 hf
+  obtain ⟨w', hw', h'⟩ := sum_conjRootClass_eq_sum_map_aroots φ w' hw'
+  obtain ⟨w, w0, w', hw'', h⟩ := clear_coefficient_denominator ℤ _ w w0 w' (h' ▸ h)
+  exact ⟨w, w0, clear_polynomial_denominator ℤ _ w w' (fun p hp ↦ hw' p (hw'' hp)) h⟩
+
+end LindemannWeierstrass

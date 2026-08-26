@@ -67,10 +67,7 @@ theorem aevalMultiset_map_of_card_eq (f : τ → S) (p : symmetricSubalgebra σ 
     aevalMultiset σ R (Finset.univ.val.map f) p =
       aeval (f ∘ Fintype.equivOfCardEq h) (p : MvPolynomial σ R) := by
   rw [← aevalMultiset_map (f ∘ Fintype.equivOfCardEq h) p,
-    ← Multiset.map_map f (Fintype.equivOfCardEq h)]
-  congr
-  refine (congr_arg Finset.val (Finset.map_univ_equiv (Fintype.equivOfCardEq h)).symm).trans ?_
-  rw [Finset.map_val, Equiv.coe_toEmbedding]
+    ← Multiset.map_map f (Fintype.equivOfCardEq h), Multiset.map_univ_val_equiv]
 
 variable (σ) in
 /-- `sumPolynomial σ p` is the map sending `X` to `∑ i, X i`. -/

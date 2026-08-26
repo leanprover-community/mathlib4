@@ -21,9 +21,9 @@ import Mathlib.Topology.Algebra.Polynomial
 The proof is partially based on [Jacobson, *Basic Algebra I, 4.12*][jacobson1974].
 -/
 
-namespace LindemannWeierstrass
-
 noncomputable section
+
+namespace LindemannWeierstrass
 
 open scoped Nat
 open Complex Polynomial
@@ -212,7 +212,5 @@ public theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     ring_nf
   · apply Finset.le_max'
     simpa using Multiset.mem_map_of_mem _ hr
-
-end
 
 end LindemannWeierstrass
