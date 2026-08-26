@@ -75,7 +75,7 @@ lemma IsGeodesic.eq {l : List (ι × Bool)} (hl : P.IsGeodesic l) :
     P.wordLength (P.wordProd l) = l.length := hl
 
 /-- Every group element has a geodesic word representative. -/
-theorem exists_isGeodesic : ∃ l, P.IsGeodesic l ∧ g = P.wordProd l := by
+theorem exists_isGeodesic : ∃ l, P.IsGeodesic l ∧ P.wordProd l = g := by
   obtain ⟨l, rfl, hlen⟩ := Nat.sInf_mem (Set.Nonempty.image List.length (P.wordProd_surjective g))
   exact ⟨l, hlen.symm, rfl⟩
 
