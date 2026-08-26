@@ -63,6 +63,22 @@ theorem Set.Nonempty.csSup_mem (h : s.Nonempty) (hs : s.Finite) : sSup s ∈ s :
 theorem Set.Nonempty.csInf_mem (h : s.Nonempty) (hs : s.Finite) : sInf s ∈ s :=
   @Set.Nonempty.csSup_mem αᵒᵈ _ _ h hs
 
+attribute [to_dual existing] Set.Nonempty.csSup_mem
+
+@[to_dual]
+theorem Set.Nonempty.isGreatest_csSup {s : Set α} (h : s.Nonempty) (hs : s.Finite) :
+    IsGreatest s (sSup s) :=
+  (isLUB_csSup h hs.bddAbove).isGreatest (csSup_mem h hs)
+
+@[to_dual]
+theorem Finite.ciSup_mem [Nonempty ι] [Finite ι] (f : ι → α) : (⨆ i, f i) ∈ Set.range f := by
+  simpa [sSup_range] using (Set.range_nonempty f).csSup_mem (Set.finite_range f)
+
+@[to_dual]
+theorem Finite.isGreatest_ciSup [Nonempty ι] [Finite ι] (f : ι → α) :
+    IsGreatest (Set.range f) (⨆ i, f i) :=
+  (isLUB_ciSup ((_root_.Set.finite_range f).bddAbove)).isGreatest (Finite.ciSup_mem f)
+
 theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a ↔ ∀ x ∈ s, x < a :=
   ⟨fun h _ hx => (le_csSup hs.bddAbove hx).trans_lt h, fun H => H _ <| h.csSup_mem hs⟩
 
@@ -291,7 +307,7 @@ section ConditionallyCompleteLinearOrderBot
 variable [ConditionallyCompleteLinearOrderBot α]
 
 theorem sup_eq_ciSup (s : Finset ι) (f : ι → α) : s.sup f = ⨆ x ∈ s, f x := by
-  apply (ciSup_le' fun _ ↦ ciSup_le' s.le_sup).antisymm'
+  apply (ciSup₂_le' fun _ ↦ s.le_sup).antisymm'
   refine s.sup_le fun a ha ↦ le_ciSup_of_le ?_ a <| by simp [ha]
   exact ⟨s.sup f, fun _ ⟨_, hx⟩ ↦ hx ▸ ciSup_le' s.le_sup⟩
 
