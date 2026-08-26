@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Flag of submodules defined by a basis
