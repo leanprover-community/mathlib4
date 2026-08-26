@@ -185,7 +185,7 @@ lemma mapDomainNonUnitalRingHom_id : mapDomainNonUnitalRingHom R (.id M) = .id R
 lemma mapDomainNonUnitalRingHom_comp (f : N →ₙ* O) (g : M →ₙ* N) :
     mapDomainNonUnitalRingHom R (f.comp g) =
       (mapDomainNonUnitalRingHom R f).comp (mapDomainNonUnitalRingHom R g) := by
-  ext; simp [Finsupp.mapDomain_comp]
+  ext; simp [Finsupp.mapDomain_fun_comp]
 
 variable (R) in
 /-- Equivalent monoids have additively isomorphic monoid algebras.

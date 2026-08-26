@@ -409,13 +409,12 @@ section
 
 open MeasurableSpace
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontrivial (β i)]
     {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β i)) fun i =>
       stronglyMeasurable_one.indicator (hsm i) := by
-  simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
-  ext1 i
+  refine Filtration.ext <| funext fun i ↦ ?_
+  simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop]
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_)
   · rintro _ ⟨j, hij, rfl⟩
     refine measurableSet_generateFrom ⟨j, measurableSet_generateFrom ⟨hij, ?_⟩⟩
@@ -499,13 +498,12 @@ def piLE : @Filtration (Π i, X i) ι _ pi where
 
 variable [LocallyFiniteOrderBot ι]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma piLE_eq_comap_frestrictLe (i : ι) : piLE (X := X) i = pi.comap (frestrictLe i) := by
-  apply le_antisymm
-  · simp_rw [piLE, ← piCongrLeft_comp_frestrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
-    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
-  · rw [← piCongrLeft_comp_restrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
-    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
+  refine le_antisymm (Measurable.comap_le ?_) (Measurable.comap_le ?_)
+  · exact (MeasurableEquiv.piCongrLeft (fun j : Set.Iic i ↦ X j)
+      (Equiv.IicFinsetSet i)).measurable.comp (comap_measurable _)
+  · exact (MeasurableEquiv.piCongrLeft (fun j : Finset.Iic i ↦ X j)
+      (Equiv.IicFinsetSet i).symm).measurable.comp (comap_measurable _)
 
 end piLE
 
