@@ -116,4 +116,20 @@ theorem _root_.Setoid.ker_eq_top {α β : Type*} {f : α → β} :
     Setoid.ker f = ⊤ ↔ IsConst f :=
   Setoid.ker f |>.eq_top_iff
 
+@[simp]
+theorem _root_.Set.subsingleton_range_iff {β : Type*} {f : α → β} :
+    (Set.range f).Subsingleton ↔ f.IsConst := by
+  simp [Set.Subsingleton, isConst_iff]
+
+theorem subsingleton_iff_isConst_and_injective {f : α → β} :
+    Subsingleton α ↔ f.IsConst ∧ f.Injective where
+  mp _ := ⟨.of_subsingleton_domain f, injective_of_subsingleton f⟩
+  mpr := fun ⟨hc, hinj⟩ ↦ ⟨(hinj <| hc · ·)⟩
+
+theorem IsConst.injective_iff {f : α → β} (h : f.IsConst) : f.Injective ↔ Subsingleton α := by
+  simp [f.subsingleton_iff_isConst_and_injective, h]
+
+theorem Injective.isConst_iff {f : α → β} (h : f.Injective) : f.IsConst ↔ Subsingleton α := by
+  simp [f.subsingleton_iff_isConst_and_injective, h]
+
 end Function
