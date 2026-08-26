@@ -50,6 +50,23 @@ theorem FredholmPackage.eventually_isInvertible
   have Φ_T_inv : (Φ T).IsInvertible := ⟨pkg.equiv, by ext; simp [Φ, pkg.eq_equiv]⟩
   exact Φ_cont.tendsto T |>.eventually Φ_T_inv.eventually
 
+open Module in
+private theorem FredholmPackage.eventually_isFredholm_index_eq [CompleteSpace 𝕜]
+    {T₀ : E →L[𝕜] F} (pkg : T₀.FredholmPackage) :
+    ∀ᶠ T in 𝓝 T₀, T.IsFredholm ∧
+      T.index = (finrank 𝕜 pkg.decDom.X₀ : ℤ) - finrank 𝕜 pkg.decCodom.X₀ := by
+  filter_upwards [pkg.eventually_isInvertible] with T h_inv
+  have A : IsFredholm pkg.decDom.X₁.subtypeL :=
+    have := pkg.decDom.cofg_X₁
+    pkg.decDom.X₁.isFredholm_subtypeL pkg.decDom.isTopCompl.isClosed
+  have B : IsFredholm pkg.decCodom.proj := pkg.decCodom.isFredholm_proj
+  have C : IsFredholm T := by
+    rw [← A.comp_iff_left, ← B.comp_iff_right]
+    exact h_inv.isFredholm
+  have key := LinearMap.index_of_bijective h_inv.bijective
+  rw [B.index_comp (C.comp A), C.index_comp A] at key
+  simp [LinearMap.index_subtype] at key
+
 /-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
 enough to `T₀` (in operator norm) is also Fredholm. -/
 private theorem IsFredholm.eventually_and_index_eq [CompleteSpace 𝕜]
