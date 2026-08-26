@@ -219,6 +219,21 @@ to module `Foo.Bar` (no `srcDir` indirection).
   lists (which occasionally leave lines over the 100-char limit).
   Usage: `scripts/fix_long_lines.py path:line ...`
 
+- `lake exe no_expose [collect|report|edit|clean]`
+  Tool for finding `@[expose]`-annotated defs that aren't needed
+  downstream and removing the attribute. `collect` walks the built
+  Mathlib environment (and, without `--skip-build`, runs a full
+  `lake build` with `diagnostics=true`) and writes
+  `scripts/.no_expose/{exposed,static_refs,decl_refs,diagnostics,report}.jsonl`.
+  `report PATH...` renders per-file safe-to-unexpose / needed
+  classifications (text or json). `edit PATH...` applies the
+  removal (default; `--dry-run` previews) using a section-level or
+  per-decl strategy auto-detected from the file. With `--verify`,
+  re-runs `lake build` on the touched module and rolls back on
+  failure.
+  The exe deliberately does not `import Mathlib` (so it builds in
+  seconds); it loads the env at runtime via `Lean.withImportModules`.
+
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.

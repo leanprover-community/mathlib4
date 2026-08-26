@@ -13,3 +13,5 @@ scripts/.rm_set_option_progress.jsonl
 
 # Output of scripts/export_crossrefs.lean
 /crossrefs.json
+# Output directory for `lake exe no_expose`
+scripts/.no_expose/
