@@ -279,7 +279,7 @@ initialize simpsDefeqWarnDisabledExt : SimplePersistentEnvExtension Unit Bool â†
 /-- Persistently disable `simps.defeqWarn` in this file and all downstream files.
 This is useful in areas of the library where definitional equality abuse in `@[simps]` lemmas
 is widespread and the warnings are not actionable. -/
-elab "disable_simps_defeq_warn" : command =>
+elab (name := disableSimpsDefeqWarn) "disable_simps_defeq_warn" : command =>
   modifyEnv (simpsDefeqWarnDisabledExt.addEntry Â· ())
 
 /-- Linter to check that `simps!` is used when needed -/
