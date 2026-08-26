@@ -12,6 +12,8 @@ public import Plausible.Gen
 public meta import Plausible.Testable
 
 /-!
+# `Plausible`: `Testable` and `PrintableProb` instances
+
 This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.
 -/
 
