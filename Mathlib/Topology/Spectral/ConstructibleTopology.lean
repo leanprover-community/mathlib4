@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Constructible
-public import Mathlib.Topology.Order.GenerateFromLattice
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.Spectral.Prespectral
@@ -105,6 +104,16 @@ lemma constructibleTopologySubbasis_subset_isConstructible
     [CompactSpace X] [QuasiSeparatedSpace X] :
     constructibleTopologySubbasis X ⊆ { s | IsConstructible s } := by
   simp [← latticeClosure_constructibleTopologySubbasis]
+
+private lemma generateFrom_latticeClosure {α : Type*} (s : Set (Set α)) :
+    generateFrom (latticeClosure s) = generateFrom s := by
+  let : TopologicalSpace α := generateFrom s
+  refine le_antisymm (generateFrom_anti subset_latticeClosure) ?_
+  refine le_generateFrom fun o hos => ?_
+  induction hos using latticeClosure_sup_inf_induction with
+  | mem _ has => exact isOpen_generateFrom_of_mem has
+  | sup _ _ _ _ ha hb => exact ha.union hb
+  | inf _ _ _ _ ha hb => exact ha.inter hb
 
 variable (X) in
 lemma constructibleTopology_eq_generateFrom_isConstructible

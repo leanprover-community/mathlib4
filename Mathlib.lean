@@ -8217,7 +8217,6 @@ public import Mathlib.Topology.Order.DenselyOrdered
 public import Mathlib.Topology.Order.ExtendFrom
 public import Mathlib.Topology.Order.ExtrClosure
 public import Mathlib.Topology.Order.Filter
-public import Mathlib.Topology.Order.GenerateFromLattice
 public import Mathlib.Topology.Order.Hom.Basic
 public import Mathlib.Topology.Order.Hom.Esakia
 public import Mathlib.Topology.Order.HullKernel
