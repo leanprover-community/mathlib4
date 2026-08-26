@@ -78,7 +78,7 @@ noncomputable section
 
 namespace DiscreteConvolution
 
-variable {M S E E' E'' F F' G R : Type*}
+variable {M S E E' F F' R : Type*}
 
 /-! ### Multiplication Fiber -/
 
