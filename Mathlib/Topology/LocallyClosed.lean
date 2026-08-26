@@ -206,7 +206,8 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
     rintro ⟨U, U_mem, eq⟩
     exact ⟨U, U_mem, closure s, isClosed_closure, eq⟩
   tfae_have 1 ↔ 5 := by
-    simp [IsLocallyClosedAt, eventuallyEq_set, eventually_iff_exists_mem, Set.ext_iff]
+    simp only [IsLocallyClosedAt, Set.ext_iff, mem_inter_iff, and_congr_right_iff,
+      eventuallyEq_set, eventually_iff_exists_mem]
     grind
   tfae_have 4 ↔ 6 := by simp [eventuallyEq_set, eventually_iff_exists_mem, Set.ext_iff]
   tfae_have 6 → 7 := fun H ↦ H.symm.le
@@ -278,7 +279,6 @@ lemma IsLocallyClosedAt.union {x : X} (hs : IsLocallyClosedAt s x) (ht : IsLocal
   obtain ⟨Z₁, hZ₁, eq₁⟩ := hs
   obtain ⟨Z₂, hZ₂, eq₂⟩ := ht
   exact ⟨Z₁ ∪ Z₂, hZ₁.union hZ₂, eq₁.union eq₂⟩
-
 
 end IsLocallyClosedAt
 
