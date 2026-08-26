@@ -84,7 +84,6 @@ section Ring
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {n : ℕ}
 
-/-- The span of the new head vector lies in the successor flag of `Basis.mkFinCons`. -/
 theorem span_singleton_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
     {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
     R ∙ v ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
