@@ -189,7 +189,7 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
         rw [show (i : ℕ) = p.length - 1 by lia, show (j : ℕ) = 0 by lia, getVert_zero]
         exact p.adj_penultimate hp.not_nil
       · grind [adj_getVert_succ, Fin.sub_val_of_le]
-    refine ⟨⟨(p.getVert ·), fun {i j} hij ↦ ?_⟩, fun i j hij ↦ ?_⟩
+    refine ⟨⟨(p.getVert ·), fun hij ↦ ?_⟩, fun i j hij ↦ ?_⟩
     · exact cycleGraph_adj'.mp hij |>.elim (key · |>.symm) key
     · grind [hp.getVert_injOn', Set.InjOn, RelHom.coeFn_mk]
 
