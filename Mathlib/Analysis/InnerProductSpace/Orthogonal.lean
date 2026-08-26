@@ -66,7 +66,7 @@ lemma mem_orthogonal_iff_re_inner_eq_zero {v : E} :
     v ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪u, v⟫ = 0 := by
   rw [mem_orthogonal]
   refine ⟨by simp +contextual, fun h u hu ↦ ?_⟩
-  simpa [inner_smul_left, RCLike.conj_mul, -inner_conj_symm] using h (⟪u, v⟫ • u) (K.smul_mem _ hu)
+  exact inner_eq_zero_iff_forall_re_inner_smul_left.mpr fun c ↦ h _ (K.smul_mem c hu)
 
 /-- `v ∈ Kᗮ` if and only if `re ⟪v, u⟫ = 0` for all `u ∈ K`; it suffices to check only the
 real part of the inner product is zero. Variation of `mem_orthogonal_iff_re_inner_eq_zero` with
