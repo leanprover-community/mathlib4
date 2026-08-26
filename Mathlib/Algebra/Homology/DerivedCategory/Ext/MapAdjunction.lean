@@ -69,12 +69,12 @@ lemma extEquiv_symm_mk₀ (adj : F ⊣ G) {X : C} {Y : D} (f : X ⟶ G.obj Y) :
 
 @[simp]
 lemma extEquiv_symm_mk₀_unit_app (adj : F ⊣ G) (X : C) :
-    adj.extEquiv.symm (Ext.mk₀ (adj.unit.app X)) = Ext.mk₀ (𝟙 (F.obj X)) := by
+    dsimp% adj.extEquiv.symm (Ext.mk₀ (adj.unit.app X)) = Ext.mk₀ (𝟙 (F.obj X)) := by
   simp [extEquiv_symm_mk₀]
 
-@[simp]
+@[simp high]
 lemma extEquiv_mk₀_counit_app (adj : F ⊣ G) (Y : D) :
-    adj.extEquiv (Ext.mk₀ (adj.counit.app Y)) = Ext.mk₀ (𝟙 (G.obj Y)) := by
+    dsimp% adj.extEquiv (Ext.mk₀ (adj.counit.app Y)) = Ext.mk₀ (𝟙 (G.obj Y)) := by
   simp [extEquiv_mk₀, homEquiv_unit]
 
 lemma extEquiv_naturality_left (adj : F ⊣ G) {X₁ X₂ : C} {Y : D} {a b : ℕ}
