@@ -174,20 +174,13 @@ instance instContinuousEvalConst : ContinuousEvalConst H X V where
 
 theorem continuous_kerFun_iff :
     Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (kerFun H) := by
-  constructor
-  · rintro hK
-    rw [continuous_iff_continuousAt]
+  constructor <;> intro
+  · rw [continuous_iff_continuousAt]
     intro x
     rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]
-    simp_rw [norm_kerFun_sub_kerFun]
-    refine Tendsto.comp (y:=(𝓝 0)) (by simpa using ((Real.continuous_sqrt).tendsto 0)) ?_
-    have h1 : Continuous (fun y ↦ kernel H x x) := continuous_const (X:=X)
-    have h2 : Continuous (fun y ↦ kernel H y x) := hK.comp (continuous_id.prodMk continuous_const)
-    have h3 : Continuous (fun y ↦ kernel H x y) := hK.comp (continuous_const.prodMk continuous_id)
-    have h4 : Continuous (fun y ↦ kernel H y y) := hK.comp (continuous_id.prodMk continuous_id)
-    simpa using (h4 |>.sub h3 |>.sub h2 |>.add h1).norm.tendsto x
-  · rintro _
-    dsimp only [kernel, Matrix.of_apply]
+    simpa [norm_kerFun_sub_kerFun] using ContinuousAt.tendsto (x := x)
+      (f := fun e ↦ √‖kernel H e e - kernel H x e - kernel H e x + kernel H x x‖) (by fun_prop)
+  · dsimp only [kernel, Matrix.of_apply]
     fun_prop
 
 theorem continuous_eval_iff : Continuous (fun x : X => eval H x) ↔ Continuous (kerFun H) := by
