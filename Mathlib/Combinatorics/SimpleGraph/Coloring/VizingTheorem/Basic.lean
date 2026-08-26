@@ -125,4 +125,3 @@ lemma extendColoringOneEdge (e : G.edgeSet)
         change (lift f₁ h1).val = (lift f₂ h2).val
         exact congrArg Subtype.val h_lift_eq
   · change toFun e = color; simp [toFun]
-
