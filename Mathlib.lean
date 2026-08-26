@@ -3700,6 +3700,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan.Adjacency
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan.Rotation
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingTheorem
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingTheorem.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingTheorem.UpperBound
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
