@@ -222,6 +222,9 @@ theorem uniformOfFinset_apply_singleton (a : α) :
     simp
     grind
 
+@[deprecated (since := "2026-08-18")] alias _root_.uniformOfFinset_apply :=
+  uniformOfFinset_apply_singleton
+
 theorem uniformOfFinset_apply_singleton_of_mem (ha : a ∈ s) :
     uniformOfFinset s {a} = (s.card : ℝ≥0∞)⁻¹ := by
   simp [ha]
