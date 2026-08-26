@@ -103,20 +103,11 @@ lemma map_genEigenspace_le {N : Type*} [AddCommGroup N] [Module R N]
     (μ : R) (k : ℕ∞) :
     (f.genEigenspace μ k).map φ ≤ g.genEigenspace μ k := by
   rintro y ⟨x, hx, rfl⟩
-  obtain ⟨l, hl, hx⟩ := (mem_genEigenspace (f := f) (μ := μ) (k := k)).mp hx
-  apply (mem_genEigenspace (f := g) (μ := μ) (k := k)).mpr
-  refine ⟨l, hl, ?_⟩
-  rw [LinearMap.mem_ker] at hx ⊢
-  have hsub (x : M) : (g - μ • 1) (φ x) = φ ((f - μ • 1) x) := by
-    have hfg : g (φ x) = φ (f x) := LinearMap.congr_fun hφ x
-    simp [LinearMap.sub_apply, hfg]
-  have hpow (l : ℕ) (x : M) :
-      ((g - μ • 1) ^ l) (φ x) = φ (((f - μ • 1) ^ l) x) := by
-    induction l with
-    | zero => simp
-    | succ l ih =>
-        rw [pow_succ', pow_succ', Module.End.mul_apply, Module.End.mul_apply, ih, hsub]
-  rw [hpow, hx, map_zero]
+  obtain ⟨l, hl, hx⟩ := mem_genEigenspace.mp hx
+  refine mem_genEigenspace.mpr ⟨l, hl, ?_⟩
+  simp only [LinearMap.mem_ker, Module.End.pow_apply] at hx ⊢
+  suffices (⇑φ).Semiconj ⇑(f - μ • 1) ⇑(g - μ • 1) by rw [← this.iterate_right, hx, map_zero]
+  intro; simpa using congr($hφ _).symm
 
 /-- `map_genEigenspace_le` as `MapsTo`. -/
 lemma mapsTo_genEigenspace_of_comp {N : Type*} [AddCommGroup N] [Module R N]
