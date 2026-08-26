@@ -39,6 +39,8 @@ relative subgroup `(pCore p H).subgroupOf H`, not for `pCore p H` itself.
   (instance): inside `H`, the `p`-core is normal and characteristic.
 * `Subgroup.le_pCore`, `Subgroup.le_pCore_of_le`: a normal `p`-subgroup of `H` (embedded into
   `G`) is contained in the `p`-core — the universal property.
+* `Subgroup.pCore_eq_iSup`, `Subgroup.pCore_eq_biSup`: the `p`-core as a supremum, indexed by
+  `Subgroup H` and by `Subgroup G` respectively.
 * `Subgroup.pCore_eq_iInf_sylow`: `pCore p H = (⨅ P : Sylow p H, (P : Subgroup H)).map H.subtype`.
 * `Subgroup.map_pCore_le_pCore`, `Subgroup.map_pCore_eq_pCore`,
   `Subgroup.comap_pCore_le_pCore`, `Subgroup.comap_pCore_eq_pCore`, and `MulEquiv.map_pCore`
@@ -208,25 +210,12 @@ theorem pCore_le_sylow (P : Sylow p H) : pCore p H ≤ (P : Subgroup H).map H.su
   rw [← map_subgroupOf_eq_of_le (pCore_le (H := H))]
   exact map_mono (pCore_subgroupOf_le_sylow P)
 
-/-- The intersection of all Sylow `p`-subgroups of `H` is normal in `H`. -/
-theorem normal_iInf_sylow : (⨅ P : Sylow p H, (P : Subgroup H)).Normal where
-  conj_mem n hn g := by
-    simp only [mem_iInf] at hn ⊢
-    intro P
-    have h := hn (g⁻¹ • P)
-    rw [Sylow.coe_subgroup_smul, mem_pointwise_smul_iff_inv_smul_mem] at h
-    simpa using h
-
-/-- The intersection of all Sylow `p`-subgroups of `H` is a `p`-group. -/
-theorem isPGroup_iInf_sylow : IsPGroup p ↥(⨅ P : Sylow p H, (P : Subgroup H)) :=
-  (Classical.arbitrary (Sylow p H)).2.to_le (iInf_le _ _)
-
 /-- Computed inside `H`, the `p`-core equals the intersection of all Sylow
 `p`-subgroups of `H`. -/
 theorem pCore_subgroupOf_eq_iInf_sylow :
     (pCore p H).subgroupOf H = ⨅ P : Sylow p H, (P : Subgroup H) :=
   le_antisymm (le_iInf pCore_subgroupOf_le_sylow)
-    (le_pCore_subgroupOf normal_iInf_sylow isPGroup_iInf_sylow)
+    (le_pCore_subgroupOf Sylow.normal_iInf Sylow.isPGroup_iInf)
 
 /-- The `p`-core equals the intersection of all Sylow `p`-subgroups of `H`,
 embedded into `G`. -/
@@ -252,6 +241,22 @@ theorem le_pCore_of_le {N : Subgroup G} (hle : N ≤ H) (hnorm : (N.subgroupOf H
     (hp : IsPGroup p N) : N ≤ pCore p H := by
   rw [← map_subgroupOf_eq_of_le hle]
   exact le_pCore hnorm (hp.of_equiv (subgroupOfEquivOfLe hle).symm)
+
+/-- The `p`-core as a supremum indexed by subgroups of the ambient group: `pCore p H` is the
+supremum of the subgroups of `G` that are contained in `H`, normal in `H`, and `p`-groups. This is
+`pCore_eq_iSup` with the indexing moved from `Subgroup H` to `Subgroup G`. -/
+theorem pCore_eq_biSup :
+    pCore p H = ⨆ N ≤ H, ⨆ _ : (N.subgroupOf H).Normal, ⨆ _ : IsPGroup p N, N := by
+  refine le_antisymm ?_ (iSup₂_le fun N hN => iSup_le fun hnorm => iSup_le fun hp =>
+    le_pCore_of_le hN hnorm hp)
+  rw [pCore_eq_iSup]
+  refine iSup_le fun N => ?_
+  have hcomap : ((N : Subgroup H).map H.subtype).subgroupOf H = (N : Subgroup H) :=
+    comap_map_eq_self_of_injective H.subtype_injective _
+  have hnorm : (((N : Subgroup H).map H.subtype).subgroupOf H).Normal := by
+    rw [hcomap]; exact N.2.1
+  refine le_iSup_of_le ((N : Subgroup H).map H.subtype) (le_iSup_of_le (map_subtype_le _) ?_)
+  exact le_iSup_of_le hnorm (le_iSup_of_le (N.2.2.map _) le_rfl)
 
 section Hom
 
