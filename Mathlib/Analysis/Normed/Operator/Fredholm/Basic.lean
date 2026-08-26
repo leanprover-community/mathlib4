@@ -153,7 +153,7 @@ structure _root_.FredholmDecomposition where
 
 /-- Given a Fredholm decomposition `dec` of the space `E`, `dec.proj` is the (continuous linear)
 projection onto the "essential part" `dec.X₁` along the "inessential part" `dec.X₀`.
-This is a Fredholm operator. -/
+This is a Fredholm operator, see `FredholmDecomposition.isFredholm_proj`. -/
 abbrev _root_.FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
     E →L[𝕜] dec.X₁ := dec.X₁.projectionOntoL dec.X₀ dec.isTopCompl
 
@@ -461,6 +461,56 @@ theorem _root_.Submodule.isFredholm_mkQL {p : Submodule 𝕜 E} (hcompl : p.Clos
     [FiniteDimensional 𝕜 p] :
     IsFredholm p.mkQL :=
   isFredholm_mkQL_iff.mpr ⟨hcompl, inferInstance⟩
+
+theorem _root_.Submodule.isFredholm_projectionOntoL_iff [ContinuousSub E] {p q : Submodule 𝕜 E}
+    (hcompl : IsTopCompl p q) :
+    IsFredholm (p.projectionOntoL q hcompl) ↔ FiniteDimensional 𝕜 q := by
+  rw [(projectionOntoL_surjective hcompl).isFredholm_iff _, ← fg_iff_finiteDimensional,
+    ← fg_iff_finiteDimensional]
+  simp [isQuotientMap_projectionOnto hcompl, hcompl.symm.closedComplemented]
+
+theorem _root_.Submodule.isFredholm_projectionOntoL [ContinuousSub E] {p q : Submodule 𝕜 E}
+    (hcompl : IsTopCompl p q)
+    [FiniteDimensional 𝕜 q] :
+    IsFredholm (p.projectionOntoL q hcompl) :=
+  isFredholm_projectionOntoL_iff hcompl |>.mpr inferInstance
+
+theorem _root_.FredholmDecomposition.isFredholm_proj [ContinuousSub E]
+    (dec : FredholmDecomposition 𝕜 E) :
+    IsFredholm dec.proj :=
+  have := dec.finite_X₀
+  isFredholm_projectionOntoL dec.isTopCompl
+
+theorem _root_.Submodule.isFredholm_projectionL [ContinuousSub E] {p q : Submodule 𝕜 E} [T1Space q]
+    (hcompl : IsTopCompl p q)
+    [FiniteDimensional 𝕜 q] :
+    IsFredholm (p.projectionL q hcompl) where
+  isStrictMap := by simp [projection, ← IsEmbedding.subtypeVal.isStrictMap_iff,
+    (isQuotientMap_projectionOnto hcompl).isStrictMap]
+  isClosed_range := by simp [hcompl.isClosed]
+  finite_ker := by rw [← fg_iff_finiteDimensional]; simpa using FG.of_finite
+  finite_coker := by simpa using FG.cofg_of_isCompl hcompl.isCompl.symm .of_finite
+  closedComplemented_ker := by simpa using hcompl.symm.closedComplemented
+
+theorem _root_.Submodule.isFredholm_projectionL_iff [ContinuousSub E]
+    {p q : Submodule 𝕜 E} [T1Space q] (hcompl : IsTopCompl p q) :
+    IsFredholm (p.projectionL q hcompl) ↔ FiniteDimensional 𝕜 q := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ isFredholm_projectionL hcompl⟩
+  simpa [← fg_iff_finiteDimensional, -toLinearMap_projectionL, ker_projectionL] using h.finite_ker
+
+open ContinuousLinearMap in
+theorem IsIdempotentElem.isFredholm_iff [ContinuousSub E] {f : E →L[𝕜] E} [T1Space f.ker]
+    (hf : IsIdempotentElem f) :
+    IsFredholm f ↔ FiniteDimensional 𝕜 f.ker := by
+  conv_lhs => rw [hf.eq_projectionL]
+  rw [isFredholm_projectionL_iff]
+
+open ContinuousLinearMap in
+theorem IsIdempotentElem.isFredholm [ContinuousSub E] {f : E →L[𝕜] E} [T1Space f.ker]
+    (hf : IsIdempotentElem f)
+    [FiniteDimensional 𝕜 f.ker] :
+    IsFredholm f :=
+  hf.isFredholm_iff.mpr inferInstance
 
 variable [CompleteSpace 𝕜] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
   [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 G]
