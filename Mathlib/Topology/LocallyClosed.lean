@@ -136,13 +136,6 @@ lemma IsLocallyClosedAt.of_notMem_closure {x : X} (hx : x ∉ closure s) :
   ⟨(closure s)ᶜ, isClosed_closure.isOpen_compl.mem_nhds hx, closure s, isClosed_closure, by
     simp [← disjoint_iff_inter_eq_empty, disjoint_compl_left_iff, subset_closure]⟩
 
-lemma IsLocallyClosedAt.inter {x : X} (hs : IsLocallyClosedAt s x) (ht : IsLocallyClosedAt t x) :
-    IsLocallyClosedAt (s ∩ t) x := by
-  obtain ⟨U₁, hU₁, Z₁, hZ₁, eq₁⟩ := hs
-  obtain ⟨U₂, hU₂, Z₂, hZ₂, eq₂⟩ := ht
-  refine ⟨_, Filter.inter_mem hU₁ hU₂, _, hZ₁.inter hZ₂, ?_⟩
-  rw [inter_inter_inter_comm U₁ U₂ s t, inter_inter_inter_comm U₁ U₂ Z₁ Z₂, eq₁, eq₂]
-
 lemma IsLocallyClosedAt.preimage {x : X} {s : Set Y} {f : X → Y}
     (hs : IsLocallyClosedAt s (f x))
     (hf : Continuous f) :
@@ -177,10 +170,11 @@ private lemma mono_aux₄ (U V : Set X) (U_sub_V : U ⊆ V)
 2. There is a neighborhood `U` of `x` such that `U ∩ s` is a closed subset of `U`.
 3. There is a neighborhood `U` of `x` such that `U ∩ closure s ⊆ s`.
 4. There is a neighborhood `U` of `x` such that `U ∩ s = U ∩ closure s`.
-5. `s` and `closure s` coincide eventually near `x`.
-6. `closure s ⊆ s` eventually near `x`.
-7. `s` is a neighborhood of `x` inside `closure s`.
-8. `coborder s` is a neighborhood of `x`.
+5. `s` coincides with some closed set `Z` eventually near `x`.
+6. `s` and `closure s` coincide eventually near `x`.
+7. `closure s ⊆ s` eventually near `x`.
+8. `s` is a neighborhood of `x` inside `closure s`.
+9. `coborder s` is a neighborhood of `x`.
 
 Furthermore (see API below), in assertions 1, 2, 3 and 4, one can restrict to `U` belonging
 to a basis of neighborhoods of `x`.
@@ -191,6 +185,7 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
       ∃ U ∈ 𝓝 x, IsClosed (U ↓∩ s),
       ∃ U ∈ 𝓝 x, U ∩ closure s ⊆ s,
       ∃ U ∈ 𝓝 x, U ∩ s = U ∩ closure s,
+      ∃ Z, IsClosed Z ∧ s =ᶠ[𝓝 x] Z,
       s =ᶠ[𝓝 x] closure s,
       closure s ≤ᶠ[𝓝 x] s,
       s ∈ 𝓝[closure s] x,
@@ -210,13 +205,16 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
   tfae_have 4 → 1 := by
     rintro ⟨U, U_mem, eq⟩
     exact ⟨U, U_mem, closure s, isClosed_closure, eq⟩
-  tfae_have 4 ↔ 5 := by simp [eventuallyEq_set, eventually_iff_exists_mem, Set.ext_iff]
-  tfae_have 5 → 6 := fun H ↦ H.symm.le
-  tfae_have 6 → 5 := fun H ↦ EventuallyLE.antisymm (.of_forall subset_closure) H
-  tfae_have 6 ↔ 7 := by
+  tfae_have 1 ↔ 5 := by
+    simp [IsLocallyClosedAt, eventuallyEq_set, eventually_iff_exists_mem, Set.ext_iff]
+    grind
+  tfae_have 4 ↔ 6 := by simp [eventuallyEq_set, eventually_iff_exists_mem, Set.ext_iff]
+  tfae_have 6 → 7 := fun H ↦ H.symm.le
+  tfae_have 7 → 6 := fun H ↦ EventuallyLE.antisymm (.of_forall subset_closure) H
+  tfae_have 7 ↔ 8 := by
     simp_rw [← eventually_mem_set, eventually_nhdsWithin_iff]
     rfl
-  tfae_have 7 ↔ 8 := by
+  tfae_have 8 ↔ 9 := by
     simp_rw [← eventually_mem_set, eventually_nhdsWithin_iff, mem_coborder_iff_imp]
   tfae_finish
 
@@ -252,16 +250,35 @@ lemma isLocallyClosedAt_iff_exists_eq_inter_closure_of_hasBasis {ι : Type*} {p 
     ∃ i, p i ∧ U i ∩ s = U i ∩ closure s := by
   rw [isLocallyClosedAt_iff_exists_eq_inter_closure, H.exists_iff mono_aux₄]
 
+lemma isLocallyClosedAt_iff_exists_isClosed_eventuallyEq {x : X} : IsLocallyClosedAt s x ↔
+    ∃ Z, IsClosed Z ∧ s =ᶠ[𝓝 x] Z :=
+  (isLocallyClosedAt_tfae s x).out 1 5
+
 lemma isLocallyClosedAt_iff_eventuallyEq_closure {x : X} : IsLocallyClosedAt s x ↔
     s =ᶠ[𝓝 x] closure s :=
-  (isLocallyClosedAt_tfae s x).out 1 5
+  (isLocallyClosedAt_tfae s x).out 1 6
 
 lemma isLocallyClosedAt_iff_closure_eventuallyLE {x : X} : IsLocallyClosedAt s x ↔
     closure s ≤ᶠ[𝓝 x] s :=
-  (isLocallyClosedAt_tfae s x).out 1 6
+  (isLocallyClosedAt_tfae s x).out 1 7
 
 lemma isLocallyClosedAt_iff_coborder_mem_nhds {x : X} : IsLocallyClosedAt s x ↔ coborder s ∈ 𝓝 x :=
-  (isLocallyClosedAt_tfae s x).out 1 8
+  (isLocallyClosedAt_tfae s x).out 1 9
+
+lemma IsLocallyClosedAt.inter {x : X} (hs : IsLocallyClosedAt s x) (ht : IsLocallyClosedAt t x) :
+    IsLocallyClosedAt (s ∩ t) x := by
+  rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEq] at *
+  obtain ⟨Z₁, hZ₁, eq₁⟩ := hs
+  obtain ⟨Z₂, hZ₂, eq₂⟩ := ht
+  exact ⟨Z₁ ∩ Z₂, hZ₁.inter hZ₂, eq₁.inter eq₂⟩
+
+lemma IsLocallyClosedAt.union {x : X} (hs : IsLocallyClosedAt s x) (ht : IsLocallyClosedAt t x) :
+    IsLocallyClosedAt (s ∪ t) x := by
+  rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEq] at *
+  obtain ⟨Z₁, hZ₁, eq₁⟩ := hs
+  obtain ⟨Z₂, hZ₂, eq₂⟩ := ht
+  exact ⟨Z₁ ∪ Z₂, hZ₁.union hZ₂, eq₁.union eq₂⟩
+
 
 end IsLocallyClosedAt
 
