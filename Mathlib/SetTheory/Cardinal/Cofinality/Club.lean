@@ -6,7 +6,6 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
-public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Club sets and stationary sets
