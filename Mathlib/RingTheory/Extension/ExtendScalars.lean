@@ -59,6 +59,7 @@ def extendScalars {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+set_option simps.defeqWarn false in
 /-- The canonical homomorphism from `P` to `P.extendScalars` induced by the identity map
 on the underlying extension rings. -/
 @[simps!]
