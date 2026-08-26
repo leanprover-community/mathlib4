@@ -85,7 +85,7 @@ theorem commutatorElement_mul_right_eq_mul_conj (a b c : G) :
   simp [mul_assoc, commutatorElement_def]
 
 @[to_additive]
-theorem commutatorElement_pow_left_of_commute {a b : G} (h : Commute a ⁅a, b⁆) (n : ℕ) :
+theorem Commute.commutatorElement_pow_left {a b : G} (h : Commute a ⁅a, b⁆) (n : ℕ) :
     ⁅a, b⁆ ^ n = ⁅a ^ n, b⁆ := by
   induction n with
   | zero => simp
@@ -93,7 +93,7 @@ theorem commutatorElement_pow_left_of_commute {a b : G} (h : Commute a ⁅a, b�
       mul_inv_cancel_right]
 
 @[to_additive]
-theorem commutatorElement_pow_right_of_commute {a b : G} (h : Commute b ⁅a, b⁆) (n : ℕ) :
+theorem Commute.commutatorElement_pow_right {a b : G} (h : Commute b ⁅a, b⁆) (n : ℕ) :
     ⁅a, b⁆ ^ n = ⁅a, b ^ n⁆ := by
   induction n with
   | zero => simp
