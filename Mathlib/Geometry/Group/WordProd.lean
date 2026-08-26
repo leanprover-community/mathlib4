@@ -8,20 +8,16 @@ module
 public import Mathlib.GroupTheory.Generators
 
 /-!
-# Words over a generating family
+# Evaluation of words
 
-A word over a generating family `P : Group.Generators G ι` is a list of letters, each carrying a
-sign: `List (ι × Bool)`. The evaluation map is then given by `Group.Generators.wordProd`.
+A generating family `P : Group.Generators G ι` indexed by `ι` gives rise to an evaluation map
+`P.wordProd : List (ι × Bool) → G`.
 
 ## Main definitions
 
 * `Group.Generators.wordProd`: the canonical map from a word `List (ι × Bool)` over a generating
-  family `ι` to its corresponding group `G`.
-
-## Main results
-
-* `Group.Generators.wordProd_surjective`: every element of `G` is the product of some word over a
-  generating family.
+  family `ι` to the corresponding group `G`. It sends each `(i, true)` to `P.val i` and
+  `(i, false)` to `(P.val i)⁻¹`.
 
 ## Implementation notes
 
