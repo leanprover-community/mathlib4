@@ -9,6 +9,7 @@ public import Mathlib.Order.PartialSups
 public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
 public import Mathlib.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Finset.Lattice.Union
 
 /-!
 # Making a sequence disjoint
@@ -211,6 +212,7 @@ theorem disjointed_unique' {f d : ι → α} (hdisj : Pairwise (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f :=
   disjointed_unique (fun hij ↦ hdisj hij.ne) hsups
 
+set_option backward.isDefEq.respectTransparency false in
 omit [GeneralizedBooleanAlgebra α] in
 lemma Finset.disjiUnion_Iic_disjointed [DecidableEq α] (n : ι) (t : ι → Finset α) :
     (Iic n).disjiUnion (disjointed t) ((disjoint_disjointed t).set_pairwise _) =
@@ -285,8 +287,8 @@ lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] (f : ι → α) :
   have hf' : f = f' ∘ R := by ext; simp only [Function.comp_apply, Equiv.symm_apply_apply, f']
   refine ⟨disjointed f' ∘ R, ?_, ?_, ?_⟩
   · intro n
-    simpa only [hf'] using disjointed_le f' (R n)
-  · simpa only [← sup_image, image_univ_equiv, hf'] using sup_disjointed f'
+    simpa only [hf'] using! disjointed_le f' (R n)
+  · simpa only [← sup_image, image_univ_equiv, hf'] using! sup_disjointed f'
   · exact fun i j hij ↦ disjoint_disjointed f' (R.injective.ne hij)
 
 end GeneralizedBooleanAlgebra

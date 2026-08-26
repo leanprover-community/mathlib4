@@ -41,6 +41,7 @@ variable [IsScalarTower R S A]
 
 namespace MulOpposite
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAlgebra : Algebra R Aᵐᵒᵖ where
   algebraMap := (algebraMap R A).toOpposite fun _ _ => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
@@ -133,6 +134,9 @@ end AlgHom
 
 namespace AlgEquiv
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An algebra iso `A ≃ₐ[R] B` can equivalently be viewed as an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`.
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
@@ -162,6 +166,9 @@ theorem toRingEquiv_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) :
     (AlgEquiv.unop f).toRingEquiv = RingEquiv.unop f.toRingEquiv :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Swap the `ᵐᵒᵖ` on an algebra isomorphism to the opposite side. -/
 @[simps!]
 def opComm : (A ≃ₐ[R] Bᵐᵒᵖ) ≃ (Aᵐᵒᵖ ≃ₐ[R] B) :=

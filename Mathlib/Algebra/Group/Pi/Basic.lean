@@ -39,9 +39,18 @@ variable {α β γ : Type*}
 
 -- The families of types already equipped with instances
 variable {f : I → Type v₁} {g : I → Type v₂} {h : I → Type v₃}
-variable (x y : ∀ i, f i) (i : I)
+variable (x : ∀ i, f i) (i : I)
 
 namespace Pi
+
+@[to_additive]
+instance isMulCommutative [∀ i, Mul (f i)] [∀ i, IsMulCommutative (f i)] :
+    IsMulCommutative (∀ i, f i) where
+  is_comm.comm _ _ := by ext; apply mul_comm'
+
+@[to_additive]
+instance commMagma [∀ i, CommMagma (f i)] : CommMagma (∀ i, f i) where
+  mul_comm _ _ := by ext; apply mul_comm
 
 @[to_additive]
 instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
@@ -49,12 +58,16 @@ instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
 
 @[to_additive]
 instance commSemigroup [∀ i, CommSemigroup (f i)] : CommSemigroup (∀ i, f i) where
-  mul_comm := by intros; ext; exact mul_comm _ _
 
 @[to_additive]
 instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
   one_mul := by intros; ext; exact one_mul _
   mul_one := by intros; ext; exact mul_one _
+
+@[to_additive]
+instance [∀ i, MulOneClass (f i)] [∀ i, IsDedekindFiniteMonoid (f i)] :
+    IsDedekindFiniteMonoid (∀ i, f i) where
+  mul_eq_one_symm := by simp [funext_iff, mul_eq_one_comm]
 
 @[to_additive]
 instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
@@ -69,8 +82,7 @@ instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   npow_succ := by intros; ext; exact Monoid.npow_succ _ _
 
 @[to_additive]
-instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
-  { monoid, commSemigroup with }
+instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) where
 
 @[to_additive Pi.subNegMonoid]
 instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where
@@ -191,7 +203,7 @@ lemma comp_ne_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : In
 end Function
 
 /-- If the one function is surjective, the codomain is trivial. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- If the zero function is surjective, the codomain is trivial. -/]
 def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surjective (1 : α → β)) :
     Unique β :=
