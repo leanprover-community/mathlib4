@@ -13,7 +13,7 @@ public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Tactic.CrossRefAttribute
 
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Disjoint
 
 /-!
 # Simple graphs
@@ -100,7 +100,6 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
@@ -201,6 +200,11 @@ theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ 
 
 instance symm_adj (f : ι → V) : Std.Symm fun i j ↦ G.Adj (f i) (f j) where symm _ _ := .symm
 
+instance [Infinite V] : Infinite (SimpleGraph V) := by
+  let f := Infinite.natEmbedding V
+  refine .of_injective (fun n ↦ fromRel (· = f 0 ∧ · = f (n + 1))) fun a b h ↦ ?_
+  simpa using congr(($h).Adj (f 0) (f (a + 1)))
+
 section Order
 
 /-- The relation that one `SimpleGraph` is a subgraph of another.
@@ -221,7 +225,7 @@ instance : Max (SimpleGraph V) where
     { Adj := x.Adj ⊔ y.Adj
       symm.symm v w h := by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
 
-@[simp]
+@[simp, grind =]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
   Iff.rfl
 
@@ -820,6 +824,32 @@ variable {G H} in
 theorem disjoint_neighborSet :
     (∀ v, Disjoint (G.neighborSet v) (H.neighborSet v)) ↔ Disjoint G H := by
   simp_rw [← disjoint_edgeSet, Set.disjoint_left, mem_neighborSet, Sym2.forall, mem_edgeSet]
+
+@[simp]
+theorem neighborSet_sup {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊔ G₂).neighborSet v = G₁.neighborSet v ∪ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_inf {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊓ G₂).neighborSet v = G₁.neighborSet v ∩ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_sdiff {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ \ G₂).neighborSet v = G₁.neighborSet v \ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_iSup {s : ι → SimpleGraph V} (v : V) :
+    (⨆ i, s i).neighborSet v = ⋃ i, (s i).neighborSet v := by
+  ext; simp
+
+@[simp]
+theorem neighborSet_iInf [Nonempty ι] {s : ι → SimpleGraph V} (v : V) :
+    (⨅ i, s i).neighborSet v = ⋂ i, (s i).neighborSet v := by
+  ext
+  simp_rw [Set.mem_iInter, mem_neighborSet, iInf_adj_of_nonempty]
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by

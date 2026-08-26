@@ -34,7 +34,9 @@ defined using pentagonal numbers. We then show that this series is equal to both
 * `PowerSeries.coeff_pentagonalSeries` restates the right-hand side without requiring topology.
 -/
 
-open Filter PowerSeries WithPiTopology Topology
+open Filter PowerSeries WithPiTopology
+
+open scoped Topology
 variable (R : Type*) [CommRing R]
 
 namespace Pentagonal
@@ -83,7 +85,7 @@ def pentagonalSeries : R⟦X⟧ :=
     0
 
 theorem coeff_pentagonalSeries_eq_zero {n : ℕ} (h : n ∉ Set.range pentagonal) :
-    (pentagonalSeries R).coeff n = 0 := dif_neg <| by simpa using h
+    (pentagonalSeries R).coeff n = 0 := dite_eq_right <| by simpa using h
 
 @[simp]
 theorem coeff_pentagonalSeries_pentagonal (k : ℤ) :

@@ -6,7 +6,8 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Topology.Bornology.Absorbs
 /-!
 # Local convexity
@@ -44,6 +45,8 @@ absorbent, balanced, locally convex, LCTVS
 -/
 
 @[expose] public section
+
+assert_not_exists NormedSpace
 
 open Set
 open scoped Pointwise Topology
