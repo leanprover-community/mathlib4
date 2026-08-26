@@ -42,6 +42,10 @@ instance instLinearOrder : LinearOrder ℤ where
   toDecidableLE := decLe
   toDecidableLT := decLt
 
+-- Shortcut instances
+instance : Preorder ℤ := inferInstance
+instance : PartialOrder ℤ := inferInstance
+
 protected alias ⟨eq_zero_or_eq_zero_of_mul_eq_zero, _⟩ := Int.mul_eq_zero
 
 theorem nonneg_or_nonpos_of_mul_nonneg : 0 ≤ a * b → 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
