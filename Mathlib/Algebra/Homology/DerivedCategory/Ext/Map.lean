@@ -266,9 +266,12 @@ lemma mapExactFunctor_comp_mk₀_natTransApp
       ((Ext.mk₀ (τ.app X))).comp (α.mapExactFunctor G) (zero_add n) := by
   ext
   have := ShiftedHom.map_naturality α.hom (NatTrans.mapDerivedCategory τ)
-  simp [ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀] at this
-  simp [mapExactFunctor_hom, ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀]
-  sorry
+  simp [← cancel_mono (((G.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦(n : ℤ)⟧'),
+    ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
+    NatTrans.mapDerivedCategory_app_singleFunctor_obj,
+    ← Functor.map_comp] at this
+  simp [mapExactFunctor_hom, ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
+    ← Functor.map_comp, this]
 
 end Abelian.Ext
 

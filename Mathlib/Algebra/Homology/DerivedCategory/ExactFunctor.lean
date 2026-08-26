@@ -94,7 +94,6 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactorsh.hom ℤ :=
         (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh)
           F.mapDerivedCategory).hom ℤ)
 
-set_option backward.defeqAttrib.useBackward true in
 instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
   NatTrans.CommShift.verticalComposition (DerivedCategory.quotientCompQhIso C₁).inv
     (DerivedCategory.quotientCompQhIso C₂).hom
@@ -104,6 +103,13 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
       dsimp
       simp only [id_comp, mapDerivedCategoryFactorsh_hom_app, assoc, comp_id,
         ← Functor.map_comp_assoc, Iso.inv_hom_id_app, map_id, comp_obj])
+
+instance :
+    NatTrans.CommShift (Lifting.iso DerivedCategory.Q
+      (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ))
+        (F.mapHomologicalComplex _ ⋙ DerivedCategory.Q) F.mapDerivedCategory).hom ℤ := by
+  dsimp [Lifting.iso]
+  infer_instance
 
 instance : F.mapDerivedCategory.IsTriangulated :=
   Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
@@ -150,6 +156,12 @@ noncomputable instance :
   iso := (𝟭 C₁).mapDerivedCategoryFactors ≪≫
     isoWhiskerRight (Functor.mapHomologicalComplexIdIso _ _) _ ≪≫ leftUnitor _
 
+instance :
+    NatTrans.CommShift (Lifting.iso DerivedCategory.Q (HomologicalComplex.quasiIso C₁ (.up ℤ))
+      DerivedCategory.Q (𝟭 C₁).mapDerivedCategory).hom ℤ := by
+  dsimp [Lifting.iso]
+  infer_instance
+
 variable (C₁) in
 @[no_expose]
 noncomputable def mapDerivedCategoryIdIso : (𝟭 C₁).mapDerivedCategory ≅ 𝟭 _ :=
@@ -157,7 +169,8 @@ noncomputable def mapDerivedCategoryIdIso : (𝟭 C₁).mapDerivedCategory ≅ �
       (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ)) _ _ _ _
       (Iso.refl (DerivedCategory.Q))
 
-instance : NatTrans.CommShift (mapDerivedCategoryIdIso C₁).hom ℤ := sorry
+instance : NatTrans.CommShift (mapDerivedCategoryIdIso C₁).hom ℤ :=
+  NatTrans.CommShift.liftNatTrans ..
 
 @[reassoc]
 lemma mapDerivedCategoryIdIso_hom_app (X : CochainComplex C₁ ℤ) :
@@ -191,6 +204,14 @@ noncomputable instance :
     (associator _ _ _).symm ≪≫ isoWhiskerRight F.mapDerivedCategoryFactors _ ≪≫
     associator _ _ _ ≪≫ isoWhiskerLeft _ G.mapDerivedCategoryFactors
 
+instance :
+    NatTrans.CommShift (Lifting.iso DerivedCategory.Q
+      (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ))
+      (F.mapHomologicalComplex _ ⋙ G.mapHomologicalComplex _ ⋙ DerivedCategory.Q)
+      (F.mapDerivedCategory ⋙ G.mapDerivedCategory)).hom ℤ := by
+  dsimp [Lifting.iso]
+  infer_instance
+
 @[no_expose]
 noncomputable def mapDerivedCategoryCompIso :
     F.mapDerivedCategory ⋙ G.mapDerivedCategory ≅ (F ⋙ G).mapDerivedCategory :=
@@ -201,6 +222,11 @@ noncomputable def mapDerivedCategoryCompIso :
       ((associator _ _ _).symm ≪≫
         isoWhiskerRight (mapHomologicalComplexCompIso (Iso.refl (F ⋙ G)) (.up ℤ)) _)
 
+instance : NatTrans.CommShift (mapDerivedCategoryCompIso F G).hom ℤ := by
+  apply +allowSynthFailures NatTrans.CommShift.liftNatTrans
+  dsimp
+  infer_instance
+
 lemma mapDerivedCategoryCompIso_hom_app_Q_obj (X : CochainComplex C₁ ℤ) :
     (mapDerivedCategoryCompIso F G).hom.app (DerivedCategory.Q.obj X) =
     G.mapDerivedCategory.map (F.mapDerivedCategoryFactors.hom.app X) ≫
@@ -209,8 +235,6 @@ lemma mapDerivedCategoryCompIso_hom_app_Q_obj (X : CochainComplex C₁ ℤ) :
         (Iso.refl (F ⋙ G)) (ComplexShape.up ℤ)).hom.app X) ≫
           (F ⋙ G).mapDerivedCategoryFactors.inv.app X :=
   (liftNatTrans_app ..).trans (by simp [Lifting.iso])
-
-instance : NatTrans.CommShift (mapDerivedCategoryCompIso F G).hom ℤ := sorry
 
 open HomologicalComplex in
 @[reassoc]
@@ -249,10 +273,11 @@ variable {F : C₁ ⥤ C₂} [F.Additive] [PreservesFiniteLimits F] [PreservesFi
 
 noncomputable def mapDerivedCategory (τ : F ⟶ G) : F.mapDerivedCategory ⟶ G.mapDerivedCategory :=
   liftNatTrans DerivedCategory.Q
-      (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ)) _ _ _ _
+    (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ)) _ _ _ _
       (Functor.whiskerRight (τ.mapHomologicalComplex _) DerivedCategory.Q)
 
-instance (τ : F ⟶ G) : NatTrans.CommShift τ.mapDerivedCategory ℤ := sorry
+instance (τ : F ⟶ G) : NatTrans.CommShift τ.mapDerivedCategory ℤ :=
+  NatTrans.CommShift.liftNatTrans ..
 
 @[reassoc]
 lemma mapDerivedCategory_app_Q_obj (τ : F ⟶ G) (X : CochainComplex C₁ ℤ) :
