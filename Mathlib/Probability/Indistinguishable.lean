@@ -23,6 +23,8 @@ for instance the `gcongr` tactic.
 In this file we introduce a predicate `Indistinguishable P X Y`, denoted `X ≡ᵐ[P] Y`, which states
 that `∀ᵐ ω ∂P, ∀ t, X t ω = Y t ω`. The symbol `≡` can be typed with `\==`.
 
+The recommended spelling for `Indistinguishable` in names is `indist`.
+
 -/
 
 public section
