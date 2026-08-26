@@ -34,7 +34,7 @@ public section
 
 /-- Coordinate form on coordinate inputs = intrinsic form on transported inputs, for
 `inCoordinates` on the bundle of bilinear forms `fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ`.
-Specialisation of `inCoordinates_apply_eq₂` to a scalar codomain. -/
+Specialisation of inCoordinates_apply_eq₂ to scalar-valued forms (`E₃ = Bundle.Trivial B ℝ`) -/
 lemma inCoordinates_apply_eq₂_bilin
     {x₀ x : B} {ϕ : E x →L[ℝ] E x →L[ℝ] ℝ} {v w : F}
     (h₁x : x ∈ (trivializationAt F E x₀).baseSet) :
