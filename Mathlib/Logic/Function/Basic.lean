@@ -14,7 +14,6 @@ public import Mathlib.Logic.Nontrivial.Defs
 public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Miscellaneous function constructions and lemmas
@@ -49,6 +48,10 @@ theorem const_injective [Nonempty α] : Injective (const α : β → α → β) 
 @[simp]
 theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂ ↔ y₁ = y₂ :=
   ⟨fun h ↦ const_injective h, fun h ↦ h ▸ rfl⟩
+
+theorem eq_const_iff {f : α → β} {b : β} :
+    f = const α b ↔ ∀ a : α, f a = b := by
+  simp only [funext_iff, const_apply]
 
 section onFun
 
@@ -313,7 +316,7 @@ theorem injective_comp_right_iff_surjective {γ : Type*} [Nontrivial γ] :
   have ⟨b₀, hb⟩ := not_forall.mp not_surj
   classical have := inj (a₁ := fun _ ↦ c) (a₂ := (if · = b₀ then c' else c)) ?_
   · simpa using congr_fun this b₀
-  ext a; simp only [comp_apply, if_neg fun h ↦ hb ⟨a, h⟩]
+  ext a; simp only [comp_apply, ite_eq_right fun h ↦ hb ⟨a, h⟩]
 
 protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : β → γ} :
     g₁ ∘ f = g₂ ∘ f ↔ g₁ = g₂ :=
@@ -351,6 +354,10 @@ theorem Bijective.of_comp_iff (f : α → β) {g : γ → α} (hg : Bijective g)
 theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α) :
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
+
+theorem Bijective.of_comp_left {f : α → β} {g : γ → α} (hfg : Function.Bijective (f ∘ g))
+    (hf : Function.Injective f) : Function.Bijective g :=
+  ⟨hfg.1.of_comp, hfg.2.of_comp_left hf⟩
 
 /-- If `f : α → α → β` is surjective, then every endofunction on `β` has a fixed point.
 This is an instance of Lawvere's fixed-point theorem applied to the category of types
@@ -494,13 +501,13 @@ theorem Injective.isPartialInv {α β} {f : α → β} (I : Injective f) : IsPar
     have hpi : partialInv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
       rfl
     if h' : ∃ a, f a = b
-    then by rw [hpi, dif_pos h'] at h
+    then by rw [hpi, dite_eq_left h'] at h
             injection h with h
             subst h
             apply Classical.choose_spec h'
-    else by rw [hpi, dif_neg h'] at h; contradiction,
+    else by rw [hpi, dite_eq_right h'] at h; contradiction,
   fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
-              (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
+              (dite_eq_left h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 
 @[deprecated (since := "2026-03-11")] alias partialInv_of_injective := Injective.isPartialInv
 
@@ -521,14 +528,14 @@ noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β �
   fun y ↦ if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
 
 theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b := by
-  simp only [invFun, dif_pos h, h.choose_spec]
+  simp only [invFun, dite_eq_left h, h.choose_spec]
 
 theorem apply_invFun_apply {α β : Type*} {f : α → β} {a : α} :
     f (@invFun _ _ ⟨a⟩ f (f a)) = f a :=
   @invFun_eq _ _ ⟨a⟩ _ _ ⟨_, rfl⟩
 
 theorem invFun_neg (h : ¬∃ a, f a = b) : invFun f b = Classical.choice ‹_› :=
-  dif_neg h
+  dite_eq_right h
 
 theorem invFun_eq_of_injective_of_rightInverse {g : β → α} (hf : Injective f)
     (hg : RightInverse g f) : invFun f = g :=
@@ -597,6 +604,10 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
     Surjective f :=
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
 
+@[nontriviality] theorem bijective_of_subsingleton' [Nonempty α] [Subsingleton α] [Subsingleton β]
+    (f : α → β) : Bijective f :=
+  ⟨injective_of_subsingleton f, surjective_to_subsingleton f⟩
+
 theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦
   ⟨fun i ↦ surjInv (hf i) (g i), funext fun _ ↦ rightInverse_surjInv _ _⟩
@@ -636,11 +647,11 @@ def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
 
 @[simp]
 theorem update_self (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem update_of_ne {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
-  dif_neg h
+  dite_eq_right h
 
 /--
 A congruence lemma for `Function.update`, specialized for the non-dependent case. Without this,
@@ -840,7 +851,7 @@ lemma Injective.factorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThr
 lemma FactorsThrough.extend_apply {g : α → γ} (hf : g.FactorsThrough f) (e' : β → γ) (a : α) :
     extend f g e' (f a) = g a := by
   classical
-  simp only [extend_def, dif_pos, exists_apply_eq_apply]
+  simp only [extend_def, dite_eq_left, exists_apply_eq_apply]
   exact hf (Classical.choose_spec (exists_apply_eq_apply f a))
 
 @[simp]
@@ -921,7 +932,7 @@ theorem surjective_comp_right_iff_injective {γ : Type*} [Nontrivial γ] :
   have ⟨f, hf⟩ := surj (if · = a₂ then c else c')
   have h₁ := congr_fun hf a₁
   have h₂ := congr_fun hf a₂
-  simp only [comp_apply, if_neg ne, reduceIte] at h₁ h₂
+  simp only [comp_apply, ite_eq_right ne, reduceIte] at h₁ h₂
   rw [← h₁, eq, h₂]
 
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
@@ -1049,8 +1060,10 @@ lemma not_surjective : Surjective Not := not_involutive.surjective
 lemma not_bijective : Bijective Not := not_involutive.bijective
 
 @[simp]
-lemma symmetric_apply_eq_iff {α : Sort*} {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by
-  simp [Symmetric, Involutive]
+lemma symm_apply_eq_iff {α : Sort*} {f : α → α} : Std.Symm (f · = ·) ↔ Involutive f := by
+  simp [symm_def, Involutive]
+
+@[deprecated (since := "2026-06-10")] alias symmetric_apply_eq_iff := symm_apply_eq_iff
 
 /-- The property of a binary function `f : α → β → γ` being injective.
 Mathematically this should be thought of as the corresponding function `α × β → γ` being injective.
@@ -1100,7 +1113,7 @@ noncomputable def sometimes {α β} [Nonempty β] (f : α → β) : β :=
   if h : Nonempty α then f (Classical.choice h) else Classical.choice ‹_›
 
 theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : sometimes f = f a :=
-  dif_pos ⟨a⟩
+  dite_eq_left ⟨a⟩
 
 theorem sometimes_spec {p : Prop} {α} [Nonempty α] (P : α → Prop) (f : p → α) (a : p)
     (h : P (f a)) : P (sometimes f) := by
@@ -1133,18 +1146,24 @@ lemma forall_existsUnique_iff' {r : α → β → Prop} :
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff' {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Std.Symm.forall_existsUnique_iff' {r : α → α → Prop} [Std.Symm r] :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ r = (f · = ·) := by
   refine ⟨fun h ↦ ?_, fun ⟨f, _, hf⟩ ↦ forall_existsUnique_iff'.2 ⟨f, hf⟩⟩
   rcases forall_existsUnique_iff'.1 h with ⟨f, rfl : r = _⟩
-  exact ⟨f, symmetric_apply_eq_iff.1 hr, rfl⟩
+  exact ⟨f, symm_apply_eq_iff.1 ‹_›, rfl⟩
+
+@[deprecated (since := "2026-06-10")]
+protected alias Symmetric.forall_existsUnique_iff' := Std.Symm.forall_existsUnique_iff'
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Std.Symm.forall_existsUnique_iff {r : α → α → Prop} [Std.Symm r] :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ ∀ {a b}, r a b ↔ f a = b := by
-  simp [hr.forall_existsUnique_iff', funext_iff]
+  simp [Std.Symm.forall_existsUnique_iff', funext_iff]
+
+@[deprecated (since := "2026-06-10")]
+protected alias Symmetric.forall_existsUnique_iff := Std.Symm.forall_existsUnique_iff
 
 /-- `s.piecewise f g` is the function equal to `f` on the set `s`, and to `g` on its complement. -/
 def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, β i)
@@ -1204,7 +1223,13 @@ theorem Function.LeftInverse.cast_eq {γ : β → Sort v} {f : α → β} {g : �
 /-- A set of functions "separates points"
 if for each pair of distinct points there is a function taking different values on them. -/
 def Set.SeparatesPoints {α β : Type*} (A : Set (α → β)) : Prop :=
-  ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
+  ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, f x ≠ f y
+
+theorem Set.separatesPoints_mono {α β : Type*} {A B : Set (α → β)} (hAB : A ⊆ B)
+    (hA : Set.SeparatesPoints A) : Set.SeparatesPoints B := by
+  intro x y hne
+  obtain ⟨f, hfA, hne'⟩ := hA hne
+  exact ⟨f, hAB hfA, hne'⟩
 
 theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop) (f : α → β)
     (h : Equivalence r) : Equivalence (InvImage r f) :=

@@ -142,8 +142,6 @@ theorem ebound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
 
 section
 
-open Filter
-
 variable (𝕜 E)
 
 /-- Given a unit-length element `x` of a normed space `E` over a field `𝕜`, the natural linear
@@ -192,7 +190,7 @@ theorem bounds_bddBelow {f : E →SL[σ₁₂] F} : BddBelow { c | 0 ≤ c ∧ �
 theorem isLeast_opNorm [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     IsLeast {c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
-  simp only [setOf_and, setOf_forall]
+  simp only [ofPred_and, ofPred_forall]
   refine isClosed_Ici.inter <| isClosed_iInter fun _ ↦ isClosed_le ?_ ?_ <;> fun_prop
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
@@ -412,26 +410,6 @@ variable [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F)
 @[simp, nontriviality]
 theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := norm_of_subsingleton f
 
-/-- The fundamental property of the operator norm, expressed with extended norms:
-`‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ`. -/
-lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
-  simp_rw [← ofReal_norm]
-  rw [← ENNReal.ofReal_mul (by positivity)]
-  gcongr
-  exact f.le_opNorm x
-
-/-- If one controls the enorm of every `f x`, then one controls the enorm of `f`. -/
-theorem opENorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ≥0∞} (hM : ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ) :
-    ‖f‖ₑ ≤ M := by
-  rcases eq_top_or_lt_top M with rfl | h'M
-  · simp
-  lift M to NNReal using h'M.ne
-  simp only [← ofReal_norm, ENNReal.ofReal_le_coe]
-  apply opNorm_le_bound _ (by positivity) (fun x ↦ ?_)
-  specialize hM x
-  simp only [← ofReal_norm, ← ENNReal.ofReal_coe_nnreal] at hM
-  rwa [← ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_le_ofReal_iff (by positivity)] at hM
-
 variable {f} in
 theorem homothety_norm [NontrivialTopology E] (f : E →SL[σ₁₂] F) {a : ℝ}
     (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
@@ -483,6 +461,10 @@ lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
   refine opNorm_le_bound _ hC (fun x ↦ ?_)
   refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun i ↦ ?_)
   exact (L i).le_of_opNorm_le (hL i) _
+
+lemma norm_postcomp_le [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] [RingHomIsometric σ₂₃]
+    (L : F →SL[σ₂₃] G) : ‖L.postcomp (σ := σ₁₂) E‖ ≤ ‖L‖ :=
+  L.postcomp (σ := σ₁₂) E |>.opNorm_le_bound (by positivity) <| opNorm_comp_le L
 
 end ContinuousLinearMap
 

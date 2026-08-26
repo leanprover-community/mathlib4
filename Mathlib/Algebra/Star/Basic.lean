@@ -93,8 +93,16 @@ theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
   star_injective.eq_iff
 
 /-- `star` as an equivalence when it is involutive. -/
-protected def Equiv.Perm.star [InvolutiveStar R] : Equiv.Perm R :=
-  star_involutive.toPerm _
+@[simps! apply]
+protected def Equiv.Perm.star [InvolutiveStar R] : Equiv.Perm R where
+  toFun := star
+  invFun := star
+  __ : Equiv.Perm R := star_involutive.toPerm _
+
+@[simp]
+theorem Equiv.Perm.symm_star [InvolutiveStar R] :
+    (Equiv.Perm.star : R ≃ R).symm = Equiv.Perm.star :=
+  rfl
 
 theorem eq_star_of_eq_star [InvolutiveStar R] {r s : R} (h : r = star s) : s = star r := by
   simp [h]
@@ -174,7 +182,7 @@ def starMulAut [CommSemigroup R] [StarMul R] : MulAut R :=
     map_mul' := star_mul' }
 
 variable (R) in
-@[simp]
+@[simp, grind =]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
 
@@ -207,7 +215,7 @@ theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / s
 See note [reducible non-instances].
 -/
 abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
-  star := id
+  star x := x
   star_involutive _ := rfl
   star_mul := mul_comm
 
@@ -232,14 +240,23 @@ export StarAddMonoid (star_add)
 attribute [simp] star_add
 
 /-- `star` as an `AddEquiv` -/
-@[simps apply]
-def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
-  { InvolutiveStar.star_involutive.toPerm star with
-    toFun := star
-    map_add' := star_add }
+@[simps! apply]
+def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R where
+  toEquiv := Equiv.Perm.star
+  map_add' := star_add
+
+@[simp]
+theorem toEquiv_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
+    (starAddEquiv : R ≃+ R) = (Equiv.Perm.star : R ≃ R) :=
+  rfl
+
+@[simp]
+theorem symm_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
+    (starAddEquiv : R ≃+ R).symm = starAddEquiv :=
+  rfl
 
 variable (R) in
-@[simp]
+@[simp, grind =]
 theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
 
@@ -276,6 +293,8 @@ class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R wher
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 
+attribute [grind =] star_add
+
 instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalNonAssocSemiring R] [StarRing R] :
     StarAddMonoid R where
   star_add := StarRing.star_add
@@ -309,7 +328,8 @@ variable [CommSemiring R] [StarRing R]
 
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
-def starRingAut : RingAut R := { starAddEquiv, starMulAut (R := R) with toFun := star }
+def starRingAut : RingAut R :=
+  { starAddEquiv, starMulAut (R := R) with toFun := star, invFun := star }
 
 variable (R) in
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
@@ -319,7 +339,10 @@ Note that this is the preferred form (over `starRingAut`, available under the sa
 because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short for
 `E →ₛₗ[starRingEnd R] F`) does not pretty-print if there is a coercion involved, as would be the
 case for `(↑starRingAut : R →* R)`. -/
-def starRingEnd : R →+* R := @starRingAut R _ _
+@[implicit_reducible]
+def starRingEnd : R →+* R where
+  toFun := star
+  __ := (@starRingAut R _ _).toRingHom
 
 @[inherit_doc]
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
@@ -400,7 +423,7 @@ class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop w
 
 export StarModule (star_smul)
 
-attribute [simp] star_smul
+attribute [simp, grind =] star_smul
 
 /-- A commutative star monoid is a star module over itself via `Monoid.toMulAction`. -/
 instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=

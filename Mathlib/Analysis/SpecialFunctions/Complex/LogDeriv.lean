@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 public import Mathlib.Analysis.Calculus.LogDeriv
-public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Tactic.Measurability
 
 /-!
 # Differentiability of the complex `log` function
@@ -20,7 +20,7 @@ public section
 
 assert_not_exists IsConformalMap Conformal
 
-open Set Filter
+open Set
 
 open scoped Real Topology
 
@@ -50,15 +50,18 @@ theorem contDiffAt_log {x : ℂ} (h : x ∈ slitPlane) {n : WithTop ℕ∞} : Co
   expOpenPartialHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
     contDiff_exp.contDiffAt
 
+theorem deriv_log {x : ℂ} (h : x ∈ slitPlane) : deriv log x = x⁻¹ :=
+  (hasDerivAt_log h).deriv
+
 end Complex
 
 section LogDeriv
 
-open Complex Filter
+open Complex
 
 open scoped Topology
 
-variable {α : Type*} [TopologicalSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E}
     (h₁ : HasStrictFDerivAt f f' x) (h₂ : f x ∈ slitPlane) :
@@ -126,15 +129,5 @@ lemma Complex.deriv_log_comp_eq_logDeriv {f : ℂ → ℂ} {x : ℂ} (h₁ : Dif
   have A := (HasDerivAt.clog h₁.hasDerivAt h₂).deriv
   rw [← h₁.hasDerivAt.deriv] at A
   simp only [logDeriv, Pi.div_apply, ← A, Function.comp_def]
-
-protected theorem MeromorphicOn.logDeriv {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
-    [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
-    {f : 𝕜 → 𝕜'} {s : Set 𝕜} (h : MeromorphicOn f s) : MeromorphicOn (logDeriv f) s :=
-  h.deriv.div h
-
-protected theorem Meromorphic.logDeriv {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
-    [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
-    {f : 𝕜 → 𝕜'} (h : Meromorphic f) : Meromorphic (logDeriv f) :=
-  h.deriv.div h
 
 end LogDeriv
