@@ -41,7 +41,7 @@ namespace IsUltrametricDist
 
 section Group
 
-variable {S S' ι : Type*} [SeminormedGroup S] [SeminormedGroup S'] [IsUltrametricDist S]
+variable {S S' : Type*} [SeminormedGroup S] [SeminormedGroup S'] [IsUltrametricDist S]
 
 @[to_additive]
 lemma norm_mul_le_max (x y : S) :
@@ -107,7 +107,7 @@ lemma norm_eq_of_mul_norm_lt_max {x y : S} (h : ‖x * y‖ < max ‖x‖ ‖y�
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
 lemma nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm
     {x y : S} (h : ‖x‖₊ ≠ ‖y‖₊) : ‖x * y‖₊ = max ‖x‖₊ ‖y‖₊ := by
-  simpa only [← NNReal.coe_inj, NNReal.coe_max] using
+  simpa only [← NNReal.coe_inj, NNReal.coe_max] using!
     norm_mul_eq_max_of_norm_ne_norm (NNReal.coe_injective.ne h)
 
 @[to_additive]
@@ -125,7 +125,7 @@ lemma norm_div_eq_max_of_norm_div_ne_norm_div (x y z : S) (h : ‖x / y‖ ≠ �
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
 lemma nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div (x y z : S) (h : ‖x / y‖₊ ≠ ‖y / z‖₊) :
     ‖x / z‖₊ = max ‖x / y‖₊ ‖y / z‖₊ := by
-  simpa only [← NNReal.coe_inj, NNReal.coe_max] using
+  simpa only [← NNReal.coe_inj, NNReal.coe_max] using!
     norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
 @[to_additive]
@@ -225,7 +225,7 @@ lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnnorm']
-      using hs.norm_prod_le_sup'_norm f
+      using! hs.norm_prod_le_sup'_norm f
 
 /--
 Generalised ultrametric triangle inequality for finite products in commutative groups with
@@ -375,7 +375,7 @@ lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.N
     (hs : Set.Pairwise s (fun i j ↦ ‖f i‖ ≠ ‖f j‖)) :
     ‖∏ i ∈ s, f i‖ = s.sup' hs' (fun i ↦ ‖f i‖) := by
   rw [← coe_nnnorm', nnnorm_prod_eq_sup_of_pairwise_ne, ← Finset.sup'_eq_sup hs']
-  · exact s.comp_sup'_eq_sup'_comp hs' _ (by tauto)
+  · exact s.apply_sup'_eq_sup'_comp hs' _ (by tauto)
   · simpa [← NNReal.coe_inj] using hs
 
 end CommGroup

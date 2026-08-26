@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Flag of submodules defined by a basis
@@ -20,7 +20,10 @@ We also prove some lemmas about this definition, including `flag_map`, `Basis.mk
 `mem_flag_iff_repr_eq_zero`.
 -/
 
-@[expose] public section
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- This is why this section is `noncomputable`.
+-- See https://github.com/leanprover/lean4/issues/14084.
+@[expose] public noncomputable section
 
 open Set Submodule
 
@@ -48,8 +51,7 @@ theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.succ = R ∙ b k ⊔ b.flag k.castSucc := by
-  simp only [flag, Fin.castSucc_lt_castSucc_iff]
-  simp [Fin.castSucc_lt_iff_succ_le, le_iff_eq_or_lt, setOf_or, image_insert_eq, span_insert]
+  simp [flag, Fin.castSucc_lt_castSucc_iff, le_iff_eq_or_lt, ofPred_or, span_insert]
 
 /-- `flag` commutes with `Basis.map`. -/
 theorem flag_map {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]

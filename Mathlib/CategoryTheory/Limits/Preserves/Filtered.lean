@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Preservation of filtered colimits and cofiltered limits.
+
 Typically forgetful functors from algebraic categories preserve filtered colimits
 (although not general colimits). See e.g. `Mathlib/Algebra/Category/MonCat/FilteredColimits.lean`.
 
@@ -48,7 +49,7 @@ filtered diagram `J ⥤ C` to colimit cocones, where `J : Type w` with `[Categor
 -- `PreservesFilteredColimitsOfSize`, `ReflectsFilteredColimitsOfSize`,
 -- `PreservesCofilteredLimitsOfSize`, and `ReflectsCofilteredLimitsOfSize` would default to
 -- universe output parameters. See Note [universe output parameters and typeclass caching].
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesFilteredColimitsOfSize (F : C ⥤ D) : Prop where
   preserves_filtered_colimits :
     ∀ (J : Type w) [Category.{w'} J] [IsFiltered J], PreservesColimitsOfShape J F
@@ -78,7 +79,7 @@ lemma preservesFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       PreservesFilteredColimitsOfSize.{w, w₂} F where
   preserves_filtered_colimits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsFiltered.of_equivalence e.symm
+    have := IsFiltered.of_equivalence e.symm
     exact preservesColimitsOfShape_of_equiv e F
 
 /--
@@ -104,7 +105,7 @@ section Reflects
 -- This should be used with explicit universe variables.
 /-- `ReflectsFilteredColimitsOfSize.{w', w} F` means that whenever the image of a filtered cocone
 under `F` is a colimit cocone, the original cocone was already a colimit. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsFilteredColimitsOfSize (F : C ⥤ D) : Prop where
   reflects_filtered_colimits :
     ∀ (J : Type w) [Category.{w'} J] [IsFiltered J], ReflectsColimitsOfShape J F
@@ -134,7 +135,7 @@ lemma reflectsFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       ReflectsFilteredColimitsOfSize.{w, w₂} F where
   reflects_filtered_colimits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsFiltered.of_equivalence e.symm
+    have := IsFiltered.of_equivalence e.symm
     exact reflectsColimitsOfShape_of_equiv e F
 
 /--
@@ -164,7 +165,7 @@ section Preserves
 -- This should be used with explicit universe variables.
 /-- `PreservesCofilteredLimitsOfSize.{w', w} F` means that `F` sends all limit cones over any
 cofiltered diagram `J ⥤ C` to limit cones, where `J : Type w` with `[Category.{w'} J]`. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
   preserves_cofiltered_limits :
     ∀ (J : Type w) [Category.{w'} J] [IsCofiltered J], PreservesLimitsOfShape J F
@@ -194,7 +195,7 @@ lemma preservesCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       PreservesCofilteredLimitsOfSize.{w, w₂} F where
   preserves_cofiltered_limits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsCofiltered.of_equivalence e.symm
+    have := IsCofiltered.of_equivalence e.symm
     exact preservesLimitsOfShape_of_equiv e F
 
 /--
@@ -220,7 +221,7 @@ section Reflects
 -- This should be used with explicit universe variables.
 /-- `ReflectsCofilteredLimitsOfSize.{w', w} F` means that whenever the image of a cofiltered cone
 under `F` is a limit cone, the original cone was already a limit. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
   reflects_cofiltered_limits :
     ∀ (J : Type w) [Category.{w'} J] [IsCofiltered J], ReflectsLimitsOfShape J F
@@ -250,7 +251,7 @@ lemma reflectsCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       ReflectsCofilteredLimitsOfSize.{w, w₂} F where
   reflects_cofiltered_limits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsCofiltered.of_equivalence e.symm
+    have := IsCofiltered.of_equivalence e.symm
     exact reflectsLimitsOfShape_of_equiv e F
 
 /--

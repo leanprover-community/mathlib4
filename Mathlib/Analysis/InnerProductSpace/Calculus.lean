@@ -32,7 +32,7 @@ The last part of the file should be generalized to `PiLp`.
 
 noncomputable section
 
-open RCLike Real Filter
+open RCLike Real
 
 section DerivInner
 
@@ -389,7 +389,7 @@ theorem contDiffOn_univBall_symm :
   unfold univBall; split_ifs with h
   · refine contDiffOn_univUnitBall_symm.comp (contDiff_unitBallBall_symm h).contDiffOn ?_
     rw [← unitBallBall_source c r h, ← unitBallBall_target c r h]
-    apply OpenPartialHomeomorph.symm_mapsTo
+    apply OpenPartialHomeomorph.mapsTo_symm
   · exact contDiffOn_id.sub contDiffOn_const
 
 end OpenPartialHomeomorph

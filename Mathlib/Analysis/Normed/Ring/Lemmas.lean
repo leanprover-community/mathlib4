@@ -20,7 +20,7 @@ In this file we continue building the theory of (semi)normed rings.
 
 @[expose] public section
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {α : Type*} {ι : Type*}
 
 open Filter Bornology
 open scoped Topology NNReal Pointwise
@@ -78,7 +78,7 @@ lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [S
 lemma tendsto_pow_cobounded_cobounded
     [NormOneClass α] [NormMulClass α] {m : ℕ} (hm : m ≠ 0) :
     Tendsto (· ^ m) (cobounded α) (cobounded α) := by
-  simpa [← tendsto_norm_atTop_iff_cobounded] using
+  simpa [← tendsto_norm_atTop_iff_cobounded] using!
     (tendsto_pow_atTop hm).comp (tendsto_norm_cobounded_atTop (E := α))
 
 end SeminormedRing
@@ -214,8 +214,8 @@ lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 
   have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
     NNReal.isometry_coe.prodMap NNReal.isometry_coe
   convert!
-    (((LipschitzWith.prod_fst.comp this.lipschitz).sub
-          (LipschitzWith.prod_snd.comp this.lipschitz)).max_const
+    (((LipschitzWith.prod_fst.comp this.lipschitzWith).sub
+          (LipschitzWith.prod_snd.comp this.lipschitzWith)).max_const
       0)
   norm_num
 

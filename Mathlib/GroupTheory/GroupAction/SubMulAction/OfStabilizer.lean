@@ -138,7 +138,7 @@ theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
       (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
-    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
+    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.addConj, ← add_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
 variable {hg hh hk} in
@@ -215,7 +215,7 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
   use g, (Fin.Embedding.init (g • x)).codRestrict (ofStabilizer G a) H
   ext i
   rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-  · simpa [ofStabilizer.snoc] using
+  · simpa [ofStabilizer.snoc] using!
       Subtype.ext_iff.mp <| Function.Embedding.codRestrict_apply _ _ H i
   · simpa only [smul_apply, ofStabilizer.snoc, Fin.Embedding.snoc_last]
 

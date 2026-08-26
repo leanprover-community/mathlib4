@@ -86,7 +86,7 @@ protected theorem HasSubst.monomial {n : τ →₀ ℕ} (hn : n ≠ 0) (s : S) :
   classical
   apply HasSubst.of_constantCoeff_zero
   rw [← MvPowerSeries.coeff_zero_eq_constantCoeff, MvPowerSeries.coeff_monomial,
-    if_neg hn.symm]
+    ite_eq_right hn.symm]
 
 /-- A variant of `HasSubst.monomial` to avoid the expansion of `Unit`. -/
 protected theorem HasSubst.monomial' {n : ℕ} (hn : n ≠ 0) (s : S) :
@@ -124,7 +124,7 @@ theorem HasSubst.smul (r : MvPowerSeries τ S) {a : MvPowerSeries τ S} (ha : Ha
 
 /-- Families of `PowerSeries` that can be substituted, as an `Ideal`. -/
 noncomputable def HasSubst.ideal : Ideal (MvPowerSeries τ S) where
-  carrier := setOf HasSubst
+  carrier := Set.ofPred HasSubst
   add_mem' := HasSubst.add
   zero_mem' := HasSubst.zero
   smul_mem' := HasSubst.smul
@@ -162,6 +162,9 @@ noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
 lemma subst_def (a : MvPowerSeries τ S) (f : PowerSeries R) :
     subst a f = MvPowerSeries.subst (fun _ ↦ a) f := rfl
 
+lemma subst_X_comp_const {f : R⟦X⟧} {i : τ} :
+    .subst (.X (R := R) ∘ fun _ ↦ i) f = f.subst (.X i) := rfl
+
 variable {a : MvPowerSeries τ S} {b : S⟦X⟧}
 
 /-- Substitution of power series into a power series, as an `AlgHom`. -/
@@ -183,7 +186,7 @@ theorem substAlgHom_eq_aeval
     (ha : HasSubst a) :
     (substAlgHom ha : R⟦X⟧ →ₐ[R] MvPowerSeries τ S) = PowerSeries.aeval ha.hasEval := by
   ext1 f
-  simpa [substAlgHom] using congr_fun (MvPowerSeries.substAlgHom_eq_aeval ha.const) f
+  simpa [substAlgHom] using! congr_fun (MvPowerSeries.substAlgHom_eq_aeval ha.const) f
 
 theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f + g) = subst a f + subst a g := by
@@ -192,6 +195,15 @@ theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
 theorem subst_sub (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f - g) = subst a f - subst a g := by
   rw [← coe_substAlgHom ha, map_sub]
+
+lemma subst_zero_eq_C_constantCoeff {f : PowerSeries R} :
+    f.subst 0 = (MvPowerSeries.C f.constantCoeff (σ := τ)).map (algebraMap R S) :=
+  MvPowerSeries.subst_zero_eq_C_constantCoeff
+
+@[simp]
+theorem subst_zero_of_constantCoeff_zero {f : PowerSeries R} (hf : f.constantCoeff = 0) :
+    subst (0 : MvPowerSeries τ S) f = 0 :=
+  MvPowerSeries.subst_zero_of_constantCoeff_zero hf
 
 theorem subst_pow (ha : HasSubst a) (f : PowerSeries R) (n : ℕ) :
     subst a (f ^ n) = (subst a f) ^ n := by
@@ -250,19 +262,19 @@ theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ)
   · rw [coeff_subst' (.X_pow hk), finsum_eq_single _ (n / k), ← pow_mul, Nat.mul_div_cancel' h,
       coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
     intro j hj
-    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    rw [← pow_mul, coeff_X_pow, ite_eq_right, smul_zero]
     contrapose hj
     rw [hj, Nat.mul_div_cancel_left j hk.pos]
   · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
     intro j
-    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    rw [← pow_mul, coeff_X_pow, ite_eq_right, smul_zero]
     contrapose h
     use j
 
 @[simp]
 theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
     constantCoeff (subst (X ^ k) f) = algebraMap R S f.constantCoeff := by
-  rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, if_pos (dvd_zero k),
+  rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, ite_eq_left (dvd_zero k),
     Nat.zero_div, coeff_zero_eq_constantCoeff]
 
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
@@ -359,10 +371,9 @@ end
 theorem HasSubst.comp
     {a : PowerSeries S} (ha : HasSubst a) {b : MvPowerSeries υ T} (hb : HasSubst b) :
     HasSubst (substAlgHom hb a) :=
-  MvPowerSeries.IsNilpotent_subst hb.const ha
+  MvPowerSeries.IsNilpotent_substAlgHom hb.const ha
 
-variable {a : PowerSeries S} {b : MvPowerSeries υ T} {a' : MvPowerSeries τ S}
-  {b' : τ → MvPowerSeries υ T} [IsScalarTower R S T]
+variable {a : PowerSeries S} {b : MvPowerSeries υ T} [IsScalarTower R S T]
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) :=
@@ -528,7 +539,7 @@ lemma coeff_one_substInv : P.substInv.coeff 1 = ⅟(P.coeff 1) := by
 
 include hP in
 lemma subst_substInv_left : P.substInv.subst P = X := by
-  haveI : Invertible (P.substInv.coeff 1) := by simpa using invertibleInvOf
+  have : Invertible (P.substInv.coeff 1) := by simpa using invertibleInvOf
   let Q := P.substInv.substInv
   have hQ : HasSubst Q := HasSubst.substInv P.substInv
   have eq_aux : P.substInv.subst Q = X := subst_substInv_right P.substInv P.constantCoeff_substInv
@@ -568,23 +579,57 @@ lemma HasSubst.substInvOfIsUnit : HasSubst (P.substInvOfIsUnit hP') := by
 
 @[simp]
 lemma coeff_one_substInvOfIsUnit : (P.substInvOfIsUnit hP').coeff 1 = hP'.unit⁻¹ := by
-  letI := hP'.invertible
+  let := hP'.invertible
   rw [substInvOfIsUnit_eq_substInv, coeff_one_substInv]
   exact Units.mul_eq_one_iff_eq_inv.mp Invertible.invOf_mul_self
 
 include hP in
 lemma subst_substInvOfIsUnit_right : P.subst (substInvOfIsUnit P hP') = X := by
-  letI := hP'.invertible
+  let := hP'.invertible
   rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_right hP]
 
 include hP in
 lemma subst_substInvOfIsUnit_left : (P.substInvOfIsUnit hP').subst P = X := by
-  letI := hP'.invertible
+  let := hP'.invertible
   rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_left hP]
+
+include hP hP' in
+/-- A right compositional inverse `Q` of `P` is equal to `P.substInvOfIsUnit hP'`. -/
+lemma eq_substInvOfIsUnit_of_subst_eq_X {Q : R⟦X⟧} (hQ : HasSubst Q) (hPQ : P.subst Q = X) :
+    Q = P.substInvOfIsUnit hP' := calc
+  _ = PowerSeries.subst Q X := (subst_X hQ).symm
+  _ = _ := by
+    rw [← P.subst_substInvOfIsUnit_left hP hP',
+      subst_comp_subst_apply (HasSubst.of_constantCoeff_zero' hP) hQ _, hPQ, X_subst _]
+
+include hP hP' in
+/-- A right compositional inverse `Q` of `P` is also a left compositional inverse. -/
+lemma subst_eq_X_of_subst_eq_X {Q : R⟦X⟧} (hQ : HasSubst Q) (hPQ : P.subst Q = X) :
+    Q.subst P = X := by
+  rw [P.eq_substInvOfIsUnit_of_subst_eq_X hP hP' hQ hPQ, P.subst_substInvOfIsUnit_left hP hP']
 
 end IsUnit
 
 end substInv
+
+section
+
+attribute [local instance] DiscreteTopology.instContinuousSMul
+
+variable {x : ℕ → PowerSeries R} {a : MvPowerSeries τ S}
+  [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+
+lemma subst_tsum (hx : Summable x) (ha : HasSubst a) :
+    (∑' i, x i).subst a = ∑' i, ((x i).subst a) := by
+  rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha, hx.map_tsum _]
+  exact continuous_aeval _
+
+lemma summable_subst (hx : Summable x) (ha : HasSubst a) :
+    Summable fun i ↦ (x i).subst a := by
+  rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha]
+  exact hx.map _ (continuous_aeval _)
+
+end
 
 section Bivariate
 
