@@ -385,7 +385,7 @@ def weightedHomogeneousComponent (w : σ → M) (n : M) : MvPolynomial σ R →�
 
 section WeightedHomogeneousComponent
 
-variable {w : σ → M} (n : M) (φ ψ : MvPolynomial σ R)
+variable {w : σ → M} (n : M) (φ : MvPolynomial σ R)
 
 theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
     coeff d (weightedHomogeneousComponent w n φ) =
@@ -616,7 +616,7 @@ end OrderedAddCommMonoid
 section LinearOrderedAddCommMonoid
 
 variable [AddCommMonoid M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M]
-  {w : σ → M} (φ : MvPolynomial σ R)
+  {w : σ → M}
 
 /-- A multivariate polynomial is weighted homogeneous of weighted degree zero if and only if
   its weighted total degree is equal to zero. -/

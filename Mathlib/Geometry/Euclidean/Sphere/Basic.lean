@@ -39,7 +39,7 @@ Euclidean affine spaces.
 
 noncomputable section
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry
 
