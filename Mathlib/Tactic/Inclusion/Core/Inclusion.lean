@@ -135,7 +135,7 @@ def mkExprInclusion (output : IExpr) (body : ExprInclusionBody) : HypothesisM Ex
   collectHyps
   let context ← read
   let state ← get
-  let coarsen? ← match context.iVars.any (·.cover.isSome) with
+  let coarsen? ← match context.iVars.any (·.cover?.isSome) with
     | true => some <$> output.iType.synthCoarsen
     | false => pure none
   let body ← context.iVars.foldrM (init := body) fun iVar body => do
@@ -144,7 +144,7 @@ def mkExprInclusion (output : IExpr) (body : ExprInclusionBody) : HypothesisM Ex
       (binderInfoForMVars := .default)
     let proof ← mkLambdaFVars #[iVar.setVar, iVar.hypVar] body.proofBody
       (binderInfoForMVars := .default)
-    match iVar.cover with
+    match iVar.cover? with
     | none =>
       let inclusionBody := mkApp inclusion hypBody.inclusionBody
       let proofBody := mkAppN proof #[hypBody.inclusionBody, hypBody.proofBody]

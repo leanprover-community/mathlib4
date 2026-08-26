@@ -166,7 +166,7 @@ def deriveHypothesisOp (theoremName : Name) (sourceIdx : Nat) (hypArgs : Array H
   sourceId.assign h
   let some (e, s, _) := toSetMem? conclusion | failure
   let e ← instantiateMVars e
-  let some ⟨iExpr, _, _, _⟩ ← findIVar? e | failure
+  let some iVar ← findIVar? e | failure
   for ⟨name, idx⟩ in paramArgs do
     unless ← isDefEq args[idx]! (← HypothesisM.getParam name) do failure
   for ⟨elemIdx, setIdx, proofIdx⟩ in hypArgs do
@@ -184,7 +184,7 @@ def deriveHypothesisOp (theoremName : Name) (sourceIdx : Nat) (hypArgs : Array H
           hypothesis extension generated from `{.ofConstName theoremName}`"
   let inclusionBody ← instantiateMVars s
   let proofBody ← instantiateMVars (mkAppN theoremExpr args)
-  addInclusionHyp iExpr { inclusionBody, proofBody }
+  addInclusionHyp iVar.iExpr { inclusionBody, proofBody }
 
 /-- Extract the `HypArg` and `ParamArg` metadata from a theorem declaration. -/
 private def getOpArgInfo (declName : Name) (matchExpr : Expr)

@@ -61,9 +61,6 @@ private def checkIVarWellFormed (localContext : LocalContext) (iExpr : IExpr) : 
   unless ← MetavarContext.isWellFormed localContext iType.setType do
     throwError "Cannot use set type {iType.setType} for {e} because it depends on \
       variables introduced while constructing the inclusion"
-  unless ← MetavarContext.isWellFormed localContext iType.toSetInst do
-    throwError "Cannot use the `ToSet` instance for {e} because it depends on variables \
-      introduced while constructing the inclusion"
 
 open PrettyPrinter Delaborator SubExpr in
 /-- Delaborate an inclusion set variable as `I[e]`. -/
@@ -85,16 +82,16 @@ private def mkIVarDisplay (iExpr : IExpr) (setVar : Expr) : Expr :=
     mkLet .anonymous iExpr.iType.elemType iExpr.expr setVar (nondep := true)
 
 /-- Create and register an inclusion variable for `iExpr`. -/
-def mkIVar (iExpr : IExpr) (cover : Option Expr := none) : InclusionM IVar := do
+def mkIVar (iExpr : IExpr) (cover? : Option Expr := none) : InclusionM IVar := do
   let ctx ← read
   if ctx.noIVars then
     throwError "Cannot create an inclusion variable for {iExpr.expr} since `noIVars` is set to true"
   checkIVarWellFormed ctx.localContext iExpr
   let setVar ←
     mkFreshExprMVarAt ctx.localContext ctx.localInstances iExpr.iType.setType .syntheticOpaque
-  let hypType ← iExpr.mkMem setVar
-  let hypVar ← mkFreshExprMVarAt ctx.localContext ctx.localInstances hypType .syntheticOpaque
-  let iVar := { iExpr, setVar, hypVar, cover }
+  let hypVarType ← iExpr.mkMem setVar
+  let hypVar ← mkFreshExprMVarAt ctx.localContext ctx.localInstances hypVarType .syntheticOpaque
+  let iVar := { iExpr, setVar, hypVar, cover? }
   modify fun state => { state with iVars := state.iVars.insert iVar.expr iVar }
   if ← isTracingEnabledFor `Tactic.inclusion then
     let iVarDisplayExpr := mkIVarDisplay iExpr setVar
@@ -104,7 +101,7 @@ def mkIVar (iExpr : IExpr) (cover : Option Expr := none) : InclusionM IVar := do
 
 /-- Construct an inclusion extension for making non dependently typed inclusion variables. -/
 def mkNDIVarExt (family : Name) (iType : IType)
-    (mkCover : InclusionM (Option Expr) := pure none)
+    (mkCover? : InclusionM (Option Expr) := pure none)
     (priority : Nat := eval_prio low) (name : Name := by exact decl_name%) : InclusionExt where
   declName := name
   family := family
@@ -113,7 +110,7 @@ def mkNDIVarExt (family : Name) (iType : IType)
     let eType ← inferType e
     unless ← isDefEq eType iType.elemType do failure
     let iExpr : IExpr := ⟨iType, e⟩
-    return (← mkIVar iExpr (← mkCover)).toExprInclusionBody
+    return (← mkIVar iExpr (← mkCover?)).toExprInclusionBody
 
 /-- Return the inclusion variable registered for `e`, if there is one. -/
 def findIVar? (e : Expr) : HypothesisM (Option IVar) := do

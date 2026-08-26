@@ -54,7 +54,7 @@ structure IVar where
   hypVar : Expr
   /-- An optional expression of type `Cover iVar.type.setType iVar.type.elemType`. When present,
   the inclusion computation is mapped over this cover to reduce the "dependency effect". -/
-  cover : Option Expr
+  cover? : Option Expr
 
 /-- The `IType` of an `IVar`. -/
 def IVar.type (iVar : IVar) : IType := iVar.iExpr.iType
