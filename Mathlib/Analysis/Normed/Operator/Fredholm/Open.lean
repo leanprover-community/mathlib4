@@ -41,14 +41,14 @@ $T₀ = \begin{pmatrix} α₀ & 0 \cr 0 & 0$ with `α₀` invertible.
 Then, for $T = \begin{pmatrix} α & β \cr γ & δ$ close enough to `T₀` (in operator norm), we have
 that `α` is invertible. -/
 theorem FredholmPackage.eventually_isInvertible
-    {T : E →L[𝕜] F} (pkg : T.FredholmPackage) :
-    ∀ᶠ S in 𝓝 T, (pkg.decCodom.proj ∘L S ∘L pkg.decDom.X₁.subtypeL).IsInvertible := by
+    {T₀ : E →L[𝕜] F} (pkg : T₀.FredholmPackage) :
+    ∀ᶠ T in 𝓝 T₀, (pkg.decCodom.proj ∘L T ∘L pkg.decDom.X₁.subtypeL).IsInvertible := by
   have : CompleteSpace pkg.decDom.X₁ := pkg.decDom.isTopCompl.isClosed.isComplete.completeSpace_coe
-  let Φ (S : E →L[𝕜] F) : (pkg.decDom.X₁ →L[𝕜] pkg.decCodom.X₁) :=
-    pkg.decCodom.proj ∘L S ∘L pkg.decDom.X₁.subtypeL
+  let Φ (T : E →L[𝕜] F) : (pkg.decDom.X₁ →L[𝕜] pkg.decCodom.X₁) :=
+    pkg.decCodom.proj ∘L T ∘L pkg.decDom.X₁.subtypeL
   have Φ_cont : Continuous Φ := by fun_prop
-  have Φ_T_inv : (Φ T).IsInvertible := ⟨pkg.equiv, by ext; simp [Φ, pkg.eq_equiv]⟩
-  exact Φ_cont.tendsto T |>.eventually Φ_T_inv.eventually
+  have Φ_T₀_inv : (Φ T₀).IsInvertible := ⟨pkg.equiv, by ext; simp [Φ, pkg.eq_equiv]⟩
+  exact Φ_cont.tendsto T₀ |>.eventually Φ_T₀_inv.eventually
 
 open Module in
 private theorem FredholmPackage.eventually_isFredholm_index_eq [CompleteSpace 𝕜]
@@ -88,8 +88,8 @@ private theorem IsFredholm.eventually_and_index_eq [CompleteSpace 𝕜]
 /-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
 enough to `T₀` (in operator norm) is also Fredholm. -/
 protected theorem IsFredholm.eventually [CompleteSpace 𝕜]
-    {T : E →L[𝕜] F} (hT : T.IsFredholm) : ∀ᶠ S in 𝓝 T, S.IsFredholm := by
-  obtain ⟨pkg⟩ := hT.nonempty_fredholmPackage
+    {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) : ∀ᶠ T in 𝓝 T₀, T.IsFredholm := by
+  obtain ⟨pkg⟩ := hT₀.nonempty_fredholmPackage
   filter_upwards [pkg.eventually_isInvertible] with S h_inv
   have A : IsFredholm pkg.decDom.X₁.subtypeL :=
     have := pkg.decDom.cofg_X₁
