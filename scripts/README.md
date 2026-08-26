@@ -219,8 +219,9 @@ to module `Foo.Bar` (no `srcDir` indirection).
   lists (which occasionally leave lines over the 100-char limit).
   Usage: `scripts/fix_long_lines.py path:line ...`
 
-- `lake exe no_expose [collect|report|edit|clean]`
-  Tool for finding `@[expose]`-annotated defs that aren't needed
+- `no_expose.lean`, `NoExpose`
+  run via `lake exe no_expose [collect|report|edit|clean]`,
+  a tool for finding `@[expose]`-annotated defs that aren't needed
   downstream and removing the attribute. `collect` walks the built
   Mathlib environment (and, without `--skip-build`, runs a full
   `lake build` with `diagnostics=true`) and writes
