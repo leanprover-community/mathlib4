@@ -130,7 +130,6 @@ theorem join_map {M : Type*} {N : Type*} (g : M → N) (f : StdSimplex R (StdSim
   exact key f.weights
 
 /-- Join of a single-point outer simplex. -/
-@[simp]
 theorem join_single (d : StdSimplex R M) :
     (single d : StdSimplex R (StdSimplex R M)).join = d := by
   ext m
@@ -1775,7 +1774,7 @@ theorem affineOfBinary_binary_join_single [Inhabited M]
           · exact absurd rfl hab
 
 /-- When d₁ and d₂ have the same support, their toWeightedSeq have the same points. -/
-theorem toWeightedSeq_samePoints_of_support_eq [PartialOrder R] [IsStrictOrderedRing R]
+theorem toWeightedSeq_samePoints_of_support_eq [PartialOrder R]
     {d₁ d₂ : StdSimplex R M} (hsupp : d₁.weights.support = d₂.weights.support) :
     d₁.toWeightedSeq.samePoints d₂.toWeightedSeq := by
   simp only [StdSimplex.toWeightedSeq, WeightedSeq.samePoints, List.map_map]
@@ -1783,7 +1782,7 @@ theorem toWeightedSeq_samePoints_of_support_eq [PartialOrder R] [IsStrictOrdered
   rw [hsupp]
 
 /-- When d₁ and d₂ have the same support, their toWeightedSeq have the same length. -/
-theorem toWeightedSeq_length_of_support_eq [PartialOrder R] [IsStrictOrderedRing R]
+theorem toWeightedSeq_length_of_support_eq [PartialOrder R]
     {d₁ d₂ : StdSimplex R M} (hsupp : d₁.weights.support = d₂.weights.support) :
     d₁.toWeightedSeq.length = d₂.toWeightedSeq.length := by
   simp only [StdSimplex.toWeightedSeq, List.length_map]
