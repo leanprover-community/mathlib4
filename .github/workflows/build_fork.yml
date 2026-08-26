@@ -9,10 +9,9 @@ on:
       - 'staging*.tmp'
       - 'nolints'
     paths-ignore:
-      # pull_request_target uses the workflow from the target branch:
-      # PR changes under this directory won't affect this run, so
-      # running it is just wasteful
-      - '.github/workflows/**'
+      # pull_request_target runs the workflow and its actions from the target branch, not
+      # the PR, so PR changes under these dirs can't affect the run — triggering is wasteful.
+      - '.github/**'
 
 concurrency:
   # label each workflow run; only the latest with each label will run
@@ -25,6 +24,7 @@ concurrency:
 permissions:
   contents: read
   id-token: write
+  actions: read  # Allow get-tools to download the prebuilt tools artifact from master's publish_tools runs
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
 
