@@ -12,10 +12,9 @@ public import Mathlib.Tactic.TFAE
 /-!
 # Locally closed sets
 
-## Main definitions
-
-* `IsLocallyClosedAt`: Predicate saying that a set is locally closed at a point
-* `IsLocallyClosed`: Predicate saying that a set is locally closed
+In this file, we develop API for the predicates `IsLocallyClosedAt`, expressing that
+a set is locally closed at a point, and `IsLocallyClosed`, expressing that a set is locally closed.
+These are defined earlier, but most of their API should be in this file.
 
 ## Main results
 
