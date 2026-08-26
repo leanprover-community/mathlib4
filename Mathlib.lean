@@ -1721,6 +1721,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Project
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.RealImaginaryPart
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Transfer
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
@@ -3334,6 +3335,7 @@ public import Mathlib.CategoryTheory.Presentable.SharplyLT.Basic
 public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.CategoryTheory.Presentable.Type
+public import Mathlib.CategoryTheory.Presentable.Uniformization
 public import Mathlib.CategoryTheory.Products.Associator
 public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Products.Bifunctor
@@ -7982,6 +7984,7 @@ public import Mathlib.Topology.ContinuousMap.T0Sierpinski
 public import Mathlib.Topology.ContinuousMap.Units
 public import Mathlib.Topology.ContinuousMap.Weierstrass
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+public import Mathlib.Topology.ContinuousMap.ZeroAtInftyUnitization
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Convenient.Category
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
