@@ -256,6 +256,10 @@ lemma isLocallyClosedAt_iff_closure_eventuallyLE {x : X} : IsLocallyClosedAt s x
 lemma isLocallyClosedAt_iff_coborder_mem_nhds {x : X} : IsLocallyClosedAt s x ↔ coborder s ∈ 𝓝 x :=
   (isLocallyClosedAt_tfae s x).out 1 9
 
+lemma interior_coborder : interior (coborder s) = {x | IsLocallyClosedAt s x} := by
+  ext
+  simp [isLocallyClosedAt_iff_coborder_mem_nhds, mem_interior_iff_mem_nhds]
+
 lemma IsLocallyClosedAt.inter {x : X} (hs : IsLocallyClosedAt s x) (ht : IsLocallyClosedAt t x) :
     IsLocallyClosedAt (s ∩ t) x := by
   rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEq] at *
