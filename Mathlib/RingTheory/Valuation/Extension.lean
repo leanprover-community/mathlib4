@@ -98,7 +98,7 @@ instance id : vR.HasExtension vR where
   val_isEquiv_comap := by
     simp only [Algebra.algebraMap_self, comap_id, IsEquiv.refl]
 
-theorem comp {R A B ΓR ΓA ΓB : Type*} [CommRing R] [CommRing A] [Ring B]
+theorem comp {A B ΓR ΓA ΓB : Type*} [CommRing A] [Ring B]
     [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA]
     [LinearOrderedCommMonoidWithZero ΓB] [Algebra R A] [Algebra A B] [Algebra R B]
     [IsScalarTower R A B]
@@ -291,8 +291,8 @@ theorem mapValueGroup₀_self : mapValueGroup₀ vR vR = .id .. := by
   simp
 
 section tower
-variable {R A B ΓR ΓA ΓB : Type*}
-    [CommRing R] [CommRing A] [Ring B] [Algebra R A] [Algebra A B] [Algebra R B]
+variable {A B ΓR ΓA ΓB : Type*}
+    [CommRing A] [Ring B] [Algebra R A] [Algebra A B] [Algebra R B]
     [IsScalarTower R A B]
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
     [LinearOrderedCommGroupWithZero ΓB]
