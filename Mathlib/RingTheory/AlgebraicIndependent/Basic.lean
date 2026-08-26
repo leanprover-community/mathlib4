@@ -472,6 +472,9 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
     (hx : AlgebraicIndependent R x) (a : A) : ((Polynomial.aeval a).restrictScalars R).comp
       hx.mvPolynomialOptionEquivPolynomialAdjoin.toAlgHom =
+    (hx : AlgebraicIndependent R x) (a : A) :
+    ((Polynomial.aeval a).restrictScalars R).comp
+        hx.mvPolynomialOptionEquivPolynomialAdjoin.toAlgHom =
       MvPolynomial.aeval fun o : Option ι ↦ o.elim a x := by
   refine MvPolynomial.algHom_ext fun o ↦ ?_
   simp only [AlgHom.comp_apply, AlgHom.restrictScalars_apply, AlgEquiv.coe_toAlgHom]
