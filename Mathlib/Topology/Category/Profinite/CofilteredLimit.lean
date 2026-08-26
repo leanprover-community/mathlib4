@@ -34,7 +34,6 @@ universe u v
 
 variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{max u v}} (C : Cone F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a cofiltered limit of profinite sets, then any clopen subset of `X` arises from
 a clopen set in one of the terms in the limit.
 -/
@@ -87,7 +86,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   · apply isClopen_biUnion_finset
     intro s hs
     dsimp [W]
-    rw [dif_pos hs]
+    rw [dite_eq_left hs]
     exact ⟨(hV s).1.1.preimage (F.map _).hom.hom.continuous,
       (hV s).1.2.preimage (F.map _).hom.hom.continuous⟩
   · ext x
@@ -96,16 +95,15 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
       obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine ⟨s, hs, ?_⟩
-      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w]
+      rwa [dite_eq_left hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w]
     · intro hx
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
       refine ⟨s.1, s.2, ?_⟩
       rw [(hV s).2]
-      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w] at hx
+      rwa [dite_eq_left hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w] at hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _).hom.hom := by
   let U := f ⁻¹' {0}
@@ -114,12 +112,12 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   classical
   use j, LocallyConstant.ofIsClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
-  simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
+  simp only [Fin.isValue, LocallyConstant.coe_comap, Set.preimage_comp,
     LocallyConstant.ofIsClopen_fiber_zero]
   exact h
 
-set_option backward.isDefEq.respectTransparency false in
-open Classical in
+set_option backward.defeqAttrib.useBackward true in
+open scoped Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
       (f.map fun a b => if a = b then (0 : Fin 2) else 1) = g.comap (C.π.app _).hom.hom := by
@@ -151,7 +149,6 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   change _ = (g a) ((C.π.app j0 ≫ F.map (fs a)) x)
   rw [C.w]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempty α]
     (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _).hom.hom := by
@@ -162,7 +159,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   let σ : (α → Fin 2) → α := fun f => if h : ∃ a : α, ι a = f then h.choose else default
   refine ⟨j, gg.map σ, ?_⟩
   ext x
-  simp only [Functor.const_obj_obj, LocallyConstant.coe_comap, LocallyConstant.map_apply,
+  simp only [LocallyConstant.coe_comap, LocallyConstant.map_apply,
     Function.comp_apply]
   dsimp [σ]
   have h1 : ι (f x) = gg (C.π.app j x) := by
@@ -170,7 +167,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     rw [h]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
-  rw [dif_pos]
+  rw [dite_eq_left]
   swap
   · assumption
   apply_fun ι
@@ -179,12 +176,11 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   · intro a b hh
     have hhh := congr_fun hh a
     dsimp [ι] at hhh
-    rw [if_pos rfl] at hhh
+    rw [ite_eq_left rfl] at hhh
     split_ifs at hhh with hh1
     · exact hh1.symm
     · exact False.elim (bot_ne_top hhh)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any locally constant function from a cofiltered limit of profinite sets factors through
 one of the components. -/
 theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
@@ -201,10 +197,10 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
       · ext x
         exact hj.elim' (C.π.app j x)
     by_contra! h
-    haveI : ∀ j : J, Nonempty ((F ⋙ Profinite.toTopCat).obj j) := h
-    haveI : ∀ j : J, T2Space ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
+    have : ∀ j : J, Nonempty ((F ⋙ Profinite.toTopCat).obj j) := h
+    have : ∀ j : J, T2Space ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
       (inferInstance : T2Space (F.obj j))
-    haveI : ∀ j : J, CompactSpace ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
+    have : ∀ j : J, CompactSpace ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
       (inferInstance : CompactSpace (F.obj j))
     have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u}
       (F ⋙ Profinite.toTopCat)

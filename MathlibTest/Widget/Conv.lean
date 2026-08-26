@@ -83,8 +83,7 @@ conv =>
     enter [1, x, 5]
     skip
 ---
-trace: case h
-x : False
+trace: x : False
 | true
 -/
 #guard_msgs in
@@ -115,8 +114,7 @@ conv =>
     enter [1, 0, x, 1]
     skip
 ---
-trace: case h
-x : Unit
+trace: x : Unit
 | false
 -/
 #guard_msgs in
@@ -154,7 +152,6 @@ example : 1 = Nat.log2 4 → False := by
   test "/0/1/1"
   exact test_sorry
 
-set_option pp.mvars.anonymous false in
 /--
 info: `conv?` would output:
 conv =>
@@ -384,8 +381,7 @@ conv =>
     enter [1, 0, x0, x1, x2, 2]
     skip
 ---
-trace: case h.h.h
-x0 x1 x2 : Bool → Nat
+trace: x0 x1 x2 : Bool → Nat
 | x2 true
 -/
 #guard_msgs in

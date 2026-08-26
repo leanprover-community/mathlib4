@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
@@ -35,6 +36,7 @@ open scoped NNReal Nat
 namespace ProbabilityTheory
 
 /-- The poisson measure with rate `r : ℝ≥0` as a measure over `ℕ`. -/
+@[wikidata Q205692]
 noncomputable
 def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
   Measure.sum (fun n ↦ ENNReal.ofReal (exp (-r) * r ^ n / (n)!) • (.dirac n))
@@ -214,19 +216,16 @@ def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (-r) * r ^ n / (n)!
 @[deprecated (since := "2026-03-08")]
 alias poissonPMFRealSum := hasSum_one_poissonMeasure
 
-set_option linter.deprecated false in
 @[deprecated poissonMeasure_real_singleton_pos (since := "2026-03-08")]
 lemma poissonPMFReal_pos {r : ℝ≥0} {n : ℕ} (hr : 0 < r) : 0 < poissonPMFReal r n := by
   rw [poissonPMFReal]
   positivity
 
-set_option linter.deprecated false in
 @[deprecated measureReal_nonneg (since := "2026-03-08")]
 lemma poissonPMFReal_nonneg {r : ℝ≥0} {n : ℕ} : 0 ≤ poissonPMFReal r n := by
   unfold poissonPMFReal
   positivity
 
-set_option linter.deprecated false in
 /-- The pmf of the Poisson distribution depending on its rate, as a PMF. -/
 @[deprecated poissonMeasure (since := "2026-03-08")]
 noncomputable
@@ -236,17 +235,14 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   rw [← toNNReal_one]
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
 
-set_option linter.deprecated false in
 @[deprecated poissonMeasure (since := "2026-03-08")]
 lemma poissonPMFReal_ofReal_eq_poissonPMF (r : ℝ≥0) (n : ℕ) :
     ENNReal.ofReal (poissonPMFReal r n) = poissonPMF r n := by
   simpa only [poissonPMF] using by rfl
 
-set_option linter.deprecated false in
 @[deprecated Measurable.of_discrete (since := "2026-03-08")]
 lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by fun_prop
 
-set_option linter.deprecated false in
 @[deprecated StronglyMeasurable.of_discrete (since := "2026-03-08")]
 lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (poissonPMFReal r) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPMFReal r)
