@@ -67,40 +67,6 @@ private lemma poissonKernel_eq_re_herglotzRieszKernel_aux {a b : ℂ} :
     _ = (‖a‖ ^ 2 - ‖b‖ ^ 2) / ‖a - b‖ ^ 2 := by
       simp [← normSq_apply, normSq_eq_norm_sq]
 
-/-!
-### Regularity Properties of the Kernels
--/
-
-/-- The Herglotz–Riesz kernel `herglotzRieszKernel c w` is analytic away from its pole at `w`. -/
-theorem analyticOnNhd_herglotzRieszKernel_compl {c w : ℂ} :
-    AnalyticOnNhd ℂ (herglotzRieszKernel c w) {w}ᶜ := by
-  intro x hx
-  unfold herglotzRieszKernel
-  have : x - w ≠ 0 := by grind
-  fun_prop (disch := aesop)
-
-/--
-The Herglotz–Riesz kernel `herglotzRieszKernel c w` is continuous on the circle `sphere c |R|`
-whenever `w ∈ ball c R`.
--/
-@[fun_prop] lemma continuousOn_herglotzRieszKernel_sphere (hw : w ∈ ball c R) :
-    ContinuousOn (herglotzRieszKernel c w) (sphere c |R|) := by
-  apply ContinuousOn.div (by fun_prop) (by fun_prop)
-  grind [mem_sphere, mem_ball, le_abs_self R]
-
-/--
-The real part of the Herglotz–Riesz kernel `herglotzRieszKernel c w` is continuous on the sphere
-`sphere c |R|` around an interior point `w ∈ ball c R`.
--/
-@[fun_prop]
-theorem continuousOn_re_herglotzRieszKernel_sphere {c w : ℂ} {R : ℝ} (hw : w ∈ ball c R) :
-    ContinuousOn (re ∘ herglotzRieszKernel c w) (sphere c |R|) := by
-  fun_prop
-
-/-!
-### Computations and Estimates
--/
-
 /--
 Companion theorem to the Poisson Integral Formula: The real part of the Herglotz–Riesz kernel and
 the Poisson kernel agree on the path of integration.
@@ -186,6 +152,23 @@ whenever `w` does not lie on the circle.
   rw [sub_sub_sub_cancel_right, sub_ne_zero]
   rintro rfl
   exact hw hz
+
+/--
+The real part of the Herglotz–Riesz kernel `herglotzRieszKernel c w` is continuous on the circle
+`sphere c |R|` whenever `w` does not lie on the circle.
+-/
+@[fun_prop]
+theorem continuousOn_re_herglotzRieszKernel_sphere (hw : w ∉ sphere c |R|) :
+    ContinuousOn (re ∘ herglotzRieszKernel c w) (sphere c |R|) := by
+  fun_prop (disch := assumption)
+
+/-- The Herglotz–Riesz kernel `herglotzRieszKernel c w` is analytic away from its pole at `w`. -/
+theorem analyticOnNhd_herglotzRieszKernel_compl :
+    AnalyticOnNhd ℂ (herglotzRieszKernel c w) {w}ᶜ := by
+  intro x hx
+  unfold herglotzRieszKernel
+  have : x - w ≠ 0 := by grind
+  fun_prop (disch := aesop)
 
 /--
 Taking real parts commutes with the Herglotz–Riesz kernel integral of a real-valued

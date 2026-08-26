@@ -318,6 +318,7 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball 0 
       = circleAverage (Complex.re ∘ herglotzRieszKernel 0 w * (log ‖f ·‖)) 0 R
         - ∑ᶠ i, (divisor f (ball 0 R) i) * log ‖Complex.canonicalFactor R i w‖ := by
   have hR : 0 < R := pos_of_mem_ball h₁w
+  have h₃w : w ∉ sphere 0 |R| := by grind [mem_sphere, mem_ball, le_abs_self R]
   -- Write `f = (Blaschke product) • h` with `h` analytic and nowhere zero on the closed
   -- ball, where the Blaschke product collects the zeros and poles of `f`.
   obtain ⟨h, h₀h⟩ := h₁f.exists_ecanonicalDecomp <| by
