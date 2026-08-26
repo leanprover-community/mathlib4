@@ -23,15 +23,18 @@ assert_not_exists TwoSidedIdeal
 
 universe w₁ w₂ w₃
 
-open CategoryTheory Category Limits
+open CategoryTheory Category Limits Localization
 
 variable {C₁ : Type*} [Category* C₁] [Abelian C₁] [HasDerivedCategory.{w₁} C₁]
   {C₂ : Type*} [Category* C₂] [Abelian C₂] [HasDerivedCategory.{w₂} C₂]
   {C₃ : Type*} [Category* C₃] [Abelian C₃] [HasDerivedCategory.{w₃} C₃]
-  (F : C₁ ⥤ C₂) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
-  (G : C₂ ⥤ C₃) [G.Additive] [PreservesFiniteLimits G] [PreservesFiniteColimits G]
 
-namespace CategoryTheory.Functor
+namespace CategoryTheory
+
+namespace Functor
+
+variable (F : C₁ ⥤ C₂) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+  (G : C₂ ⥤ C₃) [G.Additive] [PreservesFiniteLimits G] [PreservesFiniteColimits G]
 
 /-- The functor `DerivedCategory C₁ ⥤ DerivedCategory C₂` induced
 by an exact functor `F : C₁ ⥤ C₂` between abelian categories. -/
@@ -53,7 +56,7 @@ lemma mapDerivedCategoryFactors_hom_naturality {X Y : CochainComplex C₁ ℤ} (
   F.mapDerivedCategoryFactors.hom.naturality f
 
 noncomputable instance :
-    Localization.Lifting DerivedCategory.Q
+    Lifting DerivedCategory.Q
       (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ))
       (F.mapHomologicalComplex _ ⋙ DerivedCategory.Q) F.mapDerivedCategory :=
   ⟨F.mapDerivedCategoryFactors⟩
@@ -74,7 +77,7 @@ lemma mapDerivedCategoryFactorsh_hom_app (K : CochainComplex C₁ ℤ) :
   F.mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app K
 
 noncomputable instance :
-    Localization.Lifting DerivedCategory.Qh
+    Lifting DerivedCategory.Qh
       (HomotopyCategory.quasiIso C₁ (ComplexShape.up ℤ))
       (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh) F.mapDerivedCategory :=
   ⟨F.mapDerivedCategoryFactorsh⟩
@@ -86,7 +89,7 @@ noncomputable instance : F.mapDerivedCategory.CommShift ℤ :=
     F.mapDerivedCategory
 
 instance : NatTrans.CommShift F.mapDerivedCategoryFactorsh.hom ℤ :=
-  inferInstanceAs (NatTrans.CommShift (Localization.Lifting.iso
+  inferInstanceAs (NatTrans.CommShift (Lifting.iso
       DerivedCategory.Qh (HomotopyCategory.quasiIso C₁ (ComplexShape.up ℤ))
         (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh)
           F.mapDerivedCategory).hom ℤ)
@@ -110,6 +113,7 @@ instance : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
   inferInstanceAs ((F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ)
 
 /-- `DerivedCategory.singleFunctor` commutes with `F` and `F.mapDerivedCategory`. -/
+@[simps! -isSimp]
 noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :
     DerivedCategory.singleFunctor C₁ n ⋙ F.mapDerivedCategory ≅
       F ⋙ DerivedCategory.singleFunctor C₂ n :=
@@ -120,52 +124,56 @@ noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :
 
 instance (R : Type*) [Ring R] [CategoryTheory.Linear R C₁] [CategoryTheory.Linear R C₂]
     [F.Linear R] : F.mapDerivedCategory.Linear R := by
-  rw [← Localization.functor_linear_iff DerivedCategory.Qh (HomotopyCategory.quasiIso C₁
+  rw [← functor_linear_iff DerivedCategory.Qh (HomotopyCategory.quasiIso C₁
     (ComplexShape.up ℤ)) R ((F.mapHomotopyCategory (ComplexShape.up ℤ)).comp DerivedCategory.Qh)]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app (X : C₁) :
     dsimp% F.mapDerivedCategoryFactors.inv.app ((HomologicalComplex.single C₁ (.up ℤ) 0).obj X) ≫
       (F.mapDerivedCategorySingleFunctor 0).hom.app X =
     DerivedCategory.Q.map ((F.mapCochainComplexSingleFunctor 0).hom.app X) := by
   simp [Functor.mapDerivedCategorySingleFunctor, Functor.mapCochainComplexSingleFunctor,
-    CochainComplex.singleFunctor, CochainComplex.singleFunctors,
-    DerivedCategory.singleFunctorIsoCompQ]
+    CochainComplex.singleFunctor, DerivedCategory.singleFunctorIsoCompQ]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app (X : C₁) :
     dsimp% (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
       F.mapDerivedCategoryFactors.hom.app ((HomologicalComplex.single C₁ (.up ℤ) 0).obj X) =
     DerivedCategory.Q.map ((F.mapCochainComplexSingleFunctor 0).inv.app X) := by
   simp [Functor.mapDerivedCategorySingleFunctor, Functor.mapCochainComplexSingleFunctor,
-    CochainComplex.singleFunctor, CochainComplex.singleFunctors,
     DerivedCategory.singleFunctorIsoCompQ]
 
 noncomputable instance :
-    Localization.Lifting DerivedCategory.Q
-      (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ))
-    (F.mapHomologicalComplex _ ⋙ G.mapHomologicalComplex _ ⋙ DerivedCategory.Q)
-    (F.mapDerivedCategory ⋙ G.mapDerivedCategory) where
-  iso :=
-    (associator _ _ _).symm ≪≫ isoWhiskerRight F.mapDerivedCategoryFactors _ ≪≫
-    associator _ _ _ ≪≫ isoWhiskerLeft _ G.mapDerivedCategoryFactors
+    Lifting DerivedCategory.Q (HomologicalComplex.quasiIso C₁ (.up ℤ))
+      DerivedCategory.Q (𝟭 C₁).mapDerivedCategory where
+  iso := (𝟭 C₁).mapDerivedCategoryFactors ≪≫
+    isoWhiskerRight (Functor.mapHomologicalComplexIdIso _ _) _ ≪≫ leftUnitor _
 
 variable (C₁) in
 @[no_expose]
 noncomputable def mapDerivedCategoryIdIso : (𝟭 C₁).mapDerivedCategory ≅ 𝟭 _ :=
-  sorry
+  liftNatIso DerivedCategory.Q
+      (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ)) _ _ _ _
+      (Iso.refl (DerivedCategory.Q))
 
 instance : NatTrans.CommShift (mapDerivedCategoryIdIso C₁).hom ℤ := sorry
 
+@[reassoc]
+lemma mapDerivedCategoryIdIso_hom_app (X : CochainComplex C₁ ℤ) :
+    (mapDerivedCategoryIdIso C₁).hom.app (DerivedCategory.Q.obj X) =
+    (𝟭 C₁).mapDerivedCategoryFactors.hom.app X ≫
+    DerivedCategory.Q.map ((mapHomologicalComplexIdIso C₁ (ComplexShape.up ℤ)).hom.app X) :=
+  (liftNatTrans_app ..).trans (by simp [Lifting.iso])
+
 lemma mapDerivedCategoryIdIso_hom_app_singleFunctor_obj (X : C₁) :
     (mapDerivedCategoryIdIso C₁).hom.app ((DerivedCategory.singleFunctor C₁ 0).obj X) =
-    ((𝟭 C₁).mapDerivedCategorySingleFunctor 0).hom.app X := by
-  sorry
+    ((𝟭 C₁).mapDerivedCategorySingleFunctor 0).hom.app X:= by
+  simp [← DerivedCategory.Q_obj_single_obj, mapDerivedCategoryIdIso_hom_app,
+    mapDerivedCategorySingleFunctor_hom_app,
+    HomologicalComplex.singleMapHomologicalComplex_id_hom_app,
+    DerivedCategory.singleFunctorIsoCompQ_hom_app,
+    DerivedCategory.singleFunctorIsoCompQ_inv_app]
 
 lemma mapDerivedCategoryIdIso_inv_app_singleFunctor_obj (X : C₁) :
     (mapDerivedCategoryIdIso C₁).inv.app ((DerivedCategory.singleFunctor C₁ 0).obj X) =
@@ -174,15 +182,22 @@ lemma mapDerivedCategoryIdIso_inv_app_singleFunctor_obj (X : C₁) :
     mapDerivedCategoryIdIso_hom_app_singleFunctor_obj]
   simp
 
+noncomputable instance :
+    Lifting DerivedCategory.Q
+      (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ))
+    (F.mapHomologicalComplex _ ⋙ G.mapHomologicalComplex _ ⋙ DerivedCategory.Q)
+    (F.mapDerivedCategory ⋙ G.mapDerivedCategory) where
+  iso :=
+    (associator _ _ _).symm ≪≫ isoWhiskerRight F.mapDerivedCategoryFactors _ ≪≫
+    associator _ _ _ ≪≫ isoWhiskerLeft _ G.mapDerivedCategoryFactors
+
 @[no_expose]
 noncomputable def mapDerivedCategoryCompIso :
     F.mapDerivedCategory ⋙ G.mapDerivedCategory ≅ (F ⋙ G).mapDerivedCategory :=
-  Localization.liftNatIso DerivedCategory.Q
+  liftNatIso DerivedCategory.Q
       (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ))
       (F.mapHomologicalComplex _ ⋙ G.mapHomologicalComplex _ ⋙ DerivedCategory.Q)
-      ((F ⋙ G).mapHomologicalComplex _ ⋙ DerivedCategory.Q)
-      (F.mapDerivedCategory ⋙ G.mapDerivedCategory)
-      (F ⋙ G).mapDerivedCategory
+      ((F ⋙ G).mapHomologicalComplex _ ⋙ DerivedCategory.Q) _ _
       ((associator _ _ _).symm ≪≫
         isoWhiskerRight (mapHomologicalComplexCompIso (Iso.refl (F ⋙ G)) (.up ℤ)) _)
 
@@ -193,34 +208,26 @@ lemma mapDerivedCategoryCompIso_hom_app_Q_obj (X : CochainComplex C₁ ℤ) :
       DerivedCategory.Q.map ((mapHomologicalComplexCompIso
         (Iso.refl (F ⋙ G)) (ComplexShape.up ℤ)).hom.app X) ≫
           (F ⋙ G).mapDerivedCategoryFactors.inv.app X :=
-  (Localization.liftNatTrans_app ..).trans (by simp [Localization.Lifting.iso])
+  (liftNatTrans_app ..).trans (by simp [Lifting.iso])
 
 instance : NatTrans.CommShift (mapDerivedCategoryCompIso F G).hom ℤ := sorry
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
+open HomologicalComplex in
 @[reassoc]
-lemma mapDerivedCategoryCompIso_hom_app_comp_mapDerivedCategorySingleFunctor_hom_app (X : C₁) :
-    (mapDerivedCategoryCompIso F G).hom.app ((DerivedCategory.singleFunctor C₁ 0).obj X) ≫
-    ((F ⋙ G).mapDerivedCategorySingleFunctor 0).hom.app X =
-    G.mapDerivedCategory.map ((F.mapDerivedCategorySingleFunctor 0).hom.app X) ≫
-    (G.mapDerivedCategorySingleFunctor 0).hom.app (F.obj X) := by
-  have := DerivedCategory.singleFunctorIsoCompQ C₁ 0
-  rw [← NatTrans.naturality_1 _ ((DerivedCategory.singleFunctorIsoCompQ C₁ 0).symm.app X)]
+lemma mapDerivedCategoryCompIso_hom_app_comp_mapDerivedCategorySingleFunctor_hom_app
+    (X : C₁) (n : ℤ) :
+    (mapDerivedCategoryCompIso F G).hom.app ((DerivedCategory.singleFunctor C₁ n).obj X) ≫
+    ((F ⋙ G).mapDerivedCategorySingleFunctor n).hom.app X =
+    G.mapDerivedCategory.map ((F.mapDerivedCategorySingleFunctor n).hom.app X) ≫
+    (G.mapDerivedCategorySingleFunctor n).hom.app (F.obj X) := by
   dsimp
-  rw [mapDerivedCategoryCompIso_hom_app_Q_obj]
-  dsimp [DerivedCategory.singleFunctorIsoCompQ, mapDerivedCategorySingleFunctor]
-  simp only [map_id, assoc, id_comp]
-  erw [Functor.map_id, Functor.map_id]
-  rw [Category.id_comp]
-  rw [Category.id_comp]
-  erw [Category.comp_id]
-  erw [Category.comp_id]
-  erw [Category.comp_id]
-  simp only [Iso.inv_hom_id_app_assoc, map_comp, assoc]
-  congr 1
-  -- requires a compatibility of `singleMapHomologicalComplex` with the composition of functors
-  sorry
+  simp only [← DerivedCategory.Q_obj_single_obj, mapDerivedCategoryCompIso_hom_app_Q_obj,
+    mapDerivedCategorySingleFunctor_hom_app,
+    DerivedCategory.singleFunctorIsoCompQ_hom_app, map_id, singleMapHomologicalComplex_comp_hom_app,
+    map_comp, DerivedCategory.singleFunctorIsoCompQ_inv_app, id_comp, assoc,
+    dsimp% G.mapDerivedCategoryFactors.hom.naturality_assoc
+      ((singleMapHomologicalComplex F (.up ℤ) n).hom.app X)]
+  simp [← map_comp]
 
 @[reassoc]
 lemma mapDerivedCategorySingleFunctor_inv_app_comp_mapDerivedCategoryCompIso_inv_app (X : C₁) :
@@ -233,4 +240,41 @@ lemma mapDerivedCategorySingleFunctor_inv_app_comp_mapDerivedCategoryCompIso_inv
   simp [← mapDerivedCategoryCompIso_hom_app_comp_mapDerivedCategorySingleFunctor_hom_app_assoc,
     ← Functor.map_comp]
 
-end CategoryTheory.Functor
+end Functor
+
+namespace NatTrans
+
+variable {F : C₁ ⥤ C₂} [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+  {G : C₁ ⥤ C₂} [G.Additive] [PreservesFiniteLimits G] [PreservesFiniteColimits G]
+
+noncomputable def mapDerivedCategory (τ : F ⟶ G) : F.mapDerivedCategory ⟶ G.mapDerivedCategory :=
+  liftNatTrans DerivedCategory.Q
+      (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ)) _ _ _ _
+      (Functor.whiskerRight (τ.mapHomologicalComplex _) DerivedCategory.Q)
+
+instance (τ : F ⟶ G) : NatTrans.CommShift τ.mapDerivedCategory ℤ := sorry
+
+@[reassoc]
+lemma mapDerivedCategory_app_Q_obj (τ : F ⟶ G) (X : CochainComplex C₁ ℤ) :
+    τ.mapDerivedCategory.app (DerivedCategory.Q.obj X) =
+    F.mapDerivedCategoryFactors.hom.app X ≫
+      DerivedCategory.Q.map ((τ.mapHomologicalComplex (.up ℤ)).app X) ≫
+        G.mapDerivedCategoryFactors.inv.app X :=
+  liftNatTrans_app ..
+
+@[reassoc]
+lemma mapDerivedCategory_app_singleFunctor_obj (τ : F ⟶ G) (X : C₁) (n : ℤ) :
+    τ.mapDerivedCategory.app ((DerivedCategory.singleFunctor C₁ n).obj X) =
+    (F.mapDerivedCategorySingleFunctor n).hom.app X ≫
+      (DerivedCategory.singleFunctor C₂ n).map (τ.app X) ≫
+        (G.mapDerivedCategorySingleFunctor n).inv.app X := by
+  simp [← DerivedCategory.Q_obj_single_obj, mapDerivedCategory_app_Q_obj,
+    Functor.mapDerivedCategorySingleFunctor_hom_app,
+    Functor.mapDerivedCategorySingleFunctor_inv_app,
+    DerivedCategory.singleFunctorIsoCompQ_hom_app,
+    DerivedCategory.singleFunctorIsoCompQ_inv_app,
+    HomologicalComplex.natTransMapHomologicalComplex_app_single_obj]
+
+end NatTrans
+
+end CategoryTheory

@@ -140,10 +140,8 @@ lemma Abelian.Ext.mapExactFunctor_hom
           F.mapDerivedCategory F.mapDerivedCategoryFactors.symm e)
   rw [this, ← ShiftedHom.comp_mk₀ _ 0 rfl, ← ShiftedHom.mk₀_comp 0 rfl]
   congr 2
-  · simp [← F.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc,
-      CochainComplex.singleFunctor, CochainComplex.singleFunctors]
-  · simp [CochainComplex.singleFunctor, CochainComplex.singleFunctors,
-      ← Functor.mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app]
+  · simp [← F.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc]
+  · simp [← Functor.mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app]
 
 section
 
@@ -258,13 +256,19 @@ lemma comp_mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] [HasExt.{w''} E] {X Y 
     commShiftIso_hom_naturality_assoc, ← Functor.map_comp,
     mapDerivedCategoryCompIso_hom_app_comp_mapDerivedCategorySingleFunctor_hom_app]
 
+attribute [local instance] HasDerivedCategory.standard in
 lemma mapExactFunctor_comp_mk₀_natTransApp
     [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}
     (α : Ext X Y n) {F G : C ⥤ D} [F.Additive] [G.Additive]
     [PreservesFiniteLimits F] [PreservesFiniteColimits F]
     [PreservesFiniteLimits G] [PreservesFiniteColimits G] (τ : F ⟶ G) :
     (α.mapExactFunctor F).comp (Ext.mk₀ (τ.app Y)) (add_zero n) =
-      ((Ext.mk₀ (τ.app X))).comp (α.mapExactFunctor G) (zero_add n) := sorry
+      ((Ext.mk₀ (τ.app X))).comp (α.mapExactFunctor G) (zero_add n) := by
+  ext
+  have := ShiftedHom.map_naturality α.hom (NatTrans.mapDerivedCategory τ)
+  simp [ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀] at this
+  simp [mapExactFunctor_hom, ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀]
+  sorry
 
 end Abelian.Ext
 
