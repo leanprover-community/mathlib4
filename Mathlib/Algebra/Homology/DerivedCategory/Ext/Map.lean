@@ -76,7 +76,6 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
   simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
     ← Functor.map_comp_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
@@ -87,24 +86,17 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
         ((F.mapDerivedCategorySingleFunctor 0).hom.app S.X₁)⟦1⟧' =
     (hS.map_of_exact F).singleδ := by
   dsimp [ShiftedHom.map, ShortComplex.ShortExact.singleδ]
-  simp only [Functor.map_comp, Category.assoc, Functor.commShiftIso_hom_naturality,
-    DerivedCategory.map_triangleOfSESδ, singleFunctorsPostcompQIso_hom_hom,
-    singleFunctorsPostcompQIso_inv_hom]
+  simp only [Category.assoc, DerivedCategory.map_triangleOfSESδ]
   generalize_proofs _ _ _ _ _ _ h1 _ _ h2
-  dsimp [CochainComplex.singleFunctors]
-  rw [Functor.map_id, Category.id_comp,
-    Functor.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc,
-    Iso.inv_hom_id_app_assoc, Functor.map_id, Functor.map_id, Category.id_comp,
-    ← Functor.map_comp,
+  dsimp
+  rw [Functor.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc,
+    Iso.inv_hom_id_app_assoc, ← Functor.map_comp,
     F.mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app,
     dsimp% triangleOfSESδ_naturality h1 h2
       (S.mapNatTrans (F.mapCochainComplexSingleFunctor 0).hom),
     ← Functor.map_comp_assoc]
   simp
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
@@ -148,10 +140,8 @@ lemma Abelian.Ext.mapExactFunctor_hom
           F.mapDerivedCategory F.mapDerivedCategoryFactors.symm e)
   rw [this, ← ShiftedHom.comp_mk₀ _ 0 rfl, ← ShiftedHom.mk₀_comp 0 rfl]
   congr 2
-  · simp [← F.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc,
-      CochainComplex.singleFunctor, CochainComplex.singleFunctors]
-  · simp [CochainComplex.singleFunctor, CochainComplex.singleFunctors,
-      ← Functor.mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app]
+  · simp [← F.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc]
+  · simp [← Functor.mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app]
 
 section
 
@@ -238,25 +228,50 @@ lemma mapExactFunctor_extClass [HasExt.{w} C] [HasExt.{w'} D] {S : ShortComplex 
   rw [Ext.mapExactFunctor_hom, hS.extClass_hom]
   exact (hS.mapShiftedHom_singleδ' F).trans (hS.map_of_exact F).extClass_hom.symm
 
+open CategoryTheory.Functor in
+attribute [local instance] HasDerivedCategory.standard in
 @[simp]
 lemma id_mapExactFunctor [HasExt.{w} C] {X Y : C} {n : ℕ}
     (α : Ext X Y n) :
-    α.mapExactFunctor (𝟭 C) = α := sorry
+    α.mapExactFunctor (𝟭 C) = α := by
+  ext
+  rw [mapExactFunctor_hom, ← α.hom.map_naturality_2 (Functor.mapDerivedCategoryIdIso C)]
+  simp [ShiftedHom.id_map, ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
+    mapDerivedCategoryIdIso_hom_app_singleFunctor_obj, ← Functor.map_comp,
+    mapDerivedCategoryIdIso_inv_app_singleFunctor_obj]
 
+open CategoryTheory.Functor in
+attribute [local instance] HasDerivedCategory.standard in
 lemma comp_mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] [HasExt.{w''} E] {X Y : C} {n : ℕ}
     (α : Ext X Y n) (F : C ⥤ D) (G : D ⥤ E) [F.Additive] [G.Additive]
     [PreservesFiniteLimits F] [PreservesFiniteColimits F]
     [PreservesFiniteLimits G] [PreservesFiniteColimits G] :
     α.mapExactFunctor (F ⋙ G) = (α.mapExactFunctor F).mapExactFunctor G := by
-  sorry
+  ext
+  simp only [mapExactFunctor_hom]
+  rw [← α.hom.map_naturality_1 (Functor.mapDerivedCategoryCompIso F G), ShiftedHom.comp_map]
+  simp only [ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
+    ShiftedHom.map, Functor.map_comp, Category.assoc]
+  simp [mapDerivedCategorySingleFunctor_inv_app_comp_mapDerivedCategoryCompIso_inv_app_assoc,
+    commShiftIso_hom_naturality_assoc, ← Functor.map_comp,
+    mapDerivedCategoryCompIso_hom_app_comp_mapDerivedCategorySingleFunctor_hom_app]
 
+attribute [local instance] HasDerivedCategory.standard in
 lemma mapExactFunctor_comp_mk₀_natTransApp
     [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}
     (α : Ext X Y n) {F G : C ⥤ D} [F.Additive] [G.Additive]
     [PreservesFiniteLimits F] [PreservesFiniteColimits F]
     [PreservesFiniteLimits G] [PreservesFiniteColimits G] (τ : F ⟶ G) :
     (α.mapExactFunctor F).comp (Ext.mk₀ (τ.app Y)) (add_zero n) =
-      ((Ext.mk₀ (τ.app X))).comp (α.mapExactFunctor G) (zero_add n) := sorry
+      ((Ext.mk₀ (τ.app X))).comp (α.mapExactFunctor G) (zero_add n) := by
+  ext
+  have := ShiftedHom.map_naturality α.hom (NatTrans.mapDerivedCategory τ)
+  simp [← cancel_mono (((G.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦(n : ℤ)⟧'),
+    ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
+    NatTrans.mapDerivedCategory_app_singleFunctor_obj,
+    ← Functor.map_comp] at this
+  simp [mapExactFunctor_hom, ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
+    ← Functor.map_comp, this]
 
 end Abelian.Ext
 

@@ -59,8 +59,7 @@ lemma isSplitEpi_to_singleFunctor_obj_of_projective
     id := by
       apply HomologicalComplex.from_single_hom_ext
       rw [comp_f, mkHomFromSingle_f, assoc, id_f, this, Projective.factorThru_comp_assoc,
-        id_comp, Iso.hom_inv_id]
-      rfl }⟩⟩
+        id_comp, Iso.hom_inv_id] }⟩⟩
 
 end CochainComplex
 
