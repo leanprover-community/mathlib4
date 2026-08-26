@@ -308,6 +308,29 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field
 
+/-- If `f` is Lipschitz on a set containing `g '' uIcc a b` and `g` is absolutely continuous on
+`uIcc a b`, then `f ∘ g` is absolutely continuous on `uIcc a b`. -/
+theorem _root_.LipschitzOnWith.comp_absolutelyContinuousOnInterval
+    {Y : Type*} [PseudoMetricSpace Y] {f : X → Y} {K : ℝ≥0} {t : Set X}
+    (hf : LipschitzOnWith K f t) {g : ℝ → X} {a b : ℝ} (hg : MapsTo g (uIcc a b) t)
+    (h : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f ∘ g) a b := by
+  apply squeeze_zero' ?_ ?_ (by simpa using Tendsto.const_mul (K : ℝ) h)
+  · exact .of_forall fun _ ↦ by positivity
+  rw [eventually_inf_principal]
+  filter_upwards with (n, I) hnI
+  rw [Finset.mul_sum]
+  exact Finset.sum_le_sum fun i hi ↦
+    hf.dist_le_mul _ (hg (hnI.left i hi).left) _ (hg (hnI.left i hi).right)
+
+/-- If `f` is Lipschitz and `g` is absolutely continuous on `uIcc a b`, then `f ∘ g` is absolutely
+continuous on `uIcc a b`. -/
+theorem _root_.LipschitzWith.comp_absolutelyContinuousOnInterval
+    {Y : Type*} [PseudoMetricSpace Y] {f : X → Y} {K : ℝ≥0} (hf : LipschitzWith K f)
+    {g : ℝ → X} {a b : ℝ} (h : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f ∘ g) a b :=
+  hf.lipschitzOnWith.comp_absolutelyContinuousOnInterval (mapsTo_univ _ _) h
+
 /-- If `f` is `C^1` on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
 theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {f : ℝ → E} (hf : ContDiffOn ℝ 1 f (uIcc a b)) :
