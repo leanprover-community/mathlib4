@@ -1,12 +1,11 @@
 /-
-Copyright (c) 2025 Matteo Cipollina. All rights reserved.
+Copyright (c) 2025 Matteo Cipollina, Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Michail Karatarakis
 -/
 module
 
 public import Mathlib.Combinatorics.Quiver.Path.Vertices
-public import Mathlib.Combinatorics.Quiver.Prefunctor
 
 /-!
 # Vertex-induced quivers
@@ -16,8 +15,6 @@ in the ambient quiver. Cf. `SimpleGraph.induce` and `SimpleGraph.Walk.induce`.
 -/
 
 @[expose] public section
-
-open Quiver
 
 namespace Quiver
 
@@ -37,8 +34,6 @@ def inducePrefunctor : Prefunctor S V where
 
 namespace Path
 
-open Quiver.Path
-
 variable {i j : S}
 
 /-- Vertices of `mapPath` on the inclusion lie in `S`. -/
@@ -49,24 +44,20 @@ lemma mapPath_inducePrefunctor_mem_vertices {v : V} (p : Path i j)
     rw [Prefunctor.mapPath_nil, vertices_nil, List.mem_singleton] at hv
     exact hv ▸ i.property
   | cons p' e ih =>
-    simp only [Prefunctor.mapPath_cons, vertices_cons, List.concat_eq_append] at hv
-    rcases List.mem_append.mp hv with h | h
+    simp only [Prefunctor.mapPath_cons, vertices_cons, List.concat_eq_append,
+      List.mem_append, List.mem_singleton] at hv
+    rcases hv with h | rfl
     · exact ih h
-    · rw [List.mem_singleton] at h
-      subst h
-      simp [inducePrefunctor]
+    · exact Subtype.coe_prop _
 
-/--
-A path in `V` whose vertices stay in `S` induces a path in the induced quiver on `S`.
--/
-noncomputable def induce {i j : V} (p : Path i j) (hp : ∀ k, k ∈ p.vertices → k ∈ S) :
+/-- A path in `V` whose vertices stay in `S` induces a path in the induced quiver on `S`. -/
+def induce {i j : V} (p : Path i j) (hp : ∀ k, k ∈ p.vertices → k ∈ S) :
     letI : Quiver S := Quiver.induce S
     Path (⟨i, hp i (start_mem_vertices p)⟩ : S) (⟨j, hp j (end_mem_vertices p)⟩ : S) := by
   letI : Quiver S := Quiver.induce S
   induction p with
   | nil => exact Path.nil
-  | cons p' e ih =>
-    exact Path.cons (ih fun k hk => hp k ((mem_vertices_cons p' e).mpr (Or.inl hk))) e
+  | cons p' e ih => exact Path.cons (ih fun k hk ↦ hp k ((mem_vertices_cons p' e).2 (.inl hk))) e
 
 end Path
 
