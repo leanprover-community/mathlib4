@@ -1069,18 +1069,11 @@ For preorders `α` and `β`, if there is a strictly monotone function `f : WithT
 lemma coheight_zero_of_coheight_one_of_strictMono
     {α β : Type*} [Preorder α] [Preorder β] (f : WithTop α → β) (hf : StrictMono f) (x : α)
     (h : coheight (f x) = 1) : coheight x = 0 := by
-  suffices coheight (x : WithTop α) = 1 by
-    simp only [coheight_coe_withTop] at this
-    by_cases m : coheight x = ⊤
-    · simp_all
-    · push Not at m
-      rw [ENat.ne_top_iff_exists] at m
-      obtain ⟨a, ha⟩ := m
-      rw [← ha] at this ⊢
-      norm_cast at *
-      lia
   have := coheight_le_coheight_apply_of_strictMono f hf x
-  exact le_antisymm (by simp_all) (by simp)
+  rw [h] at this
+  have h₁ : coheight (x : WithTop α) = 1 := le_antisymm this (by simp)
+  simpa using h₁
+
 
 @[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x :=
   height_coe_withTop (α := αᵒᵈ) x

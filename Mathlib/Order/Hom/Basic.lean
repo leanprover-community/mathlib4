@@ -526,15 +526,6 @@ def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (α�
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
 
-/--
-If a predicate `p` on `α` holds for all elements of `α`,
-then `Subtype p` is order isomorphic to the original type.
--/
-def subtypeUnivOrderIso {α : Type*} [LE α] {p : α → Prop} (h : ∀ (x : α), p x) :
-    Subtype p ≃o α where
-  __ := Equiv.subtypeUnivEquiv h
-  map_rel_iff' := by simp
-
 /-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o ULift β` in a
 higher universe. -/
 @[simps!]
