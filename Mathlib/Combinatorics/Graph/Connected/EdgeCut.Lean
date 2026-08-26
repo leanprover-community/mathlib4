@@ -91,7 +91,7 @@ lemma IsEdgeCut.exists_of_isLink (he : G.IsLink e u v) (heF : e ∈ F) (hF : G.I
 
 lemma IsEdgeCut.subset_edgeSet (hF : G.IsEdgeCut F) : F ⊆ E(G) := by
   obtain ⟨S, rfl⟩ := hF
-  exact G.edgeCut_subset S
+  exact G.edgeCut_subset_edgeSet
 
 lemma IsEdgeCut.symmDiff (hF : G.IsEdgeCut F) (hF' : G.IsEdgeCut F') : G.IsEdgeCut (F ∆ F') := by
   obtain ⟨S, rfl⟩ := hF
@@ -108,14 +108,17 @@ lemma IsEdgeCut.inter_edgeSet_of_le (hHG : H ≤ G) (hF : G.IsEdgeCut F) :
   use S
   exact hHG.edgeCut_eq_inter
 
+lemma IsEdgeCut.anti_of_subset (hHG : H ≤ G) (hFH : F ⊆ E(H)) (hF : G.IsEdgeCut F) :
+    H.IsEdgeCut F :=
+  inter_eq_right.mpr hFH ▸ hF.inter_edgeSet_of_le hHG
+
 lemma IsEdgeCut.of_isClosedSubgraph (hGH : G ≤c H) (hF : G.IsEdgeCut F) : H.IsEdgeCut F := by
   obtain ⟨S, hSG, rfl⟩ := hF.exists
   use S
   ext e
   wlog he : e ∈ E(G) generalizing
-  · refine iff_of_false ?_ (he <| G.edgeCut_subset _ ·)
-    rintro ⟨u, v, hxy, hu, hv⟩
-    exact he <| hGH.closed hxy.inc_left (hSG hu)
+  · refine iff_of_false ?_ (he <| G.edgeCut_subset_edgeSet ·)
+    exact fun ⟨u, v, hxy, hu, hv⟩ ↦ he <| hGH.closed hxy.inc_left (hSG hu)
   obtain ⟨x, y, hxy⟩ := exists_isLink_of_mem_edgeSet he
   rw [hxy.mem_edgeCut_iff, (hGH.le.isLink_mono hxy).mem_edgeCut_iff]
 alias IsClosedSubgraph.isEdgeCut := IsEdgeCut.of_isClosedSubgraph
@@ -133,19 +136,13 @@ lemma IsBridge.isEdgeCut (he : G.IsBridge e) : G.IsEdgeCut {e} := he
 
 @[grind .]
 lemma IsBridge.mem_edgeSet (he : G.IsBridge e) : e ∈ E(G) := by
-  simpa using IsEdgeCut.subset he
+  simpa using IsEdgeCut.subset_edgeSet he
 
-lemma IsBridge.anti_of_mem (hHG : H ≤ G) (heH : e ∈ E(H)) (he : G.IsBridge e) : H.IsBridge e := by
-  obtain ⟨x, y, hxy⟩ := exists_isLink_of_mem_edgeSet heH
-  obtain ⟨S, hS, he⟩ := he.exists
-  use S
-  grind [hHG.edgeCut_eq_inter]
+lemma IsBridge.anti_of_mem (hHG : H ≤ G) (heH : e ∈ E(H)) (he : G.IsBridge e) : H.IsBridge e :=
+  he.anti_of_subset hHG (singleton_subset_iff.mpr heH)
 
-lemma IsBridge.of_isClosedSubgraph (hcle : H ≤c G) (he : H.IsBridge e) : G.IsBridge e := by
-  obtain ⟨x, y, hxy⟩ := exists_isLink_of_mem_edgeSet he.mem_edgeSet
-  obtain ⟨S, hS, he⟩ := he.exists
-  use S
-  rwa [hcle.edgeCut_eq_inter, inter_eq_right.mpr <| hcle.edgeCut_subset hS] at he
+lemma IsBridge.of_isClosedSubgraph (hcle : H ≤c G) (he : H.IsBridge e) : G.IsBridge e :=
+  he.isEdgeCut.of_isClosedSubgraph hcle
 
 lemma IsClosedSubgraph.isBridge_iff (he : e ∈ E(H)) (h : H ≤c G) : G.IsBridge e ↔ H.IsBridge e :=
   ⟨fun hb ↦ hb.anti_of_mem h.le he, fun hb ↦ hb.of_isClosedSubgraph h⟩
@@ -161,14 +158,13 @@ section IsBond
 @[expose]
 def IsBond (G : Graph α β) (F : Set β) : Prop := Minimal (fun F ↦ G.IsEdgeCut F ∧ F.Nonempty) F
 
-@[grind →]
-lemma IsBond.subset (hB : G.IsBond B) : B ⊆ E(G) := by
-  obtain ⟨h, -⟩ := hB.prop
-  exact h.subset
 
 lemma IsBond.isEdgeCut (hB : G.IsBond B) : G.IsEdgeCut B := hB.prop.1
 
 lemma IsBond.nonempty (hB : G.IsBond B) : B.Nonempty := hB.prop.2
+
+@[grind →]
+lemma IsBond.subset (hB : G.IsBond B) : B ⊆ E(G) := hB.isEdgeCut.subset_edgeSet
 
 @[grind .]
 lemma IsBridge.isBond (he : G.IsBridge e) : G.IsBond {e} := by
