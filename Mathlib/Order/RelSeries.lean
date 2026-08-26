@@ -120,7 +120,6 @@ def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r]
   toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
   step i := List.isChain_iff_getElem.mp hx i _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.IsChain (· ~[r] ·)} where
@@ -391,51 +390,20 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
   length := p.length + 1
   toFun := (Fin.castSucc i.succ).insertNth a p
   step m := by
-    set x := _; set y := _; change x ~[r] y
-    obtain hm | hm | hm := lt_trichotomy m.1 i.1
-    · convert! p.step ⟨m, hm.trans i.2⟩
-      · change Fin.insertNth _ _ _ _ = _
-        rw [Fin.insertNth_apply_below]
-        pick_goal 2
-        · exact hm.trans (lt_add_one _)
-        simp
-      · change Fin.insertNth _ _ _ _ = _
-        rw [Fin.insertNth_apply_below]
-        pick_goal 2
-        · change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
-        simp; rfl
-    · rw [show x = p m from show Fin.insertNth _ _ _ _ = _ by
-        rw [Fin.insertNth_apply_below]
-        pick_goal 2
-        · change m.1 < i.1 + 1; exact hm ▸ lt_add_one _
-        simp]
-      convert! prev_connect
-      · ext; exact hm
-      · change Fin.insertNth _ _ _ _ = _
-        rw [show m.succ = i.succ.castSucc by ext; change _ + 1 = _ + 1; rw [hm],
-          Fin.insertNth_apply_same]
-    · rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
-      obtain hm | hm := hm
-      · convert! p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by lia) m.2⟩
-        · change Fin.insertNth _ _ _ _ = _
-          rw [Fin.insertNth_apply_above (h := hm)]
-          aesop
-        · change Fin.insertNth _ _ _ _ = _
-          rw [Fin.insertNth_apply_above]
-          swap
-          · exact hm.trans (lt_add_one _)
-          simp only [Fin.pred_succ, eq_rec_constant, Fin.succ_mk]
-          congr
-          exact Fin.ext <| Eq.symm <| Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
-      · convert! connect_next
-        · change Fin.insertNth _ _ _ _ = _
-          rw [show m.castSucc = i.succ.castSucc from Fin.ext hm.symm, Fin.insertNth_apply_same]
-        · change Fin.insertNth _ _ _ _ = _
-          rw [Fin.insertNth_apply_above]
-          swap
-          · change i.1 + 1 < m.1 + 1; lia
-          simp only [Fin.pred_succ, eq_rec_constant]
-          congr; ext; exact hm.symm
+    obtain hm | rfl | hm := lt_trichotomy m i.castSucc
+    · obtain ⟨m, rfl⟩ := m.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hm)
+      simp only [Fin.castSucc_lt_castSucc_iff] at hm
+      rw [Fin.insertNth_apply_below (by simpa using hm.le), Fin.insertNth_apply_below (by simpa)]
+      simpa [← Fin.castSucc_succ] using p.step m
+    · rw [Fin.insertNth_apply_below (by simp)]
+      simpa
+    · obtain ⟨m, rfl⟩ := m.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hm)
+      simp only [Fin.castSucc_lt_succ_iff] at hm
+      obtain rfl | hm := hm.eq_or_lt
+      · rw [Fin.castSucc_succ, Fin.insertNth_apply_same, Fin.insertNth_apply_above (by simp)]
+        simpa
+      · rw [Fin.insertNth_apply_above (by simpa), Fin.insertNth_apply_above (by simpa)]
+        simpa using p.step m
 
 /--
 A relation series `a₀ -r→ a₁ -r→ ... -r→ aₙ` of `r` gives a relation series of the reverse of `r`
@@ -548,7 +516,6 @@ lemma snoc_cast_castSucc (s : RelSeries r) (a : α) (h : s.last ~[r] a) (i : Fin
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i :=
   Fin.append_left _ _ i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : p.last ~[r] newLast} {x : α} :
     x ∈ p.snoc newLast rel ↔ x ∈ p ∨ x = newLast := by
   simp only [snoc, append, mem_def, Set.mem_range]
@@ -607,7 +574,6 @@ lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
   apply toList_injective
   simp [← head_toList]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
 and to show that when `p` holds for `xs` it also holds for `xs` prepended with one element.
@@ -679,7 +645,6 @@ lemma snoc_self_eraseLast (p : RelSeries r) (h : p.length ≠ 0) :
   apply toList_injective
   rw [toList_snoc, ← getLast_toList, toList_eraseLast _ h, List.dropLast_append_getLast]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
 and to show that when `p` holds for `xs` it also holds for `xs` appended with one element.
@@ -1012,7 +977,6 @@ theorem exists_relSeries_covBy
       simp [RelSeries.smash_castLE]
     all_goals simp [Fin.snoc, Fin.castPred_zero, hi₁]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_relSeries_covBy_and_head_eq_bot_and_last_eq_bot
     {α} [PartialOrder α] [BoundedOrder α] [WellFoundedLT α] [WellFoundedGT α] (s : LTSeries α) :
     ∃ (t : RelSeries {(a, b) : α × α | a ⋖ b}) (i : Fin (s.length + 1) ↪ Fin (t.length + 1)),

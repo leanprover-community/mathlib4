@@ -8,9 +8,12 @@ module
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.GroupTopology
+public import Mathlib.Topology.Algebra.Group.Neighborhood
+public import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 
@@ -118,8 +121,11 @@ instance (priority := 100) IsSemitopologicalRing.toIsTopologicalAddGroup [NonUni
     [TopologicalSpace R] [IsSemitopologicalRing R] : IsTopologicalAddGroup R := ⟨⟩
 
 -- kept just to avoid breaking manual usage of the previous instance
-theorem IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing R]
+theorem IsTopologicalRing.isTopologicalAddGroup [NonUnitalNonAssocRing R]
     [TopologicalSpace R] [IsTopologicalRing R] : IsTopologicalAddGroup R := ⟨⟩
+
+@[deprecated (since := "2026-08-21")]
+alias IsTopologicalRing.to_topologicalAddGroup := IsTopologicalRing.isTopologicalAddGroup
 
 instance (priority := 50) DiscreteTopology.topologicalSemiring [TopologicalSpace R]
     [NonUnitalNonAssocSemiring R] [DiscreteTopology R] : IsTopologicalSemiring R := ⟨⟩
@@ -170,13 +176,21 @@ theorem topologicalClosure_mono {s t : NonUnitalSubsemiring R} (h : s ≤ t) :
   _root_.closure_mono h
 
 /-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
+topological closure. -/
+instance isMulCommutative_topologicalClosure [T2Space R] (s : NonUnitalSubsemiring R)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemigroup.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
+/-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances] -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space R] (s : NonUnitalSubsemiring R)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  { NonUnitalSubsemiringClass.toNonUnitalSemiring s.topologicalClosure,
-    s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end NonUnitalSubsemiring
 
@@ -229,12 +243,21 @@ theorem Subsemiring.topologicalClosure_mono {s t : Subsemiring R} (h : s ≤ t) 
   _root_.closure_mono h
 
 /-- If a subsemiring of a topological semiring is commutative, then so is its
+topological closure. -/
+instance Subsemiring.isMulCommutative_topologicalClosure [T2Space R] (s : Subsemiring R)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubmonoid.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
+/-- If a subsemiring of a topological semiring is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
 abbrev Subsemiring.commSemiringTopologicalClosure [T2Space R] (s : Subsemiring R)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
-  { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end
 
@@ -436,12 +459,21 @@ theorem topologicalClosure_mono {s t : NonUnitalSubring R} (h : s ≤ t) :
   _root_.closure_mono h
 
 /-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
+topological closure. -/
+instance isMulCommutative_topologicalClosure [T2Space R] (s : NonUnitalSubring R)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemigroup.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
+/-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances] -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
 abbrev nonUnitalCommRingTopologicalClosure [T2Space R] (s : NonUnitalSubring R)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
-  { s.topologicalClosure.toNonUnitalRing, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end NonUnitalSubring
 
@@ -483,12 +515,20 @@ theorem Subring.topologicalClosure_mono {s t : Subring R} (h : s ≤ t) :
     s.topologicalClosure ≤ t.topologicalClosure :=
   _root_.closure_mono h
 
+/-- If a subring of a topological ring is commutative, then so is its topological closure. -/
+instance Subring.isMulCommutative_topologicalClosure [T2Space R] (s : Subring R)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemigroup.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a subring of a topological ring is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
 abbrev Subring.commRingTopologicalClosure [T2Space R] (s : Subring R)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
-  { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end IsTopologicalSemiring
 
@@ -573,7 +613,7 @@ theorem coinduced_continuous {R S : Type*} [t : TopologicalSpace R] [Ring S] (f 
 def toAddGroupTopology (t : RingTopology R) : AddGroupTopology R where
   toTopologicalSpace := t.toTopologicalSpace
   toIsTopologicalAddGroup :=
-    @IsTopologicalRing.to_topologicalAddGroup _ _ t.toTopologicalSpace t.toIsTopologicalRing
+    @IsTopologicalRing.isTopologicalAddGroup _ _ t.toTopologicalSpace t.toIsTopologicalRing
 
 /-- The order embedding from ring topologies on `a` to additive group topologies on `a`. -/
 def toAddGroupTopology.orderEmbedding : OrderEmbedding (RingTopology R) (AddGroupTopology R) :=

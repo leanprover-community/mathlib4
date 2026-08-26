@@ -277,7 +277,7 @@ lemma rewrites_reverse : r.reverse.Rewrites u.reverse v.reverse ↔ r.Rewrites u
 end ContextFreeRule
 
 namespace ContextFreeGrammar
-variable {g : ContextFreeGrammar T} {u v : List (Symbol T g.NT)} {w : List T}
+variable {g : ContextFreeGrammar T} {u v : List (Symbol T g.NT)}
 
 /-- Grammar for a reversed language. -/
 @[simps] def reverse (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
