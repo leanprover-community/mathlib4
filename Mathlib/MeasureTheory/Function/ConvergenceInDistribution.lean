@@ -43,7 +43,7 @@ and convergence in distribution.
 
 public section
 
-open Filter ProbabilityTheory
+open Filter ProbabilityTheory BoundedContinuousFunction
 open scoped Topology
 
 namespace MeasureTheory
@@ -67,8 +67,23 @@ structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i 
   forall_aemeasurable : ∀ i, AEMeasurable (X i) (μ i)
   aemeasurable_limit : AEMeasurable Z μ' := by fun_prop
   tendsto : Tendsto (β := ProbabilityMeasure E)
-      (fun n ↦ ⟨(μ n).map (X n), Measure.isProbabilityMeasure_map (forall_aemeasurable n)⟩) l
-      (𝓝 ⟨μ'.map Z, Measure.isProbabilityMeasure_map aemeasurable_limit⟩)
+      (fun n ↦ ⟨(μ n).map (X n), inferInstance⟩) l (𝓝 ⟨μ'.map Z, inferInstance⟩)
+
+theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
+    (𝕜 : Type*) [RCLike 𝕜] [OpensMeasurableSpace E]
+    (hX : ∀ i, AEMeasurable (X i) (μ i)) (hZ : AEMeasurable Z μ') :
+    TendstoInDistribution X l Z μ μ' ↔
+      ∀ f : E →ᵇ 𝕜, Tendsto (fun i ↦ ∫ ω, f (X i ω) ∂(μ i)) l (𝓝 (∫ ω, f (Z ω) ∂μ')) := by
+  have h_map (i) (f : E →ᵇ 𝕜) :
+      ∫ x, f x ∂(μ i).map (X i) = ∫ ω, f (X i ω) ∂(μ i) := integral_map (hX i) (by fun_prop)
+  have h_map' (f : E →ᵇ 𝕜) :
+      ∫ x, f x ∂μ'.map Z = ∫ ω, f (Z ω) ∂μ' := integral_map hZ (by fun_prop)
+  refine ⟨fun h f ↦ ?_, fun h ↦ ⟨hX, hZ, ?_⟩⟩
+  · have hf := (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜).mp h.tendsto f
+    simpa [h_map, h_map'] using hf
+  · apply (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto (Ω := E) 𝕜).mpr
+    intro f
+    simpa [h_map, h_map'] using h f
 
 lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z μ') :
     TendstoInDistribution (fun _ ↦ Z) l Z (fun _ ↦ μ') μ' where
@@ -198,8 +213,6 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
   · simp only [LipschitzWith.zero_iff] at hF_lip
     specialize hF_lip x₀
     simp only [← hF_lip, integral_const, smul_eq_mul]
-    have h_prob n : IsProbabilityMeasure (μ''.map (Y n)) := Measure.isProbabilityMeasure_map (hY n)
-    have : IsProbabilityMeasure (μ'.map Z) := Measure.isProbabilityMeasure_map hZ
     simpa using! tendsto_const_nhds
   -- now `F` is `L`-Lipschitz with `L > 0`
   simp_rw [Metric.tendsto_nhds, Real.dist_eq]

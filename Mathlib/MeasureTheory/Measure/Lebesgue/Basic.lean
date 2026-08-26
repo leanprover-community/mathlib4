@@ -417,6 +417,8 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
   · intro A B _ _ IHA IHB
     rw [toLin'_mul, det_mul, LinearMap.coe_comp, ← Measure.map_map, IHB, Measure.map_smul, IHA,
       smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, mul_comm, mul_inv]
+    · apply Continuous.aemeasurable
+      apply LinearMap.continuous_on_pi
     · apply Continuous.measurable
       apply LinearMap.continuous_on_pi
     · apply Continuous.measurable
