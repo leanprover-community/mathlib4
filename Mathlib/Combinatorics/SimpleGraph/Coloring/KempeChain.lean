@@ -6,6 +6,8 @@ Authors: Yiyang He, Daniel Raggi
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain.Swap
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain.Recolor
 
 /-!
 # Kempe Chain Infrastructure for Vizing's Theorem
