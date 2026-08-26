@@ -64,6 +64,13 @@ normal `p`-subgroups of `H`, embedded back into `G` via `H.subtype`. It is a
 `Subgroup G` contained in `H` (see `pCore_le`); by `isPGroup_pCore` it is a
 `p`-group, and so the largest normal `p`-subgroup of `H`.
 
+The parameter is an arbitrary natural number, and `pCore` is prime-agnostic: `IsPGroup n N`
+constrains element orders only through the primes dividing `n`, so for `n ≥ 1` the value of
+`pCore n H` depends on `n` only via `n.primeFactors`, and `pCore n H` is the π-core `O_π(H)` at
+`π = n.primeFactors`. The literature parameterises by a set of primes instead. Note `n = 0` is
+not of this form: `IsPGroup 0` holds vacuously, so `pCore 0 H = H` (`pCore_zero`) rather than the
+`⊥` that `Nat.primeFactors 0 = ∅` would suggest.
+
 We define it via an `iSup` over the subtype of normal `p`-subgroups, which makes
 `Subgroup.iSup_induction` directly applicable after `pCore_subgroupOf`. -/
 def pCore (p : ℕ) (H : Subgroup G) : Subgroup G :=
