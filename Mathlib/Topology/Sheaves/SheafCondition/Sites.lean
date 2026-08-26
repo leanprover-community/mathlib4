@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 # Coverings and sieves; from sheaves on sites and sheaves on spaces
 
 In this file, we connect coverings in a topological space to sieves in the associated Grothendieck
-topology, in preparation of connecting the sheaf condition on sites to the various sheaf conditions
+topology, in preparation for connecting the sheaf condition on sites to the various sheaf conditions
 on spaces.
 
 We also specialize results about sheaves on sites to sheaves on spaces; we show that the inclusion

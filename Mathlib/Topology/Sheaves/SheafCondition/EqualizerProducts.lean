@@ -371,7 +371,7 @@ def coneEquivCounitIso :
 
 set_option backward.defeqAttrib.useBackward true in
 /--
-Cones over `diagram U ⋙ F` are the same as a cones over the usual sheaf condition equalizer diagram.
+Cones over `diagram U ⋙ F` are the same as cones over the usual sheaf condition equalizer diagram.
 -/
 @[simps]
 def coneEquiv :

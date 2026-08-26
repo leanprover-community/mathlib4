@@ -132,12 +132,13 @@ theorem append1_cases_append1 {C : TypeVec (n + 1) → Sort u} (H : ∀ α β, C
     @append1Cases _ C H (append1 α β) = H α β :=
   rfl
 
-/-- append an arrow and a function for arbitrary source and target type vectors -/
+/-- Append an arrow and a function for arbitrary source and target type vectors. -/
 def splitFun {α α' : TypeVec (n + 1)} (f : drop α ⟹ drop α') (g : last α → last α') : α ⟹ α'
   | Fin2.fs i => f i
   | Fin2.fz => g
 
-/-- append an arrow and a function as well as their respective source and target types / typevecs -/
+/-- Append an arrow and a function as well as their respective source and target types / type
+vectors. -/
 def appendFun {α α' : TypeVec n} {β β' : Type*} (f : α ⟹ α') (g : β → β') :
     append1 α β ⟹ append1 α' β' :=
   splitFun f g

@@ -10,7 +10,7 @@ public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
-# Pell's equation and Matiyasevic's theorem
+# Pell's equation and Matiyasevich's theorem
 
 This file solves Pell's equation, i.e. integer solutions to `x ^ 2 - d * y ^ 2 = 1`
 *in the special case that `d = a ^ 2 - 1`*.

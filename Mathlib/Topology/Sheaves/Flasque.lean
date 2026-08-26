@@ -24,7 +24,7 @@ We define and prove basic properties about flasque sheaves on topological spaces
 * `TopCat.Sheaf.IsFlasque.epi_of_shortExact`: Given a short exact sequence of sheaves,
   `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`.
 
-* `TopCat.Sheaf.IsFlasque.of_shortExact_of_isFlasque₁₂ `: Given a short exact sequence of
+* `TopCat.Sheaf.IsFlasque.of_shortExact_of_isFlasque₁₂`: Given a short exact sequence of
   sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque, then `𝓗` is flasque.
 
 -/
@@ -76,8 +76,8 @@ instance pushforward_isFlasque {C : Type v} [Category.{w} C] {Y : TopCat.{u}} (F
 
 variable {U : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.obj.obj (op U))
 
-/-- Given a morphism of sheaves `g: F ⟶ G` and a section `s` of `G(U)`, `Under g s` is comprised of
-an open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. -/
+/-- Given a morphism of sheaves `g : F ⟶ G` and a section `s` of `G(U)`, `Under g s` is comprised
+of an open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. -/
 abbrev Under := StructuredArrow ⟨op U, s⟩ (Functor.whiskerRight g.hom
   (CategoryTheory.forget AddCommGrpCat.{u})).mapElements
 

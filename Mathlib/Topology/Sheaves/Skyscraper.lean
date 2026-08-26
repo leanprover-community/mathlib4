@@ -13,7 +13,7 @@ public import Mathlib.Topology.Sheaves.Functors
 # Skyscraper (pre)sheaves
 
 A skyscraper (pre)sheaf `𝓕 : (Pre)Sheaf C X` is the (pre)sheaf with value `A` at point `p₀` that is
-supported only at open sets contain `p₀`, i.e. `𝓕(U) = A` if `p₀ ∈ U` and `𝓕(U) = *` if `p₀ ∉ U`
+supported only at open sets containing `p₀`, i.e. `𝓕(U) = A` if `p₀ ∈ U` and `𝓕(U) = *` if `p₀ ∉ U`
 where `*` is a terminal object of `C`. In terms of stalks, `𝓕` is supported at all specializations
 of `p₀`, i.e. if `p₀ ⤳ x` then `𝓕ₓ ≅ A` and if `¬ p₀ ⤳ x` then `𝓕ₓ ≅ *`.
 
@@ -430,8 +430,8 @@ noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
 set_option backward.defeqAttrib.useBackward true in
 variable {A p₀} in
 /--
-On an open set not containing `p₀`, the value of skyscraper sheaf supported at `p₀` is a terminal
-object.
+On an open set not containing `p₀`, the value of the skyscraper sheaf supported at `p₀` is a
+terminal object.
 -/
 noncomputable
 def isTerminalSkyscraperSheafObjObjOfNotMem {U : (Opens X)ᵒᵖ} (h : p₀ ∉ unop U) :

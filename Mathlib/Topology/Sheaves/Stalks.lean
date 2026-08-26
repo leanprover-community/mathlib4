@@ -103,7 +103,7 @@ theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : X) (hx : 
   colimit.w ((OpenNhds.inclusion x).op ⋙ F) i'.op
 
 /-- A variant of `germ_res` with `op V ⟶ op U`
-so that the LHS is more general and simp fires more easier. -/
+so that the LHS is more general and simp fires more easily. -/
 @[reassoc (attr := simp)]
 theorem germ_res' (F : X.Presheaf C) {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) :
     F.map i ≫ F.germ U x hx = F.germ V x (i.unop.le hx) :=
@@ -513,7 +513,7 @@ end IsBasis
 variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
 
 /-- Let `F` be a sheaf valued in a concrete category, whose forgetful functor reflects isomorphisms,
-preserves limits and filtered colimits. Then two sections who agree on every stalk must be equal.
+preserves limits and filtered colimits. Then two sections that agree on every stalk must be equal.
 -/
 theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : ToType (F.1.obj (op U)))
     (h : ∀ (x : X) (hx : x ∈ U), F.presheaf.germ U x hx s = F.presheaf.germ U x hx t) : s = t := by
