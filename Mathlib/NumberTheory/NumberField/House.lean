@@ -66,8 +66,17 @@ theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
   norm_cast
   simp [NNReal.mul_finset_sup]
 
+theorem house_nsmul (α : K) (c : ℕ) : house (c • α) = c * house α := by
+  rw [nsmul_eq_mul, house_nat_mul]
+
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
   simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
+
+theorem house_zsmul (α : K) (n : ℤ) : house (n • α) = |n| * house α := by
+  rw [house, house, map_zsmul, norm_zsmul ℝ, Real.norm_eq_abs, ← Int.cast_abs]
+
+theorem house_intCast_mul (α : K) (n : ℤ) : house ((n : K) * α) = |n| * house α := by
+  rw [← zsmul_eq_mul, house_zsmul]
 
 /-- Let `α` be a non-zero algebraic integer. Then `α` has a conjugate `σ α` with `‖σ α‖ ≥ 1`. -/
 lemma exists_conjugate_one_le_norm {α : 𝓞 K} (hα0 : α ≠ 0) :
