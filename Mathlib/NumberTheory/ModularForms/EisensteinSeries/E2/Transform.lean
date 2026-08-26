@@ -66,7 +66,9 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
 
 open UpperHalfPlane hiding I
 
-open ModularForm ModularGroup Filter Complex MatrixGroups Set SummationFilter
+open ModularForm ModularGroup Filter Complex Set SummationFilter
+
+open scoped MatrixGroups
 
 open scoped Real Topology
 
@@ -180,7 +182,7 @@ lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     exact H.prod_factor
 
 
-@[expose] public section
+public section
 
 section transform
 
@@ -189,6 +191,7 @@ lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2
   rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z, ← tsum_G2Term_eq_tsum',
   tsum_G2Term_eq_tsum]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
   simp_rw [SL_slash_def, modular_T_smul z]

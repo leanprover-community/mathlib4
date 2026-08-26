@@ -8,7 +8,6 @@ module
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.Tactic.TFAE
-public import Mathlib.Topology.Order.IsNormal
 public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Order.SuccPred
 
@@ -34,7 +33,7 @@ topologies.
 
 universe u v
 
-open Cardinal Order Topology
+open Order Topology
 
 namespace Ordinal
 
@@ -42,18 +41,6 @@ variable {s : Set Ordinal.{u}} {a : Ordinal.{u}}
 
 instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
 instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
-
-@[deprecated SuccOrder.isOpen_singleton_iff (since := "2026-01-20")]
-theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬ IsSuccLimit a :=
-  SuccOrder.isOpen_singleton_iff
-
-@[deprecated SuccOrder.nhds_eq_pure (since := "2026-01-20")]
-theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
-  SuccOrder.nhds_eq_pure
-
-@[deprecated SuccOrder.isOpen_iff (since := "2026-01-20")]
-theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsSuccLimit o → ∃ a < o, Set.Ioo a o ⊆ s :=
-  SuccOrder.isOpen_iff
 
 open List Set in
 theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
@@ -90,7 +77,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
 theorem mem_closure_iff_iSup :
     a ∈ closure s ↔
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
-  apply ((mem_closure_tfae a s).out 0 4).trans
+  apply ((mem_closure_tfae a s).out 1 5).trans
   simp_rw [exists_prop]
 
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
@@ -138,10 +125,6 @@ theorem isClosed_iff_bsup :
     apply H (type_ne_zero_iff_nonempty.2 hι)
     exact fun i hi => hf _
 
-@[deprecated SuccOrder.isSuccLimit_of_mem_frontier (since := "2026-01-20")]
-theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a :=
-  SuccOrder.isSuccLimit_of_mem_frontier ha
-
 @[deprecated isNormal_enum_iff_dirSupClosed (since := "2026-05-25")]
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
@@ -182,34 +165,28 @@ its accumulation points below the ordinal. -/
 def IsClosedBelow (S : Set Ordinal) (o : Ordinal) : Prop :=
   IsClosed (Iio o ↓∩ S)
 
-set_option linter.deprecated false in
 @[deprecated SuccOrder.accPt_principal (since := "2026-05-24")]
 theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
     o ≠ 0 ∧ ∀ p < o, (S ∩ Ioo p o).Nonempty := by
   apply SuccOrder.accPt_principal.trans
   simp
 
-set_option linter.deprecated false in
 @[deprecated SuccOrder.accPt_principal (since := "2026-05-24")]
 theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
     ∀ p < o, (S ∩ Ioo p o).Nonempty := ((isAcc_iff _ _).mp h).2
 
-set_option linter.deprecated false in
 @[deprecated AccPt.not_isMin (since := "2026-05-24")]
 theorem IsAcc.pos {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
     0 < o := pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
 
-set_option linter.deprecated false in
 @[deprecated AccPt.isSuccLimit (since := "2026-05-24")]
 theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSuccLimit o :=
   AccPt.isSuccLimit h
 
-set_option linter.deprecated false in
 @[deprecated AccPt.mono (since := "2026-05-24")]
 theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) : o.IsAcc T :=
   AccPt.mono ho (monotone_principal h)
 
-set_option linter.deprecated false in
 @[deprecated SuccOrder.accPt_principal (since := "2026-05-24")]
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
     {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt p hp
@@ -219,18 +196,15 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
     AccPt p (𝓟 S) ↔ AccPt ⟨p, hpo⟩ (𝓟 (Iio o ↓∩ S)) := by
   rw [← comap_principal, isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff]
 
-set_option linter.deprecated false in
 @[deprecated isClosed_iff_accPt (since := "2026-05-24")]
 theorem isClosedBelow_iff {S : Set Ordinal} {o : Ordinal} : IsClosedBelow S o ↔
     ∀ p < o, IsAcc p S → p ∈ S := by
   simp [IsClosedBelow, IsAcc, isClosed_iff_accPt, ← comap_principal,
     isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff]
 
-set_option linter.deprecated false in
 @[deprecated isClosed_iff_accPt (since := "2026-05-24")]
 alias ⟨IsClosedBelow.forall_lt, _⟩ := isClosedBelow_iff
 
-set_option linter.deprecated false in
 @[deprecated isClosed_sInter (since := "2026-05-24")]
 theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
     (h : ∀ C ∈ S, IsClosedBelow C o) : IsClosedBelow (⋂₀ S) o := by
@@ -238,7 +212,6 @@ theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
   exact fun p plto pAcc C CmemS ↦ (h C CmemS).forall_lt p plto <|
     AccPt.mono pAcc (monotone_principal (sInter_subset_of_mem CmemS))
 
-set_option linter.deprecated false in
 @[deprecated isClosed_iInter (since := "2026-05-24")]
 theorem IsClosedBelow.iInter {ι : Type u} {f : ι → Set Ordinal} {o : Ordinal}
     (h : ∀ i, IsClosedBelow (f i) o) : IsClosedBelow (⋂ i, f i) o :=

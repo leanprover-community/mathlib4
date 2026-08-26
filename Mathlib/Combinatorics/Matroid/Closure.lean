@@ -167,11 +167,11 @@ lemma inter_ground_subset_closure (M : Matroid α) (X : Set α) : X ∩ M.E ⊆ 
 
 lemma mem_closure_iff_forall_mem_isFlat (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     e ∈ M.closure X ↔ ∀ F, M.IsFlat F → X ⊆ F → e ∈ F := by
-  simp_rw [M.closure_def' X, mem_sInter, mem_setOf, and_imp]
+  simp_rw [M.closure_def' X, mem_sInter, mem_ofPred, and_imp]
 
 lemma subset_closure_iff_forall_subset_isFlat (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     Y ⊆ M.closure X ↔ ∀ F, M.IsFlat F → X ⊆ F → Y ⊆ F := by
-  simp_rw [M.closure_def' X, subset_sInter_iff, mem_setOf, and_imp]
+  simp_rw [M.closure_def' X, subset_sInter_iff, mem_ofPred, and_imp]
 
 lemma subset_closure (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     X ⊆ M.closure X := by
@@ -317,10 +317,10 @@ section Indep
 
 variable {ι : Sort*} {I J B : Set α} {x : α}
 
-lemma Indep.closure_eq_setOf_isBasis_insert (hI : M.Indep I) :
+lemma Indep.closure_eq_setOfPred_isBasis_insert (hI : M.Indep I) :
     M.closure I = {x | M.IsBasis I (insert x I)} := by
   set F := {x | M.IsBasis I (insert x I)}
-  have hIF : M.IsBasis I F := hI.isBasis_setOf_insert_isBasis
+  have hIF : M.IsBasis I F := hI.isBasis_setOfPred_insert_isBasis
   have hF : M.IsFlat F := by
     refine ⟨fun J X hJF hJX e heX ↦ show M.IsBasis _ _ from ?_, hIF.subset_ground⟩
     exact (hIF.isBasis_of_isBasis_of_subset_of_subset (hJX.isBasis_union hJF) hJF.subset
@@ -333,16 +333,19 @@ lemma Indep.closure_eq_setOf_isBasis_insert (hI : M.Indep I) :
     exact (hF'.1 hJ (he.isBasis_union_of_subset hJ.indep hIJ)) (Or.inr (mem_insert _ _))
   exact ⟨hF, inter_subset_left.trans hIF.subset⟩
 
+@[deprecated (since := "2026-07-09")]
+alias Indep.closure_eq_setOf_isBasis_insert := Indep.closure_eq_setOfPred_isBasis_insert
+
 lemma Indep.insert_isBasis_iff_mem_closure (hI : M.Indep I) :
     M.IsBasis I (insert e I) ↔ e ∈ M.closure I := by
-  rw [hI.closure_eq_setOf_isBasis_insert, mem_setOf]
+  rw [hI.closure_eq_setOfPred_isBasis_insert, mem_ofPred]
 
 lemma Indep.isBasis_closure (hI : M.Indep I) : M.IsBasis I (M.closure I) := by
-  rw [hI.closure_eq_setOf_isBasis_insert]; exact hI.isBasis_setOf_insert_isBasis
+  rw [hI.closure_eq_setOfPred_isBasis_insert]; exact hI.isBasis_setOfPred_insert_isBasis
 
 lemma IsBasis.closure_eq_closure (h : M.IsBasis I X) : M.closure I = M.closure X := by
   refine subset_antisymm (M.closure_subset_closure h.subset) ?_
-  rw [← M.closure_closure I, h.indep.closure_eq_setOf_isBasis_insert]
+  rw [← M.closure_closure I, h.indep.closure_eq_setOfPred_isBasis_insert]
   exact M.closure_subset_closure fun e he ↦ (h.isBasis_subset (subset_insert _ _)
     (insert_subset he h.subset))
 
@@ -363,7 +366,7 @@ lemma IsBasis.isBasis_closure_right (h : M.IsBasis I X) : M.IsBasis I (M.closure
 
 lemma Indep.mem_closure_iff (hI : M.Indep I) :
     x ∈ M.closure I ↔ M.Dep (insert x I) ∨ x ∈ I := by
-  rwa [hI.closure_eq_setOf_isBasis_insert, mem_setOf, isBasis_insert_iff]
+  rwa [hI.closure_eq_setOfPred_isBasis_insert, mem_ofPred, isBasis_insert_iff]
 
 lemma Indep.mem_closure_iff' (hI : M.Indep I) :
     x ∈ M.closure I ↔ x ∈ M.E ∧ (M.Indep (insert x I) → x ∈ I) := by

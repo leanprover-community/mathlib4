@@ -240,8 +240,6 @@ private local instance comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The commutative ring structure on `𝕎 R`. -/
 instance : CommRing (𝕎 R) :=
   (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)
