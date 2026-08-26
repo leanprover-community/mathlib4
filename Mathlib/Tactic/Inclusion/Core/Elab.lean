@@ -56,10 +56,10 @@ def collectInclusionArgs (argStxs : Array Syntax) : TacticM InclusionConfig := d
   return { paramSettings, families }
 
 /-- `inclusion` tactic for proving "inclusion" propositions. -/
-syntax (name := inclusionTacStx) "inclusion" optConfig " [" inclusionArg,* "]" : tactic
+syntax (name := inclusion) "inclusion" optConfig " [" inclusionArg,* "]" : tactic
 
 /-- Elaborator for the `inclusion` tactic. -/
-@[tactic inclusionTacStx]
+@[tactic inclusion]
 def inclusionTac : Tactic
   | `(tactic| inclusion $cfg:optConfig [$args,*]) => do
       let options ← elabInclusionConfig cfg
@@ -69,10 +69,10 @@ def inclusionTac : Tactic
   | _ => throwUnsupportedSyntax
 
 /-- Tactic for quickly checking if the `inclusion` tactic will succeed. -/
-syntax (name := inclusion?TacStx) "inclusion?" " [" inclusionArg,* "]" : tactic
+syntax (name := inclusion?) "inclusion?" " [" inclusionArg,* "]" : tactic
 
 /-- Elaborator for the `inclusion?` tactic. -/
-@[tactic inclusion?TacStx]
+@[tactic inclusion?]
 def inclusion?Tac : Tactic
   | `(tactic| inclusion? [$args,*]) => do
       let config ← collectInclusionArgs args.getElems

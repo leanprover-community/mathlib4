@@ -181,7 +181,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib: \
         because it trusts the entire Lean compiler (not just the Lean kernel), \
         it could quite possibly be used to prove false.")
-    | `Inclusion.inclusionTacStx =>
+    | `Inclusion.inclusion =>
       if usesNativeConfig stx then
         rargs.push (kind, stx, "Using `inclusion +native` is not allowed in mathlib: \
           because it trusts the entire Lean compiler (not just the Lean kernel), \
@@ -250,7 +250,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | `Mathlib.Tactic.induction' => Linter.logLintIf linter.style.induction stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
       | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide |
-          `Inclusion.inclusionTacStx | `Inclusion.dyadicInterval =>
+          `Inclusion.inclusion | `Inclusion.dyadicInterval =>
         Linter.logLintIf linter.style.native stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | _ => continue) stx
