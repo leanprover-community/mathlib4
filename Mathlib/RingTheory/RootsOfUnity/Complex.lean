@@ -35,6 +35,13 @@ open Polynomial Real
 
 open scoped Nat Real
 
+theorem isPrimitiveRoot_I : IsPrimitiveRoot I 4 :=
+  .mk_of_lt I zero_lt_four I_pow_four fun l hl0 hl4 ↦ by
+    interval_cases l <;> norm_num [Complex.ext_iff]
+
+theorem isPrimitiveRoot_neg_I : IsPrimitiveRoot (-I) 4 := by
+  simpa only [inv_I] using isPrimitiveRoot_I.inv
+
 theorem isPrimitiveRoot_exp_of_isCoprime (i : ℤ) (n : ℕ) (h0 : n ≠ 0) (hi : IsCoprime i n) :
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]

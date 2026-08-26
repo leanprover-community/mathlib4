@@ -25,7 +25,7 @@ defined.
 
 public section
 
-variable {α β : Type*} {G H : Graph α β} {u v : α} {e f : β} {X Y : Set α}
+variable {α β : Type*} {G H : Graph α β} {u v : α} {e f : β}
 
 open Set SimpleGraph
 

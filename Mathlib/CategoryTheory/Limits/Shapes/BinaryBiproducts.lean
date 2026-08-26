@@ -5,7 +5,7 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
@@ -35,11 +35,10 @@ noncomputable section
 
 universe w w' v u
 
-open CategoryTheory Functor Opposite
+open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
 
-variable {J : Type w}
 universe uC' uC uD' uD
 variable {C : Type uC} [Category.{uC'} C] [HasZeroMorphisms C]
 variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
@@ -619,7 +618,6 @@ theorem biprod.isoProd_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).hom = prod.lift biprod.fst biprod.snd := by
       ext <;> simp [biprod.isoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod.isoProd_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).inv = biprod.lift prod.fst prod.snd := by
@@ -770,7 +768,6 @@ instance prod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     (biprod.isoProd _ _).hom by simp]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Mono (biprod.map f g) := by
   rw [show biprod.map f g = (biprod.isoProd _ _).hom ≫ prod.map f g ≫
@@ -911,7 +908,6 @@ section
 
 variable (P Q) [HasBinaryBiproduct P Q]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `op (P ⊞ Q) ≅ op P ⊞ op Q`. -/
 def biprod.opIso : op (P ⊞ Q) ≅ op P ⊞ op Q :=
   biprod.uniqueUpToIso _ _ (getBinaryBiproductData P Q).op.isBilimit
