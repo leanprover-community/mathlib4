@@ -29,7 +29,6 @@ open Function Module
 namespace LinearMap
 
 section CommSemiring
-
 variable {R M M' N N' : Type*} [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid M']
   [AddCommMonoid N'] [CommSemiring R] [Module R M] [Module R M'] [Module R N] [Module R N']
   {p : M →ₗ[R] N →ₗ[R] R} {x : M} {y : N}
@@ -119,7 +118,6 @@ lemma IsPerfPair.nondegenerate {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPai
 end CommSemiring
 
 section Field
-
 variable {K M N : Type*} [Field K] [AddCommGroup M] [AddCommGroup N]
   [Module K M] [Module K N] {p : M →ₗ[K] N →ₗ[K] K}
 
@@ -138,7 +136,6 @@ lemma IsPerfPair.of_injective' [FiniteDimensional K N] (h : Injective p) (h' : I
     p.IsPerfPair := .flip <| .of_injective h' h
 
 end Field
-
 end LinearMap
 
 noncomputable section
@@ -147,7 +144,6 @@ variable {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N]
 
 namespace LinearMap
-
 variable {p : M →ₗ[R] N →ₗ[R] R} [p.IsPerfPair]
 
 variable (p) in
@@ -159,7 +155,6 @@ structure IsPerfectCompl (U : Submodule R M) (V : Submodule R N) : Prop where
   isCompl_right : IsCompl V (U.dualAnnihilator.map (p.flip.toPerfPair.symm : Dual R M →ₗ[R] N))
 
 namespace IsPerfectCompl
-
 variable {U : Submodule R M} {V : Submodule R N}
 
 protected lemma flip (h : p.IsPerfectCompl U V) :
