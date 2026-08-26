@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 module
 
 public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.ToFun
 
@@ -1283,7 +1283,7 @@ theorem LE.le.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s
 
 @[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallyLE
 
-variable {α β : Type*} {F : Filter α} {G : Filter β}
+variable {α : Type*}
 
 namespace Filter
 

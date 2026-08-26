@@ -28,8 +28,6 @@ public section
 
 open Filter
 
-namespace Finset.HasAntidiagonal
-
 variable {M R : Type*} [AddZeroClass M] [HasAntidiagonal M] {f : M × M → R} [LinearOrder R]
   {F : Filter R}
 
