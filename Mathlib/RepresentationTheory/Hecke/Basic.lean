@@ -19,10 +19,8 @@ with the space of `H`-invariants.
 
 namespace Representation
 
-variable {k : Type*} [CommRing k]
-variable {G : Type*} [Group G]
-variable {V : Type*} [AddCommGroup V] [Module k V]
-variable (H : Subgroup G) (ρ : Representation k G V)
+variable {k : Type*} [CommRing k] {G : Type*} [Group G] (H : Subgroup G)
+variable {V : Type*} [AddCommGroup V] [Module k V] (ρ : Representation k G V)
 
 /-- The intertwining space `Hom_G(k[G ⧸ H], ρ)`, which can be viewed as a module over the standard
 Hecke algebra `End_G(k[G ⧸ H])ᵒᵖ`. -/
@@ -34,7 +32,7 @@ open MonoidAlgebra
 
 variable (k) {H} in
 /-- The basis vector in `k[G ⧸ H]` of a left coset. -/
-noncomputable abbrev cosetVector (x : G ⧸ H) : k[G ⧸ H] := .single x 1
+noncomputable abbrev cosetVector (x : G ⧸ H) : k[G ⧸ H] := single x 1
 
 @[simp]
 lemma cosetVector_mem_eq (h : H) :
@@ -50,18 +48,18 @@ lemma HeckeModule.ext {H : Subgroup G} (f g : HeckeModule H ρ)
 
 /-- Evaluation at the trivial coset gives a linear equivalence between the `H`-invariants of `ρ` and
 the Hecke module `Hom_G(k[G ⧸ H], ρ)`. -/
-@[simps! symm_apply]
+@[simps symm_apply]
 noncomputable def HeckeModule.invariantsEquiv :
     invariants (ρ.comp H.subtype) ≃ₗ[k] HeckeModule H ρ where
   toLinearMap :=
     { toFun v :=
         ⟨ Finsupp.lift V k (G ⧸ H)
           ( fun x => Quotient.liftOn x (fun x => ρ x v) (fun a b hab => by
-              have : ρ (a⁻¹ * b) v = v := by simpa using v.2 ⟨_, QuotientGroup.leftRel_apply.mp hab⟩
+              let h : H := ⟨a⁻¹ * b, QuotientGroup.leftRel_apply.mp hab⟩
+              have : ρ h v = v := v.2 h
               nth_rw 1 [← this]
-              simp)) ∘ₗ (MonoidAlgebra.coeffLinearEquiv k).toLinearMap,
-          by
-            intro g
+              simp [h])) ∘ₗ (MonoidAlgebra.coeffLinearEquiv k).toLinearMap,
+          fun _ => by
             ext z
             simpa using Quotient.inductionOn z (by simp [MulAction.Quotient.smul_mk])⟩
       map_add' _ _ := by ext; simp
@@ -72,7 +70,7 @@ noncomputable def HeckeModule.invariantsEquiv :
 
 @[simp]
 lemma HeckeModule.invariantsEquiv_apply (g : G) (v : invariants (ρ.comp H.subtype)) :
-    invariantsEquiv H ρ v (cosetVector k (g : G)) = ρ g v := by
+    invariantsEquiv H ρ v (cosetVector k g) = ρ g v := by
   simp [invariantsEquiv]
 
 end heckeModule
