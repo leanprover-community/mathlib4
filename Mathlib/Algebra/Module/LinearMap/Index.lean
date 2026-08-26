@@ -58,12 +58,24 @@ public lemma index_of_injective [Nontrivial R] (hf : Injective f) :
     f.index = - finrank R (N ⧸ f.range) := by
   simpa [index_eq_finrank_sub] using ker_eq_bot.2 hf ▸ finrank_bot _ _
 
+@[simp] public lemma index_subtype [Nontrivial R] {S : Submodule R M} :
+    S.subtype.index = - finrank R (M ⧸ S) := by
+  rw [index_of_injective S.injective_subtype, S.range_subtype]
+
 variable [StrongRankCondition R]
 
 public lemma index_of_surjective (hf : Surjective f) :
     f.index = finrank R f.ker := by
   rw [index_eq_finrank_sub, range_eq_top.mpr hf]
   simp [finrank_eq_zero_of_subsingleton]
+
+@[simp] public lemma index_mkQ {S : Submodule R M} :
+    S.mkQ.index = finrank R S := by
+  rw [index_of_surjective S.mkQ_surjective, S.ker_mkQ]
+
+@[simp] public lemma index_projectionOnto {S T : Submodule R M} (hST : IsCompl S T) :
+    (S.projectionOnto T hST).index = finrank R T := by
+  rw [index_of_surjective (Submodule.projectionOnto_surjective hST), Submodule.ker_projectionOnto]
 
 public lemma index_of_bijective (hf : Bijective f) :
     f.index = 0 := by

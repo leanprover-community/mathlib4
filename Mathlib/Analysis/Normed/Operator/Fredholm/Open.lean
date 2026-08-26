@@ -50,8 +50,8 @@ theorem FredholmPackage.eventually_isInvertible
   have Φ_T₀_inv : (Φ T₀).IsInvertible := ⟨pkg.equiv, by ext; simp [Φ, pkg.eq_equiv]⟩
   exact Φ_cont.tendsto T₀ |>.eventually Φ_T₀_inv.eventually
 
-open Module in
-private theorem FredholmPackage.eventually_isFredholm_index_eq [CompleteSpace 𝕜]
+open Module _root_.LinearMap in
+private theorem FredholmPackage.eventually_isFredholm_and_index_eq [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (pkg : T₀.FredholmPackage) :
     ∀ᶠ T in 𝓝 T₀, T.IsFredholm ∧
       T.index = (finrank 𝕜 pkg.decDom.X₀ : ℤ) - finrank 𝕜 pkg.decCodom.X₀ := by
@@ -63,57 +63,39 @@ private theorem FredholmPackage.eventually_isFredholm_index_eq [CompleteSpace �
   have C : IsFredholm T := by
     rw [← A.comp_iff_left, ← B.comp_iff_right]
     exact h_inv.isFredholm
+  refine ⟨C, ?_⟩
   have key := LinearMap.index_of_bijective h_inv.bijective
-  rw [B.index_comp (C.comp A), C.index_comp A] at key
-  simp [LinearMap.index_subtype] at key
-
-/-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
-enough to `T₀` (in operator norm) is also Fredholm. -/
-private theorem IsFredholm.eventually_and_index_eq [CompleteSpace 𝕜]
-    {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) :
-    ∀ᶠ T in 𝓝 T₀, T.IsFredholm ∧ T.index = T₀.index := by
-  obtain ⟨pkg⟩ := hT₀.nonempty_fredholmPackage
-  filter_upwards [pkg.eventually_isInvertible] with T h_inv
-  have A : IsFredholm pkg.decDom.X₁.subtypeL :=
-    have := pkg.decDom.cofg_X₁
-    pkg.decDom.X₁.isFredholm_subtypeL pkg.decDom.isTopCompl.isClosed
-  have B : IsFredholm pkg.decCodom.proj := pkg.decCodom.isFredholm_proj
-  have C : IsFredholm T := by
-    rw [← A.comp_iff_left, ← B.comp_iff_right]
-    exact h_inv.isFredholm
-  have key := LinearMap.index_of_bijective h_inv.bijective
-  rw [B.index_comp (C.comp A), C.index_comp A] at key
-  simp [LinearMap.index_subtype] at key
+  rw [B.index_comp (C.comp A), C.index_comp A, toLinearMap_projectionOntoL, index_projectionOnto,
+    toLinearMap_subtypeL, index_subtype,
+    (Submodule.quotientEquivOfIsCompl _ _ pkg.decDom.isTopCompl.isCompl).finrank_eq] at key
+  lia
 
 /-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
 enough to `T₀` (in operator norm) is also Fredholm. -/
 protected theorem IsFredholm.eventually [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) : ∀ᶠ T in 𝓝 T₀, T.IsFredholm := by
   obtain ⟨pkg⟩ := hT₀.nonempty_fredholmPackage
-  filter_upwards [pkg.eventually_isInvertible] with S h_inv
-  have A : IsFredholm pkg.decDom.X₁.subtypeL :=
-    have := pkg.decDom.cofg_X₁
-    pkg.decDom.X₁.isFredholm_subtypeL pkg.decDom.isTopCompl.isClosed
-  have B : IsFredholm pkg.decCodom.proj := pkg.decCodom.isFredholm_proj
-  rw [← A.comp_iff_left, ← B.comp_iff_right]
-  exact h_inv.isFredholm
+  exact pkg.eventually_isFredholm_and_index_eq.mono fun T ⟨T_fred, _⟩ ↦ T_fred
 
 /-- The set of Fredholm operators between two Banach spaces is open (for the operator norm)
 in the space of continuous linear maps. -/
 theorem isOpen_setOfPred_isFredholm [CompleteSpace 𝕜] : IsOpen {T : E →L[𝕜] F | T.IsFredholm} :=
   isOpen_iff_mem_nhds.mpr fun _ ↦ IsFredholm.eventually
 
-protected theorem IsFredholm.eventually_index_eq [CompleteSpace 𝕜]
+theorem IsFredholm.eventually_index_eq [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) : ∀ᶠ T in 𝓝 T₀, T.index = T₀.index := by
   obtain ⟨pkg⟩ := hT₀.nonempty_fredholmPackage
-  filter_upwards [pkg.eventually_isInvertible, hT₀.eventually] with T h_inv h_fred
-  have key := LinearMap.index_of_bijective h_inv.bijective
-  rw [pkg.decCodom.isFredholm_proj.index_comp (h_fred.comp _)] at key
-  have A : IsFredholm pkg.decDom.X₁.subtypeL :=
-    have := pkg.decDom.cofg_X₁
-    pkg.decDom.X₁.isFredholm_subtypeL pkg.decDom.isTopCompl.isClosed
-  have B : IsFredholm pkg.decCodom.proj := pkg.decCodom.isFredholm_proj
-  rw [← A.comp_iff_left, ← B.comp_iff_right]
-  exact h_inv.isFredholm
+  rw [pkg.eventually_isFredholm_and_index_eq.self_of_nhds.2]
+  exact pkg.eventually_isFredholm_and_index_eq.mono fun _ ⟨_, eq⟩ ↦ eq
+
+theorem IsFredholm.index_continuousAt [CompleteSpace 𝕜]
+    {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) :
+    ContinuousAt (fun (T : E →L[𝕜] F) ↦ T.index) T₀ :=
+  tendsto_const_nhds.congr' <| .symm hT₀.eventually_index_eq
+
+theorem index_continuousOn_isFredholm [CompleteSpace 𝕜] :
+    ContinuousOn (fun (T : E →L[𝕜] F) ↦ T.index) {T | T.IsFredholm} :=
+  continuousOn_of_forall_continuousAt fun _ ↦ IsFredholm.index_continuousAt
+
 
 end ContinuousLinearMap
