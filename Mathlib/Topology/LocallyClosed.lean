@@ -143,27 +143,6 @@ lemma IsLocallyClosedAt.preimage {x : X} {s : Set Y} {f : X → Y}
   obtain ⟨U, hU, Z, hZ, eq⟩ := hs
   exact ⟨_, hf.tendsto x hU, _, hZ.preimage hf, by simp [← preimage_inter, eq]⟩
 
-/-
-We start by proving that the four first conditions in `isLocallyClosedAt_tfae` are monotonous
-in `U`.
--/
-
-private lemma mono_aux₁ (U V : Set X) (U_sub_V : U ⊆ V)
-    (h : ∃ Z, IsClosed Z ∧ V ∩ s = V ∩ Z) : ∃ Z, IsClosed Z ∧ U ∩ s = U ∩ Z := by
-  grind [inter_eq_inter_mono_left]
-
-private lemma mono_aux₂ (U V : Set X) (U_sub_V : U ⊆ V)
-    (h : IsClosed (V ↓∩ s)) : IsClosed (U ↓∩ s) :=
-  h.preimage <| continuous_inclusion U_sub_V
-
-private lemma mono_aux₃ (U V : Set X) (U_sub_V : U ⊆ V)
-    (h : V ∩ closure s ⊆ s) : U ∩ closure s ⊆ s := by
-  grind
-
-private lemma mono_aux₄ (U V : Set X) (U_sub_V : U ⊆ V)
-    (h : V ∩ s = V ∩ closure s) : U ∩ s = U ∩ closure s := by
-  grind [inter_eq_inter_mono_left]
-
 /-- A set `s` is locally closed at a point `x` if one of the equivalent conditions below hold
 1. There is a neighborhood `U` of `x` such that `U ∩ s` can be written `U ∩ Z` for some closed set
   `Z` (this is the definition).
@@ -195,7 +174,9 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
       Subtype.preimage_val_eq_preimage_val_iff, eq_comm]
   tfae_have 2 → 3 := by
     intro H
-    rw [nhds_basis_opens' x |>.exists_iff mono_aux₂] at H
+    have (U V : Set X) (U_sub_V : U ⊆ V) (h : IsClosed (V ↓∩ s)) : IsClosed (U ↓∩ s) :=
+      h.preimage <| continuous_inclusion U_sub_V
+    rw [nhds_basis_opens' x |>.exists_iff this] at H
     obtain ⟨U, ⟨U_mem, U_open⟩, H⟩ := H
     rw [← closure_subset_iff_isClosed,
       ← U_open.isOpenMap_subtype_val.preimage_closure_eq_closure_preimage (by fun_prop),
@@ -234,22 +215,31 @@ lemma isLocallyClosedAt_iff_exists_eq_inter_closure {x : X} : IsLocallyClosedAt 
 lemma isLocallyClosedAt_iff_exists_isClosed_inter_eq_of_hasBasis {ι : Type*} {p : ι → Prop}
     {U : ι → Set X} {x : X} (H : (𝓝 x).HasBasis p U) : IsLocallyClosedAt s x ↔
     ∃ i, p i ∧ ∃ Z, IsClosed Z ∧ U i ∩ s = U i ∩ Z := by
-  rw [IsLocallyClosedAt, H.exists_iff mono_aux₁]
+  have (U V : Set X) (U_sub_V : U ⊆ V) (h : ∃ Z, IsClosed Z ∧ V ∩ s = V ∩ Z) :
+      ∃ Z, IsClosed Z ∧ U ∩ s = U ∩ Z :=
+    h.imp fun Z hZ ↦ hZ.imp_right fun eq ↦ inter_eq_inter_mono_left eq U_sub_V
+  rw [IsLocallyClosedAt, H.exists_iff this]
 
 lemma isLocallyClosedAt_iff_exists_isClosed_preimage_val_of_hasBasis {ι : Type*} {p : ι → Prop}
     {U : ι → Set X} {x : X} (H : (𝓝 x).HasBasis p U) : IsLocallyClosedAt s x ↔
     ∃ i, p i ∧ IsClosed (U i ↓∩ s) := by
-  rw [isLocallyClosedAt_iff_exists_isClosed_preimage_val, H.exists_iff mono_aux₂]
+  have (U V : Set X) (U_sub_V : U ⊆ V) (h : IsClosed (V ↓∩ s)) : IsClosed (U ↓∩ s) :=
+    h.preimage <| continuous_inclusion U_sub_V
+  rw [isLocallyClosedAt_iff_exists_isClosed_preimage_val, H.exists_iff this]
 
 lemma isLocallyClosedAt_iff_exists_inter_closure_subset_of_hasBasis {ι : Type*} {p : ι → Prop}
     {U : ι → Set X} {x : X} (H : (𝓝 x).HasBasis p U) : IsLocallyClosedAt s x ↔
     ∃ i, p i ∧ U i ∩ closure s ⊆ s := by
-  rw [isLocallyClosedAt_iff_exists_inter_closure_subset, H.exists_iff mono_aux₃]
+  have (U V : Set X) (U_sub_V : U ⊆ V) (h : V ∩ closure s ⊆ s) : U ∩ closure s ⊆ s :=
+    subset_trans (inter_subset_inter_left _ U_sub_V) h
+  rw [isLocallyClosedAt_iff_exists_inter_closure_subset, H.exists_iff this]
 
 lemma isLocallyClosedAt_iff_exists_eq_inter_closure_of_hasBasis {ι : Type*} {p : ι → Prop}
     {U : ι → Set X} {x : X} (H : (𝓝 x).HasBasis p U) : IsLocallyClosedAt s x ↔
     ∃ i, p i ∧ U i ∩ s = U i ∩ closure s := by
-  rw [isLocallyClosedAt_iff_exists_eq_inter_closure, H.exists_iff mono_aux₄]
+  have (U V : Set X) (U_sub_V : U ⊆ V) (h : V ∩ s = V ∩ closure s) : U ∩ s = U ∩ closure s :=
+    inter_eq_inter_mono_left h U_sub_V
+  rw [isLocallyClosedAt_iff_exists_eq_inter_closure, H.exists_iff this]
 
 lemma isLocallyClosedAt_iff_exists_isClosed_eventuallyEq {x : X} : IsLocallyClosedAt s x ↔
     ∃ Z, IsClosed Z ∧ s =ᶠ[𝓝 x] Z :=
