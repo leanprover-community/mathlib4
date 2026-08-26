@@ -31,7 +31,6 @@ instance : MeasurableSpace Circle := inferInstanceAs <| MeasurableSpace <| Subty
 instance : BorelSpace Circle :=
   inferInstanceAs <| BorelSpace <| Subtype (· ∈ Metric.sphere (0 : ℂ) 1)
 
-@[fun_prop]
 protected lemma measurable_coe : Measurable fun x : Circle ↦ (x : ℂ) := measurable_subtype_coe
 
 protected lemma measurable_iff {X : Type*} [MeasurableSpace X] {f : X → Circle} :
