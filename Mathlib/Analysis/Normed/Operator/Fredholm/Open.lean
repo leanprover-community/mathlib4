@@ -9,23 +9,26 @@ public import Mathlib.Analysis.Normed.Operator.Fredholm.Basic
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
-# The set of Fredholm operators is open
+# The set of Fredholm operators is open, and the index is locally constant
 
-In this file, we show that the set of Fredholm operators between two Banach spaces is open
-(for the operator norm) in the space of continuous linear maps.
+In this file, we show two closely related results about Fredholm operators between two Banach
+spaces:
+* `isOpen_setOfPred_isFredholm`: the set of Fredholm operators is open
+  (for the operator norm) in the space of continuous linear maps;
+* `index_continuousOn_isFredholm`: the integer-valued map `T ↦ T.index` is continuous
+  (i.e locally constant) on this open subset.
 
 ## TODO
 
-We can strengthen this statement in two ways:
-- the index is continuous (i.e. locally constant) on the set of Fredholm operators (WIP)
-- for any choice of a quasi-inverse `S₀` to a Fredholm operator `T₀`, there is a function
-`φ : (E →L[𝕜] F) → (F →L[𝕜] E)` which is analytic on a neighborhood of `T₀`, such that `φ(T₀) = S₀`
-and `φ(T)` is a quasi-inverse of `T` for every `T` in a neighborhood of `T₀`.
+With a bit more work, we could also show that, for any choice of a quasi-inverse `S₀` to a
+Fredholm operator `T₀`, there is a function `φ : (E →L[𝕜] F) → (F →L[𝕜] E)` which is analytic on a
+neighborhood of `T₀`, such that `φ(T₀) = S₀` and `φ(T)` is a quasi-inverse of `T` for every `T` in
+a neighborhood of `T₀`.
 -/
 
 @[expose] public noncomputable section
 
-open Topology Submodule
+open Topology Submodule Module LinearMap
 
 namespace ContinuousLinearMap
 
@@ -50,7 +53,6 @@ theorem FredholmPackage.eventually_isInvertible
   have Φ_T₀_inv : (Φ T₀).IsInvertible := ⟨pkg.equiv, by ext; simp [Φ, pkg.eq_equiv]⟩
   exact Φ_cont.tendsto T₀ |>.eventually Φ_T₀_inv.eventually
 
-open Module _root_.LinearMap in
 private theorem FredholmPackage.eventually_isFredholm_and_index_eq [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (pkg : T₀.FredholmPackage) :
     ∀ᶠ T in 𝓝 T₀, T.IsFredholm ∧
@@ -82,17 +84,23 @@ in the space of continuous linear maps. -/
 theorem isOpen_setOfPred_isFredholm [CompleteSpace 𝕜] : IsOpen {T : E →L[𝕜] F | T.IsFredholm} :=
   isOpen_iff_mem_nhds.mpr fun _ ↦ IsFredholm.eventually
 
+/-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
+enough to `T₀` (in operator norm) has the same index as `T₀`. -/
 theorem IsFredholm.eventually_index_eq [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) : ∀ᶠ T in 𝓝 T₀, T.index = T₀.index := by
   obtain ⟨pkg⟩ := hT₀.nonempty_fredholmPackage
   rw [pkg.eventually_isFredholm_and_index_eq.self_of_nhds.2]
   exact pkg.eventually_isFredholm_and_index_eq.mono fun _ ⟨_, eq⟩ ↦ eq
 
+/-- If `T₀` is a Fredholm operators between two Banach spaces, then the integer-valued map
+`T ↦ T.index` is continuous at `T₀`. -/
 theorem IsFredholm.index_continuousAt [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) :
     ContinuousAt (fun (T : E →L[𝕜] F) ↦ T.index) T₀ :=
   tendsto_const_nhds.congr' <| .symm hT₀.eventually_index_eq
 
+/-- The integer-valued map `T ↦ T.index` is continuous (i.e locally constant)
+on the set of Fredholm operators between two Banach spaces.. -/
 theorem index_continuousOn_isFredholm [CompleteSpace 𝕜] :
     ContinuousOn (fun (T : E →L[𝕜] F) ↦ T.index) {T | T.IsFredholm} :=
   continuousOn_of_forall_continuousAt fun _ ↦ IsFredholm.index_continuousAt
