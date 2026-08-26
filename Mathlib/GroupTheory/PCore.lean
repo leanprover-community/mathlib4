@@ -234,17 +234,17 @@ theorem pCore_eq_iInf_sylow :
     pCore p H = (⨅ P : Sylow p H, (P : Subgroup H)).map H.subtype := by
   rw [← pCore_subgroupOf_eq_iInf_sylow, map_subgroupOf_eq_of_le pCore_le]
 
-/-- A normal Sylow `p`-subgroup of `H` coincides with the `p`-core inside `H`. -/
-theorem sylow_eq_pCore_subgroupOf_of_normal (P : Sylow p H) [(P : Subgroup H).Normal] :
-    (P : Subgroup H) = (pCore p H).subgroupOf H :=
-  le_antisymm (le_pCore_subgroupOf inferInstance P.2) (pCore_subgroupOf_le_sylow P)
+/-- The `p`-core of `H`, computed inside `H`, coincides with a normal Sylow `p`-subgroup. -/
+theorem pCore_subgroupOf_eq_sylow_of_normal (P : Sylow p H) [(P : Subgroup H).Normal] :
+    (pCore p H).subgroupOf H = (P : Subgroup H) :=
+  le_antisymm (pCore_subgroupOf_le_sylow P) (le_pCore_subgroupOf inferInstance P.2)
 
 /-- A Sylow `p`-subgroup of `H` equals the `p`-core (inside `H`) iff it is normal. -/
 theorem pCore_subgroupOf_eq_sylow_iff_normal (P : Sylow p H) :
     (pCore p H).subgroupOf H = (P : Subgroup H) ↔ (P : Subgroup H).Normal := by
   refine ⟨fun h => h ▸ pCore_subgroupOf_normal, fun h => ?_⟩
   have := h
-  exact (sylow_eq_pCore_subgroupOf_of_normal P).symm
+  exact pCore_subgroupOf_eq_sylow_of_normal P
 
 /-- The universal property, stated for an ambient-group subgroup: a `p`-subgroup `N ≤ H`
 that is normal in `H` is contained in the `p`-core. -/
