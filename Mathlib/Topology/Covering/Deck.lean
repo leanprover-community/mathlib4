@@ -16,7 +16,7 @@ For a map `p : E → X`, the **deck transformation group** `Deck p` is the subgr
 continuity of `p` is assumed.
 
 The definition is stated for an arbitrary `p`; no `IsCoveringMap` hypothesis is needed
-for the basic group structure or the canonical action. Theorems characterising deck
+for the basic group structure or the canonical action. Theorems characterising Deck
 transformations via path lifting (when `p` is a covering map of a path-connected,
 locally path-connected base) belong to follow-up files.
 
