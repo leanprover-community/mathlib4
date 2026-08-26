@@ -39,7 +39,7 @@ open Prod Set
 public section
 
 variable {G X : Type*} [TopologicalSpace X] [Group G]
-  [TopologicalSpace G] [MulAction G X] [CompactlyGeneratedSpace (X × X)] [T2Space X]
+  [TopologicalSpace G] [MulAction G X] [CompactlyCoherentSpace (X × X)] [T2Space X]
 
 /-- The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
 the set of `g` such that `U` intersects `g • V` is compact.
