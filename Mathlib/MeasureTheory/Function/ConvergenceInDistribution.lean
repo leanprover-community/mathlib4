@@ -43,7 +43,7 @@ and convergence in distribution.
 
 public section
 
-open Filter ProbabilityTheory
+open Filter ProbabilityTheory BoundedContinuousFunction
 open scoped Topology
 
 namespace MeasureTheory
@@ -69,6 +69,22 @@ structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i 
   tendsto : Tendsto (β := ProbabilityMeasure E)
       (fun n ↦ ⟨(μ n).map (X n), Measure.isProbabilityMeasure_map (forall_aemeasurable n)⟩) l
       (𝓝 ⟨μ'.map Z, Measure.isProbabilityMeasure_map aemeasurable_limit⟩)
+
+theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
+    (𝕜 : Type*) [RCLike 𝕜] [OpensMeasurableSpace E]
+    (hX : ∀ i, AEMeasurable (X i) (μ i)) (hZ : AEMeasurable Z μ') :
+    TendstoInDistribution X l Z μ μ' ↔
+      ∀ f : E →ᵇ 𝕜, Tendsto (fun i ↦ ∫ ω, f (X i ω) ∂(μ i)) l (𝓝 (∫ ω, f (Z ω) ∂μ')) := by
+  have h_map (i) (f : E →ᵇ 𝕜) :
+      ∫ x, f x ∂(μ i).map (X i) = ∫ ω, f (X i ω) ∂(μ i) := integral_map (hX i) (by fun_prop)
+  have h_map' (f : E →ᵇ 𝕜) :
+      ∫ x, f x ∂μ'.map Z = ∫ ω, f (Z ω) ∂μ' := integral_map hZ (by fun_prop)
+  refine ⟨fun h f ↦ ?_, fun h ↦ ⟨hX, hZ, ?_⟩⟩
+  · have hf := (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜).mp h.tendsto f
+    simpa [h_map, h_map'] using hf
+  · apply (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto (Ω := E) 𝕜).mpr
+    intro f
+    simpa [h_map, h_map'] using h f
 
 lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z μ') :
     TendstoInDistribution (fun _ ↦ Z) l Z (fun _ ↦ μ') μ' where
@@ -295,7 +311,6 @@ lemma TendstoInMeasure.tendstoInDistribution_of_aemeasurable [l.IsCountablyGener
   tendstoInDistribution_of_tendstoInMeasure_sub X Z (tendstoInDistribution_const hZ)
     (by simpa [tendstoInMeasure_iff_norm] using h) hX
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Slutsky's theorem**: if `X n` converges in distribution to `Z`, and `Y n` converges in
 probability to a constant `c`, then the pair `(X n, Y n)` converges in distribution to `(Z, c)`. -/
 theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const

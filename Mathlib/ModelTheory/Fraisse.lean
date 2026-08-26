@@ -413,7 +413,7 @@ theorem isFraisseLimit_of_countable_infinite
     IsFraisseLimit { S : Bundled Language.empty.Structure | Finite S } M where
   age := by
     ext S
-    simp only [age, Structure.fg_iff_finite, mem_setOf_eq, and_iff_left_iff_imp]
+    simp only [age, Structure.fg_iff_finite, mem_ofPred_eq, and_iff_left_iff_imp]
     intro hS
     simp
   ultrahomogeneous S hS f := by

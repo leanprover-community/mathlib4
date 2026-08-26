@@ -184,12 +184,12 @@ instance : (tateComplexFunctor R G).Additive where
   `CochainComplex (ModuleCat R) ℤ`. -/
 instance preservesFiniteLimits_tateComplexFunctor :
     Limits.PreservesFiniteLimits (tateComplexFunctor R G) :=
-  (((tateComplexFunctor R G).exact_tfae.out 0 3 rfl rfl).mp
+  (((tateComplexFunctor R G).exact_tfae.out 1 4 rfl rfl).mp
     fun _ ↦ map_tateComplexFunctor_shortExact).1
 
 instance preservesFiniteColimits_tateComplexFunctor :
     Limits.PreservesFiniteColimits (tateComplexFunctor R G) :=
-  (((tateComplexFunctor R G).exact_tfae.out 0 3 rfl rfl).mp
+  (((tateComplexFunctor R G).exact_tfae.out 1 4 rfl rfl).mp
     fun _ ↦ map_tateComplexFunctor_shortExact).2
 
 end Exact

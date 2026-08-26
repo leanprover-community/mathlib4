@@ -6,7 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Logic.Equiv.Defs
-public meta import Mathlib.Tactic.Simps.Basic
+public meta import Mathlib.Tactic.Simps
 
 /-!
 # Generating "proxy types"

@@ -171,7 +171,7 @@ end IntermediateField
 
 section EqProdEmbeddings
 
-open IntermediateField IntermediateField.AdjoinSimple Polynomial
+open IntermediateField.AdjoinSimple Polynomial
 
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
@@ -205,7 +205,7 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
     congr
     exact AlgHom.card L F E
   · intro σ
-    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
+    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.domRestrict, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
 
 lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
