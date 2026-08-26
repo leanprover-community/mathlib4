@@ -56,7 +56,7 @@ is exactly the Hilbert polynomial of the polynomial ring `ℚ[X_0,...,X_d]` view
 a graded module over itself. In fact, `Polynomial.preHilbertPoly F d k` is the
 same as `Polynomial.hilbertPoly ((X : F[X]) ^ k) (d + 1)` for any field `F` and
 `d k : ℕ` (see the lemma `Polynomial.hilbertPoly_X_pow_succ`). See also the lemma
-`Polynomial.preHilbertPoly_eq_choose_sub_add`, which states that if `CharZero F`,
+`Polynomial.preHilbertPoly_eq_choose_add_sub`, which states that if `CharZero F`,
 then for any `d k n : ℕ` with `k ≤ n`, `(Polynomial.preHilbertPoly F d k).eval (n : F)`
 equals `(n - k + d).choose d`.
 -/
