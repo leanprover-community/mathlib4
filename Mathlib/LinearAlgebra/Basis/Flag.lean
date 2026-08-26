@@ -58,6 +58,11 @@ theorem flag_map {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
     (b.map e).flag k = (b.flag k).map (e : M →ₗ[R] M₂) := by
   simp [flag, Submodule.map_span, Set.image_image, coe_map]
 
+/-- `x ∈ b.flag k` iff `b.repr x i = 0` for `k ≤ i.castSucc`. -/
+theorem mem_flag_iff_repr_eq_zero (b : Basis (Fin n) R M) {k : Fin (n + 1)} {x : M} :
+    x ∈ b.flag k ↔ ∀ i : Fin n, k ≤ i.castSucc → b.repr x i = 0 := by
+  simp [flag, mem_span_image, Finsupp.support_subset_iff]
+
 theorem self_mem_flag (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} (h : i.castSucc < k) :
     b i ∈ b.flag k :=
   subset_span <| mem_image_of_mem _ h
@@ -84,6 +89,7 @@ section Ring
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {n : ℕ}
 
+/-- The span of the new head vector lies in the successor flag of `Basis.mkFinCons`. -/
 theorem span_singleton_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
     {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
     R ∙ v ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
@@ -92,6 +98,8 @@ theorem span_singleton_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
   · simp [coe_mkFinCons, Fin.cons_zero]
   · simp
 
+/-- The image of a flag under `Submodule.subtype` lies in the successor flag of
+`Basis.mkFinCons`. -/
 theorem map_flag_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
     {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
     (bW.flag k).map W.subtype ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
@@ -121,11 +129,6 @@ theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.castSucc ≤ LinearMap.ker (b.dualBasis k) := by
   nontriviality R
   rw [coe_dualBasis, b.flag_le_ker_coord_iff]
-
-/-- `x ∈ b.flag k` iff `b.repr x i = 0` for `k ≤ i.castSucc`. -/
-theorem mem_flag_iff_repr_eq_zero (b : Basis (Fin n) R M) {k : Fin (n + 1)} {x : M} :
-    x ∈ b.flag k ↔ ∀ i : Fin n, k ≤ i.castSucc → b.repr x i = 0 := by
-  simp [flag, Basis.mem_span_image, Finsupp.support_subset_iff]
 
 end CommRing
 
