@@ -82,8 +82,7 @@ theorem exists_isGeodesic : ∃ l, P.IsGeodesic l ∧ P.wordProd l = g := by
 /-! ### Word length -/
 
 @[simp]
-lemma wordLength_one : P.wordLength (1 : G) = 0 :=
-  Nat.eq_zero_of_le_zero (by simpa using P.wordLength_wordProd_le [])
+lemma wordLength_one : P.wordLength (1 : G) = 0 := eq_zero_of_nonpos (P.wordLength_wordProd_le [])
 
 @[simp]
 lemma wordLength_eq_zero_iff : P.wordLength g = 0 ↔ g = 1 := by
