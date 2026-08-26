@@ -44,27 +44,21 @@ variable {G X : Type*} [TopologicalSpace X] [Group G]
 /-- The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
 the set of `g` such that `U` intersects `g • V` is compact.
 
-See `ProperSMul.isCompact_setOfPred_inter_nonempty`
-for a one-way implication with fewer conditions.
+See `ProperSMul.isCompact_setOfPred_inter_nonempty` for a one-way implication with fewer conditions.
 
-**Note**: We assume `CompactlyCoherentSpace (X × X)`
-as this is the minimal assumption needed to make the proof work;
-but this follows from various more familiar conditions,
-such as `FirstCountableTopology X`.
-Importing `Mathlib.Topology.Sequences` makes this implication available.
+**Note**: We assume `CompactlyCoherentSpace (X × X)` as this is the minimal assumption needed to
+make the proof work; but this follows from various more familiar conditions, such as
+`FirstCountableTopology X`. Importing `Mathlib.Topology.Sequences` makes this implication available.
 -/
 @[to_additive /--
 The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
 the set of `g` such that `U` intersects `g +ᵥ V` is compact.
 
-See `ProperVAdd.isCompact_setOfPred_inter_nonempty`
-for a one-way implication with fewer conditions.
+See `ProperVAdd.isCompact_setOfPred_inter_nonempty` for a one-way implication with fewer conditions.
 
-**Note**: We assume `CompactlyCoherentSpace (X × X)`
-as this is the minimal assumption needed to make the proof work;
-but this follows from various more familiar conditions,
-such as `FirstCountableTopology X`.
-Importing `Mathlib.Topology.Sequences` makes this implication available.
+**Note**: We assume `CompactlyCoherentSpace (X × X)` as this is the minimal assumption needed to
+make the proof work; but this follows from various more familiar conditions, such as
+`FirstCountableTopology X`. Importing `Mathlib.Topology.Sequences` makes this implication available.
 -/]
 lemma MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty [ContinuousSMul G X] :
     ProperSMul G X ↔
