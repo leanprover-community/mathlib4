@@ -705,8 +705,8 @@ theorem contMDiffVectorBundle : @ContMDiffVectorBundle n
       refine (a.contMDiffOn_contMDiffCoordChange he he').congr ?_
       intro b hb
       ext v
-      rw [a.contMDiffCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,
-        Trivialization.coordChangeL_apply]
+      rw [a.contMDiffCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe]
+      erw [Trivialization.coordChangeL_apply]
       exacts [rfl, hb] }
 
 end VectorPrebundle
