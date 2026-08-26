@@ -30,11 +30,11 @@ star graph
 
 namespace SimpleGraph
 
-variable {V V' : Type*} (G : SimpleGraph V) (G' : SimpleGraph V')
+variable {V : Type*}
 
 /-- The star graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
 def starGraph (r : V) : SimpleGraph V :=
- .fromRel fun v _ ↦ v = r
+  .fromRel fun v _ ↦ v = r
 
 instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj :=
   inferInstanceAs (DecidableRel fun x y ↦ x ≠ y ∧ (x = r ∨ y = r))

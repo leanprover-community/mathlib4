@@ -191,7 +191,6 @@ instance (priority := 100) hasStrictInitialObjects_of_finitaryPreExtensive
       dsimp
       infer_instance)).some)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFiniteCoproducts C]
     [HasPullbacksOfInclusions C]
     (T : C) (HT : IsTerminal T) (c₀ : BinaryCofan T T) (hc₀ : IsColimit c₀) :
@@ -207,6 +206,7 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
   obtain ⟨hl, hr⟩ := (H c (HT.from _) (HT.from _) d hd.symm hd'.symm).mp ⟨hc⟩
   rw [hl.paste_vert_iff hX.symm, hr.paste_vert_iff hY.symm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
   classical
@@ -308,6 +308,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     convert! f.hom.2.1 _ isOpen_range_inr
   · convert! Set.isCompl_range_inl_range_inr.preimage f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
   rw [finitaryExtensive_iff_of_isTerminal TopCat.{u} _ TopCat.isTerminalPUnit _
       (TopCat.binaryCofanIsColimit _ _)]
@@ -420,8 +421,8 @@ theorem finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [F
     [HasFiniteCoproducts C] [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
     [PreservesColimitsOfShape (Discrete WalkingPair) F] [F.ReflectsIsomorphisms] :
     FinitaryExtensive C := by
-  haveI : ReflectsLimitsOfShape WalkingCospan F := reflectsLimitsOfShape_of_reflectsIsomorphisms
-  haveI : ReflectsColimitsOfShape (Discrete WalkingPair) F :=
+  have : ReflectsLimitsOfShape WalkingCospan F := reflectsLimitsOfShape_of_reflectsIsomorphisms
+  have : ReflectsColimitsOfShape (Discrete WalkingPair) F :=
     reflectsColimitsOfShape_of_reflectsIsomorphisms
   exact finitaryExtensive_of_preserves_and_reflects F
 
@@ -504,7 +505,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
       · simp only [coprod.desc_comp, colimit.ι_desc, Cofan.mk_ι_app,
           eqToHom_refl, Category.id_comp, dite_true, BinaryCofan.ι_app_right,
           BinaryCofan.mk_inr, colimit.ι_desc_assoc, Discrete.functor_obj, Category.comp_id]
-        exact dif_neg j.prop }
+        exact dite_eq_right j.prop }
   let e' : c.pt ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
     hc.coconePointUniqueUpToIso (getColimitCocone _).2 ≪≫ e
   have : coprod.inl ≫ e'.inv = c.ι.app ⟨i⟩ := by
@@ -587,7 +588,6 @@ instance FinitaryPreExtensive.isIso_sigmaDesc_map [HasPullbacks C] [FinitaryPreE
   · exact pullback.isLimit (Sigma.desc f) (Sigma.desc g)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has pullbacks and is finitary (pre-)extensive, pullbacks distribute over finite
 coproducts, i.e., `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`.
 For a variant, see `FinitaryPreExtensive.isIso_sigmaDesc_map`. -/

@@ -5,10 +5,10 @@ Authors: Johan Commelin, Jiedong Jiang, Christian Merten
 -/
 module
 
-public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.WithTopology
-public import Mathlib.Topology.JacobsonSpace
-public import Mathlib.Data.Set.Card
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Topology.Sober
+public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Constructible topology
@@ -38,7 +38,7 @@ def constructibleTopologySubbasis (X : Type*) [TopologicalSpace X] : Set (Set X)
 
 /-- The constructible topology on a topological space `X` has as a subbasis
 the open and compact sets of `X` and their complements. -/
-@[implicit_reducible]
+@[instance_reducible]
 def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
   .generateFrom (constructibleTopologySubbasis X)
 
@@ -47,7 +47,7 @@ def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X 
 abbrev WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
   WithTopology X (constructibleTopology X)
 
-open Topology
+open scoped Topology
 
 lemma WithConstructibleTopology.isOpen_iff {s : Set (WithConstructibleTopology X)} :
     IsOpen s ↔ IsOpen[constructibleTopology X] (WithTopology.toTopology _ ⁻¹' s) :=

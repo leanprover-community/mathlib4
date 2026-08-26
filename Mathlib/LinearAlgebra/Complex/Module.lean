@@ -52,9 +52,7 @@ element of a `StarModule` over `ℂ`.
 assert_not_exists NNReal
 namespace Complex
 
-open ComplexConjugate
-
-open scoped SMul
+open scoped Complex.SMul
 
 variable {R : Type*} {S : Type*}
 
@@ -138,7 +136,7 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
 
 end
 
-open Module Submodule
+open Module
 
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
@@ -217,7 +215,7 @@ instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E]
 
 namespace Complex
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 /-- Linear map version of the real part function, from `ℂ` to `ℝ`. -/
 def reLm : ℂ →ₗ[ℝ] ℝ where
@@ -453,6 +451,7 @@ lemma realPart_comp_subtype_selfAdjoint :
     realPart.comp (selfAdjoint.submodule ℝ A).subtype = LinearMap.id :=
   selfAdjointPart_comp_subtype_selfAdjoint ℝ
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma imaginaryPart_comp_subtype_selfAdjoint :
     imaginaryPart.comp (selfAdjoint.submodule ℝ A).subtype = 0 := by
   ext; simp [imaginaryPart]
@@ -504,6 +503,7 @@ lemma map_imaginaryPart (f : F) (x : A) : f (ℑ x) = ℑ (f x) := by
 
 end StarHomClass
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := by
   ext x

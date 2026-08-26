@@ -5,11 +5,10 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.RepresentationTheory.FDRep
-public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Irreducible
-public import Mathlib.RepresentationTheory.Intertwining
 
 /-!
 # Characters of representations
@@ -27,7 +26,7 @@ Irreducible representations are implemented categorically, using the `CategoryTh
 defined in `Mathlib/CategoryTheory/Simple.lean`
 
 ## TODO
-* Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
+* Once we have the monoidal closed structure on `FDRep k G` and a better API for the rigid
   structure, `char_dual` and `char_linHom` should probably be stated
   in terms of `Vᘁ` and `ihom V W`.
 -/
@@ -99,6 +98,16 @@ theorem char_linHom (g : G) :
     (linHom ρ σ).character g = ρ.character g⁻¹ * σ.character g := by
   rw [← char_iso (Equiv.dualTensorHom ρ σ), char_tensor, Pi.mul_apply, char_dual]
 
+theorem isIntegral_character [Finite G] (g : G) : IsIntegral ℤ (ρ.character g) := by
+  rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure k), character, ← trace_baseChange,
+    End.trace_eq_sum_roots_charpoly_of_splits (IsAlgClosed.splits _)]
+  refine IsIntegral.multiset_sum fun x hx ↦ ?_
+  obtain ⟨v, hv⟩ := End.hasEigenvalue_iff_isRoot_charpoly .. |>.2
+    (Polynomial.isRoot_of_mem_roots hx) |>.exists_hasEigenvector
+  have hxn : x ^ orderOf g = 1 := smul_left_injective (R := AlgebraicClosure k) hv.2 <| by
+    simp [← hv.pow_apply, ← baseChange_pow, ← map_pow]
+  exact IsIntegral.of_pow (orderOf_pos g) (hxn ▸ isIntegral_one)
+
 variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem card_inv_mul_sum_char_eq_finrank :
@@ -108,7 +117,7 @@ theorem card_inv_mul_sum_char_eq_finrank :
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
 /--
-If `V` are `W` are finite-dimensional representations of a finite group, then the
+If `V` and `W` are finite-dimensional representations of a finite group, then the
 scalar product of their characters is equal to the dimension of the space of
 equivariant maps from `V` to `W`.
 -/
@@ -194,28 +203,33 @@ theorem char_linHom (V W : FDRep k G) (g : G) :
     (of (linHom V.ρ W.ρ)).character g = V.character g⁻¹ * W.character g := by
   rw [← char_iso (dualTensorIsoLinHom _ _), char_tensor, Pi.mul_apply, char_dual]
 
-variable [Fintype G] [Invertible (Fintype.card G : k)]
+theorem isIntegral_character [Finite G] (V : FDRep k G) (g : G) : IsIntegral ℤ (V.character g) := by
+  rw [character, ← Representation.character]; exact Representation.isIntegral_character ..
+
+variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
-    ⅟(Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
+    (Nat.card G : k)⁻¹ * ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
+  have : Invertible (Fintype.card G : k) := by
+    rwa [Fintype.card_eq_nat_card]
   rw [← (isProj_averageMap V.ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
 /--
-If `V` are `W` are finite-dimensional representations of a finite group, then the
+If `V` and `W` are finite-dimensional representations of a finite group, then the
 scalar product of their characters is equal to the dimension of the space of
 equivariant maps from `V` to `W`.
 -/
 theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
-    ⅟(Fintype.card G : k) • ∑ g : G, W.character g * V.character g⁻¹ =
+    (Nat.card G : k)⁻¹ * ∑ g : G, W.character g * V.character g⁻¹ =
     Module.finrank k (V ⟶ W) := by
   conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← FDRep.char_linHom]
   -- The scalar product is the character of `Hom(V, W).`
   rw [FDRep.average_char_eq_finrank_invariants, ← LinearEquiv.finrank_eq
     (Representation.linHom.invariantsEquivFDRepHom V W), of_ρ']
   -- The average over the group of the character of a representation equals the dimension of the
-  -- space of invariants, and the space of invariants of `Hom(W, V)` is the subspace of
-  --`G`-equivariant linear maps, `Hom_G(W, V)`.
+  -- space of invariants, and the space of invariants of `Hom(V, W)` is the subspace of
+  -- `G`-equivariant linear maps, `Hom_G(V, W)`.
 
 end Group
 
@@ -223,19 +237,19 @@ section Orthogonality
 
 variable {G : Type v} [Group G] [IsAlgClosed k]
 
-variable [Fintype G] [Invertible (Fintype.card G : k)]
+variable [Fintype G] [Invertible (Nat.card G : k)]
 
 open scoped Classical in
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
-    ⅟(Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
+    (Nat.card G : k)⁻¹ * ∑ g : G, V.character g * W.character g⁻¹ =
       if Nonempty (V ≅ W) then ↑1 else ↑0 := by
   rw [scalar_product_char_eq_finrank_equivariant]
-  -- The scalar products of the characters is equal to the dimension of the space of
+  -- The scalar product of the characters is equal to the dimension of the space of
   -- equivariant maps `W ⟶ V`.
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
-  -- By Schur's Lemma, the dimension of `Hom_G(W, V)` is `1` is `V ≅ W` and `0` otherwise.
+  -- By Schur's Lemma, the dimension of `Hom_G(W, V)` is `1` if `V ≅ W` and `0` otherwise.
 
 end Orthogonality
 
