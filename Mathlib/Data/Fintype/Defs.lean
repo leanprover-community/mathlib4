@@ -48,7 +48,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 /-- `Fintype α` means that `α` is finite, i.e. there are only
   finitely many distinct elements of type `α`. The evidence of this
@@ -72,7 +72,7 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {f : α → β} {s : Finset α} {t' : Finset β}
 
 instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
   -- Use custom implementation for better performance.
@@ -85,7 +85,7 @@ end List
 
 namespace Finset
 
-variable [Fintype α] {s t : Finset α}
+variable [Fintype α] {s : Finset α}
 
 /-- `univ` is the universal finite set of type `Finset α` implied from
   the assumption `Fintype α`. -/

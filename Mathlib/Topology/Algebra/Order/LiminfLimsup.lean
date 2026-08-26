@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Group.DenselyOrdered
-public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Group.ContinuousDiv
 public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
@@ -31,7 +31,7 @@ open scoped Topology
 
 universe u v
 
-variable {ι α β R S : Type*} {X : ι → Type*}
+variable {ι α β R : Type*}
 
 section LiminfLimsupAdd
 
