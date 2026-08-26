@@ -352,10 +352,12 @@ theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpac
   continuous_neg := continuous_neg R C
 
 variable (R) in
-theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+theorem isTopologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
     [IsModuleTopology R C] : IsTopologicalAddGroup C where
   continuous_add := (IsModuleTopology.toContinuousAdd R C).1
   continuous_neg := continuous_neg R C
+
+@[deprecated (since := "2026-08-21")] alias topologicalAddGroup := isTopologicalAddGroup
 
 @[fun_prop, continuity]
 theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
