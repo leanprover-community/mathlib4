@@ -89,7 +89,7 @@ lemma IsEdgeCut.exists_of_isLink (he : G.IsLink e u v) (heF : e ∈ F) (hF : G.I
   obtain ⟨S, hS, rfl⟩ := hF.exists
   grind [he.mem_edgeCut_iff, G.edgeCut_vertexSet_diff (S := S)]
 
-lemma IsEdgeCut.subset (hF : G.IsEdgeCut F) : F ⊆ E(G) := by
+lemma IsEdgeCut.subset_edgeSet (hF : G.IsEdgeCut F) : F ⊆ E(G) := by
   obtain ⟨S, rfl⟩ := hF
   exact G.edgeCut_subset S
 
