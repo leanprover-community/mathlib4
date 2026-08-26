@@ -231,6 +231,7 @@ def addMonoidAlgebraEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Dec
   toFun := AddMonoidAlgebra.toDirectSum
   invFun := DirectSum.toAddMonoidAlgebra
 
+set_option simps.defeqWarn false in
 /-- The additive version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
 @[simps! -fullyApplied]
 def addMonoidAlgebraAddEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :

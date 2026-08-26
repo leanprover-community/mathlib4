@@ -47,6 +47,7 @@ universe w v u
 
 variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
 
+set_option simps.defeqWarn false in
 /-- Given an extension `P` of `S` over `R`, `P.extendScalars` is the same extension
 but viewed as an extension of `S` over `P.Ring`. -/
 @[simps]
