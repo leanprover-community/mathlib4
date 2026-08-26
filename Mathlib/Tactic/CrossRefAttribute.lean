@@ -174,7 +174,7 @@ def wikidataIdNoAntiquot : Parser := {
 def wikidataIdParser : Parser :=
   withAntiquot (mkAntiquot "wikidataId" wikidataIdKind) wikidataIdNoAntiquot
 
-/-! # LMFDB parser -/
+/-! ### LMFDB parser -/
 
 /-- `lmfdbId` is the node kind of LMFDB identifiers: lower case words with `.` in between.
 The words can also contain underscores and digits. -/

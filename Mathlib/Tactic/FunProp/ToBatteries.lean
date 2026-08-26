@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 
 /-!
-## `funProp` missing function from standard library
+# `funProp` missing function from standard library
 -/
 
 public meta section

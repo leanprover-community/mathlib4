@@ -9,6 +9,8 @@ public import Mathlib.Init
 public import Lean.Elab.Tactic.Simp
 
 /-!
+# The `dsimp%` term elaborator
+
 `dsimp% […] t` runs `dsimp […]` on term `t`.
 If `t` is a proof, then it runs `dsimp […]` on the type of `t` instead.
 

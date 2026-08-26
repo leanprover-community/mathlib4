@@ -15,7 +15,7 @@ public meta import Lean.Elab.ConfigEval
 public import Qq
 
 /-!
-The `tauto` tactic.
+# The `tauto` tactic
 -/
 
 public meta section

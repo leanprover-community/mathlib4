@@ -13,6 +13,8 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Message
 
 /-!
+# Helper functions for linters
+
 This file contains functions that are used by multiple linters.
 -/
 
