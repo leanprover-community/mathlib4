@@ -24,7 +24,7 @@ universe v' v u
 
 namespace CategoryTheory.GrothendieckTopology
 
-open Opposite Functor
+open Opposite CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [Subcanonical J]
 
@@ -64,7 +64,6 @@ lemma yonedaEquiv_comp {X : C} {F G : Sheaf J (Type v)} (α : J.yoneda.obj X ⟶
     J.yonedaEquiv (α ≫ β) = β.hom.app _ (J.yonedaEquiv α) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : J.yonedaEquiv (J.yoneda.map f) = f := by
   rw [yonedaEquiv_apply]
   simp
@@ -113,6 +112,9 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
     using! congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Yoneda lemma for sheaves. -/
 @[simps! +dsimpLhs hom_app_app_hom_apply_down inv_app_app]
 def yonedaOpCompCoyoneda :
@@ -138,9 +140,6 @@ theorem uliftYonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type (max v v'))}
     (x : F.obj.obj (op X)) (Y : Cᵒᵖ) (f : Y.unop ⟶ X) :
     dsimp% (J.uliftYonedaEquiv.symm x).hom.app Y ⟨f⟩ = F.obj.map f.op x :=
   rfl
-
-@[deprecated (since := "2025-11-10")] alias yonedaULiftEquiv_symm_app_apply :=
-  uliftYonedaEquiv_symm_app_apply
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -214,6 +213,9 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
   simpa only [uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
     using! congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of the Yoneda lemma for sheaves with a raise in the universe level. -/
 @[simps! +dsimpLhs -isSimp]
 def uliftYonedaOpCompCoyoneda :

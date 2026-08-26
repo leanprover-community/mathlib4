@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.NegOnePow
 public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
@@ -48,7 +49,9 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open Topology Filter Set
+open Filter Set
+
+open scoped Topology
 
 namespace Complex
 
@@ -83,8 +86,6 @@ theorem continuous_cosh : Continuous cosh := by
 end Complex
 
 namespace Real
-
-variable {x y z : ℝ}
 
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin :=
@@ -177,7 +178,8 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-meta def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealPi : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.pi) =>
     assertInstancesCommute

@@ -48,7 +48,7 @@ structure NormedAddGroupHom (V W : Type*) [SeminormedAddCommGroup V]
 namespace AddMonoidHom
 
 variable {V W : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
-  {f g : NormedAddGroupHom V W}
+  {f : NormedAddGroupHom V W}
 
 /-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
 

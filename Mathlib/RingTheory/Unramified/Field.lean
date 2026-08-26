@@ -147,7 +147,7 @@ theorem isReduced_of_field :
     (Localization.AtPrime M)
   have := comp (AlgebraicClosure K) (AlgebraicClosure K ⊗[K] A)
     (Localization.AtPrime M)
-  letI := (isField_of_isAlgClosed_of_isLocalRing (AlgebraicClosure K)
+  let := (isField_of_isAlgClosed_of_isLocalRing (AlgebraicClosure K)
     (A := Localization.AtPrime M)).toField
   exact hy.eq_zero
 
@@ -234,7 +234,7 @@ theorem Algebra.IsUnramifiedAt.not_minpoly_sq_dvd
     have := IsArtinianRing.of_finite K (Localization.AtPrime Q)
     have := Algebra.FormallyUnramified.isReduced_of_field K (Localization.AtPrime Q)
     IsArtinianRing.isField_of_isReduced_of_isLocalRing _
-  letI := this.toField
+  let := this.toField
   set q := minpoly K (algebraMap A Q.ResidueField x)
   have : algebraMap A (Localization.AtPrime Q) (aeval x q) = 0 := by
     apply (algebraMap (Localization.AtPrime Q) Q.ResidueField).injective

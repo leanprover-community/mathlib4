@@ -38,5 +38,5 @@ example : (reprPrec p2 65).pretty = "(C 57 + C 22 * X ^ 2)" := by native_decide
 -- test that parens are added inside `C`
 def pu1 : (ULift.{1} ℕ)[X] :=
   ⟨⟨{1}, Pi.single 1 (ULift.up 37),
-    by intro; simp [Pi.single, Function.update_apply, ←ULift.down_inj]⟩⟩
+    by intro; simp [Pi.single, Function.update_apply, ← ULift.down_inj]⟩⟩
 example : reprStr pu1 = "C (ULift.up 37) * X" := by native_decide

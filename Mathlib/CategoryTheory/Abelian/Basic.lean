@@ -256,7 +256,7 @@ in which the coimage-image comparison morphism is always an isomorphism,
 is an abelian category. -/
 @[stacks 0109
 "The Stacks project uses this characterisation at the definition of an abelian category.",
-  implicit_reducible]
+  instance_reducible]
 def ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian
@@ -437,8 +437,6 @@ def coim : Arrow C ⥤ C where
   map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
     simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
 
-@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctor := coim
-
 set_option backward.defeqAttrib.useBackward true in
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
@@ -512,7 +510,6 @@ section
 
 variable {D : Type*} [Category* D] [HasZeroMorphisms D]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphism
 admitting a cokernel such that `F` preserves this cokernel and `F.map i` is a mono,
 then `F.map X` identifies to the kernel of `F.map (cokernel.π i)`. -/
@@ -529,7 +526,6 @@ noncomputable def isLimitMapConeOfKernelForkOfι
   change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
   rw [Category.comp_id, Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphism
 admitting a kernel such that `F` preserves this kernel and `F.map p` is an epi,
 then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
@@ -618,7 +614,7 @@ end PullbackToBiproductIsKernel
 
 namespace BiproductToPushoutIsCokernel
 
-variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+variable [Limits.HasPushouts C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` -/
 abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
@@ -649,7 +645,6 @@ section EpiPullback
 
 variable [Limits.HasPullbacks C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism.
     Proof from [aluffi2016, IX.2.3], cf. [borceux-vol2, 1.7.6] -/
 instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
@@ -683,7 +678,6 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
       _ = (biprod.inr ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
       _ = 0 := HasZeroMorphisms.comp_zero _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism. -/
 instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst f g) :=
   -- It will suffice to consider some morphism e : X ⟶ R such that
@@ -716,15 +710,13 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst f g) :=
       _ = (biprod.inl ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
       _ = 0 := HasZeroMorphisms.comp_zero _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem epi_snd_of_isLimit [Epi f] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.snd := by
-  haveI : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.right) :=
+  have : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.right) :=
     Abelian.epi_pullback_of_epi_f f g
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.fst := by
-  haveI : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.left) :=
+  have : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.left) :=
     Abelian.epi_pullback_of_epi_g f g
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
 
@@ -742,7 +734,6 @@ section MonoPushout
 
 variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
-set_option backward.isDefEq.respectTransparency false in
 instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift (0 : R ⟶ Y) e
@@ -765,7 +756,6 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [Category.assoc]
       _ = 0 := zero_comp
 
-set_option backward.isDefEq.respectTransparency false in
 instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift e (0 : R ⟶ Z)
@@ -788,16 +778,14 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl f g) :=
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.fst := by rw [Category.assoc]
       _ = 0 := zero_comp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mono_inr_of_isColimit [Mono f] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inr := by
-  haveI : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.right) :=
+  have : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.right) :=
     Abelian.mono_pushout_of_mono_f f g
   apply
     mono_of_mono_fac (IsColimit.comp_coconePointUniqueUpToIso_hom hs (colimit.isColimit _) _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mono_inl_of_isColimit [Mono g] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inl := by
-  haveI : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.left) :=
+  have : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.left) :=
     Abelian.mono_pushout_of_mono_g f g
   apply
     mono_of_mono_fac (IsColimit.comp_coconePointUniqueUpToIso_hom hs (colimit.isColimit _) _)
@@ -819,7 +807,7 @@ namespace CategoryTheory.NonPreadditiveAbelian
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
 /-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
-@[implicit_reducible]
+@[instance_reducible]
 def abelian : Abelian C where
   toPreadditive := NonPreadditiveAbelian.preadditive
   normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
@@ -862,13 +850,12 @@ attribute [reassoc (attr := simp)] ι_imageπ imageι_π fac
 
 end AbelianStruct
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for abelian categories. We assume that the category `C` is
 preadditive, has finite products, and that any morphism `f : X ⟶ Y` has
 a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = π ≫ ι`
 where `π : X ⟶ I` is a cokernel of `i` and `ι : I ⟶ Y` is a kernel of `p`.
 This assumption is packaged in a structure `AbelianStruct f`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def mk' [HasFiniteProducts C]
     (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty (AbelianStruct f)) :
     Abelian C where
