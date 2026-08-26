@@ -149,7 +149,7 @@ private theorem geom_mul_one_add_X :
     simp
 
 theorem subst_exp_log : (exp A).subst (log A) = 1 + X := by
-  haveI : IsAddTorsionFree A := IsAddTorsionFree.of_module_rat A
+  have : IsAddTorsionFree A := IsAddTorsionFree.of_module_rat A
   have hderiv : d⁄dX A ((exp A).subst (log A)) * (1 + X) = (exp A).subst (log A) := by
     rw [derivative_subst (hg := HasSubst.log), derivative_exp, deriv_log, mul_assoc,
       geom_mul_one_add_X, mul_one]
