@@ -48,7 +48,7 @@ norm, seminorm
 
 @[expose] public section
 
-assert_not_exists Finset
+assert_not_exists Finset SeminormedGroup SeminormedAddGroup
 
 open Set
 

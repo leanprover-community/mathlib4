@@ -158,6 +158,11 @@ lemma scaleRoots_eval_mul (p : R[X]) (r s : R) :
     eval (s * r) (p.scaleRoots s) = s ^ p.natDegree * eval r p :=
   scaleRoots_eval₂_mul _ _ _
 
+lemma scaleRoots_aeval_smul {S} [CommSemiring S] [Algebra S R] {p : S[X]} (r : R) (s : S) :
+    (p.scaleRoots s).aeval (s • r) = s ^ p.natDegree • p.aeval r := by
+  simp_rw [Algebra.smul_def, map_pow]
+  exact scaleRoots_eval₂_mul _ _ _
+
 theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
     aeval (algebraMap R A r * a) (scaleRoots p r) = 0 := by
   rw [aeval_def, scaleRoots_eval₂_mul_of_commute, ← aeval_def, ha, mul_zero]
