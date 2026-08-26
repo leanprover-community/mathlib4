@@ -43,7 +43,7 @@ and convergence in distribution.
 
 public section
 
-open Filter ProbabilityTheory
+open Filter ProbabilityTheory BoundedContinuousFunction
 open scoped Topology
 
 namespace MeasureTheory
@@ -70,11 +70,28 @@ structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i 
       (fun n ↦ ⟨(μ n).map (X n), Measure.isProbabilityMeasure_map (forall_aemeasurable n)⟩) l
       (𝓝 ⟨μ'.map Z, Measure.isProbabilityMeasure_map aemeasurable_limit⟩)
 
+theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
+    (𝕜 : Type*) [RCLike 𝕜] [OpensMeasurableSpace E]
+    (hX : ∀ i, AEMeasurable (X i) (μ i)) (hZ : AEMeasurable Z μ') :
+    TendstoInDistribution X l Z μ μ' ↔
+      ∀ f : E →ᵇ 𝕜, Tendsto (fun i ↦ ∫ ω, f (X i ω) ∂(μ i)) l (𝓝 (∫ ω, f (Z ω) ∂μ')) := by
+  have h_map (i) (f : E →ᵇ 𝕜) :
+      ∫ x, f x ∂(μ i).map (X i) = ∫ ω, f (X i ω) ∂(μ i) := integral_map (hX i) (by fun_prop)
+  have h_map' (f : E →ᵇ 𝕜) :
+      ∫ x, f x ∂μ'.map Z = ∫ ω, f (Z ω) ∂μ' := integral_map hZ (by fun_prop)
+  refine ⟨fun h f ↦ ?_, fun h ↦ ⟨hX, hZ, ?_⟩⟩
+  · have hf := (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜).mp h.tendsto f
+    simpa [h_map, h_map'] using hf
+  · apply (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto (Ω := E) 𝕜).mpr
+    intro f
+    simpa [h_map, h_map'] using h f
+
 lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z μ') :
     TendstoInDistribution (fun _ ↦ Z) l Z (fun _ ↦ μ') μ' where
   forall_aemeasurable := fun _ ↦ by fun_prop
   tendsto := tendsto_const_nhds
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
     (hX : ∀ j, IdentDistrib (X i) (X j) (μ i) (μ j)) (hZ : IdentDistrib (X i) Z (μ i) μ') :
     TendstoInDistribution X l Z μ μ' where
@@ -84,6 +101,7 @@ lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
     convert! tendsto_const_nhds with j
     exact (hX j).map_eq.symm.trans hZ.map_eq
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' → E}
     (hXY : ∀ i, X i =ᵐ[μ i] Y i) (hZT : Z =ᵐ[μ'] T) (h : TendstoInDistribution X l Z μ μ') :
     TendstoInDistribution Y l T μ μ' where
@@ -113,6 +131,7 @@ lemma tendstoInDistribution_unique [HasOuterApproxClosed E] [BorelSpace E]
   rw [Subtype.ext_iff] at h_eq
   simpa using h_eq
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- **Continuous mapping theorem**: if `X n` tends to `Z` in distribution and `g` is continuous,
 then `g ∘ X n` tends to `g ∘ Z` in distribution. -/
 theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace E]
@@ -129,6 +148,7 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
       congr
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Almost sure convergence implies convergence in distribution. -/
 theorem tendstoInDistribution_of_ae_tendsto [l.IsCountablyGenerated]
     [OpensMeasurableSpace E] {X : ι → Ω' → E}
@@ -166,6 +186,7 @@ theorem TendstoInMeasure.tendstoInDistribution [PseudoEMetricSpace E] [BorelSpac
 
 variable [SeminormedAddCommGroup E] [SecondCountableTopology E] [BorelSpace E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `X, Y` be two sequences of measurable functions such that `X n` converges in distribution
 to `Z`, and `Y n - X n` converges in probability to `0`.
 Then `Y n` converges in distribution to `Z`. -/

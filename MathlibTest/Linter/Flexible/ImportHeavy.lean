@@ -46,9 +46,10 @@ Note: This linter can be disabled with `set_option linter.flexible false`
 info: Try this:
   [apply] simp only [zero_add]
 ---
-info: `rw [add_comm]` uses `⊢`!
+info: `rw [add_comm]`
+modifies the current goal, which was modified by the flexible tactic `simp` on line
 -/
-#guard_msgs in
+#guard_msgs (substring := true) in
 -- `norm_num` is allowed after `simp`, but "passes along the stain".
 example {a : Rat} : a + (0 + 2 + 1 : Rat) = 3 + a := by
   simp
@@ -81,9 +82,10 @@ Note: This linter can be disabled with `set_option linter.flexible false`
 info: Try this:
   [apply] simp only [mul_zero, add_zero]
 ---
-info: `positivity` uses `⊢`!
+info: `positivity`
+modifies the current goal, which was modified by the flexible tactic `simp` on line
 -/
-#guard_msgs in
+#guard_msgs (substring := true) in
 example {k l : ℤ} : 0 ≤ k ^ 2 + 4 * l * 0 := by
   simp
   positivity
@@ -124,9 +126,10 @@ Note: This linter can be disabled with `set_option linter.flexible false`
 info: Try this:
   [apply] simp only [Function.comp_apply, add_zero]
 ---
-info: `fun_prop` uses `⊢`!
+info: `fun_prop`
+modifies the current goal, which was modified by the flexible tactic `simp` on line
 -/
-#guard_msgs in
+#guard_msgs (substring := true) in
 example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
     (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x ↦ (f ∘ g) x + 0) := by

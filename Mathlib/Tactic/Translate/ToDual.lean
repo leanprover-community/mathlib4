@@ -151,6 +151,8 @@ initialize translations : NameMapExtension TranslationInfo ← registerNameMapEx
 def nameDict : Std.HashMap String (List String) := .ofList [
   ("top", ["Bot"]),
   ("bot", ["Top"]),
+  ("untop", ["Unbot"]),
+  ("unbot", ["Untop"]),
   ("inf", ["Sup"]),
   ("sup", ["Inf"]),
   ("inf₂", ["Sup₂"]),
@@ -159,8 +161,12 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("ssup", ["SInf"]),
   ("min", ["Max"]),
   ("max", ["Min"]),
-  ("untop", ["Unbot"]),
-  ("unbot", ["Untop"]),
+  ("min?", ["Max?"]),
+  ("max?", ["Min?"]),
+  ("argmin", ["Argmax"]),
+  ("argmax", ["Argmin"]),
+  ("minimum", ["Maximum"]),
+  ("maximum", ["Minimum"]),
   ("minimal", ["Maximal"]),
   ("maximal", ["Minimal"]),
   ("lower", ["Upper"]),
@@ -199,6 +205,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
   -- ("mono", ["Epi"]),
+  ("epimorphisms", ["Monomorphisms"]),
+  ("monomorphisms", ["Epimorphisms"]),
   ("terminal", ["Initial"]),
   ("initial", ["Terminal"]),
   ("precompose", ["Postcompose"]),
@@ -211,6 +219,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cofan", ["Fan"]),
   ("limit", ["Colimit"]),
   ("colimit", ["Limit"]),
+  ("lim", ["Colim"]),
+  ("colim", ["Lim"]),
   ("limits", ["Colimits"]),
   ("colimits", ["Limits"]),
   ("product", ["Coproduct"]),
@@ -255,9 +265,14 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("galoisCoinsertion", "GaloisInsertion"),
   ("leftOrdContinuous", "RightOrdContinuous"),
   ("rightOrdContinuous", "LeftOrdContinuous"),
+  ("bihimp", "SymmDiff"),
+  ("symmDiff", "Bihimp"),
 
+  -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
+  ("ofSucc", "OfPred"),
+  ("maximalAxioms", "MinimalAxioms"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]
@@ -295,10 +310,11 @@ initialize registerBuiltinAttribute {
     applicationTime := .afterCompilation
   }
 
-/-- `to_dual_name_hint src tgt` lets `to_dual` translate between the name segments `src` and `tgt`
-for the rest of the file current. `src` and `tgt` should both be capitalized. -/
-elab "to_dual_name_hint" src:ident tgt:ident : command => do
-  guessNameExt.addTranslation src tgt
-  guessNameExt.addTranslation tgt src
+/-- `to_dual_name_hint src₁ tgt₁, ..., srcₙ tgtₙ` lets `to_dual` translate between the name segments
+`srcᵢ` and `tgtᵢ` for the rest of the file current. The name segments should be capitalized. -/
+elab "to_dual_name_hint" hints:(ident ident),* : command => do
+  for ⟨hint⟩ in hints.getElems do
+    guessNameExt.addTranslation ⟨hint[0]⟩ ⟨hint[1]⟩
+    guessNameExt.addTranslation ⟨hint[1]⟩ ⟨hint[0]⟩
 
 end Mathlib.Tactic.ToDual

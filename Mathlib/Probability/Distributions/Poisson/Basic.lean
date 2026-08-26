@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
@@ -35,6 +36,7 @@ open scoped NNReal Nat
 namespace ProbabilityTheory
 
 /-- The poisson measure with rate `r : ℝ≥0` as a measure over `ℕ`. -/
+@[wikidata Q205692]
 noncomputable
 def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
   Measure.sum (fun n ↦ ENNReal.ofReal (exp (-r) * r ^ n / (n)!) • (.dirac n))

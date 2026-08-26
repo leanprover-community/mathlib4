@@ -274,7 +274,7 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     refine fun ha ↦ (g ^ 2).det_ne_zero ?_
     rw [ha, map_zero, zero_add] at hg
     rw [← hg] at hmsq
-    rw [Units.val_pow_eq_pow_val, hmsq, det_zero ⟨0⟩]
+    rw [Units.val_pow_eq_pow_val, hmsq, det_zero]
 
 lemma isParabolic_iff_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) :
     g.IsParabolic ↔ g 0 0 = g 1 1 ∧ g 0 1 ≠ 0 :=
