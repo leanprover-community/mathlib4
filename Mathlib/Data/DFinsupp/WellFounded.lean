@@ -60,7 +60,6 @@ section Zero
 
 variable [∀ i, Zero (α i)] (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This key lemma says that if a finitely supported dependent function `x₀` is obtained by merging
   two such functions `x₁` and `x₂`, and if we evolve `x₀` down the `DFinsupp.Lex` relation one
   step and get `x`, we can always evolve one of `x₁` and `x₂` down the `DFinsupp.Lex` relation

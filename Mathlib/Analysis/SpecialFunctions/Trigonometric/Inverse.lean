@@ -22,7 +22,9 @@ Basic inequalities on trigonometric functions.
 
 noncomputable section
 
-open Topology Filter Set Filter Real
+open Filter Set Filter Real
+
+open scoped Topology
 
 namespace Real
 variable {x y : ℝ}
@@ -36,7 +38,6 @@ noncomputable def arcsin : ℝ → ℝ :=
 theorem arcsin_mem_Icc (x : ℝ) : arcsin x ∈ Icc (-(π / 2)) (π / 2) :=
   Subtype.coe_prop _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_arcsin : range arcsin = Icc (-(π / 2)) (π / 2) := by
   rw [arcsin, range_comp Subtype.val]

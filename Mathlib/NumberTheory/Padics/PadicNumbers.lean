@@ -65,8 +65,6 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 open WithZero
 
--- TODO: fix non-terminal simp; acts on 8 goals, leaving one
-set_option linter.flexible false in
 /-- The p-adic valuation on rationals, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
 def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   toFun x := if x = 0 then 0 else exp (-padicValRat p x)
@@ -78,17 +76,20 @@ def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
     simp_all [padicValRat.mul, exp_add, mul_comm]
   map_add_le_max' := by
     intros
-    split_ifs
-    any_goals simp_all [-exp_neg]
-    rw [← min_le_iff]
-    exact padicValRat.min_le_padicValRat_add ‹_›
+    split_ifs <;> simp_all [← min_le_iff, padicValRat.min_le_padicValRat_add]
 
 /-- The p-adic valuation on integers, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
 def Int.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℤ ℤᵐ⁰ :=
   (Rat.padicValuation p).comap (Int.castRingHom ℚ)
 
+@[simp]
 lemma Rat.padicValuation_cast (p : ℕ) [Fact p.Prime] (x : ℤ) :
-    Rat.padicValuation p (Int.cast x) = Int.padicValuation p x :=
+    Rat.padicValuation p x = Int.padicValuation p x :=
+  rfl
+
+@[simp]
+lemma Rat.padicValuation_natCast (p : ℕ) [Fact p.Prime] (x : ℕ) :
+    Rat.padicValuation p x = Int.padicValuation p x :=
   rfl
 
 lemma Rat.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
@@ -100,7 +101,6 @@ lemma Int.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
     Int.padicValuation p x = 0 ↔ x = 0 := by
   simp [← Rat.padicValuation_cast]
 
-@[simp]
 lemma Rat.padicValuation_self (p : ℕ) [Fact p.Prime] :
     Rat.padicValuation p p = exp (-1) := by
   simp [Rat.padicValuation, Nat.Prime.ne_zero Fact.out]
@@ -108,7 +108,7 @@ lemma Rat.padicValuation_self (p : ℕ) [Fact p.Prime] :
 @[simp]
 lemma Int.padicValuation_self (p : ℕ) [Fact p.Prime] :
     Int.padicValuation p p = exp (-1) := by
-  simp [← Rat.padicValuation_cast]
+  rw [← Rat.padicValuation_natCast, Rat.padicValuation_self]
 
 lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
     Int.padicValuation p x ≤ 1 := by
@@ -1186,7 +1186,7 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   map_mul' _ _ := by split_ifs <;> simp_all [add_comm]
   map_add_le_max' _ _ := by
     split_ifs
-    any_goals simp_all [inv_le_inv₀]
+    any_goals simp_all
     simpa using le_valuation_add ‹_›
 
 lemma comap_mulValuation_eq_padicValuation :

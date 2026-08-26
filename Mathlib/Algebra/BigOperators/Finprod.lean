@@ -7,12 +7,9 @@ module
 
 public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.FiniteSupport
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Data.Set.Finite.Lattice
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Module.End
@@ -90,7 +87,7 @@ open Function Set
 
 section sort
 
-variable {G M N : Type*} {α β ι : Sort*} [CommMonoid M] [CommMonoid N]
+variable {G M N : Type*} {α ι : Sort*} [CommMonoid M] [CommMonoid N]
 
 section
 
@@ -909,7 +906,6 @@ theorem finprod_mem_pair (h : a ≠ b) : (∏ᶠ i ∈ ({a, b} : Set α), f i) =
   rw [finprod_mem_insert, finprod_mem_singleton]
   exacts [h, finite_singleton b]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of `f y` over `y ∈ g '' s` equals the product of `f (g i)` over `s`
 provided that `g` is injective on `s ∩ mulSupport (f ∘ g)`. -/
 @[to_additive

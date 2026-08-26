@@ -203,7 +203,6 @@ def inclCompMap (j : J) : incl j ⋙ map C g ≅ incl (g j) :=
 
 variable (I)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Sigma.map` applied to the identity function is just the identity functor. -/
 @[simps!]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σ i, C i) :=
