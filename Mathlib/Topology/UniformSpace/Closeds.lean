@@ -481,9 +481,8 @@ theorem compactSpace_iff : CompactSpace (Closeds α) ↔ CompactSpace α := by
   have := isClopen_singleton_bot.compl.isClosed.isCompact.elim_finite_subfamily_closed
     (fun i => {C : Closeds α | ↑C ⊆ F i})
     (fun i => isClosed_subsets_of_isClosed (hF₁ i))
-  simp_rw [← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset,
-    ← Set.ofPred_forall, ← Set.subset_iInter_iff, hF₂, Set.subset_empty_iff, coe_eq_empty,
-    Set.ofPred_eq_eq_singleton] at this
+  simp_rw [Set.disjoint_compl_left_iff_subset, ← Set.ofPred_forall, ← Set.subset_iInter_iff, hF₂,
+    Set.subset_empty_iff, coe_eq_empty, Set.ofPred_eq_eq_singleton] at this
   obtain ⟨s, hs⟩ := this .rfl
   specialize @hs ⟨⋂ i ∈ s, F i, isClosed_biInter fun i _ => hF₁ i⟩ .rfl
   exact ⟨s, congr($hs)⟩

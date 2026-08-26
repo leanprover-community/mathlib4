@@ -6,8 +6,10 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Topology
+
 import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
@@ -371,7 +373,7 @@ end Mul
 
 section SMul
 
-variable {f : ℝ → 𝕜} {g : ℝ → E} [NormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+variable {f : ℝ → 𝕜} {g : ℝ → E} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem smul_continuousOn (hf : IntervalIntegrable f μ a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x • g x) μ a b := by
