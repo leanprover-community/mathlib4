@@ -19,7 +19,7 @@ resulting object is `NormGroup G` with `dist g h = ‖g⁻¹ * h‖`.
 
 * `Group.Generators.wordLength`: the word length of an element of `G` with respect to a
   generating family `P`.
-* `Group.Generators.IsGeodesic`: a word is geodesic if of minimal length among the words
+* `Group.Generators.IsGeodesic`: a word is geodesic if it is of minimal length among the words
   representing the same group element.
 * `Group.Generators.wordNorm`: the word length as a norm on `G`.
 * `Group.Generators.normedGroup`: the normed group structure on `G` induced by `wordNorm`.
