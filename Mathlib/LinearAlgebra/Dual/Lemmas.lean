@@ -317,6 +317,10 @@ theorem SeparatingRight.id [Module.Projective R M] : (.id : (M →ₗ[R] R) →�
 theorem Nondegenerate.id [Module.Projective R M] :
     (.id : (M →ₗ[R] R) →ₛₗ[_] _).Nondegenerate := ⟨.id, .id⟩
 
+instance [Module.Projective R M] : Fact (.id : (M →ₗ[R] R) →ₛₗ[_] _).SeparatingRight := ⟨.id⟩
+
+instance [Module.Projective R M] : Fact (.id : (M →ₗ[R] R) →ₛₗ[_] _).Nondegenerate := ⟨.id⟩
+
 /-- The pairing `Dual.eval` is left-separating. -/
 theorem SeparatingLeft.eval [Module.Projective R M] : (Dual.eval R M).SeparatingLeft := by
   simp only [Dual.eval, flip_separatingLeft, SeparatingRight.id]
@@ -324,6 +328,10 @@ theorem SeparatingLeft.eval [Module.Projective R M] : (Dual.eval R M).Separating
 /-- The pairing `Dual.eval` is non-degenerate. -/
 theorem Nondegenerate.eval [Module.Projective R M] : (Dual.eval R M).Nondegenerate :=
   ⟨.eval, .eval⟩
+
+instance [Module.Projective R M] : Fact (Dual.eval R M).SeparatingLeft := ⟨.eval⟩
+
+instance [Module.Projective R M] : Fact (Dual.eval R M).Nondegenerate := ⟨.eval⟩
 
 end LinearMap
 

@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
 # The algebraic dual of a cone
@@ -29,7 +30,7 @@ Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to
 
 @[expose] public section
 
-assert_not_exists TopologicalSpace Real Cardinal
+assert_not_exists TopologicalSpace Real -- Cardinal
 
 open Function LinearMap Pointwise Set
 
@@ -142,10 +143,16 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
 
-lemma dual_univ (hp : Injective p.flip) : dual p univ = 0 := by
-  refine le_antisymm (fun y hy ↦ (map_eq_zero_iff p.flip hp).1 ?_) (by simp)
+lemma dual_univ_ker : dual p .univ = ker p.flip := by
   ext x
-  exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
+  simp_rw [mem_dual, Set.mem_univ, forall_const, Submodule.restrictScalars_mem,
+    mem_ker, LinearMap.ext_iff, flip_apply, zero_apply]
+  constructor <;> intro h y
+  · exact le_antisymm (by simpa using @h (-y)) (@h y)
+  · rw [h y]
+
+variable [Fact p.SeparatingRight] in
+@[simp] lemma dual_univ : dual p .univ = ⊥ := by simp [dual_univ_ker]
 
 variable {N : Type*} [AddCommGroup N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
