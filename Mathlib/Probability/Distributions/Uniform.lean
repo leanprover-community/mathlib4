@@ -46,7 +46,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 open scoped Finset MeasureTheory NNReal ENNReal
 
 -- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` scope :(
-open TopologicalSpace MeasureTheory Measure PMF
+open TopologicalSpace MeasureTheory.Measure PMF ProbabilityTheory
 
 noncomputable section
 
