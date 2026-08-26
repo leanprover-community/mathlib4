@@ -10,6 +10,7 @@ public import Counterexamples.DirectSumIsInternal
 public import Counterexamples.DiscreteTopologyNonDiscreteUniformity
 public import Counterexamples.EulerSumOfPowers
 public import Counterexamples.Girard
+public import Counterexamples.GrothendieckPower
 public import Counterexamples.HeawoodUnitDistance
 public import Counterexamples.HomogeneousPrimeNotPrime
 public import Counterexamples.InvertibleModuleNotIdeal
