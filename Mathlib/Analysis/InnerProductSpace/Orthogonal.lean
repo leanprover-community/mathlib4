@@ -68,7 +68,7 @@ lemma mem_orthogonal_iff_re_inner_eq_zero {v : E} :
   refine ⟨by simp +contextual, fun h u hu ↦ ?_⟩
   simpa [inner_smul_left, RCLike.conj_mul, -inner_conj_symm] using h (⟪u, v⟫ • u) (K.smul_mem _ hu)
 
-/-- `v ∈ Kᗮ` if and only if `re ⟪u, v⟫ = 0` for all `u ∈ K`; it suffices to check only the
+/-- `v ∈ Kᗮ` if and only if `re ⟪v, u⟫ = 0` for all `u ∈ K`; it suffices to check only the
 real part of the inner product is zero. Variation of `mem_orthogonal_iff_re_inner_eq_zero` with
 the inner product reversed. -/
 lemma mem_orthogonal_iff_re_inner_eq_zero' {v : E} :
@@ -445,7 +445,7 @@ lemma mem_orthogonal_iff_re_inner_eq_zero {v : E} :
     v ∈ Kᗮ ↔ ∀ u ∈ K, RCLike.re ⟪u, v⟫ = 0 :=
   K.toSubmodule.mem_orthogonal_iff_re_inner_eq_zero
 
-/-- `v ∈ Kᗮ` if and only if `re ⟪u, v⟫ = 0` for all `u ∈ K`; it suffices to check only the
+/-- `v ∈ Kᗮ` if and only if `re ⟪v, u⟫ = 0` for all `u ∈ K`; it suffices to check only the
 real part of the inner product is zero. Variation of `mem_orthogonal_iff_re_inner_eq_zero` with
 the inner product reversed. -/
 lemma mem_orthogonal_iff_re_inner_eq_zero' {v : E} :
