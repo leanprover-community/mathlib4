@@ -339,19 +339,15 @@ theorem summable_iterate_mul_iff_isQuasiregular {x : R} (h : ‖x‖ < 1) :
   rw [isQuasiregular_iff]
   refine ⟨fun h ↦ ?_, ?_⟩
   · refine ⟨∑' i : ℕ, (· * x)^[i] x, ?_, ?_⟩
-    · simpa [← sub_eq_add_neg, sub_sub] using sub_eq_zero.mpr h.add_self_mul_geom_series.symm
+    · simpa [← sub_eq_add_neg, sub_sub, sub_eq_zero] using h.add_self_mul_geom_series.symm
     · rw [mul_neg]
       convert sub_eq_zero.mpr h.add_geom_series_mul_self.symm
       abel
   · rintro ⟨s, hs, hs'⟩
     rw [neg_mul] at hs
     have hxy : x * s = s - x := by grind
-    have hnorm (n : ℕ) : ‖(· * x)^[n] x‖ ≤ ‖x‖ ^ (n + 1) := by
-      induction n with
-      | zero => simp
-      | succ n ih => grw [iterate_succ_apply', pow_succ, norm_mul_le, ih]
     have hsum : Summable (‖(· * x)^[·] x‖) :=
-      .of_nonneg_of_le (by intro; positivity) hnorm <| by
+      .of_nonneg_of_le (by intro; positivity) (norm_iterate_mul_le x) <| by
         simpa [pow_succ] using (summable_geometric_of_lt_one (norm_nonneg x) h).mul_right ‖x‖
     apply HasSum.summable (a := s)
     rw [hasSum_iff_tendsto_nat_of_summable_norm hsum, ← tendsto_sub_nhds_zero_iff]
