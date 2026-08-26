@@ -92,13 +92,13 @@ def toPermHom (n : ℕ) : BraidGroup n →* Perm (Fin n) :=
 @[simp]
 theorem toPermHom_σ (n : ℕ) (i : Fin n) :
     toPermHom (n + 1) (σ i) = CoxeterMatrix.swapFun n i := by
-  -- This proof is strangely fragile
-  -- e.g. changing the `rw` to `simp only` results in a timeout,
-  -- and while `simp only [CoxeterMatrix.artinToCoxeter_artinGenerator]`
-  -- should work before the `exact`, it doesn't, nor does `rw`, while `erw` times out.
-  simp only [toPermHom, σ]
-  rw [MonoidHom.coe_comp, Function.comp_apply]
-  exact CoxeterMatrix.typeAToPermHom_simple _ _
+  -- `BraidGroup (n + 1)` and `(CoxeterMatrix.A n).ArtinGroup` are definitionally equal, but
+  -- carry syntactically different `Group` instances, so unfolding `toPermHom` here leaves a
+  -- goal that only typechecks at default transparency and `rw` cannot see into. Restate it
+  -- over the Artin group first, where every instance argument agrees.
+  change CoxeterMatrix.typeAToPermHom n
+      ((CoxeterMatrix.A n).artinToCoxeter ((CoxeterMatrix.A n).artinGenerator i)) = _
+  rw [CoxeterMatrix.artinToCoxeter_artinGenerator, CoxeterMatrix.typeAToPermHom_simple]
 
 /-- The surjection from $B_{n+1}$ to $S_{n+1}$ is surjective. -/
 theorem toPermHom_surjective (n : ℕ) : Function.Surjective (toPermHom n) :=
