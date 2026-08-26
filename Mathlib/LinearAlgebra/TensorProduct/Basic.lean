@@ -340,6 +340,15 @@ attribute [local instance] SMulCommClass.symm
 @[deprecated "with (S := R)" (since := "2026-02-21")]
 alias mapOfCompatibleSMul' := mapOfCompatibleSMul
 
+variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SMulCommClass A S' M]
+
+lemma toAddHom_mapOfCompatibleSMul_eq :
+    (mapOfCompatibleSMul R A S M N).toAddHom = (mapOfCompatibleSMul R A S' M N).toAddHom := rfl
+
+lemma mem_ker_mapOfCompatibleSMul_iff (x : M ⊗[A] N) :
+    x ∈ (mapOfCompatibleSMul R A S M N).ker ↔ x ∈ (mapOfCompatibleSMul R A S' M N).ker :=
+  Iff.of_eq rfl
+
 /-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
 then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N` as `S`-modules,
 where `S` is any other ring acting on `M` and whose action commutes with the `A` and `R`-actions. -/
@@ -350,15 +359,6 @@ def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[S] M ⊗[
     fun _ _ h h' ↦ by simpa using congr($h + $h')
   right_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
     fun _ _ h h' ↦ by simpa using congr($h + $h')
-
-variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SMulCommClass A S' M]
-
-lemma toAddHom_mapOfCompatibleSMul_eq :
-    (mapOfCompatibleSMul R A S M N).toAddHom = (mapOfCompatibleSMul R A S' M N).toAddHom := rfl
-
-lemma mem_ker_mapOfCompatibleSMul_iff (x : M ⊗[A] N) :
-    x ∈ (mapOfCompatibleSMul R A S M N).ker ↔ x ∈ (mapOfCompatibleSMul R A S' M N).ker :=
-  Iff.of_eq rfl
 
 end CompatibleSMul
 
