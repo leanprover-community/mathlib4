@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.RingTheory.LocalRing.Quotient
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
@@ -108,23 +109,6 @@ section FiniteResidueField
 
 open Valued
 
-lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuationRing 𝒪[K]]
-    (h : Finite 𝓀[K]) (n : ℕ) :
-    Finite (𝒪[K] ⧸ 𝓂[K] ^ n) := by
-  induction n with
-  | zero =>
-    simp only [pow_zero, Ideal.one_eq_top]
-    exact Finite.of_fintype (↥𝒪[K] ⧸ ⊤)
-  | succ n ih =>
-    have : 𝓂[K] ^ (n + 1) ≤ 𝓂[K] ^ n := Ideal.pow_le_pow_right (by simp)
-    replace ih := Finite.of_equiv _ (DoubleQuot.quotQuotEquivQuotOfLE this).symm.toEquiv
-    suffices Finite (Ideal.map (Ideal.Quotient.mk (𝓂[K] ^ (n + 1))) (𝓂[K] ^ n)) from
-      .of_ideal_quotient (.map (Ideal.Quotient.mk _) (𝓂[K] ^ n))
-    exact @Finite.of_equiv _ _ h
-      ((Ideal.quotEquivPowQuotPowSuccEquiv (IsPrincipalIdealRing.principal 𝓂[K])
-        (IsDiscreteValuationRing.not_a_field _) n).trans
-        (Ideal.powQuotPowSuccEquivMapMkPowSuccPow _ n))
-
 open scoped Valued
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -163,7 +147,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
     have hp' := Valuation.integer.v_irreducible_lt_one hp
     obtain ⟨n, hn⟩ : ∃ n : ℕ, ‖(p : K)‖ ^ n < ε := exists_pow_lt_of_lt_one εpos
       (toNormedField.norm_lt_one_iff.mpr hp')
-    have hF := finite_quotient_maximalIdeal_pow_of_finite_residueField H n
+    have hF : Finite (𝒪[K] ⧸ 𝓂[K] ^ n) := inferInstance
     refine ⟨Quotient.out '' (Set.univ (α := 𝒪[K] ⧸ (𝓂[K] ^ n))), Set.toFinite _, ?_⟩
     have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n) := by
       ext
