@@ -230,14 +230,15 @@ variable {ΓR ΓA : Type*}
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
     (vR : Valuation R ΓR) (vA : Valuation A ΓA) [vR.HasExtension vA]
 
+open MonoidWithZeroHom in
 /-- The map of valuation groups induced by a valuation extension. -/
 noncomputable def mapValueGroup₀ :
-    (MonoidWithZeroHom.ValueGroup₀ (.ofClass vR : R →*₀ ΓR)) →*₀
-      (MonoidWithZeroHom.ValueGroup₀ (.ofClass vA : A →*₀ ΓA)) := by
+    (ValueGroup₀ (.ofClass vR : R →*₀ ΓR)) →*₀
+      (ValueGroup₀ (.ofClass vA : A →*₀ ΓA)) := by
   have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
   refine (WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso.toMonoidWithZeroHom
   intro r hr
-  rw [MonoidWithZeroHom.mem_valueGroup_iff_of_comm] at hr ⊢
+  rw [mem_valueGroup_iff_of_comm] at hr ⊢
   obtain ⟨a, ha0, x, hr⟩ := hr
   exact ⟨algebraMap R A a, ha0, algebraMap R A x, hr⟩
 
