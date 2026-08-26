@@ -3696,6 +3696,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain.Recolor
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain.Swap
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan.Rotation
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
