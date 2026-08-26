@@ -78,9 +78,17 @@ theorem omega_mul_omega_eq_add :
     (ω : QuadraticAlgebra R a b) * ω = a • 1 + b • ω := by
   ext <;> simp
 
+theorem omega_pow_two_eq_add :
+    ω ^ 2 = a • (1 : QuadraticAlgebra R a b) + b • ω := by
+  rw [sq , omega_mul_omega_eq_add]
+
 theorem omega_mul_omega_eq_algebraMap :
     (ω : QuadraticAlgebra R a b) * ω = algebraMap R _ a + algebraMap R _ b * ω := by
   simp [omega_mul_omega_eq_add, Algebra.algebraMap_eq_smul_one]
+
+@[simp]
+theorem basis_apply_one : basis a b 1 = ω := by
+  ext <;> simp [basis]
 
 @[simp]
 theorem omega_mul_mk (x y : R) : (ω : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨a * y, x + b * y⟩ := by
@@ -93,6 +101,10 @@ theorem omega_mul_algebraMap_mul_mk (n x y : R) :
 
 theorem mk_eq_add_smul_omega (x y : R) :
     (⟨x, y⟩ : QuadraticAlgebra R a b) = algebraMap _ _ x + y • ω := by
+  ext <;> simp
+
+/-- Decomposition of an element of a quadratic algebra in the basis `(1, ω)`. -/
+theorem re_smul_add_im_smul (x : QuadraticAlgebra R a b) : x.re • 1 + x.im • ω = x := by
   ext <;> simp
 
 variable {A : Type*} [Ring A] [Algebra R A]
