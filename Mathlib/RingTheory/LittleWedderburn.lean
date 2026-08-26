@@ -55,13 +55,14 @@ open Module Polynomial
 
 variable {D}
 
-@[implicit_reducible]
+@[instance_reducible]
 private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
 private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical
@@ -69,7 +70,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   set Z := Subring.center D
   -- We proceed by contradiction; that is, we assume the center is strictly smaller than `D`.
   by_contra! hZ
-  letI : Field Z := hD.field hZ.lt_top
+  let : Field Z := hD.field hZ.lt_top
   set q := card Z with card_Z
   have hq : 1 < q := by rw [card_Z]; exact one_lt_card
   let n := finrank Z D
@@ -92,7 +93,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
     rw [eval_sub, eval_X_pow, eval_one, ← key, Int.dvd_add_left this] at contra
     refine (Nat.le_of_dvd ?_ ?_).not_gt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
-    · convert Int.natAbs_dvd_natAbs.mpr contra
+    · convert! Int.natAbs_dvd_natAbs.mpr contra
       clear_value q
       simp only [eq_comm, Int.natAbs_eq_iff, Nat.cast_sub hq.le, Nat.cast_one, neg_sub, true_or]
     · by_contra! h
@@ -118,12 +119,12 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
     by_contra! hZx
     refine (ConjClasses.mk_bijOn (Dˣ)).mapsTo (Set.subset_center_units ?_) hx
     exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
-  letI : Field Zx := hD.field hZx.lt_top
-  letI : Algebra Z Zx := (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
+  let : Field Zx := hD.field hZx.lt_top
+  let : Algebra Z Zx := (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
   let d := finrank Z Zx
   have card_Zx : card Zx = q ^ d := Module.card_eq_pow_finrank
   have h1qd : 1 ≤ q ^ d := by rw [← card_Zx]; exact card_pos
-  haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
+  have : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
   rw [card_units, card_Zx]
   push_cast [h1qd, h1qn]
   apply Int.dvd_div_of_mul_dvd
@@ -153,7 +154,7 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
   rw [← hn, ← Subring.card_top D]
-  convert Set.card_lt_card hR
+  convert! Set.card_lt_card hR
 
 end LittleWedderburn
 
@@ -173,5 +174,4 @@ theorem Finite.isDomain_to_isField (D : Type*) [Finite D] [Ring D] [IsDomain D] 
   classical
   cases nonempty_fintype D
   let _ := Fintype.divisionRingOfIsDomain D
-  let _ := littleWedderburn D
   exact Field.toIsField D

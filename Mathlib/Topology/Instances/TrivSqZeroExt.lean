@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
-public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
 /-!
 # Topology on `TrivSqZeroExt R M`
@@ -162,7 +162,7 @@ instance [AddGroup R] [AddGroup M] [IsUniformAddGroup R] [IsUniformAddGroup M] :
     IsUniformAddGroup (tsze R M) :=
   inferInstanceAs <| IsUniformAddGroup (R × M)
 
-open Uniformity
+open scoped Uniformity
 
 theorem uniformity_def :
     𝓤 (tsze R M) =
