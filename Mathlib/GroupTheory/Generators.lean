@@ -54,8 +54,17 @@ namespace Group.Generators
 
 variable (P : Group.Generators G ι)
 
-theorem lift_val_surjective : Function.Surjective (FreeGroup.lift P.val) :=
+/-- The canonical surjection from the free group on the generators to `G`. -/
+abbrev lift : FreeGroup ι →* G := FreeGroup.lift P.val
+
+lemma lift_surjective : Function.Surjective P.lift :=
   FreeGroup.lift_surjective_iff_closure_range_eq_top.mpr P.closure_eq_top
+
+@[deprecated (since := "2026-08-21")]
+alias lift_val_surjective := lift_surjective
+
+@[simp]
+lemma range_lift_eq_top : P.lift.range = ⊤ := MonoidHom.range_eq_top.mpr P.lift_surjective
 
 /-- If two homomorphisms coincide on the elements of a generating family, then they are equal. -/
 theorem hom_ext {M : Type*} [Monoid M] (f g : G →* M) (h : ∀ i, f (P.val i) = g (P.val i)) :
@@ -70,6 +79,25 @@ def ofSet {S : Set G} (h : Subgroup.closure S = ⊤) : Group.Generators G S wher
 lemma ofSet_val {S : Set G} (hS : Subgroup.closure S = ⊤) :
     (Group.Generators.ofSet hS).val = Subtype.val :=
   rfl
+
+/-- The generating family given by a the canonical surjection from `FreeGroup ι`. -/
+def ofFreeGroupHom (φ : FreeGroup ι →* G) (hφ : Function.Surjective φ) :
+    Group.Generators G ι where
+  val := φ ∘ FreeGroup.of
+  closure_eq_top := by
+    rw [Set.range_comp, ← MonoidHom.map_closure, FreeGroup.closure_range_of,
+      Subgroup.map_top_of_surjective φ hφ]
+
+@[simp]
+lemma ofFreeGroupHom_val (φ : FreeGroup ι →* G) (hφ : Function.Surjective φ) :
+    (Group.Generators.ofFreeGroupHom φ hφ).val = φ ∘ FreeGroup.of :=
+  rfl
+
+/-- The canonical surjection attached to `ofFreeGroupHom φ hφ` is `φ`. -/
+@[simp]
+lemma ofFreeGroupHom_lift (φ : FreeGroup ι →* G) (hφ : Function.Surjective φ) :
+    (Group.Generators.ofFreeGroupHom φ hφ).lift = φ :=
+  FreeGroup.lift.apply_symm_apply φ
 
 /-- The transport of a generating family along a surjective homomorphism. -/
 protected def map (f : G →* H) (hf : Function.Surjective f) : Group.Generators H ι where
@@ -95,7 +123,7 @@ lemma reindex_val (P : Group.Generators G ι) (e : ι' ≃ ι) : (P.reindex e).v
 
 /-- If `G` has a finite generating family, then `G` is finitely generated. -/
 theorem fg [Finite ι] (P : Group.Generators G ι) : Group.FG G :=
-  Group.fg_of_surjective P.lift_val_surjective
+  Group.fg_of_surjective P.lift_surjective
 
 end Group.Generators
 
