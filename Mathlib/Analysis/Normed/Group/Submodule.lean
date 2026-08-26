@@ -56,7 +56,7 @@ instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module �
 /-- If `x` is an element of a closed submodule `s` of a normed group `E`, its norm in `s` is equal
 to its norm in `E`. -/
 @[simp ←, norm_cast]
-theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
+theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : ClosedSubmodule 𝕜 E}
     (x : s) : ‖(x : E)‖ = ‖x‖ :=
   rfl
 
