@@ -43,7 +43,7 @@ lemma IsLink.mem_edgeCut_iff (h : G.IsLink e u v) :
   grind [isLink_comm, h.eq_and_eq_or_eq_and_eq]
 
 @[grind .]
-lemma edgeCut_subset (G : Graph α β) (S : Set α) : G.edgeCut S ⊆ E(G) :=
+lemma edgeCut_subset_edgeSet : G.edgeCut S ⊆ E(G) :=
   fun _ ⟨_, _, huv, _, _⟩ ↦ huv.edge_mem
 
 lemma edgeCut_eq_empty_iff (hS : S ⊆ V(G)) : G.edgeCut S = ∅ ↔ G.induce S ≤c G := by
