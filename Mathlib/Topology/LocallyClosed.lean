@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.NhdsWithin
 public import Mathlib.Tactic.TFAE
@@ -27,10 +26,11 @@ public import Mathlib.Tactic.TFAE
   2. There is a neighborhood `U` of `x` such that `U ∩ s` is a closed subset of `U`.
   3. There is a neighborhood `U` of `x` such that `U ∩ closure s ⊆ s`.
   4. There is a neighborhood `U` of `x` such that `U ∩ s = U ∩ closure s`.
-  5. `s` and `closure s` coincide eventually near `x`.
-  6. `closure s ⊆ s` eventually near `x`.
-  7. `s` is a neighborhood of `x` inside `closure s`.
-  8. `coborder s` is a neighborhood of `x`.
+  5. `s` coincides with some closed set `Z` eventually near `x`.
+  6. `s` and `closure s` coincide eventually near `x`.
+  7. `closure s ⊆ s` eventually near `x`.
+  8. `s` is a neighborhood of `x` inside `closure s`.
+  9. `coborder s` is a neighborhood of `x`.
 * `isLocallyClosed_tfae`:
   A set `s` is locally closed if one of the equivalent conditions below hold
   1. It is the intersection of some open set and some closed set (this is the definition).
