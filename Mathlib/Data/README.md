@@ -7,7 +7,7 @@ Other definitions and results that are more "mathematics-flavored" but do not cl
 to a specific mathematical domain should instead go in `Basic`.
 
 Note that, although the possibility of upstreaming is the defining property of this folder,
-the maintainer of Core and Batteries can refuse the upstreaming of material from this folder
+the maintainers of Core and Batteries may refuse the upstreaming of material from this folder
 to Core or Batteries.
 
 ## TODO
