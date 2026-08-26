@@ -51,7 +51,7 @@ lemma wordProd_nil : P.wordProd [] = 1 := by
   simp [wordProd]
 
 @[simp]
-lemma wordProd_singleton : P.wordProd [(i,b)] = cond b (P.val i) (P.val i)⁻¹ := by
+lemma wordProd_singleton : P.wordProd [(i, b)] = cond b (P.val i) (P.val i)⁻¹ := by
   simp [wordProd]
 
 lemma wordProd_cons : P.wordProd ((i, b) :: l) = cond b (P.val i) (P.val i)⁻¹ * P.wordProd l := by
