@@ -88,7 +88,8 @@ lemma wordLength_one : P.wordLength (1 : G) = 0 := eq_zero_of_nonpos (P.wordLeng
 lemma wordLength_eq_zero_iff : P.wordLength g = 0 ↔ g = 1 := by
   constructor
   · obtain ⟨l, hl, rfl⟩ := P.exists_isGeodesic g
-    intro h; rw [hl.eq, List.length_eq_zero_iff] at h
+    intro h
+    rw [hl.eq, List.length_eq_zero_iff] at h
     exact h ▸ P.wordProd_nil
   · intro h
     exact h ▸ P.wordLength_one
