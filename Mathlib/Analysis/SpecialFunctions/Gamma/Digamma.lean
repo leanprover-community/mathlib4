@@ -27,8 +27,8 @@ proves some basic properties.
   `digamma (s + n) = digamma s + ∑ k ∈ Finset.range n, (s + k)⁻¹`.
 * `Complex.digamma_nat_add_one`: The digamma function at positive integers, in terms of harmonic
   numbers: `digamma (n + 1) = harmonic n - eulerMascheroniConstant`.
-* `Complex.digamma_reflection`: The reflection formula
-  `digamma (1 - s) - digamma s = π * cot (π * s)`.
+* `Complex.digamma_one_sub`: Euler's reflection formula
+  `digamma (1 - s) = digamma s + π * cot (π * s)`.
 * `Complex.digamma_two_mul`: The duplication formula
   `digamma (2 * s) = (1 / 2) * (digamma s + digamma (s + 1 / 2)) + log 2`.
 * `Complex.meromorphic_digamma`: The digamma function is meromorphic.
@@ -88,6 +88,22 @@ theorem digamma_nat_add_one (n : ℕ) :
   push_cast [add_comm (1 : ℂ)]
   ring
 
+open scoped Real in
+/-- **Euler's reflection formula for the digamma function**:
+`ψ (1 - s) = ψ s + π * cot (π * s)` for `s` not an integer. -/
+theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
+    digamma (1 - s) = digamma s + π * cot (π * s) := by
+  -- The idea is to apply `logDeriv` to both sides of `Gamma_mul_Gamma_one_sub`. This produces
+  -- side conditions, which the two `have`s below allow the `<;> try ...` line to discharge.
+  have (m : ℕ) : s ≠ -m := by simpa using hs (-m)
+  have (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by push_cast; grind)
+  have := congr(logDeriv $(funext Gamma_mul_Gamma_one_sub) s)
+  rw [logDeriv_fun_mul, logDeriv_fun_div, ← Function.comp_def Gamma, ← Function.comp_def sin,
+    logDeriv_comp, logDeriv_comp] at this <;>
+    try first | fun_prop | grind [sin_eq_zero_iff, ofReal_ne_zero, Real.pi_ne_zero]
+  simp [digamma_def] at this ⊢
+  grind
+
 @[fun_prop]
 theorem meromorphic_digamma : Meromorphic digamma :=
   Meromorphic.Gamma.logDeriv
@@ -100,37 +116,6 @@ theorem _root_.HasDerivAt.logDeriv_Gamma {g : ℂ → ℂ} {a s : ℂ} (hg : Has
   rw [show (fun z ↦ Gamma (g z)) = Gamma ∘ g from rfl,
     logDeriv_comp (differentiableAt_Gamma _ h) hg.differentiableAt, hg.deriv, digamma_def]
   exact mul_comm _ _
-
-/-- **The digamma reflection formula** `ψ(1 - s) - ψ(s) = π cot (π s)`, for `s ∉ ℤ`.
-Proved from `Complex.Gamma_mul_Gamma_one_sub` by taking logarithmic derivatives. -/
-theorem digamma_reflection {s : ℂ} (hs : ∀ m : ℤ, s ≠ m) :
-    digamma (1 - s) - digamma s = (π : ℂ) * cot ((π : ℂ) * s) := by
-  have hπ : (π : ℂ) ≠ 0 := ofReal_ne_zero.mpr Real.pi_ne_zero
-  have hs₀ (m : ℕ) : s ≠ -m := fun h ↦ hs (-m) (by push_cast; exact h)
-  have hs₁ (m : ℕ) : 1 - s ≠ -m := fun h ↦ hs (1 + m) (by push_cast; linear_combination -h)
-  have hsin : sin ((π : ℂ) * s) ≠ 0 := fun h ↦ by
-    obtain ⟨k, hk⟩ := sin_eq_zero_iff.mp h
-    exact hs k (mul_left_cancel₀ hπ (hk.trans (mul_comm _ _)))
-  -- take logarithmic derivatives of Euler's reflection formula `Γ(s) Γ(1 - s) = π / sin (π s)`
-  have key : digamma s - digamma (1 - s) = -((π : ℂ) * cot ((π : ℂ) * s)) := by
-    calc digamma s - digamma (1 - s)
-        = logDeriv (fun z ↦ Gamma z * Gamma (1 - z)) s := by
-          rw [logDeriv_fun_mul (f := Gamma) (g := fun z ↦ Gamma (1 - z)) s (Gamma_ne_zero hs₀)
-              (Gamma_ne_zero hs₁) (differentiableAt_Gamma s hs₀)
-              ((differentiableAt_Gamma _ hs₁).comp s (by fun_prop)),
-            ((hasDerivAt_id' (x := s)).const_sub 1).logDeriv_Gamma hs₁, ← digamma_def]
-          ring
-      _ = logDeriv (fun z ↦ (π : ℂ) / sin ((π : ℂ) * z)) s := by
-          rw [funext Gamma_mul_Gamma_one_sub]
-      _ = -((π : ℂ) * cot ((π : ℂ) * s)) := by
-          rw [logDeriv_fun_div (f := fun _ ↦ (π : ℂ))
-                (g := fun z ↦ sin ((π : ℂ) * z)) s hπ hsin (by fun_prop)
-                (differentiableAt_sin.comp s (by fun_prop)),
-              logDeriv_const, Pi.zero_apply,
-              show (fun z : ℂ ↦ sin ((π : ℂ) * z)) = sin ∘ ((π : ℂ) * ·) from rfl,
-              logDeriv_comp differentiableAt_sin (by fun_prop), logDeriv_sin, deriv_const_mul_id]
-          ring
-  linear_combination -key
 
 /-- **The digamma duplication formula** `ψ(2s) = ½(ψ(s) + ψ(s + ½)) + log 2`, for
 `2s ∉ {0, -1, -2, …}`, which is equivalent to `s` and `s + ½` both avoiding the poles of `ψ`.
