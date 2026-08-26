@@ -104,12 +104,11 @@ theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α)
 /-- Maximal intersecting families are upper sets. -/
 protected theorem Intersecting.isUpperSet (hs : s.Intersecting)
     (h : ∀ t : Set α, t.Intersecting → s ⊆ t → s = t) : IsUpperSet s := by
-  classical
-    rintro a b hab ha
-    rw [h (Insert.insert b s) _ (subset_insert _ _)]
-    · exact mem_insert _ _
-    exact
-      hs.insert (mt (eq_bot_mono hab) <| hs.ne_bot ha) fun c hc hbc => hs ha hc <| hbc.mono_left hab
+  rintro a b hab ha
+  rw [h (Insert.insert b s) _ (subset_insert _ _)]
+  · exact mem_insert _ _
+  exact
+    hs.insert (mt (eq_bot_mono hab) <| hs.ne_bot ha) fun c hc hbc => hs ha hc <| hbc.mono_left hab
 
 /-- Maximal intersecting families are upper sets. Finset version. -/
 theorem Intersecting.isUpperSet' {s : Finset α} (hs : (s : Set α).Intersecting)
@@ -153,9 +152,8 @@ theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Inter
 
 theorem Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Intersecting) :
     2 * #s ≤ Fintype.card α := by
-  classical
-    refine (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' ?_
-    rw [Nat.two_mul, card_disjUnion, card_map]
+  refine (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' ?_
+  rw [Nat.two_mul, card_disjUnion, card_map]
 
 variable [Nontrivial α] [Fintype α] {s : Finset α}
 

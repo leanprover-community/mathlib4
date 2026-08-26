@@ -84,7 +84,7 @@ open Nat
 @[to_additive]
 private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.card α)
     (hpos : 0 < #{a : α | orderOf a = d}) : #{a : α | orderOf a = d} = φ d := by
-  induction d using Nat.strongRec' with | _ d IH
+  induction d using Nat.strong_induction_on with | _ d IH
   rcases Decidable.eq_or_ne d 0 with (rfl | hd0)
   · cases Fintype.card_ne_zero (eq_zero_of_zero_dvd hd)
   rcases Finset.card_pos.1 hpos with ⟨a, ha'⟩
@@ -175,10 +175,11 @@ variable [Group G] [Group G']
 /-- A group is commutative if the quotient by the center is cyclic.
   Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
 @[to_additive
-      /-- A group is commutative if the quotient by the center is cyclic.
-      Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
-theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
-    (a b : G) : a * b = b * a :=
+/-- A group is commutative if the quotient by the center is cyclic.
+Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
+theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f : G →* G')
+    (hf : f.ker ≤ center G) : IsMulCommutative G := by
+  refine ⟨⟨fun a b ↦ ?_⟩⟩
   let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
     IsCyclic.exists_generator (α := f.range)
   let ⟨m, hm⟩ := hx ⟨f a, a, rfl⟩
@@ -196,12 +197,26 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
     _ = y ^ m * y ^ n * y ^ (-m) * (y ^ (-n) * b * a) := by rw [mem_center_iff.1 hb]
     _ = b * a := by group
 
+@[to_additive (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
+  (since := "2026-05-26"))]
+theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
+    (a b : G) : a * b = b * a :=
+  f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm a b
+
 /-- A group is commutative if the quotient by the center is cyclic. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
     CommGroup G where
-  mul_comm := commutative_of_cyclic_center_quotient f hf
+  mul_comm := f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm
+
+variable (G) in
+/-- If the quotient by the center of a group is cyclic, then the group is commutative. -/
+@[to_additive
+/-- If the quotient by the center of a group is cyclic, then the group is commutative. -/]
+theorem isMulCommutative_of_isCyclic_quotient_center_self [IsCyclic (G ⧸ Subgroup.center G)] :
+    IsMulCommutative G := by
+  simp [(QuotientGroup.mk' <| .center G).isMulCommutative_of_isCyclic_of_ker_le_center]
 
 end QuotientCenter
 
@@ -257,9 +272,6 @@ theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
 theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
 
-@[deprecated (since := "2025-11-19")]
-alias CommGroup.is_simple_iff_isCyclic_and_prime_card := CommGroup.is_simple_iff_prime_card
-
 section SpecificInstances
 
 instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
@@ -286,7 +298,7 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
     obtain ⟨m, rfl⟩ := hs a
     aesop
   wlog hg' : 0 < g
-  · exact this (g := -g) (by simpa using neg_surjective.comp hs) (by grind) (by grind)
+  · exact this (g := -g) (by simpa using! neg_surjective.comp hs) (by grind) (by grind)
   have hi : (fun n : ℤ ↦ n • g).Injective := injective_zsmul_iff_not_isOfFinAddOrder.mpr
       <| not_isOfFinAddOrder_of_isAddTorsionFree h_ne
   exact ⟨.symm { Equiv.ofBijective _ ⟨hi, hs⟩ with
@@ -338,7 +350,8 @@ protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := b
   rw [IsAddCyclic.exponent_eq_card, Nat.card_zmod]
 
 /-- A group of order `p ^ 2` is not cyclic if and only if its exponent is `p`. -/
-@[to_additive]
+@[to_additive /-- An additive group of order `p ^ 2` is not cyclic if and only if its exponent is
+`p`. -/]
 lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
     (hα : Nat.card α = p ^ 2) : ¬ IsCyclic α ↔ Monoid.exponent α = p := by
   -- G is a nontrivial fintype of cardinality `p ^ 2`
@@ -381,6 +394,78 @@ theorem zmultiplesHom_ker_eq [AddGroup G] (g : G) :
 theorem zpowersHom_ker_eq [Group G] (g : G) :
     (zpowersHom G g).ker = zpowers (Multiplicative.ofAdd ↑(orderOf g)) :=
   congr_arg AddSubgroup.toSubgroup <| zmultiplesHom_ker_eq (Additive.ofMul g)
+
+/-- In any additive group, the relative index of `zmultiples (i • g)` in `zmultiples (j • g)`,
+times `gcd (gcd i j) (addOrderOf g)`, is `gcd i (addOrderOf g)`. -/
+theorem AddSubgroup.relIndex_zmultiples_zsmul_zsmul [AddGroup G] (g : G) (i j : ℤ) :
+    (zmultiples (i • g)).relIndex (zmultiples (j • g)) * (i.gcd j).gcd (addOrderOf g) =
+      i.gcd (addOrderOf g) := by
+  rw [show (i.gcd j).gcd (addOrderOf g) = (i.gcd (addOrderOf g)).gcd (j.gcd (addOrderOf g)) from
+      (Nat.gcd_gcd_gcd_right i.natAbs j.natAbs (addOrderOf g)).symm,
+    ← zmultiplesHom_apply, ← zmultiplesHom_apply, ← AddMonoidHom.map_zmultiples,
+    ← AddMonoidHom.map_zmultiples, AddSubgroup.relIndex_map_map, zmultiplesHom_ker_eq,
+    Int.zmultiples_sup, Int.zmultiples_sup, Int.relIndex_zmultiples_mul]
+
+/-- In any group, the relative index of `zpowers (g ^ i)` in `zpowers (g ^ j)`, times
+`gcd (gcd i j) (orderOf g)`, is `gcd i (orderOf g)`. -/
+@[to_additive existing]
+theorem Subgroup.relIndex_zpowers_zpow_zpow [Group G] (g : G) (i j : ℤ) :
+    (zpowers (g ^ i)).relIndex (zpowers (g ^ j)) * (i.gcd j).gcd (orderOf g) =
+      i.gcd (orderOf g) :=
+  AddSubgroup.relIndex_zmultiples_zsmul_zsmul (Additive.ofMul g) i j
+
+/-- `zpowers (g ^ i) ≤ zpowers (g ^ j)` iff `j.gcd (orderOf g) ∣ i.gcd (orderOf g)`.
+This characterizes inclusion of cyclic subgroups of a group generated by integer powers of a
+single element. -/
+@[to_additive]
+theorem Subgroup.zpowers_le_zpowers_iff [Group G] (g : G) (i j : ℤ) :
+    zpowers (g ^ i) ≤ zpowers (g ^ j) ↔ j.gcd (orderOf g) ∣ i.gcd (orderOf g) := by
+  simp_rw [← Nat.gcd_eq_left_iff_dvd, eq_comm, Int.gcd_eq_natAbs_gcd_natAbs, Nat.gcd_gcd_gcd_right,
+    ← Int.gcd_eq_natAbs_gcd_natAbs, ← relIndex_zpowers_zpow_zpow g j i]
+  simp +contextual [mul_left_eq_self₀]
+
+/-- In any group, the index of `zpowers (g ^ i)` relative to `zpowers g` is the gcd of `i` and
+the order of `g`. -/
+@[to_additive /-- In any additive group, the index of `zmultiples (i • g)` relative to
+`zmultiples g` is the gcd of `i` and the order of `g`. -/]
+theorem Subgroup.relIndex_zpowers_zpow [Group G] (g : G) (i : ℤ) :
+    (zpowers (g ^ i)).relIndex (zpowers g) = i.gcd (orderOf g) := by
+  simpa using Subgroup.relIndex_zpowers_zpow_zpow g i 1
+
+/-- In a group generated by `g`, the index of `zpowers (g ^ i)` is the gcd of `i` and the order
+of `g`. -/
+@[to_additive /-- In an additive group generated by `g`, the index of `zmultiples (i • g)` is the
+gcd of `i` and the order of `g`. -/]
+theorem Subgroup.index_zpowers_zpow [Group G] {g : G} (hg : zpowers g = ⊤) (i : ℤ) :
+    (zpowers (g ^ i)).index = i.gcd (orderOf g) := by
+  rw [← Subgroup.relIndex_top_right, ← hg, Subgroup.relIndex_zpowers_zpow]
+
+/-- The subgroups generated by `g ^ i` and `g ^ j` are equal iff
+`i.gcd (orderOf g) = j.gcd (orderOf g)`. Compare `Subgroup.zpowers_eq_zpowers_iff`, which
+characterizes equality of `zpowers x` and `zpowers y` when `x` has infinite order. -/
+@[to_additive /-- The subgroups generated by `i • g` and `j • g` are equal iff
+`i.gcd (addOrderOf g) = j.gcd (addOrderOf g)`. Compare `AddSubgroup.zmultiples_eq_zmultiples_iff`,
+which characterizes equality of `zmultiples x` and `zmultiples y` when `x` has infinite order. -/]
+theorem Subgroup.zpowers_eq_zpowers_iff' [Group G] (g : G) (i j : ℤ) :
+    zpowers (g ^ i) = zpowers (g ^ j) ↔ i.gcd (orderOf g) = j.gcd (orderOf g) := by
+  rw [le_antisymm_iff, zpowers_le_zpowers_iff, zpowers_le_zpowers_iff,
+    ← Nat.dvd_antisymm_iff, eq_comm]
+
+@[to_additive]
+theorem Subgroup.zpowers_le_zpowers_of_dvd [Group G] (g : G) {m n : ℤ} (h : n ∣ m) :
+    zpowers (g ^ m) ≤ zpowers (g ^ n) :=
+  (zpowers_le_zpowers_iff g m n).mpr (Int.gcd_dvd_gcd_of_dvd_left _ h)
+
+/-- The subgroup generated by `g ^ i` and `g ^ j` is generated by `g ^ gcd i j`. -/
+@[to_additive /-- The subgroup generated by `i • g` and `j • g` is generated by `gcd i j • g`. -/]
+theorem Subgroup.zpowers_zpow_sup [Group G] (g : G) (i j : ℤ) :
+    zpowers (g ^ i) ⊔ zpowers (g ^ j) = zpowers (g ^ (i.gcd j : ℤ)) := by
+  apply le_antisymm
+  · exact sup_le (zpowers_le_zpowers_of_dvd g (gcd_dvd_left i j))
+      (zpowers_le_zpowers_of_dvd g (gcd_dvd_right i j))
+  · grw [Int.gcd_eq_gcd_ab, zpow_add, zpowers_mul_le_sup]
+    exact sup_le_sup (zpowers_le_zpowers_of_dvd g (dvd_mul_right i (i.gcdA j)))
+      (zpowers_le_zpowers_of_dvd g (dvd_mul_right j (i.gcdB j)))
 
 section addGenerator
 variable [AddGroup G] {g : G} (hg : ∀ x, x ∈ zmultiples g) {n : ℕ} (hn : Nat.card G = n)
@@ -567,6 +652,9 @@ abbrev intCyclicAddEquiv [AddGroup G] [IsAddCyclic G] : ℤ ≃+ G :=
 
 end Infinite
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 variable (G) in
 /-- The automorphism group of a cyclic group is isomorphic to the multiplicative group of ZMod. -/
 @[simps!]
@@ -579,7 +667,6 @@ noncomputable def IsCyclic.mulAutMulEquiv [Group G] [h : IsCyclic G] :
 variable (G) in
 theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :
     Nat.card (MulAut G) = Nat.totient (Nat.card G) := by
-  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   rw [← ZMod.card_units_eq_totient, ← Nat.card_eq_fintype_card]
   exact Nat.card_congr (mulAutMulEquiv G)
 
@@ -776,7 +863,6 @@ theorem not_isAddCyclic_prod_of_infinite_nontrivial (M N : Type*) [AddGroup M] [
     have := isAddCyclic_of_surjective (f.prodMap f) (Prod.map_surjective.mpr ⟨hf, hf⟩)
     simpa using coprime_card_of_isAddCyclic_prod (ZMod 2) (ZMod 2)
   let ZN := ZMod (Nat.card N)
-  have : NeZero (Nat.card N) := ⟨Nat.card_pos.ne'⟩
   have := isAddCyclic_of_surjective ((ZMod.castHom (dvd_zero _) ZN).toAddMonoidHom.prodMap (.id ZN))
     (Prod.map_surjective.mpr ⟨ZMod.castHom_surjective (dvd_zero _), Function.surjective_id⟩)
   exact Finite.one_lt_card (α := N).ne' (by simpa [ZN] using coprime_card_of_isAddCyclic_prod ZN ZN)

@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Round
-import Mathlib.Algebra.Order.Group.PiLex
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Algebra.Polynomial.Reverse
+module
+
+public import Mathlib.Algebra.Order.Round
+public import Mathlib.Algebra.Order.Group.PiLex
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Algebra.Polynomial.Reverse
 
 /-!
 # Floors and ceils aren't preserved under ordered ring homomorphisms
@@ -35,10 +37,9 @@ But it does not preserve floors (nor ceils) as `⌊-ε⌋ = -1` while `⌊f (-ε
 (`IntWithEpsilon.forgetEpsilons_floor_lt`, `IntWithEpsilon.lt_forgetEpsilons_ceil`).
 -/
 
+@[expose] public noncomputable section
 
 namespace Counterexample
-
-noncomputable section
 
 open Function Int Polynomial
 
@@ -115,7 +116,7 @@ theorem forgetEpsilons_floor_lt (n : ℤ) :
     forgetEpsilons ⌊(n - ↑ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ↑ε)⌋ := by
   suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [map_sub, this]
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
-  exact (if_neg <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
+  exact (ite_eq_right <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
     rw [coeff_sub, intCast_coeff_zero]; simp)
 
 /-- The ceil of `n + ε` is `n + 1` but its image under `forgetEpsilons` is `n`, whose ceil is
@@ -127,7 +128,5 @@ theorem lt_forgetEpsilons_ceil (n : ℤ) :
   exact forgetEpsilons_floor_lt _
 
 end IntWithEpsilon
-
-end
 
 end Counterexample

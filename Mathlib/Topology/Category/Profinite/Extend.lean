@@ -42,7 +42,6 @@ the profinite set when written as a cofiltered limit of finite sets.
 -/
 lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj X) :
     ∃ (i : I) (g : F.obj i ⟶ X), f = c.π.app i ≫ toProfinite.map g := by
-  let _ : TopologicalSpace X := ⊥
   have : DiscreteTopology (toProfinite.obj X) := ⟨rfl⟩
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
     ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.hom.continuous⟩
@@ -117,6 +116,7 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
 `(StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G)` with cone point `G.obj S`.
@@ -148,6 +148,7 @@ section Colimit
 
 variable {C : Type*} [Category* C] (G : Profiniteᵒᵖ ⥤ C)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `Profiniteᵒᵖ` and `S : Profinite`, we obtain a cocone on
 `(CostructuredArrow.proj toProfinite.op ⟨S⟩ ⋙ toProfinite.op ⋙ G)` with cocone point `G.obj ⟨S⟩`.

@@ -46,7 +46,7 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal
     · exact factors_prod hI
     · exact prime_of_mem
     · exact fun _ _ _ _ ij => ij
-  · intro p hp q hq pq; dsimp
+  · intro p hp q hq pq
     rw [Ideal.irreducible_pow_sup]
     · suffices (normalizedFactors _).count p = 0 by rw [this, zero_min, pow_zero, Ideal.one_eq_top]
       rw [Multiset.count_eq_zero,
@@ -74,7 +74,6 @@ theorem isInternal_prime_power_torsion [Module.Finite R M]
 theorem exists_isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
     ∃ (P : Finset <| Ideal R) (_ : DecidableEq P) (_ : ∀ p ∈ P, Prime p) (e : P → ℕ),
       DirectSum.IsInternal fun p : P => torsionBySet R M (p ^ e p : Ideal R) := by
-  classical
   exact ⟨_, _, fun p hp => prime_of_factor p (Multiset.mem_toFinset.mp hp), _,
     isInternal_prime_power_torsion hM⟩
 

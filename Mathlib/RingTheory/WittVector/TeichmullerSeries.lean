@@ -31,7 +31,7 @@ Show that the Teichmuller series is unique.
 
 public section
 
-open Ideal Quotient
+open Ideal
 namespace WittVector
 
 variable {p : ℕ} [hp : Fact (Nat.Prime p)]
@@ -97,7 +97,7 @@ theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff (x : 𝕎 R) (n : �
       ← le_coeff_eq_iff_le_sub_coeff_eq_zero]
   intro i hi
   rw [WittVector.sum_coeff_eq_coeff_sum]
-  · rw [Finset.sum_eq_add_sum_diff_singleton_of_mem (Finset.mem_Iic.mpr (Nat.lt_succ_iff.mp hi))]
+  · rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem (Finset.mem_Iic.mpr (Nat.lt_succ_iff.mp hi))]
     let g := fun x : ℕ ↦ (0 : R)
     rw [Finset.sum_congr rfl (g := g)]
     · simp [g]
@@ -106,7 +106,7 @@ theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff (x : 𝕎 R) (n : �
       exact teichmuller_mul_pow_coeff_of_ne _ (Ne.intro hb.2).symm
   · refine fun n ↦ ⟨fun ⟨a, _, ha⟩ ⟨b, _, hb⟩ ↦ ?_⟩
     ext
-    dsimp only [ne_eq, Set.mem_setOf_eq]
+    dsimp only [ne_eq, Set.mem_ofPred_eq]
     rw [← Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) ha]
     exact Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) hb
 

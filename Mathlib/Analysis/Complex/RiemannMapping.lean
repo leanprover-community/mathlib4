@@ -5,15 +5,18 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Complex.Basic
 
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 import Mathlib.Analysis.Complex.BranchLogRoot
+public import Mathlib.Algebra.Order.Algebra
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Complex.Order
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Riemann mapping theorem
@@ -56,7 +59,7 @@ theorem exists_injective_not_dense_image_deriv_ne_zero {U : Set ℂ} (hUo : IsOp
       (by simpa [mem_vadd_set_iff_neg_vadd_mem])
     rcases this with ⟨f, hf_inj, hf_dense, hdf⟩
     refine ⟨f ∘ (-a + ·), hf_inj.comp (add_right_injective (-a)), ?_, fun z hz ↦ ?_⟩
-    · simpa only [← image_vadd, Set.image_image] using hf_dense
+    · simpa only [← image_vadd, Set.image_image] using! hf_dense
     · simpa [Function.comp_def, deriv_comp_const_add] using hdf (-a + z) (mapsTo_image _ _ hz)
   -- Choose a continuous branch of `√z` on `U`.
   -- This is the function we're looking for.
