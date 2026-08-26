@@ -16,7 +16,7 @@ This file gathers results on meromorphic functions specifict to the real and com
 
 public section
 
-open Set Complex
+open Set
 
 variable
   {𝕜 : Type*} [RCLike 𝕜]

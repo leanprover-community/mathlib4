@@ -184,7 +184,7 @@ lemma negMulLog_mul (x y : ℝ) : negMulLog (x * y) = y * negMulLog x + x * negM
   ring
 
 @[fun_prop] lemma continuous_negMulLog : Continuous negMulLog := by
-  simpa only [negMulLog_eq_neg] using continuous_mul_log.neg
+  simpa only [negMulLog_eq_neg] using continuous_mul_log.fun_neg
 
 lemma differentiableOn_negMulLog : DifferentiableOn ℝ negMulLog {0}ᶜ := by
   simpa only [negMulLog_eq_neg] using! differentiableOn_mul_log.neg
