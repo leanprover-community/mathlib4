@@ -9,10 +9,10 @@ public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Field.ProperSpace
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
+public import Mathlib.RingTheory.LocalRing.Quotient
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
-public import Mathlib.RingTheory.LocalRing.Quotient
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
@@ -108,6 +108,10 @@ variable {K Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Val
 section FiniteResidueField
 
 open Valued
+
+@[deprecated (since := "2026-08-26")]
+alias finite_quotient_maximalIdeal_pow_of_finite_residueField :=
+  IsLocalRing.instFiniteQuotientIdealHPowNatMaximalIdealOfIsNoetherianRingOfResidueField
 
 open scoped Valued
 
