@@ -26,7 +26,7 @@ This file defines the extension of a valuation on a field `K` to its uniform com
 
 - `UniformSpace.Completion.isValuativeTopology` : the extended valuative relation on
   `Completion K` is compatible with the topology.
-- `Valuation.extension.compatible` : if `v` is compatible with the valuative relation on `K`,
+- `Valuation.compatible_extension` : if `v` is compatible with the valuative relation on `K`,
   then `v.extension` is compatible with the valuative relation on `Completion K`.
 
 ## TODO
@@ -228,7 +228,7 @@ theorem continuous_extensionFun : Continuous v.extensionFun := by
   · obtain ⟨z₀, -, hz₀⟩ := v.exists_eventually_map_eq h
     exact ⟨_, tendsto_const_nhds.congr' (hz₀.mono fun x hx ↦ (v.restrict_inj.2 hx).symm)⟩
 
-/-- the extension of a valuation on a division ring to its completion. -/
+/-- The extension of a valuation on a division ring to its completion. -/
 noncomputable def extension : Valuation (Completion K) Γ₀ where
   toFun := ValueGroup₀.embedding ∘ v.extensionFun
   map_zero' := by

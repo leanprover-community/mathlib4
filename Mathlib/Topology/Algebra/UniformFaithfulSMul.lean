@@ -18,7 +18,7 @@ is also faithful.
 
 @[expose] public section
 
--- `[T0Space K]` can be replace by any condition that implies `Nontrivial (Completion K)`
+-- `[T0Space K]` can be replaced by any condition that implies `Nontrivial (Completion K)`
 instance UniformSpace.Completion.faithfulSMul {R K : Type*} [CommSemiring R] [Field K] [Algebra R K]
     [UniformSpace K] [UniformContinuousConstSMul R K] [IsUniformAddGroup K]
     [IsTopologicalRing K] [T0Space K] [FaithfulSMul R K] :
