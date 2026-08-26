@@ -78,17 +78,8 @@ private theorem mem_diagonalBound {H K : Subgroup G} {n i : ℕ} (hi : i ≤ n) 
   mem_iSup_of_mem ⟨i, Nat.lt_succ_of_le hi⟩ hg
 
 private instance diagonalBound_normal (H K : Subgroup G) [H.Normal] [K.Normal] (n : ℕ) :
-    (diagonalBound H K n).Normal where
-  conj_mem x hx g := by
-    refine iSup_induction (C := fun y => g * y * g⁻¹ ∈ diagonalBound H K n) _ hx ?_ ?_ ?_
-    · rintro i y ⟨hyH, hyK⟩
-      exact mem_iSup_of_mem i ⟨
-        Normal.conj_mem (lowerCentralSeries_normal H i.val) _ hyH g,
-        Normal.conj_mem (lowerCentralSeries_normal K (n - i.val)) _ hyK g⟩
-    · simp
-    · intro a b ha hb
-      convert (diagonalBound H K n).mul_mem ha hb using 1
-      group
+    (diagonalBound H K n).Normal :=
+  iSup_normal _
 
 private theorem commutator_inf_lowerCentralSeries_left (H K : Subgroup G) [K.Normal] (i j : ℕ) :
     ⁅H.lowerCentralSeries i ⊓ K.lowerCentralSeries j, H⁆ ≤
