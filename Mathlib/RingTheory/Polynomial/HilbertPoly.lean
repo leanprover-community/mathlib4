@@ -57,8 +57,8 @@ a graded module over itself. In fact, `Polynomial.preHilbertPoly F d k` is the
 same as `Polynomial.hilbertPoly ((X : F[X]) ^ k) (d + 1)` for any field `F` and
 `d k : ℕ` (see the lemma `Polynomial.hilbertPoly_X_pow_succ`). See also the lemma
 `Polynomial.preHilbertPoly_eq_choose_add_sub`, which states that if `CharZero F`,
-then for any `d k n : ℕ` with `k ≤ n`, `(Polynomial.preHilbertPoly F d k).eval (n : F)`
-equals `(n - k + d).choose d`.
+then for any `d k n : ℕ` with `k ≤ n + d`, `(Polynomial.preHilbertPoly F d k).eval (n : F)`
+equals `(n + d - k).choose d`.
 -/
 noncomputable def preHilbertPoly (d k : ℕ) : F[X] :=
   (d.factorial : F)⁻¹ • ((ascPochhammer F d).comp (Polynomial.X - (C (k : F)) + 1))
