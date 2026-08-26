@@ -96,7 +96,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
       m.degree ((monomial (m.degree f - m.degree b)) (hb.unit⁻¹ * m.leadingCoeff f)) +
         m.degree b := by
     classical
-    rw [degree_monomial, if_neg]
+    rw [degree_monomial, ite_eq_right]
     · ext d
       rw [tsub_add_cancel_of_le hbf]
     · simp only [Units.mul_right_eq_zero, leadingCoeff_eq_zero_iff]

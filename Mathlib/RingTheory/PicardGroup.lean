@@ -114,7 +114,6 @@ noncomputable def rTensorInv : (P ⊗[R] M →ₗ[R] Q ⊗[R] M) →ₗ[R] (P �
   ((rightCancelEquiv Q e).congrRight ≪≫ₗ (rightCancelEquiv P e).congrLeft _ R) ∘ₗ
     LinearMap.rTensorHom N
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem rTensorInv_leftInverse : Function.LeftInverse (rTensorInv P Q e) (.rTensorHom M) :=
   fun _ ↦ by
     simp_rw [rTensorInv, LinearEquiv.coe_trans, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap]
@@ -132,7 +131,6 @@ of `R`-modules. -/
   left_inv := rTensorInv_leftInverse P Q e
   right_inv _ := rTensorInv_injective P Q e (by rw [LinearMap.toFun_eq_coe, rTensorInv_leftInverse])
 
-set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 /-- If there is an `R`-isomorphism between `M ⊗[R] N` and `R`,
 the induced map `M → Nᵛ` is an isomorphism. -/
@@ -892,9 +890,8 @@ open CommRing Pic
 
 section Ideal
 
-variable (R M N : Type*) [CommRing R]
+variable (R M : Type*) [CommRing R]
 variable [AddCommGroup M] [Module R M] [Module.Invertible R M]
-variable [AddCommGroup N] [Module R N] [Module.Invertible R N]
 
 /-- If `FractionRing R` has trivial Picard group,
 every invertible `R`-module is isomorphic to an ideal. -/
@@ -930,6 +927,6 @@ theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
     convert! Subtype.val_injective.comp e.injective using 2
     rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one, Function.comp_apply]
   constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
-  exacts [mul_le_right (e 1).2, mul_le_left (e 1).2]
+  exacts [mul_le_left (e 1).2, mul_le_right (e 1).2]
 
 end Ideal
