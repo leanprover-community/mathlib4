@@ -44,11 +44,11 @@ variable (P : Group.Generators G ι) (i : ι) (b : Bool) (l l₁ l₂ : List (ι
 
 /-- The canonical map from a word `List (ι × Bool)` over a generating family `ι` to its
 corresponding group `G`. -/
-def wordProd : G := FreeGroup.lift P.val (FreeGroup.mk l)
+def wordProd : G := P.lift (FreeGroup.mk l)
 
 /-- Every element of `G` is the product of some word over a generating family. -/
 theorem wordProd_surjective : Function.Surjective P.wordProd :=
-  P.lift_val_surjective.comp Quot.mk_surjective
+  P.lift_surjective.comp Quot.mk_surjective
 
 @[simp]
 lemma wordProd_nil : P.wordProd [] = 1 := by
