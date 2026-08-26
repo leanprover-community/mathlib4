@@ -10,8 +10,7 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
 
 /-!
-
-## Pushouts of Monoids and Groups
+# Pushouts of Monoids and Groups
 
 This file defines wide pushouts of monoids and groups and proves some properties
 of the amalgamated product of groups (i.e. the special case where all the maps
@@ -104,12 +103,11 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le fun x y => ?_
+    apply Con.conGen_le.2 fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
     simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
@@ -118,7 +116,6 @@ theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe,
     lift_apply_inl, CoprodI.lift_of]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
@@ -330,6 +327,7 @@ theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
 we multiply by an element of the base group it still has this property,
 then the element of the base group we multiplied by was one. -/
@@ -453,6 +451,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head } := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
@@ -561,9 +560,9 @@ noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
 
 theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
     {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
-  letI := Classical.decEq ι
-  letI := fun i => Classical.decEq (G i)
-  classical exact equiv.symm.injective
+  let := Classical.decEq ι
+  let := fun i => Classical.decEq (G i)
+  exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
   ⟨fun h => by simpa using congr_arg prod (h empty)⟩
@@ -614,7 +613,6 @@ def Reduced (w : Word G) : Prop :=
 theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord d, w'.prod = ofCoprodI w.prod ∧
       w'.toList.map Sigma.fst = w.toList.map Sigma.fst := by
-  classical
   induction w using Word.consRecOn with
   | empty => exact ⟨empty, by simp, rfl⟩
   | cons i g w hIdx hg1 ih =>

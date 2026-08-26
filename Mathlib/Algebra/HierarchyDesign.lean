@@ -15,12 +15,14 @@ A library note giving advice on modifying the algebraic hierarchy.
 (It is not intended as a "tour".) This is ported directly from the Lean3 version, so may
 refer to files/types that currently only exist in mathlib3.
 
-TODO: Add sections about interactions with topological typeclasses, and order typeclasses.
+## TODO
+
+Add sections about algebra-order and algebra-topology mixins and interactions with
+normed typeclasses.
 
 -/
 
 @[expose] public section
-
 
 library_note «the algebraic hierarchy» /-- # The algebraic hierarchy
 
@@ -34,8 +36,8 @@ In mathlib, we try to avoid this by only introducing new algebraic typeclasses e
 1. when there is "real mathematics" to be done with them, or
 2. when there is a meaningful gain in simplicity by factoring out a common substructure.
 
-(As examples, at this point we don't have `Loop`, or `UnitalMagma`,
-but we do have `LieSubmodule` and `TopologicalField`!
+(As examples, at this point we don't have `Loop`, or `Quasigroup`,
+but we do have `LieSubmodule`, `NormedField` and `IsTopologicalDivisionRing`!
 We also have `GroupWithZero`, as an exemplar of point 2.)
 
 Generally in mathlib we use the extension mechanism (so `CommRing` extends `Ring`)
@@ -43,7 +45,7 @@ rather than mixins (e.g. with separate `Ring` and `CommMul` classes),
 in part because of the potential blow-up in term sizes described at
 https://www.ralfj.de/blog/2019/05/15/typeclasses-exponential-blowup.html
 However there is tension here, as it results in considerable duplication in the API,
-particularly in the interaction with order structures.
+particularly in the interaction with normed structures.
 
 This library note is not intended as a design document
 justifying and explaining the history of mathlib's algebraic hierarchy!

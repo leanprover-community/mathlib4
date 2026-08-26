@@ -20,7 +20,6 @@ compact space, this type has nice properties.
 
 * Create more instances of algebraic structures (e.g., `NonUnitalSemiring`) once the necessary
   type classes (e.g., `IsTopologicalRing`) are sufficiently generalized.
-* Relate the unitization of `C₀(α, β)` to the Alexandroff compactification.
 -/
 
 @[expose] public section
@@ -30,7 +29,9 @@ universe u v w
 
 variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w} [TopologicalSpace α]
 
-open BoundedContinuousFunction Topology Bornology
+open BoundedContinuousFunction Bornology
+
+open scoped Topology
 
 open Filter Metric
 
@@ -52,7 +53,7 @@ scoped[ZeroAtInfty] notation (priority := 2000) "C₀(" α ", " β ")" => ZeroAt
 @[inherit_doc]
 scoped[ZeroAtInfty] notation α " →C₀ " β => ZeroAtInftyContinuousMap α β
 
-open ZeroAtInfty
+open scoped ZeroAtInfty
 
 section
 
@@ -77,7 +78,7 @@ variable [TopologicalSpace β] [Zero β] [FunLike F α β] [ZeroAtInftyContinuou
 
 instance instFunLike : FunLike C₀(α, β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -264,6 +265,16 @@ instance instAddCommGroup [AddCommGroup β] [IsTopologicalAddGroup β] : AddComm
 instance instIsCentralScalar [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C₀(α, β) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
+
+instance instIsScalarTower' [Zero β] {R S : Type*} [Zero R] [Zero S] [SMulWithZero R β]
+    [SMulWithZero S β] [ContinuousConstSMul R β] [ContinuousConstSMul S β] [SMul R S]
+    [IsScalarTower R S β] : IsScalarTower R S C₀(α, β) where
+  smul_assoc _ _ _ := ext fun _ => smul_assoc ..
+
+instance instSMulCommClass' [Zero β] {R S : Type*} [Zero R] [Zero S] [SMulWithZero R β]
+    [SMulWithZero S β] [ContinuousConstSMul R β] [ContinuousConstSMul S β] [SMulCommClass R S β] :
+    SMulCommClass R S C₀(α, β) where
+  smul_comm _ _ _ := ext fun _ => smul_comm ..
 
 instance instSMulWithZero [Zero β] {R : Type*} [Zero R] [SMulWithZero R β]
     [ContinuousConstSMul R β] : SMulWithZero R C₀(α, β) := fast_instance%

@@ -149,8 +149,8 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     simp [← mul_smul]⟩
   map_add' _ _ := by ext; simp
   map_smul' x m := funext fun i ↦ Subtype.ext <| by
-    letI := Module.compHom M (Matrix.scalar (α := R) ι)
-    haveI := MatrixModCat.isScalarTower_toModuleCat R M
+    let := Module.compHom M (Matrix.scalar (α := R) ι)
+    have := MatrixModCat.isScalarTower_toModuleCat R M
     simp only [← mul_smul, RingHom.id_apply, Module.smul_apply,
       AddSubmonoidClass.coe_finsetSum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
@@ -180,7 +180,6 @@ def MatrixModCat.counitIso (i : ι) :
     simp [toModuleCatFromModuleCatLinearEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 400000 in
 -- This declaration has been on the tipping point of timeout ever since nightly-2026-02-23.
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
