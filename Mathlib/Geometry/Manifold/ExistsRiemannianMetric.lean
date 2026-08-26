@@ -91,8 +91,8 @@ lemma g_bilin_smooth_on_chart (i : B) :
     ((trivializationAt F E i).baseSet ∩ (chartAt HB i).source) := by
   unfold g_bilin
   intro b hb
-  letI ψ := trivializationAt (F →L[ℝ] F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) i
-  letI innerAtP : B → F →L[ℝ] F →L[ℝ] ℝ := fun x ↦ innerSL ℝ
+  let ψ := trivializationAt (F →L[ℝ] F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) i
+  let innerAtP : B → F →L[ℝ] F →L[ℝ] ℝ := fun x ↦ innerSL ℝ
   have h4 : ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
     (fun c => (c, innerAtP c)) ((trivializationAt F E i).baseSet ∩ (chartAt HB i).source) :=
     contMDiffOn_id.prodMk contMDiffOn_const
@@ -174,7 +174,7 @@ private lemma g_bilin_aux_apply {i p : B} (hp : p ∈ (trivializationAt F E i).b
       inner ℝ ((trivializationAt F E i).continuousLinearEquivAt ℝ p hp u)
               ((trivializationAt F E i).continuousLinearEquivAt ℝ p hp v) := by
   unfold g_bilin_aux
-  rw [dif_pos hp]
+  rw [dite_eq_left hp]
   simp only [ContinuousLinearEquiv.arrowCongr_symm, ContinuousLinearEquiv.arrowCongr_apply,
     ContinuousLinearEquiv.symm_symm, ContinuousLinearEquiv.refl_symm,
     ContinuousLinearEquiv.coe_refl', id_eq]
@@ -184,7 +184,7 @@ private lemma g_bilin_aux_of_not_mem {i p : B}
     (hp : p ∉ (trivializationAt F E i).baseSet) :
     (g_bilin_aux F i p : E p →L[ℝ] E p →L[ℝ] ℝ) = 0 := by
   unfold g_bilin_aux
-  rw [dif_neg hp]
+  rw [dite_eq_right hp]
 
 lemma g_nonneg {j b : B} (v : E b) :
     0 ≤ ((g_bilin_aux F j b).toFun v).toFun v := by
@@ -245,7 +245,7 @@ lemma riemannian_metric_symm_aux (f : SmoothPartitionOfUnity B IB B) (b : B)
   simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
   have h1 := g_global_bilin_aux_support_finite (F := F) (E := E) f b
   rw [finsum_eq_sum _ h1]
-  letI h : (j : B) → (E b →L[ℝ] (E b →L[ℝ] ℝ)) := fun j ↦ (f j) b • g_bilin_aux F j b
+  let h : (j : B) → (E b →L[ℝ] (E b →L[ℝ] ℝ)) := fun j ↦ (f j) b • g_bilin_aux F j b
   have h2 : (Function.support h) ⊆ h1.toFinset := Finite.toFinset_subset.mp fun ⦃a⦄ a ↦ a
   have h3 : ∀ (u v : E b),
       ∑ j ∈ h1.toFinset, (((f j) b • g_bilin_aux F j b).toFun u).toFun v =
@@ -354,6 +354,8 @@ Transferring symmetry, positive definiteness and von Neumann boundedness from (2
 
 noncomputable section
 
+set_option maxHeartbeats 800000 in
+-- It times out otherwise.
 lemma g_global_bilin_eq
     (f : SmoothPartitionOfUnity B IB B)
     (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
