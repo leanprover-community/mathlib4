@@ -180,13 +180,11 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
     · simp [cycleGraph.length_cycle, ← this]
   · obtain ⟨u, p, hp, rfl⟩ := h'
     -- The copy sends `i : Fin p.length` to the `i`-th vertex of the cycle `p`.
-    have key {i j : Fin p.length} (h : (j - i).val = 1) :
-        G.Adj (p.getVert i) (p.getVert j) := by
-      have hi := i.isLt
-      rcases Nat.lt_or_ge (j : ℕ) (i : ℕ) with hij | hij
+    have key {i j : Fin p.length} (h : (j - i).val = 1) : G.Adj (p.getVert i) (p.getVert j) := by
+      rcases Nat.lt_or_ge j i with hij | hij
       · -- wraparound: `i` is the last vertex of `p` and `j` the first
         rw [Fin.coe_sub_iff_lt.mpr (Fin.lt_def.mpr hij)] at h
-        rw [show (i : ℕ) = p.length - 1 by lia, show (j : ℕ) = 0 by lia, getVert_zero]
+        rw [show i = p.length - 1 by lia, show ↑j = 0 by lia, getVert_zero]
         exact p.adj_penultimate hp.not_nil
       · grind [adj_getVert_succ, Fin.sub_val_of_le]
     refine ⟨⟨(p.getVert ·), fun hij ↦ ?_⟩, fun i j hij ↦ ?_⟩
