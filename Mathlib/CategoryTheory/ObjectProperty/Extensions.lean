@@ -52,7 +52,7 @@ instance : (⊤ : ObjectProperty C).IsClosedUnderExtensions where
 
 instance : IsClosedUnderExtensions (IsZero (C := C)) where
   prop_X₂_of_shortExact hS h₁ h₃ :=
-    hS.exact.isZero_of_both_zeros (h₁.eq_of_src _ _) (h₃.eq_of_tgt _ _)
+    hS.exact.isZero_of_both_isZero h₁ h₃
 
 instance [P.IsClosedUnderExtensions] (F : D ⥤ C)
     [HasZeroMorphisms D] [F.PreservesZeroMorphisms]

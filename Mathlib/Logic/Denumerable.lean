@@ -76,7 +76,7 @@ instance (priority := 100) : Infinite α :=
   Infinite.of_surjective _ (eqv α).surjective
 
 /-- A type equivalent to `ℕ` is denumerable. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mk' {α} (e : α ≃ ℕ) : Denumerable α where
   encode := e
   decode := some ∘ e.symm
@@ -85,7 +85,7 @@ def mk' {α} (e : α ≃ ℕ) : Denumerable α where
 
 /-- Denumerability is conserved by equivalences. This is transitivity of equivalence the denumerable
 way. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
   { Encodable.ofEquiv _ e with
     decode_inv := fun n => by
@@ -94,7 +94,7 @@ def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
-  letI := ofEquiv _ e
+  let := ofEquiv _ e
   refine ofNat_of_decode ?_
   rw [decode_ofEquiv e]
   simp
@@ -179,7 +179,7 @@ end Denumerable
 
 namespace Nat.Subtype
 
-open Function Encodable
+open Function
 
 /-! ### Subsets of `ℕ` -/
 
@@ -238,7 +238,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
     set t : List s :=
       ((List.range x).filter fun y => y ∈ s).pmap
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
-        (by intro a ha; simpa using (List.mem_filter.mp ha).2) with ht
+        (by intro a ha; simpa using! (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
       simp [List.mem_filter, Subtype.ext_iff, ht]
     cases hmax : List.maximum t with
@@ -246,7 +246,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
       refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (a := (⊥ : s)) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
     | coe m =>
-      have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)
+      have wf : ↑m < x := by simpa using! hmt.mp (List.maximum_mem hmax)
       rcases ofNat_surjective m with ⟨a, rfl⟩
       refine ⟨a + 1, le_antisymm (succ_le_of_lt wf) ?_⟩
       exact le_succ_of_forall_lt_le fun z hz => List.le_maximum_of_mem (hmt.2 hz) hmax
@@ -260,7 +260,6 @@ theorem ofNat_range : Set.range (ofNat s) = Set.univ :=
 theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s := by
   rw [Set.range_comp Subtype.val, ofNat_range, Set.image_univ, Subtype.range_coe]
 
-set_option backward.privateInPublic true in
 private def toFunAux (x : s) : ℕ :=
   (List.range x).countP (· ∈ s)
 
@@ -269,7 +268,6 @@ private theorem toFunAux_eq {s : Set ℕ} [DecidablePred (· ∈ s)] (x : s) :
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
-set_option backward.privateInPublic true in
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]
@@ -294,10 +292,8 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
       rhs
       rw [← ih, ← card_insert_of_notMem h₁, ← h₂]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Any infinite set of naturals is denumerable. -/
-@[implicit_reducible]
+@[instance_reducible, no_expose]
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=
   Denumerable.ofEquiv ℕ
     { toFun := toFunAux
@@ -312,7 +308,7 @@ namespace Denumerable
 open Encodable
 
 /-- An infinite encodable type is denumerable. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofEncodableOfInfinite (α : Type*) [Encodable α] [Infinite α] : Denumerable α := by
   letI := @decidableRangeEncode α _
   letI : Infinite (Set.range (@encode α _)) :=

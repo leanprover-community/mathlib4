@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.NegOnePow
 public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
@@ -48,7 +49,9 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open Topology Filter Set
+open Filter Set
+
+open scoped Topology
 
 namespace Complex
 
@@ -83,8 +86,6 @@ theorem continuous_cosh : Continuous cosh := by
 end Complex
 
 namespace Real
-
-variable {x y z : ℝ}
 
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin :=
@@ -123,6 +124,7 @@ from which one can derive all its properties. For explicit bounds on π,
 see `Mathlib/Analysis/Real/Pi/Bounds.lean`.
 
 Denoted `π`, once the `Real` namespace is opened. -/
+@[wikidata Q167]
 protected noncomputable def pi : ℝ :=
   2 * Classical.choose exists_cos_eq_zero
 
@@ -176,7 +178,8 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-meta def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealPi : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.pi) =>
     assertInstancesCommute
@@ -590,11 +593,11 @@ theorem injOn_cos : InjOn cos (Icc 0 π) :=
   strictAntiOn_cos.injOn
 
 theorem surjOn_sin : SurjOn sin (Icc (-(π / 2)) (π / 2)) (Icc (-1) 1) := by
-  simpa only [sin_neg, sin_pi_div_two] using
+  simpa only [sin_neg, sin_pi_div_two] using!
     intermediate_value_Icc (neg_le_self pi_div_two_pos.le) continuous_sin.continuousOn
 
 theorem surjOn_cos : SurjOn cos (Icc 0 π) (Icc (-1) 1) := by
-  simpa only [cos_zero, cos_pi] using intermediate_value_Icc' pi_pos.le continuous_cos.continuousOn
+  simpa only [cos_zero, cos_pi] using! intermediate_value_Icc' pi_pos.le continuous_cos.continuousOn
 
 theorem sin_mem_Icc (x : ℝ) : sin x ∈ Icc (-1 : ℝ) 1 :=
   ⟨neg_one_le_sin x, sin_le_one x⟩
@@ -927,7 +930,7 @@ theorem tan_inj_of_lt_of_lt_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) < x) (hx�
   injOn_tan ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩ hxy
 
 theorem tan_periodic : Function.Periodic tan π := by
-  simpa only [Function.Periodic, tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
+  simpa only [Function.Periodic, tan_eq_sin_div_cos] using! sin_antiperiodic.div cos_antiperiodic
 
 @[simp]
 theorem tan_pi : tan π = 0 := by rw [tan_periodic.eq, tan_zero]
@@ -1158,7 +1161,7 @@ theorem cos_pi_div_two_sub (x : ℂ) : cos (π / 2 - x) = sin x := by
   rw [← cos_neg, neg_sub, cos_sub_pi_div_two]
 
 theorem tan_periodic : Function.Periodic tan π := by
-  simpa only [tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
+  simpa only [tan_eq_sin_div_cos] using! sin_antiperiodic.div cos_antiperiodic
 
 theorem tan_add_pi (x : ℂ) : tan (x + π) = tan x :=
   tan_periodic x

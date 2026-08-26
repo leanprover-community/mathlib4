@@ -80,8 +80,8 @@ instance prodMap {M N M' N' : Type*}
     (f : M →ₗ[R] M') (g : N →ₗ[R] N')
     [IsLocalizedModule S f] [IsLocalizedModule S g] :
     IsLocalizedModule S (f.prodMap g) := by
-  letI : Module (Localization S) M' := IsLocalizedModule.module S f
-  letI : Module (Localization S) N' := IsLocalizedModule.module S g
+  let : Module (Localization S) M' := IsLocalizedModule.module S f
+  let : Module (Localization S) N' := IsLocalizedModule.module S g
   rw [isLocalizedModule_iff_isBaseChange S (Localization S)]
   apply IsBaseChange.prodMap
   · rw [← isLocalizedModule_iff_isBaseChange S]
@@ -95,7 +95,7 @@ instance pi {ι : Type*} [Finite ι]
     [∀ i, Module R (M i)] [∀ i, Module R (M' i)]
     (f : ∀ i, M i →ₗ[R] M' i) [∀ i, IsLocalizedModule S (f i)] :
     IsLocalizedModule S (.pi fun i ↦ f i ∘ₗ .proj i) := by
-  letI (i : ι) : Module (Localization S) (M' i) := IsLocalizedModule.module S (f i)
+  let (i : ι) : Module (Localization S) (M' i) := IsLocalizedModule.module S (f i)
   rw [isLocalizedModule_iff_isBaseChange S (Localization S)]
   apply IsBaseChange.pi
   intro i
