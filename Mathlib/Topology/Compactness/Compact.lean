@@ -264,28 +264,20 @@ theorem IsCompact.disjoint_nhdsSet_right {l : Filter X} (hs : IsCompact s) :
     Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
   simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left
 
--- TODO: reformulate using `Disjoint`
-/-- For every directed family of closed sets whose intersection avoids a compact set,
-there exists a single element of the family which itself avoids this compact set. -/
+/-- For every directed family of closed sets whose intersection is disjoint from a compact set,
+there exists a single element of the family which itself is disjoint from this compact set. -/
 theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : IsCompact s)
-    (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅)
-    (hdt : Directed (· ⊇ ·) t) : ∃ i : ι, s ∩ t i = ∅ :=
-  let ⟨t, ht⟩ :=
-    hs.elim_directed_cover (compl ∘ t) (fun i => (htc i).isOpen_compl)
-      (by
-        simpa only [subset_def, not_forall, eq_empty_iff_forall_notMem, mem_iUnion, exists_prop,
-          mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using! hst)
-      (hdt.mono_comp _ fun _ _ => compl_subset_compl.mpr)
-  ⟨t, by
-    simpa only [subset_def, not_forall, eq_empty_iff_forall_notMem, mem_iUnion, exists_prop,
-      mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using! ht⟩
+    (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : Disjoint s (⋂ i, t i))
+    (hdt : Directed (· ⊇ ·) t) : ∃ i : ι, Disjoint s (t i) := by
+  simp only [← subset_compl_iff_disjoint_right, compl_iInter] at hst ⊢
+  exact hs.elim_directed_cover (compl ∘ t) (fun i ↦ (htc i).isOpen_compl) hst
+    (hdt.mono_comp _ fun _ _ ↦ compl_subset_compl.mpr)
 
--- TODO: reformulate using `Disjoint`
-/-- For every family of closed sets whose intersection avoids a compact set,
-there exists a finite subfamily whose intersection avoids this compact set. -/
+/-- For every family of closed sets whose intersection is disjoint from a compact set,
+there exists a finite subfamily whose intersection is disjoint from this compact set. -/
 theorem IsCompact.elim_finite_subfamily_closed {ι : Type v} (hs : IsCompact s)
-    (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
-    ∃ u : Finset ι, (s ∩ ⋂ i ∈ u, t i) = ∅ :=
+    (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : Disjoint s (⋂ i, t i)) :
+    ∃ u : Finset ι, Disjoint s (⋂ i ∈ u, t i) :=
   hs.elim_directed_family_closed _ (fun _ ↦ isClosed_biInter fun _ _ ↦ htc _)
     (by rwa [← iInter_eq_iInter_finset])
     (directed_of_isDirected_le fun _ _ h ↦ biInter_subset_biInter_left h)
@@ -296,6 +288,7 @@ theorem IsCompact.inter_iInter_nonempty {ι : Type v} (hs : IsCompact s) (t : ι
     (htc : ∀ i, IsClosed (t i)) (hst : ∀ u : Finset ι, (s ∩ ⋂ i ∈ u, t i).Nonempty) :
     (s ∩ ⋂ i, t i).Nonempty := by
   contrapose! hst
+  simp only [← disjoint_iff_inter_eq_empty] at hst ⊢
   exact hs.elim_finite_subfamily_closed t htc hst
 
 lemma IsCompact.nonempty_inter_sInter (hs : IsCompact s) {t : Set (Set X)}
@@ -318,13 +311,11 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   let i₀ := hι.some
   suffices (t i₀ ∩ ⋂ i, t i).Nonempty by
     rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
-  simp only [nonempty_iff_ne_empty] at htn ⊢
-  apply mt ((htc i₀).elim_directed_family_closed t htcl)
-  push Not
-  simp only [← nonempty_iff_ne_empty] at htn ⊢
-  refine ⟨htd, fun i => ?_⟩
+  refine not_disjoint_iff_nonempty_inter.1 fun hst ↦ ?_
+  obtain ⟨i, hi⟩ := (htc i₀).elim_directed_family_closed t htcl hst htd
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
-  exact (htn j).mono (subset_inter hji₀ hji)
+  obtain ⟨x, hx⟩ := htn j
+  exact disjoint_left.mp hi (hji₀ hx) (hji hx)
 
 /-- Cantor's intersection theorem for `sInter`:
 the intersection of a directed family of nonempty compact closed sets is nonempty. -/
@@ -371,18 +362,17 @@ theorem isCompact_of_finite_subcover
   rw [subset_compl_comm, compl_iInter₂]
   simpa only [compl_compl]
 
--- TODO: reformulate using `Disjoint`
-/-- A set `s` is compact if for every family of closed sets whose intersection avoids `s`,
-there exists a finite subfamily whose intersection avoids `s`. -/
+/-- A set `s` is compact if for every family of closed sets whose intersection is disjoint from `s`,
+there exists a finite subfamily whose intersection is disjoint from `s`. -/
 theorem isCompact_of_finite_subfamily_closed
-    (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ →
-      ∃ u : Finset ι, (s ∩ ⋂ i ∈ u, t i) = ∅) :
+    (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → Disjoint s (⋂ i, t i) →
+      ∃ u : Finset ι, Disjoint s (⋂ i ∈ u, t i)) :
     IsCompact s :=
   isCompact_of_finite_subcover fun U hUo hsU => by
-    rw [← disjoint_compl_right_iff_subset, compl_iUnion, disjoint_iff] at hsU
+    rw [← disjoint_compl_right_iff_subset, compl_iUnion] at hsU
     rcases h (fun i => (U i)ᶜ) (fun i => (hUo _).isClosed_compl) hsU with ⟨t, ht⟩
     refine ⟨t, ?_⟩
-    rwa [← disjoint_compl_right_iff_subset, compl_iUnion₂, disjoint_iff]
+    rwa [← disjoint_compl_right_iff_subset, compl_iUnion₂]
 
 /-- A set `s` is compact if and only if
 for every open cover of `s`, there exists a finite subcover. -/
@@ -391,12 +381,11 @@ theorem isCompact_iff_finite_subcover :
       (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) → ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i :=
   ⟨fun hs => hs.elim_finite_subcover, isCompact_of_finite_subcover⟩
 
-/-- A set `s` is compact if and only if
-for every family of closed sets whose intersection avoids `s`,
-there exists a finite subfamily whose intersection avoids `s`. -/
+/-- A set `s` is compact if and only if for every family of closed sets whose intersection is
+disjoint from `s`, there exists a finite subfamily whose intersection is disjoint from `s`. -/
 theorem isCompact_iff_finite_subfamily_closed :
     IsCompact s ↔ ∀ {ι : Type u} (t : ι → Set X),
-      (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ → ∃ u : Finset ι, (s ∩ ⋂ i ∈ u, t i) = ∅ :=
+      (∀ i, IsClosed (t i)) → Disjoint s (⋂ i, t i) → ∃ u : Finset ι, Disjoint s (⋂ i ∈ u, t i) :=
   ⟨fun hs => hs.elim_finite_subfamily_closed, isCompact_of_finite_subfamily_closed⟩
 
 /-- If `s : Set (X × Y)` belongs to `𝓝 x ×ˢ l` for all `x` from a compact set `K`,
@@ -432,7 +421,7 @@ theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {X} {l : Filter X} {s :
 -- That would seem a bit more natural.
 theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
     (𝓝ˢ K) ⊓ l = ⨆ x ∈ K, 𝓝 x ⊓ l := by
-  have : ∀ f : Filter X, f ⊓ l = comap (fun x ↦ (x, x)) (f ×ˢ l) := fun f ↦ by
+  have : ∀ f : Filter X, f ⊓ l = comap Function.diag (f ×ˢ l) := fun f ↦ by
     simpa only [comap_prod] using! congrArg₂ (· ⊓ ·) comap_id.symm comap_id.symm
   simp_rw [this, ← comap_iSup, hK.nhdsSet_prod_eq_biSup]
 
@@ -529,14 +518,13 @@ theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪
 protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 
--- TODO: reformulate using `𝓝ˢ`
 /-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
-not assumed to be Hausdorff. See `exists_subset_nhds_of_compact` for version assuming this. -/
+not assumed to be Hausdorff. See `exists_subset_nhds_of_isCompact` for a version assuming this. -/
 theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) (hV_closed : ∀ i, IsClosed (V i))
-    {U : Set X} (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U := by
-  obtain ⟨W, hsubW, W_op, hWU⟩ := exists_open_set_nhds hU
+    {U : Set X} (hU : U ∈ 𝓝ˢ (⋂ i, V i)) : ∃ i, V i ⊆ U := by
+  obtain ⟨W, W_op, hsubW, hWU⟩ := mem_nhdsSet_iff_exists.mp hU
   suffices ∃ i, V i ⊆ W from this.imp fun i hi => hi.trans hWU
   by_contra! H
   replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i => Set.inter_compl_nonempty_iff.mpr (H i)
@@ -986,7 +974,7 @@ theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
 
 theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
     {V : ι → Set X} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set X}
-    (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
+    (hU : U ∈ 𝓝ˢ (⋂ i, V i)) : ∃ i, V i ⊆ U :=
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is compact
@@ -1046,13 +1034,13 @@ theorem IsCompact.elim_finite_subfamily_isClosed_subtype
     {X : Type*} [TopologicalSpace X] {s : Set X} (ks : IsCompact s)
     {ι : Type*} (t : ι → Set X) {I : Set ι}
     (htc : ∀ i ∈ I, IsClosed (s ↓∩ (t i) : Set s))
-    (hst : s ∩ ⋂ i ∈ I, t i = ∅) :
-    ∃ u : Finset I, s ∩ ⋂ i ∈ u, t i = ∅ := by
-  suffices univ ∩ ⋂ i, (fun i : I ↦ s ↓∩ t i) i = ∅ by
-    simpa [eq_empty_iff_forall_notMem] using
+    (hst : Disjoint s (⋂ i ∈ I, t i)) :
+    ∃ u : Finset I, Disjoint s (⋂ i ∈ u, t i) := by
+  suffices ⋂ i, (fun i : I ↦ s ↓∩ t i) i = ∅ by
+    simpa [eq_empty_iff_forall_notMem, disjoint_left, Subtype.forall] using
       (isCompact_iff_isCompact_univ.mp ks).elim_finite_subfamily_closed
-      (fun i : I ↦ s ↓∩ t i) (fun i ↦ htc i.val i.prop) this
-  simpa [Set.eq_empty_iff_forall_notMem, Subtype.forall] using hst
+      (fun i : I ↦ s ↓∩ t i) (fun i ↦ htc i.val i.prop) (univ_disjoint.mpr this)
+  simpa [Set.eq_empty_iff_forall_notMem, Subtype.forall, disjoint_left] using hst
 
 theorem isCompact_iff_compactSpace : IsCompact s ↔ CompactSpace s :=
   isCompact_iff_isCompact_univ.trans isCompact_univ_iff

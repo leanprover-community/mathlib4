@@ -34,7 +34,9 @@ public section
 
 assert_not_exists FiniteDimensional
 
-open Metric Topology
+open Metric
+
+open scoped Topology
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
 

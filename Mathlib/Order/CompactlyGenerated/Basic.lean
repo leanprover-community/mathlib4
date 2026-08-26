@@ -5,15 +5,15 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Data.Finite.Set
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Order.OrderIsoNat
-public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
-public import Mathlib.Data.Finset.Order
-public import Mathlib.Order.Interval.Set.OrderIso
-public import Mathlib.Data.Finite.Set
 public import Mathlib.Tactic.TFAE
 
 /-!
@@ -267,14 +267,14 @@ theorem wellFoundedGT_characterisations : List.TFAE
 
 theorem wellFoundedGT_iff_isSupFiniteCompact :
     WellFoundedGT α ↔ IsSupFiniteCompact α :=
-  (wellFoundedGT_characterisations α).out 0 1
+  (wellFoundedGT_characterisations α).out 1 2
 
 theorem isSupFiniteCompact_iff_isSupClosedCompact : IsSupFiniteCompact α ↔ IsSupClosedCompact α :=
-  (wellFoundedGT_characterisations α).out 1 2
+  (wellFoundedGT_characterisations α).out 2 3
 
 theorem isSupClosedCompact_iff_wellFoundedGT :
     IsSupClosedCompact α ↔ WellFoundedGT α :=
-  (wellFoundedGT_characterisations α).out 2 0
+  (wellFoundedGT_characterisations α).out 3 1
 
 alias ⟨_, IsSupFiniteCompact.wellFoundedGT⟩ := wellFoundedGT_iff_isSupFiniteCompact
 

@@ -49,7 +49,7 @@ analysis, comparison, asymptotics
 
 public section
 
-open Set MeasureTheory MeasureSpace intervalIntegral
+open Set MeasureTheory intervalIntegral
 
 variable {x₀ : ℝ} {a b : ℕ} {f g : ℝ → ℝ}
 

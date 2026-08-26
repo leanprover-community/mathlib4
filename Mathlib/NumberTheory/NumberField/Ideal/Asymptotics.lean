@@ -22,7 +22,7 @@ We prove several asymptotics involving integral ideals of a number field.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -34,8 +34,10 @@ namespace NumberField.Ideal
 
 open scoped nonZeroDivisors Real
 
-open Filter InfinitePlace mixedEmbedding euclidean fundamentalCone Submodule Topology
+open Filter InfinitePlace mixedEmbedding euclidean fundamentalCone Submodule
 open NumberField.Units
+
+open scoped Topology
 
 variable {C : ClassGroup (𝓞 K)} {J : (Ideal (𝓞 K))⁰} {s : ℝ}
 
