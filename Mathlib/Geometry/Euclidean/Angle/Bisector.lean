@@ -62,8 +62,6 @@ private lemma dist_orthogonalProjection_eq_iff_angle_eq_aux {p p' : P}
     haveI : Nonempty s₂ := ⟨p', hp'₂⟩
     dist p (orthogonalProjection s₁ p) = dist p (orthogonalProjection s₂ p) ↔
       ∠ p p' (orthogonalProjection s₁ p) = ∠ p p' (orthogonalProjection s₂ p) := by
-  have : Nonempty s₁ := ⟨p', hp'₁⟩
-  have : Nonempty s₂ := ⟨p', hp'₂⟩
   rcases h' with h' | h'
   · exact dist_orthogonalProjection_eq_iff_angle_eq_aux₁ hp'₁ hp'₂ h'
   · nth_rw 1 [eq_comm]

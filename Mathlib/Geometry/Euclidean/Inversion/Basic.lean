@@ -94,7 +94,6 @@ works for `x = c`. -/
 theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R ^ 2 / dist x c := by
   rcases eq_or_ne x c with (rfl | hx)
   · simp
-  have : dist x c ≠ 0 := dist_ne_zero.2 hx
   simp only [inversion]
   field_simp
   simp only [sq, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,

@@ -212,7 +212,6 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
     (MvPolynomial.sumAlgEquiv R _ _).symm.trans (MvPolynomial.renameEquiv _ e₀)
   let φ := e.toAlgHom.comp (IsScalarTower.toAlgHom _ (MvPolynomial (Fin n) R) _)
   algebraize [φ.toRingHom, (algebraMap P.Ring S).comp φ.toRingHom]
-  have := IsScalarTower.of_algebraMap_eq' φ.comp_algebraMap.symm
   have : IsScalarTower R (MvPolynomial (Fin n) R) S := .to₁₂₄ _ _ P.Ring _
   refine ⟨IsScalarTower.toAlgHom _ _ _, ?_⟩
   have H : (MvPolynomial.aeval fun x ↦ (algebraMap P.Ring S) (e (MvPolynomial.X x))).toRingHom =

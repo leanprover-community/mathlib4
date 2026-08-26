@@ -74,7 +74,6 @@ private lemma binomial_sum_eq (h : n < m) :
   push_cast at this
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have : (m - i : ℚ) ≠ 0 := sub_ne_zero_of_ne (cast_lt.mpr h₂).ne'
-  have : (m.choose i : ℚ) ≠ 0 := cast_ne_zero.2 (choose_pos h₂.le).ne'
   simp [field, *]
 
 set_option backward.isDefEq.respectTransparency false in

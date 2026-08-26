@@ -210,7 +210,6 @@ theorem normalizedTrace_trans_apply [Algebra.IsIntegral E K] [CharZero E] (a : K
   let E₀ := IntermediateField.adjoin F S
   have : FiniteDimensional F E₀ := IntermediateField.finiteDimensional_adjoin
     fun x _ ↦ Algebra.IsIntegral.isIntegral x
-  have : Algebra.IsIntegral E₀ E := IsIntegral.tower_top F
   have : Algebra.IsIntegral E₀ K := IsIntegral.trans E
   have hsub : S ⊆ (algebraMap E₀ E).range :=
     Subalgebra.range_algebraMap E₀.toSubalgebra ▸ IntermediateField.subset_adjoin F S

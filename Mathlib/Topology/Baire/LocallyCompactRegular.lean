@@ -61,7 +61,6 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace : BaireSpac
 /-- A Gδ subset of a locally compact R₁ space is Baire. -/
 theorem IsGδ.baireSpace_of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSpace s := by
   have : LocallyCompactSpace (closure s) := isClosed_closure.locallyCompactSpace
-  have : BaireSpace (closure s) := .of_t2Space_locallyCompactSpace
   have : BaireSpace ((↑) ⁻¹' s : Set (closure s)) :=
     (hG.preimage continuous_subtype_val).baireSpace_of_dense
     (by simp [Subtype.dense_iff, inter_eq_right.mpr subset_closure])

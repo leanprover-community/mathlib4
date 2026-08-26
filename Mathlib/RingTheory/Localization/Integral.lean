@@ -498,7 +498,6 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
   · intro h x
     let := MulActionWithZero.nontrivial S K
     let := FractionRing.liftAlgebra R K
-    have := FractionRing.isScalarTower_liftAlgebra R K
     rw [IsFractionRing.isAlgebraic_iff R (FractionRing R) K, isAlgebraic_iff_isIntegral]
     obtain ⟨a : S, b, ha, rfl⟩ := div_surjective S x
     obtain ⟨f, hf₁, hf₂⟩ := h b

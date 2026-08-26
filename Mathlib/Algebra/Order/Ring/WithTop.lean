@@ -262,7 +262,6 @@ variable [CommSemiring α] [PartialOrder α] [OrderBot α]
 
 @[gcongr]
 protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ < a₂ * b₂ := by
-  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
   lift a₁ to α using ha.lt_top.ne
   lift b₁ to α using hb.lt_top.ne
   obtain rfl | ha₂ := eq_or_ne a₂ ⊤

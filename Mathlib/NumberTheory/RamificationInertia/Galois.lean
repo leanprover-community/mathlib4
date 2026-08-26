@@ -348,7 +348,6 @@ lemma exists_comap_galRestrict_eq [IsDedekindDomain R] [IsGalois K L] {p : Ideal
     ∃ σ, P₁.comap (galRestrict R K L S σ) = P₂ := by
   have : IsDomain S :=
     (IsIntegralClosure.equiv R S L (integralClosure R L)).toMulEquiv.isDomain (integralClosure R L)
-  have := IsIntegralClosure.isDedekindDomain R K L S
   have : Module.Finite R S := IsIntegralClosure.finite R K L S
   have := hP₁.1
   have := hP₁.2

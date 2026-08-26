@@ -75,7 +75,6 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     have := isAssociatedPrime_iff.mp <| AssociatedPrimes.mem_iff.mp
       (associatedPrimes.mem_associatedPrimes_atPrime_of_mem_associatedPrimes pass)
     rcases this.2 with ⟨x, hx⟩
-    have : Nontrivial (Module.Dual p.ResidueField Nₚ') := by simpa using ntr
     rcases exists_ne (α := Module.Dual p.ResidueField Nₚ') 0 with ⟨g, hg⟩
     let to_res' : Nₚ' →ₗ[Rₚ] p.ResidueField := {
       __ := g
