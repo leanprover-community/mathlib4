@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Functor.KanExtension.AdjunctionPreserves
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Left derived functors
@@ -39,8 +39,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
-  [Category* D] [Category* D'] [Category* H] [Category* H']
+variable {C D H H' : Type _} [Category* C] [Category* D] [Category* H] [Category* H']
   (LF'' LF' LF : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α'' : L ⋙ LF'' ⟶ F'') (α' : L ⋙ LF' ⟶ F') (α : L ⋙ LF ⟶ F) (α'₂ : L ⋙ LF' ⟶ F)
   (W : MorphismProperty C)
@@ -142,6 +141,13 @@ lemma isLeftDerivedFunctor_iff_isIso_leftDerivedLift (G : D ⥤ H) (β : L ⋙ G
   have := IsLeftDerivedFunctor.isRightKanExtension _ α W
   exact isRightKanExtension_iff_isIso _ α _ (by simp)
 
+instance (G : H ⥤ H') [G.IsRightAdjoint] :
+    (LF ⋙ G).IsLeftDerivedFunctor ((associator _ _ _).inv ≫ whiskerRight α G) W := by
+  have : LF.IsRightKanExtension α := by
+    rwa [← isLeftDerivedFunctor_iff_isRightKanExtension _ _ W]
+  rw [isLeftDerivedFunctor_iff_isRightKanExtension]
+  infer_instance
+
 end
 
 variable (F)
@@ -187,7 +193,7 @@ section
 
 variable (F) [F.HasLeftDerivedFunctor W] (L W)
 
-/-- Given a functor `F : C ⥤ H`, and a localization functor `L : D ⥤ H` for `W`,
+/-- Given a functor `F : C ⥤ H`, and a localization functor `L : C ⥤ D` for `W`,
 this is the left derived functor `D ⥤ H` of `F`, i.e. the right Kan extension
 of `F` along `L`. -/
 noncomputable def totalLeftDerived : D ⥤ H :=
@@ -208,5 +214,30 @@ instance : (F.totalLeftDerived L W).IsLeftDerivedFunctor
 end
 
 end Functor
+
+namespace LocalizerMorphism
+
+variable {C₁ C₂ H₁ H₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
+  [Category* H₁] [Category* H₂] {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
+  (Φ : LocalizerMorphism W₁ W₂) [Φ.IsLocalizedEquivalence] [Φ.functor.IsEquivalence]
+
+open CategoryTheory.Functor in
+lemma isLeftDerivedFunctor_iff_precomp
+    (L₁ : C₁ ⥤ H₁) (L₂ : C₂ ⥤ H₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+    (G : H₁ ⥤ H₂) (iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
+    {F₁ : C₁ ⥤ D} {LF₁ : H₁ ⥤ D} (α₁ : L₁ ⋙ LF₁ ⟶ F₁)
+    {F₂ : C₂ ⥤ D} {LF₂ : H₂ ⥤ D} (α₂ : L₂ ⋙ LF₂ ⟶ F₂)
+    (e₁ : Φ.functor ⋙ F₂ ≅ F₁)
+    (e₂ : G ⋙ LF₂ ≅ LF₁)
+    (h : α₁ = whiskerLeft L₁ e₂.inv ≫ (associator _ _ _).inv ≫
+      whiskerRight iso.inv LF₂ ≫ (associator _ _ _).hom ≫
+      whiskerLeft Φ.functor α₂ ≫ e₁.hom := by cat_disch) :
+    LF₂.IsLeftDerivedFunctor α₂ W₂ ↔ LF₁.IsLeftDerivedFunctor α₁ W₁ := by
+  have : CatCommSq Φ.functor L₁ L₂ G := ⟨iso⟩
+  have := Φ.isEquivalence L₁ L₂ G
+  simpa only [Functor.isLeftDerivedFunctor_iff_isRightKanExtension] using
+    isRightKanExtension_iff_precomp_equivalence α₁ α₂ iso e₁.symm e₂
+
+end LocalizerMorphism
 
 end CategoryTheory

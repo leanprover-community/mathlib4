@@ -45,7 +45,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
         (not_le_of_gt hma)
       have : b - a ∈ posTangentConeAt (Icc a b) a :=
         sub_mem_posTangentConeAt_of_segment_subset (segment_eq_Icc hab ▸ Subset.rfl)
-      simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
+      simpa only [ContinuousLinearMap.smulRight_apply, one_apply_eq_self]
         using! hc.localize.hasFDerivWithinAt_nonneg (hg a (left_mem_Icc.2 hab)) this
     rcases cmem.2.eq_or_lt' with (rfl | hcb)
     -- Show that `c` can't be equal to `b`
@@ -53,7 +53,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
         (not_le_of_gt hmb)
       have : a - b ∈ posTangentConeAt (Icc a b) b :=
         sub_mem_posTangentConeAt_of_segment_subset (by rw [segment_symm, segment_eq_Icc hab])
-      simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
+      simpa only [ContinuousLinearMap.smulRight_apply, one_apply_eq_self]
         using! hc.localize.hasFDerivWithinAt_nonneg (hg b (right_mem_Icc.2 hab)) this
     exact ⟨hac, hcb⟩
   use c, cmem'
@@ -130,10 +130,10 @@ theorem exists_hasDerivWithinAt_eq_of_ge_of_le (hab : a ≤ b)
 /-- **Darboux's theorem**: if `a ≤ b` and `f' b ≤ m ≤ f' a`, then `f' c = m` for some
 `c ∈ [a, b]`. -/
 theorem exists_hasDerivWithinAt_eq_of_le_of_ge (hab : a ≤ b)
-    (hf : ∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) {m : ℝ} (hma : f' a ≤ m)
-    (hmb : m ≤ f' b) : m ∈ f' '' Icc a b :=
-  (ordConnected_Icc.image_hasDerivWithinAt hf).out (mem_image_of_mem _ (left_mem_Icc.2 hab))
-    (mem_image_of_mem _ (right_mem_Icc.2 hab)) ⟨hma, hmb⟩
+    (hf : ∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) {m : ℝ} (hma : m ≤ f' a)
+    (hmb : f' b ≤ m) : m ∈ f' '' Icc a b :=
+  (ordConnected_Icc.image_hasDerivWithinAt hf).out (mem_image_of_mem _ (right_mem_Icc.2 hab))
+    (mem_image_of_mem _ (left_mem_Icc.2 hab)) ⟨hmb, hma⟩
 
 /-- If the derivative of a function is never equal to `m`, then either
 it is always greater than `m`, or it is always less than `m`. -/
