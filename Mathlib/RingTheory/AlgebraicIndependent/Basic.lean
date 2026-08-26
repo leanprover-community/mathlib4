@@ -470,8 +470,6 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
     Polynomial.map_C, RingHom.coe_coe]
 
 theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
-    (hx : AlgebraicIndependent R x) (a : A) : ((Polynomial.aeval a).restrictScalars R).comp
-      hx.mvPolynomialOptionEquivPolynomialAdjoin.toAlgHom =
     (hx : AlgebraicIndependent R x) (a : A) :
     ((Polynomial.aeval a).restrictScalars R).comp
         hx.mvPolynomialOptionEquivPolynomialAdjoin.toAlgHom =
