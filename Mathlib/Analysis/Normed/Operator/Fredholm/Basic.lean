@@ -481,7 +481,7 @@ theorem _root_.FredholmDecomposition.isFredholm_proj [ContinuousSub E]
   have := dec.finite_X₀
   isFredholm_projectionOntoL dec.isTopCompl
 
-theorem _root_.Submodule.isFredholm_projectionL [ContinuousSub E] [T2Space E] {p q : Submodule 𝕜 E}
+theorem _root_.Submodule.isFredholm_projectionL [ContinuousSub E] {p q : Submodule 𝕜 E} [T1Space q]
     (hcompl : IsTopCompl p q)
     [FiniteDimensional 𝕜 q] :
     IsFredholm (p.projectionL q hcompl) where
@@ -492,21 +492,21 @@ theorem _root_.Submodule.isFredholm_projectionL [ContinuousSub E] [T2Space E] {p
   finite_coker := by simpa using FG.cofg_of_isCompl hcompl.isCompl.symm .of_finite
   closedComplemented_ker := by simpa using hcompl.symm.closedComplemented
 
-theorem _root_.Submodule.isFredholm_projectionL_iff [ContinuousSub E] [T2Space E]
-    {p q : Submodule 𝕜 E} (hcompl : IsTopCompl p q) :
+theorem _root_.Submodule.isFredholm_projectionL_iff [ContinuousSub E]
+    {p q : Submodule 𝕜 E} [T1Space q] (hcompl : IsTopCompl p q) :
     IsFredholm (p.projectionL q hcompl) ↔ FiniteDimensional 𝕜 q := by
   refine ⟨fun h ↦ ?_, fun _ ↦ isFredholm_projectionL hcompl⟩
   simpa [← fg_iff_finiteDimensional, -toLinearMap_projectionL, ker_projectionL] using h.finite_ker
 
 open ContinuousLinearMap in
-theorem IsIdempotentElem.isFredholm_iff [ContinuousSub E] [T2Space E] {f : E →L[𝕜] E}
+theorem IsIdempotentElem.isFredholm_iff [ContinuousSub E] {f : E →L[𝕜] E} [T1Space f.ker]
     (hf : IsIdempotentElem f) :
     IsFredholm f ↔ FiniteDimensional 𝕜 f.ker := by
   conv_lhs => rw [hf.eq_projectionL]
   rw [isFredholm_projectionL_iff]
 
 open ContinuousLinearMap in
-theorem IsIdempotentElem.isFredholm [ContinuousSub E] [T2Space E] {f : E →L[𝕜] E}
+theorem IsIdempotentElem.isFredholm [ContinuousSub E] {f : E →L[𝕜] E} [T1Space f.ker]
     (hf : IsIdempotentElem f)
     [FiniteDimensional 𝕜 f.ker] :
     IsFredholm f :=
