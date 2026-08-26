@@ -1296,7 +1296,7 @@ theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k 
       exact prime_dvd_card_center (hp := ⟨by simpa⟩) ⟨k * m'', by grind⟩
     obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), K.index = k ∧ K.Normal := by
       refine ih (Nat.card (G ⧸ N)) ?_ ?_ rfl
-      · rw [←hm, N.card_eq_card_quotient_mul_card_subgroup, hNcard]
+      · rw [← hm, N.card_eq_card_quotient_mul_card_subgroup, hNcard]
         exact lt_mul_right Nat.card_pos hp.one_lt
       · refine ⟨m'', Nat.eq_of_mul_eq_mul_right hp.pos ?_⟩
         grind [N.card_eq_card_quotient_mul_card_subgroup]
@@ -1307,9 +1307,9 @@ theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k 
 theorem Group.IsNilpotent.exists_normal_card_eq_of_dvd_card [IsNilpotent G] {n : ℕ}
     (hdvd : n ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = n ∧ H.Normal := by
   obtain ⟨k, hk⟩ := hdvd
-  obtain ⟨H, hind, hH⟩ := exists_normal_index_eq_of_dvd_card (G := G) (k := k) ⟨n, by grind⟩
+  obtain ⟨H, hind, hH⟩ := exists_normal_index_eq_of_dvd_card (Dvd.intro_left n hk.symm)
   refine ⟨H, ?_, hH⟩
-  rw [←Nat.mul_left_inj (FiniteIndex.index_ne_zero (H := H)), H.card_mul_index, hk, hind]
+  rwa [← H.card_mul_index, ← hind, Nat.mul_left_inj FiniteIndex.index_ne_zero] at hk
 
 end WithFiniteGroup
 
