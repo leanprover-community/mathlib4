@@ -14,6 +14,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 In this file, we show that if `F : C₁ ⥤ C₂` is an exact functor between
 abelian categories, then there is an induced triangulated functor
 `F.mapDerivedCategory : DerivedCategory C₁ ⥤ DerivedCategory C₂`.
+We study some of the pseudofunctorial properties of this construction,
+but we do not define the pseudofunctor which sends an abelian category
+to its derived category (TODO).
 
 -/
 
@@ -163,6 +166,8 @@ instance :
   infer_instance
 
 variable (C₁) in
+/-- The functor `DerivedCategory C₁ ⥤ DerivedCategory C₁` induced by the identity
+functor of `C₁` identifies to the identity functor of the derived category. -/
 @[no_expose]
 noncomputable def mapDerivedCategoryIdIso : (𝟭 C₁).mapDerivedCategory ≅ 𝟭 _ :=
   liftNatIso DerivedCategory.Q
@@ -212,6 +217,9 @@ instance :
   dsimp [Lifting.iso]
   infer_instance
 
+/-- If `F` and `G` are exact functors between abelian categories, the composition
+of the induced functors on the derived category identifies to the functor
+induced by `F ⋙ G`. -/
 @[no_expose]
 noncomputable def mapDerivedCategoryCompIso :
     F.mapDerivedCategory ⋙ G.mapDerivedCategory ≅ (F ⋙ G).mapDerivedCategory :=
@@ -271,6 +279,9 @@ namespace NatTrans
 variable {F : C₁ ⥤ C₂} [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
   {G : C₁ ⥤ C₂} [G.Additive] [PreservesFiniteLimits G] [PreservesFiniteColimits G]
 
+/-- A natural transformation between exact functors between abelian categories
+induces a natural transformation between the corresponding induced functors
+on the derived categories. -/
 noncomputable def mapDerivedCategory (τ : F ⟶ G) : F.mapDerivedCategory ⟶ G.mapDerivedCategory :=
   liftNatTrans DerivedCategory.Q
     (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ)) _ _ _ _
