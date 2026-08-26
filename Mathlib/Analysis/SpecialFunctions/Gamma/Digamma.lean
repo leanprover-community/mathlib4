@@ -60,7 +60,7 @@ theorem digamma_apply_add_one (s : ℂ) (hs : ∀ m : ℕ, s ≠ - m) :
     add_div, div_mul_cancel_right₀ (Gamma_ne_zero hs), mul_div_mul_left _ _ hs0, add_comm]
 
 open scoped Real in
-/-- Euler's reflection formula for the digamma function:
+/-- **Euler's reflection formula for the digamma function**:
 `ψ (1 - s) = ψ s + π * cot (π * s)` for `s` not an integer. -/
 theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
     digamma (1 - s) = digamma s + π * cot (π * s) := by
