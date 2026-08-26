@@ -99,10 +99,6 @@ lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
       rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
   cases false_of_nontrivial_of_subsingleton ((A ⧸ R') ⊗[R] (A ⧸ R'))
 
-@[deprecated (since := "2026-01-13")]
-alias _root_.RingHom.surjective_of_tmul_eq_tmul_of_finite :=
-  isEpi_iff_surjective_algebraMap_of_finite
-
 end Ring
 
 section CommSemiring
@@ -143,7 +139,7 @@ lemma injective_lift_lsmul :
         map_add' m n := tmul_add _ _ _
         map_smul' r m := tmul_smul _ _ _ }
     have aux : f ∘ₗ (lift <| LinearMap.restrictScalars₁₂ R R (LinearMap.lsmul A M)) = .id := by
-      ext a m; simpa using this a m
+      ext a m; simpa using! this a m
     exact HasLeftInverse.injective ⟨f, fun x ↦ congr($aux x)⟩
   intro a m
   let f : A ⊗[R] A →ₗ[R] A ⊗[R] M := lift
@@ -153,7 +149,7 @@ lemma injective_lift_lsmul :
         map_smul' := by simp }
       map_add' := by intros; ext; simp [add_tmul]
       map_smul' := by intros; ext; simp [smul_tmul'] }
-  simpa [f] using congr_arg f (tmul_comm R 1 a)
+  simpa [f] using! congr_arg f (tmul_comm R 1 a)
 
 /-- A heterogeneous variant of `TensorProduct.lid` when `R → A` is epi. -/
 def _root_.TensorProduct.lid' : A ⊗[R] M ≃ₗ[A] M :=

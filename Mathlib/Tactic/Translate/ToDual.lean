@@ -19,6 +19,12 @@ Known limitations:
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
   are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
+- It is currently not possible for a constant to have multiple possible duals.
+  This would be useful for constants that have orders on different types, such as `Monotone f`.
+  If the domain and codomain of `f` are both dualized, then `Monotone f` is simply dual to itself.
+  But there are also cases where only the domain or only the codomain should be dualized.
+  Then, `Monotone f` would be dual to `Antitone f`.
+  We may also want this feature for dualizing results about bicategories.
 -/
 
 public meta section
@@ -145,6 +151,8 @@ initialize translations : NameMapExtension TranslationInfo ← registerNameMapEx
 def nameDict : Std.HashMap String (List String) := .ofList [
   ("top", ["Bot"]),
   ("bot", ["Top"]),
+  ("untop", ["Unbot"]),
+  ("unbot", ["Untop"]),
   ("inf", ["Sup"]),
   ("sup", ["Inf"]),
   ("inf₂", ["Sup₂"]),
@@ -153,8 +161,12 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("ssup", ["SInf"]),
   ("min", ["Max"]),
   ("max", ["Min"]),
-  ("untop", ["Unbot"]),
-  ("unbot", ["Untop"]),
+  ("min?", ["Max?"]),
+  ("max?", ["Min?"]),
+  ("argmin", ["Argmax"]),
+  ("argmax", ["Argmin"]),
+  ("minimum", ["Maximum"]),
+  ("maximum", ["Minimum"]),
   ("minimal", ["Maximal"]),
   ("maximal", ["Minimal"]),
   ("lower", ["Upper"]),
@@ -193,6 +205,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
   -- ("mono", ["Epi"]),
+  ("epimorphisms", ["Monomorphisms"]),
+  ("monomorphisms", ["Epimorphisms"]),
   ("terminal", ["Initial"]),
   ("initial", ["Terminal"]),
   ("precompose", ["Postcompose"]),
@@ -205,6 +219,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cofan", ["Fan"]),
   ("limit", ["Colimit"]),
   ("colimit", ["Limit"]),
+  ("lim", ["Colim"]),
+  ("colim", ["Lim"]),
   ("limits", ["Colimits"]),
   ("colimits", ["Limits"]),
   ("product", ["Coproduct"]),
@@ -249,9 +265,14 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("galoisCoinsertion", "GaloisInsertion"),
   ("leftOrdContinuous", "RightOrdContinuous"),
   ("rightOrdContinuous", "LeftOrdContinuous"),
+  ("bihimp", "SymmDiff"),
+  ("symmDiff", "Bihimp"),
 
+  -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
+  ("ofSucc", "OfPred"),
+  ("maximalAxioms", "MinimalAxioms"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]
@@ -289,10 +310,11 @@ initialize registerBuiltinAttribute {
     applicationTime := .afterCompilation
   }
 
-/-- `to_dual_name_hint src tgt` lets `to_dual` translate between the name segments `src` and `tgt`
-for the rest of the file current. `src` and `tgt` should both be capitalized. -/
-elab "to_dual_name_hint" src:ident tgt:ident : command => do
-  guessNameExt.addTranslation src tgt
-  guessNameExt.addTranslation tgt src
+/-- `to_dual_name_hint src₁ tgt₁, ..., srcₙ tgtₙ` lets `to_dual` translate between the name segments
+`srcᵢ` and `tgtᵢ` for the rest of the file current. The name segments should be capitalized. -/
+elab "to_dual_name_hint" hints:(ident ident),* : command => do
+  for ⟨hint⟩ in hints.getElems do
+    guessNameExt.addTranslation ⟨hint[0]⟩ ⟨hint[1]⟩
+    guessNameExt.addTranslation ⟨hint[1]⟩ ⟨hint[0]⟩
 
 end Mathlib.Tactic.ToDual

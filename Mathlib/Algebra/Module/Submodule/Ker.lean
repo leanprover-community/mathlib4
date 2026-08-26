@@ -36,7 +36,7 @@ open scoped Pointwise
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {K : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {V : Type*} {V₂ : Type*}
 
 /-! ### Properties of linear maps -/
@@ -121,6 +121,7 @@ theorem ker_codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[τ₁₂] M�
 lemma ker_domRestrict (p : Submodule R M) (f : M →ₛₗ[τ₁₂] M₂) :
     ker (domRestrict f p) = (ker f).comap p.subtype := ker_comp ..
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ker_restrict {p : Submodule R M} {q : Submodule R₂ M₂} {f : M →ₛₗ[τ₁₂] M₂}
     (hf : ∀ x : M, x ∈ p → f x ∈ q) :
     ker (f.restrict hf) = (ker f).comap p.subtype := by
@@ -163,6 +164,11 @@ def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M where
     rw [LinearMap.mem_ker] at h
     rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, map_zero]
 
+lemma ker_submoduleMap {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂ τ₂₁]
+    (f : M →ₛₗ[τ₁₂] M₂) (p : Submodule R M) :
+    (f.submoduleMap p).ker = f.ker.comap p.subtype := by
+  ext; simp [Subtype.ext_iff]
+
 end AddCommMonoid
 
 section Ring
@@ -193,29 +199,35 @@ theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
 theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective f := by
   simpa [disjoint_iff_inf_le] using disjoint_ker_iff_injOn (f := f) (p := ⊤)
 
-@[deprecated (since := "2025-12-23")]
-alias _root_.LinearMapClass.ker_eq_bot := ker_eq_bot
-
 @[simp] lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
-    Injective (f.domRestrict S) ↔ S ⊓ LinearMap.ker f = ⊥ := by
-  rw [← LinearMap.ker_eq_bot]
-  refine ⟨fun h ↦ le_bot_iff.1 ?_, fun h ↦ le_bot_iff.1 ?_⟩
-  · intro x ⟨hx, h'x⟩
-    have : ⟨x, hx⟩ ∈ LinearMap.ker (LinearMap.domRestrict f S) := by simpa using h'x
-    rw [h] at this
-    simpa [mk_eq_zero] using this
-  · rintro ⟨x, hx⟩ h'x
-    have : x ∈ S ⊓ LinearMap.ker f := ⟨hx, h'x⟩
-    rw [h] at this
-    simpa [mk_eq_zero] using this
+    Injective (f.domRestrict S) ↔ Disjoint S f.ker := by
+  simp [← ker_eq_bot, ker_domRestrict, disjoint_iff_comap_eq_bot]
 
-@[simp] theorem injective_restrict_iff_disjoint {p : Submodule R M} {f : M →ₗ[R] M}
-    (hf : ∀ x ∈ p, f x ∈ p) :
-    Injective (f.restrict hf) ↔ Disjoint p (ker f) := by
-  rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff,
-    disjoint_iff]
+@[simp]
+theorem injective_restrict_iff {p : Submodule R M} {q : Submodule R₂ M₂} {f : M →ₛₗ[τ₁₂] M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) : Injective (f.restrict hf) ↔ Disjoint p (ker f) := by
+  simp [← ker_eq_bot, ker_restrict, disjoint_iff_comap_eq_bot]
+
+@[deprecated (since := "2026-07-01")]
+alias injective_restrict_iff_disjoint := injective_restrict_iff
+
+@[simp]
+theorem injective_codRestrict_iff {q : Submodule R₂ M₂} {f : M →ₛₗ[τ₁₂] M₂}
+    (hf : ∀ x, f x ∈ q) : Injective (f.codRestrict q hf) ↔ Injective f :=
+  Set.injective_codRestrict _
 
 end Ring
+
+section CommSemiring
+
+variable [Semiring R] [CommSemiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂}
+
+theorem ker_le_ker_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : ker f ≤ ker (c • f) := by
+  simpa only [ker] using Submodule.comap_le_comap_smul _ _ _
+
+end CommSemiring
 
 section Semifield
 

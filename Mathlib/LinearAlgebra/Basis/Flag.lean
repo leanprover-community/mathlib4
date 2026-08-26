@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Flag of submodules defined by a basis
@@ -20,7 +19,10 @@ We also prove some lemmas about this definition, including `flag_map`, `Basis.mk
 `mem_flag_iff_repr_eq_zero`.
 -/
 
-@[expose] public section
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- This is why this section is `noncomputable`.
+-- See https://github.com/leanprover/lean4/issues/14084.
+@[expose] public noncomputable section
 
 open Set Submodule
 
@@ -48,14 +50,18 @@ theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.succ = R ∙ b k ⊔ b.flag k.castSucc := by
-  simp only [flag, Fin.castSucc_lt_castSucc_iff]
-  simp [Fin.castSucc_lt_iff_succ_le, le_iff_eq_or_lt, setOf_or, image_insert_eq, span_insert]
+  simp [flag, Fin.castSucc_lt_castSucc_iff, le_iff_eq_or_lt, ofPred_or, span_insert]
 
 /-- `flag` commutes with `Basis.map`. -/
 theorem flag_map {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
     (b : Basis (Fin n) R M) (e : M ≃ₗ[R] M₂) (k : Fin (n + 1)) :
     (b.map e).flag k = (b.flag k).map (e : M →ₗ[R] M₂) := by
-  simp [flag, Submodule.map_span, Set.image_image]
+  simp [flag, Submodule.map_span, Set.image_image, coe_map]
+
+/-- `x ∈ b.flag k` iff `b.repr x i = 0` for `k ≤ i.castSucc`. -/
+theorem mem_flag_iff_repr_eq_zero (b : Basis (Fin n) R M) {k : Fin (n + 1)} {x : M} :
+    x ∈ b.flag k ↔ ∀ i : Fin n, k ≤ i.castSucc → b.repr x i = 0 := by
+  simp [flag, mem_span_image, Finsupp.support_subset_iff]
 
 theorem self_mem_flag (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} (h : i.castSucc < k) :
     b i ∈ b.flag k :=
@@ -92,6 +98,8 @@ theorem span_singleton_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
   · simp [coe_mkFinCons, Fin.cons_zero]
   · simp
 
+/-- The image of a flag under `Submodule.subtype` lies in the successor flag of
+`Basis.mkFinCons`. -/
 theorem map_flag_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
     {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
     (bW.flag k).map W.subtype ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
@@ -121,21 +129,6 @@ theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.castSucc ≤ LinearMap.ker (b.dualBasis k) := by
   nontriviality R
   rw [coe_dualBasis, b.flag_le_ker_coord_iff]
-
-/-- `x ∈ b.flag k` iff `b.repr x i = 0` for `k ≤ i.castSucc`. -/
-theorem mem_flag_iff_repr_eq_zero [Nontrivial R] (b : Basis (Fin n) R M) {k : Fin (n + 1)} {x : M} :
-    x ∈ b.flag k ↔ ∀ i : Fin n, k ≤ i.castSucc → b.repr x i = 0 := by
-  constructor
-  · intro hx i hi
-    have hmem : x ∈ LinearMap.ker (b.coord i) := b.flag_le_ker_coord hi hx
-    simpa [Module.Basis.coord_apply] using (LinearMap.mem_ker.mp hmem)
-  · intro h
-    rw [← b.sum_repr x]
-    exact Submodule.sum_mem _ fun i _ => by
-      by_cases hi : i.castSucc < k
-      · exact Submodule.smul_mem _ _ (b.self_mem_flag hi)
-      · rw [h i (le_of_not_gt hi), zero_smul]
-        exact Submodule.zero_mem _
 
 end CommRing
 

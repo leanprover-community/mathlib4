@@ -114,7 +114,7 @@ variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 instance funLike : FunLike (A →ₐc[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨_, _⟩
     rcases g with ⟨_, _⟩
     simp_all
@@ -133,7 +133,7 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
     [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₐc[R] β) : α → β := f
 
-initialize_simps_projections BialgHom (toFun → apply)
+initialize_simps_projections BialgHom (toFun → apply, as_prefix toCoalgHom)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
@@ -194,9 +194,11 @@ theorem coe_coalgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) �
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₗc[R] B) : A → B) = ((φ₂ : A →ₗc[R] B) : A → B) from congr_arg _ H
 
-theorem coe_algHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₐ[R] B) :=
+theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₐ[R] B) :=
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₐ[R] B) : A → B) = ((φ₂ : A →ₐ[R] B) : A → B) from congr_arg _ H
+
+@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
 theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗ[R] B) :=
   CoalgHom.coe_linearMap_injective.comp coe_coalgHom_injective
@@ -292,7 +294,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₐc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
