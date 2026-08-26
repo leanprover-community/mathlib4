@@ -42,12 +42,6 @@ theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤
     @AEMeasurable α α m m0 id μ :=
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
 
-lemma aemeasurable_of_map_neZero {μ : Measure α}
-    {f : α → β} (h : NeZero (μ.map f)) :
-    AEMeasurable f μ := by
-  by_contra h'
-  simp [h'] at h
-
 namespace AEMeasurable
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
@@ -449,7 +443,13 @@ instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := 
   · rw [← sum_sfiniteSeq μ] at H ⊢
     rw [map_sum H]
     infer_instance
-  · rw [map_of_not_aemeasurable H]
+  · obtain rfl | hμ := eq_or_ne μ 0
+    · rw [Measure.map_zero]; infer_instance
+    rw [map_of_not_aemeasurable_of_ne_zero H hμ]
+    have : Nonempty β := by
+      contrapose! H
+      exact (measurable_of_empty_codomain f).aemeasurable
+    have : IsFiniteMeasure (dirac Classical.ofNonempty : Measure β) := isFiniteMeasure_dirac
     infer_instance
 
 end Measure
