@@ -15,7 +15,7 @@ public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 Here we set up the machinery for the "usual" definition of the sheaf condition,
 e.g. as in https://stacks.math.columbia.edu/tag/0072
 in terms of an equalizer diagram where the two objects are
-`∏ᶜ F.obj (U i)` and `∏ᶜ F.obj (U i) ⊓ (U j)`.
+`∏ᶜ F.obj (U i)` and `∏ᶜ F.obj (U i ⊓ U j)`.
 
 We show that this sheaf condition is equivalent to the "pairwise intersections" sheaf condition when
 the presheaf is valued in a category with products, and thereby equivalent to the default sheaf
@@ -50,20 +50,20 @@ a family of open sets.
 def piInters : C :=
   ∏ᶜ fun p : ι × ι => F.obj (op (U p.1 ⊓ U p.2))
 
-/-- The morphism `Π F.obj (U i) ⟶ Π F.obj (U i) ⊓ (U j)` whose components
+/-- The morphism `Π F.obj (U i) ⟶ Π F.obj (U i ⊓ U j)` whose components
 are given by the restriction maps from `U i` to `U i ⊓ U j`.
 -/
 def leftRes : piOpens F U ⟶ piInters.{v'} F U :=
   Pi.lift fun p : ι × ι => Pi.π _ p.1 ≫ F.map (infLELeft (U p.1) (U p.2)).op
 
-/-- The morphism `Π F.obj (U i) ⟶ Π F.obj (U i) ⊓ (U j)` whose components
+/-- The morphism `Π F.obj (U i) ⟶ Π F.obj (U i ⊓ U j)` whose components
 are given by the restriction maps from `U j` to `U i ⊓ U j`.
 -/
 def rightRes : piOpens F U ⟶ piInters.{v'} F U :=
   Pi.lift fun p : ι × ι => Pi.π _ p.2 ≫ F.map (infLERight (U p.1) (U p.2)).op
 
-/-- The morphism `F.obj U ⟶ Π F.obj (U i)` whose components
-are given by the restriction maps from `U j` to `U i ⊓ U j`.
+/-- The morphism `F.obj (iSup U) ⟶ Π F.obj (U i)` whose components
+are given by the restriction maps from `iSup U` to `U i`.
 -/
 def res : F.obj (op (iSup U)) ⟶ piOpens.{v'} F U :=
   Pi.lift fun i : ι => F.map (TopologicalSpace.Opens.leSupr U i).op
@@ -156,7 +156,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F G : Presheaf C X` are isomorphic presheaves,
 then the `fork F U`, the canonical cone of the sheaf condition diagram for `F`,
-is isomorphic to `fork F G` postcomposed with the corresponding isomorphism between
+is isomorphic to `fork G U` postcomposed with the corresponding isomorphism between
 sheaf condition diagrams.
 -/
 def fork.isoOfIso (α : F ≅ G) :
@@ -173,7 +173,7 @@ end SheafConditionEqualizerProducts
 /-- The sheaf condition for a `F : Presheaf C X` requires that the morphism
 `F.obj U ⟶ ∏ᶜ F.obj (U i)` (where `U` is some open set which is the union of the `U i`)
 is the equalizer of the two morphisms
-`∏ᶜ F.obj (U i) ⟶ ∏ᶜ F.obj (U i) ⊓ (U j)`.
+`∏ᶜ F.obj (U i) ⟶ ∏ᶜ F.obj (U i ⊓ U j)`.
 -/
 def IsSheafEqualizerProducts (F : Presheaf.{v', v, u} C X) : Prop :=
   ∀ ⦃ι : Type v'⦄ (U : ι → Opens X), Nonempty (IsLimit (SheafConditionEqualizerProducts.fork F U))

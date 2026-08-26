@@ -15,8 +15,8 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 For a presheaf `F` on a topological space `X`, valued in some category `C`, the *stalk* of `F`
 at the point `x : X` is defined as the colimit of the composition of the inclusion of categories
 `(OpenNhds x)ᵒᵖ ⥤ (Opens X)ᵒᵖ` and the functor `F : (Opens X)ᵒᵖ ⥤ C`.
-For an open neighborhood `U` of `x`, we define the map `F.germ x : F.obj (op U) ⟶ F.stalk x` as the
-canonical morphism into this colimit.
+For an open neighborhood `U` of `x`, we define the map
+`F.germ U x hx : F.obj (op U) ⟶ F.stalk x` as the canonical morphism into this colimit.
 
 Taking stalks is functorial: For every point `x : X` we define a functor `stalkFunctor C x`,
 sending presheaves on `X` to objects of `C`. Furthermore, for a map `f : X ⟶ Y` between
@@ -32,7 +32,7 @@ element of the stalk is the germ of a section.
 
 Furthermore, if we require the forgetful functor to reflect isomorphisms and preserve limits (as
 is the case for most algebraic structures), we have access to the unique gluing API and can prove
-further properties. Most notably, in `is_iso_iff_stalk_functor_map_iso`, we prove that in such
+further properties. Most notably, in `isIso_iff_stalkFunctor_map_iso`, we prove that in such
 a category, a morphism of sheaves is an isomorphism if and only if all of its stalk maps are
 isomorphisms.
 
@@ -76,8 +76,8 @@ variable (C) in
 def stalkFunctor (x : X) : X.Presheaf C ⥤ C :=
   (whiskeringLeft _ _ C).obj (OpenNhds.inclusion x).op ⋙ colim
 
-/-- The stalk of a presheaf `F` at a point `x` is calculated as the colimit of the functor
-nbhds x ⥤ opens F.X ⥤ C
+/-- The stalk of a presheaf `F` at a point `x` is calculated as the colimit of the composition
+`(OpenNhds x)ᵒᵖ ⥤ (Opens X)ᵒᵖ ⥤ C` of the inclusion of categories with `F`.
 -/
 def stalk (ℱ : X.Presheaf C) (x : X) : C :=
   (stalkFunctor C x).obj ℱ
@@ -166,8 +166,8 @@ theorem stalkFunctor_map_germ_apply' [ConcreteCategory C FC]
 
 variable (C)
 
-/-- For a presheaf `F` on a space `X`, a continuous map `f : X ⟶ Y` induces a morphisms between the
-stalk of `f _ * F` at `f x` and the stalk of `F` at `x`.
+/-- For a presheaf `F` on a space `X`, a continuous map `f : X ⟶ Y` induces a morphism between
+the stalk of `f _* F` at `f x` and the stalk of `F` at `x`.
 -/
 def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x := by
   -- This is a hack; Lean doesn't like to elaborate the term written directly.

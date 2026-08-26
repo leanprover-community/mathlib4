@@ -26,7 +26,7 @@ or equivalently whether we're looking at the first or second object in an equali
 `TopCat.Presheaf.isSheaf_iff_isSheafOpensLeCover`: for a presheaf on a topological space,
 the sheaf condition in terms of Grothendieck topology is equivalent to the `OpensLeCover`
 sheaf condition. This result will be used to further connect to other sheaf conditions on spaces,
-like `pairwise_intersections` and `equalizer_products`.
+like `IsSheafPairwiseIntersections` and `IsSheafEqualizerProducts`.
 
 ## References
 * This is the definition Lurie uses in [Spectral Algebraic Geometry][LurieSAG].
@@ -209,10 +209,10 @@ theorem IsSheaf.isSheafOpensLeCover (h : F.IsSheaf) :
   apply (Presheaf.isSheaf_iff_isLimit _ _).mp h
   apply presieveOfCovering.mem_grothendieckTopology
 
-/-- A presheaf `(opens X)ᵒᵖ ⥤ C` on a topological space `X` is a sheaf on the site `opens X` iff
+/-- A presheaf `(Opens X)ᵒᵖ ⥤ C` on a topological space `X` is a sheaf on the site `Opens X` iff
 it satisfies the `IsSheafOpensLeCover` sheaf condition. The latter is not the
 official definition of sheaves on spaces, but has the advantage that it does not
-require `has_products C`. -/
+require `HasProducts C`. -/
 theorem isSheaf_iff_isSheafOpensLeCover : F.IsSheaf ↔ F.IsSheafOpensLeCover := by
   refine ⟨fun h _ ↦ h.isSheafOpensLeCover,
     fun h ↦ (Presheaf.isSheaf_iff_isLimit _ _).mpr fun Y S ↦ ?_⟩

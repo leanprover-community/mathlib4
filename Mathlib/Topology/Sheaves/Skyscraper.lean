@@ -54,7 +54,7 @@ variable {C : Type v} [Category.{w} C] [HasTerminal C] (A : C)
 
 /-- A skyscraper presheaf is a presheaf supported at a single point: if `p₀ ∈ X` is a specified
 point, then the skyscraper presheaf `𝓕` with value `A` is defined by `U ↦ A` if `p₀ ∈ U` and
-`U ↦ *` if `p₀ ∉ A` where `*` is some terminal object.
+`U ↦ *` if `p₀ ∉ U` where `*` is some terminal object.
 -/
 @[simps]
 def skyscraperPresheaf : Presheaf C X where
