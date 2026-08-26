@@ -9,7 +9,6 @@ public import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.SetTheory.Ordinal.Topology
 public import Mathlib.Topology.Order.Compact
 public import Mathlib.Topology.Compactness.Paracompact
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Order.MonotoneConvergence
 public import Mathlib.Topology.Order.T5
 public import Mathlib.Topology.Instances.Shrink
@@ -90,61 +89,56 @@ Type (u+1). We use Shrink to build versions of Iio.{1} ω₁ and Iic.{1} ω₁ i
 and make the results more general.
 -/
 
-instance smIio : Small.{u,1} (Iio ω₁) := small_lift _
-abbrev ShIio := Shrink (Iio ω₁)
-noncomputable def homeoIio : ShIio ≃ₜ Iio ω₁ := (Shrink.homeomorph (Iio ω₁)).symm
-instance smIic : Small.{u,1} (Iic ω₁) := small_lift _
-abbrev ShIic := Shrink (Iic ω₁)
-noncomputable def homeoIic : ShIic ≃ₜ Iic ω₁ := (Shrink.homeomorph (Iic ω₁)).symm
+instance : Small.{u, 1} (Iio ω₁) := small_lift _
+instance : Small.{u, 1} (Iic ω₁) := small_lift _
+variable {X : Type*} [TopologicalSpace X] [Small.{v} X]
 
-instance : T2Space ShIio := homeoIio.symm.t2Space
-instance : T2Space ShIic := homeoIic.symm.t2Space
-instance : NormalSpace ShIio := homeoIio.symm.normalSpace
-instance : NormalSpace ShIic := homeoIic.symm.normalSpace
+instance [NormalSpace X] : NormalSpace (Shrink.{v} X) := (Shrink.homeomorph X).normalSpace
 
-noncomputable def homeoIicIic : ShIic ≃ₜ ShIic := homeoIic.trans homeoIic.symm
-instance compactSpace_toType : CompactSpace ShIic := homeoIic.symm.compactSpace
-noncomputable def incT : ShIio → ShIic := homeoIic.symm ∘ inc ∘ homeoIio
+instance [T3Space X] : T3Space (Shrink.{v} X) := (Shrink.homeomorph X).t3Space
 
-lemma incT_prod_embedding : IsEmbedding
-    (fun (p : ShIio × ShIic) =>
-      (incT.{u, v} p.1, homeoIicIic.{u, v} p.2)) := by
-  refine IsEmbedding.prodMap ?_ homeoIicIic.isEmbedding
-  exact homeoIic.symm.isEmbedding.comp
-    (inc_embedding.comp homeoIio.isEmbedding)
+instance [CompactSpace X] : CompactSpace (Shrink.{v} X) :=
+  (Shrink.homeomorph X).symm.isClosedEmbedding.compactSpace
 
-theorem prod_ShIio_ShIic_not_normal :
-    ¬ NormalSpace (ShIio.{u} × ShIic.{v}) := by
-  intro
-  exact not_normalSpace_Iio_prod_Iic_omega_one
-    (homeoIio.prodCongr homeoIic).normalSpace
+theorem not_normalSpace_shrink_Iio_prod_Iic_omega_one :
+    ¬ NormalSpace (Shrink.{u} (Iio ω₁ × Iic ω₁)) :=
+  fun _ ↦ not_normalSpace_Iio_prod_Iic_omega_one (Shrink.homeomorph _).symm.normalSpace
+
+/-- `Iio ω₁ × Iic ω₁` embeds into the compact Hausdorff space `Iic ω₁ × Iic ω₁`, shrunk. -/
+lemma isEmbedding_shrink_prodMap_inc_id :
+    IsEmbedding (Shrink.homeomorph.{v} (Iic ω₁ × Iic ω₁) ∘ Prod.map inc id ∘
+      (Shrink.homeomorph.{u} (Iio ω₁ × Iic ω₁)).symm) :=
+  (Shrink.homeomorph _).isEmbedding.comp
+    ((inc_embedding.prodMap .id).comp (Shrink.homeomorph _).symm.isEmbedding)
 
 /-! Counterexamples -/
 
 /-- A subspace of a paracompact space need not be paracompact. -/
 theorem subspace_of_paracompact_not_paracompact :
     ¬ ∀ (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
-      ParacompactSpace Y → IsEmbedding f → ParacompactSpace X := fun h => by
-  have := h _ _ _ inferInstance incT_prod_embedding
-  exact prod_ShIio_ShIic_not_normal.{u,u} inferInstance
+      ParacompactSpace Y → IsEmbedding f → ParacompactSpace X := fun h ↦
+  let _ := h _ _ _ inferInstance isEmbedding_shrink_prodMap_inc_id
+  not_normalSpace_shrink_Iio_prod_Iic_omega_one inferInstance
 
 /-- The product of two normal spaces need not be normal. -/
 theorem product_of_normal_not_normal :
     ¬ ∀ (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y],
-      NormalSpace X → NormalSpace Y → NormalSpace (X × Y) :=
-  fun h => prod_ShIio_ShIic_not_normal (h _ _ inferInstance inferInstance)
+      NormalSpace X → NormalSpace Y → NormalSpace (X × Y) := fun h ↦
+  let _ := h (Shrink.{u} (Iio ω₁)) (Shrink.{v} (Iic ω₁)) inferInstance inferInstance
+  not_normalSpace_Iio_prod_Iic_omega_one
+    ((Shrink.homeomorph _).symm.prodCongr (Shrink.homeomorph _).symm).normalSpace
 
 /-- A subspace of a normal space need not be normal. -/
 theorem subspace_of_normal_not_normal :
     ¬ ∀ (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
       NormalSpace Y → IsEmbedding f → NormalSpace X :=
-  fun h => prod_ShIio_ShIic_not_normal
-    (h _ _ _ inferInstance incT_prod_embedding)
+  fun h ↦ not_normalSpace_shrink_Iio_prod_Iic_omega_one <|
+    h _ _ _ inferInstance isEmbedding_shrink_prodMap_inc_id
 
 /-- A regular space need not be normal. -/
 theorem regular_not_normal :
     ¬ ∀ (X : Type u) [TopologicalSpace X], RegularSpace X → NormalSpace X :=
-  fun h => prod_ShIio_ShIic_not_normal.{u,u} (h _ inferInstance)
+  fun h ↦ not_normalSpace_shrink_Iio_prod_Iic_omega_one (h _ inferInstance)
 
 end Omega1Space
 
