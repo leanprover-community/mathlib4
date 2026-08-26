@@ -108,8 +108,10 @@ lemma IsPerfPair.of_bijective (p : M →ₗ[R] N →ₗ[R] R) [IsReflexive R N] 
 
 set_option linter.overlappingInstances false
 instance [inst : p.IsPerfPair] : Fact p.Nondegenerate := ⟨by
-  simpa only [Nondegenerate, ← flip_separatingLeft, separatingLeft_iff_ker_eq_bot, ker_eq_bot]
-    using ⟨inst.bijective_left.injective, inst.bijective_right.injective⟩⟩
+  exact ⟨separatingLeft_iff_ker_eq_bot.mpr <|
+      ker_eq_bot_of_injective inst.bijective_left.injective,
+    flip_separatingLeft.mp <| separatingLeft_iff_ker_eq_bot.mpr <|
+      ker_eq_bot_of_injective inst.bijective_right.injective⟩⟩
 
 end CommSemiring
 
