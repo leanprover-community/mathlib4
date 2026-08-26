@@ -123,19 +123,9 @@ theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
   rw [coe_dualBasis, b.flag_le_ker_coord_iff]
 
 /-- `x ∈ b.flag k` iff `b.repr x i = 0` for `k ≤ i.castSucc`. -/
-theorem mem_flag_iff_repr_eq_zero [Nontrivial R] (b : Basis (Fin n) R M) {k : Fin (n + 1)} {x : M} :
+theorem mem_flag_iff_repr_eq_zero (b : Basis (Fin n) R M) {k : Fin (n + 1)} {x : M} :
     x ∈ b.flag k ↔ ∀ i : Fin n, k ≤ i.castSucc → b.repr x i = 0 := by
-  constructor
-  · intro hx i hi
-    have hmem : x ∈ LinearMap.ker (b.coord i) := b.flag_le_ker_coord hi hx
-    simpa [Module.Basis.coord_apply] using (LinearMap.mem_ker.mp hmem)
-  · intro h
-    rw [← b.sum_repr x]
-    exact Submodule.sum_mem _ fun i _ => by
-      by_cases hi : i.castSucc < k
-      · exact Submodule.smul_mem _ _ (b.self_mem_flag hi)
-      · rw [h i (le_of_not_gt hi), zero_smul]
-        exact Submodule.zero_mem _
+  simp [flag, Basis.mem_span_image, Finsupp.support_subset_iff]
 
 end CommRing
 
