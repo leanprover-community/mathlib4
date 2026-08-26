@@ -82,10 +82,10 @@ def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
 
 variable (G)
 
+set_option simps.defeqWarn false in
 /-- Each element of the group defines an additive monoid isomorphism.
 
 This is a stronger version of `MulAction.toPermHom`. -/
-set_option simps.defeqWarn false in
 @[simps]
 def DistribMulAction.toAddAut [DistribMulAction G A] : G →* Multiplicative (AddAut A) where
   toFun := toAddEquiv _
