@@ -25,7 +25,7 @@ variable {V : Type*} {G : SimpleGraph V} {α : Type*}
 set_option linter.unusedDecidableInType false in
 /-- Every fan can be extended to a maximal fan (induction on `Fintype.card V − l.length`). -/
 private lemma IsFan.exists_maximal
-    [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+    [Fintype V] [DecidableEq V]
     {u v : V} {c : G.lineGraph.Coloring α} :
     ∀ (gap : ℕ) (l : List V) (_h_ne : l ≠ []),
       IsFan c u v l → Fintype.card V - l.length ≤ gap →
