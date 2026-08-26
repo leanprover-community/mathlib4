@@ -761,8 +761,8 @@ namespace FiberPrebundle
 variable {F E}
 variable (a : FiberPrebundle F E) {e : Pretrivialization F (π F E)}
 
+set_option warn.classDefReducibility false in
 /-- Topology on the total space that will make the prebundle into a bundle. -/
-@[instance_reducible]
 def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F E) :=
   ⨆ (e : Pretrivialization F (π F E)) (_ : e ∈ a.pretrivializationAtlas),
     coinduced e.setSymm instTopologicalSpaceSubtype

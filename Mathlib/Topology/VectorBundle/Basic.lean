@@ -879,8 +879,8 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
       dsimp only [Function.comp_def, Prod.map]
       rw [a.mk_coordChange _ _ hb, e'.mk_symm hb.1] }
 
+set_option warn.classDefReducibility false in
 /-- Topology on the total space that will make the prebundle into a bundle. -/
-@[instance_reducible]
 def totalSpaceTopology (a : VectorPrebundle R F E) : TopologicalSpace (TotalSpace F E) :=
   a.toFiberPrebundle.totalSpaceTopology
 
