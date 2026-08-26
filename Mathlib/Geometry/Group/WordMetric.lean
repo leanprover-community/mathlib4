@@ -94,6 +94,7 @@ lemma wordLength_eq_zero_iff : P.wordLength g = 0 ↔ g = 1 := by
   · intro h
     exact h ▸ P.wordLength_one
 
+-- This is uperceded by `wordLength_inv`.
 private lemma wordLength_inv_le : P.wordLength g⁻¹ ≤ P.wordLength g := by
   obtain ⟨l, hl, rfl⟩ := P.exists_isGeodesic g
   simpa [wordProd_invRev, hl.eq] using P.wordLength_wordProd_le (FreeGroup.invRev l)
