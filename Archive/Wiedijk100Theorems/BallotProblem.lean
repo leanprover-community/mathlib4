@@ -3,7 +3,9 @@ Copyright (c) 2022 Bhavik Mehta, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kexing Ying
 -/
-import Mathlib.Probability.UniformOn
+module
+
+public import Mathlib.Probability.UniformOn
 
 /-!
 # Ballot problem
@@ -29,6 +31,7 @@ throughout the count. The probability of this is `(p - q) / (p + q)`.
 
 -/
 
+@[expose] public section
 
 open Set ProbabilityTheory MeasureTheory
 open scoped ENNReal
@@ -165,12 +168,12 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
-private local instance measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
+local instance measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
-private local instance measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
+local instance measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
   { measurableSet_singleton := fun _ => trivial }
 
-private theorem list_int_measurableSet {s : Set (List ℤ)} : MeasurableSet s := trivial
+theorem list_int_measurableSet {s : Set (List ℤ)} : MeasurableSet s := trivial
 
 theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p + q).choose p
   | p, 0 => by simp [counted_right_zero]

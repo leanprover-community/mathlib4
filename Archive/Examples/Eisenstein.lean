@@ -3,13 +3,14 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.CharP.Quotient
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.Polynomial.SpecificDegree
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
-import Mathlib.Tactic.ComputeDegree
+public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.Polynomial.SpecificDegree
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
+public import Mathlib.Tactic.ComputeDegree
 
 /-! # Example of an application of the generalized Eisenstein criterion
 
@@ -20,6 +21,8 @@ to establish the irreducibility of the explicit polynomial of degree 4
 One argues modulo `3`, with `q := X ^ 2 + 1`.
 
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
