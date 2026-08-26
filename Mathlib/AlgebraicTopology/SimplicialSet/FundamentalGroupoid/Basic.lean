@@ -28,7 +28,6 @@ this allows to obtain the equality
 `(mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x)`
 by `with_implicit rfl`.
 
-
 -/
 
 @[expose] public section
