@@ -55,7 +55,7 @@ enough to `T₀` (in operator norm) is also Fredholm. -/
 protected theorem IsFredholm.eventually [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) : ∀ᶠ T in 𝓝 T₀, T.IsFredholm := by
   obtain ⟨pkg⟩ := hT₀.nonempty_fredholmPackage
-  filter_upwards [pkg.eventually_isInvertible] with S h_inv
+  filter_upwards [pkg.eventually_isInvertible] with T h_inv
   have A : IsFredholm pkg.decDom.X₁.subtypeL :=
     have := pkg.decDom.cofg_X₁
     pkg.decDom.X₁.isFredholm_subtypeL pkg.decDom.isTopCompl.isClosed
