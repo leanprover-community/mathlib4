@@ -91,7 +91,7 @@ def probeContainerForSHA (container : Container) (repo sha : String) :
   let out ← IO.Process.output
     {cmd := (← IO.getCurl),
      args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I"] ++
-       curlFollowRedirectArgs ++ #[url],
+       curlFollowRedirectArgs ++ curlRetryArgs ++ #[url],
      cwd := "."}
   if out.exitCode != 0 then
     -- Network error; assume no cache at this SHA

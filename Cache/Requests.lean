@@ -339,6 +339,18 @@ plaintext protocol or through a long chain of hops.
 def curlFollowRedirectArgs : Array String :=
   #["--location", "--proto-redir", "=https", "--max-redirs", "5"]
 
+/--
+`curl` retry flags for a cache transfer. `--retry` covers timeouts and
+408/429/5xx; `--retry-all-errors` adds transport errors, so a transfer that
+dies with its connection retries on a fresh one, with curl's exponential
+backoff. An HTTP 4xx is not a curl error, so a 404 miss never retries.
+`--retry-all-errors` needs curl >= 7.71, the `validateCurl` floor for
+parallel mode; the serial download path serves older curls and stays on
+plain `--retry`.
+-/
+def curlRetryArgs : Array String :=
+  #["--retry", "5", "--retry-all-errors"]
+
 /-- Authentication method used for cache upload operations. -/
 inductive UploadAuth where
   | azureSas (token : String)
@@ -465,15 +477,20 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
-      args := #[url, "--fail", "--silent"] ++ curlFollowRedirectArgs ++
-        #["--write-out", "%{http_code}", "-o", partPath.toString] }
-  if out.exitCode = 0 then
+      args := #[url, "--silent"] ++ curlFollowRedirectArgs ++
+        -- Plain `--retry` only: this path serves the curls below 7.71 that
+        -- `validateCurl` keeps out of parallel mode, and they reject
+        -- `curlRetryArgs`.
+        #["--retry", "5", "--write-out", "%{http_code}", "-o", partPath.toString] }
+  -- The status decides, as on the parallel path: only a 200/201 body is a
+  -- cache file. On any other answer the part file holds an error body, if
+  -- one exists at all. A connection error reports status `000`.
+  let httpCode := out.stdout.trimAscii.toNat?.getD 0
+  if out.exitCode = 0 && (httpCode == 200 || httpCode == 201) then
     IO.FS.rename partPath path
     return .served
-  IO.FS.removeFile partPath
-  -- `--fail` exits nonzero on any HTTP error; the written-out status tells a 404
-  -- miss apart from a real transfer failure (a connection error reports `000`).
-  let httpCode := out.stdout.trimAscii.toNat?.getD 0
+  if ← partPath.pathExists then
+    IO.FS.removeFile partPath
   return if isCacheMissStatus httpCode treatForbiddenAsMiss then .miss else .failed
 
 /-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345).
@@ -727,11 +744,9 @@ private def downloadFilesFromContainer
   let size := hashMap.size
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
-    let args := #["--request", "GET", "--parallel",
-        -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
-        "--silent"] ++ curlFollowRedirectArgs ++
-      #["--retry", "5", -- there seem to be some intermittent failures
-        "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+    let args := #["--request", "GET", "--parallel", "--silent"] ++
+      curlFollowRedirectArgs ++ curlRetryArgs ++
+      #["--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
     -- `legacy` answers reads with 403 once its public access is revoked ahead
     -- of retirement; treat that as a miss so the chain stays quiet for clients
     -- whose chain still lists it.
@@ -1128,10 +1143,11 @@ def putFilesAbsolute
         else
           #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
             azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
-    let args := args ++ #[
-      "-X", "PUT", "--parallel",
-      "--retry", "5", -- there seem to be some intermittent failures
-      "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
+    -- A retry after a PUT that landed is safe: a non-overwrite put answers
+    -- it with 409/412, which `treatExistsAsSkip` excuses, and an overwrite
+    -- put re-sends the same bytes.
+    let args := args ++ #["-X", "PUT", "--parallel"] ++ curlRetryArgs ++
+      #["--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
     let (s, _) ← monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
       (decompConfig := none) (treatExistsAsSkip := !overwrite)
     IO.FS.removeFile tempConfigFilePath
