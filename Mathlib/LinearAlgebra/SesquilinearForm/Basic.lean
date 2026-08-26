@@ -8,9 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-public import Mathlib.Algebra.Module.Projective
 
--- public import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.Algebra.Module.Torsion.Field
 
 /-!

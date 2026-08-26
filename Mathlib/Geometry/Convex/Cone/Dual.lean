@@ -30,7 +30,7 @@ Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to
 
 @[expose] public section
 
-assert_not_exists TopologicalSpace Real -- Cardinal
+assert_not_exists TopologicalSpace Real
 
 open Function LinearMap Pointwise Set
 
