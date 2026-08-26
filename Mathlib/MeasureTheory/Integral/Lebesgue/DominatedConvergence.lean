@@ -18,7 +18,9 @@ pointwise dominated by a fixed function. This file provides a few variants of th
 
 public section
 
-open Filter ENNReal Topology
+open Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 

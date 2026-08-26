@@ -44,7 +44,7 @@ These definitions are for sums over a `Finset`; versions for a
 
 noncomputable section
 
-open Affine
+open scoped Affine
 
 namespace Finset
 
