@@ -111,7 +111,7 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
     simp only [p, p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
     congr
     ext n
-    rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), if_neg]
+    rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), ite_eq_right]
     exact fun ha => (lt_self_iff_false _).mp
       (ha.2.trans_le (one_div_nonneg.mpr n.cast_nonneg : 0 ≤ (1 / n : ℝ)))
   have H₁ := (differentiableOn_inverse_one_sub_smul r_lt).hasFPowerSeriesOnBall r_pos

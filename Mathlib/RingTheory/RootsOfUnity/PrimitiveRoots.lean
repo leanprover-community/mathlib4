@@ -33,6 +33,8 @@ monoids, expressing that an element is a primitive root of unity.
   has a primitive `k`-th root of unity, then it has `φ k` of them.
 * `primitiveRootsPowEquivOfCoprime`: An equivalence between `primitiveRoots k R` that takes each
   root to a coprime power `a`.
+* `nthRootsFinset_eq_of_prime`: for `p` prime, the `p`-th roots of unity are the primitive `p`-th
+  roots of unity together with `1`.
 
 ## Implementation details
 
@@ -155,6 +157,10 @@ theorem one_right_iff : IsPrimitiveRoot ζ 1 ↔ ζ = 1 := by
   · rintro rfl; exact one
 
 @[simp]
+theorem one_left_iff : IsPrimitiveRoot (1 : M) k ↔ k = 1 :=
+  ⟨fun h ↦ Nat.dvd_one.mp (h.dvd_of_pow_eq_one 1 (one_pow _)), fun e ↦ e ▸ one⟩
+
+@[simp]
 theorem coe_submonoidClass_iff {M B : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M]
     {N : B} {ζ : N} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoot ζ k := by
   simp_rw [iff_def]
@@ -170,19 +176,21 @@ lemma isUnit_unit {ζ : M} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
 lemma isUnit_unit' {ζ : G} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
     IsPrimitiveRoot (hζ.isUnit hn).unit' n := coe_units_iff.mp hζ
 
+theorem pow_div_gcd (h : IsPrimitiveRoot ζ k) (j : ℕ) (h0 : k.gcd j ≠ 0) :
+    IsPrimitiveRoot (ζ ^ j) (k / k.gcd j) where
+  pow_eq_one := by
+    rw [← pow_mul, ← Nat.mul_div_assoc j (k.gcd_dvd_left j), mul_comm,
+      Nat.mul_div_assoc k (k.gcd_dvd_right j), pow_mul, h.pow_eq_one, one_pow]
+  dvd_of_pow_eq_one l hl := by
+    rw [Nat.div_dvd_iff_dvd_mul (k.gcd_dvd_left j) h0.pos]
+    grw [← k.gcd_dvd_right l, ← Nat.gcd_mul_right_dvd_mul_gcd]
+    apply h.dvd_of_pow_eq_one
+    rw [pow_gcd_eq_one]
+    exact ⟨h.pow_eq_one, by rwa [pow_mul]⟩
+
 theorem pow_of_coprime (h : IsPrimitiveRoot ζ k) (i : ℕ) (hi : i.Coprime k) :
     IsPrimitiveRoot (ζ ^ i) k := by
-  by_cases h0 : k = 0
-  · subst k; simp_all only [pow_one, Nat.coprime_zero_right]
-  rcases h.isUnit h0 with ⟨ζ, rfl⟩
-  rw [← Units.val_pow_eq_pow_val]
-  rw [coe_units_iff] at h ⊢
-  refine
-    { pow_eq_one := by rw [← pow_mul', pow_mul, h.pow_eq_one, one_pow]
-      dvd_of_pow_eq_one := fun l hl ↦ h.dvd_of_pow_eq_one l ?_ }
-  rw [← pow_one ζ, ← zpow_natCast ζ, ← hi.gcd_eq_one, Nat.gcd_eq_gcd_ab, zpow_add, mul_pow,
-    ← zpow_natCast, ← zpow_mul, mul_right_comm]
-  simp only [zpow_mul, hl, h.pow_eq_one, one_zpow, one_pow, one_mul, zpow_natCast]
+  grind [pow_div_gcd h i (by grind)]
 
 theorem pow_of_prime (h : IsPrimitiveRoot ζ k) {p : ℕ} (hprime : Nat.Prime p) (hdiv : ¬p ∣ k) :
     IsPrimitiveRoot (ζ ^ p) k :=
@@ -239,6 +247,12 @@ theorem pow_of_dvd (h : IsPrimitiveRoot ζ k) {p : ℕ} (hp : p ≠ 0) (hdiv : p
   rw [h.eq_orderOf] at hdiv ⊢
   rw [← orderOf_pow_of_dvd hp hdiv]
   exact IsPrimitiveRoot.orderOf _
+
+/-- If `ζ` is a primitive `k`-th root of unity with `k` odd, then every power of `ζ` is an even
+power of `ζ`. -/
+theorem exists_pow_eq_pow_two_mul (h : IsPrimitiveRoot ζ k) (hk : Odd k) (n : ℕ) :
+    ∃ m, ζ ^ n = ζ ^ (2 * m) :=
+  _root_.exists_pow_eq_pow_two_mul h.pow_eq_one hk n
 
 protected theorem mem_rootsOfUnity {ζ : Mˣ} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     ζ ∈ rootsOfUnity n M :=
@@ -424,7 +438,7 @@ theorem eq_neg_one_of_two_right [NoZeroDivisors R] {ζ : R} (h : IsPrimitiveRoot
 theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
     IsPrimitiveRoot (-1 : R) 2 := by
   convert! IsPrimitiveRoot.orderOf (-1 : R)
-  rw [orderOf_neg_one, if_neg <| by rwa [ringChar.eq_iff.mpr h]]
+  rw [orderOf_neg_one, ite_eq_right <| by rwa [ringChar.eq_iff.mpr h]]
 
 /-- If `1 < k` then `(∑ i ∈ range k, ζ ^ i) = 0`. -/
 theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
@@ -502,20 +516,16 @@ variable [IsDomain R]
 
 theorem zpowers_eq {k : ℕ} [NeZero k] {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
     Subgroup.zpowers ζ = rootsOfUnity k R := by
-  apply SetLike.coe_injective
-  have F : Fintype (Subgroup.zpowers ζ) := Fintype.ofEquiv _ h.zmodEquivZPowers.toEquiv
-  refine
-    @Set.eq_of_subset_of_card_le Rˣ _ _ F (rootsOfUnity.fintype R k)
-      (Subgroup.zpowers_le_of_mem <| show ζ ∈ rootsOfUnity k R from h.pow_eq_one) ?_
+  apply Subgroup.eq_of_le_of_card_ge (Subgroup.zpowers_le_of_mem h.pow_eq_one)
   calc
-    Fintype.card (rootsOfUnity k R) ≤ k := card_rootsOfUnity R k
-    _ = Fintype.card (ZMod k) := (ZMod.card k).symm
-    _ = Fintype.card (Subgroup.zpowers ζ) := Fintype.card_congr h.zmodEquivZPowers.toEquiv
+    Nat.card (rootsOfUnity k R) ≤ k := card_rootsOfUnity R k
+    _ = Nat.card (ZMod k) := (Nat.card_zmod k).symm
+    _ = Nat.card (Subgroup.zpowers ζ) := Nat.card_congr h.zmodEquivZPowers.toEquiv
 
 lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F R S]
     {ζ : R} {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) {f : F} (hf : Function.Injective f) :
     (rootsOfUnity n R).map (Units.map f) = rootsOfUnity n S := by
-  letI : CommMonoid Sˣ := inferInstance
+  let : CommMonoid Sˣ := inferInstance
   replace hζ := hζ.isUnit_unit NeZero.out
   rw [← hζ.zpowers_eq,
     ← (hζ.map_of_injective (Units.map_injective (f := (f : R →* S)) hf)).zpowers_eq,
@@ -635,26 +645,20 @@ theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
 
 /-- A variant of `IsPrimitiveRoot.card_rootsOfUnity` for `ζ : Rˣ`. -/
 theorem card_rootsOfUnity' {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
-    Fintype.card (rootsOfUnity n R) = n := by
-  let e := h.zmodEquivZPowers
-  have : Fintype (Subgroup.zpowers ζ) := Fintype.ofEquiv _ e.toEquiv
-  calc
-    Fintype.card (rootsOfUnity n R) = Fintype.card (Subgroup.zpowers ζ) :=
-      Fintype.card_congr <| by rw [h.zpowers_eq]
-    _ = Fintype.card (ZMod n) := Fintype.card_congr e.toEquiv.symm
-    _ = n := ZMod.card n
+    Nat.card (rootsOfUnity n R) = n := by
+  rw [← h.zpowers_eq, Nat.card_zpowers, h.eq_orderOf]
 
 theorem card_rootsOfUnity {ζ : R} {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
-    Fintype.card (rootsOfUnity n R) = n := by
+    Nat.card (rootsOfUnity n R) = n := by
   obtain ⟨ζ, hζ⟩ := h.isUnit NeZero.out
   rw [← hζ, IsPrimitiveRoot.coe_units_iff] at h
   exact h.card_rootsOfUnity'
 
 lemma _root_.card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot {n : ℕ} [NeZero n] :
-    Fintype.card (rootsOfUnity n R) = n ↔ ∃ ζ : R, IsPrimitiveRoot ζ n := by
+    Nat.card (rootsOfUnity n R) = n ↔ ∃ ζ : R, IsPrimitiveRoot ζ n := by
   refine ⟨fun h ↦ ?_, fun ⟨ζ, hζ⟩ ↦ hζ.card_rootsOfUnity⟩
   obtain ⟨⟨ζ, hζ'⟩, hζ⟩ := (rootsOfUnity.isCyclic R n).exists_ofOrder_eq_natCard
-  rw [Nat.card_eq_fintype_card, h, ← IsPrimitiveRoot.iff_orderOf, ← coe_submonoidClass_iff,
+  rw [h, ← IsPrimitiveRoot.iff_orderOf, ← coe_submonoidClass_iff,
     ← IsPrimitiveRoot.coe_units_iff] at hζ
   use ζ
 
@@ -662,7 +666,7 @@ lemma _root_.card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot {n : ℕ} [NeZero n
 if there is a primitive root of unity in `R`. -/
 theorem card_nthRoots_one {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     Multiset.card (nthRoots n (1 : R)) = n := by
-  rw [card_nthRoots h, if_pos ⟨ζ, h.pow_eq_one⟩]
+  rw [card_nthRoots h, ite_eq_left ⟨ζ, h.pow_eq_one⟩]
 
 theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha : a ≠ 0) :
     (nthRoots n a).Nodup := by
@@ -830,6 +834,37 @@ theorem autToPow_spec [NeZero n] (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : 
 end Automorphisms
 
 end IsPrimitiveRoot
+
+section nthRootsFinsetPrime
+
+open IsPrimitiveRoot
+
+variable [CommRing R] [IsDomain R] {p : ℕ}
+
+/-- If `p` is prime, the `p`-th roots of unity in an integral domain are exactly the primitive
+`p`-th roots of unity together with `1`. -/
+theorem nthRootsFinset_eq_of_prime [DecidableEq R] (hp : p.Prime) :
+    nthRootsFinset p (1 : R) = primitiveRoots p R ∪ {1} := by
+  simp [nthRoots_one_eq_biUnion_primitiveRoots, hp.divisors]
+
+/-- For `p` prime, an element of `R` is a `p`-th root of unity if and only if it is either a
+primitive `p`-th root of unity or `1`. -/
+theorem mem_nthRootsFinset_iff_of_prime (hp : p.Prime) {η : R} :
+    η ∈ nthRootsFinset p (1 : R) ↔ IsPrimitiveRoot η p ∨ η = 1 := by
+  classical
+  simp [nthRootsFinset_eq_of_prime hp, mem_primitiveRoots hp.pos, or_comm]
+
+/-- A `p`-th root of unity that is not `1`, with `p` prime, satisfies `IsPrimitiveRoot η p`. -/
+theorem isPrimitiveRoot_of_mem_nthRootsFinset (hp : p.Prime) {η : R}
+    (hη : η ∈ nthRootsFinset p (1 : R)) (hne1 : η ≠ 1) : IsPrimitiveRoot η p :=
+  ((mem_nthRootsFinset_iff_of_prime hp).1 hη).resolve_right hne1
+
+/-- A `p`-th root of unity that is not `1`, with `p` prime, is a primitive `p`-th root of unity. -/
+theorem mem_primitiveRoots_of_mem_nthRootsFinset (hp : p.Prime) {η : R}
+    (hη : η ∈ nthRootsFinset p (1 : R)) (hne1 : η ≠ 1) : η ∈ primitiveRoots p R :=
+  (mem_primitiveRoots hp.pos).2 (isPrimitiveRoot_of_mem_nthRootsFinset hp hη hne1)
+
+end nthRootsFinsetPrime
 
 section cyclic
 

@@ -277,7 +277,7 @@ lemma rewrites_reverse : r.reverse.Rewrites u.reverse v.reverse ↔ r.Rewrites u
 end ContextFreeRule
 
 namespace ContextFreeGrammar
-variable {g : ContextFreeGrammar T} {u v : List (Symbol T g.NT)} {w : List T}
+variable {g : ContextFreeGrammar T} {u v : List (Symbol T g.NT)}
 
 set_option simps.defeqWarn false in
 /-- Grammar for a reversed language. -/
@@ -319,6 +319,7 @@ protected lemma Derives.reverse (hg : g.Derives u v) : g.reverse.Derives u.rever
   | tail _ orig ih => exact ih.trans_produces orig.reverse
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma derives_reverse : g.reverse.Derives u.reverse v.reverse ↔ g.Derives u v :=
   ⟨fun h ↦ by convert! h.reverse <;> simp, .reverse⟩
 

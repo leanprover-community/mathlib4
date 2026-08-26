@@ -22,6 +22,7 @@ variable {R n : Type} [CommSemiring R] [Fintype n] [DecidableEq n]
 
 open Matrix TrivSqZeroExt
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option simps.defeqWarn false in
 /-- Matrices over dual numbers and dual numbers over matrices are isomorphic. -/
 @[simps]

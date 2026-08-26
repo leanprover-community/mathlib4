@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Lie.Cochain
 
 /-!
 # Extensions of Lie algebras
+
 This file defines extensions of Lie algebras, given by short exact sequences of Lie algebra
 homomorphisms. They are implemented in two ways: `IsExtension` is a `Prop`-valued class taking two
 homomorphisms as parameters, and `Extension` is a structure that includes the middle Lie algebra.
@@ -151,7 +152,8 @@ def ofProd : L × M ≃ ofTwoCocycle c where
 
 -- transport instances along the equivalence
 instance : AddCommGroup (ofTwoCocycle c) := (ofProd c).symm.addCommGroup
-instance : Module R (ofTwoCocycle c) := (ofProd c).symm.module R
+instance : Module R (ofTwoCocycle c) :=
+  ({ (ofProd c).symm with map_add' _ _ := rfl : ofTwoCocycle c ≃+ L × M}).module R
 
 @[simp] lemma of_zero : ofProd c (0 : L × M) = 0 := rfl
 @[simp] lemma of_add (x y : L × M) : ofProd c (x + y) = ofProd c x + ofProd c y := rfl
@@ -223,7 +225,7 @@ def LieEquiv.ofCoboundary (c' : twoCocycle R L M) (x : oneCochain R L M)
     ofProd c (y.1, y.2 + x y.1)
   map_add' _ _ := by simp [← of_add]; abel
   map_smul' := by simp [← of_smul, smul_sub]
-  map_lie' := ((ofProd c').apply_eq_iff_eq_symm_apply).2 <| by simp [bracket_ofTwoCocycle, h]; abel
+  map_lie' := ((ofProd c').eq_symm_apply).1 <| by simp [bracket_ofTwoCocycle, h]; abel
   left_inv y := by simp
   right_inv z := by simp
 
@@ -299,6 +301,7 @@ lemma lie_incl_mem_ker {E : Extension R M L} (x : E.L) (y : M) :
     ⁅x, E.incl y⁆ ∈ E.proj.ker := by
   rw [LieHom.mem_ker, LieHom.map_lie, proj_incl, lie_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Lie algebra isomorphism from the kernel of an extension to the kernel of the projection. -/
 noncomputable def toKer (E : Extension R M L) :
     M ≃ₗ⁅R⁆ E.proj.ker where
@@ -322,7 +325,7 @@ instance [IsLieAbelian M] (E : Extension R M L) : IsLieAbelian E.proj.ker :=
 /-- Given an extension of `L` by `M` whose kernel `M` is abelian, the kernel `M` gets an `L`-module
 structure. We do not make this an instance, because we may have to work with more than one
 extension. -/
-@[simps, implicit_reducible]
+@[simps, instance_reducible]
 noncomputable def ringModuleOf [IsLieAbelian M] (E : Extension R M L) : LieRingModule L M where
   bracket x y := E.toKer.symm ⁅E.proj_surjective.hasRightInverse.choose x, E.toKer y⁆
   add_lie x y m := by
@@ -355,7 +358,7 @@ one extension. -/
 lemma lieModuleOf [IsLieAbelian M] (E : Extension R M L) :
     letI := E.ringModuleOf
     LieModule R L M := by
-  letI := E.ringModuleOf
+  let := E.ringModuleOf
   set h := E.proj_surjective.hasRightInverse
   exact
     { smul_lie r x m := by

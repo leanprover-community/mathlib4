@@ -109,6 +109,7 @@ lemma pullbackShiftFunctorZero'_hom_app :
     pullbackShiftFunctorZero'_inv_app, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma pullbackShiftFunctorAdd'_inv_app :
     (shiftFunctorAdd' _ a₁ a₂ a₃ h).inv.app X =
       (shiftFunctor (PullbackShift C φ) a₂).map ((pullbackShiftIso C φ a₁ b₁ h₁).hom.app X) ≫
@@ -212,7 +213,7 @@ namespace NatTrans
 variable {F} {G : C ⥤ D} [G.CommShift B]
 
 set_option backward.isDefEq.respectTransparency false in
-open Functor in
+open CategoryTheory.Functor in
 instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
     NatTrans.CommShift (PullbackShift.natTrans φ τ) A where
   shift_comm _ := by
@@ -261,7 +262,7 @@ composition of `CommShift` structures by `B` on `F` and `G`), and that on
 `PullbackShift.functor F φ ⋙ PullbackShift.functor G φ` (i.e. the one coming from
 the composition of the pulled back `CommShift` structures on `F` and `G`).
 -/
-open Functor in
+open CategoryTheory.Functor in
 instance : NatTrans.CommShift (PullbackShift.natIsoComp φ F G).hom A where
   shift_comm _ := by
     ext

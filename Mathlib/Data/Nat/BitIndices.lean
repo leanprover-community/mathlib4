@@ -6,7 +6,6 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.List
-public import Mathlib.Algebra.Order.BigOperators.Group.List
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Algebra.Ring.Nat
