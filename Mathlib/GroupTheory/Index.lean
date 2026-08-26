@@ -5,11 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
@@ -41,7 +37,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 @[expose] public section
 
-assert_not_exists Field
+assert_not_exists MonoidWithZero
 
 open scoped Pointwise
 
@@ -434,20 +430,22 @@ theorem index_inf_le : (H ⊓ K).index ≤ H.index * K.index := by
 
 @[to_additive]
 theorem relIndex_iInf_ne_zero {ι : Type*} [_hι : Finite ι] {f : ι → Subgroup G}
-    (hf : ∀ i, (f i).relIndex L ≠ 0) : (⨅ i, f i).relIndex L ≠ 0 :=
-  haveI := Fintype.ofFinite ι
-  (Finset.prod_ne_zero_iff.mpr fun i _hi => hf i) ∘
-    Nat.card_pi.symm.trans ∘
-      Finite.card_eq_zero_of_embedding (quotientiInfSubgroupOfEmbedding f L)
+    (hf : ∀ i, (f i).relIndex L ≠ 0) : (⨅ i, f i).relIndex L ≠ 0 := by
+  classical
+  cases nonempty_fintype ι
+  suffices ∀ s : Finset ι, (⨅ i ∈ s, f i).relIndex L ≠ 0 by simpa using this Finset.univ
+  refine Finset.induction (by simp) fun i s his h ↦ ?_
+  rw [Finset.iInf_insert]
+  exact relIndex_inf_ne_zero (hf i) h
 
 @[to_additive]
 theorem relIndex_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
-    (⨅ i, f i).relIndex L ≤ ∏ i, (f i).relIndex L :=
-  le_of_le_of_eq
-    (Finite.card_le_of_embedding' (quotientiInfSubgroupOfEmbedding f L) fun h =>
-      let ⟨i, _hi, h⟩ := Finset.prod_eq_zero_iff.mp (Nat.card_pi.symm.trans h)
-      relIndex_eq_zero_of_le_left (iInf_le f i) h)
-    Nat.card_pi
+    (⨅ i, f i).relIndex L ≤ ∏ i, (f i).relIndex L := by
+  classical
+  suffices ∀ s : Finset ι, (⨅ i ∈ s, f i).relIndex L ≤ ∏ i ∈ s, (f i).relIndex L by
+    simpa using this Finset.univ
+  refine Finset.induction (by simp) fun i s his h ↦ ?_
+  grw [Finset.iInf_insert, Finset.prod_insert his, relIndex_inf_le, h]
 
 @[to_additive]
 theorem index_iInf_ne_zero {ι : Type*} [Finite ι] {f : ι → Subgroup G}
