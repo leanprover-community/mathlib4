@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
 public import Mathlib.CategoryTheory.Sites.Over
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-!
 
@@ -93,6 +94,8 @@ lemma coverPreserving_comap_forget (H : K ≤ P.precoverage) :
 variable [HasFiniteWidePullbacks C] [P.HasOfPostcompProperty P] [P.IsStableUnderBaseChange]
   [P.ContainsIdentities]
 
+attribute [local instance] hasFiniteLimits_of_hasTerminal_and_pullbacks
+  preservesFiniteLimits_of_preservesTerminal_and_pullbacks in
 lemma isContinuous_comap_forget (H : K ≤ P.precoverage) :
     (Over.forget P ⊤ S).IsContinuous
         (Precoverage.comap (Over.forget P ⊤ S ⋙ CategoryTheory.Over.forget S) K).toGrothendieck

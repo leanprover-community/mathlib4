@@ -52,7 +52,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   -- If the package is `mathlib`, then it removes the libraries `Cache` and `MathlibTest` and it
   -- adds `Mathlib/Tactic`.
   let libs := ← match args.flag? "lib" with
-              | some lib => return #[lib.as! String]
+              | some lib => pure #[lib.as! String]
               | none => getLeanLibs
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`

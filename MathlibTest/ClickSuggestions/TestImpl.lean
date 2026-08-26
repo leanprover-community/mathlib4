@@ -48,7 +48,7 @@ where
 /- Wait until the state has finished refreshing, and the return the final HTML.
 This is useful for inspecting `Html` from within Lean. -/
   getFinalHtml (info : RefreshRef) : BaseIO Html := do
-  let { curr, next, .. } ← info.ref.get
+  let { curr, next, .. } ← info.ref.atomically get
   if next.get.isNone then
     return curr.get
   getFinalHtml info
@@ -67,7 +67,7 @@ elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ :
     | .ok pos => return pos
     | .error s => throwError "{s}"
   let expecteds := expecteds.map (·.getString)
-  let loc : GoalLocation := ← match hyp?, pos? with
+  let loc : GoalLocation ← match hyp?, pos? with
     | some h, some pos => pure <| .hypType h pos
     | none  , some pos => pure <| .target pos
     | some h, none     => pure <| .hyp h
