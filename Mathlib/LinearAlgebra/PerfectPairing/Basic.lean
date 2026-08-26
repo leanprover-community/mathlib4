@@ -106,16 +106,23 @@ lemma IsPerfPair.of_bijective (p : M →ₗ[R] N →ₗ[R] R) [IsReflexive R N] 
     (LinearEquiv.ofBijective p h : M →ₗ[R] N →ₗ[R] R)
     (LinearEquiv.refl R N : N →ₗ[R] N)).IsPerfPair
 
+lemma IsPerfPair.separatingLeft {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
+    p.SeparatingLeft :=
+  separatingLeft_iff_ker_eq_bot.mpr (ker_eq_bot_of_injective hp.bijective_left.injective)
+
+lemma IsPerfPair.separatingRight {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
+    p.SeparatingRight := hp.flip.separatingLeft
+
+lemma IsPerfPair.nondegenerate {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
+    p.Nondegenerate := ⟨hp.separatingLeft, hp.separatingRight⟩
+
 set_option linter.overlappingInstances false
-instance [inst : p.IsPerfPair] : Fact p.Nondegenerate := ⟨by
-  exact ⟨separatingLeft_iff_ker_eq_bot.mpr <|
-      ker_eq_bot_of_injective inst.bijective_left.injective,
-    flip_separatingLeft.mp <| separatingLeft_iff_ker_eq_bot.mpr <|
-      ker_eq_bot_of_injective inst.bijective_right.injective⟩⟩
+instance [inst : p.IsPerfPair] : Fact p.Nondegenerate := ⟨inst.nondegenerate⟩
 
 end CommSemiring
 
 section Field
+
 variable {K M N : Type*} [Field K] [AddCommGroup M] [AddCommGroup N]
   [Module K M] [Module K N] {p : M →ₗ[K] N →ₗ[K] K}
 
