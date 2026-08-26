@@ -20,6 +20,8 @@ This file defines intersecting families and proves their basic properties.
 * `Set.Intersecting.card_le`: An intersecting family can only take up to half the elements, because
   `a` and `aᶜ` cannot simultaneously be in it.
 * `Set.Intersecting.is_max_iff_card_eq`: Any maximal intersecting family takes up half the elements.
+* `Set.IsIntersectingOf`: Predicate stating that a family `𝒜` of finsets is `L`-intersecting, i.e.,
+  meaning the intersection size of every pair of distinct members of `𝒜` belongs to `L ⊆ ℕ`.
 
 ## References
 
@@ -32,11 +34,11 @@ assert_not_exists Monoid
 
 open Finset
 
-variable {α : Type*}
-
 namespace Set
 
 section SemilatticeInf
+
+variable {α : Type*}
 
 variable [SemilatticeInf α] [OrderBot α] {s t : Set α} {a b c : α}
 
@@ -44,7 +46,7 @@ variable [SemilatticeInf α] [OrderBot α] {s t : Set α} {a b c : α}
 def Intersecting (s : Set α) : Prop :=
   ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬Disjoint a b
 
-@[mono]
+@[gcongr, mono]
 theorem Intersecting.mono (h : t ⊆ s) (hs : s.Intersecting) : t.Intersecting := fun _a ha _b hb =>
   hs (h ha) (h hb)
 
@@ -102,12 +104,11 @@ theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α)
 /-- Maximal intersecting families are upper sets. -/
 protected theorem Intersecting.isUpperSet (hs : s.Intersecting)
     (h : ∀ t : Set α, t.Intersecting → s ⊆ t → s = t) : IsUpperSet s := by
-  classical
-    rintro a b hab ha
-    rw [h (Insert.insert b s) _ (subset_insert _ _)]
-    · exact mem_insert _ _
-    exact
-      hs.insert (mt (eq_bot_mono hab) <| hs.ne_bot ha) fun c hc hbc => hs ha hc <| hbc.mono_left hab
+  rintro a b hab ha
+  rw [h (Insert.insert b s) _ (subset_insert _ _)]
+  · exact mem_insert _ _
+  exact
+    hs.insert (mt (eq_bot_mono hab) <| hs.ne_bot ha) fun c hc hbc => hs ha hc <| hbc.mono_left hab
 
 /-- Maximal intersecting families are upper sets. Finset version. -/
 theorem Intersecting.isUpperSet' {s : Finset α} (hs : (s : Set α).Intersecting)
@@ -121,6 +122,10 @@ theorem Intersecting.isUpperSet' {s : Finset α} (hs : (s : Set α).Intersecting
       hs.insert (mt (eq_bot_mono hab) <| hs.ne_bot ha) fun c hc hbc => hs ha hc <| hbc.mono_left hab
 
 end SemilatticeInf
+
+section
+
+variable {α : Type*}
 
 theorem Intersecting.exists_mem_set {𝒜 : Set (Set α)} (h𝒜 : 𝒜.Intersecting) {s t : Set α}
     (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : ∃ a, a ∈ s ∧ a ∈ t :=
@@ -147,9 +152,8 @@ theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Inter
 
 theorem Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Intersecting) :
     2 * #s ≤ Fintype.card α := by
-  classical
-    refine (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' ?_
-    rw [Nat.two_mul, card_disjUnion, card_map]
+  refine (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' ?_
+  rw [Nat.two_mul, card_disjUnion, card_map]
 
 variable [Nontrivial α] [Fintype α] {s : Finset α}
 
@@ -188,5 +192,54 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
   rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.mul_comm]
   exact ht.card_le
+
+end
+
+/-!
+### `L`-intersecting families
+
+This section defines `L`-intersecting families and establishes their basic properties.
+-/
+
+variable {L L' : Set ℕ}
+variable {α : Type*} [DecidableEq α]
+variable {𝒜 ℬ : Set (Finset α)}
+
+/--
+A family `𝒜` of finite subsets of `α` is `L`-intersecting if the intersection size of every pair of
+distinct members of `𝒜` belongs to `L ⊆ ℕ`.
+
+That is, for all `s, t ∈ 𝒜` with `s ≠ t`, we have `|(s ∩ t)| ∈ L`.
+-/
+def IsIntersectingOf (L : Set ℕ) (𝒜 : Set (Finset α)) : Prop := 𝒜.Pairwise fun s t ↦ #(s ∩ t) ∈ L
+
+namespace IsIntersectingOf
+
+/--
+An `L`-intersecting family is also `L'`-intersecting whenever `L ⊆ L'`.
+-/
+@[gcongr]
+theorem mono (h : L ⊆ L') (hL : IsIntersectingOf L 𝒜) : IsIntersectingOf L' 𝒜 := by tauto
+
+/--
+An `L`-intersecting family remains `L`-intersecting under restriction to any subfamily.
+-/
+@[gcongr]
+theorem anti (h : ℬ ⊆ 𝒜) (h𝒜 : IsIntersectingOf L 𝒜) : IsIntersectingOf L ℬ := Pairwise.mono h h𝒜
+
+/--
+The empty family of finite sets is `L`-intersecting, vacuously, because it contains no pairs of
+sets.
+-/
+@[simp]
+protected theorem empty : IsIntersectingOf L (∅ : Set (Finset α)) := by tauto
+
+/--
+Every family of finite sets is `univ`-intersecting.
+-/
+@[simp]
+protected theorem univ : IsIntersectingOf univ 𝒜 := 𝒜.pairwise_of_forall _ fun _ _ ↦ trivial
+
+end IsIntersectingOf
 
 end Set

@@ -29,9 +29,10 @@ of `HasForget₂` instances.
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
-variable (V : Type*) [Category* V] [HasForget V] [HasForget₂ V TopCat]
+variable (V : Type*) [Category* V] {FV : V → V → Type*} {CV : V → Type*}
+    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] [HasForget₂ V TopCat]
 variable (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Action
@@ -39,6 +40,7 @@ namespace Action
 instance : HasForget₂ (Action V G) TopCat :=
   HasForget₂.trans (Action V G) V TopCat
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
   smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
   one_smul x := by
@@ -106,6 +108,8 @@ def res (f : G →ₜ* H) : ContAction V H ⥤ ContAction V G :=
     change Continuous (u ∘ v)
     fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Restricting scalars along a composition is naturally isomorphic to restricting scalars twice. -/
 @[simps! hom inv]
 def resComp {K : Type*} [Monoid K] [TopologicalSpace K]
@@ -113,12 +117,16 @@ def resComp {K : Type*} [Monoid K] [TopologicalSpace K]
     ContAction.res V (h.comp f) ≅ ContAction.res V h ⋙ ContAction.res V f :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f = f'`, restriction of scalars along `f` and `f'` is the same. -/
 @[simps! hom inv]
 def resCongr (f f' : G →ₜ* H) (h : f = f') : ContAction.res V f ≅ ContAction.res V f' :=
   NatIso.ofComponents (fun _ ↦ ObjectProperty.isoMk _ (Action.mkIso (Iso.refl _)
     (by subst h; simp))) fun f ↦ ObjectProperty.hom_ext _ (Action.Hom.ext (by simp))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Restriction of scalars along a topological monoid isomorphism induces an equivalence of
 categories. -/
 @[simps! functor inverse]
@@ -134,30 +142,25 @@ end ContAction
 
 open ContAction
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The subcategory of `ContAction V G` where the topology is discrete. -/
 def DiscreteContAction : Type _ := ObjectProperty.FullSubcategory (IsDiscrete (V := V) (G := G))
+deriving Category, ConcreteCategory
 
 namespace DiscreteContAction
 
-instance : Category (DiscreteContAction V G) :=
-  ObjectProperty.FullSubcategory.category (IsDiscrete (V := V) (G := G))
 
-instance : HasForget (DiscreteContAction V G) :=
-  FullSubcategory.hasForget (IsDiscrete (V := V) (G := G))
-
-instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
-    [ConcreteCategory V FV] :
-    ConcreteCategory (DiscreteContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
-  FullSubcategory.concreteCategory (IsDiscrete (V := V) (G := G))
-
+set_option backward.isDefEq.respectTransparency.types false in
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
-  FullSubcategory.hasForget₂ (IsDiscrete (V := V) (G := G))
+  inferInstanceAs <| HasForget₂ (ObjectProperty.FullSubcategory _) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : HasForget₂ (DiscreteContAction V G) TopCat :=
   HasForget₂.trans (DiscreteContAction V G) (ContAction V G) TopCat
 
 variable {V G}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (X : DiscreteContAction V G) :
     DiscreteTopology ((CategoryTheory.forget₂ _ TopCat).obj X) :=
   X.property
@@ -166,9 +169,12 @@ end DiscreteContAction
 
 namespace CategoryTheory
 
-variable {V W : Type*} [Category* V] [HasForget V] [HasForget₂ V TopCat]
-  [Category* W] [HasForget W] [HasForget₂ W TopCat]
-  (G : Type*) [Monoid G] [TopologicalSpace G]
+variable {V W : Type*} [Category* V] {FV : V → V → Type*} {CV : V → Type*}
+    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] [HasForget₂ V TopCat]
+    [Category* W] {FW : W → W → Type*} {CW : W → Type*} [∀ X Y, FunLike (FW X Y) (CW X) (CW Y)]
+    [ConcreteCategory W FW] [HasForget₂ W TopCat]
+    (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Functor
 
@@ -178,15 +184,21 @@ def mapContAction (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).ob
     ContAction V G ⥤ ContAction W G :=
   ObjectProperty.lift _ (ObjectProperty.ι _ ⋙ F.mapAction G) H
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Continuous version of `Functor.mapActionComp`. -/
 @[simps! hom inv]
-def mapContActionComp {T : Type*} [Category* T] [HasForget T] [HasForget₂ T TopCat]
+def mapContActionComp {T : Type*} [Category* T]
+    {FT : T → T → Type*} {CT : T → Type*} [∀ X Y, FunLike (FT X Y) (CT X) (CT Y)]
+    [ConcreteCategory T FT] [HasForget₂ T TopCat]
     (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).obj X.obj).IsContinuous)
     (F' : W ⥤ T) (H' : ∀ X : ContAction W G, ((F'.mapAction G).obj X.obj).IsContinuous) :
     Functor.mapContAction G (F ⋙ F') (fun X ↦ H' ((F.mapContAction G H).obj X)) ≅
       Functor.mapContAction G F H ⋙ Functor.mapContAction G F' H' :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Continuous version of `Functor.mapActionCongr`. -/
 @[simps! hom inv]
 def mapContActionCongr
@@ -198,6 +210,8 @@ def mapContActionCongr
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Continuous version of `Equivalence.mapAction`. -/
 @[simps functor inverse]
 def Equivalence.mapContAction (E : V ≌ W)

@@ -27,7 +27,7 @@ Cauchy-Schwarz inequality, and induces a norm that makes `E` a normed vector spa
   space. This can be used with `NormedAddCommGroup.ofCore` and `NormedSpace.ofCore` to create
   the relevant instances on a type of interest.
 + `CStarModule.inner_mul_inner_swap_le`: The statement that
-  `⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫`, which can be viewed as a version of the Cauchy-Schwarz
+  `⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫`, which can be viewed as a version of the Cauchy-Schwarz
   inequality for Hilbert C⋆-modules.
 + `CStarModule.norm_inner_le`, which states that `‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖`, i.e. the
   Cauchy-Schwarz inequality.
@@ -168,6 +168,7 @@ local notation "⟪" x ", " y "⟫" => inner A x y
 open scoped InnerProductSpace in
 /-- The norm associated with a Hilbert C⋆-module. It is not registered as a norm, since a type
 might already have a norm defined on it. -/
+@[instance_reducible]
 noncomputable def norm (A : Type*) {E : Type*} [Norm A] [Inner A E] : Norm E where
   norm x := √‖⟪x, x⟫_A‖
 
@@ -216,7 +217,7 @@ lemma inner_mul_inner_swap_le {x y : E} : ⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 
                   - ‖x‖ ^ 2 • (⟪x, y⟫ * star a) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := by
                       gcongr
                       calc _ ≤ ‖⟪x, x⟫_A‖ • (a * star a) :=
-                          CStarAlgebra.star_right_conjugate_le_norm_smul
+                          CStarAlgebra.star_right_conjugate_le_norm_smul ..
                         _ = (√‖⟪x, x⟫_A‖) ^ 2 • (a * star a) := by
                           rw [Real.sq_sqrt]
                           positivity
@@ -232,7 +233,7 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪x, y⟫ * ⟪y, x⟫‖ := by
                 rw [← star_inner x, CStarRing.norm_self_mul_star, pow_two]
     _ ≤ ‖‖x‖ ^ 2 • ⟪y, y⟫‖ := by
-                refine CStarAlgebra.norm_le_norm_of_nonneg_of_le ?_ inner_mul_inner_swap_le
+                refine CStarAlgebra.norm_le_norm_of_le_of_nonneg inner_mul_inner_swap_le ?_
                 rw [← star_inner x]
                 exact mul_star_self_nonneg ⟪x, y⟫_A
     _ = ‖x‖ ^ 2 * ‖⟪y, y⟫‖ := by simp [norm_smul]
@@ -271,7 +272,7 @@ lemma normedSpaceCore : NormedSpace.Core ℂ E where
 variable (A) in
 /-- This is not listed as an instance because we often want to replace the topology, uniformity
 and bornology instead of inheriting them from the norm. -/
-abbrev normedAddCommGroup : NormedAddCommGroup E :=
+noncomputable abbrev normedAddCommGroup : NormedAddCommGroup E :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
 open scoped InnerProductSpace in

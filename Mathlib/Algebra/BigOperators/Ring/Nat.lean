@@ -51,6 +51,6 @@ theorem card_preimage_eq_sum_card_image_eq {M : Type*} {f : ι → M} {s : Finse
     suffices {a | f a = m} ⊆ ht.toFinset from
       congr_arg (Finset.card ·) (Finset.ext_iff.mpr fun a ↦ by simpa using fun h ↦ this h)
     intro _ h
-    simpa using by rwa [h]
+    simp_all
 
 end Finset

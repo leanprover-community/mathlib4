@@ -101,20 +101,11 @@ theorem isChain_cons_primeFactorsList {n : ℕ} :
         ((le_minFac.2 h).resolve_left (by simp)) (isChain_cons_primeFactorsList ?_)
       exact fun p pp d => minFac_le_of_dvd pp.two_le (d.trans <| div_dvd_of_dvd <| minFac_dvd _)
 
-@[deprecated (since := "2025-09-21")]
-alias primeFactorsList_chain := isChain_cons_primeFactorsList
-
 theorem isChain_two_cons_primeFactorsList (n) : List.IsChain (· ≤ ·) (2 :: primeFactorsList n) :=
   isChain_cons_primeFactorsList fun _ pp _ => pp.two_le
 
 theorem isChain_primeFactorsList (n) : List.IsChain (· ≤ ·) (primeFactorsList n) :=
   (isChain_two_cons_primeFactorsList _).tail
-
-@[deprecated (since := "2025-09-24")]
-alias primeFactorsList_chain_2 := isChain_two_cons_primeFactorsList
-
-@[deprecated (since := "2025-09-24")]
-alias primeFactorsList_chain' := isChain_primeFactorsList
 
 theorem primeFactorsList_sorted (n : ℕ) : List.SortedLE (primeFactorsList n) :=
   (isChain_primeFactorsList _).sortedLE

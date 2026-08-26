@@ -32,7 +32,7 @@ This file defines partial functions. Partial functions are like functions, excep
 * `PFun.restrict`: Restriction of a partial function to a smaller `Dom`.
 * `PFun.res`: Turns a function into a partial function with a prescribed domain.
 * `PFun.fix` : First return map of a partial function `f : α →. β ⊕ α`.
-* `PFun.fix_induction`: A recursion principle for `PFun.fix`.
+* `PFun.fixInduction`: A recursion principle for `PFun.fix`.
 
 ### Partial functions as relations
 
@@ -73,7 +73,7 @@ instance inhabited : Inhabited (α →. β) :=
 
 /-- The domain of a partial function -/
 def Dom (f : α →. β) : Set α :=
-  { a | (f a).Dom }
+  {a | (f a).Dom}
 
 @[simp]
 theorem mem_dom (f : α →. β) (x : α) : x ∈ Dom f ↔ ∃ y, y ∈ f x := by simp [Dom, Part.dom_iff_mem]
@@ -86,7 +86,7 @@ theorem dom_eq (f : α →. β) : Dom f = { x | ∃ y, y ∈ f x } :=
   Set.ext (mem_dom f)
 
 /-- Evaluate a partial function -/
-def fn (f : α →. β) (a : α) : Dom f a → β :=
+def fn (f : α →. β) (a : α) : a ∈ Dom f → β :=
   (f a).get
 
 @[simp]
@@ -156,6 +156,7 @@ def ran (f : α →. β) : Set β :=
 def restrict (f : α →. β) {p : Set α} (H : p ⊆ f.Dom) : α →. β := fun x =>
   (f x).restrict (x ∈ p) (@H x)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_restrict {f : α →. β} {s : Set α} (h : s ⊆ f.Dom) (a : α) (b : β) :
     b ∈ f.restrict h a ↔ a ∈ s ∧ b ∈ f a := by simp [restrict]
@@ -164,6 +165,7 @@ theorem mem_restrict {f : α →. β} {s : Set α} (h : s ⊆ f.Dom) (a : α) (b
 def res (f : α → β) (s : Set α) : α →. β :=
   (PFun.lift f).restrict s.subset_univ
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_res (f : α → β) (s : Set α) (a : α) (b : β) : b ∈ res f s a ↔ a ∈ s ∧ f a = b := by
   simp [res, @eq_comm _ b]
 
@@ -205,7 +207,7 @@ theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
 
 theorem bind_defined {α β γ} (p : Set α) {f : α →. β} {g : β → α →. γ} (H1 : p ⊆ f.Dom)
     (H2 : ∀ x, p ⊆ (g x).Dom) : p ⊆ (f >>= g).Dom := fun a ha =>
-  (⟨H1 ha, H2 _ ha⟩ : (f >>= g).Dom a)
+  (⟨H1 ha, H2 _ ha⟩ : a ∈ (f >>= g).Dom)
 
 /-- First return map. Transforms a partial function `f : α →. β ⊕ α` into the partial function
 `α →. β` which sends `a : α` to the first value in `β` it hits by iterating `f`, if such a value
@@ -305,7 +307,7 @@ def fixInduction' {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α}
   refine fixInduction h fun a' h ih => ?_
   rcases e : (f a').get (dom_of_mem_fix h) with b' | a'' <;> replace e : _ ∈ f a' := ⟨_, e⟩
   · apply hbase
-    convert e
+    convert! e
     exact Part.mem_unique h (fix_stop e)
   · exact hind _ _ (fix_fwd h e) e (ih _ e)
 
@@ -479,14 +481,17 @@ def comp (f : β →. γ) (g : α →. β) : α →. γ := fun a => (g a).bind f
 theorem comp_apply (f : β →. γ) (g : α →. β) (a : α) : f.comp g a = (g a).bind f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id_comp (f : α →. β) : (PFun.id β).comp f = f :=
   ext fun _ _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp_id (f : α →. β) : f.comp (PFun.id α) = f :=
   ext fun _ _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage f.Dom := by
   ext
@@ -508,6 +513,7 @@ theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
 theorem comp_assoc (f : γ →. δ) (g : β →. γ) (h : α →. β) : (f.comp g).comp h = f.comp (g.comp h) :=
   ext fun _ _ => by simp only [comp_apply, Part.bind_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 -- This can't be `simp`
 theorem coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α →. γ) = (g : β →. γ).comp f :=
   ext fun _ _ => by simp only [coe_val, comp_apply, Function.comp, Part.bind_some]
@@ -560,6 +566,7 @@ theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × 
   · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff]
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
     prodLift (f.comp ((Prod.fst : α × β → α) : α × β →. α))

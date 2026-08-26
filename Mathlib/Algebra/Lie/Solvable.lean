@@ -74,6 +74,13 @@ abbrev derivedSeries (k : ℕ) : LieIdeal R L :=
 theorem derivedSeries_def (k : ℕ) : derivedSeries R L k = derivedSeriesOfIdeal R L k ⊤ :=
   rfl
 
+lemma coe_derivedSeries_one_eq :
+    derivedSeries R L 1 = Submodule.span R {⁅x, y⁆ | (x : L) (y : L)} := by
+  ext z
+  simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero,
+    LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span']
+  aesop
+
 variable {R L}
 
 local notation "D" => derivedSeriesOfIdeal R L
@@ -96,17 +103,18 @@ theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J
     · rw [derivedSeriesOfIdeal_succ]; exact le_trans (LieSubmodule.lie_le_left _ _) (ih h)
 
 theorem derivedSeriesOfIdeal_succ_le (k : ℕ) : D (k + 1) I ≤ D k I :=
-  derivedSeriesOfIdeal_le (le_refl I) k.le_succ
+  derivedSeriesOfIdeal_le le_rfl k.le_succ
 
 theorem derivedSeriesOfIdeal_le_self (k : ℕ) : D k I ≤ I :=
-  derivedSeriesOfIdeal_le (le_refl I) (zero_le k)
+  derivedSeriesOfIdeal_le le_rfl zero_le
 
 theorem derivedSeriesOfIdeal_mono {I J : LieIdeal R L} (h : I ≤ J) (k : ℕ) : D k I ≤ D k J :=
-  derivedSeriesOfIdeal_le h (le_refl k)
+  derivedSeriesOfIdeal_le h le_rfl
 
 theorem derivedSeriesOfIdeal_antitone {k l : ℕ} (h : l ≤ k) : D k I ≤ D l I :=
-  derivedSeriesOfIdeal_le (le_refl I) h
+  derivedSeriesOfIdeal_le le_rfl h
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem derivedSeriesOfIdeal_add_le_add (J : LieIdeal R L) (k l : ℕ) :
     D (k + l) (I + J) ≤ D k I + D l J := by
   let D₁ : LieIdeal R L →o LieIdeal R L :=
@@ -363,7 +371,7 @@ instance radicalIsSolvable [IsNoetherian R L] : IsSolvable (radical R L) := by
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
   refine hwf { I : LieIdeal R L | IsSolvable I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L
-  · rw [Set.mem_setOf_eq] at hI hJ ⊢
+  · rw [Set.mem_ofPred_eq] at hI hJ ⊢
     apply LieAlgebra.isSolvableAdd R L
 
 /-- The `→` direction of this lemma is actually true without the `IsNoetherian` assumption. -/
@@ -433,7 +441,7 @@ instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
 
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by
-  dsimp only [derivedAbelianOfIdeal]
+  dsimp +instances only [derivedAbelianOfIdeal]
   rcases h : derivedLengthOfIdeal R L I with - | k
   · dsimp; infer_instance
   · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1

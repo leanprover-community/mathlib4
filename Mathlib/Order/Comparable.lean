@@ -10,22 +10,23 @@ public import Mathlib.Order.Antisymmetrization
 /-!
 # Comparability and incomparability relations
 
-Two values in a preorder are said to be comparable whenever `a ≤ b` or `b ≤ a`. We define both the
-comparability and incomparability relations.
+Two values in a preorder are said to be comparable (`SymmRel`) whenever `a ≤ b` or `b ≤ a`. We
+define both the comparability and incomparability relations.
 
-In a linear order, `CompRel (· ≤ ·) a b` is always true, and `IncompRel (· ≤ ·) a b` is always
+In a linear order, `SymmGen (· ≤ ·) a b` is always true, and `IncompRel (· ≤ ·) a b` is always
 false.
 
 ## Implementation notes
 
 Although comparability and incomparability are negations of each other, both relations are
 convenient in different contexts, and as such, it's useful to keep them distinct. To move from one
-to the other, use `not_compRel_iff` and `not_incompRel_iff`.
+to the other, use `not_symmGen_iff` and `not_incompRel_iff_symmGen`.
 
 ## Main declarations
 
 * `CompRel`: The comparability relation. `CompRel r a b` means that `a` and `b` is related in
-  either direction by `r`.
+  either direction by `r`. This is deprecated in favor of `Relation.SymmGen`, with naming chosen for
+  consistency with `Relation.TransGen` in core and other definitions in `Mathlib.Logic.Relation`.
 * `IncompRel`: The incomparability relation. `IncompRel r a b` means that `a` and `b` are related in
   neither direction by `r`.
 
@@ -36,128 +37,17 @@ These definitions should be linked to `IsChain` and `IsAntichain`.
 
 @[expose] public section
 
-open Function
+open Function Relation
 
 variable {α : Type*} {a b c d : α}
 
 /-! ### Comparability -/
 
-section Relation
-
-variable {r : α → α → Prop}
-
-/-- The comparability relation `CompRel r a b` means that either `r a b` or `r b a`. -/
-def CompRel (r : α → α → Prop) (a b : α) : Prop :=
-  r a b ∨ r b a
-
-theorem CompRel.of_rel (h : r a b) : CompRel r a b :=
-  Or.inl h
-
-theorem CompRel.of_rel_symm (h : r b a) : CompRel r a b :=
-  Or.inr h
-
-theorem compRel_swap (r : α → α → Prop) : CompRel (swap r) = CompRel r :=
-  funext₂ fun _ _ ↦ propext or_comm
-
-theorem compRel_swap_apply (r : α → α → Prop) : CompRel (swap r) a b ↔ CompRel r a b :=
-  or_comm
-
-@[simp, refl]
-theorem CompRel.refl (r : α → α → Prop) [Std.Refl r] (a : α) : CompRel r a a :=
-  .of_rel (_root_.refl _)
-
-theorem CompRel.rfl [Std.Refl r] : CompRel r a a := .refl ..
-
-instance [Std.Refl r] : Std.Refl (CompRel r) where
-  refl := .refl r
-
-@[symm]
-theorem CompRel.symm : CompRel r a b → CompRel r b a :=
-  Or.symm
-
-instance : Std.Symm (CompRel r) where
-  symm _ _ := CompRel.symm
-
-theorem compRel_comm {a b : α} : CompRel r a b ↔ CompRel r b a :=
-  comm
-
-instance CompRel.decidableRel [DecidableRel r] : DecidableRel (CompRel r) :=
-  fun _ _ ↦ inferInstanceAs (Decidable (_ ∨ _))
-
-theorem AntisymmRel.compRel (h : AntisymmRel r a b) : CompRel r a b :=
-  Or.inl h.1
-
-@[simp]
-theorem compRel_of_total [Std.Total r] (a b : α) : CompRel r a b :=
-  Std.Total.total a b
-
-@[deprecated (since := "2026-01-13")] alias IsTotal.compRel := compRel_of_total
-
-end Relation
-
-section LE
-
-variable [LE α]
-
-theorem CompRel.of_le (h : a ≤ b) : CompRel (· ≤ ·) a b := .of_rel h
-theorem CompRel.of_ge (h : b ≤ a) : CompRel (· ≤ ·) a b := .of_rel_symm h
-
-alias LE.le.compRel := CompRel.of_le
-alias LE.le.compRel_symm := CompRel.of_ge
-
-end LE
-
-section Preorder
-
-variable [Preorder α]
-
-theorem CompRel.of_lt (h : a < b) : CompRel (· ≤ ·) a b := h.le.compRel
-theorem CompRel.of_gt (h : b < a) : CompRel (· ≤ ·) a b := h.le.compRel_symm
-
-alias LT.lt.compRel := CompRel.of_lt
-alias LT.lt.compRel_symm := CompRel.of_gt
-
-@[trans]
-theorem CompRel.of_compRel_of_antisymmRel
-    (h₁ : CompRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) b c) : CompRel (· ≤ ·) a c := by
-  obtain (h | h) := h₁
-  · exact (h.trans h₂.le).compRel
-  · exact (h₂.ge.trans h).compRel_symm
-
-alias CompRel.trans_antisymmRel := CompRel.of_compRel_of_antisymmRel
-
-instance : @Trans α α α (CompRel (· ≤ ·)) (AntisymmRel (· ≤ ·)) (CompRel (· ≤ ·)) where
-  trans := CompRel.of_compRel_of_antisymmRel
-
-@[trans]
-theorem CompRel.of_antisymmRel_of_compRel
-    (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : CompRel (· ≤ ·) b c) : CompRel (· ≤ ·) a c :=
-  (h₂.symm.trans_antisymmRel h₁.symm).symm
-
-alias AntisymmRel.trans_compRel := CompRel.of_antisymmRel_of_compRel
-
-instance : @Trans α α α (AntisymmRel (· ≤ ·)) (CompRel (· ≤ ·)) (CompRel (· ≤ ·)) where
-  trans := CompRel.of_antisymmRel_of_compRel
-
-theorem AntisymmRel.compRel_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
-    CompRel (· ≤ ·) a c ↔ CompRel (· ≤ ·) b d where
-  mp h := (h₁.symm.trans_compRel h).trans_antisymmRel h₂
-  mpr h := (h₁.trans_compRel h).trans_antisymmRel h₂.symm
-
-theorem AntisymmRel.compRel_congr_left (h : AntisymmRel (· ≤ ·) a b) :
-    CompRel (· ≤ ·) a c ↔ CompRel (· ≤ ·) b c :=
-  h.compRel_congr .rfl
-
-theorem AntisymmRel.compRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
-    CompRel (· ≤ ·) a b ↔ CompRel (· ≤ ·) a c :=
-  AntisymmRel.rfl.compRel_congr h
-
-end Preorder
-
 /-- A partial order where any two elements are comparable is a linear order. -/
-def linearOrderOfComprel [PartialOrder α]
+@[instance_reducible]
+def Relation.linearOrderOfSymmGen [PartialOrder α]
     [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
-    (h : ∀ a b : α, CompRel (· ≤ ·) a b) : LinearOrder α where
+    (h : ∀ a b : α, Relation.SymmGen (· ≤ ·) a b) : LinearOrder α where
   le_total := h
   toDecidableLE := decLE
   toDecidableEq := decEq
@@ -224,18 +114,16 @@ theorem IncompRel.not_antisymmRel (h : IncompRel r a b) : ¬ AntisymmRel r a b :
 theorem AntisymmRel.not_incompRel (h : AntisymmRel r a b) : ¬ IncompRel r a b :=
   fun h' ↦ h'.1 h.1
 
-theorem not_compRel_iff : ¬ CompRel r a b ↔ IncompRel r a b := by
-  simp [CompRel, IncompRel]
+theorem not_symmGen_iff : ¬ Relation.SymmGen r a b ↔ IncompRel r a b := by
+  simp [Relation.SymmGen, IncompRel]
 
-theorem not_incompRel_iff : ¬ IncompRel r a b ↔ CompRel r a b := by
-  rw [← not_compRel_iff, not_not]
+theorem not_incompRel_iff_symmGen : ¬ IncompRel r a b ↔ Relation.SymmGen r a b := by
+  rw [← not_symmGen_iff, not_not]
 
 @[simp]
 theorem not_incompRel_of_total [Std.Total r] (a b : α) : ¬ IncompRel r a b := by
-  rw [not_incompRel_iff]
-  exact compRel_of_total a b
-
-@[deprecated (since := "2026-01-13")] alias IsTotal.not_incompRel := not_incompRel_of_total
+  rw [not_incompRel_iff_symmGen]
+  exact symmGen_of_total a b
 
 theorem IncompRel.ne [Std.Refl r] {a b : α} (h : IncompRel r a b) : a ≠ b := by
   rintro rfl

@@ -42,7 +42,7 @@ variable {ι : Type u} (P : ι → Under R)
 
 /-- The canonical fan on `P : ι → Under R` given by `∀ i, P i`. -/
 def piFan : Fan P :=
-  Fan.mk (Under.mk <| ofHom <| Pi.ringHom (fun i ↦ (P i).hom.hom))
+  Fan.mk (Under.mk <| ofHom <| RingHom.pi (fun i ↦ (P i).hom.hom))
     (fun i ↦ Under.homMk (ofHom <| Pi.evalRingHom _ i))
 
 /-- The canonical fan is limiting. -/
@@ -64,6 +64,7 @@ def tensorProductFan' : Fan (fun i ↦ mkUnder S (S ⊗[R] (P i).right)) :=
   Fan.mk (mkUnder S <| ∀ i, S ⊗[R] (P i).right)
     (fun i ↦ AlgHom.toUnder <| Pi.evalAlgHom S _ i)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The two fans on `i ↦ S ⊗[R] P i` agree if `ι` is finite. -/
 def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     tensorProductFan S P ≅ tensorProductFan' S P :=
@@ -78,7 +79,7 @@ def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
         Algebra.TensorProduct.piRight_tmul]
     · simp_all
 
-open Classical in
+open scoped Classical in
 /-- The fan on `i ↦ S ⊗[R] P i` given by `S ⊗[R] ∀ i, P i` is limiting if `ι` is finite. -/
 def tensorProductFanIsLimit [Finite ι] : IsLimit (tensorProductFan S P) :=
   letI : Fintype ι := Fintype.ofFinite ι

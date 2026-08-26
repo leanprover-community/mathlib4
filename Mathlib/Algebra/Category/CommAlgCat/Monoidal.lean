@@ -58,7 +58,7 @@ instance : MonoidalCategory (CommAlgCat.{u} R) where
   whiskerRight f T := ofHom (map f.hom (.id _ _))
   tensorHom f g := ofHom (map f.hom g.hom)
   tensorUnit := .of R R
-  associator _ _ _ := isoMk (assoc R R _ _ _)
+  associator _ _ _ := isoMk (assoc R R R _ _ _)
   leftUnitor _ := isoMk (lid R _)
   rightUnitor _ := isoMk (rid R R _)
 
@@ -77,10 +77,10 @@ variable (C) in
 @[simp] lemma whiskerLeft_hom (f : A ⟶ B) : (C ◁ f).hom = map (.id _ _) f.hom := rfl
 
 variable (A B C) in
-@[simp] lemma associator_hom_hom : (α_ A B C).hom.hom = (assoc R R A B C).toAlgHom := rfl
+@[simp] lemma associator_hom_hom : (α_ A B C).hom.hom = (assoc R R R A B C).toAlgHom := rfl
 
 variable (A B C) in
-@[simp] lemma associator_inv_hom : (α_ A B C).inv.hom = (assoc R R A B C).symm.toAlgHom := rfl
+@[simp] lemma associator_inv_hom : (α_ A B C).inv.hom = (assoc R R R A B C).symm.toAlgHom := rfl
 
 instance : BraidedCategory (CommAlgCat.{u} R) where
   braiding S T := isoMk (comm R _ _)
@@ -104,7 +104,7 @@ instance : CartesianMonoidalCategory (CommAlgCat.{u} R)ᵒᵖ where
   fst_def S T := by ext x; change x ⊗ₜ 1 = x ⊗ₜ algebraMap R T.unop 1; simp
   snd_def S T := by ext x; change 1 ⊗ₜ x = algebraMap R S.unop 1 ⊗ₜ x; simp
 
-variable {A B C D : (CommAlgCat.{u} R)ᵒᵖ}
+variable {A B C : (CommAlgCat.{u} R)ᵒᵖ}
 
 @[simp] lemma fst_unop_hom (A B : (CommAlgCat.{u} R)ᵒᵖ) : (fst A B).unop.hom = includeLeft := rfl
 @[simp] lemma snd_unop_hom (A B : (CommAlgCat.{u} R)ᵒᵖ) : (snd A B).unop.hom = includeRight := rfl

@@ -17,7 +17,7 @@ We introduce the following typeclasses for measures:
 * `IsProbabilityMeasure μ`: `μ univ = 1`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
@@ -40,6 +40,7 @@ lemma prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α}
   apply (measure_mono (subset_univ _)).trans
   rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with h | h <;> simp [h]
 
+@[simp]
 lemma measureReal_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
     μ.real s ≤ 1 :=
   ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
@@ -110,7 +111,7 @@ instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
 open unitInterval in
 instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
     IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where
-  measure_univ := by simp [← add_smul]
+  measure_univ := by simp [← ENNReal.coe_add]
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
@@ -198,14 +199,12 @@ end IsProbabilityMeasure
 
 section IsZeroOrProbabilityMeasure
 
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 instance isZeroOrProbabilityMeasureSMul :
     IsZeroOrProbabilityMeasure ((μ univ)⁻¹ • μ) := by
   rcases eq_zero_or_neZero μ with rfl | h
-  · simp; infer_instance
+  · rw [Measure.coe_zero, Pi.zero_apply, inv_zero, smul_zero]; infer_instance
   rcases eq_top_or_lt_top (μ univ) with h | h
-  · simp [h]; infer_instance
+  · rw [h, inv_top, zero_smul]; infer_instance
   have : IsFiniteMeasure μ := ⟨h⟩
   infer_instance
 
@@ -228,7 +227,7 @@ lemma prob_compl_lt_one_sub_of_lt_prob {p : ℝ≥0∞} (hμs : p < μ s) (s_mbl
   · simp at hμs
   · rw [prob_compl_eq_one_sub s_mble]
     apply ENNReal.sub_lt_of_sub_lt prob_le_one (Or.inl one_ne_top)
-    convert hμs
+    convert! hμs
     exact ENNReal.sub_sub_cancel one_ne_top (lt_of_lt_of_le hμs prob_le_one).le
 
 lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_mble : MeasurableSet s) :

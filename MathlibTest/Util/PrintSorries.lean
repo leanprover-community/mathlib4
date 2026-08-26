@@ -1,7 +1,5 @@
 import Mathlib.Util.PrintSorries
 
-set_option pp.mvars false
-
 /-!
 Direct use of `sorry`
 -/

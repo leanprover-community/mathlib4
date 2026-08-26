@@ -136,12 +136,13 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
         coe_eval₂RingHom, map_pow, eval₂_C, RingHom.coe_comp, map_mul, eval₂_X,
         Function.comp_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X]) :
     I.polynomialQuotientEquivQuotientPolynomial.symm (Quotient.mk _ f) = f.map (Quotient.mk I) := by
-  rw [polynomialQuotientEquivQuotientPolynomial, RingEquiv.symm_mk, RingEquiv.coe_mk,
-    Equiv.coe_fn_mk, Quotient.lift_mk, coe_eval₂RingHom, eval₂_eq_eval_map, ← Polynomial.map_map,
-    ← eval₂_eq_eval_map, Polynomial.eval₂_C_X]
+  simp only [polynomialQuotientEquivQuotientPolynomial, coe_eval₂RingHom, RingEquiv.symm_mk,
+    RingEquiv.coe_mk, Equiv.coe_fn_symm_mk, Quotient.lift_mk]
+  rw [eval₂_eq_eval_map, ← Polynomial.map_map, ← eval₂_eq_eval_map, Polynomial.eval₂_C_X]
 
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]) :
@@ -227,14 +228,12 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
   apply induction_on f
   · intro r
     obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
-    rw [eval₂_C, Ideal.Quotient.lift_mk, RingHom.comp_apply, Ideal.Quotient.lift_mk, eval₂Hom_C,
-      RingHom.comp_apply]
+    simp
   · intro p q hp hq
     simp only [map_add, MvPolynomial.eval₂_add]
       at hp hq ⊢
     rw [hp, hq]
   · intro p i hp
-    simp only at hp
     simp only [hp, coe_eval₂Hom, Ideal.Quotient.lift_mk, eval₂_mul, map_mul, eval₂_X]
 
 /-- Split off from `quotientEquivQuotientMvPolynomial` for speed. -/

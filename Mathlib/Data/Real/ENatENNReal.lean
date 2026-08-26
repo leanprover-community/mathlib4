@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENNReal.Basic
+public import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # Coercion from `ℕ∞` to `ℝ≥0∞`
@@ -64,28 +65,30 @@ theorem toENNReal_inj : (m : ℝ≥0∞) = (n : ℝ≥0∞) ↔ m = n :=
 @[simp, norm_cast] lemma toENNReal_eq_top : (n : ℝ≥0∞) = ∞ ↔ n = ⊤ := by simp [← toENNReal_inj]
 @[norm_cast] lemma toENNReal_ne_top : (n : ℝ≥0∞) ≠ ∞ ↔ n ≠ ⊤ := by simp
 
-@[simp, norm_cast]
+@[simp, norm_cast, gcongr]
 theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
   toENNRealOrderEmbedding.le_iff_le
 
-@[simp, norm_cast]
+@[simp, norm_cast, gcongr]
 theorem toENNReal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
   toENNRealOrderEmbedding.lt_iff_lt
 
 @[simp, norm_cast]
 lemma toENNReal_lt_top : (n : ℝ≥0∞) < ∞ ↔ n < ⊤ := by simp [← toENNReal_lt]
 
-@[mono]
+@[gcongr, mono]
 theorem toENNReal_mono : Monotone ((↑) : ℕ∞ → ℝ≥0∞) :=
   toENNRealOrderEmbedding.monotone
 
-@[mono]
+@[gcongr, mono]
 theorem toENNReal_strictMono : StrictMono ((↑) : ℕ∞ → ℝ≥0∞) :=
   toENNRealOrderEmbedding.strictMono
 
 @[simp, norm_cast]
 theorem toENNReal_zero : ((0 : ℕ∞) : ℝ≥0∞) = 0 :=
   map_zero toENNRealRingHom
+
+@[simp] lemma toENNReal_eq_zero : toENNReal n = 0 ↔ n = 0 := by rw [← toENNReal_zero, toENNReal_inj]
 
 @[simp, norm_cast]
 theorem toENNReal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=

@@ -66,7 +66,7 @@ Note 2: In the case `R = ℤ` and `A = K` a field, there is also `IsZLattice` wh
 generated condition is replaced by having the discrete topology. -/
 class IsLattice (A : outParam Type*) [CommRing A] [Algebra R A]
     {V : Type*} [AddCommMonoid V] [Module R V] [Module A V] [IsScalarTower R A V]
-    [Algebra R A] [IsScalarTower R A V] (M : Submodule R V) : Prop where
+    [IsScalarTower R A V] (M : Submodule R V) : Prop where
   fg : M.FG
   span_eq_top : Submodule.span A (M : Set V) = ⊤
 
@@ -83,6 +83,7 @@ instance finite [IsLattice A M] : Module.Finite R M := by
   rw [Module.Finite.iff_fg]
   exact IsLattice.fg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The action of `Aˣ` on `R`-submodules of `V` preserves `IsLattice`. -/
 instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) where
   fg := by
@@ -147,6 +148,7 @@ noncomputable def _root_.Module.Basis.extendOfIsLattice [IsFractionRing R K] {κ
     simp [b.span_eq, Submodule.map_top, span_eq_top]
   Basis.mk hli hsp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.Module.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Type*}
     {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) (k : κ) :

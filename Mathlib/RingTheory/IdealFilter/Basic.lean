@@ -55,9 +55,9 @@ change the induced topology.
 
 * [Bo Stenström, *Rings and Modules of Quotients*][stenstrom1971]
 * [Bo Stenström, *Rings of Quotients*][stenstrom1975]
-* [nLab: Uniform filter](<https://ncatlab.org/nlab/show/uniform+filter>)
-* [nLab: Gabriel filter](<https://ncatlab.org/nlab/show/Gabriel+filter>)
-* [nLab: Gabriel composition](<https://ncatlab.org/nlab/show/Gabriel+composition+of+filters>)
+* [nLab: Uniform filter](https://ncatlab.org/nlab/show/uniform+filter)
+* [nLab: Gabriel filter](https://ncatlab.org/nlab/show/Gabriel+filter)
+* [nLab: Gabriel composition](https://ncatlab.org/nlab/show/Gabriel+composition+of+filters)
 
 ## Tags
 
@@ -76,7 +76,7 @@ namespace IdealFilter
 variable {A : Type*} [Ring A]
 
 /-- A filter of ideals is *uniform* if it is closed under colon by singletons. -/
-structure IsUniform (F : IdealFilter A) : Prop where
+class IsUniform (F : IdealFilter A) : Prop where
   /-- **Axiom T3.**  See [stenstrom1975]. -/
   colon_mem {I : Ideal A} (hI : I ∈ F) (a : A) : I.colon {a} ∈ F
 
@@ -157,7 +157,7 @@ lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
     exact ⟨K, hK, hIK.mono_left hIJ⟩
 
 /-- The Gabriel composition of ideal filters `F` and `G`.
-See [nLab: Gabriel composition](<https://ncatlab.org/nlab/show/Gabriel+composition+of+filters>). -/
+See [nLab: Gabriel composition](https://ncatlab.org/nlab/show/Gabriel+composition+of+filters). -/
 def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
   (isPFilter_gabrielComposition F G).toPFilter
 
@@ -165,8 +165,8 @@ def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
 scoped infixl:70 " • " => gabrielComposition
 
 /-- An ideal filter is Gabriel if it satisfies `IsUniform` and axiom T4.
-See [nLab: Gabriel filter](<https://ncatlab.org/nlab/show/Gabriel+filter>). -/
-structure IsGabriel (F : IdealFilter A) extends F.IsUniform where
+See [nLab: Gabriel filter](https://ncatlab.org/nlab/show/Gabriel+filter). -/
+class IsGabriel (F : IdealFilter A) extends F.IsUniform where
   /-- **Axiom T4.** See [stenstrom1975]. -/
   gabriel_closed (I : Ideal A) (h : ∃ J ∈ F, ∀ x ∈ J, I.colon {x} ∈ F) : I ∈ F
 
@@ -174,16 +174,18 @@ structure IsGabriel (F : IdealFilter A) extends F.IsUniform where
 `gabrielComposition`. -/
 theorem isGabriel_iff (F : IdealFilter A) : F.IsGabriel ↔ F.IsUniform ∧ F • F = F := by
   constructor
-  · rintro ⟨h₁, h₂⟩
-    refine ⟨h₁, ?_⟩
+  · intro hF
+    refine ⟨hF.toIsUniform, ?_⟩
     ext I
     constructor <;> intro hI
     · rcases hI with ⟨J, hJ, htors⟩
-      refine h₂ I ⟨J, hJ, fun x hx ↦ ?_⟩
+      refine hF.gabriel_closed I ⟨J, hJ, fun x hx ↦ ?_⟩
       rcases htors x hx with ⟨K, hK, hincl⟩
       exact Order.PFilter.mem_of_le hincl hK
     · exact ⟨I, hI, isTorsionQuot_self F I⟩
-  · refine fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun I ⟨J, hJ, hcolon⟩ ↦ ?_⟩
+  · rintro ⟨h₁, h₂⟩
+    refine { toIsUniform := h₁, gabriel_closed := ?_ }
+    rintro I ⟨J, hJ, hcolon⟩
     exact h₂.le ⟨J, hJ, fun x hx ↦ ⟨I.colon {x}, hcolon x hx, by simp⟩⟩
 
 end IdealFilter

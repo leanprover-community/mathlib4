@@ -82,7 +82,7 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   have hνs' : μ (g ⁻¹' s) ≠ ∞ := by rwa [hg.measure_preimage hs]
   obtain ⟨K, hKg, hKco, hKcl, hKμ⟩ :
       ∃ K, MapsTo g K s ∧ IsCompact K ∧ IsClosed K ∧ μ (g ⁻¹' s \ K) < ε / 2 :=
-    (hg.measurable hso.measurableSet).exists_isCompact_isClosed_diff_lt hνs' <| by simp [hε.ne']
+    (hg.measurable hso.measurableSet).exists_isCompact_isClosed_sdiff_lt hνs' <| by simp [hε.ne']
   have hKm : NullMeasurableSet K μ := hKcl.nullMeasurableSet
   -- Take `a` such that `f a` is measure preserving and maps `K` to `s`.
   -- This is possible, because `K` is a compact set and `s` is an open set.
@@ -94,10 +94,11 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   rw [symmDiff_of_ge ha.subset_preimage, symmDiff_of_le hKg.subset_preimage]
   gcongr
   have hK' : μ K ≠ ∞ := ne_top_of_le_ne_top hνs' <| measure_mono hKg.subset_preimage
-  rw [measure_diff_le_iff_le_add hKm ha.subset_preimage hK', hfa.measure_preimage hs,
-    ← hg.measure_preimage hs, ← measure_diff_le_iff_le_add hKm hKg.subset_preimage hK']
+  rw [measure_sdiff_le_iff_le_add hKm ha.subset_preimage hK', hfa.measure_preimage hs,
+    ← hg.measure_preimage hs, ← measure_sdiff_le_iff_le_add hKm hKg.subset_preimage hK']
   exact hKμ.le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `f : Z → C(X, Y)` be a continuous (in the compact open topology) family
 of continuous measure-preserving maps.
 Let `t : Set Y` be a null measurable set of finite measure.
@@ -107,7 +108,7 @@ is a closed set.
 
 In particular, if `X = Y` and `s = t`,
 then we see that the a.e. stabilizer of a set is a closed set. -/
-theorem isClosed_setOf_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
+theorem isClosed_setOfPred_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
     (hfm : ∀ z, MeasurePreserving (f z) μ ν) (s : Set X)
     {t : Set Y} (htm : NullMeasurableSet t ν) (ht : ν t ≠ ∞) :
     IsClosed {z | f z ⁻¹' t =ᵐ[μ] s} := by
@@ -121,5 +122,8 @@ theorem isClosed_setOf_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
   intro (hw' : f w ⁻¹' t =ᵐ[μ] s)
   rw [measure_congr (hw'.symmDiff (ae_eq_refl _)), symmDiff_comm] at hw
   exact hw.false
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_preimage_ae_eq := isClosed_setOfPred_preimage_ae_eq
 
 end MeasureTheory

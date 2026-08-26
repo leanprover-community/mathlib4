@@ -6,7 +6,7 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Maps
 
 /-!
 # Localizing commutative monoids away from an element
@@ -22,8 +22,6 @@ commutative monoid, grothendieck group
 @[expose] public section
 
 assert_not_exists MonoidWithZero
-
-open Function
 
 section CommMonoid
 

@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
-public import Mathlib.CategoryTheory.Thin
 
 /-!
 # Wide pullbacks
@@ -37,12 +36,14 @@ namespace CategoryTheory.Limits
 variable (J : Type w)
 
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
+@[implicit_reducible]
 def WidePullbackShape := Option J
 
 instance : Inhabited (WidePullbackShape J) where
   default := none
 
 /-- A wide pushout shape for any type `J` can be written simply as `Option J`. -/
+@[implicit_reducible]
 def WidePushoutShape := Option J
 
 instance : Inhabited (WidePushoutShape J) where
@@ -79,7 +80,7 @@ open Lean Elab Tactic
 /- Pointing note: experimenting with manual scoping of aesop tactics. Attempted to define
 aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 /-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash : TacticM Unit := do
+meta def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
       (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)))
@@ -106,7 +107,7 @@ variable {C : Type u} [Category.{v} C]
 /-- Construct a functor out of the wide pullback shape given a J-indexed collection of arrows to a
 fixed object.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : WidePullbackShape J ⥤ C where
   obj j := Option.casesOn j B objs
   map f := by
@@ -204,7 +205,7 @@ instance Hom.inhabited : Inhabited (Hom (none : WidePushoutShape J) none) :=
 open Lean Elab Tactic
 -- Pointing note: experimenting with manual scoping of aesop tactics; only this worked
 /-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash' : TacticM Unit := do
+meta def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
       (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)))
@@ -229,7 +230,7 @@ variable {C : Type u} [Category.{v} C]
 /-- Construct a functor out of the wide pushout shape given a J-indexed collection of arrows from a
 fixed object.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WidePushoutShape J ⥤ C where
   obj j := Option.casesOn j B objs
   map f := by
@@ -334,13 +335,15 @@ noncomputable abbrev lift {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
 
 variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
-  simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
+  simp only [limit.lift_π, WidePullbackShape.mkCone_π_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem lift_base : lift f fs w ≫ base arrows = f := by
-  simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
+  simp only [limit.lift_π, WidePullbackShape.mkCone_π_app]
 
 theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
     (∀ j : J, g ≫ π arrows j = fs j) → g ≫ base arrows = f → g = lift f fs w := by
@@ -352,6 +355,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
   · apply h2
   · apply h1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
   aesop
@@ -385,7 +389,7 @@ def base (s : WidePullbackCone f) : s.pt ⟶ X :=
 
 @[reassoc (attr := simp)]
 lemma condition (s : WidePullbackCone f) (i : ι) : s.π i ≫ f i = s.base := by
-  simpa using ((Cone.π s).naturality (.term i)).symm
+  simpa using! ((Cone.π s).naturality (.term i)).symm
 
 /-- Construct a wide pullback cone from the projections. -/
 @[simps! pt]
@@ -448,7 +452,7 @@ def ext {ι : Type*}
     (base : e.hom ≫ t.base = s.base := by cat_disch)
     (π : ∀ i, e.hom ≫ t.π i = s.π i := by cat_disch) :
     s ≅ t :=
-  Cones.ext e <| by
+  Cone.ext e <| by
     rintro (_ | _)
     · exact base.symm
     · exact (π _).symm
@@ -470,6 +474,7 @@ lemma reindex_π {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X} (s :
     {ι' : Type*} (e : ι' ≃ ι) (i : ι') :
     (s.reindex e).π i = s.π (e i) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing a pullback cone preserves being limiting. -/
 def reindexIsLimitEquiv {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X}
     (s : WidePullbackCone f) {ι' : Type*} (e : ι' ≃ ι) :
@@ -510,13 +515,15 @@ noncomputable abbrev desc {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
 
 variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
-  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
+  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_ι_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem head_desc : head arrows ≫ desc f fs w = f := by
-  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
+  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_ι_app]
 
 theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
     (∀ j : J, ι arrows j ≫ g = fs j) → head arrows ≫ g = f → g = desc f fs w := by
@@ -528,6 +535,7 @@ theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
   · apply h2
   · apply h1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
     g =
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by

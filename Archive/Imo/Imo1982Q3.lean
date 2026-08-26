@@ -3,8 +3,11 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Alex Brodbelt
 -/
-import Mathlib.Algebra.Order.Field.GeomSum
-import Mathlib.Data.NNReal.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.GeomSum
+public import Mathlib.Data.NNReal.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset -- for `Finset.sq_sum_div_le_sum_sq_div`
 
 /-!
 # IMO 1982 Q3
@@ -26,6 +29,8 @@ website. For part a, we use Sedrakyan's lemma to show the sum is bounded below b
 $\frac{4n}{n + 1}$, which can be made arbitrarily close to $4$ by taking large $n$. For part b, we
 show the sequence $x_n = 2^{-n}$ satisfies the desired inequality.
 -/
+
+@[expose] public section
 
 open Finset NNReal
 
@@ -74,7 +79,7 @@ end Imo1982Q3
 theorem imo1982_q3a (hx : Antitone x) (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     ∃ n : ℕ, 3.999 ≤ ∑ k ∈ range n, (x k) ^ 2 / x (k + 1) := by
   use 4000
-  convert Imo1982Q3.ineq (Nat.succ_ne_zero 3998) hx h0 hp
+  convert! Imo1982Q3.ineq (Nat.succ_ne_zero 3998) hx h0 hp
   norm_num
 
 /-- Part b of the problem is solved by `x k = (1 / 2) ^ k`. -/
@@ -88,6 +93,6 @@ theorem imo1982_q3b : ∃ x : ℕ → ℝ, Antitone x ∧ x 0 = 1 ∧ (∀ k, 0 
     simp_rw [← pow_mul, pow_succ, ← div_eq_mul_inv, div_div_eq_mul_div, mul_comm, mul_div_assoc,
       ← mul_sum, div_eq_mul_inv, this, ← two_add_two_eq_four, ← mul_two,
       mul_lt_mul_iff_of_pos_left two_pos]
-    convert NNReal.coe_lt_coe.2 <| geom_sum_lt (inv_ne_zero two_ne_zero) two_inv_lt_one n
+    convert! NNReal.coe_lt_coe.2 <| geom_sum_lt (inv_ne_zero two_ne_zero) two_inv_lt_one n
     · simp
     · norm_num

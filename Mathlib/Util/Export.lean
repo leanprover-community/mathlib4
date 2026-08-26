@@ -24,7 +24,8 @@ namespace Lean
 
 namespace Export
 
-/- References -/
+/-! References -/
+
 private opaque MethodsRefPointed : NonemptyType.{0}
 
 private def MethodsRef : Type := MethodsRefPointed.type
@@ -47,7 +48,7 @@ deriving Inhabited
 
 structure State where
   names : Alloc Name := ⟨(∅ : Std.HashMap Name Nat).insert Name.anonymous 0, 1⟩
-  levels : Alloc Level := ⟨(∅ : Std.HashMap Level Nat).insert levelZero 0, 1⟩
+  levels : Alloc Level := ⟨(∅ : Std.HashMap Level Nat).insert .zero 0, 1⟩
   exprs : Alloc Expr
   defs : Std.HashSet Name
   stk : Array (Bool × Entry)

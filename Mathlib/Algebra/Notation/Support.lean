@@ -63,6 +63,11 @@ lemma ext_iff_mulSupport : f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f
     else rw [notMem_mulSupport.1 hx, notMem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]
 
 @[to_additive]
+lemma ext_iff_mulSupport_union :
+    f = g ↔ ∀ x ∈ f.mulSupport ∪ g.mulSupport, f x = g x := by
+  grind [mem_mulSupport]
+
+@[to_additive]
 lemma mulSupport_update_of_ne_one [DecidableEq ι] (f : ι → M) (x : ι) {y : M} (hy : y ≠ 1) :
     mulSupport (update f x y) = insert x (mulSupport f) := by
   ext a; obtain rfl | hne := eq_or_ne a x <;> simp [*]
@@ -82,7 +87,7 @@ lemma mulSupport_extend_one_subset {f : ι → κ} {g : ι → N} :
     mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
   mulSupport_subset_iff'.mpr fun x hfg ↦ by
     by_cases hf : ∃ a, f a = x
-    · rw [extend, dif_pos hf, ← notMem_mulSupport]
+    · rw [extend, dite_eq_left hf, ← notMem_mulSupport]
       rw [← Classical.choose_spec hf] at hfg
       exact fun hg ↦ hfg ⟨_, hg, rfl⟩
     · rw [extend_apply' _ _ _ hf]; rfl
@@ -118,7 +123,7 @@ theorem _root_.Subsingleton.mulSupport_eq [Subsingleton M] (f : ι → M) : mulS
 @[to_additive]
 lemma range_subset_insert_image_mulSupport (f : ι → M) :
     range f ⊆ insert 1 (f '' mulSupport f) := by
-  simpa only [range_subset_iff, mem_insert_iff, or_iff_not_imp_left] using
+  simpa only [range_subset_iff, mem_insert_iff, or_iff_not_imp_left] using!
     fun x (hx : x ∈ mulSupport f) ↦ mem_image_of_mem f hx
 
 @[to_additive]
@@ -134,12 +139,14 @@ lemma mulSupport_one : mulSupport (1 : ι → M) = ∅ := mulSupport_eq_empty_if
 @[to_additive (attr := simp)]
 lemma mulSupport_fun_one : mulSupport (fun _ ↦ 1 : ι → M) = ∅ := mulSupport_one
 
-@[deprecated (since := "2025-07-31")] alias support_zero' := support_zero
-@[deprecated (since := "2025-07-31")] alias mulSupport_one' := mulSupport_one
-
 @[to_additive]
 lemma mulSupport_const {c : M} (hc : c ≠ 1) : (mulSupport fun _ : ι ↦ c) = Set.univ := by
   ext x; simp [hc]
+
+/-- The multiplicative support of a function that is everywhere non-one is the whole space. -/
+@[to_additive /-- The support of a function that is everywhere nonzero is the whole space. -/]
+lemma mulSupport_eq_univ (hf : ∀ x, f x ≠ 1) : mulSupport f = Set.univ :=
+  Set.eq_univ_of_forall hf
 
 @[to_additive]
 lemma mulSupport_binop_subset (op : M → N → P) (op1 : op 1 1 = 1) (f : ι → M) (g : ι → N) :
@@ -173,17 +180,12 @@ lemma mulSupport_comp_eq_preimage (g : κ → M) (f : ι → κ) :
 lemma mulSupport_prodMk (f : ι → M) (g : ι → N) :
     mulSupport (fun x ↦ (f x, g x)) = mulSupport f ∪ mulSupport g :=
   Set.ext fun x ↦ by
-    simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne]
+    simp only [mulSupport, not_and_or, mem_union, mem_ofPred_eq, Prod.mk_eq_one, Ne]
 
 @[to_additive support_prodMk']
 lemma mulSupport_prodMk' (f : ι → M × N) :
     mulSupport f = (mulSupport fun x ↦ (f x).1) ∪ mulSupport fun x ↦ (f x).2 := by
   simp only [← mulSupport_prodMk]
-
-@[deprecated (since := "2025-07-31")] alias support_prod_mk := support_prodMk
-@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk := mulSupport_prodMk
-@[deprecated (since := "2025-07-31")] alias support_prod_mk' := support_prodMk'
-@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk' := mulSupport_prodMk'
 
 @[to_additive]
 lemma mulSupport_along_fiber_subset (f : ι × κ → M) (i : ι) :
@@ -197,9 +199,6 @@ lemma mulSupport_curry (f : ι × κ → M) : (mulSupport f.curry) = (mulSupport
 @[to_additive]
 lemma mulSupport_fun_curry (f : ι × κ → M) :
     mulSupport (fun i j ↦ f (i, j)) = (mulSupport f).image Prod.fst := mulSupport_curry f
-
-@[deprecated (since := "2025-07-31")] alias support_curry' := support_fun_curry
-@[deprecated (since := "2025-07-31")] alias mulSupport_curry' := mulSupport_fun_curry
 
 end Function
 

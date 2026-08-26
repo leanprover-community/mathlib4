@@ -23,14 +23,14 @@ such as splittings and equivalences.
 
 ```text
 For multiplicative groups:
-      ↗︎ E  ↘
+      ↗ E  ↘
 1 → N   ↓    G → 1
-      ↘︎ E' ↗︎️
+      ↘ E' ↗
 
 For additive groups:
-      ↗︎ E  ↘
+      ↗ E  ↘
 0 → N   ↓    G → 0
-      ↘︎ E' ↗︎️
+      ↘ E' ↗
 ```
 
 - `(Add?)GroupExtension.Section S`: structure for right inverses to `rightHom` of a group extension
@@ -249,7 +249,7 @@ namespace Section
 @[to_additive]
 instance : FunLike S.Section G E where
   coe := toFun
-  coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ ↦ by congr
+  coe_injective := fun ⟨_, _⟩ ⟨_, _⟩ _ ↦ by congr
 
 variable {S}
 
@@ -278,7 +278,7 @@ namespace Splitting
 @[to_additive]
 instance : FunLike S.Splitting G E where
   coe s := s.toFun
-  coe_injective' := by
+  coe_injective := by
     intro ⟨_, _⟩ ⟨_, _⟩ h
     congr
     exact DFunLike.coe_injective h

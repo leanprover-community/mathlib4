@@ -26,11 +26,9 @@ public section
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
-open Multiset Subtype Function
-
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
@@ -42,7 +40,7 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Lattice
 
-variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
+variable [DecidableEq α] {s s₁ s₂ t : Finset α} {a b : α}
 
 theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
   disjoint_iff
@@ -72,7 +70,10 @@ theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
 lemma singleton_union (x : α) (s : Finset α) : {x} ∪ s = insert x s :=
   rfl
 
-@[simp, grind =]
+/- We lower the simp-priority of `union_singleton` to ensure that `{x} ∪ {y}`
+simplifies to `{x, y}` and not `{y, x}`. -/
+
+@[simp 900, grind =]
 lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
   rw [Finset.union_comm, singleton_union]
 

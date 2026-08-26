@@ -18,7 +18,7 @@ We deduce that the projection `C × D ⥤ C` is final (or initial) if `D` is con
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 

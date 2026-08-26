@@ -6,7 +6,7 @@ Authors: Kenny Lau, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Algebra.NonUnitalHom
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products
@@ -32,7 +32,7 @@ variable [SMulCommClass R A A] [IsScalarTower R A A]
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
 
 A weaker version of this for semirings exists as `AddMonoidHom.mul`. -/
-@[simps!]
+@[instance_reducible, simps!]
 def mul : A →ₗ[R] A →ₗ[R] A :=
   LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
 
@@ -52,6 +52,12 @@ theorem mul_apply' (a b : A) : mul R A a b = a * b :=
 @[simp]
 theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
+
+lemma restrictScalars_mul {S : Type*} [CommSemiring S] [Module S A] [SMulCommClass S A A]
+    [IsScalarTower S A A] [CompatibleSMul A A R S] (a : A) :
+    LinearMap.restrictScalars R (LinearMap.mul S A a) = LinearMap.mul R A a := by
+  ext x
+  simp
 
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 
@@ -156,9 +162,6 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
 theorem toSpanSingleton_one_eq_algebraLinearMap :
     toSpanSingleton R A 1 = Algebra.linearMap R A := by ext; simp
 
-@[deprecated (since := "2025-12-30")] alias toSpanSingleton_eq_algebra_linearMap :=
-  toSpanSingleton_one_eq_algebraLinearMap
-
 variable (R A) in
 /-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/
 @[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where
@@ -169,9 +172,7 @@ variable (R A) in
 end Semiring
 
 section CommSemiring
--- TODO: Generalise to `NonUnitalNonAssocCommSemiring`. This can't currently be done
--- because there is no instance **to** `NonUnitalNonAssocCommSemiring`.
-variable [CommSemiring R] [NonUnitalCommSemiring A]
+variable [CommSemiring R] [NonUnitalNonAssocCommSemiring A]
   [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
 @[simp] lemma flip_mul : (mul R A).flip = mul R A := by ext; simp [mul_comm]
@@ -189,7 +190,7 @@ open scoped RingTheory.LinearMap
 
 namespace NonUnitalAlgHom
 variable [CommSemiring R]
-  [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+  [NonUnitalNonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
   [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 lemma comp_mul' (f : A →ₙₐ[R] B) : (f : A →ₗ[R] B) ∘ₗ μ = μ[R] ∘ₗ (f ⊗ₘ f) :=
