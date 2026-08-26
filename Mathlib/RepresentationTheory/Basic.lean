@@ -501,7 +501,6 @@ lemma asAlgebraHom_ofMulAction_smul_eq_mul (x y : k[G]) :
 @[deprecated (since := "2026-06-18")]
 alias ofMulAction_self_smul_eq_mul := asAlgebraHom_ofMulAction_smul_eq_mul
 
-set_option simps.defeqWarn false in
 /-- If we equip `k[G]` with the `k`-linear `G`-representation induced by the left regular action of
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural
 `k[G]`-module structure. -/

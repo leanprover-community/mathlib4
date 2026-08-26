@@ -23,7 +23,6 @@ variable {R M : Type*} [Semiring R] [Mul M]
 
 namespace MonoidAlgebra
 
-set_option simps.defeqWarn false in
 /-- The opposite of a monoid algebra is equivalent as a ring to the opposite monoid algebra over the
 opposite ring. -/
 @[to_additive (dont_translate := R) (attr := simps! +simpRhs apply symm_apply)

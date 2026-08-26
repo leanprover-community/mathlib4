@@ -740,7 +740,6 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
     · simpa [coeff_single_one_mul] using congr(($hax).coeff 1)
     · simpa [coeff_mul_single_one] using congr(($hxa).coeff 1)
 
-set_option simps.defeqWarn false in
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R) (attr := simps! apply)
