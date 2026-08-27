@@ -127,9 +127,9 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
   simp [h.mem_edges_iff]
 
 theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.IsIsolated w) :
-    w ∈ p.support :=
-  have ⟨_, hadj⟩ := exists_adj_iff_not_isIsolated.mpr hw
-  p.fst_mem_support_of_mem_edges <| hp.mem_edges_iff.mpr hadj
+    w ∈ p.support := by
+  have ⟨e, he, hwe⟩ := not_isIsolated_iff_exists_edgeSet_mem.mp hw
+  exact mem_support_iff_exists_mem_edges.mpr <| .inr ⟨e, hp.mem_edges_iff.mpr he, hwe⟩
 
 theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
   simp [← edgeSet_eq_empty, hp.edgeSet_eq]
@@ -139,7 +139,7 @@ theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
     w ∈ p.support ↔ ¬G.IsIsolated w :=
   ⟨fun hwp hw ↦ hnil <| p.nil_of_isIsolated_of_mem_support hw hwp, hp.mem_support_of_not_isIsolated⟩
 
-theorem isEulerian_rotate {u v : V} {p : G.Walk u u} (hv : v ∈ p.support) :
+theorem isEulerian_rotate {p : G.Walk u u} (hv : v ∈ p.support) :
     (p.rotate v hv).IsEulerian ↔ p.IsEulerian := by
   simp_rw [IsEulerian, p.rotate_edges v hv |>.perm.count_eq]
 
