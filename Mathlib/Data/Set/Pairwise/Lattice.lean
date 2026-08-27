@@ -5,7 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
+public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
@@ -151,6 +152,7 @@ lemma coe_biUnionEqSigmaOfDisjoint_symm_apply {α ι : Type*} {s : Set ι}
     ((Set.biUnionEqSigmaOfDisjoint h).symm x : α) = x.2 := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coe_snd_biUnionEqSigmaOfDisjoint {α ι : Type*} {s : Set ι}
     {f : ι → Set α} (h : s.PairwiseDisjoint f) (x : ⋃ i ∈ s, f i) :

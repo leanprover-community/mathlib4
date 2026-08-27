@@ -141,10 +141,10 @@ variable (H)
 @[to_additive]
 theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (S : Set G) = ⊤) :
     ∃ T : Finset H, #T ≤ H.index * #S ∧ closure (T : Set H) = ⊤ := by
-  letI := H.fintypeQuotientOfFiniteIndex
-  haveI : DecidableEq G := Classical.decEq G
+  let := H.fintypeQuotientOfFiniteIndex
+  have : DecidableEq G := Classical.decEq G
   obtain ⟨R₀, hR, hR1⟩ := H.exists_isComplement_right 1
-  haveI : Fintype R₀ := Fintype.ofEquiv _ hR.rightQuotientEquiv
+  have : Fintype R₀ := Fintype.ofEquiv _ hR.rightQuotientEquiv
   let R : Finset G := Set.toFinset R₀
   replace hR : IsComplement (H : Set G) R := by rwa [Set.coe_toFinset]
   replace hR1 : (1 : G) ∈ R := by rwa [Set.mem_toFinset]
@@ -170,7 +170,7 @@ instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := b
 
 theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
     Group.rank H ≤ H.index * Group.rank G := by
-  haveI := H.fg_of_index_ne_zero
+  have := H.fg_of_index_ne_zero
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G
   obtain ⟨T, hT₀, hT⟩ := exists_finset_card_le_mul H hS
   calc
@@ -189,7 +189,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   -- First handle the case when `Z(G)` has infinite index and `[G : Z(G)]` is defined to be `0`
   by_cases hG : (center G).index = 0
   · simp_rw [hG, zero_mul, zero_add, pow_one, dvd_zero]
-  haveI : FiniteIndex (center G) := ⟨hG⟩
+  have : FiniteIndex (center G) := ⟨hG⟩
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
   rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ]
   -- We have `h1 : [G' : Z(G) ∩ G'] ∣ [G : Z(G)]`
@@ -197,7 +197,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
   refine mul_dvd_mul ?_ h1
   -- We know that `[G' : Z(G) ∩ G'] < ∞` by `h1` and `hG`
-  haveI : FiniteIndex ((center G).subgroupOf (_root_.commutator G)) :=
+  have : FiniteIndex ((center G).subgroupOf (_root_.commutator G)) :=
     ⟨ne_zero_of_dvd_ne_zero hG h1⟩
   -- We have `h2 : rank (Z(G) ∩ G') ≤ [G' : Z(G) ∩ G'] * rank G'` by Schreier's lemma
   have h2 := rank_le_index_mul_rank ((center G).subgroupOf (_root_.commutator G))
