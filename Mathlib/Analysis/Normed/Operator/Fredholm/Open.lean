@@ -105,5 +105,4 @@ theorem index_continuousOn_isFredholm [CompleteSpace 𝕜] :
     ContinuousOn (fun (T : E →L[𝕜] F) ↦ T.index) {T | T.IsFredholm} :=
   continuousOn_of_forall_continuousAt fun _ ↦ IsFredholm.index_continuousAt
 
-
 end ContinuousLinearMap
