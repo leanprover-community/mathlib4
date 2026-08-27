@@ -39,6 +39,7 @@ variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
+@[implicit_reducible]
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
 deriving Inhabited
 
@@ -53,7 +54,6 @@ deriving instance IsNoetherian R for Cotangent I
 @[simps! -isSimp apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_toCotangent_ker : (LinearMap.ker I.toCotangent).map I.subtype = I ^ 2 := by
   rw [Ideal.toCotangent, Submodule.ker_mkQ, pow_two, Submodule.map_smul'' I ⊤ (Submodule.subtype I),
     smul_eq_mul, Submodule.map_subtype_top]
@@ -170,14 +170,14 @@ theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
 def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by
   refine { Ideal.Quotient.lift (RingHom.ker f.toRingHom ^ 2) f.toRingHom ?_ with commutes' := ?_ }
   · intro a ha; exact Ideal.pow_le_self two_ne_zero ha
   · intro r
     rw [IsScalarTower.algebraMap_apply R A, RingHom.toFun_eq_coe, Ideal.Quotient.algebraMap_eq,
-      Ideal.Quotient.lift_mk]
+      Ideal.Quotient.lift_mk (RingHom.ker f.toRingHom ^ 2) f.toRingHom
+        (fun a ha ↦ pow_le_self two_ne_zero ha)]
     exact f.map_algebraMap r
 
 -- Can't be `simp`, because `RingHom.ker f.toRingHom` in the definition of `AlgHom.kerSquareLift`
@@ -206,7 +206,7 @@ def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
   refine (DoubleQuot.quotQuotEquivQuotSup _ _).trans ?_
   exact Ideal.quotEquivOfEq (sup_eq_right.mpr <| Ideal.pow_le_self two_ne_zero)
 
-set_option backward.isDefEq.respectTransparency.types false in
+attribute [local implicit_reducible] Submodule.restrictScalars in
 /-- The map `I/I² → J/J²` if `I ≤ f⁻¹(J)`. -/
 def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) :
     I₁.Cotangent →ₗ[R] I₂.Cotangent := by
@@ -218,11 +218,14 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
     rintro a ha ⟨b, hb⟩ -
     simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
-    convert!
+    convert
       (Submodule.smul_mem_smul (M := I₂) (r := f a) (n := ⟨f b, h hb⟩) (h ha)
         (Submodule.mem_top)) using 1
     ext
-    exact map_mul f a b
+    -- ## tech debt
+    simp [f.toLinearMap.coe_restrict_apply (fun a ha ↦
+      (Submodule.mem_comap.mp (h ((Submodule.restrictScalars_mem _ _ _).mp ha)) :
+        f.toLinearMap a ∈ Submodule.restrictScalars R I₂))]
 
 @[simp]
 lemma mapCotangent_toCotangent
@@ -310,7 +313,6 @@ instance : Module (ResidueField R) (CotangentSpace R) :=
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
   inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _
 
@@ -416,7 +418,6 @@ lemma Ideal.mapCotangent_surjective_of_comap_eq (surj : Function.Surjective (alg
   use J.toCotangent ⟨y', mem⟩
   simpa using I.toCotangent.congr_arg (SetCoe.ext hy')
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraMap A B))
     {I : Ideal B} {J : Ideal A} (eq : I.comap (algebraMap A B) = RingHom.ker (algebraMap A B) ⊔ J) :
     (Ideal.mapCotangent J I (Algebra.ofId A B) (le_of_le_of_eq le_sup_right eq.symm)).ker =
@@ -436,6 +437,9 @@ lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraM
     exact Submodule.mem_map_of_mem (Submodule.mem_comap.mpr (Ideal.mem_inf.mpr ⟨hz, zmemJ⟩))
   · rw [Submodule.map_le_iff_le_comap, ← LinearMap.ker_comp]
     intro x hx
+    simp only [Submodule.comap_inf, Submodule.comap_subtype_self, le_top, inf_of_le_left,
+      Submodule.mem_comap, Submodule.subtype_apply, RingHom.mem_ker] at hx
     simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent]
-    convert! map_zero I.toCotangent
-    exact (Ideal.mem_inf.mp hx).1
+    convert map_zero I.toCotangent
+    apply Subtype.ext
+    simp [hx]
