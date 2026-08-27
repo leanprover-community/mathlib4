@@ -30,7 +30,7 @@ are obtained by showing that the limit of both sides at `i∞` agree.
 
 open UpperHalfPlane hiding I
 open Real Complex Filter EisensteinSeries ModularForm
-open scoped Manifold MatrixGroups ModularForm Topology
+open scoped Manifold MatrixGroups Topology
 
 namespace Derivative
 
@@ -109,8 +109,7 @@ lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
   rw [hslash, E2_slash_action, serreDerivative_sub _ _ _ E2_mdifferentiable (hD2.const_smul _),
     serreDerivative_smul _ _ _ hD2]
   ext z
-  simp only [hDD2, serreDerivative_apply, Pi.add_apply, Pi.sub_apply, Pi.smul_apply, Pi.mul_apply,
-    smul_eq_mul]
+  simp [hDD2]
   ring
 
 /-- The weight-1 Serre derivative of `E₂`, packaged as a modular form of weight `4`. -/
