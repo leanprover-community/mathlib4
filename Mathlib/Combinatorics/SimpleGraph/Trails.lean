@@ -127,9 +127,9 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
   simp [h.mem_edges_iff]
 
 theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.IsIsolated w) :
-    w ∈ p.support := by
-  have ⟨e, he, hwe⟩ := not_isIsolated_iff_exists_edgeSet_mem.mp hw
-  exact mem_support_iff_exists_mem_edges.mpr <| .inr ⟨e, hp.mem_edges_iff.mpr he, hwe⟩
+    w ∈ p.support :=
+  have ⟨_, hadj⟩ := exists_adj_iff_not_isIsolated.mpr hw
+  p.fst_mem_support_of_mem_edges <| hp.mem_edges_iff.mpr hadj
 
 theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
   simp [← edgeSet_eq_empty, hp.edgeSet_eq]
@@ -148,10 +148,9 @@ alias ⟨_, IsEulerian.rotate⟩ := isEulerian_rotate
 /-- In an Eulerian graph there exists an Eulerian circuit from any non-isolated vertex. -/
 theorem _root_.SimpleGraph.exists_isEulerian_of_mem_support
     (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) {v : V} (hv : ¬G.IsIsolated v) :
-    ∃ p : G.Walk v v, p.IsEulerian := by
-  have ⟨v', p, hp⟩ := hp
-  have ⟨u, hadj⟩ := exists_adj_iff_not_isIsolated.mpr hv
-  exact ⟨_, hp.rotate <| p.fst_mem_support_of_mem_edges <| hp.mem_edges_iff.mpr hadj⟩
+    ∃ p : G.Walk v v, p.IsEulerian :=
+  have ⟨_, _, hp⟩ := hp
+  ⟨_, hp.rotate <| hp.mem_support_of_not_isIsolated hv⟩
 
 /-- In a preconnected Eulerian graph there exists an Eulerian circuit from any vertex. -/
 theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected)
