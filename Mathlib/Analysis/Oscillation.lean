@@ -28,7 +28,9 @@ oscillation, oscillationWithin
 
 @[expose] public section
 
-open Topology Metric Set ENNReal
+open Metric Set ENNReal
+
+open scoped Topology
 
 universe u v
 
@@ -157,7 +159,7 @@ theorem uniform_oscillation {K : Set E} (comp : IsCompact K)
     {f : E → F} {ε : ENNReal} (hK : ∀ x ∈ K, oscillation f x < ε) :
     ∃ δ > 0, ∀ x ∈ K, ediam (f '' (eball x (ENNReal.ofReal δ))) ≤ ε := by
   simp only [← oscillationWithin_univ_eq_oscillation] at hK
-  convert ← comp.uniform_oscillationWithin hK
+  convert! ← comp.uniform_oscillationWithin hK
   exact inter_univ _
 
 end IsCompact

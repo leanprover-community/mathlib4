@@ -6,7 +6,7 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # The arithmetic-geometric mean
@@ -46,7 +46,9 @@ lemma sqrt_mul_lt_half_add_of_ne {x y : ℝ≥0} (h : x ≠ y) : sqrt (x * y) < 
     show (2 : ℝ≥0) ^ 2 * (x * y) = 2 * x * y + 2 * x * y by ring, add_sq, add_right_comm]
   gcongr
 
-open Function Filter Topology
+open Function Filter
+
+open scoped Topology
 
 /-- `agmSequences x y` is the sequence of (geometric, arithmetic) means
 converging to the arithmetic-geometric mean starting from `x` and `y`. -/
@@ -243,7 +245,7 @@ lemma agm_eq_agm_agmSequences_fst_agmSequences_snd (n : ℕ) :
   refine tendsto_nhds_unique ?_ tendsto_agmSequences_snd_agm
   have key := @tendsto_agmSequences_snd_agm x y
   rw [← tendsto_add_atTop_iff_nat (n + 1)] at key
-  convert key using 2 with m
+  convert! key using 2 with m
   simp_rw [agmSequences, Prod.mk.eta, ← iterate_add_apply, add_right_comm]
 
 lemma agm_eq_agm_gm_am : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by

@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.RatFunc.Degree
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
-public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.FieldTheory.RatFunc.IntermediateField
 public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.CompletionAtInfty`
@@ -77,7 +76,7 @@ theorem functionField_iff (Ft : Type*) [Field Ft] [Algebra F[X] Ft]
     exact (b.mapCoeffs e this).finiteDimensional_of_finite
   · let b := Module.finBasis Ft K
     refine (b.mapCoeffs e.symm ?_).finiteDimensional_of_finite
-    intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
+    intro c x; convert! (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
 namespace FunctionField
 

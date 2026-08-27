@@ -33,7 +33,7 @@ def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsem
   carrier := ball (0 : 𝕜) 1
   mul_mem' hx hy := by
     rw [mem_ball_zero_iff] at *
-    exact (norm_mul_le _ _).trans_lt (mul_lt_one_of_nonneg_of_lt_one_left (norm_nonneg _) hx hy.le)
+    exact (norm_mul_le _ _).trans_lt ((mul_le_of_le_one_right (norm_nonneg _) hy.le).trans_lt hx)
 
 @[simp] lemma Subsemigroup.mem_unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] {x : 𝕜} :
     x ∈ Subsemigroup.unitBall 𝕜 ↔ ‖x‖ < 1 := by
@@ -97,7 +97,7 @@ def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : 
   carrier := closedBall 0 1
   mul_mem' hx hy := by
     rw [mem_closedBall_zero_iff] at *
-    exact (norm_mul_le _ _).trans (mul_le_one₀ hx (norm_nonneg _) hy)
+    exact (norm_mul_le _ _).trans ((mul_le_of_le_one_left (norm_nonneg _) hx).trans hy)
 
 instance Metric.unitClosedBall.instSemigroup [NonUnitalSeminormedRing 𝕜] :
     Semigroup (closedBall (0 : 𝕜) 1) :=
@@ -140,6 +140,11 @@ def Submonoid.unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 
   { Subsemigroup.unitClosedBall 𝕜 with
     carrier := closedBall 0 1
     one_mem' := mem_closedBall_zero_iff.2 norm_one.le }
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp] lemma Submonoid.mem_unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 𝕜] {x : 𝕜} :
+    x ∈ Submonoid.unitClosedBall 𝕜 ↔ ‖x‖ ≤ 1 := by
+  simp [Submonoid.unitClosedBall]
 
 instance Metric.unitClosedBall.instMonoid [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     Monoid (closedBall (0 : 𝕜) 1) :=
@@ -248,7 +253,7 @@ theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : �
 
 theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
     Function.Injective (unitSphereToUnits 𝕜) := fun x y h =>
-  Subtype.ext <| by convert congr_arg Units.val h
+  Subtype.ext <| by convert! congr_arg Units.val h
 
 instance Metric.unitSphere.instGroup [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=
   fast_instance% unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)
