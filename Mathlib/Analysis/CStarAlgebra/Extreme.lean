@@ -10,6 +10,7 @@ public import Mathlib.Analysis.CStarAlgebra.Unitary.Maps
 public import Mathlib.Analysis.Convex.Strict.Extreme
 
 import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Projection
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 
@@ -24,6 +25,12 @@ This file contains results on the extreme points of the closed unit ball in (uni
 * `isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosedBall`: the star
   projections in a C⋆-algebra are exactly the extreme points of the nonnegative closed unit ball.
 
+## To Do
+
++ Prove that the conclusion of `eq_zero_of_mem_extremePoints_unitClosedBall` is in fact also
+  sufficient to conclude that `x` is an extreme point of the closed unit ball. Consequently,
+  this characterizes the extreme points of the closed unit ball in unital C⋆-algebra.
+
 ## References
 
 [C⋆-algebras and W⋆-algebras][sakai1971] -/
@@ -33,7 +40,7 @@ public section
 open Set Metric CStarAlgebra Unitization CFC
 
 open scoped ComplexStarModule in
-lemma CStarAlgebra.one_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebra A] :
+lemma CStarAlgebra.one_mem_extremePoints_unitClosedBall (A : Type*) [CStarAlgebra A] :
     1 ∈ extremePoints ℝ (closedBall (0 : A) 1) := by
   nontriviality A
   /- Suppose that `1` is a convex combination of `x` and `y`. Then, since `1` is self
@@ -51,7 +58,7 @@ lemma CStarAlgebra.one_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebr
   replace hcab : c₁ • a + c₂ • b = 1 := by simpa [ha', hb'] using congr((ℜ $hcab : A))
   have : b = c₂⁻¹ • 1 - c₂⁻¹ • c₁ • a := by
     simpa [inv_smul_smul₀ hc₂.ne', eq_sub_iff_add_eq'] using congr(c₂⁻¹ • $hcab)
-  /- By passing to functions, we will show that `a = 1`. In particular, the constant
+  /- By passing to functions, we will show that `a = 1`. We proceed by establishing the constant
   function `1` on the `ℝ`-spectrum of `a` is a convex combination of functions (one of
   which is the identity) which are bounded in absolute value by `1`. Since `1 : ℝ` is
   extreme in `Icc (-1) 1`, we conclude that these functions must be `1` on the
@@ -89,7 +96,7 @@ lemma Unitary.coe_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebra A] 
     (hu : u ∈ unitary A) : u ∈ extremePoints ℝ (closedBall 0 1) := by
   rw [← map_zero (mulLeft ℝ A ⟨u, hu⟩), ← LinearIsometryEquiv.image_closedBall,
     ← image_extremePoints]
-  exact ⟨1 , ⟨one_mem_extremePoints_unitClosedBall, by simp⟩⟩
+  exact ⟨1 , ⟨one_mem_extremePoints_unitClosedBall A, by simp⟩⟩
 
 variable {A : Type*} [NonUnitalCStarAlgebra A]
 
@@ -147,10 +154,17 @@ with initial projection `p = star x * x` and final projection `q = x * star x`,
 shorthand used in paper proofs to make them more transparent, but it is
 nonsense to refer to `1`, and the notation means that everything should be
 considered as fully expanded. This is reflected in the statement below. -/
-private theorem eq_zero_of_eq_sub_of_mem_closedBall_of_mem_extremePoints_unitClosedBall
-    {x a b : A} (hx : x ∈ extremePoints ℝ (closedBall 0 1)) (ha : a ∈ closedBall 0 1)
-    (hb : a = b - b * (star x * x) - (x * star x) * b + (x * star x) * b * (star x * x)) :
-    a = 0 := by
+theorem eq_zero_of_mem_extremePoints_unitClosedBall ⦃x : A⦄
+    (hx : x ∈ extremePoints ℝ (closedBall 0 1)) (b : A) :
+    b - b * (star x * x) - (x * star x) * b + (x * star x) * b * (star x * x) = 0 := by
+  -- First reduce to the case where the left-hand side lies in the closed unit ball.
+  wlog ha :
+      b - b * (star x * x) - (x * star x) * b + (x * star x) * b * (star x * x) ∈ closedBall 0 1
+  · have hb : ‖b - b * (star x * x) - (x * star x) * b + (x * star x) * b * (star x * x)‖ ≠ 0 := by
+      grind [mem_closedBall_zero_iff, norm_eq_zero]
+    simpa [← smul_sub, ← smul_add, mul_smul_comm, smul_mul_assoc, norm_smul, inv_mul_le_one] using
+      this hx (‖b - b * (star x * x) - (x * star x) * b + (x * star x) * b * (star x * x)‖⁻¹ • b)
+  set a := b - b * (star x * x) - (x * star x) * b + (x * star x) * b * (star x * x) with hb
   have hP := isStarProjection_star_mul_self_of_mem_extremePoints_unitClosedBall hx
   have hQ := isStarProjection_self_mul_star_of_mem_extremePoints_unitClosedBall hx
   set p := star x * x with hp
@@ -188,33 +202,38 @@ private theorem eq_zero_of_eq_sub_of_mem_closedBall_of_mem_extremePoints_unitClo
     ⟨2⁻¹, 2⁻¹, by simp [smul_add, smul_sub, ← add_smul, ← one_div]⟩
 
 open Filter Topology in
-/-- When `x` is an extreme point of the closed unit ball in an a priori non-unital C⋆-algebra,
-then `star x * x + x * star x - x * star x * star x * x` is a right identity.
-(See also `CStarAlgebra.partial_isometry_mul` for the left identity.) -/
-theorem CStarAlgebra.mul_partial_isometry {x : A} (hx : x ∈ extremePoints ℝ (closedBall 0 1))
-    (a : A) : a * (star x * x + x * star x - x * star x * (star x * x)) = a := by
+private theorem CStarAlgebra.right_identity_of_forall_eq_zero ⦃x : A⦄
+    (hx : ∀ t, t - t * (star x * x) - x * star x * t + x * star x * t * (star x * x) = 0) (a : A) :
+    a * (star x * x + x * star x - x * star x * (star x * x)) = a := by
   let := spectralOrder A
   let := spectralOrderedRing A
   let u := approximateUnit A
   let hu := increasingApproximateUnit A
   let f (t : A) : A := t - t * (star x * x) - x * star x * t + x * star x * t * (star x * x)
-  have h (t : A) : f t = 0 := by
-    simpa using eq_zero_of_eq_sub_of_mem_closedBall_of_mem_extremePoints_unitClosedBall
-      hx (inv_norm_smul_mem_unitClosedBall (f t)) (b := ‖f t‖⁻¹ • t)
-      (by simp [← mul_assoc, smul_mul_assoc, mul_smul_comm, sub_sub, ← smul_sub, ← smul_add, f])
+  replace hx : ∀ t, f t = 0 := hx
   have h_tendsto : Tendsto (fun t ↦ a * f t) u
       (𝓝 (a - a * (star x * x + x * star x - x * star x * (star x * x)))) := by
     conv => enter [1, t]; simp only [f]; rw [sub_add, sub_sub, add_sub, mul_sub]
     apply_rules [Tendsto.sub, Tendsto.add, hu.tendsto_mul_left, hu.tendsto_mul_right,
       Tendsto.mul_const, Tendsto.const_mul]
-  simpa [h, sub_eq_zero, eq_comm (a := (0 : A)), eq_comm (a := a)] using h_tendsto
+  simpa [hx, sub_eq_zero, eq_comm (a := (0 : A)), eq_comm (a := a)] using h_tendsto
+
+/-- When `x` is an extreme point of the closed unit ball in an a priori non-unital C⋆-algebra,
+then `star x * x + x * star x - x * star x * star x * x` is a right identity.
+(See also `CStarAlgebra.partial_isometry_mul` for the left identity.) -/
+theorem CStarAlgebra.right_identity_of_mem_extremePoints {x : A}
+    (hx : x ∈ extremePoints ℝ (closedBall 0 1)) (a : A) :
+    a * (star x * x + x * star x - x * star x * (star x * x)) = a :=
+  right_identity_of_forall_eq_zero
+    (eq_zero_of_mem_extremePoints_unitClosedBall hx) a
 
 /-- When `x` is an extreme point of the closed unit ball in an a priori non-unital C⋆-algebra,
 then `star x * x + x * star x - x * star x * star x * x` is a left identity.
 (See also `CStarAlgebra.mul_partial_isometry` for the right identity.) -/
-theorem CStarAlgebra.partial_isometry_mul {x : A} (hx : x ∈ extremePoints ℝ (closedBall 0 1))
-    (a : A) : (star x * x + x * star x - x * star x * (star x * x)) * a = a := by
-  simpa [add_comm] using congr(star $(mul_partial_isometry (x := star x)
+theorem CStarAlgebra.left_identity_of_mem_extremePoints {x : A}
+    (hx : x ∈ extremePoints ℝ (closedBall 0 1)) (a : A) :
+    (star x * x + x * star x - x * star x * (star x * x)) * a = a := by
+  simpa [add_comm] using congr(star $(right_identity_of_mem_extremePoints (x := star x)
     (by simpa using star_mem_star.mpr hx) (star a)))
 
 /-- A C⋆-algebra is unital iff there exists an extreme point of the closed unit ball.
@@ -225,8 +244,9 @@ This is 1.6.1 from [sakai1971]. -/
 theorem CStarAlgebra.isUnital_iff :
     IsUnital A ↔ (extremePoints ℝ (closedBall (0 : A) 1)).Nonempty := by
   rw [nonempty_def]
-  refine ⟨fun h ↦ let := h.toCStarAlgebra; ⟨1, one_mem_extremePoints_unitClosedBall⟩, ?_⟩
-  exact fun ⟨x, hx⟩ ↦ ⟨_, fun y ↦ ⟨partial_isometry_mul hx y, mul_partial_isometry hx y⟩⟩
+  refine ⟨fun h ↦ let := h.toCStarAlgebra; ⟨1, one_mem_extremePoints_unitClosedBall A⟩, ?_⟩
+  exact fun ⟨x, hx⟩ ↦ ⟨_, fun y ↦
+    ⟨left_identity_of_mem_extremePoints hx y, right_identity_of_mem_extremePoints hx y⟩⟩
 
 theorem CStarAlgebra.isNotUnital_iff :
     IsNotUnital A ↔ extremePoints ℝ (closedBall (0 : A) 1) = ∅ := by
