@@ -78,9 +78,8 @@ noncomputable def wedgePairingEquiv
       ExteriorAlgebra.basis_mul_of_disjoint b s (c s) (hdisj s)]
     rw [Set.powersetCard.coe_disjUnion, Finset.disjUnion_eq_union]
     rw [c_val, Finset.union_compl]
-    rcases Int.units_eq_one_or (permOfDisjoint (hdisj s)).sign with h | h
-    · simp [h]
-    · simp [h, Units.smul_def]
+    rcases Int.units_eq_one_or (permOfDisjoint (hdisj s)).sign with h | h <;>
+      simp [h, Units.smul_def]
   have hcomp_eq {s t : powersetCard (Fin (finrank K V)) k}
       (h : Disjoint t.val (c s).val) : t = s := by
     apply Subtype.ext
@@ -88,7 +87,7 @@ noncomputable def wedgePairingEquiv
       simpa [t.prop, (c s).prop, Fintype.card_fin] using hkl')).symm
   have hzero (s t : powersetCard (Fin (finrank K V)) k) (h : t ≠ s) :
       wedgeMul (bk t) (complementBasis s) = 0 := by
-    have hnotdisj : ¬Disjoint t.val (c s).val := fun h' ↦ h (hcomp_eq h')
+    have hnotdisj : ¬Disjoint t.val (c s).val := mt hcomp_eq h
     apply Subtype.ext
     change (bk t : ExteriorAlgebra K V) * (complementBasis s : ExteriorAlgebra K V) = 0
     rw [← ExteriorAlgebra.basis_eq_coe_basis b t, complementBasis_coe]
