@@ -261,14 +261,16 @@ lemma lift_comp_toCotangent (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) =
     Cotangent.lift f hf ∘ₗ I.toCotangent = f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
     Function.Surjective (Cotangent.lift f hf) ↔ Function.Surjective f := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← Cotangent.lift_comp_toCotangent f hf, LinearMap.coe_comp]
     exact Function.Surjective.comp h (toCotangent_surjective I)
-  · dsimp [Cotangent.lift]
-    exact QuotientAddGroup.lift_surjective_of_surjective _ _ h _
+  · refine QuotientAddGroup.lift_surjective_of_surjective _ _ h ?_
+    intro x hx
+    simp only [Submodule.mem_toAddSubgroup, AddMonoidHom.mem_ker] at hx ⊢
+    refine Submodule.smul_induction_on hx (fun r hr y _ ↦ hf ⟨r, hr⟩ y) fun x y hx hy ↦ ?_
+    simp [map_add, hx, hy, add_zero]
 
 end Lift
 
