@@ -20,7 +20,7 @@ and we would expect the stopped value to be equal to the limit random variable w
 (this is for example true if `X` is a uniformly integrable martingale).
 
 This limit process is always defined in mathlib as `𝓕.limitProcess X P`, with a default value
-when it does not make sense. In this file we define `𝓕.stoppedValue' X τ P ω` to be equal
+when it does not make sense. In this file we define `𝓕.stoppedValue X τ P ω` to be equal
 to `X (τ ω)` if `τ ω ≠ ⊤`, and `𝓕.limitProcess X P ω` otherwise.
 
 -/
@@ -43,9 +43,9 @@ section Def
 variable [TopologicalSpace E] [Zero E] [Preorder ι] {𝓕 : Filtration ι mΩ}
 
 open scoped Classical in
-/-- Given a stochastic process `X` and a stopping time `τ` `𝓕.stoppedValue' X τ P` is the process
+/-- Given a stochastic process `X` and a stopping time `τ` `𝓕.stoppedValue X τ P` is the process
 given by `X (τ ω)`, where `X ⊤` is given by `𝓕.limitProcess X P`. -/
-noncomputable def stoppedValue' (X : ι → Ω → E) (τ : Ω → WithTop ι)
+noncomputable def stoppedValue (X : ι → Ω → E) (τ : Ω → WithTop ι)
     (𝓕 : Filtration ι mΩ) (P : Measure Ω) (ω : Ω) : E :=
   if h : τ ω = ⊤
     then 𝓕.limitProcess X P ω
@@ -53,127 +53,119 @@ noncomputable def stoppedValue' (X : ι → Ω → E) (τ : Ω → WithTop ι)
       X ((τ ω).untop h) ω
 
 @[simp]
-lemma stoppedValue'_of_eq_top (hτ : τ ω = ⊤) :
-    𝓕.stoppedValue' X τ P ω = 𝓕.limitProcess X P ω := by
-  rw [stoppedValue', dif_pos hτ]
+lemma stoppedValue_of_eq_top (hτ : τ ω = ⊤) :
+    𝓕.stoppedValue X τ P ω = 𝓕.limitProcess X P ω := by
+  rw [stoppedValue, dite_eq_left hτ]
 
-lemma stoppedValue'_of_ne_top (hτ : τ ω ≠ ⊤) :
-    𝓕.stoppedValue' X τ P ω = X ((τ ω).untop hτ) ω := by
-  rw [stoppedValue', dif_neg hτ]
+lemma stoppedValue_of_ne_top (hτ : τ ω ≠ ⊤) :
+    𝓕.stoppedValue X τ P ω = X ((τ ω).untop hτ) ω := by
+  rw [stoppedValue, dite_eq_right hτ]
 
 @[simp]
-lemma stoppedValue'_of_eq_coe (hτ : τ ω = t) :
-    𝓕.stoppedValue' X τ P ω = X t ω := by
-  rw! [stoppedValue'_of_ne_top, hτ]
+lemma stoppedValue_of_eq_coe (hτ : τ ω = t) :
+    𝓕.stoppedValue X τ P ω = X t ω := by
+  rw! [stoppedValue_of_ne_top, hτ]
   · simp
   · simp [hτ]
-
-lemma stoppedValue'_eq_stoppedValue [Nonempty ι] (hτ : τ ω ≠ ⊤) :
-    𝓕.stoppedValue' X τ P ω = stoppedValue X τ ω := by
-  rw [stoppedValue'_of_ne_top hτ, stoppedValue, WithTop.untopA_eq_untop hτ]
 
 end Def
 
 @[gcongr]
-lemma stoppedValue'_congr [TopologicalSpace E] [Zero E] [T2Space E] [LinearOrder ι]
+lemma stoppedValue_congr [TopologicalSpace E] [Zero E] [T2Space E] [LinearOrder ι]
     {𝓕 : Filtration ι mΩ} (h : X ≡ᵐ[P] Y) :
-    𝓕.stoppedValue' X τ P =ᵐ[P] 𝓕.stoppedValue' Y τ P := by
+    𝓕.stoppedValue X τ P =ᵐ[P] 𝓕.stoppedValue Y τ P := by
   filter_upwards [h, 𝓕.limitProcess_congr h] with ω h1 h2
-  obtain _ | _ := eq_or_ne (τ ω) ⊤ <;> simp_all [stoppedValue'_of_ne_top]
+  obtain _ | _ := eq_or_ne (τ ω) ⊤ <;> simp_all [stoppedValue_of_ne_top]
 
-end Filtration
+-- section Measurability
 
-section Measurability
+-- /-! ### Strong measurability of the stopped value with respect to the stopped sigma-algebra -/
 
-/-! ### Strong measurability of the stopped value with respect to the stopped sigma-algebra -/
+-- variable [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι]
+--   {𝓕 : Filtration ι mΩ} [TopologicalSpace E] [TopologicalSpace.PseudoMetrizableSpace E]
 
-variable [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι]
-  {𝓕 : Filtration ι mΩ} [TopologicalSpace E] [TopologicalSpace.PseudoMetrizableSpace E]
+-- private lemma IsStoppingTime.stronglyMeasurable_limitProcess_indicator_eq_top
+--     [Zero E] (hτ : IsStoppingTime 𝓕 τ) :
+--     StronglyMeasurable[hτ.measurableSpace] ({ω | τ ω = ⊤}.indicator (𝓕.limitProcess X P)) := by
+--   borelize E
+--   rw [stronglyMeasurable_iff_measurable_separable]
+--   refine ⟨fun s hs ↦ (hτ.measurableSet _).2 ⟨?_, fun t ↦ ?_⟩,
+--     (𝓕.stronglyMeasurable_limit_process'.indicator hτ.measurableSet_eq_top).isSeparable_range⟩
+--   · exact hs.preimage (𝓕.stronglyMeasurable_limitProcess.measurable.indicator
+--       hτ.measurableSet_eq_top')
+--   have : MeasurableSet[𝓕 t] ({ω | 0 ∈ s} ∩ {ω | τ ω ≤ t}) := by
+--     by_cases h : 0 ∈ s
+--     · simpa [h] using hτ t
+--     · simp [h]
+--   convert this using 1
+--   ext ω
+--   simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_ofPred_eq, and_congr_left_iff]
+--   intro h
+--   have : τ ω ≠ ⊤ := ne_top_of_le_ne_top (by simp) h
+--   simp [Set.indicator, this]
 
-private lemma IsStoppingTime.stronglyMeasurable_limitProcess_indicator_eq_top
-    [Zero E] (hτ : IsStoppingTime 𝓕 τ) :
-    StronglyMeasurable[hτ.measurableSpace] ({ω | τ ω = ⊤}.indicator (𝓕.limitProcess X P)) := by
-  borelize E
-  rw [stronglyMeasurable_iff_measurable_separable]
-  refine ⟨fun s hs ↦ (hτ.measurableSet _).2 ⟨?_, fun t ↦ ?_⟩,
-    (𝓕.stronglyMeasurable_limit_process'.indicator hτ.measurableSet_eq_top).isSeparable_range⟩
-  · exact hs.preimage (𝓕.stronglyMeasurable_limitProcess.measurable.indicator
-      hτ.measurableSet_eq_top')
-  have : MeasurableSet[𝓕 t] ({ω | 0 ∈ s} ∩ {ω | τ ω ≤ t}) := by
-    by_cases h : 0 ∈ s
-    · simpa [h] using hτ t
-    · simp [h]
-  convert this using 1
-  ext ω
-  simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_ofPred_eq, and_congr_left_iff]
-  intro h
-  have : τ ω ≠ ⊤ := ne_top_of_le_ne_top (by simp) h
-  simp [Set.indicator, this]
+-- variable [MeasurableSpace ι] [BorelSpace ι]
 
-variable [MeasurableSpace ι] [BorelSpace ι]
+-- lemma stronglyMeasurable_stoppedValue [Nonempty ι]
+--     (h : IsStronglyProgressive 𝓕 X)
+--     (hRC : ∀ ω, _root_.IsRightContinuous (X · ω)) (hτ : IsStoppingTime 𝓕 τ) :
+--     StronglyMeasurable[hτ.measurableSpace] (stoppedValue X τ) := by
+--   borelize E
+--   refine stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_stoppedValue h hτ, ?_⟩
+--   refine (isSeparable_iUnion_range_of_stronglyMeasurable_of_isRightContinuous ?_ hRC).mono ?_
+--   · intro t
+--     exact h.stronglyAdapted t |>.mono (𝓕.le t)
+--   rintro - ⟨ω, rfl⟩
+--   simp [stoppedValue]
 
-lemma stronglyMeasurable_stoppedValue [Nonempty ι]
-    (h : IsStronglyProgressive 𝓕 X)
-    (hRC : ∀ ω, _root_.IsRightContinuous (X · ω)) (hτ : IsStoppingTime 𝓕 τ) :
-    StronglyMeasurable[hτ.measurableSpace] (stoppedValue X τ) := by
-  borelize E
-  refine stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_stoppedValue h hτ, ?_⟩
-  refine (isSeparable_iUnion_range_of_stronglyMeasurable_of_isRightContinuous ?_ hRC).mono ?_
-  · intro t
-    exact h.stronglyAdapted t |>.mono (𝓕.le t)
-  rintro - ⟨ω, rfl⟩
-  simp [stoppedValue]
+-- lemma Filtration.stronglyMeasurable_stoppedValue [Zero E] [OrderBot ι]
+--     (hX : IsStronglyProgressive 𝓕 X) (hRC : ∀ ω, _root_.IsRightContinuous (X · ω))
+--     (hτ : IsStoppingTime 𝓕 τ) :
+--     StronglyMeasurable[hτ.measurableSpace] (𝓕.stoppedValue X τ P) := by
+--   have : 𝓕.stoppedValue X τ P = {ω | τ ω = ⊤}.piecewise
+--       ({ω | τ ω = ⊤}.indicator (𝓕.limitProcess X P)) (stoppedValue X τ) := by
+--     ext ω
+--     obtain h | h := eq_or_ne (τ ω) ⊤
+--     · simp [h]
+--     · simp [h, stoppedValue_eq_stoppedValue]
+--   rw [this]
+--   refine hτ.stronglyMeasurable_limitProcess_indicator_eq_top.piecewise ?_
+--     (stronglyMeasurable_stoppedValue hX hRC hτ)
+--   refine (hτ.measurableSet _).2 ⟨hτ.measurableSet_eq_top', fun t ↦ ?_⟩
+--   convert MeasurableSet.empty
+--   ext
+--   simp +contextual
 
-lemma Filtration.stronglyMeasurable_stoppedValue' [Zero E] [OrderBot ι]
-    (hX : IsStronglyProgressive 𝓕 X) (hRC : ∀ ω, _root_.IsRightContinuous (X · ω))
-    (hτ : IsStoppingTime 𝓕 τ) :
-    StronglyMeasurable[hτ.measurableSpace] (𝓕.stoppedValue' X τ P) := by
-  have : 𝓕.stoppedValue' X τ P = {ω | τ ω = ⊤}.piecewise
-      ({ω | τ ω = ⊤}.indicator (𝓕.limitProcess X P)) (stoppedValue X τ) := by
-    ext ω
-    obtain h | h := eq_or_ne (τ ω) ⊤
-    · simp [h]
-    · simp [h, stoppedValue'_eq_stoppedValue]
-  rw [this]
-  refine hτ.stronglyMeasurable_limitProcess_indicator_eq_top.piecewise ?_
-    (stronglyMeasurable_stoppedValue hX hRC hτ)
-  refine (hτ.measurableSet _).2 ⟨hτ.measurableSet_eq_top', fun t ↦ ?_⟩
-  convert MeasurableSet.empty
-  ext
-  simp +contextual
+-- end Measurability
 
-end Measurability
-
-end MeasureTheory
-
-
-
-/-- Given a map `u : ι → Ω → E`, its stopped value with respect to the stopping
-time `τ` is the map `x ↦ u (τ ω) ω`. -/
-noncomputable
-def stoppedValue (u : ι → Ω → β) (τ : Ω → WithTop ι) : Ω → β := fun ω => u (τ ω).untopA ω
+variable [TopologicalSpace E] [Zero E] [Preorder ι] {𝓕 : Filtration ι mΩ}
+  {X : ι → Ω → E} {ω : Ω}
 
 @[simp]
-theorem stoppedValue_const (u : ι → Ω → β) (i : ι) : (stoppedValue u fun _ => i) = u i := rfl
+theorem stoppedValue_const (u : ι → Ω → E) (i : ι) : (𝓕.stoppedValue u (fun _ => i) P) = u i := by
+  rfl
 
-@[simp] lemma stoppedValue_comp {γ : Type*} (f : β → γ) :
-    stoppedValue (fun t ω ↦ f (u t ω)) τ = fun ω ↦ f (stoppedValue u τ ω) := rfl
+@[simp] lemma stoppedValue_comp_of_ne_top {γ : Type*} [Zero γ] [TopologicalSpace γ] (f : E → γ)
+    (hτ : τ ω ≠ ⊤) :
+    𝓕.stoppedValue (fun t ω ↦ f (X t ω)) τ P ω = f (𝓕.stoppedValue X τ P ω) := by
+  simp [stoppedValue_of_ne_top hτ]
 
-lemma stoppedValue_norm [SeminormedAddCommGroup β] :
-    stoppedValue (fun t ω ↦ ‖u t ω‖) τ = fun ω ↦ ‖stoppedValue u τ ω‖ := rfl
+lemma stoppedValue_norm [SeminormedAddCommGroup E] (hτ : τ ω ≠ ⊤) :
+    𝓕.stoppedValue (fun t ω ↦ ‖X t ω‖) τ P ω = ‖𝓕.stoppedValue X τ P ω‖ := by
+  rw [stoppedValue_comp_of_ne_top]
 
 @[to_additive (attr := simp)]
-lemma stoppedValue_inv [Inv β] : stoppedValue (u⁻¹) τ = (stoppedValue u τ)⁻¹ := rfl
+lemma stoppedValue_inv [Inv E] : stoppedValue (u⁻¹) τ = (stoppedValue u τ)⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-lemma stoppedValue_mul [Mul β] :
+lemma stoppedValue_mul [Mul E] :
     stoppedValue (u * v) τ = stoppedValue u τ * stoppedValue v τ := rfl
 
 @[to_additive (attr := simp)]
-lemma stoppedValue_div [Div β] :
+lemma stoppedValue_div [Div E] :
     stoppedValue (u / v) τ = stoppedValue u τ / stoppedValue v τ := rfl
 
-@[simp] lemma stoppedValue_const_smul {𝕜 : Type*} [SMul 𝕜 β] (c : 𝕜) :
+@[simp] lemma stoppedValue_const_smul {𝕜 : Type*} [SMul 𝕜 E] (c : 𝕜) :
     stoppedValue (c • u) τ = c • stoppedValue u τ := rfl
 
 @[simp] lemma stoppedValue_const_bot [Bot ι] :
@@ -215,10 +207,10 @@ theorem stronglyMeasurable_stoppedValue_of_le (h : IsStronglyProgressive f u)
   refine (Measurable.subtype_mk ?_).prodMk measurable_id
   exact (hτ.measurable_of_le hτ_le).untopA
 
-lemma measurableSet_preimage_stoppedValue_inter [PseudoMetrizableSpace β] [MeasurableSpace β]
-    [BorelSpace β]
+lemma measurableSet_preimage_stoppedValue_inter [PseudoMetrizableSpace E] [MeasurableSpace E]
+    [BorelSpace E]
     (hf_prog : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ)
-    {t : Set β} (ht : MeasurableSet t) (i : ι) :
+    {t : Set E} (ht : MeasurableSet t) (i : ι) :
     MeasurableSet[f i] (stoppedValue u τ ⁻¹' t ∩ {ω | τ ω ≤ i}) := by
   have h_str_meas : ∀ i, StronglyMeasurable[f i] (stoppedValue u fun ω => min (τ ω) i) := fun i =>
     stronglyMeasurable_stoppedValue_of_le hf_prog (hτ.min_const i) fun _ => min_le_right _ _
@@ -231,7 +223,7 @@ lemma measurableSet_preimage_stoppedValue_inter [PseudoMetrizableSpace β] [Meas
   intro h
   rw [min_eq_left h]
 
-theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
+theorem measurable_stoppedValue [PseudoMetrizableSpace E] [MeasurableSpace E] [BorelSpace E]
     (hf_prog : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
     Measurable[hτ.measurableSpace] (stoppedValue u τ) := by
   have h_str_meas : ∀ i, StronglyMeasurable[f i] (stoppedValue u fun ω => min (τ ω) i) := fun i =>
@@ -344,9 +336,9 @@ end StoppedValue
 
 /-! ### Filtrations indexed by `ℕ` -/
 
-variable {u : ℕ → Ω → β} {τ π : Ω → WithTop ℕ}
+variable {u : ℕ → Ω → E} {τ π : Ω → WithTop ℕ}
 
-theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ⊤) :
+theorem stoppedValue_sub_eq_sum [AddCommGroup E] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ⊤) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.Ico (τ ω).untopA (π ω).untopA, (u (i + 1) - u i)) ω := by
   ext ω
@@ -354,7 +346,7 @@ theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ �
   rw [Finset.sum_Ico_eq_sub _ h_le', Finset.sum_range_sub, Finset.sum_range_sub]
   simp [stoppedValue]
 
-theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) :
+theorem stoppedValue_sub_eq_sum' [AddCommGroup E] (hle : τ ≤ π) {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω ≤ i ∧ i < π ω} (u (i + 1) - u i)) ω := by
   have hπ_top ω : π ω ≠ ⊤ := fun h ↦ by specialize hbdd ω; simp [h] at hbdd
@@ -390,3 +382,5 @@ theorem stoppedValue_piecewise_const' {ι' α : Type*} [AddCommGroup α]
     stoppedValue f (s.piecewise (fun _ => i) fun _ => j) =
     s.indicator (f i) + sᶜ.indicator (f j) := by
   ext ω; rw [stoppedValue]; by_cases hx : ω ∈ s <;> simp [hx]
+
+end MeasureTheory.Filtration
