@@ -654,8 +654,8 @@ lemma qExpansionAddHom_apply (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : �
 /-- The `q`-expansion map is injective on modular forms of a fixed weight. -/
 lemma qExpansion_injective (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ} :
     Function.Injective (fun f : ModularForm Γ k ↦ qExpansion h f) :=
-  (injective_iff_map_eq_zero (qExpansionAddHom hh hΓ k)).2
-    fun f hf ↦ (ModularForm.qExpansion_eq_zero_iff hh hΓ f).1 hf
+  (injective_iff_map_eq_zero (qExpansionAddHom hh hΓ k)).mpr
+    fun f hf ↦ (ModularForm.qExpansion_eq_zero_iff hh hΓ f).mp hf
 
 @[simp]
 lemma qExpansion_inj (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ} {f g : ModularForm Γ k} :
