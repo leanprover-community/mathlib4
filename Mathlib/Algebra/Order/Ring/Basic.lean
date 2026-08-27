@@ -86,7 +86,7 @@ lemma pow_four_le_pow_two_of_pow_two_le {a b : R} (h : a ^ 2 ≤ b) : a ^ 4 ≤ 
   (pow_mul a 2 2).symm ▸ pow_le_pow_left₀ (sq_nonneg a) h 2
 
 lemma pow_add_pow_eq_zero_iff_of_even [NoZeroDivisors R]
-    (n : ℕ) (hn : n ≠ 0) (hn' : Even n) (x y : R) :
+    {n : ℕ} (hn : n ≠ 0) (hn' : Even n) (x y : R) :
     x ^ n + y ^ n = 0 ↔ x = 0 ∧ y = 0 := by
   obtain ⟨m, rfl⟩ := hn'
   simp only [pow_add]
