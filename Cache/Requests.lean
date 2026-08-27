@@ -469,6 +469,11 @@ inductive TransferDirection where
   | upload
   deriving Repr, DecidableEq
 
+instance : ToString TransferDirection where
+  toString
+    | .download => "download"
+    | .upload => "upload"
+
 /-- What one finished transfer amounts to. The index restricts each verdict to
 the direction where it has meaning. -/
 inductive TransferVerdict : TransferDirection → Type where
@@ -657,7 +662,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
       if s.decomp.decompFailed != 0 then
         msg := msg ++ s!" ({s.decomp.decompFailed} failed)"
     if s.failed != 0 then
-      msg := msg ++ s!", {s.failed} download failed"
+      msg := msg ++ s!", {s.failed} {dir} failed"
     -- Clear to end of line to avoid remnants from longer previous messages
     if useAnsi then
       msg := msg ++ "\x1b[K"
@@ -674,7 +679,8 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
       | .ok result =>
         let code? := result.getObjValAs? Nat "http_code"
         let fn? := result.getObjValAs? String "filename_effective"
-        -- `exitcode` joined `%{json}` in curl 7.75; an absent field reads as 0.
+        -- The per-transfer JSON report carries `exitcode` from curl 7.75 on;
+        -- an absent field reads as 0.
         let exitCode := (result.getObjValAs? Nat "exitcode").toOption.getD 0
         let verdict := classify code?.toOption exitCode
         if verdict matches .delivered then
@@ -731,7 +737,14 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg}: {errMsg}"
               return msg
             let msg? := result.getObjValAs? String "errormsg"
-            IO.println (mkFailureMsg code? fn? msg?)
+            -- A download is named by its part file, an upload by its URL —
+            -- query-stripped: a SAS put carries its token there.
+            let src? : Except String String := match dir with
+              | .download => fn?
+              | .upload =>
+                (result.getObjValAs? String "url_effective").map
+                  fun url => (url.splitOn "?").headD url
+            IO.println (mkFailureMsg code? src? msg?)
           -- The part file holds a truncated body (failure) or an error body
           -- (miss); remove it either way.
           if removeOnError then
@@ -1143,7 +1156,10 @@ def mkPutConfigContent (container : Option Container) (repo uploadURL : String)
     | .azureSas token => s!"?{token}"
     | _ => ""
   let l ← files.toList.mapM fun file : FilePath => do
-    pure s!"-T {file.toString}\nurl = {mkFileURL container repo uploadURL file.fileName.get! scope?}{token}"
+    -- The response body goes to the null device: stdout must carry only the
+    -- per-transfer JSON reports that `monitorCurl` parses.
+    pure s!"-T {file.toString}\nurl = {mkFileURL container repo uploadURL file.fileName.get! scope?}{token}\n\
+      -o {IO.nullDevice}"
   return "\n".intercalate l
 
 /-- Calls `curl` to send a set of files to the server. The destination container
@@ -1181,7 +1197,10 @@ def putFilesAbsolute
     -- put re-sends the same bytes.
     let args := args ++ #["-X", "PUT", "--parallel"] ++
       curlRetryArgs (supportLegacyCurl := false) ++
-      #["--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
+      -- `%{json}` prints a JSON report for each finished transfer. The
+      -- leading newline keeps each report on its own line even if something
+      -- else reaches stdout ahead of it.
+      #["--write-out", "\n%{json}\n", "--config", tempConfigFilePath.toString]
     let (s, _) ← monitorCurl args size "Uploaded" "speed_upload"
       (classifyUpload · · !overwrite) (removeOnError := false) (decompConfig := none)
     IO.FS.removeFile tempConfigFilePath
