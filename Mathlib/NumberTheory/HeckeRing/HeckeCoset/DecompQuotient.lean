@@ -23,7 +23,8 @@ namespace DoubleCoset
 
 section decomp
 
-/-- tbd -/
+/-- The decomposition quotient `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)`, indexing the left cosets of `Γ₂` inside
+the double coset `H₁gH₂`; see `DoubleCoset.doubleCoset_eq_iUnion_leftCosets`. -/
 abbrev DecompQuotient := H₁ ⧸ ((ConjAct.toConjAct g) • H₂).subgroupOf H₁
 
 namespace DecompQuotient
@@ -31,7 +32,8 @@ namespace DecompQuotient
 lemma nat_card_eq_relIndex :
     Nat.card (DecompQuotient H₁ H₂ g) = (ConjAct.toConjAct g • H₂).relIndex H₁ := rfl
 
-/-- The canonical map from `DecompQuotient` to left cosets. -/
+/-- The canonical map from the decomposition quotient `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` to left coset space
+`G ⧸ H₂`. -/
 def toLeftCoset :
     DecompQuotient H₁ H₂ g → G ⧸ H₂ :=
   Quotient.lift (fun x => (x * g : G)) fun _ _ h => by
@@ -47,12 +49,12 @@ lemma toLeftCoset_mk (x : H₁) :
   rfl
 
 lemma toLeftCoset_apply (x : DecompQuotient H₁ H₂ g) :
-    DecompQuotient.toLeftCoset H₁ H₂ g x = (x.out.val * g : G ⧸ H₂) := by
+    toLeftCoset H₁ H₂ g x = (x.out.val * g : G ⧸ H₂) := by
   nth_rw 1 [← Quotient.out_eq x]
   rfl
 
-lemma toLeftCoset.injective :
-    Function.Injective (DecompQuotient.toLeftCoset H₁ H₂ g) := by
+lemma toLeftCoset_injective :
+    Function.Injective (toLeftCoset H₁ H₂ g) := by
   intro i j hij
   rw [← QuotientGroup.out_eq' i, ← QuotientGroup.out_eq' j, QuotientGroup.eq]
   simpa [toLeftCoset_apply, QuotientGroup.eq, mul_assoc, Subgroup.mem_subgroupOf,
@@ -74,7 +76,8 @@ section degree
 
 variable {H₁ H₂} (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
 
-/-- tbd -/
+/-- The cardinality of `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)`, which depends only the correponding double coset
+`H₁gH₂`. -/
 noncomputable def Quotient.degree :
     ℕ := Quotient.liftOn x (fun x => (ConjAct.toConjAct x • H₂).relIndex H₁) fun a b hab => by
   obtain ⟨h₁, hh₁, h₂, hh₂, rfl⟩ := DoubleCoset.rel_iff.mp hab

@@ -15,27 +15,28 @@ public import Mathlib.Data.Finsupp.Defs
 
 @[expose] public section
 
-open DoubleCoset Pointwise
+open DoubleCoset
 
 variable {G : Type*} [Group G] {H₁ H₂ H₃ : Subgroup G} (g g' : G)
 
-namespace DoubleCoset.DecompQuotient
+namespace DoubleCoset
 
-lemma snd_eq_of_fst_eq {g g' d : G} {i : DecompQuotient H₁ H₂ g}
+lemma DecompQuotient.snd_eq_of_fst_eq {g g' d : G} {i : DecompQuotient H₁ H₂ g}
     {j₁ j₂ : DecompQuotient H₂ H₃ g'}
     (h₁ : ((i.out : G) * g * ((j₁.out : G) * g') : G ⧸ H₃) = (d : G ⧸ H₃))
     (h₂ : ((i.out : G) * g * ((j₂.out : G) * g') : G ⧸ H₃) = (d : G ⧸ H₃)) :
     j₁ = j₂ := by
-  apply DecompQuotient.toLeftCoset.injective
+  apply toLeftCoset_injective
   have h := h₁.trans h₂.symm
   simp only [toLeftCoset_apply, QuotientGroup.eq] at h ⊢
   simpa [mul_assoc] using h
 
-end DoubleCoset.DecompQuotient
+end DoubleCoset
 
 namespace HeckeCoset
 
-/-- tbd -/
+/-- The map sending a pair of coset representatives `(σᵢ, τⱼ)` to the mixed double coset
+`H₁ (σᵢ g₁ τⱼ g₂) H₃` of their product. -/
 noncomputable def mulMap (x : HeckeCoset H₁ H₂) (y : HeckeCoset H₂ H₃)
     (p : DecompQuotient H₁ H₂ x.rep × DecompQuotient H₂ H₃ y.rep) : HeckeCoset H₁ H₃ :=
   mk H₁ H₃ (p.1.out * x.rep * p.2.out * y.rep)
@@ -49,7 +50,7 @@ lemma mulMap_eq_of_mk_eq (x : HeckeCoset H₁ H₂) (y : HeckeCoset H₂ H₃)
   exact ⟨1, H₁.one_mem, ((p.1.out * x.rep * p.2.out * y.rep)⁻¹ * z.rep), by
     simpa [mul_assoc] using QuotientGroup.eq.mp h, by simp [mul_assoc]⟩
 
-/-- tbd -/
+/-- Shimura's multiplicity descended to Hecke double cosets. -/
 noncomputable def multiplicity (x : HeckeCoset H₁ H₂) (y : HeckeCoset H₂ H₃) :
     HeckeCoset H₁ H₃ →₀ ℕ :=
   Finsupp.ofSupportFinite

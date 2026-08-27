@@ -20,7 +20,7 @@ variable {G : Type*} [Group G] {H H₁ H₂ : Subgroup G}
 
 namespace DoubleCoset
 
-/-- tbd -/
+/-- The map sending `H₁gH₂` to `H₂g⁻¹H₁`. -/
 def inv (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
     DoubleCoset.Quotient (H₂ : Set G) (H₁ : Set G) :=
   Quotient.liftOn x (fun x => DoubleCoset.mk H₂ H₁ x⁻¹) fun a b hab => by
@@ -44,7 +44,7 @@ lemma inv_inv (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
 
 end DoubleCoset
 
-/-- tbd -/
+/-- A subgroup `H` is called Hecke unimodular if `Nat.card HgH = Nat.card Hg⁻¹H` for any `g`. -/
 class IsHeckeUnimodular (H : Subgroup G) : Prop where
   degree_eq_inv_degree : ∀ (x : DoubleCoset.Quotient (H : Set G) (H : Set G)),
     x.degree = (inv x).degree
@@ -57,7 +57,7 @@ namespace HeckeCoset
 
 variable [IsHeckeUnimodular H]
 
-/-- tbd -/
+/-- The map sending `HgH` to `Hg⁻¹H`. -/
 def inv (x : HeckeCoset H H) :
     HeckeCoset H H := ⟨DoubleCoset.inv x, by simp [← IsHeckeUnimodular.degree_eq_inv_degree]⟩
 
@@ -82,7 +82,7 @@ lemma inv_eq_iff {x y : HeckeCoset H H} :
   ⟨by intro rfl; simp, by intro rfl; simp⟩
 
 @[simp]
-lemma inv_degree_eq_degree (x : HeckeCoset H H) :
+lemma inv_degree (x : HeckeCoset H H) :
     x.inv.degree = x.degree := by
   rw [← mk_rep x, mk_degree, ← DoubleCoset.mk_degree, IsHeckeUnimodular.degree_eq_inv_degree]
   simp [inv, mk_degree, DoubleCoset.mk_degree]
@@ -92,7 +92,7 @@ lemma diag_one_inv_eq_self :
   simp
 
 private lemma multiplicity_self_inv_mk_one_eq_degree (x : HeckeCoset H H) :
-    x.multiplicity x.inv (mk H H 1) = x.degree := by classical
+    x.multiplicity x.inv (mk H H 1) = x.degree := by
   simp only  [multiplicity_apply]
   obtain ⟨h₁, hh₁, h₂, hh₂, hinv⟩ := mk_eq_iff.mp
     (show mk H H x.rep⁻¹ = mk H H x.inv.rep by simp [mk_inv_rep])

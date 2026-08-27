@@ -22,7 +22,7 @@ section triple
 
 open DoubleCoset
 
-/-- tbd -/
+/-- `(H₁, H₂, g)` is a Hecke triple if `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` is finite. -/
 @[mk_iff] class IsHeckeTriple : Prop where
   degreeNeZero : (DoubleCoset.mk H₁ H₂ g).degree ≠ 0
 
@@ -59,7 +59,7 @@ instance instIsHeckeTriple_diag_mul (H : Subgroup G) (g g' : G)
 
 end triple
 
-/-- tbd -/
+/-- The collection of double cosets admitting finite decomposition into left cosets. -/
 @[implicit_reducible]
 def HeckeCoset := {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G) // x.degree ≠ 0}
 
@@ -69,12 +69,13 @@ namespace HeckeCoset
 
 variable {H₁ H₂ H₃}
 
-/-- tbd -/
+/-- A representative of the underlying double coset in the ambient group. -/
 noncomputable def rep (x : HeckeCoset H₁ H₂) : G := x.val.out
 
 lemma rep_eq_out (x : HeckeCoset H₁ H₂) : x.rep = x.val.out := rfl
 
-/-- tbd -/
+/-- The cardinality of `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` where `g` is a representative of the underlying double
+coset. -/
 noncomputable abbrev degree (x : HeckeCoset H₁ H₂) : ℕ := x.val.degree
 
 @[simp]
@@ -88,7 +89,7 @@ lemma degree_eq_rep (x : HeckeCoset H₁ H₂) :
 instance (x : HeckeCoset H₁ H₂) : IsHeckeTriple H₁ H₂ x.rep := by
   simp [isHeckeTriple_iff, rep_eq_out, DoubleCoset.mk_degree, ← DoubleCoset.degree_eq_out]
 
-/-- tbd -/
+/-- The Hecke double coset represented by `g`. -/
 abbrev mk (H₁ H₂ : Subgroup G) (g : G) [IsHeckeTriple H₁ H₂ g] :
     HeckeCoset H₁ H₂ := ⟨DoubleCoset.mk H₁ H₂ g, IsHeckeTriple.degreeNeZero⟩
 
