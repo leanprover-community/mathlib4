@@ -214,33 +214,24 @@ theorem pderiv_inv' {i : σ} [Field R] (f : MvPowerSeries σ R) :
 
 section Substitution
 
-open Filter WithPiTopology
-
-variable {τ S : Type*}
-
-section Continuity
-
-variable [CommSemiring R] [TopologicalSpace R] [ContinuousMul R]
+open Filter WithPiTopology Finset
 
 /-- The formal partial derivative is continuous for the product topology. -/
 @[fun_prop]
-theorem continuous_pderiv (i : σ) :
+theorem continuous_pderiv [CommSemiring R] [TopologicalSpace R] [ContinuousMul R] (i : σ) :
     Continuous (pderiv R i : MvPowerSeries σ R → MvPowerSeries σ R) := by
   refine continuous_pi_iff.mpr fun d ↦ ?_
   simp only [← coeff_apply, coeff_pderiv]
   fun_prop
 
-end Continuity
-
-variable [CommRing R] [CommRing S] [Algebra R S] {a : σ → MvPowerSeries τ S}
+variable {τ S : Type*} [CommRing R] [CommRing S] [Algebra R S] {a : σ → MvPowerSeries τ S}
 
 /-- Only finitely many members of a substitutable family `a` contribute to a given coefficient
 of a product `u * pderiv S i (a j)`. -/
 theorem eventually_coeff_mul_pderiv_eq_zero (ha : HasSubst a) (i : τ) (e : τ →₀ ℕ) :
     ∀ᶠ j in cofinite, ∀ u, coeff e (u * pderiv S i (a j)) = 0 := by
   classical
-  have h : ∀ᶠ j in cofinite, ∀ x ∈ Finset.antidiagonal e,
-      coeff (x.2 + single i 1) (a j) = 0 := by
+  have h : ∀ᶠ j in cofinite, ∀ x ∈ Finset.antidiagonal e, coeff (x.2 + single i 1) (a j) = 0 := by
     rw [eventually_all_finset]
     exact fun x _ ↦ eventually_cofinite.mpr (ha.coeff_zero _)
   filter_upwards [h] with j hj u
@@ -292,11 +283,11 @@ theorem pderiv_aeval_tsum (a : σ → MvPowerSeries τ S) (i : τ) (p : MvPolyno
       obtain h | h := eq_or_ne k j
       · simp [h]
       · simp [MvPolynomial.pderiv_X_of_ne h.symm, h]
-    trans (∑' k : σ, (if k = j then MvPolynomial.aeval a p else 0) * pderiv S i (a k)) +
-      ∑' k : σ, a j * (MvPolynomial.aeval a ((MvPolynomial.pderiv k) p) * pderiv S i (a k))
+    trans (∑' k, (if k = j then p.aeval a else 0) * pderiv S i (a k)) +
+      ∑' k, a j * ((p.pderiv k).aeval a * pderiv S i (a k))
     · simp [tsum_ite_eq, (summable_aeval_pderiv a i p).tsum_mul_left, ← hp, Derivation.leibniz]
     · rw [← Summable.tsum_add _ ((summable_aeval_pderiv a i p).mul_left _)]
-      · exact tsum_congr fun k ↦ by rw [key, add_mul, mul_assoc]
+      · simp_rw [key, add_mul, mul_assoc]
       · exact summable_of_ne_finset_zero (s := {j}) fun k hk ↦ by simp_all
 
 variable [UniformSpace R] [DiscreteUniformity R]
