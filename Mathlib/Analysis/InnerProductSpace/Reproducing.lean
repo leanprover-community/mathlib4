@@ -467,7 +467,7 @@ omit [CompleteSpace V] in
 variable (𝕜) in
 @[simp]
 lemma outerKernel_apply (f : X → V) (x y) :
-    (outerKernel 𝕜 f) x y = rankOne 𝕜 (f x) (f y) :=
+    outerKernel 𝕜 f x y = rankOne 𝕜 (f x) (f y) :=
   coe_inj.mp rfl
 
 omit [CompleteSpace V] in
