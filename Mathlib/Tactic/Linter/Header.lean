@@ -276,9 +276,24 @@ def headerToPreludeTk? (header : TSyntax ``Parser.Module.header) : Option Syntax
 
 namespace Style.Header
 
+/--
+The set of files outside the `Mathlib` package to run the header style linter on,
+because they are files that test the linter.
+-/
+def headerTestFiles : NameSet := .ofList [
+  `MathlibTest.Linter.Header.Basic,
+  `MathlibTest.Linter.Header.Fail,
+  `MathlibTest.Linter.Header.Verso,
+  `MathlibTest.DirectoryDependencyLinter.Test]
+
 /-- Check the `Syntax` `imports` for broad imports:
-`Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`. -/
+`Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`.
+
+This currently returns immediately if `mainModule` is not in `Mathlib` (or a test file).
+TODO: make this extensible for use in other libraries. -/
 def broadImportsCheck (imports : Array ImportRef) (mainModule : Name) : CommandElabM Unit := do
+  unless mainModule.getRoot == `Mathlib || headerTestFiles.contains mainModule do
+    return
   for i in imports do
     match i.module with
     | `Mathlib.Tactic | `Lean | `Lean.Meta | `Lean.Elab | `Lean.Elab.Tactic | `Std =>
@@ -315,16 +330,6 @@ def duplicateImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
         m!"Duplicate imports: `{imp.module}` already imported"
     else
       importsSoFar := importsSoFar.insert imp.toImport
-
-/--
-The set of files outside the `Mathlib` package to run the header style linter on,
-because they are files that test the linter.
--/
-def headerTestFiles : NameSet := .ofList [
-  `MathlibTest.Linter.Header.Basic,
-  `MathlibTest.Linter.Header.Fail,
-  `MathlibTest.Linter.Header.Verso,
-  `MathlibTest.DirectoryDependencyLinter.Test]
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
