@@ -19,7 +19,7 @@ iff `x` is an accumulation point of the set, see `uniqueDiffWithinAt_iff_accPt`.
 
 public section
 
-open Filter Metric Set
+open Filter Set
 open scoped Topology
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜]

@@ -51,20 +51,34 @@ variable (D : DescentAux A B)
 variable (R)
 
 /-- (Implementation detail): The finite type `R`-algebra. -/
-def subalgebra (D : DescentAux A B) : Subalgebra R A :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def subalgebra (D : DescentAux A B) : Subalgebra R A :=
   Algebra.adjoin R
     (D.P.coeffs ∪
       ((⋃ i, (D.h i).coeffs) ∪
        (⋃ i, ⋃ x ∈ (D.q i).coeffs, x.coeffs) ∪
        (⋃ i, ⋃ x ∈ (D.p i).coeffs, x.coeffs)) : Set A)
 
-instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adjoin _ _)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance : CommRing (D.subalgebra R) :=
+  inferInstanceAs <| CommRing (Algebra.adjoin _ _)
 
-instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance algebra₀ : Algebra R (D.subalgebra R) :=
+  inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
 
-instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance algebra₁ : Algebra (D.subalgebra R) A :=
+  inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
 
-instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance algebra₂ : Algebra (D.subalgebra R) B :=
+  inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
 
 instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
@@ -236,13 +250,6 @@ public theorem exists_subalgebra_fg [Smooth A B] :
   exact ⟨D.subalgebra R, P.ModelOfHasCoeffs (D.subalgebra R), inferInstance, inferInstance,
     D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
-
-@[deprecated exists_subalgebra_fg (since := "2026-01-07")]
-public theorem exists_subalgebra_finiteType [Smooth A B] :
-    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
-      FiniteType R A₀ ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
-  obtain ⟨A₀, B₀, _, _, h0, h1, h2⟩ := exists_subalgebra_fg R A B
-  exact ⟨A₀, B₀, inferInstance, inferInstance, (Subalgebra.fg_iff_finiteType A₀).mp h0, h1, h2⟩
 
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
