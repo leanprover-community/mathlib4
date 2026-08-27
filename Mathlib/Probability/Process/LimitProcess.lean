@@ -15,11 +15,12 @@ open scoped Topology ENNReal NNReal
 
 namespace MeasureTheory.Filtration
 
-variable {ι Ω E : Type*} {mΩ : MeasurableSpace Ω} {X : ι → Ω → E} {P : Measure Ω}
+variable {ι Ω E : Type*} {mΩ : MeasurableSpace Ω} [TopologicalSpace E] [Preorder ι]
+  {P : Measure Ω} {𝓕 : Filtration ι mΩ} {X Y : ι → Ω → E}
 
 section Def
 
-variable [Zero E] [TopologicalSpace E] [Preorder ι] {𝓕 : Filtration ι mΩ}
+variable [Zero E]
 
 open scoped Classical in
 /-- Given a process `X` and a filtration `𝓕`, if `X` converges to some `Y` almost everywhere and
@@ -29,9 +30,15 @@ This definition is used to phrase the a.e. martingale convergence theorem
 `Submartingale.ae_tendsto_limitProcess` where an L¹-bounded submartingale `X` adapted to `𝓕`
 converges to `limitProcess X 𝓕 P` `P`-almost everywhere. -/
 noncomputable def limitProcess (X : ι → Ω → E) (𝓕 : Filtration ι mΩ) (P : Measure Ω) :=
-  if h : ∃ Y : Ω → E,
-    StronglyMeasurable[⨆ t, 𝓕 t] Y ∧ ∀ᵐ ω ∂P, Tendsto (X · ω) atTop (𝓝 (Y ω)) then
+  if h : ∃ g : Ω → E,
+    StronglyMeasurable[⨆ t, 𝓕 t] g ∧ ∀ᵐ ω ∂P, Tendsto (X · ω) atTop (𝓝 (g ω)) then
   Classical.choose h else 0
+
+lemma ae_tendsto_limitProcess_of_exists
+    (h : ∃ g : Ω → E, StronglyMeasurable[⨆ t, 𝓕 t] g ∧ ∀ᵐ ω ∂P, Tendsto (X · ω) atTop (𝓝 (g ω))) :
+    ∀ᵐ ω ∂P, Tendsto (X · ω) atTop (𝓝 (𝓕.limitProcess X P ω)) := by
+  rw [limitProcess, dite_eq_left h]
+  exact h.choose_spec.2
 
 theorem stronglyMeasurable_limitProcess : StronglyMeasurable[⨆ t, 𝓕 t] (limitProcess X 𝓕 P) := by
   rw [limitProcess]
@@ -56,13 +63,14 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
 
 end Def
 
-variable {X Y : ι → Ω → E} [LinearOrder ι] [Nonempty ι] {𝓕 : Filtration ι mΩ}
+variable [IsDirectedOrder ι] [Nonempty ι] [T2Space E]
 
 section Basic
 
-variable [TopologicalSpace E] [Zero E] [T2Space E]
+variable [Zero E]
 
-/-- If `X` converges almost surely towards  -/
+/-- If `X` converges almost surely towards `g` a `⨆ t, 𝓕 t`-strongly measurable function,
+then `g` is almost surely equal to `𝓕.limitProcess X P`. -/
 lemma limitProcess_ae_eq {X : ι → Ω → E} {g : Ω → E}
     (mg : StronglyMeasurable[⨆ t, 𝓕 t] g) (hg : ∀ᵐ ω ∂P, Tendsto (X · ω) atTop (𝓝 (g ω))) :
     𝓕.limitProcess X P =ᵐ[P] g := by
@@ -90,18 +98,17 @@ lemma limitProcess_congr {X Y : ι → Ω → E} (hXY : X ≡ᵐ[P] Y) :
   filter_upwards [hg2, hXY] with ω h1 h2 using h1.congr (fun t ↦ (h2 t).symm)
 
 lemma limitProcess_const (c : E) :
-    𝓕.limitProcess (fun _ _ ↦ c) P =ᵐ[P] (fun _ ↦ c) := by
-  apply limitProcess_ae_eq stronglyMeasurable_const (by simp)
+    𝓕.limitProcess (fun _ _ ↦ c) P =ᵐ[P] (fun _ ↦ c) :=
+  limitProcess_ae_eq stronglyMeasurable_const (by simp)
 
 lemma limitProcess_zero :
     𝓕.limitProcess (0 : ι → Ω → E) P =ᵐ[P] 0 := limitProcess_const 0
 
 end Basic
 
-variable [NormedAddCommGroup E]
-
 @[to_fun limitProcess_fun_smul]
-lemma limitProcess_smul [NormedSpace ℝ E] (X : ι → Ω → E) (c : ℝ) :
+lemma limitProcess_smul [Zero E] {R : Type*} [DivisionRing R] [MulActionWithZero R E]
+    [ContinuousConstSMul R E] (X : ι → Ω → E) (c : R) :
     𝓕.limitProcess (c • X) P =ᵐ[P] c • 𝓕.limitProcess X P := by
   obtain rfl | hc := eq_or_ne c 0
   · simp [limitProcess_zero]
@@ -120,7 +127,7 @@ lemma limitProcess_smul [NormedSpace ℝ E] (X : ι → Ω → E) (c : ℝ) :
   · simp
 
 @[to_fun limitProcess_fun_neg]
-lemma limitProcess_neg (X : ι → Ω → E) :
+lemma limitProcess_neg [AddGroup E] [ContinuousNeg E] (X : ι → Ω → E) :
     𝓕.limitProcess (-X) P =ᵐ[P] -𝓕.limitProcess X P := by
   nth_rw 2 [Filtration.limitProcess]
   split_ifs with h
