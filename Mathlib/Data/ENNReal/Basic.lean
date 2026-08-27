@@ -175,7 +175,7 @@ noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }�
 
 noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0} {n : ℕ}
+variable {a b c : ℝ≥0∞} {r p q : ℝ≥0} {n : ℕ}
 
 instance : IsOrderedMonoid ℝ≥0∞ where
   mul_le_mul_left _ _ := mul_le_mul_left

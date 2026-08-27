@@ -171,7 +171,7 @@ theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
     ((tensorFunc C).obj Z).map f = inclusion.map f ▷ Z := by
   cases n
   cases n'
-  rcases f with ⟨⟨h⟩⟩
+  rcases f with ⟨h⟩
   dsimp at h
   subst h
   simp
@@ -230,7 +230,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def normalizeIsoAux (X : F C) : (tensorFunc C).obj X ≅ (normalize' C).obj X :=
   NatIso.ofComponents (normalizeIsoApp C X)
     (by
-      rintro ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩
+      rintro ⟨X⟩ ⟨Y⟩ ⟨f⟩
       dsimp at f
       subst f
       dsimp
