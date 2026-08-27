@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Basic
 
+import Mathlib.Data.Set.Image
+
 /-!
 # Matrix and vector notation
 
