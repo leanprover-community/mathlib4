@@ -89,8 +89,7 @@ private lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
   -- One can apply slash-equivariance of Serre derivative after rewriting in terms of `∂₂`
   have h₁₂ : serreDerivative 1 E2 = serreDerivative 2 E2 + (12⁻¹ : ℂ) • (E2 * E2) := by
     ext z
-    simp only [serreDerivative_apply, Pi.add_apply, Pi.smul_apply, Pi.mul_apply, smul_eq_mul]
-    ring
+    simp; ring
   have hslash : serreDerivative 1 E2 ∣[(4 : ℤ)] γ =
       serreDerivative 2 (E2 ∣[(2 : ℤ)] γ) +
         (12⁻¹ : ℂ) • ((E2 ∣[(2 : ℤ)] γ) * (E2 ∣[(2 : ℤ)] γ)) := by
