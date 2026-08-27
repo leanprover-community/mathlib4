@@ -47,3 +47,5 @@ unsafe def elabEvalExpr : Lean.Elab.Term.TermElab
 | _ => fun _ => Elab.throwUnsupportedSyntax
 
 end Mathlib.Meta
+
+-- ci-dev: exercise the cache upload path
