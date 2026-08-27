@@ -6,8 +6,8 @@ Authors: Kevin Buzzard, Antoine Labelle
 module
 
 public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.Basic.UnivLE
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
-public import Mathlib.Logic.UnivLE
 
 /-!
 
@@ -54,7 +54,7 @@ projective module
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -67,6 +67,7 @@ from the free `R`-module on `P` to `P` splits. -/
 /-- An R-module is projective if it is a direct summand of a free module, or equivalently
 if maps from the module lift along surjections. There are several other equivalent
 definitions. -/
+@[wikidata Q942423]
 class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
     Prop where
   out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.linearCombination R id) s

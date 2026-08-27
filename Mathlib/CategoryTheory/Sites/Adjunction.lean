@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Adjunction.Whiskering
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 /-!
+# Adjunctions between categories of sheaves
 
 In this file, we show that an adjunction `G ⊣ F` induces an adjunction between
 categories of sheaves. We also show that `G` preserves sheafification.
@@ -21,7 +22,7 @@ categories of sheaves. We also show that `G` preserves sheafification.
 
 namespace CategoryTheory
 
-open GrothendieckTopology Limits Opposite Functor
+open GrothendieckTopology Limits Opposite CategoryTheory.Functor
 
 universe v₁ v₂ u₁ u₂
 

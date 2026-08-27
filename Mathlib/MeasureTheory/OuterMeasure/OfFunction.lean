@@ -42,7 +42,7 @@ assert_not_exists Module.Basis
 
 noncomputable section
 
-open Set Function Filter
+open Set Function
 open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory
@@ -230,7 +230,7 @@ theorem restrict_ofFunction (s : Set α) (hm : Monotone m) :
 theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) : c • OuterMeasure.ofFunction m m_empty =
     OuterMeasure.ofFunction (c • m) (by simp [m_empty]) := by
   ext1 s
-  haveI : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_iUnion (fun _ => s) 0⟩⟩
+  have : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_iUnion (fun _ => s) 0⟩⟩
   simp only [smul_apply, ofFunction_apply, ENNReal.tsum_mul_left, Pi.smul_apply, smul_eq_mul,
   iInf_subtype']
   rw [ENNReal.mul_iInf fun h => (hc h).elim]
@@ -391,7 +391,7 @@ the minimum value of a measure on that set: it is the infimum sum of measures of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem biInf_apply {ι} {I : Set ι} (hI : I.Nonempty) (m : ι → OuterMeasure α) (s : Set α) :
     (⨅ i ∈ I, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i ∈ I, m i (t n) := by
-  haveI := hI.to_subtype
+  have := hI.to_subtype
   simp only [← iInf_subtype'', iInf_apply]
 
 /-- The value of the Infimum of a nonempty family of outer measures on a set is not simply
@@ -433,7 +433,7 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
 
 theorem map_biInf_comap {ι β} {I : Set ι} (hI : I.Nonempty) {f : α → β} (m : ι → OuterMeasure β) :
     map f (⨅ i ∈ I, comap f (m i)) = ⨅ i ∈ I, map f (comap f (m i)) := by
-  haveI := hI.to_subtype
+  have := hI.to_subtype
   rw [← iInf_subtype'', ← iInf_subtype'']
   exact map_iInf_comap _
 
@@ -450,7 +450,7 @@ theorem restrict_iInf {ι} [Nonempty ι] (s : Set α) (m : ι → OuterMeasure �
 
 theorem restrict_biInf {ι} {I : Set ι} (hI : I.Nonempty) (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨅ i ∈ I, m i) = ⨅ i ∈ I, restrict s (m i) := by
-  haveI := hI.to_subtype
+  have := hI.to_subtype
   rw [← iInf_subtype'', ← iInf_subtype'']
   exact restrict_iInf _ _
 

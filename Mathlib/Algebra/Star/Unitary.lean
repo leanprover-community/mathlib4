@@ -34,7 +34,7 @@ unitary
 -/
 def unitary (R : Type*) [Monoid R] [StarMul R] : Submonoid R where
   carrier := { U | star U * U = 1 ∧ U * star U = 1 }
-  one_mem' := by simp only [mul_one, and_self_iff, Set.mem_setOf_eq, star_one]
+  one_mem' := by simp only [mul_one, and_self_iff, Set.mem_ofPred_eq, star_one]
   mul_mem' := @fun U B ⟨hA₁, hA₂⟩ ⟨hB₁, hB₂⟩ => by
     refine ⟨?_, ?_⟩
     · calc
@@ -188,6 +188,23 @@ instance coe_isStarNormal (u : unitary R) : IsStarNormal (u : R) where
 @[aesop 10% apply (rule_sets := [CStarAlgebra])]
 lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStarNormal u :=
   coe_isStarNormal ⟨u, hu⟩
+
+lemma commute_self_star (u : unitary R) : Commute u (star u) := by simp [commute_iff_eq]
+lemma commute_star_self (u : unitary R) : Commute (star u) u := by simp [commute_iff_eq]
+
+lemma _root_.commute_unitary_star_self {u : R} (hu : u ∈ unitary R) : Commute (star u) u :=
+  isStarNormal_of_mem_unitary hu |>.star_comm_self
+
+lemma _root_.commute_unitary_self_star {u : R} (hu : u ∈ unitary R) : Commute u (star u) :=
+  commute_unitary_star_self hu |>.symm
+
+lemma _root_.commute_unitary_iff_star_left_conjugate {x u : R} (hu : u ∈ unitary R) :
+    Commute u x ↔ star u * x * u = x := by
+  simpa using! (Unitary.toUnits ⟨u, hu⟩).commute_iff_inv_mul_cancel
+
+lemma _root_.commute_unitary_iff_star_right_conjugate {x u : R} (hu : u ∈ unitary R) :
+    Commute u x ↔ u * x * star u = x := by
+  simpa using! (Unitary.toUnits ⟨u, hu⟩).commute_iff_mul_inv_cancel
 
 end Monoid
 

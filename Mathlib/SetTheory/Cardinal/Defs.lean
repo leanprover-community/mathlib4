@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Data.ULift
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.PPWithUniv
@@ -54,7 +55,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Monoid
 
-open List Function Set
+open List
 
 noncomputable section
 
