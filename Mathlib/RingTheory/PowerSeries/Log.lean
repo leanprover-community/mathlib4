@@ -102,7 +102,6 @@ variable (A) in
 theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
   rw [logOf_eq, add_sub_cancel_left, X_subst]
 
-
 /-! ## Log and exp as inverses -/
 
 omit [Algebra ℚ A] in
