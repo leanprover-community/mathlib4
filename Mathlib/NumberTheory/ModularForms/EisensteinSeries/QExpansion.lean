@@ -358,12 +358,4 @@ theorem EisensteinSeries.tendsto_E_atImInfty {k : ℕ} (hk : 3 ≤ k := by norm_
   simpa [E_qExpansion_coeff_zero hk hk2] using
     ModularFormClass.tendsto_atImInfty (E hk) one_pos one_mem_strictPeriods_SL
 
-/-- The normalised Eisenstein series `E₄` tends to `1` at `i∞`. -/
-theorem EisensteinSeries.tendsto_E₄_atImInfty : Tendsto (E₄ : ℍ → ℂ) atImInfty (𝓝 1) :=
-  tendsto_E_atImInfty (k := 4)
-
-/-- The normalised Eisenstein series `E₆` tends to `1` at `i∞`. -/
-theorem EisensteinSeries.tendsto_E₆_atImInfty : Tendsto (E₆ : ℍ → ℂ) atImInfty (𝓝 1) :=
-  tendsto_E_atImInfty (k := 6)
-
 end NonZero

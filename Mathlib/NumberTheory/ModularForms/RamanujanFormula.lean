@@ -58,15 +58,15 @@ private lemma serreDerivative_eq_smul {k' : ℤ} {κ l L : ℂ} {g F : ModularFo
 /-- **Ramanujan's formula for `E₄`**: `∂₄ E₄ = -E₆ / 3`. -/
 theorem serreDerivative_E₄ : serreDerivative 4 E₄ = (-3⁻¹ : ℂ) • E₆ :=
   serreDerivative_eq_smul (F := serreDerivativeMF 4 E₄) rfl levelOne_weight_six_rank_one
-    E₄.holo' tendsto_E₄_atImInfty tendsto_E₆_atImInfty (by norm_num)
+    E₄.holo' tendsto_E_atImInfty tendsto_E_atImInfty (by norm_num)
 
 /-- **Ramanujan's formula for `E₆`**: `∂₆ E₆ = -E₄² / 2`. -/
 theorem serreDerivative_E₆ : serreDerivative 6 E₆ = (-2⁻¹ : ℂ) • E₄ ^ 2 :=
   have hlim : Tendsto (fun z ↦ E₄ z ^ 2) atImInfty (𝓝 1) := by
-    simpa using tendsto_E₄_atImInfty.pow 2
+    simpa using (tendsto_E_atImInfty).pow 2
   coe_pow E₄ 2 ▸ serreDerivative_eq_smul (F := serreDerivativeMF 6 E₆) (g := E₄.pow 2) rfl
     (by simpa [Nat.ModEq] using dimension_level_one 8 ⟨4, rfl⟩) E₆.holo'
-    tendsto_E₆_atImInfty hlim (by norm_num)
+    tendsto_E_atImInfty hlim (by norm_num)
 
 /-- The normalized derivative of the modular defect `D2 γ` is `-(γ₁₀)² / denom γ ²`. -/
 lemma normalizedDerivOfComplex_D2 (γ : SL(2, ℤ)) :
@@ -124,7 +124,7 @@ def serreDerivativeOneE2 : ModularForm 𝒮ℒ 4 where
 /-- **Ramanujan's formula for `E₂`**: `∂₁ E₂ = -E₄ / 12`. -/
 theorem serreDerivative_E₂ : serreDerivative 1 E2 = (-12⁻¹ : ℂ) • E₄ :=
   serreDerivative_eq_smul (F := serreDerivativeOneE2) rfl levelOne_weight_four_rank_one
-    E2_mdifferentiable tendsto_E2_atImInfty tendsto_E₄_atImInfty (by norm_num)
+    E2_mdifferentiable tendsto_E2_atImInfty tendsto_E_atImInfty (by norm_num)
 
 /-! ### Ramanujan's formulas in terms of `D` -/
 
