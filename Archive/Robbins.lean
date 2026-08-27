@@ -3,9 +3,11 @@ Copyright (c) 2026 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Huntington and Robbins algebras
@@ -43,6 +45,8 @@ Some differences include:
   and `lia` for numeric comparisons. In particular, we do not use `grind`.
   Wampler-Doty's formalisation relies a lot on `metis`, a rough Isabelle equivalent of `grind`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -243,9 +247,9 @@ lemma exists_one : a + -a = b + -b := by
     ← huntington (-a) (-b), ← huntington a (-b)]
   ac_rfl
 
-private instance mul : Mul α := ⟨fun a b ↦ -(-a + -b)⟩
-private instance zero : Zero α := ⟨-(default + -default)⟩
-private instance one : One α := ⟨default + -default⟩
+instance mul : Mul α := ⟨fun a b ↦ -(-a + -b)⟩
+instance zero : Zero α := ⟨-(default + -default)⟩
+instance one : One α := ⟨default + -default⟩
 
 lemma mul_def : a * b = -(-a + -b) := rfl
 lemma zero_def : (0 : α) = -(default + -default) := rfl
@@ -354,7 +358,7 @@ def smul : ℕ → α → α
   | 1, a => a
   | k + 2, a => smul (k + 1) a + a
 
-private instance : SMul ℕ α where smul := smul
+instance : SMul ℕ α where smul := smul
 
 lemma smul1 : 1 • a = a := rfl
 lemma smul2 : 2 • a = a + a := rfl
