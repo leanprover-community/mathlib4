@@ -108,7 +108,8 @@ where
     MetaM (List VarQ × LocalContext × Q(Prop) × Q($α)) := do
   match path with
   | [] =>
-    let ~q(@Eq.{u} $γ $x $y) := P | panic! "path is empty, but `P` is not an equality: {← ppExpr P}"
+    let ~q(@Eq.{u} $γ $x $y) := P
+      | panic! s!"path is empty, but `P` is not an equality: {← ppExpr P}"
     if eqDetermines a x y then
       return ([], ← getLCtx, P, y)
     if eqDetermines a y x then
@@ -316,35 +317,35 @@ def mkAfterToBefore {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
       return q(Exists.intro $a' $pf1)
     mkLambdaFVars #[h] pf
 
-#check instantiateMVars
+/-- Runs `k` on `e` with the metavariables occurring in `e` replaced by local variables, and
+substitutes the metavariables back into the resulting `Simp.Step`. In some cases (e.g. under
+`aesop`) the goal contains metavariables, and this is needed to handle them properly: the proof
+built by `substCore` can only be instantiated when the goal contains none.
 
-/-- Runs `k` on `e` with every metavariable occurring in `e` replaced by a local variable, and
-substitutes the metavariables back into the resulting `Simp.Step`.
-
-The proof of a rewrite must be a closed term, and `substCore` reintroduces the substituted
-hypotheses through delayed assignments, which `instantiateMVars` only expands once the goal
-contains no metavariables at all (the discharger of `simp` rejects proofs with metavariables for
-the same reason). Goals containing metavariables are common under `aesop`, say. Since such
-metavariables predate every local variable introduced by the simproc, treating them as opaque
-local variables while the proof is built is sound. -/
-partial def withMVarsAsFVars (e : Expr) (k : Expr → MetaM Simp.Step) : MetaM Simp.Step := do
+The abstraction is done by `abstractMVars`, so that metavariables occurring in the types of other
+metavariables (as in `?f : α → ?β`) are handled consistently. -/
+def withMVarsAsFVars (e : Expr) (k : Expr → MetaM Simp.Step) : MetaM Simp.Step := do
   let e ← instantiateMVars e
-  go (← getMVars e).toList e #[] #[]
-where
-  /-- Introduces a local variable for each of the remaining metavariables. -/
-  go (mvars : List MVarId) (e : Expr) (ms xs : Array Expr) : MetaM Simp.Step := do
-    match mvars with
-    | [] =>
-      let subst (r : Simp.Result) : Simp.Result :=
-        { r with expr := r.expr.replaceFVars xs ms, proof? := r.proof?.map (·.replaceFVars xs ms) }
-      match ← k e with
-      | .done r => return .done (subst r)
-      | .visit r => return .visit (subst r)
-      | .continue r? => return .continue (r?.map subst)
-    | m :: mvars =>
-      withLocalDeclD .anonymous (← instantiateMVars (← m.getType)) fun x => do
-        let e := e.replace fun t => if t == mkMVar m then some x else none
-        go mvars e (ms.push (mkMVar m)) (xs.push x)
+  if !e.hasMVar then
+    return ← k e
+  let r ← abstractMVars e
+  lambdaTelescope r.expr fun xs e' => do
+    let step ← k e'
+    -- reopen the abstraction with fresh metavariables and unify them with the original ones
+    let us ← r.paramNames.mapM fun _ => mkFreshLevelMVar
+    let (ms, _, body) ←
+      lambdaMetaTelescope (r.expr.instantiateLevelParamsArray r.paramNames us) (some r.numMVars)
+    unless ← isDefEq body e do
+      throwError "existsAndEq: failed to restore the metavariables of{indentExpr e}"
+    let restore (t : Expr) : MetaM Expr := do
+      let t ← mkLambdaFVars xs t
+      instantiateMVars <| (t.instantiateLevelParamsArray r.paramNames us).beta ms
+    let subst (res : Simp.Result) : MetaM Simp.Result :=
+      return { res with expr := ← restore res.expr, proof? := ← res.proof?.mapM restore }
+    match step with
+    | .done res => return .done (← subst res)
+    | .visit res => return .visit (← subst res)
+    | .continue res? => return .continue (← res?.mapM subst)
 
 /-- The implementation of `existsAndEq`, for an expression without metavariables. -/
 def existsAndEqCore (e : Expr) : MetaM Simp.Step := do
