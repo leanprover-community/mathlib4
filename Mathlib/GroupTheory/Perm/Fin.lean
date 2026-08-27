@@ -557,8 +557,7 @@ noncomputable def decomposeFin'Symm (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) 
     (Fin.cases i (Fin.succAbove i ∘ σ)) (by
       rw [Nat.bijective_iff_injective_and_card]
       refine ⟨fun j k h ↦ ?_, rfl⟩
-      obtain rfl | ⟨j, rfl⟩ := j.eq_zero_or_eq_succ <;>
-        obtain rfl | ⟨k, rfl⟩ := k.eq_zero_or_eq_succ <;> aesop)
+      induction j using Fin.cases <;> induction k using Fin.cases <;> aesop)
 
 @[simp]
 lemma decomposeFin'Symm_zero (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
