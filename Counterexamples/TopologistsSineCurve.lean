@@ -31,14 +31,14 @@ open Topology Filter Set Real
 namespace TopologistsSineCurve
 
 /-- The topologist's sine curve, i.e. the graph of `y = sin (x⁻¹)` for `0 < x`. -/
-def S : Set (ℝ × ℝ) := (fun x ↦ (x, sin x⁻¹)) '' Ioi 0
+noncomputable def S : Set (ℝ × ℝ) := (fun x ↦ (x, sin x⁻¹)) '' Ioi 0
 
 /-- The vertical line segment `{ (0, y) | -1 ≤ y ≤ 1 }`, which is the set of limit points of `S`
 not contained in `S` itself. -/
 def Z : Set (ℝ × ℝ) := (fun y ↦ (0, y)) '' Icc (-1) 1
 
 /-- The union of `S` and `Z` (which we will show is the closure of `S`). -/
-def T : Set (ℝ × ℝ) := S ∪ Z
+noncomputable def T : Set (ℝ × ℝ) := S ∪ Z
 
 /-- A sequence of `x`-values tending to 0 at which the sine curve has a given `y`-coordinate. -/
 noncomputable def xSeq (y : ℝ) (k : ℕ) := 1 / (arcsin y + (k + 1) * (2 * π))
@@ -111,7 +111,7 @@ is a continuous image of the positive real line). -/
 theorem isConnected_T : IsConnected T := by
   rw [← closure_S]
   refine (isConnected_Ioi.image _ <| continuousOn_id.prodMk ?_).closure
-  exact continuous_sin.comp_continuousOn <| continuousOn_inv₀.mono fun _ hx ↦ hx.ne'
+  fun_prop (discharger := grind)
 
 /-!
 ## `T` is not path-connected
