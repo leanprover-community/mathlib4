@@ -48,7 +48,7 @@ normed group
 public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {α E G : Type*}
 
 open Filter Bornology
 open ENNReal Filter NNReal

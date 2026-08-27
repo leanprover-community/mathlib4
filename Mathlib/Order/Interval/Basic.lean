@@ -567,7 +567,7 @@ namespace NonemptyInterval
 
 section Preorder
 
-variable [Preorder α] {s t : NonemptyInterval α} {a : α}
+variable [Preorder α] {s : NonemptyInterval α} {a : α}
 
 @[simp, norm_cast]
 theorem coe_pure_interval (a : α) : (pure a : Interval α) = Interval.pure a :=

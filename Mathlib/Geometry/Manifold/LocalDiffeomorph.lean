@@ -59,7 +59,9 @@ local diffeomorphism, manifold
 
 public noncomputable section
 
-open Manifold Set TopologicalSpace
+open Set TopologicalSpace
+
+open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -164,7 +166,7 @@ namespace IsLocalDiffeomorphAt
 
 variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 /-- An arbitrary choice of local inverse of `f` near `x`. -/
 def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
@@ -186,6 +188,11 @@ lemma localInverse_mem_target (hf : IsLocalDiffeomorphAt I J n f x) :
 lemma contmdiffOn_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
     CMDiff[hf.localInverse.source] n hf.localInverse :=
   hf.localInverse.contMDiffOn_toFun
+
+lemma continuousAt_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContinuousAt hf.localInverse (f x) :=
+  hf.contmdiffOn_localInverse.continuousOn.continuousAt <|
+    hf.localInverse_open_source.mem_nhds hf.localInverse_mem_source
 
 lemma localInverse_right_inv (hf : IsLocalDiffeomorphAt I J n f x) {y : N}
     (hy : y ∈ hf.localInverse.source) : f (hf.localInverse y) = y := by
@@ -384,9 +391,9 @@ end Basic
 
 section Differential
 
-variable {f : M → N} {s : Set M} {x : M}
+variable {f : M → N} {x : M}
 
-variable {I I' J n}
+variable {I J n}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≠ 0`, the differential `df_x`
@@ -398,11 +405,11 @@ is a linear equivalence. -/
   invFun := mfderiv% hf.localInverse (f x)
   left_inv := by
     apply ContinuousLinearMap.leftInverse_of_comp
-    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
+    rw [← mfderiv_id, hf.localInverse_eventuallyEq_left.symm.mfderiv_eq]
     exact (mfderiv_comp _ (hf.localInverse_mdifferentiableAt hn) (hf.mdifferentiableAt hn)).symm
   right_inv := by
     apply ContinuousLinearMap.rightInverse_of_comp
-    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
+    rw [← mfderiv_id, hf.localInverse_eventuallyEq_right.symm.mfderiv_eq]
     -- We need to rewrite the base point hf.localInverse (f x) = x twice,
     -- in the differentiability hypothesis and for applying the chain rule.
     have hf' : MDifferentiableAt I J f (hf.localInverse (f x)) := by
@@ -410,6 +417,7 @@ is a linear equivalence. -/
       exact hf.mdifferentiableAt hn
     rw [mfderiv_comp _ hf' (hf.localInverse_mdifferentiableAt hn),
       hf.localInverse_left_inv hf.localInverse_mem_target]
+    rfl
   continuous_toFun := (mfderiv% f x).cont
   continuous_invFun := (mfderiv% hf.localInverse (f x)).cont
   map_add' := fun x_1 y ↦ map_add _ x_1 y
@@ -420,6 +428,10 @@ lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
     hf.mfderivToContinuousLinearEquiv hn = mfderiv% f x := rfl
 
+lemma IsLocalDiffeomorphAt.isInvertible_mfderiv (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
+    (mfderiv I J f x).IsInvertible :=
+  ⟨hf.mfderivToContinuousLinearEquiv hn, by simp⟩
+
 /-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≠ 0`)
 is a linear equivalence. -/
 def Diffeomorph.mfderivToContinuousLinearEquiv
@@ -429,6 +441,10 @@ def Diffeomorph.mfderivToContinuousLinearEquiv
 
 lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) :
     Φ.mfderivToContinuousLinearEquiv hn x = mfderiv% Φ x := by rfl
+
+lemma Diffeomorph.isInvertible_mfderiv (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) :
+    (mfderiv I J Φ x).IsInvertible :=
+  (Φ.isLocalDiffeomorph x).isInvertible_mfderiv hn
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≠ 0`),
 each differential is a linear equivalence. -/
@@ -441,5 +457,9 @@ lemma IsLocalDiffeomorph.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorph I J n f) (hn : n ≠ 0) (x : M) :
     hf.mfderivToContinuousLinearEquiv hn x = mfderiv% f x :=
   (hf x).mfderivToContinuousLinearEquiv_coe hn
+
+lemma IsLocalDiffeomorph.isInvertible_mfderiv (hf : IsLocalDiffeomorph I J n f) (hn : n ≠ 0) (x) :
+    (mfderiv I J f x).IsInvertible :=
+  (hf x).isInvertible_mfderiv hn
 
 end Differential
