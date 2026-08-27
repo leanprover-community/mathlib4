@@ -5,20 +5,31 @@ name: publish cache to R2
 # Azure fallback in the read path.
 #
 # Jobs (per master push, after `continuous integration` completes):
-#   upload   Assemble the commit's full `.ltar` set locally: warm from the
-#            triggering run's `cache-snapshot` and `cache-staging` artifacts
-#            (free bandwidth, no storage egress), then top up anything still
-#            missing through the normal read chain (MATHLIB_CACHE_BASE_URL;
-#            its backend falls back to Azure, so files the bucket does not
-#            hold yet arrive from there). Copy the set to the bucket; only
-#            objects the bucket is missing are transferred.
-#   verify   Fresh runner, empty cache dir, MATHLIB_CACHE_GET_URL pointed at
-#            the bucket's anonymous host. Passes only when every file of the
-#            commit's closure downloads: 100% hits served by the bucket.
-#   marker   Write the completeness marker m/leanprover-community/mathlib4/{sha}
-#            (content: the sha). Files first, marker last; the `verify` job
-#            between them is the completeness proof the marker asserts.
-#   report   Zulip message when any job fails.
+#   assemble  Assemble the commit's full `.ltar` set locally: warm from the
+#             triggering run's `cache-snapshot` and `cache-staging` artifacts
+#             (free bandwidth, no storage egress), then top up anything still
+#             missing through the normal read chain (MATHLIB_CACHE_BASE_URL;
+#             its backend falls back to Azure, so files the bucket does not
+#             hold yet arrive from there). Publish the set as a run artifact
+#             with the minimum retention: a handoff to `push`, not a
+#             deliverable.
+#   push      Copy the assembled set to the bucket; only objects the bucket
+#             is missing are transferred.
+#   verify    Fresh runner, empty cache dir, MATHLIB_CACHE_GET_URL pointed at
+#             the bucket's anonymous host. Passes only when every file of the
+#             commit's closure downloads: 100% hits served by the bucket.
+#   marker    Write the completeness marker m/leanprover-community/mathlib4/{sha}
+#             (content: the sha). Files first, marker last; the `verify` job
+#             between them is the completeness proof the marker asserts.
+#   report    Zulip message when any job fails.
+#
+# Credential isolation: a job's referenced secrets live in the runner process
+# for the job's whole lifetime, so the job — not the step — is the exposure
+# boundary. The jobs that execute repo-derived code (`assemble` and `verify`
+# run the Lean toolchain, the lakefile, and the cache tool) reference no
+# write-capable secret; the jobs that reference the write key (`push`,
+# `marker`) execute only pinned actions, apt-installed rclone, and inline
+# bash.
 #
 # Required repository configuration:
 #   Environment `cache-upload-master` — the deployment branch policy admits
@@ -50,7 +61,7 @@ on:
     types: [completed]
     branches: [master]
   # Manual fallback: re-run a commit whose publish failed, or seed from the
-  # most recent master build. The gate job validates the source run, so a
+  # most recent master build. `assemble` validates the source run, so a
   # dispatch cannot feed the bucket from anything but a master push build.
   workflow_dispatch:
     inputs:
@@ -75,8 +86,8 @@ defaults:
     shell: bash -euo pipefail {0}
 
 jobs:
-  upload:
-    name: Upload master cache to R2
+  assemble:
+    name: Assemble the commit's cache set
     if: >-
       github.repository == 'leanprover-community/mathlib4' &&
       (github.event_name == 'workflow_dispatch' ||
@@ -85,19 +96,11 @@ jobs:
          github.event.workflow_run.head_branch == 'master'))
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    environment: cache-upload-master
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       run_id: ${{ steps.resolve.outputs.run_id }}
     env:
       MATHLIB_CACHE_DIR: ${{ github.workspace }}/r2-publish-cache
-      RCLONE_CONFIG_R2_TYPE: s3
-      RCLONE_CONFIG_R2_PROVIDER: Cloudflare
-      RCLONE_CONFIG_R2_ENDPOINT: ${{ vars.MATHLIB_CACHE_R2_S3_ENDPOINT }}
-      RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
-      # Bucket and key prefix of the master namespace. The prefix is part of
-      # the published URL contract; change it only with the resolver config.
-      R2_DEST: mathlib4-cache/mathlib4
     steps:
       - name: Resolve and validate the source run
         id: resolve
@@ -212,6 +215,38 @@ jobs:
           fi
           echo "local .ltar count: $(find "${MATHLIB_CACHE_DIR}" -name '*.ltar' | wc -l)"
 
+      - name: Publish the set as a run artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: r2-publish-set
+          path: ${{ github.workspace }}/r2-publish-cache/*.ltar
+          compression-level: 0 # `.ltar` files are already zstd-compressed
+          retention-days: 1 # a job-to-job handoff, not a deliverable
+          if-no-files-found: error
+
+  push:
+    name: Push the set to the bucket
+    needs: assemble
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: cache-upload-master
+    env:
+      RCLONE_CONFIG_R2_TYPE: s3
+      RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+      RCLONE_CONFIG_R2_ENDPOINT: ${{ vars.MATHLIB_CACHE_R2_S3_ENDPOINT }}
+      RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+      # Bucket and key prefix of the master namespace. The prefix is part of
+      # the published URL contract; change it only with the resolver config.
+      R2_DEST: mathlib4-cache/mathlib4
+    steps:
+      # No `run-id`, so the artifact can only come from this run's own
+      # `assemble` job.
+      - name: Download the assembled set
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: r2-publish-set
+          path: ${{ github.workspace }}/r2-publish-set
+
       - name: Install rclone
         run: sudo apt-get update -qq && sudo apt-get install -y -qq rclone
 
@@ -240,14 +275,14 @@ jobs:
           # destination prefix (millions of objects) would be slower than a
           # few thousand probes. --size-only suffices to skip a present
           # file: `.ltar` names are content hashes.
-          rclone copy "${MATHLIB_CACHE_DIR}" "r2:${R2_DEST}/f/" \
+          rclone copy "${GITHUB_WORKSPACE}/r2-publish-set" "r2:${R2_DEST}/f/" \
             --include '*.ltar' --size-only --no-traverse \
             --transfers 32 --checkers 32 \
             --stats-one-line --stats 30s
 
   verify:
     name: Verify direct bucket reads
-    needs: upload
+    needs: [assemble, push]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: cache-upload-master
@@ -257,7 +292,7 @@ jobs:
       - name: Checkout mathlib at the built commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.upload.outputs.sha }}
+          ref: ${{ needs.assemble.outputs.sha }}
           path: mathlib
 
       - name: Install elan
@@ -271,7 +306,7 @@ jobs:
         working-directory: mathlib
         env:
           MATHLIB_CACHE_GET_URL: ${{ secrets.MATHLIB_CACHE_R2_GET_URL }}
-          SHA: ${{ needs.upload.outputs.sha }}
+          SHA: ${{ needs.assemble.outputs.sha }}
         run: |
           if [ -z "${MATHLIB_CACHE_GET_URL}" ]; then
             echo "::error::MATHLIB_CACHE_R2_GET_URL (environment secret) must be set"
@@ -301,7 +336,7 @@ jobs:
 
   marker:
     name: Write the completeness marker
-    needs: [upload, verify]
+    needs: [assemble, push, verify]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: cache-upload-master
@@ -319,6 +354,11 @@ jobs:
         env:
           R2_WRITE_KEY: ${{ secrets.MATHLIB_CACHE_R2_WRITE_KEY }}
         run: |
+          if [ -z "${R2_WRITE_KEY}" ] || [ -z "${RCLONE_CONFIG_R2_ENDPOINT}" ]; then
+            echo "::error::MATHLIB_CACHE_R2_WRITE_KEY (environment secret) and \
+          MATHLIB_CACHE_R2_S3_ENDPOINT (repository variable) must be set"
+            exit 1
+          fi
           key="$(printf %s "${R2_WRITE_KEY}" | tr -d '[:space:]')"
           access_key_id="${key%%:*}"
           secret_access_key="${key#*:}"
@@ -331,7 +371,7 @@ jobs:
 
       - name: Write the marker
         env:
-          SHA: ${{ needs.upload.outputs.sha }}
+          SHA: ${{ needs.assemble.outputs.sha }}
         run: |
           # Marker shape: m/{repo}/{sha}, content the sha plus a newline —
           # what the cache tool probes and writes. Written last: `verify`
@@ -342,7 +382,7 @@ jobs:
 
   report:
     name: Report a failure to Zulip
-    needs: [upload, verify, marker]
+    needs: [assemble, push, verify, marker]
     if: ${{ always() && github.repository == 'leanprover-community/mathlib4' && contains(needs.*.result, 'failure') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -350,17 +390,22 @@ jobs:
       - name: Compose the message
         id: compose
         env:
-          UPLOAD: ${{ needs.upload.result }}
+          ASSEMBLE: ${{ needs.assemble.result }}
+          PUSH: ${{ needs.push.result }}
           VERIFY: ${{ needs.verify.result }}
           MARKER: ${{ needs.marker.result }}
-          SHA: ${{ needs.upload.outputs.sha }}
+          SHA: ${{ needs.assemble.outputs.sha }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          # The sha is empty when `assemble` fails before resolving the
+          # source run.
+          sha="${SHA:-unresolved}"
           {
             echo "msg<<MSG_EOF"
-            echo "**R2 cache publish failed** ([run](${RUN_URL}), rev \`${SHA:0:12}\`)"
+            echo "**R2 cache publish failed** ([run](${RUN_URL}), rev \`${sha:0:12}\`)"
             echo ""
-            echo "- upload: \`${UPLOAD}\`"
+            echo "- assemble: \`${ASSEMBLE}\`"
+            echo "- push: \`${PUSH}\`"
             echo "- verify: \`${VERIFY}\`"
             echo "- marker: \`${MARKER}\`"
             echo "MSG_EOF"
