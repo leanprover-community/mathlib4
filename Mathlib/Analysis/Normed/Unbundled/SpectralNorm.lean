@@ -801,7 +801,7 @@ def algNormFromConst {x : L} (hx : x ≠ 0) :
     AlgebraNorm K L :=
   have hx' : spectralAlgNorm K L x ≠ 0 :=
     (map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx
-  algebraNormFromConst hx' spectralAlgNorm_isPowMul
+  algNormFromConst hx' spectralAlgNorm_isPowMul
 
 theorem algNormFromConst_def {x y : L}
     (hx : x ≠ 0) :
