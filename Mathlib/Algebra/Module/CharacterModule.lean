@@ -102,7 +102,7 @@ lemma dual_injective_of_surjective (f : A →ₗ[R] B) (hf : Function.Surjective
 
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
     Function.Surjective (dual f) :=
-  (Module.Baer.of_divisible _).extension_property_addMonoidHom _ hf
+  (Module.Baer.of_divisible _ _).extension_property_addMonoidHom _ hf
 
 /--
 Two isomorphic modules have isomorphic character modules.
