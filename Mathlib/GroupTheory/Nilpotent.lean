@@ -63,6 +63,8 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * The `Group.nilpotencyClass` of `G ⧸ center G` is given explicitly, and an induction principle
   is derived from that.
 * `IsNilpotent.to_isSolvable`: If `G` is nilpotent, it is solvable.
+*  `IsNilpotent.commute_of_orderOf_coprime` : In a nilpotent group, two elements commute when their
+  orders are coprime.
 
 
 ## Warning
@@ -1199,7 +1201,8 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
     exact (ih H' hH').trans (symm (map_top_of_surjective _ hsur))
 
 /-- In a nilpotent group, two elements commute when their orders are coprime. -/
-@[to_additive /-- In a nilpotent group, two elements commute when their orders are coprime. -/]
+@[to_additive /-- In a nilpotent additive group, two elements commute when their orders are
+coprime. -/]
 theorem IsNilpotent.commute_of_orderOf_coprime [IsNilpotent G] {x y : G}
     (h : (orderOf x).Coprime (orderOf y)) : Commute x y := by
   revert x y
