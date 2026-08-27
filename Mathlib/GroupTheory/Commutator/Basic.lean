@@ -89,16 +89,16 @@ theorem Commute.commutatorElement_pow_left {a b : G} (h : Commute a ⁅a, b⁆) 
     ⁅a, b⁆ ^ n = ⁅a ^ n, b⁆ := by
   induction n with
   | zero => simp
-  | succ n ih => rw [pow_succ, pow_succ', commutatorElement_mul_left_eq_conj_mul, ← ih, h.pow_right,
-      mul_inv_cancel_right]
+  | succ n ih => rw [pow_succ, pow_succ', commutatorElement_mul_left_eq_conj_mul, ← ih,
+      (h.pow_right n).eq, mul_inv_cancel_right]
 
 @[to_additive]
 theorem Commute.commutatorElement_pow_right {a b : G} (h : Commute b ⁅a, b⁆) (n : ℕ) :
     ⁅a, b⁆ ^ n = ⁅a, b ^ n⁆ := by
   induction n with
   | zero => simp
-  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ←ih, mul_assoc,
-      mul_assoc ⁅a, b⁆, mul_left_cancel_iff, ←mul_assoc, h.pow_right, mul_inv_cancel_right]
+  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ←ih,
+        (h.pow_right n).right_comm, mul_inv_cancel_right]
 
 @[to_additive]
 theorem commutatorElement_inv_left (a b : G) : ⁅a⁻¹, b⁆ = a⁻¹ * ⁅b, a⁆ * a := by
