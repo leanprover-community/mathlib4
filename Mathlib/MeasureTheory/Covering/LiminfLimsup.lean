@@ -229,9 +229,9 @@ theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
     (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
-  refine eventuallySubset_antisymm_iff.mpr ⟨?_, .of_le ?_⟩
+  refine eventuallySubset_antisymm_iff.mpr ⟨?_, .of_subset ?_⟩
   · refine (blimsup_cthickening_mul_ae_eq μ p s (one_half_pos (α := ℝ)) r hr).superset.trans
-      (.of_le ?_)
+      (.of_subset ?_)
     refine mono_blimsup' (hr'.mono fun i hi pi => cthickening_subset_thickening' (hi pi) ?_ (s i))
     nlinarith [hi pi]
   · exact mono_blimsup fun i _ => thickening_subset_cthickening _ _

@@ -82,7 +82,7 @@ open Lean Lean.PrettyPrinter.Delaborator
 /-- Delaborator printing `Filter.EventuallyEq (MeasureTheory.ae μ) f g` as `f =ᵐ[μ] g`. -/
 @[app_delab Filter.EventuallyEq]
 meta def delabAEEventuallyEq : Delab :=
-  whenNotPPOption getPPExplicit <| whenPPOption Lean.getPPNotation do
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
     let e ← SubExpr.getExpr
     guard <| e.isAppOfArity ``Filter.EventuallyEq 5
     guard <| (e.getArg! 2).isAppOfArity ``MeasureTheory.ae 5
@@ -94,7 +94,7 @@ meta def delabAEEventuallyEq : Delab :=
 /-- Delaborator printing `Filter.EventuallyEqSet (MeasureTheory.ae μ) s t` as `s =ᵐ[μ] t`. -/
 @[app_delab Filter.EventuallyEqSet]
 meta def delabAEEventuallyEqSet : Delab :=
-  whenNotPPOption getPPExplicit <| whenPPOption Lean.getPPNotation do
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
     let e ← SubExpr.getExpr
     guard <| e.isAppOfArity ``Filter.EventuallyEqSet 4
     guard <| (e.getArg! 1).isAppOfArity ``MeasureTheory.ae 5
@@ -106,7 +106,7 @@ meta def delabAEEventuallyEqSet : Delab :=
 /-- Delaborator printing `Filter.EventuallyLE (MeasureTheory.ae μ) f g` as `f ≤ᵐ[μ] g`. -/
 @[app_delab Filter.EventuallyLE]
 meta def delabAEEventuallyLE : Delab :=
-  whenNotPPOption getPPExplicit <| whenPPOption Lean.getPPNotation do
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
     let e ← SubExpr.getExpr
     guard <| e.isAppOfArity ``Filter.EventuallyLE 6
     guard <| (e.getArg! 3).isAppOfArity ``MeasureTheory.ae 5
@@ -118,7 +118,7 @@ meta def delabAEEventuallyLE : Delab :=
 /-- Delaborator printing `Filter.EventuallySubset (MeasureTheory.ae μ) s t` as `s ≤ᵐ[μ] t`. -/
 @[app_delab Filter.EventuallySubset]
 meta def delabAEEventuallySubset : Delab :=
-  whenNotPPOption getPPExplicit <| whenPPOption Lean.getPPNotation do
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
     let e ← SubExpr.getExpr
     guard <| e.isAppOfArity ``Filter.EventuallySubset 4
     guard <| (e.getArg! 1).isAppOfArity ``MeasureTheory.ae 5

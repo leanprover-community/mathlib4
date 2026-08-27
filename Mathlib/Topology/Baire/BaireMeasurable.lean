@@ -43,23 +43,25 @@ open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator printing `Filter.EventuallyEq (residual _) f g` as `f =ᵇ g`. -/
 @[app_delab Filter.EventuallyEq]
-meta def delabResidualEventuallyEq : Delab := whenPPOption Lean.getPPNotation do
-  let e ← SubExpr.getExpr
-  guard <| e.isAppOfArity ``Filter.EventuallyEq 5
-  guard <| (e.getArg! 2).isAppOfArity ``residual 2
-  let f ← SubExpr.withNaryArg 3 delab
-  let g ← SubExpr.withNaryArg 4 delab
-  `($f =ᵇ $g)
+meta def delabResidualEventuallyEq : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+    let e ← SubExpr.getExpr
+    guard <| e.isAppOfArity ``Filter.EventuallyEq 5
+    guard <| (e.getArg! 2).isAppOfArity ``residual 2
+    let f ← SubExpr.withNaryArg 3 delab
+    let g ← SubExpr.withNaryArg 4 delab
+    `($f =ᵇ $g)
 
 /-- Delaborator printing `Filter.EventuallyEqSet (residual _) s t` as `s =ᵇ t`. -/
 @[app_delab Filter.EventuallyEqSet]
-meta def delabResidualEventuallyEqSet : Delab := whenPPOption Lean.getPPNotation do
-  let e ← SubExpr.getExpr
-  guard <| e.isAppOfArity ``Filter.EventuallyEqSet 4
-  guard <| (e.getArg! 1).isAppOfArity ``residual 2
-  let s ← SubExpr.withNaryArg 2 delab
-  let t ← SubExpr.withNaryArg 3 delab
-  `($s =ᵇ $t)
+meta def delabResidualEventuallyEqSet : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+    let e ← SubExpr.getExpr
+    guard <| e.isAppOfArity ``Filter.EventuallyEqSet 4
+    guard <| (e.getArg! 1).isAppOfArity ``residual 2
+    let s ← SubExpr.withNaryArg 2 delab
+    let t ← SubExpr.withNaryArg 3 delab
+    `($s =ᵇ $t)
 
 end delaborators
 
