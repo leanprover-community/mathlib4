@@ -94,7 +94,7 @@ theorem sum_sq_eq_zero_iff [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
 theorem sum_pow_eq_zero_iff_of_even
     [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R] (s : Finset ι) (f : ι → R)
-    (n : ℕ) (hn : n ≠ 0) (heven : Even n) :
+    {n : ℕ} (hn : n ≠ 0) (heven : Even n) :
     (∑ i ∈ s, f i ^ n) = 0 ↔ ∀ i ∈ s, f i = 0 := by
   grind [Even.pow_nonneg, Finset.sum_eq_zero_iff_of_nonneg, pow_eq_zero_iff]
 
