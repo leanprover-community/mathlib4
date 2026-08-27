@@ -51,30 +51,24 @@ lemma CStarAlgebra.one_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebr
   replace hcab : c₁ • a + c₂ • b = 1 := by simpa [ha', hb'] using congr((ℜ $hcab : A))
   have : b = c₂⁻¹ • 1 - c₂⁻¹ • c₁ • a := by
     simpa [inv_smul_smul₀ hc₂.ne', eq_sub_iff_add_eq'] using congr(c₂⁻¹ • $hcab)
-  rw [this, ← cfc_id' ℝ a, ← cfc_one ℝ a, ← cfc_smul .., ← cfc_smul .., ← cfc_smul ..,
-    ← cfc_sub .., ← cfc_smul .., ← cfc_add .., cfc_eq_cfc_iff_eqOn] at hcab
   /- By passing to functions, we will show that `a = 1`. In particular, the constant
   function `1` on the `ℝ`-spectrum of `a` is a convex combination of functions (one of
   which is the identity) which are bounded in absolute value by `1`. Since `1 : ℝ` is
   extreme in `Icc (-1) 1`, we conclude that these functions must be `1` on the
   spectrum of `a`. -/
   obtain rfl : a = 1 := by
-    refine CFC.eq_one_of_spectrum_subset_one (R := ℝ) a fun r hr ↦ ?_
+    refine CFC.eq_one_of_spectrum_subset_one (R := ℝ) a fun r hr ↦ show r = 1 from ?_
     have h1_mem : (1 : ℝ) ∈ openSegment ℝ r (c₂⁻¹ - c₂⁻¹ * c₁ * r) :=
-      ⟨c₁, c₂, hc₁, hc₂, hc, by simpa [mul_assoc] using hcab hr⟩
+      ⟨c₁, c₂, hc₁, hc₂, hc, by simp [mul_assoc, mul_sub, hc₂.ne']⟩
     have key : (1 : ℝ) ∈ extremePoints ℝ (Icc (-1) 1) := by simp
-    simp only [mem_singleton_iff]
     refine mem_extremePoints_iff_left.mp key |>.2 _ ?_ _ ?_ h1_mem
     · simpa [abs_le] using (spectrum.norm_le_norm_of_mem hr).trans ha
     · suffices c₂⁻¹ - c₂⁻¹ * c₁ * r ∈ spectrum ℝ b by
         simpa [abs_le] using (spectrum.norm_le_norm_of_mem this).trans hb
-      rw [this, ← Algebra.algebraMap_eq_smul_one, sub_eq_add_neg, sub_eq_add_neg]
-      rwa [add_comm c₂⁻¹, spectrum.add_mem_add_iff, ← spectrum.neg_eq, Set.neg_mem_neg, smul_smul,
+      rwa [this, ← Algebra.algebraMap_eq_smul_one, sub_eq_add_neg, sub_eq_add_neg,
+        add_comm c₂⁻¹, spectrum.add_mem_add_iff, ← spectrum.neg_eq, Set.neg_mem_neg, smul_smul,
         spectrum.smul_eq_smul _ _ (nonempty_of_mem hr), ← smul_eq_mul _ r,
         Set.smul_mem_smul_set_iff₀ (by positivity)]
-  /- Since `ℜ x = a = 1`, so too we conclude `ℜ y = b = 1`. -/
-  obtain rfl : b = 1 := by
-    simpa [← smul_assoc, ← sub_smul, (sub_eq_iff_eq_add.mpr hc.symm).symm, mul_sub, hc₂.ne']
   clear this hb ha hcab hb' hc hc₂ hc₁ c₁ c₂ hy hxy y
   /- Since `ℜ x = 1`, the real and imaginary parts of `x` commute, so `x` is normal. It
   then suffices to show that `ℑ x = 0`. -/
@@ -109,7 +103,7 @@ theorem star_self_conjugate_eq_self_of_mem_extremePoints_unitClosedBall {a : A}
   suffices a * abs a = a by rw [mul_assoc, ← abs_mul_abs, ← mul_assoc, this, this]
   obtain ⟨ha, h⟩ := mem_extremePoints_iff_left.mp ha
   simp only [mem_closedBall, dist_zero_right] at ha h
-  /- Using the extremity of `a`, it suffices to show that `2 • a - a * |a|` is in the
+  /- Using the extremality of `a`, it suffices to show that `2 • a - a * |a|` is in the
   closed unit ball since `2⁻¹ • (2 • a - a * |a|) + 2⁻¹ • (a * |a|) = a`
   (and clearly `a * |a|` is in the closed unit ball since `a` is). -/
   refine @h _ ?_ ((2 : ℝ) • a - a * abs a) ?_ ⟨2⁻¹, 2⁻¹, by simp [smul_sub, ← two_mul]⟩
@@ -126,7 +120,7 @@ theorem star_self_conjugate_eq_self_of_mem_extremePoints_unitClosedBall {a : A}
         simp [abs_nonneg a |>.star_eq, mul_assoc, ← mul_assoc _ a, ← abs_mul_abs]
       _ = ‖cfcₙ (fun x : ℝ ↦ 2 * x - x * x) (abs a)‖ := by
         rw [cfcₙ_sub _ _, cfcₙ_const_mul _ _, cfcₙ_mul _ _, cfcₙ_id' ℝ (abs a)]
-      _ ≤ _ := norm_cfcₙ_le fun x hx ↦ by
+      _ ≤ 1 := norm_cfcₙ_le fun x hx ↦ by
         have := x.le_norm_self.trans (by grw [quasispectrum.norm_le_norm_of_mem hx, norm_abs, ha])
         rw [Real.norm_of_nonneg] <;> nlinarith [quasispectrum_nonneg_of_nonneg _ (by simp) _ hx]
 
