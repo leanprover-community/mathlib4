@@ -77,7 +77,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       change μ _ = 0
       convert! this
       ext y
-      simp only [mem_setOf_eq, mem_compl_iff, not_notMem]
+      simp only [mem_ofPred_eq, mem_compl_iff, not_notMem]
     filter_upwards [this] with x hx
     apply (iInf_eq_of_forall_ge_of_forall_gt_exists_lt _ _).symm
     · intro i

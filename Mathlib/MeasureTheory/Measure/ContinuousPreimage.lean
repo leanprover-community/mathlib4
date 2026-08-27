@@ -108,7 +108,7 @@ is a closed set.
 
 In particular, if `X = Y` and `s = t`,
 then we see that the a.e. stabilizer of a set is a closed set. -/
-theorem isClosed_setOf_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
+theorem isClosed_setOfPred_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
     (hfm : ∀ z, MeasurePreserving (f z) μ ν) (s : Set X)
     {t : Set Y} (htm : NullMeasurableSet t ν) (ht : ν t ≠ ∞) :
     IsClosed {z | f z ⁻¹' t =ᵐ[μ] s} := by
@@ -120,7 +120,10 @@ theorem isClosed_setOf_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
   filter_upwards [(tendsto_measure_symmDiff_preimage_nhds_zero (hf.tendsto z)
     (.of_forall hfm) (hfm z) htm ht).eventually hz] with w hw
   intro (hw' : f w ⁻¹' t =ᵐ[μ] s)
-  rw [measure_congr (hw'.symmDiff (ae_eq_refl _)), symmDiff_comm] at hw
+  rw [measure_congr (hw'.symmDiff .rfl), symmDiff_comm] at hw
   exact hw.false
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_preimage_ae_eq := isClosed_setOfPred_preimage_ae_eq
 
 end MeasureTheory

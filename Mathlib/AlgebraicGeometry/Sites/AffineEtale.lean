@@ -5,8 +5,9 @@ Authors: Christian Merten, Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.AB
-public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+-- these `ModuleCat` instances are only used by the `example` below, which `shake` cannot see
+public import Mathlib.Algebra.Category.ModuleCat.AB  -- shake: keep
+public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits  -- shake: keep
 public import Mathlib.AlgebraicGeometry.Sites.Affine
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf

@@ -39,7 +39,7 @@ Eulerian trails
 
 namespace SimpleGraph
 
-variable {V : Type*} {G : SimpleGraph V} {u v x : V}
+variable {V : Type*} {G : SimpleGraph V} {u v w x : V} {p : G.Walk u v}
 
 namespace Walk
 
@@ -99,6 +99,19 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {p : G.Walk u v} (h : p.Is
     h.isTrail.edgesFinset = G.edgeFinset := by
   ext e
   simp [h.mem_edges_iff]
+
+theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.IsIsolated w) :
+    w ∈ p.support := by
+  have ⟨e, he, hwe⟩ := not_isIsolated_iff_exists_edgeSet_mem.mp hw
+  exact mem_support_iff_exists_mem_edges.mpr <| .inr ⟨e, hp.mem_edges_iff.mpr he, hwe⟩
+
+theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
+  simp [← edgeSet_eq_empty, hp.edgeSet_eq]
+
+/-- The support of a non-nil Eulerian trail equals the support of the graph. -/
+theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
+    w ∈ p.support ↔ ¬G.IsIsolated w :=
+  ⟨fun hwp hw ↦ hnil <| p.nil_of_isIsolated_of_mem_support hw hwp, hp.mem_support_of_not_isIsolated⟩
 
 theorem IsEulerian.even_degree_iff {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
