@@ -289,8 +289,8 @@ def algNormFromConst {k : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : I
     simp [Algebra.smul_def, seminormFromConst_isMul_of_isMul hg_k hg_pm hy y,
       seminormFromConst_apply_of_isMul hg_k hg_pm hy, hx]
 
-theorem algNormFromConst_def {k y : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
-    algNormFromConst hg_k hg_pm y = seminormFromConst hg_k hg_pm y :=
+theorem algNormFromConst_def {k x : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
+    algNormFromConst hg_k hg_pm x = seminormFromConst hg_k hg_pm x :=
   rfl
 
 end Field
