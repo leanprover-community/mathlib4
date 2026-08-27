@@ -68,3 +68,19 @@ example (P Q : α × β → Prop) (a : α × β) :
 example (P Q : α × β → Prop) (a : α × β) :
     (∃ b : (α × β), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
   simp
+
+-- The simproc must return a closed proof even when the goal contains metavariables, which is what
+-- `aesop` presents to it: here the goal is `∃ a : Nat, a = Nat.succ ?b ∧ 0 < ?b`. A tactic-level
+-- test cannot catch this, since the metavariable context persists to the end of the proof, where
+-- `?b` is finally assigned; so we inspect the proof produced by `simp` directly.
+open Lean Meta Qq in
+#eval show MetaM Unit from do
+  let b : Q(Nat) ← mkFreshExprMVarQ q(Nat)
+  let e : Q(Prop) := q(∃ a : Nat, a = Nat.succ $b ∧ 0 < $b)
+  let simprocs ← ({} : Simprocs).add ``ExistsAndEq.existsAndEq (post := false)
+  let (r, _) ← Simp.main e (← Simp.mkContext) (methods := Simp.mkDefaultMethodsCore #[simprocs])
+  let some pf := r.proof? | throwError "the simproc did not fire"
+  let pf ← instantiateMVars pf
+  let leftover := (← getMVars pf).filter (· != b.mvarId!)
+  unless leftover.isEmpty do
+    throwError "metavariables left in the proof: {leftover.map mkMVar}\n{pf}"
