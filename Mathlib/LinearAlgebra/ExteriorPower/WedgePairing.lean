@@ -66,8 +66,8 @@ omit [FiniteDimensional K V] in
 lemma complementEquiv_eq_of_disjoint (k l : ℕ) (hkl : k + l = finrank K V)
     {s t : powersetCard (Fin (finrank K V)) k}
     (h : Disjoint t.val (complementEquiv k l hkl s).val) : t = s := by
-  apply Set.powersetCard.eq_iff_subset.mpr
-  simpa [complementEquiv] using Finset.subset_compl_iff_disjoint_right.mpr h
+  simpa [Set.powersetCard.eq_iff_subset, complementEquiv] using
+    Finset.subset_compl_iff_disjoint_right.mpr h
 
 /-! ### The wedge pairing -/
 
