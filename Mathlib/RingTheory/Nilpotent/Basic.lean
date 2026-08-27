@@ -232,15 +232,6 @@ theorem pow_odd_add_pow_odd_eq_zero_of_add_eq_zero
     (h : x + y = 0) (n : ℕ) : x ^ (2 * n + 1) + y ^ (2 * n + 1) = 0 := by
   simp_rw [pow_succ, pow_mul, sq_eq_sq_of_add_eq_zero h, ← mul_add, h, mul_zero]
 
-theorem pow_even_eq_pow_even_of_add_eq_zero_right
-    (h : x + y = 0) (n : ℕ) : y ^ (2 * n) = x ^ (2 * n) :=
-  (pow_even_eq_pow_even_of_add_eq_zero h n).symm
-
-theorem pow_odd_add_pow_odd_eq_zero_of_add_eq_zero_right
-    (h : x + y = 0) (n : ℕ) : y ^ (2 * n + 1) + x ^ (2 * n + 1) = 0 := by
-  rw [add_comm]
-  exact pow_odd_add_pow_odd_eq_zero_of_add_eq_zero h n
-
 /-- If two elements of a semiring sum to zero and a power of the right one vanishes,
 then the same power of the left one vanishes. -/
 theorem pow_eq_zero_of_add_eq_zero_left {n : ℕ} (h : x + y = 0) (hy : y ^ n = 0) :
