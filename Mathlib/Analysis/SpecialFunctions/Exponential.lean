@@ -409,17 +409,17 @@ theorem MonoidHom.map_exp_of_hasFDerivAt_one [NormedAlgebra ℚ 𝔸] (φ : 𝔸
     rw [← map_mul, ← NormedSpace.exp_add_of_commute, add_smul]
     exact (Commute.smul_left rfl b).symm.smul_left a
   have hf (t : 𝕂) : HasDerivAt f (L x * f t) t := by
-    have hf0 : HasDerivAt f (L x) 0 := by
+    have : HasDerivAt f (L x) (t - t) := by
+      simp only [sub_self]
       have := hφ.comp_hasDerivAt_of_eq 0 (hasDerivAt_exp_smul_const' x (0 : 𝕂)) (by simp)
       exact this.congr_deriv (by simp)
-    have : HasDerivAt f (L x) (t - t) := by simpa using hf0
     apply (((this.comp_sub_const t t).const_mul (f t)).congr_deriv
       (mul_comm _ _)).congr_of_eventuallyEq
     filter_upwards with s
     simp [← hadd t (s - t)]
-  set h : 𝕂 → 𝕂 := fun t ↦ f t * exp (-(L x) * t)
+  set h : 𝕂 → 𝕂 := fun t ↦ f t * exp (-L x * t)
   have hh (t : 𝕂) : HasDerivAt h 0 t := by
-    have : HasDerivAt (fun s : 𝕂 ↦ exp (-(L x) * s)) (exp (-(L x) * t) * (-L x)) t := by
+    have : HasDerivAt (fun s : 𝕂 ↦ exp (-L x * s)) (exp (-L x * t) * -L x) t := by
       simpa [Function.comp_def] using
         (hasDerivAt_exp (x := -L x * t)).comp t ((hasDerivAt_id t).const_mul (-L x))
     exact ((hf t).mul this).congr_deriv (by ring)
@@ -427,7 +427,7 @@ theorem MonoidHom.map_exp_of_hasFDerivAt_one [NormedAlgebra ℚ 𝔸] (φ : 𝔸
     is_const_of_deriv_eq_zero (fun t ↦ (hh t).differentiableAt) (fun t ↦ (hh t).deriv) 1 0
   simp only [h, f, one_smul, mul_one, zero_smul, exp_zero, map_one, mul_zero,
     NormedSpace.exp_neg, ← div_eq_mul_inv] at hconst
-  exact (NormedSpace.isUnit_exp (L x)).div_eq_one_iff_eq.mp hconst
+  exact (isUnit_exp (L x)).div_eq_one_iff_eq.mp hconst
 
 variable (𝕂) in
 @[fun_prop]
