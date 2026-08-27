@@ -53,36 +53,36 @@ instance [IsHeckeUnimodular H] (g : G) [IsHeckeTriple H H g] :
     IsHeckeTriple H H g⁻¹ := by
   rw [isHeckeTriple_iff, ←inv_mk g, ← IsHeckeUnimodular.degree_eq_inv_degree]
   simp [mk_degree]
-namespace HeckeCoset
+namespace DoubleCoset₀
 
 variable [IsHeckeUnimodular H]
 
 /-- The map sending `HgH` to `Hg⁻¹H`. -/
-def inv (x : HeckeCoset H H) :
-    HeckeCoset H H := ⟨DoubleCoset.inv x, by simp [← IsHeckeUnimodular.degree_eq_inv_degree]⟩
+def inv (x : DoubleCoset₀ H H) :
+    DoubleCoset₀ H H := ⟨DoubleCoset.inv x, by simp [← IsHeckeUnimodular.degree_eq_inv_degree]⟩
 
-lemma coe_inv (x : HeckeCoset H H) :
+lemma coe_inv (x : DoubleCoset₀ H H) :
     x.inv = DoubleCoset.inv x.val := rfl
 
 @[simp]
 lemma inv_mk (g : G) [IsHeckeTriple H H g] :
     (mk H H g).inv = mk H H g⁻¹ := rfl
 
-lemma mk_inv_rep (x : HeckeCoset H H) :
+lemma mk_inv_rep (x : DoubleCoset₀ H H) :
     mk H H x.rep⁻¹ = x.inv  := by
   simp [inv, ← DoubleCoset.mk_inv_out, rep_eq_out]
 
 @[simp]
-lemma inv_inv (x : HeckeCoset H H) :
+lemma inv_inv (x : DoubleCoset₀ H H) :
     x.inv.inv = x :=
   induction_on x (p := fun x => x.inv.inv = x) fun g => by simp
 
-lemma inv_eq_iff {x y : HeckeCoset H H} :
+lemma inv_eq_iff {x y : DoubleCoset₀ H H} :
     x.inv = y ↔ x = y.inv :=
   ⟨by intro rfl; simp, by intro rfl; simp⟩
 
 @[simp]
-lemma inv_degree (x : HeckeCoset H H) :
+lemma inv_degree (x : DoubleCoset₀ H H) :
     x.inv.degree = x.degree := by
   rw [← mk_rep x, mk_degree, ← DoubleCoset.mk_degree, IsHeckeUnimodular.degree_eq_inv_degree]
   simp [inv, mk_degree, DoubleCoset.mk_degree]
@@ -91,7 +91,7 @@ lemma diag_one_inv_eq_self :
     (mk H H 1).inv = (mk H H 1) := by
   simp
 
-private lemma multiplicity_self_inv_mk_one_eq_degree (x : HeckeCoset H H) :
+private lemma multiplicity_self_inv_mk_one_eq_degree (x : DoubleCoset₀ H H) :
     x.multiplicity x.inv (mk H H 1) = x.degree := by
   simp only  [multiplicity_apply]
   obtain ⟨h₁, hh₁, h₂, hh₂, hinv⟩ := mk_eq_iff.mp
@@ -121,26 +121,26 @@ private lemma multiplicity_self_inv_mk_one_eq_degree (x : HeckeCoset H H) :
       right_inv _ := rfl}
   simpa [degree_eq_rep] using Nat.card_congr equiv
 
-private lemma multiplicity_ne_self_inv_mk_one_eq_zero {x y : HeckeCoset H H} (h : y ≠ x.inv) :
+private lemma multiplicity_ne_self_inv_mk_one_eq_zero {x y : DoubleCoset₀ H H} (h : y ≠ x.inv) :
     x.multiplicity y (mk H H 1) = 0 := by
   simp only [multiplicity_apply]
   by_contra hne
   obtain ⟨p, hp⟩ := (Nat.card_ne_zero.mp hne).left
   simp only [Set.mem_ofPred_eq, ← mul_assoc, QuotientGroup.eq, mul_inv_rev] at hp
   have heq : y = x.inv := by
-    rw [← HeckeCoset.mk_rep y, ← mk_inv_rep]
+    rw [← DoubleCoset₀.mk_rep y, ← mk_inv_rep]
     apply mk_eq_iff.mpr
     have : y.rep⁻¹ * p.2.out⁻¹ * x.rep⁻¹ ∈ H := by
       simpa [mul_assoc] using
-        H.mul_mem hp (H.mul_mem (H.inv_mem (HeckeCoset.diag_mk_one_rep_mem H)) p.1.out.prop)
+        H.mul_mem hp (H.mul_mem (H.inv_mem (DoubleCoset₀.diag_mk_one_rep_mem H)) p.1.out.prop)
     exact ⟨p.2.out, p.2.out.prop, (y.rep⁻¹ * p.2.out⁻¹ * x.rep⁻¹), this, by simp [mul_assoc]⟩
   exact h heq
 
 @[simp]
-lemma multiplicity_apply_one {x y : HeckeCoset H H} [Decidable (y = x.inv)] :
+lemma multiplicity_apply_one {x y : DoubleCoset₀ H H} [Decidable (y = x.inv)] :
     x.multiplicity y (mk H H 1) = if y = x.inv then x.degree else 0 := by
   by_cases h : y = x.inv
-  · simp [h, HeckeCoset.multiplicity_self_inv_mk_one_eq_degree]
-  · simp [h, HeckeCoset.multiplicity_ne_self_inv_mk_one_eq_zero]
+  · simp [h, DoubleCoset₀.multiplicity_self_inv_mk_one_eq_degree]
+  · simp [h, DoubleCoset₀.multiplicity_ne_self_inv_mk_one_eq_zero]
 
-end HeckeCoset
+end DoubleCoset₀

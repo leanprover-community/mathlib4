@@ -61,43 +61,44 @@ end triple
 
 /-- The collection of double cosets admitting finite decomposition into left cosets. -/
 @[implicit_reducible]
-def HeckeCoset := {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G) // x.degree ≠ 0}
+def DoubleCoset₀ := {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G) // x.degree ≠ 0}
 
-instance : Coe (HeckeCoset H₁ H₂) (DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) := ⟨Subtype.val⟩
+instance : Coe (DoubleCoset₀ H₁ H₂) (DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :=
+  ⟨Subtype.val⟩
 
-namespace HeckeCoset
+namespace DoubleCoset₀
 
 variable {H₁ H₂ H₃}
 
 /-- A representative of the underlying double coset in the ambient group. -/
-noncomputable def rep (x : HeckeCoset H₁ H₂) : G := x.val.out
+noncomputable def rep (x : DoubleCoset₀ H₁ H₂) : G := x.val.out
 
-lemma rep_eq_out (x : HeckeCoset H₁ H₂) : x.rep = x.val.out := rfl
+lemma rep_eq_out (x : DoubleCoset₀ H₁ H₂) : x.rep = x.val.out := rfl
 
 /-- The cardinality of `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` where `g` is a representative of the underlying double
 coset. -/
-noncomputable abbrev degree (x : HeckeCoset H₁ H₂) : ℕ := x.val.degree
+noncomputable abbrev degree (x : DoubleCoset₀ H₁ H₂) : ℕ := x.val.degree
 
 @[simp]
-lemma degree_ne_zero (x : HeckeCoset H₁ H₂) :
+lemma degree_ne_zero (x : DoubleCoset₀ H₁ H₂) :
     x.degree ≠ 0 := x.prop
 
-lemma degree_eq_rep (x : HeckeCoset H₁ H₂) :
+lemma degree_eq_rep (x : DoubleCoset₀ H₁ H₂) :
     x.degree = Nat.card (DoubleCoset.DecompQuotient H₁ H₂ x.rep) := by
   simp [degree, rep_eq_out, ← DoubleCoset.degree_eq_out]
 
-instance (x : HeckeCoset H₁ H₂) : IsHeckeTriple H₁ H₂ x.rep := by
+instance (x : DoubleCoset₀ H₁ H₂) : IsHeckeTriple H₁ H₂ x.rep := by
   simp [isHeckeTriple_iff, rep_eq_out, DoubleCoset.mk_degree, ← DoubleCoset.degree_eq_out]
 
 /-- The Hecke double coset represented by `g`. -/
 abbrev mk (H₁ H₂ : Subgroup G) (g : G) [IsHeckeTriple H₁ H₂ g] :
-    HeckeCoset H₁ H₂ := ⟨DoubleCoset.mk H₁ H₂ g, IsHeckeTriple.degreeNeZero⟩
+    DoubleCoset₀ H₁ H₂ := ⟨DoubleCoset.mk H₁ H₂ g, IsHeckeTriple.degreeNeZero⟩
 
 lemma coe_mk (g : G) [IsHeckeTriple H₁ H₂ g] :
     mk H₁ H₂ g = DoubleCoset.mk H₁ H₂ g := rfl
 
 @[simp]
-lemma mk_rep (x : HeckeCoset H₁ H₂) :
+lemma mk_rep (x : DoubleCoset₀ H₁ H₂) :
     mk H₁ H₂ x.rep = x := by
   simp [mk, rep_eq_out, DoubleCoset.out_eq']
 
@@ -111,8 +112,7 @@ lemma mk_eq_iff {g g' : G} [IsHeckeTriple H₁ H₂ g] [IsHeckeTriple H₁ H₂ 
 
 @[simp]
 lemma diag_mk_one_rep_mem (H : Subgroup G) : (mk H H 1).rep ∈ H := by
-  obtain ⟨_, h₁, _, h₂, heq⟩ :=
-    HeckeCoset.mk_eq_iff.mp (show mk H H 1 = mk H H (mk H H 1).rep from by simp)
+  obtain ⟨_, h₁, _, h₂, heq⟩ := mk_eq_iff.mp (show mk H H 1 = mk H H (mk H H 1).rep from by simp)
   simp [heq, H.mul_mem h₁ h₂]
 
 @[simp]
@@ -120,10 +120,10 @@ lemma diag_one_degree_eq_one (H : Subgroup G) : (mk H H 1).degree = 1 := by
   rw [mk_degree, DoubleCoset.DecompQuotient.nat_card_eq_relIndex]
   simp
 
-lemma induction_on (x : HeckeCoset H₁ H₂) {p : HeckeCoset H₁ H₂ → Prop}
+lemma induction_on (x : DoubleCoset₀ H₁ H₂) {p : DoubleCoset₀ H₁ H₂ → Prop}
     (h : ∀ (g : G) [IsHeckeTriple H₁ H₂ g], p (mk H₁ H₂ g)) :
     p x := by
   rw [← mk_rep x]
   exact h x.rep
 
-end HeckeCoset
+end DoubleCoset₀
