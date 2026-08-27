@@ -48,7 +48,7 @@ theorem FredholmPackage.eventually_nhds_isInvertible
     pkg.decCodom.proj ∘L T ∘L pkg.decDom.X₁.subtypeL
   have Φ_cont : Continuous Φ := by fun_prop
   have Φ_T₀_inv : (Φ T₀).IsInvertible := ⟨pkg.equiv, by ext; simp [Φ, pkg.eq_equiv]⟩
-  exact Φ_cont.tendsto T₀ |>.eventually Φ_T₀_inv.eventually
+  exact Φ_cont.tendsto T₀ |>.eventually Φ_T₀_inv.eventually_nhds
 
 /-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
 enough to `T₀` (in operator norm) is also Fredholm. -/
