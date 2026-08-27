@@ -3925,6 +3925,7 @@ public import Mathlib.Data.Erased
 public import Mathlib.Data.FP.Basic
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Fin.Embedding
+public import Mathlib.Data.Fin.EquivOfInjective
 public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.Data.Fin.Init
