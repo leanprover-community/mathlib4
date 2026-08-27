@@ -67,15 +67,16 @@ theorem lowerCentralSeries_sup_le_sup_left (H K : Subgroup G) [K.Normal] :
 
 /-! ### Diagonal bound (proof-internal) -/
 
-/-- The diagonal bound `⨆ i ≤ n, H.lowerCentralSeries i ⊓ K.lowerCentralSeries (n - i)`.
+/-- The diagonal bound indexed by pairs in `Finset.antidiagonal n`.
 Used to track the simultaneous decay of `H`- and `K`-flavoured iterations. -/
 private def diagonalBound (H K : Subgroup G) (n : ℕ) : Subgroup G :=
-  ⨆ i : Fin (n + 1), H.lowerCentralSeries i.val ⊓ K.lowerCentralSeries (n - i.val)
+  ⨆ ij : ↥(Finset.antidiagonal n),
+    H.lowerCentralSeries ij.val.1 ⊓ K.lowerCentralSeries ij.val.2
 
-private theorem mem_diagonalBound {H K : Subgroup G} {n i : ℕ} (hi : i ≤ n) {g : G}
-    (hg : g ∈ H.lowerCentralSeries i ⊓ K.lowerCentralSeries (n - i)) :
+private theorem mem_diagonalBound {H K : Subgroup G} {n i j : ℕ} (hij : i + j = n) {g : G}
+    (hg : g ∈ H.lowerCentralSeries i ⊓ K.lowerCentralSeries j) :
     g ∈ diagonalBound H K n :=
-  mem_iSup_of_mem ⟨i, Nat.lt_succ_of_le hi⟩ hg
+  mem_iSup_of_mem ⟨(i, j), Finset.mem_antidiagonal.mpr hij⟩ hg
 
 private instance diagonalBound_normal (H K : Subgroup G) [H.Normal] [K.Normal] (n : ℕ) :
     (diagonalBound H K n).Normal :=
@@ -95,17 +96,17 @@ private theorem commutator_inf_lowerCentralSeries_right (H K : Subgroup G) [H.No
   exact le_inf ((commutator_mono inf_le_left le_rfl).trans (commutator_le_left _ _))
     (commutator_mono inf_le_right le_rfl)
 
-private theorem mem_diagonalBound_succ_left (H K : Subgroup G) {n i : ℕ} (hi : i ≤ n) {g : G}
-    (hg : g ∈ H.lowerCentralSeries (i + 1) ⊓ K.lowerCentralSeries (n - i)) :
-    g ∈ diagonalBound H K (n + 1) := by
-  have hidx : n + 1 - (i + 1) = n - i := by omega
-  exact mem_diagonalBound (Nat.succ_le_succ hi) (hidx ▸ hg)
+private theorem mem_diagonalBound_succ_left (H K : Subgroup G) {n i j : ℕ}
+    (hij : i + j = n) {g : G}
+    (hg : g ∈ H.lowerCentralSeries (i + 1) ⊓ K.lowerCentralSeries j) :
+    g ∈ diagonalBound H K (n + 1) :=
+  mem_diagonalBound (by omega) hg
 
-private theorem mem_diagonalBound_succ_right (H K : Subgroup G) {n i : ℕ} (hi : i ≤ n) {g : G}
-    (hg : g ∈ H.lowerCentralSeries i ⊓ K.lowerCentralSeries (n - i + 1)) :
-    g ∈ diagonalBound H K (n + 1) := by
-  have hidx : n + 1 - i = n - i + 1 := by omega
-  exact mem_diagonalBound (Nat.le_succ_of_le hi) (hidx ▸ hg)
+private theorem mem_diagonalBound_succ_right (H K : Subgroup G) {n i j : ℕ}
+    (hij : i + j = n) {g : G}
+    (hg : g ∈ H.lowerCentralSeries i ⊓ K.lowerCentralSeries (j + 1)) :
+    g ∈ diagonalBound H K (n + 1) :=
+  mem_diagonalBound (by omega) hg
 
 private theorem commutator_diagonalBound_sup_le
     (H K : Subgroup G) [H.Normal] [K.Normal] (n : ℕ) :
@@ -114,13 +115,13 @@ private theorem commutator_diagonalBound_sup_le
   obtain ⟨c, hc, d, hd, rfl⟩ := mem_sup_of_normal_right.mp hh
   refine iSup_induction
     (C := fun g => ⁅g, c * d⁆ ∈ diagonalBound H K (n + 1)) _ hg ?_ ?_ ?_
-  · intro i y hy
-    have hi : i.val ≤ n := Nat.lt_succ_iff.mp i.isLt
-    have hyc : ⁅y, c⁆ ∈ diagonalBound H K (n + 1) := mem_diagonalBound_succ_left H K hi
-      (commutator_inf_lowerCentralSeries_left H K i.val (n - i.val)
+  · intro ij y hy
+    have hij : ij.val.1 + ij.val.2 = n := Finset.mem_antidiagonal.mp ij.property
+    have hyc : ⁅y, c⁆ ∈ diagonalBound H K (n + 1) := mem_diagonalBound_succ_left H K hij
+      (commutator_inf_lowerCentralSeries_left H K ij.val.1 ij.val.2
         (commutator_mem_commutator hy hc))
-    have hyd : ⁅y, d⁆ ∈ diagonalBound H K (n + 1) := mem_diagonalBound_succ_right H K hi
-      (commutator_inf_lowerCentralSeries_right H K i.val (n - i.val)
+    have hyd : ⁅y, d⁆ ∈ diagonalBound H K (n + 1) := mem_diagonalBound_succ_right H K hij
+      (commutator_inf_lowerCentralSeries_right H K ij.val.1 ij.val.2
         (commutator_mem_commutator hy hd))
     rw [commutatorElement_mul_right_eq_mul_commutator]
     exact mul_mem (mul_mem hyc (commutator_le_right H _ (commutator_mem_commutator hc hyd))) hyd
@@ -144,7 +145,8 @@ private theorem lowerCentralSeries_sup_le_diagonalBound (H K : Subgroup G)
       rwa [lowerCentralSeries_eq_bot_of_nilpotencyClass_le hA, bot_sup_eq] at this
     have h₁ := aux H K (le_max_left _ _)
     have h₂ := sup_comm H K ▸ aux K H (le_max_right _ _)
-    exact (le_inf h₂ h₁).trans fun _ hg => mem_diagonalBound (n := 0) (i := 0) le_rfl hg
+    exact (le_inf h₂ h₁).trans fun _ hg =>
+      mem_diagonalBound (n := 0) (i := 0) (j := 0) rfl (by simpa using hg)
   | n + 1 => by
     rw [← add_assoc, lowerCentralSeries_succ]
     exact (commutator_mono (lowerCentralSeries_sup_le_diagonalBound H K n) le_rfl).trans
@@ -153,11 +155,12 @@ private theorem lowerCentralSeries_sup_le_diagonalBound (H K : Subgroup G)
 private theorem diagonalBound_eq_bot_of_nilpotent (H K : Subgroup G)
     [Group.IsNilpotent H] [Group.IsNilpotent K] :
     diagonalBound H K (Group.nilpotencyClass H + Group.nilpotencyClass K) = ⊥ := by
-  refine iSup_eq_bot.mpr fun i => ?_
-  by_cases h : Group.nilpotencyClass H ≤ i.val
+  refine iSup_eq_bot.mpr fun ij => ?_
+  by_cases h : Group.nilpotencyClass H ≤ ij.val.1
   · rw [lowerCentralSeries_eq_bot_of_nilpotencyClass_le h, bot_inf_eq]
-  · have hK : Group.nilpotencyClass K ≤
-        Group.nilpotencyClass H + Group.nilpotencyClass K - i.val := by omega
+  · have hK : Group.nilpotencyClass K ≤ ij.val.2 := by
+      have hij := Finset.mem_antidiagonal.mp ij.property
+      omega
     rw [lowerCentralSeries_eq_bot_of_nilpotencyClass_le hK, inf_bot_eq]
 
 /-! ### Main theorem -/
