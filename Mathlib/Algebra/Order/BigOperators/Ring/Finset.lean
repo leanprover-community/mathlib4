@@ -87,8 +87,8 @@ theorem sum_mul_self_eq_zero_iff [Semiring R] [LinearOrder R] [IsStrictOrderedRi
   simp
 
 theorem sum_sq_eq_zero_iff [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
-    [ExistsAddOfLE R] (s : Finset ι)
-    (f : ι → R) : ∑ i ∈ s, (f i) ^2 = 0 ↔ ∀ i ∈ s, f i = 0 := by
+    [ExistsAddOfLE R] (s : Finset ι) (f : ι → R) :
+    ∑ i ∈ s, f i ^ 2 = 0 ↔ ∀ i ∈ s, f i = 0 := by
     grind [sq_nonneg, Finset.sum_eq_zero_iff_of_nonneg, pow_eq_zero_iff]
 
 theorem sum_pow_eq_zero_iff_of_even
