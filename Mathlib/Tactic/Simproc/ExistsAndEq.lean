@@ -316,12 +316,38 @@ def mkAfterToBefore {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
       return q(Exists.intro $a' $pf1)
     mkLambdaFVars #[h] pf
 
-/-- Triggers at goals of the form `∃ a, body` and checks if `body` allows a single value `a'`
-for `a`. If so, replaces `a` with `a'` and removes quantifier.
+#check instantiateMVars
 
-It looks through nested quantifiers and conjunctions searching for a `a = a'`
-or `a' = a` subexpression. -/
-simproc ↓ existsAndEq (Exists _) := fun e => do
+/-- Runs `k` on `e` with every metavariable occurring in `e` replaced by a local variable, and
+substitutes the metavariables back into the resulting `Simp.Step`.
+
+The proof of a rewrite must be a closed term, and `substCore` reintroduces the substituted
+hypotheses through delayed assignments, which `instantiateMVars` only expands once the goal
+contains no metavariables at all (the discharger of `simp` rejects proofs with metavariables for
+the same reason). Goals containing metavariables are common under `aesop`, say. Since such
+metavariables predate every local variable introduced by the simproc, treating them as opaque
+local variables while the proof is built is sound. -/
+partial def withMVarsAsFVars (e : Expr) (k : Expr → MetaM Simp.Step) : MetaM Simp.Step := do
+  let e ← instantiateMVars e
+  go (← getMVars e).toList e #[] #[]
+where
+  /-- Introduces a local variable for each of the remaining metavariables. -/
+  go (mvars : List MVarId) (e : Expr) (ms xs : Array Expr) : MetaM Simp.Step := do
+    match mvars with
+    | [] =>
+      let subst (r : Simp.Result) : Simp.Result :=
+        { r with expr := r.expr.replaceFVars xs ms, proof? := r.proof?.map (·.replaceFVars xs ms) }
+      match ← k e with
+      | .done r => return .done (subst r)
+      | .visit r => return .visit (subst r)
+      | .continue r? => return .continue (r?.map subst)
+    | m :: mvars =>
+      withLocalDeclD .anonymous (← instantiateMVars (← m.getType)) fun x => do
+        let e := e.replace fun t => if t == mkMVar m then some x else none
+        go mvars e (ms.push (mkMVar m)) (xs.push x)
+
+/-- The implementation of `existsAndEq`, for an expression without metavariables. -/
+def existsAndEqCore (e : Expr) : MetaM Simp.Step := do
   let_expr f@Exists α p := e | return .continue
   lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => withNewMCtxDepth do
     let some u := f.constLevels![0]? | unreachable!
@@ -336,6 +362,13 @@ simproc ↓ existsAndEq (Exists _) := fun e => do
       let pfAfterBefore : Q($P' → (∃ a, $p a)) ← mkAfterToBefore a' fvars path
       let pf := q(propext ⟨$pfBeforeAfter, $pfAfterBefore⟩)
       return .visit <| Simp.ResultQ.mk _ <| some q($pf)
+
+/-- Triggers at goals of the form `∃ a, body` and checks if `body` allows a single value `a'`
+for `a`. If so, replaces `a` with `a'` and removes quantifier.
+
+It looks through nested quantifiers and conjunctions searching for a `a = a'`
+or `a' = a` subexpression. -/
+simproc ↓ existsAndEq (Exists _) := fun e => withMVarsAsFVars e existsAndEqCore
 
 end ExistsAndEq
 
