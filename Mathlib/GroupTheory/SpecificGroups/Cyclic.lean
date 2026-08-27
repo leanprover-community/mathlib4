@@ -950,7 +950,7 @@ theorem IsCyclic.subgroup_le_iff_index_dvd [Group G] [IsCyclic G] {H K : Subgrou
 /-- In a cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/
 @[to_additive
 /-- In an additive cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/]
-theorem IsCyclic.subgroup_le_subgroup_iff [Group G] [IsCyclic G] {H K : Subgroup G} [h : Finite K] :
+theorem IsCyclic.subgroup_le_iff_card_dvd [Group G] [IsCyclic G] {H K : Subgroup G} [h : Finite K] :
     H ≤ K ↔ Nat.card H ∣ Nat.card K := by
   obtain _ | _ := subsingleton_or_nontrivial K
   · simp [Subgroup.eq_bot_of_subsingleton]
@@ -965,9 +965,9 @@ theorem IsCyclic.subgroup_le_subgroup_iff [Group G] [IsCyclic G] {H K : Subgroup
 @[to_additive
 /-- In an additive cyclic group, if `H` and `K` are finite then `H = K` iff
 `Nat.card H = Nat.card K`. -/]
-theorem IsCyclic.subgroup_eq_subgroup_iff [Group G] [IsCyclic G] {H K : Subgroup G} [Finite H]
+theorem IsCyclic.subgroup_eq_iff_card_eq [Group G] [IsCyclic G] {H K : Subgroup G} [Finite H]
     [Finite K] : H = K ↔ Nat.card H = Nat.card K := by
-  rw [le_antisymm_iff, IsCyclic.subgroup_le_subgroup_iff, IsCyclic.subgroup_le_subgroup_iff,
+  rw [le_antisymm_iff, IsCyclic.subgroup_le_iff_card_dvd, IsCyclic.subgroup_le_iff_card_dvd,
     Nat.dvd_antisymm_iff]
 
 end SubgroupCard
