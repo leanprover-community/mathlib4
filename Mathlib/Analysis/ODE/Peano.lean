@@ -134,20 +134,19 @@ private lemma tonelliIterate_bounds (hf : IsPeano f t₀ x₀ r L) (n k : ℕ) :
       ⟨fun _ _ ↦ by simp [tonelliIterate, mem_closedBall],
         (LipschitzWith.const x₀).weaken L.2 |>.lipschitzOnWith⟩
   | succ k hk =>
+    have h_delayed : MapsTo (delayedInput t₀ n) (Icc t₀.val tmax) (Icc t₀.val tmax) :=
+      mapsTo_delayedInput t₀ n
+    have h_iterate_cont := hk.2.continuousOn
     have h_map : MapsTo
         (fun s ↦ tonelliIterate f t₀ x₀ n k (delayedInput t₀ n s))
         (Icc t₀ tmax) (closedBall x₀ r) :=
-      hk.1.comp (mapsTo_delayedInput t₀ n)
+      hk.1.comp h_delayed
     have h_cont :
         ContinuousOn
           (fun s ↦ f (s, tonelliIterate f t₀ x₀ n k (delayedInput t₀ n s)))
           (uIcc t₀.val tmax) := by
       rw [uIcc_of_le t₀.2.2]
-      exact hf.continuousOn.comp
-        (ContinuousOn.prodMk continuousOn_id
-          (ContinuousOn.comp hk.2.continuousOn
-            (lipschitzWith_delayedInput t₀ n).continuous.continuousOn
-            (mapsTo_delayedInput t₀ n)))
+      exact hf.continuousOn.comp (by fun_prop [delayedInput])
         (fun t ht ↦ ⟨Icc_t0_subset_Icc ht, h_map ht⟩)
     have h_int :
         IntervalIntegrable
