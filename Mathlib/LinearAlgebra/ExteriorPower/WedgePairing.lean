@@ -21,8 +21,8 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensiona
 
 /-- The linear equivalence induced by wedging with `vol` in complementary degrees. -/
 noncomputable def wedgePairingEquiv
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k : ℕ)
-    (l : ℕ) (hkl : k + l = finrank K V) :
+    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
+    (hkl : k + l = finrank K V) :
     ⋀[K]^l V ≃ₗ[K] (⋀[K]^k V →ₗ[K] K) := by
   classical
   let b := finBasis K V
@@ -50,7 +50,7 @@ noncomputable def wedgePairingEquiv
     (b.ExteriorAlgebra).ne_zero (Finset.univ : Finset (Fin (finrank K V))) <| by
       simpa [topVector] using congrArg Subtype.val
         ((topCoordinateBasis.forall_coord_eq_zero_iff (x := topVector)).mp
-          (fun i ↦ (show i = default from Subsingleton.elim _ _) ▸ hd))
+          (fun i ↦ by simpa [d, topCoordinate] using hd))
   let complementBasis : Basis (powersetCard (Fin (finrank K V)) k) K
       (⋀[K]^l V) :=
     (bl.reindex c.symm).groupSMul (fun s ↦ (permOfDisjoint (hdisj s)).sign⁻¹)
@@ -61,9 +61,9 @@ noncomputable def wedgePairingEquiv
       ExteriorAlgebra.basis_eq_coe_basis, Basis.groupSMul_apply]
   have hcomp_eq {s t : powersetCard (Fin (finrank K V)) k}
       (h : Disjoint t.val (c s).val) : t = s := by
+    apply c.injective
     apply Subtype.ext
-    apply compl_injective
-    simpa [c_val s] using Finset.compl_eq_of_disjoint_of_card_add_eq h (by
+    simpa [c_val] using Finset.compl_eq_of_disjoint_of_card_add_eq h (by
       simpa [t.prop, (c s).prop, Fintype.card_fin] using hkl)
   have hpair (s t : powersetCard (Fin (finrank K V)) k) :
       DirectSum.gMulLHom K (fun i ↦ ⋀[K]^i V) (bk t) (complementBasis s) =
@@ -82,13 +82,13 @@ noncomputable def wedgePairingEquiv
       rw [← ExteriorAlgebra.basis_eq_coe_basis b t, complementBasis_coe, mul_smul_comm,
         ExteriorAlgebra.basis_mul_of_not_disjoint b t (c s) hnotdisj]
       simp
-  let targetBasis := bk.dualBasis.unitsSMul (fun _ ↦ Units.mk0 d hd)
+  let targetBasis := bk.dualBasis.isUnitSMul (fun _ ↦ isUnit_iff_ne_zero.mpr hd)
   have hmap : f ∘ complementBasis = targetBasis := by
     funext s
     apply bk.ext
     intro t
     by_cases h : t = s <;>
-      simp [f, hpair, h, d, targetBasis, Module.Basis.unitsSMul_apply, Units.smul_def]
+      simp [f, hpair, h, d, targetBasis, Module.Basis.isUnitSMul_apply]
   exact LinearEquiv.ofBijective f
     (LinearMap.bijective_of_linearIndependent_of_span_eq_top complementBasis.span_eq
       (hmap.symm ▸ targetBasis.linearIndependent)
