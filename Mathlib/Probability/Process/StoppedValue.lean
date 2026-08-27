@@ -5,8 +5,8 @@ Authors: Etienne Marion
 -/
 module
 
-public import BrownianMotion.Auxiliary.LimitProcess
-public import BrownianMotion.StochasticIntegral.Cadlag
+public import Mathlib.Probability.Process.LimitProcess
+-- public import BrownianMotion.StochasticIntegral.Cadlag
 public import Mathlib.Probability.Process.Stopping
 
 /-!
