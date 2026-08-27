@@ -3683,6 +3683,7 @@ public import Mathlib.Combinatorics.Schnirelmann
 public import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Combinatorics.SetFamily.Compression.UV
+public import Mathlib.Combinatorics.SetFamily.DualVC
 public import Mathlib.Combinatorics.SetFamily.FourFunctions
 public import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 public import Mathlib.Combinatorics.SetFamily.Intersecting
@@ -5931,6 +5932,7 @@ public import Mathlib.NumberTheory.ModularForms.NormTrace
 public import Mathlib.NumberTheory.ModularForms.Petersson
 public import Mathlib.NumberTheory.ModularForms.ProperlyDiscontinuous
 public import Mathlib.NumberTheory.ModularForms.QExpansion
+public import Mathlib.NumberTheory.ModularForms.RamanujanFormula
 public import Mathlib.NumberTheory.ModularForms.SlashActions
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 public import Mathlib.NumberTheory.MulChar.Basic
