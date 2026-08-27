@@ -89,10 +89,13 @@ prime element.
 theorem height_eq_one_iff_exists_prime_span [UniqueFactorizationMonoid R]
     {p : Ideal R} [p.IsPrime] :
     p.height = 1 ↔ ∃ ϖ : R, Prime ϖ ∧ p = Ideal.span {ϖ} := by
-  refine ⟨fun hph => ?_, fun ⟨_, hϖ, hp⟩ => hp ▸ Ideal.height_span_singleton_eq_one_of_prime hϖ⟩
-  have : p.IsPrincipal := isPrincipal_of_height_eq_one hph
-  exact ⟨_, Submodule.IsPrincipal.prime_generator_of_isPrime p (p.ne_bot_of_height_eq_one hph),
-    (Ideal.span_singleton_generator p).symm⟩
+  constructor
+  · intro hph
+    have : p.IsPrincipal := isPrincipal_of_height_eq_one hph
+    exact ⟨_, Submodule.IsPrincipal.prime_generator_of_isPrime p (p.ne_bot_of_height_eq_one hph),
+      (Ideal.span_singleton_generator p).symm⟩
+  · rintro ⟨ϖ, hϖ, rfl⟩
+    exact Ideal.height_span_singleton_eq_one_of_prime hϖ
 
 section Hartogs
 
@@ -119,10 +122,12 @@ theorem mem_range_algebraMap_of_forall_prime {f : K}
     obtain ⟨ϖ, hϖirr, hϖdvd⟩ := WfDvdMonoid.exists_irreducible_factor hbu hb₀
     have hϖ : Prime ϖ := irreducible_iff_prime.mp hϖirr
     obtain ⟨a, b, hϖb, hab⟩ := h ϖ hϖ
-    have key : a₀ * b = a * b₀ := inj <| by
+    have ans : a₀ * b = a * b₀ := inj <| by
       rw [map_mul, map_mul, ← hf, ← hab]; ring
+    have := hϖdvd.mul_left a
+    rw [← ans] at this
     exact hϖ.not_isUnit <|
-      hred ((hϖ.dvd_or_dvd (key ▸ hϖdvd.mul_left a)).resolve_right hϖb) hϖdvd
+      hred ((hϖ.dvd_or_dvd this).resolve_right hϖb) hϖdvd
   obtain ⟨u, rfl⟩ := hb₀u
   exact ⟨a₀ * ↑u⁻¹, by
     rw [map_mul, ← hf, mul_assoc, ← map_mul, Units.mul_inv, map_one, mul_one]⟩
@@ -137,10 +142,11 @@ theorem iInf_localization_eq_bot :
   ext x
   rw [Algebra.mem_bot, Algebra.mem_iInf]
   refine ⟨fun hx => mem_range_algebraMap_of_forall_prime fun ϖ hϖ => ?_, ?_⟩
-  · obtain ⟨a, s, hs, rfl⟩ := hx ⟨⟨Ideal.span {ϖ}, (Ideal.span_singleton_prime hϖ.ne_zero).mpr hϖ⟩,
-      Ideal.height_span_singleton_eq_one_of_prime hϖ⟩
-    have hs0 : algebraMap R K s ≠ 0 :=
-      (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr fun h => hs (h ▸ Ideal.zero_mem _)
+  · have hp : (Ideal.span {ϖ}).IsPrime := (Ideal.span_singleton_prime hϖ.ne_zero).mpr hϖ
+    obtain ⟨a, s, hs, rfl⟩ :=
+      hx ⟨⟨Ideal.span {ϖ}, hp⟩, Ideal.height_span_singleton_eq_one_of_prime hϖ⟩
+    have hs0 : algebraMap R K s ≠ 0 := (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr
+      (nonZeroDivisors.ne_zero (Ideal.primeCompl_le_nonZeroDivisors _ hs))
     exact ⟨a, s, by simpa [Ideal.mem_span_singleton] using hs, inv_mul_cancel_right₀ hs0 _⟩
   · rintro ⟨y, rfl⟩ v
     exact ⟨y, 1, Submonoid.one_mem _, by simp⟩
