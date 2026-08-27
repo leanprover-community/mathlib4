@@ -79,31 +79,39 @@ def internalHomMap {U V : C} (f : V ⟶ U) (φ : F.over U ⟶ G.over U) :
   app W := φ.app ((Over.map f).op.obj W)
   naturality g := φ.naturality ((Over.map f).op.map g)
 
+@[simp]
+lemma internalHomMap_smul {U V : Cᵒᵖ} (f : U ⟶ V) (a : R.obj U)
+    (φ : F.over U.unop ⟶ G.over U.unop) :
+    F.internalHomMap G f.unop (a • φ) = R.map f a • F.internalHomMap G f.unop φ := by
+  ext W x
+  simp [internalHomMap, Functor.map_comp]
+  rfl
+
+@[simp]
+lemma internalHomMap_comp {U V W} (g : W ⟶ V) (f : V ⟶ U) (φ : F.over U ⟶ G.over U) :
+    F.internalHomMap G (g ≫ f) φ = F.internalHomMap G g (F.internalHomMap G f φ) := by
+  refine PresheafOfModules.hom_ext (fun _ ↦ ?_)
+  simp only [internalHomMap_app]
+  congr 1
+  simp [Over.mapComp_eq]
+
+@[simp]
+lemma internalHomMap_id {U : C} (φ : F.over U ⟶ G.over U) :
+    F.internalHomMap G (𝟙 U) φ = φ := by
+  refine PresheafOfModules.hom_ext (fun _ ↦ ?_)
+  simp only [internalHomMap_app]
+  congr 1
+  simp [Over.mapId_eq]
+
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def internalHom : PresheafOfModulesOfCommRing.{max u u₁ v₁} R where
   obj U := ModuleCat.of (R.obj U) (F.over U.unop ⟶ G.over U.unop)
   map {U V} f := ConcreteCategory.ofHom (C := ModuleCat (R.obj U))
     { toFun := internalHomMap _ _ f.unop
       map_add' _ _ := rfl
-      map_smul' _ _ := PresheafOfModules.hom_ext (fun _ ↦ by
-        ext
-        erw [over_smul_app_apply, over_smul_app_apply]
-        dsimp
-        rw [Functor.map_comp]
-        rfl ) }
-  map_id _ := by
-    ext
-    refine PresheafOfModules.hom_ext (fun _ ↦ ?_)
-    dsimp
-    congr
-    simp [Over.mapId_eq]
-  map_comp {X₁ X₂ X₃} f g := by
-    ext
-    refine PresheafOfModules.hom_ext (fun _ ↦ ?_)
-    dsimp
-    congr 2
-    simp [Over.mapComp_eq]
+      map_smul' a φ := internalHomMap_smul F G f a φ }
+  map_id _ := by ext x; simp [ModuleCat.restrictScalarsId'App_inv_apply (x := x)]
+  map_comp {X₁ X₂ X₃} f g := by ext; simp
 
 end PresheafOfModulesOfCommRing
