@@ -41,10 +41,10 @@ variable {R K} (χ : HeckeCharacter R K)
 
 namespace HeckeCharacter
 
-/- The restriction `χᵥ` of a character `χ` to the completion `Kᵥˣ` at a finite place `v`. -/
+/-- The restriction `χᵥ` of a character `χ` to the completion `Kᵥˣ` at a finite place `v`. -/
 @[simps!]
 def restrict (v : HeightOneSpectrum R) : MulChar (v.adicCompletion K) ℂ :=
-  .ofUnitHom <| χ.toUnitHom.comp <| .toHomUnits <| IdeleClassGroup.ofCompletion R K v
+  .ofUnitHom <| χ.toUnitHom.comp <| .toHomUnits <| IdeleClassGroup.ofAdicCompletion R K v
 
 /-- A Hecke character `χ` is said to be unramified at a finite place `v` when the restriction `χᵥ`
 is trivial on the local unit group `𝓞ᵥˣ` -/
