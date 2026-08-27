@@ -33,7 +33,7 @@ positive semidefinite matrices.
 - `RKHS.kernel_subRKHS`: the kernel of the subRKHS is formed by composing the adjoint of the kernel
   function of the full RKHS with a star projection acting on the kernel function of the full RKHS.
 - `RKHS.outerKernel`: the kernel generated from a function `f : X → V` with the rank-one operators
-  `z ↦ ⟪f y, z⟫ • f x` as its entries.
+  `⟪f y, ·⟫ • f x` as its entries.
 
 ## TODO
 
@@ -459,7 +459,7 @@ section outerKernel
 
 variable (𝕜) in
 /-- The kernel generated from a function `f : X → V` with the rank-one operators
-`z ↦ ⟪f y, z⟫ • f x` as its entries. -/
+`⟪f y, ·⟫ • f x` as its entries. -/
 def outerKernel (f : X → V) : Matrix X X (V →L[𝕜] V) :=
   .of fun x y ↦ rankOne 𝕜 (f x) (f y)
 
