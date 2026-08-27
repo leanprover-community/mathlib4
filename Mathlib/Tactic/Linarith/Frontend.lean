@@ -532,6 +532,28 @@ elab_rules : tactic
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
+/--
+Filter out `minimize` options from the config syntax.
+-/
+def filterMinimizeFromLinarithConfig (cfg : TSyntax ``Lean.Parser.Tactic.optConfig) :
+    TSyntax ``Lean.Parser.Tactic.optConfig :=
+  -- The config has one arg: a null node containing configItem nodes
+  let nullNode := cfg.raw.getArg 0
+  let configItems := nullNode.getArgs
+
+  -- Filter out configItem nodes that set `minimize`.
+  let filteredItems := configItems.filter fun item =>
+    match item[0]?, item.getKind with
+    | some configItem, ``Lean.Parser.Tactic.configItem =>
+      match configItem[1]? with
+      | some name => name.getId.eraseMacroScopes != `minimize
+      | none => true
+    | _, _ => true
+
+  -- Reconstruct the config with filtered items
+  let newNullNode := nullNode.setArgs filteredItems
+  ⟨cfg.raw.setArg 0 newNullNode⟩
+
 private meta partial def minimize (cfg : Linarith.LinarithConfig) (st : Tactic.SavedState)
     (g : MVarId) (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
   if _h : i < hs.length then
@@ -549,26 +571,30 @@ elab_rules : tactic
       withMainContext do
         let args ←
           ((args.map (TSepArray.getElems)).getD {}).mapM (elabTermWithoutNewMVars `linarith)
-        let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
+        let config := (← elabLinarithConfig cfg).updateReducibility bang.isSome
         let g ← getMainGoal
         let st ← saveState
         try
-          let used₀ ← Linarith.linarithUsedHyps o.isSome args.toList cfg g
+          let used₀ ← Linarith.linarithUsedHyps o.isSome args.toList config g
           -- Check that all used hypotheses are fvars (not arbitrary terms)
           if used₀.any (fun e => e.fvarId?.isNone) then
             throwError "linarith? currently only supports named hypothesis, not terms"
           let used ←
-            if cfg.minimize then
-              minimize cfg st g used₀ 0
+            if config.minimize then
+              minimize config st g used₀ 0
             else
               pure used₀
           st.restore
-          discard <| Linarith.linarith true used cfg g
+          discard <| Linarith.linarith true used config g
           replaceMainGoal []
+          let filteredCfg := filterMinimizeFromLinarithConfig cfg
           -- TODO: we should check for, and deal with, shadowed names here.
           let idsList ← used.mapM fun e => do
             pure (Lean.mkIdent (← e.fvarId!.getUserName))
-          let sugg ← `(tactic| linarith only [$(idsList.toArray),*])
+          let sugg ← if bang.isSome then
+            `(tactic| linarith! $filteredCfg:optConfig only [$(idsList.toArray),*])
+          else
+            `(tactic| linarith $filteredCfg:optConfig only [$(idsList.toArray),*])
           Lean.Meta.Tactic.TryThis.addSuggestion tk sugg
         catch e =>
           discard <| st.restore
