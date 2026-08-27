@@ -642,7 +642,7 @@ lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
 /-- The sum of two squares is zero iff both elements are zero -/
 lemma sq_add_sq_eq_zero [NoZeroDivisors R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
-    a^2 + b ^2 = 0 ↔ a = 0 ∧ b = 0 := by
+    a ^ 2 + b ^ 2 = 0 ↔ a = 0 ∧ b = 0 := by
     simpa [pow_two] using mul_self_add_mul_self_eq_zero
 
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
