@@ -34,7 +34,7 @@ open scoped Manifold MatrixGroups Topology
 
 namespace Derivative
 
-@[expose] public noncomputable section
+public noncomputable section
 
 /-- The dimension argument: let `F` be a weight-`k'` modular form whose underlying function is
 the Serre derivative `∂_κ f` of a holomorphic `f` with limit `l` at `i∞`. If the space of
