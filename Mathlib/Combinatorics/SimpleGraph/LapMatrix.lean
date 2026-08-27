@@ -157,7 +157,7 @@ theorem lapMatrix_top [AddGroupWithOne R] :
   ext i j
   rcases eq_or_ne i j with (rfl | h)
   · simp [lapMatrix, Nat.cast_pred <| Fintype.card_pos_iff.mpr ⟨i⟩, sub_eq_add_neg]
-  · simp [lapMatrix, natCast_apply, h]
+  · simp [lapMatrix, Matrix.natCast_apply, h]
 
 theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
     x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
