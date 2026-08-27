@@ -20,7 +20,7 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 
 public section
 
-open Encodable Denumerable
+open Denumerable
 open Computable Part
 open Nat.Partrec (Code)
 open Nat.Partrec.Code

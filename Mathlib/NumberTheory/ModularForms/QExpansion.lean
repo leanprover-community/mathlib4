@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # q-expansions of functions on the upper half plane
@@ -118,16 +119,9 @@ end UpperHalfPlane
 namespace SlashInvariantFormClass
 
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ.strictPeriods) :
-    Periodic (f ∘ ofComplex) h := by
-  intro w
-  by_cases! hw : 0 < im w
-  · have : 0 < im (w + h) := by simp [hw]
-    simp only [comp_apply, ofComplex_apply_of_im_pos this, ofComplex_apply_of_im_pos hw]
-    convert! SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f ⟨w, hw⟩ hΓ using 2
-    ext
-    simp [add_comm]
-  · have : im (w + h) ≤ 0 := by simpa using hw
-    simp [ofComplex_apply_of_im_nonpos this, ofComplex_apply_of_im_nonpos hw]
+    Periodic (f ∘ ofComplex) h :=
+  UpperHalfPlane.periodic_comp_ofComplex fun τ ↦
+    SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f τ hΓ
 
 protected theorem eq_cuspFunction [SlashInvariantFormClass F Γ k] (τ : ℍ)
     (hΓ : h ∈ Γ.strictPeriods) (hh : h ≠ 0) : cuspFunction h f (𝕢 h τ) = f τ :=
@@ -627,6 +621,15 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
   | succ n ih =>
     rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih,
       pow_succ]
+
+/-- The product of two non-zero modular forms is non-zero. -/
+protected lemma mul_ne_zero [Γ.HasDetPlusMinusOne] (hΓ : ∃ h ∈ Γ.strictPeriods, 0 < h)
+    {a b : ℤ} {f : ModularForm Γ a} {g : ModularForm Γ b} (hf : f ≠ 0) (hg : g ≠ 0) :
+    f.mul g ≠ 0 := by
+  obtain ⟨h, hΓ, hh⟩ := hΓ
+  simp only [ne_eq, ← ModularForm.qExpansion_eq_zero_iff hh hΓ,
+    ModularForm.qExpansion_mul hh hΓ] at hf hg ⊢
+  exact mul_ne_zero hf hg
 
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :

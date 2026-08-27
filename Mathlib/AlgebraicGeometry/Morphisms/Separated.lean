@@ -45,12 +45,9 @@ class IsSeparated : Prop where
   /-- A morphism is separated if the diagonal map is a closed immersion. -/
   isClosedImmersion_diagonal : IsClosedImmersion (pullback.diagonal f) := by infer_instance
 
-@[deprecated (since := "2026-01-20")]
-alias IsSeparated.diagonal_isClosedImmersion := IsSeparated.isClosedImmersion_diagonal
-
 namespace IsSeparated
 
-attribute [instance] diagonal_isClosedImmersion
+attribute [instance] isClosedImmersion_diagonal
 
 theorem isSeparated_eq_diagonal_isClosedImmersion :
     @IsSeparated = MorphismProperty.diagonal @IsClosedImmersion := by
@@ -276,7 +273,6 @@ variable {f g} in
 lemma IsAffineHom.comp_iff [IsAffineHom g] : IsAffineHom (f ≫ g) ↔ IsAffineHom f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 01KM]
 instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSeparated Y.hom]
     (f g : X ⟶ Y) : IsClosedImmersion (equalizer.ι f g).left := by
@@ -287,7 +283,6 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
   convert! (inferInstance : IsClosedImmersion (pullback.diagonal Y.hom))
   ext1 <;> simp [← Over.comp_left]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Suppose `X` is a reduced scheme and that `f g : X ⟶ Y` agree over some separated `Y ⟶ Z`.
 Then `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
@@ -340,7 +335,6 @@ protected class IsSeparated (X : Scheme.{u}) : Prop where
 
 attribute [instance] IsSeparated.isSeparated_terminal_from
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSeparated_iff_isClosedImmersion_prod_lift {X : Scheme.{u}} :
     X.IsSeparated ↔ IsClosedImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
   rw [isSeparated_iff, AlgebraicGeometry.isSeparated_iff, iff_iff_eq,
