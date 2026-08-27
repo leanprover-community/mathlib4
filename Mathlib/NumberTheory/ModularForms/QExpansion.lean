@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # q-expansions of functions on the upper half plane
@@ -118,16 +119,9 @@ end UpperHalfPlane
 namespace SlashInvariantFormClass
 
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ.strictPeriods) :
-    Periodic (f ∘ ofComplex) h := by
-  intro w
-  by_cases! hw : 0 < im w
-  · have : 0 < im (w + h) := by simp [hw]
-    simp only [comp_apply, ofComplex_apply_of_im_pos this, ofComplex_apply_of_im_pos hw]
-    convert! SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f ⟨w, hw⟩ hΓ using 2
-    ext
-    simp [add_comm]
-  · have : im (w + h) ≤ 0 := by simpa using hw
-    simp [ofComplex_apply_of_im_nonpos this, ofComplex_apply_of_im_nonpos hw]
+    Periodic (f ∘ ofComplex) h :=
+  UpperHalfPlane.periodic_comp_ofComplex fun τ ↦
+    SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f τ hΓ
 
 protected theorem eq_cuspFunction [SlashInvariantFormClass F Γ k] (τ : ℍ)
     (hΓ : h ∈ Γ.strictPeriods) (hh : h ≠ 0) : cuspFunction h f (𝕢 h τ) = f τ :=
@@ -628,6 +622,15 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih,
       pow_succ]
 
+/-- The product of two non-zero modular forms is non-zero. -/
+protected lemma mul_ne_zero [Γ.HasDetPlusMinusOne] (hΓ : ∃ h ∈ Γ.strictPeriods, 0 < h)
+    {a b : ℤ} {f : ModularForm Γ a} {g : ModularForm Γ b} (hf : f ≠ 0) (hg : g ≠ 0) :
+    f.mul g ≠ 0 := by
+  obtain ⟨h, hΓ, hh⟩ := hΓ
+  simp only [ne_eq, ← ModularForm.qExpansion_eq_zero_iff hh hΓ,
+    ModularForm.qExpansion_mul hh hΓ] at hf hg ⊢
+  exact mul_ne_zero hf hg
+
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
     ModularForm Γ k →+ PowerSeries ℂ where
@@ -659,6 +662,13 @@ lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     qExpansion h ((((DirectSum.of _ k f)) ^ n) (n * k)) = (qExpansion h f) ^ n := by
   have := (qExpansionRingHom h hh hΓ).map_pow (DirectSum.of _ k f) n
   simpa [DirectSum.ofPow]
+
+/-- Specialized version of `UpperHalfPlane.hasSum_qExpansion` for modular forms, with many
+arguments filled in automatically. -/
+lemma hasSum_qExpansion (hh : 0 < h) {k : ℤ} [ModularFormClass F Γ k]
+    [Fact (IsCusp .infty Γ)] (hΓ : h ∈ Γ.strictPeriods) (τ : ℍ) :
+    HasSum (fun m ↦ (qExpansion h f).coeff m * 𝕢 h τ ^ m) (f τ) :=
+  τ.hasSum_qExpansion hh (periodic_comp_ofComplex f hΓ) (holo f) (bdd_at_infty f)
 
 end ModularForm
 
