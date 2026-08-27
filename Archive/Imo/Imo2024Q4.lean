@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Incenter
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Incenter
 
 /-!
 # IMO 2024 Q4
@@ -574,7 +576,7 @@ end Imo2024Q4
 
 open Imo2024Q4
 
-theorem imo2024_q4 [Fact (finrank ℝ V = 2)] {A B C I X Y P K L : Pt} {ω : Sphere Pt}
+public theorem imo2024_q4 [Fact (finrank ℝ V = 2)] {A B C I X Y P K L : Pt} {ω : Sphere Pt}
     (affineIndependent_ABC : AffineIndependent ℝ ![A, B, C]) (AB_lt_AC : dist A B < dist A C)
     (AC_lt_BC : dist A C < dist B C)
     (incenter_eq_I : (⟨_, affineIndependent_ABC⟩ : Triangle ℝ Pt).incenter = I)

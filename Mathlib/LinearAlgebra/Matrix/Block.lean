@@ -69,6 +69,10 @@ abbrev IsUpperTriangular [LT m] (M : Matrix m m R) : Prop :=
 abbrev IsLowerTriangular [LT m] (M : Matrix m m R) : Prop :=
   M.BlockTriangular toDual
 
+/-- A matrix is indecomposable if it cannot be reindexed to block-triangular form. -/
+def IsIndecomposable (M : Matrix m m R) : Prop :=
+  ∀ i j A B D (e : Fin i ⊕ Fin j ≃ m), M = (fromBlocks A B 0 D).reindex e e → i = 0 ∨ j = 0
+
 @[simp]
 protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular b) :
     (M.submatrix f f).BlockTriangular (b ∘ f) := fun _ _ hij => h hij
@@ -236,6 +240,51 @@ theorem mem_blockTriangularSubalgebra [CommSemiring R] [Semiring A] [Algebra R A
     [DecidableEq m] [Fintype m] {M : Matrix m m A} :
     M ∈ blockTriangularSubalgebra R A b ↔ BlockTriangular M b :=
   Iff.rfl
+
+open Fintype in
+lemma isIndecomposable_iff_blockTriangular_const [Nontrivial α] [Finite m] [Zero R]
+    (M : Matrix m m R) :
+    M.IsIndecomposable ↔ ∀ b : m → α, M.BlockTriangular b → ∃ a, b = const m a := by
+  simp_rw [IsIndecomposable]
+  refine ⟨fun h b hb ↦ ?_, fun h i j A B D e he ↦ ?_⟩
+  · contrapose! h
+    have : Fintype m := .ofFinite m
+    rcases isEmpty_or_nonempty m with hm | hm
+    · exact False.elim <| h (Nonempty.some inferInstance) (IsEmpty.congr_fun _ _)
+    obtain ⟨K, k, hKk⟩ : ∃ K k, b k < b K := by
+      obtain ⟨K, hK⟩ := Finite.exists_max b
+      obtain ⟨k, hk⟩ : ∃ k, b k ≠ b K := by simpa using ne_iff.mp <| h (b K)
+      exact ⟨K, k, (hK k).lt_of_ne hk⟩
+    let s := {k // b k < b K}
+    let t := {k // ¬ b k < b K}
+    have : Nonempty s := ⟨⟨k, hKk⟩⟩
+    have : Nonempty t := ⟨⟨K, lt_irrefl _⟩⟩
+    let e : Fin (card s) ⊕ Fin (card t) ≃ m :=
+      ((Fintype.equivFin _).sumCongr (Fintype.equivFin _)).symm.trans (Equiv.sumCompl _)
+    let M' := M.submatrix e e
+    suffices M'.toBlocks₂₁ = 0 by
+      refine ⟨_, _, M'.toBlocks₁₁, M'.toBlocks₁₂, M'.toBlocks₂₂, e, ?_, card_ne_zero, card_ne_zero⟩
+      simp [← this, M'.fromBlocks_toBlocks, M']
+    have hp (x : Fin (card s)) : b (e (.inl x)) < b K := ((equivFin s).symm x).property
+    have hn (x : Fin (card t)) : b K ≤ b (e (.inr x)) := not_lt.mp ((equivFin t).symm x).property
+    ext i j
+    replace hb : M (e (Sum.inr i)) (e (Sum.inl j)) = 0 := hb (lt_of_lt_of_le (hp j) (hn i))
+    simpa [M', toBlocks₂₁]
+  · obtain ⟨a₁, a₂, ha₁₂⟩ : ∃ a₁ a₂ : α, a₁ < a₂ := exists_pair_lt α
+    set b : m → α := fun k ↦ Sum.elim (fun _ ↦ a₁) (fun _ ↦ a₂) (e.symm k) with hb
+    have hBT : M.BlockTriangular b := by
+      rw [he, Matrix.blockTriangular_reindex_iff]
+      rintro (r | r) (s | s) hrs
+      · aesop
+      · exact False.elim <| lt_irrefl a₁ <| ha₁₂.trans <| by aesop
+      · simp
+      · aesop
+    contrapose! ha₁₂
+    obtain ⟨a, ha⟩ := h b hBT
+    rw [hb] at ha
+    obtain rfl : a₁ = a := by simpa using congr_fun ha <| e <| .inl <| Nonempty.some ⟨⟨0, by lia⟩⟩
+    obtain rfl : a₂ = a₁ := by simpa using congr_fun ha <| e <| .inr <| Nonempty.some ⟨⟨0, by lia⟩⟩
+    exact le_refl _
 
 end LinearOrder
 
