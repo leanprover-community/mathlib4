@@ -497,12 +497,14 @@ jobs:
                 "attempt to create a new bump branch for the next nightly."
             )
 
-        # Post at most once per nightly date: this job runs on every green CI of
-        # `nightly-testing`, several times a day. We narrow by sender to ignore human replies.
+        # Post at most once per nightly date and bump branch: this job runs on every green CI
+        # of `nightly-testing`, several times a day. We narrow by sender to ignore human
+        # replies, and look back over several messages rather than just the newest, so that an
+        # intervening `Automatic PR creation failed` notice cannot hide our own last one.
         bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
         response = client.get_messages({
           'anchor': 'newest',
-          'num_before': 1,
+          'num_before': 20,
           'num_after': 0,
           'narrow': [
             {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
@@ -511,23 +513,21 @@ jobs:
           ],
           'apply_markdown': False    # Otherwise the content test below fails.
         })
-        messages = response['messages']
-        last_bot_message = messages[0] if messages else None
+        # Newest first, and only messages of our own kind.
+        previous = [m for m in reversed(response['messages']) if marker in m['content']]
+        last_skip_message = previous[0] if previous else None
 
-        # Test on the marker as well as the date and branch: this topic carries two kinds of
-        # bot message, and matching a bare date/branch would let one kind silence the other.
         should_post = True
-        if last_bot_message:
-            last_content = last_bot_message['content']
-            if (marker in last_content
-                    and f'`nightly-{current_version}`' in last_content
+        if last_skip_message:
+            last_content = last_skip_message['content']
+            if (f'`nightly-{current_version}`' in last_content
                     and f'`{bump_branch}`' in last_content):
                 should_post = False
                 print(f'Already posted for nightly {current_version} and {bump_branch}')
         if should_post:
-            if last_bot_message:
-                print("###### Last bot message:")
-                print(last_bot_message['content'])
+            if last_skip_message:
+                print("###### Last message of this kind:")
+                print(last_skip_message['content'])
             print("###### Current message:")
             print(payload)
             result = client.send_message({
@@ -537,6 +537,11 @@ jobs:
                 'content': payload
             })
             print(result)
+            # The Zulip client reports API-level failures in the return value rather than by
+            # raising, so a rejected message would otherwise be lost with the job still green.
+            if result.get('result') != 'success':
+                raise RuntimeError(
+                    f"Zulip send failed: {result.get('code')}: {result.get('msg')}")
 
     - name: Clean workspace and checkout Mathlib4
       if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'false'
@@ -647,16 +652,19 @@ jobs:
             # We extract these fields from the last bot message rather than comparing substrings,
             # since the message also contains a run ID that differs between workflow runs.
             # This topic also carries `Bump branch creation skipped` messages, posted by the
-            # step of that name above. Requiring the `PR that to ...` phrasing below, which
-            # only this message uses, is what keeps a skip notice from suppressing a genuine
-            # creation-failure notice; that step tests on its own marker for the same reason.
+            # step of that name above, and those quote the titles of the blocking PRs. Require
+            # this message's own marker before trusting the field regexes below, so that a PR
+            # title cannot make a skip notice look like an already-reported failure.
             should_post = True
             if last_bot_message:
                 last_content = last_bot_message['content']
                 # Extract nightly date and bump branch from last bot message
                 date_match = re.search(r'bump/nightly-(\d{4}-\d{2}-\d{2}(?:-rev\d+)?)', last_content)
-                branch_match = re.search(r'PR that to (bump/v[\d.]+)', last_content)
-                if date_match and branch_match:
+                # `[\d.]+` used to swallow the sentence-ending period here, so `branch_match`
+                # never equalled the bare branch name and this dedup never fired: several
+                # nightly dates in this topic have two identical reminders as a result.
+                branch_match = re.search(r'PR that to (bump/v\d+\.\d+\.\d+)', last_content)
+                if 'Automatic PR creation' in last_content and date_match and branch_match:
                     last_date = date_match.group(1)
                     last_branch = branch_match.group(1)
                     if last_date == current_version and last_branch == bump_branch:
