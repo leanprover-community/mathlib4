@@ -39,11 +39,11 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
 /-- Let `T₀ : E → F` be a Fredholm operator between two Banach spaces, and choose a
 `FredholmPackage` for `T₀`; that is, fix topological decompositions `E = E₁ ⊕ E₀` and `F = F₁ ⊕ F₀`,
 where `E₀` and `F₀` are finite dimensional, and such that in these decompositions we have
-$T₀ = \begin{pmatrix} α₀ & 0 \cr 0 & 0$ with `α₀` invertible.
+$T₀ = \begin{pmatrix} α₀ & 0 \cr 0 & 0 \end{pmatrix}$ with `α₀` invertible.
 
-Then, for $T = \begin{pmatrix} α & β \cr γ & δ$ close enough to `T₀` (in operator norm), we have
-that `α` is invertible. -/
-theorem FredholmPackage.eventually_isInvertible
+Then, for $T = \begin{pmatrix} α & β \cr γ & δ \end{pmatrix}$ close enough to `T₀`
+(in operator norm), we have that `α` is invertible. -/
+theorem FredholmPackage.eventually_nhds_isInvertible
     {T₀ : E →L[𝕜] F} (pkg : T₀.FredholmPackage) :
     ∀ᶠ T in 𝓝 T₀, (pkg.decCodom.proj ∘L T ∘L pkg.decDom.X₁.subtypeL).IsInvertible := by
   have : CompleteSpace pkg.decDom.X₁ := pkg.decDom.isTopCompl.isClosed.isComplete.completeSpace_coe
@@ -51,7 +51,7 @@ theorem FredholmPackage.eventually_isInvertible
     pkg.decCodom.proj ∘L T ∘L pkg.decDom.X₁.subtypeL
   have Φ_cont : Continuous Φ := by fun_prop
   have Φ_T₀_inv : (Φ T₀).IsInvertible := ⟨pkg.equiv, by ext; simp [Φ, pkg.eq_equiv]⟩
-  exact Φ_cont.tendsto T₀ |>.eventually Φ_T₀_inv.eventually
+  exact Φ_cont.tendsto T₀ |>.eventually Φ_T₀_inv.eventually_nhds
 
 private theorem FredholmPackage.eventually_isFredholm_and_index_eq [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (pkg : T₀.FredholmPackage) :
@@ -82,7 +82,7 @@ protected theorem IsFredholm.eventually [CompleteSpace 𝕜]
 /-- The set of Fredholm operators between two Banach spaces is open (for the operator norm)
 in the space of continuous linear maps. -/
 theorem isOpen_setOfPred_isFredholm [CompleteSpace 𝕜] : IsOpen {T : E →L[𝕜] F | T.IsFredholm} :=
-  isOpen_iff_mem_nhds.mpr fun _ ↦ IsFredholm.eventually
+  isOpen_iff_mem_nhds.mpr fun _ ↦ IsFredholm.eventually_nhds
 
 /-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
 enough to `T₀` (in operator norm) has the same index as `T₀`. -/

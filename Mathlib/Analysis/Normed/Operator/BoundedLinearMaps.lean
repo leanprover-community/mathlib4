@@ -565,7 +565,7 @@ theorem ContinuousLinearMap.isOpen_setOfPred_isInvertible [CompleteSpace E] :
     IsOpen {T : E →L[𝕜] F | T.IsInvertible} :=
   ContinuousLinearEquiv.isOpen
 
-protected theorem ContinuousLinearMap.IsInvertible.eventually [CompleteSpace E]
+protected theorem ContinuousLinearMap.IsInvertible.eventually_nhds [CompleteSpace E]
     {T : E →L[𝕜] F} (hT : T.IsInvertible) : ∀ᶠ S in 𝓝 T, S.IsInvertible :=
   ContinuousLinearMap.isOpen_setOfPred_isInvertible.eventually_mem hT
 
