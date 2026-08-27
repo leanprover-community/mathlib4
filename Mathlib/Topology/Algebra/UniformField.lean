@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.UniformRing
 

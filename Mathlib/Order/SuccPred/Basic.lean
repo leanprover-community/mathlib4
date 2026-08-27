@@ -118,7 +118,7 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
     (fun ha _ ↦ by
       rw [not_isMax_iff] at ha
       simp_rw [Set.Nonempty, mem_Ioi, dite_eq_left ha]
-      exact ⟨wellFounded_lt.min_le (s := Ioi _), lt_of_lt_of_le (wellFounded_lt.prop_min ha)⟩)
+      exact ⟨WellFoundedLT.min_le (s := Ioi _), lt_of_lt_of_le (wellFounded_lt.prop_min ha)⟩)
     fun _ ha ↦ dite_eq_right (not_not_intro ha <| not_isMax_iff.mpr ·)
 
 end LinearOrder
@@ -627,7 +627,7 @@ theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrd
 
 section Preorder
 
-variable [Preorder α] [PredOrder α] {a b : α}
+variable [Preorder α] [PredOrder α] {a : α}
 
 -- TODO: auto-generate all of these through `to_dual`
 
