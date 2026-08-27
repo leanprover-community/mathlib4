@@ -106,7 +106,7 @@ theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
 /-! ## Log and exp as inverses -/
 
 omit [Algebra ℚ A] in
-private theorem eq_of_deriv_mul_one_add_X_eq_self [IsAddTorsionFree A]
+private theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
     {g : A⟦X⟧} {c : A} (hderiv : d⁄dX A g * (1 + X) = g) (hconst : constantCoeff g = c) :
     g = c • (1 + X) := by
   have hcoeff (n) : coeff n (d⁄dX A g * (1 + X)) = coeff n g := by rw [hderiv]
