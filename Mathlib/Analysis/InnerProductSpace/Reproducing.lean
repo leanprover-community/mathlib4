@@ -259,11 +259,11 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
 
 theorem posSemidef_iff_re_sum_kernel : K.PosSemidef ↔ K.IsHermitian ∧ ∀ (f : X × V →₀ 𝕜),
     0 ≤ RCLike.re (f.sum fun xv z ↦ f.sum fun xv' w ↦ conj z * w * ⟪K xv'.1 xv.1 xv.2, xv'.2⟫_𝕜) :=
-  (posSemidef_tfae.out 1 2)
+  posSemidef_tfae.out 1 2
 
 theorem posSemidef_iff_re_sum_kernel' : K.PosSemidef ↔ K.IsHermitian ∧ ∀ (vv : X →₀ V),
     0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜) :=
-  (posSemidef_tfae.out 1 3)
+  posSemidef_tfae.out 1 3
 
 set_option linter.unusedVariables false in
 /-- Auxiliary construction for `OfKernel`. TODO: Privatize -/
