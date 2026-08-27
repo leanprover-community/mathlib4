@@ -6,6 +6,7 @@ Authors: Kirill Kondrashov
 module
 
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
+public import Mathlib.LinearAlgebra.Basis.Bilinear
 
 /-!
 # Wedge pairing on exterior powers
@@ -26,9 +27,10 @@ def complementEquiv (k l : ℕ) (hkl : k + l = finrank K V) :
   powersetCard.compl (by simpa using hkl)
 
 lemma complementEquiv_disjoint (k l : ℕ) (hkl : k + l = finrank K V)
-    (s : powersetCard (Fin (finrank K V)) l) :
-    Disjoint (complementEquiv k l hkl s).val s.val := by
-  simpa [complementEquiv] using (disjoint_compl_right : Disjoint s.val s.valᶜ).symm
+    (sourceIndex : powersetCard (Fin (finrank K V)) l) :
+    Disjoint (complementEquiv k l hkl sourceIndex).val sourceIndex.val := by
+  simpa [complementEquiv] using
+    (disjoint_compl_right : Disjoint sourceIndex.val sourceIndex.valᶜ).symm
 
 /-! ### The top-degree basis vector -/
 
@@ -42,30 +44,31 @@ def basisUniv (b : Basis (Fin (finrank K V)) K V) {k l : ℕ}
 /-! ### The wedge pairing -/
 
 lemma basis_mul_of_complement (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
-    (hkl : k + l = finrank K V) (s : powersetCard (Fin (finrank K V)) l)
-    (t : powersetCard (Fin (finrank K V)) k) :
-    DirectSum.gMulLHom K (fun i ↦ ⋀[K]^i V) (b.exteriorPower k t)
-        (b.exteriorPower l s) =
-      if t = complementEquiv k l hkl s then
-        (permOfDisjoint (complementEquiv_disjoint k l hkl s)).sign •
+    (hkl : k + l = finrank K V)
+    (sourceIndex : powersetCard (Fin (finrank K V)) l)
+    (targetIndex : powersetCard (Fin (finrank K V)) k) :
+    DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
+        (b.exteriorPower l sourceIndex) =
+      if targetIndex = complementEquiv k l hkl sourceIndex then
+        (permOfDisjoint (complementEquiv_disjoint k l hkl sourceIndex)).sign •
           basisUniv b hkl
       else 0 := by
   apply Subtype.ext
-  change (b.exteriorPower k t : ExteriorAlgebra K V) *
-      (b.exteriorPower l s : ExteriorAlgebra K V) = _
-  rw [← ExteriorAlgebra.basis_eq_coe_basis b t, ← ExteriorAlgebra.basis_eq_coe_basis b s]
-  split_ifs with ht
-  · subst t
-    rw [ExteriorAlgebra.basis_mul_of_disjoint b _ s
-      (complementEquiv_disjoint k l hkl s)]
-    simp [basisUniv, complementEquiv, Finset.union_comm]
-  · have hdisj : ¬Disjoint t.val s.val := by
-      intro h
-      apply ht
+  change (b.exteriorPower k targetIndex : ExteriorAlgebra K V) *
+      (b.exteriorPower l sourceIndex : ExteriorAlgebra K V) = _
+  rw [← ExteriorAlgebra.basis_eq_coe_basis b targetIndex,
+    ← ExteriorAlgebra.basis_eq_coe_basis b sourceIndex]
+  split_ifs with hcomplement
+  · subst targetIndex
+    simpa [basisUniv, complementEquiv, Finset.union_comm] using
+      ExteriorAlgebra.basis_mul_of_disjoint b (complementEquiv k l hkl sourceIndex) sourceIndex
+        (complementEquiv_disjoint k l hkl sourceIndex)
+  · have hdisjoint : ¬Disjoint targetIndex.val sourceIndex.val := by
+      intro disjoint
+      apply hcomplement
       simpa [powersetCard.eq_iff_subset, complementEquiv] using
-        Finset.subset_compl_iff_disjoint_right.mpr h
-    rw [ExteriorAlgebra.basis_mul_of_not_disjoint b t s hdisj]
-    simp
+        Finset.subset_compl_iff_disjoint_right.mpr disjoint
+    simpa using ExteriorAlgebra.basis_mul_of_not_disjoint b targetIndex sourceIndex hdisjoint
 
 section FiniteDimensional
 
@@ -84,7 +87,7 @@ def volumeCoordinate (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
 def wedgePairing (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
   {k l : ℕ} (hkl : k + l = finrank K V) :
     ⋀[K]^l V →ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
-  (LinearMap.flip (DirectSum.gMulLHom K (fun i ↦ ⋀[K]^i V))).compr₂
+  (LinearMap.flip (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V))).compr₂
     (volumeCoordinate vol hvol hkl)
 
 end FiniteDimensional
@@ -110,27 +113,22 @@ public noncomputable def wedgePairingEquiv
     intro hzero
     apply (b.ExteriorAlgebra).ne_zero (Finset.univ : Finset (Fin (finrank K V)))
     exact congrArg Subtype.val
-      (((hkl ▸ volumeBasis vol hvol).forall_coord_eq_zero_iff).mp fun i ↦ by
+      (((hkl ▸ volumeBasis vol hvol).forall_coord_eq_zero_iff).mp fun coordinateIndex ↦ by
         simpa [volumeCoordinate] using hzero)
   let pairingBasis := ((bk.dualBasis.reindex (complementEquiv k l hkl).symm).isUnitSMul
       (fun _ ↦ isUnit_iff_ne_zero.mpr hcoord)).groupSMul
-    (fun s ↦ (permOfDisjoint
-      (complementEquiv_disjoint k l hkl s)).sign)
+    (fun sourceIndex ↦ (permOfDisjoint
+      (complementEquiv_disjoint k l hkl sourceIndex)).sign)
   let basisEquiv := bl.equiv pairingBasis (Equiv.refl _)
   have basisEquiv_eq : basisEquiv.toLinearMap = wedgePairing vol hvol hkl := by
-    apply bl.ext
-    intro s
-    change basisEquiv (bl s) = wedgePairing vol hvol hkl (bl s)
-    rw [Basis.equiv_apply]
-    apply bk.ext
-    intro t
-    change _ = volumeCoordinate vol hvol hkl
-      (DirectSum.gMulLHom K (fun i ↦ ⋀[K]^i V) (b.exteriorPower k t)
-        (b.exteriorPower l s))
-    rw [basis_mul_of_complement b k l hkl s t]
-    by_cases h : t = complementEquiv k l hkl s <;>
-      simp [h, pairingBasis, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
-        Basis.groupSMul_apply, Equiv.symm_symm, smul_eq_mul]
+    refine LinearMap.ext_basis bl bk fun sourceIndex targetIndex ↦ ?_
+    change basisEquiv (bl sourceIndex) (bk targetIndex) = volumeCoordinate vol hvol hkl
+      (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
+        (b.exteriorPower l sourceIndex))
+    rw [Basis.equiv_apply, basis_mul_of_complement b k l hkl sourceIndex targetIndex]
+    by_cases target_eq_complement : targetIndex = complementEquiv k l hkl sourceIndex <;>
+      simp [target_eq_complement, pairingBasis, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
+        Basis.groupSMul_apply]
   exact LinearEquiv.ofBijective (wedgePairing vol hvol hkl) (by
     rw [← basisEquiv_eq]
     exact basisEquiv.bijective)
