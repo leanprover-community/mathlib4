@@ -74,7 +74,7 @@ noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} 
       simp only [exteriorPower.oneEquiv_symm_apply, LinearMap.coe_comp, Function.comp_apply,
         GradedAlgebra.linearGMul_eq_mul, exteriorPower.ιMulti_apply_coe,
         ExteriorAlgebra.ιMulti_succ_apply, ExteriorAlgebra.ιMulti_zero_apply, mul_one, ← mul_assoc,
-        CliffordAlgebra.ι_sq_scalar, QuadraticMap.zero_apply, map_zero, zero_mul]
+        CliffordAlgebra.ι_sq_scalar, zero_apply, map_zero, zero_mul]
       rfl)
 
 namespace koszulCocomplex
@@ -176,7 +176,7 @@ lemma X_isZero_of_card_generators_le (x : M) {ι : Type*} [Finite ι] [LinearOrd
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulCocomplex R x).X i) :=
   ModuleCat.isZero_of_iff_subsingleton.mpr
-    (exteriorPower.subsingleton_of_card_generators_le g hg i hi)
+    (exteriorPower.subsingleton_of_span_eq_top_of_card_lt g hg i hi)
 
 lemma ofList_X_isZero_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
     IsZero ((ofList l).X i) :=
