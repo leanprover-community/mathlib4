@@ -137,7 +137,7 @@ theorem IsEulerian.nil_iff {u v : V} {p : G.Walk u v} (hp : p.IsEulerian) : p.Ni
 /-- The support of a non-nil Eulerian trail equals the support of the graph. -/
 theorem IsEulerian.mem_support_iff {u v : V} {p : G.Walk u v} (hp : p.IsEulerian) (hnil : ¬p.Nil)
     (w : V) : w ∈ p.support ↔ ¬G.IsIsolated w :=
-  ⟨fun hwp hw ↦ hnil <| p.mem_support_of_isIsolated hw hwp, hp.mem_support_of_not_isIsolated⟩
+  ⟨fun hwp hw ↦ hnil <| p.nil_of_isIsolated_of_mem_support hw hwp, hp.mem_support_of_not_isIsolated⟩
 
 theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by

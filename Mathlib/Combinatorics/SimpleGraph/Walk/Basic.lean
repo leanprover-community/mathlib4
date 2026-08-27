@@ -460,7 +460,7 @@ theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : G.Walk u v}
   | nil => simp at hnil
   | cons h p ih => cases p <;> aesop
 
-theorem mem_support_of_isIsolated {p : G.Walk u v} {w : V} (hw : G.IsIsolated w)
+theorem nil_of_isIsolated_of_mem_support {p : G.Walk u v} (hw : G.IsIsolated w)
     (hwp : w ∈ p.support) : p.Nil := by
   contrapose! hw with hnil
   have ⟨e, hep, hwe⟩ := mem_support_iff_exists_mem_edges_of_not_nil hnil |>.mp hwp
