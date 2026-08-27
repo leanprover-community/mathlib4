@@ -83,7 +83,7 @@ lemma normalizedDerivOfComplex_D2 (γ : SL(2, ℤ)) :
 
 /-- Although `E₂` is only quasi-modular, its weight-1 Serre derivative `∂₁ E₂ = D E₂ - E₂² / 12`
 is invariant under the weight-4 slash action of `SL(2, ℤ)`. -/
-lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
+private lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
     serreDerivative 1 E2 ∣[(4 : ℤ)] γ = serreDerivative 1 E2 := by
   have hD2 : MDiff (D2 γ) := mdifferentiable_const.div (mdifferentiable_denom _) (denom_ne_zero _)
   -- One can apply slash-equivariance of Serre derivative after rewriting in terms of `∂₂`
@@ -113,7 +113,7 @@ lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
   ring
 
 /-- The weight-1 Serre derivative of `E₂`, packaged as a modular form of weight `4`. -/
-def serreDerivativeOneE2 : ModularForm 𝒮ℒ 4 where
+private def serreDerivativeOneE2 : ModularForm 𝒮ℒ 4 where
   toFun := serreDerivative 1 E2
   slash_action_eq' := fun _ ⟨γ, hγ⟩ ↦ hγ ▸ serreDerivativeOne_E2_slash γ
   holo' := serreDerivative_mdifferentiable 1 E2_mdifferentiable
