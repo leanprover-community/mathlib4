@@ -658,8 +658,8 @@ lemma qExpansion_injective (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ}
     fun f hf ↦ (ModularForm.qExpansion_eq_zero_iff hh hΓ f).1 hf
 
 @[simp]
-lemma qExpansion_inj (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ}
-    {f g : ModularForm Γ k} : qExpansion h f = qExpansion h g ↔ f = g :=
+lemma qExpansion_inj (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ} {f g : ModularForm Γ k} :
+    qExpansion h f = qExpansion h g ↔ f = g :=
   (qExpansion_injective hh hΓ).eq_iff
 
 open scoped DirectSum in
