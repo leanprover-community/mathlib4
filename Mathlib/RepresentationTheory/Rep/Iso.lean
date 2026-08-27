@@ -28,7 +28,7 @@ suppress_compilation
 
 section Group
 
-variable (k G H : Type u) [Group G] [Monoid H] [MulAction G H] [CommRing k] (n : ℕ)
+variable (k G : Type u) [Group G] [CommRing k] (n : ℕ)
 
 open MonoidalCategory Finsupp Representation.IntertwiningMap
 

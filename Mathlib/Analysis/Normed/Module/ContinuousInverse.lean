@@ -6,8 +6,9 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Continuous linear maps with a continuous left/right inverse
 
@@ -181,7 +182,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
   [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [T2Space F] {f : E →L[𝕜] F}
 
-/-- If `f : E → F` is injective and `E` is finite-dimensional,
+/-- If `f : E → F` is injective and `F` is finite-dimensional,
 `f` has a continuous left inverse. -/
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
     (hf : Injective f) :
@@ -198,7 +199,7 @@ end NontriviallyNormedField
 section Ring
 
 -- The next lemmas assume we are working over a ring.
-variable {R E E' F F' G : Type*} [Ring R]
+variable {R E F : Type*} [Ring R]
   [TopologicalSpace E] [AddCommGroup E] [Module R E]
   [TopologicalSpace F] [AddCommGroup F] [Module R F] {f : E →L[R] F}
 

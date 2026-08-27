@@ -54,8 +54,8 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a ha b hb hab
   simp only [Set.mem_Ici] at ha hb
-  rw [← inr_le_iff .., nnreal_cfcₙ_eq_cfc_inr a _, nnreal_cfcₙ_eq_cfc_inr b _]
-  rw [← inr_le_iff a b (.of_nonneg ha) (.of_nonneg hb)] at hab
+  rw [← inr_le_inr_iff, nnreal_cfcₙ_eq_cfc_inr a _, nnreal_cfcₙ_eq_cfc_inr b _]
+  rw [← inr_le_inr_iff] at hab
   rw [← inr_nonneg_iff] at ha hb
   have h_cfc_one_sub (c : A⁺¹) (hc : 0 ≤ c := by cfc_tac) :
       cfc (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) c = 1 - cfc (·⁻¹ : ℝ≥0 → ℝ≥0) (1 + c) := by
@@ -135,7 +135,9 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
 
 section ApproximateUnit
 
-open Metric Filter Topology
+open Metric Filter
+
+open scoped Topology
 
 /-- An *increasing approximate unit* in a C⋆-algebra is an approximate unit contained in the
 closed unit ball of nonnegative elements. -/
@@ -232,11 +234,11 @@ lemma nnnorm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [Star
   have hy₀ : y ∈ Set.Icc 0 1 := ⟨hx₀.trans hy.1, hy.2⟩
   have hy' : 1 - y ∈ Set.Icc 0 1 := Set.sub_mem_Icc_zero_iff_right.mpr hy₀
   rw [hy₀.1.star_eq, ← mul_assoc, mul_assoc (star _), ← sq]
-  refine nnnorm_le_nnnorm_of_nonneg_of_le (star_left_conjugate_nonneg (pow_nonneg hy'.1 2) _) ?_
+  refine nnnorm_le_nnnorm_of_le_of_nonneg ?_ (star_left_conjugate_nonneg (pow_nonneg (1 - y) 2) _)
     |>.trans h
   refine star_left_conjugate_le_conjugate ?_ _
   trans (1 - y)
-  · simpa using pow_antitone hy'.1 hy'.2 one_le_two
+  · simpa using pow_antitone hy'.2 hy'.1 one_le_two
   · gcongr
     exact hy.1
 
@@ -256,8 +258,7 @@ lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x �
   refine norm_sub_mul_self_le _ ?_ ?_ hc h
   · rwa [inr_nonneg_iff]
   · have hy := hx₀.trans hxy
-    rw [Set.mem_Icc, inr_le_iff _ _ hx₀.isSelfAdjoint hy.isSelfAdjoint,
-      ← norm_le_one_iff_of_nonneg _, norm_inr]
+    rw [Set.mem_Icc, inr_le_inr_iff, ← norm_le_one_iff_of_nonneg _, norm_inr]
     exact ⟨hxy, hy₁⟩
 
 variable {A} in
@@ -276,8 +277,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
   simp only [mem_closedBall, dist_eq_norm', zero_sub, norm_neg] at hx₂ ⊢
   rw [← coe_nnnorm, coe_le_coe]
   have hx₀ : 0 ≤ x := cfcₙ_nonneg_of_predicate.trans hx₁
-  rw [← inr_le_iff _ _ (.of_nonneg cfcₙ_nonneg_of_predicate) (.of_nonneg hx₀),
-    nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [tsub_self]), inr_smul] at hx₁
+  rw [← inr_le_inr_iff, nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [tsub_self]), inr_smul] at hx₁
   rw [← norm_inr (𝕜 := ℂ)] at hm₂ hx₂
   rw [← inr_nonneg_iff] at hx₀ hm₁
   rw [← nnnorm_inr (𝕜 := ℂ), inr_sub, inr_mul]

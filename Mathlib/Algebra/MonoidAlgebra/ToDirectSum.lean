@@ -165,7 +165,6 @@ namespace DirectSum
 
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toAddMonoidAlgebra_zero [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     toAddMonoidAlgebra 0 = (0 : AddMonoidAlgebra M ι) := by simp [toAddMonoidAlgebra]

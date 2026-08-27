@@ -36,7 +36,9 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 @[expose] public section
 
 
-open TopologicalSpace Topology Function
+open TopologicalSpace Function
+
+open scoped Topology
 
 /-- The type of open subgroups of a topological additive group. -/
 structure OpenAddSubgroup (G : Type*) [AddGroup G] [TopologicalSpace G] extends AddSubgroup G where
@@ -328,8 +330,6 @@ instance : Lattice (OpenSubgroup G) where
 end OpenSubgroup
 
 namespace Submodule
-
-open OpenAddSubgroup
 
 variable {R : Type*} {M : Type*} [CommRing R]
 variable [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M] [Module R M]
