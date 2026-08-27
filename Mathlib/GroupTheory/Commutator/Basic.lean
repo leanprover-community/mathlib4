@@ -151,6 +151,14 @@ theorem commutator_le : ⁅H₁, H₂⁆ ≤ H₃ ↔ ∀ g₁ ∈ H₁, ∀ g�
 theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁, H₂⁆ ≤ ⁅K₁, K₂⁆ :=
   commutator_le.mpr fun _g₁ hg₁ _g₂ hg₂ => commutator_mem_commutator (h₁ hg₁) (h₂ hg₂)
 
+@[to_additive (attr := gcongr)]
+theorem commutator_mono_left (h : H₁ ≤ H₂) : ⁅H₁, K⁆ ≤ ⁅H₂, K⁆ :=
+  commutator_mono h le_rfl
+
+@[to_additive (attr := gcongr)]
+theorem commutator_mono_right (h : K₁ ≤ K₂) : ⁅H, K₁⁆ ≤ ⁅H, K₂⁆ :=
+  commutator_mono le_rfl h
+
 @[to_additive]
 theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ centralizer H₂ := by
   rw [eq_bot_iff, commutator_le]
@@ -273,6 +281,10 @@ end Normal
 @[to_additive]
 theorem commutator_le_sup : ⁅H₁, H₂⁆ ≤ H₁ ⊔ H₂ :=
   commutator_le.mpr <| by grind [mul_assoc, mul_mem, mul_mem_sup, inv_mem]
+
+@[to_additive]
+theorem commutator_le_of_le (h₁ : K₁ ≤ K) (h₂ : K₂ ≤ K) : ⁅K₁, K₂⁆ ≤ K :=
+  (commutator_le_sup K₁ K₂).trans (sup_le h₁ h₂)
 
 @[to_additive]
 theorem normalizer_commutator_ge_left : H₁ ≤ normalizer (⁅H₁, H₂⁆ : Subgroup G) := by
