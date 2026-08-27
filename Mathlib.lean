@@ -5836,6 +5836,10 @@ public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 public import Mathlib.NumberTheory.Harmonic.Int
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.HeckeRing.Defs
+public import Mathlib.NumberTheory.HeckeRing.HeckeCoset.Basic
+public import Mathlib.NumberTheory.HeckeRing.HeckeCoset.DecompQuotient
+public import Mathlib.NumberTheory.HeckeRing.HeckeCoset.Multiplicity
+public import Mathlib.NumberTheory.HeckeRing.HeckeCoset.Unimodular
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.EllipticCurve
 public import Mathlib.NumberTheory.Height.MvPolynomial
