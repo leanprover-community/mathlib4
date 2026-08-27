@@ -25,7 +25,7 @@ assert_not_exists Field
 
 open MulAction MonoidHom Nat
 
-variable {G : Type*} [Group G] {H : Subgroup G} {p : ℕ}
+variable {G : Type*} [Group G] {H : Subgroup G}
 
 namespace Subgroup
 

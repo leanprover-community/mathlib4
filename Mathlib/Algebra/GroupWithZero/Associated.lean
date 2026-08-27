@@ -43,15 +43,9 @@ protected theorem refl [Monoid M] (x : M) : x ~ᵤ x :=
 protected theorem rfl [Monoid M] {x : M} : x ~ᵤ x :=
   .refl x
 
-instance [Monoid M] : @Std.Refl M Associated :=
-  ⟨Associated.refl⟩
-
 @[symm]
 protected theorem symm [Monoid M] : ∀ {x y : M}, x ~ᵤ y → y ~ᵤ x
   | x, _, ⟨u, rfl⟩ => ⟨u⁻¹, by rw [mul_assoc, Units.mul_inv, mul_one]⟩
-
-instance [Monoid M] : Std.Symm (α := M) Associated :=
-  ⟨fun _ _ => Associated.symm⟩
 
 protected theorem comm [Monoid M] {x y : M} : x ~ᵤ y ↔ y ~ᵤ x :=
   ⟨Associated.symm, Associated.symm⟩
@@ -60,8 +54,10 @@ protected theorem comm [Monoid M] {x y : M} : x ~ᵤ y ↔ y ~ᵤ x :=
 protected theorem trans [Monoid M] : ∀ {x y z : M}, x ~ᵤ y → y ~ᵤ z → x ~ᵤ z
   | x, _, _, ⟨u, rfl⟩, ⟨v, rfl⟩ => ⟨u * v, by rw [Units.val_mul, mul_assoc]⟩
 
-instance [Monoid M] : IsTrans M Associated :=
-  ⟨fun _ _ _ => Associated.trans⟩
+instance [Monoid M] : IsEquiv M Associated where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
 @[instance_reducible]
@@ -234,11 +230,27 @@ protected theorem Associated.prime [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ 
     Prime q :=
   ⟨h.ne_zero_iff.1 hp.ne_zero,
     let ⟨u, hu⟩ := h
-    ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩, by
+    ⟨fun ⟨v, hv⟩ => hp.not_isUnit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩, by
       rw [← hu]
       simp only [Units.isUnit, IsUnit.mul_right_dvd]
       intro a b
       exact hp.dvd_or_dvd⟩⟩
+
+lemma Associated.isRelPrime_left [Monoid M] {a b c : M} (assoc : Associated a b)
+    (h : IsRelPrime a c) : IsRelPrime b c :=
+  fun _ hb hc ↦ h (assoc.dvd_iff_dvd_right.mpr hb) hc
+
+lemma Associated.isRelPrime_iff_left [Monoid M] {a b c : M} (assoc : Associated a b) :
+    IsRelPrime a c ↔ IsRelPrime b c :=
+  ⟨fun h ↦ isRelPrime_left assoc h, fun h ↦ isRelPrime_left assoc.symm h⟩
+
+lemma Associated.isRelPrime_right [Monoid M] {a b c : M} (assoc : Associated a b)
+    (h : IsRelPrime c a) : IsRelPrime c b :=
+  fun _ hc hb ↦ h hc (assoc.dvd_iff_dvd_right.mpr hb)
+
+lemma Associated.isRelPrime_iff_right [Monoid M] {a b c : M} (assoc : Associated a b) :
+    IsRelPrime c a ↔ IsRelPrime c b :=
+  ⟨fun h ↦ isRelPrime_right assoc h, fun h ↦ isRelPrime_right assoc.symm h⟩
 
 theorem prime_mul_iff [CommMonoidWithZero M] [IsCancelMulZero M] {x y : M} :
     Prime (x * y) ↔ (Prime x ∧ IsUnit y) ∨ (IsUnit x ∧ Prime y) := by

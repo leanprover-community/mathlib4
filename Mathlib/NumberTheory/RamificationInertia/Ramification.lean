@@ -6,8 +6,12 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.GroupWithZero.Torsion
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.RingTheory.Nakayama
+public import Mathlib.Tactic.Continuity
 
 /-!
 # Ramification index
@@ -68,7 +72,6 @@ noncomputable def ramificationIdx' : ℕ := sSup {n | map f p ≤ P ^ n}
 
 variable {p P}
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem ramificationIdx'_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx' p P = Nat.find h := by
@@ -78,7 +81,7 @@ theorem ramificationIdx'_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p
 
 theorem ramificationIdx'_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n < k) :
     ramificationIdx' p P = 0 :=
-  dif_neg (by push Not; exact h)
+  dite_eq_right (by push Not; exact h)
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_eq_zero := ramificationIdx'_eq_zero
 
@@ -112,7 +115,7 @@ theorem ramificationIdx'_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramification
 
 @[simp]
 theorem ramificationIdx'_bot : ramificationIdx' (⊥ : Ideal R) P = 0 :=
-  dif_neg <| not_exists.mpr fun n hn => n.lt_succ_self.not_ge (hn _ (by simp))
+  dite_eq_right <| not_exists.mpr fun n hn => n.lt_succ_self.not_ge (hn _ (by simp))
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_bot := ramificationIdx'_bot
 
@@ -303,7 +306,6 @@ theorem ramificationIdx'_ne_zero_of_liesOver [IsDomain R] [IsTorsionFree R S]
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_ne_zero_of_liesOver :=
   ramificationIdx'_ne_zero_of_liesOver
 
-set_option backward.isDefEq.respectTransparency.types false in
 open IsLocalRing in
 lemma ramificationIdx'_eq_one_iff
     {p : Ideal R} {P : Ideal S} [P.IsPrime]

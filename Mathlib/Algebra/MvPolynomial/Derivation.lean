@@ -84,7 +84,6 @@ theorem derivation_ext {D₁ D₂ : Derivation R (MvPolynomial σ R) A} (h : ∀
 
 variable [IsScalarTower R (MvPolynomial σ R) A]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
     (∀ p q, D (p * q) = p • D q + q • D p) ↔ ∀ s i, D (monomial s 1 * X i) =
     (monomial s 1 : MvPolynomial σ R) • D (X i) + (X i : MvPolynomial σ R) • D (monomial s 1) := by
@@ -114,14 +113,14 @@ def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
   map_one_eq_zero' := mkDerivationₗ_C _ 1
   leibniz' :=
     (leibniz_iff_X (mkDerivationₗ R f) (mkDerivationₗ_C _ 1)).2 fun s i => by
-      simp only [mkDerivationₗ_monomial, X, monomial_mul, one_smul, one_mul]
+      simp only [mkDerivationₗ_monomial, X, monomial_mul_monomial, one_smul, one_mul]
       rw [Finsupp.sum_add_index'] <;>
         [skip; simp; (intros; simp only [Nat.cast_add, (monomial _).map_add, add_smul])]
       rw [Finsupp.sum_single_index, Finsupp.sum_single_index] <;> [skip; simp; simp]
       rw [tsub_self, add_tsub_cancel_right, Nat.cast_one, ← C_apply, C_1, one_smul, add_comm,
         Finsupp.smul_sum]
       refine congr_arg₂ (· + ·) rfl (Finset.sum_congr rfl fun j hj => ?_); dsimp only
-      rw [smul_smul, monomial_mul, one_mul, add_comm s, add_tsub_assoc_of_le]
+      rw [smul_smul, monomial_mul_monomial, one_mul, add_comm s, add_tsub_assoc_of_le]
       rwa [Finsupp.single_le_iff, Nat.succ_le_iff, pos_iff_ne_zero, ← Finsupp.mem_support_iff]
 
 @[simp]

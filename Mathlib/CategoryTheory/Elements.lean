@@ -211,7 +211,6 @@ def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F where
 
 open Opposite
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forward direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.
 -/
@@ -284,7 +283,6 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
   Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
 @[simps]
