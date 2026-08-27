@@ -258,13 +258,15 @@ def validateCurl : IO Bool := do
           "-L", "-o", CURLBIN.toString]
         let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
         return true
-      -- The parallel download path passes `--retry-all-errors`, which
-      -- needs curl 7.71; an older curl rejects the whole command.
-      if version >= (7, 71) then
+      -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
+      -- and read the `exitcode` and `errormsg` fields of the per-transfer
+      -- JSON report (curl 7.75); an older curl rejects the flag or omits
+      -- the fields.
+      if version >= (7, 75) then
         IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
         return true
       else
-        IO.println s!"Warning: recommended `curl` version ≥7.71. Found {v}. Can't use `--parallel`."
+        IO.println s!"Warning: recommended `curl` version ≥7.75. Found {v}. Can't use `--parallel`."
         return false
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"

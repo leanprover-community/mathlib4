@@ -91,11 +91,11 @@ def probeContainerForSHA (container : Container) (repo sha : String) :
   let out ← IO.Process.output
     {cmd := (← IO.getCurl),
      args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I"] ++
-       -- `cache query` runs this probe without `validateCurl`, so it must
-       -- work on curls below 7.71.
-       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := true) ++
-       -- Time-bound each probe: the query walk makes up to 50 of them serially.
-       #["--connect-timeout", "10", "--max-time", "30", "--retry-max-time", "30", url],
+       -- No retry flags: the probe is diagnostic and a false negative is
+       -- cheap. The time bounds keep an unreachable endpoint from stalling
+       -- the up-to-50-probe `cache query` walk.
+       curlFollowRedirectArgs ++
+       #["--connect-timeout", "10", "--max-time", "30", url],
      cwd := "."}
   if out.exitCode != 0 then
     -- Network error; assume no cache at this SHA

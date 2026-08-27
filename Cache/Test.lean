@@ -1040,8 +1040,8 @@ end ReadRedirects
 section RetryFlags
 
 /-- Only a path with a curl 7.71 floor may pass `--retry-all-errors`; an older
-curl rejects the whole command. The legacy tier serves the serial download path
-and the marker probe, so it must stay free of that flag. -/
+curl rejects the whole command. The legacy tier serves the serial download
+path, so it must stay free of that flag. -/
 def test_curlRetryArgs : IO Unit := do
   IO.println "curlRetryArgs:"
   assertEq "legacy tier" "--retry 5"

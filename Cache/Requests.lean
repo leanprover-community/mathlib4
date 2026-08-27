@@ -344,7 +344,8 @@ def curlFollowRedirectArgs : Array String :=
 408/429/5xx; every supported curl accepts it. With
 `supportLegacyCurl := false`, `--retry-all-errors` also retries transport
 errors on a fresh connection, with exponential backoff. That flag needs
-curl 7.71, the `validateCurl` floor for parallel mode; pass
+curl 7.71; `validateCurl` gates parallel mode at 7.75, which also
+guarantees the per-transfer JSON report fields `monitorCurl` reads. Pass
 `supportLegacyCurl := true` on paths that must work on older curls.
 -/
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
