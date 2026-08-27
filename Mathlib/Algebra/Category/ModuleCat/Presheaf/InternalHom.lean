@@ -48,7 +48,10 @@ instance smulOver (U : Cᵒᵖ) (F G : (PresheafOfModulesOfCommRing ((Over.forge
     naturality f := by
       ext x
       dsimp
-      sorry
+      rw [PresheafOfModules.naturality_apply, G.map_smul]
+      congr 1
+      change R.map _ a = R.map f.unop.left.op (R.map _ a)
+      rw [← comp_apply, ← R.map_comp, ← op_comp, f.unop.w]
   }
 
 lemma over_smul_app_apply
@@ -84,7 +87,7 @@ lemma internalHomMap_smul {U V : Cᵒᵖ} (f : U ⟶ V) (a : R.obj U)
     (φ : F.over U.unop ⟶ G.over U.unop) :
     F.internalHomMap G f.unop (a • φ) = R.map f a • F.internalHomMap G f.unop φ := by
   ext W x
-  simp [internalHomMap, Functor.map_comp]
+  simp
   rfl
 
 @[simp]
@@ -110,8 +113,38 @@ def internalHom : PresheafOfModulesOfCommRing.{max u u₁ v₁} R where
   map {U V} f := ConcreteCategory.ofHom (C := ModuleCat (R.obj U))
     { toFun := internalHomMap _ _ f.unop
       map_add' _ _ := rfl
-      map_smul' a φ := internalHomMap_smul F G f a φ }
+      map_smul' a φ := internalHomMap_smul _ _ _ _ _ }
   map_id _ := by ext x; simp [ModuleCat.restrictScalarsId'App_inv_apply (x := x)]
   map_comp {X₁ X₂ X₃} f g := by ext; simp
+
+open Opposite
+
+@[simps]
+def internalHomFunctor : PresheafOfModulesOfCommRing.{u} R ⥤
+    PresheafOfModulesOfCommRing.{max u u₁ v₁} R where
+  obj G := internalHom F G
+  map φ :=
+    { app V := ModuleCat.ofHom
+        { toFun s := s ≫ overHom φ (unop V)
+          map_smul' b s := by simp
+          map_add' := by simp }
+    }
+
+/-- Internal version of the co-Yoneda functor `CategoryTheory.coyoneda` -/
+@[simps]
+def internalHomCoyoneda :
+    (PresheafOfModulesOfCommRing.{u} R)ᵒᵖ ⥤
+      PresheafOfModulesOfCommRing.{u} R ⥤
+      PresheafOfModulesOfCommRing.{max u u₁ v₁} R where
+  obj F := internalHomFunctor (unop F)
+  map φ :=
+    { app G :=
+      { app V := ModuleCat.ofHom
+          { toFun s := overHom φ.unop (unop V) ≫ s
+            map_add' := by simp
+            map_smul' := by simp
+          }
+      }
+    }
 
 end PresheafOfModulesOfCommRing
