@@ -354,6 +354,9 @@ theorem commutator_sup_left (H K N : Subgroup G) [N.Normal] : ⁅H ⊔ K, N⁆ =
   · grw [← inf_normalizer_le_normalizer_sup, ← normalizer_commutator_ge_right,
       ← normalizer_commutator_ge_right, inf_idem]
 
+theorem commutator_sup_right (N H K : Subgroup G) [N.Normal] : ⁅N, H ⊔ K⁆ = ⁅N, H⁆ ⊔ ⁅N, K⁆ := by
+  simp_rw [commutator_comm N, commutator_sup_left]
+
 @[to_additive]
 instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characteristic H₂] :
     Characteristic ⁅H₁, H₂⁆ :=
