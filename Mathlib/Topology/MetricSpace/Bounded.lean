@@ -668,7 +668,7 @@ end Continuous
 
 /-- If `U : ι → Set X` is an open covering of a compact metric space `X`,
 there exists `ε > 0` such that any subset of `X` of diameter `≤ ε`
-is containted in some `U i`. -/
+is contained in some `U i`. -/
 lemma CompactSpace.lebesgue_number_lemma {X : Type*} [MetricSpace X] [CompactSpace X]
     {ι : Type*} (U : ι → Set X) (hU : ∀ i, IsOpen (U i)) (hU' : ⋃ i, U i = Set.univ) :
     ∃ ε > 0, ∀ (S : Set X) (_ : S.Nonempty) (_ : Metric.diam S ≤ ε), ∃ (i : ι), S ⊆ U i := by
