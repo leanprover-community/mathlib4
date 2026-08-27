@@ -153,9 +153,9 @@ theorem lapMatrix_bot [AddGroupWithOne R] : (⊥ : SimpleGraph V).lapMatrix R = 
 variable (R) in
 @[simp]
 theorem lapMatrix_top [AddGroupWithOne R] :
-    (⊤ : SimpleGraph V).lapMatrix R = Fintype.card V + .of (fun _ _ ↦ -1) := by
+    (⊤ : SimpleGraph V).lapMatrix R = Fintype.card V - .of 1 := by
   ext i j
-  rcases eq_or_ne i j with (rfl | h)
+  rcases eq_or_ne i j with rfl | h
   · simp [lapMatrix, Nat.cast_pred <| Fintype.card_pos_iff.mpr ⟨i⟩, sub_eq_add_neg]
   · simp [lapMatrix, Matrix.natCast_apply, h]
 
