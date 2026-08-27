@@ -177,15 +177,12 @@ lemma limitProcess_neg [AddGroup E] [ContinuousNeg E] (X : ι → Ω → E) :
   filter_upwards [hg2] with ω h1
   simpa using h1.neg
 
-@[to_fun limitProcess_fun_mul]
+@[to_fun (attr := to_additive) limitProcess_fun_mul]
 lemma limitProcess_mul [Zero E] [Mul E] [ContinuousMul E]
     (hX : ∃ g : Ω → E, StronglyMeasurable[⨆ t, 𝓕 t] g ∧ ∀ᵐ ω ∂P, Tendsto (X · ω) atTop (𝓝 (g ω)))
     (hY : ∃ g : Ω → E, StronglyMeasurable[⨆ t, 𝓕 t] g ∧ ∀ᵐ ω ∂P, Tendsto (Y · ω) atTop (𝓝 (g ω))) :
     𝓕.limitProcess (X * Y) P =ᵐ[P] 𝓕.limitProcess X P * 𝓕.limitProcess Y P :=
   limitProcess_comp₂ continuous_mul hX hY
-
-attribute [to_additive] limitProcess_mul
-attribute [to_additive] limitProcess_fun_mul
 
 @[to_fun limitProcess_fun_div']
 lemma limitProcess_div' [Zero E] [Div E] [ContinuousDiv E]
