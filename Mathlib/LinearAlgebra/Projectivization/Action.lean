@@ -240,7 +240,9 @@ instance : IsPreprimitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι 
     {toFun := id, map_smul' := by intros; simp; rfl} (prePrimitive_SL (ι := ι) (K := K))
     Function.surjective_id
 
-open MatrixGroups Matrix.ProjGenLinGroup
+open Matrix.ProjGenLinGroup
+
+open scoped MatrixGroups
 
 instance : MulAction PGL(ι, K) (ℙ K (ι → K)) :=
   mulActionOfGL fun u ↦ ind fun v hv ↦ by
