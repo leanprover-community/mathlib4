@@ -106,7 +106,7 @@ variable (A) in
 noncomputable abbrev indToCoind :
     ind S.subtype A →ₗ[k] coind S.subtype A :=
   Representation.IndV.lift S.subtype A.ρ
-    (fun g => LinearMap.codRestrict _ (indToCoindAux A g) (by intro a s h; simp))
+    (fun g => LinearMap.codRestrict _ (indToCoindAux A g) (by intros; simp))
     (by intros; ext; simp)
 
 variable [S.FiniteIndex]
