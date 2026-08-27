@@ -79,7 +79,7 @@ protected theorem IsFredholm.eventually_nhds [CompleteSpace 𝕜]
   obtain ⟨pkg⟩ := hT₀.nonempty_fredholmPackage
   exact pkg.eventually_nhds_isFredholm_and_index_eq.mono fun T ⟨T_fred, _⟩ ↦ T_fred
 
-/-- The set of Fredholm operator between two Banach spaces is open (for the operator norm)
+/-- The set of Fredholm operators between two Banach spaces is open (for the operator norm)
 in the space of continuous linear maps. -/
 theorem isOpen_setOfPred_isFredholm [CompleteSpace 𝕜] : IsOpen {T : E →L[𝕜] F | T.IsFredholm} :=
   isOpen_iff_mem_nhds.mpr fun _ ↦ IsFredholm.eventually_nhds
