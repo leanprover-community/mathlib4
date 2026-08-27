@@ -27,7 +27,7 @@ More suggestively, this is the series `∫ a : ℤ_[p], (1 + X) ^ a dμ`.
 * `AbstractMeasure.amiceTransformEquiv`: the Amice transform with `ℤ_[p]`-coefficients, bundled
   as a linear equivalence.
 
-## TODO
+## TODO
 
 Define the Amice transform as an equivalence over more general base rings; this requires developing
 some theory of _bounded_ power series over normed rings.
