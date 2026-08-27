@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Data.NNReal.Defs
-public import Mathlib.Data.Real.Star
+public import Mathlib.Basic.NNReal.Defs
+public import Mathlib.Basic.Real.Star
 
 /-!
 # The non-negative real numbers are a \*-ring, with the trivial \*-structure

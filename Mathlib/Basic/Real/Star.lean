@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 
 /-!
 # The real numbers are a \*-ring, with the trivial \*-structure

@@ -108,7 +108,7 @@ end Set
 /-! ### Finite instances
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
-in `Data.Set.Finite`. While every `Fintype` instance gives a `Finite` instance, those
+in `Mathlib.Data.Set.Finite.Basic`. While every `Fintype` instance gives a `Finite` instance, those
 instances that depend on `Fintype` or `Decidable` instances need an additional `Finite` instance
 to be able to generally apply.
 

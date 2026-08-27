@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Basic.ENNReal.Basic
 public import Mathlib.Data.ENat.Monoid
-public import Mathlib.Data.ENNReal.Basic
 public import Mathlib.Order.Hom.WithTopBot
 
 /-!
