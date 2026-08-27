@@ -37,7 +37,7 @@ finitely presented group, finitely generated normal closure
 
 @[expose] public section
 
-variable {G H α β : Type*} [Group G] [Group H]
+variable {G H α : Type*} [Group G] [Group H]
 
 /-- `N.IsFinitelyNormallyGenerated` says that the subgroup `N` is the normal closure
  of a finite set. -/
