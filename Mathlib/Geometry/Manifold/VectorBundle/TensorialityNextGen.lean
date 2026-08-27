@@ -390,5 +390,3 @@ def MDiffAtPkg [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] : RegPkg I F V x 
     (contMDiffAt_localFrame_of_mem 1 _ _ _ hx).mdifferentiableAt zero_ne_one.symm
   localFrame_coeff_fin hx _ _ _ hσ _ :=
     mdifferentiableAt_localFrameCoeff _ hx hσ _
-
-
