@@ -27,7 +27,9 @@ public section
 
 open Filter Finset Asymptotics
 
-open Asymptotics Polynomial Topology
+open Asymptotics Polynomial
+
+open scoped Topology
 
 namespace Polynomial
 
@@ -331,10 +333,6 @@ theorem isBigO_atBot_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atBot]
 @[deprecated (since := "2026-02-05")] alias isBigO_of_degree_le := isBigO_atTop_of_degree_le
 
 section Cobounded
-
-lemma eventually_cofinite_not_isRoot {R : Type*} [CommRing R] [IsDomain R] {P : R[X]} (hP : P ≠ 0) :
-    ∀ᶠ x in cofinite, ¬P.IsRoot x :=
-  (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 open Bornology
 
