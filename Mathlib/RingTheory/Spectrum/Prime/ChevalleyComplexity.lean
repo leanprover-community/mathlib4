@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Polynomial.CoeffMem
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
 public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # Chevalley's theorem with complexity bound
@@ -105,7 +106,7 @@ private def coeffSubmodule (e : InductionObj R n) : Submodule R₀ R :=
 private lemma coeffSubmodule_mapRingHom_comp (e : InductionObj R n) (f : R →ₐ[R₀] S) :
     ({ val := mapRingHom f ∘ e } : InductionObj S n).coeffSubmodule R₀
       = (e.coeffSubmodule R₀).map f.toLinearMap := by
-  simp [coeffSubmodule, Submodule.map_span, Set.image_insert_eq, Set.image_iUnion, ← Set.range_comp,
+  simp [coeffSubmodule, Submodule.map_span, Set.image_iUnion, ← Set.range_comp,
     coeff_map_eq_comp]
 
 variable {e T : InductionObj R n}
@@ -319,7 +320,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
         (span R₀ ({c} ∪ ⋃ i, coeff(e i)) ^ e₁.powBound).map q₁.toLinearMap := by
     unfold coeffSubmodule
     rw [Submodule.map_pow, map_span, invOf_pow, ← smul_pow, ← span_smul]
-    simp [Set.image_insert_eq, Set.smul_set_insert, Set.image_iUnion, Set.smul_set_iUnion, q₁, e₁]
+    simp [Set.smul_set_insert, Set.image_iUnion, Set.smul_set_iUnion, q₁, e₁]
     congr! with i
     change _ = IsLocalization.Away.invSelf c • _
     simp [← Set.range_comp, Set.smul_set_range]
@@ -665,7 +666,6 @@ lemma degBound_pos (k : ℕ) (D : ℕ → ℕ) : ∀ n, 0 < degBound k D n
 
 end MvPolynomialC
 
-set_option backward.isDefEq.respectTransparency false in
 open MvPolynomialC in
 /-- The `C : R → R[X₁, ..., Xₘ]` case of **Chevalley's theorem** with complexity bound. -/
 lemma chevalley_mvPolynomialC

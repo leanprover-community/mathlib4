@@ -283,7 +283,6 @@ end
 namespace ShiftSequence
 
 variable {F} in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism `π ⋙ H ≅ F`, where `π` is a functor which commutes
 with the shift by `M` and `H` is equipped with a shift sequence,
 then this is the shift sequence for `F` induced by composition. -/

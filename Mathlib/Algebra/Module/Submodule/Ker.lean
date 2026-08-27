@@ -36,7 +36,7 @@ open scoped Pointwise
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {K : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {V : Type*} {V₂ : Type*}
 
 /-! ### Properties of linear maps -/
