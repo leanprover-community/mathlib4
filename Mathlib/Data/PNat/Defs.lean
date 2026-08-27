@@ -81,7 +81,7 @@ theorem toPNat'_zero : Nat.toPNat' 0 = 1 := rfl
 theorem toPNat'_coe : ∀ n : ℕ, (toPNat' n : ℕ) = ite (0 < n) n 1
   | 0 => rfl
   | m + 1 => by
-    rw [if_pos (succ_pos m)]
+    rw [ite_eq_left (succ_pos m)]
     rfl
 
 end Nat
@@ -203,10 +203,10 @@ theorem mod_coe (m k : ℕ+) :
   dsimp [mod, modDiv]
   cases (m : ℕ) % (k : ℕ) with
   | zero =>
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     rfl
   | succ n =>
-    rw [if_neg n.succ_ne_zero]
+    rw [ite_eq_right n.succ_ne_zero]
     rfl
 
 theorem div_coe (m k : ℕ+) :
@@ -214,10 +214,10 @@ theorem div_coe (m k : ℕ+) :
   dsimp [div, modDiv]
   cases (m : ℕ) % (k : ℕ) with
   | zero =>
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     rfl
   | succ n =>
-    rw [if_neg n.succ_ne_zero]
+    rw [ite_eq_right n.succ_ne_zero]
     rfl
 
 /-- If `h : k | m`, then `k * (div_exact m k) = m`. Note that this is not equal to `m / k`. -/
@@ -234,7 +234,7 @@ instance Nat.canLiftPNat : CanLift ℕ ℕ+ (↑) (fun n => 0 < n) :=
 instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
   ⟨fun n hn =>
     ⟨Nat.toPNat' (Int.natAbs n), by
-      rw [Nat.toPNat'_coe, if_pos (Int.natAbs_pos.2 hn.ne'),
+      rw [Nat.toPNat'_coe, ite_eq_left (Int.natAbs_pos.2 hn.ne'),
         Int.natAbs_of_nonneg hn.le]⟩⟩
 
 end CanLift

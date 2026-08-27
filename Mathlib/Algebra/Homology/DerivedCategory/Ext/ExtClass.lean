@@ -102,7 +102,7 @@ end
 
 @[simp]
 lemma comp_extClass : (Ext.mk₀ S.g).comp hS.extClass (zero_add 1) = 0 := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   ext
   simp only [Ext.comp_hom, Ext.mk₀_hom, extClass_hom, Ext.zero_hom,
     ShiftedHom.mk₀_comp]
@@ -116,7 +116,7 @@ lemma comp_extClass_assoc {Y : C} {n : ℕ} (γ : Ext S.X₁ Y n) {n' : ℕ} (h 
 
 @[simp]
 lemma extClass_comp : hS.extClass.comp (Ext.mk₀ S.f) (add_zero 1) = 0 := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   ext
   simp only [Ext.comp_hom, Ext.mk₀_hom, extClass_hom, Ext.zero_hom,
     ShiftedHom.comp_mk₀]
@@ -132,7 +132,7 @@ lemma extClass_naturality {S₁ S₂ : ShortComplex C}
     (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
     h₁.extClass.comp (Ext.mk₀ f.τ₁) (add_zero 1) =
       (Ext.mk₀ f.τ₃).comp h₂.extClass (zero_add 1) := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   ext
   simpa [ShiftedHom.comp_mk₀, ShiftedHom.mk₀_comp] using! (singleTriangle.map h₁ h₂ f).comm₃
 
