@@ -92,3 +92,98 @@ example : ∃ (β : Type) (f : Nat → β), ∃ b, f 0 = b := by
   simp only [existsAndEq]
   · exact Nat
   · exact id
+
+/-! ### Equations in binder types of dependent quantifiers
+
+`∃ h : T, body` behaves like `T ∧ body`, except that `body` may refer to the proof `h`. When the
+equation is found inside `T`, the quantifier stays in place and `a` is substituted in `T` as
+everywhere else. A quantifier inside `T` that `a'` depends on is moved to the front, and the proof
+that `body` expects is rebuilt from the remaining one by putting the witness back (the *anchor*). -/
+
+-- the binder type is exactly the equation
+example (a' : α) (P : (a : α) → a = a' → Prop) :
+    (∃ a : α, ∃ (h : a = a'), P a h) ↔ ∃ (h : a' = a'), P a' h := by
+  simp only [existsAndEq]
+
+example (a' : α) (P : (a : α) → a' = a → Prop) :
+    (∃ a : α, ∃ (h : a' = a), P a h) ↔ ∃ (h : a' = a'), P a' h := by
+  simp only [existsAndEq]
+
+-- the equation stays in the binder type, next to the other conjuncts
+example (a' : α) (Q : α → Prop) (P : (a : α) → a = a' ∧ Q a → Prop) :
+    (∃ a : α, ∃ (h : a = a' ∧ Q a), P a h) ↔ ∃ (h : a' = a' ∧ Q a'), P a' h := by
+  simp only [existsAndEq]
+
+example (a' : α) (Q : α → Prop) (P : (a : α) → Q a ∧ a' = a → Prop) :
+    (∃ a : α, ∃ (h : Q a ∧ a' = a), P a h) ↔ ∃ (h : Q a' ∧ a' = a'), P a' h := by
+  simp only [existsAndEq]
+
+-- conjuncts on both sides of the equation are preserved
+example (a' : α) (Q R : α → Prop) (P : (a : α) → Q a ∧ a = a' ∧ R a → Prop) :
+    (∃ a : α, ∃ (h : Q a ∧ a = a' ∧ R a), P a h) ↔
+      ∃ (h : Q a' ∧ a' = a' ∧ R a'), P a' h := by
+  simp only [existsAndEq]
+
+-- a quantifier inside the binder type is moved outside, since `a'` may depend on its variable;
+-- its witness is put back into the proof that the body expects
+example (f : β → α) (Q : β → Prop) (P : (a : α) → (∃ b : β, Q b ∧ a = f b) → Prop) :
+    (∃ a : α, ∃ (h : ∃ b : β, Q b ∧ a = f b), P a h) ↔
+      ∃ b : β, ∃ (h : Q b ∧ f b = f b), P (f b) ⟨b, h⟩ := by
+  simp only [existsAndEq]
+
+-- ... also when the binder type is the quantified equation alone
+example (f : β → α) (P : (a : α) → (∃ b : β, a = f b) → Prop) :
+    (∃ a : α, ∃ (h : ∃ b : β, a = f b), P a h) ↔
+      ∃ b : β, ∃ (h : f b = f b), P (f b) ⟨b, h⟩ := by
+  simp only [existsAndEq]
+
+-- combined with hoisting on the main path
+example (f : β → α) (Q : α → Prop) (P : (a : α) → (b : β) → a = f b ∧ Q a → Prop) :
+    (∃ a : α, ∃ b : β, ∃ (h : a = f b ∧ Q a), P a b h) ↔
+      ∃ b : β, ∃ (h : f b = f b ∧ Q (f b)), P (f b) b h := by
+  simp only [existsAndEq]
+
+-- conjunctions on the main path are traversed as well
+example (a' : α) (R Q : α → Prop) (S : (a : α) → a = a' ∧ Q a → Prop) :
+    (∃ a : α, R a ∧ ∃ (h : a = a' ∧ Q a), S a h) ↔
+      R a' ∧ ∃ (h : a' = a' ∧ Q a'), S a' h := by
+  simp only [existsAndEq]
+
+-- binder types of nested dependent quantifiers are searched as well
+example (a' : α) (Q : α → Prop) (S : (a : α) → a = a' ∧ Q a → Prop)
+    (P : (a : α) → (∃ h : a = a' ∧ Q a, S a h) → Prop) :
+    (∃ a : α, ∃ (h : ∃ h' : a = a' ∧ Q a, S a h'), P a h) ↔
+      ∃ (h : ∃ h' : a' = a' ∧ Q a', S a' h'), P a' h := by
+  simp only [existsAndEq]
+
+-- the rewrite composes with the default simp set
+example (a' : α) (Q : α → Prop) (P : (a : α) → a = a' ∧ Q a → Prop) :
+    (∃ a : α, ∃ (h : a = a' ∧ Q a), P a h) ↔ ∃ (h : a' = a' ∧ Q a'), P a' h := by
+  simp
+
+-- The simproc is not applicable when the binder type provides no usable equation.
+/--
+error: `simp` made no progress
+-/
+#guard_msgs in
+example (Q : α → Prop) (P : (a : α) → Q a → Prop) :
+    ∃ a : α, ∃ (h : Q a), P a h := by
+  simp only [existsAndEq]
+
+/--
+error: `simp` made no progress
+-/
+#guard_msgs in
+example (f : α → α) (P : (a : α) → a = f a → Prop) :
+    ∃ a : α, ∃ (h : a = f a), P a h := by
+  simp only [existsAndEq]
+
+-- The body of a quantifier whose binder type mentions `a` is not entered: `∃ h : Q a, ⋯` cannot
+-- be moved outside, so an equation in its body cannot eliminate `∃ a`.
+/--
+error: `simp` made no progress
+-/
+#guard_msgs in
+example (a' : α) (Q : α → Prop) (P : (a : α) → Q a → Prop) :
+    ∃ a : α, ∃ (h : Q a), P a h ∧ a = a' := by
+  simp only [existsAndEq]
