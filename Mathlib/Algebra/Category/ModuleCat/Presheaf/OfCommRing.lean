@@ -47,6 +47,13 @@ section ChangeOfRings
 variable {C : Type u₁} [Category.{v₁} C]
   {R S : Cᵒᵖ ⥤ CommRingCat.{u}} (φ : R ⟶ S)
 
+abbrev obj (F : PresheafOfModulesOfCommRing.{v} R) (X : Cᵒᵖ) : ModuleCat.{v} (R.obj X) :=
+    PresheafOfModules.obj F X
+
+abbrev map (F : PresheafOfModulesOfCommRing.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    F.obj X ⟶ (ModuleCat.restrictScalars (R.map f).hom).obj (F.obj Y) :=
+  PresheafOfModules.map _ _
+
 /-- Restriction of scalars along a morphism of presheaves of commutative rings. -/
 noncomputable abbrev restrictScalars :
     PresheafOfModulesOfCommRing.{v} S ⥤ PresheafOfModulesOfCommRing.{v} R :=
