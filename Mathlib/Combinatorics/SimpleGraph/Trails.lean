@@ -45,7 +45,7 @@ namespace Walk
 
 /-- The edges of a trail as a finset, since each edge in a trail appears exactly once. -/
 abbrev IsTrail.edgesFinset (h : p.IsTrail) : Finset (Sym2 V) :=
-  ⟨p.edges, h.edges_nodup⟩
+  ⟨p.edges, Multiset.coe_nodup.mpr h.edges_nodup⟩
 
 variable [DecidableEq V]
 
@@ -70,7 +70,6 @@ theorem IsEulerian.isTrail (h : p.IsEulerian) : p.IsTrail := by
 theorem IsEulerian.mem_edges_iff (h : p.IsEulerian) {e : Sym2 V} : e ∈ p.edges ↔ e ∈ G.edgeSet :=
   ⟨fun h ↦ p.edges_subset_edgeSet h, fun he ↦ by simpa using (h e he).ge⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The edge set of an Eulerian graph is finite. -/
 @[instance_reducible]
 def IsEulerian.fintypeEdgeSet (h : p.IsEulerian) : Fintype G.edgeSet :=
@@ -92,7 +91,6 @@ theorem IsTrail.isEulerian_iff (hp : p.IsTrail) : p.IsEulerian ↔ p.edgeSet = G
 theorem IsEulerian.edgeSet_eq (h : p.IsEulerian) : p.edgeSet = G.edgeSet := by
   rwa [← h.isTrail.isEulerian_iff]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] (h : p.IsEulerian) :
     h.isTrail.edgesFinset = G.edgeFinset := by
   ext e
