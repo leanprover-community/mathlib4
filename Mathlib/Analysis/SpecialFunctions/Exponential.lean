@@ -403,37 +403,31 @@ exponential of its derivative at `1`. -/
 theorem MonoidHom.map_exp_of_hasFDerivAt_one [NormedAlgebra ℚ 𝔸] (φ : 𝔸 →* 𝕂)
     (L : 𝔸 →L[𝕂] 𝕂) (hφ : HasFDerivAt (fun x : 𝔸 ↦ φ x) L 1) (x : 𝔸) :
     φ (exp x) = exp (L x) := by
-  let f : 𝕂 → 𝕂 := fun t ↦ φ (exp (t • x))
-  let c : 𝕂 := L x
-  have hf0 : HasDerivAt f c 0 := by
-    have hexp := hasDerivAt_exp_smul_const' x (0 : 𝕂)
-    have h := hφ.comp_hasDerivAt_of_eq 0 hexp (by simp)
-    exact h.congr_deriv (by simp [c])
-  have hadd (s t : 𝕂) : f (s + t) = f s * f t := by
+  set f : 𝕂 → 𝕂 := fun t ↦ φ (exp (t • x))
+  have hadd (a b : 𝕂) : f (a + b) = f a * f b := by
     dsimp only [f]
-    rw [← map_mul, ← exp_add_of_commute, add_smul]
-    exact ((Commute.refl x).smul_left s).smul_right t
-  have hf (t : 𝕂) : HasDerivAt f (c * f t) t := by
-    have hfzero : HasDerivAt f c (t - t) := by simpa using hf0
-    apply (((hfzero.comp_sub_const t t).const_mul (f t)).congr_deriv
+    rw [← map_mul, ← NormedSpace.exp_add_of_commute, add_smul]
+    exact (Commute.smul_left rfl b).symm.smul_left a
+  have hf (t : 𝕂) : HasDerivAt f (L x * f t) t := by
+    have hf0 : HasDerivAt f (L x) 0 := by
+      have := hφ.comp_hasDerivAt_of_eq 0 (hasDerivAt_exp_smul_const' x (0 : 𝕂)) (by simp)
+      exact this.congr_deriv (by simp)
+    have : HasDerivAt f (L x) (t - t) := by simpa using hf0
+    apply (((this.comp_sub_const t t).const_mul (f t)).congr_deriv
       (mul_comm _ _)).congr_of_eventuallyEq
     filter_upwards with s
-    rw [← hadd t (s - t)]
-    congr 1
-    ring
-  let h : 𝕂 → 𝕂 := fun t ↦ f t * exp (-c * t)
+    simp [← hadd t (s - t)]
+  set h : 𝕂 → 𝕂 := fun t ↦ f t * exp (-(L x) * t)
   have hh (t : 𝕂) : HasDerivAt h 0 t := by
-    have he : HasDerivAt (fun s : 𝕂 ↦ exp (-c * s)) (exp (-c * t) * (-c)) t := by
-      simpa only [Function.comp_def, mul_one] using
-        (hasDerivAt_exp (x := -c * t)).comp t ((hasDerivAt_id t).const_mul (-c))
-    dsimp only [h]
-    exact ((hf t).mul he).congr_deriv (by ring)
+    have : HasDerivAt (fun s : 𝕂 ↦ exp (-(L x) * s)) (exp (-(L x) * t) * (-L x)) t := by
+      simpa [Function.comp_def] using
+        (hasDerivAt_exp (x := -L x * t)).comp t ((hasDerivAt_id t).const_mul (-L x))
+    exact ((hf t).mul this).congr_deriv (by ring)
   have hconst : h 1 = h 0 :=
     is_const_of_deriv_eq_zero (fun t ↦ (hh t).differentiableAt) (fun t ↦ (hh t).deriv) 1 0
-  simp only [h, f, c, one_smul, mul_one, zero_smul, exp_zero, map_one, mul_zero, exp_neg]
-    at hconst
-  rw [← div_eq_mul_inv] at hconst
-  exact (isUnit_exp (L x)).div_eq_one_iff_eq.mp hconst
+  simp only [h, f, one_smul, mul_one, zero_smul, exp_zero, map_one, mul_zero,
+    NormedSpace.exp_neg, ← div_eq_mul_inv] at hconst
+  exact (NormedSpace.isUnit_exp (L x)).div_eq_one_iff_eq.mp hconst
 
 variable (𝕂) in
 @[fun_prop]
