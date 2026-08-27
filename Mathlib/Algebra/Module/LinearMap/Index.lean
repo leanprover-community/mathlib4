@@ -58,6 +58,10 @@ public lemma index_of_injective [Nontrivial R] (hf : Injective f) :
     f.index = - finrank R (N ⧸ f.range) := by
   simpa [index_eq_finrank_sub] using ker_eq_bot.2 hf ▸ finrank_bot _ _
 
+@[simp] public lemma index_subtype [Nontrivial R] {S : Submodule R M} :
+    S.subtype.index = - finrank R (M ⧸ S) := by
+  rw [index_of_injective S.injective_subtype, S.range_subtype]
+
 variable [StrongRankCondition R]
 
 public lemma index_of_surjective (hf : Surjective f) :
@@ -65,19 +69,26 @@ public lemma index_of_surjective (hf : Surjective f) :
   rw [index_eq_finrank_sub, range_eq_top.mpr hf]
   simp [finrank_eq_zero_of_subsingleton]
 
-set_option backward.isDefEq.respectTransparency.types false in
-@[simp] public lemma index_id :
-    (id : M →ₗ[R] M).index = 0 := by
+@[simp] public lemma index_mkQ {S : Submodule R M} :
+    S.mkQ.index = finrank R S := by
+  rw [index_of_surjective S.mkQ_surjective, S.ker_mkQ]
+
+@[simp] public lemma index_projectionOnto {S T : Submodule R M} (hST : IsCompl S T) :
+    (S.projectionOnto T hST).index = finrank R T := by
+  rw [index_of_surjective (Submodule.projectionOnto_surjective hST), Submodule.ker_projectionOnto]
+
+public lemma index_of_bijective (hf : Bijective f) :
+    f.index = 0 := by
   nontriviality R
-  rw [index_eq_finrank_sub, range_id]
-  simp [finrank_eq_zero_of_subsingleton]
+  rw [index_of_surjective hf.surjective, ker_eq_bot.mpr hf.injective, finrank_bot, Nat.cast_zero]
+
+@[simp] public lemma index_id :
+    (id : M →ₗ[R] M).index = 0 :=
+  index_of_bijective bijective_id
 
 @[simp] public lemma _root_.LinearEquiv.index_eq_zero {e : M ≃ₗ[R] N} :
-    e.toLinearMap.index = 0 := by
-  nontriviality R
-  have := index_of_injective e.injective
-  have := index_of_surjective e.surjective
-  lia
+    e.toLinearMap.index = 0 :=
+  index_of_bijective e.bijective
 
 end Ring
 
@@ -100,7 +111,8 @@ public lemma index_eq_of_finiteDimensional [FiniteDimensional k M] [FiniteDimens
 
 set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
-@[simp] public lemma index_comp {P : Type*} [AddCommGroup P] [Module k P] (g : N →ₗ[k] P)
+@[simp] public lemma index_comp {P : Type*} [AddCommGroup P] [Module k P]
+    (g : N →ₗ[k] P) (f : M →ₗ[k] N)
     [FiniteDimensional k f.ker] [FiniteDimensional k g.ker]
     [FiniteDimensional k (N ⧸ f.range)] [FiniteDimensional k (P ⧸ g.range)] :
     (g ∘ₗ f).index = g.index + f.index := by
