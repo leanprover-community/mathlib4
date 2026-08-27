@@ -74,12 +74,12 @@ theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K 
 
 /-- The embedding of the completion `Kᵥ` at an infinite place `v` into the adele ring. -/
 @[simps!]
-def ofCompletion (v : InfinitePlace K) : v.Completion →* AdeleRing R K :=
+def ofCompletion (v : InfinitePlace K) : v.Completion →* 𝔸[R, K] :=
   .prod (InfiniteAdeleRing.ofCompletion v) 1
 
 /-- The embedding of the completion `Kᵥ` at a finite place `v` into the adele ring. -/
 @[simps!]
-def ofAdicCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* AdeleRing R K :=
+def ofAdicCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* 𝔸[R, K] :=
   .prod 1 (FiniteAdeleRing.ofAdicCompletion K v)
 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
@@ -87,15 +87,17 @@ abbrev principalSubgroup : AddSubgroup 𝔸[R, K] := (algebraMap K 𝔸[R, K]).r
 
 end AdeleRing
 
+open scoped AdeleRing
+
 /-- The idele group is the group of units of the adele ring. -/
-abbrev IdeleGroup := (AdeleRing R K)ˣ
+abbrev IdeleGroup := 𝔸[R, K]ˣ
 
 namespace IdeleGroup
 
 /-- The map from `Kˣ` to the idele group of `K`. The image is the subgroup of principal ideles. -/
 @[simps!]
 def unitEmbedding : Kˣ →* IdeleGroup R K :=
-  Units.map (algebraMap K (AdeleRing R K)).toMonoidHom
+  Units.map (algebraMap K 𝔸[R, K]).toMonoidHom
 
 /-- The map from the completion `Kᵥ` at an infinite place `v` to the idele group. -/
 @[simps!]
