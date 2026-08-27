@@ -36,10 +36,10 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
 /-- Let `T₀ : E → F` be a Fredholm operator between two Banach spaces, and choose a
 `FredholmPackage` for `T₀`; that is, fix topological decompositions `E = E₁ ⊕ E₀` and `F = F₁ ⊕ F₀`,
 where `E₀` and `F₀` are finite dimensional, and such that in these decompositions we have
-$T₀ = \begin{pmatrix} α₀ & 0 \cr 0 & 0$ with `α₀` invertible.
+$T₀ = \begin{pmatrix} α₀ & 0 \cr 0 & 0 \end{pmatrix}$ with `α₀` invertible.
 
-Then, for $T = \begin{pmatrix} α & β \cr γ & δ$ close enough to `T₀` (in operator norm), we have
-that `α` is invertible. -/
+Then, for $T = \begin{pmatrix} α & β \cr γ & δ \end{pmatrix}$ close enough to `T₀`
+(in operator norm), we have that `α` is invertible. -/
 theorem FredholmPackage.eventually_nhds_isInvertible
     {T₀ : E →L[𝕜] F} (pkg : T₀.FredholmPackage) :
     ∀ᶠ T in 𝓝 T₀, (pkg.decCodom.proj ∘L T ∘L pkg.decDom.X₁.subtypeL).IsInvertible := by
