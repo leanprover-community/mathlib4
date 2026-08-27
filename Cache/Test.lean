@@ -1051,6 +1051,29 @@ def test_curlRetryArgs : IO Unit := do
 
 end RetryFlags
 
+section RunCmdErrors
+
+/-- With `showArgsOnError := false` a failing command's error names only the
+command: the argument list can carry a credential (the marker uploads pass
+`--oauth2-bearer` and SAS-tokened URLs). The default keeps the argument list
+in the message. -/
+def test_runCmd_showArgsOnError : IO Unit := do
+  IO.println "runCmd showArgsOnError:"
+  let secret := "hunter2-credential"
+  let hidden ← try
+      discard <| IO.runCmd "curl" #["--not-a-curl-flag", secret] (showArgsOnError := false)
+      pure "no failure"
+    catch e => pure (toString e)
+  assertTrue "the failure throws" (hidden != "no failure")
+  assertTrue "the message hides the arguments" ((hidden.splitOn secret).length == 1)
+  let shown ← try
+      discard <| IO.runCmd "curl" #["--not-a-curl-flag", secret]
+      pure "no failure"
+    catch e => pure (toString e)
+  assertTrue "the default shows the arguments" ((shown.splitOn secret).length == 2)
+
+end RunCmdErrors
+
 section CacheMissStatus
 
 /-- `isCacheMissStatus` decides whether a read's HTTP status is a benign miss
@@ -1318,6 +1341,7 @@ def runAll : IO Unit := do
   test_parseFlagOpt
   test_curlFollowRedirectArgs
   test_curlRetryArgs
+  test_runCmd_showArgsOnError
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
   test_classifyDownload

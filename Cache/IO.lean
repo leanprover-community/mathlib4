@@ -225,16 +225,19 @@ where
       loop h (← processLine a line)
 
 /-- Runs a terminal command and retrieves its output -/
-def runCmd (cmd : String) (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
+def runCmd (cmd : String) (args : Array String)
+    (throwFailure stderrAsErr showArgsOnError := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
   if (out.exitCode != 0 || stderrAsErr && !out.stderr.isEmpty) && throwFailure then
-    throw <| IO.userError s!"failure in {cmd} {args}:\n{out.stderr}"
+    let invocation := if showArgsOnError then s!"{cmd} {args}" else cmd
+    throw <| IO.userError s!"failure in {invocation}:\n{out.stderr}"
   else if !out.stderr.isEmpty then
     IO.eprintln out.stderr
   return out.stdout
 
-def runCurl (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
-  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr
+def runCurl (args : Array String) (throwFailure stderrAsErr showArgsOnError := true) :
+    IO String := do
+  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr showArgsOnError
 
 def validateCurl : IO Bool := do
   if (← CURLBIN.pathExists) then return true

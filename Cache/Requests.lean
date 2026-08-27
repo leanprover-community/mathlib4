@@ -1285,20 +1285,22 @@ def commit (container : Option Container) (hashMap : IO.ModuleHashMap) (overwrit
   -- Commit files are never namespaced by repo (they always live at `/c/<hash>`),
   -- so we only need the URL from `effectiveUploadURL`, not the URL-shape container.
   let (_, uploadURL) ← effectiveUploadURL container
-  match auth with
-  | .azureSas token =>
-    let params := if overwrite
-      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
-      else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}?{token}"]
-  | .azureBearer token =>
-    let params := if overwrite
-      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
-        "-H", azureDateHeader,
-        "--oauth2-bearer", token]
-      else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-        azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
-    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}"]
+  let args := match auth with
+    | .azureSas token =>
+      let params := if overwrite
+        then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
+        else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+      params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}?{token}"]
+    | .azureBearer token =>
+      let params := if overwrite
+        then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
+          "-H", azureDateHeader,
+          "--oauth2-bearer", token]
+        else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
+          azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
+      params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}"]
+  -- The argument list carries the credential; keep it out of the failure message.
+  discard <| IO.runCurl args (showArgsOnError := false)
   IO.FS.removeFile path
 
 end Commit
