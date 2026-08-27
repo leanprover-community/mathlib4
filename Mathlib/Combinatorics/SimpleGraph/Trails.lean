@@ -97,9 +97,9 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] (h : p.IsEulerian) :
   simp [h.mem_edges_iff]
 
 theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.IsIsolated w) :
-    w ∈ p.support := by
-  have ⟨e, he, hwe⟩ := not_isIsolated_iff_exists_edgeSet_mem.mp hw
-  exact mem_support_iff_exists_mem_edges.mpr <| .inr ⟨e, hp.mem_edges_iff.mpr he, hwe⟩
+    w ∈ p.support :=
+  have ⟨_, hadj⟩ := exists_adj_iff_not_isIsolated.mpr hw
+  p.fst_mem_support_of_mem_edges <| hp.mem_edges_iff.mpr hadj
 
 theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
   simp [← edgeSet_eq_empty, hp.edgeSet_eq]
