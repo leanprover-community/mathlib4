@@ -136,7 +136,7 @@ open scoped Function in -- required for scoped `on` notation
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp :=
+      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.forall₂ hi hj).exp :=
   open scoped Norms.Operator in exp_sum_of_commute s f h
 
 set_option backward.isDefEq.respectTransparency false in
