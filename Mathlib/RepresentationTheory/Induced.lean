@@ -68,7 +68,7 @@ noncomputable def IndV.mk (h : H) : A →ₗ[k] IndV φ ρ :=
 
 @[ext 10000]
 lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
-    (hfg : ∀ (h : H), f ∘ₗ (IndV.mk φ ρ h) = g ∘ₗ (IndV.mk φ ρ h)) : f = g :=
+    (hfg : ∀ h : H, f ∘ₗ IndV.mk φ ρ h = g ∘ₗ IndV.mk φ ρ h) : f = g :=
   Coinvariants.hom_ext <| TensorProduct.ext <| MonoidAlgebra.lhom_ext' fun h =>
     LinearMap.ext_ring <| hfg h
 
