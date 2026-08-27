@@ -197,7 +197,7 @@ theorem rank_mul_le [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R) 
   le_min (rank_mul_le_left _ _) (rank_mul_le_right _ _)
 
 theorem rank_mul_ge [CommRing R] [IsDomain R] (A : Matrix m n R) (B : Matrix n o R) :
-    A.rank + B.rank - Fintype.card n ≤ (A * B).rank := by
+    A.rank + B.rank ≤ (A * B).rank + Fintype.card n := by
   have hker : finrank R (A.mulVecLin.comp B.mulVecLin).ker ≤
       finrank R A.mulVecLin.ker + finrank R B.mulVecLin.ker := by
     have H := B.mulVecLin.lift_rank_comap_le A.mulVecLin.ker
