@@ -187,9 +187,9 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
     exact ⟨U, U_mem, closure s, isClosed_closure, eq⟩
   tfae_have 1 ↔ 5 := by
     simp only [IsLocallyClosedAt, Set.ext_iff, mem_inter_iff, and_congr_right_iff,
-      eventuallyEq_set, eventually_iff_exists_mem]
+      eventuallyEqSet_iff, eventually_iff_exists_mem]
     grind
-  tfae_have 4 ↔ 6 := by simp [eventuallyEq_set, eventually_iff_exists_mem, Set.ext_iff]
+  tfae_have 4 ↔ 6 := by simp [eventuallyEqSet_iff, eventually_iff_exists_mem, Set.ext_iff]
   tfae_have 6 → 7 := fun H ↦ H.symm.le
   tfae_have 7 → 6 := fun H ↦ EventuallyLE.antisymm (.of_forall subset_closure) H
   tfae_have 7 ↔ 8 := by
