@@ -42,7 +42,7 @@ Eulerian trails
 
 namespace SimpleGraph
 
-variable {V : Type*} {G : SimpleGraph V}
+variable {V : Type*} {G : SimpleGraph V} {u v w : V} {p : G.Walk u v}
 
 namespace Walk
 
@@ -126,6 +126,19 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
     (h : p.IsEulerian) : h.isTrail.edgesFinset = G.edgeFinset := by
   ext e
   simp [h.mem_edges_iff]
+
+theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.IsIsolated w) :
+    w ∈ p.support := by
+  have ⟨e, he, hwe⟩ := not_isIsolated_iff_exists_edgeSet_mem.mp hw
+  exact mem_support_iff_exists_mem_edges.mpr <| .inr ⟨e, hp.mem_edges_iff.mpr he, hwe⟩
+
+theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
+  simp [← edgeSet_eq_empty, hp.edgeSet_eq]
+
+/-- The support of a non-nil Eulerian trail equals the support of the graph. -/
+theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
+    w ∈ p.support ↔ ¬G.IsIsolated w :=
+  ⟨fun hwp hw ↦ hnil <| p.nil_of_isIsolated_of_mem_support hw hwp, hp.mem_support_of_not_isIsolated⟩
 
 theorem IsEulerian.isChordless {u v : V} {p : G.Walk u v} (hp : p.IsEulerian) : p.IsChordless :=
   fun _ ⟨hadj, hnmem, _⟩ ↦ hnmem <| hp.mem_edges_iff.mpr hadj

@@ -24,7 +24,7 @@ Moreover, if a topological ring is an algebra over a commutative semiring, then 
 
 The last part of the file builds a ring structure on the biggest separated quotient of a ring.
 
-## Main declarations:
+## Main declarations
 
 Beyond the instances explained above (that don't have to be explicitly invoked),
 the main constructions deal with continuous ring morphisms.
