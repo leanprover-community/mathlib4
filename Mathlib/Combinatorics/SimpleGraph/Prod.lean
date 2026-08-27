@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 George Peter Banyard, Yaël Dillies, Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
+Authors: George Peter Banyard, Yaël Dillies, Kyle Miller, Felix Pernegger
 -/
 module
 
@@ -12,17 +12,25 @@ public import Mathlib.Combinatorics.SimpleGraph.Sum
 /-!
 # Graph products
 
-This file defines the box product of graphs and other product constructions. The box product of `G`
+This files defined two kinds of product of graphs.
+
+* The strong product of graphs. The strong product of `G`
+and `H` is the graph on the product of the vertices such that `x` and `y` are related iff they agree
+are not equal and are related or equal on each component.
+
+* The box product of graphs. The box product of `G`
 and `H` is the graph on the product of the vertices such that `x` and `y` are related iff they agree
 on one component and the other one is related via either `G` or `H`. For example, the box product of
 two edges is a square.
 
 ## Main declarations
 
+* `SimpleGraph.strongProd`: The strong product.
 * `SimpleGraph.boxProd`: The box product.
 
 ## Notation
 
+* `G ⊠ H`: The strong product of `G` and `H`.
 * `G □ H`: The box product of `G` and `H`.
 
 ## TODO
@@ -37,6 +45,242 @@ variable {α β γ V V₁ V₂ W W₁ W₂ : Type*}
 namespace SimpleGraph
 
 variable {G : SimpleGraph α} {H : SimpleGraph β}
+
+section Product
+
+/-- Strong product of simple graphs. It relates `(a₁, b₁)` and `(a₂,  b₂)` if `a₁` and `a₂` are
+equal or`G` relates, and if `b₁` and `b₂` are equal or `H` them. -/
+def strongProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
+  Adj x y := x ≠ y ∧ (x.1 = y.1 ∨ G.Adj x.1 y.1) ∧ (x.2 = y.2 ∨ H.Adj x.2 y.2)
+  symm.symm x y := by tauto
+
+/-- Strong product of simple graphs. It relates `(a₁, b₁)` and `(a₂, b₂)` if `a₁` and `a₂` are
+equal or `G` relates, and if `b₁` and `b₂` are equal or `H` them. -/
+infixl:70 " ⊠ " => strongProd
+
+@[simp]
+theorem strongProd_adj {x y : α × β} :
+    (G ⊠ H).Adj x y ↔ x ≠ y ∧ (x.1 = y.1 ∨ G.Adj x.1 y.1) ∧ (x.2 = y.2 ∨ H.Adj x.2 y.2) :=
+  Iff.rfl
+
+theorem strongProd_adj_left {a₁ : α} {b : β} {a₂ : α} :
+    (G ⊠ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
+  simp only [strongProd_adj, ne_eq, Prod.mk.injEq, and_true, SimpleGraph.irrefl, or_false]
+  exact ⟨fun h ↦ by tauto, fun h ↦ ⟨h.ne, Or.inr h⟩⟩
+
+/-- If (a₁, b₁) and (a₂, b₂) are adjacent in the strong product graph,
+then a₁ and a₂ are equal or adjacent. -/
+theorem strongProd_adj_left' {a₁ a₂ : α} {b₁ b₂ : β} (h : (G ⊠ H).Adj (a₁, b₁) (a₂, b₂)) :
+    a₁ = a₂ ∨ G.Adj a₁ a₂ := by
+  simpa using (strongProd_adj.mp h).2.1
+
+/-- If (a₁, b₁) and (a₂, b₂) are adjacent in the strong product graph,
+then b₁ and b₂ are equal or adjacent. -/
+theorem strongProd_adj_right' {a₁ a₂ : α} {b₁ b₂ : β} (h : (G ⊠ H).Adj (a₁, b₁) (a₂, b₂)) :
+    b₁ = b₂ ∨ H.Adj b₁ b₂ := by
+  simpa using (strongProd_adj.mp h).2.2
+
+theorem strongProd_adj_right {a : α} {b₁ b₂ : β} : (G ⊠ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
+  simp only [strongProd_adj, ne_eq, Prod.mk.injEq, true_and, SimpleGraph.irrefl, or_false]
+  exact ⟨fun h ↦ by tauto, fun h ↦ ⟨h.ne, Or.inr h⟩⟩
+
+theorem neighborSet_strongProd (x : α × β) :
+    (G ⊠ H).neighborSet x =
+      (insert x.1 (G.neighborSet x.1)) ×ˢ (insert x.2 (H.neighborSet x.2)) \ {x} := by
+  ext ⟨a', b'⟩
+  simp
+  tauto
+
+variable (G H)
+
+/-- The strong product is commutative up to isomorphism. `Equiv.prodComm` as a graph isomorphism. -/
+@[simps!]
+def strongProdComm : (G ⊠ H) ≃g H ⊠ G := ⟨Equiv.prodComm _ _, by simp; tauto⟩
+
+/--
+The strong product is associative up to isomorphism. `Equiv.prodAssoc` as a graph isomorphism.
+-/
+@[simps!]
+def strongProdAssoc (I : SimpleGraph γ) : ((G ⊠ H) ⊠ I) ≃g G ⊠ (H ⊠ I) :=
+  ⟨Equiv.prodAssoc _ _ _, fun {x y} => by
+    simp
+    grind⟩
+
+/-- The embedding of `G` into `G ⊠ H` given by `b`. -/
+@[simps]
+def strongProdLeft (b : β) : G ↪g G ⊠ H where
+  toFun a := (a, b)
+  inj' _ _ := congr_arg Prod.fst
+  map_rel_iff' {_ _} := strongProd_adj_left
+
+/-- The embedding of `H` into `G ⊠ H` given by `a`. -/
+@[simps]
+def strongProdRight (a : α) : H ↪g G ⊠ H where
+  toFun := Prod.mk a
+  inj' _ _ := congr_arg Prod.snd
+  map_rel_iff' {_ _} := strongProd_adj_right
+
+namespace Iso
+
+/-- The strong product distributes over the disjoint sum of graphs. -/
+@[simps!, simps toEquiv]
+def strongProdSumDistrib (G : SimpleGraph V) (H₁ : SimpleGraph W₁) (H₂ : SimpleGraph W₂) :
+   (G ⊠ (H₁ ⊕g H₂)) ≃g G ⊠ H₁ ⊕g G ⊠ H₂ where
+  toEquiv := .prodSumDistrib ..
+  map_rel_iff' := by simp
+
+/-- The strong product distributes over the disjoint sum of graphs. -/
+@[simps!, simps toEquiv]
+def sumstrongProdDistrib (G₁ : SimpleGraph V₁) (G₂ : SimpleGraph V₂) (H : SimpleGraph W) :
+    ((G₁ ⊕g G₂) ⊠ H) ≃g G₁ ⊠ H ⊕g G₂ ⊠ H where
+  toEquiv := .sumProdDistrib ..
+  map_rel_iff' := by simp
+
+end Iso
+
+namespace Walk
+
+variable {G}
+
+/-- Turn a walk on `G` into a walk on `G ⊠ H`. -/
+protected def strongProdLeft {a₁ a₂ : α} (b : β) : G.Walk a₁ a₂ → (G ⊠ H).Walk (a₁, b) (a₂, b) :=
+  Walk.map (G.strongProdLeft H b).toHom
+
+variable (G) {H}
+
+/-- Turn a walk on `H` into a walk on `G ⊠ H`. -/
+protected def strongProdRight {b₁ b₂ : β} (a : α) : H.Walk b₁ b₂ → (G ⊠ H).Walk (a, b₁) (a, b₂) :=
+  Walk.map (G.strongProdRight H a).toHom
+
+variable {G}
+
+/-- Project a walk on `G ⊠ H` to a walk on `G` by discarding the moves in the direction of `H`. -/
+def ofStrongProdLeft [DecidableEq α] [DecidableRel G.Adj] {x y : α × β} :
+    (G ⊠ H).Walk x y → G.Walk x.1 y.1
+  | nil => nil
+  | cons h w =>
+    Or.by_cases h.2.1
+      (· ▸ w.ofStrongProdLeft)
+      w.ofStrongProdLeft.cons
+
+/-- Project a walk on `G ⊠ H` to a walk on `H` by discarding the moves in the direction of `G`. -/
+def ofStrongProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
+    (G ⊠ H).Walk x y → H.Walk x.2 y.2
+  | nil => nil
+  | cons h w =>
+    (Or.symm h.2.2).by_cases
+      w.ofStrongProdRight.cons
+      (· ▸ w.ofStrongProdRight)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem ofStrongProdLeft_strongProdLeft [DecidableEq α] [DecidableRel G.Adj] {a₁ a₂ : α} {b : β} :
+    ∀ (w : G.Walk a₁ a₂), (w.strongProdLeft H b).ofStrongProdLeft = w
+  | nil => rfl
+  | cons' x y z h w => by
+    rw [Walk.strongProdLeft, map_cons, ofStrongProdLeft, Or.by_cases, ← Walk.strongProdLeft]
+    simp only [RelHom.coeFn_mk, Function.Embedding.toFun_eq_coe, RelEmbedding.coe_toEmbedding,
+      strongProdLeft_apply, h.ne, ↓reduceDIte, cons.injEq, heq_eq_eq, true_and]
+    simp [ofStrongProdLeft_strongProdLeft]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem ofStrongProdRight_strongProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
+    ∀ (w : G.Walk b₁ b₂), (w.strongProdRight G a).ofStrongProdRight = w
+  | nil => rfl
+  | cons' x y z h w => by
+    rw [Walk.strongProdRight, map_cons, ofStrongProdRight, Or.by_cases, dite_eq_left, ←
+      Walk.strongProdRight]
+    · simp [ofStrongProdRight_strongProdRight]
+    · simpa
+
+end Walk
+
+variable {G H}
+
+protected theorem Preconnected.strongProd (hG : G.Preconnected) (hH : H.Preconnected) :
+    (G ⊠ H).Preconnected := by
+  rintro x y
+  obtain ⟨w₁⟩ := hG x.1 y.1
+  obtain ⟨w₂⟩ := hH x.2 y.2
+  exact ⟨(w₁.strongProdLeft _ _).append (w₂.strongProdRight _ _)⟩
+
+protected theorem Preconnected.ofStrongProdLeft [Nonempty β] (h : (G ⊠ H).Preconnected) :
+    G.Preconnected := by
+  classical
+  rintro a₁ a₂
+  obtain ⟨w⟩ := h (a₁, Classical.arbitrary _) (a₂, Classical.arbitrary _)
+  exact ⟨w.ofStrongProdLeft⟩
+
+protected theorem Preconnected.ofStrongProdRight [Nonempty α] (h : (G ⊠ H).Preconnected) :
+    H.Preconnected := by
+  classical
+  rintro b₁ b₂
+  obtain ⟨w⟩ := h (Classical.arbitrary _, b₁) (Classical.arbitrary _, b₂)
+  exact ⟨w.ofStrongProdRight⟩
+
+protected theorem Connected.strongProd (hG : G.Connected) (hH : H.Connected) :
+    (G ⊠ H).Connected := by
+  have := hG.nonempty
+  have := hH.nonempty
+  exact ⟨hG.preconnected.strongProd hH.preconnected⟩
+
+protected theorem Connected.ofStrongProdLeft (h : (G ⊠ H).Connected) : G.Connected := by
+  have := (nonempty_prod.1 h.nonempty).1
+  have := (nonempty_prod.1 h.nonempty).2
+  exact ⟨h.preconnected.ofStrongProdLeft⟩
+
+protected theorem Connected.ofStrongProdRight (h : (G ⊠ H).Connected) : H.Connected := by
+  have := (nonempty_prod.1 h.nonempty).1
+  have := (nonempty_prod.1 h.nonempty).2
+  exact ⟨h.preconnected.ofStrongProdRight⟩
+
+@[simp]
+theorem connected_strongProd : (G ⊠ H).Connected ↔ G.Connected ∧ H.Connected :=
+  ⟨fun h => ⟨h.ofStrongProdLeft, h.ofStrongProdRight⟩, fun h => h.1.strongProd h.2⟩
+
+variable (a b : Finset Nat)
+
+noncomputable instance strongProdFintypeNeighborSet (x : α × β)
+    [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] :
+    Fintype ((G ⊠ H).neighborSet x) :=
+  open scoped Classical in
+  Fintype.ofEquiv
+    (insert x.1 (G.neighborFinset x.1) ×ˢ insert x.2 (H.neighborFinset x.2) \ {x} : Finset (α × β))
+    ((Equiv.refl _).subtypeEquiv fun y => by
+      simp
+      grind)
+
+open scoped Classical in
+theorem neighborFinset_strongProd (x : α × β)
+    [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G ⊠ H).neighborSet x)] :
+    (G ⊠ H).neighborFinset x =
+      insert x.1 (G.neighborFinset x.1) ×ˢ insert x.2 (H.neighborFinset x.2) \ {x}:= by
+  -- swap out the fintype instance for the canonical one
+  let : Fintype ((G ⊠ H).neighborSet x) := SimpleGraph.strongProdFintypeNeighborSet _
+  convert_to (G ⊠ H).neighborFinset x = _ using 2
+  exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
+
+theorem degree_strongProd (x : α × β)
+    [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G ⊠ H).neighborSet x)] :
+    (G ⊠ H).degree x = G.degree x.1 * H.degree x.2 + G.degree x.1 + H.degree x.2 := by
+  classical
+  rw [degree, neighborFinset_strongProd, Finset.card_sdiff_of_subset (by simp)]
+  simp
+  grind
+
+lemma reachable_strongProd {x y : α × β} :
+    (G ⊠ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
+  classical
+  constructor
+  · intro ⟨w⟩
+    exact ⟨⟨w.ofStrongProdLeft⟩, ⟨w.ofStrongProdRight⟩⟩
+  · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
+    exact ⟨(w₁.strongProdLeft _ _).append (w₂.strongProdRight _ _)⟩
+
+end Product
+
+section BoxProduct
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
@@ -286,5 +530,13 @@ lemma edist_boxProd (x y : α × β) :
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
+
+theorem boxProd_le_strongProd : G □ H ≤ G ⊠ H := by
+  refine le_iff_adj.mpr ?_
+  simp only [boxProd_adj, strongProd_adj, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
+  intro _ _ _ _ h
+  rcases h with h | h <;> have := h.1.ne <;> grind
+
+end BoxProduct
 
 end SimpleGraph
