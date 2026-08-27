@@ -125,7 +125,7 @@ lemma QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one [QuasiSober X] [Irre
 
 attribute [local instance] specializationPreorder in
 /--
-In a quasi-sober, irreducible, T0 space `X`, a Noetherian quasi-sober subspace `p` whose closure
+In a quasi-sober, irreducible, `T0` space `X`, a Noetherian quasi-sober subspace `p` whose closure
 is not all of `X` contains only finitely many points of coheight `1` (in the specialization order
 of `X`).
 -/
