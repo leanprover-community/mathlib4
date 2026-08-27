@@ -84,10 +84,8 @@ noncomputable def wedgePairingEquiv
   have hcomp_eq {s t : powersetCard (Fin (finrank K V)) k}
       (h : Disjoint t.val (c s).val) : t = s := by
     apply Subtype.ext
-    have ht : (c s).valᶜ = t.val :=
-      Finset.compl_eq_of_disjoint_of_card_add_eq h.symm (by
-        simpa [t.prop, (c s).prop, Fintype.card_fin] using hkl')
-    simpa [c_val s] using ht.symm
+    simpa [c_val s] using (Finset.compl_eq_of_disjoint_of_card_add_eq h.symm (by
+      simpa [t.prop, (c s).prop, Fintype.card_fin] using hkl')).symm
   have hzero (s t : powersetCard (Fin (finrank K V)) k) (h : t ≠ s) :
       wedgeMul (bk t) (complementBasis s) = 0 := by
     have hnotdisj : ¬Disjoint t.val (c s).val := fun h' ↦ h (hcomp_eq h')
@@ -113,9 +111,11 @@ noncomputable def wedgePairingEquiv
   have he : e.toLinearMap = f := by
     apply complementBasis.ext
     intro s
+    change e (complementBasis s) = f (complementBasis s)
+    rw [Basis.equiv_apply]
     apply bk.ext
     intro t
-    simp [e, fpair, targetBasis, Module.Basis.unitsSMul_apply,
+    simp [fpair, targetBasis, Module.Basis.unitsSMul_apply,
       Units.smul_def, Finsupp.single_apply, eq_comm]
   exact LinearEquiv.ofBijective f (by
     rw [← he]
