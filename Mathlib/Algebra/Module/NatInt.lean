@@ -215,7 +215,7 @@ lemma CharZero.of_isAddTorsionFree [Semiring R] [AddCommGroup M] [Module R M]
   refine ⟨fun {n m h} ↦ ?_⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
-  simpa using zsmul_left_injective hx h
+  simpa using IsAddTorsionFree.zsmul_left_injective hx h
 
 variable (M) in
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic

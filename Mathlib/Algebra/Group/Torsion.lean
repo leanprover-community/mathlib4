@@ -87,13 +87,20 @@ lemma IsMulTorsionFree.zpow_eq_one_iff : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
 @[to_additive IsAddTorsionFree.zsmul_eq_zero_iff_left]
 lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 
-@[to_additive zsmul_left_injective]
-lemma zpow_right_injective (ha : a ≠ 1) :
-    (a ^ · : ℤ → G).Injective := by
-  intro m n h
-  apply Int.sub_eq_zero.mp
-  apply (IsMulTorsionFree.zpow_eq_one_iff_right ha).mp
+@[to_additive IsAddTorsionFree.zsmul_left_injective_iff]
+lemma IsMulTorsionFree.zpow_right_injective_iff : (a ^ · : ℤ → G).Injective ↔ a ≠ 1 := by
+  refine ⟨fun h ha ↦ by
+    simpa using h (show a ^ (0 : ℤ) = a ^ (1 : ℤ) by simp [ha]), fun ha m n h ↦ ?_⟩
+  rw [← Int.sub_eq_zero, ← IsMulTorsionFree.zpow_eq_one_iff_right ha]
   simp [zpow_sub, h]
+
+@[to_additive IsAddTorsionFree.zsmul_left_injective]
+alias ⟨_, IsMulTorsionFree.zpow_right_injective⟩ :=
+  IsMulTorsionFree.zpow_right_injective_iff
+
+@[to_additive (attr := simp) IsAddTorsionFree.zsmul_left_inj]
+lemma IsMulTorsionFree.zpow_right_inj (ha : a ≠ 1) {m n : ℤ} : a ^ m = a ^ n ↔ m = n :=
+  (IsMulTorsionFree.zpow_right_injective ha).eq_iff
 
 @[to_additive] lemma self_eq_inv : a = a⁻¹ ↔ a = 1 := by rw [← sq_eq_one, sq, mul_eq_one_iff_eq_inv]
 @[to_additive] lemma inv_eq_self : a⁻¹ = a ↔ a = 1 := by rw [eq_comm, self_eq_inv]
