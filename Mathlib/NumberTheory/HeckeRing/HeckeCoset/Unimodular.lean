@@ -8,7 +8,7 @@ module
 public import Mathlib.NumberTheory.HeckeRing.HeckeCoset.Multiplicity
 
 /-!
-# Multiplicity
+# Unimodular
 
 -/
 
@@ -53,6 +53,7 @@ instance [IsHeckeUnimodular H] (g : G) [IsHeckeTriple H H g] :
     IsHeckeTriple H H g⁻¹ := by
   rw [isHeckeTriple_iff, ←inv_mk g, ← IsHeckeUnimodular.degree_eq_inv_degree]
   simp [mk_degree]
+
 namespace DoubleCoset₀
 
 variable [IsHeckeUnimodular H]
