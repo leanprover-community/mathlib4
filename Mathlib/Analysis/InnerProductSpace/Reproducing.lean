@@ -461,7 +461,7 @@ variable (𝕜) in
 /-- The kernel generated from a function `f : X → V` with the rank-one operators
 `z ↦ ⟪f y, z⟫ • f x` as its entries. -/
 def outerKernel (f : X → V) : Matrix X X (V →L[𝕜] V) :=
-  Matrix.of fun x y ↦ rankOne 𝕜 (f x) (f y)
+  .of fun x y ↦ rankOne 𝕜 (f x) (f y)
 
 omit [CompleteSpace V] in
 variable (𝕜) in
