@@ -5,13 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.UnivLE
 public import Mathlib.Data.Countable.Small
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Logic.Small.Set
-public import Mathlib.Logic.UnivLE
 public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
@@ -533,6 +533,10 @@ theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
 
 lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
+
+@[simp] lemma aleph0_le_mk_set {s : Set α} : ℵ₀ ≤ #s ↔ s.Infinite := by
+  rw [aleph0_le_mk_iff, Set.infinite_coe_iff]
+
 lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
 
 @[simp] lemma mk_lt_aleph0 [Finite α] : #α < ℵ₀ := mk_lt_aleph0_iff.2 ‹_›
