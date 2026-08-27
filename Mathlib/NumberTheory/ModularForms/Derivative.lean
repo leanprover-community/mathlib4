@@ -137,25 +137,25 @@ lemma serreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
 /-!
 Basic properties of Serre derivative.
 -/
-theorem serreDerivative_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+theorem serreDerivative_add (k : ℂ) {F G : ℍ → ℂ} (hF : MDiff F) (hG : MDiff G) :
     serreDerivative k (F + G) = serreDerivative k F + serreDerivative k G := by
   ext z
   simp [serreDerivative, normalizedDerivOfComplex_add F G hF hG]
   ring_nf
 
-theorem serreDerivative_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+theorem serreDerivative_sub (k : ℂ) {F G : ℍ → ℂ} (hF : MDiff F) (hG : MDiff G) :
     serreDerivative k (F - G) = serreDerivative k F - serreDerivative k G := by
   ext z
   simp [serreDerivative, normalizedDerivOfComplex_sub F G hF hG]
   ring_nf
 
-theorem serreDerivative_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) :
+theorem serreDerivative_smul (k c : ℂ) {F : ℍ → ℂ} (hF : MDiff F) :
     serreDerivative k (c • F) = c • (serreDerivative k F) := by
   ext z
   simp [serreDerivative, normalizedDerivOfComplex_smul c F hF, smul_eq_mul]
   ring_nf
 
-theorem serreDerivative_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+theorem serreDerivative_mul (k₁ k₂ : ℂ) {F G : ℍ → ℂ} (hF : MDiff F) (hG : MDiff G) :
     serreDerivative (k₁ + k₂) (F * G) =
       (serreDerivative k₁ F) * G + F * (serreDerivative k₂ G) := by
   ext z

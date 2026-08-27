@@ -106,8 +106,8 @@ private lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
     field_simp [denom_ne_zero, Complex.ofReal_ne_zero.mpr Real.pi_ne_zero]
     linear_combination -24 * (γ 1 0 : ℂ) ^ 2 * I_sq
   -- Substitute `E₂ ∣[2] γ = E₂ - (2 ζ(2))⁻¹ • D2 γ` and expand `∂₂` by linearity
-  rw [hslash, E2_slash_action, serreDerivative_sub _ _ _ E2_mdifferentiable (hD2.const_smul _),
-    serreDerivative_smul _ _ _ hD2]
+  rw [hslash, E2_slash_action, serreDerivative_sub 2 E2_mdifferentiable (hD2.const_smul _),
+    serreDerivative_smul 2 _ hD2]
   ext z
   simp [hDD2]
   ring
