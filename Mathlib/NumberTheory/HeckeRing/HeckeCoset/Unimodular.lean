@@ -49,9 +49,9 @@ class IsHeckeUnimodular (H : Subgroup G) : Prop where
   degree_eq_inv_degree : ∀ (x : DoubleCoset.Quotient (H : Set G) (H : Set G)),
     x.degree = (inv x).degree
 
-instance [IsHeckeUnimodular H] (g : G) [IsHeckeTriple H H g] :
-    IsHeckeTriple H H g⁻¹ := by
-  rw [isHeckeTriple_iff, ←inv_mk g, ← IsHeckeUnimodular.degree_eq_inv_degree]
+instance [IsHeckeUnimodular H] (g : G) [IsHeckeFinite H H g] :
+    IsHeckeFinite H H g⁻¹ := by
+  rw [isHeckeFinite_iff, ←inv_mk g, ← IsHeckeUnimodular.degree_eq_inv_degree]
   simp [mk_degree]
 
 namespace DoubleCoset₀
@@ -66,7 +66,7 @@ lemma coe_inv (x : DoubleCoset₀ H H) :
     x.inv = DoubleCoset.inv x.val := rfl
 
 @[simp]
-lemma inv_mk (g : G) [IsHeckeTriple H H g] :
+lemma inv_mk (g : G) [IsHeckeFinite H H g] :
     (mk H H g).inv = mk H H g⁻¹ := rfl
 
 lemma mk_inv_rep (x : DoubleCoset₀ H H) :
