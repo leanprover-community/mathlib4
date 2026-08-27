@@ -40,8 +40,8 @@ noncomputable def double : HomologicalComplex C c where
   X k := if k = i₀ then X₀ else if k = i₁ then X₁ else 0
   d k k' :=
     if hk : k = i₀ ∧ k' = i₁ ∧ i₀ ≠ i₁ then
-      eqToHom (if_pos hk.1) ≫ f ≫ eqToHom (by
-        rw [if_neg, if_pos hk.2.1]
+      eqToHom (ite_eq_left hk.1) ≫ f ≫ eqToHom (by
+        rw [ite_eq_right, ite_eq_left hk.2.1]
         aesop)
     else 0
   d_comp_d' := by
@@ -51,40 +51,40 @@ noncomputable def double : HomologicalComplex C c where
     · subst hi
       by_cases hj : j = i₁
       · subst hj
-        nth_rw 2 [dif_neg (by tauto)]
+        nth_rw 2 [dite_eq_right (by tauto)]
         rw [comp_zero]
-      · rw [dif_neg (by tauto), zero_comp]
-    · rw [dif_neg (by tauto), zero_comp]
-  shape i j hij := dif_neg (by aesop)
+      · rw [dite_eq_right (by tauto), zero_comp]
+    · rw [dite_eq_right (by tauto), zero_comp]
+  shape i j hij := dite_eq_right (by aesop)
 
 lemma isZero_double_X (k : ι) (h₀ : k ≠ i₀) (h₁ : k ≠ i₁) :
     IsZero ((double f hi₀₁).X k) := by
   dsimp [double]
-  rw [if_neg h₀, if_neg h₁]
+  rw [ite_eq_right h₀, ite_eq_right h₁]
   exact Limits.isZero_zero C
 
 /-- The isomorphism `(double f hi₀₁).X i₀ ≅ X₀`. -/
 noncomputable def doubleXIso₀ : (double f hi₀₁).X i₀ ≅ X₀ :=
-  eqToIso (dif_pos rfl)
+  eqToIso (dite_eq_left rfl)
 
 /-- The isomorphism `(double f hi₀₁).X i₁ ≅ X₁`. -/
 noncomputable def doubleXIso₁ (h : i₀ ≠ i₁) : (double f hi₀₁).X i₁ ≅ X₁ :=
   eqToIso (by
     dsimp [double]
-    rw [if_neg h.symm, if_pos rfl])
+    rw [ite_eq_right h.symm, ite_eq_left rfl])
 
 lemma double_d (h : i₀ ≠ i₁) :
     (double f hi₀₁).d i₀ i₁ =
       (doubleXIso₀ f hi₀₁).hom ≫ f ≫ (doubleXIso₁ f hi₀₁ h).inv :=
-  dif_pos ⟨rfl, rfl, h⟩
+  dite_eq_left ⟨rfl, rfl, h⟩
 
 lemma double_d_eq_zero₀ (a b : ι) (ha : a ≠ i₀) :
     (double f hi₀₁).d a b = 0 :=
-  dif_neg (by tauto)
+  dite_eq_right (by tauto)
 
 lemma double_d_eq_zero₁ (a b : ι) (hb : b ≠ i₁) :
     (double f hi₀₁).d a b = 0 :=
-  dif_neg (by tauto)
+  dite_eq_right (by tauto)
 
 variable {f hi₀₁} in
 @[ext]
@@ -124,14 +124,14 @@ noncomputable def mkHomFromDouble : double f hi₀₁ ⟶ K where
   comm' k₀ k₁ hk := by
     by_cases h₀ : k₀ = i₀
     · subst h₀
-      rw [dif_pos rfl]
+      rw [dite_eq_left rfl]
       obtain rfl := c.next_eq hk hi₀₁
-      simp [dif_neg h.symm, double_d f hi₀₁ h, comm]
-    · rw [dif_neg h₀]
+      simp [dite_eq_right h.symm, double_d f hi₀₁ h, comm]
+    · rw [dite_eq_right h₀]
       by_cases h₁ : k₀ = i₁
       · subst h₁
         dsimp
-        rw [if_pos rfl, comp_id, id_comp, assoc, hφ k₁ hk, comp_zero,
+        rw [ite_eq_left rfl, comp_id, id_comp, assoc, hφ k₁ hk, comp_zero,
           double_d_eq_zero₀ _ _ _ _ h.symm, zero_comp]
       · apply (isZero_double_X f hi₀₁ k₀ h₀ h₁).eq_of_src
 
@@ -140,18 +140,17 @@ lemma mkHomFromDouble_f₀ :
     (mkHomFromDouble hi₀₁ h φ₀ φ₁ comm hφ).f i₀ =
       (doubleXIso₀ f hi₀₁).hom ≫ φ₀ := by
   dsimp [mkHomFromDouble]
-  rw [if_pos rfl, id_comp, comp_id]
+  rw [ite_eq_left rfl, id_comp, comp_id]
 
 @[simp, reassoc]
 lemma mkHomFromDouble_f₁ :
     (mkHomFromDouble hi₀₁ h φ₀ φ₁ comm hφ).f i₁ =
       (doubleXIso₁ f hi₀₁ h).hom ≫ φ₁ := by
   dsimp [mkHomFromDouble]
-  rw [dif_neg h.symm, if_pos rfl, id_comp, comp_id]
+  rw [dite_eq_right h.symm, ite_eq_left rfl, id_comp, comp_id]
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `c : ComplexShape ι`, and `i₀` and `i₁` be distinct indices such
 that `hi₀₁ : c.Rel i₀ i₁`, then for any `X : C`, the functor which sends
 `K : HomologicalComplex C c` to `X ⟶ K.X i` is corepresentable by `double (𝟙 X) hi₀₁`. -/
@@ -172,7 +171,6 @@ end
 
 variable {ι : Type*} (c : ComplexShape ι)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i` has no successor for the complex shape `c`,
 then for any `X : C`, the functor which sends `K : HomologicalComplex C c`
 to `X ⟶ K.X i` is corepresentable by `(single C c i).obj X`. -/

@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
 # Order connected components of a set
@@ -20,7 +21,9 @@ so we only add API needed for this lemma.
 @[expose] public section
 
 
-open Interval Function OrderDual
+open Function OrderDual
+
+open scoped Interval
 
 namespace Set
 
@@ -116,7 +119,9 @@ theorem ordConnectedProj_eq {x y : s} :
 
 /-- A set that intersects each order connected component of a set by a single point. Defined as the
 range of `Set.ordConnectedProj s`. -/
-def ordConnectedSection (s : Set α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def ordConnectedSection (s : Set α) : Set α :=
   range <| ordConnectedProj s
 
 theorem dual_ordConnectedSection (s : Set α) :
@@ -165,7 +170,9 @@ theorem dual_ordSeparatingSet :
 
 /-- An auxiliary neighborhood that will be used in the proof of
 `OrderTopology.CompletelyNormalSpace`. -/
-def ordT5Nhd (s t : Set α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 
 theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
