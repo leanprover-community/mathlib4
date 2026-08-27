@@ -341,15 +341,15 @@ def curlFollowRedirectArgs : Array String :=
 
 /--
 `curl` retry flags for a cache transfer. `--retry` covers timeouts and
-408/429/5xx; `--retry-all-errors` adds transport errors, so a transfer that
-dies with its connection retries on a fresh one, with curl's exponential
-backoff. An HTTP 4xx is not a curl error, so a 404 miss never retries.
-`--retry-all-errors` needs curl >= 7.71, the `validateCurl` floor for
-parallel mode; the serial download path serves older curls and stays on
-plain `--retry`.
+408/429/5xx responses; every supported curl accepts it. With
+`supportLegacyCurl := false`, `--retry-all-errors` also retries transport
+errors: a transfer that dies with its connection retries on a fresh one,
+with exponential backoff. That flag needs curl 7.71, the `validateCurl`
+floor for parallel mode. Pass `supportLegacyCurl := true` on the paths that
+preserve compatibility with older versions of curl.
 -/
-def curlRetryArgs : Array String :=
-  #["--retry", "5", "--retry-all-errors"]
+def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
+  #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
 /-- Authentication method used for cache upload operations. -/
 inductive UploadAuth where
@@ -478,10 +478,9 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
       args := #[url, "--silent"] ++ curlFollowRedirectArgs ++
-        -- Plain `--retry` only: this path serves the curls below 7.71 that
-        -- `validateCurl` keeps out of parallel mode, and they reject
-        -- `curlRetryArgs`.
-        #["--retry", "5", "--write-out", "%{http_code}", "-o", partPath.toString] }
+        -- This path serves curls below 7.71, which reject `--retry-all-errors`.
+        curlRetryArgs (supportLegacyCurl := true) ++
+        #["--write-out", "%{http_code}", "-o", partPath.toString] }
   -- The status decides, as on the parallel path: only a 200/201 body is a
   -- cache file. On any other answer the part file holds an error body, if
   -- one exists at all. A connection error reports status `000`.
@@ -745,7 +744,9 @@ private def downloadFilesFromContainer
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
     let args := #["--request", "GET", "--parallel", "--silent"] ++
-      curlFollowRedirectArgs ++ curlRetryArgs ++
+      -- Avoid passing `--fail` here: it slows parallel transfers on curl
+      -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
+      curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
       #["--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
     -- `legacy` answers reads with 403 once its public access is revoked ahead
     -- of retirement; treat that as a miss so the chain stays quiet for clients
@@ -1146,7 +1147,8 @@ def putFilesAbsolute
     -- A retry after a PUT that landed is safe: a non-overwrite put answers
     -- it with 409/412, which `treatExistsAsSkip` excuses, and an overwrite
     -- put re-sends the same bytes.
-    let args := args ++ #["-X", "PUT", "--parallel"] ++ curlRetryArgs ++
+    let args := args ++ #["-X", "PUT", "--parallel"] ++
+      curlRetryArgs (supportLegacyCurl := false) ++
       #["--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
     let (s, _) ← monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
       (decompConfig := none) (treatExistsAsSkip := !overwrite)
