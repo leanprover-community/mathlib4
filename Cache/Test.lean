@@ -23,6 +23,9 @@ These tests cover the pure logic of the cache system, including:
   non-default-scope security warning it triggers
 - Decompression-pipeline carry across download rounds (`DecompState`,
   `finalizeDecomp`, `monitorCurl`)
+- Transfer classification (`classifyDownload`/`classifyUpload`): delivered,
+  miss, skip, or failed, per HTTP status and curl exit code
+- The two retry-flag tiers (`curlRetryArgs`)
 - Utility functions (URL extraction, filename hashing, etc.)
 
 Anything that touches the network is left to CI, which exercises the
@@ -1034,6 +1037,20 @@ def test_curlFollowRedirectArgs : IO Unit := do
 
 end ReadRedirects
 
+section RetryFlags
+
+/-- Only a path with a curl 7.71 floor may pass `--retry-all-errors`; an older
+curl rejects the whole command. The legacy tier serves the serial download path
+and the marker probe, so it must stay free of that flag. -/
+def test_curlRetryArgs : IO Unit := do
+  IO.println "curlRetryArgs:"
+  assertEq "legacy tier" "--retry 5"
+    (" ".intercalate (curlRetryArgs (supportLegacyCurl := true)).toList)
+  assertEq "full tier" "--retry 5 --retry-all-errors"
+    (" ".intercalate (curlRetryArgs (supportLegacyCurl := false)).toList)
+
+end RetryFlags
+
 section CacheMissStatus
 
 /-- `isCacheMissStatus` decides whether a read's HTTP status is a benign miss
@@ -1076,6 +1093,62 @@ def test_isAlreadyPresentStatus : IO Unit := do
   assertTrue "500 is not already-present" (!isAlreadyPresentStatus 500)
 
 end AlreadyPresentStatus
+
+section TransferClassification
+
+/-- `classifyDownload` is the decision table shared by the parallel and serial
+download paths. The clean-exit rows guard against renaming a truncated body: a
+transport error that outlives the retries reports `http_code: 200` with a
+nonzero `exitcode`. -/
+def test_classifyDownload : IO Unit := do
+  IO.println "classifyDownload:"
+  -- A clean 200/201 delivers.
+  assertTrue "200 + exit 0 delivers"
+    (classifyDownload (some 200) 0 false matches .delivered)
+  assertTrue "201 + exit 0 delivers"
+    (classifyDownload (some 201) 0 false matches .delivered)
+  -- A 200 with a nonzero exit code carries a truncated body.
+  assertTrue "200 + exit 18 fails"
+    (classifyDownload (some 200) 18 false matches .failed)
+  assertTrue "201 + exit 18 fails"
+    (classifyDownload (some 201) 18 false matches .failed)
+  -- The status alone decides a miss.
+  assertTrue "404 is a miss"
+    (classifyDownload (some 404) 0 false matches .miss)
+  assertTrue "404 + nonzero exit is still a miss"
+    (classifyDownload (some 404) 18 false matches .miss)
+  assertTrue "403 is a miss with treatForbiddenAsMiss"
+    (classifyDownload (some 403) 0 true matches .miss)
+  assertTrue "403 fails otherwise"
+    (classifyDownload (some 403) 0 false matches .failed)
+  assertTrue "409 fails on a read"
+    (classifyDownload (some 409) 0 false matches .failed)
+  -- No usable status is a failure (a connection error reports `000`).
+  assertTrue "status 0 fails"
+    (classifyDownload (some 0) 0 false matches .failed)
+  assertTrue "no status fails"
+    (classifyDownload none 0 false matches .failed)
+
+/-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
+non-overwrite put, and every other answer — a 404 included — is a failure. -/
+def test_classifyUpload : IO Unit := do
+  IO.println "classifyUpload:"
+  assertTrue "201 + exit 0 delivers"
+    (classifyUpload (some 201) 0 false matches .delivered)
+  assertTrue "201 + exit 18 fails"
+    (classifyUpload (some 201) 18 false matches .failed)
+  assertTrue "409 skips on a non-overwrite put"
+    (classifyUpload (some 409) 0 true matches .skip)
+  assertTrue "412 skips on a non-overwrite put"
+    (classifyUpload (some 412) 0 true matches .skip)
+  assertTrue "409 fails on an overwrite put"
+    (classifyUpload (some 409) 0 false matches .failed)
+  assertTrue "404 fails"
+    (classifyUpload (some 404) 0 true matches .failed)
+  assertTrue "no status fails"
+    (classifyUpload none 0 true matches .failed)
+
+end TransferClassification
 
 section UnsafeRounds
 
@@ -1191,7 +1264,8 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
     decompressed := 42
     decompFailed := 1 }
   let (s, served) ← withSuppressedOutput <|
-    monitorCurl #["--version"] 1 "Downloaded" "speed_download" (decompState := carried)
+    monitorCurl #["--version"] 1 "Downloaded" "speed_download"
+      (classifyDownload · · false) (decompState := carried)
   assertTrue "no transfers → an empty served set" served.isEmpty
   assertTrue "pending files survive the round" (s.decomp.pending.size == 1)
   assertTrue "the in-flight task survives the round" s.decomp.currentTask.isSome
@@ -1233,8 +1307,11 @@ def runAll : IO Unit := do
   test_parseNamedOpt
   test_parseFlagOpt
   test_curlFollowRedirectArgs
+  test_curlRetryArgs
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
+  test_classifyDownload
+  test_classifyUpload
   test_expandDownloadRounds
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
