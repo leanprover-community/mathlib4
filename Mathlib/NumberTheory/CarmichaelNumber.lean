@@ -40,7 +40,7 @@ namespace Nat
 open ArithmeticFunction
 
 /-- We say a natural number `n` is a Carmichael number if it is greater than 2, composite and
-for all natural number `b` coprime to `n` we have `n ∣ b ^ (n - 1) - 1`. -/
+for all natural numbers `b` coprime to `n` we have `n ∣ b ^ (n - 1) - 1`. -/
 @[expose]
 def IsCarmichael (n : ℕ) : Prop :=
   2 < n ∧ ¬ n.Prime ∧ ∀ b, b.Coprime n → ProbablePrime n b
@@ -90,18 +90,16 @@ lemma pow_mod_succ {n : ℕ} (hn : n ≠ 0) (k : ℕ) :
 
 /-- A Carmichael number is odd. -/
 theorem IsCarmichael.odd (h : n.IsCarmichael) : Odd n := by
-  have : n.ProbablePrime (n - 1) := h.probablePrime_of_coprime (b := n - 1)
-    <| (coprime_self_sub_left (by grind [h.two_lt])).mpr (by simp)
-  rw [ProbablePrime, dvd_iff_mod_eq_zero, ← mod_sub_of_le] at this
-  · rw [sub_one_pow_mod h.two_lt.le] at this
-    contrapose! this
-    simp_rw [(odd_sub' (m := n) (n := 1) (by grind [h.two_lt.le])).mpr (by simp_all)]
-    exact Nat.sub_ne_zero_iff_lt.mpr <| lt_sub_of_add_lt h.two_lt
-  · rw [sub_one_pow_mod h.two_lt.le]
-    by_cases h0 : Odd (n - 1)
-    · simp [h0]
-      grind [h.two_lt]
-    · simp [h0]
+  match n with
+  | 0 => exact (not_isCarmichael_zero h).elim
+  | n + 1 =>
+    rw [odd_add_one, not_odd_iff_even]
+    have H := h.zmod_unit_pow_sub_one (-1)
+    rw [Nat.add_one_sub_one, neg_one_pow_eq_ite] at H
+    contrapose! H
+    rw [ite_eq_right H, Ne, Units.ext_iff, Units.val_one, Units.coe_neg_one,
+      ZMod.neg_one_eq_one_iff]
+    grind [h.two_lt]
 
 lemma IsCarmichael.zmod_unit_pow_sub_one (s : (ZMod n)ˣ) (hn : n.IsCarmichael) :
   s ^ (n - 1) = 1 := by
@@ -119,36 +117,28 @@ lemma IsCarmichael.zmod_unit_pow_sub_one (s : (ZMod n)ˣ) (hn : n.IsCarmichael) 
 
 /-- A Carmichael number is squarefree. -/
 theorem IsCarmichael.squarefree (h : n.IsCarmichael) : Squarefree n := by
-  intro k hk
-  rw [isUnit_iff_eq_one]
-  contrapose! hk
-  intro hn
-  obtain ⟨p, hp, pk⟩ := ne_one_iff_exists_prime_dvd.mp hk
+  refine squarefree_iff_prime_squarefree.mpr fun p hp p_dvd ↦ ?_
   have : NeZero (p ^ 2) := ⟨pow_ne_zero 2 hp.ne_zero⟩
   have : NeZero n := ⟨by grind [h.two_lt]⟩
-  have p_dvd : p * p ∣ n := dvd_trans (by gcongr) hn
   have p_odd : Odd p := h.odd.of_dvd_nat <| dvd_trans (p.dvd_mul_left p) p_dvd
   have h_cyclic : IsCyclic (ZMod (p ^ 2))ˣ :=
     (ZMod.isCyclic_units_iff_of_odd p_odd.pow).mpr ⟨p, 2, hp, p_odd, rfl⟩
   obtain ⟨r, hr⟩ := isCyclic_iff_exists_orderOf_eq_natCard.mp h_cyclic
   rw [card_eq_fintype_card, ZMod.card_units_eq_totient] at hr
-  have p_sq_dvd : p ^ 2 ∣ n := by simpa [pow_two] using p_dvd
-  obtain ⟨s, hs⟩ := ZMod.unitsMap_surjective p_sq_dvd r
+  obtain ⟨s, hs⟩ := ZMod.unitsMap_surjective (pow_two p ▸ p_dvd) r
   have r_pow : r ^ (n - 1) = 1 := by rw [← hs, ← map_pow, h.zmod_unit_pow_sub_one, map_one]
   have phi_dvd : φ (p ^ 2) ∣ n - 1 := by
     rw [← hr]
     exact orderOf_dvd_of_pow_eq_one r_pow
   have p_dvd_sub : p ∣ n - 1 := dvd_trans (by simp [totient_prime_pow_succ hp 1]) phi_dvd
-  apply hp.ne_one
-  exact eq_one_of_dvd_coprimes ((coprime_self_sub_left (by grind [h.two_lt])).mpr (by simp))
-    p_dvd_sub (dvd_trans (p.dvd_mul_right p) p_dvd)
+  have p_dvd_n : p ∣ n := dvd_trans (dvd_mul_left p p) p_dvd
+  have := Nat.dvd_sub_iff_right (show 1 ≤ n by grind [h.two_lt]) p_dvd_n |>.mp p_dvd_sub
+  exact hp.not_dvd_one this
 
-theorem IsCarmichael.carmichael_dvd_pred (h : n.IsCarmichael) : carmichael n ∣ n - 1 := by
+theorem IsCarmichael.carmichael_dvd_sub_one (h : n.IsCarmichael) : carmichael n ∣ n - 1 := by
   have : NeZero n := ⟨by grind [h.two_lt]⟩
   rw [carmichael_eq_exponent']
-  apply Monoid.exponent_dvd_of_forall_pow_eq_one
-  intro s
-  exact h.zmod_unit_pow_sub_one s
+  exact Monoid.exponent_dvd_of_forall_pow_eq_one h.zmod_unit_pow_sub_one
 
 theorem IsCarmichael.prime_sub_one_dvd {p : ℕ} (h : n.IsCarmichael) (hp : p.Prime) (hpn : p ∣ n) :
     p - 1 ∣ n - 1 := by
@@ -157,8 +147,8 @@ theorem IsCarmichael.prime_sub_one_dvd {p : ℕ} (h : n.IsCarmichael) (hp : p.Pr
   exact carmichael_dvd (by simpa using hpn)
 
 /-- **Korselt's criterion** for Carmichael numbers:
-`n` is a Carmichael number if and only if it is greater than two, composite, sqaurefree and for all
-of for each prime divisor `p`, we have `p - 1 ∣ n - 1`. -/
+`n` is a Carmichael number if and only if it is greater than two, composite, squarefree, and for
+each prime divisor `p` of `n`, we have `p - 1 ∣ n - 1`. -/
 theorem isCarmichael_iff_korselt :
     n.IsCarmichael ↔ 2 < n ∧ ¬n.Prime ∧ Squarefree n ∧ ∀ p, p.Prime → p ∣ n → p - 1 ∣ n - 1 := by
   refine ⟨fun h ↦ ⟨h.two_lt, h.not_prime, h.squarefree, fun _ ↦ h.prime_sub_one_dvd⟩, ?_⟩
@@ -166,15 +156,13 @@ theorem isCarmichael_iff_korselt :
   have : NeZero n := ⟨by lia⟩
   refine ⟨hn, hn_prime, fun b hb ↦ ?_⟩
   rw [probablePrime_iff_modEq n (show 1 ≤ b by grind)]
-  have carmichael_dvd : carmichael n ∣ n - 1 := by
+  obtain ⟨d, hd⟩ : carmichael n ∣ n - 1 := by
     rw [carmichael_factorization]
-    apply Finset.lcm_dvd
-    intro p hp_mem
+    refine Finset.lcm_dvd fun p hp_mem ↦ ?_
     rw [mem_primeFactors] at hp_mem
     rw [factorization_eq_one_of_squarefree hn_squarefree hp_mem.1 hp_mem.2.1, pow_one,
       carmichael_of_prime hp_mem.1]
     exact h_dvd p hp_mem.1 hp_mem.2.1
-  obtain ⟨d, hd⟩ := carmichael_dvd
   have hb_pow : (ZMod.unitOfCoprime b hb) ^ (n - 1) = 1 := by
     rw [hd, pow_mul, pow_carmichael, one_pow]
   have h_cast : (b : ZMod n) ^ (n - 1) = 1 := by
