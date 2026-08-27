@@ -135,4 +135,35 @@ theorem natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (
 theorem coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
   natCast_pow_pred 2 p (by decide)
 
+lemma sq_emod_four (b : ℤ) : b ^ 2 % 4 = b % 2 := by
+  rcases even_or_odd' b with ⟨k, rfl | rfl⟩ <;> grind
+
+theorem sq_emod_four_eq_one_of_odd {x : ℤ} (hx : Odd x) : x ^ 2 % 4 = 1 := by
+  grind [sq_emod_four]
+
+lemma eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
+  obtain ⟨m, rfl⟩ := hk
+  obtain ⟨c, hc⟩ := two_dvd_mul_add_one m
+  exact ⟨c, by grind⟩
+
 end Int
+
+section DivisionMonoid
+
+variable {α : Type*} [DivisionMonoid α] [HasDistribNeg α] {n : ℤ}
+
+theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
+  obtain ⟨k, rfl⟩ := h
+  cases k with
+  | ofNat k =>
+    rw [Int.ofNat_eq_natCast]
+    norm_cast
+    simp [pow_add]
+  | negSucc k =>
+    simp_rw [Int.negSucc_eq, show 2 * -(↑k + 1) + (1 : ℤ) = - (1 + k*2) by grind, _root_.zpow_neg]
+    norm_cast
+    simp [pow_add]
+
+theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]
+
+end DivisionMonoid

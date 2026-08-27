@@ -42,13 +42,13 @@ def wInner (w : ι → ℝ) (f g : ∀ i, E i) : 𝕜 := ∑ i, w i • ⟪f i, 
 /-- The weight function making `wInner` into the compact inner product. -/
 noncomputable abbrev cWeight : ι → ℝ := Function.const _ (Fintype.card ι)⁻¹
 
-@[inherit_doc] notation "⟪" f ", " g "⟫_[" 𝕝 ", " w "]" => wInner (𝕜 := 𝕝) w f g
+@[inherit_doc wInner] notation3 "⟪" f ", " g "⟫_[" 𝕝 ", " w "]" => wInner (𝕜 := 𝕝) w f g
 
 /-- Discrete inner product giving rise to the discrete L2 norm. -/
-notation "⟪" f ", " g "⟫_[" 𝕝 "]" => ⟪f, g⟫_[𝕝, 1]
+notation3 "⟪" f ", " g "⟫_[" 𝕝 "]" => ⟪f, g⟫_[𝕝, 1]
 
 /-- Compact inner product giving rise to the compact L2 norm. -/
-notation "⟪" f ", " g "⟫ₙ_[" 𝕝 "]" => ⟪f, g⟫_[𝕝, cWeight]
+notation3 "⟪" f ", " g "⟫ₙ_[" 𝕝 "]" => ⟪f, g⟫_[𝕝, cWeight]
 
 lemma wInner_cWeight_eq_smul_wInner_one (f g : ∀ i, E i) :
     ⟪f, g⟫ₙ_[𝕜] = (Fintype.card ι : ℚ≥0)⁻¹ • ⟪f, g⟫_[𝕜] := by
@@ -153,7 +153,6 @@ lemma linearIndependent_of_ne_zero_of_wInner_cWeight_eq_zero {f : κ → ι → 
 lemma wInner_nonneg (hw : 0 ≤ w) (hf : 0 ≤ f) (hg : 0 ≤ g) : 0 ≤ ⟪f, g⟫_[𝕜, w] :=
   sum_nonneg fun _ _ ↦ smul_nonneg (hw _) <| mul_nonneg (hg _) (star_nonneg_iff.2 (hf _))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_wInner_le (hw : 0 ≤ w) : ‖⟪f, g⟫_[𝕜, w]‖ ≤ ⟪fun i ↦ ‖f i‖, fun i ↦ ‖g i‖⟫_[ℝ, w] :=
   (norm_sum_le ..).trans_eq <| sum_congr rfl fun i _ ↦ by
     simp [Algebra.smul_def, norm_mul, abs_of_nonneg (hw i)]
@@ -164,7 +163,7 @@ section Real
 variable {w f g : ι → ℝ}
 
 lemma abs_wInner_le (hw : 0 ≤ w) : |⟪f, g⟫_[ℝ, w]| ≤ ⟪|f|, |g|⟫_[ℝ, w] := by
-  simpa using norm_wInner_le (𝕜 := ℝ) hw
+  simpa using! norm_wInner_le (𝕜 := ℝ) hw
 
 end Real
 end RCLike

@@ -34,6 +34,7 @@ structure BialgCat where
   [instRing : Ring carrier]
   [instBialgebra : Bialgebra R carrier]
 
+initialize_simps_projections BialgCat (-instRing, -instBialgebra)
 attribute [instance] BialgCat.instBialgebra BialgCat.instRing
 
 variable {R}

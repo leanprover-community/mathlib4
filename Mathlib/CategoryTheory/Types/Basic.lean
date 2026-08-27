@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ToAdditive
 
@@ -28,8 +27,8 @@ a `FunLike` instance on the latter (which would give two non-reducibly defeq coe
 morphisms in `Type` to functions), and the outer nesting `TypeCat.Hom` gives a layer of separation
 between morphisms and `FC`, as is done for all concrete categories in mathlib.
 
-To promote a function to a morphism in this category, we provide the abbreviation `TypeCat.ofHom f`,
-as well as a corresponding notation `↾ f`. (Entered as `\upr `.)
+To promote a function to a morphism in this category, we provide the abbreviation `↾f`,
+as well as a corresponding notation `↾f`. (Entered as `\upr `.)
 
 ## Main definitions
 
@@ -58,7 +57,7 @@ structure Fun (X Y : Type*) where
 
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f x := f.toFun x
-  coe_injective' _ := by aesop
+  coe_injective _ := by aesop
 
 initialize_simps_projections Fun (toFun → apply)
 
@@ -70,11 +69,11 @@ lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
   rfl
 
 /-- The identity function as a `Fun`. -/
-@[simps! +dsimpLhs]
+@[implicit_reducible, simps!]
 def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 
 /-- Composition of `Fun`s. -/
-@[simps! +dsimpLhs]
+@[implicit_reducible, simps!]
 def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.toFun ∘ g.toFun)
 
 /-- The equivalence between `Fun`s and functions between types. -/
@@ -135,8 +134,16 @@ abbrev Hom.hom {X Y : Type u} (f : Hom X Y) : Fun X Y :=
 abbrev ofHom {X Y : Type u} (f : X → Y) : X ⟶ Y :=
   ConcreteCategory.ofHom (Fun.mk f)
 
+end TypeCat
+
+namespace CategoryTheory
+
 @[inherit_doc]
 scoped notation "↾" f:200 => TypeCat.ofHom f
+
+end CategoryTheory
+
+namespace TypeCat
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (X Y : Type u) (f : X ⟶ Y) :=
@@ -162,7 +169,7 @@ lemma ofHom_hom {X Y : Type u} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) :
-    TypeCat.ofHom f x = f x :=
+    (↾f) x = f x :=
   rfl
 
 /-- `TypeCat.Hom.hom` bundled as an `Equiv`. -/
@@ -208,7 +215,7 @@ lemma types_congr_hom {X Y : Type u} {f g : X ⟶ Y} (h : f = g) (x : X) : f x =
 
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_apply := Iso.hom_inv_id_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_apply := Iso.inv_hom_id_apply
-@[deprecated (since := "2026-02-09")] alias asHom := TypeCat.ofHom
+@[deprecated (since := "2026-02-09")] alias asHom := ofHom
 
 namespace Functor
 
@@ -237,7 +244,7 @@ variable (J)
 @[simps]
 def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
   obj F := F.sections
-  map {F G} φ := TypeCat.ofHom fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
+  map {F G} φ := ↾fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
     by simp [← NatTrans.naturality_apply, x.2 f]⟩
 
 end Functor
@@ -274,8 +281,8 @@ theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
 @[deprecated "No replacement" (since := "2026-02-09")]
-theorem hcomp (x : (I ⋙ F).obj W) : (ρ ◫ σ).app W x = (G.map (ρ.app W)) (σ.app (I.obj W) x) :=
-  rfl
+theorem hcomp (x : (I ⋙ F).obj W) : (ρ ◫ σ).app W x = (G.map (ρ.app W)) (σ.app (I.obj W) x) := by
+  rw [NatTrans.hcomp_app]; rfl
 
 attribute [elementwise nosimp] Functor.map_hom_inv Functor.map_inv_hom
   Functor.map_hom_inv' Functor.map_inv_hom'

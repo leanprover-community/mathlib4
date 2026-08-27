@@ -23,46 +23,65 @@ variable {ι : Sort*} {α : Type*}
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}
 
-lemma csSup_mem_of_not_isSuccPrelimit
-    (hne : s.Nonempty) (hbdd : BddAbove s) (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup s ∈ s := by
-  obtain ⟨y, hy⟩ := not_forall_not.mp hlim
-  obtain ⟨i, his, hi⟩ := exists_lt_of_lt_csSup hne hy.lt
-  exact eq_of_le_of_not_lt (le_csSup hbdd his) (hy.2 hi) ▸ his
+@[to_dual]
+lemma csSup_mem_of_not_isSuccLimit (hne : s.Nonempty) (hbdd : BddAbove s)
+    (hlim : ¬ IsSuccLimit (sSup s)) : sSup s ∈ s := by
+  rw [isSuccLimit_iff, not_and_or, not_not] at hlim
+  rcases hlim with (hmin | hlim)
+  · have ⟨a, has⟩ := hne
+    rwa [← hmin.eq_of_le <| le_csSup hbdd has]
+  · have ⟨y, hy⟩ := not_forall_not.mp hlim
+    have ⟨i, his, hi⟩ := exists_lt_of_lt_csSup hne hy.lt
+    exact eq_of_le_of_not_lt (le_csSup hbdd his) (hy.2 hi) ▸ his
 
-lemma csInf_mem_of_not_isPredPrelimit
-    (hne : s.Nonempty) (hbdd : BddBelow s) (hlim : ¬ IsPredPrelimit (sInf s)) : sInf s ∈ s := by
-  obtain ⟨y, hy⟩ := not_forall_not.mp hlim
-  obtain ⟨i, his, hi⟩ := exists_lt_of_csInf_lt hne hy.lt
-  exact eq_of_le_of_not_lt (csInf_le hbdd his) (hy.2 · hi) ▸ his
+@[to_dual]
+lemma exists_eq_ciSup_of_not_isSuccLimit (hbdd : BddAbove (range f))
+    (hf : ¬ IsSuccLimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
+  csSup_mem_of_not_isSuccLimit (range_nonempty f) hbdd hf
 
-lemma exists_eq_ciSup_of_not_isSuccPrelimit
-    (hf : BddAbove (range f)) (hf' : ¬ IsSuccPrelimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
-  csSup_mem_of_not_isSuccPrelimit (range_nonempty f) hf hf'
+@[deprecated csInf_mem_of_not_isPredLimit (since := "2026-04-24")]
+lemma csInf_mem_of_not_isPredPrelimit (hne : s.Nonempty) (hbdd : BddBelow s)
+    (hlim : ¬ IsPredPrelimit (sInf s)) : sInf s ∈ s :=
+  csInf_mem_of_not_isPredLimit hne hbdd <| mt IsPredLimit.isPredPrelimit hlim
 
-lemma exists_eq_ciInf_of_not_isPredPrelimit
-    (hf : BddBelow (range f)) (hf' : ¬ IsPredPrelimit (⨅ i, f i)) : ∃ i, f i = ⨅ i, f i :=
-  csInf_mem_of_not_isPredPrelimit (range_nonempty f) hf hf'
+@[deprecated exists_eq_ciInf_of_not_isPredLimit (since := "2026-04-24")]
+lemma exists_eq_ciInf_of_not_isPredPrelimit (hf : BddBelow (range f))
+    (hf' : ¬ IsPredPrelimit (⨅ i, f i)) : ∃ i, f i = ⨅ i, f i :=
+  exists_eq_ciInf_of_not_isPredLimit hf <| mt IsPredLimit.isPredPrelimit hf'
 
+@[to_dual]
+lemma IsLUB.mem_of_nonempty_of_not_isSuccLimit (hs : IsLUB s x) (hne : s.Nonempty)
+    (hx : ¬ IsSuccLimit x) : x ∈ s :=
+  hs.csSup_eq hne ▸ csSup_mem_of_not_isSuccLimit hne hs.bddAbove (hs.csSup_eq hne ▸ hx)
+
+@[to_dual]
+lemma IsLUB.exists_of_nonempty_of_not_isSuccLimit (hf : IsLUB (range f) x) (hx : ¬ IsSuccLimit x) :
+    ∃ i, f i = x :=
+  hf.mem_of_nonempty_of_not_isSuccLimit (range_nonempty f) hx
+
+@[deprecated mem_of_nonempty_of_not_isSuccLimit (since := "2026-04-24")]
 lemma IsLUB.mem_of_nonempty_of_not_isSuccPrelimit
     (hs : IsLUB s x) (hne : s.Nonempty) (hx : ¬ IsSuccPrelimit x) : x ∈ s :=
-  hs.csSup_eq hne ▸ csSup_mem_of_not_isSuccPrelimit hne hs.bddAbove (hs.csSup_eq hne ▸ hx)
+  hs.mem_of_nonempty_of_not_isSuccLimit hne <| mt IsSuccLimit.isSuccPrelimit hx
 
+@[deprecated mem_of_nonempty_of_not_isPredLimit (since := "2026-04-24")]
 lemma IsGLB.mem_of_nonempty_of_not_isPredPrelimit
     (hs : IsGLB s x) (hne : s.Nonempty) (hx : ¬ IsPredPrelimit x) : x ∈ s :=
-  hs.csInf_eq hne ▸ csInf_mem_of_not_isPredPrelimit hne hs.bddBelow (hs.csInf_eq hne ▸ hx)
+  hs.mem_of_nonempty_of_not_isPredLimit hne <| mt IsPredLimit.isPredPrelimit hx
 
+@[deprecated exists_of_nonempty_of_not_isSuccLimit (since := "2026-04-24")]
 lemma IsLUB.exists_of_nonempty_of_not_isSuccPrelimit
     (hf : IsLUB (range f) x) (hx : ¬ IsSuccPrelimit x) : ∃ i, f i = x :=
-  hf.mem_of_nonempty_of_not_isSuccPrelimit (range_nonempty f) hx
+  hf.exists_of_nonempty_of_not_isSuccLimit <| mt IsSuccLimit.isSuccPrelimit hx
 
+@[deprecated exists_of_nonempty_of_not_isPredLimit (since := "2026-04-24")]
 lemma IsGLB.exists_of_nonempty_of_not_isPredPrelimit
     (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) : ∃ i, f i = x :=
-  hf.mem_of_nonempty_of_not_isPredPrelimit (range_nonempty f) hx
+  hf.exists_of_nonempty_of_not_isPredLimit <| mt IsPredLimit.isPredPrelimit hx
 
-open Classical in
 /-- Every conditionally complete linear order with well-founded `<` is a successor order, by setting
 the successor of an element to be the infimum of all larger elements. -/
-@[implicit_reducible, deprecated SuccOrder.ofLinearWellFoundedLT (since := "2026-04-12")]
+@[instance_reducible, deprecated SuccOrder.ofLinearWellFoundedLT (since := "2026-04-12")]
 noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α] :
     SuccOrder α := .ofLinearWellFoundedLT _
 
@@ -71,33 +90,25 @@ end ConditionallyCompleteLinearOrder
 section ConditionallyCompleteLinearOrderBot
 variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {s : Set α} {x : α}
 
-/-- See `csSup_mem_of_not_isSuccPrelimit` for the `ConditionallyCompleteLinearOrder` version. -/
-lemma csSup_mem_of_not_isSuccPrelimit' (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup s ∈ s := by
+/-- See `csSup_mem_of_not_isSuccLimit` for the `ConditionallyCompleteLinearOrder` version. -/
+lemma csSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup s ∈ s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [isSuccPrelimit_bot] at hlim
-  · apply csSup_mem_of_not_isSuccPrelimit hs _ hlim
+  · apply csSup_mem_of_not_isSuccLimit hs _ <| mt IsSuccLimit.isSuccPrelimit hlim
     contrapose! hlim
     rw [csSup_of_not_bddAbove hlim, csSup_empty]
     exact isSuccPrelimit_bot
 
-/-- See `exists_eq_ciSup_of_not_isSuccPrelimit` for the
-`ConditionallyCompleteLinearOrder` version. -/
-lemma exists_eq_ciSup_of_not_isSuccPrelimit' (hf' : ¬ IsSuccPrelimit (⨆ i, f i)) :
+@[deprecated (since := "2026-04-24")]
+alias csSup_mem_of_not_isSuccPrelimit' := csSup_mem_of_not_isSuccPrelimit
+
+/-- See `exists_eq_ciSup_of_not_isSuccLimit` for the `ConditionallyCompleteLinearOrder` version. -/
+lemma exists_eq_ciSup_of_not_isSuccPrelimit (hf' : ¬ IsSuccPrelimit (⨆ i, f i)) :
     ∃ i, f i = ⨆ i, f i :=
-  csSup_mem_of_not_isSuccPrelimit' hf'
+  csSup_mem_of_not_isSuccPrelimit hf'
 
-lemma csSup_mem_of_not_isSuccLimit (hne : s.Nonempty) (hbbd : BddAbove s)
-    (hlim : ¬ IsSuccLimit (sSup s)) : sSup s ∈ s := by
-  rw [isSuccLimit_iff_of_orderBot, not_and_or, not_ne_iff] at hlim
-  refine hlim.elim (fun h ↦ ?_) csSup_mem_of_not_isSuccPrelimit'
-  obtain ⟨a, ha⟩ := hne
-  obtain rfl | ha' := eq_or_ne ⊥ a
-  · rwa [h]
-  · exact (h ▸ ha'.bot_lt'.trans_le <| le_csSup hbbd ha).false.elim
-
-lemma exists_eq_ciSup_of_not_isSuccLimit [Nonempty ι] (hbbd : BddAbove (range f))
-    (hf : ¬ IsSuccLimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
-  csSup_mem_of_not_isSuccLimit (Set.range_nonempty _) hbbd hf
+@[deprecated (since := "2026-04-24")]
+alias exists_eq_ciSup_of_not_isSuccPrelimit' := exists_eq_ciSup_of_not_isSuccPrelimit
 
 theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x := by
   obtain rfl | hx := eq_bot_or_bot_lt x
@@ -117,7 +128,7 @@ theorem sSup_Iio_eq_self_iff_isSuccPrelimit : sSup (Iio x) = x ↔ IsSuccPrelimi
   refine ⟨fun h ↦ ?_, IsSuccPrelimit.sSup_Iio⟩
   by_contra hx
   rw [← h] at hx
-  simpa [h] using csSup_mem_of_not_isSuccPrelimit' hx
+  simpa [h] using csSup_mem_of_not_isSuccPrelimit hx
 
 theorem iSup_Iio_eq_self_iff_isSuccPrelimit : ⨆ a : Iio x, a.1 = x ↔ IsSuccPrelimit x := by
   rw [← sSup_eq_iSup', sSup_Iio_eq_self_iff_isSuccPrelimit]
@@ -153,5 +164,68 @@ lemma exists_eq_iSup_of_not_isSuccPrelimit (hf : ¬ IsSuccPrelimit (⨆ i, f i))
 lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i)) :
     ∃ i, f i = ⨅ i, f i :=
   sInf_mem_of_not_isPredPrelimit hf
+
+/-- Similar to `sSup_lt_iff` but with a weaker RHS, as it does not require a uniform bound. -/
+@[to_dual lt_sInf_iff_of_not_isPredPrelimit
+/-- Similar to `lt_sInf_iff` but with a weaker RHS, as it does not require a uniform bound. -/]
+theorem sSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
+    sSup s < x ↔ ∀ a ∈ s, a < x := by
+  have ⟨y, hy⟩ := not_isSuccPrelimit_iff.mp h
+  simp_rw [← hy.le_iff_lt_left]
+  exact sSup_le_iff
+
+/-- Similar to `iSup_lt_iff` but with a weaker RHS, as it does not require a uniform bound. -/
+@[to_dual lt_iInf_iff_of_not_isPredPrelimit
+/-- Similar to `lt_iInf_iff` but with a weaker RHS, as it does not require a uniform bound. -/]
+theorem iSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
+    ⨆ i, f i < x ↔ ∀ i, f i < x :=
+  sSup_lt_iff_of_not_isSuccPrelimit h |>.trans forall_mem_range
+
+/-- Similar to `le_sSup_iff_forall_lt` but with a stronger RHS, as it requires a uniform bound. -/
+@[to_dual sInf_le_iff_of_not_isPredPrelimit
+/-- Similar to `sInf_le_iff_forall_lt` but with a stronger RHS, as it requires a uniform bound. -/]
+theorem le_sSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
+    x ≤ sSup s ↔ ∃ a ∈ s, x ≤ a := by
+  simpa using sSup_lt_iff_of_not_isSuccPrelimit h |>.not
+
+/-- Similar to `le_iSup_iff_forall_lt` but with a stronger RHS, as it requires a uniform bound. -/
+@[to_dual iInf_le_iff_of_not_isPredPrelimit
+/-- Similar to `iInf_le_iff_forall_lt` but with a stronger RHS, as it requires a uniform bound. -/]
+theorem le_iSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
+    x ≤ ⨆ i, f i ↔ ∃ i, x ≤ f i :=
+  le_sSup_iff_of_not_isSuccPrelimit h |>.trans exists_range_iff
+
+/-- Similar to `sSup_lt_iff` but with a stronger RHS, as it requires a strict inequality. -/
+@[to_dual lt_sInf_iff
+/-- Similar to `lt_sInf_iff` but with a stronger RHS, as it requires a strict inequality. -/]
+theorem Order.IsSuccPrelimit.sSup_lt_iff (h : IsSuccPrelimit x) :
+    sSup s < x ↔ ∃ a < x, ∀ b ∈ s, b < a := by
+  simp_rw [_root_.sSup_lt_iff, mem_upperBounds]
+  grind [lt_iff_exists_lt]
+
+/-- Similar to `iSup_lt_iff` but with a stronger RHS, as it requires a strict inequality. -/
+@[to_dual lt_iInf_iff
+/-- Similar to `lt_iInf_iff` but with a stronger RHS, as it requires a strict inequality. -/]
+theorem Order.IsSuccPrelimit.iSup_lt_iff (h : IsSuccPrelimit x) :
+    ⨆ i, f i < x ↔ ∃ a < x, ∀ i, f i < a :=
+  h.sSup_lt_iff.trans <| exists_congr fun _ ↦ and_congr_right fun _ ↦ forall_mem_range
+
+/-- Similar to `le_sSup_iff_forall_lt` but with a weaker RHS, as it requires a non-strict
+inequality. -/
+@[to_dual sInf_le_iff
+/-- Similar to `sInf_le_iff_forall_lt` but with a weaker RHS, as it requires a non-strict
+inequality. -/]
+theorem Order.IsSuccPrelimit.le_sSup_iff (h : IsSuccPrelimit x) :
+    x ≤ sSup s ↔ IsCofinalFor (Iio x) s := by
+  simpa [IsCofinalFor] using h.sSup_lt_iff.not
+
+/-- Similar to `le_iSup_iff_forall_lt` but with a weaker RHS, as it requires a non-strict
+inequality. -/
+@[to_dual iInf_le_iff
+/-- Similar to `iInf_le_iff_forall_lt` but with a weaker RHS, as it requires a non-strict
+inequality. -/]
+theorem Order.IsSuccPrelimit.le_iSup_iff (h : IsSuccPrelimit x) :
+    x ≤ ⨆ i, f i ↔ ∀ a < x, ∃ i, a ≤ f i :=
+  h.le_sSup_iff.trans <| forall₂_congr fun _ _ ↦ exists_range_iff
 
 end CompleteLinearOrder

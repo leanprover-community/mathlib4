@@ -5,7 +5,7 @@ Authors: Arthur Paulino, Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 
 /-!
 # Graph partitions
@@ -20,22 +20,22 @@ a graph `G`, with vertices `V`, is a set `P` of disjoint nonempty subsets of `V`
 Graph partitions are graph colorings that do not name their colors.  They are adjoint in the
 following sense. Given a graph coloring, there is an associated partition from the set of color
 classes, and given a partition, there is an associated graph coloring from using the partition's
-subsets as colors.  Going from graph colorings to partitions and back makes a coloring "canonical":
-all colors are given a canonical name and unused colors are removed.  Going from partitions to
+subsets as colors. Going from graph colorings to partitions and back makes a coloring "canonical":
+all colors are given a canonical name and unused colors are removed. Going from partitions to
 graph colorings and back is the identity.
 
 ## Main definitions
 
-* `SimpleGraph.Partition` is a structure to represent a partition of a simple graph
+* `SimpleGraph.Partition` is a structure to represent a partition of a simple graph.
 
 * `SimpleGraph.Partition.PartsCardLe` is whether a given partition is an `n`-partition.
   (a partition with at most `n` parts).
 
-* `SimpleGraph.Partitionable n` is whether a given graph is `n`-partite
+* `SimpleGraph.Partitionable n` is whether a given graph is `n`-partite.
 
-* `SimpleGraph.Partition.toColoring` creates colorings from partitions
+* `SimpleGraph.Partition.toColoring` creates colorings from partitions.
 
-* `SimpleGraph.Coloring.toPartition` creates partitions from colorings
+* `SimpleGraph.Coloring.toPartition` creates partitions from colorings.
 
 ## Main statements
 
@@ -54,18 +54,17 @@ namespace SimpleGraph
 
 variable {V : Type u} (G : SimpleGraph V)
 
-/-- A `Partition` of a simple graph `G` is a structure constituted by
-* `parts`: a set of subsets of the vertices `V` of `G`
-* `isPartition`: a proof that `parts` is a proper partition of `V`
-* `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices
+/-- A `Partition` of a simple graph `G` is a structure constituted by:
+* `parts`: a set of subsets of the vertices `V` of `G`.
+* `isPartition`: a proof that `parts` is a proper partition of `V`.
+* `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices.
 -/
 structure Partition where
-  /-- `parts`: a set of subsets of the vertices `V` of `G`. -/
+  /-- A set of subsets of the vertices `V` of `G`. -/
   parts : Set (Set V)
-  /-- `isPartition`: a proof that `parts` is a proper partition of `V`. -/
+  /-- A proof that `parts` is a proper partition of `V`. -/
   isPartition : Setoid.IsPartition parts
-  /-- `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices.
--/
+  /-- A proof that each element of `parts` doesn't have a pair of adjacent vertices. -/
   independent : ∀ s ∈ parts, IsAntichain G.Adj s
 
 /-- Whether a partition `P` has at most `n` parts. A graph with a partition
@@ -82,8 +81,10 @@ namespace Partition
 variable {G}
 variable (P : G.Partition)
 
-/-- The part in the partition that `v` belongs to -/
-def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
+/-- The part in the partition that `v` belongs to. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
 
 theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
   obtain ⟨h, -⟩ := (P.isPartition.2 v).choose_spec.1
@@ -101,13 +102,17 @@ theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ 
 
 /-- Create a coloring using the parts themselves as the colors.
 Each vertex is colored by the part it's contained in. -/
-def toColoring : G.Coloring P.parts :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def toColoring : G.Coloring P.parts :=
   Coloring.mk (fun v ↦ ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦ by
     rw [Ne, Subtype.mk_eq_mk]
     exact P.partOfVertex_ne_of_adj hvw
 
 /-- Like `SimpleGraph.Partition.toColoring` but uses `Set V` as the coloring type. -/
-def toColoring' : G.Coloring (Set V) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def toColoring' : G.Coloring (Set V) :=
   Coloring.mk P.partOfVertex fun hvw ↦ P.partOfVertex_ne_of_adj hvw
 
 theorem colorable [Fintype P.parts] : G.Colorable (Fintype.card P.parts) :=

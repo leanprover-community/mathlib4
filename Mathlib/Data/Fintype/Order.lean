@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
 import Mathlib.Data.Finite.Prod
@@ -51,12 +50,11 @@ We provide a few instances for concrete types:
 
 public section
 
-
 open Finset
 
 namespace Fintype
 
-variable {ι α : Type*} [Fintype ι] [Fintype α]
+variable {α : Type*} [Fintype α]
 
 section Nonempty
 
@@ -96,22 +94,23 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   isLUB_sSup s := Set.coe_toFinset s ▸ Finset.isLUB_sup_id
   isGLB_sInf s := Set.coe_toFinset s ▸ Finset.isGLB_inf_id
 
+attribute [local instance] toCompleteLattice in
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice.MinimalAxioms α where
-  __ := toCompleteLattice α
   iInf_sup_le_sup_sInf := fun a s => by
-    convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
+    convert! (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
     rw [Finset.inf_eq_iInf]
     simp_rw [Set.mem_toFinset]
     rfl
   inf_sSup_le_iSup_inf := fun a s => by
-    convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
+    convert! (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
     rw [Finset.sup_eq_iSup]
     simp_rw [Set.mem_toFinset]
     rfl
 
+attribute [local instance] toCompleteLattice in
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
@@ -182,24 +181,24 @@ noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBoolean
 
 section DirectedOrders
 
-variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
-  [Finite β]
+variable {ι : Sort*} {α : Type*} {r : α → α → Prop} [IsTrans α r] {γ : Type*} [Nonempty γ]
+  {f : γ → α} [Finite ι]
 
 theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
-  convert D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
+  convert! D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
 
-theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
-  classical
-    obtain ⟨z, hz⟩ := D.finite_set_le (Set.finite_range g)
-    exact ⟨z, fun i => hz (g i) ⟨i, rfl⟩⟩
+lemma Directed.finite_le {ι κ : Sort*} [Nonempty ι] [Finite κ] {f : ι → α} (hf : Directed r f)
+    (g : κ → ι) : ∃ z, ∀ i, r (f (g i)) (f z) := by
+  simpa using
+    (hf.comp_of_surjective PLift.down_surjective).finite_set_le (Set.finite_range (PLift.up ∘ g))
 
 variable [Nonempty α] [Preorder α]
 
-theorem Finite.exists_le [IsDirectedOrder α] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
+theorem Finite.exists_le [IsDirectedOrder α] (f : ι → α) : ∃ M, ∀ i, f i ≤ M :=
   directed_id.finite_le _
 
-theorem Finite.exists_ge [IsCodirectedOrder α] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
+theorem Finite.exists_ge [IsCodirectedOrder α] (f : ι → α) : ∃ M, ∀ i, M ≤ f i :=
   directed_id.finite_le (r := (· ≥ ·)) _
 
 theorem Set.Finite.exists_le [IsDirectedOrder α] {s : Set α} (hs : s.Finite) :
@@ -211,20 +210,48 @@ theorem Set.Finite.exists_ge [IsCodirectedOrder α] {s : Set α} (hs : s.Finite)
   directed_id.finite_set_le (r := (· ≥ ·)) hs
 
 @[simp]
-theorem Finite.bddAbove_range [IsDirectedOrder α] (f : β → α) : BddAbove (Set.range f) := by
+theorem Finite.bddAbove_range [IsDirectedOrder α] (f : ι → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
 @[simp]
-theorem Finite.bddBelow_range [IsCodirectedOrder α] (f : β → α) : BddBelow (Set.range f) := by
+theorem Finite.bddBelow_range [IsCodirectedOrder α] (f : ι → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
 end DirectedOrders
+
+section
+variable {ι : Sort*} {α : Type*} [CompleteLattice α] {s : Set α} {a : α} {f : ι → α}
+
+lemma le_iSup_iff_of_directed [Nonempty ι] [Finite ι] (hf : Directed (· ≤ ·) f) :
+    a ≤ ⨆ i, f i ↔ ∃ i, a ≤ f i where
+  mp ha := by obtain ⟨i, hi⟩ := hf.finite_le id; exact ⟨i, ha.trans <| iSup_le hi⟩
+  mpr := by rintro ⟨i, hai⟩; exact le_iSup_of_le i hai
+
+lemma le_sSup_iff_of_directedOn (hs : s.Nonempty) (hs' : s.Finite) (hs'' : DirectedOn (· ≤ ·) s) :
+    a ≤ sSup s ↔ ∃ b ∈ s, a ≤ b := by
+  have := hs.to_subtype
+  have := hs'.to_subtype
+  simp [sSup_eq_iSup', le_iSup_iff_of_directed hs''.directed_val]
+
+end
+
+namespace Set
+variable {ι : Sort*} {α : Type*} {S : Set (Set α)} {s : Set α} {f : ι → Set α}
+
+lemma subset_iUnion_iff_of_directed [Nonempty ι] [Finite ι] (hf : Directed (· ≤ ·) f) :
+    s ⊆ ⋃ i, f i ↔ ∃ i, s ⊆ f i := le_iSup_iff_of_directed hf
+
+lemma subset_sUnion_iff_of_directed (hS : S.Nonempty) (hS' : S.Finite)
+    (hS'' : DirectedOn (· ≤ ·) S) : s ⊆ sSup S ↔ ∃ t ∈ S, s ⊆ t :=
+  le_sSup_iff_of_directedOn hS hS' hS''
+
+end Set
 
 /-!
 ### Suprema and infima over finite types
@@ -324,6 +351,14 @@ lemma map_iSup_of_antitone (f : ι → α) {g : α → β} (hg : Antitone g) :
 lemma map_iInf_of_antitone (f : ι → α) {g : α → β} (hg : Antitone g) :
     g (⨅ i, f i) = ⨆ i, g (f i) :=
   map_iInf_of_monotone (β := βᵒᵈ) f hg
+
+@[to_dual ciInf_le_iff]
+theorem le_ciSup_iff {a : α} {f : ι → α} : a ≤ ⨆ i, f i ↔ ∃ x, a ≤ f x := by
+  simpa using (Finite.isGreatest_ciSup f).le_iff
+
+@[to_dual lt_ciInf_iff]
+theorem ciSup_lt_iff {a : α} {f : ι → α} : ⨆ i, f i < a ↔ ∀ x, f x < a := by
+  simpa using (Finite.isGreatest_ciSup f).lt_iff
 
 end CCLO
 

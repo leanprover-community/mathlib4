@@ -16,7 +16,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 universe u
 
-open Simplicial CategoryTheory Limits
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -57,7 +59,7 @@ def isInitialOfNotNonempty (hX : ¬ X.Nonempty) : IsInitial X := by
   have (n : SimplexCategoryᵒᵖ) : IsEmpty (X.obj n) :=
     Function.isEmpty (X.map (⦋0⦌.const n.unop 0).op)
   exact IsInitial.ofUniqueHom (fun _ ↦
-    { app _ := TypeCat.ofHom fun x ↦ isEmptyElim x
+    { app _ := ↾fun x ↦ isEmptyElim x
       naturality _ _ _  := by ext x; exact isEmptyElim x })
     (fun _ _ ↦ by ext _ x; exact isEmptyElim x)
 

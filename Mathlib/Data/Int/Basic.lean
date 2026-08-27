@@ -10,7 +10,6 @@ public import Mathlib.Data.Nat.Basic
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
-public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.OfNat
 
 /-!
@@ -25,32 +24,13 @@ public section
 open Nat
 
 namespace Int
-variable {a b c d m n : ℤ}
+variable {a b c m n : ℤ}
 
 attribute [gcongr] ofNat_le
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
-
-section inductionOn'
-
-variable {C : ℤ → Sort*} (z b : ℤ)
-  (H0 : C b) (Hs : ∀ k, b ≤ k → C k → C (k + 1)) (Hp : ∀ k ≤ b, C k → C (k - 1))
-
-variable {z b H0 Hs Hp}
-
-lemma inductionOn'_add_one (hz : b ≤ z) :
-    (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
-  apply cast_eq_iff_heq.mpr
-  lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
-  rw [show z + 1 - b = zb + 1 by lia]
-  have : b + zb = z := by lia
-  subst this
-  convert cast_heq _ _
-  rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
-
-end inductionOn'
 
 section strongRec
 
@@ -59,7 +39,7 @@ variable {P : ℤ → Sort*} {lt : ∀ n < m, P n} {ge : ∀ n ≥ m, (∀ k < n
 lemma strongRec_of_ge :
     ∀ hn : m ≤ n, m.strongRec lt ge n = ge n hn fun k _ ↦ m.strongRec lt ge k := by
   refine m.strongRec (fun n hnm hmn ↦ (Int.not_lt.mpr hmn hnm).elim) (fun n _ ih hn ↦ ?_) n
-  rw [Int.strongRec, dif_neg (Int.not_lt.mpr hn)]
+  rw [Int.strongRec, dite_eq_right (Int.not_lt.mpr hn)]
   congr; revert ih
   refine n.inductionOn' m (fun _ ↦ ?_) (fun k hmk ih' ih ↦ ?_) (fun k hkm ih' _ ↦ ?_) <;> ext l hl
   · rw [inductionOn'_self, strongRec_of_lt hl]
@@ -77,7 +57,7 @@ lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_natCast n�
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
-  convert Nat.pow_right_injective h using 2
+  convert! Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]
 
 /-! ### dvd -/

@@ -36,7 +36,9 @@ L-series.
 
 public section
 
-open Finset Filter MeasureTheory Topology Complex Asymptotics
+open Finset Filter MeasureTheory Complex Asymptotics
+
+open scoped Topology
 
 section summable
 
@@ -77,10 +79,10 @@ theorem LSeriesSummable_of_sum_norm_bigO
     (hr : 0 ≤ r) (hs : r < s.re) :
     LSeriesSummable f s := by
   have h₁ : (fun n ↦ if n = 0 then 0 else f n) =ᶠ[atTop] f := by
-    filter_upwards [eventually_ne_atTop 0] with n hn using by simp_rw [if_neg hn]
-  refine (LSeriesSummable_of_sum_norm_bigO_aux (if_pos rfl) ?_ hr hs).congr' _ h₁
+    filter_upwards [eventually_ne_atTop 0] with n hn using by simp_rw [ite_eq_right hn]
+  refine (LSeriesSummable_of_sum_norm_bigO_aux (ite_eq_left rfl) ?_ hr hs).congr' _ h₁
   refine hO.congr' (Eventually.of_forall fun _ ↦ Finset.sum_congr rfl fun _ h ↦ ?_) EventuallyEq.rfl
-  rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
+  rw [ite_eq_right (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
 
 /-- If `f` takes nonnegative real values and the partial sums `∑ k ∈ Icc 1 n, f k` are `O(n ^ r)`
 for some real `0 ≤ r`, then the L-series `LSeries f` converges at `s : ℂ` for all `s`
@@ -95,7 +97,6 @@ end summable
 
 section integralrepresentation
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r : ℝ} (hr : 0 ≤ r) {s : ℂ}
     (hs : r < s.re) (hS : LSeriesSummable f s)
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r) :
@@ -111,8 +112,9 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
   rw [← integral_const_mul]
   refine tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).mpr hS.hasSum.tendsto_sum_nat) ?_
   simp_rw [Nat.range_succ_eq_Icc_zero, LSeries.term_def₀ hf, mul_comm (f _)]
-  convert tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (f := fun x ↦ (x : ℂ) ^ (-s)) (l := 0)
-    ?_ hf h₃ ?_ ?_ ?_ (integrableAtFilter_rpow_atTop_iff.mpr h₁)
+  convert!
+    tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (f := fun x ↦ (x : ℂ) ^ (-s)) (l := 0) ?_ hf h₃ ?_
+      ?_ ?_ (integrableAtFilter_rpow_atTop_iff.mpr h₁)
   · rw [zero_sub, ← integral_neg]
     refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
     rw [deriv_ofReal_cpow_const (zero_lt_one.trans ht).ne', h₄]
@@ -120,14 +122,14 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
     · exact neg_ne_zero.mpr <| ne_zero_of_re_pos (hr.trans_lt hs)
   · refine (Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi <|
       integrableOn_Ioi_deriv_ofReal_cpow zero_lt_one
-        (by simpa using hr.trans_lt hs)).locallyIntegrableOn
+        (by simpa using! hr.trans_lt hs)).locallyIntegrableOn
   · have hlim : Tendsto (fun n : ℕ ↦ (n : ℝ) ^ (-(s.re - r))) atTop (𝓝 0) :=
       (tendsto_rpow_neg_atTop (by rwa [sub_pos])).comp tendsto_natCast_atTop_atTop
     refine (IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow (-s.re) _ _ ?_ hO ?_).trans_tendsto hlim
     · exact isBigO_norm_left.mp <| (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.natCast_atTop
     · linarith
   · refine .mul_atTop_rpow_of_isBigO_rpow (-(s + 1).re) r _ ?_ ?_ (by rw [← neg_re, neg_add'])
-    · simpa [-neg_add_rev, neg_add'] using isBigO_deriv_ofReal_cpow_const_atTop _
+    · simpa [-neg_add_rev, neg_add'] using! isBigO_deriv_ofReal_cpow_const_atTop _
     · exact (hO.comp_tendsto tendsto_nat_floor_atTop).trans <|
         isEquivalent_nat_floor.isBigO.rpow hr (eventually_ge_atTop 0)
 
@@ -139,10 +141,12 @@ theorem LSeries_eq_mul_integral (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : 
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r) :
     LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (-(s + 1)) := by
   rw [← LSeriesSummable_congr' s (f := fun n ↦ if n = 0 then 0 else f n)
-    (by filter_upwards [eventually_ne_atTop 0] with n h using if_neg h)] at hS
+    (by filter_upwards [eventually_ne_atTop 0] with n h using ite_eq_right h)] at hS
   have (n : _) : ∑ k ∈ Icc 1 n, (if k = 0 then 0 else f k) = ∑ k ∈ Icc 1 n, f k :=
-    Finset.sum_congr rfl fun k hk ↦ by rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp hk).1).ne']
-  rw [← LSeries_congr fun _ ↦ if_neg _, LSeries_eq_mul_integral_aux (if_pos rfl) hr hs hS] <;>
+    Finset.sum_congr rfl fun k hk ↦ by
+      rw [ite_eq_right (zero_lt_one.trans_le (mem_Icc.mp hk).1).ne']
+  rw [← LSeries_congr fun _ ↦ ite_eq_right _,
+    LSeries_eq_mul_integral_aux (ite_eq_left rfl) hr hs hS] <;>
   simp_all
 
 /-- A version of `LSeries_eq_mul_integral` where we use the stronger condition that the partial sums
@@ -184,8 +188,8 @@ private theorem lemma₁ (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f 
     simp_rw [Real.rpow_one]
     refine IsBigO.trans_isEquivalent ?_ isEquivalent_nat_floor
     have : Tendsto (fun n ↦ (∑ k ∈ Icc 1 n, f k) / ((n : ℝ) ^ (1 : ℝ) : ℝ)) atTop (𝓝 l) := by
-      simpa using hlim
-    simpa using (isBigO_atTop_natCast_rpow_of_tendsto_div_rpow this).comp_tendsto
+      simpa using! hlim
+    simpa using! (isBigO_atTop_natCast_rpow_of_tendsto_div_rpow this).comp_tendsto
         tendsto_nat_floor_atTop
   refine h₁.integrableOn_of_isBigO_atTop (g := fun t ↦ t ^ (-s)) ?_ ?_
   · refine IsBigO.mul_atTop_rpow_of_isBigO_rpow 1 (-s - 1) _ h₂ ?_ (by linarith)
@@ -249,7 +253,6 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
       rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow]
       field [show -s + 1 ≠ 0 by linarith]
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
     (hfS : ∀ s : ℝ, 1 < s → LSeriesSummable f s) {ε : ℝ} (hε : ε > 0) :

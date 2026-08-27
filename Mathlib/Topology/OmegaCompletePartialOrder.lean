@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Topology.Order.ScottTopology
 
 /-!
@@ -56,9 +56,10 @@ theorem isOpen_univ : IsOpen α univ := @CompleteLattice.ωScottContinuous.top �
 theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
   CompleteLattice.ωScottContinuous.inf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
-  convert CompleteLattice.ωScottContinuous.sSup hs
+  convert! CompleteLattice.ωScottContinuous.sSup hs
   aesop
 
 theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone

@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Group.Submonoid.Finite
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Subgroups
@@ -25,7 +25,6 @@ public section
 assert_not_exists Field
 
 variable {G : Type*} [Group G]
-variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
@@ -92,7 +91,11 @@ theorem val_finsetProd {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
   SubmonoidClass.coe_finsetProd f s
 
-@[deprecated (since := "2026-04-08")] alias val_finset_prod := val_finsetProd
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubgroup.val_finset_sum := _root_.AddSubgroup.val_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias val_finset_prod := val_finsetProd
 
 @[to_additive]
 instance fintypeBot : Fintype (⊥ : Subgroup G) :=
@@ -156,6 +159,10 @@ theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H �
   Nat.card_le_card_of_injective _ (Subgroup.inclusion_injective h)
 
 @[to_additive]
+theorem card_lt_of_lt {H K : Subgroup G} [Finite K] (h : H < K) : Nat.card H < Nat.card K :=
+  (Set.toFinite _).card_lt_card h
+
+@[to_additive]
 theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}
     (hf : Function.Injective f) :
     Nat.card (map f K) = Nat.card K := by
@@ -165,6 +172,11 @@ theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →*
 theorem card_subtype (K : Subgroup G) (L : Subgroup K) :
     Nat.card (map K.subtype L) = Nat.card L :=
   card_map_of_injective K.subtype_injective
+
+@[to_additive]
+theorem card_mapSubgroup {G' : Type*} [Group G'] (e : G ≃* G') :
+    Nat.card (e.mapSubgroup H) = Nat.card H :=
+  Subgroup.card_map_of_injective e.injective
 
 end Subgroup
 
@@ -208,7 +220,7 @@ section Normalizer
 
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
     x ∈ Subgroup.normalizer S := by
-  haveI := Classical.propDecidable; cases nonempty_fintype S
+  have := Classical.propDecidable; cases nonempty_fintype S
   exact fun n =>
     ⟨h n, fun h₁ =>
       have heq : (fun n => x * n * x⁻¹) '' S = S :=

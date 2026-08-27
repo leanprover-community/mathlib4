@@ -5,10 +5,12 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
+public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Spread
-public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
@@ -51,8 +53,6 @@ assert_not_exists DivisionMonoid.toDivInvOneMonoid mul_rotate
 universe u v
 
 variable {α : Type u} {R : Type v}
-
-open Function
 
 /-!
 ### `Distrib` class
@@ -140,10 +140,18 @@ class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiri
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
-class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
+class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonUnitalSemiring α,
+  NonAssocSemiring α
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
+@[wikidata Q161172]
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+
+-- Add some short-cut instances to avoid going through the less used ring type classes.
+instance [Semiring α] : Distrib α := inferInstance
+instance [Semiring α] : MulZeroClass α := inferInstance
+instance [Semiring α] : MulZeroOneClass α := inferInstance
+attribute [instance] Semiring.toAddCommMonoid Semiring.toMonoid
 
 /-!
 ### Semirings
@@ -360,6 +368,9 @@ theorem one_sub_mul (a b : α) : (1 - a) * b = b - a * b := by rw [sub_mul, one_
 
 theorem mul_one_sub (a b : α) : a * (1 - b) = a - a * b := by rw [mul_sub, mul_one]
 
+lemma mul_one_sub_mul (a b c : α) : a * (1 - b) * c = a * c - a * b * c := by
+  rw [mul_one_sub, sub_mul]
+
 end NonAssocRing
 
 section Ring
@@ -400,6 +411,7 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
   { s with }
 
 /-- A commutative ring is a ring with commutative multiplication. -/
+@[wikidata Q858656]
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 
 instance (priority := 100) CommRing.toNonAssocCommRing [CommRing α] : NonAssocCommRing α where
@@ -517,3 +529,62 @@ scoped instance (priority := 50) [Ring R] [IsMulCommutative R] :
     CommRing R where
 
 end IsMulCommutative
+
+noncomputable section
+namespace IsUnital
+variable {A : Type*}
+
+attribute [local instance] IsUnital.toMulOneClass
+
+/-- A unital non-associative semiring is a non-associative semiring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toNonAssocSemiring [NonUnitalNonAssocSemiring A] [IsUnital A] : NonAssocSemiring A where
+
+/-- A unital non-unital non-associative commutative semiring is a non-associative
+commutative semiring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toNonAssocCommSemiring [NonUnitalNonAssocCommSemiring A] [IsUnital A] :
+    NonAssocCommSemiring A where
+
+/-- A unital non-unital semiring is a semiring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toSemiring [NonUnitalSemiring A] [IsUnital A] : Semiring A where
+
+/-- A unital non-unital commutative semiring is a commutative semiring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toCommSemiring [NonUnitalCommSemiring A] [IsUnital A] : CommSemiring A where
+
+/-- A unital non-unital non-associative ring is a non-associative ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toNonAssocRing [NonUnitalNonAssocRing A] [IsUnital A] : NonAssocRing A where
+
+/-- A unital non-unital non-associative commutative ring is a non-associative commutative ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toNonAssocCommRing [NonUnitalNonAssocCommRing A] [IsUnital A] : NonAssocCommRing A where
+
+/-- A unital non-unital ring is a ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toRing [NonUnitalRing A] [IsUnital A] : Ring A where
+
+/-- A unital non-unital commutative ring is a commutative ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+abbrev toCommRing [NonUnitalCommRing A] [IsUnital A] : CommRing A where
+
+end IsUnital
+end

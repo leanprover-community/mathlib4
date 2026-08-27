@@ -51,7 +51,7 @@ set_option backward.isDefEq.respectTransparency false in
 def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦
-        { toFun := fun f ↦ TypeCat.ofHom (homEquiv f.hom)
+        { toFun := fun f ↦ ↾(homEquiv f.hom)
           invFun := fun f ↦ ofHom <| homEquiv.symm f
           left_inv := fun f ↦ congrArg ofHom (homEquiv.left_inv f.hom)
           right_inv := by cat_disch }
@@ -66,24 +66,26 @@ instance : (forget CommRingCat.{u}).IsRightAdjoint :=
 def coyoneda : Type vᵒᵖ ⥤ CommRingCat.{u} ⥤ CommRingCat.{max u v} where
   obj n :=
   { obj R := CommRingCat.of (unop n → R)
-    map {R S} φ := CommRingCat.ofHom (Pi.ringHom (φ.hom.comp <| Pi.evalRingHom _ ·)) }
+    map {R S} φ := CommRingCat.ofHom (RingHom.pi (φ.hom.comp <| Pi.evalRingHom _ ·)) }
   map {m n} f :=
-  { app R := CommRingCat.ofHom (Pi.ringHom (Pi.evalRingHom _ <| f.unop ·)) }
+  { app R := CommRingCat.ofHom (RingHom.pi (Pi.evalRingHom _ <| f.unop ·)) }
 
 /-- The adjunction `Hom_{CRing}(Fun(n, R), S) ≃ Fun(n, Hom_{CRing}(R, S))`. -/
 def coyonedaAdj (R : CommRingCat.{u}) :
     (coyoneda.flip.obj R).rightOp ⊣ yoneda.obj R where
-  unit := { app n := TypeCat.ofHom (fun i ↦ CommRingCat.ofHom (Pi.evalRingHom _ i)) }
-  counit := { app S := (CommRingCat.ofHom (Pi.ringHom fun f ↦ f.hom)).op }
+  unit := { app n := ↾fun i ↦ CommRingCat.ofHom (Pi.evalRingHom _ i) }
+  counit := { app S := (CommRingCat.ofHom (RingHom.pi fun f ↦ f.hom)).op }
 
 instance (R : CommRingCat.{u}) : (yoneda.obj R).IsRightAdjoint := ⟨_, ⟨coyonedaAdj R⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `n` is a singleton, `Hom(n, -)` is the identity in `CommRingCat`. -/
 @[simps!]
 def coyonedaUnique {n : Type v} [Unique n] : coyoneda.obj (op n) ≅ 𝟭 CommRingCat.{max u v} :=
   NatIso.ofComponents (fun X ↦ (RingEquiv.piUnique _).toCommRingCatIso) (fun f ↦ by ext; simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The monoid algebra functor `CommGrpCat ⥤ R-Alg` given by `G ↦ R[G]`. -/
 @[simps]
 def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
@@ -91,6 +93,7 @@ def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
   map f := Under.homMk (CommRingCat.ofHom <| MonoidAlgebra.mapDomainRingHom R f.hom)
   map_comp f g := by ext : 2; apply MonoidAlgebra.ringHom_ext <;> intro <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `G ↦ R[G]` and `S ↦ Sˣ` between `CommGrpCat` and `R-Alg`. -/
 def monoidAlgebraAdj (R : CommRingCat.{u}) :

@@ -55,13 +55,12 @@ noncomputable def withDensity (κ : Kernel α β) [IsSFiniteKernel κ] (f : α �
         exact hf.setLIntegral_kernel_prod_right hs⟩ : Kernel α β)) fun _ => 0
 
 theorem withDensity_of_not_measurable (κ : Kernel α β) [IsSFiniteKernel κ]
-    (hf : ¬Measurable (Function.uncurry f)) : withDensity κ f = 0 := by classical exact dif_neg hf
+    (hf : ¬Measurable (Function.uncurry f)) : withDensity κ f = 0 := by exact dite_eq_right hf
 
 protected theorem withDensity_apply (κ : Kernel α β) [IsSFiniteKernel κ]
     (hf : Measurable (Function.uncurry f)) (a : α) :
     withDensity κ f a = (κ a).withDensity (f a) := by
-  classical
-  rw [withDensity, dif_pos hf]
+  rw [withDensity, dite_eq_left hf]
   rfl
 
 protected theorem withDensity_apply' (κ : Kernel α β) [IsSFiniteKernel κ]
@@ -122,8 +121,7 @@ theorem withDensity_add_left (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
     (f : α → β → ℝ≥0∞) : withDensity (κ + η) f = withDensity κ f + withDensity η f := by
   by_cases hf : Measurable (Function.uncurry f)
   · ext a s
-    simp only [Kernel.withDensity_apply _ hf, coe_add, Pi.add_apply, withDensity_add_measure,
-      Measure.add_apply]
+    simp only [Kernel.withDensity_apply _ hf, add_apply, withDensity_add_measure]
   · simp_rw [withDensity_of_not_measurable _ hf]
     rw [zero_add]
 
@@ -141,7 +139,7 @@ lemma withDensity_add_right [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞
     (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g)) :
     withDensity κ (f + g) = withDensity κ f + withDensity κ g := by
   ext a
-  rw [coe_add, Pi.add_apply, Kernel.withDensity_apply _ hf, Kernel.withDensity_apply _ hg,
+  rw [add_apply, Kernel.withDensity_apply _ hf, Kernel.withDensity_apply _ hg,
     Kernel.withDensity_apply, Pi.add_apply, MeasureTheory.withDensity_add_right]
   · fun_prop
   · exact hf.add hg
@@ -208,10 +206,8 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     intro a b n hn
     have : (f a b).toReal ≤ n := Nat.le_of_ceil_le hn
     rw [← ENNReal.le_ofReal_iff_toReal_le (hf_ne_top a b) _] at this
-    · refine this.trans (le_of_eq ?_)
-      rw [ENNReal.ofReal_natCast]
-    · norm_cast
-      exact zero_le _
+    · simpa
+    · exact n.cast_nonneg
   have h_zero : ∀ a b n, ⌈(f a b).toReal⌉₊ ≤ n → fs n a b = 0 := by
     intro a b n hn
     suffices min (f a b) (n + 1) = f a b ∧ min (f a b) n = f a b by

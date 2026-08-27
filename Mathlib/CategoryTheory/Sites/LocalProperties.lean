@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Over
-public import Mathlib.CategoryTheory.Sites.CoversTop
+public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 
 /-!
 # Local properties of sheaves
@@ -22,7 +22,7 @@ public section
 
 namespace CategoryTheory
 
-open Limits Opposite
+open Opposite
 
 variable {C : Type*} [Category* C] {K : GrothendieckTopology C} {A : Type*} [Category* A]
 

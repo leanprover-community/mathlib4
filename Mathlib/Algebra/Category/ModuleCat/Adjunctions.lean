@@ -6,9 +6,10 @@ Authors: Kim Morrison, Johan Commelin
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`
@@ -16,14 +17,12 @@ is the left adjoint of
 the forgetful functor from `R`-modules to types.
 -/
 
-@[expose] public section
-
+@[expose] public noncomputable section
 
 assert_not_exists Cardinal
 
-noncomputable section
-
 open CategoryTheory
+open scoped MonoidAlgebra
 
 namespace ModuleCat
 
@@ -41,6 +40,14 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
   map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ (f : _ → _)
+
+/-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
+free `R`-module with generators `x : X`, implemented as the monoid algebra `R[X]`.
+-/
+@[simps]
+def monoidAlgebraFree : Type u ⥤ ModuleCat.{u} R where
+  obj X := .of R R[X]
+  map f := ofHom (MonoidAlgebra.mapDomainLinearMap R R f)
 
 variable {R}
 
@@ -75,15 +82,14 @@ lemma free_map_apply {X Y : Type u} (f : X ⟶ Y) (x : X) :
 @[simps]
 def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
     ((free R).obj X ⟶ M) ≃ (X ⟶ M) where
-  toFun φ := TypeCat.ofHom (fun x ↦ φ (freeMk x))
-  invFun ψ := freeDesc (TypeCat.ofHom ψ)
+  toFun φ := ↾fun x ↦ φ (freeMk x)
+  invFun ψ := freeDesc (↾ψ)
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 
 variable (R)
 
-/-- The free-forgetful adjunction for R-modules.
--/
+/-- The free-forgetful adjunction for R-modules. -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => freeHomEquiv
@@ -107,6 +113,7 @@ variable [CommRing R]
 
 namespace FreeMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical isomorphism `𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u))`.
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
@@ -233,6 +240,7 @@ open Finsupp
 -- Conceptually, it would be nice to construct this via "transport of enrichment",
 -- using the fact that `ModuleCat.Free R : Type ⥤ ModuleCat R` and `ModuleCat.forget` are both lax
 -- monoidal. This still seems difficult, so we just do it by hand.
+set_option backward.isDefEq.respectTransparency.types false in
 instance categoryFree : Category (Free R C) where
   Hom := fun X Y : C => (X ⟶ Y) →₀ R
   id := fun X : C => Finsupp.single (𝟙 X) 1
@@ -330,21 +338,26 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
         rw [single_comp_single _ _ f' g' r s]
         simp [mul_comm r s, mul_smul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lift_map_single (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (r : R) :
     (lift R F).map (single f r) = r • F.map f := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) : (lift R F).Additive where
   map_add {X Y} f g := by
     dsimp
     rw [Finsupp.sum_add_index'] <;> simp [add_smul]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
   map_smul {X Y} f r := by
     dsimp
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_smul]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The embedding into the `R`-linear completion, followed by the lift,
 is isomorphic to the original functor.
 -/

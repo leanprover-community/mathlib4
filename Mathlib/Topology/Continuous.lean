@@ -22,7 +22,9 @@ continuity, continuous function
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 variable {X Y Z : Type*}
 
@@ -199,7 +201,7 @@ theorem Continuous.closure_preimage_subset (hf : Continuous f) (t : Set Y) :
 
 theorem Continuous.frontier_preimage_subset (hf : Continuous f) (t : Set Y) :
     frontier (f ⁻¹' t) ⊆ f ⁻¹' frontier t :=
-  diff_subset_diff (hf.closure_preimage_subset t) (preimage_interior_subset_interior_preimage hf)
+  sdiff_subset_sdiff (hf.closure_preimage_subset t) (preimage_interior_subset_interior_preimage hf)
 
 /-- If a continuous map `f` maps `s` to `t`, then it maps `closure s` to `closure t`. -/
 protected theorem Set.MapsTo.closure {t : Set Y} (h : MapsTo f s t)
@@ -256,7 +258,7 @@ theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
 
 section DenseRange
 
-variable {α ι : Type*} (f : α → X) (g : X → Y)
+variable {α : Type*} (f : α → X) (g : X → Y)
 variable {f : α → X} {s : Set X}
 
 /-- A surjective map has dense range. -/
@@ -292,7 +294,7 @@ theorem DenseRange.dense_image {f : X → Y} (hf' : DenseRange f) (hf : Continuo
 /-- If `f` has dense range and `s` is an open set in the codomain of `f`, then the image of the
 preimage of `s` under `f` is dense in `s`. -/
 theorem DenseRange.subset_closure_image_preimage_of_isOpen (hf : DenseRange f) (hs : IsOpen s) :
-    s ⊆ closure (f '' (f ⁻¹' s)) := by
+    s ⊆ closure (f '' f ⁻¹' s) := by
   rw [image_preimage_eq_inter_range]
   exact hf.open_subset_closure_inter hs
 

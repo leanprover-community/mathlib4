@@ -25,7 +25,9 @@ for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite
+open CategoryTheory Limits Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -34,7 +36,7 @@ variable (X : SSet.{u})
 /-- An `n`-simplex of a simplicial set `X` is degenerate if it is in the range
 of `X.map f.op` for some morphism `f : [n] ⟶ [m]` with `m < n`. -/
 def degenerate (n : ℕ) : Set (X _⦋n⦌) :=
-  setOf (fun x ↦ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌),
+  Set.ofPred (fun x ↦ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌),
     x ∈ Set.range (X.map f.op))
 
 /-- The set of `n`-dimensional non-degenerate simplices in a simplicial
@@ -76,7 +78,7 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma opObjEquiv_mem_degenerate_iff (x : X.op _⦋n⦌) :
     opObjEquiv x ∈ X.degenerate n ↔ x ∈ X.op.degenerate n := by
   simp only [mem_degenerate_iff]
@@ -261,9 +263,10 @@ namespace Subcomplex
 
 variable {X} (A : X.Subcomplex)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
-    x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
+    dsimp% x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
   rw [SSet.mem_degenerate_iff, SSet.mem_degenerate_iff]
   constructor
   · rintro ⟨m, hm, f, _, y, rfl⟩
@@ -275,12 +278,14 @@ lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     simpa [Set.mem_preimage, ← op_comp, ← comp_apply, ← Functor.map_comp] using
       A.map (section_ f).op hx
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
-    x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
+    dsimp% x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
   rw [mem_nonDegenerate_iff_notMem_degenerate,
     mem_nonDegenerate_iff_notMem_degenerate, mem_degenerate_iff]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
     A ≤ B ↔ ∀ (n : ℕ) (x : X.nonDegenerate n), x.val ∈ A.obj _ → x.val ∈ B.obj _ := by
@@ -297,7 +302,7 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
 
 lemma eq_top_iff_contains_nonDegenerate :
     A = ⊤ ↔ ∀ (n : ℕ), X.nonDegenerate n ⊆ A.obj _ := by
-  simpa using le_iff_contains_nonDegenerate ⊤ A
+  simpa using! le_iff_contains_nonDegenerate ⊤ A
 
 set_option backward.isDefEq.respectTransparency false in
 lemma degenerate_eq_top_iff (n : ℕ) :

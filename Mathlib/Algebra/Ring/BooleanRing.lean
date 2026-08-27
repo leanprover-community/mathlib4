@@ -205,7 +205,6 @@ theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = 
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
   rw [le_sup_inf_aux, add_self, mul_self, zero_add]
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- The Boolean algebra structure on a Boolean ring.
 
 The data is defined so that:
@@ -233,8 +232,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
-      simp [mul_add, mul_self, add_self]
-      rw [← add_assoc, add_self] }
+      simp [mul_add, mul_self, add_self, ← add_assoc 1 a] }
 
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
@@ -541,3 +539,15 @@ instance : BooleanRing Bool where
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
   zsmul := zsmulRec
+
+theorem Bool.zero_eq_false : 0 = false := rfl
+
+theorem Bool.one_eq_true : 1 = true := rfl
+
+theorem Bool.add_eq_xor (b c : Bool) : b + c = (b ^^ c) := rfl
+
+theorem Bool.neg_eq_id (b : Bool) : -b = b := rfl
+
+theorem Bool.sub_eq_xor (b c : Bool) : b - c = (b ^^ c) := rfl
+
+theorem Bool.mul_eq_and (b c : Bool) : b * c = (b && c) := rfl
