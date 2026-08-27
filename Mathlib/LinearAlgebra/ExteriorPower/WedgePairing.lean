@@ -25,14 +25,12 @@ def volumeBasis (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) :
     Basis Unit K (⋀[K]^(finrank K V) V) :=
   FiniteDimensional.basisSingleton Unit (by simp) vol hvol
 
-set_option backward.privateInPublic true in
 def volumeCoordinate (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
     (k l : ℕ) (hkl : k + l = finrank K V) : ⋀[K]^(k + l) V →ₗ[K] K :=
   (hkl ▸ volumeBasis vol hvol).coord default
 
 /-! ### The complementary basis -/
 
-set_option backward.privateInPublic true in
 def topVector (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
     (hkl : k + l = finrank K V) : ⋀[K]^(k + l) V :=
   ⟨b.ExteriorAlgebra (Finset.univ : Finset (Fin (finrank K V))), by
@@ -56,7 +54,6 @@ lemma complementEquiv_disjoint (k l : ℕ) (hkl : k + l = finrank K V)
     Disjoint s.val (complementEquiv k l hkl s).val := by
   simpa only [complementEquiv_coe] using (disjoint_compl_right : Disjoint s.val s.valᶜ)
 
-set_option backward.privateInPublic true in
 def complementBasis (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
     (hkl : k + l = finrank K V) :
     Basis (powersetCard (Fin (finrank K V)) k) K (⋀[K]^l V) :=
@@ -83,7 +80,6 @@ lemma complementEquiv_eq_of_disjoint (k l : ℕ) (hkl : k + l = finrank K V)
 /-! ### The wedge pairing -/
 
 omit [FiniteDimensional K V] in
-set_option backward.privateInPublic true in
 lemma wedgeMul_basis_pair (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
     (hkl : k + l = finrank K V) (s t : powersetCard (Fin (finrank K V)) k) :
     DirectSum.gMulLHom K (fun i ↦ ⋀[K]^i V) (b.exteriorPower k t)
@@ -108,7 +104,6 @@ lemma wedgeMul_basis_pair (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
       ExteriorAlgebra.basis_mul_of_not_disjoint b t (complementEquiv k l hkl s) hnotdisj]
     simp
 
-set_option backward.privateInPublic true in
 lemma volumeCoordinate_topVector_ne_zero (b : Basis (Fin (finrank K V)) K V)
     (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
     (hkl : k + l = finrank K V) :
@@ -122,7 +117,6 @@ lemma volumeCoordinate_topVector_ne_zero (b : Basis (Fin (finrank K V)) K V)
         cases i
         simpa [volumeCoordinate] using hd))
 
-set_option backward.privateInPublic true in
 def wedgePairing (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
   (k l : ℕ) (hkl : k + l = finrank K V) :
     ⋀[K]^l V →ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
@@ -133,14 +127,10 @@ end exteriorPower
 
 end private_defs
 
-@[expose] public section
-
 namespace exteriorPower
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The linear equivalence induced by wedging with `vol` in complementary degrees. -/
-noncomputable def wedgePairingEquiv
+public noncomputable def wedgePairingEquiv
     (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
     (hkl : k + l = finrank K V) :
     ⋀[K]^l V ≃ₗ[K] (⋀[K]^k V →ₗ[K] K) := by
