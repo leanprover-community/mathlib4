@@ -29,7 +29,7 @@ def volumeCoordinate (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
     (k l : ℕ) (hkl : k + l = finrank K V) : ⋀[K]^(k + l) V →ₗ[K] K :=
   (hkl ▸ volumeBasis vol hvol).coord default
 
-/-! ### The complementary basis -/
+/-! ### Complementary basis indices -/
 
 def topVector (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
     (hkl : k + l = finrank K V) : ⋀[K]^(k + l) V :=
@@ -48,48 +48,35 @@ lemma complementEquiv_disjoint (k l : ℕ) (hkl : k + l = finrank K V)
     Disjoint s.val (complementEquiv k l hkl s).val := by
   simpa [complementEquiv] using (disjoint_compl_right : Disjoint s.val s.valᶜ)
 
-def complementBasis (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
-    (hkl : k + l = finrank K V) :
-    Basis (powersetCard (Fin (finrank K V)) k) K (⋀[K]^l V) :=
-  ((b.exteriorPower l).reindex (complementEquiv k l hkl).symm).groupSMul
-    (fun s ↦ (permOfDisjoint (complementEquiv_disjoint k l hkl s)).sign⁻¹)
-
-omit [FiniteDimensional K V] in
-lemma complementBasis_coe (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
-    (hkl : k + l = finrank K V) (s : powersetCard (Fin (finrank K V)) k) :
-    (complementBasis b k l hkl s : ExteriorAlgebra K V) =
-      (permOfDisjoint (complementEquiv_disjoint k l hkl s)).sign⁻¹ •
-        b.ExteriorAlgebra (complementEquiv k l hkl s) := by
-  simp [complementBasis, ExteriorAlgebra.basis_eq_coe_basis, Basis.groupSMul_apply]
-
-omit [FiniteDimensional K V] in
-lemma complementEquiv_eq_of_disjoint (k l : ℕ) (hkl : k + l = finrank K V)
-    {s t : powersetCard (Fin (finrank K V)) k}
-    (h : Disjoint t.val (complementEquiv k l hkl s).val) : t = s := by
-  simpa [Set.powersetCard.eq_iff_subset, complementEquiv] using
-    Finset.subset_compl_iff_disjoint_right.mpr h
-
 /-! ### The wedge pairing -/
 
 omit [FiniteDimensional K V] in
 lemma wedgeMul_basis_pair (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
-    (hkl : k + l = finrank K V) (s t : powersetCard (Fin (finrank K V)) k) :
+    (hkl : l + k = finrank K V) (s : powersetCard (Fin (finrank K V)) l)
+    (t : powersetCard (Fin (finrank K V)) k) :
     DirectSum.gMulLHom K (fun i ↦ ⋀[K]^i V) (b.exteriorPower k t)
-        (complementBasis b k l hkl s) =
-      if t = s then topVector b k l hkl else 0 := by
+        (b.exteriorPower l s) =
+      if t = complementEquiv l k hkl s then
+        (permOfDisjoint (complementEquiv_disjoint l k hkl s).symm).sign •
+          topVector b k l (by simpa [Nat.add_comm] using hkl)
+      else 0 := by
   apply Subtype.ext
   change (b.exteriorPower k t : ExteriorAlgebra K V) *
-      (complementBasis b k l hkl s : ExteriorAlgebra K V) = _
-  rw [← ExteriorAlgebra.basis_eq_coe_basis b t, complementBasis_coe, mul_smul_comm]
-  split_ifs with h
-  · subst t
-    rw [ExteriorAlgebra.basis_mul_of_disjoint b s (complementEquiv k l hkl s)
-      (complementEquiv_disjoint k l hkl s)]
-    simp [topVector, complementEquiv, smul_smul]
-  · have hnotdisj : ¬Disjoint t.val (complementEquiv k l hkl s).val :=
-      mt (complementEquiv_eq_of_disjoint k l hkl) h
-    rw [ExteriorAlgebra.basis_mul_of_not_disjoint b t (complementEquiv k l hkl s) hnotdisj]
-    simp
+      (b.exteriorPower l s : ExteriorAlgebra K V) = _
+  rw [← ExteriorAlgebra.basis_eq_coe_basis b t, ← ExteriorAlgebra.basis_eq_coe_basis b s]
+  by_cases h : Disjoint t.val s.val
+  · have ht : t = complementEquiv l k hkl s := by
+      simpa [Set.powersetCard.eq_iff_subset, complementEquiv] using
+        Finset.subset_compl_iff_disjoint_right.mpr h
+    subst t
+    rw [ExteriorAlgebra.basis_mul_of_disjoint b _ s h]
+    simp [topVector, complementEquiv, Finset.union_comm]
+  · rw [ExteriorAlgebra.basis_mul_of_not_disjoint b t s h]
+    have ht : t ≠ complementEquiv l k hkl s := by
+      intro ht
+      subst t
+      exact h (complementEquiv_disjoint l k hkl s).symm
+    simp [ht]
 
 lemma volumeCoordinate_topVector_ne_zero (b : Basis (Fin (finrank K V)) K V)
     (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
@@ -123,27 +110,38 @@ public noncomputable def wedgePairingEquiv
   classical
   let b := finBasis K V
   let bk := b.exteriorPower k
+  let bl := b.exteriorPower l
   let f := wedgePairing vol hvol k l hkl
   let d := volumeCoordinate vol hvol k l hkl (topVector b k l hkl)
   have hd : d ≠ 0 := volumeCoordinate_topVector_ne_zero b vol hvol k l hkl
-  let complement := complementBasis b k l hkl
-  let target := bk.dualBasis.isUnitSMul (fun _ ↦ isUnit_iff_ne_zero.mpr hd)
-  have hpair (s t : powersetCard (Fin (finrank K V)) k) :
-      f (complement s) (bk t) = if t = s then d else 0 := by
+  have hlk : l + k = finrank K V := by simpa [Nat.add_comm] using hkl
+  let complement := complementEquiv l k hlk
+  let target := ((bk.dualBasis.reindex complement.symm).isUnitSMul
+      (fun _ ↦ isUnit_iff_ne_zero.mpr hd)).groupSMul
+    (fun s ↦ (permOfDisjoint
+      (complementEquiv_disjoint l k hlk s).symm).sign)
+  have hpair (s : powersetCard (Fin (finrank K V)) l)
+      (t : powersetCard (Fin (finrank K V)) k) :
+      f (bl s) (bk t) =
+        if t = complementEquiv l k hlk s then
+          (permOfDisjoint (complementEquiv_disjoint l k hlk s).symm).sign • d
+        else 0 := by
     change volumeCoordinate vol hvol k l hkl
       (DirectSum.gMulLHom K (fun i ↦ ⋀[K]^i V) (b.exteriorPower k t)
-        (complementBasis b k l hkl s)) = _
-    rw [wedgeMul_basis_pair]
-    split <;> simp [d]
-  let e := complement.equiv target (Equiv.refl _)
+        (b.exteriorPower l s)) = _
+    rw [wedgeMul_basis_pair b k l hlk s t]
+    split <;> simp [d, Units.smul_def]
+  let e := bl.equiv target (Equiv.refl _)
   have he : e.toLinearMap = f := by
-    apply complement.ext
+    apply bl.ext
     intro s
-    change e (complement s) = f (complement s)
+    change e (bl s) = f (bl s)
     rw [Basis.equiv_apply]
     apply bk.ext
     intro t
-    simp [hpair, target, Module.Basis.isUnitSMul_apply, Finsupp.single_apply]
+    simp [hpair, target, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
+      Basis.groupSMul_apply, Finsupp.single_apply, complement, Equiv.symm_symm,
+      smul_eq_mul]
   exact LinearEquiv.ofBijective f (by
     rw [← he]
     exact e.bijective)
