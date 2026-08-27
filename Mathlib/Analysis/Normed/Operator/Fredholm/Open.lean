@@ -72,19 +72,19 @@ private theorem FredholmPackage.eventually_nhds_isFredholm_and_index_eq [Complet
     (Submodule.quotientEquivOfIsCompl _ _ pkg.decDom.isTopCompl.isCompl).finrank_eq] at key
   lia
 
-/-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
+/-- If `T₀` is a Fredholm operator between two Banach spaces, then every operator `T` close
 enough to `T₀` (in operator norm) is also Fredholm. -/
 protected theorem IsFredholm.eventually_nhds [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) : ∀ᶠ T in 𝓝 T₀, T.IsFredholm := by
   obtain ⟨pkg⟩ := hT₀.nonempty_fredholmPackage
   exact pkg.eventually_nhds_isFredholm_and_index_eq.mono fun T ⟨T_fred, _⟩ ↦ T_fred
 
-/-- The set of Fredholm operators between two Banach spaces is open (for the operator norm)
+/-- The set of Fredholm operator between two Banach spaces is open (for the operator norm)
 in the space of continuous linear maps. -/
 theorem isOpen_setOfPred_isFredholm [CompleteSpace 𝕜] : IsOpen {T : E →L[𝕜] F | T.IsFredholm} :=
   isOpen_iff_mem_nhds.mpr fun _ ↦ IsFredholm.eventually_nhds
 
-/-- If `T₀` is a Fredholm operators between two Banach spaces, then every operator `T` close
+/-- If `T₀` is a Fredholm operator between two Banach spaces, then every operator `T` close
 enough to `T₀` (in operator norm) has the same index as `T₀`. -/
 theorem IsFredholm.eventually_nhds_index_eq [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) : ∀ᶠ T in 𝓝 T₀, T.index = T₀.index := by
@@ -92,7 +92,7 @@ theorem IsFredholm.eventually_nhds_index_eq [CompleteSpace 𝕜]
   rw [pkg.eventually_nhds_isFredholm_and_index_eq.self_of_nhds.2]
   exact pkg.eventually_nhds_isFredholm_and_index_eq.mono fun _ ⟨_, eq⟩ ↦ eq
 
-/-- If `T₀` is a Fredholm operators between two Banach spaces, then the integer-valued map
+/-- If `T₀` is a Fredholm operator between two Banach spaces, then the integer-valued map
 `T ↦ T.index` is continuous at `T₀`. -/
 theorem IsFredholm.index_continuousAt [CompleteSpace 𝕜]
     {T₀ : E →L[𝕜] F} (hT₀ : T₀.IsFredholm) :
