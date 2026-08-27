@@ -498,7 +498,7 @@ lemma outerKernel_inner (f : X → V) (x y : X) (u v : V) :
 omit [CompleteSpace V] in
 variable (𝕜) in
 lemma inner_outerKernel (f : X → V) (x y : X) (u v : V) :
-    ⟪v, outerKernel 𝕜 f y x u⟫_𝕜 = ⟪f x, u⟫_𝕜 * conj ⟪f y, v⟫_𝕜 := by
+    ⟪v, outerKernel 𝕜 f y x u⟫_𝕜 = conj ⟪u, f x⟫_𝕜 * ⟪v, f y⟫_𝕜 := by
   simp [inner_smul_right]
 
 variable (𝕜) in
