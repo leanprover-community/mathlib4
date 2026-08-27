@@ -55,26 +55,11 @@ abbrev HypQ := (P : Q(Prop)) × Q($P)
 instance : Inhabited HypQ where
   default := ⟨default, default⟩
 
--- /-- Used to indicate the current case should be unreachable, unless an invariant is violated.
--- `context` should be used to indicate which case is asserted to be unreachable.
--- For example, `"findEq: path for a conjunction should be nonempty"`. -/
--- private def panic! {α : Type} (context : String) : MetaM α := do
---   let e := s!"existsAndEq: internal error, unreachable case has occurred:\n{context}."
---   logError e
---   -- the following error will be caught by `simp` so we additionally log it above
---   throwError e
-
-#check mkLambda
-
-/-- Constructs `∃ f₁ f₂ ... fₙ, body`, where `[f₁, ..., fₙ] = fvars`. -/
-def mkNestedExists (fvars : List VarQ) (body : Q(Prop)) : MetaM Q(Prop) := do
-  match fvars with
-  | [] => pure body
-  | ⟨_, β, b⟩ :: tl =>
-    let res ← mkNestedExists tl body
-    let name := (← getLCtx).findFVar? b |>.get!.userName
-    let p : Q($β → Prop) ← Impl.mkLambdaQ name b res
-    pure q(Exists $p)
+/-- Checks whether the equation with sides `x` and `y` determines the free variable `a` as `y`:
+`x` is `a` itself, and `y` doesn't mention `a` (in `a = f a`, for example, it does). The callers
+try both orientations. -/
+def eqDetermines (a x y : Expr) : Bool :=
+  a == x && !(y.containsFVar a.fvarId!)
 
 /-- Finds a `Path` for `findEq`. It leads to a subexpression `a = a'` or `a' = a`, where
 `a'` doesn't contain the free variable `a`.
@@ -84,9 +69,9 @@ partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
     MetaM <| Option Path := do
   match_expr P with
   | Eq _ x y =>
-    if a == x && !(y.containsFVar a.fvarId!) then
+    if eqDetermines a x y then
       return some []
-    if a == y && !(x.containsFVar a.fvarId!) then
+    if eqDetermines a y x then
       return some []
     return none
   | And L R =>
@@ -124,9 +109,9 @@ where
   match path with
   | [] =>
     let ~q(@Eq.{u} $γ $x $y) := P | panic! "path is empty, but `P` is not an equality: {← ppExpr P}"
-    if a == x && !(y.containsFVar a.fvarId!) then
+    if eqDetermines a x y then
       return ([], ← getLCtx, P, y)
-    if a == y && !(x.containsFVar a.fvarId!) then
+    if eqDetermines a y x then
       return ([], ← getLCtx, P, x)
     panic!
       "some side of equality must be `a`, and the other must not depend on `a`"
@@ -138,7 +123,7 @@ where
     let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjuction"
     let (fvars, lctx, P', a') ← go a q($R) tl
     return (fvars, lctx, q($L ∧ $P'), a')
-  | .existsType :: tl =>
+  | .existsType :: _ =>
     panic! "not implemented"
   | .existsBody :: tl =>
     let ~q(@Exists $β $pb) := P | panic! "path starts with `existsBody`, but `P` is not `Exists`"
@@ -147,11 +132,22 @@ where
       let (fvars, lctx, P', a') ← go a q($body) tl
       return (⟨_, _, b⟩ :: fvars, lctx, P', a')
 
+/-- Constructs `∃ f₁ f₂ ... fₙ, body`, where `[f₁, ..., fₙ] = fvars`. -/
+def mkNestedExists (fvars : List VarQ) (body : Q(Prop)) : MetaM Q(Prop) := do
+  match fvars with
+  | [] => pure body
+  | ⟨_, β, b⟩ :: tl =>
+    let res ← mkNestedExists tl body
+    let name := (← getLCtx).findFVar? b |>.get!.userName
+    let p : Q($β → Prop) ← Impl.mkLambdaQ name b res
+    pure q(Exists $p)
+
 /-- The path to the equation in the result formula: the quantifiers entered along `path` are moved
 to the front, so their `existsBody` steps come first, followed by the `And` steps in their original
 order. -/
 def Path.forResult (path : Path) : Path :=
-  path.filter (· == .existsBody) ++ path.filter (· != .existsBody)
+  let (quantifiers, conjunctions) := path.partition (· == .existsBody)
+  quantifiers ++ conjunctions
 
 /-- Destructs `h : P` following `path`, as the chain of `refine h.elim fun … ↦ ?_` in the docstring
 of `mkBeforeToAfter` does: at an `existsBody` step the quantifier is unpacked with `Exists.elim`,
@@ -239,23 +235,26 @@ The proof follows the following structure:
 ```
 example (f : β → α) {P Q : β → Prop} :
     (∃ x b, P b ∧ (∃ c, f c = x ∧ Q c) ∧ Q b) → ∃ b c, P b ∧ (f c = f c ∧ Q c) ∧ Q b := by
-  -- path : EB, AR, AL, EB, AL
+  -- path : existsBody, andRight, andLeft, existsBody, andLeft
   intro ⟨x, h₁⟩
-  -- destruct the input following the path
+  -- destruct the input following the path:
+  -- obtain ⟨e1, a1, ⟨e2, h_eq, a3⟩, a2⟩ := h₁
   refine
-    h₁.elim fun e1 h₂ ↦        -- EB
-    h₂.elim fun a1 h₃ ↦        -- AR
-    h₃.elim fun h₄ a2 ↦        -- AL
-    h₄.elim fun e2 h₅ ↦        -- EB
-    h₅.elim fun h_eq a3 ↦ ?_   -- AL
+    h₁.elim fun e1 h₂ ↦           -- existsBody
+    h₂.elim fun a1 h₃ ↦           -- andRight
+    h₃.elim fun h₄ a2 ↦           -- andLeft
+    h₄.elim fun e2 h₅ ↦           -- existsBody
+    h₅.elim fun h_eq a3 ↦ ?_      -- andLeft
   -- subst the equation (`substCore`)
   subst h_eq
-  -- construct the output following the path of the result: EB, EB, AR, AL, AL
-  refine Exists.intro e1 ?_ -- EB
-  refine Exists.intro e2 ?_ -- EB
-  refine And.intro a1 ?_    -- AR
-  refine And.intro ?_ a2    -- AL
-  refine And.intro ?_ a3    -- AL
+  -- construct the output following the path of the result (with all existsBody moved left):
+  -- existsBody, existsBody, andRight, andLeft, andLeft
+  -- exact ⟨e1, e2, a1, ⟨rfl, a3⟩, a2⟩
+  refine Exists.intro e1 ?_       -- existsBody
+  refine Exists.intro e2 ?_       -- existsBody
+  refine And.intro a1 ?_          -- andRight
+  refine And.intro ?_ a2          -- andLeft
+  refine And.intro ?_ a3          -- andLeft
   exact rfl
 ``` -/
 def mkBeforeToAfter {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
@@ -289,20 +288,23 @@ The proof follows the following structure:
 example (f : β → α) {P Q : β → Prop} :
     (∃ b c, P b ∧ (f c = f c ∧ Q c) ∧ Q b) → ∃ x b, P b ∧ (∃ c, f c = x ∧ Q c) ∧ Q b := by
   intro h₁
-  -- destruct the input following the path of the result: EB, EB, AR, AL, AL
+  -- destruct the input following the path of the result (with all existsBody moved left):
+  -- existsBody, existsBody, andRight, andLeft, andLeft
+  -- obtain ⟨e1, e2, a1, ⟨_, a3⟩, a2⟩ := h₁
   refine
-    h₁.elim fun e1 h₂ ↦    -- EB
-    h₂.elim fun e2 h₃ ↦    -- EB
-    h₃.elim fun a1 h₄ ↦    -- AR
-    h₄.elim fun h₅ a2 ↦    -- AL
-    h₅.elim fun _ a3 ↦ ?_  -- AL
-  -- construct the output following the path: EB, AR, AL, EB, AL
-  refine Exists.intro (f e2) ?_  -- `a'`
-  refine Exists.intro e1 ?_      -- EB
-  refine And.intro a1 ?_         -- AR
-  refine And.intro ?_ a2         -- AL
-  refine Exists.intro e2 ?_      -- EB
-  refine And.intro ?_ a3         -- AL
+    h₁.elim fun e1 h₂ ↦           -- existsBody
+    h₂.elim fun e2 h₃ ↦           -- existsBody
+    h₃.elim fun a1 h₄ ↦           -- andRight
+    h₄.elim fun h₅ a2 ↦           -- andLeft
+    h₅.elim fun _ a3 ↦ ?_         -- andLeft
+  -- construct the output following the path: existsBody, andRight, andLeft, existsBody, andLeft
+  -- exact ⟨f e2, e1, a1, ⟨e2, rfl, a3⟩, a2⟩
+  refine Exists.intro (f e2) ?_   -- `a'`
+  refine Exists.intro e1 ?_       -- existsBody
+  refine And.intro a1 ?_          -- andRight
+  refine And.intro ?_ a2          -- andLeft
+  refine Exists.intro e2 ?_       -- existsBody
+  refine And.intro ?_ a3          -- andLeft
   exact rfl
 ``` -/
 def mkAfterToBefore {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
@@ -313,7 +315,6 @@ def mkAfterToBefore {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
       let pf1 : Q($p $a') ← construct (goal := q($p $a')) fvars path leaves
       return q(Exists.intro $a' $pf1)
     mkLambdaFVars #[h] pf
-
 
 /-- Triggers at goals of the form `∃ a, body` and checks if `body` allows a single value `a'`
 for `a`. If so, replaces `a` with `a'` and removes quantifier.
