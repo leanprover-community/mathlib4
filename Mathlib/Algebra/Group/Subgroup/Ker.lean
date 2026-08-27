@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Tactic.ApplyFun
 
-import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Kernel and range of group homomorphisms
@@ -53,7 +52,7 @@ assert_not_exists IsOrderedMonoid Multiset Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
+variable {G G' : Type*} [Group G] [Group G']
 variable {A : Type*} [AddGroup A]
 
 namespace MonoidHom

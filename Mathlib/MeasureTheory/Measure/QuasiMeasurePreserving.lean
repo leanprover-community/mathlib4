@@ -97,7 +97,7 @@ protected theorem congr (hf : QuasiMeasurePreserving f μa μb) {f' : α → β}
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiMeasurePreserving f μa μb) (c : R) : QuasiMeasurePreserving f (c • μa) (c • μb) :=
-  ⟨hf.1, by rw [Measure.map_smul]; exact hf.2.smul c⟩
+  ⟨hf.1, by rw [Measure.map_smul _ hf.aemeasurable]; exact hf.2.smul c⟩
 
 theorem ae_map_le (h : QuasiMeasurePreserving f μa μb) : ae (μa.map f) ≤ ae μb :=
   h.2.ae_le
@@ -237,7 +237,7 @@ open MeasureTheory
 
 namespace MeasurableEquiv
 
-variable {_ : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α} {ν : Measure β}
+variable {_ : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α}
 
 theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
     Measure.QuasiMeasurePreserving e.symm (μ.map e) μ :=
