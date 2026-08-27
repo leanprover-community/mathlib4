@@ -5,7 +5,7 @@ Authors: Jiaxi Mo
 -/
 module
 
-public import Mathlib.RepresentationTheory.HeckeCoset.Multiplicity
+public import Mathlib.NumberTheory.HeckeRing.HeckeCoset.Multiplicity
 
 /-!
 # Multiplicity

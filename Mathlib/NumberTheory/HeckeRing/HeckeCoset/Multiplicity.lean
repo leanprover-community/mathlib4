@@ -5,7 +5,7 @@ Authors: Chris Birkbeck, Jiaxi Mo
 -/
 module
 
-public import Mathlib.RepresentationTheory.HeckeCoset.Basic
+public import Mathlib.NumberTheory.HeckeRing.HeckeCoset.Basic
 public import Mathlib.Data.Finsupp.Defs
 
 /-!

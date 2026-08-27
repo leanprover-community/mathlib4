@@ -5,7 +5,7 @@ Authors: Chris Birkbeck, Jiaxi Mo
 -/
 module
 
-public import Mathlib.RepresentationTheory.HeckeCoset.DecompQuotient
+public import Mathlib.NumberTheory.HeckeRing.HeckeCoset.DecompQuotient
 
 /-!
 # Hecke Double Cosets
