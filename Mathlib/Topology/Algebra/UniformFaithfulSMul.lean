@@ -5,18 +5,18 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
+public import Mathlib.Algebra.Algebra.IsSimpleRing
 public import Mathlib.Topology.Algebra.UniformField
 
 /-!
 # Faithfulness of Scalar Multiplication on Completions
 
 Given a field `K` with an `R`-scalar multiplication, if the scalar action of `R` on `K`
-is faithful, then the canonical induced scalar action of `R` on the completion of `K`
+is faithful, then the induced scalar action of `R` on the completion of `K`
 is also faithful.
 -/
 
-@[expose] public section
+public section
 
 -- `[T0Space K]` can be replaced by any condition that implies `Nontrivial (Completion K)`
 instance UniformSpace.Completion.faithfulSMul {R K : Type*} [CommSemiring R] [Field K] [Algebra R K]

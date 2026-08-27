@@ -10,7 +10,7 @@ public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
-# Completion of Valuations
+# Completion of valuations
 
 This file defines the extension of a valuation on a field `K` to its uniform completion
 `Completion K`, assuming the valuation is compatible with the topology on `K`.
@@ -20,7 +20,8 @@ This file defines the extension of a valuation on a field `K` to its uniform com
 - `Valuation.extension` : extends a valuation on a field `K` to `Completion K`, provided
   the valuation is compatible with the topology on `K`.
 - `UniformSpace.Completion.valuativeRel` : the valuative relation on `Completion K`,
-  extending the one on `K` that is compatible with the topology.
+  extending the one on `K` that is compatible (in the sense of `Valuation.Compatible`)
+  with the topology.
 
 ## Main statements
 
@@ -46,7 +47,7 @@ showing that the original valuation is uniformly continuous.
 open Valuation ValuativeRel IsValuativeTopology UniformSpace MonoidWithZeroHom ValueGroup₀
 open Set Filter Topology
 
-variable {R K Γ₀ : Type*}
+variable {K Γ₀ : Type*}
 
 section DivisionRing
 
