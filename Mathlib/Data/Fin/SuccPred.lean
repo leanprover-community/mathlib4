@@ -24,7 +24,7 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 
 @[expose] public section
 
-assert_not_exists Monoid Finset OrderTop
+assert_not_exists Monoid Finset Preorder
 
 open Fin Nat Function
 
