@@ -111,14 +111,15 @@ lemma map_val (P : Group.Generators G ι) (f : G →* H) (hf : Function.Surjecti
     (P.map f hf).val = f ∘ P.val :=
   rfl
 
-/-- The transport of a generating family along an equivalence of index types. -/
-def reindex (P : Group.Generators G ι) (e : ι' ≃ ι) : Group.Generators G ι' where
+/-- The transport of a generating family along a surjection of index types. -/
+def reindex (P : Group.Generators G ι) {e : ι' → ι} (he : Function.Surjective e) :
+    Group.Generators G ι' where
   val := P.val ∘ e
-  closure_eq_top := by
-    rw [Set.range_comp, EquivLike.range_eq_univ, Set.image_univ, P.closure_eq_top]
+  closure_eq_top := by rw [Set.range_comp, he.range_eq, Set.image_univ, P.closure_eq_top]
 
 @[simp]
-lemma reindex_val (P : Group.Generators G ι) (e : ι' ≃ ι) : (P.reindex e).val = P.val ∘ e :=
+lemma reindex_val (P : Group.Generators G ι) {e : ι' → ι} (he : Function.Surjective e) :
+    (P.reindex he).val = P.val ∘ e :=
   rfl
 
 /-- If `G` has a finite generating family, then `G` is finitely generated. -/
@@ -132,6 +133,6 @@ theorem Group.fg_iff_nonempty_finite_generators :
     Group.FG G ↔ ∃ n : ℕ, Nonempty (Group.Generators G (Fin n)) := by
   constructor
   · rintro ⟨S, hS⟩
-    exact ⟨S.card, ⟨(Group.Generators.ofSet hS).reindex S.equivFin.symm⟩⟩
+    exact ⟨S.card, ⟨(Group.Generators.ofSet hS).reindex S.equivFin.symm.surjective⟩⟩
   · rintro ⟨n, ⟨P⟩⟩
     exact P.fg
