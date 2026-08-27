@@ -30,7 +30,7 @@ over ℚ-algebras and establishes its key properties.
 * `PowerSeries.order_log`: The order of `log A` is `1`.
 * `PowerSeries.deriv_log`: The derivative of `log(1+X)` is the geometric series
   `∑ (-1)^n · Xⁿ = 1/(1+X)`.
-* `PowerSeries.exp_subst_log`: `exp` and `log` are mutually inverse:
+* `PowerSeries.subst_exp_log`: `exp` and `log` are mutually inverse:
   substituting `log(1+X)` into `exp` yields `1 + X`.
 * `PowerSeries.log_subst_exp_sub_one`: Substituting `exp X - 1` into `log(1+X)`
   yields `X`.
