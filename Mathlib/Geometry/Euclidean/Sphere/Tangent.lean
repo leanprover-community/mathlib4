@@ -318,19 +318,14 @@ lemma tangentsFrom_eq_empty_of_dist_lt_radius {s : Sphere P} {p : P}
   simp only [Set.mem_image, Metric.mem_sphere, mem_coe', Set.mem_ofPred_eq, Set.mem_empty_iff_false,
     iff_false, not_and, forall_exists_index, and_imp]
   rintro p' hp' rfl hpm
-  linarith [(isTangent_orthRadius_iff_mem.2 hp').radius_le_dist_center hpm]
+  exact (isTangent_orthRadius_iff_mem.2 hp').radius_le_dist_center hpm |>.not_gt hp
 
 lemma tangentsFrom_eq_singleton_orthRadius_of_mem {s : Sphere P} {p : P} (hp : p ∈ s) :
     s.tangentsFrom p = {s.orthRadius p} := by
   by_cases hr : s.radius = 0
-  · rw [mem_sphere, hr, dist_eq_zero] at hp
-    subst hp
-    simp_rw [tangentsFrom, tangentSet, hr]
-    ext as
-    simp only [Metric.sphere_zero, Set.image_singleton, orthRadius_center, Set.mem_singleton_iff,
-      Set.mem_ofPred_eq, and_iff_left_iff_imp]
-    rintro rfl
-    simp
+  · ext as
+    rw [mem_sphere, hr, dist_eq_zero] at hp
+    simp +contextual [tangentsFrom, tangentSet, hp, hr]
   have hpc : p ≠ s.center := by
     rintro rfl
     simp_all
@@ -342,7 +337,7 @@ lemma tangentsFrom_eq_singleton_orthRadius_of_mem {s : Sphere P} {p : P} (hp : p
   constructor
   · exact fun ⟨hp', hp'p⟩ ↦ (isTangentAt_orthRadius_iff_mem.2 hp).eq_of_mem_of_mem hp' hp'p
   · rintro rfl
-    simp [*, self_mem_orthRadius]
+    simp [hp]
 
 lemma ncard_tangentsFrom_eq_two_of_radius_lt_dist [Fact (Module.finrank ℝ V = 2)] {s : Sphere P}
     (hs : 0 < s.radius) {p : P} (hp : s.radius < dist p s.center) :
