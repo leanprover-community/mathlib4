@@ -688,8 +688,8 @@ def qExpansionAlgHom (h) [Γ.HasDetOne] (hh : 0 < h)
     ModularForm.qExpansion_one (ModularForm.qExpansion_mul hh hΓ)
 
 @[simp]
-lemma qExpansionAlgHom_apply [Γ.HasDetOne] (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) (f : ModularForm Γ k) :
+lemma qExpansionAlgHom_apply [Γ.HasDetOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
+    (k : ℤ) (f : ModularForm Γ k) :
     qExpansionAlgHom h hh hΓ (DirectSum.of _ k f) = qExpansion h f :=
   DirectSum.toSemiring_of _ ModularForm.qExpansion_one (ModularForm.qExpansion_mul hh hΓ) k f
 
