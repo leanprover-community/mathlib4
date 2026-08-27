@@ -678,8 +678,8 @@ lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] (hh : 0 < h)
 open scoped DirectSum in
 /-- The qExpansion map as a `ℂ`-algebra map from the graded ring of modular forms to power series
 over `ℂ`. -/
-def qExpansionAlgHom (h) [Γ.HasDetOne] (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) : (⨁ k, ModularForm Γ k) →ₐ[ℂ] PowerSeries ℂ :=
+def qExpansionAlgHom (h) [Γ.HasDetOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+    (⨁ k, ModularForm Γ k) →ₐ[ℂ] PowerSeries ℂ :=
   DirectSum.toAlgebra ℂ _
     (fun _ ↦
       { toFun f := qExpansion h f
