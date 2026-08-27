@@ -128,9 +128,9 @@ theorem mem_range_algebraMap_of_forall_prime {f : K}
     rw [map_mul, ← hf, mul_assoc, ← map_mul, Units.mul_inv, map_one, mul_one]⟩
 
 variable (R K) in
-/-- See `UniqueFactorizationMonoid.mem_range_algebraMap_of_forall_prime` for the elementary form,
-phrased by divisibility of denominators.
-This lemma is sometimes called Algebraic Hartog's lemma (for UFDs). -/
+/-- See `UniqueFactorizationMonoid.mem_range_algebraMap_of_forall_prime` for an alternate phrasing
+in terms of divisibility of denominators. This lemma is sometimes called Algebraic Hartog's lemma
+(for UFDs). -/
 theorem iInf_localization_eq_bot :
     (⨅ v : {v : PrimeSpectrum R // v.asIdeal.height = 1},
       Localization.subalgebra.ofField K _ v.1.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by
