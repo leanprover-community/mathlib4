@@ -40,12 +40,12 @@ in this setup.
 
 public section
 
-open Filter Function Module Nat FormalMultilinearSeries EMetric Set
+open Filter Function Module Nat FormalMultilinearSeries Set
 
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
+  [NormedSpace 𝕜 E] {s : E} {p : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
 
 namespace HasSum
 

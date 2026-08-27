@@ -96,7 +96,7 @@ section Characterizations
 
 section
 
-variable {R₁ : Type*} [Semiring R₁] {M₁ M₂ : Type*}
+variable {M₁ M₂ : Type*}
   [TopologicalSpace M₁] [AddCommMonoid M₁] [TopologicalSpace M₂]
 
 theorem isCompactOperator_iff_exists_mem_nhds_image_subset_compact (f : M₁ → M₂) :
@@ -320,7 +320,7 @@ end CodRestrict
 
 section Restrict
 
-variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R₁ →+* R₂}
+variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
   {M₁ M₂ : Type*} [TopologicalSpace M₁] [UniformSpace M₂]
   [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R₁ M₁]
   [Module R₂ M₂]
