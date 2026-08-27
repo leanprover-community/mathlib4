@@ -770,10 +770,10 @@ public lemma ConwayLife_emptyWorldProperty
   have count_true_all_false : count_true (α := ↥z2_nbhrs) (f := fun _ => false) = 0 := by
     simp [count_true]
   simp only [count_true_all_false]
-  rw [if_neg (show ¬ (false = true) by decide)]
+  rw [ite_eq_right (show ¬ (false = true) by decide)]
   rw [Fin.mk_zero, h]
   rw [
-    if_neg (show ¬ (false = true) by decide)]
+    ite_eq_right (show ¬ (false = true) by decide)]
 
 end ConwayLife
 
