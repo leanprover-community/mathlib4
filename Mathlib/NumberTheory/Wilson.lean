@@ -50,14 +50,9 @@ namespace ZMod
 `(p - 1)! = (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)!) ^ 2` in `ZMod p`. -/
 theorem factorial_eq_neg_one_pow_mul_half_factorial_sq {p : ℕ} (hp : Odd p) :
     ((p - 1)! : ZMod p) = (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)! : ZMod p) ^ 2 := by
-  obtain ⟨m, hm⟩ := hp
-  rw [show (p - 1) / 2 = m by lia]
-  calc
-    ((p - 1)! : ZMod p) =
-        ((p - 1 - m)! : ZMod p) * ((p - 1).descFactorial m : ZMod p) := by
-      rw [← Nat.cast_mul, Nat.factorial_mul_descFactorial (by lia)]
-    _ = (-1) ^ m * (m ! : ZMod p) ^ 2 := by
-      rw [show p - 1 - m = m by lia, cast_descFactorial (by lia), pow_two, mul_rotate']
+  rw [pow_two, ← Nat.factorial_mul_descFactorial (show (p - 1) / 2 ≤ p - 1 by lia),
+    show p - 1 - (p - 1) / 2 = (p - 1) / 2 by grind, Nat.cast_mul,
+    cast_descFactorial (by lia), mul_rotate']
 
 variable (p : ℕ) [Fact p.Prime]
 
