@@ -1073,7 +1073,7 @@ theorem lintegral_prod_mul {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf :
   rw [lintegral_prod _ (by fun_prop)]
   simp [lintegral_lintegral_mul hf hg]
 
-lemma _root_.Measurable.measurable_bind {f : α → β → Measure γ} (hf : Measurable f.uncurry) :
+lemma _root_.Measurable.measurable_bind_left {f : α → β → Measure γ} (hf : Measurable f.uncurry) :
     Measurable (fun a ↦ ν.bind (f a)) := by
   refine measurable_measure.2 fun s hs ↦ ?_
   simp_rw [ν.bind_apply hs hf.of_uncurry_left.aemeasurable]
@@ -1081,7 +1081,7 @@ lemma _root_.Measurable.measurable_bind {f : α → β → Measure γ} (hf : Mea
   convert measurable_measure.1 (hf.comp measurable_swap) s hs
   grind
 
-lemma _root_.Measurable.measurable_bind' [SFinite μ] {f : α → β → Measure γ}
+lemma _root_.Measurable.measurable_bind_right [SFinite μ] {f : α → β → Measure γ}
     (hf : Measurable f.uncurry) :
     Measurable (fun b ↦ μ.bind (f · b)) := by
   refine measurable_measure.2 fun s hs ↦ ?_
@@ -1093,8 +1093,9 @@ lemma _root_.Measurable.measurable_bind' [SFinite μ] {f : α → β → Measure
 theorem Measure.bind_comm [SFinite μ] {f : α → β → Measure γ} (hf : Measurable f.uncurry) :
     μ.bind (fun a ↦ ν.bind (f a)) = ν.bind (fun b ↦ μ.bind (f · b)) := by
   ext s hs
-  simp_rw [bind_apply hs hf.measurable_bind.aemeasurable,
-    bind_apply hs hf.of_uncurry_left.aemeasurable, bind_apply hs hf.measurable_bind'.aemeasurable,
+  simp_rw [bind_apply hs hf.measurable_bind_left.aemeasurable,
+    bind_apply hs hf.of_uncurry_left.aemeasurable,
+    bind_apply hs hf.measurable_bind_right.aemeasurable,
     bind_apply hs hf.of_uncurry_right.aemeasurable]
   rw [lintegral_lintegral_swap]
   exact (measurable_measure.1 hf s hs).aemeasurable
