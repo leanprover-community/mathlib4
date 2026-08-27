@@ -332,12 +332,6 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   exact mul_mem hyz (inv_mem (h hz))
 
 @[to_additive]
-lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
-    normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
-  intro g hg
-  simp_rw [mem_inf, mem_normalizer_iff_map_conj_eq, map_sup, hg.1, hg.2] at hg ⊢
-
-@[to_additive]
 theorem iInf_normalizer_le_normalizer_iSup {ι : Sort*} (H : ι → Subgroup G) :
     ⨅ i, normalizer (H i) ≤ normalizer ((⨆ i, H i : Subgroup G) : Set G) := by
   intro g hg
@@ -347,13 +341,13 @@ theorem iInf_normalizer_le_normalizer_iSup {ι : Sort*} (H : ι → Subgroup G) 
 lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
     {H K : Subgroup G} {s : G} (hs : s ∈ normalizer H ⊓ normalizer K) (g : G) (hg : g ∈ H ⊔ K) :
     s * g * s⁻¹ ∈ H ⊔ K :=
-  (normalizer_inf_normalizer_le_normalizer_sup H K hs g).mp hg
+  (inf_normalizer_le_normalizer_sup H K hs g).mp hg
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_left
     {H K : Subgroup G} (hHnK : normalizer H ≤ normalizer (K : Set G)) :
     normalizer H ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) :=
-  (inf_of_le_left hHnK).symm.trans_le (H.normalizer_inf_normalizer_le_normalizer_sup K)
+  (inf_of_le_left hHnK).symm.trans_le (H.inf_normalizer_le_normalizer_sup K)
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_right {H K : Subgroup G}
@@ -413,37 +407,6 @@ theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
     (fun y => h • y) '' (g * ·) ⁻¹' s = (g * ·) ⁻¹' (fun y => h • y) '' s :=
   smul_opposite_image_mul_preimage' g h s
-
-private theorem commutator_sup_left' (H K N : Subgroup G) [N.Normal] [(⁅H, N⁆ ⊔ ⁅K, N⁆).Normal] :
-    ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
-  refine le_antisymm ?_
-    (sup_le (commutator_mono_left le_sup_left) (commutator_mono_left le_sup_right))
-  have hH : ⁅H, N⁆ ≤ ⁅H, N⁆ ⊔ ⁅K, N⁆ := le_sup_left
-  have hK : ⁅K, N⁆ ≤ ⁅H, N⁆ ⊔ ⁅K, N⁆ := le_sup_right
-  rw [← QuotientGroup.ker_mk' (⁅H, N⁆ ⊔ ⁅K, N⁆), ← Subgroup.map_eq_bot_iff,
-    map_commutator, Subgroup.commutator_eq_bot_iff_le_centralizer] at hH hK ⊢
-  rw [map_sup]
-  exact sup_le hH hK
-
-theorem commutator_sup_left (H K N : Subgroup G) [N.Normal] : ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
-  let M := H ⊔ K ⊔ N
-  have hHM : H ≤ M := le_sup_of_le_left le_sup_left
-  have hKM : K ≤ M := le_sup_of_le_left le_sup_right
-  have hNM : N ≤ M := le_sup_right
-  have hHNM : ⁅H, N⁆ ≤ M := commutator_le_of_le hHM hNM
-  have hKNM : ⁅K, N⁆ ≤ M := commutator_le_of_le hKM hNM
-  suffices (⁅H.subgroupOf M, N.subgroupOf M⁆ ⊔ ⁅K.subgroupOf M, N.subgroupOf M⁆).Normal by
-    simpa [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM] using
-      commutator_sup_left' (H.subgroupOf M) (K.subgroupOf M) (N.subgroupOf M)
-  suffices M ≤ normalizer (⁅H, N⁆ ⊔ ⁅K, N⁆ : Subgroup G) by
-    convert Subgroup.normal_subgroupOf_of_le_normalizer this
-    simp [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM, hHNM, hKNM]
-  have hHKN : ⁅H, N⁆ ⊔ ⁅K, N⁆ ≤ N := sup_le (commutator_le_right H N) (commutator_le_right K N)
-  refine sup_le (sup_le ?_ ?_) ?_
-  · grw [le_normalizer_iff_commutator_le_right, hHKN, ← le_sup_left]
-  · grw [le_normalizer_iff_commutator_le_right, hHKN, ← le_sup_right]
-  · grw [← normalizer_inf_normalizer_le_normalizer_sup, ← normalizer_commutator_ge_right,
-      ← normalizer_commutator_ge_right, inf_idem]
 
 /-! ### Pointwise action -/
 

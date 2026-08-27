@@ -323,6 +323,37 @@ theorem commutator_le_map_commutator {f : G →* G'} {K₁ K₂ : Subgroup G'} (
 
 variable (H₁ H₂)
 
+private theorem commutator_sup_left' (H K N : Subgroup G) [N.Normal] [(⁅H, N⁆ ⊔ ⁅K, N⁆).Normal] :
+    ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
+  refine le_antisymm ?_
+    (sup_le (commutator_mono_left le_sup_left) (commutator_mono_left le_sup_right))
+  have hH : ⁅H, N⁆ ≤ ⁅H, N⁆ ⊔ ⁅K, N⁆ := le_sup_left
+  have hK : ⁅K, N⁆ ≤ ⁅H, N⁆ ⊔ ⁅K, N⁆ := le_sup_right
+  rw [← QuotientGroup.ker_mk' (⁅H, N⁆ ⊔ ⁅K, N⁆), ← Subgroup.map_eq_bot_iff,
+    map_commutator, Subgroup.commutator_eq_bot_iff_le_centralizer] at hH hK ⊢
+  rw [map_sup]
+  exact sup_le hH hK
+
+theorem commutator_sup_left (H K N : Subgroup G) [N.Normal] : ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
+  let M := H ⊔ K ⊔ N
+  have hHM : H ≤ M := le_sup_of_le_left le_sup_left
+  have hKM : K ≤ M := le_sup_of_le_left le_sup_right
+  have hNM : N ≤ M := le_sup_right
+  have hHNM : ⁅H, N⁆ ≤ M := commutator_le_of_le hHM hNM
+  have hKNM : ⁅K, N⁆ ≤ M := commutator_le_of_le hKM hNM
+  suffices (⁅H.subgroupOf M, N.subgroupOf M⁆ ⊔ ⁅K.subgroupOf M, N.subgroupOf M⁆).Normal by
+    simpa [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM] using
+      commutator_sup_left' (H.subgroupOf M) (K.subgroupOf M) (N.subgroupOf M)
+  suffices M ≤ normalizer (⁅H, N⁆ ⊔ ⁅K, N⁆ : Subgroup G) by
+    convert Subgroup.normal_subgroupOf_of_le_normalizer this
+    simp [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM, hHNM, hKNM]
+  have hHKN : ⁅H, N⁆ ⊔ ⁅K, N⁆ ≤ N := sup_le (commutator_le_right H N) (commutator_le_right K N)
+  refine sup_le (sup_le ?_ ?_) ?_
+  · grw [le_normalizer_iff_commutator_le_right, hHKN, ← le_sup_left]
+  · grw [le_normalizer_iff_commutator_le_right, hHKN, ← le_sup_right]
+  · grw [← inf_normalizer_le_normalizer_sup, ← normalizer_commutator_ge_right,
+      ← normalizer_commutator_ge_right, inf_idem]
+
 @[to_additive]
 instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characteristic H₂] :
     Characteristic ⁅H₁, H₂⁆ :=
