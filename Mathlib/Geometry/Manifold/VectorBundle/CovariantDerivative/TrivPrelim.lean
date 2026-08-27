@@ -412,7 +412,8 @@ lemma derivInv_deriv
   rw [e.mk_proj_snd' hv] at D₁
   have comp := mfderiv_comp v D₁ D₂
   rw [(invFun_comp_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
-  simp [deriv, derivInv, comp]
+  simp [deriv, derivInv]
+  sorry
 
 @[simp]
 lemma derivInv_deriv_apply
@@ -429,6 +430,7 @@ lemma mfderiv_proj_fst_deriv
     (u : TangentSpace% v) :
     mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v u = (e.deriv I v u).1 := by
   have := e.fst_comp_eventuallyEq hv
+  stop
   rw [← this.mfderiv_eq, mfderiv_comp v mdifferentiableAt_fst (e.mdifferentiableAt (I := I) hv v.2)]
   simp
   rfl -- TODO: understand why `simp` does not handle `ContinuousLinearMap.fst`
@@ -551,9 +553,11 @@ lemma mfderiv_total_funToSec
   rw [(e.totalSpace_mk_funToSec hx s).mfderiv_eq,
       mfderiv_comp x (e.mdifferentiableAt_invFun (I := I) hx (s x))]
   · congr 2
-    · simp [hx]
+    · stop
+      simp [hx]
     · rw [mfderiv_prodMk]
       · erw [mfderiv_id]
+        stop
         rfl
       · exact mdifferentiableAt_id
       · exact hs
@@ -573,6 +577,7 @@ lemma comap_vert
   ext x
   have : Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := e.fst_comp_eventuallyEq hv
   unfold vert
+  stop
   rw [← this.mfderiv_eq, mfderiv_comp v mdifferentiableAt_fst (e.mdifferentiableAt hv _)]
   simp
   rfl
