@@ -18,6 +18,20 @@ to the power series with `n`-th coefficient `μ (mahler n)`.
 
 More suggestively, this is the series `∫ a : ℤ_[p], (1 + X) ^ a dμ`.
 
+## Main statements
+
+* `AbstractMeasure.amiceTransform`: the Amice transform as an `R`-linear map into `R⟦X⟧`, allowing
+  `R` to be any normed `ℤ_[p]`-algebra
+* `AbstractMeasure.coeff_amiceTransform`: the `n`-th coefficient of `μ.amiceTransform` is
+  `μ (mahler n)`
+* `AbstractMeasure.amiceTransformEquiv`: the Amice transform with `ℤ_[p]`-coefficients, bundled
+  as a linear equivalence.
+
+## TODO
+
+Define the Amice transform as an equivalence over more general base rings; this requires developing
+some theory of _bounded_ power series over normed rings.
+
 ## References
 
 * [P. Colmez, *Fonctions d'une variable p-adique*][colmez2010], section II.2
@@ -55,6 +69,8 @@ variable {R : Type*} [CommRing R] [TopologicalSpace R]
 /--
 The Amice transform, sending a measure `μ` on `ℤ_[p]` to the power series with `n`-th
 coefficient `μ (mahler n)`. More suggestively, this is the series `∫ a : ℤ_[p], (1 + X) ^ a dμ`.
+
+See also `amiceTransformEquiv` for the same map bundled as a linear equivalence.
 -/
 def amiceTransform : D(ℤ_[p], R) →ₗ[R] R⟦X⟧ where
   toFun μ := .mk fun n ↦ μ ((mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R)))
@@ -132,7 +148,10 @@ lemma amiceTransform_invTransform (F : ℤ_[p]⟦X⟧) :
   simp [coeff_amiceTransform, invTransform_apply, PadicInt.mahlerEquiv_apply, this]
 
 /--
-The Amice transform bundled as a linear equivalence.
+The Amice transform bundled as a linear equivalence (with coefficients in `ℤ_[p]`).
+
+(TODO: Define this more generally -- this will need a definition for bounded power series over a
+normed ring.)
 -/
 def amiceTransformEquiv : D(ℤ_[p], ℤ_[p]) ≃ₗ[ℤ_[p]] ℤ_[p]⟦X⟧ where
   __ := amiceTransform
