@@ -13,7 +13,7 @@ public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Tactic.CrossRefAttribute
 
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Disjoint
 
 /-!
 # Simple graphs
@@ -199,6 +199,11 @@ theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ 
   · rw [hr.1, hr.2, adj_comm]
 
 instance symm_adj (f : ι → V) : Std.Symm fun i j ↦ G.Adj (f i) (f j) where symm _ _ := .symm
+
+instance [Infinite V] : Infinite (SimpleGraph V) := by
+  let f := Infinite.natEmbedding V
+  refine .of_injective (fun n ↦ fromRel (· = f 0 ∧ · = f (n + 1))) fun a b h ↦ ?_
+  simpa using congr(($h).Adj (f 0) (f (a + 1)))
 
 section Order
 
