@@ -482,6 +482,12 @@ lemma outerKernel_inner (f : X → V) (x y : X) (v u : V) :
     ⟪outerKernel 𝕜 f y x v, u⟫_𝕜 = conj ⟪f x, v⟫_𝕜 * ⟪f y, u⟫_𝕜 := by
   simp [inner_smul_left]
 
+omit [CompleteSpace V] in
+variable (𝕜) in
+lemma inner_outerKernel (f : X → V) (x y : X) (v u : V) :
+    ⟪u, outerKernel 𝕜 f y x v⟫_𝕜 = ⟪f x, v⟫_𝕜 * conj ⟪f y, u⟫_𝕜 := by
+  simp [inner_smul_right]
+
 variable (𝕜) in
 lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := by
   rw [posSemidef_iff_re_sum_kernel']
