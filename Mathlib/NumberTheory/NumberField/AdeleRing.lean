@@ -82,10 +82,6 @@ def ofCompletion (v : InfinitePlace K) : v.Completion →* 𝔸[R, K] :=
 def ofAdicCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* 𝔸[R, K] :=
   .prod 1 (FiniteAdeleRing.ofAdicCompletion K v)
 
-@[simps!]
-def ofCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* AdeleRing R K :=
-  .prod 1 (FiniteAdeleRing.ofCompletion K v)
-
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
 abbrev principalSubgroup : AddSubgroup 𝔸[R, K] := (algebraMap K 𝔸[R, K]).range.toAddSubgroup
 
