@@ -191,16 +191,6 @@ def ofAdicCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* FiniteA
   letI := Classical.decEq (HeightOneSpectrum R)
   RestrictedProduct.mulSingleMonoidHom (fun w ↦ w.adicCompletionIntegers K) v
 
-variable {R}
-
-variable (K) in
-/-- The embedding of a completion `Kᵥ` into the finite adele ring. -/
-@[simps!]
-def ofCompletion (v : HeightOneSpectrum R) :
-    v.adicCompletion K →* FiniteAdeleRing R K :=
-  letI := Classical.decEq (HeightOneSpectrum R)
-  RestrictedProduct.mulSingleHom (fun w ↦ w.adicCompletionIntegers K) v
-
 end Units
 
 end FiniteAdeleRing
