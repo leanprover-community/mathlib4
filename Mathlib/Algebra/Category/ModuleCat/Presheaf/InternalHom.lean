@@ -115,10 +115,13 @@ def internalHom : PresheafOfModulesOfCommRing.{max u u₁ v₁} R where
       map_add' _ _ := rfl
       map_smul' a φ := internalHomMap_smul _ _ _ _ _ }
   map_id _ := by ext x; simp [ModuleCat.restrictScalarsId'App_inv_apply (x := x)]
-  map_comp {X₁ X₂ X₃} f g := by ext; simp
+  map_comp _ _ := by ext; simp
 
 open Opposite
 
+/-- This is the functor that sends `G : PresheafOfModules` to `internalHom F G`.
+TODO: Show this is right adjoint to `MonoidalCategory.tensorLeft F`, giving `PresheafOfModules`
+the structure of a closed monoidal category. -/
 @[simps]
 def internalHomFunctor : PresheafOfModulesOfCommRing.{u} R ⥤
     PresheafOfModulesOfCommRing.{max u u₁ v₁} R where
