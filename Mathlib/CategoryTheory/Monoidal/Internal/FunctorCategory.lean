@@ -175,7 +175,6 @@ def functorObj (A : (C ⥤ D)) [ComonObj A] : C ⥤ Comon D where
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
 /-- Functor translating a comonoid object in a functor category
 to a functor into the category of comonoid objects.
 -/
@@ -306,7 +305,6 @@ end CommMonFunctorCategoryEquivalence
 
 open CommMonFunctorCategoryEquivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When `D` is a braided monoidal category,
 commutative monoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the commutative monoid objects of `D`.

@@ -22,10 +22,10 @@ noncomputable section
 
 universe u
 
-variable {ι ι' R R₂ M M' : Type*}
+variable {ι R M : Type*}
 
 namespace Module.Basis
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (b : Basis ι R M)
 
@@ -48,12 +48,10 @@ theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {
 
 end Basis
 
-open LinearMap
-
 variable {v : ι → M}
-variable [Ring R] [CommRing R₂] [AddCommGroup M]
-variable [Module R M] [Module R₂ M]
-variable {x y : M}
+variable [Ring R] [AddCommGroup M]
+variable [Module R M]
+variable {x : M}
 variable (b : Basis ι R M)
 
 theorem Basis.eq_bot_of_rank_eq_zero [IsDomain R] (b : Basis ι R M) (N : Submodule R M)
@@ -131,7 +129,7 @@ lemma mem_center_iff {A}
     · intros
       exact ⟨h.2 _ _, h.3 _ _⟩
   · intro h
-    rw [center, mem_setOf_eq]
+    rw [center, mem_ofPred_eq]
     constructor
     case comm =>
       intro y

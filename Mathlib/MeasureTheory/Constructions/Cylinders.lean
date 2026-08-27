@@ -62,7 +62,7 @@ def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
     squareCylinders C = ⋃ s : Finset ι, (fun t ↦ (s : Set ι).pi t) '' univ.pi C := by
   ext1 f
-  simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_setOf_eq,
+  simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_ofPred_eq,
     eq_comm (a := f)]
 
 theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
@@ -117,15 +117,15 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
   simp only [singleton_pi]
   rw [MeasurableSpace.comap_eq_generateFrom]
   refine MeasurableSpace.generateFrom_mono fun S ↦ ?_
-  simp only [mem_setOf_eq, mem_image, mem_univ_pi, forall_exists_index, and_imp]
+  simp only [mem_ofPred_eq, mem_image, mem_univ_pi, forall_exists_index, and_imp]
   intro t ht h
   classical
   refine ⟨fun j ↦ if hji : j = i then by convert! t else univ, fun j ↦ ?_, ?_⟩
   · by_cases hji : j = i
-    · simp only [hji, eq_mpr_eq_cast, dif_pos]
+    · simp only [hji, eq_mpr_eq_cast, dite_eq_left]
       convert! ht
       simp only [cast_heq]
-    · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
+    · simp only [hji, not_false_iff, dite_eq_right, MeasurableSet.univ]
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
     (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
     It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
@@ -139,7 +139,7 @@ theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
   apply le_antisymm
   · rw [MeasurableSpace.generateFrom_le_iff]
     rintro S ⟨s, t, h, rfl⟩
-    simp only [mem_univ_pi, mem_setOf_eq] at h
+    simp only [mem_univ_pi, mem_ofPred_eq] at h
     exact MeasurableSet.pi (Finset.countable_toSet _) (fun i _ ↦ h i)
   · refine iSup_le fun i ↦ ?_
     refine (comap_eval_le_generateFrom_squareCylinders_singleton α i).trans ?_
@@ -147,7 +147,7 @@ theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
     rw [← Finset.coe_singleton, squareCylinders_eq_iUnion_image]
     exact subset_iUnion
       (fun (s : Finset ι) ↦
-        (fun t : ∀ i, Set (α i) ↦ (s : Set ι).pi t) '' univ.pi (fun i ↦ setOf MeasurableSet))
+        (fun t : ∀ i, Set (α i) ↦ (s : Set ι).pi t) '' univ.pi (fun i ↦ Set.ofPred MeasurableSet))
       ({i} : Finset ι)
 
 end squareCylinders
@@ -185,7 +185,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
   let f' : ∀ i, α i := fun i ↦ if hi : i ∈ s then f ⟨i, hi⟩ else h_nonempty.some i
   have hf' : f' ∈ cylinder s S := by
     rw [mem_cylinder]
-    simpa only [Finset.restrict_def, Finset.coe_mem, dif_pos, f']
+    simpa only [Finset.restrict_def, Finset.coe_mem, dite_eq_left, f']
   rw [h] at hf'
   exact notMem_empty _ hf'
 
@@ -294,7 +294,9 @@ noncomputable def measurableCylinders.finset (ht : t ∈ measurableCylinders α)
   ((mem_measurableCylinders t).mp ht).choose
 
 /-- A set `S` such that `t = cylinder s S`. `s` is given by `measurableCylinders.finset`. -/
-def measurableCylinders.set (ht : t ∈ measurableCylinders α) :
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def measurableCylinders.set (ht : t ∈ measurableCylinders α) :
     Set (∀ i : measurableCylinders.finset ht, α i) :=
   ((mem_measurableCylinders t).mp ht).choose_spec.choose
 
@@ -366,12 +368,12 @@ theorem generateFrom_measurableCylinders :
   · refine iSup_le fun i ↦ ?_
     refine (comap_eval_le_generateFrom_squareCylinders_singleton α i).trans ?_
     refine MeasurableSpace.generateFrom_mono (fun x ↦ ?_)
-    simp only [singleton_pi, mem_image, mem_pi, mem_univ, mem_setOf_eq,
+    simp only [singleton_pi, mem_image, mem_pi, mem_univ, mem_ofPred_eq,
       forall_true_left, mem_measurableCylinders, forall_exists_index, and_imp]
     rintro t ht rfl
     refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i}, measurable_pi_apply _ (ht i), ?_⟩
     ext1 x
-    simp only [mem_preimage, Function.eval, mem_cylinder, mem_setOf_eq, Finset.restrict]
+    simp only [mem_preimage, Function.eval, mem_cylinder, mem_ofPred_eq, Finset.restrict]
 
 /-- The cylinders of a product space indexed by `ℕ` can be seen as depending on the first
 coordinates. -/
@@ -460,7 +462,7 @@ lemma measurable_update_cylinderEvents_left {a : ι} [DecidableEq ι] {x : X a} 
   measurable_update_cylinderEvents'.comp measurable_prodMk_right
 
 lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
-    Measurable[cylinderEvents (X := X) Δ] (restrict Δ) := by
+    Measurable[cylinderEvents (X := X) Δ] (domRestrict Δ) := by
   rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
 
 end cylinderEvents
@@ -468,7 +470,7 @@ end cylinderEvents
 /-- A measurable set from the product sigma-algebra only depends on countably many coordinates. -/
 lemma MeasurableSet.eq_preimage_restrict_countable
     [∀ i, MeasurableSpace (α i)] {s : Set (Π i, α i)} (hs : MeasurableSet s) :
-    ∃ I : Set ι, ∃ t, I.Countable ∧ s = I.restrict ⁻¹' t := by
+    ∃ I : Set ι, ∃ t, I.Countable ∧ s = I.domRestrict ⁻¹' t := by
   refine induction_on_inter generateFrom_squareCylinders.symm
     (isPiSystem_squareCylinders (fun _ ↦ isPiSystem_measurableSet) (by simp))
     ⟨∅, ∅, by simp⟩ ?_ ?_ ?_ s hs
@@ -478,13 +480,13 @@ lemma MeasurableSet.eq_preimage_restrict_countable
     exact ⟨I, tᶜ, hI, by simp⟩
   intro f df mf hf
   choose! I t hI hf using hf
-  refine ⟨⋃ n, I n, ⋃ n, (⋃ k, I k).restrict '' (f n), countable_iUnion hI, ?_⟩
+  refine ⟨⋃ n, I n, ⋃ n, (⋃ k, I k).domRestrict '' (f n), countable_iUnion hI, ?_⟩
   ext x
   simp only [hf, mem_iUnion, mem_preimage, preimage_iUnion, mem_image]
   refine ⟨fun ⟨i, hi⟩ ↦ ⟨i, x, hi, rfl⟩, fun ⟨n, x', hn, hx⟩ ↦ ⟨n, ?_⟩⟩
-  have (x : Π i, α i) : (I n).restrict x =
+  have (x : Π i, α i) : (I n).domRestrict x =
       (fun (x : Π (i : ⋃ k, I k), α i) (i : I n) ↦ x ⟨i.1, subset_iUnion I n i.2⟩)
-      ((⋃ k, I k).restrict x) := rfl
+      ((⋃ k, I k).domRestrict x) := rfl
   rwa [this, ← hx, ← this]
 
 end MeasureTheory

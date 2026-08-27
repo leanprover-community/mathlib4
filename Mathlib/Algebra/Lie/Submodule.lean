@@ -323,7 +323,7 @@ instance : InfSet (LieSubmodule R L M) :=
   ⟨fun S ↦
     { toSubmodule := sInf {(s : Submodule R M) | s ∈ S}
       lie_mem := fun {x m} h ↦ by
-        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_setOf_eq,
+        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_ofPred_eq,
           forall_apply_eq_imp_iff₂, forall_exists_index, and_imp] at h ⊢
         intro N hN; apply N.lie_mem (h N hN) }⟩
 
@@ -354,7 +354,7 @@ theorem iInf_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
 theorem coe_sInf (S : Set (LieSubmodule R L M)) : (↑(sInf S) : Set M) = ⋂ s ∈ S, (s : Set M) := by
   rw [← LieSubmodule.coe_toSubmodule, sInf_toSubmodule, Submodule.coe_sInf]
   ext m
-  simp only [mem_iInter, mem_setOf_eq, forall_apply_eq_imp_iff₂, exists_imp,
+  simp only [mem_iInter, mem_ofPred_eq, forall_apply_eq_imp_iff₂, exists_imp,
     and_imp, SetLike.mem_coe, mem_toSubmodule]
 
 @[simp]
@@ -521,11 +521,8 @@ variable (R L M)
 instance wellFoundedGT_of_noetherian [IsNoetherian R M] : WellFoundedGT (LieSubmodule R L M) :=
   RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
 
-theorem wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
+instance wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
   RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding
-
-instance [IsArtinian R M] : IsAtomic (LieSubmodule R L M) :=
-  isAtomic_of_orderBot_wellFounded_lt <| (wellFoundedLT_of_isArtinian R L M).wf
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
@@ -716,8 +713,8 @@ end LieSubmodule
 
 section LieSubmoduleMapAndComap
 
-variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w} {M' : Type w₁}
-variable [CommRing R] [LieRing L] [LieRing L'] [LieAlgebra R L']
+variable {R : Type u} {L : Type v} {M : Type w} {M' : Type w₁}
+variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable [AddCommGroup M'] [Module R M'] [LieRingModule L M']
 
@@ -851,7 +848,7 @@ Submodules. -/
   toFun := map e
   invFun := comap e
   left_inv := fun N ↦ by ext; simp
-  right_inv := fun N ↦ by ext; simp [e.apply_eq_iff_eq_symm_apply]
+  right_inv := fun N ↦ by ext; simp [← e.eq_symm_apply]
   map_rel_iff' := fun {_ _} ↦ Set.image_subset_image_iff e.injective
 
 end LieSubmodule
