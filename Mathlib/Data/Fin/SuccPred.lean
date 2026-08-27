@@ -6,7 +6,6 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Data.Fin.Basic
-public import Mathlib.Logic.Equiv.Set
 
 /-!
 # Successors and predecessor operations of `Fin n`
@@ -24,7 +23,7 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 
 @[expose] public section
 
-assert_not_exists Monoid Finset
+assert_not_exists Monoid Finset OrderTop
 
 open Fin Nat Function
 
@@ -108,12 +107,6 @@ lemma castSucc_injective (n : ℕ) : Injective (@Fin.castSucc n) := castAdd_inje
 @[simp]
 theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
   Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
-
-@[simp]
-theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
-    ((Equiv.ofInjective _ (castLE_injective h)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← val_castLE h]
-  exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
 
 theorem leftInverse_cast (eq : n = m) : LeftInverse (Fin.cast eq.symm) (Fin.cast eq) :=
   fun _ => rfl
@@ -247,12 +240,6 @@ theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j
 @[simp]
 theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
     ({ i | (i : ℕ) < n } : Set (Fin n.succ)) := range_castLE (by lia)
-
-@[simp]
-theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
-    ((Equiv.ofInjective castSucc (castSucc_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← val_castSucc]
-  exact congr_arg val (Equiv.apply_ofInjective_symm _ _)
 
 theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
 
@@ -685,7 +672,8 @@ lemma exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove
 
 /-- `succAbove` is injective at the pivot -/
 lemma succAbove_left_injective : Injective (@succAbove n) := fun _ _ h => by
-  simpa [range_succAbove] using congr_arg (fun f : Fin n → Fin (n + 1) => (Set.range f)ᶜ) h
+  by_contra! hne
+  simp [← exists_succAbove_eq_iff, ← h] at hne
 
 /-- `succAbove` is injective at the pivot -/
 @[simp] lemma succAbove_left_inj {x y : Fin (n + 1)} : x.succAbove = y.succAbove ↔ x = y :=
