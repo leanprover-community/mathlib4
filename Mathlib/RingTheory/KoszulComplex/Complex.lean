@@ -161,7 +161,7 @@ lemma X_isZero_of_card_generators_lt {ι : Type*} [Finite ι] [LinearOrder ι] (
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulComplex φ).X i) :=
   ModuleCat.isZero_of_iff_subsingleton.mpr
-    (exteriorPower.subsingleton_of_card_generators_le g hg i hi)
+    (exteriorPower.subsingleton_of_span_eq_top_of_card_lt g hg i hi)
 
 lemma ofList_X_isZero_of_length_lt (l : List R) (i : ℕ) (hi : l.length < i) :
     IsZero ((ofList l).X i) := X_isZero_of_card_generators_lt _
