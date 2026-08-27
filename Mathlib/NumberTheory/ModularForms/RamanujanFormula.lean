@@ -40,19 +40,19 @@ namespace Derivative
 the Serre derivative `∂_κ f` of a holomorphic `f` with limit `l` at `i∞`. If the space of
 weight-`k'` forms has rank one with a generator `g` tending to `1` at `i∞`, then
 `∂_κ f = -(κ / 12) l • g`. -/
-private lemma serreDerivative_eq_smul {k' : ℤ} {κ l L : ℂ} {g F : ModularForm 𝒮ℒ k'}
-    {f : ℍ → ℂ} (hF : F = serreDerivative κ f)
+private lemma serreDerivative_eq_smul {k' : ℤ} {k l L : ℂ} {g F : ModularForm 𝒮ℒ k'}
+    {f : ℍ → ℂ} (hF : F = serreDerivative k f)
     (hrank : Module.rank ℂ (ModularForm 𝒮ℒ k') = 1) (hf : MDiff f)
     (hl : Tendsto f atImInfty (𝓝 l)) (hg1 : Tendsto g atImInfty (𝓝 1))
-    (hL : L = -(κ * 12⁻¹ * l)) :
-    serreDerivative κ f = L • g := by
+    (hL : L = -(k * 12⁻¹ * l)) :
+    serreDerivative k f = L • g := by
   have hg : g ≠ 0 := fun h ↦ one_ne_zero (tendsto_nhds_unique (h ▸ hg1) tendsto_const_nhds)
   obtain ⟨c, hc⟩ :=
     (finrank_eq_one_iff_of_nonzero' g hg).mp (Module.rank_eq_one_iff_finrank_eq_one.mp hrank) F
-  have hfg : serreDerivative κ f = c • g := hF ▸ congrArg DFunLike.coe hc.symm
-  have hlim : Tendsto (c • ⇑g) atImInfty (𝓝 (-(κ * 12⁻¹ * l))) := hfg ▸ by
+  have hfg : serreDerivative k f = c • g := hF ▸ congrArg DFunLike.coe hc.symm
+  have hlim : Tendsto (c • ⇑g) atImInfty (𝓝 (-(k * 12⁻¹ * l))) := hfg ▸ by
     simpa using (isZeroAtImInfty_normalizedDerivOfComplex hf (hl.isBigO_one ℝ)).sub
-      ((tendsto_E2_atImInfty.const_mul (κ * 12⁻¹)).mul hl)
+      ((tendsto_E2_atImInfty.const_mul (k * 12⁻¹)).mul hl)
   rw [hfg, hL, ← tendsto_nhds_unique (hg1.const_mul c) hlim, mul_one]
 
 /-- **Ramanujan's formula for `E₄`**: `∂₄ E₄ = -E₆ / 3`. -/
