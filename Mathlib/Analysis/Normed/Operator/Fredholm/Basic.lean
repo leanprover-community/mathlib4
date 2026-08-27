@@ -157,6 +157,11 @@ This is a Fredholm operator, see `FredholmDecomposition.isFredholm_proj`. -/
 abbrev _root_.FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
     E →L[𝕜] dec.X₁ := dec.X₁.projectionOntoL dec.X₀ dec.isTopCompl
 
+lemma _root_.FredholmDecomposition.cofg_X₁ (dec : FredholmDecomposition 𝕜 E) :
+    dec.X₁.CoFG :=
+  have := dec.finite_X₀
+  FG.cofg_of_isCompl dec.isTopCompl.isCompl.symm .of_finite
+
 /-- Let `u : E →L[𝕜] F` be a continuous linear map. A **Fredholm package** for `u` is the data of
 Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
 a continuous linear equivalence `equiv : decDom.X₁ ≃L[𝕜] decCodom.X₁` between the "essential"
