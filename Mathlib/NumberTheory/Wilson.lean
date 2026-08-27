@@ -48,20 +48,16 @@ namespace ZMod
 
 /-- If `p` is odd, pairing each factor above `(p - 1) / 2` with its negative gives
 `(p - 1)! = (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)!) ^ 2` in `ZMod p`. -/
-theorem factorial_eq_neg_one_pow_mul_half_factorial_sq (p : ℕ) (hp : Odd p) :
-    ((p - 1)! : ZMod p) =
-      (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)! : ZMod p) ^ 2 := by
-  set m := (p - 1) / 2 with hm
-  obtain ⟨k, hk⟩ := hp
-  have hp_eq : p = 2 * m + 1 := by omega
+theorem factorial_eq_neg_one_pow_mul_half_factorial_sq {p : ℕ} (hp : Odd p) :
+    ((p - 1)! : ZMod p) = (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)! : ZMod p) ^ 2 := by
+  obtain ⟨m, hm⟩ := hp
+  rw [show (p - 1) / 2 = m by lia]
   calc
     ((p - 1)! : ZMod p) =
         ((p - 1 - m)! : ZMod p) * ((p - 1).descFactorial m : ZMod p) := by
-      rw [← Nat.cast_mul, Nat.factorial_mul_descFactorial (by omega)]
-    _ = (-1) ^ m * (m.factorial : ZMod p) ^ 2 := by
-      rw [show p - 1 - m = m by omega,
-        ZMod.cast_descFactorial (by omega), pow_two]
-      ac_rfl
+      rw [← Nat.cast_mul, Nat.factorial_mul_descFactorial (by lia)]
+    _ = (-1) ^ m * (m ! : ZMod p) ^ 2 := by
+      rw [show p - 1 - m = m by lia, cast_descFactorial (by lia), pow_two, mul_rotate']
 
 variable (p : ℕ) [Fact p.Prime]
 
@@ -94,18 +90,16 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
     · simp only [val_cast_of_lt hb.right, Units.val_mk0]
   · rintro a -; simp only [cast_id, natCast_val]
 
+variable {p} in
 /-- Let `p` be prime with `p % 4 ≠ 3`. Then `((p - 1) / 2)!` is a specified square root of `-1`
 in `ZMod p`. -/
 theorem half_factorial_sq_eq_neg_one (hp : p % 4 ≠ 3) :
     (((p - 1) / 2)! : ZMod p) ^ 2 = -1 := by
   rcases (Fact.out (p := p.Prime)).eq_two_or_odd' with rfl | hodd
   · decide +revert
-  have hm : Even ((p - 1) / 2) := by
-    rw [Nat.even_iff]
-    have hp_mod_two : p % 2 = 1 := Nat.odd_iff.mp hodd
-    omega
-  rw [← ZMod.wilsons_lemma p,
-    factorial_eq_neg_one_pow_mul_half_factorial_sq p hodd,
+  have hp_mod_two : p % 2 = 1 := Nat.odd_iff.mp hodd
+  have hm : Even ((p - 1) / 2) := Nat.even_iff.mpr (by lia)
+  rw [← wilsons_lemma p, factorial_eq_neg_one_pow_mul_half_factorial_sq hodd,
     hm.neg_one_pow, one_mul]
 
 @[simp]
