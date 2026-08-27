@@ -14,11 +14,11 @@ public import Mathlib.Combinatorics.SimpleGraph.Sum
 
 This files defined two kinds of product of graphs.
 
-* The strong product of graphs. The strong product of `G`
+The strong product of graphs. The strong product of `G`
 and `H` is the graph on the product of the vertices such that `x` and `y` are related iff they agree
 are not equal and are related or equal on each component.
 
-* The box product of graphs. The box product of `G`
+The box product of graphs. The box product of `G`
 and `H` is the graph on the product of the vertices such that `x` and `y` are related iff they agree
 on one component and the other one is related via either `G` or `H`. For example, the box product of
 two edges is a square.
