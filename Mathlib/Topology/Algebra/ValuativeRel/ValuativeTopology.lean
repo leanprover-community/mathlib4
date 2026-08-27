@@ -433,6 +433,14 @@ instance [TopologicalSpace R] [IsValuativeTopology R] :
   rw [nhds_subtype_eq_comap]
   exact (IsValuativeTopology.hasBasis_nhds_zero R).comap _
 
+/-- The topology on a ring `R` carrying a valuative topology is linear over its ring of integers:
+the open balls `Valuation.ltSubmodule (valuation R) γ` form a basis of neighborhoods of zero
+made of `(valuation R).integer`-submodules. -/
+instance [TopologicalSpace R] [IsValuativeTopology R] :
+    IsLinearTopology (valuation R).integer R :=
+  IsLinearTopology.mk_of_hasBasis _ (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True)
+    (s := (valuation R).ltSubmodule) (IsValuativeTopology.hasBasis_nhds_zero R)
+
 @[deprecated (since := "2026-03-17")] alias isOpen_ball := Valuation.isOpen_ball
 @[deprecated (since := "2026-03-17")] alias isClosed_ball := Valuation.isClosed_ball
 @[deprecated (since := "2026-03-17")] alias isClopen_ball := Valuation.isClopen_ball
