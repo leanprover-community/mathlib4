@@ -637,6 +637,14 @@ lemma languageOn_union {X Y : Set (G → A)} (U : Finset G) :
   simp only [LanguageOn, mem_union, mem_ofPred_eq]
   grind
 
+/-- The language of an intersection is contained in the intersection of the languages.
+Equality does not hold in general: a pattern may arise from distinct configurations
+`x ∈ X` and `y ∈ Y` with no common configuration in `X ∩ Y` realising it. -/
+lemma languageOn_inter_subset (X Y : Set (G → A)) (U : Finset G) :
+    LanguageOn (X ∩ Y) U ⊆ LanguageOn X U ∩ LanguageOn Y U := by
+  rintro p ⟨x, ⟨hxX, hxY⟩, hp⟩
+  exact ⟨⟨x, hxX, hp⟩, ⟨x, hxY, hp⟩⟩
+
 /-- The language of a subshift `Y` on a finite shape `U`. -/
 def MulSubshift.languageOn {A G} [TopologicalSpace A] [Inhabited A] [Monoid G]
     (Y : MulSubshift A G) (U : Finset G) : Set (Pattern A G) :=
