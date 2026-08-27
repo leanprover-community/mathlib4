@@ -9,7 +9,6 @@ public import Mathlib.Data.Set.Defs
 public import Batteries.Tactic.Alias
 public import Mathlib.Tactic.ExtendDoc
 
-import Mathlib.Tactic.ToDual
 
 /-!
 # Orders
@@ -22,31 +21,6 @@ and proves some basic lemmas about them.
 
 /-! ### Unbundled classes -/
 
-/-- An empty relation does not relate any elements. -/
-@[deprecated (since := "2025-12-22")] alias EmptyRelation := emptyRelation
-
-/-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
-holds). -/
-@[deprecated Std.Irrefl (since := "2026-01-07")]
-abbrev IsIrrefl (α : Sort*) (r : α → α → Prop) : Prop := Std.Irrefl r
-
-/-- `IsRefl X r` means the binary relation `r` on `X` is reflexive. -/
-@[deprecated Std.Refl (since := "2026-01-08")]
-abbrev IsRefl (α : Sort*) (r : α → α → Prop) : Prop := Std.Refl r
-
-/-- `IsSymm X r` means the binary relation `r` on `X` is symmetric. -/
-@[deprecated Std.Symm (since := "2025-12-26")]
-abbrev IsSymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Symm r
-
-/-- `IsAsymm X r` means that the binary relation `r` on `X` is asymmetric, that is,
-`r a b → ¬ r b a`. -/
-@[deprecated Std.Asymm (since := "2026-01-03")]
-abbrev IsAsymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Asymm r
-
-/-- `IsAntisymm X r` means the binary relation `r` on `X` is antisymmetric. -/
-@[deprecated Std.Antisymm (since := "2026-01-06")]
-abbrev IsAntisymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Antisymm r
-
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Sort*) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
@@ -56,11 +30,6 @@ instance {α : Sort*} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
 
 instance (priority := 100) {α : Sort*} {r : α → α → Prop} [Trans r r r] : IsTrans α r :=
   ⟨fun _ _ _ => Trans.trans⟩
-
-/-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
-`x y : X` we have `r x y` or `r y x`. -/
-@[deprecated Std.Total (since := "2026-01-09")]
-abbrev IsTotal (α : Sort*) (r : α → α → Prop) : Prop := Std.Total r
 
 /-- `IsPreorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
 and transitive. -/
@@ -87,21 +56,29 @@ that is, `IsStrictOrder X lt` and `¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c
 class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) : Prop extends IsStrictOrder α lt where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
-/-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
-either `lt a b` or `a = b` or `lt b a` for any `a` and `b`. -/
-@[deprecated Std.Trichotomous (since := "2026-01-24")]
-abbrev IsTrichotomous (α : Sort*) (lt : α → α → Prop) : Prop := Std.Trichotomous lt
-
 /-- `IsStrictTotalOrder X lt` means that the binary relation `lt` on `X` is a strict total order,
 that is, `Std.Trichotomous lt` and `IsStrictOrder X lt`. -/
 class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
     extends Std.Trichotomous lt, IsStrictOrder α lt
+
+theorem Equivalence.of_isEquiv {α : Sort*} (lt : α → α → Prop) [IsEquiv α lt] : Equivalence lt where
+  refl := Std.Refl.refl; symm := Std.Symm.symm _ _; trans := IsTrans.trans _ _ _
+
+theorem IsEquiv.of_equivalence {α : Sort*} {lt : α → α → Prop} (h : Equivalence lt) :
+    IsEquiv α lt where
+  refl := h.refl; symm _ _ := h.symm; trans _ _ _ := h.trans
+
+theorem equivalence_iff_isEquiv {α : Sort*} (lt : α → α → Prop) : Equivalence lt ↔ IsEquiv α lt :=
+  ⟨.of_equivalence, fun _ => .of_isEquiv lt⟩
 
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
   symm := @Eq.symm _
   trans := @Eq.trans _
   refl := Eq.refl
+
+instance (α : Sort*) : Std.Symm (α := α) Ne where
+  symm _ _ := Ne.symm
 
 /-- `Iff` is an equivalence relation. -/
 instance iff_isEquiv : IsEquiv Prop Iff where
@@ -206,6 +183,7 @@ section
 def Reflexive := ∀ x, x ≺ x
 
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Symm (since := "2026-06-10")]
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
@@ -229,13 +207,21 @@ theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
 
 @[deprecated (since := "2026-03-27")] alias Equivalence.reflexive := Equivalence.stdRefl
 
-theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
-  fun _ _ ↦ h.symm
+theorem Equivalence.stdSymm (h : Equivalence r) : Std.Symm r where
+  symm _ _ := h.symm
+
+@[deprecated (since := "2026-06-10")] alias Equivalence.symmetric := Equivalence.stdSymm
 
 theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
   ⟨fun _ _ _ ↦ h.trans⟩
 
 @[deprecated (since := "2026-02-20")] alias Equivalence.transitive := Equivalence.isTrans
+
+theorem Equivalence.isEquiv (h : Equivalence r) : IsEquiv α r :=
+  have := h.stdRefl
+  have := h.stdSymm
+  have := h.isTrans
+  {}
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
@@ -345,7 +331,7 @@ structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
 
 extend_docs RelLowerSet before "The type of lower sets of an order relative to `P`."
 
-variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Sort*} {r : α → α → Prop}
 
 theorem of_eq [Std.Refl r] : ∀ {a b}, a = b → r a b
   | _, _, .refl _ => refl _
@@ -383,19 +369,11 @@ theorem comm_of (r : α → α → Prop) [Std.Symm r] {a b : α} : r a b ↔ r b
 protected theorem Std.Asymm.antisymm (r : α → α → Prop) [Std.Asymm r] : Std.Antisymm r :=
   inferInstance
 
-@[deprecated (since := "2026-01-05")] protected alias IsAsymm.isAntisymm := Std.Asymm.antisymm
-@[deprecated (since := "2026-01-06")] protected alias Std.Asymm.isAntisymm := Std.Asymm.antisymm
-
 protected theorem Std.Asymm.irrefl [Std.Asymm r] : Std.Irrefl r :=
   inferInstance
 
-@[deprecated (since := "2026-01-05")] protected alias IsAsymm.isIrrefl := Std.Asymm.irrefl
-@[deprecated (since := "2026-01-07")] protected alias Std.Asymm.isIrrefl := Std.Asymm.irrefl
-
 protected theorem Std.Total.trichotomous (r : α → α → Prop) [Std.Total r] : Std.Trichotomous r :=
   inferInstance
-
-@[deprecated (since := "2026-01-24")] alias Std.Total.isTrichotomous := Std.Total.trichotomous
 
 -- see Note [lower instance priority]
 instance (priority := 100) Std.Total.to_refl (r : α → α → Prop) [Std.Total r] : Std.Refl r :=
@@ -444,7 +422,6 @@ theorem trans_trichotomous_right [IsTrans α r] [Std.Trichotomous r] {a b c : α
   · exact h₁
   · exact absurd h₃ h₂
 
-set_option linter.deprecated false in
 @[deprecated IsTrans.trans (since := "2026-02-20")]
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 

@@ -58,7 +58,7 @@ noncomputable def quotientTensorQuotientEquiv (m : Submodule R M) (n : Submodule
     (M ⊗[R] N) ⧸
       (LinearMap.range (map m.subtype LinearMap.id) ⊔
         LinearMap.range (map LinearMap.id n.subtype)) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| Submodule.liftQ _ (LinearMap.flip <| Submodule.liftQ _
       ((mk R (M := M) (N := N)).flip.compr₂ (Submodule.mkQ _)) fun x hx => by
       ext y
@@ -133,12 +133,7 @@ noncomputable def tensorQuotientEquiv (n : Submodule R N) :
     (M ⊗[R] N) ⧸ (LinearMap.range (map (LinearMap.id : M →ₗ[R] M) n.subtype)) :=
   congr ((Submodule.quotEquivOfEqBot _ rfl).symm) (LinearEquiv.refl _ _) ≪≫ₗ
   quotientTensorQuotientEquiv (⊥ : Submodule R M) n ≪≫ₗ
-  Submodule.Quotient.equiv _ _ (LinearEquiv.refl _ _) (by
-    simp only [Submodule.map_sup]
-    erw [Submodule.map_id, Submodule.map_id]
-    simp only [sup_eq_right]
-    rw [range_map_eq_span_tmul, range_map_eq_span_tmul]
-    simp)
+  Submodule.Quotient.equiv _ _ (LinearEquiv.refl _ _) (by simp [range_map_eq_span_tmul])
 
 @[simp]
 lemma tensorQuotientEquiv_apply_mk_tmul (n : Submodule R N) (x : M) (y : N) :

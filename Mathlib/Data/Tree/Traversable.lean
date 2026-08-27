@@ -15,22 +15,22 @@ public import Mathlib.Control.Traversable.Basic
 Provides a `Traversable` instance for the `Tree` type.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
-namespace Tree
+namespace BinaryTree
 section Traverse
 variable {α β : Type*}
 
-instance : Traversable Tree where
+instance : Traversable BinaryTree where
   map := map
   traverse := traverse
 
 lemma comp_traverse
     {F : Type u → Type v} {G : Type v → Type w} [Applicative F] [Applicative G]
     [LawfulApplicative G] {β : Type v} {γ : Type u} (f : β → F γ) (g : α → G β)
-    (t : Tree α) : t.traverse (Functor.Comp.mk ∘ (f <$> ·) ∘ g) =
+    (t : BinaryTree α) : t.traverse (Functor.Comp.mk ∘ (f <$> ·) ∘ g) =
       Functor.Comp.mk ((·.traverse f) <$> (t.traverse g)) := by
   induction t with
   | nil => rw [traverse, traverse, map_pure, traverse]; rfl
@@ -40,7 +40,7 @@ lemma comp_traverse
       Comp.seq_mk, seq_map_assoc, map_seq]
     rfl
 
-lemma traverse_eq_map_id (f : α → β) (t : Tree α) :
+lemma traverse_eq_map_id (f : α → β) (t : BinaryTree α) :
     t.traverse ((pure : β → Id β) ∘ f) = pure (t.map f) := by
   induction t with
   | nil => rw [traverse, map]
@@ -50,14 +50,14 @@ lemma traverse_eq_map_id (f : α → β) (t : Tree α) :
 
 lemma naturality {F G : Type u → Type*} [Applicative F] [Applicative G] [LawfulApplicative F]
     [LawfulApplicative G] (η : ApplicativeTransformation F G) {β : Type u} (f : α → F β)
-    (t : Tree α) : η (t.traverse f) = t.traverse (η.app β ∘ f : α → G β) := by
+    (t : BinaryTree α) : η (t.traverse f) = t.traverse (η.app β ∘ f : α → G β) := by
   induction t with
   | nil => rw [traverse, traverse, η.preserves_pure]
   | node v l r hl hr =>
     rw [traverse, traverse, η.preserves_seq, η.preserves_seq, η.preserves_map, hl, hr,
       Function.comp_apply]
 
-instance : LawfulTraversable Tree where
+instance : LawfulTraversable BinaryTree where
   map_const := rfl
   id_map := id_map
   comp_map := comp_map
@@ -68,4 +68,4 @@ instance : LawfulTraversable Tree where
 
 end Traverse
 
-end Tree
+end BinaryTree

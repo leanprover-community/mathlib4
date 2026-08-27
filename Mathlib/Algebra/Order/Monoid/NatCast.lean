@@ -13,11 +13,9 @@ public import Mathlib.Data.Nat.Cast.Defs
 # Order of numerals in an `AddMonoidWithOne`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
-
-open Function
 
 lemma lt_add_one [One α] [AddZeroClass α] [PartialOrder α] [ZeroLEOneClass α]
     [NeZero (1 : α)] [AddLeftStrictMono α] (a : α) : a < a + 1 :=

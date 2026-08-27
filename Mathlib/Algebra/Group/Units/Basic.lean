@@ -8,12 +8,11 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Logic.Unique
+public import Mathlib.Basic.Unique
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Subsingleton
 public import Mathlib.Tactic.Attr.Core
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -27,7 +26,7 @@ and unique types.
 The results here should be used to golf the basic `Group` lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 

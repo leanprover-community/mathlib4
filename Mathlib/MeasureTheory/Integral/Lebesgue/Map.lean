@@ -30,7 +30,7 @@ theorem lintegral_map {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f
   simp only [← Function.comp_apply (f := f) (g := g)]
   rw [lintegral_eq_iSup_eapprox_lintegral (hf.comp hg)]
   congr with n : 1
-  convert SimpleFunc.lintegral_map _ hg
+  convert! SimpleFunc.lintegral_map _ hg
   ext1 x; simp only [eapprox_comp hf hg, coe_comp]
 
 theorem lintegral_map' {f : β → ℝ≥0∞} {g : α → β}
@@ -46,14 +46,12 @@ theorem lintegral_map' {f : β → ℝ≥0∞} {g : α → β}
     _ = ∫⁻ a, hf.mk f (g a) ∂μ := lintegral_congr_ae <| hg.ae_eq_mk.symm.fun_comp _
     _ = ∫⁻ a, f (g a) ∂μ := lintegral_congr_ae (ae_eq_comp hg hf.ae_eq_mk.symm)
 
-theorem lintegral_map_le (f : β → ℝ≥0∞) (g : α → β) :
+theorem lintegral_map_le (f : β → ℝ≥0∞) {g : α → β} (hg : AEMeasurable g μ) :
     ∫⁻ a, f a ∂Measure.map g μ ≤ ∫⁻ a, f (g a) ∂μ := by
-  by_cases hg : AEMeasurable g μ
-  · rw [← iSup_lintegral_measurable_le_eq_lintegral]
-    refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
-    rw [lintegral_map' hi.aemeasurable hg]
-    exact lintegral_mono fun _ ↦ h'i _
-  · simp [map_of_not_aemeasurable hg]
+  rw [← iSup_lintegral_measurable_le_eq_lintegral]
+  refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
+  rw [lintegral_map' hi.aemeasurable hg]
+  exact lintegral_mono fun _ ↦ h'i _
 
 theorem lintegral_comp {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f)
     (hg : Measurable g) : lintegral μ (f ∘ g) = ∫⁻ a, f a ∂map g μ :=
@@ -72,8 +70,8 @@ theorem setLIntegral_map {f : β → ℝ≥0∞} {g : α → β} {s : Set β}
 theorem lintegral_indicator_const_comp {f : α → β} {s : Set β}
     (hf : Measurable f) (hs : MeasurableSet s) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) (f a) ∂μ = c * μ (f ⁻¹' s) := by
-  erw [lintegral_comp (measurable_const.indicator hs) hf]
-  rw [lintegral_indicator_const hs, Measure.map_apply hf hs]
+  rw [← lintegral_map (measurable_const.indicator hs) hf, lintegral_indicator_const hs,
+    Measure.map_apply hf hs]
 
 /-- If `g : α → β` is a measurable embedding and `f : β → ℝ≥0∞` is any function (not necessarily
 measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` which

@@ -3,15 +3,18 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2008 Q2
+
 (a) Prove that
           ```
           x^2 / (x-1)^2 + y^2 / (y-1)^2 + z^2 / (z-1)^2 ≥ 1
@@ -30,6 +33,7 @@ using `c`, `m` and `n`. We factor `LHS - 1` as a square, which finishes the proo
 set of rational solutions to the equation, and that `W` is infinite.
 -/
 
+@[expose] public section
 
 namespace Imo2008Q2
 
@@ -51,7 +55,7 @@ theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠
   have hmn_ne_zero : m + n ≠ 0 := by contrapose hz; field_simp; linarith
   have hc_sub_sub : c - (c - m - n) = m + n := by abel
   rw [ge_iff_le, ← sub_nonneg]
-  convert sq_nonneg ((c * (m ^ 2 + n ^ 2 + m * n) - m * (m + n) ^ 2) / (m * n * (m + n)))
+  convert! sq_nonneg ((c * (m ^ 2 + n ^ 2 + m * n) - m * (m + n) ^ 2) / (m * n * (m + n)))
   simp [field, hc_sub_sub]; ring
 
 def rationalSolutions :=
@@ -64,7 +68,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
   have hW_sub_S : W ⊆ rationalSolutions := by
     intro s hs_in_W
     rw [rationalSolutions]
-    simp only [Set.mem_setOf_eq] at hs_in_W ⊢
+    simp only [Set.mem_ofPred_eq] at hs_in_W ⊢
     rcases hs_in_W with ⟨x, y, z, h₁, t, ht_gt_zero, hx_t, hy_t, hz_t⟩
     use x, y, z
     have key_gt_zero : 0 < t ^ 2 + t + 1 := by linarith [pow_pos ht_gt_zero 2, ht_gt_zero]
@@ -98,7 +102,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
         set z : ℚ := -t * (t + 1) with hz_def
         simp only [t, W, K, g, Set.mem_image, Prod.exists]
         use x, y, z; constructor
-        · simp only [Set.mem_setOf_eq]
+        · simp only [Set.mem_ofPred_eq]
           use x, y, z; constructor
           · rfl
           · use t; constructor

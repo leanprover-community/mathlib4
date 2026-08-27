@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Data.Complex.Basic
 public import Mathlib.Data.Nat.Prime.Basic
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
@@ -139,7 +139,7 @@ theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
   Zsqrtd.norm_nonneg (by simp) _
 
 @[simp]
-theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast_inj ℝ _ _ _]; simp
+theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← Int.cast_inj (α := ℝ)]; simp
 
 theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
   rw [lt_iff_le_and_ne, Ne, eq_comm, norm_eq_zero]; simp [norm_nonneg]
@@ -176,11 +176,9 @@ theorem toComplex_im_div (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x
   simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, add_mul]
 
 theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
-    (him : |x.im| ≤ |y.im|) : Complex.normSq x ≤ Complex.normSq y := by
-  rw [normSq_apply, normSq_apply, ← _root_.abs_mul_self, _root_.abs_mul, ←
-      _root_.abs_mul_self y.re, _root_.abs_mul y.re, ← _root_.abs_mul_self x.im,
-      _root_.abs_mul x.im, ← _root_.abs_mul_self y.im, _root_.abs_mul y.im]
-  gcongr
+    (him : |x.im| ≤ |y.im|) : normSq x ≤ normSq y := by
+  simp only [normSq_apply]
+  nlinarith [sq_le_sq.mpr hre, sq_le_sq.mpr him]
 
 theorem normSq_div_sub_div_lt_one (x y : ℤ[i]) :
     Complex.normSq ((x / y : ℂ) - ((x / y : ℤ[i]) : ℂ)) < 1 :=

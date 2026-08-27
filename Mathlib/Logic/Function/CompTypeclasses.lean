@@ -22,7 +22,7 @@ TODO :
 
 -/
 
-@[expose] public section
+public section
 
 section CompTriple
 

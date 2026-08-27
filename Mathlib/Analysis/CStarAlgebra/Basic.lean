@@ -38,15 +38,13 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
-open Topology
-
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
 class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
-variable {𝕜 E α : Type*}
+variable {𝕜 E : Type*}
 
 section NormedStarGroup
 
@@ -77,6 +75,26 @@ instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] 
     NormedSpace 𝕜 (selfAdjoint E) where
   norm_smul_le _ _ := norm_smul_le _ (_ : E)
 
+variable (x : E) (r : ℝ)
+
+@[simp] lemma Metric.star_ball : star (ball x r) = ball (star x) r := by
+  simpa using star_isometry.preimage_ball (star x) r
+
+@[simp] lemma Metric.star_closedBall : star (closedBall x r) = closedBall (star x) r := by
+  simpa using star_isometry.preimage_closedBall (star x) r
+
+@[simp] lemma Metric.star_sphere : star (sphere x r) = sphere (star x) r := by
+  simpa using star_isometry.preimage_sphere (star x) r
+
+@[simp] lemma dist_star_star (x y : E) : dist (star x) (star y) = dist x y :=
+  star_isometry.dist_eq x y
+
+@[simp] lemma edist_star_star (x y : E) : edist (star x) (star y) = edist x y :=
+  star_isometry.edist_eq x y
+
+@[simp] lemma nndist_star_star (x y : E) : nndist (star x) (star y) = nndist x y :=
+  star_isometry.nndist_eq x y
+
 end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
@@ -90,8 +108,7 @@ class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
 
 instance : CStarRing ℝ where
-  norm_mul_self_le x := by
-    simp only [Real.norm_eq_abs, abs_mul_abs_self, star, id, norm_mul, le_refl]
+  norm_mul_self_le x := by simp
 
 namespace CStarRing
 
@@ -186,7 +203,7 @@ instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
     norm_cast
     exact
-      (Finset.comp_sup_eq_sup_comp_of_is_total (fun x : NNReal => x ^ 2)
+      (Finset.apply_sup_eq_sup_comp_of_linearOrder (fun x : NNReal => x ^ 2)
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 
 instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
@@ -214,11 +231,11 @@ theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
 instance (priority := 100) [Nontrivial E] : NormOneClass E :=
   ⟨norm_one⟩
 
+@[simp]
 theorem norm_coe_unitary [Nontrivial E] (U : unitary E) : ‖(U : E)‖ = 1 := by
   rw [← sq_eq_sq₀ (norm_nonneg _) zero_le_one, one_pow 2, sq, ← CStarRing.norm_star_mul_self,
     Unitary.coe_star_mul_self, CStarRing.norm_one]
 
-@[simp]
 theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U‖ = 1 :=
   norm_coe_unitary ⟨U, hU⟩
 
@@ -288,9 +305,17 @@ theorem starₗᵢ_apply {x : E} : starₗᵢ 𝕜 x = star x :=
   rfl
 
 @[simp]
+theorem symm_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).symm = starₗᵢ 𝕜 :=
+  rfl
+
+@[simp]
 theorem starₗᵢ_toContinuousLinearEquiv :
     (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toContinuousLinearEquiv = (starL 𝕜 : E ≃L⋆[𝕜] E) :=
   ContinuousLinearEquiv.ext rfl
+
+@[simp]
+theorem toLinearEquiv_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toLinearEquiv = starLinearEquiv 𝕜 :=
+  rfl
 
 end starₗᵢ
 

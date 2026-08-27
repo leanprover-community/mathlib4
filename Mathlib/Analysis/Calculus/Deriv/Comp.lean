@@ -40,7 +40,7 @@ universe u v w
 
 open scoped Topology Filter ENNReal
 
-open Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -161,7 +161,7 @@ theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[�
     {L'' : Filter (E × E)} (hh₂ : HasDerivAtFilter h₂ h₂' L') (hf : HasFDerivAtFilter f f' L'')
     (hL : Tendsto (Prod.map f f) L'' L') :
     HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') L'' := by
-  convert (hh₂.restrictScalars 𝕜).comp hf hL
+  convert! (hh₂.restrictScalars 𝕜).comp hf hL
   ext x
   simp [mul_comm]
 
@@ -399,7 +399,7 @@ theorem HasFDerivAt.comp_hasDerivAt_of_eq
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt (hl : HasStrictFDerivAt l l' (f x))
     (hf : HasStrictDerivAt f f' x) : HasStrictDerivAt (l ∘ f) (l' f') x := by
-  simpa using (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
+  simpa using! (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l l' y)
     (hf : HasStrictDerivAt f f' x) (hy : y = f x) :

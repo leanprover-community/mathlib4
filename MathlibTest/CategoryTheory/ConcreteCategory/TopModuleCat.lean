@@ -26,32 +26,32 @@ example {X Y : Type v}
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     (f : X →L[R] Y) (x : X) : (TopModuleCat.ofHom f) x = f x := by simp
 
-example {X Y Z : TopModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) : ⇑(f ≫ g) = ⇑g ∘ ⇑f := by simp
+example {X Y Z : TopModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) : ⇑(f ≫ g) = ⇑g ∘ ⇑f := by ext; simp
 
 example {X Y Z : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     [AddCommGroup Z] [Module R Z] [TopologicalSpace Z] [ContinuousAdd Z] [ContinuousSMul R Z]
     (f : X →L[R] Y) (g : Y →L[R] Z) :
-    ⇑(TopModuleCat.ofHom f ≫ TopModuleCat.ofHom g) = g ∘ f := by simp
+    ⇑(TopModuleCat.ofHom f ≫ TopModuleCat.ofHom g) = g ∘ f := by ext; simp
 
 example {X Y : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     {Z : TopModuleCat R}
     (f : X →L[R] Y) (g : of R Y ⟶ Z) :
-    ⇑(TopModuleCat.ofHom f ≫ g) = g ∘ f := by simp
+    ⇑(TopModuleCat.ofHom f ≫ g) = g ∘ f := by ext; simp
 
 example {Y Z : TopModuleCat R} {X : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     (f : of R X ⟶ Y) (g : Y ⟶ Z) :
-    ⇑(f ≫ g) = g ∘ f := by simp
+    ⇑(f ≫ g) = g ∘ f := by ext; simp
 
 example {X : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     {Y Z : TopModuleCat R}
     (f : X →L[R] Y) (g : of R Y ⟶ Z) :
-    ⇑(TopModuleCat.ofHom f ≫ g) = g ∘ f := by simp
+    ⇑(TopModuleCat.ofHom f ≫ g) = g ∘ f := by ext; simp
 
 example {X Y Z : TopModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) := by simp
 

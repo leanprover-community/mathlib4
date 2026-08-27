@@ -18,7 +18,7 @@ of modules are defined and belong to `Type v`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

@@ -23,7 +23,7 @@ If furthermore the base ring is a domain, this is equivalent to the naïve
 `r • m = 0 ↔ r = 0 ∨ m = 0` definition.
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -138,7 +138,7 @@ lemma Module.isTorsionFree_nat_iff_isAddTorsionFree : IsTorsionFree ℕ M ↔ Is
 end AddCommMonoid
 
 section AddCommGroup
-variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M] {m : M}
+variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M]
 
 instance [IsAddTorsionFree M] : IsTorsionFree ℤ M where
   isSMulRegular n hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
