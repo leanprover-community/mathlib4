@@ -56,7 +56,7 @@ universe w u v u₁ v₁ u₂ v₂
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C]
 variable {D : Type u₁} [Category.{v₁} D]
@@ -115,6 +115,7 @@ def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
 
 attribute [local simp] eqToHom_map
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : Category (Grothendieck F) where
   Hom X Y := Grothendieck.Hom X Y
@@ -193,6 +194,7 @@ If `F : C ⥤ Cat` is a functor and `t : c ⟶ d` is a morphism in `C`, then `tr
 def toTransport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) : x ⟶ x.transport t :=
   ⟨t, 𝟙 _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Construct an isomorphism in a Grothendieck construction from isomorphisms in its base and fiber.
@@ -209,6 +211,9 @@ def isoMk {X Y : Grothendieck F} (e₁ : X.base ≅ Y.base)
     have := Functor.congr_hom congr($((F.mapIso e₁).inv_hom_id).toFunctor) e₂.inv
     simp_all)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `F : C ⥤ Cat` and `x : Grothendieck F`, then every `C`-isomorphism `α : x.base ≅ c` induces
 an isomorphism between `x` and its transport along `α`
@@ -234,6 +239,7 @@ section
 
 variable {G : C ⥤ Cat}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The Grothendieck construction is functorial: a natural transformation `α : F ⟶ G` induces
 a functor `Grothendieck.map : Grothendieck F ⥤ Grothendieck G`.
@@ -387,13 +393,13 @@ variable (G : C ⥤ Type w)
 @[simps!]
 def grothendieckTypeToCatFunctor : Grothendieck (G ⋙ typeToCat) ⥤ G.Elements where
   obj X := ⟨X.1, X.2.as⟩
-  map f := ⟨f.1, f.2.1.1⟩
+  map f := ⟨f.1, f.2.1⟩
 
 /-- Auxiliary definition for `grothendieckTypeToCat`, to speed up elaboration. -/
 @[simps!]
 def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat) where
   obj X := ⟨X.1, ⟨X.2⟩⟩
-  map f := ⟨f.1, ⟨⟨f.2⟩⟩⟩
+  map f := ⟨f.1, ⟨f.2⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck construction applied to a functor to `Type`
@@ -410,7 +416,7 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rcases X with ⟨_, ⟨⟩⟩
         exact Iso.refl _)
       (by
-        rintro ⟨_, ⟨⟩⟩ ⟨_, ⟨⟩⟩ ⟨base, ⟨⟨f⟩⟩⟩
+        rintro ⟨_, ⟨⟩⟩ ⟨_, ⟨⟩⟩ ⟨base, ⟨f⟩⟩
         dsimp at *
         simp
         rfl)
@@ -436,7 +442,7 @@ variable (F)
 set_option backward.isDefEq.respectTransparency false in
 /-- Applying a functor `G : D ⥤ C` to the base of the Grothendieck construction induces a functor
 `Grothendieck (G ⋙ F) ⥤ Grothendieck F`. -/
-@[simps]
+@[simps, implicit_reducible]
 def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
   obj X := ⟨G.obj X.base, X.fiber⟩
   map f := ⟨G.map f.base, f.fiber⟩
@@ -538,6 +544,7 @@ section FunctorFrom
 
 variable {E : Type*} [Category* E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (F) in
 /-- The inclusion of a fiber `F.obj c` of a functor `F : C ⥤ Cat` into its Grothendieck
 construction. -/
@@ -579,7 +586,7 @@ variable (hom_id : ∀ c, hom (𝟙 c) = eqToHom (by simp only [Functor.map_id];
 variable (hom_comp : ∀ c₁ c₂ c₃ (f : c₁ ⟶ c₂) (g : c₂ ⟶ c₃), hom (f ≫ g) =
   hom f ≫ whiskerLeft (F.map f).toFunctor (hom g) ≫ eqToHom (by simp only [Functor.map_comp]; rfl))
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a functor from `Grothendieck F` to another category `E` by providing a family of
 functors on the fibers of `Grothendieck F`, a family of natural transformations on morphisms in the
 base of `Grothendieck F` and coherence data for this family of natural transformations. -/

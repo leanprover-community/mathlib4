@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

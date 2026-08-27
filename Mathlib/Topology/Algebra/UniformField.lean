@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.UniformRing
 
@@ -81,7 +80,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   rw [this, ← Filter.map_map]
   apply Cauchy.map _ (Completion.uniformContinuous_coe K)
   apply CompletableTopField.nice
-  · haveI := isDenseInducing_coe.comap_nhds_neBot y
+  · have := isDenseInducing_coe.comap_nhds_neBot y
     apply cauchy_nhds.comap
     rw [Completion.comap_coe_eq_uniformity]
   · have eq_bot : 𝓝 (0 : hat K) ⊓ 𝓝 y = ⊥ := by
@@ -115,14 +114,14 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
     norm_cast
     simp
   · conv_lhs => dsimp [Inv.inv]
-    rw [if_neg]
+    rw [ite_eq_right]
     · exact hatInv_extends h
     · exact fun H => h (isDenseEmbedding_coe.injective H)
 
 variable [IsUniformAddGroup K]
 
 theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
-  haveI : T1Space (hat K) := T2Space.t1Space
+  have : T1Space (hat K) := T2Space.t1Space
   let f := fun x : hat K => x * hatInv x
   let c := (fun (x : K) => (x : hat K))
   change f x = 1
@@ -147,7 +146,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 
 instance instField : Field (hat K) where
-  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
+  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, ite_eq_right x_ne, mul_hatInv_cancel x_ne]
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq
   nnqsmul := _
@@ -164,7 +163,7 @@ instance : IsTopologicalDivisionRing (hat K) :=
           intro y y_ne
           rw [mem_compl_singleton_iff] at y_ne
           dsimp [Inv.inv]
-          rw [if_neg y_ne]
+          rw [ite_eq_right y_ne]
         mem_of_superset (compl_singleton_mem_nhds x_ne) this
       exact ContinuousAt.congr (continuous_hatInv x_ne) this }
 
@@ -186,7 +185,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K w
 instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L] [UniformSpace L]
     [IsTopologicalDivisionRing L] [T0Space L] [CompleteSpace L] : CompletableTopField L where
   nice F cau_F hF := by
-    haveI : NeBot F := cau_F.1
+    have : NeBot F := cau_F.1
     rcases CompleteSpace.complete cau_F with ⟨x, hx⟩
     have hx' : x ≠ 0 := by
       rintro rfl

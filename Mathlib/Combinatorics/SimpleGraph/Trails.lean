@@ -41,7 +41,7 @@ Eulerian trails
 
 namespace SimpleGraph
 
-variable {V : Type*} {G : SimpleGraph V}
+variable {V : Type*} {G : SimpleGraph V} {u v w : V} {p : G.Walk u v}
 
 namespace Walk
 
@@ -91,8 +91,9 @@ theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {
   ⟨fun h => p.edges_subset_edgeSet h,
    fun he => by simpa [Nat.succ_le_iff] using (h e he).ge⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The edge set of an Eulerian graph is finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     Fintype G.edgeSet :=
   Fintype.ofFinset h.isTrail.edgesFinset fun e => by
@@ -119,10 +120,24 @@ theorem IsEulerian.edgeSet_eq {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     p.edgeSet = G.edgeSet := by
   rwa [← h.isTrail.isEulerian_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
     (h : p.IsEulerian) : h.isTrail.edgesFinset = G.edgeFinset := by
   ext e
   simp [h.mem_edges_iff]
+
+theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.IsIsolated w) :
+    w ∈ p.support := by
+  have ⟨e, he, hwe⟩ := not_isIsolated_iff_exists_edgeSet_mem.mp hw
+  exact mem_support_iff_exists_mem_edges.mpr <| .inr ⟨e, hp.mem_edges_iff.mpr he, hwe⟩
+
+theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
+  simp [← edgeSet_eq_empty, hp.edgeSet_eq]
+
+/-- The support of a non-nil Eulerian trail equals the support of the graph. -/
+theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
+    w ∈ p.support ↔ ¬G.IsIsolated w :=
+  ⟨fun hwp hw ↦ hnil <| p.nil_of_isIsolated_of_mem_support hw hwp, hp.mem_support_of_not_isIsolated⟩
 
 theorem isEulerian_rotate {u v : V} {p : G.Walk u u} (hv : v ∈ p.support) :
     (p.rotate v hv).IsEulerian ↔ p.IsEulerian := by

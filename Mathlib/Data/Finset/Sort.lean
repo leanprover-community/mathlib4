@@ -132,12 +132,8 @@ variable [LinearOrder α]
 theorem sortedLT_sort (s : Finset α) : (sort s).SortedLT :=
   (pairwise_sort _ _).sortedLE.sortedLT_of_nodup (sort_nodup _ _)
 
-@[deprecated (since := "2025-11-27")] alias sort_sorted_lt := sortedLT_sort
-
 theorem sortedGT_sort (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
   (pairwise_sort _ _).sortedGE.sortedGT_of_nodup (sort_nodup _ _)
-
-@[deprecated (since := "2025-11-27")] alias sort_sorted_gt := sortedGT_sort
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < s.sort.length) (H : s.Nonempty) :
     s.sort.get ⟨0, h⟩ = s.min' H := by
@@ -222,7 +218,7 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
   simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
     OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding,
-    Subtype.range_coe_subtype, Finset.setOf_mem]
+    Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 @[simp]
 theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
@@ -263,8 +259,8 @@ theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k → α}
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
-  rw [← hmono.range_inj (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin, ← Set.image_univ,
-    ← coe_univ, ← coe_image, coe_inj]
+  rw [← hmono.range_inj_of_wellFoundedLT (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin,
+    ← Set.image_univ, ← coe_univ, ← coe_image, coe_inj]
   refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
   · rcases mem_image.1 hx with ⟨x, _, rfl⟩
     exact hfs x
@@ -350,6 +346,6 @@ def Fintype.orderIsoFinOfCardEq
 lemma nonempty_orderEmbedding_of_finite_infinite
     (α : Type*) [LinearOrder α] [hα : Finite α]
     (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩

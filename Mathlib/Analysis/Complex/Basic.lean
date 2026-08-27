@@ -58,7 +58,9 @@ noncomputable section
 namespace Complex
 variable {z : ℂ}
 
-open ComplexConjugate Topology Filter
+open Topology Filter
+
+open scoped ComplexConjugate
 
 instance : NormedField ℂ where
   dist_eq _ _ := rfl
@@ -204,11 +206,6 @@ theorem restrictScalars_toSpanSingleton (x : ℂ) :
   ext1 z
   dsimp
   apply mul_comm
-
-@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight' :=
-  restrictScalars_toSpanSingleton'
-@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight :=
-  restrictScalars_toSpanSingleton
 
 /-- The complex-conjugation function from `ℂ` to itself is an isometric linear equivalence. -/
 def conjLIE : ℂ ≃ₗᵢ[ℝ] ℂ :=
@@ -485,7 +482,7 @@ end Complex
 
 namespace RCLike
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 local notation "reC" => @RCLike.re ℂ _
 local notation "imC" => @RCLike.im ℂ _
@@ -581,7 +578,7 @@ section tsum
 
 variable {α : Type*} {L : SummationFilter α}
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 theorem hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) x L ↔ HasSum f (conj x) L :=
   RCLike.hasSum_conj _
@@ -636,7 +633,7 @@ open scoped ComplexOrder
 /-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
 def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
-lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
+lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_ofPred
 
 /- If `z` is non-zero, then either `z` or `-z` is in `slitPlane`. -/
 lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
@@ -648,7 +645,7 @@ lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
   by_contra! contra
   exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
 
-lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := Set.setOf_or.symm
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := Set.ofPred_or.symm
 
 lemma isOpen_slitPlane : IsOpen slitPlane :=
   (isOpen_lt continuous_const continuous_re).union (isOpen_ne_fun continuous_im continuous_const)

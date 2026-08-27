@@ -74,7 +74,9 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 @[expose] public section
 
-open Module Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal WithLp
+open Module Real Set Filter Bornology NNReal ENNReal WithLp
+
+open scoped Uniformity
 
 noncomputable section
 
@@ -264,12 +266,12 @@ variable {β}
 
 theorem edist_eq_card (f g : PiLp 0 β) :
     edist f g = {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
     edist f g = (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := rfl
 
@@ -319,12 +321,12 @@ variable {α}
 
 theorem dist_eq_card (f g : PiLp 0 α) :
     dist f g = {i | dist (f i) (g i) ≠ 0}.toFinite.toFinset.card :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem dist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p α) :
     dist f g = (∑ i, dist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 theorem dist_eq_iSup (f g : PiLp ∞ α) : dist f g = ⨆ i, dist (f i) (g i) := rfl
 
@@ -348,14 +350,14 @@ instance instNorm : Norm (PiLp p β) where
 variable {p β}
 
 theorem norm_eq_card (f : PiLp 0 β) : ‖f‖ = {i | ‖f i‖ ≠ 0}.toFinite.toFinset.card :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem norm_eq_ciSup (f : PiLp ∞ β) : ‖f‖ = ⨆ i, ‖f i‖ := rfl
 
 theorem norm_eq_sum (hp : 0 < p.toReal) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 end Norm
 
@@ -417,6 +419,7 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
 
 attribute [local instance] PiLp.pseudoEmetricAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used twice in the proof of `PiLp.pseudoMetricAux` below. Not intended for
 use outside this file. -/
 theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
@@ -753,6 +756,7 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
 section L1
 variable {β} [∀ i, SeminormedAddCommGroup (β i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_eq_of_L1 (x : PiLp 1 β) : ‖x‖ = ∑ i : ι, ‖x i‖ := by
   simp [norm_eq_sum]
 
@@ -765,6 +769,7 @@ theorem dist_eq_of_L1 (x y : PiLp 1 β) : dist x y = ∑ i, dist (x i) (y i) := 
 theorem nndist_eq_of_L1 (x y : PiLp 1 β) : nndist x y = ∑ i, nndist (x i) (y i) :=
   NNReal.eq <| by push_cast; exact dist_eq_of_L1 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem edist_eq_of_L1 (x y : PiLp 1 β) : edist x y = ∑ i, edist (x i) (y i) := by
   simp [PiLp.edist_eq_sum]
 
@@ -846,7 +851,7 @@ instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 
 variable {𝕜 p α}
 variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (β i)]
-variable [∀ i, Module 𝕜 (α i)] [∀ i, Module 𝕜 (β i)] (c : 𝕜)
+variable [∀ i, Module 𝕜 (α i)] [∀ i, Module 𝕜 (β i)]
 
 /-- The canonical map `WithLp.equiv` between `PiLp ∞ β` and `Π i, β i` as a linear isometric
 equivalence. -/
@@ -1013,7 +1018,7 @@ variable [DecidableEq ι]
 
 @[simp]
 theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ := by
-  haveI : Nonempty ι := ⟨i⟩
+  have : Nonempty ι := ⟨i⟩
   induction p generalizing hp with
   | top =>
     simp_rw [nnnorm_eq_ciSup]
@@ -1262,7 +1267,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
     letI := pseudoMetricSpaceToPi p α
     IsBoundedSMul R (Π i, α i) := by
-  letI := pseudoMetricSpaceToPi p α
+  let := pseudoMetricSpaceToPi p α
   refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
   · simpa [dist_pseudoMetricSpaceToPi] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
@@ -1272,7 +1277,7 @@ lemma normSMulClassSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
     letI := seminormedAddCommGroupToPi p α
     NormSMulClass R (Π i, α i) := by
-  letI := seminormedAddCommGroupToPi p α
+  let := seminormedAddCommGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 

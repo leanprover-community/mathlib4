@@ -153,6 +153,9 @@ def tensorObj (X Y : Center C) : Center C :=
             rw [HalfBraiding.naturality]; monoidal
           _ = _ := by rw [HalfBraiding.naturality]; monoidal }⟩
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) (U : C) :
@@ -217,16 +220,19 @@ section
 def tensorUnit : Center C :=
   ⟨𝟙_ C, { β := fun U => λ_ U ≪≫ (ρ_ U).symm }⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
   isoMk ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
   isoMk ⟨(λ_ X.1).hom, fun U => by simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
@@ -341,6 +347,7 @@ instance : (forget C).ReflectsIsomorphisms where
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `BraidedCategory` instance on `Center C`. -/
 @[simps!]
