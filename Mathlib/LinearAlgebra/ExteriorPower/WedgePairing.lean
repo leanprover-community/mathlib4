@@ -51,9 +51,8 @@ noncomputable def wedgePairingEquiv
   let topCoordinate := topCoordinateBasis.coord default
   let wedgeMul : ⋀[K]^k V →ₗ[K] ⋀[K]^l V →ₗ[K] ⋀[K]^(k + l) V :=
     DirectSum.gMulLHom K (fun i ↦ ⋀[K]^i V)
-  let f : ⋀[K]^l V →ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
-    (LinearMap.flip wedgeMul).compr₂ topCoordinate
-  let d : K := topCoordinate topVector
+  let f := (LinearMap.flip wedgeMul).compr₂ topCoordinate
+  let d := topCoordinate topVector
   have hd : d ≠ 0 := by
     intro hd
     apply (b.ExteriorAlgebra).ne_zero _
@@ -68,45 +67,41 @@ noncomputable def wedgePairingEquiv
         (permOfDisjoint (hdisj s)).sign • b.ExteriorAlgebra (c s) := by
     simp [complementBasis, bl, exteriorPower.basis_apply,
       ExteriorAlgebra.basis_eq_coe_basis, Basis.groupSMul_apply]
-  have hmul (s : powersetCard (Fin (finrank K V)) k) :
-      wedgeMul (bk s) (complementBasis s) = topVector := by
-    apply Subtype.ext
-    change (bk s : ExteriorAlgebra K V) * (complementBasis s : ExteriorAlgebra K V) =
-      b.ExteriorAlgebra Finset.univ
-    rw [← ExteriorAlgebra.basis_eq_coe_basis b s, complementBasis_coe]
-    rw [Units.smul_def, mul_smul_comm,
-      ExteriorAlgebra.basis_mul_of_disjoint b s (c s) (hdisj s)]
-    rw [Set.powersetCard.coe_disjUnion, Finset.disjUnion_eq_union]
-    rw [c_val, Finset.union_compl]
-    rcases Int.units_eq_one_or (permOfDisjoint (hdisj s)).sign with h | h <;>
-      simp [h, Units.smul_def]
   have hcomp_eq {s t : powersetCard (Fin (finrank K V)) k}
       (h : Disjoint t.val (c s).val) : t = s := by
     apply Subtype.ext
     simpa [c_val s] using (Finset.compl_eq_of_disjoint_of_card_add_eq h.symm (by
       simpa [t.prop, (c s).prop, Fintype.card_fin] using hkl')).symm
-  have hzero (s t : powersetCard (Fin (finrank K V)) k) (h : t ≠ s) :
-      wedgeMul (bk t) (complementBasis s) = 0 := by
-    have hnotdisj : ¬Disjoint t.val (c s).val := mt hcomp_eq h
-    apply Subtype.ext
-    change (bk t : ExteriorAlgebra K V) * (complementBasis s : ExteriorAlgebra K V) = 0
-    rw [← ExteriorAlgebra.basis_eq_coe_basis b t, complementBasis_coe]
-    rw [Units.smul_def, mul_smul_comm,
-      ExteriorAlgebra.basis_mul_of_not_disjoint b t (c s) hnotdisj]
-    simp
+  have hpair (s t : powersetCard (Fin (finrank K V)) k) :
+      wedgeMul (bk t) (complementBasis s) = if t = s then topVector else 0 := by
+    by_cases h : t = s
+    · subst t
+      rw [ite_eq_left rfl]
+      apply Subtype.ext
+      change (bk s : ExteriorAlgebra K V) * (complementBasis s : ExteriorAlgebra K V) =
+        b.ExteriorAlgebra Finset.univ
+      rw [← ExteriorAlgebra.basis_eq_coe_basis b s, complementBasis_coe]
+      rw [Units.smul_def, mul_smul_comm,
+        ExteriorAlgebra.basis_mul_of_disjoint b s (c s) (hdisj s)]
+      rw [Set.powersetCard.coe_disjUnion, Finset.disjUnion_eq_union]
+      rw [c_val, Finset.union_compl]
+      rcases Int.units_eq_one_or (permOfDisjoint (hdisj s)).sign with h | h <;>
+        simp [h, Units.smul_def]
+    · rw [ite_eq_right h]
+      have hnotdisj : ¬Disjoint t.val (c s).val := mt hcomp_eq h
+      apply Subtype.ext
+      change (bk t : ExteriorAlgebra K V) * (complementBasis s : ExteriorAlgebra K V) = 0
+      rw [← ExteriorAlgebra.basis_eq_coe_basis b t, complementBasis_coe]
+      rw [Units.smul_def, mul_smul_comm,
+        ExteriorAlgebra.basis_mul_of_not_disjoint b t (c s) hnotdisj]
+      simp
   have fpair (s t : powersetCard (Fin (finrank K V)) k) :
       f (complementBasis s) (bk t) = if t = s then d else 0 := by
     change topCoordinate (wedgeMul (bk t) (complementBasis s)) = _
-    by_cases h : t = s
-    · subst t
-      rw [hmul]
-      simp [d]
-    · rw [hzero s t h]
-      simp [h]
-  let targetBasis : Basis (powersetCard (Fin (finrank K V)) k) K (⋀[K]^k V →ₗ[K] K) :=
-    bk.dualBasis.unitsSMul (fun _ ↦ Units.mk0 d hd)
-  let e : (⋀[K]^l V) ≃ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
-    complementBasis.equiv targetBasis (Equiv.refl _)
+    rw [hpair]
+    split <;> simp [d]
+  let targetBasis := bk.dualBasis.unitsSMul (fun _ ↦ Units.mk0 d hd)
+  let e := complementBasis.equiv targetBasis (Equiv.refl _)
   have he : e.toLinearMap = f := by
     apply complementBasis.ext
     intro s
