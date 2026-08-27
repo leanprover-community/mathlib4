@@ -5,6 +5,7 @@ Authors: Seewoo Lee
 -/
 module
 
+public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
@@ -19,10 +20,11 @@ and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular
 - `normalizedDerivOfComplex`: $D = \frac{1}{2\pi i} \frac{d}{dz}$
 - `serreDerivative`: $\partial_k F := D F - \frac{k}{12} E_2 F$
 - `serreDerivative_slash_equivariant`: Serre derivative is equivariant under the slash action.
+- `serreDerivativeMF`: the Serre derivative preserves modularity, i.e. for a subgroup `Γ` of
+  `SL(2, ℤ)` it maps a weight `k` level `Γ` modular form to a weight `k + 2` level `Γ` modular form.
 
 TODO:
-- Serre derivative preserves modularity, i.e. $\partial_k (M_k) \subseteq M_{k+2}$.
-- Use above, prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
+- Use the above to prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
   for `sorry`-free proofs.
 -/
 
@@ -247,6 +249,76 @@ theorem serreDerivative_slash_invariant {k : ℤ} {F : ℍ → ℂ} (hF : MDiff 
     (h : F ∣[k] γ = F) :
     serreDerivative k F ∣[k + 2] γ = serreDerivative k F := by
   grind [serreDerivative_slash_equivariant]
+
+/-!
+Boundedness of the normalized derivative and Serre derivative at infinity.
+-/
+
+/-- A Cauchy estimate for the normalized derivative: if `F` is holomorphic on `ℍ` and bounded by
+`M` at every point with imaginary part at least `z.im / 2`, then `‖D F z‖ ≤ M / (π * z.im)`. -/
+private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) {z : ℍ} {M : ℝ}
+    (hM : ∀ w : ℍ, z.im / 2 ≤ w.im → ‖F w‖ ≤ M) : ‖D F z‖ ≤ M / (π * z.im) := by
+  have h2 : 0 < z.im / 2 := half_pos z.im_pos
+  have him : ∀ w ∈ Metric.closedBall (z : ℂ) (z.im / 2), z.im / 2 ≤ w.im := fun w hw ↦ by
+    have h := (abs_im_le_norm (w - (z : ℂ))).trans (mem_closedBall_iff_norm.mp hw)
+    rw [Complex.sub_im, UpperHalfPlane.coe_im, abs_le] at h
+    linarith [h.1]
+  have hbd (w) (hw : w ∈ Metric.sphere (↑z) (z.im / 2)) : ‖(F ∘ ofComplex) w‖ ≤ M := by
+    have hwim := him w (Metric.sphere_subset_closedBall hw)
+    rw [Function.comp_apply, ofComplex_apply_of_im_pos (h2.trans_le hwim)]
+    exact hM _ hwim
+  have hd : ‖deriv (F ∘ ofComplex) (z : ℂ)‖ ≤ M / (z.im / 2) :=
+    norm_deriv_le_of_forall_mem_sphere_norm_le h2
+      ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball
+        fun w hw ↦ h2.trans_le (him w hw)) hbd
+  calc ‖D F z‖ = (2 * π)⁻¹ * ‖deriv (F ∘ ofComplex) (z : ℂ)‖ := by
+        simp [normalizedDerivOfComplex, Real.pi_pos.le]
+    _ ≤ (2 * π)⁻¹ * (M / (z.im / 2)) := by gcongr
+    _ = M / (π * z.im) := by ring
+
+/-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
+again bounded at infinity. This is a Cauchy estimate: differentiating loses at most a factor
+of `1 / z.im`. -/
+theorem isBoundedAtImInfty_normalizedDerivOfComplex {F : ℍ → ℂ} (hF : MDiff F)
+    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (D F) := by
+  rw [isBoundedAtImInfty_iff] at hb ⊢
+  obtain ⟨M, A, hMA⟩ := hb
+  refine ⟨M / π, max (2 * A) 1, fun z hz => ?_⟩
+  obtain ⟨hzA, hz1⟩ := max_le_iff.mp hz
+  have hM : 0 ≤ M := (norm_nonneg _).trans (hMA z (by linarith))
+  calc ‖D F z‖ ≤ M / (π * z.im) :=
+        norm_normalizedDerivOfComplex_le hF fun w hw => hMA w (by linarith)
+    _ ≤ M / π := by gcongr; exact le_mul_of_one_le_right Real.pi_pos.le hz1
+
+/-- The Serre derivative of a holomorphic function that is bounded at infinity is again bounded at
+infinity. -/
+theorem isBoundedAtImInfty_serreDerivative {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F)
+    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (serreDerivative k F) :=
+  Asymptotics.IsBigO.sub (isBoundedAtImInfty_normalizedDerivOfComplex hF hb) <|
+    ((Filter.const_boundedAtFilter atImInfty (k * 12⁻¹)).mul
+      EisensteinSeries.isBoundedAtImInfty_E2).mul hb
+
+/--
+The Serre derivative preserves modularity: if `f` is a modular form of weight `k` for a subgroup
+`Γ` of `SL(2, ℤ)`, then `∂ₖ f` is a modular form of weight `k + 2` for `Γ`.
+-/
+noncomputable def serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
+    (f : ModularForm Γ k) (hΓ : Γ ≤ 𝒮ℒ := by rfl) : ModularForm Γ (k + 2) where
+  toFun := serreDerivative k f
+  slash_action_eq' g hg := by
+    obtain ⟨γ, rfl⟩ := hΓ hg
+    exact serreDerivative_slash_invariant f.holo' (f.slash_action_eq' _ hg)
+  holo' := serreDerivative_mdifferentiable k f.holo'
+  bdd_at_cusps' {c} hc := by
+    rw [OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)]
+    intro γ hγ
+    rw [serreDerivative_slash_equivariant (F := (f : ℍ → ℂ)) f.holo']
+    exact isBoundedAtImInfty_serreDerivative k (f.holo'.slash k γ)
+      ((OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)).mp (f.bdd_at_cusps' hc) γ hγ)
+
+@[simp]
+lemma coe_serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ) (f : ModularForm Γ k)
+    (hΓ : Γ ≤ 𝒮ℒ) : serreDerivativeMF k f hΓ = serreDerivative k f := rfl
 
 end
 
