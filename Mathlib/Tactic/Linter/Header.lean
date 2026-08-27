@@ -289,8 +289,8 @@ def headerTestFiles : NameSet := .ofList [
 /-- Check the `Syntax` `imports` for broad imports:
 `Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`.
 
-This currently returns immediately if `mainModule` is not in `Mathlib` (or a test file).
-TODO: make this extensible for use in other libraries. -/
+This currently returns without logging if `mainModule` is not in `Mathlib` (nor the linter's test
+files). TODO: make this extensible for use in other libraries. -/
 def broadImportsCheck (imports : Array ImportRef) (mainModule : Name) : CommandElabM Unit := do
   unless mainModule.getRoot == `Mathlib || headerTestFiles.contains mainModule do
     return
