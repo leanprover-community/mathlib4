@@ -323,7 +323,7 @@ theorem commutator_le_map_commutator {f : G →* G'} {K₁ K₂ : Subgroup G'} (
 
 variable (H₁ H₂)
 
-private theorem commutator_sup_left' (H K N : Subgroup G) [N.Normal] [(⁅H, N⁆ ⊔ ⁅K, N⁆).Normal] :
+private theorem commutator_sup_left' (H K N : Subgroup G) [(⁅H, N⁆ ⊔ ⁅K, N⁆).Normal] :
     ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
   refine le_antisymm ?_
     (sup_le (commutator_mono_left le_sup_left) (commutator_mono_left le_sup_right))
