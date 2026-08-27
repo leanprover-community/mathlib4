@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.RingTheory.PowerSeries.Substitution
+public import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!
 # Logarithmic Power Series
@@ -30,6 +31,7 @@ over ℚ-algebras and establishes its key properties.
 * `PowerSeries.order_log`: The order of `log A` is `1`.
 * `PowerSeries.deriv_log`: The derivative of `log(1+X)` is the geometric series
   `∑ (-1)^n · Xⁿ = 1/(1+X)`.
+* `PowerSeries.derivative_log_mul_one_add_X`: `(log(1+X))' · (1 + X) = 1`.
 * `PowerSeries.subst_exp_log`: `exp` and `log` are mutually inverse:
   substituting `log(1+X)` into `exp` yields `1 + X`.
 * `PowerSeries.subst_log_exp_sub_one`: Substituting `exp X - 1` into `log(1+X)`
@@ -70,11 +72,15 @@ theorem order_log [Nontrivial A] : (log A).order = 1 :=
   order_eq_nat.mpr ⟨by simp, fun i hi ↦ by simp [Nat.lt_one_iff.mp hi]⟩
 
 /-- The derivative of `log(1+X)` is the geometric series `1 - X + X² - X³ + ⋯ = 1/(1+X)`. -/
-theorem deriv_log : d⁄dX A (log A) = mk fun n ↦ algebraMap ℚ A ((-1 : ℚ) ^ n) := by
+theorem deriv_log : d⁄dX A (log A) = mk fun n ↦ (-1 : A) ^ n := by
   ext n
   have : (n + 1) = algebraMap ℚ A (n + 1) := by simp
   rw [coeff_derivative, coeff_log, coeff_mk]
   grind
+
+/-- The derivative of `log(1+X)` is the inverse of `1 + X`. -/
+theorem derivative_log_mul_one_add_X : d⁄dX A (log A) * (1 + X) = 1 := by
+  rw [deriv_log, mk_neg_one_pow_mul_one_add_eq_one]
 
 /-! ## Substitution -/
 
@@ -105,7 +111,7 @@ theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
 /-! ## Log and exp as inverses -/
 
 omit [Algebra ℚ A] in
-private theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
+theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
     {g : A⟦X⟧} {c : A} (hderiv : d⁄dX A g * (1 + X) = g) (hconst : constantCoeff g = c) :
     g = c • (1 + X) := by
   have hcoeff (n) : coeff n (d⁄dX A g * (1 + X)) = coeff n g := by rw [hderiv]
@@ -136,26 +142,16 @@ private theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
   | 1 => simp [h1]
   | n + 2 => simp [h2, coeff_X]
 
-private theorem geom_mul_one_add_X :
-    (mk fun n ↦ algebraMap ℚ A ((-1 : ℚ) ^ n)) * (1 + X : A⟦X⟧) = 1 := by
-  ext n
-  rw [mul_add, mul_one, map_add, coeff_one]
-  match n with
-  | 0 => simp
-  | n + 1 =>
-    have hcancel : (-1 : ℚ) ^ n * -1 + (-1) ^ n = 0 := by ring
-    rw [coeff_succ_mul_X, coeff_mk, coeff_mk, pow_succ, ← map_add, hcancel, map_zero]
-    simp
-
+variable (A) in
 theorem subst_exp_log : (exp A).subst (log A) = 1 + X := by
   have : IsAddTorsionFree A := IsAddTorsionFree.of_module_rat A
   have hderiv : d⁄dX A ((exp A).subst (log A)) * (1 + X) = (exp A).subst (log A) := by
-    rw [derivative_subst (hg := HasSubst.log), derivative_exp, deriv_log, mul_assoc,
-      geom_mul_one_add_X, mul_one]
+    rw [derivative_subst (hg := HasSubst.log), derivative_exp, mul_assoc,
+      derivative_log_mul_one_add_X, mul_one]
   have hconst : constantCoeff ((exp A).subst (log A)) = 1 := by
     rw [constantCoeff_eq, constantCoeff_subst_of_constantCoeff_zero constantCoeff_log,
       constantCoeff_exp, map_one]
-  simpa using eq_of_deriv_mul_one_add_X_eq_self hderiv hconst
+  simpa using eq_of_derivative_mul_one_add_X_eq_self hderiv hconst
 
 variable (A) in
 theorem subst_log_exp_sub_one : (log A).subst (exp A - 1) = X := by
@@ -163,10 +159,11 @@ theorem subst_log_exp_sub_one : (log A).subst (exp A - 1) = X := by
   · simp [constantCoeff_exp]
   · simp [coeff_exp]
   · exact HasSubst.log
-  · rw [subst_sub HasSubst.log, subst_exp_log, ← coe_substAlgHom HasSubst.log (R := A), map_one]
+  · rw [subst_sub HasSubst.log, subst_exp_log A, ← coe_substAlgHom HasSubst.log (R := A), map_one]
     ring
 
 variable (A) in
+@[simp]
 theorem logOf_exp : logOf (exp A) = X :=
   subst_log_exp_sub_one A
 
