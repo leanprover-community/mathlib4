@@ -80,24 +80,23 @@ lemma basis_mul_of_not_disjoint (b : Basis (Fin (finrank K V)) K V) {k l : ℕ}
 section FiniteDimensional
 
 variable [FiniteDimensional K V]
+variable (b : Basis (Fin (finrank K V)) K V)
+variable (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
+variable {k l : ℕ} (hkl : k + l = finrank K V)
 
-def volumeBasis (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) :
+def volumeBasis :
     Basis Unit K (⋀[K]^(finrank K V) V) :=
   FiniteDimensional.basisSingleton Unit (by simp) vol hvol
 
-def volumeCoordinate (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
-    {k l : ℕ} (hkl : k + l = finrank K V) : ⋀[K]^(k + l) V →ₗ[K] K :=
+def volumeCoordinate : ⋀[K]^(k + l) V →ₗ[K] K :=
   (hkl ▸ volumeBasis vol hvol).coord default
 
-def wedgePairing (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
-  {k l : ℕ} (hkl : k + l = finrank K V) :
+def wedgePairing :
     ⋀[K]^l V →ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
   (LinearMap.flip (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V))).compr₂
     (volumeCoordinate vol hvol hkl)
 
-lemma volumeCoordinate_basisUniv_ne_zero (b : Basis (Fin (finrank K V)) K V)
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) {k l : ℕ}
-    (hkl : k + l = finrank K V) :
+lemma volumeCoordinate_basisUniv_ne_zero :
     volumeCoordinate vol hvol hkl (basisUniv b hkl) ≠ 0 := by
   intro hzero
   apply (b.ExteriorAlgebra).ne_zero (Finset.univ : Finset (Fin (finrank K V)))
@@ -105,9 +104,7 @@ lemma volumeCoordinate_basisUniv_ne_zero (b : Basis (Fin (finrank K V)) K V)
     (((hkl ▸ volumeBasis vol hvol).forall_coord_eq_zero_iff).mp fun coordinateIndex ↦ by
       simpa [volumeCoordinate] using hzero)
 
-def wedgePairingBasis (b : Basis (Fin (finrank K V)) K V)
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
-    (hkl : k + l = finrank K V) :
+def wedgePairingBasis :
     Basis (powersetCard (Fin (finrank K V)) l) K (⋀[K]^k V →ₗ[K] K) :=
   (((b.exteriorPower k).dualBasis.reindex (complementEquiv k l hkl).symm).isUnitSMul
       (fun _ ↦ isUnit_iff_ne_zero.mpr
@@ -115,12 +112,12 @@ def wedgePairingBasis (b : Basis (Fin (finrank K V)) K V)
     (fun sourceIndex ↦ (permOfDisjoint
       (complementEquiv_disjoint k l hkl sourceIndex)).sign)
 
-lemma wedgePairing_apply_basis_of_disjoint (b : Basis (Fin (finrank K V)) K V)
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
-    (hkl : k + l = finrank K V)
-    (sourceIndex : powersetCard (Fin (finrank K V)) l)
-    (targetIndex : powersetCard (Fin (finrank K V)) k)
-    (hdisjoint : Disjoint targetIndex.val sourceIndex.val) :
+section Basis
+
+variable (sourceIndex : powersetCard (Fin (finrank K V)) l)
+variable (targetIndex : powersetCard (Fin (finrank K V)) k)
+
+lemma wedgePairing_apply_basis_of_disjoint (hdisjoint : Disjoint targetIndex.val sourceIndex.val) :
     wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) =
       (permOfDisjoint hdisjoint).sign • volumeCoordinate vol hvol hkl (basisUniv b hkl) := by
   change volumeCoordinate vol hvol hkl
@@ -129,11 +126,7 @@ lemma wedgePairing_apply_basis_of_disjoint (b : Basis (Fin (finrank K V)) K V)
   rw [basis_mul_of_disjoint b hkl sourceIndex targetIndex hdisjoint]
   simp
 
-lemma wedgePairing_apply_basis_of_not_disjoint (b : Basis (Fin (finrank K V)) K V)
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
-    (hkl : k + l = finrank K V)
-    (sourceIndex : powersetCard (Fin (finrank K V)) l)
-    (targetIndex : powersetCard (Fin (finrank K V)) k)
+lemma wedgePairing_apply_basis_of_not_disjoint
     (hdisjoint : ¬Disjoint targetIndex.val sourceIndex.val) :
     wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) = 0 := by
   change volumeCoordinate vol hvol hkl
@@ -142,47 +135,40 @@ lemma wedgePairing_apply_basis_of_not_disjoint (b : Basis (Fin (finrank K V)) K 
   rw [basis_mul_of_not_disjoint b sourceIndex targetIndex hdisjoint]
   simp
 
-lemma wedgePairingBasis_apply (b : Basis (Fin (finrank K V)) K V)
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
-    (hkl : k + l = finrank K V)
-    (sourceIndex : powersetCard (Fin (finrank K V)) l)
-    (targetIndex : powersetCard (Fin (finrank K V)) k) :
-    wedgePairingBasis b vol hvol k l hkl sourceIndex (b.exteriorPower k targetIndex) =
+lemma wedgePairingBasis_apply :
+    wedgePairingBasis b vol hvol hkl sourceIndex (b.exteriorPower k targetIndex) =
       wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) := by
   have hdisjoint_iff := disjoint_iff_eq_complementEquiv k l hkl sourceIndex targetIndex
   by_cases! htarget : targetIndex = complementEquiv k l hkl sourceIndex
-  · rw [wedgePairing_apply_basis_of_disjoint b vol hvol k l hkl sourceIndex targetIndex
+  · rw [wedgePairing_apply_basis_of_disjoint b vol hvol hkl sourceIndex targetIndex
       (hdisjoint_iff.mpr htarget)]
     simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
       Basis.groupSMul_apply]
-  · rw [wedgePairing_apply_basis_of_not_disjoint b vol hvol k l hkl sourceIndex targetIndex
+  · rw [wedgePairing_apply_basis_of_not_disjoint b vol hvol hkl sourceIndex targetIndex
       (hdisjoint_iff.not.mpr htarget)]
     simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
       Basis.groupSMul_apply]
 
-def wedgePairingEquivOfBasis (b : Basis (Fin (finrank K V)) K V)
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
-    (hkl : k + l = finrank K V) :
-    ⋀[K]^l V ≃ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
-  (b.exteriorPower l).equiv (wedgePairingBasis b vol hvol k l hkl) (Equiv.refl _)
+end Basis
 
-lemma wedgePairingEquivOfBasis_toLinearMap (b : Basis (Fin (finrank K V)) K V)
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
-    (hkl : k + l = finrank K V) :
-    (wedgePairingEquivOfBasis b vol hvol k l hkl).toLinearMap = wedgePairing vol hvol hkl := by
+def wedgePairingEquivOfBasis :
+    ⋀[K]^l V ≃ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
+  (b.exteriorPower l).equiv (wedgePairingBasis b vol hvol hkl) (Equiv.refl _)
+
+lemma wedgePairingEquivOfBasis_toLinearMap :
+    (wedgePairingEquivOfBasis b vol hvol hkl).toLinearMap = wedgePairing vol hvol hkl := by
   refine LinearMap.ext_basis (b.exteriorPower l) (b.exteriorPower k)
     fun sourceIndex targetIndex ↦ ?_
-  change wedgePairingEquivOfBasis b vol hvol k l hkl
+  change wedgePairingEquivOfBasis b vol hvol hkl
       (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) =
     wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex)
   rw [wedgePairingEquivOfBasis, Basis.equiv_apply, Equiv.refl_apply]
-  exact wedgePairingBasis_apply b vol hvol k l hkl sourceIndex targetIndex
+  exact wedgePairingBasis_apply b vol hvol hkl sourceIndex targetIndex
 
-lemma bijective_wedgePairing (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
-    (hkl : k + l = finrank K V) :
+lemma bijective_wedgePairing :
     Bijective (wedgePairing vol hvol hkl) := by
-  rw [← wedgePairingEquivOfBasis_toLinearMap (finBasis K V) vol hvol k l hkl]
-  exact (wedgePairingEquivOfBasis (finBasis K V) vol hvol k l hkl).bijective
+  rw [← wedgePairingEquivOfBasis_toLinearMap (finBasis K V) vol hvol hkl]
+  exact (wedgePairingEquivOfBasis (finBasis K V) vol hvol hkl).bijective
 
 end FiniteDimensional
 
@@ -193,13 +179,13 @@ end private_defs
 namespace exteriorPower
 
 variable [FiniteDimensional K V]
+variable (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
+variable (k l : ℕ) (hkl : k + l = finrank K V)
 
 /-- The linear equivalence induced by wedging with `vol` in complementary degrees. -/
-public noncomputable def wedgePairingEquiv
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
-    (hkl : k + l = finrank K V) :
+public noncomputable def wedgePairingEquiv :
     ⋀[K]^l V ≃ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
   LinearEquiv.ofBijective (wedgePairing vol hvol hkl)
-    (bijective_wedgePairing vol hvol k l hkl)
+    (bijective_wedgePairing vol hvol hkl)
 
 end exteriorPower
