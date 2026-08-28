@@ -748,7 +748,7 @@ theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
   refine ⟨t.piecewise (hf.mk f) (hg.mk g),
     StronglyMeasurable.piecewise ht hf.stronglyMeasurable_mk hg.stronglyMeasurable_mk, ?_⟩
   suffices h : s.piecewise f g =ᵐ[μ] s.piecewise (hf.mk f) (hg.mk g) by
-    filter_upwards [h, eventuallyEq_set.1 hst] with x hxf hxt
+    filter_upwards [h, eventuallyEqSet_iff.1 hst] with x hxf hxt
     rw [hxf]
     by_cases hx : x ∈ s
     · simp [hx, hxt.1 hx]

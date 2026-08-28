@@ -301,10 +301,8 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
     UniformIntegrable f p μ := by
   have hmeas := fun i ↦ (hf i).symm.aestronglyMeasurable_snd hℒp.aestronglyMeasurable
   refine uniformIntegrable_of hp hp' hmeas fun ε hε ↦ ?_
-  rcases isEmpty_or_nonempty ι with _ | _
-  · simp
-  obtain ⟨C, -, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le (hmeas _) hε
-  refine ⟨C.toNNReal, fun i ↦ le_trans (le_of_eq ?_) hC₂⟩
+  obtain ⟨C, -, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le hε
+  refine ⟨C.toNNReal, fun i ↦ hC₂.trans_eq' ?_⟩
   have : {x | C.toNNReal ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
     simp_rw [Set.mem_ofPred_eq, Real.toNNReal_le_iff_le_coe, coe_nnnorm]
