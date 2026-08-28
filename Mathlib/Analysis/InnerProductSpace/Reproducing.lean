@@ -522,44 +522,44 @@ private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 
     refine ENNReal.mul_lt_top ?_ enorm_lt_top
     refine ENNReal.mul_lt_top hK.eLpNorm_lt_top enorm_lt_top
 
+private lemma integral_congr_fst {U : Type*} {φ ψ : X → U} (h : φ =ᵐ[μ] ψ) (F : X × X → U → 𝕜) :
+    ∫ p : X × X, F p (φ p.1) ∂ μ.prod μ = ∫ p : X × X, F p (ψ p.1) ∂ μ.prod μ := by
+  apply integral_congr_ae
+  filter_upwards [Measure.quasiMeasurePreserving_fst.ae h] with p hp
+  rw [hp]
+
+private lemma integral_congr_snd {U : Type*} {φ ψ : X → U} (h : φ =ᵐ[μ] ψ) (F : X × X → U → 𝕜) :
+    ∫ p : X × X, F p (φ p.2) ∂ μ.prod μ = ∫ p : X × X, F p (ψ p.2) ∂ μ.prod μ := by
+  apply integral_congr_ae
+  filter_upwards [Measure.quasiMeasurePreserving_snd.ae h] with p hp
+  rw [hp]
+
 /-- The bilinear map `(f,g) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ)`. -/
 def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
   (LinearMap.mk₂'ₛₗ (starRingEnd 𝕜) (RingHom.id 𝕜)
     (fun (f : Lp V 2 μ) (g : Lp V 2 μ) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ))
     (fun f₁ f₂ g ↦ by
-      simp_rw [← integral_add (mercerForm_integrable μ hK f₁ g)
-        (mercerForm_integrable μ hK f₂ g), ← inner_add_left, ← map_add]
-      have hf : ∀ᵐ p ∂(μ.prod μ), (f₁ + f₂) p.2 = f₁ p.2 + f₂ p.2 :=
-        Measure.quasiMeasurePreserving_snd.ae (Lp.coeFn_add f₁ f₂)
-      apply integral_congr_ae
-      filter_upwards [hf] with p hf
-      rw [hf]
+      simp_rw [← integral_add (mercerForm_integrable μ hK f₁ g) (mercerForm_integrable μ hK f₂ g),
+        ← inner_add_left,
+        integral_congr_snd μ (Lp.coeFn_add f₁ f₂) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜)]
+      simp
     )
     (fun c f g ↦ by
-      simp_rw [← integral_smul, ← inner_smul_left_eq_star_smul, ← map_smul]
-      have hf : ∀ᵐ p ∂(μ.prod μ), (c • f) p.2 = c • f p.2 :=
-        Measure.quasiMeasurePreserving_snd.ae (Lp.coeFn_smul c f)
-      apply integral_congr_ae
-      filter_upwards [hf] with p hf
-      rw [hf]
+      simp_rw [← integral_smul, ← inner_smul_left_eq_star_smul,
+        integral_congr_snd μ (Lp.coeFn_smul c f) (fun p v ↦ ⟪K p.1 p.2 v, (g p.1)⟫_𝕜)]
+      simp
     )
     (fun f g₁ g₂ ↦ by
       simp_rw [← integral_add (mercerForm_integrable μ hK f g₁) (mercerForm_integrable μ hK f g₂),
-        ← inner_add_right]
-      have hf : ∀ᵐ p ∂(μ.prod μ), (g₁ + g₂) p.1 = g₁ p.1 + g₂ p.1 :=
-        Measure.quasiMeasurePreserving_fst.ae (Lp.coeFn_add g₁ g₂)
-      apply integral_congr_ae
-      filter_upwards [hf] with p hf
-      rw [hf]
+        ← inner_add_right,
+        integral_congr_fst μ (Lp.coeFn_add g₁ g₂) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜)]
+      simp
     )
     (fun c f g ↦ by
-      simp_rw [← integral_smul, ← inner_smul_right_eq_smul, RingHom.id_apply]
-      have hf : ∀ᵐ p ∂(μ.prod μ), (c • g) p.1 = c • g p.1 :=
-        Measure.quasiMeasurePreserving_fst.ae (Lp.coeFn_smul c g)
-      apply integral_congr_ae
-      filter_upwards [hf] with p hf
-      rw [hf]
+      simp_rw [← integral_smul, ← inner_smul_right_eq_smul, RingHom.id_apply,
+        integral_congr_fst μ (Lp.coeFn_smul c g) (fun p v ↦ ⟪K p.1 p.2 (f p.2), v⟫_𝕜)]
+      simp
     )
   )
   (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
