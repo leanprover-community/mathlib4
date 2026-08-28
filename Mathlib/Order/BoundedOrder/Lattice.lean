@@ -24,7 +24,7 @@ This file contains miscellaneous lemmas about lattices with top or bottom elemen
 
 public section
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-! ### Top, bottom element -/
 

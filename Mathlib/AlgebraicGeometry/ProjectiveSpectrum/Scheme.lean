@@ -165,7 +165,7 @@ open Ideal
 -- So for any `x` in `Proj| (pbo f)`, we need some point in `Spec A⁰_f`, i.e. a prime ideal,
 -- and we need this correspondence to be continuous in their Zariski topology.
 variable {𝒜}
-variable {f : A} {m : ℕ} (x : Proj| (pbo f))
+variable {f : A} (x : Proj| (pbo f))
 
 /--
 For any `x` in `Proj| (pbo f)`, the corresponding ideal in `Spec A⁰_f`. This fact that this ideal
@@ -848,7 +848,6 @@ def projIsoSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Proj| pbo f) ≅ (Spec (A⁰_ f)) :=
   @asIso _ _ _ _ (f := toSpec 𝒜 f) (isIso_toSpec 𝒜 f f_deg hm)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This is the scheme `Proj(A)` for any `ℕ`-graded ring `A`.
 -/

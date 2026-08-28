@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Algebra.Order.Nonneg.Field
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Order.LocalExtr
@@ -125,28 +126,24 @@ def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
     exact mul_div_cancel_left₀ x h
   right_inv y := by simp [mul_div_cancel₀ _ h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem affineHomeomorph_image_Icc {𝕜 : Type*}
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Icc c d = Set.Icc (a * c + b) (a * d + b) := by
   simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem affineHomeomorph_image_Ico {𝕜 : Type*}
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Ico c d = Set.Ico (a * c + b) (a * d + b) := by
   simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem affineHomeomorph_image_Ioc {𝕜 : Type*}
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Ioc c d = Set.Ioc (a * c + b) (a * d + b) := by
   simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem affineHomeomorph_image_Ioo {𝕜 : Type*}
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
@@ -160,7 +157,7 @@ section LocalExtr
 variable {α β : Type*} [TopologicalSpace α]
   [Semifield β] [LinearOrder β] [IsStrictOrderedRing β] {a : α}
 
-open Topology
+open scoped Topology
 
 theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
