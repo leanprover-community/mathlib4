@@ -114,33 +114,21 @@ omit [Algebra ℚ A] in
 theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
     {g : A⟦X⟧} {c : A} (hderiv : d⁄dX A g * (1 + X) = g) (hconst : constantCoeff g = c) :
     g = c • (1 + X) := by
-  have hcoeff (n) : coeff n (d⁄dX A g * (1 + X)) = coeff n g := by rw [hderiv]
-  have hrec (n : ℕ) : (↑(n + 2) : A) * coeff (n + 2) g = -↑n * coeff (n + 1) g := by
-    have h := hcoeff (n + 1)
-    rw [mul_add, mul_one, map_add, coeff_succ_mul_X, coeff_derivative, coeff_derivative] at h
-    push_cast at h ⊢
-    linear_combination h
-  have h1 : coeff 1 g = c := by
-    have h := hcoeff 0
-    simp only [mul_add, mul_one, map_add, coeff_zero_mul_X, add_zero, coeff_derivative,
-      Nat.cast_zero, zero_add] at h
-    rw [h, coeff_zero_eq_constantCoeff, hconst]
-  have h2 : ∀ n : ℕ, coeff (n + 2) g = 0 := by
-    intro n
-    induction n with
-    | zero =>
-      have h := hrec 0
-      simp only [Nat.cast_zero, neg_zero, zero_mul, ← nsmul_eq_mul] at h
-      rwa [nsmul_eq_zero_iff_right (by omega : (2 : ℕ) ≠ 0)] at h
-    | succ m ih =>
-      have h := hrec (m + 1)
-      rw [ih, mul_zero, ← nsmul_eq_mul] at h
-      rwa [nsmul_eq_zero_iff_right (by omega : (m + 3 : ℕ) ≠ 0)] at h
-  ext n
-  match n with
-  | 0 => simp [coeff_zero_eq_constantCoeff, hconst]
-  | 1 => simp [h1]
-  | n + 2 => simp [h2, coeff_X]
+  have : Invertible (1 + X : A⟦X⟧) := (isUnit_iff_constantCoeff.mpr (by simp)).invertible
+  have hcu : constantCoeff (⅟(1 + X) : A⟦X⟧) = 1 := by
+    have h := congrArg (constantCoeff (R := A)) (mul_invOf_self (1 + X : A⟦X⟧))
+    rw [map_mul] at h
+    simpa using h
+  have hg : g * ⅟(1 + X) = d⁄dX A g := by
+    conv_lhs => rw [← hderiv]
+    rw [mul_assoc, mul_invOf_self, mul_one]
+  have key : g * ⅟(1 + X) = C c := by
+    refine derivative.ext ?_ ?_
+    · simp only [Derivation.leibniz, derivative_invOf, map_add, derivative_one, derivative_X,
+        zero_add, derivative_C, mul_one, smul_eq_mul, ← hg]
+      ring
+    · simp [hconst, hcu]
+  rw [smul_eq_C_mul, ← key, mul_assoc, invOf_mul_self, mul_one]
 
 variable (A) in
 theorem subst_exp_log : (exp A).subst (log A) = 1 + X := by
