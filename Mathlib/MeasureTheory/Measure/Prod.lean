@@ -464,6 +464,13 @@ theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν
   refine (prod_prod_le _ _).trans_eq ?_
   rw [h2s, mul_zero]
 
+@[fun_prop]
+theorem _root_.AEMeasurable.prodMap {δ : Type*} [MeasurableSpace δ] {f : α → γ} {g : β → δ}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
+    AEMeasurable (Prod.map f g) (μ.prod ν) :=
+  (hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst).prodMk
+    (hg.comp_quasiMeasurePreserving quasiMeasurePreserving_snd)
+
 lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : t =ᵐ[ν] t') :
     (s ×ˢ t : Set (α × β)) =ᵐ[μ.prod ν] (s' ×ˢ t' : Set (α × β)) :=
   (quasiMeasurePreserving_fst.preimage_ae_eq hs).inter
