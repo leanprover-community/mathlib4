@@ -18,11 +18,11 @@ variable {G : Type*} [Group G] (H₁ H₂ H₃ : Subgroup G) (g g' : G)
 
 open Pointwise
 
-section triple
+section finite
 
 open DoubleCoset
 
-/-- `(H₁, H₂, g)` is a Hecke triple if `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` is finite. -/
+/-- A triple `(H₁, H₂, g)` is Hecke finite if `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` is finite. -/
 @[mk_iff] class IsHeckeFinite : Prop where
   degreeNeZero : (DoubleCoset.mk H₁ H₂ g).degree ≠ 0
 
@@ -57,7 +57,7 @@ instance instIsHeckeFinite_diag_mul (H : Subgroup G) (g g' : G)
     [IsHeckeFinite H H g] [IsHeckeFinite H H g'] : IsHeckeFinite H H (g * g') := by
   simpa using isHeckeFinite_trans H H H g g'
 
-end triple
+end finite
 
 /-- The collection of double cosets admitting finite decomposition into left cosets. -/
 @[implicit_reducible]
