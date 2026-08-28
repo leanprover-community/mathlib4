@@ -91,9 +91,10 @@ lemma volumeCoordinate_basisUniv_ne_zero :
     volumeCoordinate vol hvol hkl (basisUniv b hkl) ≠ 0 := by
   intro hzero
   apply (b.ExteriorAlgebra).ne_zero (Finset.univ : Finset (Fin (finrank K V)))
-  exact congrArg Subtype.val
-    (((hkl ▸ volumeBasis vol hvol).forall_coord_eq_zero_iff).mp fun coordinateIndex ↦ by
-      simpa [volumeCoordinate] using hzero)
+  change (basisUniv b hkl : ExteriorAlgebra K V) = 0
+  rw [Submodule.coe_eq_zero]
+  exact ((hkl ▸ volumeBasis vol hvol).forall_coord_eq_zero_iff).mp fun _ ↦ by
+    simpa [volumeCoordinate] using hzero
 
 def wedgePairingBasis :
     Basis (powersetCard (Fin (finrank K V)) l) K (⋀[K]^k V →ₗ[K] K) :=
@@ -115,12 +116,11 @@ lemma wedgePairingBasis_apply :
       wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) := by
   have hdisjoint_iff := disjoint_iff_eq_complementEquiv hkl sourceIndex targetIndex
   by_cases! htarget : targetIndex = complementEquiv k l hkl sourceIndex
-  · rw [wedgePairing_apply_basis,
-      basis_mul_of_disjoint b hkl sourceIndex targetIndex (hdisjoint_iff.mpr htarget)]
-    simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
-      Basis.groupSMul_apply]
-  · rw [wedgePairing_apply_basis,
-      basis_mul_of_not_disjoint b sourceIndex targetIndex (hdisjoint_iff.not.mpr htarget)]
+  all_goals
+    rw [wedgePairing_apply_basis]
+    first
+    | rw [basis_mul_of_disjoint b hkl sourceIndex targetIndex (hdisjoint_iff.mpr htarget)]
+    | rw [basis_mul_of_not_disjoint b sourceIndex targetIndex (hdisjoint_iff.not.mpr htarget)]
     simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
       Basis.groupSMul_apply]
 
