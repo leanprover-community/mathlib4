@@ -61,6 +61,17 @@ theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
 theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := by
   simpa only [house, map_pow] using norm_pow_le ((canonicalEmbedding K) α) i
 
+theorem house_pow (α : K) (i : ℕ) : house (α ^ i) = house α ^ i := by
+  have hmono : Monotone (fun x : NNReal => x ^ i) := fun a b h => pow_le_pow_left' h i
+  rw [house_eq_sup', house_eq_sup']
+  have h : (fun φ : K →+* ℂ ↦ ‖φ (α ^ i)‖₊)
+      = (fun x : NNReal ↦ x ^ i) ∘ (fun φ : K →+* ℂ ↦ ‖φ α‖₊) := by
+    funext φ
+    simp [map_pow, nnnorm_pow]
+  rw [h, ← Finset.apply_sup'_eq_sup'_comp _ _ fun x y ↦ hmono.map_max]
+  push_cast
+  rfl
+
 theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
   rw [house_eq_sup', house_eq_sup', Finset.sup'_eq_sup, Finset.sup'_eq_sup]
   norm_cast
