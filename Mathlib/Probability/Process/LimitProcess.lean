@@ -274,6 +274,10 @@ lemma limitProcess_prodMk [Zero E] {Y : ι → Ω → F}
       fun ω ↦ (𝓕.limitProcess X P ω, 𝓕.limitProcess Y P ω) :=
   hX.limitProcess_comp₂ (f := fun x y ↦ (x, y)) continuous_id hY
 
+end Maps
+
+end Preserved
+
 /-- If a stochastic process is bounded in `Lp` then its limit is in `Lp`. -/
 theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [SeminormedAddGroup F]
     {𝓕 : Filtration ℕ mΩ} {X : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (X n) P)
@@ -287,10 +291,6 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ ↦ (ha a le_rfl).trans (hbdd _)
   · exact MemLp.zero
-
-end Maps
-
-end Preserved
 
 end limitProcess
 
