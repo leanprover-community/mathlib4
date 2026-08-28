@@ -41,7 +41,6 @@ As in other polynomial files, we typically use the notation:
 
 -/
 
-/- @[expose] -/
 public section
 
 
@@ -359,21 +358,21 @@ variable [LinearOrder σ] {c : σ}
 
 theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p.degreeOf c := by
   apply card_mainDegree_eq_degreeOf_of_forall_degrees_le
-  · rw [← Multiset.mem_toFinset, ← vars_def]
-    exact Finset.mem_of_max h
-  rw [isMaxOn_iff]
+  · simpa [← Multiset.mem_toFinset, ← vars_def] using Finset.mem_of_max h
   intro j hj
-  rw [id_eq, id_eq, ← WithBot.coe_le_coe, ← h, vars_def]
+  rw [id_eq, mem_ofPred_eq, ← WithBot.coe_le_coe, ← h, vars_def]
   exact Finset.le_max hj
 
-theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥ := by
+theorem mainDegree_eq_zero_iff : p.mainDegree = 0 ↔ p.vars = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · cases hc : p.vars.max
-    · simp only
-    absurd Finset.mem_of_max hc
-    simpa [card_mainDegree_eq_degreeOf hc, degreeOf_def, vars_def] using h
+  · by_contra hm
+    have hm : p.vars.max ≠ ⊥ := (Iff.ne Finset.max_eq_bot).mpr hm
+    rcases WithBot.ne_bot_iff_exists.mp hm with ⟨i, hi⟩
+    absurd Finset.mem_of_max hi.symm
+    have hc : p.mainDegree.card = 0 := Multiset.card_eq_zero.mpr h
+    simpa [card_mainDegree_eq_degreeOf hi.symm, degreeOf_def, vars_def] using hc
   suffices p.degrees = 0 by simp [mainDegree_def, this]
-  rw [Finset.max_eq_bot, vars_def] at h
+  rw [vars_def] at h
   exact Multiset.toFinset_eq_empty.mp h
 
 end MainDegree

@@ -115,7 +115,7 @@ section Degrees
 
 @[simp]
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
-  classical rw [degrees_def, degrees_def, support_neg]
+  classical simp [degrees_def]
 
 theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by

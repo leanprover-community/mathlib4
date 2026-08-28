@@ -699,7 +699,7 @@ theorem card_mainDegree_eq_degreeOf_of_forall_degrees_le (h₁ : i ∈ p.degrees
     (h₂ : IsMaxOn id p.degrees.toFinset i) : p.mainDegree.card = p.degreeOf i := by
   have := forall_mainDegree_eq_of_forall_degrees_le h₁ h₂
   rw [← Multiset.count_eq_card.mpr this]
-  rw [degreeOf_def, mainDegree, Multiset.count_filter, if_pos h₂]
+  rw [degreeOf_def, mainDegree, Multiset.count_filter, ite_eq_left h₂]
 
 @[simp]
 theorem mainDegree_zero : (0 : MvPolynomial σ R).mainDegree = 0 := Eq.refl _
