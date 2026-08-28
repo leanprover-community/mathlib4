@@ -10,6 +10,8 @@ public meta import Lean.Util.Heartbeats
 public meta import Lean.Meta.Tactic.TryThis
 
 /-!
+# Counting heartbeats
+
 Defines a command wrapper that prints the number of heartbeats used in the enclosed command.
 
 For example
@@ -224,7 +226,7 @@ end CountHeartbeats
 end Mathlib
 
 /-!
-# The "countHeartbeats" linter
+## The "countHeartbeats" linter
 
 The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/

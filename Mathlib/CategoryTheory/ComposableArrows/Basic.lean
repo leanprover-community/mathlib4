@@ -40,8 +40,6 @@ TODO (@joelriou):
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 /-!
@@ -127,7 +125,7 @@ namespace Mk₁
 variable (X₀ X₁ : C)
 
 /-- The map which sends `0 : Fin 2` to `X₀` and `1` to `X₁`. -/
-@[simp]
+@[implicit_reducible, simp]
 def obj : Fin 2 → C
   | ⟨0, _⟩ => X₀
   | ⟨1, _⟩  => X₁
@@ -136,7 +134,7 @@ variable {X₀ X₁}
 variable (f : X₀ ⟶ X₁)
 
 /-- The obvious map `obj X₀ X₁ i ⟶ obj X₀ X₁ j` whenever `i j : Fin 2` satisfy `i ≤ j`. -/
-@[simp]
+@[implicit_reducible, simp]
 def map : ∀ (i j : Fin 2) (_ : i ≤ j), obj X₀ X₁ i ⟶ obj X₀ X₁ j
   | ⟨0, _⟩, ⟨0, _⟩, _ => 𝟙 _
   | ⟨0, _⟩, ⟨1, _⟩, _ => f
@@ -156,7 +154,7 @@ lemma map_comp {i j k : Fin 2} (hij : i ≤ j) (hjk : j ≤ k) :
 end Mk₁
 
 /-- Constructor for `ComposableArrows C 1`. -/
-@[simps]
+@[implicit_reducible, simps]
 def mk₁ {X₀ X₁ : C} (f : X₀ ⟶ X₁) : ComposableArrows C 1 where
   obj := Mk₁.obj X₀ X₁
   map g := Mk₁.map f _ _ (leOfHom g)
@@ -166,7 +164,7 @@ def mk₁ {X₀ X₁ : C} (f : X₀ ⟶ X₁) : ComposableArrows C 1 where
 /-- Constructor for morphisms `F ⟶ G` in `ComposableArrows C n` which takes as inputs
 a family of morphisms `F.obj i ⟶ G.obj i` and the naturality condition only for the
 maps in `Fin (n + 1)` given by inequalities of the form `i ≤ i + 1`. -/
-@[simps]
+@[implicit_reducible, simps]
 def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
     (w : ∀ (i : ℕ) (hi : i < n), F.map' i (i + 1) ≫ app _ = app _ ≫ G.map' i (i + 1)) :
     F ⟶ G where
@@ -194,7 +192,7 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
 /-- Constructor for isomorphisms `F ≅ G` in `ComposableArrows C n` which takes as inputs
 a family of isomorphisms `F.obj i ≅ G.obj i` and the naturality condition only for the
 maps in `Fin (n + 1)` given by inequalities of the form `i ≤ i + 1`. -/
-@[simps]
+@[implicit_reducible, simps]
 def isoMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ≅ G.obj i)
     (w : ∀ (i : ℕ) (hi : i < n),
       F.map' i (i + 1) ≫ (app _).hom = (app _).hom ≫ G.map' i (i + 1)) :
@@ -211,7 +209,7 @@ lemma ext {F G : ComposableArrows C n} (h : ∀ i, F.obj i = G.obj i)
     (isoMk (fun i => eqToIso (h i)) (fun i hi => by simp [w i hi])) h
 
 /-- Constructor for morphisms in `ComposableArrows C 0`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def homMk₀ {F G : ComposableArrows C 0} (f : F.obj' 0 ⟶ G.obj' 0) : F ⟶ G :=
   homMk (fun i => match i with
     | ⟨0, _⟩ => f) (fun i hi => by simp at hi)
@@ -225,7 +223,7 @@ lemma hom_ext₀ {F G : ComposableArrows C 0} {φ φ' : F ⟶ G}
   exact h
 
 /-- Constructor for isomorphisms in `ComposableArrows C 0`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def isoMk₀ {F G : ComposableArrows C 0} (e : F.obj' 0 ≅ G.obj' 0) : F ≅ G where
   hom := homMk₀ e.hom
   inv := homMk₀ e.inv
@@ -243,7 +241,7 @@ lemma mk₀_surjective (F : ComposableArrows C 0) : ∃ (X : C), F = mk₀ X :=
   ⟨F.obj' 0, ext₀ rfl⟩
 
 /-- Constructor for morphisms in `ComposableArrows C 1`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def homMk₁ {F G : ComposableArrows C 1}
     (left : F.obj' 0 ⟶ G.obj' 0) (right : F.obj' 1 ⟶ G.obj' 1)
     (w : F.map' 0 1 ≫ right = left ≫ G.map' 0 1 := by cat_disch) :
@@ -265,7 +263,7 @@ lemma hom_ext₁ {F G : ComposableArrows C 1} {φ φ' : F ⟶ G}
     | 1 => exact h₁
 
 /-- Constructor for isomorphisms in `ComposableArrows C 1`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def isoMk₁ {F G : ComposableArrows C 1}
     (left : F.obj' 0 ≅ G.obj' 0) (right : F.obj' 1 ≅ G.obj' 1)
     (w : F.map' 0 1 ≫ right.hom = left.hom ≫ G.map' 0 1 := by cat_disch) :
@@ -300,16 +298,12 @@ lemma mk₁_comp_eqToHom {X₀ X₁ X₁' : C} (f : X₀ ⟶ X₁) (h : X₁ = X
     ComposableArrows.mk₁ (f ≫ eqToHom h) = ComposableArrows.mk₁ f := by
   cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma mk₁_hom (X : ComposableArrows C 1) :
     mk₁ X.hom = X :=
   ext₁ rfl rfl (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The bijection between `ComposableArrows C 1` and `Arrow C`. -/
-@[simps]
+@[implicit_reducible, simps]
 def arrowEquiv : ComposableArrows C 1 ≃ Arrow C where
   toFun F := Arrow.mk F.hom
   invFun f := mk₁ f.hom
@@ -324,6 +318,7 @@ variable (X : C)
 
 /-- The map `Fin (n + 1 + 1) → C` which "shifts" `F.obj'` to the right and inserts `X` in
 the zeroth position. -/
+@[implicit_reducible]
 def obj : Fin (n + 1 + 1) → C
   | ⟨0, _⟩ => X
   | ⟨i + 1, hi⟩ => F.obj' i
@@ -341,6 +336,7 @@ variable {X} (f : X ⟶ F.left)
 
 /-- Auxiliary definition for the action on maps of the functor `F.precomp f`.
 It sends `0 ≤ 1` to `f` and `i + 1 ≤ j + 1` to `F.map' i j`. -/
+@[implicit_reducible]
 def map : ∀ (i j : Fin (n + 1 + 1)) (_ : i ≤ j), obj F X i ⟶ obj F X j
   | ⟨0, _⟩, ⟨0, _⟩, _ => 𝟙 X
   | ⟨0, _⟩, ⟨1, _⟩, _ => f
@@ -383,8 +379,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
   obtain ⟨k, hk⟩ := k
   cases i
   · obtain _ | _ | j := j
-    · dsimp
-      rw [id_comp]
+    · simp
     · obtain _ | _ | k := k
       · simp at hjk
       · simp
@@ -404,7 +399,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
 end Precomp
 
 /-- "Precomposition" of `F : ComposableArrows C n` by a morphism `f : X ⟶ F.left`. -/
-@[simps]
+@[implicit_reducible, simps]
 def precomp {X : C} (f : X ⟶ F.left) : ComposableArrows C (n + 1) where
   obj := Precomp.obj F X
   map g := Precomp.map F f _ _ (leOfHom g)
@@ -437,35 +432,20 @@ variable {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) 
 /-! These examples are meant to test the good definitional properties of `precomp`,
 and that `dsimp` can see through. -/
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 example : map' (mk₂ f g) 0 1 = f := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 1 2 = g := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 0 2 = f ≫ g := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : (mk₂ f g).hom = f ≫ g := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 0 0 = 𝟙 _ := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 1 1 = 𝟙 _ := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 2 2 = 𝟙 _ := by dsimp
 
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 0 1 = f := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 1 2 = g := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 2 3 = h := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 0 3 = f ≫ g ≫ h := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : (mk₃ f g h).hom = f ≫ g ≫ h := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 0 2 = f ≫ g := by dsimp
-set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 1 3 = g ≫ h := by dsimp
 
 end
@@ -513,7 +493,7 @@ lemma natAddLEFunctor_app' {n k l i : ℕ} (h : k + l ≤ n) {R₁ R₂ : Compos
 
 /-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
 the first arrow. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def δ₀Functor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
   whiskerLeftFunctor (Fin.succFunctor (n + 1))
 
@@ -542,10 +522,10 @@ section
 
 variable {F G : ComposableArrows C (n + 1)}
 
-
 /-- Inductive construction of morphisms in `ComposableArrows C (n + 1)`: in order to construct
 a morphism `F ⟶ G`, it suffices to provide `α : F.obj' 0 ⟶ G.obj' 0` and `β : F.δ₀ ⟶ G.δ₀`
 such that `F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1`. -/
+@[implicit_reducible]
 def homMkSucc (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
     (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1) : F ⟶ G :=
   homMk
@@ -579,6 +559,7 @@ lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
   · exact congr_app h₁ ⟨i, by valid⟩
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Inductive construction of isomorphisms in `ComposableArrows C (n + 1)`: in order to
 construct an isomorphism `F ≅ G`, it suffices to provide `α : F.obj' 0 ≅ G.obj' 0` and
 `β : F.δ₀ ≅ G.δ₀` such that `F.map' 0 1 ≫ app' β.hom 0 = α.hom ≫ G.map' 0 1`. -/
@@ -587,9 +568,7 @@ def isoMkSucc {F G : ComposableArrows C (n + 1)} (α : F.obj' 0 ≅ G.obj' 0)
     (β : F.δ₀ ≅ G.δ₀) (w : F.map' 0 1 ≫ app' β.hom 0 = α.hom ≫ G.map' 0 1) : F ≅ G where
   hom := homMkSucc α.hom β.hom w
   inv := homMkSucc α.inv β.inv (by
-    rw [← cancel_epi α.hom, ← reassoc_of% w, α.hom_inv_id_assoc, β.hom_inv_id_app]
-    dsimp
-    rw [comp_id])
+    simp [← cancel_epi α.hom, ← reassoc_of% w, α.hom_inv_id_assoc, β.hom_inv_id_app])
   hom_inv_id := by
     apply hom_ext_succ
     · simp
@@ -681,7 +660,6 @@ lemma ext₂ {f g : ComposableArrows C 2}
     (w₁ : f.map' 1 2 = eqToHom h₁ ≫ g.map' 1 2 ≫ eqToHom h₂.symm) : f = g :=
   ext_succ h₀ (ext₁ h₁ h₂ w₁) w₀
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₂_surjective (X : ComposableArrows C 2) :
     ∃ (X₀ X₁ X₂ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂), X = mk₂ f₀ f₁ :=
   ⟨_, _, _, X.map' 0 1, X.map' 1 2, ext₂ rfl rfl rfl (by simp) (by simp)⟩
@@ -764,7 +742,6 @@ lemma ext₃ {f g : ComposableArrows C 3}
     (w₂ : f.map' 2 3 = eqToHom h₂ ≫ g.map' 2 3 ≫ eqToHom h₃.symm) : f = g :=
   ext_succ h₀ (ext₂ h₁ h₂ h₃ w₁ w₂) w₀
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₃_surjective (X : ComposableArrows C 3) :
     ∃ (X₀ X₁ X₂ X₃ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃), X = mk₃ f₀ f₁ f₂ :=
   ⟨_, _, _, _, X.map' 0 1, X.map' 1 2, X.map' 2 3,
@@ -850,7 +827,6 @@ lemma ext₄ {f g : ComposableArrows C 4}
     f = g :=
   ext_succ h₀ (ext₃ h₁ h₂ h₃ h₄ w₁ w₂ w₃) w₀
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₄_surjective (X : ComposableArrows C 4) :
     ∃ (X₀ X₁ X₂ X₃ X₄ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (f₃ : X₃ ⟶ X₄),
       X = mk₄ f₀ f₁ f₂ f₃ :=
@@ -940,7 +916,6 @@ lemma ext₅ {f g : ComposableArrows C 5}
     f = g :=
   ext_succ h₀ (ext₄ h₁ h₂ h₃ h₄ h₅ w₁ w₂ w₃ w₄) w₀
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₅_surjective (X : ComposableArrows C 5) :
     ∃ (X₀ X₁ X₂ X₃ X₄ X₅ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
       (f₃ : X₃ ⟶ X₄) (f₄ : X₄ ⟶ X₅), X = mk₅ f₀ f₁ f₂ f₃ f₄ :=
@@ -1015,22 +990,24 @@ variable {C} {D : Type*} [Category* D] (G : C ⥤ D) (n : ℕ)
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
 with a functor `C ⥤ D`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def Functor.mapComposableArrows :
     ComposableArrows C n ⥤ ComposableArrows D n :=
   (whiskeringRight _ _ _).obj G
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `(G.mapComposableArrows 1).obj (.mk₁ f)` and
 `.mk₁ (G.map f)`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def Functor.mapComposableArrowsObjMk₁Iso {X Y : C} (f : X ⟶ Y) :
     (G.mapComposableArrows 1).obj (.mk₁ f) ≅ .mk₁ (G.map f) :=
   isoMk₁ (Iso.refl _) (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between `(G.mapComposableArrows 2).obj (.mk₂ f g)` and
 `.mk₂ (G.map f) (G.map g)`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def Functor.mapComposableArrowsObjMk₂Iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (G.mapComposableArrows 2).obj (.mk₂ f g) ≅ .mk₂ (G.map f) (G.map g) :=
   isoMk₂ (Iso.refl _) (Iso.refl _) (Iso.refl _)
