@@ -105,7 +105,7 @@ instance instNNRatSMul : SMul ℚ≥0 {x : α // 0 ≤ x} where
     (⟨q • a, by rw [NNRat.smul_def]; exact mul_nonneg q.cast_nonneg ha⟩ : {x : α // 0 ≤ x}) =
       q • a := rfl
 
-instance divisionSemiring : DivisionSemiring { x : α // 0 ≤ x } := fast_instance%
+instance divisionSemiring : DivisionSemiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.divisionSemiring _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
     Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
     Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
@@ -116,9 +116,10 @@ section LinearOrderedSemifield
 
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
 
-instance semifield : Semifield { x : α // 0 ≤ x } where
+instance semifield : Semifield { x : α // 0 ≤ x } := fast_instance% {
   __ := divisionSemiring
   mul_comm := mul_comm
+}
 
 end LinearOrderedSemifield
 
