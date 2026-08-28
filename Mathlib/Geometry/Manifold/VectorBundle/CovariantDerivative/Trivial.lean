@@ -183,7 +183,7 @@ lemma contMDiffOn_one_form [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteDi
   have : IsManifold I n M := IsManifold.of_le  (by norm_num : n ≤ n + 1)
   have : ContMDiffVectorBundle n E (fun x : M ↦ TangentSpace I x) I :=
     TangentBundle.contMDiffVectorBundle -- TODO: understand why this is needed
-  apply ContMDiffOn.clm_bundle_of_apply'
+  apply ContMDiffOn.clm_bundle_of_apply' (by simp : n ≤ n+1)
   intro σ x hx hσ
   have (x' : M) (hx' : x' ∈ s) := hcov.eq_one_form (x := x') (σ := σ)
   -- By hypothesis, `cov` is smooth; the differential `d%` is also smooth, hence so is their

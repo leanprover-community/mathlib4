@@ -540,22 +540,24 @@ lemma ContMDiff.clm_bundle_of_apply {k}
     ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) :=
   fun x ↦ ContMDiffAt.clm_bundle_of_apply fun σ ↦ h σ x
 
+
 -- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffWithinAt k (T% σ) b` is almost
 -- equivalent to `CMDiffWithinAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
 omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
   [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
 /-- Version allowing for the loss of a single derivative: we assume that applying `φ` to a
 `C^{k+1}` section near `x` within a set `s` produces a `C^k` section near `x` within `s` -/
-lemma ContMDiffWithinAt.clm_bundle_of_apply' {k}
+lemma ContMDiffWithinAt.clm_bundle_of_apply' {k l}
     [FiniteDimensional 𝕜 EB]
-    [IsManifold IB (k + 1) B] [ContMDiffVectorBundle (k + 1) F₁ E₁ IB]
+    [IsManifold IB l B] [ContMDiffVectorBundle l F₁ E₁ IB]
     [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
     [ContMDiffVectorBundle k F₂ E₂ IB] {s : Set B} {x : B}
+    (hkl : k ≤ l)
     (h : ∀ (σ : Π x : B, E₁ x),
-      (∀ᶠ b in 𝓝 x, CMDiffAt[s] (k + 1) (T% σ) b) → CMDiffAt[s] k (T% (fun x ↦ φ x (σ x))) x) :
+      (∀ᶠ b in 𝓝 x, CMDiffAt[s] l (T% σ) b) → CMDiffAt[s] k (T% (fun x ↦ φ x (σ x))) x) :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k
       (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) s x := by
-  have : IsManifold IB k B := IsManifold.of_le (m := k) (n := k + 1) (by simp)
+  have : IsManifold IB k B := IsManifold.of_le hkl
   refine (contMDiffWithinAt_hom_bundle fun x ↦ ⟨x, φ x⟩).mpr ⟨contMDiffWithinAt_id, ?_⟩
   rw [contMDiffWithinAt_iff_source, contMDiffWithinAt_iff_contDiffWithinAt]
   set t₁ := trivializationAt F₁ E₁ x
@@ -578,46 +580,46 @@ omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
   [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
 /-- Version allowing for the loss of a single derivative: we assume that applying `φ` to a
 `C^{k+1}` section near `x` produces a `C^k` section near `x` -/
-lemma ContMDiffAt.clm_bundle_of_apply' {k}
+lemma ContMDiffAt.clm_bundle_of_apply' {k l}
     [FiniteDimensional 𝕜 EB]
-    [IsManifold IB (k + 1) B] [ContMDiffVectorBundle (k + 1) F₁ E₁ IB]
+    [IsManifold IB l B] [ContMDiffVectorBundle l F₁ E₁ IB]
     [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
-    [ContMDiffVectorBundle k F₂ E₂ IB] {x : B}
+    [ContMDiffVectorBundle k F₂ E₂ IB] (hkl : k ≤ l) {x : B}
     (h : ∀ (σ : Π x : B, E₁ x),
-      (∀ᶠ b in 𝓝 x, CMDiffAt (k + 1) (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x) :
+      (∀ᶠ b in 𝓝 x, CMDiffAt l (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
     x := by
   simp_rw [← contMDiffWithinAt_univ] at h ⊢
-  exact ContMDiffWithinAt.clm_bundle_of_apply' (fun σ hσ ↦ h σ hσ)
+  exact ContMDiffWithinAt.clm_bundle_of_apply' hkl fun σ hσ ↦ h σ hσ
 
 omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
   [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
 /-- Version allowing for the loss of a single derivative: we assume that applying `φ` to a
 `C^{k+1}` section on `s` produces a `C^k` section on `s` -/
-lemma ContMDiffOn.clm_bundle_of_apply' {k}
+lemma ContMDiffOn.clm_bundle_of_apply' {k l}
     [FiniteDimensional 𝕜 EB]
-    [IsManifold IB (k + 1) B] [ContMDiffVectorBundle (k + 1) F₁ E₁ IB]
+    [IsManifold IB l B] [ContMDiffVectorBundle l F₁ E₁ IB]
     [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
-    [ContMDiffVectorBundle k F₂ E₂ IB] {s : Set B}
-    (h : ∀ (σ : Π x : B, E₁ x), (∀ x ∈ s, (∀ᶠ b in 𝓝 x, CMDiffAt[s] (k + 1) (T% σ) b) →
+    [ContMDiffVectorBundle k F₂ E₂ IB] (hkl : k ≤ l) {s : Set B}
+    (h : ∀ (σ : Π x : B, E₁ x), (∀ x ∈ s, (∀ᶠ b in 𝓝 x, CMDiffAt[s] l (T% σ) b) →
       CMDiffAt[s] k (T% (fun x ↦ φ x (σ x))) x)) :
     ContMDiffOn IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
     s :=
-  fun x hx ↦ ContMDiffWithinAt.clm_bundle_of_apply' (fun σ hσ ↦ h σ x hx hσ)
+  fun x hx ↦ ContMDiffWithinAt.clm_bundle_of_apply' hkl fun σ hσ ↦ h σ x hx hσ
 
 omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
   [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
 /-- Version allowing for the loss of a single derivative: we assume that applying `φ` to a
 `C^{k+1}` section produces a `C^k` section -/
-lemma ContMDiff.clm_bundle_of_apply' {k}
+lemma ContMDiff.clm_bundle_of_apply' {k l}
     [FiniteDimensional 𝕜 EB]
-    [IsManifold IB (k + 1) B] [ContMDiffVectorBundle (k + 1) F₁ E₁ IB]
+    [IsManifold IB l B] [ContMDiffVectorBundle l F₁ E₁ IB]
     [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
-    [ContMDiffVectorBundle k F₂ E₂ IB]
+    [ContMDiffVectorBundle k F₂ E₂ IB] (hkl : k ≤ l)
     (h : ∀ (σ : Π x : B, E₁ x),
-      (∀ x, (∀ᶠ b in 𝓝 x, CMDiffAt (k + 1) (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x)) :
+      (∀ x, (∀ᶠ b in 𝓝 x, CMDiffAt l (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x)) :
     ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) :=
-  fun x ↦ ContMDiffAt.clm_bundle_of_apply' fun σ ↦ h σ x
+  fun x ↦ ContMDiffAt.clm_bundle_of_apply' hkl fun σ ↦ h σ x
 
 set_option linter.unusedSectionVars false in
 lemma TensorialAt.apply_clm
