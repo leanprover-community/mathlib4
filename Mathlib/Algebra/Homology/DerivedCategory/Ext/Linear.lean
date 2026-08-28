@@ -33,16 +33,11 @@ section End
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C] {A G : C} {n : ℕ}
 
-/-- Scalar multiplication of `End G` on `Ext A G n` by postcomposition; the module structure is
-`Abelian.Ext.moduleEndRight`. -/
 noncomputable instance smulEndRight : SMul (End G) (Ext A G n) where
   smul r x := x.comp (mk₀ r) (add_zero n)
 
 lemma smul_end_def (r : End G) (x : Ext A G n) : r • x = x.comp (mk₀ r) (add_zero n) := rfl
 
-/-- The endomorphism ring of `G` acts on `Ext A G n` by postcomposition. This is the `Ext`
-analogue of `CategoryTheory.Preadditive.moduleEndRight`, which is the same statement for the
-Hom-groups `A ⟶ G`, and it expresses the additivity of `Ext` in its second variable. -/
 noncomputable instance moduleEndRight : Module (End G) (Ext A G n) where
   one_smul x := by simp [smul_end_def, End.one_def]
   mul_smul r s x := by
