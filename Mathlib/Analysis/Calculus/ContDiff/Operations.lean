@@ -770,7 +770,7 @@ section AlgebraInverse
 variable (𝕜)
 variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R]
 
-open NormedRing ContinuousLinearMap Ring
+open NormedRing Ring
 
 /-- In a complete normed algebra, the operation of inversion is `C^n`, for all `n`, at each
 invertible element, as it is analytic. -/

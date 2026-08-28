@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Lean.Meta.Tactic.Rfl
 
 /-!
 # The category `TopModuleCat R` of topological modules
@@ -155,9 +156,11 @@ section CommRing
 
 variable {S : Type*} [CommRing S] [TopologicalSpace S]
 
-instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) where
+instance {X Y : TopModuleCat S} : SMul S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
-  __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
+
+instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) := fast_instance%
+  { homEquiv (Y := Y) with map_add' _ _ := rfl : (X ⟶ Y) ≃+ (X →L[S] Y) }.module S
 
 instance : Linear S (TopModuleCat S) where
   smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)
@@ -349,12 +352,12 @@ topology making it into a topological module. This is left adjoint to the forget
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
   obj X :=
     letI := moduleTopology R X
-    letI := IsModuleTopology.topologicalAddGroup R X
+    letI := IsModuleTopology.isTopologicalAddGroup R X
     .of R X
   map {X Y} f :=
     letI := moduleTopology R X
     letI := moduleTopology R Y
-    letI := IsModuleTopology.topologicalAddGroup R Y
+    letI := IsModuleTopology.isTopologicalAddGroup R Y
     ⟨f.hom, IsModuleTopology.continuous_of_linearMap f.hom⟩
 
 set_option backward.isDefEq.respectTransparency false in

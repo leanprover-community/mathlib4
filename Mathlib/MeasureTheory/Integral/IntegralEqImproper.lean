@@ -75,7 +75,7 @@ Versions of these results are also given on the intervals `(-∞, a]` and `(-∞
 the corresponding versions of integration by parts.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Set TopologicalSpace Topology
 open scoped ENNReal NNReal
@@ -1174,6 +1174,21 @@ theorem integrableOn_comp_exp_Ioi (g : ℝ → E) (a : ℝ) :
       (measurableSet_Ioi (a := a)) (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt)
       (fun x _ y _ hxy ↦ exp_injective hxy) g
 
+/-- Substitution `y = exp x` in integrals over the whole line. -/
+theorem integral_comp_exp (g : ℝ → E) :
+    ∫ x, exp x • g (exp x) = ∫ y in Ioi 0, g y := by
+  symm
+  rw [← range_exp, ← image_univ]
+  simpa using integral_image_eq_integral_abs_deriv_smul .univ
+    (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt) exp_injective.injOn g
+
+theorem integrable_comp_exp (g : ℝ → E) :
+    Integrable (fun x ↦ exp x • g (exp x)) ↔ IntegrableOn g (Ioi 0) := by
+  rw [← integrableOn_univ, ← range_exp, ← image_univ]
+  symm
+  simpa using integrableOn_image_iff_integrableOn_abs_deriv_smul
+    .univ (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt) exp_injective.injOn g
+
 /-- Substitution `y = log x` in integrals over `Ioi a` -/
 theorem integral_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
     ∫ x in Ioi a, x⁻¹ • g (log x) = ∫ y in Ioi (log a), g y := by
@@ -1183,6 +1198,15 @@ theorem integrableOn_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
     IntegrableOn (fun x ↦ x⁻¹ • g (log x)) (Ioi a) ↔ IntegrableOn g (Ioi (log a)) := by
   symm
   simpa  [exp_log ha] using integrableOn_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a)
+
+/-- Substitution `y = log x` in integrals over `Ioi 0`. -/
+theorem integral_comp_log_Ioi_zero (g : ℝ → E) :
+    ∫ x in Ioi 0, x⁻¹ • g (log x) = ∫ y, g y := by
+  simpa using (integral_comp_exp (fun x ↦ x⁻¹ • g (log x))).symm
+
+theorem integrableOn_comp_log_Ioi_zero (g : ℝ → E) :
+    IntegrableOn (fun x ↦ x⁻¹ • g (log x)) (Ioi 0) ↔ Integrable g := by
+  simpa using (integrable_comp_exp (fun x ↦ x⁻¹ • g (log x))).symm
 
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     ∫ x in Ioi a, g (b * x) = b⁻¹ • ∫ x in Ioi (b * a), g x := by

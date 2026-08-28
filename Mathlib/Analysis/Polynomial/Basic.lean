@@ -27,7 +27,9 @@ public section
 
 open Filter Finset Asymptotics
 
-open Asymptotics Polynomial Topology
+open Asymptotics Polynomial
+
+open scoped Topology
 
 namespace Polynomial
 
@@ -52,7 +54,7 @@ theorem isEquivalent_atTop_lead :
   · simp only [Polynomial.eval_eq_sum_range, sum_range_succ]
     exact
       IsLittleO.add_isEquivalent
-        (IsLittleO.sum fun i hi =>
+        (IsLittleO.fun_sum fun i hi =>
           IsLittleO.const_mul_left
             ((IsLittleO.const_mul_right fun hz => h <| leadingCoeff_eq_zero.mp hz) <|
               isLittleO_pow_pow_atTop_of_lt (mem_range.mp hi))
@@ -332,10 +334,6 @@ theorem isBigO_atBot_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atBot]
 
 section Cobounded
 
-lemma eventually_cofinite_not_isRoot {R : Type*} [CommRing R] [IsDomain R] {P : R[X]} (hP : P ≠ 0) :
-    ∀ᶠ x in cofinite, ¬P.IsRoot x :=
-  (finite_setOfPred_isRoot hP).compl_mem_cofinite
-
 open Bornology
 
 variable {R : Type*} [NormedRing R] [NormMulClass R] {P Q : R[X]}
@@ -345,7 +343,7 @@ lemma isEquivalent_cobounded_leading_monomial :
   by_cases h : P = 0
   · simp [h, IsEquivalent.refl]
   · simp only [eval_eq_sum_range, sum_range_succ]
-    exact (IsLittleO.sum fun i hi ↦
+    exact (IsLittleO.fun_sum fun i hi ↦
       ((isLittleO_pow_pow_cobounded_of_lt (mem_range.mp hi)).const_mul_right
         (leadingCoeff_ne_zero.mpr h)).const_mul_left _).add_isEquivalent .refl
 

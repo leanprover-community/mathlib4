@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
 
@@ -209,7 +210,7 @@ protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical
           h <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) z) h0⟩
 
 protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
-  rw [IsFractionRing.inv, dif_neg hx, ←
+  rw [IsFractionRing.inv, dite_eq_right hx, ←
     IsUnit.mul_left_inj
       (map_units K
         ⟨(sec _ x).1,
@@ -226,7 +227,9 @@ noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
   inv := IsFractionRing.inv A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by
+    rw [IsFractionRing.inv]
+    exact dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
@@ -433,7 +436,6 @@ fraction rings `K ≃+* L`. -/
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
   IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ringEquivOfRingEquiv_algebraMap
     (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp
@@ -682,6 +684,21 @@ protected theorem smulCommClass [SMulCommClass G A B] : SMulCommClass G K L :=
     simp [Algebra.smul_def, map_div₀, ← IsScalarTower.algebraMap_apply A K L,
       IsScalarTower.algebraMap_apply A B L, smul_mul', smul_div₀',
       ← algebraMap.coe_smul', smul_algebraMap]⟩
+
+variable {A B} in
+/-- If `K` is the fraction field of `A` and `L` is the fraction field of `B` with `A ⊆ B`,
+then for `G` acting on `B` and `L`, the fixing subgroup of `A` in `B` equals the fixing subgroup
+of `K` in `L`. -/
+theorem fixingSubgroup_range_algebraMap :
+    fixingSubgroup G (Set.range (algebraMap A B)) =
+      fixingSubgroup G (Set.range (algebraMap K L)) := by
+  simp_rw [Subgroup.ext_iff, mem_fixingSubgroup_iff, Set.forall_mem_range]
+  refine fun g ↦ ⟨fun h x ↦ ?_, fun h x ↦ FaithfulSMul.algebraMap_injective B L ?_⟩
+  · obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
+    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A B L, smul_div₀', ← algebraMap.smul', h]
+  · simp_rw [algebraMap.smul', ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A K L, h]
 
 end MulAction
 
