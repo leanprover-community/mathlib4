@@ -111,6 +111,7 @@ theorem adj_symm (G' : Subgraph G) {u v : V} (h : G'.Adj u v) : G'.Adj v u :=
 protected theorem Adj.symm {G' : Subgraph G} {u v : V} (h : G'.Adj u v) : G'.Adj v u :=
   G'.adj_symm h
 
+@[grind →]
 protected theorem Adj.adj_sub {H : G.Subgraph} {u v : V} (h : H.Adj u v) : G.Adj u v :=
   H.adj_sub h
 
@@ -169,11 +170,13 @@ protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   symm := G'.symm
   loopless.irrefl _ hadj := G.irrefl hadj.adj_sub
 
+attribute [grind =] Subgraph.spanningCoe_adj
+
 @[simp]
 lemma spanningCoe_coe (G' : G.Subgraph) : G'.coe.spanningCoe = G'.spanningCoe := by
   ext
   simp only [map_adj, Function.Embedding.subtype_apply, Subtype.exists]
-  grind [spanningCoe_adj, coe_adj, edge_vert, adj_symm]
+  grind [coe_adj, edge_vert, adj_symm]
 
 theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCoe.Adj u v) :
     G.Adj u v :=
@@ -466,11 +469,8 @@ instance : BoundedOrder (Subgraph G) where
   le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
-/-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
-@[instance_reducible]
-def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph where
-  le_top G' := ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
-  bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
+set_option linter.unusedVariables false in
+instance : CompleteLattice (Subgraph G) where
   isLUB_sSup _ :=
     ⟨fun G' hG' ↦ ⟨Set.subset_biUnion_of_mem hG', fun _ _ hab => ⟨G', hG', hab⟩⟩,
       fun G' hG' ↦
@@ -479,12 +479,13 @@ def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxio
     ⟨fun G' hG' ↦ ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩,
       fun G' hG' ↦
         ⟨Set.subset_iInter₂ fun _ hH => (hG' hH).1, fun _ _ hab =>
-          ⟨fun _ hH => (hG' hH).2 hab, G'.adj_sub hab⟩⟩⟩
-  iInf_iSup_eq f := Subgraph.ext (by simpa using! iInf_iSup_eq)
-    (by ext; simp [Classical.skolem])
+         ⟨fun _ hH => (hG' hH).2 hab, G'.adj_sub hab⟩⟩⟩
 
+/-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
 instance : CompletelyDistribLattice G.Subgraph :=
-  fast_instance% .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
+  fast_instance% .ofMinimalAxioms {
+    iInf_iSup_eq f := Subgraph.ext (by simpa using! iInf_iSup_eq)
+      (by ext; simp [Classical.skolem]) }
 
 @[gcongr] lemma verts_mono {H H' : G.Subgraph} (h : H ≤ H') : H.verts ⊆ H'.verts := h.1
 lemma verts_monotone : Monotone (verts : G.Subgraph → Set V) := fun _ _ h ↦ h.1
@@ -663,7 +664,7 @@ theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
 @[simp] lemma map_iso_top {H : SimpleGraph W} (e : G ≃g H) : Subgraph.map e.toHom ⊤ = ⊤ := by
-  ext <;> simp [Relation.Map, e.apply_eq_iff_eq_symm_apply, ← e.map_rel_iff]
+  ext <;> simp [Relation.Map, ← e.eq_symm_apply, ← e.map_rel_iff]
 
 @[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
     (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap ..
