@@ -26,15 +26,11 @@ class ToSet (Iα : Type*) (α : outParam Type*) where
   /-- The mapping of elements of `Iα` to sets in `α`. -/
   toSet : Iα → Set α
 
-instance {Iα α : Type*} [ToSet Iα α] : CoeTC Iα (Set α) where
-  coe := ToSet.toSet
-
 instance {Iα α : Type*} [ToSet Iα α] : Membership α Iα where
   mem s a := ToSet.toSet s a
 
-@[simp]
-lemma mem_toSet_iff_mem {Iα α : Type*} [ToSet Iα α] (a : α) (s : Iα) :
-  a ∈ (s : Set α) ↔ a ∈ s := Iff.rfl
+lemma ToSet.mem_def {Iα α : Type*} [ToSet Iα α] (a : α) (s : Iα) :
+    a ∈ s ↔ a ∈ ToSet.toSet s := Iff.rfl
 
 lemma ToSet.mem_of_eq_of_mem {Iα α : Type*} [ToSet Iα α] {x y : α} {s : Iα}
     (hxy : x = y) (hy : y ∈ s) : x ∈ s := hxy ▸ hy
@@ -88,8 +84,6 @@ structure Cover (Iα α : Type*) [ToSet Iα α] where
   mem_coverMap {Iβ β : Type u} [ToSet Iβ β] [Coarsen Iβ β] {s : Iα} {F : Iα → Iβ} {x : α} {y : β}
     (hx : x ∈ s) (hy : ∀ t, x ∈ t → y ∈ F t) : y ∈ coverMap s F
 
-open ToSet
-
 section IntervalBool
 
 /-- An `IntervalBool` represents the result of a `Prop` inclusion and is either
@@ -112,11 +106,11 @@ instance : ToSet IntervalBool Prop := ⟨IntervalBool.toPropSet⟩
 
 @[simp]
 theorem IntervalBool.mem_true_iff {p : Prop} : p ∈ IntervalBool.true ↔ p := by
-  simp [← mem_toSet_iff_mem, ToSet.toSet, IntervalBool.toPropSet]
+  simp [ToSet.mem_def, ToSet.toSet, IntervalBool.toPropSet]
 
 @[simp]
 theorem IntervalBool.mem_false_iff {p : Prop} : p ∈ IntervalBool.false ↔ ¬p := by
-  simp [← mem_toSet_iff_mem, ToSet.toSet, IntervalBool.toPropSet]
+  simp [ToSet.mem_def, ToSet.toSet, IntervalBool.toPropSet]
 
 theorem IntervalBool.mem_true {p : Prop} (hp : p) : p ∈ IntervalBool.true :=
   IntervalBool.mem_true_iff.mpr hp
@@ -126,7 +120,7 @@ theorem IntervalBool.mem_false {p : Prop} (hp : ¬p) : p ∈ IntervalBool.false 
 
 @[simp]
 theorem IntervalBool.mem_undetermined (p : Prop) : p ∈ IntervalBool.undetermined := by
-  by_cases hp : p <;> simp [← mem_toSet_iff_mem, ToSet.toSet, IntervalBool.toPropSet, hp]
+  simpa [ToSet.mem_def, ToSet.toSet, IntervalBool.toPropSet] using Classical.em p
 
 /-- Negation of an `IntervalBool` value. -/
 def IntervalBool.not : IntervalBool → IntervalBool
