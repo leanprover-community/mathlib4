@@ -208,8 +208,8 @@ theorem eq_of_comp_eq
 
 theorem eqOn_of_comp_eqOn (hs : IsPreconnected s) (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
     (he : s.EqOn (p ∘ g₁) (p ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ := by
-  rw [← Set.restrict_eq_restrict_iff] at he ⊢
-  rw [continuousOn_iff_continuous_restrict] at h₁ h₂
+  rw [← Set.domRestrict_eq_domRestrict_iff] at he ⊢
+  rw [continuousOn_iff_continuous_domRestrict] at h₁ h₂
   rw [isPreconnected_iff_preconnectedSpace] at hs
   exact sep.eq_of_comp_eq inj h₁ h₂ he ⟨a, has⟩ ha
 
