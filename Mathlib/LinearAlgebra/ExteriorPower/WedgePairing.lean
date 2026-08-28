@@ -109,11 +109,11 @@ lemma wedgePairingBasis_apply :
       (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k t)
         (b.exteriorPower l s))
   have hdisjoint_iff := disjoint_iff_eq_compl hkl s t
-  by_cases! htarget : t = complementEquiv k l hkl s
-  all_goals
-    first
-    | rw [basis_mul_of_complement b hkl s t (hdisjoint_iff.mpr htarget)]
-    | rw [basis_mul_of_not_disjoint b s t (hdisjoint_iff.not.mpr htarget)]
+  by_cases htarget : t = complementEquiv k l hkl s
+  · rw [basis_mul_of_complement b hkl s t (hdisjoint_iff.mpr htarget)]
+    simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
+      Basis.groupSMul_apply]
+  · rw [basis_mul_of_not_disjoint b s t (hdisjoint_iff.not.mpr htarget)]
     simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
       Basis.groupSMul_apply]
 
