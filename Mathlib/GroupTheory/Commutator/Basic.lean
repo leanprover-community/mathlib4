@@ -85,6 +85,22 @@ theorem commutatorElement_mul_right_eq_mul_conj (a b c : G) :
   simp [mul_assoc, commutatorElement_def]
 
 @[to_additive]
+theorem Commute.commutatorElement_pow_left {a b : G} (h : Commute a ⁅a, b⁆) (n : ℕ) :
+    ⁅a, b⁆ ^ n = ⁅a ^ n, b⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [pow_succ, pow_succ', commutatorElement_mul_left_eq_conj_mul, ← ih,
+      (h.pow_right n).eq, mul_inv_cancel_right]
+
+@[to_additive]
+theorem Commute.commutatorElement_pow_right {a b : G} (h : Commute b ⁅a, b⁆) (n : ℕ) :
+    ⁅a, b⁆ ^ n = ⁅a, b ^ n⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ←ih,
+        (h.pow_right n).right_comm, mul_inv_cancel_right]
+
+@[to_additive]
 theorem commutatorElement_inv_left (a b : G) : ⁅a⁻¹, b⁆ = a⁻¹ * ⁅b, a⁆ * a := by
   simp [mul_assoc, commutatorElement_def]
 
@@ -519,7 +535,7 @@ theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgro
   -- Q is a quotient of H
   let φ : H →ₙ* G ⧸ N := MonoidHom.comp (QuotientGroup.mk' N) (Subgroup.subtype H)
   -- It is enough to prove that φ is surjective
-  apply Function.Surjective.mul_comm (f := φ) _ hH
+  apply Function.Surjective.isMulCommutative (f := φ) _ hH
   -- We have to prove that `MonoidHom.range φ = ⊤`
   have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
     rw [← MonoidHom.range_eq_map, MonoidHom.range_eq_top]

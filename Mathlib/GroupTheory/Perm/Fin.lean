@@ -5,6 +5,7 @@ Authors: Eric Wieser, Yi Yuan
 -/
 module
 
+public import Mathlib.Data.Finite.Perm
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.Logic.Equiv.Fin.Rotate
@@ -21,7 +22,8 @@ open Equiv
 
 /-- Permutations of `Fin (n + 1)` are equivalent to fixing a single
 `Fin (n + 1)` and permuting the remaining with a `Perm (Fin n)`.
-The fixed `Fin (n + 1)` is swapped with `0`. -/
+The fixed `Fin (n + 1)` is swapped with `0`.
+(See also `Equiv.Perm.decomposeFin'` for a slightly different bijection.) -/
 def Equiv.Perm.decomposeFin {n : ℕ} : Perm (Fin n.succ) ≃ Fin n.succ × Perm (Fin n) :=
   ((Equiv.permCongr <| finSuccEquiv n).trans Equiv.Perm.decomposeOption).trans
     (Equiv.prodCongr (finSuccEquiv n).symm (Equiv.refl _))
@@ -542,3 +544,80 @@ theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
   apply Finset.prod_comm' (by simp)
 
 end Sign
+
+namespace Equiv.Perm
+
+variable {n : ℕ}
+
+/-- Given `i : Fin (n + 2)` and `σ : Perm (Fin (n + 1)`, this is the permutation
+of `Fin (n + 2)` which sends `0` to `i` and `j.succ` to `i.succAbove (σ j)`. -/
+noncomputable def decomposeFin'Symm (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    Perm (Fin (n + 2)) :=
+  Equiv.ofBijective
+    (Fin.cases i (Fin.succAbove i ∘ σ)) (by
+      rw [Nat.bijective_iff_injective_and_card]
+      refine ⟨fun j k h ↦ ?_, rfl⟩
+      induction j using Fin.cases <;> induction k using Fin.cases <;> aesop)
+
+@[simp]
+lemma decomposeFin'Symm_zero (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    decomposeFin'Symm i σ 0 = i := rfl
+
+@[simp]
+lemma decomposeFin'Symm_succ (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) (j : Fin (n + 1)) :
+    decomposeFin'Symm i σ j.succ = i.succAbove (σ j) := rfl
+
+@[simp]
+lemma decomposeFin'Symm_symm_eq_zero (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    (decomposeFin'Symm i σ).symm i = 0 :=
+  (decomposeFin'Symm i σ).injective (by simp)
+
+@[simp]
+lemma decomposeFin'Symm_symm_succAbove
+    (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) (j : Fin (n + 1)) :
+    (decomposeFin'Symm i σ).symm (i.succAbove (σ j)) = j.succ :=
+  (decomposeFin'Symm i σ).injective (by simp)
+
+variable (n) in
+lemma decomposeFin'Symm_uncurry_bijective :
+    Function.Bijective (decomposeFin'Symm (n := n)).uncurry := by
+  rw [Nat.bijective_iff_injective_and_card]
+  refine ⟨fun ⟨i, σ⟩ ⟨i', σ'⟩ h ↦ ?_, ?_⟩
+  · obtain rfl : i = i' := by simpa using DFunLike.congr_fun h 0
+    obtain rfl : σ = σ' := by
+      ext j : 1
+      simpa using DFunLike.congr_fun h j.succ
+    rfl
+  · rw [Nat.card_prod, Nat.card_perm, Nat.card_perm, Nat.card_eq_fintype_card,
+      Nat.card_eq_fintype_card, Fintype.card_fin, Fintype.card_fin,
+      Nat.factorial_succ (n + 1)]
+
+/-- A bijection between `Perm (Fin (n + 2))` and `Fin (n + 2) × Perm (Fin (n + 1))`.
+The inverse map sends `⟨i, σ⟩` (with `i : Fin (n + 2)` and `σ : Perm (Fin (n + 1)`)
+to `decomposeFin'Symm i σ` which sends `0` to `i` and `j.succ` to `i.succAbove (σ j)`.
+(This bijection is slightly different from `Equiv.Perm.decomposeFin`.) -/
+noncomputable def decomposeFin' : Perm (Fin (n + 2)) ≃ Fin (n + 2) × Perm (Fin (n + 1)) :=
+  (Equiv.ofBijective _ (decomposeFin'Symm_uncurry_bijective n)).symm
+
+@[simp]
+lemma decomposeFin'_symm (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    decomposeFin'.symm ⟨i, σ⟩ = decomposeFin'Symm i σ := rfl
+
+@[simp]
+lemma sign_decomposeFin'Symm (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    (decomposeFin'Symm i σ).sign = (-1) ^ i.val * σ.sign := by
+  rw [Equiv.Perm.sign_eq_prod_prod_Ioi, Fin.prod_univ_succ]
+  congr
+  · let S : Finset (Fin (n + 1)) := { x | i.succAbove (σ x) ≤ i }
+    have : S = Finset.image σ.symm { x | x.castSucc < i } := by aesop
+    have hS : S.card = i.val := by
+      simp only [this, Finset.card_image_of_injective _ (Equiv.injective _)]
+      exact Finset.card_eq_of_bijective (fun j hj ↦ ⟨j, by grind⟩) (by grind) (by grind) (by simp)
+    simp only [← hS, Fin.Ioi_zero_eq_map, decomposeFin'Symm_zero, Finset.prod_map, Fin.coe_succEmb,
+      decomposeFin'Symm_succ, ← S.prod_mul_prod_compl, ← Finset.prod_const]
+    nth_rw 2 [Finset.prod_eq_one (by simp [S]; grind [Fin.succAbove])]
+    rw [mul_one]
+    exact Finset.prod_congr rfl (by grind)
+  · simp [Equiv.Perm.sign_eq_prod_prod_Ioi]
+
+end Equiv.Perm
