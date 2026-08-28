@@ -69,25 +69,17 @@ theorem not_isCarmichael_one : ¬ IsCarmichael 1 := by
   intro h
   simpa using h.two_lt
 
--- TODO: move this to a more appropriate file
-lemma sub_one_pow_mod {n : ℕ} (hn : 2 ≤ n) (k : ℕ) :
-    (n - 1) ^ k % n = if Odd k then n - 1 else 1 := by
-  induction k with
-  | zero => simp [mod_eq_of_lt hn]
-  | succ k ih =>
-    simp only [pow_succ, mul_mod, ih, self_sub_mod, ite_mul, one_mul]
-    by_cases hk : Odd k
-    · simp only [hk, ↓reduceIte, not_odd_iff_even.mpr hk.add_one, mod_eq_iff]
-      refine Or.inr ⟨lt_of_succ_le hn, n - 2, ?_⟩
-      rw [Nat.mul_sub, Nat.mul_sub, mul_one, Nat.sub_mul, one_mul, Nat.sub_sub,
-        self_add_sub_one n, mul_comm 2, tsub_tsub_assoc (by gcongr)]
-      lia
-    · simp [hk, not_even_iff_odd.mpr (not_odd_iff_even.mp hk).add_one]
-
--- TODO: move this to a more appropriate file
-lemma pow_mod_succ {n : ℕ} (hn : n ≠ 0) (k : ℕ) :
-    n ^ k % (n + 1) = if Odd k then n else 1 :=
-  sub_one_pow_mod (n := n + 1) (by lia) k
+lemma IsCarmichael.zmod_unit_pow_sub_one (s : (ZMod n)ˣ) (hn : n.IsCarmichael) :
+  s ^ (n - 1) = 1 := by
+  have _ : NeZero n := ⟨by grind [hn.two_lt]⟩
+  have suf : (↑s : ZMod n).val ^ (n - 1) ≡ 1 [MOD n] := by
+    refine (probablePrime_iff_modEq n ?_).mp <|
+      hn.probablePrime_of_coprime (ZMod.val_coe_unit_coprime s)
+    rw [one_le_iff_ne_zero, Ne, ZMod.val_eq_zero]
+    have : Nontrivial (ZMod n) := ZMod.nontrivial_iff.mpr (by grind [hn.two_lt])
+    exact Units.ne_zero s
+  ext
+  simp [← cast_one (R := ZMod n), ← (ZMod.natCast_eq_natCast_iff ..).mpr suf]
 
 /-- A Carmichael number is odd. -/
 theorem IsCarmichael.odd (h : n.IsCarmichael) : Odd n := by
@@ -101,20 +93,6 @@ theorem IsCarmichael.odd (h : n.IsCarmichael) : Odd n := by
     rw [ite_eq_right H, Ne, Units.ext_iff, Units.val_one, Units.coe_neg_one,
       ZMod.neg_one_eq_one_iff]
     grind [h.two_lt]
-
-lemma IsCarmichael.zmod_unit_pow_sub_one (s : (ZMod n)ˣ) (hn : n.IsCarmichael) :
-  s ^ (n - 1) = 1 := by
-  have _ : NeZero n := ⟨by grind [hn.two_lt]⟩
-  have suf : (↑s : ZMod n).val ^ (n - 1) ≡ 1 [MOD n] := by
-    apply (probablePrime_iff_modEq n ?_).mp <|
-      hn.probablePrime_of_coprime (ZMod.val_coe_unit_coprime s)
-    rw [one_le_iff_ne_zero]
-    intro hs0
-    have h_coprime := ZMod.val_coe_unit_coprime s
-    rw [hs0, coprime_zero_left] at h_coprime
-    grind [hn.two_lt]
-  ext
-  simp [← cast_one (R := ZMod n), ← (ZMod.natCast_eq_natCast_iff ..).mpr suf]
 
 /-- A Carmichael number is squarefree. -/
 theorem IsCarmichael.squarefree (h : n.IsCarmichael) : Squarefree n := by
@@ -143,7 +121,7 @@ theorem IsCarmichael.carmichael_dvd_sub_one (h : n.IsCarmichael) : carmichael n 
 
 theorem IsCarmichael.prime_sub_one_dvd {p : ℕ} (h : n.IsCarmichael) (hp : p.Prime) (hpn : p ∣ n) :
     p - 1 ∣ n - 1 := by
-  refine dvd_trans ?_ h.carmichael_dvd_pred
+  refine dvd_trans ?_ h.carmichael_dvd_sub_one
   rw [← carmichael_of_prime hp]
   exact carmichael_dvd (by simpa using hpn)
 
