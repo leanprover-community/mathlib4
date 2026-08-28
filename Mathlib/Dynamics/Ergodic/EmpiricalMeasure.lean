@@ -134,7 +134,7 @@ public theorem exists_measurePreserving_probabilityMeasure
       exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
     · exact g.continuous.aestronglyMeasurable
   use ν
-  exact ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩⟩
+  exact ⟨⟨hf.aemeasurable, hmap⟩, hνreg, ⟨hprob⟩⟩
 
 /-- **Krylov-Bogolyubov theorem** for forward invariant compact sets. -/
 theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
@@ -156,11 +156,11 @@ theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
   use ν
   have : (ν : Measure X).InnerRegular :=
     Measure.InnerRegular.map_of_continuous continuous_subtype_val
-  have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas, by simp [ν]⟩
+  have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas.aemeasurable, by simp [ν]⟩
   have hsemi : Function.Semiconj ι (Set.MapsTo.restrict f K K hfinv) f := by
     intro
     rfl
-  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, inferInstance, ?_⟩
+  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas.aemeasurable, inferInstance, inferInstance, ?_⟩
   -- Now we prove that the invariant measure is supported on the forward invariant set
   apply Measure.support_subset_of_isClosed hcomp.isClosed
   rw [MeasureTheory.mem_ae_iff]

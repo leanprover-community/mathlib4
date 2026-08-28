@@ -785,7 +785,7 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
     {𝓕 : Set α} (h𝓕 : IsFundamentalDomain G 𝓕 ν)
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] :
     MeasurePreserving π (ν.restrict 𝓕) μ where
-  measurable := measurable_quotient_mk' (s := α_mod_G)
+  aemeasurable := (measurable_quotient_mk' (s := α_mod_G)).aemeasurable
   map_eq := by
     have : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
     rw [h𝓕.projection_respects_measure (μ := μ)]
