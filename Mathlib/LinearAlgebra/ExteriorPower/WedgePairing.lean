@@ -144,11 +144,8 @@ lemma bijective_wedgePairing :
   exact (wedgePairingEquivOfBasis (finBasis K V) vol hvol hkl).bijective
 
 end FiniteDimensional
-
 end Basis
-
 end exteriorPower
-
 end private_defs
 
 namespace exteriorPower
