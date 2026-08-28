@@ -199,8 +199,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
     | _ => rargs
   | _ => default
 
--- Remove this suppression and the compatibility code marked below when
--- `linter.style.nativeDecide` is removed.
+-- TODO: Remove this `set_option` with `linter.style.nativeDecide`.
 set_option linter.deprecated false in
 /-- The deprecated syntax linter flags usages of deprecated syntax and suggests
 replacement syntax. For each individual case, linting can be turned on or off separately.
