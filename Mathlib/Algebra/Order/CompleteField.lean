@@ -51,13 +51,6 @@ open Function Rat Set
 
 open scoped Pointwise
 
-/-- A field which is both linearly ordered and conditionally complete with respect to the order.
-This axiomatizes the reals. -/
-@[deprecated "Use `[Field α] [ConditionallyCompleteLinearOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2026-02-23")]
-structure ConditionallyCompleteLinearOrderedField (α : Type*) extends
-    Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
-
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
 scoped instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
