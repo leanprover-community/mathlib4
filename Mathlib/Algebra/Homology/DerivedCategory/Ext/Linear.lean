@@ -29,47 +29,35 @@ namespace Abelian
 
 namespace Ext
 
-section RingHom
+section End
 
-variable {R : Type t} [Semiring R] {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
-  {A G : C} (φ : R →+* End G)
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C] {A G : C} {n : ℕ}
 
-/-- Auxiliary definition for `Abelian.Ext.moduleOfRingHom`: the scalar multiplication in which
-`r : R` acts on `Ext A G n` by postcomposition with `mk₀ (φ r)`. -/
-@[reducible] noncomputable def smulOfRingHom (n : ℕ) : SMul R (Ext A G n) where
-  smul r x := x.comp (mk₀ (φ r)) (add_zero n)
+/-- Scalar multiplication of `End G` on `Ext A G n` by postcomposition; the module structure is
+`Abelian.Ext.moduleEndRight`. -/
+noncomputable instance smulEndRight : SMul (End G) (Ext A G n) where
+  smul r x := x.comp (mk₀ r) (add_zero n)
 
-lemma smulOfRingHom_smul (n : ℕ) (r : R) (x : Ext A G n) :
-    letI := smulOfRingHom φ n (A := A) (G := G)
-    r • x = x.comp (mk₀ (φ r)) (add_zero n) := rfl
+lemma smul_end_def (r : End G) (x : Ext A G n) : r • x = x.comp (mk₀ r) (add_zero n) := rfl
 
-/-- A ring homomorphism `φ : R →+* End G` makes each `Ext A G n` an `R`-module, with `r` acting
-by postcomposition with `mk₀ (φ r)`; this is the additivity of `Ext` in its second variable
-packaged as a module structure.
-
-Note that this does not require the ambient category to be `R`-linear: only the single object `G`
-needs an action of `R`. There is also an `R`-module instance on `Ext A G n` in the case where `C` is
-`R`-linear. When `C` is `R`-linear the two agree, see `Abelian.Ext.moduleOfRingHom_algebraMap`. -/
-@[reducible] noncomputable def moduleOfRingHom (n : ℕ) : Module R (Ext A G n) where
-  __ := smulOfRingHom φ n (A := A) (G := G)
-  one_smul x := by simp [smulOfRingHom_smul, End.one_def]
+/-- The endomorphism ring of `G` acts on `Ext A G n` by postcomposition. This is the `Ext`
+analogue of `CategoryTheory.Preadditive.moduleEndRight`, which is the same statement for the
+Hom-groups `A ⟶ G`, and it expresses the additivity of `Ext` in its second variable. -/
+noncomputable instance moduleEndRight : Module (End G) (Ext A G n) where
+  one_smul x := by simp [smul_end_def, End.one_def]
   mul_smul r s x := by
-    simp only [smulOfRingHom_smul]
-    rw [map_mul, End.mul_def, ← mk₀_comp_mk₀, comp_assoc_of_third_deg_zero]
-  smul_zero r := by simp [smulOfRingHom_smul]
+    simp only [smul_end_def]
+    rw [End.mul_def, ← mk₀_comp_mk₀, comp_assoc_of_third_deg_zero]
+  smul_zero r := by simp [smul_end_def]
   zero_smul x := by
-    simp only [smulOfRingHom_smul]
-    rw [map_zero, show (0 : End G) = (0 : G ⟶ G) from rfl, mk₀_zero, comp_zero]
-  smul_add r x y := by simp [smulOfRingHom_smul]
+    simp only [smul_end_def]
+    rw [show (0 : End G) = (0 : G ⟶ G) from rfl, mk₀_zero, comp_zero]
+  smul_add r x y := by simp [smul_end_def]
   add_smul r s x := by
-    simp only [smulOfRingHom_smul]
-    rw [map_add, show mk₀ (φ r + φ s) = mk₀ (φ r) + mk₀ (φ s) from mk₀_add (φ r) (φ s), comp_add]
+    simp only [smul_end_def]
+    rw [show mk₀ (r + s) = mk₀ r + mk₀ s from mk₀_add r s, comp_add]
 
-lemma moduleOfRingHom_smul (n : ℕ) (r : R) (x : Ext A G n) :
-    letI := moduleOfRingHom φ n (A := A) (G := G)
-    r • x = x.comp (mk₀ (φ r)) (add_zero n) := rfl
-
-end RingHom
+end End
 
 section Ring
 
@@ -143,13 +131,11 @@ section CommRing
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
-/-- In an `R`-linear category over a commutative ring, the `Module R (Ext X Y n)` instance is
-`Abelian.Ext.moduleOfRingHom` for the canonical ring homomorphism `R →+* End Y`. -/
-lemma moduleOfRingHom_algebraMap {R : Type t} [CommRing R] [Linear R C] {X Y : C} {n : ℕ} :
-    moduleOfRingHom (algebraMap R (End Y)) n (A := X) = (inferInstance : Module R (Ext X Y n)) :=
-  Module.ext' _ _ fun r x => by
-    rw [moduleOfRingHom_smul, smul_eq_comp_mk₀]
-    congr 2
+@[simp]
+lemma algebraMap_end_smul {R : Type t} [CommRing R] [Linear R C] {X Y : C} {n : ℕ}
+    (r : R) (x : Ext X Y n) : (algebraMap R (End Y)) r • x = r • x := by
+  rw [smul_end_def, smul_eq_comp_mk₀]
+  congr 2
 
 /-- The composition of `Ext`, as a bilinear map. -/
 @[simps!]
