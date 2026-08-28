@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
 module
-
-public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Analysis.Convex.Cone.Closure
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Order.Module
 public import Mathlib.Topology.Order.DenselyOrdered
+
+import Mathlib.Algebra.Order.Nonneg.Basic
 
 /-!
 # Proper cones

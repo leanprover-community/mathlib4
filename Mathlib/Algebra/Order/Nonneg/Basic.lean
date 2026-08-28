@@ -43,7 +43,11 @@ open Set
 
 variable {α : Type*}
 
-/-- The subtype of nonnegative elements. -/
+/-- The subtype of nonnegative elements.
+
+TODO: `Nonneg` could be converted to a one-field or two-field structure, as discussed on Zulip:
+https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/585745328
+-/
 abbrev Nonneg (α : Type*) [Zero α] [LE α] := { x : α // 0 ≤ x }
 
 namespace Nonneg
