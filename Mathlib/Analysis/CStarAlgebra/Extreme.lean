@@ -39,65 +39,6 @@ public section
 
 open Set Metric CStarAlgebra Unitization CFC
 
-open scoped ComplexStarModule in
-lemma CStarAlgebra.one_mem_extremePoints_unitClosedBall (A : Type*) [CStarAlgebra A] :
-    1 ∈ extremePoints ℝ (closedBall (0 : A) 1) := by
-  nontriviality A
-  /- Suppose that `1` is a convex combination of `x` and `y`. Then, since `1` is self
-  adjoint, it is also a combination of their real and imaginary parts, which we
-  call `a` and `b`. Moreover, `b` is a linear polynomial in the variable `a`, so we
-  may write it as the continuous functional calculus applied to the appropriate
-  function of `a`. -/
-  refine ⟨by simp, fun x hx y hy hxy ↦ ?_⟩
-  let +nondep (eq := ha') a : A := ℜ x
-  let +nondep (eq := hb') b : A := ℜ y
-  simp only [mem_closedBall, dist_zero_right] at hx hy
-  have ha : ‖a‖ ≤ 1 := by simpa [ha'] using realPart.norm_le _ |>.trans hx
-  have hb : ‖b‖ ≤ 1 := by simpa [hb'] using realPart.norm_le _ |>.trans hy
-  obtain ⟨c₁, hc₁, c₂, hc₂, hc, hcab⟩ := by simpa [openSegment] using hxy
-  replace hcab : c₁ • a + c₂ • b = 1 := by simpa [ha', hb'] using congr((ℜ $hcab : A))
-  have : b = c₂⁻¹ • 1 - c₂⁻¹ • c₁ • a := by
-    simpa [inv_smul_smul₀ hc₂.ne', eq_sub_iff_add_eq'] using congr(c₂⁻¹ • $hcab)
-  /- By passing to functions, we will show that `a = 1`. We proceed by establishing the constant
-  function `1` on the `ℝ`-spectrum of `a` is a convex combination of functions (one of
-  which is the identity) which are bounded in absolute value by `1`. Since `1 : ℝ` is
-  extreme in `Icc (-1) 1`, we conclude that these functions must be `1` on the
-  spectrum of `a`. -/
-  obtain rfl : a = 1 := by
-    refine CFC.eq_one_of_spectrum_subset_one (R := ℝ) a fun r hr ↦ show r = 1 from ?_
-    have h1_mem : (1 : ℝ) ∈ openSegment ℝ r (c₂⁻¹ - c₂⁻¹ * c₁ * r) :=
-      ⟨c₁, c₂, hc₁, hc₂, hc, by simp [mul_assoc, mul_sub, hc₂.ne']⟩
-    have key : (1 : ℝ) ∈ extremePoints ℝ (Icc (-1) 1) := by simp
-    refine mem_extremePoints_iff_left.mp key |>.2 _ ?_ _ ?_ h1_mem
-    · simpa [abs_le] using (spectrum.norm_le_norm_of_mem hr).trans ha
-    · suffices c₂⁻¹ - c₂⁻¹ * c₁ * r ∈ spectrum ℝ b by
-        simpa [abs_le] using (spectrum.norm_le_norm_of_mem this).trans hb
-      rwa [this, ← Algebra.algebraMap_eq_smul_one, sub_eq_add_neg, sub_eq_add_neg,
-        add_comm c₂⁻¹, spectrum.add_mem_add_iff, ← spectrum.neg_eq, Set.neg_mem_neg, smul_smul,
-        spectrum.smul_eq_smul _ _ (nonempty_of_mem hr), ← smul_eq_mul _ r,
-        Set.smul_mem_smul_set_iff₀ (by positivity)]
-  clear this hb ha hcab hb' hc hc₂ hc₁ c₁ c₂ hy hxy y
-  /- Since `ℜ x = 1`, the real and imaginary parts of `x` commute, so `x` is normal. It
-  then suffices to show that `ℑ x = 0`. -/
-  have hx' : IsStarNormal x := by simp [isStarNormal_iff_commute_realPart_imaginaryPart, ← ha']
-  suffices (ℑ x : A) = 0 by rw [← realPart_add_I_smul_imaginaryPart x, ← ha', this]; simp
-  let := spectralOrder A
-  let := spectralOrderedRing A
-  /- Note that `‖1 + (ℑ x) ^ 2‖ = ‖(ℜ x) ^ 2 + (ℑ x) ^ 2‖ = ‖star x * x‖ = ‖x‖ ^ 2 ≤ 1`.
-  Therefore, `1 + (ℑ x) ^ 2 ≤ 1`, so `(ℑ x) ^ 2 ≤ 0`. Since `(ℑ x) ^ 2` is clearly nonnegative,
-  we conclude that it is zero, and hence so also `ℑ x = 0`, as desired. -/
-  rw [← sq_le_one_iff₀ (by positivity), sq, ← CStarRing.norm_star_mul_self,
-    star_mul_self_eq_realPart_sq_add_imaginaryPart_sq, ← ha', mul_one, ← sq,
-    norm_le_one_iff_of_nonneg _ (add_nonneg zero_le_one (ℑ x).2.sq_nonneg)] at hx
-  rw [← norm_eq_zero, ← sq_eq_zero_iff, ← IsSelfAdjoint.norm_mul_self (ℑ x).2, ← sq, norm_eq_zero]
-  exact le_antisymm (by simpa using hx) (ℑ x).2.sq_nonneg
-
-lemma Unitary.coe_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebra A] {u : A}
-    (hu : u ∈ unitary A) : u ∈ extremePoints ℝ (closedBall 0 1) := by
-  rw [← map_zero (mulLeft ℝ A ⟨u, hu⟩), ← LinearIsometryEquiv.image_closedBall,
-    ← image_extremePoints]
-  exact ⟨1 , ⟨one_mem_extremePoints_unitClosedBall A, by simp⟩⟩
-
 variable {A : Type*} [NonUnitalCStarAlgebra A]
 
 -- TODO: this should be phrased in terms of partial isometries once we have those
@@ -235,6 +176,65 @@ theorem CStarAlgebra.left_identity_of_mem_extremePoints {x : A}
     (star x * x + x * star x - x * star x * (star x * x)) * a = a := by
   simpa [add_comm] using congr(star $(right_identity_of_mem_extremePoints (x := star x)
     (by simpa using star_mem_star.mpr hx) (star a)))
+
+open scoped ComplexStarModule in
+lemma CStarAlgebra.one_mem_extremePoints_unitClosedBall (A : Type*) [CStarAlgebra A] :
+    1 ∈ extremePoints ℝ (closedBall (0 : A) 1) := by
+  nontriviality A
+  /- Suppose that `1` is a convex combination of `x` and `y`. Then, since `1` is self
+  adjoint, it is also a combination of their real and imaginary parts, which we
+  call `a` and `b`. Moreover, `b` is a linear polynomial in the variable `a`, so we
+  may write it as the continuous functional calculus applied to the appropriate
+  function of `a`. -/
+  refine ⟨by simp, fun x hx y hy hxy ↦ ?_⟩
+  let +nondep (eq := ha') a : A := ℜ x
+  let +nondep (eq := hb') b : A := ℜ y
+  simp only [mem_closedBall, dist_zero_right] at hx hy
+  have ha : ‖a‖ ≤ 1 := by simpa [ha'] using realPart.norm_le _ |>.trans hx
+  have hb : ‖b‖ ≤ 1 := by simpa [hb'] using realPart.norm_le _ |>.trans hy
+  obtain ⟨c₁, hc₁, c₂, hc₂, hc, hcab⟩ := by simpa [openSegment] using hxy
+  replace hcab : c₁ • a + c₂ • b = 1 := by simpa [ha', hb'] using congr((ℜ $hcab : A))
+  have : b = c₂⁻¹ • 1 - c₂⁻¹ • c₁ • a := by
+    simpa [inv_smul_smul₀ hc₂.ne', eq_sub_iff_add_eq'] using congr(c₂⁻¹ • $hcab)
+  /- By passing to functions, we will show that `a = 1`. We proceed by establishing the constant
+  function `1` on the `ℝ`-spectrum of `a` is a convex combination of functions (one of
+  which is the identity) which are bounded in absolute value by `1`. Since `1 : ℝ` is
+  extreme in `Icc (-1) 1`, we conclude that these functions must be `1` on the
+  spectrum of `a`. -/
+  obtain rfl : a = 1 := by
+    refine CFC.eq_one_of_spectrum_subset_one (R := ℝ) a fun r hr ↦ show r = 1 from ?_
+    have h1_mem : (1 : ℝ) ∈ openSegment ℝ r (c₂⁻¹ - c₂⁻¹ * c₁ * r) :=
+      ⟨c₁, c₂, hc₁, hc₂, hc, by simp [mul_assoc, mul_sub, hc₂.ne']⟩
+    have key : (1 : ℝ) ∈ extremePoints ℝ (Icc (-1) 1) := by simp
+    refine mem_extremePoints_iff_left.mp key |>.2 _ ?_ _ ?_ h1_mem
+    · simpa [abs_le] using (spectrum.norm_le_norm_of_mem hr).trans ha
+    · suffices c₂⁻¹ - c₂⁻¹ * c₁ * r ∈ spectrum ℝ b by
+        simpa [abs_le] using (spectrum.norm_le_norm_of_mem this).trans hb
+      rwa [this, ← Algebra.algebraMap_eq_smul_one, sub_eq_add_neg, sub_eq_add_neg,
+        add_comm c₂⁻¹, spectrum.add_mem_add_iff, ← spectrum.neg_eq, Set.neg_mem_neg, smul_smul,
+        spectrum.smul_eq_smul _ _ (nonempty_of_mem hr), ← smul_eq_mul _ r,
+        Set.smul_mem_smul_set_iff₀ (by positivity)]
+  clear this hb ha hcab hb' hc hc₂ hc₁ c₁ c₂ hy hxy y
+  /- Since `ℜ x = 1`, the real and imaginary parts of `x` commute, so `x` is normal. It
+  then suffices to show that `ℑ x = 0`. -/
+  have hx' : IsStarNormal x := by simp [isStarNormal_iff_commute_realPart_imaginaryPart, ← ha']
+  suffices (ℑ x : A) = 0 by rw [← realPart_add_I_smul_imaginaryPart x, ← ha', this]; simp
+  let := spectralOrder A
+  let := spectralOrderedRing A
+  /- Note that `‖1 + (ℑ x) ^ 2‖ = ‖(ℜ x) ^ 2 + (ℑ x) ^ 2‖ = ‖star x * x‖ = ‖x‖ ^ 2 ≤ 1`.
+  Therefore, `1 + (ℑ x) ^ 2 ≤ 1`, so `(ℑ x) ^ 2 ≤ 0`. Since `(ℑ x) ^ 2` is clearly nonnegative,
+  we conclude that it is zero, and hence so also `ℑ x = 0`, as desired. -/
+  rw [← sq_le_one_iff₀ (by positivity), sq, ← CStarRing.norm_star_mul_self,
+    star_mul_self_eq_realPart_sq_add_imaginaryPart_sq, ← ha', mul_one, ← sq,
+    norm_le_one_iff_of_nonneg _ (add_nonneg zero_le_one (ℑ x).2.sq_nonneg)] at hx
+  rw [← norm_eq_zero, ← sq_eq_zero_iff, ← IsSelfAdjoint.norm_mul_self (ℑ x).2, ← sq, norm_eq_zero]
+  exact le_antisymm (by simpa using hx) (ℑ x).2.sq_nonneg
+
+lemma Unitary.coe_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebra A] {u : A}
+    (hu : u ∈ unitary A) : u ∈ extremePoints ℝ (closedBall 0 1) := by
+  rw [← map_zero (mulLeft ℝ A ⟨u, hu⟩), ← LinearIsometryEquiv.image_closedBall,
+    ← image_extremePoints]
+  exact ⟨1 , ⟨one_mem_extremePoints_unitClosedBall A, by simp⟩⟩
 
 /-- A C⋆-algebra is unital iff there exists an extreme point of the closed unit ball.
 
