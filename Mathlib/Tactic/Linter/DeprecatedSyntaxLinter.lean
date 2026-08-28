@@ -82,14 +82,21 @@ public register_option linter.style.admit : Bool := {
   descr := "enable the admit linter"
 }
 
-/-- The option `linter.style.nativeDecide` of the deprecated syntax linter flags usages of
-the `native_decide` tactic, which is disallowed in mathlib. -/
+/-- The option `linter.style.native` of the deprecated syntax linter flags usages of
+`native_decide` and `decide +native`, which are disallowed in mathlib. -/
 -- Note: this linter is purely for user information. Running `lean4checker` in CI catches *any*
 -- additional axioms that are introduced (not just `ofReduceBool`): the point of this check is to
 -- alert the user quickly, not to be airtight.
+public register_option linter.style.native : Bool := {
+  defValue := false
+  descr := "enable the native-evaluation linter"
+}
+
+/-- Deprecated in favor of `linter.style.native`. -/
+@[deprecated linter.style.native (since := "2026-08-28")]
 public register_option linter.style.nativeDecide : Bool := {
   defValue := false
-  descr := "enable the nativeDecide linter"
+  descr := "deprecated: use the `linter.style.native` option instead"
 }
 
 /-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
@@ -202,6 +209,8 @@ replacement syntax. For each individual case, linting can be turned on or off se
 * `cases'`, superseded by `obtain`, `rcases` and `cases` (controlled by `linter.style.cases`)
 * `induction'`, superseded by `induction` (controlled by `linter.style.induction`)
 * `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
+* `native_decide` and `decide +native`, which trust the Lean compiler
+  (controlled by `linter.style.native`)
 * `set_option maxHeartbeats`, should contain an explanatory comment
   (controlled by `linter.style.maxHeartbeats`)
 -/
@@ -211,7 +220,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       getLinterValue linter.style.induction (← getLinterOptions) ||
       getLinterValue linter.style.admit (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
-      getLinterValue linter.style.nativeDecide (← getLinterOptions) do
+      getLinterValue linter.style.native (← getLinterOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -229,7 +238,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | `Mathlib.Tactic.induction' => Linter.logLintIf linter.style.induction stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
       | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide =>
-        Linter.logLintIf linter.style.nativeDecide stx' msg
+        Linter.logLintIf linter.style.native stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | _ => continue) stx
 
