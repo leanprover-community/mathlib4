@@ -495,14 +495,10 @@ private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 
       simp [mul_pow]
     _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ * ((∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) *
           ∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹ := by
-      have h : (∫⁻ (x : X), ∫⁻ (y : X), ‖f y‖ₑ ^ 2 * ‖g x‖ₑ ^ 2 ∂μ ∂μ)
-          = ((∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) * ∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ) := by
-        rw [← lintegral_const_mul _ ((g : X →ₘ[μ] V).measurable.enorm.pow_const 2)]
-        congr 1
-        ext x
-        exact lintegral_mul_const _ ((f : X →ₘ[μ] V).measurable.enorm.pow_const 2)
-      grw [lintegral_prod_le (fun (p : X × X) ↦ ‖f p.2‖ₑ ^ 2 * ‖g p.1‖ₑ ^ 2)]
-      simp [h]
+      simp_rw [mul_comm (‖f _‖ₑ ^ 2)]
+      grw [lintegral_prod_mul_le ((g : X →ₘ[μ] V).aemeasurable.enorm.pow_const 2)
+        ((f : X →ₘ[μ] V).aemeasurable.enorm.pow_const 2)]
+      simp [mul_comm]
     _ ≤ (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
       rw [ENNReal.mul_rpow_of_nonneg (∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) (∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ)
         (by simp)]
