@@ -185,7 +185,6 @@ def unitFork (B : C) :
       (adj.unit.app (G.obj (F.obj B))) :=
   Fork.ofι (adj.unit.app B) (adj.unit_naturality _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {adj} in
 /-- The counit fork is a limit provided `F` preserves it. -/
 def counitLimitOfPreservesEqualizer (A : adj.toComonad.Coalgebra)
@@ -281,7 +280,6 @@ instance [ReflectsLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
       (NatTrans.app adj.unit (G.obj A.A))) F :=
   fun _ => ReflectsLimitOfIsCosplitPair.out _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- To show `F` is a comonadic left adjoint, we can show it preserves and reflects `F`-split
 equalizers, and `C` has them.
 -/

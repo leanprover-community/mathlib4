@@ -361,7 +361,7 @@ scoped[ChangeOfRings] notation:100 s:100 " ⊗ₜ[" R "," f "] " m:101 =>
 
 end Unbundled
 
-open ChangeOfRings
+open scoped ChangeOfRings
 
 namespace ExtendScalars
 
@@ -967,7 +967,6 @@ lemma homEquiv_extendScalarsId (M : ModuleCat R) :
   simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma extendScalarsId_hom_app_one_tmul (M : ModuleCat R) (m : M) :
     (extendScalarsId R).hom.app M ((1 : R) ⊗ₜ m) = m := by
   rw [← extendRestrictScalarsAdj_homEquiv_apply,
