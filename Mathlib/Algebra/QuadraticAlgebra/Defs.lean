@@ -382,6 +382,10 @@ noncomputable def basis : Module.Basis (Fin 2) R (QuadraticAlgebra R a b) :=
 theorem basis_repr_apply (x : QuadraticAlgebra R a b) :
     (basis a b).repr x = ![x.re, x.im] := rfl
 
+@[simp]
+theorem basis_apply_zero : basis a b 0 = 1 := by
+  ext <;> simp [basis]
+
 instance : Module.Finite R (QuadraticAlgebra R a b) := .of_basis (basis a b)
 
 instance : Module.Free R (QuadraticAlgebra R a b) := .of_basis (basis a b)
