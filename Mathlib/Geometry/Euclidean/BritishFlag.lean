@@ -44,7 +44,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 /-- The identity underlying the British flag theorem, for the parallelogram with vertices `0`,
 `u`, `u + v` and `v` and any point `x`, vector form. -/
-theorem norm_sq_add_norm_sub_add_sq_eq_norm_sub_sq_add_norm_sub_sq_add_two_inner (x u v : V) :
+theorem norm_sq_add_norm_sub_add_sq_eq_norm_sub_sq_add_norm_sub_sq_add_two_mul_inner (x u v : V) :
     ‖x‖ ^ 2 + ‖x - (u + v)‖ ^ 2 = ‖x - u‖ ^ 2 + ‖x - v‖ ^ 2 + 2 * ⟪u, v⟫ := by
   simp only [← real_inner_self_eq_norm_sq, inner_sub_left, inner_sub_right, inner_add_left,
     inner_add_right, real_inner_comm u x, real_inner_comm v x, real_inner_comm v u]
@@ -53,7 +53,7 @@ theorem norm_sq_add_norm_sub_add_sq_eq_norm_sub_sq_add_norm_sub_sq_add_two_inner
 /-- British flag theorem, if-and-only-if vector form. -/
 theorem norm_sq_add_norm_sub_add_sq_eq_norm_sub_sq_add_norm_sub_sq_iff_inner_eq_zero (x u v : V) :
     ‖x‖ ^ 2 + ‖x - (u + v)‖ ^ 2 = ‖x - u‖ ^ 2 + ‖x - v‖ ^ 2 ↔ ⟪u, v⟫ = 0 := by
-  rw [norm_sq_add_norm_sub_add_sq_eq_norm_sub_sq_add_norm_sub_sq_add_two_inner, add_eq_left,
+  rw [norm_sq_add_norm_sub_add_sq_eq_norm_sub_sq_add_norm_sub_sq_add_two_mul_inner, add_eq_left,
     mul_eq_zero_iff_left two_ne_zero]
 
 end InnerProductGeometry
@@ -67,7 +67,7 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
 
 /-- The British flag identity for a parallelogram, with the correction term written as an inner
 product. -/
-private theorem dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_two_inner {a b c d : P}
+theorem dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_two_mul_inner {a b c d : P}
     (h : midpoint ℝ a c = midpoint ℝ b d) (p : P) :
     dist p a ^ 2 + dist p c ^ 2 = dist p b ^ 2 + dist p d ^ 2 + 2 * ⟪b -ᵥ a, d -ᵥ a⟫ := by
   have hd : c -ᵥ a = b -ᵥ a + (d -ᵥ a) := by
@@ -76,7 +76,7 @@ private theorem dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_two_inner {a b c 
   rw [dist_eq_norm_vsub V p a, dist_eq_norm_vsub V p b, dist_eq_norm_vsub V p c,
     dist_eq_norm_vsub V p d, ← vsub_sub_vsub_cancel_right p b a,
     ← vsub_sub_vsub_cancel_right p d a, ← vsub_sub_vsub_cancel_right p c a, hd,
-    norm_sq_add_norm_sub_add_sq_eq_norm_sub_sq_add_norm_sub_sq_add_two_inner]
+    norm_sq_add_norm_sub_add_sq_eq_norm_sub_sq_add_norm_sub_sq_add_two_mul_inner]
 
 /-- The British flag theorem generalized to parallelograms, with a correction term of twice the
 product of the sides at `a` and the cosine of the angle at `a`. -/
@@ -84,7 +84,7 @@ theorem dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_two_mul_dist_mul_dist_mul
     {a b c d : P} (h : midpoint ℝ a c = midpoint ℝ b d) (p : P) :
     dist p a ^ 2 + dist p c ^ 2 =
       dist p b ^ 2 + dist p d ^ 2 + 2 * dist b a * dist d a * Real.cos (∠ b a d) := by
-  rw [dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_two_inner h p, dist_eq_norm_vsub V b a,
+  rw [dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_two_mul_inner h p, dist_eq_norm_vsub V b a,
     dist_eq_norm_vsub V d a, angle, ← cos_angle_mul_norm_mul_norm]
   ring
 
@@ -94,7 +94,7 @@ theorem dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two {a b 
     (h : midpoint ℝ a c = midpoint ℝ b d) (p : P) :
     dist p a ^ 2 + dist p c ^ 2 = dist p b ^ 2 + dist p d ^ 2 ↔ ∠ b a d = π / 2 := by
   rw [angle, ← inner_eq_zero_iff_angle_eq_pi_div_two,
-    dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_two_inner h p, add_eq_left,
+    dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_two_mul_inner h p, add_eq_left,
     mul_eq_zero_iff_left two_ne_zero]
 
 /-- **British flag theorem**: for a rectangle `a b c d` and any point `p` (not necessarily in
