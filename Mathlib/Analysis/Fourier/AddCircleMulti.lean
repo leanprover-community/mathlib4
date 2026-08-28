@@ -168,7 +168,7 @@ theorem coe_symm_measurableEquivPiIoc_apply (y : {x : ι → ℝ // ∀ i, x i �
 /-- The equivalence `measurableEquivPiIoc` is measure preserving. -/
 lemma measurePreserving_equivPiIoc :
     MeasurePreserving (measurableEquivPiIoc a) volume (Measure.comap Subtype.val volume) := by
-  refine (⟨(measurableEquivPiIoc a).symm.measurable, symm ?_⟩ :
+  refine (⟨(measurableEquivPiIoc a).symm.measurable.aemeasurable, symm ?_⟩ :
     MeasurePreserving (measurableEquivPiIoc a).symm _ _).symm
   have := Measure.map_map (μ := volume.comap Subtype.val) (.of_eval
     (f := fun (x : d → ℝ) => (fun i => x i : UnitAddTorus d))

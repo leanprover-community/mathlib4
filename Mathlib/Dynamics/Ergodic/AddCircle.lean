@@ -103,7 +103,8 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     mul_assoc, this, hI₂]
 
 theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => n • y :=
-  Ergodic.of_preimage_eq (measurePreserving_zsmul volume (abs_pos.mp <| lt_trans zero_lt_one hn))
+  Ergodic.of_preimage_eq (by fun_prop)
+    (measurePreserving_zsmul volume (abs_pos.mp <| lt_trans zero_lt_one hn))
     fun s hs hs' => by
       let u : ℕ → AddCircle T := fun j => ↑((↑1 : ℝ) / ↑(n.natAbs ^ j) * T)
       replace hn : 1 < n.natAbs := by rwa [Int.abs_eq_natAbs, Nat.one_lt_cast] at hn

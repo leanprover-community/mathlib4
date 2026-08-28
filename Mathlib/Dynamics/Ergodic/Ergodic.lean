@@ -70,12 +70,12 @@ theorem PreErgodic.of_preimage_eq_of_isComplete [μ.IsComplete] (hf : QuasiMeasu
     PreErgodic f μ :=
   .of_preimage_eq (aemeasurable_iff_measurable.1 hf.aemeasurable) hf h
 
-/-- To prove that a quasi-measure-preserving `f` is ergodic, it suffices to check the ergodicity
-condition on strictly invariant measurable sets. -/
-theorem Ergodic.of_preimage_eq (hf : MeasurePreserving f μ μ)
+/-- To prove that a measurable quasi-measure-preserving `f` is ergodic, it suffices to check the
+ergodicity condition on strictly invariant measurable sets. -/
+theorem Ergodic.of_preimage_eq (hfm : Measurable f) (hf : MeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
     Ergodic f μ :=
-  ⟨hf, .of_preimage_eq hf.measurable hf.quasiMeasurePreserving h⟩
+  ⟨hf, .of_preimage_eq hfm hf.quasiMeasurePreserving h⟩
 
 /-- To prove that a measurable quasi-measure-preserving `f` is quasi-ergodic, it suffices to check
 the ergodicity condition on strictly invariant measurable sets. -/
@@ -141,7 +141,7 @@ theorem preErgodic_of_preErgodic_semiconj (hg : MeasurePreserving g μ μ') (hf 
 
 theorem ergodic_of_ergodic_semiconj (hg : MeasurePreserving g μ μ') (hf : Ergodic f μ)
     {f' : β → β} (hf' : Measurable f') (h_comm : Semiconj g f f') : Ergodic f' μ' :=
-  ⟨hg.of_semiconj hf.toMeasurePreserving h_comm hf',
+  ⟨hg.of_semiconj hf.toMeasurePreserving h_comm hf'.aemeasurable,
    hg.preErgodic_of_preErgodic_semiconj hf.toPreErgodic h_comm⟩
 
 theorem preErgodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ μ') :
@@ -225,7 +225,7 @@ theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : NullMeasurabl
 
 /-- If a measurable equivalence is ergodic, then so is the inverse map. -/
 theorem symm {e : α ≃ᵐ α} (he : Ergodic e μ) : Ergodic e.symm μ :=
-  .of_preimage_eq he.toMeasurePreserving.symm fun s hsm hs ↦
+  .of_preimage_eq e.symm.measurable he.toMeasurePreserving.symm fun s hsm hs ↦
     he.aeconst_set hsm.nullMeasurableSet <| by
       conv_lhs => rw [← hs, ← e.image_eq_preimage_symm, e.preimage_image]
 
@@ -235,8 +235,8 @@ theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞
     (hf : Ergodic f μ) (c : R) : Ergodic f (c • μ) :=
   ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
 
-theorem zero_measure {f : α → α} (hf : Measurable f) : @Ergodic α m f 0 where
-  measurable := hf
+theorem zero_measure {f : α → α} : @Ergodic α m f 0 where
+  aemeasurable := aemeasurable_zero_measure
   map_eq := by simp
   toPreErgodic := .zero_measure f
 

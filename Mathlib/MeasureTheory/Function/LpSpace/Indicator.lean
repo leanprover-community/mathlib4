@@ -287,9 +287,9 @@ namespace Lp
 variable {β : Type*} [MeasurableSpace β] {μb : MeasureTheory.Measure β} {f : α → β}
 
 theorem indicatorConstLp_compMeasurePreserving {s : Set β} (hs : MeasurableSet s)
-    (hμs : μb s ≠ ∞) (c : E) (hf : MeasurePreserving f μ μb) :
+    (hμs : μb s ≠ ∞) (c : E) (hf : MeasurePreserving f μ μb) (hfm : Measurable f) :
     Lp.compMeasurePreserving f hf (indicatorConstLp p hs hμs c) =
-      indicatorConstLp p (hs.preimage hf.measurable)
+      indicatorConstLp p (hs.preimage hfm)
         (by rwa [hf.measure_preimage hs.nullMeasurableSet]) c :=
   rfl
 

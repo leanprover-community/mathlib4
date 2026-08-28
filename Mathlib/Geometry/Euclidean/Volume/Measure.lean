@@ -208,7 +208,7 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq (p : P) :
 
 theorem EuclideanGeometry.measurePreserving_vaddConst (p : P) :
     MeasurePreserving (IsometryEquiv.vaddConst p) volume μHE[finrank ℝ V] where
-  measurable := (IsometryEquiv.vaddConst p).toHomeomorph.measurable
+  aemeasurable := (IsometryEquiv.vaddConst p).toHomeomorph.measurable.aemeasurable
   map_eq := (euclideanHausdorffMeasure_eq p).symm
 
 open EuclideanGeometry
