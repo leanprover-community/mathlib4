@@ -132,26 +132,22 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
         some default
   | _ => none
 
-/-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option
-enabled. This may have false negatives for `decide (config := {<options>})` syntax. -/
-def isDecideNative (stx : Syntax ) : Bool :=
-  match stx with
-  | .node _ ``Lean.Parser.Tactic.decide args =>
-    -- The configuration passed to the tactic call.
-    let config := args[1]![0]
-    -- Check all configuration arguments in order to determine the final
-    -- toggling of the native decide option.
-    if let (.node _ _ config_args) := config then
-      let natives := config_args.filterMap (match ·[0] with
-        | `(Parser.Tactic.posConfigItem| +native) => some true
-        | `(Parser.Tactic.negConfigItem| -native) => some false
-        | `(Parser.Tactic.valConfigItem| (config := {native := true})) => some true
-        | `(Parser.Tactic.valConfigItem| (config := {native := false})) => some false
-        | _ => none)
-      natives.back? == some true
-    else
-      false
-  | _ => false
+/-- Whether the tactic syntax `stx` enables the `native` option. This may have false negatives for
+`tac (config := {<options>})` syntax. -/
+def usesNativeConfig (stx : Syntax) : Bool :=
+  let config := stx[1]![0]
+  if let .node _ _ configArgs := config then
+    let natives := configArgs.filterMap (match ·[0] with
+      | `(Parser.Tactic.posConfigItem| +native) => some true
+      | `(Parser.Tactic.negConfigItem| -native) => some false
+      | `(Parser.Tactic.valConfigItem| (native := true)) => some true
+      | `(Parser.Tactic.valConfigItem| (native := false)) => some false
+      | `(Parser.Tactic.valConfigItem| (config := {native := true})) => some true
+      | `(Parser.Tactic.valConfigItem| (config := {native := false})) => some false
+      | _ => none)
+    natives.back? == some true
+  else
+    false
 
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
@@ -176,7 +172,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
     | ``Lean.Parser.Tactic.decide =>
-      if isDecideNative stx then
+      if usesNativeConfig stx then
         rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib: \
         because it trusts the entire Lean compiler (not just the Lean kernel), \
         it could quite possibly be used to prove false.")
