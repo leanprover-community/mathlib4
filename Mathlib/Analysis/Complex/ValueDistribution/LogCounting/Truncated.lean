@@ -35,11 +35,11 @@ For `1 ≤ r`, the counting function of a truncated divisor is bounded above by 
 of the divisor itself.
 -/
 theorem logCounting_trunc_le (D : locallyFinsupp E ℤ) {r : ℝ} (hr : 1 ≤ r) :
-    logCounting D.trunc r ≤ logCounting D r := logCounting_le (trunc_le D) hr
+    logCounting D.trunc₁ r ≤ logCounting D r := logCounting_le (trunc₁_le D) hr
 
 /-- For `1 ≤ r`, the counting function of a truncated non-negative divisor is non-negative. -/
 theorem logCounting_trunc_nonneg {D : locallyFinsupp E ℤ} (h : 0 ≤ D) {r : ℝ} (hr : 1 ≤ r) :
-    0 ≤ logCounting D.trunc r := logCounting_nonneg (trunc_nonneg h) hr
+    0 ≤ logCounting D.trunc₁ r := logCounting_nonneg (trunc₁_nonneg h) hr
 
 end Function.locallyFinsuppWithin
 
@@ -62,15 +62,15 @@ counts the poles of `f`, each with multiplicity one.
 -/
 noncomputable def truncatedLogCounting : ℝ → ℝ := by
   by_cases h : a = ⊤
-  · exact ((divisor f Set.univ)⁻.trunc).logCounting
-  · exact ((divisor (f · - a.untop₀) Set.univ)⁺.trunc).logCounting
+  · exact ((divisor f Set.univ)⁻.trunc₁).logCounting
+  · exact ((divisor (f · - a.untop₀) Set.univ)⁺.trunc₁).logCounting
 
 /--
 The truncated logarithmic counting function `truncatedLogCounting f ⊤` counts the poles of `f`, each
 with multiplicity one.
 -/
 lemma truncatedLogCounting_top :
-    truncatedLogCounting f ⊤ = ((divisor f Set.univ)⁻.trunc).logCounting := by
+    truncatedLogCounting f ⊤ = ((divisor f Set.univ)⁻.trunc₁).logCounting := by
   simp [truncatedLogCounting]
 
 /--
@@ -78,7 +78,7 @@ For finite values `a₀`, the truncated logarithmic counting function `truncated
 counts the zeros of `f - a₀`, each with multiplicity one.
 -/
 lemma truncatedLogCounting_coe :
-    truncatedLogCounting f a₀ = ((divisor (f · - a₀) Set.univ)⁺.trunc).logCounting := by
+    truncatedLogCounting f a₀ = ((divisor (f · - a₀) Set.univ)⁺.trunc₁).logCounting := by
   simp [truncatedLogCounting]
 
 /--
@@ -86,7 +86,7 @@ The truncated logarithmic counting function `truncatedLogCounting f 0` counts th
 with multiplicity one.
 -/
 lemma truncatedLogCounting_zero :
-    truncatedLogCounting f 0 = ((divisor f Set.univ)⁺.trunc).logCounting := by
+    truncatedLogCounting f 0 = ((divisor f Set.univ)⁺.trunc₁).logCounting := by
   simp [truncatedLogCounting, WithTop.zero_ne_top, reduceDIte, WithTop.untop₀_zero, sub_zero]
 
 /-- Evaluation of the truncated logarithmic counting function at zero yields zero. -/
@@ -126,11 +126,11 @@ theorem truncatedLogCounting_monotoneOn :
   · subst h
     rw [truncatedLogCounting_top]
     exact locallyFinsuppWithin.logCounting_mono
-      (locallyFinsuppWithin.trunc_nonneg (negPart_nonneg _))
+      (locallyFinsuppWithin.trunc₁_nonneg (negPart_nonneg _))
   · lift a to E using h with a₀
     rw [truncatedLogCounting_coe]
     exact locallyFinsuppWithin.logCounting_mono
-      (locallyFinsuppWithin.trunc_nonneg (posPart_nonneg _))
+      (locallyFinsuppWithin.trunc₁_nonneg (posPart_nonneg _))
 
 /-- Relation between the truncated logarithmic counting functions of `f` and of `f⁻¹`. -/
 @[simp] theorem truncatedLogCounting_inv {f : 𝕜 → 𝕜} :
