@@ -103,31 +103,24 @@ def wedgePairingBasis :
     (fun sourceIndex ↦ (permOfDisjoint
       (complementEquiv_disjoint hkl sourceIndex)).sign)
 
-lemma wedgePairing_apply_basis_of_disjoint (hdisjoint : Disjoint targetIndex.val sourceIndex.val) :
+lemma wedgePairing_apply_basis :
     wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) =
-      (permOfDisjoint hdisjoint).sign • volumeCoordinate vol hvol hkl (basisUniv b hkl) := by
-  change volumeCoordinate vol hvol hkl _ = _
-  rw [LinearMap.flip_apply, basis_mul_of_disjoint b hkl sourceIndex targetIndex hdisjoint]
-  simp only [map_zsmul_unit]
-
-lemma wedgePairing_apply_basis_of_not_disjoint
-    (hdisjoint : ¬Disjoint targetIndex.val sourceIndex.val) :
-    wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) = 0 := by
-  change volumeCoordinate vol hvol hkl _ = _
-  rw [LinearMap.flip_apply, basis_mul_of_not_disjoint b sourceIndex targetIndex hdisjoint]
-  simp only [map_zero]
+      volumeCoordinate vol hvol hkl
+        (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
+          (b.exteriorPower l sourceIndex)) := by
+  rfl
 
 lemma wedgePairingBasis_apply :
     wedgePairingBasis b vol hvol hkl sourceIndex (b.exteriorPower k targetIndex) =
       wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) := by
   have hdisjoint_iff := disjoint_iff_eq_complementEquiv hkl sourceIndex targetIndex
   by_cases! htarget : targetIndex = complementEquiv k l hkl sourceIndex
-  · rw [wedgePairing_apply_basis_of_disjoint b vol hvol hkl sourceIndex targetIndex
-      (hdisjoint_iff.mpr htarget)]
+  · rw [wedgePairing_apply_basis,
+      basis_mul_of_disjoint b hkl sourceIndex targetIndex (hdisjoint_iff.mpr htarget)]
     simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
       Basis.groupSMul_apply]
-  · rw [wedgePairing_apply_basis_of_not_disjoint b vol hvol hkl sourceIndex targetIndex
-      (hdisjoint_iff.not.mpr htarget)]
+  · rw [wedgePairing_apply_basis,
+      basis_mul_of_not_disjoint b sourceIndex targetIndex (hdisjoint_iff.not.mpr htarget)]
     simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
       Basis.groupSMul_apply]
 
