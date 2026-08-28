@@ -72,7 +72,7 @@ theorem order_log [Nontrivial A] : (log A).order = 1 :=
   order_eq_nat.mpr ⟨by simp, fun i hi ↦ by simp [Nat.lt_one_iff.mp hi]⟩
 
 /-- The derivative of `log(1+X)` is the geometric series `1 - X + X² - X³ + ⋯ = 1/(1+X)`. -/
-theorem deriv_log : d⁄dX A (log A) = mk fun n ↦ (-1 : A) ^ n := by
+theorem derivative_log : d⁄dX A (log A) = mk fun n ↦ (-1 : A) ^ n := by
   ext n
   have : (n + 1) = algebraMap ℚ A (n + 1) := by simp
   rw [coeff_derivative, coeff_log, coeff_mk]
