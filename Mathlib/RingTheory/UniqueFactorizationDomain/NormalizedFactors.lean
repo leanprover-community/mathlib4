@@ -46,7 +46,7 @@ theorem factors_eq_normalizedFactors {M : Type*} [CommMonoidWithZero M]
 
 theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) :
     Associated (normalizedFactors a).prod a := by
-  rw [normalizedFactors, factors, dif_neg ane0]
+  rw [normalizedFactors, factors, dite_eq_right ane0]
   refine Associated.trans ?_ (Classical.choose_spec (exists_prime_factors a ane0)).2
   rw [← Associates.mk_eq_mk_iff_associated, ← Associates.prod_mk, ← Associates.prod_mk,
     Multiset.map_map]
@@ -401,7 +401,7 @@ protected noncomputable def strongNormalizationMonoid : StrongNormalizationMonoi
         rw [Function.comp_apply, mkMonoidHom_apply,
           Classical.choose_spec mk_surjective.hasRightInverse x]
         rfl
-      rw [if_neg hx, ← mkMonoidHom_apply, MonoidHom.map_multiset_prod, map_map, h, map_id, ←
+      rw [ite_eq_right hx, ← mkMonoidHom_apply, MonoidHom.map_multiset_prod, map_map, h, map_id, ←
         associated_iff_eq]
       apply prod_normalizedFactors hx)
 

@@ -164,10 +164,17 @@ instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotie
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
 
-/-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
+/-- A subspace of a normed space is also a normed space (with respect to the restricted norm). -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
     (s : Submodule R E) : NormedSpace 𝕜 s where
+  norm_smul_le c x := norm_smul_le c (x : E)
+
+/-- A closed subspace of a normed space is also a normed space (with respect to the restricted
+norm). -/
+instance ClosedSubmodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
+    (s : ClosedSubmodule R E) : NormedSpace 𝕜 s where
   norm_smul_le c x := norm_smul_le c (x : E)
 
 variable {S 𝕜 R E : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] [SeminormedAddCommGroup E]
@@ -781,3 +788,14 @@ lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 
     _ = (n : ℝ)⁻¹ * C := by simp
     _ < (C / ε : ℝ)⁻¹ * C := by gcongr
     _ = ε := by simp [hC₀.ne']
+
+attribute [local instance] IsUnital.toSeminormedRing in
+/-- A unital non-unital normed algebra is a normed algebra.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜]
+    [NonUnitalSeminormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+    [IsUnital A] : NormedAlgebra 𝕜 A where
+  __ := toAlgebra
+  __ := ‹NormedSpace 𝕜 A›
