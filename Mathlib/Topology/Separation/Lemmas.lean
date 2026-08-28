@@ -13,4 +13,4 @@ public import Mathlib.Topology.Separation.CompletelyRegular
 
 deprecated_module
   "All the theorems formerly in this file have been generalized to zero-dimensional spaces."
-  (since := "2026-07-28")
+  (since := "2026-08-28")

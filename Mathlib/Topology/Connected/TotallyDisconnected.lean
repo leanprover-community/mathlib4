@@ -372,7 +372,7 @@ instance [T0Space α] [ZeroDimensionalSpace α] : TotallySeparatedSpace α := by
   rw [isTopologicalBasis_isClopen.inseparable_iff]
   exact fun V hV ↦ ⟨hxy V hV, (hxy Vᶜ hV.compl).mtr⟩
 
-@[deprecated instTotallySeparatedSpaceOfT0SpaceOfZeroDimensionalSpace (since := "2026-07-28")]
+@[deprecated instTotallySeparatedSpaceOfT0SpaceOfZeroDimensionalSpace (since := "2026-08-28")]
 theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space α]
     (h : TopologicalSpace.IsTopologicalBasis { s : Set α | IsClopen s }) :
     TotallySeparatedSpace α := by
