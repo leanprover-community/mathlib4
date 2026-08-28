@@ -102,57 +102,60 @@ def RadialSchwartzMap (𝕜 E F : Type*) [NormedField 𝕜] [NormedAddCommGroup 
   zero_mem' := by simp [isRadial_def]
   smul_mem' := by grind [isRadial_def]
 
+@[inherit_doc]
+scoped[RadialSchwartzMap] notation "𝓢₀[" 𝕜 "](" E ", " F ")" => RadialSchwartzMap 𝕜 E F
+
 namespace RadialSchwartzMap
 
 variable {𝕜 E F : Type*} [NormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- Create a `RadialSchwartzMap` -/
-def mk [NormedSpace ℝ E] (f : 𝓢(E, F)) (hf : IsRadial f) : RadialSchwartzMap 𝕜 E F := ⟨f, hf⟩
+def mk [NormedSpace ℝ E] (f : 𝓢(E, F)) (hf : IsRadial f) : 𝓢₀[𝕜](E, F) := ⟨f, hf⟩
 
 section NormedSpace
 
 variable [NormedSpace ℝ E]
 
-instance instFunLike : FunLike (RadialSchwartzMap 𝕜 E F) E F where
+instance instFunLike : FunLike (𝓢₀[𝕜](E, F)) E F where
   coe f := f.1
   coe_injective := DFunLike.coe_injective.comp Subtype.val_injective
 
 @[simp, norm_cast]
-lemma coe_coe (f : RadialSchwartzMap 𝕜 E F) : ⇑(f : 𝓢(E, F)) = f := rfl
+lemma coe_coe (f : 𝓢₀[𝕜](E, F)) : ⇑(f : 𝓢(E, F)) = f := rfl
 
 @[simp]
-lemma zero_apply (x : E) : (0 : RadialSchwartzMap 𝕜 E F) x = 0 := rfl
+lemma zero_apply (x : E) : (0 : 𝓢₀[𝕜](E, F)) x = 0 := rfl
 
 @[simp]
-lemma add_apply (f g : RadialSchwartzMap 𝕜 E F) (x : E) : (f + g) x = f x + g x := rfl
+lemma add_apply (f g : 𝓢₀[𝕜](E, F)) (x : E) : (f + g) x = f x + g x := rfl
 
 @[simp]
-lemma neg_apply (f : RadialSchwartzMap 𝕜 E F) (x : E) : (-f) x = -f x := rfl
+lemma neg_apply (f : 𝓢₀[𝕜](E, F)) (x : E) : (-f) x = -f x := rfl
 
 @[simp]
-lemma sub_apply (f g : RadialSchwartzMap 𝕜 E F) (x : E) : (f - g) x = f x - g x := rfl
+lemma sub_apply (f g : 𝓢₀[𝕜](E, F)) (x : E) : (f - g) x = f x - g x := rfl
 
 @[simp]
-lemma smul_apply (c : 𝕜) (f : RadialSchwartzMap 𝕜 E F) (x : E) : (c • f) x = c • f x := rfl
+lemma smul_apply (c : 𝕜) (f : 𝓢₀[𝕜](E, F)) (x : E) : (c • f) x = c • f x := rfl
 
-lemma isRadial (f : RadialSchwartzMap 𝕜 E F) : IsRadial f := f.2
+lemma isRadial (f : 𝓢₀[𝕜](E, F)) : IsRadial f := f.2
 
 lemma _root_.SchwartzMap.mem_radialSchwartzMap_iff_isRadial (f : 𝓢(E, F)) :
-    f ∈ RadialSchwartzMap 𝕜 E F ↔ IsRadial f := .rfl
+    f ∈ 𝓢₀[𝕜](E, F) ↔ IsRadial f := .rfl
 
 end NormedSpace
 
 lemma _root_.SchwartzMap.mem_radialSchwartzMap_iff_comp_linearIsometryEquiv
     [InnerProductSpace ℝ E] (f : 𝓢(E, F)) :
-    f ∈ RadialSchwartzMap 𝕜 E F ↔ ∀ g : E ≃ₗᵢ[ℝ] E, ⇑f ∘ g = ⇑f :=
+    f ∈ 𝓢₀[𝕜](E, F) ↔ ∀ g : E ≃ₗᵢ[ℝ] E, ⇑f ∘ g = ⇑f :=
   isRadial_iff_comp_linearIsometryEquiv _
 
 end RadialSchwartzMap
 
 noncomputable section Fourier
 
-open Real FourierTransform
+open Real FourierTransform RadialSchwartzMap
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
   [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
@@ -168,7 +171,7 @@ lemma Function.IsRadial.fourier {f : E → F} (hf : f.IsRadial) : (𝓕 f).IsRad
 
 variable (𝕜) in
 lemma SchwartzMap.fourier_mem_radialSchwartzMap_of_mem_radialSchwartzMap {f : 𝓢(E, F)}
-    (hf : f ∈ RadialSchwartzMap 𝕜 E F) : 𝓕 f ∈ RadialSchwartzMap 𝕜 E F := by
+    (hf : f ∈ 𝓢₀[𝕜](E, F)) : 𝓕 f ∈ 𝓢₀[𝕜](E, F) := by
   rw [SchwartzMap.mem_radialSchwartzMap_iff_isRadial] at hf ⊢
   exact SchwartzMap.fourier_coe f ▸ hf.fourier
 
@@ -176,32 +179,32 @@ namespace RadialSchwartzMap
 
 variable (𝕜 E F)
 
-lemma map_fourierTransformCLM_le : (RadialSchwartzMap 𝕜 E F).map
-    (SchwartzMap.fourierTransformCLM 𝕜 (V := E) (E := F)).toLinearMap ≤ RadialSchwartzMap 𝕜 E F :=
+lemma map_fourierTransformCLM_le : (𝓢₀[𝕜](E, F)).map
+    (SchwartzMap.fourierTransformCLM 𝕜 (V := E) (E := F)).toLinearMap ≤ 𝓢₀[𝕜](E, F) :=
   Submodule.map_le_iff_le_comap.mpr fun _ ↦ fourier_mem_radialSchwartzMap_of_mem_radialSchwartzMap 𝕜
 
 /-- The Fourier transform as a continuous linear map on radial Schwartz functions. -/
-def fourierTransformCLM : RadialSchwartzMap 𝕜 E F →L[𝕜] RadialSchwartzMap 𝕜 E F :=
+def fourierTransformCLM : 𝓢₀[𝕜](E, F) →L[𝕜] 𝓢₀[𝕜](E, F) :=
   (SchwartzMap.fourierTransformCLM 𝕜).restrict fun _ ↦
     fourier_mem_radialSchwartzMap_of_mem_radialSchwartzMap 𝕜
 
 instance instFourierTransform :
-    FourierTransform (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+    FourierTransform (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   fourier := fourierTransformCLM 𝕜 E F
 
 variable {𝕜 E F}
 
 @[simp]
-lemma fourierTransformCLM_apply (f : RadialSchwartzMap 𝕜 E F) :
+lemma fourierTransformCLM_apply (f : 𝓢₀[𝕜](E, F)) :
     fourierTransformCLM 𝕜 E F f = 𝓕 f := rfl
 
 @[simp, norm_cast]
-lemma coe_fourier (f : RadialSchwartzMap 𝕜 E F) :
-    ((𝓕 f : RadialSchwartzMap 𝕜 E F) : 𝓢(E, F)) = 𝓕 (f : 𝓢(E, F)) := rfl
+lemma coe_fourier (f : 𝓢₀[𝕜](E, F)) :
+    ((𝓕 f : 𝓢₀[𝕜](E, F)) : 𝓢(E, F)) = 𝓕 (f : 𝓢(E, F)) := rfl
 
 @[simp, norm_cast]
-lemma fourier_coe (f : RadialSchwartzMap 𝕜 E F) :
-    ((𝓕 f : RadialSchwartzMap 𝕜 E F) : E → F) = 𝓕 (f : E → F) := rfl
+lemma fourier_coe (f : 𝓢₀[𝕜](E, F)) :
+    ((𝓕 f : 𝓢₀[𝕜](E, F)) : E → F) = 𝓕 (f : E → F) := rfl
 
 section inverse
 
@@ -212,34 +215,34 @@ lemma _root_.Function.Even.fourierInv {f : E → F} (hf : (𝓕 f).Even) {w : E}
 
 variable (𝕜) in
 lemma _root_.SchwartzMap.fourier_eq_fourierInv_of_mem_radialSchwartzMap {f : 𝓢(E, F)}
-    (hf : f ∈ RadialSchwartzMap 𝕜 E F) : 𝓕⁻ f = 𝓕 f := by
+    (hf : f ∈ 𝓢₀[𝕜](E, F)) : 𝓕⁻ f = 𝓕 f := by
   ext x
   rw [fourierInv_coe, SchwartzMap.fourier_coe]
   exact Function.Even.fourierInv <| IsRadial.even (hf.fourier)
 
 lemma _root_.SchwartzMap.eqOn_fourier_fourierInv_radialSchwartzMap :
-    Set.EqOn (𝓕⁻ : 𝓢(E, F) → 𝓢(E, F)) (𝓕 : 𝓢(E, F) → 𝓢(E, F)) (RadialSchwartzMap 𝕜 E F) :=
+    Set.EqOn (𝓕⁻ : 𝓢(E, F) → 𝓢(E, F)) (𝓕 : 𝓢(E, F) → 𝓢(E, F)) (𝓢₀[𝕜](E, F)) :=
   fun _ hf ↦ SchwartzMap.fourier_eq_fourierInv_of_mem_radialSchwartzMap 𝕜 hf
 
 instance instFourierInv :
-    FourierTransformInv (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+    FourierTransformInv (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   fourierInv := fourierTransformCLM 𝕜 E F
 
-lemma fourierInv_eq_fourier : (𝓕⁻ : RadialSchwartzMap 𝕜 E F → RadialSchwartzMap 𝕜 E F) = 𝓕 := rfl
+lemma fourierInv_eq_fourier : (𝓕⁻ : 𝓢₀[𝕜](E, F) → 𝓢₀[𝕜](E, F)) = 𝓕 := rfl
 
-lemma coe_fourierInv (f : RadialSchwartzMap 𝕜 E F) : 𝓕⁻ f = 𝓕⁻ (f : 𝓢(E, F)) := by
+lemma coe_fourierInv (f : 𝓢₀[𝕜](E, F)) : 𝓕⁻ f = 𝓕⁻ (f : 𝓢(E, F)) := by
   rw [fourierInv_eq_fourier, coe_fourier f]
   exact (SchwartzMap.fourier_eq_fourierInv_of_mem_radialSchwartzMap 𝕜 (Submodule.coe_mem f)).symm
 
 variable [CompleteSpace F]
 
-instance instFourierPair : FourierPair (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+instance instFourierPair : FourierPair (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   fourierInv_fourier_eq := by
     intro f
     rw [← Subtype.val_inj, coe_fourierInv, coe_fourier]
     exact SchwartzMap.instFourierPair.fourierInv_fourier_eq (f : 𝓢(E, F))
 
-variable {f : RadialSchwartzMap 𝕜 E F}
+variable {f : 𝓢₀[𝕜](E, F)}
 
 /-- The Fourier transform is an involution on radial Schwartz functions. -/
 @[simp]
@@ -254,7 +257,7 @@ lemma fourierInv_apply_apply : 𝓕⁻ (𝓕⁻ f) = f := by
   exact fourier_apply_apply
 
 instance instFourierInvPair :
-    FourierInvPair (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+    FourierInvPair (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   fourier_fourierInv_eq := by
     intro f
     rw [fourierInv_eq_fourier]
@@ -264,25 +267,25 @@ end inverse
 
 section MoreFourierInstances
 
-instance instFourierAdd : FourierAdd (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+instance instFourierAdd : FourierAdd (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   fourier_add := fun _ _ ↦ by simp [← Subtype.val_inj]
 
-instance instFourierInvAdd : FourierInvAdd (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+instance instFourierInvAdd : FourierInvAdd (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   fourierInv_add := instFourierAdd.fourier_add
 
-instance instFourierSMul : FourierSMul 𝕜 (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+instance instFourierSMul : FourierSMul 𝕜 (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   fourier_smul := fun _ _ ↦ by simp [← Subtype.val_inj]
 
 instance instFourierInvSMul :
-    FourierInvSMul 𝕜 (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+    FourierInvSMul 𝕜 (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   fourierInv_smul := instFourierSMul.fourier_smul
 
 instance instContinuousFourier :
-    ContinuousFourier (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+    ContinuousFourier (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   continuous_fourier := ContinuousLinearMap.continuous _
 
 instance instContinuousFourierInv :
-    ContinuousFourierInv (RadialSchwartzMap 𝕜 E F) (RadialSchwartzMap 𝕜 E F) where
+    ContinuousFourierInv (𝓢₀[𝕜](E, F)) (𝓢₀[𝕜](E, F)) where
   continuous_fourierInv := instContinuousFourier.continuous_fourier
 
 end MoreFourierInstances
@@ -304,23 +307,23 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 variable [CompleteSpace F]
 
-instance instStarAddMonoid : StarAddMonoid (RadialSchwartzMap 𝕜 E F) where
+instance instStarAddMonoid : StarAddMonoid (𝓢₀[𝕜](E, F)) where
   star := 𝓕
   star_involutive := fun _ ↦ fourier_apply_apply
   star_add := instFourierAdd.fourier_add
 
-instance instStarModule : StarModule ℝ (RadialSchwartzMap 𝕜 E F) where
+instance instStarModule : StarModule ℝ (𝓢₀[𝕜](E, F)) where
   star_smul := by
     intro r f
     change 𝓕 (r • f) = star r • 𝓕 f
     rw [star_trivial]
     aesop
 
-variable {f : RadialSchwartzMap 𝕜 E F}
+variable {f : 𝓢₀[𝕜](E, F)}
 
-lemma mem_selfAdjoint_iff : f ∈ selfAdjoint (RadialSchwartzMap 𝕜 E F) ↔ 𝓕 f = f := by rfl
+lemma mem_selfAdjoint_iff : f ∈ selfAdjoint (𝓢₀[𝕜](E, F)) ↔ 𝓕 f = f := by rfl
 
-lemma mem_skewAdjoint_iff : f ∈ skewAdjoint (RadialSchwartzMap 𝕜 E F) ↔ 𝓕 f = -f := by rfl
+lemma mem_skewAdjoint_iff : f ∈ skewAdjoint (𝓢₀[𝕜](E, F)) ↔ 𝓕 f = -f := by rfl
 
 lemma selfAdjointPart_eq : selfAdjointPart ℝ f = (1 / 2 : ℝ) • (f + 𝓕 f) := by aesop
 
