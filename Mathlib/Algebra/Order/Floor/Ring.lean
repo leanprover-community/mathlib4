@@ -471,10 +471,10 @@ theorem fract_sub_fract (a b : R) : fract (a - fract b) = fract (a - b) :=
   fract_eq_fract.2 ⟨⌊b⌋, by unfold fract; abel⟩
 
 theorem fract_fract_add_fract (a b : R) : fract (fract a + fract b) = fract (a + b) := by
-  rw [fract_fract_add, fract_add_fract]
+  simp
 
 theorem fract_fract_sub_fract (a b : R) : fract (fract a - fract b) = fract (a - b) := by
-  rw [fract_fract_sub, fract_sub_fract]
+  simp
 
 theorem fract_eq_zero_iff {a : R} : fract a = 0 ↔ a ∈ range Int.cast := by
   simp [fract_eq_iff, eq_comm]
