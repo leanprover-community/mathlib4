@@ -7,13 +7,8 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.Analysis.Normed.Lp.WithLp
-public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.Analysis.Normed.Operator.Extend
-public import Mathlib.Topology.Algebra.LinearMapCompletion
+public import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Reproducing Kernel Hilbert Spaces
