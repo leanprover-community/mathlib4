@@ -239,7 +239,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--allow-failure",
-        "-f",
+        "-F",
         action="store_true",
         help="record measurements even if the measured command exits with a non-zero status",
     )
