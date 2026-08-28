@@ -123,18 +123,16 @@ lemma wedgePairingBasis_apply :
 
 lemma bijective_wedgePairing :
     Bijective (wedgePairing vol hvol hkl) := by
-  let b := finBasis K V
-  let basisEquiv := (b.exteriorPower l).equiv (wedgePairingBasis b vol hvol hkl) (Equiv.refl _)
-  have basisEquiv_eq : basisEquiv.toLinearMap = wedgePairing vol hvol hkl := by
-    refine LinearMap.ext_basis (b.exteriorPower l) (b.exteriorPower k)
-      fun sourceIndex targetIndex ↦ ?_
-    change basisEquiv (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) =
-      wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex)
-        (b.exteriorPower k targetIndex)
-    simpa only [basisEquiv, Basis.equiv_apply, Equiv.refl_apply] using
-      wedgePairingBasis_apply b vol hvol hkl sourceIndex targetIndex
-  rw [← basisEquiv_eq]
-  exact basisEquiv.bijective
+  let basis := finBasis K V
+  let basisEquiv :=
+    (basis.exteriorPower l).equiv (wedgePairingBasis basis vol hvol hkl) (Equiv.refl _)
+  suffices basisEquiv.toLinearMap = wedgePairing vol hvol hkl by
+    rw [← this]
+    exact basisEquiv.bijective
+  apply LinearMap.ext_basis (basis.exteriorPower l) (basis.exteriorPower k)
+  intro sourceIndex targetIndex
+  simpa only [basisEquiv, LinearEquiv.coe_toLinearMap, Basis.equiv_apply, Equiv.refl_apply] using
+    wedgePairingBasis_apply basis vol hvol hkl sourceIndex targetIndex
 
 end FiniteDimensional
 end Basis
