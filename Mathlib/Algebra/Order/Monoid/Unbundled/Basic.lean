@@ -754,7 +754,7 @@ alias mul_lt_one := Left.mul_lt_one
 @[to_additive]
 alias mul_lt_one' := Left.mul_lt_one'
 
-@[to_additive]
+@[to_additive add_nonneg]
 alias one_le_mul := Left.one_le_mul
 
 @[to_additive add_pos_of_nonneg_of_pos]
