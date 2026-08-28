@@ -244,8 +244,7 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
           Algebra.Generators.ofSurjective] using congr($H _)
       suffices e ((e.symm (P.relation j)).pderiv i) = (P.relation j).pderiv (P.map i) by
         simp [Algebra.PreSubmersivePresentation.jacobiMatrix_apply, this]
-      simp [e, MvPolynomial.pderiv_sumToIter, ← MvPolynomial.pderiv_rename e₀.injective,
-        show e₀ (Sum.inl i) = P.map i from rfl] }
+      simp [e, ← MvPolynomial.pderiv_rename e₀.injective, show e₀ (Sum.inl i) = P.map i from rfl] }
   exact etale_algebraMap.mpr (Algebra.Etale.iff_isStandardSmoothOfRelativeDimension_zero.mpr
     ⟨_, _, _, inferInstance, P', by simp [Algebra.Presentation.dimension]⟩)
 
@@ -254,7 +253,6 @@ where `n` is the relative dimension and `R[X₁,...,Xₙ] → S` is etale. -/
 theorem IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
     {f : R →+* S} {n : ℕ} (hf : f.IsStandardSmoothOfRelativeDimension n) :
     ∃ g : MvPolynomial (Fin n) R →+* S, g.comp MvPolynomial.C = f ∧ g.Etale := by
-  classical
   algebraize [f]
   obtain ⟨g, hg⟩ := Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial n R S
   exact ⟨_, g.comp_algebraMap, hg⟩
