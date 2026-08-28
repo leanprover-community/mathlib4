@@ -307,7 +307,7 @@ instance RelCWComplex.Subcomplex.finiteDimensional_finite_iSup_of_finiteDimensio
   eventually_isEmpty_cell := by
     have h j := (hf j).eventually_isEmpty_cell
     simp only [cell_def, isEmpty_coe_sort, Filter.eventually_iff, Filter.mem_atTop_sets,
-      mem_setOf_eq, iSup_I, iUnion_eq_empty, setOf_forall, Filter.iInter_mem] at h ⊢
+      mem_ofPred_eq, iSup_I, iUnion_eq_empty, ofPred_forall, Filter.iInter_mem] at h ⊢
     exact h
 
 /-- A finite union of subcomplexes of finite type is again a subcomplex of finite type. -/
