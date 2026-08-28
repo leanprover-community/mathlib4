@@ -29,7 +29,7 @@ over ℚ-algebras and establishes its key properties.
 * `PowerSeries.map_log`: `log` is preserved by ring homomorphisms between ℚ-algebras.
 * `PowerSeries.coeff_one_log`: The coefficient of `log A` at `1` is `1`.
 * `PowerSeries.order_log`: The order of `log A` is `1`.
-* `PowerSeries.deriv_log`: The derivative of `log(1+X)` is the geometric series
+* `PowerSeries.derivative_log`: The derivative of `log(1+X)` is the geometric series
   `∑ (-1)^n · Xⁿ = 1/(1+X)`.
 * `PowerSeries.derivative_log_mul_one_add_X`: `(log(1+X))' · (1 + X) = 1`.
 * `PowerSeries.subst_exp_log`: `exp` and `log` are mutually inverse:
@@ -80,7 +80,7 @@ theorem derivative_log : d⁄dX A (log A) = mk fun n ↦ (-1 : A) ^ n := by
 
 /-- The derivative of `log(1+X)` is the inverse of `1 + X`. -/
 theorem derivative_log_mul_one_add_X : d⁄dX A (log A) * (1 + X) = 1 := by
-  rw [deriv_log, mk_neg_one_pow_mul_one_add_eq_one]
+  rw [derivative_log, mk_neg_one_pow_mul_one_add_eq_one]
 
 /-! ## Substitution -/
 
