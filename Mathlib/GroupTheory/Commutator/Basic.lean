@@ -339,7 +339,8 @@ theorem commutator_le_map_commutator {f : G →* G'} {K₁ K₂ : Subgroup G'} (
 
 variable (H₁ H₂)
 
-private theorem commutator_sup_left' (H K N : Subgroup G) [(⁅H, N⁆ ⊔ ⁅K, N⁆).Normal] :
+@[to_additive]
+private theorem commutator_sup_right_of_normal (H K N : Subgroup G) [(⁅H, N⁆ ⊔ ⁅K, N⁆).Normal] :
     ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
   refine le_antisymm ?_
     (sup_le (commutator_mono_left le_sup_left) (commutator_mono_left le_sup_right))
@@ -350,7 +351,8 @@ private theorem commutator_sup_left' (H K N : Subgroup G) [(⁅H, N⁆ ⊔ ⁅K,
   rw [map_sup]
   exact sup_le hH hK
 
-theorem commutator_sup_left (H K N : Subgroup G) [N.Normal] : ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
+@[to_additive]
+theorem commutator_sup_right (H K N : Subgroup G) [N.Normal] : ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
   let M := H ⊔ K ⊔ N
   have hHM : H ≤ M := le_sup_of_le_left le_sup_left
   have hKM : K ≤ M := le_sup_of_le_left le_sup_right
@@ -359,7 +361,7 @@ theorem commutator_sup_left (H K N : Subgroup G) [N.Normal] : ⁅H ⊔ K, N⁆ =
   have hKNM : ⁅K, N⁆ ≤ M := commutator_le_of_le hKM hNM
   suffices (⁅H.subgroupOf M, N.subgroupOf M⁆ ⊔ ⁅K.subgroupOf M, N.subgroupOf M⁆).Normal by
     simpa [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM] using
-      commutator_sup_left' (H.subgroupOf M) (K.subgroupOf M) (N.subgroupOf M)
+      commutator_sup_right_of_normal (H.subgroupOf M) (K.subgroupOf M) (N.subgroupOf M)
   suffices M ≤ normalizer (⁅H, N⁆ ⊔ ⁅K, N⁆ : Subgroup G) by
     convert Subgroup.normal_subgroupOf_of_le_normalizer this
     simp [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM, hHNM, hKNM]
@@ -370,8 +372,9 @@ theorem commutator_sup_left (H K N : Subgroup G) [N.Normal] : ⁅H ⊔ K, N⁆ =
   · grw [← inf_normalizer_le_normalizer_sup, ← normalizer_commutator_ge_right,
       ← normalizer_commutator_ge_right, inf_idem]
 
-theorem commutator_sup_right (N H K : Subgroup G) [N.Normal] : ⁅N, H ⊔ K⁆ = ⁅N, H⁆ ⊔ ⁅N, K⁆ := by
-  simp_rw [commutator_comm N, commutator_sup_left]
+@[to_additive]
+theorem commutator_sup_left (N H K : Subgroup G) [N.Normal] : ⁅N, H ⊔ K⁆ = ⁅N, H⁆ ⊔ ⁅N, K⁆ := by
+  simp_rw [commutator_comm N, commutator_sup_right]
 
 @[to_additive]
 instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characteristic H₂] :
