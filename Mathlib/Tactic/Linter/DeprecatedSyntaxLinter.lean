@@ -83,7 +83,8 @@ public register_option linter.style.admit : Bool := {
 }
 
 /-- The option `linter.style.native` of the deprecated syntax linter flags usages of
-`native_decide` and `decide +native`, which are disallowed in mathlib. -/
+tactics which use `nativeEqTrue` such as `native_decide` and `decide +native`, which are
+disallowed in mathlib. -/
 -- Note: this linter is purely for user information. Running `lean4checker` in CI catches *any*
 -- additional axioms that are introduced (not just `ofReduceBool`): the point of this check is to
 -- alert the user quickly, not to be airtight.
@@ -98,6 +99,12 @@ public register_option linter.style.nativeDecide : Bool := {
   defValue := false
   descr := "deprecated: use the `linter.style.native` option instead"
 }
+
+/-- Return whether the native-evaluation linter is enabled, honoring its deprecated option name. -/
+private def getNativeLinterValue (options : LinterOptions) : Bool :=
+  match options.get? linter.style.native.name with
+  | some value => value
+  | none => options.get `linter.style.nativeDecide (getLinterValue linter.style.native options)
 
 /-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
 `set_option <name-containing-maxHeartbeats> n in cmd` that do not add a comment explaining
@@ -220,7 +227,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       getLinterValue linter.style.induction (← getLinterOptions) ||
       getLinterValue linter.style.admit (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
-      getLinterValue linter.style.native (← getLinterOptions) do
+      getNativeLinterValue (← getLinterOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -238,7 +245,8 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | `Mathlib.Tactic.induction' => Linter.logLintIf linter.style.induction stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
       | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide =>
-        Linter.logLintIf linter.style.native stx' msg
+        if getNativeLinterValue (← getLinterOptions) then
+          Linter.logLint linter.style.native stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | _ => continue) stx
 
