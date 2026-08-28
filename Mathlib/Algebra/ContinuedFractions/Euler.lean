@@ -205,7 +205,7 @@ theorem IsEuler.dens_eq_one (h : g.IsEuler) : g.dens n = 1 := by
   | n + 1 =>
   obtain ⟨a, s_n_succ_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
     exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n
-  simp [dens_recurrence s_n_succ_eq, ih]
+  simp [dens_recurrence s_n_succ_eq, ih, add_assoc]
 
 private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n =
     ∏ j ∈ Finset.range (n + 1), (ρ.get? j).getD 0 := by
