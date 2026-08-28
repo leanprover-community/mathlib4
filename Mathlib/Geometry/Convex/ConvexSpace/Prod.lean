@@ -13,7 +13,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 This file defines the cartesian product of convex spaces.
 -/
 
-open Convexity Finsupp Set
+open Convexity Finsupp
 
 public noncomputable section
 

@@ -83,7 +83,6 @@ noncomputable local instance : MetricSpace (Seq α) :=
 local instance : CompleteSpace (Stream' α) :=
   @PiNat.completeSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : CompleteSpace (Seq α) := by
   suffices IsClosed (X := Stream' (Option α)) {x | ∀ {n : ℕ}, x n = none → x (n + 1) = none} by
     exact this.completeSpace_coe

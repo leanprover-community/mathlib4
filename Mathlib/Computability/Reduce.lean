@@ -5,7 +5,7 @@ Authors: Minchao Wu, Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.Halting
+public import Mathlib.Computability.RE
 
 /-!
 # Strong reducibility and degrees.
