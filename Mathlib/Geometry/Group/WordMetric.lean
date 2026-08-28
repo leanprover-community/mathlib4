@@ -54,16 +54,11 @@ variable {G ι : Type*} [Group G]
 
 variable (P : Group.Generators G ι) (g h : G) (l : List (ι × Bool))
 
-/-! ### The word length -/
+/-! ### Definition of word length -/
 
 /-- The word length of `g` with respect to the generating family `P`. -/
 @[no_expose]
 noncomputable def wordLength : ℕ := sInf {n | ∃ l, P.wordProd l = g ∧ l.length = n}
-
-/-- The word length of a group element given by a word `l` is smaller or equal to the
-length of `l`. -/
-lemma wordLength_wordProd_le : P.wordLength (P.wordProd l) ≤ l.length :=
-  Nat.sInf_le ⟨l, rfl, rfl⟩
 
 /-! ### Geodesic words -/
 
@@ -81,18 +76,28 @@ theorem exists_isGeodesic : ∃ l, P.IsGeodesic l ∧ P.wordProd l = g := by
 
 /-! ### Word length -/
 
+/-- The word length of a group element given by a word `l` is smaller or equal to the
+length of `l`. -/
+lemma wordLength_wordProd_le : P.wordLength (P.wordProd l) ≤ l.length :=
+  Nat.sInf_le ⟨l, rfl, rfl⟩
+
 @[simp]
 lemma wordLength_one : P.wordLength (1 : G) = 0 := eq_zero_of_nonpos (P.wordLength_wordProd_le [])
 
+/-- The characterisation of word length: the word length of a group element is less or equal to `n`
+if and only if there exists a word `l` of length `n` which evaluates to `g`. -/
+theorem wordLength_le_iff {n : ℕ} : P.wordLength g ≤ n ↔ ∃ l, l.length ≤ n ∧ P.wordProd l = g := by
+  constructor
+  · intro h
+    obtain ⟨l, hl, rfl⟩ := P.exists_isGeodesic g
+    exact ⟨l, hl.eq ▸ h, rfl⟩
+  · rintro ⟨l, hl, rfl⟩
+    exact (P.wordLength_wordProd_le l).trans hl
+
 @[simp]
 lemma wordLength_eq_zero_iff : P.wordLength g = 0 ↔ g = 1 := by
-  constructor
-  · obtain ⟨l, hl, rfl⟩ := P.exists_isGeodesic g
-    intro h
-    rw [hl.eq, List.length_eq_zero_iff] at h
-    exact h ▸ P.wordProd_nil
-  · intro h
-    exact h ▸ P.wordLength_one
+  rw [← Nat.le_zero, wordLength_le_iff]
+  simp [eq_comm]
 
 -- This is superceded by `wordLength_inv`.
 private lemma wordLength_inv_le : P.wordLength g⁻¹ ≤ P.wordLength g := by
@@ -120,8 +125,8 @@ noncomputable def groupNorm : GroupNorm G where
 
 /-! ### Word metric -/
 
-/-- `G` as a metric space `NormedGroup G` with respect to a generating family `P`, given by
-`dist g h = ‖g⁻¹ * h‖`. -/
+/-- `G` as a metric space `NormedGroup G` with respect to a generating family `P`. The metric is
+given by `dist g h = ‖g⁻¹ * h‖`, where the norm `groupNorm`. -/
 @[instance_reducible]
 noncomputable def normedGroup : NormedGroup G := P.groupNorm.toNormedGroup
 
