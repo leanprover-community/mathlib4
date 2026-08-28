@@ -452,14 +452,14 @@ theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
 
 @[fun_prop]
 theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν) μ := by
-  refine ⟨measurable_fst, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  refine ⟨measurable_fst.aemeasurable, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_fst hs, ← prod_univ, ← nonpos_iff_eq_zero]
   refine (prod_prod_le _ _).trans_eq ?_
   rw [h2s, zero_mul]
 
 @[fun_prop]
 theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν) ν := by
-  refine ⟨measurable_snd, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  refine ⟨measurable_snd.aemeasurable, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_snd hs, ← univ_prod, ← nonpos_iff_eq_zero]
   refine (prod_prod_le _ _).trans_eq ?_
   rw [h2s, mul_zero]
@@ -837,6 +837,21 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
   rw [map_apply (hf.prodMap hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
   exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
 
+/-- Version of `map_prod_map` for a.e. measurable maps. -/
+theorem map_prod_map_of_aemeasurable {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ}
+    (μa : Measure α) (μc : Measure γ) [SFinite μa] [SFinite μc] (hf : AEMeasurable f μa)
+    (hg : AEMeasurable g μc) :
+    (map f μa).prod (map g μc) = map (Prod.map f g) (μa.prod μc) := by
+  have h : Prod.map f g =ᵐ[μa.prod μc] Prod.map (hf.mk f) (hg.mk g) := by
+    have h₁ : f ∘ (Prod.fst : α × γ → α) =ᵐ[μa.prod μc] hf.mk f ∘ Prod.fst :=
+      quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk
+    have h₂ : g ∘ (Prod.snd : α × γ → γ) =ᵐ[μa.prod μc] hg.mk g ∘ Prod.snd :=
+      quasiMeasurePreserving_snd.ae_eq_comp hg.ae_eq_mk
+    filter_upwards [h₁, h₂] with z hz₁ hz₂
+    exact Prod.ext hz₁ hz₂
+  rw [map_congr h, map_congr hf.ae_eq_mk, map_congr hg.ae_eq_mk,
+    map_prod_map _ _ hf.measurable_mk hg.measurable_mk]
+
 -- `prod_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
 lemma prod_smul_left {μ : Measure α} {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -899,7 +914,7 @@ theorem prod_of_right {f : α × β → γ} {μ : Measure α} {ν : Measure β} 
     (hf : Measurable f) [SFinite ν]
     (h2f : ∀ᵐ x ∂μ, QuasiMeasurePreserving (fun y => f (x, y)) ν τ) :
     QuasiMeasurePreserving f (μ.prod ν) τ := by
-  refine ⟨hf, ?_⟩
+  refine ⟨hf.aemeasurable, ?_⟩
   refine AbsolutelyContinuous.mk fun s hs h2s => ?_
   rw [map_apply hf hs, Measure.prod_apply (hf hs)]; simp_rw [preimage_preimage]
   rw [lintegral_congr_ae (h2f.mono fun x hx => hx.preimage_null h2s), lintegral_zero]
@@ -930,8 +945,12 @@ protected theorem prodMap {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure 
     [SFinite μ] [SFinite τ] [SFinite υ] {f : α → β} {g : γ → ω}
     (hf : QuasiMeasurePreserving f μ ν) (hg : QuasiMeasurePreserving g τ υ) :
     QuasiMeasurePreserving (Prod.map f g) (μ.prod τ) (ν.prod υ) := by
-  refine ⟨by fun_prop, ?_⟩
-  rw [← map_prod_map _ _ (by fun_prop) (by fun_prop)]
+  have hfst : AEMeasurable (fun z : α × γ ↦ f z.1) (μ.prod τ) :=
+    hf.aemeasurable.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
+  have hsnd : AEMeasurable (fun z : α × γ ↦ g z.2) (μ.prod τ) :=
+    hg.aemeasurable.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
+  refine ⟨hfst.prodMk hsnd, ?_⟩
+  rw [← map_prod_map_of_aemeasurable _ _ hf.aemeasurable hg.aemeasurable]
   exact hf.absolutelyContinuous.prod hg.absolutelyContinuous
 
 end QuasiMeasurePreserving

@@ -93,6 +93,6 @@ theorem ergodicSMul_iterateMulAct {f : α → α} (hf : Measurable f) :
     nth_rewrite 2 [← Function.IsFixedPt.preimage_iterate hs n.val]
     rfl
   · intro s hm hs
-    exact h.quasiErgodic.aeconst_set₀ hm.nullMeasurableSet <| hs (.mk 1)
+    exact h.quasiErgodic.aeconst_set₀ hf hm.nullMeasurableSet <| hs (.mk 1)
 
 end MeasureTheory

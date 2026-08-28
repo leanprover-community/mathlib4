@@ -369,7 +369,7 @@ theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
 
 theorem quasiMeasurePreserving_eval (i : ι) :
     QuasiMeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
-  refine ⟨by fun_prop, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  refine ⟨(measurable_pi_apply i).aemeasurable, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply (by fun_prop) hs, pi_eval_preimage_null μ h2s]
 
 lemma pi_map_eval [DecidableEq ι] (i : ι) :
