@@ -310,8 +310,8 @@ namespace LinearMap
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The identitiy pairing is right-separating. -/
-theorem SeparatingRight.id [Module.Projective R M] : (.id : (M →ₗ[R] R) →ₛₗ[_] _).SeparatingRight :=
-  fun _ hx => by simpa using (Module.forall_dual_apply_eq_zero_iff R _).mp hx
+theorem SeparatingRight.id [Module.Projective R M] : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
+  fun _ hx ↦ by simpa using (Module.forall_dual_apply_eq_zero_iff R _).mp hx
 
 /-- The identitiy pairing is non-degenerate. -/
 theorem Nondegenerate.id [Module.Projective R M] :
@@ -319,7 +319,7 @@ theorem Nondegenerate.id [Module.Projective R M] :
 
 /-- The pairing `Dual.eval` is left-separating. -/
 theorem SeparatingLeft.eval [Module.Projective R M] : (Dual.eval R M).SeparatingLeft := by
-  simp only [Dual.eval, flip_separatingLeft, SeparatingRight.id]
+  simp [Dual.eval, SeparatingRight.id]
 
 /-- The pairing `Dual.eval` is non-degenerate. -/
 theorem Nondegenerate.eval [Module.Projective R M] : (Dual.eval R M).Nondegenerate :=
@@ -482,7 +482,7 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
   simp
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
-    Function.LeftInverse W.dualRestrict W.dualLift := fun x => by
+    Function.LeftInverse W.dualRestrict W.dualLift := fun x ↦ by
   rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, End.one_apply]
 
 theorem dualLift_rightInverse (W : Subspace K V) :
@@ -643,7 +643,7 @@ The inverse of this is `Submodule.dualCopairing`. -/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
   LinearEquiv.ofLinearMap
-    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
+    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ ↦
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
 
@@ -814,7 +814,7 @@ theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingL
 variable [Module.Projective K V]
 
 theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
-  fun x => (forall_dual_apply_eq_zero_iff K x).mp
+  fun x ↦ (forall_dual_apply_eq_zero_iff K x).mp
 
 theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
 

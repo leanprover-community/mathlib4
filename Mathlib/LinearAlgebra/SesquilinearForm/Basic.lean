@@ -679,7 +679,7 @@ theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ke
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
 
 /-- The identitiy pairing is left-separating. -/
-theorem SeparatingLeft.id : (.id : (M₁ →ₛₗ[I₁] M) →ₛₗ[_] _).SeparatingLeft :=
+theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
   fun _ hx => by ext y; exact hx y
 
 /-- The pairing `Dual.eval` is right-separating. -/
