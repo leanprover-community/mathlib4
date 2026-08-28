@@ -83,61 +83,60 @@ partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
       return some (.andRight :: path)
     return none
   | Exists tb pb =>
-    if (tb.containsFVar a.fvarId!) then
-      -- this quantifier cannot be moved outside, but the equation may be hidden in `tb` itself
-      let some path ← findEqPath a tb | return none
-      return some (.existsType :: path)
-    let .lam _ _ body _ := pb | return none
-    let some path ← findEqPath a body | return none
-    return some (.existsBody :: path)
+    if !(tb.containsFVar a.fvarId!) then
+      let .lam _ _ body _ := pb | return none
+      let some path ← findEqPath a body | return none
+      return some (.existsBody :: path)
+    -- This quantifier cannot be moved outside, but the equation may be hidden in `tb` itself.
+    -- It make sense only when `tb` is a `Prop`. We don't check it here but if it's not,
+    -- `tb` will not match anything in `match_expr` above
+    -- TODO: should we check?
+    let some path ← findEqPath a tb | return none
+    return some (.existsType :: path)
+
   | _ => return none
 
-/-- Given `h : T'`, where `T'` is the binder type `T` with the quantifiers entered along `path`
-removed (their variables are `exs`), constructs a proof of `T` by reintroducing those quantifiers
-with `exs` as witnesses. This is what the body of a dependent quantifier whose binder type was
-entered receives in place of its proof: `∃ h : T, body h` becomes `∃ h : T', body (anchor h)`. -/
-partial def mkAnchor {T T' : Q(Prop)} (h : Q($T')) (exs : List VarQ) (path : Path) :
+/-- Assuming `T'` is `T` with existential quantifiers removed and abstracted as `exs` this function
+proves the original `T` from `h : T'`. This is used when we hoist binders from inside `P` in
+`∃ h : P, Q h` and restore the proof `h` that `Q` consumes. -/
+partial def proveFromHoisted {T T' : Q(Prop)} (h : Q($T')) (exs : List VarQ) (path : Path) :
     MetaM Q($T) := do
   if path.all (· != .existsBody) then
-    -- nothing was removed from `T`
-    let _ : $T' =Q $T := ⟨⟩
+    have : $T' =Q $T := ⟨⟩
     return q($h)
   match path with
-  | [] => panic! "mkAnchor: `path` is empty"
+  | [] => panic! "`path` is empty"
   | .andLeft :: tl =>
-    let ~q($L ∧ $R) := T | panic! "mkAnchor: path starts with `andLeft`, but `T` is not `And`"
-    let ~q($L' ∧ $R') := T' | panic! "mkAnchor: path starts with `andLeft`, but `T'` is not `And`"
-    let _ : $R' =Q $R := ⟨⟩
-    let pfL : Q($L) ← mkAnchor (T' := q($L')) q(And.left $h) exs tl
+    let ~q($L ∧ $R) := T | panic! "path starts with `andLeft`, but `T` is not `And`"
+    let ~q($L' ∧ $R') := T' | panic! "path starts with `andLeft`, but `T'` is not `And`"
+    have : $R' =Q $R := ⟨⟩
+    let pfL : Q($L) ← proveFromHoisted q(And.left $h) exs tl
     return q(And.intro $pfL (And.right $h))
   | .andRight :: tl =>
-    let ~q($L ∧ $R) := T | panic! "mkAnchor: path starts with `andRight`, but `T` is not `And`"
-    let ~q($L' ∧ $R') := T' | panic! "mkAnchor: path starts with `andRight`, but `T'` is not `And`"
-    let _ : $L' =Q $L := ⟨⟩
-    let pfR : Q($R) ← mkAnchor (T' := q($R')) q(And.right $h) exs tl
+    let ~q($L ∧ $R) := T | panic! "path starts with `andRight`, but `T` is not `And`"
+    let ~q($L' ∧ $R') := T' | panic! "path starts with `andRight`, but `T'` is not `And`"
+    have : $L' =Q $L := ⟨⟩
+    let pfR : Q($R) ← proveFromHoisted q(And.right $h) exs tl
     return q(And.intro (And.left $h) $pfR)
   | .existsBody :: tl =>
     match exs with
-    | [] => panic! "mkAnchor: path starts with `existsBody`, but `exs` is empty"
+    | [] => panic! "path starts with `existsBody`, but `exs` is empty"
     | ⟨v, γ, e⟩ :: exsTl =>
     let ~q(@Exists.{v} $β $pb) := T
-      | panic! "mkAnchor: path starts with `existsBody`, but `T` is not `Exists`"
-    let _ : $γ =Q $β := ⟨⟩
-    let pf : Q($pb $e) ← mkAnchor (T := q($pb $e)) h exsTl tl
+      | panic! "path starts with `existsBody`, but `T` is not `Exists`"
+    have : $γ =Q $β := ⟨⟩
+    let pf : Q($pb $e) ← proveFromHoisted h exsTl tl
     return q(Exists.intro $e $pf)
   | .existsType :: tl =>
-    let ~q(@Exists $S $c) := T
-      | panic! "mkAnchor: path starts with `existsType`, but `T` is not `Exists`"
-    let ~q(@Exists $S' $c') := T'
-      | panic! "mkAnchor: path starts with `existsType`, but `T'` is not `Exists`"
+    let ~q(@Exists $S $c) := T | panic! "path starts with `existsType`, but `T` is not `Exists`"
+    let ~q(@Exists $S' $c') := T' | panic! "path starts with `existsType`, but `T'` is not `Exists`"
     withLocalDeclQ .anonymous .default S' fun k => do
-      withLocalDeclQ .anonymous .default q($c' $k) fun hc => do
-        let w : Q($S) ← mkAnchor (T := S) (T' := S') k exs tl
-        -- `hc : c' k` proves `c w` by proof irrelevance
-        have hc : Q($c $w) := hc
-        let inner : Q(@Exists $S $c) := q(Exists.intro $w $hc)
-        let f : Q(∀ k, $c' k → @Exists $S $c) ← mkLambdaFVars #[k, hc] inner
-        return q(Exists.elim $h $f)
+    withLocalDeclQ .anonymous .default q($c' $k) fun hc => do
+      let w : Q($S) ← proveFromHoisted k exs tl
+      have hc : Q($c $w) := hc
+      let inner : Q(@Exists $S $c) := q(Exists.intro $w $hc)
+      let f : Q(∀ k, $c' k → @Exists $S $c) ← mkLambdaFVars #[k, hc] inner
+      return q(Exists.elim $h $f)
 
 /-- Given `P : Prop` and `a : α`, traverses the expression `P` to find a subexpression of
 the form `a = a'` or `a' = a` for some `a'`. It branches at each `And` and walks into
@@ -177,14 +176,12 @@ where
     return (fvars, lctx, q($L ∧ $P'), a')
   | .existsType :: tl =>
     let ~q(@Exists $β $pb) := P | panic! "path starts with `existsType`, but `P` is not `Exists`"
-    -- the binder type contains the equation, so it is a proposition
-    let βProp : Q(Prop) := β
-    -- the quantifier stays in place, with its binder type replaced by what remains of it
-    let (fvars, lctx, T', a') ← go a βProp tl
+    -- the quantifier stays in place, with its binder type (a proposition, since it contains the
+    -- equation) replaced by what remains of it
+    let (fvars, lctx, T', a') ← go a β tl
     let node : Q(Prop) ← withLCtx' lctx do
       withLocalDeclQ .anonymous .default T' fun h => do
-        let anchor ← mkAnchor (T := βProp) h fvars tl
-        have anchor : Q($β) := anchor
+        let anchor : Q($β) ← proveFromHoisted h fvars tl
         let body : Q(Prop) := q($pb $anchor)
         let p' : Q($T' → Prop) ← mkLambdaFVars #[h] body
         return q(Exists $p')
@@ -229,7 +226,7 @@ partial def destruct {P goal : Q(Prop)} (h : Q($P)) (exs : List VarQ) (path : Pa
     | ⟨v, γ, e⟩ :: exsTl =>
     let ~q(@Exists.{v} $β $pb) := P
       | panic! "path starts with `existsBody`, but `P` is not `Exists`"
-    let _ : $γ =Q $β := ⟨⟩
+    have : $γ =Q $β := ⟨⟩
     withLocalDeclQ .anonymous .default q($pb $e) fun h' => do
       let pf ← destruct h' exsTl tl acc k
       let f : Q(∀ e, $pb e → $goal) ← mkLambdaFVars #[e, h'] pf
@@ -266,7 +263,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
   match path with
   | [] =>
     let ~q($x = $y) := goal | panic! "path is empty, but the goal is not an equation"
-    let _ : $x =Q $y := ⟨⟩
+    have : $x =Q $y := ⟨⟩
     return q(rfl)
   | .existsBody :: tl =>
     match exs with
@@ -274,7 +271,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     | ⟨v, γ, e⟩ :: exsTl =>
     let ~q(@Exists.{v} $β $pb) := goal
       | panic! "path starts with `existsBody`, but the goal is not `Exists`"
-    let _ : $γ =Q $β := ⟨⟩
+    have : $γ =Q $β := ⟨⟩
     let pf : Q($pb $e) ← construct exsTl tl leaves
     return q(Exists.intro $e $pf)
   | .andRight :: tl =>
@@ -283,7 +280,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     match leaves with
     | [] => panic! "path starts with `andRight`, but `leaves` is empty"
     | ⟨T, leaf⟩ :: leavesTl =>
-    let _ : $T =Q $L := ⟨⟩
+    have : $T =Q $L := ⟨⟩
     have leaf : Q($L) := leaf
     let pf : Q($R) ← construct exs tl leavesTl
     return q(And.intro $leaf $pf)
@@ -293,7 +290,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     match leaves with
     | [] => panic! "path starts with `andLeft`, but `leaves` is empty"
     | ⟨T, leaf⟩ :: leavesTl =>
-    let _ : $T =Q $R := ⟨⟩
+    have : $T =Q $R := ⟨⟩
     have leaf : Q($R) := leaf
     let pf : Q($L) ← construct exs tl leavesTl
     return q(And.intro $pf $leaf)
@@ -305,7 +302,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     | ⟨B, leaf⟩ :: leavesTl =>
     let w : Q($β) ← construct exs tl leavesTl
     -- the leaf proves the body at `w` by proof irrelevance
-    let _ : $B =Q $pb $w := ⟨⟩
+    have : $B =Q $pb $w := ⟨⟩
     have leaf : Q($pb $w) := leaf
     return q(Exists.intro $w $leaf)
 
