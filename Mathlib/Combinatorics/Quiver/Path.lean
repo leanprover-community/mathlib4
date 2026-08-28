@@ -5,8 +5,8 @@ Authors: David Wärn, Kim Morrison, Matteo Cipollina, Runtian Zhou
 -/
 module
 
+public import Mathlib.Basic.Logic.Lemmas
 public import Mathlib.Combinatorics.Quiver.Prefunctor
-public import Mathlib.Logic.Lemmas
 public import Batteries.Data.List.Basic
 
 /-!
@@ -171,7 +171,7 @@ lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
 
 section Decomposition
 
-variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
+variable {V : Type*} [Quiver V] {a b : V} (p : Path a b)
 
 lemma length_ne_zero_iff_eq_comp (p : Path a b) :
     p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
