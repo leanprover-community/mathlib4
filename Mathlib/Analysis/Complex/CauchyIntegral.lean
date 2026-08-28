@@ -806,7 +806,7 @@ section tendsto_zero
 then $\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
 `tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`. -/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
-    {g : ℝ → ℂ → E} (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop)) :
+    {g : ℝ → ℂ → E} (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
   wlog hne : x₁ ≠ x₂
   · simp_all
@@ -815,14 +815,19 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
   have hε' : 0 < (1 / 2) * (ε / |x₂ - x₁|) := by linarith [div_pos hε (abs_sub_pos.mpr hne.symm)]
   obtain ⟨pa, hpa, pb, hpb, hp⟩ :=
     eventually_prod_iff.mp <| Metric.tendstoUniformlyOnFilter_iff.mp htendsto _ hε'
-  obtain ⟨M₁, hM₁⟩ := eventually_atTop.mp hpa
-  obtain ⟨K, hK⟩ := eventually_atTop.mp (eventually_comap.mp hpb)
+  simp only [eventually_atTop, eventually_comap, eventually_inf_principal] at hpa hpb
+  obtain ⟨M₁, hM₁⟩ := hpa
+  obtain ⟨K, hK⟩ := hpb
   refine ⟨max M₁ K, fun m hm ↦ ?_⟩
   calc ‖∫ (x : ℝ) in x₁..x₂, g m (↑x + ↑m * I)‖
     _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| := by
-      refine intervalIntegral.norm_integral_le_of_norm_le_const fun x _ ↦ ?_
-      simpa using hp (hM₁ m (le_of_max_le_left hm))
-        (hK m (le_of_max_le_right hm) (x + m * I) (by simp)) |>.le
+      refine intervalIntegral.norm_integral_le_of_norm_le_const fun x hx ↦ ?_
+      simp only [Pi.zero_apply, dist_zero] at hp
+      refine le_of_lt <| hp ?_ ?_
+      · exact hM₁ m <| le_of_max_le_left hm
+      · apply hK m (le_of_max_le_right hm) (x + m * I) (by simp)
+
+        sorry
     _ = (1 / 2) * ε := by field_simp
     _ < ε := by linarith
 
