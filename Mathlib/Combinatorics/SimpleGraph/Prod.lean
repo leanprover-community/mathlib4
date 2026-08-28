@@ -46,7 +46,7 @@ namespace SimpleGraph
 
 variable {G : SimpleGraph α} {H : SimpleGraph β}
 
-section Product
+section StrongProduct
 
 /-- Strong product of simple graphs. It relates `(a₁, b₁)` and `(a₂,  b₂)` if `a₁` and `a₂` are
 equal or`G` relates, and if `b₁` and `b₂` are equal or `H` them. -/
@@ -278,7 +278,7 @@ lemma reachable_strongProd {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.strongProdLeft _ _).append (w₂.strongProdRight _ _)⟩
 
-end Product
+end StrongProduct
 
 section BoxProduct
 
