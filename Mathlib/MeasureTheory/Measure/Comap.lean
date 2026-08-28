@@ -112,12 +112,12 @@ set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_image_of_ae_eq_comap (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
     {s t : Set α} (hst : s =ᵐ[comap f μ] t) : f '' s =ᵐ[μ] f '' t := by
-  rw [EventuallyEq, ae_iff] at hst ⊢
-  have h_eq_α : { a : α | ¬s a = t a } = s \ t ∪ t \ s := by
+  rw [EventuallyEqSet, EventuallyEq, ae_iff] at hst ⊢
+  have h_eq_α : { a : α | ¬(a ∈ s) = (a ∈ t) } = s \ t ∪ t \ s := by
     ext1 x
     simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
     tauto
-  have h_eq_β : { a : β | ¬(f '' s) a = (f '' t) a } = f '' s \ f '' t ∪ f '' t \ f '' s := by
+  have h_eq_β : { a : β | ¬(a ∈ f '' s) = (a ∈ f '' t) } = f '' s \ f '' t ∪ f '' t \ f '' s := by
     ext1 x
     simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
     tauto

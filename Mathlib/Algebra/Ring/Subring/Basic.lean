@@ -378,6 +378,19 @@ theorem mem_center_iff {R : Type*} [Ring R] {z : R} : z ∈ center R ↔ ∀ g, 
 instance decidableMemCenter {R} [Ring R] [DecidableEq R] [Fintype R] :
     DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
 
+theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+    map f (center R) = center S :=
+  SetLike.coe_injective (Set.image_center_eq f)
+
 @[simp]
 theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
@@ -936,7 +949,7 @@ variable {s t : Subring R}
 /-- Makes the identity isomorphism from a proof two subrings of a multiplicative
 monoid are equal. -/
 def subringCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| congr_arg _ h with
+  { Equiv.Set.congr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
