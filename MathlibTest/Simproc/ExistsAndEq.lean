@@ -69,6 +69,8 @@ example (P Q : α × β → Prop) (a : α × β) :
     (∃ b : (α × β), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
   simp
 
+-- # Metavariables in goals
+
 -- The simproc must return a closed proof even when the goal contains metavariables, which is what
 -- `aesop` presents to it: here the goal is `∃ a : Nat, a = Nat.succ ?b ∧ 0 < ?b`.
 open Lean Meta Qq in

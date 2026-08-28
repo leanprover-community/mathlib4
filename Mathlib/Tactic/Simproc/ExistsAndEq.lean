@@ -323,26 +323,21 @@ substitutes the metavariables back into the resulting `Simp.Step`. In some cases
 built by `substCore` can only be instantiated when the goal contains none.
 
 The abstraction is done by `abstractMVars`, so that metavariables occurring in the types of other
-metavariables (as in `?f : α → ?β`) are handled consistently. -/
-def withMVarsAsFVars (e : Expr) (k : Expr → MetaM Simp.Step) : MetaM Simp.Step := do
+metavariables (as in `?f : α → ?β`) are handled consistently.
+
+TODO: this is a general simproc infrastructure, should we moved somewhere else?
+-/
+def withAbstractMVars (e : Expr) (k : Expr → MetaM Simp.Step) : MetaM Simp.Step := do
   let e ← instantiateMVars e
   if !e.hasMVar then
     return ← k e
-  let r ← abstractMVars e
-  lambdaTelescope r.expr fun xs e' => do
-    let step ← k e'
-    -- reopen the abstraction with fresh metavariables and unify them with the original ones
-    let us ← r.paramNames.mapM fun _ => mkFreshLevelMVar
-    let (ms, _, body) ←
-      lambdaMetaTelescope (r.expr.instantiateLevelParamsArray r.paramNames us) (some r.numMVars)
-    unless ← isDefEq body e do
-      throwError "existsAndEq: failed to restore the metavariables of{indentExpr e}"
-    let restore (t : Expr) : MetaM Expr := do
-      let t ← mkLambdaFVars xs t
-      instantiateMVars <| (t.instantiateLevelParamsArray r.paramNames us).beta ms
-    let subst (res : Simp.Result) : MetaM Simp.Result :=
+  let r ← abstractMVars e (levels := false)
+  lambdaBoundedTelescope r.expr r.numMVars fun xs e' => do
+    let restore (t : Expr) : MetaM Expr :=
+      instantiateMVars <| t.replaceFVars xs r.mvars
+    let subst (res : Simp.Result) : MetaM Simp.Result := do
       return { res with expr := ← restore res.expr, proof? := ← res.proof?.mapM restore }
-    match step with
+    match ← k e' with
     | .done res => return .done (← subst res)
     | .visit res => return .visit (← subst res)
     | .continue res? => return .continue (← res?.mapM subst)
@@ -369,7 +364,7 @@ for `a`. If so, replaces `a` with `a'` and removes quantifier.
 
 It looks through nested quantifiers and conjunctions searching for a `a = a'`
 or `a' = a` subexpression. -/
-simproc ↓ existsAndEq (Exists _) := fun e => withMVarsAsFVars e existsAndEqCore
+simproc ↓ existsAndEq (Exists _) := fun e => withAbstractMVars e existsAndEqCore
 
 end ExistsAndEq
 
