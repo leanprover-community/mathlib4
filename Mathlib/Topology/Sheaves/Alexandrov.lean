@@ -10,6 +10,7 @@ public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
+# Sheaves on the Alexandrov topology of a preorder
 
 Let `X` be a preorder `≤`, and consider the associated Alexandrov topology on `X`.
 Given a functor `F : X ⥤ C` to a complete category, we can extend `F` to a
@@ -198,6 +199,4 @@ theorem Topology.IsUpperSet.isSheaf_of_isRightKanExtension
     @rightKanExtensionUnique _ _ _ _ _ _ _ _ _ _ (by assumption) _ _ (by assumption)
   change TopCat.Presheaf.IsSheaf (X := TopCat.of X) P
   rw [isSheaf_iso_iff this]
-  let _ : Preorder (TopCat.of X) := inferInstanceAs <| Preorder X
-  have _ : Topology.IsUpperSet (TopCat.of X) := inferInstanceAs <| Topology.IsUpperSet X
   exact isSheaf_principalsKanExtension (X := TopCat.of X) F

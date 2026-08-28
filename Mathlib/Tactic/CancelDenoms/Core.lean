@@ -5,9 +5,11 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Data.Tree.Basic
-public import Mathlib.Algebra.Field.Basic
 public meta import Mathlib.Algebra.Group.Nat.Defs
+public meta import Mathlib.Basic.Logic.Basic
+public meta import Mathlib.Data.Tree.Basic
+
+public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Tree.Basic
 public import Mathlib.Tactic.NormNum.Core
@@ -94,7 +96,6 @@ theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
 theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
     (a ≠ b) = (1 / gcd * (bd * a') ≠ 1 / gcd * (ad * b')) := by
-  classical
   rw [eq_iff_iff, not_iff_not, cancel_factors_eq ha hb had hbd hgcd]
 
 /-! ### Computing cancellation factors -/

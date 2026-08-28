@@ -110,7 +110,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   refine hasIntegral_iff.2 fun ε ε0 => ?_
   lift ε to ℝ≥0 using ε0.lt.le; rw [gt_iff_lt, NNReal.coe_pos] at ε0
   rcases NNReal.exists_pos_sum_of_countable ε0.ne' ℕ with ⟨δ, δ0, c, hδc, hcε⟩
-  haveI := Fact.mk (I.measure_coe_lt_top μ)
+  have := Fact.mk (I.measure_coe_lt_top μ)
   change μ.restrict I {x | f x ≠ 0} = 0 at hf
   set N : (ι → ℝ) → ℕ := fun x => ⌈‖f x‖⌉₊
   have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp [N]
@@ -176,7 +176,7 @@ theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ
   | @const y s hs =>
     simpa [hs] using! BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
   | @add f g _ hfi hgi =>
-    borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
+    borelize E; have := Fact.mk (I.measure_coe_lt_top μ)
     rw [integral_add]
     exacts [hfi.add hgi, integrable_iff.2 fun _ _ => measure_lt_top _ _,
       integrable_iff.2 fun _ _ => measure_lt_top _ _]
@@ -202,7 +202,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   borelize E
   -- First we replace an `ae_strongly_measurable` function by a measurable one.
   rcases hf.aestronglyMeasurable with ⟨g, hg, hfg⟩
-  haveI : SeparableSpace (range g ∪ {0} : Set E) := hg.separableSpace_range_union_singleton
+  have : SeparableSpace (range g ∪ {0} : Set E) := hg.separableSpace_range_union_singleton
   rw [integral_congr_ae hfg]; have hgi : IntegrableOn g I μ := (integrable_congr hfg).1 hf
   refine BoxIntegral.HasIntegral.congr_ae ?_ hfg.symm hl
   clear! f

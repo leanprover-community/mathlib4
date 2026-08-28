@@ -44,6 +44,7 @@ hidden auxiliary declarations (for example recursive hypotheses). Example:
 ```
 The intent is that `clear * -` only clears user-visible local declarations; hidden auxiliary
 declarations should be handled by more specific mechanisms when needed. -/
+@[nolint tacticAlt]
 syntax (name := clearExceptTactic) "clear " "*" " -" (ppSpace colGt ident)* : tactic
 
 elab_rules : tactic

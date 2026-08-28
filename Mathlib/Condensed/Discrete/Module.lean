@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 public import Mathlib.Condensed.Discrete.LocallyConstant
 public import Mathlib.Condensed.Light.Module
 public import Mathlib.Condensed.Module
@@ -73,7 +72,7 @@ abbrev functorToPresheaves : ModuleCat.{u + 1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ Mod
 /-- `functorToPresheaves` as a functor to condensed modules. -/
 abbrev functor : ModuleCat R ⥤ CondensedMod.{u} R :=
   CompHausLike.LocallyConstantModule.functor.{u + 1, u} R
-    (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+    (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 1 3).mp)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u + 1} R) :
@@ -154,13 +153,13 @@ instance : (functor R).Full := (fullyFaithfulFunctor R).full
 instance : (discrete (ModuleCat R)).Faithful :=
   Functor.Faithful.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Faithful :=
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat.{u + 1} R)).Faithful :=
   inferInstanceAs (discrete (ModuleCat R)).Faithful
 
 instance : (discrete (ModuleCat R)).Full :=
   Functor.Full.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Full :=
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat.{u + 1} R)).Full :=
   inferInstanceAs (discrete (ModuleCat R)).Full
 
 instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=

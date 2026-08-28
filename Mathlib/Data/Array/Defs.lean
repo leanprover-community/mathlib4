@@ -36,8 +36,6 @@ where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
   let (y, a) := a.swapAt! i x
   cyclicPermuteAux a is y i0
 
-set_option linter.deprecated false
-
 /-- Permute the array using a list of cycles. -/
 @[deprecated "This is now in `Mathlib.Tactic.Translate.Reorder.permute!`" (since := "2026-03-05")]
 def permute! [Inhabited α] (a : Array α) (ls : List (List Nat)) : Array α :=
