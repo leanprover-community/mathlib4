@@ -35,7 +35,6 @@ open CategoryTheory Limits
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
   [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 namespace SheafOfModules
 
@@ -108,7 +107,6 @@ section
 
 variable [∀ (X : C), HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat.{u})]
 
 /-- The data of generating sections of the restriction of a sheaf of modules
 over a covering of the terminal object. -/
@@ -151,7 +149,6 @@ noncomputable section
 
 variable {C' : Type u₁} [Category.{v₁} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
-  [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
 
 variable {M : SheafOfModules.{u} R} (G : M.GeneratingSections)
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
@@ -189,8 +186,7 @@ instance [IsIso G.π] : IsIso (G.map F η).π := by
   rw [GeneratingSections.map_π_eq]
   infer_instance
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
+variable [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the

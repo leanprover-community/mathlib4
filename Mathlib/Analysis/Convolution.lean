@@ -89,7 +89,7 @@ assert_not_exists ContDiffAt HasDerivAt
 @[expose] public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open Bornology ContinuousLinearMap Metric Topology
+open ContinuousLinearMap Metric Topology
 open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
@@ -98,7 +98,7 @@ variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {E'' : 
   {F' : Type uF'} {F'' : Type uF''} {P : Type uP}
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
-  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
+  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y : E}
 
 namespace MeasureTheory
 section NontriviallyNormedField
@@ -174,7 +174,7 @@ section Group
 
 variable [AddGroup G]
 
-theorem AEStronglyMeasurable.convolution_integrand' [MeasurableAdd₂ G]
+theorem AEStronglyMeasurable.convolution_integrand' [SFinite ν] [MeasurableAdd₂ G]
     [MeasurableNeg G] (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g <| map (fun p : G × G => p.1 - p.2) (μ.prod ν)) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
@@ -807,8 +807,8 @@ theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x�
   have hgi : dist (g i (k i)) z₀ < ε / 3 := hgδ hpi (hki.trans <| half_lt_self hδ)
   have h1 : ∀ x' ∈ ball (k i) (δ / 2), dist (g i x') (g i (k i)) ≤ ε / 3 + ε / 3 := by
     intro x' hx'
-    refine (dist_triangle_right _ _ _).trans (add_le_add (hgδ hpi ?_).le hgi.le)
-    exact ((dist_triangle _ _ _).trans_lt (add_lt_add hx'.out hki)).trans_eq (add_halves δ)
+    grw [dist_triangle_right, hgδ hpi ?_, hgi]
+    grw [dist_triangle, hx'.out, hki, add_halves]
   have := dist_convolution_le (add_pos h2ε h2ε).le hφi hnφi hiφi hmgi h1
   refine ((dist_triangle _ _ _).trans_lt (add_lt_add_of_le_of_lt this hgi)).trans_eq ?_
   ring
@@ -827,7 +827,6 @@ variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
 variable [NormedSpace 𝕜 E'']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-variable {n : ℕ∞}
 variable [MeasurableSpace G] {μ ν : Measure G}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 

@@ -19,8 +19,6 @@ is Guitart exact.
 
 namespace CategoryTheory
 
-open Category
-
 variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
   [Category* D₁] [Category* D₂] [Category* D₃]
 
@@ -40,6 +38,7 @@ def whiskerHorizontal (α : T' ⟶ T) (β : B ⟶ B') :
 
 namespace GuitartExact
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A 2-square stays Guitart exact if we replace the top and bottom functors
 by isomorphic functors. See also `whiskerHorizontal_iff`. -/
@@ -86,6 +85,7 @@ def hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ T�
 
 namespace GuitartExact
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance hComp [w.GuitartExact] [w'.GuitartExact] :
     (w ≫ₕ w').GuitartExact := by
@@ -100,6 +100,7 @@ instance hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ �
   dsimp only [TwoSquare.hComp']
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism between
 `w.costructuredArrowRightwards Y₁ ⋙ w'.costructuredArrowRightwards (B₁.obj Y₁)` and
@@ -136,6 +137,7 @@ lemma hComp'_iff_of_essSurj
     (w.hComp' w' eT eB).GuitartExact ↔ w'.GuitartExact :=
   ⟨fun _ ↦ of_hComp' w w' eT eB, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma hComp_iff_of_equivalences (eT : C₂ ≌ C₃) (eB : D₂ ≌ D₃)
     (w' : eT.functor ⋙ V₃ ≅ V₂ ⋙ eB.functor) :
@@ -146,6 +148,7 @@ lemma hComp_iff_of_equivalences (eT : C₂ ≌ C₃) (eB : D₂ ≌ D₃)
     ← vComp_iff_of_equivalences _ _ _ w'', this]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hComp'_iff_of_equivalences (E : C₂ ≌ C₃) (E' : D₂ ≌ D₃)
     (w' : E.functor ⋙ V₃ ≅ V₂ ⋙ E'.functor)
     {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ E.functor ≅ T₁₂)
