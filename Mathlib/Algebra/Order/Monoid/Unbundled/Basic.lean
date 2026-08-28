@@ -739,38 +739,34 @@ The lemma assuming left covariance is `Left.one_lt_mul'`. -/
 The lemma assuming left covariance is `Left.add_pos'`. -/]
 alias Right.one_lt_mul' := lt_mul_of_one_lt_of_lt'
 
-@[to_additive add_nonpos /-- **Alias** of `Left.add_nonpos`. -/]
+@[to_additive add_nonpos]
 alias mul_le_one' := Left.mul_le_one
 
-@[to_additive add_neg_of_nonpos_of_neg
-/-- **Alias** of `Left.add_neg_of_nonpos_of_neg`. -/]
+@[to_additive add_neg_of_nonpos_of_neg]
 alias mul_lt_one_of_le_of_lt := Left.mul_lt_one_of_le_of_lt
 
-@[to_additive add_neg_of_neg_of_nonpos
-/-- **Alias** of `Left.add_neg_of_neg_of_nonpos`. -/]
+@[to_additive add_neg_of_neg_of_nonpos]
 alias mul_lt_one_of_lt_of_le := Left.mul_lt_one_of_lt_of_le
 
-@[to_additive /-- **Alias** of `Left.add_neg`. -/]
+@[to_additive]
 alias mul_lt_one := Left.mul_lt_one
 
-@[to_additive /-- **Alias** of `Left.add_neg'`. -/]
+@[to_additive]
 alias mul_lt_one' := Left.mul_lt_one'
 
-@[to_additive add_nonneg /-- **Alias** of `Left.add_nonneg`. -/]
+@[to_additive]
 alias one_le_mul := Left.one_le_mul
 
-@[to_additive add_pos_of_nonneg_of_pos
-/-- **Alias** of `Left.add_pos_of_nonneg_of_pos`. -/]
+@[to_additive add_pos_of_nonneg_of_pos]
 alias one_lt_mul_of_le_of_lt' := Left.one_lt_mul_of_le_of_lt
 
-@[to_additive add_pos_of_pos_of_nonneg
-/-- **Alias** of `Left.add_pos_of_pos_of_nonneg`. -/]
+@[to_additive add_pos_of_pos_of_nonneg]
 alias one_lt_mul_of_lt_of_le' := Left.one_lt_mul_of_lt_of_le
 
-@[to_additive add_pos /-- **Alias** of `Left.add_pos`. -/]
+@[to_additive add_pos]
 alias one_lt_mul' := Left.one_lt_mul
 
-@[to_additive add_pos' /-- **Alias** of `Left.add_pos'`. -/]
+@[to_additive add_pos']
 alias one_lt_mul'' := Left.one_lt_mul'
 
 @[to_additive]
