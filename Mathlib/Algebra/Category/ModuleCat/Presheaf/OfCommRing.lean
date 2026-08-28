@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
 
 This file provides short names for categories and functors obtained from a presheaf of commutative
 rings by forgetting to rings. In particular, these names reduce the need for
-repeatedly writing the relevant forgetful functor or `sheafCompose`.
+repeatedly writing the relevant forgetful functor.
 -/
 
 @[expose] public section
