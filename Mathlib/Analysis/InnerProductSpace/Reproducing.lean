@@ -501,7 +501,7 @@ private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 
         congr 1
         ext x
         exact lintegral_mul_const _ ((f : X →ₘ[μ] V).measurable.enorm.pow_const 2)
-      grw [lintegral_prod_le (fun (p:X× X)↦ ‖f p.2‖ₑ ^ 2 * ‖g p.1‖ₑ ^ 2)]
+      grw [lintegral_prod_le (fun (p : X × X) ↦ ‖f p.2‖ₑ ^ 2 * ‖g p.1‖ₑ ^ 2)]
       simp [h]
     _ ≤ (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
       rw [ENNReal.mul_rpow_of_nonneg (∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) (∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ)

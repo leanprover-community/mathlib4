@@ -1073,6 +1073,12 @@ theorem lintegral_prod_mul {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf :
   rw [lintegral_prod _ (by fun_prop)]
   simp [lintegral_lintegral_mul hf hg]
 
+omit [SFinite ν] in
+theorem lintegral_prod_mul_le {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g ν) : ∫⁻ z, f z.1 * g z.2 ∂μ.prod ν ≤ (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by
+  grw [lintegral_prod_le _]
+  simp [lintegral_lintegral_mul hf hg]
+
 /-! ### Marginals of a measure defined on a product -/
 
 
