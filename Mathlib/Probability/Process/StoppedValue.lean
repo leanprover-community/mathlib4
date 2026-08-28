@@ -149,6 +149,15 @@ theorem stoppedValue_const (u : ι → Ω → E) (i : ι) : (𝓕.stoppedValue u
     (hτ : τ ω ≠ ⊤) :
     𝓕.stoppedValue (fun t ω ↦ f (X t ω)) τ P ω = f (𝓕.stoppedValue X τ P ω) := by
   simp [stoppedValue_of_ne_top hτ]
+  rfl
+
+@[simp] lemma HasLimitProcess.stoppedValue_comp {γ : Type*} [Zero γ] [TopologicalSpace γ]
+    {f : E → γ} (hX : HasLimitProcess X 𝓕 P) (hf : Continuous f) :
+    𝓕.stoppedValue (fun t ω ↦ f (X t ω)) τ P = f ∘ (𝓕.stoppedValue X τ P) := by
+  ext ω
+  simp only [stoppedValue, Function.comp_apply]
+  split_ifs
+
 
 lemma stoppedValue_norm [SeminormedAddCommGroup E] (hτ : τ ω ≠ ⊤) :
     𝓕.stoppedValue (fun t ω ↦ ‖X t ω‖) τ P ω = ‖𝓕.stoppedValue X τ P ω‖ := by
