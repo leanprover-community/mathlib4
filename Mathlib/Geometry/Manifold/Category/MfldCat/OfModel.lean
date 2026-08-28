@@ -136,13 +136,13 @@ instance hasForgetToTopCat : HasForget₂ (MfldCat I n) TopCat.{u} where
     (forget₂ (MfldCat I n) TopCat).map f = TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩ := rfl
 
 /-- Build an isomorphism in `ModelWithCorners.MfldCat I n` from a diffeomorphism. -/
-@[simps]
+@[expose, simps]
 def isoOfDiffeomorph (e : M ≃ₘ^n⟮I, I⟯ N) : M ≅ N where
   hom := ofHom e.toContMDiffMap
   inv := ofHom e.symm.toContMDiffMap
 
 /-- Build a diffeomorphism from an isomorphism in `ModelWithCorners.MfldCat I n`. -/
-@[simps]
+@[expose, simps]
 def diffeomorphOfIso (i : M ≅ N) : M ≃ₘ^n⟮I, I⟯ N where
   toFun := i.hom
   invFun := i.inv
@@ -153,7 +153,7 @@ def diffeomorphOfIso (i : M ≅ N) : M ≃ₘ^n⟮I, I⟯ N where
 
 /-- Diffeomorphisms between manifolds modeled on `I` are the same as isomorphisms in
 `ModelWithCorners.MfldCat I n`. -/
-@[simps]
+@[expose, simps]
 def isoEquivDiffeomorph : (M ≅ N) ≃ (M ≃ₘ^n⟮I, I⟯ N) where
   toFun := diffeomorphOfIso
   invFun := isoOfDiffeomorph
