@@ -854,7 +854,7 @@ theorem map_hausdorffMeasure (e : X ≃ᵢ Y) (d : ℝ) : Measure.map e μH[d] =
   rw [e.isometry.map_hausdorffMeasure (Or.inr e.surjective), e.surjective.range_eq, restrict_univ]
 
 theorem measurePreserving_hausdorffMeasure (e : X ≃ᵢ Y) (d : ℝ) : MeasurePreserving e μH[d] μH[d] :=
-  ⟨e.continuous.measurable, map_hausdorffMeasure _ _⟩
+  ⟨e.continuous.measurable.aemeasurable, map_hausdorffMeasure _ _⟩
 
 end IsometryEquiv
 

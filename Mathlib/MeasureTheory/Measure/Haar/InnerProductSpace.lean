@@ -150,7 +150,7 @@ namespace LinearIsometryEquiv
 /-- Every linear isometry on a real finite-dimensional Hilbert space is measure-preserving. -/
 theorem measurePreserving (f : E ≃ₗᵢ[ℝ] F) :
     MeasurePreserving f := by
-  refine ⟨f.continuous.measurable, ?_⟩
+  refine ⟨f.continuous.measurable.aemeasurable, ?_⟩
   rcases exists_orthonormalBasis ℝ E with ⟨w, b, _hw⟩
   erw [← OrthonormalBasis.addHaar_eq_volume b, ← OrthonormalBasis.addHaar_eq_volume (b.map f),
     Basis.map_addHaar _ f.toContinuousLinearEquiv]
