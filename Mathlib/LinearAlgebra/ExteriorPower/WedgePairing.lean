@@ -34,13 +34,13 @@ variable (sourceIndex : powersetCard (Fin (finrank K V)) l)
 
 lemma complementEquiv_disjoint :
     Disjoint (complementEquiv k l hkl sourceIndex).val sourceIndex.val := by
-  simpa [complementEquiv] using
+  simpa only [complementEquiv, coe_compl] using
     (disjoint_compl_right : Disjoint sourceIndex.val sourceIndex.valᶜ).symm
 
 lemma disjoint_iff_eq_complementEquiv :
     Disjoint targetIndex.val sourceIndex.val ↔
       targetIndex = complementEquiv k l hkl sourceIndex := by
-  simpa [powersetCard.eq_iff_subset, complementEquiv] using
+  simpa only [complementEquiv, powersetCard.eq_iff_subset, coe_compl] using
     (Finset.subset_compl_iff_disjoint_right :
       targetIndex.val ⊆ sourceIndex.valᶜ ↔ Disjoint targetIndex.val sourceIndex.val).symm
 
@@ -54,24 +54,21 @@ lemma basis_mul_of_disjoint (hdisjoint : Disjoint targetIndex.val sourceIndex.va
     DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
         (b.exteriorPower l sourceIndex) =
       (permOfDisjoint hdisjoint).sign • basisUniv b hkl := by
+  obtain rfl := (disjoint_iff_eq_complementEquiv hkl sourceIndex targetIndex).mp hdisjoint
   apply Subtype.ext
-  change (b.exteriorPower k targetIndex : ExteriorAlgebra K V) *
-      (b.exteriorPower l sourceIndex : ExteriorAlgebra K V) = _
-  rw [← ExteriorAlgebra.basis_eq_coe_basis b targetIndex,
-    ← ExteriorAlgebra.basis_eq_coe_basis b sourceIndex]
-  have source_eq_compl : sourceIndex.val = targetIndex.valᶜ :=
-    (Finset.compl_eq_of_disjoint_of_card_add_eq hdisjoint (by
-      simpa [targetIndex.prop, sourceIndex.prop] using hkl)).symm
-  simpa [basisUniv, Finset.disjUnion_eq_union, source_eq_compl] using
-    ExteriorAlgebra.basis_mul_of_disjoint b targetIndex sourceIndex hdisjoint
+  simpa only [DirectSum.gMulLHom_apply_apply, SetLike.coe_gMul,
+    ← ExteriorAlgebra.basis_eq_coe_basis, basisUniv, complementEquiv, coe_compl,
+    SetLike.mk_smul_of_tower_mk, coe_disjUnion, Finset.disjUnion_eq_union,
+    Finset.union_comm, Finset.union_compl] using
+    ExteriorAlgebra.basis_mul_of_disjoint b _ sourceIndex
+      (complementEquiv_disjoint hkl sourceIndex)
 
 lemma basis_mul_of_not_disjoint (hdisjoint : ¬Disjoint targetIndex.val sourceIndex.val) :
     DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
         (b.exteriorPower l sourceIndex) = 0 := by
   apply Subtype.ext
-  change (b.exteriorPower k targetIndex : ExteriorAlgebra K V) *
-      (b.exteriorPower l sourceIndex : ExteriorAlgebra K V) = _
-  simpa only [← ExteriorAlgebra.basis_eq_coe_basis, Submodule.coe_zero] using
+  simpa only [DirectSum.gMulLHom_apply_apply, SetLike.coe_gMul,
+    ← ExteriorAlgebra.basis_eq_coe_basis, Submodule.coe_zero] using
     ExteriorAlgebra.basis_mul_of_not_disjoint b targetIndex sourceIndex hdisjoint
 
 section FiniteDimensional
@@ -109,20 +106,16 @@ def wedgePairingBasis :
 lemma wedgePairing_apply_basis_of_disjoint (hdisjoint : Disjoint targetIndex.val sourceIndex.val) :
     wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) =
       (permOfDisjoint hdisjoint).sign • volumeCoordinate vol hvol hkl (basisUniv b hkl) := by
-  change volumeCoordinate vol hvol hkl
-    (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
-      (b.exteriorPower l sourceIndex)) = _
-  rw [basis_mul_of_disjoint b hkl sourceIndex targetIndex hdisjoint]
-  simp
+  change volumeCoordinate vol hvol hkl _ = _
+  rw [LinearMap.flip_apply, basis_mul_of_disjoint b hkl sourceIndex targetIndex hdisjoint]
+  simp only [map_zsmul_unit]
 
 lemma wedgePairing_apply_basis_of_not_disjoint
     (hdisjoint : ¬Disjoint targetIndex.val sourceIndex.val) :
     wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) = 0 := by
-  change volumeCoordinate vol hvol hkl
-    (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
-      (b.exteriorPower l sourceIndex)) = _
-  rw [basis_mul_of_not_disjoint b sourceIndex targetIndex hdisjoint]
-  simp
+  change volumeCoordinate vol hvol hkl _ = _
+  rw [LinearMap.flip_apply, basis_mul_of_not_disjoint b sourceIndex targetIndex hdisjoint]
+  simp only [map_zero]
 
 lemma wedgePairingBasis_apply :
     wedgePairingBasis b vol hvol hkl sourceIndex (b.exteriorPower k targetIndex) =
@@ -149,8 +142,8 @@ lemma wedgePairingEquivOfBasis_toLinearMap :
   change wedgePairingEquivOfBasis b vol hvol hkl
       (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex) =
     wedgePairing vol hvol hkl (b.exteriorPower l sourceIndex) (b.exteriorPower k targetIndex)
-  rw [wedgePairingEquivOfBasis, Basis.equiv_apply, Equiv.refl_apply]
-  exact wedgePairingBasis_apply b vol hvol hkl sourceIndex targetIndex
+  simpa only [wedgePairingEquivOfBasis, Basis.equiv_apply, Equiv.refl_apply] using
+    wedgePairingBasis_apply b vol hvol hkl sourceIndex targetIndex
 
 lemma bijective_wedgePairing :
     Bijective (wedgePairing vol hvol hkl) := by
