@@ -5,10 +5,11 @@ Authors: Fernando Chu, Andrew Yang, Violeta Hernández Palacios, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.ENat.Basic
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Clopen
 
+import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Topology.Algebra.Indicator
