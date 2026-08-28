@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Data.Finsupp.Ext
 
 /-! # Connection between `Subgroup.closure` and `Finsupp.prod` -/
 
@@ -81,36 +83,22 @@ theorem mem_addSubgroup_closure_setOf_single_iff (hG : AddSubgroup.closure G = �
     f ∈ AddSubgroup.closure {g : α →₀ N | ∃ a ∈ s, ∃ y ∈ G, g = single a y} ↔
       ↑f.support ⊆ s := by
   classical
-  constructor
-  · intro hf
-    induction hf using AddSubgroup.closure_induction with
-    | mem g hg =>
-      obtain ⟨a, ha, y, -, rfl⟩ := hg
-      intro x hx
-      rw [Finset.mem_singleton.1 (support_single_subset (Finset.mem_coe.1 hx))]
-      exact ha
-    | zero => simp
-    | add g h _ _ hg hh =>
-      refine (Finset.coe_subset.2 support_add).trans ?_
-      rw [Finset.coe_union]
-      exact Set.union_subset hg hh
-    | neg g _ hg => rwa [support_neg]
-  · have hsingle : ∀ a ∈ s, ∀ y : N,
-        single a y ∈ AddSubgroup.closure {g : α →₀ N | ∃ a ∈ s, ∃ y ∈ G, g = single a y} := by
-      intro a ha y
-      have hy : y ∈ AddSubgroup.closure G := hG ▸ AddSubgroup.mem_top y
-      induction hy using AddSubgroup.closure_induction with
-      | mem z hz => exact AddSubgroup.subset_closure ⟨a, ha, z, hz, rfl⟩
-      | zero => simp
-      | add z w _ _ hz hw => rw [single_add]; exact add_mem hz hw
-      | neg z _ hz => rw [single_neg]; exact neg_mem hz
-    induction f using Finsupp.induction₂ with
-    | zero => exact fun _ ↦ zero_mem _
-    | add_single a y g ha hy ih =>
-      intro hsub
-      rw [support_add_eq (by rw [support_single _ hy]; simpa using ha), support_single _ hy,
-        Finset.coe_union, Set.union_subset_iff, Finset.coe_singleton,
-        Set.singleton_subset_iff] at hsub
-      exact add_mem (ih hsub.1) (hsingle a hsub.2 y)
+  -- the `single`s over `G ∪ -G` are the `single`s over `G` together with their negatives
+  have hset : {g : α →₀ N | ∃ a ∈ s, ∃ y ∈ G, g = single a y} ∪
+      -{g : α →₀ N | ∃ a ∈ s, ∃ y ∈ G, g = single a y} =
+      {g : α →₀ N | ∃ a ∈ s, ∃ y ∈ G ∪ -G, g = single a y} := by
+    ext g
+    simp only [Set.mem_union, Set.mem_ofPred_eq, Set.mem_neg]
+    constructor
+    · rintro (⟨a, ha, y, hy, rfl⟩ | ⟨a, ha, y, hy, h⟩)
+      · exact ⟨a, ha, y, Or.inl hy, rfl⟩
+      · exact ⟨a, ha, -y, Or.inr (by simpa using hy), by rw [single_neg, ← h, neg_neg]⟩
+    · rintro ⟨a, ha, y, hy | hy, rfl⟩
+      · exact Or.inl ⟨a, ha, y, hy, rfl⟩
+      · exact Or.inr ⟨a, ha, -y, by simpa using hy, by simp⟩
+  rw [← AddSubgroup.mem_toAddSubmonoid, AddSubgroup.closure_toAddSubmonoid, hset]
+  refine mem_addSubmonoid_closure_setOf_single_iff ?_
+  rw [← AddSubgroup.closure_toAddSubmonoid, hG]
+  rfl
 
 end Finsupp
