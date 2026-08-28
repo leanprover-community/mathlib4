@@ -12,7 +12,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Metrizable.Basic
 
 /-!
-## Pseudo-metric spaces
+# Pseudo-metric spaces
 
 Further results about pseudo-metric spaces.
 
@@ -20,7 +20,7 @@ Further results about pseudo-metric spaces.
 
 public section
 
-open Set Filter TopologicalSpace Bornology
+open Set Filter TopologicalSpace
 open scoped ENNReal NNReal Uniformity Topology
 
 universe u v
@@ -240,8 +240,6 @@ namespace Metric
 
 section SecondCountable
 
-open TopologicalSpace
-
 /-- A pseudometric space is second countable if, for every `ε > 0`, there is a countable set which
 is `ε`-dense. -/
 theorem secondCountable_of_almost_dense_set
@@ -285,4 +283,4 @@ theorem ContinuousOn.isSeparable_image {α : Type*} [TopologicalSpace α] [Pseud
     [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
   rw [image_eq_range, ← image_univ]
-  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
+  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.domRestrict
