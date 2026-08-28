@@ -450,7 +450,7 @@ instance RelCWComplex.Subcomplex.instCompleteLattice [T2Space X] [RelCWComplex C
 
 /-- An auxiliary definition to provide a `CompletelyDistribLattice` instance on subcomplexes. -/
 @[alias_in CWComplex.Subcomplex]
-protected def RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms [T2Space X]
+protected theorem RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms [T2Space X]
     [RelCWComplex C D] : CompletelyDistribLattice.MinimalAxioms (Subcomplex C) where
   iInf_iSup_eq {ι} f E := by
     by_cases h : Nonempty ι
@@ -464,7 +464,7 @@ protected def RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms [T2
         rw [iSup_of_empty, eq_bot_iff]
         exact iInf_le_of_le i <| by rw [iSup_of_empty]
     · rw [not_nonempty_iff] at h
-      simp [iInf_of_empty]
+      simp
 
 @[alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.instCompletelyDistribLattice [T2Space X]
