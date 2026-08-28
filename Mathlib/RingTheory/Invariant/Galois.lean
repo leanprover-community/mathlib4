@@ -45,7 +45,7 @@ instance [Algebra.IsAlgebraic K L] : let := IsIntegralClosure.MulSemiringAction 
 theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K L] :
     letI := IsIntegralClosure.MulSemiringAction A K L B
     Algebra.IsInvariant A B Gal(L/K) := by
-  replace h := ((IsGalois.tfae (F := K) (E := L)).out 0 1).mp h
+  replace h := ((IsGalois.tfae (F := K) (E := L)).out 1 2).mp h
   let := IsIntegralClosure.MulSemiringAction A K L B
   refine ⟨fun b hb ↦ ?_⟩
   replace hb : algebraMap B L b ∈ IntermediateField.fixedField (⊤ : Subgroup Gal(L/K)) := by
@@ -54,8 +54,7 @@ theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K 
   rw [h, IntermediateField.mem_bot] at hb
   obtain ⟨k, hk⟩ := hb
   have hb : IsIntegral A b := IsIntegralClosure.isIntegral A L b
-  rw [← isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective B L), ← hk,
-    isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective K L)] at hb
+  rw [← isIntegral_algebraMap_iff (B := L), ← hk, isIntegral_algebraMap_iff] at hb
   obtain ⟨a, rfl⟩ := IsIntegrallyClosed.algebraMap_eq_of_integral hb
   rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L,
     (FaithfulSMul.algebraMap_injective B L).eq_iff] at hk
