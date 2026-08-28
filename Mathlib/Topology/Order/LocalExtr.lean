@@ -96,32 +96,32 @@ theorem IsLocalExtr.isLocalExtrOn (h : IsLocalExtr f a) (s) : IsLocalExtrOn f s 
 
 @[deprecated (since := "2026-07-17")] alias IsLocalExtr.on := IsLocalExtr.isLocalExtrOn
 
-theorem IsLocalMinOn.of_subset {t : Set α} (hf : IsLocalMinOn f t a) (h : s ⊆ t) :
+theorem IsLocalMinOn.mono {t : Set α} (hf : IsLocalMinOn f t a) (h : s ⊆ t) :
     IsLocalMinOn f s a :=
   hf.filter_mono <| nhdsWithin_mono a h
 
-@[deprecated (since := "2026-07-17")] alias IsLocalMinOn.on_subset := IsLocalMinOn.of_subset
+@[deprecated (since := "2026-07-17")] alias IsLocalMinOn.on_subset := IsLocalMinOn.mono
 
-theorem IsLocalMaxOn.of_subset {t : Set α} (hf : IsLocalMaxOn f t a) (h : s ⊆ t) :
+theorem IsLocalMaxOn.mono {t : Set α} (hf : IsLocalMaxOn f t a) (h : s ⊆ t) :
     IsLocalMaxOn f s a :=
   hf.filter_mono <| nhdsWithin_mono a h
 
-@[deprecated (since := "2026-07-17")] alias IsLocalMaxOn.on_subset := IsLocalMaxOn.of_subset
+@[deprecated (since := "2026-07-17")] alias IsLocalMaxOn.on_subset := IsLocalMaxOn.mono
 
-theorem IsLocalExtrOn.of_subset {t : Set α} (hf : IsLocalExtrOn f t a) (h : s ⊆ t) :
+theorem IsLocalExtrOn.mono {t : Set α} (hf : IsLocalExtrOn f t a) (h : s ⊆ t) :
     IsLocalExtrOn f s a :=
   hf.filter_mono <| nhdsWithin_mono a h
 
-@[deprecated (since := "2026-07-17")] alias IsLocalExtrOn.on_subset := IsLocalExtrOn.of_subset
+@[deprecated (since := "2026-07-17")] alias IsLocalExtrOn.on_subset := IsLocalExtrOn.mono
 
 theorem IsLocalMinOn.inter (hf : IsLocalMinOn f s a) (t) : IsLocalMinOn f (s ∩ t) a :=
-  hf.of_subset inter_subset_left
+  hf.mono inter_subset_left
 
 theorem IsLocalMaxOn.inter (hf : IsLocalMaxOn f s a) (t) : IsLocalMaxOn f (s ∩ t) a :=
-  hf.of_subset inter_subset_left
+  hf.mono inter_subset_left
 
 theorem IsLocalExtrOn.inter (hf : IsLocalExtrOn f s a) (t) : IsLocalExtrOn f (s ∩ t) a :=
-  hf.of_subset inter_subset_left
+  hf.mono inter_subset_left
 
 theorem IsMinOn.isLocalMinOn (hf : IsMinOn f s a) : IsLocalMinOn f s a :=
   hf.filter_mono <| inf_le_right
