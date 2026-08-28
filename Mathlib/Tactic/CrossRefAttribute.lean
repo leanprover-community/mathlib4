@@ -41,7 +41,7 @@ inductive PiBaseTopic where
 
 namespace PiBaseTopic
 
-/-- The string such that `https://{topic.urlSubdomain}.pi-base.org` is the base url of the π-Base
+/-- The string such that `https://{topic.urlSubdomain}.pi-base.org` is the base URL of the π-Base
 project identified by this topic. -/
 def urlSubdomain : PiBaseTopic → String
   | topology => "topology"
@@ -66,19 +66,25 @@ inductive Database where
   | wikidata
   deriving BEq, Hashable, Ord
 
+-- While `PiBaseTopic` has a single constructor, `simp` can prove `pibase.injEq` by itself.
+-- This can be removed once a second π-Base topic is added.
+attribute [nolint simpNF] Database.pibase.injEq
+
 namespace Database
 
-/-- The URL for an external database entry, where `id` is the `id` recorded in `Tag`. -/
+/-- The URL for an external database entry, where `id` is the identifier recorded in `Tag.tag`. -/
 def url : Database → String → String
   | .kerodon, id => s!"https://kerodon.net/tag/{id}"
   | .lmfdb, id => s!"https://www.lmfdb.org/knowledge/show/{id}"
   | .pibase topic, id =>
-      let path := match id.toList with
-        | 'P' :: _ => "properties"
-        | 'S' :: _ => "spaces"
-        | 'T' :: _ => "theorems"
-        | _ => ""
-      s!"https://{topic.urlSubdomain}.pi-base.org/{path}/{id}"
+    -- The `.toString` is required: `String.take` returns a `String.Slice`, and matching a slice
+    -- against a string literal compares the slice structurally, so it would never match here.
+    let path := match (id.take 1).toString with
+      | "P" => "properties"
+      | "S" => "spaces"
+      | "T" => "theorems"
+      | _ => ""
+    s!"https://{topic.urlSubdomain}.pi-base.org/{path}/{id}"
   | .stacks, id => s!"https://stacks.math.columbia.edu/tag/{id}"
   | .wikidata, id => s!"https://www.wikidata.org/wiki/{id}"
 
@@ -260,19 +266,19 @@ def pibaseIdFn : ParserFn := fun c s =>
     let id := c.extract i s.pos
     match id.toList with
     | kind :: rest =>
-        if kind != 'P' && kind != 'S' && kind != 'T' then
-          ParserState.mkUnexpectedError s
-            "π-Base ids must start with P, S, or T."
-        else if rest.length != 6 then
-          ParserState.mkUnexpectedError s "π-Base ids must have exactly six digits after P/S/T."
-        else if !rest.all Char.isDigit then
-          ParserState.mkUnexpectedError s
-            "π-Base ids must consist of P, S, or T followed by six digits."
-        else
-          mkNodeToken pibaseIdKind i true c s
-    | _ =>
+      if kind != 'P' && kind != 'S' && kind != 'T' then
+        ParserState.mkUnexpectedError s
+          "π-Base ids must start with P, S, or T."
+      else if rest.length != 6 then
+        ParserState.mkUnexpectedError s "π-Base ids must have exactly six digits after P/S/T."
+      else if !rest.all Char.isDigit then
         ParserState.mkUnexpectedError s
           "π-Base ids must consist of P, S, or T followed by six digits."
+      else
+        mkNodeToken pibaseIdKind i true c s
+    | _ =>
+      ParserState.mkUnexpectedError s
+        "π-Base ids must consist of P, S, or T followed by six digits."
 
 @[inherit_doc pibaseIdFn]
 def pibaseIdNoAntiquot : Parser := {
