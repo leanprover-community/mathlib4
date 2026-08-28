@@ -849,7 +849,8 @@ private local instance [T2Space X] [TotallyDisconnectedSpace X] [CompactSpace X]
       rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
       exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
     have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := by grind
-    obtain ⟨⟨s, hs, hs'⟩, hs''⟩ := exists_subset_nhds_of_compactSpace hdir hNcl h_nhds
+    obtain ⟨⟨s, hs, hs'⟩, hs''⟩ := exists_subset_nhds_of_compactSpace hdir hNcl
+      (mem_nhdsSet_iff_forall.mpr h_nhds)
     exact ⟨s, ⟨hs, hs'⟩, hs''⟩
   · rw [mem_nhds_iff]
     exact ⟨V, hUV, hxV.isOpen, V_op⟩
