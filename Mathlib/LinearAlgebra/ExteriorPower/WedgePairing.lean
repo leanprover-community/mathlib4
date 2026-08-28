@@ -46,29 +46,40 @@ def basisUniv (b : Basis (Fin (finrank K V)) K V) {k l : ℕ}
 lemma basis_mul_of_complement (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
     (hkl : k + l = finrank K V)
     (sourceIndex : powersetCard (Fin (finrank K V)) l)
-    (targetIndex : powersetCard (Fin (finrank K V)) k) :
+    (targetIndex : powersetCard (Fin (finrank K V)) k)
+    (target_is_complement : targetIndex = complementEquiv k l hkl sourceIndex) :
     DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
         (b.exteriorPower l sourceIndex) =
-      if targetIndex = complementEquiv k l hkl sourceIndex then
-        (permOfDisjoint (complementEquiv_disjoint k l hkl sourceIndex)).sign •
-          basisUniv b hkl
-      else 0 := by
+      (permOfDisjoint (complementEquiv_disjoint k l hkl sourceIndex)).sign • basisUniv b hkl := by
+  subst targetIndex
+  apply Subtype.ext
+  change (b.exteriorPower k (complementEquiv k l hkl sourceIndex) : ExteriorAlgebra K V) *
+      (b.exteriorPower l sourceIndex : ExteriorAlgebra K V) = _
+  rw [← ExteriorAlgebra.basis_eq_coe_basis b (complementEquiv k l hkl sourceIndex),
+    ← ExteriorAlgebra.basis_eq_coe_basis b sourceIndex]
+  simpa [basisUniv, complementEquiv, Finset.union_comm] using
+    ExteriorAlgebra.basis_mul_of_disjoint b (complementEquiv k l hkl sourceIndex) sourceIndex
+      (by simpa [complementEquiv] using
+        complementEquiv_disjoint k l hkl sourceIndex)
+
+lemma basis_mul_of_not_complement (b : Basis (Fin (finrank K V)) K V) (k l : ℕ)
+    (hkl : k + l = finrank K V)
+    (sourceIndex : powersetCard (Fin (finrank K V)) l)
+    (targetIndex : powersetCard (Fin (finrank K V)) k)
+    (target_not_complement : targetIndex ≠ complementEquiv k l hkl sourceIndex) :
+    DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
+        (b.exteriorPower l sourceIndex) = 0 := by
+  have hdisjoint : ¬Disjoint targetIndex.val sourceIndex.val := by
+    intro disjoint
+    apply target_not_complement
+    simpa [powersetCard.eq_iff_subset, complementEquiv] using
+      Finset.subset_compl_iff_disjoint_right.mpr disjoint
   apply Subtype.ext
   change (b.exteriorPower k targetIndex : ExteriorAlgebra K V) *
       (b.exteriorPower l sourceIndex : ExteriorAlgebra K V) = _
   rw [← ExteriorAlgebra.basis_eq_coe_basis b targetIndex,
     ← ExteriorAlgebra.basis_eq_coe_basis b sourceIndex]
-  split_ifs with hcomplement
-  · subst targetIndex
-    simpa [basisUniv, complementEquiv, Finset.union_comm] using
-      ExteriorAlgebra.basis_mul_of_disjoint b (complementEquiv k l hkl sourceIndex) sourceIndex
-        (complementEquiv_disjoint k l hkl sourceIndex)
-  · have hdisjoint : ¬Disjoint targetIndex.val sourceIndex.val := by
-      intro disjoint
-      apply hcomplement
-      simpa [powersetCard.eq_iff_subset, complementEquiv] using
-        Finset.subset_compl_iff_disjoint_right.mpr disjoint
-    simpa using ExteriorAlgebra.basis_mul_of_not_disjoint b targetIndex sourceIndex hdisjoint
+  simpa using ExteriorAlgebra.basis_mul_of_not_disjoint b targetIndex sourceIndex hdisjoint
 
 section FiniteDimensional
 
@@ -125,10 +136,14 @@ public noncomputable def wedgePairingEquiv
     change basisEquiv (bl sourceIndex) (bk targetIndex) = volumeCoordinate vol hvol hkl
       (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k targetIndex)
         (b.exteriorPower l sourceIndex))
-    rw [Basis.equiv_apply, basis_mul_of_complement b k l hkl sourceIndex targetIndex]
-    by_cases target_eq_complement : targetIndex = complementEquiv k l hkl sourceIndex <;>
-      simp [target_eq_complement, pairingBasis, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
-        Basis.groupSMul_apply]
+    rw [Basis.equiv_apply]
+    by_cases target_eq_complement : targetIndex = complementEquiv k l hkl sourceIndex
+    · rw [basis_mul_of_complement b k l hkl sourceIndex targetIndex target_eq_complement]
+      simp [target_eq_complement, pairingBasis, Module.Basis.isUnitSMul_apply,
+        Basis.reindex_apply, Basis.groupSMul_apply]
+    · rw [basis_mul_of_not_complement b k l hkl sourceIndex targetIndex target_eq_complement]
+      simp [target_eq_complement, pairingBasis, Module.Basis.isUnitSMul_apply,
+        Basis.reindex_apply, Basis.groupSMul_apply]
   exact LinearEquiv.ofBijective (wedgePairing vol hvol hkl) (by
     rw [← basisEquiv_eq]
     exact basisEquiv.bijective)
