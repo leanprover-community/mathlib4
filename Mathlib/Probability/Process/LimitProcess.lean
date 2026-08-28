@@ -19,7 +19,7 @@ This file thus provides a definition `𝓕.limitProcess X P`, which is the limit
 under the measure `P` with an ambient filtration `𝓕`. This is defined for any `X : ι → Ω → E`,
 but of course it only makes sense if `X` converges. Moreover, in concrete use cases, `X` will
 be strongly adapted to the filtration `𝓕`, so that the limit will be `⨆ t, 𝓕 t`-strongly measurable.
-Therefore we define `𝓕.limitProcess X P` to be `⨆ t, 𝓕 t`-strongly measurable almost everywhere
+Therefore we define `𝓕.limitProcess X P` to be a `⨆ t, 𝓕 t`-strongly measurable almost everywhere
 limit if it exists, and `0` otherwise.
 
 This definition is for example used to phrase the a.e. martingale convergence theorem
@@ -28,6 +28,10 @@ converges to `limitProcess X 𝓕 P` `P`-almost everywhere.
 
 In this file we provide the definition and prove basic preservation properties of the limit
 under continuous maps.
+
+Because several properties often rely on the fact that the limit exists, we also define a predicate
+`HasLimitProcess X 𝓕 P` which states that `X` does converge `P`-almost surely towards a
+`⨆ t, 𝓕 t`-strongly measurable function.
 
 -/
 
@@ -38,14 +42,17 @@ open scoped Topology ENNReal NNReal
 
 namespace MeasureTheory.Filtration
 
-variable {ι Ω E F G : Type*} {mΩ : MeasurableSpace Ω} [TopologicalSpace E] [Preorder ι]
-  {P : Measure Ω} {𝓕 : Filtration ι mΩ} {X Y : ι → Ω → E} {g : Ω → E}
-  [TopologicalSpace F] [TopologicalSpace G]
+variable {ι Ω E F G : Type*} [Preorder ι] {mΩ : MeasurableSpace Ω} [TopologicalSpace E]
+  [TopologicalSpace F] [TopologicalSpace G] {P : Measure Ω} {𝓕 : Filtration ι mΩ}
+  {X Y : ι → Ω → E} {Z : ι → Ω → F} {g : Ω → E}
 
 section HasLimitProcess
 
+/-! ### `HasLimitProcess` predicate -/
+
 /-- A stochastic process `X` satisfies `𝓕.HasLimitProcess X P` if it converges `P`-almost surely
 towards a `⨆ t, 𝓕 t`-strongly measurable random variable. -/
+@[expose]
 def HasLimitProcess (X : ι → Ω → E) (𝓕 : Filtration ι mΩ) (P : Measure Ω) : Prop :=
   ∃ g : Ω → E, StronglyMeasurable[⨆ t, 𝓕 t] g ∧ ∀ᵐ ω ∂P, Tendsto (X · ω) atTop (𝓝 (g ω))
 
@@ -67,11 +74,11 @@ lemma HasLimitProcess.comp {f : E → F} (hX : HasLimitProcess X 𝓕 P) (hf : C
   refine ⟨f ∘ g, hf.comp_stronglyMeasurable mg, ?_⟩
   filter_upwards [hg] with ω h using (hf.tendsto _).comp h
 
-lemma HasLimitProcess.comp₂ {f : E → F → G} {Y : ι → Ω → F} (hX : HasLimitProcess X 𝓕 P)
-    (hY : HasLimitProcess Y 𝓕 P) (hf : Continuous f.uncurry) :
-    HasLimitProcess (fun t ω ↦ f (X t ω) (Y t ω)) 𝓕 P := by
+lemma HasLimitProcess.comp₂ {f : E → F → G} (hX : HasLimitProcess X 𝓕 P)
+    (hZ : HasLimitProcess Z 𝓕 P) (hf : Continuous f.uncurry) :
+    HasLimitProcess (fun t ω ↦ f (X t ω) (Z t ω)) 𝓕 P := by
   obtain ⟨g, mg, hg⟩ := hX
-  obtain ⟨h, mh, hh⟩ := hY
+  obtain ⟨h, mh, hh⟩ := hZ
   refine ⟨f.uncurry ∘ (Function.prod g h), hf.comp_stronglyMeasurable (mg.prodMk mh), ?_⟩
   filter_upwards [hg, hh] with ω h1 h2 using (hf.tendsto _).comp (h1.prodMk_nhds h2)
 
@@ -115,20 +122,24 @@ lemma HasLimitProcess.div' [Div E] [ContinuousDiv E] (hX : HasLimitProcess X �
     HasLimitProcess (X / Y) 𝓕 P :=
   hX.comp₂ hY continuous_div'
 
-lemma HasLimitProcess.prodMk {Y : ι → Ω → F} (hX : HasLimitProcess X 𝓕 P)
-    (hY : HasLimitProcess Y 𝓕 P) :
-    HasLimitProcess (fun t ω ↦ (X t ω, Y t ω)) 𝓕 P :=
-  hX.comp₂ hY continuous_id
+lemma HasLimitProcess.prodMk (hX : HasLimitProcess X 𝓕 P) (hZ : HasLimitProcess Z 𝓕 P) :
+    HasLimitProcess (fun t ω ↦ (X t ω, Z t ω)) 𝓕 P :=
+  hX.comp₂ hZ continuous_id
 
 end HasLimitProcess
+
+section limitProcess
+
+/-! ### The limit of a process -/
 
 section Def
 
 variable [Zero E]
 
 open scoped Classical in
-/-- Given a process `X` and a filtration `𝓕`, if `X` converges to some `Y` almost everywhere and
-`Y` is `⨆ t, 𝓕 t`-measurable, then `limitProcess X 𝓕 P` chooses said `Y`, else it returns 0.
+/-- Given a process `X` and a filtration `𝓕`, if `X` converges to some `g` almost everywhere and
+`g` is `⨆ t, 𝓕 t`-measurable (i.e. `HasLimitProcess X 𝓕 P` holds),
+then `limitProcess X 𝓕 P` chooses said `g`, else it returns 0.
 
 This definition is used to phrase the a.e. martingale convergence theorem
 `Submartingale.ae_tendsto_limitProcess` where an L¹-bounded submartingale `X` adapted to `𝓕`
@@ -164,8 +175,7 @@ then `g` is almost surely equal to `𝓕.limitProcess X P`. -/
 lemma limitProcess_ae_eq (mg : StronglyMeasurable[⨆ t, 𝓕 t] g)
     (hg : ∀ᵐ ω ∂P, Tendsto (X · ω) atTop (𝓝 (g ω))) :
     𝓕.limitProcess X P =ᵐ[P] g := by
-  have : HasLimitProcess X 𝓕 P :=
-    ⟨g, mg, hg⟩
+  have : HasLimitProcess X 𝓕 P := ⟨g, mg, hg⟩
   rw [limitProcess, dite_eq_left this]
   filter_upwards [hg, this.choose_spec.2] with ω h1 h2 using tendsto_nhds_unique h2 h1
 
@@ -265,7 +275,7 @@ lemma limitProcess_prodMk [Zero E] {Y : ι → Ω → F}
   hX.limitProcess_comp₂ (f := fun x y ↦ (x, y)) continuous_id hY
 
 /-- If a stochastic process is bounded in `Lp` then its limit is in `Lp`. -/
-theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
+theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [SeminormedAddGroup F]
     {𝓕 : Filtration ℕ mΩ} {X : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (X n) P)
     (hbdd : ∀ n, eLpNorm (X n) p P ≤ R) : MemLp (limitProcess X 𝓕 P) p P := by
   rw [limitProcess]
@@ -281,5 +291,7 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
 end Maps
 
 end Preserved
+
+end limitProcess
 
 end MeasureTheory.Filtration
