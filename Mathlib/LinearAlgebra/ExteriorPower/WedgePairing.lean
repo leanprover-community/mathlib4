@@ -117,7 +117,8 @@ lemma wedgePairingBasis_apply :
   by_cases htarget : targetIndex = complementEquiv k l hkl sourceIndex <;>
     (first
       | rw [basis_mul_of_complement b hkl sourceIndex targetIndex (hdisjoint_iff.mpr htarget)]
-      | rw [basis_mul_of_not_disjoint b sourceIndex targetIndex (hdisjoint_iff.not.mpr htarget)]) <;>
+      | rw [basis_mul_of_not_disjoint b sourceIndex targetIndex
+          (hdisjoint_iff.not.mpr htarget)]) <;>
     simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply, Basis.reindex_apply,
       Basis.groupSMul_apply]
 
