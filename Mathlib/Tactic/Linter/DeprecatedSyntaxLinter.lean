@@ -203,6 +203,8 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
     | _ => rargs
   | _ => default
 
+-- Remove this suppression and the compatibility code marked below when
+-- `linter.style.nativeDecide` is removed.
 set_option linter.deprecated false in
 /-- The deprecated syntax linter flags usages of deprecated syntax and suggests
 replacement syntax. For each individual case, linting can be turned on or off separately.
@@ -223,6 +225,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       getLinterValue linter.style.admit (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
       getLinterValue linter.style.native (← getLinterOptions) ||
+      -- TODO: Remove this line with `linter.style.nativeDecide`.
       getLinterValue linter.style.nativeDecide (← getLinterOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
@@ -241,8 +244,13 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | `Mathlib.Tactic.induction' => Linter.logLintIf linter.style.induction stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
       | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide => do
-        Linter.logLintIf linter.style.native stx' msg
-        Linter.logLintIf linter.style.nativeDecide stx' msg
+        -- TODO: this block should be removed when `linter.style.nativeDecide` is removed and
+        -- replaced with just `Linter.logLint linter.style.native stx' msg`
+        let options ← getLinterOptions
+        if getLinterValue linter.style.native options then
+          Linter.logLint linter.style.native stx' msg
+        else if getLinterValue linter.style.nativeDecide options then
+          Linter.logLint linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | _ => continue) stx
 
