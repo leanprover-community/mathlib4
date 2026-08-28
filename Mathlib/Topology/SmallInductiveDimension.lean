@@ -9,6 +9,7 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Clopen
 
+import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.Compactness.Compact
