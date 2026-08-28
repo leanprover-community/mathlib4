@@ -143,7 +143,7 @@ theorem measurePreserving_homeomorphUnitSphereProd :
     MeasurePreserving (homeomorphUnitSphereProd E) (μ.comap (↑))
       (μ.toSphere.prod (volumeIoiPow (dim E - 1))) := by
   nontriviality E
-  refine ⟨(homeomorphUnitSphereProd E).measurable, .symm ?_⟩
+  refine ⟨(homeomorphUnitSphereProd E).measurable.aemeasurable, .symm ?_⟩
   refine prod_eq_generateFrom generateFrom_measurableSet
     ((borel_eq_generateFrom_Iio _).symm.trans BorelSpace.measurable_eq.symm)
     isPiSystem_measurableSet isPiSystem_Iio

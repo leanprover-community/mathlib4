@@ -85,7 +85,7 @@ variable [MeasurableMul G]
 @[to_additive]
 theorem measurePreserving_mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) :
     MeasurePreserving (g * ·) μ μ :=
-  ⟨measurable_const_mul g, map_mul_left_eq_self μ g⟩
+  ⟨(measurable_const_mul g).aemeasurable, map_mul_left_eq_self μ g⟩
 
 @[to_additive]
 theorem MeasurePreserving.mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) {X : Type*}
@@ -96,7 +96,7 @@ theorem MeasurePreserving.mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g :
 @[to_additive]
 theorem measurePreserving_mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) :
     MeasurePreserving (· * g) μ μ :=
-  ⟨measurable_mul_const g, map_mul_right_eq_self μ g⟩
+  ⟨(measurable_mul_const g).aemeasurable, map_mul_right_eq_self μ g⟩
 
 @[to_additive]
 theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) {X : Type*}
@@ -334,7 +334,7 @@ variable [MeasurableInv G]
 
 @[to_additive]
 theorem measurePreserving_inv (μ : Measure G) [IsInvInvariant μ] : MeasurePreserving Inv.inv μ μ :=
-  ⟨measurable_inv, map_inv_eq_self μ⟩
+  ⟨measurable_inv.aemeasurable, map_inv_eq_self μ⟩
 
 @[to_additive]
 instance inv.instSFinite (μ : Measure G) [SFinite μ] : SFinite μ.inv := by

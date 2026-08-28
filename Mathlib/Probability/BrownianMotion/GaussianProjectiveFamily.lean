@@ -86,7 +86,7 @@ with covariance matrix `covMatrix I`. -/
 lemma measurePreserving_ofLp_multivariateGaussian (I : Finset ℝ≥0) :
     MeasurePreserving ofLp
       (multivariateGaussian 0 (covMatrix I)) (projectiveFamily I) where
-  measurable := by fun_prop
+  aemeasurable := (by fun_prop : Measurable _).aemeasurable
   map_eq := rfl
 
 /-- Up to a measurable equivalence, `projectiveFamily I` is the centered multivariate Gaussian
@@ -94,7 +94,7 @@ with covariance matrix `covMatrix I`. -/
 lemma measurePreserving_toLp_projectiveFamily (I : Finset ℝ≥0) :
     MeasurePreserving (toLp 2) (projectiveFamily I)
       (multivariateGaussian 0 (covMatrix I)) where
-  measurable := by fun_prop
+  aemeasurable := (by fun_prop : Measurable _).aemeasurable
   map_eq := by
     rw [projectiveFamily, Measure.map_map]
     · simp [← MeasurableEquiv.coe_toLp]
@@ -157,7 +157,7 @@ lemma variance_eval_projectiveFamily (s : I) :
 is the centered Gaussian with variance `s`. -/
 lemma measurePreserving_eval_projectiveFamily (s : I) :
     MeasurePreserving (fun x ↦ x s) (projectiveFamily I) (gaussianReal 0 s) where
-  measurable := by fun_prop
+  aemeasurable := (by fun_prop : Measurable _).aemeasurable
   map_eq := by
     rw [(IsGaussian.hasGaussianLaw_id.eval s).map_eq_gaussianReal,
       integral_eval_projectiveFamily,
@@ -168,7 +168,7 @@ is the centered Gaussian with variance `t - s`. -/
 lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t : I) :
     MeasurePreserving (fun x ↦ x s - x t) (projectiveFamily I)
       (gaussianReal 0 (nndist s.1 t.1)) where
-  measurable := by fun_prop
+  aemeasurable := (by fun_prop : Measurable _).aemeasurable
   map_eq := by
     rw [HasGaussianLaw.map_eq_gaussianReal, variance_fun_sub,
       variance_eval_projectiveFamily, variance_eval_projectiveFamily,
@@ -208,7 +208,7 @@ the real Brownian motion over `I`. -/
 lemma measurePreserving_restrict_projectiveFamily (hIJ : I ⊆ J) :
     MeasurePreserving (Finset.restrict₂ (π := fun _ ↦ ℝ) hIJ) (projectiveFamily J)
       (projectiveFamily I) where
-  measurable := Finset.measurable_restrict₂ _
+  aemeasurable := (Finset.measurable_restrict₂ _).aemeasurable
   map_eq := isProjectiveMeasureFamily_projectiveFamily J I hIJ |>.symm
 
 end ProbabilityTheory.BrownianReal
