@@ -25,6 +25,7 @@ open Function Module
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
 /-- The Hodge star associated to `B` and `vol`, in complementary degrees. -/
+@[simps!]
 noncomputable def hodgeStar (B : LinearMap.BilinForm K V) (hB : Bijective B)
     (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
     (hkl : k + l = finrank K V) :

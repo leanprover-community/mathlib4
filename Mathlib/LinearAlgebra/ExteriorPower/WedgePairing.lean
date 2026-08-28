@@ -20,6 +20,7 @@ noncomputable section private_defs
 
 namespace exteriorPower
 
+@[simps!]
 def complementEquiv (k l : ℕ) (hkl : k + l = finrank K V) :
     powersetCard (Fin (finrank K V)) l ≃ powersetCard (Fin (finrank K V)) k :=
   powersetCard.compl (by simpa using hkl)
@@ -81,9 +82,11 @@ def volumeBasis :
     Basis Unit K (⋀[K]^(finrank K V) V) :=
   FiniteDimensional.basisSingleton Unit (by simp) vol hvol
 
+@[simps!]
 def volumeCoordinate : ⋀[K]^(k + l) V →ₗ[K] K :=
   (hkl ▸ volumeBasis vol hvol).coord default
 
+@[simps!]
 def wedgePairing :
     ⋀[K]^l V →ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
   (LinearMap.flip (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V))).compr₂
@@ -151,5 +154,9 @@ public noncomputable def wedgePairingEquiv :
     ⋀[K]^l V ≃ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
   LinearEquiv.ofBijective (wedgePairing vol hvol hkl)
     (bijective_wedgePairing vol hvol hkl)
+
+@[simp]
+lemma wedgePairingEquiv_apply (source : ⋀[K]^l V) :
+    wedgePairingEquiv vol hvol k l hkl source = wedgePairing vol hvol hkl source := rfl
 
 end exteriorPower
