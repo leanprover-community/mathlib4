@@ -94,7 +94,7 @@ theorem aemeasurable_comp_iff {f : α → β} (hf : MeasurePreserving f μa μb)
 
 protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving f μa μb) :
     QuasiMeasurePreserving f μa μb :=
-  ⟨hf.1, hf.2.absolutelyContinuous⟩
+  ⟨hf.1.aemeasurable, hf.2.absolutelyContinuous⟩
 
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
