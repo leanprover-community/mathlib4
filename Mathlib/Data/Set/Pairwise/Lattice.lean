@@ -5,7 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
+public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Data.Set.Pairwise.Basic
 
 /-!

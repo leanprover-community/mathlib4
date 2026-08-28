@@ -571,6 +571,12 @@ theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f)
   h.restrict _
 
 @[fun_prop]
+lemma Topology.IsInducing.restrict {f : X → Y}
+    (hf : IsInducing f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) :
+    IsInducing H.restrict :=
+  .of_comp (hf.continuous.restrict H) continuous_subtype_val (hf.comp .subtypeVal)
+
+@[fun_prop]
 lemma Topology.IsEmbedding.restrict {f : X → Y}
     (hf : IsEmbedding f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) :
     IsEmbedding H.restrict :=
@@ -767,6 +773,7 @@ theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i :=
 theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
   continuous_pi_iff.2 h
 
+/-- The projection maps out of the product topology are continuous. -/
 @[continuity, fun_prop]
 theorem continuous_apply (i : ι) : Continuous fun p : ∀ i, A i => p i :=
   continuous_iInf_dom continuous_induced_dom

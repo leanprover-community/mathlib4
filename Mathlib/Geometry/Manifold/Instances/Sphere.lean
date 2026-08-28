@@ -201,7 +201,7 @@ theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv
     ((contDiff_stereoInvFunAux (m := 0)).continuous.comp continuous_subtype_val)
 
 open scoped InnerProductSpace in
-attribute [-simp] AddSubgroupClass.coe_norm Submodule.coe_norm in
+attribute [-simp] AddSubgroupClass.coe_norm in
 theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
     stereoInvFun hv (stereoToFun v x) = x := by
   ext
@@ -378,7 +378,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
         (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr
       (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (4 : ℝ) • (U.symm x : E) +
         (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (‖(U.symm x : E)‖ ^ 2 - 4) • v.val := by
-  simp [stereographic, stereographic', ← Submodule.coe_norm]
+  simp [stereographic, stereographic', Submodule.norm_coe]
 
 /-! ### Analytic manifold structure on the sphere -/
 
