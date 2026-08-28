@@ -25,7 +25,8 @@ This file defines Carmichael numbers and proves Korselt's criterion about them.
 
 ## TODO
 
-* Prove (in computationally efficient manner) that there are no Carmichael numbers less than `561`.
+* Prove (in a computationally efficient manner) that there are no Carmichael numbers
+  less than `561`.
 
 ## References
 
