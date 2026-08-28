@@ -82,7 +82,7 @@ There, the map in this lemma is called `S`. -/
 /-- The shear mapping `(x, y) ↦ (x, x + y)` preserves the measure `μ × ν`. -/]
 theorem measurePreserving_prod_mul [IsMulLeftInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.1 * z.2)) (μ.prod ν) (μ.prod ν) :=
-  (MeasurePreserving.id μ).skew_product measurable_mul <|
+  (MeasurePreserving.id μ).skew_product measurable_id measurable_mul <|
     Filter.Eventually.of_forall <| map_mul_left_eq_self ν
 
 /-- The map `(x, y) ↦ (y, yx)` sends the measure `μ × ν` to `ν × μ`.
@@ -343,7 +343,7 @@ section RightInvariant
 @[to_additive measurePreserving_prod_add_right]
 theorem measurePreserving_prod_mul_right [IsMulRightInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.2 * z.1)) (μ.prod ν) (μ.prod ν) :=
-  MeasurePreserving.skew_product (g := fun x y => y * x) (MeasurePreserving.id μ)
+  MeasurePreserving.skew_product (g := fun x y => y * x) (MeasurePreserving.id μ) measurable_id
     (measurable_snd.mul measurable_fst) <| Filter.Eventually.of_forall <| map_mul_right_eq_self ν
 
 /-- The map `(x, y) ↦ (y, xy)` sends the measure `μ × ν` to `ν × μ`. -/

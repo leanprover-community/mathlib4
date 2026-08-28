@@ -91,7 +91,8 @@ theorem ergodic_smul_of_denseRange_pow {M : Type*} [Monoid M] [TopologicalSpace 
     (μ : Measure X) [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul M X μ] :
     Ergodic (g • ·) μ := by
   borelize M
-  refine .of_preimage_eq (measurePreserving_smul _ _) fun s hsm hs ↦ ?_
+  refine .of_preimage_eq (continuous_const_smul g).measurable (measurePreserving_smul _ _)
+    fun s hsm hs ↦ ?_
   refine aeconst_of_dense_setOfPred_preimage_smul_eq hsm.nullMeasurableSet (hg.mono ?_)
   refine range_subset_iff.2 fun n ↦ ?_
   rw [mem_ofPred, ← smul_iterate, preimage_iterate_eq, iterate_fixed hs]
@@ -149,7 +150,8 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
     (μ : Measure X) [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul G X μ] :
     Ergodic (g • ·) μ := by
   borelize G
-  refine .of_preimage_eq (measurePreserving_smul _ _) fun s hsm hs ↦ ?_
+  refine .of_preimage_eq (continuous_const_smul g).measurable (measurePreserving_smul _ _)
+    fun s hsm hs ↦ ?_
   refine aeconst_of_dense_aestabilizer_smul hsm.nullMeasurableSet (hg.mono ?_)
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
     MulAction.mem_aestabilizer, ← preimage_smul]
@@ -258,6 +260,6 @@ theorem ergodic_of_dense_iUnion_preimage_one [CompactSpace G] {μ : Measure G} [
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) (hcont : Continuous f) (hsurj : Surjective f) :
     Ergodic f μ :=
   have hmp := f.measurePreserving hcont hsurj rfl
-  ⟨hmp, f.preErgodic_of_dense_iUnion_preimage_one hf hmp.measurable hmp.quasiMeasurePreserving⟩
+  ⟨hmp, f.preErgodic_of_dense_iUnion_preimage_one hf hcont.measurable hmp.quasiMeasurePreserving⟩
 
 end MonoidHom
