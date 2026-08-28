@@ -32,13 +32,13 @@ of simplicial sets `P.left` and `P.right` via a long homology sequence
 
 open Simplicial CategoryTheory Limits Opposite
 
-universe w v u
+universe w
 
 namespace SSetPair
 
 section
 
-variable (C : Type u) [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
+variable (C : Type*) [Category* C] [HasCoproducts.{w} C] [Preadditive C]
 
 /-- The bifunctor which sends `R : C` and a pair of simplicial sets `i : X ⟶ Y`
 (with `i` a monomorphism) to `X.chainComplex R`, which is the
@@ -338,7 +338,7 @@ end
 
 section
 
-variable {A : Type u} [Category.{v} A] [HasCoproducts.{w} A] [Abelian A]
+variable {A : Type*} [Category* A] [HasCoproducts.{w} A] [Abelian A]
   (P : SSetPair.{w}) (R : A)
 
 lemma shortExact_chainComplexShortComplex :
