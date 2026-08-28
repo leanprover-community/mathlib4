@@ -173,11 +173,10 @@ lemma _root_.CovariantDerivative.exists_one_form
     cov σ x = d% σ x + A x (σ x) := by
   simpa using! cov.isCovariantDerivativeOnUniv.exists_one_form
 
---set_option pp.notation false
 lemma contMDiffOn_one_form [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
-    (hcov' : ContMDiffCovariantDerivativeOn F n cov s) :
+    (hcov' : ContMDiffCovariantDerivativeOn' F n cov s) :
     letI V : M → Type _ := fun m ↦ F →L[𝕜] TangentSpace% m →L[𝕜] F
     CMDiff[s] n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (hcov.one_form m)) := by
   have : IsManifold I n M := IsManifold.of_le  (by norm_num : n ≤ n + 1)
@@ -185,30 +184,23 @@ lemma contMDiffOn_one_form [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteDi
     TangentBundle.contMDiffVectorBundle -- TODO: understand why this is needed
   apply ContMDiffOn.clm_bundle_of_apply' (by simp : n ≤ n+1)
   intro σ x hx hσ
-  have (x' : M) (hx' : x' ∈ s) := hcov.eq_one_form (x := x') (σ := σ)
-  -- By hypothesis, `cov` is smooth; the differential `d%` is also smooth, hence so is their
-  -- difference `hcov.one_form x = cov - d%`.
-
-  -- TODO: this is stronger than hσ, but seems to be needed. Think and/or make this match up!
-  -- Do we need to patch up ContMDiffCovariantDerivativeOn.contMDiff?
-  have scifi : CMDiff[s] (n + 1) (T% σ) := sorry
-  let aux := hcov'.contMDiff scifi
-  -- TODO: similarly, double-check this version.
-  have lemming : ∀ x' ∈ s, (hcov.one_form x') (σ x') = (cov σ x') - (d% σ x') := by
-    intro x' hx'
-    simp [hcov.eq_one_form_lemming (hσ := (scifi x' hx').mdifferentiableWithinAt (by simp))]
-  have nexter : ∀ x' ∈ s, TotalSpace.mk' (E →L[𝕜] F) x ((hcov.one_form x') (σ x')) =
-      TotalSpace.mk' (E := fun (x : M) ↦ (TangentSpace% x) →L[𝕜] F)
-        (E →L[𝕜] F) x ((cov σ x') - (d% σ x')) := by
-    intro x' hx'
-    congr 1
-    apply lemming x' hx'
-  apply ContMDiffWithinAt.congr ?_
-  · -- TODO: this does not unify, why?
-    sorry -- apply nexter
-  · apply nexter x hx
-  apply (aux x hx).sub_section
-  sorry -- proven in LeviCivita.lean
+  have hσ' : ∀ᶠ b in 𝓝[s] x, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) (n + 1) (T% σ) s b :=
+    eventually_nhdsWithin_of_eventually_nhds hσ
+  have : ∀ᶠ x' in 𝓝[s] x, cov σ x' = d% σ x' + (hcov.one_form x') (σ x') := by
+    filter_upwards [hσ', eventually_mem_nhdsWithin] with x' hx' Hx'
+    exact hcov.eq_one_form_lemming (hx'.mdifferentiableWithinAt (by simp))
+  let V := TotalSpace (E →L[𝕜] F) fun x : M ↦ TangentSpace I x →L[𝕜] F
+  have : ∀ᶠ x' in 𝓝[s] x,
+      (TotalSpace.mk' (E →L[𝕜] F) x' (hcov.one_form x' (σ x')) : V) =
+      TotalSpace.mk' (E →L[𝕜] F) x' (cov σ x' - d% σ x') := by
+    filter_upwards [this] with x' hx'
+    simp [hx']
+  apply ContMDiffWithinAt.congr_of_eventuallyEq _ this (this.self_of_nhdsWithin hx)
+  apply ContMDiffWithinAt.sub_section
+  · -- FIXME: awful delaborator bug!
+    exact hcov'.contMDiffWithinAt hx hσ'
+  · have := hσ.self_of_nhds
+    sorry
 
 -- TODO: add global variant!
 
