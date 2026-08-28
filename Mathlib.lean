@@ -3683,6 +3683,7 @@ public import Mathlib.Combinatorics.Schnirelmann
 public import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Combinatorics.SetFamily.Compression.UV
+public import Mathlib.Combinatorics.SetFamily.DualVC
 public import Mathlib.Combinatorics.SetFamily.FourFunctions
 public import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 public import Mathlib.Combinatorics.SetFamily.Intersecting
@@ -4711,6 +4712,7 @@ public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.Bordism
 public import Mathlib.Geometry.Manifold.BumpFunction
+public import Mathlib.Geometry.Manifold.Category.MfldCat.OfModel
 public import Mathlib.Geometry.Manifold.ChartedSpace
 public import Mathlib.Geometry.Manifold.Complex
 public import Mathlib.Geometry.Manifold.ConformalGroupoid
@@ -5930,6 +5932,7 @@ public import Mathlib.NumberTheory.ModularForms.NormTrace
 public import Mathlib.NumberTheory.ModularForms.Petersson
 public import Mathlib.NumberTheory.ModularForms.ProperlyDiscontinuous
 public import Mathlib.NumberTheory.ModularForms.QExpansion
+public import Mathlib.NumberTheory.ModularForms.RamanujanFormula
 public import Mathlib.NumberTheory.ModularForms.SlashActions
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 public import Mathlib.NumberTheory.MulChar.Basic
@@ -6530,6 +6533,7 @@ public import Mathlib.RepresentationTheory.Rep.Basic
 public import Mathlib.RepresentationTheory.Rep.Iso
 public import Mathlib.RepresentationTheory.Rep.Res
 public import Mathlib.RepresentationTheory.Semisimple
+public import Mathlib.RepresentationTheory.Stabilizer
 public import Mathlib.RepresentationTheory.Submodule
 public import Mathlib.RepresentationTheory.Subrepresentation
 public import Mathlib.RepresentationTheory.Tannaka
