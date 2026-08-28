@@ -31,9 +31,9 @@ lemma integral_of_ae_eq_zero_or_one (hXmeas : AEMeasurable X μ) (hX : ∀ᵐ ω
   rw [(Measure.ae_eq_or_eq_iff_map_eq_dirac_add_dirac hXmeas zero_ne_one).1 hX]
   by_cases h : μ {ω | X ω = 1} = ⊤
   · simp [h, Measure.real, Set.preimage, integral_undef, Integrable, HasFiniteIntegral]
-  rw [integral_add_measure ⟨by fun_prop, by simp [HasFiniteIntegral]⟩]
-  · simp [Measure.real, Set.preimage]
-  · exact .smul_measure (by simp [integrable_dirac]) h
+  rw [integral_add_measure ⟨by fun_prop, by simp [HasFiniteIntegral]⟩ <|
+    .smul_measure (by simp [integrable_dirac]) h]
+  simp [Measure.real, Set.preimage]
 
 /-- If a random variable is ae equal to `0` or `1`, then one minus its expectation is equal to the
 probability that it equals `0`. -/
