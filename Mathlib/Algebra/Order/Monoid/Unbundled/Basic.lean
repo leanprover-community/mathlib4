@@ -34,7 +34,6 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 
 @[expose] public section
 
-
 -- TODO: If possible, uniformize lemma names, taking special care of `'`,
 -- after the `ordered`-refactor is done.
 open Function
@@ -58,29 +57,29 @@ variable [LE α]
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_le_mul_of_nonneg_left`, which have an extra side condition.
 
-@[to_additive (attr := gcongr high - 1)]
+@[to_additive (attr := gcongr high - 1, to_dual self)]
 theorem mul_le_mul_right [MulLeftMono α] (bc : b ≤ c) (a : α) : a * b ≤ a * c :=
   CovariantClass.elim _ bc
 
-@[to_additive le_of_add_le_add_left]
+@[to_additive (attr := to_dual self) le_of_add_le_add_left]
 theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] (bc : a * b ≤ a * c) : b ≤ c :=
   MulLeftReflectLE.le_of_mul_le_mul_left' bc
 
-@[to_additive (attr := gcongr high - 1)]
+@[to_additive (attr := gcongr high - 1, to_dual self)]
 theorem mul_le_mul_left [i : MulRightMono α] (bc : b ≤ c) (a : α) : b * a ≤ c * a :=
   i.elim a bc
 
-@[to_additive le_of_add_le_add_right]
+@[to_additive (attr := to_dual self) le_of_add_le_add_right]
 theorem le_of_mul_le_mul_right' [MulRightReflectLE α] (bc : b * a ≤ c * a) :
     b ≤ c :=
   MulRightReflectLE.le_of_mul_le_mul_right' bc
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual self)]
 theorem mul_le_mul_iff_left [MulLeftMono α] [MulLeftReflectLE α] (a : α) {b c : α} :
     a * b ≤ a * c ↔ b ≤ c :=
   rel_iff_cov' ‹MulLeftMono α›.elim fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual self)]
 theorem mul_le_mul_iff_right [MulRightMono α] [MulRightReflectLE α] (a : α) :
     b * a ≤ c * a ↔ b ≤ c :=
   rel_iff_cov' ‹MulRightMono α›.elim fun _ ↦ MulRightReflectLE.le_of_mul_le_mul_right'
@@ -91,12 +90,12 @@ section LT
 
 variable [LT α]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual self)]
 theorem mul_lt_mul_iff_left [MulLeftStrictMono α] [MulLeftReflectLT α] (a : α) :
     a * b < a * c ↔ b < c :=
   rel_iff_cov α α (· * ·) (· < ·) a
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual self)]
 theorem mul_lt_mul_iff_right [MulRightStrictMono α] [MulRightReflectLT α] (a : α) :
     b * a < c * a ↔ b < c :=
   rel_iff_cov α α (swap (· * ·)) (· < ·) a
@@ -104,20 +103,20 @@ theorem mul_lt_mul_iff_right [MulRightStrictMono α] [MulRightReflectLT α] (a :
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_lt_mul_of_pos_left`, which have an extra side condition.
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high, to_dual self)]
 theorem mul_lt_mul_right [MulLeftStrictMono α] (bc : b < c) (a : α) :
     a * b < a * c :=
   CovariantClass.elim _ bc
 
-@[to_additive lt_of_add_lt_add_left]
+@[to_additive (attr := to_dual self) lt_of_add_lt_add_left]
 theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] (bc : a * b < a * c) : b < c :=
   ContravariantClass.elim _ bc
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high, to_dual self)]
 theorem mul_lt_mul_left [i : MulRightStrictMono α] (bc : b < c) (a : α) : b * a < c * a :=
   i.elim a bc
 
-@[to_additive lt_of_add_lt_add_right]
+@[to_additive (attr := to_dual self) lt_of_add_lt_add_right]
 theorem lt_of_mul_lt_mul_right' [i : MulRightReflectLT α] (bc : b * a < c * a) : b < c :=
   i.elim a bc
 
@@ -146,41 +145,41 @@ lemma mul_left_strictMono [MulRightStrictMono α] : StrictMono (· * a) :=
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_le_mul_of_nonneg`, which have an extra side condition.
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high, to_dual self)]
 theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α] [MulRightStrictMono α]
     (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
   (mul_lt_mul_right h₂ a).trans (mul_lt_mul_left h₁ d)
 
-alias add_lt_add := add_lt_add_of_lt_of_lt
+@[to_dual self] alias add_lt_add := add_lt_add_of_lt_of_lt
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem mul_lt_mul_of_le_of_lt [MulLeftStrictMono α] [MulRightMono α]
     (h₁ : a ≤ b) (h₂ : c < d) : a * c < b * d :=
   (mul_le_mul_left h₁ _).trans_lt (mul_lt_mul_right h₂ b)
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem mul_lt_mul_of_lt_of_le [MulLeftMono α] [MulRightStrictMono α]
     (h₁ : a < b) (h₂ : c ≤ d) : a * c < b * d :=
   (mul_le_mul_right h₂ _).trans_lt (mul_lt_mul_left h₁ d)
 
 /-- Only assumes left strict covariance. -/
-@[to_additive /-- Only assumes left strict covariance -/]
+@[to_additive (attr := to_dual self) /-- Only assumes left strict covariance -/]
 theorem Left.mul_lt_mul [MulLeftStrictMono α] [MulRightMono α]
     (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
   mul_lt_mul_of_le_of_lt h₁.le h₂
 
 /-- Only assumes right strict covariance. -/
-@[to_additive /-- Only assumes right strict covariance -/]
+@[to_additive (attr := to_dual self) /-- Only assumes right strict covariance -/]
 theorem Right.mul_lt_mul [MulLeftMono α] [MulRightStrictMono α]
     (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
   mul_lt_mul_of_lt_of_le h₁ h₂.le
 
-@[to_additive (attr := gcongr high) add_le_add]
+@[to_additive (attr := gcongr high, to_dual self) add_le_add]
 theorem mul_le_mul' [MulLeftMono α] [MulRightMono α]
     (h₁ : a ≤ b) (h₂ : c ≤ d) : a * c ≤ b * d := by
   grw [h₁, h₂]
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem mul_le_mul_three [MulLeftMono α] [MulRightMono α]
     (h₁ : a ≤ d) (h₂ : b ≤ e) (h₃ : c ≤ f) : a * b * c ≤ d * e * f :=
   mul_le_mul' (mul_le_mul' h₁ h₂) h₃
@@ -334,6 +333,24 @@ theorem MulLeftStrictMono.toIsLeftCancelMul [MulLeftStrictMono α] : IsLeftCance
 @[to_additive]
 theorem MulRightStrictMono.toIsRightCancelMul [MulRightStrictMono α] : IsRightCancelMul α where
   mul_right_cancel _ _ _ h := mul_left_strictMono.injective h
+
+/-- Left multiplication is strictly monotone if and only if it is monotone and
+left-cancellative. -/
+@[to_additive /-- Left addition is strictly monotone if and only if it is monotone and
+left-cancellative. -/]
+theorem mulLeftStrictMono_iff_mulLeftMono_and_isLeftCancelMul :
+    MulLeftStrictMono α ↔ MulLeftMono α ∧ IsLeftCancelMul α where
+  mp _ := ⟨mulLeftMono_of_mulLeftStrictMono α, MulLeftStrictMono.toIsLeftCancelMul⟩
+  mpr := by rintro ⟨_, _⟩; infer_instance
+
+/-- Right multiplication is strictly monotone if and only if it is monotone and
+right-cancellative. -/
+@[to_additive /-- Right addition is strictly monotone if and only if it is monotone and
+right-cancellative. -/]
+theorem mulRightStrictMono_iff_mulRightMono_and_isRightCancelMul :
+    MulRightStrictMono α ↔ MulRightMono α ∧ IsRightCancelMul α where
+  mp _ := ⟨mulRightMono_of_mulRightStrictMono α, MulRightStrictMono.toIsRightCancelMul⟩
+  mpr := by rintro ⟨_, _⟩; infer_instance
 
 end LinearOrder
 
@@ -1125,24 +1142,41 @@ theorem mulLECancellable_one [MulOneClass α] [LE α] : MulLECancellable (1 : α
 namespace MulLECancellable
 
 @[to_additive]
-protected theorem Injective [Mul α] [PartialOrder α] (ha : MulLECancellable a) :
+protected theorem injective_right [Mul α] [PartialOrder α] (ha : MulLECancellable a) :
     Injective (a * ·) :=
   fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
 
-@[to_additive]
-protected theorem isLeftRegular [Mul α] [PartialOrder α] (ha : MulLECancellable a) :
-    IsLeftRegular a :=
-  ha.Injective
+@[deprecated (since := "2026-07-07")]
+protected alias _root_.MulLECancellable.Injective := MulLECancellable.injective_right
+
+@[deprecated (since := "2026-07-07")]
+protected alias _root_.AddLECancellable.Injective := AddLECancellable.injective_right
 
 @[to_additive]
-protected theorem inj [Mul α] [PartialOrder α] (ha : MulLECancellable a) :
+protected theorem isLeftRegular [Mul α] [PartialOrder α] {a : α}
+    (ha : MulLECancellable a) : IsLeftRegular a :=
+  ha.injective_right
+
+@[to_additive]
+protected theorem inj_right [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancellable a) :
     a * b = a * c ↔ b = c :=
-  ha.Injective.eq_iff
+  ha.injective_right.eq_iff
+
+@[deprecated (since := "2026-07-07")]
+protected alias _root_.MulLECancellable.inj := MulLECancellable.inj_right
+
+@[deprecated (since := "2026-07-07")]
+protected alias _root_.AddLECancellable.inj := AddLECancellable.inj_right
 
 @[to_additive]
 protected theorem injective_left [Mul α] [IsMulCommutative α] [PartialOrder α]
     (ha : MulLECancellable a) : Injective (· * a) :=
-  fun b c h ↦ ha.Injective <| by dsimp; rwa [mul_comm' a, mul_comm' a]
+  fun b c h ↦ ha.injective_right <| by dsimp; rwa [mul_comm' a, mul_comm' a]
+
+@[to_additive]
+protected theorem isRightRegular [Mul α] [IsMulCommutative α] [PartialOrder α] {a : α}
+    (ha : MulLECancellable a) : IsRightRegular a :=
+  ha.injective_left
 
 @[to_additive]
 protected theorem inj_left [Mul α] [IsMulCommutative α] [PartialOrder α]
