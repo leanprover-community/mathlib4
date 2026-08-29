@@ -863,6 +863,11 @@ theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w)
 theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
   .rfl
 
+theorem isIndepSet_empty : G.IsIndepSet ∅ := Set.pairwise_empty _
+
+theorem isIndepSet_emptyFinset : G.IsIndepSet (∅ : Finset α) := by
+  simp only [coe_empty, isIndepSet_empty]
+
 /-- An independent set is a clique in the complement graph and vice versa. -/
 @[simp] theorem isClique_compl : Gᶜ.IsClique s ↔ G.IsIndepSet s := by
   rw [isIndepSet_iff, isClique_iff]; repeat rw [Set.Pairwise]
@@ -918,6 +923,8 @@ variable {n : ℕ} {s : Finset α}
 structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
   isIndepSet : G.IsIndepSet s
   card_eq : s.card = n
+
+theorem isNIndepSet_empty : G.IsNIndepSet 0 ∅ := ⟨isIndepSet_emptyFinset G, rfl⟩
 
 /-- An `n`-independent set is an `n`-clique in the complement graph and vice versa. -/
 @[simp] theorem isNClique_compl : Gᶜ.IsNClique n s ↔ G.IsNIndepSet n s := by
@@ -1055,6 +1062,25 @@ theorem maximumIndepSet_card_eq_indepNum
 
 lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndepSet s := by
   simp [← isMaximumClique_compl, maximumClique_exists]
+
+theorem indepNum_eq_zero_iff_empty [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
+  constructor
+  · intro h
+    by_contra
+    simp only [not_isEmpty_iff] at this
+    obtain ⟨a⟩ := this
+    have one_indep : G.IsNIndepSet 1 {a} := by
+      rw [isNIndepSet_iff]
+      simp only [coe_singleton, Set.pairwise_singleton, card_singleton, and_self]
+    have : 1 ≤ G.indepNum  := SimpleGraph.IsIndepSet.card_le_indepNum one_indep.isIndepSet
+    grind
+  intro h
+  rw [isEmpty_iff] at h
+  have : ∀ (s : Finset α ) , s = ∅ := by
+    exact fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
+  simp only [indepNum, this, exists_const]
+  have : {n | G.IsNIndepSet n ∅} = {0} := by ext x ; simp [isNIndepSet_iff]
+  rw [this] ; simp
 
 end IndepNumber
 
