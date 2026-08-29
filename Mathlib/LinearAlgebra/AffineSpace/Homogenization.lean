@@ -109,12 +109,12 @@ theorem ofPoint_linear : ofPoint.linear = ofVector (R := R) (P := P) :=
   rfl
 
 @[simp]
-theorem ofVector_vsub {p q : P} : ofVector (R := R) (p -ᵥ q) = ofPoint p - ofPoint q :=
+theorem ofVector_vsub (p q : P) : ofVector (R := R) (p -ᵥ q) = ofPoint p - ofPoint q :=
   ofPoint.linearMap_vsub p q
 
 @[simp]
 theorem ofVector_smul {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
-    {r : R} {v : V} : ofVector (r • v) = r • ofVector (R := R) (P := P) v :=
+    (r : R) (v : V) : ofVector (r • v) = r • ofVector (R := R) (P := P) v :=
   Prod.ext rfl (smul_zero r).symm
 
 theorem ofVector_injective : Function.Injective (ofVector (R := R) (P := P)) :=
@@ -175,7 +175,7 @@ private def liftAux (f : P →ᵃ[R] W) : Homogenization R P →ₗ[R] W :=
   f.linear.coprod <| LinearMap.id.smulRight (f (Classical.arbitrary P))
 
 @[simp]
-private theorem liftAux_ofPoint {f : P →ᵃ[R] W} {p : P} : liftAux f (ofPoint p) = f p := by
+private theorem liftAux_ofPoint (f : P →ᵃ[R] W) (p : P) : liftAux f (ofPoint p) = f p := by
   change f.linear (p -ᵥ Classical.arbitrary P) + (1 : R) • f (Classical.arbitrary P) = f p
   simp
 
@@ -198,22 +198,22 @@ def lift : (P →ᵃ[R] W) ≃+ (Homogenization R P →ₗ[R] W) where
     apply hom_ext; simp
 
 @[simp]
-theorem lift_apply_ofPoint {f : P →ᵃ[R] W} {p : P} : lift f (ofPoint p) = f p :=
-  liftAux_ofPoint
+theorem lift_apply_ofPoint (f : P →ᵃ[R] W) (p : P) : lift f (ofPoint p) = f p :=
+  liftAux_ofPoint ..
 
 @[simp]
-theorem lift_apply_ofVector {f : P →ᵃ[R] W} {v : V} : lift f (ofVector v) = f.linear v := by
+theorem lift_apply_ofVector (f : P →ᵃ[R] W) (v : V) : lift f (ofVector v) = f.linear v := by
   obtain ⟨p⟩ : Nonempty P := inferInstance
   nth_rw 1 [← vadd_vsub v p]
   simp_rw [ofVector_vsub, map_sub, lift_apply_ofPoint, AffineMap.map_vadd, vadd_eq_add,
     add_sub_cancel_right]
 
 @[simp]
-theorem lift_symm_apply {f : Homogenization R P →ₗ[R] W} {p : P} : lift.symm f p = f (ofPoint p) :=
+theorem lift_symm_apply (f : Homogenization R P →ₗ[R] W) (p : P) : lift.symm f p = f (ofPoint p) :=
   rfl
 
 @[simp]
-theorem lift_symm_linear_apply {f : Homogenization R P →ₗ[R] W} {v : V} :
+theorem lift_symm_linear_apply (f : Homogenization R P →ₗ[R] W) (v : V) :
     (lift.symm f).linear v = f (ofVector v) :=
   rfl
 
@@ -228,11 +228,11 @@ section SMul
 variable {S : Type*} [Semiring S] [Module S W] [SMulCommClass R S W]
 
 @[simp]
-theorem lift_smul {f : P →ᵃ[R] W} {c : S} : lift (c • f) = c • lift f :=
+theorem lift_smul (c : S) (f : P →ᵃ[R] W) : lift (c • f) = c • lift f :=
   hom_ext <| by simp
 
 @[simp]
-theorem lift_symm_smul {f : Homogenization R P →ₗ[R] W} {c : S} :
+theorem lift_symm_smul (c : S) (f : Homogenization R P →ₗ[R] W) :
     lift.symm (c • f) = c • lift.symm f :=
   rfl
 
@@ -240,7 +240,7 @@ variable (S) in
 /-- Linear version of `Homogenization.lift`. -/
 @[expose]
 def liftₗ : (P →ᵃ[R] W) ≃ₗ[S] (Homogenization R P →ₗ[R] W) :=
-  lift.toLinearEquiv fun _ _ => lift_smul
+  lift.toLinearEquiv fun _ _ => lift_smul ..
 
 @[simp]
 theorem coe_liftₗ : ⇑(liftₗ (R := R) (P := P) (W := W) S) = lift :=
@@ -258,11 +258,11 @@ def weight : Homogenization R P →ₗ[R] R :=
   lift (.const R P 1)
 
 @[simp]
-theorem weight_ofVector {v : V} : weight (R := R) (P := P) (ofVector v) = 0 := by
+theorem weight_ofVector (v : V) : weight (R := R) (P := P) (ofVector v) = 0 := by
   simp [weight]
 
 @[simp]
-theorem weight_ofPoint {p : P} : weight (R := R) (ofPoint p) = 1 := by
+theorem weight_ofPoint (p : P) : weight (R := R) (ofPoint p) = 1 := by
   simp [weight]
 
 theorem weight_eq_zero_iff {x : Homogenization R P} : weight x = 0 ↔ ∃ v, x = ofVector v where
@@ -276,7 +276,7 @@ theorem weight_eq_one_iff {x : Homogenization R P} : weight x = 1 ↔ ∃ p, x =
     simp_all
   mpr := by rintro ⟨_, rfl⟩; rw [weight_ofPoint]
 
-theorem lift_const_apply {u : W} {x : Homogenization R P} :
+theorem lift_const_apply (u : W) (x : Homogenization R P) :
     lift (AffineMap.const R P u) x = weight x • u := by
   cases x; simp
 
@@ -291,11 +291,11 @@ def map (f : P1 →ᵃ[R] P2) : Homogenization R P1 →ₗ[R] Homogenization R P
   lift (ofPoint.comp f)
 
 @[simp]
-theorem map_apply_ofPoint {f : P1 →ᵃ[R] P2} {p : P1} : map f (ofPoint p) = ofPoint (f p) := by
+theorem map_apply_ofPoint (f : P1 →ᵃ[R] P) (p : P1) : map f (ofPoint p) = ofPoint (f p) := by
   simp [map]
 
 @[simp]
-theorem map_apply_ofVector {f : P1 →ᵃ[R] P2} {v : V1} :
+theorem map_apply_ofVector (f : P1 →ᵃ[R] P2) (v : V1) :
     map f (ofVector v) = ofVector (f.linear v) := by
   simp [map]
 
@@ -304,21 +304,21 @@ theorem map_id : map (AffineMap.id R P) = .id :=
   hom_ext <| by simp
 
 @[simp]
-theorem map_eq_id_iff (f : P →ᵃ[R] P) : map f = .id ↔ f = .id .. where
+theorem map_eq_id_iff {f : P →ᵃ[R] P} : map f = .id ↔ f = .id .. where
   mp h := by
     ext p
     simpa [ofPoint_injective.eq_iff] using congr($h (ofPoint p))
   mpr h := by simp [h]
 
-theorem map_comp {f : P1 →ᵃ[R] P2} {g : P2 →ᵃ[R] P3} : map (g.comp f) = map g ∘ₗ map f :=
+theorem map_comp (f : P2 →ᵃ[R] P3) (g : P1 →ᵃ[R] P2) : map (f.comp g) = map f ∘ₗ map g :=
   hom_ext <| by simp
 
 @[simp]
-theorem weight_map {f : P1 →ᵃ[R] P2} {x : Homogenization R P1} : weight (map f x) = weight x := by
+theorem weight_map (f : P1 →ᵃ[R] P2) (x : Homogenization R P1) : weight (map f x) = weight x := by
   cases x; simp
 
-theorem lift_map {f : P1 →ᵃ[R] P2} {g : P2 →ᵃ[R] V3} {x : Homogenization R P1} :
-    lift g (map f x) = lift (g.comp f) x := by
+theorem lift_map (f : P2 →ᵃ[R] V3) (g : P1 →ᵃ[R] P2) (x : Homogenization R P1) :
+    lift f (map g x) = lift (f.comp g) x := by
   cases x; simp
 
 @[simp]
@@ -349,7 +349,7 @@ theorem map_surjective {f : P1 →ᵃ[R] P2} : Function.Surjective (map f) ↔ F
   mpr hf := by
     rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_range_ofPoint, Submodule.span_le,
       Set.range_subset_iff, hf.forall]
-    exact fun p => ⟨ofPoint p, map_apply_ofPoint⟩
+    exact fun p => ⟨ofPoint p, map_apply_ofPoint ..⟩
 
 /-- An affine isomorphism between two affine spaces extends to a linear isomorphism between their
 homogenizations. -/
@@ -374,7 +374,7 @@ theorem congr_refl : congr (.refl R P) = .refl .. := by
   ext; simp
 
 @[simp]
-theorem congr_eq_refl_iff (f : P ≃ᵃ[R] P) : congr f = .refl .. ↔ f = .refl .. := by
+theorem congr_eq_refl_iff {f : P ≃ᵃ[R] P} : congr f = .refl .. ↔ f = .refl .. := by
   simp [← LinearEquiv.toLinearMap_inj, ← AffineEquiv.toAffineMap_inj]
 
 theorem congr_trans (f : P1 ≃ᵃ[R] P2) (g : P2 ≃ᵃ[R] P3) :
@@ -392,11 +392,11 @@ def toProd : Homogenization R V ≃ₗ[R] V × R where
   right_inv x := by simp
 
 @[simp]
-theorem toProd_ofPoint {v : V} : toProd (ofPoint (R := R) v) = (v, 1) := by
+theorem toProd_ofPoint (v : V) : toProd (ofPoint (R := R) v) = (v, 1) := by
   simp [toProd_apply]
 
 @[simp]
-theorem toProd_ofVector {v : V} : toProd (ofVector (R := R) v) = (v, 0) := by
+theorem toProd_ofVector (v : V) : toProd (ofVector (R := R) v) = (v, 0) := by
   simp [toProd_apply]
 
 instance [Module.Finite R V] : Module.Finite R (Homogenization R P) :=
