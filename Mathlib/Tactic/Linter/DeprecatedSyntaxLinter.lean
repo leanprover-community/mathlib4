@@ -133,21 +133,18 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
   | _ => none
 
 /-- Whether the tactic syntax `stx` enables the `native` option. This may have false negatives for
-`tac (config := {<options>})` syntax. -/
-def usesNativeConfig (stx : Syntax) : Bool :=
-  let config := stx[1]![0]
-  if let .node _ _ configArgs := config then
-    let natives := configArgs.filterMap (match ·[0] with
-      | `(Parser.Tactic.posConfigItem| +native) => some true
-      | `(Parser.Tactic.negConfigItem| -native) => some false
-      | `(Parser.Tactic.valConfigItem| (native := true)) => some true
-      | `(Parser.Tactic.valConfigItem| (native := false)) => some false
-      | `(Parser.Tactic.valConfigItem| (config := {native := true})) => some true
-      | `(Parser.Tactic.valConfigItem| (config := {native := false})) => some false
-      | _ => none)
-    natives.back? == some true
-  else
-    false
+`tac (config := term)` syntax if `term` is not of the form `{..., native := true, ...}`. -/
+def usesNativeConfig : Syntax → Bool
+  | `(Parser.Term.configItem|   +native)
+  | `(Parser.Tactic.configItem| +native) => true
+  | `(Parser.Term.configItem|   (native := true))
+  | `(Parser.Tactic.configItem| (native := true)) => true
+  | `(Parser.Term.configItem|   (config := {$t:structInstField,*}))
+  | `(Parser.Tactic.configItem| (config := {$t:structInstField,*})) =>
+    t.getElems.any fun
+      | `(Parser.Term.structInstField| native := true) => true
+      | _ => false
+  | _ => false
 
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
@@ -171,17 +168,17 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
-    | ``Lean.Parser.Tactic.decide =>
+    | ``Parser.Term.configItem | ``Parser.Tactic.configItem =>
       if usesNativeConfig stx then
-        rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib: \
-        because it trusts the entire Lean compiler (not just the Lean kernel), \
-        it could quite possibly be used to prove false.")
+        rargs.push (kind, stx, m!"Using `+native` is not allowed in mathlib: \
+          it trusts the entire Lean compiler (not just the Lean kernel), \
+          and it can quite possibly be used to prove `{.ofConstName ``False}`.")
       else
         rargs
     | ``Lean.Parser.Tactic.nativeDecide =>
-      rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib: \
-        because it trusts the entire Lean compiler (not just the Lean kernel), \
-        it could quite possibly be used to prove false.")
+      rargs.push (kind, stx, m!"Using `native_decide` is not allowed in mathlib: \
+        it trusts the entire Lean compiler (not just the Lean kernel), \
+        and it can quite possibly be used to prove `{.ofConstName ``False}`.")
     | ``Lean.Parser.Command.in =>
       match getSetOptionMaxHeartbeatsComment stx with
       | none => rargs
@@ -208,7 +205,7 @@ replacement syntax. For each individual case, linting can be turned on or off se
 * `cases'`, superseded by `obtain`, `rcases` and `cases` (controlled by `linter.style.cases`)
 * `induction'`, superseded by `induction` (controlled by `linter.style.induction`)
 * `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
-* `native_decide` and `decide +native`, which trust the Lean compiler
+* `native_decide` and any config setting `+native`, which trust the Lean compiler
   (controlled by `linter.style.native`)
 * `set_option maxHeartbeats`, should contain an explanatory comment
   (controlled by `linter.style.maxHeartbeats`)
@@ -238,7 +235,8 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
       | `Mathlib.Tactic.induction' => Linter.logLintIf linter.style.induction stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
-      | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide => do
+      | ``Lean.Parser.Tactic.nativeDecide
+      | ``Parser.Term.configItem | ``Parser.Tactic.configItem => do
         -- TODO: this block should be removed when `linter.style.nativeDecide` is removed and
         -- replaced with just `Linter.logLint linter.style.native stx' msg`
         let options ← getLinterOptions
