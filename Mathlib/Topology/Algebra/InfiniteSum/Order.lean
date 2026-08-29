@@ -255,7 +255,7 @@ theorem prod_le_hasProd_of_nonneg [L.NeBot] [L.LeAtTop] {f : ι → α} {a : α}
     (hnonneg : ∀ i ∈ s, 0 ≤ f i) (hs : ∀ i ∉ s, 1 ≤ f i) (hf : HasProd f a L) :
     ∏ i ∈ s, f i ≤ a := by
   refine ge_of_tendsto hf <| .filter_mono L.le_atTop <| eventually_atTop.2 ?_
-  exact ⟨s, fun _ hst ↦ prod_le_prod_of_subset_of_one_le hst hnonneg (fun i _ ↦ hs i)⟩
+  exact ⟨s, fun _ hst ↦ prod_le_prod_of_subset_of_one_le₀ hst hnonneg (fun i _ ↦ hs i)⟩
 
 theorem Multipliable.prod_le_tprod_of_nonneg [L.NeBot] [L.LeAtTop] {f : ι → α} {s : Finset ι}
     (hnonneg : ∀ i ∈ s, 0 ≤ f i) (hs : ∀ i ∉ s, 1 ≤ f i) (hf : Multipliable f L) :
