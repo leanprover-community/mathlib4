@@ -449,6 +449,26 @@ jobs:
           cmp /tmp/probe.txt /tmp/probe-back.txt
           echo "::notice::session-token PUT and read-back verified"
 
+      # Lake signs uploads with curl and takes the curl binary from the
+      # CURL environment variable. The pinned lake does not send a session
+      # token itself, so this wrapper adds the temporary credential's
+      # x-amz-security-token header to every request lake makes. A lake
+      # that reads LAKE_CACHE_SESSION_TOKEN directly makes this wrapper
+      # deletable with no other change.
+      - name: Wrap curl so lake sends the session token
+        if: ${{ !inputs.mint_only }}
+        run: |
+          wrapper="${RUNNER_TEMP}/curl-with-session-token"
+          cat > "${wrapper}" <<'EOF'
+          #!/usr/bin/env bash
+          if [ -n "${LAKE_CACHE_SESSION_TOKEN:-}" ]; then
+            exec /usr/bin/curl -H "x-amz-security-token: ${LAKE_CACHE_SESSION_TOKEN}" "$@"
+          fi
+          exec /usr/bin/curl "$@"
+          EOF
+          chmod +x "${wrapper}"
+          echo "CURL=${wrapper}" >> "$GITHUB_ENV"
+
       - name: lake cache put-staged
         if: ${{ !inputs.mint_only }}
         run: |
