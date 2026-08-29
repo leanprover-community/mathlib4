@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Geometry.Convex.ConvexSpace.Barycenter
-public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpace
+public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
