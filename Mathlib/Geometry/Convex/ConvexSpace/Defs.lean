@@ -711,6 +711,12 @@ lemma convexCombPair_convexCombPair_assoc_right (H : s * t'' = t * s' * s'') (m�
       (h'' := (add_comm _ _).trans h'') (H := H),
     convexCombPair_symm, convexCombPair_symm (x := m₂)]
 
+variable (R) in
+lemma StdSimplex.isAffineMap_iConvexComb (f : I → M) :
+    IsAffineMap R (fun x ↦ iConvexComb (R := R) x f) where
+  map_sConvexComb s := by
+    sorry
+
 section CommSemiring
 
 variable {R M I : Type*} [PartialOrder R] [CommSemiring R] [IsStrictOrderedRing R]

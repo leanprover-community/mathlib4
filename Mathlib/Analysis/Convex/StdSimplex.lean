@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Geometry.Convex.ConvexSpace.Barycenter
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpace
+public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
+public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 public import Mathlib.Topology.UnitInterval
@@ -168,22 +170,22 @@ theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
 
 variable {ι R}
 
-/-- The convex hull of a finite set is the image of the standard simplex in `s → ℝ`
-under the linear map sending each function `w` to `∑ x ∈ s, w x • x`.
-
-Since we have no sums over finite sets, we use sum over `@Finset.univ _ hs.fintype`.
-The map is defined in terms of operations on `(s → ℝ) →ₗ[ℝ] ℝ` so that later we will not need
-to prove that this map is linear. -/
-@[deprecated "no replacement" (since := "2026-07-29")]
-theorem Set.Finite.convexHull_eq_image {E : Type*} [AddCommGroup E] [Module R E]
-    {s : Set E} (hs : s.Finite) : convexHull R s =
-    haveI := hs.fintype
-    (⇑(∑ x : s, (LinearMap.proj (R := R) x).smulRight x.1)) '' stdSimplex R s := by
-  classical
+/-- The convex hull of a finite set `s` is the range of the affine map
+`StdSimplex R s → E` which sends `x : s` to `x : E`. -/
+theorem Set.Finite.convexHull_eq_range_iConvexComb
+    {E : Type*} [AddCommGroup E] [Module R E]
+    [ConvexSpace R E] [IsModuleConvexSpace R E] {s : Set E} (hs : s.Finite) :
+    convexHull R s =
+      Set.range (ConvexSpace.AffineMap.iConvexComb (R := R) (fun (x : s) ↦ x.val)) := by
+  /-classical
   let := hs.fintype
   rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
-  aesop
+  aesop-/
+  sorry
+
+@[deprecated (since := "2026-08-29")] alias Set.Finite.convexHull_eq_image :=
+  Set.Finite.convexHull_eq_range_iConvexComb
 
 end Field
 

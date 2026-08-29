@@ -34,7 +34,11 @@ lemma continuous_convexCombPair {M : Type*} (x y : StdSimplex ℝ M) :
     ext t : 1
     exact ((isAffineMap_map ℝ ι).map_convexCombPair ..).symm
   rw [(StdSimplex.isEmbedding_toFun_comp_weights _ _).continuous_iff]
-  continuity
+  unfold Function.comp
+  refine continuous_pi (fun i ↦ ?_)
+  simp only [unitInterval.coe_symm_eq, weights_convexCombPair, Finsupp.coe_add,
+    Finsupp.coe_smul, Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+  fun_prop
 
 @[fun_prop]
 lemma continuous_duple {M : Type*} (x y : M) :

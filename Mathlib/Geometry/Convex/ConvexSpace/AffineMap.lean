@@ -95,6 +95,14 @@ def const {X Y : Type*} [ConvexSpace R X] [ConvexSpace R Y] (y : Y) :
     ConvexSpace.AffineMap R X Y where
   toFun _ := y
 
+/-- Given a map `f : I → X` where `X` is a convex space over `R`, this is the affine
+map `StdSimplex R I → X` which sends -/
+@[simps, implicit_reducible]
+protected noncomputable def iConvexComb {I X : Type*} [ConvexSpace R X] (f : I → X) :
+    ConvexSpace.AffineMap R (StdSimplex R I) X where
+  toFun x := iConvexComb x f
+  isAffineMap_toFun := StdSimplex.isAffineMap_iConvexComb R f
+
 end AffineMap
 
 end Convexity.ConvexSpace
