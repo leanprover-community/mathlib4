@@ -82,33 +82,49 @@ lemma HasLimitProcess.comp₂ {f : E → F → G} (hX : HasLimitProcess X 𝓕 P
   refine ⟨f.uncurry ∘ (Function.prod g h), hf.comp_stronglyMeasurable (mg.prodMk mh), ?_⟩
   filter_upwards [hg, hh] with ω h1 h2 using (hf.tendsto _).comp (h1.prodMk_nhds h2)
 
-lemma HasLimitProcess.smul {R : Type*} [SMul R E] [ContinuousConstSMul R E] (c : R)
+@[to_additive]
+lemma HasLimitProcess.smul {G : Type*} [SMul G E] [ContinuousConstSMul G E] (c : G)
     (hX : HasLimitProcess X 𝓕 P) :
     HasLimitProcess (c • X) 𝓕 P :=
   hX.comp (continuous_const_smul c)
 
-lemma hasLimitProcess_smul_iff {R : Type*} [DivisionRing R] [MulAction R E]
-    [ContinuousConstSMul R E] {c : R} (hc : c ≠ 0) :
+@[to_additive]
+lemma hasLimitProcess_smul_iff {G : Type*} [Group G] [MulAction G E] [ContinuousConstSMul G E]
+    {c : G} :
     HasLimitProcess (c • X) 𝓕 P ↔ HasLimitProcess X 𝓕 P where
   mp h := by
     convert h.comp (continuous_const_smul c⁻¹)
-    simp [smul_smul, hc]
+    simp
   mpr h := h.smul c
 
+@[to_additive]
 alias ⟨HasLimitProcess.of_smul, _⟩ := hasLimitProcess_smul_iff
 
-lemma HasLimitProcess.neg [Neg E] [ContinuousNeg E] (hX : HasLimitProcess X 𝓕 P) :
-    HasLimitProcess (-X) 𝓕 P :=
-  hX.comp continuous_neg
-
-lemma hasLimitProcess_neg_iff [InvolutiveNeg E] [ContinuousNeg E] :
-    HasLimitProcess (-X) 𝓕 P ↔ HasLimitProcess X 𝓕 P where
+lemma hasLimitProcess_smul_iff₀ {G : Type*} [GroupWithZero G] [MulAction G E]
+    [ContinuousConstSMul G E] {c : G} (hc : c ≠ 0) :
+    HasLimitProcess (c • X) 𝓕 P ↔ HasLimitProcess X 𝓕 P where
   mp h := by
-    convert h.comp continuous_neg
-    simp
-  mpr h := h.neg
+    convert h.comp (continuous_const_smul c⁻¹)
+    simp [hc]
+  mpr h := h.smul c
 
-alias ⟨HasLimitProcess.of_neg, _⟩ := hasLimitProcess_neg_iff
+alias ⟨HasLimitProcess.of_smul₀, _⟩ := hasLimitProcess_smul_iff₀
+
+@[to_additive]
+lemma HasLimitProcess.inv [Inv E] [ContinuousInv E] (hX : HasLimitProcess X 𝓕 P) :
+    HasLimitProcess (X⁻¹) 𝓕 P :=
+  hX.comp continuous_inv
+
+@[to_additive]
+lemma hasLimitProcess_inv_iff [InvolutiveInv E] [ContinuousInv E] :
+    HasLimitProcess (X⁻¹) 𝓕 P ↔ HasLimitProcess X 𝓕 P where
+  mp h := by
+    convert h.comp continuous_inv
+    simp
+  mpr h := h.inv
+
+@[to_additive]
+alias ⟨HasLimitProcess.of_inv, _⟩ := hasLimitProcess_inv_iff
 
 @[to_additive]
 lemma HasLimitProcess.mul [Mul E] [ContinuousMul E] (hX : HasLimitProcess X 𝓕 P)

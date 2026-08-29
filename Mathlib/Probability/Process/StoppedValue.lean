@@ -68,14 +68,13 @@ lemma stoppedValue_of_eq_coe (hτ : τ ω = t) :
   · simp
   · simp [hτ]
 
-end Def
-
 @[gcongr]
-lemma stoppedValue_congr [TopologicalSpace E] [Zero E] [T2Space E] [LinearOrder ι]
-    {𝓕 : Filtration ι mΩ} (h : X ≡ᵐ[P] Y) :
+lemma stoppedValue_congr [IsDirectedOrder ι] [Nonempty ι] [T2Space E] (h : X ≡ᵐ[P] Y) :
     𝓕.stoppedValue X τ P =ᵐ[P] 𝓕.stoppedValue Y τ P := by
   filter_upwards [h, 𝓕.limitProcess_congr h] with ω h1 h2
   obtain _ | _ := eq_or_ne (τ ω) ⊤ <;> simp_all [stoppedValue_of_ne_top]
+
+end Def
 
 -- section Measurability
 
@@ -145,26 +144,37 @@ variable [TopologicalSpace E] [Zero E] [Preorder ι] {𝓕 : Filtration ι mΩ}
 theorem stoppedValue_const (u : ι → Ω → E) (i : ι) : (𝓕.stoppedValue u (fun _ => i) P) = u i := by
   rfl
 
-@[simp] lemma stoppedValue_comp_of_ne_top {γ : Type*} [Zero γ] [TopologicalSpace γ] (f : E → γ)
+@[simp]
+lemma stoppedValue_comp_of_ne_top {γ : Type*} [Zero γ] [TopologicalSpace γ] (f : E → γ)
     (hτ : τ ω ≠ ⊤) :
     𝓕.stoppedValue (fun t ω ↦ f (X t ω)) τ P ω = f (𝓕.stoppedValue X τ P ω) := by
   simp [stoppedValue_of_ne_top hτ]
-  rfl
 
-@[simp] lemma HasLimitProcess.stoppedValue_comp {γ : Type*} [Zero γ] [TopologicalSpace γ]
+@[to_fun stoppedValue_fun_comp]
+lemma HasLimitProcess.stoppedValue_comp [IsDirectedOrder ι] [Nonempty ι] {γ : Type*}
+    [Zero γ] [TopologicalSpace γ] [T2Space γ]
     {f : E → γ} (hX : HasLimitProcess X 𝓕 P) (hf : Continuous f) :
-    𝓕.stoppedValue (fun t ω ↦ f (X t ω)) τ P = f ∘ (𝓕.stoppedValue X τ P) := by
-  ext ω
-  simp only [stoppedValue, Function.comp_apply]
-  split_ifs
+    𝓕.stoppedValue (fun t ω ↦ f (X t ω)) τ P =ᵐ[P] f ∘ (𝓕.stoppedValue X τ P) := by
+  filter_upwards [hX.limitProcess_comp hf] with ω hω
+  cases h : τ ω with
+  | top => simp [h, hω]
+  | coe t => simp [h]
 
-
-lemma stoppedValue_norm [SeminormedAddCommGroup E] (hτ : τ ω ≠ ⊤) :
-    𝓕.stoppedValue (fun t ω ↦ ‖X t ω‖) τ P ω = ‖𝓕.stoppedValue X τ P ω‖ := by
-  rw [stoppedValue_comp_of_ne_top]
+@[deprecated (since := "2026-08-28")] alias stoppedValue_norm := stoppedValue_comp_of_ne_top
 
 @[to_additive (attr := simp)]
-lemma stoppedValue_inv [Inv E] : stoppedValue (u⁻¹) τ = (stoppedValue u τ)⁻¹ := rfl
+lemma stoppedValue_inv_of_ne_top [Inv E] (hτ : τ ω ≠ ⊤) :
+    𝓕.stoppedValue (X⁻¹) τ P ω = (𝓕.stoppedValue X τ P ω)⁻¹ :=
+  stoppedValue_comp_of_ne_top _ hτ
+
+@[to_fun stoppedValue_fun_inv']
+lemma HasLimitProcess.stoppedValue_inv' [IsDirectedOrder ι] [Nonempty ι] [Inv E] [ContinuousInv E]
+    [T2Space E] :
+    𝓕.stoppedValue (X⁻¹) τ P =ᵐ[P] (𝓕.stoppedValue X τ P)⁻¹ := by
+  filter_upwards [hX.limitProcess_inv'] with ω hω
+  cases h : τ ω with
+  | top => simp [h, hω]
+  | coe t => simp [h]
 
 @[to_additive (attr := simp)]
 lemma stoppedValue_mul [Mul E] :
