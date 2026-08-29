@@ -5,7 +5,6 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
@@ -14,6 +13,7 @@ public import Mathlib.CategoryTheory.Adjunction.Whiskering
 public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
+public import Mathlib.CategoryTheory.Sites.Coverage
 
 /-!
 # Continuous functors between sites.
@@ -80,6 +80,11 @@ lemma map_id : E.map (𝟭 _) = E :=
 lemma map_comp {D' : Type*} [Category* D'] (G : D ⥤ D') : E.map (F ⋙ G) = (E.map F).map G :=
   rfl
 
+lemma sieve₀_map : (E.map F).sieve₀ = Sieve.functorPushforward _ E.sieve₀ := by
+  rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← PreZeroHypercover.presieve₀,
+    PreOneHypercover.map_toPreZeroHypercover, PreZeroHypercover.presieve₀_map,
+    Sieve.generate_map_eq_functorPushforward]
+
 /-- If `F : C ⥤ D`, `P : Dᵒᵖ ⥤ A` and `E` is a 1-pre-hypercover of an object of `X`,
 then `(E.map F).multifork P` is a limit iff `E.multifork (F.op ⋙ P)` is a limit. -/
 def isLimitMapMultiforkEquiv {A : Type u} [Category.{t} A] (P : Dᵒᵖ ⥤ A) :
@@ -89,6 +94,7 @@ section
 
 variable {E} {W : C} {i₁ i₂ : E.I₀} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma functorPushforward_sieve₁_map_le :
     Sieve.functorPushforward F (E.sieve₁ p₁ p₂) ≤ (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
@@ -232,7 +238,6 @@ private lemma isSheaf_of_isContinuous_aux (F : C ⥤ D) [Functor.IsContinuous F 
           Iso.trans_hom, Iso.symm_hom, Functor.mapIso_inv, Iso.app_inv, Category.assoc]
         rw [← Functor.map_comp_assoc, ← dsimp% e.inv.naturality, ← Functor.map_comp_assoc,
           Sieve.shrinkFunctorUliftFunctorIso_inv_ι]
-        rfl
   rw [K.W.arrow_mk_iso_iff iso]
   apply GrothendieckTopology.W_of_preservesSheafification
   exact F.W_map_of_adjunction_of_isContinuous_aux J K H adj
@@ -380,6 +385,7 @@ def sheafPushforwardContinuousComp [IsContinuous G K L] :
     sheafPushforwardContinuous G A K L ⋙ sheafPushforwardContinuous F A J K ≅
     sheafPushforwardContinuous (F ⋙ G) A J L := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {F F'} in
 /-- The action of a natural transformation on pushforward functors of sheaves. -/
@@ -388,6 +394,7 @@ def sheafPushforwardContinuousNatTrans [IsContinuous F' J K] :
     sheafPushforwardContinuous F' A J K ⟶ sheafPushforwardContinuous F A J K where
   app M := ⟨whiskerRight (NatTrans.op τ) _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {F F'} in
 /-- The action of a natural isomorphism on pushforward functors of sheaves. -/
@@ -421,6 +428,7 @@ def sheafPushforwardContinuousComp'
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F ⊣ G` is an adjunction between continuous functors, the associated
 pushforwards on sheaves are adjoint. -/

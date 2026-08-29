@@ -327,7 +327,7 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
+    simp only [Finset.sum_apply, sum_empty, mul_zero, exp_zero]
     exact aestronglyMeasurable_const
   | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -350,7 +350,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
+    simp only [Finset.sum_apply, sum_empty, mul_zero, exp_zero]
     exact integrable_const _
   | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -437,7 +437,7 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
   calc
     μ.real {ω | ε ≤ X ω} = μ.real {ω | exp (t * ε) ≤ exp (t * X ω)} := by
       congr 1 with ω
-      simp only [Set.mem_setOf_eq, exp_le_exp]
+      simp only [Set.mem_ofPred_eq, exp_le_exp]
       exact ⟨fun h => mul_le_mul_of_nonneg_left h ht_pos.le,
         fun h => le_of_mul_le_mul_left h ht_pos⟩
     _ ≤ (exp (t * ε))⁻¹ * μ[fun ω => exp (t * X ω)] := by
@@ -475,10 +475,9 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 
 end Chernoff
 
-lemma mgf_dirac {x : ℝ} (hX : μ.map X = .dirac x) (t : ℝ) : mgf X μ t = exp (x * t) := by
-  have : IsProbabilityMeasure (μ.map X) := by rw [hX]; infer_instance
-  rw [← mgf_id_map (.of_map_ne_zero <| IsProbabilityMeasure.ne_zero _), mgf, hX, integral_dirac,
-    mul_comm, id_def]
+lemma mgf_dirac {x : ℝ} (hX : HasLaw X (.dirac x) μ) (t : ℝ) : mgf X μ t = exp (x * t) := by
+  have : IsProbabilityMeasure (μ.map X) := by rw [hX.map_eq]; infer_instance
+  rw [← mgf_id_map hX.aemeasurable, mgf, hX.map_eq, integral_dirac, mul_comm, id_def]
 
 lemma mgf_dirac' [MeasurableSingletonClass Ω] {ω : Ω} :
     mgf X (Measure.dirac ω) t = exp (t * X ω) := by

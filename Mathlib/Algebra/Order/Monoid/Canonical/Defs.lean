@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Algebra.NeZero
 public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Canonically ordered monoids
@@ -23,14 +21,14 @@ universe u
 variable {α : Type u}
 
 /-- An ordered additive monoid is `CanonicallyOrderedAdd`
-  if the ordering coincides with the subtractibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
-  This is satisfied by the natural numbers, for example, but not
-  the integers or other nontrivial `OrderedAddCommGroup`s.
+if the ordering coincides with the subtractibility relation,
+which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
+This is satisfied by the natural numbers, for example, but not
+the integers or other nontrivial ordered groups.
 
-  We have `a ≤ b + a` and `a ≤ a + b` as separate fields. In the commutative case the second field
-  is redundant, but in the noncommutative case (satisfied most relevantly by the ordinals), this
-  extra field allows us to prove more things without the extra commutativity assumption. -/
+We have `a ≤ b + a` and `a ≤ a + b` as separate fields. In the commutative case the second field
+is redundant, but in the noncommutative case (satisfied most relevantly by the ordinals), this
+extra field allows us to prove more things without the extra commutativity assumption. -/
 class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] : Prop
     extends ExistsAddOfLE α where
   /-- For any `a` and `b`, `a ≤ a + b` -/
@@ -125,7 +123,7 @@ section MulOneClass
 variable [MulOneClass α]
 
 section LE
-variable [LE α] [CanonicallyOrderedMul α] {a b : α}
+variable [LE α] [CanonicallyOrderedMul α]
 
 @[to_additive]
 instance : IsBotOneClass α where
@@ -191,7 +189,7 @@ section Monoid
 variable [Monoid α]
 
 section PartialOrder
-variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
+variable [PartialOrder α] [CanonicallyOrderedMul α] {a : α}
 
 @[to_additive] instance CanonicallyOrderedCommMonoid.toUniqueUnits : Unique αˣ where
   uniq a := Units.ext <| le_one_iff_eq_one.mp (le_of_mul_le_left a.mul_inv.le)
@@ -204,7 +202,7 @@ section CommMonoid
 variable [CommMonoid α]
 
 section PartialOrder
-variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
+variable [PartialOrder α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by

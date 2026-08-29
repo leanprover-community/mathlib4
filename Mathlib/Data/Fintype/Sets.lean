@@ -31,7 +31,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 
@@ -51,7 +51,6 @@ theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
 theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a ∈ s := by
   simp [toFinset]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Many `Fintype` instances for sets are defined using an extensionally equal `Finset`.
 Rewriting `s.toFinset` with `Set.toFinset_ofFinset` replaces the term with such a `Finset`. -/
 theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
@@ -135,9 +134,11 @@ theorem toFinset_union [Fintype (s ∪ t : Set _)] : (s ∪ t).toFinset = s.toFi
   simp
 
 @[simp]
-theorem toFinset_diff [Fintype (s \ t : Set _)] : (s \ t).toFinset = s.toFinset \ t.toFinset := by
+theorem toFinset_sdiff [Fintype (s \ t : Set _)] : (s \ t).toFinset = s.toFinset \ t.toFinset := by
   ext
   simp
+
+@[deprecated (since := "2026-06-03")] alias toFinset_diff := toFinset_sdiff
 
 open scoped symmDiff in
 @[simp]
@@ -174,10 +175,12 @@ theorem toFinset_eq_univ [Fintype α] [Fintype s] : s.toFinset = Finset.univ ↔
   rw [← coe_inj, coe_toFinset, coe_univ]
 
 @[simp]
-theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
+theorem toFinset_ofPred [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
     Set.toFinset {x | p x} = Finset.univ.filter p := by
   ext
   simp
+
+@[deprecated (since := "2026-07-09")] alias toFinset_setOf := toFinset_ofPred
 
 theorem toFinset_ssubset_univ [Fintype α] {s : Set α} [Fintype s] :
     s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by simp
@@ -259,7 +262,7 @@ instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fint
   Fintype.subtype (univ.filter p) (by simp)
 
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
-@[implicit_reducible]
+@[instance_reducible]
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s
 

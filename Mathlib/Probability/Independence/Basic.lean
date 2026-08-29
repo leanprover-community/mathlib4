@@ -841,7 +841,6 @@ theorem iIndepFun.map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i}
     (hf : ∀ i, AEMeasurable (f i) μ) (h : iIndepFun f μ) :
     μ.map (fun ω i ↦ f i ω) = Measure.pi (fun i ↦ μ.map (f i)) := by
-  classical
   have := h.isProbabilityMeasure
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at h
   have h₀ {s : ∀ i, Set (β i)} (hm : ∀ (i : ι), MeasurableSet (s i)) :
@@ -879,8 +878,7 @@ theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
   specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
     fun i ↦ by split_ifs with hiS <;> simp [hiS, hs]
   simp only [apply_ite, preimage_univ, measure_univ, Finset.prod_ite_mem, Finset.univ_inter,
-    Finset.prod_ite, Finset.filter_univ_mem, iInter_ite, iInter_univ, inter_univ, h,
-    Measure.pi_pi] at h₀
+    iInter_ite, iInter_univ, inter_univ, h, Measure.pi_pi] at h₀
   rw [h₀.2, ← h₀.1]
 
 variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
@@ -1036,7 +1034,7 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
   Kernel.iIndepSet.iIndepFun_indicator hs
 
 lemma Indep.indicator_indepFun {m : MeasurableSpace Ω} {M 𝓧 : Type*}
-    [Zero M] [MeasurableSpace M] (c : M) [NeZero c] {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
+    [Zero M] [MeasurableSpace M] (c : M) {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
     {X : Ω → 𝓧} (hA : MeasurableSet[m] A) (h : Indep m (m𝓧.comap X) μ) :
     (A.indicator (fun _ ↦ c)) ⟂ᵢ[μ] X :=
   Kernel.Indep.indicator_const_indepFun c hA h

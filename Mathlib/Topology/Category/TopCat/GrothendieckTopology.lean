@@ -66,9 +66,7 @@ def precoverage : Precoverage TopCat.{u} :=
     Types.jointlySurjectivePrecoverage.comap (forget TopCat) ⊓ isOpenEmbedding.precoverage
   deriving Precoverage.HasIsos, Precoverage.IsStableUnderComposition
 
-#adaptation_note /-- nightly-2026-03-04: Strange we need `noncomputable` for a `Prop` instance.
-Will be fixed by https://github.com/leanprover/lean4/pull/12789 -/
-deriving noncomputable instance Precoverage.IsStableUnderBaseChange for precoverage
+deriving instance Precoverage.IsStableUnderBaseChange for precoverage
 
 /-- The Grothendieck topology on the category of topological spaces is the topology given by
 jointly surjective open embeddings. -/

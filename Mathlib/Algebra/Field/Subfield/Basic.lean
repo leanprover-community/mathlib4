@@ -424,7 +424,7 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (h
 
 theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : K} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
@@ -529,7 +529,7 @@ variable {s t : Subfield K}
 /-- Makes the identity isomorphism from a proof two subfields of a multiplicative
     monoid are equal. -/
 def subfieldCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| SetLike.ext'_iff.1 h with
+  { Equiv.Set.congr <| SetLike.ext'_iff.1 h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
@@ -556,7 +556,7 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ 
   prod_mem h
 
 instance toAlgebra : Algebra s K :=
-  fast_instance% RingHom.toAlgebra s.subtype
+  inferInstance
 
 theorem algebraMap_ofSubfield : algebraMap s K = s.subtype :=
   rfl

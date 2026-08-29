@@ -85,7 +85,7 @@ variable [CompleteLattice α] {P Q : Partition s}
 
 instance {s : α} : SetLike (Partition s) α where
   coe := Partition.parts
-  coe_injective' p p' h := by cases p; cases p'; simpa using h
+  coe_injective p p' h := by cases p; cases p'; simpa using h
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe {s : α} (P : Partition s) : Set α := P
@@ -152,19 +152,19 @@ lemma mem_copy_iff (hst : s = t) : x ∈ P.copy hst ↔ x ∈ P := Iff.rfl
 /-- The natural equivalence between the subtype of parts and the subtype of parts of a copy. -/
 @[simps!]
 def partscopyEquiv (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
-  Equiv.setCongr rfl
+  Equiv.Set.congr rfl
 
 /-- A constructor for `Partition s` that removes `⊥` from the set of parts. -/
 @[simps]
-def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) : Partition s where
+def removeBot (P : Set α) (indep : _root_.sSupIndep P) (hsSup : sSup P = s) : Partition s where
   parts := P \ {⊥}
-  sSupIndep' := indep.mono diff_subset
+  sSupIndep' := indep.mono sdiff_subset
   bot_notMem' := by simp
-  sSup_eq' := by simp [← sSup_eq]
+  sSup_eq' := by simp [← hsSup]
 
 @[simp]
-lemma mem_removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
-    x ∈ removeBot P indep sSup_eq ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
+lemma mem_removeBot (P : Set α) (indep : _root_.sSupIndep P) (hsSup : sSup P = s) :
+    x ∈ removeBot P indep hsSup ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
 
 @[simp]
 lemma notMem_of_bot (P : Partition (⊥ : α)) (x : α) : x ∉ P := by
@@ -528,7 +528,7 @@ lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
     · exact h.choose_spec.trans <| h_mem h.choose h.choose_spec.right_mem
     push Not at h
     exact P.rep_rel (P.partOf_mem ha) (P.mem_partOf ha)
-  · simp_rw [hfdef, dif_pos hab.left_mem, dif_pos hab.right_mem]
+  · simp_rw [hfdef, dite_eq_left hab.left_mem, dite_eq_left hab.right_mem]
     split_ifs with h₁ h₂ h₂
     · exact h_eq _ _ <| (hab.symm.trans h₁.choose_spec).symm.trans h₂.choose_spec
     · exact h₂ ⟨_, hab.symm.trans h₁.choose_spec⟩ |>.elim
