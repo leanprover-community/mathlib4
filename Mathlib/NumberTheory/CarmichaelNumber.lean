@@ -83,11 +83,10 @@ theorem IsCarmichael.odd (h : n.IsCarmichael) : Odd n := by
   match n with
   | 0 => exact (not_isCarmichael_zero h).elim
   | n + 1 =>
-    rw [odd_add_one, not_odd_iff_even]
     have H := h.zmod_unit_pow_sub_one (-1)
     rw [Nat.add_one_sub_one, neg_one_pow_eq_ite] at H
     contrapose! H
-    rw [ite_eq_right H, Ne, Units.ext_iff, Units.val_one, Units.coe_neg_one,
+    rw [ite_eq_right (by grind), ne_eq, Units.ext_iff, Units.val_one, Units.coe_neg_one,
       ZMod.neg_one_eq_one_iff]
     grind [h.two_lt]
 
@@ -97,19 +96,17 @@ theorem IsCarmichael.squarefree (h : n.IsCarmichael) : Squarefree n := by
   have : NeZero (p ^ 2) := ⟨pow_ne_zero 2 hp.ne_zero⟩
   have : NeZero n := ⟨by grind [h.two_lt]⟩
   have p_odd : Odd p := h.odd.of_dvd_nat <| dvd_trans (p.dvd_mul_left p) p_dvd
-  have h_cyclic : IsCyclic (ZMod (p ^ 2))ˣ :=
+  obtain ⟨r, hr⟩ := isCyclic_iff_exists_orderOf_eq_natCard.mp <|
     (ZMod.isCyclic_units_iff_of_odd p_odd.pow).mpr ⟨p, 2, hp, p_odd, rfl⟩
-  obtain ⟨r, hr⟩ := isCyclic_iff_exists_orderOf_eq_natCard.mp h_cyclic
   rw [card_eq_fintype_card, ZMod.card_units_eq_totient] at hr
   obtain ⟨s, hs⟩ := ZMod.unitsMap_surjective (pow_two p ▸ p_dvd) r
-  have r_pow : r ^ (n - 1) = 1 := by rw [← hs, ← map_pow, h.zmod_unit_pow_sub_one, map_one]
   have phi_dvd : φ (p ^ 2) ∣ n - 1 := by
-    rw [← hr]
-    exact orderOf_dvd_of_pow_eq_one r_pow
-  have p_dvd_sub : p ∣ n - 1 := dvd_trans (by simp [totient_prime_pow_succ hp 1]) phi_dvd
+    rw [← hr, ← hs]
+    apply orderOf_dvd_of_pow_eq_one
+    rw [← map_pow, h.zmod_unit_pow_sub_one, map_one]
   have p_dvd_n : p ∣ n := dvd_trans (dvd_mul_left p p) p_dvd
-  have := Nat.dvd_sub_iff_right (show 1 ≤ n by grind [h.two_lt]) p_dvd_n |>.mp p_dvd_sub
-  exact hp.not_dvd_one this
+  refine hp.not_dvd_one <| dvd_sub_iff_right (by grind [h.two_lt]) p_dvd_n |>.mp ?_
+  exact dvd_trans (by simp [totient_prime_pow_succ hp 1]) phi_dvd
 
 theorem IsCarmichael.carmichael_dvd_sub_one (h : n.IsCarmichael) : carmichael n ∣ n - 1 := by
   have : NeZero n := ⟨by grind [h.two_lt]⟩
@@ -129,10 +126,9 @@ theorem isCarmichael_iff_korselt :
     n.IsCarmichael ↔ 2 < n ∧ ¬n.Prime ∧ Squarefree n ∧ ∀ p, p.Prime → p ∣ n → p - 1 ∣ n - 1 := by
   refine ⟨fun h ↦ ⟨h.two_lt, h.not_prime, h.squarefree, fun _ ↦ h.prime_sub_one_dvd⟩, ?_⟩
   intro ⟨hn, hn_prime, hn_squarefree, h_dvd⟩
-  have : NeZero n := ⟨by lia⟩
   refine ⟨hn, hn_prime, fun b hb ↦ ?_⟩
   obtain ⟨d, hd⟩ : carmichael n ∣ n - 1 := by
-    rw [carmichael_factorization]
+    rw [@carmichael_factorization n ⟨by lia⟩]
     refine Finset.lcm_dvd fun p hp_mem ↦ ?_
     rw [mem_primeFactors] at hp_mem
     rw [factorization_eq_one_of_squarefree hn_squarefree hp_mem.1 hp_mem.2.1, pow_one,
