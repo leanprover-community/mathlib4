@@ -9,7 +9,14 @@ public import Mathlib.CategoryTheory.Presentable.Comma
 public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 
 /-!
-# Accessible functor satisfy the solution set condition
+# Accessible functors satisfy the solution set condition
+
+If `F : C ⥤ D` is an accessible functor between accessible categories,
+then `F` satisfies the solution set condition (this is corollary 2.45 in
+the book by Adámek and Rosický).
+
+## References
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
 
@@ -21,7 +28,6 @@ namespace CategoryTheory
 
 variable {C D : Type*} [Category* C] [Category* D]
 
-attribute [local instance] IsFiltered.nonempty in
 lemma SolutionSetCondition.of_isCardinalAccessible
     [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
     (F : C ⥤ D) [Functor.IsAccessible.{w} F] :
@@ -33,6 +39,7 @@ lemma SolutionSetCondition.of_isCardinalAccessible
   refine ⟨ι, fun i ↦ (X₀ i).right, fun i ↦ (X₀ i).hom, fun X g ↦ ?_⟩
   let E := CostructuredArrow (isCardinalPresentable _ κ).ι (StructuredArrow.mk g)
   have : IsFiltered E := isFiltered_of_isCardinalFiltered _ κ
+  have : Nonempty E := IsFiltered.nonempty
   let γ : E := Classical.arbitrary _
   obtain ⟨_, ⟨i⟩, ⟨e⟩⟩ := h.le _ γ.left.property
   exact ⟨i, _, StructuredArrow.w (e.inv ≫ γ.hom)⟩

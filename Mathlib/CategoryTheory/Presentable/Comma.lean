@@ -7,11 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Comma
-public import Mathlib.CategoryTheory.Presentable.Dense
 public import Mathlib.CategoryTheory.Presentable.IsDiscrete
-public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 public import Mathlib.CategoryTheory.Presentable.Uniformization
-
 
 /-!
 # Comma categories are accessible
@@ -57,13 +54,10 @@ namespace CategoryTheory
 open Limits
 
 variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
-  (F₁ : C₁ ⥤ D) (F₂ : C₂ ⥤ D)
 
 namespace Comma
 
-section
-
-variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
+variable (F₁ : C₁ ⥤ D) (F₂ : C₂ ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 section
 
@@ -464,8 +458,6 @@ instance : (Comma.snd F₁ F₂).PreservesCardinalPresentable κ where
   le_inverseImage_isCardinalPresentable f hf := by
     simp only [Comma.isCardinalPresentable_iff] at hf
     tauto
-
-end
 
 section
 
