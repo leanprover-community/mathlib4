@@ -303,12 +303,14 @@ theorem map_apply_ofVector (f : P1 →ᵃ[R] P2) (v : V1) :
 theorem map_id : map (AffineMap.id R P) = .id :=
   hom_ext <| by simp
 
+theorem map_injective' : Function.Injective (map (R := R) (P1 := P1) (P2 := P2)) := by
+  intro f g h
+  ext p
+  simpa [ofPoint_injective.eq_iff] using congr($h (ofPoint p))
+
 @[simp]
-theorem map_eq_id_iff {f : P →ᵃ[R] P} : map f = .id ↔ f = .id .. where
-  mp h := by
-    ext p
-    simpa [ofPoint_injective.eq_iff] using congr($h (ofPoint p))
-  mpr h := by simp [h]
+theorem map_eq_id_iff {f : P →ᵃ[R] P} : map f = .id ↔ f = .id .. := by
+  rw [← map_id, map_injective'.eq_iff]
 
 theorem map_comp (f : P2 →ᵃ[R] P3) (g : P1 →ᵃ[R] P2) : map (f.comp g) = map f ∘ₗ map g :=
   hom_ext <| by simp
