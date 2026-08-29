@@ -24,7 +24,7 @@ namespace Inclusion
 namespace IntervalDyadicReal
 
 /-- The precision of dyadic approximations, defaulting to zero. -/
-@[inclusionParam]
+@[inclusion_param]
 def precParam : InclusionParamDecl where
   name := `prec
   type := q(Nat)
@@ -48,7 +48,7 @@ def rat (x : ℚ) (prec : ℕ) : Interval Dyadic :=
   let upper := if lower.toRat = x then lower else lower + Dyadic.step prec
   Interval.Icc lower upper
 
-@[inclusionOp interval_dyadic_real]
+@[inclusion_op interval_dyadic_real]
 theorem ratCast_mem (q : ℚ) (prec : ℕ) : (q : ℝ) ∈ rat q prec := by
   apply Interval.mem_map_Icc Dyadic.toReal
   · exact Rat.cast_le.mpr Rat.toRat_toDyadic_le
@@ -85,7 +85,7 @@ def scientific (m : ℕ) (s : Bool) (e prec : ℕ) : Interval Dyadic :=
   else
     Interval.singleton (m * (10 : Dyadic) ^ e)
 
-@[inclusionOp interval_dyadic_real]
+@[inclusion_op interval_dyadic_real]
 theorem scientific_mem (m : ℕ) (s : Bool) (e prec : ℕ) :
     (OfScientific.ofScientific (α := ℝ) m s e) ∈ scientific m s e prec := by
   cases s

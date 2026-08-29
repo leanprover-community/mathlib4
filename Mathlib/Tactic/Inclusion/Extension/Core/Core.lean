@@ -20,11 +20,11 @@ open Lean Meta
 
 namespace Inclusion
 
-attribute [inclusionOp core] IntervalBool.not_mem IntervalBool.and_mem IntervalBool.or_mem
-attribute [hypothesisOp core] ToSet.mem_of_eq_of_mem ToSet.mem_of_mem_of_eq
+attribute [inclusion_op core] IntervalBool.not_mem IntervalBool.and_mem IntervalBool.or_mem
+attribute [hypothesis_op core] ToSet.mem_of_eq_of_mem ToSet.mem_of_mem_of_eq
 
 /-- `HypothesisExt` for direct `ToSet` instance membership hypotheses. -/
-@[hypothesisExt _ ∈ _]
+@[hypothesis_ext _ ∈ _]
 def instMembershipHyp : HypothesisExt where
   family := `core
   derive h := do
@@ -35,7 +35,7 @@ def instMembershipHyp : HypothesisExt where
     addInclusionHyp iVar.iExpr ⟨set, h⟩
 
 /-- `HypothesisExt` for conjunction hypotheses. -/
-@[hypothesisExt _ ∧ _]
+@[hypothesis_ext _ ∧ _]
 def andHyp : HypothesisExt where
   family := `core
   derive h := do

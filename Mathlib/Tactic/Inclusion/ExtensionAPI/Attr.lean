@@ -19,8 +19,8 @@ open Lean Meta Elab Term DiscrTreeExt
 
 namespace Inclusion
 
-/-- Syntax for registering an inclusion parameter using the `inclusionParam` attribute. -/
-syntax (name := inclusionParamAttr) "inclusionParam" : attr
+/-- Syntax for registering an inclusion parameter using the `inclusion_param` attribute. -/
+syntax (name := inclusionParamAttr) "inclusion_param" : attr
 
 /-- Validate an inclusion parameter declaration. -/
 private def validateInclusionParamDecl (decl : InclusionParamDecl) : MetaM Unit := do
@@ -34,9 +34,9 @@ private def validateInclusionParamDecl (decl : InclusionParamDecl) : MetaM Unit 
 /-- Add the inclusion parameter declared by `declName`. -/
 def addInclusionParam (declName : Name) (kind : AttributeKind) : AttrM Unit := do
   let env ← getEnv
-  ensureAttrDeclIsMeta `inclusionParam declName kind
+  ensureAttrDeclIsMeta `inclusion_param declName kind
   unless (env.getModuleIdxFor? declName).isNone do
-    throwAttrDeclInImportedModule `inclusionParam declName
+    throwAttrDeclInImportedModule `inclusion_param declName
   if (IR.getSorryDep env declName).isSome then return
   let decl ← mkInclusionParamDecl declName
   MetaM.run' <| validateInclusionParamDecl decl
@@ -52,8 +52,8 @@ initialize registerBuiltinAttribute {
   add := fun declName _ kind => addInclusionParam declName kind
 }
 
-/-- Syntax for declaring an inclusion extension using the `inclusionExt` attribute. -/
-syntax (name := inclusionExtAttr) "inclusionExt" term,+ : attr
+/-- Syntax for declaring an inclusion extension using the `inclusion_ext` attribute. -/
+syntax (name := inclusionExtAttr) "inclusion_ext" term,+ : attr
 
 /-- Add the inclusion extension `declName` under `keys`. -/
 def addInclusionExt (declName : Name) (keys : Array (Array DiscrTree.Key))
@@ -67,11 +67,11 @@ initialize registerBuiltinAttribute {
   descr := "adds an inclusion extension"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
-    | `(attr| inclusionExt $es,*) => do
+    | `(attr| inclusion_ext $es,*) => do
       let env ← getEnv
-      ensureAttrDeclIsMeta `inclusionExt declName kind
+      ensureAttrDeclIsMeta `inclusion_ext declName kind
       unless (env.getModuleIdxFor? declName).isNone do
-        throwAttrDeclInImportedModule `inclusionExt declName
+        throwAttrDeclInImportedModule `inclusion_ext declName
       if (IR.getSorryDep env declName).isSome then return
       let keys ← elabExtKeys (es.getElems.map (·.raw))
       addInclusionExt declName keys kind
@@ -79,8 +79,8 @@ initialize registerBuiltinAttribute {
   erase := fun _ => throwError "Inclusion extensions cannot be erased by declaration"
 }
 
-/-- Syntax for declaring a hypothesis extension using the `hypothesisExt` attribute. -/
-syntax (name := hypothesisExtAttr) "hypothesisExt" term,+ : attr
+/-- Syntax for declaring a hypothesis extension using the `hypothesis_ext` attribute. -/
+syntax (name := hypothesisExtAttr) "hypothesis_ext" term,+ : attr
 
 /-- Add the hypothesis extension `declName` under `keys`. -/
 def addHypothesisExt (declName : Name) (keys : Array (Array DiscrTree.Key))
@@ -89,17 +89,17 @@ def addHypothesisExt (declName : Name) (keys : Array (Array DiscrTree.Key))
   let family ← getInclusionFamily ext.family
   family.hypothesisExt.add ((keys, declName), ext) kind
 
-/-- Register the `hypothesisExt` attribute. -/
+/-- Register the `hypothesis_ext` attribute. -/
 initialize registerBuiltinAttribute {
   name := `hypothesisExtAttr
   descr := "adds a hypothesis extension"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
-    | `(attr| hypothesisExt $es,*) => do
+    | `(attr| hypothesis_ext $es,*) => do
       let env ← getEnv
-      ensureAttrDeclIsMeta `hypothesisExt declName kind
+      ensureAttrDeclIsMeta `hypothesis_ext declName kind
       unless (env.getModuleIdxFor? declName).isNone do
-        throwAttrDeclInImportedModule `hypothesisExt declName
+        throwAttrDeclInImportedModule `hypothesis_ext declName
       if (IR.getSorryDep env declName).isSome then return
       let keys ← elabExtKeys (es.getElems.map (·.raw))
       addHypothesisExt declName keys kind
@@ -245,16 +245,16 @@ private def addInclusionOp (theoremName familyName : Name) (priority : Nat)
   addAndCompile (.defnDecl decl) (markMeta := true)
   addInclusionExt extName #[path] kind
 
-/-- Syntax for registering an inclusion extension from a theorem using the `inclusionOp`
+/-- Syntax for registering an inclusion extension from a theorem using the `inclusion_op`
 attribute. -/
-syntax (name := inclusionOpAttr) "inclusionOp " ident (prio)? : attr
+syntax (name := inclusionOpAttr) "inclusion_op " ident (prio)? : attr
 
 initialize registerBuiltinAttribute {
   name := `inclusionOpAttr
   descr := "adds an inclusion operation"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
-    | `(attr| inclusionOp $familyName:ident $[$_prio:prio]?) => do
+    | `(attr| inclusion_op $familyName:ident $[$_prio:prio]?) => do
       if (IR.getSorryDep (← getEnv) declName).isSome then return
       addInclusionOp declName familyName.getId (← getAttrParamOptPrio stx[2]) kind
     | _ => throwUnsupportedSyntax
@@ -307,16 +307,16 @@ private def addHypothesisOp (theoremName familyName : Name) (priority : Nat)
   addAndCompile (.defnDecl decl) (markMeta := true)
   addHypothesisExt extName #[path] kind
 
-/-- Syntax for registering a hypothesis extension from a theorem using the `hypothesisOp`
+/-- Syntax for registering a hypothesis extension from a theorem using the `hypothesis_op`
 attribute. -/
-syntax (name := hypothesisOpAttr) "hypothesisOp " ident (prio)? : attr
+syntax (name := hypothesisOpAttr) "hypothesis_op " ident (prio)? : attr
 
 initialize registerBuiltinAttribute {
   name := `hypothesisOpAttr
   descr := "adds an inclusion-hypothesis operation"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
-    | `(attr| hypothesisOp $familyName:ident $[$_prio:prio]?) => do
+    | `(attr| hypothesis_op $familyName:ident $[$_prio:prio]?) => do
       if (IR.getSorryDep (← getEnv) declName).isSome then return
       addHypothesisOp declName familyName.getId (← getAttrParamOptPrio stx[2]) kind
     | _ => throwUnsupportedSyntax

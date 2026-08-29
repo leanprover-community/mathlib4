@@ -59,7 +59,7 @@ def binarySplit (n : ℕ) : Cover (Interval Dyadic) ℝ where
 
 /-- The depth to which bounded dyadic intervals are repeatedly bisected. A depth of
 `n` produces `2 ^ n` pieces. -/
-@[inclusionParam]
+@[inclusion_param]
 meta def binarySplitParam : InclusionParamDecl where
   name := `binSplit
   type := q(ℕ)
