@@ -132,8 +132,8 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
         some default
   | _ => none
 
-/-- Whether the tactic syntax `stx` enables the `native` option. This may have false negatives for
-`tac (config := term)` syntax if `term` is not of the form `{..., native := true, ...}`. -/
+/-- Whether the config item `stx` enables the `native` option. This may have false negatives for
+`(config := term)` syntax if `term` is not of the form `{..., native := true, ...}`. -/
 def usesNativeConfig : Syntax → Bool
   | `(Parser.Term.configItem|   +native)
   | `(Parser.Tactic.configItem| +native) => true
