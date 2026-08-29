@@ -683,7 +683,7 @@ variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
 This is the affine version of `LinearEquiv.ofEq`. -/
 @[simps linear]
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
-  toEquiv := Equiv.setCongr <| congr_arg _ h
+  toEquiv := Equiv.Set.congr <| congr_arg _ h
   linear := .ofEq _ _ <| congr_arg _ h
   map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
 
