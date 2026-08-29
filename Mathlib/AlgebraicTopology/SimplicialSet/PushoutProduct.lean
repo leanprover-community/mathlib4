@@ -22,6 +22,7 @@ universe v u
 namespace SSet
 
 open CategoryTheory MonoidalCategory
+open scoped MonoidalCategory.Arrow
 
 variable {X Y : SSet.{u}} (S : X.Subcomplex) (T : Y.Subcomplex)
 
