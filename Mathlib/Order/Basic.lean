@@ -527,11 +527,64 @@ theorem Pi.compl_apply [∀ i, Compl (π i)] (x : ∀ i, π i) (i : ι) :
     xᶜ i = (x i)ᶜ :=
   rfl
 
-instance Std.Irrefl.compl (r : α → α → Prop) [Std.Irrefl r] : Std.Refl rᶜ :=
-  ⟨@irrefl α r _⟩
+section
 
-instance Std.Refl.compl (r : α → α → Prop) [Std.Refl r] : Std.Irrefl rᶜ :=
-  ⟨fun a ↦ not_not_intro (refl a)⟩
+variable (r s : α → α → Prop)
+
+protected instance Std.Symm.compl [Std.Symm r] : Std.Symm rᶜ where
+  symm a b hr hr' := hr <| symm b a hr'
+
+@[deprecated (since := "2026-06-10")] alias Symmetric.compl := Std.Symm.compl
+
+protected instance Std.Refl.compl [Std.Refl r] : Std.Irrefl rᶜ where
+  irrefl a := not_not_intro <| refl a
+
+protected instance Std.Irrefl.compl [Std.Irrefl r] : Std.Refl rᶜ where
+  refl := irrefl
+
+instance [Std.Asymm r] : Std.Total rᶜ :=
+  Std.Asymm.total_not
+
+instance [Std.Total r] : Std.Asymm rᶜ where
+  asymm a b := total_of r a b |>.elim
+
+instance [Std.Antisymm r] : Std.Trichotomous rᶜ where
+  trichotomous _ _ hab hba := antisymm_of r (by_contra hab) (by_contra hba)
+
+instance [Std.Trichotomous r] : Std.Antisymm rᶜ where
+  antisymm := Std.Trichotomous.trichotomous
+
+@[simp]
+theorem Std.Refl.compl_iff : Std.Refl rᶜ ↔ Std.Irrefl r :=
+  have : rᶜᶜ = r := by ext; exact not_not
+  ⟨fun _ ↦ this ▸ inferInstance, fun _ ↦ inferInstance⟩
+
+@[simp]
+theorem Std.Irrefl.compl_iff : Std.Irrefl rᶜ ↔ Std.Refl r :=
+  have : rᶜᶜ = r := by ext; exact not_not
+  ⟨fun _ ↦ this ▸ inferInstance, fun _ ↦ inferInstance⟩
+
+@[simp]
+theorem Std.Total.compl_iff : Std.Total rᶜ ↔ Std.Asymm r :=
+  have : rᶜᶜ = r := by ext; exact not_not
+  ⟨fun _ ↦ this ▸ inferInstance, fun _ ↦ inferInstance⟩
+
+@[simp]
+theorem Std.Asymm.compl_iff : Std.Asymm rᶜ ↔ Std.Total r :=
+  have : rᶜᶜ = r := by ext; exact not_not
+  ⟨fun _ ↦ this ▸ inferInstance, fun _ ↦ inferInstance⟩
+
+@[simp]
+theorem Std.Trichotomous.compl_iff : Std.Trichotomous rᶜ ↔ Std.Antisymm r :=
+  have : rᶜᶜ = r := by ext; exact not_not
+  ⟨fun _ ↦ this ▸ inferInstance, fun _ ↦ inferInstance⟩
+
+@[simp]
+theorem Std.Antisymm.compl_iff : Std.Antisymm rᶜ ↔ Std.Trichotomous r :=
+  have : rᶜᶜ = r := by ext; exact not_not
+  ⟨fun _ ↦ this ▸ inferInstance, fun _ ↦ inferInstance⟩
+
+end
 
 theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by simp [compl]
 theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by simp [compl]
