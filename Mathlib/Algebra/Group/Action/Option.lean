@@ -20,7 +20,7 @@ multiplication is defined by `a • some b = some (a • b)` and `a • none = n
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

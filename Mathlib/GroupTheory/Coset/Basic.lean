@@ -144,11 +144,11 @@ variable [Group α] {s : Set α} {x : α}
 
 @[to_additive mem_leftAddCoset_iff]
 theorem mem_leftCoset_iff (a : α) : x ∈ a • s ↔ a⁻¹ * x ∈ s :=
-  Iff.intro (fun ⟨b, hb, Eq⟩ => by simp [Eq.symm, hb]) fun h => ⟨a⁻¹ * x, h, by simp⟩
+  Iff.intro (fun ⟨b, hb, h⟩ => by simp [h.symm, hb]) fun h => ⟨a⁻¹ * x, h, by simp⟩
 
 @[to_additive mem_rightAddCoset_iff]
 theorem mem_rightCoset_iff (a : α) : x ∈ op a • s ↔ x * a⁻¹ ∈ s :=
-  Iff.intro (fun ⟨b, hb, Eq⟩ => by simp [Eq.symm, hb]) fun h => ⟨x * a⁻¹, h, by simp⟩
+  Iff.intro (fun ⟨b, hb, h⟩ => by simp [h.symm, hb]) fun h => ⟨x * a⁻¹, h, by simp⟩
 
 end CosetGroup
 
@@ -294,7 +294,7 @@ variable {s} {a b : α}
 theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
     { x : α | (x : α ⧸ s) = g } = g • s :=
   Set.ext fun z => by
-    rw [mem_leftCoset_iff, Set.mem_setOf_eq, eq_comm, QuotientGroup.eq, SetLike.mem_coe]
+    rw [mem_leftCoset_iff, Set.mem_ofPred_eq, eq_comm, QuotientGroup.eq, SetLike.mem_coe]
 
 open MulAction in
 @[to_additive]
@@ -473,7 +473,7 @@ variable [Group α] {H : Type*} [Group H]
 /-- An equivalence between any non-empty fiber of an `AddMonoidHom` and its kernel. -/]
 def fiberEquivKer (f : α →* H) (a : α) : f ⁻¹' {f a} ≃ f.ker :=
   .trans
-    (Equiv.setCongr <| Set.ext fun _ => by
+    (Equiv.Set.congr <| Set.ext fun _ => by
       rw [mem_preimage, mem_singleton_iff, mem_smul_set_iff_inv_smul_mem, SetLike.mem_coe, mem_ker,
         smul_eq_mul, map_mul, map_inv, inv_mul_eq_one, eq_comm])
     (Subgroup.leftCosetEquivSubgroup a)

@@ -45,9 +45,6 @@ def PreZeroHypercover.isLimitSigmaOfIsColimitEquiv (E : PreZeroHypercover.{w} S)
     [PreservesLimit (Discrete.functor fun i ↦ op (E.toPreOneHypercover.Y' i)) F] :
     IsLimit ((E.sigmaOfIsColimit hc).toPreOneHypercover.multifork F) ≃
       IsLimit (E.toPreOneHypercover.multifork F) := by
-  have : HasPullback (Cofan.IsColimit.desc hc E.f) (Cofan.IsColimit.desc hc E.f) :=
-    inferInstanceAs <| HasPullback
-      ((E.sigmaOfIsColimit hc).f ⟨⟩) ((E.sigmaOfIsColimit hc).f ⟨⟩)
   let c' : Cofan E.toPreOneHypercover.Y' :=
     Cofan.mk
       ((E.sigmaOfIsColimit hc).toPreOneHypercover.Y (i₁ := ⟨⟩) (i₂ := ⟨⟩) ⟨⟩)
@@ -86,7 +83,8 @@ lemma Presieve.isSheafFor_sigmaDesc_iff {ι : Type*} {X : ι → C} (f : ∀ i, 
     [∀ i, HasPullback (f i) (Cofan.IsColimit.desc hc f)]
     (F : Cᵒᵖ ⥤ Type*)
     [PreservesLimit (Discrete.functor <| fun i ↦ op (X i)) F]
-    [PreservesLimit (Discrete.functor fun (ij : ι × ι) ↦ op (pullback (f ij.1) (f ij.2))) F] :
+    [PreservesLimit (Discrete.functor fun (ij : ι × ι) ↦
+      op (Limits.pullback (f ij.1) (f ij.2))) F] :
     Presieve.IsSheafFor F (.singleton <| Cofan.IsColimit.desc hc f) ↔
       Presieve.IsSheafFor F (.ofArrows X f) := by
   let E := PreZeroHypercover.mk _ _ f

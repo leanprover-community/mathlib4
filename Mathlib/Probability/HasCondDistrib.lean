@@ -49,7 +49,7 @@ lemma HasCondDistrib.aemeasurable_fst (h : HasCondDistrib Y X κ P) :
 lemma HasCondDistrib.aemeasurable_snd (h : HasCondDistrib Y X κ P) :
     AEMeasurable Y P := h.aemeasurable.snd
 
-lemma HasLaw.prodMk_of_hasCondDistrib {Q : Measure 𝓧} [IsSFiniteKernel κ]
+lemma HasLaw.prodMk_of_hasCondDistrib {Q : Measure 𝓧}
     (h1 : HasLaw X Q P) (h2 : HasCondDistrib Y X κ P) :
     HasLaw (fun ω ↦ (X ω, Y ω)) (Q ⊗ₘ κ) P := by rwa [← h1.map_eq]
 
@@ -60,7 +60,7 @@ lemma HasCondDistrib.hasLaw_of_const [IsProbabilityMeasure P] {Q : Measure 𝓨}
     have h_snd : (P.map (fun ω ↦ (X ω, Y ω))).snd = Q := by
       rw [h.map_eq, Measure.snd_compProd]
       simp [Measure.map_apply_of_aemeasurable h.aemeasurable_fst]
-    rwa [Measure.snd_map_prodMk₀ h.aemeasurable_fst] at h_snd
+    rwa [Measure.snd_map_prodMk₀ h.aemeasurable_fst (by fun_prop)] at h_snd
 
 variable [SFinite P] [IsSFiniteKernel κ]
 

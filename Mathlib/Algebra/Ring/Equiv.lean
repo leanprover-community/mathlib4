@@ -537,6 +537,9 @@ theorem piCongrLeft'_symm {R : Type*} [NonUnitalNonAssocSemiring R] (e : α ≃ 
     (RingEquiv.piCongrLeft' (fun _ => R) e).symm = RingEquiv.piCongrLeft' _ e.symm := by
   simp only [piCongrLeft', RingEquiv.symm, MulEquiv.symm, Equiv.piCongrLeft'_symm]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Transport dependent functions through an equivalence of the base space.
 
 This is `Equiv.piCongrLeft` as a `RingEquiv`. -/
@@ -893,10 +896,6 @@ def ofNonUnitalRingHom (hom : R →ₙ+* S) (inv : S →ₙ+* R)
 
 attribute [simp] ofNonUnitalRingHom_apply
 
-@[deprecated (since := "2025-12-04")] alias ofHomInv' := ofNonUnitalRingHom
-@[deprecated (since := "2025-12-04")] alias ofHomInv'_apply := ofNonUnitalRingHom_apply
-@[deprecated (since := "2025-12-04")] alias ofHomInv'_symm_apply := ofNonUnitalRingHom_symm_apply
-
 @[simp]
 theorem symm_ofNonUnitalRingHom (f : R →ₙ+* S) (g : S →ₙ+* R) (h₁ h₂) :
     (ofNonUnitalRingHom f g h₁ h₂).symm = ofNonUnitalRingHom g f h₂ h₁ :=
@@ -919,10 +918,6 @@ def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
     right_inv := RingHom.ext_iff.1 h₁ }
 
 attribute [simp] ofRingHom_apply
-
-@[deprecated (since := "2025-12-04")] alias ofHomInv := ofRingHom
-@[deprecated (since := "2025-12-04")] alias ofHomInv_apply := ofRingHom_apply
-@[deprecated (since := "2025-12-04")] alias ofHomInv_symm_apply := ofRingHom_symm_apply
 
 theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
   rfl

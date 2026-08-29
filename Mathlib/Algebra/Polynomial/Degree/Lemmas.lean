@@ -23,7 +23,7 @@ noncomputable section
 
 open Polynomial
 
-open Finsupp Finset
+open Finset
 
 namespace Polynomial
 
@@ -33,7 +33,7 @@ variable {R : Type u} {S : Type v} {ι : Type w} {a b : R} {m n : ℕ}
 
 section Semiring
 
-variable [Semiring R] {p q r : R[X]}
+variable [Semiring R] {p q : R[X]}
 
 section Degree
 
