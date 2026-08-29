@@ -6,89 +6,50 @@ Authors: Sidharth Hariharan, Seewoo Lee
 module
 
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
+public import Mathlib.Analysis.Normed.Radial
 
-/-! # Radial Schwartz Functions
+/-!
+# Radial Schwartz functions
 
-This file defines the notion of a radial function, and uses it to define the submodule the Schwartz
-space consisting of radial functions. It proves that the Fourier transform is an involution on this
-submodule. It proves `FourierTransform`, `FourierPair`, `ContinuousFourier`, `FourierAdd` and
-`FourierSMul` instances (and the corresponding instances for 𝓕⁻) and `StarAddMonoid` and
-`StarModule` instances (where the module structure is over ℝ).
+This file defines the submodule of the Schwartz space `𝓢(E, F)` consisting of the radial functions.
+Since the Fourier transform of a radial function is again radial, this submodule is preserved by
+the Fourier transform. Moreover, a radial function is even, so on this submodule the Fourier
+transform agrees with its inverse and is therefore an involution. Consequently the space of radial
+Schwartz functions is a `StarModule ℝ` with the Fourier transform as star operation, and the
+decomposition into self-adjoint and skew-adjoint parts writes a radial Schwartz function as a sum
+of eigenfunctions of the Fourier transform with eigenvalues `1` and `-1`.
 
-This file was written as part of the [Sphere Packing Project](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean).
+## Main definitions
+
+* `RadialSchwartzMap`: the submodule of `𝓢(E, F)` consisting of the radial Schwartz functions.
+* `RadialSchwartzMap.fourierTransformCLM`: the Fourier transform as a continuous linear
+  endomorphism of the space of radial Schwartz functions.
+
+## Main statements
+
+* `Function.IsRadial.fourier`: the Fourier transform of a radial function is radial.
+* `RadialSchwartzMap.fourier_apply_apply`: the Fourier transform is an involution on radial
+  Schwartz functions.
+* `RadialSchwartzMap.selfAdjointPart_eq` and `RadialSchwartzMap.skewAdjointPart_eq`: with respect
+  to the star operation given by the Fourier transform, the self-adjoint and skew-adjoint parts of
+  a radial Schwartz function `f` are `(f + 𝓕 f) / 2` and `(f - 𝓕 f) / 2`.
+
+## Notation
+
+* `𝓢₀[𝕜](E, F)`: the submodule `RadialSchwartzMap 𝕜 E F` of radial Schwartz functions, localized
+  in the `RadialSchwartzMap` namespace.
+
+## References
+
+This file was written as part of the
+[Sphere Packing Project](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean).
+
+## Tags
+
+Schwartz space, radial function, Fourier transform
 -/
 
 @[expose] public section
-
-namespace Function
-
-variable {D E F : Type*}
-
-/-- A function on a space with a norm is *radial* if factors through the norm. -/
-def IsRadial [Norm E] (f : E → F) : Prop := f.FactorsThrough (‖·‖ : E → ℝ)
-
-lemma isRadial_def [Norm E] (f : E → F) :
-    f.IsRadial ↔ ∀ {x y : E}, ‖x‖ = ‖y‖ → f x = f y := by
-  simp [IsRadial, Function.FactorsThrough]
-
-/-- The radial part of a function. If f is a radial function, then `f = f.radialPart ∘ ‖·‖`. -/
-noncomputable def radialPart [Norm E] [hF : Nonempty F] (f : E → F) : ℝ → F :=
-  Function.extend (‖·‖ : E → ℝ) f <| fun _ ↦ Classical.choice hF
-
-namespace IsRadial
-
-lemma eq_radialPart_comp_norm [Norm E] [Nonempty F] {f : E → F} (hf : f.IsRadial) :
-    f = f.radialPart ∘ (‖·‖ : E → ℝ) := by
-  ext x
-  rw [radialPart]
-  exact (hf.extend_apply _ _).symm
-
-lemma even [SeminormedAddGroup E] {f : E → F} (hf : f.IsRadial) : f.Even := fun x ↦ hf (norm_neg x)
-
-lemma comp_right [Norm D] {f : D → E} {g : E → F} (hf : f.IsRadial) :
-  (g ∘ f).IsRadial := by grind [isRadial_def]
-
-end IsRadial
-section Norm
-
-open IsRadial
-
-lemma RCLike.normSq_radial {K : Type*} [RCLike K] : IsRadial (RCLike.normSq (K := K)) := by
-  intro _ _ _
-  simpa [RCLike.normSq_eq_def']
-
-lemma Complex.normSq_radial : IsRadial (Complex.normSq) := RCLike.normSq_radial
-
-variable [Norm E]
-
-variable (E) in
-lemma _root_.Norm.isRadial : (‖·‖ : E → ℝ).IsRadial := by grind [isRadial_def]
-
-lemma comp_norm (g : ℝ → F) : (g ∘ (‖·‖ : E → ℝ)).IsRadial := by
-  simp [IsRadial.comp_right, Norm.isRadial]
-
-variable (E) in
-lemma isRadial_norm_sq : IsRadial (‖·‖ ^ 2 : E → ℝ) := by grind [isRadial_def]
-
-end Norm
-
-section Isometries
-
-lemma IsRadial.comp_isometry [SeminormedAddGroup E] {f : E → F} (hf : f.IsRadial) {g : E → E}
-    (hg : Isometry g) (hg₀ : g 0 = 0) : f ∘ g = f :=
-  funext fun x ↦ hf <| hg.norm_map_of_map_zero hg₀ x
-
-lemma isRadial_iff_comp_linearIsometryEquiv [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (f : E → F) : f.IsRadial ↔ ∀ g : E ≃ₗᵢ[ℝ] E, f ∘ g = f := by
-  refine ⟨fun hf g ↦ hf.comp_isometry g.isometry (by simp), fun h x y hxy ↦ ?_⟩
-  specialize h (ℝ ∙ (x - y))ᗮ.reflection
-  rw [← Submodule.reflection_sub hxy, ← f.comp_apply (g := (ℝ ∙ (x - y))ᗮ.reflection), h]
-
-end Isometries
-
-end Function
-
-section RadialSchwartz
 
 open Function SchwartzMap
 
@@ -332,5 +293,3 @@ lemma skewAdjointPart_eq : skewAdjointPart ℝ f = (1 / 2 : ℝ) • (f - 𝓕 f
 end RadialSchwartzMap
 
 end Star
-
-end RadialSchwartz
