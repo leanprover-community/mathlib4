@@ -394,28 +394,46 @@ theorem derivativeFinsupp_derivative (p : R[X]) :
   ext i : 1
   simp
 
-section IsAddTorsionFree
-variable [IsAddTorsionFree R]
+theorem mem_support_derivative_of_isSMulRegular (h : IsSMulRegular R (n + 1)) :
+    n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
+  suffices (n + 1) • p.coeff (n + 1) ≠ 0 ↔ p.coeff (n + 1) ≠ 0 by
+    rw [nsmul_eq_mul, (Nat.cast_commute _ _).eq] at this
+    simpa [coeff_derivative]
+  grind [IsSMulRegular.right_eq_zero_of_smul h]
 
-lemma mem_support_derivative : n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
-  suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
-    simpa only [mem_support_iff, coeff_derivative, Ne, Nat.cast_succ]
-  rw [← nsmul_eq_mul', smul_eq_zero]
-  simp only [Nat.succ_ne_zero, false_or]
-
-@[simp]
-lemma degree_derivative (hp : p.natDegree ≠ 0) : degree (derivative p) = ↑(natDegree p - 1) := by
+theorem degree_derivative_of_isSMulRegular [Nontrivial R] (hp : IsSMulRegular R p.natDegree) :
+    degree (derivative p) = ↑(natDegree p - 1) := by
   apply le_antisymm
   · rw [derivative_apply]
     apply le_trans (degree_sum_le _ _) (Finset.sup_le _)
     intro n hn
     apply le_trans (degree_C_mul_X_pow_le _ _) (WithBot.coe_le_coe.2 (tsub_le_tsub_right _ _))
     apply le_natDegree_of_mem_supp _ hn
-  · refine le_sup ?_
-    rw [mem_support_derivative, tsub_add_cancel_of_le (by lia), mem_support_iff,
-      coeff_natDegree, leadingCoeff_ne_zero]
+  · have hp1 : 1 ≤ p.natDegree := by
+      contrapose hp
+      simp_all [IsSMulRegular.not_zero]
+    refine Finset.le_sup ?_
+    rw [mem_support_derivative_of_isSMulRegular (by simpa [tsub_add_cancel_of_le hp1] using hp),
+      tsub_add_cancel_of_le hp1, mem_support_iff, coeff_natDegree, leadingCoeff_ne_zero]
     rintro rfl
-    simp at hp
+    simp [IsSMulRegular.not_zero] at hp
+
+theorem natDegree_derivative_of_isSMulRegular (hp : IsSMulRegular R p.natDegree) :
+    natDegree (derivative p) = natDegree p - 1 := by
+  nontriviality R
+  simp [natDegree, degree_derivative_of_isSMulRegular hp]
+
+section IsAddTorsionFree
+variable [IsAddTorsionFree R]
+
+lemma mem_support_derivative : n ∈ (derivative p).support ↔ n + 1 ∈ p.support :=
+  mem_support_derivative_of_isSMulRegular <| IsSMulRegular.of_ne_zero (by simp)
+
+@[simp]
+lemma degree_derivative (hp : p.natDegree ≠ 0) : degree (derivative p) = ↑(natDegree p - 1) := by
+  rcases subsingleton_or_nontrivial R
+  · simp [Polynomial.natDegree_of_subsingleton] at hp
+  exact degree_derivative_of_isSMulRegular <| IsSMulRegular.of_ne_zero hp
 
 @[simp]
 lemma natDegree_derivative (p : R[X]) : p.derivative.natDegree = p.natDegree - 1 := by
