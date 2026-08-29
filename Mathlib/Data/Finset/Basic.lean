@@ -632,7 +632,7 @@ open Finset
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ (s ∪ t : Finset α) :=
-  Equiv.setCongr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Equiv.Set.congr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.union_inl (h : Disjoint s t) (x : s) :
@@ -657,7 +657,7 @@ theorem Finset.union_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
 /-- The disjoint union of finsets is a sum -/
 def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ s.disjUnion t h :=
-  Equiv.setCongr (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Equiv.Set.congr (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :
