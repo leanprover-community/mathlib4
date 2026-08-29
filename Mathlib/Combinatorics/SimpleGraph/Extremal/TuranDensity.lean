@@ -190,7 +190,7 @@ fewer vertices cannot contain `H`. -/
 theorem card_le_turanDensityConst [Fintype W] (H : SimpleGraph W) {ε : ℝ} (hε_pos : 0 < ε)
     (h : H.turanDensity + ε ≤ 1) : card W ≤ turanDensityConst H ε := by
   classical
-  rw [turanDensityConst, dif_pos hε_pos, Nat.le_find_iff]
+  rw [turanDensityConst, dite_eq_left hε_pos, Nat.le_find_iff]
   refine fun m (hm : m < card W) h_find ↦ absurd hm ?_
   obtain ⟨f : Copy H ⊤⟩ := by
     apply h_find m le_rfl (G := ⊤)
