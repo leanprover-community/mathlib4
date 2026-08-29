@@ -43,7 +43,6 @@ abbrev homMk {X Y : SSetPair.{u}} (left : X.left ⟶ Y.left) (right : X.right �
     (w : left ≫ Y.hom = X.hom ≫ right := by cat_disch) : X ⟶ Y :=
   MorphismProperty.Arrow.Hom.mk (Arrow.homMk left right w) (by simp) (by simp)
 
---Arrow.Hom.mk
 end SSetPair
 
 /-- Given a subcomplex `A` of a simplical set `X`, this is the pair in `SSetPair`
