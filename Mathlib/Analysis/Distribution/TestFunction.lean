@@ -53,7 +53,7 @@ distributions, test function
 
 @[expose] public section
 
-open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
+open Function Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜]
@@ -79,7 +79,7 @@ scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" => TestFunction Ω 
 with compact support. -/
 scoped[Distributions] notation "𝓓(" Ω ", " F ")" => TestFunction Ω F ⊤
 
-open Distributions
+open scoped Distributions
 
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
@@ -126,6 +126,8 @@ protected theorem contDiff (f : 𝓓^{n}(Ω, F)) : ContDiff ℝ n f := map_contD
 protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f :=
   map_hasCompactSupport f
 protected theorem tsupport_subset (f : 𝓓^{n}(Ω, F)) : tsupport f ⊆ Ω := tsupport_map_subset f
+protected theorem zero_on_compl (f : 𝓓^{n}(Ω, F)) : EqOn f 0 Ωᶜ := fun _ hx ↦
+  image_eq_zero_of_notMem_tsupport fun h ↦ hx (f.tsupport_subset h)
 
 @[fun_prop]
 protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
@@ -257,7 +259,7 @@ limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
 Note that this has no reason to be a locally convex (or even vector space) topology. For this
 reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
 topology which is coarser than this original topology. See `TestFunction.topologicalSpace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
   ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
     coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
@@ -278,7 +280,7 @@ noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
     @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ t}
 
 noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
-  topologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
+  isTopologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
 
 noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
   IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
@@ -323,14 +325,10 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[deprecated (since := "2025-12-10")] alias ofSupportedInLM := ofSupportedInCLM
-
 @[simp] theorem coe_ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
     (K_sub_Ω : (K : Set E) ⊆ Ω) :
     (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
-
-@[deprecated (since := "2025-12-10")] alias coe_ofSupportedInLM := coe_ofSupportedInCLM
 
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
@@ -343,7 +341,7 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   simp_rw [← f.coe_restrictScalars ℝ]
   rw [continuous_iff_le_induced]
   have : @IsTopologicalAddGroup _ (induced (f.restrictScalars ℝ) t) _ :=
-    topologicalAddGroup_induced _
+    isTopologicalAddGroup_induced _
   have : @ContinuousSMul ℝ _ _ _ (induced (f.restrictScalars ℝ) t) := continuousSMul_induced _
   have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced (f.restrictScalars ℝ) t) := .induced _
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
@@ -414,6 +412,7 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarT
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
@@ -676,6 +675,11 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
   replace hφ := hφ.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
   rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
   exact B.memLp_of_bilin 1 f.memLp_top hφ
+
+protected theorem integrable_smul {f : E → F} {μ : Measure E}
+    (φ : 𝓓^{n}(Ω, ℝ)) (hf : LocallyIntegrableOn f Ω μ) :
+    Integrable (fun x ↦ φ x • f x) μ :=
+  φ.integrable_bilin (ContinuousLinearMap.lsmul ℝ ℝ) hf
 
 /-- A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
 `LocallyIntegrableOn 1 Ω μ`. Note that this is a weaker assumption than both

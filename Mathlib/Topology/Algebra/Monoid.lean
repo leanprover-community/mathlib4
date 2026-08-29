@@ -292,15 +292,22 @@ section PointwiseLimits
 variable (M₁ M₂ : Type*) [TopologicalSpace M₂] [T2Space M₂]
 
 @[to_additive]
-theorem isClosed_setOf_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M₂ | f 1 = 1 } :=
+theorem isClosed_setOfPred_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M₂ | f 1 = 1 } :=
   isClosed_eq (continuous_apply 1) continuous_const
 
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_one := isClosed_setOfPred_map_one
+
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_zero := isClosed_setOfPred_map_zero
+
 @[to_additive]
-theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
+theorem isClosed_setOfPred_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     IsClosed { f : M₁ → M₂ | ∀ x y, f (x * y) = f x * f y } := by
-  simp only [setOf_forall]
+  simp only [ofPred_forall]
   exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦
     isClosed_eq (continuous_apply _) (by fun_prop)
+
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_mul := isClosed_setOfPred_map_mul
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_add := isClosed_setOfPred_map_add
 
 section Semigroup
 
@@ -317,7 +324,8 @@ type of bundled homomorphisms that has an `AddHomClass` instance) to `M₁ → M
 def mulHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →ₙ* M₂ where
   toFun := f
-  map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
+  map_mul' := (isClosed_setOfPred_map_mul M₁ M₂).closure_subset_iff.2
+    (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled semigroup homomorphism from a pointwise limit of semigroup homomorphisms. -/
 @[to_additive (attr := simps! -fullyApplied)
@@ -351,8 +359,10 @@ type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂ where
   toFun := f
-  map_one' := (isClosed_setOf_map_one M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_one) hf
-  map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
+  map_one' := (isClosed_setOfPred_map_one M₁ M₂).closure_subset_iff.2
+    (range_subset_iff.2 map_one) hf
+  map_mul' := (isClosed_setOfPred_map_mul M₁ M₂).closure_subset_iff.2
+    (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled monoid homomorphism from a pointwise limit of monoid homomorphisms. -/
 @[to_additive (attr := simps! -fullyApplied)
@@ -540,10 +550,10 @@ theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace 
 theorem tendsto_mul_cofinite_nhds_zero {f : α → M} {g : β → M}
     (hf : Tendsto f cofinite (𝓝 0)) (hg : Tendsto g cofinite (𝓝 0)) :
     Tendsto (fun i : α × β ↦ f i.1 * g i.2) cofinite (𝓝 0) := by
-  letI : TopologicalSpace α := ⊥
-  haveI : DiscreteTopology α := discreteTopology_bot α
-  letI : TopologicalSpace β := ⊥
-  haveI : DiscreteTopology β := discreteTopology_bot β
+  let : TopologicalSpace α := ⊥
+  have : DiscreteTopology α := discreteTopology_bot α
+  let : TopologicalSpace β := ⊥
+  have : DiscreteTopology β := discreteTopology_bot β
   rw [← cocompact_eq_cofinite] at *
   exact tendsto_mul_cocompact_nhds_zero
     continuous_of_discreteTopology continuous_of_discreteTopology hf hg
@@ -642,23 +652,31 @@ theorem Subsemigroup.topologicalClosure_mono {s t : Subsemigroup M} (h : s ≤ t
   _root_.closure_mono h
 
 /-- If a subsemigroup of a topological semigroup is commutative, then so is its topological
+closure. -/
+@[to_additive
+/-- If a subsemigroup of an additive topological semigroup is commutative, then so is its
+topological closure. -/]
+instance Subsemigroup.isMulCommutative_topologicalClosure [T2Space M] (s : Subsemigroup M)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure := by
+  refine .of_setLike_mul_comm fun _ h₁ _ h₂ ↦ ?_
+  refine eqOn_closure₂' (fun _ ha _ hb ↦ setLike_mul_comm ha hb) ?_ ?_ ?_ ?_ _ h₁ _ h₂
+  all_goals fun_prop
+
+open scoped IsMulCommutative in
+/-- If a subsemigroup of a topological semigroup is commutative, then so is its topological
 closure.
 
 See note [reducible non-instances] -/
-@[to_additive /-- If a submonoid of an additive topological monoid is commutative, then so is its
+@[to_additive (attr := deprecated Subsemigroup.isMulCommutative_topologicalClosure
+(since := "2026-07-29"))
+/-- If a subsemigroup of an additive topological semigroup is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances] -/]
 abbrev Subsemigroup.commSemigroupTopologicalClosure [T2Space M] (s : Subsemigroup M)
     (hs : ∀ x y : s, x * y = y * x) : CommSemigroup s.topologicalClosure :=
-  { MulMemClass.toSemigroup s.topologicalClosure with
-    mul_comm :=
-      have : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x := fun x hx y hy =>
-        congr_arg Subtype.val (hs ⟨x, hx⟩ ⟨y, hy⟩)
-      fun ⟨x, hx⟩ ⟨y, hy⟩ =>
-      Subtype.ext <| by
-        refine eqOn_closure₂' this ?_ ?_ ?_ ?_ x hx y hy
-        all_goals fun_prop }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 @[to_additive]
 theorem IsCompact.mul [TopologicalSpace N] [Mul N] [ContinuousMul N] {s t : Set N}
@@ -719,12 +737,23 @@ theorem Submonoid.topologicalClosure_mono {s t : Submonoid M} (h : s ≤ t) :
 
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
 @[to_additive /-- If a submonoid of an additive topological monoid is commutative, then so is its
+topological closure. -/]
+instance Submonoid.isMulCommutative_topologicalClosure [T2Space M] (s : Submonoid M)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemigroup.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
+/-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
+@[to_additive (attr := deprecated Submonoid.isMulCommutative_topologicalClosure
+(since := "2026-07-29"))
+/-- If a submonoid of an additive topological monoid is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/]
 abbrev Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
     (hs : ∀ x y : s, x * y = y * x) : CommMonoid s.topologicalClosure :=
-  { s.topologicalClosure.toMonoid, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 /-- Left-multiplication by a left-invertible element of a topological monoid is proper, i.e.,
 inverse images of compact sets are compact. -/
@@ -779,10 +808,10 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
     (h : ∀ i ∈ l, ContinuousOn (f i) t) :
     ContinuousOn (fun a => (l.map fun i => f i a).prod) t := by
   intro x hx
-  rw [continuousWithinAt_iff_continuousAt_restrict _ hx]
+  rw [continuousWithinAt_iff_continuousAt_domRestrict _ hx]
   refine tendsto_list_prod _ fun i hi => ?_
   specialize h i hi x hx
-  rw [continuousWithinAt_iff_continuousAt_restrict _ hx] at h
+  rw [continuousWithinAt_iff_continuousAt_domRestrict _ hx] at h
   exact h
 
 @[to_additive (attr := continuity)]

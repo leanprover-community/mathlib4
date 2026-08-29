@@ -77,7 +77,6 @@ variable {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (U' : A ⥤ C)
 variable (adj₁ : F ⊣ U) (adj₂ : L ⋙ F ⊣ U')
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- To show that `η_X` is an equalizer for `(UFη_X, η_UFX)`, it suffices to assume it's always an
 equalizer of something (i.e. a regular mono).
 -/
@@ -108,7 +107,6 @@ We will show that this equalizer exists and that it forms the object map for a r
 def otherMap (X : B) : U'.obj (F.obj X) ⟶ U'.obj (F.obj (U.obj (F.obj X))) :=
   adj₂.unit.app _ ≫ U'.map (F.map (adj₁.unit.app _ ≫ (U.map (adj₂.counit.app _))))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `(U'Fη_X, otherMap X)` is a coreflexive pair: in particular if `C` has coreflexive equalizers
 then this pair has an equalizer.
 -/

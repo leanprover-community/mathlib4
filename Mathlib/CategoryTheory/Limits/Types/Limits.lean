@@ -5,7 +5,7 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
-public import Mathlib.Logic.UnivLE
+public import Mathlib.Basic.UnivLE
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
@@ -112,6 +112,7 @@ noncomputable def limitCone : Cone F where
   π :=
     { app j := ↾fun u => ((equivShrink F.sections).symm u).val j }
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 lemma limitCone_pt_ext {x y : (limitCone F).pt}
     (w : (equivShrink F.sections).symm x = (equivShrink F.sections).symm y) : x = y := by

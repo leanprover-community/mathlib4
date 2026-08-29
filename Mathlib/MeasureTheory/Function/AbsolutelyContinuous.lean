@@ -83,7 +83,7 @@ lemma hasBasis_totalLengthFilter : totalLengthFilter.HasBasis (fun (ε : ℝ) =>
       {E : ℕ × (ℕ → X × X) | ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < ε}) := by
   convert! Filter.HasBasis.comap (α := ℝ) _ (nhds_basis_Ioo_pos _) using 1
   ext ε E
-  simp only [mem_setOf_eq, zero_sub, zero_add, mem_preimage, mem_Ioo, iff_and_self]
+  simp only [mem_ofPred_eq, zero_sub, zero_add, mem_preimage, mem_Ioo, iff_and_self]
   suffices 0 ≤ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 by grind
   exact Finset.sum_nonneg (fun _ _ ↦ dist_nonneg)
 
@@ -105,7 +105,7 @@ lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
 
 lemma uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
     (hnI : (n, I) ∈ disjWithin a b) {i : ℕ} (hi : i < n) : uIoc (I i).1 (I i).2 ⊆ uIoc a b := by
-  simp only [disjWithin, Finset.mem_range, mem_setOf_eq, uIcc, mem_Icc] at hnI
+  simp only [disjWithin, Finset.mem_range, mem_ofPred_eq, uIcc, mem_Icc] at hnI
   grind
 
 lemma biUnion_uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
@@ -181,6 +181,24 @@ theorem mono (hf : AbsolutelyContinuousOnInterval f a b) (habcd : uIcc c d ⊆ u
   refine le_trans (Filter.map_mono ?_) hf
   gcongr; exact disjWithin_mono habcd
 
+theorem congr (hf : AbsolutelyContinuousOnInterval f a b)
+    (hfg : Set.EqOn f g (uIcc a b)) : AbsolutelyContinuousOnInterval g a b := by
+  apply hf.congr'
+  rw [eventuallyEq_inf_principal_iff]
+  filter_upwards with (n, I) hnI
+  exact Finset.sum_congr rfl fun i hi ↦ by rw [hfg (hnI.1 i hi).1, hfg (hnI.1 i hi).2]
+
+@[refl, simp]
+protected theorem refl (f : ℝ → X) (a : ℝ) : AbsolutelyContinuousOnInterval f a a := by
+  apply tendsto_nhds_of_eventually_eq
+  rw [eventually_inf_principal]
+  filter_upwards with (n, I) hnI
+  refine Finset.sum_eq_zero fun i hi ↦ ?_
+  obtain ⟨h₁, h₂⟩ := hnI.1 i hi
+  simp_all
+
+protected theorem rfl : AbsolutelyContinuousOnInterval f a a := .refl f a
+
 variable {f g : ℝ → F}
 
 @[to_fun]
@@ -233,8 +251,8 @@ theorem uniformContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
   · simp only [comap_inf, comap_principal]
     congr
     ext p
-    simp only [disjWithin, Finset.mem_range, preimage_setOf_eq, Nat.lt_one_iff,
-      forall_eq, mem_setOf_eq, mem_prod]
+    simp only [disjWithin, Finset.mem_range, preimage_ofPred_eq, Nat.lt_one_iff,
+      forall_eq, mem_ofPred_eq, mem_prod]
     simp
   · simp [totalLengthFilter, comap_comap, Function.comp_def]
 
@@ -271,7 +289,7 @@ theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
   trans dist (f (I i).1 • g (I i).1) (f (I i).1 • g (I i).2) +
     dist (f (I i).1 • g (I i).2) (f (I i).2 • g (I i).2)
   · exact dist_triangle _ _ _
-  · simp only [disjWithin, mem_setOf_eq] at hnI
+  · simp only [disjWithin, mem_ofPred_eq] at hnI
     gcongr
     · rw [dist_smul₀]
       gcongr
@@ -307,6 +325,29 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ ≤ K * (ε / (K + 1)) := by gcongr
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field
+
+/-- If `f` is Lipschitz on a set containing `g '' uIcc a b` and `g` is absolutely continuous on
+`uIcc a b`, then `f ∘ g` is absolutely continuous on `uIcc a b`. -/
+theorem _root_.LipschitzOnWith.comp_absolutelyContinuousOnInterval
+    {Y : Type*} [PseudoMetricSpace Y] {f : X → Y} {K : ℝ≥0} {t : Set X}
+    (hf : LipschitzOnWith K f t) {g : ℝ → X} {a b : ℝ} (hg : MapsTo g (uIcc a b) t)
+    (h : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f ∘ g) a b := by
+  apply squeeze_zero' ?_ ?_ (by simpa using Tendsto.const_mul (K : ℝ) h)
+  · exact .of_forall fun _ ↦ by positivity
+  rw [eventually_inf_principal]
+  filter_upwards with (n, I) hnI
+  rw [Finset.mul_sum]
+  exact Finset.sum_le_sum fun i hi ↦
+    hf.dist_le_mul _ (hg (hnI.left i hi).left) _ (hg (hnI.left i hi).right)
+
+/-- If `f` is Lipschitz and `g` is absolutely continuous on `uIcc a b`, then `f ∘ g` is absolutely
+continuous on `uIcc a b`. -/
+theorem _root_.LipschitzWith.comp_absolutelyContinuousOnInterval
+    {Y : Type*} [PseudoMetricSpace Y] {f : X → Y} {K : ℝ≥0} (hf : LipschitzWith K f)
+    {g : ℝ → X} {a b : ℝ} (h : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f ∘ g) a b :=
+  hf.lipschitzOnWith.comp_absolutelyContinuousOnInterval (mapsTo_univ _ _) h
 
 /-- If `f` is `C^1` on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
 theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]
@@ -433,7 +474,7 @@ theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegra
       E ∈ disjWithin a b :=
     eventually_inf_principal.mpr (by simp)
   filter_upwards [this] with (n, I) hnI
-  obtain ⟨hnI1, hnI2⟩ := mem_setOf_eq ▸ hnI
+  obtain ⟨hnI1, hnI2⟩ := mem_ofPred_eq ▸ hnI
   simp only
   rw [← integral_norm_eq_lintegral_enorm (h.aestronglyMeasurable_restrict_uIoc.restrict),
       integral_biUnion_finset _ (by simp +contextual [uIoc]) hnI2]
