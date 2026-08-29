@@ -93,8 +93,7 @@ theorem sum_sq_eq_zero_iff :
     ∑ i ∈ s, f i ^ 2 = 0 ↔ ∀ i ∈ s, f i = 0 := by
     grind [sq_nonneg, Finset.sum_eq_zero_iff_of_nonneg, pow_eq_zero_iff]
 
-theorem sum_pow_eq_zero_iff_of_even
-    {n : ℕ} (hn : n ≠ 0) (heven : Even n) :
+theorem sum_pow_eq_zero_iff_of_even {n : ℕ} (hn : n ≠ 0) (heven : Even n) :
     ∑ i ∈ s, f i ^ n = 0 ↔ ∀ i ∈ s, f i = 0 := by
   grind [Even.pow_nonneg, Finset.sum_eq_zero_iff_of_nonneg, pow_eq_zero_iff]
 
