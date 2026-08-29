@@ -664,8 +664,8 @@ instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
 
 variable [IsDomain K] [Algebra.IsIntegral F K]
 
-theorem IsSeparable.of_integral_of_natCast_natDegree_ne_zero [Module.Finite F K]
-    {x : K} (h : ((minpoly F x).natDegree : F) ≠ 0) : IsSeparable F x :=
+theorem IsSeparable.of_integral_of_natCast_natDegree_ne_zero {x : K}
+    (h : ((minpoly F x).natDegree : F) ≠ 0) : IsSeparable F x :=
   (minpoly.irreducible <| Algebra.IsIntegral.isIntegral x).separable_of_natCast_natDegree_ne_zero h
 
 theorem Algebra.IsSeparable.of_integral_of_finrank_lt [Module.Finite F K]
