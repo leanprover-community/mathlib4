@@ -541,7 +541,7 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
     filter_upwards [quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk,
       quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk] with p hp hq
     simp only [Function.comp_apply] at hp hq
-    simp only [regionBetween, mem_ofPred_eq, hp, hq]
+    simp only [regionBetween, mem_ofPred, hp, hq]
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
   convert! h₂ using 1
