@@ -534,7 +534,7 @@ protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
 instance isTopologicalAddGroup : IsTopologicalAddGroup 𝓓^{n}_{K}(E, F) :=
-  topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+  isTopologicalAddGroup_iInf fun _ ↦ isTopologicalAddGroup_induced _
 
 instance isUniformAddGroup : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
   rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
