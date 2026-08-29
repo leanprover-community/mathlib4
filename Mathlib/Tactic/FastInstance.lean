@@ -46,6 +46,10 @@ is `withReducible` with some exceptions.
 -/
 partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : Array Name := #[]) :
     MetaM Expr := withReducible do
+  -- Telescope since it might be a family of instances.
+  forallTelescopeReducing expectedType fun xs expectedType => do
+  mkLambdaFVars xs <| ← withNewMCtxDepth <| do
+  let inst ← whnfI <| mkAppN inst xs
   withTraceNode `Elab.fast_instance (fun _ => return m!"type: {expectedType}") do
   let some className ← isClass? expectedType
     | error trace m!"Can only be used for classes, but type is{indentExpr expectedType}"
@@ -138,16 +142,14 @@ public def elabFastInstance : TermElab
     let inst ← withSynthesize <| elabTerm arg expectedType?
     let expectedType ← expectedType?.getDM (inferType inst)
     try
-      -- Telescope since it might be a family of instances.
-      forallTelescopeReducing expectedType fun xs expectedType => do
-        mkLambdaFVars xs <| ← withNewMCtxDepth <| makeFastInstance inst expectedType
+      makeFastInstance inst expectedType
     catch e =>
       logException e
       return inst
   | _, _ => Elab.throwUnsupportedSyntax
 
-/-- `inferInstanceAs% A` is shorthand for `fast_instance% inferInstanceAs A`.
-This is preferred over `inferInstanceAs` when the instance can be reduced to
+/-- `inferInstanceAs% A` is shorthand for `fast_instance% _root_.inferInstanceAs A`.
+This is preferred over the `inferInstanceAs` elaborator when the instance can be reduced to
 constructor applications. In that case, the parameters of the constructors will be filled in
 using the expected type, so that the instance will unfold nicely during unification. -/
 macro "inferInstanceAs% " source:term : term =>
