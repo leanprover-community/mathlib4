@@ -171,14 +171,14 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
     | ``Parser.Term.configItem | ``Parser.Tactic.configItem =>
       if usesNativeConfig stx then
         rargs.push (kind, stx, m!"Using `+native` is not allowed in mathlib: \
-          it trusts the entire Lean compiler (not just the Lean kernel), \
-          and it can quite possibly be used to prove `{.ofConstName ``False}`.")
+          because it trusts the entire Lean compiler (not just the Lean kernel), \
+          it could quite possibly be used to prove `{.ofConstName ``False}`.")
       else
         rargs
     | ``Lean.Parser.Tactic.nativeDecide =>
       rargs.push (kind, stx, m!"Using `native_decide` is not allowed in mathlib: \
-        it trusts the entire Lean compiler (not just the Lean kernel), \
-        and it can quite possibly be used to prove `{.ofConstName ``False}`.")
+        because it trusts the entire Lean compiler (not just the Lean kernel), \
+        it could quite possibly be used to prove `{.ofConstName ``False}`.")
     | ``Lean.Parser.Command.in =>
       match getSetOptionMaxHeartbeatsComment stx with
       | none => rargs
