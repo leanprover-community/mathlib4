@@ -6,6 +6,7 @@ Authors: Markus Himmel, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
