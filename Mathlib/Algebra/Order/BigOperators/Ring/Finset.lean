@@ -85,8 +85,7 @@ section StrictOrderedRing
 variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R]
     (s : Finset ι) (f : ι → R)
 
-theorem sum_mul_self_eq_zero_iff
-    : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
+theorem sum_mul_self_eq_zero_iff : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
   rw [sum_eq_zero_iff_of_nonneg fun _ _ ↦ mul_self_nonneg _]
   simp
 
