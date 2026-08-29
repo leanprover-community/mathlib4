@@ -5,9 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Constructing pullbacks from binary products and equalizers
@@ -25,7 +23,6 @@ open CategoryTheory
 
 namespace CategoryTheory.Limits
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the product `X ⨯ Y` and the equalizer of `π₁ ≫ f` and `π₂ ≫ g` exist, then the
 pullback of `f` and `g` exists: It is given by composing the equalizer with the projections. -/
 theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [𝒞 : Category.{v} C]

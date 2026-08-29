@@ -108,6 +108,8 @@ class UnitalShelf (α : Type u) extends Shelf α, One α where
   one_act : ∀ a : α, act 1 a = a
   act_one : ∀ a : α, act a 1 = a
 
+attribute [instance 100] UnitalShelf.toOne
+
 /-- The type of homomorphisms between shelves.
 This is also the notion of rack and quandle homomorphisms.
 -/
@@ -142,7 +144,7 @@ scoped[Quandles] infixr:65 " ◃⁻¹ " => Rack.invAct
 /-- Shelf Homomorphism -/
 scoped[Quandles] infixr:25 " →◃ " => ShelfHom
 
-open Quandles
+open scoped Quandles
 
 namespace UnitalShelf
 open Shelf
