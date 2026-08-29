@@ -114,7 +114,7 @@ example : False := by admit
 set_option linter.style.native true
 
 /--
-warning: Using `native_decide` is not allowed in mathlib: it trusts the entire Lean compiler (not just the Lean kernel), and it can quite possibly be used to prove `False`.
+warning: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
@@ -122,7 +122,7 @@ Note: This linter can be disabled with `set_option linter.style.native false`
 example : 1 + 1 = 2 := by native_decide
 
 /--
-warning: Using `+native` is not allowed in mathlib: it trusts the entire Lean compiler (not just the Lean kernel), and it can quite possibly be used to prove `False`.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
@@ -132,7 +132,7 @@ example : 1 + 1 = 2 := by decide +native
 example : 1 + 1 = 2 := by decide -native
 
 /--
-warning: Using `+native` is not allowed in mathlib: it trusts the entire Lean compiler (not just the Lean kernel), and it can quite possibly be used to prove `False`.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
@@ -141,7 +141,7 @@ theorem foo : 1 + 1 = 2 := by decide -native +native
 -- We warn on `+native -native` even though this ends up using `-native`.
 -- This is an implementation convenience.
 /--
-warning: Using `+native` is not allowed in mathlib: it trusts the entire Lean compiler (not just the Lean kernel), and it can quite possibly be used to prove `False`.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
@@ -149,7 +149,7 @@ Note: This linter can be disabled with `set_option linter.style.native false`
 example : 1 + 1 = 2 := by decide +native -native
 
 /--
-warning: Using `+native` is not allowed in mathlib: it trusts the entire Lean compiler (not just the Lean kernel), and it can quite possibly be used to prove `False`.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
@@ -159,7 +159,7 @@ example : 1 + 1 = 2 := by decide (native := true)
 example : 1 + 1 = 2 := by decide (native := false)
 
 /--
-warning: Using `+native` is not allowed in mathlib: it trusts the entire Lean compiler (not just the Lean kernel), and it can quite possibly be used to prove `False`.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
@@ -167,7 +167,7 @@ Note: This linter can be disabled with `set_option linter.style.native false`
 example : 1 + 1 = 2 := by decide (config := { native := true })
 example : 1 + 1 = 2 := by decide (config := { native := false })
 /--
-warning: Using `+native` is not allowed in mathlib: it trusts the entire Lean compiler (not just the Lean kernel), and it can quite possibly be used to prove `False`.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
