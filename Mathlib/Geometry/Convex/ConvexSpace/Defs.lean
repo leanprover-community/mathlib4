@@ -6,10 +6,6 @@ Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 module
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
-<<<<<<< HEAD
-public import Mathlib.Data.Fin.VecNotation
-=======
->>>>>>> origin/stdsimplex-compact
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 
