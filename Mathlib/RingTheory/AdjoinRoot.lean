@@ -90,6 +90,11 @@ protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (Adj
   rintro x hx rfl
   exact h (degree_C hx.ne_zero)
 
+variable {f} in
+lemma nontrivial_iff_of_monic (monic : f.Monic) : Nontrivial (AdjoinRoot f) ↔ 0 < f.degree := by
+  rw [AdjoinRoot, Quotient.nontrivial_iff, ne_eq, span_singleton_eq_top, monic.isUnit_iff,
+    monic.degree_pos]
+
 /-- Ring homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
 def mk : R[X] →+* AdjoinRoot f :=
   Ideal.Quotient.mk _
@@ -273,6 +278,17 @@ theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
     rw [← degree_C h_contra]
     apply le_antisymm (degree_le_of_dvd hp (by rwa [Ne, C_eq_zero])) _
     rwa [degree_C h_contra, zero_le_degree_iff]
+
+theorem of.injective_of_monic_of_degree_pos (monic : f.Monic) (deg : 0 < f.degree) :
+    Function.Injective (AdjoinRoot.of f) := by
+  rw [injective_iff_map_eq_zero]
+  intro r hr; by_contra ne_zero
+  exact mk_ne_zero_of_degree_lt monic (C_ne_zero.mpr ne_zero) (degree_C ne_zero ▸ deg) hr
+
+lemma faithfulSMul_of_monic_of_degree_pos (monic : f.Monic) (deg : 0 < f.degree) :
+    FaithfulSMul R (AdjoinRoot f) :=
+  (faithfulSMul_iff_algebraMap_injective R (AdjoinRoot f)).mpr <|
+    of.injective_of_monic_of_degree_pos monic deg
 
 variable [CommRing S]
 
@@ -515,6 +531,10 @@ section Irreducible
 
 variable [Field K] {f : K[X]}
 
+theorem isField_iff_irreducible : IsField (AdjoinRoot f) ↔ Irreducible f :=
+  (Ideal.Quotient.maximal_ideal_iff_isField_quotient _).symm.trans
+    (Ideal.irreducible_iff_isMaximal_span_singleton_of_not_isField (Polynomial.not_isField K)).symm
+
 instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal :=
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 
@@ -568,6 +588,17 @@ variable [CommRing R] {g : R[X]}
 
 theorem isIntegral_root' (hg : g.Monic) : IsIntegral R (root g) :=
   ⟨g, hg, eval₂_root g⟩
+
+open Algebra in
+lemma isIntegral_of_monic (monic : g.Monic) : Algebra.IsIntegral R (AdjoinRoot g) := by
+  rw [← AlgEquiv.isIntegral_iff ((Subalgebra.equivOfEq R[root g] ⊤ adjoinRoot_eq_top).trans
+    Subalgebra.topEquiv)]
+  exact .adjoin (by simpa using isIntegral_root' monic)
+
+lemma isLocalHom_of_monic_of_degree_pos (monic : g.Monic) (deg : 0 < g.degree) :
+    IsLocalHom (algebraMap R (AdjoinRoot g)) :=
+  have := faithfulSMul_of_monic_of_degree_pos monic deg
+  (isIntegral_of_monic monic).isLocalHom
 
 /-- `AdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
 
@@ -630,7 +661,6 @@ theorem powerBasisAux'_repr_apply_to_fun (hg : g.Monic) (f : AdjoinRoot g) (i : 
     (powerBasisAux' hg).repr f i = (modByMonicHom hg f).coeff ↑i :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The power basis `1, root g, ..., root g ^ (d - 1)` for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
 @[simps]
@@ -850,11 +880,9 @@ def quotMapOfEquivQuotMapCMapMk :
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (AdjoinRoot.mk f) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated (since := "2026-03-02")]
 alias quotMapOfEquivQuotMapCMapSpanMk := quotMapOfEquivQuotMapCMapMk
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
@@ -943,7 +971,6 @@ def quotAdjoinRootEquivQuotPolynomialQuot :
       ((Ideal.quotEquivOfEq (by rw [map_span, Set.image_singleton])).trans
         (Polynomial.quotQuotEquivComm I f).symm))
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
     quotAdjoinRootEquivQuotPolynomialQuot I f (Ideal.Quotient.mk (I.map (of f)) (mk f p)) =
@@ -994,8 +1021,8 @@ theorem quotEquivQuotMap_symm_apply_mk (f g : R[X]) (I : Ideal R) :
 end
 
 section TensorProduct
-variable {R S T U : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-  [CommRing U] [Algebra R U] {p : Polynomial S}
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+  {p : Polynomial S}
 
 open Algebra TensorProduct
 
@@ -1037,7 +1064,6 @@ open AdjoinRoot AlgEquiv
 
 variable [CommRing R] [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `α` have minimal polynomial `f` over `R` and `I` be an ideal of `R`,
 then `R[α] / (I) = (R[x] / (f)) / pS = (R/p)[x] / (f mod p)`. -/
 @[simps!]

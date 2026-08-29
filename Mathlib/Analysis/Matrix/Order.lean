@@ -354,7 +354,6 @@ def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
   InnerProductSpace.ofCore _
 
 open scoped Norms.L2Operator in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
 given by the identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
@@ -370,7 +369,7 @@ instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
     rw [ContinuousMap.norm_eq_norm_coeFn]
     refine Function.Surjective.pi_norm_comp ?_ _
     rw [← Function.Surjective.of_comp_iff'
-      (Equiv.setCongr hA.spectrum_real_eq_range_eigenvalues).bijective]
+      (Equiv.Set.congr hA.spectrum_real_eq_range_eigenvalues).bijective]
     exact Set.codRestrict_range_surjective hA.eigenvalues
 
 scoped[Matrix.Norms.L2Operator] attribute [instance]

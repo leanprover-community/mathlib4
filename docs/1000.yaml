@@ -730,7 +730,7 @@ Q670235:
   decls:
     - Nat.primeFactorsList_unique
     - Int.euclideanDomain
-    - EuclideanDomain.to_principal_ideal_domain
+    - EuclideanDomain.instIsPrincipalIdealRing
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
   authors: Chris Hughes
@@ -1186,7 +1186,7 @@ Q1008566:
   decls:
     - Polynomial.rootSet_derivative_subset_convexHull_rootSet
     - Polynomial.eq_centerMass_of_eval_derivative_eq_zero
-  authors: Yury Kudryashov, Aristotle AI
+  authors: Yury Kudryashov
 
 Q1032886:
   title: Hales–Jewett theorem
@@ -2098,6 +2098,9 @@ Q2226855:
 
 Q2226868:
   title: Geometric mean theorem
+  decl: EuclideanGeometry.dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two
+  authors: Daniel Liao
+  date: 2026
 
 Q2226962:
   title: Weierstrass–Casorati theorem

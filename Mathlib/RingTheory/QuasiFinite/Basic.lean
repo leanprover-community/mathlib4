@@ -294,7 +294,6 @@ lemma iff_finite_comap_preimage_singleton [FiniteType R S] :
   exact ⟨Algebra.FiniteType.isNoetherianRing P.ResidueField _,
     (PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero.mp inferInstance).right⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma iff_finite_primesOver [FiniteType R S] :
     QuasiFinite R S ↔ ∀ I : Ideal R, I.IsPrime → (I.primesOver S).Finite := by
   rw [iff_finite_comap_preimage_singleton,

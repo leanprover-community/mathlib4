@@ -409,8 +409,8 @@ and the valuation `v`. -/
 @[simps! apply symm_apply]
 def valueGroupEquiv :
     valueGroup (.ofClass (Valued.v (R := WithVal v))) ≃* valueGroup (.ofClass v) where
-  __ := Equiv.setCongr (by simp [valueGroup_eq v])
-  map_mul' := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
+  __ := Equiv.Set.congr (by simp [valueGroup_eq v])
+  map_mul' := by simp [Equiv.Set.congr, Equiv.subtypeEquivProp]
 
 theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
   fun _ _ _ ↦ by simpa
@@ -610,7 +610,6 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
   obtain ⟨r, hr⟩ := hv γ
   exact ⟨r, 1, by simp [hr]⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
     (γ : (ValueGroup₀ (.ofClass v))ˣ) :
