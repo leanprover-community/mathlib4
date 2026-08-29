@@ -319,8 +319,6 @@ noncomputable def ranBaseChange :
     ext X
     simp [← dsimp% B.ranCounit.naturality_app (L.obj X) τ]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isIso_ranBaseChange_app_iff (F : C₃ ⥤ D) :
     IsIso (w.ranBaseChange.app F) ↔
       IsRightKanExtension _ ((RightExtension.mk _ (B.ranCounit.app F)).compTwoSquare w).hom := by
