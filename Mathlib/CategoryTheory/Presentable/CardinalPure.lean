@@ -152,15 +152,22 @@ instance IsCardinalPure.map
     IsCardinalPure κ (F.map f) where
   exists_of_commSq {X' Y' t l r _ _ } sq := by
     obtain ⟨I, _, _, ⟨pX⟩⟩ :=
+    /- Write X and Y as κ-filtered colimits of κ-presentable objects `X ≅ colimᵢ pXᵢ` and
+    `Y ≅ colimⱼ pYⱼ`. -/
+    obtain ⟨I, _, _, ⟨pX⟩⟩ :=
       (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape X
     obtain ⟨J, _, _, ⟨pY⟩⟩ :=
       (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape Y
+    -- `F` is κ-accessible so the presentations of `X` and `Y` are preserved by `F`.
     have := F.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ I
     have := F.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ J
+    -- `X'` is κ-presentable so `l : X' ⟶ F.obj X` factors through some `F.obj pXᵢ`.
     obtain ⟨i, l', hl'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
       (isColimitOfPreserves F pX.isColimit) l
-    dsimp at l' hl'
-    have := pX.prop_diag_obj i
+    have : isCardinalPresentable C κ (pX.diag.obj i) := pX.prop_diag_obj i
+    /- `Y'` is also κ-presentable so `l : Y' ⟶ F.obj Y` factors through some `F.obj pYⱼ₀`,
+    and the composite `pXᵢ ⟶ X ⟶ Y` also lifts to some pYⱼ₁, taking the filtered max, one gets an
+    index `j` such that `l` factors through `F.obj pYⱼ` and a lift `pXᵢ ⟶ pYⱼ` of `f`. -/
     obtain ⟨j, r', a, hr', ha⟩ :
         ∃ (j : J) (r' : Y' ⟶ F.obj (pY.diag.obj j)) (a : pX.diag.obj i ⟶ pY.diag.obj j),
           r' ≫ F.map (pY.ι.app j) = r ∧ a ≫ pY.ι.app j = pX.ι.app i ≫ f := by
@@ -168,22 +175,24 @@ instance IsCardinalPure.map
         (isColimitOfPreserves F pY.isColimit) r
       obtain ⟨j₁, a, ha⟩ :=
         IsCardinalPresentable.exists_hom_of_isColimit κ pY.isColimit (pX.ι.app i ≫ f)
-      dsimp at r' hr' ha
       have := isFiltered_of_isCardinalFiltered J κ
       refine ⟨IsFiltered.max j₀ j₁, r' ≫ F.map (pY.diag.map (IsFiltered.leftToMax j₀ j₁)),
         a ≫ pY.diag.map (IsFiltered.rightToMax j₀ j₁), ?_, ?_⟩
       all_goals simpa [← Functor.map_comp, pY.w]
-    dsimp at hr' ha
-    obtain ⟨j', b, hb⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
+    /- Using again that `X'` is κ-presentable, the composites `X' ⟶ Y' ⟶ F.obj pYⱼ` and
+    `X' ⟶ F.obj pXᵢ ⟶ F.obj pYⱼ` are equalized for some index `k ≥ j`. -/
+    obtain ⟨k, b, hb⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
       (isColimitOfPreserves F pY.isColimit) (t ≫ r') (l' ≫ F.map a) (by
         dsimp
         rw [Category.assoc, Category.assoc, hr', ← Functor.map_comp, ha,
-          Functor.map_comp, reassoc_of% hl', sq.w])
-    have := pY.prop_diag_obj j'
+          Functor.map_comp, reassoc_of% dsimp% hl', sq.w])
+    have : isCardinalPresentable C κ (pY.diag.obj k) := pY.prop_diag_obj k
+    /- Now one can use purity of `f` to get a morphism `pYₖ ⟶ X`, and the composite
+    `Y' ⟶ F.obj pYₖ ⟶ F.obj X` is the desired lift. -/
     obtain ⟨ρ, hρ⟩ := IsCardinalPure.exists_of_commSq κ (f := f) (t := a ≫ pY.diag.map b)
-      (l := pX.ι.app i) (r := pY.ι.app j') ⟨by simpa [pY.w]⟩
+      (l := pX.ι.app i) (r := pY.ι.app k) ⟨by simpa [pY.w]⟩
     simp only [Category.assoc] at hb hρ
     refine ⟨r' ≫ F.map (pY.diag.map b) ≫ F.map ρ, ?_⟩
-    rw [reassoc_of% hb, ← Functor.map_comp, ← Functor.map_comp, hρ, hl']
+    rw [reassoc_of% hb, ← Functor.map_comp, ← Functor.map_comp, hρ, dsimp% hl']
 
 end CategoryTheory
