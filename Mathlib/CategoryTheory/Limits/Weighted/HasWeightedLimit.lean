@@ -73,7 +73,9 @@ def mk
   π.naturality x₁ x₂ f := by simpa using! (hπ x₁.snd f.val).symm
 
 @[simp]
-lemma mk_π (hπ := by cat_disch) {j : J} (x : W.obj j) :
+lemma mk_π
+    (hπ : ∀ ⦃j₁ j₂ : J⦄ (x : W.obj j₁) (f : j₁ ⟶ j₂),
+      π x ≫ F.map f = π (W.map f x) := by cat_disch) {j : J} (x : W.obj j) :
     (mk pt π hπ).π x = π x := rfl
 
 /-- A weighted cone `c : WeightedCone W F` is a limit if it is so
