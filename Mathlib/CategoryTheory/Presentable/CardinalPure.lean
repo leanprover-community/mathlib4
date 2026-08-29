@@ -144,7 +144,7 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
 
 /-- If `F : C ⥤ D` is a `κ`-accessible functor (with `C` a `κ`-accessible category),
 then `F` maps `κ`-pure morphisms to `κ`-morphisms.
-(This is proposition 2.29 in [Adamek_Rosicky_1994], without the unnecessary
+(This is proposition 2.38 in [Adamek_Rosicky_1994], without the unnecessary
 assumption that `F` preserves `κ`-presentable objects.) -/
 instance IsCardinalPure.map
     [IsCardinalAccessibleCategory C κ] [F.IsCardinalAccessible κ]
