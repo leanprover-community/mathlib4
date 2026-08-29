@@ -671,17 +671,17 @@ theorem IsSeparable.of_integral_of_natCast_natDegree_ne_zero {x : K}
 theorem Algebra.IsSeparable.of_integral_of_finrank_lt [Module.Finite F K]
     (h : Module.finrank F K < ringChar F) :
     Algebra.IsSeparable F K := by
-  rw [Algebra.isSeparable_def]
+  rw [isSeparable_def]
   intro x
   apply IsSeparable.of_integral_of_natCast_natDegree_ne_zero
   rw [Ne, ringChar.spec]
-  apply Nat.not_dvd_of_pos_of_lt (minpoly.natDegree_pos <| Algebra.IsIntegral.isIntegral x)
+  apply Nat.not_dvd_of_pos_of_lt (minpoly.natDegree_pos <| IsIntegral.isIntegral x)
   exact (minpoly.natDegree_le x).trans_lt h
 
 theorem Algebra.IsSeparable.of_integral_of_rank_lt (h : Module.rank F K < ringChar F) :
     Algebra.IsSeparable F K := by
   have : Module.Finite F K := Module.rank_lt_aleph0_iff.mp (h.trans Cardinal.natCast_lt_aleph0)
-  apply Algebra.IsSeparable.of_integral_of_finrank_lt
+  apply of_integral_of_finrank_lt
   convert! Cardinal.toNat_lt_toNat h Cardinal.natCast_lt_aleph0
   rw [Cardinal.toNat_natCast]
 

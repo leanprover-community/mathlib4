@@ -412,7 +412,7 @@ theorem degree_derivative_of_isSMulRegular [Nontrivial R] (hp : IsSMulRegular R 
   · have hp1 : 1 ≤ p.natDegree := by
       contrapose hp
       simp_all [IsSMulRegular.not_zero]
-    refine Finset.le_sup ?_
+    refine le_sup ?_
     rw [mem_support_derivative_of_isSMulRegular (by simpa [tsub_add_cancel_of_le hp1] using hp),
       tsub_add_cancel_of_le hp1, mem_support_iff, coeff_natDegree, leadingCoeff_ne_zero]
     rintro rfl
@@ -432,7 +432,7 @@ lemma mem_support_derivative : n ∈ (derivative p).support ↔ n + 1 ∈ p.supp
 @[simp]
 lemma degree_derivative (hp : p.natDegree ≠ 0) : degree (derivative p) = ↑(natDegree p - 1) := by
   rcases subsingleton_or_nontrivial R
-  · simp [Polynomial.natDegree_of_subsingleton] at hp
+  · simp [natDegree_of_subsingleton] at hp
   exact degree_derivative_of_isSMulRegular <| IsSMulRegular.of_ne_zero hp
 
 @[simp]
