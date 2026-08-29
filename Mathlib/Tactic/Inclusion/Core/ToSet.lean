@@ -133,6 +133,7 @@ theorem IntervalBool.not_mem {p : Prop} {a : IntervalBool}
   cases a <;> by_cases hp' : p <;> simp_all [IntervalBool.not]
 
 /-- Conjunction of two `IntervalBool` values. -/
+@[macro_inline]
 def IntervalBool.and : IntervalBool → IntervalBool → IntervalBool
   | .true, .true => .true
   | .false, _ | _, .false => .false
@@ -143,6 +144,7 @@ theorem IntervalBool.and_mem {p q : Prop} {a b : IntervalBool}
   cases a <;> cases b <;> simp_all [IntervalBool.and]
 
 /-- Disjunction of two `IntervalBool` values. -/
+@[macro_inline]
 def IntervalBool.or : IntervalBool → IntervalBool → IntervalBool
   | .true, _ | _, .true => .true
   | .false, .false => .false
@@ -170,6 +172,7 @@ theorem IntervalBool.eq_true_of_isTrue_eq_true {b : IntervalBool}
   cases b <;> simp_all [IntervalBool.isTrue]
 
 /-- Union of two `IntervalBool`s. -/
+@[macro_inline]
 def IntervalBool.union : IntervalBool → IntervalBool → IntervalBool
   | .true, .true => .true
   | .false, .false => .false
