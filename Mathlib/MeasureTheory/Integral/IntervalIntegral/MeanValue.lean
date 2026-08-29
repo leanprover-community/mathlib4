@@ -243,5 +243,4 @@ theorem exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_monotoneOn
   rw [← intervalIntegral.integral_comp_neg] at hξ
   exact ⟨-ξ, by grind, by simpa using hξ⟩
 
-
 end Second
