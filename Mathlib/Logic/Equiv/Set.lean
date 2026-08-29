@@ -16,7 +16,7 @@ In this file we provide lemmas linking equivalences to sets.
 Some notable definitions are:
 
 * `Equiv.ofInjective`: an injective function is (noncomputably) equivalent to its range.
-* `Equiv.setCongr`: two equal sets are equivalent as types.
+* `Equiv.Set.congr`: two equal sets are equivalent as types.
 * `Equiv.Set.union`: a disjoint union of sets is equivalent to their `Sum`.
 
 This file is separate from `Equiv/Basic` such that we do not require the full lattice structure
@@ -152,10 +152,12 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
   toFun x := ⟨x.1.1, x.1.2, by simp⟩
   invFun x := ⟨(x.1, x.2.1), x.2.2⟩
 
-/-- The subtypes corresponding to equal sets are equivalent. -/
-@[simps! apply symm_apply]
-def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
-  subtypeEquivProp <| h ▸ rfl
+/-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`.
+
+See also `Equiv.finsetCongr`. -/
+@[simps]
+def setCongr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
+  ⟨fun s => e '' s, fun t => e.symm '' t, symm_image_image e, symm_image_image e.symm⟩
 
 -- We could construct this using `Equiv.Set.image e s e.injective`,
 -- but this definition provides an explicit inverse.
@@ -192,6 +194,13 @@ end order
 
 namespace Set
 
+/-- The subtypes corresponding to equal sets are equivalent.
+
+See also `Equiv.Finset.congr`. -/
+@[simps! apply symm_apply]
+protected def congr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
+  subtypeEquivProp <| h ▸ rfl
+
 /-- `univ α` is equivalent to `α`. -/
 @[simps apply symm_apply]
 protected def univ (α) : @univ α ≃ α :=
@@ -227,11 +236,11 @@ protected def union {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Di
 
 theorem union_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
     {a : (s ∪ t : Set α)} (ha : ↑a ∈ s) : Equiv.Set.union H a = Sum.inl ⟨a, ha⟩ :=
-  dif_pos ha
+  dite_eq_left ha
 
 theorem union_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
     {a : (s ∪ t : Set α)} (ha : ↑a ∈ t) : Equiv.Set.union H a = Sum.inr ⟨a, ha⟩ :=
-  dif_neg fun h => Set.disjoint_left.mp H h ha
+  dite_eq_right fun h => Set.disjoint_left.mp H h ha
 
 @[simp]
 theorem union_symm_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
@@ -250,7 +259,7 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     rfl, fun ⟨⟩ => rfl⟩
 
 lemma _root_.Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
-    StrictMono (setCongr h) := fun _ _ ↦ id
+    StrictMono (Equiv.Set.congr h) := fun _ _ ↦ id
 
 set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")] alias Equiv.strictMono_setCongr := Equiv.strictMono_setCongr
@@ -259,7 +268,7 @@ set_option linter.dupNamespace false in
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
     (insert a s : Set α) ≃ s ⊕ PUnit.{u + 1} :=
   calc
-    (insert a s : Set α) ≃ ↥(s ∪ {a}) := Equiv.setCongr (by simp)
+    (insert a s : Set α) ≃ ↥(s ∪ {a}) := Equiv.Set.congr (by simp)
     _ ≃ s ⊕ ({a} : Set α) := Equiv.Set.union <| by simpa
     _ ≃ s ⊕ PUnit.{u + 1} := sumCongr (Equiv.refl _) (Equiv.Set.singleton _)
 
@@ -324,7 +333,7 @@ protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (·
   calc
     s ⊕ (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
       (Equiv.Set.union disjoint_sdiff_self_right).symm
-    _ ≃ t := Equiv.setCongr (by simp [union_sdiff_self, union_eq_self_of_subset_left h])
+    _ ≃ t := Equiv.Set.congr (by simp [union_sdiff_self, union_eq_self_of_subset_left h])
 
 @[simp]
 theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)] (x : s) :
@@ -365,7 +374,6 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
       { rw [(_ : t \ s ∪ s ∩ t = t)]
         rw [union_comm, inter_comm, inter_union_sdiff] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an equivalence `e₀` between sets `s : Set α` and `t : Set β`, the set of equivalences
 `e : α ≃ β` such that `e ↑x = ↑(e₀ x)` for each `x : s` is equivalent to the set of equivalences
 between `sᶜ` and `tᶜ`. -/
@@ -433,16 +441,11 @@ protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Inj
     (h : f x ∈ f '' s) : (Set.image f s H).symm ⟨f x, h⟩ = ⟨x, H.mem_set_image.1 h⟩ :=
   (Equiv.symm_apply_eq _).2 rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Set α) :
     (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' f '' u := by
-  ext ⟨b, a, has, rfl⟩
-  simp [hf.eq_iff]
-
-/-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`. -/
-@[simps]
-protected def congr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
-  ⟨fun s => e '' s, fun t => e.symm '' t, symm_image_image e, symm_image_image e.symm⟩
+  ext x
+  obtain ⟨y, rfl⟩ := (Set.image f s hf).surjective x
+  simp [hf.mem_set_image]
 
 /-- The set `{x ∈ s | t x}` is equivalent to the set of `x : s` such that `t x`. -/
 protected def sep {α : Type u} (s : Set α) (t : α → Prop) :
@@ -586,9 +589,6 @@ def sigmaPreimageEquiv {α β} (f : α → β) : (Σ b, f ⁻¹' {b}) ≃ α :=
   sigmaFiberEquiv f
 
 -- See also `Equiv.ofFiberEquiv`.
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A family of equivalences between preimages of points gives an equivalence between domains. -/
 @[simps!]
 def ofPreimageEquiv {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c}) : α ≃ β :=

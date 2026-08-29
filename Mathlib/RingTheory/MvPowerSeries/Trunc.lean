@@ -299,7 +299,7 @@ theorem ext_trunc' {f g : MvPowerSeries σ R} : f = g ↔ ∀ n, trunc' R n f = 
   ext n
   specialize h n
   have {f' : MvPowerSeries σ R} : f'.coeff n = (trunc' R n f').coeff n := by
-    rw [coeff_trunc', if_pos le_rfl]
+    rw [coeff_trunc', ite_eq_left le_rfl]
   simp_rw [this, h]
 
 open Filter in
@@ -309,7 +309,7 @@ theorem eq_iff_frequently_trunc'_eq {f g : MvPowerSeries σ R} :
   ext n
   obtain ⟨m, hm₁, hm₂⟩ := h.forall_exists_of_atTop n
   have {f' : MvPowerSeries σ R} : f'.coeff n = (trunc' R m f').coeff n := by
-    rw [coeff_trunc', if_pos hm₁]
+    rw [coeff_trunc', ite_eq_left hm₁]
   simp [this, hm₂]
 
 end
@@ -334,8 +334,8 @@ theorem coeff_truncTotal_eq_zero (h : n ≤ degree x) :
 theorem coeff_truncTotal_eq_ite :
     (truncTotal n p).coeff x = if x.degree < n then p.coeff x else 0 := by
   by_cases h : x.degree < n
-  · rw [if_pos h, coeff_truncTotal _ h]
-  · rw [if_neg h, coeff_truncTotal_eq_zero _ (not_lt.mp h)]
+  · rw [ite_eq_left h, coeff_truncTotal _ h]
+  · rw [ite_eq_right h, coeff_truncTotal_eq_zero _ (not_lt.mp h)]
 
 theorem constantCoeff_truncTotal_eq_ite :
     (truncTotal n p).constantCoeff = if 0 < n then p.constantCoeff else 0 := by
