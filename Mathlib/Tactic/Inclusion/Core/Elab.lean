@@ -81,7 +81,7 @@ def inclusion?Tac : Tactic
           discard <| inclusionCore (← getMainTarget) config
           logInfo "The inclusion check succeeded."
         catch err =>
-          logInfo m!"The inclusion check failed:\n{err.toMessageData}"
+          logError m!"The inclusion check failed:\n{err.toMessageData}"
   | _ => throwUnsupportedSyntax
 
 end Inclusion
