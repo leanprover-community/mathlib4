@@ -985,7 +985,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
   let c : ℝ≥0∞ := haarScalarFactor μ.inv μ
   have hc : μ.inv = c • μ := isMulLeftInvariant_eq_smul_of_regular μ.inv μ
   have : map Inv.inv (map Inv.inv μ) = c ^ 2 • μ := by
-    rw [← inv_def μ, hc, Measure.map_smul, ← inv_def μ, hc, smul_smul, pow_two]
+    rw [← inv_def μ, hc, Measure.map_smul _ (by fun_prop), ← inv_def μ, hc, smul_smul, pow_two]
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
     simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]
@@ -1011,7 +1011,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
   let c : ℝ≥0∞ := haarScalarFactor μ.inv μ
   have hc : μ.inv = c • μ := isMulLeftInvariant_eq_smul_of_innerRegular μ.inv μ
   have : map Inv.inv (map Inv.inv μ) = c ^ 2 • μ := by
-    rw [← inv_def μ, hc, Measure.map_smul, ← inv_def μ, hc, smul_smul, pow_two]
+    rw [← inv_def μ, hc, Measure.map_smul _ (by fun_prop), ← inv_def μ, hc, smul_smul, pow_two]
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
     simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]

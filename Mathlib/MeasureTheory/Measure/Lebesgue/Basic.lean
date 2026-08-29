@@ -417,6 +417,8 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
   · intro A B _ _ IHA IHB
     rw [toLin'_mul, det_mul, LinearMap.coe_comp, ← Measure.map_map, IHB, Measure.map_smul, IHA,
       smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, mul_comm, mul_inv]
+    · apply Continuous.aemeasurable
+      apply LinearMap.continuous_on_pi
     · apply Continuous.measurable
       apply LinearMap.continuous_on_pi
     · apply Continuous.measurable
@@ -535,10 +537,11 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
       (μ.restrict s).prod volume
         (regionBetween (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s) := by
     apply measure_congr
-    apply EventuallyEq.rfl.inter
-    exact
-      ((quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk).comp₂ _ EventuallyEq.rfl).inter
-        (EventuallyEq.rfl.comp₂ _ <| quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk)
+    apply Filter.Eventually.set_eq
+    filter_upwards [quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk,
+      quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk] with p hp hq
+    simp only [Function.comp_apply] at hp hq
+    simp only [regionBetween, mem_ofPred_eq, hp, hq]
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
   convert! h₂ using 1

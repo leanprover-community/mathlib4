@@ -342,7 +342,7 @@ private lemma exists_ae_subset_biUnion_countable_of_isFiniteMeasure [IsFiniteMea
     exact measure_mono (fun x hx ↦ by simp at hx ⊢; grind)
   refine ⟨D, by grind, by grind, fun s hs ↦ union_ae_eq_right_iff_ae_subset.mp ?_⟩
   symm
-  apply ae_eq_of_ae_subset_of_measure_ge subset_union_right.eventuallyLE
+  apply ae_eq_of_ae_subset_of_measure_ge subset_union_right.eventuallySubset
   · rw [hD, show s ∪ ⋃₀ D = ⋃₀ (D ∪ {s}) by simp]
     apply le_biSup (f := fun D ↦ μ (⋃₀ D))
     simp [D_mem.2, insert_subset_iff, hs, D_mem.1]
@@ -364,7 +364,7 @@ lemma exists_ae_subset_biUnion_countable [SFinite μ]
   refine ⟨⋃ n, D n, by simp [DC], by simp [D_count], fun s hs ↦ ?_⟩
   rw [← sum_sfiniteSeq μ]
   apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
-  exact LE.le.eventuallyLE (fun x hx ↦ by simp at hx ⊢; grind)
+  exact LE.le.eventuallySubset (fun x hx ↦ by simp at hx ⊢; grind)
 
 set_option backward.defeqAttrib.useBackward false in
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
