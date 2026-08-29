@@ -22,7 +22,8 @@ In this file, given `X : TopCat`, we define a bijection
 
 universe u
 
-open Simplicial Convexity
+open Convexity
+open scoped Simplicial
 
 namespace TopCat
 

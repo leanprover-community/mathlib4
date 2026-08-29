@@ -23,7 +23,7 @@ namespace Polynomial
 
 universe u v y
 
-variable {R : Type u} {S : Type v} {a b : R} {m n : ℕ} {ι : Type y}
+variable {R : Type u} {S : Type v} {a : R} {m n : ℕ}
 
 section IntegralNormalization
 
@@ -146,6 +146,13 @@ theorem integralNormalization_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (
     (integralNormalization p).eval₂ f (f p.leadingCoeff * x) =
       f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x :=
   integralNormalization_eval₂_leadingCoeff_mul_of_commute h _ _ (.all _ _) (.all _ _)
+
+lemma integralNormalization_aeval_smul {R} [CommSemiring R] [Algebra R S] {p : R[X]}
+    (h : 1 ≤ p.natDegree) (x : S) :
+    p.integralNormalization.aeval (p.leadingCoeff • x) =
+      p.leadingCoeff ^ (p.natDegree - 1) • p.aeval x := by
+  simp_rw [Algebra.smul_def, map_pow]
+  exact integralNormalization_eval₂_leadingCoeff_mul h _ _
 
 theorem integralNormalization_eval₂_eq_zero_of_commute {p : R[X]} (f : R →+* A) {z : A}
     (hz : eval₂ f z p = 0) (h₁ : Commute (f p.leadingCoeff) z) (h₂ : ∀ {r r'}, Commute (f r) (f r'))

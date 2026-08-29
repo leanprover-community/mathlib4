@@ -21,7 +21,9 @@ This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
 
 universe u
 
-open CategoryTheory Simplicial Convexity
+open CategoryTheory Convexity
+
+open scoped Simplicial
 
 namespace SimplexCategory
 
