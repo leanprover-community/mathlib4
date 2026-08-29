@@ -225,7 +225,7 @@ lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Con
 
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
 
-lemma of_leftInverse_of_isInducting {f : X → Y} {g : Y → X}
+lemma of_leftInverse_of_isInducing {f : X → Y} {g : Y → X}
     (h : LeftInverse f g) (hf : IsInducing f) :
     IsEmbedding g := by
   apply of_leftInverse h hf.continuous <| continuous_def.mpr fun s hs ↦ ?_
