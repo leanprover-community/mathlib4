@@ -171,11 +171,11 @@ theorem hom_ext_iff {f g : Homogenization R P1 →ₗ[R] W} :
   ⟨by rintro rfl _; rfl, hom_ext⟩
 
 /-- Auxiliary definition used for defining `Homogenization.lift`. -/
-def lift.aux (f : P →ᵃ[R] W) : Homogenization R P →ₗ[R] W :=
+private def liftAux (f : P →ᵃ[R] W) : Homogenization R P →ₗ[R] W :=
   f.linear.coprod <| LinearMap.id.smulRight (f (Classical.arbitrary P))
 
 @[simp]
-private theorem lift.aux_ofPoint {f : P →ᵃ[R] W} {p : P} : aux f (ofPoint p) = f p := by
+private theorem liftAux_ofPoint {f : P →ᵃ[R] W} {p : P} : liftAux f (ofPoint p) = f p := by
   change f.linear (p -ᵥ Classical.arbitrary P) + (1 : R) • f (Classical.arbitrary P) = f p
   simp
 
@@ -185,15 +185,21 @@ private theorem lift.aux_ofPoint {f : P →ᵃ[R] W} {p : P} : aux f (ofPoint p)
 See also `Homogenization.liftₗ` for a version that is linear over some ring. -/
 @[expose]
 def lift : (P →ᵃ[R] W) ≃+ (Homogenization R P →ₗ[R] W) where
-  toFun := lift.aux
+  toFun := private liftAux
   invFun f := f.toAffineMap.comp ofPoint
-  left_inv f := by ext; simp
-  right_inv f := hom_ext <| by simp
-  map_add' f g := hom_ext <| by simp
+  left_inv f := by
+    change (liftAux f).toAffineMap.comp ofPoint = f
+    ext; simp
+  right_inv f := by
+    change liftAux (f.toAffineMap.comp ofPoint) = f
+    apply hom_ext; simp
+  map_add' f g := by
+    change liftAux (f + g) = liftAux f + liftAux g
+    apply hom_ext; simp
 
 @[simp]
-theorem lift_apply_ofPoint {f : P →ᵃ[R] W} {p : P} : lift f (ofPoint p) = f p := by
-  simp [lift]
+theorem lift_apply_ofPoint {f : P →ᵃ[R] W} {p : P} : lift f (ofPoint p) = f p :=
+  liftAux_ofPoint
 
 @[simp]
 theorem lift_apply_ofVector {f : P →ᵃ[R] W} {v : V} : lift f (ofVector v) = f.linear v := by
@@ -249,7 +255,7 @@ end SMul
 /-- The linear map that is constantly `1` when restricted to `P`. -/
 @[expose]
 def weight : Homogenization R P →ₗ[R] R :=
-  lift (AffineMap.const R P 1)
+  lift (.const R P 1)
 
 @[simp]
 theorem weight_ofVector {v : V} : weight (R := R) (P := P) (ofVector v) = 0 := by
@@ -294,8 +300,15 @@ theorem map_apply_ofVector {f : P1 →ᵃ[R] P2} {v : V1} :
   simp [map]
 
 @[simp]
-theorem map_id : map (AffineMap.id R P) = LinearMap.id :=
+theorem map_id : map (AffineMap.id R P) = .id :=
   hom_ext <| by simp
+
+@[simp]
+theorem map_eq_id_iff (f : P →ᵃ[R] P) : map f = .id ↔ f = .id .. where
+  mp h := by
+    ext p
+    simpa [ofPoint_injective.eq_iff] using congr($h (ofPoint p))
+  mpr h := by simp [h]
 
 theorem map_comp {f : P1 →ᵃ[R] P2} {g : P2 →ᵃ[R] P3} : map (g.comp f) = map g ∘ₗ map f :=
   hom_ext <| by simp
@@ -308,6 +321,7 @@ theorem lift_map {f : P1 →ᵃ[R] P2} {g : P2 →ᵃ[R] V3} {x : Homogenization
     lift g (map f x) = lift (g.comp f) x := by
   cases x; simp
 
+@[simp]
 theorem map_injective {f : P1 →ᵃ[R] P2} : Function.Injective (map f) ↔ Function.Injective f where
   mp hf := by
     have h := hf.comp ofPoint_injective
@@ -323,6 +337,7 @@ theorem map_injective {f : P1 →ᵃ[R] P2} : Function.Injective (map f) ↔ Fun
        map_eq_zero_iff _ (f.linear_injective_iff.mpr hf)] at h
     rw [h, map_zero]
 
+@[simp]
 theorem map_surjective {f : P1 →ᵃ[R] P2} : Function.Surjective (map f) ↔ Function.Surjective f where
   mp hf p := by
     obtain ⟨x, hx⟩ := hf (ofPoint p)
@@ -357,6 +372,10 @@ theorem congr_symm (f : P1 ≃ᵃ[R] P2) : (congr f).symm = congr f.symm :=
 @[simp]
 theorem congr_refl : congr (.refl R P) = .refl .. := by
   ext; simp
+
+@[simp]
+theorem congr_eq_refl_iff (f : P ≃ᵃ[R] P) : congr f = .refl .. ↔ f = .refl .. := by
+  simp [← LinearEquiv.toLinearMap_inj, ← AffineEquiv.toAffineMap_inj]
 
 theorem congr_trans (f : P1 ≃ᵃ[R] P2) (g : P2 ≃ᵃ[R] P3) :
     congr (f.trans g) = congr f ≪≫ₗ congr g := by
