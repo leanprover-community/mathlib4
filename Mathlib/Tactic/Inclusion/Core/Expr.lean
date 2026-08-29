@@ -24,8 +24,8 @@ namespace Inclusion
 /-- If `e` is an `Expr` of the form `x ∈ s` using a `ToSet` instance, return
 `some (x, s, toSetInst)`. -/
 def toSetMem? (e : Expr) : Option (Expr × Expr × Expr) := do
-  let (``Membership.mem, #[_, _, membershipInst, s, x]) := e.getAppFnArgs | none
-  let (``instMembershipOfToSet, #[_, _, toSetInst]) := membershipInst.getAppFnArgs | none
+  let_expr Membership.mem _ _ membershipInst s x := e | none
+  let_expr instMembershipOfToSet _ _ toSetInst := membershipInst | none
   return (x, s, toSetInst)
 
 /-- Given expressions `x : xType`, `s : setType`, and `toSetInst : ToSet setType xType`, create
