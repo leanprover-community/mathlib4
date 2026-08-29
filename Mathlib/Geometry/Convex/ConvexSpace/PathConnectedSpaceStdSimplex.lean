@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Topology.Connected.PathConnected
 
@@ -55,7 +54,7 @@ instance pathConnectedSpace
     source' := by simp
     target' := by simp }⟩
 
-/-- The standard one-dimension simplex is homeomorphic to the unit interval. -/
+/-- The standard one-dimensional simplex is homeomorphic to the unit interval. -/
 noncomputable def homeomorphI : StdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
   toEquiv := equivIcc
 
