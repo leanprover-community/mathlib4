@@ -45,7 +45,7 @@ lemma prodEquivTensorForwardAux_apply_mul (m : M × N) :
   rw [h, add_mul, mul_add, mul_add, GradedTensorProduct.tmul_one_mul_coe_tmul,
     GradedTensorProduct.tmul_one_mul_one_tmul, GradedTensorProduct.tmul_coe_mul_coe_tmul,
     GradedTensorProduct.tmul_coe_mul_one_tmul]
-  simp [a, b, mul_one, one_mul, uzpow_one, Units.neg_smul, one_smul, GradedTensorProduct.tmul,
+  simp [a, b, mul_one, one_mul, Units.neg_smul, one_smul, GradedTensorProduct.tmul,
     TensorProduct.zero_tmul, TensorProduct.tmul_zero, map_zero]
 
 /-- The forward function for the equivalence between `ExteriorAlgebra R (M × N)` and
