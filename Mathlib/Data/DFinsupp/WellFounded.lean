@@ -60,7 +60,6 @@ section Zero
 
 variable [∀ i, Zero (α i)] (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This key lemma says that if a finitely supported dependent function `x₀` is obtained by merging
   two such functions `x₁` and `x₂`, and if we evolve `x₀` down the `DFinsupp.Lex` relation one
   step and get `x`, we can always evolve one of `x₁` and `x₂` down the `DFinsupp.Lex` relation
@@ -77,27 +76,27 @@ theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
   split_ifs at hs with hp
   · refine ⟨⟨{ j | r j i → j ∈ p }, piecewise x₁ x { j | r j i }, x₂⟩,
       .fst ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_ofPred_eq]
-    · simp only [if_pos hj]
+    · simp only [ite_eq_left hj]
     · split_ifs with hi
-      · rwa [hr i hi, if_pos hp] at hs
+      · rwa [hr i hi, ite_eq_left hp] at hs
       · assumption
     · ext1 j
       simp only [piecewise_apply, Set.mem_ofPred_eq]
       split_ifs with h₁ h₂ <;> try rfl
-      · rw [hr j h₂, if_pos (h₁ h₂)]
+      · rw [hr j h₂, ite_eq_left (h₁ h₂)]
       · rw [Classical.not_imp] at h₁
-        rw [hr j h₁.1, if_neg h₁.2]
+        rw [hr j h₁.1, ite_eq_right h₁.2]
   · refine ⟨⟨{ j | r j i ∧ j ∈ p }, x₁, piecewise x₂ x { j | r j i }⟩,
       .snd ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_ofPred_eq]
-    · exact if_pos hj
+    · exact ite_eq_left hj
     · split_ifs with hi
-      · rwa [hr i hi, if_neg hp] at hs
+      · rwa [hr i hi, ite_eq_right hp] at hs
       · assumption
     · ext1 j
       simp only [piecewise_apply, Set.mem_ofPred_eq]
       split_ifs with h₁ h₂ <;> try rfl
-      · rw [hr j h₁.1, if_pos h₁.2]
-      · rw [hr j h₂, if_neg]
+      · rw [hr j h₁.1, ite_eq_left h₁.2]
+      · rw [hr j h₂, ite_eq_right]
         simpa [h₂] using h₁
 
 variable {r s}

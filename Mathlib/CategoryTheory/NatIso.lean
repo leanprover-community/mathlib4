@@ -40,8 +40,6 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open NatTrans
-
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type u₃}
   [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
@@ -49,7 +47,7 @@ namespace Iso
 
 /-- The application of a natural isomorphism to an object. We put this definition in a different
 namespace, so that we can use `α.app` -/
-@[simps (attr := grind =)]
+@[implicit_reducible, simps (attr := grind =)]
 def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     F.obj X ≅ G.obj X where
   hom := α.hom.app X
@@ -176,7 +174,7 @@ set_option linter.translate.warnInvalid false in
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
-@[to_dual (attr := simps (attr := grind =)) ofComponents'
+@[implicit_reducible, to_dual (attr := simps (attr := grind =)) ofComponents'
 /-- The dual of `ofComponents` -/]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),
