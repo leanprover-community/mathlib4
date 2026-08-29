@@ -275,10 +275,10 @@ def equivIcc : StdSimplex R' (Fin 2) ≃ Set.Icc (0 : R') 1 where
 attribute [local simp] equivIcc_apply_coe
 
 @[simp]
-lemma equivIcc_single_zero : equivIcc (.single (R := R') 0) = ⟨0, by simp⟩ := by aesop
+lemma equivIcc_single_zero : equivIcc (.single (R := R') 0) = 0 := by aesop
 
 @[simp]
-lemma equivIcc_single_one : equivIcc (.single (R := R') 1) = ⟨1, by simp⟩ := by aesop
+lemma equivIcc_single_one : equivIcc (.single (R := R') 1) = 1 := by aesop
 
 @[simp]
 lemma equivIcc_symm_zero : equivIcc.symm 0 = .single (R := R') 0 :=
