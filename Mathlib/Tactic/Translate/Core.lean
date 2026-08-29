@@ -21,6 +21,7 @@ public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
+meta import Mathlib.Tactic.Translate.Reorder
 
 /-!
 # The translation attribute.
@@ -1002,7 +1003,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
-  -- Process any remaining universe contraints, to assign all universe metavariables.
+  -- Process any remaining universe constraints, to assign all universe metavariables.
   discard <| processPostponed (mayPostpone := false) (exceptionOnFailure := true)
   let tgtParams := tgtDecl.levelParams.toArray
   let params ← levels.mapIdxM fun i level ↦ do
@@ -1205,7 +1206,19 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
   let allDecls := #[src, tgt] ++ nestedDecls
   if attrs.size > 0 then
     trace[translate_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
+  -- Sort the attributes based on their application time.
+  let mut attrs₁ := #[]
+  let mut attrs₂ := #[]
+  let mut attrs₃ := #[]
   for attr in attrs do
+    match getAttributeImpl (← getEnv) attr.name with
+    | .error errMsg => throwError errMsg
+    | .ok attrImpl =>
+      match attrImpl.applicationTime with
+      | .beforeElaboration => attrs₁ := attrs₁.push attr
+      | .afterTypeChecking => attrs₂ := attrs₂.push attr
+      | .afterCompilation => attrs₃ := attrs₃.push attr
+  for attr in attrs₁ ++ attrs₂ ++ attrs₃ do
     if let some impl := (← generatingAttrs.get).find? attr.name then
       withRef attr.stx do withLogging do
         translateLemmas t allDecls "simps lemmas" cfg
