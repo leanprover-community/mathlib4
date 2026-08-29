@@ -137,62 +137,90 @@ end Def
 
 -- end Measurability
 
-variable [TopologicalSpace E] [Zero E] [Preorder ι] {𝓕 : Filtration ι mΩ}
-  {X : ι → Ω → E} {ω : Ω}
+variable [TopologicalSpace E] {F G : Type*} [Zero F] [Zero G] [TopologicalSpace F]
+  [TopologicalSpace G] [Preorder ι] {𝓕 : Filtration ι mΩ}
+  {X Y : ι → Ω → E} {Z : ι → Ω → F} {ω : Ω}
 
 @[simp]
-theorem stoppedValue_const (u : ι → Ω → E) (i : ι) : (𝓕.stoppedValue u (fun _ => i) P) = u i := by
-  rfl
+theorem stoppedValue_const [Zero E] (u : ι → Ω → E) (i : ι) :
+    (𝓕.stoppedValue u (fun _ => i) P) = u i := by rfl
 
 @[simp]
-lemma stoppedValue_comp_of_ne_top {γ : Type*} [Zero γ] [TopologicalSpace γ] (f : E → γ)
-    (hτ : τ ω ≠ ⊤) :
+lemma stoppedValue_comp_of_ne_top [Zero E] {γ : Type*} [Zero γ] [TopologicalSpace γ]
+    (X : ι → Ω → E) (f : E → γ) (hτ : τ ω ≠ ⊤) :
     𝓕.stoppedValue (fun t ω ↦ f (X t ω)) τ P ω = f (𝓕.stoppedValue X τ P ω) := by
   simp [stoppedValue_of_ne_top hτ]
 
+@[simp]
+lemma stoppedValue_comp₂_of_ne_top [Zero E] (X : ι → Ω → E) (Z : ι → Ω → F) (f : E → F → G)
+    (hτ : τ ω ≠ ⊤) :
+    𝓕.stoppedValue (fun t ω ↦ f (X t ω) (Z t ω)) τ P ω =
+      f (𝓕.stoppedValue X τ P ω) (𝓕.stoppedValue Z τ P ω) := by
+  simp [stoppedValue_of_ne_top hτ]
+
 @[to_fun stoppedValue_fun_comp]
-lemma HasLimitProcess.stoppedValue_comp [IsDirectedOrder ι] [Nonempty ι] {γ : Type*}
-    [Zero γ] [TopologicalSpace γ] [T2Space γ]
-    {f : E → γ} (hX : HasLimitProcess X 𝓕 P) (hf : Continuous f) :
+lemma HasLimitProcess.stoppedValue_comp [Zero E] [IsDirectedOrder ι] [Nonempty ι] [T2Space F]
+    {f : E → F} (hX : HasLimitProcess X 𝓕 P) (hf : Continuous f) :
     𝓕.stoppedValue (fun t ω ↦ f (X t ω)) τ P =ᵐ[P] f ∘ (𝓕.stoppedValue X τ P) := by
   filter_upwards [hX.limitProcess_comp hf] with ω hω
-  cases h : τ ω with
-  | top => simp [h, hω]
-  | coe t => simp [h]
+  obtain _ | _ := eq_or_ne (τ ω) ⊤ <;> simp_all
+
+lemma HasLimitProcess.stoppedValue_comp₂ [Zero E] [IsDirectedOrder ι] [Nonempty ι] [T2Space G]
+    {f : E → F → G} (hX : HasLimitProcess X 𝓕 P) (hZ : HasLimitProcess Z 𝓕 P)
+    (hf : Continuous f.uncurry) :
+    𝓕.stoppedValue (fun t ω ↦ f (X t ω) (Z t ω)) τ P =ᵐ[P]
+      fun ω ↦ f (𝓕.stoppedValue X τ P ω) (𝓕.stoppedValue Z τ P ω) := by
+  filter_upwards [hX.limitProcess_comp₂ hf hZ] with ω hω
+  obtain _ | _ := eq_or_ne (τ ω) ⊤ <;> simp_all
 
 @[deprecated (since := "2026-08-28")] alias stoppedValue_norm := stoppedValue_comp_of_ne_top
 
-@[to_additive (attr := simp)]
-lemma stoppedValue_inv_of_ne_top [Inv E] (hτ : τ ω ≠ ⊤) :
+@[to_fun (attr := to_additive, simp) stoppedValue_fun_inv_of_ne_top]
+lemma stoppedValue_inv_of_ne_top [Zero E] [Inv E] (hτ : τ ω ≠ ⊤) :
     𝓕.stoppedValue (X⁻¹) τ P ω = (𝓕.stoppedValue X τ P ω)⁻¹ :=
-  stoppedValue_comp_of_ne_top _ hτ
+  stoppedValue_comp_of_ne_top X _ hτ
 
-@[to_fun stoppedValue_fun_inv']
-lemma HasLimitProcess.stoppedValue_inv' [IsDirectedOrder ι] [Nonempty ι] [Inv E] [ContinuousInv E]
+@[to_fun stoppedValue_fun_neg]
+lemma stoppedValue_neg [IsDirectedOrder ι] [Nonempty ι] [AddGroup E] [ContinuousNeg E]
     [T2Space E] :
-    𝓕.stoppedValue (X⁻¹) τ P =ᵐ[P] (𝓕.stoppedValue X τ P)⁻¹ := by
-  filter_upwards [hX.limitProcess_inv'] with ω hω
-  cases h : τ ω with
-  | top => simp [h, hω]
-  | coe t => simp [h]
+    𝓕.stoppedValue (-X) τ P =ᵐ[P] -(𝓕.stoppedValue X τ P) := by
+  filter_upwards [𝓕.limitProcess_neg X] with ω hω
+  obtain _ | _ := eq_or_ne (τ ω) ⊤ <;> simp_all [stoppedValue_of_ne_top]
 
-@[to_additive (attr := simp)]
-lemma stoppedValue_mul [Mul E] :
-    stoppedValue (u * v) τ = stoppedValue u τ * stoppedValue v τ := rfl
+@[to_fun (attr := to_additive, simp) stoppedValue_fun_mul_of_ne_top]
+lemma stoppedValue_mul_of_ne_top [Zero E] [Mul E] (hτ : τ ω ≠ ⊤) :
+    𝓕.stoppedValue (X * Y) τ P ω = 𝓕.stoppedValue X τ P ω * 𝓕.stoppedValue Y τ P ω :=
+  stoppedValue_comp₂_of_ne_top X Y _ hτ
 
-@[to_additive (attr := simp)]
-lemma stoppedValue_div [Div E] :
-    stoppedValue (u / v) τ = stoppedValue u τ / stoppedValue v τ := rfl
+@[to_fun (attr := to_additive) stoppedValue_fun_mul]
+lemma HasLimitProcess.stoppedValue_mul [IsDirectedOrder ι] [Nonempty ι] [Zero E] [Mul E]
+    [ContinuousMul E] [T2Space E] (hX : HasLimitProcess X 𝓕 P) (hY : HasLimitProcess Y 𝓕 P) :
+    𝓕.stoppedValue (X * Y) τ P =ᵐ[P] 𝓕.stoppedValue X τ P * 𝓕.stoppedValue Y τ P :=
+  hX.stoppedValue_comp₂ hY continuous_mul
 
-@[simp] lemma stoppedValue_const_smul {𝕜 : Type*} [SMul 𝕜 E] (c : 𝕜) :
-    stoppedValue (c • u) τ = c • stoppedValue u τ := rfl
+@[to_fun (attr := to_additive, simp) stoppedValue_fun_div_of_ne_top]
+lemma stoppedValue_div_of_ne_top [Zero E] [Div E] (hτ : τ ω ≠ ⊤) :
+    𝓕.stoppedValue (X / Y) τ P ω = 𝓕.stoppedValue X τ P ω / 𝓕.stoppedValue Y τ P ω :=
+  stoppedValue_comp₂_of_ne_top X Y _ hτ
 
-@[simp] lemma stoppedValue_const_bot [Bot ι] :
-    stoppedValue u (fun _ ↦ ⊥) = u ⊥ := by
-  ext; simp [stoppedValue, ← WithTop.coe_bot]
+@[to_fun (attr := to_additive, simp) stoppedValue_const_fun_smul_of_ne_top]
+lemma stoppedValue_const_smul_of_ne_top [Zero E] {𝕜 : Type*} [SMul 𝕜 E] (c : 𝕜) (hτ : τ ω ≠ ⊤) :
+    𝓕.stoppedValue (c • X) τ P ω = c • 𝓕.stoppedValue X τ P ω :=
+  stoppedValue_comp_of_ne_top X _ hτ
 
-theorem stoppedProcess_eq_stoppedValue :
-    stoppedProcess u τ = fun i : ι => stoppedValue u fun ω => min i (τ ω) := rfl
+@[to_fun stoppedValue_const_fun_smul]
+lemma stoppedValue_const_smul [Zero E] [IsDirectedOrder ι] [Nonempty ι] [T2Space E] {𝕜 : Type*}
+    [GroupWithZero 𝕜] [MulActionWithZero 𝕜 E] [ContinuousConstSMul 𝕜 E] (c : 𝕜) :
+    𝓕.stoppedValue (c • X) τ P =ᵐ[P] c • 𝓕.stoppedValue X τ P := by
+  filter_upwards [𝓕.limitProcess_smul X c] with ω hω
+  obtain _ | _ := eq_or_ne (τ ω) ⊤ <;> simp_all [stoppedValue_of_ne_top]
+
+@[simp] lemma stoppedValue_const_bot [Zero E] [Bot ι] :
+    𝓕.stoppedValue X (fun _ ↦ ⊥) P = X ⊥ :=
+  stoppedValue_const X ⊥
+
+theorem stoppedProcess_eq_stoppedValue [Nonempty ι] :
+    stoppedProcess X τ = fun i : ι => stoppedValue u fun ω => min i (τ ω) := rfl
 
 theorem stoppedProcess_eq_stoppedValue_apply (i : ι) (ω : Ω) :
     stoppedProcess u τ i ω = stoppedValue u (fun ω ↦ min i (τ ω)) ω := rfl
