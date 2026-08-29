@@ -649,9 +649,6 @@ lemma log_deriv_riemannZeta_add_inv_sub_bounded :
     =O[𝓝[≠] 1] (fun _ ↦ (1 : ℂ)) :=
   (isBigO_const_one ..).sub_iff_left.mp log_deriv_riemannZeta_add_inv_sub_sub_isLittleO.isBigO
 
-/-- The reciprocal of the Riemann zeta function expressed via the entire function `riemannZeta₁`,
-valid at every `s ≠ 1`.  This is the pointwise form of `inv_riemannZeta_eq_sub_mul`, which holds
-eventually near `s = 1`. -/
 lemma inv_riemannZeta_eq_sub_mul_of_ne_one {s : ℂ} (hs : s ≠ 1) :
     (riemannZeta s)⁻¹ = (s - 1) * (riemannZeta₁ s)⁻¹ := by
   rw [riemannZeta_eq_inv_sub_mul hs, mul_inv, inv_inv]
