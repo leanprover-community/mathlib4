@@ -114,7 +114,7 @@ theorem ofVector_vsub (p q : P) : ofVector (R := R) (p -ᵥ q) = ofPoint p - ofP
 
 @[simp]
 theorem ofVector_smul {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
-    (r : R) (v : V) : ofVector (r • v) = r • ofVector (R := R) (P := P) v :=
+    (r : S) (v : V) : ofVector (r • v) = r • ofVector (R := R) (P := P) v :=
   Prod.ext rfl (smul_zero r).symm
 
 theorem ofVector_injective : Function.Injective (ofVector (R := R) (P := P)) :=
