@@ -82,12 +82,6 @@ lemma re_dotProduct_pos (hA : A.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
 lemma eigenvalues_pos [DecidableEq n] (hA : A.PosDef) (i : n) : 0 < hA.1.eigenvalues i :=
   hA.isHermitian.posDef_iff_eigenvalues_pos.mp hA i
 
-lemma det_pos [DecidableEq n] (hA : A.PosDef) : 0 < det A := by
-  rw [hA.isHermitian.det_eq_prod_eigenvalues]
-  apply Finset.prod_pos
-  intro i _
-  simpa using hA.eigenvalues_pos i
-
 end PosDef
 
 set_option backward.privateInPublic true in
