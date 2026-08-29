@@ -62,6 +62,7 @@ abbrev SSet.pair (X : SSet.{u}) : SSetPair.{u} := SSet.Subcomplex.pair (X := X) 
 
 /-- The functor `SSet ⥤ SSetPair` which sends `X : SSet` to the pair
 corresponding to the inclusion of the empty subcomplex in `X`. -/
+@[implicit_reducible, simps]
 def SSet.toPairFunctor : SSet.{u} ⥤ SSetPair.{u} where
   obj := SSet.pair
   map f := SSetPair.homMk (Subcomplex.lift (Subcomplex.ι _ ≫ f) (fun _ _ h ↦ by simp at h)) f
