@@ -517,10 +517,11 @@ theorem comapDomain_apply [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.I
     (a : α) : comapDomain f l hf a = l (f a) :=
   rfl
 
-theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →₀ M) (g : β → M → N)
+@[to_additive]
+theorem prod_comapDomain [Zero M] [CommMonoid N] (f : α → β) (l : β →₀ M) (g : β → M → N)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) :
-    (comapDomain f l hf.injOn).sum (g ∘ f) = l.sum g :=
-  Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
+    (comapDomain f l hf.injOn).prod (g ∘ f) = l.prod g :=
+  Finset.prod_preimage_of_bij f _ hf fun x => g x (l x)
 
 theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
