@@ -139,6 +139,43 @@ theorem nndist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
     nndist p₂ (homothety p₁ c p₂) = ‖1 - c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_self_homothety _ _ _
 
+theorem Metric.image_homothety_ball (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
+    homothety c x '' ball p r = ball (homothety c x p) (‖x‖ * r) := by
+  ext q
+  simp only [Set.mem_image, mem_ball]
+  constructor
+  · rintro ⟨s, hs, rfl⟩
+    simpa [hx] using hs
+  · intro h
+    use homothety c x⁻¹ q
+    have hp : p = homothety c x⁻¹ (homothety c x p) := by simp [← homothety_mul_apply, hx]
+    rw [hp, dist_homothety, norm_inv, inv_mul_lt_iff₀ (by simpa using hx)]
+    simp [← homothety_mul_apply, hx, h]
+
+theorem Metric.image_homothety_closedBall (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
+    homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
+  ext q
+  simp only [Set.mem_image, mem_closedBall]
+  constructor
+  · rintro ⟨s, hs, rfl⟩
+    simpa [hx] using hs
+  · intro h
+    use homothety c x⁻¹ q
+    have hp : p = homothety c x⁻¹ (homothety c x p) := by simp [← homothety_mul_apply, hx]
+    rw [hp, dist_homothety, norm_inv, inv_mul_le_iff₀ (by simpa using hx)]
+    simp [← homothety_mul_apply, hx, h]
+
+theorem Metric.image_homothety_closedBall_of_nonneg (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
+    homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
+  by_cases hx : x = 0
+  · simpa [hx] using! (nonempty_closedBall.mpr hr).image_const c
+  exact image_homothety_closedBall p c r hx
+
+theorem Metric.image_homothety_sphere (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
+    homothety c x '' sphere p r = sphere (homothety c x p) (‖x‖ * r) := by
+  rw [← closedBall_sdiff_ball, ← closedBall_sdiff_ball, Set.image_sdiff (homothety_injective c hx),
+    image_homothety_ball p c r hx, image_homothety_closedBall p c r hx]
+
 section invertibleTwo
 
 variable [Invertible (2 : 𝕜)]
