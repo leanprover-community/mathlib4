@@ -266,8 +266,8 @@ lemma lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← Cotangent.lift_comp_toCotangent f hf, LinearMap.coe_comp]
     exact Function.Surjective.comp h (toCotangent_surjective I)
-  · intro y 
-    obtain ⟨x, rfl⟩ := h y 
+  · intro y
+    obtain ⟨x, rfl⟩ := h y
     exact ⟨_, lift_toCotangent f hf x⟩
 
 end Lift
