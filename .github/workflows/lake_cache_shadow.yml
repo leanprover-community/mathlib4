@@ -6,12 +6,17 @@ name: Lake cache shadow (master)
 # scope so no other consumer reads from it.
 #
 # Required repository configuration:
+#   Environment `lake-cache-shadow` — its deployment branch policy lists
+#   the refs that may mint upload credentials. The `upload` job holds no
+#   durable storage secret: it exchanges its GitHub OIDC token at the
+#   cache broker for short-lived SigV4 credentials (LAKE_CACHE_KEY as
+#   `<ACCESS_KEY_ID>:<SECRET_ACCESS_KEY>` plus LAKE_CACHE_SESSION_TOKEN;
+#   region is `auto`), and the credentials expire on their own.
 #   Secrets:
-#     LAKE_CACHE_KEY                         — SigV4 credential for the cache
-#                                              bucket, as `<ACCESS_KEY_ID>:<SECRET_ACCESS_KEY>`
-#                                              (curl `--user`; region is `auto`).
 #     ZULIP_API_KEY                          — Zulip bot key, used by the `report` job.
 #   Variables:
+#     # The cache broker endpoint the `upload` job mints credentials from.
+#     MATHLIB_CACHE_BROKER_URL               — e.g. https://<broker-host>/r2-credentials
 #     # Authenticated S3 endpoint, used by `upload` for PUTs.
 #     LAKE_CACHE_ARTIFACT_ENDPOINT           — e.g. https://<acct>.r2.cloudflarestorage.com/<bucket>/<prefix>/artifacts
 #     LAKE_CACHE_REVISION_ENDPOINT           — e.g. https://<acct>.r2.cloudflarestorage.com/<bucket>/<prefix>/revisions
@@ -83,6 +88,13 @@ on:
         required: false
         type: string
         default: ''
+      mint_only:
+        description: >-
+          mint broker credentials and smoke-test them, then stop: skips
+          put-staged, carryover, and consume. For broker trials.
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -352,6 +364,12 @@ jobs:
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # The environment sub is what the broker's grant pins; the environment's
+    # deployment branch policy lists the refs that may mint.
+    environment: lake-cache-shadow
+    permissions:
+      contents: read
+      id-token: write # request the OIDC token the broker verifies
     outputs:
       carryover: ${{ steps.carryover.outputs.summary }}
       new_content: ${{ steps.carryover.outputs.new_content }}
@@ -387,15 +405,52 @@ jobs:
           name: lake-cache-staging-${{ github.run_id }}
           path: lake-cache-staging
 
-      - name: Resolve LAKE_CACHE_KEY (trim whitespace)
+      # The job's whole credential: short-lived, scoped to the shadow
+      # bucket's cache/ prefix, and expiring on its own. LAKE_CACHE_KEY
+      # feeds `lake cache put-staged` and the carryover curls;
+      # LAKE_CACHE_SESSION_TOKEN completes the temporary-credential
+      # signature (sent as x-amz-security-token).
+      - name: Mint short-lived R2 credentials from the broker
         env:
-          LAKE_CACHE_KEY_RAW: ${{ secrets.LAKE_CACHE_KEY }}
+          BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
         run: |
-          KEY="$(printf %s "$LAKE_CACHE_KEY_RAW" | sed -e 's/[[:space:]]*$//')"
-          echo "::add-mask::$KEY"
-          echo "LAKE_CACHE_KEY=$KEY" >> "$GITHUB_ENV"
+          if [ -z "${BROKER_URL}" ]; then
+            echo "::error::MATHLIB_CACHE_BROKER_URL (repository variable) must be set"
+            exit 1
+          fi
+          jwt="$(curl -sSf -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mathlib-cache-broker" | jq -er .value)"
+          creds="$(curl -sSf -X POST -H "Authorization: Bearer ${jwt}" "${BROKER_URL}")"
+          access_key_id="$(jq -er .accessKeyId <<<"${creds}")"
+          secret_access_key="$(jq -er .secretAccessKey <<<"${creds}")"
+          session_token="$(jq -er .sessionToken <<<"${creds}")"
+          echo "::add-mask::${access_key_id}"
+          echo "::add-mask::${secret_access_key}"
+          echo "::add-mask::${session_token}"
+          {
+            echo "LAKE_CACHE_KEY=${access_key_id}:${secret_access_key}"
+            echo "LAKE_CACHE_SESSION_TOKEN=${session_token}"
+          } >> "$GITHUB_ENV"
+          echo "::notice::minted grant $(jq -r .grant <<<"${creds}") (ttl $(jq -r .ttlSeconds <<<"${creds}")s)"
+
+      # Proves the minted credential signs a session-token PUT before Lake
+      # holds it: a put-staged failure after this step passes isolates to
+      # Lake, not to the credential.
+      - name: Smoke-test the minted credential
+        run: |
+          probe_url="${LAKE_CACHE_ARTIFACT_ENDPOINT%/artifacts}/broker-smoke/run-${GITHUB_RUN_ID}.txt"
+          printf 'run %s\n' "${GITHUB_RUN_ID}" > /tmp/probe.txt
+          curl -sSf --aws-sigv4 aws:amz:auto:s3 --user "${LAKE_CACHE_KEY}" \
+            -H "x-amz-security-token: ${LAKE_CACHE_SESSION_TOKEN}" \
+            -X PUT -T /tmp/probe.txt "${probe_url}"
+          curl -sSf --aws-sigv4 aws:amz:auto:s3 --user "${LAKE_CACHE_KEY}" \
+            -H "x-amz-security-token: ${LAKE_CACHE_SESSION_TOKEN}" \
+            -o /tmp/probe-back.txt "${probe_url}"
+          cmp /tmp/probe.txt /tmp/probe-back.txt
+          echo "::notice::session-token PUT and read-back verified"
 
       - name: lake cache put-staged
+        if: ${{ !inputs.mint_only }}
         run: |
           cd pr-branch
           # --toolchain is a no-op with the current `--scope=<string>` form
@@ -417,6 +472,7 @@ jobs:
       # bucket this run) by mapping each new content-hash back to its staged file.
       - name: Cache carryover analysis
         id: carryover
+        if: ${{ !inputs.mint_only }}
         continue-on-error: true
         env:
           AUTH: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
@@ -428,7 +484,8 @@ jobs:
           slug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
           base="${AUTH%/artifacts}/analysis/$slug"
           sha="${{ needs.build_and_stage.outputs.sha }}"
-          sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
+          sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY"
+            -H "x-amz-security-token: $LAKE_CACHE_SESSION_TOKEN")
           # grep exits 1 on no match (handled by the total==0 branch); tolerate it under pipefail.
           grep -oE 'uploaded artifact [0-9a-f]+' /tmp/put.log | awk '{print $3}' | sort -u > /tmp/today.txt || true
           total=$(wc -l < /tmp/today.txt)
@@ -488,7 +545,7 @@ jobs:
   consume:
     name: Build from Lake cache (no hydration)
     needs: [build_and_stage, upload]
-    if: ${{ github.repository == 'leanprover-community/mathlib4' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && !inputs.mint_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     outputs:
