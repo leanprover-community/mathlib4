@@ -26,6 +26,8 @@ We prove a variety of API lemmas, see `Mathlib/Data/Finsupp/Fin.lean` for compar
   function on `α`.
 * `Finsupp.optionElim`: extend a finitely supported function on `α`
   to a finitely supported function on `Option α`, provided a default value for `none`.
+* `Finsupp.withTopSome`/`Finsupp.withBotSome`: `Finsupp.some` stated for `WithTop`/`WithBot` rather
+  than for `Option`, so that the two are duals of each other under `@[to_dual]`.
 
 ## Implementation notes
 
@@ -95,6 +97,21 @@ theorem some_single_some (a : α) (m : M) :
 @[simp]
 theorem embDomain_some_some (f : α →₀ M) (x) : f.embDomain .some (.some x) = f x := by
   simp [← Function.Embedding.some_apply]
+
+@[simp]
+lemma embDomain_some_of_none_eq_zero {f : Option α →₀ M} (hf : f none = 0) :
+    f.some.embDomain .some = f := by
+  ext a
+  cases a with
+  | none => rw [embDomain_some_none, hf]
+  | some a => rw [embDomain_some_some, some_apply]
+
+@[to_additive]
+lemma prod_some [CommMonoid N] {f : Option α →₀ M} (hf : f none = 0) (g : Option α → M → N) :
+    (f.some.prod fun a ↦ g (Option.some a)) = f.prod g := by
+  conv_rhs => rw [← embDomain_some_of_none_eq_zero hf]
+  rw [prod_embDomain]
+  rfl
 
 @[simp]
 theorem some_update_none (f : Option α →₀ M) (a : M) :
@@ -217,5 +234,31 @@ lemma optionElim_add [AddZeroClass M] (a b : α →₀ M) (i j : M) :
   ext x; cases x <;> simp
 
 end Option
+
+section WithTop
+variable [Zero M]
+
+/-- Restrict a finitely supported function on `WithTop α` to a finitely supported function on `α`.
+
+This is `Finsupp.some` stated for `WithTop`, so that it dualises to `Finsupp.withBotSome`. -/
+@[to_dual
+/-- Restrict a finitely supported function on `WithBot α` to a finitely supported function on `α`.
+
+This is `Finsupp.some` stated for `WithBot`, so that it dualises to `Finsupp.withTopSome`. -/]
+def withTopSome (f : WithTop α →₀ M) : α →₀ M := f.comapDomain (↑) WithTop.coe_injective.injOn
+
+@[to_dual (attr := simp)]
+lemma withTopSome_apply (f : WithTop α →₀ M) (a : α) : f.withTopSome a = f a := rfl
+
+@[to_additive (attr := to_dual)]
+lemma prod_withTopSome [CommMonoid N] {f : WithTop α →₀ M} (hf : f ⊤ = 0)
+    (g : WithTop α → M → N) : (f.withTopSome.prod fun a ↦ g (a : WithTop α)) = f.prod g := by
+  refine prod_comapDomain ((↑) : α → WithTop α) f g
+    ⟨fun a ha ↦ ha, WithTop.coe_injective.injOn, fun b hb ↦ ?_⟩
+  induction b with
+  | top => exact absurd (Finsupp.mem_support_iff.1 hb) (not_not.2 hf)
+  | coe a => exact ⟨a, hb, rfl⟩
+
+end WithTop
 
 end Finsupp
