@@ -17,7 +17,9 @@ simplex category, for `n ≤ m` are initial.
 
 public section
 
-open Simplicial CategoryTheory
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SimplexCategory.Truncated
 
