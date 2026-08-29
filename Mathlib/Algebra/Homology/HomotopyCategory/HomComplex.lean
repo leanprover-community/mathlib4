@@ -707,6 +707,14 @@ def toCochainAddMonoidHom : Cocycle K L n →+ Cochain K L n where
   map_zero' := by simp
   map_add' := by simp
 
+variable (R L n) in
+/-- The inclusion `Cocycle K L n →ₗ[R] Cochain K L n`. -/
+@[simps]
+def toCochainLinearMap : Cocycle K L n →ₗ[R] Cochain K L n where
+  toFun x := x
+  map_add' := by simp
+  map_smul' := by simp
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (L n) in
@@ -959,5 +967,23 @@ def linearHomComplex : CochainComplex (ModuleCat R) ℤ where
   d i j := ModuleCat.ofHom (δ_hom R F G i j)
   shape _ _ hij := by ext; simp [δ_shape _ _ hij]
   d_comp_d' _ _ _ _ _ := by ext; simp [δ_δ]
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+variable (R K L) in
+def HomComplex.Cocycle.isKernel' (hm : n + 1 = m) :
+    IsLimit (KernelFork.ofι (f := (linearHomComplex R K L).d n m)
+      (ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L _)) (by cat_disch)) :=
+  Fork.IsLimit.mk _
+    (fun s ↦ ModuleCat.ofHom
+      { toFun x := ⟨s.ι x, by
+          dsimp
+          rw [Cocycle.mem_iff _ _ hm]
+          exact ConcreteCategory.congr_hom s.condition x⟩
+        map_add' := sorry
+        map_smul' := sorry })
+    sorry
+    sorry
+
 
 end CochainComplex

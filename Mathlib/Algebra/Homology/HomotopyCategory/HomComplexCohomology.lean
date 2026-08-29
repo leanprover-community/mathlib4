@@ -107,7 +107,8 @@ lemma mk_eq_zero_iff (x : Cocycle K L n) :
   QuotientAddGroup.eq_zero_iff x
 
 lemma mk_eq_mk_iff (x y : Cocycle K L n) :
-    mk x = mk y ↔ (x - y) ∈ coboundaries K L n := sorry
+    mk x = mk y ↔ (x - y) ∈ coboundaries K L n := by
+  rw [← mk_eq_zero_iff, mk_sub, sub_eq_zero]
 
 variable (K L n) in
 /-- The projection map `Cocycle K L n →+ CohomologyClass K L n`. -/
@@ -210,6 +211,14 @@ instance : Module R (CohomologyClass K L n) where
 
 end
 
+variable (K L n) in
+/-- The projection map `Cocycle K L n →ₗ[R] CohomologyClass K L n`. -/
+@[simps]
+def mkLinearMap [Linear R C] : Cocycle K L n →ₗ[R] CohomologyClass K L n where
+  toFun := mk
+  map_add' := by simp
+  map_smul' := by simp [mk_smul]
+
 end CohomologyClass
 
 set_option backward.defeqAttrib.useBackward true in
@@ -243,8 +252,8 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
         obtain ⟨y, rfl⟩ := x.mk_surjective
         simpa using! ConcreteCategory.congr_hom hl y)
 
-/-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
-in degree `m`. -/
+/-- `CohomologyClass K L n` identifies to the cohomology of the complex `HomComplex K L`
+in degree `n`. -/
 @[simps!]
 noncomputable def leftHomologyData :
     ((HomComplex K L).sc n).LeftHomologyData :=
@@ -255,8 +264,39 @@ noncomputable def homologyAddEquiv :
     (HomComplex K L).homology n ≃+ CohomologyClass K L n :=
   (leftHomologyData K L n).homologyIso.addCommGroupIsoToAddEquiv
 
-def homologyLinearEquiv [Linear R C] :
-    (linearHomComplex R K L).homology n ≃ₗ[R] HomComplex.CohomologyClass K L n := sorry
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- `CohomologyClass K L m` identifies to the cohomology of the
+complex `linearHomComplex R K L` in degree `m`. -/
+@[simps]
+def linearLeftHomologyData' [Linear R C] (hm : n + 1 = m) (hp : m + 1 = p) :
+    ((linearHomComplex R K L).sc' n m p).LeftHomologyData where
+  K := ModuleCat.of R (Cocycle K L m)
+  H := ModuleCat.of R (CohomologyClass K L m)
+  i := ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L m)
+  π := ModuleCat.ofHom (CohomologyClass.mkLinearMap R K L m)
+  wi := by cat_disch
+  hi := Cocycle.isKernel' R K L _ _ hp
+  wπ := by
+    ext x
+    dsimp
+    rw [CohomologyClass.mk_eq_zero_iff]
+    exact ⟨n, hm, x, rfl⟩
+  hπ := by
+    sorry
+
+/-- `CohomologyClass K L m` identifies to the cohomology of the
+complex `linearHomComplex R K L` in degree `m`. -/
+@[simps!]
+noncomputable def linearLeftHomologyData [Linear R C] :
+    ((linearHomComplex R K L).sc n).LeftHomologyData :=
+  linearLeftHomologyData' R K L _ n _ (by simp) (by simp)
+
+/-- The homology of `linearHomComplex R K L` in degree `n` identifies
+to `CohomologyClass K L n`. -/
+noncomputable def homologyLinearEquiv [Linear R C] :
+    (linearHomComplex R K L).homology n ≃ₗ[R] CohomologyClass K L n :=
+  (linearLeftHomologyData R K L n).homologyIso.toLinearEquiv
 
 end HomComplex
 
