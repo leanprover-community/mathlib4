@@ -54,21 +54,18 @@ def mkExprInclusionBody (e : Expr) : InclusionM ExprInclusionBody := do
     "Matched inclusion extensions (in order of priority):\n{ppMatchedExts matchedExts}"
   let savedState ← saveState
   for ext in matchedExts do
-    let body? : Option ExprInclusionBody ← withTraceNode `Tactic.inclusion
-      (fun _ => do return m!"Trying {ppExtensionName ext.family ext.userName}") do
+    withTraceNode `Tactic.inclusion
+      (fun _ => do return m!"Trying {ppExtensionName ext.family ext.userName}") do←
       try
         let body ← ext.derive e
         recordExtraModUseFromDecl (isMeta := true) ext.declName
-        return some body
+        trace[Tactic.inclusion] "Inclusion body:\n {← ppInclusionExpr body.inclusionBody}"
+        return body
       catch err =>
         trace[Tactic.inclusion]
           "Failed to apply {ppExtensionName ext.family ext.userName} to {e}: \
             {err.toMessageData}"
         restoreState savedState
-        return none
-    if let some body := body? then
-      trace[Tactic.inclusion] "Inclusion body:\n {← ppInclusionExpr body.inclusionBody}"
-      return body
   throwError "No inclusion extension applies to {e}"
 
 /-- Check that `body.proofBody` is a proof of `e ∈ body.inclusionBody` and infer its `IType`. -/
