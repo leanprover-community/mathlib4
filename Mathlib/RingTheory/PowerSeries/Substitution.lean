@@ -373,8 +373,7 @@ theorem HasSubst.comp
     HasSubst (substAlgHom hb a) :=
   MvPowerSeries.IsNilpotent_substAlgHom hb.const ha
 
-variable {a : PowerSeries S} {b : MvPowerSeries υ T} {a' : MvPowerSeries τ S}
-  {b' : τ → MvPowerSeries υ T} [IsScalarTower R S T]
+variable {a : PowerSeries S} {b : MvPowerSeries υ T} [IsScalarTower R S T]
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) :=

@@ -276,7 +276,7 @@ end ShortComplex
 
 namespace Functor
 
-variable (F : C ⥤ D) [PreservesZeroMorphisms F] (S : ShortComplex C) {S₁ S₂ : ShortComplex C}
+variable (F : C ⥤ D) [PreservesZeroMorphisms F] (S : ShortComplex C)
 
 /-- A functor preserves the left homology of a short complex `S` if it preserves all the
 left homology data of `S`. -/

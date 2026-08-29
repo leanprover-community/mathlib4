@@ -150,7 +150,7 @@ theorem isCompact_closure_of_isBounded (S : Set (WeakSpace 𝕜 X))
   rw [(isEmbedding_inclusionInDoubleDualWeak 𝕜 X).closure_eq_preimage_closure_image]
   apply (isEmbedding_inclusionInDoubleDualWeak 𝕜 X).isCompact_preimage' _ hrange
   exact WeakDual.isCompact_of_bounded_of_closed
-    (WeakDual.isBounded_closure ((inclusionInDoubleDual 𝕜 X).lipschitz.isBounded_image hb))
+    (WeakDual.isBounded_closure ((inclusionInDoubleDual 𝕜 X).lipschitzWith.isBounded_image hb))
     isClosed_closure
 
 end Embedding

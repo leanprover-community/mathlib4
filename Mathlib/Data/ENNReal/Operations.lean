@@ -454,7 +454,7 @@ end Sub
 
 section Interval
 
-variable {x y z : ℝ≥0∞} {ε ε₁ ε₂ : ℝ≥0∞} {s : Set ℝ≥0∞}
+variable {x y : ℝ≥0∞} {ε ε₁ ε₂ : ℝ≥0∞}
 
 protected theorem Ico_eq_Iio : Ico 0 y = Iio y :=
   Ico_bot
@@ -502,7 +502,7 @@ end Interval
 section iInf
 
 variable {ι : Sort*} {f g : ι → ℝ≥0∞}
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a b c d : ℝ≥0∞} {r : ℝ≥0}
 
 theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f i).toNNReal := by
   cases isEmpty_or_nonempty ι
