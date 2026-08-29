@@ -71,15 +71,12 @@ theorem not_isCarmichael_one : ¬ IsCarmichael 1 := by
 
 lemma IsCarmichael.zmod_unit_pow_sub_one (s : (ZMod n)ˣ) (hn : n.IsCarmichael) :
   s ^ (n - 1) = 1 := by
-  have _ : NeZero n := ⟨by grind [hn.two_lt]⟩
-  have suf : (↑s : ZMod n).val ^ (n - 1) ≡ 1 [MOD n] := by
-    refine (probablePrime_iff_modEq n ?_).mp <|
-      hn.probablePrime_of_coprime (ZMod.val_coe_unit_coprime s)
-    rw [one_le_iff_ne_zero, Ne, ZMod.val_eq_zero]
-    have : Nontrivial (ZMod n) := ZMod.nontrivial_iff.mpr (by grind [hn.two_lt])
-    exact Units.ne_zero s
+  have : Nontrivial (ZMod n) := ZMod.nontrivial_iff.mpr (by grind [hn.two_lt])
   ext
-  simp [← cast_one (R := ZMod n), ← (ZMod.natCast_eq_natCast_iff ..).mpr suf]
+  rw [Units.val_one, Units.val_pow_eq_pow_val,
+    ← @ZMod.natCast_zmod_val _ ⟨by grind [hn.two_lt]⟩ s.val,
+    ← probablePrime_iff_zmod_one n (by simp [Units.ne_zero s])]
+  exact hn.probablePrime_of_coprime <| ZMod.val_coe_unit_coprime s
 
 /-- A Carmichael number is odd. -/
 theorem IsCarmichael.odd (h : n.IsCarmichael) : Odd n := by
@@ -134,7 +131,6 @@ theorem isCarmichael_iff_korselt :
   intro ⟨hn, hn_prime, hn_squarefree, h_dvd⟩
   have : NeZero n := ⟨by lia⟩
   refine ⟨hn, hn_prime, fun b hb ↦ ?_⟩
-  rw [probablePrime_iff_modEq n (show 1 ≤ b by grind)]
   obtain ⟨d, hd⟩ : carmichael n ∣ n - 1 := by
     rw [carmichael_factorization]
     refine Finset.lcm_dvd fun p hp_mem ↦ ?_
@@ -142,12 +138,8 @@ theorem isCarmichael_iff_korselt :
     rw [factorization_eq_one_of_squarefree hn_squarefree hp_mem.1 hp_mem.2.1, pow_one,
       carmichael_of_prime hp_mem.1]
     exact h_dvd p hp_mem.1 hp_mem.2.1
-  have hb_pow : (ZMod.unitOfCoprime b hb) ^ (n - 1) = 1 := by
-    rw [hd, pow_mul, pow_carmichael, one_pow]
-  have h_cast : (b : ZMod n) ^ (n - 1) = 1 := by
-    simpa using congrArg Units.val hb_pow
-  apply (ZMod.natCast_eq_natCast_iff ..).mp
-  simp [h_cast]
+  rw [probablePrime_iff_zmod_one n (by grind), ← ZMod.coe_unitOfCoprime b hb,
+    ← Units.val_pow_eq_pow_val, hd, pow_mul, pow_carmichael, one_pow, Units.val_one]
 
 /-- **Korselt's criterion** stated in a form suitable for concrete calculations. -/
 theorem isCarmichael_iff_korselt_primeFactorsList :
