@@ -5,13 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.UnivLE
 public import Mathlib.Data.Countable.Small
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Logic.Small.Set
-public import Mathlib.Logic.UnivLE
 public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
@@ -340,9 +340,6 @@ protected theorem le_one_iff {c : Cardinal} : c ≤ 1 ↔ c = 0 ∨ c = 1 := by
   rw [← natCast_add_one_le_iff, ← Nat.cast_add_one, ← lift_mk_fin, aleph0, lift_mk_le.{u}]
   exact ⟨⟨(↑), fun a b => Fin.ext⟩⟩
 
-@[deprecated natCast_lt_aleph0 (since := "2026-01-21")]
-theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ := natCast_lt_aleph0
-
 @[simp] lemma natCast_le_aleph0 {n : ℕ} : (n : Cardinal.{u}) ≤ ℵ₀ := natCast_lt_aleph0.le
 
 @[simp] lemma ofNat_lt_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) < ℵ₀ := natCast_lt_aleph0
@@ -536,6 +533,10 @@ theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
 
 lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
+
+@[simp] lemma aleph0_le_mk_set {s : Set α} : ℵ₀ ≤ #s ↔ s.Infinite := by
+  rw [aleph0_le_mk_iff, Set.infinite_coe_iff]
+
 lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
 
 @[simp] lemma mk_lt_aleph0 [Finite α] : #α < ℵ₀ := mk_lt_aleph0_iff.2 ‹_›
@@ -656,15 +657,8 @@ theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
 theorem mk_monotone : Monotone (α := Set α) (mk ∘ (↑)) :=
   fun _ _ ↦ mk_le_mk_of_subset
 
-@[deprecated mk_eq_zero (since := "2026-01-31")]
-theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
-  mk_eq_zero _
-
 theorem mk_set_eq_zero_iff {s : Set α} : #s = 0 ↔ s = ∅ := by
   rw [mk_eq_zero_iff, isEmpty_coe_sort]
-
-@[deprecated (since := "2026-01-31")]
-alias mk_emptyCollection_iff := mk_set_eq_zero_iff
 
 theorem mk_set_ne_zero_iff {s : Set α} : #s ≠ 0 ↔ s.Nonempty := by
   rw [mk_ne_zero_iff, nonempty_coe_sort]
@@ -701,11 +695,6 @@ theorem mk_range_eq (f : α → β) (h : Injective f) : #(range f) = #α :=
 theorem mk_range_eq_of_injective {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     lift.{u} #(range f) = lift.{v} #α :=
   lift_mk_eq'.mpr ⟨(Equiv.ofInjective f hf).symm⟩
-
-@[deprecated mk_range_eq_of_injective (since := "2026-01-06")]
-theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
-    lift.{max u w} #(range f) = lift.{max v w} #α :=
-  lift_mk_eq.{v, u, w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
 
 lemma lift_mk_le_lift_mk_of_injective {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     Cardinal.lift.{v} (#α) ≤ Cardinal.lift.{u} (#β) := by
