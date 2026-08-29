@@ -82,33 +82,49 @@ lemma HasLimitProcess.comp₂ {f : E → F → G} (hX : HasLimitProcess X 𝓕 P
   refine ⟨f.uncurry ∘ (Function.prod g h), hf.comp_stronglyMeasurable (mg.prodMk mh), ?_⟩
   filter_upwards [hg, hh] with ω h1 h2 using (hf.tendsto _).comp (h1.prodMk_nhds h2)
 
-lemma HasLimitProcess.smul {R : Type*} [SMul R E] [ContinuousConstSMul R E] (c : R)
+@[to_additive]
+lemma HasLimitProcess.smul {G : Type*} [SMul G E] [ContinuousConstSMul G E] (c : G)
     (hX : HasLimitProcess X 𝓕 P) :
     HasLimitProcess (c • X) 𝓕 P :=
   hX.comp (continuous_const_smul c)
 
-lemma hasLimitProcess_smul_iff {R : Type*} [DivisionRing R] [MulAction R E]
-    [ContinuousConstSMul R E] {c : R} (hc : c ≠ 0) :
+@[to_additive]
+lemma hasLimitProcess_smul_iff {G : Type*} [Group G] [MulAction G E] [ContinuousConstSMul G E]
+    {c : G} :
     HasLimitProcess (c • X) 𝓕 P ↔ HasLimitProcess X 𝓕 P where
   mp h := by
     convert h.comp (continuous_const_smul c⁻¹)
-    simp [smul_smul, hc]
+    simp
   mpr h := h.smul c
 
+@[to_additive]
 alias ⟨HasLimitProcess.of_smul, _⟩ := hasLimitProcess_smul_iff
 
-lemma HasLimitProcess.neg [Neg E] [ContinuousNeg E] (hX : HasLimitProcess X 𝓕 P) :
-    HasLimitProcess (-X) 𝓕 P :=
-  hX.comp continuous_neg
-
-lemma hasLimitProcess_neg_iff [InvolutiveNeg E] [ContinuousNeg E] :
-    HasLimitProcess (-X) 𝓕 P ↔ HasLimitProcess X 𝓕 P where
+lemma hasLimitProcess_smul_iff₀ {G : Type*} [GroupWithZero G] [MulAction G E]
+    [ContinuousConstSMul G E] {c : G} (hc : c ≠ 0) :
+    HasLimitProcess (c • X) 𝓕 P ↔ HasLimitProcess X 𝓕 P where
   mp h := by
-    convert h.comp continuous_neg
-    simp
-  mpr h := h.neg
+    convert h.comp (continuous_const_smul c⁻¹)
+    simp [hc]
+  mpr h := h.smul c
 
-alias ⟨HasLimitProcess.of_neg, _⟩ := hasLimitProcess_neg_iff
+alias ⟨HasLimitProcess.of_smul₀, _⟩ := hasLimitProcess_smul_iff₀
+
+@[to_additive]
+lemma HasLimitProcess.inv [Inv E] [ContinuousInv E] (hX : HasLimitProcess X 𝓕 P) :
+    HasLimitProcess (X⁻¹) 𝓕 P :=
+  hX.comp continuous_inv
+
+@[to_additive]
+lemma hasLimitProcess_inv_iff [InvolutiveInv E] [ContinuousInv E] :
+    HasLimitProcess (X⁻¹) 𝓕 P ↔ HasLimitProcess X 𝓕 P where
+  mp h := by
+    convert h.comp continuous_inv
+    simp
+  mpr h := h.inv
+
+@[to_additive]
+alias ⟨HasLimitProcess.of_inv, _⟩ := hasLimitProcess_inv_iff
 
 @[to_additive]
 lemma HasLimitProcess.mul [Mul E] [ContinuousMul E] (hX : HasLimitProcess X 𝓕 P)
@@ -225,9 +241,15 @@ lemma HasLimitProcess.limitProcess_comp₂ [Zero E] [T2Space G] {f : E → F →
 
 variable [T2Space E] [T2Space F]
 
+@[to_fun limitProcess_fun_vadd]
+lemma HasLimitProcess.limitProcess_vadd [Zero E] {G : Type*} [VAdd G E]
+    [ContinuousConstVAdd G E] (c : G) (hX : HasLimitProcess X 𝓕 P) :
+    𝓕.limitProcess (c +ᵥ X) P =ᵐ[P] c +ᵥ 𝓕.limitProcess X P :=
+  hX.limitProcess_comp (continuous_const_vadd c)
+
 @[to_fun limitProcess_fun_smul]
-lemma limitProcess_smul [Zero E] {R : Type*} [DivisionRing R] [MulActionWithZero R E]
-    [ContinuousConstSMul R E] (X : ι → Ω → E) (c : R) :
+lemma limitProcess_smul [Zero E] {G : Type*} [GroupWithZero G] [MulActionWithZero G E]
+    [ContinuousConstSMul G E] (X : ι → Ω → E) (c : G) :
     𝓕.limitProcess (c • X) P =ᵐ[P] c • 𝓕.limitProcess X P := by
   obtain rfl | hc := eq_or_ne c 0
   · simp [limitProcess_zero]
@@ -235,7 +257,7 @@ lemma limitProcess_smul [Zero E] {R : Type*} [DivisionRing R] [MulActionWithZero
   split_ifs with h
   · apply limitProcess_ae_eq (h.choose_spec.1.const_smul c)
     filter_upwards [h.choose_spec.2] with ω h1 using h1.const_smul c
-  rw [limitProcess, dite_eq_right ((hasLimitProcess_smul_iff hc).not.2 h)]
+  rw [limitProcess, dite_eq_right ((hasLimitProcess_smul_iff₀ hc).not.2 h)]
   simp
 
 @[to_fun limitProcess_fun_neg]
@@ -268,8 +290,7 @@ lemma limitProcess_div' [Zero E] [Div E] [ContinuousDiv E]
 attribute [to_additive limitProcess_sub] limitProcess_div'
 attribute [to_additive limitProcess_fun_sub] limitProcess_fun_div'
 
-lemma limitProcess_prodMk [Zero E] {Y : ι → Ω → F}
-    (hX : HasLimitProcess X 𝓕 P) (hY : HasLimitProcess Y 𝓕 P) :
+lemma limitProcess_prodMk [Zero E] (hX : HasLimitProcess X 𝓕 P) (hY : HasLimitProcess Y 𝓕 P) :
     𝓕.limitProcess (fun t ω ↦ (X t ω, Y t ω)) P =ᵐ[P]
       fun ω ↦ (𝓕.limitProcess X P ω, 𝓕.limitProcess Y P ω) :=
   hX.limitProcess_comp₂ (f := fun x y ↦ (x, y)) continuous_id hY
