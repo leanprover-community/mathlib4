@@ -94,12 +94,11 @@ theorem IsCarmichael.odd (h : n.IsCarmichael) : Odd n := by
 theorem IsCarmichael.squarefree (h : n.IsCarmichael) : Squarefree n := by
   refine squarefree_iff_prime_squarefree.mpr fun p hp p_dvd ↦ ?_
   have : NeZero (p ^ 2) := ⟨pow_ne_zero 2 hp.ne_zero⟩
-  have : NeZero n := ⟨by grind [h.two_lt]⟩
   have p_odd : Odd p := h.odd.of_dvd_nat <| dvd_trans (p.dvd_mul_left p) p_dvd
   obtain ⟨r, hr⟩ := isCyclic_iff_exists_orderOf_eq_natCard.mp <|
     (ZMod.isCyclic_units_iff_of_odd p_odd.pow).mpr ⟨p, 2, hp, p_odd, rfl⟩
   rw [card_eq_fintype_card, ZMod.card_units_eq_totient] at hr
-  obtain ⟨s, hs⟩ := ZMod.unitsMap_surjective (pow_two p ▸ p_dvd) r
+  obtain ⟨s, hs⟩ := @ZMod.unitsMap_surjective _ _ ⟨by grind [h.two_lt]⟩ (pow_two p ▸ p_dvd) r
   have phi_dvd : φ (p ^ 2) ∣ n - 1 := by
     rw [← hr, ← hs]
     apply orderOf_dvd_of_pow_eq_one
@@ -109,8 +108,7 @@ theorem IsCarmichael.squarefree (h : n.IsCarmichael) : Squarefree n := by
   exact dvd_trans (by simp [totient_prime_pow_succ hp 1]) phi_dvd
 
 theorem IsCarmichael.carmichael_dvd_sub_one (h : n.IsCarmichael) : carmichael n ∣ n - 1 := by
-  have : NeZero n := ⟨by grind [h.two_lt]⟩
-  rw [carmichael_eq_exponent']
+  rw [@carmichael_eq_exponent' n ⟨by grind [h.two_lt]⟩]
   exact Monoid.exponent_dvd_of_forall_pow_eq_one h.zmod_unit_pow_sub_one
 
 theorem IsCarmichael.prime_sub_one_dvd {p : ℕ} (h : n.IsCarmichael) (hp : p.Prime) (hpn : p ∣ n) :
