@@ -58,7 +58,6 @@ for a functor `G` from `K` to the fullsubcategory of `J ⥤ Type w` defined
 by `hasWeightedLimit.{w} F`. Assuming the cocone `c` is a colimit as a cocone
 in `J ⥤ Type w`, we show that after the application of the contravariant
 functor `F.weightedLimFlipObj'.{w}`, the corresponding cone in `C` is a limit. -/
-@[no_expose]
 noncomputable def preservesLimit'
     [HasColimitsOfShape K (Type w)]
     {F : J ⥤ C} {G : K ⥤ (hasWeightedLimit.{w} F).FullSubcategory}
@@ -101,12 +100,14 @@ namespace preservesLimit
 
 variable (s : Cone (G ⋙ W.weightedLimObj))
 
+/-- Auxiliary definition for `Functor.weightedLimObj.preservesLimit`. -/
 noncomputable def coneEval ⦃j : J⦄ (x : W.obj j) :
     Cone (G ⋙ (evaluation J C).obj j) where
   pt := s.pt
   π.app k := s.π.app k ≫ W.weightedLimObjObjπ (G.obj k) x
   π.naturality k₁ k₂ f := by simp [← s.w f]
 
+/-- Auxiliary definition for `Functor.weightedLimObj.preservesLimit`. -/
 noncomputable def liftAux ⦃j : J⦄ (x : W.obj j) : s.pt ⟶ c.pt.obj j :=
   (isLimitOfPreserves ((evaluation _ _).obj j) hc).lift (coneEval W s x)
 
@@ -116,7 +117,7 @@ lemma liftAux_π_app_app ⦃j : J⦄ (x : W.obj j) (k) :
       s.π.app k ≫ W.weightedLimObjObjπ (G.obj k) x :=
   (isLimitOfPreserves ((evaluation _ _).obj j) hc).fac (coneEval W s x) k
 
-@[no_expose]
+/-- Auxiliary definition for `Functor.weightedLimObj.preservesLimit`. -/
 noncomputable def isLimitMapCone : IsLimit (W.weightedLimObj.mapCone c) where
   lift s :=
     (isLimitWeightedLimCone W c.pt).lift
