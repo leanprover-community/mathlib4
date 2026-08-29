@@ -113,9 +113,9 @@ section Second
 
 /-- **Second mean value theorem for interval integrals** with a nonnegative antitone weight. -/
 theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
-    (hab : a ≤ b) (hf : 0 ≤ f b)
-    (hf_mon : AntitoneOn f (Icc a b)) (hg : IntervalIntegrable g volume a b) : ∃ ξ ∈ Icc a b,
-    ∫ x in a..b, f x * g x = f a * ∫ x in a..ξ, g x := by
+    (hab : a ≤ b) (hf : 0 ≤ f b) (hf_mon : AntitoneOn f (Icc a b))
+    (hg : IntervalIntegrable g volume a b) :
+    ∃ ξ ∈ Icc a b, ∫ x in a..b, f x * g x = f a * ∫ x in a..ξ, g x := by
   -- The first step is to write `f x` as layercake integral and use Fubini.
   have hsub : Ι a b ⊆ Icc a b := uIcc_of_le hab ▸ uIoc_subset_uIcc
   have hf_nonneg x (hx : x ∈ Icc a b) : 0 ≤ f x := hf.trans (hf_mon.mapsTo_Icc hx).1
@@ -130,8 +130,8 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
       ((volume.restrict (uIoc a b)).prod (volume.restrict (uIoc 0 (f a)))) :=
     (hg.def'.comp_fst _).indicator₀ hmeas
   -- Layer cake representation of `f x * g x`, valid for every `x` in the interval
-  have hlayer : ∀ x ∈ Ι a b, f x * g x = ∫ r in 0..f a, ({y | r ≤ f y}.indicator g) x := by
-    intro x hx
+  have hlayer (x : ℝ) (hx : x ∈ Ι a b) :
+      f x * g x = ∫ r in 0..f a, ({y | r ≤ f y}.indicator g) x := by
     have hfx : f x ∈ Icc 0 (f a) :=
       ⟨hf_nonneg x (hsub hx), (hf_mon.mapsTo_Icc (hsub hx)).2⟩
     simpa [Set.indicator_apply] using
@@ -186,8 +186,8 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
 /-- **Second mean value theorem for interval integrals** with a nonnegative monotone weight. -/
 theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_monotoneOn
     (hab : a ≤ b) (hf : 0 ≤ f a) (hf_mon : MonotoneOn f (Icc a b))
-    (hg : IntervalIntegrable g volume a b) : ∃ ξ ∈ Icc a b,
-    ∫ x in a..b, f x * g x = f b * ∫ x in ξ..b, g x := by
+    (hg : IntervalIntegrable g volume a b) :
+    ∃ ξ ∈ Icc a b, ∫ x in a..b, f x * g x = f b * ∫ x in ξ..b, g x := by
   obtain ⟨ξ, hξ_mem, hξ⟩ := exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
     (f := fun x ↦ f (-x)) (by simpa) (by simpa)
     (by intro x hx y hy hxy; apply hf_mon <;> grind)
@@ -202,8 +202,8 @@ variable {g : ℝ → E}
 for vector-valued functions with a nonnegative antitone weight. -/
 theorem exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn
     (hab : a ≤ b) (hf : 0 ≤ f b) (hf_mon : AntitoneOn f (Icc a b))
-    (hg : IntervalIntegrable g volume a b) : ∃ ξ ∈ Icc a b,
-    ‖∫ x in a..b, f x • g x‖ ≤ f a * ‖∫ x in a..ξ, g x‖ := by
+    (hg : IntervalIntegrable g volume a b) :
+    ∃ ξ ∈ Icc a b, ‖∫ x in a..b, f x • g x‖ ≤ f a * ‖∫ x in a..ξ, g x‖ := by
   have hfa := hf.trans (hf_mon.mapsTo_Icc ⟨le_rfl, hab⟩).1
   -- If `E` is not complete, every Bochner integral below vanishes and the claim is trivial
   by_cases hE : CompleteSpace E
@@ -234,8 +234,8 @@ for vector-valued functions with a nonnegative monotone weight.
 Monotone variant of `exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn`. -/
 theorem exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_monotoneOn
     (hab : a ≤ b) (hf : 0 ≤ f a) (hf_mon : MonotoneOn f (Icc a b))
-    (hg : IntervalIntegrable g volume a b) : ∃ ξ ∈ Icc a b,
-    ‖∫ x in a..b, f x • g x‖ ≤ f b * ‖∫ x in ξ..b, g x‖ := by
+    (hg : IntervalIntegrable g volume a b) :
+    ∃ ξ ∈ Icc a b, ‖∫ x in a..b, f x • g x‖ ≤ f b * ‖∫ x in ξ..b, g x‖ := by
   obtain ⟨ξ, hξ_mem, hξ⟩ := exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn
     (f := fun x ↦ f (-x)) (g := fun x ↦ g (-x)) (by simpa) (by simpa)
     (by intro x hx y hy hxy; apply hf_mon <;> grind)
