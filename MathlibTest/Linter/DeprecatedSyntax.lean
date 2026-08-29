@@ -154,6 +154,16 @@ warning: Using `+native` is not allowed in mathlib: it trusts the entire Lean co
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
 #guard_msgs in
+example : 1 + 1 = 2 := by decide (native := true)
+#guard_msgs in
+example : 1 + 1 = 2 := by decide (native := false)
+
+/--
+warning: Using `+native` is not allowed in mathlib: it trusts the entire Lean compiler (not just the Lean kernel), and it can quite possibly be used to prove `False`.
+
+Note: This linter can be disabled with `set_option linter.style.native false`
+-/
+#guard_msgs in
 example : 1 + 1 = 2 := by decide (config := { native := true })
 example : 1 + 1 = 2 := by decide (config := { native := false })
 /--
