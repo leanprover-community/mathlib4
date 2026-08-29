@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
-public import Mathlib.MeasureTheory.Order.Group.Lattice
 
 /-!
 # Domain of the moment-generating function
@@ -46,7 +45,7 @@ open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
 
 section Interval
 

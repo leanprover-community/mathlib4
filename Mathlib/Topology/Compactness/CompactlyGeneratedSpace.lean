@@ -47,7 +47,9 @@ compactly generated space
 
 universe u v w x
 
-open TopologicalSpace Filter Topology Set
+open TopologicalSpace Filter Set
+
+open scoped Topology
 
 section UCompactlyGeneratedSpace
 
