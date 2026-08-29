@@ -878,8 +878,7 @@ theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
   specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
     fun i ↦ by split_ifs with hiS <;> simp [hiS, hs]
   simp only [apply_ite, preimage_univ, measure_univ, Finset.prod_ite_mem, Finset.univ_inter,
-    Finset.prod_ite, Finset.filter_univ_mem, iInter_ite, iInter_univ, inter_univ, h,
-    Measure.pi_pi] at h₀
+    iInter_ite, iInter_univ, inter_univ, h, Measure.pi_pi] at h₀
   rw [h₀.2, ← h₀.1]
 
 variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}

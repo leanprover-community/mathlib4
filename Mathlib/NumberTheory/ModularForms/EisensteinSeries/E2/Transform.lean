@@ -38,6 +38,8 @@ the action of `S = [[0, -1], [1, 0]]`.
 * **`E2_slash_action`**: The normalized version:
   `E₂|[2] γ = E₂ - (1/(2ζ(2))) D₂(γ)`
 
+* **`E2_periodic`**: as a consequence of invariance under `T`, `E2` is `1`-periodic.
+
 ## Proof Strategy
 
 The proof of `G2_S_transform` is the heart of this file. The strategy is:
@@ -66,7 +68,9 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
 
 open UpperHalfPlane hiding I
 
-open ModularForm ModularGroup Filter Complex MatrixGroups Set SummationFilter
+open ModularForm ModularGroup Filter Complex Set SummationFilter
+
+open scoped MatrixGroups
 
 open scoped Real Topology
 
@@ -225,6 +229,18 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := b
 lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * riemannZeta 2)) • D2 γ := by
   ext z
   simp [E2, SL_smul_slash, G2_slash_action γ, mul_sub]
+
+/-- `E2` is invariant under the weight-2 slash action of `T`, since the defect `D2 T` vanishes. -/
+lemma E2_T_transform : E2 ∣[(2 : ℤ)] T = E2 := by
+  simp [E2_slash_action, D2_T]
+
+/-- `E2` is invariant under `z ↦ z + 1` (the action of `T`). -/
+lemma E2_T_smul (z : ℍ) : E2 (T • z) = E2 z := by
+  simpa [denom_apply, SL_slash_apply] using congrFun E2_T_transform z
+
+/-- `E2 ∘ ofComplex` has period `1`. -/
+lemma E2_periodic : Function.Periodic (E2 ∘ ofComplex) 1 :=
+  periodic_comp_ofComplex fun _ ↦ by rw [← modular_T_smul, E2_T_smul]
 
 end transform
 

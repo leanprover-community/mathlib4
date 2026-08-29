@@ -150,7 +150,7 @@ theorem homMk_surjective {f f' : StructuredArrow S T} (φ : f ⟶ f') :
 
 /-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
 structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`. -/
-@[simps]
+@[implicit_reducible, simps]
 def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ T.map g) where
   left := 𝟙 _
   right := g
@@ -170,7 +170,7 @@ lemma homMk'_mk_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
   homMk'_comp _ _ _
 
 /-- Variant of `homMk'` where both objects are applications of `mk`. -/
-@[simps]
+@[implicit_reducible, simps]
 def mkPostcomp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') : mk f ⟶ mk (f ≫ T.map g) where
   left := 𝟙 _
   right := g
@@ -606,7 +606,7 @@ theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙
 we need a morphism of the objects underlying the source,
 and to check that the triangle commutes.
 -/
-@[simps! left]
+@[implicit_reducible, simps! left]
 def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
     (w : S.map g ≫ f'.hom = f.hom := by cat_disch) : f ⟶ f' where
   left := g
@@ -619,7 +619,7 @@ theorem homMk_surjective {f f' : CostructuredArrow S T} (φ : f ⟶ f') :
 
 /-- Given a costructured arrow `S(Y) ⟶ X`, and an arrow `Y' ⟶ Y'`, we can construct a morphism of
 costructured arrows given by `(S(Y) ⟶ X) ⟶ (S(Y') ⟶ S(Y) ⟶ X)`. -/
-@[simps]
+@[implicit_reducible, simps]
 def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.hom) ⟶ f where
   left := g
   right := 𝟙 _
@@ -639,7 +639,7 @@ lemma homMk'_mk_comp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) (g' : Y'' ⟶ Y') :
   homMk'_comp _ _ _
 
 /-- Variant of `homMk'` where both objects are applications of `mk`. -/
-@[simps]
+@[implicit_reducible, simps]
 def mkPrecomp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) : mk (S.map g ≫ f) ⟶ mk f where
   left := g
   right := 𝟙 _
