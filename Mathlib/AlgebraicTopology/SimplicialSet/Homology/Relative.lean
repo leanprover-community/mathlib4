@@ -363,7 +363,7 @@ lemma comp_homologyδ (n m : ℕ) (h : m + 1 = n := by lia) :
   (P.shortExact_chainComplexShortComplex R).comp_δ n m (by simpa)
 
 /-- Given `P : SSetPair` corresponding to a monomorphism `i : Y ⟶ X`,
-the sequence `Hₙ(X;Y) ⟶ Hₙ₊₁(Y) ⟶ Hₙ₊₁(X)` is exact. -/
+the sequence `Hₘ₊₁(X;Y) ⟶ Hₘ(Y) ⟶ Hₘ(X)` is exact. -/
 lemma homology_exact₁ (n m : ℕ) (h : m + 1 = n := by lia) :
     (ShortComplex.mk _ _ (P.homologyδ_comp R n m h)).Exact :=
   (P.shortExact_chainComplexShortComplex R).homology_exact₁ n m h
@@ -375,7 +375,7 @@ lemma homology_exact₂ (n : ℕ) :
   (P.shortExact_chainComplexShortComplex R).homology_exact₂ n
 
 /-- Given `P : SSetPair` corresponding to a monomorphism `i : Y ⟶ X`,
-the sequence `Hₙ(X) ⟶ Hₙ(X;Y) ⟶ Hₙ₊₁(Y)` is exact. -/
+the sequence `Hₘ₊₁(X) ⟶ Hₘ₊₁(X;Y) ⟶ Hₘ(Y)` is exact. -/
 lemma homology_exact₃ (n m : ℕ) (h : m + 1 = n := by lia) :
     (ShortComplex.mk _ _ (P.comp_homologyδ R n m h)).Exact :=
   (P.shortExact_chainComplexShortComplex R).homology_exact₃ n m h
