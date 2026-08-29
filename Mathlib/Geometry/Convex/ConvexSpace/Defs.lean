@@ -6,7 +6,10 @@ Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 module
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
+<<<<<<< HEAD
 public import Mathlib.Data.Fin.VecNotation
+=======
+>>>>>>> origin/stdsimplex-compact
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 
@@ -276,10 +279,10 @@ def equivIcc : StdSimplex R' (Fin 2) ≃ Set.Icc (0 : R') 1 where
 attribute [local simp] equivIcc_apply_coe
 
 @[simp]
-lemma equivIcc_single_zero : equivIcc (.single (R := R') 0) = ⟨0, by simp⟩ := by aesop
+lemma equivIcc_single_zero : equivIcc (.single (R := R') 0) = 0 := by aesop
 
 @[simp]
-lemma equivIcc_single_one : equivIcc (.single (R := R') 1) = ⟨1, by simp⟩ := by aesop
+lemma equivIcc_single_one : equivIcc (.single (R := R') 1) = 1 := by aesop
 
 @[simp]
 lemma equivIcc_symm_zero : equivIcc.symm 0 = .single (R := R') 0 :=
