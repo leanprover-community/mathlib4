@@ -78,6 +78,8 @@ theorem derivative_log : d⁄dX A (log A) = mk fun n ↦ (-1 : A) ^ n := by
   rw [coeff_derivative, coeff_log, coeff_mk]
   grind
 
+@[deprecated (since := "2026-08-29")] alias deriv_log := derivative_log
+
 /-- The derivative of `log(1+X)` is the inverse of `1 + X`. -/
 theorem derivative_log_mul_one_add_X : d⁄dX A (log A) * (1 + X) = 1 := by
   rw [derivative_log, mk_neg_one_pow_mul_one_add_eq_one]
