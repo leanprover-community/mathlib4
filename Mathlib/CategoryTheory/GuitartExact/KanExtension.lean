@@ -302,8 +302,6 @@ section
 
 variable [∀ (F : C₁ ⥤ D), T.HasRightKanExtension F] [∀ (F : C₃ ⥤ D), B.HasRightKanExtension F]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The base change natural transformation for left Kan extensions associated to
 a 2-square. -/
 @[simps -isSimp]
