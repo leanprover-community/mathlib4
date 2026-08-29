@@ -642,9 +642,8 @@ lemma mul_self_add_mul_self_eq_zero :
     apply mul_self_nonneg
 
 /-- The sum of two squares is zero iff both elements are zero -/
-lemma sq_add_sq_eq_zero :
-    a ^ 2 + b ^ 2 = 0 ↔ a = 0 ∧ b = 0 := by
-    simpa [pow_two] using mul_self_add_mul_self_eq_zero
+lemma sq_add_sq_eq_zero : a ^ 2 + b ^ 2 = 0 ↔ a = 0 ∧ b = 0 := by
+  simpa [pow_two] using mul_self_add_mul_self_eq_zero
 
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero
     (h : a * a + b * b = 0) : a = 0 :=
