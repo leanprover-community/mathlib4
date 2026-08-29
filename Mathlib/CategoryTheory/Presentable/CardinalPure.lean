@@ -150,7 +150,6 @@ instance IsCardinalPure.map
     {X Y : C} (f : X ⟶ Y) [IsCardinalPure κ f] :
     IsCardinalPure κ (F.map f) where
   exists_of_commSq {X' Y' t l r _ _ } sq := by
-    obtain ⟨I, _, _, ⟨pX⟩⟩ :=
     /- Write X and Y as κ-filtered colimits of κ-presentable objects `X ≅ colimᵢ pXᵢ` and
     `Y ≅ colimⱼ pYⱼ`. -/
     obtain ⟨I, _, _, ⟨pX⟩⟩ :=
