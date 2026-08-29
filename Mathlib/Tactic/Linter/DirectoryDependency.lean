@@ -383,7 +383,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Computability, `Mathlib.CategoryTheory),
   (`Mathlib.Computability, `Mathlib.Condensed),
   (`Mathlib.Computability, `Mathlib.FieldTheory),
-  (`Mathlib.Computability, `Mathlib.Geometry),
   (`Mathlib.Computability, `Mathlib.InformationTheory),
   (`Mathlib.Computability, `Mathlib.MeasureTheory),
   (`Mathlib.Computability, `Mathlib.ModelTheory),

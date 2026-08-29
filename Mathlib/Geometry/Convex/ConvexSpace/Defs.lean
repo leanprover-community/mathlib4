@@ -5,6 +5,7 @@ Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
 public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LSum
@@ -281,11 +282,11 @@ lemma equivIcc_single_zero : equivIcc (.single (R := R') 0) = ⟨0, by simp⟩ :
 lemma equivIcc_single_one : equivIcc (.single (R := R') 1) = ⟨1, by simp⟩ := by aesop
 
 @[simp]
-lemma equivIcc_symm_zero : equivIcc.symm ⟨0, by simp⟩ = .single (R := R') 0 :=
+lemma equivIcc_symm_zero : equivIcc.symm 0 = .single (R := R') 0 :=
   equivIcc.injective (by simp)
 
 @[simp]
-lemma equivIcc_symm_one : equivIcc.symm ⟨1, by simp⟩ = .single (R := R') 1 :=
+lemma equivIcc_symm_one : equivIcc.symm 1 = .single (R := R') 1 :=
   equivIcc.injective (by simp)
 
 end
