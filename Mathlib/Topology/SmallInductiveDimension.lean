@@ -208,7 +208,7 @@ protected theorem Homeomorph.smallInductiveDimension_congr (f : X ≃ₜ Y) :
 /--
 The small inductive dimension of the separation quotient is equal to that of the ambient space.
 -/
-theorem SeparationQuotient.smallInductiveDimension :
+theorem smallInductiveDimension_separationQuotient :
     smallInductiveDimension (SeparationQuotient X) = smallInductiveDimension X := by
   apply le_antisymm
   · exact isEmbedding_out.isInducing.smallInductiveDimension_le
