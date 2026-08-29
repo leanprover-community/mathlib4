@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.Algebra.Module.Basic
@@ -349,9 +350,8 @@ attribute [local instance] ConvexSpace.ofModule IsModuleConvexSpace.ofModule in
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
     IsCompact (convexHull 𝕜 s) := by
   have := hs.to_subtype
-  have : Continuous (ConvexSpace.AffineMap.iConvexComb (R := 𝕜) (fun (x : s) ↦ x.val)) := sorry
   rw [hs.convexHull_eq_range_iConvexComb]
-  exact isCompact_range (by continuity)
+  exact isCompact_range (by fun_prop)
 
 /-- Convex hull of a finite set is closed. -/
 theorem Set.Finite.isClosed_convexHull [T2Space E] {s : Set E} (hs : s.Finite) :

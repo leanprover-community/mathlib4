@@ -4659,6 +4659,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Barycenter
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
+public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology

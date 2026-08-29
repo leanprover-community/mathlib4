@@ -436,6 +436,11 @@ lemma map_sConvexComb (s : StdSimplex R (StdSimplex R I)) (f : I → J) :
     s.sConvexComb.map f = (s.map (map f)).sConvexComb :=
   StdSimplex.map_join s f
 
+@[simp]
+lemma iConvexComb_single (x : StdSimplex R I) :
+    x.iConvexComb single = x := by
+  aesop
+
 variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
 
 lemma convexCombPair_restrict_restrict_compl (w : StdSimplex K I) (s : Set I) (hs hs')
@@ -589,6 +594,15 @@ lemma map_iConvexComb {f : J → K}
     (s.iConvexComb g).map f = s.iConvexComb (map f ∘ g) :=
   (isAffineMap_map R f).map_iConvexComb s g
 
+@[simp]
+lemma sConvexComb_map_iConvexComb (f : I → M) (s : StdSimplex R (StdSimplex R I)) :
+    sConvexComb (map (fun s ↦ iConvexComb s f) s) = iConvexComb (sConvexComb s) f :=
+  calc
+    _ = iConvexComb s fun s ↦ sConvexComb (map f s) := sConvexComb_map _ _
+    _ = sConvexComb (map f (sConvexComb s)) := by
+        rw [StdSimplex.map_sConvexComb, sConvexComb_sConvexComb, sConvexComb_map,
+          iConvexComb_map]
+
 end iConvexComb
 
 variable {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1)
@@ -710,12 +724,6 @@ lemma convexCombPair_convexCombPair_assoc_right (H : s * t'' = t * s' * s'') (m�
     convexCombPair_convexCombPair_assoc_left (hs'' := ht'') (ht'' := hs'')
       (h'' := (add_comm _ _).trans h'') (H := H),
     convexCombPair_symm, convexCombPair_symm (x := m₂)]
-
-variable (R) in
-lemma StdSimplex.isAffineMap_iConvexComb (f : I → M) :
-    IsAffineMap R (fun x ↦ iConvexComb (R := R) x f) where
-  map_sConvexComb s := by
-    sorry
 
 section CommSemiring
 

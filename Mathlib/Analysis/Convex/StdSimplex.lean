@@ -170,19 +170,29 @@ theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
 
 variable {ι R}
 
+lemma Convexity.ConvexSpace.AffineMap.convex_range {X : Type*}
+    [ConvexSpace R X] {E : Type*} [AddCommGroup E] [Module R E]
+    [ConvexSpace R E] [IsModuleConvexSpace R E] (f : ConvexSpace.AffineMap R X E) :
+    Convex R (range f) := by
+  rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ a b ha hb h
+  exact ⟨convexCombPair a b ha hb h x y, by simp [f.isAffineMap.map_convexCombPair]⟩
+
 /-- The convex hull of a finite set `s` is the range of the affine map
 `StdSimplex R s → E` which sends `x : s` to `x : E`. -/
 theorem Set.Finite.convexHull_eq_range_iConvexComb
     {E : Type*} [AddCommGroup E] [Module R E]
     [ConvexSpace R E] [IsModuleConvexSpace R E] {s : Set E} (hs : s.Finite) :
     convexHull R s =
-      Set.range (ConvexSpace.AffineMap.iConvexComb (R := R) (fun (x : s) ↦ x.val)) := by
-  /-classical
-  let := hs.fintype
-  rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
-  apply congr_arg
-  aesop-/
-  sorry
+      Set.range (StdSimplex.affineMapMk (R := R) (fun (x : s) ↦ x.val)) := by
+  refine subset_antisymm ?_ ?_
+  · rw [Convex.convexHull_subset_iff (ConvexSpace.AffineMap.convex_range _)]
+    intro x hx
+    exact ⟨.single ⟨x, hx⟩, by simp⟩
+  · rintro _ ⟨w, rfl⟩
+    have := hs.fintype
+    rw [StdSimplex.affineMapMk_apply_eq_sum_of_fintype]
+    convert affineCombination_mem_convexHull (s := .univ) (v := fun x ↦ x.val)
+      (w := w.weights) (by simp) (by simp) <;> simp
 
 @[deprecated (since := "2026-08-29")] alias Set.Finite.convexHull_eq_image :=
   Set.Finite.convexHull_eq_range_iConvexComb

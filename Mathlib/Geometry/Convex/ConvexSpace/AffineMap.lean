@@ -95,14 +95,62 @@ def const {X Y : Type*} [ConvexSpace R X] [ConvexSpace R Y] (y : Y) :
     ConvexSpace.AffineMap R X Y where
   toFun _ := y
 
+end ConvexSpace.AffineMap
+
+
+namespace StdSimplex
+
+@[ext]
+lemma affineMap_ext {M : Type*} {Y : Type*} [ConvexSpace R Y]
+    {f g : ConvexSpace.AffineMap R (StdSimplex R M) Y}
+    (h : ∀ (i : M), f (.single i) = g (.single i)) : f = g := by
+  ext x
+  conv_lhs => rw [← iConvexComb_single x]
+  conv_rhs => rw [← iConvexComb_single x]
+  rw [f.isAffineMap.map_iConvexComb, g.isAffineMap.map_iConvexComb]
+  aesop
+
+/-- The (bundled) affine map `StdSimplex R M → StdSimplex R N` induced
+by a map `f : M → N`. -/
+noncomputable def affineMap {M N : Type*} (f : M → N) :
+    ConvexSpace.AffineMap R (StdSimplex R M) (StdSimplex R N) where
+  toFun := map f
+
+@[simp]
+lemma coe_affineMap {M N : Type*} (f : M → N) :
+    ⇑(affineMap (R := R) f) = map f := rfl
+
+@[simp]
+lemma affineMap_id (M : Type*) :
+    affineMap (R := R) (id : M → M) = .id _ := by
+  aesop
+
 /-- Given a map `f : I → X` where `X` is a convex space over `R`, this is the affine
 map `StdSimplex R I → X` which sends -/
-@[simps, implicit_reducible]
-protected noncomputable def iConvexComb {I X : Type*} [ConvexSpace R X] (f : I → X) :
+noncomputable def affineMapMk {I X : Type*} [ConvexSpace R X] (f : I → X) :
     ConvexSpace.AffineMap R (StdSimplex R I) X where
   toFun x := iConvexComb x f
-  isAffineMap_toFun := StdSimplex.isAffineMap_iConvexComb R f
+  isAffineMap_toFun.map_sConvexComb s := by simp
 
-end AffineMap
+lemma affineMapMk_apply {M : Type*} {Y : Type*} [ConvexSpace R Y] (f : M → Y)
+    (s : StdSimplex R M) :
+    affineMapMk (R := R) f s = iConvexComb s f := rfl
 
-end Convexity.ConvexSpace
+@[simp]
+lemma affineMapMk_single {M : Type*} {Y : Type*} [ConvexSpace R Y] (f : M → Y) (m : M) :
+    affineMapMk (R := R) f (.single m) = f m := by
+  simp [affineMapMk_apply]
+
+lemma affineMapMk_surjective {M : Type*} {Y : Type*} [ConvexSpace R Y]
+    (s : ConvexSpace.AffineMap R (StdSimplex R M) Y) :
+    ∃ (f : M → Y), affineMapMk f = s :=
+  ⟨fun i ↦ s (single i), by ext; simp [affineMapMk_apply]⟩
+
+lemma comp_affineMapMk {M : Type*} {Y Z : Type*} [ConvexSpace R Y] [ConvexSpace R Z]
+    (f : ConvexSpace.AffineMap R Y Z) (g : M → Y) :
+    f.comp (affineMapMk g) = affineMapMk (f ∘ g) := by
+  aesop
+
+end StdSimplex
+
+end Convexity
