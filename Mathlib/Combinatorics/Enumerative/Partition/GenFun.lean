@@ -108,9 +108,9 @@ private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : 
   refine prod_subset_one_on_sdiff ?_ (fun i hi ↦ ?_) (fun i hi ↦ ?_)
   · grind
   · rw [mem_sdiff, Multiset.mem_toFinset] at hi
-    simp [toFinsuppAntidiag, hi.2]
+    simp [hi.2]
   · rw [Multiset.mem_toFinset] at hi
-    simp [toFinsuppAntidiag, (p.parts_pos hi).ne.symm, Multiset.count_ne_zero.mpr hi]
+    simp [(p.parts_pos hi).ne.symm, Multiset.count_ne_zero.mpr hi]
 
 private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : Finset ℕ}
     {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d) (hcoeff : ∀ i ∈ s, (coeff (g i))
@@ -148,7 +148,7 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
     apply sum_subset_zero_on_sdiff h (by simp)
     exact fun x hx ↦ Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
   · ext x
-    simpa [toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
+    simpa using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
 
 variable [TopologicalSpace R]
 

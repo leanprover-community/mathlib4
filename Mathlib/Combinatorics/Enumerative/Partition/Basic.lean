@@ -131,6 +131,7 @@ def ofSymShapeEquiv (μ : Partition n) (e : σ ≃ τ) :
 /-- Convert a `Partition n` to a member of `(Finset.Icc 1 n).finsuppAntidiag n`
 (see `Nat.Partition.toFinsuppAntidiag_mem_finsuppAntidiag` for the proof).
 `p.toFinsuppAntidiag i` is defined as `i` times the number of occurrence of `i` in `p`. -/
+@[simps]
 def toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
   toFun m := p.parts.count m * m
   support := p.parts.toFinset
