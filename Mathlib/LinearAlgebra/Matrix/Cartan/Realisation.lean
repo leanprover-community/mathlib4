@@ -32,6 +32,11 @@ We develop this theory here.
 
 -/
 
+-- Legacy lemma: TODO drop when refactoring proofs
+lemma Matrix.PosDef.mul_comm_of_diagonal_mul {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {A : Matrix ι ι ℤ} {d : ι → ℤ} (h : (diagonal d * A).PosDef) (i j : ι) :
+    d i * A i j = d j * A j i := by simpa using h.isHermitian.apply j i
+
 public noncomputable section
 
 open Function Module Set
