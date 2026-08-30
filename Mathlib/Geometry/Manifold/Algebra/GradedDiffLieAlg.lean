@@ -69,8 +69,9 @@ structure equation**, §21/§30 "definition of curvature".) -/
 noncomputable def curvature (ω : A 1) : A 2 :=
   d ω + (2 : ℝ)⁻¹ • wb (by omega : 1 + 1 = 2) ω ω
 
-/-- **Bianchi identity** `dΩ = [Ω∧ω]`. (Tu, **(30.2)/§30 part (iii)**; general-Lie-algebra
-form. The frame-bundle specialization is Tu **(30.3)**, see `bianchi_matrix`.) Over ℝ, with no
+/-- **Second Bianchi identity** `dΩ = [Ω∧ω]`. (Tu, GTM 275, **Theorem 30.4(iii)**;
+general-Lie-algebra form. Curvature convention `Ω = dω + ½[ω∧ω]` is **Definition 30.1**.
+The frame-bundle/matrix specialization is `bianchi_matrix` [Tu ref: CHECK].) Over ℝ, with no
 characteristic hypothesis. The proof:
 `dΩ = ½ d[ω∧ω] = ½ · 2 [dω∧ω] = [dω∧ω]` (using `d² = 0`, Leibniz, antisymmetry), while
 `[Ω∧ω] = [dω∧ω] + ½[[ω∧ω]∧ω] = [dω∧ω]` (using `wb_wb_self`); both sides are `[dω∧ω]`. -/
