@@ -170,6 +170,13 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {M₂ : Type*} [TopologicalSpace M₂] [ChartedSpace H₂ M₂]
   {n : WithTop ℕ∞} [IsManifold I₁ n M₁] [IsManifold I₂ n M₂]
 
+lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M₁ → M₂} {p : M₁}
+    (hf : ContinuousLinearMap.IsInvertible (mfderiv% f p)) :
+    ContinuousLinearMap.IsInvertible (fderivWithin 𝕜 (writtenInExtChartAt I₁ I₂ p f) (range I₁)
+      (extChartAt I₁ p p)) := by
+  convert! hf
+  rw [mfderiv, if_pos (mdifferentiableAt_of_mfderiv_injective hf.injective)]
+
 /-- The inverse function theorem for manifolds. If `f` is `ContMDiff` on a neighborhood of an
 interior point `p` and has bijective differential at `p`, then `f` is a local diffeomorphism at `p`.
 -/
@@ -203,12 +210,10 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   have φ₀p_mem_U : φ₀ p ∈ U := mem_image_of_mem _ ⟨mem_extChartAtPartialDiffeomorph_source n hp,
     hpA, mem_extChartAtPartialDiffeomorph_source n hfp⟩
   -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence
-  have ⟨g', hg'⟩ : ∃ g' : E₁ ≃L[𝕜] E₂, HasFDerivAt g (g' : E₁ →L[𝕜] E₂) (φ₀ p) := by
-    rw [mfderiv, if_pos mDiffAt_f_p] at hf'
-    rcases hf' with ⟨g', g'_eq⟩
-    exact ⟨g', g'_eq ▸
-      mDiffAt_f_p.differentiableWithinAt_writtenInExtChartAt.hasFDerivWithinAt.hasFDerivAt
-      (range_mem_nhds_isInteriorPoint hp)⟩
+  obtain ⟨g', hg'⟩ := isInvertible_fderivWithin_writtenInExtChartAt hf'
+  have hg' : HasFDerivAt g g'.toContinuousLinearMap (extChartAt I₁ p p) :=
+    hg' ▸ mDiffAt_f_p.differentiableWithinAt_writtenInExtChartAt.hasFDerivWithinAt.hasFDerivAt
+      (range_mem_nhds_isInteriorPoint hp)
   /- obtain partial diffeomorphism in coordinates and compose with the charts to obtain a partial
   diffeomorphism `M₁ → M₂` -/
   let coord_diffeo := hg.toPartialDiffeomorph U_open φ₀p_mem_U  hg' hn
