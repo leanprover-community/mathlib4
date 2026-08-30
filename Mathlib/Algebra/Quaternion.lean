@@ -671,12 +671,12 @@ theorem mul_star_eq_coe : a * star a = (a * star a).re := by
 open MulOpposite
 
 /-- Quaternion conjugate as an `AlgEquiv` to the opposite ring. -/
-def starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] ℍ[R,c₁,c₂,c₃]ᵐᵒᵖ :=
-  { starAddEquiv.trans opAddEquiv with
-    toFun := op ∘ star
-    invFun := star ∘ unop
-    map_mul' := fun x y => by simp
-    commutes' := fun r => by simp }
+def starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] ℍ[R,c₁,c₂,c₃]ᵐᵒᵖ where
+  __ := starAddEquiv.trans opAddEquiv
+  toFun := op ∘ star
+  invFun := star ∘ unop
+  map_mul' x y := by simp
+  commutes' r := by simp
 
 @[simp]
 theorem coe_starAe : ⇑(starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] _) = op ∘ star :=
@@ -1167,15 +1167,14 @@ end ofScientific
 variable [LinearOrder R] [IsStrictOrderedRing R] (a b : ℍ[R])
 
 @[simps -isSimp]
-instance instInv : Inv ℍ[R] :=
-  ⟨fun a => (normSq a)⁻¹ • star a⟩
+instance instInv : Inv ℍ[R] where
+  inv a := (normSq a)⁻¹ • star a
 
-instance instGroupWithZero : GroupWithZero ℍ[R] :=
-  { Quaternion.instNontrivial with
-    inv_zero := by rw [inv_def, star_zero, smul_zero]
-    mul_inv_cancel := fun a ha => by
-      rw [inv_def, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
-        inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
+instance instGroupWithZero : GroupWithZero ℍ[R] where
+  inv_zero := by rw [inv_def, star_zero, smul_zero]
+  mul_inv_cancel a ha := by
+    rw [inv_def, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
+      inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one]
 
 @[norm_cast, simp]
 theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
