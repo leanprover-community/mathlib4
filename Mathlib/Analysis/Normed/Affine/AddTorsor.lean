@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.Topology.Instances.RealVectorSpace
 
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Torsors of normed space actions.
@@ -139,37 +140,29 @@ theorem nndist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
     nndist p₂ (homothety p₁ c p₂) = ‖1 - c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_self_homothety _ _ _
 
+open scoped Pointwise in
+theorem NormedAddTorsor.image_homothety (c : P) (x : 𝕜) (s : Set P) :
+    homothety c x '' s =
+      IsometryEquiv.vaddConst c '' (x • ((IsometryEquiv.vaddConst c).symm '' s)) := by
+  simp [← Set.image_smul, ← Set.image_comp]; rfl
+
 theorem Metric.image_homothety_ball (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
     homothety c x '' ball p r = ball (homothety c x p) (‖x‖ * r) := by
-  ext q
-  simp only [Set.mem_image, mem_ball]
-  constructor
-  · rintro ⟨s, hs, rfl⟩
-    simpa [hx] using hs
-  · intro h
-    use homothety c x⁻¹ q
-    have hp : p = homothety c x⁻¹ (homothety c x p) := by simp [← homothety_mul_apply, hx]
-    rw [hp, dist_homothety, norm_inv, inv_mul_lt_iff₀ (by simpa using hx)]
-    simp [← homothety_mul_apply, hx, h]
+  rw [NormedAddTorsor.image_homothety, IsometryEquiv.image_ball, _root_.smul_ball hx,
+    IsometryEquiv.image_ball]
+  rfl
 
 theorem Metric.image_homothety_closedBall (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
     homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
-  ext q
-  simp only [Set.mem_image, mem_closedBall]
-  constructor
-  · rintro ⟨s, hs, rfl⟩
-    simpa [hx] using hs
-  · intro h
-    use homothety c x⁻¹ q
-    have hp : p = homothety c x⁻¹ (homothety c x p) := by simp [← homothety_mul_apply, hx]
-    rw [hp, dist_homothety, norm_inv, inv_mul_le_iff₀ (by simpa using hx)]
-    simp [← homothety_mul_apply, hx, h]
+  rw [NormedAddTorsor.image_homothety, IsometryEquiv.image_closedBall, _root_.smul_closedBall' hx,
+    IsometryEquiv.image_closedBall]
+  rfl
 
 theorem Metric.image_homothety_closedBall_of_nonneg (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
     homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
-  by_cases hx : x = 0
-  · simpa [hx] using! (nonempty_closedBall.mpr hr).image_const c
-  exact image_homothety_closedBall p c r hx
+  rw [NormedAddTorsor.image_homothety, IsometryEquiv.image_closedBall,
+    _root_.smul_closedBall x _ hr, IsometryEquiv.image_closedBall]
+  rfl
 
 theorem Metric.image_homothety_sphere (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
     homothety c x '' sphere p r = sphere (homothety c x p) (‖x‖ * r) := by
