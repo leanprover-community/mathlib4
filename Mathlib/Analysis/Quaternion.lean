@@ -120,7 +120,7 @@ theorem imK_coeComplex (z : ℂ) : (z : ℍ).imK = 0 :=
 theorem coeComplex_add (z w : ℂ) : ↑(z + w) = (z + w : ℍ) := by ext <;> simp
 
 @[simp, norm_cast]
-theorem coeComplex_mul (z w : ℂ) : ↑(z * w) = (z * w : ℍ) := by ext <;> simp [sub_eq_add_neg]
+theorem coeComplex_mul (z w : ℂ) : ↑(z * w) = (z * w : ℍ) := by ext <;> simp
 
 @[simp, norm_cast]
 theorem coeComplex_zero : ((0 : ℂ) : ℍ) = 0 :=

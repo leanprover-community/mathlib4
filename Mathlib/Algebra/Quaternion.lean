@@ -819,15 +819,19 @@ theorem coe_neg : ((-x : R) : ℍ[R]) = -x :=
 theorem coe_sub : ((x - y : R) : ℍ[R]) = x - y :=
   QuaternionAlgebra.coe_sub x y
 
+@[simp high]
 theorem re_mul : (a * b).re = a.re * b.re - a.imI * b.imI - a.imJ * b.imJ - a.imK * b.imK :=
   (QuaternionAlgebra.re_mul a b).trans <| by simp [one_mul, neg_mul, sub_eq_add_neg, neg_neg]
 
+@[simp high]
 theorem imI_mul : (a * b).imI = a.re * b.imI + a.imI * b.re + a.imJ * b.imK - a.imK * b.imJ :=
   (QuaternionAlgebra.imI_mul a b).trans <| by ring
 
+@[simp high]
 theorem imJ_mul : (a * b).imJ = a.re * b.imJ - a.imI * b.imK + a.imJ * b.re + a.imK * b.imI :=
   (QuaternionAlgebra.imJ_mul a b).trans <| by ring
 
+@[simp high]
 theorem imK_mul : (a * b).imK = a.re * b.imK + a.imI * b.imJ - a.imJ * b.imI + a.imK * b.re :=
   (QuaternionAlgebra.imK_mul a b).trans <| by ring
 
@@ -911,6 +915,7 @@ theorem coe_mul_eq_smul : ↑r * a = r • a :=
 theorem mul_coe_eq_smul : a * r = r • a :=
   QuaternionAlgebra.mul_coe_eq_smul r a
 
+@[simp high]
 theorem algebraMap_def : ⇑(algebraMap R ℍ[R]) = coe :=
   rfl
 
@@ -926,7 +931,7 @@ theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
 theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
   QuaternionAlgebra.finrank_eq_four _ _ _
 
-theorem re_star : (star a).re = a.re := by
+@[simp high] theorem re_star : (star a).re = a.re := by
   rw [QuaternionAlgebra.re_star, zero_mul, add_zero]
 
 @[simp] theorem imI_star : (star a).imI = -a.imI := rfl
@@ -973,6 +978,7 @@ section CharZero
 
 variable [NoZeroDivisors R] [CharZero R]
 
+@[simp high]
 theorem star_eq_self {a : ℍ[R]} : star a = a ↔ a = a.re :=
   QuaternionAlgebra.star_eq_self
 
