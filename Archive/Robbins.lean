@@ -82,9 +82,7 @@ private lemma smul4 : 4 • a = a + a + a + a := rfl
 private lemma smul5 : 5 • a = a + a + a + a + a := rfl
 
 lemma smul_succ {k : ℕ} {a : α} (hk : 1 ≤ k) : (k + 1) • a = k • a + a := by
-  induction k, hk using Nat.le_induction with
-  | base => rfl
-  | succ k ih => rfl
+  induction k, hk using Nat.le_induction <;> rfl
 
 lemma mann_44 : -(-(-(a + b) + -a + b) + b) = -(a + b) := by
   nth_rw 2 [← robbins (-(a + b)) (-a + b)]
