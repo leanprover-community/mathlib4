@@ -200,6 +200,7 @@ def mathlibLabelData : (l : Label) → LabelData l
     dependencies := #[.«t-algebra»] }
   | .«t-data» => {
     dirs := #[
+      "Mathlib" / "Basic",
       "Mathlib" / "Control",
       "Mathlib" / "Data"] }
   | .«t-differential-geometry» => {
@@ -256,6 +257,7 @@ def mathlibLabelData : (l : Label) → LabelData l
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
       "scripts" / "nolints_prime_decls.txt",
+      "bors.toml",
     ],
     exclusions := #[
       "scripts" / "lint-style.lean",

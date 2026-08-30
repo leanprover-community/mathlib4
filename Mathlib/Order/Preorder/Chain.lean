@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Set.Notation
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Data.SetLike.Basic
@@ -324,6 +325,10 @@ theorem subset_succChain : s ⊆ SuccChain r s := by
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).2.1
   else
     simp [SuccChain, h]
+
+theorem List.IsChain.isChain_setOfPred_mem [IsTrans α r] {l : List α} (h : l.IsChain r) :
+    _root_.IsChain r {a | a ∈ l} :=
+  h.pairwise.imp Relation.SymmGen.of_rel |>.set_pairwise
 
 end Chain
 
