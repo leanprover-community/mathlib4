@@ -185,7 +185,7 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
     simp only [C_pow, pow_mul]
     change (frobenius _ _) _  - (frobenius _ _) _ = (frobenius _ _ ) _
     grind
-  grind [frobenius_inj]
+  grind
 
 protected theorem div (h : Introspective ((X : R[X]) - C (a : R)) n r)
     (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective ((X : R[X]) - C (a : R)) (n / p) r := by
