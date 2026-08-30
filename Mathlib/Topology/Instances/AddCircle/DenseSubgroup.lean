@@ -7,7 +7,7 @@ module
 
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Topology.Instances.AddCircle.Defs
-public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
 
 /-!
 # Irrational rotation is minimal
@@ -42,9 +42,10 @@ theorem dense_addSubgroupClosure_pair_iff {a b : ℝ} :
     · simp [field]
   · intro h
     contrapose h
-    rcases (AddSubgroup.dense_or_cyclic _).resolve_left h with ⟨c, hc⟩
+    have := (AddSubgroup.dense_or_isCyclic _).resolve_left h
+    rcases AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq_top _ |>.mp this with ⟨c, hc⟩
     have : {a, b} ⊆ range (· • c : ℤ → ℝ) := by
-      rw [← AddSubgroup.coe_zmultiples, AddSubgroup.zmultiples_eq_closure, ← hc]
+      rw [← AddSubgroup.coe_zmultiples, hc]
       apply AddSubgroup.subset_closure
     rcases pair_subset_iff.1 this with ⟨⟨m, rfl⟩, n, rfl⟩
     simp_all [mul_div_mul_right]
@@ -79,10 +80,11 @@ theorem dense_addSubgroup_iff_ne_zmultiples {p : ℝ} [Fact (0 < p)] {s : AddSub
     contrapose! h
     obtain ⟨a, rfl⟩ : ∃ a, s = .zmultiples a := by
       rw [← QuotientAddGroup.dense_preimage_mk, ← QuotientAddGroup.coe_mk',
-        ← AddSubgroup.coe_comap, xor_iff_not_iff'.1 (AddSubgroup.dense_xor_cyclic _)] at h
+        ← AddSubgroup.coe_comap, xor_iff_not_iff'.1 (AddSubgroup.dense_xor_isAddCyclic _),
+        AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq_top] at h
       rcases h with ⟨a, ha⟩
       use a
-      rw [← QuotientAddGroup.coe_mk', ← AddMonoidHom.map_zmultiples, ← ha,
+      rw [← QuotientAddGroup.coe_mk', ← AddMonoidHom.map_zmultiples, ha,
         AddSubgroup.map_comap_eq_self_of_surjective]
       exact Quot.mk_surjective
     exact ⟨a, denseRange_zsmul_iff.not.mp h, rfl⟩
