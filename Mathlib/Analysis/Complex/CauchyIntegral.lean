@@ -802,8 +802,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} 
 section tendsto_zero
 
 /-- If a family of functions `g m` tends to zero uniformly along the product filter
-`atTop ×ˢ comap im atTop` (i.e., as `m → ∞` and the imaginary part of the input → ∞ jointly),
-then $\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
+`atTop ×ˢ (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))` (i.e., as `m → ∞` and the imaginary part of
+the input → ∞ jointly, within `[[x₁, x₂]] ×ℂ Ici y`), then
+$\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
 `tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`. -/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero {g : ℝ → ℂ → E}
     (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))) :
@@ -832,7 +833,7 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero {g : �
     _ = (1 / 2) * ε := by field_simp
     _ < ε := by linarith
 
-/-- If $f(z) \to 0$ as $\Im(z) \to \infty$, then
+/-- If $f(z) \to 0$ as $\Im(z) \to \infty$ within `[[x₁, x₂]] ×ℂ univ`, then
 $\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
     (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
