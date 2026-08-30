@@ -2098,6 +2098,9 @@ Q2226855:
 
 Q2226868:
   title: Geometric mean theorem
+  decl: EuclideanGeometry.dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two
+  authors: Daniel Liao
+  date: 2026
 
 Q2226962:
   title: Weierstrass–Casorati theorem
