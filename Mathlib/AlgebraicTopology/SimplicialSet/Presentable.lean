@@ -23,7 +23,9 @@ public section
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite
+open CategoryTheory Limits Opposite
+
+open scoped Simplicial
 
 namespace SSet
 

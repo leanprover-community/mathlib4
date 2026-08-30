@@ -74,19 +74,35 @@ theorem mem_add (T : Subspace K V) (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw 
 /-- The span of a set of points in a projective space is defined inductively to be the set of points
 which contains the original set, and contains all points determined by the (nonzero) sum of two
 nonzero vectors, each of which determine points in the span. -/
-inductive spanCarrier (S : Set (ℙ K V)) : Set (ℙ K V)
-  | of (x : ℙ K V) (hx : x ∈ S) : spanCarrier S x
-  | mem_add (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
-      spanCarrier S (Projectivization.mk K v hv) →
-      spanCarrier S (Projectivization.mk K w hw) → spanCarrier S (Projectivization.mk K (v + w) hvw)
+private inductive MemSpan (S : Set (ℙ K V)) : ℙ K V → Prop
+  | of_mem (x : ℙ K V) (hx : x ∈ S) : MemSpan S x
+  | add (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
+      MemSpan S (Projectivization.mk K v hv) →
+      MemSpan S (Projectivization.mk K w hw) → MemSpan S (Projectivization.mk K (v + w) hvw)
 
 /-- The span of a set of points in projective space is a subspace. -/
+@[no_expose]
 def span (S : Set (ℙ K V)) : Subspace K V where
-  carrier := spanCarrier S
-  mem_add' v w hv hw hvw := spanCarrier.mem_add v w hv hw hvw
+  carrier := {x | MemSpan S x}
+  mem_add' v w hv hw hvw := .add v w hv hw hvw
 
 /-- The span of a set of points contains the set of points. -/
-theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun _x hx => spanCarrier.of _ hx
+theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun _x hx => .of_mem _ hx
+
+/-- An induction principle for membership of `span S`. If `motive` holds of all points of `S` and is
+preserved under taking the point determined by the (non-zero) sum of two non-zero vectors, then it
+holds of all points of `span S`. -/
+@[elab_as_elim]
+lemma span_induction {S : Set (ℙ K V)} {motive : ∀ x, x ∈ span S → Prop}
+    (of_mem : ∀ (x) (hx : x ∈ S), motive x (subset_span S hx))
+    (add : ∀ (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0)
+      (hv' : Projectivization.mk K v hv ∈ span S)
+      (hw' : Projectivization.mk K w hw ∈ span S), motive _ hv' → motive _ hw' →
+      motive (Projectivization.mk K (v + w) hvw) ((span S).mem_add v w hv hw hvw hv' hw'))
+    {x : ℙ K V} (hx : x ∈ span S) : motive x hx := by
+  induction hx with
+  | of_mem _ hx => exact of_mem _ hx
+  | add v w hv hw hvw _ _ ih₁ ih₂ => exact add v w hv hw hvw _ _ ih₁ ih₂
 
 /-- The span of a set of points is a Galois insertion between sets of points of a projective space
 and subspaces of the projective space. -/
@@ -95,9 +111,9 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
   gc A B :=
     ⟨fun h => le_trans (subset_span _) h, by
       intro h x hx
-      induction hx with
-      | of => apply h; assumption
-      | mem_add => apply B.mem_add; assumption'⟩
+      induction hx using span_induction with
+      | of_mem => apply h; assumption
+      | add => apply B.mem_add; assumption'⟩
   le_l_u _ := subset_span _
   choice_eq _ _ := rfl
 
