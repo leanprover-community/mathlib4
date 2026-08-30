@@ -153,7 +153,7 @@ theorem HasFPowerSeriesWithinOnBall.analyticWithinAt (hf : HasFPowerSeriesWithin
   hf.hasFPowerSeriesWithinAt.analyticWithinAt
 
 /-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z - y)` has the
-same power series around `x + y`. -/
+same power series with the same radius around `x + y`. -/
 theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y) :
     HasFPowerSeriesOnBall (f <| · - y) p (x + y) r :=
   { r_le := hf.r_le
@@ -162,6 +162,8 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y) 
       convert hf.hasSum hz
       abel }
 
+/-- If a function `f` has a power series `p` around `x` within `s`, then the function
+`z ↦ f (z - y)` has the same power series with the same radius around `x + y` within `s + {y}`. -/
 theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) (y) :
     HasFPowerSeriesWithinOnBall (f <| · - y) p (s + {y}) (x + y) r where
   r_le := hf.r_le
@@ -174,57 +176,85 @@ theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f
     convert hf.hasSum this hz2
     abel
 
+/-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z - y)` has the
+same power series around `x + y`. -/
 theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y) :
     HasFPowerSeriesAt (f <| · - y) p (x + y) := (fun ⟨r, h⟩ ↦ ⟨r, h.comp_sub _⟩) hf
 
+/-- If a function `f` has a power series `p` around `x` within `s`, then the function
+`z ↦ f (z - y)` has the same power series around `x + y` within `s + {y}`. -/
 theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y) :
     HasFPowerSeriesWithinAt (f <| · - y) p (s + {y}) (x + y) := (fun ⟨r, h⟩ ↦ ⟨r, h.comp_sub _⟩) hf
 
+/-- If a function `f` is analytic at `x`, then the function `z ↦ f (z - y)` is analytic at `x + y`.
+-/
 theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y) :
     AnalyticAt 𝕜 (f <| · - y) (x + y) := (fun ⟨p, h⟩ ↦ ⟨p, h.comp_sub _⟩) hf
 
+/-- If a function `f` is analytic on `s`, then the function `z ↦ f (z - y)` is analytic on
+`s + {y}`. -/
 theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y) :
     AnalyticOnNhd 𝕜 (f <| · - y) (s + {y}) := fun x hx ↦ by
   simp only [add_singleton, image_add_right, mem_preimage] at hx
   rw [show x = (x - y) + y by abel]
   apply (hf (x - y) (by convert hx; abel)).comp_sub
 
+/-- If a function `f` is analytic at `x` within `s`, then the function `z ↦ f (z - y)` is analytic
+at `x + y` within `s + {y}`. -/
 theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y) :
     AnalyticWithinAt 𝕜 (f <| · - y) (s + {y}) (x + y) := (fun ⟨p, h⟩ ↦ ⟨p, h.comp_sub _⟩) hf
 
+/-- If a function `f` is analytic within `s`, then the function `z ↦ f (z - y)` is analytic within
+`s + {y}`. -/
 theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y) : AnalyticOn 𝕜 (f <| · - y) (s + {y}) :=
   fun x hx ↦ by
     simp only [add_singleton, image_add_right, mem_preimage] at hx
     rw [show x = (x - y) + y by abel]
     apply (hf (x - y) (by convert hx; abel)).comp_sub
 
+/-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z + y)` has the
+same power series with the same radius around `x - y`. -/
 theorem HasFPowerSeriesOnBall.comp_add (hf : HasFPowerSeriesOnBall f p x r) (y) :
     HasFPowerSeriesOnBall (f <| · + y) p (x - y) r := by convert hf.comp_sub (-y) <;> abel
 
+/-- If a function `f` has a power series `p` around `x` within `s`, then the function
+`z ↦ f (z + y)` has the same power series with the same radius around `x - y` within `s - {y}`. -/
 theorem HasFPowerSeriesWithinOnBall.comp_add (hf : HasFPowerSeriesWithinOnBall f p s x r) (y) :
     HasFPowerSeriesWithinOnBall (f <| · + y) p (s - {y}) (x - y) r := by
   convert hf.comp_sub (-y); swap
   · simp only [sub_eq_add_neg, neg_singleton]
   all_goals abel
 
+/-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z + y)` has the
+same power series around `x - y`. -/
 theorem HasFPowerSeriesAt.comp_add (hf : HasFPowerSeriesAt f p x) (y) :
     HasFPowerSeriesAt (f <| · + y) p (x - y) := (fun ⟨r, h⟩ ↦ ⟨r, h.comp_add _⟩) hf
 
+/-- If a function `f` has a power series `p` around `x` within `s`, then the function
+`z ↦ f (z + y)` has the same power series around `x - y` within `s - {y}`. -/
 theorem HasFPowerSeriesWithinAt.comp_add (hf : HasFPowerSeriesWithinAt f p s x) (y) :
     HasFPowerSeriesWithinAt (f <| · + y) p (s - {y}) (x - y) := (fun ⟨r, h⟩ ↦ ⟨r, h.comp_add _⟩) hf
 
+/-- If a function `f` is analytic at `x`, then the function `z ↦ f (z + y)` is analytic at `x - y`.
+-/
 theorem AnalyticAt.comp_add (hf : AnalyticAt 𝕜 f x) (y) :
     AnalyticAt 𝕜 (f <| · + y) (x - y) := (fun ⟨p, h⟩ ↦ ⟨p, h.comp_add _⟩) hf
 
+/-- If a function `f` is analytic on `s`, then the function `z ↦ f (z + y)` is analytic on
+`s - {y}`. -/
 theorem AnalyticOnNhd.comp_add (hf : AnalyticOnNhd 𝕜 f s) (y) :
     AnalyticOnNhd 𝕜 (f <| · + y) (s - {y}) := by
   convert hf.comp_sub (-y); swap
   · simp only [sub_eq_add_neg, neg_singleton]
   abel
 
+/-- If a function `f` is analytic at `x` within `s`, then the function `z ↦ f (z + y)` is analytic
+at `x - y` within `s - {y}`. -/
 theorem AnalyticWithinAt.comp_add (hf : AnalyticWithinAt 𝕜 f s x) (y) :
     AnalyticWithinAt 𝕜 (f <| · + y) (s - {y}) (x - y) := (fun ⟨p, h⟩ ↦ ⟨p, h.comp_add _⟩) hf
 
+/-- If a function `f` is analytic within `s`, then the function `z ↦ f (z + y)` is analytic within
+`s - {y}`. -/
 theorem AnalyticOn.comp_add (hf : AnalyticOn 𝕜 f s) (y) : AnalyticOn 𝕜 (f <| · + y) (s - {y}) := by
   convert hf.comp_sub (-y); swap
   · simp only [sub_eq_add_neg, neg_singleton]
@@ -232,10 +262,14 @@ theorem AnalyticOn.comp_add (hf : AnalyticOn 𝕜 f s) (y) : AnalyticOn 𝕜 (f 
 
 variable (𝕜 f p s x r y)
 
+/-- A function `f` has a power series `p` around `x` if and only if the function `z ↦ f (z - y)` has
+the same power series with the same radius around `x + y`. -/
 theorem hasFPowerSeriesOnBall_iff_comp_sub :
     HasFPowerSeriesOnBall f p x r ↔ HasFPowerSeriesOnBall (f <| · - y) p (x + y) r :=
   ⟨fun h ↦ h.comp_sub y, fun h ↦ by convert h.comp_add y <;> abel⟩
 
+/-- A function `f` has a power series `p` around `x` within `s` if and only if the function
+`z ↦ f (z - y)` has the same power series with the same radius around `x + y` within `s + {y}`. -/
 theorem hasFPowerSeriesWithinOnBall_iff_comp_sub : HasFPowerSeriesWithinOnBall f p s x r ↔
     HasFPowerSeriesWithinOnBall (f <| · - y) p (s + {y}) (x + y) r :=
   ⟨fun h ↦ h.comp_sub y, fun h ↦ by
@@ -244,17 +278,25 @@ theorem hasFPowerSeriesWithinOnBall_iff_comp_sub : HasFPowerSeriesWithinOnBall f
       simp only [add_singleton, sub_singleton, image_singleton, sub_self, add_zero, image_id']
     all_goals abel⟩
 
+/-- A function `f` has a power series `p` around `x` if and only if the function `z ↦ f (z - y)` has
+the same power series around `x + y`. -/
 theorem hasFPowerSeriesAt_iff_comp_sub :
     HasFPowerSeriesAt f p x ↔ HasFPowerSeriesAt (f <| · - y) p (x + y) :=
   ⟨fun h ↦ h.comp_sub y, fun ⟨r, h⟩ ↦ ⟨r, (hasFPowerSeriesOnBall_iff_comp_sub ..).2 h⟩⟩
 
+/-- A function `f` has a power series `p` around `x` within `s` if and only if the function
+`z ↦ f (z - y)` has the same power series around `x + y` within `s + {y}`. -/
 theorem hasFPowerSeriesWithinAt_iff_comp_sub :
     HasFPowerSeriesWithinAt f p s x ↔ HasFPowerSeriesWithinAt (f <| · - y) p (s + {y}) (x + y) :=
   ⟨fun h ↦ h.comp_sub y, fun ⟨r, h⟩ ↦ ⟨r, (hasFPowerSeriesWithinOnBall_iff_comp_sub ..).2 h⟩⟩
 
+/-- A function `f` is analytic at `x` if and only if the function `z ↦ f (z - y)` is analytic at
+`x + y`. -/
 theorem analyticAt_iff_comp_sub : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 (f <| · - y) (x + y) :=
   ⟨fun h ↦ h.comp_sub y, fun ⟨p, h⟩ ↦ ⟨p, (hasFPowerSeriesAt_iff_comp_sub ..).2 h⟩⟩
 
+/-- A function `f` is analytic on `s` if and only if the function `z ↦ f (z - y)` is analytic on
+`s + {y}`. -/
 theorem analyticOnNhd_iff_comp_sub : AnalyticOnNhd 𝕜 f s ↔ AnalyticOnNhd 𝕜 (f <| · - y) (s + {y}) :=
   ⟨fun h ↦ h.comp_sub y, fun h ↦ by
     convert h.comp_add y; swap
@@ -262,10 +304,14 @@ theorem analyticOnNhd_iff_comp_sub : AnalyticOnNhd 𝕜 f s ↔ AnalyticOnNhd �
       simp only [add_singleton, sub_singleton, image_singleton, sub_self, add_zero, image_id']
     abel⟩
 
+/-- A function `f` is analytic at `x` within `s` if and only if the function `z ↦ f (z - y)` is
+analytic at `x + y` within `s + {y}`. -/
 theorem analyticWithinAt_iff_comp_sub :
     AnalyticWithinAt 𝕜 f s x ↔ AnalyticWithinAt 𝕜 (f <| · - y) (s + {y}) (x + y) :=
   ⟨fun h ↦ h.comp_sub y, fun ⟨p, h⟩ ↦ ⟨p, (hasFPowerSeriesWithinAt_iff_comp_sub ..).2 h⟩⟩
 
+/-- A function `f` is analytic within `s` if and only if the function `z ↦ f (z - y)` is analytic
+within `s + {y}`. -/
 theorem analyticOn_iff_comp_sub : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 (f <| · - y) (s + {y}) :=
   ⟨fun h ↦ h.comp_sub y, fun h ↦ by
     convert h.comp_add y; swap
@@ -273,10 +319,14 @@ theorem analyticOn_iff_comp_sub : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 (f <| 
       simp only [add_singleton, sub_singleton, image_singleton, sub_self, add_zero, image_id']
     abel⟩
 
+/-- A function `f` has a power series `p` around `x` if and only if the function `z ↦ f (z + y)` has
+the same power series with the same radius around `x - y`. -/
 theorem hasFPowerSeriesOnBall_iff_comp_add :
     HasFPowerSeriesOnBall f p x r ↔ HasFPowerSeriesOnBall (f <| · + y) p (x - y) r :=
   ⟨fun h ↦ h.comp_add y, fun h ↦ by convert h.comp_sub y <;> abel⟩
 
+/-- A function `f` has a power series `p` around `x` within `s` if and only if the function
+`z ↦ f (z + y)` has the same power series with the same radius around `x - y` within `s - {y}`. -/
 theorem hasFPowerSeriesWithinOnBall_iff_comp_add : HasFPowerSeriesWithinOnBall f p s x r ↔
     HasFPowerSeriesWithinOnBall (f <| · + y) p (s - {y}) (x - y) r :=
   ⟨fun h ↦ h.comp_add y, fun h ↦ by
@@ -285,17 +335,25 @@ theorem hasFPowerSeriesWithinOnBall_iff_comp_add : HasFPowerSeriesWithinOnBall f
       simp only [sub_singleton, image_singleton, sub_self, singleton_add, zero_add, image_id']
     all_goals abel⟩
 
+/-- A function `f` has a power series `p` around `x` if and only if the function `z ↦ f (z + y)` has
+the same power series around `x - y`. -/
 theorem hasFPowerSeriesAt_iff_comp_add :
     HasFPowerSeriesAt f p x ↔ HasFPowerSeriesAt (f <| · + y) p (x - y) :=
   ⟨fun h ↦ h.comp_add y, fun ⟨r, h⟩ ↦ ⟨r, (hasFPowerSeriesOnBall_iff_comp_add ..).2 h⟩⟩
 
+/-- A function `f` has a power series `p` around `x` within `s` if and only if the function
+`z ↦ f (z + y)` has the same power series around `x - y` within `s - {y}`. -/
 theorem hasFPowerSeriesWithinAt_iff_comp_add :
     HasFPowerSeriesWithinAt f p s x ↔ HasFPowerSeriesWithinAt (f <| · + y) p (s - {y}) (x - y) :=
   ⟨fun h ↦ h.comp_add y, fun ⟨r, h⟩ ↦ ⟨r, (hasFPowerSeriesWithinOnBall_iff_comp_add ..).2 h⟩⟩
 
+/-- A function `f` is analytic at `x` if and only if the function `z ↦ f (z + y)` is analytic at
+`x - y`. -/
 theorem analyticAt_iff_comp_add : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 (f <| · + y) (x - y) :=
   ⟨fun h ↦ h.comp_add y, fun ⟨p, h⟩ ↦ ⟨p, (hasFPowerSeriesAt_iff_comp_add ..).2 h⟩⟩
 
+/-- A function `f` is analytic on `s` if and only if the function `z ↦ f (z + y)` is analytic on
+`s - {y}`. -/
 theorem analyticOnNhd_iff_comp_add : AnalyticOnNhd 𝕜 f s ↔ AnalyticOnNhd 𝕜 (f <| · + y) (s - {y}) :=
   ⟨fun h ↦ h.comp_add y, fun h ↦ by
     convert h.comp_sub y; swap
@@ -303,10 +361,14 @@ theorem analyticOnNhd_iff_comp_add : AnalyticOnNhd 𝕜 f s ↔ AnalyticOnNhd �
       simp only [sub_singleton, image_singleton, sub_self, singleton_add, zero_add, image_id']
     abel⟩
 
+/-- A function `f` is analytic at `x` within `s` if and only if the function `z ↦ f (z + y)` is
+analytic at `x - y` within `s - {y}`. -/
 theorem analyticWithinAt_iff_comp_add :
     AnalyticWithinAt 𝕜 f s x ↔ AnalyticWithinAt 𝕜 (f <| · + y) (s - {y}) (x - y) :=
   ⟨fun h ↦ h.comp_add y, fun ⟨p, h⟩ ↦ ⟨p, (hasFPowerSeriesWithinAt_iff_comp_add ..).2 h⟩⟩
 
+/-- A function `f` is analytic within `s` if and only if the function `z ↦ f (z + y)` is analytic
+within `s - {y}`. -/
 theorem analyticOn_iff_comp_add : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 (f <| · + y) (s - {y}) :=
   ⟨fun h ↦ h.comp_add y, fun h ↦ by
     convert h.comp_sub y; swap
