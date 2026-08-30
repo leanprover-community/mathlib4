@@ -86,7 +86,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 noncomputable def liftedCone : Cone F where
   pt := ⟨_, liftedConeElement F⟩
   π :=
-    { app := fun i => ⟨limit.π (F ⋙ π A) i, by simpa using! map_π_liftedConeElement _ _⟩
+    { app := fun i => ⟨limit.π (F ⋙ π A) i, by simp⟩
       naturality := fun i i' f => by ext; simpa using! (limit.w _ _).symm }
 
 /-- (implementation) The constructed limit cone is a lift of the limit cone in `C`. -/
