@@ -186,7 +186,7 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
     nth_rw 1 [← CharP.pow_charP_of_nat a]
     simp only [C_comp]
     simp only [C_pow, pow_mul]
-    change (frobenius _ _) _  - (frobenius _ _) _= (frobenius _ _ ) _
+    change (frobenius _ _) _  - (frobenius _ _) _ = (frobenius _ _ ) _
     rw [← RingHom.map_sub]
   rw [h2] at h
   exact (frobenius_inj _ _) h
