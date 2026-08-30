@@ -142,9 +142,6 @@ protected def trans (Ψ : PartialDiffeomorph J K N P n) : PartialDiffeomorph I K
   contMDiffOn_invFun :=
     Φ.contMDiffOn_invFun.comp (Ψ.contMDiffOn_invFun.mono inter_subset_left) inter_subset_right
 
-protected theorem trans_source (Ψ : PartialDiffeomorph J K N P n) :
-    (Φ.trans Ψ).source = Φ.source ∩ Φ ⁻¹' (Ψ.source) := by simp
-
 /- We could add lots of additional API (following `Diffeomorph` and `OpenPartialHomeomorph`),
 such as
 * further continuity and differentiability lemmas
