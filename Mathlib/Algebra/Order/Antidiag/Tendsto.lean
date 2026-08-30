@@ -26,6 +26,8 @@ public section
 
 public section
 
+namespace Finset.HasAntidiagonal
+
 open Filter
 
 variable {M R : Type*} [AddZeroClass M] [HasAntidiagonal M] {f : M × M → R} [LinearOrder R]
@@ -41,12 +43,6 @@ lemma tendsto_sup'_antidiagonal_cofinite (hf : Tendsto f cofinite F) : Tendsto
   obtain rfl : i.1 + i.2 = x := by simpa using hi
   exact Set.add_mem_add (by simpa using ⟨i.2, e ▸ hx⟩) (by simpa using ⟨i.1, e ▸ hx⟩)
 
-end Finset.HasAntidiagonal
-
-namespace Finset.HasMulAntidiagonal
-
-variable {N : Type*} [Mul N] [HasMulAntidiagonal N]
-
 /-- When a magma satisfies the `HasMulAntidiagonal` property, its multiplication map has
 finite fibers.
 
@@ -55,7 +51,8 @@ For the reverse implication, see `Filter.TendstoCofinite.hasMulAntidiagonal`. -/
 its addition map has finite fibers.
 
 For the reverse implication, see `Filter.TendstoCofinite.hasAntidiagonal`-/]
-instance tendstoCofinite_mul : TendstoCofinite fun (p : N × N) ↦ p.1 * p.2 := by
+instance tendstoCofinite_mul {N : Type*} [Mul N] [HasMulAntidiagonal N] :
+    TendstoCofinite fun (p : N × N) ↦ p.1 * p.2 := by
   simp [tendstoCofinite_iff_finite_preimage_singleton, ← coe_mulAntidiagonal_eq_preimage_singleton]
 
 end Finset.HasMulAntidiagonal
