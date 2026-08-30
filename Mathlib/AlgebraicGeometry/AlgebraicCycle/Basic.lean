@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.Topology.LocallyFinsupp.Pushforward
 public import Mathlib.AlgebraicGeometry.ResidueField
-public import Mathlib.RingTheory.Flat.Rank
 
 /-!
 # Algebraic Cycles
