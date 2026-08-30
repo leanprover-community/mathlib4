@@ -29,6 +29,7 @@ multilinear map, alternating map, continuous
 @[expose] public section
 
 open Function Matrix
+open scoped Nat
 
 /-- A continuous alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→L[R] N`,
 is a continuous map that is
@@ -654,6 +655,15 @@ theorem alternatization_apply_toAlternatingMap :
     (alternatization f).toAlternatingMap = MultilinearMap.alternatization f.1 := by
   ext v
   simp [alternatization_apply_apply, MultilinearMap.alternatization_apply, Function.comp_def]
+
+theorem _root_.ContinuousAlternatingMap.alternatization_toContinuousMultilinearMap
+    (f : M [⋀^ι]→L[R] N) :
+    f.toContinuousMultilinearMap.alternatization = (Fintype.card ι)! • f := by
+  ext v
+  have : MultilinearMap.alternatization f.toAlternatingMap.toMultilinearMap v =
+      ((Fintype.card ι)! • f.toAlternatingMap) v := by
+    rw [AlternatingMap.coe_alternatization f.toAlternatingMap]
+  simpa only [MultilinearMap.alternatization_apply, alternatization_apply_apply] using! this
 
 end Semiring
 
