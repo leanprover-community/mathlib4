@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Computability.Language
 public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.Option
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Tactic.NormNum
@@ -346,6 +347,60 @@ theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ⊓ M2.accepts := by
 
 end inter
 
+section epsilon
+
+/-- DFA which accepts the language of only the empty string. -/
+@[simps]
+def epsilon : DFA α (Option Unit) where
+  step := fun _ _ => none
+  start := some ()
+  accept := { some () }
+
+@[simp]
+theorem accepts_epsilon : epsilon.accepts = (1 : Language α) := by
+  ext x
+  simp only [accepts, acceptsFrom, evalFrom]
+  rw [Set.mem_setOf_eq]
+  cases x with
+  | nil => simp
+  | cons a x' =>
+    have h_dead : ∀ w : List α, List.foldl epsilon.step (none : Option Unit) w = none := by
+      intro w
+      induction w <;> simp_all
+    simp_all
+
+end epsilon
+
+section singleton
+
+/-- DFA which accepts the singleton language of `a`. -/
+@[simps]
+def char (a : α) [DecidableEq α] : DFA α (Option Bool) where
+  step (ob : Option Bool) (x : α) := match ob with
+    | some true  => none
+    | some false => if x = a then some true else none
+    | none       => none
+  start := some false
+  accept := { some true }
+
+@[simp]
+theorem accepts_char {a : α} [DecidableEq α] : (char a).accepts = { [a] } := by
+  ext x
+  simp only [accepts, acceptsFrom, evalFrom]
+  rw [Set.mem_setOf_eq, Set.mem_singleton_iff]
+  cases x with
+  | nil => simp
+  | cons b x' =>
+    cases x' with
+    | nil => simp
+    | cons c x'' =>
+      have h_dead : ∀ w, List.foldl (char a).step none w = none := by
+        intro w
+        induction w <;> simp_all
+      aesop
+
+end singleton
+
 end DFA
 
 namespace Language
@@ -398,5 +453,24 @@ theorem IsRegular.inf {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
   ⟨σ1 × σ2, inferInstance, M1.inter M2, by simp [hM1, hM2]⟩
+
+/-- The empty language is regular. -/
+theorem IsRegular.zero {T : Type u} : IsRegular (0 : Language T) :=
+  ⟨Unit, inferInstance, ⟨fun _ _ => (), (), {}⟩, rfl⟩
+
+/-- The language of only the empty string is regular. -/
+theorem IsRegular.one {T : Type u} : IsRegular (1 : Language T) :=
+  ⟨Option Unit, inferInstance, DFA.epsilon, DFA.accepts_epsilon⟩
+
+/-- The language of all strings over an alpabet is regular. -/
+theorem IsRegular.top {T : Type u} : IsRegular (⊤ : Language T) := by
+  rw [← compl_bot, bot_eq_zero]
+  apply IsRegular.compl
+  exact IsRegular.zero
+
+/-- The language of only a single symbol is regular. -/
+theorem IsRegular.singleton {T : Type u} {a : T} : IsRegular { [a] } := by
+  classical
+  exact ⟨Option Bool, inferInstance, DFA.char a, DFA.accepts_char⟩
 
 end Language
