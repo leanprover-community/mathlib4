@@ -114,8 +114,8 @@ theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
 
 omit [Algebra ℚ A] in
 theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
-    {g : A⟦X⟧} {c : A} (hderiv : d⁄dX A g * (1 + X) = g) (hconst : constantCoeff g = c) :
-    g = c • (1 + X) := by
+    {g : A⟦X⟧} (hderiv : d⁄dX A g * (1 + X) = g) :
+    g = constantCoeff g • (1 + X) := by
   have : Invertible (1 + X : A⟦X⟧) := (isUnit_iff_constantCoeff.mpr (by simp)).invertible
   have hcu : constantCoeff (⅟(1 + X) : A⟦X⟧) = 1 := by
     have h := congrArg (constantCoeff (R := A)) (mul_invOf_self (1 + X : A⟦X⟧))
@@ -124,12 +124,12 @@ theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
   have hg : g * ⅟(1 + X) = d⁄dX A g := by
     conv_lhs => rw [← hderiv]
     rw [mul_assoc, mul_invOf_self, mul_one]
-  have key : g * ⅟(1 + X) = C c := by
+  have key : g * ⅟(1 + X) = C (constantCoeff g) := by
     refine derivative.ext ?_ ?_
     · simp only [Derivation.leibniz, derivative_invOf, map_add, derivative_one, derivative_X,
         zero_add, derivative_C, mul_one, smul_eq_mul, ← hg]
       ring
-    · simp [hconst, hcu]
+    · simp [hcu]
   rw [smul_eq_C_mul, ← key, mul_assoc, invOf_mul_self, mul_one]
 
 variable (A) in
@@ -141,7 +141,8 @@ theorem subst_exp_log : (exp A).subst (log A) = 1 + X := by
   have hconst : constantCoeff ((exp A).subst (log A)) = 1 := by
     rw [constantCoeff_eq, constantCoeff_subst_of_constantCoeff_zero constantCoeff_log,
       constantCoeff_exp, map_one]
-  simpa using eq_of_derivative_mul_one_add_X_eq_self hderiv hconst
+  have h := eq_of_derivative_mul_one_add_X_eq_self hderiv
+  rwa [hconst, one_smul] at h
 
 variable (A) in
 theorem subst_log_exp_sub_one : (log A).subst (exp A - 1) = X := by
