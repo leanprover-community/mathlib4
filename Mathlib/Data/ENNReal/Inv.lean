@@ -175,6 +175,10 @@ protected lemma div_mul_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 
 protected lemma div_mul_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : b / a * a = b :=
   ENNReal.div_mul_cancel' (by simp [ha₀]) (by simp [ha])
 
+protected lemma div_mul_div_cancel (hb₀ : b ≠ 0) (hb : b ≠ ∞) :
+    a / b * (b / c) = a / c := by
+  rw [← mul_div_assoc, ENNReal.div_mul_cancel hb₀ hb]
+
 /-- See `ENNReal.mul_div_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
 protected lemma mul_div_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) : a * (b / a) = b := by
   rw [mul_comm, ENNReal.div_mul_cancel' ha₀ ha]
