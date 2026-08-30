@@ -520,8 +520,7 @@ theorem det_pos [DecidableEq n] [Nontrivial R'] [IsOrderedRing R'] [PosMulReflec
     replace ih : 0 < M.det := ih _ hM
     suffices 0 < M.det * N.det from lt_of_mul_lt_mul_left (by grind) ih.le
     have hNv : N *ᵥ v = fun i ↦ if i = 0 then N.det else 0 := by
-      have : N *ᵥ N.adjugate.col 0 = (N * N.adjugate).col 0 := rfl -- API?
-      ext; simp [v_def, this, mul_adjugate, Matrix.one_apply]
+      ext; simp [v_def, ← col_mul_eq_mulVec_col, mul_adjugate, Matrix.one_apply]
     have hv₀ : v ≠ 0 := fun contra ↦ ih.ne' <| by simp [← hvM, contra]
     have hM_det : star M.det = M.det := by rw [← det_conjTranspose, hM.1]
     simpa [hNv, dotProduct, hvM, hM_det] using hN.dotProduct_mulVec_pos hv₀

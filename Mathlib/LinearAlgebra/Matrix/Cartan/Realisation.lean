@@ -32,7 +32,7 @@ We develop this theory here.
 
 -/
 
-noncomputable section
+public noncomputable section
 
 open Function Module Set
 open Submodule (span subset_span)
@@ -116,15 +116,15 @@ def coreflection (i : n) : N ≃ₗ[R] N :=
     rl.coreflection i y = y - rl.pairing (rl.sRoot i) y • rl.sCoroot i :=
   rl.flip.reflection_apply i y
 
-@[simp] lemma flip_pairing : rl.flip.pairing = rl.pairing.flip := rfl
+@[simp] lemma flip_pairing : rl.flip.pairing = rl.pairing.flip := by rfl
 
-@[simp] lemma flip_sRoot : rl.flip.sRoot = rl.sCoroot := rfl
+@[simp] lemma flip_sRoot : rl.flip.sRoot = rl.sCoroot := by rfl
 
-@[simp] lemma flip_sCoroot : rl.flip.sCoroot = rl.sRoot := rfl
+@[simp] lemma flip_sCoroot : rl.flip.sCoroot = rl.sRoot := by rfl
 
-@[simp] lemma flip_reflection (i : n) : rl.flip.reflection i = rl.coreflection i := rfl
+@[simp] lemma flip_reflection (i : n) : rl.flip.reflection i = rl.coreflection i := by rfl
 
-@[simp] lemma flip_coreflection (i : n) : rl.flip.coreflection i = rl.reflection i := rfl
+@[simp] lemma flip_coreflection (i : n) : rl.flip.coreflection i = rl.reflection i := by rfl
 
 lemma pairing_reflection_left (i : n) (x : M) (y : N) :
     rl.pairing (rl.reflection i x) y = rl.pairing x (rl.coreflection i y) := by
@@ -265,9 +265,9 @@ lemma mapsTo_preReflection_snd {p : M × N} (hp : p ∈ rl.idx) :
   rintro - ⟨q, hq, rfl⟩
   exact ⟨_, rl.apply_mem_idx hw hq, by simp [preReflection_apply, h₂]⟩
 
-@[simp] lemma reflection_symm (i : n) : (rl.reflection i).symm = rl.reflection i := rfl
+@[simp] lemma reflection_symm (i : n) : (rl.reflection i).symm = rl.reflection i := by rfl
 
-@[simp] lemma coreflection_symm (i : n) : (rl.coreflection i).symm = rl.coreflection i := rfl
+@[simp] lemma coreflection_symm (i : n) : (rl.coreflection i).symm = rl.coreflection i := by rfl
 
 lemma apply_mem_span_of_mem_weyl {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weylGroup) :
     (∀ x ∈ span R (range rl.sRoot),
@@ -498,16 +498,16 @@ def toRootPairing :
       exact rl.mapsTo_reflection_coroot (e i))
 
 @[simp] lemma toRootPairing_root (i : ι) :
-    (rl.toRootPairing e).root i = ((e i : M × N)).1 := rfl
+    (rl.toRootPairing e).root i = ((e i : M × N)).1 := by rfl
 
 @[simp] lemma toRootPairing_coroot (i : ι) :
-    (rl.toRootPairing e).coroot i = ((e i : M × N)).2 := rfl
+    (rl.toRootPairing e).coroot i = ((e i : M × N)).2 := by rfl
 
 @[simp] lemma toRootPairing_toLinearMap :
-    (rl.toRootPairing e).toLinearMap = rl.pairing := rfl
+    (rl.toRootPairing e).toLinearMap = rl.pairing := by rfl
 
 lemma toRootPairing_pairing (i j : ι) :
-    (rl.toRootPairing e).pairing i j = rl.pairing ((e i : M × N)).1 ((e j : M × N)).2 := rfl
+    (rl.toRootPairing e).pairing i j = rl.pairing ((e i : M × N)).1 ((e j : M × N)).2 := by rfl
 
 omit [IsDomain R] [IsTorsionFree R M] [IsTorsionFree R N] in
 lemma exists_intCoords {p : M × N} (hp : p ∈ rl.idx) :

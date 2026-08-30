@@ -482,17 +482,8 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM :
 include hM
 
 lemma det_ne_zero :
-    M.det ≠ 0 := by
-  -- TODO Improve this proof
-  obtain ⟨d, hd_pos, hG⟩ := hM.exists_posDef
-  have hdet : (Matrix.diagonal d * M).det ≠ 0 := by
-    intro h
-    obtain ⟨v, hv, hv₀⟩ := Matrix.exists_mulVec_eq_zero_iff.mpr h
-    have := hG.dotProduct_mulVec_pos hv
-    rw [star_trivial, hv₀] at this
-    simp at this
-  rw [Matrix.det_mul] at hdet
-  exact fun h ↦ hdet (by rw [h, mul_zero])
+    M.det ≠ 0 :=
+  fun contra ↦ by simpa [contra] using hM.exists_posDef.choose_spec.2.det_pos.ne'
 
 protected lemma isUnit_map (k : Type*) [Field k] [CharZero k] :
     IsUnit <| M.map (Int.cast : ℤ → k) := by
