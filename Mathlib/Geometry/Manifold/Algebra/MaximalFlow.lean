@@ -411,20 +411,16 @@ private lemma W_lee_neg_time
     False := by
   sorry
 
-/-- **Sorry 2 — piecewise curve stays in `flowSet`.**
-    The product set `Ioo (-δ₀) (t₁ + ε) ×ˢ U₁'` is contained in `flowSet V`.
+/-- The piecewise curve stays in `flowSet`: the product
+    `Ioo (-δ₀) (t₁ + ε) ×ˢ U₁'` is contained in `flowSet V`, where
+    `U₁' = U₁ ∩ (θ_{t₁})⁻¹' U₀`.
 
-    The proof proceeds in two pieces:
-    * *Left piece* (`s < t₁`): `s ∈ J₁` (because `Ioo (-δ₀) δ₀ ⊆ J₁` by `hδ₀_sub`),
-      so `(s, p) ∈ J₁ ×ˢ U₁ ⊆ flowSet V` by `hJ₁U₁` (after shrinking `U₁'` into `U₁`).
-    * *Right piece* (`s > t₁ - ε`): the translated integral curve
-      `u ↦ maximalFlowAt' V (maximalFlowAt' V p t₁) (u - t₁)` is an integral
-      curve starting at `maximalFlowAt' V p t₁ ∈ U₀`, so `(s, p)` is in `flowSet V`
-      via `hJ₀U₀`.
-    * The two pieces agree on the overlap `Ioo (t₁ - ε) (t₁ + ε₁) ×ˢ U₁'` by
-      uniqueness of integral curves.
-
-    TODO: formalise the gluing argument. -/
+    For `(s, p)` in the product, split on whether `s ∈ J₁`:
+    * `s ∈ J₁`: then `(s, p) ∈ J₁ ×ˢ U₁ ⊆ flowSet V` directly, by `hJ₁U₁`.
+    * `s ∉ J₁`: connectedness of `J₁` (which contains `(-δ₀, δ₀)` and `t₁`) forces
+      `s > t₁`, so `s - t₁ ∈ (0, ε) ⊆ J₀`. Then `s - t₁` is in the flow domain of
+      `θ_{t₁}(p) ∈ U₀`, and `flowDomain_extend` pushes the domain of `p` from `t₁`
+      out to `s`. -/
 private lemma piecewise_flow_subset_flowSet
     {t₁ δ₀ ε : ℝ}
     {J₁ J₀ : Set ℝ} {U₁ U₀ : Set M}
@@ -571,21 +567,17 @@ private lemma maximalFlowAt'_extend (p : M) (t₁ : ℝ)
   · have := hagree ⟨h, ht₁rS₀⟩; simp only [add_sub_cancel_left] at this; exact this
   · simp only [add_sub_cancel_left]
 
-/-- **Sorry 3 — piecewise flow is continuous.**
-    `(t, p) ↦ maximalFlowAt' V p t` is continuous on
-    `Ioo (-δ₀) (t₁ + ε) ×ˢ U₁'`.
+/-- The piecewise flow is continuous: `(t, p) ↦ maximalFlowAt' V p t` is continuous on
+    `Ioo (-δ₀) (t₁ + ε) ×ˢ U₁'`, where `U₁' = U₁ ∩ (θ_{t₁})⁻¹' U₀`.
 
-    The proof glues two continuous pieces:
-    * *Left piece*: the restriction of `hcont₁` to
-      `Ioo (-δ₀) (t₁ + ε₁) ×ˢ U₁' ⊆ J₁ ×ˢ U₁`.
-    * *Right piece*: on `Ioo (t₁ - ε) (t₁ + ε) ×ˢ U₁'` the map factors as
-        `(t, p) ↦ maximalFlowAt' V (maximalFlowAt' V p t₁) (t - t₁)`,
-      which is continuous by composing `hcont_p_t₁` (continuity of `p ↦ θ_{t₁}(p)`)
-      with `hcont₀` (continuity of `(s, q) ↦ θ_s(q)` near `(0, q₀)`).
-    * The two pieces agree on their overlap by the flow group law
-      (`flow_add` / `IsMIntegralCurve.mul`).
-
-    TODO: formalise the gluing via `ContinuousOn.congr` and `IsOpen.continuousOn_iff`. -/
+    Continuity is checked pointwise, splitting on whether `tp.1 ∈ J₁`:
+    * `tp.1 ∈ J₁`: the point lies in `J₁ ×ˢ U₁`, so `hcont₁` applies after restricting
+      the neighbourhood.
+    * `tp.1 ∉ J₁`: connectedness of `J₁` forces `tp.1 > t₁`, so `tp.1 ∈ S`. There the map
+      factors as `(t, p) ↦ maximalFlowAt' V (maximalFlowAt' V p t₁) (t - t₁)`, continuous by
+      composing `hcont_p_t₁` (continuity of `p ↦ θ_{t₁}(p)`) with `hcont₀`. The two forms
+      agree via `hflow_eq` (the group-law identity from `maximalFlowAt'_extend`), so
+      `ContinuousWithinAt.congr` transfers continuity to the original map. -/
 private lemma piecewise_flow_continuous
     {t₁ δ₀ ε : ℝ}
     {J₁ J₀ : Set ℝ} {U₁ U₀ : Set M}
