@@ -369,9 +369,7 @@ theorem or_congr_left' {c a b : Prop} (h : ¬c → (a ↔ b)) : a ∨ c ↔ b �
 theorem or_congr_right' {c : Prop} (h : ¬a → (b ↔ c)) : a ∨ b ↔ a ∨ c :=
   open scoped Classical in Decidable.or_congr_right' h
 
-/-! ### Declarations about distributivity -/
-
-/-! Declarations about `iff` -/
+/-! ### Declarations about `iff` -/
 
 alias Iff.iff := iff_congr
 
