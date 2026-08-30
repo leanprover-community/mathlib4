@@ -268,16 +268,13 @@ theorem posSemidef_iff_re_sum_kernel' :
       0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜) :=
   posSemidef_tfae.out 1 3
 
-theorem _root_.Matrix.PosSemidef.re_sum_kernel (h : K.PosSemidef) :
-    K.IsHermitian ∧ ∀ (f : X × V →₀ 𝕜),
-      0 ≤ RCLike.re
-        (f.sum fun xv z ↦ f.sum fun xv' w ↦ conj z * w * ⟪K xv'.1 xv.1 xv.2, xv'.2⟫_𝕜) :=
-  posSemidef_iff_re_sum_kernel.mp h
+theorem _root_.Matrix.PosSemidef.re_sum_kernel (h : K.PosSemidef) (f : X × V →₀ 𝕜) :
+    0 ≤ RCLike.re (f.sum fun xv z ↦ f.sum fun xv' w ↦ conj z * w * ⟪K xv'.1 xv.1 xv.2, xv'.2⟫_𝕜) :=
+  (posSemidef_iff_re_sum_kernel.mp h).2 f
 
-theorem _root_.Matrix.PosSemidef.re_sum_kernel' (h : K.PosSemidef) :
-    K.IsHermitian ∧ ∀ (vv : X →₀ V),
-      0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜) :=
-  posSemidef_iff_re_sum_kernel'.mp h
+theorem _root_.Matrix.PosSemidef.re_sum_kernel' (h : K.PosSemidef) (vv : X →₀ V) :
+    0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜) :=
+  (posSemidef_iff_re_sum_kernel'.mp h).2 vv
 
 set_option linter.unusedVariables false in
 /-- Auxiliary construction for `OfKernel`. TODO: Privatize -/
@@ -298,7 +295,7 @@ instance instPreInnerProductSpaceCoreH₀ : PreInnerProductSpace.Core 𝕜 (H₀
     rw [Finsupp.sum_add_index'] <;> simp [← Finsupp.sum_add, add_mul]
   smul_left _ _ _ := by
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.mul_sum, ← mul_assoc]
-  re_inner_nonneg := (Fact.out : K.PosSemidef).re_sum_kernel.2
+  re_inner_nonneg := (Fact.out : K.PosSemidef).re_sum_kernel
 
 instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
   InnerProductSpace.Core.toSeminormedAddCommGroup (𝕜 := 𝕜)
