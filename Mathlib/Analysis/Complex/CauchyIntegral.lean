@@ -805,8 +805,8 @@ section tendsto_zero
 `atTop ×ˢ comap im atTop` (i.e., as `m → ∞` and the imaginary part of the input → ∞ jointly),
 then $\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
 `tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`. -/
-lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
-    {g : ℝ → ℂ → E} (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))) :
+lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero {g : ℝ → ℂ → E}
+    (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
   wlog hne : x₁ ≠ x₂
   · simp_all
@@ -818,27 +818,30 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
   simp only [eventually_atTop, eventually_comap, eventually_inf_principal] at hpa hpb
   obtain ⟨M₁, hM₁⟩ := hpa
   obtain ⟨K, hK⟩ := hpb
-  refine ⟨max M₁ K, fun m hm ↦ ?_⟩
+  refine ⟨max y (max M₁ K), fun m hm ↦ ?_⟩
   calc ‖∫ (x : ℝ) in x₁..x₂, g m (↑x + ↑m * I)‖
     _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| := by
-      refine intervalIntegral.norm_integral_le_of_norm_le_const fun x hx ↦ ?_
       simp only [Pi.zero_apply, dist_zero] at hp
-      refine le_of_lt <| hp ?_ ?_
-      · exact hM₁ m <| le_of_max_le_left hm
-      · apply hK m (le_of_max_le_right hm) (x + m * I) (by simp)
-
-        sorry
+      refine intervalIntegral.norm_integral_le_of_norm_le_const fun x hx ↦ le_of_lt <| hp ?_ ?_
+      · exact hM₁ m <| le_of_max_le_left <| le_of_max_le_right hm
+      · apply hK m (le_of_max_le_right <| le_of_max_le_right <| hm) (x + m * I) (by simp)
+        simp only [mem_reProdIm, add_re, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, I_im,
+          mul_one, sub_self, add_zero, add_im, mul_im, zero_add, mem_Ici]
+        refine ⟨?_, le_of_max_le_left hm⟩
+        grind [mem_uIcc, mem_uIoc]
     _ = (1 / 2) * ε := by field_simp
     _ < ε := by linarith
 
 /-- If $f(z) \to 0$ as $\Im(z) \to \infty$, then
 $\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
-    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, f (x + m * I)) atTop (𝓝 0) :=
-  tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero (g := fun _ ↦ f) <|
-    tendstoUniformlyOnFilter_iff_tendsto.mpr <|
-      tendsto_left_nhds_uniformity.comp (htendsto.comp tendsto_snd)
+  tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero (y := 0) (g := fun _ ↦ f) <|
+    (tendstoUniformlyOnFilter_iff_tendsto.mpr <|
+        tendsto_left_nhds_uniformity.comp (htendsto.comp tendsto_snd)).mono_right <|
+      inf_le_inf_left _ <| principal_mono.2 <| reProdIm_subset_iff.2 <|
+        prod_mono_right <| subset_univ _
 
 end tendsto_zero
 
@@ -891,7 +894,7 @@ theorem tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_t
     (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
     {C₂ : E} (hC₂ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
-    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
     Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop <|
       𝓝 ((∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂) := by
   refine .congr' ((eventually_ge_atTop y).mono fun m hm ↦
@@ -908,7 +911,7 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
     {C₁ : E} (hC₁ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop (𝓝 C₁))
     {C₂ : E} (hC₂ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
-    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
     (∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂ - C₁ = 0 := by
   rw [sub_eq_zero]
   exact (tendsto_nhds_unique hC₁ <|
@@ -930,7 +933,7 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
     {C₁ : E} (hC₁ : Tendsto (fun m ↦ ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop (𝓝 C₁))
     {C₂ : E} (hC₂ : Tendsto (fun m ↦ ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
-    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
     (∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + (I • C₂) - (I • C₁) = 0 :=
   integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable y hcont s hs hdiff
     (hC₁.const_smul I) (hC₂.const_smul I) htendsto
@@ -955,7 +958,7 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
     (hint₁ : IntegrableOn (fun (t : ℝ) ↦ f (x₁ + t * I)) (Ioi y) volume)
     (hint₂ : IntegrableOn (fun (t : ℝ) ↦ f (x₂ + t * I)) (Ioi y) volume)
-    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
     (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) + (I • ∫ (t : ℝ) in Ioi y, f (x₂ + t * I)) -
       (I • ∫ (t : ℝ) in Ioi y, f (x₁ + t * I)) = 0 := by
   refine integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable' y hcont s hs
