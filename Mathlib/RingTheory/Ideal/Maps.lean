@@ -1331,6 +1331,21 @@ lemma RingHom.ker_evalRingHom {ι : Type*} [DecidableEq ι] (R : ι → Type*)
   use x + Pi.single i 1
   simp [mul_add, sub_mul, one_mul, ← Pi.single_mul_left, hx]
 
+lemma Pi.not_comap_evalRingHom_le_comap_of_neq {ι : Type*} (R : ι → Type*) [∀ i, Semiring (R i)]
+    {i j : ι} (hij : i ≠ j) (I : Ideal (R i)) (J : Ideal (R j)) (hJ : J ≠ ⊤) :
+    ¬ I.comap (Pi.evalRingHom R i) ≤ J.comap (Pi.evalRingHom R j) := by
+  intro hle
+  classical
+  have hmem : Pi.single j (1 : R j) ∈ I.comap (Pi.evalRingHom R i) := by
+    change (Pi.single j (1 : R j)) i ∈ I
+    rewrite [Pi.single_eq_of_ne hij 1]
+    exact I.zero_mem
+  have hnotmem : Pi.single j (1 : R j) ∉ J.comap (Pi.evalRingHom R j) := by
+    change (Pi.single j (1 : R j)) j ∉ J
+    rewrite [Pi.single_eq_same]
+    exact (Ideal.ne_top_iff_one J).mp hJ
+  exact hnotmem (hle hmem)
+
 lemma Ideal.exists_of_comap_eq_ker_sup {A B : Type*} [Ring A] [Ring B] (f : A →+* B)
     (surj : Function.Surjective f) {I : Ideal B} {J : Ideal A}
     (eq : I.comap f = RingHom.ker f ⊔ J) {x : B} (hx : x ∈ I) : ∃ y ∈ J, f y = x := by
