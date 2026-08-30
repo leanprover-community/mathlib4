@@ -191,7 +191,7 @@ open scoped Classical in
 /-- Alternative way of writing the uniformPDF. -/
 lemma uniformPDF_ite {s : Set E} {x : E} :
     uniformPDF s x μ = if x ∈ s then (μ s)⁻¹ else 0 := by
-  norm_num [uniformPDF, Set.indicator]
+  simp [uniformPDF, Set.indicator]
 
 end pdf
 

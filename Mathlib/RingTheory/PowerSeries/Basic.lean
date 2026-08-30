@@ -667,7 +667,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
           rw [h'] at h''
           simp only [pow_zero, one_mul, coeff_one, one_ne_zero, ↓reduceIte, zero_mul, add_zero,
             mul_one] at h''
-          norm_num at h''
+          simp at h''
         · rw [ih]
           · conv => lhs; arg 2; rw [mul_comm, ← mul_assoc]
             move_mul [← constantCoeff φ ^ (n' - 1)]

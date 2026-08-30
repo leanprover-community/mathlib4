@@ -47,7 +47,7 @@ theorem sin_lt (h : 0 < x) : sin x < x := by
   rw [sub_le_iff_le_add', hx] at this
   apply this.trans_lt
   rw [sub_add, sub_lt_self_iff, sub_pos, div_eq_mul_inv (x ^ 3)]
-  refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
+  refine mul_lt_mul' ?_ (by norm_num) (by simp) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
   simp
 

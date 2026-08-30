@@ -198,7 +198,7 @@ variable {A : Type*} [CommSemiring A] {I : Ideal A} [DecidablePred (fun x ↦ x 
 
 /-- If `I^2 = 0`, then `I` admits a divided power structure. -/
 noncomputable def dividedPowers : DividedPowers I :=
-  OfInvertibleFactorial.dividedPowers (by norm_num) hI2
+  OfInvertibleFactorial.dividedPowers (by simp) hI2
 
 theorem dpow_of_two_le {n : ℕ} (hn : 2 ≤ n) (a : A) :
     (dividedPowers hI2) n a = 0 := by

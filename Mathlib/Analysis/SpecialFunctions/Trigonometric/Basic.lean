@@ -218,7 +218,7 @@ theorem sin_pi : sin π = 0 := by
 @[simp]
 theorem cos_pi : cos π = -1 := by
   rw [← mul_div_cancel_left₀ π two_ne_zero, mul_div_assoc, cos_two_mul, cos_pi_div_two]
-  norm_num
+  simp
 
 @[simp]
 theorem sin_two_pi : sin (2 * π) = 0 := by simp [two_mul, sin_add]
@@ -857,7 +857,7 @@ theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
   · simp [h]; linarith
   · absurd (show 0 ≤ c from cos_nonneg_of_mem_Icc <| by constructor <;> linarith [pi_pos.le])
     rw [not_le, h]
-    exact div_neg_of_neg_of_pos (by norm_num [lt_sqrt]) (by positivity)
+    exact div_neg_of_neg_of_pos (by simp [lt_sqrt]) (by positivity)
 
 end CosDivSq
 

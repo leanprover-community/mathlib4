@@ -94,7 +94,7 @@ theorem alternatingGroup_le_of_normal
     apply Set.powersetCard.isPreprimitive_perm <;> grind
   classical
   apply iwasawaStructure_two.commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by simp) (by grind)
 
 end Equiv.Perm
 
@@ -125,12 +125,12 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
   rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
   have : IsPreprimitive (alternatingGroup α) (Set.powersetCard α 3) := by
-    refine Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) ?_ ?_
-    · exact lt_of_lt_of_le (by norm_num) hα
+    refine Set.powersetCard.isPreprimitive_alternatingGroup (by simp) ?_ ?_
+    · exact lt_of_lt_of_le (by simp) hα
     · simpa using hα'
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top (by simpa using hα)]
   apply iwasawaStructure_three.commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by simp) (by grind)
 
 theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
@@ -182,10 +182,10 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
   rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
   have : IsPreprimitive (alternatingGroup α) (Set.powersetCard α 4) := by
-    apply Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) <;> grind
+    apply Set.powersetCard.isPreprimitive_alternatingGroup (by simp) <;> grind
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top hα]
   apply (iwasawaStructure_four hα).commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by simp) (by grind)
 
 /- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`
@@ -204,7 +204,7 @@ theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
   exists_pair_ne := by
     rw [← _root_.nontrivial_iff]
     refine nontrivial_of_three_le_card ?_
-    simpa using le_trans (by norm_num) hα
+    simpa using le_trans (by simp) hα
   eq_bot_or_eq_top_of_normal H _ := normal_subgroup_eq_bot_or_eq_top hα
 
 @[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]

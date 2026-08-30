@@ -313,7 +313,7 @@ theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ}
   rw [← isCoatom_stabilizer_iff_preprimitive _ s, stabilizer_coe]
   apply alternatingGroup.isCoatom_stabilizer
   · rw [powersetCard.coe_nonempty_iff]
-    exact le_trans (by norm_num) h_three_le
+    exact le_trans (by simp) h_three_le
   · simpa [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq] using ne_of_lt hn
   · simpa only [ncard_eq]
 

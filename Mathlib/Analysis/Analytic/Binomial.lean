@@ -103,7 +103,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
   suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
       fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
     convert! AnalyticOn.hasFPowerSeriesOnSubball _ _ _
-    · norm_num
+    · simp
     · -- TODO: use `fun_prop` for this subgoal
       apply AnalyticOn.cpow (analyticOn_const.add analyticOn_id) analyticOn_const
       intro z hz

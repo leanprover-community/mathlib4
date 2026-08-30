@@ -389,7 +389,7 @@ The norm, relative to `ℤ`, of `ζ - 1` in a `2`-th cyclotomic extension of `�
 theorem norm_toInteger_sub_one_of_eq_two [IsCyclotomicExtension {2} ℚ K]
     (hζ : IsPrimitiveRoot ζ 2) :
     norm ℤ (hζ.toInteger - 1) = -2 := by
-  rw [show 2 = (2 ^ (0 + 1)) by norm_num] at hζ
+  rw [show 2 = (2 ^ (0 + 1)) by simp] at hζ
   simpa using hζ.norm_toInteger_pow_sub_one_of_two
 
 /-- The norm, relative to `ℤ`, of `ζ - 1` in a `p`-th cyclotomic extension of `ℚ` is `p` if
