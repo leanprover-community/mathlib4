@@ -25,6 +25,7 @@ interior.
 -/
 
 open MeasureTheory Measure Module Submodule AffineSubspace
+open scoped ENNReal NNReal
 
 public section
 
@@ -41,7 +42,7 @@ theorem measurableSet_closedInterior (s : Simplex ℝ P n) : MeasurableSet s.clo
 private theorem measure_cross_section (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     (μHE[n] <| s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) ·)
       =ᵐ[MeasureSpace.volume.restrict (Set.Icc 0 1)]
-      (‖·‖₊ ^ n • μHE[n] (s.faceOpposite i).closedInterior) := by
+        (‖·‖₊ ^ n • μHE[n] (s.faceOpposite i).closedInterior) := by
   rw [← restrict_Ioc_eq_restrict_Icc]
   refine ae_restrict_of_forall_mem (by simp) fun x hx ↦ ?_
   simp [s.closedInterior_inter_shift_eq_homothety i (Set.Ioc_subset_Icc_self hx),
@@ -58,7 +59,7 @@ private theorem cross_section_support (s : Simplex ℝ P (n + 1)) (i : Fin (n + 
 height and $b$ is the $(n - 1)$-volume of the base. This version is expressed in `ENNReal`. -/
 theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     μHE[n + 1] s.closedInterior =
-      (.ofReal ↑(n + 1))⁻¹ * .ofReal (s.height i) * μHE[n] (s.faceOpposite i).closedInterior := by
+      ((n + 1 : ℕ) : ℝ≥0∞)⁻¹ * .ofReal (s.height i) * μHE[n] (s.faceOpposite i).closedInterior := by
   borelize V
   have hn : finrank ℝ (affineSpan ℝ (Set.range s.points)).direction = n + 1 := by
     rw [direction_affineSpan]
@@ -83,22 +84,15 @@ theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i 
   simp_rw [nnreal_smul_coe_apply]
   rw [lintegral_mul_const _ (by fun_prop), ← mul_assoc, mul_comm (ENNReal.ofReal (s.height i))]
   congr
-  suffices (∫⁻ (x : ℝ) in Set.Icc 0 1, ↑(‖x‖₊ ^ n)).toReal = (ENNReal.ofReal ↑(n + 1))⁻¹.toReal by
-    rw [ENNReal.toReal_eq_toReal_iff] at this
-    apply this.resolve_right
-    push +distrib Not
-    exact ⟨Or.inr (by simp; grind), Or.inr (by simp)⟩
   calc
-  _ = ∫ (x : ℝ) in Set.Icc 0 1, x ^ n := by
-    rw [integral_eq_lintegral_of_nonneg_ae
-      (ae_restrict_of_forall_mem measurableSet_Icc fun x hx ↦ by simp [hx.1]) (by fun_prop),
-      setLIntegral_congr_fun (by simp) fun x hx ↦ ?_]
-    rw [← nnnorm_pow, ← enorm_eq_nnnorm, Real.enorm_eq_ofReal (by simp [hx.1])]
-  _ = ∫ x in 0..1, x ^ n := by
-    rw [intervalIntegral.integral_of_le (by simp), integral_Icc_eq_integral_Ioc]
-  _ = _ := by
-    rw [ENNReal.toReal_inv, ENNReal.toReal_ofReal (by positivity)]
-    simp
+    _ = ENNReal.ofReal (∫ x in Set.Icc (0 : ℝ) 1, ((‖x‖₊ ^ n : ℝ≥0) : ℝ)) :=
+      lintegral_coe_eq_integral _ (Continuous.integrableOn_Icc (by fun_prop))
+    _ = ENNReal.ofReal (∫ x in Set.Icc 0 1, x ^ n) :=
+      congrArg _ (setIntegral_congr_fun measurableSet_Icc fun x hx ↦ by simp [abs_of_nonneg hx.1])
+    _ = ((n + 1 : ℕ) : ℝ≥0∞)⁻¹ := by
+      rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le zero_le_one, integral_pow,
+        ← ENNReal.ofReal_natCast (n + 1), ← ENNReal.ofReal_inv_of_pos (by positivity)]
+      norm_num
 
 /-- The $n$-volume of the closed interior of a $n$-simplex is equal to $h * b / n$, where $h$ is the
 height and $b$ is the $(n - 1)$-volume of the base. This version is expressed in `Real`. -/
@@ -107,8 +101,7 @@ theorem euclideanHausdorffMeasure_real_closedInterior (s : Simplex ℝ P (n + 1)
       (↑(n + 1))⁻¹ * s.height i * μHE[n].real (s.faceOpposite i).closedInterior := by
   simp_rw [measureReal_def]
   rw [s.euclideanHausdorffMeasure_closedInterior i, ENNReal.toReal_mul, ENNReal.toReal_mul,
-    ENNReal.toReal_ofReal (s.height_pos i).le, ENNReal.toReal_inv,
-    ENNReal.toReal_ofReal (by positivity)]
+    ENNReal.toReal_ofReal (s.height_pos i).le, ENNReal.toReal_inv, ENNReal.toReal_natCast]
 
 theorem euclideanHausdorffMeasure_closedInterior_eq_one (s : Simplex ℝ P 0) :
     μHE[0] s.closedInterior = 1 := by
