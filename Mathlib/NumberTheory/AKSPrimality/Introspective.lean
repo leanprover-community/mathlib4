@@ -42,17 +42,17 @@ namespace Introspective
 
 variable {b d r p a n e : ℕ} {R : Type*}
 
-theorem dvd_of_introspective {f : (ZMod n)[X]} (h : Introspective f e r) (hd : p ∣ n) :
-    Introspective (R := ZMod p) (f.map (ZMod.castHom hd _)) e r := by
+protected theorem map {S : Type*} [CommRing S] [CommRing R] {f : S[X]}
+    (h : Introspective f e r) (g : S →+* R) : Introspective (f.map g) e r := by
   simp only [Introspective] at *
-  let g := lift (span {(X : (ZMod n)[X]) ^ r - C 1}) (RingHom.comp (mk (span
-      ({(X : (ZMod p)[X]) ^ r - C 1})))  (Polynomial.mapRingHom (ZMod.castHom hd (ZMod p)))) (by
+  let g := lift (span {(X : S[X]) ^ r - C 1}) (RingHom.comp (mk (span
+      ({(X : R[X]) ^ r - C 1})))  (Polynomial.mapRingHom g)) (by
     intro a ha
     simp only [RingHom.coe_comp, coe_mapRingHom, Function.comp_apply]
     apply eq_zero_iff_mem.mpr
     simp only [Ideal.mem_span_singleton'] at *
     obtain ⟨ b , hb ⟩ := ha
-    use b.map (ZMod.castHom hd _)
+    use b.map g
     simp [← hb])
   convert congrArg g h
   · simp [g]
