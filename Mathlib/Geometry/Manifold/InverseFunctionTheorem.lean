@@ -217,9 +217,7 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
       (range_mem_nhds_isInteriorPoint hp)
   /- obtain partial diffeomorphism in coordinates and compose with the charts to obtain a partial
   diffeomorphism `M₁ → M₂` -/
-  let coord_diffeo := hg.toPartialDiffeomorph U_open φ₀p_mem_U  hg' hn
-  let diffeo := (φ₁.trans coord_diffeo).trans ψ₁.symm
-  use diffeo
+  use (φ₁.trans (hg.toPartialDiffeomorph U_open φ₀p_mem_U hg' hn)).trans ψ₁.symm
   constructor
   · refine ⟨⟨mem_extChartAtPartialDiffeomorph_source n hp,
       (hg.toPartialDiffeomorph_mem_source U_open φ₀p_mem_U hg' hn)⟩, ?_⟩
