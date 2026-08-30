@@ -73,6 +73,7 @@ https://github.com/leanprover/lean4/issues/14470 is fixed -/
 def equivProdAux : Homogenization R P ≃ V × R :=
   .refl _
 
+-- This instance must be exposed to avoid publicly non-defeq instances for `NSMul`.
 instance : AddCommGroup (Homogenization R P) :=
   equivProdAux.addCommGroup
 
