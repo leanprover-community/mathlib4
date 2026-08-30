@@ -98,6 +98,7 @@ protected theorem mul (hf : Introspective f e r) (hg : Introspective g e r) :
   convert Ideal.zero_mem _
   grind [mul_pow]
 
+
 /-- The product of coprime exponents is Introspective. -/
 theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h : e.Coprime r) :
     Introspective f (e * d) r := by
@@ -132,6 +133,7 @@ end CommRing
 
 variable [Field R] [CharP R p] [Fact p.Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
     (hcprm : p.Coprime r) : Introspective ((X : R[X]) - C (a : R)) m r := by
   have hp : p.Prime := Fact.out
