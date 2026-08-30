@@ -51,38 +51,41 @@ Rather than defining `HasFiniteResolutionOfLength` in terms of explicit exact se
 we define it inductively: `X` has a `P`-resolution of length `0` if `X` satisfies `P`, and
 it has a `P`-resolution of length `n + 1` if there exists a short exact sequence
 `0 ⟶ K ⟶ E ⟶ X ⟶ 0` such that `E` satisfies `P` and `K` has a `P`-resolution of length `n`. -/
-inductive HasFiniteResolutionOfLength (P : ObjectProperty C) : C → ℕ → Prop
-  | zero (X : C) (hX : P X) : HasFiniteResolutionOfLength P X 0
+inductive HasFiniteResolutionOfLength (P : ObjectProperty C) : ℕ → ObjectProperty C
+  | zero (X : C) (hX : P X) : HasFiniteResolutionOfLength P 0 X
   | succ (S : ShortComplex C) (n : ℕ) (hS : S.ShortExact) (h₂ : P S.X₂)
-      (h₁ : HasFiniteResolutionOfLength P S.X₁ n) : HasFiniteResolutionOfLength P S.X₃ (n + 1)
+      (h₁ : HasFiniteResolutionOfLength P n S.X₁) : HasFiniteResolutionOfLength P (n + 1) S.X₃
 
 /-- Let `C` be a category, `P : ObjectProperty C` be a property of objects in `C`.
 We say that `X : C` has a finite `P`-resolution if it has a `P`-resolution of some finite length. -/
 class HasFiniteResolution (P : ObjectProperty C) (X : C) : Prop where
-  out (P X) : ∃ n : ℕ, P.HasFiniteResolutionOfLength X n
+  out (P X) : ∃ n : ℕ, P.HasFiniteResolutionOfLength n X
 
 variable {P Q : ObjectProperty C} {X : C} {n : ℕ}
 
 namespace HasFiniteResolutionOfLength
 
-theorem property (hX : P.HasFiniteResolutionOfLength X 0) : P X := by
-  cases hX with
-  | zero _ hX => exact hX
+theorem property : P = P.HasFiniteResolutionOfLength 0 :=
+  le_antisymm HasFiniteResolutionOfLength.zero fun _ hX ↦
+    match hX with
+    | zero _ hX => hX
 
-theorem monotone (hPQ : P ≤ Q) (hX : P.HasFiniteResolutionOfLength X n) :
-    Q.HasFiniteResolutionOfLength X n := by
+theorem monotone (hPQ : P ≤ Q) :
+    P.HasFiniteResolutionOfLength n ≤ Q.HasFiniteResolutionOfLength n := by
+  intro X hX
   induction hX with
   | zero X hX => exact HasFiniteResolutionOfLength.zero X (hPQ X hX)
   | succ S n hS h₂ _ ih => exact HasFiniteResolutionOfLength.succ S n hS (hPQ S.X₂ h₂) ih
 
-theorem property_of_isClosedUnderQuotients [P.IsClosedUnderQuotients]
-    (hX : P.HasFiniteResolutionOfLength X n) : P X := by
+theorem property_of_isClosedUnderQuotients [P.IsClosedUnderQuotients] :
+    P.HasFiniteResolutionOfLength n ≤ P := by
+  intro X hX
   cases hX with
   | zero _ hX => exact hX
   | succ S _ hS h₂ _ => exact P.prop_X₃_of_shortExact hS h₂
 
 theorem of_iso [P.IsClosedUnderIsomorphisms] {Y : C} (e : X ≅ Y)
-    (hX : P.HasFiniteResolutionOfLength X n) : P.HasFiniteResolutionOfLength Y n := by
+    (hX : P.HasFiniteResolutionOfLength n X) : P.HasFiniteResolutionOfLength n Y := by
   cases hX with
   | zero _ hX => exact HasFiniteResolutionOfLength.zero Y (P.prop_of_iso e hX)
   | succ S n hS h₂ h₁ =>
@@ -92,17 +95,16 @@ theorem of_iso [P.IsClosedUnderIsomorphisms] {Y : C} (e : X ≅ Y)
 
 theorem map_exactFunctor {D : Type u'} [Category.{v'} D] [HasZeroMorphisms D]
     {Q : ObjectProperty D} (F : C ⥤ D) [F.PreservesZeroMorphisms]
-    [PreservesFiniteLimits F] [PreservesFiniteColimits F]
-    (hF : P ≤ Q.inverseImage F) (hX : P.HasFiniteResolutionOfLength X n) :
-    Q.HasFiniteResolutionOfLength (F.obj X) n := by
+    [PreservesFiniteLimits F] [PreservesFiniteColimits F] (hF : P ≤ Q.inverseImage F) :
+    P.HasFiniteResolutionOfLength n ≤ (Q.HasFiniteResolutionOfLength n).inverseImage F := by
+  intro X hX
   induction hX with
-  | zero X hX =>
-      exact HasFiniteResolutionOfLength.zero (F.obj X) (hF X hX)
+  | zero X hX => exact HasFiniteResolutionOfLength.zero (F.obj X) (hF X hX)
   | succ S n hS h₂ _ ih =>
       exact HasFiniteResolutionOfLength.succ (S.map F) n (hS.map_of_exact F) (hF S.X₂ h₂) ih
 
-theorem hasFiniteResolution (hX : P.HasFiniteResolutionOfLength X n) : P.HasFiniteResolution X :=
-  ⟨n, hX⟩
+theorem hasFiniteResolution : P.HasFiniteResolutionOfLength n ≤ P.HasFiniteResolution :=
+  fun _ hX ↦ ⟨n, hX⟩
 
 end HasFiniteResolutionOfLength
 
