@@ -401,7 +401,7 @@ theorem ContinuousLinearMap.hasDerivAt_exp_smul_const {E : Type*} [NormedAddComm
 /-- A multiplicative map that is Fréchet differentiable at `1` maps an exponential to the
 exponential of its derivative at `1`. -/
 theorem MonoidHom.map_exp_of_hasFDerivAt_one [NormedAlgebra ℚ 𝔸] (φ : 𝔸 →* 𝕂)
-    (L : 𝔸 →L[𝕂] 𝕂) (hφ : HasFDerivAt (fun x : 𝔸 ↦ φ x) L 1) (x : 𝔸) :
+    (L : 𝔸 →L[𝕂] 𝕂) (hφ : HasFDerivAt φ L 1) (x : 𝔸) :
     φ (exp x) = exp (L x) := by
   set f : 𝕂 → 𝕂 := fun t ↦ φ (exp (t • x))
   have hadd (a b : 𝕂) : f (a + b) = f a * f b := by
