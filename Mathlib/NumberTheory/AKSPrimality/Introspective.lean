@@ -142,8 +142,7 @@ private theorem _root_.Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (hcprm : 
   refine separable_X_pow_sub_C 1 ?_ (by simp)
   rw [← cast_zero (R := R)]
   apply ((CharP.natCast_eq_natCast R p).mp).mt
-  apply modEq_zero_iff_dvd.mp.mt
-  exact (Nat.Prime.coprime_iff_not_dvd Fact.out).mp hcprm
+  grind [modEq_zero_iff_dvd, Nat.Prime.coprime_iff_not_dvd Fact.out]
 
 private theorem _root_.Ring.charP_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Coprime r) :
     CharP (R[X] ⧸ span {(X : R[X]) ^ r - C 1}) p  := by
@@ -185,9 +184,8 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
     simp only [C_comp]
     simp only [C_pow, pow_mul]
     change (frobenius _ _) _  - (frobenius _ _) _ = (frobenius _ _ ) _
-    rw [← RingHom.map_sub]
-  rw [h2] at h
-  exact (frobenius_inj _ _) h
+    grind
+  grind [frobenius_inj]
 
 protected theorem div (h : Introspective ((X : R[X]) - C (a : R)) n r)
     (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective ((X : R[X]) - C (a : R)) (n / p) r := by
@@ -205,7 +203,7 @@ theorem of_multiset (s : Multiset (Fin b)) (hcprm : n.Coprime r)
     simp only [Multiset.map_cons, Multiset.prod_cons]
     refine Introspective.mul ?_ h1
     clear h1
-    refine mul_of_coprime ?_ ?_ ?_
+    refine mul_of_coprime ?_ ?_ (by grind [Coprime.pow_left])
     · induction d with
       | zero => simp
       | succ i hi =>
@@ -215,11 +213,9 @@ theorem of_multiset (s : Multiset (Fin b)) (hcprm : n.Coprime r)
       | zero => simp
       | succ i hi =>
         simp only [pow_succ, mul_comm]
-        refine mul_of_coprime ?_ hi ?_
-        · have hsx := hs x
-          simp only [ofMultiset_apply, Multiset.map_singleton, Multiset.prod_singleton] at hsx
-          exact Introspective.div hsx hdiv hcprm2
-        · exact Coprime.coprime_div_left hcprm hdiv
-    · exact Coprime.pow_left d hcprm2
+        refine mul_of_coprime ?_ hi (by grind [Coprime.coprime_div_left])
+        have hsx := hs x
+        simp only [ofMultiset_apply, Multiset.map_singleton, Multiset.prod_singleton] at hsx
+        exact Introspective.div hsx hdiv hcprm2
 
 end Introspective
