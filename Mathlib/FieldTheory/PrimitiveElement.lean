@@ -36,7 +36,7 @@ exists_adjoin_simple_eq_top
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -18,7 +18,7 @@ Note that it is often preferable to use `(Fin n → α) → β` in place of `OfA
 * `Function.OfArity.const α b n`: `n`-ary constant function equal to `b`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

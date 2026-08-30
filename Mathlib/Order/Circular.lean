@@ -91,7 +91,7 @@ and the circular order of months. Is `α →c β` a good notation?
 circular order, cyclic order, circularly ordered set, cyclically ordered set
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

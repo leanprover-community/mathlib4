@@ -21,7 +21,7 @@ In the case in which `N` is an additive group, `Finsupp.neLocus f g` coincides w
 `Finsupp.support (f - g)`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α M N P : Type*}

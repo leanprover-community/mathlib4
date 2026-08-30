@@ -37,7 +37,7 @@ as a linear map. This is used in particular in the proof of the Lindemann-Weiers
 
 -/
 
-@[expose] public section
+public section
 
 open Finset
 open scoped Nat

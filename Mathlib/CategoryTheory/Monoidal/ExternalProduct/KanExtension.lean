@@ -22,7 +22,7 @@ We also prove a similar criterion to establish that `K ⊠ H'` is a pointwise le
 extension of `K ⊠ H` along `(𝟭 E).prod L`.
 -/
 
-@[expose] public section
+public section
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.MonoidalCategory.ExternalProduct

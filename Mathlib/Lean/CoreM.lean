@@ -11,7 +11,7 @@ public import Mathlib.Init
 # Additional functions using `CoreM` state.
 -/
 
-@[expose] public section
+public section
 
 open Lean Core
 

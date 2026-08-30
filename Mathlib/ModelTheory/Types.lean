@@ -38,7 +38,7 @@ This file defines the space of complete types over a first-order theory.
 - Connect `T.CompleteType α` to sets of formulas `L.Formula α`.
 -/
 
-@[expose] public section
+public section
 
 
 
@@ -65,6 +65,7 @@ structure CompleteType where
 variable {α}
 
 /-- The clopen set of complete types which contain a formula. -/
+@[expose]
 def typesWith (T : L.Theory) : L[[α]].Sentence → Set (CompleteType T α) :=
   fun φ ↦ {p | φ ∈ p.toTheory}
 

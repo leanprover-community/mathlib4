@@ -58,7 +58,7 @@ integral, and involutive quantales easier to add on later.
 
 -/
 
-@[expose] public section
+public section
 
 open Function
 

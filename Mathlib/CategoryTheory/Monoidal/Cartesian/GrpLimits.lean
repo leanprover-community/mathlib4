@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 We show that `Grp C` has limits.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -33,6 +33,7 @@ instance : PreservesLimitsOfShape J (shrinkYonedaMon.{max w v} (C := C)) :=
   preservesLimitsOfShape_of_reflects_of_preserves _ ((whiskeringRight _ _ _).obj (forget MonCat))
 
 /-- An auxiliary construction in order to prove that `Grp.forget₂Mon` creates limits. -/
+@[expose]
 noncomputable def Grp.limitAux (F : J ⥤ Grp C) : Grp C where
   X := (limit (F ⋙ forget₂Mon C)).X
   grp := GrpObj.ofInvertible (limit (F ⋙ forget₂Mon C)).X fun X f ↦

@@ -34,7 +34,7 @@ We define `R.leftFixedPoints` (resp. `R.rightFixedPoints`) as the set of fixed p
 relation, Galois connection, induced bijection, fixed points
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*} (R : SetRel α β)
 

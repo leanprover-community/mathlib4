@@ -26,7 +26,7 @@ version also interferes more with software-verification use-cases, which is reas
 cautious here.
 -/
 
-@[expose] public section
+public section
 
 set_option linter.style.emptyLine false in
 -- these theorems are fragile, so do them first

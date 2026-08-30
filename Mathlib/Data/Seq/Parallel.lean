@@ -18,7 +18,7 @@ terminates_parallel and exists_of_mem_parallel.
 honor sequence equivalence (irrelevance of computation time).)
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

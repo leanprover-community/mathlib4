@@ -35,7 +35,7 @@ under surjective homomorphism.
 finitely presented group, finitely generated normal closure
 -/
 
-@[expose] public section
+public section
 
 variable {G H α : Type*} [Group G] [Group H]
 

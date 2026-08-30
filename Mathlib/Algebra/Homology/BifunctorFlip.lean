@@ -19,7 +19,7 @@ under the additional assumption `[TotalComplexShapeSymmetry c₁ c₂ c]`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

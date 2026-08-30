@@ -22,7 +22,7 @@ category `V`.
 
 set_option backward.defeqAttrib.useBackward true
 
-@[expose] public section
+public section
 
 
 universe w v u u₁ u₂ u₃
@@ -32,6 +32,7 @@ namespace CategoryTheory
 variable (V : Type v) [Category.{w} V] [MonoidalCategory V]
 
 /-- Category of `V`-enriched categories for a monoidal category `V`. -/
+@[expose]
 def EnrichedCat := Bundled (EnrichedCategory.{w, v, u} V)
 
 namespace EnrichedCat

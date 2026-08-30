@@ -20,7 +20,7 @@ that it is a Serre class.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

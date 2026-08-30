@@ -29,7 +29,7 @@ weights of its edges, where weights are taken from a monoid.
 * `Quiver.Path.weightOfEPs_nonneg`: If all edge weights are non-negative, so is the path weight.
 -/
 
-@[expose] public section
+public section
 
 namespace Quiver.Path
 

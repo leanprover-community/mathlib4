@@ -17,7 +17,7 @@ Dually, `inclRight : C ⥤ C ⋆ D` is final if `D` is connected.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Join
 

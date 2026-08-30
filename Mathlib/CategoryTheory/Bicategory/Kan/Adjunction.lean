@@ -29,7 +29,7 @@ similar results for right Kan extensions and right Kan lifts.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

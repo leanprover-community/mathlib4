@@ -37,7 +37,7 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace ADEInequality

@@ -55,7 +55,7 @@ it also holds that `X ^ p - C a` is irreducible iff `a` is not a `p`-th power in
 
 -/
 
-@[expose] public section
+public section
 universe u
 
 variable {K : Type u} [Field K]

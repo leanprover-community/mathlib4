@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Local
 In this file we provide API related to covers in subcanonical topologies.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

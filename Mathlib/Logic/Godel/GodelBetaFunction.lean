@@ -45,7 +45,7 @@ and other key results from the repository https://github.com/iehality/lean4-logi
 Gödel, beta function
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

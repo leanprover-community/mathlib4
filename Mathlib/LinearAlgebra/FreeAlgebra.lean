@@ -20,7 +20,7 @@ This file provides a `FreeMonoid X` basis on the `FreeAlgebra R X`, and uses it 
 dimension of the algebra is the cardinality of `List X`
 -/
 
-@[expose] public section
+public section
 
 open Module
 

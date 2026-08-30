@@ -14,7 +14,7 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 open Module
 

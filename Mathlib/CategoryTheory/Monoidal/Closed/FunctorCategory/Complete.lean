@@ -18,7 +18,7 @@ TODO (in progress by Joël Riou): make a more explicit construction of the inter
 categories.
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ u₁ u₂
 

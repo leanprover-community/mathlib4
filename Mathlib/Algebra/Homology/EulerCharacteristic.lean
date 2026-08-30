@@ -45,7 +45,7 @@ These definitions may have junk values from `finsum` (0 for infinite support) an
 
 -/
 
-@[expose] public section
+public section
 
 namespace ComplexShape
 

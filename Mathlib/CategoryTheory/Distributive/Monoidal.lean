@@ -57,7 +57,7 @@ pointed types and the coproduct given by the wedge sum is distributive.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v₂ u u₂
 

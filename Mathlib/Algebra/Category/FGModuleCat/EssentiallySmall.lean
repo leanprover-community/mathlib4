@@ -17,7 +17,7 @@ recommended to use the standard `CategoryTheory.SmallModel (FGModuleCat R)` inst
 
 -/
 
-@[expose] public section
+public section
 
 universe v w u
 
@@ -41,6 +41,7 @@ variable (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
 variable {R} in
 /-- The finite module represented by an object of the type `FGModuleRepr R`, which is the quotient
 of `Fin n → R` (i.e. `Rⁿ`) by the submodule `S` provided. -/
+@[expose]
 def repr (x : FGModuleRepr R) : Type u :=
   _ ⧸ x.S
 deriving AddCommGroup, Module R

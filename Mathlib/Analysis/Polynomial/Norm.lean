@@ -40,7 +40,7 @@ the polynomial's value on the unit circle.
 -/
 
 
-@[expose] public section supnorm_seminorm
+public section supnorm_seminorm
 
 variable {A : Type*} [SeminormedRing A] (p : Polynomial A)
 
