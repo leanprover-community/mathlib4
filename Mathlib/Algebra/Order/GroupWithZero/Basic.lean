@@ -296,7 +296,7 @@ end MulZeroClass
 
 section MulOneClass
 
-variable [MulOneClass α] [Zero α] {a b c d : α}
+variable [MulOneClass α] [Zero α] {a b : α}
 
 section Preorder
 
@@ -450,9 +450,11 @@ lemma one_lt_mul_of_lt_of_le [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 < a
 
 alias one_lt_mul := one_lt_mul_of_le_of_lt
 
+@[deprecated "No replacement, use constituent lemmas from proof." (since := "2026-07-28")]
 lemma mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) :
     a * b < 1 := (mul_le_of_le_one_right ha₀ hb).trans_lt ha
 
+@[deprecated "No replacement, use constituent lemmas from proof." (since := "2026-07-28")]
 lemma mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono M₀] (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) :
     a * b < 1 := (mul_le_of_le_one_left hb₀ ha).trans_lt hb
 
@@ -462,13 +464,19 @@ protected lemma Bound.one_lt_mul [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPos
   rintro (⟨ha, hb⟩ | ⟨ha, hb⟩); exacts [one_lt_mul ha hb, one_lt_mul_of_lt_of_le ha hb]
 
 @[bound]
+protected lemma Bound.mul_le_one [PosMulMono M₀] [MulPosMono M₀] (ha : a ≤ 1) (hb : b ≤ 1) :
+    0 ≤ a ∨ 0 ≤ b → a * b ≤ 1 := by
+  rintro (ha₀ | hb₀)
+  exacts [(mul_le_of_le_one_right ha₀ hb).trans ha, (mul_le_of_le_one_left hb₀ ha).trans hb]
+
+@[deprecated "No replacement, use constituent lemmas from proof." (since := "2026-07-28")]
 lemma mul_le_one₀ [MulPosMono M₀] (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
-  (mul_le_mul_of_nonneg_right ha hb₀).trans <| by rwa [one_mul]
+  (mul_le_of_le_one_left hb₀ ha).trans hb
 
 lemma pow_lt_one₀ [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
   | 0, h => (h rfl).elim
   | n + 1, _ => by
-    rw [pow_succ']; exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
+    rw [pow_succ']; exact (mul_le_of_le_one_right h₀ (pow_le_one₀ h₀ h₁.le)).trans_lt h₁
 
 lemma pow_right_mono₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (h : 1 ≤ a) : Monotone (a ^ ·) :=
   monotone_nat_of_le_succ fun n => by
@@ -515,7 +523,7 @@ lemma pow_left_monotoneOn [PosMulMono M₀] [MulPosMono M₀] :
     MonotoneOn (fun a : M₀ ↦ a ^ n) {x | 0 ≤ x} :=
   fun _a ha _b _ hab ↦ pow_le_pow_left₀ ha hab _
 
-variable [Preorder α] {f g : α → M₀}
+variable [Preorder α] {f : α → M₀}
 
 lemma monotone_mul_left_of_nonneg [PosMulMono M₀] (ha : 0 ≤ a) : Monotone fun x ↦ a * x :=
   fun _ _ h ↦ mul_le_mul_of_nonneg_left h ha
@@ -807,7 +815,7 @@ lemma le_mul_div_mul_right (h : a / b ≤ 0) : a / b ≤ a * c / (b * c) := by
 end Preorder
 
 section Preorder
-variable [Preorder G₀] [ZeroLEOneClass G₀] {a b c : G₀}
+variable [Preorder G₀] [ZeroLEOneClass G₀] {a : G₀}
 
 /-- See `div_self` for the version with equality when `a ≠ 0`. -/
 lemma div_self_le_one (a : G₀) : a / a ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
@@ -1291,7 +1299,7 @@ end Both
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder G₀] {a b c d : G₀}
+variable [LinearOrder G₀] {a b : G₀}
 
 section PosMulMono
 variable [PosMulMono G₀]

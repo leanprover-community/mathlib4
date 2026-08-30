@@ -401,7 +401,7 @@ lemma Ideal.radical_span_singleton_eq_span_radical {S : Type*} [CommSemiring S]
 namespace UniqueFactorizationDomain
 
 variable {R : Type*} [CommRing R] [NormalizationMonoid R]
-  [UniqueFactorizationMonoid R] {a b : R}
+  [UniqueFactorizationMonoid R] {a : R}
 
 @[simp]
 theorem radical_neg : radical (-a) = radical a :=

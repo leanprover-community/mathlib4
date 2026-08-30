@@ -98,7 +98,7 @@ variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {E'' : 
   {F' : Type uF'} {F'' : Type uF''} {P : Type uP}
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
-  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
+  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y : E}
 
 namespace MeasureTheory
 section NontriviallyNormedField
@@ -174,7 +174,7 @@ section Group
 
 variable [AddGroup G]
 
-theorem AEStronglyMeasurable.convolution_integrand' [MeasurableAdd₂ G]
+theorem AEStronglyMeasurable.convolution_integrand' [SFinite ν] [MeasurableAdd₂ G]
     [MeasurableNeg G] (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g <| map (fun p : G × G => p.1 - p.2) (μ.prod ν)) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
@@ -827,7 +827,6 @@ variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
 variable [NormedSpace 𝕜 E'']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-variable {n : ℕ∞}
 variable [MeasurableSpace G] {μ ν : Measure G}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
