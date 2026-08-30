@@ -203,7 +203,7 @@ theorem HasFPowerSeriesOnBall.comp_add (hf : HasFPowerSeriesOnBall f p x r) (y) 
 
 theorem HasFPowerSeriesWithinOnBall.comp_add (hf : HasFPowerSeriesWithinOnBall f p s x r) (y) :
     HasFPowerSeriesWithinOnBall (f <| · + y) p (s - {y}) (x - y) r := by
-  convert hf.comp_sub (-y) ; swap
+  convert hf.comp_sub (-y); swap
   · simp only [sub_eq_add_neg, neg_singleton]
   all_goals abel
 
@@ -218,7 +218,7 @@ theorem AnalyticAt.comp_add (hf : AnalyticAt 𝕜 f x) (y) :
 
 theorem AnalyticOnNhd.comp_add (hf : AnalyticOnNhd 𝕜 f s) (y) :
     AnalyticOnNhd 𝕜 (f <| · + y) (s - {y}) := by
-  convert hf.comp_sub (-y) ; swap
+  convert hf.comp_sub (-y); swap
   · simp only [sub_eq_add_neg, neg_singleton]
   abel
 
@@ -226,7 +226,7 @@ theorem AnalyticWithinAt.comp_add (hf : AnalyticWithinAt 𝕜 f s x) (y) :
     AnalyticWithinAt 𝕜 (f <| · + y) (s - {y}) (x - y) := (fun ⟨p, h⟩ ↦ ⟨p, h.comp_add _⟩) hf
 
 theorem AnalyticOn.comp_add (hf : AnalyticOn 𝕜 f s) (y) : AnalyticOn 𝕜 (f <| · + y) (s - {y}) := by
-  convert hf.comp_sub (-y) ; swap
+  convert hf.comp_sub (-y); swap
   · simp only [sub_eq_add_neg, neg_singleton]
   abel
 
@@ -239,7 +239,7 @@ theorem hasFPowerSeriesOnBall_iff_comp_sub :
 theorem hasFPowerSeriesWithinOnBall_iff_comp_sub : HasFPowerSeriesWithinOnBall f p s x r ↔
     HasFPowerSeriesWithinOnBall (f <| · - y) p (s + {y}) (x + y) r :=
   ⟨fun h ↦ h.comp_sub y, fun h ↦ by
-    convert h.comp_add y ; swap
+    convert h.comp_add y; swap
     · rw [← add_sub]
       simp only [add_singleton, sub_singleton, image_singleton, sub_self, add_zero, image_id']
     all_goals abel⟩
@@ -257,7 +257,7 @@ theorem analyticAt_iff_comp_sub : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 (f <| 
 
 theorem analyticOnNhd_iff_comp_sub : AnalyticOnNhd 𝕜 f s ↔ AnalyticOnNhd 𝕜 (f <| · - y) (s + {y}) :=
   ⟨fun h ↦ h.comp_sub y, fun h ↦ by
-    convert h.comp_add y ; swap
+    convert h.comp_add y; swap
     · rw [← add_sub]
       simp only [add_singleton, sub_singleton, image_singleton, sub_self, add_zero, image_id']
     abel⟩
@@ -268,7 +268,7 @@ theorem analyticWithinAt_iff_comp_sub :
 
 theorem analyticOn_iff_comp_sub : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 (f <| · - y) (s + {y}) :=
   ⟨fun h ↦ h.comp_sub y, fun h ↦ by
-    convert h.comp_add y ; swap
+    convert h.comp_add y; swap
     · rw [← add_sub]
       simp only [add_singleton, sub_singleton, image_singleton, sub_self, add_zero, image_id']
     abel⟩
@@ -280,7 +280,7 @@ theorem hasFPowerSeriesOnBall_iff_comp_add :
 theorem hasFPowerSeriesWithinOnBall_iff_comp_add : HasFPowerSeriesWithinOnBall f p s x r ↔
     HasFPowerSeriesWithinOnBall (f <| · + y) p (s - {y}) (x - y) r :=
   ⟨fun h ↦ h.comp_add y, fun h ↦ by
-    convert h.comp_sub y ; swap
+    convert h.comp_sub y; swap
     · rw [← sub_add_comm]
       simp only [sub_singleton, image_singleton, sub_self, singleton_add, zero_add, image_id']
     all_goals abel⟩
@@ -298,7 +298,7 @@ theorem analyticAt_iff_comp_add : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 (f <| 
 
 theorem analyticOnNhd_iff_comp_add : AnalyticOnNhd 𝕜 f s ↔ AnalyticOnNhd 𝕜 (f <| · + y) (s - {y}) :=
   ⟨fun h ↦ h.comp_add y, fun h ↦ by
-    convert h.comp_sub y ; swap
+    convert h.comp_sub y; swap
     · rw [← sub_add_comm]
       simp only [sub_singleton, image_singleton, sub_self, singleton_add, zero_add, image_id']
     abel⟩
@@ -309,7 +309,7 @@ theorem analyticWithinAt_iff_comp_add :
 
 theorem analyticOn_iff_comp_add : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 (f <| · + y) (s - {y}) :=
   ⟨fun h ↦ h.comp_add y, fun h ↦ by
-    convert h.comp_sub y ; swap
+    convert h.comp_sub y; swap
     · rw [← sub_add_comm]
       simp only [sub_singleton, image_singleton, sub_self, singleton_add, zero_add, image_id']
     abel⟩
