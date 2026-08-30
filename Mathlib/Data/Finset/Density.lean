@@ -52,7 +52,7 @@ overengineering basic definitions is likely to hinder user experience.
 -- TODO
 -- assert_not_exists Ring
 
-open Function Multiset Nat
+open Function Nat
 
 variable {𝕜 α β : Type*} [Fintype α]
 
