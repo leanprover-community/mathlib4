@@ -382,7 +382,7 @@ instance : Lattice α where
   le_inf _ _ _ h₁ h₂ := by rw [sup_inf_left, h₁, h₂]
 
 /-- Derive a Boolean algebra from a Robbins algebra. -/
-instance booleanAlgebra : BooleanAlgebra α where
+instance : BooleanAlgebra α where
   compl := (-·)
   top := 1
   bot := 0
