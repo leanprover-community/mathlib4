@@ -261,7 +261,6 @@ theorem gramSchmidtNormed_unit_length' {f : ι → E} {n : ι} (hn : gramSchmidt
 system of vectors. -/
 theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
     Orthonormal 𝕜 (gramSchmidtNormed 𝕜 f) := by
-  unfold Orthonormal
   constructor
   · simp only [gramSchmidtNormed_unit_length, h₀, imp_true_iff]
   · intro i j hij
@@ -302,7 +301,6 @@ theorem span_gramSchmidtNormed_range (f : ι → E) :
 vectors. -/
 theorem gramSchmidtNormed_linearIndependent {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
     LinearIndependent 𝕜 (gramSchmidtNormed 𝕜 f) := by
-  unfold gramSchmidtNormed
   have (i : ι) : IsUnit (‖gramSchmidt 𝕜 f i‖⁻¹ : 𝕜) :=
     isUnit_iff_ne_zero.mpr (by simp [gramSchmidt_ne_zero i h₀])
   let w : ι → 𝕜ˣ := fun i ↦ (this i).unit

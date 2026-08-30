@@ -170,7 +170,6 @@ theorem binaryRec_eq {zero : motive 0} {bit : ∀ b n, motive n → motive (bit 
   case pos =>
     obtain ⟨rfl, rfl⟩ := bit_eq_zero_iff.mp h'
     simp only [Bool.false_eq_true, imp_false, not_true_eq_false, or_false] at h
-    unfold binaryRec
     exact h.symm
   case neg =>
     rw [binaryRec, dite_eq_right h']

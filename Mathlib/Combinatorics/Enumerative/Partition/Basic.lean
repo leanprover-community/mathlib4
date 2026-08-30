@@ -139,7 +139,6 @@ def toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
     grind
 
 theorem toFinsuppAntidiag_injective (n : ℕ) : Function.Injective (toFinsuppAntidiag (n := n)) := by
-  unfold toFinsuppAntidiag
   intro p q h
   rw [Finsupp.mk.injEq] at h
   obtain ⟨hfinset, hcount⟩ := h

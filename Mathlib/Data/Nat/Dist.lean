@@ -38,11 +38,15 @@ theorem dist_eq_sub_of_le_right {n m : ℕ} (h : m ≤ n) : dist n m = n - m := 
   unfold Nat.dist; lia
 
 theorem dist_tri_left (n m : ℕ) : m ≤ dist n m + n := by unfold Nat.dist; lia
+
 theorem dist_tri_right (n m : ℕ) : m ≤ n + dist n m := by unfold Nat.dist; lia
+
 theorem dist_tri_left' (n m : ℕ) : n ≤ dist n m + m := by unfold Nat.dist; lia
+
 theorem dist_tri_right' (n m : ℕ) : n ≤ m + dist n m := by unfold Nat.dist; lia
 
 theorem dist_zero_right (n : ℕ) : dist n 0 = n := by unfold Nat.dist; lia
+
 theorem dist_zero_left (n : ℕ) : dist 0 n = n := by unfold Nat.dist; lia
 
 theorem dist_add_add_right (n k m : ℕ) : dist (n + k) (m + k) = dist n m := by
