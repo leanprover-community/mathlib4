@@ -293,8 +293,6 @@ abbrev initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.Corepresentab
     F.Elements :=
   .mk (h.homEquiv (𝟙 X))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is corepresented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
 def isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
