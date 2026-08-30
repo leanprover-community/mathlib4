@@ -773,6 +773,12 @@ def Cocycle.precomp {n : ℤ} (z : Cocycle G K n) (f : F ⟶ G) : Cocycle F K n 
 def Cocycle.postcomp {n : ℤ} (z : Cocycle F G n) (f : G ⟶ K) : Cocycle F K n :=
   Cocycle.mk (z.1.comp (Cochain.ofHom f) (add_zero n)) _ rfl (by simp)
 
+/-- The composition of two cocycles. -/
+@[simps!]
+def Cocycle.comp {a b c : ℤ} (z₁ : Cocycle F G a) (z₂ : Cocycle G K b) (h : a + b = c) :
+    Cocycle F K c :=
+  Cocycle.mk (z₁.1.comp z₂.1 h) _ rfl (by simp [δ_comp _ _ _ _ _ _ rfl rfl rfl])
+
 namespace Cochain
 
 set_option backward.isDefEq.respectTransparency.types false in

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Tactic.Linarith
 
@@ -561,6 +562,13 @@ lemma equivHomShift_symm_postcomp
     (z : Cocycle K L n) {L' : CochainComplex C ℤ} (g : L ⟶ L') :
     equivHomShift.symm (z.postcomp g) = equivHomShift.symm z ≫ g⟦n⟧' :=
   equivHomShift.injective (by simp [equivHomShift_comp_shift])
+
+lemma shiftedHomComp_equivHomShift_symm
+    {a b c : ℤ} (z : Cocycle K L a) {K' : CochainComplex C ℤ}
+    (g : ShiftedHom K' K b) (h : a + b = c) :
+    ShiftedHom.comp g (equivHomShift.symm z) h =
+      equivHomShift.symm ((equivHomShift g).comp z (by lia)) := by
+  sorry
 
 /-- The additive equivalence `Cocycle K L n ≃+ Cocycle K⟦a⟧ L n'` when `n + a = n'`. -/
 @[simps]
