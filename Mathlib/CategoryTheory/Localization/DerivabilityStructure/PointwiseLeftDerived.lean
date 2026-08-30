@@ -43,10 +43,8 @@ namespace CategoryTheory
 
 open Limits Category CategoryTheory.Functor
 
-variable {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
-  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} H]
-  {D₁ : Type u₄} {D₂ : Type u₅}
-  [Category.{v₄} D₁] [Category.{v₅} D₂]
+variable {C₁ C₂ H D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* H]
+  [Category* D₁] [Category* D₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
 namespace LocalizerMorphism
@@ -123,7 +121,6 @@ instance : IsIso (Φ.leftDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α
   exact ((F₂.isPointwiseRightKanExtensionOfHasPointwiseLeftDerivedFunctor α₂ W₂).compTwoSquare
     ((Φ.catCommSq L₁ L₂).iso).inv).isRightKanExtension
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_iff_of_isLeftDerivabilityStructure (X : C₁) :
     IsIso (α₁.app X) ↔ IsIso (α₂.app (Φ.functor.obj X)) := by
   rw [← isIso_comp_left_iff
