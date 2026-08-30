@@ -66,7 +66,7 @@ open scoped Topology Pointwise
 
 section
 
-variable {f g : E → F} {p pf : FormalMultilinearSeries 𝕜 E F} {s t : Set E} {x : E} {r r' : ℝ≥0∞}
+variable {f g : E → F} {p pf : FormalMultilinearSeries 𝕜 E F} {s t : Set E} {x y : E} {r r' : ℝ≥0∞}
 
 /-- Given a function `f : E → F` and a formal multilinear series `p`, we say that `f` has `p` as
 a power series on the ball of radius `r > 0` around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `‖y‖ < r`.
@@ -154,16 +154,16 @@ theorem HasFPowerSeriesWithinOnBall.analyticWithinAt (hf : HasFPowerSeriesWithin
 
 /-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z - y)` has the
 same power series around `x + y`. -/
-theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y : E) :
-    HasFPowerSeriesOnBall (fun z => f (z - y)) p (x + y) r :=
+theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y) :
+    HasFPowerSeriesOnBall (f <| · - y) p (x + y) r :=
   { r_le := hf.r_le
     r_pos := hf.r_pos
     hasSum := fun {z} hz => by
       convert hf.hasSum hz
       abel }
 
-theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) (y : E) :
-    HasFPowerSeriesWithinOnBall (fun z ↦ f (z - y)) p (s + {y}) (x + y) r where
+theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) (y) :
+    HasFPowerSeriesWithinOnBall (f <| · - y) p (s + {y}) (x + y) r where
   r_le := hf.r_le
   r_pos := hf.r_pos
   hasSum {z} hz1 hz2 := by
@@ -174,39 +174,147 @@ theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f
     convert hf.hasSum this hz2
     abel
 
-theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
-    HasFPowerSeriesAt (fun z ↦ f (z - y)) p (x + y) := by
-  obtain ⟨r, hf⟩ := hf
-  exact ⟨r, hf.comp_sub _⟩
+theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y) :
+    HasFPowerSeriesAt (f <| · - y) p (x + y) := (fun ⟨r, h⟩ ↦ ⟨r, h.comp_sub _⟩) hf
 
-theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y : E) :
-    HasFPowerSeriesWithinAt (fun z ↦ f (z - y)) p (s + {y}) (x + y) := by
-  obtain ⟨r, hf⟩ := hf
-  exact ⟨r, hf.comp_sub _⟩
+theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y) :
+    HasFPowerSeriesWithinAt (f <| · - y) p (s + {y}) (x + y) := (fun ⟨r, h⟩ ↦ ⟨r, h.comp_sub _⟩) hf
 
-theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y : E) :
-    AnalyticAt 𝕜 (fun z ↦ f (z - y)) (x + y) := by
-  obtain ⟨p, hf⟩ := hf
-  exact ⟨p, hf.comp_sub _⟩
+theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y) :
+    AnalyticAt 𝕜 (f <| · - y) (x + y) := (fun ⟨p, h⟩ ↦ ⟨p, h.comp_sub _⟩) hf
 
-theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
-    AnalyticOnNhd 𝕜 (fun z ↦ f (z - y)) (s + {y}) := by
-  intro x hx
+theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y) :
+    AnalyticOnNhd 𝕜 (f <| · - y) (s + {y}) := fun x hx ↦ by
   simp only [add_singleton, image_add_right, mem_preimage] at hx
   rw [show x = (x - y) + y by abel]
   apply (hf (x - y) (by convert hx; abel)).comp_sub
 
-theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
-    AnalyticWithinAt 𝕜 (fun z ↦ f (z - y)) (s + {y}) (x + y) := by
-  obtain ⟨p, hf⟩ := hf
-  exact ⟨p, hf.comp_sub _⟩
+theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y) :
+    AnalyticWithinAt 𝕜 (f <| · - y) (s + {y}) (x + y) := (fun ⟨p, h⟩ ↦ ⟨p, h.comp_sub _⟩) hf
 
-theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
-    AnalyticOn 𝕜 (fun z ↦ f (z - y)) (s + {y}) := by
-  intro x hx
-  simp only [add_singleton, image_add_right, mem_preimage] at hx
-  rw [show x = (x - y) + y by abel]
-  apply (hf (x - y) (by convert hx; abel)).comp_sub
+theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y) : AnalyticOn 𝕜 (f <| · - y) (s + {y}) :=
+  fun x hx ↦ by
+    simp only [add_singleton, image_add_right, mem_preimage] at hx
+    rw [show x = (x - y) + y by abel]
+    apply (hf (x - y) (by convert hx; abel)).comp_sub
+
+theorem HasFPowerSeriesOnBall.comp_add (hf : HasFPowerSeriesOnBall f p x r) (y) :
+    HasFPowerSeriesOnBall (f <| · + y) p (x - y) r := by convert hf.comp_sub (-y) <;> abel
+
+theorem HasFPowerSeriesWithinOnBall.comp_add (hf : HasFPowerSeriesWithinOnBall f p s x r) (y) :
+    HasFPowerSeriesWithinOnBall (f <| · + y) p (s - {y}) (x - y) r := by
+  convert hf.comp_sub (-y) ; swap
+  · simp only [sub_eq_add_neg, neg_singleton]
+  all_goals abel
+
+theorem HasFPowerSeriesAt.comp_add (hf : HasFPowerSeriesAt f p x) (y) :
+    HasFPowerSeriesAt (f <| · + y) p (x - y) := (fun ⟨r, h⟩ ↦ ⟨r, h.comp_add _⟩) hf
+
+theorem HasFPowerSeriesWithinAt.comp_add (hf : HasFPowerSeriesWithinAt f p s x) (y) :
+    HasFPowerSeriesWithinAt (f <| · + y) p (s - {y}) (x - y) := (fun ⟨r, h⟩ ↦ ⟨r, h.comp_add _⟩) hf
+
+theorem AnalyticAt.comp_add (hf : AnalyticAt 𝕜 f x) (y) :
+    AnalyticAt 𝕜 (f <| · + y) (x - y) := (fun ⟨p, h⟩ ↦ ⟨p, h.comp_add _⟩) hf
+
+theorem AnalyticOnNhd.comp_add (hf : AnalyticOnNhd 𝕜 f s) (y) :
+    AnalyticOnNhd 𝕜 (f <| · + y) (s - {y}) := by
+  convert hf.comp_sub (-y) ; swap
+  · simp only [sub_eq_add_neg, neg_singleton]
+  abel
+
+theorem AnalyticWithinAt.comp_add (hf : AnalyticWithinAt 𝕜 f s x) (y) :
+    AnalyticWithinAt 𝕜 (f <| · + y) (s - {y}) (x - y) := (fun ⟨p, h⟩ ↦ ⟨p, h.comp_add _⟩) hf
+
+theorem AnalyticOn.comp_add (hf : AnalyticOn 𝕜 f s) (y) : AnalyticOn 𝕜 (f <| · + y) (s - {y}) := by
+  convert hf.comp_sub (-y) ; swap
+  · simp only [sub_eq_add_neg, neg_singleton]
+  abel
+
+variable (𝕜 f p s x r y)
+
+theorem hasFPowerSeriesOnBall_iff_comp_sub :
+    HasFPowerSeriesOnBall f p x r ↔ HasFPowerSeriesOnBall (f <| · - y) p (x + y) r :=
+  ⟨fun h ↦ h.comp_sub y, fun h ↦ by convert h.comp_add y <;> abel⟩
+
+theorem hasFPowerSeriesWithinOnBall_iff_comp_sub : HasFPowerSeriesWithinOnBall f p s x r ↔
+    HasFPowerSeriesWithinOnBall (f <| · - y) p (s + {y}) (x + y) r :=
+  ⟨fun h ↦ h.comp_sub y, fun h ↦ by
+    convert h.comp_add y ; swap
+    · rw [← add_sub]
+      simp only [add_singleton, sub_singleton, image_singleton, sub_self, add_zero, image_id']
+    all_goals abel⟩
+
+theorem hasFPowerSeriesAt_iff_comp_sub :
+    HasFPowerSeriesAt f p x ↔ HasFPowerSeriesAt (f <| · - y) p (x + y) :=
+  ⟨fun h ↦ h.comp_sub y, fun ⟨r, h⟩ ↦ ⟨r, (hasFPowerSeriesOnBall_iff_comp_sub ..).2 h⟩⟩
+
+theorem hasFPowerSeriesWithinAt_iff_comp_sub :
+    HasFPowerSeriesWithinAt f p s x ↔ HasFPowerSeriesWithinAt (f <| · - y) p (s + {y}) (x + y) :=
+  ⟨fun h ↦ h.comp_sub y, fun ⟨r, h⟩ ↦ ⟨r, (hasFPowerSeriesWithinOnBall_iff_comp_sub ..).2 h⟩⟩
+
+theorem analyticAt_iff_comp_sub : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 (f <| · - y) (x + y) :=
+  ⟨fun h ↦ h.comp_sub y, fun ⟨p, h⟩ ↦ ⟨p, (hasFPowerSeriesAt_iff_comp_sub ..).2 h⟩⟩
+
+theorem analyticOnNhd_iff_comp_sub : AnalyticOnNhd 𝕜 f s ↔ AnalyticOnNhd 𝕜 (f <| · - y) (s + {y}) :=
+  ⟨fun h ↦ h.comp_sub y, fun h ↦ by
+    convert h.comp_add y ; swap
+    · rw [← add_sub]
+      simp only [add_singleton, sub_singleton, image_singleton, sub_self, add_zero, image_id']
+    abel⟩
+
+theorem analyticWithinAt_iff_comp_sub :
+    AnalyticWithinAt 𝕜 f s x ↔ AnalyticWithinAt 𝕜 (f <| · - y) (s + {y}) (x + y) :=
+  ⟨fun h ↦ h.comp_sub y, fun ⟨p, h⟩ ↦ ⟨p, (hasFPowerSeriesWithinAt_iff_comp_sub ..).2 h⟩⟩
+
+theorem analyticOn_iff_comp_sub : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 (f <| · - y) (s + {y}) :=
+  ⟨fun h ↦ h.comp_sub y, fun h ↦ by
+    convert h.comp_add y ; swap
+    · rw [← add_sub]
+      simp only [add_singleton, sub_singleton, image_singleton, sub_self, add_zero, image_id']
+    abel⟩
+
+theorem hasFPowerSeriesOnBall_iff_comp_add :
+    HasFPowerSeriesOnBall f p x r ↔ HasFPowerSeriesOnBall (f <| · + y) p (x - y) r :=
+  ⟨fun h ↦ h.comp_add y, fun h ↦ by convert h.comp_sub y <;> abel⟩
+
+theorem hasFPowerSeriesWithinOnBall_iff_comp_add : HasFPowerSeriesWithinOnBall f p s x r ↔
+    HasFPowerSeriesWithinOnBall (f <| · + y) p (s - {y}) (x - y) r :=
+  ⟨fun h ↦ h.comp_add y, fun h ↦ by
+    convert h.comp_sub y ; swap
+    · rw [← sub_add_comm]
+      simp only [sub_singleton, image_singleton, sub_self, singleton_add, zero_add, image_id']
+    all_goals abel⟩
+
+theorem hasFPowerSeriesAt_iff_comp_add :
+    HasFPowerSeriesAt f p x ↔ HasFPowerSeriesAt (f <| · + y) p (x - y) :=
+  ⟨fun h ↦ h.comp_add y, fun ⟨r, h⟩ ↦ ⟨r, (hasFPowerSeriesOnBall_iff_comp_add ..).2 h⟩⟩
+
+theorem hasFPowerSeriesWithinAt_iff_comp_add :
+    HasFPowerSeriesWithinAt f p s x ↔ HasFPowerSeriesWithinAt (f <| · + y) p (s - {y}) (x - y) :=
+  ⟨fun h ↦ h.comp_add y, fun ⟨r, h⟩ ↦ ⟨r, (hasFPowerSeriesWithinOnBall_iff_comp_add ..).2 h⟩⟩
+
+theorem analyticAt_iff_comp_add : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 (f <| · + y) (x - y) :=
+  ⟨fun h ↦ h.comp_add y, fun ⟨p, h⟩ ↦ ⟨p, (hasFPowerSeriesAt_iff_comp_add ..).2 h⟩⟩
+
+theorem analyticOnNhd_iff_comp_add : AnalyticOnNhd 𝕜 f s ↔ AnalyticOnNhd 𝕜 (f <| · + y) (s - {y}) :=
+  ⟨fun h ↦ h.comp_add y, fun h ↦ by
+    convert h.comp_sub y ; swap
+    · rw [← sub_add_comm]
+      simp only [sub_singleton, image_singleton, sub_self, singleton_add, zero_add, image_id']
+    abel⟩
+
+theorem analyticWithinAt_iff_comp_add :
+    AnalyticWithinAt 𝕜 f s x ↔ AnalyticWithinAt 𝕜 (f <| · + y) (s - {y}) (x - y) :=
+  ⟨fun h ↦ h.comp_add y, fun ⟨p, h⟩ ↦ ⟨p, (hasFPowerSeriesWithinAt_iff_comp_add ..).2 h⟩⟩
+
+theorem analyticOn_iff_comp_add : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 (f <| · + y) (s - {y}) :=
+  ⟨fun h ↦ h.comp_add y, fun h ↦ by
+    convert h.comp_sub y ; swap
+    · rw [← sub_add_comm]
+      simp only [sub_singleton, image_singleton, sub_self, singleton_add, zero_add, image_id']
+    abel⟩
+
+variable {𝕜 f p s x r y}
 
 theorem HasFPowerSeriesWithinOnBall.hasSum_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E}
     (hy : y ∈ (insert x s) ∩ Metric.eball x r) :
