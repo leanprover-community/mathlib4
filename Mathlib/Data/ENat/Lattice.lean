@@ -188,8 +188,8 @@ lemma mul_iInf' (h₀ : a = 0 → Nonempty ι) : a * ⨅ i, f i = ⨅ i, a * f i
 lemma iInf_mul' (h₀ : a = 0 → Nonempty ι) : (⨅ i, f i) * a = ⨅ i, f i * a := by
   simp_rw [mul_comm, mul_iInf' h₀]
 
-/-- If `a ≠ 0`, then right multiplication by `a` maps infimum to infimum.
-See also `ENat.iInf_mul` that assumes `[Nonempty ι]` but does not require `a ≠ 0`. -/
+/-- If `a ≠ 0`, then left multiplication by `a` maps infimum to infimum.
+See also `ENat.mul_iInf` that assumes `[Nonempty ι]` but does not require `a ≠ 0`. -/
 lemma mul_iInf_of_ne (ha₀ : a ≠ 0) : a * ⨅ i, f i = ⨅ i, a * f i :=
   mul_iInf' <| by simp [ha₀]
 
