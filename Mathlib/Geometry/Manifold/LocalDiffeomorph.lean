@@ -40,6 +40,10 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 * `LocalDiffeomorph.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism,
   each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
+* `IsLocalDiffeomorphAt_of_isInvertible_mderiv` (proved in `InverseFunctionTheorem.lean`): if `f` is
+  `ContMDiffOn` an open set `U` and has bijective differential at an interior point `p ∈ U`, then
+  `f` is a local diffeomorphism at `p`.
+
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
 
@@ -137,6 +141,9 @@ protected def trans (Ψ : PartialDiffeomorph J K N P n) : PartialDiffeomorph I K
     Ψ.contMDiffOn_toFun.comp (Φ.contMDiffOn_toFun.mono inter_subset_left) inter_subset_right
   contMDiffOn_invFun :=
     Φ.contMDiffOn_invFun.comp (Ψ.contMDiffOn_invFun.mono inter_subset_left) inter_subset_right
+
+protected theorem trans_source (Ψ : PartialDiffeomorph J K N P n) :
+    (Φ.trans Ψ).source = Φ.source ∩ Φ ⁻¹' (Ψ.source) := by simp
 
 /- We could add lots of additional API (following `Diffeomorph` and `OpenPartialHomeomorph`),
 such as
