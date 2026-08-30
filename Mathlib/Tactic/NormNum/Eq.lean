@@ -112,7 +112,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   | .isNNRat dsα .., .isNegNat rα .. | .isNegNat rα .., .isNNRat dsα .. =>
     -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
     -- so would still need to be in `MetaM`.
-    ratArm (←synthInstanceQ q(DivisionRing $α))
+    ratArm (← synthInstanceQ q(DivisionRing $α))
   | .isNNRat dsα .., _ | _, .isNNRat dsα .. => nnratArm dsα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
   | .isNat _ na pa, .isNat mα nb pb =>

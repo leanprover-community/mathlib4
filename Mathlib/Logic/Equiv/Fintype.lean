@@ -122,8 +122,8 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
   have h := setDiffEquiv (Fintype.card_congr e)
   have hpc : spᶜ = (sq \ sp) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
   have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
-  let epc := (Equiv.setCongr hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
-  let eqc := (Equiv.setCongr hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
+  let epc := (Equiv.Set.congr hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
+  let eqc := (Equiv.Set.congr hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
   epc.trans <| .trans (h.symm.sumCongr <| .refl _) eqc.symm
 
 variable {p q : α → Prop} [DecidablePred p] [DecidablePred q] [Finite {x | p x}]
@@ -135,7 +135,6 @@ Note that when `p = q`, `Equiv.Perm.subtypeCongr e (Equiv.refl _)` can be used i
 noncomputable abbrev extendSubtype (e : { x // p x } ≃ { x // q x }) : Perm α :=
   subtypeCongr e e.toCompl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     e.extendSubtype x = e ⟨x, hx⟩ := by
   simp [extendSubtype, subtypeCongr, sumCompl_symm_apply_of_pos hx]

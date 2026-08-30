@@ -33,12 +33,11 @@ public section
 open MeasureTheory.Measure Function Set
 open scoped ENNReal
 
-variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
-  [MeasurableSpace δ]
+variable {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 namespace MeasureTheory
 
-variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
+variable {μa : Measure α} {μb : Measure β} {μc : Measure γ}
 
 /-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
 and `map f μa = μb`. -/
@@ -186,7 +185,7 @@ theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {f : α → β}
     (hf : MeasurePreserving f μa μb) (c : R) : MeasurePreserving f (c • μa) (c • μb) where
   measurable := hf.measurable
-  map_eq := by rw [Measure.map_smul, hf.map_eq]
+  map_eq := by rw [Measure.map_smul _ hf.aemeasurable, hf.map_eq]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 
