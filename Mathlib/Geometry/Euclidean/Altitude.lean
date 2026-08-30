@@ -247,7 +247,7 @@ theorem affineSubspaceMk'_lineMap_altitudeFoot_eq_shift {n : ℕ} [NeZero n] (s 
     exact Submodule.orthogonal_inf_orthogonal_inf_of_le <| vectorSpan_mono _ <| by simp
   · refine ⟨lineMap (s.points i) (s.altitudeFoot i) x, ?_, ?_⟩
     · simpa using h
-    · apply lineMap_mem_shift (by simp)
+    · exact lineMap_mem_shift (by simp) _ _
 
 /-- Through a point on the altitude of a simplex, draw the perpendicular plane and find the cross
 section with the closed interior. This is the same as the cross section between the shifted base
