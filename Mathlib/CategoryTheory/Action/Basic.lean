@@ -477,4 +477,54 @@ def Equivalence.mapAction {V W : Type*} [Category* V] [Category* W] (G : Type*) 
   counitIso := (Functor.mapActionComp G _ _).symm ≪≫ Functor.mapActionCongr G E.counitIso
   functor_unitIso_comp X := by ext; simp
 
+/-- An adjunction `F ⊣ U` induces an adjunction between the categories of
+`G`-actions within those categories. -/
+def Adjunction.mapAction {V W : Type*} [Category* V] [Category* W] {F : V ⥤ W} {U : W ⥤ V}
+    (adj : F ⊣ U) (G : Type*) [Monoid G] : F.mapAction G ⊣ U.mapAction G :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun X Y =>
+        { toFun := fun f =>
+            { hom := adj.homEquiv _ _ f.hom
+              comm := fun g => by
+                show X.ρ g ≫ adj.homEquiv _ _ f.hom = adj.homEquiv _ _ f.hom ≫ U.map (Y.ρ g)
+                rw [← adj.homEquiv_naturality_left, ← adj.homEquiv_naturality_right]
+                exact congrArg (adj.homEquiv X.V Y.V) (f.comm g) }
+          invFun := fun f =>
+            { hom := (adj.homEquiv _ _).symm f.hom
+              comm := fun g => by
+                show F.map (X.ρ g) ≫ (adj.homEquiv _ _).symm f.hom
+                    = (adj.homEquiv _ _).symm f.hom ≫ Y.ρ g
+                rw [← adj.homEquiv_naturality_left_symm, ← adj.homEquiv_naturality_right_symm]
+                exact congrArg (adj.homEquiv X.V Y.V).symm (f.comm g) }
+          left_inv := fun f => by ext; simp
+          right_inv := fun f => by ext; simp }
+      homEquiv_naturality_left_symm := fun f g => by
+        ext
+        exact adj.homEquiv_naturality_left_symm f.hom g.hom
+      homEquiv_naturality_right := fun f g => by
+        ext
+        exact adj.homEquiv_naturality_right f.hom g.hom }
+
+@[simp]
+lemma Adjunction.mapAction_homEquiv_hom {V W : Type*} [Category* V] [Category* W]
+    {F : V ⥤ W} {U : W ⥤ V} (adj : F ⊣ U) (G : Type*) [Monoid G]
+    {X : Action V G} {Y : Action W G} (f : (F.mapAction G).obj X ⟶ Y) :
+    ((adj.mapAction G).homEquiv X Y f).hom = adj.homEquiv X.V Y.V f.hom := by
+  simp [Adjunction.mapAction]
+
+@[simp]
+lemma Adjunction.mapAction_homEquiv_symm_hom {V W : Type*} [Category* V] [Category* W]
+    {F : V ⥤ W} {U : W ⥤ V} (adj : F ⊣ U) (G : Type*) [Monoid G]
+    {X : Action V G} {Y : Action W G} (f : X ⟶ (U.mapAction G).obj Y) :
+    (((adj.mapAction G).homEquiv X Y).symm f).hom = (adj.homEquiv X.V Y.V).symm f.hom := by
+  simp [Adjunction.mapAction]
+
+instance Functor.mapAction_isLeftAdjoint {V W : Type*} [Category* V] [Category* W]
+    (F : V ⥤ W) (G : Type*) [Monoid G] [F.IsLeftAdjoint] : (F.mapAction G).IsLeftAdjoint :=
+  ((Adjunction.ofIsLeftAdjoint F).mapAction G).isLeftAdjoint
+
+instance Functor.mapAction_isRightAdjoint {V W : Type*} [Category* V] [Category* W]
+    (U : V ⥤ W) (G : Type*) [Monoid G] [U.IsRightAdjoint] : (U.mapAction G).IsRightAdjoint :=
+  ((Adjunction.ofIsRightAdjoint U).mapAction G).isRightAdjoint
+
 end CategoryTheory
