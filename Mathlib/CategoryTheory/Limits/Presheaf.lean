@@ -63,6 +63,180 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 namespace Presheaf
 
+/-- When a category `C` is locally `w`-small, this is colimit cocone
+(indexed by a category of costructured arrows) which expresses
+any presheaf `P : Cᵒᵖ ⥤ Type w` as a colimit of representable presheaves
+(using `shrinkYoneda`). -/
+noncomputable abbrev tautologicalCoconeShrink [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
+    Cocone (CostructuredArrow.proj shrinkYoneda.{w} P ⋙ shrinkYoneda.{w}) :=
+  Cocone.mk _ (CostructuredArrow.ι shrinkYoneda.{w} P)
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- Auxiliary definition for `isColimitTautologicalCoconeShrink`. -/
+noncomputable def isColimitTautologicalCoconeShrinkEvaluation
+    [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (X : Cᵒᵖ) :
+    IsColimit (((evaluation _ _).obj X).mapCocone (tautologicalCoconeShrink.{w} P)) :=
+  Nonempty.some (by
+    rw [Types.isColimit_iff_coconeTypesIsColimit]
+    refine ⟨⟨fun y₁ y₂ hy ↦ ?_, fun x ↦ ?_⟩⟩
+    · have (Y : CostructuredArrow shrinkYoneda.{w} P)
+          (y : (shrinkYoneda.{w}.obj Y.left).obj X) :
+        ((CostructuredArrow.proj shrinkYoneda.{w} P ⋙ shrinkYoneda.{w}) ⋙
+          (evaluation _ _).obj X).ιColimitType Y y =
+            Functor.ιColimitType _ (CostructuredArrow.mk
+              (shrinkYonedaEquiv.symm (Y.hom.app X y)))
+                (shrinkYonedaObjObjEquiv.symm (𝟙 X.unop)) :=
+        Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _)
+          (CostructuredArrow.homMk (shrinkYonedaObjObjEquiv y) (by
+            rw [← shrinkYonedaEquiv_symm_comp]
+            rfl)) (by
+            simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])
+      obtain ⟨Y₁, y₁, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y₁
+      obtain ⟨Y₂, y₂, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y₂
+      rw [this Y₁ y₁, this Y₂ y₂, dsimp% hy]
+    · exact ⟨Functor.ιColimitType _ (CostructuredArrow.mk (shrinkYonedaEquiv.symm x))
+        (shrinkYonedaObjObjEquiv.symm (𝟙 X.unop)),
+        by simp [shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm.{w}]⟩)
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- When a category `C` is locally `w`-small, any presheaf `P : Cᵒᵖ ⥤ Type w` is
+a colimit of representable presheaves (using `shrinkYoneda`). -/
+noncomputable def isColimitTautologicalCoconeShrink
+    [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
+    IsColimit (tautologicalCoconeShrink.{w} P) :=
+  evaluationJointlyReflectsColimits _
+    (isColimitTautologicalCoconeShrinkEvaluation _)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- When the types of morphisms in a category `C` are in `Type v₁`, this is the colimit cocone
+which expresses any presheaf `P : Cᵒᵖ ⥤ Type max w v₁` as a colimit of representable
+presheaves (using `uliftYoneda`). -/
+@[simps]
+def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
+    Cocone (CostructuredArrow.proj uliftYoneda.{w} P ⋙ uliftYoneda.{w}) where
+  pt := P
+  ι := { app X := X.hom }
+
+/-- Let `C` be a category where types of morphisms are in `Type v₁`.
+Let `P : Cᵒᵖ ⥤ Type max w v₁`. This is the equivalence of categories between
+`CostructuredArrow uliftYoneda.{w} P` and `CostructuredArrow shrinkYoneda.{max w v₁} P`. -/
+noncomputable abbrev costructuredArrowUliftYonedaEquiv (P : Cᵒᵖ ⥤ Type max w v₁) :
+    CostructuredArrow uliftYoneda.{w} P ≌ CostructuredArrow shrinkYoneda.{max w v₁} P :=
+  CostructuredArrow.congr .refl .refl
+    (Functor.rightUnitor _ ≪≫ uliftYonedaIsoShrinkYoneda ≪≫ (Functor.leftUnitor _).symm)
+    (Iso.refl _)
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- When the types of morphisms in a category `C` are in `Type v₁`,
+any presheaf `P : Cᵒᵖ ⥤ Type max w v₁` identifies to a colimit of representable
+presheaves (using `uliftYoneda`). -/
+@[no_expose]
+noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
+    IsColimit (tautologicalCocone'.{w} P) :=
+  evaluationJointlyReflectsColimits _ (fun X ↦ by
+    refine (IsColimit.equivOfNatIsoOfIso
+      (NatIso.ofComponents (fun Y ↦ (uliftYonedaIsoShrinkYoneda.app Y.left).app X)
+        (fun _ ↦ by
+          ext
+          simp [uliftYonedaIsoShrinkYoneda,
+            shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])) _ _ ?_).2
+      ((isColimitTautologicalCoconeShrinkEvaluation.{max w v₁} P X).whiskerEquivalence
+      (costructuredArrowUliftYonedaEquiv.{w} P))
+    exact Iso.refl _)
+
+/-- Let `C` be a category where types of morphisms are in `Type v₁`.
+Let `P : Cᵒᵖ ⥤ Type v₁`. This is the equivalence of categories between
+`CostructuredArrow yoneda P` and `CostructuredArrow shrinkYoneda.{v₁} P`. -/
+noncomputable abbrev costructuredArrowYonedaEquiv (P : Cᵒᵖ ⥤ Type v₁) :
+    CostructuredArrow yoneda P ≌ CostructuredArrow shrinkYoneda.{v₁} P :=
+  CostructuredArrow.congr .refl .refl
+    (Functor.rightUnitor _ ≪≫ shrinkYonedaIsoYoneda.symm ≪≫ (Functor.leftUnitor _).symm)
+    (Iso.refl _)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- For a presheaf `P`, consider the forgetful functor from the category of representable
+    presheaves over `P` to the category of presheaves. There is a tautological cocone over this
+    functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
+    natural transformation. -/
+@[simps]
+def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
+    Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
+  pt := P
+  ι := { app X := X.hom }
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
+    representables.
+
+    Proposition 2.6.3(i) in [Kashiwara2006] -/
+@[no_expose]
+noncomputable def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
+    IsColimit (tautologicalCocone P) :=
+  evaluationJointlyReflectsColimits _ (fun X ↦
+    (IsColimit.equivOfNatIsoOfIso
+      (NatIso.ofComponents (fun Y ↦ shrinkYonedaObjObjEquiv.symm.toIso) (fun _ ↦ by
+        ext
+        simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])) _ _ (by exact Iso.refl _)).2
+      ((isColimitTautologicalCoconeShrinkEvaluation.{v₁} P X).whiskerEquivalence
+        (costructuredArrowYonedaEquiv P)))
+
+/-- Given `P : Cᵒᵖ ⥤ Type max w v₁`, this is the functor from the opposite category
+of the category of elements of `X` which sends an element in `P.obj (op X)` to the
+presheaf represented by `X`. The definition `coconeOfRepresentable`
+gives a cocone for this functor which is a colimit and has point `P`.
+-/
+@[simps! obj map]
+def functorToRepresentables (P : Cᵒᵖ ⥤ Type max w v₁) :
+    P.Elementsᵒᵖ ⥤ Cᵒᵖ ⥤ Type max w v₁ :=
+  (CategoryOfElements.π P).leftOp ⋙ uliftYoneda.{w}
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- This is a cocone with point `P` for the functor `functorToRepresentables P`. It is shown in
+`colimitOfRepresentable P` that this cocone is a colimit: that is, we have exhibited an arbitrary
+presheaf `P` as a colimit of representables.
+
+The construction of [MM92], Chapter I, Section 5, Corollary 3.
+-/
+@[simps]
+def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
+    Cocone (functorToRepresentables P) where
+  pt := P
+  ι :=
+    { app x := uliftYonedaEquiv.symm x.unop.2
+      naturality {x₁ x₂} f := by
+        dsimp
+        rw [comp_id, ← uliftYonedaEquiv_symm_map, f.unop.2] }
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- The legs of the cocone `coconeOfRepresentable` are natural in the choice of presheaf. -/
+theorem coconeOfRepresentable_naturality
+    {P₁ P₂ : Cᵒᵖ ⥤ Type max w v₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
+    (coconeOfRepresentable P₁).ι.app j ≫ α =
+      (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
+  ext T f
+  simp [uliftYonedaEquiv]
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- The cocone with point `P` given by `coconeOfRepresentable` is a colimit:
+that is, we have exhibited an arbitrary presheaf `P` as a colimit of representables.
+
+The result of [MM92], Chapter I, Section 5, Corollary 3.
+-/
+@[no_expose]
+noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
+    IsColimit (coconeOfRepresentable P) :=
+  (IsColimit.whiskerEquivalenceEquiv
+    (CategoryOfElements.costructuredArrowULiftYonedaEquivalence P).symm).2
+      (IsColimit.ofIsoColimit (isColimitTautologicalCocone' P)
+        (Cocone.ext (Iso.refl _)))
+
 variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
 
 /--
@@ -240,81 +414,6 @@ noncomputable def isExtensionAlongULiftYoneda :
   (asIso (uliftYoneda.leftKanExtensionUnit A)).symm
 
 end
-
-/-- Given `P : Cᵒᵖ ⥤ Type max w v₁`, this is the functor from the opposite category
-of the category of elements of `X` which sends an element in `P.obj (op X)` to the
-presheaf represented by `X`. The definition `coconeOfRepresentable`
-gives a cocone for this functor which is a colimit and has point `P`.
--/
-@[simps! obj map]
-def functorToRepresentables (P : Cᵒᵖ ⥤ Type max w v₁) :
-    P.Elementsᵒᵖ ⥤ Cᵒᵖ ⥤ Type max w v₁ :=
-  (CategoryOfElements.π P).leftOp ⋙ uliftYoneda.{w}
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-/-- This is a cocone with point `P` for the functor `functorToRepresentables P`. It is shown in
-`colimitOfRepresentable P` that this cocone is a colimit: that is, we have exhibited an arbitrary
-presheaf `P` as a colimit of representables.
-
-The construction of [MM92], Chapter I, Section 5, Corollary 3.
--/
-@[simps]
-def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
-    Cocone (functorToRepresentables P) where
-  pt := P
-  ι :=
-    { app x := uliftYonedaEquiv.symm x.unop.2
-      naturality {x₁ x₂} f := by
-        dsimp
-        rw [comp_id, ← uliftYonedaEquiv_symm_map, f.unop.2] }
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-/-- The legs of the cocone `coconeOfRepresentable` are natural in the choice of presheaf. -/
-theorem coconeOfRepresentable_naturality
-    {P₁ P₂ : Cᵒᵖ ⥤ Type max w v₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
-    (coconeOfRepresentable P₁).ι.app j ≫ α =
-      (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
-  ext T f
-  simp [uliftYonedaEquiv]
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-/-- The cocone with point `P` given by `coconeOfRepresentable` is a colimit:
-that is, we have exhibited an arbitrary presheaf `P` as a colimit of representables.
-
-The result of [MM92], Chapter I, Section 5, Corollary 3.
--/
-def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
-    IsColimit (coconeOfRepresentable P) where
-  desc s :=
-    { app X := ↾fun x ↦ uliftYonedaEquiv
-        (s.ι.app (Opposite.op (Functor.elementsMk P X x)))
-      naturality X Y f := by
-        ext x
-        have := s.w (Quiver.Hom.op (CategoryOfElements.homMk (P.elementsMk X x)
-          (P.elementsMk Y (P.map f x)) f rfl))
-        dsimp at this x ⊢
-        rw [← this, uliftYonedaEquiv_comp]
-        dsimp
-        rw [uliftYonedaEquiv_apply, uliftYonedaEquiv_apply,
-          ← NatTrans.naturality_apply]
-        simp [uliftYoneda] }
-  fac s j := by
-    ext X x
-    let φ : j.unop ⟶ (Functor.elementsMk P _
-      ((uliftYonedaEquiv.symm (unop j).snd).app X x)) := ⟨x.down.op, rfl⟩
-    have := s.w φ.op
-    dsimp [φ] at this x ⊢
-    rw [← this, uliftYonedaEquiv_apply]
-    simp [uliftYoneda]
-  uniq s m hm := by
-    ext X x
-    simp only [functorToRepresentables_obj, coconeOfRepresentable_pt, Functor.const_obj_obj,
-      coconeOfRepresentable_ι_app, Functor.leftOp_obj, CategoryOfElements.π_obj, op_unop,
-      TypeCat.Fun.toFun_apply, hom_ofHom, TypeCat.Fun.coe_mk] at hm ⊢
-    rw [← hm, uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
 
 variable {A : C ⥤ ℰ}
 
@@ -528,7 +627,7 @@ set_option backward.isDefEq.respectTransparency false in
 and a natural transformation `φ : F ⋙ uliftYoneda ⟶ uliftYoneda ⋙ G`, this is the
 (natural) morphism `P ⟶ F.op ⋙ G.obj P` for all `P : Cᵒᵖ ⥤ Type max w v₁ v₂` that is
 determined by `φ`. -/
-def presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) : P ⟶ F.op ⋙ G.obj P :=
+noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) : P ⟶ F.op ⋙ G.obj P :=
   (colimitOfRepresentable P).desc
     (Cocone.mk _ { app x := coconeApp.{w} φ x.unop })
 
@@ -643,55 +742,6 @@ instance : F.op.lan.IsLeftKanExtension (compULiftYonedaIsoULiftYonedaCompLan.{w}
   ⟨⟨Limits.IsInitial.ofUnique _⟩⟩
 
 end
-
-set_option backward.defeqAttrib.useBackward true in
-/-- For a presheaf `P`, consider the forgetful functor from the category of representable
-    presheaves over `P` to the category of presheaves. There is a tautological cocone over this
-    functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
-    natural transformation. (In this version, we allow the presheaf `P` to have values in
-    a larger universe.) -/
-@[simps]
-def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
-    Cocone (CostructuredArrow.proj uliftYoneda.{w} P ⋙ uliftYoneda.{w}) where
-  pt := P
-  ι := { app X := X.hom }
-
-/-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-    representables. (In this version, we allow the presheaf `P` to have values in
-    a larger universe.)
-
-    Proposition 2.6.3(i) in [Kashiwara2006] -/
-def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
-    IsColimit (tautologicalCocone'.{w} P) :=
-  (IsColimit.whiskerEquivalenceEquiv
-    (CategoryOfElements.costructuredArrowULiftYonedaEquivalence.{w} P)).2
-      (colimitOfRepresentable.{w} P)
-
-
-set_option backward.defeqAttrib.useBackward true in
-/-- For a presheaf `P`, consider the forgetful functor from the category of representable
-    presheaves over `P` to the category of presheaves. There is a tautological cocone over this
-    functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
-    natural transformation. -/
-@[simps]
-def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
-    Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
-  pt := P
-  ι := { app X := X.hom }
-
-/-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-    representables.
-
-    Proposition 2.6.3(i) in [Kashiwara2006] -/
-def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
-    IsColimit (tautologicalCocone P) :=
-  let e : functorToRepresentables.{v₁} P ≅
-    ((CategoryOfElements.costructuredArrowYonedaEquivalence P).functor ⋙
-      CostructuredArrow.proj yoneda P ⋙ yoneda) :=
-    NatIso.ofComponents (fun e ↦ NatIso.ofComponents (fun X ↦ Equiv.ulift.toIso))
-  (IsColimit.whiskerEquivalenceEquiv
-    (CategoryOfElements.costructuredArrowYonedaEquivalence P)).2
-      ((IsColimit.precomposeHomEquiv e _).1 (colimitOfRepresentable.{v₁} P))
 
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
