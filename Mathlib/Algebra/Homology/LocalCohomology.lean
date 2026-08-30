@@ -80,7 +80,8 @@ section
 variable {R : Type u} [CommRing R] {D : Type u₁} [Category.{v₁} D]
 variable {E : Type u₂} [Category.{v₂} E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
-@[simps!]
+/-- The diagram `ringModIdeals (I' ⋙ I)` is isomorphism (in fact, definitionally equal)
+to the the diagram `I' ⋙ ringModIdeals I`. -/
 def ringModIdealComp : ringModIdeals (I' ⋙ I) ≅ I' ⋙ ringModIdeals I :=
   NatIso.ofComponents (fun _ ↦ .refl _)
 
