@@ -152,6 +152,45 @@ lemma analyticAt : AnalyticAt 𝕜 f x := f.cpolynomialAt.analyticAt
 
 lemma analyticWithinAt : AnalyticWithinAt 𝕜 f s x := f.analyticAt.analyticWithinAt
 
+open scoped Nat
+
+lemma cpolynomialAt_compContinuousLinearMapCLM (f : E →L[𝕜] F) :
+    CPolynomialAt 𝕜 ((Fintype.card ι)! •
+      compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) f := by
+  classical
+  let A : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E) G →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
+    ContinuousMultilinearMap.alternatizationCLM
+  let B : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ (E →L[𝕜] F))
+      ((ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ F) G)
+        →L[𝕜] (ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E) G)) :=
+    ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear _ _ _ _
+  let C : F [⋀^ι]→L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ F) G :=
+    toContinuousMultilinearMapCLM 𝕜
+  have : ((Fintype.card ι)! • compContinuousLinearMapCLM :
+        (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) =
+      fun f ↦ A ∘L (B (fun i ↦ f)) ∘L C := by
+    ext f : 1
+    simp [A, B, C]
+    sorry
+  sorry
+#exit
+
+theorem continuous_compContinuousLinearMapCLM [Finite ι] :
+    Continuous
+      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) := by
+  rcases nonempty_fintype ι
+  refine UniformConvergenceCLM.isUniformInducing_postcomp (.id 𝕜)
+    (toContinuousMultilinearMapCLM 𝕜 : (E [⋀^ι]→L[𝕜] G) →L[𝕜] _)
+    isUniformEmbedding_toContinuousMultilinearMap.isUniformInducing _ |>.isInducing
+    |>.continuous_iff |>.mpr ?_
+  change Continuous <|
+    (toContinuousMultilinearMapCLM 𝕜 : (F [⋀^ι]→L[𝕜] G) →L[𝕜] _).precomp _ ∘
+      ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear 𝕜
+        (fun _ : ι ↦ E) (fun _ ↦ F) G ∘
+      (fun f _ ↦ f)
+  fun_prop
+
+
 end ContinuousAlternatingMap
 
 /-!
