@@ -192,8 +192,7 @@ section Add
 variable [Add R]
 
 @[simps]
-instance : Add ℍ[R,c₁,c₂,c₃] :=
-  ⟨fun a b => ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
+instance : Add ℍ[R,c₁,c₂,c₃] where add a b := ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩
 
 @[simp]
 theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -236,7 +235,7 @@ section Neg
 variable [Neg R]
 
 @[simps]
-instance : Neg ℍ[R,c₁,c₂,c₃] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
+instance : Neg ℍ[R,c₁,c₂,c₃] where neg a := ⟨-a.1, -a.2, -a.3, -a.4⟩
 
 @[simp]
 theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁,c₂,c₃]) = ⟨-a₁, -a₂, -a₃, -a₄⟩ :=
@@ -254,8 +253,7 @@ variable [AddGroup R]
 theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂,c₃]) = -x := by ext <;> simp
 
 @[simps]
-instance : Sub ℍ[R,c₁,c₂,c₃] :=
-  ⟨fun a b => ⟨a.1 - b.1, a.2 - b.2, a.3 - b.3, a.4 - b.4⟩⟩
+instance : Sub ℍ[R,c₁,c₂,c₃] where sub a b := ⟨a.1 - b.1, a.2 - b.2, a.3 - b.3, a.4 - b.4⟩
 
 @[simp] theorem im_sub : (a - b).im = a.im - b.im :=
   QuaternionAlgebra.ext (sub_zero _).symm rfl rfl rfl
@@ -297,12 +295,12 @@ variable [Ring R]
 * `i * k = c₁ * j + c₂ * k`, `k * i = -c₁ * j`;
 * `j * k = c₂ * c₃ - c₃ * i`, `k * j = c₃ * i`. -/
 @[simps]
-instance : Mul ℍ[R,c₁,c₂,c₃] :=
-  ⟨fun a b =>
+instance : Mul ℍ[R,c₁,c₂,c₃] where
+  mul a b :=
     ⟨a.1 * b.1 + c₁ * a.2 * b.2 + c₃ * a.3 * b.3 + c₂ * c₃ * a.3 * b.4 - c₁ * c₃ * a.4 * b.4,
       a.1 * b.2 + a.2 * b.1 + c₂ * a.2 * b.2 - c₃ * a.3 * b.4 + c₃ * a.4 * b.3,
       a.1 * b.3 + c₁ * a.2 * b.4 + a.3 * b.1 + c₂ * a.3 * b.2 - c₁ * a.4 * b.2,
-      a.1 * b.4 + a.2 * b.3 + c₂ * a.2 * b.4 - a.3 * b.2 + a.4 * b.1⟩⟩
+      a.1 * b.4 + a.2 * b.3 + c₂ * a.2 * b.4 - a.3 * b.2 + a.4 * b.1⟩
 
 @[simp]
 theorem mk_mul_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -437,7 +435,6 @@ end AddCommGroupWithOne
 variable [CommRing R]
 
 instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
-  __ := (inferInstance : AddCommGroupWithOne ℍ[R,c₁,c₂,c₃])
   left_distrib _ _ _ := by ext <;> simp <;> ring
   right_distrib _ _ _ := by ext <;> simp <;> ring
   zero_mul _ := by ext <;> simp
@@ -576,8 +573,8 @@ theorem coe_algebraMap : ⇑(algebraMap R ℍ[R,c₁,c₂,c₃]) = coe :=
 theorem smul_coe : x • (y : ℍ[R,c₁,c₂,c₃]) = ↑(x * y) := by rw [coe_mul, coe_mul_eq_smul]
 
 /-- Quaternion conjugate. -/
-instance instStarQuaternionAlgebra : Star ℍ[R,c₁,c₂,c₃] where star a :=
-  ⟨a.1 + c₂ * a.2, -a.2, -a.3, -a.4⟩
+instance instStarQuaternionAlgebra : Star ℍ[R,c₁,c₂,c₃] where
+  star a := ⟨a.1 + c₂ * a.2, -a.2, -a.3, -a.4⟩
 
 @[simp] theorem re_star : (star a).re = a.re + c₂ * a.imI := rfl
 
@@ -620,10 +617,8 @@ theorem star_eq_two_re_sub : star a = ↑(2 * a.re + c₂ * a.imI) - a :=
 lemma comm (r : R) (x : ℍ[R,c₁,c₂,c₃]) : r * x = x * r := by
   ext <;> simp [mul_comm]
 
-instance : IsStarNormal a :=
-  ⟨by
-    rw [commute_iff_eq, a.star_eq_two_re_sub];
-    ext <;> simp <;> ring⟩
+instance : IsStarNormal a where
+  star_comm_self := by rw [commute_iff_eq, a.star_eq_two_re_sub]; ext <;> simp <;> ring
 
 @[simp, norm_cast]
 theorem star_coe : star (x : ℍ[R,c₁,c₂,c₃]) = x := by ext <;> simp
