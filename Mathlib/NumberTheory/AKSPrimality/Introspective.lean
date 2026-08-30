@@ -133,6 +133,38 @@ end CommRing
 
 variable [Field R] [CharP R p] [Fact p.Prime]
 
+private theorem _root_.Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Coprime r) :
+    IsReduced (R[X] ⧸ span {(X : R[X]) ^ r - C 1}) := by
+  apply (isRadical_iff_quotient_reduced _).mp
+  apply (Ideal.isRadical_iff_pow_one_lt 2 (by grind)).mpr
+  intro s hs
+  rw [Ideal.mem_span_singleton] at *
+  refine (Squarefree.dvd_pow_iff_dvd ?_ (by lia)).mp hs
+  apply Separable.squarefree
+  refine separable_X_pow_sub_C 1 ?_ (by simp)
+  rw [← cast_zero (R := R)]
+  apply ((CharP.natCast_eq_natCast R p).mp).mt
+  apply modEq_zero_iff_dvd.mp.mt
+  exact (Nat.Prime.coprime_iff_not_dvd Fact.out).mp hcprm
+
+private theorem _root_.Ring.charP_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Coprime r) :
+    CharP (R[X] ⧸ span {(X : R[X]) ^ r - C 1}) p  := by
+  have _ : r ≠ 0 := by grind [coprime_zero_right, prime_one_false, Fact.out]
+  apply CharP.quotient'
+  intro z hz
+  by_contra!
+  obtain ⟨ y, hy ⟩ := Ideal.mem_span_singleton'.mp hz
+  by_cases hc : y = 0
+  · grind
+  · have _ :  (z : R[X]).natDegree = 0 := by simp
+    have _ : r ≤ (z : R[X]).natDegree := by
+      rw [← hy, natDegree_mul]
+      · suffices ((X : R[X]) ^ r - C 1).natDegree = r by lia
+        exact natDegree_X_pow_sub_C
+      · exact hc
+      exact X_pow_sub_C_ne_zero (show 0 < r by lia) _
+    grind
+
 set_option backward.isDefEq.respectTransparency false in
 theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
     (hcprm : p.Coprime r) : Introspective ((X : R[X]) - C (a : R)) m r := by
@@ -141,54 +173,22 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
   set g : R[X] := (X : R[X]) - C (a : R)
   have rn0 : r ≠ 0 := by grind [coprime_zero_right, prime_one_false]
   rw [pow_mul] at h
-  have _ :  IsReduced (R[X] ⧸ span {(X : R[X]) ^ r - C 1}) := by
-    apply (isRadical_iff_quotient_reduced _).mp
-    apply (Ideal.isRadical_iff_pow_one_lt 2 (by grind)).mpr
-    intro s hs
-    rw [Ideal.mem_span_singleton] at *
-    refine (Squarefree.dvd_pow_iff_dvd ?_ (by lia)).mp hs
-    apply Separable.squarefree
-    apply separable_X_pow_sub_C
-    · rw[← cast_zero (R := R)]
-      apply ((CharP.natCast_eq_natCast R p).mp).mt
-      apply modEq_zero_iff_dvd.mp.mt
-      exact (Nat.Prime.coprime_iff_not_dvd hp).mp hcprm
-    · simp
-  have _ := CharP.quotient' p (Ideal.span {(X : R[X]) ^ r - C 1}) (by
-    intro z hz
-    by_contra!
-    obtain ⟨ y, hy ⟩ := Ideal.mem_span_singleton'.mp hz
-    by_cases hc : y = 0
-    · grind
-    · have _ :  (z : R[X]).natDegree = 0 := by simp
-      have _ : r ≤ (z : R[X]).natDegree := by
-        rw [← hy, natDegree_mul]
-        · suffices ((X : R[X]) ^ r - C 1).natDegree = r by lia
-          exact natDegree_X_pow_sub_C
-        · exact hc
-        exact X_pow_sub_C_ne_zero (show 0 < r by lia) _
-      grind)
+  have _ := Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
+  have _ := Ring.charP_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
   simp only [map_pow] at h
   replace h : (frobenius _ p) _ = _ := h
-  have hrh : mk (span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ (m * p))) =
+  have h2 : mk (span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ (m * p))) =
       frobenius _ p (mk (Ideal.span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ m))) := by
     simp only [frobenius, RingHom.coe_mk, powMonoidHom_apply]
     rw [← map_pow]
     congr
     simp only [sub_comp, X_comp, g]
-    -- Does this really not exist in mathlib?
-    have aaa : (a : R) ^ p = a := by
-      norm_cast
-      apply (CharP.natCast_eq_natCast R p).mpr
-      rw [← ZMod.natCast_eq_natCast_iff]
-      push_cast
-      rw [ZMod.pow_card]
-    nth_rw 1 [← aaa]
+    nth_rw 1 [← CharP.pow_charP_of_nat a]
     simp only [C_comp]
     simp only [C_pow, pow_mul]
     change (frobenius _ _) _  - (frobenius _ _) _= (frobenius _ _ ) _
     rw [← RingHom.map_sub]
-  rw [hrh] at h
+  rw [h2] at h
   exact (frobenius_inj _ _) h
 
 protected theorem div (h : Introspective ((X : R[X]) - C (a : R)) n r)
