@@ -59,6 +59,7 @@ variable [HasDerivedCategory C]
 namespace Plus
 
 /-- The localization functor `HomotopyCategory.Plus C ⥤ DerivedCategory.Plus C`. -/
+@[implicit_reducible]
 noncomputable def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
   t.plus.lift (HomotopyCategory.Plus.ι _ ⋙ DerivedCategory.Qh) (by
     rintro ⟨K, hK⟩
@@ -217,11 +218,35 @@ lemma isIso_iff {X Y : Plus C} (f : X ⟶ Y) :
   exact isIso_of_fully_faithful ι _
 
 /-- The localization functor `CochainComplex.Plus C ⥤ DerivedCategory.Plus C`. -/
+@[implicit_reducible]
 noncomputable def Q : CochainComplex.Plus C ⥤ DerivedCategory.Plus C :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ DerivedCategory.Q)
     (fun ⟨K, n, hn⟩ ↦ ⟨n, by dsimp; infer_instance⟩)
 
--- TODO: show that `Q` is indeed a localization functor with respect to quasi-isomorphisms
+variable (C) in
+/-- The natural isomorphism `HomotopyCategory.Plus.quotient C ⋙ Qh ≅ Q`. -/
+noncomputable def quotientCompQhIso : HomotopyCategory.Plus.quotient C ⋙ Qh ≅ Q :=
+  NatIso.ofComponents (fun X ↦
+    ObjectProperty.isoMk _ ((DerivedCategory.quotientCompQhIso C).app X.obj)) (fun _ ↦ by
+      ext
+      apply (DerivedCategory.quotientCompQhIso C).hom.naturality)
+
+-- TODO: show that `HomotopyCategory.Plus.quotient C ` and `Q` commute with the shift
+-- in a way that is compatible with `quotientCompQhIso`
+
+instance : (HomotopyCategory.Plus.quotient C ⋙ Qh).IsLocalization
+    (CochainComplex.Plus.quasiIso C) := by
+  refine Functor.IsLocalization.comp _ _
+    (((HomologicalComplex.homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C)))
+    (HomotopyCategory.Plus.quasiIso C) _ (fun _ _ f _ ↦ ?_) (fun _ _ _ hf ↦ ?_)
+    (by rw [HomotopyCategory.Plus.quasiIso_map_quotient_eq_quasiIso])
+  · refine Localization.inverts Qh (HomotopyCategory.Plus.quasiIso C) _ ?_
+    simpa [HomotopyCategory.Plus.quasiIso_iff, HomotopyCategory.quotient_map_mem_quasiIso_iff]
+  · rw [CochainComplex.Plus.quasiIso_iff]
+    exact homotopyEquivalences_le_quasiIso _ _ _ hf
+
+instance : Q.IsLocalization (CochainComplex.Plus.quasiIso C) :=
+  Functor.IsLocalization.of_iso _ (quotientCompQhIso C)
 
 end Plus
 

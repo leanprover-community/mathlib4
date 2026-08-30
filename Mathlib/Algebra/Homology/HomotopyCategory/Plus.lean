@@ -169,7 +169,7 @@ instance : (quasiIso A).RespectsIso := by
 
 /-- The full and essentially surjective functor
 `CochainComplex.Plus C ⥤ HomotopyCategory.Plus C`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def quotient : CochainComplex.Plus C ⥤ Plus C :=
   ObjectProperty.lift _
     (CochainComplex.Plus.ι C ⋙ HomotopyCategory.quotient C (.up ℤ)) (by
@@ -198,6 +198,19 @@ instance : (quotient C).EssSurj where
     exact ⟨L, ⟨Iso.refl _⟩⟩
 
 instance : (quotient C).Full := by dsimp [quotient]; infer_instance
+
+lemma quasiIso_map_quotient_eq_quasiIso :
+    (CochainComplex.Plus.quasiIso A).map (quotient A) = quasiIso A := by
+  ext K L f
+  obtain ⟨K, rfl⟩ := K.quotient_obj_surjective
+  obtain ⟨L, rfl⟩ := L.quotient_obj_surjective
+  obtain ⟨f, rfl⟩ := (quotient A).map_surjective f
+  refine ⟨?_, fun hf ↦ ?_⟩
+  · rintro ⟨K', L', f', hf', ⟨e⟩⟩
+    refine ((quasiIso A).arrow_mk_iso_iff e).1 ?_
+    rwa [quasiIso_iff, quotient_map_hom, HomotopyCategory.quotient_map_mem_quasiIso_iff]
+  · rw [quasiIso_iff, quotient_map_hom, HomotopyCategory.quotient_map_mem_quasiIso_iff] at hf
+    exact ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩
 
 section
 
