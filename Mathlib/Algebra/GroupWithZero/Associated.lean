@@ -236,6 +236,22 @@ protected theorem Associated.prime [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ 
       intro a b
       exact hp.dvd_or_dvd⟩⟩
 
+lemma Associated.isRelPrime_left [Monoid M] {a b c : M} (assoc : Associated a b)
+    (h : IsRelPrime a c) : IsRelPrime b c :=
+  fun _ hb hc ↦ h (assoc.dvd_iff_dvd_right.mpr hb) hc
+
+lemma Associated.isRelPrime_iff_left [Monoid M] {a b c : M} (assoc : Associated a b) :
+    IsRelPrime a c ↔ IsRelPrime b c :=
+  ⟨fun h ↦ isRelPrime_left assoc h, fun h ↦ isRelPrime_left assoc.symm h⟩
+
+lemma Associated.isRelPrime_right [Monoid M] {a b c : M} (assoc : Associated a b)
+    (h : IsRelPrime c a) : IsRelPrime c b :=
+  fun _ hc hb ↦ h hc (assoc.dvd_iff_dvd_right.mpr hb)
+
+lemma Associated.isRelPrime_iff_right [Monoid M] {a b c : M} (assoc : Associated a b) :
+    IsRelPrime c a ↔ IsRelPrime c b :=
+  ⟨fun h ↦ isRelPrime_right assoc h, fun h ↦ isRelPrime_right assoc.symm h⟩
+
 theorem prime_mul_iff [CommMonoidWithZero M] [IsCancelMulZero M] {x y : M} :
     Prime (x * y) ↔ (Prime x ∧ IsUnit y) ∨ (IsUnit x ∧ Prime y) := by
   refine ⟨fun h ↦ ?_, ?_⟩
