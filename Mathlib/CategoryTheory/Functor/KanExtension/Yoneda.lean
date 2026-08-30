@@ -156,7 +156,6 @@ instance (F : C ⥤ D) (X : C) : (uliftYoneda.{max w v₁}.obj (F.obj X)).IsLeft
   rw [← comp_shrinkYonedaMap_comp_eq_uliftYonedaMap]
   infer_instance
 
-
 variable (F : C ⥤ D) [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
 /-- `F ⋙ uliftYoneda` is naturally isomorphic to `uliftYoneda ⋙ F.op.lan`. -/

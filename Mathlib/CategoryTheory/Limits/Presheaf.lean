@@ -280,6 +280,7 @@ variable {X : C} {G : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ Dᵒᵖ ⥤ Type ma
   (φ : F ⋙ uliftYoneda.{max w v₁} ⟶ uliftYoneda.{max w v₂} ⋙ G)
 
 /-- Auxiliary definition for `presheafHom`. -/
+@[deprecated "No replacement." (since := "2026-08-23")]
 def coconeApp {P : Cᵒᵖ ⥤ Type max w v₁ v₂} (x : P.Elements) :
     uliftYoneda.{max w v₂}.obj x.1.unop ⟶ F.op ⋙ G.obj P :=
   uliftYonedaEquiv.symm
@@ -288,7 +289,7 @@ def coconeApp {P : Cᵒᵖ ⥤ Type max w v₁ v₂} (x : P.Elements) :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
+@[deprecated "No replacement." (since := "2026-08-23"), reassoc (attr := simp)]
 lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Elements} (f : x ⟶ y) :
     uliftYoneda.map f.1.unop ≫ coconeApp.{w} φ x = coconeApp φ y := by
   have eq₁ : uliftYoneda.map f.1.unop ≫ uliftYonedaEquiv.symm x.2 =
@@ -345,89 +346,57 @@ lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type max w v₁ v₂} (f : P ⟶
 
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ (Dᵒᵖ ⥤ Type max w v₁ v₂)`,
 and a natural transformation `φ : F ⋙ uliftYoneda ⟶ uliftYoneda ⋙ G`, this is
 the canonical natural transformation `F.op.lan ⟶ G`, which is part of the
 fact that `F.op.lan : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
 is the left Kan extension of `F ⋙ uliftYoneda : C ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
 along `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`. -/
-noncomputable def natTrans : F.op.lan ⟶ G where
-  app P := (F.op.lan.obj P).descOfIsLeftKanExtension (F.op.lanUnit.app P) _ (presheafHom φ P)
-  naturality {P Q} f := by
-    apply (F.op.lan.obj P).hom_ext_of_isLeftKanExtension (F.op.lanUnit.app P)
-    have eq := F.op.lanUnit.naturality f
-    dsimp at eq ⊢
-    rw [Functor.descOfIsLeftKanExtension_fac_assoc, ← reassoc_of% eq,
-      Functor.descOfIsLeftKanExtension_fac, presheafHom_naturality]
+@[deprecated "No replacement" (since := "2026-08-23")]
+noncomputable def natTrans : F.op.lan ⟶ G :=
+  Functor.descOfIsLeftKanExtension _ (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom _ φ
 
+@[deprecated "No replacemenet" (since := "2026-08-23")]
 lemma natTrans_app_uliftYoneda_obj (X : C) :
     (natTrans.{w} φ).app (uliftYoneda.{max w v₂}.obj X) =
       (compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X ≫ φ.app X := by
-  dsimp [natTrans]
-  apply (F.op.lan.obj (uliftYoneda.obj X)).hom_ext_of_isLeftKanExtension (F.op.lanUnit.app _)
-  rw [Functor.descOfIsLeftKanExtension_fac]
-  apply uliftYonedaEquiv.injective
-  rw [uliftYonedaEquiv_presheafHom_uliftYoneda_obj]
-  exact _root_.congr_arg _ (compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id F X).symm
+  rw [← cancel_epi ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom.app X),
+    Iso.hom_inv_id_app_assoc]
+  apply Functor.descOfIsLeftKanExtension_fac_app
+
+/-- Given functors `F : C ⥤ D` and
+`G : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ (Dᵒᵖ ⥤ Type max w v₁ v₂)`,
+and a natural transformation `φ : F ⋙ uliftYoneda ⟶ uliftYoneda ⋙ G`, this is the
+(natural) morphism `P ⟶ F.op ⋙ G.obj P` for all `P : Cᵒᵖ ⥤ Type max w v₁ v₂` that is
+determined by `φ`. -/
+@[deprecated "No replacement" (since := "2026-08-23")]
+noncomputable def presheafHom' (P : Cᵒᵖ ⥤ Type max w v₁ v₂) : P ⟶ F.op ⋙ G.obj P :=
+  (F.op.lanAdjunction _).homEquiv _ _ ((natTrans.{w} φ).app P)
 
 end
 
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a functor `F : C ⥤ D`, this definition is part of the verification that
 `Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan F).hom`
 is universal, i.e. that  `F.op.lan : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
 is the left Kan extension of `F ⋙ uliftYoneda : C ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
 along `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`. -/
+@[deprecated "No replacement" (since := "2026-08-23")]
 noncomputable def extensionHom
     (Φ : uliftYoneda.{max w v₂}.LeftExtension (F ⋙ uliftYoneda.{max w v₁})) :
     Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom ⟶ Φ :=
-  StructuredArrow.homMk (natTrans Φ.hom) (by
-    ext X : 2
-    dsimp
-    rw [natTrans_app_uliftYoneda_obj, Iso.hom_inv_id_app_assoc])
+  IsInitial.to (Functor.isUniversalOfIsLeftKanExtension _
+    (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom) _
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-@[ext]
+@[ext, deprecated "No replacement" (since := "2026-08-23")]
 lemma hom_ext {Φ : uliftYoneda.{max w v₂}.LeftExtension (F ⋙ uliftYoneda.{max w v₁})}
     (f g : Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan F).hom ⟶ Φ) :
-    f = g := by
-  ext P : 3
-  apply (F.op.lan.obj P).hom_ext_of_isLeftKanExtension (F.op.lanUnit.app P)
-  apply (colimitOfRepresentable.{max w v₂} P).hom_ext
-  intro x
-  have eq := F.op.lanUnit.naturality (uliftYonedaEquiv.{max w v₂}.symm x.unop.2)
-  have eq₁ := congr_hom (CC := fun X ↦ X) (congr_app (congr_app (StructuredArrow.w f) x.unop.1.unop)
-    (F.op.obj x.unop.1)) (ULift.up (𝟙 _))
-  have eq₂ := congr_hom (CC := fun X ↦ X) (congr_app (congr_app (StructuredArrow.w g) x.unop.1.unop)
-    (F.op.obj x.unop.1)) (ULift.up (𝟙 _))
-  dsimp at eq₁ eq₂ eq ⊢
-  simp only [reassoc_of% eq, ← Functor.whiskerLeft_comp]
-  congr 2
-  simp only [← cancel_epi ((compULiftYonedaIsoULiftYonedaCompLan F).hom.app x.unop.1.unop),
-    NatTrans.naturality]
-  apply uliftYonedaEquiv.injective
-  simp [eq₁, eq₂, uliftYonedaEquiv_apply]
+    f = g :=
+  IsInitial.hom_ext (Functor.isUniversalOfIsLeftKanExtension _
+    (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom) _ _
 
 end compULiftYonedaIsoULiftYonedaCompLan
-
-variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
-
-noncomputable instance (Φ : StructuredArrow (F ⋙ uliftYoneda.{max w v₁})
-    ((Functor.whiskeringLeft C (Cᵒᵖ ⥤ Type max w v₁ v₂)
-      (Dᵒᵖ ⥤ Type max w v₁ v₂)).obj uliftYoneda.{max w v₂})) :
-    Unique (Functor.LeftExtension.mk F.op.lan
-      (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom ⟶ Φ) where
-  default := compULiftYonedaIsoULiftYonedaCompLan.extensionHom Φ
-  uniq _ := compULiftYonedaIsoULiftYonedaCompLan.hom_ext _ _
-
-/-- Given a functor `F : C ⥤ D`, `F.op.lan : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁` is the
-left Kan extension of `F ⋙ yoneda : C ⥤ Dᵒᵖ ⥤ Type v₁` along `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`. -/
-instance : F.op.lan.IsLeftKanExtension (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom :=
-  ⟨⟨Limits.IsInitial.ofUnique _⟩⟩
 
 end
 
