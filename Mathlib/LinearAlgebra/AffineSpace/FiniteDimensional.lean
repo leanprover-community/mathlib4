@@ -91,18 +91,17 @@ instance finiteDimensional_direction_affineSpan_image_of_finite [Finite ι] (p :
     FiniteDimensional k (affineSpan k (p '' s)).direction :=
   finiteDimensional_direction_affineSpan_of_finite k (Set.toFinite _)
 
-/-- An affine-independent family of points in a finite-dimensional affine space is finite. -/
-theorem finite_of_fin_dim_affineIndependent [FiniteDimensional k V] {p : ι → P}
-    (hi : AffineIndependent k p) : Finite ι := by
+/-- An affine-independent family of points in a finite-dimensional affine subspace is finite. -/
+theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndependent k p)
+    [FiniteDimensional k (vectorSpan k (Set.range p))] : Finite ι := by
   nontriviality ι; inhabit ι
   rw [affineIndependent_iff_linearIndependent_vsub k p default] at hi
-  let : IsNoetherian k V := IsNoetherian.iff_fg.2 inferInstance
-  exact
-    (Set.finite_singleton default).finite_of_compl (Set.finite_coe_iff.1 hi.finite_of_isNoetherian)
+  refine (Set.finite_singleton default).finite_of_compl (Set.finite_coe_iff.mp ?_)
+  exact hi.codRestrict (vectorSpan k (Set.range p)) (by simp [vsub_mem_vectorSpan]) |>.finite
 
-/-- An affine-independent subset of a finite-dimensional affine space is finite. -/
-theorem finite_set_of_fin_dim_affineIndependent [FiniteDimensional k V] {s : Set ι} {f : s → P}
-    (hi : AffineIndependent k f) : s.Finite :=
+/-- An affine-independent subset of a finite-dimensional affine subspace is finite. -/
+theorem finite_set_of_fin_dim_affineIndependent {s : Set ι} {f : s → P} (hi : AffineIndependent k f)
+    [FiniteDimensional k (vectorSpan k (Set.range f))] : s.Finite :=
   @Set.toFinite _ s (finite_of_fin_dim_affineIndependent k hi)
 
 variable {k}
