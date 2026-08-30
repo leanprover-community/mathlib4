@@ -163,9 +163,12 @@ theorem ne_zero_of_degree_ne_zero {f : MvPolynomial σ R} (h : m.degree f ≠ 0)
   exact h m.degree_zero
 
 @[simp, nontriviality]
-theorem degree_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
+theorem degree_of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.degree f = 0 := by
   rw [Subsingleton.eq_zero f, degree_zero]
+
+@[deprecated (since := "2026-08-16")]
+alias degree_subsingleton := degree_of_subsingleton
 
 @[simp]
 theorem leadingCoeff_zero : m.leadingCoeff (0 : MvPolynomial σ R) = 0 := by
@@ -758,7 +761,7 @@ lemma leadingTerm_one : m.leadingTerm (1 : MvPolynomial σ R) = 1 := by
 @[simp]
 lemma leadingTerm_of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.leadingTerm f = f := by
-  simp [leadingTerm, (m.degree_eq_zero_iff.mp degree_subsingleton).symm]
+  simp [leadingTerm, (m.degree_eq_zero_iff.mp degree_of_subsingleton).symm]
 
 /--
 The set of leading terms of non-zero polynomials within a set `B` is equal to the set of
