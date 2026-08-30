@@ -800,11 +800,6 @@ lemma choose_eq' (a : α) : @Exists.choose _ (a = ·) ⟨a, rfl⟩ = a :=
 alias axiom_of_choice := axiomOfChoice -- TODO: remove? rename in core?
 alias by_cases := byCases -- TODO: remove? rename in core?
 alias by_contradiction := byContradiction -- TODO: remove? rename in core?
-
--- The remaining theorems in this section were ported from Lean 3,
--- but are currently unused in Mathlib, so have been deprecated.
--- If any are being used downstream, please remove the deprecation.
-
 alias prop_complete := propComplete -- TODO: remove? rename in core?
 
 end Classical
