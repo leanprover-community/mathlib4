@@ -142,7 +142,7 @@ def isoMk {x y : F.Elements} (e : x.obj ≅ y.obj)
 instance [LocallySmall.{w} C] : LocallySmall.{w} F.Elements where
   hom_small x y := small_of_injective (f := fun g ↦ g.hom) (by cat_disch)
 
-instance {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) : Groupoid F.Elements where
+instance groupoid {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) : Groupoid F.Elements where
   inv {p q} f := Functor.Elements.homMk (Groupoid.inv f.hom) (by
     rw [← f.map_val, ← ConcreteCategory.comp_apply, ← Functor.map_comp]
     simp)
