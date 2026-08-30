@@ -83,7 +83,7 @@ arbitrary choice made in the definition of `Homogenization`. -/
 @[nolint unusedArguments]
 instance instModule {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V] :
     Module S (Homogenization R P) :=
-  AddEquiv.module S ⟨equivProdAux, by intros; rfl⟩
+  equivProdAux.addEquiv.module S
 
 variable
   {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
@@ -277,7 +277,7 @@ theorem weight_eq_one_iff {x : Homogenization R P} : weight x = 1 ↔ ∃ p, x =
   mpr := by rintro ⟨_, rfl⟩; rw [weight_ofPoint]
 
 theorem lift_const_apply (u : W) (x : Homogenization R P) :
-    lift (AffineMap.const R P u) x = weight x • u := by
+    lift (.const R P u) x = weight x • u := by
   cases x; simp
 
 theorem weight_surjective : Function.Surjective (weight (R := R) (P := P)) :=
@@ -403,6 +403,6 @@ theorem toProd_ofVector (v : V) : toProd (ofVector (R := R) v) = (v, 0) := by
 
 instance [Module.Finite R V] : Module.Finite R (Homogenization R P) :=
   have ⟨x⟩ : Nonempty P := inferInstance
-  .equiv (toProd.symm ≪≫ₗ congr (AffineEquiv.vaddConst R x))
+  .equiv (toProd.symm ≪≫ₗ congr (.vaddConst R x))
 
 end Homogenization
