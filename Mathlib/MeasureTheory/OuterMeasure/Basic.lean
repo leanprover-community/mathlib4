@@ -5,9 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Countable.Basic
-public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Order.Disjointed
 public import Mathlib.MeasureTheory.OuterMeasure.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
@@ -170,7 +167,7 @@ end OuterMeasureClass
 
 namespace OuterMeasure
 
-variable {α β : Type*} {m : OuterMeasure α}
+variable {α : Type*} {m : OuterMeasure α}
 
 /-- If `s : ι → Set α` is a sequence of sets, `S = ⋃ n, s n`, and `m (S \ s n)` tends to zero along
 some nontrivial filter (usually `atTop` on `ι = ℕ`), then `m S = ⨆ n, m (s n)`. -/

@@ -25,7 +25,9 @@ standard formula for computing the Laplacian in terms of orthonormal bases of `E
 
 @[expose] public section
 
-open Filter TensorProduct Topology
+open Filter TensorProduct
+
+open scoped Topology
 
 section secondDerivativeAPI
 
@@ -42,7 +44,6 @@ variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 variable (𝕜) in
 /--
@@ -138,9 +139,6 @@ scoped[InnerProductSpace] notation "Δ[" s "] " f:60 => laplacianWithin f s
 noncomputable
 instance instLaplacian : Laplacian (E → F) (E → F) where
   laplacian f x := tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
-
-@[deprecated (since := "2025-12-31")]
-alias InnerProduct.laplacian := _root_.Laplacian.laplacian
 
 open Laplacian
 
