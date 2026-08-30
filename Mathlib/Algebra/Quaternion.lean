@@ -709,9 +709,6 @@ theorem Quaternion.equivTuple_apply (R : Type*) [Zero R] [One R] [Neg R] (x : �
     Quaternion.equivTuple R x = ![x.re, x.imI, x.imJ, x.imK] :=
   rfl
 
-instance {R : Type*} [Zero R] [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] := inferInstance
-instance {R : Type*} [Zero R] [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] := inferInstance
-
 namespace Quaternion
 
 variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
@@ -720,20 +717,6 @@ variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 @[coe] def coe : R → ℍ[R] := QuaternionAlgebra.coe
 
 instance : CoeTC R ℍ[R] := ⟨coe⟩
-
-instance [SMul S R] : SMul S ℍ[R] := inferInstance
-instance instRing : Ring ℍ[R] := inferInstance
-instance : Inhabited ℍ[R] := inferInstance
-instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower S T ℍ[R] :=
-  inferInstance
-instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] := inferInstance
-instance [Monoid S] [MulAction S R] : MulAction S ℍ[R] := inferInstance
-instance [Semiring S] [DistribMulAction S R] : DistribMulAction S ℍ[R] := inferInstance
-instance [Semiring S] [Module S R] : Module S ℍ[R] := inferInstance
-protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] := inferInstance
-instance : Star ℍ[R] := inferInstance
-instance : StarRing ℍ[R] := inferInstance
-instance : IsStarNormal a := inferInstance
 
 @[ext]
 theorem ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK → a = b :=
@@ -942,9 +925,6 @@ theorem algebraMap_injective : (algebraMap R ℍ[R] : _ → _).Injective :=
 theorem smul_coe : x • (y : ℍ[R]) = ↑(x * y) :=
   QuaternionAlgebra.smul_coe x y
 
-instance : Module.Finite R ℍ[R] := inferInstance
-instance : Module.Free R ℍ[R] := inferInstance
-
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
   QuaternionAlgebra.rank_eq_four _ _ _
 
@@ -1106,8 +1086,6 @@ theorem normSq_nonneg : 0 ≤ normSq a := by
 theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
   normSq_nonneg.ge_iff_eq'.trans normSq_eq_zero
 
-instance instNontrivial : Nontrivial ℍ[R] := inferInstance
-
 instance : NoZeroDivisors ℍ[R] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab :=
     have : normSq a * normSq b = 0 := by rwa [← map_mul, normSq_eq_zero]
@@ -1189,7 +1167,7 @@ theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :
   map_zpow₀ (algebraMap R ℍ[R]) x z
 
 instance instDivisionRing : DivisionRing ℍ[R] where
-  __ := Quaternion.instRing
+  __ := QuaternionAlgebra.instRing
   __ := Quaternion.instGroupWithZero
   nnqsmul := (· • ·)
   qsmul := (· • ·)
