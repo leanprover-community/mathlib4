@@ -3,16 +3,19 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Finite.Prod
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Tactic.NoncommRing
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Tactic.Ring
 
 /-!
 # IMO 1998 Q2
+
 In a competition, there are `a` contestants and `b` judges, where `b ≥ 3` is an odd integer. Each
 judge rates each contestant as either "pass" or "fail". Suppose `k` is a number such that, for any
 two judges, their ratings coincide for at most `k` contestants. Prove that `k / a ≥ (b - 1) / (2b)`.
@@ -38,6 +41,8 @@ the lower bound: `a(b-1)^2/2 ≤ |A|`.
 
 Rearranging gives the result.
 -/
+
+@[expose] public section
 
 variable {C J : Type*} (r : C → J → Prop)
 
@@ -97,7 +102,6 @@ def A : Finset (AgreedTriple C J) :=
   Finset.univ.filter @fun (a : AgreedTriple C J) =>
     (a.judgePair.Agree r a.contestant ∧ a.judgePair.Distinct)
 
-open scoped Classical in
 theorem A_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
     a ∈ A r → a.judgePair ∈ Finset.offDiag (@Finset.univ J _) := by simp [A, Finset.mem_offDiag]
 
@@ -210,7 +214,7 @@ end
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff₀]
-  on_goal 1 => convert Nat.cast_le (α := ℚ)
+  on_goal 1 => convert! Nat.cast_le (α := ℚ)
   all_goals simp [ha, hb]
 
 end

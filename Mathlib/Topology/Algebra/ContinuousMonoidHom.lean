@@ -28,7 +28,7 @@ assert_not_exists ContinuousLinearEquiv
 
 section
 
-open Function Topology
+open Function
 
 variable (F A B C D E : Type*)
 variable [Monoid A] [Monoid B] [Monoid C] [Monoid D]
@@ -53,7 +53,7 @@ over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [MonoidHomClass F A
 
 When you extend this structure,
 make sure to extend `ContinuousMapClass` and/or `MonoidHomClass`, if needed. -/
-@[to_additive /-- The type of continuous additive monoid homomorphisms from `A` to `B`. -/]
+@[to_additive]
 structure ContinuousMonoidHom extends A →* B, C(A, B)
 
 /-- Reinterpret a `ContinuousMonoidHom` as a `MonoidHom`. -/
@@ -80,7 +80,7 @@ variable {A B C D E}
 @[to_additive]
 instance instFunLike : FunLike (A →ₜ* B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
@@ -141,11 +141,11 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h
+  ext <| by convert! DFunLike.ext_iff.1 h
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → A →* B) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h
+  ext <| by convert! DFunLike.ext_iff.1 h
 
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) /-- Composition of two continuous homomorphisms. -/]
@@ -306,8 +306,7 @@ structure ContinuousAddEquiv [Add G] [Add H] extends G ≃+ H, G ≃ₜ H
 
 /-- The structure of two-sided continuous isomorphisms between groups.
 Note that both the map and its inverse have to be continuous. -/
-@[to_additive /-- The structure of two-sided continuous isomorphisms between additive groups.
-Note that both the map and its inverse have to be continuous. -/]
+@[to_additive]
 structure ContinuousMulEquiv [Mul G] [Mul H] extends G ≃* H, G ≃ₜ H
 
 /-- The homeomorphism induced from a two-sided continuous isomorphism of groups. -/
@@ -483,16 +482,16 @@ theorem self_comp_symm (e : M ≃ₜ* N) : e ∘ e.symm = id :=
   funext e.apply_symm_apply
 
 @[to_additive]
-theorem apply_eq_iff_symm_apply (e : M ≃ₜ* N) {x : M} {y : N} : e x = y ↔ x = e.symm y :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
-
-@[to_additive]
 theorem symm_apply_eq (e : M ≃ₜ* N) {x y} : e.symm x = y ↔ x = e y :=
   e.toEquiv.symm_apply_eq
 
 @[to_additive]
 theorem eq_symm_apply (e : M ≃ₜ* N) {x y} : y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
+
+@[to_additive (attr := deprecated eq_symm_apply (since := "2026-07-26"))]
+theorem apply_eq_iff_symm_apply (e : M ≃ₜ* N) {x : M} {y : N} : e x = y ↔ x = e.symm y :=
+  e.eq_symm_apply.symm
 
 @[to_additive]
 theorem eq_comp_symm {α : Type*} (e : M ≃ₜ* N) (f : N → α) (g : M → α) :
@@ -524,8 +523,8 @@ variable {L : Type*} [Mul L] [TopologicalSpace L]
 @[to_additive /-- The composition of two ContinuousAddEquiv. -/]
 def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L where
   __ := cme1.toMulEquiv.trans cme2.toMulEquiv
-  continuous_toFun := by convert Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
-  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
+  continuous_toFun := by convert! Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
+  continuous_invFun := by convert! Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
 
 @[to_additive (attr := simp)]
 theorem coe_trans (e₁ : M ≃ₜ* N) (e₂ : N ≃ₜ* L) : ↑(e₁.trans e₂) = e₂ ∘ e₁ := rfl
@@ -594,7 +593,7 @@ lemma toMulEquiv_toContinuousMulEquiv : (e.toContinuousMulEquiv he : G ≃* H) =
 @[to_additive]
 lemma symm_toContinuousMulEquiv :
     (e.toContinuousMulEquiv he).symm = e.symm.toContinuousMulEquiv
-      (fun s ↦ by convert (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
+      (fun s ↦ by convert! (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
   rfl
 
 end MulEquiv

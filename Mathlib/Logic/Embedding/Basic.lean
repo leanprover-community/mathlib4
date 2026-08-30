@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.PProd
@@ -33,7 +34,7 @@ infixr:25 " ↪ " => Embedding
 
 instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
-  coe_injective' f g h := by { cases f; cases g; congr }
+  coe_injective f g h := by { cases f; cases g; congr }
 
 instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
   injective' := Embedding.inj'
@@ -134,6 +135,18 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 
 @[norm_cast]
 theorem coe_trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : ⇑(f.trans g) = ⇑g ∘ ⇑f := rfl
+
+@[simp]
+theorem refl_trans {α β : Type*} (f : α ↪ β) : .trans (.refl α) f = f :=
+  rfl
+
+@[simp]
+theorem trans_refl {α β : Type*} (f : α ↪ β) : .trans f (.refl β) = f :=
+  rfl
+
+theorem trans_assoc {α β γ δ : Type*} (f : α ↪ β) (g : β ↪ γ) (h : γ ↪ δ) :
+    (f.trans g).trans h = f.trans (g.trans h) :=
+  rfl
 
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
@@ -465,13 +478,13 @@ def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
 theorem subtypeOrLeftEmbedding_apply_left {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : p x) :
     subtypeOrLeftEmbedding p q x = Sum.inl ⟨x, hx⟩ :=
-  dif_pos hx
+  dite_eq_left hx
 
 @[simp]
 theorem subtypeOrLeftEmbedding_apply_right {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : ¬p x) :
     subtypeOrLeftEmbedding p q x = Sum.inr ⟨x, x.prop.resolve_left hx⟩ :=
-  dif_neg hx
+  dite_eq_right hx
 
 @[grind =]
 theorem subtypeOrLeftEmbedding_apply {p q : α → Prop} [DecidablePred p]

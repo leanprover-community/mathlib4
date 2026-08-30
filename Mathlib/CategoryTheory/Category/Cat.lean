@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
-public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
@@ -25,16 +24,16 @@ its carrier type.
 
 @[expose] public section
 
-
 universe v u
 
 namespace CategoryTheory
 
-open Bicategory Functor
+open Bicategory CategoryTheory.Functor
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- Category of categories. -/
-@[nolint checkUnivs]
+@[implicit_reducible]
 def Cat :=
   Bundled Category.{v, u}
 
@@ -51,6 +50,7 @@ instance str (C : Cat.{v, u}) : Category.{v, u} C :=
   Bundled.str C
 
 /-- Construct a bundled `Cat` from the underlying type and the typeclass. -/
+@[implicit_reducible]
 def of (C : Type u) [Category.{v} C] : Cat.{v, u} :=
   Bundled.of C
 
@@ -73,7 +73,7 @@ instance : Quiver (Cat.{v, u}) where
   Hom C D := Hom C D
 
 /-- The 1-morphism in `Cat` corresponding to a functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def _root_.CategoryTheory.Functor.toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D]
     (F : C ⥤ D) : Cat.of C ⟶ Cat.of D where
   toFunctor := F
@@ -212,7 +212,6 @@ end Hom
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Bicategory structure on `Cat` -/
 instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   id C := (𝟭 C).toCatHom
@@ -250,7 +249,6 @@ theorem Hom.id_map {C : Cat.{v, u}} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⟶ C)
 lemma Hom.comp_toFunctor {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) :
   (F ≫ G).toFunctor = F.toFunctor ⋙ G.toFunctor := rfl
 
-@[simp]
 theorem Hom.comp_obj {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) (X : C) :
     (F ≫ G).toFunctor.obj X = G.toFunctor.obj (F.toFunctor.obj X) := by
   simp
@@ -281,7 +279,6 @@ theorem eqToHom_app {C D : Cat.{v, u}} (F G : C ⟶ D) (h : F = G) (X : C) :
 lemma whiskerLeft_toNatTrans {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) :
   (F ◁ η).toNatTrans = F.toFunctor.whiskerLeft η.toNatTrans := rfl
 
-@[simp]
 lemma whiskerLeft_app {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
     (F ◁ η).toNatTrans.app X = η.toNatTrans.app (F.toFunctor.obj X) := by simp
 
@@ -289,7 +286,6 @@ lemma whiskerLeft_app {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G
 lemma whiskerRight_toNatTrans {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) :
     (η ▷ H).toNatTrans = Functor.whiskerRight η.toNatTrans H.toFunctor := rfl
 
-@[simp]
 lemma whiskerRight_app {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
     (η ▷ H).toNatTrans.app X = H.toFunctor.map (η.toNatTrans.app X) := by simp
 
@@ -410,10 +406,7 @@ def typeToCat : Type u ⥤ Cat where
     simp only [Cat.of_α, toCatHom_toFunctor, Cat.Hom.id_toFunctor]
     fapply Functor.ext
     · simp
-    · intro X Y f
-      cases f
-      apply ULift.ext
-      cat_disch
+    · exact fun _ _ _ ↦ Discrete.hom_eq
   map_comp f g := by
     ext
     simp only [Cat.of_α, toCatHom_toFunctor, Cat.Hom.comp_toFunctor]
@@ -428,9 +421,6 @@ instance : Functor.Faithful typeToCat.{u} where
 instance : Functor.Full typeToCat.{u} where
   map_surjective F := ⟨↾(Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk), by
     ext
-    refine Functor.ext (by cat_disch) ?_
-    intro x y f
-    apply ULift.ext
-    cat_disch⟩
+    exact Functor.ext (by cat_disch) fun _ _ _ ↦ Discrete.hom_eq⟩
 
 end CategoryTheory

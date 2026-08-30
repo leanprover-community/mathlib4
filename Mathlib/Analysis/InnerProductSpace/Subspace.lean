@@ -18,9 +18,11 @@ some theorems about orthogonal families of subspaces.
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp Module
+open RCLike Real Module
 
 open LinearMap (BilinForm)
+
+open scoped InnerProductSpace
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 
@@ -28,17 +30,15 @@ section Submodule
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
-
 /-! ### Inner product space structure on subspaces -/
 
 /-- Induced inner product on a submodule. -/
 instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
-  .induced W.subtype
+  fast_instance% .induced W.subtype
 
 /-- The inner product on submodules is the same as on the ambient space. -/
 @[simp]
-theorem Submodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫ = ⟪(x : E), ↑y⟫ :=
+theorem Submodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫_𝕜 = ⟪(x : E), y⟫_𝕜 :=
   rfl
 
 theorem Orthonormal.codRestrict {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) (s : Submodule 𝕜 E)
@@ -52,6 +52,21 @@ theorem orthonormal_span {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) :
     Submodule.subset_span (Set.mem_range_self i)
 
 end Submodule
+
+section ClosedSubmodule
+
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+/-- Induced inner product on a closed submodule. -/
+instance ClosedSubmodule.innerProductSpace (W : ClosedSubmodule 𝕜 E) : InnerProductSpace 𝕜 W :=
+  fast_instance% W.toSubmodule.innerProductSpace
+
+/-- The inner product on closed submodules is the same as on the ambient space. -/
+@[simp]
+theorem ClosedSubmodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫_𝕜 = ⟪(x : E), y⟫_𝕜 :=
+  rfl
+
+end ClosedSubmodule
 
 /-! ### Families of mutually-orthogonal subspaces of an inner product space -/
 
@@ -122,7 +137,7 @@ theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : 
     _ = ∑ j, ite (i = j) ⟪V i v, V j (l j)⟫ 0 :=
       (congr_arg (Finset.sum Finset.univ) <| funext fun j => hV.eq_ite v (l j))
     _ = ⟪v, l i⟫ := by
-      simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, if_true]
+      simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, ite_true]
 
 nonrec theorem OrthogonalFamily.inner_sum (l₁ l₂ : ∀ i, G i) (s : Finset ι) :
     ⟪∑ i ∈ s, V i (l₁ i), ∑ j ∈ s, V j (l₂ j)⟫ = ∑ i ∈ s, ⟪l₁ i, l₂ i⟫ := by
@@ -165,13 +180,13 @@ theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_fa
     simpa only [LinearIsometry.inner_map_map] using (hv_family i).2 this
   · exact hV hij (v_family i v) (v_family j w)
 
-theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s₁ s₂ : Finset ι) :
+theorem OrthogonalFamily.norm_sq_sdiff_sum [DecidableEq ι] (f : ∀ i, G i) (s₁ s₂ : Finset ι) :
     ‖(∑ i ∈ s₁, V i (f i)) - ∑ i ∈ s₂, V i (f i)‖ ^ 2 =
       (∑ i ∈ s₁ \ s₂, ‖f i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖f i‖ ^ 2 := by
   rw [← Finset.sum_sdiff_sub_sum_sdiff, sub_eq_add_neg, ← Finset.sum_neg_distrib]
   let F : ∀ i, G i := fun i => if i ∈ s₁ then f i else -f i
-  have hF₁ : ∀ i ∈ s₁ \ s₂, F i = f i := fun i hi => if_pos (Finset.sdiff_subset hi)
-  have hF₂ : ∀ i ∈ s₂ \ s₁, F i = -f i := fun i hi => if_neg (Finset.mem_sdiff.mp hi).2
+  have hF₁ : ∀ i ∈ s₁ \ s₂, F i = f i := fun i hi => ite_eq_left (Finset.sdiff_subset hi)
+  have hF₂ : ∀ i ∈ s₂ \ s₁, F i = -f i := fun i hi => ite_eq_right (Finset.mem_sdiff.mp hi).2
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
     intro i
     dsimp only [F]
@@ -181,13 +196,16 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
       (∑ i ∈ s₁ \ s₂, ‖F i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖F i‖ ^ 2 := by
     have hs : Disjoint (s₁ \ s₂) (s₂ \ s₁) := disjoint_sdiff_sdiff
     simpa only [Finset.sum_union hs] using hV.norm_sum F (s₁ \ s₂ ∪ s₂ \ s₁)
-  convert this using 4
+  convert! this using 4
   · refine Finset.sum_congr rfl fun i hi => ?_
     simp only [hF₁ i hi]
   · refine Finset.sum_congr rfl fun i hi => ?_
     simp only [hF₂ i hi, LinearIsometry.map_neg]
   · simp only [hF]
   · simp only [hF]
+
+@[deprecated (since := "2026-06-03")]
+alias OrthogonalFamily.norm_sq_diff_sum := OrthogonalFamily.norm_sq_sdiff_sum
 
 /-- A family `f` of mutually-orthogonal elements of `E` is summable, if and only if
 `(fun i ↦ ‖f i‖ ^ 2)` is summable. -/
@@ -206,7 +224,7 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       have : ∀ i, 0 ≤ ‖f i‖ ^ 2 := fun i : ι => sq_nonneg _
       simp only [Finset.abs_sum_of_nonneg' this]
       have : ((∑ i ∈ s₁ \ s₂, ‖f i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖f i‖ ^ 2) < √ε ^ 2 := by
-        rw [← hV.norm_sq_diff_sum, sq_lt_sq, abs_of_nonneg (sqrt_nonneg _),
+        rw [← hV.norm_sq_sdiff_sum, sq_lt_sq, abs_of_nonneg (sqrt_nonneg _),
           abs_of_nonneg (norm_nonneg _)]
         exact H s₁ hs₁ s₂ hs₂
       have hη := sq_sqrt (le_of_lt hε)
@@ -218,15 +236,15 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       intro s₁ hs₁ s₂ hs₂
       refine (abs_lt_of_sq_lt_sq' ?_ (le_of_lt hε)).2
       have has : a ≤ s₁ ⊓ s₂ := le_inf hs₁ hs₂
-      rw [hV.norm_sq_diff_sum]
+      rw [hV.norm_sq_sdiff_sum]
       have Hs₁ : ∑ x ∈ s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
-        convert H _ hs₁ _ has
+        convert! H _ hs₁ _ has
         have : s₁ ⊓ s₂ ⊆ s₁ := Finset.inter_subset_left
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp
         · exact fun i => sq_nonneg _
       have Hs₂ : ∑ x ∈ s₂ \ s₁, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
-        convert H _ hs₂ _ has
+        convert! H _ hs₂ _ has
         have : s₁ ⊓ s₂ ⊆ s₂ := Finset.inter_subset_right
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp
@@ -243,7 +261,7 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-variable {ι : Type*} {G : ι → Type*}
+variable {ι : Type*}
 
 /-- An orthogonal family forms an independent family of subspaces; that is, any collection of
 elements each from a different subspace in the family is linearly independent. In particular, the
@@ -258,10 +276,10 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
   intro v hv
   rw [LinearMap.mem_ker] at hv
   ext i
-  suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
+  suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using! this
   calc
     ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
-      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using
+      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using!
         (hV.inner_right_dfinsupp v i (v i)).symm
     _ = 0 := by simp only [hv, inner_zero_right]
 
@@ -270,6 +288,6 @@ theorem DirectSum.IsInternal.collectedBasis_orthonormal [DecidableEq ι] {V : ι
     (hV_sum : DirectSum.IsInternal fun i => V i) {α : ι → Type*}
     {v_family : ∀ i, Basis (α i) 𝕜 (V i)} (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
     Orthonormal 𝕜 (hV_sum.collectedBasis v_family) := by
-  simpa only [hV_sum.collectedBasis_coe] using hV.orthonormal_sigma_orthonormal hv_family
+  simpa only [hV_sum.collectedBasis_coe] using! hV.orthonormal_sigma_orthonormal hv_family
 
 end OrthogonalFamily

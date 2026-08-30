@@ -196,7 +196,7 @@ theorem singularPart_add_withDensity_rnDeriv_eq [s.HaveLebesgueDecomposition μ]
     add_assoc (-(s.toJordanDecomposition.negPart.singularPart μ).toSignedMeasure),
     ← toSignedMeasure_add, add_comm, ← add_assoc, ← neg_add, ← toSignedMeasure_add, add_comm,
     ← sub_eq_add_neg]
-  · convert rfl
+  · convert! rfl
     -- `convert rfl` much faster than `congr`
     · exact s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ
     · rw [add_comm]
@@ -226,23 +226,23 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
       @JordanDecomposition.mk α _
         (t.toJordanDecomposition.posPart + μ.withDensity fun x => ENNReal.ofReal (f x))
         (t.toJordanDecomposition.negPart + μ.withDensity fun x => ENNReal.ofReal (-f x))
-        (by haveI := isFiniteMeasure_withDensity_ofReal hfi.2; infer_instance)
-        (by haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2; infer_instance)
+        (by have := isFiniteMeasure_withDensity_ofReal hfi.2; infer_instance)
+        (by have := isFiniteMeasure_withDensity_ofReal hfi.neg.2; infer_instance)
         (jordanDecomposition_add_withDensity_mutuallySingular hf htμ) := by
-  haveI := isFiniteMeasure_withDensity_ofReal hfi.2
-  haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2
+  have := isFiniteMeasure_withDensity_ofReal hfi.2
+  have := isFiniteMeasure_withDensity_ofReal hfi.neg.2
   refine toJordanDecomposition_eq ?_
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
   ext i hi
-  rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
+  rw [_root_.sub_apply, toSignedMeasure_apply_measurable hi,
       toSignedMeasure_apply_measurable hi, measureReal_add_apply, measureReal_add_apply,
       add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
-      ← toSignedMeasure_apply_measurable hi, ← VectorMeasure.sub_apply,
+      ← toSignedMeasure_apply_measurable hi, ← _root_.sub_apply,
       ← JordanDecomposition.toSignedMeasure, toSignedMeasure_toJordanDecomposition,
-      VectorMeasure.add_apply, ← toSignedMeasure_apply_measurable hi,
+      _root_.add_apply, ← toSignedMeasure_apply_measurable hi,
       ← toSignedMeasure_apply_measurable hi,
       withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part hfi,
-      VectorMeasure.sub_apply]
+      _root_.sub_apply]
 
 private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
@@ -266,7 +266,7 @@ theorem haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Me
     s.HaveLebesgueDecomposition μ := by
   by_cases hfi : Integrable f μ
   · exact haveLebesgueDecomposition_mk' μ hf hfi htμ hadd
-  · rw [withDensityᵥ, dif_neg hfi, add_zero] at hadd
+  · rw [withDensityᵥ, dite_eq_right hfi, add_zero] at hadd
     refine haveLebesgueDecomposition_mk' μ measurable_zero (integrable_zero _ _ μ) htμ ?_
     rwa [withDensityᵥ_zero, add_zero]
 
@@ -294,9 +294,9 @@ theorem eq_singularPart (t : SignedMeasure α) (f : α → ℝ) (htμ : t ⟂ᵥ
     (hadd : s = t + μ.withDensityᵥ f) : t = s.singularPart μ := by
   by_cases hfi : Integrable f μ
   · refine eq_singularPart' t hfi.1.measurable_mk (hfi.congr hfi.1.ae_eq_mk) htμ ?_
-    convert hadd using 2
+    convert! hadd using 2
     exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
-  · rw [withDensityᵥ, dif_neg hfi, add_zero] at hadd
+  · rw [withDensityᵥ, dite_eq_right hfi, add_zero] at hadd
     refine eq_singularPart' t measurable_zero (integrable_zero _ _ μ) htμ ?_
     rwa [withDensityᵥ_zero, add_zero]
 
@@ -362,7 +362,7 @@ theorem eq_rnDeriv (t : SignedMeasure α) (f : α → ℝ) (hfi : Integrable f �
     f =ᵐ[μ] s.rnDeriv μ := by
   set f' := hfi.1.mk f
   have hadd' : s = t + μ.withDensityᵥ f' := by
-    convert hadd using 2
+    convert! hadd using 2
     exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
   have := haveLebesgueDecomposition_mk μ hfi.1.measurable_mk htμ hadd'
   refine (Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _) hfi ?_).symm
@@ -441,7 +441,7 @@ theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ]
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by
   conv_rhs => rw [← c.toComplexMeasure_to_signedMeasure]
   ext i hi : 1
-  rw [VectorMeasure.add_apply, SignedMeasure.toComplexMeasure_apply]
+  rw [add_apply, SignedMeasure.toComplexMeasure_apply]
   apply Complex.ext
   · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← RCLike.re_eq_complex_re,
       ← integral_re (c.integrable_rnDeriv μ).integrableOn, RCLike.re_eq_complex_re,

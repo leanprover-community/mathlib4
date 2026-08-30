@@ -71,7 +71,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonAssocRing R]
 variable [NonAssocRing S] [NonAssocRing T]
 
 namespace Subring
-variable {s t : Subring R}
+variable {s : Subring R}
 
 @[gcongr, mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
@@ -81,12 +81,6 @@ theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Sub
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
-@[deprecated toSubsemiring_strictMono (since := "2025-10-20")]
-lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
-
-@[deprecated toSubsemiring_mono (since := "2025-10-20")]
-lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
-
 @[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
@@ -94,12 +88,6 @@ theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → Add
 @[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
-
-@[deprecated toAddSubgroup_strictMono (since := "2025-10-20")]
-lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
-
-@[deprecated toAddSubgroup_mono (since := "2025-10-20")]
-lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
@@ -389,6 +377,19 @@ theorem mem_center_iff {R : Type*} [Ring R] {z : R} : z ∈ center R ↔ ∀ g, 
 
 instance decidableMemCenter {R} [Ring R] [DecidableEq R] [Fintype R] :
     DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
+
+theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+    map f (center R) = center S :=
+  SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
 theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
@@ -759,6 +760,9 @@ theorem top_prod (s : Subring S) : (⊤ : Subring R).prod s = s.comap (RingHom.s
 theorem top_prod_top : (⊤ : Subring R).prod (⊤ : Subring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
+  SetLike.coe_injective Set.center_prod
+
 /-- Product of subrings is isomorphic to their product as rings. -/
 def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
@@ -783,7 +787,7 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS
 
 theorem mem_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
@@ -794,7 +798,7 @@ theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → Subring R}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : Subring R) := by
   simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
-    Subsemigroup.coe_iSup_of_directed dir] using Subsemigroup.isMulCommutative_iSup dir
+    Subsemigroup.coe_iSup_of_directed dir] using! Subsemigroup.isMulCommutative_iSup dir
 
 instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
     {S : ι →o Subring R} [hS : ∀ i, IsMulCommutative (S i)] :
@@ -850,6 +854,11 @@ theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) 
 theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
     (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
   rfl
+
+@[simp]
+theorem range_prodMap {R' S' : Type*} [Ring R'] [Ring S'] (f : R →+* S) (g : R' →+* S') :
+    (f.prodMap g).range = f.range.prod g.range :=
+  SetLike.coe_injective Set.range_prodMap
 
 section eqLocus
 
@@ -940,7 +949,7 @@ variable {s t : Subring R}
 /-- Makes the identity isomorphism from a proof two subrings of a multiplicative
 monoid are equal. -/
 def subringCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| congr_arg _ h with
+  { Equiv.Set.congr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
@@ -979,6 +988,7 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A ring isomorphism `e : R ≃+* S` descends to subrings `s' ≃+* s` provided
 `x ∈ s' ↔ e x ∈ s`. -/
 @[simps!]
@@ -1164,7 +1174,7 @@ theorem comap_map_eq (f : R →+* S) (s : Subring R) :
 
 theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
     (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
-  convert comap_map_eq f s
+  convert! comap_map_eq f s
   rwa [left_eq_sup, closure_le]
 
 theorem comap_map_eq_self_of_injective
@@ -1175,5 +1185,5 @@ end Subring
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
-  convert AddSubgroup.zsmul_mem G h k using 1
+  convert AddSubgroup.zsmul_mem G h k
   rw [zsmul_eq_mul]

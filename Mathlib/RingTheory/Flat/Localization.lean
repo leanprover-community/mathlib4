@@ -32,6 +32,7 @@ variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable (p : Submonoid R) [IsLocalization p S]
 variable (M : Type*) [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
 
+set_option backward.isDefEq.respectTransparency.types false in
 include p in
 theorem IsLocalization.flat : Module.Flat R S := by
   refine Module.Flat.iff_lTensor_injectiveₛ.mpr fun P _ _ N ↦ ?_
@@ -39,7 +40,7 @@ theorem IsLocalization.flat : Module.Flat R S := by
   let e := (LinearEquiv.ofInjective _ Subtype.val_injective).lTensor S ≪≫ₗ h.equiv.restrictScalars R
   have : N.subtype.lTensor S = Submodule.subtype _ ∘ₗ e.toLinearMap := by
     ext; change _ = (h.equiv _).1; simp [h.equiv_tmul, TensorProduct.smul_tmul']
-  simpa [this] using e.injective
+  simpa [this] using! e.injective
 
 instance Localization.flat [Module.Flat R S] (p : Submonoid S) : Module.Flat R (Localization p) :=
   have : Module.Flat S (Localization p) := IsLocalization.flat _ p
