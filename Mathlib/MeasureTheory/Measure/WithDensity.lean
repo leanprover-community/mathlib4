@@ -257,14 +257,14 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     simp only [Pi.zero_apply] at A
     convert! A using 2
     ext x
-    simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
+    simp only [and_comm, exists_prop, mem_inter_iff, mem_ofPred_eq,
       not_forall]
   · intro hs
     let t := toMeasurable μ ({ x | f x ≠ 0 } ∩ s)
     have A : s ⊆ t ∪ { x | f x = 0 } := by
       intro x hx
       rcases eq_or_ne (f x) 0 with (fx | fx)
-      · simp only [fx, mem_union, mem_setOf_eq, or_true]
+      · simp only [fx, mem_union, mem_ofPred_eq, or_true]
       · left
         apply subset_toMeasurable _ _
         exact ⟨fx, hx⟩
@@ -293,7 +293,7 @@ theorem ae_withDensity_iff' {p : α → Prop} {f : α → ℝ≥0∞} (hf : AEMe
   rw [ae_iff, ae_iff, withDensity_apply_eq_zero' hf, iff_iff_eq]
   congr
   ext x
-  simp only [exists_prop, mem_inter_iff, mem_setOf_eq, not_forall]
+  simp only [exists_prop, mem_inter_iff, mem_ofPred_eq, not_forall]
 
 theorem ae_withDensity_iff {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measurable f) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ, f x ≠ 0 → p x :=
@@ -303,7 +303,7 @@ theorem ae_withDensity_iff_ae_restrict' {p : α → Prop} {f : α → ℝ≥0∞
     (hf : AEMeasurable f μ) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ.restrict { x | f x ≠ 0 }, p x := by
   rw [ae_withDensity_iff' hf, ae_restrict_iff'₀]
-  · simp only [mem_setOf]
+  · simp only [mem_ofPred]
   · rcases hf with ⟨g, hg, hfg⟩
     have nonneg_eq_ae : {x | g x ≠ 0} =ᵐ[μ] {x | f x ≠ 0} := by
       filter_upwards [hfg] with a ha
@@ -439,7 +439,7 @@ theorem lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α →
           (hf.measurable_mk (measurableSet_singleton 0).compl).compl
         filter_upwards [ae_restrict_mem M]
         intro x hx
-        simp only [Classical.not_not, mem_setOf_eq, mem_compl_iff] at hx
+        simp only [Classical.not_not, mem_ofPred_eq, mem_compl_iff] at hx
         simp only [hx, zero_mul, Pi.mul_apply]
     _ = ∫⁻ a : α, (f * g) a ∂μ := by
       apply lintegral_congr_ae
@@ -458,14 +458,14 @@ lemma setLIntegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α �
 theorem lintegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ) :
     ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ :=
-  lintegral_withDensity_eq_lintegral_mul₀' hf (hg.mono' (withDensity_absolutelyContinuous μ f))
+  lintegral_withDensity_eq_lintegral_mul₀' hf (hg.mono_ac (withDensity_absolutelyContinuous μ f))
 
 lemma setLIntegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
     {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ :=
   setLIntegral_withDensity_eq_lintegral_mul₀' hf
-    (hg.mono' (MeasureTheory.withDensity_absolutelyContinuous μ f)) hs
+    (hg.mono_ac (MeasureTheory.withDensity_absolutelyContinuous μ f)) hs
 
 theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by
@@ -761,10 +761,11 @@ variable {M : Type*} [Monoid M] [MeasurableSpace M]
 -- `mconv_smul_left` is in the `Convolution` file. This lemma is here because this is the file in
 -- which we prove the instance that gives `SFinite (c • ν)`.
 @[to_additive conv_smul_right]
-theorem Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
+theorem Measure.mconv_smul_right [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) [SFinite ν]
+    (s : ℝ≥0∞) :
     μ ∗ₘ (s • ν) = s • (μ ∗ₘ ν) := by
   unfold mconv
-  rw [Measure.prod_smul_right, Measure.map_smul]
+  rw [Measure.prod_smul_right, Measure.map_smul _ (by fun_prop)]
 
 variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]

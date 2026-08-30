@@ -32,7 +32,7 @@ universe v₅ u₅ v₄ u₄ v₃ u₃ v₂ u₂ v₁ u₁
 
 namespace CategoryTheory
 
-open Functor Category NatTrans IsHomLift
+open CategoryTheory.Functor Category NatTrans IsHomLift
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
@@ -281,6 +281,7 @@ instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
   id := id
   comp := comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The bicategory of based categories. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where

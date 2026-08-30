@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Fourier.PoissonSummation
 
-import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 
 /-!
 # Poisson summation applied to the Gaussian

@@ -54,12 +54,12 @@ assert_not_exists IsOrderedMonoid Multiset Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
+variable {G G' : Type*} [Group G] [Group G']
 variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
-variable (H K : Subgroup G) {k : Set G}
+variable (H K : Subgroup G)
 
 open Set
 
@@ -523,7 +523,7 @@ group are equal. -/
       /-- Makes the identity additive isomorphism from a proof
       two subgroups of an additive group are equal. -/]
 def subgroupCongr (h : H = K) : H ≃* K :=
-  { Equiv.setCongr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Equiv.Set.congr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
 @[to_additive (attr := simp)]
 lemma subgroupCongr_apply (h : H = K) (x) :

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.RingTheory.Norm.Basic
 
@@ -38,7 +37,7 @@ of order `n`.
 
 ## Other results
 Criteria for `X ^ n - C a` to be irreducible is given:
-- `X_pow_sub_C_irreducible_iff_of_prime_pow`:
+- `X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two`:
   For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power.
 - `X_pow_sub_C_irreducible_iff_forall_prime_of_odd`:
   For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power for all prime `p ∣ n`.
@@ -72,7 +71,8 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
   | inl hn =>
     simp only [hn, pow_zero, ← C.map_one, ← map_sub, Splits.C]
   | inr hn =>
-    rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
+    rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C,
+      ite_eq_left ⟨α, e⟩]
 
 -- make this private, as we only use it to prove a strictly more general version
 private
@@ -124,7 +124,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     intro E _ _ x hx
     have : IsIntegral K x := not_not.mp fun h ↦ by
       simpa only [degree_zero, degree_X_pow_sub_C hp.pos,
-        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
+        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dite_eq_right h))
     apply IH (Nat.odd_mul.mp hn).2
     intro q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)
@@ -143,18 +143,26 @@ theorem X_pow_sub_C_irreducible_iff_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     fun H ↦ X_pow_sub_C_irreducible_of_odd hn fun p hp hpn ↦ (H p hpn hp.ne_one)⟩
 
 -- TODO: generalize to `p = 2`
-theorem X_pow_sub_C_irreducible_of_prime_pow
+theorem X_pow_sub_C_irreducible_of_prime_pow_of_ne_two
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) (n : ℕ) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ (p ^ n) - C a) := by
   apply X_pow_sub_C_irreducible_of_odd (hp.odd_of_ne_two hp').pow
   intro q hq hq'
   simpa [(Nat.prime_dvd_prime_iff_eq hq hp).mp (hq.dvd_of_dvd_pow hq')] using ha
 
-theorem X_pow_sub_C_irreducible_iff_of_prime_pow
+@[deprecated (since := "2026-08-17")]
+alias X_pow_sub_C_irreducible_of_prime_pow :=
+  X_pow_sub_C_irreducible_of_prime_pow_of_ne_two
+
+theorem X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) {n} (hn : n ≠ 0) {a : K} :
     Irreducible (X ^ p ^ n - C a) ↔ ∀ b, b ^ p ≠ a :=
   ⟨(pow_ne_of_irreducible_X_pow_sub_C · (dvd_pow dvd_rfl hn) hp.ne_one),
-    X_pow_sub_C_irreducible_of_prime_pow hp hp' n⟩
+    X_pow_sub_C_irreducible_of_prime_pow_of_ne_two hp hp' n⟩
+
+@[deprecated (since := "2026-08-17")]
+alias X_pow_sub_C_irreducible_iff_of_prime_pow :=
+  X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two
 
 end Irreducible
 
@@ -179,8 +187,8 @@ section AdjoinRoot
 include hζ H in
 /-- Also see `Polynomial.separable_X_pow_sub_C_unit` -/
 theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separable := by
-  letI := Fact.mk H
-  letI : Algebra K K[n√a] := inferInstance
+  let := Fact.mk H
+  let : Algebra K K[n√a] := inferInstance
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   by_cases hn' : n = 1
   · rw [hn', pow_one]; exact separable_X_sub_C
@@ -218,6 +226,7 @@ def autAdjoinRootXPowSubC :
 
 variable {n}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma autAdjoinRootXPowSubC_root (η) :
     autAdjoinRootXPowSubC n a η (root _) = ((η : Kˣ) : K) • root _ := by
   dsimp [autAdjoinRootXPowSubC, autAdjoinRootXPowSubCHom, AlgEquiv.algHomUnitsEquiv]
@@ -253,7 +262,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     intro η
     have := Fact.mk H
     have : IsDomain K[n√a] := inferInstance
-    letI : Algebra K K[n√a] := inferInstance
+    let : Algebra K K[n√a] := inferInstance
     apply (rootsOfUnityEquivOfPrimitiveRoots (algebraMap K K[n√a]).injective hζ).injective
     ext
     simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
@@ -268,7 +277,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
   right_inv := by
     intro e
     have := Fact.mk H
-    letI : Algebra K K[n√a] := inferInstance
+    let : Algebra K K[n√a] := inferInstance
     apply AlgEquiv.coe_toAlgHom_injective
     apply AdjoinRoot.algHom_ext
     simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
@@ -311,7 +320,7 @@ lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
     letI : Algebra K K[n√a] := inferInstance
     IsSplittingField K K[n√a] (X ^ n - C a) := by
   have := Fact.mk H
-  letI : Algebra K K[n√a] := inferInstance
+  let : Algebra K K[n√a] := inferInstance
   constructor
   · rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
       Polynomial.map_X]
@@ -333,8 +342,8 @@ noncomputable
 def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducible (X ^ n - C a))
     (hα : α ^ n = algebraMap K L a) : K[n√a] ≃ₐ[K] L :=
   .ofBijective (AdjoinRoot.liftAlgHom (X ^ n - C a) (Algebra.ofId _ _) α (by simp [hα])) <| by
-    haveI := Fact.mk H
-    letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
+    have := Fact.mk H
+    let := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
     refine ⟨(liftAlgHom (X ^ n - C a) _ α _).injective, ?_⟩
     rw [← AlgHom.range_eq_top, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
       eq_comm, Splits.adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
