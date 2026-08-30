@@ -40,6 +40,7 @@ variable (R : Type*) [Ring R] (C : Type*) [Category* C] [Abelian C] [Linear R C]
 the first argument of `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`
 (which is the second argument of `linearYoneda`).
 -/
+@[deprecated "Use `Abelian.Ext`" (since := "2026-08-25")]
 def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
   Functor.flip
     { obj := fun Y => (((linearYoneda R C).obj Y).rightOp.leftDerived n).leftOp
@@ -67,6 +68,7 @@ namespace ProjectiveResolution
 variable {X : C} (P : ProjectiveResolution X)
 
 /-- `Ext` can be computed using a projective resolution. -/
+@[deprecated "Use `ProjectiveResolution.extLinearEquivCohomologyClass`" (since := "2026-08-25")]
 def isoExt (n : ℕ) (Y : C) : ((Ext R C n).obj (Opposite.op X)).obj Y ≅
     (P.complex.linearYonedaObj R Y).homology n :=
   (P.isoLeftDerivedObj ((linearYoneda R C).obj Y).rightOp n).unop.symm ≪≫
@@ -77,6 +79,7 @@ end ProjectiveResolution
 end CategoryTheory
 
 /-- If `X : C` is projective and `n : ℕ`, then `Ext^(n + 1) X Y ≅ 0` for any `Y`. -/
+@[deprecated "Use `Abelian.Ext.subsingleton_of_projective`" (since := "2026-08-25")]
 lemma isZero_Ext_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
     IsZero (((Ext R C (n + 1)).obj (Opposite.op X)).obj Y) := by
   refine IsZero.of_iso ?_ ((ProjectiveResolution.self X).isoExt (n + 1) Y)

@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.KProjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
@@ -18,13 +19,6 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Extend
 Given a projective resolution `R` of an object `X` in an abelian category `C`,
 we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.complex` and to make computations in the `Ext`-group.
-
-## TODO
-* Functoriality in `X`: this would involve a morphism `X ⟶ X'`, projective
-  resolutions `R` and `R'` of `X` and `X'`, a lift of `X ⟶ X'` as a morphism
-  of cochain complexes `R.complex ⟶ R'.complex`; in this context,
-  we should be able to compute the precomposition of an element
-  `R.extMk f m hm hf : Ext X' Y n` by `X ⟶ X'`.
 
 -/
 
@@ -77,6 +71,14 @@ lemma extEquivCohomologyClass_symm_add
   obtain ⟨y, rfl⟩ := y.mk_surjective
   ext
   simp [← CohomologyClass.mk_add, extEquivCohomologyClass_symm_mk_hom, ShiftedHom.map]
+
+@[simp]
+lemma extEquivCohomologyClass_symm_smul
+    {R₀ : Type*} [Ring R₀] [Linear R₀ C] (r : R₀)
+    (x : CohomologyClass R.cochainComplex ((singleFunctor C 0).obj Y) n) :
+    R.extEquivCohomologyClass.symm (r • x) =
+      r • R.extEquivCohomologyClass.symm x := by
+  sorry
 
 /-- If `R` is a projective resolution of `X`, then `Ext X Y n` identifies
 to the type of cohomology classes of degree `n` from `R.cochainComplex`
@@ -178,6 +180,13 @@ lemma neg_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (by simpa [cochainComplex_d _ _ _ m n rfl rfl])]
   simp
 
+lemma smul_extMk {R₀ : Type*} [Ring R₀] [Linear R₀ C]
+    (r : R₀) {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
+    (hf : R.complex.d m n ≫ f = 0) :
+    r • R.extMk f m hm hf =
+      R.extMk (r • f) m hm (by simp [hf]) := by
+  sorry
+
 @[simp]
 lemma extMk_zero {n : ℕ} (m : ℕ) (hm : n + 1 = m) :
     R.extMk (0 : R.complex.X n ⟶ Y) m hm (by simp) = 0 := by
@@ -264,5 +273,21 @@ lemma mk₀_comp_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1
     ShiftedHom.map_mk₀, ShiftedHom.mk₀_comp_mk₀, ShiftedHom.mk₀_comp_mk₀]
   congr 3
   simp [← Functor.map_comp_assoc, ← Functor.map_comp]
+
+section
+
+variable {R₀ : Type*} [Ring R₀] [Linear R₀ C]
+
+/-- If `R` is a projective resolution of `X` in a `R₀`-linear category,
+then `Ext X Y n` identifies to the `R₀`-module of cohomology classes
+of degree `n` from `R.cochainComplex` to `(singleFunctor C 0).obj Y`. -/
+@[simps!]
+noncomputable def extLinearEquivCohomologyClass :
+    Ext X Y n ≃ₗ[R₀] CohomologyClass R.cochainComplex ((singleFunctor C 0).obj Y) n :=
+  LinearEquiv.symm
+    { toAddEquiv := R.extAddEquivCohomologyClass.symm
+      map_smul' r x := by simp }
+
+end
 
 end CategoryTheory.ProjectiveResolution
