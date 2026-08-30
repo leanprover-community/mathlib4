@@ -37,11 +37,9 @@ This file contains the dual results to those obtained in the file
 
 @[expose] public section
 
-universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
-
 namespace CategoryTheory
 
-open Limits Category CategoryTheory.Functor
+open CategoryTheory.Functor
 
 variable {C₁ C₂ H D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* H]
   [Category* D₁] [Category* D₂]
