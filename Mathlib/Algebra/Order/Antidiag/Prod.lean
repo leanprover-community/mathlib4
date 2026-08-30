@@ -111,6 +111,10 @@ lemma congr (A : Type*) [Mul A] [H1 : HasMulAntidiagonal A] [H2 : HasMulAntidiag
     H1.mulAntidiagonal = H2.mulAntidiagonal := by congr!; subsingleton
 
 @[to_additive]
+lemma coe_mulAntidiagonal_eq_preimage_singleton [Mul A] [HasMulAntidiagonal A] (a : A) :
+    (mulAntidiagonal a : Set (A × A)) = ((fun p ↦ p.1 * p.2) ⁻¹' {a}) := by ext; simp
+
+@[to_additive]
 theorem swap_mem_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} {xy : A × A} :
     xy.swap ∈ mulAntidiagonal n ↔ xy ∈ mulAntidiagonal n := by
   simp [mul_comm]
@@ -125,10 +129,6 @@ theorem map_prodComm_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A
 theorem map_swap_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = mulAntidiagonal n :=
   map_prodComm_mulAntidiagonal
-
-@[to_additive]
-lemma coe_mulAntidiagonal_eq_preimage_singleton [Mul A] [HasMulAntidiagonal A] (a : A) :
-    (mulAntidiagonal a : Set (A × A)) = ((fun p ↦ p.1 * p.2) ⁻¹' {a}) := by ext; simp
 
 section CancelMonoid
 
