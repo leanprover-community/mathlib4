@@ -217,10 +217,10 @@ theorem lift_symm_linear_apply (f : Homogenization R P →ₗ[R] W) (v : V) :
     (lift.symm f).linear v = f (ofVector v) :=
   rfl
 
-theorem lift_symm_id : lift.symm LinearMap.id = ofPoint (R := R) (P := P) :=
+theorem lift_symm_id : lift.symm .id = ofPoint (R := R) (P := P) :=
   rfl
 
-theorem lift_ofPoint : lift (R := R) (P := P) ofPoint = LinearMap.id :=
+theorem lift_ofPoint : lift (R := R) (P := P) ofPoint = .id :=
   hom_ext <| by simp
 
 section SMul
@@ -300,7 +300,7 @@ theorem map_apply_ofVector (f : P1 →ᵃ[R] P2) (v : V1) :
   simp [map]
 
 @[simp]
-theorem map_id : map (AffineMap.id R P) = .id :=
+theorem map_id : map (.id R P) = .id :=
   hom_ext <| by simp
 
 theorem map_injective' : Function.Injective (map (R := R) (P1 := P1) (P2 := P2)) := by
