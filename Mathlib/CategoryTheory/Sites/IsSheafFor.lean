@@ -6,7 +6,8 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
+public import Mathlib.CategoryTheory.Sites.Sieves.Shrink
 
 /-!
 # The sheaf condition for a presieve

@@ -222,7 +222,7 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
   uniformContinuous_toFun := uniformContinuous_subtype_val.subtype_mk _
   uniformContinuous_invFun := uniformContinuous_subtype_val.subtype_mk _
-  toEquiv := Equiv.setCongr h
+  toEquiv := Equiv.Set.congr h
 
 /-- Product of two uniform isomorphisms. -/
 def prodCongr (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) : α × γ ≃ᵤ β × δ where
