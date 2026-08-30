@@ -260,6 +260,9 @@ private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Ex
     | RingHom.id _ _ => return (k, E, F)
     | _ => throwError "`{e}` is a space of continuous (semi-)linear maps over `{σ}`, \
       which is not the identity"
+  | ContinuousAlternatingMap k E F _ _ _ _ _ _ _ _ =>
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous alternating maps"
+    return (k, E, F)
   | _ => throwError "`{e}` is not a space of continuous linear maps"
 
 /--

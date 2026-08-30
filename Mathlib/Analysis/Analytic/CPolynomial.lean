@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Analytic.CPolynomialDef
+public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 
 /-! # Properties of continuously polynomial functions
 
@@ -134,6 +135,24 @@ lemma analyticWithinAt : AnalyticWithinAt 𝕜 f s x := f.analyticAt.analyticWit
 
 end ContinuousMultilinearMap
 
+namespace ContinuousAlternatingMap
+
+variable {ι : Type*} [Fintype ι] (f : E [⋀^ι]→L[𝕜] F) {x : Π (_ : ι), E} {s : Set (Π (_ : ι), E)}
+
+lemma cpolynomialAt : CPolynomialAt 𝕜 f x :=
+  ContinuousMultilinearMap.cpolynomialAt f.toContinuousMultilinearMap
+
+lemma cpolynomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
+
+lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolynomialOn.analyticOnNhd
+
+lemma analyticOn : AnalyticOn 𝕜 f s := f.analyticOnNhd.analyticOn
+
+lemma analyticAt : AnalyticAt 𝕜 f x := f.cpolynomialAt.analyticAt
+
+lemma analyticWithinAt : AnalyticWithinAt 𝕜 f s x := f.analyticAt.analyticWithinAt
+
+end ContinuousAlternatingMap
 
 /-!
 ### Continuous linear maps into continuous multilinear maps
