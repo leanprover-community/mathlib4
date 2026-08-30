@@ -126,7 +126,8 @@ attribute [local instance] ConvexSpace.ofAddTorsor in
 instance IsAffineConvexSpace.ofAddTorsor : IsAffineConvexSpace R V P where
   sConvexComb_eq_convexComb _ := rfl
 
-instance [ConvexSpace R V] [IsModuleConvexSpace R V] : IsAffineConvexSpace R V V where
+instance IsModuleConvexSpace.isAffineConvexSpace [ConvexSpace R V] [IsModuleConvexSpace R V] :
+    IsAffineConvexSpace R V V where
   sConvexComb_eq_convexComb w := by
     rw [IsModuleConvexSpace.sConvexComb_eq_sum, AddTorsor.convexCombination,
       Finset.affineCombination_eq_linear_combination _ _ _ w.total]
