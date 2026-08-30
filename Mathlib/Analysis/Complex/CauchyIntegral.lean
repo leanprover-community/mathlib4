@@ -41,6 +41,18 @@ differentiability at all but countably many points of the set mentioned below.
   `f : ℂ → E` is continuous on a closed rectangle and is *complex* differentiable on its interior,
   then its integral over the boundary of this rectangle is equal to zero.
 
+### Unbounded rectangle integrals
+
+* `Complex.integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable`: If a
+  function `f : ℂ → E` is continuous on an unbounded rectangle `[[x₁, x₂]] ×ℂ Ici y`, is *complex*
+  differentiable on its interior, tends to zero as the imaginary part of its argument tends to
+  infinity inside the strip `[[x₁, x₂]] ×ℂ Ici y`, and its integrals along the two vertical sides
+  converge, then its integral over the boundary of this rectangle is equal to zero.
+
+* `Complex.tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides`: In
+  the same setting, the integrals along one vertical side tend to the sum of the integral along
+  the horizontal side and the limit of the integrals along the other vertical side.
+
 ### Annuli and circles
 
 * `Complex.circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable`: If a
@@ -154,6 +166,13 @@ ball, see `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countabl
 Finally, we use the properties of the Cauchy integrals established elsewhere (see
 `hasFPowerSeriesOn_cauchy_integral`) and Cauchy integral formula to prove that the original
 function is analytic on the open ball.
+
+## TODO
+
+* The results on unbounded rectangles only cover rectangles that are unbounded above. Add versions
+  for rectangles that are unbounded below, to the left and to the right, together with lemmas
+  transferring statements between the four cases, so that these follow readily from the the results
+  already formalised in this file.
 
 ## Tags
 
