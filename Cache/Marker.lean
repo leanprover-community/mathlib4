@@ -67,14 +67,16 @@ def uploadMarker (container : Container) (repo sha : String) (auth : UploadAuth)
   IO.FS.writeFile path s!"{sha}\n"
   let azureDateHeader ← getAzureDateHeader
   try
-    match auth with
-    | .azureSas token =>
-      let params := #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
-      discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{url}?{token}"]
-    | .azureBearer token =>
-      let params := #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H",
-        azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
-      discard <| IO.runCurl <| params ++ #["-T", path.toString, url]
+    let args := match auth with
+      | .azureSas token =>
+        #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
+          "-T", path.toString, s!"{url}?{token}"]
+      | .azureBearer token =>
+        #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H",
+          azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token,
+          "-T", path.toString, url]
+    -- The argument list carries the credential; keep it out of the failure message.
+    discard <| IO.runCurl args (showArgsOnError := false)
   catch e =>
     IO.eprintln s!"warning: marker upload to {url} failed: {e}"
   IO.FS.removeFile path
