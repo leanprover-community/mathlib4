@@ -85,7 +85,7 @@ open MeasureTheory
 /-! ## Strongly measurable functions -/
 
 section StronglyMeasurable
-variable {_ : MeasurableSpace α} {μ : Measure α} {f : α → β} {g : ℕ → α} {m : ℕ}
+variable {_ : MeasurableSpace α} {f : α → β} {g : ℕ → α} {m : ℕ}
 
 variable [TopologicalSpace β]
 

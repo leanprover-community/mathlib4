@@ -52,11 +52,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
 
 namespace ContinuousLinearMap
 
@@ -177,7 +172,6 @@ section Const
 
 variable {c : M'}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_const (c : M') (x : M) :
     HasMFDerivAt% (fun _ : M ↦ c) x (0 : TangentSpace% x →L[𝕜] TangentSpace% c) :=
   ⟨by fun_prop, by simp [Function.comp_def, hasFDerivWithinAt_const]⟩
@@ -405,6 +399,13 @@ theorem mdifferentiableWithinAt_prod_iff (f : M → M' × N') :
     MDiffAt[s] f x ↔ MDiffAt[s] (Prod.fst ∘ f) x ∧ MDiffAt[s] (Prod.snd ∘ f) x :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
 
+section prod_module
+
+-- `F₁` and `F₂` are normed spaces.
+variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  {s : Set M} {x : M}
+
 theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂) f s x ↔
       MDiffAt[s] (Prod.fst ∘ f) x ∧ MDiffAt[s] (Prod.snd ∘ f) x := by
@@ -440,6 +441,8 @@ theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔ MDiff (Prod.fst ∘ f) ∧ MDiff (Prod.snd ∘ f) := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact mdifferentiable_prod_iff f
+
+end prod_module
 
 
 section prodMap
@@ -676,7 +679,7 @@ theorem mfderiv_sumSwap :
     mfderiv% (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace% p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
 
-variable {f : M → N} (g : M' → N') {q : M} {q' : M'}
+variable {f : M → N} {q : M} {q' : M'}
 
 lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
     (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q q)] id := by
@@ -1047,7 +1050,7 @@ section DivisionRing
 open scoped RightActions
 
 variable {z : M} {F' : Type*} [NormedDivisionRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
-  {p' q' : TangentSpace% z →L[𝕜] F'}
+  {p' : TangentSpace% z →L[𝕜] F'}
 
 lemma HasMFDerivWithinAt.inv' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p⁻¹) s z (-((p z)⁻¹ •> p' <• (p z)⁻¹) : E →L[𝕜] F') :=
