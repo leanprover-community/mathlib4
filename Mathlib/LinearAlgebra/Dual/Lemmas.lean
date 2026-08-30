@@ -307,23 +307,39 @@ end Module
 
 namespace LinearMap
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+section Projective
+
+variable {R : Type*} [CommSemiring R]
+variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
 
 /-- The identitiy pairing is right-separating. -/
-theorem SeparatingRight.id [Module.Projective R M] : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
-  fun _ hx ↦ by simpa using (Module.forall_dual_apply_eq_zero_iff R _).mp hx
+theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
+  fun x ↦ (forall_dual_apply_eq_zero_iff R x).mp
+
+alias id_separatingRight := SeparatingRight.id
 
 /-- The identitiy pairing is non-degenerate. -/
-theorem Nondegenerate.id [Module.Projective R M] :
-    (.id : (M →ₗ[R] R) →ₛₗ[_] _).Nondegenerate := ⟨.id, .id⟩
+theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :=
+  ⟨.id, .id⟩
+
+alias id_nondegenerate := Nondegenerate.id
+
+@[deprecated (since := "2026-04-02")]
+alias dualPairing_nondegenerate := id_nondegenerate
 
 /-- The pairing `Dual.eval` is left-separating. -/
-theorem SeparatingLeft.eval [Module.Projective R M] : (Dual.eval R M).SeparatingLeft := by
-  simp [Dual.eval, SeparatingRight.id]
+theorem SeparatingLeft.eval : (Dual.eval R M).SeparatingLeft :=
+  id_separatingRight
+
+alias eval_separatingLeft := SeparatingLeft.eval
 
 /-- The pairing `Dual.eval` is non-degenerate. -/
-theorem Nondegenerate.eval [Module.Projective R M] : (Dual.eval R M).Nondegenerate :=
+theorem Nondegenerate.eval : (Dual.eval R M).Nondegenerate :=
   ⟨.eval, .eval⟩
+
+alias eval_nondegenerate := Nondegenerate.eval
+
+end Projective
 
 end LinearMap
 
@@ -803,29 +819,6 @@ end Module.Dual
 end
 
 namespace LinearMap
-
-variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
-
-theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
-  separatingLeft_iff_ker_eq_bot.mpr ker_id
-
-theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingLeft
-
-variable [Module.Projective K V]
-
-theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
-  fun x ↦ (forall_dual_apply_eq_zero_iff K x).mp
-
-theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
-
-theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
-  ⟨id_separatingLeft, id_separatingRight⟩
-
-@[deprecated (since := "2026-04-02")]
-alias dualPairing_nondegenerate := id_nondegenerate
-
-theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
-  ⟨eval_separatingLeft, eval_separatingRight⟩
 
 variable {K V₁ V₂ : Type*} [Field K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]

@@ -680,11 +680,15 @@ theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ke
 
 /-- The identitiy pairing is left-separating. -/
 theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
-  fun _ hx => by ext y; exact hx y
+  separatingLeft_iff_ker_eq_bot.mpr ker_id
+
+alias id_separatingLeft := SeparatingLeft.id
 
 /-- The pairing `Dual.eval` is right-separating. -/
-theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight := by
-  simp only [Dual.eval, flip_separatingRight, SeparatingLeft.id]
+theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight :=
+  id_separatingLeft
+
+alias eval_separatingRight := SeparatingRight.eval
 
 end CommSemiring
 
