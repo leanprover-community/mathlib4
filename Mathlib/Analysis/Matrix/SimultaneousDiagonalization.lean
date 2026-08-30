@@ -24,6 +24,15 @@ Hermitian forms, one of which is positive definite, can be diagonalized simultan
   `B` to `∑ dᵢ * ‖xᵢ‖ ^ 2`.
 * `Matrix.PosDef.exists_simultaneous_diagonalization_of_posDef`: when `B` is positive definite
   as well, the resulting diagonal entries are positive.
+* `Matrix.mul_eq_mul_diagonal_of_simultaneous_diagonalization`: the columns of `P` solve the
+  generalized eigenvalue problem `B * P = A * P * D`.
+* `Matrix.det_sub_smul_eq_zero_of_simultaneous_diagonalization`: the diagonal entries are roots
+  of `det (B - μ • A)`, that is, they are the generalized eigenvalues of the pencil `(A, B)`.
+* `Matrix.PosDef.exists_generalized_eigenbasis`: the three statements above packaged as a single
+  existence result.
+* `Matrix.PosDef.exists_simultaneous_diagonalization_transpose` and
+  `Matrix.PosDef.exists_simultaneous_diagonalization_quadratic`: the real case, stated with the
+  transpose and read off on the quadratic forms themselves.
 
 ## Implementation notes
 
@@ -136,5 +145,101 @@ theorem PosDef.exists_simultaneous_diagonalization_of_posDef {A B : Matrix n n �
       (mulVec_injective_iff_isUnit.mpr (isUnit_of_invertible P))
   rw [hPB] at hPD
   simpa using posDef_diagonal_iff.mp hPD i
+
+/-- The columns of a simultaneous diagonalizer solve the generalized eigenvalue problem: if
+`Pᴴ * A * P = 1` and `Pᴴ * B * P` is the diagonal matrix `D`, then `B * P = A * P * D`. -/
+theorem mul_eq_mul_diagonal_of_simultaneous_diagonalization {A B P : Matrix n n 𝕜} {d : n → ℝ}
+    (hP : IsUnit P.det) (hPA : Pᴴ * A * P = 1)
+    (hPB : Pᴴ * B * P = diagonal (RCLike.ofReal ∘ d)) :
+    B * P = A * P * diagonal (RCLike.ofReal ∘ d) := by
+  have hPh : IsUnit (Pᴴ).det := by rw [det_conjTranspose]; exact hP.star
+  have key : Pᴴ * (B * P) = Pᴴ * (A * P * diagonal (RCLike.ofReal ∘ d)) := by
+    rw [← mul_assoc, hPB, show Pᴴ * (A * P * diagonal (RCLike.ofReal ∘ d))
+      = (Pᴴ * A * P) * diagonal (RCLike.ofReal ∘ d) by simp only [mul_assoc], hPA, one_mul]
+  have h2 : (Pᴴ)⁻¹ * (Pᴴ * (B * P))
+      = (Pᴴ)⁻¹ * (Pᴴ * (A * P * diagonal (RCLike.ofReal ∘ d))) := by rw [key]
+  simp only [← mul_assoc, nonsing_inv_mul (Pᴴ) hPh, one_mul] at h2
+  exact h2
+
+/-- The diagonal entries produced by a simultaneous diagonalization are the generalized
+eigenvalues of the pencil `(A, B)`: each of them is a root of `det (B - μ • A)`. -/
+theorem det_sub_smul_eq_zero_of_simultaneous_diagonalization {A B P : Matrix n n 𝕜} {d : n → ℝ}
+    (hP : IsUnit P.det) (hPA : Pᴴ * A * P = 1)
+    (hPB : Pᴴ * B * P = diagonal (RCLike.ofReal ∘ d)) (i : n) :
+    (B - (d i : 𝕜) • A).det = 0 := by
+  have key : Pᴴ * (B - (d i : 𝕜) • A) * P
+      = diagonal (fun j => (RCLike.ofReal (d j) : 𝕜) - (RCLike.ofReal (d i) : 𝕜)) := by
+    rw [mul_sub, sub_mul, hPB, Matrix.mul_smul, Matrix.smul_mul, hPA, smul_one_eq_diagonal,
+      ← diagonal_sub]
+    rfl
+  have hdet : (Pᴴ * (B - (d i : 𝕜) • A) * P).det = 0 := by
+    rw [key, det_diagonal]
+    exact Finset.prod_eq_zero (Finset.mem_univ i) (by simp)
+  rw [det_mul, det_mul, det_conjTranspose] at hdet
+  rcases mul_eq_zero.mp hdet with h | h
+  · rcases mul_eq_zero.mp h with h' | h'
+    · exact absurd h' (isUnit_iff_ne_zero.mp hP.star)
+    · exact h'
+  · exact absurd h (isUnit_iff_ne_zero.mp hP)
+
+/-- **Generalized eigenbasis for a definite pencil.** If `A` is positive definite and `B` is
+Hermitian, there are an invertible `P` and real numbers `d` such that `P` simultaneously
+diagonalizes both forms, its columns solve `B * P = A * P * D`, and each `d i` is a root of
+`det (B - μ • A)`. -/
+theorem PosDef.exists_generalized_eigenbasis {A B : Matrix n n 𝕜} (hA : A.PosDef)
+    (hB : B.IsHermitian) :
+    ∃ (P : Matrix n n 𝕜) (d : n → ℝ), IsUnit P.det ∧ Pᴴ * A * P = 1 ∧
+      Pᴴ * B * P = diagonal (RCLike.ofReal ∘ d) ∧
+      B * P = A * P * diagonal (RCLike.ofReal ∘ d) ∧
+      ∀ i, (B - (d i : 𝕜) • A).det = 0 := by
+  obtain ⟨P, hP, hPA, d, hPB⟩ := hA.exists_simultaneous_diagonalization hB
+  exact ⟨P, d, hP, hPA, hPB,
+    mul_eq_mul_diagonal_of_simultaneous_diagonalization hP hPA hPB,
+    fun i => det_sub_smul_eq_zero_of_simultaneous_diagonalization hP hPA hPB i⟩
+
+section Real
+
+/-- **Simultaneous diagonalization of two real quadratic forms.** If `A` is positive definite
+and `B` is symmetric, then some invertible matrix `P` satisfies `Pᵀ * A * P = 1` and takes `B`
+to a diagonal matrix by congruence. -/
+theorem PosDef.exists_simultaneous_diagonalization_transpose {A B : Matrix n n ℝ}
+    (hA : A.PosDef) (hB : B.IsSymm) :
+    ∃ P : Matrix n n ℝ, IsUnit P.det ∧ Pᵀ * A * P = 1 ∧
+      ∃ d : n → ℝ, Pᵀ * B * P = diagonal d := by
+  have hBh : B.IsHermitian := by
+    change Bᴴ = B
+    rw [conjTranspose_eq_transpose_of_trivial]
+    exact hB
+  obtain ⟨P, hP, hPA, d, hPB⟩ := hA.exists_simultaneous_diagonalization hBh
+  refine ⟨P, hP, ?_, d, ?_⟩
+  · rwa [← conjTranspose_eq_transpose_of_trivial]
+  · rw [← conjTranspose_eq_transpose_of_trivial, hPB]
+    simp
+
+omit [DecidableEq n] in
+/-- Congruence by `P` on matrices corresponds to the change of variables `x ↦ P *ᵥ x` on the
+associated real quadratic forms. -/
+private lemma dotProduct_mulVec_congr (P M : Matrix n n ℝ) (x : n → ℝ) :
+    (P *ᵥ x) ⬝ᵥ (M *ᵥ (P *ᵥ x)) = x ⬝ᵥ ((Pᵀ * M * P) *ᵥ x) := by
+  conv_rhs => rw [← mulVec_mulVec, ← mulVec_mulVec, dotProduct_mulVec, vecMul_transpose]
+
+/-- **Simultaneous diagonalization**, stated on the real quadratic forms rather than the
+matrices: if `A` is positive definite and `B` is symmetric, one invertible change of variables
+turns the form of `A` into `∑ xᵢ ^ 2` and the form of `B` into `∑ dᵢ * xᵢ ^ 2`. -/
+theorem PosDef.exists_simultaneous_diagonalization_quadratic {A B : Matrix n n ℝ}
+    (hA : A.PosDef) (hB : B.IsSymm) :
+    ∃ (P : Matrix n n ℝ) (d : n → ℝ), IsUnit P.det ∧
+      (∀ x, (P *ᵥ x) ⬝ᵥ (A *ᵥ (P *ᵥ x)) = ∑ i, x i ^ 2) ∧
+      (∀ x, (P *ᵥ x) ⬝ᵥ (B *ᵥ (P *ᵥ x)) = ∑ i, d i * x i ^ 2) := by
+  obtain ⟨P, hPdet, hPA, d, hPB⟩ := hA.exists_simultaneous_diagonalization_transpose hB
+  refine ⟨P, d, hPdet, fun x => ?_, fun x => ?_⟩
+  · rw [dotProduct_mulVec_congr, hPA, one_mulVec]
+    simp only [dotProduct]
+    exact Finset.sum_congr rfl fun i _ => by ring
+  · rw [dotProduct_mulVec_congr, hPB]
+    simp only [dotProduct, mulVec_diagonal]
+    exact Finset.sum_congr rfl fun i _ => by ring
+
+end Real
 
 end Matrix
