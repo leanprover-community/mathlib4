@@ -501,6 +501,14 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [IsTopological
   congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
 
+/-- The topology induced by a family of seminorms is exactly the infimum of the ones induced by
+each seminorm individually. We express this as a characterization of `WithSeminorms p`. -/
+theorem WithSeminorms.topologicalSpace_eq_iInf
+    {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
+    t = ⨅ i, (p i).toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace := by
+  have : IsTopologicalAddGroup E := WithSeminorms.isTopologicalAddGroup hp
+  exact p.withSeminorms_iff_topologicalSpace_eq_iInf.1 hp
+
 theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p)
     (i : ι) : Continuous (p i) := by
   have := hp.isTopologicalAddGroup
@@ -563,16 +571,13 @@ noncomputable def IsNormableSpace.seminorm : Seminorm 𝕜 E := hn.withSeminorms
 
 /-- A normable space can be endowed with a seminorm defining the same topology. -/
 noncomputable abbrev IsNormableSpace.toSeminormedAddCommGroup : SeminormedAddCommGroup E := by
-  let q := IsNormableSpace.seminorm 𝕜 E
-  have hq := hn.withSeminorms'.choose_spec
-  have : IsTopologicalAddGroup E := hq.topologicalAddGroup
   let : Norm E := ⟨IsNormableSpace.seminorm 𝕜 E⟩
   let c : SeminormedSpace.Core 𝕜 E :=
-  { norm_nonneg x := apply_nonneg q x
-    norm_smul c x := map_smul_eq_mul q c x
-    norm_triangle x y := map_add_le_add q x y }
+  { norm_nonneg x := apply_nonneg _ x
+    norm_smul c x := map_smul_eq_mul _ c x
+    norm_triangle x y := map_add_le_add _ x y }
   refine SeminormedAddCommGroup.ofCoreReplaceTopology c ?_
-  rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 hq, ciInf_unique]
+  rw [hn.withSeminorms'.choose_spec.topologicalSpace_eq_iInf, ciInf_unique]
   rfl
 
 /-- A normable space can be endowed with a normed space structure. -/
