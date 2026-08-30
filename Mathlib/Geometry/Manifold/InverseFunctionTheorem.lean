@@ -170,6 +170,7 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {M₂ : Type*} [TopologicalSpace M₂] [ChartedSpace H₂ M₂]
   {n : WithTop ℕ∞} [IsManifold I₁ n M₁] [IsManifold I₂ n M₂]
 
+omit [CompleteSpace E₁] in
 lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M₁ → M₂} {p : M₁}
     (hf : ContinuousLinearMap.IsInvertible (mfderiv% f p)) :
     ContinuousLinearMap.IsInvertible (fderivWithin 𝕜 (writtenInExtChartAt I₁ I₂ p f) (range I₁)
