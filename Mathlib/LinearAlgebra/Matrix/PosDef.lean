@@ -512,23 +512,19 @@ theorem det_pos [DecidableEq n] [Nontrivial R'] [IsOrderedRing R'] [PosMulReflec
   induction k with
   | zero => simp
   | succ k ih =>
-    -- TODO Improve this proof
     intro N hN
-    have hN' : (N.submatrix Fin.succ Fin.succ).PosDef := hN.submatrix (Fin.succ_injective k)
-    have hd : 0 < (N.submatrix Fin.succ Fin.succ).det := ih _ hN'
-    set d := (N.submatrix Fin.succ Fin.succ).det with hd_def
-    set v : Fin (k + 1) → R' := fun j ↦ N.adjugate j 0 with hv
-    have hdstar : star d = d := by rw [hd_def, ← det_conjTranspose, hN'.1]
-    have hv0 : v 0 = d := by simp [hv, hd_def, adjugate_fin_succ_eq_det_submatrix]
-    have hv₀ : v ≠ 0 := fun contra ↦ hd.ne' (hv0 ▸ congrFun contra 0)
+    set M := N.submatrix Fin.succ Fin.succ with M_def
+    set v : Fin (k + 1) → R' := N.adjugate.col 0 with v_def
+    have hM : M.PosDef := hN.submatrix <| Fin.succ_injective k
+    have hvM : v 0 = M.det := by simp [M_def, v_def, adjugate_fin_succ_eq_det_submatrix]
+    replace ih : 0 < M.det := ih _ hM
+    suffices 0 < M.det * N.det from lt_of_mul_lt_mul_left (by grind) ih.le
     have hNv : N *ᵥ v = fun i ↦ if i = 0 then N.det else 0 := by
-      ext i
-      have h : (N * N.adjugate) i 0 = N.det * (1 : Matrix (Fin (k + 1)) (Fin (k + 1)) R') i 0 := by
-        simp [mul_adjugate]
-      simpa [mulVec, dotProduct, mul_apply, hv, one_apply] using h
-    have key : 0 < d * N.det := by
-      simpa [hNv, dotProduct, hv0, hdstar] using hN.dotProduct_mulVec_pos hv₀
-    exact lt_of_mul_lt_mul_left (by simpa using key) hd.le
+      have : N *ᵥ N.adjugate.col 0 = (N * N.adjugate).col 0 := rfl -- API?
+      ext; simp [v_def, this, mul_adjugate, Matrix.one_apply]
+    have hv₀ : v ≠ 0 := fun contra ↦ ih.ne' <| by simp [← hvM, contra]
+    have hM_det : star M.det = M.det := by rw [← det_conjTranspose, hM.1]
+    simpa [hNv, dotProduct, hvM, hM_det] using hN.dotProduct_mulVec_pos hv₀
 
 section Field
 variable {K : Type*} [Field K] [PartialOrder K] [StarRing K]
