@@ -59,9 +59,9 @@ def Homogenization
 variable
   {R : Type*} [Ring R]
   {V P : Type*} [AddCommGroup V] [Module R V] [AddTorsor V P]
-  {V1 P1 : Type*} [AddCommGroup V1] [Module R V1] [AddTorsor V1 P1]
-  {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [AddTorsor V2 P2]
-  {V3 P3 : Type*} [AddCommGroup V3] [Module R V3] [AddTorsor V3 P3]
+  {V₁ P₁ : Type*} [AddCommGroup V₁] [Module R V₁] [AddTorsor V₁ P₁]
+  {V₂ P₂ : Type*} [AddCommGroup V₂] [Module R V₂] [AddTorsor V₂ P₂]
+  {V₃ P₃ : Type*} [AddCommGroup V₃] [Module R V₃] [AddTorsor V₃ P₃]
   {W : Type*} [AddCommGroup W] [Module R W]
 
 namespace Homogenization
@@ -162,12 +162,12 @@ theorem span_range_ofPoint : Submodule.span R (Set.range (ofPoint (R := R) (P :=
   refine Submodule.add_mem _ (Submodule.sub_mem _ ?_ ?_) (Submodule.smul_mem _ _ ?_) <;>
     exact Submodule.mem_span_of_mem <| Set.mem_range_self _
 
-theorem hom_ext {f g : Homogenization R P1 →ₗ[R] W}
+theorem hom_ext {f g : Homogenization R P →ₗ[R] W}
     (h : ∀ x, f (ofPoint x) = g (ofPoint x)) : f = g := by
   rwa [← LinearMap.eqLocus_eq_top, eq_top_iff, ← span_range_ofPoint, Submodule.span_le,
     Set.range_subset_iff]
 
-theorem hom_ext_iff {f g : Homogenization R P1 →ₗ[R] W} :
+theorem hom_ext_iff {f g : Homogenization R P →ₗ[R] W} :
     f = g ↔ ∀ x, f (ofPoint x) = g (ofPoint x) :=
   ⟨by rintro rfl _; rfl, hom_ext⟩
 
@@ -183,7 +183,7 @@ private theorem liftAux_ofPoint (f : P →ᵃ[R] W) (p : P) : liftAux f (ofPoint
 /-- An affine map on `P` taking values in a vector space extends uniquely to a linear map on
 `Homogenization R P`.
 
-See also `Homogenization.liftₗ` for a version that is linear over some ring. -/
+See also `Homogenization.liftₗ` for a version that is linear over some semiring. -/
 @[expose]
 def lift : (P →ᵃ[R] W) ≃+ (Homogenization R P →ₗ[R] W) where
   toFun := private liftAux
@@ -288,15 +288,15 @@ theorem weight_surjective : Function.Surjective (weight (R := R) (P := P)) :=
 /-- An affine map between two affine spaces extends to a linear map between their homogenizations.
 -/
 @[expose]
-def map (f : P1 →ᵃ[R] P2) : Homogenization R P1 →ₗ[R] Homogenization R P2 :=
+def map (f : P₁ →ᵃ[R] P₂) : Homogenization R P₁ →ₗ[R] Homogenization R P₂ :=
   lift (ofPoint.comp f)
 
 @[simp]
-theorem map_apply_ofPoint (f : P1 →ᵃ[R] P) (p : P1) : map f (ofPoint p) = ofPoint (f p) := by
+theorem map_apply_ofPoint (f : P₁ →ᵃ[R] P) (p : P₁) : map f (ofPoint p) = ofPoint (f p) := by
   simp [map]
 
 @[simp]
-theorem map_apply_ofVector (f : P1 →ᵃ[R] P2) (v : V1) :
+theorem map_apply_ofVector (f : P₁ →ᵃ[R] P₂) (v : V₁) :
     map f (ofVector v) = ofVector (f.linear v) := by
   simp [map]
 
@@ -304,7 +304,7 @@ theorem map_apply_ofVector (f : P1 →ᵃ[R] P2) (v : V1) :
 theorem map_id : map (.id R P) = .id :=
   hom_ext <| by simp
 
-theorem map_injective' : Function.Injective (map (R := R) (P1 := P1) (P2 := P2)) := by
+theorem map_injective' : Function.Injective (map (R := R) (P₁ := P₁) (P₂ := P₂)) := by
   intro f g h
   ext p
   simpa [ofPoint_injective.eq_iff] using congr($h (ofPoint p))
@@ -313,19 +313,19 @@ theorem map_injective' : Function.Injective (map (R := R) (P1 := P1) (P2 := P2))
 theorem map_eq_id_iff {f : P →ᵃ[R] P} : map f = .id ↔ f = .id .. := by
   rw [← map_id, map_injective'.eq_iff]
 
-theorem map_comp (f : P2 →ᵃ[R] P3) (g : P1 →ᵃ[R] P2) : map (f.comp g) = map f ∘ₗ map g :=
+theorem map_comp (f : P₂ →ᵃ[R] P₃) (g : P₁ →ᵃ[R] P₂) : map (f.comp g) = map f ∘ₗ map g :=
   hom_ext <| by simp
 
 @[simp]
-theorem weight_map (f : P1 →ᵃ[R] P2) (x : Homogenization R P1) : weight (map f x) = weight x := by
+theorem weight_map (f : P₁ →ᵃ[R] P₂) (x : Homogenization R P₁) : weight (map f x) = weight x := by
   cases x; simp
 
-theorem lift_map (f : P2 →ᵃ[R] V3) (g : P1 →ᵃ[R] P2) (x : Homogenization R P1) :
+theorem lift_map (f : P₂ →ᵃ[R] V₃) (g : P₁ →ᵃ[R] P₂) (x : Homogenization R P₁) :
     lift f (map g x) = lift (f.comp g) x := by
   cases x; simp
 
 @[simp]
-theorem map_injective {f : P1 →ᵃ[R] P2} : Function.Injective (map f) ↔ Function.Injective f where
+theorem map_injective {f : P₁ →ᵃ[R] P₂} : Function.Injective (map f) ↔ Function.Injective f where
   mp hf := by
     have h := hf.comp ofPoint_injective
     simp_rw [Function.comp_def, map_apply_ofPoint] at h
@@ -341,7 +341,7 @@ theorem map_injective {f : P1 →ᵃ[R] P2} : Function.Injective (map f) ↔ Fun
     rw [h, map_zero]
 
 @[simp]
-theorem map_surjective {f : P1 →ᵃ[R] P2} : Function.Surjective (map f) ↔ Function.Surjective f where
+theorem map_surjective {f : P₁ →ᵃ[R] P₂} : Function.Surjective (map f) ↔ Function.Surjective f where
   mp hf p := by
     obtain ⟨x, hx⟩ := hf (ofPoint p)
     have := congr(weight $hx)
@@ -357,19 +357,19 @@ theorem map_surjective {f : P1 →ᵃ[R] P2} : Function.Surjective (map f) ↔ F
 /-- An affine isomorphism between two affine spaces extends to a linear isomorphism between their
 homogenizations. -/
 @[expose]
-def congr (f : P1 ≃ᵃ[R] P2) : Homogenization R P1 ≃ₗ[R] Homogenization R P2 :=
+def congr (f : P₁ ≃ᵃ[R] P₂) : Homogenization R P₁ ≃ₗ[R] Homogenization R P₂ :=
   .ofLinearMap (map f) (map f.symm) (hom_ext <| by simp) (hom_ext <| by simp)
 
 @[simp]
-theorem coe_congr (f : P1 ≃ᵃ[R] P2) : ⇑(congr f) = map f.toAffineMap :=
+theorem coe_congr (f : P₁ ≃ᵃ[R] P₂) : ⇑(congr f) = map f.toAffineMap :=
   rfl
 
 @[simp]
-theorem toLinearMap_congr (f : P1 ≃ᵃ[R] P2) : congr f = map f.toAffineMap :=
+theorem toLinearMap_congr (f : P₁ ≃ᵃ[R] P₂) : congr f = map f.toAffineMap :=
   rfl
 
 @[simp]
-theorem congr_symm (f : P1 ≃ᵃ[R] P2) : (congr f).symm = congr f.symm :=
+theorem congr_symm (f : P₁ ≃ᵃ[R] P₂) : (congr f).symm = congr f.symm :=
   rfl
 
 @[simp]
@@ -380,7 +380,7 @@ theorem congr_refl : congr (.refl R P) = .refl .. := by
 theorem congr_eq_refl_iff {f : P ≃ᵃ[R] P} : congr f = .refl .. ↔ f = .refl .. := by
   simp [← LinearEquiv.toLinearMap_inj, ← AffineEquiv.toAffineMap_inj]
 
-theorem congr_trans (f : P1 ≃ᵃ[R] P2) (g : P2 ≃ᵃ[R] P3) :
+theorem congr_trans (f : P₁ ≃ᵃ[R] P₂) (g : P₂ ≃ᵃ[R] P₃) :
     congr (f.trans g) = congr f ≪≫ₗ congr g := by
   ext; simp [map_comp]
 
