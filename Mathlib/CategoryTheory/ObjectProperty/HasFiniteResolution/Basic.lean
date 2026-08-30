@@ -78,20 +78,19 @@ theorem monotone (hPQ : P ≤ Q) :
   | succ S n hS h₂ _ ih => exact HasFiniteResolutionOfLength.succ S n hS (hPQ S.X₂ h₂) ih
 
 theorem property_of_isClosedUnderQuotients [P.IsClosedUnderQuotients] :
-    P.HasFiniteResolutionOfLength n ≤ P := by
-  intro X hX
-  cases hX with
-  | zero _ hX => exact hX
-  | succ S _ hS h₂ _ => exact P.prop_X₃_of_shortExact hS h₂
+    P.HasFiniteResolutionOfLength n ≤ P := fun X hX ↦
+  match hX with
+  | zero _ hX => hX
+  | succ S _ hS h₂ _ => P.prop_X₃_of_shortExact hS h₂
 
 theorem of_iso [P.IsClosedUnderIsomorphisms] {Y : C} (e : X ≅ Y)
-    (hX : P.HasFiniteResolutionOfLength n X) : P.HasFiniteResolutionOfLength n Y := by
-  cases hX with
-  | zero _ hX => exact HasFiniteResolutionOfLength.zero Y (P.prop_of_iso e hX)
+    (hX : P.HasFiniteResolutionOfLength n X) : P.HasFiniteResolutionOfLength n Y :=
+  match hX with
+  | zero _ hX => HasFiniteResolutionOfLength.zero Y (P.prop_of_iso e hX)
   | succ S n hS h₂ h₁ =>
       let T : ShortComplex C := ShortComplex.mk S.f (S.g ≫ e.hom) (by simp)
       let eS : S ≅ T := ShortComplex.isoMk (Iso.refl _) (Iso.refl _) e (by simp [T]) (by simp [T])
-      exact HasFiniteResolutionOfLength.succ T n (ShortComplex.shortExact_of_iso eS hS) h₂ h₁
+      HasFiniteResolutionOfLength.succ T n (ShortComplex.shortExact_of_iso eS hS) h₂ h₁
 
 theorem map_exactFunctor {D : Type u'} [Category.{v'} D] [HasZeroMorphisms D]
     {Q : ObjectProperty D} (F : C ⥤ D) [F.PreservesZeroMorphisms]
