@@ -928,10 +928,9 @@ lemma affineSpan_faceOpposite_eq_orthRadius_insphere [Fact (Module.finrank ℝ V
   s.excenterExists_empty.affineSpan_faceOpposite_eq_orthRadius i
 
 variable {s} in
-lemma ExcenterExists.affineSpan_faceOpposite_mem_tangentSet [hf : Fact (Module.finrank ℝ V = n)]
+lemma ExcenterExists.affineSpan_faceOpposite_mem_tangentSet [Fact (Module.finrank ℝ V = n)]
     {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
-    affineSpan ℝ (Set.range (s.faceOpposite i).points) ∈
-      (s.exsphere signs).tangentSet := by
+    affineSpan ℝ (Set.range (s.faceOpposite i).points) ∈ (s.exsphere signs).tangentSet := by
   rw [h.affineSpan_faceOpposite_eq_orthRadius]
   exact Set.mem_image_of_mem _ (h.touchpoint_mem_exsphere _)
 
@@ -1266,7 +1265,7 @@ lemma touchpoint_empty_ne_point [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
   s.excenterExists_empty.touchpoint_ne_point i j
 
 variable {s} in
-lemma ExcenterExists.exradius_lt_dist_point_excenter [Nat.AtLeastTwo n]
+lemma ExcenterExists.exradius_lt_dist_point_excenter [n.AtLeastTwo]
     {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
     s.exradius signs < dist (s.points i) (s.excenter signs) := by
   obtain ⟨j, hj⟩: ∃ j, j ≠ i := exists_ne _
@@ -1413,8 +1412,8 @@ lemma affineSpan_pair_mem_tangentsFrom_insphere [hf : Fact (Module.finrank ℝ V
 
 lemma tangentsFrom_eq_pair_affineSpan_pair [hf : Fact (Module.finrank ℝ V = 2)]
     (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
-    (t.exsphere signs).tangentsFrom (t.points i₁) = {line[ℝ, t.points i₁, t.points i₂],
-      line[ℝ, t.points i₁, t.points i₃]} := by
+    (t.exsphere signs).tangentsFrom (t.points i₁) =
+      {line[ℝ, t.points i₁, t.points i₂], line[ℝ, t.points i₁, t.points i₃]} := by
   rw [eq_comm]
   refine Set.eq_of_subset_of_ncard_le ?_ ?_ (Set.finite_of_ncard_ne_zero (by simp))
   · rw [Set.insert_subset_iff, Set.singleton_subset_iff]
