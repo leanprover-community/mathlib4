@@ -50,6 +50,7 @@ lemma cast_ne_zero : (p : α) ≠ 0 ↔ p ≠ 0 := cast_eq_zero.ne
 
 variable (α) in
 /-- Coercion `ℚ → α` as a `RingHom`. -/
+@[reducible]
 def castHom : ℚ →+* α where
   toFun := (↑)
   map_one' := cast_one
