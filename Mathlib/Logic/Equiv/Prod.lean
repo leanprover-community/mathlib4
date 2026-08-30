@@ -330,7 +330,10 @@ theorem eq_of_prodExtendRight_ne {e : Perm β₁} {a a' : α₁} {b : β₁}
 
 @[simp]
 theorem fst_prodExtendRight (ab : α₁ × β₁) : (prodExtendRight a e ab).fst = ab.fst := by
-  grind [prodExtendRight]
+  simp only [prodExtendRight, coe_fn_mk]
+  match (show Decidable (ab.fst = a) by infer_instance) with
+  | isFalse h => simp[h]
+  | isTrue h => simp[h]
 
 end Perm
 
