@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Quaternion
+public import Mathlib.Algebra.Quaternion.Basic
 public import Mathlib.Analysis.InnerProductSpace.Continuous
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Topology.Algebra.Algebra
