@@ -98,7 +98,6 @@ protected theorem mul (hf : Introspective f e r) (hg : Introspective g e r) :
   convert Ideal.zero_mem _
   grind [mul_pow]
 
-
 /-- The product of coprime exponents is Introspective. -/
 theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h : e.Coprime r) :
     Introspective f (e * d) r := by
@@ -115,7 +114,6 @@ theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h 
       · exact X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd _ (by
           simp only [mem_properDivisors, dvd_mul_left, true_and]
           exact lt_mul_left (by lia) (by lia)) |> dvd_of_mul_right_dvd
-      -- I feel like grind should handle this case split.
       · by_cases he2 : e = 0
         · simp [he2]
         · grind [dvd_refl]
