@@ -467,15 +467,6 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
   zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
   exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
 
--- TODO Drop this lemma when refactoring proofs
-lemma Matrix.PosDef.mul_comm_of_diagonal_mul
-    {ι : Type*} [Fintype ι] [DecidableEq ι] {A : Matrix ι ι ℤ} {d : ι → ℤ}
-    (hG : (diagonal d * A).PosDef) (i j : ι) :
-    d i * A i j = d j * A j i := by
-  have h : (diagonal d * A)ᵀ = diagonal d * A := by
-    rw [← conjTranspose_eq_transpose_of_trivial]; exact hG.isHermitian.eq
-  simpa [diagonal_mul] using (congr_fun₂ h i j).symm
-
 namespace Matrix.IsFiniteCartan
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM : M.IsFiniteCartan)
@@ -493,41 +484,32 @@ protected lemma isUnit_map (k : Type*) [Field k] [CharZero k] :
 
 protected lemma transpose :
     Mᵀ.IsFiniteCartan := by
-  -- TODO Improve this proof
-  obtain ⟨d, hd_pos, hG⟩ := hM.exists_posDef
-  set C : ℤ := ∏ j, d j with hC
+  obtain ⟨d, hd_pos, hdM⟩ := hM.exists_posDef
   set d' : ι → ℤ := fun i ↦ ∏ j ∈ Finset.univ.erase i, d j with hd'
-  have hd'_pos : ∀ i, 0 < d' i := fun i ↦ Finset.prod_pos fun j _ ↦ hd_pos j
+  have hd'_pos (i : ι) : 0 < d' i := Finset.prod_pos fun j _ ↦ hd_pos j
+  suffices (diagonal d' * Mᵀ).PosDef from
+    { diag i := by simpa using hM.diag i
+      offDiag_nonpos i j hij := by simpa using hM.offDiag_nonpos j i hij.symm
+      zero_comm i j := by simpa using hM.zero_comm j i
+      exists_posDef := ⟨d', hd'_pos, this⟩ }
+  set C : ℤ := ∏ j, d j with hC
+  have hCd (i : ι) : d i * d' i = C := Finset.mul_prod_erase _ _ (Finset.mem_univ i)
+  have hsymm (i j : ι) : d' i * M j i = d' j * M i j := by
+    apply mul_left_cancel₀ (a := d i * d j) (by simp [(hd_pos _).ne'])
+    have aux : d i * M i j = d j * M j i := by simpa using hdM.isHermitian.apply j i
+    linear_combination (d j * M j i) * hCd i - (d i * M i j) * hCd j - C * aux
+  suffices ∀ v : ι → ℤ, v ≠ 0 → 0 < star v ⬝ᵥ (diagonal d' * Mᵀ) *ᵥ v from
+    posDef_iff_dotProduct_mulVec.mpr ⟨by ext i j; simpa using (hsymm i j).symm, this⟩
+  intro v hv
+  have key : (d' * v) ⬝ᵥ (diagonal d * M) *ᵥ (d' * v) = C * (v ⬝ᵥ (diagonal d' * Mᵀ) *ᵥ v) := by
+    simp only [dotProduct, mulVec, diagonal_mul, transpose_apply, Finset.mul_sum, Pi.mul_apply]
+    refine Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_
+    linear_combination (M i j * d' j * v i * v j) * hCd i - (C * v i * v j) * hsymm i j
+  have hpos := hdM.dotProduct_mulVec_pos (x := d' * v) <|
+    fun h ↦ hv (funext fun i ↦ by simpa [(hd'_pos i).ne'] using congr_fun h i)
+  rw [star_trivial, key] at hpos
   have hCpos : 0 < C := Finset.prod_pos fun j _ ↦ hd_pos j
-  have hCd : ∀ i, d i * d' i = C := fun i ↦ Finset.mul_prod_erase _ _ (Finset.mem_univ i)
-  have hsymmM := hG.mul_comm_of_diagonal_mul
-  have hsymm : ∀ i j, d' i * M j i = d' j * M i j := fun i j ↦ by
-    refine mul_left_cancel₀ (a := d i * d j) (mul_pos (hd_pos i) (hd_pos j)).ne' ?_
-    linear_combination (d j * M j i) * hCd i - (d i * M i j) * hCd j - C * hsymmM i j
-  refine { diag := fun i ↦ by simpa using hM.diag i
-           offDiag_nonpos := fun i j hij ↦ by simpa using hM.offDiag_nonpos j i hij.symm
-           zero_comm := fun i j ↦ by simpa using hM.zero_comm j i
-           exists_posDef := ⟨d', hd'_pos, ?_⟩ }
-  rw [Matrix.posDef_iff_dotProduct_mulVec]
-  refine ⟨?_, fun x hx ↦ ?_⟩
-  · ext i j
-    simpa [Matrix.diagonal_mul] using (hsymm i j).symm
-  · have hy0 : (fun i ↦ d' i * x i) ≠ 0 := by
-      intro h
-      refine hx (funext fun i ↦ ?_)
-      have := congr_fun h i
-      simpa [(hd'_pos i).ne'] using this
-    have hpos := hG.dotProduct_mulVec_pos hy0
-    rw [star_trivial] at hpos
-    have key : (fun i ↦ d' i * x i) ⬝ᵥ (Matrix.diagonal d * M) *ᵥ (fun i ↦ d' i * x i)
-        = C * (x ⬝ᵥ (Matrix.diagonal d' * Mᵀ) *ᵥ x) := by
-      simp only [dotProduct, Matrix.mulVec, Matrix.diagonal_mul, Matrix.transpose_apply,
-        Finset.mul_sum]
-      exact Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ by
-        linear_combination (M i j * d' j * x i * x j) * hCd i - (C * x i * x j) * hsymm i j
-    rw [key] at hpos
-    rw [star_trivial]
-    exact (mul_pos_iff_of_pos_left hCpos).mp hpos
+  rwa [star_trivial, ← mul_pos_iff_of_pos_left hCpos]
 
 end Matrix.IsFiniteCartan
 

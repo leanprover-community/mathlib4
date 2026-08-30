@@ -46,10 +46,14 @@ namespace CartanMatrix
 /-- A realisation of a Cartan matrix indexed by `ι` is a family of vectors `v` and covectors `f`,
 both indexed by `ι`, such that `⟨fⱼ, vᵢ⟩ = Aᵢⱼ` for all `i j`. -/
 structure Realisation where
+  /-- The simple roots. -/
   sRoot : n → M
+  /-- The simple coroots. -/
   sCoroot : n → N
+  /-- The Cartan matrix. -/
   matrix : Matrix n n ℤ
   isCartan : matrix.IsFiniteCartan
+  /-- The perfect pairing. -/
   pairing : M →ₗ[R] N →ₗ[R] R
   isPerfPair : pairing.IsPerfPair
   pairingMatrix (i j : n) : pairing (sRoot i) (sCoroot j) = matrix i j
@@ -454,9 +458,11 @@ lemma injOn_snd : InjOn Prod.snd rl.idx := fun p hp q hq h ↦ by
   replace hq : q.swap ∈ rl.flip.idx := by simpa [flip_idx]
   simpa using rl.flip.injOn_fst hp hq h
 
+/-- The roots of a realisation of a Cartan matrix. -/
 abbrev root : rl.idx ↪ M :=
   ⟨fun p ↦ (p : M × N).1, fun p q hpq ↦ Subtype.ext <| rl.injOn_fst p.2 q.2 hpq⟩
 
+/-- The coroots of a realisation of a Cartan matrix. -/
 abbrev coroot : rl.idx ↪ N :=
   ⟨fun p ↦ (p : M × N).2, fun p q hpq ↦ Subtype.ext <| rl.injOn_snd p.2 q.2 hpq⟩
 
