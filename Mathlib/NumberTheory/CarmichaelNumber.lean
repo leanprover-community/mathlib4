@@ -50,6 +50,9 @@ variable {n : ℕ}
 
 theorem IsCarmichael.two_lt (h : n.IsCarmichael) : 2 < n := h.1
 
+theorem IsCarmichael.neZero (h : n.IsCarmichael) : NeZero n :=
+  ⟨by grind [h.two_lt]⟩
+
 theorem IsCarmichael.not_prime (h : n.IsCarmichael) : ¬ n.Prime := h.2.1
 
 theorem IsCarmichael.probablePrime_of_coprime {b : ℕ} (h : n.IsCarmichael) (hb : b.Coprime n) :
@@ -73,8 +76,8 @@ lemma IsCarmichael.zmod_unit_pow_sub_one (s : (ZMod n)ˣ) (hn : n.IsCarmichael) 
   s ^ (n - 1) = 1 := by
   have : Nontrivial (ZMod n) := ZMod.nontrivial_iff.mpr (by grind [hn.two_lt])
   ext
-  rw [Units.val_one, Units.val_pow_eq_pow_val,
-    ← @ZMod.natCast_zmod_val _ ⟨by grind [hn.two_lt]⟩ s.val,
+  have : NeZero n := hn.neZero
+  rw [Units.val_one, Units.val_pow_eq_pow_val, ← ZMod.natCast_zmod_val s.val,
     ← probablePrime_iff_zmod_one n (by simp [Units.ne_zero s])]
   exact hn.probablePrime_of_coprime <| ZMod.val_coe_unit_coprime s
 
@@ -98,7 +101,8 @@ theorem IsCarmichael.squarefree (h : n.IsCarmichael) : Squarefree n := by
   obtain ⟨r, hr⟩ := isCyclic_iff_exists_orderOf_eq_natCard.mp <|
     (ZMod.isCyclic_units_iff_of_odd p_odd.pow).mpr ⟨p, 2, hp, p_odd, rfl⟩
   rw [card_eq_fintype_card, ZMod.card_units_eq_totient] at hr
-  obtain ⟨s, hs⟩ := @ZMod.unitsMap_surjective _ _ ⟨by grind [h.two_lt]⟩ (pow_two p ▸ p_dvd) r
+  have : NeZero n := h.neZero
+  obtain ⟨s, hs⟩ := ZMod.unitsMap_surjective (pow_two p ▸ p_dvd) r
   have phi_dvd : φ (p ^ 2) ∣ n - 1 := by
     rw [← hr, ← hs]
     apply orderOf_dvd_of_pow_eq_one
@@ -108,7 +112,7 @@ theorem IsCarmichael.squarefree (h : n.IsCarmichael) : Squarefree n := by
   exact dvd_trans (by simp [totient_prime_pow_succ hp 1]) phi_dvd
 
 theorem IsCarmichael.carmichael_dvd_sub_one (h : n.IsCarmichael) : carmichael n ∣ n - 1 := by
-  rw [@carmichael_eq_exponent' n ⟨by grind [h.two_lt]⟩]
+  rw [@carmichael_eq_exponent' n h.neZero]
   exact Monoid.exponent_dvd_of_forall_pow_eq_one h.zmod_unit_pow_sub_one
 
 theorem IsCarmichael.prime_sub_one_dvd {p : ℕ} (h : n.IsCarmichael) (hp : p.Prime) (hpn : p ∣ n) :
