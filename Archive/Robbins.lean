@@ -10,340 +10,55 @@ public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.Common
 
 /-!
-# Huntington and Robbins algebras
+# The Robbins conjecture
 
-In 1904, Edward Huntington gave a minimal set of 8 axioms for Boolean algebra,
-in the sense that every axiom is independent of the rest.
-Expressed with the lattice-theoretic notation of mathlib's `BooleanAlgebra` class:
-* `⊔` and `⊓` are commutative
-* `⊔` has identity `⊥`, `⊓` has identity `⊤`
-* `⊔` and `⊓` distribute over each other
-* For all `a`, `a ⊔ aᶜ = ⊤` and `a ⊓ aᶜ = ⊥`
+Herbert Robbins asked in 1933 whether the following three axioms,
+with `⊔` and `ᶜ` as in `BooleanAlgebra`, yield an algebra equivalent to Boolean algebra:
 
-This was followed in 1933 by a set of 3 axioms involving only `⊔` and `ᶜ` –
-`a ⊓ b := (aᶜ ⊔ bᶜ)ᶜ`, `⊤ := a ⊔ aᶜ` and `⊥ := (a ⊔ aᶜ)ᶜ`:
 * `⊔` is commutative and associative
-* For all `a` and `b`, `(aᶜ ⊔ bᶜ)ᶜ ⊔ (aᶜ ⊔ b)ᶜ = a` (Huntington's axiom)
+* For all `a` and `b`, `((a ⊔ b)ᶜ ⊔ (a ⊔ bᶜ)ᶜ)ᶜ = a`
 
-Very soon afterwards, Herbert Robbins asked whether replacing Huntington's axiom by
-* For all `a` and `b`, `((a ⊔ b)ᶜ ⊔ (a ⊔ bᶜ)ᶜ)ᶜ = a` (Robbins's axiom)
+This **Robbins conjecture** was only proved in 1997 by an early automated theorem prover
+under the direction of William McCune by deriving Huntington's equation:
 
-still yielded an algebra equivalent to Boolean algebra. This came to be known as the
-**Robbins conjecture**, and was only proved in 1997 by an early automated theorem prover
-under the direction of William McCune.
+* For all `a` and `b`, `(aᶜ ⊔ bᶜ)ᶜ ⊔ (aᶜ ⊔ b)ᶜ = a`
+
+With the axioms on `⊔` this had been shown by Edward Huntington to be equivalent to Boolean algebra,
+just before Robbins made his conjecture.
 
 The formalisation in this file largely follows Matthew Wampler-Doty's [Isabelle formalisation](https://www.isa-afp.org/entries/Robbins-Conjecture.html),
 which in turn follows Allen L. Mann's [A Complete Proof of the Robbins Conjecture](https://math.colgate.edu/~amann/MA/robbins_complete.pdf).
 Some differences include:
-* For ease of typing and clarity around negations, algebraic notation is used
-  for the newly defined algebras: `- + * 0 1` instead of `ᶜ ⊔ ⊓ ⊥ ⊤`.
-* To link the 1933 Huntington and Robbins algebras to the native Boolean algebra class,
+
+* For ease of typing and clarity around negations, algebraic notation is used for Robbins algebras:
+  `- + 0 1` instead of `ᶜ ⊔ ⊥ ⊤`.
+* After deriving Huntington's equation we derive the `BooleanAlgebra` instance directly.
   Wampler-Doty went through an axiomatisation with 9 axioms found in a textbook.
-  We go through the 1904 Huntington algebra (`H1904Algebra`).
-* To make the manipulations in Mann's presentation explicit, we only appeal to proof automation
-  in the forms of `ac_rfl` for rearranging terms in the 1933 Huntington and Robbins algebras,
-  and `lia` for numeric comparisons. In particular, we do not use `grind`.
-  Wampler-Doty's formalisation relies a lot on `metis`, a rough Isabelle equivalent of `grind`.
+* To make the manipulations in Mann's presentation explicit, we do not automate proofs with `grind`,
+  only `ac_rfl` for rearranging terms and `lia` for numeric comparisons.
+  Wampler-Doty relies heavily on `metis`, a rough Isabelle equivalent of `grind`.
 -/
 
-@[expose] public section
+public section
 
-variable {α : Type*}
-
-/-- Huntington's 1904 axioms for Boolean algebra. -/
-class H1904Algebra (α) extends Neg α, Add α, Mul α, Zero α, One α where
-  /-- `+` is commutative -/
-  add_comm (a b : α) : a + b = b + a
-  /-- `*` is commutative -/
-  mul_comm (a b : α) : a * b = b * a
-  /-- 0 is an identity for `+` -/
-  add_zero (a : α) : a + 0 = a
-  /-- 1 is an identity for `*` -/
-  mul_one (a : α) : a * 1 = a
-  /-- `+` distributes over `*` -/
-  add_mul_left (a b c : α) : a + (b * c) = (a + b) * (a + c)
-  /-- `*` distributes over `+` -/
-  mul_add_left (a b c : α) : a * (b + c) = a * b + a * c
-  /-- `a + -a = 1` -/
-  add_neg_self (a : α) : a + -a = 1
-  /-- `a * -a = 0` -/
-  mul_neg_self (a : α) : a * -a = 0
-
-/-- Derive a `H1904Algebra` from a Boolean algebra. -/
-@[instance_reducible]
-def BooleanAlgebra.h1904Algebra [BooleanAlgebra α] : H1904Algebra α where
-  neg := (·ᶜ)
-  add := (· ⊔ ·)
-  mul := (· ⊓ ·)
-  zero := ⊥
-  one := ⊤
-  add_comm := sup_comm
-  mul_comm := inf_comm
-  add_zero := sup_bot_eq
-  mul_one := inf_top_eq
-  add_mul_left := sup_inf_left
-  mul_add_left := inf_sup_left
-  add_neg_self _ := sup_compl_eq_top
-  mul_neg_self := inf_compl_self
-
-namespace H1904Algebra
-
-variable [H1904Algebra α] (a b c : α)
-
-lemma zero_add : 0 + a = a := by
-  rw [add_comm, add_zero]
-
-lemma one_mul : 1 * a = a := by
-  rw [mul_comm, mul_one]
-
-lemma add_mul_right : a * b + c = (a + c) * (b + c) := by
-  rw [add_comm, add_mul_left, add_comm, add_comm c]
-
-lemma mul_add_right : (a + b) * c = a * c + b * c := by
-  rw [mul_comm, mul_add_left, mul_comm, mul_comm c]
-
-lemma neg_self_add : -a + a = 1 := by
-  rw [add_comm, add_neg_self]
-
-lemma neg_self_mul : -a * a = 0 := by
-  rw [mul_comm, mul_neg_self]
-
-lemma add_self : a + a = a := by
-  rw [← mul_one (a + a), ← add_neg_self a, ← add_mul_left, mul_neg_self, add_zero]
-
-lemma mul_self : a * a = a := by
-  rw [← add_zero (a * a), ← mul_neg_self a, ← mul_add_left, add_neg_self, mul_one]
-
-lemma add_one : a + 1 = 1 := by
-  nth_rw 1 [← one_mul (a + 1), ← add_neg_self a, ← add_mul_left, mul_one, add_neg_self]
-
-lemma mul_zero : a * 0 = 0 := by
-  nth_rw 1 [← zero_add (a * 0), ← mul_neg_self a, ← mul_add_left, add_zero, mul_neg_self]
-
-lemma one_add : 1 + a = 1 := by
-  rw [add_comm, add_one]
-
-lemma zero_mul : 0 * a = 0 := by
-  rw [mul_comm, mul_zero]
-
-lemma neg_unique (p : a + b = 1) (q : a * b = 0) : b = -a := by
-  rw [← one_mul b, ← add_neg_self a, mul_add_right, q, ← neg_self_mul a, ← mul_add_left, p, mul_one]
-
-lemma neg_neg : - -a = a :=
-  (neg_unique _ _ (neg_self_add _) (neg_self_mul _)).symm
-
-lemma add_self_mul : a + a * b = a := by
-  nth_rw 1 [← mul_one a, ← mul_add_left, add_comm, add_one, mul_one]
-
-lemma mul_self_add : a * (a + b) = a := by
-  nth_rw 1 [← add_zero a, ← add_mul_left, mul_comm, mul_zero, add_zero]
-
-lemma add_assoc : a + b + c = a + (b + c) := by
-  have lp : a * (a + b + c) = a * (a + (b + c)) := by
-    rw [mul_self_add, mul_add_left, mul_self_add, add_self_mul]
-  have ln : -a * (a + b + c) = -a * (a + (b + c)) := by
-    rw [mul_add_left, mul_add_left (-a), neg_self_mul, zero_add,
-      ← mul_add_left, mul_add_left _ a, neg_self_mul, zero_add]
-  rw [← one_mul (a + b + c), ← add_neg_self a, mul_add_right, lp, ln,
-    ← mul_add_right, add_neg_self, one_mul]
-
-lemma mul_assoc : a * b * c = a * (b * c) := by
-  have lp : a + a * b * c = a + a * (b * c) := by
-    rw [add_self_mul, add_mul_left, add_self_mul, mul_self_add]
-  have ln : -a + a * b * c = -a + a * (b * c) := by
-    rw [add_mul_left, add_mul_left (-a), neg_self_add, one_mul,
-      ← add_mul_left, add_mul_left _ a, neg_self_add, one_mul]
-  rw [← zero_add (a * b * c), ← mul_neg_self a, add_mul_right, lp, ln,
-    ← add_mul_right, mul_neg_self, zero_add]
-
-lemma neg_add : -(a + b) = -a * -b := by
-  apply (neg_unique _ _ ?_ ?_).symm
-  · rw [add_mul_left, add_comm, ← add_assoc, neg_self_add,
-      one_add, add_assoc, add_neg_self, add_one, mul_self]
-  · rw [← mul_assoc, mul_add_right, mul_neg_self, zero_add,
-      mul_comm, ← mul_assoc, neg_self_mul, zero_mul]
-
-lemma neg_mul : -(a * b) = -a + -b := by
-  apply (neg_unique _ _ ?_ ?_).symm
-  · rw [← add_assoc, add_mul_right, add_neg_self, one_mul,
-      add_comm, ← add_assoc, neg_self_add, one_add]
-  · rw [mul_add_left, mul_comm, ← mul_assoc, neg_self_mul,
-      zero_mul, mul_assoc, mul_neg_self, mul_zero, add_self]
-
-/-- Derive a distributive lattice from a `H1904Algebra`. -/
-@[instance_reducible]
-def distribLattice : DistribLattice α where
-  le a b := a + b = b
-  le_refl := add_self
-  le_trans _ _ _ h₁ h₂ := by rw [← h₂, ← add_assoc, h₁]
-  le_antisymm _ _ h₁ h₂ := by rwa [← h₂, add_comm]
-  sup := (· + ·)
-  inf := (· * ·)
-  le_sup_left _ _ := by rw [← add_assoc, add_self]
-  le_sup_right _ _ := by rw [add_comm, add_assoc, add_self]
-  sup_le _ _ _ h₁ h₂ := by rwa [add_assoc, h₂]
-  inf_le_left _ _ := by rw [add_comm, add_self_mul]
-  inf_le_right _ _ := by rw [add_comm, mul_comm, add_self_mul]
-  le_inf _ _ _ h₁ h₂ := by rw [add_mul_left, h₁, h₂]
-  le_sup_inf _ _ _ := by
-    change (_ + _) * (_ + _) + (_ + _ * _) = _ + _ * _
-    rw [add_mul_left, add_self]
-
-/-- Derive a Boolean algebra from a `H1904Algebra`. -/
-@[instance_reducible]
-def booleanAlgebra : BooleanAlgebra α where
-  __ := distribLattice
-  compl := (-·)
-  bot := 0
-  top := 1
-  inf_compl_le_bot a := by
-    change a * -a ≤ 0
-    rw [mul_neg_self]
-  top_le_sup_compl a := by
-    change 1 ≤ a + -a
-    rw [add_neg_self]
-  le_top a := by
-    change a + 1 = 1
-    rw [add_one]
-  bot_le a := by
-    change 0 + a = a
-    rw [add_comm, add_zero]
-
-end H1904Algebra
-
-/-- Huntington's 1933 axioms for Boolean algebra. -/
-class HuntingtonAlgebra (α) extends Inhabited α, AddCommSemigroup α, Neg α where
-  /-- Huntington's axiom -/
-  huntington (a b : α) : -(-a + -b) + -(-a + b) = a
-
-/-- Derive a `HuntingtonAlgebra` from a `H1904Algebra`. -/
-@[instance_reducible]
-def H1904Algebra.huntingtonAlgebra [H1904Algebra α] : HuntingtonAlgebra α where
-  default := 0
-  add_comm := add_comm
-  add_assoc := add_assoc
-  huntington _ _ := by
-    rw [neg_add, neg_neg, neg_neg, neg_add, neg_neg, ← mul_add_left, add_neg_self, mul_one]
-
-namespace HuntingtonAlgebra
-
-variable [HuntingtonAlgebra α] (a b c : α)
-
-private instance : Std.Associative (α := α) (· + ·) := ⟨add_assoc⟩
-
-lemma neg_neg_with_add : a + -a = -a + - -a := by
-  rw [← huntington (- -a) (-a)]
-  nth_rw 2 [← huntington (-a) (-a)]
-  nth_rw 1 [← huntington (-a) (- -a), ← huntington a (- -a)]
-  ac_rfl
-
-lemma neg_neg : - -a = a := by
-  nth_rw 2 [← huntington a (- -a)]
-  nth_rw 1 [← huntington (- -a) (-a), add_comm (- - -a), ← neg_neg_with_add]
-  ac_rfl
-
-lemma exists_one : a + -a = b + -b := by
-  nth_rw 1 [← huntington (-b) (-a), ← huntington b (-a),
-    ← huntington (-a) (-b), ← huntington a (-b)]
-  ac_rfl
-
-instance mul : Mul α := ⟨fun a b ↦ -(-a + -b)⟩
-instance zero : Zero α := ⟨-(default + -default)⟩
-instance one : One α := ⟨default + -default⟩
-
-lemma mul_def : a * b = -(-a + -b) := rfl
-lemma zero_def : (0 : α) = -(default + -default) := rfl
-lemma one_def : (1 : α) = default + -default := rfl
-lemma neg_zero : -(0 : α) = 1 := by rw [zero_def, neg_neg, one_def]
-lemma neg_one : -(1 : α) = 0 := rfl
-lemma mul_comm : a * b = b * a := by rw [mul_def, mul_def, add_comm]
-lemma add_neg_self : a + -a = 1 := exists_one ..
-lemma mul_neg_self : a * -a = 0 := by rw [mul_def, exists_one _ default, zero_def]
-lemma neg_add : -(a + b) = -a * -b := by rw [mul_def, neg_neg, neg_neg]
-lemma neg_mul : -(a * b) = -a + -b := by rw [mul_def, neg_neg]
-
-lemma add_zero : a + 0 = a := by
-  have l₀ := huntington (0 : α) 0
-  rw [add_comm _ 0, add_neg_self, neg_zero, ← neg_one] at l₀
-  have l₁ := add_neg_self (1 : α)
-  rw [← l₀, add_comm, add_assoc, add_comm (-1), add_neg_self] at l₁
-  have s₁ := add_neg_self (1 + 1 : α)
-  rw [add_assoc, add_comm _ (-_), l₁] at s₁
-  have s₀ := neg_one (α := α)
-  rw [← l₀, s₁, neg_one] at s₀
-  rw [← huntington a a, add_comm _ a, add_neg_self, neg_one, add_assoc, s₀]
-
-lemma mul_one : a * 1 = a := by
-  rw [mul_def, neg_one, add_zero, neg_neg]
-
-lemma mul_assoc : a * b * c = a * (b * c) := by
-  rw [mul_def, neg_mul, mul_def, neg_mul, add_assoc]
-
-lemma mul_self : a * a = a := by
-  nth_rw 3 [← huntington a a]
-  rw [add_comm _ a, add_neg_self, neg_one, add_zero, mul_def]
-
-lemma add_self : a + a = a := by
-  nth_rw 3 [← neg_neg a]
-  rw [← mul_self (-a), mul_def, neg_neg, neg_neg]
-
-lemma add_one : a + 1 = 1 := by
-  rw [← add_neg_self a, ← add_assoc, add_self]
-
-lemma mul_zero : a * 0 = 0 := by
-  rw [← mul_neg_self a, ← mul_assoc, mul_self]
-
-lemma add_self_mul : a + a * b = a := by
-  nth_rw 1 [← huntington a b, mul_def, add_comm, ← add_assoc, add_self, huntington]
-
-lemma mul_self_add : a * (a + b) = a := by
-  rw [mul_def, neg_add a, add_self_mul, neg_neg]
-
-lemma huntington' : a * b + a * -b = a := by
-  nth_rw 3 [← huntington a b]
-  rw [mul_def, mul_def, neg_neg]
-
-private instance : Std.Commutative (α := α) (· * ·) := ⟨mul_comm⟩
-private instance : Std.Associative (α := α) (· * ·) := ⟨mul_assoc⟩
-
-lemma mul_add_left : a * (b + c) = a * b + a * c := by
-  nth_rw 1 [← huntington' (_ * _) b, mul_assoc, mul_comm _ b, mul_self_add,
-    ← huntington' (a * b) c, ← huntington' (_ * -b) c]
-  have rearr : a * (b + c) * -b * c = a * -b * (c * (c + b)) := by ac_rfl
-  rw [rearr, mul_self_add, mul_assoc _ (-b) (-c), ← neg_add, mul_assoc _ (b + c), mul_neg_self,
-    mul_zero, add_zero, ← add_self (a * b * c), add_assoc (_ * _), huntington',
-    ← huntington' (a * c) b]
-  ac_rfl
-
-lemma add_mul_left : a + b * c = (a + b) * (a + c) := by
-  rw [mul_def (a + b), neg_add a, neg_add a, ← mul_add_left, neg_mul, neg_neg, mul_def]
-
-/-- Derive a `H1904Algebra` from a Huntington algebra. -/
-@[instance_reducible]
-def h1904Algebra : H1904Algebra α where
-  add_comm := add_comm
-  mul_comm := mul_comm
-  add_zero := add_zero
-  mul_one := mul_one
-  add_mul_left := add_mul_left
-  mul_add_left := mul_add_left
-  add_neg_self := add_neg_self
-  mul_neg_self := mul_neg_self
-
-end HuntingtonAlgebra
-
-/-- The type of **Robbins algebras**. -/
+/-- The type of Robbins algebras. -/
 class RobbinsAlgebra (α) extends Inhabited α, AddCommSemigroup α, Neg α where
   /-- Robbins's axiom -/
   robbins (a b : α) : -(-(a + b) + -(a + -b)) = a
 
-/-- Derive a Robbins algebra from a `H1904Algebra`. -/
+variable {α : Type*}
+
+/-- Derive a Robbins algebra from a Boolean algebra. -/
 @[instance_reducible]
-def H1904Algebra.robbinsAlgebra [H1904Algebra α] : RobbinsAlgebra α where
-  default := 0
-  add_comm := add_comm
-  add_assoc := add_assoc
-  robbins _ _ := by rw [neg_add, neg_neg, neg_neg, ← add_mul_left, mul_neg_self, add_zero]
+def BooleanAlgebra.robbinsAlgebra [BooleanAlgebra α] : RobbinsAlgebra α where
+  default := ⊥
+  add := (· ⊔ ·)
+  add_comm := sup_comm
+  add_assoc := sup_assoc
+  neg := (·ᶜ)
+  robbins a b := by
+    change ((a ⊔ b)ᶜ ⊔ (a ⊔ bᶜ)ᶜ)ᶜ = a
+    rw [compl_sup, compl_compl, compl_compl, ← sup_inf_left, inf_compl_self, sup_bot_eq]
 
 namespace RobbinsAlgebra
 
@@ -360,11 +75,11 @@ def smul : ℕ → α → α
 
 instance : SMul ℕ α where smul := smul
 
-lemma smul1 : 1 • a = a := rfl
-lemma smul2 : 2 • a = a + a := rfl
-lemma smul3 : 3 • a = a + a + a := rfl
-lemma smul4 : 4 • a = a + a + a + a := rfl
-lemma smul5 : 5 • a = a + a + a + a + a := rfl
+private lemma smul1 : 1 • a = a := rfl
+private lemma smul2 : 2 • a = a + a := rfl
+private lemma smul3 : 3 • a = a + a + a := rfl
+private lemma smul4 : 4 • a = a + a + a + a := rfl
+private lemma smul5 : 5 • a = a + a + a + a + a := rfl
 
 lemma smul_succ {k : ℕ} {a : α} (hk : 1 ≤ k) : (k + 1) • a = k • a + a := by
   induction k, hk using Nat.le_induction with
@@ -604,18 +319,93 @@ theorem neg_neg : - -a = a := by
     nth_rw 1 [← robbins (- - -x) (-x), add_comm _ (- -x), ← k₁ (-x), hz, add_comm, ← k₂]
   simpa only [robbins] using k₃ (-(a + z) + -(a + -z))
 
-/-- Derive a Huntington algebra from a Robbins algebra. -/
-@[instance_reducible]
-def huntingtonAlgebra : HuntingtonAlgebra α where
-  huntington a b := by
-    conv_rhs => rw [← neg_neg a, ← robbins (-a) b, neg_neg]
-    ac_rfl
+theorem huntington : -(-a + -b) + -(-a + b) = a := by
+  conv_rhs => rw [← neg_neg a, ← robbins (-a) b, neg_neg, add_comm]
+
+instance : Zero α where zero := -(default + -default)
+instance : One α where one := default + -default
+
+lemma add_neg_self_const : a + -a = b + -b := by
+  nth_rw 1 [← huntington (-b) (-a), ← huntington b (-a),
+    ← huntington (-a) (-b), ← huntington a (-b)]
+  ac_rfl
+
+lemma neg_zero : -(0 : α) = 1 := neg_neg _
+
+lemma neg_one : -(1 : α) = 0 := rfl
+
+lemma add_neg_self : a + -a = 1 := add_neg_self_const ..
+
+lemma add_zero : a + 0 = a := by
+  have l₀ := huntington (0 : α) 0
+  rw [add_comm _ 0, add_neg_self, neg_zero, ← neg_one] at l₀
+  have l₁ := add_neg_self (1 : α)
+  rw [← l₀, add_comm, add_assoc, add_comm (-1), add_neg_self] at l₁
+  have s₁ := add_neg_self (1 + 1 : α)
+  rw [add_assoc, add_comm _ (-_), l₁] at s₁
+  have s₀ := neg_one (α := α)
+  rw [← l₀, s₁, neg_one] at s₀
+  rw [← huntington a a, add_comm _ a, add_neg_self, neg_one, add_assoc, s₀]
+
+lemma add_self : a + a = a := by
+  conv_rhs => rw [← neg_neg a, ← huntington (-a) (-a)]
+  rw [add_comm _ (-a), add_neg_self, neg_one, add_zero, neg_neg, neg_neg]
+
+lemma inf_le_left : -(-a + -b) + a = a := by
+  nth_rw 2 [← huntington a b]
+  rw [← add_assoc, add_self, huntington]
+
+lemma inf_sup_left : -(-a + -(b + c)) = -(-a + -b) + -(-a + -c) := by
+  nth_rw 1 [← huntington (-_) b, neg_neg, add_assoc, ← neg_neg b, ← neg_neg c, inf_le_left,
+    ← huntington (-_) c, ← huntington (-(_ + b)) c]
+  have l₁ := huntington (-(-a + -b)) c
+  have l₂ := huntington (-(-a + -c)) b
+  simp_rw [neg_neg] at l₁ l₂ ⊢
+  rw [show -a + -(b + c) + b + -c = -a + b + (-(c + b) + -c) by ac_rfl,
+    show -a + -(b + c) + b + c = -a + ((b + c) + -(b + c)) by ac_rfl]
+  conv_lhs => enter [2, 1, 1, 2, 1]; rw [← neg_neg b, ← neg_neg c]
+  rw [inf_le_left, add_neg_self_const _ a, show -a + (a + -a) = a + (-a + -a) by ac_rfl, add_self,
+    add_neg_self, neg_one, add_zero, ← add_self (-_), add_assoc (-(-a + -b + -c)), l₁, ← l₂]
+  ac_rfl
+
+lemma sup_inf_left : a + -(-b + -c) = -(-(a + b) + -(a + c)) := by
+  simpa only [neg_neg] using congr(-$(inf_sup_left (-a) (-b) (-c)))
+
+instance : Lattice α where
+  le a b := a + b = b
+  le_refl := add_self
+  le_trans _ _ _ h₁ h₂ := by rw [← h₂, ← add_assoc, h₁]
+  le_antisymm _ _ h₁ h₂ := by rwa [← h₂, add_comm]
+  sup a b := a + b
+  le_sup_left _ _ := by rw [← add_assoc, add_self]
+  le_sup_right _ _ := by rw [add_comm, add_assoc, add_self]
+  sup_le _ _ _ h₁ h₂ := by rw [add_assoc, h₂, h₁]
+  inf a b := -(-a + -b)
+  inf_le_left := inf_le_left
+  inf_le_right a b := add_comm (-b) _ ▸ inf_le_left ..
+  le_inf _ _ _ h₁ h₂ := by rw [sup_inf_left, h₁, h₂]
 
 /-- Derive a Boolean algebra from a Robbins algebra. -/
 @[instance_reducible]
-def booleanAlgebra : BooleanAlgebra α :=
-  let _ : HuntingtonAlgebra α := huntingtonAlgebra
-  let _ : H1904Algebra α := HuntingtonAlgebra.h1904Algebra
-  H1904Algebra.booleanAlgebra
+def booleanAlgebra : BooleanAlgebra α where
+  compl := (-·)
+  top := 1
+  bot := 0
+  inf_compl_le_bot _ := by
+    change -(_ + _) + _ = _
+    rw [add_zero, add_neg_self, neg_one]
+  top_le_sup_compl _ := by
+    change _ + (_ + _) = (_ + _)
+    rw [add_neg_self, add_self]
+  le_top _ := by
+    change _ + _ = _
+    nth_rw 1 [← add_neg_self, ← add_assoc, add_self, add_neg_self]
+  bot_le _ := by
+    change _ + _ = _
+    rw [add_comm, add_zero]
+  le_sup_inf _ _ _ := by
+    change -(-(_ + _) + -(_ + _)) + _ = _
+    rw [← sup_inf_left]
+    exact add_self _
 
 end RobbinsAlgebra
