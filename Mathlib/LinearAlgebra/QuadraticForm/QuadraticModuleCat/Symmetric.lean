@@ -37,7 +37,7 @@ instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
     fun X Y ↦ ofIso <| tensorComm X.form Y.form
 
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a braided functor. -/
-instance : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Braided where
+instance : (forget₂ (QuadraticModuleCat R) (ModuleCat.{u} R)).Braided where
 
 instance instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R) :=
   .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))

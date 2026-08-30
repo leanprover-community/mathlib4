@@ -88,19 +88,19 @@ lemma hom_ext {M N : QuadraticModuleCat.{v} R} (f g : M ⟶ N) (h : f.toIsometry
     Hom.toIsometry (𝟙 M) = Isometry.id _ :=
   rfl
 
-instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
+instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
       map := fun f => ModuleCat.ofHom f.toIsometry.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : QuadraticModuleCat R) :
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).obj X = ModuleCat.of R X :=
+    (forget₂ (QuadraticModuleCat R) (ModuleCat.{v} R)).obj X = ModuleCat.of R X :=
   rfl
 
 @[simp]
 theorem forget₂_map (X Y : QuadraticModuleCat R) (f : X ⟶ Y) :
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map f =
+    (forget₂ (QuadraticModuleCat R) (ModuleCat.{v} R)).map f =
       ModuleCat.ofHom f.toIsometry.toLinearMap :=
   rfl
 

@@ -40,7 +40,7 @@ variable (R : Type*) [Ring R] (C : Type*) [Category* C] [Abelian C] [Linear R C]
 the first argument of `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`
 (which is the second argument of `linearYoneda`).
 -/
-def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
+def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat.{v_1} R :=
   Functor.flip
     { obj := fun Y => (((linearYoneda R C).obj Y).rightOp.leftDerived n).leftOp
       map := fun f => ((((linearYoneda R C).map f).rightOp).leftDerived n).leftOp }
@@ -57,7 +57,7 @@ which in degree `i` consists of the module of morphisms `X.X i ⟶ Y`. -/
 @[simps! X d]
 def ChainComplex.linearYonedaObj {α : Type*} [AddRightCancelSemigroup α] [One α]
     (X : ChainComplex C α) (A : Type*) [Ring A] [Linear A C] (Y : C) :
-    CochainComplex (ModuleCat A) α :=
+    CochainComplex (ModuleCat.{v_1} A) α :=
   ((((linearYoneda A C).obj Y).rightOp.mapHomologicalComplex _).obj X).unop
 
 namespace CategoryTheory
