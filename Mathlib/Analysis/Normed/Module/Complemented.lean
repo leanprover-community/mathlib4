@@ -6,8 +6,12 @@ Authors: Yury Kudryashov, Sharvil Kesarwani
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Complemented subspaces of Banach spaces
@@ -81,7 +85,7 @@ variable [CompleteSpace E] {p q : Subspace 𝕜 E}
 
 theorem IsCompl.isTopCompl_of_isClosed (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : IsTopCompl p q := by
-  haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
+  have := hp.completeSpace_coe; have := hq.completeSpace_coe
   rw [isTopCompl_iff_continuous_symm_prodEquivOfIsCompl h]
   exact (p.prodEquivOfIsCompl q h).continuous_symm (continuous_prodEquivOfIsCompl h)
 

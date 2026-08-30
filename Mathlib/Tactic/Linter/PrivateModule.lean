@@ -14,8 +14,10 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 /-!
 # Private module linter
 
-This linter lints against nonempty modules that have only private declarations, and suggests adding
-`@[expose] public section` to the top or selectively marking declarations as `public`.
+This linter lints against nonempty modules that have only private declarations. It suggests the
+possible fixes: adding `public section` at the top of the module, selectively marking declarations
+as `public` (with `@[expose]` on `def`s whose bodies are needed downstream, e.g. for `unfold`), or
+adding `@[expose] public section` to expose every definition.
 
 ## Implementation notes
 
@@ -59,7 +61,7 @@ open Lean Elab Command Linter
 namespace Mathlib.Linter
 
 /-- The `privateModule` linter lints against nonempty modules that have only private declarations,
-and suggests adding `@[expose] public section` or selectively marking declarations as `public`. -/
+and suggests ways to mark some or all of its declarations as `public`. -/
 public register_option linter.privateModule : Bool := {
   defValue := false
   descr := "Enable the `privateModule` linter, which lints against nonempty modules that have only \
@@ -68,7 +70,7 @@ public register_option linter.privateModule : Bool := {
 
 /--
 The `privateModule` linter lints against nonempty modules that have only private declarations,
-and suggests adding `@[expose] public section` to the top.
+and suggests ways to make declarations in the module public.
 
 This linter only acts on the end-of-input `Parser.Command.eoi` token, and ignores all other syntax.
 It logs its message at the top of the file.
@@ -91,8 +93,11 @@ def privateModule : Linter where run stx := do
       let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
       logLint linter.privateModule topOfFileRef
         "The current module only contains private declarations.\n\n\
-        Consider adding `@[expose] public section` at the beginning of the module, \
-        or selectively marking declarations as `public`."
+        Consider adding `public section` at the beginning of the module, \
+        or selectively marking declarations as `public`. Mark a `def` with \
+        `@[expose]` if downstream code needs it to be definitionally equal \
+        to its body (e.g. for `unfold`). Alternatively, \
+        add `@[expose] public section` to mark every definition as exposed."
 
 initialize addLinter privateModule
 

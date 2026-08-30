@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
@@ -106,9 +107,8 @@ open scoped NNReal Topology ContDiff
 universe u uE uF uG uX
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] {X : Type uX} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-  {s s₁ t u : Set E} {f f₁ : E → F} {g : F → G} {x x₀ : E} {c : F} {m n : ℕ∞ω}
+  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {s s₁ t u : Set E} {f f₁ : E → F} {x : E} {m n : ℕ∞ω}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Smooth functions within a set around a point -/
@@ -254,6 +254,13 @@ theorem ContDiffWithinAt.congr (h : ContDiffWithinAt 𝕜 n f s x) (h₁ : ∀ y
     (hx : f₁ x = f x) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq (Filter.eventuallyEq_of_mem self_mem_nhdsWithin h₁) hx
 
+/-- Version of `ContDiffWithinAt.congr` where `x` need not be contained in `s`,
+but `f` and `f₁` are equal on a set containing both. -/
+theorem ContDiffWithinAt.congr' (h : ContDiffWithinAt 𝕜 n f s x) (h₁ : ∀ y ∈ t, f₁ y = f y)
+    (hst : s ⊆ t) (hxt : x ∈ t) :
+    ContDiffWithinAt 𝕜 n f₁ s x :=
+  h.congr (fun _y hy ↦ h₁ _ (hst hy)) (h₁ x hxt)
+
 theorem contDiffWithinAt_congr (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : f₁ x = f x) :
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=
   ⟨fun h' ↦ h'.congr (fun x hx ↦ (h₁ x hx).symm) hx.symm, fun h' ↦  h'.congr h₁ hx⟩
@@ -296,7 +303,7 @@ theorem ContDiffWithinAt.congr_mono
 
 theorem ContDiffWithinAt.congr_set (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E}
     (hst : s =ᶠ[𝓝 x] t) : ContDiffWithinAt 𝕜 n f t x := by
-  rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet] at hst
   apply h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin
 
 theorem contDiffWithinAt_congr_set {t : Set E} (hst : s =ᶠ[𝓝 x] t) :
@@ -305,7 +312,7 @@ theorem contDiffWithinAt_congr_set {t : Set E} (hst : s =ᶠ[𝓝 x] t) :
 
 theorem contDiffWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     ContDiffWithinAt 𝕜 n f (s ∩ t) x ↔ ContDiffWithinAt 𝕜 n f s x :=
-  contDiffWithinAt_congr_set (mem_nhdsWithin_iff_eventuallyEq.1 h).symm
+  contDiffWithinAt_congr_set (mem_nhdsWithin_iff_eventuallyEqSet.1 h).symm
 
 theorem contDiffWithinAt_inter (h : t ∈ 𝓝 x) :
     ContDiffWithinAt 𝕜 n f (s ∩ t) x ↔ ContDiffWithinAt 𝕜 n f s x :=
@@ -787,7 +794,7 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     with ⟨u, uo, xu, hu⟩
   set t := insert x s ∩ u
   have A : t =ᶠ[𝓝[≠] x] s := by
-    simp only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter']
+    simp only [eventuallyEqSet_iff_inf_principal, ← nhdsWithin_inter']
     rw [← inter_assoc, nhdsWithin_inter_of_mem', ← sdiff_eq_compl_inter, insert_sdiff_of_mem,
       sdiff_eq_compl_inter]
     exacts [rfl, mem_nhdsWithin_of_mem_nhds (uo.mem_nhds xu)]
