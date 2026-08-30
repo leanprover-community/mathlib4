@@ -127,7 +127,7 @@ theorem map_swap_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} :
   map_prodComm_mulAntidiagonal
 
 @[to_additive (attr := simp)]
-lemma coe_mulAntidiagonal_eq_preimage_singleton [CommMagma A] [HasMulAntidiagonal A] (a : A) :
+lemma coe_mulAntidiagonal_eq_preimage_singleton [Mul A] [HasMulAntidiagonal A] (a : A) :
     (mulAntidiagonal a : Set (A × A)) = ((fun p ↦ p.1 * p.2) ⁻¹' {a}) := by ext; simp
 
 section CancelMonoid
