@@ -117,6 +117,7 @@ theorem not_summable_one_div_on_primes :
 set_option backward.isDefEq.respectTransparency false in
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem Nat.Primes.not_summable_one_div : ¬ Summable (fun p : Nat.Primes ↦ (1 / p : ℝ)) := by
+  -- faster than `exact`
   convert! summable_subtype_iff_indicator.mp.mt not_summable_one_div_on_primes
 
 /-- The series over `p^r` for primes `p` converges if and only if `r < -1`. -/

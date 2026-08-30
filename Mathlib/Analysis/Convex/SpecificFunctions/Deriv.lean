@@ -84,7 +84,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
     rcases le_or_gt m k with hmk | hmk
     · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
       convert! mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
-      convert! sub_nonpos_of_le this
+      exact sub_nonpos_of_le this
     · exact mul_nonneg (sub_nonneg_of_le hmk.le) (sub_nonneg_of_le hmk)
 
 theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
