@@ -329,9 +329,7 @@ lemma add_neg_self_const : a + -a = b + -b := by
   ac_rfl
 
 lemma neg_zero : -(0 : α) = 1 := neg_neg _
-
 lemma neg_one : -(1 : α) = 0 := rfl
-
 lemma add_neg_self : a + -a = 1 := add_neg_self_const ..
 
 lemma add_zero : a + 0 = a := by
@@ -358,16 +356,16 @@ lemma inf_sup_left : -(-a + -(b + c)) = -(-a + -b) + -(-a + -c) := by
     ← huntington (-_) c, ← huntington (-(_ + b)) c]
   have l₁ := huntington (-(-a + -b)) c
   have l₂ := huntington (-(-a + -c)) b
-  simp_rw [neg_neg] at l₁ l₂ ⊢
+  simp only [neg_neg] at l₁ l₂ ⊢
   rw [show -a + -(b + c) + b + -c = -a + b + (-(c + b) + -c) by ac_rfl,
     show -a + -(b + c) + b + c = -a + ((b + c) + -(b + c)) by ac_rfl]
   conv_lhs => enter [2, 1, 1, 2, 1]; rw [← neg_neg b, ← neg_neg c]
   rw [inf_le_left, add_neg_self_const _ a, show -a + (a + -a) = a + (-a + -a) by ac_rfl, add_self,
-    add_neg_self, neg_one, add_zero, ← add_self (-_), add_assoc (-(-a + -b + -c)), l₁, ← l₂]
+    add_neg_self, neg_one, add_zero, ← add_self (-_), add_assoc (-_), l₁, ← l₂]
   ac_rfl
 
 lemma sup_inf_left : a + -(-b + -c) = -(-(a + b) + -(a + c)) := by
-  simpa only [neg_neg] using congr(-$(inf_sup_left (-a) (-b) (-c)))
+  simpa [neg_neg] using congr(-$(inf_sup_left (-a) (-b) (-c)))
 
 instance : Lattice α where
   le a b := a + b = b
@@ -384,8 +382,7 @@ instance : Lattice α where
   le_inf _ _ _ h₁ h₂ := by rw [sup_inf_left, h₁, h₂]
 
 /-- Derive a Boolean algebra from a Robbins algebra. -/
-@[instance_reducible]
-def booleanAlgebra : BooleanAlgebra α where
+instance booleanAlgebra : BooleanAlgebra α where
   compl := (-·)
   top := 1
   bot := 0
