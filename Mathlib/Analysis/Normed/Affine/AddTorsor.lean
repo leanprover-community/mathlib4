@@ -141,27 +141,26 @@ theorem nndist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
   NNReal.eq <| dist_self_homothety _ _ _
 
 open scoped Pointwise in
-theorem NormedAddTorsor.image_homothety (c : P) (x : 𝕜) (s : Set P) :
+private theorem image_homothety (c : P) (x : 𝕜) (s : Set P) :
     homothety c x '' s =
       IsometryEquiv.vaddConst c '' (x • ((IsometryEquiv.vaddConst c).symm '' s)) := by
   simp [← Set.image_smul, ← Set.image_comp]; rfl
 
 theorem Metric.image_homothety_ball (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
     homothety c x '' ball p r = ball (homothety c x p) (‖x‖ * r) := by
-  rw [NormedAddTorsor.image_homothety, IsometryEquiv.image_ball, _root_.smul_ball hx,
-    IsometryEquiv.image_ball]
+  rw [image_homothety, IsometryEquiv.image_ball, _root_.smul_ball hx, IsometryEquiv.image_ball]
   rfl
 
 theorem Metric.image_homothety_closedBall (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
     homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
-  rw [NormedAddTorsor.image_homothety, IsometryEquiv.image_closedBall, _root_.smul_closedBall' hx,
+  rw [image_homothety, IsometryEquiv.image_closedBall, _root_.smul_closedBall' hx,
     IsometryEquiv.image_closedBall]
   rfl
 
 theorem Metric.image_homothety_closedBall_of_nonneg (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
     homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
-  rw [NormedAddTorsor.image_homothety, IsometryEquiv.image_closedBall,
-    _root_.smul_closedBall x _ hr, IsometryEquiv.image_closedBall]
+  rw [image_homothety, IsometryEquiv.image_closedBall, _root_.smul_closedBall x _ hr,
+    IsometryEquiv.image_closedBall]
   rfl
 
 theorem Metric.image_homothety_sphere (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
