@@ -168,6 +168,13 @@ theorem Metric.image_homothety_sphere (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠
   rw [← closedBall_sdiff_ball, ← closedBall_sdiff_ball, Set.image_sdiff (homothety_injective c hx),
     image_homothety_ball p c r hx, image_homothety_closedBall p c r hx]
 
+theorem Metric.image_homothety_sphere_of_nonneg [NormedSpace ℝ W] [Nontrivial W]
+    (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
+    homothety c x '' sphere p r = sphere (homothety c x p) (‖x‖ * r) := by
+  rw [image_homothety, IsometryEquiv.image_sphere, _root_.smul_sphere x _ hr,
+    IsometryEquiv.image_sphere]
+  rfl
+
 section invertibleTwo
 
 variable [Invertible (2 : 𝕜)]
