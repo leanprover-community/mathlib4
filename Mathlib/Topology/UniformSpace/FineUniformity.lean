@@ -3,8 +3,9 @@ Copyright (c) 2026 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen
 -/
+module
 
-import Mathlib.Topology.UniformSpace.Uniformizable
+public import Mathlib.Topology.UniformSpace.Uniformizable
 
 /-!
 # The fine uniformity
