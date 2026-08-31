@@ -299,6 +299,15 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
 
+theorem subtype_comp_map_eq (f : M →ₗ[R] N) :
+    (Submodule.subtype _) ∘ₗ (map n f) =
+      (ExteriorAlgebra.map f).toLinearMap ∘ₗ (Submodule.subtype _) :=
+  linearMap_ext <| AlternatingMap.ext fun m ↦ (by simp)
+
+@[simp]
+theorem coe_map (f : M →ₗ[R] N) (x : ⋀[R]^n M) : map n f x = ExteriorAlgebra.map f x.1 :=
+  congr($(subtype_comp_map_eq f) x)
+
 /-! Exactness properties of the exterior power functor. -/
 
 /-- If a linear map has a retraction, then the map it induces on exterior powers is injective. -/
@@ -351,7 +360,7 @@ private lemma ιMulti_family_span_fixedDegree_aux
   have α_card : (Finset.image α Finset.univ).card = n :=
     (Finset.card_image_of_injective Finset.univ α_inj).trans (Finset.card_fin n)
   use (Finset.orderIsoOfFin (Finset.image α Finset.univ) α_card).toEquiv.trans
-    ((Equiv.setCongr Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
+    ((Set.equivOfEq Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
   apply Submodule.mem_span_of_mem
   use ⟨(Finset.image α Finset.univ), α_card⟩
   rw [ExteriorAlgebra.ιMulti_family, Function.comp_assoc]
