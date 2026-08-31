@@ -709,6 +709,10 @@ theorem normalClosure_union {G : Type*} [Group G] (s t : Set G) :
     normalClosure (s ∪ t) = normalClosure s ⊔ normalClosure t := by
   simp_rw [normalClosure, Group.conjugatesOfSet_union, closure_union]
 
+@[to_additive (attr := simp)]
+theorem normalClosure_singleton_one : normalClosure ({1} : Set G) = ⊥ :=
+  le_antisymm (normalClosure_le_normal (by simp)) bot_le
+
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_iSup`. -/
 @[to_additive /-- The normal core of an additive subgroup `H` is the largest normal additive
