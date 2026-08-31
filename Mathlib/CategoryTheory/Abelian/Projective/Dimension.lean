@@ -335,6 +335,10 @@ lemma projectiveDimension_eq_zero_iff (X : C) :
     ← projectiveDimension_le_iff, ← WithBot.lt_zero_iff_eq_bot, not_lt, Nat.cast_zero,
     le_antisymm_iff]
 
+lemma projectiveDimension_ge_zero_iff (X : C) :
+    0 ≤ projectiveDimension X ↔ ¬ Limits.IsZero X := by
+  rw [← Nat.cast_zero, projectiveDimension_ge_iff, hasProjectiveDimensionLT_zero_iff_isZero]
+
 namespace ShortComplex
 
 namespace ShortExact
@@ -399,8 +403,7 @@ lemma projectiveDimension_X₃_eq_succ_of_not_projective (p : Projective S.X₂)
   · simp only [sup_le_iff, le_refl, and_true]
     trans 0 + 1
     · grw [p.projectiveDimension_le_zero, zero_add, zero_le_one]
-    · rw [ENat.WithBot.add_le_add_one_right_iff, ← Nat.cast_zero, projectiveDimension_ge_iff,
-      hasProjectiveDimensionLT_zero_iff_isZero, ← hS.isIso_g_iff]
+    · rw [ENat.WithBot.add_le_add_one_right_iff, projectiveDimension_ge_zero_iff, ← hS.isIso_g_iff]
       contrapose np
       exact Projective.of_iso (asIso S.g) p
   · simp only [sup_le_iff, le_refl, and_true]

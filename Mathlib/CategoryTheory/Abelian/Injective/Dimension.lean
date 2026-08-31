@@ -333,6 +333,10 @@ lemma injectiveDimension_eq_zero_iff (X : C) :
     ← injectiveDimension_le_iff, ← WithBot.lt_zero_iff_eq_bot, not_lt, Nat.cast_zero,
     le_antisymm_iff]
 
+lemma injectiveDimension_ge_zero_iff (X : C) :
+    0 ≤ injectiveDimension X ↔ ¬ Limits.IsZero X := by
+  rw [← Nat.cast_zero, injectiveDimension_ge_iff, hasInjectiveDimensionLT_zero_iff_isZero]
+
 namespace ShortComplex
 
 namespace ShortExact
@@ -397,8 +401,7 @@ lemma injectiveDimension_X₁_eq_succ_of_not_injective (i : Injective S.X₂)
   · simp only [sup_le_iff, le_refl, and_true]
     trans 0 + 1
     · grw [i.injectiveDimension_le_zero, zero_add, zero_le_one]
-    · rw [ENat.WithBot.add_le_add_one_right_iff, ← Nat.cast_zero, injectiveDimension_ge_iff,
-        hasInjectiveDimensionLT_zero_iff_isZero, ← hS.isIso_f_iff]
+    · rw [ENat.WithBot.add_le_add_one_right_iff, injectiveDimension_ge_zero_iff, ← hS.isIso_f_iff]
       contrapose ni
       exact Injective.of_iso (asIso S.f).symm i
   · simp only [sup_le_iff, le_refl, and_true]
