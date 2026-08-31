@@ -17,6 +17,10 @@ valuation at infinity `FunctionField.inftyValuation K`.
 
 ## Main results
 - `RatFunc.valuation_isEquiv_infty_or_adic`: Ostrowski's theorem for `K(X)`.
+
+### TODO
+- Show that a nontrivial valuation `v`, trivial on `K`, is a rank one discrete valuation.
+
 -/
 
 @[expose] public noncomputable section
@@ -252,8 +256,6 @@ lemma valuation_isEquiv_adic_of_not_isEquiv_infty [DecidableEq (RatFunc K)]
   valuation_isEquiv_infty_or_adic.or.resolve_left hni
 
 end IsTrivialOn
-
--- TODO: Show that `v` is a rank one discrete valuation.
 
 end RatFunc
 
