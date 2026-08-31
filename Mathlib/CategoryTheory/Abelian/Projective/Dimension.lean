@@ -397,17 +397,17 @@ lemma projectiveDimension_X₃_eq_succ_of_not_projective (p : Projective S.X₂)
   refine le_antisymm (hS.projectiveDimension_X₃_le_sup.trans ?_)
     (hS.projectiveDimension_X₁_succ_le_sup.trans ?_)
   · simp only [sup_le_iff, le_refl, and_true]
-    trans (0 : ℕ) + 1
-    · grw [p.projectiveDimension_le_zero, Nat.cast_zero, zero_add, zero_le_one]
-    rw [ENat.WithBot.add_le_add_one_right_iff, projectiveDimension_ge_iff,
+    trans 0 + 1
+    · grw [p.projectiveDimension_le_zero, zero_add, zero_le_one]
+    · rw [ENat.WithBot.add_le_add_one_right_iff, ← Nat.cast_zero, projectiveDimension_ge_iff,
       hasProjectiveDimensionLT_zero_iff_isZero, ← hS.isIso_g_iff]
-    contrapose np
-    exact Projective.of_iso (asIso S.g) p
+      contrapose np
+      exact Projective.of_iso (asIso S.g) p
   · simp only [sup_le_iff, le_refl, and_true]
     trans 0 + 1
     · grw [p.projectiveDimension_le_zero]
-    rwa [zero_add, ← Nat.cast_one, projectiveDimension_ge_iff,
-      ← projective_iff_hasProjectiveDimensionLT_one]
+    · rwa [zero_add, ← Nat.cast_one, projectiveDimension_ge_iff,
+        ← projective_iff_hasProjectiveDimensionLT_one]
 
 end ShortExact
 
