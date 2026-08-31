@@ -20,10 +20,12 @@ matrices built out of blocks.
 
 * `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
   if the rows and columns are ordered according to some order `b : o → α`
+* `Matrix.IsUpperTriangular` and `Matrix.IsLowerTriangular`, as abbreviations for
+  `Matrix.BlockTriangular` with the identity and the dual order, respectively.
 
 ## Main results
 
-* `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
+* `Matrix.BlockTriangular.det`: the determinant of a block triangular matrix
   is equal to the product of the determinants of all the blocks
 * `Matrix.det_of_isUpperTriangular` and `Matrix.det_of_isLowerTriangular`: the determinant of
   a triangular matrix is the product of the entries along the diagonal
@@ -399,16 +401,16 @@ theorem det_of_isLowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLow
 
 open Polynomial
 
-theorem matrixOfPolynomials_blockTriangular {R} [Semiring R] {n : ℕ} (p : Fin n → R[X])
+theorem matrixOfPolynomials_isUpperTriangular {R} [Semiring R] {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree ≤ i) :
-    Matrix.BlockTriangular (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) id :=
+    (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).IsUpperTriangular :=
   fun _ j h => by
     exact coeff_eq_zero_of_natDegree_lt <| Nat.lt_of_le_of_lt (h_deg j) h
 
 theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
-  rw [Matrix.det_of_isUpperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
+  rw [Matrix.det_of_isUpperTriangular (Matrix.matrixOfPolynomials_isUpperTriangular p (fun i ↦
       Nat.le_of_eq (h_deg i)))]
   convert! prod_const_one with x _
   rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
