@@ -997,15 +997,15 @@ theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
     fun _ ↦ FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 
-theorem dualCoannihilator_inf_eq {W W' : Subspace K (Dual K V)}
-      [FiniteDimensional K W] [FiniteDimensional K W'] :
+theorem dualCoannihilator_inf (W W' : Subspace K (Dual K V))
+    [FiniteDimensional K W] [FiniteDimensional K W'] :
     (W ⊓ W').dualCoannihilator = W.dualCoannihilator ⊔ W'.dualCoannihilator := by
   rw [← dualAnnihilator_inj, dualAnnihilator_sup_eq]
   repeat rw [dualCoannihilator_dualAnnihilator_eq]
 
-theorem dualCoannihilator_iInf_eq {ι : Type*} (W : ι → Subspace K (Module.Dual K V))
+theorem dualCoannihilator_iInf {ι : Type*} (W : ι → Subspace K (Module.Dual K V))
     [inst : ∀ i, FiniteDimensional K (W i)] :
-  (⨅ i, W i).dualCoannihilator = ⨆ i, (W i).dualCoannihilator := by
+    (⨅ i, W i).dualCoannihilator = ⨆ i, (W i).dualCoannihilator := by
   cases isEmpty_or_nonempty ι
   · simp [iInf_of_isEmpty, iSup_of_empty']
   have := Module.Finite.iff_fg.mpr <|
