@@ -4071,7 +4071,6 @@ public import Mathlib.Data.Finsupp.Option
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.Data.Finsupp.Pointwise
-public import Mathlib.Data.Finsupp.PointwiseSMul
 public import Mathlib.Data.Finsupp.Quotient
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.Data.Finsupp.SMulWithZero
