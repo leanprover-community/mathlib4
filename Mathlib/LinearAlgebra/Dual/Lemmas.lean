@@ -1005,7 +1005,7 @@ theorem dualCoannihilator_inf (W W' : Subspace K (Dual K V))
   repeat rw [dualCoannihilator_dualAnnihilator_eq]
 
 theorem dualCoannihilator_iInf {ι : Type*} (W : ι → Subspace K (Module.Dual K V))
-    [inst : ∀ i, FiniteDimensional K (W i)] :
+    [∀ i, FiniteDimensional K (W i)] :
     (⨅ i, W i).dualCoannihilator = ⨆ i, (W i).dualCoannihilator := by
   cases isEmpty_or_nonempty ι
   · simp [iInf_of_isEmpty, iSup_of_empty']
