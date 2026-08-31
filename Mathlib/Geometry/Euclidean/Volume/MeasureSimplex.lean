@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.Def
-public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
 
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
