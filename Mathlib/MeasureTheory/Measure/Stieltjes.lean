@@ -46,7 +46,9 @@ is not representable as a Stieltjes measure.
 
 noncomputable section
 
-open Set Filter Function ENNReal NNReal Topology MeasureTheory
+open Set Filter Function ENNReal NNReal MeasureTheory
+
+open scoped Topology
 
 open ENNReal (ofReal)
 
@@ -76,7 +78,6 @@ lemma isOpen_Iotop [TopologicalSpace R] [OrderTopology R] (a b : R) : IsOpen (Io
     simp [this, isOpen_Ioi]
   · simp [isOpen_Ioo]
 
-open scoped Classical in
 /-- `botSet` is the set of all bottom elements. -/
 def botSet : Set R := {x | IsBot x}
 
@@ -132,6 +133,7 @@ initialize_simps_projections StieltjesFunction (toFun → apply)
 
 variable (f : StieltjesFunction R)
 
+@[gcongr]
 theorem mono : Monotone f :=
   f.mono'
 
@@ -260,8 +262,6 @@ theorem countable_leftLim_ne [OrderTopology R] (f : StieltjesFunction R) :
 /-! ### The outer measure associated to a Stieltjes function -/
 
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
@@ -272,14 +272,12 @@ def length (s : Set R) : ℝ≥0∞ :=
   -- when measuring the size of a set (the set `{x}` will have measure `0` in our construction).
   else ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 lemma length_eq [Nonempty R] (s : Set R) :
     f.length s = ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a) := by
   simp [length]
 
 lemma length_eq_of_isEmpty [IsEmpty R] (s : Set R) : f.length s = 0 := by
-  simp only [length, if_pos]
+  simp only [length, ite_eq_left]
 
 @[simp]
 theorem length_empty : f.length ∅ = 0 := by
@@ -301,16 +299,15 @@ theorem length_Ioc (a b : R) : f.length (Ioc a b) = ofReal (f b - f a) := by
     apply zero_le
   simp only [Ioc_sdiff_botSet] at h
   obtain ⟨h₁, h₂⟩ := (Ioc_subset_Ioc_iff ab).1 h
-  exact Real.toNNReal_le_toNNReal (sub_le_sub (f.mono h₁) (f.mono h₂))
+  grw [h₁, h₂]
 
+@[gcongr]
 theorem length_mono {s₁ s₂ : Set R} (h : s₁ ⊆ s₂) : f.length s₁ ≤ f.length s₂ := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
   simp only [length_eq]
-  exact iInf_mono fun a => biInf_mono fun b h' => (sdiff_subset_sdiff_left h).trans h'
+  exact iInf_mono fun a => biInf_mono fun b => by gcongr
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem length_sdiff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
@@ -329,8 +326,6 @@ theorem outer_le_length (s : Set R) : f.outer s ≤ f.length s :=
 
 variable [OrderTopology R] [CompactIccSpace R]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If a compact interval `[a, b]` is covered by a union of open interval `(c i, d i)`, then
 `f b - f a ≤ ∑ f (d i) - f (c i)`. This is an auxiliary technical statement to prove the same
 statement for half-open intervals, the point of the current statement being that one can use
@@ -364,9 +359,8 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
   rw [Finset.sum_insert (Finset.notMem_erase _ _)]
   replace bcd : b ∈ Ioc (c i) (d i) := Iotop_subset_Ioc bcd
   grw [← IH _ (Finset.erase_ssubset is) (c i), ← ENNReal.ofReal_add_le]
-  · gcongr
-    rw [sub_add_sub_cancel]
-    exact sub_le_sub_right (f.mono bcd.2) _
+  · rw [sub_add_sub_cancel]
+    grw [bcd.2]
   · rintro x ⟨h₁, h₂⟩
     apply (cv ⟨h₁, le_trans h₂ (le_of_lt bcd.1)⟩).resolve_left (fun h ↦ ?_)
     order [(Iotop_subset_Ioc h).1]
@@ -424,7 +418,8 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       rintro x hx
       simp only [Iotop, htq', ↓reduceIte, mem_Ioc]
       exact ⟨(A hx).1, htq' _⟩
-    have : (𝓝[>] q').NeBot := by simp [Filter.neBot_iff, nhdsGT_eq_bot_iff, htq', not_covBy]
+    have : (𝓝[>] q').NeBot := by
+      simp [Filter.neBot_iff, nhdsGT_eq_bot_iff, htq', not_covBy_of_denselyOrdered]
     have : ContinuousWithinAt (fun r => ofReal (f r - f p)) (Ioi q') q' := by
       apply ENNReal.continuous_ofReal.continuousAt.comp_continuousWithinAt
       refine ContinuousWithinAt.sub ?_ continuousWithinAt_const
@@ -459,10 +454,7 @@ theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) 
   simp only [← length_eq]
   rw [← length_sdiff_botSet, inter_sdiff_right_comm, ← length_sdiff_botSet (s := t \ Ioi c),
     sdiff_sdiff_comm]
-  refine
-    le_trans
-      (add_le_add (f.length_mono <| inter_subset_inter_left _ h)
-        (f.length_mono <| sdiff_subset_sdiff_left h)) ?_
+  grw [h]
   rcases le_total a c with hac | hac <;> rcases le_total b c with hbc | hbc
   · simp only [Ioc_inter_Ioi, f.length_Ioc, hac, hbc, le_refl, Ioc_eq_empty,
       max_eq_right, min_eq_left, Ioc_sdiff_Ioi, f.length_empty, zero_add, not_lt]
@@ -487,8 +479,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
     show ∀ i, ∃ s, t i ⊆ s ∧ MeasurableSet s ∧ f.outer s ≤ f.length (t i) + ofReal (ε' i) by
       intro i
       rcases isEmpty_or_nonempty R with hR | hR
-      · refine ⟨∅, ?_, MeasurableSet.empty, by simp⟩
-        simpa using eq_empty_of_isEmpty (t i)
+      · exact ⟨∅, by simp, MeasurableSet.empty, by simp⟩
       have hl :=
         ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_pos.2 (ε'0 i)).ne'
       conv at hl =>

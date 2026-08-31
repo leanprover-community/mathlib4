@@ -22,7 +22,6 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {X Y : C} (f g : X ⟶ Y)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equalizer of `f g : X ⟶ Y` is the pullback of the diagonal map `Y ⟶ Y × Y`
 along the map `(f, g) : X ⟶ Y × Y`. -/
 lemma isPullback_equalizer_prod [HasEqualizer f g] [HasBinaryProduct Y Y] :

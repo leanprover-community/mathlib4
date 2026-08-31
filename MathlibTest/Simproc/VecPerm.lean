@@ -12,12 +12,15 @@ example : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
 example : ![a, b, c] ∘ Equiv.swap 0 2 = ![c, b, a] := by
   simp [vecPerm, Equiv.swap_apply_def]
 
+set_option backward.isDefEq.respectTransparency false in
 example : ![a, b, c] ∘ c[0, 1] = ![b, a, c] := by
   simp -- this is dealt with using `Matrix.cons_cons_comp_swap_zero_one`
 
+set_option backward.isDefEq.respectTransparency false in
 example : ![a, b, c] ∘ c[2, 0, 1] = ![b, c, a] := by
   simp [vecPerm, Equiv.swap_apply_def]
 
+set_option backward.isDefEq.respectTransparency false in
 example : ![a, b, c, d] ∘ c[2, 3, 0, 1] = ![b, c, d, a] := by
   simp [vecPerm, Equiv.swap_apply_def]
 

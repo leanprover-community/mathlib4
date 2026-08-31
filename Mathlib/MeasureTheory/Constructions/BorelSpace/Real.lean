@@ -37,7 +37,7 @@ open scoped Topology NNReal ENNReal
 
 universe u v w x y
 
-variable {α β γ δ : Type*} {ι : Sort y} {s t u : Set α}
+variable {α β γ δ : Type*} {ι : Sort y} {s u : Set α}
 
 namespace Real
 
@@ -480,7 +480,7 @@ instance : MeasurableAdd₂ EReal := ⟨EReal.lowerSemicontinuous_add.measurable
 
 section MeasurableMul
 
-variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+variable {β γ : Type*} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
 lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
@@ -551,7 +551,7 @@ theorem exists_spanning_measurableSet_le {f : α → ℝ≥0} (hf : Measurable f
   · have :
       ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
       refine Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => ?_
-      simp only [norm_sets, Set.mem_setOf_eq]
+      simp only [norm_sets, Set.mem_ofPred_eq]
       refine fun hif => hif.trans ?_
       exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
