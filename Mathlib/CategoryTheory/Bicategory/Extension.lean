@@ -141,16 +141,17 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
 
 /-- Construct an isomorphism between whiskered extensions. -/
 def whiskerIso (i : s ≅ t) {x : B} (h : c ⟶ x) :
-    s.whisker h ≅ t.whisker h :=
-  Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
-    (StructuredArrow.hom_ext _ _ <|
-      calc
-        _ = (i.hom ≫ i.inv).right ▷ h := by simp [-Iso.hom_inv_id]
-        _ = 𝟙 _ := by simp [Iso.hom_inv_id])
-    (StructuredArrow.hom_ext _ _ <|
-      calc
-        _ = (i.inv ≫ i.hom).right ▷ h := by simp [-Iso.inv_hom_id]
-        _ = 𝟙 _ := by simp [Iso.inv_hom_id])
+    s.whisker h ≅ t.whisker h where
+  hom := whiskerHom i.hom h
+  inv := whiskerHom i.inv h
+  hom_inv_id := StructuredArrow.hom_ext _ _ <|
+    calc
+      _ = (i.hom ≫ i.inv).right ▷ h := by simp [-Iso.hom_inv_id]
+      _ = 𝟙 _ := by simp [Iso.hom_inv_id]
+  inv_hom_id := StructuredArrow.hom_ext _ _ <|
+    calc
+      _ = (i.inv ≫ i.hom).right ▷ h := by simp [-Iso.inv_hom_id]
+      _ = 𝟙 _ := by simp [Iso.inv_hom_id]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between left extensions induced by a right unitor. -/
@@ -164,8 +165,7 @@ variable {f f' : a ⟶ b} (ef : f ≅ f') {g g' : a ⟶ c} (eg : g ≅ g')
 
 /-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
 categories of left extensions. -/
-[implicit_reducible, simps!]
-[implicit_reducible, simps!]
+@[implicit_reducible, simps!]
 def mapIso : LeftExtension f g ≌ LeftExtension f' g' :=
   (StructuredArrow.mapNatIso ((precomposing a b c).mapIso ef)).trans (StructuredArrow.mapIso eg)
 
@@ -299,16 +299,17 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
 
 /-- Construct an isomorphism between whiskered lifts. -/
 def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
-    s.whisker h ≅ t.whisker h :=
-  Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
-    (StructuredArrow.hom_ext _ _ <|
-      calc
-        _ = h ◁ (i.hom ≫ i.inv).right := by simp [-Iso.hom_inv_id]
-        _ = 𝟙 _ := by simp [Iso.hom_inv_id])
-    (StructuredArrow.hom_ext _ _ <|
-      calc
-        _ = h ◁ (i.inv ≫ i.hom).right := by simp [-Iso.inv_hom_id]
-        _ = 𝟙 _ := by simp [Iso.inv_hom_id])
+    s.whisker h ≅ t.whisker h where
+  hom := whiskerHom i.hom h
+  inv := whiskerHom i.inv h
+  hom_inv_id := StructuredArrow.hom_ext _ _ <|
+    calc
+      _ = h ◁ (i.hom ≫ i.inv).right := by simp [-Iso.hom_inv_id]
+      _ = 𝟙 _ := by simp [Iso.hom_inv_id]
+  inv_hom_id := StructuredArrow.hom_ext _ _ <|
+    calc
+      _ = h ◁ (i.inv ≫ i.hom).right := by simp [-Iso.inv_hom_id]
+      _ = 𝟙 _ := by simp [Iso.inv_hom_id]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between left lifts induced by a left unitor. -/
@@ -322,7 +323,7 @@ variable {f f' : b ⟶ a} (ef : f ≅ f') {g g' : c ⟶ a} (eg : g ≅ g')
 
 /-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
 categories of left lifts. -/
-[implicit_reducible, simps!]
+@[implicit_reducible, simps!]
 def mapIso : LeftLift f g ≌ LeftLift f' g' :=
   (StructuredArrow.mapNatIso ((postcomposing c b a).mapIso ef)).trans (StructuredArrow.mapIso eg)
 
@@ -456,22 +457,22 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
 /-- Construct an isomorphism between whiskered extensions. -/
 @[simps]
 def whiskerIso (i : s ≅ t) {x : B} (h : c ⟶ x) :
-    s.whisker h ≅ t.whisker h :=
-  Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
-    (CostructuredArrow.hom_ext _ _ <|
-      calc
-        _ = (i.hom ≫ i.inv).left ▷ h := by simp [-Iso.hom_inv_id]
-        _ = 𝟙 _ := by simp [Iso.hom_inv_id])
-    (CostructuredArrow.hom_ext _ _ <|
-      calc
-        _ = (i.inv ≫ i.hom).left ▷ h := by simp [-Iso.inv_hom_id]
-        _ = 𝟙 _ := by simp [Iso.inv_hom_id])
+    s.whisker h ≅ t.whisker h where
+  hom := whiskerHom i.hom h
+  inv := whiskerHom i.inv h
+  hom_inv_id := CostructuredArrow.hom_ext _ _ <|
+    calc
+      _ = (i.hom ≫ i.inv).left ▷ h := by simp [-Iso.hom_inv_id]
+      _ = 𝟙 _ := by simp [Iso.hom_inv_id]
+  inv_hom_id := CostructuredArrow.hom_ext _ _ <|
+    calc
+      _ = (i.inv ≫ i.hom).left ▷ h := by simp [-Iso.inv_hom_id]
+      _ = 𝟙 _ := by simp [Iso.inv_hom_id]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between right extensions induced by a right unitor. -/
 @[simps! hom_left inv_left]
 def whiskerOfCompIdIsoSelf (t : RightExtension f g) : (t.whisker (𝟙 c)).ofCompId ≅ t :=
-  CostructuredArrow.isoMk (ρ_ (t.extension))
+  CostructuredArrow.isoMk (ρ_ (t.extension)) (by simp [precomp])
 
 section OfIso
 
@@ -611,16 +612,17 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
 
 /-- Construct an isomorphism between whiskered lifts. -/
 def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
-    s.whisker h ≅ t.whisker h :=
-  Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
-    (CostructuredArrow.hom_ext _ _ <|
-      calc
-        _ = h ◁ (i.hom ≫ i.inv).left := by simp [-Iso.hom_inv_id]
-        _ = 𝟙 _ := by simp [Iso.hom_inv_id])
-    (CostructuredArrow.hom_ext _ _ <|
-      calc
-        _ = h ◁ (i.inv ≫ i.hom).left := by simp [-Iso.inv_hom_id]
-        _ = 𝟙 _ := by simp [Iso.inv_hom_id])
+    s.whisker h ≅ t.whisker h where
+  hom := whiskerHom i.hom h
+  inv := whiskerHom i.inv h
+  hom_inv_id := CostructuredArrow.hom_ext _ _ <|
+    calc
+      _ = h ◁ (i.hom ≫ i.inv).left := by simp [-Iso.hom_inv_id]
+      _ = 𝟙 _ := by simp [Iso.hom_inv_id]
+  inv_hom_id := CostructuredArrow.hom_ext _ _ <|
+    calc
+      _ = h ◁ (i.inv ≫ i.hom).left := by simp [-Iso.inv_hom_id]
+      _ = 𝟙 _ := by simp [Iso.inv_hom_id]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
