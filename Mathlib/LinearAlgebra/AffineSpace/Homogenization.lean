@@ -86,6 +86,12 @@ instance instModule {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalar
     Module S (Homogenization R P) :=
   equivProdAux.addEquiv.module S
 
+example : instAddCommGroup.toNSMul = @NSMul.ofSMul (Homogenization R P) instModule.toSMul := by
+  with_implicit rfl
+
+example : instAddCommGroup.toZSMul = @ZSMul.ofSMul (Homogenization R P) instModule.toSMul := by
+  with_implicit rfl
+
 variable
   {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
   {T : Type*} [Semiring T] [Module T R] [Module T V] [IsScalarTower T R V]
