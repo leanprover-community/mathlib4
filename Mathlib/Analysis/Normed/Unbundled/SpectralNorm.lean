@@ -272,8 +272,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       set g := fun i : ℕ ↦ p.coeff i • x ^ i
       obtain ⟨m, hm_in, hm⟩ : ∃ (m : ℕ) (_ : 0 < p.natDegree → m < p.natDegree),
           f ((Finset.range p.natDegree).sum g) ≤ f (g m) := by
-        obtain ⟨m, hm, h⟩ := IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hf_na g
-          (Finset.range p.natDegree)
+        obtain ⟨m, hm, h⟩ := hf_na.finset_image_add g (Finset.range p.natDegree) (map_zero_le f)
         rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
         exact ⟨m, hm, h⟩
       exact lt_of_le_of_lt hm (hn' m (hm_in h_deg))
@@ -281,7 +280,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       have h_eq : f 0 = f (x ^ p.natDegree) := by
         rw [← hx, aeval_eq_sum_range, Finset.sum_range_succ, add_comm, hp.coeff_natDegree,
           one_smul, ← max_eq_left_of_lt h_lt]
-        exact IsNonarchimedean.add_eq_max_of_ne hf_na (ne_of_gt h_lt)
+        exact hf_na.add_eq_max_of_ne (map_neg_eq_map f) (ne_of_gt h_lt)
       exact h_eq ▸ ne_of_gt (lt_of_le_of_lt (apply_nonneg _ _) h_lt)
     exact h0 (map_zero _)
 
@@ -327,7 +326,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
       rw [h, esymm]
       obtain ⟨t, ht_card, hts, ht_ge⟩ : ∃ t : Multiset L, card t = card s - m ∧
           (∀ x : L, x ∈ t → x ∈ s) ∧ f (map prod (powersetCard (card s - m) s)).sum ≤ f t.prod :=
-        hf_na.multiset_powerset_image_add s m
+        hf_na.multiset_powerset_image_add m s
       apply le_trans ht_ge
       have h_pr : f t.prod ≤ (t.map f).prod := le_prod_of_submultiplicative_of_nonneg f
         (apply_nonneg _) (le_of_eq hf1) (map_mul_le_mul _) t
@@ -664,7 +663,7 @@ variable (K L) in
 def spectralAlgNorm : AlgebraNorm K L where
   toFun       := spectralNorm K L
   map_zero'   := spectralNorm_zero
-  add_le' _ _ := IsNonarchimedean.add_le spectralNorm_nonneg isNonarchimedean_spectralNorm
+  add_le' _ _ := isNonarchimedean_spectralNorm.add_le spectralNorm_nonneg
   mul_le' x y := spectralNorm_mul (h_alg.isAlgebraic x) (h_alg.isAlgebraic y)
   smul' k x   := spectralNorm_smul k (h_alg.isAlgebraic x)
   neg' x      := spectralNorm_neg (h_alg.isAlgebraic x)
@@ -794,14 +793,15 @@ theorem NormedAlgebra.norm_eq_spectralNorm {L : Type*} [NormedField L] [NormedAl
       spectralNorm_unique (f := (toMulAlgebraNorm K L).toAlgebraNorm)
       (MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm)]
 
+variable (K) in
 /-- Given a nonzero `x : L`, and assuming that `(spectralAlgNorm h_alg hna) 1 ≤ 1`, this is
   the real-valued function sending `y ∈ L` to the limit of  `(f (y * x^n))/((f x)^n)`,
   regarded as an algebra norm. -/
-def algNormFromConst (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1) {x : L} (hx : x ≠ 0) :
+def algNormFromConst {x : L} (hx : x ≠ 0) :
     AlgebraNorm K L :=
   have hx' : spectralAlgNorm K L x ≠ 0 :=
-    ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x))
-  { normFromConst h1 hx' spectralAlgNorm_isPowMul with
+    (map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx
+  { normFromConst hx' spectralAlgNorm_isPowMul with
     smul' k y := by
       have h_mul : ∀ y : L, spectralNorm K L (algebraMap K L k * y) =
           spectralNorm K L (algebraMap K L k) * spectralNorm K L y := fun y ↦ by
@@ -809,14 +809,14 @@ def algNormFromConst (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1) {x : L}
           map_smul_eq_mul _ _ _, spectralAlgNorm_def]
       have h : spectralNorm K L (algebraMap K L k) =
         seminormFromConst' x (spectralAlgNorm K L).toRingSeminorm (algebraMap K L k) := by
-          rw [seminormFromConst_apply_of_isMul h1 hx' spectralAlgNorm_isPowMul h_mul]; rfl
+          rw [seminormFromConst_apply_of_isMul hx' spectralAlgNorm_isPowMul h_mul]; rfl
       rw [← @spectralNorm_extends K _ L _ _ k, Algebra.smul_def, h]
-      exact seminormFromConst_isMul_of_isMul h1 hx' spectralAlgNorm_isPowMul h_mul y }
+      exact seminormFromConst_isMul_of_isMul hx' spectralAlgNorm_isPowMul h_mul y }
 
-theorem algNormFromConst_def (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1) {x y : L}
+theorem algNormFromConst_def {x y : L}
     (hx : x ≠ 0) :
-    algNormFromConst h1 hx y =
-      seminormFromConst h1 (ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x)))
+    algNormFromConst K hx y =
+      seminormFromConst ((map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx)
         isPowMul_spectralNorm y := rfl
 
 section CompleteSpace
@@ -831,11 +831,10 @@ theorem spectralAlgNorm_mul (x y : L) :
   · simp [hx, zero_mul, map_zero]
   · have hx' : spectralAlgNorm K L x ≠ 0 :=
       ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x))
-    have hf1 : (spectralAlgNorm K L) 1 ≤ 1 := le_of_eq spectralAlgNorm_one
-    set f : AlgebraNorm K L := algNormFromConst hf1 hx with hf
-    have hf_pow : IsPowMul f := seminormFromConst_isPowMul hf1 hx' isPowMul_spectralNorm
+    set f : AlgebraNorm K L := algNormFromConst K hx with hf
+    have hf_pow : IsPowMul f := seminormFromConst_isPowMul hx' isPowMul_spectralNorm
     rw [← spectralNorm_unique hf_pow, hf]
-    exact seminormFromConst_const_mul hf1 hx' isPowMul_spectralNorm _
+    exact seminormFromConst_const_mul hx' isPowMul_spectralNorm _
 
 variable (K L) in
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`. -/
