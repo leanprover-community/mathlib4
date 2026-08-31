@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
-
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
@@ -27,7 +26,7 @@ and the affine span of a set of points.
 
 noncomputable section
 
-open Affine
+open scoped Affine
 
 open Set
 open scoped Pointwise
@@ -261,7 +260,7 @@ theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i
     vectorSpan k (p '' s) = Submodule.span k ((p i -ᵥ ·) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi, ←
-      Set.insert_sdiff_singleton, Set.image_insert_eq, Set.image_insert_eq]
+      Set.insert_sdiff_singleton, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
@@ -270,7 +269,7 @@ theorem vectorSpan_image_eq_span_vsub_set_right_ne (p : ι → P) {s : Set ι} {
     vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ p i) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_right k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi,
-      ← Set.insert_sdiff_singleton, Set.image_insert_eq, Set.image_insert_eq]
+      ← Set.insert_sdiff_singleton, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` of an indexed family is the span of the pairwise subtractions with a given
@@ -521,10 +520,6 @@ theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
 
--- this name was backwards
-@[deprecated (since := "2026-01-20")]
-alias AffineMap.vectorSpan_image_eq_submodule_map := AffineMap.map_vectorSpan
-
 namespace AffineSubspace
 
 /-- The image of an affine subspace under an affine map as an affine subspace. -/
@@ -688,7 +683,7 @@ variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
 This is the affine version of `LinearEquiv.ofEq`. -/
 @[simps linear]
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
-  toEquiv := Equiv.setCongr <| congr_arg _ h
+  toEquiv := Set.equivOfEq <| congr_arg _ h
   linear := .ofEq _ _ <| congr_arg _ h
   map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
 

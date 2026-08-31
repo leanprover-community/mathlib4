@@ -51,7 +51,7 @@ weak dual, seminorm
 
 variable {𝕜 E F : Type*}
 
-open Topology
+open scoped Topology
 
 section BilinForm
 
@@ -95,8 +95,9 @@ lemma dualEmbedding_injective_of_separatingRight (B : E →ₗ[𝕜] F →ₗ[�
 
 variable {ι 𝕜 E F : Type*}
 
-open Topology TopologicalSpace
-open scoped NNReal
+open TopologicalSpace
+
+open scoped Topology NNReal
 
 section
 
@@ -137,18 +138,18 @@ functionals. -/
 theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     Continuous[⨅ i, induced (f i) inferInstance, inferInstance] φ := by
-  letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
-  letI t₁ : TopologicalSpace E := ⨅ i, induced (f i) t𝕜
-  letI t₂ (s : Finset ι) : TopologicalSpace E := ⨅ i : s, induced (f i) t𝕜
+  let t𝕜 : TopologicalSpace 𝕜 := inferInstance
+  let t₁ : TopologicalSpace E := ⨅ i, induced (f i) t𝕜
+  let t₂ (s : Finset ι) : TopologicalSpace E := ⨅ i : s, induced (f i) t𝕜
   suffices
       Continuous[t₁, t𝕜] φ ↔ ∃ s : Finset ι, Continuous[t₂ s, t𝕜] φ by
     simp_rw [this, ← mem_span_iff_continuous_of_finite, Submodule.span_range_eq_iSup,
       iSup_subtype]
     rw [Submodule.mem_iSup_iff_exists_finset]
   have t₁_group : @IsTopologicalAddGroup E t₁ _ :=
-    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+    isTopologicalAddGroup_iInf fun _ ↦ isTopologicalAddGroup_induced _
   have t₂_group (s : Finset ι) : @IsTopologicalAddGroup E (t₂ s) _ :=
-    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+    isTopologicalAddGroup_iInf fun _ ↦ isTopologicalAddGroup_induced _
   have t₁_smul : @ContinuousSMul 𝕜 E _ _ t₁ :=
     continuousSMul_iInf fun _ ↦ continuousSMul_induced _
   have t₂_smul (s : Finset ι) : @ContinuousSMul 𝕜 E _ _ (t₂ s) :=
@@ -163,9 +164,10 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     ∃ s : Finset ι, ∃ c : ℝ≥0, φ.toSeminorm ≤
       c • (s.sup fun i ↦ (f i).toSeminorm) := by
-  letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
+  let t𝕜 : TopologicalSpace 𝕜 := inferInstance
   let t := ⨅ i, induced (f i) t𝕜
-  have : IsTopologicalAddGroup E := topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+  have : IsTopologicalAddGroup E := isTopologicalAddGroup_iInf fun _ ↦
+    isTopologicalAddGroup_induced _
   have : WithSeminorms (fun i ↦ (f i).toSeminorm) := by
     simp_rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, nhds_iInf, nhds_induced, map_zero,
       ← comap_norm_nhds_zero (E := 𝕜), Filter.comap_comap]

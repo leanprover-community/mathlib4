@@ -230,7 +230,6 @@ variable {g : E × E → E × E}
 #check MDifferentiable 𝓘(ℝ, E × E) ((𝓘(ℝ, E)).prod (𝓘(ℝ, E))) g
 
 -- This can yield rather confusing errors
-set_option pp.mvars.anonymous false in
 /--
 error: Tactic `apply` failed: could not unify the conclusion of `@mdifferentiable_id`
   MDiff id
