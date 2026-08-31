@@ -818,3 +818,25 @@ protected def finsetSubtypeComm (p : α → Prop) :
     grind
 
 end Equiv
+
+namespace Finset
+
+/-- The order isomorphism `Finset α ≃o Finset β` induced by an equivalence `e : α ≃ β`.
+The order-isomorphism refinement of `Equiv.finsetCongr`. -/
+def congrOrderIso (e : α ≃ β) : Finset α ≃o Finset β where
+  toEquiv := e.finsetCongr
+  map_rel_iff' := by
+    intro a b
+    simp only [Equiv.finsetCongr_apply, map_subset_map]
+
+@[simp]
+theorem congrOrderIso_apply (e : α ≃ β) (s : Finset α) :
+    congrOrderIso e s = s.map e.toEmbedding := rfl
+
+theorem congrOrderIso_univ [Fintype α] [Fintype β] (e : α ≃ β) :
+    congrOrderIso e (univ : Finset α) = (univ : Finset β) := by
+  rw [congrOrderIso_apply]
+  exact eq_univ_iff_forall.mpr fun b =>
+    mem_map.mpr ⟨e.symm b, mem_univ _, by simp⟩
+
+end Finset
