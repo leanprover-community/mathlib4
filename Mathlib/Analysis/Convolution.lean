@@ -539,8 +539,7 @@ lemma eLpNorm_convolution_integrand_le {p q r : ENNReal} [hpq : p.HolderTriple q
     eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
   have hmp := μ.measurePreserving_sub_left x₀
   rw [← eLpNorm_comp_measurePreserving hg hmp]
-  exact eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm L hf
-    (hg.comp_quasiMeasurePreserving hmp.quasiMeasurePreserving)
+  exact eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm L hf (hg.comp_measurePreserving hmp)
 
 omit [NormedSpace ℝ F] in
 /-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
