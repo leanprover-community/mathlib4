@@ -62,11 +62,8 @@ instance [IsCyclic G] : IsVirtuallyCyclic G :=
 /-- A finite group is virtually cyclic — via the trivial subgroup, which is
 cyclic and of finite index. -/
 @[to_additive]
-instance [Finite G] : IsVirtuallyCyclic G := by
-  have : Subsingleton (⊥ : Subgroup G) :=
-    ⟨fun a b => Subtype.ext ((Subgroup.mem_bot.mp a.2).trans
-      (Subgroup.mem_bot.mp b.2).symm)⟩
-  exact ⟨⊥, inferInstance, ⟨Subgroup.index_ne_zero_of_finite⟩⟩
+instance [Finite G] : IsVirtuallyCyclic G :=
+  ⟨⊥, inferInstance, ⟨Subgroup.index_ne_zero_of_finite⟩⟩
 
 -- TODO: additivize once Mathlib has additive nilpotency.
 /-- A virtually cyclic group is virtually nilpotent: a cyclic group is
@@ -89,7 +86,7 @@ instance [h : IsVirtuallyCyclic G] (K : Subgroup G) : IsVirtuallyCyclic K := by
     simp [Subgroup.mem_subgroupOf]
   have : IsCyclic (H ⊓ K :) := Subgroup.isCyclic_of_le inf_le_left
   rw [hEq]
-  exact (Subgroup.subgroupOfEquivOfLe inf_le_right).isCyclic.mpr inferInstance
+  exact (Subgroup.subgroupOfEquivOfLe inf_le_right).isCyclic.mpr this
 
 /-- The image of a virtually cyclic group under a surjective homomorphism is
 virtually cyclic. Cyclicity of the image subgroup comes from
