@@ -73,7 +73,7 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
         (shiftFunctor _ a)).homEquiv.trans
         ((shiftFunctorAdd' _ _ _ _ (Int.sub_add_cancel b a)).symm.app _).homToEquiv
     · suffices Subsingleton ((Q.obj ((CochainComplex.singleFunctor C 0).obj X))⟦a⟧ ⟶
-          (Q.obj ((CochainComplex.singleFunctor C 0).obj Y))⟦b⟧) from inferInstance
+        (Q.obj ((CochainComplex.singleFunctor C 0).obj Y))⟦b⟧) from inferInstance
       constructor
       intro x y
       rw [← cancel_mono ((Q.commShiftIso b).inv.app _),
