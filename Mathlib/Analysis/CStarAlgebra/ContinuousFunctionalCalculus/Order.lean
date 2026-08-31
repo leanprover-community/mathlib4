@@ -599,15 +599,19 @@ lemma inr_map_Ici_zero : inr '' (Ici (0 : A)) ⊆ Ici (0 : A⁺¹) := by
 
 end Icc
 
+lemma nnrpow_le_nnrpow_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1) {m n : ℝ≥0}
+    (hm : m ≠ 0) (hmn : m ≤ n) : e ^ n ≤ e ^ m := by
+  have hn : n ≠ 0 := by aesop
+  rw [CFC.nnrpow_eq_cfcₙ_real e, CFC.nnrpow_eq_cfcₙ_real e]
+  refine cfcₙ_mono fun x hx ↦ ?_
+  have hx1 : x ≤ 1 := by grw [Real.le_norm_self x, quasispectrum.norm_le_norm_of_mem hx, he1]
+  exact Real.rpow_le_rpow_of_exponent_ge' (quasispectrum_nonneg_of_nonneg _ he0 _ hx) hx1
+    m.coe_nonneg (mod_cast hmn)
+
 lemma nnrpow_le_self_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1)
     {n : ℝ≥0} (hn : 1 ≤ n) : e ^ n ≤ e := by
-  have : n ≠ 0 := by aesop
-  conv_rhs => rw [← cfcₙ_id' ℝ e]
-  rw [CFC.nnrpow_eq_cfcₙ_real e, ← sub_nonneg, ← cfcₙ_sub ..]
-  refine cfcₙ_nonneg fun x hx ↦ sub_nonneg.mpr ?_
-  have := quasispectrum.norm_le_norm_of_mem hx
-  grw [he1, Real.norm_eq_abs] at this
-  exact Real.rpow_le_self_of_le_one (quasispectrum_nonneg_of_nonneg _ he0 _ hx) (by grind) hn
+  conv_rhs => rw [← CFC.nnrpow_one e]
+  exact nnrpow_le_nnrpow_of_nonneg_of_norm_le_one he0 he1 (by simp) hn
 
 /-- If `e` is an element of the nonnegative closed unit ball, then `e * e ≤ e`, with equality
 if `e` is an extreme point
@@ -617,12 +621,8 @@ lemma mul_self_le_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e�
 
 lemma self_le_nnrpow_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1)
     {n : ℝ≥0} (hn0 : n ≠ 0) (hn : n ≤ 1) : e ≤ e ^ n := by
-  conv_lhs => rw [← cfcₙ_id' ℝ e]
-  rw [CFC.nnrpow_eq_cfcₙ_real e, ← sub_nonneg, ← cfcₙ_sub ..]
-  refine cfcₙ_nonneg fun x hx ↦ sub_nonneg.mpr ?_
-  have := quasispectrum.norm_le_norm_of_mem hx
-  grw [he1, Real.norm_eq_abs] at this
-  exact Real.self_le_rpow_of_le_one (quasispectrum_nonneg_of_nonneg _ he0 _ hx) (by grind) hn
+  conv_lhs => rw [← CFC.nnrpow_one e]
+  exact nnrpow_le_nnrpow_of_nonneg_of_norm_le_one he0 he1 hn0 hn
 
 lemma self_le_sqrt_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1) :
     e ≤ CFC.sqrt e :=
