@@ -49,7 +49,7 @@ variable {P P₁ P₂ : Set X}
 
 lemma isConvexSet (hP : IsPolytope R P) : IsConvexSet R P := by
   obtain ⟨_, rfl⟩ := hP
-  exact IsConvexSet.convexHull
+  exact .convexHull
 
 variable (R X) in
 @[simp] protected lemma empty : IsPolytope R (∅ : Set X) := by
