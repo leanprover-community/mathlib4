@@ -15,7 +15,7 @@ This file specialises `IsSelfInv` to sets equipped with the pointwise inversion.
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped Pointwise
@@ -31,7 +31,7 @@ lemma isSelfInv_iff_forall_inv_mem_iff : IsSelfInv s ↔ ∀ x, x⁻¹ ∈ s ↔
   simp only [isSelfInv_iff, Set.ext_iff, mem_inv]
 
 @[to_additive (attr := simp)]
-lemma IsSelfInv.empty : IsSelfInv (∅ : Set α) := inv_empty
+protected lemma IsSelfInv.empty : IsSelfInv (∅ : Set α) := inv_empty
 
 @[to_additive (attr := simp)]
 lemma IsSelfInv.univ : IsSelfInv (univ : Set α) := inv_univ

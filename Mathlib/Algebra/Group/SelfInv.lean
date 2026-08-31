@@ -43,7 +43,7 @@ lemma IsSelfInv.eq_inv (h : IsSelfInv a) : a = a⁻¹ := h.symm
 end Inv
 
 @[to_additive (attr := simp)]
-lemma isSelfInv_one [InvOneClass α] : IsSelfInv (1 : α) := inv_one
+protected lemma IsSelfInv.one [InvOneClass α] : IsSelfInv (1 : α) := inv_one
 
 @[to_additive (attr := simp)]
 lemma isSelfInv_inv [InvolutiveInv α] {a : α} : IsSelfInv a⁻¹ ↔ IsSelfInv a := by
