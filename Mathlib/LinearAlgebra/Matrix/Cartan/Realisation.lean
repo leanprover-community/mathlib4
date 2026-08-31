@@ -134,11 +134,11 @@ def reflection (i : n) : M ≃ₗ[R] M :=
 def coreflection (i : n) : N ≃ₗ[R] N :=
   rl.flip.reflection i
 
-@[simp] lemma reflection_apply (i : n) (x : M) :
+lemma reflection_apply (i : n) (x : M) :
     rl.reflection i x = x - rl.pairing x (rl.sCoroot i) • rl.sRoot i := by
   simp [reflection, Module.reflection_apply]
 
-@[simp] lemma coreflection_apply (i : n) (y : N) :
+lemma coreflection_apply (i : n) (y : N) :
     rl.coreflection i y = y - rl.pairing (rl.sRoot i) y • rl.sCoroot i :=
   rl.flip.reflection_apply i y
 
@@ -436,12 +436,12 @@ lemma exists_mem_weyl_of_mem_idx {p : M × N} (hp : p ∈ rl.idx) :
       rw [← rl.pairing_apply_apply_of_mem_weyl hv (v.1.symm x) (rl.sCoroot i)]
       simp
     change v.1 (rl.reflection i (v.1.symm x)) = _
-    simp [h]
+    simp [reflection_apply, h]
   · have h : rl.pairing (v.1 (rl.sRoot i)) y = rl.pairing (rl.sRoot i) (v.2.symm y) := by
       rw [← rl.pairing_apply_apply_of_mem_weyl hv (rl.sRoot i) (v.2.symm y)]
       simp
     change v.2 (rl.coreflection i (v.2.symm y)) = _
-    simp [h]
+    simp [coreflection_apply, h]
 
 omit [CharZero R] [IsDomain R] in
 lemma mapsTo_preReflection_fst {p : M × N} (hp : p ∈ rl.idx) :
