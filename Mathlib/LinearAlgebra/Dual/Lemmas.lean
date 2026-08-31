@@ -313,13 +313,13 @@ variable {R : Type*} [CommSemiring R]
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
 
 /-- The identitiy pairing is right-separating. -/
-theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
+protected theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
   fun x ↦ (forall_dual_apply_eq_zero_iff R x).mp
 
 alias id_separatingRight := SeparatingRight.id
 
 /-- The identitiy pairing is non-degenerate. -/
-theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :=
+protected theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :=
   ⟨.id, .id⟩
 
 alias id_nondegenerate := Nondegenerate.id
@@ -328,13 +328,13 @@ alias id_nondegenerate := Nondegenerate.id
 alias dualPairing_nondegenerate := id_nondegenerate
 
 /-- The pairing `Dual.eval` is left-separating. -/
-theorem SeparatingLeft.eval : (Dual.eval R M).SeparatingLeft :=
+protected theorem SeparatingLeft.eval : (Dual.eval R M).SeparatingLeft :=
   id_separatingRight
 
 alias eval_separatingLeft := SeparatingLeft.eval
 
 /-- The pairing `Dual.eval` is non-degenerate. -/
-theorem Nondegenerate.eval : (Dual.eval R M).Nondegenerate :=
+protected theorem Nondegenerate.eval : (Dual.eval R M).Nondegenerate :=
   ⟨.eval, .eval⟩
 
 alias eval_nondegenerate := Nondegenerate.eval
