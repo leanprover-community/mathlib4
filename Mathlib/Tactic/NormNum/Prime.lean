@@ -198,7 +198,7 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
         return .isFalse q(isNat_not_prime $pn $prf)
       let r : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
       let .isNat _ _lit (p2n : Q(IsNat (minFac $nn) $nn)) ←
-        evalMinFac.core nn nn q(.raw_refl _) nn.natLit! | failure
+        evalMinFac.core nn nn q(.raw_refl _) n' | failure
       return .isTrue q(isNat_prime_2 $pn $r $p2n)
   core
 
