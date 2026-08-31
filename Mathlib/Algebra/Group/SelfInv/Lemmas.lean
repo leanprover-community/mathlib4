@@ -25,6 +25,10 @@ protected theorem IsSelfInv.neg {α : Type*} [DivisionMonoid α] [HasDistribNeg 
     (h : IsSelfInv a) : IsSelfInv (-a) := by
   rw [isSelfInv_iff, inv_neg, h.inv_eq]
 
+protected theorem IsSelfNeg.inv {α : Type*} [DivisionMonoid α] [HasDistribNeg α] {a : α}
+    (h : IsSelfNeg a) : IsSelfNeg a⁻¹ := by
+  rw [isSelfNeg_iff, neg_inv, h.neg_eq]
+
 @[to_additive]
 theorem isSelfInv_iff_isOfFinOrder_and_orderOf_le_two {G : Type*} [Group G] {a : G} :
     IsSelfInv a ↔ IsOfFinOrder a ∧ orderOf a ≤ 2 := by
