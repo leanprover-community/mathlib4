@@ -98,6 +98,7 @@ private noncomputable def toDualBaseChangeAux :
     | add x y hx hy => aesop
     | tmul b f => simp [TensorProduct.smul_tmul', mul_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private theorem toDualBaseChangeAux_tmul (a : A) (f : Dual R V) (v : V) :
     (ibc.toDualBaseChangeAux (a ⊗ₜ[R] f)) (j v) = a * algebraMap R A (f v) := by
