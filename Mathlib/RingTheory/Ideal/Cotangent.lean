@@ -439,7 +439,4 @@ lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraM
     intro x hx
     simp only [Submodule.comap_inf, Submodule.comap_subtype_self, le_top, inf_of_le_left,
       Submodule.mem_comap, Submodule.subtype_apply, RingHom.mem_ker] at hx
-    simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent]
-    convert map_zero I.toCotangent
-    apply Subtype.ext
-    simp [hx]
+    simp [Ideal.toCotangent_eq_zero, hx]
