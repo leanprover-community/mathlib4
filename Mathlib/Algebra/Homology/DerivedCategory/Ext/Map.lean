@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Nailin Guan, Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan, Jingting Wang
+Authors: Nailin Guan, Jingting Wang, Joël Riou
 -/
 module
 
@@ -31,6 +31,13 @@ where `F` is an exact functor between abelian categories.
 
 * `mapExactFunctor_extClass` :
   `Ext.mapExactFunctor` commutes with `ShortComplex.ShortExact.extClass`
+
+* `id_mapExactFunctor`: the identity functor acts by the identity on `Ext` groups
+
+* `comp_mapExactFunctor`: compatibility with the composition of two exact functors
+
+* `mapExactFunctor_comp_mk₀_natTransApp`: compatibility with a natural
+transformation between two exact functors
 
 -/
 
