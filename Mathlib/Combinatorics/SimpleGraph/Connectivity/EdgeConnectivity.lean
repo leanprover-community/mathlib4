@@ -198,8 +198,8 @@ noncomputable def edgeConnectivity' (G : SimpleGraph V) : ℕ∞ :=
 theorem equiv_defs : G.edgeConnectivity = G.edgeConnectivity' := by
  -- unfold edgeConnectivity
  -- unfold edgeConnectivity'
-  
-  apply eq_of_le_of_ge 
+
+  apply eq_of_le_of_ge
   refine iSup_le fun k => iSup_le fun h => ?_
   cases k using WithTop.recTopCoe with
   | top =>
@@ -223,13 +223,13 @@ theorem equiv_defs : G.edgeConnectivity = G.edgeConnectivity' := by
   apply le_iSup_of_le
   have : i ≤ i := by
     exact ENat.forall_natCast_le_iff_le.mp fun a a_1 ↦ a_1
-   
+
   #check le_rfl
   sorry
 
 #check WithTop.instCompleteLattice
 #check instCompleteLatticeWithTop
-#check 
+#check
 #synth CompleteLattice (WithTop ℕ)
 noncomputable instance : CompleteLattice ℕ∞ := by
   exact completeLatticeOfCompleteSemilatticeSup ℕ∞
@@ -248,7 +248,7 @@ theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachab
 theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
   le_iSup₂ (α := ℕ∞) k h
 
--- check if this is in mathlib or not... 
+-- check if this is in mathlib or not...
 theorem iSup_enat : (⨆ k : ℕ∞, k) = ⊤ := by
   apply top_unique
   exact le_iSup (fun k : ℕ∞ => k) ⊤
@@ -259,8 +259,8 @@ theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnect
   #check ENat.iSup_coe_eq_top
   simp [edgeConnectivity, IsEdgeConnected, IsEdgeReachable]
   exact iSup_enat
-   
-   
+
+
 
 @[simp]
 theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
