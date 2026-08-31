@@ -160,7 +160,7 @@ lemma logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
     logDeriv (fun t ↦ (Complex.sin (π * t) / (π * t))) x = π * cot (π * x) - 1 / x := by
   have : (fun t ↦ (Complex.sin (π * t) / (π * t))) = fun z ↦
     (Complex.sin ∘ fun t ↦ π * t) z / (π * z) := by simp
-  rw [this, logDeriv_div _ (by apply sin_pi_mul_ne_zero hz) ?_
+  rw [this, logDeriv_fun_div _ (by apply sin_pi_mul_ne_zero hz) ?_
     (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
     logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
     deriv_const_mul_id, logDeriv_const_mul, logDeriv_id']
@@ -189,7 +189,7 @@ lemma logDeriv_sineTerm_eq_cotTerm (hx : x ∈ ℂ_ℤ) (i : ℕ) :
 lemma logDeriv_prod_sineTerm_eq_sum_cotTerm (hx : x ∈ ℂ_ℤ) (n : ℕ) :
     logDeriv (fun (z : ℂ) ↦ ∏ j ∈ Finset.range n, (1 + sineTerm z j)) x =
     ∑ j ∈ Finset.range n, cotTerm x j := by
-  rw [logDeriv_prod]
+  rw [logDeriv_fun_prod]
   · simp_rw [logDeriv_sineTerm_eq_cotTerm hx]
   · exact fun i _ ↦ sineTerm_ne_zero hx i
   · fun_prop

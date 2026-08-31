@@ -167,7 +167,7 @@ end Presheaf
 
 namespace Sheaf
 
-open Presheaf CategoryTheory
+open CategoryTheory
 
 section
 
