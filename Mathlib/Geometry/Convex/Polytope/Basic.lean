@@ -11,20 +11,25 @@ public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
-This file introduces convex polytopes as V-polytopes and proves basic facts.
+# Convex polytope
+
+This file introduces convex polytopes as V-polytopes and proves basic facts about them.
 
 ## Main declarations
 
 * `IsPolytope`: states that a set is the convex hull of finitely many points.
 
-## Remarks
+## Implementation notes
 
+* The term "polytope" usually refers to the object defined via the V-representation (convex hull
+of finitely many vertices), whereas the object defined via the H-representation (intersection of
+finitely many halfspaces) is referred to as "polyhedron".
 * We decided to not implement bundled polytope until a clear usecase comes up.
 
 ## TODO
 
-* Implement `IsPolyhedron` using the H-definition.
-* Prove that polytopes are H-polyhedra in vector spaces.
+Future PRs will define polyhedra (using H-representations) and prove that, in vector spaces,
+polytopes are polyhedra.
 -/
 
 public noncomputable section
