@@ -38,7 +38,7 @@ since this provides summability.
 vector measure, signed measure, complex measure
 -/
 
-@[expose] public section
+public section
 
 open scoped Function -- required for scoped `on` notation
 namespace MeasureTheory

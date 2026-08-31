@@ -27,7 +27,7 @@ and the conversion of nonnegative or nonpositive parts of signed measures to ord
   to the vector measure `w` restricted on `i`, i.e. `v.restrict i ≤ w.restrict i`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
