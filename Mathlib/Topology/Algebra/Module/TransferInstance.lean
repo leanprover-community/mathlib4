@@ -46,10 +46,7 @@ def continuousLinearEquiv (e : α ≃+ β) :
   letI := e.topologicalSpace
   letI := e.module R
   { toLinearEquiv := e.linearEquiv _
-    continuous_toFun := continuous_induced_dom
-    continuous_invFun := by
-      simp +instances only [Equiv.topologicalSpace, e.toFun_as_coe, ← e.coinduced_symm]
-      exact continuous_coinduced_rng }
+    __ := e.homeomorph }
 
 @[simp]
 lemma toLinearEquiv_continuousLinearEquiv (e : α ≃+ β) :
