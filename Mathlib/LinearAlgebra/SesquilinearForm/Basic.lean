@@ -694,10 +694,10 @@ instance [inst : Fact B.SeparatingRight] : Fact B.flip.SeparatingLeft :=
   ⟨flip_separatingRight.mp inst.elim⟩
 
 /-- The identitiy pairing is left-separating. -/
-theorem SeparatingLeft.id : (.id : (M₁ →ₛₗ[I₁] M) →ₛₗ[_] _).SeparatingLeft :=
+theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
   fun _ hx => by ext y; exact hx y
 
-instance : Fact (.id : (M₂ →ₛₗ[I₂] M) →ₛₗ[_] _).SeparatingLeft := ⟨.id⟩
+instance : Fact (SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id) := ⟨.id⟩
 
 /-- The pairing `Dual.eval` is right-separating. -/
 theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight := by
