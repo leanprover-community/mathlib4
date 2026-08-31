@@ -17,7 +17,7 @@ This file records the instance `IsNonarchimedeanLocalField ℚ_[p]`.
 
 public section
 
-variable {p : ℕ} [hp : Fact p.Prime]
+variable {p : ℕ} [Fact p.Prime]
 
 /-- The `p`-adic numbers form a non-archimedean local field: the topology comes from the valuative
 relation, `ℚ_[p]` is locally compact, and the valuation is nontrivial. -/
