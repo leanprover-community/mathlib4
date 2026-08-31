@@ -161,6 +161,7 @@ public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
 public import Mathlib.Tactic.Inclusion.Core.Core
+public import Mathlib.Tactic.Inclusion.Core.DiscrTreeExt
 public import Mathlib.Tactic.Inclusion.Core.Elab
 public import Mathlib.Tactic.Inclusion.Core.Expr
 public import Mathlib.Tactic.Inclusion.Core.Extensions
