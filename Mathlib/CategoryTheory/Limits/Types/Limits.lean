@@ -248,37 +248,6 @@ theorem limit_ext_iff' (F' : J ⥤ Type v) (x y : limit F') :
 attribute [elementwise] limMap_π
 attribute [simp] limMap_π_apply
 
-variable {F} in
-@[deprecated limit.w_apply (since := "2026-02-17")]
-theorem Limit.w_apply {j j' : J} {x : (limit F : Type u)} (f : j ⟶ j') :
-    F.map f (limit.π F j x) = limit.π F j' x :=
-  limit.w_apply _ _ _
-
-@[deprecated limit.lift_π_apply (since := "2026-02-17")]
-theorem Limit.lift_π_apply (s : Cone F) (j : J) (x : s.pt) :
-    limit.π F j (limit.lift F s x) = s.π.app j x :=
-  limit.lift_π_apply _ _ _
-
-@[deprecated limMap_π_apply (since := "2026-02-17")]
-theorem Limit.map_π_apply {F G : J ⥤ Type u} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
-    (x : limit F) : limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
-  limMap_π_apply _ _ _
-
-@[deprecated limit.w_apply (since := "2026-02-17")]
-theorem Limit.w_apply' {F' : J ⥤ Type v} {j j' : J} {x : (limit F' : Type v)}
-    (f : j ⟶ j') : F'.map f (limit.π F' j x) = limit.π F' j' x :=
-  limit.w_apply _ _ _
-
-@[deprecated limit.lift_π_apply (since := "2026-02-17")]
-theorem Limit.lift_π_apply' (F' : J ⥤ Type v) (s : Cone F') (j : J) (x : s.pt) :
-    limit.π F' j (limit.lift F' s x) = s.π.app j x :=
-  limit.lift_π_apply _ _ _
-
-@[deprecated limMap_π_apply (since := "2026-02-17")]
-theorem Limit.map_π_apply' {F' G' : J ⥤ Type v} (α : F' ⟶ G') (j : J)
-    (x : (limit F' : Type v)) : limit.π G' j (limMap α x) = α.app j (limit.π F' j x) :=
-  limMap_π_apply _ _ _
-
 end UnivLE
 
 /-!
