@@ -61,6 +61,10 @@ instance autMulFiber (F : C ⥤ FintypeCat.{w}) (X : C) : MulAction (Aut X) (F.o
     change F.map (h.hom ≫ g.hom) a = (F.map h.hom ≫ F.map g.hom) a
     simp only [map_comp, FintypeCat.comp_apply]
 
+lemma autMulFiber_def
+    (F : C ⥤ FintypeCat.{w}) {X : C} (g : Aut X) (x : F.obj X) :
+    g • x = F.map g.hom x := rfl
+
 variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
 /-- For a connected object `X` of `C`, the quotient `X / Aut X` is terminal if and only if

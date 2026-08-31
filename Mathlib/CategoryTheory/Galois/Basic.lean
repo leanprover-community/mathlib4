@@ -72,7 +72,7 @@ class PreGaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop where
   hasFiniteCoproducts : HasFiniteCoproducts C := by infer_instance
   /-- `C` has quotients by finite groups (G2). -/
   hasQuotientsByFiniteGroups (G : Type u₂) [Group G] [Finite G] :
-    HasColimitsOfShape (SingleObj G) C := by infer_instance
+    HasColimitsOfShape (SingleObj G) C := by intros; infer_instance
   /-- Every monomorphism in `C` induces an isomorphism on a direct summand (G3). -/
   monoInducesIsoOnDirectSummand {X Y : C} (i : X ⟶ Y) [Mono i] : ∃ (Z : C) (u : Z ⟶ Y),
     Nonempty (IsColimit (BinaryCofan.mk i u))
@@ -387,6 +387,12 @@ lemma card_fiber_coprod_eq_sum (X Y : C) :
     <| Types.binaryCoproductIso (FintypeCat.incl.obj (F.obj X)) (FintypeCat.incl.obj (F.obj Y))
   rw [← Nat.card_sum]
   exact Nat.card_eq_of_bijective e.toFun (Equiv.bijective e)
+
+lemma card_fiber_eq_add_of_isColimit
+    {X Y : C} {b : BinaryCofan X Y} (hb : IsColimit b) :
+    Nat.card (F.obj b.pt) = Nat.card (F.obj X) + Nat.card (F.obj Y) := by
+  rw [← card_fiber_coprod_eq_sum]
+  exact card_fiber_eq_of_iso _ (hb.coconePointUniqueUpToIso (colimit.isColimit _))
 
 /-- The cardinality of morphisms `A ⟶ X` is smaller than the cardinality of
 the fiber of the target if the source is connected. -/

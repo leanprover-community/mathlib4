@@ -135,6 +135,8 @@ instance : Group (Aut X) where
   mul_one := Iso.refl_trans
   inv_mul_cancel := Iso.self_symm_id
 
+lemma one_def (X : C) : (1 : Aut X) = Iso.refl _ := rfl
+
 theorem Aut_mul_def (f g : Aut X) : f * g = g.trans f := rfl
 
 theorem Aut_inv_def (f : Aut X) : f⁻¹ = f.symm := rfl
@@ -153,6 +155,7 @@ def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEn
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Isomorphisms induce isomorphisms of the automorphism group -/
+@[simps -isSimp]
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   toFun x := { hom := h.inv ≫ x.hom ≫ h.hom, inv := h.inv ≫ x.inv ≫ h.hom }
   invFun y := { hom := h.hom ≫ y.hom ≫ h.inv, inv := h.hom ≫ y.inv ≫ h.inv }
