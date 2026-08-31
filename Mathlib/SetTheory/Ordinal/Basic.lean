@@ -475,11 +475,6 @@ instance wellFoundedLT : WellFoundedLT Ordinal :=
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
-@[deprecated WellFoundedLT.induction (since := "2026-02-27")]
-theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ k, k < j → p k) → p j) :
-    p i :=
-  WellFoundedLT.induction i h
-
 theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
     (f : r ≼i s) (a : α) : typein s (f a) = typein r a := by
   rw [← f.transPrincipal_apply _ a, (f.transPrincipal _).eq]
@@ -532,8 +527,6 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
 theorem type_ulift (r : α → α → Prop) [IsWellOrder α r] :
     type (ULift.down ⁻¹'o r) = lift.{v} (type r) :=
   rfl
-
-@[deprecated (since := "2026-02-20")] alias type_uLift := type_ulift
 
 @[simp]
 theorem type_lt_ulift [LinearOrder α] [WellFoundedLT α] :
@@ -671,16 +664,12 @@ theorem type_toType (o : Ordinal.{u}) : typeLT o.ToType = o := by
 theorem isEmpty_toType_iff {o : Ordinal} : IsEmpty o.ToType ↔ o = 0 := by
   rw [← @type_eq_zero_iff_isEmpty o.ToType (· < ·), type_toType]
 
-@[deprecated (since := "2026-02-18")] alias toType_empty_iff_eq_zero := isEmpty_toType_iff
-
 instance isEmpty_toType_zero : IsEmpty (ToType 0) :=
   isEmpty_toType_iff.2 rfl
 
 @[simp]
 theorem nonempty_toType_iff {o : Ordinal} : Nonempty o.ToType ↔ o ≠ 0 := by
   rw [← @type_ne_zero_iff_nonempty o.ToType (· < ·), type_toType]
-
-@[deprecated (since := "2026-02-18")] alias toType_nonempty_iff_ne_zero := nonempty_toType_iff
 
 theorem typein_lt_self {o : Ordinal} (i : o.ToType) : typein (α := o.ToType) (· < ·) i < o := by
   simp_rw [← type_toType o]
@@ -901,21 +890,6 @@ instance : SuccOrder Ordinal.{u} :=
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
-@[deprecated succ_eq_add_one (since := "2026-02-26")]
-theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
-  rfl
-
-@[deprecated zero_add (since := "2026-02-26")]
-theorem succ_zero : succ (0 : Ordinal) = 1 :=
-  zero_add 1
-
-@[deprecated one_add_one_eq_two (since := "2026-02-26")]
-theorem succ_one : succ (1 : Ordinal) = 2 := one_add_one_eq_two
-
-@[deprecated add_assoc (since := "2026-02-26")]
-theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
-  (add_assoc _ _ _).symm
-
 @[deprecated Order.one_le_iff_ne_zero (since := "2026-03-24")]
 protected theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 :=
   Order.one_le_iff_ne_zero
@@ -928,10 +902,6 @@ theorem succ_pos (o : Ordinal) : 0 < succ o :=
 theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
   (add_pos_of_right zero_lt_one o).ne'
 
-@[deprecated add_pos_of_right (since := "2026-02-27")]
-theorem succ_ne_zero (o : Ordinal) : succ o ≠ 0 :=
-  (add_pos_of_right zero_lt_one o).ne'
-
 @[deprecated Order.lt_one_iff (since := "2026-03-24")]
 theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 :=
   Order.lt_one_iff
@@ -939,10 +909,6 @@ theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 :=
 @[deprecated Order.le_one_iff (since := "2026-03-24")]
 protected theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 :=
   Order.le_one_iff
-
-@[deprecated card_add_one (since := "2026-02-27")]
-theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
-  simp
 
 @[deprecated Nat.cast_add_one (since := "2026-05-21")]
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
@@ -1142,8 +1108,6 @@ theorem ord_natCast (n : ℕ) : ord n = n := by
   | zero => exact zero_le
   | succ n IH => exact (IH.trans_lt <| by simp).succ_le
 
-@[deprecated (since := "2026-02-27")] alias ord_nat := ord_natCast
-
 @[simp]
 theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
   ord_natCast n
@@ -1231,17 +1195,6 @@ theorem omega0_lt_ord {a : Cardinal} : ω < a.ord ↔ ℵ₀ < a :=
 @[simp]
 theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
   ord_injective.eq_iff' ord_aleph0
-
-/-- The ordinal corresponding to a cardinal `c` is the least ordinal
-  whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
--/
-@[deprecated ord (since := "2026-02-27")]
-def ord.orderEmbedding : Cardinal ↪o Ordinal :=
-  OrderEmbedding.ofStrictMono _ fun _ _ ↦ Cardinal.ord_lt_ord.2
-
-@[deprecated ord (since := "2026-02-27")]
-theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
-  rfl
 
 lemma nonempty_ord_toType {c : Cardinal} (h : c ≠ 0) :
     Nonempty c.ord.ToType := by

@@ -184,9 +184,9 @@ section Transpose
 
 /-- The `transpose` of a Young diagram is obtained by swapping i's with j's. -/
 def transpose (μ : YoungDiagram) : YoungDiagram where
-  cells := Equiv.Finset.congr (Equiv.prodComm _ _) μ.cells
+  cells := (Equiv.prodComm _ _).finsetCongr μ.cells
   isLowerSet _ _ h := by
-    simp only [Finset.mem_coe, Equiv.Finset.congr_apply, Finset.mem_map_equiv]
+    simp only [Finset.mem_coe, Equiv.finsetCongr_apply, Finset.mem_map_equiv]
     intro hcell
     apply μ.isLowerSet _ hcell
     simp [h]
