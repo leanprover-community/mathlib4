@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Rel.Separated
+public import Mathlib.Basic.Rel.Separated
 
 /-!
 # Covers in a uniform space

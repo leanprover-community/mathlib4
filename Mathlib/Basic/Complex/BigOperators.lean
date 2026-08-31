@@ -6,7 +6,7 @@ Authors: Kevin Buzzard, Mario Carneiro
 module
 
 public import Mathlib.Algebra.BigOperators.Balance
-public import Mathlib.Data.Complex.Basic
+public import Mathlib.Basic.Complex.Basic
 
 /-!
 # Finite sums and products of complex numbers

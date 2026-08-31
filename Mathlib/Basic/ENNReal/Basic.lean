@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Sub.WithTop
-public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
@@ -22,14 +22,14 @@ In this file we set up many of the instances on `ℝ≥0∞`, and provide relati
 as functions `ENNReal.toNNReal`, `ENNReal.ofReal` and `ENNReal.toReal`, all of which take the value
 zero wherever they cannot be the identity. Also included is the relationship between `ℝ≥0∞` and `ℕ`.
 The interaction of these functions, especially `ENNReal.ofReal` and `ENNReal.toReal`, with the
-algebraic and lattice structure can be found in `Data.ENNReal.Real`.
+algebraic and lattice structure can be found in `Mathlib.Basic.ENNReal.Real`.
 
 This file proves many of the order properties of `ℝ≥0∞`, with the exception of the ways those relate
-to the algebraic structure, which are included in `Data.ENNReal.Operations`.
+to the algebraic structure, which are included in `Mathlib.Basic.ENNReal.Operations`.
 This file also defines inversion and division: this includes `Inv` and `Div` instances on `ℝ≥0∞`
 making it into a `DivInvOneMonoid`.
 As a consequence of being a `DivInvOneMonoid`, `ℝ≥0∞` inherits a power operation with integer
-exponent: this and other properties is shown in `Data.ENNReal.Inv`.
+exponent: this and other properties is shown in `Mathlib.Basic.ENNReal.Inv`.
 
 
 ## Main definitions
@@ -58,7 +58,8 @@ exponent: this and other properties is shown in `Data.ENNReal.Inv`.
   - `a / b` is defined as `a * b⁻¹`.
 
   This inversion and division include `Inv` and `Div` instances on `ℝ≥0∞`,
-  making it into a `DivInvOneMonoid`. Further properties of these are shown in `Data.ENNReal.Inv`.
+  making it into a `DivInvOneMonoid`. Further properties of these are shown in
+  `Mathlib.Basic.ENNReal.Inv`.
 
 * Coercions to/from other types:
 
@@ -83,7 +84,7 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 ## Notation
 
 * `ℝ≥0∞`: the type of the extended nonnegative real numbers;
-* `ℝ≥0`: the type of nonnegative real numbers `[0, ∞)`; defined in `Data.Real.NNReal`;
+* `ℝ≥0`: the type of nonnegative real numbers `[0, ∞)`; defined in `Mathlib.Basic.NNReal.Defs`;
 * `∞`: a localized notation in `ENNReal` for `⊤ : ℝ≥0∞`.
 
 -/

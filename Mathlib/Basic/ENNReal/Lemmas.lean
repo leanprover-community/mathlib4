@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Data.ENNReal.Basic
+public import Mathlib.Basic.ENNReal.Basic
 public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!

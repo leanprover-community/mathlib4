@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.Algebra.Order.AddTorsor
-public import Mathlib.Data.ENNReal.Operations
+public import Mathlib.Basic.ENNReal.Operations
 
 /-!
 # Scalar multiplication on `ℝ≥0∞`.
