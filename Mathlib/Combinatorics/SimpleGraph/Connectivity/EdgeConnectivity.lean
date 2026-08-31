@@ -110,45 +110,12 @@ lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
   exact (h u v).le_degree hv.symm
 
 theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
-    (hk : k ≠ ⊤) (h : G.IsEdgeConnected k) : k ≤ G.minDegree :=by
-  -- old solution
-  --exact le_minDegree_of_forall_le_degree G k (le_degree h)
-
-  #check WithTop.coe_le_coe
-  let n : ℕ := WithTop.untop k hk
-  have hn : (n : ℕ∞) = k := by{
-    simp [n,WithTop.untop]
-    aesop
-  }
-  rw [←hn]
-  have hh : G.IsEdgeConnected (↑n) := by
-    simp_all only [n]
-  simp 
-  apply le_minDegree_of_forall_le_degree 
-  intro v'
-  #check le_degree (u := v') hh 
-  have := le_degree (u := v') hh 
-  simp at this ; assumption
-
-
-  --rw [←WithTop.coe_le_coe]
-  --simp 
- -- exact le_minDegree_of_forall_le_degree G n (by exact le_degree h hh)
- -- exact?
- -- exact le_degree h 
-
-/-
-  exact le_minDegree_of_forall_le_degree G (WithTop.untop k hk) fun _ ↦ (
-  by
-    #check le_degree (k := WithTop.untop k (by exact WithTop.coe_ne_top)) h
-    expose_names
-    --apply le_degree (u := x) (k := WithTop.untop k (by exact WithTop.coe_ne_top)) h
-    exact le_minDegree_of_forall_le_degree G (WithTop.untop k hk) fun x ↦ by(
-      exact_mod_cast le_degree h
-      )
-    exact (le_degree h)
-    -/
-  --le_degree h
+    (hk : k ≠ ⊤) (h : G.IsEdgeConnected k) : k ≤ G.minDegree := by
+  obtain ⟨n,h⟩ := WithTop.ne_top_iff_exists.mp hk
+  change (n : ℕ∞) = k at h
+  subst k
+  simp only [Nat.cast_le]
+  apply le_minDegree_of_forall_le_degree G n (fun v ↦ Nat.cast_le.mp (le_degree h))
 
 lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
@@ -297,7 +264,8 @@ theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnect
 
 @[simp]
 theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
-  simp only [edgeReachability, IsEdgeReachable.rfl, iSup_pos, ENat.iSup_natCast]
+  simp only [edgeReachability, IsEdgeReachable.rfl, iSup_pos]
+  exact iSup_enat
 
 @[simp]
 theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeReachability u v = ⊤ := by
