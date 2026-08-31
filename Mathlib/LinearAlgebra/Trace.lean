@@ -302,7 +302,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
   · rw [trace, trace, dite_eq_right hM, dite_eq_right ?_, zero_apply, zero_apply]
     rintro ⟨s, ⟨b⟩⟩
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
-      ((e.symm.toEquiv.image s).trans (Equiv.setCongr Finset.coe_image.symm))⟩⟩
+      ((e.symm.toEquiv.image s).trans (Set.equivOfEq Finset.coe_image.symm))⟩⟩
 
 @[simp] theorem trace_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W]
     [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)] [AlgEquivClass F K _ _]
