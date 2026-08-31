@@ -75,8 +75,8 @@ protected lemma IsSelfInv.prod {t : Set β} (hs : IsSelfInv s) (ht : IsSelfInv t
 lemma isSelfInv_compl_iff : IsSelfInv sᶜ ↔ IsSelfInv s := by
   simp only [isSelfInv_iff, compl_inv, compl_inj_iff]
 
-@[to_additive] 
-alias ⟨_, IsSelfInv.compl⟩ := isSelfInv_compl_iff
+@[to_additive]
+protected alias ⟨_, IsSelfInv.compl⟩ := isSelfInv_compl_iff
 
 end Inv
 
