@@ -431,7 +431,7 @@ theorem selbergBoundSum_pos :
     use 1
     simpa using ⟨s.prodPrimes_ne_zero, s.one_le_level⟩
 
-/-- The weights associated with Selberg's Lambda squared sieve. These weights are optimal amoung
+/-- The weights associated with Selberg's Lambda squared sieve. These weights are optimal among
   all sets of weights supported on `d ≤ √level`. -/
 def selbergWeights (d : ℕ) : ℝ :=
   if d ∣ s.prodPrimes then
@@ -441,7 +441,7 @@ def selbergWeights (d : ℕ) : ℝ :=
 
 theorem selbergWeights_eq_zero_of_not_dvd {d : ℕ} (hd : ¬ d ∣ s.prodPrimes) :
     s.selbergWeights d = 0 := by
-  rw [selbergWeights, if_neg hd]
+  rw [selbergWeights, ite_eq_right hd]
 
 theorem selbergWeights_eq_zero (d : ℕ) (hd : s.level < d ^ 2) :
     s.selbergWeights d = 0 := by
@@ -461,7 +461,7 @@ theorem selbergWeights_eq_zero (d : ℕ) (hd : s.level < d ^ 2) :
 theorem selbergWeights_mul_mu_nonneg {d : ℕ} (hdP : d ∣ s.prodPrimes) :
     0 ≤ s.selbergWeights d * μ d := by
   dsimp only [selbergWeights]
-  rw [if_pos hdP, mul_assoc]
+  rw [ite_eq_left hdP, mul_assoc]
   trans ((μ d : ℝ) ^ 2 * (s.nu d)⁻¹ * s.selbergTerms d * s.selbergBoundSum⁻¹ *
     ∑ m ∈ divisors s.prodPrimes with (d * (m : ℕ)) ^ 2 ≤ s.level ∧ Coprime m d, s.selbergTerms m)
   · apply mul_nonneg
@@ -518,13 +518,13 @@ theorem nu_mul_selbergWeights_eq (d : ℕ) :
       ∑ l ∈ divisors s.prodPrimes with d ∣ l ∧ l ^ 2 ≤ s.level, s.selbergTerms l := by
   by_cases h_dvd : d ∣ s.prodPrimes
   swap
-  · rw [selbergWeights, if_neg h_dvd, sum_eq_zero]
+  · rw [selbergWeights, ite_eq_right h_dvd, sum_eq_zero]
     · ring
     intro l hl
     rw [mem_filter, mem_divisors] at hl
     exact h_dvd (dvd_trans hl.2.1 hl.1.1) |>.elim
   dsimp only [selbergWeights]
-  rw [if_pos h_dvd]
+  rw [ite_eq_left h_dvd]
   simp_rw [mul_sum]
   apply symm
   simp_rw [← mul_sum, s.sum_selbergTerms_dvd_eq_mul_sum_coprime h_dvd, ← mul_assoc]
