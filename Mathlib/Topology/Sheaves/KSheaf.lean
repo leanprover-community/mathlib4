@@ -80,6 +80,7 @@ lemma hom_K_ext (P : KPresheaf A X) {K : Compacts X} (h : (IsColimit (P.coconeOf
     : f = f' :=
   ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).hom_ext w
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Ksheaf condition. It's a generalisation of the one of J.Pardon that
 corespond to the one of J.Lurie in the case of usual categories.
 
