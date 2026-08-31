@@ -31,8 +31,6 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
 
 @[expose] public section
 
-open CategoryTheory
-
 universe uR uA uB
 
 variable (R : Type uR) [CommRing R]

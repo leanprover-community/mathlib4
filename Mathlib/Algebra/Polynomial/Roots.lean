@@ -69,12 +69,12 @@ theorem roots_def [DecidableEq R] (p : R[X]) [Decidable (p = 0)] :
 
 @[simp]
 theorem roots_zero : (0 : R[X]).roots = 0 :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem card_roots (hp0 : p ≠ 0) : (Multiset.card (roots p) : WithBot ℕ) ≤ degree p := by
   classical
   unfold roots
-  rw [dif_neg hp0]
+  rw [dite_eq_right hp0]
   exact (Classical.choose_spec (exists_multiset_roots hp0)).1
 
 theorem card_roots' (p : R[X]) : Multiset.card p.roots ≤ natDegree p := by
@@ -99,7 +99,7 @@ theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
 theorem count_roots [DecidableEq R] (p : R[X]) : p.roots.count a = rootMultiplicity a p := by
   by_cases hp : p = 0
   · simp [hp]
-  rw [roots_def, dif_neg hp]
+  rw [roots_def, dite_eq_right hp]
   exact (Classical.choose_spec (exists_multiset_roots hp)).2 a
 
 @[simp]
@@ -143,6 +143,16 @@ theorem finite_setOfPred_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsR
     using p.roots.toFinset.finite_toSet
 
 @[deprecated (since := "2026-07-09")] alias finite_setOf_isRoot := finite_setOfPred_isRoot
+
+/-- Nonzero polynomials have no roots away from a finite set. -/
+lemma eventually_cofinite_not_isRoot {p : R[X]} (hp : p ≠ 0) :
+    ∀ᶠ x in Filter.cofinite, ¬p.IsRoot x :=
+  (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+/-- Nonzero polynomials are nonzero away from a finite set. -/
+lemma eventually_eval_ne_zero_cofinite {p : R[X]} (hp : p ≠ 0) :
+    ∀ᶠ x in Filter.cofinite, p.eval x ≠ 0 :=
+  eventually_cofinite_not_isRoot hp
 
 theorem eq_zero_of_infinite_isRoot (p : R[X]) (h : Set.Infinite { x | IsRoot p x }) : p = 0 :=
   not_imp_comm.mp finite_setOfPred_isRoot h
@@ -618,7 +628,7 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
     fun _ _ => Finset.finite_toSet _
 
 /-- A version of `mem_rootSet` that requires the polynomial to be non-zero after mapping
-instead of requiring it to be non-zero and `NoZeroSMulDivisors`. -/
+instead of requiring it to be non-zero and `Module.IsTorsionFree`. -/
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical

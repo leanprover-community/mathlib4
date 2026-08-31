@@ -93,6 +93,27 @@ lemma of_obj_bijective : Function.Bijective (of C).obj where
   left _ _ h := by cases h; rfl
   right X := ⟨X.as.as, rfl⟩
 
+/-- Induction principle for proving a property for all the morphisms
+in the free groupoid of a category `C`: it suffices to prove the property
+for morphisms coming from the category `C`, and that the property is
+stable under inverses and composition. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma hom_rec {motive : ∀ ⦃x y : FreeGroupoid C⦄ (_ : x ⟶ y), Prop}
+    (homMk : ∀ ⦃x y : C⦄ (f : x ⟶ y), motive (homMk f))
+    (inv : ∀ ⦃x y : FreeGroupoid C⦄ (f : x ⟶ y), motive f → motive (inv f))
+    (comp : ∀ ⦃x y z : FreeGroupoid C⦄ (f : x ⟶ y) (g : y ⟶ z),
+      motive f → motive g → motive (f ≫ g))
+    {x y : FreeGroupoid C} (f : x ⟶ y) :
+    motive f := by
+  induction x with | _ x
+  induction y with | _ y
+  obtain ⟨f, rfl⟩ := (Quotient.functor (FreeGroupoid.homRel C)).map_surjective f
+  induction f with
+  | of_map f => exact homMk f
+  | inv_of_map f => simpa using! inv _ (homMk f)
+  | id x => simpa using! homMk (𝟙 x)
+  | comp _ _ hf hg => simpa using! comp _ _ hf hg
+
 section UniversalProperty
 
 variable {G : Type u₁} [Groupoid.{v₁} G]
@@ -131,6 +152,11 @@ theorem lift_unique (φ : C ⥤ G) (Φ : FreeGroupoid C ⥤ G) (hΦ : of C ⋙ �
   apply Quotient.lift_unique
   apply Quiver.FreeGroupoid.lift_unique
   exact congr_arg Functor.toPrefunctor hΦ
+
+lemma lift_unique' {Φ Φ' : FreeGroupoid C ⥤ G} (h : of C ⋙ Φ = of C ⋙ Φ') : Φ = Φ' := by
+  trans lift (of C ⋙ Φ')
+  · exact lift_unique _ _ h
+  · exact (lift_unique _ _ rfl).symm
 
 theorem lift_id_comp_of : lift (𝟭 G) ⋙ of G = 𝟭 _ := by
   rw [lift_unique (of G) (lift (𝟭 G) ⋙ of G) (by rw [← Functor.assoc, lift_spec, Functor.id_comp])]

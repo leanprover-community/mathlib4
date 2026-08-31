@@ -23,7 +23,9 @@ of divisors and of meromorphic functions to subsets of their domain of definitio
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-open Filter Metric Topology
+open Filter Metric
+
+open scoped Topology
 
 namespace MeromorphicOn
 
@@ -455,7 +457,7 @@ open WithTop in
 /-- The divisor of the function `z ↦ z - z₀` at `x` is `0` if `x ≠ z₀`. -/
 lemma divisor_sub_const_of_ne {U : Set 𝕜} {z₀ x : 𝕜} (hx : x ≠ z₀) : divisor (· - z₀) U x = 0 := by
   by_cases hu : x ∈ U
-  · rw [divisor_apply (show MeromorphicOn (· - z₀) U from fun_sub id <| const z₀) hu,
+  · rw [divisor_apply (show MeromorphicOn (· - z₀) U by fun_prop) hu,
       ← untop₀_coe 0]
     congr
     exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr
@@ -465,7 +467,7 @@ lemma divisor_sub_const_of_ne {U : Set 𝕜} {z₀ x : 𝕜} (hx : x ≠ z₀) :
 open WithTop in
 /-- The divisor of the function `z ↦ z - z₀` at `z₀` is `1`. -/
 lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : divisor (· - z₀) U z₀ = 1 := by
-  rw [divisor_apply (show MeromorphicOn (· - z₀) U from fun_sub id <| const z₀) h, ← untop₀_coe 1]
+  rw [divisor_apply (show MeromorphicOn (· - z₀) U by fun_prop) h, ← untop₀_coe 1]
   congr
   exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr ⟨fun _ ↦ 1, analyticAt_const, by simp⟩
 
