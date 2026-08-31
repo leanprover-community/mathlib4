@@ -72,6 +72,14 @@ lemma _root_.Measurable.untopA {α} {mα : MeasurableSpace α} [Nonempty ι]
     {f : α → WithTop ι} (hf : Measurable f) :
     Measurable (fun x ↦ (f x).untopA) := hf.untopD _
 
+lemma _root_.Measurable.untop {α} {mα : MeasurableSpace α}
+    {f : α → WithTop ι} (hf : Measurable f) (h : ∀ i, f i ≠ ⊤) :
+    Measurable (fun x ↦ (f x).untop (h x)) := by
+  obtain _ | _ := isEmpty_or_nonempty ι
+  · fun_prop
+  simp_rw [← untopA_eq_untop]
+  exact hf.untopA
+
 /-- Measurable equivalence between `WithTop ι` and `ι ⊕ Unit`. -/
 def measurableEquivSum : WithTop ι ≃ᵐ ι ⊕ Unit :=
   { Equiv.optionEquivSumPUnit ι with
