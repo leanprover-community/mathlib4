@@ -10,6 +10,8 @@ public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Relator
 
 /-!
+# Basic properties of `IsEmpty`
+
 In this file we prove some basic properties about the typeclass `IsEmpty`.
 -/
 
