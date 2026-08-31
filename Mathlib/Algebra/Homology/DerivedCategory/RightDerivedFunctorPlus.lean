@@ -13,10 +13,16 @@ public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInje
 If `F : C ⥤ D` is an additive functor between abelian categories,
 where `C` has enough injectives, we define the right derived functor
 `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
-between the corresponding bounded below derived categories.
+between the corresponding bounded below derived categories. We define
+this derived functor as the derived functor of the functor
+`F.mapHomotopyCategoryPlus` induced by `F` on the bounded below
+homotopy categories. We take advantage of this definition in order to
+show that `F.rightDerivedFunctorPlus` is a triangulated functor.
+We also show that `F.rightDerivedFunctorPlus` may also be thought of
+as a derived functor of the functor `F.mapCochainComplexPlus`
+that `F` induces on the categorie of bounded below cochain complexes.
 
-TODO(@joelriou): show that this functor is triangulated and refactor
-the definition of `Functor.rightDerived`
+TODO(@joelriou): refactor the definition of `Functor.rightDerived`
 
 -/
 
@@ -33,6 +39,7 @@ variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
 /-- The right derived functor `DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
 when `F : C ⥤ D` is an additive functor between abelian categories and
 `C` has enough injectives. -/
+@[no_expose]
 noncomputable def rightDerivedFunctorPlus :
     DerivedCategory.Plus C ⥤ DerivedCategory.Plus D :=
   (F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).totalRightDerived DerivedCategory.Plus.Qh
@@ -93,14 +100,16 @@ instance (K : CochainComplex.Plus (InjectiveObject C)) :
   simp only [F.rightDerivedFunctorPlusUnit_app]
   infer_instance
 
-lemma derives_mapCochainComplexPlus_comp_Q :
+--omit [HasDerivedCategory C] in
+lemma _root_.CochainComplex.Plus.localizerMorphism_derives_mapCochainComplexPlus :
     (CochainComplex.Plus.localizerMorphism C).Derives
       (F.mapCochainComplexPlus ⋙ DerivedCategory.Plus.Q) := by
   sorry
 
+open CochainComplex.Plus in
 instance : F.rightDerivedFunctorPlus.IsRightDerivedFunctor
     F.rightDerivedFunctorPlusUnit (CochainComplex.Plus.quasiIso C) :=
-  F.derives_mapCochainComplexPlus_comp_Q.isRightDerivedFunctor_of_isIso _
+  (localizerMorphism_derives_mapCochainComplexPlus F).isRightDerivedFunctor_of_isIso _
     (by dsimp; infer_instance)
 
 example (X : HomotopyCategory.Plus (InjectiveObject C)) :
