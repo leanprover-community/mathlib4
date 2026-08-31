@@ -49,8 +49,6 @@ open Topology
 
 public section
 
-noncomputable section
-
 namespace Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

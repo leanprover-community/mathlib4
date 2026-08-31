@@ -15,9 +15,6 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 public section
 
-
-noncomputable section
-
 namespace RCLike
 
 variable {𝕜 : Type*} [RCLike 𝕜]

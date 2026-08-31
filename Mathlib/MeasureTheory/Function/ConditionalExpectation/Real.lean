@@ -29,9 +29,6 @@ This file proves some results regarding the conditional expectation of real-valu
 
 public section
 
-
-noncomputable section
-
 open ENNReal Filter
 
 open scoped NNReal

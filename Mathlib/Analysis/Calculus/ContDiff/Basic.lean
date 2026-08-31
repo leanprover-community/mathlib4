@@ -19,7 +19,7 @@ constants, products, composition with linear maps, etc.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-public noncomputable section
+public section
 
 open Set Fin Filter Function
 

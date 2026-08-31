@@ -41,8 +41,6 @@ public section
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
-noncomputable section
-
 open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve
   CategoryTheory.Limits
 

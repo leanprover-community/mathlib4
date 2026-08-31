@@ -45,8 +45,6 @@ Primed versions of the three results above are also stated for when the endpoint
 
 public section
 
-noncomputable section
-
 open Finset MeasureTheory
 
 variable {𝕜 : Type*} [RCLike 𝕜] (c : ℕ → 𝕜) {f : ℝ → 𝕜} {a b : ℝ}

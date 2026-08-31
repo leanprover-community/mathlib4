@@ -111,8 +111,6 @@ public section
 
 open Filter Asymptotics ContinuousLinearMap Set Topology NNReal
 
-noncomputable section
-
 section
 section DerivativeUniqueness
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
