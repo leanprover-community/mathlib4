@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 module
 
 public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Basic.Rel
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Data.Part
-public import Mathlib.Data.Rel
 
 /-!
 # Partial functions

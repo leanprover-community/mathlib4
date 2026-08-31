@@ -70,8 +70,8 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*}
+variable {M : Type*} {M' M'' : Type*}
 
 namespace Module
 
@@ -99,7 +99,7 @@ namespace Basis
 instance : Inhabited (Basis ι R (ι →₀ R)) :=
   ⟨.ofRepr (LinearEquiv.refl _ _)⟩
 
-variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
+variable (b : Basis ι R M) (i : ι) (c : R) (x : M)
 
 section repr
 
@@ -179,7 +179,6 @@ end Map
 
 section Reindex
 
-variable (b' : Basis ι' R M')
 variable (e : ι ≃ ι')
 
 /-- `b.reindex (e : ι ≃ ι')` is a basis indexed by `ι'` -/
@@ -199,7 +198,7 @@ theorem repr_reindex_apply (i' : ι') : (b.reindex e).repr x i' = b.repr x (e.sy
   show (Finsupp.domLCongr e : _ ≃ₗ[R] _) (b.repr x) i' = _ by simp
 
 @[simp]
-theorem repr_reindex : (b.reindex e).repr x = (b.repr x).mapDomain e :=
+theorem repr_reindex : (b.reindex e).repr x = (b.repr x).equivMapDomain e :=
   DFunLike.ext _ _ <| by simp [repr_reindex_apply]
 
 @[simp]
@@ -477,8 +476,7 @@ theorem reindexFinsetRange_repr_self (i : ι) :
     b.reindexFinsetRange.repr (b i) =
       Finsupp.single ⟨b i, Finset.mem_image_of_mem b (Finset.mem_univ i)⟩ 1 := by
   ext ⟨bi, hbi⟩
-  rw [reindexFinsetRange, repr_reindex, Finsupp.mapDomain_equiv_apply, reindexRange_repr_self]
-  simp [Finsupp.single_apply]
+  simp [reindexFinsetRange, reindexRange_repr_self]
 
 @[simp]
 theorem reindexFinsetRange_repr (x : M) (i : ι)
@@ -708,11 +706,7 @@ variable (e : ι ≃ ι')
 @[simp]
 theorem sumCoords_reindex : (b.reindex e).sumCoords = b.sumCoords := by
   ext x
-  simp only [coe_sumCoords, repr_reindex]
-  exact Finsupp.sum_mapDomain_index (fun _ => rfl) fun _ _ _ => rfl
-
-variable (S : Type*) [Semiring S] [Module S M']
-variable [SMulCommClass R S M']
+  simp [Function.id_def]
 
 theorem coord_equivFun_symm [Finite ι] (b : Basis ι R M) (i : ι) (f : ι → R) :
     b.coord i (b.equivFun.symm f) = f i :=
