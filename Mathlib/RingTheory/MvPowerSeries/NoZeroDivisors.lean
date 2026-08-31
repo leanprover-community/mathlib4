@@ -109,7 +109,7 @@ lemma monomial_mem_nonzeroDivisorsLeft {n : σ →₀ ℕ} {r} :
   · intro H p hrp
     ext i
     have := congr(coeff (i + n) $hrp)
-    rw [coeff_monomial_mul, if_pos le_add_self, add_tsub_cancel_right] at this
+    rw [coeff_monomial_mul, ite_eq_left le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
 -- TODO: reduce duplication
@@ -122,7 +122,7 @@ lemma monomial_mem_nonzeroDivisorsRight {n : σ →₀ ℕ} {r} :
   · intro H p hrp
     ext i
     have := congr(coeff (i + n) $hrp)
-    rw [coeff_mul_monomial, if_pos le_add_self, add_tsub_cancel_right] at this
+    rw [coeff_mul_monomial, ite_eq_left le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
 lemma monomial_mem_nonzeroDivisors {n : σ →₀ ℕ} {r} :
