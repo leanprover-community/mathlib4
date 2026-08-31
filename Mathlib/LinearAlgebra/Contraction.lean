@@ -404,7 +404,7 @@ namespace TensorProduct
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
 section
-variable [Module.Finite R M] [Module.Finite R N] [Module.Free R M] [Module.Free R N]
+variable [Module.Finite R M] [Module.Finite R N] [Projective R M] [Projective R N]
 
 variable (R M N) in
 /--

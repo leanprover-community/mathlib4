@@ -165,8 +165,8 @@ section CommRing
 variable [CommRing R]
 variable [AddCommGroup M₁] [AddCommGroup M₂]
 variable [Module R M₁] [Module R M₂]
-variable [Module.Free R M₁] [Module.Finite R M₁]
-variable [Module.Free R M₂] [Module.Finite R M₂]
+variable [Module.Projective R M₁] [Module.Finite R M₁]
+variable [Module.Projective R M₂] [Module.Finite R M₂]
 
 namespace BilinForm
 
