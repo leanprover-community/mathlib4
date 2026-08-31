@@ -271,7 +271,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (hf : AEStr
   · by_cases hr : r = 0
     · simp [hr, eLpNorm_exponent_zero]
     by_cases hfg : eLpNorm f p μ * eLpNorm g q μ = 0
-    · rw [hc, mul_assoc, ENNReal.top_mul', if_pos hfg, nonpos_iff_eq_zero]
+    · rw [hc, mul_assoc, ENNReal.top_mul', ite_eq_left hfg, nonpos_iff_eq_zero]
       apply eLpNorm_eq_zero_of_ae_zero
       rcases mul_eq_zero.mp hfg with hf0 | hg0
       · have hp : p ≠ 0 := ne_bot_of_le_ne_bot hr (HolderTriple.le p q r)
