@@ -1206,8 +1206,10 @@ lemma norm_lt_zpow_iff_mulValuation_lt_exp {x : ℚ_[p]} {m : ℤ} :
   · rw [norm_eq_zpow_neg_valuation hx, zpow_lt_zpow_iff_right₀ h1p, mulValuation_toFun,
       ite_eq_right hx, exp_lt_exp]
 
-lemma norm_lt_norm_iff_mulValuation_lt {x y : ℚ_[p]} (hy : y ≠ 0) :
+lemma norm_lt_norm_iff_mulValuation_lt {x y : ℚ_[p]} :
     ‖x‖ < ‖y‖ ↔ mulValuation x < mulValuation y := by
+  by_cases hy : y = 0
+  · simp [hy]
   rw [norm_eq_zpow_log_mulValuation hy, norm_lt_zpow_iff_mulValuation_lt_exp,
     exp_log (mulValuation.ne_zero_iff.mpr hy)]
 
