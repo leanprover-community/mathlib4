@@ -678,7 +678,7 @@ theorem separatingLeft_iff_ker_eq_bot : B.SeparatingLeft ↔ LinearMap.ker B = �
 theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
 
-/-- The identitiy pairing is left-separating. -/
+/-- The identity pairing is left-separating. -/
 protected theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
   separatingLeft_iff_ker_eq_bot.mpr ker_id
 
