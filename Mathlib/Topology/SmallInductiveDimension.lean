@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Inseparable
 
 import Mathlib.Data.Nat.Cast.Order.Basic
 
@@ -203,3 +204,12 @@ instance {p : X → Prop} (n : ℕ) [h : HasSmallInductiveDimensionLT X n] :
 protected theorem Homeomorph.smallInductiveDimension_congr (f : X ≃ₜ Y) :
     smallInductiveDimension X = smallInductiveDimension Y :=
   le_antisymm f.isInducing.smallInductiveDimension_le f.symm.isInducing.smallInductiveDimension_le
+
+/--
+The small inductive dimension of the separation quotient is equal to that of the ambient space.
+-/
+theorem smallInductiveDimension_separationQuotient :
+    smallInductiveDimension (SeparationQuotient X) = smallInductiveDimension X := by
+  apply le_antisymm
+  · exact isEmbedding_out.isInducing.smallInductiveDimension_le
+  · exact isInducing_mk.smallInductiveDimension_le

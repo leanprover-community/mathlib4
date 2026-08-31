@@ -794,6 +794,13 @@ theorem continuous_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) →
     Continuous (uncurry <| lift₂ f hf) ↔ Continuous (uncurry f) := by
   simp only [← continuousOn_univ, continuousOn_lift₂, preimage_univ]
 
+theorem LeftInverse.out :
+    LeftInverse SeparationQuotient.mk (Quotient.out : SeparationQuotient X → X) :=
+  surjInv_eq Quot.exists_rep
+
+theorem isEmbedding_out : IsEmbedding (Quotient.out : SeparationQuotient X → X) :=
+  IsEmbedding.of_leftInverse_of_isInducting LeftInverse.out SeparationQuotient.isInducing_mk
+
 end SeparationQuotient
 
 theorem continuous_congr_of_inseparable (h : ∀ x, f x ~ᵢ g x) :
