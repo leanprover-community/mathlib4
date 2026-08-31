@@ -166,8 +166,8 @@ lemma analyticAt : AnalyticAt 𝕜 f x := f.cpolynomialAt.analyticAt
 
 lemma analyticWithinAt : AnalyticWithinAt 𝕜 f s x := f.analyticAt.analyticWithinAt
 
-/-- Precomposition on spaces of `n`-alternating maps, as a continuous linear map, is cpolynomial
-when multiplied by `(card ι)!`. -/
+/-- Precomposition on spaces of `n`-alternating maps, as a continuous linear map, is continuously
+polynomial when multiplied by `(card ι)!`. -/
 lemma cpolynomialAt_smul_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
     CPolynomialAt 𝕜 ((Fintype.card ι)! •
       compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) f₀ := by
@@ -175,14 +175,14 @@ lemma cpolynomialAt_smul_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
   * the canonical inclusion from alternating maps to multilinear maps (called `C` below)
   * precomposition on the space of multilinear maps (called `B`)
   * alternatization to go back from multilinear maps to alternating maps (called `A`)
-  All these building blocks are cpolynomial (as `A` and `C` can be seen as composition with
-    linear maps, and `B` as a multilinear map), so their composition also is.
+  All these building blocks are continuously polynomial (as `A` and `C` can be seen as composition
+  with linear maps, and `B` is a multilinear map), so their composition also is.
   The factor `(Fintype.card ι)!` comes out of the alternatization in this argument.
   Note that the naive argument to eliminate it fails, as follows.
   We would like to think that the map is polynomial of degree `card ι`, i.e., it should be
   written as `P (f, ..., f)` where `P` is multilinear. The natural candidate for `P` is
   `P (f₁, ..., fₙ) m (v₁, ..., vₙ) = m (f₁ v₁, ..., fₙ vₙ)`, i.e., apply the `fᵢ`coordinatewise.
-  This is the formula used to show that multilinear maps are cpolynomial.
+  This is the formula used for multilinear maps.
   However, even if `m` is alternating, the map `m (f₁ v₁, ..., fₙ vₙ)` is not! So, `P` does not
   take its values in the correct space of alternating maps, and the argument fails.
   -/
@@ -212,7 +212,8 @@ lemma cpolynomialAt_smul_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
 
 variable [CharZero 𝕜]
 
-/-- Precomposition on spaces of `n`-alternating maps, as a continuous linear map, is cpolynomial. -/
+/-- Precomposition on spaces of `n`-alternating maps, as a continuous linear map, is continuously
+polynomial. -/
 lemma cpolynomialAt_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
     CPolynomialAt 𝕜
       (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) f₀ := by
@@ -223,7 +224,12 @@ lemma cpolynomialAt_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
   are finite-dimensional: in this case, the space of alternating maps is complemented in the space
   of multilinear maps, therefore there is a continuous linear projection on it. One can then follow
   the proof in `cpolynomialAt_smul_compContinuousLinearMapCLM` using this projection instead
-  of `alternatization`, which eliminates the factorial. -/
+  of `alternatization`, which eliminates the factorial.
+
+  This corresponds to the sentence in Bourbaki, Variétés différentielles et analytiques,
+  Paragraph 7.8: "We assume that 𝕜 has characteristic zero or that the vector bundles have finite
+  dimension".
+  -/
   have : (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) =
       ((Fintype.card ι)! : 𝕜)⁻¹ • ((Fintype.card ι)! • compContinuousLinearMapCLM) := by
     rw [← Nat.cast_smul_eq_nsmul 𝕜, smul_smul, inv_mul_cancel₀, one_smul]
