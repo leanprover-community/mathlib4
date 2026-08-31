@@ -21,6 +21,11 @@ public section
 protected theorem IsSelfInv.zero {α : Type*} [GroupWithZero α] : IsSelfInv (0 : α) :=
   inv_zero
 
+@[simp]
+protected theorem IsSelfNeg.one {α : Type*} [AddGroupWithOne α] [CharP α 2] :
+    IsSelfNeg (1 : α) := by
+  rw [isSelfNeg_iff, neg_eq_iff_add_eq_zero, one_add_one_eq_two, CharTwo.two_eq_zero]
+
 protected theorem IsSelfInv.neg {α : Type*} [DivisionMonoid α] [HasDistribNeg α] {a : α}
     (h : IsSelfInv a) : IsSelfInv (-a) := by
   rw [isSelfInv_iff, inv_neg, h.inv_eq]
