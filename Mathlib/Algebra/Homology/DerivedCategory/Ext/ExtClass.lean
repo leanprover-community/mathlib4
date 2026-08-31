@@ -52,7 +52,7 @@ local notation "δ" => Triangle.mor₃ (CochainComplex.mappingCone.triangle (Sho
 
 set_option backward.defeqAttrib.useBackward true in
 instance : HasSmallLocalizedShiftedHom.{w} W ℤ (S').X₃ (S').X₁ := by
-  dsimp only [map_X₃, map_X₁]
+  dsimp
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
@@ -61,7 +61,7 @@ include hS in
 private lemma hasSmallLocalizedHom_S'_X₃_K :
     HasSmallLocalizedHom.{w} W (S').X₃ K := by
   rw [Localization.hasSmallLocalizedHom_iff_target W (S').X₃ qis hqis]
-  dsimp only [map_X₃]
+  dsimp
   apply Localization.hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ (M := ℤ)
 
 set_option backward.privateInPublic true in
