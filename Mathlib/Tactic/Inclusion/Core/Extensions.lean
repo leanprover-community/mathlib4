@@ -5,8 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
+public meta import Mathlib.Tactic.Inclusion.Core.DiscrTreeExt
 public meta import Mathlib.Tactic.Inclusion.Core.Types
-public meta import Mathlib.Lean.Meta.DiscrTreeExt
 
 /-!
 # Environment extensions for the `inclusion` tactic

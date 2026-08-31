@@ -5037,7 +5037,6 @@ public import Mathlib.Lean.Meta
 public import Mathlib.Lean.Meta.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Lean.Meta.DiscrTree
-public import Mathlib.Lean.Meta.DiscrTreeExt
 public import Mathlib.Lean.Meta.KAbstractPositions
 public import Mathlib.Lean.Meta.RefinedDiscrTree
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
@@ -7527,6 +7526,7 @@ public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
 public import Mathlib.Tactic.Inclusion.Core.Core
+public import Mathlib.Tactic.Inclusion.Core.DiscrTreeExt
 public import Mathlib.Tactic.Inclusion.Core.Elab
 public import Mathlib.Tactic.Inclusion.Core.Expr
 public import Mathlib.Tactic.Inclusion.Core.Extensions
