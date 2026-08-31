@@ -572,8 +572,6 @@ end
 
 variable (R : Type) [Ring R]
 
-open Opposite
-
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `CategoryTheory.Mat.equivalenceSingleObj`. -/
 @[simps]

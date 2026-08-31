@@ -66,7 +66,6 @@ theorem take_repeat {α : Type*} {n' : ℕ} (m : ℕ) (h : m ≤ n) (a : Fin n' 
   ext i
   simp only [take, repeat_apply, modNat, val_castLE]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Taking `m + 1` elements is equal to taking `m` elements and adding the `(m + 1)`th one. -/
 theorem take_succ_eq_snoc (m : ℕ) (h : m < n) (v : (i : Fin n) → α i) :
     take m.succ h v = snoc (take m h.le v) (v ⟨m, h⟩) := by
@@ -118,7 +117,6 @@ theorem take_append_left {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n) (u : (i
     (v : (i : Fin n') → α) : take m (Nat.le_add_right_of_le h) (append u v) = take m h u :=
   take_addCases_left m h _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Taking the first `n + m` elements of an `addCases u v`, where `v` is a `n'`-tuple and `m ≤ n'`,
 is the same as appending `u` with the first `m` elements of `v`. -/
 theorem take_addCases_right {n' : ℕ} {motive : Fin (n + n') → Sort*} (m : ℕ) (h : m ≤ n')

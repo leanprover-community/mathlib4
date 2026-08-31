@@ -201,7 +201,7 @@ theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
   rcases h with ⟨t, htm, hst⟩
   refine ⟨t ∪ toMeasurable μ (s \ t), ?_, htm.union (measurableSet_toMeasurable _ _), ?_⟩
   · exact sdiff_subset_iff.1 (subset_toMeasurable _ _)
-  · have : toMeasurable μ (s \ t) =ᵐ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
+  · have : toMeasurable μ (s \ t) =ᵐ[μ] ∅ := by simp [ae_le_set.1 hst.le]
     simpa only [union_empty] using hst.symm.union this
 
 theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by
@@ -414,6 +414,20 @@ theorem NullMeasurable.congr {g : α → β} (hf : NullMeasurable f μ) (hg : f 
 
 end NullMeasurable
 
+section AEMeasurable
+
+variable {m : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α} {f : α → β}
+
+protected theorem _root_.AEMeasurable.nullMeasurable (h : AEMeasurable f μ) :
+    NullMeasurable f μ :=
+  let ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
+
+theorem _root_.AEMeasurable.nullMeasurableSet_preimage {s : Set β} (hf : AEMeasurable f μ)
+    (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
+  hf.nullMeasurable hs
+
+end AEMeasurable
+
 section IsComplete
 
 /-- A measure is complete if every null set is also measurable.
@@ -423,7 +437,7 @@ section IsComplete
 class Measure.IsComplete {_ : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : ∀ s, μ s = 0 → MeasurableSet s
 
-variable {m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
+variable {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
 theorem Measure.isComplete_iff : μ.IsComplete ↔ ∀ s, μ s = 0 → MeasurableSet s :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
