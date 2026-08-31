@@ -409,6 +409,9 @@ theorem matrixOfPolynomials_isUpperTriangular {R} [Semiring R] {n : ℕ} (p : Fi
   fun _ j h => by
     exact coeff_eq_zero_of_natDegree_lt <| Nat.lt_of_le_of_lt (h_deg j) h
 
+@[deprecated (since := "2026-08-31")]
+alias matrixOfPolynomials_blockTriangular := Matrix.matrixOfPolynomials_isUpperTriangular
+
 theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
