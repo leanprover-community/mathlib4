@@ -1,13 +1,10 @@
 import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Positive
 
 open scoped ComplexOrder
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-
--- this should be in `Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric`
-alias quasispectrum.norm_le_norm_of_mem :=
-  NonUnitalIsometricContinuousFunctionalCalculus.norm_quasispectrum_le
 
 open CStarAlgebra Unitization in
 lemma CStarAlgebra.norm_sub_le_one_of_nonneg_of_norm_le_one {A : Type*} [NonUnitalCStarAlgebra A]
@@ -24,7 +21,7 @@ lemma CStarAlgebra.nnrpow_le_self_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ 
   conv_rhs => rw [← cfcₙ_id' ℝ e]
   rw [CFC.nnrpow_eq_cfcₙ_real e, ← sub_nonneg, ← cfcₙ_sub ..]
   refine cfcₙ_nonneg fun x hx ↦ sub_nonneg.mpr ?_
-  have := quasispectrum.norm_le_norm_of_mem _ hx
+  have := quasispectrum.norm_le_norm_of_mem hx
   grw [he1, Real.norm_eq_abs] at this
   exact Real.rpow_le_self_of_le_one (quasispectrum_nonneg_of_nonneg _ he0 _ hx) (by grind) hn
 
@@ -40,7 +37,7 @@ lemma CStarAlgebra.self_le_nnrpow_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ 
   conv_lhs => rw [← cfcₙ_id' ℝ e]
   rw [CFC.nnrpow_eq_cfcₙ_real e, ← sub_nonneg, ← cfcₙ_sub ..]
   refine cfcₙ_nonneg fun x hx ↦ sub_nonneg.mpr ?_
-  have := quasispectrum.norm_le_norm_of_mem _ hx
+  have := quasispectrum.norm_le_norm_of_mem hx
   grw [he1, Real.norm_eq_abs] at this
   exact Real.self_le_rpow_of_le_one (quasispectrum_nonneg_of_nonneg _ he0 _ hx) (by grind) hn
 
@@ -50,48 +47,27 @@ lemma CStarAlgebra.self_le_sqrt_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e)
 
 end
 
-namespace PositiveLinearMap
+namespace PositiveContinuousLinearMap
 
-section
--- should go in GNS file
-
-lemma preGNS_norm_def' (f : A →ₚ[ℂ] ℂ) (a : f.PreGNS) :
-    ‖a‖ = √‖f (star (f.ofPreGNS a) * f.ofPreGNS a)‖ := by
-  rw [← sq_eq_sq₀ (by positivity) (by positivity), ← Complex.ofReal_inj,
-    Complex.ofReal_pow, preGNS_norm_sq, Real.sq_sqrt (by positivity),
-    ← Complex.eq_coe_norm_of_nonneg]
-  exact f.map_nonneg (star_mul_self_nonneg _)
-
-lemma cauchy_schwarz_star_mul (f : A →ₚ[ℂ] ℂ) (x y : A) :
-    ‖f (star x * y)‖ ≤ √‖f (star x * x)‖ * √‖f (star y * y)‖ := by
-  simpa [preGNS_inner_def, preGNS_norm_def'] using
-    norm_inner_le_norm (𝕜 := ℂ) (f.toPreGNS x) (f.toPreGNS y)
-
-lemma cauchy_schwarz_mul_star (f : A →ₚ[ℂ] ℂ) (x y : A) :
-    ‖f (x * star y)‖ ≤ √‖f (x * star x)‖ * √‖f (y * star y)‖ := by
-  simpa using cauchy_schwarz_star_mul f (star x) (star y)
-
-end
-
--- change to PCLM when that lands
-theorem norm_apply_le_sqrt_opNorm_mul (f : A →ₚ[ℂ] ℂ) (x : A) :
-    ‖f x‖ ≤ √‖f.toContinuousLinearMap‖ * √‖f (star x * x)‖ := by
+theorem norm_apply_le_sqrt_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
+    ‖f x‖ ≤ √‖(f : A →L[ℂ] ℂ)‖ * √‖f (star x * x)‖ := by
   have hl := CStarAlgebra.increasingApproximateUnit A
   refine le_of_tendsto ((ContinuousAt.tendsto (by fun_prop)).comp (hl.tendsto_mul_right _)).norm ?_
   filter_upwards [hl.eventually_nonneg, hl.eventually_norm] with e he1 he2
-  grw [← he1.star_eq, Function.comp_apply, f.cauchy_schwarz_star_mul,
-    ← f.toContinuousLinearMap_apply, f.toContinuousLinearMap.le_opNorm (star e * e),
+  rw [← he1.star_eq, Function.comp_apply, ← f.coe_toPositiveLinearMap]
+  grw [PositiveLinearMap.cauchy_schwarz_star_mul, coe_toPositiveLinearMap,
+    ← f.coe_toContinuousLinearMap, f.toContinuousLinearMap.le_opNorm (star e * e),
     CStarRing.norm_star_mul_self, he2, he2, one_mul, mul_one]
 
 open Topology Complex in
-theorem tendsto_nhds_opNorm (f : A →ₚ[ℂ] ℂ) {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
-    l.Tendsto (f ·) (𝓝 ‖f.toContinuousLinearMap‖) := by
+theorem tendsto_nhds_opNorm (f : A →P[ℂ] ℂ) {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
+    l.Tendsto (f ·) (𝓝 ‖(f : A →L[ℂ] ℂ)‖) := by
   suffices l.Tendsto (‖f ·‖) (𝓝 ‖f.toContinuousLinearMap‖) from this.ofReal.congr' <| by
     filter_upwards [hl.eventually_nonneg] using by simp_all [norm_of_nonneg' (f.map_nonneg _)]
   refine Metric.tendsto_nhds.mpr fun ε hε ↦ ?_
   have h : ∀ᶠ x in l, ‖f x‖ ≤ ‖f.toContinuousLinearMap‖ + ε / 2 := by
     filter_upwards [hl.eventually_norm] with x hx
-    grw [← f.toContinuousLinearMap_apply, ContinuousLinearMap.le_opNorm, hx, mul_one]
+    grw [← f.coe_toContinuousLinearMap, ContinuousLinearMap.le_opNorm, hx, mul_one]
     grind
   have h2 : ∀ᶠ x in l, ‖f.toContinuousLinearMap‖ - ε / 2 < ‖f x‖ := by
     obtain ⟨_, ⟨a, ha1, rfl⟩, ha2⟩ := exists_lt_of_lt_csSup (b := ‖f.toContinuousLinearMap‖ - ε / 4)
@@ -100,12 +76,13 @@ theorem tendsto_nhds_opNorm (f : A →ₚ[ℂ] ℂ) {l : Filter A} (hl : l.IsInc
     have h3 : ∀ᶠ x in l, ‖f (x * a)‖ ^ 2 ≤ ‖f x‖ * ‖f.toContinuousLinearMap‖ := by
       filter_upwards [hl.eventually_nonneg, hl.eventually_norm] with x hx1 hx2
       have : ‖f (star x * x)‖ ≤ ‖f x‖ := by
-        refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg (star_mul_self_nonneg _)) ?_
+        refine CStarAlgebra.norm_le_norm_of_le_of_nonneg ?_
         exact f.mono <| hx1.star_eq.symm ▸ CStarAlgebra.mul_self_le_of_nonneg_of_norm_le_one hx1 hx2
-      conv_lhs => rw [← hx1.star_eq]
-      grw [f.cauchy_schwarz_star_mul x a, mul_pow, Real.sq_sqrt (norm_nonneg _),
-        Real.sq_sqrt (norm_nonneg _), this, ← f.toContinuousLinearMap_apply (star a * a),
-        f.toContinuousLinearMap.le_opNorm (star a * a), CStarRing.norm_star_mul_self, ← mul_assoc]
+      conv_lhs => rw [← hx1.star_eq, ← f.coe_toPositiveLinearMap]
+      grw [PositiveLinearMap.cauchy_schwarz_star_mul _ x a, mul_pow, Real.sq_sqrt (norm_nonneg _),
+        Real.sq_sqrt (norm_nonneg _), f.coe_toPositiveLinearMap, this,
+        ← f.coe_toContinuousLinearMap, f.toContinuousLinearMap.le_opNorm (star a * a),
+        CStarRing.norm_star_mul_self, ← mul_assoc]
       refine mul_le_of_le_one_right (by positivity) ?_
       grw [mem_closedBall_zero_iff.mp ha1, mem_closedBall_zero_iff.mp ha1, one_mul]
     have h4 : ∀ᶠ x in l, ‖f.toContinuousLinearMap‖ - ε / 4 < ‖f (x * a)‖ := by
@@ -115,10 +92,10 @@ theorem tendsto_nhds_opNorm (f : A →ₚ[ℂ] ℂ) {l : Filter A} (hl : l.IsInc
   filter_upwards [h, h2] using by grind [Real.dist_eq]
 
 theorem ofReal_opNorm_eq_map_one {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-    (f : A →ₚ[ℂ] ℂ) : ‖f.toContinuousLinearMap‖ = f 1 :=
+    (f : A →P[ℂ] ℂ) : ‖(f : A →L[ℂ] ℂ)‖ = f 1 :=
   tendsto_nhds_unique (f.tendsto_nhds_opNorm (.pure_one A)) (tendsto_pure_nhds _ _)
 
-end PositiveLinearMap
+end PositiveContinuousLinearMap
 
 namespace ContinuousLinearMap
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] {f : A →L[ℂ] ℂ}
@@ -181,7 +158,7 @@ private lemma im_apply_eq_zero_of_tendsto_nhds_opNorm {l : Filter A}
 theorem monotone_iff_tendsto_nhds_opNorm {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     Monotone f ↔ l.Tendsto (f ·) (𝓝 ‖f‖) := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ monotone_iff_map_nonneg _ |>.mpr fun a ha ↦ ?_⟩
-  · exact ({ __ := f, monotone' := hf } : _ →ₚ[ℂ] _).tendsto_nhds_opNorm hl
+  · exact ({ __ := f, monotone' := hf } : _ →P[ℂ] _).tendsto_nhds_opNorm hl
   by_cases ha0 : a = 0
   · simp [ha0]
   suffices 0 ≤ (f (‖a‖⁻¹ • a)).re by simpa [Complex.le_def, ha0,
