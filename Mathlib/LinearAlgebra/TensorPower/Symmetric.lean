@@ -112,7 +112,7 @@ def mk : (⨂[R] (_ : ι), M) →ₗ[R] Sym[R] ι M where
 variable {M ι} in
 /-- The multilinear map that takes `ι`-indexed elements of `M` and
 returns their symmetric tensor power. Denoted `⨂ₛ[R] i, f i`. -/
-def tprod : MultilinearMap R (fun _ : ι ↦ M) Sym[R] ι M :=
+def tprod : MultilinearMap (RingHom.id R) (fun _ : ι ↦ M) Sym[R] ι M :=
   (mk R ι M).compMultilinearMap (PiTensorProduct.tprod R)
 
 unsuppress_compilation in

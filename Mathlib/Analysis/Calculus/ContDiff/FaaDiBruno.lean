@@ -811,7 +811,8 @@ and multilinearly on `p`. -/
 @[simps! apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
-      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E [×c.partSize i]→L[𝕜] F) (E [×n]→L[𝕜] G) where
+      MultilinearMap (RingHom.id 𝕜) (fun i : Fin c.length ↦ E [×c.partSize i]→L[𝕜] F)
+        (E [×n]→L[𝕜] G) where
   toFun f :=
     MultilinearMap.mk' (fun p ↦ c.compAlongOrderedFinpartition f p)
       (fun p m q q' ↦ by

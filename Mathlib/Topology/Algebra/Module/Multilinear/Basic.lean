@@ -50,7 +50,8 @@ conditions between the algebraic and the topological structures, but this is not
 definition. -/
 structure ContinuousMultilinearMap (R : Type u) {ι : Type v} (M₁ : ι → Type w₁) (M₂ : Type w₂)
   [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)] [Module R M₂]
-  [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] extends MultilinearMap R M₁ M₂ where
+  [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂]
+  extends MultilinearMap (RingHom.id R) M₁ M₂ where
   cont : Continuous toFun
 
 attribute [inherit_doc ContinuousMultilinearMap] ContinuousMultilinearMap.cont
@@ -72,7 +73,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
 theorem toMultilinearMap_injective :
     Function.Injective
       (ContinuousMultilinearMap.toMultilinearMap :
-        ContinuousMultilinearMap R M₁ M₂ → MultilinearMap R M₁ M₂)
+        ContinuousMultilinearMap R M₁ M₂ → MultilinearMap (RingHom.id R) M₁ M₂)
   | ⟨f, hf⟩, ⟨g, hg⟩, h => by subst h; rfl
 
 instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
@@ -121,7 +122,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 :=
   f.toMultilinearMap.map_zero
 
 instance : Zero (ContinuousMultilinearMap R M₁ M₂) :=
-  ⟨{ (0 : MultilinearMap R M₁ M₂) with cont := continuous_const }⟩
+  ⟨{ (0 : MultilinearMap (RingHom.id R) M₁ M₂) with cont := continuous_const }⟩
 
 instance : Inhabited (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨0⟩
@@ -573,7 +574,8 @@ instance : Module R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
 /-- Linear map version of the map `toMultilinearMap` associating to a continuous multilinear map
 the corresponding multilinear map. -/
 @[simps]
-def toMultilinearMapLinear : ContinuousMultilinearMap A M₁ M₂ →ₗ[R'] MultilinearMap A M₁ M₂ where
+def toMultilinearMapLinear :
+    ContinuousMultilinearMap A M₁ M₂ →ₗ[R'] MultilinearMap (RingHom.id A) M₁ M₂ where
   toFun := toMultilinearMap
   map_add' := toMultilinearMap_add
   map_smul' := toMultilinearMap_smul

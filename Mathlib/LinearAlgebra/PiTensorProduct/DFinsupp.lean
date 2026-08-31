@@ -37,9 +37,19 @@ def ofDFinsuppEquiv :
     (lift <| MultilinearMap.fromDFinsuppEquiv κ R
       fun p ↦ (DFinsupp.lsingle p).compMultilinearMap (tprod R))
     (DFinsupp.lsum R fun p ↦ lift <|
-      (PiTensorProduct.map fun i ↦ DFinsupp.lsingle (p i)).compMultilinearMap (tprod R))
+      ((PiTensorProduct.map fun i ↦ DFinsupp.lsingle (p i) :
+          (⨂[R] i, M i (p i)) →ₗ[R] _)).compMultilinearMap (tprod R))
     (by ext p x; simp)
-    (by ext x; simp)
+    (by
+      classical
+      ext x
+      have hx : x = fun i ↦ ∑ j ∈ (x i).support, DFinsupp.single j ((x i) j) :=
+        funext fun i ↦ ((x i).sum_single).symm
+      conv_rhs =>
+        rw [LinearMap.id_apply, hx,
+          (tprod R).map_sum_finset (fun i j ↦ DFinsupp.single j ((x i) j))
+            (fun i ↦ (x i).support)]
+      simp [MultilinearMap.fromDFinsuppEquiv_apply])
 
 @[simp]
 theorem ofDFinsuppEquiv_tprod_single (p : Π i, κ i) (x : Π i, M i (p i)) :

@@ -195,7 +195,8 @@ variables obtained by concatenating the variables, given by `m ↦ f (init m) (m
 def ContinuousMultilinearMap.uncurryRight
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
     ContinuousMultilinearMap 𝕜 Ei G :=
-  let f' : MultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →ₗ[𝕜] G) :=
+  let f' : MultilinearMap (RingHom.id 𝕜) (fun i : Fin n => Ei <| castSucc i)
+      (Ei (last n) →ₗ[𝕜] G) :=
     (ContinuousLinearMap.coeLM 𝕜).compMultilinearMap f.toMultilinearMap
   f'.uncurryRight.mkContinuous ‖f‖ fun m => f.norm_map_init_le m
 
@@ -211,7 +212,8 @@ a continuous multilinear map in `n` variables into continuous linear maps, given
 `m ↦ (x ↦ f (snoc m x))`. -/
 def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G) :
     ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G) :=
-  let f' : MultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G) :=
+  let f' : MultilinearMap (RingHom.id 𝕜) (fun i : Fin n => Ei <| castSucc i)
+      (Ei (last n) →L[𝕜] G) :=
     { toFun := fun m =>
         (f.toMultilinearMap.curryRight m).mkContinuous (‖f‖ * ∏ i, ‖m i‖) fun x =>
           f.norm_map_snoc_le m x

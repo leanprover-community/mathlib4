@@ -42,7 +42,7 @@ variable [∀ i k, Module R (M i k)] [Module R N]
 This is a multilinear version of `LinearMap.pi_ext`. -/
 @[ext]
 theorem pi_ext [Finite ι] [∀ i, Finite (κ i)] [∀ i, DecidableEq (κ i)]
-    ⦃f g : MultilinearMap R (fun i ↦ Π j : κ i, M i j) N⦄
+    ⦃f g : MultilinearMap (RingHom.id R) (fun i ↦ Π j : κ i, M i j) N⦄
     (h : ∀ p : Π i, κ i,
       f.compLinearMap (fun i => LinearMap.single R _ (p i)) =
       g.compLinearMap (fun i => LinearMap.single R _ (p i))) : f = g := by
@@ -74,8 +74,8 @@ each family, `piFamily f` maps a family of functions (one for each domain `κ i`
 from each selection of indices (with domain `Π i, κ i`).
 -/
 @[simps]
-def piFamily (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
-    MultilinearMap R (fun i => Π j : κ i, M i j) (Π t : Π i, κ i, N t) where
+def piFamily (f : Π (p : Π i, κ i), MultilinearMap (RingHom.id R) (fun i ↦ M i (p i)) (N p)) :
+    MultilinearMap (RingHom.id R) (fun i => Π j : κ i, M i j) (Π t : Π i, κ i, N t) where
   toFun x := fun p => f p (fun i => x i (p i))
   map_update_add' {dec} m i x y := funext fun p => by
     dsimp
@@ -89,12 +89,12 @@ def piFamily (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N
 at that point. -/
 @[simp]
 theorem piFamily_single [Fintype ι] [∀ i, DecidableEq (κ i)]
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p))
+    (f : Π (p : Π i, κ i), MultilinearMap (RingHom.id R) (fun i ↦ M i (p i)) (N p))
     (p : ∀ i, κ i) (m : ∀ i, M i (p i)) :
     piFamily f (fun i => Pi.single (p i) (m i)) = Pi.single p (f p m) := by
   ext q
   obtain rfl | hpq := eq_or_ne p q
-  · simp
+  · simp [piFamily]
   · rw [Pi.single_eq_of_ne' hpq]
     rw [Function.ne_iff] at hpq
     obtain ⟨i, hpqi⟩ := hpq
@@ -105,42 +105,45 @@ theorem piFamily_single [Fintype ι] [∀ i, DecidableEq (κ i)]
 the component from that member. -/
 @[simp]
 theorem piFamily_single_left_apply [Fintype ι] [∀ i, DecidableEq (κ i)]
-    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) (x : Π i j, M i j) :
+    (p : Π i, κ i) (f : MultilinearMap (RingHom.id R) (fun i ↦ M i (p i)) (N p))
+    (x : Π i j, M i j) :
     piFamily (Pi.single p f) x = Pi.single p (f fun i => x i (p i)) := by
   ext p'
   obtain rfl | hp := eq_or_ne p p'
-  · simp
-  · simp [hp]
+  · simp [piFamily]
+  · simp [piFamily, hp]
 
 theorem piFamily_single_left [Fintype ι] [∀ i, DecidableEq (κ i)]
-    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    (p : Π i, κ i) (f : MultilinearMap (RingHom.id R) (fun i ↦ M i (p i)) (N p)) :
     piFamily (Pi.single p f) =
       (LinearMap.single R _ p).compMultilinearMap (f.compLinearMap fun i => .proj (p i)) :=
   ext <| piFamily_single_left_apply _ _
 
 @[simp]
 theorem piFamily_compLinearMap_lsingle [Fintype ι] [∀ i, DecidableEq (κ i)]
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) (p : ∀ i, κ i) :
+    (f : Π (p : Π i, κ i), MultilinearMap (RingHom.id R) (fun i ↦ M i (p i)) (N p)) (p : ∀ i, κ i) :
     (piFamily f).compLinearMap (fun i => LinearMap.single _ _ (p i))
       = (LinearMap.single _ _ p).compMultilinearMap (f p) :=
   MultilinearMap.ext <| piFamily_single f p
 
 @[simp]
 theorem piFamily_zero :
-    piFamily (0 : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) = 0 := by
-  ext; simp
+    piFamily (0 : Π (p : Π i, κ i), MultilinearMap (RingHom.id R) (fun i ↦ M i (p i)) (N p))
+      = 0 := by
+  ext; simp [piFamily]
 
 @[simp]
-theorem piFamily_add (f g : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+theorem piFamily_add
+    (f g : Π (p : Π i, κ i), MultilinearMap (RingHom.id R) (fun i ↦ M i (p i)) (N p)) :
     piFamily (f + g) = piFamily f + piFamily g := by
-  ext; simp
+  ext; simp [piFamily]
 
 @[simp]
 theorem piFamily_smul
     [Monoid S] [∀ p, DistribMulAction S (N p)] [∀ p, SMulCommClass R S (N p)]
-    (s : S) (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    (s : S) (f : Π (p : Π i, κ i), MultilinearMap (RingHom.id R) (fun i ↦ M i (p i)) (N p)) :
     piFamily (s • f) = s • piFamily f := by
-  ext; simp
+  ext; simp [piFamily]
 
 end Semiring
 
@@ -153,8 +156,8 @@ variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 /-- `MultilinearMap.piFamily` as a linear map. -/
 @[simps]
 def piFamilyₗ :
-    (Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p))
-      →ₗ[R] MultilinearMap R (fun i => Π j : κ i, M i j) (Π t : Π i, κ i, N t) where
+    (Π (p : Π i, κ i), MultilinearMap (RingHom.id R) (fun i ↦ M i (p i)) (N p))
+      →ₗ[R] MultilinearMap (RingHom.id R) (fun i => Π j : κ i, M i j) (Π t : Π i, κ i, N t) where
   toFun := piFamily
   map_add' := piFamily_add
   map_smul' := piFamily_smul

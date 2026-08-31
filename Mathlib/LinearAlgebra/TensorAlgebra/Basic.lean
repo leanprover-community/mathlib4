@@ -322,7 +322,7 @@ variable (R M)
 /-- Construct a product of `n` elements of the module within the tensor algebra.
 
 See also `PiTensorProduct.tprod`. -/
-def tprod (n : ℕ) : MultilinearMap R (fun _ : Fin n => M) (TensorAlgebra R M) :=
+def tprod (n : ℕ) : MultilinearMap (RingHom.id R) (fun _ : Fin n => M) (TensorAlgebra R M) :=
   (MultilinearMap.mkPiAlgebraFin R n (TensorAlgebra R M)).compLinearMap fun _ => ι R
 
 @[simp]

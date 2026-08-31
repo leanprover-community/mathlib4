@@ -205,7 +205,7 @@ Lifting a multilinear map to an algebra homomorphism from tensor product
 -/
 @[simps!]
 def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
-    (f : MultilinearMap R A S)
+    (f : MultilinearMap (RingHom.id R) A S)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : (⨂[R] i, A i) →ₐ[R] S :=
   AlgHom.ofLinearMap (lift f) (show lift f (tprod R 1) = 1 by simp [one]) <|
     LinearMap.map_mul_iff _ |>.mpr <| by aesop
