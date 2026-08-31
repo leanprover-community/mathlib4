@@ -192,6 +192,11 @@ lemma exists_map_eq_top
     (fun j k fkj fji x (hx : _ ∉ U) ↦ by rwa [Functor.map_comp] at hx)
   exact absurd (hU.ge (Set.mem_univ s)) (by simpa using hs i (𝟙 i))
 
+@[simp]
+lemma π_app_preimage_map_preimage {i j : I} (fji : j ⟶ i) (U : (D.obj i).Opens) :
+    c.π.app j ⁻¹ᵁ D.map fji ⁻¹ᵁ U = c.π.app i ⁻¹ᵁ U := by
+  rw [← Scheme.Hom.comp_preimage, c.w]
+
 attribute [local simp] Scheme.Hom.resLE_comp_resLE
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -831,6 +836,93 @@ lemma exists_appTop_π_eq_of_isAffine_of_isLimit
   exact ⟨_, (Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s).choose_spec⟩
 
+private lemma exists_cone_of_pairs {C : Type*} [Category C] [IsCofiltered C] {α : Type*}
+    (σ : Finset α) (i : α → C) (j : α → α → C)
+    (p₁ : ∀ x y, j x y ⟶ i x) (p₂ : ∀ x y, j x y ⟶ i y) :
+    ∃ (k : C) (fi : ∀ {x}, x ∈ σ → (k ⟶ i x)) (fj : ∀ {x y}, x ∈ σ → y ∈ σ → (k ⟶ j x y)),
+      (∀ {x y} (hx : x ∈ σ) (hy : y ∈ σ), fj hx hy ≫ p₁ x y = fi hx) ∧
+        ∀ {x y} (hx : x ∈ σ) (hy : y ∈ σ), fj hx hy ≫ p₂ x y = fi hy := by
+  classical
+  let O : Finset C := σ.image i ∪ Finset.image₂ j σ σ
+  have hiO {x} (hx : x ∈ σ) : i x ∈ O := Finset.subset_union_left (Finset.mem_image_of_mem i hx)
+  have hjO {x y} (hx : x ∈ σ) (hy : y ∈ σ) : j x y ∈ O :=
+    Finset.subset_union_right (Finset.mem_image₂_of_mem hx hy)
+  obtain ⟨k, T, hT⟩ := IsCofiltered.inf_exists O
+    (σ.attach.image₂ (fun (x y : σ) ↦ ⟨j x.1 y.1, i x.1, hjO x.2 y.2, hiO x.2, p₁ x y⟩) σ.attach ∪
+    σ.attach.image₂ (fun (x y : σ) ↦ ⟨j x.1 y.1, i y.1, hjO x.2 y.2, hiO y.2, p₂ x y⟩) σ.attach)
+  refine ⟨k, fun hx ↦ T (hiO hx), fun hx hy ↦ T (hjO hx hy), fun {x y} hx hy ↦ ?_,
+    fun {x y} hx hy ↦ ?_⟩
+  · exact hT (hjO hx hy) (hiO hx) (f := p₁ x y) (Finset.subset_union_left
+      (Finset.mem_image₂.mpr ⟨⟨x, hx⟩, by simp, ⟨y, hy⟩, by simp, rfl⟩))
+  · exact hT (hjO hx hy) (hiO hy) (f := p₂ x y) (Finset.subset_union_right
+      (Finset.mem_image₂.mpr ⟨⟨x, hx⟩, by simp, ⟨y, hy⟩, by simp, rfl⟩))
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+include hc in
+private lemma exists_app_eq_restrict_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+    (s : Γ(c.pt, ⊤)) (x : c.pt) :
+    ∃ (i : I) (U : (D.obj i).Opens) (_ : IsAffineOpen U) (_ : (c.π.app i).base x ∈ U)
+      (t : Γ(D.obj i, U)), (c.π.app i).app U t = s |_ (c.π.app i ⁻¹ᵁ U) := by
+  have i := IsCofiltered.nonempty (C := I).some
+  obtain ⟨_, ⟨U, hU : IsAffineOpen U, rfl⟩, hxU, -⟩ :=
+    (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open
+      (Set.mem_univ ((c.π.app i).base x)) isOpen_univ
+  have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
+  obtain ⟨j, t, hj⟩ := exists_appTop_π_eq_of_isAffine_of_isLimit _ _
+    (isLimitOpensCone D c hc i U) (s |_ _)
+  refine ⟨j.left, (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤, by simpa using hU.preimage (D.map _), ?_, t, ?_⟩
+  · suffices (c.π.app j.1 ≫ D.map j.hom).base x ∈ U by simpa [-Cone.w] using this
+    rwa [Cone.w]
+  · have H : c.π.app j.left ⁻¹ᵁ (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ (c.π.app i ⁻¹ᵁ U).ι ''ᵁ ⊤ := by
+      simp [← Scheme.Hom.comp_preimage]
+    convert! congr(c.pt.presheaf.map (homOfLE H).op $hj)
+    · convert! ConcreteCategory.comp_apply _ _ _
+      congr
+      simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
+    · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
+      change _ = (c.pt.presheaf.map (homOfLE _).op ≫ c.pt.presheaf.map (homOfLE _).op) s
+      rw [← Functor.map_comp]
+      rfl
+
+omit [IsCofiltered I] in
+private lemma π_appLE_eq_restrict {i : I} {U : (D.obj i).Opens} {s : Γ(c.pt, ⊤)}
+    {t : Γ(D.obj i, U)} (ht : (c.π.app i).app U t = s |_ (c.π.app i ⁻¹ᵁ U))
+    {V : c.pt.Opens} (e : V ≤ c.π.app i ⁻¹ᵁ U) :
+    (c.π.app i).appLE U V e t = s |_ V := by
+  simp_rw [Scheme.Hom.appLE, ConcreteCategory.comp_apply, ht]
+  exact TopCat.Presheaf.restrict_restrict e le_top s
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+include hc in
+private lemma exists_map_app_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+    [∀ i, QuasiSeparatedSpace (D.obj i)]
+    {s : Γ(c.pt, ⊤)} {i₁ i₂ : I} {U₁ : (D.obj i₁).Opens} {U₂ : (D.obj i₂).Opens}
+    (hU₁ : IsAffineOpen U₁) (hU₂ : IsAffineOpen U₂) (t₁ : Γ(D.obj i₁, U₁)) (t₂ : Γ(D.obj i₂, U₂))
+    (ht₁ : (c.π.app i₁).app U₁ t₁ = s |_ (c.π.app i₁ ⁻¹ᵁ U₁))
+    (ht₂ : (c.π.app i₂).app U₂ t₂ = s |_ (c.π.app i₂ ⁻¹ᵁ U₂)) :
+    ∃ (j : I) (f₁ : j ⟶ i₁) (f₂ : j ⟶ i₂),
+      (D.map f₁).app U₁ t₁ |_ (D.map f₁ ⁻¹ᵁ U₁ ⊓ D.map f₂ ⁻¹ᵁ U₂) =
+      (D.map f₂).app U₂ t₂ |_ (D.map f₁ ⁻¹ᵁ U₁ ⊓ D.map f₂ ⁻¹ᵁ U₂) := by
+  obtain ⟨j, f₁, f₂, -⟩ := IsCofilteredOrEmpty.cone_objs i₁ i₂
+  obtain ⟨k, fkj, hk⟩ := exists_app_map_eq_zero_of_isLimit D c hc
+    ((hU₁.preimage (D.map f₁)).isCompact.inter_of_isOpen (hU₂.preimage (D.map f₂)).isCompact
+      (U₁.2.preimage (D.map f₁).continuous) (U₂.2.preimage (D.map f₂).continuous))
+    ((D.map f₁).app U₁ t₁ |_ (D.map f₁ ⁻¹ᵁ U₁ ⊓ D.map f₂ ⁻¹ᵁ U₂) -
+      (D.map f₂).app U₂ t₂ |_ (D.map f₁ ⁻¹ᵁ U₁ ⊓ D.map f₂ ⁻¹ᵁ U₂)) (by
+    dsimp +instances [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
+    simp only [map_sub, sub_eq_zero, ← ConcreteCategory.comp_apply,
+      Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE, Cone.w]
+    exact (π_appLE_eq_restrict D c ht₁ _).trans (π_appLE_eq_restrict D c ht₂ _).symm)
+  refine ⟨k, fkj ≫ f₁, fkj ≫ f₂, ?_⟩
+  have H : (D.map (fkj ≫ f₁) ⁻¹ᵁ U₁ ⊓ D.map (fkj ≫ f₂) ⁻¹ᵁ U₂) ≤
+      D.map fkj ⁻¹ᵁ ((D.map f₁ ⁻¹ᵁ U₁ ⊓ D.map f₂ ⁻¹ᵁ U₂)) := by simp; rfl
+  apply_fun (D.obj k).presheaf.map (homOfLE H).op at hk
+  dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict] at hk ⊢
+  simpa [sub_eq_zero, ← ConcreteCategory.comp_apply, -Scheme.Hom.comp_appLE,
+    Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE] using hk
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
@@ -839,91 +931,36 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
     ∃ (i : I) (t : Γ(D.obj i, ⊤)), s = (c.π.app i).appTop t := by
   classical
   have := Scheme.compactSpace_of_isLimit _ _ hc
-  have (x : c.pt) : ∃ (i : I) (U : (D.obj i).Opens) (hU : IsAffineOpen U)
-      (hU : (c.π.app i).base x ∈ U) (t : Γ(D.obj i, U)), (c.π.app i).app U t = s |_ _ := by
-    have i := IsCofiltered.nonempty (C := I).some
-    obtain ⟨_, ⟨U, hU : IsAffineOpen U, rfl⟩, hxU, -⟩ :=
-      (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open
-        (Set.mem_univ ((c.π.app i).base x)) isOpen_univ
-    have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
-    obtain ⟨j, t, hj⟩ := exists_appTop_π_eq_of_isAffine_of_isLimit _ _
-      (isLimitOpensCone D c hc i U) (s |_ _)
-    refine ⟨j.left, (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤, by simpa using hU.preimage (D.map _), ?_, t, ?_⟩
-    · suffices (c.π.app j.1 ≫ D.map j.hom).base x ∈ U by simpa [-Cone.w] using this
-      rwa [Cone.w]
-    · have H : c.π.app j.left ⁻¹ᵁ (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ (c.π.app i ⁻¹ᵁ U).ι ''ᵁ ⊤ := by
-        simp [← Scheme.Hom.comp_preimage]
-      convert! congr(c.pt.presheaf.map (homOfLE H).op $hj)
-      · convert! ConcreteCategory.comp_apply _ _ _
-        congr
-        simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
-      · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
-        change _ = (c.pt.presheaf.map (homOfLE _).op ≫ c.pt.presheaf.map (homOfLE _).op) s
-        rw [← Functor.map_comp]
-        rfl
-  choose i U hU hxU t ht using this
-  dsimp at ht
-  have (x y : c.pt) : ∃ (j : I) (fjx : j ⟶ i x) (fjy : j ⟶ i y),
-      (D.map fjx).app (U x) (t x) |_ (D.map fjx ⁻¹ᵁ U x ⊓ D.map fjy ⁻¹ᵁ U y) =
-      (D.map fjy).app (U y) (t y) |_ (D.map fjx ⁻¹ᵁ U x ⊓ D.map fjy ⁻¹ᵁ U y) := by
-    obtain ⟨j, fjx, fjy, -⟩ := IsCofilteredOrEmpty.cone_objs (i x) (i y)
-    obtain ⟨k, fkj, hk⟩ := exists_app_map_eq_zero_of_isLimit D c hc
-      (((hU x).preimage (D.map fjx)).isCompact.inter_of_isOpen
-        ((hU y).preimage (D.map fjy)).isCompact ((U x).2.preimage (D.map fjx).continuous)
-        ((U y).2.preimage (D.map fjy).continuous))
-      ((D.map fjx).app (U x) (t x) |_ (D.map fjx ⁻¹ᵁ U x ⊓ D.map fjy ⁻¹ᵁ U y) -
-        (D.map fjy).app (U y) (t y) |_ (D.map fjx ⁻¹ᵁ U x ⊓ D.map fjy ⁻¹ᵁ U y)) (by
-      dsimp +instances [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
-      simp only [map_sub, sub_eq_zero, ← ConcreteCategory.comp_apply,
-        Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE,
-        Cone.w]
-      simp_rw [Scheme.Hom.appLE, ConcreteCategory.comp_apply, ht, TopCat.Presheaf.restrictOpen,
-        TopCat.Presheaf.restrict, ← ConcreteCategory.comp_apply, ← Functor.map_comp]
-      rfl)
-    refine ⟨k, fkj ≫ fjx, fkj ≫ fjy, ?_⟩
-    have H : (D.map (fkj ≫ fjx) ⁻¹ᵁ U x ⊓ D.map (fkj ≫ fjy) ⁻¹ᵁ U y) ≤
-        D.map fkj ⁻¹ᵁ ((D.map fjx ⁻¹ᵁ U x ⊓ D.map fjy ⁻¹ᵁ U y)) := by simp; rfl
-    apply_fun (D.obj k).presheaf.map (homOfLE H).op at hk
-    dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict] at hk ⊢
-    simpa [sub_eq_zero, ← ConcreteCategory.comp_apply, -Scheme.Hom.comp_appLE,
-      Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE] using hk
-  choose j fjx fjy hj using this
+  choose i U hU hxU t ht using exists_app_eq_restrict_of_isLimit D c hc s
+  choose j fjx fjy hj using fun x y ↦
+    exists_map_app_eq_of_isLimit D c hc (hU x) (hU y) (t x) (t y) (ht x) (ht y)
   obtain ⟨σ, hσ⟩ := CompactSpace.elim_nhds_subcover (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).1)
     (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).2.mem_nhds (by exact hxU x))
   choose σi hσiσ hσi using fun x ↦ Set.mem_iUnion₂.mp (hσ.ge (Set.mem_univ x))
-  let S : Finset _ := σ.image i ∪ Finset.image₂ j σ σ
-  have hiS {x} (hx : x ∈ σ) : i x ∈ S := Finset.subset_union_left (Finset.mem_image_of_mem i hx)
-  have hjS {x y} (hx : x ∈ σ) (hy : y ∈ σ) : j x y ∈ S :=
-    Finset.subset_union_right (Finset.mem_image₂_of_mem hx hy)
-  obtain ⟨k, fk, hk⟩ := IsCofiltered.inf_exists S
-    (σ.attach.image₂ (fun (x y : σ) ↦ ⟨j x.1 y.1, i x.1, hjS x.2 y.2, hiS x.2, fjx x y⟩) σ.attach ∪
-    σ.attach.image₂ (fun (x y : σ) ↦ ⟨j x.1 y.1, i y.1, hjS x.2 y.2, hiS y.2, fjy x y⟩) σ.attach)
-  have hk₁ {x y} (hx : x ∈ σ) (hy : y ∈ σ) := hk (hjS hx hy) (hiS hx) (f := fjx x y)
-    (Finset.subset_union_left (Finset.mem_image₂.mpr ⟨⟨x, hx⟩, by simp, ⟨y, hy⟩, by simp, rfl⟩))
-  have hk₂ {x y} (hx : x ∈ σ) (hy : y ∈ σ) := hk (hjS hx hy) (hiS hy) (f := fjy x y)
-    (Finset.subset_union_right (Finset.mem_image₂.mpr ⟨⟨x, hx⟩, by simp, ⟨y, hy⟩, by simp, rfl⟩))
+  obtain ⟨k, fk, fkj, hk₁, hk₂⟩ := exists_cone_of_pairs σ i j fjx fjy
   obtain ⟨k', fk'k, hk'⟩ := exists_map_eq_top D c hc
-    (⨆ (x : _) (hx : x ∈ σ), D.map (fk (hiS hx)) ⁻¹ᵁ U x) (by
+    (⨆ (x : _) (hx : x ∈ σ), D.map (fk hx) ⁻¹ᵁ U x) (by
     apply SetLike.coe_injective
     simpa [← Set.preimage_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base])
-  have := ((Presheaf.isSheaf_iff_isSheaf_forget _ _ (forget _)).mp (D.obj k').IsSheaf).isSheafFor
-    (.ofArrows (fun x : σ ↦ D.map (fk'k ≫ fk (hiS x.2)) ⁻¹ᵁ U x.1) fun x ↦ homOfLE le_top)
+  have hsheaf := ((Presheaf.isSheaf_iff_isSheaf_forget _ _ (forget _)).mp
+      (D.obj k').IsSheaf).isSheafFor
+    (.ofArrows (fun x : σ ↦ D.map (fk'k ≫ fk x.2) ⁻¹ᵁ U x.1) fun x ↦ homOfLE le_top)
     (fun x _ ↦ by
-      obtain ⟨ix, hix, h⟩ : ∃ ix, ∃ (h : ix ∈ σ), (D.map (fk'k ≫ fk (hiS h))).base x ∈ U ix := by
+      obtain ⟨ix, hix, h⟩ : ∃ ix, ∃ (h : ix ∈ σ), (D.map (fk'k ≫ fk h)).base x ∈ U ix := by
         simpa using hk'.ge (Set.mem_univ x)
-      refine ⟨D.map (fk'k ≫ fk (hiS hix)) ⁻¹ᵁ U ix, homOfLE le_top,
+      refine ⟨D.map (fk'k ≫ fk hix) ⁻¹ᵁ U ix, homOfLE le_top,
         Sieve.ofArrows_mk (I := σ) _ _ ⟨ix, hix⟩, h⟩)
-  rw [← Presieve.isSheafFor_iff_generate, Presieve.isSheafFor_arrows_iff] at this
-  obtain ⟨t₀, ht₀, -⟩ := this (fun x ↦ (D.map _).app _ (t x)) fun x y V fVx fVy _ ↦ by
-    have H : V ≤ D.map (fk'k ≫ fk (hjS x.2 y.2)) ⁻¹ᵁ
+  rw [← Presieve.isSheafFor_iff_generate, Presieve.isSheafFor_arrows_iff] at hsheaf
+  obtain ⟨t₀, ht₀, -⟩ := hsheaf (fun x ↦ (D.map _).app _ (t x)) fun x y V fVx fVy _ ↦ by
+    have H : V ≤ D.map (fk'k ≫ fkj x.2 y.2) ⁻¹ᵁ
         (D.map (fjx ↑x ↑y) ⁻¹ᵁ U ↑x ⊓ D.map (fjy ↑x ↑y) ⁻¹ᵁ U ↑y) := by
-      change V ≤ (D.map (fk'k ≫ fk (hjS x.2 y.2)) ≫ D.map (fjx ↑x ↑y)) ⁻¹ᵁ U x ⊓
-        (D.map (fk'k ≫ fk (hjS x.2 y.2)) ≫ D.map (fjy x y)) ⁻¹ᵁ U y
+      change V ≤ (D.map (fk'k ≫ fkj x.2 y.2) ≫ D.map (fjx ↑x ↑y)) ⁻¹ᵁ U x ⊓
+        (D.map (fk'k ≫ fkj x.2 y.2) ≫ D.map (fjy x y)) ⁻¹ᵁ U y
       rw [← Functor.map_comp, ← Functor.map_comp, Category.assoc, Category.assoc,
         hk₁ x.2 y.2, hk₂ x.2 y.2, le_inf_iff]
       exact ⟨fVx.le, fVy.le⟩
     convert!
-      congr(((D.map (fk'k ≫ fk (hjS x.2 y.2))).app _ ≫ (D.obj k').presheaf.map (homOfLE H).op)
+      congr(((D.map (fk'k ≫ fkj x.2 y.2)).app _ ≫ (D.obj k').presheaf.map (homOfLE H).op)
         $(hj x y)) using 1
     · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
       simp only [← ConcreteCategory.comp_apply]
@@ -938,7 +975,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
   refine ⟨k', t₀, TopCat.Presheaf.section_ext c.pt.sheaf _ _ _ fun y hy ↦ c.pt.presheaf.germ_ext
     (c.π.app _ ⁻¹ᵁ U (σi y)) (hσi y) (homOfLE le_top) (homOfLE le_top) ?_⟩
   have H : c.π.app (i (σi y)) ⁻¹ᵁ U (σi y) ≤
-      c.π.app k' ⁻¹ᵁ D.map (fk'k ≫ fk (hiS (hσiσ _))) ⁻¹ᵁ U (σi y) := by
+      c.π.app k' ⁻¹ᵁ D.map (fk'k ≫ fk (hσiσ _)) ⁻¹ᵁ U (σi y) := by
     rw [← Scheme.Hom.comp_preimage, Cone.w]
   convert! congr(c.pt.presheaf.map (homOfLE H).op ((c.π.app k').app _ $(ht₀ ⟨_, hσiσ y⟩))).symm
   · refine (ht (σi y)).symm.trans ?_
@@ -1149,6 +1186,15 @@ end IsAffine
 
 section LocallyOfFinitePresentation
 
+private lemma Scheme.exists_appTop_eq {Y Z : Scheme.{u}} [IsAffine Z] (φ : Γ(Z, ⊤) ⟶ Γ(Y, ⊤)) :
+    ∃ g : Y ⟶ Z, g.appTop = φ := by
+  have h : Z.isoSpec.inv.appTop = (Scheme.ΓSpecIso Γ(Z, ⊤)).inv := by
+    rw [← cancel_epi (Scheme.ΓSpecIso Γ(Z, ⊤)).hom, Iso.hom_inv_id, ← Scheme.toSpecΓ_appTop,
+      ← Scheme.Hom.comp_appTop, Scheme.isoSpec_inv_toSpecΓ, Scheme.Hom.id_appTop]
+  refine ⟨Y.toSpecΓ ≫ Spec.map φ ≫ Z.isoSpec.inv, ?_⟩
+  rw [Scheme.Hom.comp_appTop, Scheme.Hom.comp_appTop, h, Scheme.toSpecΓ_appTop, Category.assoc,
+    Scheme.ΓSpecIso_naturality, Iso.inv_hom_id_assoc]
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
@@ -1160,57 +1206,147 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
   -- Every scheme involved is affine, so the proof is merely translate to commutative algebra and
   -- use `RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit`.
-  -- Unfortunately the translation takes 45 lines.
-  wlog hS : ∃ R, S = Spec R generalizing S
-  · obtain ⟨i, g, hg, hg'⟩ := this (t ≫ ((Functor.const I).mapIso S.isoSpec).hom)
-      (f ≫ S.isoSpec.hom) (by simp [reassoc_of% ha]) ⟨_, rfl⟩
-    exact ⟨i, g, hg, by simpa using! congr($hg' ≫ S.isoSpec.inv)⟩
-  obtain ⟨R, rfl⟩ := hS
-  wlog hX : ∃ S, X = Spec S generalizing X
-  · obtain ⟨i, f, hf⟩ := this (a ≫ X.isoSpec.hom) (X.isoSpec.inv ≫ f)
-      (by simp [ha, -Functor.map_comp]) ⟨_, rfl⟩
-    exact ⟨i, f ≫ X.isoSpec.inv, by simpa [← Iso.comp_inv_eq] using! hf⟩
-  obtain ⟨S, rfl⟩ := hX
-  obtain ⟨φ, rfl⟩ := Spec.map_surjective f
-  wlog hD : ∃ D' : I ⥤ CommRingCatᵒᵖ, D = D' ⋙ Scheme.Spec generalizing D
-  · let e : D ⟶ D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
-    have inst (i) : IsIso (e.app i) := by dsimp [e]; infer_instance
-    have inst : IsIso e := NatIso.isIso_of_isIso_app e
-    have inst (i) : IsAffine ((D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec).obj i) := by
-      dsimp; infer_instance
-    obtain ⟨i, g, hg, hg'⟩ := this _ _ ((IsLimit.postcomposeHomEquiv (asIso e) c).symm hc)
-      (inv e ≫ t) a (by simpa using! ha) ⟨D ⋙ Scheme.Γ.rightOp, rfl⟩
-    exact ⟨i, e.app i ≫ g, by rwa [← Category.assoc], by simp [hg']⟩
-  obtain ⟨D, rfl⟩ := hD
-  let e : ((Functor.const Iᵒᵖ).obj R).rightOp ⋙ Scheme.Spec ≅ (Functor.const I).obj (Spec R) :=
-    NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp)
-  obtain ⟨t, rfl⟩ : ∃ t' : (Functor.const Iᵒᵖ).obj R ⟶ D.leftOp,
-      t = Functor.whiskerRight (NatTrans.rightOp t') Scheme.Spec ≫ e.hom :=
-    ⟨⟨fun i ↦ Spec.preimage (t.app i.unop), fun _ _ f ↦ Spec.map_injective
-      (by simpa using! (t.naturality f.unop).symm)⟩, by ext : 2; simp [e]⟩
-  wlog hc' : ∃ c' : Cocone D.leftOp, c = Scheme.Spec.mapCone (coneOfCoconeLeftOp c') generalizing c
-  · have inst : IsAffine c.pt := isAffine_of_isLimit _ hc
-    let e' : (D ⋙ Scheme.Spec).op ⋙ Γ ≅ D.leftOp := D.leftOp.isoWhiskerLeft SpecΓIdentity
-    let c' := coneOfCoconeLeftOp ((Cocone.precompose e'.inv).obj (Γ.mapCocone c.op))
-    have inst : ∀ i, IsAffine ((D ⋙ Scheme.Spec).op.obj i).unop := by dsimp; infer_instance
-    obtain ⟨i, f, hf⟩ := this (Scheme.Spec.mapCone c') (isLimitOfPreserves _
-      (isLimitConeOfCoconeLeftOp _ ((IsColimit.precomposeHomEquiv e'.symm _).symm
-        (isColimitOfPreserves _ hc.op)))) (c.pt.isoSpec.inv ≫ a) (by
-        ext i
-        have : c.π.app i ≫ Spec.map (t.app (.op i)) = a ≫ Spec.map φ := by
-          simpa using! congr((($ha).app i))
-        simp [c', e, e', ← this, Iso.eq_inv_comp, isoSpec_hom_naturality_assoc]) ⟨_, rfl⟩
-    refine ⟨i, f, ?_⟩
-    simpa [Iso.eq_inv_comp, c', isoSpec_hom_naturality_assoc, e'] using! hf
-  obtain ⟨c', rfl⟩ := hc'
-  obtain ⟨ψ, rfl⟩ := Spec.map_surjective a
-  replace hc := isColimitOfConeOfCoconeLeftOp _ (isLimitOfReflects _ hc)
-  obtain ⟨i, g, hg, hg'⟩ :=
-    RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit _ D.leftOp t _ _ hc
-    (HasRingHomProperty.Spec_iff.mp ‹LocallyOfFinitePresentation (Spec.map φ)›) ψ fun i ↦ by
-    apply Spec.map_injective; simpa using! congr(($ha).app i.unop).symm
-  exact ⟨i.unop, Spec.map g, by simpa using! congr(Spec.map $hg').symm,
-    by simpa using! congr(Spec.map $hg)⟩
+  have : ∀ i, IsAffine (D.op.obj i).unop := fun i ↦ by dsimp; infer_instance
+  let α : (Functor.const Iᵒᵖ).obj Γ(S, ⊤) ⟶ D.op ⋙ Scheme.Γ :=
+    { app := fun i ↦ (t.app i.unop).appTop
+      naturality := fun _ _ u ↦ by
+        have h := congr(Scheme.Hom.appTop $(t.naturality u.unop))
+        simp only [Scheme.Hom.comp_appTop, Functor.const_obj_map, Scheme.Hom.id_appTop] at h ⊢
+        exact h.symm }
+  obtain ⟨i, φ, hφ, hφ'⟩ := RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit
+    Γ(S, ⊤) (D.op ⋙ Scheme.Γ) α f.appTop _ (isColimitOfPreserves Scheme.Γ hc.op)
+    (HasRingHomProperty.iff_of_isAffine.mp ‹LocallyOfFinitePresentation f›) a.appTop fun i ↦ by
+      simpa [α] using congr(Scheme.Hom.appTop $(congr(($ha).app i.unop))).symm
+  obtain ⟨g, rfl⟩ := Scheme.exists_appTop_eq φ
+  exact ⟨i.unop, g, ext_of_isAffine (by simpa using hφ'.symm),
+    ext_of_isAffine (by simpa [α] using hφ)⟩
+
+open TopologicalSpace in
+private lemma isBasis_affineOpens_le_preimage {Y Z T : Scheme.{u}} (a : Y ⟶ Z) (g : Z ⟶ T) :
+    Opens.IsBasis {U : Y.Opens | IsAffineOpen U ∧ ∃ (V : Z.affineOpens) (W : T.affineOpens),
+      U ≤ a ⁻¹ᵁ (V : Z.Opens) ∧ (V : Z.Opens) ≤ g ⁻¹ᵁ (W : T.Opens)} := by
+  refine Opens.isBasis_iff_nbhd.mpr fun {O y} hy ↦ ?_
+  obtain ⟨W, hW, hyW, -⟩ := Opens.isBasis_iff_nbhd.mp T.isBasis_affineOpens
+    (U := ⊤) (x := g (a y)) trivial
+  obtain ⟨V, hV, hyV, hVW⟩ := Opens.isBasis_iff_nbhd.mp Z.isBasis_affineOpens
+    (U := g ⁻¹ᵁ W) (x := a y) hyW
+  obtain ⟨U, hU, hyU, hUV⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
+    (U := O ⊓ a ⁻¹ᵁ V) (x := y) ⟨hy, hyV⟩
+  exact ⟨U, ⟨hU, ⟨V, hV⟩, ⟨W, hW⟩, hUV.trans inf_le_right, hVW⟩, hyU, hUV.trans inf_le_left⟩
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+include hc in
+private lemma exists_resLE_comp_eq_of_isAffineOpen
+    [IsCofiltered I] [LocallyOfFinitePresentation f]
+    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+    (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f))
+    {i : I} {U : (D.obj i).Opens} (hU : IsAffineOpen U) (V : X.affineOpens) (W : S.affineOpens)
+    (hVW : (V : X.Opens) ≤ f ⁻¹ᵁ (W : S.Opens)) (hUV : c.π.app i ⁻¹ᵁ U ≤ a ⁻¹ᵁ (V : X.Opens)) :
+    ∃ (k : I) (u : k ⟶ i) (g : ↑(D.map u ⁻¹ᵁ U) ⟶ X),
+      g ≫ f = (D.map u ⁻¹ᵁ U).ι ≫ t.app k ∧
+        ∀ (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U),
+          (c.π.app k).resLE _ O h ≫ g = O.ι ≫ a := by
+  obtain ⟨i', u, hu⟩ : ∃ (i' : I) (u : i' ⟶ i), D.map u ⁻¹ᵁ U ≤ t.app i' ⁻¹ᵁ (W : S.Opens) := by
+    obtain ⟨i', u, hu⟩ := exists_map_preimage_le_map_preimage D c hc hU.isCompact
+      (V := t.app i ⁻¹ᵁ (W : S.Opens)) (by
+        rw [← Scheme.Hom.comp_preimage, ← NatTrans.comp_app, ha]
+        exact hUV.trans (a.preimage_mono hVW))
+    exact ⟨i', u, hu.trans_eq (by simp [← Scheme.Hom.comp_preimage, t.naturality])⟩
+  have _ (k : Over i') : IsAffine ((opensDiagram D i' (D.map u ⁻¹ᵁ U)).obj k) :=
+    (hU.preimage _).preimage _
+  let τ : opensDiagram D i' (D.map u ⁻¹ᵁ U) ⟶ (Functor.const (Over i')).obj W :=
+    { app k := (t.app k.left).resLE _ _ (by
+        refine (Scheme.Hom.preimage_mono _ hu).trans ?_
+        simp [← Scheme.Hom.comp_preimage, t.naturality])
+      naturality _ _ _ := by simp [Scheme.Hom.resLE_comp_resLE] }
+  obtain ⟨k, g, hg, hg'⟩ := Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
+    _ τ (f.resLE _ _ hVW) _ (isLimitOpensCone D c hc i' _) (a.resLE _ _ (by simpa using hUV)) (by
+      ext k
+      simp [τ, Scheme.Hom.resLE_comp_resLE,
+        show c.π.app k.left ≫ t.app k.left = a ≫ f from congr(($ha).app k.left)])
+  have e : D.map (k.hom ≫ u) ⁻¹ᵁ U ≤ D.map k.hom ⁻¹ᵁ D.map u ⁻¹ᵁ U := by simp
+  refine ⟨k.left, k.hom ≫ u, Scheme.homOfLE _ e ≫ g ≫ (V : X.Opens).ι, ?_, fun O h ↦ ?_⟩
+  · simpa [τ] using congr(Scheme.homOfLE _ e ≫ $hg' ≫ (W : S.Opens).ι)
+  · have h' : O ≤ c.π.app i' ⁻¹ᵁ D.map u ⁻¹ᵁ U := by simpa using h
+    simpa using congr(Scheme.homOfLE _ h' ≫ $hg ≫ (V : X.Opens).ι)
+
+include hc in
+private lemma exists_forall_resLE_comp_eq_of_isAffineOpen
+    [IsCofiltered I] [LocallyOfFinitePresentation f]
+    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+    (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f))
+    {i : I} {J : Type*} [Finite J] {U : J → (D.obj i).Opens} (hU : ∀ j, IsAffineOpen (U j))
+    (hUV : ∀ j, ∃ (V : X.affineOpens) (W : S.affineOpens),
+      c.π.app i ⁻¹ᵁ U j ≤ a ⁻¹ᵁ (V : X.Opens) ∧ (V : X.Opens) ≤ f ⁻¹ᵁ (W : S.Opens)) :
+    ∃ (k : I) (u : k ⟶ i) (g : ∀ j, ↑(D.map u ⁻¹ᵁ U j) ⟶ X),
+      (∀ j, g j ≫ f = (D.map u ⁻¹ᵁ U j).ι ≫ t.app k) ∧
+        ∀ j (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j),
+          (c.π.app k).resLE _ O h ≫ g j = O.ι ≫ a := by
+  choose V W hUV hVW using hUV
+  choose k u g hg hg' using IsCofiltered.exists_forall
+    (fun k (u : k ⟶ i) (j : J) ↦ ∃ g : ↑(D.map u ⁻¹ᵁ U j) ⟶ X,
+      g ≫ f = (D.map u ⁻¹ᵁ U j).ι ≫ t.app k ∧
+        ∀ (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j),
+          (c.π.app k).resLE _ O h ≫ g = O.ι ≫ a)
+    (by
+      rintro k₁ k₂ v u j ⟨g, hg, hg'⟩
+      have e : D.map (v ≫ u) ⁻¹ᵁ U j ≤ D.map v ⁻¹ᵁ D.map u ⁻¹ᵁ U j := by simp
+      exact ⟨(D.map v).resLE _ _ e ≫ g, by simpa using congr((D.map v).resLE _ _ e ≫ $hg),
+        fun O h ↦ by
+          simpa [Scheme.Hom.resLE_comp_resLE_assoc] using hg' O (by simpa using h)⟩)
+    fun j ↦ exists_resLE_comp_eq_of_isAffineOpen D t f c hc a ha (hU j) (V j) (W j) (hVW j) (hUV j)
+  exact ⟨k, u, g, hg, hg'⟩
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+include hc in
+private lemma exists_resLE_comp_eq_resLE_comp [IsCofiltered I] [LocallyOfFiniteType f]
+    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ i, QuasiSeparatedSpace (D.obj i)]
+    {k : I} {U₁ U₂ : (D.obj k).Opens} (hU₁ : IsCompact (U₁ : Set (D.obj k)))
+    (hU₂ : IsCompact (U₂ : Set (D.obj k))) (g₁ : ↑U₁ ⟶ X) (g₂ : ↑U₂ ⟶ X)
+    (hg₁ : g₁ ≫ f = U₁.ι ≫ t.app k) (hg₂ : g₂ ≫ f = U₂.ι ≫ t.app k)
+    (h : ∀ (O : c.pt.Opens) (e₁ : O ≤ c.π.app k ⁻¹ᵁ U₁) (e₂ : O ≤ c.π.app k ⁻¹ᵁ U₂),
+      (c.π.app k).resLE U₁ O e₁ ≫ g₁ = (c.π.app k).resLE U₂ O e₂ ≫ g₂) :
+    ∃ (l : I) (v : l ⟶ k), ∀ (O : (D.obj l).Opens) (e₁ : O ≤ D.map v ⁻¹ᵁ U₁)
+      (e₂ : O ≤ D.map v ⁻¹ᵁ U₂), (D.map v).resLE U₁ O e₁ ≫ g₁ = (D.map v).resLE U₂ O e₂ ≫ g₂ := by
+  have _ (x) : CompactSpace ((opensDiagram D k (U₁ ⊓ U₂)).obj x) :=
+    isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ (U₁ ⊓ U₂).isOpen
+      (hU₁.inter_of_isOpen hU₂ U₁.2 U₂.2))
+  obtain ⟨⟨l, ⟨⟨⟩⟩, v⟩, ⟨v', ⟨⟨⟨⟩⟩⟩, hv⟩, e⟩ :=
+    Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
+      _ (opensDiagramι .. ≫ (Over.forget k).whiskerLeft t) f _
+      (isLimitOpensCone D c hc k (U₁ ⊓ U₂)) (i := .mk (𝟙 k))
+      (Scheme.homOfLE _ (by simp) ≫ g₁) (Scheme.homOfLE _ (by simp) ≫ g₂)
+      (by simp [hg₁]) (by simp [hg₂]) (by
+        simp only [opensCone_π_app, Over.mk_left, Over.mk_hom, Scheme.Hom.resLE_map_assoc]
+        exact h _ _ _)
+  obtain rfl : v = v' := by simpa using! hv.symm
+  refine ⟨l, v, fun O e₁ e₂ ↦ ?_⟩
+  simpa using congr(Scheme.homOfLE _ (show O ≤ D.map v ⁻¹ᵁ (U₁ ⊓ U₂) from le_inf e₁ e₂) ≫ $e)
+
+include hc in
+private lemma exists_forall_resLE_comp_eq_resLE_comp [IsCofiltered I] [LocallyOfFiniteType f]
+    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ i, QuasiSeparatedSpace (D.obj i)]
+    {k : I} {J : Type*} [Finite J] {U : J → (D.obj k).Opens}
+    (hU : ∀ j, IsCompact (U j : Set (D.obj k))) (g : ∀ j, ↑(U j) ⟶ X)
+    (hg : ∀ j, g j ≫ f = (U j).ι ≫ t.app k)
+    (h : ∀ j₁ j₂ (O : c.pt.Opens) (e₁ : O ≤ c.π.app k ⁻¹ᵁ U j₁) (e₂ : O ≤ c.π.app k ⁻¹ᵁ U j₂),
+      (c.π.app k).resLE _ O e₁ ≫ g j₁ = (c.π.app k).resLE _ O e₂ ≫ g j₂) :
+    ∃ (l : I) (v : l ⟶ k), ∀ j₁ j₂ (O : (D.obj l).Opens) (e₁ : O ≤ D.map v ⁻¹ᵁ U j₁)
+      (e₂ : O ≤ D.map v ⁻¹ᵁ U j₂),
+        (D.map v).resLE _ O e₁ ≫ g j₁ = (D.map v).resLE _ O e₂ ≫ g j₂ := by
+  obtain ⟨l, v, hl⟩ := IsCofiltered.exists_forall
+    (fun l (v : l ⟶ k) (j : J × J) ↦ ∀ (O : (D.obj l).Opens) (e₁ : O ≤ D.map v ⁻¹ᵁ U j.1)
+      (e₂ : O ≤ D.map v ⁻¹ᵁ U j.2),
+        (D.map v).resLE _ O e₁ ≫ g j.1 = (D.map v).resLE _ O e₂ ≫ g j.2)
+    (fun w v j hv O e₁ e₂ ↦ by
+      simpa [Scheme.Hom.resLE_comp_resLE_assoc] using congr((D.map w).resLE _ O
+        (show O ≤ D.map w ⁻¹ᵁ _ by simpa [Scheme.Hom.preimage_inf] using le_inf e₁ e₂) ≫
+          $(hv _ inf_le_left inf_le_right)))
+    fun j ↦ exists_resLE_comp_eq_resLE_comp D t f c hc (hU j.1) (hU j.2) _ _ (hg j.1) (hg j.2)
+      (h j.1 j.2)
+  exact ⟨l, v, fun j₁ j₂ ↦ hl (j₁, j₂)⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -1227,107 +1363,37 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)]
     (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f)) :
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
-  -- The open cover of `c := lim Dᵢ` indexed by triplets of affine opens `(U, V, W)` with
-  -- `U ⊆ c`, `V ⊆ X`, `W ⊆ S` such that `U` maps to `V` maps to `W`.
-  have 𝒰 := (c.pt.isBasis_affineOpens).isOpenCover_mem_and_le
-    (((X.isBasis_affineOpens).isOpenCover_mem_and_le
-    ((S.isBasis_affineOpens).isOpenCover.comap f.base.hom)).comap a.base.hom)
-  -- By qcqs, this cover descends to some finite affine open cover `𝒱` of `Dᵢ`.
-  obtain ⟨i, s, 𝒱, h𝒱, h𝒱𝒰⟩ := Scheme.exists_isOpenCover_and_isAffine D c hc _ 𝒰 fun U ↦ U.2.1
-  obtain ⟨i', fi'i, hi'⟩ : ∃ (i' : I) (fi'i : i' ⟶ i),
-      ∀ j, D.map fi'i ⁻¹ᵁ 𝒱 j ≤ t.app i' ⁻¹ᵁ j.1.1.2.1.2.1 := by
-    choose k fk hk using fun j ↦ exists_map_preimage_le_map_preimage D c hc (h𝒱𝒰 j).1.isCompact
-      (V := t.app i ⁻¹ᵁ j.1.1.2.1.2.1) (by
-      rw [← Hom.comp_preimage, ← NatTrans.comp_app, ha]
-      exact (h𝒱𝒰 j).2.symm.trans_le (j.1.prop.2.trans (a.preimage_mono j.1.1.2.prop.2)))
-    obtain ⟨i', fi'i, fi', hfi'⟩ := IsCofiltered.wideCospan fk
-    refine ⟨i', fi'i, fun j ↦ ?_⟩
-    rw [← hfi', Functor.map_comp, Hom.comp_preimage]
-    refine (Hom.preimage_mono _ (hk _)).trans ?_
-    simp only [← Hom.comp_preimage, t.naturality, Functor.const_obj_obj,
-      Functor.const_obj_map, Category.comp_id, le_refl]
-  -- Using the affine version `exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine`,
-  -- one can now factor `Dⱼ ⁻¹ 𝒱ⱼ ⟶ lim Dᵢ ⟶ X` through some `Dⱼₖ ⁻¹ 𝒱ⱼ` for each `𝒱ⱼ`,
-  -- and by finite-ness we may chose a fixed `k` that works for every `j`.
-  have : ∃ k, ∃ (fk : k ⟶ i), ∀ j, ∃ (ak : ↑(D.map fk ⁻¹ᵁ 𝒱 j) ⟶ X),
-      ak ≫ f = Opens.ι _ ≫ t.app k ∧ c.π.app _ ∣_ _ ≫ ak = Opens.ι _ ≫ a := by
-    let 𝒱' := (D.map fi'i ⁻¹ᵁ 𝒱 ·)
-    have h𝒱'𝒰 (j : s) : c.π.app i' ⁻¹ᵁ 𝒱' j = j.1.1.1 := by
-      rw [← Hom.comp_preimage, c.w fi'i]; exact (h𝒱𝒰 j).2.symm
-    have _ (j k) : IsAffine ((opensDiagram D i' (𝒱' j)).obj k) := ((h𝒱𝒰 _).1.preimage _).preimage _
-    let t𝒱 (j : _) : opensDiagram D i' (𝒱' j) ⟶ (Functor.const (Over i')).obj j.1.1.2.1.2 :=
-    { app k := (t.app k.left).resLE _ _ <| by
-        refine (Hom.preimage_mono _ (hi' _)).trans ?_
-        simp only [Functor.const_obj_obj, ← Hom.comp_preimage, t.naturality,
-          Functor.const_obj_map, Category.comp_id, le_refl]
-      naturality {k₁ k₂} f₁₂ := by simp [Hom.resLE_comp_resLE] }
-    have (j : s) : IsAffine j.1.1.2.1.1 := j.1.1.2.prop.1
-    choose k ak hk hk' using fun j ↦ exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
-      _ (t𝒱 j) (f.resLE _ _ j.1.1.2.prop.2) _ (isLimitOpensCone D c hc i' (𝒱' j))
-      (a.resLE _ _ ((h𝒱'𝒰 _).trans_le j.1.prop.2)) (by
-      ext k
-      simp [t𝒱, Hom.resLE_comp_resLE, show c.π.app k.left ≫ t.app k.left = a ≫ f from
-        congr(($ha).app k.left)])
-    obtain ⟨i'', fi''i', fi'', hi''⟩ := IsCofiltered.wideCospan fun j ↦ (k j).hom
-    refine ⟨i'', fi''i' ≫ fi'i, fun j ↦
-      ⟨Scheme.homOfLE _ ?_ ≫ D.map (fi'' _) ∣_ _ ≫ ak j ≫ Opens.ι _, ?_, ?_⟩⟩
-    · simp only [← Hom.comp_preimage, ← Functor.map_comp, 𝒱', reassoc_of% hi'']; rfl
-    · have : ak j ≫ Opens.ι _ ≫ f = Opens.ι _ ≫ t.app (k j).left := by
-        simpa [t𝒱] using! congr($(hk' j) ≫ Opens.ι _)
-      simp [this]
-    · have e : c.π.app i'' ⁻¹ᵁ D.map (fi''i' ≫ fi'i) ⁻¹ᵁ 𝒱 j ≤ c.π.app i' ⁻¹ᵁ 𝒱' j := by
-        simp only [← Hom.comp_preimage, Cone.w, 𝒱']; rfl
-      simpa [← AlgebraicGeometry.Scheme.Hom.resLE_eq_morphismRestrict,
-        Scheme.Hom.resLE_comp_resLE_assoc] using! congr(Scheme.homOfLE _ e ≫ $(hk j) ≫ Opens.ι _)
-  choose k fki ak hak hak' using this
-  -- We may then find an `l` for each `j₁` and `j₂` such that the map `Dⱼ₁ₗ ⁻¹ 𝒱ⱼ₁ ⟶ X` and
-  -- `Dⱼ₂ₗ ⁻¹ 𝒱ⱼ₂ ⟶ X` agrees on the intersection in `Dₗ`.
-  -- And again by finiteness we may choose a global `l`.
-  obtain ⟨l, flk, hl⟩ : ∃ (l : I) (flk : l ⟶ k), ∀ j₁ j₂, Scheme.homOfLE _ inf_le_left ≫
-      D.map flk ∣_ _ ≫ ak j₁ = Scheme.homOfLE _ inf_le_right ≫ D.map flk ∣_ _ ≫ ak j₂ := by
-    let 𝒱' := (D.map fki ⁻¹ᵁ 𝒱 ·)
-    have (j₁ j₂ : s) : ∃ (l : I) (flk : l ⟶ k), Scheme.homOfLE _ inf_le_left ≫ D.map flk ∣_ _ ≫
-        ak j₁ = Scheme.homOfLE _ inf_le_right ≫ D.map flk ∣_ _ ≫ ak j₂ := by
-      have _ (x) : CompactSpace ↥((opensDiagram D k (𝒱' j₁ ⊓ 𝒱' j₂)).obj x) :=
-        isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ (𝒱' j₁ ⊓ 𝒱' j₂).isOpen
-          (((h𝒱𝒰 _).1.preimage _).isCompact.inter_of_isOpen ((h𝒱𝒰 _).1.preimage _).isCompact
-            (D.map fki ⁻¹ᵁ 𝒱 j₁).2 (D.map fki ⁻¹ᵁ 𝒱 j₂).2))
-      obtain ⟨⟨l, ⟨⟨⟩⟩, flk⟩, ⟨flk', ⟨⟨⟨⟩⟩⟩, h⟩, e⟩ :=
-        Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType _
-          (opensDiagramι .. ≫ (Over.forget k).whiskerLeft t) f _
-          (isLimitOpensCone D c hc k (𝒱' j₁ ⊓ 𝒱' j₂)) (i := .mk (𝟙 k))
-          (Scheme.homOfLE _ (by simp [𝒱']) ≫ ak j₁) (Scheme.homOfLE _ (by simp [𝒱']) ≫ ak j₂)
-          (by simp [hak]) (by simp [hak]) (by simp; simp [Hom.resLE, hak'])
-      obtain rfl : flk = flk' := by simpa using! h.symm
-      refine ⟨l, flk, by simpa [← Scheme.Hom.resLE_eq_morphismRestrict] using! e⟩
-    choose l flk hflk using this
-    obtain ⟨l', fl'k, fl'l, hl'⟩ := IsCofiltered.wideCospan (I := s × s) fun x ↦ flk x.1 x.2
-    refine ⟨l', fl'k, fun j₁ j₂ ↦ ?_⟩
-    have H : (D.map fl'k ≫ D.map fki) ⁻¹ᵁ (𝒱 j₁ ⊓ 𝒱 j₂) ≤
-        (D.map (fl'l (j₁, j₂)) ≫ D.map (flk j₁ j₂) ≫ D.map fki) ⁻¹ᵁ (𝒱 j₁ ⊓ 𝒱 j₂) := by
-      simp only [← Functor.map_comp, reassoc_of% hl']; rfl
-    simpa [← Scheme.Hom.resLE_eq_morphismRestrict, Scheme.Hom.resLE_comp_resLE_assoc,
-      ← Functor.map_comp, hl'] using! congr((D.map (fl'l (j₁, j₂))).resLE _ _ H ≫ $(hflk j₁ j₂))
+  -- The open cover of `c := lim Dᵢ` by the affine opens `U ⊆ c` such that `U` maps into an affine
+  -- `V ⊆ X` which in turn maps into an affine `W ⊆ S`.
+  have h𝒰 := (isBasis_affineOpens_le_preimage a f).isOpenCover
+  obtain ⟨i, s, 𝒱, h𝒱, h𝒱𝒰⟩ := Scheme.exists_isOpenCover_and_isAffine D c hc _ h𝒰 fun U ↦ U.2.1
+  -- Each `𝒱 j` factors after passing to some `k`, and by finiteness a single `k` works for all `j`.
+  obtain ⟨k, fki, ak, hak, hak'⟩ := exists_forall_resLE_comp_eq_of_isAffineOpen D t f c hc a ha
+    (fun j ↦ (h𝒱𝒰 j).1) fun j ↦ (h𝒱𝒰 j).2 ▸ j.1.2.2
+  -- Likewise the `ak j` pairwise agree on overlaps after passing to some `l`.
+  obtain ⟨l, flk, hl⟩ := exists_forall_resLE_comp_eq_resLE_comp D t f c hc
+    (fun j ↦ ((h𝒱𝒰 j).1.preimage _).isCompact) ak hak
+    fun j₁ j₂ O e₁ e₂ ↦ (hak' j₁ O e₁).trans (hak' j₂ O e₂).symm
   -- We may glue the morphisms into `Dₗ ⟶ X` and verify that it indeed satisfies the hypothesis.
-  let h𝒲 := (h𝒱.comap (D.map fki).base.hom).comap (D.map flk).base.hom
-  let 𝒲 := Scheme.openCoverOfIsOpenCover _ (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 ·) h𝒲
-  let F := 𝒲.glueMorphisms (fun j ↦ D.map flk ∣_ D.map fki ⁻¹ᵁ 𝒱 j ≫ ak j) (fun j₁ j₂ ↦ by
+  let 𝒲 := Scheme.openCoverOfIsOpenCover _ (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 ·)
+    ((h𝒱.comap (D.map fki).base.hom).comap (D.map flk).base.hom)
+  let F := 𝒲.glueMorphisms (fun j ↦ (D.map flk).resLE (D.map fki ⁻¹ᵁ 𝒱 j) _ le_rfl ≫ ak j)
+    (fun j₁ j₂ ↦ by
       rw [← cancel_epi (isPullback_opens_inf _ _).isoPullback.hom]
-      simpa [𝒲] using! hl j₁ j₂)
-  have hF (j : s) : (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j).ι ≫ F = D.map flk ∣_ _ ≫ ak j :=
-    Scheme.Cover.ι_glueMorphisms ..
+      simpa [𝒲] using hl j₁ j₂ _ inf_le_left inf_le_right)
+  have hF (j : s) : (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j).ι ≫ F =
+      (D.map flk).resLE _ _ le_rfl ≫ ak j := Scheme.Cover.ι_glueMorphisms ..
   refine ⟨l, F, ?_, ?_⟩
   · refine Cover.hom_ext (𝒲.pullback₁ (c.π.app l)) _ _ fun j ↦ ?_
     rw [← cancel_epi (isPullback_morphismRestrict _ _).flip.isoPullback.hom]
     dsimp [𝒲]
     simp only [pullback.condition_assoc, IsPullback.isoPullback_hom_snd_assoc,
-      IsPullback.isoPullback_hom_fst_assoc, hF]
-    have h : c.π.app l ⁻¹ᵁ D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j ≤ c.π.app k ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j := by
-      simp only [← Hom.comp_preimage, c.w_assoc, c.w]; rfl
-    simpa [← Scheme.Hom.resLE_eq_morphismRestrict, Scheme.Hom.resLE_comp_resLE_assoc] using!
-      congr(Scheme.homOfLE _ h ≫ $(hak' j))
+      IsPullback.isoPullback_hom_fst_assoc, hF, ← Hom.resLE_eq_morphismRestrict,
+      Hom.resLE_comp_resLE_assoc, Cone.w]
+    exact hak' j _ _
   · refine 𝒲.hom_ext _ _ fun j ↦ ?_
-    simp [F, Cover.ι_glueMorphisms_assoc, hak]; rfl
+    dsimp [𝒲]
+    simp [reassoc_of% hF, hak]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
