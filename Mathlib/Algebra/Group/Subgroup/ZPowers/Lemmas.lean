@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-public import Mathlib.Data.Countable.Basic
+public import Mathlib.Basic.Countable.Basic
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Data.Int.GCD
 

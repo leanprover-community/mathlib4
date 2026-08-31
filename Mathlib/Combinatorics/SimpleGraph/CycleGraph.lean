@@ -119,9 +119,6 @@ def cycleGraph.cycle (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
     simp [cycleGraph_adj]
   Walk.cons hadj (cycleGraph.cycleCons n (Fin.last (n + 2)))
 
-@[deprecated (since := "2026-02-15")]
-alias cycleGraph_EulerianCircuit := cycleGraph.cycle
-
 private theorem cycleGraph.length_cycle_cons (n : ℕ) :
     ∀ m : Fin (n + 3), (cycleGraph.cycleCons n m).length = m.val
   | ⟨0, h⟩ => by
@@ -138,9 +135,6 @@ variable {n : ℕ}
 theorem cycleGraph.length_cycle : (cycleGraph.cycle n).length = n + 3 := by
   unfold cycleGraph.cycle
   simp [cycleGraph.length_cycle_cons]
-
-@[deprecated (since := "2026-02-15")]
-alias cycleGraph_EulerianCircuit_length := cycleGraph.length_cycle
 
 private theorem cycleGraph.getVert_cycleCons (m : Fin (n + 3)) (i : ℕ) (hi : i ≤ m.val) :
     (cycleGraph.cycleCons n m).getVert i = (m - i) % (n + 3) := by
