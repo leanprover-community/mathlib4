@@ -5,7 +5,7 @@ Authors: Shing Tak Lam
 -/
 module
 
-public import Mathlib.Data.Finite.Sum
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.GroupAction.CardCommute
