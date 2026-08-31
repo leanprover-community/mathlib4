@@ -693,15 +693,19 @@ instance [inst : Fact B.SeparatingLeft] : Fact B.flip.SeparatingRight :=
 instance [inst : Fact B.SeparatingRight] : Fact B.flip.SeparatingLeft :=
   ⟨flip_separatingRight.mp inst.elim⟩
 
-/-- The identitiy pairing is left-separating. -/
-theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
-  fun _ hx => by ext y; exact hx y
+/-- The identity pairing is left-separating. -/
+protected theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
+  separatingLeft_iff_ker_eq_bot.mpr ker_id
+
+alias id_separatingLeft := SeparatingLeft.id
 
 instance : Fact (SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id) := ⟨.id⟩
 
 /-- The pairing `Dual.eval` is right-separating. -/
-theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight := by
-  simp only [Dual.eval, flip_separatingRight, SeparatingLeft.id]
+protected theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight :=
+  id_separatingLeft
+
+alias eval_separatingRight := SeparatingRight.eval
 
 instance : Fact (Dual.eval R M).SeparatingRight := ⟨.eval⟩
 

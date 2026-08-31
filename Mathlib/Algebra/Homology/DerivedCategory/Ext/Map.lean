@@ -75,7 +75,6 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
   simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
     ← Functor.map_comp_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
@@ -86,24 +85,17 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
         ((F.mapDerivedCategorySingleFunctor 0).hom.app S.X₁)⟦1⟧' =
     (hS.map_of_exact F).singleδ := by
   dsimp [ShiftedHom.map, ShortComplex.ShortExact.singleδ]
-  simp only [Functor.map_comp, Category.assoc, Functor.commShiftIso_hom_naturality,
-    DerivedCategory.map_triangleOfSESδ, singleFunctorsPostcompQIso_hom_hom,
-    singleFunctorsPostcompQIso_inv_hom]
+  simp only [Category.assoc, DerivedCategory.map_triangleOfSESδ]
   generalize_proofs _ _ _ _ _ _ h1 _ _ h2
-  dsimp [CochainComplex.singleFunctors]
-  rw [Functor.map_id, Category.id_comp,
-    Functor.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc,
-    Iso.inv_hom_id_app_assoc, Functor.map_id, Functor.map_id, Category.id_comp,
-    ← Functor.map_comp,
+  dsimp
+  rw [Functor.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc,
+    Iso.inv_hom_id_app_assoc, ← Functor.map_comp,
     F.mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app,
     dsimp% triangleOfSESδ_naturality h1 h2
       (S.mapNatTrans (F.mapCochainComplexSingleFunctor 0).hom),
     ← Functor.map_comp_assoc]
   simp
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
