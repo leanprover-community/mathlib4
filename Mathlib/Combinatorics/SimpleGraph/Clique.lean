@@ -1079,8 +1079,8 @@ theorem indepNum_eq_zero_iff_empty [Finite α] : G.indepNum = 0 ↔ IsEmpty α :
   have : ∀ (s : Finset α ) , s = ∅ := by
     exact fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
   simp only [indepNum, this, exists_const]
-  have : {n | G.IsNIndepSet n ∅} = {0} := by ext x ; simp [isNIndepSet_iff]
-  rw [this] ; simp
+  have : {n | G.IsNIndepSet n ∅} = {0} := by ext x; simp [isNIndepSet_iff]
+  rw [this]; simp
 
 end IndepNumber
 
