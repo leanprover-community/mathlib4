@@ -57,7 +57,7 @@ structure Digraph (V : Type*) where
 
 namespace Digraph
 
-attribute [aesop unsafe] left_mem_verts_of_adj right_mem_verts_of_adj
+attribute [grind →] left_mem_verts_of_adj right_mem_verts_of_adj
 
 /--
 Constructor for digraphs using a Boolean function.
@@ -100,8 +100,9 @@ protected def emptyDigraph (V : Type*) : Digraph V where
 Two vertices are adjacent in the complete bipartite digraph on two vertex types
 if and only if they are not from the same side.
 Any bipartite digraph may be regarded as a subgraph of one of these.
--/
-@[simps]
+
+Deprecated name; use `completeBipartite` instead. -/
+@[simps, deprecated "completeBipartiteDigraph" (since := "2024-01-01")]
 def completeBipartite (V W : Type*) : Digraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
   verts := Set.univ
