@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Action.Pi
 This file defines instances for NoZeroSMulDivisors on Pi types.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

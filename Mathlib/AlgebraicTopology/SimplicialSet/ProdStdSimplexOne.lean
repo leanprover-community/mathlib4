@@ -21,7 +21,9 @@ of `Δ[p] ⊗ Δ[1]`.
 
 universe u
 
-open CategoryTheory Simplicial MonoidalCategory Opposite
+open CategoryTheory MonoidalCategory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -29,6 +31,8 @@ namespace prodStdSimplex
 
 variable {p : ℕ}
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 open stdSimplex in
 /-- This is an enumeration of the `p + 1` nondegenerate dimension-`(p + 1)`
 simplices of `Δ[p] ⊗ Δ[1]`. It sends `i : Fin (p + 1)` to the nondegenerate

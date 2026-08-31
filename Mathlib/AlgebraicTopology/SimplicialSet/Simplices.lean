@@ -32,7 +32,9 @@ not what is called "the category of simplices of `X`" in the literature
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -124,7 +126,7 @@ lemma le_def {s t : X.S} : s ≤ t ↔ s.subcomplex ≤ t.subcomplex :=
 
 lemma le_iff {s t : X.S} :
     s ≤ t ↔ ∃ (f : ⦋s.dim⦌ ⟶ ⦋t.dim⦌), X.map f.op t.simplex = s.simplex := by
-  rw [le_def, Subcomplex.ofSimplex_le_iff, Subfunctor.ofSection_obj, Set.mem_setOf_eq]
+  rw [le_def, Subcomplex.ofSimplex_le_iff, Subfunctor.ofSection_obj, Set.mem_ofPred_eq]
   tauto
 
 lemma mk_map_le {n m : ℕ} (x : X _⦋n⦌) (f : ⦋m⦌ ⟶ ⦋n⦌) :

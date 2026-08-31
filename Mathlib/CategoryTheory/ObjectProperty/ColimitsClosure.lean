@@ -21,7 +21,7 @@ results in the file `Mathlib/CategoryTheory/ObjectProperty/LimitsClosure.lean`.)
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' t v' u' v u
 

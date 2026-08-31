@@ -30,7 +30,9 @@ rectangular box, induction
 
 @[expose] public section
 
-open Set Function Filter Topology
+open Set Function Filter
+
+open scoped Topology
 
 noncomputable section
 
@@ -40,7 +42,7 @@ namespace Box
 
 variable {ι : Type*} {I J : Box ι}
 
-open Classical in
+open scoped Classical in
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also
 `BoxIntegral.Partition.splitCenter` for the corresponding `BoxIntegral.Partition`. -/
@@ -128,7 +130,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   -- Now we prove some properties of `J`
   have hJmono : Antitone J :=
     antitone_nat_of_succ_le fun n ↦ by simpa [J_succ] using splitCenterBox_le _ _
-  have hJle (m) : J m ≤ I := hJmono (zero_le m)
+  have hJle (m) : J m ≤ I := hJmono zero_le
   have hJp (m) : ¬p (J m) := Nat.recOn m hpI fun m ↦ by simpa only [J_succ] using hs (J m) (hJle m)
   have hJsub (m i) : (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
     induction m with

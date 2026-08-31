@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
@@ -13,7 +15,9 @@ public import Mathlib.Topology.Order.LeftRightNhds
 
 public section
 
-open Set Filter TopologicalSpace Topology Function
+open Set Filter TopologicalSpace Function
+
+open scoped Topology
 
 open OrderDual (toDual ofDual)
 
@@ -88,7 +92,7 @@ theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ upperBounds (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩
   replace ha := ha.inter_Ici_of_mem hx
-  haveI := ha.nhdsWithin_neBot ⟨x, hx, le_rfl⟩
+  have := ha.nhdsWithin_neBot ⟨x, hx, le_rfl⟩
   refine ge_of_tendsto (hb.mono_left (nhdsWithin_mono a (inter_subset_left (t := Ici x)))) ?_
   exact mem_of_superset self_mem_nhdsWithin fun y hy => hf hx hy.1 hy.2
 
@@ -109,6 +113,7 @@ theorem IsGLB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
 -- For a version of this theorem in which the convergence considered on the domain `α` is as
 -- `x : α` tends to negative infinity, rather than tending to a point `x` in `α`, see
 -- `isGLB_of_tendsto_atBot`
+@[to_dual existing]
 theorem IsGLB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
     {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) :
     IsGLB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsGLB (f '' s) b :=
@@ -383,7 +388,7 @@ theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGene
 
 theorem exists_seq_strictAnti_tendsto' [DenselyOrdered α] [FirstCountableTopology α] {x y : α}
     (hy : x < y) : ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ Ioo x y) ∧ Tendsto u atTop (𝓝 x) := by
-  simpa using exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
+  simpa using! exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
 
 theorem exists_seq_strictAnti_tendsto [DenselyOrdered α] [NoMaxOrder α] [FirstCountableTopology α]
     (x : α) : ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) :=
@@ -402,7 +407,7 @@ theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCount
   rcases exists_seq_strictMono_tendsto' (hu_mem 0).2 with ⟨v, hv_mono, hv_mem, hvy⟩
   exact
     ⟨u, v, hu_anti, hv_mono, hu_mem, fun l => ⟨(hu_mem 0).1.trans (hv_mem l).1, (hv_mem l).2⟩,
-      fun k l => (hu_anti.antitone (zero_le k)).trans_lt (hv_mem l).1, hux, hvy⟩
+      fun k l => (hu_anti.antitone zero_le).trans_lt (hv_mem l).1, hux, hvy⟩
 
 theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
@@ -412,7 +417,7 @@ theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder �
 theorem Dense.exists_seq_strictAnti_tendsto_of_lt [DenselyOrdered α] [FirstCountableTopology α]
     {s : Set α} (hs : Dense s) {x y : α} (hy : x < y) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ (Ioo x y ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
-  simpa using hs.exists_seq_strictMono_tendsto_of_lt (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
+  simpa using! hs.exists_seq_strictMono_tendsto_of_lt (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
 
 theorem Dense.exists_seq_strictAnti_tendsto [DenselyOrdered α] [NoMaxOrder α]
     [FirstCountableTopology α] {s : Set α} (hs : Dense s) (x : α) :
@@ -423,7 +428,7 @@ theorem DenseRange.exists_seq_strictAnti_tendsto_of_lt {β : Type*} [LinearOrder
     [DenselyOrdered α] [FirstCountableTopology α] {f : β → α} {x y : α} (hf : DenseRange f)
     (hmono : Monotone f) (hlt : x < y) :
     ∃ u : ℕ → β, StrictAnti u ∧ (∀ n, f (u n) ∈ Ioo x y) ∧ Tendsto (f ∘ u) atTop (𝓝 x) := by
-  simpa using hf.exists_seq_strictMono_tendsto_of_lt (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual
+  simpa using! hf.exists_seq_strictMono_tendsto_of_lt (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual
     (OrderDual.toDual_lt_toDual.2 hlt)
 
 theorem DenseRange.exists_seq_strictAnti_tendsto {β : Type*} [LinearOrder β] [DenselyOrdered α]
@@ -431,5 +436,29 @@ theorem DenseRange.exists_seq_strictAnti_tendsto {β : Type*} [LinearOrder β] [
     (x : α) :
     ∃ u : ℕ → β, StrictAnti u ∧ (∀ n, f (u n) ∈ Ioi x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) :=
   hf.exists_seq_strictMono_tendsto (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual x
+
+theorem eventually_le_const_iff_forall_gt_eventually_lt_const [FirstCountableTopology α]
+    {l : Filter γ} [CountableInterFilter l] {f : γ → α} {a : α} :
+    (∀ᶠ x in l, f x ≤ a) ↔ ∀ b, a < b → ∀ᶠ x in l, f x < b where
+  mp h c hbc := h.mono <| fun x hx ↦ lt_of_le_of_lt hx hbc
+  mpr h := by
+    rcases exists_glb_Ioi a with ⟨d, hd⟩
+    obtain rfl | H0 := glb_Ioi_eq_self_or_Ioi_eq_Ici _ hd
+    · obtain h | _ := isTop_or_exists_gt d
+      · exact .of_forall (fun _ ↦ h _)
+      obtain ⟨u, -, -, hu_tt, hu_gt⟩ := hd.exists_seq_antitone_tendsto (by simpa)
+      replace h := fun n ↦ h (u n) (by grind)
+      rw [← eventually_countable_forall] at h
+      filter_upwards [h] with x hx
+      exact ge_of_tendsto hu_tt <| .of_forall <| fun n ↦ le_of_lt <| hx n
+    · specialize h d <| by simp [← Set.mem_Ioi, H0]
+      filter_upwards [h] with x hx
+      rw [← Set.compl_Iic, ← Set.compl_Iio, compl_inj_iff] at H0
+      simpa [← Set.mem_Iic, ← Set.mem_Iio, H0] using hx
+
+theorem eventually_const_le_iff_forall_lt_eventually_const_lt [FirstCountableTopology α]
+    {l : Filter γ} [CountableInterFilter l] {f : γ → α} {a : α} :
+    (∀ᶠ x in l, a ≤ f x) ↔ ∀ b, b < a → ∀ᶠ x in l, b < f x :=
+  eventually_le_const_iff_forall_gt_eventually_lt_const (α := αᵒᵈ)
 
 end OrderTopology

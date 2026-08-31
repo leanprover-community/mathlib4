@@ -63,6 +63,7 @@ theorem exact_iff_epi_imageToKernel' : S.Exact ↔ Epi (imageToKernel' S.f S.g S
     rw [← this]
     apply epi_comp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem exact_iff_epi_imageToKernel : S.Exact ↔ Epi (imageToKernel S.f S.g S.zero) := by
   rw [S.exact_iff_epi_imageToKernel']
   apply (MorphismProperty.epimorphisms C).arrow_mk_iso_iff
@@ -98,7 +99,6 @@ theorem exact_iff_image_eq_kernel : S.Exact ↔ imageSubobject S.f = kernelSubob
   · intro h
     exact ⟨Subobject.ofLE _ _ h.ge, by ext; simp, by ext; simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exact_iff_of_forks {cg : KernelFork S.g} (hg : IsLimit cg) {cf : CokernelCofork S.f}
     (hf : IsColimit cf) : S.Exact ↔ cg.ι ≫ cf.π = 0 := by
   rw [exact_iff_kernel_ι_comp_cokernel_π_zero]
@@ -210,6 +210,7 @@ section
 variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma reflects_exact_of_faithful [F.Faithful] (S : ShortComplex C) (hS : (S.map F).Exact) :
     S.Exact := by
@@ -244,20 +245,23 @@ include hL
 
 open ZeroObject
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor which preserves exactness preserves monomorphisms. -/
 theorem preservesMonomorphisms_of_map_exact : L.PreservesMonomorphisms where
   preserves f hf := by
-    apply ((Abelian.tfae_mono (L.map f) (L.obj 0)).out 2 0).mp
-    refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_mono f 0).out 0 2).mp hf))
+    apply ((Abelian.tfae_mono (L.map f) (L.obj 0)).out 3 1).mp
+    refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_mono f 0).out 1 3).mp hf))
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor which preserves exactness preserves epimorphisms. -/
 theorem preservesEpimorphisms_of_map_exact : L.PreservesEpimorphisms where
   preserves f hf := by
-    apply ((Abelian.tfae_epi (L.map f) (L.obj 0)).out 2 0).mp
-    refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_epi f 0).out 0 2).mp hf))
+    apply ((Abelian.tfae_epi (L.map f) (L.obj 0)).out 3 1).mp
+    refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_epi f 0).out 1 3).mp hf))
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor which preserves the exactness of short complexes preserves homology. -/
 lemma preservesHomology_of_map_exact : L.PreservesHomology where
   preservesCokernels X Y f := by
@@ -283,6 +287,7 @@ end
 
 section
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor preserving zero morphisms, monos, and cokernels preserves homology. -/
 lemma preservesHomology_of_preservesMonos_and_cokernels [PreservesZeroMorphisms L]
@@ -301,6 +306,7 @@ lemma preservesHomology_of_preservesMonos_and_cokernels [PreservesZeroMorphisms 
   apply ShortComplex.exact_of_g_is_cokernel
   exact CokernelCofork.mapIsColimit _ ((S.exact_iff_exact_coimage_π).1 hS).gIsCokernel L
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor preserving zero morphisms, epis, and kernels preserves homology. -/
 lemma preservesHomology_of_preservesEpis_and_kernels [PreservesZeroMorphisms L]

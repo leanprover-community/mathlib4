@@ -31,12 +31,7 @@ the same ray).
 convex, uniformly convex
 -/
 
-@[expose] public section
-
-
-open Set Metric
-
-open Convex Pointwise
+public section
 
 /-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
 uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above

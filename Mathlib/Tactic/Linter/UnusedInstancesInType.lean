@@ -11,7 +11,7 @@ public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Lean.Linter.Basic
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Lint.Basic
 public import Batteries.Tactic.Lint.Misc
 
@@ -285,7 +285,7 @@ def isDecidableVariant (type : Expr) : Bool :=
 
 /-- `withSetOptionIn` currently breaks infotree searches, so we simply set `Bool` options
 until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313). -/
-partial def withSetBoolOptionIn (x : CommandElab) : CommandElab
+public partial def withSetBoolOptionIn (x : CommandElab) : CommandElab
   | `(command| set_option $opt:ident $val in $cmd:command) => do
     match val.raw with
     | Syntax.atom _ "true"  =>

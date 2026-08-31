@@ -18,11 +18,7 @@ In this file, we prove that subgroups of a normed (semi)group are also normed (s
 normed group
 -/
 
-@[expose] public section
-
-
-open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+public section
 
 /-! ### Subgroups of normed groups -/
 

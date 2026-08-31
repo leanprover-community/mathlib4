@@ -176,7 +176,7 @@ lemma abs_signedDist_eq_dist_iff_vsub_mem_span :
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0 : ℝ)), eq_comm (a := (0 : V))]
   rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
-  rw [← Real.norm_eq_abs, ((norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 0 2 :)]
+  rw [← Real.norm_eq_abs, ((norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 1 3 :)]
   simp [h, eq_comm]
 
 open NNReal in
@@ -338,7 +338,7 @@ lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_range {p : P}
     orthogonalProjectionSpan]
   · simp_rw [range_faceOpposite_points]
   rw [affineSpan_insert_affineSpan]
-  convert h
+  convert! h
   exact Set.insert_image_compl_eq_range s.points i
 
 end Simplex

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
-public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Basic.Finite.Sigma
 
 /-!
 # Finite simplicial sets
@@ -17,11 +17,13 @@ many nondegenerate simplices.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
-open Simplicial CategoryTheory
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -50,6 +52,7 @@ lemma finite_of_hasDimensionLT (d : ℕ) [X.HasDimensionLT d]
     · have := x.nonDegenerate
       simp [X.nonDegenerate_eq_empty_of_hasDimensionLT d x.dim (by simpa using hj)] at this
 
+set_option backward.defeqAttrib.useBackward true in
 lemma hasDimensionLT_of_finite [X.Finite] :
     ∃ (d : ℕ), X.HasDimensionLT d := by
   have : Fintype X.N := Fintype.ofFinite _

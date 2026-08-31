@@ -26,7 +26,7 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 
 universe u w
 
-open CategoryTheory Topology TopologicalSpace
+open CategoryTheory TopologicalSpace
 
 /-- `CompactlyGenerated.{u, w}` is the type of `u`-compactly generated `w`-small topological spaces.
 This should always be used with explicit universe parameters. -/

@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 module
 
 public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.ToFun
 
@@ -44,6 +44,7 @@ The examples of filters appearing in the description of the two motivating ideas
 The predicate "happening eventually" is `Filter.Eventually`, and "happening often" is
 `Filter.Frequently`, whose definitions are immediate after `Filter` is defined (but they come
 rather late in this file in order to immediately relate them to the lattice structure).
+
 ## Notation
 
 * `∀ᶠ x in f, p x` : `f.Eventually p`;
@@ -100,8 +101,10 @@ theorem inter_mem_iff {s t : Set α} : s ∩ t ∈ f ↔ s ∈ f ∧ t ∈ f :=
   ⟨fun h => ⟨mem_of_superset h inter_subset_left, mem_of_superset h inter_subset_right⟩,
     and_imp.2 inter_mem⟩
 
-theorem diff_mem {s t : Set α} (hs : s ∈ f) (ht : tᶜ ∈ f) : s \ t ∈ f :=
+theorem sdiff_mem {s t : Set α} (hs : s ∈ f) (ht : tᶜ ∈ f) : s \ t ∈ f :=
   inter_mem hs ht
+
+@[deprecated (since := "2026-06-03")] alias diff_mem := sdiff_mem
 
 theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f :=
   ⟨fun hs => mp_mem hs (mem_of_superset h fun _ => Iff.mp), fun hs =>
@@ -257,6 +260,7 @@ theorem NeBot.ne {f : Filter α} (hf : NeBot f) : f ≠ ⊥ := hf.ne'
 @[simp, push]
 theorem not_neBot {f : Filter α} : ¬f.NeBot ↔ f = ⊥ := neBot_iff.not_left
 
+@[gcongr]
 theorem NeBot.mono {f g : Filter α} (hf : NeBot f) (hg : f ≤ g) : NeBot g :=
   ⟨ne_bot_of_le_ne_bot hf.1 hg⟩
 
@@ -265,6 +269,9 @@ theorem neBot_of_le {f g : Filter α} [hf : NeBot f] (hg : f ≤ g) : NeBot g :=
 
 @[simp] theorem sup_neBot {f g : Filter α} : NeBot (f ⊔ g) ↔ NeBot f ∨ NeBot g := by
   simp only [neBot_iff, not_and_or, Ne, sup_eq_bot_iff]
+
+instance neBot_sup_of_left {f g : Filter α} [f.NeBot] : NeBot (f ⊔ g) := by simp [*]
+instance neBot_sup_of_right {f g : Filter α} [g.NeBot] : NeBot (f ⊔ g) := by simp [*]
 
 theorem not_disjoint_self_iff : ¬Disjoint f f ↔ f.NeBot := by rw [disjoint_self, neBot_iff]
 
@@ -365,7 +372,7 @@ theorem principal_mono {s t : Set α} : 𝓟 s ≤ 𝓟 t ↔ s ⊆ t := by
 theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ => principal_mono.2
 
 @[simp] theorem principal_eq_iff_eq {s t : Set α} : 𝓟 s = 𝓟 t ↔ s = t := by
-  simp only [le_antisymm_iff, le_principal_iff, mem_principal]; rfl
+  simp only [le_antisymm_iff, le_principal_iff, mem_principal]
 
 @[simp] theorem join_principal_eq_sSup {s : Set (Filter α)} : join (𝓟 s) = sSup s := rfl
 
@@ -485,7 +492,7 @@ theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f)
 
 theorem mem_biInf_of_directed {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻¹'o (· ≥ ·)) s)
     (ne : s.Nonempty) {t : Set α} : (t ∈ ⨅ i ∈ s, f i) ↔ ∃ i ∈ s, t ∈ f i := by
-  haveI := ne.to_subtype
+  have := ne.to_subtype
   simp_rw [iInf_subtype', mem_iInf_of_directed h.directed_val, Subtype.exists, exists_prop]
 
 theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻¹'o (· ≥ ·)) s)
@@ -525,7 +532,7 @@ theorem iInf_neBot_of_directed {f : ι → Filter α} [hn : Nonempty α] (hd : D
     (hb : ∀ i, NeBot (f i)) : NeBot (iInf f) := by
   cases isEmpty_or_nonempty ι
   · constructor
-    simp [iInf_of_empty f, top_ne_bot]
+    simp [top_ne_bot]
   · exact iInf_neBot_of_directed' hd hb
 
 theorem sInf_neBot_of_directed' {s : Set (Filter α)} (hne : s.Nonempty) (hd : DirectedOn (· ≥ ·) s)
@@ -569,7 +576,7 @@ theorem principal_sdiff_principal {s t : Set α} : 𝓟 s \ 𝓟 t = 𝓟 (s \ t
 
 @[simp]
 theorem hnot_principal {s : Set α} : ￢𝓟 s = 𝓟 sᶜ := by
-  simpa [← compl_eq_univ_diff] using @principal_sdiff_principal _ univ s
+  simpa [← compl_eq_univ_sdiff] using @principal_sdiff_principal _ univ s
 
 @[simp]
 theorem principal_eq_bot_iff {s : Set α} : 𝓟 s = ⊥ ↔ s = ∅ :=
@@ -590,7 +597,7 @@ theorem mem_inf_principal' {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t �
     ← (isCompl_principal (t ∩ sᶜ)).le_right_iff, compl_inter, compl_compl]
 
 lemma mem_inf_principal {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t ↔ { x | x ∈ t → x ∈ s } ∈ f := by
-  simp only [mem_inf_principal', imp_iff_not_or, setOf_or, compl_def, setOf_mem_eq]
+  simp only [mem_inf_principal', imp_iff_not_or, ofPred_or, compl_def, ofPred_mem_eq]
 
 lemma iSup_inf_principal (f : ι → Filter α) (s : Set α) : ⨆ i, f i ⊓ 𝓟 s = (⨆ i, f i) ⊓ 𝓟 s := by
   ext
@@ -603,9 +610,12 @@ theorem inf_principal_eq_bot {f : Filter α} {s : Set α} : f ⊓ 𝓟 s = ⊥ �
 theorem mem_of_eq_bot {f : Filter α} {s : Set α} (h : f ⊓ 𝓟 sᶜ = ⊥) : s ∈ f := by
   rwa [inf_principal_eq_bot, compl_compl] at h
 
-theorem diff_mem_inf_principal_compl {f : Filter α} {s : Set α} (hs : s ∈ f) (t : Set α) :
+theorem sdiff_mem_inf_principal_compl {f : Filter α} {s : Set α} (hs : s ∈ f) (t : Set α) :
     s \ t ∈ f ⊓ 𝓟 tᶜ :=
   inter_mem_inf hs <| mem_principal_self tᶜ
+
+@[deprecated (since := "2026-06-03")]
+alias diff_mem_inf_principal_compl := sdiff_mem_inf_principal_compl
 
 theorem principal_le_iff {s : Set α} {f : Filter α} : 𝓟 s ≤ f ↔ ∀ V ∈ f, s ⊆ V := by
   simp_rw [le_def, mem_principal]
@@ -626,7 +636,7 @@ theorem eventually_mem_set {s : Set α} {l : Filter α} : (∀ᶠ x in l, x ∈ 
 
 protected theorem ext' {f₁ f₂ : Filter α}
     (h : ∀ p : α → Prop, (∀ᶠ x in f₁, p x) ↔ ∀ᶠ x in f₂, p x) : f₁ = f₂ :=
-  Filter.ext <| Set.setOf_bijective.surjective.forall.mpr h
+  Filter.ext <| Set.ofPred_bijective.surjective.forall.mpr h
 
 theorem Eventually.filter_mono {f₁ f₂ : Filter α} (h : f₁ ≤ f₂) {p : α → Prop}
     (hp : ∀ᶠ x in f₂, p x) : ∀ᶠ x in f₁, p x :=
@@ -805,7 +815,7 @@ theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filte
 theorem frequently_iff {f : Filter α} {P : α → Prop} :
     (∃ᶠ x in f, P x) ↔ ∀ {U}, U ∈ f → ∃ x ∈ U, P x := by
   simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _),
-    Set.setOf_bijective.surjective.forall, Filter.Eventually, mem_setOf]
+    Set.ofPred_bijective.surjective.forall, Filter.Eventually, mem_ofPred]
 
 @[simp, push]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by
@@ -894,7 +904,7 @@ theorem frequently_iSup {p : α → Prop} {fs : β → Filter α} :
 
 theorem Eventually.choice {r : α → β → Prop} {l : Filter α} [l.NeBot] (h : ∀ᶠ x in l, ∃ y, r x y) :
     ∃ f : α → β, ∀ᶠ x in l, r x (f x) := by
-  haveI : Nonempty β := let ⟨_, hx⟩ := h.exists; hx.nonempty
+  have : Nonempty β := let ⟨_, hx⟩ := h.exists; hx.nonempty
   choose! f hf using fun x (hx : ∃ y, r x y) => hx
   exact ⟨f, h.mono hf⟩
 
@@ -905,7 +915,7 @@ lemma skolem {ι : Type*} {α : ι → Type*} [∀ i, Nonempty (α i)]
   refine ⟨fun H ↦ ?_, fun ⟨b, hb⟩ ↦ hb.mp (.of_forall fun x a ↦ ⟨_, a⟩)⟩
   refine ⟨fun i ↦ if h : ∃ b, P i b then h.choose else Nonempty.some inferInstance, ?_⟩
   filter_upwards [H] with i hi
-  exact dif_pos hi ▸ hi.choose_spec
+  exact dite_eq_left hi ▸ hi.choose_spec
 
 /-!
 ### Relation “eventually equal”
@@ -922,14 +932,24 @@ theorem EventuallyEq.rw {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) (p :
     (hf : ∀ᶠ x in l, p x (f x)) : ∀ᶠ x in l, p x (g x) :=
   hf.congr <| h.mono fun _ hx => hx ▸ Iff.rfl
 
-theorem eventuallyEq_set {s t : Set α} {l : Filter α} : s =ᶠ[l] t ↔ ∀ᶠ x in l, x ∈ s ↔ x ∈ t :=
+theorem eventuallyEqSet_iff {s t : Set α} {l : Filter α} : s =ᶠ[l] t ↔ ∀ᶠ x in l, x ∈ s ↔ x ∈ t :=
   eventually_congr <| Eventually.of_forall fun _ ↦ eq_iff_iff
 
-alias ⟨EventuallyEq.mem_iff, Eventually.set_eq⟩ := eventuallyEq_set
+@[deprecated (since := "2026-08-14")] alias eventuallyEq_set := eventuallyEqSet_iff
+
+alias ⟨EventuallyEqSet.mem_iff, Eventually.set_eq⟩ := eventuallyEqSet_iff
+
+theorem eventuallyEqSet_empty {s : Set α} {l : Filter α} :
+    s =ᶠ[l] ∅ ↔ ∀ᶠ x in l, x ∉ s := by
+  simp [EventuallyEqSet, EventuallyEq]
+
+@[deprecated (since := "2026-08-14")] alias eventuallyEq_empty := eventuallyEqSet_empty
 
 @[simp]
-theorem eventuallyEq_univ {s : Set α} {l : Filter α} : s =ᶠ[l] univ ↔ s ∈ l := by
-  simp [eventuallyEq_set]
+theorem eventuallyEqSet_univ {s : Set α} {l : Filter α} : s =ᶠ[l] univ ↔ s ∈ l := by
+  simp [eventuallyEqSet_iff]
+
+@[deprecated (since := "2026-08-14")] alias eventuallyEq_univ := eventuallyEqSet_univ
 
 theorem EventuallyEq.exists_mem {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) :
     ∃ s ∈ l, EqOn f g s :=
@@ -1047,43 +1067,82 @@ theorem EventuallyEq.inf [Min β] {l : Filter α} {f f' g g' : α → β} (hf : 
 @[gcongr]
 theorem EventuallyEq.preimage {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) (s : Set β) :
     f ⁻¹' s =ᶠ[l] g ⁻¹' s :=
-  h.fun_comp s
+  h.fun_comp (· ∈ s)
+
+namespace EventuallyEqSet
+variable {s t u : Set α} {l l' : Filter α}
 
 @[gcongr]
-theorem EventuallyEq.inter {s t s' t' : Set α} {l : Filter α} (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') :
-    (s ∩ s' : Set α) =ᶠ[l] (t ∩ t' : Set α) :=
+lemma filter_mono (h : s =ᶠ[l] t) (hl : l' ≤ l) : s =ᶠ[l'] t :=
+  EventuallyEq.filter_mono h hl
+
+@[refl, simp]
+protected lemma refl (l : Filter α) (s : Set α) : s =ᶠ[l] s := EventuallyEq.refl l _
+
+protected lemma rfl : s =ᶠ[l] s := .refl l s
+
+lemma of_eq (h : s = t) : s =ᶠ[l] t := h ▸ .rfl
+
+@[symm]
+lemma symm (h : s =ᶠ[l] t) : t =ᶠ[l] s := EventuallyEq.symm h
+
+@[trans]
+protected lemma trans (h : s =ᶠ[l] t) (h' : t =ᶠ[l] u) : s =ᶠ[l] u := EventuallyEq.trans h h'
+
+instance {l : Filter α} : IsTrans (Set α) (· =ᶠ[l] ·) where
+  trans _ _ _ := .trans
+
+lemma congr_left (h : s =ᶠ[l] t) : s =ᶠ[l] u ↔ t =ᶠ[l] u := ⟨h.symm.trans, h.trans⟩
+
+lemma congr_right (h : t =ᶠ[l] u) : s =ᶠ[l] t ↔ s =ᶠ[l] u := ⟨(·.trans h), (·.trans h.symm)⟩
+
+lemma subset (h : s =ᶠ[l] t) : s ≤ᶠ[l] t := Eventually.mono h fun _ ↦ le_of_eq
+
+lemma superset (h : s =ᶠ[l] t) : t ≤ᶠ[l] s := Eventually.mono h fun _ ↦ ge_of_eq
+
+@[gcongr]
+lemma inter (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s ∩ s' =ᶠ[l] t ∩ t' :=
   h.comp₂ (· ∧ ·) h'
 
 @[gcongr]
-theorem EventuallyEq.union {s t s' t' : Set α} {l : Filter α} (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') :
-    (s ∪ s' : Set α) =ᶠ[l] (t ∪ t' : Set α) :=
+lemma union (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s ∪ s' =ᶠ[l] t ∪ t' :=
   h.comp₂ (· ∨ ·) h'
 
 @[gcongr]
-theorem EventuallyEq.compl {s t : Set α} {l : Filter α} (h : s =ᶠ[l] t) :
-    (sᶜ : Set α) =ᶠ[l] (tᶜ : Set α) :=
-  h.fun_comp Not
+lemma compl (h : s =ᶠ[l] t) : sᶜ =ᶠ[l] tᶜ := h.fun_comp Not
 
 @[gcongr]
-theorem EventuallyEq.diff {s t s' t' : Set α} {l : Filter α} (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') :
-    (s \ s' : Set α) =ᶠ[l] (t \ t' : Set α) :=
+lemma diff (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s \ s' =ᶠ[l] t \ t' :=
   h.inter h'.compl
 
 @[gcongr]
-protected theorem EventuallyEq.symmDiff {s t s' t' : Set α} {l : Filter α}
-    (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') : (s ∆ s' : Set α) =ᶠ[l] (t ∆ t' : Set α) :=
+protected lemma symmDiff (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') :
+    s ∆ s' =ᶠ[l] t ∆ t' :=
   (h.diff h').union (h'.diff h)
 
-theorem eventuallyEq_empty {s : Set α} {l : Filter α} : s =ᶠ[l] (∅ : Set α) ↔ ∀ᶠ x in l, x ∉ s :=
-  eventuallyEq_set.trans <| by simp
+end EventuallyEqSet
 
-theorem inter_eventuallyEq_left {s t : Set α} {l : Filter α} :
-    (s ∩ t : Set α) =ᶠ[l] s ↔ ∀ᶠ x in l, x ∈ s → x ∈ t := by
-  simp only [eventuallyEq_set, mem_inter_iff, and_iff_left_iff_imp]
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.mem_iff := EventuallyEqSet.mem_iff
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.inter := EventuallyEqSet.inter
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.union := EventuallyEqSet.union
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.compl := EventuallyEqSet.compl
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.diff := EventuallyEqSet.diff
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.symmDiff := EventuallyEqSet.symmDiff
 
-theorem inter_eventuallyEq_right {s t : Set α} {l : Filter α} :
-    (s ∩ t : Set α) =ᶠ[l] t ↔ ∀ᶠ x in l, x ∈ t → x ∈ s := by
-  rw [inter_comm, inter_eventuallyEq_left]
+lemma eventuallyEqSet_comm {s t : Set α} {l : Filter α} : s =ᶠ[l] t ↔ t =ᶠ[l] s :=
+  ⟨.symm, .symm⟩
+
+theorem inter_eventuallyEqSet_left {s t : Set α} {l : Filter α} :
+    s ∩ t =ᶠ[l] s ↔ ∀ᶠ x in l, x ∈ s → x ∈ t := by
+  simp [EventuallyEqSet, EventuallyEq]
+
+@[deprecated (since := "2026-08-14")] alias inter_eventuallyEq_left := inter_eventuallyEqSet_left
+
+theorem inter_eventuallyEqSet_right {s t : Set α} {l : Filter α} :
+    s ∩ t =ᶠ[l] t ↔ ∀ᶠ x in l, x ∈ t → x ∈ s := by
+  rw [inter_comm, inter_eventuallyEqSet_left]
+
+@[deprecated (since := "2026-08-14")] alias inter_eventuallyEq_right := inter_eventuallyEqSet_right
 
 @[simp]
 theorem eventuallyEq_principal {s : Set α} {f g : α → β} : f =ᶠ[𝓟 s] g ↔ EqOn f g s :=
@@ -1108,14 +1167,17 @@ section LE
 
 variable [LE β] {l : Filter α}
 
+@[to_dual self (reorder := f g, f' g', hf hg)]
 theorem EventuallyLE.congr {f f' g g' : α → β} (H : f ≤ᶠ[l] g) (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
     f' ≤ᶠ[l] g' :=
   H.mp <| hg.mp <| hf.mono fun x hf hg H => by rwa [hf, hg] at H
 
+@[to_dual self (reorder := f g, f' g', hf hg)]
 theorem eventuallyLE_congr {f f' g g' : α → β} (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
     f ≤ᶠ[l] g ↔ f' ≤ᶠ[l] g' :=
   ⟨fun H => H.congr hf hg, fun H => H.congr hf.symm hg.symm⟩
 
+@[to_dual self]
 theorem eventuallyLE_iff_all_subsets {f g : α → β} {l : Filter α} :
     f ≤ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x ≤ g x :=
   eventually_iff_all_subsets
@@ -1126,6 +1188,7 @@ section Preorder
 
 variable [Preorder β] {l : Filter α} {f g h : α → β}
 
+@[to_dual ge]
 theorem EventuallyEq.le (h : f =ᶠ[l] g) : f ≤ᶠ[l] g :=
   h.mono fun _ => le_of_eq
 
@@ -1136,21 +1199,19 @@ theorem EventuallyLE.refl (l : Filter α) (f : α → β) : f ≤ᶠ[l] f :=
 theorem EventuallyLE.rfl : f ≤ᶠ[l] f :=
   EventuallyLE.refl l f
 
-@[trans]
+@[trans, to_dual self (reorder := f h, H₁ H₂)]
 theorem EventuallyLE.trans (H₁ : f ≤ᶠ[l] g) (H₂ : g ≤ᶠ[l] h) : f ≤ᶠ[l] h :=
   H₂.mp <| H₁.mono fun _ => le_trans
 
 instance : Trans ((· ≤ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· ≤ᶠ[l] ·) (· ≤ᶠ[l] ·) where
   trans := EventuallyLE.trans
 
-@[trans]
 theorem EventuallyEq.trans_le (H₁ : f =ᶠ[l] g) (H₂ : g ≤ᶠ[l] h) : f ≤ᶠ[l] h :=
   H₁.le.trans H₂
 
 instance : Trans ((· =ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· ≤ᶠ[l] ·) (· ≤ᶠ[l] ·) where
   trans := EventuallyEq.trans_le
 
-@[trans]
 theorem EventuallyLE.trans_eq (H₁ : f ≤ᶠ[l] g) (H₂ : g =ᶠ[l] h) : f ≤ᶠ[l] h :=
   H₁.trans H₂.le
 
@@ -1161,79 +1222,128 @@ end Preorder
 
 variable {l : Filter α}
 
+@[to_dual self (reorder := h₁ h₂)]
 theorem EventuallyLE.antisymm [PartialOrder β] {l : Filter α} {f g : α → β} (h₁ : f ≤ᶠ[l] g)
     (h₂ : g ≤ᶠ[l] f) : f =ᶠ[l] g :=
   h₂.mp <| h₁.mono fun _ => le_antisymm
 
+@[to_dual none]
 theorem eventuallyLE_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α → β} :
     f =ᶠ[l] g ↔ f ≤ᶠ[l] g ∧ g ≤ᶠ[l] f := by
   simp only [EventuallyEq, EventuallyLE, le_antisymm_iff, eventually_and]
 
-theorem EventuallyLE.ge_iff_eq' [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
-    g ≤ᶠ[l] f ↔ g =ᶠ[l] f :=
-  ⟨fun h' => h'.antisymm h, EventuallyEq.le⟩
+@[to_dual ge_iff_eq']
+theorem EventuallyLE.ge_iff_eq [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
+    g ≤ᶠ[l] f ↔ f =ᶠ[l] g :=
+  ⟨fun h' => h.antisymm h', EventuallyEq.ge⟩
 
+@[to_dual ne_of_gt]
 theorem Eventually.ne_of_lt [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ᶠ x in l, f x < g x) :
     ∀ᶠ x in l, f x ≠ g x :=
   h.mono fun _ hx => hx.ne
 
+@[to_dual ne_bot_of_gt]
 theorem Eventually.ne_top_of_lt [Preorder β] [OrderTop β] {l : Filter α} {f g : α → β}
     (h : ∀ᶠ x in l, f x < g x) : ∀ᶠ x in l, f x ≠ ⊤ :=
   h.mono fun _ hx => hx.ne_top
 
+@[to_dual bot_lt_of_ne]
 theorem Eventually.lt_top_of_ne [PartialOrder β] [OrderTop β] {l : Filter α} {f : α → β}
     (h : ∀ᶠ x in l, f x ≠ ⊤) : ∀ᶠ x in l, f x < ⊤ :=
   h.mono fun _ hx => hx.lt_top
 
+@[to_dual bot_lt_iff_ne_bot]
 theorem Eventually.lt_top_iff_ne_top [PartialOrder β] [OrderTop β] {l : Filter α} {f : α → β} :
     (∀ᶠ x in l, f x < ⊤) ↔ ∀ᶠ x in l, f x ≠ ⊤ :=
   ⟨Eventually.ne_of_lt, Eventually.lt_top_of_ne⟩
 
-@[mono]
-theorem EventuallyLE.inter {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : s' ≤ᶠ[l] t') :
-    (s ∩ s' : Set α) ≤ᶠ[l] (t ∩ t' : Set α) :=
+namespace EventuallySubset
+variable {s t u : Set α} {l l' : Filter α}
+
+lemma eventually (h : s ≤ᶠ[l] t) : ∀ᶠ x in l, x ∈ s → x ∈ t := h
+
+@[gcongr]
+lemma filter_mono (h : s ≤ᶠ[l] t) (hl : l' ≤ l) : s ≤ᶠ[l'] t :=
+  Eventually.filter_mono hl h
+
+@[refl]
+protected lemma refl (l : Filter α) (s : Set α) : s ≤ᶠ[l] s := EventuallyLE.refl l _
+
+protected lemma rfl : s ≤ᶠ[l] s := .refl l s
+
+@[trans]
+lemma trans (h : s ≤ᶠ[l] t) (h' : t ≤ᶠ[l] u) : s ≤ᶠ[l] u := EventuallyLE.trans h h'
+
+instance {l : Filter α} :
+    Trans ((· ≤ᶠ[l] ·) : Set α → Set α → Prop) (· ≤ᶠ[l] ·) (· ≤ᶠ[l] ·) where
+  trans := .trans
+
+lemma antisymm (h : s ≤ᶠ[l] t) (h' : t ≤ᶠ[l] s) : s =ᶠ[l] t := EventuallyLE.antisymm h h'
+
+@[gcongr, mono]
+lemma inter (h : s ≤ᶠ[l] t) {s' t' : Set α} (h' : s' ≤ᶠ[l] t') : s ∩ s' ≤ᶠ[l] t ∩ t' :=
   h'.mp <| h.mono fun _ => And.imp
 
-@[mono]
-theorem EventuallyLE.union {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : s' ≤ᶠ[l] t') :
-    (s ∪ s' : Set α) ≤ᶠ[l] (t ∪ t' : Set α) :=
+@[gcongr, mono]
+lemma union (h : s ≤ᶠ[l] t) {s' t' : Set α} (h' : s' ≤ᶠ[l] t') : s ∪ s' ≤ᶠ[l] t ∪ t' :=
   h'.mp <| h.mono fun _ => Or.imp
 
-@[mono]
-theorem EventuallyLE.compl {s t : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) :
-    (tᶜ : Set α) ≤ᶠ[l] (sᶜ : Set α) :=
-  h.mono fun _ => mt
+@[gcongr, mono]
+lemma compl (h : s ≤ᶠ[l] t) : tᶜ ≤ᶠ[l] sᶜ := h.mono fun _ => mt
 
-@[mono]
-theorem EventuallyLE.diff {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : t' ≤ᶠ[l] s') :
-    (s \ s' : Set α) ≤ᶠ[l] (t \ t' : Set α) :=
+@[gcongr, mono]
+lemma diff (h : s ≤ᶠ[l] t) {s' t' : Set α} (h' : t' ≤ᶠ[l] s') : s \ s' ≤ᶠ[l] t \ t' :=
   h.inter h'.compl
 
-theorem set_eventuallyLE_iff_mem_inf_principal {s t : Set α} {l : Filter α} :
+end EventuallySubset
+
+@[deprecated (since := "2026-08-14")] alias EventuallyLE.inter := EventuallySubset.inter
+@[deprecated (since := "2026-08-14")] alias EventuallyLE.union := EventuallySubset.union
+@[deprecated (since := "2026-08-14")] alias EventuallyLE.compl := EventuallySubset.compl
+@[deprecated (since := "2026-08-14")] alias EventuallyLE.diff := EventuallySubset.diff
+
+theorem eventuallySubset_iff_mem_inf_principal {s t : Set α} {l : Filter α} :
     s ≤ᶠ[l] t ↔ t ∈ l ⊓ 𝓟 s :=
   eventually_inf_principal.symm
 
-theorem set_eventuallyLE_iff_inf_principal_le {s t : Set α} {l : Filter α} :
+@[deprecated (since := "2026-08-14")]
+alias set_eventuallyLE_iff_mem_inf_principal := eventuallySubset_iff_mem_inf_principal
+
+theorem eventuallySubset_iff_inf_principal_le {s t : Set α} {l : Filter α} :
     s ≤ᶠ[l] t ↔ l ⊓ 𝓟 s ≤ l ⊓ 𝓟 t :=
-  set_eventuallyLE_iff_mem_inf_principal.trans <| by
+  eventuallySubset_iff_mem_inf_principal.trans <| by
     simp only [le_inf_iff, inf_le_left, true_and, le_principal_iff]
 
-theorem set_eventuallyEq_iff_inf_principal {s t : Set α} {l : Filter α} :
-    s =ᶠ[l] t ↔ l ⊓ 𝓟 s = l ⊓ 𝓟 t := by
-  simp only [eventuallyLE_antisymm_iff, le_antisymm_iff, set_eventuallyLE_iff_inf_principal_le]
+@[deprecated (since := "2026-08-14")]
+alias set_eventuallyLE_iff_inf_principal_le := eventuallySubset_iff_inf_principal_le
 
+theorem eventuallySubset_antisymm_iff {s t : Set α} {l : Filter α} :
+    s =ᶠ[l] t ↔ s ≤ᶠ[l] t ∧ t ≤ᶠ[l] s :=
+  eventuallyLE_antisymm_iff
+
+theorem eventuallyEqSet_iff_inf_principal {s t : Set α} {l : Filter α} :
+    s =ᶠ[l] t ↔ l ⊓ 𝓟 s = l ⊓ 𝓟 t := by
+  simp only [eventuallySubset_antisymm_iff, le_antisymm_iff, eventuallySubset_iff_inf_principal_le]
+
+@[deprecated (since := "2026-08-14")]
+alias set_eventuallyEq_iff_inf_principal := eventuallyEqSet_iff_inf_principal
+
+@[to_dual (attr := gcongr)]
 theorem EventuallyLE.sup [SemilatticeSup β] {l : Filter α} {f₁ f₂ g₁ g₂ : α → β} (hf : f₁ ≤ᶠ[l] f₂)
     (hg : g₁ ≤ᶠ[l] g₂) : f₁ ⊔ g₁ ≤ᶠ[l] f₂ ⊔ g₂ := by
   filter_upwards [hf, hg] with x hfx hgx using sup_le_sup hfx hgx
 
+@[to_dual le_inf]
 theorem EventuallyLE.sup_le [SemilatticeSup β] {l : Filter α} {f g h : α → β} (hf : f ≤ᶠ[l] h)
     (hg : g ≤ᶠ[l] h) : f ⊔ g ≤ᶠ[l] h := by
   filter_upwards [hf, hg] with x hfx hgx using _root_.sup_le hfx hgx
 
+@[to_dual inf_le_of_left_le]
 theorem EventuallyLE.le_sup_of_le_left [SemilatticeSup β] {l : Filter α} {f g h : α → β}
     (hf : h ≤ᶠ[l] f) : h ≤ᶠ[l] f ⊔ g :=
   hf.mono fun _ => _root_.le_sup_of_le_left
 
+@[to_dual inf_le_of_right_le]
 theorem EventuallyLE.le_sup_of_le_right [SemilatticeSup β] {l : Filter α} {f g h : α → β}
     (hg : h ≤ᶠ[l] g) : h ≤ᶠ[l] f ⊔ g :=
   hg.mono fun _ => _root_.le_sup_of_le_right
@@ -1254,10 +1364,18 @@ theorem Set.EqOn.eventuallyEq_of_mem {α β} {s : Set α} {l : Filter α} {f g :
     (hl : s ∈ l) : f =ᶠ[l] g :=
   h.eventuallyEq.filter_mono <| Filter.le_principal_iff.2 hl
 
-theorem HasSubset.Subset.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
-  Filter.Eventually.of_forall h
+lemma LE.le.eventuallySubset {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
+  .of_forall h
 
-variable {α β : Type*} {F : Filter α} {G : Filter β}
+lemma LE.le.eventuallyLE {α β : Type*} [LE β] {l : Filter α} {f g : α → β} (h : f ≤ g) :
+    f ≤ᶠ[l] g := .of_forall h
+
+@[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallySubset
+
+alias Filter.EventuallySubset.of_subset := LE.le.eventuallySubset
+alias Filter.EventuallyLE.of_le := LE.le.eventuallyLE
+
+variable {α : Type*}
 
 namespace Filter
 

@@ -59,8 +59,8 @@ theorem LDL.lowerInv_eq_gramSchmidtBasis :
       ((Pi.basisFun 𝕜 n).toMatrix
           (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
             (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ (Pi.basisFun 𝕜 n)))ᵀ := by
-  letI := (Sᵀ.toNormedAddCommGroup hS.transpose)
-  letI := (Sᵀ.toInnerProductSpace hS.transpose.posSemidef)
+  let := (Sᵀ.toNormedAddCommGroup hS.transpose)
+  let := (Sᵀ.toInnerProductSpace hS.transpose.posSemidef)
   ext i j
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
   rfl

@@ -41,16 +41,16 @@ composing a pair of adjunctions, which factor through the category of 2-truncate
 @[expose] public section
 
 namespace SSet
-open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
+open CategoryTheory Category Limits Functor Opposite Nerve
 open SimplexCategory.Truncated SimplicialObject.Truncated
+
+open scoped Simplicial
 
 universe v u
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _⦋0⦌₂` as its underlying
 type. -/
 def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
-
-@[deprecated (since := "2025-11-01")] alias OneTruncation₂.Hom := Truncated.Edge
 
 namespace OneTruncation₂
 
@@ -66,11 +66,7 @@ lemma hom_ext
     (h : f.edge = g.edge) : f = g :=
   Truncated.Edge.ext h
 
-@[deprecated "Use reflQuiver_id" (since := "2025-11-01")]
-lemma id_edge {S : SSet.Truncated 2} (x : OneTruncation₂ S) :
-    Truncated.Edge.edge (𝟙rq x) = S.map (σ₂ 0).op x := by
-  rfl
-
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The prefunctor on refl quivers `OneTruncation₂` induced by a morphism
 of `2`-truncated simplicial sets. -/
 @[simps]
@@ -129,14 +125,13 @@ def ofNerve₂ (C : Type u) [Category.{u} C] :
   ReflQuiv.isoOfEquiv.{u, u} OneTruncation₂.nerveEquiv
     (fun _ _ ↦ OneTruncation₂.nerveHomEquiv) nerveHomEquiv_id
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
     {F G : X ⟶ ((truncation 2).obj (nerve C))}
     (h : OneTruncation₂.map F = OneTruncation₂.map G) : F = G :=
   SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
     obtain ⟨x₀, x₁, f, rfl⟩ := Truncated.Edge.exists_of_simplex f
     simpa using congr_arg Truncated.Edge.edge (ReflPrefunctor.congr_hom h f))
-
-@[deprecated (since := "2025-11-06")] alias _root_.CategoryTheory.toNerve₂.ext := nerve_hom_ext
 
 end
 end OneTruncation₂
@@ -237,16 +232,6 @@ inductive HoRel₂ : HomRel (Cat.FreeRefl (OneTruncation₂ V)) where
         (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
       ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂))
 
-@[deprecated "HoRel₂.of_compStruct" (since := "2025-11-06")]
-lemma HoRel₂.mk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
-    {e₁₂ : Truncated.Edge x₁ x₂} {e₀₂ : Truncated.Edge x₀ x₂}
-    (h : Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂) :
-    HoRel₂ V
-      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map
-        (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
-      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂)) :=
-  HoRel₂.of_compStruct h
-
 end OneTruncation₂
 
 namespace Truncated
@@ -306,6 +291,7 @@ lemma congr_arrowMk_homMk {x₀ x₁ : V _⦋0⦌₂} (e : Edge x₀ x₁)
   obtain rfl : e = e' := by aesop
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma homMk_id (x : V _⦋0⦌₂) :
     homMk (.id x) = 𝟙 (mk x) := by
@@ -317,7 +303,7 @@ lemma homMk_id (x : V _⦋0⦌₂) :
 lemma homMk_comp_homMk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
     {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
     homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ := by
-  simpa [homMk] using CategoryTheory.Quotient.sound _
+  simpa [homMk] using! CategoryTheory.Quotient.sound _
     (OneTruncation₂.HoRel₂.of_compStruct h)
 
 variable (V) in
@@ -364,6 +350,24 @@ lemma morphismProperty_eq_top {W : MorphismProperty V.HomotopyCategory}
     rintro _ _ _ ⟨_, _, e⟩
     exact hW e)
 
+/-- Induction principle for proving a property for all the morphisms
+in the homotopy category of a `2`-truncated simplicial set: it suffices
+to show that the property holds for morphisms induced by edges and that
+the property is stable under composition. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma hom_rec {motive : ∀ {x y : V.HomotopyCategory}, (x ⟶ y) → Prop}
+    (homMk : ∀ {x y : V _⦋0⦌₂} (e : Edge x y), motive (homMk e))
+    (comp : ∀ {x y z : V.HomotopyCategory} (f : x ⟶ y) (g : y ⟶ z),
+      motive f → motive g → motive (f ≫ g))
+    {x y : V.HomotopyCategory} (f : x ⟶ y) : motive f := by
+  let W : MorphismProperty V.HomotopyCategory := fun _ _ f ↦ motive f
+  have : W.IsMultiplicative :=
+    { id_mem x := by
+        obtain ⟨x, rfl⟩ := x.mk_surjective
+        simpa using! homMk (.id x)
+      comp_mem := comp }
+  exact (morphismProperty_eq_top (W := W) homMk).symm.le f (by simp)
+
 section
 
 variable {D : Type*} [Category* D]
@@ -376,13 +380,14 @@ variable (obj : V _⦋0⦌₂ → D) (map : ∀ {x y : V _⦋0⦌₂}, Edge x y 
     {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
     (_ : Edge.CompStruct e₀₁ e₁₂ e₀₂), map e₀₁ ≫ map e₁₂ = map e₀₂)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for functors from the homotopy category. -/
 def lift : V.HomotopyCategory ⥤ D :=
   CategoryTheory.Quotient.lift _
     (Cat.FreeRefl.lift' obj (fun f ↦ map f) map_id) (by
       rintro _ _ _ _ ⟨h⟩
       simp only [Functor.map_comp]
-      convert map_comp h <;> apply Cat.FreeRefl.lift'_map)
+      convert! map_comp h <;> apply Cat.FreeRefl.lift'_map)
 
 @[simp]
 lemma lift_obj_mk (x : V _⦋0⦌₂) : (lift obj map map_id map_comp).obj (mk x) = obj x := rfl
@@ -402,8 +407,8 @@ variable (φ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ⟶ G.obj (mk x))
   (hφ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y),
     F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e) := by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Constructor for natural transformations between functors from `V.HomotopyCategory`. -/
 def mkNatTrans : F ⟶ G where
   app _ := φ _
@@ -413,7 +418,6 @@ def mkNatTrans : F ⟶ G where
     exact this.symm.le f (by simp)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatTrans_app_mk (v : V _⦋0⦌₂) :
     (mkNatTrans φ hφ).app (mk v) = φ v := rfl
@@ -427,19 +431,16 @@ variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
     (iso x).hom ≫ G.map (homMk e) := by cat_disch)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
 def mkNatIso : F ≅ G :=
   NatIso.ofComponents (fun _ ↦ iso _) (fun f ↦ (mkNatTrans _ hiso).naturality f)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatIso_hom_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).hom.app (mk v) = (iso v).hom := rfl
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatIso_inv_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).inv.app (mk v) = (iso v).inv := rfl
@@ -464,6 +465,7 @@ instance (X : Truncated.{u} 2) [Subsingleton (X _⦋0⦌₂)] :
     obtain rfl := Subsingleton.elim x y
     rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance subsingleton_hom (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)]
     (x y : X.HomotopyCategory) :
     Subsingleton (x ⟶ y) :=
@@ -531,13 +533,91 @@ theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D : Type*} [Ca
 
 end Truncated
 
+/-- The homotopy category of a simplicial set is defined as the homotopy
+category of its `2`-truncation. -/
+abbrev HomotopyCategory (X : SSet.{u}) : Type u := ((truncation 2).obj X).HomotopyCategory
+
+/-- The functor `X.HomotopyCategory ⥤ Y.HomotopyCategory` that is induced
+by a morphism `X ⟶ Y` of simplicial sets. -/
+@[implicit_reducible]
+def mapHomotopyCategory {X Y : SSet.{u}} (f : X ⟶ Y) :
+    X.HomotopyCategory ⥤ Y.HomotopyCategory :=
+  Truncated.mapHomotopyCategory ((truncation 2).map f)
+
+namespace HomotopyCategory
+
+variable {X Y : SSet.{u}}
+
+/-- Constructor for objects of the homotopy category of a simplicial set. -/
+@[implicit_reducible]
+def mk (x : X _⦋0⦌) : X.HomotopyCategory := Truncated.HomotopyCategory.mk x
+
+/-- The bijection `X.HomotopyCategory ≃ X _⦋0⦌` when `X` is a simplicial set. -/
+@[implicit_reducible, simps symm_apply, simps -isSimp apply]
+def objEquiv {X : SSet.{u}} : X.HomotopyCategory ≃ X _⦋0⦌ where
+  toFun x := x.as.as
+  invFun x := mk x
+
+/-- Induction principle for objects of the homotopy category of a simplicial set. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def rec {motive : X.HomotopyCategory → Sort*}
+    (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : X.HomotopyCategory) : motive x :=
+  mk _
+
+@[simp]
+lemma rec_mk {motive : X.HomotopyCategory → Sort*}
+    (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : X _⦋0⦌) :
+    rec mk (.mk x) = mk x := rfl
+
+/-- Constructor for morphisms in the homotopy category of a simplicial set. -/
+def homMk {x y : X _⦋0⦌} (e : Edge x y) : mk x ⟶ mk y :=
+  Truncated.HomotopyCategory.homMk e.toTruncated
+
+@[simp]
+lemma homMk_id (x : X _⦋0⦌) : homMk (.id x) = 𝟙 (mk x) :=
+  Truncated.HomotopyCategory.homMk_id _
+
+@[reassoc]
+lemma homMk_comp_homMk {x₀ x₁ x₂ : X _⦋0⦌} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
+    {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
+    homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ :=
+  Truncated.HomotopyCategory.homMk_comp_homMk h.toTruncated
+
+/-- Induction principle for morphisms in the homotopy category of a simplicial set:
+in order to prove a property for all morphisms, its suffices to prove the property for
+morphisms induced by an edge and that the property is stable by composition. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma hom_rec {motive : ∀ {x y : X.HomotopyCategory}, (x ⟶ y) → Prop}
+    (homMk : ∀ {x y : X _⦋0⦌} (e : Edge x y), motive (homMk e))
+    (comp : ∀ {x y z : X.HomotopyCategory} (f : x ⟶ y) (g : y ⟶ z),
+      motive f → motive g → motive (f ≫ g))
+    {x y : X.HomotopyCategory} (f : x ⟶ y) : motive f := by
+  induction f using Truncated.HomotopyCategory.hom_rec with
+  | homMk f => exact homMk f
+  | comp f g hf hg => exact comp _ _ hf hg
+
+end HomotopyCategory
+
+@[simp]
+lemma mapHomotopyCategory_obj_mk {X Y : SSet.{u}} (f : X ⟶ Y) (x : X _⦋0⦌) :
+    (mapHomotopyCategory f).obj (.mk x) = .mk (f.app _ x) := rfl
+
+open HomotopyCategory in
+@[simp]
+lemma mapHomotopyCategory_map_homMk {X Y : SSet.{u}} (f : X ⟶ Y) {x y : X _⦋0⦌} (e : Edge x y) :
+    (mapHomotopyCategory f).map (homMk e) = homMk (e.map f) := rfl
+
 /-- The functor that takes a simplicial set to its homotopy category by passing through the
 2-truncation. -/
-def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFunctor₂
+@[implicit_reducible, simps]
+def hoFunctor : SSet.{u} ⥤ Cat.{u, u} where
+  obj X := Cat.of X.HomotopyCategory
+  map f := (mapHomotopyCategory f).toCatHom
+  map_id _ := Truncated.hoFunctor₂.map_id _
+  map_comp f g := Truncated.hoFunctor₂.map_comp ((truncation 2).map f) ((truncation 2).map g)
 
-/-- For a simplicial set `X`, the underlying type of `hoFunctor.obj X` is equivalent to `X _⦋0⦌`. -/
-def hoFunctor.obj.equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
-  (Quotient.equiv.{u, u} _).trans (Quotient.equiv _)
+@[deprecated (since := "2026-08-12")]
+alias hoFunctor.obj.equiv := HomotopyCategory.objEquiv
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
 `OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/
@@ -552,15 +632,16 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     obtain rfl : y = default := Unique.uniq _ _
     exact 𝟙rq instUniqueOneTruncation₂DeltaZero.default
   uniq _ := by
-    letI : Subsingleton (((truncation 2).obj Δ[0]).obj (.op ⦋1⦌₂)) :=
+    let : Subsingleton (((truncation 2).obj Δ[0]).obj (.op ⦋1⦌₂)) :=
       inferInstanceAs (Subsingleton (ULift.{_, 0} (⦋1⦌ ⟶ ⦋0⦌)))
     ext
     exact this.allEq _ _
 
-instance : Unique ((truncation.{u} 2).obj Δ[0]).HomotopyCategory :=
+instance : Unique Δ[0].HomotopyCategory :=
   inferInstanceAs (Unique <| CategoryTheory.Quotient _)
 
-instance : IsDiscrete ((truncation.{u} 2).obj Δ[0]).HomotopyCategory where
+set_option backward.isDefEq.respectTransparency.types false in
+instance : IsDiscrete Δ[0].HomotopyCategory where
   subsingleton x y :=
     inferInstanceAs (Subsingleton ((_ : CategoryTheory.Quotient _) ⟶ _))
   eq_of_hom _ := by subsingleton

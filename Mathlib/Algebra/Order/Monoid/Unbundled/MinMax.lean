@@ -13,9 +13,6 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 public section
 
-
-open Function
-
 variable {α β : Type*}
 
 /-! Some lemmas about types that have an ordering and a binary operation, with no

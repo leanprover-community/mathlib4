@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 # The category of `R`-modules has enough projectives.
 -/
 
-@[expose] public section
+public section
 
 universe v u w
 

@@ -17,10 +17,7 @@ from the fact that `ModuleCat R` is an abelian category.
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u v
 
@@ -56,6 +53,7 @@ attribute [local simp] image.fac
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The universal property for the image factorisation -/
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
   ofHom

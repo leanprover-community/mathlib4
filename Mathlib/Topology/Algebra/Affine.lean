@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.Algebra.Group.Torsor
 
 /-!
 # Topological properties of affine spaces and maps
@@ -67,7 +67,9 @@ theorem lineMap_continuous {p q : P} :
     Continuous (lineMap p q : R →ᵃ[R] P) := by
   fun_prop
 
-open Topology Filter
+open Filter
+
+open scoped Topology
 
 section Tendsto
 
@@ -121,7 +123,7 @@ theorem homothety_continuous (x : P) (t : R) : Continuous <| homothety x t := by
 
 variable (R) [TopologicalSpace R] [Module R W] [ContinuousSMul R W] (x : Q) {s : Set Q}
 
-open Topology
+open scoped Topology
 
 theorem _root_.eventually_homothety_mem_of_mem_interior {y : Q} (hy : y ∈ interior s) :
     ∀ᶠ δ in 𝓝 (1 : R), homothety x δ y ∈ s := by

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Cast.WithTop
 public import Mathlib.Order.Nat
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # `WithBot ℕ`
@@ -14,7 +15,7 @@ public import Mathlib.Order.Nat
 Lemmas about the type of natural numbers with a bottom element adjoined.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

@@ -3,11 +3,13 @@ Copyright (c) 2021 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Sort
-import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Tactic.Linarith
 
 /-!
 # IMO 1994 Q1
@@ -26,6 +28,7 @@ Indeed, if we had `aᵢ + aₘ₊₁₋ᵢ ≤ n`, then `a₁ + aₘ₊₁₋ᵢ
 would be `m` elements of the set of `aᵢ`'s all larger than `aₘ₊₁₋ᵢ`, which is impossible.
 -/
 
+public section
 
 open Finset
 
@@ -54,7 +57,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : #A = m + 1)
   -- `i ↦ m-i`
   -- We reindex the sum by fin (m+1)
   have : ∑ x ∈ A, x = ∑ i : Fin (m + 1), a i := by
-    convert sum_image fun x _ y _ => a.eq_iff_eq.1
+    convert! sum_image fun x _ y _ => a.eq_iff_eq.1
     rw [← coe_inj]; simp [a]
   rw [this]; clear this
   -- The main proof is a simple calculation by rearranging one of the two sums

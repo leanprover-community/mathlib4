@@ -98,7 +98,7 @@ variable {𝓕 𝓖 : Filter ι}
 
 instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
   coe x i := x.1 i
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 variable {R A} in
 /-- Constructor for `RestrictedProduct`. -/
@@ -169,7 +169,7 @@ lemma coe_comp_inclusion (h : 𝓕 ≤ 𝓖) :
   rfl
 
 lemma image_coe_preimage_inclusion_subset (h : 𝓕 ≤ 𝓖)
-    (U : Set Πʳ i, [R i, A i]_[𝓕]) : (⇑) '' (inclusion R A h ⁻¹' U) ⊆ (⇑) '' U :=
+    (U : Set Πʳ i, [R i, A i]_[𝓕]) : (⇑) '' inclusion R A h ⁻¹' U ⊆ (⇑) '' U :=
   fun _ ⟨x, hx, hx'⟩ ↦ ⟨inclusion R A h x, hx, hx'⟩
 
 lemma range_structureMap :
@@ -567,6 +567,16 @@ lemma mulSingle_zpow [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
     (i : ι) (r : G i) (n : ℤ) :
     mulSingle A i (r ^ n) = mulSingle A i r ^ n := by
   ext; simp [Pi.mulSingle_zpow, RestrictedProduct.zpow_apply]
+
+/-- The map from a single factor to the restricted product given by setting the rest of the entries
+to be 1. -/
+@[to_additive (attr := simps) /-- The map from a single factor to the restricted product given by
+setting the rest of the entries to be 0. -/]
+def mulSingleMonoidHom [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)] (i : ι) :
+    (G i) →* Πʳ (i : ι), [G i, A i] where
+  toFun := mulSingle A i
+  map_one' := mulSingle_one A i
+  map_mul' := mulSingle_mul A i
 
 end single
 

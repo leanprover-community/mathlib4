@@ -25,11 +25,11 @@ public section
 
 namespace IsIntegral
 
-variable {α R : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
+variable {α : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
 
 @[simp]
 theorem ratCast_iff : IsIntegral ℤ (q : α) ↔ IsIntegral ℤ q :=
-  isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective ℚ α)
+  isIntegral_algebraMap_iff (A := ℚ)
 
 theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = q) ↔ ∃ k : ℤ, x = k := by
   refine ⟨?_, fun ⟨w, h⟩ ↦ ⟨w, by simp [h]⟩⟩
@@ -68,7 +68,7 @@ theorem isIntegral_exp_neg_rat_mul_pi_mul_I (q : ℚ) :
 theorem isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) := by
   rw [sin.eq_1, mul_div_cancel₀ _ two_ne_zero]
   exact (isIntegral_exp_neg_rat_mul_pi_mul_I q).sub (isIntegral_exp_rat_mul_pi_mul_I q)
-    |>.mul isIntegral_int_I
+    |>.mul <| isIntegral_I ℤ
 
 /-- `2 cos(q * π)` for `q : ℚ` is integral over `ℤ`, using the complex `cos` function. -/
 theorem isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos (q * π) := by
@@ -93,16 +93,13 @@ namespace Real
 
 /-- `2 sin(q * π)` for `q : ℚ` is integral over `ℤ`, using the real `sin` function. -/
 theorem isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) :=
-  isIntegral_algebraMap_iff (B := ℂ) RCLike.ofReal_injective |>.mp <| by
+  isIntegral_algebraMap_iff (B := ℂ) |>.mp <| by
     simp [Complex.isIntegral_two_mul_sin_rat_mul_pi]
 
 /-- `2 cos(q * π)` for `q : ℚ` is integral over `ℤ`, using the real `cos` function. -/
 theorem isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos (q * π) :=
-  isIntegral_algebraMap_iff (B := ℂ) RCLike.ofReal_injective |>.mp <| by
+  isIntegral_algebraMap_iff (B := ℂ) |>.mp <| by
     simp [Complex.isIntegral_two_mul_cos_rat_mul_pi]
-
-@[deprecated (since := "2025-11-15")]
-alias _root_.isIntegral_two_mul_cos_rat_mul_pi := isIntegral_two_mul_cos_rat_mul_pi
 
 /-- `sin(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `sin` function. -/
 theorem isAlgebraic_sin_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| sin <| q * π :=
@@ -142,7 +139,7 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
 /-- Niven's theorem, but stated for `sin` instead of `cos`. -/
 theorem niven_sin (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, sin θ = q) :
     sin θ ∈ ({-1, -1 / 2, 0, 1 / 2, 1} : Set ℝ) := by
-  convert ← niven (θ := θ - π / 2) ?_ ?_ using 1
+  convert! ← niven (θ := θ - π / 2) ?_ ?_ using 1
   · exact cos_sub_pi_div_two θ
   · exact hθ.imp' (· - 1 / 2) (by intros; push_cast; linarith)
   · simpa [cos_sub_pi_div_two]

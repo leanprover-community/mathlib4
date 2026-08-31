@@ -31,9 +31,8 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 
 -/
 
-@[expose] public section
+public section
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.card_ideal_quot (n : ℕ) : Nat.card (ℤ ⧸ (Ideal.span {(n : ℤ)})) = n := by
   simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
 
@@ -90,7 +89,7 @@ theorem absNorm_under_eq_sInf :
     rw [← cast_natCast, cast_mem_ideal_iff, natCast_dvd_natCast] at h₂
     exact lt_iff_not_ge.mp h₀ <| Nat.le_of_dvd (Nat.sInf_mem (Set.nonempty_of_mem h₁)).1 h₂
 
-theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
+theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] [Infinite S]
     (I : Ideal S) :
     absNorm (under ℤ I) ∣ absNorm I := by
   cases finite_or_infinite (S ⧸ I)

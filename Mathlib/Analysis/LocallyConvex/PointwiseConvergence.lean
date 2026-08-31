@@ -39,7 +39,7 @@ all `x : E`. -/
 protected def seminorm (x : E) : Seminorm 𝕜₂ (E →SLₚₜ[σ] F) where
   toFun A := ‖A x‖
   map_zero' := by simp
-  add_le' A B := by simpa only using norm_add_le _ _
+  add_le' A B := by simpa only using! norm_add_le _ _
   neg' A := by simp
   smul' r A := by simp [norm_smul]
 

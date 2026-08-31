@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.EpiMono
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
-public import Mathlib.Data.Finite.Prod
 
 /-!
 # The Serre class of finite abelian groups

@@ -64,7 +64,7 @@ instance : LargeCategory MeasCat where
 
 instance (X Y : MeasCat) : FunLike ({ f : X → Y // Measurable f }) X Y where
   coe f := f
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 instance : ConcreteCategory MeasCat ({ f : · → · // Measurable f }) where
   hom f := f

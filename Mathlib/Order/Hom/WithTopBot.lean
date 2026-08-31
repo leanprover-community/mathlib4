@@ -68,12 +68,16 @@ def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
   inj' := WithTop.coe_injective
 
 /-- The coercion `α → WithTop α` bundled as monotone map. -/
-@[to_dual (attr := simps -fullyApplied)
+@[to_dual
 /-- The coercion `α → WithBot α` bundled as monotone map. -/]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   toFun := (↑)
   inj' := WithTop.coe_injective
   map_rel_iff' := WithTop.coe_le_coe
+
+-- `simps` could generate this theorem, but `to_dual` is not happy with that version.
+@[to_dual (attr := simp)]
+theorem coeOrderHom_apply {α : Type*} [Preorder α] : (coeOrderHom : α → WithTop α) = some := rfl
 
 /-- Any `OrderTop` is equivalent to `WithTop` of the subtype excluding `⊤`.
 
@@ -126,11 +130,15 @@ namespace OrderEmbedding
 variable [Preorder α] [Preorder β]
 
 /-- A version of `WithBot.map` for order embeddings. -/
-@[to_dual (attr := simps -fullyApplied) /-- A version of `WithTop.map` for order embeddings. -/]
+@[to_dual /-- A version of `WithTop.map` for order embeddings. -/]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
   toFun := WithBot.map f
   inj' := WithBot.map_injective f.injective
   map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
+
+-- `simps` could generate this theorem, but `to_dual` is not happy with that version.
+@[to_dual (attr := simp)]
+theorem withBotMap_apply (f : α ↪o β) : ⇑f.withBotMap = WithBot.map f := rfl
 
 end OrderEmbedding
 
@@ -139,11 +147,15 @@ namespace OrderIso
 variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
-@[to_dual (attr := simps -fullyApplied) /-- A version of `Equiv.optionCongr` for `WithBot`. -/]
+@[to_dual /-- A version of `Equiv.optionCongr` for `WithBot`. -/]
 def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β where
   toFun := WithTop.map e
   __ := e.toOrderEmbedding.withTopMap
   __ := e.toEquiv.withTopCongr
+
+-- `simps` could generate this theorem, but `to_dual` is not happy with that version.
+@[to_dual (attr := simp)]
+theorem withTopCongr_apply (e : α ≃o β) : ⇑e.withTopCongr = WithTop.map e := rfl
 
 @[simp]
 theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=

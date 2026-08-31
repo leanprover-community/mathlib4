@@ -5,9 +5,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Logic.Basic
+public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Data.Nat.Init
-public import Mathlib.Logic.Basic
-public import Mathlib.Logic.Nontrivial.Defs
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Tactic.GCongr.Core
 
@@ -20,7 +20,7 @@ depending on Mathlib definitions.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
@@ -28,7 +28,7 @@ assert_not_exists Monoid
 open Function
 
 namespace Nat
-variable {a b c d m n k : ℕ} {p : ℕ → Prop}
+variable {a b c m n k : ℕ}
 
 -- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (https://github.com/leanprover-community/mathlib4/pull/13092).
 instance instLinearOrder : LinearOrder ℕ where
@@ -119,6 +119,10 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 /-! ### `mod`, `dvd` -/
 
+/-- Two natural numbers dividing each other are equal. -/
+protected lemma dvd_antisymm_iff : m = n ↔ m ∣ n ∧ n ∣ m :=
+  ⟨by simp +contextual, fun ⟨h₁, h₂⟩ ↦ Nat.dvd_antisymm h₁ h₂⟩
+
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
   dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
@@ -140,5 +144,27 @@ protected lemma dvd_sub_self_right {n m : ℕ} :
   rcases le_or_gt m n with h | h
   · simp [h]
   · simp [dvd_sub_iff_left (le_of_lt h) (Nat.dvd_refl _), h.not_ge]
+
+/-! ### Miscellaneous -/
+
+lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
+    a * b ≤ a ^ b := by
+  cases b with
+  | zero => exact Nat.zero_le _
+  | succ b =>
+      obtain rfl | ha0 : a = 0 ∨ a > 0 := a.eq_zero_or_pos
+      · rw [Nat.zero_mul]; exact Nat.zero_le _
+      · have ha1 : a > 1 := Nat.lt_of_le_of_ne ha0 ha.symm
+        rw [Nat.pow_succ']; exact Nat.mul_le_mul_left a (Nat.lt_pow_self ha1)
+
+lemma two_mul_sq_add_one_le_two_pow_two_mul (k : ℕ) : 2 * k ^ 2 + 1 ≤ 2 ^ (2 * k) := by
+  obtain rfl | hk : k = 0 ∨ k > 0 := k.eq_zero_or_pos
+  · decide
+  · have hk0 : 0 < 2 * k ^ 2 := Nat.mul_pos Nat.two_pos (Nat.pow_pos hk)
+    calc 2 * k ^ 2
+      _ < 2 * k ^ 2 + 2 * k ^ 2 := Nat.lt_add_of_pos_left hk0
+      _ = (2 * k) ^ 2 := by rw [Nat.mul_pow, ← Nat.add_mul]
+      _ ≤ (2 ^ k) ^ 2 := Nat.pow_le_pow_left (Nat.mul_le_pow (by decide : 2 ≠ 1) _) 2
+      _ = 2 ^ (2 * k) := (Nat.pow_mul' _ _ _).symm
 
 end Nat

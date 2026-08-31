@@ -89,7 +89,7 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactorsh.hom ℤ :=
         (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh)
           F.mapDerivedCategory).hom ℤ)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
   NatTrans.CommShift.verticalComposition (DerivedCategory.quotientCompQhIso C₁).inv
     (DerivedCategory.quotientCompQhIso C₂).hom
@@ -123,6 +123,7 @@ instance [F.Linear R] : F.mapDerivedCategory.Linear R := by
     (ComplexShape.up ℤ)) R ((F.mapHomotopyCategory (ComplexShape.up ℤ)).comp DerivedCategory.Qh)]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app (X : C₁) :
@@ -133,6 +134,7 @@ lemma mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app 
     CochainComplex.singleFunctor, CochainComplex.singleFunctors,
     DerivedCategory.singleFunctorIsoCompQ]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app (X : C₁) :

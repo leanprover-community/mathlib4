@@ -18,7 +18,9 @@ pointwise dominated by a fixed function. This file provides a few variants of th
 
 public section
 
-open Filter ENNReal Topology
+open Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -76,10 +78,11 @@ theorem tendsto_lintegral_of_dominated_convergence' {F : ℕ → α → ℝ≥0�
     filter_upwards [h_bound n, (hF_meas n).ae_eq_mk] with a H H'
     rwa [H'] at H
 
-/-- **Dominated convergence theorem** for filters with a countable basis. -/
-theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
+/-- **Dominated convergence theorem** for filters with a countable basis and
+AEMeasurable functions. -/
+theorem tendsto_lintegral_filter_of_dominated_convergence' {ι} {l : Filter ι}
     [l.IsCountablyGenerated] {F : ι → α → ℝ≥0∞} {f : α → ℝ≥0∞} (bound : α → ℝ≥0∞)
-    (hF_meas : ∀ᶠ n in l, Measurable (F n)) (h_bound : ∀ᶠ n in l, ∀ᵐ a ∂μ, F n a ≤ bound a)
+    (hF_meas : ∀ᶠ n in l, AEMeasurable (F n) μ) (h_bound : ∀ᶠ n in l, ∀ᵐ a ∂μ, F n a ≤ bound a)
     (h_fin : ∫⁻ a, bound a ∂μ ≠ ∞) (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) l (𝓝 (f a))) :
     Tendsto (fun n => ∫⁻ a, F n a ∂μ) l (𝓝 <| ∫⁻ a, f a ∂μ) := by
   rw [tendsto_iff_seq_tendsto]
@@ -91,7 +94,7 @@ theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
   replace h := hxl _ h
   rcases h with ⟨k, h⟩
   rw [← tendsto_add_atTop_iff_nat k]
-  refine tendsto_lintegral_of_dominated_convergence ?_ ?_ ?_ ?_ ?_
+  refine tendsto_lintegral_of_dominated_convergence' ?_ ?_ ?_ ?_ ?_
   · exact bound
   · intro
     refine (h _ ?_).1
@@ -105,6 +108,15 @@ theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
     · assumption
     rw [tendsto_add_atTop_iff_nat]
     assumption
+
+/-- **Dominated convergence theorem** for filters with a countable basis. -/
+theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
+    [l.IsCountablyGenerated] {F : ι → α → ℝ≥0∞} {f : α → ℝ≥0∞} (bound : α → ℝ≥0∞)
+    (hF_meas : ∀ᶠ n in l, Measurable (F n)) (h_bound : ∀ᶠ n in l, ∀ᵐ a ∂μ, F n a ≤ bound a)
+    (h_fin : ∫⁻ a, bound a ∂μ ≠ ∞) (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) l (𝓝 (f a))) :
+    Tendsto (fun n => ∫⁻ a, F n a ∂μ) l (𝓝 <| ∫⁻ a, f a ∂μ) := by
+  refine tendsto_lintegral_filter_of_dominated_convergence' bound ?_ h_bound h_fin h_lim
+  filter_upwards [hF_meas] using by fun_prop
 
 /-- If a monotone sequence of functions has an upper bound and the sequence of integrals of these
 functions tends to the integral of the upper bound, then the sequence of functions converges
@@ -134,7 +146,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone_aux {α : Type*} {mα : Measurabl
     then h.choose else ∞
   have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [F', dif_pos ha]
+    simp_rw [F', dite_eq_left ha]
     exact ha.choose_spec
   suffices F' =ᵐ[μ] F by
     filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto
@@ -213,7 +225,7 @@ lemma tendsto_of_lintegral_tendsto_of_antitone {α : Type*} {mα : MeasurableSpa
     then h.choose else ∞
   have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [F', dif_pos ha]
+    simp_rw [F', dite_eq_left ha]
     exact ha.choose_spec
   suffices F' =ᵐ[μ] F by
     filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto

@@ -29,12 +29,14 @@ compactification.
 - `ℚ∞` is used as a local notation for `OnePoint ℚ`
 -/
 
-@[expose] public section
+public section
 
 
-open Set Metric Filter TopologicalSpace
+open Set Filter TopologicalSpace
 
-open Topology OnePoint
+open OnePoint
+
+open scoped Topology
 
 local notation "ℚ∞" => OnePoint ℚ
 
