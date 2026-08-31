@@ -94,20 +94,17 @@ lemma ord_one : ord (1 : X.functionField) = 0 := by
     rw [ord_eq_iff hz one_ne_zero]
     simp
 
-/-- The order of vanishing of an inverse is the negative of the order of vanishing. -/
 lemma ord_inv {z : X} {f : X.functionField} (hf : f ≠ 0) : ord f⁻¹ z = -ord f z := by
   have h := ord_mul (x := z) hf (inv_ne_zero hf)
   rw [mul_inv_cancel₀ hf] at h
   simp only [ord_one, Pi.zero_apply] at h
   omega
 
-/-- The order of vanishing of a quotient is the difference of the orders of vanishing. -/
 lemma ord_div {z : X} {f g : X.functionField} (hf : f ≠ 0) (hg : g ≠ 0) :
     ord (f / g) z = ord f z - ord g z := by
   rw [div_eq_mul_inv, ord_mul hf (inv_ne_zero hg), ord_inv hg]
   ring
 
-/-- The order of vanishing of a natural power is the multiple of the order of vanishing. -/
 lemma ord_pow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℕ) :
     ord (f ^ n) z = n * ord f z := by
   induction n with
@@ -117,7 +114,6 @@ lemma ord_pow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℕ) :
     push_cast
     ring
 
-/-- The order of vanishing of an integer power is the multiple of the order of vanishing. -/
 lemma ord_zpow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℤ) :
     ord (f ^ n) z = n * ord f z := by
   cases n with
@@ -128,8 +124,6 @@ lemma ord_zpow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℤ) :
     push_cast
     ring
 
-/-- The order of vanishing of a finite product of nonzero rational functions is the sum of the
-orders of vanishing. -/
 lemma ord_prod {ι : Type*} {z : X} (T : Finset ι) (F : ι → X.functionField)
     (hF : ∀ i ∈ T, F i ≠ 0) : ord (∏ i ∈ T, F i) z = ∑ i ∈ T, ord (F i) z := by
   classical
@@ -209,7 +203,6 @@ section Chart
 variable {U : X.Opens} [Nonempty U]
 
 omit [IsLocallyNoetherian X] in
-/-- A section with nonzero image in the function field has nonzero germs. -/
 lemma algebraMap_section_stalk_ne_zero (w : U) {r : Γ(X, U)}
     (hr : algebraMap Γ(X, U) X.functionField r ≠ 0) :
     algebraMap Γ(X, U) (X.presheaf.stalk (w : X)) r ≠ 0 := fun h0 =>
@@ -217,8 +210,6 @@ lemma algebraMap_section_stalk_ne_zero (w : U) {r : Γ(X, U)}
     rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk (w : X)) X.functionField, h0,
       map_zero])
 
-/-- A section with nonzero image in the function field has nonnegative order of vanishing at
-every point of the chart. -/
 lemma ord_algebraMap_section_nonneg (w : U) {r : Γ(X, U)}
     (hr : algebraMap Γ(X, U) X.functionField r ≠ 0) :
     0 ≤ ord (algebraMap Γ(X, U) X.functionField r) (w : X) := by
