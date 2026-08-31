@@ -16,11 +16,15 @@ public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 # Realisations of Cartan Matrices
 
-A realisation of a Cartan matrix indexed by `ι`, is a family of vectors `v` and covectors `f`,
-both indexed by `ι`, such that `⟨fⱼ, vᵢ⟩ = Aᵢⱼ` for all `i j`. Such a realisation determines a
-based root datum for which `v` and `f` are the simple roots and coroots.
+Let `R` be an integral domain of characteristic zero, and let `M` and `N` be `R`-modules in perfect
+pairing. Then, given vectors `r₁, r₂, …, rₗ` in `M` and `c₁, c₂, …, cₗ` in `N`, the following two
+propositions are equivalent:
+1. The vectors `rᵢ`, `cᵢ` are the simple roots and coroots of a finite, reduced, crystrallographic
+   root pairing (i.e., a root datum except we do not require `R = ℤ`).
+2. The matrix `Aᵢⱼ = ⟨cⱼ, rᵢ⟩` is a finite-type Cartan matrix.
 
-We develop this theory here.
+The definition `RootPairing` formalises item 1 above. Here we introduce `CartanMatrix.Realisation`
+to formalise item 2.
 
 ## Main definitions / results:
  * `CartanMatrix.Realisation`: the definition of a realisation of a Cartan matrix.
@@ -32,16 +36,10 @@ We develop this theory here.
 
 -/
 
--- Legacy lemma: TODO drop when refactoring proofs
-lemma Matrix.PosDef.mul_comm_of_diagonal_mul {ι : Type*} [Fintype ι] [DecidableEq ι]
-    {A : Matrix ι ι ℤ} {d : ι → ℤ} (h : (diagonal d * A).PosDef) (i j : ι) :
-    d i * A i j = d j * A j i := by simpa using h.isHermitian.apply j i
-
 public noncomputable section
 
-open Function Module Set
+open Function Matrix Module Set
 open Submodule (span subset_span)
-open scoped Matrix
 
 variable (n R M N : Type*) [Fintype n] [DecidableEq n] [CommRing R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
@@ -82,19 +80,16 @@ protected def flip : Realisation n R N M where
   pairingMatrix := by simp [rl.pairingMatrix]
 
 lemma lin_ind_sRoot [CharZero R] [IsDomain R] : LinearIndependent R rl.sRoot := by
-  rw [Fintype.linearIndependent_iff]
-  intro c hc
-  have h : c ᵥ* (rl.matrix.map (Int.cast : ℤ → R)) = 0 := by
-    funext j
-    have h0 : rl.pairing (∑ i, c i • rl.sRoot i) (rl.sCoroot j) = 0 := by rw [hc]; simp
-    rw [map_sum] at h0
-    simpa [Matrix.vecMul, dotProduct, rl.pairingMatrix] using h0
-  have key : (rl.matrix.map (Int.cast : ℤ → R)).det ≠ 0 := by
-    have h : (rl.matrix.map (Int.cast : ℤ → R)).det = ((rl.matrix.det : ℤ) : R) := by
-      simpa using (RingHom.map_det (Int.castRingHom R) rl.matrix).symm
-    rw [h]
-    exact_mod_cast rl.isCartan.det_ne_zero
-  exact congrFun (Matrix.eq_zero_of_vecMul_eq_zero key h)
+  refine Fintype.linearIndependent_iff.mpr fun v hv ↦ ?_
+  set A := (Int.castRingHom R).mapMatrix rl.matrix with A_def
+  replace hv : v ᵥ* A = 0 := by
+    ext j
+    have : rl.pairing (∑ i, v i • rl.sRoot i) (rl.sCoroot j) = 0 := by simp [hv]
+    simpa [Matrix.vecMul, dotProduct, rl.pairingMatrix, A_def] using this
+  have hdet : A.det ≠ 0 := by
+    rw [← (Int.castRingHom R).map_det rl.matrix]
+    simpa using rl.isCartan.det_ne_zero
+  simp [Matrix.eq_zero_of_vecMul_eq_zero hdet hv]
 
 lemma lin_ind_sCoroot [CharZero R] [IsDomain R] : LinearIndependent R rl.sCoroot :=
   rl.flip.lin_ind_sRoot
@@ -108,6 +103,28 @@ lemma injective_sCoroot [CharZero R] [IsDomain R] : Injective rl.sCoroot :=
 @[simp] lemma pairing_sRoot_sCoroot_self (i : n) :
     rl.pairing (rl.sRoot i) (rl.sCoroot i) = 2 := by
   simp [rl.pairingMatrix, rl.isCartan.diag]
+
+lemma exist_int_eq_pairing_of_mem_span_int {x : M} (hx : x ∈ span ℤ (range rl.sRoot))
+    {y : N} (hy : y ∈ span ℤ (range rl.sCoroot)) :
+    ∃ z : ℤ, rl.pairing x y = z := by
+  induction hx, hy using Submodule.span_induction₂ with
+  | mem_mem u v hu hv => obtain ⟨i, rfl⟩ := hu; obtain ⟨j, rfl⟩ := hv; simp [rl.pairingMatrix]
+  | zero_left u hu => exact ⟨0, by simp⟩
+  | zero_right u hu => exact ⟨0, by simp⟩
+  | add_left u₁ u₂ v _ _ _ h₁ h₂ =>
+    obtain ⟨z, hz⟩ := h₁
+    obtain ⟨w, hw⟩ := h₂
+    exact ⟨z + w, by simp [hz, hw]⟩
+  | add_right u v₁ v₂ _ _ _ h₁ h₂ =>
+    obtain ⟨z, hz⟩ := h₁
+    obtain ⟨w, hw⟩ := h₂
+    exact ⟨z + w, by simp [hz, hw]⟩
+  | smul_left z u v _ _ h =>
+    obtain ⟨w, hw⟩ := h
+    exact ⟨z * w, by simp [hw]⟩
+  | smul_right z u v _ _ h =>
+    obtain ⟨w, hw⟩ := h
+    exact ⟨z * w, by simp [hw]⟩
 
 /-- The reflection associated to a simple root. -/
 def reflection (i : n) : M ≃ₗ[R] M :=
@@ -125,6 +142,16 @@ def coreflection (i : n) : N ≃ₗ[R] N :=
     rl.coreflection i y = y - rl.pairing (rl.sRoot i) y • rl.sCoroot i :=
   rl.flip.reflection_apply i y
 
+@[simp]
+lemma reflection_same (i : n) (x : M) :
+    rl.reflection i (rl.reflection i x) = x :=
+  Module.involutive_reflection (by simp) x
+
+@[simp]
+lemma coreflection_same (i : n) (y : N) :
+    rl.coreflection i (rl.coreflection i y) = y :=
+  rl.flip.reflection_same i y
+
 @[simp] lemma flip_pairing : rl.flip.pairing = rl.pairing.flip := by rfl
 
 @[simp] lemma flip_sRoot : rl.flip.sRoot = rl.sCoroot := by rfl
@@ -135,17 +162,32 @@ def coreflection (i : n) : N ≃ₗ[R] N :=
 
 @[simp] lemma flip_coreflection (i : n) : rl.flip.coreflection i = rl.reflection i := by rfl
 
+lemma eq_zero_iff_forall_pairing_sRoot_eq_zero [CharZero R] [IsDomain R]
+    {y : N} (hy : y ∈ span R (range rl.sCoroot)) :
+    y = 0 ↔ ∀ i, rl.pairing (rl.sRoot i) y = 0 := by
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  obtain ⟨c, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun R).mp hy
+  suffices c = 0 by simp [this]
+  set A := (Int.castRingHom R).mapMatrix rl.matrix with A_def
+  have hdet : A.det ≠ 0 := by
+    rw [← (Int.castRingHom R).map_det rl.matrix]
+    simpa using rl.isCartan.det_ne_zero
+  refine eq_zero_of_mulVec_eq_zero hdet (funext fun i ↦ ?_)
+  simpa [A_def, Matrix.mulVec, dotProduct, rl.pairingMatrix, mul_comm] using h i
+
+lemma eq_zero_iff_forall_pairing_sCoroot_eq_zero [CharZero R] [IsDomain R]
+    {x : M} (hx : x ∈ span R (range rl.sRoot)) :
+    x = 0 ↔ ∀ i, rl.pairing x (rl.sCoroot i) = 0 :=
+  rl.flip.eq_zero_iff_forall_pairing_sRoot_eq_zero hx
+
 lemma pairing_reflection_left (i : n) (x : M) (y : N) :
     rl.pairing (rl.reflection i x) y = rl.pairing x (rl.coreflection i y) := by
   simp only [reflection_apply, coreflection_apply, map_sub, map_smul, LinearMap.sub_apply,
-    LinearMap.smul_apply, smul_eq_mul]
-  ring
+    LinearMap.smul_apply, smul_eq_mul, mul_comm]
 
 lemma pairing_reflection_coreflection (i : n) (x : M) (y : N) :
     rl.pairing (rl.reflection i x) (rl.coreflection i y) = rl.pairing x y := by
-  simp only [reflection_apply, coreflection_apply, map_sub, map_smul, LinearMap.sub_apply,
-    LinearMap.smul_apply, smul_eq_mul, pairing_sRoot_sCoroot_self]
-  ring
+  rw [rl.pairing_reflection_left, coreflection_same]
 
 /-- The Weyl group of a realisation. -/
 def weylGroup :
@@ -158,14 +200,7 @@ lemma mem_weyl (i : n) :
 
 lemma flip_weyl :
     rl.flip.weylGroup = rl.weylGroup.map (MulEquiv.prodComm.toMonoidHom) := by
-  rw [weylGroup, weylGroup, MonoidHom.map_closure]
-  congr 1
-  ext w
-  constructor
-  · rintro ⟨i, rfl⟩
-    exact ⟨(rl.reflection i, rl.coreflection i), ⟨i, rfl⟩, by simp⟩
-  · rintro ⟨-, ⟨i, rfl⟩, rfl⟩
-    exact ⟨i, by simp⟩
+  simp [weylGroup, MonoidHom.map_closure, ← image_univ, ← image_comp]
 
 @[simp] lemma mem_flip_weyl {w : (N ≃ₗ[R] N) × (M ≃ₗ[R] M)} :
     w ∈ rl.flip.weylGroup ↔ (w.2, w.1) ∈ rl.weylGroup := by
@@ -174,30 +209,57 @@ lemma flip_weyl :
 
 lemma map_fst_weyl :
     rl.weylGroup.map (MonoidHom.fst _ _) = .closure (range rl.reflection) := by
-  rw [weylGroup, MonoidHom.map_closure]
-  congr 1
-  aesop
+  simp [weylGroup, MonoidHom.map_closure, ← image_univ, ← image_comp]
 
 lemma map_snd_weyl :
     rl.weylGroup.map (MonoidHom.snd _ _) = .closure (range rl.coreflection) := by
-  rw [weylGroup, MonoidHom.map_closure]
-  congr 1
-  aesop
+  simp [weylGroup, MonoidHom.map_closure, ← image_univ, ← image_comp]
+
+@[simp] lemma reflection_inv (i : n) : (rl.reflection i)⁻¹ = rl.reflection i := by rfl
+
+@[simp] lemma coreflection_inv (i : n) : (rl.coreflection i)⁻¹ = rl.coreflection i := by rfl
+
+@[elab_as_elim]
+lemma weylGroup.induction {pred : (g : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)) → g ∈ rl.weylGroup → Prop}
+    (mem : ∀ i, pred (rl.reflection i, rl.coreflection i) (rl.mem_weyl i))
+    (one : pred 1 (one_mem _))
+    (mul : ∀ x y hx hy, pred x hx → pred y hy → pred (x * y) (mul_mem hx hy))
+    {w} (hw : w ∈ rl.weylGroup) :
+    pred w hw := by
+  set S := (range fun i ↦ (rl.reflection i, rl.coreflection i)) with S_def
+  have : rl.weylGroup.toSubmonoid = .closure S := by
+    suffices S = S⁻¹ by rw [weylGroup, Subgroup.closure_toSubmonoid, ← this, union_self]
+    ext; simp [S_def, ← inv_eq_iff_eq_inv]
+  let pred' : (g : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)) →
+      g ∈ Submonoid.closure S → Prop :=
+    fun g hg ↦ pred g <| by change g ∈ rl.weylGroup.toSubmonoid; rwa [this]
+  replace hw' : w ∈ Submonoid.closure S := by rwa [← this]
+  suffices pred' w hw' from this
+  clear hw
+  induction hw' using Submonoid.closure_induction with
+  | mem u hu => obtain ⟨i, rfl⟩ := hu; exact mem i
+  | one => exact one
+  | mul u v hu hv hu' hv' => rw [← this] at hu hv; exact mul u v hu hv hu' hv'
 
 lemma pairing_apply_apply_of_mem_weyl {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)}
     (hw : w ∈ rl.weylGroup) (x : M) (y : N) :
     rl.pairing (w.1 x) (w.2 y) = rl.pairing x y := by
-  revert x y
-  induction hw using Subgroup.closure_induction with
-  | mem w hw =>
-    obtain ⟨i, rfl⟩ := hw
-    exact rl.pairing_reflection_coreflection i
+  induction hw using weylGroup.induction generalizing x y with
+  | mem i => exact rl.pairing_reflection_coreflection i x y
   | one => simp
-  | mul u v _ _ hu hv => exact fun x y ↦ (hu (v.1 x) (v.2 y)).trans (hv x y)
-  | inv u _ hu =>
-    intro x y
-    rw [← hu (u⁻¹.1 x) (u⁻¹.2 y)]
-    simp
+  | mul u v _ _ hu hv => simp [hu, hv]
+
+lemma mapsTo_span_int_range_sRoot {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weylGroup) :
+    MapsTo w.1 (span ℤ (range rl.sRoot)) (span ℤ (range rl.sRoot)) := by
+  induction hw using weylGroup.induction with
+  | mem i =>
+    intro x hx
+    obtain ⟨z, hz⟩ : ∃ z : ℤ, rl.pairing x (rl.sCoroot i) = z :=
+      rl.exist_int_eq_pairing_of_mem_span_int hx <| subset_span <| mem_range_self i
+    simp only [reflection_apply, hz, Int.cast_smul_eq_zsmul, SetLike.mem_coe]
+    exact sub_mem hx <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self i
+  | one => intro x hx; simpa using hx
+  | mul u v _ _ hu hv => exact fun x hx ↦ hu (hv hx)
 
 instance : SMul rl.weylGroup (M × N) where smul w p := (w.1.1 p.1, w.1.2 p.2)
 
@@ -209,7 +271,8 @@ instance : DistribMulAction rl.weylGroup (M × N) where
   smul_zero := by simp [weylGroup_smul_def]
   smul_add := by simp [weylGroup_smul_def]
 
-/-- The orbit of the action of the Weyl group on the set of simple root, coroot pairs. -/
+/-- Taking the Weyl-group orbits of all `(simple root, simple coroot)` pairs, yields a natural
+indexing set for the roots and coroots for the root pairing corresponding to a realisation. -/
 def idx : Set (M × N) := {(w.1 (rl.sRoot i), w.2 (rl.sCoroot i)) | (w ∈ rl.weylGroup) (i)}
 
 open scoped Pointwise in
@@ -232,7 +295,7 @@ lemma apply_mem_idx {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weyl
   exact rl.mk_mem_idx (mul_mem hw hv) i
 
 @[simp] lemma flip_idx : rl.flip.idx = Prod.swap '' rl.idx := by
-  ext p
+  ext
   constructor
   · rintro ⟨w, hw, i, rfl⟩
     exact ⟨_, rl.mk_mem_idx (rl.mem_flip_weyl.mp hw) i, rfl⟩
@@ -244,6 +307,124 @@ lemma pairing_fst_snd {p : M × N} (hp : p ∈ rl.idx) :
   obtain ⟨w, hw, i, rfl⟩ := hp
   simpa using rl.pairing_apply_apply_of_mem_weyl hw (rl.sRoot i) (rl.sCoroot i)
 
+lemma fst_mem_span {p : M × N} (hp : p ∈ rl.idx) :
+    p.1 ∈ span R (range rl.sRoot) := by
+  obtain ⟨w, hw, i, rfl⟩ := hp
+  exact Submodule.span_subset_span ℤ R _ <|
+    rl.mapsTo_span_int_range_sRoot hw <| subset_span <| mem_range_self i
+
+lemma snd_mem_span {p : M × N} (hp : p ∈ rl.idx) :
+    p.2 ∈ span R (range rl.sCoroot) := by
+  replace hp : p.swap ∈ rl.flip.idx := by simpa
+  simpa using rl.flip.fst_mem_span hp
+
+lemma idx_subset_span_int_sprod_span_int :
+    rl.idx ⊆ (span ℤ <| range rl.sRoot) ×ˢ (span ℤ <| range rl.sCoroot) := by
+  rintro p ⟨w, hw, i, rfl⟩
+  refine ⟨rl.mapsTo_span_int_range_sRoot hw <| subset_span <| mem_range_self i, ?_⟩
+  exact rl.flip.mapsTo_span_int_range_sRoot (w := (w.2, w.1)) (rl.mem_flip_weyl.mpr hw) <|
+    subset_span <| mem_range_self i
+
+variable [CharZero R] [IsDomain R]
+
+-- TODO Sort out this lemma (and much of the below)
+lemma exists_coords {d : n → ℤ} (hd : (diagonal d * rl.matrix).IsSymm)
+    {p : M × N} (hp : p ∈ rl.idx) :
+    ∃ (i : n) (b : n → ℤ),
+      b ⬝ᵥ (diagonal d * rl.matrix) *ᵥ b = 2 * d i ∧
+      p.2 = ∑ j, b j • rl.sCoroot j ∧
+      d i • p.1 = ∑ j, (b j * d j) • rl.sRoot j := by
+  obtain ⟨i, hi⟩ : ∃ i, ∀ j, (d i : R) * rl.pairing p.1 (rl.sCoroot j) =
+      (d j : R) * rl.pairing (rl.sRoot j) p.2 := by
+    obtain ⟨w, hw, i, rfl⟩ := hp
+    have hd' (i j : n) : (d i : R) * (rl.matrix i j : R) = (d j : R) * (rl.matrix j i : R) := by
+      have : d i * rl.matrix i j = d j * rl.matrix j i := by simpa using hd.apply j i
+      exact_mod_cast congrArg (Int.cast (R := R)) this
+    suffices ∀ {v : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)}, v ∈ rl.weylGroup → ∀ q : M × N,
+        (∀ j, (d i : R) * rl.pairing q.1 (rl.sCoroot j) =
+          (d j : R) * rl.pairing (rl.sRoot j) q.2) →
+        ∀ j, (d i : R) * rl.pairing (v.1 q.1) (rl.sCoroot j) =
+          (d j : R) * rl.pairing (rl.sRoot j) (v.2 q.2) by
+      exact ⟨i, this hw (rl.sRoot i, rl.sCoroot i) fun j ↦ by
+        simpa [rl.pairingMatrix] using hd' i j⟩
+    intro v hv
+    induction hv using weylGroup.induction with
+    | mem k =>
+      intro q hq j
+      simp only [reflection_apply, coreflection_apply, map_sub, map_smul, LinearMap.sub_apply,
+        LinearMap.smul_apply, smul_eq_mul, rl.pairingMatrix]
+      linear_combination hq j - (rl.matrix k j : R) * hq k + rl.pairing (rl.sRoot k) q.2 * hd' j k
+    | one => exact fun q hq ↦ hq
+    | mul u v _ _ hu hv => exact fun q hq ↦ hu (v.1 q.1, v.2 q.2) (hv q hq)
+  obtain ⟨b, hb⟩ := (Submodule.mem_span_range_iff_exists_fun ℤ).mp
+    (rl.idx_subset_span_int_sprod_span_int hp).2
+  have h2 : p.2 = ∑ j, b j • rl.sCoroot j := hb.symm
+  have hbd : (fun j ↦ b j * d j) = b ᵥ* diagonal d := funext fun j ↦ (vecMul_diagonal b d j).symm
+  have hvecMul (c : n → ℤ) (k : n) :
+      rl.pairing (∑ j, c j • rl.sRoot j) (rl.sCoroot k) = (((c ᵥ* rl.matrix) k : ℤ) : R) := by
+    simp only [map_sum, LinearMap.sum_apply, map_zsmul, LinearMap.smul_apply, rl.pairingMatrix,
+      zsmul_eq_mul, Matrix.vecMul, dotProduct]
+    push_cast
+    rfl
+  have hmulVec (k : n) : rl.pairing (rl.sRoot k) p.2 = (((rl.matrix *ᵥ b) k : ℤ) : R) := by
+    rw [h2]
+    simp only [map_sum, map_zsmul, rl.pairingMatrix, zsmul_eq_mul, Matrix.mulVec, dotProduct]
+    push_cast
+    exact Finset.sum_congr rfl fun j _ ↦ mul_comm _ _
+  have h1 : d i • p.1 = ∑ j, (b j * d j) • rl.sRoot j := by
+    have hmem : d i • p.1 - ∑ j, (b j * d j) • rl.sRoot j ∈ span R (range rl.sRoot) := by
+      simp only [← Int.cast_smul_eq_zsmul R]
+      exact sub_mem (Submodule.smul_mem _ _ (rl.fst_mem_span hp))
+        (Submodule.sum_mem _ fun j _ ↦ Submodule.smul_mem _ _ (subset_span (mem_range_self j)))
+    rw [← sub_eq_zero, rl.eq_zero_iff_forall_pairing_sCoroot_eq_zero (by simpa using hmem)]
+    intro k
+    simp only [map_sub, LinearMap.sub_apply, sub_eq_zero]
+    rw [hvecMul, map_zsmul, LinearMap.smul_apply, zsmul_eq_mul, hi k, hmulVec]
+    have : d k * (rl.matrix *ᵥ b) k = ((fun j ↦ b j * d j) ᵥ* rl.matrix) k := by
+      rw [hbd, vecMul_vecMul, ← mulVec_transpose, hd.eq, ← mulVec_mulVec, mulVec_diagonal]
+    exact_mod_cast congrArg (Int.cast (R := R)) this
+  refine ⟨i, b, ?_, h2, h1⟩
+  have hdiag : b ⬝ᵥ (diagonal d * rl.matrix) *ᵥ b = (fun j ↦ b j * d j) ⬝ᵥ rl.matrix *ᵥ b := by
+    rw [hbd, dotProduct_mulVec, dotProduct_mulVec, vecMul_vecMul]
+  have hdot (c : n → ℤ) :
+      rl.pairing (∑ j, c j • rl.sRoot j) p.2 = ((c ⬝ᵥ rl.matrix *ᵥ b : ℤ) : R) := by
+    simp only [map_sum, LinearMap.sum_apply, map_zsmul, LinearMap.smul_apply, hmulVec,
+      zsmul_eq_mul, dotProduct]
+    push_cast
+    rfl
+  have hnorm : ((b ⬝ᵥ (diagonal d * rl.matrix) *ᵥ b : ℤ) : R) = ((2 * d i : ℤ) : R) := by
+    rw [hdiag, ← hdot, ← h1, map_zsmul, LinearMap.smul_apply, rl.pairing_fst_snd hp, zsmul_eq_mul]
+    push_cast
+    ring
+  exact_mod_cast hnorm
+
+instance : Finite rl.idx := by
+  obtain ⟨d, hd_pos, hG⟩ := rl.isCartan.exists_posDef
+  set G : Matrix n n ℤ := Matrix.diagonal d * rl.matrix with hGdef
+  have hd : (Matrix.diagonal d * rl.matrix).IsSymm := by have := hG.isHermitian; aesop
+  choose i b hnorm h2 h1 using fun p : rl.idx ↦ rl.exists_coords hd p.2
+  set K : ℤ := 2 * ∑ j, d j with hK
+  have hbK : ∀ p : rl.idx, b p ⬝ᵥ G *ᵥ b p ≤ K := fun p ↦ by
+    rw [hnorm p, hK]
+    exact mul_le_mul_of_nonneg_left
+      (Finset.single_le_sum (fun j _ ↦ (hd_pos j).le) (Finset.mem_univ _)) (by norm_num)
+  have _i : Finite ↥{c : n → ℤ | c ⬝ᵥ G *ᵥ c ≤ K} :=
+    (hG.finite_setOf_dotProduct_mulVec_le K).to_subtype
+  have : IsReflexive R M := .of_isPerfPair rl.pairing
+  have _i : IsAddTorsionFree M := .of_isTorsionFree R M
+  refine Finite.of_injective
+    (fun p ↦ (i p, (⟨b p, hbK p⟩ : ↥{c : n → ℤ | c ⬝ᵥ G *ᵥ c ≤ K}))) ?_
+  rintro p q hpq
+  simp only [Prod.mk.injEq, Subtype.mk.injEq] at hpq
+  obtain ⟨hi, hb⟩ := hpq
+  refine Subtype.ext (Prod.ext ?_ ?_)
+  · have h : d (i p) • (p : M × N).1 = d (i p) • (q : M × N).1 := by
+      rw [h1 p, hb, hi, ← h1 q]
+    exact zsmul_right_injective (G := M) (hd_pos (i p)).ne' h
+  · rw [h2 p, h2 q, hb]
+
+-- TODO drop (or _maybe_ restate) but wait till we see how used below
+omit [CharZero R] [IsDomain R] in
 lemma exists_mem_weyl_of_mem_idx {p : M × N} (hp : p ∈ rl.idx) :
     ∃ w ∈ rl.weylGroup,
       (∀ x : M, w.1 x = x - rl.pairing x p.2 • p.1) ∧
@@ -262,181 +443,20 @@ lemma exists_mem_weyl_of_mem_idx {p : M × N} (hp : p ∈ rl.idx) :
     change v.2 (rl.coreflection i (v.2.symm y)) = _
     simp [h]
 
+omit [CharZero R] [IsDomain R] in
 lemma mapsTo_preReflection_fst {p : M × N} (hp : p ∈ rl.idx) :
     MapsTo (preReflection p.1 (rl.pairing.flip p.2)) (Prod.fst '' rl.idx) (Prod.fst '' rl.idx) := by
   obtain ⟨w, hw, h₁, -⟩ := rl.exists_mem_weyl_of_mem_idx hp
   rintro - ⟨q, hq, rfl⟩
   exact ⟨_, rl.apply_mem_idx hw hq, by simp [preReflection_apply, h₁]⟩
 
+omit [CharZero R] [IsDomain R] in
 lemma mapsTo_preReflection_snd {p : M × N} (hp : p ∈ rl.idx) :
     MapsTo (preReflection p.2 (rl.pairing p.1)) (Prod.snd '' rl.idx) (Prod.snd '' rl.idx) := by
   obtain ⟨w, hw, -, h₂⟩ := rl.exists_mem_weyl_of_mem_idx hp
   rintro - ⟨q, hq, rfl⟩
   exact ⟨_, rl.apply_mem_idx hw hq, by simp [preReflection_apply, h₂]⟩
 
-@[simp] lemma reflection_symm (i : n) : (rl.reflection i).symm = rl.reflection i := by rfl
-
-@[simp] lemma coreflection_symm (i : n) : (rl.coreflection i).symm = rl.coreflection i := by rfl
-
-lemma apply_mem_span_of_mem_weyl {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weylGroup) :
-    (∀ x ∈ span R (range rl.sRoot),
-      w.1 x ∈ span R (range rl.sRoot) ∧ w.1.symm x ∈ span R (range rl.sRoot)) ∧
-    (∀ y ∈ span R (range rl.sCoroot),
-      w.2 y ∈ span R (range rl.sCoroot) ∧ w.2.symm y ∈ span R (range rl.sCoroot)) := by
-  induction hw using Subgroup.closure_induction with
-  | mem g hg =>
-    obtain ⟨i, rfl⟩ := hg
-    have h₁ : ∀ x ∈ span R (range rl.sRoot), rl.reflection i x ∈ span R (range rl.sRoot) := by
-      intro x hx
-      exact sub_mem hx <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self i
-    have h₂ : ∀ y ∈ span R (range rl.sCoroot),
-        rl.coreflection i y ∈ span R (range rl.sCoroot) := by
-      intro y hy
-      exact sub_mem hy <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self i
-    exact ⟨fun x hx ↦ ⟨h₁ x hx, h₁ x hx⟩, fun y hy ↦ ⟨h₂ y hy, h₂ y hy⟩⟩
-  | one => exact ⟨fun x hx ↦ ⟨hx, hx⟩, fun y hy ↦ ⟨hy, hy⟩⟩
-  | mul u v _ _ hu hv =>
-    exact ⟨fun x hx ↦ ⟨(hu.1 _ (hv.1 x hx).1).1, (hv.1 _ (hu.1 x hx).2).2⟩,
-      fun y hy ↦ ⟨(hu.2 _ (hv.2 y hy).1).1, (hv.2 _ (hu.2 y hy).2).2⟩⟩
-  | inv u _ hu =>
-    exact ⟨fun x hx ↦ ⟨(hu.1 x hx).2, (hu.1 x hx).1⟩,
-      fun y hy ↦ ⟨(hu.2 y hy).2, (hu.2 y hy).1⟩⟩
-
-lemma fst_mem_span {p : M × N} (hp : p ∈ rl.idx) :
-    p.1 ∈ span R (range rl.sRoot) := by
-  obtain ⟨w, hw, i, rfl⟩ := hp
-  exact ((rl.apply_mem_span_of_mem_weyl hw).1 _ (subset_span (mem_range_self i))).1
-
-lemma snd_mem_span {p : M × N} (hp : p ∈ rl.idx) :
-    p.2 ∈ span R (range rl.sCoroot) := by
-  replace hp : p.swap ∈ rl.flip.idx := by simpa
-  simpa using rl.flip.fst_mem_span hp
-
-/-- Pairs whose coroot is the integral combination `b` of the simple coroots and whose root is,
-after scaling by `d i`, the corresponding `d`-weighted combination of the simple roots.
-
-This is the graph of the map sending a coroot to its root, in coordinates.
-
-TODO Think about this. -/
-def coordSet (d : n → ℤ) : Set (M × N) :=
-  {p | ∃ (i : n) (b : n → ℤ), p.2 = ∑ j, b j • rl.sCoroot j ∧
-    d i • p.1 = ∑ j, (b j * d j) • rl.sRoot j}
-
-lemma sPair_mem_coordSet {d : n → ℤ} (i : n) :
-    (rl.sRoot i, rl.sCoroot i) ∈ rl.coordSet d := by
-  refine ⟨i, Pi.single i 1, ?_, ?_⟩ <;>
-  · simp [Pi.single_apply, ite_smul, ite_mul, Finset.sum_ite_eq']
-
-lemma reflection_mem_coordSet {d : n → ℤ}
-    (hd : ∀ i j, d i * rl.matrix i j = d j * rl.matrix j i) (i : n)
-    {p : M × N} (hp : p ∈ rl.coordSet d) :
-    (rl.reflection i p.1, rl.coreflection i p.2) ∈ rl.coordSet d := by
-  obtain ⟨i₀, b, h2, h1⟩ := hp
-  set z : ℤ := ∑ j, b j * rl.matrix i j with hz
-  have hZ : ∑ j, b j * d j * rl.matrix j i = d i * z := by
-    rw [hz, Finset.mul_sum]
-    exact Finset.sum_congr rfl fun j _ ↦ by linear_combination b j * hd j i
-  have hPx : (d i₀ : R) * rl.pairing p.1 (rl.sCoroot i) = ((d i * z : ℤ) : R) := by
-    have h : (d i₀ : R) * rl.pairing p.1 (rl.sCoroot i) =
-        rl.pairing (d i₀ • p.1) (rl.sCoroot i) := by
-      simp [map_zsmul, zsmul_eq_mul]
-    rw [h, h1, ← hZ, map_sum]
-    simp only [LinearMap.sum_apply, map_zsmul, LinearMap.smul_apply, rl.pairingMatrix,
-      zsmul_eq_mul]
-    push_cast
-    exact Finset.sum_congr rfl fun j _ ↦ by ring
-  refine ⟨i₀, b - z • Pi.single i 1, ?_, ?_⟩
-  · have hPy : rl.pairing (rl.sRoot i) p.2 = (z : R) := by
-      rw [h2]
-      simp [rl.pairingMatrix, hz]
-    rw [coreflection_apply, hPy, h2]
-    simp [Pi.single_apply, sub_smul, Finset.sum_sub_distrib, ite_smul, Finset.sum_ite_eq',
-      Int.cast_smul_eq_zsmul]
-  · have hsm : d i₀ • (rl.pairing p.1 (rl.sCoroot i) • rl.sRoot i) =
-        ((d i * z : ℤ) : R) • rl.sRoot i := by
-      rw [← smul_assoc, zsmul_eq_mul, hPx]
-    rw [reflection_apply, smul_sub, h1, hsm, Int.cast_smul_eq_zsmul]
-    simp only [Pi.sub_apply, Pi.smul_apply, Pi.single_apply, smul_eq_mul, sub_mul, sub_smul,
-      Finset.sum_sub_distrib, mul_ite, ite_mul, mul_one, mul_zero, zero_mul, ite_smul, zero_smul,
-      Finset.sum_ite_eq', Finset.mem_univ, ite_true]
-    rw [mul_comm]
-
-lemma apply_mem_coordSet {d : n → ℤ} (hd : ∀ i j, d i * rl.matrix i j = d j * rl.matrix j i)
-    {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weylGroup) :
-    ∀ p ∈ rl.coordSet d, (w.1 p.1, w.2 p.2) ∈ rl.coordSet d ∧
-      (w.1.symm p.1, w.2.symm p.2) ∈ rl.coordSet d := by
-  induction hw using Subgroup.closure_induction with
-  | mem g hg =>
-    obtain ⟨i, rfl⟩ := hg
-    exact fun p hp ↦ ⟨rl.reflection_mem_coordSet hd i hp, rl.reflection_mem_coordSet hd i hp⟩
-  | one => exact fun p hp ↦ ⟨hp, hp⟩
-  | mul u v _ _ hu hv => exact fun p hp ↦ ⟨(hu _ (hv p hp).1).1, (hv _ (hu p hp).2).2⟩
-  | inv u _ hu => exact fun p hp ↦ ⟨(hu p hp).2, (hu p hp).1⟩
-
-lemma exists_coords [CharZero R] {d : n → ℤ} (hd : ∀ i j, d i * rl.matrix i j = d j * rl.matrix j i)
-    {p : M × N} (hp : p ∈ rl.idx) :
-    ∃ (i : n) (b : n → ℤ), b ⬝ᵥ (Matrix.diagonal d * rl.matrix) *ᵥ b = 2 * d i ∧
-      p.2 = ∑ j, b j • rl.sCoroot j ∧ d i • p.1 = ∑ j, (b j * d j) • rl.sRoot j := by
-  obtain ⟨i₀, b, h2, h1⟩ :
-      p ∈ rl.coordSet d := by
-    obtain ⟨w, hw, i, rfl⟩ := hp
-    exact (rl.apply_mem_coordSet hd hw _ (rl.sPair_mem_coordSet i)).1
-  refine ⟨i₀, b, ?_, h2, h1⟩
-  have key : ((b ⬝ᵥ (Matrix.diagonal d * rl.matrix) *ᵥ b : ℤ) : R) = ((2 * d i₀ : ℤ) : R) := by
-    have e1 : ((2 * d i₀ : ℤ) : R) = rl.pairing (d i₀ • p.1) p.2 := by
-      rw [map_zsmul, LinearMap.smul_apply, rl.pairing_fst_snd hp, zsmul_eq_mul]
-      push_cast
-      ring
-    rw [e1, h1, h2, map_sum]
-    simp only [LinearMap.sum_apply, map_zsmul, LinearMap.smul_apply, map_sum, zsmul_eq_mul,
-      rl.pairingMatrix, dotProduct, Matrix.mulVec, Matrix.diagonal_mul]
-    push_cast
-    simp only [Finset.mul_sum]
-    rw [Finset.sum_comm]
-    exact Finset.sum_congr rfl fun j _ ↦ Finset.sum_congr rfl fun k _ ↦ by ring
-  exact_mod_cast key
-
-variable [CharZero R] [IsDomain R] [IsTorsionFree R M] [IsTorsionFree R N]
-
-instance : Finite rl.idx := by
-  obtain ⟨d, hd_pos, hG⟩ := rl.isCartan.exists_posDef
-  set G : Matrix n n ℤ := Matrix.diagonal d * rl.matrix with hGdef
-  have hd : ∀ i j, d i * rl.matrix i j = d j * rl.matrix j i := hG.mul_comm_of_diagonal_mul
-  choose i b hnorm h2 h1 using fun p : rl.idx ↦ rl.exists_coords hd p.2
-  set K : ℤ := 2 * ∑ j, d j with hK
-  have hbK : ∀ p : rl.idx, b p ⬝ᵥ G *ᵥ b p ≤ K := fun p ↦ by
-    rw [hnorm p, hK]
-    exact mul_le_mul_of_nonneg_left
-      (Finset.single_le_sum (fun j _ ↦ (hd_pos j).le) (Finset.mem_univ _)) (by norm_num)
-  have _i : Finite ↥{c : n → ℤ | c ⬝ᵥ G *ᵥ c ≤ K} :=
-    (hG.finite_setOf_dotProduct_mulVec_le K).to_subtype
-  have _i : IsAddTorsionFree M := .of_isTorsionFree R M
-  refine Finite.of_injective
-    (fun p ↦ (i p, (⟨b p, hbK p⟩ : ↥{c : n → ℤ | c ⬝ᵥ G *ᵥ c ≤ K}))) ?_
-  rintro p q hpq
-  simp only [Prod.mk.injEq, Subtype.mk.injEq] at hpq
-  obtain ⟨hi, hb⟩ := hpq
-  refine Subtype.ext (Prod.ext ?_ ?_)
-  · have h : d (i p) • (p : M × N).1 = d (i p) • (q : M × N).1 := by
-      rw [h1 p, hb, hi, ← h1 q]
-    exact zsmul_right_injective (G := M) (hd_pos (i p)).ne' h
-  · rw [h2 p, h2 q, hb]
-
-omit [IsTorsionFree R M] [IsTorsionFree R N] in
-lemma eq_zero_of_pairing_sRoot_eq_zero {v : N} (hv : v ∈ span R (range rl.sCoroot))
-    (h : ∀ i, rl.pairing (rl.sRoot i) v = 0) :
-    v = 0 := by
-  obtain ⟨c, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun R).mp hv
-  have hdet : (rl.matrix.map (Int.cast : ℤ → R)).det ≠ 0 := by
-    have : (rl.matrix.map (Int.cast : ℤ → R)).det = ((rl.matrix.det : ℤ) : R) := by
-      simpa using (RingHom.map_det (Int.castRingHom R) rl.matrix).symm
-    rw [this]
-    exact_mod_cast rl.isCartan.det_ne_zero
-  suffices c = 0 by simp [this]
-  refine Matrix.eq_zero_of_mulVec_eq_zero hdet (funext fun i ↦ ?_)
-  simpa [Matrix.mulVec, dotProduct, rl.pairingMatrix, mul_comm] using h i
-
-omit [IsTorsionFree R N] in
 lemma injOn_fst : InjOn Prod.fst rl.idx := by
   intro p hp q hq h
   have hfin : (Prod.fst '' rl.idx).Finite := Set.toFinite _
@@ -447,18 +467,18 @@ lemma injOn_fst : InjOn Prod.fst rl.idx := by
   have hg₂ : MapsTo (preReflection p.1 (rl.pairing.flip q.2))
       (Prod.fst '' rl.idx) (Prod.fst '' rl.idx) := by
     rw [h]; exact rl.mapsTo_preReflection_fst hq
+  have : IsReflexive R M := .of_isPerfPair rl.pairing
   have key := Dual.eq_of_preReflection_mapsTo' hfin hx hf₁ (rl.mapsTo_preReflection_fst hp) hg₁ hg₂
-  refine Prod.ext h (sub_eq_zero.mp <| rl.eq_zero_of_pairing_sRoot_eq_zero
-    (sub_mem (rl.snd_mem_span hp) (rl.snd_mem_span hq)) fun i ↦ ?_)
+  refine Prod.ext h (sub_eq_zero.mp <| (rl.eq_zero_iff_forall_pairing_sRoot_eq_zero
+    (sub_mem (rl.snd_mem_span hp) (rl.snd_mem_span hq))).mpr fun i ↦ ?_)
   have hi : rl.sRoot i ∈ span R (Prod.fst '' rl.idx) :=
     subset_span ⟨(rl.sRoot i, rl.sCoroot i), rl.sPair_mem_idx i, rfl⟩
   have := LinearMap.congr_fun key ⟨rl.sRoot i, hi⟩
   simp only [LinearMap.dualMap_apply, Submodule.subtype_apply, LinearMap.flip_apply] at this
   simp [this]
 
-omit [IsTorsionFree R M] in
-/-- Dually, a coroot determines its root. This is `injOn_fst` for the flipped realisation. -/
-lemma injOn_snd : InjOn Prod.snd rl.idx := fun p hp q hq h ↦ by
+lemma injOn_snd : InjOn Prod.snd rl.idx := by
+  intro p hp q hq h
   replace hp : p.swap ∈ rl.flip.idx := by simpa [flip_idx]
   replace hq : q.swap ∈ rl.flip.idx := by simpa [flip_idx]
   simpa using rl.flip.injOn_fst hp hq h
@@ -471,10 +491,8 @@ abbrev root : rl.idx ↪ M :=
 abbrev coroot : rl.idx ↪ N :=
   ⟨fun p ↦ (p : M × N).2, fun p q hpq ↦ Subtype.ext <| rl.injOn_snd p.2 q.2 hpq⟩
 
-omit [IsTorsionFree R N] in
 @[simp] lemma root_apply (p : rl.idx) : rl.root p = (p : M × N).1 := rfl
 
-omit [IsTorsionFree R M] in
 @[simp] lemma coroot_apply (p : rl.idx) : rl.coroot p = (p : M × N).2 := rfl
 
 lemma mapsTo_reflection_root (i : rl.idx) :
@@ -493,6 +511,7 @@ lemma mapsTo_reflection_coroot (i : rl.idx) :
   rintro - ⟨p, hp, rfl⟩
   exact ⟨_, rl.apply_mem_idx hw hp, by simp [preReflection_apply, h₂]⟩
 
+-- TODO Consider dropping `ι`, `e` and introducing `RootPairing.reindex` for the application
 variable {ι : Type*} (e : ι ≃ rl.idx)
 
 /-- The root pairing associated to a realisation of a Cartan matrix. -/
@@ -520,46 +539,25 @@ def toRootPairing :
 lemma toRootPairing_pairing (i j : ι) :
     (rl.toRootPairing e).pairing i j = rl.pairing ((e i : M × N)).1 ((e j : M × N)).2 := by rfl
 
-omit [IsDomain R] [IsTorsionFree R M] [IsTorsionFree R N] in
-lemma exists_intCoords {p : M × N} (hp : p ∈ rl.idx) :
-    ∃ c b : n → ℤ, p.1 = ∑ i, c i • rl.sRoot i ∧ p.2 = ∑ i, b i • rl.sCoroot i := by
-  obtain ⟨d, -, hG⟩ := rl.isCartan.exists_posDef
-  obtain ⟨-, b, -, hb, -⟩ := rl.exists_coords hG.mul_comm_of_diagonal_mul hp
-  obtain ⟨d', -, hG'⟩ := rl.flip.isCartan.exists_posDef
-  have hp' : p.swap ∈ rl.flip.idx := by rw [flip_idx]; exact ⟨p, hp, rfl⟩
-  obtain ⟨-, c, -, hc, -⟩ := rl.flip.exists_coords hG'.mul_comm_of_diagonal_mul hp'
-  exact ⟨c, b, by simpa using hc, hb⟩
-
 lemma isCrystallographic_toRootPairing :
     (rl.toRootPairing e).IsCrystallographic where
   exists_value i j := by
-    suffices ∀ {p q : M × N} (hp : p ∈ rl.idx) (hq : q ∈ rl.idx),
-        ∃ z : ℤ, (z : R) = rl.pairing p.1 q.2 by
-      obtain ⟨z, hz⟩ := this (e i).2 (e j).2
-      exact ⟨z, by simpa [toRootPairing_pairing] using hz⟩
-    intro p q hp hq
-    obtain ⟨c, -, hc, -⟩ := rl.exists_intCoords hp
-    obtain ⟨-, b, -, hb⟩ := rl.exists_intCoords hq
-    refine ⟨∑ i, ∑ j, c i * b j * rl.matrix i j, ?_⟩
-    rw [hc, hb, map_sum]
-    simp only [LinearMap.sum_apply, map_zsmul, LinearMap.smul_apply, map_sum, zsmul_eq_mul,
-      rl.pairingMatrix]
-    push_cast
-    simp only [Finset.mul_sum]
-    rw [Finset.sum_comm]
-    exact Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ by ring
+    obtain ⟨hp, -⟩ := rl.idx_subset_span_int_sprod_span_int (e i).2
+    obtain ⟨-, hq⟩ := rl.idx_subset_span_int_sprod_span_int (e j).2
+    obtain ⟨z, hz⟩ := rl.exist_int_eq_pairing_of_mem_span_int hp hq
+    exact ⟨z, by simp [toRootPairing_pairing, hz]⟩
 
-omit [IsTorsionFree R M] [IsTorsionFree R N] in
 lemma eq_one_or_neg_one_of_eq_zsmul_sRoot {p : M × N} (hp : p ∈ rl.idx) {z : ℤ} {m : n}
     (h : p.1 = (z : R) • rl.sRoot m) :
     z = 1 ∨ z = -1 := by
   obtain ⟨w, hw, l, hwl⟩ := hp
-  obtain ⟨c, -, hc, -⟩ := rl.exists_intCoords (rl.mk_mem_idx (inv_mem hw) m)
+  obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun ℤ).mp
+    (rl.idx_subset_span_int_sprod_span_int (rl.mk_mem_idx (inv_mem hw) m)).1
   have h1 : rl.sRoot l = ∑ k, ((z * c k : ℤ) : R) • rl.sRoot k := by
     have h2 : w.1 (rl.sRoot l) = (z : R) • rl.sRoot m := by rw [← h, ← hwl]
     have h3 : rl.sRoot l = (z : R) • w.1.symm (rl.sRoot m) := by
       rw [← map_smul, ← h2, LinearEquiv.symm_apply_apply]
-    rw [h3, show w.1.symm (rl.sRoot m) = ∑ k, c k • rl.sRoot k from hc, Finset.smul_sum]
+    rw [h3, show w.1.symm (rl.sRoot m) = ∑ k, c k • rl.sRoot k from hc.symm, Finset.smul_sum]
     refine Finset.sum_congr rfl fun k _ ↦ ?_
     rw [← Int.cast_smul_eq_zsmul R, smul_smul]
     push_cast
@@ -572,6 +570,7 @@ lemma eq_one_or_neg_one_of_eq_zsmul_sRoot {p : M × N} (hp : p ∈ rl.idx) {z : 
 lemma isReduced_toRootPairing :
     (rl.toRootPairing e).IsReduced where
   eq_or_eq_neg i j hij := by
+    have : IsReflexive R M := .of_isPerfPair rl.pairing
     simp only [toRootPairing_root] at hij ⊢
     set p : M × N := (↑(e i) : M × N) with hp'
     set q : M × N := (↑(e j) : M × N) with hq'
@@ -592,8 +591,9 @@ lemma isReduced_toRootPairing :
       · exact hst0 rfl rfl
       · exact hq0 h
     obtain ⟨w, hw, l, hwl⟩ := hq
-    obtain ⟨c, -, hγ₀, -⟩ := rl.exists_intCoords (rl.apply_mem_idx (inv_mem hw) hp)
-    have hγ : w.1.symm p.1 = ∑ k, c k • rl.sRoot k := hγ₀
+    obtain ⟨c, hγ₀⟩ := (Submodule.mem_span_range_iff_exists_fun ℤ).mp
+      (rl.idx_subset_span_int_sprod_span_int (rl.apply_mem_idx (inv_mem hw) hp)).1
+    have hγ : w.1.symm p.1 = ∑ k, c k • rl.sRoot k := hγ₀.symm
     have hlq : w.1 (rl.sRoot l) = q.1 := by rw [← hwl]
     have hql : w.1.symm q.1 = rl.sRoot l := by rw [← hlq, LinearEquiv.symm_apply_apply]
     have hrel : ∑ k, (s * ((c k : R)) + (if k = l then t else 0)) • rl.sRoot k = 0 := by
@@ -655,7 +655,6 @@ lemma isIrreducible_toRootPairing [Nonempty n] {ι k V W : Type*} [Field k] [Cha
     simpa [contra] using rl.pairing_sRoot_sCoroot_self default
   set P := rl.toRootPairing e with hP
   have _i : P.IsRootSystem := rl.isRootSystem_toRootPairing e hr hc
-  -- the index of the `a`-th simple root
   set f : n → ι := fun a ↦ e.symm ⟨(rl.sRoot a, rl.sCoroot a), rl.sPair_mem_idx a⟩ with hf
   have hroot : ∀ a, P.root (f a) = rl.sRoot a := by simp [hP, hf]
   have hpair : ∀ a b, P.pairing (f a) (f b) = (rl.matrix a b : k) := by
@@ -669,7 +668,6 @@ lemma isIrreducible_toRootPairing [Nonempty n] {ι k V W : Type*} [Field k] [Cha
   refine RootPairing.IsIrreducible.mk' P fun q hq hq0 ↦ ?_
   refine RootPairing.eq_top_of_mem_invtSubmodule_of_forall_eq_univ P q hq0 hq
     fun Φ hΦ hΦq hΦker ↦ ?_
-  -- the simple roots lying in `q` give a block decomposition of `rl.matrix`
   set b : n → ℕ := fun a ↦ if f a ∈ Φ then 1 else 0 with hb
   have hbt : rl.matrix.BlockTriangular b := by
     intro i j hij
