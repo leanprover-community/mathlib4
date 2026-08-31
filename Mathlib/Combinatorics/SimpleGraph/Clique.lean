@@ -924,7 +924,7 @@ structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
   isIndepSet : G.IsIndepSet s
   card_eq : s.card = n
 
-theorem isNIndepSet_empty : G.IsNIndepSet 0 ∅ := ⟨isIndepSet_emptyFinset G, rfl⟩
+theorem isNIndepSet_empty : G.IsNIndepSet 0 ∅ := ⟨by simp, rfl⟩
 
 /-- An `n`-independent set is an `n`-clique in the complement graph and vice versa. -/
 @[simp] theorem isNClique_compl : Gᶜ.IsNClique n s ↔ G.IsNIndepSet n s := by
