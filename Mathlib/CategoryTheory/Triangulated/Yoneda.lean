@@ -20,7 +20,7 @@ functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrpCat` for `A : Cᵒᵖ` and
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -39,6 +39,7 @@ section
 variable [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated C]
 
+@[stacks 0149]
 instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
   exact T hT := by
     rw [ShortComplex.ab_exact_iff]
@@ -46,6 +47,7 @@ instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
     obtain ⟨x₁, hx₁⟩ := T.coyoneda_exact₂ hT x₂ hx₂
     exact ⟨x₁, hx₁.symm⟩
 
+@[stacks 0149]
 instance (B : C) : (preadditiveYoneda.obj B).IsHomological where
   exact T hT := by
     rw [ShortComplex.ab_exact_iff]
@@ -92,6 +94,7 @@ lemma preadditiveYoneda_shiftMap_apply (B : C) {X Y : Cᵒᵖ} (n : ℤ) (f : X 
   symm
   apply ShiftedHom.opEquiv_symm_apply_comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma preadditiveYoneda_homologySequenceδ_apply
     (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {B : C} (x : T.obj₁ ⟶ B⟦n₀⟧) :
     (preadditiveYoneda.obj B).homologySequenceδ

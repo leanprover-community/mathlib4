@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.Ring.Real
@@ -39,7 +39,7 @@ a few of which rely on the fact that subtraction is continuous.
 
 noncomputable section
 
-open Filter Metric Set TopologicalSpace Topology
+open Filter Set TopologicalSpace Topology
 
 variable {ι : Sort*} {n : ℕ}
 
@@ -62,6 +62,14 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
 @[simps -fullyApplied]
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
+
+@[simp]
+theorem map_coe_nhdsGT (x : ℝ≥0) : (𝓝[>] x).map toReal = 𝓝[>] ↑x := by
+  rw [isEmbedding_coe.map_nhdsWithin_eq, image_coe_Ioi]
+
+@[simp]
+theorem map_coe_nhdsGE (x : ℝ≥0) : (𝓝[≥] x).map toReal = 𝓝[≥] ↑x := by
+  rw [isEmbedding_coe.map_nhdsWithin_eq, image_coe_Ici]
 
 lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
     (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
@@ -157,7 +165,7 @@ theorem coe_tsum {f : α → ℝ≥0} : ↑(∑'[L] a, f a) = ∑'[L] a, (f a : 
     f NNReal.continuous_coe continuous_real_toNNReal (fun x ↦ by simp)
 
 theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
-    (⟨∑'[L] n, f n, tsum_nonneg hf₁⟩ : ℝ≥0) = (∑'[L] n, ⟨f n, hf₁ n⟩ : ℝ≥0) :=
+    NNReal.mk (∑'[L] n, f n) (tsum_nonneg hf₁) = ∑'[L] n, NNReal.mk (f n) (hf₁ n) :=
   NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
 
 nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) :
@@ -214,38 +222,9 @@ nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
   StrictMono.orderIsoOfSurjective (fun x ↦ x ^ n) (fun x y h =>
-      pow_left_strictMonoOn₀ hn (zero_le x) (zero_le y) h) <|
+      pow_left_strictMonoOn₀ hn (zero_le (a := x)) (zero_le (a := y)) h) <|
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
-
-section Monotone
-
-/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
-theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
-    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isLUB (Set.range_nonempty f) h_bdd
-  exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
-
-/-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
-theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
-    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isGLB (Set.range_nonempty f) h_bdd
-  exact ⟨B, tendsto_atTop_isGLB h_ant hB⟩
-
-/-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
-theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
-    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := by
-  have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) := by
-    rintro r ⟨n, hn⟩
-    simp_rw [← hn]
-    exact NNReal.coe_nonneg _
-  obtain ⟨L, hL⟩ := Real.tendsto_of_bddBelow_antitone ⟨0, h_bdd_0⟩ h_ant
-  have hL0 : 0 ≤ L :=
-    haveI h_glb : IsGLB (Set.range fun n => (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
-    (le_isGLB_iff h_glb).mpr h_bdd_0
-  exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
-
-end Monotone
 
 lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
   (NNReal.powOrderIso n hn).map_ciSup' _

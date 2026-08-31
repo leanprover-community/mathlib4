@@ -28,7 +28,7 @@ stronger assumptions (e.g., `im z` is bounded from below and from above) are not
 
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics Filter Function
@@ -95,6 +95,7 @@ theorem tendsto_norm (hl : IsExpCmpFilter l) : Tendsto norm l atTop :=
 theorem isLittleO_log_re_re (hl : IsExpCmpFilter l) : (fun z => Real.log z.re) =o[l] re :=
   Real.isLittleO_log_id_atTop.comp_tendsto hl.tendsto_re
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     (fun z : ℂ => z.im ^ n) =o[l] fun z => Real.exp z.re :=
   flip IsLittleO.of_pow two_ne_zero <|
@@ -108,7 +109,7 @@ theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
 
 theorem abs_im_pow_eventuallyLE_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     (fun z : ℂ => |z.im| ^ n) ≤ᶠ[l] fun z => Real.exp z.re := by
-  simpa using (hl.isLittleO_im_pow_exp_re n).bound zero_lt_one
+  simpa using! (hl.isLittleO_im_pow_exp_re n).bound zero_lt_one
 
 /-- If `l : Filter ℂ` is an "exponential comparison filter", then $\log |z| =o(ℜ z)$ along `l`.
 This is the main lemma in the proof of `Complex.IsExpCmpFilter.isLittleO_cpow_exp` below.

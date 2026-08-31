@@ -5,8 +5,8 @@ Authors: Lenny Taelman
 -/
 module
 
-public meta import Mathlib.Data.Set.SymmDiff
-public meta import Mathlib.Data.Set.Disjoint
+public import Mathlib.Data.Set.SymmDiff  -- shake: keep (Qq dependency)
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The `tauto_set` tactic
@@ -29,10 +29,12 @@ elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContex
 
 
 /--
-`tauto_set` attempts to prove tautologies involving hypotheses and goals of the form `X ⊆ Y`
-or `X = Y`, where `X`, `Y` are expressions built using ∪, ∩, \, and ᶜ from finitely many
+`tauto_set` proves tautologies involving hypotheses and goals of the form `X ⊆ Y`
+or `X = Y`, where `X`, `Y` are expressions built using `∪`, `∩`, `\`, and `ᶜ` from finitely many
 variables of type `Set α`. It also unfolds expressions of the form `Disjoint A B` and
 `symmDiff A B`.
+In other words, this tactic proves propositional tautologies, expressed in the language of sets.
+This is a finishing tactic: it either closes the goal or raises an error.
 
 Examples:
 ```lean
@@ -47,7 +49,7 @@ macro "tauto_set" : tactic => `(tactic|
   · simp_all -failIfUnchanged only [
       Set.ext_iff, Set.subset_def,
       Set.mem_union, Set.mem_compl_iff, Set.mem_inter_iff,
-      Set.symmDiff_def, Set.diff_eq, Set.disjoint_iff
+      Set.symmDiff_def, Set.sdiff_eq, Set.disjoint_iff
     ]
     try intro x
     try specialize_all x

@@ -219,7 +219,7 @@ theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ peri
   rcases hx with ⟨r, hr, hr'⟩
   suffices n ≤ (n / r + 1) * r by
     unfold IsPeriodicPt IsFixedPt
-    convert (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
+    convert! (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
       rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
   rw [Nat.add_mul, one_mul]
   exact (Nat.lt_div_mul_add hr).le
@@ -268,33 +268,27 @@ theorem iterate_mod_minimalPeriod_eq : f^[n % minimalPeriod f x] x = f^[n] x :=
 
 theorem minimalPeriod_pos_of_mem_periodicPts (hx : x ∈ periodicPts f) : 0 < minimalPeriod f x := by
   classical
-  simp only [minimalPeriod, dif_pos hx, (Nat.find_spec hx).1.lt]
+  simp only [minimalPeriod, dite_eq_left hx, (Nat.find_spec hx).1.lt]
 
 theorem minimalPeriod_eq_zero_of_notMem_periodicPts (hx : x ∉ periodicPts f) :
-    minimalPeriod f x = 0 := by simp only [minimalPeriod, dif_neg hx]
-
-@[deprecated (since := "2025-05-24")]
-alias minimalPeriod_eq_zero_of_nmem_periodicPts := minimalPeriod_eq_zero_of_notMem_periodicPts
+    minimalPeriod f x = 0 := by simp only [minimalPeriod, dite_eq_right hx]
 
 theorem IsPeriodicPt.minimalPeriod_pos (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     0 < minimalPeriod f x :=
   minimalPeriod_pos_of_mem_periodicPts <| mk_mem_periodicPts hn hx
 
 theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ periodicPts f :=
-  ⟨not_imp_not.1 fun h => by simp only [minimalPeriod, dif_neg h, lt_irrefl 0, not_false_iff],
+  ⟨not_imp_not.1 fun h => by simp only [minimalPeriod, dite_eq_right h, lt_irrefl 0, not_false_iff],
     minimalPeriod_pos_of_mem_periodicPts⟩
 
 theorem minimalPeriod_eq_zero_iff_notMem_periodicPts :
     minimalPeriod f x = 0 ↔ x ∉ periodicPts f := by
   rw [← minimalPeriod_pos_iff_mem_periodicPts, not_lt, nonpos_iff_eq_zero]
 
-@[deprecated (since := "2025-05-24")]
-alias minimalPeriod_eq_zero_iff_nmem_periodicPts := minimalPeriod_eq_zero_iff_notMem_periodicPts
-
 theorem IsPeriodicPt.minimalPeriod_le (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     minimalPeriod f x ≤ n := by
   classical
-  rw [minimalPeriod, dif_pos (mk_mem_periodicPts hn hx)]
+  rw [minimalPeriod, dite_eq_left (mk_mem_periodicPts hn hx)]
   exact Nat.find_min' (mk_mem_periodicPts hn hx) ⟨hn, hx⟩
 
 theorem minimalPeriod_apply_iterate (hx : x ∈ periodicPts f) (n : ℕ) :
@@ -315,12 +309,9 @@ theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod
     (hmn : f^[m] x = f^[n] x) : m ≤ n := by
   by_contra! hmn'
   rw [← Nat.add_sub_of_le hmn'.le, add_comm, iterate_add_apply] at hmn
-  exact
-    ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
-              (isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate
-                (minimalPeriod_pos_iff_mem_periodicPts.1 ((zero_le m).trans_lt hm)) hmn)).trans
-          (Nat.sub_le m n)).not_gt
-      hm
+  exact ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
+    (isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate
+      (minimalPeriod_pos_iff_mem_periodicPts.1 hm.pos) hmn)).trans (Nat.sub_le m n)).not_gt hm
 
 theorem iterate_injOn_Iio_minimalPeriod : (Iio <| minimalPeriod f x).InjOn (f^[·] x) :=
   fun _m hm _n hn hmn ↦ (le_of_lt_minimalPeriod_of_iterate_eq hm hmn).antisymm
@@ -449,7 +440,7 @@ theorem iterate_mem_periodicOrbit (hx : x ∈ periodicPts f) (n : ℕ) :
 
 @[simp]
 theorem exists_iterate_apply_eq_of_mem_periodicPts (hx : x ∈ periodicPts f) : ∃ n, f^[n] x = x := by
-  simpa only [← mem_periodicOrbit_iff hx] using iterate_mem_periodicOrbit hx 0
+  simpa only [← mem_periodicOrbit_iff hx] using! iterate_mem_periodicOrbit hx 0
 
 theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit f x := by
   simp [hx]
@@ -504,7 +495,7 @@ namespace Function
 
 section Prod
 
-variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {n : ℕ}
 
 @[simp]
 theorem isFixedPt_prodMap (x : α × β) :

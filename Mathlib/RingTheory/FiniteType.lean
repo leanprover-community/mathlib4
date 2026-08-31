@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Tower
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Noetherian.Orzech
@@ -32,7 +32,7 @@ open Polynomial
 section ModuleAndAlgebra
 
 universe uR uS uA uB uM uN
-variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB) (M : Type uM) (N : Type uN)
+variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB)
 
 /-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
 over the base ring as algebra. -/
@@ -41,11 +41,9 @@ class Algebra.FiniteType [CommSemiring R] [Semiring A] [Algebra R A] : Prop wher
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R]
 
 namespace Finite
-
-open Submodule Set
 
 variable {R S M N}
 
@@ -66,13 +64,8 @@ namespace Algebra
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra R B]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
 
 namespace FiniteType
-
-@[deprecated inferInstance (since := "2025-07-12")]
-theorem self : FiniteType R R := inferInstance
 
 theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
@@ -89,7 +82,7 @@ variable {R S A B}
 theorem of_surjective [FiniteType R A] (f : A →ₐ[R] B) (hf : Surjective f) : FiniteType R B :=
   ⟨by
     convert ‹FiniteType R A›.1.map f
-    simpa only [map_top f, @eq_comm _ ⊤, eq_top_iff, AlgHom.mem_range] using hf⟩
+    simpa only [map_top f, @eq_comm _ ⊤, eq_top_iff, AlgHom.mem_range] using! hf⟩
 
 theorem equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=
   hRA.of_surjective e e.surjective
@@ -107,9 +100,6 @@ instance [FiniteType R S] : FiniteType R S[X] := by
   rw [Finset.coe_singleton]
   exact Polynomial.adjoin_X
 
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem polynomial : FiniteType R R[X] := inferInstance
-
 instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (MvPolynomial ι S) := by
   classical
   cases nonempty_fintype ι
@@ -117,20 +107,12 @@ instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (MvPolynomial 
   rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
   exact MvPolynomial.adjoin_range_X
 
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) :=
-  inferInstance
-
 instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (FreeAlgebra S ι) := by
   classical
   cases nonempty_fintype ι
   refine .trans ‹_› ⟨Finset.univ.image (FreeAlgebra.ι _), ?_⟩
   rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
   exact FreeAlgebra.adjoin_range_ι ..
-
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) :=
-  inferInstance
 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a free algebra whose variables are indexed by a finset. -/
@@ -141,7 +123,7 @@ theorem iff_quotient_freeAlgebra :
   · rintro ⟨s, hs⟩
     refine ⟨s, FreeAlgebra.lift _ (↑), ?_⟩
     rw [← Set.range_eq_univ, ← AlgHom.coe_range, ← adjoin_range_eq_range_freeAlgebra_lift,
-      Subtype.range_coe_subtype, Finset.setOf_mem, hs, coe_top]
+      Subtype.range_coe_subtype, Finset.setOfPred_mem, hs, coe_top]
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
@@ -154,10 +136,8 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range]
-    simp_rw [← hrw, hs]
-    exact Set.mem_univ x
+    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, SetLike.mem_coe, hs]
+    apply mem_top
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
@@ -170,7 +150,7 @@ theorem iff_quotient_freeAlgebra' : FiniteType R A ↔
     rintro ⟨s, f, hsur⟩
     use { x : A // x ∈ s }, inferInstance, f
   · rintro ⟨ι, hfintype, f, hsur⟩
-    letI : Fintype ι := hfintype
+    let : Fintype ι := hfintype
     exact .of_surjective f hsur
 
 /-- A commutative algebra is finitely generated if and only if it is a quotient
@@ -182,7 +162,7 @@ theorem iff_quotient_mvPolynomial' : FiniteType R S ↔
     rintro ⟨s, f, hsur⟩
     use { x : S // x ∈ s }, inferInstance, f
   · rintro ⟨ι, hfintype, f, hsur⟩
-    letI : Fintype ι := hfintype
+    let : Fintype ι := hfintype
     exact .of_surjective f hsur
 
 /-- A commutative algebra is finitely generated if and only if it is a quotient of a polynomial ring
@@ -207,7 +187,7 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     isNoetherianRing_of_surjective (MvPolynomial s R) S
       (MvPolynomial.aeval (↑) : MvPolynomial s R →ₐ[R] S).toRingHom
   rw [← Set.range_eq_univ, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, ← AlgHom.coe_range,
-    ← Algebra.adjoin_range_eq_range_aeval, Subtype.range_coe_subtype, Finset.setOf_mem, hs]
+    ← Algebra.adjoin_range_eq_range_aeval, Subtype.range_coe_subtype, Finset.setOfPred_mem, hs]
   rfl
 
 theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
@@ -246,10 +226,8 @@ end Finite
 
 namespace FiniteType
 
--- TODO: should infer_instance be marked as normalising?
-set_option linter.flexible false in
 variable (A) in
-theorem id : FiniteType (RingHom.id A) := by simp [FiniteType]; infer_instance
+theorem id : FiniteType (RingHom.id A) := by rw [FiniteType]; infer_instance
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
@@ -329,9 +307,6 @@ end FiniteType
 
 end AlgHom
 
-@[deprecated (since := "2025-08-12")] alias algebraMap_finiteType_iff_algebra_finiteType :=
-  RingHom.finiteType_algebraMap
-
 section MonoidAlgebra
 
 variable {R : Type*} {M : Type*}
@@ -347,31 +322,26 @@ section Semiring
 variable [CommSemiring R] [AddMonoid M]
 
 /-- An element of `R[M]` is in the subalgebra generated by its support. -/
-theorem mem_adjoin_support (f : R[M]) : f ∈ adjoin R (of' R M '' f.support) := by
-  suffices span R (of' R M '' f.support) ≤
-      Subalgebra.toSubmodule (adjoin R (of' R M '' f.support)) by
-    exact this (mem_span_support f)
-  rw [Submodule.span_le]
-  exact subset_adjoin
+theorem mem_adjoin_support (f : R[M]) : f ∈ adjoin R (of' R M '' f.coeff.support) :=
+  (adjoin R (of' R M '' f.coeff.support)).toSubmodule.span_le.2 subset_adjoin
+    (mem_span_support_coeff f)
 
 /-- If a set `S` generates, as algebra, `R[M]`, then the set of supports of
 elements of `S` generates `R[M]`. -/
 theorem support_gen_of_gen {S : Set R[M]} (hS : Algebra.adjoin R S = ⊤) :
-    Algebra.adjoin R (⋃ f ∈ S, of' R M '' (f.support : Set M)) = ⊤ := by
+    Algebra.adjoin R (⋃ f ∈ S, of' R M '' (f.coeff.support : Set M)) = ⊤ := by
   refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
-  have hincl :
-    of' R M '' f.support ⊆ ⋃ (g : R[M]) (_ : g ∈ S), of' R M '' g.support := by
-    intro s hs
-    exact Set.mem_iUnion₂.2 ⟨f, ⟨hf, hs⟩⟩
+  have hincl : of' R M '' f.coeff.support ⊆ ⋃ g ∈ S, of' R M '' g.coeff.support :=
+    fun s hs ↦ Set.mem_iUnion₂.2 ⟨f, hf, hs⟩
   exact adjoin_mono hincl (mem_adjoin_support f)
 
 /-- If a set `S` generates, as algebra, `R[M]`, then the image of the union of
 the supports of elements of `S` generates `R[M]`. -/
 theorem support_gen_of_gen' {S : Set R[M]} (hS : Algebra.adjoin R S = ⊤) :
-    Algebra.adjoin R (of' R M '' ⋃ f ∈ S, (f.support : Set M)) = ⊤ := by
-  suffices (of' R M '' ⋃ f ∈ S, (f.support : Set M)) = ⋃ f ∈ S, of' R M '' (f.support : Set M) by
+    Algebra.adjoin R (of' R M '' ⋃ f ∈ S, (f.coeff.support : Set M)) = ⊤ := by
+  suffices of' R M '' ⋃ f ∈ S, (f.coeff.support : Set M) = ⋃ f ∈ S, of' R M '' f.coeff.support by
     rw [this]
     exact support_gen_of_gen hS
   simp only [Set.image_iUnion]
@@ -387,36 +357,12 @@ image generates, as algebra, `R[M]`. -/
 theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
     ∃ G : Finset M, Algebra.adjoin R (of' R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h
-  letI : DecidableEq M := Classical.decEq M
-  use Finset.biUnion S fun f => f.support
-  have : (Finset.biUnion S fun f => f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
+  let : DecidableEq M := Classical.decEq M
+  use Finset.biUnion S fun f => f.coeff.support
+  have : S.biUnion (fun f => f.coeff.support) = ⋃ f ∈ S, (f.coeff.support : Set M) := by
     simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
   rw [this]
   exact support_gen_of_gen' hS
-
-/-- The image of an element `m : M` in `R[M]` belongs the submodule generated by
-`S : Set M` if and only if `m ∈ S`. -/
-theorem of'_mem_span [Nontrivial R] {m : M} {S : Set M} :
-    of' R M m ∈ span R (of' R M '' S) ↔ m ∈ S := by
-  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
-  unfold of' at h
-  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
-    Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
-  simpa using h
-
-/--
-If the image of an element `m : M` in `R[M]` belongs the submodule generated by
-the closure of some `S : Set M` then `m ∈ closure S`. -/
-theorem mem_closure_of_mem_span_closure [Nontrivial R] {m : M} {S : Set M}
-    (h : of' R M m ∈ span R (Submonoid.closure (of' R M '' S) : Set R[M])) :
-    m ∈ closure S := by
-  suffices Multiplicative.ofAdd m ∈ Submonoid.closure (Multiplicative.toAdd ⁻¹' S) by
-    simpa [← toSubmonoid_closure]
-  let S' := @Submonoid.closure (Multiplicative M) Multiplicative.mulOneClass S
-  have h' : Submonoid.map (of R M) S' = Submonoid.closure ((fun x : M => (of R M) x) '' S) :=
-    MonoidHom.map_mclosure _ _
-  rw [Set.image_congr' (show ∀ x, of' R M x = of R M x from fun x => of'_eq_of x), ← h'] at h
-  simpa using of'_mem_span.1 h
 
 end Ring
 
@@ -430,7 +376,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
       (MvPolynomial.aeval fun s : S => of' R M ↑s : MvPolynomial S R → R[M]) := by
   intro f
   induction f using induction_on with
-  | hM m =>
+  | of m =>
     have : m ∈ closure S := hS.symm ▸ mem_top _
     refine AddSubmonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
@@ -440,11 +386,11 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
             one_mul]; rfl⟩
-  | hadd f g ihf ihg =>
+  | add f g ihf ihg =>
     rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  | hsmul r f ih =>
+  | smul r f ih =>
     rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
@@ -458,7 +404,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
       (FreeAlgebra.lift R fun s : S => of' R M ↑s : FreeAlgebra R S → R[M]) := by
   intro f
   induction f using induction_on with
-  | hM m =>
+  | of m =>
     have : m ∈ closure S := hS.symm ▸ mem_top _
     refine AddSubmonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
@@ -468,11 +414,11 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
             one_mul]; rfl⟩
-  | hadd f g ihf ihg =>
+  | add f g ihf ihg =>
     rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  | hsmul r f ih =>
+  | smul r f ih =>
     rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
@@ -525,30 +471,26 @@ section Semiring
 variable [CommSemiring R] [Monoid M]
 
 /-- An element of `R[M]` is in the subalgebra generated by its support. -/
-theorem mem_adjoin_support (f : R[M]) : f ∈ adjoin R (of R M '' f.support) := by
-  suffices span R (of R M '' f.support) ≤ Subalgebra.toSubmodule (adjoin R (of R M '' f.support)) by
-    exact this (mem_span_support f)
-  rw [Submodule.span_le]
-  exact subset_adjoin
+theorem mem_adjoin_support (f : R[M]) : f ∈ adjoin R (of R M '' f.coeff.support) :=
+  (adjoin R (of R M '' f.coeff.support)).toSubmodule.span_le.2 subset_adjoin
+    (mem_span_support_coeff f)
 
 /-- If a set `S` generates, as algebra, `R[M]`, then the set of supports of elements
 of `S` generates `R[M]`. -/
 theorem support_gen_of_gen {S : Set R[M]} (hS : Algebra.adjoin R S = ⊤) :
-    Algebra.adjoin R (⋃ f ∈ S, of R M '' (f.support : Set M)) = ⊤ := by
+    Algebra.adjoin R (⋃ f ∈ S, of R M '' (f.coeff.support : Set M)) = ⊤ := by
   refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
-  have hincl : (of R M '' f.support) ⊆
-      ⋃ (g : R[M]) (H : g ∈ S), (of R M '' g.support) := by
-    intro s hs
-    exact Set.mem_iUnion₂.2 ⟨f, ⟨hf, hs⟩⟩
+  have hincl : of R M '' f.coeff.support ⊆ ⋃ g ∈ S, of R M '' g.coeff.support :=
+    fun s hs ↦ Set.mem_iUnion₂.2 ⟨f, hf, hs⟩
   exact adjoin_mono hincl (mem_adjoin_support f)
 
 /-- If a set `S` generates, as algebra, `R[M]`, then the image of the union of the
 supports of elements of `S` generates `R[M]`. -/
 theorem support_gen_of_gen' {S : Set R[M]} (hS : Algebra.adjoin R S = ⊤) :
-    Algebra.adjoin R (of R M '' ⋃ f ∈ S, (f.support : Set M)) = ⊤ := by
-  suffices (of R M '' ⋃ f ∈ S, (f.support : Set M)) = ⋃ f ∈ S, of R M '' (f.support : Set M) by
+    Algebra.adjoin R (of R M '' ⋃ f ∈ S, (f.coeff.support : Set M)) = ⊤ := by
+  suffices of R M '' ⋃ f ∈ S, f.coeff.support = ⋃ f ∈ S, of R M '' f.coeff.support by
     rw [this]
     exact support_gen_of_gen hS
   simp only [Set.image_iUnion]
@@ -564,31 +506,12 @@ generates, as algebra, `R[M]`. -/
 theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
     ∃ G : Finset M, Algebra.adjoin R (of R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h
-  letI : DecidableEq M := Classical.decEq M
-  use Finset.biUnion S fun f => f.support
-  have : (Finset.biUnion S fun f => f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
+  let : DecidableEq M := Classical.decEq M
+  use Finset.biUnion S fun f => f.coeff.support
+  have : S.biUnion (fun f => f.coeff.support) = ⋃ f ∈ S, (f.coeff.support : Set M) := by
     simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
   rw [this]
   exact support_gen_of_gen' hS
-
-/-- The image of an element `m : M` in `R[M]` belongs the submodule generated by
-`S : Set M` if and only if `m ∈ S`. -/
-theorem of_mem_span_of_iff [Nontrivial R] {m : M} {S : Set M} :
-    of R M m ∈ span R (of R M '' S) ↔ m ∈ S := by
-  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
-  dsimp [of] at h
-  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
-    Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
-  simpa using h
-
-/--
-If the image of an element `m : M` in `R[M]` belongs the submodule generated by the
-closure of some `S : Set M` then `m ∈ closure S`. -/
-theorem mem_closure_of_mem_span_closure [Nontrivial R] {m : M} {S : Set M}
-    (h : of R M m ∈ span R (Submonoid.closure (of R M '' S) : Set R[M])) :
-    m ∈ closure S := by
-  rw [← MonoidHom.map_mclosure] at h
-  simpa using of_mem_span_of_iff.1 h
 
 end Ring
 
@@ -602,7 +525,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
       (MvPolynomial.aeval fun s : S => of R M ↑s : MvPolynomial S R → R[M]) := by
   intro f
   induction f using induction_on with
-  | hM m =>
+  | of m =>
     have : m ∈ closure S := hS.symm ▸ mem_top _
     refine Submonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
@@ -611,10 +534,10 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
-  | hadd f g ihf ihg =>
+  | add f g ihf ihg =>
     rcases ihf with ⟨P, rfl⟩; rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  | hsmul r f ih =>
+  | smul r f ih =>
     rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
@@ -629,7 +552,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
       (FreeAlgebra.lift R fun s : S => of R M ↑s : FreeAlgebra R S → R[M]) := by
   intro f
   induction f using induction_on with
-  | hM m =>
+  | of m =>
     have : m ∈ closure S := hS.symm ▸ mem_top _
     refine Submonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
@@ -638,22 +561,22 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
-  | hadd f g ihf ihg =>
+  | add f g ihf ihg =>
     rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  | hsmul r f ih =>
+  | smul r f ih =>
     rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
 /-- If a monoid `M` is finitely generated then `R[M]` is of finite type. -/
 instance finiteType_of_fg [CommRing R] [Monoid.FG M] : FiniteType R R[M] :=
-  (AddMonoidAlgebra.finiteType_of_fg R (Additive M)).equiv (toAdditiveAlgEquiv R M).symm
+  (AddMonoidAlgebra.finiteType_of_fg R (Additive M)).equiv (toAdditiveAlgEquiv R R M).symm
 
 /-- A monoid `M` is finitely generated if and only if `R[M]` is of finite type. -/
 theorem finiteType_iff_fg [CommRing R] [Nontrivial R] : FiniteType R R[M] ↔ Monoid.FG M where
   mp h := Monoid.fg_iff_add_fg.2 <|
-    AddMonoidAlgebra.finiteType_iff_fg.1 <| h.equiv <| toAdditiveAlgEquiv R M
+    AddMonoidAlgebra.finiteType_iff_fg.1 <| h.equiv <| toAdditiveAlgEquiv R R M
   mpr _ := inferInstance
 
 /-- If `R[M]` is of finite type then `M` is finitely generated. -/
@@ -673,7 +596,8 @@ end MonoidAlgebra
 section Orzech
 
 open Submodule Module Module.Finite in
-/-- Any commutative ring `R` satisfies the `OrzechProperty`, that is, for any finitely generated
+/--
+Any commutative ring `R` satisfies the `OrzechProperty`, that is, for any finitely generated
 `R`-module `M`, any surjective homomorphism `f : N →ₗ[R] M` from a submodule `N` of `M` to `M`
 is injective.
 
@@ -692,12 +616,17 @@ then it's easy to see that `i` and `f` restrict to `N' →ₗ[A] M'`,
 and the restricted version of `f` is surjective, hence by Noetherian case,
 it is also injective, in particular, if `f n = 0`, then `n = 0`.
 
-See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971]. -/
+See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971].
+
+This implies that nontrivial commutative rings satisfy the strong rank condition:
+see `strongRankCondition_of_orzechProperty` in `Mathlib.LinearAlgebra.InvariantBasisNumber`.
+A shortcut instance `commRing_strongRankCondition` is also provided.
+-/
 instance (priority := 100) CommRing.orzechProperty
     (R : Type*) [CommRing R] : OrzechProperty R := by
   refine ⟨fun {M} _ _ _ {N} f hf ↦ ?_⟩
-  letI := addCommMonoidToAddCommGroup R (M := M)
-  letI := addCommMonoidToAddCommGroup R (M := N)
+  let := addCommMonoidToAddCommGroup R (M := M)
+  let := addCommMonoidToAddCommGroup R (M := N)
   let i := N.subtype
   let hi : Function.Injective i := N.injective_subtype
   refine LinearMap.ker_eq_bot.1 <| LinearMap.ker_eq_bot'.2 fun n hn ↦ ?_
@@ -709,9 +638,9 @@ instance (priority := 100) CommRing.orzechProperty
   let A := Subring.closure (Set.range b ∪ Set.range c.uncurry)
   let N' := span A ({n} ∪ Set.range nj)
   let M' := span A (Set.range mj)
-  haveI : IsNoetherianRing A := is_noetherian_subring_closure _
+  have : IsNoetherianRing A := is_noetherian_subring_closure _
     (.union (Set.finite_range _) (Set.finite_range _))
-  haveI : Module.Finite A M' := span_of_finite A (Set.finite_range _)
+  have : Module.Finite A M' := span_of_finite A (Set.finite_range _)
   refine congr($((LinearMap.ker_eq_bot'.1 <| LinearMap.ker_eq_bot.2 <|
     IsNoetherian.injective_of_surjective_of_injective
       ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')

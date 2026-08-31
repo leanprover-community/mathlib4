@@ -16,7 +16,7 @@ We explore the relationships between pointwise addition of sets in normed groups
 Notably, we show that the sum of bounded sets remain bounded.
 -/
 
-@[expose] public section
+public section
 
 
 open Metric Set Pointwise Topology
@@ -37,8 +37,11 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
   exact norm_mul_le_of_le' (hRs x hx) (hRt y hy)
 
 @[to_additive]
-theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t :=
-  AntilipschitzWith.isBounded_of_image2_left _ (fun x => (isometry_mul_right x).antilipschitz) hst
+theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
+  symm
+  exact AntilipschitzWith.isBounded_of_image2_left _
+    (fun x => (isometry_mul_left x).antilipschitzWith)
+    (by rwa [image2_swap])
 
 @[to_additive]
 theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
@@ -60,18 +63,18 @@ section EMetric
 open EMetric
 
 @[to_additive (attr := simp)]
-theorem infEdist_inv_inv (x : E) (s : Set E) : infEdist x⁻¹ s⁻¹ = infEdist x s := by
-  rw [← image_inv_eq_inv, infEdist_image isometry_inv]
+theorem infEDist_inv_inv (x : E) (s : Set E) : infEDist x⁻¹ s⁻¹ = infEDist x s := by
+  rw [← image_inv_eq_inv, infEDist_image isometry_inv]
 
 @[to_additive]
-theorem infEdist_inv (x : E) (s : Set E) : infEdist x⁻¹ s = infEdist x s⁻¹ := by
-  rw [← infEdist_inv_inv, inv_inv]
+theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹ := by
+  rw [← infEDist_inv_inv, inv_inv]
 
 @[to_additive]
-theorem ediam_mul_le (x y : Set E) : EMetric.diam (x * y) ≤ EMetric.diam x + EMetric.diam y :=
+theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
-        (fun _ _ => (isometry_mul_right _).lipschitz.lipschitzOnWith) fun _ _ =>
-        (isometry_mul_left _).lipschitz.lipschitzOnWith).trans_eq <|
+        (fun _ _ => (isometry_mul_right _).lipschitzWith.lipschitzOnWith) fun _ _ =>
+        (isometry_mul_left _).lipschitzWith.lipschitzOnWith).trans_eq <|
     by simp only [ENNReal.coe_one, one_mul]
 
 end EMetric
@@ -80,12 +83,12 @@ variable (δ s x y)
 
 @[to_additive (attr := simp)]
 theorem inv_thickening : (thickening δ s)⁻¹ = thickening δ s⁻¹ := by
-  simp_rw [thickening, ← infEdist_inv]
+  simp_rw [thickening, ← infEDist_inv]
   rfl
 
 @[to_additive (attr := simp)]
 theorem inv_cthickening : (cthickening δ s)⁻¹ = cthickening δ s⁻¹ := by
-  simp_rw [cthickening, ← infEdist_inv]
+  simp_rw [cthickening, ← infEDist_inv]
   rfl
 
 @[to_additive (attr := simp)]
@@ -94,6 +97,10 @@ theorem inv_ball : (ball x δ)⁻¹ = ball x⁻¹ δ := (IsometryEquiv.inv E).pr
 @[to_additive (attr := simp)]
 theorem inv_closedBall : (closedBall x δ)⁻¹ = closedBall x⁻¹ δ :=
   (IsometryEquiv.inv E).preimage_closedBall x δ
+
+@[to_additive (attr := simp)]
+theorem inv_sphere : (sphere x δ)⁻¹ = sphere x⁻¹ δ :=
+  (IsometryEquiv.inv E).preimage_sphere x δ
 
 @[to_additive]
 theorem singleton_mul_ball : {x} * ball y δ = ball (x * y) δ := by
@@ -161,10 +168,42 @@ theorem closedBall_one_div_singleton : closedBall 1 δ / {x} = closedBall x⁻¹
 @[to_additive (attr := simp 1100)]
 theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := by simp
 
+@[to_additive (attr := simp 1100)]
+theorem singleton_mul_sphere : {x} * sphere y δ = sphere (x * y) δ := by
+  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, smul_sphere]
+
+@[to_additive (attr := simp 1100)]
+theorem singleton_div_sphere : {x} / sphere y δ = sphere (x / y) δ := by
+  simp_rw [div_eq_mul_inv, inv_sphere, singleton_mul_sphere]
+
+@[to_additive (attr := simp 1100)]
+theorem sphere_mul_singleton : sphere x δ * {y} = sphere (x * y) δ := by
+  simp [mul_comm _ {y}, mul_comm y]
+
+@[to_additive (attr := simp 1100)]
+theorem sphere_div_singleton : sphere x δ / {y} = sphere (x / y) δ := by
+  simp [div_eq_mul_inv]
+
+@[to_additive]
+theorem singleton_mul_sphere_one : {x} * sphere 1 δ = sphere x δ := by simp
+
+@[to_additive]
+theorem singleton_div_sphere_one : {x} / sphere 1 δ = sphere x δ := by
+  rw [singleton_div_sphere, div_one]
+
+@[to_additive]
+theorem sphere_one_mul_singleton : sphere 1 δ * {x} = sphere x δ := by simp
+
+@[to_additive]
+theorem sphere_one_div_singleton : sphere 1 δ / {x} = sphere x⁻¹ δ := by simp
+
+@[to_additive (attr := simp 1100)]
+theorem smul_sphere_one : x • sphere (1 : E) δ = sphere x δ := by simp
+
 @[to_additive]
 theorem mul_ball_one : s * ball 1 δ = thickening δ s := by
   rw [thickening_eq_biUnion_ball]
-  convert iUnion₂_mul (fun x (_ : x ∈ s) => {x}) (ball (1 : E) δ)
+  convert! iUnion₂_mul (fun x (_ : x ∈ s) => { x }) (ball (1 : E) δ)
   · exact s.biUnion_of_singleton.symm
   ext x
   simp_rw [singleton_mul_ball, mul_one]

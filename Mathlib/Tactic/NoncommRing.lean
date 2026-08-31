@@ -5,8 +5,8 @@ Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 -/
 module
 
-public meta import Mathlib.Algebra.Group.Action.Defs
-public meta import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Group.Action.Defs  -- shake: keep (metaprogram output dependency)
+public import Mathlib.Tactic.Abel
 
 /-! # The `noncomm_ring` tactic
 
@@ -35,15 +35,33 @@ lemma mul_nat_lit_eq_nsmul [n.AtLeastTwo] : r * ofNat(n) = OfNat.ofNat n • r :
 end nat_lit_mul
 
 open Lean.Parser.Tactic
-/-- A tactic for simplifying identities in not-necessarily-commutative rings.
+/-- `noncomm_ring` simplifies expressions in not-necessarily-commutative rings in the main goal
+then tries closing it by "cheap" (reducible) `rfl`.
+This tactic supports the operators `+`, `*`, `-`, `^` and `•` (for scalar multiplication by
+natural numbers or integers).
 
-An example:
+If the ring is commutative, prefer the `ring` tactic instead, which is more powerful and efficient.
+The tactic is implemented as a combination of `simp only [...]` and `abel`. The precise invocation
+of `simp only` can be customized using the options listed below.
+
+Limitation: numeric powers are unfolded entirely with `pow_succ` and can easily exceed the
+maximum recursion depth.
+
+* `noncomm_ring [h]` adds the term `h` as simplification lemma, rewriting from left to right.
+  Multiple arguments can be combined as `noncomm_ring [h₁, ..., hₙ]`.
+* `noncomm_ring [← h]` adds the term `h` as simplification lemma, rewriting from right to left.
+* `noncomm_ring [*]` simplifies using all hypotheses in the local context.
+* `noncomm_ring (config := cfg)` uses `cfg` as configuration for the simplification step.
+  See `Lean.Meta.Simp.Config` for more details.
+* `noncomm_ring (discharger := tac)` uses the tactic sequence `tac` to discharge assumptions
+  to the simplification lemmas. This only applies to user-supplied lemmas, since the default lemmas
+  used by `noncomm_ring` do not require a discharger.
+
+Example:
 ```lean
 example {R : Type*} [Ring R] (a b c : R) : a * (b + c + c - b) = 2 * a * c := by
   noncomm_ring
 ```
-
-You can use `noncomm_ring [h]` to also simplify using `h`.
 -/
 syntax (name := noncomm_ring) "noncomm_ring" optConfig (discharger)?
   (" [" ((simpStar <|> simpErase <|> simpLemma),*,?) "]")? : tactic

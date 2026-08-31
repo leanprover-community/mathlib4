@@ -37,7 +37,7 @@ element in a lattice ordered group.
 positive part, negative part
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -46,8 +46,8 @@ variable {α : Type*}
 section Lattice
 variable [Lattice α]
 
-section Group
-variable [Group α] {a b : α}
+section DivInvMonoid
+variable [DivInvMonoid α] {a b : α}
 
 /-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 1`, denoted `a⁺ᵐ`. -/
 @[to_additive
@@ -72,11 +72,11 @@ instance instLeOnePart : LeOnePart α where
 
 @[to_additive (attr := simp high)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
 
-@[to_additive (attr := simp)] lemma leOnePart_one : (1 : α)⁻ᵐ = 1 := by simp [leOnePart]
+@[to_additive (attr := simp) posPart_nonneg]
+lemma one_le_oneLePart (a : α) : 1 ≤ a⁺ᵐ := le_sup_right
 
-@[to_additive posPart_nonneg] lemma one_le_oneLePart (a : α) : 1 ≤ a⁺ᵐ := le_sup_right
-
-@[to_additive negPart_nonneg] lemma one_le_leOnePart (a : α) : 1 ≤ a⁻ᵐ := le_sup_right
+@[to_additive (attr := simp) negPart_nonneg]
+lemma one_le_leOnePart (a : α) : 1 ≤ a⁻ᵐ := le_sup_right
 
 -- TODO: `to_additive` guesses `nonposPart`
 @[to_additive le_posPart] lemma le_oneLePart (a : α) : a ≤ a⁺ᵐ := le_sup_left
@@ -108,11 +108,18 @@ lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 
 @[to_additive (attr := simp)] lemma oneLePart_inv (a : α) : a⁻¹⁺ᵐ = a⁻ᵐ := rfl
 
-@[to_additive (attr := simp)] lemma leOnePart_inv (a : α) : a⁻¹⁻ᵐ = a⁺ᵐ := by
-  simp [oneLePart, leOnePart]
-
 @[to_additive] lemma oneLePart_max (a b : α) : (max a b)⁺ᵐ = max a⁺ᵐ b⁺ᵐ := by
   simp [oneLePart, sup_sup_distrib_right]
+
+end DivInvMonoid
+
+section Group
+variable [Group α] {a b : α}
+
+@[to_additive (attr := simp)] lemma leOnePart_one : (1 : α)⁻ᵐ = 1 := by simp [leOnePart]
+
+@[to_additive (attr := simp)] lemma leOnePart_inv (a : α) : a⁻¹⁻ᵐ = a⁺ᵐ := by
+  simp [oneLePart, leOnePart]
 
 section MulLeftMono
 variable [MulLeftMono α]
@@ -129,8 +136,6 @@ lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
 
 @[to_additive (attr := simp) negPart_pos] lemma one_lt_leOnePart (ha : a < 1) : 1 < a⁻ᵐ := by
   rwa [leOnePart_eq_inv.2 ha.le, one_lt_inv']
-
-@[deprecated (since := "2025-10-25")] alias one_lt_ltOnePart := one_lt_leOnePart
 
 -- Bourbaki A.VI.12 Prop 9 a)
 @[to_additive (attr := simp)] lemma oneLePart_div_leOnePart (a : α) : a⁺ᵐ / a⁻ᵐ = a := by
@@ -241,6 +246,9 @@ variable [LinearOrder α] [Group α] {a b : α}
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [oneLePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
+@[to_additive] lemma oneLePart_eq_ite_lt : a⁺ᵐ = if 1 < a then a else 1 := by
+  grind [oneLePart_eq_ite]
+
 @[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=
   lt_iff_lt_of_le_iff_le <| (one_le_oneLePart _).ge_iff_eq'.trans oneLePart_eq_one
 
@@ -256,10 +264,11 @@ variable [MulLeftMono α]
 @[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
   simp_rw [← one_le_inv']; rw [leOnePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
+@[to_additive] lemma leOnePart_eq_ite_lt : a⁻ᵐ = if a < 1 then a⁻¹ else 1 := by
+  grind [leOnePart_eq_ite, inv_one]
+
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_leOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
   lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).ge_iff_eq'.trans leOnePart_eq_one
-
-@[deprecated (since := "2025-10-25")] alias one_lt_ltOnePart_iff := one_lt_leOnePart_iff
 
 variable [MulRightMono α]
 
@@ -270,7 +279,7 @@ end covariantmul
 end LinearOrder
 
 namespace Pi
-variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, Group (α i)]
+variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, DivInvMonoid (α i)]
 
 @[to_additive (attr := simp)] lemma oneLePart_apply (f : ∀ i, α i) (i : ι) : f⁺ᵐ i = (f i)⁺ᵐ := rfl
 @[to_additive (attr := simp)] lemma leOnePart_apply (f : ∀ i, α i) (i : ι) : f⁻ᵐ i = (f i)⁻ᵐ := rfl

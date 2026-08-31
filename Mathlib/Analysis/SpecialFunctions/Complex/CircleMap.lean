@@ -26,6 +26,8 @@ noncomputable section circleMap
 
 open Complex Function Metric Real
 
+open scoped ComplexConjugate
+
 /-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
 `c` and radius `|R|`. -/
 def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
@@ -42,8 +44,6 @@ theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| 
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
 
-@[deprecated (since := "2025-05-23")] alias circleMap_not_mem_ball := circleMap_notMem_ball
-
 theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
     circleMap c R θ ≠ w :=
   (ne_of_mem_of_not_mem hw (circleMap_notMem_ball _ _ _)).symm
@@ -57,6 +57,27 @@ theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
 theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
     circleMap c R θ ∈ closedBall c R :=
   sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
+
+theorem norm_circleMap_sub_le (c : ℂ) (R : ℝ) (θ : ℝ) (x : ℂ) :
+    ‖circleMap c R θ - x‖ ≤ |R| + dist c x := by
+  rw [← dist_eq_norm, ← mem_sphere.1 (circleMap_mem_sphere' c R θ)]
+  exact dist_triangle _ _ _
+
+/-- If `w` does not lie on the circle `sphere c |R|`, there is a radius `d > 0` such that all
+points of `ball w d` keep distance at least `d` from every point `circleMap c R θ` of the circle. -/
+theorem exists_ball_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ} (hw : w ∉ sphere c |R|) :
+    ∃ d > 0, ∀ x ∈ ball w d, ∀ θ : ℝ, d ≤ ‖circleMap c R θ - x‖ := by
+  have hd₀ : 0 < abs (dist w c - |R|) :=
+    abs_pos.2 (sub_ne_zero.2 fun h ↦ hw (mem_sphere.2 h))
+  refine ⟨abs (dist w c - |R|) / 2, by positivity, fun x hx θ ↦ ?_⟩
+  rw [mem_ball] at hx
+  have h₁ : dist (circleMap c R θ) c = |R| := mem_sphere.1 (circleMap_mem_sphere' c R θ)
+  have h₂ : abs (dist w c - |R|) ≤ dist (circleMap c R θ) w := by
+    calc abs (dist w c - |R|) = |dist (circleMap c R θ) c - dist w c| := by rw [h₁, abs_sub_comm]
+      _ ≤ dist (circleMap c R θ) w := abs_dist_sub_le _ _ _
+  have h₃ := dist_triangle (circleMap c R θ) x w
+  rw [← dist_eq_norm]
+  linarith
 
 @[simp]
 theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R θ = c ↔ R = 0 := by
@@ -89,6 +110,20 @@ lemma circleMap_zero_pow (n : ℕ) (R θ : ℝ) :
 lemma circleMap_zero_zpow (n : ℤ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
   simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
+
+lemma conj_circleMap_zero (r θ : ℝ) :
+    conj (circleMap 0 r θ) = circleMap 0 r (-θ) := by
+  simp [circleMap_zero, ← exp_conj]
+
+lemma conj_circleMap (c : ℂ) (r θ : ℝ) :
+    conj (circleMap c r θ) = circleMap (conj c) r (-θ) :=
+  sub_left_injective (b := conj c) <| by simp [← map_sub, conj_circleMap_zero]
+
+lemma circleMap_zero_re (r θ : ℝ) : (circleMap 0 r θ).re = r * Real.cos θ := by
+  simp [circleMap_zero]
+
+lemma circleMap_zero_im (r θ : ℝ) : (circleMap 0 r θ).im = r * Real.sin θ := by
+  simp [circleMap_zero]
 
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]

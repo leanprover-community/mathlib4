@@ -35,19 +35,19 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M
 
 namespace NonUnitalSubsemiring
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemigroup_strictMono :
     StrictMono (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R) := fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemigroup_mono : Monotone (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R) :=
   toSubsemigroup_strictMono.monotone
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubmonoid_strictMono :
     StrictMono (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R) := fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R) :=
   toAddSubmonoid_strictMono.monotone
 
@@ -157,7 +157,7 @@ theorem mem_srange_self (f : F) (x : R) : f x ∈ srange f :=
   mem_srange.mpr ⟨x, rfl⟩
 
 theorem map_srange (g : S →ₙ+* T) (f : R →ₙ+* S) : map g (srange f) = srange (g.comp f) := by
-  simpa only [srange_eq_map] using (⊤ : NonUnitalSubsemiring R).map_map g f
+  simpa only [srange_eq_map] using! (⊤ : NonUnitalSubsemiring R).map_map g f
 
 /-- The range of a morphism of non-unital semirings is finite if the domain is finite. -/
 instance finite_srange [Finite R] (f : F) : Finite (srange f : NonUnitalSubsemiring S) :=
@@ -269,6 +269,7 @@ end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
     (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
@@ -281,6 +282,22 @@ theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ �
 
 instance decidableMemCenter {R} [NonUnitalSemiring R] [DecidableEq R] [Fintype R] :
     DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
+
+theorem map_center_le_center {F} [NonUnitalNonAssocSemiring S] [FunLike F R S]
+    [NonUnitalRingHomClass F R S] {f : F} (hf : Function.Surjective f) :
+    map f (center R) ≤ center S :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {F} [NonUnitalNonAssocSemiring S] [FunLike F R S]
+    [NonUnitalRingHomClass F R S] {f : F} (hf : Function.Injective f) :
+    comap f (center S) ≤ center R :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq {F} [NonUnitalNonAssocSemiring S] [EquivLike F R S]
+    [RingEquivClass F R S] (f : F) :
+    map f (center R) = center S :=
+  SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
 theorem center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=
@@ -346,8 +363,6 @@ theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 /-- A non-unital subsemiring `S` includes `closure s` if and only if it includes `s`. -/
 @[simp]
 theorem closure_le {s : Set R} {t : NonUnitalSubsemiring R} : closure s ≤ t ↔ s ⊆ t :=
@@ -369,18 +384,31 @@ lemma closure_le_centralizer_centralizer {R : Type*} [NonUnitalSemiring R] (s : 
 
 /-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
 semiring. -/
+theorem isMulCommutative_closure {R : Type*} [NonUnitalSemiring R] {s : Set R}
+    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) : IsMulCommutative (closure s) :=
+  have := closure_le_centralizer_centralizer s
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
+
+open scoped IsMulCommutative in
+/-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
+semiring. -/
+@[deprecated isMulCommutative_closure (since := "2026-03-11")]
 abbrev closureNonUnitalCommSemiringOfComm {R : Type*} [NonUnitalSemiring R] {s : Set R}
     (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) : NonUnitalCommSemiring (closure s) :=
-  { NonUnitalSubsemiringClass.toNonUnitalSemiring (closure s)  with
-    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
-      have := closure_le_centralizer_centralizer s
-      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+  have := isMulCommutative_closure hcomm
+  inferInstance
+
+instance instIsMulCommutative_closure {S R : Type*} [NonUnitalSemiring R]
+    [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :
+    IsMulCommutative (closure (s : Set R)) :=
+  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
 variable [NonUnitalNonAssocSemiring S]
 
 theorem mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubsemiring R} {x : S} :
     x ∈ K.map (f : R →ₙ+* S) ↔ f.symm x ∈ K := by
-  convert @Set.mem_image_equiv _ _ (↑K) f.toEquiv x
+  convert! @Set.mem_image_equiv _ _ (↑K) f.toEquiv x
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : NonUnitalSubsemiring R) :
     K.map (f : R →ₙ+* S) = K.comap f.symm :=
@@ -570,7 +598,7 @@ theorem mem_prod {s : NonUnitalSubsemiring R} {t : NonUnitalSubsemiring S} {p : 
     p ∈ s.prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono ⦃s₁ s₂ : NonUnitalSubsemiring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : NonUnitalSubsemiring S⦄
     (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
@@ -594,6 +622,9 @@ theorem top_prod (s : NonUnitalSubsemiring S) :
 theorem top_prod_top : (⊤ : NonUnitalSubsemiring R).prod (⊤ : NonUnitalSubsemiring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
+  SetLike.coe_injective Set.center_prod
+
 /-- Product of non-unital subsemirings is isomorphic to their product as semigroups. -/
 def prodEquiv (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
@@ -616,12 +647,27 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubse
 
 theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
+    {S : ι → NonUnitalSubsemiring R} [hS : ∀ i, IsMulCommutative (S i)]
+    (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : NonUnitalSubsemiring R) := by
+  refine .of_setLike_mul_comm ?_
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+    SetLike.mem_coe, forall_exists_index]
+  intro a i ha b j hb
+  obtain ⟨k, hik, hjk⟩ := dir i j
+  exact setLike_mul_comm (hik ha) (hjk hb)
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι]
+    [IsDirectedOrder ι] {S : ι →o NonUnitalSubsemiring R} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : NonUnitalSubsemiring R) :=
+  NonUnitalSubsemiring.isMulCommutative_iSup S.monotone.directed_le
 
 end NonUnitalSubsemiring
 
@@ -719,7 +765,7 @@ variable [NonUnitalNonAssocSemiring S] {F : Type*} [FunLike F R S] [NonUnitalRin
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative
 monoid are equal. -/
 def nonUnitalSubsemiringCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| congr_arg _ h with
+  { Set.equivOfEq <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 

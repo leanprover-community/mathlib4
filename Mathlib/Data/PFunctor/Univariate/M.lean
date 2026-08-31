@@ -126,28 +126,10 @@ instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
 theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x) :
     head' (x (succ n)) = head' (x (succ m)) := by
   suffices ∀ n, head' (x (succ n)) = head' (x 1) by simp [this]
-  clear m n
   intro n
-  rcases h₀ : x (succ n) with - | ⟨_, f₀⟩
-  cases h₁ : x 1
-  dsimp only [head']
   induction n with
-  | zero =>
-    rw [h₁] at h₀
-    cases h₀
-    trivial
-  | succ n n_ih =>
-    have H := Hconsistent (succ n)
-    cases h₂ : x (succ n)
-    rw [h₀, h₂] at H
-    apply n_ih (truncate ∘ f₀)
-    rw [h₂]
-    obtain - | ⟨_, _, hagree⟩ := H
-    congr
-    funext j
-    dsimp only [comp_apply]
-    rw [truncate_eq_of_agree]
-    apply hagree
+  | zero => grind
+  | succ n n_ih => grind +splitIndPred [Hconsistent (succ n), head']
 
 end Approx
 
@@ -170,12 +152,12 @@ theorem M.default_consistent [Inhabited F.A] : ∀ n, Agree (default : CofixA F 
   | 0 => Agree.continu _ _
   | succ n => Agree.intro _ _ fun _ => M.default_consistent n
 
-instance M.inhabited [Inhabited F.A] : Inhabited (M F) :=
+instance MIntl.inhabited [Inhabited F.A] : Inhabited (MIntl F) :=
   ⟨{  approx := default
       consistent := M.default_consistent _ }⟩
 
-instance MIntl.inhabited [Inhabited F.A] : Inhabited (MIntl F) :=
-  show Inhabited (M F) by infer_instance
+instance M.inhabited [Inhabited F.A] : Inhabited (M F) :=
+  inferInstanceAs <| Inhabited (MIntl F)
 
 namespace M
 
@@ -265,6 +247,7 @@ inductive Agree' : ℕ → M F → M F → Prop
 @[simp]
 theorem dest_mk (x : F (M F)) : dest (M.mk x) = x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'
@@ -415,7 +398,7 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
     simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
     · subst x_a
-      simp only [dif_pos, casesOn_mk']
+      simp only [dite_eq_left, casesOn_mk']
       rw [ps_ih]
       intro h'
       apply h
@@ -430,6 +413,7 @@ theorem head_mk (x : F (M F)) : head (M.mk x) = x.1 :=
       x.1 = (dest (M.mk x)).1 := by rw [dest_mk]
       _ = head (M.mk x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem children_mk {a} (x : F.B a → M F) (i : F.B (head (M.mk ⟨a, x⟩))) :
     children (M.mk ⟨a, x⟩) i = x (cast (by rw [head_mk]) i) := by apply ext'; intro n; rfl
 
@@ -442,7 +426,7 @@ theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F (M F)) (i : F.Id
 @[simp]
 theorem isubtree_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F)
     {i : F.B a} : isubtree (⟨_, i⟩ :: ps) (M.mk ⟨a, f⟩) = isubtree ps (f i) := by
-  simp only [isubtree, dif_pos, isubtree, M.casesOn_mk']; rfl
+  simp only [isubtree, dite_eq_left, isubtree, M.casesOn_mk']; rfl
 
 @[simp]
 theorem iselect_nil [DecidableEq F.A] [Inhabited (M F)] {a} (f : F.B a → M F) :
@@ -528,6 +512,7 @@ structure IsBisimulation : Prop where
   /-- The tails are equal -/
   tail : ∀ {a} {f f' : F.B a → M F}, M.mk ⟨a, f⟩ ~ M.mk ⟨a, f'⟩ → ∀ i : F.B a, f i ~ f' i
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nth_of_bisim [Inhabited (M F)] [DecidableEq F.A]
     (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
     (R s₁ s₂) →
@@ -583,11 +568,12 @@ variable {P : PFunctor.{uA, uB}} {α : Type*}
 theorem dest_corec (g : α → P α) (x : α) : M.dest (M.corec g x) = P.map (M.corec g) (g x) := by
   rw [corec_def, dest_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bisim (R : M P → M P → Prop)
     (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := by
   introv h'
-  haveI := Inhabited.mk x.head
+  have := Inhabited.mk x.head
   apply eq_of_bisim R _ _ _ h'; clear h' x y
   constructor <;> introv ih <;> rcases h _ _ ih with ⟨a'', g, g', h₀, h₁, h₂⟩ <;> clear h
   · replace h₀ := congr_arg Sigma.fst h₀

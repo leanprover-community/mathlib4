@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Bases
@@ -70,8 +70,8 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*}
+variable {M : Type*} {M' M'' : Type*}
 
 namespace Module
 
@@ -86,6 +86,7 @@ To turn a linear independent family of vectors spanning `M` into a basis, use `B
 They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
 available as `Basis.repr`.
 -/
+@[wikidata Q189569]
 structure Basis where
   /-- `Basis.ofRepr` constructs a basis given an assignment of coordinates to each vector. -/
   ofRepr ::
@@ -98,7 +99,7 @@ namespace Basis
 instance : Inhabited (Basis ι R (ι →₀ R)) :=
   ⟨.ofRepr (LinearEquiv.refl _ _)⟩
 
-variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
+variable (b : Basis ι R M) (i : ι) (c : R) (x : M)
 
 section repr
 
@@ -108,7 +109,7 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
-  coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
+  coe_injective f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
 
 @[simp]
@@ -178,7 +179,6 @@ end Map
 
 section Reindex
 
-variable (b' : Basis ι' R M')
 variable (e : ι ≃ ι')
 
 /-- `b.reindex (e : ι ≃ ι')` is a basis indexed by `ι'` -/
@@ -198,7 +198,7 @@ theorem repr_reindex_apply (i' : ι') : (b.reindex e).repr x i' = b.repr x (e.sy
   show (Finsupp.domLCongr e : _ ≃ₗ[R] _) (b.repr x) i' = _ by simp
 
 @[simp]
-theorem repr_reindex : (b.reindex e).repr x = (b.repr x).mapDomain e :=
+theorem repr_reindex : (b.reindex e).repr x = (b.repr x).equivMapDomain e :=
   DFunLike.ext _ _ <| by simp [repr_reindex_apply]
 
 @[simp]
@@ -215,8 +215,6 @@ end Basis
 
 section Fintype
 
-open Basis
-
 open Fintype
 
 /-- A module over `R` with a finite basis is linearly equivalent to functions from its basis to `R`.
@@ -230,17 +228,12 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
+@[instance_reducible]
 def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 
-theorem card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
-    card M = card R ^ card ι := by
-  classical
-    calc
-      card M = card (ι → R) := card_congr b.equivFun.toEquiv
-      _ = card R ^ card ι := card_fun
-
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a basis `v` indexed by `ι`, the canonical linear equivalence between `ι → R` and `M` maps
 a function `x : ι → R` to the linear combination `∑_i x i • v i`. -/
 @[simp]
@@ -447,7 +440,7 @@ theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
     simp only [Pi.add_apply, map_add, Finsupp.coe_add]
   · intro c x
     ext i
-    simp only [Pi.smul_apply, map_smul, Finsupp.coe_smul]
+    simp
   · intro i
     ext j
     simp only [reindexRange_repr_self]
@@ -483,8 +476,7 @@ theorem reindexFinsetRange_repr_self (i : ι) :
     b.reindexFinsetRange.repr (b i) =
       Finsupp.single ⟨b i, Finset.mem_image_of_mem b (Finset.mem_univ i)⟩ 1 := by
   ext ⟨bi, hbi⟩
-  rw [reindexFinsetRange, repr_reindex, Finsupp.mapDomain_equiv_apply, reindexRange_repr_self]
-  simp [Finsupp.single_apply]
+  simp [reindexFinsetRange, reindexRange_repr_self]
 
 @[simp]
 theorem reindexFinsetRange_repr (x : M) (i : ι)
@@ -706,7 +698,7 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
   ext m
   simp only [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
     LinearEquiv.coe_coe, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
-    finsum_eq_sum _ (b.repr m).finite_support, Finsupp.sum, Finset.finite_toSet_toFinset, id,
+    finsum_eq_sum _ (b.repr m).hasFiniteSupport, Finsupp.sum, Finset.finite_toSet_toFinset, id,
     Finsupp.fun_support_eq]
 
 variable (e : ι ≃ ι')
@@ -714,11 +706,7 @@ variable (e : ι ≃ ι')
 @[simp]
 theorem sumCoords_reindex : (b.reindex e).sumCoords = b.sumCoords := by
   ext x
-  simp only [coe_sumCoords, repr_reindex]
-  exact Finsupp.sum_mapDomain_index (fun _ => rfl) fun _ _ _ => rfl
-
-variable (S : Type*) [Semiring S] [Module S M']
-variable [SMulCommClass R S M']
+  simp [Function.id_def]
 
 theorem coord_equivFun_symm [Finite ι] (b : Basis ι R M) (i : ι) (f : ι → R) :
     b.coord i (b.equivFun.symm f) = f i :=

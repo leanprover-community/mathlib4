@@ -15,11 +15,9 @@ In this file, we record more lemmas about `SModEq` on elements
 of modules or rings.
 -/
 
-@[expose] public section
+public section
 
 open Submodule
-
-open Polynomial
 
 variable {R : Type*} [Ring R] {I : Ideal R}
 variable {M : Type*} [AddCommGroup M] [Module R M] {U : Submodule R M}

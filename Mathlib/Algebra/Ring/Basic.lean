@@ -29,8 +29,6 @@ assert_not_exists Nat.cast_sub
 
 variable {R S : Type*}
 
-open Function
-
 namespace AddHom
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
@@ -169,16 +167,6 @@ section NoZeroDivisors
 
 variable (α)
 
-lemma IsLeftCancelMulZero.to_noZeroDivisors [MulZeroClass α]
-    [IsLeftCancelMulZero α] : NoZeroDivisors α where
-  eq_zero_or_eq_zero_of_mul_eq_zero {x _} h :=
-    or_iff_not_imp_left.mpr fun ne ↦ mul_left_cancel₀ ne ((mul_zero x).symm ▸ h)
-
-lemma IsRightCancelMulZero.to_noZeroDivisors [MulZeroClass α]
-    [IsRightCancelMulZero α] : NoZeroDivisors α where
-  eq_zero_or_eq_zero_of_mul_eq_zero {_ y} h :=
-    or_iff_not_imp_right.mpr fun ne ↦ mul_right_cancel₀ ne ((zero_mul y).symm ▸ h)
-
 section NonUnitalNonAssocRing
 
 variable {R : Type*} [NonUnitalNonAssocRing R] {r : R}
@@ -210,7 +198,7 @@ lemma noZeroDivisors_tfae : List.TFAE
 
 /-- In a ring, `IsCancelMulZero` and `NoZeroDivisors` are equivalent. -/
 lemma isCancelMulZero_iff_noZeroDivisors : IsCancelMulZero R ↔ NoZeroDivisors R :=
-  noZeroDivisors_tfae.out 3 0
+  noZeroDivisors_tfae.out 4 1
 
 variable (R) in
 instance (priority := 100) NoZeroDivisors.to_isCancelMulZero

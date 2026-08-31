@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
@@ -21,9 +22,11 @@ Add more similar lemmas: limit at `-∞`, versions with $e^{cx}$ etc.
 polynomial, limit, exponential
 -/
 
-@[expose] public section
+public section
 
-open Filter Topology Real
+open Filter Real
+
+open scoped Topology
 
 namespace Polynomial
 

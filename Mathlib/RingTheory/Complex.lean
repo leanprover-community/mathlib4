@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Trace.Defs
 
 /-! # Lemmas about `Algebra.trace` and `Algebra.norm` on `ℂ` -/
 
-@[expose] public section
+public section
 
 
 open Complex

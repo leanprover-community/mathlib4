@@ -24,13 +24,13 @@ Several variants are recorded, generalising in particular to the case of a divis
 which `x` and `y` commute.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedRing
 
-variable {R K : Type*}
+variable {K : Type*}
 
-open Finset MulOpposite
+open Finset
 
 section DivisionRing
 variable [DivisionRing K] {x y : K}

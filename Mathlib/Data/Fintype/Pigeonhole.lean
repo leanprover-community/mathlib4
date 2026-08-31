@@ -24,7 +24,7 @@ We provide the following versions of the pigeonholes principle.
 Some more pigeonhole-like statements can be found in `Data.Fintype.CardEmbedding`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero MulAction
 
@@ -32,7 +32,7 @@ open Function
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 

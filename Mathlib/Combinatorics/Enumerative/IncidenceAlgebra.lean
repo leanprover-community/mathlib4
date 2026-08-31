@@ -65,7 +65,7 @@ Here are some additions to this file that could be made in the future:
 * [Jacobson, *Basic Algebra I, 8.6*][jacobson1974]
 * [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory
   VI*][doubilet_rota_stanley_vi]
-* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnel1997]
+* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnell1997]
 * [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
 -/
 
@@ -73,7 +73,7 @@ Here are some additions to this file that could be made in the future:
 
 open Finset OrderDual
 
-variable {F 𝕜 𝕝 𝕞 α β : Type*}
+variable {𝕜 𝕝 𝕞 α β : Type*}
 
 /-- The `𝕜`-incidence algebra over `α`. -/
 structure IncidenceAlgebra (𝕜 α : Type*) [Zero 𝕜] [LE α] where
@@ -90,7 +90,7 @@ variable [Zero 𝕜] [LE α] {a b : α}
 
 instance instFunLike : FunLike (IncidenceAlgebra 𝕜 α) α (α → 𝕜) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 lemma apply_eq_zero_of_not_le (h : ¬a ≤ b) (f : IncidenceAlgebra 𝕜 α) : f a b = 0 :=
   eq_zero_of_not_le' _ h
@@ -111,7 +111,7 @@ lemma coe_inj {f g : IncidenceAlgebra 𝕜 α} : (f : α → α → 𝕜) = g �
 
 @[ext]
 lemma ext ⦃f g : IncidenceAlgebra 𝕜 α⦄ (h : ∀ a b, a ≤ b → f a b = g a b) : f = g := by
-  refine DFunLike.coe_injective' (funext₂ fun a b ↦ ?_)
+  refine DFunLike.coe_injective (funext₂ fun a b ↦ ?_)
   by_cases hab : a ≤ b
   · exact h _ _ hab
   · rw [apply_eq_zero_of_not_le hab, apply_eq_zero_of_not_le hab]
@@ -205,7 +205,7 @@ all divisions into two subintervals the product of the values of the original pa
 -/
 instance instMul : Mul (IncidenceAlgebra 𝕜 α) where
   mul f g :=
-    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x * g x b, fun a b h ↦ by dsimp; rw [Icc_eq_empty h, sum_empty]⟩
+    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x * g x b, fun a b h ↦ by rw [Icc_eq_empty h, sum_empty]⟩
 
 @[simp] lemma mul_apply (f g : IncidenceAlgebra 𝕜 α) (a b : α) :
     (f * g) a b = ∑ x ∈ Icc a b, f a x * g x b := rfl
@@ -249,7 +249,7 @@ variable [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [AddCommMono
 
 instance instSMul : SMul (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) :=
   ⟨fun f g ↦
-    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x • g x b, fun a b h ↦ by dsimp; rw [Icc_eq_empty h, sum_empty]⟩⟩
+    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x • g x b, fun a b h ↦ by rw [Icc_eq_empty h, sum_empty]⟩⟩
 
 @[simp]
 lemma smul_apply (f : IncidenceAlgebra 𝕜 α) (g : IncidenceAlgebra 𝕝 α) (a b : α) :
@@ -299,13 +299,14 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
             eq_comm, Icc_self]
           simp
         · simp only [one_apply, mul_one, smul_eq_mul, mul_apply, zero_mul,
-            constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, if_neg h]
+            constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, ite_eq_right h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
-          exact if_neg fun hx ↦ h <| hx.2.trans hx.1
+          exact ite_eq_right fun hx ↦ h <| hx.2.trans hx.1
     map_zero' := by rw [map_zero, zero_smul]
     map_add' c d := by rw [map_add, add_smul] }
-  commutes' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, mul_comm]
-  smul_def' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, Algebra.smul_def]
+  commutes' c f := by classical ext a b hab; simp [ite_eq_left hab, constSMul_apply, mul_comm]
+  smul_def' c f := by
+    classical ext a b hab; simp [ite_eq_left hab, constSMul_apply, Algebra.smul_def]
 
 /-! ### The Lambda function -/
 
@@ -316,7 +317,7 @@ variable (𝕜) [Zero 𝕜] [One 𝕜] [Preorder α] [DecidableRel (α := α) (�
 interval of cardinality one or two. -/
 @[simps]
 def lambda : IncidenceAlgebra 𝕜 α :=
-  ⟨fun a b ↦ if a ⩿ b then 1 else 0, fun _a _b h ↦ if_neg fun hh ↦ h hh.le⟩
+  ⟨fun a b ↦ if a ⩿ b then 1 else 0, fun _a _b h ↦ ite_eq_right fun hh ↦ h hh.le⟩
 
 end Lambda
 
@@ -327,13 +328,13 @@ variable (𝕜) [Zero 𝕜] [One 𝕜] [LE α] [DecidableLE α] {a b : α}
 
 /-- The zeta function of the incidence algebra is the function that assigns 1 to every nonempty
 interval, convolution with this function sums functions over intervals. -/
-def zeta : IncidenceAlgebra 𝕜 α := ⟨fun a b ↦ if a ≤ b then 1 else 0, fun _a _b h ↦ if_neg h⟩
+def zeta : IncidenceAlgebra 𝕜 α := ⟨fun a b ↦ if a ≤ b then 1 else 0, fun _a _b h ↦ ite_eq_right h⟩
 
 variable {𝕜}
 
 @[simp] lemma zeta_apply (a b : α) : zeta 𝕜 a b = if a ≤ b then 1 else 0 := rfl
 
-lemma zeta_of_le (h : a ≤ b) : zeta 𝕜 a b = 1 := if_pos h
+lemma zeta_of_le (h : a ≤ b) : zeta 𝕜 a b = 1 := ite_eq_left h
 
 end Zeta
 
@@ -343,8 +344,6 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
   refine sum_congr rfl fun x hx ↦ ?_
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
-
-@[deprecated (since := "2025-09-28")] alias zeta_mul_kappa := zeta_mul_zeta
 
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
@@ -379,15 +378,13 @@ def mu : IncidenceAlgebra 𝕜 α :=
 
 variable {𝕜} {a b : α}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a b, mu 𝕜 a x := by
   rw [mu, coe_mk, muFun_apply, sum_attach]
 
 @[simp] lemma mu_self (a : α) : mu 𝕜 a a = 1 := by simp [mu_apply]
 
 lemma mu_eq_neg_sum_Ico_of_ne (hab : a ≠ b) :
-    mu 𝕜 a b = -∑ x ∈ Ico a b, mu 𝕜 a x := by rw [mu_apply, if_neg hab]
+    mu 𝕜 a b = -∑ x ∈ Ico a b, mu 𝕜 a x := by rw [mu_apply, ite_eq_right hab]
 
 variable (𝕜 α)
 /-- The Euler characteristic of a finite bounded order. -/
@@ -432,7 +429,6 @@ showing that `zeta * mu = 1` and `mu' * zeta = 1`. -/
 private def mu' : IncidenceAlgebra 𝕜 α :=
   ⟨fun a b ↦ muFun' 𝕜 b a, fun a b ↦
     not_imp_comm.1 fun h ↦ by
-      dsimp only at h
       rw [muFun'_apply] at h
       split_ifs at h with hab
       · exact hab.le
@@ -448,7 +444,7 @@ private lemma mu'_apply (a b : α) : mu' 𝕜 a b = if a = b then 1 else -∑ x 
 @[simp] private lemma mu'_apply_self (a : α) : mu' 𝕜 a a = 1 := by simp [mu'_apply]
 
 private lemma mu'_eq_sum_Ioc_of_ne (h : a ≠ b) : mu' 𝕜 a b = -∑ x ∈ Ioc a b, mu' 𝕜 x b := by
-  rw [mu'_apply, if_neg h]
+  rw [mu'_apply, ite_eq_right h]
 
 end Mu'
 
@@ -506,7 +502,7 @@ variable (𝕜) [Ring 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [Decidable
 
 @[simp]
 lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
-  letI : DecidableLE α := Classical.decRel _
+  let : DecidableLE α := Classical.decRel _
   let mud : IncidenceAlgebra 𝕜 αᵒᵈ :=
     { toFun := fun a b ↦ mu 𝕜 (ofDual b) (ofDual a)
       eq_zero_of_not_le' := fun a b hab ↦ apply_eq_zero_of_not_le (by exact hab) _ }
@@ -521,7 +517,7 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
   simp only [mul_boole, one_apply, mul_apply, zeta_apply]
   calc
     ∑ x ∈ Icc a b, (if x ≤ b then mud a x else 0) = ∑ x ∈ Icc a b, mud a x := by
-      congr! with x hx; exact if_pos (mem_Icc.1 hx).2
+      congr! with x hx; exact ite_eq_left (mem_Icc.1 hx).2
     _ = ∑ x ∈ Icc (ofDual b) (ofDual a), mu 𝕜 x (ofDual a) := by simp [Icc_orderDual_def, mud]
     _ = if ofDual b = ofDual a then 1 else 0 := sum_Icc_mu_left ..
     _ = if a = b then 1 else 0 := by simp [eq_comm]
@@ -541,14 +537,14 @@ variable [Ring 𝕜] [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α] [De
 O'Donnell. -/
 lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici x, f y) (x : α) :
     f x = ∑ y ∈ Ici x, mu 𝕜 x y * g y := by
-  letI : DecidableLE α := Classical.decRel _
+  let : DecidableLE α := Classical.decRel _
   symm
   calc
     ∑ y ∈ Ici x, mu 𝕜 x y * g y = ∑ y ∈ Ici x, mu 𝕜 x y * ∑ z ∈ Ici y, f z := by simp_rw [h]
     _ = ∑ y ∈ Ici x, mu 𝕜 x y * ∑ z ∈ Ici y, zeta 𝕜 y z * f z := by
       congr with y
       rw [sum_congr rfl fun z hz ↦ ?_]
-      rw [zeta_apply, if_pos (mem_Ici.mp ‹_›), one_mul]
+      rw [zeta_apply, ite_eq_left (mem_Ici.mp ‹_›), one_mul]
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, mu 𝕜 x y * zeta 𝕜 y z * f z := by simp [mul_sum]
     _ = ∑ z ∈ Ici x, ∑ y ∈ Icc x z, mu 𝕜 x y * zeta 𝕜 y z * f z := by
       rw [sum_sigma' (Ici x) fun y ↦ Ici y]
@@ -561,22 +557,23 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, (1 : IncidenceAlgebra 𝕜 α) x z * f z := by
       simp only [mu_mul_zeta 𝕜, one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici, le_refl,
         ↓reduceIte, ← add_sum_Ioi_eq_sum_Ici, left_eq_add]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_ge
+      exact sum_eq_zero fun y hy ↦ ite_eq_right (mem_Ioi.mp hy).not_ge
     _ = f x := by
       simp only [one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici,
         ← add_sum_Ioi_eq_sum_Ici, le_refl, ↓reduceIte, add_eq_left]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_ge
+      exact sum_eq_zero fun y hy ↦ ite_eq_right (mem_Ioi.mp hy).not_ge
 
 end InversionTop
 
 section InversionBot
 variable [Ring 𝕜] [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A general form of Möbius inversion. Based on lemma 2.1.3 of Incidence Algebras by Spiegel and
 O'Donnell. -/
 lemma moebius_inversion_bot (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Iic x, f y) (x : α) :
     f x = ∑ y ∈ Iic x, mu 𝕜 y x * g y := by
-  convert moebius_inversion_top (α := αᵒᵈ) f g h x using 3
+  convert! moebius_inversion_top (α := αᵒᵈ) f g h x using 3
   rw [← mu_toDual]; rfl
 
 end InversionBot

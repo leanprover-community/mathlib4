@@ -5,8 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public meta import Mathlib.Tactic.Widget.SelectPanelUtils
-public meta import Mathlib.Tactic.CongrM
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+public import ProofWidgets.Component.Basic
+public import ProofWidgets.Component.OfRpcMethod
+public meta import ProofWidgets.Component.Basic
 
 /-! # CongrM widget
 
@@ -42,7 +44,7 @@ def makeCongrMString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
 @[server_rpc_method]
 def CongrMSelectionPanel.rpc := mkSelectionPanelRPC makeCongrMString
   "Use shift-click to select sub-expressions in the goal that should become holes in congrm."
-  "CongrM 🔍"
+  "CongrM 🔍️"
 
 /-- The congrm widget. -/
 @[widget_module]

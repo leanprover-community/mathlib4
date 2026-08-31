@@ -127,7 +127,7 @@ theorem NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completi
 def NormedAddCommGroup.toCompl : NormedAddGroupHom G (Completion G) where
   toFun := (↑)
   map_add' := Completion.toCompl.map_add
-  bound' := ⟨1, by simp [le_refl]⟩
+  bound' := ⟨1, by simp⟩
 
 open NormedAddCommGroup
 

@@ -5,7 +5,7 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Logic.Basic
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Order.Defs.PartialOrder
 
 /-!
@@ -15,7 +15,7 @@ We give basic facts about the `NeZero n` typeclass.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [Zero R]
 

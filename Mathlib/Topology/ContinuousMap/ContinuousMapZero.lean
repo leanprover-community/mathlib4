@@ -48,7 +48,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
 
 instance instFunLike : FunLike C(X, R)₀ X R where
   coe f := f.toFun
-  coe_injective' _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
+  coe_injective _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
 
 instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
   map_continuous f := f.continuous
@@ -59,6 +59,7 @@ instance instZeroHomClass : ZeroHomClass C(X, R)₀ X R where
 /-- not marked as an instance because it would be a bad one in general, but it can
 be useful when working with `ContinuousMapZero` and the non-unital continuous
 functional calculus. -/
+@[instance_reducible]
 def _root_.Set.zeroOfFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
     Zero s where
   zero := ⟨0, Fact.out⟩
@@ -85,12 +86,15 @@ def comp (g : C(Y, R)₀) (f : C(X, Y)₀) : C(X, R)₀ where
 @[simp]
 lemma comp_apply (g : C(Y, R)₀) (f : C(X, Y)₀) (x : X) : g.comp f x = g (f x) := rfl
 
-instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ :=
-  .lift _ DFunLike.coe_injective'
+@[simp]
+theorem coe_comp (g : C(Y, R)₀) (f : C(X, Y)₀) : g.comp f = g ∘ f := rfl
+
+instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ := fast_instance%
+  .lift _ DFunLike.coe_injective
 
 lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g x := Iff.rfl
 
-protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
+protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ := fast_instance%
   TopologicalSpace.induced ((↑) : C(X, R)₀ → C(X, R)) inferInstance
 
 lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
@@ -119,12 +123,20 @@ lemma isClosedEmbedding_toContinuousMap [T1Space R] :
     exact isClosed_singleton.preimage <| continuous_eval_const 0
 
 @[fun_prop]
-lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (f : C(X, Y)₀) :
-    Continuous fun g : C(Y, Z)₀ ↦ g.comp f := by
+lemma continuous_precomp (f : C(X, Y)₀) : Continuous fun g : C(Y, R)₀ ↦ g.comp f := by
   rw [continuous_induced_rng]
-  change Continuous fun g : C(Y, Z)₀ ↦ (g : C(Y, Z)).comp (f : C(X, Y))
+  change Continuous fun g : C(Y, R)₀ ↦ (g : C(Y, R)).comp (f : C(X, Y))
   fun_prop
+
+theorem postcomp_injective (g : C(Y, R)₀) (hg : Injective g) :
+    Injective (g.comp : C(X, Y)₀ → C(X, R)₀) :=
+  fun _ _ h ↦ ext fun x ↦ hg congr($h x)
+
+@[fun_prop]
+theorem continuous_postcomp (g : C(Y, R)₀) : Continuous (g.comp : C(X, Y)₀ → C(X, R)₀) := by
+  rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
+  exact g.toContinuousMap.continuous_postcomp |>.comp <|
+    ContinuousMapZero.isEmbedding_toContinuousMap.continuous
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
 @[simps!]
@@ -174,19 +186,20 @@ lemma mkD_apply_of_continuous [Zero X] {f : X → R} {g : C(X, R)₀} {x : X}
 
 lemma mkD_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :
-    mkD (s.restrict f) g = ⟨⟨s.restrict f, hf.restrict⟩, hf₀⟩ :=
-  mkD_of_continuous hf.restrict hf₀
+    mkD (s.domRestrict f) g = ⟨⟨s.domRestrict f, hf.domRestrict⟩, hf₀⟩ :=
+  mkD_of_continuous hf.domRestrict hf₀
 
 lemma mkD_of_not_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀}
     (hf : ¬ ContinuousOn f s) :
-    mkD (s.restrict f) g = g := by
-  rw [continuousOn_iff_continuous_restrict] at hf
+    mkD (s.domRestrict f) g = g := by
+  rw [continuousOn_iff_continuous_domRestrict] at hf
   exact mkD_of_not_continuous hf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkD_apply_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀} {x : s}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :
-    mkD (s.restrict f) g x = f x := by
-  rw [mkD_of_continuousOn hf hf₀, coe_mk, ContinuousMap.coe_mk, restrict_apply]
+    mkD (s.domRestrict f) g x = f x := by
+  rw [mkD_of_continuousOn hf hf₀, coe_mk, ContinuousMap.coe_mk, domRestrict_apply]
 
 open ContinuousMap in
 /-- Link between `ContinuousMapZero.mkD` and `ContinuousMap.mkD`. -/
@@ -318,7 +331,7 @@ def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ
   map_mul' _ _ := rfl
   map_star' _ := rfl
 
-lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
+@[simp] lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
   rfl
 
@@ -377,7 +390,8 @@ section UniformSpace
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
 variable [Zero R] [UniformSpace R]
 
-protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContinuousMap inferInstance
+protected instance instUniformSpace : UniformSpace C(X, R)₀ :=
+  fast_instance% .comap toContinuousMap inferInstance
 
 lemma isUniformEmbedding_toContinuousMap :
     IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
@@ -398,7 +412,7 @@ lemma isUniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)
 sending `0 : X` to `0 : Y`. -/
 def _root_.UniformEquiv.arrowCongrLeft₀ {Y : Type*} [TopologicalSpace Y] [Zero Y] (f : X ≃ₜ Y)
     (hf : f 0 = 0) : C(X, R)₀ ≃ᵤ C(Y, R)₀ where
-  toFun g := g.comp ⟨f.symm, (f.toEquiv.apply_eq_iff_eq_symm_apply.eq ▸ hf).symm⟩
+  toFun g := g.comp ⟨f.symm, (f.eq_symm_apply.eq ▸ hf).symm⟩
   invFun g := g.comp ⟨f, hf⟩
   left_inv g := ext fun _ ↦ congrArg g <| f.left_inv _
   right_inv g := ext fun _ ↦ congrArg g <| f.right_inv _
@@ -443,6 +457,17 @@ def nonUnitalStarAlgHom_postcomp (φ : R →⋆ₙₐ[M] S) (hφ : Continuous φ
   map_mul' _ _ := ext <| by simp
   map_star' _ := ext <| by simp [map_star]
   map_smul' r f := ext <| by simp
+
+variable (R) in
+/-- Precomposition with a homeomorphism of the domains sending `0 : X` to `0 : Y` as a star
+algebra equivalence between `C(Y, R)₀` and `C(X, R)₀`. -/
+@[simps!]
+def starAlgEquivPrecomp (f : X ≃ₜ Y) (hf : f 0 = 0) :
+    C(Y, R)₀ ≃⋆ₐ[R] C(X, R)₀ :=
+  .ofNonUnitalStarAlgHom
+    (nonUnitalStarAlgHom_precomp R ⟨f, hf⟩)
+    (nonUnitalStarAlgHom_precomp R ⟨f.symm, by simpa using congr(f.symm $hf.symm)⟩)
+    (by ext; simp) (by ext; simp)
 
 end CompHoms
 

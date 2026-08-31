@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Compactness.SigmaCompact
-public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.GDelta.Basic
@@ -26,19 +25,18 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter Topology TopologicalSpace
 
 universe u
 
-variable {X : Type*} [TopologicalSpace X]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 section Separation
 
 theorem IsGδ.compl_singleton (x : X) [T1Space X] : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
-
 
 theorem Set.Countable.isGδ_compl {s : Set X} [T1Space X] (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
@@ -58,7 +56,6 @@ protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X)
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
   exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
-
 
 theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
     IsGδ s :=
@@ -115,7 +112,7 @@ theorem IsClosed.isGδ [PerfectlyNormalSpace X] {s : Set X} (hs : IsClosed s) : 
   PerfectlyNormalSpace.closed_gdelta hs
 
 instance (priority := 100) [PerfectlyNormalSpace X] : R0Space X where
-  specializes_symmetric x y hxy := by
+  specializes_symm.symm x y hxy := by
     rw [specializes_iff_forall_closed]
     intro K hK hyK
     apply IsClosed.isGδ at hK
@@ -124,12 +121,29 @@ instance (priority := 100) [PerfectlyNormalSpace X] : R0Space X where
     intros
     solve_by_elim [hxy.mem_open]
 
+theorem Topology.IsInducing.perfectlyNormalSpace [PerfectlyNormalSpace Y] {e : X → Y}
+    (he : IsInducing e) : PerfectlyNormalSpace X where
+  toNormalSpace := he.completelyNormalSpace.toNormalSpace
+  closed_gdelta _ hs := (he.isClosed_iff.1 hs).elim fun _ ht =>
+    ht.2 ▸ ht.1.isGδ.preimage he.continuous
+
+instance {s : Set X} [PerfectlyNormalSpace X] : PerfectlyNormalSpace s :=
+  IsEmbedding.subtypeVal.perfectlyNormalSpace
+
 /-- A T₆ space is a perfectly normal T₀ space. -/
 class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, PerfectlyNormalSpace X
 
 -- see Note [lower instance priority]
 /-- A `T₆` space is a `T₅` space. -/
 instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
+
+theorem Topology.IsEmbedding.t6Space [T6Space Y] {e : X → Y}
+    (he : IsEmbedding e) : T6Space X where
+  toPerfectlyNormalSpace := he.perfectlyNormalSpace
+  toT0Space := he.t0Space
+
+instance {s : Set X} [T6Space X] : T6Space s :=
+  IsEmbedding.subtypeVal.t6Space
 
 end PerfectlyNormal
 

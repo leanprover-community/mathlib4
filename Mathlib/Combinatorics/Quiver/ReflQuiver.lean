@@ -21,6 +21,7 @@ Note: Currently Category does not extend ReflQuiver, although it could. (TODO: d
 -/
 
 @[expose] public section
+
 namespace CategoryTheory
 universe v v₁ v₂ u u₁ u₂
 
@@ -28,7 +29,7 @@ universe v v₁ v₂ u u₁ u₂
 type of objects. We denote these arrows by `id` since categories can be understood as an extension
 of refl quivers.
 -/
-class ReflQuiver (obj : Type u) : Type max u v extends Quiver.{v} obj where
+class ReflQuiver (obj : Type u) : Type max u (v + 1) extends Quiver.{v} obj where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
 
@@ -39,7 +40,7 @@ scoped notation "𝟙rq" => ReflQuiver.id  -- type as \b1
 theorem ReflQuiver.homOfEq_id {V : Type*} [ReflQuiver V] {X X' : V} (hX : X = X') :
     Quiver.homOfEq (𝟙rq X) hX hX = 𝟙rq X' := by subst hX; rfl
 
-instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v + 1, u} C :=
+instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v, u} C :=
   { inst with }
 
 @[simp] theorem ReflQuiver.id_eq_id {C : Type*} [Category* C] (X : C) : 𝟙rq X = 𝟙 X := rfl
@@ -96,6 +97,7 @@ def id (V : Type*) [ReflQuiver V] : ReflPrefunctor V V where
 instance (V : Type*) [ReflQuiver V] : Inhabited (ReflPrefunctor V V) :=
   ⟨id V⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Composition of morphisms between reflexive quivers. -/
 @[simps!]
 def comp {U : Type*} [ReflQuiver U] {V : Type*} [ReflQuiver V] {W : Type*} [ReflQuiver W]
@@ -159,7 +161,7 @@ open Opposite
 instance opposite {V} [ReflQuiver V] : ReflQuiver Vᵒᵖ where
   id X := op (𝟙rq X.unop)
 
-instance discreteReflQuiver (V : Type u) : ReflQuiver.{u + 1} (Discrete V) :=
+instance discreteReflQuiver (V : Type u) : ReflQuiver.{u} (Discrete V) :=
   { discreteCategory V with }
 
 end ReflQuiver

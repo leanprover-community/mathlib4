@@ -70,7 +70,7 @@ theorem mul_toInvSubmonoid (m : M) : algebraMap R S m * (toInvSubmonoid M S m : 
 
 @[simp]
 theorem smul_toInvSubmonoid (m : M) : m • (toInvSubmonoid M S m : S) = 1 := by
-  convert mul_toInvSubmonoid M S m
+  convert! mul_toInvSubmonoid M S m
   ext
   rw [← Algebra.smul_def]
   rfl
@@ -113,6 +113,10 @@ theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   change x ∈ (Subalgebra.toSubmodule (Algebra.adjoin R _ : Subalgebra R S) : Set S)
   rw [Algebra.adjoin_eq_span, hs, span_invSubmonoid]
   trivial
+
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+    (M : Submonoid S) [Monoid.FG M] : Algebra.FiniteType R (Localization M) :=
+  .trans ‹_› (IsLocalization.finiteType_of_monoid_fg M _)
 
 end InvSubmonoid
 

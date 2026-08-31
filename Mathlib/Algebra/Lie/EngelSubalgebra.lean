@@ -34,7 +34,7 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
 
 @[expose] public section
 
-open LieAlgebra LieModule
+open LieAlgebra
 
 variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -60,7 +60,7 @@ def engel (x : L) : LieSubalgebra R L :=
       rw [ad_pow_lie]
       apply Finset.sum_eq_zero
       intro ij hij
-      obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; lia
+      obtain (h | h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; lia
       all_goals simp [Module.End.pow_map_zero_of_le h, hm, hn] }
 
 lemma mem_engel_iff (x y : L) :
@@ -82,7 +82,7 @@ lemma engel_zero : engel R (0 : L) = ⊤ := by
 /-- Engel subalgebras are self-normalizing.
 See `LieSubalgebra.normalizer_eq_self_of_engel_le` for a proof that Lie-subalgebras
 containing an Engel subalgebra are also self-normalizing,
-provided that the ambient Lie algebra is artinina. -/
+provided that the ambient Lie algebra is Artinian. -/
 @[simp]
 lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   apply le_antisymm _ (le_normalizer _)
@@ -143,6 +143,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A Lie subalgebra of a Noetherian Lie algebra is nilpotent
 if it is contained in the Engel subalgebra of all its elements. -/
 lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]

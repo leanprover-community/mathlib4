@@ -3,7 +3,9 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Tactic.Linarith
 
 /-!
 # An MIU Decision Procedure in Lean
@@ -60,6 +62,7 @@ miu, derivable strings
 
 -/
 
+@[expose] public section
 
 namespace Miu
 
@@ -107,8 +110,6 @@ instance : Repr MiuAtom :=
 /-- For simplicity, an `Miustr` is just a list of elements of type `MiuAtom`.
 -/
 abbrev Miustr := List MiuAtom
-
-instance : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
 
 /-- For display purposes, an `Miustr` can be represented as a `String`.
 -/

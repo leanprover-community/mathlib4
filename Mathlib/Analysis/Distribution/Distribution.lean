@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
+Authors: Anatole Dedecker, Luigi Massacci
 -/
 module
 
+public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.TestFunction
-public import Mathlib.Analysis.LocallyConvex.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
 /-!
 # Distributions
@@ -36,6 +37,9 @@ The theory will be expanded in future PRs.
 * `Distribution.mapCLM`: any continuous linear map `A : F →L[ℝ] G` induces a continuous linear
   map `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
   pointwise.
+* `Distribution.ofFun Ω f μ n`: the distribution induced by a function `f : E → F`,
+  sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if
+  `f` is not locally integrable on `Ω`.
 
 ## Notation
 
@@ -53,7 +57,7 @@ We could introduce another notation `∞` for `⊤ : ℕ∞`, but we believe it 
 
 ### `abbrev` or `def`
 
-At this point in time, it is not clear wether we should enforce a separation between the API
+At this point in time, it is not clear whether we should enforce a separation between the API
 for `𝓓'(Ω, F)` and the more generic API about `𝓓(Ω, ℝ) →L_c[ℝ] F`.
 For now, we have made the "default" choice to implement `Distribution` as an `abbrev`, which means
 that we get a lot of instances for free, but also that there is no such separation of APIs.
@@ -128,7 +132,7 @@ which we follow here.
 
 Finally, note that a **sequence** of distributions converges in `𝓓'(Ω, F)` if and only if it
 converges pointwise
-(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Theorème XIII][schwartz1950]).
+(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Théorème XIII][schwartz1950]).
 Due to this fact, some texts endow `𝓓'(Ω, F)` with the pointwise convergence topology. While this
 gives the same converging sequences as the topology of bounded/compact convergence, this is no
 longer true for general filters.
@@ -137,6 +141,7 @@ longer true for general filters.
 
 * [L. Schwartz, *Théorie des distributions*][schwartz1950]
 * [L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957]
+* [L. Hörmander, *The Analysis of Linear Partial Differential Operators I*][hormander2003]
 
 -/
 
@@ -175,18 +180,207 @@ namespace Distribution
 
 section mapCLM
 -- TODO: generalize this section to `𝕜` linear maps (or even semilinear maps)
--- by generalizing `ContinuousLinearMap.postcomp`
+-- by generalizing `ContinuousLinearMap.postcompCompactConvergenceCLM`
 
 /-- Any continuous linear map `A : F →L[ℝ] G` induces a continuous linear map
 `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
 pointwise. -/
-def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
-  A.postcomp_uniformConvergenceCLM _
+noncomputable def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
+  A.postcompCompactConvergenceCLM _
 
 @[simp]
 lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
     mapCLM A T f = A (T f) := rfl
 
 end mapCLM
+
+section DiracDelta
+
+/-- The Dirac delta distribution. This is zero if `x` does not belong to `Ω`. -/
+@[wikidata Q209675]
+noncomputable def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
+  toFun f := f x
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := continuous_eval_const _
+
+@[simp]
+theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
+  rfl
+
+@[simp]
+theorem delta_eq_zero_of_notMem (x : E) (hx : x ∉ Ω) : (delta x : 𝓓'^{n}(Ω, ℝ)) = 0 := by
+  ext f
+  change f x = 0
+  have hx_support : x ∉ tsupport f := by
+    intro hx_mem
+    exact hx (f.tsupport_subset hx_mem)
+  exact image_eq_zero_of_notMem_tsupport hx_support
+
+end DiracDelta
+
+section LineDerivCLM
+-- TODO: generalize this section to `𝕜` linearity
+-- by generalizing `ContinuousLinearMap.precompCompactConvergenceCLM`
+
+/-- `lineDerivCLM 𝕜 v` is the continuous `𝕜`-linear-map sending a distribution
+`T : 𝓓'^{k}_{K}(E, F)` to its derivative along the vector `v`, which is a
+distribution in `𝓓^{n}_{K}(E, F)`. Because differentiating increases the order, this only makes
+sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+The parameters `n` and `k` are implicit as they can often be inferred from context, or
+specified by a type ascription. For `n = k = ⊤`, we also provide instances of the `LineDeriv`
+notation typeclass. -/
+noncomputable def lineDerivCLM (v : E) :
+    𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F) :=
+  - (TestFunction.lineDerivCLM ℝ v).precompCompactConvergenceCLM _
+
+lemma lineDerivCLM_apply {v : E} {T : 𝓓'^{k}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
+    lineDerivCLM v T f = - T (TestFunction.lineDerivCLM ℝ v f) :=
+  rfl
+
+lemma lineDerivCLM_add {v₁ v₂ : E} :
+    (lineDerivCLM (v₁ + v₂) : 𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F)) =
+      lineDerivCLM v₁ + lineDerivCLM v₂ := by
+  ext T f
+  simp [lineDerivCLM_apply, TestFunction.lineDerivCLM_add, neg_add, -neg_add_rev]
+
+lemma lineDerivCLM_smul {c : ℝ} {v : E} :
+    (lineDerivCLM (c • v) : 𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F)) =
+      c • lineDerivCLM v := by
+  ext T f
+  simp [lineDerivCLM_apply, TestFunction.lineDerivCLM_smul]
+
+open LineDeriv
+
+/-- Note: we cannot express the full generality of `lineDerivCLM` purely in terms of this typeclass,
+because (by design) the target type `𝓓^{k}_{K}(E, F)` is not determined by the input type
+`𝓓^{n}_{K}(E, F)`. -/
+noncomputable instance : LineDeriv E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  lineDerivOp v := lineDerivCLM v
+
+variable (𝕜) in
+lemma lineDerivOp_eq_lineDerivCLM {v : E} {T : 𝓓'(Ω, F)} :
+    ∂_{v} T = lineDerivCLM v T :=
+  rfl
+
+@[simp]
+theorem lineDerivOp_apply_apply (f : 𝓓'(Ω, F)) (g : 𝓓(Ω, ℝ)) (m : E) :
+    ∂_{m} f g = f (- ∂_{m} g) := by
+  rw [map_neg]; rfl
+
+noncomputable instance : LineDerivAdd E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  lineDerivOp_add v := map_add (lineDerivCLM v)
+  lineDerivOp_left_add _ _ T := congr($lineDerivCLM_add T)
+
+noncomputable instance : LineDerivSMul ℝ E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  lineDerivOp_smul v := map_smul (lineDerivCLM v)
+
+noncomputable instance : LineDerivLeftSMul ℝ E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  lineDerivOp_left_smul _ _ T := congr($lineDerivCLM_smul T)
+
+noncomputable instance : ContinuousLineDeriv E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  continuous_lineDerivOp v := (lineDerivCLM v).continuous
+
+lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
+    lineDerivOpCLM ℝ 𝓓'(Ω, F) v = lineDerivCLM v :=
+  rfl
+
+end LineDerivCLM
+
+section ofFun
+
+open MeasureTheory
+
+variable [MeasurableSpace E] [OpensMeasurableSpace E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+variable (Ω) in
+/-- The distribution induced by a function `f : E → F` and a measure `μ`,
+sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if `f` is not locally
+integrable on `Ω`. -/
+noncomputable def ofFun (f : E → F) (μ : Measure E := by volume_tac) (n : ℕ∞) :
+    𝓓'^{n}(Ω, F) :=
+  TestFunction.integralAgainstBilinCLM (ContinuousLinearMap.lsmul ℝ ℝ) μ f
+
+theorem ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ)
+    {φ : 𝓓^{n}(Ω, ℝ)} :
+    ofFun Ω f μ n φ = ∫ x, φ x • f x ∂μ :=
+  TestFunction.integralAgainstBilinCLM_eq_integral hf
+
+theorem ofFun_eq_zero {f : E → F} {μ : Measure E}
+    (hf : ¬ LocallyIntegrableOn f Ω μ) : ofFun Ω f μ n = 0 :=
+  TestFunction.integralAgainstBilinCLM_eq_zero hf
+
+open Classical in
+@[grind =]
+theorem ofFun_apply_eq_ite {f : E → F} {μ : Measure E} {φ : 𝓓^{n}(Ω, ℝ)} :
+    ofFun Ω f μ n φ = if LocallyIntegrableOn f Ω μ then ∫ x, φ x • f x ∂μ else 0 := by
+  grind [ofFun_eq_zero, ofFun_apply]
+
+@[simp, grind =]
+theorem ofFun_zero {μ : Measure E} : ofFun Ω (0 : E → F) μ n = 0 := by
+  have h0 : LocallyIntegrableOn (0 : E → F) Ω μ := locallyIntegrableOn_zero
+  ext; simp [ofFun_apply h0]
+
+theorem ofFun_congr_ae {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
+    ofFun Ω f μ n = ofFun Ω f' μ n := by
+  ext φ
+  by_cases hf : LocallyIntegrableOn f Ω μ
+  · have hf' : LocallyIntegrableOn f' Ω μ := hf.congr h
+    rw [ofFun_apply hf, ofFun_apply hf']
+    have h' : ∀ x ∉ Ω, φ x • f x = 0 ∧ φ x • f' x = 0 := fun x hx ↦ by simp [φ.zero_on_compl hx]
+    obtain ⟨h₁, h₂⟩ := forall₂_and.mp h'
+    rw [← setIntegral_eq_integral_of_ae_compl_eq_zero (.of_forall h₁),
+      ← setIntegral_eq_integral_of_ae_compl_eq_zero (.of_forall h₂)]
+    refine integral_congr_ae <| ae_eq_rfl.smul h
+  · grind [locallyIntegrableOn_congr]
+
+@[simp]
+theorem ofFun_add {f g : E → F} {μ : Measure E}
+    (hf : LocallyIntegrableOn f Ω μ) (hg : LocallyIntegrableOn g Ω μ) :
+    ofFun Ω (f + g) μ n = ofFun Ω f μ n + ofFun Ω g μ n := by
+  ext φ
+  rw [add_apply, ofFun_apply hf, ofFun_apply hg,
+    ofFun_apply (hf.add hg),
+    ← integral_add (φ.integrable_smul hf) (φ.integrable_smul hg)]
+  simp
+
+@[simp]
+theorem ofFun_neg {f : E → F} {μ : Measure E} :
+    ofFun Ω (-f) μ n = -ofFun Ω f μ n := by
+  by_cases hf : LocallyIntegrableOn f Ω μ
+  · ext; simp [ofFun_apply hf, ofFun_apply hf.neg, integral_neg]
+  · rw [ofFun_eq_zero hf, ofFun_eq_zero (by simpa), neg_zero]
+
+@[simp]
+theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
+    ofFun Ω (c • f) μ n = c • ofFun Ω f μ n := by
+  ext φ
+  by_cases hf : LocallyIntegrableOn f Ω μ
+  · rw [ofFun_apply (hf.smul c), smul_apply, ofFun_apply hf, ← integral_smul]
+    refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
+    simp [smul_comm c]
+  · grind [zero_smul, locallyIntegrableOn_smul_iff, smul_zero]
+
+variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
+
+theorem ofFun_injective {f f' : E → F} {μ : Measure E}
+    (hf : LocallyIntegrableOn f Ω μ) (hf' : LocallyIntegrableOn f' Ω μ)
+    (h : ofFun Ω f μ n = ofFun Ω f' μ n) :
+    f =ᵐ[μ.restrict Ω] f' := by
+  suffices h' : ∀ᵐ x ∂μ, x ∈ Ω → (f - f') x = 0 by
+    rw [← sub_ae_eq_zero]
+    exact (ae_restrict_iff' Ω.isOpen.measurableSet).mpr h'
+  refine Ω.isOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero (hf.sub hf')
+    fun g g_diff g_compact g_tsupp ↦ ?_
+  let φ : 𝓓^{n}(Ω, ℝ) := ⟨g, g_diff.of_le (mod_cast le_top), g_compact, g_tsupp⟩
+  have : ∫ x, φ x • (f - f') x ∂μ = 0:= by
+    simp_rw [Pi.sub_apply, smul_sub]
+    rw [integral_sub (φ.integrable_smul hf) (φ.integrable_smul hf'), sub_eq_zero]
+    rw [← ofFun_apply hf, ← ofFun_apply hf', h]
+  congr
+
+end ofFun
 
 end Distribution

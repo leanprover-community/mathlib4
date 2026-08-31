@@ -5,14 +5,14 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Logic.UnivLE
-public import Mathlib.SetTheory.Ordinal.Basic
+public import Mathlib.Basic.UnivLE
+public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
 # UnivLE and cardinals
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

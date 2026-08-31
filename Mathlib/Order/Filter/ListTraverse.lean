@@ -14,7 +14,7 @@ In this file we prove basic properties (monotonicity, membership)
 for `Traversable.traverse f l`, where `f : β → Filter α` and `l : List β`.
 -/
 
-@[expose] public section
+public section
 
 open Set List
 

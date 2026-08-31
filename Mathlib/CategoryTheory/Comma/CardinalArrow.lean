@@ -5,17 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.EssentiallySmall
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # Cardinal of Arrow
 
 We obtain various results about the cardinality of `Arrow C`. For example,
-If `A` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
+if `C` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
 
 -/
 
@@ -62,6 +60,9 @@ lemma hasCardinalLT_arrow_discrete_iff {X : Type u} (κ : Cardinal.{w}) :
     HasCardinalLT (Arrow (Discrete X)) κ ↔ HasCardinalLT X κ :=
   hasCardinalLT_iff_of_equiv (Arrow.discreteEquiv X) κ
 
+instance (X : Type u) [Finite X] : Finite (Arrow (Discrete X)) :=
+  Finite.of_equiv _ (Arrow.discreteEquiv X).symm
+
 lemma small_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     Small.{w} C :=
   small_of_injective (f := fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
@@ -73,6 +74,8 @@ lemma locallySmall_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arro
       change (Arrow.mk f).hom = (Arrow.mk g).hom
       congr)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `Arrow.{w} (ShrinkHoms C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySmall.{w} C] :
     Arrow.{w} (ShrinkHoms C) ≃ Arrow C where
@@ -81,6 +84,7 @@ noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySm
   left_inv _ := by simp
   right_inv _ := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The bijection `Arrow (Shrink C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkEquiv (C : Type u) [Category.{v} C] [Small.{w} C] :
     Arrow (Shrink.{w} C) ≃ Arrow C where
@@ -107,5 +111,14 @@ lemma hasCardinalLT_of_hasCardinalLT_arrow
     {C : Type u} [Category.{v} C] {κ : Cardinal.{w}} (h : HasCardinalLT (Arrow C) κ) :
     HasCardinalLT C κ :=
   h.of_injective (fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
+
+lemma hasCardinalLT_arrow_iff_of_isThin (C : Type u) [Category.{v} C]
+    [Quiver.IsThin C] (κ : Cardinal.{w}) (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT (Arrow C) κ ↔ HasCardinalLT C κ :=
+  ⟨hasCardinalLT_of_hasCardinalLT_arrow, fun h ↦
+    (hasCardinalLT_prod hκ h h).of_injective (fun f ↦ (f.left, f.right))
+      (fun f g h ↦
+        Arrow.ext (congr_arg _root_.Prod.fst h) (congr_arg _root_.Prod.snd h)
+          (by subsingleton))⟩
 
 end CategoryTheory

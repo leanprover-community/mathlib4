@@ -5,9 +5,9 @@ Authors: Emily Riehl
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Cartesian closed structure on `Cat`
@@ -30,7 +30,7 @@ universe v u v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Functor Cat
+open CategoryTheory.Functor Cat
 
 namespace Cat
 
@@ -47,7 +47,7 @@ end Cat
 
 section
 
-variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C] {D : Type u₃}
+variable {C : Type u₂} [Category.{v₂} C] {D : Type u₃}
   [Category.{v₃} D] {E : Type u₄} [Category.{v₄} E]
 
 /-- The isomorphism of categories of bifunctors given by currying. -/

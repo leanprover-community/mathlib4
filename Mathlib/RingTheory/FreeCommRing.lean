@@ -6,7 +6,6 @@ Authors: Kenny Lau, Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.RingTheory.FreeRing
 
@@ -105,6 +104,7 @@ theorem of_ne_one (x : α) : of x ≠ 1 :=
 theorem one_ne_of (x : α) : 1 ≠ of x :=
   FreeAbelianGroup.of_injective.ne <| Multiset.zero_ne_singleton _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
     @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
     (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by
@@ -127,6 +127,7 @@ section lift
 
 variable {R : Type v} [CommRing R] (f : α → R)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- A helper to implement `lift`. This is essentially `FreeCommMonoid.lift`, but this does not
 currently exist. -/
@@ -226,7 +227,7 @@ def restriction (s : Set α) [DecidablePred (· ∈ s)] : FreeCommRing α →+* 
 
 section Restriction
 
-variable (s : Set α) [DecidablePred (· ∈ s)] (x y : FreeCommRing α)
+variable (s : Set α) [DecidablePred (· ∈ s)]
 
 @[simp]
 theorem restriction_of (p) : restriction s (of p) = if H : p ∈ s then of ⟨p, H⟩ else 0 :=
@@ -237,8 +238,7 @@ end Restriction
 theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   suffices IsSupported (of p) s → p ∈ s from ⟨this, fun hps => Subring.subset_closure ⟨p, hps, rfl⟩⟩
   fun hps : IsSupported (of p) s => by
-  classical
-  haveI := Classical.decPred s
+  have := Classical.decPred (· ∈ s)
   have : ∀ x, IsSupported x s →
         ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
     intro x hx
@@ -250,7 +250,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       rw [map_neg, map_one, Int.cast_neg, Int.cast_one]
     · rintro _ ⟨z, hzs, rfl⟩ _ _
       use 0
-      rw [map_mul, lift_of, if_pos hzs, zero_mul]
+      rw [map_mul, lift_of, ite_eq_left hzs, zero_mul]
       norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
       refine ⟨q + r, ?_⟩
@@ -265,7 +265,8 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   rcases this with ⟨w, H⟩
   rw [← Polynomial.C_eq_intCast] at H
   have : Polynomial.X.coeff 1 = (Polynomial.C ↑w).coeff 1 := by rw [H]; rfl
-  rwa [Polynomial.coeff_C, if_neg (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X, if_pos rfl] at this
+  rwa [Polynomial.coeff_C, ite_eq_right (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X,
+    ite_eq_left rfl] at this
 
 theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
@@ -275,7 +276,7 @@ theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
   · rw [map_neg, map_one]
     rfl
   · rintro _ ⟨p, hps, rfl⟩ n ih
-    rw [map_mul, restriction_of, dif_pos hps, map_mul, map_of, ih]
+    rw [map_mul, restriction_of, dite_eq_left hps, map_mul, map_of, ih]
   · intro x y ihx ihy
     rw [map_add, map_add, ihx, ihy]
 
@@ -358,6 +359,7 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
     rcases hx with ⟨x, rfl⟩; rcases hy with ⟨y, rfl⟩
     exact ⟨x * y, (FreeRing.lift _).map_mul _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
     @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
   funext x
@@ -383,7 +385,7 @@ def subsingletonEquivFreeCommRing [Subsingleton α] : FreeRing α ≃+* FreeComm
     apply Equiv.bijective)
 
 instance instCommRing [Subsingleton α] : CommRing (FreeRing α) :=
-  { inferInstanceAs (Ring (FreeRing α)) with
+  { (inferInstance : Ring (FreeRing α)) with
     mul_comm := fun x y => by
       rw [← (subsingletonEquivFreeCommRing α).symm_apply_apply (y * x),
         (subsingletonEquivFreeCommRing α).map_mul, mul_comm,
@@ -400,19 +402,19 @@ def freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ
     (by ext <;> simp) (by ext; simp)
 
 /-- The free commutative ring on the empty type is isomorphic to `ℤ`. -/
-def freeCommRingPemptyEquivInt : FreeCommRing PEmpty.{u + 1} ≃+* ℤ :=
+def freeCommRingPEmptyEquivInt : FreeCommRing PEmpty.{u + 1} ≃+* ℤ :=
   RingEquiv.trans (freeCommRingEquivMvPolynomialInt _) (MvPolynomial.isEmptyRingEquiv _ PEmpty)
 
 /-- The free commutative ring on a type with one term is isomorphic to `ℤ[X]`. -/
-def freeCommRingPunitEquivPolynomialInt : FreeCommRing PUnit.{u + 1} ≃+* ℤ[X] :=
-  (freeCommRingEquivMvPolynomialInt _).trans (MvPolynomial.pUnitAlgEquiv ℤ).toRingEquiv
+def freeCommRingPUnitEquivPolynomialInt : FreeCommRing PUnit.{u + 1} ≃+* ℤ[X] :=
+  (freeCommRingEquivMvPolynomialInt _).trans (MvPolynomial.uniqueAlgEquiv ℤ PUnit).toRingEquiv
 
 open FreeRing
 
 /-- The free ring on the empty type is isomorphic to `ℤ`. -/
-def freeRingPemptyEquivInt : FreeRing PEmpty.{u + 1} ≃+* ℤ :=
-  RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPemptyEquivInt
+def freeRingPEmptyEquivInt : FreeRing PEmpty.{u + 1} ≃+* ℤ :=
+  RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPEmptyEquivInt
 
 /-- The free ring on a type with one term is isomorphic to `ℤ[X]`. -/
-def freeRingPunitEquivPolynomialInt : FreeRing PUnit.{u + 1} ≃+* ℤ[X] :=
-  RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPunitEquivPolynomialInt
+def freeRingPUnitEquivPolynomialInt : FreeRing PUnit.{u + 1} ≃+* ℤ[X] :=
+  RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPUnitEquivPolynomialInt

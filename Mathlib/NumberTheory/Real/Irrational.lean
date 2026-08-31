@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Rat.Sqrt
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -19,7 +20,7 @@ In this file we define a predicate `Irrational` on `ℝ`, prove that the `n`-th 
 number is irrational if it is not integer, and that `√(q : ℚ)` is irrational if and only if
 `¬IsSquare q ∧ 0 ≤ q`.
 
-We also provide dot-style constructors like `Irrational.add_rat`, `Irrational.rat_sub` etc.
+We also provide dot-style constructors like `Irrational.add_ratCast`, `Irrational.ratCast_sub` etc.
 
 With the `Decidable` instances in this file, is possible to prove `Irrational √n` using `decide`,
 when `n` is a numeric literal or cast;
@@ -32,6 +33,7 @@ but this only works if you `unseal Nat.sqrt.iter in` before the theorem where yo
 open Rat Real
 
 /-- A real number is irrational if it is not equal to any rational number. -/
+@[wikidata Q607728]
 def Irrational (x : ℝ) :=
   x ∉ Set.range ((↑) : ℚ → ℝ)
 
@@ -40,6 +42,9 @@ theorem irrational_iff_ne_rational (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, b
 
 theorem Irrational.ne_rational {x : ℝ} (hx : Irrational x) (a b : ℤ) : x ≠ a / b := by
   rintro rfl; exact hx ⟨a / b, by simp⟩
+
+theorem exists_rat_of_not_irrational {x : ℝ} (hx : ¬ Irrational x) : ∃ (q : ℚ), x = q := by
+  grind [Irrational]
 
 /-- A transcendental real number is irrational. -/
 theorem Transcendental.irrational {r : ℝ} (tr : Transcendental ℚ r) : Irrational r := by

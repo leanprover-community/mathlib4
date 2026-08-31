@@ -5,8 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 
 /-!
 # Normalization of 2-morphisms in bicategories
@@ -30,7 +31,7 @@ universe w v u
 variable {B : Type u} [Bicategory.{w, v} B]
 
 variable {a b c d : B}
-variable {f f' g g' h i j : a ⟶ b}
+variable {f f' g h i j : a ⟶ b}
 
 @[nolint synTaut]
 theorem evalComp_nil_nil (α : f ≅ g) (β : g ≅ h) :

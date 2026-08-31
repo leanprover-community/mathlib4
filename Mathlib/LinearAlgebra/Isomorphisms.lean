@@ -21,9 +21,9 @@ public import Mathlib.LinearAlgebra.Quotient.Card
 
 universe u v
 
-variable {R M M₂ M₃ : Type*}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-variable [Module R M] [Module R M₂] [Module R M₃]
+variable {R M M₂ : Type*}
+variable [Ring R] [AddCommGroup M] [AddCommGroup M₂]
+variable [Module R M] [Module R M₂]
 variable (f : M →ₗ[R] M₂)
 
 /-! The first and second isomorphism theorems for modules. -/
@@ -37,6 +37,8 @@ section IsomorphismLaws
 /-- The **first isomorphism law for modules**. The quotient of `M` by the kernel of `f` is linearly
 equivalent to the range of `f`. -/
 noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMap.range f :=
+  -- TODO: We should fix this definition so that `fₗ.quotKerEquivRange.toAddEquiv` is definitionally
+  -- equal to `QuotientAddGroup.quotientKerEquivRange f.toAddMonoidHom`.
   (LinearEquiv.ofInjective ((LinearMap.ker f).liftQ f <| le_rfl) <|
         ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ (le_refl (LinearMap.ker f))).trans
     (LinearEquiv.ofEq _ _ <| Submodule.range_liftQ _ _ _)
@@ -89,12 +91,14 @@ def quotientInfToSupQuotient (p p' : Submodule R M) :
       (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
   (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
     Function.Injective (quotientInfToSupQuotient p p') := by
   rw [← ker_eq_bot, quotientInfToSupQuotient, ker_liftQ_eq_bot]
   rw [ker_comp, ker_mkQ]
   exact fun ⟨x, hx1⟩ hx2 => ⟨hx1, hx2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
     Function.Surjective (quotientInfToSupQuotient p p') := by
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
@@ -166,7 +170,8 @@ theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk x) = mapQ S T LinearMap.id h x :=
   liftQ_apply _ _ _
 
--- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+-- @[simp]
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := rfl
 

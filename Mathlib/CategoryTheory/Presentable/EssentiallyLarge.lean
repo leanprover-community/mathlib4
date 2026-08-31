@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 
 /-!
 # Accessible categories are essentially large
@@ -17,7 +17,7 @@ of objects is in `Type (w + 1)` and whose types of morphisms are in `Type w`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

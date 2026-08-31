@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+
 /-!
 
 # Quadratic Algebra
@@ -19,20 +20,6 @@ and define some algebraic structures on it.
 
 * `QuadraticAlgebra R a b`:
   [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b` in `R`.
-
-## Warning
-If `R` is a ring, then `QuadraticAlgebra a b` is an `R`-algebra, and if `R` is of characteristic
-zero then the same holds for `QuadraticAlgebra a b`. In particular, in the very common case where
-`R` is `ℚ` and `a` and `b` are such that `QuadraticAlgebra a b` is a field, then
-`QuadraticAlgebra a b` is a `ℚ`-algebra in two ways, that are not definitionally equal. This is a
-known diamond for characteristic zero fields. If you are working in this setting you should start
-your file with
-```
-attribute [-instance] DivisionRing.toRatAlgebra
-```
-to keep the `CharZero` instance but to avoid having two `Algebra` instances. (Note that all the
-basic theorems about `QuadraticAlgebra` are stated using the general instance
-`Algebra R (QuadraticAlgebra a b)`, so you don't want to deactivate that one.)
 
 ## Tags
 
@@ -84,28 +71,18 @@ variable [Zero R]
 Note that, if `R` is a ring, you should use `algebraMap` instead of `C`. -/
 protected def C (x : R) : QuadraticAlgebra R a b := ⟨x, 0⟩
 
-@[deprecated (since := "2025-12-15")] alias coe := QuadraticAlgebra.C
-
 @[simp]
 theorem re_C : (.C r : QuadraticAlgebra R a b).re = r := rfl
-
-@[deprecated (since := "2025-12-15")] alias re_coe := re_C
 
 @[simp]
 theorem im_C : (.C r : QuadraticAlgebra R a b).im = 0 := rfl
 
-@[deprecated (since := "2025-12-15")] alias im_coe := im_C
-
 theorem C_injective : Function.Injective (.C : R → QuadraticAlgebra R a b) :=
   fun _ _ h => congr_arg re h
-
-@[deprecated (since := "2025-12-15")] alias coe_injective := C_injective
 
 @[simp]
 theorem C_inj {x y : R} : (.C x : QuadraticAlgebra R a b) = .C y ↔ x = y :=
   C_injective.eq_iff
-
-@[deprecated (since := "2025-12-15")] alias coe_inj := C_inj
 
 instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
 
@@ -116,13 +93,9 @@ instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
 @[simp]
 theorem C_zero : (.C 0 : QuadraticAlgebra R a b) = 0 := rfl
 
-@[deprecated (since := "2025-12-15")] alias coe_zero := C_zero
-
 @[simp]
 theorem C_eq_zero_iff {r : R} : (.C r : QuadraticAlgebra R a b) = 0 ↔ r = 0 := by
   rw [← C_zero, C_inj]
-
-@[deprecated (since := "2025-12-15")] alias coe_eq_zero_iff := C_eq_zero_iff
 
 instance : Inhabited (QuadraticAlgebra R a b) := ⟨0⟩
 
@@ -138,13 +111,9 @@ instance : One (QuadraticAlgebra R a b) := ⟨⟨1, 0⟩⟩
 @[simp]
 theorem C_one : (.C 1 : QuadraticAlgebra R a b) = 1 := rfl
 
-@[deprecated (since := "2025-12-15")] alias coe_one := C_one
-
 @[simp]
 theorem C_eq_one_iff {r : R} : (.C r : QuadraticAlgebra R a b) = 1 ↔ r = 1 := by
   rw [← C_one, C_inj]
-
-@[deprecated (since := "2025-12-15")] alias coe_eq_one_iff := C_eq_one_iff
 
 end One
 
@@ -175,8 +144,6 @@ variable [AddZeroClass R]
 theorem C_add (x y : R) : (.C (x + y) : QuadraticAlgebra R a b) = .C x + .C y := by
   ext <;> simp
 
-@[deprecated (since := "2025-12-15")] alias coe_add := C_add
-
 end AddZeroClass
 
 section Neg
@@ -200,8 +167,6 @@ section AddGroup
 theorem C_neg [NegZeroClass R] (x : R) : (.C (-x) : QuadraticAlgebra R a b) = -.C x := by
   ext <;> simp
 
-@[deprecated (since := "2025-12-15")] alias coe_neg := C_neg
-
 instance [Sub R] : Sub (QuadraticAlgebra R a b) where
   sub z w := ⟨z.re - w.re, z.im - w.im⟩
 
@@ -219,8 +184,6 @@ theorem mk_sub_mk [Sub R] (x1 y1 x2 y2 : R) :
 theorem C_sub (r1 r2 : R) [SubNegZeroMonoid R] :
     (.C (r1 - r2) : QuadraticAlgebra R a b) = .C r1 - .C r2 :=
   QuadraticAlgebra.ext rfl zero_sub_zero.symm
-
-@[deprecated (since := "2025-12-15")] alias coe_sub := C_sub
 
 end AddGroup
 
@@ -280,8 +243,6 @@ theorem C_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
     (.C (s • r) : QuadraticAlgebra R a b) = s • .C r :=
   QuadraticAlgebra.ext rfl (smul_zero _).symm
 
-@[deprecated (since := "2025-12-15")] alias coe_smul := C_smul
-
 instance [AddMonoid R] : AddMonoid (QuadraticAlgebra R a b) := fast_instance% by
   refine (equivProd a b).injective.addMonoid _ rfl ?_ ?_ <;> intros <;> rfl
 
@@ -315,8 +276,6 @@ theorem C_ofNat (n : ℕ) [n.AtLeastTwo] :
     (.C (ofNat(n) : R) : QuadraticAlgebra R a b) = ofNat(n) := by
   ext <;> rfl
 
-@[deprecated (since := "2025-12-15")] alias coe_ofNat := C_ofNat
-
 @[simp, norm_cast]
 theorem re_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
 
@@ -324,8 +283,6 @@ theorem re_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
 theorem im_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 
 theorem C_natCast (n : ℕ) : .C (n : R) = (↑n : QuadraticAlgebra R a b) := rfl
-
-@[deprecated (since := "2025-12-15")] alias coe_natCast := C_natCast
 
 @[scoped simp]
 theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).re = ofNat(n) := rfl
@@ -351,16 +308,14 @@ theorem im_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 
 theorem C_intCast (n : ℤ) : .C (n : R) = (n : QuadraticAlgebra R a b) := rfl
 
-@[deprecated (since := "2025-12-15")] alias coe_intCast := C_intCast
-
 end AddCommGroupWithOne
 
 section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring R]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (QuadraticAlgebra R a b) where
-  left_distrib _ _ _ := by ext <;> simpa using by simp [mul_add]; abel
-  right_distrib _ _ _ := by ext <;> simpa using by simp [mul_add, add_mul]; abel
+  left_distrib _ _ _ := by ext <;> simp [mul_add] <;> abel
+  right_distrib _ _ _ := by ext <;> simp [mul_add, add_mul] <;> abel
   zero_mul _ := by ext <;> simp
   mul_zero _ := by ext <;> simp
 
@@ -368,13 +323,9 @@ theorem C_mul_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
     (.C r * x : QuadraticAlgebra R a b) = r • x := by
   ext <;> simp
 
-@[deprecated (since := "2025-12-15")] alias coe_mul_eq_smul := C_mul_eq_smul
-
 @[simp]
 theorem C_mul (x y : R) : .C (x * y) = (.C x * .C y : QuadraticAlgebra R a b) := by
   ext <;> simp
-
-@[deprecated (since := "2025-12-15")] alias coe_mul := C_mul
 
 end NonUnitalNonAssocSemiring
 
@@ -431,6 +382,10 @@ noncomputable def basis : Module.Basis (Fin 2) R (QuadraticAlgebra R a b) :=
 theorem basis_repr_apply (x : QuadraticAlgebra R a b) :
     (basis a b).repr x = ![x.re, x.im] := rfl
 
+@[simp]
+theorem basis_apply_zero : basis a b 0 = 1 := by
+  ext <;> simp [basis]
+
 instance : Module.Finite R (QuadraticAlgebra R a b) := .of_basis (basis a b)
 
 instance : Module.Free R (QuadraticAlgebra R a b) := .of_basis (basis a b)
@@ -448,16 +403,15 @@ section CommSemiring
 variable [CommSemiring R]
 
 instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
-  mul_assoc _ _ _ := by ext <;> simpa using by ring
-  mul_comm _ _ := by ext <;> simpa using by ring
+  mul_assoc _ _ _ := by ext <;> simp <;> ring
+  mul_comm _ _ := by ext <;> simp <;> ring
 
-instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
-    Algebra S (QuadraticAlgebra R a b) where
+instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
-  algebraMap.map_mul' x y:= by ext <;> simp
+  algebraMap.map_mul' x y := by ext <;> simp
   algebraMap.map_zero' := by ext <;> simp
-  algebraMap.map_add' x y:= by ext <;> simp
+  algebraMap.map_add' x y := by ext <;> simp
   commutes' s z := by ext <;> simp [Algebra.commutes]
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
 
@@ -477,53 +431,38 @@ theorem algebraMap_re : (algebraMap R (QuadraticAlgebra R a b) r).re = r := rfl
 @[simp]
 theorem algebraMap_im : (algebraMap R (QuadraticAlgebra R a b) r).im = 0 := rfl
 
-instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
-    NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=
-  ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
+instance [Semiring S] [Module S R] [Module.IsTorsionFree S R] :
+    Module.IsTorsionFree S (QuadraticAlgebra R a b) :=
+  (linearEquivTuple ..).injective.moduleIsTorsionFree _ (by simp)
 
 @[simp]
 theorem C_pow (n : ℕ) (r : R) : (.C (r ^ n : R) : QuadraticAlgebra R a b) = (.C r) ^ n :=
   (algebraMap R (QuadraticAlgebra R a b)).map_pow r n
 
-@[deprecated (since := "2025-12-15")] alias coe_pow := C_pow
-
 theorem mul_C_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
     (x * .C r : QuadraticAlgebra R a b) = r • x := by
   rw [mul_comm, C_mul_eq_smul r x]
 
-@[deprecated (since := "2025-12-15")] alias mul_coe_eq_smul := mul_C_eq_smul
-
 @[simp]
 theorem C_eq_algebraMap : QuadraticAlgebra.C = (algebraMap R (QuadraticAlgebra R a b)) := rfl
 
-@[deprecated (since := "2025-12-15")] alias coe_algebraMap := C_eq_algebraMap
-
 theorem smul_C (r1 r2 : R) :
     r1 • (.C r2 : QuadraticAlgebra R a b) = .C (r1 * r2) := by rw [C_mul, C_mul_eq_smul]
-
-@[deprecated (since := "2025-12-15")] alias smul_coe := smul_C
 
 theorem algebraMap_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
     (algebraMap R (QuadraticAlgebra R a b) r) ∣ z ↔ r ∣ z.re ∧ r ∣ z.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp [dvd_mul_right, ← C_eq_algebraMap]
+    simp
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
     simp [QuadraticAlgebra.ext_iff, hr, hi, ← C_eq_algebraMap]
-
-@[deprecated (since := "2025-12-15")] alias coe_dvd_iff := algebraMap_dvd_iff
 
 @[simp]
 theorem algebraMap_dvd_iff_dvd {z w : R} :
     algebraMap R (QuadraticAlgebra R a b) z ∣ algebraMap R (QuadraticAlgebra R a b) w ↔ z ∣ w := by
   rw [algebraMap_dvd_iff]
-  constructor
-  · rintro ⟨hx, -⟩
-    simpa using hx
-  · simp [← C_eq_algebraMap]
-
-@[deprecated (since := "2025-12-15")] alias coe_dvd_iff_dvd := algebraMap_dvd_iff_dvd
+  simp
 
 end CommSemiring
 

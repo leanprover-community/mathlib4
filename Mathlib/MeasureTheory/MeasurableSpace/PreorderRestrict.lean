@@ -15,9 +15,7 @@ We prove that the map which restricts a function `f : (i : α) → X i` to eleme
 measurable.
 -/
 
-@[expose] public section
-
-open MeasureTheory
+public section
 
 namespace Preorder
 

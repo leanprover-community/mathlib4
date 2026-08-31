@@ -16,10 +16,10 @@ which contain `Set.univ` and are closed under intersections, the induced *naive*
 of sets in the limit is, in fact, a topological basis.
 -/
 
-@[expose] public section
+public section
 
 
-open TopologicalSpace Topology
+open TopologicalSpace
 
 open CategoryTheory
 
@@ -35,6 +35,7 @@ section CofilteredLimit
 
 variable {J : Type v} [Category.{w} J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
@@ -46,7 +47,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
     IsTopologicalBasis
       {U : Set C.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = C.π.app j ⁻¹' V} := by
   classical
-  convert IsTopologicalBasis.iInf_induced hT fun j (x : C.pt) => C.π.app j x using 1
+  convert! IsTopologicalBasis.iInf_induced hT fun j (x : C.pt) => C.π.app j x using 1
   · exact induced_of_isLimit C hC
   ext U0
   constructor
@@ -83,7 +84,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       refine this _ _ _ (univ _) (inter _) ?_
       intro e he
       dsimp [Vs]
-      rw [dif_pos he]
+      rw [dite_eq_left he]
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...
       rw [h2]
@@ -94,7 +95,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
-      simp [Vs, dif_pos he, ← Set.preimage_comp, ← coe_comp]
+      simp [Vs, dite_eq_left he, ← Set.preimage_comp, ← coe_comp]
 
 end CofilteredLimit
 

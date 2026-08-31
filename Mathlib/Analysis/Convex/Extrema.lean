@@ -17,14 +17,16 @@ We show that if a function `f : E → β` is convex, then a local minimum is als
 a global minimum, and likewise for concave functions.
 -/
 
-@[expose] public section
+public section
 
 
 variable {E β : Type*} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [IsTopologicalAddGroup E]
   [ContinuousSMul ℝ E] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
   [Module ℝ β] [IsOrderedModule ℝ β] [PosSMulReflectLE ℝ β] {s : Set E}
 
-open Set Filter Function Topology
+open Set Filter Function
+
+open scoped Topology
 
 /-- Helper lemma for the more general case: `IsMinOn.of_isLocalMinOn_of_convexOn`.
 -/
@@ -32,7 +34,7 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn_Icc {f : ℝ → β} {a b : ℝ} (a_
     (h_local_min : IsLocalMinOn f (Icc a b) a) (h_conv : ConvexOn ℝ (Icc a b) f) :
     IsMinOn f (Icc a b) a := by
   rintro c hc
-  dsimp only [mem_setOf_eq]
+  dsimp only [mem_ofPred_eq]
   rw [IsLocalMinOn, nhdsWithin_Icc_eq_nhdsGE a_lt_b] at h_local_min
   rcases hc.1.eq_or_lt with (rfl | a_lt_c)
   · exact le_rfl
@@ -66,7 +68,7 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn {f : E → β} {a : E} (a_in_s : a �
   have fg_min_on : IsMinOn (f ∘ g) (Icc 0 1 : Set ℝ) 0 := by
     refine IsMinOn.of_isLocalMinOn_of_convexOn_Icc one_pos fg_local_min_on ?_
     exact (h_conv.comp_affineMap g).subset h_maps (convex_Icc 0 1)
-  simpa only [hg0, hg1, comp_apply, mem_setOf_eq] using fg_min_on (right_mem_Icc.2 zero_le_one)
+  simpa only [hg0, hg1, comp_apply, mem_ofPred_eq] using fg_min_on (right_mem_Icc.2 zero_le_one)
 
 /-- A local maximum of a concave function is a global maximum, restricted to a set `s`. -/
 theorem IsMaxOn.of_isLocalMaxOn_of_concaveOn {f : E → β} {a : E} (a_in_s : a ∈ s)
@@ -76,7 +78,8 @@ theorem IsMaxOn.of_isLocalMaxOn_of_concaveOn {f : E → β} {a : E} (a_in_s : a 
 /-- A local minimum of a convex function is a global minimum. -/
 theorem IsMinOn.of_isLocalMin_of_convex_univ {f : E → β} {a : E} (h_local_min : IsLocalMin f a)
     (h_conv : ConvexOn ℝ univ f) : ∀ x, f a ≤ f x := fun x =>
-  (IsMinOn.of_isLocalMinOn_of_convexOn (mem_univ a) (h_local_min.on univ) h_conv) (mem_univ x)
+  (IsMinOn.of_isLocalMinOn_of_convexOn (mem_univ a) (h_local_min.isLocalMinOn univ) h_conv)
+    (mem_univ x)
 
 /-- A local maximum of a concave function is a global maximum. -/
 theorem IsMaxOn.of_isLocalMax_of_convex_univ {f : E → β} {a : E} (h_local_max : IsLocalMax f a)

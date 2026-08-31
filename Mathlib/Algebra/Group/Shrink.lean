@@ -7,17 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Action.TransferInstance
 public import Mathlib.Logic.Small.Defs
-public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Transfer group structures from `α` to `Shrink α`
 -/
 
-@[expose] public section
-
--- FIXME: `to_additive` is incompatible with `noncomputable section`.
--- See https://github.com/leanprover-community/mathlib4/issues/1074.
-suppress_compilation
+@[expose] public noncomputable section
 
 universe v
 variable {M α : Type*} [Small.{v} α]
@@ -77,7 +72,7 @@ lemma equivShrink_inv [Inv α] (x : α) : equivShrink α x⁻¹ = (equivShrink �
 namespace Shrink
 
 /-- Shrink `α` to a smaller universe preserves multiplication. -/
-@[to_additive /-- Shrink `α` to a smaller universe preserves addition. -/]
+@[to_additive (attr := simps!) /-- Shrink `α` to a smaller universe preserves addition. -/]
 def mulEquiv [Mul α] : Shrink.{v} α ≃* α := (equivShrink α).symm.mulEquiv
 
 @[to_additive]

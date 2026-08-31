@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Results on `MvPolynomial.expand`
@@ -15,24 +17,35 @@ In this file we prove results about `MvPolynomial.expand` that require more than
 available in `Mathlib.Algebra.*`.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
 variable {σ R : Type*} [CommSemiring R] (p : ℕ) [ExpChar R p]
 
-theorem expand_char {f : MvPolynomial σ R} :
+set_option backward.isDefEq.respectTransparency.types false in
+theorem map_frobenius_expand {f : MvPolynomial σ R} :
     (f.expand p).map (frobenius R p) = f ^ p :=
   f.induction_on' fun _ _ => by simp [monomial_pow, frobenius]
     fun _ _ ha hb => by rw [map_add, map_add, ha, hb, add_pow_expChar]
 
-theorem map_expand_char_pow (f : MvPolynomial σ R) (n : ℕ) :
-    map (frobenius R p ^ n) (expand (p ^ n) f) = f ^ p ^ n := by
+theorem map_iterateFrobenius_expand (f : MvPolynomial σ R) (n : ℕ) :
+    map (iterateFrobenius R p n) (expand (p ^ n) f) = f ^ p ^ n := by
   induction n with
-  | zero => simp [RingHom.one_def, map_id]
-  | succ _ n_ih =>
+  | zero => simp [map_id]
+  | succ k n_ih =>
     symm
-    rw [pow_succ, pow_mul, ← n_ih, ← expand_char, pow_succ', RingHom.mul_def, ← map_map, mul_comm,
-      expand_mul, ← map_expand]
+    conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
+    simp_rw [← map_frobenius_expand p, pow_succ', add_comm k, iterateFrobenius_add,
+      ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
+
+theorem _root_.FiniteField.MvPolynomial.expand_card {K : Type*} [Field K] [Fintype K]
+    (f : MvPolynomial σ K) : expand (Fintype.card K) f = f ^ Fintype.card K := by
+  obtain ⟨p, hp⟩ := CharP.exists K
+  rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
+  have : Fact p.Prime := ⟨hp⟩
+  dsimp at hn
+  rw [hn, ← map_iterateFrobenius_expand p, iterateFrobenius_eq_pow,
+    FiniteField.frobenius_pow hn, RingHom.one_def, map_id]
 
 end MvPolynomial

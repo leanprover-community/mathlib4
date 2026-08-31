@@ -16,12 +16,14 @@ some results on asymptotics as `x → 0` (those which are not just continuity st
 located here.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
 
-open Real Topology NNReal ENNReal Filter ComplexConjugate Finset Set
+open Real NNReal ENNReal Filter Set
+
+open scoped Topology
 
 /-!
 ## Limits at `+∞`
@@ -81,14 +83,17 @@ lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
   refine tendsto_exp_atTop.comp <| (tendsto_const_mul_atTop_iff_neg <| tendsto_id (α := ℝ)).mpr ?_
   exact (log_neg_iff hb₀).mpr hb₁
 
+lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
+    Tendsto (b ^ · : ℝ → ℝ) atTop atTop := by
+  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
+  refine tendsto_exp_atTop.comp <| (tendsto_const_mul_atTop_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
+  exact log_pos hb
+
 lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
     Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
   exact (log_pos_iff (by positivity)).mpr <| by aesop
-
-@[deprecated (since := "2025-08-24")]
-alias tendsto_rpow_atTop_of_base_gt_one := tendsto_rpow_atBot_of_base_gt_one
 
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
@@ -110,12 +115,12 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
 
 /-- The function `x ^ (1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_div : Tendsto (fun x => x ^ ((1 : ℝ) / x)) atTop (𝓝 1) := by
-  convert tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
+  convert! tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
   ring
 
 /-- The function `x ^ (-1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (𝓝 1) := by
-  convert tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
+  convert! tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
   ring
 
 /-- The function `exp(x) / x ^ s` tends to `+∞` at `+∞`, for any real number `s`. -/
@@ -240,9 +245,14 @@ theorem IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
   let ⟨_, hc, h'⟩ := h.exists_nonneg
   (h'.rpow hc hr hg).isBigO
 
-theorem IsTheta.rpow (hr : 0 ≤ r) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) (h : f =Θ[l] g) :
-    (fun x => f x ^ r) =Θ[l] fun x => g x ^ r :=
-  ⟨h.1.rpow hr hg, h.2.rpow hr hf⟩
+theorem IsTheta.rpow (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) (h : f =Θ[l] g) :
+    (fun x => f x ^ r) =Θ[l] fun x => g x ^ r := by
+  wlog hr : r ≥ 0 with rpow_pos
+  · rw [← isTheta_inv]
+    grw [← EventuallyEq.isTheta <| hf.mono fun x hfx ↦ Real.rpow_neg hfx r]
+    grw [← EventuallyEq.isTheta <| hg.mono fun x hgx ↦ Real.rpow_neg hgx r]
+    exact rpow_pos hf hg h <| by linarith
+  exact ⟨h.1.rpow hr hg, h.2.rpow hr hf⟩
 
 theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
     (fun x => f x ^ r) =o[l] fun x => g x ^ r := by
@@ -292,6 +302,23 @@ theorem IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow {f g : ℕ → E}
   rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
     (zero_le_one.trans ht) (a + b))]
   exact Real.rpow_le_rpow_of_exponent_le ht h
+
+/-- If `a ≤ b`, then `x^b = O(x^a)` as `x → 0`, `x ≥ 0`, unless `b = 0` and `a ≠ 0`. -/
+theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le_of_imp {a b : ℝ} (h : a ≤ b) (himp : b = 0 → a = 0) :
+    (· ^ b : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) :=
+  .of_bound' <| mem_of_superset (Icc_mem_nhdsGE one_pos) fun x hx ↦ by
+    simpa [Real.abs_rpow_of_nonneg hx.1, abs_of_nonneg hx.1]
+     using Real.rpow_le_rpow_of_exponent_ge_of_imp hx.1 hx.2 h fun _ ↦ himp
+
+/-- If `a ≤ b`, `b ≠ 0`, then `x^b = O(x^a)` as `x → 0`, `x ≥ 0`. -/
+theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le {a b : ℝ} (h : a ≤ b) (hb : b ≠ 0) :
+    (· ^ b : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) :=
+  .rpow_rpow_nhdsGE_zero_of_le_of_imp h (absurd · hb)
+
+/-- If `a ≤ 1`, then `x = O(x ^ a)` as `x → 0`, `x ≥ 0`. -/
+theorem IsBigO.id_rpow_of_le_one {a : ℝ} (ha : a ≤ 1) :
+    (id : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) := by
+  simpa using! rpow_rpow_nhdsGE_zero_of_le ha (by simp)
 
 end Asymptotics
 
@@ -354,7 +381,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
         filter_upwards [tendsto_log_atTop.eventually_ge_atTop 1] with x hx
         rw [Real.norm_of_nonneg (by positivity)]
         gcongr
-        exacts [hx, le_max_left _ _]
+        exact le_max_left _ _
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)
@@ -395,5 +422,5 @@ lemma tendsto_log_mul_self_nhdsLT_zero : Filter.Tendsto (fun x ↦ log x * x) (�
   nth_rewrite 3 [← neg_zero]
   refine (h.comp (tendsto_abs_nhdsNE_zero.mono_left ?_)).neg
   refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
-  simp only [Set.mem_Iio] at hx
+  push _ ∈ _ at hx
   simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]

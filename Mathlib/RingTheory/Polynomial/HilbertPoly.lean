@@ -12,6 +12,7 @@ public import Mathlib.Order.Interval.Set.Infinite
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.RingTheory.PowerSeries.WellKnown
 public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Hilbert polynomials
@@ -55,9 +56,9 @@ is exactly the Hilbert polynomial of the polynomial ring `ℚ[X_0,...,X_d]` view
 a graded module over itself. In fact, `Polynomial.preHilbertPoly F d k` is the
 same as `Polynomial.hilbertPoly ((X : F[X]) ^ k) (d + 1)` for any field `F` and
 `d k : ℕ` (see the lemma `Polynomial.hilbertPoly_X_pow_succ`). See also the lemma
-`Polynomial.preHilbertPoly_eq_choose_sub_add`, which states that if `CharZero F`,
-then for any `d k n : ℕ` with `k ≤ n`, `(Polynomial.preHilbertPoly F d k).eval (n : F)`
-equals `(n - k + d).choose d`.
+`Polynomial.preHilbertPoly_eq_choose_add_sub`, which states that if `CharZero F`,
+then for any `d k n : ℕ` with `k ≤ n + d`, `(Polynomial.preHilbertPoly F d k).eval (n : F)`
+equals `(n + d - k).choose d`.
 -/
 noncomputable def preHilbertPoly (d k : ℕ) : F[X] :=
   (d.factorial : F)⁻¹ • ((ascPochhammer F d).comp (Polynomial.X - (C (k : F)) + 1))
@@ -86,14 +87,21 @@ lemma leadingCoeff_preHilbertPoly [CharZero F] (d k : ℕ) :
     (preHilbertPoly F d k).leadingCoeff = (d ! : F)⁻¹ := by
   rw [leadingCoeff, natDegree_preHilbertPoly, coeff_preHilbertPoly_self]
 
-lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn : k ≤ n) :
-    (preHilbertPoly F d k).eval (n : F) = (n - k + d).choose d := by
+lemma preHilbertPoly_eq_choose_add_sub [CharZero F] (d : ℕ) {k n : ℕ} (hkn : k ≤ n + d) :
+    (preHilbertPoly F d k).eval (n : F) = (n + d - k).choose d := by
   have : (d ! : F) ≠ 0 := by norm_cast; positivity
-  calc
-  _ = (↑d !)⁻¹ * eval (↑(n - k + 1)) (ascPochhammer F d) := by simp [cast_sub hkn, preHilbertPoly]
-  _ = (n - k + d).choose d := by
-    rw [ascPochhammer_nat_eq_natCast_ascFactorial];
-    simp [field, ascFactorial_eq_factorial_mul_choose]
+  rcases le_or_gt k n with h | h
+  · calc
+    _ = (↑d !)⁻¹ * eval (↑(n - k + 1)) (ascPochhammer F d) := by simp [cast_sub h, preHilbertPoly]
+    _ = (n + d - k).choose d := by
+      rw [ascPochhammer_nat_eq_natCast_ascFactorial]
+      simp [field, ascFactorial_eq_factorial_mul_choose, Nat.sub_add_comm h]
+  · rw [Nat.choose_eq_zero_of_lt (by omega)]
+    simpa [preHilbertPoly] using
+      Or.inr ⟨k - n - 1, by omega, by rw [Nat.sub_sub, Nat.cast_sub h]; push_cast; ring⟩
+
+@[deprecated (since := "2026-08-25")]
+alias preHilbertPoly_eq_choose_sub_add := preHilbertPoly_eq_choose_add_sub
 
 variable {F}
 
@@ -169,12 +177,13 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
   | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
             exact coeff_eq_zero_of_natDegree_lt hn
   | succ d hd =>
-      simp only [eval_finset_sum, eval_smul, smul_eq_mul]
+      simp only [eval_finsetSum, eval_smul, smul_eq_mul]
       rw [← Finset.sum_coe_sort]
       have h_le (i : p.support) : (i : ℕ) ≤ n :=
         le_trans (le_natDegree_of_ne_zero <| mem_support_iff.1 i.2) hn.le
       have h (i : p.support) : eval ↑n (preHilbertPoly F d ↑i) = (n + d - ↑i).choose d := by
-        rw [preHilbertPoly_eq_choose_sub_add _ _ (h_le i), Nat.sub_add_comm (h_le i)]
+        rw [preHilbertPoly_eq_choose_add_sub _ _ (Nat.le_add_right_of_le (h_le i)),
+          Nat.sub_add_comm (h_le i)]
       simp_rw [h]
       rw [Finset.sum_coe_sort _ (fun x => (p.coeff ↑x) * (_ + d - ↑x).choose _),
         PowerSeries.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
@@ -201,7 +210,7 @@ theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     apply eq_of_infinite_eval_eq h (hilbertPoly p d)
     apply ((Set.Ioi_infinite (max N p.natDegree)).image cast_injective.injOn).mono
     rintro x ⟨n, hn, rfl⟩
-    simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hn ⊢
+    simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_ofPred_eq] at hn ⊢
     rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn.2, hhN n hn.1]
 
 /--
@@ -257,7 +266,7 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
     apply le_trans (natDegree_smul_le _ _)
     rw [natDegree_preHilbertPoly]
   · have : (fun (x : ℕ) (a : F) => a) = fun x a => a * 1 ^ x := by simp only [one_pow, mul_one]
-    simp only [finset_sum_coeff, coeff_smul, smul_eq_mul, coeff_preHilbertPoly_self,
+    simp only [finsetSum_coeff, coeff_smul, smul_eq_mul, coeff_preHilbertPoly_self,
       ← Finset.sum_mul, ← sum_def _ (fun _ a => a), this, ← eval_eq_sum, eval_mul, eval_pow,
       eval_neg, eval_one, _root_.mul_eq_zero, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq,
       false_and, or_false, inv_eq_zero, cast_eq_zero, not_or]

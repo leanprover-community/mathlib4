@@ -16,7 +16,7 @@ endpoints in the range.  This is expressed in this file using `Set.surjOn`, and 
 permutations of interval endpoints.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*} {β : Type*} [LinearOrder α] [PartialOrder β] {f : α → β}
@@ -46,7 +46,7 @@ theorem surjOn_Ico_of_monotone_surjective (h_mono : Monotone f) (h_surj : Functi
 
 theorem surjOn_Ioc_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a b : α) : SurjOn f (Ioc a b) (Ioc (f a) (f b)) := by
-  simpa using surjOn_Ico_of_monotone_surjective h_mono.dual h_surj (toDual b) (toDual a)
+  simpa using! surjOn_Ico_of_monotone_surjective h_mono.dual h_surj (toDual b) (toDual a)
 
 -- to see that the hypothesis `a ≤ b` is necessary, consider a constant function
 theorem surjOn_Icc_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)

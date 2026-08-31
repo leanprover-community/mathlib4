@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.RingTheory.Coprime.Lemmas
-public meta import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Tactic.NormNum.GCD
 
 /-! # `norm_num` extension for `IsCoprime`
 
@@ -18,7 +18,7 @@ it does not correspond to the usual notion of coprime.)
 
 public meta section
 
-namespace Tactic
+namespace Mathlib.Meta
 
 namespace NormNum
 
@@ -64,4 +64,4 @@ def evalIntIsCoprime : NormNumExt where eval {_ _} e := do
 
 end NormNum
 
-end Tactic
+end Mathlib.Meta

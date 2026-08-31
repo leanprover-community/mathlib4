@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
-public import Mathlib.Tactic.Abel
 
 /-!
 # The Pochhammer polynomials
@@ -224,7 +223,7 @@ theorem ascPochhammer_nat_eval_succ (r : ℕ) :
   | 0 => by
     by_cases h : r = 0
     · simp only [h, zero_mul, zero_add]
-    · simp only [ascPochhammer_eval_zero, zero_mul, if_neg h, mul_zero]
+    · simp only [ascPochhammer_eval_zero, zero_mul, ite_eq_right h, mul_zero]
   | k + 1 => by simp only [ascPochhammer_nat_eq_ascFactorial, Nat.succ_ascFactorial, add_right_comm]
 
 theorem ascPochhammer_eval_succ (r n : ℕ) :
@@ -446,7 +445,7 @@ theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
       | inr h =>
         exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
   · obtain ⟨rn, hrn, rnn⟩ := hrn
-    convert ascPochhammer_eval_neg_coe_nat_of_lt hrn
+    convert! ascPochhammer_eval_neg_coe_nat_of_lt hrn
     simp [rnn]
 
 /-- `descPochhammer R n` is `0` for `0, 1, …, n-1`. -/

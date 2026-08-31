@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Group.Hom.Instances
 
 /-! # Zero-related `•` instances on group-like morphisms -/
 
-@[expose] public section
+public section
 
 variable {M N A B C : Type*}
 
@@ -22,7 +22,7 @@ variable [Zero A] [Zero B] [Zero C]
 instance [SMulZeroClass M B] : SMulZeroClass M (ZeroHom A B) where
   smul r f :=
     { toFun a := r • f a
-      map_zero' := by simp only [map_zero, smul_zero]  }
+      map_zero' := by simp only [map_zero, smul_zero] }
   smul_zero _ := ext fun _ => smul_zero _
 
 @[norm_cast] theorem coe_smul [SMulZeroClass M B] (m : M) (f : ZeroHom A B) : ⇑(m • f) = m • f :=

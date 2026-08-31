@@ -96,6 +96,7 @@ lemma hom_ext {Z : C} {φ φ' : X₂ ⟶ Z}
   apply Cofan.IsColimit.hom_ext c.isColimit₂
   simpa [cell_def] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `f'` are isomorphic morphisms and the target of `f`
 is obtained by attaching cells to the source of `f`,
 then the same holds for `f'`. -/
@@ -137,6 +138,7 @@ section
 variable {α' : Type t'} {A' B' : α' → C} (g' : ∀ i', A' i' ⟶ B' i')
   (a : α → α') (ha : ∀ (i : α), Arrow.mk (g i) ≅ Arrow.mk (g' (a i)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a family of maps `g` is contained in another family `g'` (up to isomorphisms),
 if `f : X₁ ⟶ X₂` is a morphism, and `X₂` is obtained from `X₁` by attaching cells
 of the form `g`, then it is also obtained by attaching cells of the form `g'`. -/
@@ -153,14 +155,14 @@ def reindexCellTypes : AttachCells g' f where
       Discrete.natIso (fun ⟨i⟩ ↦ Arrow.leftFunc.mapIso (ha (c.π i)))
     refine (IsColimit.precomposeHomEquiv e _).1
       (IsColimit.ofIsoColimit c.isColimit₁ (Cofan.ext (Iso.refl _) (fun i ↦ ?_)))
-    simp [Cocones.precompose, e, Cofan.inj]
+    simp [Cocone.precompose, e, Cofan.inj]
   isColimit₂ := by
     let e : Discrete.functor (fun i ↦ B (c.π i)) ≅
         Discrete.functor (fun i ↦ B' (a (c.π i))) :=
       Discrete.natIso (fun ⟨i⟩ ↦ Arrow.rightFunc.mapIso (ha (c.π i)))
     refine (IsColimit.precomposeHomEquiv e _).1
       (IsColimit.ofIsoColimit c.isColimit₂ (Cofan.ext (Iso.refl _) (fun i ↦ ?_)))
-    simp [Cocones.precompose, e, Cofan.inj]
+    simp [Cocone.precompose, e, Cofan.inj]
   m := c.m
   g₁ := c.g₁
   g₂ := c.g₂
@@ -170,6 +172,7 @@ end
 
 end AttachCells
 
+set_option backward.isDefEq.respectTransparency false in
 open MorphismProperty in
 lemma nonempty_attachCells_iff :
     Nonempty (AttachCells.{w} g f) ↔ (coproducts.{w} (ofHoms g)).pushouts f := by
@@ -191,10 +194,10 @@ lemma nonempty_attachCells_iff :
       cofan₂ := Cofan.mk c₂.pt (fun i ↦ (e₂ i).inv ≫ c₂.ι.app ⟨i⟩)
       isColimit₁ :=
         (IsColimit.precomposeHomEquiv (Discrete.natIso (fun ⟨i⟩ ↦ e₁ i)) _).1
-          (IsColimit.ofIsoColimit h₁ (Cocones.ext (Iso.refl _) (by simp)))
+          (IsColimit.ofIsoColimit h₁ (Cocone.ext (Iso.refl _) (by simp)))
       isColimit₂ :=
         (IsColimit.precomposeHomEquiv (Discrete.natIso (fun ⟨i⟩ ↦ e₂ i)) _).1
-          (IsColimit.ofIsoColimit h₂ (Cocones.ext (Iso.refl _) (by simp)))
+          (IsColimit.ofIsoColimit h₂ (Cocone.ext (Iso.refl _) (by simp)))
       hm i := by simp [e₁, e₂]
       isPushout := sq, .. }⟩
 

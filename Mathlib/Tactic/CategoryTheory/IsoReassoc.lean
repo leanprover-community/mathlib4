@@ -5,7 +5,7 @@ Authors: Robin Carlier
 -/
 module
 
-public meta import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.Iso
 
 /-!
 # Extension of `reassoc` to isomorphisms.
@@ -25,9 +25,9 @@ that are already right associated.
 public meta section
 
 open Lean Meta Elab Tactic
-open Mathlib.Tactic
+open CategoryTheory
 
-namespace CategoryTheory
+namespace Mathlib.Tactic.Reassoc
 
 theorem Iso.eq_whisker {C : Type*} [Category* C]
     {X Y : C} {f g : X ≅ Y} (w : f = g) {Z : C} (h : Y ≅ Z) :
@@ -57,4 +57,4 @@ def reassocExprIso (e : Expr) : MetaM (Expr × Array MVarId) := do
 
 initialize registerReassocExpr reassocExprIso
 
-end CategoryTheory
+end Mathlib.Tactic.Reassoc

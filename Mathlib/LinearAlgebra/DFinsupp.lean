@@ -39,6 +39,8 @@ function with finite support, module, linear algebra
 
 @[expose] public section
 
+open Module
+
 variable {ι ι' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
 namespace DFinsupp
@@ -127,10 +129,10 @@ def domLCongr (e : ι ≃ ι') : (Π₀ i, M i) ≃ₗ[R] (Π₀ i, M (e.symm i)
 
 /-- `DFinsupp.sigmaCurryEquiv` as a linear equivalence.
 
-This is the `DFinsupp` version of `Finsupp.finsuppProdLEquiv`. -/
+This is the `DFinsupp` version of `Finsupp.curryLinearEquiv`. -/
 @[simps! apply symm_apply]
 def sigmaCurryLEquiv {α : ι → Type*} {M : (i : ι) → α i → Type*}
-    [Π i j, AddCommMonoid (M i j)] [Π i j, Module R (M i j)] [DecidableEq ι] :
+    [Π i j, AddCommMonoid (M i j)] [Π i j, Module R (M i j)] :
     (Π₀ (i : (x : ι) × α x), M i.fst i.snd) ≃ₗ[R] Π₀ (i : ι) (j : α i), M i j where
   __ := DFinsupp.sigmaCurryEquiv
   map_add' _ _ := by ext; rfl
@@ -145,6 +147,7 @@ def linearEquivFunOnFintype [Fintype ι] : (Π₀ i, M i) ≃ₗ[R] (Π i, M i) 
   map_add' _ _ := by ext; rfl
   map_smul' _ _ := by ext; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `DFinsupp` version of `Finsupp.lsum`.
 
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
@@ -208,6 +211,7 @@ section AddCommMonoid
 variable [∀ i, AddCommMonoid (β i)] [∀ i, AddCommMonoid (β₁ i)] [∀ i, AddCommMonoid (β₂ i)]
 variable [∀ i, Module R (β i)] [∀ i, Module R (β₁ i)] [∀ i, Module R (β₂ i)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mker_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
     AddMonoidHom.mker (mapRange.addMonoidHom f) =
       (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap coeFnAddMonoidHom := by
@@ -258,7 +262,7 @@ theorem mapRange.linearMap_comp (f : ∀ i, β₁ i →ₗ[R] β₂ i) (f₂ : �
 theorem sum_mapRange_index.linearMap [DecidableEq ι] {f : ∀ i, β₁ i →ₗ[R] β₂ i}
     {h : ∀ i, β₂ i →ₗ[R] N} {l : Π₀ i, β₁ i} :
     DFinsupp.lsum ℕ h (mapRange.linearMap f l) = DFinsupp.lsum ℕ (fun i => (h i).comp (f i)) l := by
-  classical simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
+  classical simpa [DFinsupp.sumAddHom_apply] using! sum_mapRange_index fun i => by simp
 
 lemma ker_mapRangeLinearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) :
     LinearMap.ker (mapRange.linearMap f) =
@@ -486,7 +490,7 @@ theorem iSupIndep_iff_forall_dfinsupp (p : ι → Submodule R N) :
   refine forall_congr' fun i => Subtype.forall'.trans ?_
   simp_rw [Submodule.coe_eq_zero]
 
-/- If `DFinsupp.lsum` applied with `Submodule.subtype` is injective then the submodules are
+/-- If `DFinsupp.lsum` applied with `Submodule.subtype` is injective then the submodules are
 iSupIndep. -/
 theorem iSupIndep_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
     (h : Function.Injective (lsum ℕ fun i => (p i).subtype)) :
@@ -495,11 +499,11 @@ theorem iSupIndep_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
   intro i x v hv
   replace hv : lsum ℕ (fun i => (p i).subtype) (erase i v) =
       lsum ℕ (fun i => (p i).subtype) (single i x) := by
-    simpa only [lsum_single] using hv
+    simpa only [lsum_single] using! hv
   have := DFunLike.ext_iff.mp (h hv) i
-  simpa [eq_comm] using this
+  simpa [eq_comm] using! this
 
-/- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
+/-- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 submonoids are independent. -/
 theorem iSupIndep_of_dfinsuppSumAddHom_injective (p : ι → AddSubmonoid N)
     (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : iSupIndep p := by
@@ -544,7 +548,7 @@ theorem iSupIndep.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : iSupIn
   rw [iSupIndep_iff_forall_dfinsupp] at h
   suffices LinearMap.ker (lsum ℕ fun i => (p i).subtype) = ⊥ by
     -- Lean can't find this without our help
-    letI thisI : AddCommGroup (Π₀ i, p i) := inferInstance
+    let thisI : AddCommGroup (Π₀ i, p i) := inferInstance
     rw [LinearMap.ker_eq_bot] at this
     exact this
   rw [LinearMap.ker_eq_bot']
@@ -573,7 +577,7 @@ theorem iSupIndep_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
   ⟨iSupIndep.dfinsupp_lsum_injective, iSupIndep_of_dfinsupp_lsum_injective p⟩
 
 omit [DecidableEq ι] in
-theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
+theorem iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v : ι → N),
     (∀ i ∈ s, v i ∈ p i) → (∑ i ∈ s, v i = 0) → ∀ i ∈ s, v i = 0 := by
   classical
@@ -597,17 +601,23 @@ theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) 
       simp at hf
       grind [Finsupp.sum, Finset.sum_congr]
 
+@[deprecated (since := "2026-04-08")]
+alias iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero := iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero
+
 omit [DecidableEq ι] in
-theorem iSupIndep_iff_finset_sum_eq_imp_eq (p : ι → Submodule R N) :
+theorem iSupIndep_iff_finsetSum_eq_imp_eq (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v w : ι → N),
     (∀ i ∈ s, v i ∈ p i ∧ w i ∈ p i) → (∑ i ∈ s, v i = ∑ i ∈ s, w i) → ∀ i ∈ s, v i = w i := by
-  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
+  rw [iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero]
   constructor
   · intro h s v w hvw
     simpa [sub_eq_zero] using h s (v - w) fun i hi => (p i).sub_mem (hvw i hi).1 (hvw i hi).2
   · intro h s v hv hv0
     specialize h s v 0
     simp_all
+
+@[deprecated (since := "2026-04-08")]
+alias iSupIndep_iff_finset_sum_eq_imp_eq := iSupIndep_iff_finsetSum_eq_imp_eq
 
 /-- A family of additive subgroups over an additive group are independent if and only if
 `DFinsupp.sumAddHom` applied with `AddSubgroup.subtype` is injective. -/
@@ -622,6 +632,7 @@ theorem iSupIndep_iff_dfinsuppSumAddHom_injective (p : ι → AddSubgroup N) :
   .ofBijective _ ⟨ind.dfinsupp_lsum_injective, by
     rwa [← LinearMap.range_eq_top, ← Submodule.iSup_eq_range_dfinsupp_lsum]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iSupIndep.linearEquiv_symm_apply {p : ι → Submodule R N} (ind : iSupIndep p)
     (iSup_top : ⨆ i, p i = ⊤) {i : ι} {x : N} (h : x ∈ p i) :
     (ind.linearEquiv iSup_top).symm x = .single i ⟨x, h⟩ := by
@@ -631,11 +642,10 @@ theorem iSupIndep.linearEquiv_symm_apply {p : ι → Submodule R N} (ind : iSupI
 forms a linearly independent family.
 
 See also `iSupIndep.linearIndependent'`. -/
-theorem iSupIndep.linearIndependent [NoZeroSMulDivisors R N] {ι} (p : ι → Submodule R N)
-    (hp : iSupIndep p) {v : ι → N} (hv : ∀ i, v i ∈ p i) (hv' : ∀ i, v i ≠ 0) :
-    LinearIndependent R v := by
-  let _ := Classical.decEq ι
-  let _ := Classical.decEq R
+theorem iSupIndep.linearIndependent [IsDomain R] [IsTorsionFree R N] {ι : Type*}
+    (p : ι → Submodule R N) (hp : iSupIndep p) {v : ι → N} (hv : ∀ i, v i ∈ p i)
+    (hv' : ∀ i, v i ≠ 0) : LinearIndependent R v := by
+  classical
   rw [linearIndependent_iff]
   intro l hl
   let a :=
@@ -650,11 +660,11 @@ theorem iSupIndep.linearIndependent [NoZeroSMulDivisors R N] {ι} (p : ι → Su
   simp only [coe_zero, Pi.zero_apply, ZeroMemClass.coe_zero, smul_eq_zero, ha] at this
   simpa
 
-theorem iSupIndep_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {ι} {v : ι → N}
-    (h_ne_zero : ∀ i, v i ≠ 0) : (iSupIndep fun i => R ∙ v i) ↔ LinearIndependent R v :=
-  let _ := Classical.decEq ι
-  ⟨fun hv => hv.linearIndependent _ (fun i => Submodule.mem_span_singleton_self <| v i) h_ne_zero,
-    fun hv => hv.iSupIndep_span_singleton⟩
+theorem iSupIndep_iff_linearIndependent_of_ne_zero [IsDomain R] [IsTorsionFree R N]
+    {ι : Type*} {v : ι → N} (h_ne_zero : ∀ i, v i ≠ 0) :
+    iSupIndep (R ∙ v ·) ↔ LinearIndependent R v where
+  mp hv := hv.linearIndependent _ (fun i => Submodule.mem_span_singleton_self <| v i) h_ne_zero
+  mpr hv := hv.iSupIndep_span_singleton
 
 end Ring
 
@@ -669,8 +679,6 @@ variable [Semiring R] [Semiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable {σ₁₂ : R →+* R₂}
 variable [Module R M] [Module R₂ M₂]
-
-open Submodule
 
 section DFinsupp
 

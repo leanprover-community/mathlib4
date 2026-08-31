@@ -85,7 +85,6 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
 
 namespace HeightOneSpectrum
 
-open Classical in
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
   let hx := IsLocalization.sec R⁰ (x : K)
@@ -93,16 +92,17 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
     (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {hx.fst}).factors : ℤ) -
       (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {(hx.snd : R)}).factors : ℤ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
     (v.valuationOfNeZeroToFun x : ℤᵐ⁰) = v.valuation K x := by
   classical
-  rw [show v.valuation K x = _ * _ by rfl]
+  rw [show v.valuation K x = _ * _ by rw [valuation_def]; rfl]
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
   simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
-    if_neg <| IsLocalization.sec_fst_ne_zero x.ne_zero,
-    if_neg (nonZeroDivisors.coe_ne_zero _),
+    ite_eq_right <| IsLocalization.sec_fst_ne_zero x.ne_zero,
+    ite_eq_right (nonZeroDivisors.coe_ne_zero _),
     ← exp_neg, ← exp_add, valuationOfNeZeroToFun, ← sub_eq_add_neg, exp]
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
@@ -175,7 +175,7 @@ theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => h
 
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/
 def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
-  toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K/n)
+  toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K / n)
   map_one' := funext fun _ => map_one _
   map_mul' x y := by simp only [Subgroup.coe_mul, map_mul]; rfl
 

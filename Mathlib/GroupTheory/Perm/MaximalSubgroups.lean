@@ -6,8 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.Jordan
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 /-! # Maximal subgroups of the symmetric groups
@@ -28,14 +26,14 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
   * Formalize the other cases of the classification.
     The next one should be the *imprimitive case*.
 
-## Reference
+## References
 
 The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 
@@ -176,7 +174,7 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
   have hα : Set.encard (_root_.Set.univ : Set α) = 2 := by
     rw [← Set.encard_add_encard_compl s]
     have : (1 + 1 : ENat) = 2 := by norm_num
-    convert this <;>
+    convert! this <;>
     · apply le_antisymm
       · assumption
       rw [one_le_encard_iff_nonempty, Set.nonempty_iff_ne_empty]
@@ -187,7 +185,7 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     exact finite_of_encard_eq_coe hα
   have hα : Nat.card α = 2 := by
     rw [← ENat.card_coe_set_eq, ENat.card_eq_coe_natCard, Nat.card_coe_set_eq, ncard_univ] at hα
-    exact ENat.coe_inj.mp hα
+    exact ENat.natCast_inj.mp hα
   have hα2 : Fact (Nat.card (Perm α)).Prime := by
     apply Fact.mk
     rw [Nat.card_perm, hα, Nat.factorial_two]
@@ -212,7 +210,7 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
     obtain ⟨g, hg, rfl⟩ := moves a ha b hb
     rw [stabilizer_compl] at hg
     exact ⟨⟨g, hG.le hg⟩, rfl⟩
-  · contrapose! hG
+  · contrapose hG
     apply not_lt_of_ge
     --  `G ≤ stabilizer (Equiv.Perm α) s`
     have : G = Subgroup.map G.subtype ⊤ := by
@@ -244,13 +242,7 @@ lemma subsingleton_of_ssubset_of_stabilizer_le
       toFun := Subtype.val
       map_smul' _ _ := rfl }
     exact hB.preimage f'
-  let φ : stabilizer M (s : Set α) → Perm (s : Set α) := MulAction.toPerm
-  let f : (s : Set α) →ₑ[φ] (s : Set α) := {
-    toFun := id
-    map_smul' _ _ := rfl }
-  have hf : Function.Bijective f := Function.bijective_id
-  rw [isPreprimitive_congr hG hf]
-  infer_instance
+  exact isPreprimitive_stabilizer_of_surjective _ hG
 
 lemma subsingleton_of_ssubset_of_stabilizer_Perm_le
     {B : Set α} {G : Subgroup (Perm α)} (hB : IsBlock G B)
@@ -275,7 +267,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
       rw [← inter_eq_self_of_subset_right hBs, ← Subtype.image_preimage_val]
       apply Set.Subsingleton.image hB'
     · -- `Subtype.val ⁻¹' B = s`
-      have hBs' : B = s := Set.Subset.antisymm hBs (by aesop)
+      have hBs' : B = s := Set.Subset.antisymm hBs (by simp_all)
       subst hBs'
       obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's
@@ -365,7 +357,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     apply hB.eq_univ_of_card_lt
     have : sᶜ.ncard ≤ B.ncard := ncard_le_ncard this
     rw [← Set.ncard_add_ncard_compl s]
-    linarith
+    lia
   -- The proof needs 4 steps
   /- Step 1 : `sᶜ` is not a block.
        This uses that `Nat.card s < Nat.card sᶜ`.
@@ -386,14 +378,15 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton :=
     -- uses Step 1
-    hB.subsingleton_of_ssubset_of_stabilizer_Perm_le (hBsc.ssubset_of_ne (by aesop)) hG'.le
+    hB.subsingleton_of_ssubset_of_stabilizer_Perm_le (hBsc.ssubset_of_ne (by lia)) hG'.le
   -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) : B.Subsingleton :=
     have := isPreprimitive_stabilizer_subgroup hG.le
     hB.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs
   -- Step 4 : `sᶜ ⊆ B`
   have _ := isMultiplyPretransitive α (s.ncard + 1)
-  apply IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le <;> grind
+  apply MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le <;>
+    grind
 
 /-- `MulAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,
 provided `s` and `sᶜ` are nonempty, and `Nat.card α ≠ 2 * Nat.card s`.
@@ -405,7 +398,7 @@ theorem isCoatom_stabilizer {s : Set α}
     IsCoatom (stabilizer (Perm α) s) := by
   obtain h | h | h := Nat.lt_trichotomy s.ncard sᶜ.ncard
   · exact isCoatom_stabilizer_of_ncard_lt_ncard_compl hs_nonempty h
-  · contrapose! hα
+  · contrapose hα
     rw [← Set.ncard_add_ncard_compl s, two_mul, ← h]
   · rw [← stabilizer_compl]
     apply isCoatom_stabilizer_of_ncard_lt_ncard_compl hsc_nonempty

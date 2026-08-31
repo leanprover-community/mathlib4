@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -55,15 +56,19 @@ open scoped Manifold ContDiff ENNReal
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
 -/
+@[implicit_reducible, wikidata Q644719]
 def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
   { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
+deriving TopologicalSpace
 
 /--
 The quadrant in `ℝ^n`, used to model manifolds with corners, made of all vectors with nonnegative
 coordinates.
 -/
+@[implicit_reducible]
 def EuclideanQuadrant (n : ℕ) : Type :=
   { x : EuclideanSpace ℝ (Fin n) // ∀ i : Fin n, 0 ≤ x i }
+deriving TopologicalSpace
 
 section
 
@@ -71,12 +76,6 @@ section
 without the following reducibility attribute (which is only set in this section). -/
 
 variable {n : ℕ}
-
-instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n) :=
-  instTopologicalSpaceSubtype
-
-instance : TopologicalSpace (EuclideanQuadrant n) :=
-  instTopologicalSpaceSubtype
 
 instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨0, by simp⟩⟩
 
@@ -112,11 +111,11 @@ instance EuclideanHalfSpace.pathConnectedSpace [NeZero n] :
 instance EuclideanQuadrant.pathConnectedSpace : PathConnectedSpace (EuclideanQuadrant n) :=
   isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
 
-instance [NeZero n] : LocPathConnectedSpace (EuclideanHalfSpace n) :=
-  EuclideanHalfSpace.convex.locPathConnectedSpace
+instance [NeZero n] : LocallyPathConnectedSpace (EuclideanHalfSpace n) :=
+  EuclideanHalfSpace.convex.locallyPathConnectedSpace
 
-instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
-  EuclideanQuadrant.convex.locPathConnectedSpace
+instance : LocallyPathConnectedSpace (EuclideanQuadrant n) :=
+  EuclideanQuadrant.convex.locallyPathConnectedSpace
 
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     range (Subtype.val : EuclideanHalfSpace n → _) = { y | 0 ≤ y 0 } :=
@@ -151,7 +150,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
-  simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
+  simpa only [mem_sdiff, mem_ofPred_eq, not_lt] using antisymm_iff
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -162,7 +161,7 @@ theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   let f i : PiLp p (fun _ : Fin n ↦ ℝ) → ℝ := fun x ↦ x i
   have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i) ⁻¹' Ici a := by
     ext; simp; rfl
-  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
+  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i) ⁻¹' Ioi a := by
     ext; simp; rfl
   rw [h, h', interior_iInter_of_finite]
   apply iInter_congr fun i ↦ ?_
@@ -242,6 +241,22 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
+lemma modelWithCornersEuclideanHalfSpace_toFun (n : ℕ) [NeZero n] :
+    (𝓡∂ n : _ → _) = Subtype.val := rfl
+
+@[simp]
+lemma modelWithCornersEuclideanHalfSpace_apply (n : ℕ) [NeZero n] {p : EuclideanHalfSpace n} :
+    (𝓡∂ n) p = p.val := rfl
+
+lemma modelWithCornersEuclideanHalfSpace_symm_apply {n : ℕ} [NeZero n]
+    (x : EuclideanSpace ℝ (Fin n)) :
+    (𝓡∂ n).symm x = ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩ := rfl
+
+lemma modelWithCornersEuclideanHalfSpace_symm_apply_of_le {n : ℕ} [NeZero n]
+    {x : EuclideanSpace ℝ (Fin n)} (hx : 0 ≤ x 0) :
+    (𝓡∂ n).symm x = ⟨x, hx⟩ := by
+  simp [modelWithCornersEuclideanHalfSpace_symm_apply, hx]
+
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
@@ -263,6 +278,19 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       apply range_euclideanHalfSpace
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
+@[simp]
+lemma modelWithCornersEuclideanQuadrant_apply (n : ℕ) {p : EuclideanQuadrant n} :
+    (modelWithCornersEuclideanQuadrant n) p = p.val := rfl
+
+lemma modelWithCornersEuclideanQuadrant_symm_apply {n : ℕ} (x : EuclideanSpace ℝ (Fin n)) :
+    (modelWithCornersEuclideanQuadrant n).symm x = ⟨toLp 2 fun i ↦ max (x i) 0,
+    fun i ↦ by simp only [le_sup_right]⟩ := rfl
+
+lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
+    {x : EuclideanSpace ℝ (Fin n)} (hx : ∀ i, 0 ≤ x i) :
+    (modelWithCornersEuclideanQuadrant n).symm x = ⟨x, hx⟩ := by
+  simp [modelWithCornersEuclideanQuadrant_symm_apply, hx]
+
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -272,14 +300,13 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
   invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
-  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_right,
-    imp_self, implies_true]
+  map_source' := by simp
   map_target' := by
-    simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
+    simp only [min_lt_iff, mem_ofPred_eq]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
-    simp only [mem_setOf_eq, mem_Icc] at hz h'z
+    simp only [mem_ofPred_eq, mem_Icc] at hz h'z
     simp only [Fin.isValue, sub_add_cancel, hz, inf_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
@@ -297,21 +324,25 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@PiLp.continuous_apply 2 (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuousOn_toFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have : Continuous fun (z : ℝ) (_ : Fin 1) => z - x :=
-      Continuous.sub (continuous_pi fun _ => continuous_id) continuous_const
-    exact (PiLp.continuous_toLp 2 _).comp <| this.comp continuous_subtype_val
-  continuousOn_invFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have A : Continuous fun z : ℝ => min (z + x) y :=
-      (continuous_id.add continuous_const).min continuous_const
-    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) ↦ z 0 := PiLp.continuous_apply 2 _ 0
-    exact (A.comp B).comp continuous_subtype_val
+  continuousOn_toFun := by fun_prop
+  continuousOn_invFun := by fun_prop
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
+
+lemma IccLeftChart_apply (z : Icc x y) :
+    IccLeftChart x y z = ⟨toLp 2 fun _ ↦ z.val - x, by aesop⟩ :=
+  rfl
+
+lemma IccLeftChart_symm_apply (x y : ℝ) [h : Fact (x < y)] (z : EuclideanHalfSpace 1) :
+    (IccLeftChart x y).symm z = ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩ :=
+  rfl
+
+lemma IccLeftChart_symm_apply_of_le {z : EuclideanHalfSpace 1} (hz : z.val 0 ≤ y - x) :
+    (IccLeftChart x y).symm z =
+      ⟨z.val 0 + x, by simpa [z.prop, hxy.out.le, ← le_add_neg_iff_add_le]⟩ := by
+  ext
+  simp only [IccLeftChart_symm_apply, inf_eq_left]
+  linarith
 
 namespace Fact.Manifold
 
@@ -336,7 +367,7 @@ lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.v
 lemma IccLeftChart_extend_bot_mem_frontier :
     (IccLeftChart x y).extend (𝓡∂ 1) ⊥ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
-    mem_setOf, PiLp.zero_apply]
+    mem_ofPred, PiLp.zero_apply]
 
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
@@ -348,14 +379,13 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   toFun z := ⟨toLp 2 fun _ ↦ y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
     ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩
-  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_left,
-    imp_self, implies_true]
+  map_source' := by simp
   map_target' := by
-    simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
+    simp only [lt_max_iff, mem_ofPred_eq]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
-    simp only [mem_setOf_eq, mem_Icc] at hz h'z
+    simp only [mem_ofPred_eq, mem_Icc] at hz h'z
     simp only [Fin.isValue, sub_eq_add_neg, neg_add_rev, neg_neg,
       add_neg_cancel_comm_assoc, hz, sup_of_le_left]
   right_inv' := by
@@ -374,19 +404,24 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@PiLp.continuous_apply 2 (Fin 1) (fun _ ↦ ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuousOn_toFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have : Continuous fun (z : ℝ) (_ : Fin 1) => y - z :=
-      continuous_const.sub (continuous_pi fun _ => continuous_id)
-    exact (PiLp.continuous_toLp 2 _).comp <| this.comp continuous_subtype_val
-  continuousOn_invFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have A : Continuous fun z : ℝ => max (y - z) x :=
-      (continuous_const.sub continuous_id).max continuous_const
-    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := PiLp.continuous_apply 2 _ 0
-    exact (A.comp B).comp continuous_subtype_val
+  continuousOn_toFun := by fun_prop
+  continuousOn_invFun := by fun_prop
+
+lemma IccRightChart_apply (z : Icc x y) :
+    IccRightChart x y z = ⟨toLp 2 fun _ ↦ y - z.val, by aesop⟩ :=
+  rfl
+
+lemma IccRightChart_symm_apply (x y : ℝ) [h : Fact (x < y)] (z : EuclideanHalfSpace 1) :
+    (IccRightChart x y).symm z =
+      ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩ :=
+  rfl
+
+lemma IccRightChart_symm_apply_of_le {z : EuclideanHalfSpace 1} (hz : z.val 0 ≤ y - x) :
+    (IccRightChart x y).symm z =
+      ⟨y - z.val 0, by simp [z.prop, sub_eq_add_neg, add_le_of_le_sub_left hz]⟩ := by
+  ext
+  simp only [IccRightChart_symm_apply, sup_eq_left]
+  linarith
 
 lemma IccRightChart_extend_top :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
@@ -396,7 +431,7 @@ lemma IccRightChart_extend_top :
 lemma IccRightChart_extend_top_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
-    mem_setOf, PiLp.zero_apply]
+    mem_ofPred, PiLp.zero_apply]
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
@@ -407,9 +442,9 @@ instance instIccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
   mem_chart_source z := by
     by_cases h' : z.val < y
-    · simp only [h', if_true]
+    · simp only [h', ite_true]
       exact h'
-    · simp only [h', if_false]
+    · simp only [h', ite_false]
       apply lt_of_lt_of_le h.out
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
@@ -452,12 +487,9 @@ lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
     rw [this]
     apply iff_of_true Icc_isBoundaryPoint_top (mem_insert_of_mem ⊥ rfl)
   · apply iff_of_false
-    · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using
+    · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using!
         Icc_isInteriorPoint_interior hp
-    · rw [mem_insert_iff, mem_singleton_iff]
-      push_neg
-      constructor <;> by_contra h <;> rw [congrArg Subtype.val h] at hp
-      exacts [left_mem_Ioo.mp hp, right_mem_Ioo.mp hp]
+    · rintro (rfl | rfl) <;> simp at hp
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
@@ -469,7 +501,7 @@ lemma boundary_product [I.Boundaryless] :
   rw [I.boundary_of_boundaryless_left, boundary_Icc]
 
 /-- The manifold structure on `[x, y]` is smooth. -/
-instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
+instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
       from fun z ↦ toLp 2 fun i ↦ -z i + (y - x)) :=
@@ -504,7 +536,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart,
       update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
-  ·-- `e = right chart`, `e' = right chart`
+  · -- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
@@ -514,6 +546,6 @@ section
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
-instance {n : WithTop ℕ∞} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by infer_instance
+instance {n : ℕ∞ω} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by infer_instance
 
 end

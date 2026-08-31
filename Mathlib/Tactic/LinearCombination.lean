@@ -5,13 +5,12 @@ Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Tactic.LinearCombination.Lemmas
-public meta import Mathlib.Tactic.Positivity.Core
-public meta import Mathlib.Tactic.Ring
-public meta import Mathlib.Tactic.Ring.Compare
+public import Mathlib.Tactic.LinearCombination.Lemmas
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring.Compare
 
 /-!
-# linear_combination Tactic
+# `linear_combination` Tactic
 
 In this file, the `linear_combination` tactic is created.  This tactic, which
 works over `CommRing`s, attempts to simplify the target by creating a linear combination
@@ -172,7 +171,7 @@ def elabLinearCombination (tk : Syntax)
       Prod.mk eq <$> `(Eq.refl 0)
     | .proof hypRel p => pure (hypRel, p)
   -- look up the lemma for the central `refine` in `linear_combination`
-  let (reduceLem, newGoalRel) : Name × Ineq := ← do
+  let (reduceLem, newGoalRel) : Name × Ineq ← do
     match Ineq.relImpRelData hypRel goalRel with
     | none => throwError "cannot prove an equality from inequality hypotheses"
     | some n => pure n

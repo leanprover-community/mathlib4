@@ -27,11 +27,11 @@ to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continu
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology
 
-variable {α β γ δ : Type*} [TopologicalSpace α]
+variable {α β : Type*} [TopologicalSpace α]
 
 /-!
 ## Properties of the neighborhood-within filter
@@ -93,14 +93,18 @@ theorem mem_nhdsWithin_iff_exists_mem_nhds_inter {t : Set α} {a : α} {s : Set 
     t ∈ 𝓝[s] a ↔ ∃ u ∈ 𝓝 a, u ∩ s ⊆ t :=
   (nhdsWithin_hasBasis (𝓝 a).basis_sets s).mem_iff
 
-theorem diff_mem_nhdsWithin_compl {x : α} {s : Set α} (hs : s ∈ 𝓝 x) (t : Set α) :
+theorem sdiff_mem_nhdsWithin_compl {x : α} {s : Set α} (hs : s ∈ 𝓝 x) (t : Set α) :
     s \ t ∈ 𝓝[tᶜ] x :=
-  diff_mem_inf_principal_compl hs t
+  sdiff_mem_inf_principal_compl hs t
 
-theorem diff_mem_nhdsWithin_diff {x : α} {s t : Set α} (hs : s ∈ 𝓝[t] x) (t' : Set α) :
+@[deprecated (since := "2026-06-03")] alias diff_mem_nhdsWithin_compl := sdiff_mem_nhdsWithin_compl
+
+theorem sdiff_mem_nhdsWithin_sdiff {x : α} {s t : Set α} (hs : s ∈ 𝓝[t] x) (t' : Set α) :
     s \ t' ∈ 𝓝[t \ t'] x := by
-  rw [nhdsWithin, diff_eq, diff_eq, ← inf_principal, ← inf_assoc]
+  rw [nhdsWithin, sdiff_eq, sdiff_eq, ← inf_principal, ← inf_assoc]
   exact inter_mem_inf hs (mem_principal_self _)
+
+@[deprecated (since := "2026-06-03")] alias diff_mem_nhdsWithin_diff := sdiff_mem_nhdsWithin_sdiff
 
 theorem nhds_of_nhdsWithin_of_nhds {s t : Set α} {a : α} (h1 : s ∈ 𝓝 a) (h2 : t ∈ 𝓝[s] a) :
     t ∈ 𝓝 a := by
@@ -111,21 +115,27 @@ theorem mem_nhdsWithin_iff_eventually {s t : Set α} {x : α} :
     t ∈ 𝓝[s] x ↔ ∀ᶠ y in 𝓝 x, y ∈ s → y ∈ t :=
   eventually_inf_principal
 
-theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
-    t ∈ 𝓝[s] x ↔ s =ᶠ[𝓝 x] (s ∩ t : Set α) := by
-  simp_rw [mem_nhdsWithin_iff_eventually, eventuallyEq_set, mem_inter_iff, iff_self_and]
+theorem mem_nhdsWithin_iff_eventuallyEqSet {s t : Set α} {x : α} :
+    t ∈ 𝓝[s] x ↔ s =ᶠ[𝓝 x] s ∩ t := by
+  simp_rw [mem_nhdsWithin_iff_eventually, eventuallyEqSet_iff, mem_inter_iff, iff_self_and]
+
+@[deprecated (since := "2026-08-14")]
+alias mem_nhdsWithin_iff_eventuallyEq := mem_nhdsWithin_iff_eventuallyEqSet
 
 lemma mem_nhdsWithin_inter_self {s t : Set α} {x : α} : t ∈ 𝓝[s ∩ t] x :=
-  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_assoc]
+  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp [inter_assoc]
 
 lemma mem_nhdsWithin_self_inter {s t : Set α} {x : α} : s ∈ 𝓝[s ∩ t] x :=
-  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_comm s t, inter_assoc]
+  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp [inter_comm s t, inter_assoc]
 
-theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
-  set_eventuallyEq_iff_inf_principal.symm
+theorem nhdsWithin_eq_iff_eventuallyEqSet {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
+  eventuallyEqSet_iff_inf_principal.symm
+
+@[deprecated (since := "2026-08-14")]
+alias nhdsWithin_eq_iff_eventuallyEq := nhdsWithin_eq_iff_eventuallyEqSet
 
 theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ t ∈ 𝓝[s] x :=
-  set_eventuallyLE_iff_inf_principal_le.symm.trans set_eventuallyLE_iff_mem_inf_principal
+  eventuallySubset_iff_inf_principal_le.symm.trans eventuallySubset_iff_mem_inf_principal
 
 theorem preimage_nhdsWithin_coinduced' {X : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
     (hs : s ∈ @nhds β (.coinduced (fun x : t => X x) inferInstance) (X a)) :
@@ -210,6 +220,10 @@ theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a �
 theorem nhds_eq_nhdsWithin_sup_nhdsWithin (b : α) {I₁ I₂ : Set α} (hI : Set.univ = I₁ ∪ I₂) :
     nhds b = nhdsWithin b I₁ ⊔ nhdsWithin b I₂ := by
   rw [← nhdsWithin_univ b, hI, nhdsWithin_union]
+
+lemma inter_mem_nhdsWithin_inter {a b c d : Set α} {x : α} (h : a ∈ 𝓝[b] x) (h' : c ∈ 𝓝[d] x) :
+    a ∩ c ∈ 𝓝[b ∩ d] x :=
+  inter_mem (nhdsWithin_mono _ inter_subset_left h) (nhdsWithin_mono _ inter_subset_right h')
 
 /-- If `L` and `R` are neighborhoods of `b` within sets whose union is `Set.univ`, then
 `L ∪ R` is a neighborhood of `b`. -/
@@ -298,14 +312,20 @@ theorem nhdsWithin_prod [TopologicalSpace β]
   rw [nhdsWithin_prod_eq]
   exact prod_mem_prod hu hv
 
-lemma Filter.EventuallyEq.mem_interior {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t)
+lemma Filter.EventuallyEqSet.mem_interior {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t)
     (h : x ∈ interior s) : x ∈ interior t := by
-  rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet] at hst
   simpa [mem_interior_iff_mem_nhds, ← nhdsWithin_eq_nhds, hst] using h
 
-lemma Filter.EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
+lemma Filter.EventuallyEqSet.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
     x ∈ interior s ↔ x ∈ interior t :=
   ⟨fun h ↦ hst.mem_interior h, fun h ↦ hst.symm.mem_interior h⟩
+
+@[deprecated (since := "2026-08-14")]
+alias Filter.EventuallyEq.mem_interior := Filter.EventuallyEqSet.mem_interior
+
+@[deprecated (since := "2026-08-14")]
+alias Filter.EventuallyEq.mem_interior_iff := Filter.EventuallyEqSet.mem_interior_iff
 
 section Pi
 
@@ -381,7 +401,7 @@ theorem tendsto_nhdsWithin_of_tendsto_nhds {f : α → β} {a : α} {s : Set α}
 
 theorem eventually_mem_of_tendsto_nhdsWithin {f : β → α} {a : α} {s : Set α} {l : Filter β}
     (h : Tendsto f l (𝓝[s] a)) : ∀ᶠ i in l, f i ∈ s := by
-  simp_rw [nhdsWithin_eq, tendsto_iInf, mem_setOf_eq, tendsto_principal, mem_inter_iff,
+  simp_rw [nhdsWithin_eq, tendsto_iInf, mem_ofPred_eq, tendsto_principal, mem_inter_iff,
     eventually_and] at h
   exact (h univ ⟨mem_univ a, isOpen_univ⟩).2
 
@@ -506,8 +526,20 @@ theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
   eventually_nhds_subtype_iff s a (¬ P ·) |>.not
 
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
-    Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
+    Tendsto f (𝓝[s] a) l ↔ Tendsto (s.domRestrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
+
+theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t) {J : Set s} {a : s} :
+    ClusterPt a (Filter.principal J) ↔ ∃ᶠ x in nhdsWithin a t, ∃ h : x ∈ s, (⟨x, h⟩ : s) ∈ J := by
+  rw [nhdsWithin_eq_map_subtype_coe (hst a.prop), Filter.frequently_map,
+    clusterPt_principal_iff_frequently,
+    Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap,
+    Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap, Subtype.coe_mk]
+  apply frequently_congr
+  apply Eventually.of_forall
+  intro x
+  simp only [SetCoe.exists, exists_and_left, exists_eq_left]
+  exact ⟨fun ⟨h, hx⟩ => ⟨hst h, h, hx⟩, fun ⟨_, hx⟩ => hx⟩
 
 /-!
 ## The `nhdsSetWithin`-filter
@@ -542,6 +574,9 @@ lemma nhdsSetWithin_singleton {x : α} {s : Set α} : 𝓝ˢ[s] {x} = 𝓝[s] x 
 lemma nhdsSetWithin_univ {s : Set α} : 𝓝ˢ[univ] s = 𝓝ˢ s := by
   simp [nhdsSetWithin]
 
+theorem mem_nhdsSet {s t : Set α} : s ∈ 𝓝ˢ t ↔ ∃ u ⊆ s, IsOpen u ∧ t ⊆ u := by
+  simp [← nhdsSetWithin_univ, mem_nhdsSetWithin, and_comm, and_assoc]
+
 @[simp]
 lemma nhdsSetWithin_univ' {s : Set α} : 𝓝ˢ[s] univ = 𝓟 s := by
   simp [nhdsSetWithin]
@@ -570,7 +605,7 @@ lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
 
 lemma mem_nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s u : Set α) :
     u ∈ @nhdsSet α (t.induced f) s ↔ ∃ v ∈ 𝓝ˢ (f '' s), f ⁻¹' v ⊆ u := by
-  letI := t.induced f
+  let := t.induced f
   simp_rw [mem_nhdsSet_iff_exists, isOpen_induced_iff]
   refine ⟨fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_, fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_⟩
   · refine ⟨v', ⟨v', hv'.1, ?_, subset_rfl⟩, hv'.2.trans_subset hv.2⟩

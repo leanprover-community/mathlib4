@@ -20,11 +20,12 @@ public import Mathlib.Tactic.MinImports
 
 open OrderDual Set
 
-variable {α β : Type*}
+variable {α β γ : Type*}
 
 namespace Set
 
 /-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
+@[simps apply]
 def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   toFun s := (Sum.inl ⁻¹' s, Sum.inr ⁻¹' s)
   invFun s := Sum.inl '' s.1 ∪ Sum.inr '' s.2
@@ -32,6 +33,36 @@ def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   right_inv s := by
     simp [preimage_image_eq _ Sum.inl_injective, preimage_image_eq _ Sum.inr_injective]
   map_rel_iff' := by simp [subset_def]
+
+@[simp]
+theorem sumEquiv_symm_apply {s : Set α × Set β} :
+    sumEquiv.symm s = Sum.inl '' s.1 ∪ Sum.inr '' s.2 := rfl
+
+theorem MapsTo.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β} {t : Set γ}
+    (hf : Set.MapsTo f s.1 t) (hg : Set.MapsTo g s.2 t) :
+    Set.MapsTo (Sum.elim f g) (Set.sumEquiv.symm s) t := by
+  rintro (a | b) <;> aesop
+
+theorem InjOn.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β}
+    (hf : Set.InjOn f s.1) (hg : Set.InjOn g s.2) (hfg : ∀ᵉ (a ∈ s.1) (b ∈ s.2), f a ≠ g b) :
+    Set.InjOn (Sum.elim f g) (Set.sumEquiv.symm s) := by
+  rintro (a₁ | b₁) h₁ (a₂ | b₂) h₂ heq <;> aesop
+
+section Preorder
+variable [Preorder α]
+
+/-- Order isomorphism between two equal sets. -/
+@[simps! apply symm_apply]
+def orderIsoOfEq (s t : Set α) (h : s = t) : s ≃o t where
+  toEquiv := equivOfEq h
+  map_rel_iff' := Iff.rfl
+
+@[deprecated (since := "2026-08-29")] alias _root_.OrderIso.Set.congr := orderIsoOfEq
+@[deprecated (since := "2026-08-29")] alias _root_.OrderIso.Set.congr_apply := orderIsoOfEq_apply
+@[deprecated (since := "2026-08-29")]
+alias _root_.OrderIso.Set.congr_symm_apply := orderIsoOfEq_symm_apply
+
+end Preorder
 
 end Set
 
@@ -45,30 +76,30 @@ theorem range_eq (e : α ≃o β) : Set.range e = Set.univ :=
   e.surjective.range_eq
 
 @[simp]
-theorem symm_image_image (e : α ≃o β) (s : Set α) : e.symm '' (e '' s) = s :=
+theorem symm_image_image (e : α ≃o β) (s : Set α) : e.symm '' e '' s = s :=
   e.toEquiv.symm_image_image s
 
 @[simp]
-theorem image_symm_image (e : α ≃o β) (s : Set β) : e '' (e.symm '' s) = s :=
+theorem image_symm_image (e : α ≃o β) (s : Set β) : e '' e.symm '' s = s :=
   e.toEquiv.image_symm_image s
 
 theorem image_eq_preimage_symm (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage_symm s
 
 @[simp]
-theorem preimage_symm_preimage (e : α ≃o β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=
+theorem preimage_symm_preimage (e : α ≃o β) (s : Set α) : e ⁻¹' e.symm ⁻¹' s = s :=
   e.toEquiv.preimage_symm_preimage s
 
 @[simp]
-theorem symm_preimage_preimage (e : α ≃o β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
+theorem symm_preimage_preimage (e : α ≃o β) (s : Set β) : e.symm ⁻¹' e ⁻¹' s = s :=
   e.toEquiv.symm_preimage_preimage s
 
 @[simp]
-theorem image_preimage (e : α ≃o β) (s : Set β) : e '' (e ⁻¹' s) = s :=
+theorem image_preimage (e : α ≃o β) (s : Set β) : e '' e ⁻¹' s = s :=
   e.toEquiv.image_preimage s
 
 @[simp]
-theorem preimage_image (e : α ≃o β) (s : Set α) : e ⁻¹' (e '' s) = s :=
+theorem preimage_image (e : α ≃o β) (s : Set α) : e ⁻¹' e '' s = s :=
   e.toEquiv.preimage_image s
 
 end LE
@@ -77,12 +108,10 @@ open Set
 
 variable [Preorder α]
 
-/-- Order isomorphism between two equal sets. -/
-@[simps! apply symm_apply]
-def setCongr (s t : Set α) (h : s = t) :
-    s ≃o t where
-  toEquiv := Equiv.setCongr h
-  map_rel_iff' := Iff.rfl
+@[deprecated (since := "2026-08-21")] alias setCongr := _root_.Set.orderIsoOfEq
+@[deprecated (since := "2026-08-21")] alias setCongr_apply := _root_.Set.orderIsoOfEq_apply
+@[deprecated (since := "2026-08-21")]
+alias setCongr_symm_apply := _root_.Set.orderIsoOfEq_symm_apply
 
 /-- Order isomorphism between `univ : Set α` and `α`. -/
 def Set.univ : (Set.univ : Set α) ≃o α where
@@ -122,7 +151,7 @@ protected noncomputable def orderIso :
 /-- A strictly monotone surjective function from a linear order is an order isomorphism. -/
 noncomputable def orderIsoOfSurjective : α ≃o β :=
   (h_mono.orderIso f).trans <|
-    (OrderIso.setCongr _ _ h_surj.range_eq).trans OrderIso.Set.univ
+    (Set.orderIsoOfEq _ _ h_surj.range_eq).trans OrderIso.Set.univ
 
 @[simp]
 theorem coe_orderIsoOfSurjective : (orderIsoOfSurjective f h_mono h_surj : α → β) = f :=
@@ -139,10 +168,35 @@ theorem orderIsoOfSurjective_self_symm_apply (b : β) :
 
 end StrictMono
 
+/-- Two order embeddings with the same range are equal if their domain has no nontrivial order
+automorphisms. -/
+lemma OrderEmbedding.eq_of_range_eq [Preorder α] [Preorder β] [Subsingleton (α ≃o α)]
+    {f g : α ↪o β} (h : Set.range f = Set.range g) : f = g := by
+  let e : α ≃o α := f.orderIso.trans ((Set.orderIsoOfEq _ _ h).trans g.orderIso.symm)
+  have he : e = OrderIso.refl α := Subsingleton.elim _ _
+  ext x
+  have : g (e x) = f x := congrArg Subtype.val <|
+    g.orderIso.apply_symm_apply (Set.orderIsoOfEq _ _ h (f.orderIso x))
+  simp_all
+
+/-- Two strictly monotone functions are equal provided that their ranges are equal, assuming the
+type of order automorphisms of the domain is a subsingleton. -/
+lemma StrictMono.eq_of_range_eq [LinearOrder α] [Preorder β]
+    [Subsingleton (α ≃o α)] {f g : α → β} (hf : StrictMono f) (hg : StrictMono g)
+    (h : Set.range f = Set.range g) : f = g := by
+  have : Set.range (OrderEmbedding.ofStrictMono f hf) = Set.range f := by simp
+  have : Set.range (OrderEmbedding.ofStrictMono g hg) = Set.range g := by simp
+  grind [OrderEmbedding.eq_of_range_eq]
+
 /-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
-lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [Preorder β] {f g : α ↪o β} :
-    Set.range f = Set.range g ↔ f = g := by
-  rw [f.strictMono.range_inj g.strictMono, DFunLike.coe_fn_eq]
+@[to_dual
+/-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/]
+lemma OrderEmbedding.range_inj_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] [Preorder β]
+    {f g : α ↪o β} : Set.range f = Set.range g ↔ f = g := by
+  rw [f.strictMono.range_inj_of_wellFoundedLT g.strictMono, DFunLike.coe_fn_eq]
+
+@[deprecated (since := "2026-08-13")]
+alias OrderEmbedding.range_inj := OrderEmbedding.range_inj_of_wellFoundedLT
 
 namespace OrderIso
 
@@ -153,7 +207,8 @@ instance subsingleton_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] [Preo
     Subsingleton (α ≃o β) := by
   refine ⟨fun f g ↦ ?_⟩
   rw [OrderIso.ext_iff, ← coe_toOrderEmbedding, ← coe_toOrderEmbedding, DFunLike.coe_fn_eq,
-    ← OrderEmbedding.range_inj, coe_toOrderEmbedding, coe_toOrderEmbedding, range_eq, range_eq]
+    ← OrderEmbedding.range_inj_of_wellFoundedLT, coe_toOrderEmbedding, coe_toOrderEmbedding,
+    range_eq, range_eq]
 
 instance subsingleton_of_wellFoundedLT' [LinearOrder β] [WellFoundedLT β] [Preorder α] :
     Subsingleton (α ≃o β) := by
@@ -177,6 +232,7 @@ instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Pre
 
 instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
@@ -187,6 +243,7 @@ protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
   right_inv y := by simp
   map_rel_iff' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
@@ -216,8 +273,8 @@ variable (α) [BooleanAlgebra α]
 /-- Taking complements as an order isomorphism to the order dual. -/
 @[simps!]
 def OrderIso.compl : α ≃o αᵒᵈ where
-  toFun := OrderDual.toDual ∘ HasCompl.compl
-  invFun := HasCompl.compl ∘ OrderDual.ofDual
+  toFun := OrderDual.toDual ∘ Compl.compl
+  invFun := Compl.compl ∘ OrderDual.ofDual
   left_inv := compl_compl
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le

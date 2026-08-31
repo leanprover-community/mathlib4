@@ -52,7 +52,7 @@ class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ] : Prop
 @[coe]
 def RingInvoClass.toRingInvo {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ] [RingInvoClass F R] (f : F) :
     RingInvo R :=
-  { (f : R ≃+* Rᵐᵒᵖ) with involution' := RingInvoClass.involution f }
+  { (RingEquivClass.toRingEquiv f : R ≃+* Rᵐᵒᵖ) with involution' := RingInvoClass.involution f }
 
 namespace RingInvo
 
@@ -79,6 +79,8 @@ instance : RingInvoClass (RingInvo R) R where
   map_mul f := f.map_mul'
   involution f := f.involution'
 
+instance : CoeOut (RingInvo R) (R ≃+* Rᵐᵒᵖ) where coe := toRingEquiv
+
 /-- Construct a ring involution from a ring homomorphism. -/
 def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) : RingInvo R :=
   { f with
@@ -91,11 +93,6 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
 theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 
--- We might want to restore the below instance if we remove `RingEquivClass.toRingEquiv`.
--- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
---   ⟨RingInvo.toRingEquiv⟩
-
-@[norm_cast]
 theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
   rfl
 

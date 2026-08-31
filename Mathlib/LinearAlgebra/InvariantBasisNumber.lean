@@ -40,7 +40,7 @@ It is also useful to consider the following stronger conditions:
 
 ## Instances
 
-- `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian.lean`) :
+- `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian/Orzech.lean`) :
   any left-Noetherian ring satisfies the Orzech property.
   This applies in particular to division rings.
 
@@ -103,7 +103,7 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -163,7 +163,7 @@ theorem card_le_of_injective' [StrongRankCondition R] {α β : Type*} [Fintype �
 
 /-- We say that `R` satisfies the rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` surjective
     implies `m ≤ n`. -/
-class RankCondition : Prop where
+@[mk_iff] class RankCondition : Prop where
   /-- Any surjective linear map from `Rⁿ` to `Rᵐ` guarantees `m ≤ n`. -/
   le_of_fin_surjective : ∀ {n m : ℕ} (f : (Fin n → R) →ₗ[R] Fin m → R), Surjective f → m ≤ n
 
@@ -201,7 +201,7 @@ instance (priority := 100) rankCondition_of_strongRankCondition [StrongRankCondi
 /-- We say that `R` has the invariant basis number property if `(Fin n → R) ≃ₗ[R] (Fin m → R)`
     implies `n = m`. This gives rise to a well-defined notion of rank of a finitely generated free
     module. -/
-class InvariantBasisNumber : Prop where
+@[mk_iff] class InvariantBasisNumber : Prop where
   /-- Any linear equiv between `Rⁿ` and `Rᵐ` guarantees `m = n`. -/
   eq_of_fin_equiv : ∀ {n m : ℕ}, ((Fin n → R) ≃ₗ[R] Fin m → R) → n = m
 
@@ -213,11 +213,11 @@ instance (priority := 100) invariantBasisNumber_of_rankCondition [RankCondition 
 /-- A semiring `R` satisfies the strong rank condition, iff we cannot embed `R^(ℕ)` in some `Rⁿ`. -/
 theorem strongRankCondition_iff_forall_not_injective :
     StrongRankCondition R ↔ ∀ n (f : (ℕ →₀ R) →ₗ[R] Fin n → R), ¬ Injective f := by
-  rw [strongRankCondition_iff_succ, ← not_iff_not]; push_neg
+  rw [strongRankCondition_iff_succ, ← not_iff_not]; push Not
   constructor <;> refine fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩
   · exact f.exists_finsupp_nat_of_fin_fun_injective inj
   · exact ⟨f ∘ₗ Finsupp.lmapDomain R R (↑) ∘ₗ (Finsupp.linearEquivFunOnFinite ..).symm.toLinearMap,
-      inj.comp <| by simpa using Finsupp.mapDomain_injective Fin.val_injective⟩
+      inj.comp <| by simpa using! Finsupp.mapDomain_injective Fin.val_injective⟩
 
 end
 
@@ -260,7 +260,7 @@ end
   We construct the isomorphism in two steps:
   1. We construct the ring `R^n/I^n`, show that it is an `R/I`-module and show that there is an
      isomorphism of `R/I`-modules `R^n/I^n ≃ (R/I)^n`. This isomorphism is called
-    `Ideal.piQuotEquiv` and is located in the file `RingTheory/Ideals.lean`.
+    `Ideal.piQuotEquiv` and is located in the file `Mathlib/RingTheory/Ideal/Quotient/Basic.lean`.
   2. We construct an isomorphism of `R/I`-modules `R^n/I^n ≃ R^m/I^m` using the isomorphism
      `R^n ≃ R^m`.
 -/
@@ -296,15 +296,20 @@ section
 
 attribute [local instance] Ideal.Quotient.field
 
-/-- Nontrivial commutative rings have the invariant basis number property.
+/--
+Nontrivial commutative rings satisfy the invariant basis number property.
 
-There are two stronger results in mathlib: `commRing_strongRankCondition`, which says that any
-nontrivial commutative ring satisfies the strong rank condition, and
-`rankCondition_of_nontrivial_of_commSemiring`, which says that any nontrivial commutative semiring
-satisfies the rank condition.
+There are two stronger results in mathlib:
+1.  `CommRing.orzechProperty` in `Mathlib.RingTheory.FiniteType`,
+    which says that any commutative ring satisfies the Orzech property, and hence
+    (by `strongRankCondition_of_orzechProperty`) that nontrivial commutative rings satisfy
+    the strong rank condition. A shortcut instance `commRing_strongRankCondition` is also provided.
+2.  `rankCondition_of_nontrivial_of_commSemiring` in
+    `Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber`, which says that
+    any nontrivial commutative semiring satisfies the rank condition.
 
-We prove this instance separately to avoid dependency on
-`Mathlib/LinearAlgebra/Charpoly/Basic.lean` or `Mathlib/LinearAlgebra/Matrix/ToLin.lean`. -/
+We prove this instance here anyway to reduce the required imports.
+-/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>

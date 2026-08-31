@@ -28,7 +28,7 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
 @[expose] public section
 
-variable {ι α R S : Type*}
+variable {α R S : Type*}
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy
@@ -54,7 +54,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : Absolut
 
 instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   map_zero f := (f.eq_zero' _).2 rfl
@@ -148,13 +148,13 @@ section Semiring
 section IsDomain
 
 -- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
--- `IsDomain`/`CancelMonoidWithZero` API
+-- `IsDomain`/`IsCancelMulZero` API
 variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
 @[simp]
 protected theorem map_one : abv 1 = 1 :=
-  abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
+  abv.map_one_of_isLeftRegular (IsRegular.of_ne_zero <| abv.ne_zero one_ne_zero).left
 
 instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.mulHomClass with
@@ -163,7 +163,7 @@ instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
 def toMonoidWithZeroHom : R →*₀ S :=
-  abv
+  .ofClass abv
 
 @[simp]
 theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=
@@ -185,7 +185,7 @@ omit [Nontrivial R] in
 /-- An absolute value satisfies `f (n : R) ≤ n` for every `n : ℕ`. -/
 lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
   cases subsingleton_or_nontrivial R
-  · simp [Subsingleton.eq_zero (n : R)]
+  · simp [Subsingleton.eq_zero (α := R)]
   induction n with
   | zero => simp
   | succ n ih =>
@@ -217,7 +217,6 @@ section OrderedCommRing
 variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R]
   (abv : AbsoluteValue R S) [NoZeroDivisors S]
 
-@[simp]
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
   refine
@@ -235,6 +234,11 @@ protected theorem le_add (a b : R) : abv a - abv b ≤ abv (a + b) := by
 @[bound]
 lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
   simpa only [← sub_eq_add_neg, AbsoluteValue.map_neg] using abv.add_le a (-b)
+
+instance addGroupSeminormClass : AddGroupSeminormClass (AbsoluteValue R S) R S where
+  toSubadditiveHomClass := AbsoluteValue.subadditiveHomClass
+  map_zero := AbsoluteValue.map_zero
+  map_neg_eq_map f a := AbsoluteValue.map_neg f a
 
 instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.subadditiveHomClass,
@@ -258,8 +262,7 @@ end OrderedCommRing
 
 section LinearOrderedRing
 
-variable {R S : Type*} [Semiring R] [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
-  (abv : AbsoluteValue R S)
+variable {S : Type*} [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
 @[simps]
@@ -313,7 +316,7 @@ def trivial : AbsoluteValue R S where
 
 @[simp]
 lemma trivial_apply {x : R} (hx : x ≠ 0) : AbsoluteValue.trivial (S := S) x = 1 :=
-  if_neg hx
+  ite_eq_right hx
 
 end trivial
 
@@ -346,7 +349,7 @@ omit [IsOrderedRing S] in
 lemma not_isNontrivial_iff (v : AbsoluteValue R S) :
     ¬ v.IsNontrivial ↔ ∀ x ≠ 0, v x = 1 := by
   simp only [IsNontrivial]
-  push_neg
+  push Not
   rfl
 
 omit [IsOrderedRing S] in
@@ -408,10 +411,15 @@ variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
 
 open Lean Meta Mathlib Meta Positivity Qq in
-/-- The `positivity` extension which identifies expressions of the form `abv a`. -/
+/-- The `positivity` extension which identifies expressions of the form `abv a`.
+For performance reasons, we only attempt to apply this when `abv` is a variable.
+If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should apply. -/
 @[positivity _]
-meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
+meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let (.app f a) ← whnfR e | throwError "not abv ·"
+  if !f.getAppFn.isFVar then
+    throwError "abv: function is not a variable"
   let pa' ← mkAppM ``abv_nonneg #[f, a]
   pure (.nonnegative pa')
 
@@ -528,7 +536,7 @@ variable {R : Type*} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValu
 omit [IsOrderedRing S] in
 theorem abv_one' : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one_of_isLeftRegular <|
-    (isRegular_of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
+    (IsRegular.of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
 def abvHom' : R →*₀ S where

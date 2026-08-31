@@ -15,11 +15,11 @@ This file upper- and lower-bounds the values of the geometric series $\sum_{i=0}
 $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof.
 -/
 
-@[expose] public section
+public section
 
 variable {K : Type*}
 
-open Finset MulOpposite
+open Finset
 
 section Semifield
 variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [CanonicallyOrderedAdd K]

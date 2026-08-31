@@ -6,7 +6,9 @@ Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Kim Morris
 module
 
 public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Tactic.FastInstance
@@ -16,12 +18,14 @@ public import Mathlib.Tactic.FastInstance
 
 For suitably structured underlying type `α`, we exhibit the structure of
 the unit intervals (`Set.Icc`, `Set.Ioc`, `Set.Ioc`, and `Set.Ioo`) from `0` to `1`.
-Note: Instances for the interval `Ici 0` are dealt with in `Algebra/Order/Nonneg.lean`.
+Note: Instances for the interval `Ici 0` are dealt with in
+`Mathlib/Algebra/Order/Nonneg/Basic.lean`.
 
 ## Main definitions
 
 The strongest typeclass provided on each interval is:
-* `Set.Icc.cancelCommMonoidWithZero`
+* `Set.Icc.commMonoidWithZero`
+* `Set.Icc.instIsCancelMulZero`
 * `Set.Ico.commSemigroup`
 * `Set.Ioc.commMonoid`
 * `Set.Ioo.commSemigroup`
@@ -109,7 +113,7 @@ theorem le_one {t : Icc (0 : R) 1} : t ≤ 1 :=
   t.2.2
 
 instance instMul : Mul (Icc (0 : R) 1) where
-  mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_le_one₀ p.2.2 q.2.1 q.2.2⟩⟩
+  mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
 
 instance instPow : Pow (Icc (0 : R) 1) ℕ where
   pow p n := ⟨p.1 ^ n, ⟨pow_nonneg p.2.1 n, pow_le_one₀ p.2.1 p.2.2⟩⟩
@@ -135,17 +139,19 @@ instance instCommMonoidWithZero {R : Type*} [CommSemiring R] [PartialOrder R] [I
     CommMonoidWithZero (Icc (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
-instance instCancelMonoidWithZero {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
+instance instIsCancelMulZero {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
     [NoZeroDivisors R] :
-    CancelMonoidWithZero (Icc (0 : R) 1) := fast_instance%
-  @Function.Injective.cancelMonoidWithZero R _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
-    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
+    IsCancelMulZero (Icc (0 : R) 1) :=
+  @Function.Injective.isCancelMulZero _ R _ _ _ _ _ Subtype.coe_injective coe_zero coe_mul
+    NoZeroDivisors.toIsCancelMulZero
 
-instance instCancelCommMonoidWithZero {R : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
-    [NoZeroDivisors R] :
-    CancelCommMonoidWithZero (Icc (0 : R) 1) := fast_instance%
-  @Function.Injective.cancelCommMonoidWithZero R _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
-    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
+/-- The coercion from `Set.Icc 0 1` as a `MonoidWithZeroHom`. -/
+@[simps]
+def coeMonoidWithZeroHom : (Icc (0 : R) 1) →*₀ R where
+  toFun := (↑)
+  map_mul' := coe_mul
+  map_one' := rfl
+  map_zero' := rfl
 
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 
@@ -199,7 +205,7 @@ theorem nonneg [Nontrivial R] {t : Ico (0 : R) 1} : 0 ≤ t :=
 
 instance instMul : Mul (Ico (0 : R) 1) where
   mul p q :=
-    ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_lt_one_of_nonneg_of_lt_one_right p.2.2.le q.2.1 q.2.2⟩⟩
+    ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ico (0 : R) 1) : ↑(x * y) = (x * y : R) :=
@@ -211,6 +217,12 @@ instance instSemigroup : Semigroup (Ico (0 : R) 1) := fast_instance%
 instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
     CommSemigroup (Ico (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
+
+/-- The coercion from `Set.Ico 0 1` as a `MulHom`. -/
+@[simps]
+def coeMulHom : (Ico (0 : R) 1) →ₙ* R where
+  toFun := (↑)
+  map_mul' := coe_mul
 
 end Set.Ico
 
@@ -254,7 +266,7 @@ theorem le_one {t : Ioc (0 : R) 1} : t ≤ 1 :=
   t.2.2
 
 instance instMul : Mul (Ioc (0 : R) 1) where
-  mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_le_one₀ p.2.2 (le_of_lt q.2.1) q.2.2⟩⟩
+  mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1.le⟩⟩
 
 instance instPow : Pow (Ioc (0 : R) 1) ℕ where
   pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one₀ (le_of_lt p.2.1) p.2.2⟩⟩
@@ -294,6 +306,13 @@ instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStric
     CancelCommMonoid (Ioc (0 : R) 1) :=
   { Set.Ioc.instCommMonoid, Set.Ioc.instCancelMonoid with }
 
+/-- The coercion from `Set.Ioc 0 1` as a `MonoidHom`. -/
+@[simps]
+def coeMonoidHom : (Ioc (0 : R) 1) →* R where
+  toFun := (↑)
+  map_mul' := coe_mul
+  map_one' := rfl
+
 end Set.Ioc
 
 /-! ### Instances for `↥(Set.Ioo 0 1)` -/
@@ -311,7 +330,7 @@ theorem lt_one (x : Ioo (0 : R) 1) : (x : R) < 1 :=
 
 instance instMul : Mul (Ioo (0 : R) 1) where
   mul p q :=
-    ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_lt_one_of_nonneg_of_lt_one_right p.2.2.le q.2.1.le q.2.2⟩⟩
+    ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioo (0 : R) 1) : ↑(x * y) = (x * y : R) :=
@@ -323,6 +342,12 @@ instance instSemigroup : Semigroup (Ioo (0 : R) 1) := fast_instance%
 instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     CommSemigroup (Ioo (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
+
+/-- The coercion from `Set.Ioo 0 1` as a `MulHom`. -/
+@[simps]
+def coeMulHom : (Ioo (0 : R) 1) →ₙ* R where
+  toFun := (↑)
+  map_mul' := coe_mul
 
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 

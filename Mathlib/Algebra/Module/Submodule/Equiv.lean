@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Module.Submodule.Range
 
 open Function
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {N : Type*}
 
@@ -29,15 +29,13 @@ variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable {module_M : Module R M} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-variable {σ₃₂ : R₃ →+* R₂}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
-variable {re₂₃ : RingHomInvPair σ₂₃ σ₃₂} {re₃₂ : RingHomInvPair σ₃₂ σ₂₃}
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₁] M) (e : M ≃ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃] M₃)
 variable (p q : Submodule R M)
 
 /-- Linear equivalence between two equal submodules. -/
 def ofEq (h : p = q) : p ≃ₗ[R] q :=
-  { Equiv.setCongr (congr_arg _ h) with
+  { Set.equivOfEq (congr_arg _ h) with
     map_smul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
@@ -61,12 +59,14 @@ def ofSubmodules (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M
   (e.submoduleMap p).trans (LinearEquiv.ofEq _ _ h)
 
 @[simp]
-theorem ofSubmodules_apply {p : Submodule R M} {q : Submodule R₂ M₂} (h : p.map ↑e = q) (x : p) :
+theorem ofSubmodules_apply {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q) (x : p) :
     ↑(e.ofSubmodules p q h x) = e x :=
   rfl
 
 @[simp]
-theorem ofSubmodules_symm_apply {p : Submodule R M} {q : Submodule R₂ M₂} (h : p.map ↑e = q)
+theorem ofSubmodules_symm_apply {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q)
     (x : q) : ↑((e.ofSubmodules p q h).symm x) = e.symm x :=
   rfl
 
@@ -113,13 +113,12 @@ theorem ofTop_symm_apply {h} (x : M) : (ofTop p h).symm x = ⟨x, h.symm ▸ tri
   rfl
 
 @[simp]
-protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤ :=
-  LinearMap.range_eq_top.2 e.toEquiv.surjective
+theorem toLinearMap_ofTop {h} : (ofTop p h).toLinearMap = p.subtype :=
+  rfl
 
 @[simp]
-protected theorem _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] {F : Type*}
-    [EquivLike F M M₂] [SemilinearEquivClass F σ₁₂ M M₂] (e : F) : LinearMap.range e = ⊤ :=
-  LinearMap.range_eq_top.2 (EquivLike.surjective e)
+protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤ :=
+  LinearMap.range_eq_top.2 e.toEquiv.surjective
 
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
   refine bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 ?_)

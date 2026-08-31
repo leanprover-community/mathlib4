@@ -20,9 +20,9 @@ set multiplication, set addition, pointwise addition, pointwise multiplication, 
 
 -/
 
-@[expose] public section
+public section
 
-open Pointwise
+open scoped Pointwise
 
 open Set
 

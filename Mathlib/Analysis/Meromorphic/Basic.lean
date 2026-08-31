@@ -5,8 +5,10 @@ Authors: David Loeffler, Stefan Kebekus
 -/
 module
 
+public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
+public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
@@ -22,12 +24,13 @@ Main statements:
 
 @[expose] public section
 
-open Filter Set
+open Filter Metric Set
 
-open scoped Topology
+open scoped Pointwise Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+  [NormedAlgebra 𝕜 𝕜'] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
 
 /-- Meromorphy of `f` at `x` (more precisely, on a punctured neighbourhood of `x`; the value at
 `x` itself is irrelevant). -/
@@ -40,7 +43,7 @@ lemma AnalyticAt.meromorphicAt {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜
     MeromorphicAt f x :=
   ⟨0, by simpa only [pow_zero, one_smul]⟩
 
-/- Analogue of the principle of isolated zeros for an analytic function: if a function is
+/-- Analogue of the principle of isolated zeros for an analytic function: if a function is
 meromorphic at `z₀`, then either it is identically zero in a punctured neighborhood of `z₀`, or it
 does not vanish there at all. -/
 theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} {z₀ : 𝕜}
@@ -58,7 +61,7 @@ theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} 
 
 namespace MeromorphicAt
 
-variable {ι : Type*} {s : Finset ι} {F : ι → 𝕜 → 𝕜} {G : ι → 𝕜 → E}
+variable {ι : Type*} {s : Finset ι} {F : ι → 𝕜 → 𝕜'} {G : ι → 𝕜 → E}
 
 @[fun_prop]
 lemma id (x : 𝕜) : MeromorphicAt id x := analyticAt_id.meromorphicAt
@@ -83,50 +86,59 @@ lemma add {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
   exact (((analyticAt_id.sub analyticAt_const).pow _).smul hf).add
     (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
 
-@[deprecated (since := "2025-05-09")] alias add' := fun_add
-
 @[to_fun (attr := fun_prop)]
-lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+lemma smul [NormedAlgebra 𝕜 R] [IsScalarTower 𝕜 R E]
+    {f : 𝕜 → R} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f • g) x := by
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.smul hg using 2 with z
-  simp
-  module
-
-@[deprecated (since := "2025-05-09")] alias smul' := fun_smul
+  convert hf.smul hg with z
+  rw [Pi.smul_apply', Pi.smul_apply', smul_smul_smul_comm, smul_eq_mul, pow_add]
 
 @[to_fun (attr := fun_prop)]
-lemma mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
-    MeromorphicAt (f * g) x :=
-  hf.smul hg
+lemma const_smul [SMulCommClass 𝕜 R E] {x : 𝕜} {f : 𝕜 → E} (hf : MeromorphicAt f x) (c : R) :
+    MeromorphicAt (c • f) x := by
+  rcases hf with ⟨m, hf⟩
+  exact ⟨m, by simpa [smul_comm _ c _] using hf.fun_const_smul⟩
 
-@[deprecated (since := "2025-05-09")] alias mul' := fun_mul
+@[to_fun (attr := fun_prop)]
+lemma mul {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+    MeromorphicAt (f * g) x := by
+  simpa using hf.smul hg
 
 /-- Finite products of meromorphic functions are meromorphic. -/
 @[fun_prop] -- TODO: to_fun generates an unreadable statement, see #32866
-theorem prod (h : ∀ σ, MeromorphicAt (F σ) x) :
-    MeromorphicAt (∏ n ∈ s, F n) x := by
+theorem prod (hf : ∀ σ ∈ s, MeromorphicAt (F σ) x) :
+    MeromorphicAt (∏ i ∈ s, F i) x := by
   classical
   induction s using Finset.induction with
   | empty =>
     rw [Finset.prod_empty]
-    exact analyticAt_const.meromorphicAt
-  | insert σ s hσ hind =>
-    rw [Finset.prod_insert hσ]
-    exact (h σ).mul hind
+    apply MeromorphicAt.const
+  | insert a s ha hs =>
+    rw [Finset.prod_insert ha]
+    apply (hf a (Finset.mem_insert_self a s)).mul
+      (hs (fun i hi ↦ hf i (Finset.mem_insert_of_mem hi)))
 
 /-- Finite products of meromorphic functions are meromorphic. -/
 @[fun_prop]
-theorem fun_prod (h : ∀ σ, MeromorphicAt (F σ) x) :
+theorem fun_prod (h : ∀ σ ∈ s, MeromorphicAt (F σ) x) :
     MeromorphicAt (fun z ↦ ∏ n ∈ s, F n z) x := by
-  convert prod h (s := s)
+  convert! prod h (s := s)
   simp
+
+/-- Finprods of meromorphic functions are meromorphic. -/
+@[fun_prop]
+theorem finprod {x : 𝕜} (hf : ∀ i, MeromorphicAt (F i) x) :
+    MeromorphicAt (∏ᶠ i, F i) x := by
+  by_cases h₂f : Function.HasFiniteMulSupport F
+  · simpa [finprod_eq_prod F h₂f] using prod (by aesop)
+  · exact finprod_of_not_hasFiniteMulSupport h₂f ▸ const (1 : 𝕜') x
 
 /-- Finite sums of meromorphic functions are meromorphic. -/
 @[fun_prop] -- TODO: to_fun generates an unreadable statement, see #32866
-theorem sum (h : ∀ σ, MeromorphicAt (G σ) x) :
+theorem sum (h : ∀ σ ∈ s, MeromorphicAt (G σ) x) :
     MeromorphicAt (∑ n ∈ s, G n) x := by
   classical
   induction s using Finset.induction with
@@ -135,22 +147,29 @@ theorem sum (h : ∀ σ, MeromorphicAt (G σ) x) :
     exact analyticAt_const.meromorphicAt
   | insert σ s hσ hind =>
     rw [Finset.sum_insert hσ]
-    exact (h σ).add hind
+    apply (h σ (Finset.mem_insert_self σ s)).add
+      (hind (fun τ hτ ↦ h τ (Finset.mem_insert_of_mem hτ)))
 
 /-- Finite sums of meromorphic functions are meromorphic. -/
 @[fun_prop]
-theorem fun_sum (h : ∀ σ, MeromorphicAt (G σ) x) :
+theorem fun_sum (h : ∀ σ ∈ s, MeromorphicAt (G σ) x) :
     MeromorphicAt (fun z ↦ ∑ n ∈ s, G n z) x := by
-  convert sum h (s := s)
+  convert! sum h (s := s)
   simp
+
+/-- Finsums of meromorphic functions are meromorphic. -/
+@[fun_prop]
+theorem finsum (hF : ∀ i, MeromorphicAt (F i) x) :
+    MeromorphicAt (∑ᶠ i, F i) x := by
+  by_cases h₂f : Function.HasFiniteSupport F
+  · simpa [finsum_eq_sum F h₂f] using sum (by aesop)
+  · exact finsum_of_not_hasFiniteSupport h₂f ▸ const (0 : 𝕜') x
 
 @[to_fun (attr := fun_prop)]
 lemma neg {f : 𝕜 → E} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by
-  convert (MeromorphicAt.const (-1 : 𝕜) x).smul hf using 1
+  convert (MeromorphicAt.const (-1 : 𝕜) x).smul hf
   ext1 z
   simp only [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
-
-@[deprecated (since := "2025-05-09")] alias neg' := fun_neg
 
 @[simp]
 lemma neg_iff {f : 𝕜 → E} :
@@ -160,7 +179,7 @@ lemma neg_iff {f : 𝕜 → E} :
 @[to_fun (attr := fun_prop)]
 lemma sub {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x := by
-  convert hf.add hg.neg using 1
+  convert hf.add hg.neg
   ext1 z
   simp_rw [Pi.sub_apply, Pi.add_apply, Pi.neg_apply, sub_eq_add_neg]
 
@@ -173,6 +192,14 @@ lemma meromorphicAt_add_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : Meromorphi
   exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
 
 /--
+If `f` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `g` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_fun_add_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ f z + g z) x ↔ MeromorphicAt g x :=
+  meromorphicAt_add_iff_meromorphicAt₁ hf
+
+/--
 If `g` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `f` is meromorphic
 at `x`.
 -/
@@ -180,6 +207,14 @@ lemma meromorphicAt_add_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : Meromorphi
     MeromorphicAt (f + g) x ↔ MeromorphicAt f x := by
   rw [add_comm]
   exact meromorphicAt_add_iff_meromorphicAt₁ hg
+
+/--
+If `g` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `f` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_fun_add_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z + g z) x ↔ MeromorphicAt f x :=
+  meromorphicAt_add_iff_meromorphicAt₂ hg
 
 /--
 If `f` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `g` is meromorphic
@@ -190,6 +225,14 @@ lemma meromorphicAt_sub_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : Meromorphi
   exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
 
 /--
+If `f` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `g` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_fun_sub_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ f z - g z) x ↔ MeromorphicAt g x :=
+  meromorphicAt_sub_iff_meromorphicAt₁ hf
+
+/--
 If `g` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `f` is meromorphic
 at `x`.
 -/
@@ -197,7 +240,13 @@ lemma meromorphicAt_sub_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : Meromorphi
     MeromorphicAt (f - g) x ↔ MeromorphicAt f x := by
   exact ⟨fun h ↦ by simpa using h.add hg, fun _ ↦ by fun_prop⟩
 
-@[deprecated (since := "2025-05-09")] alias sub' := fun_sub
+/--
+If `g` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `f` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_fun_sub_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z - g z) x ↔ MeromorphicAt f x :=
+  meromorphicAt_sub_iff_meromorphicAt₂ hg
 
 /-- With our definitions, `MeromorphicAt f x` depends only on the values of `f` on a punctured
 neighbourhood of `x` (not on `f x`) -/
@@ -205,7 +254,7 @@ lemma congr {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hfg : f =ᶠ[𝓝[≠] 
     MeromorphicAt g x := by
   rcases hf with ⟨m, hf⟩
   refine ⟨m + 1, ?_⟩
-  have : AnalyticAt 𝕜 (fun z ↦ z - x) x := analyticAt_id.sub analyticAt_const
+  have : AnalyticAt 𝕜 (fun z ↦ z - x) x := by fun_prop
   refine (this.fun_smul hf).congr ?_
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
@@ -231,7 +280,7 @@ lemma update [DecidableEq 𝕜] {f : 𝕜 → E} {z} (hf : MeromorphicAt f z) (w
   update_iff.mpr hf
 
 @[to_fun (attr := fun_prop)]
-lemma inv {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
+lemma inv {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
   rcases hf with ⟨m, hf⟩
   by_cases h_eq : (fun z ↦ (z - x) ^ m • f z) =ᶠ[𝓝 x] 0
   · -- silly case: f locally 0 near x
@@ -248,43 +297,34 @@ lemma inv {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x 
     refine ⟨n + 1, (this.fun_smul <| hg_an.inv hg_ne).congr ?_⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
-    · simp only [sub_self, pow_succ, mul_zero, zero_smul]
-    · simp_rw [smul_eq_mul] at hfg ⊢
-      have aux1 : f z ≠ 0 := by
-        have : (z - x) ^ n * g z ≠ 0 := mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz_ne)) hg_ne'
-        rw [← hfg, mul_ne_zero_iff] at this
-        exact this.2
-      simp [field, pow_succ', mul_assoc, hfg]
-
-@[deprecated (since := "2025-05-09")] alias inv' := fun_inv
+    · simp
+    · replace hfg := congr_arg (·⁻¹) hfg
+      simp only [smul_inv₀] at hfg
+      rw [inv_smul_eq_iff₀ (pow_ne_zero m (sub_ne_zero.mpr hz_ne)), smul_comm,
+        eq_inv_smul_iff₀ (pow_ne_zero n (sub_ne_zero.mpr hz_ne))] at hfg
+      simp [pow_succ', mul_smul, hfg]
 
 @[simp]
-lemma inv_iff {f : 𝕜 → 𝕜} :
+lemma inv_iff {f : 𝕜 → 𝕜'} :
     MeromorphicAt f⁻¹ x ↔ MeromorphicAt f x :=
   ⟨fun h ↦ by simpa only [inv_inv] using h.inv, MeromorphicAt.inv⟩
 
 @[to_fun (attr := fun_prop)]
-lemma div {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+lemma div {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f / g) x :=
   (div_eq_mul_inv f g).symm ▸ (hf.mul hg.inv)
 
-@[deprecated (since := "2025-05-09")] alias div' := fun_div
-
 @[to_fun (attr := fun_prop)]
-lemma pow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
+lemma pow {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
   induction n with
-  | zero => simpa only [pow_zero] using MeromorphicAt.const 1 x
-  | succ m hm => simpa only [pow_succ] using hm.mul hf
-
-@[deprecated (since := "2025-05-09")] alias pow' := fun_pow
+  | zero => simpa only [pow_zero] using! MeromorphicAt.const 1 x
+  | succ m hm => simpa only [pow_succ] using! hm.mul hf
 
 @[to_fun (attr := fun_prop)]
-lemma zpow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
+lemma zpow {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   cases n with
   | ofNat m => simpa only [Int.ofNat_eq_natCast, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
-
-@[deprecated (since := "2025-05-09")] alias zpow' := fun_zpow
 
 /-- If a function is meromorphic at a point, then it is continuous at nearby points. -/
 theorem eventually_continuousAt {f : 𝕜 → E}
@@ -357,18 +397,102 @@ Iterated derivatives of meromorphic functions are meromorphic.
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
 
+/-- If `f` is meromorphic at a point, then so is its logarithmic derivative. -/
+@[fun_prop] theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) :
+    MeromorphicAt (logDeriv f) x := hf.deriv.div hf
+
 end MeromorphicAt
 
+section smul_iff
+
+variable {g : 𝕜 → 𝕜} {x : 𝕜}
+
+lemma meromorphicAt_smul_iff_of_ne_zero {f : 𝕜 → E} (hg : AnalyticAt 𝕜 g x) (hg' : g x ≠ 0) :
+    MeromorphicAt (g • f) x ↔ MeromorphicAt f x := by
+  refine ⟨fun hfg ↦ ?_, hg.meromorphicAt.smul⟩
+  refine (hg.inv hg').meromorphicAt.smul hfg |>.congr ?_
+  filter_upwards [(hg.continuousAt.mono_left nhdsWithin_le_nhds).eventually_ne hg'] with z hz
+  simp [inv_smul_smul₀ hz]
+
+lemma meromorphicAt_mul_iff_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : g x ≠ 0) :
+    MeromorphicAt (g * f) x ↔ MeromorphicAt f x :=
+  meromorphicAt_smul_iff_of_ne_zero hg hg'
+
+end smul_iff
+
+section composition
+/-!
+### Composition with an analytic function
+-/
+
+variable
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
+  {x : 𝕜}
+
+/-- The composition of a meromorphic and an analytic function is meromorphic. -/
+@[fun_prop]
+lemma MeromorphicAt.comp_analyticAt {f : 𝕜' → F} {g : 𝕜 → 𝕜'}
+    (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
+    MeromorphicAt (f ∘ g) x := by
+  obtain ⟨r, hr⟩ := hf
+  by_cases hg' : analyticOrderAt (g · - g x) x = ⊤
+  · -- trivial case: `g` is locally constant near `x`
+    refine .congr (.const (f (g x)) x) ?_
+    filter_upwards [nhdsWithin_le_nhds <| analyticOrderAt_eq_top.mp hg'] with z hz
+    grind
+  · -- interesting case: `g z - g x` looks like `(z - x) ^ n` times a non-vanishing function
+    obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp hg'
+    obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
+    set j := fun z ↦ (z - g x) ^ r • f z
+    have : AnalyticAt 𝕜 (fun i ↦ (h i)⁻¹ ^ r • j (g i)) x :=
+      ((han.inv hne).pow r).smul (hr.restrictScalars.comp hg)
+    refine ⟨n * r, this.congr ?_⟩
+    filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
+    simp only [j, inv_pow, Function.comp_apply, inv_smul_eq_iff₀ (pow_ne_zero r hzne)]
+    rw [hz, smul_comm, ← smul_assoc, pow_mul, smul_pow]
+
+lemma meromorphicAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero 𝕜] {f : 𝕜 → E}
+    {g : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0) :
+    MeromorphicAt (f ∘ g) x ↔ MeromorphicAt f (g x) := by
+  refine ⟨fun hf ↦ ?_, by fun_prop⟩
+  let r := hg.hasStrictDerivAt.localInverse _ _ _ hg'
+  have hra : AnalyticAt 𝕜 r (g x) := hg.analyticAt_localInverse hg'
+  have : r (g x) = x := HasStrictFDerivAt.localInverse_apply_image ..
+  rw [← this] at hf
+  refine (hf.comp_analyticAt hra).congr (.filter_mono ?_ nhdsWithin_le_nhds)
+  exact EventuallyEq.fun_comp (HasStrictDerivAt.eventually_right_inverse ..) f
+
+/-- `MeromorphicAt` is invariant under translation. -/
+@[to_fun meromorphicAt_fun_comp_add_const_iff_meromorphicAt]
+theorem meromorphicAt_comp_add_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicAt (f ∘ (· + c)) x ↔ MeromorphicAt f (x + c) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [show f = ((f ∘ fun x ↦ x + c) ∘ fun z ↦ z - c) by aesop]
+    rw [show x = (x + c) - c by ring] at h
+    exact h.comp_analyticAt (g := fun z ↦ z - c) (by fun_prop)
+  · exact h.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop)
+
+/-- `MeromorphicAt` is invariant under translation. -/
+@[to_fun meromorphicAt_fun_comp_sub_const_iff_meromorphicAt]
+theorem meromorphicAt_comp_sub_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicAt (f ∘ (· - c)) x ↔ MeromorphicAt f (x - c) := by
+  simp_rw [sub_eq_add_neg, meromorphicAt_comp_add_const_iff_meromorphicAt]
+
+end composition
+
+
 /-- Meromorphy of a function on a set. -/
+@[fun_prop]
 def MeromorphicOn (f : 𝕜 → E) (U : Set 𝕜) : Prop := ∀ x ∈ U, MeromorphicAt f x
 
+@[fun_prop]
 lemma AnalyticOnNhd.meromorphicOn {f : 𝕜 → E} {U : Set 𝕜} (hf : AnalyticOnNhd 𝕜 f U) :
     MeromorphicOn f U :=
   fun x hx ↦ (hf x hx).meromorphicAt
 
 namespace MeromorphicOn
 
-variable {s t : 𝕜 → 𝕜} {f g : 𝕜 → E} {U : Set 𝕜}
+variable {s t : 𝕜 → 𝕜'} {f g : 𝕜 → E} {U : Set 𝕜}
   (hs : MeromorphicOn s U) (ht : MeromorphicOn t U)
   (hf : MeromorphicOn f U) (hg : MeromorphicOn g U)
 
@@ -402,11 +526,22 @@ theorem congr_codiscreteWithin (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscret
     apply mem_nhdsWithin.mpr
     use U, h₂, hx, Set.inter_subset_left
   filter_upwards [this, h₁ x hx] with a h₁a h₂a
-  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and] at h₂a
+  simp only [Set.mem_compl_iff, Set.mem_sdiff, Set.mem_ofPred_eq, not_and] at h₂a
   tauto
 
-lemma id {U : Set 𝕜} : MeromorphicOn id U := fun x _ ↦ .id x
+/--
+If two functions differ only on a discrete set of an open, then one is meromorphic iff so is the
+other.
+-/
+theorem _root_.meromorphicOn_congr_codiscreteWithin {f g : 𝕜 → E} (h₁ : f =ᶠ[codiscreteWithin U] g)
+    (h₂ : IsOpen U) :
+    MeromorphicOn f U ↔ MeromorphicOn g U :=
+  ⟨(·.congr_codiscreteWithin h₁ h₂), (·.congr_codiscreteWithin h₁.symm h₂)⟩
 
+@[fun_prop]
+protected lemma id {U : Set 𝕜} : MeromorphicOn id U := fun x _ ↦ .id x
+
+@[fun_prop]
 lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
   fun x _ ↦ .const e x
 
@@ -416,71 +551,167 @@ include hf in
 lemma mono_set {V : Set 𝕜} (hv : V ⊆ U) : MeromorphicOn f V := fun x hx ↦ hf x (hv hx)
 
 include hf hg in
-@[to_fun] lemma add : MeromorphicOn (f + g) U := fun x hx ↦ (hf x hx).add (hg x hx)
+@[to_fun (attr := fun_prop)]
+lemma add : MeromorphicOn (f + g) U := fun x hx ↦ (hf x hx).add (hg x hx)
 
 include hf hg in
-@[to_fun] lemma sub : MeromorphicOn (f - g) U := fun x hx ↦ (hf x hx).sub (hg x hx)
+@[to_fun (attr := fun_prop)]
+lemma sub : MeromorphicOn (f - g) U := fun x hx ↦ (hf x hx).sub (hg x hx)
 
 include hf in
-@[to_fun] lemma neg : MeromorphicOn (-f) U := fun x hx ↦ (hf x hx).neg
+@[to_fun (attr := fun_prop)]
+lemma neg : MeromorphicOn (-f) U := fun x hx ↦ (hf x hx).neg
 
 @[simp] lemma neg_iff : MeromorphicOn (-f) U ↔ MeromorphicOn f U :=
   ⟨fun h ↦ by simpa only [neg_neg] using h.neg, neg⟩
 
-include hs hf in
-@[to_fun] lemma smul : MeromorphicOn (s • f) U := fun x hx ↦ (hs x hx).smul (hf x hx)
+@[to_fun (attr := fun_prop)]
+lemma smul [NormedAlgebra 𝕜 R] [IsScalarTower 𝕜 R E] {s : 𝕜 → R} (hs : MeromorphicOn s U)
+    {f : 𝕜 → E} (hf : MeromorphicOn f U) :
+    MeromorphicOn (s • f) U :=
+  fun x hx ↦ (hs x hx).smul (hf x hx)
+
+include hf in
+@[to_fun (attr := fun_prop)]
+lemma const_smul [SMulCommClass 𝕜 R E] (c : R) : MeromorphicOn (c • f) U :=
+  fun x hx ↦ (hf x hx).const_smul c
 
 include hs ht in
-@[to_fun] lemma mul : MeromorphicOn (s * t) U := fun x hx ↦ (hs x hx).mul (ht x hx)
+@[to_fun (attr := fun_prop)]
+lemma mul : MeromorphicOn (s * t) U := fun x hx ↦ (hs x hx).mul (ht x hx)
 
 /-- Finite products of meromorphic functions are meromorphic. -/
-lemma prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
-    (h : ∀ σ, MeromorphicOn (f σ) U) :
+@[fun_prop]
+lemma prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'}
+    (h : ∀ σ ∈ s, MeromorphicOn (f σ) U) :
     MeromorphicOn (∏ n ∈ s, f n) U :=
-  fun z hz ↦ MeromorphicAt.prod (fun σ ↦ h σ z hz)
+  fun z hz ↦ MeromorphicAt.prod (h · · z hz)
 
 /-- Finite products of meromorphic functions are meromorphic. -/
-lemma fun_prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
-    (h : ∀ σ, MeromorphicOn (f σ) U) :
+@[fun_prop]
+lemma fun_prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'}
+    (h : ∀ σ ∈ s, MeromorphicOn (f σ) U) :
     MeromorphicOn (fun z ↦ ∏ n ∈ s, f n z) U :=
-  fun z hz ↦ MeromorphicAt.fun_prod (fun σ ↦ h σ z hz)
+  fun z hz ↦ MeromorphicAt.fun_prod (h · · z hz)
+
+/-- Finprods of meromorphic functions are meromorphic. -/
+@[fun_prop]
+lemma finprod {U : Set 𝕜} {ι : Type*} {f : ι → 𝕜 → 𝕜'} (h : ∀ σ, MeromorphicOn (f σ) U) :
+    MeromorphicOn (∏ᶠ n, f n) U :=
+  fun z hz ↦ MeromorphicAt.finprod (h · z hz)
 
 /-- Finite sums of meromorphic functions are meromorphic. -/
-lemma sum {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E} (h : ∀ σ, MeromorphicOn (f σ) U) :
+@[fun_prop]
+lemma sum {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E}
+    (h : ∀ σ ∈ s, MeromorphicOn (f σ) U) :
     MeromorphicOn (∑ n ∈ s, f n) U :=
-  fun z hz ↦ MeromorphicAt.sum (fun σ ↦ h σ z hz)
+  fun z hz ↦ MeromorphicAt.sum (h · · z hz)
 
 /-- Finite sums of meromorphic functions are meromorphic. -/
+@[fun_prop]
 lemma fun_sum {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E}
-    (h : ∀ σ, MeromorphicOn (f σ) U) :
+    (h : ∀ σ ∈ s, MeromorphicOn (f σ) U) :
     MeromorphicOn (fun z ↦ ∑ n ∈ s, f n z) U :=
-  fun z hz ↦ MeromorphicAt.fun_sum (fun σ ↦ h σ z hz)
+  fun z hz ↦ MeromorphicAt.fun_sum (fun σ hσ ↦ h σ hσ z hz)
+
+/-- Finsums of meromorphic functions are meromorphic. -/
+@[fun_prop]
+lemma finsum {U : Set 𝕜} {ι : Type*} {f : ι → 𝕜 → 𝕜'} (h : ∀ σ, MeromorphicOn (f σ) U) :
+    MeromorphicOn (∑ᶠ n, f n) U :=
+  fun z hz ↦ MeromorphicAt.finsum (h · z hz)
 
 include hs in
-@[to_fun] lemma inv : MeromorphicOn s⁻¹ U := fun x hx ↦ (hs x hx).inv
+@[to_fun (attr := fun_prop)]
+lemma inv : MeromorphicOn s⁻¹ U := fun x hx ↦ (hs x hx).inv
 
 @[simp] lemma inv_iff : MeromorphicOn s⁻¹ U ↔ MeromorphicOn s U :=
   ⟨fun h ↦ by simpa only [inv_inv] using h.inv, inv⟩
 
 include hs ht in
-@[to_fun] lemma div : MeromorphicOn (s / t) U := fun x hx ↦ (hs x hx).div (ht x hx)
+@[to_fun (attr := fun_prop)]
+lemma div : MeromorphicOn (s / t) U := fun x hx ↦ (hs x hx).div (ht x hx)
 
 include hs in
-@[to_fun] lemma pow (n : ℕ) : MeromorphicOn (s ^ n) U := fun x hx ↦ (hs x hx).pow _
+@[to_fun (attr := fun_prop)]
+lemma pow (n : ℕ) : MeromorphicOn (s ^ n) U := fun x hx ↦ (hs x hx).pow _
 
 include hs in
-@[to_fun] lemma zpow (n : ℤ) : MeromorphicOn (s ^ n) U := fun x hx ↦ (hs x hx).zpow _
+@[to_fun (attr := fun_prop)]
+lemma zpow (n : ℤ) : MeromorphicOn (s ^ n) U := fun x hx ↦ (hs x hx).zpow _
 
 include hf in
 /-- Derivatives of meromorphic functions are meromorphic. -/
+@[fun_prop]
 protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
 
 include hf in
 /-- Iterated derivatives of meromorphic functions are meromorphic. -/
-theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
+@[fun_prop]
+theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
 
+/-- If `f` is meromorphic on a set, then so is its logarithmic derivative. -/
+@[fun_prop]
+protected theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} (hf : MeromorphicOn f U) :
+    MeromorphicOn (logDeriv f) U := hf.deriv.div hf
+
+/-- `MeromorphicOn` is invariant under translation. -/
+@[to_fun meromorphicOn_fun_comp_add_const_iff_meromorphicOn]
+theorem meromorphicOn_comp_add_const_iff_meromorphicOn {c : 𝕜} {U : Set 𝕜} :
+    MeromorphicOn (f ∘ (· + c)) U ↔ MeromorphicOn f (U + {c}) := by
+  refine ⟨fun h y hy ↦ ?_, fun h y hy ↦ ?_⟩
+  · rw [add_singleton, mem_image] at hy
+    obtain ⟨x, h₁x, h₂x⟩ := hy
+    simpa [← h₂x, ← meromorphicAt_comp_add_const_iff_meromorphicAt] using h x h₁x
+  · rw [meromorphicAt_comp_add_const_iff_meromorphicAt]
+    aesop
+
+/-- `MeromorphicOn` is invariant under translation. -/
+@[to_fun meromorphicOn_fun_comp_sub_const_iff_meromorphicOn]
+theorem meromorphicOn_comp_sub_const_iff_meromorphicOn {c : 𝕜} {U : Set 𝕜} :
+    MeromorphicOn (f ∘ (· - c)) U ↔ MeromorphicOn f (U - {c}) := by
+  simp_rw [sub_eq_add_neg, meromorphicOn_comp_add_const_iff_meromorphicOn, neg_singleton]
+
+/-- `MeromorphicOn` is invariant under translation, special case where the set is a ball. -/
+@[to_fun (attr := simp) meromorphicOn_ball_fun_comp_sub_const_iff_meromorphicOn_ball]
+theorem meromorphicOn_ball_comp_sub_const_iff_meromorphicOn_ball {c : 𝕜} {R : ℝ} :
+    MeromorphicOn (f ∘ (· - c)) (ball c R) ↔ MeromorphicOn f (ball 0 R) := by
+  rw [meromorphicOn_comp_sub_const_iff_meromorphicOn, ball_sub_singleton, sub_self]
+
+/-- `MeromorphicOn` is invariant under translation, special case where the set is a closed ball. -/
+@[to_fun (attr := simp) meromorphicOn_closedBall_fun_comp_sub_const_iff_meromorphicOn_closedBall]
+theorem meromorphicOn_closedBall_comp_sub_const_iff_meromorphicOn_closedBall {c : 𝕜} {R : ℝ} :
+    MeromorphicOn (f ∘ (· - c)) (closedBall c R) ↔ MeromorphicOn f (closedBall 0 R) := by
+  rw [meromorphicOn_comp_sub_const_iff_meromorphicOn, closedBall_sub_singleton, sub_self]
+
+/-- `MeromorphicOn` is invariant under translation, special case where the set is a sphere. -/
+@[to_fun (attr := simp) meromorphicOn_sphere_fun_comp_sub_const_iff_meromorphicOn_sphere]
+theorem meromorphicOn_sphere_comp_sub_const_iff_meromorphicOn_sphere {c : 𝕜} {R : ℝ} :
+    MeromorphicOn (f ∘ (· - c)) (sphere c R) ↔ MeromorphicOn f (sphere 0 R) := by
+  rw [meromorphicOn_comp_sub_const_iff_meromorphicOn, sphere_sub_singleton, sub_self]
+
 end arithmetic
+
+section composition
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
+  [IsScalarTower 𝕜 𝕜' F] {V : Set 𝕜'}
+
+/-- The composition of a meromorphic and an analytic function is meromorphic. -/
+lemma comp_analyticOnNhd {f : 𝕜' → F} {g : 𝕜 → 𝕜'} (hf : MeromorphicOn f V)
+    (hg : AnalyticOnNhd 𝕜 g U) (hUV : Set.MapsTo g U V) :
+    MeromorphicOn (f ∘ g) U :=
+  fun z hz ↦ (hf _ (hUV hz)).comp_analyticAt (hg z hz)
+
+/-- Variant of `MeromorphicOn.comp_analyticOnNhd` which trades the `Set.MapsTo` hypothesis for a
+smaller set. -/
+@[fun_prop]
+lemma comp_analyticOnNhd_inter {f : 𝕜' → F} {g : 𝕜 → 𝕜'} (hf : MeromorphicOn f V)
+    (hg : AnalyticOnNhd 𝕜 g U) :
+    MeromorphicOn (f ∘ g) (U ∩ g ⁻¹' V) :=
+  hf.comp_analyticOnNhd (hg.mono inter_subset_left) inter_subset_right
+
+end composition
 
 include hf in
 lemma congr (h_eq : Set.EqOn f g U) (hu : IsOpen U) : MeromorphicOn g U := by
@@ -503,9 +734,9 @@ The singular set of a meromorphic function is countable.
 theorem countable_compl_analyticAt_inter [SecondCountableTopology 𝕜] [CompleteSpace E]
     (h : MeromorphicOn f U) :
     ({z | AnalyticAt 𝕜 f z}ᶜ ∩ U).Countable := by
-  apply (HereditarilyLindelof_LindelofSets _).countable_of_isDiscrete
+  apply (HereditarilyLindelofSpace.isLindelof _).countable_of_isDiscrete
     (isDiscrete_of_codiscreteWithin _)
-  simpa using eventually_codiscreteWithin_analyticAt f h
+  simpa using! eventually_codiscreteWithin_analyticAt f h
 
 end MeromorphicOn
 
@@ -521,12 +752,35 @@ namespace Meromorphic
 
 variable
   {ι : Type*} {s : Finset ι}
-  {f g : 𝕜 → E} {F : ι → 𝕜 → 𝕜} {G : ι → 𝕜 → E}
+  {f g : 𝕜 → E} {F : ι → 𝕜 → 𝕜'} {G : ι → 𝕜 → E}
 
 @[fun_prop]
 lemma meromorphicAt {x : 𝕜} (hf : Meromorphic f) : MeromorphicAt f x := hf x
 
+@[fun_prop]
 lemma meromorphicOn {s : Set 𝕜} (hf : Meromorphic f) : MeromorphicOn f s := fun x _ ↦ hf x
+
+section composition
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
+  [IsScalarTower 𝕜 𝕜' F]
+
+/-- The composition of a meromorphic and an analytic function is meromorphic. Compared to
+`MeromorphicOn.comp_analyticOnNhd`, the outer function is meromorphic everywhere, so no
+`Set.MapsTo` hypothesis is required. -/
+@[fun_prop]
+lemma comp_analyticOnNhd {f : 𝕜' → F} {g : 𝕜 → 𝕜'} {U : Set 𝕜} (hf : Meromorphic f)
+    (hg : AnalyticOnNhd 𝕜 g U) :
+    MeromorphicOn (f ∘ g) U :=
+  fun z hz ↦ (hf _).comp_analyticAt (hg z hz)
+
+end composition
+
+@[fun_prop]
+protected lemma id : Meromorphic (id : 𝕜 → 𝕜) := fun x ↦ .id x
+
+@[fun_prop]
+lemma const (x : E) : Meromorphic fun _ : 𝕜 ↦ x := fun _ ↦ .const _ _
 
 @[to_fun (attr := fun_prop)]
 lemma neg (hf : Meromorphic f) : Meromorphic (-f) := fun x ↦ (hf x).neg
@@ -536,45 +790,77 @@ lemma add (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f + g) := fun x ↦ (hf x).add (hg x)
 
 @[to_fun (attr := fun_prop)]
-theorem sum (h : ∀ σ, Meromorphic (G σ)) :
-    Meromorphic (∑ n ∈ s, G n) := fun x ↦ MeromorphicAt.sum (h · x)
+theorem sum (h : ∀ σ ∈ s, Meromorphic (G σ)) :
+    Meromorphic (∑ n ∈ s, G n) := fun x ↦ MeromorphicAt.sum (h · · x)
+
+@[fun_prop]
+theorem finsum (h : ∀ σ, Meromorphic (F σ)) :
+    Meromorphic (∑ᶠ σ, F σ) := fun x ↦ MeromorphicAt.finsum (h · x)
 
 @[to_fun (attr := fun_prop)]
 lemma sub (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f - g) := fun x ↦ (hf x).sub (hg x)
 
 @[to_fun (attr := fun_prop)]
-lemma smul {f : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
+lemma smul [NormedAlgebra 𝕜 R] [IsScalarTower 𝕜 R E] {f : 𝕜 → R} (hf : Meromorphic f)
+    (hg : Meromorphic g) :
     Meromorphic (f • g) := fun x ↦ (hf x).smul (hg x)
 
 @[to_fun (attr := fun_prop)]
-lemma mul {f g : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
+lemma const_smul [SMulCommClass 𝕜 R E] (hf : Meromorphic f) (c : R) :
+    Meromorphic (c • f) := fun x ↦ (hf x).const_smul c
+
+@[to_fun (attr := fun_prop)]
+lemma mul {f g : 𝕜 → 𝕜'} (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f * g) := fun x ↦ (hf x).mul (hg x)
 
 @[to_fun (attr := fun_prop)]
-lemma inv {f : 𝕜 → 𝕜} (hf : Meromorphic f) : Meromorphic f⁻¹ := fun x ↦ (hf x).inv
+lemma inv {f : 𝕜 → 𝕜'} (hf : Meromorphic f) : Meromorphic f⁻¹ := fun x ↦ (hf x).inv
 
 @[to_fun (attr := fun_prop)]
-theorem prod (h : ∀ σ, Meromorphic (F σ)) :
-    Meromorphic (∏ n ∈ s, F n) := fun x ↦ MeromorphicAt.prod (h · x)
+theorem prod (h : ∀ σ ∈ s, Meromorphic (F σ)) :
+    Meromorphic (∏ n ∈ s, F n) := fun x ↦ MeromorphicAt.prod (h · · x)
+
+@[fun_prop]
+theorem finprod (h : ∀ σ, Meromorphic (F σ)) :
+    Meromorphic (∏ᶠ σ, F σ) := fun x ↦ MeromorphicAt.finprod (h · x)
 
 @[to_fun (attr := fun_prop)]
-lemma div {f g : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
+lemma div {f g : 𝕜 → 𝕜'} (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f / g) := fun x ↦ (hf x).div (hg x)
 
 @[to_fun (attr := fun_prop)]
-lemma pow {f : 𝕜 → 𝕜} {n : ℕ} (hf : Meromorphic f) : Meromorphic (f ^ n) := fun x ↦ (hf x).pow n
+lemma pow {f : 𝕜 → 𝕜'} {n : ℕ} (hf : Meromorphic f) : Meromorphic (f ^ n) := fun x ↦ (hf x).pow n
 
 @[to_fun (attr := fun_prop)]
-lemma zpow {f : 𝕜 → 𝕜} {n : ℤ} (hf : Meromorphic f) : Meromorphic (f ^ n) := fun x ↦ (hf x).zpow n
+lemma zpow {f : 𝕜 → 𝕜'} {n : ℤ} (hf : Meromorphic f) : Meromorphic (f ^ n) := fun x ↦ (hf x).zpow n
 
 @[fun_prop]
 protected lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deriv f) :=
-    fun x ↦ (hf x).deriv
+  fun x ↦ (hf x).deriv
 
 @[fun_prop]
 lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :
     Meromorphic (deriv^[n] f) := fun x ↦ (hf x).iterated_deriv
+
+/-- If `f` is meromorphic, then so is its logarithmic derivative. -/
+@[fun_prop] protected theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} (hf : Meromorphic f) :
+    Meromorphic (logDeriv f) := hf.deriv.div hf
+
+/--
+If `f` is meromorphic, if `g` agrees with `f` on a codiscrete set, then `g` is also meromorphic.
+-/
+theorem congr_codiscrete (hf : Meromorphic f) (h₁ : f =ᶠ[codiscrete 𝕜] g) :
+    Meromorphic g := by
+  rw [← meromorphicOn_univ] at *
+  exact hf.congr_codiscreteWithin (eventuallyEq_of_mem h₁ fun ⦃x⦄ a ↦ a) isOpen_univ
+
+/--
+If two functions differ only on a discrete set, then one is meromorphic iff so is the other.
+-/
+theorem _root_.meromorphic_congr_codiscrete (h₁ : f =ᶠ[codiscrete 𝕜] g) :
+    Meromorphic f ↔ Meromorphic g :=
+  ⟨(·.congr_codiscrete h₁), (·.congr_codiscrete h₁.symm)⟩
 
 /--
 The singular set of a meromorphic function is countable.
@@ -584,23 +870,40 @@ theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace
     {z | AnalyticAt 𝕜 f z}ᶜ.Countable := by
   simpa using (h.meromorphicOn (s := univ)).countable_compl_analyticAt_inter
 
-@[deprecated (since := "2025-12-21")] alias MeromorphicOn.countable_compl_analyticAt :=
-  countable_compl_analyticAt
-
 /--
 Meromorphic functions are measurable.
 -/
-theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
+@[fun_prop] theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
     [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : Meromorphic f) :
     Measurable f := by
   set s := {z : 𝕜 | AnalyticAt 𝕜 f z}
-  have h₁ : sᶜ.Countable  := by simpa using h.countable_compl_analyticAt
+  have h₁ : sᶜ.Countable := by simpa using h.countable_compl_analyticAt
   have h₁' := h₁.to_subtype
   have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
   have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
   exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
-    (by simp [- mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
+    (by simp [-mem_compl_iff]) h₃.domRestrict.measurable (measurable_of_countable _)
 
-@[deprecated (since := "2025-12-21")] alias MeromorphicOn.measurable := measurable
+/-- `Meromorphic` is invariant under translation. -/
+@[simp] theorem meromorphic_comp_add_const_iff_meromorphic {c : 𝕜} :
+    Meromorphic (f ∘ (· + c)) ↔ Meromorphic f := by
+  rw [Meromorphic, Meromorphic, (Equiv.subRight c).surjective.forall]
+  simp [meromorphicAt_comp_add_const_iff_meromorphicAt]
+
+/-- `Meromorphic` is invariant under translation. -/
+@[simp] theorem meromorphic_fun_comp_add_const_iff_meromorphic {c : 𝕜} :
+    Meromorphic (fun z ↦ f (z + c)) ↔ Meromorphic f :=
+  meromorphic_comp_add_const_iff_meromorphic
+
+/-- `Meromorphic` is invariant under translation. -/
+@[simp] theorem meromorphic_comp_sub_const_iff_meromorphic {c : 𝕜} :
+    Meromorphic (f ∘ (· - c)) ↔ Meromorphic f := by
+  nth_rw 2 [← meromorphic_comp_add_const_iff_meromorphic (c := -c)]
+  simp_rw [sub_eq_add_neg]
+
+/-- `Meromorphic` is invariant under translation. -/
+@[simp] theorem meromorphic_fun_comp_sub_const_iff_meromorphic {c : 𝕜} :
+    Meromorphic (fun z ↦ f (z - c)) ↔ Meromorphic f :=
+  meromorphic_comp_sub_const_iff_meromorphic
 
 end Meromorphic

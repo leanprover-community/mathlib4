@@ -17,10 +17,7 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe w u
 
@@ -71,10 +68,17 @@ theorem biprodIsoProd_inv_comp_snd (G H : AddCommGrpCat.{u}) :
     (biprodIsoProd G H).inv ≫ biprod.snd = ofHom (AddMonoidHom.snd G H) :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk WalkingPair.right)
 
+@[elementwise]
+lemma biprodIsoProd_inv_comp_desc {G H K : AddCommGrpCat.{u}} (f : G ⟶ K) (g : H ⟶ K) :
+    (biprodIsoProd G H).inv ≫ biprod.desc f g =
+      ofHom (AddMonoidHom.fst G H) ≫ f + ofHom (AddMonoidHom.snd G H) ≫ g := by
+  simp [biprod.desc_eq, ← biprodIsoProd_inv_comp_fst, ← biprodIsoProd_inv_comp_snd]
+
 namespace HasLimit
 
 variable {J : Type w} (f : J → AddCommGrpCat.{max w u})
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the Cartesian product of those groups.
 -/

@@ -10,9 +10,12 @@ public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Number fields
+
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
@@ -36,10 +39,9 @@ number field, ring of integers
 
 @[expose] public section
 
-
 /-- A number field is a field which has characteristic zero and is finite
 dimensional over ℚ. -/
-@[stacks 09GA]
+@[stacks 09GA, wikidata Q616608]
 class NumberField (K : Type*) [Field K] : Prop where
   [to_charZero : CharZero K]
   [to_finiteDimensional : FiniteDimensional ℚ K]
@@ -47,11 +49,6 @@ class NumberField (K : Type*) [Field K] : Prop where
 open Function Module
 
 open scoped nonZeroDivisors
-
-/-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ := fun h =>
-  Int.not_even_one <|
-    (h.mul_inv_cancel two_ne_zero).imp fun a => by rw [← two_mul]; exact Eq.symm
 
 namespace NumberField
 
@@ -91,8 +88,9 @@ theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
   letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
   {
     to_charZero := inferInstance
-    to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
+    to_finiteDimensional := (SemilinearEquivClass.semilinearEquiv e : K ≃ₗ[ℚ] L).finiteDimensional
   }
+
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field.
 
@@ -102,33 +100,39 @@ much more effective use of the discrimination tree than instances of the form
 `SMul (Subtype _) (Subtype _)`.
 The drawback is we have to copy over instances manually.
 -/
+@[wikidata Q1358313]
 def RingOfIntegers : Type _ :=
   integralClosure ℤ K
+deriving CommRing, IsDomain, Nontrivial
 
 @[inherit_doc] scoped notation "𝓞" => NumberField.RingOfIntegers
 
 namespace RingOfIntegers
 
-instance : CommRing (𝓞 K) :=
-  inferInstanceAs (CommRing (integralClosure _ _))
-instance : IsDomain (𝓞 K) :=
-  inferInstanceAs (IsDomain (integralClosure _ _))
 instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
-instance : Algebra (𝓞 K) K :=
-  inferInstanceAs (Algebra (integralClosure _ _) _)
-instance : NoZeroSMulDivisors (𝓞 K) K :=
-  inferInstanceAs (NoZeroSMulDivisors (integralClosure _ _) _)
-instance : Nontrivial (𝓞 K) :=
-  inferInstanceAs (Nontrivial (integralClosure _ _))
+
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
+
+instance : Algebra (𝓞 K) K := inferInstanceAs _
+
+instance : IsTorsionFree (𝓞 K) K :=
+  inferInstanceAs (IsTorsionFree (integralClosure _ _) _)
+
+
 instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
+
 instance {G : Type*} [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) :=
   inferInstanceAs (MulSemiringAction G (integralClosure ℤ K))
+
 instance {G : Type*} [Group G] [MulSemiringAction G K] : SMulDistribClass G (𝓞 K) K :=
   inferInstanceAs (SMulDistribClass G (integralClosure ℤ K) K)
+
+-- verify that the two algebra instances agree
+example : instAlgebra (L := K) (K := K) = instAlgebra_1 (K := K) := by
+  with_reducible_and_instances rfl
 
 variable {K}
 
@@ -172,13 +176,14 @@ lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = 
 @[simp] lemma neg_mk (x : K) (hx) : (-⟨x, hx⟩ : 𝓞 K) = ⟨-x, neg_mem hx⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ring homomorphism `(𝓞 K) →+* (𝓞 L)` given by restricting a ring homomorphism
   `f : K →+* L` to `𝓞 K`. -/
 def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+* (𝓞 L) where
   toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
   map_zero' := by ext; simp only [map_mk, map_zero]
   map_one' := by ext; simp only [map_mk, map_one]
-  map_add' x y:= by ext; simp only [map_mk, map_add]
+  map_add' x y := by ext; simp only [map_mk, map_add]
   map_mul' x y := by ext; simp only [map_mk, map_mul]
 
 @[simp]
@@ -217,13 +222,14 @@ namespace RingOfIntegers
 def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
   toRingHom := mapRingHom f
-  commutes' x := SetCoe.ext (AlgHomClass.commutes ((f : K →ₐ[k] L).restrictScalars (𝓞 k)) x)
+  commutes' x := SetCoe.ext (AlgHomClass.commutes
+    ((AlgHomClass.toAlgHom f).restrictScalars (𝓞 k)) x)
 
 /-- The isomorphism of algebras `(𝓞 K) ≃ₐ[𝓞 k] (𝓞 L)` given by restricting
   an isomorphism of algebras `e : K ≃ₐ[k] L` to `𝓞 K`. -/
 def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
-  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (e : K ≃ₐ[k] L).symm)
+  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (AlgEquivClass.toAlgEquiv e : K ≃ₐ[k] L).symm)
     (AlgHom.ext fun x => ext (EquivLike.right_inv e x.1))
       (AlgHom.ext fun x => ext (EquivLike.left_inv e x.1))
 
@@ -295,6 +301,9 @@ variable [NumberField K]
 instance : IsNoetherian ℤ (𝓞 K) :=
   IsIntegralClosure.isNoetherian _ ℚ K _
 
+instance : AddGroup.FG (𝓞 K) :=
+  Finite.iff_addGroup_fg.mp <| IsNoetherian.finite ℤ (𝓞 K)
+
 /-- The ring of integers of a number field is not a field. -/
 theorem not_isField : ¬IsField (𝓞 K) := by
   have h_inj : Function.Injective (algebraMap ℤ (𝓞 K)) := RingHom.injective_int (algebraMap ℤ (𝓞 K))
@@ -302,11 +311,16 @@ theorem not_isField : ¬IsField (𝓞 K) := by
   exact Int.not_isField
     (((IsIntegralClosure.isIntegral_algebra ℤ K).isField_iff_isField h_inj).mpr hf)
 
+instance {I : Ideal (𝓞 K)} [hI : I.IsMaximal] : NeZero I :=
+  ⟨Ring.ne_bot_of_isMaximal_of_not_isField hI <| RingOfIntegers.not_isField K⟩
+
 instance : IsDedekindDomain (𝓞 K) :=
   IsIntegralClosure.isDedekindDomain ℤ ℚ K _
 
 instance : Free ℤ (𝓞 K) :=
   IsIntegralClosure.module_free ℤ ℚ K (𝓞 K)
+
+instance : Ring.HasFiniteQuotients (𝓞 K) := .of_module_finite ℤ _
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) K :=
   IsIntegralClosure.isLocalization_of_isSeparable ℤ ℚ K (𝓞 K)
@@ -327,15 +341,15 @@ def restrict (f : M → K) (h : ∀ x, IsIntegral ℤ (f x)) (x : M) : 𝓞 K :=
 def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral ℤ (f x)) :
     M →+ 𝓞 K where
   toFun := restrict f h
-  map_zero' := by simp only [restrict, map_zero, mk_zero]
-  map_add' x y := by simp only [restrict, map_add, mk_add_mk _]
+  map_zero' := by simp only [restrict, map_zero]; rfl
+  map_add' x y := by simp only [restrict, map_add]; rfl
 
 /-- Given `f : M →* K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →* 𝓞 K`. -/
 def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ (f x)) : M →* 𝓞 K where
   toFun := restrict f h
-  map_one' := by simp only [restrict, map_one, mk_one]
-  map_mul' x y := by simp only [restrict, map_mul, mk_mul_mk _]
+  map_one' := by simp only [restrict, map_one]; rfl
+  map_mul' x y := by simp only [restrict, map_mul]; rfl
 
 section extension
 
@@ -371,11 +385,10 @@ theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥
 theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=
   (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
 
-instance : NoZeroSMulDivisors (𝓞 K) (𝓞 L) :=
-  NoZeroSMulDivisors.iff_algebraMap_injective.mpr <| algebraMap.injective K L
+instance : IsTorsionFree (𝓞 K) (𝓞 L) :=
+  isTorsionFree_iff_algebraMap_injective.mpr <| algebraMap.injective K L
 
-instance : NoZeroSMulDivisors (𝓞 K) L :=
-  NoZeroSMulDivisors.trans_faithfulSMul (𝓞 K) (𝓞 L) L
+instance : IsTorsionFree (𝓞 K) L := .trans_faithfulSMul (𝓞 K) (𝓞 L) L
 
 end extension
 
@@ -400,8 +413,7 @@ theorem integralBasis_repr_apply (x : (𝓞 K)) (i : Free.ChooseBasisIndex ℤ (
 
 theorem mem_span_integralBasis {x : K} :
     x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ (algebraMap (𝓞 K) K).range := by
-  rw [integralBasis, Basis.localizationLocalization_span, LinearMap.mem_range,
-      IsScalarTower.coe_toAlgHom', RingHom.mem_range]
+  simp [integralBasis, Basis.localizationLocalization_span]
 
 theorem RingOfIntegers.rank : Module.finrank ℤ (𝓞 K) = Module.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
@@ -413,13 +425,6 @@ namespace Rat
 open NumberField
 
 instance numberField : NumberField ℚ where
-  to_charZero := inferInstance
-  to_finiteDimensional := by
-  -- The vector space structure of `ℚ` over itself can arise in multiple ways:
-  -- all fields are vector spaces over themselves (used in `Rat.finiteDimensional`)
-  -- all char 0 fields have a canonical embedding of `ℚ` (used in `NumberField`).
-  -- Show that these coincide:
-    convert (inferInstance : FiniteDimensional ℚ ℚ)
 
 /-- The ring of integers of `ℚ` as a number field is just `ℤ`. -/
 noncomputable def ringOfIntegersEquiv : 𝓞 ℚ ≃+* ℤ :=
@@ -439,18 +444,10 @@ end Rat
 
 namespace AdjoinRoot
 
-section
-
-open scoped Polynomial
-
-attribute [-instance] DivisionRing.toRatAlgebra
-
 /-- The quotient of `ℚ[X]` by the ideal generated by an irreducible polynomial of `ℚ[X]`
 is a number field. -/
 instance {f : Polynomial ℚ} [hf : Fact (Irreducible f)] : NumberField (AdjoinRoot f) where
   to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
-  to_finiteDimensional := by convert (AdjoinRoot.powerBasis hf.out.ne_zero).finite
-
-end
+  to_finiteDimensional := by convert! (AdjoinRoot.powerBasis hf.out.ne_zero).finite
 
 end AdjoinRoot

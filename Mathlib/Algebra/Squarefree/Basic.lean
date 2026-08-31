@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Squarefree elements of monoids
+
 An element of a monoid is squarefree when it is not divisible by any squares
 except the squares of units.
 
@@ -70,7 +71,8 @@ theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squa
   · apply isUnit_of_mul_isUnit_left hu
 
 @[simp]
-theorem Prime.squarefree [CancelCommMonoidWithZero R] {x : R} (h : Prime x) : Squarefree x :=
+theorem Prime.squarefree [CommMonoidWithZero R] [IsCancelMulZero R] {x : R} (h : Prime x) :
+    Squarefree x :=
   h.irreducible.squarefree
 
 theorem Squarefree.of_mul_left [Monoid R] {m n : R} (hmn : Squarefree (m * n)) : Squarefree m :=
@@ -81,6 +83,10 @@ theorem Squarefree.of_mul_right [CommMonoid R] {m n : R} (hmn : Squarefree (m * 
 
 theorem Squarefree.squarefree_of_dvd [Monoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
     Squarefree x := fun _ h => hsq _ (h.trans hdvd)
+
+theorem Associated.squarefree_iff [Monoid R] {x y : R} (h : Associated x y) :
+    Squarefree x ↔ Squarefree y :=
+  ⟨fun hx ↦ hx.squarefree_of_dvd h.dvd', fun hy ↦ hy.squarefree_of_dvd h.dvd⟩
 
 theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : ℕ}
     (h : Squarefree (x ^ n)) (h' : ¬ IsUnit x) :
@@ -98,7 +104,7 @@ theorem Squarefree.pow_dvd_of_pow_dvd [Monoid R] {x y : R} {n : ℕ}
 
 section SquarefreeGcdOfSquarefree
 
-variable {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α]
+variable {α : Type*} [CommMonoidWithZero α] [GCDMonoid α]
 
 theorem Squarefree.gcd_right (a : α) {b : α} (hb : Squarefree b) : Squarefree (gcd a b) :=
   hb.squarefree_of_dvd (gcd_dvd_right _ _)
@@ -164,7 +170,7 @@ theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 
 
 end
 
-variable [CancelCommMonoidWithZero R] {x y p d : R}
+variable [CommMonoidWithZero R] [IsCancelMulZero R] {x y p d : R}
 
 theorem IsRadical.squarefree (h0 : x ≠ 0) (h : IsRadical x) : Squarefree x := by
   rintro z ⟨w, rfl⟩
@@ -179,7 +185,7 @@ theorem pow_dvd_of_squarefree_of_pow_succ_dvd_mul_right {k : ℕ}
     p ^ k ∣ y := by
   by_cases hxp : p ∣ x
   · obtain ⟨x', rfl⟩ := hxp
-    have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_unit <| hx p (mul_dvd_mul_left p contra)
+    have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_isUnit <| hx p (mul_dvd_mul_left p contra)
     replace h : p ^ k ∣ x' * y := by
       rw [pow_succ', mul_assoc] at h
       exact (mul_dvd_mul_iff_left hp.ne_zero).mp h
@@ -204,6 +210,19 @@ theorem dvd_of_squarefree_of_mul_dvd_mul_right (hx : Squarefree x) (h : d * d �
 
 theorem dvd_of_squarefree_of_mul_dvd_mul_left (hy : Squarefree y) (h : d * d ∣ x * y) : d ∣ x :=
   dvd_of_squarefree_of_mul_dvd_mul_right hy (mul_comm x y ▸ h)
+
+/-- If `x` is squarefree and `x * y` is a square, then `x ∣ y`. -/
+theorem dvd_of_isSquare_mul (hx : Squarefree x) (h : IsSquare (x * y)) : x ∣ y := by
+  nontriviality R
+  obtain ⟨c, hc⟩ := h
+  obtain ⟨k, rfl⟩ : x ∣ c := (hx.dvd_pow_iff_dvd two_ne_zero).mp ⟨y, by rwa [sq, eq_comm]⟩
+  rw [mul_mul_mul_comm, mul_assoc, mul_right_inj' hx.ne_zero] at hc
+  exact ⟨k * k, hc⟩
+
+/-- Two squarefree elements whose product is a square are associated. -/
+theorem associated_of_isSquare_mul (hx : Squarefree x) (hy : Squarefree y)
+    (h : IsSquare (x * y)) : Associated x y :=
+  associated_of_dvd_dvd (hx.dvd_of_isSquare_mul h) (hy.dvd_of_isSquare_mul (mul_comm x y ▸ h))
 
 end Squarefree
 
@@ -242,7 +261,7 @@ end IsRadical
 
 namespace UniqueFactorizationMonoid
 
-variable [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     ∃ (y : R) (n : ℕ), Squarefree y ∧ y ∣ x ∧ x ∣ y ^ n := by
@@ -260,11 +279,25 @@ lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
         mul_dvd_mul_left p hyx, mul_pow p y n ▸ mul_dvd_mul (dvd_pow_self p hn.ne') hy'⟩
       exact squarefree_mul_iff.mpr ⟨hp.isRelPrime_iff_not_dvd.mpr hp', hp.squarefree, hy⟩
 
+/-- Every element of a unique factorization monoid is a square times a squarefree element. -/
+theorem _root_.exists_sq_mul_squarefree (x : R) : ∃ e d : R, e ^ 2 * d = x ∧ Squarefree d := by
+  induction x using WfDvdMonoid.induction_on_irreducible with
+  | zero => exact ⟨0, 1, by simp, squarefree_one⟩
+  | unit u hu => exact ⟨1, u, by simp, hu.squarefree⟩
+  | mul z p hz hp ih =>
+    obtain ⟨e, d, rfl, hd⟩ := ih
+    by_cases hpd : p ∣ d
+    · obtain ⟨d', rfl⟩ := hpd
+      exact ⟨e * p, d', by simp only [pow_two]; ac_rfl, hd.of_mul_right⟩
+    · refine ⟨e, d * p, by ac_rfl, ?_⟩
+      rw [squarefree_mul_iff]
+      exact ⟨(hp.isRelPrime_iff_not_dvd.mpr hpd).symm, hd, hp.squarefree⟩
+
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   classical
   rw [squarefree_iff_emultiplicity_le_one, Multiset.nodup_iff_count_le_one]
-  haveI := nontrivial_of_ne x 0 x0
+  have := nontrivial_of_ne x 0 x0
   constructor <;> intro h a
   · by_cases hmem : a ∈ normalizedFactors x
     · have ha := irreducible_of_normalized_factor _ hmem

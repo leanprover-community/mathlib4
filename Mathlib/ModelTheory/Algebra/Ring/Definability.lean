@@ -18,7 +18,7 @@ This file proves that the set of zeros of a multivariable polynomial is a defina
 
 -/
 
-@[expose] public section
+public section
 
 namespace FirstOrder
 
@@ -32,8 +32,8 @@ theorem mvPolynomial_zeroLocus_definable {ι K : Type*} [Field K]
       (zeroLocus K (Ideal.span (S : Set (MvPolynomial ι K)))) := by
   rw [Set.definable_iff_exists_formula_sum]
   let p' := genericPolyMap (fun p : S => p.1.support)
-  letI := Classical.decEq ι
-  letI := Classical.decEq K
+  let := Classical.decEq ι
+  let := Classical.decEq K
   rw [MvPolynomial.zeroLocus_span]
   refine ⟨BoundedFormula.iInf
       (fun i : S => Term.equal

@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
 module
 
-public meta import Mathlib.Tactic.Linter.Header
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Exception
 
 /-!
 This file defines the environment extension to keep track of which tactics are allowed to leave
@@ -57,17 +58,19 @@ public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     `by,
     `null,
     `«]»,
-    `Lean.Parser.Tactic.show,
+    ``Lean.Parser.Tactic.show,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     `Mathlib.Tactic.successIfFailWithMsg,
     `Mathlib.Tactic.failIfNoProgress,
     `Mathlib.Tactic.ExtractGoal.extractGoal,
-    `Lean.Parser.Tactic.traceState,
+    ``Lean.Parser.Tactic.traceState,
+    ``Lean.Parser.Tactic.Conv.convTrace_state,
     `Mathlib.Tactic.tacticMatch_target_,
     `change?,
     `«tactic#adaptation_note_»,
     `tacticSleep_heartbeats_,
-    `Mathlib.Tactic.«tacticRename_bvar_→__»
+    `Mathlib.Tactic.«tacticRename_bvar_→__»,
+    ``Lean.Parser.Tactic.Conv.skip
   ]
 
 /--

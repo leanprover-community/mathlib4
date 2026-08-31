@@ -45,8 +45,6 @@ theorem zero_mem_nonunits [MonoidWithZero α] : 0 ∈ nonunits α ↔ (0 : α) �
 theorem one_notMem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
 
-@[deprecated (since := "2025-05-23")] alias one_not_mem_nonunits := one_notMem_nonunits
-
 @[simp high] -- High priority shortcut lemma
 theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
     [IsLocalHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
@@ -74,7 +72,7 @@ variable {C : Type*} [SetLike C α]
 theorem inv_mem_of_isUnit [DivisionMonoid α] [SubmonoidClass C α] {S : C} {a : S} (ha : IsUnit a) :
     (a : α)⁻¹ ∈ S := by
   obtain ⟨u, rfl⟩ := ha
-  convert u⁻¹.1.2
+  convert! u⁻¹.1.2
   exact (map_inv ((subtype <| ofClass S).comp <| Units.coeHom S) u).symm
 
 section Group

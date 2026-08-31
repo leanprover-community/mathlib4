@@ -3,10 +3,13 @@ Copyright (c) 2024 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Discrete uniformities and discrete topology
+
 Exactly as different metrics can induce equivalent topologies on a space, it is possible that
 different uniform structures (a notion that generalises that of a metric structure) induce the same
 topology on a space. In this file we are concerned in particular with the *discrete topology*,
@@ -42,9 +45,9 @@ They basically coincide, and the difference of the examples lies in their flavou
 ### The metric
 
 We begin  by defining a metric on `ℕ` (see `dist_def`) that
-1. Induces the discrete topology, as proven in `TopIsDiscrete`;
-2. Is not the discrete metric, in particular because the identity is a Cauchy sequence, as proven
-in `idIsCauchy`
+1. induces the discrete topology, as proven in `TopIsDiscrete`;
+2. is not the discrete metric, in particular because the identity is a Cauchy sequence, as proven
+   in `idIsCauchy`.
 
 The definition is simply `dist m n = |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|`, and I am grateful to
 Anatole Dedecker for his suggestion.
@@ -73,6 +76,8 @@ inequality) to explicit subsets, many proofs are easily closed by `aesop` or `om
 ### References
 * [N. Bourbaki, *General Topology*, Chapter II][bourbaki1966]
 -/
+
+@[expose] public section
 
 open Set Function Filter Metric
 
@@ -143,7 +148,7 @@ theorem TopIsDiscrete : DiscreteTopology ℕ := by
 lemma idIsCauchy : CauchySeq (id : ℕ → ℕ) := by
   rw [Metric.cauchySeq_iff]
   refine fun ε ↦ Metric.cauchySeq_iff.mp
-    (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^(-n : ℤ)) fun n ↦ le_of_eq ?_) ε
+    (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^ (-n : ℤ)) fun n ↦ le_of_eq ?_) ε
   simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg, one_div]
   rw [Real.dist_eq, zpow_add' <| Or.intro_left _ two_ne_zero]
   calc
@@ -166,11 +171,11 @@ discrete. -/
 each `n`, the set `fundamentalEntourage n : Set (ℕ × ℕ)` consists of the `n+1` points
 `{(0,0),(1,1)...(n,n)}` on the diagonal; together with the half plane `{(x,y) | n ≤ x ∧ n ≤ y}`. -/
 def fundamentalEntourage (n : ℕ) : Set (ℕ × ℕ) :=
-  (⋃ i : Icc 0 n, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (n , n)
+  (⋃ i : Icc 0 n, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (n, n)
 
 @[simp]
 lemma fundamentalEntourage_ext (t : ℕ) (T : Set (ℕ × ℕ)) : fundamentalEntourage t = T ↔
-    T = (⋃ i : Icc 0 t, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (t , t) := by
+    T = (⋃ i : Icc 0 t, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (t, t) := by
   simpa only [fundamentalEntourage] using eq_comm
 
 lemma mem_range_fundamentalEntourage (S : Set (ℕ × ℕ)) :
@@ -298,7 +303,7 @@ uniformity is not discrete. -/
 lemma atTopIsCauchy : Cauchy (atTop : Filter ℕ) := by
   rw [HasBasis_counterUniformity.cauchy_iff]
   refine ⟨atTop_neBot, fun i _ ↦ ?_⟩
-  simp_rw [mem_fundamentalEntourage, mem_atTop_sets, ge_iff_le]
+  simp_rw [mem_fundamentalEntourage, mem_atTop_sets]
   exact ⟨Ici i, ⟨⟨i, fun _ hb ↦ hb⟩, fun _ hx _ hy ↦ Or.inl ⟨hx, hy⟩⟩⟩
 
 /-- We find the same result about the identity map found in `idIsCauchy`, without using any metric

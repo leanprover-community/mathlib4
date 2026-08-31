@@ -33,10 +33,8 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable {α : Type*} {M : Type*} {R : Type*}
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (M R)
 
@@ -48,7 +46,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
     refine Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) ?_) (union_subset hp hq)
     rw [Finset.coe_union]
   zero_mem' := by
-    simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
+    simp only [subset_def, Finset.mem_coe, Set.mem_ofPred_eq, mem_support_iff, zero_apply]
     intro h ha
     exact (ha rfl).elim
   smul_mem' _ _ hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
@@ -78,6 +76,13 @@ theorem supported_eq_span_single (s : Set α) :
     refine sum_mem fun i il => ?_
     rw [show single i (l i) = l i • single i 1 by simp]
     exact smul_mem _ (l i) (subset_span (mem_image_of_mem _ (hl il)))
+
+lemma single_mem_span_single [Nontrivial R] {a : α} {s : Set α} :
+    single a 1 ∈ Submodule.span R ((single · (1 : R)) '' s) ↔ a ∈ s := by
+  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem _ h⟩
+  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
+    Finsupp.support_single _ (one_ne_zero' R)] at h
+  simpa using h
 
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
     span R s ≤ supported M R (⋃ x ∈ s, x.support) :=
@@ -129,7 +134,7 @@ theorem supported_univ : supported M R (Set.univ : Set α) = ⊤ :=
 theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     supported M R (⋃ i, s i) = ⨆ i, supported M R (s i) := by
   refine le_antisymm ?_ (iSup_le fun i => supported_mono <| Set.subset_iUnion _ _)
-  haveI := Classical.decPred fun x => x ∈ ⋃ i, s i
+  have := Classical.decPred fun x => x ∈ ⋃ i, s i
   suffices
     LinearMap.range ((Submodule.subtype _).comp (restrictDom M R (⋃ i, s i))) ≤
       ⨆ i, supported M R (s i) by
@@ -149,7 +154,7 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
 
 theorem supported_union (s t : Set α) :
     supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
-  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, cond_true, cond_false]
+  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, Bool.cond_true, Bool.cond_false]
 
 theorem supported_iInter {ι : Type*} (s : ι → Set α) :
     supported M R (⋂ i, s i) = ⨅ i, supported M R (s i) :=
@@ -181,8 +186,11 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
   refine ⟨fun h ↦ codisjoint_iff.mpr (eq_top_iff.mpr fun a ↦ ?_), codisjoint_supported_supported⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   rw [codisjoint_iff, ← supported_union, eq_top_iff'] at h
-  simpa [Finsupp.mem_supported, Finsupp.support_single_ne_zero _ hx] using h (Finsupp.single a x)
+  simpa [Finsupp.mem_supported, Finsupp.support_single _ hx] using h (Finsupp.single a x)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 @[simps!] def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
@@ -197,7 +205,7 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 @[simp] theorem supportedEquivFinsupp_symm_apply_coe (s : Set α) [DecidablePred (· ∈ s)]
     (f : s →₀ M) : (supportedEquivFinsupp (R := R) s).symm f = f.extendDomain := by
-  convert restrictSupportEquiv_symm_apply_coe ..
+  convert! restrictSupportEquiv_symm_apply_coe ..
 
 @[simp] theorem supportedEquivFinsupp_symm_single (s : Set α) (i : s) (a : M) :
     ((supportedEquivFinsupp (R := R) s).symm (single i a) : α →₀ M) = single ↑i a := by
@@ -205,7 +213,7 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 section LMapDomain
 
-variable {α' : Type*} {α'' : Type*} (M R)
+variable {α' : Type*} (M R)
 
 theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
     supported M R (f ⁻¹' s) ≤ (supported M R s).comap (lmapDomain M R f) := by
@@ -241,7 +249,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
   rintro l ⟨h₁, h₂⟩
   rw [SetLike.mem_coe, mem_ker, lmapDomain_apply, mapDomain] at h₂
   simp only [mem_bot]; ext x
-  haveI := Classical.decPred fun x => x ∈ s
+  have := Classical.decPred fun x => x ∈ s
   by_cases xs : x ∈ s
   · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 := by
       rw [h₂]

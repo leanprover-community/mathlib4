@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Separation.CompletelyRegular
 
 import Mathlib.Topology.UniformSpace.OfCompactT2
-import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Uniformizable Spaces
@@ -35,7 +34,9 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 variable {X : Type*}
 
-open Filter Set Uniformity UniformSpace SetRel
+open Filter Set UniformSpace SetRel
+
+open scoped Uniformity
 
 section UniformSpace
 variable [UniformSpace X]

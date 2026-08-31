@@ -6,9 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 module
 
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Logic.Embedding.Set
 
 /-!
@@ -22,7 +21,7 @@ If your proof has as *result* `Set.Finite`, then it should go to a more specific
 finite sets
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
@@ -30,7 +29,7 @@ open Set Function
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v}
 
 namespace Set
 
@@ -39,7 +38,7 @@ namespace Set
 theorem Finite.fin_embedding {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n ↪ α), range f = s :=
   ⟨_, (Fintype.equivFin (h.toFinset : Set α)).symm.asEmbedding, by
-    simp only [Finset.coe_sort_coe, Equiv.asEmbedding_range, Finite.coe_toFinset, setOf_mem_eq]⟩
+    simp only [Finset.coe_sort_coe, Equiv.asEmbedding_range, Finite.coe_toFinset, ofPred_mem_eq]⟩
 
 theorem Finite.fin_param {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n → α), Injective f ∧ range f = s :=
@@ -68,7 +67,7 @@ theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {(s : Set X) | Set.Finite s} 
 
 /-! ### Infinite sets -/
 
-variable {s t : Set α}
+variable {s : Set α}
 
 /-! ### Order properties -/
 

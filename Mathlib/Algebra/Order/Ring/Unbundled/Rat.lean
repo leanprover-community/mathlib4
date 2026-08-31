@@ -30,7 +30,7 @@ assert_not_exists IsOrderedMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
-variable {a b c p q : ℚ}
+variable {a b c q : ℚ}
 
 @[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b := by
   simpa using divInt_nonneg ha (Int.natCast_nonneg _)
@@ -38,7 +38,7 @@ variable {a b c p q : ℚ}
 theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) : 0 ≤ Rat.ofScientific m s e := by
   rw [Rat.ofScientific]
   cases s
-  · rw [if_neg (by decide)]
+  · rw [ite_eq_right (by decide)]
     exact num_nonneg.mp <| Int.natCast_nonneg _
   · grind [normalize_eq_mkRat, Rat.mkRat_nonneg]
 
@@ -115,26 +115,25 @@ instance instPreorder : Preorder ℚ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 
-@[deprecated (since := "2025-08-14")] alias le_def := Rat.le_iff
-
-@[deprecated (since := "2025-08-14")] alias lt_def := Rat.lt_iff
-
 instance : AddLeftMono ℚ where
   elim := fun _ _ _ h => Rat.add_le_add_left.2 h
 
 @[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by
-  simp [Int.le_iff_lt_or_eq, instLE, Rat.blt]
+  simp +instances [Int.le_iff_lt_or_eq, instLE, Rat.blt]
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
 @[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
 
-theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
+@[deprecated "use `div_lt_div_iff₀`" (since := "2026-03-20")] theorem div_lt_div_iff_mul_lt_mul
+    {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
   simp only [lt_iff_le_not_ge]
   apply and_congr
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
   · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 
-theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_iff]
+theorem num_le_denom_iff {q : ℚ} : q.num ≤ q.den ↔ q ≤ 1 := by simp [Rat.le_iff]
+
+theorem num_lt_denom_iff {q : ℚ} : q.num < q.den ↔ q < 1 := by simp [Rat.lt_iff]
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
   grind [abs_of_nonpos, neg_def, Rat.num_nonneg, abs_of_nonneg, num_divInt_den]

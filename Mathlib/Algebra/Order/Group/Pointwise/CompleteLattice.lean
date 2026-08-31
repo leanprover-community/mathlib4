@@ -19,9 +19,9 @@ In this file we prove a few facts like “The infimum of `-s` is `-` the supremu
 `CovariantClass` is currently not polymorphic enough to state it.
 -/
 
-@[expose] public section
+public section
 
-open Function Set
+open Set
 open scoped Pointwise
 
 variable {M : Type*}

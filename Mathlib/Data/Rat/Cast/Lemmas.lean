@@ -19,7 +19,7 @@ In fact, these lemmas don't appear to be used anywhere in Mathlib,
 so perhaps this file can simply be deleted.
 -/
 
-@[expose] public section
+public section
 
 namespace Rat
 
@@ -35,7 +35,7 @@ lemma cast_pow (p : ℚ) (n : ℕ) : ↑(p ^ n) = (p ^ n : α) := by
 theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   rcases n with - | n
   · simp
-  rw [cast_def, inv_natCast_num, inv_natCast_den, if_neg n.succ_ne_zero,
+  rw [cast_def, inv_natCast_num, inv_natCast_den, ite_eq_right n.succ_ne_zero,
     Int.sign_eq_one_of_pos (Int.ofNat_succ_pos n), Int.cast_one, one_div]
 
 @[simp]
@@ -78,6 +78,7 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
     congr
     rw [cast_inv_of_ne_zero hq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cast_mk {K} [DivisionRing K] (q : ℚ) (h : 0 ≤ q) :
     (NNRat.cast ⟨q, h⟩ : K) = (q : K) := by

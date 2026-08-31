@@ -5,10 +5,13 @@ Authors: Anne Baanen
 -/
 module
 
-meta import Batteries.Tactic.Lint.Basic
-meta import Lean.Elab.Tactic.Doc
-import Lean.Parser.Tactic.Doc
-import Mathlib.Tactic.Linter.Header
+public meta import Lean.Elab.Tactic.Doc
+public meta import Lean.Parser.Tactic.Doc
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+public import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Batteries.Tactic.Lint.Basic
+public import Lean.Elab.Tactic.Doc
 
 /-! # The `tacticDocs` linter
 
@@ -25,7 +28,7 @@ meta def isNonemptyDoc (doc : TacticDoc) : Bool :=
   doc.docString.isSome || doc.extensionDocs.any (! ·.isEmpty)
 
 /-- Check that all tactics available in Mathlib have a docstring. -/
-@[env_linter] meta def tacticDocs : Batteries.Tactic.Lint.Linter where
+@[env_linter] public meta def tacticDocs : Batteries.Tactic.Lint.Linter where
   noErrorsFound := "No tactics are missing documentation."
   errorsFound := "TACTICS ARE MISSING DOCUMENTATION STRINGS:"
   test tac := do
@@ -50,3 +53,26 @@ meta def isNonemptyDoc (doc : TacticDoc) : Bool :=
         return none
 
     return m!"tactic `{name}` missing documentation string"
+
+/-- Check tactics with the same user-facing name (usually: first syntax token) get a `@[tactic_alt]`
+attribute. -/
+@[env_linter] public meta def tacticAlt : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "No tactics sharing the same user-facing name."
+  errorsFound := "TACTICS ARE MISSING `@[tactic_alt]` ATTRIBUTES:"
+  test tac := do
+    let env ← getEnv
+    if !isTactic env tac || (alternativeOfTactic env tac).isSome then
+      return none
+    -- Find duplicates, those with the same user-facing name but that aren't declared
+    -- to be alternatives.
+    let docs ← Tactic.Doc.allTacticDocs
+    let some doc := docs.find? fun doc => doc.internalName == tac | return none
+    let name := doc.userName
+    let tacs := docs.filter fun doc =>
+      (doc.userName == name && (alternativeOfTactic env doc.internalName).isNone)
+    -- If we have duplicates, complain.
+    if tacs.size <= 1 then return none
+    let tacNames := tacs.map (·.internalName)
+    return m!"tactic `{doc.userName}` has multiple declarations {tacNames} one of which should \
+    be marked as `@[tactic_alt]` of the other(s).\n\
+    Hint: you can use the `tactic_extension` command to extend the documentation."

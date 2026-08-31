@@ -18,7 +18,8 @@ An element of a `Monoid` is a unit if it has a two-sided inverse.
 * `IsUnit x`: a predicate asserting that `x` is a unit (i.e., invertible element) of a monoid.
 
 For both declarations, there is an additive counterpart: `AddUnits` and `IsAddUnit`.
-See also `Prime`, `Associated`, and `Irreducible` in `Mathlib/Algebra/Associated.lean`.
+See also `Prime`, `Associated`, and `Irreducible` in
+`Mathlib/Algebra/GroupWithZero/Associated.lean`.
 
 ## Notation
 
@@ -120,8 +121,6 @@ theorem ext {u v : αˣ} (huv : u.val = v.val) : u = v := val_injective huv
 @[to_additive (attr := norm_cast)]
 theorem val_inj {a b : αˣ} : (a : α) = b ↔ a = b :=
   val_injective.eq_iff
-
-@[to_additive (attr := deprecated val_inj (since := "2025-06-21"))] alias eq_iff := val_inj
 
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive /-- Additive units have decidable equality
@@ -234,8 +233,8 @@ instance instMonoid : Monoid αˣ :=
         inv := a⁻¹ ^ n
         val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
         inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp }
-    npow_zero := fun a ↦ by ext; simp
-    npow_succ := fun n a ↦ by ext; simp [pow_succ] }
+    npow_zero := fun a ↦ by simp only [HPow.hPow, Pow.pow]; ext; simp
+    npow_succ := fun n a ↦ by simp only [HPow.hPow, Pow.pow]; ext; simp [pow_succ] }
 
 /-- Units of a monoid have division -/
 @[to_additive /-- Additive units of an additive monoid have subtraction. -/]
@@ -252,9 +251,9 @@ instance instDivInvMonoid : DivInvMonoid αˣ where
   zpow := fun n a ↦ match n, a with
     | Int.ofNat n, a => a ^ n
     | Int.negSucc n, a => (a ^ n.succ)⁻¹
-  zpow_zero' := fun a ↦ by simp
-  zpow_succ' := fun n a ↦ by simp [pow_succ]
-  zpow_neg' := fun n a ↦ by simp
+  zpow_zero' := fun a ↦ by simp only [HPow.hPow, Pow.pow]; simp
+  zpow_succ' := fun n a ↦ by simp only [HPow.hPow, Pow.pow]; simp [pow_succ]
+  zpow_neg' := fun n a ↦ rfl
 
 /-- Units of a monoid form a group. -/
 @[to_additive /-- Additive units of an additive monoid form an additive group. -/]
@@ -322,10 +321,6 @@ theorem divp_one (a : α) : a /ₚ 1 = a :=
 theorem divp_assoc (a b : α) (u : αˣ) : a * b /ₚ u = a * (b /ₚ u) :=
   mul_assoc _ _ _
 
-@[deprecated divp_assoc (since := "2025-08-25")]
-theorem divp_assoc' (x y : α) (u : αˣ) : x * (y /ₚ u) = x * y /ₚ u :=
-  (divp_assoc _ _ _).symm
-
 @[simp]
 theorem divp_inv (u : αˣ) : a /ₚ u⁻¹ = a * u :=
   rfl
@@ -358,7 +353,7 @@ end Monoid
 
 section IsUnit
 
-variable {M : Type*} {N : Type*}
+variable {M : Type*}
 
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
@@ -398,14 +393,10 @@ theorem IsUnit.of_mul_eq_one [Monoid M] [IsDedekindFiniteMonoid M] {a : M} (b : 
     IsUnit a :=
   ⟨.mkOfMulEqOne a b h, rfl⟩
 
-@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one := IsUnit.of_mul_eq_one
-
 @[to_additive]
 theorem IsUnit.of_mul_eq_one_right [Monoid M] [IsDedekindFiniteMonoid M] {b : M} (a : M)
     (h : a * b = 1) : IsUnit b :=
   .of_mul_eq_one a <| mul_eq_one_symm h
-
-@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one_right := IsUnit.of_mul_eq_one_right
 
 section Monoid
 variable [Monoid M] {a b : M}
@@ -433,8 +424,6 @@ variable [Subsingleton Mˣ]
 
 @[to_additive] lemma Units.eq_one (u : Mˣ) : u = 1 := Subsingleton.elim ..
 @[to_additive] lemma IsUnit.eq_one : IsUnit a → a = 1 := by rintro ⟨u, rfl⟩; simp [u.eq_one]
-
-@[deprecated (since := "2025-11-19")] alias units_eq_one := Units.eq_one
 
 @[to_additive (attr := simp)]
 lemma isUnit_iff_eq_one : IsUnit a ↔ a = 1 where
@@ -539,6 +528,18 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
 
+theorem mul_left_iff {a b : M} (ha : IsUnit a) :
+    IsUnit (a * b) ↔ IsUnit b :=
+  show IsUnit (ha.unit * b) ↔ _ by simp [-IsUnit.unit_spec]
+
+grind_pattern mul_left_iff => IsUnit a, IsUnit (a * b)
+
+theorem mul_right_iff {a b : M} (hb : IsUnit b) :
+    IsUnit (a * b) ↔ IsUnit a :=
+  show IsUnit (a * hb.unit) ↔ _ by simp [-IsUnit.unit_spec]
+
+grind_pattern mul_right_iff => IsUnit b, IsUnit (a * b)
+
 end Monoid
 
 section DivisionMonoid
@@ -635,10 +636,12 @@ section NoncomputableDefs
 variable {M : Type*}
 
 /-- Constructs an inv operation for a `Monoid` consisting only of units. -/
+@[instance_reducible]
 noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
   inv := fun a => ↑(h a).unit⁻¹
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
+@[instance_reducible]
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     toInv := invOfIsUnit h,
@@ -647,6 +650,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
+@[instance_reducible]
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,

@@ -23,7 +23,7 @@ absolutely continuous with respect to `μb`).
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ δ : Type*}
 
@@ -69,7 +69,7 @@ theorem mono_right (h : QuasiMeasurePreserving f μa μb) (ha : μb ≪ μb') :
     QuasiMeasurePreserving f μa μb' :=
   ⟨h.1, h.2.trans ha⟩
 
-@[mono]
+@[gcongr, mono]
 theorem mono (ha : μa' ≪ μa) (hb : μb ≪ μb') (h : QuasiMeasurePreserving f μa μb) :
     QuasiMeasurePreserving f μa' μb' :=
   (h.mono_left ha).mono_right hb
@@ -89,9 +89,15 @@ protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa
 protected theorem aemeasurable (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
 
+protected theorem congr (hf : QuasiMeasurePreserving f μa μb) {f' : α → β} (hf' : Measurable f')
+    (h : f =ᵐ[μa] f') : QuasiMeasurePreserving f' μa μb := by
+  refine ⟨hf', ?_⟩
+  rw [Measure.map_congr h.symm]
+  exact hf.absolutelyContinuous
+
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiMeasurePreserving f μa μb) (c : R) : QuasiMeasurePreserving f (c • μa) (c • μb) :=
-  ⟨hf.1, by rw [Measure.map_smul]; exact hf.2.smul c⟩
+  ⟨hf.1, by rw [Measure.map_smul _ hf.aemeasurable]; exact hf.2.smul c⟩
 
 theorem ae_map_le (h : QuasiMeasurePreserving f μa μb) : ae (μa.map f) ≤ ae μb :=
   h.2.ae_le
@@ -103,9 +109,12 @@ theorem ae (h : QuasiMeasurePreserving f μa μb) {p : β → Prop} (hg : ∀ᵐ
     ∀ᵐ x ∂μa, p (f x) :=
   h.tendsto_ae hg
 
-theorem ae_eq (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ} (hg : g₁ =ᵐ[μb] g₂) :
+@[gcongr]
+theorem ae_eq_comp (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ} (hg : g₁ =ᵐ[μb] g₂) :
     g₁ ∘ f =ᵐ[μa] g₂ ∘ f :=
   h.ae hg
+
+@[deprecated (since := "2026-08-01")] alias ae_eq := ae_eq_comp
 
 theorem preimage_null (h : QuasiMeasurePreserving f μa μb) {s : Set β} (hs : μb s = 0) :
     μa (f ⁻¹' s) = 0 :=
@@ -145,7 +154,7 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
     rwa [Equiv.Perm.iterate_eq_pow e⁻¹ k, inv_pow e k] at he'
   · rw [zpow_neg, zpow_natCast]
     replace hs : e ⁻¹' s =ᵐ[μ] s := by
-      convert he.preimage_ae_eq hs.symm
+      convert! he.preimage_ae_eq hs.symm
       rw [Equiv.preimage_image]
     replace he : (⇑e)^[k] ⁻¹' s =ᵐ[μ] s := he.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e k] at he
@@ -176,20 +185,20 @@ theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePrese
   · simp only [Set.preimage_iterate_eq]
     exact CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) t
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MulAction G α] {_ : MeasurableSpace α}
     {s t : Set α} {μ : Measure α} (g : G)
     (h_qmp : QuasiMeasurePreserving (g⁻¹ • · : α → α) μ μ)
     (h_ae_eq : s =ᵐ[μ] t) : (g • s : Set α) =ᵐ[μ] (g • t : Set α) := by
-  simpa only [← preimage_smul_inv] using h_qmp.ae_eq h_ae_eq
+  simpa only [← preimage_smul_inv] using! h_qmp.ae_eq_comp h_ae_eq
 
 end QuasiMeasurePreserving
 
 section Pointwise
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G] [MulAction G α]
@@ -218,21 +227,6 @@ theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
     {f : α → β} {g : β → γ} (hg : NullMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) :
     NullMeasurable (g ∘ f) μ := fun _s hs ↦ (hg hs).preimage hf
 
-theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
-    NullMeasurableSet s ν :=
-  h.preimage <| (QuasiMeasurePreserving.id μ).mono_left hle
-
-theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (hle : ν ≤ μ) : NullMeasurableSet s ν :=
-  h.mono_ac hle.absolutelyContinuous
-
-lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
-    NullMeasurableSet s (c • μ) :=
-  h.mono_ac (Measure.AbsolutelyContinuous.rfl.smul_left c)
-
-lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
-    NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ :=
-  ⟨fun h ↦ h.mono_ac (Measure.absolutelyContinuous_smul hc), fun h ↦ h.smul_measure c⟩
-
 theorem AEDisjoint.preimage {ν : Measure β} {f : α → β} {s t : Set β} (ht : AEDisjoint ν s t)
     (hf : QuasiMeasurePreserving f μ ν) : AEDisjoint μ (f ⁻¹' s) (f ⁻¹' t) :=
   hf.preimage_null ht
@@ -243,7 +237,7 @@ open MeasureTheory
 
 namespace MeasurableEquiv
 
-variable {_ : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α} {ν : Measure β}
+variable {_ : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α}
 
 theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
     Measure.QuasiMeasurePreserving e.symm (μ.map e) μ :=

@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.natDegree_mem_support_of_nonzero`: `natDegree p ∈ support p` if `p ≠ 0`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -29,11 +29,11 @@ namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {S : Type v} {a c : R} {n m : ℕ}
 
 section Semiring
 
-variable [Semiring R] {p q r : R[X]}
+variable [Semiring R] {p : R[X]}
 
 theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
   obtain rfl | h := eq_or_ne p 0
@@ -99,11 +99,11 @@ theorem as_sum_range_C_mul_X_pow (p : R[X]) :
   p.as_sum_range_C_mul_X_pow' (lt_add_one _)
 
 theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X ^ n)) : a = n :=
-  mem_singleton.1 <| support_C_mul_X_pow' n c h
+  mem_singleton.1 <| support_C_mul_X_pow_subset n c h
 
 theorem card_support_C_mul_X_pow_le_one {c : R} {n : ℕ} : #(support (C c * X ^ n)) ≤ 1 := by
   rw [← card_singleton n]
-  apply card_le_card (support_C_mul_X_pow' n c)
+  apply card_le_card (support_C_mul_X_pow_subset n c)
 
 theorem card_supp_le_succ_natDegree (p : R[X]) : #p.support ≤ p.natDegree + 1 := by
   rw [← Finset.card_range (p.natDegree + 1)]
@@ -119,7 +119,7 @@ end Semiring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type*}
+variable [Semiring R] {p : R[X]}
 
 theorem natDegree_mem_support_of_nonzero (H : p ≠ 0) : p.natDegree ∈ p.support := by
   rw [mem_support_iff]

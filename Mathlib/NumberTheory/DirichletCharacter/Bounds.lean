@@ -6,8 +6,12 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Bounds for values of Dirichlet characters
@@ -17,7 +21,7 @@ We consider Dirichlet characters `χ` with values in a normed field `F`.
 We show that `‖χ a‖ = 1` if `a` is a unit and `‖χ a‖ ≤ 1` in general.
 -/
 
-@[expose] public section
+public section
 
 variable {F : Type*} [NormedField F] {n : ℕ} (χ : DirichletCharacter F n)
 

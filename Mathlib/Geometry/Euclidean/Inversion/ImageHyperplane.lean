@@ -26,9 +26,9 @@ We also prove that the inversion sends an affine subspace passing through the ce
 inversion
 -/
 
-@[expose] public section
+public section
 
-open Metric Function AffineMap Set AffineSubspace
+open Metric AffineMap Set AffineSubspace
 open scoped Topology
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]

@@ -14,7 +14,7 @@ public import Mathlib.Logic.Equiv.Set
 In particular we prove `small_of_injective` and `small_of_surjective`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Countable
 
@@ -68,10 +68,12 @@ instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α ⊕ β)
   ⟨⟨Shrink α ⊕ Shrink β, ⟨Equiv.sumCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 
 instance small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
-  ⟨⟨Set (Shrink α), ⟨Equiv.Set.congr (equivShrink α)⟩⟩⟩
+  ⟨⟨Set (Shrink α), ⟨(equivShrink α).setCongr⟩⟩⟩
 
 instance small_quot {α : Type u} [Small.{v} α] (r : α → α → Prop) : Small.{v} (Quot r) :=
   small_of_surjective Quot.mk_surjective
 
 instance small_quotient {α : Type u} [Small.{v} α] (s : Setoid α) : Small.{v} (Quotient s) :=
   small_of_surjective Quotient.mk_surjective
+
+instance small_orderDual {α : Type*} [h : Small.{v} α] : Small.{v} αᵒᵈ := h

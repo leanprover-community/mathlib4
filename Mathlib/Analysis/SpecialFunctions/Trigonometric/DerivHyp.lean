@@ -24,7 +24,7 @@ computed.
 sinh, cosh, tanh
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -37,8 +37,8 @@ namespace Complex
 `cosh x`. -/
 theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
   simp only [cosh, div_eq_mul_inv]
-  convert ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
-    using 1
+  convert!
+    ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹ using 1
   rw [id, mul_neg_one, sub_eq_add_neg, neg_neg]
 
 /-- The complex hyperbolic sine function is everywhere differentiable, with the derivative
@@ -46,7 +46,7 @@ theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
 theorem hasDerivAt_sinh (x : ℂ) : HasDerivAt sinh (cosh x) x :=
   (hasStrictDerivAt_sinh x).hasDerivAt
 
-theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using (hasDerivAt_sinh 0).isLittleO
+theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using! (hasDerivAt_sinh 0).isLittleO
 
 @[fun_prop]
 theorem contDiff_sinh {n} : ContDiff ℂ n sinh :=
@@ -69,6 +69,7 @@ lemma analyticWithinAt_sinh {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ sinh 
   contDiff_sinh.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Complex.sinh` is complex analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_sinh {s : Set ℂ} : AnalyticOnNhd ℂ sinh s :=
   fun _ _ ↦ analyticAt_sinh
 
@@ -84,8 +85,8 @@ theorem deriv_sinh : deriv sinh = cosh :=
 derivative `sinh x`. -/
 theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
   simp only [sinh, div_eq_mul_inv]
-  convert ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
-    using 1
+  convert!
+    ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹ using 1
   rw [id, mul_neg_one, sub_eq_add_neg]
 
 /-- The complex hyperbolic cosine function is everywhere differentiable, with the derivative
@@ -114,6 +115,7 @@ lemma analyticWithinAt_cosh {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ cosh 
   contDiff_cosh.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Complex.cosh` is complex analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_cosh {s : Set ℂ} : AnalyticOnNhd ℂ cosh s :=
   fun _ _ ↦ analyticAt_cosh
 
@@ -300,7 +302,7 @@ end
 
 namespace Real
 
-variable {x y z : ℝ}
+variable {x y : ℝ}
 
 theorem hasStrictDerivAt_sinh (x : ℝ) : HasStrictDerivAt sinh (cosh x) x :=
   (Complex.hasStrictDerivAt_sinh x).real_of_complex
@@ -308,7 +310,7 @@ theorem hasStrictDerivAt_sinh (x : ℝ) : HasStrictDerivAt sinh (cosh x) x :=
 theorem hasDerivAt_sinh (x : ℝ) : HasDerivAt sinh (cosh x) x :=
   (Complex.hasDerivAt_sinh x).real_of_complex
 
-theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using (hasDerivAt_sinh 0).isLittleO
+theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using! (hasDerivAt_sinh 0).isLittleO
 
 @[fun_prop]
 theorem contDiff_sinh {n} : ContDiff ℝ n sinh :=
@@ -331,6 +333,7 @@ lemma analyticWithinAt_sinh {s : Set ℝ} : AnalyticWithinAt ℝ sinh s x :=
   contDiff_sinh.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Real.sinh` is real analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_sinh {s : Set ℝ} : AnalyticOnNhd ℝ sinh s :=
   fun _ _ ↦ analyticAt_sinh
 
@@ -369,6 +372,7 @@ lemma analyticWithinAt_cosh {s : Set ℝ} : AnalyticWithinAt ℝ cosh s x :=
   contDiff_cosh.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Real.cosh` is real analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_cosh {s : Set ℝ} : AnalyticOnNhd ℝ cosh s :=
   fun _ _ ↦ analyticAt_cosh
 
@@ -789,19 +793,17 @@ end LogDeriv
 end
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
-set_option backward.privateInPublic true in
-private alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
-set_option backward.privateInPublic true in
-private alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff
-set_option backward.privateInPublic true in
-private alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
+alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
+alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff
+alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
 
 /-- Extension for the `positivity` tactic: `Real.sinh` is positive/nonnegative/nonzero if its input
 is. -/
 @[positivity Real.sinh _]
-meta def evalSinh : PositivityExt where eval {u α} _ _ e := do
+meta def evalSinh : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let zα : Q(Zero ℝ) := q(inferInstance)
   let pα : Q(PartialOrder ℝ) := q(inferInstance)
   match u, α, e with

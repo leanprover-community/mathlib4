@@ -32,9 +32,9 @@ Cartesian products of compact spaces (this is relevant to the theory of light pr
 
 -/
 
-@[expose] public section
+public section
 
-open Function Set Filter TopologicalSpace
+open Function Set TopologicalSpace
 open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [CompactSpace Y]
@@ -48,7 +48,7 @@ theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
   have hV : IsCompact V := (W.2.1.preimage hp).isCompact
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
-  exact ⟨⟨U, (ContinuousMap.isClopen_setOf_mapsTo hV W.2).preimage
+  exact ⟨⟨U, (ContinuousMap.isClopen_setOfPred_mapsTo hV W.2).preimage
     (ContinuousMap.id (X × Y)).curry.2⟩, by simp [U, V, MapsTo], ⟨V, W.2.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
@@ -86,7 +86,7 @@ lemma countable_iff_secondCountable [T2Space X]
     [TotallyDisconnectedSpace X] : Countable (Clopens X) ↔ SecondCountableTopology X := by
   refine ⟨fun h ↦ ⟨{s : Set X | IsClopen s}, ?_, ?_⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
-    exact (injective_of_le_imp_le f fun a ↦ a).countable
+    exact Injective.of_eq_imp_le (f := f) (·.le) |>.countable
   · apply IsTopologicalBasis.eq_generateFrom
     exact loc_compact_Haus_tot_disc_of_zero_dim
   · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = (SetLike.coe t).sUnion :=

@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Devon Tuma
 module
 
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
 /-!
 # Probability mass functions
@@ -14,8 +14,9 @@ public import Mathlib.MeasureTheory.Measure.Dirac
 This file is about probability mass functions or discrete probability measures:
 a function `α → ℝ≥0∞` such that the values have (infinite) sum `1`.
 
-Construction of monadic `pure` and `bind` is found in `ProbabilityMassFunction/Monad.lean`,
-other constructions of `PMF`s are found in `ProbabilityMassFunction/Constructions.lean`.
+Construction of monadic `pure` and `bind` is found in
+`Mathlib/Probability/ProbabilityMassFunction/Monad.lean`, other constructions of `PMF`s are found in
+`Mathlib/Probability/ProbabilityMassFunction/Constructions.lean`.
 
 Given `p : PMF α`, `PMF.toOuterMeasure` constructs an `OuterMeasure` on `α`,
 by assigning each set the sum of the probabilities of each of its elements.
@@ -49,7 +50,7 @@ namespace PMF
 
 instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
 @[ext]
 protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=
@@ -109,10 +110,10 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
     1 = 1 + 0 := (add_zero 1).symm
     _ < p a + ∑' b, ite (b = a) 0 (p b) :=
       (ENNReal.add_lt_add_of_le_of_lt ENNReal.one_ne_top (le_of_eq h.symm) this)
-    _ = ite (a = a) (p a) 0 + ∑' b, ite (b = a) 0 (p b) := by rw [eq_self_iff_true, if_true]
+    _ = ite (a = a) (p a) 0 + ∑' b, ite (b = a) 0 (p b) := by rw [eq_self_iff_true, ite_true]
     _ = (∑' b, ite (b = a) (p b) 0) + ∑' b, ite (b = a) 0 (p b) := by
       congr
-      exact symm (tsum_eq_single a fun b hb => if_neg hb)
+      exact symm (tsum_eq_single a fun b hb => ite_eq_right hb)
     _ = ∑' b, (ite (b = a) (p b) 0 + ite (b = a) 0 (p b)) := ENNReal.tsum_add.symm
     _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero]
 
@@ -280,8 +281,6 @@ theorem toMeasure_apply_finset (s : Finset α) : p.toMeasure s = ∑ x ∈ s, p 
 
 theorem toMeasure_apply_eq_tsum (s : Set α) : p.toMeasure s = ∑' x, s.indicator p x :=
   (p.toMeasure_apply_eq_toOuterMeasure s).trans (p.toOuterMeasure_apply s)
-
-@[deprecated (since := "2025-06-23")] alias toMeasure_apply_of_finite := toMeasure_apply_eq_tsum
 
 @[simp]
 theorem toMeasure_apply_fintype (s : Set α) [Fintype α] : p.toMeasure s = ∑ x, s.indicator p x :=

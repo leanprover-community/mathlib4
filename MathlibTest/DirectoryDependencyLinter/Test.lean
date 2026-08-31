@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.Init
+import Mathlib.Util.AssertNoSorry
 import Qq
-import Mathlib.Util.AssertExists
 
 /--
-warning: Module MathlibTest.DirectoryDependencyLinter.Test depends on Mathlib.Util.AssertExists,
+warning: Module MathlibTest.DirectoryDependencyLinter.Test depends on Mathlib.Util.AssertNoSorry,
 but is only allowed to import modules starting with one of [Mathlib.Lean].
-Note: module Mathlib.Util.AssertExists is directly imported by this module
+Note: module Mathlib.Util.AssertNoSorry is directly imported by this module
 
 Note: This linter can be disabled with `set_option linter.directoryDependency false`
 ---

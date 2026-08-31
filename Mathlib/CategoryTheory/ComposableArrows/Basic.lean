@@ -8,15 +8,15 @@ module
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.SuppressCompilation
+
 /-!
 # Composable arrows
 
 If `C` is a category, the type of `n`-simplices in the nerve of `C` identifies
-to the type of functors `Fin (n + 1) ⥤ C`, which can be thought as families of `n` composable
+to the type of functors `Fin (n + 1) ⥤ C`, which can be thought of as families of `n` composable
 arrows in `C`. In this file, we introduce and study this category `ComposableArrows C n`
 of `n` composable arrows in `C`.
 
@@ -41,8 +41,6 @@ TODO (@joelriou):
 -/
 
 @[expose] public section
-
-set_option backward.privateInPublic true
 
 /-!
 New `simprocs` that run even in `dsimp` have caused breakages in this file.
@@ -127,7 +125,7 @@ namespace Mk₁
 variable (X₀ X₁ : C)
 
 /-- The map which sends `0 : Fin 2` to `X₀` and `1` to `X₁`. -/
-@[simp]
+@[implicit_reducible, simp]
 def obj : Fin 2 → C
   | ⟨0, _⟩ => X₀
   | ⟨1, _⟩  => X₁
@@ -136,7 +134,7 @@ variable {X₀ X₁}
 variable (f : X₀ ⟶ X₁)
 
 /-- The obvious map `obj X₀ X₁ i ⟶ obj X₀ X₁ j` whenever `i j : Fin 2` satisfy `i ≤ j`. -/
-@[simp]
+@[implicit_reducible, simp]
 def map : ∀ (i j : Fin 2) (_ : i ≤ j), obj X₀ X₁ i ⟶ obj X₀ X₁ j
   | ⟨0, _⟩, ⟨0, _⟩, _ => 𝟙 _
   | ⟨0, _⟩, ⟨1, _⟩, _ => f
@@ -156,7 +154,7 @@ lemma map_comp {i j k : Fin 2} (hij : i ≤ j) (hjk : j ≤ k) :
 end Mk₁
 
 /-- Constructor for `ComposableArrows C 1`. -/
-@[simps]
+@[implicit_reducible, simps]
 def mk₁ {X₀ X₁ : C} (f : X₀ ⟶ X₁) : ComposableArrows C 1 where
   obj := Mk₁.obj X₀ X₁
   map g := Mk₁.map f _ _ (leOfHom g)
@@ -166,7 +164,7 @@ def mk₁ {X₀ X₁ : C} (f : X₀ ⟶ X₁) : ComposableArrows C 1 where
 /-- Constructor for morphisms `F ⟶ G` in `ComposableArrows C n` which takes as inputs
 a family of morphisms `F.obj i ⟶ G.obj i` and the naturality condition only for the
 maps in `Fin (n + 1)` given by inequalities of the form `i ≤ i + 1`. -/
-@[simps]
+@[implicit_reducible, simps]
 def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
     (w : ∀ (i : ℕ) (hi : i < n), F.map' i (i + 1) ≫ app _ = app _ ≫ G.map' i (i + 1)) :
     F ⟶ G where
@@ -194,14 +192,13 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
 /-- Constructor for isomorphisms `F ≅ G` in `ComposableArrows C n` which takes as inputs
 a family of isomorphisms `F.obj i ≅ G.obj i` and the naturality condition only for the
 maps in `Fin (n + 1)` given by inequalities of the form `i ≤ i + 1`. -/
-@[simps]
+@[implicit_reducible, simps]
 def isoMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ≅ G.obj i)
     (w : ∀ (i : ℕ) (hi : i < n),
       F.map' i (i + 1) ≫ (app _).hom = (app _).hom ≫ G.map' i (i + 1)) :
     F ≅ G where
   hom := homMk (fun i => (app i).hom) w
   inv := homMk (fun i => (app i).inv) (fun i hi => by
-    dsimp only
     rw [← cancel_epi ((app _).hom), ← reassoc_of% (w i hi), Iso.hom_inv_id, comp_id,
       Iso.hom_inv_id_assoc])
 
@@ -212,7 +209,7 @@ lemma ext {F G : ComposableArrows C n} (h : ∀ i, F.obj i = G.obj i)
     (isoMk (fun i => eqToIso (h i)) (fun i hi => by simp [w i hi])) h
 
 /-- Constructor for morphisms in `ComposableArrows C 0`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def homMk₀ {F G : ComposableArrows C 0} (f : F.obj' 0 ⟶ G.obj' 0) : F ⟶ G :=
   homMk (fun i => match i with
     | ⟨0, _⟩ => f) (fun i hi => by simp at hi)
@@ -226,10 +223,15 @@ lemma hom_ext₀ {F G : ComposableArrows C 0} {φ φ' : F ⟶ G}
   exact h
 
 /-- Constructor for isomorphisms in `ComposableArrows C 0`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def isoMk₀ {F G : ComposableArrows C 0} (e : F.obj' 0 ≅ G.obj' 0) : F ≅ G where
   hom := homMk₀ e.hom
   inv := homMk₀ e.inv
+
+lemma isIso_iff₀ {F G : ComposableArrows C 0} (f : F ⟶ G) :
+    IsIso f ↔ IsIso (f.app 0) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact ⟨fun h ↦ h 0, fun _ i ↦ by fin_cases i; assumption⟩
 
 lemma ext₀ {F G : ComposableArrows C 0} (h : F.obj' 0 = G.obj 0) : F = G :=
   ext (fun i => match i with
@@ -239,7 +241,7 @@ lemma mk₀_surjective (F : ComposableArrows C 0) : ∃ (X : C), F = mk₀ X :=
   ⟨F.obj' 0, ext₀ rfl⟩
 
 /-- Constructor for morphisms in `ComposableArrows C 1`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def homMk₁ {F G : ComposableArrows C 1}
     (left : F.obj' 0 ⟶ G.obj' 0) (right : F.obj' 1 ⟶ G.obj' 1)
     (w : F.map' 0 1 ≫ right = left ≫ G.map' 0 1 := by cat_disch) :
@@ -261,7 +263,7 @@ lemma hom_ext₁ {F G : ComposableArrows C 1} {φ φ' : F ⟶ G}
     | 1 => exact h₁
 
 /-- Constructor for isomorphisms in `ComposableArrows C 1`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def isoMk₁ {F G : ComposableArrows C 1}
     (left : F.obj' 0 ≅ G.obj' 0) (right : F.obj' 1 ≅ G.obj' 1)
     (w : F.map' 0 1 ≫ right.hom = left.hom ≫ G.map' 0 1 := by cat_disch) :
@@ -272,6 +274,11 @@ def isoMk₁ {F G : ComposableArrows C 1}
     apply comp_id)
 
 lemma map'_eq_hom₁ (F : ComposableArrows C 1) : F.map' 0 1 = F.hom := rfl
+
+lemma isIso_iff₁ {F G : ComposableArrows C 1} (f : F ⟶ G) :
+    IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact ⟨fun h ↦ ⟨h 0, h 1⟩, fun _ i ↦ by fin_cases i <;> tauto⟩
 
 lemma ext₁ {F G : ComposableArrows C 1}
     (left : F.left = G.left) (right : F.right = G.right)
@@ -296,7 +303,7 @@ lemma mk₁_hom (X : ComposableArrows C 1) :
   ext₁ rfl rfl (by simp)
 
 /-- The bijection between `ComposableArrows C 1` and `Arrow C`. -/
-@[simps]
+@[implicit_reducible, simps]
 def arrowEquiv : ComposableArrows C 1 ≃ Arrow C where
   toFun F := Arrow.mk F.hom
   invFun f := mk₁ f.hom
@@ -311,6 +318,7 @@ variable (X : C)
 
 /-- The map `Fin (n + 1 + 1) → C` which "shifts" `F.obj'` to the right and inserts `X` in
 the zeroth position. -/
+@[implicit_reducible]
 def obj : Fin (n + 1 + 1) → C
   | ⟨0, _⟩ => X
   | ⟨i + 1, hi⟩ => F.obj' i
@@ -328,6 +336,7 @@ variable {X} (f : X ⟶ F.left)
 
 /-- Auxiliary definition for the action on maps of the functor `F.precomp f`.
 It sends `0 ≤ 1` to `f` and `i + 1 ≤ j + 1` to `F.map' i j`. -/
+@[implicit_reducible]
 def map : ∀ (i j : Fin (n + 1 + 1)) (_ : i ≤ j), obj F X i ⟶ obj F X j
   | ⟨0, _⟩, ⟨0, _⟩, _ => 𝟙 X
   | ⟨0, _⟩, ⟨1, _⟩, _ => f
@@ -362,6 +371,7 @@ lemma map_one_succ (j : ℕ) (hj : j + 1 < n + 1 + 1) :
 lemma map_id (i : Fin (n + 1 + 1)) : map F f i i (by simp) = 𝟙 _ := by
   obtain ⟨_ | _, hi⟩ := i <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
     map F f i k (hij.trans hjk) = map F f i j hij ≫ map F f j k hjk := by
   obtain ⟨i, hi⟩ := i
@@ -369,8 +379,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
   obtain ⟨k, hk⟩ := k
   cases i
   · obtain _ | _ | j := j
-    · dsimp
-      rw [id_comp]
+    · simp
     · obtain _ | _ | k := k
       · simp at hjk
       · simp
@@ -390,7 +399,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
 end Precomp
 
 /-- "Precomposition" of `F : ComposableArrows C n` by a morphism `f : X ⟶ F.left`. -/
-@[simps]
+@[implicit_reducible, simps]
 def precomp {X : C} (f : X ⟶ F.left) : ComposableArrows C (n + 1) where
   obj := Precomp.obj F X
   map g := Precomp.map F f _ _ (leOfHom g)
@@ -398,24 +407,20 @@ def precomp {X : C} (f : X ⟶ F.left) : ComposableArrows C (n + 1) where
   map_comp g g' := Precomp.map_comp F f (leOfHom g) (leOfHom g')
 
 /-- Constructor for `ComposableArrows C 2`. -/
-@[simp]
-def mk₂ {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) : ComposableArrows C 2 :=
+abbrev mk₂ {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) : ComposableArrows C 2 :=
   (mk₁ g).precomp f
 
 /-- Constructor for `ComposableArrows C 3`. -/
-@[simp]
-def mk₃ {X₀ X₁ X₂ X₃ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) : ComposableArrows C 3 :=
+abbrev mk₃ {X₀ X₁ X₂ X₃ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) : ComposableArrows C 3 :=
   (mk₂ g h).precomp f
 
 /-- Constructor for `ComposableArrows C 4`. -/
-@[simp]
-def mk₄ {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) (i : X₃ ⟶ X₄) :
+abbrev mk₄ {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) (i : X₃ ⟶ X₄) :
     ComposableArrows C 4 :=
   (mk₃ g h i).precomp f
 
 /-- Constructor for `ComposableArrows C 5`. -/
-@[simp]
-def mk₅ {X₀ X₁ X₂ X₃ X₄ X₅ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃)
+abbrev mk₅ {X₀ X₁ X₂ X₃ X₄ X₅ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃)
     (i : X₃ ⟶ X₄) (j : X₄ ⟶ X₅) :
     ComposableArrows C 5 :=
   (mk₄ g h i j).precomp f
@@ -465,9 +470,30 @@ def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
   obj i := i.succ
   map {_ _} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
 
+/-- The functor `Fin (l + 1) ⥤ Fin (n + 1)` which sends `i` to `k + i` -/
+@[simps!]
+def _root_.Fin.natAddLEFunctor {n k l : ℕ} (h : k + l ≤ n) : Fin (l + 1) ⥤ Fin (n + 1) where
+  obj := fun ⟨i, _⟩ => ⟨k + i , by lia⟩
+  map {_ _} hij := homOfLE (by rw [Fin.le_iff_val_le_val]; simpa using (leOfHom hij))
+
+/-- The functor `ComposableArrows C n ⥤ ComposableArrows C l` obtained by precomposition with
+the functor `Fin.natAddLEFunctor`. -/
+@[simps!]
+def natAddLEFunctor {n k l : ℕ} (h : k + l ≤ n) :
+    ComposableArrows C n ⥤ ComposableArrows C l :=
+  whiskerLeftFunctor (Fin.natAddLEFunctor h)
+
+lemma natAddLEFunctor_obj' {n k l i : ℕ} (h : k + l ≤ n) (R : ComposableArrows C n)
+    (_ : i ≤ l := by lia) :
+    ((natAddLEFunctor h).obj R).obj' i = R.obj' (k + i) := rfl
+
+lemma natAddLEFunctor_app' {n k l i : ℕ} (h : k + l ≤ n) {R₁ R₂ : ComposableArrows C n}
+    (φ : R₁ ⟶ R₂) (_ : i ≤ l := by lia) :
+    app' ((natAddLEFunctor h).map φ) i = app' φ (k + i) := rfl
+
 /-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
 the first arrow. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def δ₀Functor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
   whiskerLeftFunctor (Fin.succFunctor (n + 1))
 
@@ -496,10 +522,10 @@ section
 
 variable {F G : ComposableArrows C (n + 1)}
 
-
 /-- Inductive construction of morphisms in `ComposableArrows C (n + 1)`: in order to construct
 a morphism `F ⟶ G`, it suffices to provide `α : F.obj' 0 ⟶ G.obj' 0` and `β : F.δ₀ ⟶ G.δ₀`
 such that `F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1`. -/
+@[implicit_reducible]
 def homMkSucc (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
     (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1) : F ⟶ G :=
   homMk
@@ -512,11 +538,13 @@ def homMkSucc (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
       · exact naturality' β i (i + 1))
 
 variable (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
-  (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1)
+  (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1 := by cat_disch)
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMkSucc_app_zero : (homMkSucc α β w).app 0 = α := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMkSucc_app_succ (i : ℕ) (hi : i + 1 < n + 1 + 1) :
     (homMkSucc α β w).app ⟨i + 1, hi⟩ = app' β i := rfl
@@ -530,6 +558,8 @@ lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
   · exact h₀
   · exact congr_app h₁ ⟨i, by valid⟩
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Inductive construction of isomorphisms in `ComposableArrows C (n + 1)`: in order to
 construct an isomorphism `F ≅ G`, it suffices to provide `α : F.obj' 0 ≅ G.obj' 0` and
 `β : F.δ₀ ≅ G.δ₀` such that `F.map' 0 1 ≫ app' β.hom 0 = α.hom ≫ G.map' 0 1`. -/
@@ -538,9 +568,7 @@ def isoMkSucc {F G : ComposableArrows C (n + 1)} (α : F.obj' 0 ≅ G.obj' 0)
     (β : F.δ₀ ≅ G.δ₀) (w : F.map' 0 1 ≫ app' β.hom 0 = α.hom ≫ G.map' 0 1) : F ≅ G where
   hom := homMkSucc α.hom β.hom w
   inv := homMkSucc α.inv β.inv (by
-    rw [← cancel_epi α.hom, ← reassoc_of% w, α.hom_inv_id_assoc, β.hom_inv_id_app]
-    dsimp
-    rw [comp_id])
+    simp [← cancel_epi α.hom, ← reassoc_of% w, α.hom_inv_id_assoc, β.hom_inv_id_app])
   hom_inv_id := by
     apply hom_ext_succ
     · simp
@@ -552,6 +580,7 @@ def isoMkSucc {F G : ComposableArrows C (n + 1)} (α : F.obj' 0 ≅ G.obj' 0)
     · ext ⟨i, hi⟩
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
     (h : F.δ₀ = G.δ₀) (w : F.map' 0 1 = eqToHom h₀ ≫ G.map' 0 1 ≫
       eqToHom (Functor.congr_obj h.symm 0)) : F = G := by
@@ -566,6 +595,7 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
       rw [eqToHom_app, assoc, assoc, eqToHom_trans, eqToHom_refl, comp_id])) this
     (by rintro ⟨_ | _, hi⟩ <;> simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma precomp_surjective (F : ComposableArrows C (n + 1)) :
     ∃ (F₀ : ComposableArrows C n) (X₀ : C) (f₀ : X₀ ⟶ F₀.left), F = F₀.precomp f₀ :=
   ⟨F.δ₀, _, F.map' 0 1, ext_succ rfl (by simp) (by simp)⟩
@@ -575,20 +605,28 @@ section
 variable
   {f g : ComposableArrows C 2}
     (app₀ : f.obj' 0 ⟶ g.obj' 0) (app₁ : f.obj' 1 ⟶ g.obj' 1) (app₂ : f.obj' 2 ⟶ g.obj' 2)
-    (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1)
-    (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2)
+    (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1 := by cat_disch)
+    (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 2`. -/
 def homMk₂ : f ⟶ g := homMkSucc app₀ (homMk₁ app₁ app₂ w₁) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_zero : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_one : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
-lemma homMk₂_app_two : (homMk₂ app₀ app₁ app₂ w₀ w₁).app ⟨2, by valid⟩ = app₂ := rfl
+lemma homMk₂_app_two : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 2 = app₂ := rfl
+
+set_option backward.privateInPublic true in
+@[simp]
+lemma homMk₂_app_two' : (homMk₂ app₀ app₁ app₂ w₀ w₁).app ⟨2, by valid⟩ = app₂ := rfl
 
 end
 
@@ -602,14 +640,19 @@ lemma hom_ext₂ {f g : ComposableArrows C 2} {φ φ' : f ⟶ g}
 @[simps]
 def isoMk₂ {f g : ComposableArrows C 2}
     (app₀ : f.obj' 0 ≅ g.obj' 0) (app₁ : f.obj' 1 ≅ g.obj' 1) (app₂ : f.obj' 2 ≅ g.obj' 2)
-    (w₀ : f.map' 0 1 ≫ app₁.hom = app₀.hom ≫ g.map' 0 1)
-    (w₁ : f.map' 1 2 ≫ app₂.hom = app₁.hom ≫ g.map' 1 2) : f ≅ g where
+    (w₀ : f.map' 0 1 ≫ app₁.hom = app₀.hom ≫ g.map' 0 1 := by cat_disch)
+    (w₁ : f.map' 1 2 ≫ app₂.hom = app₁.hom ≫ g.map' 1 2 := by cat_disch) : f ≅ g where
   hom := homMk₂ app₀.hom app₁.hom app₂.hom w₀ w₁
   inv := homMk₂ app₀.inv app₁.inv app₂.inv
     (by rw [← cancel_epi app₀.hom, ← reassoc_of% w₀, app₁.hom_inv_id,
       comp_id, app₀.hom_inv_id_assoc])
     (by rw [← cancel_epi app₁.hom, ← reassoc_of% w₁, app₂.hom_inv_id,
       comp_id, app₁.hom_inv_id_assoc])
+
+lemma isIso_iff₂ {F G : ComposableArrows C 2} (f : F ⟶ G) :
+    IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) ∧ IsIso (f.app 2) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact ⟨fun h ↦ ⟨h 0, h 1, h 2⟩, fun _ i ↦ by fin_cases i <;> tauto⟩
 
 lemma ext₂ {f g : ComposableArrows C 2}
     (h₀ : f.obj' 0 = g.obj' 0) (h₁ : f.obj' 1 = g.obj' 1) (h₂ : f.obj' 2 = g.obj' 2)
@@ -639,23 +682,28 @@ variable
   {f g : ComposableArrows C 3}
   (app₀ : f.obj' 0 ⟶ g.obj' 0) (app₁ : f.obj' 1 ⟶ g.obj' 1) (app₂ : f.obj' 2 ⟶ g.obj' 2)
   (app₃ : f.obj' 3 ⟶ g.obj' 3)
-  (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1)
-  (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2)
-  (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3)
+  (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1 := by cat_disch)
+  (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2 := by cat_disch)
+  (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 3`. -/
 def homMk₃ : f ⟶ g := homMkSucc app₀ (homMk₂ app₁ app₂ app₃ w₁ w₂) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_zero : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_one : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_two : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨2, by valid⟩ = app₂ :=
   rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_three : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨3, by valid⟩ = app₃ :=
   rfl
@@ -705,28 +753,34 @@ variable
   {f g : ComposableArrows C 4}
   (app₀ : f.obj' 0 ⟶ g.obj' 0) (app₁ : f.obj' 1 ⟶ g.obj' 1) (app₂ : f.obj' 2 ⟶ g.obj' 2)
   (app₃ : f.obj' 3 ⟶ g.obj' 3) (app₄ : f.obj' 4 ⟶ g.obj' 4)
-  (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1)
-  (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2)
-  (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3)
-  (w₃ : f.map' 3 4 ≫ app₄ = app₃ ≫ g.map' 3 4)
+  (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1 := by cat_disch)
+  (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2 := by cat_disch)
+  (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3 := by cat_disch)
+  (w₃ : f.map' 3 4 ≫ app₄ = app₃ ≫ g.map' 3 4 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 4`. -/
 def homMk₄ : f ⟶ g := homMkSucc app₀ (homMk₃ app₁ app₂ app₃ app₄ w₁ w₂ w₃) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_zero : (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_one : (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_two :
     (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨2, by valid⟩ = app₂ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_three :
     (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨3, by valid⟩ = app₃ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_four :
     (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨4, by valid⟩ = app₄ := rfl
@@ -785,33 +839,40 @@ variable
   {f g : ComposableArrows C 5}
   (app₀ : f.obj' 0 ⟶ g.obj' 0) (app₁ : f.obj' 1 ⟶ g.obj' 1) (app₂ : f.obj' 2 ⟶ g.obj' 2)
   (app₃ : f.obj' 3 ⟶ g.obj' 3) (app₄ : f.obj' 4 ⟶ g.obj' 4) (app₅ : f.obj' 5 ⟶ g.obj' 5)
-  (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1)
-  (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2)
-  (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3)
-  (w₃ : f.map' 3 4 ≫ app₄ = app₃ ≫ g.map' 3 4)
-  (w₄ : f.map' 4 5 ≫ app₅ = app₄ ≫ g.map' 4 5)
+  (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1 := by cat_disch)
+  (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2 := by cat_disch)
+  (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3 := by cat_disch)
+  (w₃ : f.map' 3 4 ≫ app₄ = app₃ ≫ g.map' 3 4 := by cat_disch)
+  (w₄ : f.map' 4 5 ≫ app₅ = app₄ ≫ g.map' 4 5 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 5`. -/
 def homMk₅ : f ⟶ g := homMkSucc app₀ (homMk₄ app₁ app₂ app₃ app₄ app₅ w₁ w₂ w₃ w₄) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_zero : (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_one : (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_two :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨2, by valid⟩ = app₂ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_three :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨3, by valid⟩ = app₃ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_four :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨4, by valid⟩ = app₄ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_five :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨5, by valid⟩ = app₅ := rfl
@@ -869,6 +930,7 @@ section mkOfObjOfMapSucc
 
 variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj i ≅ obj i),
     ∀ (i : ℕ) (hi : i < n), mapSucc ⟨i, hi⟩ =
       (e ⟨i, _⟩).inv ≫ F.map' i (i + 1) ≫ (e ⟨i + 1, _⟩).hom := by
@@ -898,12 +960,16 @@ lemma mkOfObjOfMapSucc_map_succ (i : ℕ) (hi : i < n := by valid) :
     (mkOfObjOfMapSucc obj mapSucc).map' i (i + 1) = mapSucc ⟨i, hi⟩ :=
   ((mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose_spec i hi).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by valid) :
     (mkOfObjOfMapSucc obj mapSucc).arrow i = mk₁ (mapSucc ⟨i, hi⟩) :=
-  ext₁ rfl rfl (by simpa using mkOfObjOfMapSucc_map_succ obj mapSucc i hi)
+  ext₁ rfl rfl (by simpa using! mkOfObjOfMapSucc_map_succ obj mapSucc i hi)
 
 end mkOfObjOfMapSucc
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 suppress_compilation in
 variable (C n) in
 /-- The equivalence `(ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n` obtained
@@ -924,10 +990,26 @@ variable {C} {D : Type*} [Category* D] (G : C ⥤ D) (n : ℕ)
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
 with a functor `C ⥤ D`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def Functor.mapComposableArrows :
     ComposableArrows C n ⥤ ComposableArrows D n :=
   (whiskeringRight _ _ _).obj G
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The isomorphism between `(G.mapComposableArrows 1).obj (.mk₁ f)` and
+`.mk₁ (G.map f)`. -/
+@[implicit_reducible, simps!]
+def Functor.mapComposableArrowsObjMk₁Iso {X Y : C} (f : X ⟶ Y) :
+    (G.mapComposableArrows 1).obj (.mk₁ f) ≅ .mk₁ (G.map f) :=
+  isoMk₁ (Iso.refl _) (Iso.refl _)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The isomorphism between `(G.mapComposableArrows 2).obj (.mk₂ f g)` and
+`.mk₂ (G.map f) (G.map g)`. -/
+@[implicit_reducible, simps!]
+def Functor.mapComposableArrowsObjMk₂Iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (G.mapComposableArrows 2).obj (.mk₂ f g) ≅ .mk₂ (G.map f) (G.map g) :=
+  isoMk₂ (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
 suppress_compilation in
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` induced by `G : C ⥤ D`

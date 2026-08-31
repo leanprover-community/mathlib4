@@ -5,7 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Set.Lattice.Indexed
+public import Mathlib.Order.SetNotation
 
 /-!
 # Pre-sets
@@ -35,7 +37,7 @@ universe u v
   is a family of pre-sets indexed by a type in `Type u`.
   The ZFC universe is defined as a quotient of this
   to ensure extensionality. -/
-@[pp_with_univ]
+@[pp_with_univ, use_set_notation_for_order]
 inductive PSet : Type (u + 1)
   | mk (α : Type u) (A : α → PSet) : PSet
 
@@ -117,17 +119,15 @@ equivalent to some element of the second family. -/
 protected def Subset (x y : PSet) : Prop :=
   ∀ a, ∃ b, Equiv (x.Func a) (y.Func b)
 
-instance : HasSubset PSet :=
+instance : LE PSet :=
   ⟨PSet.Subset⟩
 
-instance : IsRefl PSet (· ⊆ ·) :=
-  ⟨fun _ a => ⟨a, Equiv.refl _⟩⟩
-
-instance : IsTrans PSet (· ⊆ ·) :=
-  ⟨fun x y z hxy hyz a => by
+instance : Preorder PSet where
+  le_refl _ a := ⟨a, Equiv.refl _⟩
+  le_trans x y z hxy hyz a := by
     obtain ⟨b, hb⟩ := hxy a
     obtain ⟨c, hc⟩ := hyz b
-    exact ⟨c, hb.trans hc⟩⟩
+    exact ⟨c, hb.trans hc⟩
 
 theorem Equiv.ext : ∀ x y : PSet, Equiv x y ↔ x ⊆ y ∧ y ⊆ x
   | ⟨_, _⟩, ⟨_, _⟩ =>
@@ -162,23 +162,13 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
-instance : Preorder PSet where
-  le := (· ⊆ ·)
-  le_refl := refl_of (· ⊆ ·)
-  le_trans _ _ _ := trans_of (· ⊆ ·)
-
-instance : HasSSubset PSet := ⟨(· < ·)⟩
-
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
 theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
   Iff.rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
 theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
   Iff.rfl
-
-instance : IsNonstrictStrictOrder PSet (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
 protected def Mem (y x : PSet.{u}) : Prop :=
@@ -193,9 +183,7 @@ theorem mem_def {x y : PSet} : x ∈ y ↔ ∃ b, Equiv x (y.Func b) :=
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
   ⟨a, Equiv.refl (A a)⟩
 
-theorem func_mem (x : PSet) (i : x.Type) : x.Func i ∈ x := by
-  cases x
-  apply Mem.mk
+theorem func_mem (x : PSet) (i : x.Type) : x.Func i ∈ x := Mem.mk _ _
 
 theorem Mem.ext : ∀ {x y : PSet.{u}}, (∀ w : PSet.{u}, w ∈ x ↔ w ∈ y) → Equiv x y
   | ⟨_, A⟩, ⟨_, B⟩, h =>
@@ -259,8 +247,6 @@ theorem not_subset_of_mem {x y : PSet} (h : x ∈ y) : ¬ y ⊆ x :=
 theorem notMem_of_subset {x y : PSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_subset := notMem_of_subset
-
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
@@ -291,7 +277,7 @@ theorem nonempty_of_nonempty_type (x : PSet) [h : Nonempty x.Type] : PSet.Nonemp
 
 /-- Two pre-sets are equivalent iff they have the same members. -/
 theorem Equiv.eq {x y : PSet} : Equiv x y ↔ toSet x = toSet y :=
-  equiv_iff_mem.trans Set.ext_iff.symm
+  equiv_iff_mem.trans <| .symm Set.ext_iff
 
 instance : Coe PSet (Set PSet) :=
   ⟨toSet⟩
@@ -315,8 +301,6 @@ theorem empty_def : (∅ : PSet) = ⟨_, PEmpty.elim⟩ := by
 @[simp]
 theorem notMem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
   IsEmpty.exists_iff.1
-
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
@@ -397,7 +381,7 @@ theorem mem_sep {p : PSet → Prop} (H : ∀ x y, Equiv x y → p x → p y) :
 
 /-- The pre-set powerset operator -/
 def powerset (x : PSet) : PSet :=
-  ⟨Set x.Type, fun p => ⟨{ a // p a }, fun y => x.Func y.1⟩⟩
+  ⟨Set x.Type, fun p => ⟨p, fun y => x.Func y.1⟩⟩
 
 @[simp]
 theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x
@@ -447,8 +431,8 @@ protected def Lift : PSet.{u} → PSet.{max u v}
   | ⟨α, A⟩ => ⟨ULift.{v, u} α, fun ⟨x⟩ => PSet.Lift (A x)⟩
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- Embedding of one universe in another -/
-@[nolint checkUnivs]
 def embed : PSet.{max (u + 1) v} :=
   ⟨ULift.{v, u + 1} PSet, fun ⟨x⟩ => PSet.Lift.{u, max (u + 1) v} x⟩
 

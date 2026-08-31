@@ -91,7 +91,7 @@ def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inherit_doc]
 scoped[NumberTheorySymbols] notation "J(" a " | " b ")" => jacobiSym a b
 
-open NumberTheorySymbols
+open scoped NumberTheorySymbols
 
 /-!
 ### Properties of the Jacobi symbol
@@ -140,7 +140,7 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
       (by
         intro _ ha'
         rcases List.mem_pmap.mp ha' with ⟨p, hp, rfl⟩
-        haveI : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
+        have : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
         exact quadraticChar_isQuadratic (ZMod p) a)
 
 /-- The symbol `J(1 | b)` has the value `1`. -/
@@ -152,10 +152,10 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
 
 /-- The Jacobi symbol is multiplicative in its first argument. -/
 theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
-  simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _]
+  simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul]
   exact List.prod_map_mul (l := (primeFactorsList b).attach)
-    (f := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₁)
-    (g := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₂)
+    (f := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.2 } a₁)
+    (g := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.2 } a₂)
 
 /-- The symbol `J(a | b)` vanishes iff `a` and `b` are not coprime (assuming `b ≠ 0`). -/
 theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 ↔ a.gcd b ≠ 1 :=
@@ -336,12 +336,18 @@ theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
     (by decide : (4 : ℤ) = (2 : ℕ) ^ 2), jacobiSym.sq_one' this, one_mul]
 
+/-- If `b` is odd, then `J(4 | b) = 1`. -/
+theorem at_four {b : ℕ} (hb : Odd b) : J(4 | b) = 1 := by
+  have : J((4 : ℤ) | b) = J((4 : ℤ) / 4 | b) :=
+    (div_four_left (by decide) (Nat.odd_iff.mp hb)).symm
+  simpa [one_left]
+
 theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     (if b % 8 = 3 ∨ b % 8 = 5 then -J(a / 2 | b) else J(a / 2 | b)) = J(a | b) := by
   obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha2
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
     jacobiSym.at_two (Nat.odd_iff.mpr hb2), ZMod.χ₈_nat_eq_if_mod_eight,
-    if_neg (Nat.mod_two_ne_zero.mpr hb2)]
+    ite_eq_right (Nat.mod_two_ne_zero.mpr hb2)]
   grind
 
 end jacobiSym
@@ -402,7 +408,7 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
   -- define the right-hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
     { toFun := fun x => qrSign x a * J(x | a)
-      map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
+      map_one' := by convert! ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
       map_mul' := fun x y => by
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
@@ -491,9 +497,13 @@ section FastJacobi
 We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 
+-- `fastLegendreSym` is used for computing the Legendre symbol in a `norm_num` extension,
+-- i.e. needs to be used publicly.
 set_option backward.privateInPublic true
 
-open NumberTheorySymbols jacobiSym
+open jacobiSym
+
+open scoped NumberTheorySymbols
 
 /-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing
 `a` to odd by repeated division and then using quadratic reciprocity to swap `a`, `b`. -/
@@ -557,7 +567,6 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   else
     fastJacobiSymAux (a % b).natAbs b false (Int.natAbs_pos.mpr hab)
 
-set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
@@ -577,7 +586,7 @@ set_option backward.privateInPublic.warn false in
       Int.emod_two_ne_zero.mp ha2, one_left, one_mul]
   · rw [hb1, one_right]
   · rw [mod_left, hab, zero_left (lt_of_le_of_ne (Nat.pos_of_ne_zero hb0) (Ne.symm hb1))]
-  · rw [fastJacobiSymAux.eq_jacobiSym, if_neg Bool.false_ne_true, mod_left a b,
+  · rw [fastJacobiSymAux.eq_jacobiSym, ite_eq_right Bool.false_ne_true, mod_left a b,
       Int.natAbs_of_nonneg (a.emod_nonneg (mod_cast hb0))]
     · exact Nat.mod_two_ne_zero.mp hb2
     · exact lt_of_le_of_ne (Nat.one_le_iff_ne_zero.mpr hb0) (Ne.symm hb1)
@@ -586,7 +595,6 @@ set_option backward.privateInPublic.warn false in
 @[inline, nolint unusedArguments]
 private def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ := J(a | p)
 
-set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastLegendreSym.eq : legendreSym = fastLegendreSym := by
   ext p _ a; rw [legendreSym.to_jacobiSym, fastLegendreSym]

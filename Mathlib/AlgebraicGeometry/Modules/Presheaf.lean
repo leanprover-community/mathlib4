@@ -28,13 +28,20 @@ open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 
-variable (X : Scheme.{u})
+variable (X Y : Scheme.{u})
 
 /-- The underlying sheaf of rings of a scheme. -/
 abbrev ringCatSheaf : TopCat.Sheaf RingCat.{u} X :=
   (sheafCompose _ (forget₂ CommRingCat RingCat.{u})).obj X.sheaf
 
 /-- The category of presheaves of modules over a scheme. -/
-nonrec abbrev PresheafOfModules := PresheafOfModules.{u} X.ringCatSheaf.val
+nonrec abbrev PresheafOfModules := PresheafOfModules.{u} X.ringCatSheaf.obj
+
+variable {X Y} in
+/-- The morphism of sheaves of rings corresponding to a morphism of schemes. -/
+def Hom.toRingCatSheafHom (f : X ⟶ Y) :
+    Y.ringCatSheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
+      _ _ _).obj X.ringCatSheaf where
+  hom := Functor.whiskerRight f.c _
 
 end AlgebraicGeometry.Scheme

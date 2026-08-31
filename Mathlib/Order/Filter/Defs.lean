@@ -71,6 +71,7 @@ open Set
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. We do not forbid this collection to be
 all sets of `α`. -/
+@[to_dual_dont_translate]
 structure Filter (α : Type*) where
   /-- The set of sets that belong to the filter. -/
   sets : Set (Set α)
@@ -106,6 +107,7 @@ protected theorem mem_sets : s ∈ f.sets ↔ s ∈ f :=
 theorem univ_mem : univ ∈ f :=
   f.univ_sets
 
+@[gcongr]
 theorem mem_of_superset {x y : Set α} (hx : x ∈ f) (hxy : x ⊆ y) : y ∈ f :=
   f.sets_of_superset hx hxy
 
@@ -169,7 +171,7 @@ def ker (f : Filter α) : Set α := ⋂₀ f.sets
 /-- The join of a filter of filters is defined by the relation `s ∈ join f ↔ {t | s ∈ t} ∈ f`. -/
 def join (f : Filter (Filter α)) : Filter α where
   sets := { s | { t : Filter α | s ∈ t } ∈ f }
-  univ_sets := by simp only [mem_setOf_eq, univ_mem, setOf_true]
+  univ_sets := by simp only [mem_ofPred_eq, univ_mem, ofPred_true]
   sets_of_superset hx xy := mem_of_superset hx fun f h => mem_of_superset h xy
   inter_sets hx hy := mem_of_superset (inter_mem hx hy) fun f ⟨h₁, h₂⟩ => inter_mem h₁ h₂
 
@@ -270,6 +272,7 @@ class NeBot (f : Filter α) : Prop where
   /-- The filter is nontrivial: `f ≠ ⊥` or equivalently, `∅ ∉ f`. -/
   ne' : f ≠ ⊥
 
+@[push ←]
 theorem neBot_iff {f : Filter α} : NeBot f ↔ f ≠ ⊥ :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
@@ -294,15 +297,117 @@ notation3 "∃ᶠ "(...)" in "f", "r:(scoped p => Filter.Frequently p f) => r
 def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x = g x
 
-@[inherit_doc]
-notation:50 f " =ᶠ[" l:50 "] " g:50 => EventuallyEq l f g
-
 /-- A function `f` is eventually less than or equal to a function `g` at a filter `l`. -/
+@[to_dual self (reorder := f g)]
 def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x ≤ g x
 
-@[inherit_doc]
-notation:50 f " ≤ᶠ[" l:50 "] " g:50 => EventuallyLE l f g
+/-- Two sets `s` and `t` are *eventually equal* along a filter `l` if the set of `x` such that
+`x ∈ s ↔ x ∈ t` belongs to `l`.
+
+This is definitionally `(· ∈ s) =ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
+abbreviation) to avoid simp unfolding membership of concrete sets. -/
+def EventuallyEqSet (l : Filter α) (s t : Set α) : Prop :=
+  EventuallyEq l (fun x => x ∈ s) (fun x => x ∈ t)
+
+/-- A set `s` is *eventually contained* in a set `t` along a filter `l` if the set of `x` such that
+`x ∈ s → x ∈ t` belongs to `l`.
+
+This is definitionally `(· ∈ s) ≤ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
+abbreviation) to avoid simp unfolding membership of concrete sets. -/
+def EventuallySubset (l : Filter α) (s t : Set α) : Prop :=
+  EventuallyLE l (fun x => x ∈ s) (fun x => x ∈ t)
+
+/-- `x =ᶠ[l] y` means that `x` and `y` are *eventually equal* along the filter `l`.
+
+This is `Filter.EventuallyEq l x y` if `x` is a function or `Filter.EventuallyEqSet l x y` if `x`
+is a set. -/
+syntax:50 (name := eventuallyEqStx) term:51 " =ᶠ[" term "] " term:50 : term
+
+/-- `x ≤ᶠ[l] y` means that `x` is *eventually less than or equal to* `y` along the filter `l`.
+
+This is `Filter.EventuallyLE l x y` if `x` is a function and `Filter.EventuallySubset l x y` if `x`
+is a set. -/
+syntax:50 (name := eventuallyLEStx) term:51 " ≤ᶠ[" term "] " term:50 : term
+
+open Lean Elab Term Meta in
+/-- Elaborate the left-hand side `x` of an `x =ᶠ[l] y` / `x ≤ᶠ[l] y` on its own, dispatching on
+whether its type is a `Set`. If the type is not yet known (e.g. `x` is the `_` of a `calc` step),
+consult the right-hand side `y` instead. Returns the elaborated sides turned back into syntax
+together with whether they should be interpreted as sets. If `y` is not consulted, it is returned
+unelaborated. -/
+meta def elabEventuallyRelSides (x y : Term) : TermElabM (Term × Term × Bool) := do
+  -- Elaborate a side on its own, and return its type in whnf together with the elaborated term
+  -- turned back into syntax.
+  let elabSide (e : Term) : TermElabM (Expr × Term) := do
+    let e ← elabTerm e none
+    return (← whnfR (← instantiateMVars (← inferType e)), ← exprToSyntax e)
+  let (tyx, x) ← elabSide x
+  if tyx.getAppFn.isMVar then
+    let (tyy, y) ← elabSide y
+    return (x, y, tyy.isAppOfArity ``Set 1)
+  else
+    return (x, y, tyx.isAppOfArity ``Set 1)
+
+open Lean Elab Term in
+/-- Elaborator for `x =ᶠ[l] y`, dispatching on the type of `x` (or of `y` if the type of `x` is not
+yet known): `Filter.EventuallyEqSet` for sets, `Filter.EventuallyEq` for functions. -/
+@[term_elab eventuallyEqStx]
+meta def elabEventuallyEq : TermElab := fun stx expectedType? => do
+  let `($x =ᶠ[$l] $y) := stx | throwUnsupportedSyntax
+  let (x, y, isSet) ← elabEventuallyRelSides x y
+  if isSet then
+    elabTerm (← `(Filter.EventuallyEqSet $l $x $y)) expectedType?
+  else
+    elabTerm (← `(Filter.EventuallyEq $l $x $y)) expectedType?
+
+open Lean Elab Term in
+/-- Elaborator for `x ≤ᶠ[l] y`, dispatching on the type of `x` (or of `y` if the type of `x` is not
+yet known): `Filter.EventuallySubset` for sets, `Filter.EventuallyLE` for functions. -/
+@[term_elab eventuallyLEStx]
+meta def elabEventuallyLE : TermElab := fun stx expectedType? => do
+  let `($x ≤ᶠ[$l] $y) := stx | throwUnsupportedSyntax
+  let (x, y, isSet) ← elabEventuallyRelSides x y
+  if isSet then
+    elabTerm (← `(Filter.EventuallySubset $l $x $y)) expectedType?
+  else
+    elabTerm (← `(Filter.EventuallyLE $l $x $y)) expectedType?
+
+open Lean.Elab Term.Quotation in
+/-- `quot_precheck` for the `=ᶠ[l]` notation, allowing it to appear inside other notations. -/
+@[quot_precheck Filter.eventuallyEqStx] meta def precheckEventuallyEq : Precheck
+  | `($x =ᶠ[$l] $y) => do precheck x; precheck l; precheck y
+  | _ => throwUnsupportedSyntax
+
+open Lean.Elab Term.Quotation in
+/-- `quot_precheck` for the `≤ᶠ[l]` notation, allowing it to appear inside other notations. -/
+@[quot_precheck Filter.eventuallyLEStx] meta def precheckEventuallyLE : Precheck
+  | `($x ≤ᶠ[$l] $y) => do precheck x; precheck l; precheck y
+  | _ => throwUnsupportedSyntax
+
+/-- Unexpander printing `Filter.EventuallyEq l f g` as `f =ᶠ[l] g`. -/
+@[app_unexpander Filter.EventuallyEq]
+meta def unexpandEventuallyEq : Lean.PrettyPrinter.Unexpander
+  | `($_ $l $f $g) => `($f =ᶠ[$l] $g)
+  | _ => throw ()
+
+/-- Unexpander printing `Filter.EventuallyEqSet l s t` as `s =ᶠ[l] t`. -/
+@[app_unexpander Filter.EventuallyEqSet]
+meta def unexpandEventuallyEqSet : Lean.PrettyPrinter.Unexpander
+  | `($_ $l $s $t) => `($s =ᶠ[$l] $t)
+  | _ => throw ()
+
+/-- Unexpander printing `Filter.EventuallyLE l f g` as `f ≤ᶠ[l] g`. -/
+@[app_unexpander Filter.EventuallyLE]
+meta def unexpandEventuallyLE : Lean.PrettyPrinter.Unexpander
+  | `($_ $l $f $g) => `($f ≤ᶠ[$l] $g)
+  | _ => throw ()
+
+/-- Unexpander printing `Filter.EventuallySubset l s t` as `s ≤ᶠ[l] t`. -/
+@[app_unexpander Filter.EventuallySubset]
+meta def unexpandEventuallySubset : Lean.PrettyPrinter.Unexpander
+  | `($_ $l $s $t) => `($s ≤ᶠ[$l] $t)
+  | _ => throw ()
 
 /-- The forward map of a filter -/
 def map (m : α → β) (f : Filter α) : Filter β where
@@ -323,7 +428,8 @@ equivalent conditions hold.
 1. There exists a set `t ∈ f` such that `m ⁻¹' t ⊆ s`. This is used as a definition.
 2. The set `kernImage m s = {y | ∀ x, m x = y → x ∈ s}` belongs to `f`, see `Filter.mem_comap'`.
 3. The set `(m '' sᶜ)ᶜ` belongs to `f`, see `Filter.mem_comap_iff_compl` and
-`Filter.compl_mem_comap`. -/
+   `Filter.compl_mem_comap`.
+-/
 def comap (m : α → β) (f : Filter β) : Filter α where
   sets := { s | ∃ t ∈ f, m ⁻¹' t ⊆ s }
   univ_sets := ⟨univ, univ_mem, subset_univ _⟩
@@ -453,7 +559,7 @@ elab_rules : tactic
         return [m.mvarId!]
     liftMetaTactic fun goal => do
       goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
-    evalTactic <|← `(tactic| dsimp -zeta only [Set.mem_setOf_eq])
+    evalTactic <|← `(tactic| try dsimp -zeta only [Set.mem_ofPred_eq])
     if let some l := wth then
       evalTactic <|← `(tactic| intro $[$l]*)
     if let some e := usingArg then

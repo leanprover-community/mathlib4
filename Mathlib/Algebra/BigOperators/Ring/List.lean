@@ -18,9 +18,9 @@ public import Mathlib.Algebra.BigOperators.Group.List.Basic
 This file contains the results concerning the interaction of list big operators with rings.
 -/
 
-@[expose] public section
+public section
 
-open MulOpposite List
+open List
 
 variable {ι κ M M₀ R : Type*}
 
@@ -46,7 +46,7 @@ variable [Monoid M] [HasDistribNeg M]
 @[simp]
 lemma prod_map_neg (l : List M) :
     (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
-  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
+  induction l <;> simp [*, pow_succ, Commute.left_comm]
 
 end HasDistribNeg
 

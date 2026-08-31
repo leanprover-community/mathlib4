@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.RingDivision
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Polynomial
 public import Mathlib.Algebra.MvPolynomial.Rename
 
@@ -24,7 +23,7 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
@@ -36,8 +35,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
   induction n with
   | zero =>
     apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
-    rw [map_zero]
-    convert h _ finZeroElim
+    simpa [constantCoeff, coeff] using h 0 finZeroElim
   | succ n ih =>
     apply (finSuccEquiv R n).injective
     rw [map_zero]
@@ -46,7 +44,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     rintro _ ⟨r, hr, rfl⟩
     refine ih (s ·.succ) (fun _ ↦ hs _) fun x hx ↦ ?_
     rw [eval_polynomial_eval_finSuccEquiv]
-    exact h _ fun i _ ↦ i.cases (by simpa using hr) (by simpa using hx)
+    exact h _ fun i _ ↦ i.cases (by simpa [eval_C] using hr) (by simpa using hx)
 
 section
 
@@ -66,11 +64,11 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
   suffices p = 0 by rw [this, map_zero]
   refine funext_fin (s ∘ f) (fun _ ↦ hs _) fun x hx ↦ ?_
   choose g hg using fun i ↦ (hs i).nonempty
-  convert h (Function.extend f x g) fun i _ ↦ ?_
+  convert! h (Function.extend f x g) fun i _ ↦ ?_
   · simp only [eval, eval₂Hom_rename, Function.extend_comp hf]
   obtain ⟨i, rfl⟩ | nex := em (∃ x, f x = i)
   · rw [hf.extend_apply]; exact hx _ ⟨⟩
-  · simp_rw [Function.extend, dif_neg nex, hg]
+  · simp_rw [Function.extend, dite_eq_right nex, hg]
 
 theorem funext_set_iff : p = q ↔ (∀ x ∈ Set.pi .univ s, eval x p = eval x q) :=
   ⟨by rintro rfl _ _; rfl, funext_set s hs⟩

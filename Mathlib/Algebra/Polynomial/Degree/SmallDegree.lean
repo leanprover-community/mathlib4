@@ -12,9 +12,7 @@ public import Mathlib.Data.Nat.WithBot
 # Results on polynomials of specific small degrees
 -/
 
-@[expose] public section
-
-open Finsupp Finset
+public section
 
 open Polynomial
 
@@ -22,16 +20,16 @@ namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {a b c d : R} {n m : ℕ}
 
 section Semiring
 
-variable [Semiring R] {p q r : R[X]}
+variable [Semiring R] {p : R[X]}
 
 theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X + C (p.coeff 0) :=
   ext fun n =>
     Nat.casesOn n (by simp) fun n =>
-      Nat.casesOn n (by simp [coeff_C]) fun m => by
+      Nat.casesOn n (by simp) fun m => by
         have : degree p < m.succ.succ := lt_of_le_of_lt h Nat.one_lt_ofNat
         simp [coeff_eq_zero_of_degree_lt this]
 
@@ -54,7 +52,7 @@ end Semiring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type*}
+variable [Semiring R] {p : R[X]}
 
 theorem zero_le_degree_iff : 0 ≤ degree p ↔ p ≠ 0 := by
   rw [← not_lt, Nat.WithBot.lt_zero_iff, degree_eq_bot]
@@ -88,7 +86,7 @@ theorem leadingCoeff_linear (ha : a ≠ 0) : leadingCoeff (C a * X + C b) = a :=
     leadingCoeff_C_mul_X]
 
 theorem degree_quadratic_le : degree (C a * X ^ 2 + C b * X + C c) ≤ 2 := by
-  simpa only [add_assoc] using
+  simpa only [add_assoc] using!
     degree_add_le_of_degree_le (degree_C_mul_X_pow_le 2 a)
       (le_trans degree_linear_le <| WithBot.coe_le_coe.mpr one_le_two)
 
@@ -97,7 +95,7 @@ theorem degree_quadratic_lt : degree (C a * X ^ 2 + C b * X + C c) < 3 :=
 
 theorem degree_linear_lt_degree_C_mul_X_sq (ha : a ≠ 0) :
     degree (C b * X + C c) < degree (C a * X ^ 2) := by
-  simpa only [degree_C_mul_X_pow 2 ha] using degree_linear_lt
+  simpa only [degree_C_mul_X_pow 2 ha] using! degree_linear_lt
 
 @[simp]
 theorem degree_quadratic (ha : a ≠ 0) : degree (C a * X ^ 2 + C b * X + C c) = 2 := by
@@ -117,7 +115,7 @@ theorem leadingCoeff_quadratic (ha : a ≠ 0) : leadingCoeff (C a * X ^ 2 + C b 
     leadingCoeff_C_mul_X_pow]
 
 theorem degree_cubic_le : degree (C a * X ^ 3 + C b * X ^ 2 + C c * X + C d) ≤ 3 := by
-  simpa only [add_assoc] using
+  simpa only [add_assoc] using!
     degree_add_le_of_degree_le (degree_C_mul_X_pow_le 3 a)
       (le_trans degree_quadratic_le <| WithBot.coe_le_coe.mpr <| Nat.le_succ 2)
 
@@ -126,7 +124,7 @@ theorem degree_cubic_lt : degree (C a * X ^ 3 + C b * X ^ 2 + C c * X + C d) < 4
 
 theorem degree_quadratic_lt_degree_C_mul_X_cb (ha : a ≠ 0) :
     degree (C b * X ^ 2 + C c * X + C d) < degree (C a * X ^ 3) := by
-  simpa only [degree_C_mul_X_pow 3 ha] using degree_quadratic_lt
+  simpa only [degree_C_mul_X_pow 3 ha] using! degree_quadratic_lt
 
 @[simp]
 theorem degree_cubic (ha : a ≠ 0) : degree (C a * X ^ 3 + C b * X ^ 2 + C c * X + C d) = 3 := by

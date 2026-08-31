@@ -206,7 +206,7 @@ theorem monovary_toDual_left : Monovary (toDual ∘ f) g ↔ Antivary f g :=
 
 @[simp]
 theorem monovary_toDual_right : Monovary f (toDual ∘ g) ↔ Antivary f g :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem antivary_toDual_left : Antivary (toDual ∘ f) g ↔ Monovary f g :=
@@ -214,7 +214,7 @@ theorem antivary_toDual_left : Antivary (toDual ∘ f) g ↔ Monovary f g :=
 
 @[simp]
 theorem antivary_toDual_right : Antivary f (toDual ∘ g) ↔ Monovary f g :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem monovaryOn_toDual_left : MonovaryOn (toDual ∘ f) g s ↔ AntivaryOn f g s :=
@@ -222,7 +222,7 @@ theorem monovaryOn_toDual_left : MonovaryOn (toDual ∘ f) g s ↔ AntivaryOn f 
 
 @[simp]
 theorem monovaryOn_toDual_right : MonovaryOn f (toDual ∘ g) s ↔ AntivaryOn f g s :=
-  forall₂_swap
+  forall₂_comm
 
 @[simp]
 theorem antivaryOn_toDual_left : AntivaryOn (toDual ∘ f) g s ↔ MonovaryOn f g s :=
@@ -230,7 +230,7 @@ theorem antivaryOn_toDual_left : AntivaryOn (toDual ∘ f) g s ↔ MonovaryOn f 
 
 @[simp]
 theorem antivaryOn_toDual_right : AntivaryOn f (toDual ∘ g) s ↔ MonovaryOn f g s :=
-  forall₂_swap
+  forall₂_comm
 
 end OrderDual
 

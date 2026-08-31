@@ -15,7 +15,7 @@ If `f` has a local extremum at a point, then the derivative at this point is zer
 In this file we prove several versions of this fact for line derivatives.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter
 open scoped Topology
@@ -91,7 +91,7 @@ end Module
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
-  {f : E → ℝ} {s : Set E} {a b : E} {f' : ℝ}
+  {f : E → ℝ} {a b : E} {f' : ℝ}
 
 theorem IsLocalExtr.hasLineDerivAt_eq_zero (h : IsLocalExtr f a) (hd : HasLineDerivAt ℝ f f' a b) :
     f' = 0 :=

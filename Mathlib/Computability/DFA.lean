@@ -5,8 +5,8 @@ Authors: Fox Thomson, Chris Wong, Rudy Peterson
 -/
 module
 
+public import Mathlib.Basic.Countable.Small
 public import Mathlib.Computability.Language
-public import Mathlib.Data.Countable.Small
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Tactic.NormNum
@@ -51,7 +51,7 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 
 universe u v
 
-open Computability
+open scoped Computability
 
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
@@ -154,6 +154,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   rwa [← hq, ← evalFrom_of_append, ← evalFrom_of_append, ← List.append_assoc,
     List.take_append_drop, List.take_append_drop]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
     (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
   rw [Language.mem_kstar] at hy
@@ -168,6 +169,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card σ ≤ List.length x) :
     ∃ a b c,
@@ -181,7 +183,7 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   rw [Language.mem_mul] at hab
   rcases hab with ⟨a', ha', b', hb', rfl⟩
   rw [Set.mem_singleton_iff] at ha' hc'
-  substs ha' hc'
+  subst ha' hc'
   have h := M.evalFrom_of_pow hb hb'
   rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
 
@@ -213,6 +215,7 @@ theorem evalFrom_comap (f : α' → α) (s : σ) (x : List α') :
 theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by
   simp [eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem accepts_comap (f : α' → α) : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
   ext x
@@ -269,7 +272,7 @@ section compl
 
 /-- DFAs are closed under complement:
 Given a DFA `M`, `Mᶜ` is also a DFA such that `L(Mᶜ) = {x ∣ x ∉ L(M)}`. -/
-instance : HasCompl (DFA α σ) where
+instance : Compl (DFA α σ) where
   compl M := ⟨M.step, M.start, M.acceptᶜ⟩
 
 theorem compl_def : Mᶜ = ⟨M.step, M.start, M.acceptᶜ⟩ :=
@@ -296,13 +299,14 @@ def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∨ s.2 ∈ M2.accept}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : σ2) :
     (M1.union M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
   ext x
   simp only [acceptsFrom]
   rw [Language.add_def, Set.mem_union]
-  simp_rw [↑Set.mem_setOf]
+  simp_rw [↑Set.mem_ofPred]
   induction x generalizing s1 s2 with
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, union_step, ih]
@@ -325,12 +329,13 @@ def inter : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
     (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
   ext x
   simp only [acceptsFrom, Language.mem_inf]
-  simp_rw [↑Set.mem_setOf]
+  simp_rw [↑Set.mem_ofPred]
   induction x generalizing s1 s2 with
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, inter_step, ih]

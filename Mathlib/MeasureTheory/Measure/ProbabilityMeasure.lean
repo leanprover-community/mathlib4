@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 public import Mathlib.MeasureTheory.Integral.Average
-public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Probability measures
@@ -131,7 +130,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω 
 
 instance instFunLike : FunLike (ProbabilityMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
-  coe_injective' μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
+  coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
     simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
 
 lemma coeFn_def (μ : ProbabilityMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
@@ -231,12 +230,13 @@ theorem eq_of_forall_apply_eq (μ ν : ProbabilityMeasure Ω)
 theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.mass = 1 :=
   μ.coeFn_univ
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma range_toFiniteMeasure :
     range toFiniteMeasure = {μ : FiniteMeasure Ω | μ.mass = 1} := by
   ext μ
-  simp only [mem_range, mem_setOf_eq]
+  simp only [mem_range, mem_ofPred_eq]
   refine ⟨fun ⟨ν, hν⟩ ↦ by simp [← hν], fun h ↦ ?_⟩
-  refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using h)⟩, ?_⟩
+  refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using! h)⟩, ?_⟩
   ext s hs
   simp
 
@@ -244,7 +244,8 @@ theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasur
   simp [← FiniteMeasure.mass_nonzero_iff]
 
 /-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
-instance : MeasurableSpace (ProbabilityMeasure Ω) := Subtype.instMeasurableSpace
+instance : MeasurableSpace (ProbabilityMeasure Ω) :=
+  inferInstanceAs <| MeasurableSpace (Subtype _)
 
 lemma measurableSet_isProbabilityMeasure :
     MeasurableSet { μ : Measure Ω | IsProbabilityMeasure μ } := by
@@ -262,7 +263,7 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   apply Measurable.measure_of_isPiSystem_of_isProbabilityMeasure generateFrom_prod.symm
     isPiSystem_prod _
-  simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
+  simp only [mem_image2, mem_ofPred_eq, forall_exists_index, and_imp]
   intro _ u Hu v Hv Heq
   simp_rw [← Heq, Measure.prod_prod]
   apply Measurable.mul
@@ -308,13 +309,13 @@ theorem toWeakDualBCNN_apply (μ : ProbabilityMeasure Ω) (f : Ω →ᵇ ℝ≥0
 theorem toWeakDualBCNN_continuous : Continuous fun μ : ProbabilityMeasure Ω ↦ μ.toWeakDualBCNN :=
   FiniteMeasure.toWeakDualBCNN_continuous.comp toFiniteMeasure_continuous
 
-/- Integration of (nonnegative bounded continuous) test functions against Borel probability
+/-- Integration of (nonnegative bounded continuous) test functions against Borel probability
 measures depends continuously on the measure. -/
 theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
     Continuous fun μ : ProbabilityMeasure Ω ↦ μ.toFiniteMeasure.testAgainstNN f :=
   (FiniteMeasure.continuous_testAgainstNN_eval f).comp toFiniteMeasure_continuous
 
--- The canonical mapping from probability measures to finite measures is an embedding.
+/-- The canonical mapping from probability measures to finite measures is an embedding. -/
 theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [TopologicalSpace Ω]
     [OpensMeasurableSpace Ω] :
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
@@ -365,14 +366,14 @@ integrals of every continuous bounded nonnegative function are continuous. -/
 lemma continuous_iff_forall_continuous_lintegral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ≥0, Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_lintegral_tendsto,
-    forall_swap (α := X)]
+    forall_comm (α := X)]
 
 /-- The characterization of weak convergence of probability measures by the usual (defining)
 condition that the integrals of every continuous bounded function are continuous. -/
 lemma continuous_iff_forall_continuous_integral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ, Continuous fun x ↦ ∫ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_integral_tendsto,
-    forall_swap (α := X)]
+    forall_comm (α := X)]
 
 lemma continuous_lintegral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
     (f : X →ᵇ ℝ≥0) : Continuous fun μ : ProbabilityMeasure X ↦ ∫⁻ x, f x ∂μ :=
@@ -456,12 +457,13 @@ def normalize : ProbabilityMeasure Ω :=
         rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize s := by
   obtain rfl | h := eq_or_ne μ 0
   · simp
   have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
-  simp only [normalize, dif_neg mass_nonzero]
+  simp only [normalize, dite_eq_right mass_nonzero]
   simp [mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
@@ -603,29 +605,29 @@ variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 namespace ProbabilityMeasure
 
 /-- The push-forward of a probability measure by a measurable function. -/
-noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν) :
+noncomputable def map (ν : ProbabilityMeasure Ω) (f : Ω → Ω') :
     ProbabilityMeasure Ω' :=
-  ⟨(ν : Measure Ω).map f, (ν : Measure Ω).isProbabilityMeasure_map f_aemble⟩
+  ⟨(ν : Measure Ω).map f, inferInstance⟩
 
-@[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (hf : AEMeasurable f ν) :
-    (ν.map hf).toMeasure = ν.toMeasure.map f := rfl
+@[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} :
+    (ν.map f).toMeasure = ν.toMeasure.map f := rfl
 
 /-- Note that this is an equality of elements of `ℝ≥0∞`. See also
 `MeasureTheory.ProbabilityMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
 lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ν.map f_aemble : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
+    (ν.map f : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
   Measure.map_apply_of_aemeasurable f_aemble A_mble
 
 lemma map_apply_of_aemeasurable (ν : ProbabilityMeasure Ω) {f : Ω → Ω'}
     (f_aemble : AEMeasurable f ν) {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ν.map f_aemble) A = ν (f ⁻¹' A) := by
+    (ν.map f) A = ν (f ⁻¹' A) := by
   exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr <|
     ν.map_apply' f_aemble A_mble
 
 lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ν.map f_aemble) A = ν (f ⁻¹' A) :=
+    (ν.map f) A = ν (f ⁻¹' A) :=
   map_apply_of_aemeasurable ν f_aemble A_mble
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
@@ -637,11 +639,10 @@ distribution) of the push-forwards of these measures by `f`. -/
 lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
     (νs : ι → ProbabilityMeasure Ω) (ν : ProbabilityMeasure Ω) (lim : Tendsto νs L (𝓝 ν))
     {f : Ω → Ω'} (f_cont : Continuous f) :
-    Tendsto (fun i ↦ (νs i).map f_cont.measurable.aemeasurable) L
-      (𝓝 (ν.map f_cont.measurable.aemeasurable)) := by
+    Tendsto (fun i ↦ (νs i).map f) L (𝓝 (ν.map f)) := by
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
-  convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
+  convert! lim (g.compContinuous ⟨f, f_cont⟩) <;>
   · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
     refine lintegral_map ?_ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable
@@ -650,12 +651,30 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
 the push-forward of probability measures `f* : ProbabilityMeasure X → ProbabilityMeasure Y`
 is continuous (in the topologies of convergence in distribution). -/
 lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
-    Continuous (fun ν ↦ ProbabilityMeasure.map ν f_cont.measurable.aemeasurable) := by
+    Continuous (fun ν ↦ ProbabilityMeasure.map ν f) := by
   rw [continuous_iff_continuousAt]
   exact fun _ ↦ tendsto_map_of_tendsto_of_continuous _ _ continuous_id.continuousAt f_cont
 
 end ProbabilityMeasure -- namespace
 
 end map -- section
+
+section join_bind
+
+theorem isProbabilityMeasure_join {α : Type*} [MeasurableSpace α] {m : Measure (Measure α)}
+    [IsProbabilityMeasure m] (hm : ∀ᵐ μ ∂m, IsProbabilityMeasure μ) :
+    IsProbabilityMeasure (m.join) := by
+  simp only [isProbabilityMeasure_iff, MeasurableSet.univ, Measure.join_apply]
+  simp_rw [isProbabilityMeasure_iff] at hm
+  exact lintegral_eq_const hm
+
+theorem isProbabilityMeasure_bind {α : Type*} {β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {m : Measure α} [IsProbabilityMeasure m] {f : α → Measure β} (hf₀ : AEMeasurable f m)
+    (hf₁ : ∀ᵐ μ ∂m, IsProbabilityMeasure (f μ)) : IsProbabilityMeasure (m.bind f) := by
+  simp only [isProbabilityMeasure_iff, MeasurableSet.univ, Measure.bind_apply _ hf₀]
+  simp_rw [isProbabilityMeasure_iff] at hf₁
+  exact lintegral_eq_const hf₁
+
+end join_bind
 
 end MeasureTheory -- namespace

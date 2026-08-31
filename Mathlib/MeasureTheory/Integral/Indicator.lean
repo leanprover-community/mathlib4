@@ -28,13 +28,15 @@ moved out of `Mathlib/MeasureTheory/Integral/Lebesgue/Basic.lean`, and the lemma
 be moved to, e.g., `Mathlib/MeasureTheory/Constructions/BorelSpace/Metrizable.lean`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
 section TendstoIndicator
 
-open Set Filter ENNReal Topology
+open Set Filter ENNReal
+
+open scoped Topology
 
 variable {α : Type*} [MeasurableSpace α] {A : Set α}
 variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}

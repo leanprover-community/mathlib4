@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.DirichletCharacter.Bounds
 public import Mathlib.NumberTheory.LSeries.Convolution
 public import Mathlib.NumberTheory.LSeries.Deriv
+public import Mathlib.NumberTheory.LSeries.Positivity
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
@@ -33,7 +34,7 @@ as special cases.
 Dirichlet L-series, Möbius function, von Mangoldt function, Riemann zeta function
 -/
 
-@[expose] public section
+public section
 
 open scoped LSeries.notation
 
@@ -154,7 +155,7 @@ lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ 
 lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   ext n
   rcases eq_or_ne n 0 with rfl | hn
-  · simp_rw [cast_zero, χ.map_nonunit not_isUnit_zero, delta, reduceCtorEq, if_false]
+  · simp_rw [cast_zero, χ.map_nonunit not_isUnit_zero, delta, reduceCtorEq, ite_false]
   rcases eq_or_ne n 1 with rfl | hn'
   · simp [delta]
   have : ¬ IsUnit (n : ZMod 0) := fun h ↦ hn' <| ZMod.eq_one_of_isUnit_natCast h
@@ -175,7 +176,7 @@ lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharact
   refine fun h ↦ (Real.not_summable_indicator_one_div_natCast hN 1) ?_
   refine h.norm.of_nonneg_of_le (fun m ↦ Set.indicator_apply_nonneg (fun _ ↦ by positivity))
     (fun n ↦ ?_)
-  simp only [norm_term_eq, Set.indicator, Set.mem_setOf_eq]
+  simp only [norm_term_eq, Set.indicator, Set.mem_ofPred_eq]
   split_ifs with h₁ h₂
   · simp [h₂]
   · simp [h₁, χ.map_one]
@@ -325,6 +326,29 @@ lemma LSeries_one_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : L 1 s ≠ 0 :
 lemma riemannZeta_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : riemannZeta s ≠ 0 :=
   LSeries_one_eq_riemannZeta hs ▸ LSeries_one_ne_zero_of_one_lt_re hs
 
+section ComplexOrderLemmas
+
+open scoped ComplexOrder
+
+/-- The Riemann zeta function is positive in `ComplexOrder` for real arguments greater than 1.
+This means it is a positive real number:
+both `(riemannZeta x).re > 0` and `(riemannZeta x).im = 0`. -/
+lemma riemannZeta_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < riemannZeta x := by
+  have hx' : 1 < (x : ℂ).re := by simpa using hx
+  rw [← LSeries_one_eq_riemannZeta hx']
+  refine LSeries.positive (fun _ ↦ by simp) (by simp) ?_
+  simpa [LSeries.abscissaOfAbsConv_one] using (by exact_mod_cast hx : (1 : EReal) < x)
+
+/-- The real part of the Riemann zeta function is positive for real arguments greater than 1. -/
+lemma riemannZeta_re_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < (riemannZeta x).re :=
+  (Complex.pos_iff.mp (riemannZeta_pos_of_one_lt hx)).1
+
+/-- The Riemann zeta function is real-valued for real arguments greater than 1. -/
+lemma riemannZeta_im_eq_zero_of_one_lt {x : ℝ} (hx : 1 < x) : (riemannZeta x).im = 0 :=
+  (Complex.pos_iff.mp (riemannZeta_pos_of_one_lt hx)).2.symm
+
+end ComplexOrderLemmas
+
 end zeta
 
 
@@ -403,7 +427,7 @@ of the L-series of the constant sequence `1` on its domain of convergence `re s 
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
   refine (LSeries_congr (fun {n} _ ↦ ?_) s).trans <|
     LSeries_modOne_eq ▸ LSeries_twist_vonMangoldt_eq χ₁ hs
-  simp [Subsingleton.eq_one (n : ZMod 1)]
+  simp [Subsingleton.eq_one (α := ZMod 1)]
 
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the Riemann zeta function on its domain of convergence `re s > 1`. -/

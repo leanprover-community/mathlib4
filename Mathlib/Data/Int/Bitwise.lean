@@ -10,7 +10,6 @@ public import Mathlib.Data.Nat.Bitwise
 public import Mathlib.Data.Nat.Size
 public import Batteries.Data.Int
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `Nat.bitwise`
-import all Init.Data.Int.Bitwise.Basic  -- for unfolding `Int.bitwise`
 
 /-!
 # Bitwise operations on integers
@@ -93,9 +92,9 @@ protected def xor : ℤ → ℤ → ℤ
 instance : ShiftLeft ℤ where
   shiftLeft
   | (m : ℕ), (n : ℕ) => Nat.shiftLeft' false m n
-  | (m : ℕ), -[n +1] => m >>> (Nat.succ n)
-  | -[m +1], (n : ℕ) => -[Nat.shiftLeft' true m n +1]
-  | -[m +1], -[n +1] => -[m >>> (Nat.succ n) +1]
+  | (m : ℕ), -[n+1] => m >>> (Nat.succ n)
+  | -[m+1], (n : ℕ) => -[Nat.shiftLeft' true m n+1]
+  | -[m+1], -[n+1] => -[m >>> (Nat.succ n)+1]
 
 /-- `m >>> n` produces an integer whose binary representation
   is obtained by right-shifting the binary representation of `m` by `n` places -/
@@ -203,9 +202,7 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
 theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero
-    cases b <;>
-      rfl
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero, Bool.not_not]
 
 @[simp]
 theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
@@ -223,8 +220,8 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
 theorem bitwise_or : bitwise or = lor := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, cond_true, lor, Nat.ldiff,
-      negSucc.injEq, Bool.true_or]
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, Bool.cond_true, lor,
+      Nat.ldiff, negSucc.injEq, Bool.true_or]
   · rw [Nat.bitwise_swap, Function.swap]
     congr
     funext x y
@@ -238,7 +235,7 @@ theorem bitwise_and : bitwise and = land := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false,
-      cond_false, cond_true, Bool.and_true,
+      Bool.cond_false, Bool.cond_true, Bool.and_true,
       Bool.and_false]
   · rw [Nat.bitwise_swap, Function.swap]
     congr
@@ -252,7 +249,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false,
-      cond_false, cond_true, Nat.ldiff, Bool.and_true, negSucc.injEq,
+      Bool.cond_false, Bool.cond_true, Nat.ldiff, Bool.and_true, negSucc.injEq,
       Bool.and_false, Bool.not_true, ldiff]
   · congr
     simp
@@ -268,7 +265,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.bne_eq_xor,
-      cond_false, cond_true, negSucc.injEq, Bool.false_xor,
+      Bool.cond_false, Bool.cond_true, negSucc.injEq, Bool.false_xor,
       Bool.true_xor, Bool.not_true,
       Int.xor, HXor.hXor, XorOp.xor, Nat.xor] <;> simp
 
@@ -373,7 +370,7 @@ lemma shiftLeft_natCast_right (m : ℤ) (n : ℕ) :
   unfold_projs; cases m <;> simp only [Nat.shiftLeft'_false, natCast_shiftLeft, ofNat_eq_natCast,
     Nat.pow_eq, Int.natCast_pow, Nat.cast_ofNat, mul_def]
   · grind [Int.shiftLeft_eq']
-  · simp only [negSucc_eq, ← natCast_add_one, Nat.shiftLeft'_tt_eq_mul_pow]
+  · simp only [negSucc_eq, ← natCast_add_one, Nat.shiftLeft'_true_eq_mul_pow]
     grind
 
 /-- Connection of `HShiftRight Int Int Int` and `HShiftRight Int Nat Int`. -/
@@ -389,7 +386,6 @@ theorem shiftLeft_add' : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) => by simp [← Nat.shiftLeft_sub _])
       fun i n => by
-        dsimp only [← Int.natCast_shiftRight]
         simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
           ← Nat.shiftLeft_sub _ le_rfl, Nat.sub_self, Nat.shiftLeft_zero, ← shiftRight_natCast,
           ← shiftRight_add', Nat.cast_one]
@@ -408,7 +404,7 @@ theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n 
 
 theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2 ^ n : ℕ)
   | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
-  | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
+  | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_true_eq_mul_pow _ _)
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
   congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])

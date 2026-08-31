@@ -32,7 +32,7 @@ namespace CategoryTheory
 variable (R : Type w) [Ring R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
 variable (C)
 
-/-- The Yoneda embedding for `R`-linear categories `C`,
+/-- The Yoneda embedding for `R`-linear categories `C`
 sending an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 @[simps]

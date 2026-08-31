@@ -23,7 +23,9 @@ it defines the same uniformity as the already defined uniform structure on the c
 
 open Set Filter UniformSpace Metric
 
-open Filter Topology Uniformity
+open Filter Topology
+
+open scoped Uniformity
 
 noncomputable section
 
@@ -53,8 +55,9 @@ protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion
 protected theorem dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
   Completion.extension₂_coe_coe uniformContinuous_dist _ _
 
-/- Let us check that the new distance satisfies the axioms of a distance, by starting from the
+/-! Let us check that the new distance satisfies the axioms of a distance, by starting from the
 properties on α and extending them to `Completion α` by continuity. -/
+
 protected theorem dist_self (x : Completion α) : dist x x = 0 := by
   refine induction_on x ?_ ?_
   · refine isClosed_eq ?_ continuous_const
@@ -104,7 +107,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         by_cases! h : ε ≤ dist x y
         · exact Or.inl h
         · have Z := hε h
-          simp only [Set.mem_setOf_eq] at Z
+          simp only [Set.mem_ofPred_eq] at Z
           exact Or.inr Z
     simp only [not_le.mpr hxy, false_or] at this
     exact ts this
@@ -142,7 +145,7 @@ protected theorem uniformity_dist' :
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
 
-/-- Metric space structure on the completion of a pseudo_metric space. -/
+/-- Metric space structure on the completion of a `PseudoMetric` space. -/
 instance instMetricSpace : MetricSpace (Completion α) :=
   @MetricSpace.ofT0PseudoMetricSpace _
     { dist_self := Completion.dist_self
@@ -164,19 +167,13 @@ instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [IsBoundedSMul
     IsBoundedSMul M (Completion α) where
   dist_smul_pair' c x₁ x₂ := by
     induction x₁, x₂ using induction_on₂ with
-    | hp =>
-      exact isClosed_le
-        ((continuous_fst.const_smul _).dist (continuous_snd.const_smul _))
-        (continuous_const.mul (continuous_fst.dist continuous_snd))
+    | hp => exact isClosed_le (by fun_prop) (by fun_prop)
     | ih x₁ x₂ =>
       rw [← coe_smul, ← coe_smul, Completion.dist_eq, Completion.dist_eq]
       exact dist_smul_pair c x₁ x₂
   dist_pair_smul' c₁ c₂ x := by
     induction x using induction_on with
-    | hp =>
-      exact isClosed_le
-        ((continuous_const_smul _).dist (continuous_const_smul _))
-        (continuous_const.mul (continuous_id.dist continuous_const))
+    | hp => exact isClosed_le (by fun_prop) (by fun_prop)
     | ih x =>
       rw [← coe_smul, ← coe_smul, Completion.dist_eq, ← coe_zero, Completion.dist_eq]
       exact dist_pair_smul c₁ c₂ x
@@ -193,7 +190,7 @@ theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {
 
 theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
     (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
-  one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
+  one_mul K ▸ (coe_isometry.lipschitzWith.comp h).completion_extension
 
 theorem Isometry.completion_extension [PseudoMetricSpace β] [CompleteSpace β] [T0Space β]
     {f : α → β} (h : Isometry f) : Isometry (Completion.extension f) :=
@@ -205,15 +202,35 @@ theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.map f) :=
   (coe_isometry.comp h).completion_extension
 
-/-- The extension of an isometry to the completion of the domain. -/
-def Isometry.extensionHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
-    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
-    [T0Space β] {f : α →+* β} (h : Isometry f) : Completion α →+* β :=
-  Completion.extensionHom f h.continuous
+section extension_maps
 
-@[simp]
-theorem Isometry.extensionHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
-    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
-    [T0Space β] {f : α →+* β} (h : Isometry f) (x : α) :
-    h.extensionHom x = f x :=
-  UniformSpace.Completion.extensionHom_coe f h.continuous _
+variable [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β]
+
+/-- The extension of an isometry to the completion of the domain. -/
+@[deprecated Completion.extensionHom (since := "2026-08-11")]
+def Isometry.extensionHom [CompleteSpace β] [T0Space β] {f : α →+* β} (h : Isometry f) :
+    Completion α →+* β := Completion.extensionHom f h.continuous
+
+@[deprecated Completion.extensionHom_coe (since := "2026-08-11")]
+theorem Isometry.extensionHom_coe [CompleteSpace β] [T0Space β] {f : α →+* β} (h : Isometry f)
+    (x : α) : h.extensionHom x = f x := Completion.extensionHom_coe f h.continuous _
+
+/-- The lift of an isometry to completions. -/
+@[deprecated Completion.mapRingHom (since := "2026-08-11")]
+def Isometry.mapRingHom {f : α →+* β} (h : Isometry f) : Completion α →+* Completion β :=
+  Completion.mapRingHom f h.continuous
+
+@[deprecated Completion.mapRingHom_coe (since := "2026-08-11")]
+theorem Isometry.mapRingHom_coe {f : α →+* β} (h : Isometry f) (x : α) : h.mapRingHom x = f x :=
+  Completion.mapRingHom_coe h.uniformContinuous.continuous _
+
+theorem UniformSpace.Completion.isometry_mapRingHom {f : α →+* β} (h : Isometry f) :
+    Isometry (Completion.mapRingHom f h.continuous) :=
+  h.completion_map
+
+@[deprecated Completion.isometry_mapRingHom (since := "2026-08-11")]
+theorem Isometry.isometry_mapRingHom {f : α →+* β} (h : Isometry f) : Isometry h.mapRingHom :=
+  Completion.isometry_mapRingHom h
+
+end extension_maps

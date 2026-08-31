@@ -6,8 +6,7 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Algebra.Field.ULift
-public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Data.Rat.Encodable
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.RingTheory.Localization.Cardinality
@@ -28,7 +27,7 @@ a field structure, and so can all types with prime power cardinalities, and this
 
 -/
 
-@[expose] public section
+public section
 
 
 local notation "‖" x "‖" => Fintype.card x
@@ -46,8 +45,8 @@ theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimeP
 theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
   refine ⟨fun ⟨h⟩ => Fintype.isPrimePow_card_of_field, ?_⟩
   rintro ⟨p, n, hp, hn, hα⟩
-  haveI := Fact.mk hp.nat_prime
-  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
+  have := Fact.mk hp.nat_prime
+  have : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   exact ⟨(Fintype.equivOfCardEq
     (((Fintype.card_eq_nat_card).trans (GaloisField.card p n hn.ne')).trans hα)).symm.field⟩
 
@@ -66,5 +65,5 @@ theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #�
   rw [Cardinal.isPrimePow_iff]
   obtain h | h := fintypeOrInfinite α
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',
-      (Cardinal.nat_lt_aleph0 _).not_ge, false_or] using Fintype.nonempty_field_iff
+      Cardinal.natCast_lt_aleph0.not_ge, false_or] using Fintype.nonempty_field_iff
   · simpa only [← Cardinal.infinite_iff, h, true_or, iff_true] using Infinite.nonempty_field

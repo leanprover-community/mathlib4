@@ -22,7 +22,7 @@ a complex measure is always in the form `s + it` where `s` and `t` are signed me
 * `MeasureTheory.ComplexMeasure.im`: obtains a signed measure `s` from a complex measure `c`
   such that `s i = (c i).im` for all measurable sets `i`.
 * `MeasureTheory.SignedMeasure.toComplexMeasure`: given two signed measures `s` and `t`,
-  `s.to_complex_measure t` provides a complex measure of the form `s + it`.
+  `s.toComplexMeasure t` provides a complex measure of the form `s + it`.
 * `MeasureTheory.ComplexMeasure.equivSignedMeasure`: is the equivalence between the complex
   measures and the type of the product of the signed measures with itself.
 
@@ -53,12 +53,12 @@ namespace ComplexMeasure
 /-- The real part of a complex measure is a signed measure. -/
 @[simps! apply]
 def re : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
-  mapRangeₗ Complex.reCLM Complex.continuous_re
+  mapRangeL Complex.reCLM
 
 /-- The imaginary part of a complex measure is a signed measure. -/
 @[simps! apply]
 def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
-  mapRangeₗ Complex.imCLM Complex.continuous_im
+  mapRangeL Complex.imCLM
 
 /-- Given `s` and `t` signed measures, `s + it` is a complex measure -/
 @[simps!]
@@ -94,6 +94,7 @@ section
 variable {R : Type*} [Semiring R] [Module R ℝ]
 variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The complex measures form a linear isomorphism to the type of pairs of signed measures. -/
 @[simps]
 def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × SignedMeasure α :=
@@ -108,6 +109,7 @@ def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × Sign
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 theorem absolutelyContinuous_ennreal_iff (c : ComplexMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     c ≪ᵥ μ ↔ ComplexMeasure.re c ≪ᵥ μ ∧ ComplexMeasure.im c ≪ᵥ μ := by
   constructor <;> intro h
