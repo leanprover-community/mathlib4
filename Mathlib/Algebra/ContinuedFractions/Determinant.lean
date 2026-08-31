@@ -35,18 +35,18 @@ variable {g : GenContFract K} {n : ℕ}
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ)`. -/
 theorem determinant :
     g.nums n * g.dens (n + 1) - g.dens n * g.nums (n + 1) =
-      ∏ i ∈ Finset.range (n + 1), - g.partNums! i := by
+      ∏ i ∈ Finset.range (n + 1), - g.partNumsStream' i := by
   induction n with
   | zero =>
-    suffices g.h * g.dens 1 - g.nums 1 = -g.partNums! 0 by simpa
+    suffices g.h * g.dens 1 - g.nums 1 = -g.partNumsStream' 0 by simpa
     rcases Decidable.em <| g.TerminatedAt 0 with hg | hg
     · simp [dens_stable_of_terminated zero_le_one, nums_stable_of_terminated zero_le_one,
-        partNum!_of_terminatedAt, hg]
+        partNumStream'_of_terminatedAt, hg]
     · obtain ⟨gp, s_eq⟩ : ∃ gp, g.s.get? 0 = some gp := Option.ne_none_iff_exists'.mp hg
-      rw [partNum!_eq_s_a s_eq, first_den_eq s_eq, first_num_eq s_eq,
+      rw [partNumStream'_eq_s_a s_eq, first_den_eq s_eq, first_num_eq s_eq,
         mul_comm, sub_add_cancel_left]
   | succ n' ih =>
-    rw [Finset.prod_range_succ_comm, ← ih, dens_recurrence!, nums_recurrence!]
+    rw [Finset.prod_range_succ_comm, ← ih, dens_recurrence', nums_recurrence']
     ring
 
 end GenContFract
