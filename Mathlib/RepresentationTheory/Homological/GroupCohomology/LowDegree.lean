@@ -769,6 +769,7 @@ def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dArrowIso₀₁ A)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesIso₀_hom_comp_f :
@@ -795,6 +796,9 @@ end cocyclesIso₀
 
 section isoCocycles₁
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex `A --d₀₁--> Fun(G, A) --d₁₂--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
@@ -848,6 +852,9 @@ end isoCocycles₁
 
 section isoCocycles₂
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex `Fun(G, A) --d₁₂--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
@@ -943,7 +950,7 @@ theorem π_comp_H0IsoOfIsTrivial_hom :
 variable {A} in
 @[simp]
 theorem H0IsoOfIsTrivial_inv_apply (x : A) :
-    (H0IsoOfIsTrivial A).inv x = (H0Iso A).inv ⟨x, by simp⟩ := rfl
+    (H0IsoOfIsTrivial A).inv x = (H0Iso A).inv ⟨x, by simp [isTrivial_apply]⟩ := rfl
 
 end IsTrivial
 end H0
@@ -1008,7 +1015,7 @@ def H1IsoOfIsTrivial :
     H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
   (HomologicalComplex.isoHomologyπ _ 0 1 (CochainComplex.prev_nat_succ 0) <| by
     ext; simp [inhomogeneousCochains.d, Unique.eq_default (α := Fin 0 → G),
-      CochainComplex.of.d]).symm ≪≫
+      CochainComplex.of.d, isTrivial_apply]).symm ≪≫
   isoCocycles₁ A ≪≫ cocycles₁IsoOfIsTrivial A
 
 set_option backward.isDefEq.respectTransparency false in
