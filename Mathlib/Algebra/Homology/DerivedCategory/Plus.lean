@@ -67,9 +67,8 @@ noncomputable def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
     obtain ⟨n, _⟩ := (HomotopyCategory.plus_quotient_obj_iff _).mp hK
     exact ⟨n, t.isGE_of_iso ((quotientCompQhIso C).symm.app K) n⟩)
 
-noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ := by
-  dsimp only [Qh]
-  infer_instance
+noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ :=
+  ObjectProperty.commShiftLift ..
 
 instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
   dsimp only [Qh]
@@ -105,8 +104,12 @@ variable (C)
 
 /-- The functor `DerivedCategory.Plus.Qh : HomotopyCategory.Plus C ⥤ DerivedCategory.Plus C`
 is induced by `DerivedCategory.Qh : HomotopyCategory C (.up ℤ) ⥤ DerivedCategory C`. -/
+@[simps! -isSimp]
 noncomputable def QhCompιIsoιCompQh :
     Qh ⋙ Plus.ι ≅ HomotopyCategory.Plus.ι C ⋙ DerivedCategory.Qh := Iso.refl _
+
+instance : NatTrans.CommShift (QhCompιIsoιCompQh C).hom ℤ :=
+  ObjectProperty.commShift_liftCompιIso_hom ..
 
 instance : (Qh (C := C)).EssSurj where
   mem_essImage := by
@@ -223,16 +226,47 @@ noncomputable def Q : CochainComplex.Plus C ⥤ DerivedCategory.Plus C :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ DerivedCategory.Q)
     (fun ⟨K, n, hn⟩ ↦ ⟨n, by dsimp; infer_instance⟩)
 
+noncomputable instance : (Q (C := C)).CommShift ℤ := ObjectProperty.commShiftLift ..
+
+variable (C) in
+/-- The localization functor `CochainComplex.Plus C ⥤ DerivedCategory.Plus C` is
+induced by `DerivedCategory.Q : CochainComplex C ℤ ⥤ DerivedCategory C`. -/
+@[simps!]
+noncomputable def QCompιIso :
+    DerivedCategory.Plus.Q ⋙ Plus.ι ≅ CochainComplex.Plus.ι C ⋙ DerivedCategory.Q :=
+  ObjectProperty.liftCompιIso ..
+
+instance : NatTrans.CommShift (QCompιIso C).hom ℤ :=
+  ObjectProperty.commShift_liftCompιIso_hom ..
+
 variable (C) in
 /-- The natural isomorphism `HomotopyCategory.Plus.quotient C ⋙ Qh ≅ Q`. -/
+@[simps!]
 noncomputable def quotientCompQhIso : HomotopyCategory.Plus.quotient C ⋙ Qh ≅ Q :=
   NatIso.ofComponents (fun X ↦
     ObjectProperty.isoMk _ ((DerivedCategory.quotientCompQhIso C).app X.obj)) (fun _ ↦ by
       ext
       apply (DerivedCategory.quotientCompQhIso C).hom.naturality)
 
--- TODO: show that `HomotopyCategory.Plus.quotient C ` and `Q` commute with the shift
--- in a way that is compatible with `quotientCompQhIso`
+open Functor in
+@[reassoc]
+lemma whiskerRight_quotientCompQhIso_hom_ι :
+    whiskerRight (quotientCompQhIso C).hom ι =
+    (associator _ _ _).hom ≫ whiskerLeft _ (QhCompιIsoιCompQh C).hom ≫
+    (associator _ _ _).inv ≫
+    whiskerRight (HomotopyCategory.Plus.quotientCompιIso C).hom _ ≫ (associator _ _ _).hom ≫
+    whiskerLeft _ (DerivedCategory.quotientCompQhIso C).hom ≫ (QCompιIso C).inv := by
+  ext K
+  dsimp
+  simp [QCompιIso_inv_app, comp_id, id_comp,
+    QhCompιIsoιCompQh_hom_app, HomotopyCategory.Plus.quotientCompιIso_hom_app,
+    DerivedCategory.Qh.map_id ((HomotopyCategory.quotient _ (.up ℤ)).obj K.obj),
+    dsimp% Category.id_comp ((DerivedCategory.quotientCompQhIso C).hom.app K.obj)]
+
+instance : NatTrans.CommShift (quotientCompQhIso C).hom ℤ :=
+  NatTrans.CommShift.of_comp_faithful ι (by
+    rw [whiskerRight_quotientCompQhIso_hom_ι]
+    infer_instance)
 
 instance : (HomotopyCategory.Plus.quotient C ⋙ Qh).IsLocalization
     (CochainComplex.Plus.quasiIso C) := by

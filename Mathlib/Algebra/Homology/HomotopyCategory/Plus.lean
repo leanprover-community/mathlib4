@@ -180,9 +180,15 @@ def quotient : CochainComplex.Plus C ⥤ Plus C :=
 `HomotopyCategory.Plus.quotient C : CochainComplex.Plus C ⥤ HomotopyCategory.Plus C`
 is induced by the functor `HomotopyCategory.quotient C (.up ℤ)` from `CochainComplex C ℤ`
 to `HomotopyCategory C (.up ℤ)`. -/
+@[simps! -isSimp]
 def quotientCompιIso :
     quotient C ⋙ ι C ≅ CochainComplex.Plus.ι C ⋙ HomotopyCategory.quotient C (.up ℤ) :=
   ObjectProperty.liftCompιIso ..
+
+noncomputable instance : (quotient C).CommShift ℤ := ObjectProperty.commShiftLift ..
+
+instance : NatTrans.CommShift (quotientCompιIso C).hom ℤ :=
+  ObjectProperty.commShift_liftCompιIso_hom ..
 
 variable {C} in
 lemma quotient_obj_surjective : Function.Surjective (quotient C).obj :=
