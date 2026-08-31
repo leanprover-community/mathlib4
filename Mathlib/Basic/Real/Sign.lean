@@ -5,7 +5,7 @@ Authors: Kexing Ying, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 
 /-!
 # Real sign function

@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.ENNReal.Holder
+public import Mathlib.Basic.ENNReal.Holder
 public import Mathlib.Tactic.LinearCombination
 
 /-!
