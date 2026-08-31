@@ -27,6 +27,10 @@ namespace QuadraticAlgebra
 
 variable {R : Type*} [CommRing R]
 
+theorem range_lift {a b : R} {A : Type*} [Ring A] [Algebra R A] {u : A} (h : u * u = a • 1 + b • u) :
+    (lift ⟨u, h⟩).range = Algebra.adjoin R {u} := by
+  sorry
+
 theorem omega_pow_two_eq_add {a b : R} :
     ω ^ 2 = a • (1 : QuadraticAlgebra R a b) + b • ω := by
   rw [sq, omega_mul_omega_eq_add]
@@ -184,18 +188,53 @@ theorem NumberField.exists_sq_eq_discr : ∃ x : K, x ^ 2 = (discr K : K) := by
 theorem NumberField.discr_emod_four : discr K % 4 = 0 ∨ discr K % 4 = 1 :=
   (isFundamentalDiscr_discr K).1
 
-/-- The complex embeddings of the standard model are the two square roots of `D`. -/
-noncomputable def embeddingEquiv (D : ℤ) :
-    (QuadraticAlgebra ℚ (D : ℚ) 0 →+* ℂ) ≃ {z : ℂ // z ^ 2 = D} := sorry
+/-- The complex embeddings of `ℚ(√d)` correspond to two square roots of `d` in `ℂ`. -/
+noncomputable def embeddingEquiv (d : ℚ) :
+    (QuadraticAlgebra ℚ d 0 →+* ℂ) ≃ {z : ℂ // z ^ 2 = d} :=
+  (RingHom.equivRatAlgHom _ _).trans <| lift.symm.trans
+    <| Equiv.subtypeEquivRight <| by simp [pow_two]
 
-open NumberField
+@[simp]
+theorem embeddingEquiv_symm_apply (d : ℚ) {z : ℂ} (hz : z ^ 2 = d) (x y : ℚ) :
+    (embeddingEquiv d).symm ⟨z, hz⟩ (x • 1 + y • ω) = x + y * z := by
+  simp [embeddingEquiv, Rat.smul_def]
 
-example (D : ℤ) (z : {z : ℂ // z ^ 2 = D}) [Fact (¬ IsSquare (D : ℚ))] :
-    ComplexEmbedding.IsReal ((embeddingEquiv D).symm z) ↔ D < 0 := by
+@[simp]
+theorem embeddingEquiv_symm_apply_omega (d : ℚ) {z : ℂ} (hz : z ^ 2 = d) :
+    (embeddingEquiv d).symm ⟨z, hz⟩ ω = z := by
+  simp [embeddingEquiv]
+
+example (d : ℚ) [Fact (¬ IsSquare d)] {z : ℂ} (hz : z ^ 2 = d) :
+    ComplexEmbedding.IsReal ((embeddingEquiv d).symm ⟨z, hz⟩) ↔ 0 < d := by
   rw [ComplexEmbedding.isReal_iff]
-  have : ((embeddingEquiv D).symm z).range = (Algebra.adjoin ℚ {z.1}).toSubring := by
-    have := QuadraticAlgebra.range_lift z
-    sorry
+
+  rw [← (RingHom.equivRatAlgHom _ _).injective.eq_iff]
+
+  erw? [QuadraticAlgebra.algHom_ext_iff]
+  erw [RingHom.toRatAlgHom_apply, RingHom.toRatAlgHom_apply, RingHom.toRatAlgHom_apply]
+  simp
+
+
+
+  convert_to (∀ x ∈ ((embeddingEquiv d).symm ⟨z, hz⟩).range, star x = x) ↔ d < 0
+  · simp [ComplexEmbedding.isReal_iff, RingHom.ext_iff]
+  have {x} : x ∈ ((embeddingEquiv D).symm ⟨z, hz⟩).range ↔ x ∈ Algebra.adjoin ℚ {z} := sorry
+  simp_rw [this]
+
+  rw [Algebra.adjoin_singleton_eq_range_aeval]
+
+
+
+  simp only [Subring.mem_mk, Subalgebra.mem_toSubsemiring, RCLike.star_def]
+
+#exit
+  have : ((embeddingEquiv D).symm ⟨z, hz⟩).range = (Algebra.adjoin ℚ {z}).toSubring := by
+    have : z * z = (D : ℚ) • 1 + (0 : ℚ) • z := sorry
+    have := QuadraticAlgebra.range_lift this
+    rw [← this]
+    simp [embeddingEquiv]
+    rfl
+
 
 
 
