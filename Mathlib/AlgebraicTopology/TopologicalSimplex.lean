@@ -6,7 +6,7 @@ Authors: Johan Commelin, Adam Topaz, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpace
+public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
