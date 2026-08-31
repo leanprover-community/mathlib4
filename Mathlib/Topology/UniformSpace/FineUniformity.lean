@@ -57,6 +57,7 @@ def fineUniformityBasis [t : TopologicalSpace X] : FilterBasis (X × X) where
       comp_subset_comp inter_subset_left inter_subset_left |>.trans (hs₁ i).2.2,
       comp_subset_comp inter_subset_right inter_subset_right |>.trans (hs₂ i).2.2⟩
 
+/-- A uniform space is a fine space if its uniformity is the fine uniformity. -/
 class FineSpace [u : UniformSpace X] : Prop where
   eq_fineUniformity' : u = fineUniformity X
 
@@ -196,3 +197,5 @@ theorem uniformContinuous_of_continuous {f : X → Y} (hf : Continuous f) : Unif
   simp [diagonal_subset_iff]
 
 end IsFineSpace
+
+#lint
