@@ -337,9 +337,6 @@ theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMu
 
 attribute [local instance] SMulCommClass.symm
 
-@[deprecated "with (S := R)" (since := "2026-02-21")]
-alias mapOfCompatibleSMul' := mapOfCompatibleSMul
-
 variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SMulCommClass A S' M]
 
 lemma toAddHom_mapOfCompatibleSMul_eq :
