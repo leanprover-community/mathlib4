@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.Countable.Small
 public import Mathlib.Basic.UnivLE
-public import Mathlib.Data.Countable.Small
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Nat.Cast.Order.Basic
