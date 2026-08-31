@@ -5062,6 +5062,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.Ceva
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.LinearAlgebra.AffineSpace.Homogenization
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.LinearAlgebra.AffineSpace.Matrix
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
@@ -6033,6 +6034,7 @@ public import Mathlib.NumberTheory.Padics.AddChar
 public import Mathlib.NumberTheory.Padics.Complex
 public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.NumberTheory.Padics.Hensel
+public import Mathlib.NumberTheory.Padics.LocalField
 public import Mathlib.NumberTheory.Padics.MahlerBasis
 public import Mathlib.NumberTheory.Padics.Measure.AmiceTransform
 public import Mathlib.NumberTheory.Padics.Measure.Basic
