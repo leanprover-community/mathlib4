@@ -38,7 +38,7 @@ theorem exists_mem_SL_smul_infty_ne_infty : ∃ γ ∈ 𝒮ℒ, γ • (∞ : On
 /-- **Level one modular forms of distinct weights are linearly independent**: the map sending
 `F : ⨁ k, ModularForm 𝒮ℒ k` to the function `∑ k, F k : ℍ → ℂ` is injective. -/
 theorem levelOne_gradedCoe_injective : Injective (gradedCoe 𝒮ℒ) :=
-  gradedCoe_injective one_pos one_mem_strictPeriods_SL exists_mem_SL_smul_infty_ne_infty
+  gradedCoe_injective one_ne_zero one_mem_strictPeriods_SL exists_mem_SL_smul_infty_ne_infty
 
 /-- **The `q`-expansion homomorphism on the graded ring of level one modular forms is
 injective**. -/
