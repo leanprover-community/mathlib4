@@ -197,5 +197,3 @@ theorem uniformContinuous_of_continuous {f : X → Y} (hf : Continuous f) : Unif
   simp [diagonal_subset_iff]
 
 end IsFineSpace
-
-#lint
