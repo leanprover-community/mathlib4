@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.Basic.Complex.BigOperators
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.InfiniteSum.Module

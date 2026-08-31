@@ -393,7 +393,6 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
   · change IsClosed ((lpMeasToLpTrimLie F ℝ p μ hm).symm ⁻¹' {g : lpMeas F ℝ m p μ | P ↑g})
     exact IsClosed.preimage (LinearIsometryEquiv.continuous _) h_closed
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To prove something for an `Lp` function a.e. strongly measurable with respect to a
 sub-σ-algebra `m` in a normed space, it suffices to show that
 * the property holds for (multiples of) characteristic functions which are measurable w.r.t. `m`;

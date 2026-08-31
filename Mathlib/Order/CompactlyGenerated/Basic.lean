@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Data.Finite.Set
+public import Mathlib.Basic.Finite.Set
 public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms

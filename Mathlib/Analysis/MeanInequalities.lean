@@ -10,7 +10,7 @@ public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Mathlib.Data.Real.ConjExponents
+public import Mathlib.Basic.Real.ConjExponents
 
 /-!
 # Mean value inequalities
