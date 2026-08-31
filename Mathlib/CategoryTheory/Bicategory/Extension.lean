@@ -165,7 +165,7 @@ variable {f f' : a ⟶ b} (ef : f ≅ f') {g g' : a ⟶ c} (eg : g ≅ g')
 
 /-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
 categories of left extensions. -/
-@[implicit_reducible, simps!]
+@[implicit_reducible]
 def mapIso : LeftExtension f g ≌ LeftExtension f' g' :=
   (StructuredArrow.mapNatIso ((precomposing a b c).mapIso ef)).trans (StructuredArrow.mapIso eg)
 
@@ -323,7 +323,7 @@ variable {f f' : b ⟶ a} (ef : f ≅ f') {g g' : c ⟶ a} (eg : g ≅ g')
 
 /-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
 categories of left lifts. -/
-@[implicit_reducible, simps!]
+@[implicit_reducible]
 def mapIso : LeftLift f g ≌ LeftLift f' g' :=
   (StructuredArrow.mapNatIso ((postcomposing c b a).mapIso ef)).trans (StructuredArrow.mapIso eg)
 
