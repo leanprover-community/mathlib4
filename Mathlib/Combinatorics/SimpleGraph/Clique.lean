@@ -865,9 +865,6 @@ theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s 
 
 theorem isIndepSet_empty : G.IsIndepSet ∅ := Set.pairwise_empty _
 
-theorem isIndepSet_emptyFinset : G.IsIndepSet (∅ : Finset α) := by
-  simp only [coe_empty, isIndepSet_empty]
-
 /-- An independent set is a clique in the complement graph and vice versa. -/
 @[simp] theorem isClique_compl : Gᶜ.IsClique s ↔ G.IsIndepSet s := by
   rw [isIndepSet_iff, isClique_iff]; repeat rw [Set.Pairwise]
