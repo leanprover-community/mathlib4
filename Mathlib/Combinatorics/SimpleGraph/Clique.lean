@@ -1060,7 +1060,7 @@ theorem maximumIndepSet_card_eq_indepNum
 lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndepSet s := by
   simp [← isMaximumClique_compl, maximumClique_exists]
 
-theorem indepNum_eq_zero_iff_empty [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
+theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
   constructor
   · intro h
     by_contra
