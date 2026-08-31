@@ -9,7 +9,13 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 open CStarAlgebra Unitization in
 lemma CStarAlgebra.norm_sub_le_one_of_nonneg_of_norm_le_one {A : Type*} [NonUnitalCStarAlgebra A]
     [PartialOrder A] [StarOrderedRing A] {x y : A} (hx : 0 ≤ x) (hx0 : ‖x‖ ≤ 1) (hy : 0 ≤ y)
-    (hy0 : ‖y‖ ≤ 1) : ‖x - y‖ ≤ 1 := by sorry
+    (hy0 : ‖y‖ ≤ 1) : ‖x - y‖ ≤ 1 := by
+  rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _] at hx0 hy0
+  rw [← norm_inr (𝕜 := ℂ), inr_sub, sub_eq_add_neg]
+  have h1 : -1 ≤ (x : A⁺¹) + -y := by simpa using add_le_add hx.inr (neg_le_neg_iff.mpr hy0)
+  have h2 : (x : A⁺¹) + -y ≤ 1 := by
+    simpa using add_le_add hx0 (by simpa using neg_le_neg hy.inr : -(y : A⁺¹) ≤ 0)
+  simpa using IsSelfAdjoint.norm_le_max_of_le_of_le h1 h2
 
 section
 -- don't we already have these results? did I not already upstream these?
