@@ -8388,6 +8388,7 @@ public import Mathlib.Topology.UniformSpace.Dini
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 public import Mathlib.Topology.UniformSpace.Equicontinuity
 public import Mathlib.Topology.UniformSpace.Equiv
+public import Mathlib.Topology.UniformSpace.FineUniformity
 public import Mathlib.Topology.UniformSpace.HeineCantor
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 public import Mathlib.Topology.UniformSpace.Matrix
