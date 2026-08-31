@@ -61,19 +61,21 @@ protected lemma w (c : WeightedCone W F) {i j : J} (x : W.obj i) (f : i ⟶ j) :
     (Functor.elementsMk _ _ (W.map f x)) f rfl)
 
 variable (pt : C) (π : ∀ ⦃j : J⦄ (_ : W.obj j), pt ⟶ F.obj j)
-  (hπ : ∀ ⦃j₁ j₂ : J⦄ (x : W.obj j₁) (f : j₁ ⟶ j₂),
-    π x ≫ F.map f = π (W.map f x))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Constructor for weighted cones. -/
-@[simps pt]
-def mk : WeightedCone W F where
+@[implicit_reducible, simps pt]
+def mk
+    (hπ : ∀ ⦃j₁ j₂ : J⦄ (x : W.obj j₁) (f : j₁ ⟶ j₂),
+      π x ≫ F.map f = π (W.map f x) := by cat_disch) :
+    WeightedCone W F where
   pt := pt
   π.app x := π x.snd
-  π.naturality x₁ x₂ f := by simpa using (hπ x₁.snd f.val).symm
+  π.naturality x₁ x₂ f := by simpa using! (hπ x₁.snd f.val).symm
 
 @[simp]
-lemma mk_π {j : J} (x : W.obj j) :
+lemma mk_π
+    (hπ : ∀ ⦃j₁ j₂ : J⦄ (x : W.obj j₁) (f : j₁ ⟶ j₂),
+      π x ≫ F.map f = π (W.map f x) := by cat_disch) {j : J} (x : W.obj j) :
     (mk pt π hπ).π x = π x := rfl
 
 /-- A weighted cone `c : WeightedCone W F` is a limit if it is so
@@ -112,25 +114,27 @@ lemma hom_ext {f g : Z ⟶ c.pt} (h : ∀ {j : J} (x : W.obj j), f ≫ c.π x = 
 
 end IsLimit
 
+/-- Helper definition in order to show that a weighted cone is a limit. -/
+def IsLimit.mk {c : WeightedCone W F}
+    (lift : ∀ (s : WeightedCone W F), s.pt ⟶ c.pt)
+    (fac : ∀ (s : WeightedCone W F) ⦃j : J⦄ (x : W.obj j), lift s ≫ c.π x = s.π x)
+    (uniq : ∀ (s : WeightedCone W F) (m : s.pt ⟶ c.pt)
+      (_ : ∀ ⦃j : J⦄ (x : W.obj j), m ≫ c.π x = s.π x), m = lift s) :
+    IsLimit c where
+  lift := lift
+  fac _ _ := fac _ _
+  uniq s m hm := uniq s m (fun _ _ ↦ hm _)
+
 open Opposite in
-set_option backward.defeqAttrib.useBackward true in
 /-- If the weight is `coyoneda.obj (op j) : J ⥤ Type _`, this is the limit
 weighted cone for `F : J ⥤ C` with point `F.obj j`. -/
-@[simps]
 protected abbrev coyoneda (F : J ⥤ C) (j : J) :
-    WeightedCone (coyoneda.obj (op j)) F where
-  pt := F.obj j
-  π.app u := F.map u.snd
-  π.naturality _ _ f := by simp [← Functor.map_comp, Category.id_comp, f.prop.symm]
+    WeightedCone (coyoneda.obj (op j)) F :=
+  .mk (F.obj j) (fun j' f ↦ F.map f)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The weighted limit of `F` for the weight `coyoneda.obj (op j)` is `F.obj j`. -/
-def isLimitCoyoneda (F : J ⥤ C) (j : J) : (WeightedCone.coyoneda F j).IsLimit where
-  lift s := WeightedCone.π s (𝟙 j)
-  fac s x := by
-    simpa using s.w (CategoryOfElements.homMk (Functor.elementsMk _ j (𝟙 j)) x x.snd (by simp))
-  uniq s m hm := by
-    simpa using hm (Functor.elementsMk _ j (𝟙 j))
+def isLimitCoyoneda (F : J ⥤ C) (j : J) : (WeightedCone.coyoneda F j).IsLimit :=
+  IsLimit.mk (fun s ↦ s.π (𝟙 j)) (by simp) (fun s m hm ↦ by simpa using hm (𝟙 j))
 
 end WeightedCone
 
@@ -177,7 +181,7 @@ noncomputable def isLimitWeightedLimCone :
     (W.weightedLimCone F).IsLimit :=
   limit.isLimit _
 
-@[reassoc, simp] -- `simp` can prove the `reassoc` version
+@[reassoc (attr := simp)]
 lemma isLimitWeightedLimCone_fac {Z} (π) (hπ) ⦃j : J⦄ (x : W.obj j) :
     (W.isLimitWeightedLimCone F).lift (Z := Z) π hπ ≫ W.weightedLimObjObjπ F x = π x :=
   (W.isLimitWeightedLimCone F).fac ..
@@ -249,6 +253,144 @@ end
 
 end
 
+section
+
+variable {J : Type u} [Category.{v} J] (W : J ⥤ Type w) {C : Type u'} [Category.{v'} C]
+
+variable (C) in
+/-- Given a weight `W : J ⥤ Type w`, this is the property that all `W`-weighted limits
+exist for functors `F : J ⥤ C`. Under this condition, we define a weighted limit functor
+`W.weightedLimObj : (J ⥤ C) ⥤ C`. (See also `HasWeightedLimFlipObj` for the "flipped"
+property for `F : J ⥤ C`.) -/
+abbrev HasWeightedLimObj : Prop :=
+  ∀ (F : J ⥤ C), HasWeightedLimit W F
+
+variable [W.HasWeightedLimObj C]
+
+/-- Weighted limits for a fixed weight `W : J ⥤p Type w`, as a functor `(J ⥤ C) ⥤ C`. -/
+@[implicit_reducible, simps]
+noncomputable def weightedLimObj : (J ⥤ C) ⥤ C where
+  obj F := W.weightedLimObjObj F
+  map f := W.weightedLimObjMap f
+
+instance (j : Jᵒᵖ) : HasWeightedLimObj (coyoneda.obj j) C :=
+  fun F ↦ (WeightedCone.isLimitCoyoneda F j.unop).hasWeightedLimit
+
+end
+
+section
+
+variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
+  (F : J ⥤ C)
+
+/-- Given a functor `F : J ⥤ C`, this is the property satisfied by weights `W : J ⥤ Type w`
+such that the `W`-weighted limit of `F` exists. -/
+abbrev hasWeightedLimit : ObjectProperty (J ⥤ Type w) :=
+  fun W ↦ HasWeightedLimit W F
+
+instance (W : (hasWeightedLimit.{w} F).FullSubcategory) :
+    HasWeightedLimit W.obj F := W.property
+
+/-- Given a functor `F : J ⥤ C`, this is the functor which sends a weight `W : J ⥤ Type w`
+to the `W`-weighted limit of `F`. This is defined on the full subcategory of `J ⥤ Type w`
+where this weighted limit exists. -/
+@[implicit_reducible, simps]
+noncomputable def weightedLimFlipObj' : (hasWeightedLimit.{w} F).FullSubcategoryᵒᵖ ⥤ C where
+  obj W := W.unop.1.weightedLimObjObj F
+  map g := weightedLimFlipObjMap g.unop.hom F
+
+/-- Given `F : J ⥤ C`, this is the property that weighted limits of `F` exist for all
+weights `W : J ⥤ Type w`. Under this condition, we define a weighted limit functor
+`F.weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C`. (See also `HasWeightedLimObj` for
+the "flipped" property for `W : J ⥤ Type w`.) -/
+abbrev HasWeightedLimFlipObj : Prop :=
+  ∀ (W : J ⥤ Type w), HasWeightedLimit W F
+
+variable [HasWeightedLimFlipObj.{w} F]
+
+lemma hasWeightedLimit_eq_top :
+    hasWeightedLimit.{w} F = ⊤ := by
+  rw [← top_le_iff]
+  infer_instance
+
+/-- Given a functor `F : J ⥤ C`, this is the functor `(J ⥤ Type w)ᵒᵖ ⥤ C` which sends
+a weight `W : J ⥤ Type w` to the `W`-weighted limit of `F`. Here, we assume that
+all such weighted limits exist. -/
+@[implicit_reducible, simps]
+noncomputable def weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C where
+  obj W := W.unop.weightedLimObjObj F
+  map g := weightedLimFlipObjMap g.unop F
+
+/-- When `HasWeightedLimFlipObj.{w} F` holds, the composition
+of the equivalence `F.hasWeightedLimit.ι.op` with `weightedLimFlipObj.{w} F`
+identifies to `weightedLimFlipObj'.{w} F`. -/
+noncomputable def weightedLimFlipObjIso' :
+    F.hasWeightedLimit.ι.op ⋙ weightedLimFlipObj.{w} F ≅
+      F.weightedLimFlipObj' :=
+  Iso.refl _
+
+instance : (hasWeightedLimit.{w} F).ι.IsEquivalence :=
+  ObjectProperty.isEquivalence_ι (hasWeightedLimit_eq_top _)
+
+/-- When `HasWeightedLimFlipObj.{w} F` holds, the composition
+of the inverse of the equivalence `F.hasWeightedLimit.ι.op` with
+`weightedLimFlipObj'.{w} F` identifies to `weightedLimFlipObj.{w} F`. -/
+noncomputable def weightedLimFlipObjIso :
+    F.hasWeightedLimit.ι.inv.op ⋙ F.weightedLimFlipObj' ≅
+      weightedLimFlipObj.{w} F :=
+  Functor.isoWhiskerLeft _ F.weightedLimFlipObjIso'.symm ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    Functor.isoWhiskerRight F.hasWeightedLimit.ι.asEquivalence.op.counitIso _ ≪≫
+    Functor.leftUnitor _
+
+end
+
 end Functor
+
+namespace Limits
+
+variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
+
+/-- When all weighted limits exists, this is the weighted limit
+bifunctor `(J ⥤ Type w)ᵒᵖ ⥤ (J ⥤ C) ⥤ C`. -/
+@[implicit_reducible, simps]
+noncomputable def weightedLim [∀ (W : J ⥤ Type w), W.HasWeightedLimObj C] :
+    (J ⥤ Type w)ᵒᵖ ⥤ (J ⥤ C) ⥤ C where
+  obj W := W.unop.weightedLimObj
+  map g := { app F := Functor.weightedLimFlipObjMap g.unop F }
+
+section
+
+variable {W : J ⥤ Type w} {F : J ⥤ C} {c : WeightedCone W F} (hc : c.IsLimit)
+  [HasWeightedLimit W F]
+
+/-- The isomorphism `weightedLimObjObj W F ≅ c.pt` when `c : WeightedCone W F`
+is a limit. -/
+@[no_expose]
+noncomputable def WeightedCone.IsLimit.iso :
+    W.weightedLimObjObj F ≅ c.pt :=
+  IsLimit.conePointUniqueUpToIso (limit.isLimit _) hc
+
+@[reassoc (attr := simp)]
+lemma WeightedCone.IsLimit.iso_hom_π {j : J} (x : W.obj j) :
+    hc.iso.hom ≫ c.π x = W.weightedLimObjObjπ F x :=
+  IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hc (Functor.elementsMk _ _ x)
+
+@[reassoc (attr := simp)]
+lemma WeightedCone.IsLimit.iso_inv_π {j : J} (x : W.obj j) :
+    hc.iso.inv ≫ W.weightedLimObjObjπ F x = c.π x :=
+  IsLimit.conePointUniqueUpToIso_inv_comp (limit.isLimit _) hc (Functor.elementsMk _ _ x)
+
+end
+
+/-- Let `j : J`, the weighted limit functor with weight `coyoneda.obj (op j) : J ⥤ Type _`
+identifies to the evaluation functor `(J ⥤ C) ⥤ C` at `j`. -/
+@[simps!]
+noncomputable def weightedLimObjCoyonedaObjIso (j : J) :
+    Functor.weightedLimObj (coyoneda.obj (op j)) ≅
+      (evaluation J C).obj j :=
+  (NatIso.ofComponents (fun F ↦ (WeightedCone.isLimitCoyoneda F j).iso.symm)).symm
+
+end Limits
 
 end CategoryTheory

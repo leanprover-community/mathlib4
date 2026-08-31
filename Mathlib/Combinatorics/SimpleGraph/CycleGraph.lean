@@ -172,32 +172,24 @@ variable {V : Type*} {G : SimpleGraph V}
 
 lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
     cycleGraph n ⊑ G ↔ ∃ (v : V) (p : G.Walk v v), p.IsCycle ∧ p.length = n := by
-  refine ⟨fun ⟨h⟩ ↦ ?_, fun h' ↦ ?_⟩
-  · have : n = n - 3 + 3 := by lia
-    rw [this] at h
-    refine ⟨h.toHom ⟨0, by lia⟩, Walk.map h.toHom <| cycleGraph.cycle (n - 3), ?_, ?_⟩
-    · exact (isCycle_map_iff_of_injective h.injective).mpr cycleGraph.isCycle_cycle
-    · simp [cycleGraph.length_cycle, ← this]
-  · obtain ⟨a, p, hp₁, hp₂⟩ := h'
-    refine ⟨⟨⟨fun n ↦ p.support[n.succ]'(?_), ?_⟩, ?_⟩⟩
-    · grind [hp₁.three_le_length, length_tail_add_one, not_nil_iff_lt_length]
-    · intro ⟨x, hx⟩ ⟨y, hy⟩ hab
-      have hne : x ≠ y := fun _ ↦ by simp_all
-      wlog hle : x > y
-      · exact this hn a p hp₁ hp₂ y hy x hx hab.symm hne.symm (by lia) |>.symm
-      rcases cycleGraph_adj'.mp hab with hab | hab
-      · simp_rw [show x = y + 1 by grind [Fin.sub_val_of_le]]
-        exact p.isChain_adj_support.getElem _ _ |>.symm
-      · rw [Fin.coe_sub_iff_lt.mpr hle] at hab
-        simp_rw [show x = n - 1 by lia, show y = 0 by lia, Fin.succ_mk, show n - 1 + 1 = n by lia]
-        simp [← hp₂, p.adj_snd hp₁.not_nil]
-    · have hlen : p.tail.support.length = n := by
-        grind [length_tail_add_one, not_nil_iff_lt_length]
-      have (m : Fin n) : p.support[m.succ]'(by grind) = p.tail.support[m] := by
-        simp [p.support_tail_of_not_nil hp₁.not_nil]
-      simp_rw [this]
-      have := IsPath.mk' <| (support_tail_of_not_nil _ hp₁.not_nil) ▸ hp₁.support_nodup
-      exact hlen ▸ (isPath_iff_injective_get_support _ |>.mp this)
+  have hn' : n - 3 + 3 = n := by lia
+  refine ⟨fun ⟨h⟩ ↦ ⟨_, _, cycleGraph.isCycle_cycle.map (hn' ▸ h).injective, by simp [hn']⟩, ?_⟩
+  intro ⟨a, p, hp₁, hp₂⟩
+  refine ⟨⟨fun n ↦ p.support[n.succ]'(by grind [not_nil_iff_lt_length]), ?_⟩, ?_⟩
+  · intro ⟨x, hx⟩ ⟨y, hy⟩ hab
+    wlog hle : x > y
+    · have hne : x ≠ y := by simpa using hab.ne
+      exact this hn hn' a p hp₁ hp₂ y hy x hx hab.symm (by lia) |>.symm
+    rcases cycleGraph_adj'.mp hab with hab | hab
+    · simp_rw [show x = y + 1 by grind [Fin.sub_val_of_le]]
+      exact p.isChain_adj_support.getElem _ _ |>.symm
+    · rw [Fin.coe_sub_iff_lt.mpr hle] at hab
+      simp_rw [show x = n - 1 by lia, show y = 0 by lia, Fin.succ_mk, show n - 1 + 1 = n by lia]
+      simp [← hp₂, hp₁.not_nil]
+  · have hlen : p.tail.support.length = n := by grind [length_tail_add_one]
+    have (m : Fin n) : p.support[m.succ]'(by grind) = p.tail.support[m] := by simp [hp₁.not_nil]
+    simp_rw [this]
+    exact hlen ▸ (isPath_iff_injective_get_support _).mp hp₁.isPath_tail
 
 end IsContained
 
