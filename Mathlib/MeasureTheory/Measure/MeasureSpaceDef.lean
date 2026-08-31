@@ -334,7 +334,7 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
   exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
-  HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _)
+  LE.le.eventuallyLE (subset_toMeasurable _ _)
 
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :

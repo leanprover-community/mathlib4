@@ -63,7 +63,6 @@ def liftFromOverComp : liftFromOver.obj (K ⋙ Over.post F) ≅ liftFromOver.obj
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- A cone of a functor `K : J ⥤ Over X` consists of an object of `Over X`, together
 with morphisms. This same object is a cone of the extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C`. -/
@@ -87,7 +86,6 @@ private def coneLift : Cone K ⥤ Cone (liftFromOver.obj K) where
   }
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cone of an extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cone of the original functor `K : J ⥤ Over X`. -/
@@ -177,7 +175,6 @@ def liftFromUnderComp : liftFromUnder.obj (K ⋙ Under.post F) ≅ liftFromUnder
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- A cocone of a functor `K : J ⥤ Under X` consists of an object of `Under X`, together
 with morphisms. This same object is a cocone of the extended functor
 `liftFromUnder.obj K : WithInitial J ⥤ C`. -/
@@ -201,7 +198,6 @@ private def coconeLift : Cocone K ⥤ Cocone (liftFromUnder.obj K) where
   }
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cocone of an extended functor
 `liftFromUnder.obj K : WithInitial J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cocone of the original functor `K : J ⥤ Under X`. -/

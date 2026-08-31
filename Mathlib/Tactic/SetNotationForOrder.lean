@@ -8,6 +8,8 @@ module
 public meta import Batteries.Lean.NameMapAttribute
 public meta import Lean.Elab.App
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
+public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Util.AddRelatedDecl
 
 /-!
 # Set notation for order operations
@@ -27,31 +29,44 @@ since they have both `≤` and `⊆` defined on them, with different meanings.
 TODO: Unify more order operations suh as `∪`/`⊔` and `∩`/`⊓`.
 -/
 
+/-- `UsesSetNotationForOrder` is used to track whether a type is tagged with
+`@[use_set_notation_for_order]`. -/
+public class UsesSetNotationForOrder (α : Type*)
+
 meta section
 
 namespace Mathlib.Meta.SetNotationForOrder
 
-open Lean Meta Elab Term PrettyPrinter.Delaborator SubExpr
+open Mathlib.Tactic Lean Meta Elab Term PrettyPrinter.Delaborator SubExpr
+
+/-- Add an instance of `UsesSetNotationForOrder` for `declName`. -/
+def mkUsesSetNotationForOrderInstance (declName : Name) (kind : AttributeKind) : CoreM Unit :=
+  MetaM.run' do
+  let cinfo ← getConstInfo declName
+  forallTelescope cinfo.type fun xs _ ↦ do
+  let instName := .str declName "instUsesSetNotationForOrder"
+  let app := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+  addDecl <| Declaration.defnDecl {
+    name := instName
+    levelParams := cinfo.levelParams
+    type := ← mkForallFVars xs <| ← mkAppM ``UsesSetNotationForOrder #[app]
+    value := ← mkLambdaFVars xs <| ← mkAppOptM ``UsesSetNotationForOrder.mk #[app]
+    hints := .regular 0
+    safety := .safe }
+  registerInstance instName kind (eval_prio default)
 
 /-- The `@[use_set_notation_for_order]` attribute marks that order operations on the given type
 should use set-style notation. For example, `⊆` for `≤` and `∪` for `⊔`.
 This affects both elaboration and delaboration. -/
-initialize setNotationExt : NameMapExtension Unit ← registerNameMapExtension _
-
-@[inherit_doc setNotationExt]
 initialize
   registerBuiltinAttribute {
     name := `use_set_notation_for_order
     descr := "use set notation for order operations on this type"
-    add declName _stx kind := do
-      unless kind == .global do
-        throwAttrMustBeGlobal `use_set_notation_for_order kind
-      setNotationExt.add declName () }
+    add declName _stx kind := mkUsesSetNotationForOrderInstance declName kind }
 
 /-- Whether to use set notation for the given type or not. -/
 def useSetNotationFor (type : Expr) : MetaM Bool := do
-  let .const n _ := (← whnfR type).getAppFn | return false
-  return (setNotationExt.find? (← getEnv) n).isSome
+  return (← trySynthInstance (← mkAppM ``UsesSetNotationForOrder #[type])) matches .some _
 
 /-! ## Delaboration -/
 
@@ -120,8 +135,8 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
   let_expr f@SubsetElabAux α x y := e | throwError "unexpected result {e} when elaborating {rel}"
   -- If the type cannot be determined yet, we postpone elaboration until it is known.
   -- This behaviour is inspired by `resolveLValLoop` from the file `Lean.Elab.App`.
-  tryPostponeIfMVar α
   if ← isMVarApp α then
+    tryPostpone
     synthesizeSyntheticMVarsUsingDefault
     if ← isMVarApp α then
       Linter.logLintIf linter.setNotationForOrder (← getRef)
@@ -208,5 +223,83 @@ binder_predicate (priority := high) x " ⊇ " y:term => `($x ⊇ $y)
 /-- Declare `∀ x ⊃ y, ...` as syntax for `∀ x, x ⊃ y → ...` and `∃ x ⊃ y, ...` as syntax for
 `∃ x, x ⊃ y ∧ ...` -/
 binder_predicate (priority := high) x " ⊃ " y:term => `($x ⊃ $y)
+
+/-! ## Dot-notation namespace linter -/
+
+/-- A temporary linter to help adapt to `@[set_notation_for_order]`.
+It gives a warning when a lemma is in the wrong namespace for dot-notation. -/
+@[env_linter]
+public def subsetDotNotationLinter : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "all names are correct"
+  errorsFound := "SOME DECLARATIONS USE THE WRONG NAMESPACE"
+  test declName := do
+    if Linter.isDeprecated (← getEnv) declName then return none
+    let n := declName.getNumParts
+    if n ≤ 2 then return none
+    let (nameStart, rest) := declName.splitAt (n - 2)
+    let otherStart ← match nameStart with
+      | ``Subset => pure ``LE.le
+      | ``SSubset => pure ``LT.lt
+      | _ => return none
+    let mut type := (← getConstInfo declName).type
+    while let .forallE _ d t _ := type do
+      type := t
+      if let .const c _ := d.getAppFn then
+        if c == otherStart then
+          return some m!"`{n}` should be named `{otherStart ++ rest}` in order to use dot-notation."
+    return none
+
+/-! ## Lemma translation -/
+
+@[inherit_doc GuessName.GuessNameData.nameDict]
+def nameDict : Std.HashMap String (List String) := .ofList [
+  ("le", ["Subset"]),
+  ("ge", ["Superset"]),
+  ("lt", ["SSubset"]),
+  ("gt", ["SSuperset"]),
+  ("inf", ["Inter"]),
+  ("sup", ["Union"]),
+  ("sInf", ["SInter"]),
+  ("sSup", ["SUnion"]),
+  ("iInf", ["IInter"]),
+  ("iSup", ["IUnion"]),
+]
+
+/-- Generate a variant of a theorem by restricting the order on the specified types to those
+that are tagged `@[use_set_notation_for_order]`.
+
+Explicitly, `to_set_notation` inserts a `[UsesSetNotationForOrder α]` type class
+assumption for each type `α`.
+TODO: it would be nice to be able to restrict which types get the assumption.
+
+This is used to automatically generate theorems like `subset_trans` from `le_trans`.
+The theorem name is automatically translated.
+-/
+initialize
+  registerBuiltinAttribute {
+    name := `to_set_notation
+    descr := "generate the set notation version of an order theoretic lemma."
+    add src stx kind := do
+      unless kind == .global do
+        throwAttrMustBeGlobal `to_set_notation kind
+      let .str srcRoot srcStr := src | throwError "invalid name `{src}`"
+      let tgt := srcRoot.str <| GuessName.guessName { nameDict, abbreviationDict := {} } srcStr
+      MetaM.run' <| addRelatedDecl src tgt stx ⟨mkNullNode⟩
+        (docstringPrefix? := s!"Set notation form of `{src}`") (hoverInfo := true)
+        fun value levels => do
+        forallTelescope (← inferType value) fun xs _ ↦ do
+          let mut value := mkAppN value xs
+          for x in xs.reverse do
+            if let .sort (.succ u) ← inferType x then
+              -- If `x` is a type,
+              -- create a constant lambda expression for the proof that now assumes `cls`.
+              let cls := .app (.const ``UsesSetNotationForOrder [u]) x
+              let ident ← withFreshMacroScope <| MonadQuotation.addMacroScope `inst
+              value := .lam ident cls value .instImplicit
+            value ← mkLambdaFVars #[x] value
+          return (value, levels)
+      liftCommandElabM <| Elab.Command.elabCommand (← `(command|
+        attribute [nolint unusedArguments] $(mkCIdent tgt)))
+  }
 
 end Mathlib.Meta.SetNotationForOrder

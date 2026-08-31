@@ -427,7 +427,6 @@ instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)
   · rfl
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 @[simps apply]
 private def widePullbackShapeEquivObj {J : Type*} :
@@ -442,7 +441,6 @@ private def widePullbackShapeEquivObj {J : Type*} :
   right_inv x := by cases x <;> simp
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where

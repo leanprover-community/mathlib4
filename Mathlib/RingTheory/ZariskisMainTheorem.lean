@@ -716,9 +716,8 @@ lemma ZariskisMainProperty.quasiFiniteAt
   have : Algebra.QuasiFinite R (Localization.Away r.1) :=
     .of_surjective_algHom (Localization.awayMapₐ S'.val r) H.2
   let f : Localization.Away r.1 →ₐ[S] Localization.AtPrime p :=
-    IsLocalization.liftAlgHom (M := .powers r.1) (f := Algebra.ofId _ _) (by
-      simpa [Submonoid.mem_powers_iff] using
-        (IsLocalization.map_units (M := p.primeCompl) (Localization.AtPrime p) ⟨r, hrp⟩).pow)
+    IsLocalization.Away.liftAlgHom r.1 (f := Algebra.ofId _ _) <|
+      IsLocalization.map_units (M := p.primeCompl) (Localization.AtPrime p) ⟨r, hrp⟩
   refine .of_forall_exists_mul_mem_range (f.restrictScalars R) fun x ↦ ?_
   obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
   exact ⟨algebraMap _ _ s, by simpa using IsLocalization.map_units _ ⟨s, hs⟩,

@@ -849,7 +849,6 @@ section SymEquiv
 attribute [local instance] List.Vector.Perm.isSetoid
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private def fromVector : List.Vector α 2 → α × α
   | ⟨[a, b], _⟩ => (a, b)
 

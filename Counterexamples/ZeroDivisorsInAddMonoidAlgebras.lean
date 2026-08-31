@@ -59,7 +59,7 @@ theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n
     (n2 : 2 ≤ n) (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
     ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, ?_, ?_⟩
-  · exact sub_ne_zero.mpr (by simpa [single, AddMonoidAlgebra, single_eq_single_iff])
+  · simpa [sub_ne_zero, single_inj]
   · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
       sub_eq_zero, add_zero, ← succ_nsmul', Nat.sub_add_cancel (one_le_two.trans n2), na]
 
@@ -81,22 +81,18 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
   refine
     ⟨(Finset.range (addOrderOf a)).sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, ?_, ?_,
       ?_⟩
-  · apply_fun fun x : R[A] => x 0
+  · apply_fun fun x : R[A] => x.coeff 0
     refine ne_of_eq_of_ne (?_ : (_ : R) = 1) one_ne_zero
-    rw [Finset.sum_apply']
+    simp only [single_pow, one_pow, coeff_sum, coeff_single, Finset.sum_apply']
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
     · intro b hb b0
-      rw [single_pow, one_pow, single_eq_of_ne']
+      rw [Finsupp.single_eq_of_ne']
       exact nsmul_ne_zero_of_lt_addOrderOf b0 (Finset.mem_range.mp hb)
     · grind
-    · rw [single_pow, one_pow, zero_smul, single_eq_same]
-  · apply_fun fun x : R[A] => x 0
-    refine sub_ne_zero.mpr (ne_of_eq_of_ne (?_ : (_ : R) = 0) ?_)
-    · have a0 : a ≠ 0 :=
-        ne_of_eq_of_ne (one_nsmul a).symm
-          (nsmul_ne_zero_of_lt_addOrderOf one_ne_zero (Nat.succ_le_iff.mp o2))
-      simp only [a0, single_eq_of_ne', Ne, not_false_iff]
-    · simpa only [single_eq_same] using zero_ne_one
+    · simp
+  · apply_fun fun x : R[A] => x.coeff 0
+    have a0 : a ≠ 0 := by rintro rfl; simp at o2
+    simp [a0]
   · convert Commute.geom_sum₂_mul (R := AddMonoidAlgebra R A) _ (addOrderOf a)
     · rw [single_zero_one, one_pow, mul_one]
     · rw [single_pow, one_pow, addOrderOf_nsmul_eq_zero, single_zero_one, one_pow, sub_self]

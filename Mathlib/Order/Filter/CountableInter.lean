@@ -273,7 +273,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
     s ∈ countableGenerate g ↔ ∃ S : Set (Set α), S ⊆ g ∧ S.Countable ∧ ⋂₀ S ⊆ s := by
   constructor <;> intro h
   · induction h with
-    | @basic s hs => exact ⟨{s}, by simp [hs, subset_refl]⟩
+    | @basic s hs => exact ⟨{s}, by simp [hs]⟩
     | univ => exact ⟨∅, by simp⟩
     | superset _ _ ih => refine Exists.imp (fun S => ?_) ih; tauto
     | @sInter S Sct _ ih =>

@@ -23,8 +23,8 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 ## Results
 * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
   on the size of the sifted set in terms of `mainSum` and `errSum`
- * `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
- * `lambdaSquared_mainSum_eq_diag_quad_form` - The main sum of a Λ² sieve has a nice diagonalisation
+* `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
+* `lambdaSquared_mainSum_eq_diag_quad_form` - The main sum of a Λ² sieve has a nice diagonalisation
 
 ## References
 

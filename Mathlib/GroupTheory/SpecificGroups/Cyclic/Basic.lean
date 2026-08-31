@@ -414,7 +414,6 @@ theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
 @[to_additive]
 lemma IsCyclic.ext [Finite G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
     (hGcard : Nat.card G = d) (h : ∀ t : G, t ^ a.val = t ^ b.val) : a = b := by
-  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
   specialize h g
   subst hGcard

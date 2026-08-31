@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 /-!
 # Pseudoelements and pullbacks
+
 Borceux claims in Proposition 1.9.5 that the pseudoelement constructed in
 `CategoryTheory.Abelian.Pseudoelement.pseudo_pullback` is unique. We show here that this claim is
 false. This means in particular that we cannot have an extensionality principle for pullbacks in

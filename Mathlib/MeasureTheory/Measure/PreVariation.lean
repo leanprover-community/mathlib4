@@ -55,6 +55,15 @@ noncomputable def preVariationFun (s : Set X) : ℝ≥0∞ :=
     ⨆ (P : Finpartition (⟨s, h⟩ : Subtype MeasurableSet)), ∑ p ∈ P.parts, f p
   else 0
 
+lemma preVariationFun_apply {s : Set X} (h : MeasurableSet s) :
+    preVariationFun f s =
+      ⨆ (P : Finpartition (⟨s, h⟩ : Subtype MeasurableSet)), ∑ p ∈ P.parts, f p := by
+  simp [preVariationFun, h]
+
+lemma preVariationFun_of_not_measurableSet {s : Set X} (h : ¬ MeasurableSet s) :
+    preVariationFun f s = 0 := by
+  simp [preVariationFun, h]
+
 end
 
 namespace preVariation

@@ -127,7 +127,7 @@ private lemma exists_one_le_enorm_apply_of_semivariation_eq_top
       exact enorm_sub_le
     rwa [ENNReal.add_le_add_iff_right (by simp)] at this
   · refine ⟨s \ t, hs.diff t_meas, sdiff_subset, hI, ?_⟩
-    simp only [_root_.sdiff_sdiff_right_self, le_eq_subset, ts, inf_of_le_right]
+    simp only [_root_.sdiff_sdiff_right_self, ts, inf_of_le_right]
     exact le_trans (by simp) h't
 
 private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
@@ -155,7 +155,7 @@ private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
     apply (pairwise_disjoint_on _).2 (fun m n hmn ↦ ?_)
     have : Disjoint (u m) (s (m + 1)) := by simp [u, disjoint_sdiff_left]
     apply this.mono_right
-    simp only [sdiff_le_iff, sup_eq_union, le_eq_subset, u]
+    simp only [sdiff_le_iff, sup_eq_union, u]
     exact Subset.trans (s_anti (by grind)) subset_union_right
   have : HasSum (fun i => μ (u i)) (μ (⋃ i, u i)) :=
     hasSum_of_disjoint_iUnion (fun n ↦ (hs n).1.diff (hs (n + 1)).1) u_disj

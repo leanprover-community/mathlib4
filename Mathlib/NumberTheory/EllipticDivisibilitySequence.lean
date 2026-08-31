@@ -5,6 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
+public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.LinearCombination
@@ -30,7 +31,6 @@ Some examples of EDSs include
 ## Main definitions
 
 * `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
-* `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
 * `IsEllDivSequence`: a sequence indexed by integers is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
@@ -83,23 +83,20 @@ def IsEllSequence : Prop :=
   ∀ m n r : ℤ, W (m + n) * W (m - n) * W r ^ 2 =
     W (m + r) * W (m - r) * W n ^ 2 - W (n + r) * W (n - r) * W m ^ 2
 
-/-- The proposition that a sequence indexed by integers is a divisibility sequence. -/
-def IsDivSequence : Prop :=
-  ∀ m n : ℕ, m ∣ n → W m ∣ W n
+@[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSequence
 
 /-- The proposition that a sequence indexed by integers is an EDS. -/
 def IsEllDivSequence : Prop :=
-  IsEllSequence W ∧ IsDivSequence W
+  IsEllSequence W ∧ IsDvdSequence W
 
 lemma isEllSequence_id : IsEllSequence id :=
   fun _ _ _ => by simp_rw [id_eq]; ring1
 
-lemma isDivSequence_id : IsDivSequence id :=
-  fun _ _ => Int.ofNat_dvd.mpr
+@[deprecated (since := "2026-06-30")] alias isDivSequence_id := IsDvdSequence.id
 
 /-- The identity sequence is an EDS. -/
 theorem isEllDivSequence_id : IsEllDivSequence id :=
-  ⟨isEllSequence_id, isDivSequence_id⟩
+  ⟨isEllSequence_id, .id ℤ⟩
 
 variable {W}
 
@@ -107,8 +104,7 @@ lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W)
   fun m n r => by
     linear_combination (norm := (simp_rw [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
-lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W) :=
-  fun m n r => mul_dvd_mul_left x <| h m n r
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.smul := IsDvdSequence.smul
 
 lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩

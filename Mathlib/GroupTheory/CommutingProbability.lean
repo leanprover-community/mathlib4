@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Qify
 
 /-!
 # Commuting Probability
+
 This file introduces the commuting probability of finite groups.
 
 ## Main definitions

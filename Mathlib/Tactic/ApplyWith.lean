@@ -12,6 +12,7 @@ public meta import Lean.Elab.ConfigEval
 
 /-!
 # The `applyWith` tactic
+
 The `applyWith` tactic is like `apply`, but allows passing a custom configuration to the underlying
 `apply` operation.
 -/

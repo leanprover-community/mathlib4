@@ -270,10 +270,10 @@ theorem lift_type_eq_iff : lift (type α) = lift (type β) ↔ Nonempty (α ≃o
   exact ⟨(ULift.orderIso.symm.trans h.some).trans ULift.orderIso⟩
 
 theorem lift_type_le_iff : lift (type α) ≤ lift (type β) ↔ Nonempty (α ↪o β) := by
- refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ type_le_type <| (ULift.orderIso.toOrderEmbedding.trans h).trans
-   ULift.orderIso.symm.toOrderEmbedding⟩
- rw [← type_ulift, ← type_ulift, type_le_type_iff] at h
- exact ⟨(ULift.orderIso.symm.toOrderEmbedding.trans h.some).trans ULift.orderIso.toOrderEmbedding⟩
+  refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ type_le_type <| (ULift.orderIso.toOrderEmbedding.trans h).trans
+    ULift.orderIso.symm.toOrderEmbedding⟩
+  rw [← type_ulift, ← type_ulift, type_le_type_iff] at h
+  exact ⟨(ULift.orderIso.symm.toOrderEmbedding.trans h.some).trans ULift.orderIso.toOrderEmbedding⟩
 
 /-- `ω` is the first infinite order type, defined as the order type of `ℕ`. -/
 @[expose]

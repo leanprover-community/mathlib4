@@ -319,8 +319,9 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
             n.choose k • (derivative^[n - k + 1] p * derivative^[k] q)) +
           ∑ k ∈ range n.succ,
             n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) := by
-        simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
-          smul_add, sum_add_distrib]
+        simp only [Nat.succ_eq_add_one, nsmul_eq_mul, derivative_mul, derivative_natCast, zero_mul,
+          derivative_sum, zero_add, Function.iterate_succ', Function.comp_apply]
+        simp_rw [mul_add, sum_add_distrib]
       _ = (∑ k ∈ range n.succ,
                 n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
               1 • (derivative^[n + 1] p * derivative^[0] q) +
@@ -538,9 +539,7 @@ theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
   induction k with
   | zero => simp
   | succ k IH =>
-      rw [Nat.sub_succ', Function.iterate_succ_apply', IH, derivative_smul,
-        derivative_X_add_C_pow, map_natCast, Nat.descFactorial_succ, nsmul_eq_mul, nsmul_eq_mul,
-        Nat.cast_mul]
+      simp [Nat.sub_succ', Function.iterate_succ_apply', IH, derivative_X_add_C_pow]
       ring
 
 theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :

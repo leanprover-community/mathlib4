@@ -103,11 +103,14 @@ lemma IsCofinalFor.of_subset (hst : s ⊆ t) : IsCofinalFor s t :=
   fun a ha ↦ ⟨a, hst ha, le_rfl⟩
 
 @[to_dual]
-alias HasSubset.Subset.isCofinalFor := IsCofinalFor.of_subset
+alias LE.le.isCofinalFor := IsCofinalFor.of_subset
 
-@[deprecated HasSubset.Subset.isCofinalFor (since := "2026-01-08")]
+@[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCofinalFor := LE.le.isCofinalFor
+@[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCoinitialFor := LE.le.isCoinitialFor
+
+@[deprecated LE.le.isCofinalFor (since := "2026-01-08")]
 alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
-@[deprecated HasSubset.Subset.isCoinitialFor (since := "2026-01-08")]
+@[deprecated LE.le.isCoinitialFor (since := "2026-01-08")]
 alias HasSubset.Subset.iscoinitialfor := IsCoinitialFor.of_subset
 
 @[to_dual (attr := refl)]

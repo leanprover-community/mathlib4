@@ -440,7 +440,6 @@ theorem image_eq_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).I
   exact_mod_cast ht.image_eq_image_iff (mod_cast h₁) (mod_cast h₂)
 
 lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
-  simp_rw [← lt_iff_ssubset]
   exact lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
 
 theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=

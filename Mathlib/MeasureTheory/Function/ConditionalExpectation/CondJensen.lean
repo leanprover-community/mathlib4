@@ -243,7 +243,7 @@ theorem ConcaveOn.condExp_map_le_trim_univ {mE : MeasurableSpace E} [BorelSpace 
 
 /-- In a Banach space `E` with a measure `μ`, then for any `f : α → E`, we have
 `‖𝔼[f | m]‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
-theorem norm_condExp_le : (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
+theorem norm_condExp_le (f : α → E) : (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
   by_cases! hm : ¬ m ≤ mα
   · simp [condExp_of_not_le hm]; aesop
   by_cases! hμm : ¬ SigmaFinite (μ.trim hm)
@@ -254,6 +254,24 @@ theorem norm_condExp_le : (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] :
     filter_upwards with a; positivity
   exact convexOn_univ_norm.map_condExp_le_univ hm continuous_norm.lowerSemicontinuous hf_int
     hf_int.norm
+
+theorem Integrable.norm_condExp_rpow_le {p : ℝ} (hp : 1 ≤ p)
+    (hfint : Integrable (fun x => ‖f x‖ ^ p) μ) :
+    (‖μ[f | m] ·‖ ^ p) ≤ᵐ[μ] μ[(‖f ·‖ ^ p) | m] := by
+  have hp' : 0 < p := by linarith
+  by_cases! hm : ¬ m ≤ mα
+  · simp [condExp_of_not_le hm, Real.zero_rpow hp'.ne.symm]; aesop
+  by_cases! hμm : ¬ SigmaFinite (μ.trim hm)
+  · simp [condExp_of_not_sigmaFinite hm hμm, Real.zero_rpow hp'.ne.symm]; aesop
+  by_cases! hf_int : ¬ Integrable f μ
+  · simp only [condExp_of_not_integrable hf_int, Pi.zero_apply, norm_zero,
+      Real.zero_rpow hp'.ne.symm]
+    apply condExp_nonneg
+    filter_upwards with a; positivity
+  have hl := (Real.continuous_rpow_const hp'.le).lowerSemicontinuous.lowerSemicontinuousOn (Ici 0)
+  have := (convexOn_rpow hp).map_condExp_le hm hl (by simp) isClosed_Ici hf_int.norm hfint
+  filter_upwards [norm_condExp_le f, this] with a ha hb
+  exact (Real.rpow_le_rpow (norm_nonneg _) ha hp'.le).trans hb
 
 /-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `E` with a measure
 `μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex, then for any `f : α → E` such

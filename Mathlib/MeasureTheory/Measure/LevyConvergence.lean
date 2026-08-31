@@ -182,8 +182,8 @@ lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → Probab
   rw [mem_charPoly] at hg
   obtain ⟨w, hw⟩ := hg
   have h_eq (μ : Measure E) (hμ : IsProbabilityMeasure μ) :
-      ∫ x, g x ∂μ = ∑ a ∈ w.support, w a * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ := by
-    simp_rw [hw]
+      ∫ x, g x ∂μ = w.coeff.sum (fun a z ↦ z * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ) := by
+    simp_rw [hw, Finsupp.sum]
     rw [integral_finsetSum]
     · congr with y
       rw [integral_const_mul]

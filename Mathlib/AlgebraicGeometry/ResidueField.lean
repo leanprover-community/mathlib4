@@ -329,7 +329,7 @@ noncomputable def Spec.residueFieldIsoOfField {k : Type u} [Field k] (x : Spec (
   Spec.residueFieldIso (.of k) x ≪≫
     (Ideal.algEquivResidueFieldOfField x.asIdeal).symm.toRingEquiv.toCommRingCatIso
 
-@[simp, reassoc]
+@[reassoc]
 lemma Spec.residueFieldIsoOfField_inv {k : Type u} [Field k] (x : Spec (.of k)) :
     (Spec.residueFieldIsoOfField x).inv =
       (Scheme.ΓSpecIso (.of k)).inv ≫ (Spec (.of k)).Γevaluation x := by
@@ -348,15 +348,14 @@ lemma Hom.residueFieldIsoOfField_inv_residueFieldMap {X : Scheme.{u}} {k : Type 
     (f : X ⟶ Spec (.of k)) (x : X) :
     (Spec.residueFieldIsoOfField (f x)).inv ≫ f.residueFieldMap x =
       (Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop ≫ X.Γevaluation x := by
-  simp [Scheme.Γevaluation_naturality]
+  simp [Spec.residueFieldIsoOfField_inv, Scheme.Γevaluation_naturality]
 
 /-- The residue degree of a morphism `f : X ⟶ Spec k` to the spectrum of a field at a point `x`
 equals the degree of `κ(x)` as a `k`-algebra, via the canonical `k`-algebra structure on `κ(x)`
 induced by `f`. -/
-@[simp]
 lemma Hom.residueDegree_eq_finrank {X : Scheme.{u}} {k : Type u} [Field k]
     (f : X ⟶ Spec (.of k)) (x : X) :
-    letI := Algebra.compHom (↑(X.residueField x))
+    letI := Algebra.compHom (X.residueField x)
       ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
     f.residueDegree x = Module.finrank k (X.residueField x) := by
   algebraize [((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom),

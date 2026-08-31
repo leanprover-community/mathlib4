@@ -13,6 +13,7 @@ import Mathlib.Tactic.Ring
 
 /-!
 # IMO 1998 Q2
+
 In a competition, there are `a` contestants and `b` judges, where `b ≥ 3` is an odd integer. Each
 judge rates each contestant as either "pass" or "fail". Suppose `k` is a number such that, for any
 two judges, their ratings coincide for at most `k` contestants. Prove that `k / a ≥ (b - 1) / (2b)`.

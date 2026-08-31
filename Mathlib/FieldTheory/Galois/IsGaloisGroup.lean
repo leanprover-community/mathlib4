@@ -474,6 +474,12 @@ theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
     Function.Surjective (restrictHom G G' A B C) := by
   simpa [restrictHom] using QuotientGroup.mk_surjective
 
+open Pointwise in
+theorem restrictHom_smul_under [Finite G] [Finite G'] [MulSemiringAction G C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] (g : G) (I : Ideal C) :
+    restrictHom G G' A B C g • I.under B = (g • I).under B := by
+  simp [Ideal.ext_iff, Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv]
+
 end Domain
 
 noncomputable section IntermediateField
@@ -486,7 +492,6 @@ instance [Finite G] [IsGaloisGroup G K L] : IsGaloisGroup (G ⧸ N) K F :=
   letI := smulOfNormal G F L N
   haveI := smulDistribClass_smulOfNormal G F L N
   letI := mulSemiringActionOfSmulDistribClass F L G
-  haveI := isScalarTower_mulSemiringActionQuotient G F L N
   quotient G K F L N
 
 variable (E : IntermediateField K L) [hE : IsGaloisGroup H E L]
@@ -502,7 +507,6 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
   have : SMulDistribClass G F L := smulDistribClass_smulOfNormal G F L N
   let := mulSemiringActionOfSmulDistribClass F L G
   have : IsScalarTower E F L := IsScalarTower.of_algebraMap_eq' rfl
-  have := isScalarTower_mulSemiringActionQuotient G F L N
   { faithful := have := (inferInstance : IsGaloisGroup (G ⧸ N) K F).faithful; inferInstance
     commutes := ⟨by
       intro ⟨_, g, hg, rfl⟩ x y

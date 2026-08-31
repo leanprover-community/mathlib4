@@ -34,7 +34,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
     -- write `s` as the intersection of a sequence of open sets `U n`
     obtain ⟨U, ho, hu⟩ := isGδ_iff_eq_iInter_nat.1 hs.isGδ
     have (n : ℕ) : Disjoint s (U n)ᶜ := by
-      apply HasSubset.Subset.disjoint_compl_right
+      apply LE.le.disjoint_compl_right
       grw [hu, iInter_subset]
     -- for each `n`, construct a continuous function `f n` that separates `s` from `(U n)ᶜ`
     choose f hfs hfu hfr using fun n =>

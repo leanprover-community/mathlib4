@@ -357,6 +357,31 @@ lemma angle_add_of_ne_of_ne {a b c p : P} (hb : a ≠ b) (hc : a ≠ c) (hp : Wb
   have ep := angle_add_angle_eq_pi_of_angle_eq_pi a hp
   linarith only [ea, eb, ec, ep]
 
+/-- If `X` lies strictly between `A` and `C`, then `∠ A P X + ∠ X P C = ∠ A P C`,
+with no nondegeneracy assumption on the point `P`. -/
+lemma angle_add_angle_eq_of_sbtw {a c p x : P} (hx : Sbtw ℝ a x c) :
+    ∠ a p x + ∠ x p c = ∠ a p c := by
+  rcases eq_or_ne p a with rfl | hpa
+  · simp [(hx.angle_eq_right x).symm.trans (angle_self_of_ne hx.ne_left)]
+  rcases eq_or_ne p c with rfl | hpc
+  · simp [(hx.symm.angle_eq_right a).trans (angle_self_of_ne hx.left_ne_right)]
+  exact angle_add_of_ne_of_ne hpa hpc hx.wbtw
+
+/-- If `B` lies on the same ray from `P` as a point `X` strictly between `A` and `C`,
+then `∠ A P B + ∠ B P C = ∠ A P C`. -/
+theorem angle_add_angle_eq_of_sbtw_of_sameRay {a b c p x : P}
+    (hx : Sbtw ℝ a x c) (hxb : SameRay ℝ (x -ᵥ p) (b -ᵥ p)) (hb : b ≠ p) :
+    ∠ a p b + ∠ b p c = ∠ a p c := by
+  rcases eq_or_ne p x with rfl | hpx
+  · have hpi : ∠ a p c = π := hx.angle₁₂₃_eq_pi
+    rw [hpi, angle_comm a p b]
+    exact angle_add_angle_eq_pi_of_angle_eq_pi b hpi
+  obtain ⟨r, hr, hrb⟩ := (exists_pos_left_iff_sameRay (by aesop) (by aesop)).2 hxb
+  have hab : ∠ a p b = ∠ a p x := angle_smul_right_of_pos a hr hrb
+  have hbc : ∠ b p c = ∠ x p c := angle_smul_left_of_pos c hr hrb
+  rw [hab, hbc]
+  exact angle_add_angle_eq_of_sbtw hx
+
 /-- **Stewart's Theorem**. -/
 theorem dist_sq_mul_dist_add_dist_sq_mul_dist (a b c p : P) (h : ∠ b p c = π) :
     dist a b ^ 2 * dist c p + dist a c ^ 2 * dist b p =

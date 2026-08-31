@@ -20,7 +20,7 @@ public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 This file contains the basic theory for the resolvent and spectrum of a Banach algebra.
 Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can be found in
- `Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
+`Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
 
 ## Main definitions
 

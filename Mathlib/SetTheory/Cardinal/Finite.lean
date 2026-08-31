@@ -84,6 +84,8 @@ lemma card_pos_iff : 0 < Nat.card α ↔ Nonempty α ∧ Finite α := by
 
 @[simp] lemma card_pos [Nonempty α] [Finite α] : 0 < Nat.card α := card_pos_iff.2 ⟨‹_›, ‹_›⟩
 
+instance [Nonempty α] [Finite α] : NeZero (Nat.card α) := ⟨card_pos.ne'⟩
+
 theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α := (card_ne_zero.1 h).2
 
 theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=

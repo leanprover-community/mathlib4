@@ -156,7 +156,7 @@ lemma measurableSet_countablyGeneratedAtom (p : ℕ → Prop) :
 lemma disjoint_countablyGeneratedAtom :
     Pairwise (Function.onFun Disjoint (countablyGeneratedAtom α)) := by
   intro p q hpq s hsp hsq
-  simp only [le_eq_subset, bot_eq_empty, subset_empty_iff] at hsp hsq ⊢
+  simp only [bot_eq_empty, subset_empty_iff] at hsp hsq ⊢
   ext x
   simp only [mem_empty_iff_false, iff_false]
   intro hxs

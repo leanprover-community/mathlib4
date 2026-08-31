@@ -105,6 +105,7 @@ instance Colex.isStrictOrder [∀ i, PartialOrder (α i)] :
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) where
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
+  toLT := instLTLex
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
 
@@ -112,6 +113,7 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
 See `DFinsupp.Colex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Colex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Colex (Π₀ i, α i)) where
   le x y := ⇑(ofColex x) = ⇑(ofColex y) ∨ x < y
+  toLT := instLTColex
   __ := PartialOrder.lift (fun x : Colex (Π₀ i, α i) ↦ toColex (⇑(ofColex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
 
@@ -175,14 +177,12 @@ instance Colex.decidableLT : DecidableLT (Colex (Π₀ i, α i)) :=
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
-  __ := Lex.partialOrder
   le_total := total_of _
   toDecidableLT := decidableLT
   toDecidableLE := decidableLE
 
 /-- The linear order on `DFinsupp`s obtained by the colexicographic ordering. -/
 instance Colex.linearOrder : LinearOrder (Colex (Π₀ i, α i)) where
-  __ := Colex.partialOrder
   le_total := total_of _
   toDecidableLT := decidableLT
   toDecidableLE := decidableLE

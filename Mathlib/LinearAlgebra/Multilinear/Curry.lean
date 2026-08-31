@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Currying of multilinear maps
+
 We register isomorphisms corresponding to currying or uncurrying variables, transforming a
 multilinear function `f` on `n+1` variables into a linear function taking values in multilinear
 functions in `n` variables, and into a multilinear function in `n` variables taking values in linear

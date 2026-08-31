@@ -319,7 +319,7 @@ the polynomial `c₄ T ^ 2 + a₁ c₄ T - (54 b₆ - 3 b₂ b₄ + a₂ c₄)` 
 To see how this expression arises, note that the node `(x₀, y₀)` has second order Taylor expansion
 `(Y - y₀)^2 + a_1(X - x₀)(Y - y₀) - (3x₀ + a_2)(X - x₀)^2` where `x₀ = (18 b₆ - b₂ b₄) / c₄`. -/
 @[mk_iff]
-class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
+class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) : Prop
     extends W.HasMultiplicativeReduction R where
   splitMultiplicativeReduction : letI I := W.integralModel R
     Splits <| .map (algebraMap R (ResidueField R)) <|

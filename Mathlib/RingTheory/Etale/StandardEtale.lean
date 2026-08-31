@@ -200,13 +200,11 @@ def equivPolynomialQuotient :
 def equivAwayAdjoinRoot :
     P.Ring ≃ₐ[R] Localization.Away (AdjoinRoot.mk P.f P.g) := by
   refine .ofAlgHom (P.lift (algebraMap (AdjoinRoot P.f) _ (.root P.f)) ⟨?_, ?_⟩)
-    (IsLocalization.liftAlgHom (M := .powers <| AdjoinRoot.mk P.f P.g)
-      (f := AdjoinRoot.liftAlgHom _ _ P.X P.hasMap_X.1) <| Subtype.forall.mpr ?_) ?_ ?_
+    (IsLocalization.Away.liftAlgHom (AdjoinRoot.mk P.f P.g)
+      (f := AdjoinRoot.liftAlgHom _ _ P.X P.hasMap_X.1) P.hasMap_X.2) ?_ ?_
   · rw [aeval_algebraMap_apply, AdjoinRoot.aeval_eq, AdjoinRoot.mk_self, map_zero]
   · rw [aeval_algebraMap_apply, AdjoinRoot.aeval_eq]
     exact IsLocalization.Away.algebraMap_isUnit ..
-  · change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
-    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using! P.hasMap_X.2
   · ext; simp [Algebra.algHom]
   · ext; simp
 
@@ -214,16 +212,12 @@ def equivAwayAdjoinRoot :
 def equivAwayQuotient :
     P.Ring ≃ₐ[R] Localization.Away P.g ⧸ Ideal.span {algebraMap _ (Localization.Away P.g) P.f} := by
   refine .ofAlgHom (P.lift (algebraMap R[X] _ .X) ⟨?_, ?_⟩)
-    (Ideal.Quotient.liftₐ _ (IsLocalization.liftAlgHom (M := .powers <| P.g)
-      (f := aeval P.X) <| Subtype.forall.mpr ?_) ?_)
-      ?_ ?_
+    (Ideal.Quotient.liftₐ _ (IsLocalization.Away.liftAlgHom (P.g) P.hasMap_X.2) ?_) ?_ ?_
   · rw [aeval_algebraMap_apply, IsScalarTower.algebraMap_apply _ (Localization.Away P.g) (_ ⧸ _),
       Ideal.Quotient.algebraMap_eq, aeval_X_left_apply, Ideal.Quotient.mk_singleton_self]
   · rw [aeval_algebraMap_apply, IsScalarTower.algebraMap_apply _ (Localization.Away P.g) (_ ⧸ _),
       aeval_X_left_apply]
     exact (IsLocalization.Away.algebraMap_isUnit ..).map _
-  · change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
-    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using P.hasMap_X.2
   · change Ideal.span _ ≤ RingHom.ker _
     simpa [Ideal.span_le] using P.hasMap_X.1
   · apply Ideal.Quotient.algHom_ext

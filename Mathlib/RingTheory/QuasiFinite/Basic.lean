@@ -486,11 +486,8 @@ lemma QuasiFiniteAt.of_isOpen_singleton
   obtain ⟨e, he, H⟩ := PrimeSpectrum.isClopen_iff.mp H
   have hep : e ∉ p.asIdeal := H.le rfl
   let f : Localization.Away e →ₐ[S] Localization.AtPrime p.asIdeal :=
-    IsLocalization.liftAlgHom (M := .powers e) (f := Algebra.ofId _ _) <| by
-      simp only [Subtype.forall]
-      refine Submonoid.powers_le (P := (IsUnit.submonoid _).comap _).mpr ?_
-      simpa [IsUnit.mem_submonoid_iff] using IsLocalization.map_units
-        (M := p.asIdeal.primeCompl) _ ⟨e, hep⟩
+    IsLocalization.Away.liftAlgHom e (f := Algebra.ofId _ _)
+      (IsLocalization.map_units (M := p.asIdeal.primeCompl) _ ⟨e, hep⟩)
   have h₁ := (PrimeSpectrum.localization_away_comap_range (Localization.Away e) e).trans H.symm
   have : Subsingleton (PrimeSpectrum (Localization.Away e)) :=
     Function.Injective.subsingleton

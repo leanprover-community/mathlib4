@@ -109,7 +109,7 @@ lemma skyscraperPresheafHomEquiv_naturality_left
     Φ.skyscraperPresheafHomEquiv (Φ.presheafFiber.map f ≫ g) =
       f ≫ Φ.skyscraperPresheafHomEquiv g :=
   Φ.skyscraperPresheafHomEquiv.symm.injective
-   (by simp [Φ.skyscraperPresheafHomEquiv_naturality_left_symm])
+    (by simp [Φ.skyscraperPresheafHomEquiv_naturality_left_symm])
 
 end
 

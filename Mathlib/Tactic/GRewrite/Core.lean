@@ -16,10 +16,10 @@ This module defines the core of the `grw`/`grewrite` tactic.
 This file provides two implementations of the tactic:
 1. The simple implementation uses `kabstract` to determine where to rewrite,
    and then calls `MVarId.gcongr` to prove that the rewrite is valid.
-   This is used by `nth_grw` and `grw'`
+   This is used by `nth_grw` and `grw +useKAbstract`.
 2. The more sophisticated implementation has its own congruence loop, applying `gcongr` lemmas to
-   create the replacement expression, while at the same time proving that this is related to the
-   original expression.
+   create the replacement expression, and to prove that this is related to the original expression.
+   This supports the use of strict inequalities to change the strictness in the goal.
    This is used by `grw` and `apply_rw`.
 -/
 
@@ -313,8 +313,7 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forwa
       return (mvar, goal)
   -- Try all applicable `@[gcongr]` lemmas.
   if let some (head, args) := getCongrAppFnArgs e then
-    let key := { relName, head, arity := args.size }
-    let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []
+    let mut lemmas ← findGCongrLemmas?' relName head forward args.size
     if relName == `_Implies then
       lemmas := lemmas ++ relImpRelLemma args.size
     let mctx ← getMCtx

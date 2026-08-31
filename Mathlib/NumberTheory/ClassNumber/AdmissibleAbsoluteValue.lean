@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 
 /-!
 # Admissible absolute values
+
 This file defines a structure `AbsoluteValue.IsAdmissible` which we use to show the class number
 of the ring of integers of a global field is finite.
 

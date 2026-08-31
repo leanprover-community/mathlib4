@@ -213,7 +213,6 @@ theorem lift₂Expand_of {C : Sort*} {P : X → S → X → S → C}
   rfl
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 private abbrev smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁)

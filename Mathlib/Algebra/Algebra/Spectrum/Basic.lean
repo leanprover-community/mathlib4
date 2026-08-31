@@ -13,6 +13,7 @@ public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Spectrum of an element in an algebra
+
 This file develops the basic theory of the spectrum of an element of an algebra.
 This theory will serve as the foundation for spectral theory in Banach algebras.
 

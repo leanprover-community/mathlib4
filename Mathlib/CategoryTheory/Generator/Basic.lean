@@ -550,7 +550,7 @@ theorem IsSeparator.of_equivalence {G : C} (h : IsSeparator G) (α : C ≌ D) :
 
 theorem IsCoseparator.of_equivalence {G : C} (h : IsCoseparator G) (α : C ≌ D) :
     IsCoseparator (α.functor.obj G) := by
- simpa using! ObjectProperty.IsCoseparating.of_equivalence h α
+  simpa using! ObjectProperty.IsCoseparating.of_equivalence h α
 
 end Equivalence
 

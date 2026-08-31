@@ -201,6 +201,9 @@ lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
 lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
 
+@[to_dual lt_of_ne_of_le']
+lemma lt_of_ne_of_le : a ≠ b → a ≤ b → a < b := flip lt_of_le_of_ne
+
 /-- Equality is decidable if `≤` is. -/
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>

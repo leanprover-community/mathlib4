@@ -471,7 +471,7 @@ theorem algebraMap_injective : (algebraMap R ℍ[R,c₁,c₂,c₃] : _ → _).In
   fun _ _ ↦ by simp [algebraMap_eq]
 
 instance : IsTorsionFree R ℍ[R,c₁,c₂,c₃] :=
- (addEquivProd ..).injective.moduleIsTorsionFree _ fun _ _ ↦ rfl
+  (addEquivProd ..).injective.moduleIsTorsionFree _ fun _ _ ↦ rfl
 
 section
 

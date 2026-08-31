@@ -42,19 +42,20 @@ variable [Algebra B L] [IsFractionRing B L] [IsScalarTower A B L]
 variable (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) [w.asIdeal.LiesOver v.asIdeal]
 
 theorem intValuation_liesOver (x : A) :
-    v.intValuation x ^ (v.asIdeal.ramificationIdx w.asIdeal) =
+    v.intValuation x ^ (v.asIdeal.ramificationIdx' w.asIdeal) =
       w.intValuation (algebraMap A B x) := by
-  rcases eq_or_ne x 0 with rfl | hx; · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp [ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot]
   rw [intValuation_eq_exp_neg_multiplicity v hx, intValuation_eq_exp_neg_multiplicity w (by simpa),
     ← Set.image_singleton, ← Ideal.map_span, exp_neg, exp_neg, inv_pow, ← exp_nsmul,
     Int.nsmul_eq_mul, inv_inj, exp_inj, ← Nat.cast_mul, Nat.cast_inj]
   refine multiplicity_eq_of_emultiplicity_eq_some ?_ |>.symm
   replace hx : Ideal.span {x} ≠ ⊥ := by simp [hx]
-  rw [emultiplicity_map_eq_ramificationIdx_mul hx v.irreducible w.irreducible w.ne_bot,
+  rw [emultiplicity_map_eq_ramificationIdx'_mul hx v.irreducible w.irreducible w.ne_bot,
     Nat.cast_mul, (FiniteMultiplicity.of_prime_left v.prime hx).emultiplicity_eq_multiplicity]
 
 theorem valuation_liesOver (x : K) :
-    v.valuation K x ^ v.asIdeal.ramificationIdx w.asIdeal =
+    v.valuation K x ^ v.asIdeal.ramificationIdx' w.asIdeal =
       w.valuation L (algebraMap K L x) := by
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) x
   simp [valuation_of_algebraMap, div_pow, ← IsScalarTower.algebraMap_apply A K L,
@@ -81,7 +82,7 @@ theorem uniformContinuous_algebraMap_liesOver :
             v                                                         v
   `γL : ValuativeRel.ValueGroupWithZero Lʷ`       `γK: ValuativeRel.ValueGroupWithZero Kᵛ`
   -/
-  let e := v.asIdeal.ramificationIdx w.asIdeal
+  let e := v.asIdeal.ramificationIdx' w.asIdeal
   -- push `γL` to `ℤᵐ⁰`
   let σL := WithVal.valueGroupOrderIso₀ (w.valuation L)
   let σw := valueGroup₀_equiv_withZeroMulInt (w.valuation L)
@@ -110,7 +111,7 @@ theorem uniformContinuous_algebraMap_liesOver :
     ← log_lt_log (by simp_all) (by simp [EmbeddingLike.map_eq_zero_iff (f := σwV)]), log_pow,
     nsmul_eq_mul, mul_comm]
   exact Int.mul_lt_of_lt_ediv
-    (mod_cast pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
+    (mod_cast pos_of_ne_zero (ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
 
 end AKLB
 

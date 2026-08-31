@@ -197,6 +197,12 @@ lemma Reachable.degree_pos_right {G : SimpleGraph V} {u v : V} [Fintype (G.neigh
     (huv : u ≠ v) (hreach : G.Reachable u v) : 0 < G.degree v :=
   hreach.symm.degree_pos_left huv.symm
 
+lemma Reachable.of_isUniversal {G : SimpleGraph V} {u : V} (v : V) (h : G.IsUniversal u) :
+    G.Reachable u v := by
+  by_cases! h' : u = v
+  · exact h' ▸ Reachable.rfl
+  · exact (h h').reachable
+
 lemma not_reachable_of_neighborSet_left_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
     (hu : G.neighborSet u = ∅) : ¬G.Reachable u v :=
   (Reachable.nonempty_neighborSet_left huv).mt (Set.not_nonempty_iff_eq_empty.mpr hu)
@@ -373,6 +379,11 @@ theorem connected_or_preconnected_compl : G.Connected ∨ Gᶜ.Preconnected := b
 
 theorem connected_or_connected_compl [Nonempty V] : G.Connected ∨ Gᶜ.Connected :=
   G.connected_or_preconnected_compl.elim .inl (.inr ⟨·⟩)
+
+variable {G v} in
+lemma Connected.of_isUniversal (h : G.IsUniversal v) : G.Connected := by
+  refine connected_iff _ |>.mpr ⟨fun u w ↦ ?_, ⟨v⟩⟩
+  exact (Reachable.of_isUniversal u h).symm.trans (Reachable.of_isUniversal w h)
 
 /-- The quotient of `V` by the `SimpleGraph.Reachable` relation gives the connected
 components of a graph. -/

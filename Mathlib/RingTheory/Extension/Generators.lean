@@ -230,14 +230,14 @@ noncomputable
 def comp [Algebra S T] [IsScalarTower R S T]
     (Q : Generators S T ι') (P : Generators R S ι) : Generators R T (ι' ⊕ ι) where
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
-  σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
+  σ' x := (AddMonoidAlgebra.coeff <| Q.σ x).sum fun n r ↦
+    rename .inr (P.σ r) * monomial (n.mapDomain .inl) 1
   aeval_val_σ' s := by
     have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
       rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
-    conv_rhs => rw [← Q.aeval_val_σ s, ← (Q.σ s).sum_single]
-    simp only [map_finsuppSum, map_mul, aeval_rename, Sum.elim_comp_inr, this, aeval_val_σ,
-      aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective, Sum.elim_inl,
-      one_mul, single_eq_monomial]
+    conv_rhs => rw [← Q.aeval_val_σ s, (Q.σ s).as_sum]
+    simp [aeval_rename, this, aeval_monomial, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
+      Finsupp.sum, MvPolynomial.finsupp_support_eq_support, MvPolynomial.coeff]
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
@@ -524,7 +524,7 @@ def toComp (Q : Generators S T ι') (P : Generators R S ι) : Hom P (Q.comp P) w
   aeval_val i := by simp
 
 lemma toComp_toAlgHom (Q : Generators S T ι') (P : Generators R S ι) :
-    (Q.toComp P).toAlgHom = rename Sum.inr := rfl
+    (Q.toComp P).toAlgHom = rename Sum.inr := by rw [rename_eq_aeval]; rfl
 
 /-- Given families of generators `X ⊆ T` over `S` and `Y ⊆ S` over `R`,
 there is a map of generators `R[X, Y] → S[X]`. -/
@@ -548,8 +548,11 @@ lemma toComp_toAlgHom_monomial (Q : Generators S T ι') (P : Generators R S ι) 
     (Q.toComp P).toAlgHom (monomial j a) =
       monomial (Finsupp.sumElim 0 j) a := by
   convert! rename_monomial _ _ _
-  ext f (i₁ | i₂) <;>
-    simp [Finsupp.mapDomain_notin_range, Finsupp.mapDomain_apply Sum.inr_injective]
+  · ext f (i₁ | i₂)
+    simp [rename_eq_aeval]
+    rfl
+  · ext f (i₁ | i₂) <;>
+      simp [Finsupp.mapDomain_notin_range, Finsupp.mapDomain_apply Sum.inr_injective]
 
 @[simp]
 lemma toAlgHom_ofComp_rename (Q : Generators S T ι') (P : Generators R S ι) (p : P.Ring) :
@@ -731,7 +734,7 @@ to `ker(R[X][Y] → S[Y] → T)` constructed from `P.σ`.
 noncomputable
 def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
     (Q.comp P).ker := by
-  refine ⟨x.1.sum fun n r ↦ ?_, ?_⟩
+  refine ⟨(AddMonoidAlgebra.coeff x.1).sum fun n r ↦ ?_, ?_⟩
   · -- The use of `refine` is intentional to control the elaboration order
     -- so that the term has type `(Q.comp P).Ring` and not `MvPolynomial (Q.ι ⊕ P.ι) R`
     refine rename ?_ (P.σ r) * monomial ?_ 1
@@ -752,7 +755,7 @@ lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x
   refine Finset.sum_congr rfl fun j _ ↦ ?_
   simp only [map_mul, Hom.toAlgHom_monomial]
   rw [one_smul, Finsupp.prod_mapDomain_index_inj Sum.inl_injective]
-  rw [rename, ← AlgHom.comp_apply, comp_aeval]
+  rw [rename_eq_aeval, ← AlgHom.comp_apply, comp_aeval]
   simp only [ofComp_val, Sum.elim_inr, Function.comp_apply,
     Sum.elim_inl, monomial_eq, Hom.toAlgHom_X]
   congr 1

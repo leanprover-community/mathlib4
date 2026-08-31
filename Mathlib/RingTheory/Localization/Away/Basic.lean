@@ -159,6 +159,26 @@ theorem lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg (algebraMap R S a) = g a
 theorem lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
   IsLocalization.lift_comp _
 
+section liftAlgHom
+
+variable {A : Type*} [CommSemiring A] [Algebra A R] [Algebra A S] [Algebra A P]
+  [IsScalarTower A R S] {f : R →ₐ[A] P} (hf : IsUnit (f x))
+include hf
+
+/-- `AlgHom` version of `IsLocalization.Away.lift`. -/
+noncomputable def liftAlgHom : S →ₐ[A] P where
+  __ := lift x hf
+  commutes' r := by simp [IsScalarTower.algebraMap_apply A R S]
+
+theorem liftAlgHom_toRingHom : (liftAlgHom x hf : S →ₐ[A] P).toRingHom = lift x hf := rfl
+
+@[simp]
+theorem coe_liftAlgHom : ⇑(liftAlgHom x hf : S →ₐ[A] P) = lift x hf := rfl
+
+theorem liftAlgHom_apply (s : S) : liftAlgHom x hf s = lift x hf s := rfl
+
+end liftAlgHom
+
 /-- Given `x y : R` and localizations `S`, `P` away from `x` and `y * x`
 respectively, the homomorphism induced from `S` to `P`. -/
 noncomputable def awayToAwayLeft (y : R) [Algebra R P] [IsLocalization.Away (y * x) P] : S →+* P :=

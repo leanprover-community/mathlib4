@@ -938,8 +938,8 @@ theorem not_dvd_differentIdeal_iff
       · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
         contrapose H
         exact dvd_differentIdeal_of_not_isSeparable A hp P H
-      · rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_one_iff hPbot Ideal.map_comap_le]
-        apply Ideal.ramificationIdx_spec
+      · rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hPbot Ideal.map_comap_le]
+        apply Ideal.ramificationIdx'_spec
         · simp [Ideal.map_le_iff_le_comap]
         · contrapose H
           rw [← pow_one P, show 1 = 2 - 1 by simp]
@@ -947,7 +947,7 @@ theorem not_dvd_differentIdeal_iff
           simpa [Ideal.dvd_iff_le] using H
   · intro H
     obtain ⟨Q, h₁, h₂⟩ := Ideal.eq_prime_pow_mul_coprime hp' P
-    rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count _ _ hp',
+    rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count _ _ hp',
       Ideal.ramificationIdx_eq_one_of_isUnramifiedAt, pow_one] at h₂
     obtain ⟨h₃, h₄⟩ := (Algebra.isUnramifiedAt_iff_map_eq (p := P.under A) _ _).mp H
     exact not_dvd_differentIdeal_of_isCoprime_of_isSeparable

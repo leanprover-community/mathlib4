@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Group.Measure
 
 /-!
 # Measure theory in the product of groups
+
 In this file we show properties about measure theory in products of measurable groups
 and properties of iterated integrals in measurable groups.
 

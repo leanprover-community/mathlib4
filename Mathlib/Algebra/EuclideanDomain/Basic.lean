@@ -419,7 +419,7 @@ section RingEquiv
 variable {R S : Type*} [EuclideanDomain R] [CommRing S]
 
 /-- If `S` is a nontrivial commutative ring isomorphic to a Euclidean domain
- `R` then it is also a Euclidean domain. -/
+`R` then it is also a Euclidean domain. -/
 protected abbrev RingEquiv.euclideanDomain (e : S ≃+* R) : EuclideanDomain S where
   toNontrivial := e.nontrivial
   quotient a b := e.symm (e a / e b)

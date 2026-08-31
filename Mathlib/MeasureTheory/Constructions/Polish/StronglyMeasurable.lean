@@ -82,12 +82,22 @@ variable {X E ι : Type*} [MeasurableSpace X] [CommMonoid E] [TopologicalSpace E
 
 section
 
-variable [IsCompletelyPseudoMetrizableSpace E] [ContinuousMul E]
-  [Countable ι] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
+variable [ContinuousMul E] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
 
-/-- The product of strongly measurable functions is measurable. -/
+/-- The infinite product of strongly measurable functions is measurable, `HasProd` version. -/
 @[to_additive (attr := fun_prop)
-/-- The sum of strongly measurable functions is measurable. -/]
+/-- The infinite sum of strongly measurable functions is measurable, `HasSum` version. -/]
+theorem StronglyMeasurable.hasProd [PseudoMetrizableSpace E] {f : ι → X → E} {g : X → E}
+    (h : ∀ i : ι, StronglyMeasurable (f i)) (h' : ∀ x, HasProd (fun i ↦ f i x) (g x) L) :
+    StronglyMeasurable g := by
+  refine stronglyMeasurable_of_tendsto L.filter ?_ (tendsto_pi_nhds.mpr h')
+  fun_prop
+
+variable [IsCompletelyPseudoMetrizableSpace E] [Countable ι]
+
+/-- The infinite product of strongly measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The infinite sum of strongly measurable functions is measurable. -/]
 theorem StronglyMeasurable.tprod {f : ι → X → E} (h : ∀ i : ι, StronglyMeasurable (f i)) :
     StronglyMeasurable (fun x => ∏'[L] i : ι, f i x) := by
   let E := { x | Multipliable (f · x) L }

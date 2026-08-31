@@ -72,20 +72,21 @@ noncomputable def coinvariantsEquiv (hg : ∀ x, x ∈ Subgroup.zpowers g) :
 variable [Finite G] in
 lemma coinvariantsKer_leftRegular_eq_ker :
     Coinvariants.ker (Representation.leftRegular k G) =
-      LinearMap.ker (linearCombination k (fun _ => (1 : k))) := by
+      LinearMap.ker ((linearCombination k (fun _ => (1 : k))) ∘ₗ
+        (MonoidAlgebra.coeffLinearEquiv k).toLinearMap) := by
   have := Fintype.ofFinite G
   refine le_antisymm (Submodule.span_le.2 ?_) fun x hx => ?_
   · rintro x ⟨⟨g, y⟩, rfl⟩
     simpa [linearCombination, sub_eq_zero, sum_fintype]
       using Finset.sum_bijective _ (Group.mulLeft_bijective g⁻¹) (by simp) (by lia)
-  · have : x = x.sum (fun g r => single g r - single 1 r) := by
+  · have : x = x.coeff.sum (fun g r => .single g r - .single 1 r) := by
       ext g
       by_cases hg : g = 1
-      · simp_all [linearCombination, sum_apply']
-      · simp_all [sum_apply']
+      · simp_all [linearCombination, sum_apply', MonoidAlgebra.coeff_finsuppSum]
+      · simp_all [sum_apply', MonoidAlgebra.coeff_finsuppSum]
     rw [this]
     exact Submodule.finsuppSum_mem _ _ _ _ fun g _ =>
-      Coinvariants.mem_ker_of_eq g (single 1 (x g)) _ (by simp)
+      Coinvariants.mem_ker_of_eq g (.single 1 (x.coeff g)) _ (by simp)
 
 end Representation.FiniteCyclicGroup
 
@@ -101,16 +102,17 @@ lemma range_norm_eq_ker_applyAsHom_sub (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     LinearMap.range (leftRegular k G).norm.hom.toLinearMap =
       LinearMap.ker (applyAsHom (leftRegular k G) g - 𝟙 _).hom.toLinearMap :=
   le_antisymm (fun _ ⟨_, h⟩ => by simp [sub_hom, applyAsHom_apply _, ← h, norm])
-    fun x hx => ⟨single 1 (x g), by
-    ext
-    have := apply_eq_of_leftRegular_eq_of_generator (k := k) g hg x
-      (by simpa [sub_hom, sub_eq_zero] using! hx)
+    fun x hx => ⟨.single 1 (x.coeff g), by
+    ext γ
+    have := coeff_of_leftRegular_of_generator (k := k) g hg x
+      (by simpa [sub_hom, sub_eq_zero] using! hx) γ
     simp [norm, Representation.norm, this]⟩
 
 omit [Fintype G] in variable [Finite G] in
 lemma range_applyAsHom_sub_eq_ker_linearCombination (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     LinearMap.range (applyAsHom (leftRegular k G) g - 𝟙 _).hom.toLinearMap =
-      LinearMap.ker (linearCombination k (fun _ => (1 : k))) := by
+      LinearMap.ker ((linearCombination k (fun _ => (1 : k))) ∘ₗ
+        (MonoidAlgebra.coeffLinearEquiv k).toLinearMap) := by
   simp [sub_hom, applyAsHom, FiniteCyclicGroup.coinvariantsKer_eq_range
     (Representation.leftRegular k G) _ hg,
     ← FiniteCyclicGroup.coinvariantsKer_leftRegular_eq_ker]
@@ -216,7 +218,7 @@ lemma resolution_quasiIso (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) :
           leftRegular.range_applyAsHom_sub_eq_ker_linearCombination k g hg
       · rw [Rep.epi_iff_surjective]
         intro x
-        use single 1 x
+        use .single 1 x
         simp [ChainComplex.toSingle₀Equiv]
     | succ m _ =>
       rw [quasiIsoAt_iff_exactAt' (hL := ChainComplex.exactAt_succ_single_obj ..),

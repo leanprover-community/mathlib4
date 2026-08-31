@@ -377,8 +377,6 @@ def mu : IncidenceAlgebra 𝕜 α :=
 
 variable {𝕜} {a b : α}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a b, mu 𝕜 a x := by
   rw [mu, coe_mk, muFun_apply, sum_attach]
 

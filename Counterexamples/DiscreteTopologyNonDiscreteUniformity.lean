@@ -7,6 +7,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Discrete uniformities and discrete topology
+
 Exactly as different metrics can induce equivalent topologies on a space, it is possible that
 different uniform structures (a notion that generalises that of a metric structure) induce the same
 topology on a space. In this file we are concerned in particular with the *discrete topology*,

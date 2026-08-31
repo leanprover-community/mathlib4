@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Lemmas about squarefreeness of natural numbers
+
 A number is squarefree when it is not divisible by any squares except the squares of units.
 
 ## Main Results

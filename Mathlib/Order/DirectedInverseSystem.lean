@@ -206,7 +206,6 @@ variable {C : Sort*} (ih : ∀ i, F₁ i → F₂ i → C)
   (compat : ∀ i j h x y, ih i x y = ih j (f₁ i j h x) (f₂ i j h y))
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
     {x : C // ∀ i (hzi : z.1 ≤ i) (hwi : w.1 ≤ i), x = ih i (f₁ _ _ hzi z.2) (f₂ _ _ hwi w.2)} := by
   choose j hzj hwj using exists_ge_ge z.1 w.1
@@ -227,7 +226,6 @@ protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit
         ← map_map' _ hx hji, jeq, ← map_map' _ hz hki, ← keq, map_map']
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem lift₂_def₂ (x : Σ i, F₁ i) (y : Σ i, F₂ i) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
     DirectLimit.lift₂ f₁ f₂ ih compat ⟦x⟧ ⟦y⟧ = ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2) :=
   (lift₂Aux _ _ _ compat _ _).2 ..
@@ -491,7 +489,6 @@ variable [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f]
   (equivLim : ∀ i, IsSuccPrelimit i → {e : F i ≃ limit f i // ∀ x l, (e x).1 l = f l.2.le x})
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private noncomputable def globalEquivAux (i : ι) :
     PEquivOn f (fun i hi ↦ (equivSucc i hi).1) (Iic i) :=
   SuccOrder.prelimitRecOn i
@@ -505,7 +502,6 @@ noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
   (globalEquivAux equivSucc equivLim i).equiv ⟨i, le_rfl⟩
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :
     letI e := globalEquiv equivSucc equivLim
     e i (f h x) = piLTProj h (e j x) := by

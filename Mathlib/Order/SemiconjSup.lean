@@ -89,7 +89,7 @@ theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} 
     Function.Semiconj g' fb fa := by
   refine fun y => (hg' _).unique ?_
   rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_setOf_eq]
-  simp only [h.eq, fb.le_iff_le, fa.leftOrdContinuous (hg' _)]
+  simp only [h.eq, fb.le_iff_le, fa.isLUB_image'.mpr (hg' _)]
 
 variable {G : Type*}
 
@@ -97,7 +97,7 @@ theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃
     (H : ∀ x, IsLUB (range fun g' => (f₁ g')⁻¹ (f₂ g' x)) (h x)) (g : G) :
     Function.Semiconj h (f₂ g) (f₁ g) := by
   refine fun y => (H _).unique ?_
-  have := (f₁ g).leftOrdContinuous (H y)
+  have := (f₁ g).isLUB_image'.mpr (H y)
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this
   simpa [comp_def] using this
 

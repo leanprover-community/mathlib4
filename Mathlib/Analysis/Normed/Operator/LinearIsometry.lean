@@ -284,6 +284,9 @@ theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set E) :=
 def toContinuousLinearMap : E →SL[σ₁₂] E₂ :=
   ⟨f.toLinearMap, f.continuous⟩
 
+@[simp] lemma toLinearMap_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] E₂) :
+  f.toContinuousLinearMap.toLinearMap = f.toLinearMap := rfl
+
 theorem toContinuousLinearMap_injective :
     Function.Injective (toContinuousLinearMap : _ → E →SL[σ₁₂] E₂) := fun x _ h =>
   coe_injective (congr_arg _ h : ⇑x.toContinuousLinearMap = _)

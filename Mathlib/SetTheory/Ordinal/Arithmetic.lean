@@ -768,8 +768,7 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
   · have H := mul_ne_zero hc.ne_zero hd
     apply le_antisymm
     · rw [← lt_succ_iff, ← lt_mul_iff_div_lt H, mul_assoc]
-      · apply (add_lt_add_right hc _).trans_le
-        rw [← mul_succ]
+      · grw [hc, ← mul_succ]
         gcongr
         rw [succ_le_iff]
         exact lt_mul_succ_div b hd
@@ -934,8 +933,7 @@ theorem lt_mul_iff {a b c : Ordinal} : a < b * c ↔ ∃ q < c, ∃ r < b, a = b
   obtain rfl | hb₀ := eq_or_ne b 0; · simp
   refine ⟨fun h ↦ ⟨_, (lt_mul_iff_div_lt hb₀).1 h, _, mod_lt a hb₀, (div_add_mod ..).symm⟩, ?_⟩
   rintro ⟨q, hq, r, hr, rfl⟩
-  apply add_lt_add_right hr _ |>.trans_le
-  grw [← mul_add_one, add_one_le_iff.2 hq]
+  grw [hr, ← mul_add_one, add_one_le_iff.2 hq]
 
 theorem forall_lt_mul {b c : Ordinal} {P : Ordinal → Prop} :
     (∀ a < b * c, P a) ↔ ∀ q < c, ∀ r < b, P (b * q + r) := by

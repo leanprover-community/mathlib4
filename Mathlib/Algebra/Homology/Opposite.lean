@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Opposite categories of complexes
+
 Given a preadditive category `V`, the opposite of its category of chain complexes is equivalent to
 the category of cochain complexes of objects in `Vᵒᵖ`. We define this equivalence, and another
 analogous equivalence (for a general category of homological complexes with a general
