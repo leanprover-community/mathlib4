@@ -272,7 +272,6 @@ jobs:
         else
           gh pr edit "${PR}" --add-label increases-technical-debt
         fi
-        fi
 
         echo "Compute documentation reminder"
         workflowFilesChanged="$(grep '^\.github/workflows/' changed_files.txt || true)"
