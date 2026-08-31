@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Eric Wieser
 -/
 module
 
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 public import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
@@ -283,6 +284,12 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (hf : AEStr
   · lift c to ℝ≥0 using hc
     apply eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c
     simpa only [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using h
+
+theorem eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G] (L : E →L[𝕜] F →L[𝕜] G) {p q r : ℝ≥0∞}
+    [HolderTriple p q r] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
+    eLpNorm (fun a => L (f a) (g a)) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
+  eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm hf hg (L ·) ‖L‖ₑ (.of_forall fun _ ↦ L.le_opENorm₂ ..)
 
 open NNReal in
 theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E → F → G) (c : ℝ≥0)
