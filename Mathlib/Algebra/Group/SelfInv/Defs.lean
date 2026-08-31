@@ -6,6 +6,8 @@ Authors: Justus Springer
 module
 
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Self-inverse elements
@@ -40,6 +42,17 @@ protected lemma IsSelfInv.inv_eq (h : IsSelfInv a) : a⁻¹ = a := h
 @[to_additive]
 protected lemma IsSelfInv.eq_inv (h : IsSelfInv a) : a = a⁻¹ := h.symm
 
+@[to_additive]
+instance [DecidableEq α] : Decidable (IsSelfInv a) := decidable_of_iff _ isSelfInv_iff.symm
+
+@[to_additive]
+theorem Prod.isSelfInv_iff {α β : Type*} [Inv α] [Inv β] {x : α × β} :
+    IsSelfInv x ↔ IsSelfInv x.1 ∧ IsSelfInv x.2 := Prod.ext_iff
+
+@[to_additive]
+protected theorem Pi.isSelfInv_iff {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
+    {f : (i : ι) → α i} : IsSelfInv f ↔ ∀ i, IsSelfInv (f i) := funext_iff
+
 end Inv
 
 @[to_additive (attr := simp)]
@@ -60,6 +73,16 @@ protected lemma IsSelfInv.conj [DivisionMonoid α] {a : α} (h : IsSelfInv a) (b
 @[to_additive]
 lemma isSelfInv_conj_iff [Group α] {a b : α} : IsSelfInv (b * a * b⁻¹) ↔ IsSelfInv a :=
   ⟨fun h ↦ by simpa [mul_assoc] using h.conj b⁻¹, fun h ↦ h.conj b⟩
+
+@[to_additive]
+protected lemma IsSelfInv.pow [DivisionMonoid α] {a : α} (h : IsSelfInv a) (n : ℕ) :
+    IsSelfInv (a ^ n) := by
+  rw [isSelfInv_iff, ← inv_pow, h.inv_eq]
+
+@[to_additive]
+protected lemma IsSelfInv.zpow [DivisionMonoid α] {a : α} (h : IsSelfInv a) (n : ℤ) :
+    IsSelfInv (a ^ n) := by
+  rw [isSelfInv_iff, ← inv_zpow, h.inv_eq]
 
 @[to_additive isSelfNeg_iff_two_nsmul_eq_zero]
 lemma isSelfInv_iff_sq_eq_one [Group α] {a : α} : IsSelfInv a ↔ a ^ 2 = 1 := by

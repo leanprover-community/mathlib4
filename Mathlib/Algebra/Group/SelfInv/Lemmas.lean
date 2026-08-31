@@ -17,6 +17,7 @@ This file collects results about `IsSelfInv`/`IsSelfNeg` that need more algebrai
 
 public section
 
+@[simp]
 protected theorem IsSelfInv.zero {α : Type*} [GroupWithZero α] : IsSelfInv (0 : α) :=
   inv_zero
 
@@ -41,7 +42,7 @@ theorem IsOfFinOrder.isSelfInv_iff {G : Type*} [Group G] {a : G} (h : IsOfFinOrd
   rw [isSelfInv_iff_isOfFinOrder_and_orderOf_le_two, and_iff_right h]
 
 @[to_additive]
-theorem isSelfInv_of_isMulTorsionFree {G : Type*} [Group G] [IsMulTorsionFree G] {a : G} :
+theorem isSelfInv_iff_eq_one {G : Type*} [Group G] [IsMulTorsionFree G] {a : G} :
     IsSelfInv a ↔ a = 1 :=
   inv_eq_self
 
@@ -49,6 +50,6 @@ theorem isSelfNeg_of_isSMulRegular_two {R : Type*} [NonAssocRing R] (h : IsSMulR
     {a : R} : IsSelfNeg a ↔ a = 0 :=
   isSelfNeg_iff_two_nsmul_eq_zero.trans ⟨(h <| by simpa using ·), (by simp [·])⟩
 
-theorem isSelfInv_of_divisionRing {K : Type*} [DivisionRing K] {a : K} :
+theorem isSelfInv_iff_eq_neg_one_or_eq_zero_or_eq_one {K : Type*} [DivisionRing K] {a : K} :
     IsSelfInv a ↔ a = -1 ∨ a = 0 ∨ a = 1 :=
   inv_eq_self₀
