@@ -35,10 +35,10 @@ def IsSelfInv (a : α) : Prop := a⁻¹ = a
 lemma isSelfInv_iff : IsSelfInv a ↔ a⁻¹ = a := Iff.rfl
 
 @[to_additive]
-lemma IsSelfInv.inv_eq (h : IsSelfInv a) : a⁻¹ = a := h
+protected lemma IsSelfInv.inv_eq (h : IsSelfInv a) : a⁻¹ = a := h
 
 @[to_additive]
-lemma IsSelfInv.eq_inv (h : IsSelfInv a) : a = a⁻¹ := h.symm
+protected lemma IsSelfInv.eq_inv (h : IsSelfInv a) : a = a⁻¹ := h.symm
 
 end Inv
 
@@ -57,11 +57,11 @@ section DivisionCommMonoid
 variable [DivisionCommMonoid α] {a b : α}
 
 @[to_additive]
-lemma IsSelfInv.mul (ha : IsSelfInv a) (hb : IsSelfInv b) : IsSelfInv (a * b) := by
+protected lemma IsSelfInv.mul (ha : IsSelfInv a) (hb : IsSelfInv b) : IsSelfInv (a * b) := by
   rw [isSelfInv_iff, mul_inv, ha, hb]
 
 @[to_additive]
-lemma IsSelfInv.div (ha : IsSelfInv a) (hb : IsSelfInv b) : IsSelfInv (a / b) :=
+protected lemma IsSelfInv.div (ha : IsSelfInv a) (hb : IsSelfInv b) : IsSelfInv (a / b) :=
   div_eq_mul_inv a b ▸ ha.mul hb.inv
 
 end DivisionCommMonoid

@@ -34,15 +34,15 @@ lemma isSelfInv_iff_forall_inv_mem_iff : IsSelfInv s ↔ ∀ x, x⁻¹ ∈ s ↔
 protected lemma IsSelfInv.empty : IsSelfInv (∅ : Set α) := inv_empty
 
 @[to_additive (attr := simp)]
-lemma IsSelfInv.univ : IsSelfInv (univ : Set α) := inv_univ
+protected lemma IsSelfInv.univ : IsSelfInv (univ : Set α) := inv_univ
 
 @[to_additive]
-lemma IsSelfInv.inter (hs : IsSelfInv s) (ht : IsSelfInv t) :
+protected lemma IsSelfInv.inter (hs : IsSelfInv s) (ht : IsSelfInv t) :
     IsSelfInv (s ∩ t) := by
   rw [isSelfInv_iff, inter_inv, hs, ht]
 
 @[to_additive]
-lemma IsSelfInv.union (hs : IsSelfInv s) (ht : IsSelfInv t) :
+protected lemma IsSelfInv.union (hs : IsSelfInv s) (ht : IsSelfInv t) :
     IsSelfInv (s ∪ t) := by
   rw [isSelfInv_iff, union_inv, hs, ht]
 
@@ -67,7 +67,7 @@ protected lemma IsSelfInv.sInter {S : Set (Set α)} (h : ∀ s ∈ S, IsSelfInv 
   sInter_eq_iInter ▸ .iInter fun s ↦ h s s.2
 
 @[to_additive]
-lemma IsSelfInv.prod {t : Set β} (hs : IsSelfInv s) (ht : IsSelfInv t) :
+protected lemma IsSelfInv.prod {t : Set β} (hs : IsSelfInv s) (ht : IsSelfInv t) :
     IsSelfInv (s ×ˢ t) := by
   rw [isSelfInv_iff, inv_prod, hs, ht]
 
@@ -102,11 +102,11 @@ lemma isSelfInv_iff_forall_inv_mem : IsSelfInv s ↔ ∀ ⦃x⦄, x ∈ s → x�
   exact ⟨fun h x hx ↦ (h x).2 hx, fun h x ↦ ⟨fun hx ↦ inv_inv x ▸ h hx, @h x⟩⟩
 
 @[to_additive]
-lemma IsSelfInv.inv_mem (h : IsSelfInv s) {x : α} (hx : x ∈ s) : x⁻¹ ∈ s :=
+protected lemma IsSelfInv.inv_mem (h : IsSelfInv s) {x : α} (hx : x ∈ s) : x⁻¹ ∈ s :=
   isSelfInv_iff_forall_inv_mem.mp h hx
 
 @[to_additive]
-lemma IsSelfInv.diff (hs : IsSelfInv s) (ht : IsSelfInv t) : IsSelfInv (s \ t) := by
+protected lemma IsSelfInv.diff (hs : IsSelfInv s) (ht : IsSelfInv t) : IsSelfInv (s \ t) := by
   simpa only [sdiff_eq] using hs.inter ht.compl
 
 end InvolutiveInv
