@@ -551,7 +551,7 @@ variable {K v O p}
 
 @[simp]
 theorem preVal_zero : preVal K v O p 0 = 0 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 include hv
 
@@ -559,7 +559,7 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
     preVal K v O p (Ideal.Quotient.mk _ x) = v (algebraMap O K x) := by
   obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Ideal.Quotient.mk _ x).out - x :=
     Ideal.mem_span_singleton'.1 <| Ideal.Quotient.eq.1 <| Quotient.sound' <| Quotient.mk_out' _
-  refine (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_ge ?_)
+  refine (ite_eq_right hx).trans (v.map_eq_of_sub_lt <| lt_of_not_ge ?_)
   rw [← map_sub, ← hr, hv.le_iff_dvd]
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
@@ -714,14 +714,14 @@ theorem coeff_nat_find_add_ne_zero {f : PreTilt O p} {h : ∃ n, coeff n f ≠ 0
 
 @[simp]
 theorem valAux_zero : valAux K v O p 0 = 0 :=
-  dif_neg fun ⟨_, hn⟩ => hn rfl
+  dite_eq_right fun ⟨_, hn⟩ => hn rfl
 
 include hv
 
 theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
     valAux K v O p f = ModP.preVal K v O p (coeff n f) ^ p ^ n := by
   have h : ∃ n, coeff n f ≠ 0 := ⟨n, hfn⟩
-  rw [valAux, dif_pos h]
+  rw [valAux, dite_eq_left h]
   classical
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
   induction k with
