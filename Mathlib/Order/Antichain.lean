@@ -389,6 +389,14 @@ namespace IsMaxAntichain
 theorem isAntichain (h : IsMaxAntichain r s) : IsAntichain r s :=
   h.1
 
+/-- Every element is related, in one direction or the other, to some element of a maximal
+antichain. -/
+theorem exists_rel_or_rel [Std.Refl r] (hs : IsMaxAntichain r s) : ∃ b ∈ s, r b a ∨ r a b := by
+  by_contra! h
+  have := hs.2 (hs.1.insert (fun _ hb _ => (h _ hb).1) fun _ hb _ => (h _ hb).2)
+    (subset_insert _ _)
+  grind [Std.Refl.refl a]
+
 protected theorem image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc : IsMaxAntichain r c) :
     IsMaxAntichain s (e '' c) where
   left := hc.isAntichain.image _ fun _ _ ↦ e.map_rel_iff'.mp
