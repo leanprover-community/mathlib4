@@ -533,13 +533,14 @@ section IsAddLeftInvariant
 
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsNegInvariant μ] [IsAddLeftInvariant μ]
 
-omit [NormedSpace ℝ F] in
+omit [NormedSpace ℝ F] [SFinite μ] in
 lemma lintegral_enorm_convolution_le {p q r : ENNReal} [hpq : p.HolderTriple q r]
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
     eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
-  rw [← eLpNorm_comp_measurePreserving hg (μ.measurePreserving_sub_left x₀)]
+  have hmp := μ.measurePreserving_sub_left x₀
+  rw [← eLpNorm_comp_measurePreserving hg hmp]
   exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm hf
-    (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀)) (L ·) ‖L‖₊
+    (hg.comp_quasiMeasurePreserving hmp.quasiMeasurePreserving) (L ·) ‖L‖ₑ
     (.of_forall fun _ ↦ L.le_opENorm₂ ..)
 
 omit [NormedSpace ℝ F] in
@@ -554,6 +555,7 @@ theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal
   · exact (lintegral_enorm_convolution_le L hfp.aestronglyMeasurable
       hgq.aestronglyMeasurable x).trans_lt (by finiteness)
 
+omit [SFinite μ] in
 /-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
 by `‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ`. -/
 theorem enorm_convolution_le {p q : ENNReal}
