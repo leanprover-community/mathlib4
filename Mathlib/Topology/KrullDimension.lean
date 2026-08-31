@@ -130,7 +130,7 @@ is not all of `X` contains only finitely many points of coheight `1` (in the spe
 of `X`).
 -/
 lemma TopologicalSpace.NoetherianSpace.finite_coheight_one_of_closure_ne_univ
-    [QuasiSober X] [IrreducibleSpace X] [T0Space X] {p : Set X}
+    [QuasiSober X] [IrreducibleSpace X] {p : Set X}
     [NoetherianSpace p] [QuasiSober p] (hp : closure p ≠ univ) :
     {x ∈ p | coheight x = 1}.Finite := by
   have h : {x : p | coheight x = 0}.Finite := by
