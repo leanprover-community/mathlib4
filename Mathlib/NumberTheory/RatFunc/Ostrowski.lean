@@ -19,7 +19,7 @@ valuation at infinity `FunctionField.inftyValuation K`.
 - `RatFunc.valuation_isEquiv_infty_or_adic`: Ostrowski's theorem for `K(X)`.
 
 ### TODO
-- Show that a nontrivial valuation `v`, trivial on `K`, is a rank one discrete valuation.
+- Show that a nontrivial valuation `v`, trivial on `K`, is a rank one discrete valuation. (*)
 
 -/
 
@@ -186,6 +186,28 @@ lemma exists_zpow_uniformizingPolynomial {f : RatFunc K} (hf : f ≠ 0) :
       valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hq,
       valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle
         (p := p) (by aesop)]
+
+-- TODO: remove the hypothesis [hv : IsRankOneDiscrete v] once TODO (*) is in Mathlib.
+lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
+    v.IsUniformizer πᵥ := by
+  have h0 : v πᵥ ≠ 0 := by simpa using uniformizingPolynomial_ne_zero hle
+  rw [IsUniformizer, ← hv.valueGroup_genLTOne_eq_generator, ← h0.isUnit.unit_spec, Units.val_inj]
+  apply LinearOrderedCommGroup.Subgroup.genLTOne_unique
+  · rw [← Units.val_lt_val, h0.isUnit.unit_spec, Units.val_one]
+    exact valuation_uniformizingPolynomial_lt_one hle
+  · ext γ
+    simp only [coePolynomial_eq_algebraMap, MonoidWithZeroHom.mem_valueGroup_iff_of_comm, ne_eq,
+      map_eq_zero, Subgroup.mem_zpowers_iff]
+    refine ⟨fun ⟨k, hk⟩ ↦ ?_, fun ⟨a, ha, b, hab⟩ ↦ ?_⟩
+    · use 1, one_ne_zero, πᵥ ^ k
+      simp only [← Units.val_inj, Units.val_zpow_eq_zpow_val] at hk
+      simp [← hk]
+    · obtain ⟨ka, hka⟩ := exists_zpow_uniformizingPolynomial hle ha
+      obtain ⟨kb, hkb⟩ := exists_zpow_uniformizingPolynomial hle (f := b) (by aesop)
+      rw [MonoidWithZeroHom.coe_ofClass, hka, hkb] at hab
+      use kb - ka
+      have : v ↑πᵥ ^ ka ≠ 0 := zpow_ne_zero _ h0
+      simp [zpow_sub, ← Units.val_inj, ← coePolynomial_eq_algebraMap, field, ← hab]
 
 lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one :
     v.IsEquiv ((Pᵥ).valuation (RatFunc K)) := by
