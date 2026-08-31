@@ -5,11 +5,12 @@ Authors: Andrew Yang, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Algebra
 
 /-!
 
@@ -42,8 +43,6 @@ that has little to do with this definition.
 public section
 
 namespace Convexity
-
-open ConvexSpace
 
 variable {I X : Type*}
 
@@ -258,14 +257,13 @@ lemma continuous_convexCombPair' [BoundedSpace X]
 @[deprecated (since := "2026-05-15")]
 alias continuous_convexComboPair' := continuous_convexCombPair'
 
-attribute [local instance] AddTorsor.toConvexSpace in
 instance (priority := low) {V P : Type*}
-    [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P] :
+    [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+    [ConvexSpace ℝ P] [IsAffineConvexSpace ℝ V P] :
     IsConvexDist P where
   dist_iConvexComb_fst_snd_le f := by
     let p : P := Nonempty.some inferInstance
-    simp only [AddTorsor.iConvexComb_eq_affineCombination]
-    rw [Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p,
+    repeat rw [AddTorsor.iConvexComb_eq_affineCombination,
       Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p]
     suffices ‖f.weights.sum fun a b ↦ b • (a.1 -ᵥ a.2)‖ ≤
       f.weights.sum fun a b ↦ b * ‖a.1 -ᵥ a.2‖ by
@@ -276,7 +274,7 @@ instance (priority := low) {V P : Type*}
 instance IsConvexDist.subtype (s : Set X) (hs : IsConvexSet ℝ s) :
     letI : ConvexSpace ℝ s := .subtype s hs
     IsConvexDist s := by
-  letI : ConvexSpace ℝ s := .subtype s hs
+  let : ConvexSpace ℝ s := .subtype s hs
   refine ⟨fun f ↦ ?_⟩
   convert dist_iConvexComb_fst_snd_le (X := X) (f.map fun x ↦ (x.1, x.2)) <;>
     simp [Subtype.dist_eq, Finsupp.sum_mapDomain_index, add_mul]

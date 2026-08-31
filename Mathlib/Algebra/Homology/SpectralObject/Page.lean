@@ -80,7 +80,6 @@ variable {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
   {i'' j'' k'' l'' : ι} (f₁'' : i'' ⟶ j'') (f₂'' : j'' ⟶ k'') (f₃'' : k'' ⟶ l'')
   (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃')
   (β : mk₃ f₁' f₂' f₃' ⟶ mk₃ f₁'' f₂'' f₃'')
-  (γ : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁'' f₂'' f₃'')
   (n₀ n₁ n₂ : ℤ)
 
 /-- The functoriality of `shortComplex` with respect to morphisms
@@ -162,7 +161,6 @@ lemma δ_eq_zero_of_isIso₂ (hg : IsIso g) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 
 end
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isZero_H_obj_of_isIso {i j : ι} (f : i ⟶ j) (hf : IsIso f) (n : ℤ) :
     IsZero ((X.H n).obj (mk₁ f)) := by
   let e : mk₁ (𝟙 i) ≅ mk₁ f := isoMk₁ (Iso.refl _) (asIso f) (by simp)
@@ -437,6 +435,7 @@ noncomputable def descE (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.E f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ⟶ A :=
   (X.cokernelSequenceE_exact f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ n₂).desc x (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma toCycles_πE_descE (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.toCycles f₁ f₂ f₁₂ h₁₂ n₁ ≫ X.πE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ≫
@@ -688,6 +687,9 @@ section
 
 variable {i j : ι} (f : i ⟶ j) {i' j' : ι} (f' : i' ⟶ j')
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An homology data for `X.shortComplex n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)`,
 expressing `H^n₁(f)` as the homology of this short complex,
 see `EIsoH`. -/
@@ -917,7 +919,6 @@ variable {i₀ i₁ i₂ i₃ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂
   (f₁₂' : i₀' ⟶ i₂') (h₁₂' : f₁' ≫ f₂' = f₁₂')
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma opcyclesToE_map (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (β : mk₂ f₁₂ f₃ ⟶ mk₂ f₁₂' f₃')
     (n₀ n₁ n₂ : ℤ) (h₀ : β.app 0 = α.app 0 := by cat_disch) (h₁ : β.app 1 = α.app 2 := by cat_disch)

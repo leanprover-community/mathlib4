@@ -24,6 +24,7 @@ namespace CategoryTheory
 -- intended to be used with explicit universe parameters
 set_option linter.checkUnivs false in
 /-- Category of quivers. -/
+@[implicit_reducible]
 def Quiv :=
   Bundled Quiver.{v, u}
 
@@ -35,6 +36,7 @@ instance str' (C : Quiv.{v, u}) : Quiver.{v, u} C :=
   C.str
 
 /-- Construct a bundled `Quiv` from the underlying type and the typeclass. -/
+@[implicit_reducible]
 def of (C : Type u) [Quiver.{v} C] : Quiv.{v, u} :=
   Bundled.of C
 
@@ -85,6 +87,7 @@ def freeMap {V W : Type*} [Quiver V] [Quiver W] (F : V ⥤q W) : Paths V ⥤ Pat
   map := F.mapPath
   map_comp f g := F.mapPath_comp f g
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `free : Quiv ⥤ Cat` preserves identities up to natural isomorphism and in fact up
 to equality. -/
@@ -96,6 +99,7 @@ theorem freeMap_id (V : Type*) [Quiver V] :
     freeMap (𝟭q V) = 𝟭 _ :=
   Functor.ext_of_iso (freeMapIdIso V) (fun _ ↦ rfl)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `free : Quiv ⥤ Cat` preserves composition up to natural isomorphism and in fact up
 to equality. -/
@@ -199,6 +203,7 @@ def lift {V : Type u} [Quiver.{v} V] {C : Type u₁} [Category.{v₁} C]
   obj X := F.obj X
   map f := composePath (F.mapPath f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Naturality of `pathComposition`. -/
 def pathCompositionNaturality {C : Type u} {D : Type u₁}
@@ -206,6 +211,7 @@ def pathCompositionNaturality {C : Type u} {D : Type u₁}
     Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D ≅ pathComposition C ⋙ F :=
   Paths.liftNatIso (fun _ ↦ Iso.refl _) (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Naturality of `pathComposition`, which defines a natural transformation
 `Quiv.forget ⋙ Cat.free ⟶ 𝟭 _`. -/
@@ -220,12 +226,14 @@ lemma pathsOf_freeMap_toPrefunctor
     {V : Type u} {W : Type u₁} [Quiver.{v} V] [Quiver.{v₁} W] (F : V ⥤q W) :
     Paths.of V ⋙q (Cat.freeMap F).toPrefunctor = F ⋙q Paths.of W := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The left triangle identity of `Cat.free ⊣ Quiv.forget` as a natural isomorphism -/
 def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{v} V] :
     Cat.freeMap (Paths.of V) ⋙ pathComposition (Paths V) ≅ 𝟭 (Paths V) :=
   Paths.liftNatIso (fun v ↦ Iso.refl _) (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma freeMap_pathsOf_pathComposition (V : Type u) [Quiver.{v} V] :
     Cat.freeMap (Paths.of (V := V)) ⋙ pathComposition (Paths V) = 𝟭 (Paths V) :=
