@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Polynomial.CoeffList
 public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.List.Destutter
-public import Mathlib.Data.Sign.Basic
 
 /-!
 

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.ENNReal.Operations
+public import Mathlib.Basic.ENNReal.Operations
 
 /-!
 # Results about division in extended non-negative reals

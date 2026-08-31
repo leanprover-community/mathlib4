@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 public import Mathlib.Tactic.Ring
 public import Mathlib.Util.Qq
@@ -289,7 +289,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 
 /-- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
-defined in `Data.Complex.Module`. -/
+defined in `Mathlib.LinearAlgebra.Complex.Module`. -/
 instance : Nontrivial ℂ :=
   domain_nontrivial re rfl rfl
 

@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Basic.ENNReal.Inv
 
 /-! # Hölder triples
 

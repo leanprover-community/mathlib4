@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Countable.Defs
-public import Mathlib.Data.Fin.Tuple.Basic
+public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Data.ENat.Defs
+public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Logic.Equiv.Nat
 
 /-!

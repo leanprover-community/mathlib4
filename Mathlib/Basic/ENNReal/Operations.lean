@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Basic.ENNReal.Real
 public import Mathlib.Tactic.Finiteness
 
 /-!
@@ -14,10 +14,10 @@ public import Mathlib.Tactic.Finiteness
 In this file we prove elementary properties of algebraic operations on `ℝ≥0∞`, including addition,
 multiplication, natural powers and truncated subtraction, as well as how these interact with the
 order structure on `ℝ≥0∞`. Notably excluded from this list are inversion and division, the
-definitions and properties of which can be found in `Mathlib/Data/ENNReal/Inv.lean`.
+definitions and properties of which can be found in `Mathlib/Basic/ENNReal/Inv.lean`.
 
 Note: the definitions of the operations included in this file can be found in
-`Mathlib/Data/ENNReal/Basic.lean`.
+`Mathlib/Basic/ENNReal/Basic.lean`.
 -/
 
 public section
