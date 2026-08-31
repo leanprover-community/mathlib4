@@ -102,9 +102,7 @@ def coheightZeroSetOrderIsoIrreducibleComponents [QuasiSober X] [T0Space X] :
     {x : X | coheight x = 0} ≃o irreducibleComponents X := by
   have univIso : Subtype (fun _ : X ↦ (⊤ : Prop)) ≃o X :=
     { Equiv.subtypeUnivEquiv fun _ ↦ trivial with map_rel_iff' := Iff.rfl }
-  have : {x : X | coheight x = 0} = {x : X | Maximal ⊤ x} := by
-    simp only [coheight_eq_zero, ← maximal_true]
-    congr
+  have : {x : X | coheight x = 0} = {x : X | Maximal ⊤ x} := by simp [maximal_iff_isMax]
   rw [irreducibleComponents_eq_maximals_closed, this]
   exact OrderIso.mapSetOfPredMaximal <| OrderIso.trans
     (OrderIso.trans univIso (irreducibleSetEquivPoints (α := X)).symm) <|
