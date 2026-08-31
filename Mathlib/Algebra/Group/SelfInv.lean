@@ -53,9 +53,13 @@ lemma isSelfInv_inv [InvolutiveInv α] {a : α} : IsSelfInv a⁻¹ ↔ IsSelfInv
 alias ⟨_, IsSelfInv.inv⟩ := isSelfInv_inv
 
 @[to_additive]
-protected lemma IsSelfInv.conj [DivisionMonoid α] {a b : α} (h : IsSelfInv a) :
+protected lemma IsSelfInv.conj [DivisionMonoid α] {a : α} (h : IsSelfInv a) (b : α) :
     IsSelfInv (b * a * b⁻¹) := by
   rw [isSelfInv_iff, mul_inv_rev, mul_inv_rev, inv_inv, h, mul_assoc]
+
+@[to_additive]
+lemma isSelfInv_conj_iff [Group α] {a b : α} : IsSelfInv (b * a * b⁻¹) ↔ IsSelfInv a :=
+  ⟨fun h ↦ by simpa [mul_assoc] using h.conj b⁻¹, fun h ↦ h.conj b⟩
 
 section DivisionCommMonoid
 
