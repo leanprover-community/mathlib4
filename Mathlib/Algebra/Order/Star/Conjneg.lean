@@ -19,6 +19,11 @@ open scoped ComplexConjugate
 
 variable {G R : Type*} [AddGroup G]
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 section OrderedCommSemiring
 variable [CommSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {f : G → R}
 

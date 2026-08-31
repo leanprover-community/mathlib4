@@ -22,6 +22,11 @@ open Function Int
 
 variable {α : Type*}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+  IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+
 section OrderedCommGroup
 variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {m n : ℤ} {a b : α}
 

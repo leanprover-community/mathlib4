@@ -33,6 +33,10 @@ open LinearMap Set
 
 open scoped Convex Pointwise
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 /-! ### Convexity of sets -/
 
 

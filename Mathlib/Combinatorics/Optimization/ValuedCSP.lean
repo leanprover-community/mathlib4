@@ -46,6 +46,10 @@ abbrev ValuedCSP (D C : Type*) [AddCommMonoid C] [PartialOrder C] [IsOrderedAddM
 
 variable {D C : Type*} [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C]
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+
 /-- A term in a valued CSP instance over the template `Γ`. -/
 structure ValuedCSP.Term (Γ : ValuedCSP D C) (ι : Type*) where
   /-- Arity of the function -/

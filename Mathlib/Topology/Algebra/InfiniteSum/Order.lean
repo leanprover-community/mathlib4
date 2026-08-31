@@ -23,6 +23,10 @@ open Finset Filter Function
 
 variable {ι κ α : Type*} {L : SummationFilter ι}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+
 section Preorder
 
 variable [Preorder α] [CommMonoid α] [TopologicalSpace α] {a c : α} {f : ι → α}

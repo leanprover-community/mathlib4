@@ -27,6 +27,11 @@ public section
 
 variable {R : Type*}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 /-- An ordered additive commutative monoid is called `Archimedean` if for any two elements `x`, `y`
 such that `0 < y`, there exists a natural number `n` such that `x ≤ n • y`. -/
 class Archimedean (R) [AddCommMonoid R] [PartialOrder R] : Prop where

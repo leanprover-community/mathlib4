@@ -130,6 +130,11 @@ open OrderDual
 
 variable (α β : Type*)
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 section Defs
 variable [SMul α β] [Preorder α] [Preorder β]
 

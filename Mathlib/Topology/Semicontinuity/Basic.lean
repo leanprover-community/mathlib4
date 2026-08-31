@@ -69,6 +69,11 @@ open Set Function Filter
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace γ] {f : α → β} {s t : Set α}
   {x : α} {y z : β}
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+  IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+
 /-! ### lower bounds -/
 
 section

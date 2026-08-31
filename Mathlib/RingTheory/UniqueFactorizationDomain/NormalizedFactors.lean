@@ -31,6 +31,10 @@ namespace UniqueFactorizationMonoid
 variable [CommMonoidWithZero α] [NormalizationMonoid α]
 variable [UniqueFactorizationMonoid α]
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+
 /-- Noncomputably determines the multiset of prime factors. -/
 noncomputable def normalizedFactors (a : α) : Multiset α :=
   Multiset.map normalize <| factors a

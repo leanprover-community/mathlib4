@@ -30,6 +30,10 @@ open AffineMap
 
 variable {k E PE : Type*} [Field k] [AddCommGroup E] [Module k E] [AddTorsor E PE]
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+
 /-- `slope f a b = (b - a)⁻¹ • (f b -ᵥ f a)` is the slope of a function `f` on the interval
 `[a, b]`. Note that `slope f a a = 0`, not the derivative of `f` at `a`. -/
 def slope (f : k → PE) (a b : k) : E :=

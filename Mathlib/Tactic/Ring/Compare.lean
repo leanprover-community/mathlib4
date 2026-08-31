@@ -43,6 +43,10 @@ namespace Mathlib.Tactic.Ring
 
 open Lean Qq Meta
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 /-! Rather than having the metaprograms `Mathlib.Tactic.Ring.evalLE.lean` and
 `Mathlib.Tactic.Ring.evalLT.lean` perform all type class inference at the point of use, we record in
 advance, as `abbrev`s, a few type class deductions which will certainly be necessary.  They add no

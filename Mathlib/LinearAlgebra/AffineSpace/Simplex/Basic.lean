@@ -36,6 +36,10 @@ noncomputable section
 open Finset Function Module
 open scoped Affine
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+
 namespace Affine
 
 variable (k : Type*) {V V₂ V₃ : Type*} (P P₂ P₃ : Type*)

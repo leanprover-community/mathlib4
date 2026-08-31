@@ -38,6 +38,11 @@ variable {𝕜 E F G ι : Type*} {M : ι → Type*}
 open Function Module Set
 open scoped Pointwise Convex
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 section OrderedSemiring
 
 variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]

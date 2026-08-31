@@ -436,12 +436,14 @@ theorem covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·
     CovariantClass M N μ (· ≤ ·) := ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
 
 @[to_additive]
-theorem mulLeftMono_of_mulLeftStrictMono (M) [Mul M] [PartialOrder M] [MulLeftStrictMono M] :
-    MulLeftMono M := covariantClass_le_of_lt _ _ _
+instance (priority := 1) mulLeftMono_of_mulLeftStrictMono (M) [Mul M] [PartialOrder M]
+    [MulLeftStrictMono M] : MulLeftMono M :=
+  covariantClass_le_of_lt _ _ _
 
 @[to_additive]
-theorem mulRightMono_of_mulRightStrictMono (M) [Mul M] [PartialOrder M] [MulRightStrictMono M] :
-    MulRightMono M := covariantClass_le_of_lt _ _ _
+instance (priority := 1) mulRightMono_of_mulRightStrictMono (M) [Mul M] [PartialOrder M]
+    [MulRightStrictMono M] : MulRightMono M :=
+  covariantClass_le_of_lt _ _ _
 
 theorem contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :
     Contravariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) ∧ Contravariant M N μ (· = ·) := by
@@ -550,26 +552,26 @@ theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
   then the following four instances (actually eight) can be removed in favor of the above two. -/
 
 @[to_additive]
-instance IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono [Mul N] [IsLeftCancelMul N]
+theorem IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono [Mul N] [IsLeftCancelMul N]
     [PartialOrder N] [MulLeftMono N] :
     MulLeftStrictMono N where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_right a).mpr bc.ne)
 
 @[to_additive]
-instance IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+theorem IsRightCancelMul.mulRightStrictMono_of_mulRightMono
     [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightMono N] :
     MulRightStrictMono N where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_left a).mpr bc.ne)
 
 @[to_additive]
-instance IsLeftCancelMul.mulLeftReflectLE_of_mulLeftReflectLT [Mul N] [IsLeftCancelMul N]
+theorem IsLeftCancelMul.mulLeftReflectLE_of_mulLeftReflectLT [Mul N] [IsLeftCancelMul N]
     [PartialOrder N] [MulLeftReflectLT N] :
     MulLeftReflectLE N where
   le_of_mul_le_mul_left' := contravariant_le_iff_contravariant_lt_and_eq N N _ |>.mpr
     ⟨‹MulLeftReflectLT N›.elim, fun _ ↦ mul_left_cancel⟩ _
 
 @[to_additive]
-instance IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
+theorem IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
     [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightReflectLT N] :
     MulRightReflectLE N where
   le_of_mul_le_mul_right' := contravariant_le_iff_contravariant_lt_and_eq N N _ |>.mpr

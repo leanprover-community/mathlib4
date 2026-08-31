@@ -36,6 +36,13 @@ public import Mathlib.Order.Interval.Finset.Basic
 
 open Finset
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
+  IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+  IsLeftCancelMul.mulLeftReflectLE_of_mulLeftReflectLT
+  IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
+
 section Multiplicative
 
 variable {M : Type*} [CancelCommMonoid M] [LinearOrder M] [IsOrderedMonoid M] [LocallyFiniteOrder M]

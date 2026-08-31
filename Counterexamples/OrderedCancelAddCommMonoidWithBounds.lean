@@ -16,6 +16,11 @@ as such a structure must be trivial (`⊥ = x = ⊤` for all `x`).
 The same applies to any superclasses, e.g. combining `IsStrictOrderedRing` with `CompleteLattice`.
 -/
 
+/- The conversions deriving strict monotonicity and `≤`-reflection from cancellation
+have been changed from instances to theorems for performance reasons. -/
+attribute [local instance] IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono
+  IsRightCancelAdd.addRightStrictMono_of_addRightMono
+
 example {α : Type*} [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     [BoundedOrder α] [Nontrivial α] : False :=
   have top_pos := pos_of_lt_add_right (bot_le.trans_lt (add_lt_add_right bot_lt_top (⊥ : α)))
