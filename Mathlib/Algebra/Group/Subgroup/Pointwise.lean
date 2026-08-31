@@ -44,7 +44,7 @@ theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : 
   Set.ext fun _ => inv_mem_iff
 
 @[to_additive (attr := simp)]
-theorem InvMemClass.isSelfInv [InvolutiveInv G] [SetLike S G] [InvMemClass S G] (H : S) :
+theorem IsSelfInv.of_invMemClass [InvolutiveInv G] [SetLike S G] [InvMemClass S G] (H : S) :
     IsSelfInv (H : Set G) :=
   inv_coe_set
 
