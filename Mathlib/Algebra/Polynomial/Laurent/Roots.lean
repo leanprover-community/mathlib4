@@ -19,6 +19,8 @@ as soon as there are infinitely many of them: this is the analogue for `R[T;T⁻
 
 * `LaurentPolynomial.eq_zero_of_infinite_eval₂_eq_zero`: a Laurent polynomial vanishing at
   infinitely many units is zero.
+* `LaurentPolynomial.eq_of_infinite_eval₂_eq`: two Laurent polynomials agreeing at infinitely
+  many units are equal.
 -/
 
 @[expose] public section
@@ -37,5 +39,10 @@ theorem eq_zero_of_infinite_eval₂_eq_zero (p : R[T;T⁻¹])
     simpa [Polynomial.IsRoot, ← Polynomial.eval₂_id, ← eval₂_toLaurent, hq] using hx
   rw [hq0, map_zero] at hq
   exact (isUnit_T (n : ℤ)).mul_left_eq_zero.mp hq.symm
+
+/-- Two Laurent polynomials agreeing at infinitely many units are equal. -/
+theorem eq_of_infinite_eval₂_eq {p q : R[T;T⁻¹]}
+    (h : {x : Rˣ | eval₂ (RingHom.id R) x p = eval₂ (RingHom.id R) x q}.Infinite) : p = q :=
+  sub_eq_zero.mp <| eq_zero_of_infinite_eval₂_eq_zero _ <| by simpa [sub_eq_zero] using h
 
 end LaurentPolynomial
