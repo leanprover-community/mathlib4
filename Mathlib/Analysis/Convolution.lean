@@ -534,7 +534,7 @@ section IsAddLeftInvariant
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsNegInvariant μ] [IsAddLeftInvariant μ]
 
 omit [NormedSpace ℝ F] [SFinite μ] in
-lemma lintegral_enorm_convolution_le {p q r : ENNReal} [hpq : p.HolderTriple q r]
+lemma eLpNorm_convolution_integrand_le {p q r : ENNReal} [hpq : p.HolderTriple q r]
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
     eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
   have hmp := μ.measurePreserving_sub_left x₀
@@ -552,7 +552,7 @@ theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal
   intro x
   refine memLp_one_iff_integrable.mp ⟨?_, ?_⟩
   · exact hfp.aestronglyMeasurable.convolution_integrand_snd L hgq.aestronglyMeasurable x
-  · exact (lintegral_enorm_convolution_le L hfp.aestronglyMeasurable
+  · exact (eLpNorm_convolution_integrand_le L hfp.aestronglyMeasurable
       hgq.aestronglyMeasurable x).trans_lt (by finiteness)
 
 omit [SFinite μ] in
@@ -563,7 +563,7 @@ theorem enorm_convolution_le {p q : ENNReal}
     (x₀ : G) : ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
   calc ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ := enorm_integral_le_lintegral_enorm _
     _ = eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := eLpNorm_one_eq_lintegral_enorm.symm
-    _ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := lintegral_enorm_convolution_le L hf hg x₀
+    _ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := eLpNorm_convolution_integrand_le L hf hg x₀
 
 end IsAddLeftInvariant
 
