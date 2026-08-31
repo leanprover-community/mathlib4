@@ -234,8 +234,8 @@ theorem coeff_monomial_mul (a : R) :
     ∀ p ∈ antidiagonal m,
       coeff (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 (monomial n a) * coeff p.2 φ ≠ 0 → p.1 = n :=
     fun p _ hp => eq_of_coeff_monomial_ne_zero (left_ne_zero_of_mul hp)
-  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.filter_fst_eq_antidiagonal _ n,
-    Finset.sum_ite_index]
+  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.HasAntidiagonal.filter_fst_eq_antidiagonal
+    _ n, Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 
 theorem coeff_mul_monomial (a : R) :
@@ -245,18 +245,18 @@ theorem coeff_mul_monomial (a : R) :
     ∀ p ∈ antidiagonal m,
       coeff (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 φ * coeff p.2 (monomial n a) ≠ 0 → p.2 = n :=
     fun p _ hp => eq_of_coeff_monomial_ne_zero (right_ne_zero_of_mul hp)
-  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.filter_snd_eq_antidiagonal _ n,
-    Finset.sum_ite_index]
+  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.HasAntidiagonal.filter_snd_eq_antidiagonal
+    _ n, Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 
 theorem coeff_add_monomial_mul (a : R) :
     coeff (m + n) (monomial m a * φ) = a * coeff n φ := by
-  rw [coeff_monomial_mul, if_pos, add_tsub_cancel_left]
+  rw [coeff_monomial_mul, ite_eq_left, add_tsub_cancel_left]
   exact le_add_right le_rfl
 
 theorem coeff_add_mul_monomial (a : R) :
     coeff (m + n) (φ * monomial n a) = coeff m φ * a := by
-  rw [coeff_mul_monomial, if_pos, add_tsub_cancel_right]
+  rw [coeff_mul_monomial, ite_eq_left, add_tsub_cancel_right]
   exact le_add_left le_rfl
 
 @[simp]
@@ -351,6 +351,15 @@ theorem coeff_C [DecidableEq σ] (n : σ →₀ ℕ) (a : R) :
 theorem coeff_zero_C (a : R) : coeff (0 : σ →₀ ℕ) (C a) = a :=
   coeff_monomial_same 0 a
 
+theorem coeff_C_of_ne_zero {n : σ →₀ ℕ} (h : n ≠ 0) (a : R) : coeff n (C a) = 0 := by
+  classical rw [coeff_C, ite_eq_right h]
+
+-- The intended use case of this theorem is for `m = 1` (often useful for `pderiv`).
+@[simp]
+theorem coeff_add_single_C {m : ℕ} [NeZero m] {n : σ →₀ ℕ} (a : R) (i : σ) :
+    coeff (n + single i m) (C a) = 0 :=
+  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($(H) i)) a
+
 @[grind inj]
 theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
   intro a b h
@@ -379,7 +388,7 @@ theorem coeff_index_single_self_X (s : σ) : coeff (single s 1) (X s : MvPowerSe
 
 theorem coeff_zero_X (s : σ) : coeff (0 : σ →₀ ℕ) (X s : MvPowerSeries σ R) = 0 := by
   classical
-  rw [coeff_X, if_neg]
+  rw [coeff_X, ite_eq_right]
   intro h
   exact one_ne_zero (single_eq_zero.mp h.symm)
 
@@ -417,7 +426,7 @@ theorem coeff_C_mul (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) (a : R) :
 
 theorem coeff_zero_mul_X (φ : MvPowerSeries σ R) (s : σ) : coeff (0 : σ →₀ ℕ) (φ * X s) = 0 := by
   have : ¬single s 1 ≤ 0 := fun h => by simpa using h s
-  simp only [X, coeff_mul_monomial, if_neg this]
+  simp only [X, coeff_mul_monomial, ite_eq_right this]
 
 theorem coeff_zero_X_mul (φ : MvPowerSeries σ R) (s : σ) : coeff (0 : σ →₀ ℕ) (X s * φ) = 0 := by
   rw [← (φ.commute_X s).eq, coeff_zero_mul_X]
@@ -482,7 +491,7 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
     classical
     intro h
     replace h := congr_arg (coeff (single s 1)) h
-    rw [coeff_X, if_pos rfl, coeff_X] at h
+    rw [coeff_X, ite_eq_left rfl, coeff_X] at h
     split_ifs at h with H
     · rw [Finsupp.single_eq_single_iff] at H
       rcases H with H | H
@@ -499,6 +508,7 @@ section Map
 variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
 variable (f : R →+* S) (g : S →+* T)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map between multivariate formal power series induced by a map on the coefficients. -/
 def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   toFun φ n := f <| coeff n φ
@@ -590,6 +600,7 @@ section Semiring
 
 variable [Semiring R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     (X s : MvPowerSeries σ R) ^ n ∣ φ ↔ ∀ m : σ →₀ ℕ, m s < n → coeff m φ = 0 := by
   classical
@@ -597,7 +608,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
   · rintro ⟨φ, rfl⟩ m h
     rw [coeff_mul, Finset.sum_eq_zero]
     rintro ⟨i, j⟩ hij
-    rw [coeff_X_pow, if_neg, zero_mul]
+    rw [coeff_X_pow, ite_eq_right, zero_mul]
     contrapose! h
     dsimp at h
     subst i
@@ -609,7 +620,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     ext m
     by_cases H : m - single s n + single s n = m
     · rw [coeff_mul, Finset.sum_eq_single (single s n, m - single s n)]
-      · rw [coeff_X_pow, if_pos rfl, one_mul]
+      · rw [coeff_X_pow, ite_eq_left rfl, one_mul]
         simpa using! congr_arg (fun m : σ →₀ ℕ => coeff m φ) H.symm
       · rintro ⟨i, j⟩ hij hne
         rw [mem_antidiagonal] at hij
@@ -659,6 +670,7 @@ open Finset.HasAntidiagonal Finset
 
 variable {R : Type*} [CommSemiring R] {ι : Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :

@@ -214,6 +214,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
 
 
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
+  simp only [Bool.cond_eq_ite]
   induction n using Nat.binaryRecFromOne with
   | zero => simp
   | one => simp
@@ -350,7 +351,7 @@ theorem lt_of_mem_digitsAppend {b : ℕ} (hb : 1 < b) (l i : ℕ)
 
 theorem mapsTo_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.MapsTo (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} :=
-  fun _ h ↦ Set.mem_setOf.mpr h.1 ▸ Nat.ofDigits_lt_base_pow_length hb h.2
+  fun _ h ↦ Set.mem_ofPred.mpr h.1 ▸ Nat.ofDigits_lt_base_pow_length hb h.2
 
 theorem mapsTo_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.MapsTo (digitsAppend b l) {n | n < b ^ l} {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=

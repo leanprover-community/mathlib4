@@ -197,10 +197,14 @@ theorem ker_projectionOntoL (h : IsTopCompl p q) :
     (p.projectionOntoL q h).ker = q := by
   simp
 
-theorem isQuotientMap_projectionOntoL (h : IsTopCompl p q) :
-    IsQuotientMap (p.projectionOntoL q h) :=
+theorem isQuotientMap_projectionOnto (h : IsTopCompl p q) :
+    IsQuotientMap (p.projectionOnto q h.isCompl) :=
   .of_inverse continuous_subtype_val (p.projectionOntoL q h).continuous
     (projectionOntoL_apply_left h)
+
+theorem isQuotientMap_projectionOntoL (h : IsTopCompl p q) :
+    IsQuotientMap (p.projectionOntoL q h) :=
+  isQuotientMap_projectionOnto h
 
 end projectionOnto
 
@@ -284,7 +288,7 @@ lemma projectionL_eq_id_sub_projectionL [IsTopologicalAddGroup M] (h : IsTopComp
   ContinuousLinearMap.ext <| projectionL_eq_self_sub_projectionL h
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
-lemma projectionL_eq_self_iff [ContinuousSub M] (h : IsTopCompl p q) (x : M) :
+lemma projectionL_eq_self_iff (h : IsTopCompl p q) (x : M) :
     p.projectionL q h x = x ↔ x ∈ p :=
   projection_eq_self_iff h.isCompl x
 
@@ -385,6 +389,7 @@ theorem _root_.ContinuousLinearMap.closedComplemented_ker_of_rightInverse [Conti
     f₁.ker.ClosedComplemented :=
   f₂.isTopCompl_range_ker_of_leftInverse f₁ h.leftInverse |>.symm.closedComplemented
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `p` is a closed complemented submodule,
 then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R] (p × q)` such that
 `e (x : p) = (x, 0)`, `e (y : q) = (0, y)`, and `e.symm x = x.1 + x.2`.

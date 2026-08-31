@@ -6,6 +6,7 @@ Authors: Rishikesh Vaishnav
 module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Conditional Probability
@@ -71,6 +72,7 @@ variable (μ) in
 /-- The conditional probability measure of measure `μ` on set `s` is `μ` restricted to `s`
 and scaled by the inverse of `μ s` (to make it a probability measure):
 `(μ s)⁻¹ • μ.restrict s`. -/
+@[wikidata Q327069]
 def cond (s : Set Ω) : Measure Ω :=
   (μ s)⁻¹ • μ.restrict s
 

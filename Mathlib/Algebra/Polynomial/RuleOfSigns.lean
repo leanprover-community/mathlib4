@@ -101,7 +101,7 @@ theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
     grind
   by_cases h₄ : SignType.sign P.leadingCoeff = SignType.sign P.eraseLead.leadingCoeff
   · grind [SignType.neg_eq_self_iff]
-  rw [if_pos h₄, if_pos ?_]
+  rw [ite_eq_left h₄, ite_eq_left ?_]
   · grind [Nat.sub_add_cancel, List.length_pos_of_ne_nil, List.destutter'_ne_nil]
   cases _ : SignType.sign P.leadingCoeff
   <;> cases _ : SignType.sign P.eraseLead.leadingCoeff
