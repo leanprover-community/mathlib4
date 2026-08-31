@@ -531,9 +531,9 @@ end IsAddRightInvariant
 
 section IsAddLeftInvariant
 
-variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsNegInvariant μ] [IsAddLeftInvariant μ]
+variable [MeasurableAdd₂ G] [MeasurableNeg G] [IsNegInvariant μ] [IsAddLeftInvariant μ]
 
-omit [NormedSpace ℝ F] [SFinite μ] in
+omit [NormedSpace ℝ F] in
 lemma eLpNorm_convolution_integrand_le {p q r : ENNReal} [hpq : p.HolderTriple q r]
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
     eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
@@ -544,7 +544,7 @@ lemma eLpNorm_convolution_integrand_le {p q r : ENNReal} [hpq : p.HolderTriple q
 omit [NormedSpace ℝ F] in
 /-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
 convolution of `f` and `g` exists everywhere. -/
-theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal}
+theorem ConvolutionExists.of_memLp_memLp [SFinite μ] [IsAddRightInvariant μ] {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
     ConvolutionExists f g L μ := by
   intro x
@@ -553,7 +553,6 @@ theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal
   · exact (eLpNorm_convolution_integrand_le L hfp.aestronglyMeasurable
       hgq.aestronglyMeasurable x).trans_lt (by finiteness)
 
-omit [SFinite μ] in
 /-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
 by `‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ`. -/
 theorem enorm_convolution_le {p q : ENNReal}
