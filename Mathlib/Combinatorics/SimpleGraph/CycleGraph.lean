@@ -172,24 +172,20 @@ variable {V : Type*} {G : SimpleGraph V}
 
 lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
     cycleGraph n ⊑ G ↔ ∃ (v : V) (p : G.Walk v v), p.IsCycle ∧ p.length = n := by
-  refine ⟨fun ⟨h⟩ ↦ ?_, fun h' ↦ ?_⟩
-  · have : n = n - 3 + 3 := by lia
-    rw [this] at h
-    refine ⟨h.toHom ⟨0, by lia⟩, Walk.map h.toHom <| cycleGraph.cycle (n - 3), ?_, ?_⟩
-    · exact (isCycle_map_iff_of_injective h.injective).mpr cycleGraph.isCycle_cycle
-    · simp [cycleGraph.length_cycle, ← this]
-  · obtain ⟨u, p, hp, rfl⟩ := h'
-    -- The copy sends `i : Fin p.length` to the `i`-th vertex of the cycle `p`.
-    have key {i j : Fin p.length} (h : (j - i).val = 1) : G.Adj (p.getVert i) (p.getVert j) := by
-      rcases Nat.lt_or_ge j i with hij | hij
-      · -- wraparound: `i` is the last vertex of `p` and `j` the first
-        rw [Fin.coe_sub_iff_lt.mpr (Fin.lt_def.mpr hij)] at h
-        rw [show i = p.length - 1 by lia, show ↑j = 0 by lia, getVert_zero]
-        exact p.adj_penultimate hp.not_nil
-      · grind [adj_getVert_succ, Fin.sub_val_of_le]
-    refine ⟨⟨(p.getVert ·), fun hij ↦ ?_⟩, fun i j hij ↦ ?_⟩
-    · exact cycleGraph_adj'.mp hij |>.elim (key · |>.symm) key
-    · grind [hp.getVert_injOn', Set.InjOn, RelHom.coeFn_mk]
+  have hn' : n - 3 + 3 = n := by lia
+  refine ⟨fun ⟨h⟩ ↦ ⟨_, _, cycleGraph.isCycle_cycle.map (hn' ▸ h).injective, by simp [hn']⟩, ?_⟩
+  rintro ⟨u, p, hp, rfl⟩
+  -- The copy sends `i : Fin p.length` to the `i`-th vertex of the cycle `p`.
+  have key {i j : Fin p.length} (h : (j - i).val = 1) : G.Adj (p.getVert i) (p.getVert j) := by
+    rcases Nat.lt_or_ge j i with hij | hij
+    · -- wraparound: `i` is the last vertex of `p` and `j` the first
+      rw [Fin.coe_sub_iff_lt.mpr (Fin.lt_def.mpr hij)] at h
+      rw [show i = p.length - 1 by lia, show ↑j = 0 by lia, getVert_zero]
+      exact p.adj_penultimate hp.not_nil
+    · grind [adj_getVert_succ, Fin.sub_val_of_le]
+  refine ⟨⟨(p.getVert ·), fun hij ↦ ?_⟩, fun i j hij ↦ ?_⟩
+  · exact cycleGraph_adj'.mp hij |>.elim (key · |>.symm) key
+  · grind [hp.getVert_injOn', Set.InjOn, RelHom.coeFn_mk]
 
 end IsContained
 

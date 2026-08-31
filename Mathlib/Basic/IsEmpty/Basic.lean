@@ -5,11 +5,13 @@ Authors: Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Logic.IsEmpty.Defs
 public import Mathlib.Logic.Relator
 
 /-!
+# Basic properties of `IsEmpty`
+
 In this file we prove some basic properties about the typeclass `IsEmpty`.
 -/
 
