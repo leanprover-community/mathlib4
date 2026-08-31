@@ -16,6 +16,15 @@ This file introduces convex polytopes as V-polytopes and proves basic facts.
 ## Main declarations
 
 * `IsPolytope`: states that a set is the convex hull of finitely many points.
+
+## Remarks
+
+* We decided to not implement bundled polytope until a clear usecase comes up.
+
+## TODO
+
+* Implement `IsPolyhedron` using the H-definition.
+* Prove that polytopes are H-polyhedra in vector spaces.
 -/
 
 public noncomputable section
