@@ -71,6 +71,9 @@ structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- `section_` composed with `f` is the identity -/
   id : section_ ≫ f = 𝟙 Y := by cat_disch
 
+-- TODO: `to_dual` should add these automatically:
+attribute [to_dual existing] SplitEpi.ext SplitEpi.ext_iff
+
 /-- `IsSplitEpi f` is the assertion that `f` admits a section -/
 @[to_dual]
 class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
@@ -150,7 +153,7 @@ theorem IsIso.of_epi_section {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] [hf' : 
 
 -- FIXME this has unnecessarily become noncomputable!
 /-- A category where every morphism has a `Trunc` retraction is computably a groupoid. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def Groupoid.ofTruncSplitMono
     (all_split_mono : ∀ {X Y : C} (f : X ⟶ Y), Trunc (IsSplitMono f)) : Groupoid.{v₁} C := by
   apply Groupoid.ofIsIso
@@ -173,8 +176,6 @@ class SplitMonoCategory : Prop where
 class SplitEpiCategory : Prop where
   /-- All epis are split -/
   isSplitEpi_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], IsSplitEpi f
-
-attribute [to_dual existing] SplitEpiCategory.isSplitEpi_of_epi SplitEpiCategory.mk
 
 end
 

@@ -39,7 +39,7 @@ convergence in distribution for random variables behave somewhat well in spaces 
 
 @[expose] public section
 
-open BoundedContinuousFunction MeasureTheory Topology Metric Filter Set ENNReal NNReal
+open BoundedContinuousFunction MeasureTheory Filter Set ENNReal NNReal
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 section auxiliary
@@ -217,7 +217,7 @@ end HasOuterApproxClosed --namespace
 
 noncomputable instance (X : Type*) [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] : HasOuterApproxClosed X := by
-  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
+  let : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   refine ⟨fun F hF ↦ ?_⟩
   use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
   refine ⟨?_, ⟨?_, ?_⟩⟩

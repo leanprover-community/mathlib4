@@ -142,12 +142,14 @@ theorem dual_isBase_iff' : M✶.IsBase B ↔ M.IsBase (M.E \ B) ∧ B ⊆ M.E :=
   (em (B ⊆ M.E)).elim (fun h ↦ by rw [dual_isBase_iff, and_iff_left h])
     (fun h ↦ iff_of_false (h ∘ (fun h' ↦ h'.subset_ground)) (h ∘ And.right))
 
-theorem setOf_dual_isBase_eq : {B | M✶.IsBase B} = (fun X ↦ M.E \ X) '' {B | M.IsBase B} := by
+theorem setOfPred_dual_isBase_eq : {B | M✶.IsBase B} = (fun X ↦ M.E \ X) '' {B | M.IsBase B} := by
   ext B
-  simp only [mem_setOf_eq, mem_image, dual_isBase_iff']
+  simp only [mem_ofPred_eq, mem_image, dual_isBase_iff']
   refine ⟨fun h ↦ ⟨_, h.1, sdiff_sdiff_cancel_left h.2⟩,
     fun ⟨B', hB', h⟩ ↦ ⟨?_,h.symm.trans_subset sdiff_subset⟩⟩
   rwa [← h, sdiff_sdiff_cancel_left hB'.subset_ground]
+
+@[deprecated (since := "2026-07-09")] alias setOf_dual_isBase_eq := setOfPred_dual_isBase_eq
 
 @[simp] theorem dual_dual (M : Matroid α) : M✶✶ = M :=
   ext_isBase rfl (fun B (h : B ⊆ M.E) ↦

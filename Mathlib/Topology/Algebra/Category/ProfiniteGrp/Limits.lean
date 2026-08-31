@@ -73,7 +73,7 @@ lemma toLimitFun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimitFun P) :
   apply continuous_induced_rng.mpr (continuous_pi _)
   intro H
   dsimp only [Functor.comp_obj, CompHausLike.coe_of, Functor.comp_map,
-    CompHausLike.toCompHausLike_map, CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq,
+    CompHausLike.toCompHausLike_map, CompHausLike.compHausLikeToTop_map, Set.mem_ofPred_eq,
     toLimitFun, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
   apply Continuous.mk
   intro s _
@@ -152,6 +152,7 @@ noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≅ (limit <| diagram P) :=
   ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivLimittoFiniteQuotientFunctor P)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The projection from `P` to the quotient by an open normal subgroup. -/
 @[to_additive /-- The projection from `P` to the quotient by an open normal subgroup. -/]
 def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).obj U :=

@@ -157,7 +157,6 @@ variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
 
 open ValuationRing
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_isIntegral (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsIntegral R (C • W) := by
   let l₀ := [W.a₁, W.a₂, W.a₃, W.a₄, W.a₆]
@@ -209,7 +208,7 @@ variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 open WithZero Multiplicative
 open IsDiscreteValuationRing IsDedekindDomain.HeightOneSpectrum
 
-open Classical in
+open scoped Classical in
 /-- The valuation of the discriminant of a Weierstrass curve `W`,
 which is at most 1 if `W` is integral. Zero otherwise. -/
 noncomputable def valuation_Δ_aux (W : WeierstrassCurve K) :

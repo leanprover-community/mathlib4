@@ -622,6 +622,7 @@ def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
         _ = h ◁ (i.inv ≫ i.hom).left := by simp [-Iso.inv_hom_id]
         _ = 𝟙 _ := by simp [Iso.inv_hom_id])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between right lifts induced by a left unitor. -/
 @[simps! hom_left inv_left]

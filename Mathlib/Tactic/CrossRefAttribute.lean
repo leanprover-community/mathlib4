@@ -17,6 +17,8 @@ to entries in external mathematical databases:
 * `@[stacks TAG]` — [Stacks Project](https://stacks.math.columbia.edu/tags)
 * `@[kerodon TAG]` — [Kerodon](https://kerodon.net/tag/)
 * `@[wikidata QID]` — [Wikidata](https://www.wikidata.org)
+* `@[lmfdb ID]` — [LMFDB](https://www.lmfdb.org)
+* `@[dlmf REF]` — [DLMF](https://dlmf.nist.gov/)
 
 Each attribute records the cross-reference in an environment extension and appends
 a link to the declaration's docstring.
@@ -34,7 +36,9 @@ namespace Mathlib.CrossRef
 
 /-- The supported external databases -/
 inductive Database where
+  | dlmf
   | kerodon
+  | lmfdb
   | stacks
   | wikidata
   deriving BEq, Hashable, Ord
@@ -43,19 +47,25 @@ namespace Database
 
 /-- The base URL for an external database's tag pages. Always ends with `/`. -/
 def url : Database → String
+  | .dlmf => "https://dlmf.nist.gov/"
   | .kerodon => "https://kerodon.net/tag/"
+  | .lmfdb => "https://www.lmfdb.org/knowledge/show/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
   | .wikidata => "https://www.wikidata.org/wiki/"
 
 /-- The display label used in docstring links and trace output. -/
 def label : Database → String
+  | .dlmf => "DLMF"
   | .kerodon => "Kerodon Tag"
+  | .lmfdb => "LMFDB"
   | .stacks => "Stacks Tag"
   | .wikidata => "Wikidata"
 
 /-- A lowercase short name for the given database. Useful when exporting to JSON. -/
 def shortName : Database → String
+  | .dlmf => "dlmf"
   | .kerodon  => "kerodon"
+  | .lmfdb    => "lmfdb"
   | .stacks   => "stacks"
   | .wikidata => "wikidata"
 
@@ -169,6 +179,79 @@ def wikidataIdNoAntiquot : Parser := {
 def wikidataIdParser : Parser :=
   withAntiquot (mkAntiquot "wikidataId" wikidataIdKind) wikidataIdNoAntiquot
 
+/-! ### LMFDB parser -/
+
+/-- `lmfdbId` is the node kind of LMFDB identifiers: lower case words with `.` in between.
+The words can also contain underscores and digits. -/
+abbrev lmfdbIdKind : SyntaxNodeKind := `lmfdbId
+
+/-- The main parser for LMFDB identifiers: it accepts lower case words with `.` in between.
+The words can also contain underscores and digits. -/
+def lmfdbIdFn : ParserFn := fun c s =>
+  let i := s.pos
+  let s := takeWhileFn (fun c => c.isAlphanum || c == '.' || c == '_') c s
+  if s.hasError then
+    s
+  else if s.pos == i then
+    ParserState.mkError s "lmfdb id"
+  else
+    if !(c.extract i s.pos).toList.all
+      (fun c => c.isLower || c.isDigit || c == '.' || c == '_') then
+      ParserState.mkUnexpectedError s
+        "LMFDB ids must consist only of lowercase letters, digits, periods, and underscores."
+    else
+      mkNodeToken lmfdbIdKind i true c s
+
+@[inherit_doc lmfdbIdFn]
+def lmfdbIdNoAntiquot : Parser := {
+  fn   := lmfdbIdFn
+  info := mkAtomicInfo "lmfdbId"
+}
+
+@[inherit_doc lmfdbIdFn]
+def lmfdbIdParser : Parser :=
+  withAntiquot (mkAntiquot "lmfdbId" lmfdbIdKind) lmfdbIdNoAntiquot
+
+/-! ### DLMF parser -/
+
+/-- `dlmfId` is the node kind of DLMF references:
+generally <chapter_no>.<section_no>.E<equation_no> (e.g. `5.4.E1`).
+See https://dlmf.nist.gov/help/cite for more details on the permalink format.
+Note that while underscores are not mentioned in the DLMF permalink table, they are
+supported and present in some actual links for equations. -/
+abbrev dlmfIdKind : SyntaxNodeKind := `dlmfId
+
+/-- The main parser for DLMF references:
+generally <chapter_no>.<section_no>.E<equation_no> (e.g. `5.4.E1`).
+See https://dlmf.nist.gov/help/cite for more details on the permalink format.
+Note that while underscores are not mentioned in the DLMF permalink table, they are
+supported and present in some actual links for equations. -/
+def dlmfIdFn : ParserFn := fun c s =>
+  let i := s.pos
+  let s := takeWhileFn (fun c => c.isAlphanum || c == '.' || c == '_') c s
+  if s.hasError then
+    s
+  else if s.pos == i then
+    ParserState.mkError s "dlmf id"
+  else
+    if !(c.extract i s.pos).toList.all
+      (fun c => c ∈ ['i', 'v', 'x', 'l', 'c', 'd', 'm', 'E', 'F', 'T', '.', '_'] || c.isDigit) then
+      ParserState.mkUnexpectedError s
+        "DLMF references must consist only of (lowercase) roman numerals, the letters E/T/F, \
+         digits, periods, and underscores."
+    else
+      mkNodeToken dlmfIdKind i true c s
+
+@[inherit_doc dlmfIdFn]
+def dlmfIdNoAntiquot : Parser := {
+  fn   := dlmfIdFn
+  info := mkAtomicInfo "dlmfId"
+}
+
+@[inherit_doc dlmfIdFn]
+def dlmfIdParser : Parser :=
+  withAntiquot (mkAntiquot "dlmfId" dlmfIdKind) dlmfIdNoAntiquot
+
 end Mathlib.CrossRef
 
 open Mathlib.CrossRef
@@ -183,6 +266,16 @@ def Lean.TSyntax.getWikidataId (stx : TSyntax wikidataIdKind) : CoreM String := 
   let some val := Syntax.isLit? wikidataIdKind stx | throwError "Malformed Wikidata id"
   return val
 
+/-- Extract the underlying identifier as a string from a `lmfdbId` node. -/
+def Lean.TSyntax.getLmfdbId (stx : TSyntax lmfdbIdKind) : CoreM String := do
+  let some val := Syntax.isLit? lmfdbIdKind stx | throwError "Malformed LMFDB id"
+  return val
+
+/-- Extract the underlying identifier as a string from a `dlmfId` node. -/
+def Lean.TSyntax.getDlmfId (stx : TSyntax dlmfIdKind) : CoreM String := do
+  let some val := Syntax.isLit? dlmfIdKind stx | throwError "Malformed DLMF ref."
+  return val
+
 namespace Lean.PrettyPrinter
 
 namespace Formatter
@@ -195,6 +288,14 @@ namespace Formatter
 @[combinator_formatter wikidataIdNoAntiquot] def wikidataIdNoAntiquot.formatter :=
   visitAtom wikidataIdKind
 
+/-- The formatter for LMFDB identifier syntax. -/
+@[combinator_formatter lmfdbIdNoAntiquot] def lmfdbIdNoAntiquot.formatter :=
+  visitAtom lmfdbIdKind
+
+/-- The formatter for DLMF identifier syntax. -/
+@[combinator_formatter dlmfIdNoAntiquot] def dlmfIdNoAntiquot.formatter :=
+  visitAtom dlmfIdKind
+
 end Formatter
 
 namespace Parenthesizer
@@ -204,6 +305,12 @@ namespace Parenthesizer
 
 /-- The parenthesizer for Wikidata identifier syntax. -/
 @[combinator_parenthesizer wikidataIdNoAntiquot] def wikidataIdAntiquot.parenthesizer := visitToken
+
+/-- The parenthesizer for LMFDB identifier syntax. -/
+@[combinator_parenthesizer lmfdbIdNoAntiquot] def lmfdbIdAntiquot.parenthesizer := visitToken
+
+/-- The parenthesizer for DLMF identifier syntax. -/
+@[combinator_parenthesizer dlmfIdNoAntiquot] def dlmfIdAntiquot.parenthesizer := visitToken
 
 end Lean.PrettyPrinter.Parenthesizer
 
@@ -261,6 +368,46 @@ initialize Lean.registerBuiltinAttribute {
       | `(attr| wikidata $id $[$comment]?) => pure (id, comment)
       | _ => throwUnsupportedSyntax
     addCrossRefDoc .wikidata decl (← id.getWikidataId) ((comment.map (·.getString)).getD "")
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
+}
+
+/-! ### LMFDB attribute -/
+
+/-- The `lmfdb` attribute.
+Use it as `@[lmfdb foo.bar "Optional comment"]` to associate a Mathlib declaration with
+the corresponding [LMFDB](https://www.lmfdb.org) item.
+-/
+syntax (name := lmfdbTag) "lmfdb" lmfdbIdParser (ppSpace str)? : attr
+
+initialize Lean.registerBuiltinAttribute {
+  name := `lmfdbTag
+  descr := "Apply an LMFDB identifier to a declaration."
+  add := fun decl stx _attrKind => do
+    let (id, comment) ← match stx with
+      | `(attr| lmfdb $id $[$comment]?) => pure (id, comment)
+      | _ => throwUnsupportedSyntax
+    addCrossRefDoc .lmfdb decl (← id.getLmfdbId) ((comment.map (·.getString)).getD "")
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
+}
+
+/-! ### DLMF attribute -/
+
+/-- The `dlmf` attribute.
+Use it as `@[dlmf 5.4.E1 "Optional comment"]` to associate a Mathlib declaration with
+the corresponding [DLMF](https://dlmf.nist.gov) item.
+-/
+syntax (name := dlmfTag) "dlmf" dlmfIdParser (ppSpace str)? : attr
+
+initialize Lean.registerBuiltinAttribute {
+  name := `dlmfTag
+  descr := "Apply a DLMF identifier to a declaration."
+  add := fun decl stx _attrKind => do
+    let (id, comment) ← match stx with
+      | `(attr| dlmf $id $[$comment]?) => pure (id, comment)
+      | _ => throwUnsupportedSyntax
+    addCrossRefDoc .dlmf decl (← id.getDlmfId) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
@@ -335,5 +482,29 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 -/
 elab (name := wikidataTags) "#wikidata_tags" tk:("!")? : command =>
   traceCrossRefs .wikidata (tk.isSome)
+
+/-- The `#lmfdb_tags` command retrieves all declarations that have the `lmfdb` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `#lmfdb_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
+-/
+elab (name := lmfdbTags) "#lmfdb_tags" tk:("!")? : command =>
+  traceCrossRefs .lmfdb (tk.isSome)
+
+/-- The `#dlmf_tags` command retrieves all declarations that have the `dlmf` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `#dlmf_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
+-/
+elab (name := dlmfTags) "#dlmf_tags" tk:("!")? : command =>
+  traceCrossRefs .dlmf (tk.isSome)
 
 end Mathlib.CrossRef

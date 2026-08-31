@@ -127,7 +127,7 @@ lemma LSeries.summable_real_of_abscissaOfAbsConv_lt {f : ℕ → ℝ} {x : ℝ}
   simp only [LSeriesSummable, aux, summable_ofReal] at this
   refine this.congr_cofinite ?_
   filter_upwards [(Set.finite_singleton 0).compl_mem_cofinite] with n hn
-    using if_neg (by simpa using hn)
+    using ite_eq_right (by simpa using hn)
 
 /-- If `F` is a binary operation on `ℕ → ℂ` with the property that the `LSeries` of `F f g`
 converges whenever the `LSeries` of `f` and `g` do, then the abscissa of absolute convergence
