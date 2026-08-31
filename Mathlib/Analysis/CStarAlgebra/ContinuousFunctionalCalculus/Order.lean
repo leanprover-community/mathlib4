@@ -599,6 +599,35 @@ lemma inr_map_Ici_zero : inr '' (Ici (0 : A)) ⊆ Ici (0 : A⁺¹) := by
 
 end Icc
 
+lemma nnrpow_le_self_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1)
+    {n : ℝ≥0} (hn : 1 ≤ n) : e ^ n ≤ e := by
+  have : n ≠ 0 := by aesop
+  conv_rhs => rw [← cfcₙ_id' ℝ e]
+  rw [CFC.nnrpow_eq_cfcₙ_real e, ← sub_nonneg, ← cfcₙ_sub ..]
+  refine cfcₙ_nonneg fun x hx ↦ sub_nonneg.mpr ?_
+  have := quasispectrum.norm_le_norm_of_mem hx
+  grw [he1, Real.norm_eq_abs] at this
+  exact Real.rpow_le_self_of_le_one (quasispectrum_nonneg_of_nonneg _ he0 _ hx) (by grind) hn
+
+/-- If `e` is an element of the nonnegative closed unit ball, then `e * e ≤ e`, with equality
+if `e` is an extreme point
+(see `isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosedBall`). -/
+lemma mul_self_le_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1) :
+    e * e ≤ e := CFC.nnrpow_two e ▸ nnrpow_le_self_of_nonneg_of_norm_le_one he0 he1 one_le_two
+
+lemma self_le_nnrpow_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1)
+    {n : ℝ≥0} (hn0 : n ≠ 0) (hn : n ≤ 1) : e ≤ e ^ n := by
+  conv_lhs => rw [← cfcₙ_id' ℝ e]
+  rw [CFC.nnrpow_eq_cfcₙ_real e, ← sub_nonneg, ← cfcₙ_sub ..]
+  refine cfcₙ_nonneg fun x hx ↦ sub_nonneg.mpr ?_
+  have := quasispectrum.norm_le_norm_of_mem hx
+  grw [he1, Real.norm_eq_abs] at this
+  exact Real.self_le_rpow_of_le_one (quasispectrum_nonneg_of_nonneg _ he0 _ hx) (by grind) hn
+
+lemma self_le_sqrt_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1) :
+    e ≤ CFC.sqrt e :=
+  CFC.sqrt_eq_nnrpow e ▸ self_le_nnrpow_of_nonneg_of_norm_le_one he0 he1 (by simp) (by simp)
+
 end CStarAlgebra
 
 open CStarAlgebra Unitization CFC in
