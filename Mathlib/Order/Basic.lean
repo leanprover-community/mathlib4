@@ -179,6 +179,9 @@ theorem gt_imp_gt_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > 
 
 attribute [gcongr strict] lt_of_lt_of_le lt_of_lt_of_le'
 
+@[to_dual (attr := gcongr strict) ge_imp_gt_of_lt']
+theorem ge_imp_gt_of_lt (h : a < b) : a ≥ c → b > c := lt_of_lt_of_le' h
+
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 
