@@ -255,7 +255,7 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
 attribute [local instance] specializationPreorder in
 /--
 In a quasi-sober irreducible space, every point of a non-dense subset is a strict
-generalization of the generic point of the whole space.
+specialization of the generic point of the whole space.
 -/
 lemma QuasiSober.val_lt_genericPoint_of_closure_ne_univ [QuasiSober α] [IrreducibleSpace α]
     {p : Set α} (hp : closure p ≠ univ) : ∀ x : p, (Subtype.val x) < genericPoint α := by
