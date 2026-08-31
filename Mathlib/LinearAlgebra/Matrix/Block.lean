@@ -379,6 +379,8 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     apply lt_of_le_of_ne _ hj
     exact Finset.le_max' (univ.image b) _ (mem_image_of_mem _ (mem_univ _))
 
+@[deprecated (since := "2026-08-31")] alias det_of_blockTriangular := Matrix.BlockTriangular.det
+
 theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder α]
     (h : BlockTriangular M b) : M.det = ∏ k : α, (M.toSquareBlock b k).det := by
   refine h.det.trans (prod_subset (subset_univ _) fun a _ ha => ?_)
