@@ -21,8 +21,7 @@ variable {K M : Type*} [Field K] [CharZero K] [LinearOrder K] [IsStrictOrderedRi
 /-- In the standard simplex with vertices `M`, this is the barycenter of
 a nonempty finite subset `S` of `M`. -/
 @[simps -isSimp]
-noncomputable def subBarycenter
-     (S : Finset M) (hS : S.Nonempty) : StdSimplex K M where
+noncomputable def subBarycenter (S : Finset M) (hS : S.Nonempty) : StdSimplex K M where
   weights := S.sum (fun m ↦ .single m S.card⁻¹)
   nonneg := Finset.sum_nonneg (by simp)
   total := by
