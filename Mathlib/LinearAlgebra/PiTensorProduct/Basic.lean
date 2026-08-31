@@ -402,49 +402,6 @@ section lift
 variable {R' : Type*} [CommSemiring R'] {σ : R →+* R'}
   {E' : Type*} [AddCommMonoid E'] [Module R' E']
 
-/-- Composition of a `MultilinearMap (RingHom.id R) M₁ M₂` with a semilinear `M₂ →ₛₗ[σ] M₃`,
-producing a `MultilinearMap σ M₁ M₃`. -/
-def _root_.LinearMap.compMultilinearMapₛₗ
-    {M₂ M₃ : Type*} [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R' M₃]
-    (g : M₂ →ₛₗ[σ] M₃) (f : MultilinearMap (RingHom.id R) (fun i ↦ s i) M₂) :
-    MultilinearMap σ (fun i ↦ s i) M₃ where
-  toFun m := g (f m)
-  map_update_add' m i x y := by simp
-  map_update_smul' m i c x := by simp [g.map_smulₛₗ]
-
-@[simp]
-theorem _root_.LinearMap.compMultilinearMapₛₗ_apply
-    {M₂ M₃ : Type*} [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R' M₃]
-    (g : M₂ →ₛₗ[σ] M₃) (f : MultilinearMap (RingHom.id R) (fun i ↦ s i) M₂) (m : Π i, s i) :
-    g.compMultilinearMapₛₗ f m = g (f m) :=
-  rfl
-
-/-- Composes a multilinear map `g : MultilinearMap (RingHom.id R') M₁' M₂` with a family of
-σ-semilinear maps `f : Π i, sᵢ →ₛₗ[σ] M₁' i` (where σ : R →+* R'), producing a σ-semilinear
-multilinear map `MultilinearMap σ s M₂`. -/
-def _root_.MultilinearMap.compLinearMapₛₗ
-    {M₁' : ι → Type*} [∀ i, AddCommMonoid (M₁' i)] [∀ i, Module R' (M₁' i)]
-    {M₂ : Type*} [AddCommMonoid M₂] [Module R' M₂]
-    (g : MultilinearMap (RingHom.id R') M₁' M₂) (f : ∀ i, s i →ₛₗ[σ] M₁' i) :
-    MultilinearMap σ s M₂ where
-  toFun m := g fun i ↦ f i (m i)
-  map_update_add' m i x y := by
-    have h : ∀ j z, f j (update m i z j) = update (fun k ↦ f k (m k)) i (f i z) j :=
-      fun j z ↦ Function.apply_update (fun k ↦ f k) _ _ _ _
-    simp [h]
-  map_update_smul' m i c x := by
-    have h : ∀ j z, f j (update m i z j) = update (fun k ↦ f k (m k)) i (f i z) j :=
-      fun j z ↦ Function.apply_update (fun k ↦ f k) _ _ _ _
-    simp [h, (f i).map_smulₛₗ]
-
-@[simp]
-theorem _root_.MultilinearMap.compLinearMapₛₗ_apply
-    {M₁' : ι → Type*} [∀ i, AddCommMonoid (M₁' i)] [∀ i, Module R' (M₁' i)]
-    {M₂ : Type*} [AddCommMonoid M₂] [Module R' M₂]
-    (g : MultilinearMap (RingHom.id R') M₁' M₂) (f : ∀ i, s i →ₛₗ[σ] M₁' i) (m : ∀ i, s i) :
-    g.compLinearMapₛₗ f m = g fun i ↦ f i (m i) :=
-  rfl
-
 /-- Auxiliary function to constructing a semilinear map `(⨂[R] i, s i) → E'` given a
 semilinear `MultilinearMap σ s E'` with the property that its composition with the canonical
 `MultilinearMap (RingHom.id R) s (⨂[R] i, s i)` is the given multilinear map.
@@ -495,13 +452,13 @@ This is a linear equivalence over `R'` (the codomain ring of `σ`). When `σ = R
 specializes to the original linear `lift`. -/
 def lift : MultilinearMap σ s E' ≃ₗ[R'] (⨂[R] i, s i) →ₛₗ[σ] E' where
   toFun φ := { liftAux φ with map_smul' := liftAux.smulₛₗ }
-  invFun φ' := φ'.compMultilinearMapₛₗ (tprod R)
+  invFun φ' := φ'.compMultilinearMap (tprod R)
   left_inv φ := by
     ext
-    simp [liftAux_tprod, LinearMap.compMultilinearMapₛₗ]
+    simp [liftAux_tprod, LinearMap.compMultilinearMap]
   right_inv φ := by
     ext
-    simp [liftAux_tprod, LinearMap.compMultilinearMapₛₗ]
+    simp [liftAux_tprod, LinearMap.compMultilinearMap]
   map_add' φ₁ φ₂ := by
     ext
     simp [liftAux_tprod]
@@ -520,12 +477,12 @@ theorem lift.unique {φ' : (⨂[R] i, s i) →ₛₗ[σ] E'} (H : ∀ f, φ' (Pi
   ext_iff_tprod.mpr fun f ↦ by rw [H, lift.tprod]
 
 theorem lift.unique' {φ' : (⨂[R] i, s i) →ₛₗ[σ] E'}
-    (H : φ'.compMultilinearMapₛₗ (PiTensorProduct.tprod R) = φ) : φ' = lift φ :=
+    (H : φ'.compMultilinearMap (PiTensorProduct.tprod R) = φ) : φ' = lift φ :=
   lift.unique fun f ↦ MultilinearMap.congr_fun H f
 
 @[simp]
 theorem lift_symm (φ' : (⨂[R] i, s i) →ₛₗ[σ] E') :
-    lift.symm φ' = φ'.compMultilinearMapₛₗ (tprod R) :=
+    lift.symm φ' = φ'.compMultilinearMap (tprod R) :=
   rfl
 
 @[simp]
@@ -552,7 +509,7 @@ This is `TensorProduct.map` for an arbitrary family of modules. -/
 def map {R' : Type*} [CommSemiring R'] {σ : R →+* R'}
     {u : ι → Type*} [∀ i, AddCommMonoid (u i)] [∀ i, Module R' (u i)]
     (f : Π i, s i →ₛₗ[σ] u i) : (⨂[R] i, s i) →ₛₗ[σ] ⨂[R'] i, u i :=
-  lift <| (tprod R').compLinearMapₛₗ f
+  lift <| (tprod R').compLinearMap f
 
 @[simp] lemma map_tprod {R' : Type*} [CommSemiring R'] {σ : R →+* R'}
     {u : ι → Type*} [∀ i, AddCommMonoid (u i)] [∀ i, Module R' (u i)]
