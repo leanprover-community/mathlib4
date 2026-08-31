@@ -11,7 +11,11 @@ public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
-This file introduces `IsPolytope` and proves basic properties about convex polytopes.
+This file introduces convex polytopes as V-polytopes and proves basic facts.
+
+## Main declarations
+
+* `IsPolytope`: states that a set is the convex hull of finitely many points.
 -/
 
 public noncomputable section
@@ -28,7 +32,8 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable [ConvexSpace R X]
 
 variable (R) in
-/-- A set is a polytope if it is the convex hull of finitely many points. -/
+/-- A set is a polytope if it is the convex hull of finitely many points. This is the V-polytope
+definition for convex polytope. -/
 def IsPolytope (s : Set X) : Prop := ∃ t : Finset X, s = convexHull R t
 
 end Semiring
