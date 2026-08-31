@@ -20,7 +20,7 @@ without any parallelism.
 
 variable {α : Type}
 
-open Lean Meta
+open Lean
 
 namespace Lean.Meta
 
