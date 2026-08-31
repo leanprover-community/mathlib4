@@ -214,18 +214,12 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     ((I₂ • ⊤ : Submodule B I₂).restrictScalars R) ?_ ?_
   · exact f.toLinearMap.restrict (p := I₁.restrictScalars R) (q := I₂.restrictScalars R) h
   · intro x hx
-    rw [Submodule.restrictScalars_mem] at hx
-    refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
-    rintro a ha ⟨b, hb⟩ -
-    simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
-    convert
-      (Submodule.smul_mem_smul (M := I₂) (r := f a) (n := ⟨f b, h hb⟩) (h ha)
-        (Submodule.mem_top)) using 1
-    ext
-    -- ## tech debt
-    simp [f.toLinearMap.coe_restrict_apply (fun a ha ↦
-      (Submodule.mem_comap.mp (h ((Submodule.restrictScalars_mem _ _ _).mp ha)) :
-        f.toLinearMap a ∈ Submodule.restrictScalars R I₂))]
+    rw [Submodule.restrictScalars_mem, Submodule.mem_smul_top_iff,
+      Ideal.smul_eq_mul, ← pow_two] at hx
+    rw [Submodule.mem_comap, Submodule.restrictScalars_mem,
+      Submodule.mem_smul_top_iff, f.toLinearMap.coe_restrict_apply h,
+      AlgHom.toLinearMap_apply, Ideal.smul_eq_mul, ← pow_two, ← Ideal.mem_comap]
+    exact Ideal.le_comap_pow f 2 (Ideal.pow_right_mono h 2 hx)
 
 @[simp]
 lemma mapCotangent_toCotangent
