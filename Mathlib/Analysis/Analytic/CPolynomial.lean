@@ -5,6 +5,7 @@ Authors: Sophie Morel
 -/
 module
 
+public import Mathlib.Analysis.Analytic.Composition
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Analytic.CPolynomialDef
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
@@ -24,10 +25,11 @@ analytic.
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open scoped Topology
+open scoped Topology Nat
 open Set Filter ENNReal
 
 variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r : ℝ≥0∞} {n m : ℕ}
+  {s : Set E}
 
 theorem hasFiniteFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFiniteFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 ⊤ :=
@@ -41,7 +43,7 @@ theorem hasFiniteFPowerSeriesAt_const {c : F} {e : E} :
 theorem CPolynomialAt_const {v : F} : CPolynomialAt 𝕜 (fun _ => v) x :=
   ⟨constFormalMultilinearSeries 𝕜 E v, 1, hasFiniteFPowerSeriesAt_const⟩
 
-theorem CPolynomialOn_const {v : F} {s : Set E} : CPolynomialOn 𝕜 (fun _ => v) s :=
+theorem CPolynomialOn_const {v : F} : CPolynomialOn 𝕜 (fun _ => v) s :=
   fun _ _ => CPolynomialAt_const
 
 set_option backward.isDefEq.respectTransparency false in
@@ -58,6 +60,7 @@ theorem HasFiniteFPowerSeriesAt.add (hf : HasFiniteFPowerSeriesAt f pf x n)
   rcases (hf.eventually.and hg.eventually).exists with ⟨r, hr⟩
   exact ⟨r, hr.1.add hr.2⟩
 
+@[to_fun]
 theorem CPolynomialAt.add (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
     CPolynomialAt 𝕜 (f + g) x :=
   let ⟨_, _, hpf⟩ := hf
@@ -74,6 +77,7 @@ theorem HasFiniteFPowerSeriesAt.neg (hf : HasFiniteFPowerSeriesAt f pf x n) :
   let ⟨_, hrf⟩ := hf
   hrf.neg.hasFiniteFPowerSeriesAt
 
+@[to_fun]
 theorem CPolynomialAt.neg (hf : CPolynomialAt 𝕜 f x) : CPolynomialAt 𝕜 (-f) x :=
   let ⟨_, _, hpf⟩ := hf
   hpf.neg.cpolynomialAt
@@ -88,18 +92,28 @@ theorem HasFiniteFPowerSeriesAt.sub (hf : HasFiniteFPowerSeriesAt f pf x n)
     HasFiniteFPowerSeriesAt (f - g) (pf - pg) x (max n m) := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
+@[to_fun]
 theorem CPolynomialAt.sub (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
     CPolynomialAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-theorem CPolynomialOn.add {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
+@[to_fun]
+theorem CPolynomialOn.add (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
     CPolynomialOn 𝕜 (f + g) s :=
   fun z hz => (hf z hz).add (hg z hz)
 
-theorem CPolynomialOn.sub {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
+@[to_fun]
+theorem CPolynomialOn.sub (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
     CPolynomialOn 𝕜 (f - g) s :=
   fun z hz => (hf z hz).sub (hg z hz)
 
+@[to_fun]
+theorem CPolynomialAt.smul (hf : CPolynomialAt 𝕜 f x) (c : 𝕜) : CPolynomialAt 𝕜 (c • f) x :=
+  ContinuousLinearMap.comp_cpolynomialAt ((ContinuousLinearMap.lsmul 𝕜 𝕜 c)) hf
+
+@[to_fun]
+theorem CPolynomialOn.smul (hf : CPolynomialOn 𝕜 f s) (c : 𝕜) : CPolynomialOn 𝕜 (c • f) s :=
+  fun x hx ↦ (hf x hx).smul c
 
 /-!
 ### Continuous multilinear maps
@@ -152,11 +166,26 @@ lemma analyticAt : AnalyticAt 𝕜 f x := f.cpolynomialAt.analyticAt
 
 lemma analyticWithinAt : AnalyticWithinAt 𝕜 f s x := f.analyticAt.analyticWithinAt
 
-open scoped Nat
-
-lemma cpolynomialAt_compContinuousLinearMapCLM (f : E →L[𝕜] F) :
+/-- Precomposition on spaces of `n`-alternating maps, as a continuous linear map, is cpolynomial
+when multiplied by `(card ι)!`. -/
+lemma cpolynomialAt_smul_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
     CPolynomialAt 𝕜 ((Fintype.card ι)! •
-      compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) f := by
+      compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) f₀ := by
+  /- We decompose this map in three steps:
+  * the canonical inclusion from alternating maps to multilinear maps (called `C` below)
+  * precomposition on the space of multilinear maps (called `B`)
+  * alternatization to go back from multilinear maps to alternating maps (called `A`)
+  All these building blocks are cpolynomial (as `A` and `C` can be seen as composition with
+    linear maps, and `B` as a multilinear map), so their composition also is.
+  The factor `(Fintype.card ι)!` comes out of the alternatization in this argument.
+  Note that the naive argument to eliminate it fails, as follows.
+  We would like to think that the map is polynomial of degree `card ι`, i.e., it should be
+  written as `P (f, ..., f)` where `P` is multilinear. The natural candidate for `P` is
+  `P (f₁, ..., fₙ) m (v₁, ..., vₙ) = m (f₁ v₁, ..., fₙ vₙ)`, i.e., apply the `fᵢ`coordinatewise.
+  This is the formula used to show that multilinear maps are cpolynomial.
+  However, even if `m` is alternating, the map `m (f₁ v₁, ..., fₙ vₙ)` is not! So, `P` does not
+  take its values in the correct space of alternating maps, and the argument fails.
+  -/
   classical
   let A : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E) G →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
     ContinuousMultilinearMap.alternatizationCLM
@@ -168,28 +197,66 @@ lemma cpolynomialAt_compContinuousLinearMapCLM (f : E →L[𝕜] F) :
     toContinuousMultilinearMapCLM 𝕜
   have : ((Fintype.card ι)! • compContinuousLinearMapCLM :
         (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) =
-      fun f ↦ A ∘L (B (fun i ↦ f)) ∘L C := by
-    ext f : 1
-    simp [A, B, C]
-    sorry
-  sorry
-#exit
+      (ContinuousLinearMap.compL _ _ _ _ A) ∘
+        ((ContinuousLinearMap.compL _ _ _ _).flip C) ∘ (fun f ↦ B (fun i ↦ f)) := by
+    ext f m : 2
+    simp only [Pi.smul_apply, _root_.smul_apply, compContinuousLinearMapCLM_apply,
+      ← ContinuousAlternatingMap.alternatization_toContinuousMultilinearMap]
+    rfl
+  rw [this]
+  apply ContinuousLinearMap.comp_cpolynomialAt
+  apply ContinuousLinearMap.comp_cpolynomialAt
+  apply CPolynomialAt.comp (ContinuousMultilinearMap.cpolynomialAt _) ?_
+  exact ContinuousLinearMap.cpolynomialAt
+    (ContinuousLinearMap.pi fun _ : ι ↦ ContinuousLinearMap.id 𝕜 (E →L[𝕜] F)) f₀
 
-theorem continuous_compContinuousLinearMapCLM [Finite ι] :
-    Continuous
-      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) := by
-  rcases nonempty_fintype ι
-  refine UniformConvergenceCLM.isUniformInducing_postcomp (.id 𝕜)
-    (toContinuousMultilinearMapCLM 𝕜 : (E [⋀^ι]→L[𝕜] G) →L[𝕜] _)
-    isUniformEmbedding_toContinuousMultilinearMap.isUniformInducing _ |>.isInducing
-    |>.continuous_iff |>.mpr ?_
-  change Continuous <|
-    (toContinuousMultilinearMapCLM 𝕜 : (F [⋀^ι]→L[𝕜] G) →L[𝕜] _).precomp _ ∘
-      ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear 𝕜
-        (fun _ : ι ↦ E) (fun _ ↦ F) G ∘
-      (fun f _ ↦ f)
-  fun_prop
+variable [CharZero 𝕜]
 
+/-- Precomposition on spaces of `n`-alternating maps, as a continuous linear map, is cpolynomial. -/
+lemma cpolynomialAt_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
+    CPolynomialAt 𝕜
+      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) f₀ := by
+  /- When multiplied by `(Fintype.card ι)!`, we have already proved the result above.
+  As the field has characteristic zero, we can divide by this scalar factor.
+
+  The result could also be proved by assuming instead that the field is complete and the spaces
+  are finite-dimensional: in this case, the space of alternating maps is complemented in the space
+  of multilinear maps, therefore there is a continuous linear projection on it. One can then follow
+  the proof in `cpolynomialAt_smul_compContinuousLinearMapCLM` using this projection instead
+  of `alternatization`, which eliminates the factorial. -/
+  have : (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) =
+      ((Fintype.card ι)! : 𝕜)⁻¹ • ((Fintype.card ι)! • compContinuousLinearMapCLM) := by
+    rw [← Nat.cast_smul_eq_nsmul 𝕜, smul_smul, inv_mul_cancel₀, one_smul]
+    simp [Nat.factorial_ne_zero]
+  rw [this]
+  apply CPolynomialAt.smul
+  exact cpolynomialAt_smul_compContinuousLinearMapCLM f₀
+
+/-- Precomposition on spaces of `n`-alternating maps, as a continuous linear map, is cpolynomial. -/
+lemma cpolynomialOn_compContinuousLinearMapCLM (s : Set (E →L[𝕜] F)) :
+    CPolynomialOn 𝕜
+      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) s :=
+  fun f _ ↦ cpolynomialAt_compContinuousLinearMapCLM f
+
+lemma analyticOnNhd_compContinuousLinearMapCLM (s : Set (E →L[𝕜] F)) :
+    AnalyticOnNhd 𝕜
+      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) s :=
+  (cpolynomialOn_compContinuousLinearMapCLM s).analyticOnNhd
+
+lemma analyticOn_compContinuousLinearMapCLM (s : Set (E →L[𝕜] F)) :
+    AnalyticOn 𝕜
+      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) s :=
+  (cpolynomialOn_compContinuousLinearMapCLM s).analyticOn
+
+lemma analyticAt_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
+    AnalyticAt 𝕜
+      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) f₀ :=
+  (cpolynomialAt_compContinuousLinearMapCLM f₀).analyticAt
+
+lemma analyticWithinAt_compContinuousLinearMapCLM (s : Set (E →L[𝕜] F)) (f₀ : E →L[𝕜] F) :
+    AnalyticWithinAt 𝕜
+      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) s f₀ :=
+  (analyticAt_compContinuousLinearMapCLM f₀).analyticWithinAt
 
 end ContinuousAlternatingMap
 
