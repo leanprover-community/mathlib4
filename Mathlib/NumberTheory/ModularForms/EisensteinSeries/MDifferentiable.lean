@@ -9,7 +9,6 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConverge
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Holomorphicity of Eisenstein series
@@ -23,7 +22,9 @@ public section
 
 noncomputable section
 
-open UpperHalfPlane Filter Function Complex Manifold CongruenceSubgroup
+open UpperHalfPlane Filter Function Complex CongruenceSubgroup
+
+open scoped Manifold
 
 namespace EisensteinSeries
 
@@ -61,8 +62,5 @@ theorem eisensteinSeriesSIF_mdifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (
   exact (eisensteinSeries_tendstoLocallyUniformlyOn hk a).differentiableOn
     (Eventually.of_forall fun s ↦ DifferentiableOn.fun_sum
     fun _ _ ↦ eisSummand_extension_differentiableOn _ _) isOpen_upperHalfPlaneSet
-
-@[deprecated (since := "2026-02-09")]
-alias eisensteinSeries_SIF_MDifferentiable := eisensteinSeriesSIF_mdifferentiable
 
 end EisensteinSeries
