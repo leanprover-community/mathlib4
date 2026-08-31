@@ -10,8 +10,8 @@ open Inclusion
 set_option linter.style.native true
 
 /--
-warning: Using `inclusion +native` is not allowed in mathlib: because it trusts the entire Lean
-compiler (not just the Lean kernel), it could quite possibly be used to prove false.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not
+just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
@@ -19,8 +19,8 @@ Note: This linter can be disabled with `set_option linter.style.native false`
 example : (0 : ℝ) ≤ 1 := by inclusion +native [core, interval_dyadic_real]
 
 /--
-warning: Using `inclusion +native` is not allowed in mathlib: because it trusts the entire Lean
-compiler (not just the Lean kernel), it could quite possibly be used to prove false.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not
+just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
@@ -28,8 +28,8 @@ Note: This linter can be disabled with `set_option linter.style.native false`
 example : (0 : ℝ) ≤ 1 := by inclusion (native := true) [core, interval_dyadic_real]
 
 /--
-warning: Using `dyadic_interval +native` is not allowed in mathlib: because it trusts the entire Lean
-compiler (not just the Lean kernel), it could quite possibly be used to prove false.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not
+just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
@@ -37,8 +37,8 @@ Note: This linter can be disabled with `set_option linter.style.native false`
 example : (0 : ℝ) ≤ 1 := by dyadic_interval +native
 
 /--
-warning: Using `dyadic_interval +native` is not allowed in mathlib: because it trusts the entire Lean
-compiler (not just the Lean kernel), it could quite possibly be used to prove false.
+warning: Using `+native` is not allowed in mathlib: because it trusts the entire Lean compiler (not
+just the Lean kernel), it could quite possibly be used to prove `False`.
 
 Note: This linter can be disabled with `set_option linter.style.native false`
 -/
