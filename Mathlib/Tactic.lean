@@ -18,6 +18,12 @@ public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.BDSimp
 public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basify
+public import Mathlib.Tactic.Basify.Attr
+public import Mathlib.Tactic.Basify.Core
+public import Mathlib.Tactic.Basify.ENNReal
+public import Mathlib.Tactic.Basify.ENat
+public import Mathlib.Tactic.Basify.PNat
 public import Mathlib.Tactic.Bound
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Bound.Init
