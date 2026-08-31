@@ -284,10 +284,10 @@ variable (R M N) in
 noncomputable def dualTensorHomEquiv : Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
   .ofBijective (dualTensorHom R M N) dualTensorHom_bijective
 
-@[simp] lemma dualTensorHomEquiv_toLinearMap :
+@[simp] lemma toLinearMap_dualTensorHomEquiv :
     (dualTensorHomEquiv R M N).toLinearMap = dualTensorHom R M N := rfl
 
-@[simp] lemma dualTensorHomEquiv_apply (f : Dual R M) (m : M) (n : N) :
+@[simp] lemma dualTensorHomEquiv_tmul (f : Dual R M) (m : M) (n : N) :
     dualTensorHomEquiv R M N (f ⊗ₜ n) m = f m • n := rfl
 
 @[simp] lemma dualTensorHomEquiv_symm_dualTensorHom (x : Dual R M ⊗[R] N) :
