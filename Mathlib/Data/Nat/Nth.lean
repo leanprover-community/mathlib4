@@ -503,6 +503,14 @@ theorem lt_nth_iff_count_lt (hp : (Set.ofPred p).Infinite) {a b : ℕ} :
     a < count p b ↔ nth p a < b :=
   (gc_count_nth hp).lt_iff_lt
 
+omit [DecidablePred p] in
+/-- `nth p (n + 1)` is the least value of `p` exceeding `nth p n`: for any `q` satisfying `p`, it is
+`≤ q` exactly when `nth p n < q`. -/
+theorem nth_add_one_le_iff (hp : (Set.ofPred p).Infinite) {n q : ℕ} (hq : p q) :
+    nth p (n + 1) ≤ q ↔ nth p n < q := by
+  classical
+  rw [← nth_count hq, nth_le_nth hp, nth_lt_nth hp, add_one_le_iff]
+
 end Count
 
 theorem nth_of_forall {n : ℕ} (hp : ∀ n' ≤ n, p n') : nth p n = n := by

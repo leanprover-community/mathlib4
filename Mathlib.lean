@@ -1613,6 +1613,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.MapHomologicalComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Nondegenerate
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Relative
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
@@ -1640,6 +1641,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplexOne
 public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
+public import Mathlib.AlgebraicTopology.SimplicialSet.SSetPair
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.Skeleton
 public import Mathlib.AlgebraicTopology.SimplicialSet.Splitting
@@ -4691,6 +4693,7 @@ public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
+public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
@@ -4716,6 +4719,7 @@ public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.TriangleInequality
 public import Mathlib.Geometry.Euclidean.Basic
+public import Mathlib.Geometry.Euclidean.BritishFlag
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Congruence
 public import Mathlib.Geometry.Euclidean.Incenter
