@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Descent.IsStack
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-!
 # Characterization of (pre)stacks for a precoverage
@@ -219,7 +221,6 @@ lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X 
       exact mem_sieve _ _ fac) = mor w φ _ _ fac :=
   mor_unique _ _ _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma compatible_familyOfElements (i : ι) :
     (familyOfElements w φ i).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac
@@ -299,6 +300,7 @@ end full_pullFunctor
 
 public section
 
+set_option backward.isDefEq.respectTransparency.types false in
 open full_pullFunctor in
 include w hf' in
 lemma full_pullFunctor :
@@ -397,7 +399,7 @@ lemma IsPrestack.of_precoverage
     obtain ⟨R', hR'⟩ := (Sieve.overEquiv _).symm.surjective (Sieve.generate R)
     rw [Presieve.isSheafFor_iff_generate]
     apply IsPrestackFor.isSheafFor'
-    simpa [Sieve.overEquiv_generate, Presieve.functorPushforward_overForget]
+    simpa [Sieve.overEquiv_generate, ← Sieve.arrows_generate_map_eq_functorPushforward]
       using hF _ _ hR
 
 /-- If a precoverage satisfies `HasIsos`, `IsStableUnderBaseChange` and
