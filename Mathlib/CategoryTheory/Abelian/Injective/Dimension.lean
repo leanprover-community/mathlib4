@@ -395,17 +395,17 @@ lemma injectiveDimension_X₁_eq_succ_of_not_injective (i : Injective S.X₂)
   refine le_antisymm (hS.injectiveDimension_X₁_le_sup.trans ?_)
     (hS.injectiveDimension_X₃_succ_le_sup.trans ?_)
   · simp only [sup_le_iff, le_refl, and_true]
-    trans (0 : ℕ) + 1
-    · grw [i.injectiveDimension_le_zero, Nat.cast_zero, zero_add, zero_le_one]
-    rw [ENat.WithBot.add_le_add_one_right_iff, injectiveDimension_ge_iff,
-      hasInjectiveDimensionLT_zero_iff_isZero, ← hS.isIso_f_iff]
-    contrapose ni
-    exact Injective.of_iso (asIso S.f).symm i
+    trans 0 + 1
+    · grw [i.injectiveDimension_le_zero, zero_add, zero_le_one]
+    · rw [ENat.WithBot.add_le_add_one_right_iff, ← Nat.cast_zero, injectiveDimension_ge_iff,
+        hasInjectiveDimensionLT_zero_iff_isZero, ← hS.isIso_f_iff]
+      contrapose ni
+      exact Injective.of_iso (asIso S.f).symm i
   · simp only [sup_le_iff, le_refl, and_true]
     trans 0 + 1
     · grw [i.injectiveDimension_le_zero]
-    rwa [zero_add, ← Nat.cast_one, injectiveDimension_ge_iff,
-      ← injective_iff_hasInjectiveDimensionLT_one]
+    · rwa [zero_add, ← Nat.cast_one, injectiveDimension_ge_iff,
+        ← injective_iff_hasInjectiveDimensionLT_one]
 
 end ShortExact
 
