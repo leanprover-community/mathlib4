@@ -621,6 +621,14 @@ This is the set of all finite patterns obtained by restricting some configuratio
 def LanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, Pattern.fromConfig x U = p }
 
+/-- Considering two sets of configurations `X` and `Y` such that `X ⊆ Y`, the language
+of `X` on (finite) shape `U` is included in the language of `Y` on shape `U`. -/
+lemma languageOn_mono {X Y : Set (G → A)} (h : X ⊆ Y) (U : Finset G) :
+    LanguageOn X U ⊆ LanguageOn Y U := by
+  intro p hp
+  rcases hp with ⟨x, hxX, rfl⟩
+  exact ⟨x, h hxX, rfl⟩
+
 /-- The language of a union of two sets of configurations on a finite shape `U` is the union
 of their languages on `U`. -/
 lemma languageOn_union {X Y : Set (G → A)} (U : Finset G) :
@@ -628,6 +636,14 @@ lemma languageOn_union {X Y : Set (G → A)} (U : Finset G) :
   ext p
   simp only [LanguageOn, mem_union, mem_ofPred_eq]
   grind
+
+/-- The language of an intersection is contained in the intersection of the languages.
+Equality does not hold in general: a pattern may arise from distinct configurations
+`x ∈ X` and `y ∈ Y` with no common configuration in `X ∩ Y` realising it. -/
+lemma languageOn_inter_subset (X Y : Set (G → A)) (U : Finset G) :
+    LanguageOn (X ∩ Y) U ⊆ LanguageOn X U ∩ LanguageOn Y U := by
+  rintro p ⟨x, ⟨hxX, hxY⟩, hp⟩
+  exact ⟨⟨x, hxX, hp⟩, ⟨x, hxY, hp⟩⟩
 
 /-- The language of a subshift `Y` on a finite shape `U`. -/
 def MulSubshift.languageOn {A G} [TopologicalSpace A] [Inhabited A] [Monoid G]
