@@ -55,11 +55,11 @@ variable (R) in
   use {x}; simp
 
 variable (R) in
-lemma subsingleton (hP : P.Subsingleton) : IsPolytope R P := by
+lemma of_subsingleton (hP : P.Subsingleton) : IsPolytope R P := by
   obtain rfl | ⟨x, rfl⟩ := hP.eq_empty_or_singleton <;> simp
 
 variable (R) in
-lemma convexHull_finite {v : Set X} (hv : v.Finite) :
+lemma convexHull_of_finite {v : Set X} (hv : v.Finite) :
     IsPolytope R (convexHull R v) := by use hv.toFinset; simp
 
 lemma convexHull_union (h₁ : IsPolytope R P₁) (h₂ : IsPolytope R P₂) :
@@ -69,7 +69,7 @@ lemma convexHull_union (h₁ : IsPolytope R P₁) (h₂ : IsPolytope R P₂) :
   use v₁ ∪ v₂
   simp [convexHull_union_convexHull, convexHull_convexHull_union]
 
-lemma convexHull_sUnion_finite {p : Set (Set X)} (hp : p.Finite)
+lemma convexHull_sUnion_of_finite {p : Set (Set X)} (hp : p.Finite)
     (h : ∀ P ∈ p, IsPolytope R P) : IsPolytope R (convexHull R (⋃₀ p)) := by
   induction p, hp using Set.Finite.induction_on with
   | empty => simp
