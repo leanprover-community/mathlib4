@@ -394,6 +394,12 @@ lemma addX_of_X_ne {x₁ y₁ x₂ y₂ : F} (hn : x₁ ≠ x₂) :
 
 /-!
 ### Some statements about the numerator and denominator of the x-coordinate of 2*P
+
+We add the explicit formula for the duplication map on the `x`-coordinate here
+(see `WeierstrassCurve.Affine.addX_self_of_Y_ne` below)
+even though this duplicates a small part of the theory of division polynomials.
+In this way, we avoid importing all the division polynomial machinery.
+We keep the associated API light-weight.
 -/
 
 /-- The polynomial on the left is the denominator of the rational expression for the `x`-coordinate
