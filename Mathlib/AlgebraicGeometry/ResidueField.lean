@@ -329,6 +329,7 @@ lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
 to `k`. -/
 noncomputable def Spec.residueFieldIsoOfField {k : Type u} [Field k] (x : Spec (.of k)) :
     (Spec (.of k)).residueField x ≅ .of k :=
+  haveI := x.isPrime
   Spec.residueFieldIso (.of k) x ≪≫
     (Ideal.algEquivResidueFieldOfField x.asIdeal).symm.toRingEquiv.toCommRingCatIso
 
@@ -336,11 +337,13 @@ noncomputable def Spec.residueFieldIsoOfField {k : Type u} [Field k] (x : Spec (
 lemma Spec.residueFieldIsoOfField_inv {k : Type u} [Field k] (x : Spec (.of k)) :
     (Spec.residueFieldIsoOfField x).inv =
       (Scheme.ΓSpecIso (.of k)).inv ≫ (Spec (.of k)).Γevaluation x := by
+  have := x.isPrime
   have step : (Spec.residueFieldIsoOfField x).inv =
       CommRingCat.ofHom (algebraMap (CommRingCat.of k) x.asIdeal.ResidueField) ≫
         (Spec.residueFieldIso (.of k) x).inv := by
     ext a; simp [Spec.residueFieldIsoOfField, Ideal.algEquivResidueFieldOfField_apply]
-  rw [step, Spec.algebraMap_residueFieldIso_inv (CommRingCat.of k) x, Scheme.germ_residue]
+  rw [step, Spec.algebraMap_residueFieldIso_inv (CommRingCat.of k) x,
+    Scheme.germ_residue (X := Spec (CommRingCat.of k)) (U := ⊤) x trivial]
 
 end Spec
 

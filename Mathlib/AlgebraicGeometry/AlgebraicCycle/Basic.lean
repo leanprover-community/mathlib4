@@ -96,7 +96,11 @@ section AddCommMonoid
 variable [AddCommMonoid R]
 
 @[simp]
-lemma degree_sum (D D' : AlgebraicCycle X R) [CompactSpace X] :
+lemma degree_zero : degree f (0 : AlgebraicCycle X R) = 0 := by
+  simp [degree]
+
+@[simp]
+lemma degree_add [CompactSpace X] (D D' : AlgebraicCycle X R) :
     degree f (D + D') = degree f D + degree f D' := by
   simp only [degree, Function.locallyFinsuppWithin.coe_add, Pi.add_apply, smul_add]
   rw [finsum_add_distrib]
@@ -107,7 +111,7 @@ lemma degree_sum (D D' : AlgebraicCycle X R) [CompactSpace X] :
 
 open Function.locallyFinsuppWithin in
 @[simp]
-lemma degree_single [DecidableEq X] (p : X) {r : R} : degree f (single p r) =
+lemma degree_single [DecidableEq X] (p : X) (r : R) : degree f (single p r) =
     (f.residueDegree p) • r := by
   simp [degree, finsum_eq_finsetSum_of_support_subset (s := {p})]
 
@@ -122,7 +126,7 @@ lemma degree_neg (D : AlgebraicCycle X R) : degree f (-D) = - degree f D :=
     by simp [degree, finsum_neg_distrib]
 
 @[simp]
-lemma degree_sub (D D' : AlgebraicCycle X R) [CompactSpace X] :
+lemma degree_sub [CompactSpace X] (D D' : AlgebraicCycle X R) :
     degree f (D - D') = degree f D - degree f D' := by
   simp [sub_eq_add_neg]
 
