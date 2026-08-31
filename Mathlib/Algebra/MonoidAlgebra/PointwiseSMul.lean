@@ -97,7 +97,7 @@ theorem mem_smulAntidiagonal_iff [SMul G P] [IsLeftCancelSMul G P] [Semiring R] 
     gh ∈ smulAntidiagonal f x p ↔ f.coeff gh.1 ≠ 0 ∧ x gh.2 ≠ 0 ∧ gh.1 • gh.2 = p := by
   simp [smulAntidiagonal]
 
-@[to_additive (dont_translate := R) smul_eq_addMonoidAlgebra_mul]
+@[to_additive (dont_translate := R) smul_coeff_eq_coeff_mul]
 theorem smul_coeff_eq_coeff_mul [Semiring R] [CancelMonoid G] (a b : MonoidAlgebra R G) :
     a • (b.coeff : G → R) = (a * b).coeff := by
   ext g
