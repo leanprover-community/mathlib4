@@ -12,6 +12,9 @@ public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 /-!
 # p-adic numbers with a valuative relation
 
+The instance `IsNonarchimedeanLocalField ℚ_[p]`, which builds on the instances constructed here,
+can be found in `Mathlib/NumberTheory/Padics/LocalField.lean`.
+
 ## Tags
 
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
