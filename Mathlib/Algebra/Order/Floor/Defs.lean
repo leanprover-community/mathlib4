@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Data.Nat.Cast.Basic
 
-import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # Floor and ceil

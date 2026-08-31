@@ -5,9 +5,9 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Data.Setoid.Basic
-public import Mathlib.Order.Lattice
 public import Mathlib.Order.Hom.Lattice
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Lattice Congruences

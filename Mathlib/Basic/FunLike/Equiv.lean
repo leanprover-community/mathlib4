@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Data.FunLike.Embedding
+public import Mathlib.Basic.FunLike.Embedding
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`

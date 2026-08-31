@@ -5,15 +5,15 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Mathlib.Basic.Unique
-public import Mathlib.Data.List.Defs
-public import Mathlib.Data.List.Monad
-public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas
 public import Batteries.Tactic.Lint.Simp
 public import Batteries.Tactic.SeqFocus
+public import Mathlib.Basic.Unique
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.List.Monad
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Basic properties of lists

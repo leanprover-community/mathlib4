@@ -448,7 +448,7 @@
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.Rat.NatSqrt.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Data.Part": ["Mathlib.Algebra.Notation.Defs"],
-  "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
+  "Mathlib.Logic.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Option.NAry":
   ["Batteries.Tactic.Init", "Mathlib.Logic.Function.Defs"],
@@ -474,7 +474,7 @@
   "Mathlib.Data.Int.ConditionallyCompleteOrder":
   ["Mathlib.Order.ConditionallyCompleteLattice.Basic"],
   "Mathlib.Data.Int.Basic": ["Mathlib.Tactic.OfNat"],
-  "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
+  "Mathlib.Basic.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finsupp.Notation": ["Mathlib.Data.Finsupp.Single"],
   "Mathlib.Data.Finset.Insert": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Data.Finset.Image": ["Mathlib.Data.Finset.Lattice.Lemmas"],
@@ -555,7 +555,7 @@
   "Mathlib.Algebra.Order.Nonneg.Field": ["Mathlib.Algebra.Order.Field.InjSurj"],
   "Mathlib.Algebra.Order.Field.Subfield":
   ["Mathlib.Algebra.Order.Field.InjSurj"],
-  "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Data.Setoid.Basic"],
+  "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Order.Setoid.Basic"],
   "Mathlib.Algebra.Notation.Lemmas": ["Batteries.Tactic.Init"],
   "Mathlib.Algebra.MonoidAlgebra.Basic":
   ["Mathlib.LinearAlgebra.Finsupp.SumProd"],

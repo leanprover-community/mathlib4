@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Sum
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Sum.Order
 
 /-!
 # Finite intervals in a disjoint union

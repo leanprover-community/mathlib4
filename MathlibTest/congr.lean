@@ -1,8 +1,8 @@
 module
-import Mathlib.Tactic.CongrExclamation
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
+import Mathlib.Tactic.CongrExclamation
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
