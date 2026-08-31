@@ -407,13 +407,11 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
   forall_aemeasurable n :=
     .const_smul (Finset.aemeasurable_fun_sum _ fun _ _ ↦ (hident _).aemeasurable_fst) ((√n)⁻¹)
   tendsto := by
-    have hclt := tendsto_map_inv_sqrt_smul_sum (P := P) (d := d) (X := X) h0 h1 hindep hident
-    have hmapY_eq : Measure.map Y P' = stdGaussian (EuclideanSpace ℝ (Fin d)) := hY.map_eq
-    convert hclt
-    · apply Subtype.ext
+    convert tendsto_map_inv_sqrt_smul_sum
+      (P := P) (d := d) (X := X) h0 h1 hindep hident using 1
+    · ext n
       rfl
-    · apply Subtype.ext
-      exact hmapY_eq
-
+    · congr 1
+      exact Subtype.ext hY.map_eq
 
 end Multivariate
