@@ -152,7 +152,7 @@ lemma mem_copy_iff (hst : s = t) : x ∈ P.copy hst ↔ x ∈ P := Iff.rfl
 /-- The natural equivalence between the subtype of parts and the subtype of parts of a copy. -/
 @[simps!]
 def partscopyEquiv (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
-  Equiv.Set.congr rfl
+  Set.equivOfEq rfl
 
 /-- A constructor for `Partition s` that removes `⊥` from the set of parts. -/
 @[simps]
