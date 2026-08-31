@@ -313,6 +313,26 @@ instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
     ext
     exact (F.mapHomotopyCategory _).map_injective ((ObjectProperty.ι _).congr_map h)
 
+/-- The functor `F.mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D`
+is induced by `F.mapHomotopyCategory (.up ℤ)`. -/
+@[simps! -isSimp]
+def mapHomotopyCategoryPlusCompι :
+    F.mapHomotopyCategoryPlus ⋙ HomotopyCategory.Plus.ι D ≅
+    HomotopyCategory.Plus.ι C ⋙ F.mapHomotopyCategory (.up ℤ) :=
+  Iso.refl _
+
+instance : NatTrans.CommShift F.mapHomotopyCategoryPlusCompι.hom ℤ :=
+  ObjectProperty.commShift_liftCompιIso_hom ..
+
+/-- The functor `F.mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D`
+is induced by `F.mapCochainComplexPlus`. -/
+@[simps! -isSimp]
+def quotientCompMapHomotopyCategoryPlusIso :
+    HomotopyCategory.Plus.quotient C ⋙ F.mapHomotopyCategoryPlus ≅
+    F.mapCochainComplexPlus ⋙ HomotopyCategory.Plus.quotient D := Iso.refl _
+
+instance : NatTrans.CommShift F.quotientCompMapHomotopyCategoryPlusIso.hom ℤ := sorry
+
 /-- Given additive functors that are related by an isomorphism `F ⋙ G ≅ H`, this is
 the corresponding isomorphism on the corresponding functor between
 the bounded below homotopy categories. -/

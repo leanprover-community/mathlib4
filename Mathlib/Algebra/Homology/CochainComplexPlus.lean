@@ -138,10 +138,9 @@ section
 
 variable [HasZeroMorphisms C] [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor on categories of bounded below cochain complexes that
 is induced by a functor (which preserves zero morphisms). -/
-@[simps!]
+@[implicit_reducible, simps!]
 def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
     obtain ⟨i, hi⟩ := K.2
@@ -156,6 +155,18 @@ is a functor which preserves zero morphisms -/
 def mapCochainComplexPlusCompι :
     F.mapCochainComplexPlus ⋙ CochainComplex.Plus.ι D ≅
       CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _ := Iso.refl _
+
+end
+
+section
+
+variable [Preadditive C] [Preadditive D] [F.Additive]
+
+noncomputable instance : F.mapCochainComplexPlus.CommShift ℤ :=
+  ObjectProperty.commShiftLift ..
+
+instance : NatTrans.CommShift F.mapCochainComplexPlusCompι.hom ℤ :=
+  ObjectProperty.commShift_liftCompιIso_hom ..
 
 end
 

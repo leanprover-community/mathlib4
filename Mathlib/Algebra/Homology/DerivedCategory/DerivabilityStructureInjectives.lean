@@ -101,7 +101,7 @@ variable (C) in
 /-- The localizer morphism (relative to quasi-isomorphisms) that is
 given by the "inclusion functor"
 `CochainComplex.Plus (InjectiveObject C) ⥤ CochainComplex.Plus C`. -/
-@[simps]
+@[implicit_reducible, simps]
 def localizerMorphism :
     LocalizerMorphism ((quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
       (quasiIso C) where
