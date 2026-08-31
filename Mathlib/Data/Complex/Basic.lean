@@ -1,18 +1,8 @@
-/-
-Copyright (c) 2017 Kevin Buzzard. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Mario Carneiro
--/
-module
+module -- shake: keep-all
 
-public import Mathlib.Algebra.Ring.CharZero
-public import Mathlib.Algebra.Ring.Torsion
-public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Order.Interval.Set.UnorderedInterval
-public import Mathlib.Tactic.Ring
-public import Mathlib.Util.Qq
+public import Mathlib.Basic.Complex.Basic
 
+<<<<<<< HEAD
 /-!
 # The complex numbers
 
@@ -878,3 +868,6 @@ lemma verticalSegment_eq (a b₁ b₂ : ℝ) :
 end Segments
 
 end Complex
+=======
+deprecated_module (since := "2026-08-27")
+>>>>>>> master
