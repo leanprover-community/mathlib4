@@ -12,4 +12,4 @@ example : @DivisionRing.toRatAlgebra (QuadraticAlgebra ℚ a b) _ _ =
   with_implicit rfl
 
 example : @DivisionRing.toRatAlgebra (QuadraticAlgebra ℚ a b) _ _ =
-    QuadraticAlgebra.instAlgebra := rfl   
+    QuadraticAlgebra.instAlgebra := rfl
