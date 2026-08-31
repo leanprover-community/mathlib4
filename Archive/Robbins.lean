@@ -18,7 +18,7 @@ with `⊔` and `ᶜ` as in `BooleanAlgebra`, yield an algebra equivalent to Bool
 * `⊔` is commutative and associative
 * For all `a` and `b`, `((a ⊔ b)ᶜ ⊔ (a ⊔ bᶜ)ᶜ)ᶜ = a`
 
-This **Robbins conjecture** was only proved in 1997 by an early automated theorem prover
+This conjecture was only proved in 1997 by an early automated theorem prover
 under the direction of William McCune by deriving Huntington's equation:
 
 * For all `a` and `b`, `(aᶜ ⊔ bᶜ)ᶜ ⊔ (aᶜ ⊔ b)ᶜ = a`
@@ -347,12 +347,12 @@ lemma add_self : a + a = a := by
   conv_rhs => rw [← neg_neg a, ← huntington (-a) (-a)]
   rw [add_comm _ (-a), add_neg_self, neg_one, add_zero, neg_neg, neg_neg]
 
-lemma inf_le_left : -(-a + -b) + a = a := by
+lemma min_add_left : -(-a + -b) + a = a := by
   nth_rw 2 [← huntington a b]
   rw [← add_assoc, add_self, huntington]
 
-lemma inf_sup_left : -(-a + -(b + c)) = -(-a + -b) + -(-a + -c) := by
-  nth_rw 1 [← huntington (-_) b, neg_neg, add_assoc, ← neg_neg b, ← neg_neg c, inf_le_left,
+lemma min_add_distrib : -(-a + -(b + c)) = -(-a + -b) + -(-a + -c) := by
+  nth_rw 1 [← huntington (-_) b, neg_neg, add_assoc, ← neg_neg b, ← neg_neg c, min_add_left,
     ← huntington (-_) c, ← huntington (-(_ + b)) c]
   have l₁ := huntington (-(-a + -b)) c
   have l₂ := huntington (-(-a + -c)) b
@@ -360,12 +360,12 @@ lemma inf_sup_left : -(-a + -(b + c)) = -(-a + -b) + -(-a + -c) := by
   rw [show -a + -(b + c) + b + -c = -a + b + (-(c + b) + -c) by ac_rfl,
     show -a + -(b + c) + b + c = -a + ((b + c) + -(b + c)) by ac_rfl]
   conv_lhs => enter [2, 1, 1, 2, 1]; rw [← neg_neg b, ← neg_neg c]
-  rw [inf_le_left, add_neg_self_const _ a, show -a + (a + -a) = a + (-a + -a) by ac_rfl, add_self,
+  rw [min_add_left, add_neg_self_const _ a, show -a + (a + -a) = a + (-a + -a) by ac_rfl, add_self,
     add_neg_self, neg_one, add_zero, ← add_self (-_), add_assoc (-_), l₁, ← l₂]
   ac_rfl
 
-lemma sup_inf_left : a + -(-b + -c) = -(-(a + b) + -(a + c)) := by
-  simpa [neg_neg] using congr(-$(inf_sup_left (-a) (-b) (-c)))
+lemma add_min_distrib : a + -(-b + -c) = -(-(a + b) + -(a + c)) := by
+  simpa [neg_neg] using congr(-$(min_add_distrib (-a) (-b) (-c)))
 
 instance : Lattice α where
   le a b := a + b = b
@@ -377,9 +377,9 @@ instance : Lattice α where
   le_sup_right _ _ := by rw [add_comm, add_assoc, add_self]
   sup_le _ _ _ h₁ h₂ := by rw [add_assoc, h₂, h₁]
   inf a b := -(-a + -b)
-  inf_le_left := inf_le_left
-  inf_le_right a b := add_comm (-b) _ ▸ inf_le_left ..
-  le_inf _ _ _ h₁ h₂ := by rw [sup_inf_left, h₁, h₂]
+  inf_le_left := min_add_left
+  inf_le_right a b := add_comm (-b) _ ▸ min_add_left ..
+  le_inf _ _ _ h₁ h₂ := by rw [add_min_distrib, h₁, h₂]
 
 /-- Derive a Boolean algebra from a Robbins algebra. -/
 instance : BooleanAlgebra α where
@@ -400,7 +400,7 @@ instance : BooleanAlgebra α where
     rw [add_comm, add_zero]
   le_sup_inf _ _ _ := by
     change -(-(_ + _) + -(_ + _)) + _ = _
-    rw [← sup_inf_left]
+    rw [← add_min_distrib]
     exact add_self _
 
 end RobbinsAlgebra
