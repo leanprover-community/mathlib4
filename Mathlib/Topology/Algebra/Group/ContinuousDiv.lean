@@ -69,6 +69,7 @@ lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter �
 @[deprecated (since := "2026-02-03")]
 alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. -/]
@@ -87,6 +88,7 @@ theorem isOpenMap_div_left (a : G) : IsOpenMap (a / ·) :=
 theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
   (Homeomorph.divLeft _).isClosedMap
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A version of `Homeomorph.mulRight a⁻¹ b` that is defeq to `b / a`. -/
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. -/]

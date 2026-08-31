@@ -154,6 +154,7 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
   h.isInducing.continuousWithinAt_iff
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A homeomorphism `h : X ≃ₜ Y` lifts to a homeomorphism between subtypes corresponding to
 predicates `p : X → Prop` and `q : Y → Prop` so long as `p = q ∘ h`. -/
 @[simps!]
@@ -269,6 +270,7 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `ULift X` is homeomorphic to `X`. -/
 def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X where
   toEquiv := Equiv.ulift
@@ -298,6 +300,7 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   rw [Fin.appendEquiv_eq_homeomorph]
   exact Homeomorph.continuous_toFun _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
 `Fin.appendEquiv` as a homeomorphism -/
 @[simps!]
@@ -329,6 +332,7 @@ set_option backward.defeqAttrib.useBackward true in
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
   toEquiv := Equiv.funUnique ι X
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
 @[simps! -fullyApplied]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
@@ -348,6 +352,8 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `Set.univ X` is homeomorphic to `X`. -/
 @[simps! -fullyApplied]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
@@ -366,6 +372,7 @@ section
 
 variable {ι : Type*}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The topological space `Π i, Y i` can be split as a product by separating the indices in ι
   depending on whether they satisfy a predicate p or not. -/
 @[simps!]
@@ -379,6 +386,7 @@ def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, Topologica
 
 variable [DecidableEq ι] (i : ι)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A product of topological spaces can be split as the binary product of one of the spaces and
   the product of all the remaining spaces. -/
 @[simps!]

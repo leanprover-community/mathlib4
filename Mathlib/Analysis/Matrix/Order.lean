@@ -88,6 +88,7 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
+set_option fun_prop.reducibleApply false in
 lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} := by
   rw [show {A | A.PosSemidef} = {A : Matrix n n 𝕜 | A.IsHermitian} ∩
     ⋂ x : n →₀ 𝕜, {A | 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj} by aesop]

@@ -183,6 +183,7 @@ lemma S'_compactSpace [TopologicalSpace S] [T2Space S] [TopologicalSpace T]
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This object is used to show that a certain map `T ⟶ X` descends
 to a map `S ⊗ N∪{∞} → X`. Because epimorphisms in `LightProfinite`
 are effective, it does so if the two maps `pullback π π → T → S ⊗ N∪{∞}`
@@ -243,6 +244,7 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
     simp [pullback.condition]
 
 set_option backward.isDefEq.respectTransparency false in
+set_option fun_prop.reducibleApply false in
 /-- Given a surjective map of light profinite spaces `T ⟶ S ⊗ ℕ∪{∞}`,
 construct a (non-cartesian) commutative square
 ```

@@ -569,6 +569,7 @@ def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
 @[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop
 
 @[simp] lemma coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl

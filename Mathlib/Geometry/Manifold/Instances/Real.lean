@@ -291,6 +291,7 @@ lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
     (modelWithCornersEuclideanQuadrant n).symm x = ⟨x, hx⟩ := by
   simp [modelWithCornersEuclideanQuadrant_symm_apply, hx]
 
+set_option fun_prop.reducibleApply false in
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -369,6 +370,7 @@ lemma IccLeftChart_extend_bot_mem_frontier :
   rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_ofPred, PiLp.zero_apply]
 
+set_option fun_prop.reducibleApply false in
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
 -/

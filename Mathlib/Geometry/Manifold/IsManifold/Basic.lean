@@ -1053,11 +1053,8 @@ model space. *Do not use*, unless when setting up foundational properties of the
 this definition is a technical detail related to our specific implementation of tangent spaces,
 but it has no mathematical meaning. The mathematically meaningful version of this definition
 is the derivative of the extended chart at `x`, in its `mvfderiv` version. -/
-def tangentSpaceCastModel (x : M) : TangentSpace I x ≃L[𝕜] E where
-  toFun v := v
-  invFun v := v
-  map_add' x y := rfl
-  map_smul' c x := rfl
+def tangentSpaceCastModel (x : M) : TangentSpace I x ≃L[𝕜] E :=
+  .refl ..
 
 /-- Identifying the tangent space at a normed space with the normed space itself.
 This canonical identification (which, in mathlib, is implemented using an abuse of definitional
@@ -1067,11 +1064,8 @@ def NormedSpace.fromTangentSpace (v : E) : TangentSpace 𝓘(𝕜, E) v ≃L[�
 
 /-- Definitional identification between the tangent space of a manifold at two points. This only
 makes sense mathematically when `x = y`. -/
-def tangentSpaceCast (x y : M) : TangentSpace I x ≃L[𝕜] TangentSpace I y where
-  toFun v := v
-  invFun v := v
-  map_add' x y := rfl
-  map_smul' c x := rfl
+def tangentSpaceCast (x y : M) : TangentSpace I x ≃L[𝕜] TangentSpace I y :=
+  .refl ..
 
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 

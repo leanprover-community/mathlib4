@@ -25,6 +25,7 @@ open Complex InnerProductSpace Metric Set
 variable
   {f : ℂ → ℝ} {x : ℂ}
 
+set_option fun_prop.reducibleApply false in
 /--
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex differentiable at `x`.
 -/
