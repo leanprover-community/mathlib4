@@ -5,18 +5,20 @@ Authors: Zhenhua Wu
 -/
 module
 
-public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Topology.EMetricSpace.ArcLength
 public import Mathlib.Topology.Path
 
 /-!
 # Length of paths
 
-This file defines the length of a path in a `PseudoEMetricSpace` as its variation on the unit
-interval, and develops the basic API for this definition.
+This file defines the length of a path in a `WeakPseudoEMetricSpace` as the arc length of the
+underlying map on the unit interval, equivalently as its variation on `Set.univ`, and develops
+the basic API for this definition.
 
 ## Main declarations
 
-* `Path.length`: the length of a path, defined as its variation on the unit interval.
+* `Path.length`: the length of a path, defined as `arcLength γ 0 1`.
+* `Path.length_eq_eVariationOn`: `Path.length` agrees with `eVariationOn` on `Set.univ`.
 * `Path.edist_le_length`: the endpoint distance is bounded above by the length.
 * `Path.length_symm`: reversing a path does not change its length.
 * `Path.length_trans`: the length of a concatenation is the sum of the lengths.
@@ -33,7 +35,7 @@ namespace Path
 
 @[expose] public noncomputable section
 
-variable {E : Type*} [PseudoEMetricSpace E] {a b c : E}
+variable {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E] {a b c : E}
 
 local notation "half" => (⟨1 / 2, by norm_num⟩ : I)
 
@@ -44,29 +46,36 @@ private lemma symm_half : σ half = half := by
 
 /-! ## Definition and basic properties -/
 
-/-- The length of a path is its variation on the unit interval. -/
+/-- The length of a path is the arc length of its underlying map on the unit interval. -/
 def length (γ : Path a b) : ℝ≥0∞ :=
-  eVariationOn γ Set.univ
+  arcLength γ 0 1
+
+/-- The length of a path agrees with the variation of its underlying map on `Set.univ`. -/
+theorem length_eq_eVariationOn (γ : Path a b) :
+    γ.length = eVariationOn γ Set.univ := by
+  rw [length, arcLength, ← unitInterval.univ_eq_Icc]
 
 /-- The endpoint distance of a path is bounded above by its length. -/
 theorem edist_le_length (γ : Path a b) :
-    edist a b ≤ γ.length := by
-  simp_rw [← γ.source, ← γ.target]
-  exact eVariationOn.edist_le γ (mem_univ 0) (mem_univ 1)
+    edist a b ≤ γ.length :=
+  calc
+    _ = edist (γ 0) (γ 1) := by rw [γ.source, γ.target]
+    _ ≤ arcLength γ 0 1 := edist_le_arcLength γ (a := 0) (b := 1) zero_le_one
+    _ = γ.length := by rw [length]
 
 /-- The constant path has zero length. -/
 @[simp]
 theorem length_refl (x : E) :
-    (Path.refl x).length = 0 := by
-  apply eVariationOn.constant_on
-  simp
+    (refl x).length = 0 := by
+  rw [length_eq_eVariationOn]
+  exact eVariationOn.constant_on (f := refl x) (s := Set.univ) (by simp)
 
 /-- Reversing a path does not change its length. -/
 @[simp]
 theorem length_symm (γ : Path a b) :
     γ.symm.length = γ.length := by
-  unfold length
-  rw [symm_eq_comp γ, eVariationOn.comp_eq_of_antitoneOn _ _
+  rw [length_eq_eVariationOn, length_eq_eVariationOn, symm_eq_comp γ,
+    eVariationOn.comp_eq_of_antitoneOn _ _
     (unitInterval.strictAnti_symm.antitone.antitoneOn univ),
     image_univ_of_surjective unitInterval.symm_bijective.surjective]
 
@@ -75,8 +84,7 @@ theorem length_symm (γ : Path a b) :
 /-- The length of a path is the variation of its extension on `[0,1]`. -/
 lemma length_eq_eVariationOn_extend (γ : Path a b) :
     γ.length = eVariationOn γ.extend (Icc (0 : ℝ) 1) := by
-  unfold length
-  rw [← restrict_extend γ, eVariationOn.comp_eq_of_monotoneOn _ _
+  rw [length_eq_eVariationOn, ← restrict_extend γ, eVariationOn.comp_eq_of_monotoneOn _ _
     ((Subtype.mono_coe _).monotoneOn univ), Subtype.coe_image_univ I]
 
 /-- Auxiliary lemma: the affine map `t ↦ 2t` sends the left half
@@ -107,11 +115,11 @@ private lemma eVariationOn_trans_left (γ : Path a b) (η : Path b c) :
     eVariationOn (γ.trans η) (Icc 0 half) = γ.length := by
   calc
     _ = eVariationOn (γ.extend ∘ fun t : I ↦ 2 * t) (Icc 0 half) := by
-      refine eVariationOn.congr fun t ht => ?_
-      rw [Function.comp_apply, ← Path.extend_apply, Path.extend_trans_of_le_half γ η ht.2]
+          refine eVariationOn.congr fun t ht => ?_
+          rw [Function.comp_apply, ← Path.extend_apply, Path.extend_trans_of_le_half γ η ht.2]
     _ = eVariationOn γ.extend (Icc 0 1) := by
-      rw [eVariationOn.comp_eq_of_monotoneOn _ _
-        (Subtype.mono_coe _ |>.const_mul zero_le_two |>.monotoneOn _), image_double_Icc_half]
+          rw [eVariationOn.comp_eq_of_monotoneOn _ _
+            ((Subtype.mono_coe _ |>.const_mul zero_le_two |>.monotoneOn _)), image_double_Icc_half]
     _ = γ.length := (length_eq_eVariationOn_extend γ).symm
 
 /-- Auxiliary lemma: the variation of a concatenation on its right half
@@ -128,8 +136,7 @@ private lemma eVariationOn_trans_right (γ : Path a b) (η : Path b c) :
 /-- The length of a concatenation is the sum of the lengths of the two pieces. -/
 theorem length_trans (γ : Path a b) (η : Path b c) :
     (γ.trans η).length = γ.length + η.length := by
-  change eVariationOn (γ.trans η) Set.univ = γ.length + η.length
-  rw [univ_eq_Icc, ← Icc_union_Icc_eq_Icc nonneg' le_one',
+  rw [length_eq_eVariationOn, univ_eq_Icc, ← Icc_union_Icc_eq_Icc nonneg' le_one',
     eVariationOn.union _ (isGreatest_Icc nonneg') (isLeast_Icc le_one'),
     eVariationOn_trans_left, eVariationOn_trans_right]
 
