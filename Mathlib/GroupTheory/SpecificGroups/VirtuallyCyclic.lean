@@ -24,8 +24,9 @@ Besson–Courtois–Gallot–Sambusetti.
 * `Group.IsVirtuallyCyclic` : a group with a cyclic subgroup of finite index.
 * `Group.IsVirtuallyCyclic.isVirtuallyNilpotent` : virtually cyclic groups are
   virtually nilpotent (companion to `Group.IsNilpotent.isVirtuallyNilpotent`).
-* `Group.IsVirtuallyCyclic.of_surjective` : preservation under surjective
-  homomorphisms. Instances provide the cyclic and finite base cases and
+* `Group.IsVirtuallyCyclic.of_surjective`,
+  `Group.IsVirtuallyCyclic.of_injective` : preservation under surjective
+  homomorphisms and group embeddings. Instances provide the cyclic and finite base cases and
   closure under subgroups and quotients.
 
 ## TODO
@@ -38,7 +39,7 @@ Besson–Courtois–Gallot–Sambusetti.
 
 namespace Group
 
-variable (G : Type*) [Group G]
+variable (G : Type*) [Group G] {G' : Type*} [Group G']
 
 /-- An additive group is **virtually cyclic** if it has a cyclic additive
 subgroup of finite index. -/
@@ -56,30 +57,32 @@ variable {G}
 
 /-- A cyclic group is virtually cyclic. -/
 @[to_additive]
-instance [IsCyclic G] : IsVirtuallyCyclic G :=
+-- see Note [lower instance priority]
+instance (priority := 100) [IsCyclic G] : IsVirtuallyCyclic G :=
   ⟨⊤, inferInstance, inferInstance⟩
 
 /-- A finite group is virtually cyclic — via the trivial subgroup, which is
 cyclic and of finite index. -/
 @[to_additive]
-instance [Finite G] : IsVirtuallyCyclic G :=
+-- see Note [lower instance priority]
+instance (priority := 100) [Finite G] : IsVirtuallyCyclic G :=
   ⟨⊥, inferInstance, ⟨Subgroup.index_ne_zero_of_finite⟩⟩
 
 -- TODO: additivize once Mathlib has additive nilpotency.
 /-- A virtually cyclic group is virtually nilpotent: a cyclic group is
 commutative, hence nilpotent. This slots next to
 `Group.IsNilpotent.isVirtuallyNilpotent`. -/
-theorem IsVirtuallyCyclic.isVirtuallyNilpotent [h : IsVirtuallyCyclic G] :
+theorem IsVirtuallyCyclic.isVirtuallyNilpotent [IsVirtuallyCyclic G] :
     IsVirtuallyNilpotent G := by
-  obtain ⟨H, hc, hfi⟩ := h.exists_isCyclic_and_finiteIndex
+  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
   exact ⟨H, @CommGroup.isNilpotent _ hc.commGroup, hfi⟩
 
 /-- Every subgroup of a virtually cyclic group is virtually cyclic. The
 witness is `H.subgroupOf K`, cyclic because it is isomorphic to `H ⊓ K ≤ H`,
 of finite index in `K` by `Subgroup.instFiniteIndex_subgroupOf`. -/
 @[to_additive]
-instance [h : IsVirtuallyCyclic G] (K : Subgroup G) : IsVirtuallyCyclic K := by
-  obtain ⟨H, hc, hfi⟩ := h.exists_isCyclic_and_finiteIndex
+instance [IsVirtuallyCyclic G] (K : Subgroup G) : IsVirtuallyCyclic K := by
+  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
   refine ⟨H.subgroupOf K, ?_, inferInstance⟩
   have hEq : H.subgroupOf K = (H ⊓ K).subgroupOf K := by
     ext x
@@ -93,15 +96,21 @@ virtually cyclic. Cyclicity of the image subgroup comes from
 `isCyclic_of_surjective` along `f.subgroupMap`; finiteness of its index from
 `Subgroup.index_map_dvd`. -/
 @[to_additive]
-theorem IsVirtuallyCyclic.of_surjective {G' : Type*} [Group G']
-    (f : G →* G') (hf : Function.Surjective f) [h : IsVirtuallyCyclic G] :
-    IsVirtuallyCyclic G' := by
-  obtain ⟨H, hc, hfi⟩ := h.exists_isCyclic_and_finiteIndex
-  refine ⟨H.map f, ?_, ?_⟩
-  · exact isCyclic_of_surjective _ (f.subgroupMap_surjective H)
-  · refine ⟨fun h0 => hfi.index_ne_zero ?_⟩
-    have hd := Subgroup.index_map_dvd (H := H) hf
-    rwa [h0, zero_dvd_iff] at hd
+theorem IsVirtuallyCyclic.of_surjective (f : G →* G') (hf : Function.Surjective f)
+    [IsVirtuallyCyclic G] : IsVirtuallyCyclic G' := by
+  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
+  refine ⟨H.map f, isCyclic_of_surjective _ (f.subgroupMap_surjective H), ⟨fun h0 ↦ ?_⟩⟩
+  apply hfi.index_ne_zero
+  have hd := H.index_map_dvd hf
+  rwa [h0, zero_dvd_iff] at hd
+
+/-- A group embedding into a virtually cyclic group is virtually cyclic: it is
+isomorphic to its range, a subgroup of the codomain. -/
+@[to_additive]
+theorem IsVirtuallyCyclic.of_injective (f : G →* G') (hf : Function.Injective f)
+    [IsVirtuallyCyclic G'] : IsVirtuallyCyclic G :=
+  .of_surjective (MonoidHom.ofInjective hf).symm.toMonoidHom
+    (MonoidHom.ofInjective hf).symm.surjective
 
 /-- Quotients of virtually cyclic groups are virtually cyclic. -/
 @[to_additive]
