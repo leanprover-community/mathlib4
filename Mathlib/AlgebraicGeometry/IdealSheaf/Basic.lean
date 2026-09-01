@@ -846,8 +846,7 @@ lemma Hom.support_ker (f : X ⟶ Y) [QuasiCompact f] :
     f.ker.support = closure (Set.range f) := by
   apply subset_antisymm
   · wlog hY : ∃ S, Y = Spec S
-    · try_grind
-      intro x hx
+    · intro x hx
       let 𝒰 := Y.affineCover
       obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
       have inst : QuasiCompact (𝒰.pullbackHom f i) :=
@@ -867,8 +866,7 @@ lemma Hom.support_ker (f : X ⟶ Y) [QuasiCompact f] :
         · exact (IsPullback.of_hasPullback _ _).flip
     obtain ⟨S, rfl⟩ := hY
     wlog hX : ∃ R, X = Spec R generalizing X S
-    · try_grind
-      intro x hx
+    · intro x hx
       have inst : CompactSpace X := HasAffineProperty.iff_of_isAffine.mp ‹QuasiCompact f›
       let 𝒰 := X.affineCover.finiteSubcover
       obtain ⟨_, ⟨i, rfl⟩, hx⟩ := (f.iUnion_support_ker_openCover_map_comp 𝒰).ge hx

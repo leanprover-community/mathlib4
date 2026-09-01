@@ -414,19 +414,16 @@ private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOf
     ∃ (k : I) (hik : k ⟶ i) (hjk : k ⟶ j),
       D.map hik ≫ a = D.map hjk ≫ b := by
   wlog hS : ∃ R, S = Spec R generalizing S
-  · try_grind
-    exact this (t ≫ ((Functor.const I).mapIso S.isoSpec).hom)
+  · exact this (t ≫ ((Functor.const I).mapIso S.isoSpec).hom)
       (f ≫ S.isoSpec.hom) (by simp [ha]) (by simp [hb]) ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hS
   wlog hX : ∃ S, X = Spec S generalizing X
-  · try_grind
-    simpa using! this (a ≫ X.isoSpec.hom) (b ≫ X.isoSpec.hom) (by simp [hab]) (X.isoSpec.inv ≫ f)
+  · simpa using! this (a ≫ X.isoSpec.hom) (b ≫ X.isoSpec.hom) (by simp [hab]) (X.isoSpec.inv ≫ f)
       (by simp [ha]) (by simp [hb]) ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   wlog hD : ∃ D' : I ⥤ CommRingCatᵒᵖ, D = D' ⋙ Scheme.Spec generalizing D
-  · try_grind
-    let e : D ⟶ D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
+  · let e : D ⟶ D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
     have inst (i) : IsIso (e.app i) := by dsimp [e]; infer_instance
     have inst : IsIso e := NatIso.isIso_of_isIso_app e
     have inst (i) : IsAffine ((D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec).obj i) := by
@@ -1165,21 +1162,18 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
   -- use `RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit`.
   -- Unfortunately the translation takes 45 lines.
   wlog hS : ∃ R, S = Spec R generalizing S
-  · try_grind
-    obtain ⟨i, g, hg, hg'⟩ := this (t ≫ ((Functor.const I).mapIso S.isoSpec).hom)
+  · obtain ⟨i, g, hg, hg'⟩ := this (t ≫ ((Functor.const I).mapIso S.isoSpec).hom)
       (f ≫ S.isoSpec.hom) (by simp [reassoc_of% ha]) ⟨_, rfl⟩
     exact ⟨i, g, hg, by simpa using! congr($hg' ≫ S.isoSpec.inv)⟩
   obtain ⟨R, rfl⟩ := hS
   wlog hX : ∃ S, X = Spec S generalizing X
-  · try_grind
-    obtain ⟨i, f, hf⟩ := this (a ≫ X.isoSpec.hom) (X.isoSpec.inv ≫ f)
+  · obtain ⟨i, f, hf⟩ := this (a ≫ X.isoSpec.hom) (X.isoSpec.inv ≫ f)
       (by simp [ha, -Functor.map_comp]) ⟨_, rfl⟩
     exact ⟨i, f ≫ X.isoSpec.inv, by simpa [← Iso.comp_inv_eq] using! hf⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   wlog hD : ∃ D' : I ⥤ CommRingCatᵒᵖ, D = D' ⋙ Scheme.Spec generalizing D
-  · try_grind
-    let e : D ⟶ D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
+  · let e : D ⟶ D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
     have inst (i) : IsIso (e.app i) := by dsimp [e]; infer_instance
     have inst : IsIso e := NatIso.isIso_of_isIso_app e
     have inst (i) : IsAffine ((D ⋙ Scheme.Γ.rightOp ⋙ Scheme.Spec).obj i) := by
@@ -1195,8 +1189,7 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     ⟨⟨fun i ↦ Spec.preimage (t.app i.unop), fun _ _ f ↦ Spec.map_injective
       (by simpa using! (t.naturality f.unop).symm)⟩, by ext : 2; simp [e]⟩
   wlog hc' : ∃ c' : Cocone D.leftOp, c = Scheme.Spec.mapCone (coneOfCoconeLeftOp c') generalizing c
-  · try_grind
-    have inst : IsAffine c.pt := isAffine_of_isLimit _ hc
+  · have inst : IsAffine c.pt := isAffine_of_isLimit _ hc
     let e' : (D ⋙ Scheme.Spec).op ⋙ Γ ≅ D.leftOp := D.leftOp.isoWhiskerLeft SpecΓIdentity
     let c' := coneOfCoconeLeftOp ((Cocone.precompose e'.inv).obj (Γ.mapCocone c.op))
     have inst : ∀ i, IsAffine ((D ⋙ Scheme.Spec).op.obj i).unop := by dsimp; infer_instance

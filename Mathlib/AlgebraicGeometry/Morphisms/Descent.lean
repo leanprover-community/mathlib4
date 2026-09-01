@@ -67,8 +67,7 @@ lemma IsZariskiLocalAtTarget.descendsAlong [IsZariskiLocalAtTarget P] [P'.IsStab
   apply MorphismProperty.DescendsAlong.mk'
   introv h hf
   wlog hZ : ∃ R, Z = Spec R generalizing X Y Z
-  · try_grind
-    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := P) Z.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := P) Z.affineCover]
     intro i
     let ι := Z.affineCover.f i
     let e : pullback (pullback.snd f ι) (pullback.snd g ι) ≅
@@ -139,8 +138,7 @@ lemma IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact [IsZariskiLocalAtTar
   apply IsZariskiLocalAtTarget.descendsAlong
   intro R X Y f g hf h
   wlog hX : ∃ T, X = Spec T generalizing X
-  · try_grind
-    have _ : CompactSpace X := by simpa [← quasiCompact_iff_compactSpace f] using hf.2
+  · have _ : CompactSpace X := by simpa [← quasiCompact_iff_compactSpace f] using hf.2
     obtain ⟨Y, p, hsurj, hP', hY⟩ := X.exists_hom_isAffine_of_isZariskiLocalAtSource @IsLocalIso
     refine this (f := (Y.isoSpec.inv ≫ p) ≫ f) ?_ ?_ ⟨_, rfl⟩
     · rw [Category.assoc, (P' ⊓ @QuasiCompact).cancel_left_of_respectsIso]
@@ -169,8 +167,7 @@ nonrec lemma HasRingHomProperty.descendsAlong [HasRingHomProperty P Q]
   apply IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact _ _ H₁
   introv h hf
   wlog hY : ∃ S, Y = Spec S generalizing Y
-  · try_grind
-    rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) Y.affineCover]
+  · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) Y.affineCover]
     intro i
     have heq : pullback.fst (Spec.map φ) (Y.affineCover.f i ≫ g) =
         pullback.map _ _ _ _ (𝟙 _) (Y.affineCover.f i) (𝟙 _) (by simp) (by simp) ≫
@@ -204,8 +201,7 @@ nonrec lemma HasAffineProperty.descendsAlong_of_affineAnd
     exact MorphismProperty.of_pullback_fst_of_descendsAlong h <|
       AlgebraicGeometry.HasAffineProperty.affineAnd_le_isAffineHom P inferInstance _ hf
   wlog hY : ∃ S, Y = Spec S generalizing Y
-  · try_grind
-    rw [← P.cancel_left_of_respectsIso Y.isoSpec.inv]
+  · rw [← P.cancel_left_of_respectsIso Y.isoSpec.inv]
     have heq : pullback.fst (Spec.map φ) (Y.isoSpec.inv ≫ g) =
         pullback.map _ _ _ _ (𝟙 _) (Y.isoSpec.inv) (𝟙 _) (by simp) (by simp) ≫
           pullback.fst (Spec.map φ) g := (pullback.lift_fst _ _ _).symm

@@ -143,12 +143,10 @@ nonrec lemma IsLocallyArtinian.of_locallyQuasiFinite [LocallyQuasiFinite f]
     [IsLocallyArtinian Y] : IsLocallyArtinian X := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    exact (isLocallyArtinian_iff_openCover (Y.affineCover.pullback₁ f)).mpr fun i ↦
+  · exact (isLocallyArtinian_iff_openCover (Y.affineCover.pullback₁ f)).mpr fun i ↦
       this (pullback.snd _ _) ⟨_, rfl⟩
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    exact (isLocallyArtinian_iff_openCover X.affineCover).mpr fun i ↦
+  · exact (isLocallyArtinian_iff_openCover X.affineCover).mpr fun i ↦
       this (X.affineCover.f i ≫ f) hY ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   obtain ⟨S, rfl⟩ := hX
@@ -190,13 +188,11 @@ nonrec lemma IsFinite.of_locallyQuasiFinite (f : X ⟶ Y) [LocallyQuasiFinite f]
     [QuasiCompact f] [IsLocallyArtinian Y] : IsFinite f := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    exact (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
+  · exact (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (pullback.snd _ _) ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    have inst : IsArtinianScheme X :=
+  · have inst : IsArtinianScheme X :=
       { toIsLocallyArtinian := .of_locallyQuasiFinite f,
         toCompactSpace := QuasiCompact.compactSpace_of_compactSpace f }
     exact (MorphismProperty.cancel_left_of_respectsIso _ _ _).mp
@@ -217,8 +213,7 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
     (hf : ∀ x, LocallyQuasiFinite (f.fiberToSpecResidueField x)) : LocallyQuasiFinite f := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
+  · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
     have (x : Y) : IsLocallyArtinian (f.fiber x) :=
       .of_locallyQuasiFinite (f.fiberToSpecResidueField x)
@@ -232,8 +227,7 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    refine (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦
+  · refine (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦
       this _ _ (fun x ↦ ?_) ⟨_, rfl⟩
     have (x : _) : IsLocallyArtinian (f.fiber x) :=
       .of_locallyQuasiFinite (f.fiberToSpecResidueField x)
@@ -278,8 +272,7 @@ nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
   refine ⟨fun _ ↦ f.isDiscrete_preimage_singleton, fun H ↦ ?_⟩
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
+  · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
     convert!
       (H (Y.affineCover.f i x)).preimage ((pullback.fst f _).continuous.continuousOn)
@@ -289,8 +282,7 @@ nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
       -Hom.comp_base, pullback.condition]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    exact (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦
+  · exact (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦
       this _ (fun x ↦ (H x).preimage (X.affineCover.f _).continuous.continuousOn
       (X.affineCover.f _).isOpenEmbedding.injective) ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
@@ -305,8 +297,7 @@ nonrec lemma LocallyQuasiFinite.of_finite_preimage_singleton
     [LocallyOfFiniteType f] (hf : ∀ x, (f ⁻¹' {x}).Finite) : LocallyQuasiFinite f := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
+  · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
     convert!
       (hf (Y.affineCover.f i x)).preimage
@@ -316,8 +307,7 @@ nonrec lemma LocallyQuasiFinite.of_finite_preimage_singleton
       -Hom.comp_base, pullback.condition]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    exact (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦ this _ _
+  · exact (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦ this _ _
       (fun x ↦ ((hf x).preimage (X.affineCover.f _).isOpenEmbedding.injective.injOn :)) ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
@@ -401,8 +391,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
   rw [← (f.fiberHomeo (f x)).isOpen_image]
   simp only [Set.image_singleton, asFiber, Homeomorph.apply_symm_apply]
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    obtain ⟨i, y, hy⟩ := Y.affineCover.exists_eq (f x)
+  · obtain ⟨i, y, hy⟩ := Y.affineCover.exists_eq (f x)
     obtain ⟨x, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback _ _ hy.symm
     let ι := Y.affineCover.f i
     convert! this (f := pullback.snd f ι) (x := x) ⟨_, rfl⟩ using 1
@@ -424,8 +413,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
     rw [this.isOpen_iff_image_isOpen, Set.image_singleton]; rfl
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    obtain ⟨i, x, rfl⟩ := X.affineCover.exists_eq x
+  · obtain ⟨i, x, rfl⟩ := X.affineCover.exists_eq x
     let ι := X.affineCover.f i
     convert! this (x := x) _ (f := ι ≫ f) ⟨_, rfl⟩ using 1
     · exact quasiFiniteAt_comp_iff_of_isOpenImmersion.symm

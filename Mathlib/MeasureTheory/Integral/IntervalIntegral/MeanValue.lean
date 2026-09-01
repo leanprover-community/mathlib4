@@ -77,8 +77,7 @@ theorem exists_eq_const_mul_intervalIntegral_of_ae_nonneg
   · subst h
     exact ⟨a, by simp, by simp⟩
   wlog hab : a < b generalizing a b
-  · try_grind
-    simp only [not_lt] at hab
+  · simp only [not_lt] at hab
     obtain ⟨c, c_in_uIcc, that⟩ :=
       this (by rwa [uIcc_comm]) hg.symm (by rwa [uIoc_comm]) (by lia) (lt_of_le_of_ne' hab h)
     exact ⟨c, by rwa [uIcc_comm], by simpa [integral_symm b a]⟩

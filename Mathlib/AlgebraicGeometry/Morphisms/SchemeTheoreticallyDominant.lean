@@ -75,8 +75,7 @@ lemma Scheme.Hom.app_injective (f : X ⟶ Y) [IsSchemeTheoreticallyDominant f] [
     (U : Y.Opens) :
     Function.Injective (f.app U) := by
   wlog hU : IsAffineOpen U generalizing U; swap
-  · try_grind
-    rw [RingHom.injective_iff_ker_eq_bot, ← f.ker_apply ⟨U, hU⟩, f.ker_eq_bot]
+  · rw [RingHom.injective_iff_ker_eq_bot, ← f.ker_apply ⟨U, hU⟩, f.ker_eq_bot]
     simp
   rw [injective_iff_map_eq_zero]
   intro s hs

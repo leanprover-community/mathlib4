@@ -36,8 +36,7 @@ lemma sqrt_mul_le_half_add (x y : ℝ≥0) : sqrt (x * y) ≤ (x + y) / 2 := by
 /-- The strict AM–GM inequality for two `NNReal`s, with means in canonical form. -/
 lemma sqrt_mul_lt_half_add_of_ne {x y : ℝ≥0} (h : x ≠ y) : sqrt (x * y) < (x + y) / 2 := by
   wlog hl : y < x generalizing x y
-  · try_grind
-    specialize this h.symm (h.gt_or_lt.resolve_left hl)
+  · specialize this h.symm (h.gt_or_lt.resolve_left hl)
     rwa [mul_comm, add_comm]
   have key : 0 < (x - y) ^ 2 := sq_pos_iff.mpr (by rwa [← zero_lt_iff, tsub_pos_iff_lt])
   rw [sq, tsub_mul, mul_tsub, mul_tsub, tsub_tsub_eq_add_tsub_of_le (by gcongr),
@@ -86,8 +85,7 @@ lemma le_gm_and_am_le (h : x ≤ y) : x ≤ sqrt (x * y) ∧ (x + y) / 2 ≤ y :
 
 lemma dist_gm_am_le : dist (sqrt (x * y)) ((x + y) / 2) ≤ dist x y / 2 := by
   wlog h : x ≤ y generalizing x y
-  · try_grind
-    simpa [add_comm, mul_comm, dist_comm] using this (not_le.mp h).le
+  · simpa [add_comm, mul_comm, dist_comm] using this (not_le.mp h).le
   rw [dist_comm, dist_eq, ← NNReal.coe_sub (sqrt_mul_le_half_add ..), abs_eq]
   calc
     _ ≤ ((x + y) / 2 - x).toReal := by
@@ -181,8 +179,7 @@ lemma agm_le_agmSequences_snd (n : ℕ) : agm x y ≤ (agmSequences x y n).2 := 
 
 lemma agm_le_max : agm x y ≤ max x y := by
   wlog h : x ≤ y generalizing x y
-  · try_grind
-    simpa [agm_comm, max_comm] using this (not_le.mp h).le
+  · simpa [agm_comm, max_comm] using this (not_le.mp h).le
   rw [max_eq_right h]
   apply (agm_le_agmSequences_snd 0).trans
   rw [agmSequences_zero]
@@ -214,8 +211,7 @@ lemma agmSequences_fst_le_agm (n : ℕ) : (agmSequences x y n).1 ≤ agm x y := 
 
 lemma min_le_agm : min x y ≤ agm x y := by
   wlog h : x ≤ y generalizing x y
-  · try_grind
-    simpa [agm_comm, min_comm] using this (not_le.mp h).le
+  · simpa [agm_comm, min_comm] using this (not_le.mp h).le
   rw [min_eq_left h]
   refine le_trans ?_ (agmSequences_fst_le_agm 0)
   rw [agmSequences_zero]
@@ -287,8 +283,7 @@ lemma min_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) : min x y
 
 lemma agm_lt_max_of_ne (hn : x ≠ y) : agm x y < max x y := by
   wlog h : x < y generalizing x y
-  · try_grind
-    simpa [agm_comm, max_comm] using this hn.symm (hn.gt_or_lt.resolve_right h)
+  · simpa [agm_comm, max_comm] using this hn.symm (hn.gt_or_lt.resolve_right h)
   rw [max_eq_right h.le]
   apply (agm_lt_agmSequences_snd_of_ne hn 0).trans_le
   rw [agmSequences_zero]

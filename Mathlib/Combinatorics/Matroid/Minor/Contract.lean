@@ -414,8 +414,7 @@ and then deleting the rest of its elements. -/
 lemma contract_closure_eq_contract_delete (M : Matroid α) (C : Set α) :
     M ／ M.closure C = M ／ C ＼ (M.closure C \ C) := by
   wlog hCE : C ⊆ M.E with aux
-  · try_grind
-    rw [← M.contract_inter_ground_eq C, ← closure_inter_ground, aux _ _ inter_subset_right,
+  · rw [← M.contract_inter_ground_eq C, ← closure_inter_ground, aux _ _ inter_subset_right,
       sdiff_inter, sdiff_eq_empty.2 (M.closure_subset_ground _), union_empty]
   obtain ⟨I, hI⟩ := M.exists_isBasis C
   rw [hI.isBasis_closure_right.contract_eq_contract_delete, hI.contract_eq_contract_delete,
@@ -498,8 +497,7 @@ alias IsCircuit.contract_diff_isCircuit := IsCircuit.contract_sdiff_isCircuit
 lemma IsCircuit.exists_subset_isCircuit_of_contract (hC : (M ／ K).IsCircuit C) :
     ∃ C', M.IsCircuit C' ∧ C ⊆ C' ∧ C' ⊆ C ∪ K := by
   wlog hKi : M.Indep K generalizing K with aux
-  · try_grind
-    obtain ⟨I, hI⟩ := M.exists_isBasis' K
+  · obtain ⟨I, hI⟩ := M.exists_isBasis' K
     rw [hI.contract_eq_contract_delete, delete_isCircuit_iff] at hC
     obtain ⟨C', hC', hCC', hC'ss⟩ := aux hC.1 hI.indep
     exact ⟨C', hC', hCC', hC'ss.trans (union_subset_union_right _ hI.subset)⟩
@@ -555,8 +553,7 @@ lemma restrict_contract_eq_contract_restrict (M : Matroid α) (hCR : C ⊆ R) :
 /-- Contraction and deletion commute for disjoint sets. -/
 lemma contract_delete_comm (M : Matroid α) (hCD : Disjoint C D) : M ／ C ＼ D = M ＼ D ／ C := by
   wlog hCE : C ⊆ M.E generalizing C with aux
-  · try_grind
-    rw [← contract_inter_ground_eq, aux (hCD.mono_left inter_subset_left) inter_subset_right,
+  · rw [← contract_inter_ground_eq, aux (hCD.mono_left inter_subset_left) inter_subset_right,
       contract_eq_contract_iff, inter_assoc, delete_ground,
       inter_eq_self_of_subset_right sdiff_subset]
   rw [delete_eq_restrict, delete_eq_restrict, contract_ground, sdiff_sdiff_comm,

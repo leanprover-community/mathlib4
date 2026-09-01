@@ -151,8 +151,7 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
     (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ n • g z) :
     m = n := by
   wlog! h_le : n ≤ m generalizing m n
-  · try_grind
-    exact ((this hn hm) h_le.le).symm
+  · exact ((this hn hm) h_le.le).symm
   let ⟨g, hg_an, _, hg_eq⟩ := hm
   let ⟨j, hj_an, hj_ne, hj_eq⟩ := hn
   contrapose! hj_ne

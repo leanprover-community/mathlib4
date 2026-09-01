@@ -884,8 +884,7 @@ lemma ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
 lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k) :
     p = q := by
   wlog hpq : p.length ≤ q.length generalizing p q
-  · try_grind
-    exact (this (h · |>.symm) (le_of_not_ge hpq)).symm
+  · exact (this (h · |>.symm) (le_of_not_ge hpq)).symm
   refine ext_getVert_le_length (hpq.antisymm ?_) fun k _ ↦ h k
   by_contra!
   exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])

@@ -168,8 +168,7 @@ theorem sin_ge_sub_cube {x : ℝ} (hx : 0 ≤ x) : x - x ^ 3 / 6 ≤ Real.sin x 
 /-- `|x - sin x| ≤ |x|³ / 6` for every real `x`. -/
 theorem abs_sub_sin_le (x : ℝ) : |x - Real.sin x| ≤ |x| ^ 3 / 6 := by
   wlog hx : 0 ≤ x
-  · try_grind
-    grind [sin_neg]
+  · grind [sin_neg]
   · grind [Real.sin_le, abs_of_nonneg, sin_ge_sub_cube]
 
 /-- The derivative of `tan x - x` is `1/(cos x)^2 - 1` away from the zeroes of cos. -/

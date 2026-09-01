@@ -443,14 +443,12 @@ lemma of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget [IsZariskiLocalAtTarge
     change P = Q
     ext X Y f
     wlog hY : ∃ R, Y = Spec R generalizing X Y
-    · try_grind
-      rw [IsZariskiLocalAtTarget.iff_of_openCover (P := P) Y.affineCover,
+    · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := P) Y.affineCover,
         IsZariskiLocalAtTarget.iff_of_openCover (P := Q) Y.affineCover]
       refine forall_congr' fun _ ↦ this _ ⟨_, rfl⟩
     obtain ⟨S, rfl⟩ := hY
     wlog hX : ∃ R, X = Spec R generalizing X
-    · try_grind
-      rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) X.affineCover,
+    · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) X.affineCover,
         IsZariskiLocalAtSource.iff_of_openCover (P := Q) X.affineCover]
       refine forall_congr' fun _ ↦ this _ ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hX
@@ -487,22 +485,19 @@ lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
     wlog hZ : IsAffine Z generalizing X Y Z
-    · try_grind
-      rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
+    · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
       intro U
       rw [morphismRestrict_comp]
       exact this _ _ (IsZariskiLocalAtTarget.restrict hf _)
         (IsZariskiLocalAtTarget.restrict hg _) U.2
     wlog hY : IsAffine Y generalizing X Y
-    · try_grind
-      rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (Y.affineCover.pullback₁ f)]
+    · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (Y.affineCover.pullback₁ f)]
       intro i
       rw [← Scheme.Cover.pullbackHom_map_assoc]
       exact this _ _ (IsZariskiLocalAtTarget.of_isPullback (.of_hasPullback _ _) hf)
         (comp_of_isOpenImmersion _ _ _ hg) inferInstance
     wlog hX : IsAffine X generalizing X
-    · try_grind
-      rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) X.affineCover]
+    · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) X.affineCover]
       intro i
       rw [← Category.assoc]
       exact this _ (comp_of_isOpenImmersion _ _ _ hf) inferInstance
@@ -514,23 +509,20 @@ theorem of_comp
       ∀ (f : R →+* S) (g : S →+* T), Q (g.comp f) → Q g)
     {X Y Z : Scheme.{u}} {f : X ⟶ Y} {g : Y ⟶ Z} (h : P (f ≫ g)) : P f := by
   wlog hZ : IsAffine Z generalizing X Y Z
-  · try_grind
-    rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _
+  · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _
       (g.iSup_preimage_eq_top (iSup_affineOpens_eq_top Z))]
     intro U
     have H := IsZariskiLocalAtTarget.restrict h U.1
     rw [morphismRestrict_comp] at H
     exact this H inferInstance
   wlog hY : IsAffine Y generalizing X Y
-  · try_grind
-    rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top Y)]
+  · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top Y)]
     intro U
     have H := comp_of_isOpenImmersion P (f ⁻¹ᵁ U.1).ι (f ≫ g) h
     rw [← morphismRestrict_ι_assoc] at H
     exact this H inferInstance
   wlog hY : IsAffine X generalizing X
-  · try_grind
-    rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top X)]
+  · rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top X)]
     intro U
     have H := comp_of_isOpenImmersion P U.1.ι (f ≫ g) h
     rw [← Category.assoc] at H
@@ -558,8 +550,7 @@ lemma isStableUnderBaseChange (hP : RingHom.IsStableUnderBaseChange Q) :
   intro X Y S _ _ f g H
   rw [← HasAffineProperty.iff_of_isAffine (P := P)] at H ⊢
   wlog hX : IsAffine Y generalizing Y
-  · try_grind
-    rw [IsZariskiLocalAtSource.iff_of_openCover (P := P)
+  · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P)
       (Scheme.Pullback.openCoverOfRight Y.affineCover f g)]
     intro i
     simp only [Scheme.Pullback.openCoverOfRight_f, limit.lift_π, PullbackCone.mk_π_app,
@@ -574,8 +565,7 @@ private lemma respects_isOpenImmersion_aux
     {X Y : Scheme.{u}} [IsAffine Y] {U : Y.Opens}
     (f : X ⟶ U.toScheme) (hf : P f) : P (f ≫ U.ι) := by
   wlog hYa : ∃ (a : Γ(Y, ⊤)), U = Y.basicOpen a generalizing X Y
-  · try_grind
-    obtain ⟨(Us : Set Y.Opens), hUs, heq⟩ := Opens.isBasis_iff_cover.mp (isBasis_basicOpen Y) U
+  · obtain ⟨(Us : Set Y.Opens), hUs, heq⟩ := Opens.isBasis_iff_cover.mp (isBasis_basicOpen Y) U
     let V (s : Us) : X.Opens := f ⁻¹ᵁ U.ι ⁻¹ᵁ s
     rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) V]
     · intro s
@@ -600,8 +590,7 @@ private lemma respects_isOpenImmersion_aux
       simp [this]
   obtain ⟨a, rfl⟩ := hYa
   wlog hX : IsAffine X generalizing X Y
-  · try_grind
-    rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
+  · rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro V
     rw [← Category.assoc]
     exact this _ _ (IsZariskiLocalAtSource.comp hf _) V.2
@@ -614,8 +603,7 @@ lemma respects_isOpenImmersion (hQ : RingHom.StableUnderCompositionWithLocalizat
     P.Respects @IsOpenImmersion where
   postcomp {X Y Z} i hi f hf := by
     wlog hZ : IsAffine Z generalizing X Y Z
-    · try_grind
-      rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
+    · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
       intro U
       rw [morphismRestrict_comp]
       exact this _ inferInstance _ (IsZariskiLocalAtTarget.restrict hf _) U.2
@@ -695,22 +683,19 @@ associated property of scheme morphisms can be checked on stalks. -/
 lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom) : P f := by
   have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
   wlog hY : IsAffine Y generalizing X Y f
-  · try_grind
-    rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
+  · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
     refine this (fun x ↦ ?_) U.2
     exact (hQi.arrow_mk_iso_iff (AlgebraicGeometry.morphismRestrictStalkMap f U x)).mpr (H x.val)
   wlog hX : IsAffine X generalizing X f
-  · try_grind
-    rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
+  · rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
     refine this ?_ U.2
     intro x
     rw [Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp, hQi.cancel_right_isIso]
     exact H x.val
   wlog hXY : ∃ R S, Y = Spec R ∧ X = Spec S generalizing X Y
-  · try_grind
-    rw [← P.cancel_right_of_respectsIso (g := Y.isoSpec.hom)]
+  · rw [← P.cancel_right_of_respectsIso (g := Y.isoSpec.hom)]
     rw [← P.cancel_left_of_respectsIso (f := X.isoSpec.inv)]
     refine this inferInstance (fun x ↦ ?_) inferInstance ?_
     · rw [Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp,
@@ -735,8 +720,7 @@ lemma stalkMap_of_respectsIso
       (J : Ideal S) (_ : J.IsPrime), Q' (Localization.localRingHom _ J f rfl))
     (hf : P f) (x : X) : Q' (f.stalkMap x).hom := by
   wlog h : IsAffine X ∧ IsAffine Y generalizing X Y f
-  · try_grind
-    obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
+  · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
       (Opens.mem_top <| f x)
     obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp X.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ U from hfx)
@@ -744,8 +728,7 @@ lemma stalkMap_of_respectsIso
     exact this (IsZariskiLocalAtSource.resLE _ hf) _ ⟨hV, hU⟩
   obtain ⟨hX, hY⟩ := h
   wlog hXY : ∃ R S, Y = Spec R ∧ X = Spec S generalizing X Y
-  · try_grind
-    have : Q' ((X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom).stalkMap (X.isoSpec.hom x)).hom := by
+  · have : Q' ((X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom).stalkMap (X.isoSpec.hom x)).hom := by
       refine this ?_ (X.isoSpec.hom x) inferInstance inferInstance ?_
       · rwa [P.cancel_left_of_respectsIso, P.cancel_right_of_respectsIso]
       · use Γ(Y, ⊤), Γ(X, ⊤)

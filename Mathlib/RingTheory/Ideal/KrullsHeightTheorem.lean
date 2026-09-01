@@ -198,8 +198,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
       simp_all
     | succ n =>
       wlog hR : ∃ (_ : IsLocalRing R), p = maximalIdeal R
-      · try_grind
-        rw [← Localization.AtPrime.under_maximalIdeal (I := p)] at hp ⊢
+      · rw [← Localization.AtPrime.under_maximalIdeal (I := p)] at hp ⊢
         rw [IsLocalization.height_under p.primeCompl]
         rw [← Set.mem_preimage, ← IsLocalization.minimalPrimes_map p.primeCompl, map_span] at hp
         exact this _ (s.image (algebraMap R (Localization p.primeCompl))) (by simpa using hp)

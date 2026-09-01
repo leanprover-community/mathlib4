@@ -452,11 +452,9 @@ See also `tendsto_logb_atTop` and `tendsto_logb_atTop_of_base_lt_one`.
 lemma tendsto_abs_logb_atTop (hb : b ≠ -1 ∧ b ≠ 0 ∧ b ≠ 1) :
     Tendsto (|logb b ·|) atTop atTop := by
   wlog hb₀ : 0 < b generalizing b
-  · try_grind
-    exact (this (b := -b) (by simp [hb, neg_eq_iff_eq_neg]) (by linarith +splitNe)).congr (by simp)
+  · exact (this (b := -b) (by simp [hb, neg_eq_iff_eq_neg]) (by linarith +splitNe)).congr (by simp)
   wlog hb₁ : 1 < b generalizing b
-  · try_grind
-    exact (this (b := b⁻¹) (by simp [hb, inv_eq_iff_eq_inv, inv_neg]) (by simpa)
+  · exact (this (b := b⁻¹) (by simp [hb, inv_eq_iff_eq_inv, inv_neg]) (by simpa)
       ((one_lt_inv₀ hb₀).2 (by linarith +splitNe))).congr (by simp)
   refine (tendsto_logb_atTop hb₁).congr' ?_
   filter_upwards [eventually_ge_atTop 1] with x hx₁

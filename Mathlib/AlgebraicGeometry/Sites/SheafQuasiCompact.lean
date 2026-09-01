@@ -47,8 +47,7 @@ nonrec lemma isSheaf_type_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u
   · rw [Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange_of_small.{u}]
     intro T (𝒰 : Scheme.Cover _ _)
     wlog hT : ∃ (R : CommRingCat.{u}), T = Spec R generalizing T
-    · try_grind
-      refine T.affineOneHypercover.isSheafFor_of_pullback hzar ?_ ?_
+    · refine T.affineOneHypercover.isSheafFor_of_pullback hzar ?_ ?_
       · intro i
         rw [← Sieve.pullbackArrows_comm, ← Presieve.ofArrows_pullback,
           ← Presieve.isSheafFor_iff_generate]
@@ -60,8 +59,7 @@ nonrec lemma isSheaf_type_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u
         exact this (𝒰.pullback₂ _) ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hT
     wlog h𝒰 : (∀ i, IsAffine (𝒰.X i)) ∧ Finite 𝒰.I₀ generalizing R 𝒰
-    · try_grind
-      obtain ⟨𝒱, f, hfin, ho⟩ := QuasiCompactCover.exists_hom 𝒰.forgetQc
+    · obtain ⟨𝒱, f, hfin, ho⟩ := QuasiCompactCover.exists_hom 𝒰.forgetQc
       have H (V : Scheme.{u}) (f : V ⟶ Spec R) : Presieve.IsSheafFor F
           (.ofArrows (𝒱.cover.pullback₂ f).X (𝒱.cover.pullback₂ f).f) := by
         refine V.affineOneHypercover.isSheafFor_of_pullback hzar (fun i ↦ ?_) (fun i j k ↦ ?_)

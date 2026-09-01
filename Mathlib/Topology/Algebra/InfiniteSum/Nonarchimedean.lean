@@ -81,8 +81,7 @@ lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
   rintro ⟨M, M'⟩ ⟨(hMN : N ≤ M), (hMN' : N ≤ M')⟩
   apply ht
   wlog h : M ≤ M' generalizing M M'
-  · try_grind
-    simpa [inv_div] using! t.inv_mem <| this _ _ hMN' hMN (le_of_not_ge h)
+  · simpa [inv_div] using! t.inv_mem <| this _ _ hMN' hMN (le_of_not_ge h)
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   clear h hMN'
   induction k with

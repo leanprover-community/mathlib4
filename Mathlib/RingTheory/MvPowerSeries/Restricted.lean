@@ -75,8 +75,7 @@ lemma tendsto_antidiagonal {M S : Type*} [AddMonoid M] [Finset.HasAntidiagonal M
     (hg : Tendsto (fun i ↦ ‖g i‖ * C i) cofinite (𝓝 0)) :
     Tendsto (fun a ↦ ‖∑ p ∈ Finset.antidiagonal a, (f p.1 * g p.2)‖ * C a) cofinite (𝓝 0) := by
   wlog hC' : 0 ≤ C generalizing C
-  · try_grind
-    rw [tendsto_zero_iff_norm_tendsto_zero]
+  · rw [tendsto_zero_iff_norm_tendsto_zero]
     simpa using this (C := |C|) (by simp [hC]) (by simpa using hf.norm)
       (by simpa using hg.norm) (fun _ => by simp)
   refine .squeeze tendsto_const_nhds

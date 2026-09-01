@@ -49,8 +49,7 @@ theorem finrank_sup_le_of_free : finrank R ↥(A ⊔ B) ≤ finrank R A * finran
     simpa only [map_mul] using! Cardinal.toNat_le_toNat (A.rank_sup_le_of_free B)
       (Cardinal.mul_lt_aleph0 (rank_lt_aleph0 R A) (rank_lt_aleph0 R B))
   wlog hA : ¬ Module.Finite R A generalizing A B
-  · try_grind
-    have := this B A (fun h' ↦ h h'.symm) (not_and.1 h (of_not_not hA))
+  · have := this B A (fun h' ↦ h h'.symm) (not_and.1 h (of_not_not hA))
     rwa [sup_comm, mul_comm] at this
   rw [← rank_lt_aleph0_iff, not_lt] at hA
   have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|

@@ -767,8 +767,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
     ContMDiffWithinAt I I' n f s x ↔ ∃ u ∈ 𝓝[insert x s] x, ContMDiffOn I I' n f u := by
   -- WLOG, `x ∈ s`, otherwise we add `x` to `s`
   wlog hxs : x ∈ s generalizing s
-  · try_grind
-    rw [← contMDiffWithinAt_insert_self, this (mem_insert _ _), insert_idem]
+  · rw [← contMDiffWithinAt_insert_self, this (mem_insert _ _), insert_idem]
   rw [insert_eq_of_mem hxs]
   -- The `←` implication is trivial
   refine ⟨fun h ↦ ?_, fun ⟨u, hmem, hu⟩ ↦

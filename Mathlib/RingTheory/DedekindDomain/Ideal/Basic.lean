@@ -126,8 +126,7 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     ¬(I⁻¹ : FractionalIdeal A⁰ K) ≤ 1 := by
   have hNF : ¬IsField A := fun h ↦ letI := h.toField; (eq_bot_or_eq_top I).elim hI0 hI1
   wlog hM : I.IsMaximal generalizing I
-  · try_grind
-    rcases I.exists_le_maximal hI1 with ⟨M, hmax, hIM⟩
+  · rcases I.exists_le_maximal hI1 with ⟨M, hmax, hIM⟩
     have hMbot : M ≠ ⊥ := (M.bot_lt_of_maximal hNF).ne'
     refine mt (le_trans <| inv_anti_mono ?_ ?_ ?_) (this hMbot hmax.ne_top hmax) <;>
       simpa only [coeIdeal_ne_zero, coeIdeal_le_coeIdeal]

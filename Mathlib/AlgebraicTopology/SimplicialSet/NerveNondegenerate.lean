@@ -85,8 +85,7 @@ lemma nerve_ofSimplex_le_ofSimplex_iff
     obtain ⟨⟨f⟩, rfl⟩ := hst
     exact ⟨_, rfl⟩
   · wlog ht : t ∈ (nerve X).nonDegenerate m generalizing m t
-    · try_grind
-      intro hst
+    · intro hst
       obtain ⟨m', f, _, ⟨t', h₁⟩, rfl⟩ := exists_nonDegenerate _ t
       rw [Subcomplex.ofSimplex_map_of_epi]
       refine this _ h₁ ?_

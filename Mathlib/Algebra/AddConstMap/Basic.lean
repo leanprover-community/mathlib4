@@ -251,8 +251,7 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
   have ha' : 0 ≤ a := ha.le
   -- Shift both points by `m • a` so that `l ≤ x < l + a`
   wlog hx : x ∈ Ico l (l + a) generalizing x y
-  · try_grind
-    rcases existsUnique_sub_zsmul_mem_Ico ha x l with ⟨m, hm, -⟩
+  · rcases existsUnique_sub_zsmul_mem_Ico ha x l with ⟨m, hm, -⟩
     suffices R (f (x - m • a)) (f (y - m • a)) by simpa using hR (m • b) this
     exact this _ _ (by simpa) hm
   · -- Now find `n` such that `l + n • a < y ≤ l + (n + 1) • a`

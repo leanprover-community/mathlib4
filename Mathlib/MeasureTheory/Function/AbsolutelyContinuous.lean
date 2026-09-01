@@ -358,8 +358,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     BoundedVariationOn f (uIcc a b) := by
   -- We may assume wlog that `a ≤ b`.
   wlog hab₀ : a ≤ b generalizing a b
-  · try_grind
-    specialize @this b a hf.symm (by linarith)
+  · specialize @this b a hf.symm (by linarith)
     rwa [uIcc_comm]
   rw [uIcc_of_le hab₀]
   -- Split the cases `a = b` (which is trivial) and `a < b`.

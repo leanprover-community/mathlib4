@@ -20,8 +20,7 @@ attribute [local instance] Algebra.WeaklyQuasiFiniteAt.finite_locoalization in
 lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQuasiFiniteAt R P := by
   intro H
   wlog hR : IsField R
-  · try_grind
-    let p := P.under R
+  · let p := P.under R
     obtain ⟨Q, hQ⟩ := (PrimeSpectrum.preimageEquivFiber R R[X]
         ⟨p, inferInstance⟩).symm.surjective ⟨⟨P, ‹_›⟩, rfl⟩
     have inst : Algebra.WeaklyQuasiFiniteAt p.ResidueField Q.asIdeal :=

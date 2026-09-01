@@ -161,8 +161,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
       ← map_mul, ← map_pow, IsLocalization.eq_iff_exists (.powers s₂.1),
       Submonoid.mem_powers_iff] using! hs₃
   wlog hm0 : 0 < m generalizing m
-  · try_grind
-    refine this (m + 1) (by grind) (by simp)
+  · refine this (m + 1) (by grind) (by simp)
   have hs₃q : s₃.1 ∉ q := fun h ↦ (show ↑s₂ ^ m * (s₁ * ↑s₂ ^ n) ∉ q from q.primeCompl.mul_mem
      (pow_mem hs₂q _) (mul_mem hs₁q (pow_mem hs₂q _))) (hm ▸ Ideal.mul_mem_left _ _ h)
   refine ⟨↑s₂ ^ m * ↑s₃, q.primeCompl.mul_mem (pow_mem hs₂q _) hs₃q, (s₂ ^ m * s₃).2,

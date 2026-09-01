@@ -39,8 +39,7 @@ namespace ZLattice
 lemma exists_forall_abs_repr_le_norm :
     ∃ (ε : ℝ), 0 < ε ∧ ∀ (x : L), ∀ i, ε * |b.repr x i| ≤ ‖x‖ := by
   wlog H : IsZLattice ℝ L
-  · try_grind
-    let E' := Submodule.span ℝ (L : Set E)
+  · let E' := Submodule.span ℝ (L : Set E)
     let L' : Submodule ℤ E' := ZLattice.comap ℝ L E'.subtype
     have inst : DiscreteTopology L' :=
       comap_discreteTopology _ _ (by fun_prop) Subtype.val_injective

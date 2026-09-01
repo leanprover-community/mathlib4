@@ -178,8 +178,7 @@ lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t
       norm_cast
       rw [sub_add_eq_add_sub, ← NNReal.coe_add, ← NNReal.coe_sub, Real.toNNReal_coe]
       · wlog hst : (s : ℝ≥0) ≤ t generalizing s t
-        · try_grind
-          convert this t s (le_of_not_ge hst) using 1
+        · convert this t s (le_of_not_ge hst) using 1
           · rw [add_comm, min_comm]
           · rw [nndist_comm]
         grw [min_eq_left hst, NNReal.nndist_eq, max_eq_right (by grw [hst]), two_mul,

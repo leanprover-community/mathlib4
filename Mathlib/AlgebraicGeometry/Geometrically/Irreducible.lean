@@ -75,8 +75,7 @@ lemma Scheme.Hom.isIrreducible_preimage
     [GeometricallyIrreducible f] (hf : IsOpenMap f)
     {s : Set S} (hs : IsIrreducible s) : IsIrreducible (f ⁻¹' s) := by
   wlog H : ∃ x, s = {x} generalizing s
-  · try_grind
-    refine hs.preimage_of_isPreirreducible_fiber _ hf
+  · refine hs.preimage_of_isPreirreducible_fiber _ hf
       (fun x ↦ (this isIrreducible_singleton ⟨_, rfl⟩).isPreirreducible) ?_
     rw [Set.range_eq_univ.mpr f.surjective, Set.inter_univ]
     exact hs.nonempty

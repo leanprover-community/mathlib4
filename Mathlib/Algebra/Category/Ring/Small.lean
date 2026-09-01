@@ -29,8 +29,7 @@ lemma essentiallySmall_of_finiteType [ObjectProperty.EssentiallySmall.{u} Q]
   refine ⟨.ofObj f, inferInstance, fun S hS ↦ ?_⟩
   obtain ⟨R, hR, φ, hφ⟩ := hPQ S hS
   wlog hR' : Q' R generalizing R
-  · try_grind
-    obtain ⟨R', hR', ⟨e⟩⟩ := hQQ' _ hR
+  · obtain ⟨R', hR', ⟨e⟩⟩ := hQQ' _ hR
     exact this R' (hQ'Q _ hR') (e.inv ≫ φ)
       (hφ.comp e.symm.commRingCatIsoToRingEquiv.finite.finiteType) hR'
   obtain ⟨T, e, he⟩ := hφ.exists_smallRepr
@@ -44,8 +43,7 @@ lemma essentiallySmall_of_localizationAway [ObjectProperty.EssentiallySmall.{u} 
   refine ⟨.ofObj f, inferInstance, fun S hS ↦ ?_⟩
   obtain ⟨s, hs, H⟩ := hPQ S hS
   wlog hs' : s.Finite generalizing s
-  · try_grind
-    obtain ⟨s', hs's, hs'⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
+  · obtain ⟨s', hs's, hs'⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
     exact this s' hs' (fun f hf ↦ H f (hs's hf)) s'.finite_toSet
   choose S' hS' e using fun (f : s) ↦ hQQ' _ (H _ f.2)
   let φ : S →+* Π i, S' (hs'.equivFin.symm i) :=

@@ -115,8 +115,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[instance 100]
 lemma of_isAffineHom [h : IsAffineHom f] : IsSeparated f := by
   wlog hY : IsAffine Y
-  · try_grind
-    rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @IsSeparated) _
+  · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @IsSeparated) _
       (iSup_affineOpens_eq_top Y)]
     intro U
     have H : IsAffineHom (f ∣_ U) := IsZariskiLocalAtTarget.restrict h U

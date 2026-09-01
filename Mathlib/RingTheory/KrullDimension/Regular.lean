@@ -44,8 +44,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
   nontriviality M
   refine iSup_le_iff.mpr (fun p ↦ ?_)
   wlog hxp : x ∈ p.last.1.1 generalizing p
-  · try_grind
-    obtain ⟨p, hle, hm⟩ := exists_ltSeries_support_isMaximal_last_of_ltSeries_support p
+  · obtain ⟨p, hle, hm⟩ := exists_ltSeries_support_isMaximal_last_of_ltSeries_support p
     have hj : (annihilator R M).jacobson ≤ p.last.1.1 :=
       sInf_le ⟨mem_support_iff_of_finite.mp p.last.2, inferInstance⟩
     exact (Nat.cast_le.mpr hle).trans <| this _ (hj h)

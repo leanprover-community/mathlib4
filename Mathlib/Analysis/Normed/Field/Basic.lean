@@ -123,8 +123,7 @@ lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 :
     simp_rw [Metric.isOpen_singleton_iff, dist_eq_norm, sub_zero] at this
     obtain ⟨ε, εpos, h'⟩ := this
     wlog! h : ‖x‖ < 1 generalizing 𝕜 with H
-    · try_grind
-      rcases h.eq_or_lt with h | h
+    · rcases h.eq_or_lt with h | h
       · rw [h]
       replace h := norm_inv x ▸ inv_lt_one_of_one_lt₀ h
       rw [← inv_inj, inv_one, ← norm_inv]

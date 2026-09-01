@@ -535,8 +535,7 @@ lemma isColoop_tfae (M : Matroid α) (e : α) : List.TFAE [
     · simpa [hC.mem_closure_sdiff_singleton_of_mem heC] using h (C \ {e})
   tfae_have 1 ↔ 7 := by
     wlog he : e ∈ M.E
-    · try_grind
-      exact iff_of_false (fun h ↦ he h.mem_ground) <| by simp [he, M.ground_spanning]
+    · exact iff_of_false (fun h ↦ he h.mem_ground) <| by simp [he, M.ground_spanning]
     rw [spanning_iff_compl_coindep sdiff_subset, ← dual_isLoop_iff_isColoop, ← singleton_dep,
       sdiff_sdiff_cancel_left (by simpa), ← not_indep_iff (by simpa)]
   tfae_finish
@@ -747,8 +746,7 @@ lemma coloops_indep (M : Matroid α) : M.Indep M.coloops := by
 lemma restrict_isColoop_iff {R : Set α} (hRE : R ⊆ M.E) :
     (M ↾ R).IsColoop e ↔ e ∉ M.closure (R \ {e}) ∧ e ∈ R := by
   wlog heR : e ∈ R
-  · try_grind
-    exact iff_of_false (fun h ↦ heR h.mem_ground) fun h ↦ heR h.2
+  · exact iff_of_false (fun h ↦ heR h.mem_ground) fun h ↦ heR h.2
   rw [isColoop_iff_forall_notMem_isCircuit heR, mem_closure_iff_exists_isCircuit (by simp)]
   simp only [restrict_isCircuit_iff hRE, insert_sdiff_singleton]
   aesop

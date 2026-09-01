@@ -183,8 +183,6 @@ variable {α S : Type*} [LinearOrder S] [AddCommGroup α] (f : α → S)
 lemma ultrametric_strict (na : IsNonarchimedean f)
     (Neg : ∀ a, f a = f (-a)) {a b : α} (hne : f a ≠ f b) : f (a + b) = max (f a) (f b) := by
   wlog hab : f a > f b generalizing a b with H
-  · try_grind
-    simpa [add_comm, max_comm] using (H hne.symm ((not_lt.mp hab).lt_of_ne hne))
   apply le_antisymm (na a b)
   rcases le_max_iff.mp (na (a + b) (-b)) with h | h
   · simpa [max_eq_left (le_of_lt hab)] using h

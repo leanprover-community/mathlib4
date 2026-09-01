@@ -144,8 +144,7 @@ lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a →
   apply height_le_iff.mpr
   intro p hlast
   wlog hlenpos : p.length ≠ 0
-  · try_grind
-    simp_all
+  · simp_all
   -- We replace the last element in the series with `a`
   let p' := p.eraseLast.snoc a (lt_of_lt_of_le (p.eraseLast_last_rel_last (by simp_all)) hlast)
   rw [show p.length = p'.length by simp [p']; lia]
@@ -518,8 +517,7 @@ lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤) :
 lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
     height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y < x, height y ≤ n) := by
   wlog hfin : height x < ⊤
-  · try_grind
-    simp_all [← Nat.cast_add_one, -Nat.cast_add]
+  · simp_all [← Nat.cast_add_one, -Nat.cast_add]
   simp only [hfin, true_and]
   trans n < height x ∧ height x ≤ n + 1
   · rw [le_antisymm_iff, and_comm]
@@ -537,8 +535,7 @@ lemma height_eq_coe_iff {x : α} {n : ℕ} :
     height x = n ↔
       height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y < x, height y < n) := by
   wlog hfin : height x < ⊤
-  · try_grind
-    simp_all
+  · simp_all
   simp only [hfin, true_and]
   cases n
   case zero => simp [isMin_iff_forall_not_lt]
@@ -827,8 +824,7 @@ lemma krullDim_eq_iSup_height_add_coheight_of_nonempty [Nonempty α] :
   · rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_le_coe]
     apply ciSup_mono (by bddDefault) (by simp)
   · wlog hnottop : krullDim α < ⊤
-    · try_grind
-      simp_all
+    · simp_all
     rw [krullDim_eq_iSup_length, WithBot.coe_le_coe]
     apply iSup_le
     intro a
@@ -1005,8 +1001,7 @@ set_option backward.isDefEq.respectTransparency false in
   · apply height_le
     intro p hlast
     wlog hlenpos : p.length ≠ 0
-    · try_grind
-      simp_all
+    · simp_all
     -- essentially p' := (p.drop 1).map unbot
     let p' : LTSeries α := {
       length := p.length - 1

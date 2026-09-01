@@ -106,8 +106,7 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
     ∃ (f : S), f ∉ p ∧ IsStandardSmooth R (Localization.Away f) := by
   -- By replacing `S` by some `S[1/g]` we may assume `S` is globally smooth.
   wlog h : Smooth R S
-  · try_grind
-    obtain ⟨g, hg, hsm⟩ := IsSmoothAt.exists_notMem_smooth R p
+  · obtain ⟨g, hg, hsm⟩ := IsSmoothAt.exists_notMem_smooth R p
     have _ : (Ideal.map (algebraMap S (Localization.Away g)) p).IsPrime := by
       apply IsLocalization.isPrime_of_isPrime_disjoint (.powers g) _ _ ‹_›
       rwa [Ideal.disjoint_powers_iff_notMem_of_isPrime]

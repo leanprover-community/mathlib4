@@ -29,8 +29,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     IsClosedUnderLimitsOfShape (fun f : Over F ↦ f.hom.Equifibered) J := by
   wlog hJ : IsConnected J generalizing J
-  · try_grind
-    refine ⟨fun G ⟨⟨c, α, hc⟩, H⟩ U V f ↦ ?_⟩
+  · refine ⟨fun G ⟨⟨c, α, hc⟩, H⟩ U V f ↦ ?_⟩
     have hα (i j) (f : i ⟶ j) : α.app i ≫ c.map f = α.app j := by simp [← NatTrans.naturality]
     have hc' := WithTerminal.isLimitEquiv.symm hc
     have inst : IsConnected (WithTerminal J) := isConnected_of_hasTerminal _

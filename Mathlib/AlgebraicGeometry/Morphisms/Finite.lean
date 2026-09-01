@@ -100,8 +100,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma iff_isIntegralHom_and_locallyOfFiniteType :
     IsFinite f ↔ IsIntegralHom f ∧ LocallyOfFiniteType f := by
   wlog hY : IsAffine Y
-  · try_grind
-    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
     simp_rw [this, forall_and]
@@ -125,8 +124,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AlgebraicGeometry.IsClosedImmersion.iff_isFinite_and_mono :
     IsClosedImmersion f ↔ IsFinite f ∧ Mono f := by
   wlog hY : IsAffine Y
-  · try_grind
-    rw [← monomorphisms.iff, IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+  · rw [← monomorphisms.iff, IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
     simp_rw [this, forall_and]
@@ -181,8 +179,7 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
     {X Y : Scheme.{u}} {f : X ⟶ Y} [Subsingleton X] [IsReduced X] [JacobsonSpace Y] :
     IsFinite f ↔ LocallyOfFiniteType f := by
   wlog hY : ∃ S, Y = Spec S generalizing X Y
-  · try_grind
-    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
     have inst (i) := ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding.injective.subsingleton
     have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullback₁ f).f i)
@@ -190,8 +187,7 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
     exact forall_congr' fun i ↦ this ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hY
   wlog hX : ∃ R, X = Spec R generalizing X
-  · try_grind
-    rw [← MorphismProperty.cancel_left_of_respectsIso (P := @IsFinite) X.isoSpec.inv,
+  · rw [← MorphismProperty.cancel_left_of_respectsIso (P := @IsFinite) X.isoSpec.inv,
       ← MorphismProperty.cancel_left_of_respectsIso (P := @LocallyOfFiniteType) X.isoSpec.inv]
     have inst := X.isoSpec.inv.isOpenEmbedding.injective.subsingleton
     refine this ⟨_, rfl⟩

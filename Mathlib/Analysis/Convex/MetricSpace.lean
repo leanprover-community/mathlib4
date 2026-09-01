@@ -132,8 +132,7 @@ lemma dist_convexCombPair_convexCombPair
     dist (convexCombPair s t hs ht h x y) (convexCombPair s' t' hs' ht' h' x y) =
       |s - s'| * dist x y := by
   wlog hss' : s' ≤ s generalizing s t s' t'
-  · try_grind
-    rw [dist_comm, this, abs_sub_comm]; exact le_of_not_ge hss'
+  · rw [dist_comm, this, abs_sub_comm]; exact le_of_not_ge hss'
   suffices dist (convexCombPair s t hs ht h x y) (convexCombPair s' t' hs' ht' h' x y) ≤
       |s - s'| * dist x y by
     refine this.antisymm ?_

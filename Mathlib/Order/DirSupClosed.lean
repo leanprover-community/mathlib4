@@ -172,8 +172,7 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
   intro d hD hdu hd₀ hd₁ a ha
   have hdst : d ∩ s ∪ d ∩ t = d := by grind
   wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ IsCofinalFor (d ∩ t) (d ∩ s)
-  · try_grind
-    rw [union_comm] at hdu hdst ⊢
+  · rw [union_comm] at hdu hdst ⊢
     exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <|
       (directedOn_union_iff.mp (by rwa [hdst])).resolve_right h
   obtain ⟨hds, hcof⟩ := h

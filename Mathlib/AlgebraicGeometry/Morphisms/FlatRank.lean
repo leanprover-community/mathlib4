@@ -174,16 +174,14 @@ lemma Scheme.Hom.finrank_pullback_fst {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ 
 set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma Scheme.Hom.one_le_finrank_map (x : X) : 1 ≤ finrank f (f x) := by
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    obtain ⟨R, g, hg, y, hy⟩ := Y.exists_Spec_apply_eq (f x)
+  · obtain ⟨R, g, hg, y, hy⟩ := Y.exists_Spec_apply_eq (f x)
     rw [← hy, ← finrank_pullback_snd]
     obtain ⟨z, hzl, hzr⟩ := Scheme.Pullback.exists_preimage_pullback (f := f) (g := g) x y hy.symm
     rw [hzr.symm]
     refine this _ _ ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    have _ : IsAffine X := isAffine_of_isAffineHom f
+  · have _ : IsAffine X := isAffine_of_isAffineHom f
     have heq : f x = (X.isoSpec.inv ≫ f) (X.isoSpec.hom x) := by simp
     rw [← finrank_comp_left_of_isIso X.isoSpec.inv, heq]
     exact this _ _ _ ⟨_, rfl⟩
@@ -203,8 +201,7 @@ function is at least `1` everywhere. -/
 nonrec lemma Scheme.Hom.one_le_finrank_iff_surjective : 1 ≤ finrank f ↔ Surjective f := by
   refine ⟨fun h ↦ ?_, fun _ ↦ ?_⟩
   · wlog hY : ∃ R, Y = Spec R
-    · try_grind
-      rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @Surjective) Y.affineCover]
+    · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @Surjective) Y.affineCover]
       intro i
       dsimp only [Scheme.Cover.pullbackHom]
       refine this _ (fun y ↦ ?_) ⟨_, rfl⟩
@@ -212,8 +209,7 @@ nonrec lemma Scheme.Hom.one_le_finrank_iff_surjective : 1 ≤ finrank f ↔ Surj
       exact h _
     obtain ⟨R, rfl⟩ := hY
     wlog hX : ∃ S, X = Spec S
-    · try_grind
-      have _ : IsAffine X := isAffine_of_isAffineHom f
+    · have _ : IsAffine X := isAffine_of_isAffineHom f
       rw [← MorphismProperty.cancel_left_of_respectsIso @Surjective X.isoSpec.inv]
       refine this _ _ (fun x ↦ ?_) ⟨_, rfl⟩
       rw [finrank_comp_left_of_isIso]
@@ -235,8 +231,7 @@ nonrec lemma Scheme.Hom.one_le_finrank_iff_surjective : 1 ≤ finrank f ↔ Surj
 nonrec lemma Scheme.Hom.isLocallyConstant_finrank [LocallyOfFinitePresentation f] :
     IsLocallyConstant (finrank f) := by
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    rw [IsLocallyConstant.iff_exists_open]
+  · rw [IsLocallyConstant.iff_exists_open]
     intro y
     obtain ⟨R, g, _, x, rfl⟩ := Y.exists_Spec_apply_eq y
     simp_rw [IsLocallyConstant.iff_exists_open] at this
@@ -247,8 +242,7 @@ nonrec lemma Scheme.Hom.isLocallyConstant_finrank [LocallyOfFinitePresentation f
     exact H y' hyU
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    have _ : IsAffine X := isAffine_of_isAffineHom f
+  · have _ : IsAffine X := isAffine_of_isAffineHom f
     rw [← finrank_comp_left_of_isIso X.isoSpec.inv]
     exact this _ _ ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
@@ -278,8 +272,7 @@ its rank is constant equal to `1`. -/
 nonrec lemma Scheme.Hom.isIso_iff_finrank_eq : IsIso f ↔ finrank f = 1 := by
   refine ⟨fun h ↦ finrank_eq_one_of_isIso f, fun h ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    rw [← MorphismProperty.isomorphisms.iff,
+  · rw [← MorphismProperty.isomorphisms.iff,
       IsZariskiLocalAtTarget.iff_of_openCover (P := .isomorphisms Scheme) Y.affineCover]
     intro i
     dsimp [Scheme.Cover.pullbackHom]
@@ -288,8 +281,7 @@ nonrec lemma Scheme.Hom.isIso_iff_finrank_eq : IsIso f ↔ finrank f = 1 := by
     rw [finrank_pullback_snd, h, Pi.one_apply, Pi.one_apply]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    have _ : IsAffine X := isAffine_of_isAffineHom f
+  · have _ : IsAffine X := isAffine_of_isAffineHom f
     rw [← isIso_comp_left_iff X.isoSpec.inv]
     refine this _ _ ?_ ⟨_, rfl⟩
     rw [finrank_comp_left_of_isIso, h]

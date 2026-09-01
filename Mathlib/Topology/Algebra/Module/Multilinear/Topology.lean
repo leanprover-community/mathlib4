@@ -127,8 +127,7 @@ theorem completeSpace (h : IsCoherentWith {s : Set (Π i, E i) | IsVonNBounded �
     CompleteSpace (ContinuousMultilinearMap 𝕜 E F) := by
   classical
   wlog hF : T2Space F generalizing F
-  · try_grind
-    rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
+  · rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
       SeparationQuotient.isUniformInducing_mk).completeSpace_congr]
     · exact this inferInstance
     · intro f

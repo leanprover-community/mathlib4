@@ -348,8 +348,7 @@ theorem Convex.smul_vadd_mem_of_isClosed_of_mem_asymptoticCone {c : k} {v p : V}
 
 protected theorem Convex.asymptoticCone (hs : Convex k s) : Convex k (asymptoticCone k s) := by
   wlog hs' : IsClosed s generalizing s
-  · try_grind
-    rw [← asymptoticCone_closure]; exact this hs.closure isClosed_closure
+  · rw [← asymptoticCone_closure]; exact this hs.closure isClosed_closure
   rcases s.eq_empty_or_nonempty with rfl | ⟨p, hp⟩
   · rw [asymptoticCone_empty]; exact convex_empty
   intro v hv u hu a b ha hb hab

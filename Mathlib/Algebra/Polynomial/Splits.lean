@@ -447,8 +447,7 @@ theorem splits_mul (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     have := dvd_iff_isRoot.mpr ha
     rw [← hp, (prime_X_sub_C a).dvd_mul] at this
     wlog hf : X - C a ∣ f with hf2
-    · try_grind
-      exact .symm <| hf2 n ih hg₀ hf₀ p ((mul_comm g f).trans hp) h hn a ha this.symm <|
+    · exact .symm <| hf2 n ih hg₀ hf₀ p ((mul_comm g f).trans hp) h hn a ha this.symm <|
         this.resolve_left hf
     obtain ⟨f, rfl⟩ := hf
     rw [mul_assoc] at hp; subst hp

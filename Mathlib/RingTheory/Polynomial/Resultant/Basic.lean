@@ -407,8 +407,7 @@ lemma resultant_eq_prod_roots_sub
     (hf' : f.Splits) (hg' : g.Splits) :
     resultant f g = ((f.roots ×ˢ g.roots).map fun ij ↦ ij.1 - ij.2).prod := by
   wlog hfg : g.natDegree ≤ f.natDegree
-  · try_grind
-    trans ((f.roots ×ˢ g.roots).map fun ij ↦ (-1) * (ij.2 - ij.1)).prod
+  · trans ((f.roots ×ˢ g.roots).map fun ij ↦ (-1) * (ij.2 - ij.1)).prod
     · rw [resultant_comm, this g f hg hf hg' hf' (le_of_not_ge hfg), ← Multiset.map_swap_product,
         Multiset.map_map, Multiset.prod_map_mul]
       simp [hf'.natDegree_eq_card_roots, hg'.natDegree_eq_card_roots]
@@ -480,8 +479,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
     (f g : R[X]) (n : ℕ) (hg : g.natDegree ≤ n) (hf : f.Splits) :
     resultant f g f.natDegree n = f.leadingCoeff ^ n * (f.roots.map g.eval).prod := by
   wlog hR : IsField R
-  · try_grind
-    let K := FractionRing R
+  · let K := FractionRing R
     apply FaithfulSMul.algebraMap_injective R K
     have := this (f.map (algebraMap R K)) (g.map (algebraMap R K)) n (natDegree_map_le.trans hg)
       (hf.map _) (Field.toIsField _)
@@ -492,8 +490,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   by_cases hf0 : f = 0
   · simp [hf0]
   wlog hfm : f.Monic
-  · try_grind
-    let inst := hR.toField
+  · let inst := hR.toField
     have H : (C f.leadingCoeff⁻¹ * f).Monic := by
       rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simp [hf0]), coeff_C_mul]; simp [hf0]
     have := this (C f.leadingCoeff⁻¹ * f) g n hg (.mul (.C _) hf) hR (by simpa) H
@@ -507,8 +504,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
     · obtain ⟨r, rfl⟩ := hfm.natDegree_eq_zero.mp hf'; simp
     simp [← hf.natDegree_eq_card_roots, hf']
   wlog hgm : g.Monic
-  · try_grind
-    let inst := hR.toField
+  · let inst := hR.toField
     have := this f (C g.leadingCoeff⁻¹ * g) n (by simpa [hg0, natDegree_C_mul]) hf hR hfm (by simpa)
       (by rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simp [hg0]), coeff_C_mul]; simp [hg0])
     rw [resultant_C_mul_right, inv_pow, inv_mul_eq_iff_eq_mul₀ (by simp [hg0])] at this
@@ -542,17 +538,14 @@ nonrec lemma induction_of_Splits_of_injective_of_surjective.{u}
     (surjective : ∀ (R S : Type u) [CommRing R] [CommRing S]
       (φ : R →+* S) (hφ : Function.Surjective φ) (p : S[X]) (IH : ∀ q : R[X], P q), P p) : P p := by
   wlog hR : IsDomain R generalizing R
-  · try_grind
-    exact surjective _ _ (MvPolynomial.eval₂Hom (algebraMap ℤ R) id)
+  · exact surjective _ _ (MvPolynomial.eval₂Hom (algebraMap ℤ R) id)
       (fun x ↦ ⟨.X x, by simp [MvPolynomial.eval₂Hom]⟩) p
       (fun _ ↦ this _ inferInstance)
   wlog hR : IsField R generalizing R
-  · try_grind
-    exact injective _ _ _ (FaithfulSMul.algebraMap_injective R (FractionRing R)) _
+  · exact injective _ _ _ (FaithfulSMul.algebraMap_injective R (FractionRing R)) _
       (this _ inferInstance (Field.toIsField _))
   wlog hp : p.Splits generalizing R
-  · try_grind
-    let inst := hR.toField
+  · let inst := hR.toField
     exact injective _ _ _ (algebraMap R p.SplittingField).injective _
       (this _ inferInstance (Field.toIsField _) (SplittingField.splits _))
   let inst := hR.toField
@@ -563,8 +556,7 @@ nonrec lemma resultant_mul_right (f g₁ g₂ : R[X]) (m : ℕ) (hm : f.natDegre
     resultant f (g₁ * g₂) m (g₁.natDegree + g₂.natDegree) =
       resultant f g₁ m * resultant f g₂ m := by
   wlog hgn : m = f.natDegree
-  · try_grind
-    obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hm
+  · obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hm
     simp [resultant_add_left_deg, this f g₁ g₂, coeff_mul_degree_add_degree]
     ring_nf
   subst hgn; clear hm
@@ -743,8 +735,7 @@ lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
       g.leadingCoeff ^ (f.natDegree * (g.natDegree - 1)) * resultant f g := by
   rw [natDegree_scaleRoots, natDegree_integralNormalization]
   wlog hR : IsDomain R
-  · try_grind
-    by_cases hf0 : f = 0; · simp [hf0]
+  · by_cases hf0 : f = 0; · simp [hf0]
     by_cases hg0 : g = 0; · simp [hg0]
     let S := MvPolynomial R ℤ
     let φ : S →+* R := MvPolynomial.eval₂Hom (algebraMap _ _) id

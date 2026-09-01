@@ -46,8 +46,7 @@ lemma norm_sub_le_integral_of_norm_deriv_le_of_le {B : ℝ → ℝ} (hab : a ≤
     ‖f b - f a‖ ≤ ∫ t in a..b, B t := by
   -- WLOG, the codomain is a complete space.
   wlog hE : CompleteSpace E generalizing E
-  · try_grind
-    set g : ℝ → UniformSpace.Completion E := (↑) ∘ f with hg
+  · set g : ℝ → UniformSpace.Completion E := (↑) ∘ f with hg
     have hgc : ContinuousOn g (Icc a b) :=
       (UniformSpace.Completion.continuous_coe E).comp_continuousOn hfc
     have hgd : DifferentiableOn ℝ g (Ioo a b) :=

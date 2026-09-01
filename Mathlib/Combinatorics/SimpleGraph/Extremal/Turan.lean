@@ -117,8 +117,7 @@ lemma degree_eq_of_not_adj (h : G.IsTuranMaximal r) (hn : ¬G.Adj s t) :
     G.degree s = G.degree t := by
   rw [IsTuranMaximal, IsExtremal] at h; contrapose! h; intro cf
   wlog hd : G.degree t < G.degree s generalizing G t s
-  · try_grind
-    replace hd : G.degree s < G.degree t := lt_of_le_of_ne (le_of_not_gt hd) h
+  · replace hd : G.degree s < G.degree t := lt_of_le_of_ne (le_of_not_gt hd) h
     exact this (by rwa [adj_comm] at hn) hd.ne' cf hd
   classical
   use G.replaceVertex s t, inferInstance, cf.replaceVertex s t

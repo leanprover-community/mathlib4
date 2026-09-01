@@ -231,8 +231,7 @@ private theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
   obtain ⟨j, hj_q, hlt_q⟩ := q.exists_min_eq_gaussNorm v hc0
   -- i and j are the minimal indices where the gauss norms are attained
   wlog hvpq : v (p.coeff i) ≠ 0 ∧ v (q.coeff j) ≠ 0
-  · try_grind
-    grind [mul_mul_mul_comm, gaussNorm_nonneg]
+  · grind [mul_mul_mul_comm, gaussNorm_nonneg]
   have := hvpq.1
   have := hvpq.2
   apply le_of_eq_of_le _ <| (p * q).le_gaussNorm v hc0 (i + j)

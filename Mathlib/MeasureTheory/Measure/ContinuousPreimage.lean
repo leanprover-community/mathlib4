@@ -58,8 +58,7 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   intro ε hε
   -- Without loss of generality, `s` is an open set.
   wlog hso : IsOpen s generalizing s ε
-  · try_grind
-    have H : 0 < ε / 3 := ENNReal.div_pos hε.ne' ENNReal.coe_ne_top
+  · have H : 0 < ε / 3 := ENNReal.div_pos hε.ne' ENNReal.coe_ne_top
     -- Indeed, we can choose an open set `U` such that `ν (U ∆ s) < ε / 3`,
     -- apply the lemma to `U`, then use the triangle inequality for `μ (_ ∆ _)`.
     rcases hs.exists_isOpen_symmDiff_lt hνs H.ne' with ⟨U, hUo, hU, hUs⟩

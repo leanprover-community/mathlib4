@@ -96,8 +96,7 @@ instance [QuasiCompactCover 𝒰] {T : Scheme.{u}} (f : T ⟶ S) :
     QuasiCompactCover (𝒰.pullback₁ f) := by
   refine ⟨fun {U'} hU' ↦ ?_⟩
   wlog h : ∃ (U : S.Opens), IsAffineOpen U ∧ f '' U' ⊆ U generalizing U'
-  · try_grind
-    refine .of_isCompact_of_forall_exists_isCompactOpenCovered hU'.isCompact fun x hxU ↦ ?_
+  · refine .of_isCompact_of_forall_exists_isCompactOpenCovered hU'.isCompact fun x hxU ↦ ?_
     obtain ⟨W, hW, hx, _⟩ := isBasis_iff_nbhd.mp S.isBasis_affineOpens (mem_top (f x))
     obtain ⟨W', hW', hx', hle⟩ := isBasis_iff_nbhd.mp T.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ W ⊓ U' from ⟨hx, hxU⟩)

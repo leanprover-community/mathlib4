@@ -113,8 +113,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
     (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
-  · try_grind
-    rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullback₁ f)).jacobsonSpace_iff]
+  · rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullback₁ f)).jacobsonSpace_iff]
     intro i
     have inst : LocallyOfFiniteType (Y.affineCover.pullbackHom f i) :=
       MorphismProperty.pullback_snd _ _ inferInstance
@@ -126,8 +125,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    have inst : JacobsonSpace (Spec R) := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
+  · have inst : JacobsonSpace (Spec R) := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
     rw [X.affineCover.isOpenCover_opensRange.jacobsonSpace_iff]
     intro i
     have := this _ (X.affineCover.f i ≫ f) ⟨_, rfl⟩

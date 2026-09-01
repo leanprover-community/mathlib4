@@ -160,8 +160,6 @@ theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClo
   refine fun x hx y hy => of_not_not fun hxy => ?_
   rcases exists_isOpen_xor_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
-  · try_grind
-    refine this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
   obtain ⟨hxU, hyU⟩ := h
   have : s \ U = s := hmin (s \ U) sdiff_subset ⟨y, hy, hyU⟩ (hs.sdiff hUo)
   exact (this.symm.subset hx).2 hxU
@@ -184,8 +182,6 @@ theorem minimal_nonempty_open_subsingleton [T0Space X] {s : Set X} (hs : IsOpen 
   refine fun x hx y hy => of_not_not fun hxy => ?_
   rcases exists_isOpen_xor_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
-  · try_grind
-    exact this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
   obtain ⟨hxU, hyU⟩ := h
   have : s ∩ U = s := hmin (s ∩ U) inter_subset_left ⟨x, hx, hxU⟩ (hs.inter hUo)
   exact hyU (this.symm.subset hy).2

@@ -74,8 +74,7 @@ theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
     IsOpenMap (PrimeSpectrum.comap (algebraMap A (A ⊗[K] B))) := by
   intro U hU
   wlog hU' : ∃ f, U = SetLike.coe (basicOpen f) generalizing U
-  · try_grind
-    rw [eq_biUnion_of_isOpen hU, Set.image_iUnion₂]
+  · rw [eq_biUnion_of_isOpen hU, Set.image_iUnion₂]
     exact isOpen_iUnion fun _ ↦ isOpen_iUnion fun _ ↦ this _ (basicOpen _).isOpen ⟨_, rfl⟩
   obtain ⟨f, rfl⟩ := hU'
   obtain ⟨B', hB, f, rfl⟩ := exists_fg_and_mem_baseChange f

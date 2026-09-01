@@ -77,8 +77,7 @@ theorem IsOpen.smul_sphere {r : ℝ} (hr : r ≠ 0) {U : Set ℝ} {V : Set (Metr
   rw [isOpen_iff_mem_nhds]
   rintro _ ⟨x, hxU, _, ⟨y, hyV, rfl⟩, rfl⟩
   wlog hx₀ : 0 < x generalizing x U
-  · try_grind
-    replace hx₀ : 0 < -x := by
+  · replace hx₀ : 0 < -x := by
       rw [not_lt, le_iff_eq_or_lt, ← neg_pos] at hx₀
       exact hx₀.resolve_left <| ne_of_mem_of_not_mem hxU hU₀
     specialize this hU.neg (by simpa) (-x) (by simpa) hx₀

@@ -257,8 +257,7 @@ variable (μ' ν' : Measure G) [SigmaFinite μ'] [SigmaFinite ν'] [IsMulLeftInv
 theorem ae_measure_preimage_mul_right_lt_top (hμs : μ' s ≠ ∞) :
     ∀ᵐ x ∂μ', ν' ((· * x) ⁻¹' s) < ∞ := by
   wlog sm : MeasurableSet s generalizing s
-  · try_grind
-    filter_upwards [this ((measure_toMeasurable _).trans_ne hμs) (measurableSet_toMeasurable ..)]
+  · filter_upwards [this ((measure_toMeasurable _).trans_ne hμs) (measurableSet_toMeasurable ..)]
       with x hx using lt_of_le_of_lt (by gcongr; apply subset_toMeasurable) hx
   refine ae_of_forall_measure_lt_top_ae_restrict' ν'.inv _ ?_
   intro A hA _ h3A
@@ -314,12 +313,10 @@ theorem measure_lintegral_div_measure (sm : MeasurableSet s) (h2s : ν' s ≠ 0)
 theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' s * ν' t = ν' s * μ' t := by
   wlog hs : MeasurableSet s generalizing s
-  · try_grind
-    rcases exists_measurable_superset₂ μ' ν' s with ⟨s', -, hm, hμ, hν⟩
+  · rcases exists_measurable_superset₂ μ' ν' s with ⟨s', -, hm, hμ, hν⟩
     rw [← hμ, ← hν, this s' _ _ hm] <;> rwa [hν]
   wlog ht : MeasurableSet t generalizing t
-  · try_grind
-    rcases exists_measurable_superset₂ μ' ν' t with ⟨t', -, hm, hμ, hν⟩
+  · rcases exists_measurable_superset₂ μ' ν' t with ⟨t', -, hm, hμ, hν⟩
     rw [← hμ, ← hν, this _ hm]
   have h1 := measure_lintegral_div_measure ν' ν' hs h2s h3s (t.indicator fun _ => 1)
     (measurable_const.indicator ht)

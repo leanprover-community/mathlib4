@@ -1029,8 +1029,7 @@ lemma basicOpen_injOn_isIdempotentElem :
     {e : R | IsIdempotentElem e}.InjOn basicOpen := fun x hx y hy eq ↦ by
   by_contra! ne
   wlog ne' : x * y ≠ x generalizing x y
-  · try_grind
-    apply this y hy x hx eq.symm ne.symm
+  · apply this y hy x hx eq.symm ne.symm
     rwa [mul_comm, of_not_not ne']
   have : x ∉ Ideal.span {y} := fun mem ↦ ne' <| by
     obtain ⟨r, rfl⟩ := Ideal.mem_span_singleton'.mp mem

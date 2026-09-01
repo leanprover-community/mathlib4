@@ -1075,9 +1075,6 @@ lemma wbtw_total_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -
   · simp_all
   · simp_all
   wlog hr : r₂ ≤ r₁ generalizing r₁ r₂ y z
-  · try_grind
-    rw [or_comm]
-    apply this r₂ r₁ hr₂ hr₁ h.symm (Std.le_of_not_ge hr)
   left
   refine ⟨r₂ / r₁, ⟨div_nonneg hr₂.le hr₁.le, div_le_one_of_le₀ hr hr₁.le⟩, ?_⟩
   have h' : y = r₁⁻¹ • r₂ • (z -ᵥ x) +ᵥ x := by simp [← h, hr₁.ne']

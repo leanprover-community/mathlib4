@@ -982,13 +982,11 @@ theorem exists_relSeries_covBy_and_head_eq_bot_and_last_eq_bot
     ∃ (t : RelSeries {(a, b) : α × α | a ⋖ b}) (i : Fin (s.length + 1) ↪ Fin (t.length + 1)),
       t ∘ i = s ∧ t.head = ⊥ ∧ t.last = ⊤ := by
   wlog h₁ : s.head = ⊥
-  · try_grind
-    obtain ⟨t, i, hi, ht⟩ := this (s.cons ⊥ (bot_lt_iff_ne_bot.mpr h₁)) rfl
+  · obtain ⟨t, i, hi, ht⟩ := this (s.cons ⊥ (bot_lt_iff_ne_bot.mpr h₁)) rfl
     exact ⟨t, ⟨fun j ↦ i (j.succ.cast (by simp)), fun _ _ ↦ by simp⟩,
       funext fun j ↦ (congr_fun hi _).trans (RelSeries.cons_cast_succ _ _ _ _), ht⟩
   wlog h₂ : s.last = ⊤
-  · try_grind
-    obtain ⟨t, i, hi, ht⟩ := this (s.snoc ⊤ (lt_top_iff_ne_top.mpr h₂)) (by simp [h₁]) (by simp)
+  · obtain ⟨t, i, hi, ht⟩ := this (s.snoc ⊤ (lt_top_iff_ne_top.mpr h₂)) (by simp [h₁]) (by simp)
     exact ⟨t, ⟨fun j ↦ i (.cast (by simp) j.castSucc), fun _ _ ↦ by simp⟩,
       funext fun j ↦ (congr_fun hi _).trans (RelSeries.snoc_cast_castSucc _ _ _ _), ht⟩
   obtain ⟨t, i, hit, hi₁, hi₂⟩ := s.exists_relSeries_covBy
@@ -1048,8 +1046,6 @@ lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
   by_contra! h
   obtain ⟨i, j, hn, he⟩ := Fintype.exists_ne_map_eq_of_card_lt s (by rw [Fintype.card_fin]; lia)
   wlog hl : i < j generalizing i j
-  · try_grind
-    exact this j i hn.symm he.symm (by lia)
   exact absurd he (s.strictMono hl).ne
 
 instance [DecidableLT α] : Fintype (LTSeries α) where

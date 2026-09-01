@@ -119,8 +119,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X ⟶ Y)
     {s : Set X} (hs : IsLocallyConstructible s) :
     IsLocallyConstructible (f '' s) := by
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    refine .of_isOpenCover Y.affineCover.isOpenCover_opensRange fun i ↦ ?_
+  · refine .of_isOpenCover Y.affineCover.isOpenCover_opensRange fun i ↦ ?_
     have inst : LocallyOfFinitePresentation (Y.affineCover.pullbackHom f i) :=
       MorphismProperty.pullback_snd _ _ inferInstance
     have inst : QuasiCompact (Y.affineCover.pullbackHom f i) :=
@@ -142,8 +141,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X ⟶ Y)
     simp [IsOpenImmersion.range_pullbackFst, Set.image_inter_preimage]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    have inst : CompactSpace X := HasAffineProperty.iff_of_isAffine.mp ‹QuasiCompact f›
+  · have inst : CompactSpace X := HasAffineProperty.iff_of_isAffine.mp ‹QuasiCompact f›
     let 𝒰 := X.affineCover.finiteSubcover
     rw [← 𝒰.isOpenCover_opensRange.iUnion_inter s, Set.image_iUnion]
     refine .iUnion fun i ↦ ?_

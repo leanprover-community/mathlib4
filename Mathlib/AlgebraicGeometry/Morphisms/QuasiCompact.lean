@@ -216,8 +216,7 @@ nonrec lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     IsClosedMap f ↔ SpecializingMap f := by
   refine ⟨fun h ↦ h.specializingMap, fun H ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    change topologically @IsClosedMap f
+  · change topologically @IsClosedMap f
     rw [IsZariskiLocalAtTarget.iff_of_openCover (P := topologically @IsClosedMap) Y.affineCover]
     intro i
     have _ : QuasiCompact (Y.affineCover.pullbackHom f i) := MorphismProperty.pullback_snd _ _ ‹_›
@@ -228,8 +227,7 @@ nonrec lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
   intro Z hZ
   replace H := hZ.stableUnderSpecialization.image H
   wlog hX : ∃ R, X = Spec R
-  · try_grind
-    obtain ⟨R, g, hg⟩ := compactSpace_iff_exists.mp (QuasiCompact.compactSpace_of_compactSpace f)
+  · obtain ⟨R, g, hg⟩ := compactSpace_iff_exists.mp (QuasiCompact.compactSpace_of_compactSpace f)
     have inst : QuasiCompact (g ≫ f) := HasAffineProperty.iff_of_isAffine.mpr (by infer_instance)
     have := this _ (g ≫ f) (g ⁻¹' Z) (hZ.preimage g.continuous)
     simp_rw [Scheme.Hom.comp_base, TopCat.comp_app, ← Set.image_image,

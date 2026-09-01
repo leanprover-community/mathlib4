@@ -159,8 +159,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
   /- We can assume not all `w i` are zero, and therefore that `w 0 ≠ 0`,
   since otherwise we can swap row `0` with another nonzero row. -/
   wlog h0 : w 0 ≠ 0 generalizing v w with aux
-  · try_grind
-    obtain h0' | ⟨i₀, hi₀ : w i₀ ≠ 0⟩ := forall_or_exists_not (w · = 0)
+  · obtain h0' | ⟨i₀, hi₀ : w i₀ ≠ 0⟩ := forall_or_exists_not (w · = 0)
     · obtain rfl | hne := eq_or_ne n 0
       · simp [projVandermonde_apply]
       rw [det_eq_zero_of_column_eq_zero 0 (fun i ↦ by simpa [projVandermonde_apply, h0']),

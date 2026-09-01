@@ -178,8 +178,7 @@ and the norm of `q`. -/
 protected theorem nonarchimedean {q r : ℚ} :
     padicNorm p (q + r) ≤ max (padicNorm p q) (padicNorm p r) := by
   wlog hle : padicValRat p q ≤ padicValRat p r generalizing q r
-  · try_grind
-    rw [add_comm, max_comm]
+  · rw [add_comm, max_comm]
     exact this (le_of_not_ge hle)
   exact nonarchimedean_aux hle
 

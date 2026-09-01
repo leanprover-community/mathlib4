@@ -111,8 +111,7 @@ instance descendsAlong_isomorphisms_surjective_inf_flat_inf_quasicompact :
       isAffineHom_of_isInducing g this.isInducing this.isClosedEmbedding.isClosed_range
     isAffine_of_isAffineHom g
   wlog hY : ∃ T, Y = Spec T generalizing Y
-  · try_grind
-    rw [← (isomorphisms Scheme).cancel_left_of_respectsIso Y.isoSpec.inv]
+  · rw [← (isomorphisms Scheme).cancel_left_of_respectsIso Y.isoSpec.inv]
     have heq : pullback.fst (Spec.map φ) (Y.isoSpec.inv ≫ g) =
       pullback.map _ _ _ _ (𝟙 _) (Y.isoSpec.inv) (𝟙 _) (by simp) (by simp) ≫
         pullback.fst (Spec.map φ) g := (pullback.lift_fst _ _ _).symm

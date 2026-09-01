@@ -219,8 +219,7 @@ theorem toSphereBallBound_mul_measure_unitBall_le_toSphere_ball {ε : ℝ}
     toSphereBallBound (Module.finrank ℝ E) ε * μ (ball 0 1) ≤ μ.toSphere (ball x ε) := by
   have : Nontrivial E := ⟨⟨x, 0, ne_of_apply_ne Norm.norm (by simp)⟩⟩
   wlog hε₂ : ε ≤ 2 generalizing ε
-  · try_grind
-    trans μ.toSphere (ball x (min ε 2))
+  · trans μ.toSphere (ball x (min ε 2))
     · simpa [Real.toNNReal_monotone.map_min, toSphereBallBound]
         using this (ε := min ε 2) (by simp [hε]) (by simp)
     · gcongr

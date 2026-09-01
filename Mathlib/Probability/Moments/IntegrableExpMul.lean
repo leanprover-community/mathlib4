@@ -119,9 +119,6 @@ lemma integrable_of_mem_integrableExpSet (h : t ∈ integrableExpSet X μ) :
 lemma convex_integrableExpSet : Convex ℝ (integrableExpSet X μ) := by
   rintro t₁ ht₁ t₂ ht₂ a b ha hb hab
   wlog! h_le : t₁ ≤ t₂
-  · try_grind
-    rw [add_comm] at hab ⊢
-    exact this ht₂ ht₁ hb ha hab h_le.le
   refine integrable_exp_mul_of_le_of_le ht₁ ht₂ ?_ ?_
   · simp only [smul_eq_mul]
     calc t₁

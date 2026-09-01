@@ -128,8 +128,7 @@ theorem mclosure_swap_castSucc_succ (n : ℕ) :
   rw [← mclosure_isSwap, Submonoid.closure_le]
   rintro _ ⟨i, j, ne, rfl⟩
   wlog lt : i < j generalizing i j
-  · try_grind
-    rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_gt.resolve_left lt)
+  · rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_gt.resolve_left lt)
   induction j using Fin.induction with
   | zero => cases lt
   | succ j ih =>

@@ -966,8 +966,6 @@ theorem image_iterate_stabilises_lt_card [DecidableEq α] {f : α → α} {s : F
     grw [hs.finsetImage_subset]
   have eq_iff (i j : ℕ) : #(g i) - 1 = #(g j) - 1 ↔ g i = g j := by
     wlog hij : j ≤ i generalizing i j
-    · try_grind
-      grind
     exact ⟨fun h ↦ eq_of_subset_of_card_le (hg hij) (by grind), by grind⟩
   have hG : Antitone (fun i ↦ #(g i) - 1) := fun i j h ↦ by dsimp; gcongr #?_ - 1; exact hg h
   rcases Nat.stabilises_of_antitone hG (by grind [=_ image_image, iterate_succ']) with ⟨n, hn, hn'⟩

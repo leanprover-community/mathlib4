@@ -87,8 +87,7 @@ theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
     (hf : MonotoneOn f (uIcc a b)) :
     IntervalIntegrable (deriv f) volume a b := by
   wlog hab : a ≤ b generalizing a b with h
-  · try_grind
-    exact h (uIcc_comm a b ▸ hf) (by linarith) |>.symm
+  · exact h (uIcc_comm a b ▸ hf) (by linarith) |>.symm
   rw [uIcc_of_le hab] at hf
   obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
@@ -102,8 +101,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     (hf : MonotoneOn f (uIcc a b)) :
     ∫ x in a..b, deriv f x ∈ uIcc 0 (f b - f a) := by
   wlog hab : a ≤ b generalizing a b with h
-  · try_grind
-    specialize h (uIcc_comm a b ▸ hf) (by linarith)
+  · specialize h (uIcc_comm a b ▸ hf) (by linarith)
     have : f b ≤ f a := hf (by simp) (by simp) (by linarith)
     rw [intervalIntegral.integral_symm, uIcc_of_ge (by linarith)]
     refine neg_mem_Icc_iff.mpr ?_

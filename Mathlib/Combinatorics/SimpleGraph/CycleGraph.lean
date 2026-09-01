@@ -172,8 +172,7 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
   refine ⟨⟨fun n ↦ p.support[n.succ]'(by grind [not_nil_iff_lt_length]), ?_⟩, ?_⟩
   · intro ⟨x, hx⟩ ⟨y, hy⟩ hab
     wlog hle : x > y
-    · try_grind
-      have hne : x ≠ y := by simpa using hab.ne
+    · have hne : x ≠ y := by simpa using hab.ne
       exact this hn hn' a p hp₁ hp₂ y hy x hx hab.symm (by lia) |>.symm
     rcases cycleGraph_adj'.mp hab with hab | hab
     · simp_rw [show x = y + 1 by grind [Fin.sub_val_of_le]]

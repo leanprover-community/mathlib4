@@ -108,8 +108,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
     (hf : GeneralizingMap f) : IsOpenMap f := by
   change topologically IsOpenMap f
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := topologically IsOpenMap) Y.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := topologically IsOpenMap) Y.affineCover]
     intro i
     dsimp only [Scheme.Cover.pullbackHom]
     refine this _ ?_ ⟨_, rfl⟩
@@ -117,8 +116,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
       (iY := Y.affineCover.f i) (IsPullback.of_hasPullback ..) hf
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    rw [IsZariskiLocalAtSource.iff_of_openCover (P := topologically IsOpenMap) X.affineCover]
+  · rw [IsZariskiLocalAtSource.iff_of_openCover (P := topologically IsOpenMap) X.affineCover]
     intro i
     refine this f _ _ ?_ ⟨_, rfl⟩
     exact IsZariskiLocalAtSource.comp (P := topologically GeneralizingMap) hf _
@@ -150,20 +148,17 @@ instance (priority := low) UniversallyOpen.of_flat [Flat f] [LocallyOfFinitePres
 nonrec instance (priority := low) [IsIntegral Y] [Subsingleton Y] :
     UniversallyOpen f := by
   wlog hX : ∃ S, X = Spec S generalizing X
-  · try_grind
-    refine (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦ this _ ⟨_, rfl⟩
+  · refine (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦ this _ ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
   wlog hY : ∃ K, Y = Spec K ∧ IsField K generalizing Y
-  · try_grind
-    have inst : Subsingleton (Spec Γ(Y, ⊤)) := Y.isoSpec.inv.homeomorph.subsingleton
+  · have inst : Subsingleton (Spec Γ(Y, ⊤)) := Y.isoSpec.inv.homeomorph.subsingleton
     exact (MorphismProperty.cancel_right_of_respectsIso _ _ Y.isoSpec.hom).mp
       (this _ ⟨_, rfl, isField_of_isIntegral_of_subsingleton _⟩)
   obtain ⟨K, rfl, hK⟩ := hY
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   refine ⟨universally_mk' _ _ fun {T} g _ ↦ ?_⟩
   wlog hT : ∃ R, T = Spec R generalizing T
-  · try_grind
-    refine (IsZariskiLocalAtTarget.iff_of_openCover T.affineCover).mpr fun i ↦ ?_
+  · refine (IsZariskiLocalAtTarget.iff_of_openCover T.affineCover).mpr fun i ↦ ?_
     refine (MorphismProperty.cancel_left_of_respectsIso _
       ((pullbackRightPullbackFstIso ..).inv ≫ (pullbackSymmetry ..).hom) _).mp ?_
     simpa [Scheme.Cover.pullbackHom] using! this _ _ ⟨_, rfl⟩

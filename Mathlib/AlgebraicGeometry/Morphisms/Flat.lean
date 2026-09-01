@@ -125,8 +125,7 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
   refine ⟨.of_isOpen_preimage_iff_isOpen fun s ↦
     ⟨fun hs ↦ ?_, fun hs ↦ hs.preimage f.continuous⟩, f.surjective⟩
   wlog hY : ∃ R, Y = Spec R
-  · try_grind
-    let 𝒰 := Y.affineCover
+  · let 𝒰 := Y.affineCover
     rw [𝒰.isOpenCover_opensRange.isOpen_iff_inter]
     intro i
     rw [Scheme.Hom.coe_opensRange, ← Set.image_preimage_eq_inter_range]
@@ -137,8 +136,7 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
     exact hs.preimage (Scheme.Hom.continuous _)
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · try_grind
-    have _ : CompactSpace X := QuasiCompact.compactSpace_of_compactSpace f
+  · have _ : CompactSpace X := QuasiCompact.compactSpace_of_compactSpace f
     let 𝒰 := X.affineCover.finiteSubcover
     let p : ∐ (fun i : 𝒰.I₀ ↦ 𝒰.X i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.f i)
     refine this (f := (∐ (fun i : 𝒰.I₀ ↦ 𝒰.X i)).isoSpec.inv ≫ p ≫ f) _ _ ?_ ⟨_, rfl⟩

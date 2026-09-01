@@ -432,8 +432,7 @@ theorem comp_add_right (hf : IntervalIntegrable f volume a b) (c : ℝ)
     rw [min_sub_sub_right, sub_add, sub_self, sub_zero]
     exact h
   wlog hab : a ≤ b generalizing a b
-  · try_grind
-    apply IntervalIntegrable.symm (this hf.symm ?_ ?_ (le_of_not_ge hab))
+  · apply IntervalIntegrable.symm (this hf.symm ?_ ?_ (le_of_not_ge hab))
     · rw [min_comm]; exact h
     · rw [min_comm]; exact h'
   rw [intervalIntegrable_iff' h] at hf
@@ -1150,8 +1149,7 @@ theorem integral_interval_sub_interval_comm' (hab : IntervalIntegrable f μ a b)
 theorem integral_Iic_sub_Iic (ha : IntegrableOn f (Iic a) μ) (hb : IntegrableOn f (Iic b) μ) :
     ((∫ x in Iic b, f x ∂μ) - ∫ x in Iic a, f x ∂μ) = ∫ x in a..b, f x ∂μ := by
   wlog hab : a ≤ b generalizing a b
-  · try_grind
-    rw [integral_symm, ← this hb ha (le_of_not_ge hab), neg_sub]
+  · rw [integral_symm, ← this hb ha (le_of_not_ge hab), neg_sub]
   rw [sub_eq_iff_eq_add', integral_of_le hab, ← setIntegral_union (Iic_disjoint_Ioc le_rfl),
     Iic_union_Ioc_eq_Iic hab]
   exacts [measurableSet_Ioc, ha, hb.mono_set fun _ => And.right]
@@ -1161,8 +1159,7 @@ theorem integral_interval_add_Ioi (ha : IntegrableOn f (Ioi a) μ)
     ∫ (x : ℝ) in a..b, f x ∂μ + ∫ (x : ℝ) in Ioi b, f x ∂μ
     = ∫ (x : ℝ) in Ioi a, f x ∂μ := by
   wlog hab : a ≤ b generalizing a b
-  · try_grind
-    rw [integral_symm, ← this hb ha (le_of_not_ge hab)]; grind
+  · rw [integral_symm, ← this hb ha (le_of_not_ge hab)]; grind
   rw [integral_of_le hab, ← setIntegral_union Ioc_disjoint_Ioi_same measurableSet_Ioi
     (ha.mono_set Ioc_subset_Ioi_self) hb, Ioc_union_Ioi_eq_Ioi hab]
 
@@ -1183,8 +1180,7 @@ theorem integral_Ioi_sub_Ioi (hf : IntegrableOn f (Ioi a) μ) (hab : a ≤ b) :
 theorem integral_Ioi_sub_Ioi' (hf : IntegrableOn f (Ioi a) μ) (hg : IntegrableOn f (Ioi b) μ) :
     ∫ x in Ioi a, f x ∂μ - ∫ x in Ioi b, f x ∂μ = ∫ x in a..b, f x ∂μ := by
   wlog! hab : a ≤ b generalizing a b
-  · try_grind
-    rw [integral_symm, ← this hg hf hab.le, neg_sub]
+  · rw [integral_symm, ← this hg hf hab.le, neg_sub]
   exact integral_Ioi_sub_Ioi hf hab
 
 theorem integral_Iio_sub_Iio (hf : IntegrableOn f (Iio b) μ) (hab : a ≤ b) :
@@ -1198,8 +1194,7 @@ theorem integral_Iio_sub_Iio' [NullSingletonClass μ] (hf : IntegrableOn f (Iio 
     (hg : IntegrableOn f (Iio a) μ) :
     ∫ x in Iio b, f x ∂μ - ∫ x in Iio a, f x ∂μ = ∫ x in a..b, f x ∂μ := by
   wlog! hab : a ≤ b generalizing a b
-  · try_grind
-    rw [integral_symm, ← this hg hf hab.le, neg_sub]
+  · rw [integral_symm, ← this hg hf hab.le, neg_sub]
   rw [integral_Iio_sub_Iio hf hab, integral_of_le hab, integral_Ico_eq_integral_Ioc]
 
 theorem integral_Ici_sub_Ici (hf : IntegrableOn f (Ici a) μ) (hab : a ≤ b) :
@@ -1213,8 +1208,7 @@ theorem integral_Ici_sub_Ici' [NullSingletonClass μ] (hf : IntegrableOn f (Ici 
     (hg : IntegrableOn f (Ici b) μ) :
     ∫ x in Ici a, f x ∂μ - ∫ x in Ici b, f x ∂μ = ∫ x in a..b, f x ∂μ := by
   wlog! hab : a ≤ b generalizing a b
-  · try_grind
-    rw [integral_symm, ← this hg hf hab.le, neg_sub]
+  · rw [integral_symm, ← this hg hf hab.le, neg_sub]
   rw [integral_Ici_sub_Ici hf hab, integral_of_le hab, integral_Ico_eq_integral_Ioc]
 
 theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)

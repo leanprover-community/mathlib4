@@ -946,9 +946,6 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
     intro x hx y hy hxy
     contrapose! hxy
     wlog! H : x < y generalizing x y with h
-    · try_grind
-      have : y < x := lt_of_le_of_ne H hxy.symm
-      exact (h hy hx hxy.symm this).symm
     intro h
     exact hx.2 ⟨hx.1, x, y, hx.1, hy.1, H, rfl, h.symm⟩
   · exact hu.mono (by simp [t']) |>.measurableSet

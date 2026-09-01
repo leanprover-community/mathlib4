@@ -108,8 +108,7 @@ lemma binEntropy_neg_of_neg (hp : p < 0) : binEntropy p < 0 := by
     nlinarith [log_pos_of_lt_neg_one hp']
   · have : -p * log p ≤ 0 := by
       wlog h : -1 < p
-      · try_grind
-        simp only [show p = -1 by linarith, log_neg_eq_log, log_one, le_refl, mul_zero]
+      · simp only [show p = -1 by linarith, log_neg_eq_log, log_one, le_refl, mul_zero]
       · nlinarith [log_neg_of_lt_zero hp h]
     nlinarith [(log_pos (by linarith) : 0 < log (1 - p))]
 
@@ -142,8 +141,7 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
   · rintro h rfl
     simp at h
   wlog hp : p < 2⁻¹
-  · try_grind
-    have hp : 1 - p < 2⁻¹ := by
+  · have hp : 1 - p < 2⁻¹ := by
       rw [sub_lt_comm]; norm_num at *; linarith +splitNe
     rw [← binEntropy_one_sub]
     exact this hp.ne hp

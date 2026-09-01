@@ -187,8 +187,7 @@ theorem congr {f g : α → E} {s : Set α} (h : EqOn f g s) : eVariationOn f s 
 theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
     edist (f x) (f y) ≤ eVariationOn f s := by
   wlog hxy : y ≤ x generalizing x y
-  · try_grind
-    rw [edist_comm]
+  · rw [edist_comm]
     exact this hy hx (le_of_not_ge hxy)
   let u : ℕ → α := fun n => if n = 0 then y else x
   have hu : Monotone u := monotone_nat_of_le_succ fun
@@ -440,8 +439,7 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
 @[simp]
 theorem pair (f : α → E) (a b : α) : eVariationOn f {a, b} = edist (f a) (f b) := by
   wlog hab : a ≤ b generalizing a b
-  · try_grind
-    simpa [edist_comm, pair_comm] using this b a (le_of_not_ge hab)
+  · simpa [edist_comm, pair_comm] using this b a (le_of_not_ge hab)
   · apply le_antisymm _ (edist_le f (by simp) (by simp))
     simp only [eVariationOn_eq_strictMonoOn, iSup_le_iff]
     rintro ⟨n, u, hmono, hi⟩

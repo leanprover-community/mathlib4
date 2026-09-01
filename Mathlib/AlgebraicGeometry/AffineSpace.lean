@@ -388,8 +388,7 @@ instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
   change topologically @IsOpenMap _
   wlog hS : ∃ R, S = Spec R
-  · try_grind
-    refine (IsZariskiLocalAtTarget.iff_of_openCover
+  · refine (IsZariskiLocalAtTarget.iff_of_openCover
       (P := topologically @IsOpenMap) S.affineCover).mpr ?_
     intro i
     have := this (n := n) (S.affineCover.X i) ⟨_, rfl⟩
@@ -420,8 +419,7 @@ instance : GeometricallyReduced (𝔸(n; S) ↘ S) := by
 set_option backward.isDefEq.respectTransparency.types false in
 instance [h : IsReduced S] : IsReduced 𝔸(n; S) := by
   wlog hS : ∃ R, S = Spec R
-  · try_grind
-    rw [IsReduced.iff_of_openCover _ (S.affineCover.pullback₁ (𝔸(n; S) ↘ S))]
+  · rw [IsReduced.iff_of_openCover _ (S.affineCover.pullback₁ (𝔸(n; S) ↘ S))]
     intro i
     have : IsReduced 𝔸(n; S.affineCover.X i) := this _ ⟨_, rfl⟩
     exact isReduced_of_isOpenImmersion ((isPullback_map _).isoPullback.inv)
@@ -454,8 +452,7 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
     · exact .inl ‹_›
     refine .inr ?_
     wlog hS : ∃ R, S = Spec R
-    · try_grind
-      obtain ⟨x⟩ := ‹Nonempty S›
+    · obtain ⟨x⟩ := ‹Nonempty S›
       obtain ⟨y, hy⟩ := S.affineCover.covers x
       exact this (S.affineCover.X _) (MorphismProperty.IsStableUnderBaseChange.of_isPullback
         (isPullback_map (S.affineCover.f _)) h) ⟨y⟩ ⟨_, rfl⟩

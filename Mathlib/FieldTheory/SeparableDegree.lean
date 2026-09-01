@@ -436,8 +436,7 @@ theorem natSepDegree_mul_eq_iff (g : F[X]) :
   by_cases h : f * g = 0
   · rw [mul_eq_zero] at h
     wlog hf : f = 0 generalizing f g
-    · try_grind
-      simpa only [mul_comm, add_comm, and_comm,
+    · simpa only [mul_comm, add_comm, and_comm,
         isCoprime_comm] using this g f h.symm (h.resolve_left hf)
     rw [hf, zero_mul, natSepDegree_zero, zero_add, isCoprime_zero_left, isUnit_iff, eq_comm,
       natSepDegree_eq_zero_iff, natDegree_eq_zero]
@@ -750,8 +749,7 @@ When `E / F` is infinite, it means that `Field.Emb F E` has infinitely many elem
 theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     finSepDegree F E = finrank F E := by
   wlog hfd : FiniteDimensional F E generalizing E with H
-  · try_grind
-    rw [finrank_of_infinite_dimensional hfd]
+  · rw [finrank_of_infinite_dimensional hfd]
     obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_infinite_dimensional hfd (finSepDegree F E)
     have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E
     rw [H L h] at hd
