@@ -85,8 +85,7 @@ theorem closure_eq_zmultiples (a b : ℤ) : closure {a, b} = zmultiples (a.gcd b
   · grind [closure_le, mem_zmultiples_iff, SetLike.mem_coe, gcd_dvd_left, gcd_dvd_right]
   · simp [zmultiples_le, mem_closure_pair, gcd_eq_gcd_ab, mul_comm]
 
-theorem closure_eq_zmultiples_finsetGcd (s : Finset ℤ) :
-    closure (s : Set ℤ) = zmultiples (s.gcd id) := by
+theorem closure_eq_zmultiples_finsetGcd (s : Finset ℤ) : closure s = zmultiples (s.gcd id) := by
   apply le_antisymm
   · grind [closure_le, mem_zmultiples_iff, SetLike.mem_coe, Finset.gcd_dvd]
   · have ⟨g, h⟩ := s.gcd_eq_sum_mul id
