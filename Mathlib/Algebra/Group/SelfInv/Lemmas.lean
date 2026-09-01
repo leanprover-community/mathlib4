@@ -11,8 +11,7 @@ public import Mathlib.GroupTheory.OrderOfElement
 /-!
 # More lemmas on self-inverse elements
 
-This file collects results about `IsSelfInv`/`IsSelfNeg` that need more algebraic structure.
-
+This file collects results about `IsSelfInv`/`IsSelfNeg` that need more algebraic structures.
 -/
 
 public section
