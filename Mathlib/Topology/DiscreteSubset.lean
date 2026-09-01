@@ -174,13 +174,10 @@ lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
 
 lemma IsDiscrete.isLocallyClosed [T1Space X] (hs : IsDiscrete s) :
     IsLocallyClosed s := by
-  simp_rw [isLocallyClosed_iff_isLocallyClosedAt, IsLocallyClosedAt]
-  rw [isDiscrete_iff_forall_mem_exists_isOpen] at hs
-  intro x hx
-  obtain ⟨U, U_open, hU⟩ := hs x hx
-  have x_in_U : x ∈ U := inter_subset_left (hU ▸ mem_singleton x)
-  exact ⟨U, U_open.mem_nhds x_in_U, {x}, isClosed_singleton, by simp [hU, x_in_U]⟩
-
+  simp_rw [isLocallyClosed_iff_isLocallyClosedAt,
+    isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet]
+  refine fun x hx ↦ ⟨{x}, isClosed_singleton, ?_⟩
+  simpa [eventuallyEqSet_iff_inf_principal, nhdsWithin] using hs.nhdsWithin x hx
 section cofinite_cocompact
 
 omit [TopologicalSpace X] in
