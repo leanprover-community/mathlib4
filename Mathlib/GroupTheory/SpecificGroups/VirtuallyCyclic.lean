@@ -68,6 +68,16 @@ cyclic and of finite index. -/
 instance (priority := 100) [Finite G] : IsVirtuallyCyclic G :=
   ⟨⊥, inferInstance, ⟨Subgroup.index_ne_zero_of_finite⟩⟩
 
+variable (G) in
+/-- A virtually cyclic group has a subgroup that is cyclic, of finite index
+and normal: the normal core of any cyclic finite-index subgroup. -/
+@[to_additive]
+theorem IsVirtuallyCyclic.exists_isCyclic_and_finiteIndex_and_normal [IsVirtuallyCyclic G] :
+    ∃ H : Subgroup G, IsCyclic H ∧ H.FiniteIndex ∧ H.Normal := by
+  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
+  exact ⟨H.normalCore, Subgroup.isCyclic_of_le H.normalCore_le,
+    H.finiteIndex_normalCore, H.normalCore_normal⟩
+
 -- TODO: additivize once Mathlib has additive nilpotency.
 /-- A virtually cyclic group is virtually nilpotent: a cyclic group is
 commutative, hence nilpotent. This slots next to
