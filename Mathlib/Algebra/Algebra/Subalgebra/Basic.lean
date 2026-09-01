@@ -738,7 +738,7 @@ variable (S)
 
 /-- Two subalgebras that are equal are also equivalent as algebras.
 
-This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Equiv.Set.congr`. -/
+This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Set.equivOfEq`. -/
 @[simps apply]
 def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   __ := LinearEquiv.ofEq _ _ (congr_arg toSubmodule h)
