@@ -288,7 +288,7 @@ lemma range_toGL_eq_ker_det :
 /-- `Matrix.SpecialLinearGroup` is isomorphic to `GeneralLinearGroup.det.ker` -/
 def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker where
   toFun g := ⟨toGL g, coeToGL_det g⟩
-  invFun A := ⟨A.val.val, by simpa [GeneralLinearGroup.val_det_apply] using congrArg Units.val A.2⟩
+  invFun A := ⟨A.val.val, by simpa using congrArg Units.val A.2⟩
   left_inv g := rfl
   right_inv A := Subtype.ext (Units.ext rfl)
   map_mul' g h := Subtype.ext (Units.ext rfl)
