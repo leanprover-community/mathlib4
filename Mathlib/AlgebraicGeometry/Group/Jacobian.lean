@@ -88,6 +88,32 @@ theorem_wanted existsUnique_ofCurve_comp (C : Over (Spec (.of k))) [IsProper C.h
     [GeometricallyIrreducible A.hom] (f : C ⟶ A) (hf : P ≫ f = η[A]) :
     ∃! (g : ❰Jacobian❱ C ⟶ A), f = ❰ofCurve❱ P ≫ g
 
+/-- Any factorisation through the Abel-Jacobi map as in `existsUnique_ofCurve_comp` is
+automatically a homomorphism of group schemes: such a `g` preserves the neutral element
+(precompose with `P` and use `comp_ofCurve`), so this is a special case of rigidity
+(`isMonHom_of_one_comp` below). -/
+theorem_wanted isMonHom_of_ofCurve_comp (C : Over (Spec (.of k))) [IsProper C.hom]
+    [SmoothOfRelativeDimension 1 C.hom] [GeometricallyIrreducible C.hom]
+    (P : 𝟙_ (Over (Spec (.of k))) ⟶ C)
+    {A : Over (Spec (.of k))} [Smooth A.hom] [IsProper A.hom] [GrpObj A]
+    [GeometricallyIrreducible A.hom] (f : C ⟶ A) (hf : P ≫ f = η[A]) :
+    ∀ g : ❰Jacobian❱ C ⟶ A, f = ❰ofCurve❱ P ≫ g → IsMonHom g
+
 end Jacobian
+
+/-! ## Rigidity
+
+Rigidity is the reason `Jacobian.existsUnique_ofCurve_comp` above quantifies over plain
+morphisms rather than homomorphisms of group schemes: by
+`Jacobian.isMonHom_of_ofCurve_comp`, any `g` satisfying `f = ofCurve P ≫ g` is
+automatically a homomorphism, so uniqueness among all morphisms is the stronger statement.
+-/
+
+/-- Rigidity: a morphism from an abelian variety over `k` to a group scheme over `k` that
+sends the neutral element to the neutral element is automatically a homomorphism of group
+schemes. Note only the source needs to be an abelian variety. -/
+theorem_wanted isMonHom_of_one_comp {A B : Over (Spec (.of k))}
+    [Smooth A.hom] [IsProper A.hom] [GrpObj A] [GeometricallyIrreducible A.hom]
+    [GrpObj B] (f : A ⟶ B) (hf : η[A] ≫ f = η[B]) : IsMonHom f
 
 end AlgebraicGeometry
