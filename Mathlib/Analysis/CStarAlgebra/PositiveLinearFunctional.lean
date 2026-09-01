@@ -10,6 +10,11 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Positive
 
 import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 
+/-! # Characterization of positive continuous linear functionals on C⋆-algebras
+
+In this file we show that a continious linear functional `f` on a C⋆-algebra is monotone iff
+`‖f‖ = f 1`. -/
+
 public section
 
 open ComplexOrder Topology Filter Complex CStarRing
