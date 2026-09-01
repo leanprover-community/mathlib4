@@ -216,7 +216,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def isUniversal' : (derivation' φ').Universal :=
   Derivation'.Universal.mk
     (fun {M'} d' ↦
-      mkHom (fun X ↦ (d'.app X).desc)
+      homMk (fun X ↦ (d'.app X).desc)
         (fun f ↦ CommRingCat.KaehlerDifferential.ext (fun b ↦ by
           dsimp
           rw [ModuleCat.Derivation.desc_d, Derivation'.app_apply]
