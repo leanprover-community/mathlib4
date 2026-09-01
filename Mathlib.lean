@@ -287,6 +287,7 @@ public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 public import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 public import Mathlib.Algebra.ContinuedFractions.Determinant
+public import Mathlib.Algebra.ContinuedFractions.Euler
 public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 public import Mathlib.Algebra.ContinuedFractions.Translations
 public import Mathlib.Algebra.CubicDiscriminant
@@ -4074,7 +4075,6 @@ public import Mathlib.Data.Finsupp.Option
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.Data.Finsupp.Pointwise
-public import Mathlib.Data.Finsupp.PointwiseSMul
 public import Mathlib.Data.Finsupp.Quotient
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.Data.Finsupp.SMulWithZero
@@ -5166,6 +5166,7 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Product
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
@@ -5855,6 +5856,7 @@ public import Mathlib.NumberTheory.Basic
 public import Mathlib.NumberTheory.Bernoulli
 public import Mathlib.NumberTheory.BernoulliPolynomials
 public import Mathlib.NumberTheory.Bertrand
+public import Mathlib.NumberTheory.CarmichaelNumber
 public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
@@ -8196,6 +8198,7 @@ public import Mathlib.Topology.MetricSpace.Completion
 public import Mathlib.Topology.MetricSpace.Congruence
 public import Mathlib.Topology.MetricSpace.Contracting
 public import Mathlib.Topology.MetricSpace.Cover
+public import Mathlib.Topology.MetricSpace.CoveringExponent
 public import Mathlib.Topology.MetricSpace.CoveringNumbers
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Dilation
