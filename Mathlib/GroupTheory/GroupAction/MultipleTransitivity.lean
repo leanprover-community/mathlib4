@@ -9,7 +9,6 @@ public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.SpecificGroups.Alternating
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.SetTheory.Cardinal.Embedding
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Multiple transitivity
 
@@ -33,7 +32,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
 
-## Results for `SubMulAction`.
+## Results for `SubMulAction`
 
 * `SubMulAction.ofStabilizer.isPretransitive_iff_conj` shows
   that for `a`, `b` and `g` such that `g • a = b`, the actions
@@ -96,8 +95,6 @@ theorem Function.Injective.mulActionHom_embedding_isInjective
   apply hf
   simp only [← hf.mulActionHom_embedding_apply, hxy]
 
-variable (hf' : Function.Bijective f)
-
 @[to_additive]
 theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bijective f) :
     Function.Bijective (hf.injective.mulActionHom_embedding ι) := by
@@ -130,7 +127,7 @@ theorem isMultiplyPretransitive_iff {n : ℕ} :
 variable {H β : Type*} [Group H] [MulAction H β] {σ : G → H}
   {f : α →ₑ[σ] β} (hf : Function.Injective f)
 
-/- If there exists a surjective equivariant map `α →ₑ[σ] β`
+/-- If there exists a surjective equivariant map `α →ₑ[σ] β`
 then pretransitivity descends from `n ↪ α` to `n ↪ β`.
 
 The subtlety is that if it is not injective, this map does not induce
@@ -463,14 +460,14 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     have hat : Subtype.val '' t = s \ {a} := by
       rw [Set.image_preimage_eq_inter_range]
       simp only [Subtype.range_coe_subtype]
-      rw [Set.diff_eq_compl_inter, Set.inter_comm]
+      rw [Set.sdiff_eq_compl_inter, Set.inter_comm]
       congr
     have hat' : s = insert a (Subtype.val '' t) := by
-      rw [hat, Set.insert_diff_singleton, Set.insert_eq_of_mem has]
+      rw [hat, Set.insert_sdiff_singleton, Set.insert_eq_of_mem has]
     have hfs := SubMulAction.fixingSubgroup_of_insert a t
     rw [← hat'] at hfs
     rw [hfs, Subgroup.index_map,
-      (MonoidHom.ker_eq_bot_iff (stabilizer G a).subtype).mpr
+      MonoidHom.ker_eq_bot (stabilizer G a).subtype
         (by simp only [Subgroup.coe_subtype, Subtype.coe_injective])]
     simp only [sup_bot_eq, Subgroup.range_subtype]
     have htcard : t.ncard = k := by
@@ -631,7 +628,7 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
 theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
     IsPretransitive (alternatingGroup α) α := by
   rw [← is_one_pretransitive_iff]
-  letI := isMultiplyPretransitive α
+  let := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
   rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by norm_num) h)]
 
@@ -652,7 +649,7 @@ theorem isTrivialBlock_of_isBlock {B : Set α} (hB : IsBlock (alternatingGroup �
   suffices IsPreprimitive (alternatingGroup α) α by
     apply IsPreprimitive.isTrivialBlock_of_isBlock hB
   apply isPreprimitive_of_is_two_pretransitive
-  letI := isMultiplyPretransitive α
+  let := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
   rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_of_lt h2)]
 
@@ -663,16 +660,3 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end alternatingGroup
-
-namespace AlternatingGroup
-
-@[deprecated (since := "2025-12-16")]
-alias isMultiplyPretransitive := alternatingGroup.isMultiplyPretransitive
-@[deprecated (since := "2025-12-16")]
-alias isPretransitive_of_three_le_card := alternatingGroup.isPretransitive_of_three_le_card
-@[deprecated (since := "2025-12-16")]
-alias isTrivialBlock_of_isBlock := alternatingGroup.isTrivialBlock_of_isBlock
-@[deprecated (since := "2025-12-16")]
-alias isPreprimitive_of_three_le_card := alternatingGroup.isPreprimitive_of_three_le_card
-
-end AlternatingGroup

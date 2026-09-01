@@ -6,11 +6,15 @@ Authors: Simon Hudon, David Renshaw
 module
 
 public meta import Lean.Elab.Tactic.Classical
-public import Mathlib.Logic.Basic  -- shake: keep (dependency of tactic output)
-public meta import Qq
 public meta import Mathlib.Lean.Meta
+public meta import Qq
+
+public import Mathlib.Basic.Logic.Basic  -- shake: keep (dependency of tactic output)
 public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Core
+public import Lean.Elab.ConfigEval
+public meta import Lean.Elab.ConfigEval
+public import Qq
 
 /-!
 The `tauto` tactic.

@@ -132,12 +132,8 @@ variable [LinearOrder α]
 theorem sortedLT_sort (s : Finset α) : (sort s).SortedLT :=
   (pairwise_sort _ _).sortedLE.sortedLT_of_nodup (sort_nodup _ _)
 
-@[deprecated (since := "2025-11-27")] alias sort_sorted_lt := sortedLT_sort
-
 theorem sortedGT_sort (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
   (pairwise_sort _ _).sortedGE.sortedGT_of_nodup (sort_nodup _ _)
-
-@[deprecated (since := "2025-11-27")] alias sort_sorted_gt := sortedGT_sort
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < s.sort.length) (H : s.Nonempty) :
     s.sort.get ⟨0, h⟩ = s.min' H := by
@@ -189,7 +185,7 @@ the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s`
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
   OrderIso.trans (Fin.castOrderIso ((s.length_sort (· ≤ ·)).trans h).symm) <|
-    (s.sortedLT_sort.getIso _).trans <| OrderIso.setCongr {x | x ∈ s.sort (· ≤ ·)} _ <| by simp
+    (s.sortedLT_sort.getIso _).trans <| Set.orderIsoOfEq {x | x ∈ s.sort (· ≤ ·)} _ <| by simp
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderEmbOfFin s h` is
 the increasing bijection between `Fin k` and `s` as an order embedding into `α`. Here, `h` is a
@@ -222,7 +218,7 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
   simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
     OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding,
-    Subtype.range_coe_subtype, Finset.setOf_mem]
+    Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 @[simp]
 theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
@@ -263,8 +259,8 @@ theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k → α}
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
-  rw [← hmono.range_inj (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin, ← Set.image_univ,
-    ← coe_univ, ← coe_image, coe_inj]
+  rw [← hmono.range_inj_of_wellFoundedLT (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin,
+    ← Set.image_univ, ← coe_univ, ← coe_image, coe_inj]
   refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
   · rcases mem_image.1 hx with ⟨x, _, rfl⟩
     exact hfs x
@@ -283,7 +279,7 @@ and only if `i = j`. Since they can be defined on a priori not defeq types `Fin 
 theorem orderEmbOfFin_eq_orderEmbOfFin_iff {k l : ℕ} {s : Finset α} {i : Fin k} {j : Fin l}
     {h : s.card = k} {h' : s.card = l} :
     s.orderEmbOfFin h i = s.orderEmbOfFin h' j ↔ (i : ℕ) = (j : ℕ) := by
-  substs k l
+  subst k l
   exact (s.orderEmbOfFin rfl).eq_iff_eq.trans Fin.ext_iff
 
 /-- Given a finset `s` of size at least `k` in a linear order `α`, the map `orderEmbOfCardLe`
@@ -344,50 +340,12 @@ def Fintype.orderIsoFinOfCardEq
     (α : Type*) [LinearOrder α] [Fintype α] {k : ℕ} (h : Fintype.card α = k) :
     Fin k ≃o α :=
   (Finset.univ.orderIsoOfFin h).trans
-    ((OrderIso.setCongr _ _ Finset.coe_univ).trans OrderIso.Set.univ)
+    ((Set.orderIsoOfEq _ _ Finset.coe_univ).trans OrderIso.Set.univ)
 
 /-- Any finite linear order order-embeds into any infinite linear order. -/
 lemma nonempty_orderEmbedding_of_finite_infinite
     (α : Type*) [LinearOrder α] [hα : Finite α]
     (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
-
-@[elab_as_elim, deprecated "Use `WellFoundedLT.induction _ h` instead." (since := "2026-04-10")]
-lemma LinearOrder.strong_induction_of_finite
-    {α : Type*} [LinearOrder α] [Finite α] {motive : α → Prop}
-    (h : ∀ (j : α) (_ : ∀ (k : α), k < j → motive k), motive j) (i : α) :
-    motive i := WellFoundedLT.induction _ h
-
-lemma OrderEmbedding.range_eq_iff
-    {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]
-    {f g : α ↪o β} :
-    Set.range f = Set.range g ↔ f = g := by
-  refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
-  let ef := (f.strictMono.strictMonoOn .univ).orderIso
-  let eg := (g.strictMono.strictMonoOn .univ).orderIso
-  let i : f '' .univ ≃o g '' .univ :=
-    { __ := Equiv.setCongr (by simpa using h)
-      map_rel_iff' := by rfl }
-  have : (ef.trans i).trans eg.symm = .refl _ := by
-    exact Subsingleton.elim _ _
-  ext x
-  simpa only [OrderIso.trans_apply, OrderIso.apply_symm_apply, OrderIso.refl_apply, Subtype.ext_iff]
-    using congr(eg ($this ⟨x, Set.mem_univ x⟩))
-
-lemma OrderHom.range_eq_iff {α β : Type*} [LinearOrder α] [PartialOrder β]
-    [Finite α] {f g : α →o β}
-    (hf : Function.Injective f) (hg : Function.Injective g) :
-    Set.range f = Set.range g ↔ f = g := by
-  refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
-  ext : 2
-  exact DFunLike.congr_fun ((OrderEmbedding.range_eq_iff
-    (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
-    (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg))).1 (by simpa)) _
-
-lemma OrderHom.eq_id_of_injective {α : Type*} [LinearOrder α] [Finite α] (f : α →o α)
-    (hf : Function.Injective f) :
-    f = .id :=
-  (range_eq_iff hf Function.injective_id).1 (by
-    simpa [Set.range_eq_univ] using Finite.surjective_of_injective hf)
