@@ -308,7 +308,6 @@ lemma exists_map_preimage_eq_map_preimage
   · rw [e]
     simpa only [Scheme.Hom.comp_preimage, Functor.map_comp] using Scheme.Hom.preimage_mono _ e₂
 
-set_option backward.defeqAttrib.useBackward true in
 include hc in
 lemma exists_appTop_π_eq_of_isAffine_of_isLimit [IsCofiltered I]
     [∀ i, IsAffine (D.obj i)] (s : Γ(c.pt, ⊤)) :
@@ -829,7 +828,6 @@ lemma exists_app_map_eq_zero_of_isLimit {i : I} {U : (D.obj i).Opens}
         Scheme.Hom.appLE_comp_appLE, ← Functor.map_comp, hw W]
     · simp
 
-set_option backward.defeqAttrib.useBackward true in
 include hc in
 lemma exists_appTop_map_eq_zero_of_isLimit {i : I} [CompactSpace (D.obj i)] (s : Γ(D.obj i, ⊤))
     (hs : (c.π.app i).appTop s = 0) :
