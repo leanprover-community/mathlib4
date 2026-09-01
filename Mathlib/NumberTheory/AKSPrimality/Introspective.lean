@@ -88,8 +88,7 @@ protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CharP R n] :
   convert Ideal.zero_mem _
   suffices ((X : R[X]) - C (a : R)) ^ n = ((X : R[X]) ^ n) - C (a : R) by
     simp_all
-  change (frobenius _ n) _ = (frobenius _ n) _ - _
-  simp
+  simp [← frobenius_def n _]
 
 /-- The product of two polynomials is introspective. -/
 protected theorem mul (hf : Introspective f e r) (hg : Introspective g e r) :
