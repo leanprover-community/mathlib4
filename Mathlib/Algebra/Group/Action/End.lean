@@ -201,7 +201,7 @@ variable (G α) [AddGroup G] [AddAction G α]
 
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
-@[simps!]
+@[simps! apply apply_apply apply_symm_apply]
 def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
 
 lemma AddAction.coe_toPermHom :
