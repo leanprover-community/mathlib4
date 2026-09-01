@@ -91,18 +91,35 @@ instance finiteDimensional_direction_affineSpan_image_of_finite [Finite ι] (p :
     FiniteDimensional k (affineSpan k (p '' s)).direction :=
   finiteDimensional_direction_affineSpan_of_finite k (Set.toFinite _)
 
-/-- An affine-independent family of points in a finite-dimensional affine subspace is finite. -/
-theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndependent k p)
-    [FiniteDimensional k (vectorSpan k (Set.range p))] : Finite ι := by
+/-- An affine-independent family of points `p` generates a finite-dimensional subspace iff `p` is
+finite. -/
+theorem finiteDimensional_iff_finite {p : ι → P} (hi : AffineIndependent k p) :
+    FiniteDimensional k (vectorSpan k (Set.range p)) ↔ Finite ι := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ finiteDimensional_vectorSpan_range _ _⟩
   nontriviality ι; inhabit ι
   rw [affineIndependent_iff_linearIndependent_vsub k p default] at hi
   refine (Set.finite_singleton default).finite_of_compl (Set.finite_coe_iff.mp ?_)
   exact hi.codRestrict (vectorSpan k (Set.range p)) (by simp [vsub_mem_vectorSpan]) |>.finite
 
+/-- An affine-independent family of points in a finite-dimensional affine subspace is finite. -/
+@[deprecated finiteDimensional_iff_finite (since := "2026-09-01")]
+theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndependent k p)
+    [FiniteDimensional k (vectorSpan k (Set.range p))] : Finite ι :=
+  finiteDimensional_iff_finite k hi |>.mp inferInstance
+
+/-- An affine-independent subset `s` generates a finite-dimensional subspace iff `s` isfinite. -/
+theorem finiteDimensional_iff_finite' {s : Set ι} {f : s → P}
+    (hi : AffineIndependent k f) : FiniteDimensional k (vectorSpan k (Set.range f)) ↔ s.Finite := by
+  refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
+  · exact @Set.toFinite _ s (finiteDimensional_iff_finite k hi |>.mp inferInstance)
+  · have := Set.Finite.to_subtype h
+    exact finiteDimensional_vectorSpan_range k f
+
 /-- An affine-independent subset of a finite-dimensional affine subspace is finite. -/
+@[deprecated finiteDimensional_iff_finite' (since := "2026-09-01")]
 theorem finite_set_of_fin_dim_affineIndependent {s : Set ι} {f : s → P} (hi : AffineIndependent k f)
     [FiniteDimensional k (vectorSpan k (Set.range f))] : s.Finite :=
-  @Set.toFinite _ s (finite_of_fin_dim_affineIndependent k hi)
+  finiteDimensional_iff_finite' k hi |>.mp inferInstance
 
 variable {k}
 
@@ -836,7 +853,7 @@ protected theorem finiteDimensional [Finite ι] (b : AffineBasis ι k P) : Finit
   (b.basisOf i).finiteDimensional_of_finite
 
 protected theorem finite [FiniteDimensional k V] (b : AffineBasis ι k P) : Finite ι :=
-  finite_of_fin_dim_affineIndependent k b.ind
+  finiteDimensional_iff_finite k b.ind |>.mp inferInstance
 
 protected theorem finite_set [FiniteDimensional k V] {s : Set ι} (b : AffineBasis s k P) :
     s.Finite :=
