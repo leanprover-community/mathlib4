@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
 
 /-!
 # The right derived functor on the bounded below derived category
@@ -76,7 +77,10 @@ instance : NatTrans.CommShift F.rightDerivedFunctorPlusUnith ℤ :=
   Functor.IsRightDerivedFunctor.natTrans_commShift _ F.rightDerivedFunctorPlusUnith
     (HomotopyCategory.Plus.quasiIso C) ℤ
 
-instance : F.rightDerivedFunctorPlus.IsTriangulated := sorry
+open HomotopyCategory.Plus in
+instance : F.rightDerivedFunctorPlus.IsTriangulated :=
+  (localizerMorphism_derives _).isTriangulated_of_isRightDerivedFunctor
+    F.rightDerivedFunctorPlusUnith
 
 /-- A natural transformation that is part of the data of the right derived functor
 `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
@@ -106,11 +110,25 @@ instance (K : CochainComplex.Plus (InjectiveObject C)) :
   simp only [F.rightDerivedFunctorPlusUnit_app]
   infer_instance
 
---omit [HasDerivedCategory C] in
+omit [HasDerivedCategory C] in
 lemma _root_.CochainComplex.Plus.localizerMorphism_derives_mapCochainComplexPlus :
     (CochainComplex.Plus.localizerMorphism C).Derives
-      (F.mapCochainComplexPlus ⋙ DerivedCategory.Plus.Q) := by
-  sorry
+      (F.mapCochainComplexPlus ⋙ DerivedCategory.Plus.Q) :=
+  .of_comp_of_reflectsIsomorphisms DerivedCategory.Plus.ι (by
+    let e : (((InjectiveObject.ι C).mapCochainComplexPlus ⋙ F.mapCochainComplexPlus ⋙
+      DerivedCategory.Plus.Q) ⋙ DerivedCategory.Plus.ι) ≅
+        CochainComplex.Plus.ι _ ⋙ HomotopyCategory.quotient _ _ ⋙
+          (InjectiveObject.ι C).mapHomotopyCategory  _ ⋙
+          F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh := by
+      sorry
+    dsimp
+    rw [HomotopyCategory.Plus.inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι,
+      MorphismProperty.IsInvertedBy.iff_of_iso _ e]
+    intro _ _ f hf
+    have : IsIso ((HomotopyCategory.quotient _ _).map f.hom) :=
+      HomotopyCategory.quotient_inverts_homotopyEquivalences _ _ _ hf
+    dsimp [-mapHomotopyCategory_map]
+    infer_instance)
 
 open CochainComplex.Plus in
 instance : F.rightDerivedFunctorPlus.IsRightDerivedFunctor
