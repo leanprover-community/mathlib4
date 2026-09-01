@@ -56,7 +56,7 @@ the conditional probabilities that it's equal to `0` and that it's equal to `1`.
 lemma condVar_of_ae_eq_zero_or_one {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀) {μ : Measure[m₀] Ω}
     [IsFiniteMeasure μ] (hXmeas : AEMeasurable[m₀] X μ) (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) :
     Var[X; μ | m] =ᵐ[μ] μ[X | m] * μ[1 - X | m] := by
-  wlog hXmeas : Measurable[m₀] X
+  wlog (disch := none) hXmeas : Measurable[m₀] X
   · obtain ⟨Y, hYmeas, hXY⟩ := ‹AEMeasurable[m₀] X μ›
     calc
       Var[X; μ | m]

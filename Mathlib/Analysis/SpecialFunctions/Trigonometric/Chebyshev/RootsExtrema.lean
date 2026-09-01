@@ -333,7 +333,7 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
 
 theorem abs_iterate_derivative_T_real_le (n : ℤ) (k : ℕ) {x : ℝ} (hx : |x| ≤ 1) :
     |(derivative^[k] (T ℝ n)).eval x| ≤ (derivative^[k] (T ℝ n)).eval 1 := by
-  wlog hn : 0 ≤ n
+  wlog (disch := none) hn : 0 ≤ n
   · convert! this (-n) k hx (by grind) using 1 <;> rw [T_neg]
   lift n to ℕ using hn
   have := T_iterate_derivative_mem_span_T (R := ℝ) n k
