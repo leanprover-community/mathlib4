@@ -68,8 +68,11 @@ lemma coe_smul_LeftDecomposition {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ 
 lemma stabilizer_leftCoset :
     MulAction.stabilizer H₁ (g : G ⧸ H₂) = (ConjAct.toConjAct g • H₂).subgroupOf H₁ := by
   ext h
-  simp [Subgroup.mem_subgroupOf, Subgroup.mem_conjAct_pointwise_smul_iff, eq_comm, QuotientGroup.eq,
-    MulAction.subgroup_smul_def, mul_assoc]
+  have (x : G) : x ∈ ConjAct.toConjAct g • H₂ ↔ g⁻¹ * x * g ∈ H₂ := by
+    rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv, ConjAct.smul_def,
+      ConjAct.ofConjAct_toConjAct, inv_inv]
+  simp [Subgroup.mem_subgroupOf, this, eq_comm, QuotientGroup.eq, MulAction.subgroup_smul_def,
+    mul_assoc]
 
 variable (H₁ H₂ g) in
 /-- The quotient `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` indexing the left cosets `h₁gH₂` inside
