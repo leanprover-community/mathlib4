@@ -471,7 +471,6 @@ private lemma meas_snd (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.2 :=
   (f : X →ₘ[μ] V).measurable.comp measurable_snd
 
 variable [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)] [SFinite μ]
-variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
 
 private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
     (f g : Lp V 2 μ) : ∫⁻  (p : X × X), ‖⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜‖ₑ ∂μ.prod μ ≤
@@ -564,6 +563,8 @@ def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     refine ENNReal.mul_lt_top hK.eLpNorm_lt_top enorm_lt_top
     )
 
+variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
+
 @[simp]
 lemma mercerForm_apply (f g : Lp V 2 μ) :
     mercerForm hK f g = ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ) := by
@@ -598,9 +599,13 @@ lemma integralOperator_apply [CompleteSpace V] (f : Lp V 2 μ) :
     integralOperator hK f = (InnerProductSpace.toDual 𝕜 (Lp V 2 μ)).symm (mercerForm hK f) := by
   rfl
 
-theorem integralOperator_inner_right_eq_mercerForm [CompleteSpace V] (f g : Lp V 2 μ) :
+theorem integralOperator_inner [CompleteSpace V] (f g : Lp V 2 μ) :
     ⟪integralOperator hK f, g⟫_𝕜 = mercerForm hK f g := by
   simp [mercerForm, integralOperator]
+
+theorem inner_integralOperator [CompleteSpace V] (f g : Lp V 2 μ) :
+    ⟪f, integralOperator hK g⟫_𝕜 = starRingEnd 𝕜 (mercerForm hK g f) := by
+  rw [← inner_conj_symm, integralOperator_inner]
 
 theorem isSelfAdjoint_integralOperator [CompleteSpace V] [Fact K.PosSemidef] :
     IsSelfAdjoint (integralOperator hK) := by
@@ -608,8 +613,7 @@ theorem isSelfAdjoint_integralOperator [CompleteSpace V] [Fact K.PosSemidef] :
   apply Lp.ext_iff.mp
   refine ext_inner_left 𝕜 fun g ↦ ?_
   rw [star_eq_adjoint, adjoint_inner_right, ← inner_conj_symm g ((integralOperator hK) f)]
-  simp_rw [integralOperator_inner_right_eq_mercerForm]
-  exact Eq.symm (mercerForm_conj_symm hK f g)
+  simp [Eq.symm (mercerForm_conj_symm hK f g)]
 
 end Mercer
 
