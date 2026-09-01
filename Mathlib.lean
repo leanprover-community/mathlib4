@@ -3666,6 +3666,7 @@ public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
 public import Mathlib.Combinatorics.Enumerative.Partition.Glaisher
 public import Mathlib.Combinatorics.Enumerative.Pentagonal
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.Basic
+public import Mathlib.Combinatorics.Enumerative.Pentagonal.EulerFunction
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.PowerSeries
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.Ring
 public import Mathlib.Combinatorics.Enumerative.Schroder
@@ -5450,6 +5451,7 @@ public import Mathlib.Logic.Equiv.Pairwise
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Logic.Equiv.Prod
 public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Logic.Equiv.Sigma
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Function.Coequalizer
@@ -6416,6 +6418,7 @@ public import Mathlib.Probability.Decision.BayesEstimator
 public import Mathlib.Probability.Decision.Risk.Basic
 public import Mathlib.Probability.Decision.Risk.Countable
 public import Mathlib.Probability.Decision.Risk.Defs
+public import Mathlib.Probability.Decision.Risk.RiskIncrease
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.Beta
