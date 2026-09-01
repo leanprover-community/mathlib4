@@ -24,7 +24,7 @@ We gather results about the quotients of local rings.
 
 @[expose] public section
 
-open Submodule FiniteDimensional Module
+open Submodule Module
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] [Module.Finite R S]
 
@@ -123,12 +123,14 @@ lemma exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
     Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker] at hn
   exact ⟨n, hn⟩
 
+instance [IsNoetherianRing R] [Finite (ResidueField R)] (n : ℕ) :
+    Finite (R ⧸ maximalIdeal R ^ n) :=
+  have : Finite (R ⧸ maximalIdeal R) := ‹Finite (ResidueField R)›
+  Ideal.finite_quotient_pow (IsNoetherian.noetherian _) n
+
 lemma finite_quotient_iff [IsNoetherianRing R] [Finite (ResidueField R)] {I : Ideal R} :
-    Finite (R ⧸ I) ↔ ∃ n, (maximalIdeal R) ^ n ≤ I := by
-  refine ⟨fun _ ↦ exists_maximalIdeal_pow_le_of_isArtinianRing_quotient I, ?_⟩
-  rintro ⟨n, hn⟩
-  have : Finite (R ⧸ maximalIdeal R) := ‹_›
-  have := (Ideal.finite_quotient_pow (IsNoetherian.noetherian (maximalIdeal R)) n)
-  exact Finite.of_surjective _ (Ideal.Quotient.factor_surjective hn)
+    Finite (R ⧸ I) ↔ ∃ n, (maximalIdeal R) ^ n ≤ I :=
+  ⟨fun _ ↦ exists_maximalIdeal_pow_le_of_isArtinianRing_quotient I, fun ⟨_, hn⟩ ↦
+    .of_surjective _ (Ideal.Quotient.factor_surjective hn)⟩
 
 end IsLocalRing
