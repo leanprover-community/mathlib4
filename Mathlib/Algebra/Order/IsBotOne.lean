@@ -52,12 +52,12 @@ def IsBotOneClass.toOrderBot : OrderBot α where
 @[to_additive]
 instance {β : Type*} [LE β] [One β] [IsBotOneClass β] :
     IsBotOneClass (α × β) where
-  isBot_one := by simp [Prod.one_eq_mk, IsBot]
+  isBot_one _ := by simp [Prod.le_def]
 
 @[to_additive]
 instance {ι : Type*} {M : ι → Type*} [(i : ι) → LE (M i)] [(i : ι) → One (M i)]
     [(i : ι) → IsBotOneClass (M i)] : IsBotOneClass ((i : ι) → M i) where
-  isBot_one := fun _ _ ↦ one_le
+  isBot_one _ _ := one_le
 
 end LE
 
