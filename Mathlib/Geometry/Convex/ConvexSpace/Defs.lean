@@ -27,8 +27,9 @@ This file defines convex spaces as an algebraic structure supporting finite conv
 * `Convexity.iConvexComb`: Indexed convex combination operator.
 * `Convexity.convexCombPair`: Binary convex combinations of two points.
 * `Convexity.IsCancelConvexSpace`: Typeclass for a convex space in which points can be
-  cancelled from binary convex combinations. Note that such convex spaces can all be embedded in
-  Euclidean space, but Mathlib doesn't know this yet.
+  cancelled from binary convex combinations. Over a linearly ordered field, such convex spaces are
+  precisely the ones embedding affinely into a module.
+  See `Convexity.EnvelopingModule.injective_of_iff`.
 
 ## Design
 
@@ -767,9 +768,11 @@ namely `x ↦ convexCombPair a b _ _ _ x y` is injective whenever `0 < a`.
 
 Torsion-free modules over linearly ordered scalars are cancellative,
 and so are affine spaces over such modules.
-See `Convexity.IsCancelConvexSpace.of_module`, `Convexity.IsCancelConvexSpace.of_addTorsor`. -/
+See `Convexity.IsCancelConvexSpace.of_module`, `Convexity.IsCancelConvexSpace.of_addTorsor`.
+
+Conversely, a convex space over a linearly ordered field is cancellative iff it embeds affinely
+into a module, see `Convexity.EnvelopingModule.injective_of_iff`. -/
 class IsCancelConvexSpace : Prop where
-  /-- A point can be cancelled from a binary convex combination. -/
   convexCombPair_left_injective ⦃a b : R⦄ (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) (y : X) :
     Function.Injective fun x ↦ convexCombPair a b ha.le hb hab x y
 
@@ -808,8 +811,8 @@ lemma convexCombPair_eq_right (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) :
 end
 
 /-- A convex space embedding affinely into a cancellative convex space is itself cancellative. -/
-lemma IsCancelConvexSpace.of_injective [IsCancelConvexSpace R Y] {f : X → Y}
-    (hf : IsAffineMap R f) (hfinj : Function.Injective f) : IsCancelConvexSpace R X where
+lemma IsCancelConvexSpace.of_injective [IsCancelConvexSpace R Y] {f : X → Y} (hf : IsAffineMap R f)
+    (hfinj : Function.Injective f) : IsCancelConvexSpace R X where
   convexCombPair_left_injective a b ha hb hab y x₁ x₂ hx :=
     hfinj <| convexCombPair_left_injective ha hb hab (f y) <| by
       simpa [← hf.map_convexCombPair] using congr(f $hx)
