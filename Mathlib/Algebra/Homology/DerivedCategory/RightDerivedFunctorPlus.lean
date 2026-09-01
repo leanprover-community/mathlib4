@@ -110,7 +110,7 @@ instance (K : CochainComplex.Plus (InjectiveObject C)) :
   simp only [F.rightDerivedFunctorPlusUnit_app]
   infer_instance
 
-omit [HasDerivedCategory C] in
+omit [HasDerivedCategory C] [EnoughInjectives C] in
 lemma _root_.CochainComplex.Plus.localizerMorphism_derives_mapCochainComplexPlus :
     (CochainComplex.Plus.localizerMorphism C).Derives
       (F.mapCochainComplexPlus ⋙ DerivedCategory.Plus.Q) :=
@@ -119,8 +119,24 @@ lemma _root_.CochainComplex.Plus.localizerMorphism_derives_mapCochainComplexPlus
       DerivedCategory.Plus.Q) ⋙ DerivedCategory.Plus.ι) ≅
         CochainComplex.Plus.ι _ ⋙ HomotopyCategory.quotient _ _ ⋙
           (InjectiveObject.ι C).mapHomotopyCategory  _ ⋙
-          F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh := by
-      sorry
+          F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh :=
+      associator _ _ _ ≪≫
+        isoWhiskerLeft _ (associator _ _ _ ≪≫
+          (isoWhiskerLeft _ (DerivedCategory.Plus.QCompιIso D) ≪≫
+            (associator _ _ _).symm ≪≫
+            isoWhiskerRight F.mapCochainComplexPlusCompι _)) ≪≫
+        (associator _ _ _).symm ≪≫ isoWhiskerRight (associator _ _ _).symm _ ≪≫
+        isoWhiskerRight (isoWhiskerRight (Functor.mapCochainComplexPlusCompι _) _) _ ≪≫
+        isoWhiskerRight (associator _ _ _) _ ≪≫ associator _ _ _ ≪≫
+        isoWhiskerLeft _ (associator _ _ _ ≪≫
+          isoWhiskerLeft _
+            (isoWhiskerLeft _ (DerivedCategory.quotientCompQhIso D).symm ≪≫
+              (associator _ _ _).symm ≪≫
+              isoWhiskerRight (F.mapHomotopyCategoryFactors _).symm _) ≪≫
+          (associator _ _ _).symm ≪≫
+          isoWhiskerRight (associator _ _ _).symm _ ≪≫ associator _ _ _ ≪≫
+          isoWhiskerRight ((InjectiveObject.ι C).mapHomotopyCategoryFactors _).symm _ ≪≫
+          associator _ _ _)
     dsimp
     rw [HomotopyCategory.Plus.inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι,
       MorphismProperty.IsInvertedBy.iff_of_iso _ e]
