@@ -85,6 +85,65 @@ theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := by
 @[simp] theorem derivative_X : d⁄dX R (X : R⟦X⟧) = 1 :=
   MvPowerSeries.pderiv_X_self
 
+theorem iterate_derivative_zero {k : ℕ} : (d⁄dX R)^[k] (0 : R⟦X⟧) = 0 := by
+  simp
+
+theorem derivative_monomial (a : R) (n : ℕ) :
+    d⁄dX R (monomial n a) = monomial (n - 1) (a * n) := by
+  ext k
+  rw [coeff_derivative, coeff_monomial, coeff_monomial]
+  cases n with
+  | zero => simp
+  | succ n =>
+    rw [Nat.add_sub_cancel]
+    split_ifs with h₁ h₂ h₂
+    · rw [h₂, Nat.cast_add, Nat.cast_one]
+    · omega
+    · omega
+    · rw [zero_mul]
+
+@[simp]
+theorem derivative_monomial_succ (a : R) (n : ℕ) :
+    d⁄dX R (monomial (n + 1) a) = monomial n (a * (n + 1)) := by
+  simp [derivative_monomial]
+
+theorem derivative_C_mul_X (a : R) : d⁄dX R (C a * X) = C a := by
+  simp
+
+theorem derivative_C_mul_X_pow (a : R) (n : ℕ) :
+    d⁄dX R (C a * X ^ n) = C (a * n) * X ^ (n - 1) := by
+  rw [← monomial_eq_C_mul_X_pow, ← monomial_eq_C_mul_X_pow, derivative_monomial]
+
+theorem derivative_C_mul_X_sq (a : R) : d⁄dX R (C a * X ^ 2) = C (a * 2) * X := by
+  rw [derivative_C_mul_X_pow, Nat.cast_two, pow_one]
+
+theorem derivative_X_pow (n : ℕ) : d⁄dX R (X ^ n : R⟦X⟧) = C (n : R) * X ^ (n - 1) := by
+  simp
+
+theorem derivative_X_pow_succ (n : ℕ) :
+    d⁄dX R (X ^ (n + 1) : R⟦X⟧) = C (n + 1 : R) * X ^ n := by
+  simp
+
+theorem derivative_X_sq : d⁄dX R (X ^ 2 : R⟦X⟧) = C 2 * X := by
+  rw [derivative_X_pow, Nat.cast_two, pow_one]
+
+theorem derivative_X_add_C (c : R) : d⁄dX R (X + C c : R⟦X⟧) = 1 := by
+  simp
+
+theorem iterate_derivative_sum {ι : Type*} (k : ℕ) (s : Finset ι) (f : ι → R⟦X⟧) :
+    (d⁄dX R)^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, (d⁄dX R)^[k] (f b) := by
+  induction k with
+  | zero => simp
+  | succ k ih => simp only [Function.iterate_succ_apply', ih, map_sum]
+
+@[simp]
+theorem iterate_derivative_smul {S : Type*} [SMul S R⟦X⟧]
+    [LinearMap.CompatibleSMul R⟦X⟧ R⟦X⟧ S R] (s : S) (f : R⟦X⟧) (k : ℕ) :
+    (d⁄dX R)^[k] (s • f) = s • (d⁄dX R)^[k] f := by
+  induction k generalizing f with
+  | zero => simp
+  | succ k ih => simp [Function.iterate_succ_apply, ih]
+
 -- We can't use `MvPowerSeries.trunc_pderiv` in the following proof,
 -- since `PowerSeries.trunc` is not defined in terms of `MvPowerSeries.trunc`.
 theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
