@@ -45,15 +45,16 @@ variable {b d r p a n e : ℕ} {R : Type*}
 protected theorem map {S : Type*} [CommRing S] [CommRing R] {f : S[X]}
     (h : Introspective f e r) (g : S →+* R) : Introspective (f.map g) e r := by
   simp only [Introspective] at *
-  let g := lift (span {(X : S[X]) ^ r - C 1}) (RingHom.comp (mk (span
-      ({(X : R[X]) ^ r - C 1})))  (Polynomial.mapRingHom g)) (by
+  have hg : ∀ a ∈ span {X ^ r - C 1}, ((mk (span {X ^ r - C 1})).comp (mapRingHom g)) a = 0 := by
     intro a ha
     simp only [RingHom.coe_comp, coe_mapRingHom, Function.comp_apply]
     apply eq_zero_iff_mem.mpr
     simp only [Ideal.mem_span_singleton'] at *
     obtain ⟨b , hb⟩ := ha
     use b.map g
-    simp [← hb])
+    simp [← hb]
+  let g := lift (span {(X : S[X]) ^ r - C 1}) (RingHom.comp (mk (span
+      ({(X : R[X]) ^ r - C 1})))  (Polynomial.mapRingHom g)) hg
   convert congrArg g h
   · simp [g]
   · simp only [lift_mk, RingHom.coe_comp, coe_mapRingHom, Function.comp_apply, g, map_comp]
