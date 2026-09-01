@@ -327,19 +327,24 @@ instance {G : Digraph V} : SDiff G.SpanningSubgraph where
     (v w : V) : (H \ K).val.Adj v w ↔
       H.val.Adj v w ∧ (G.Adj v w ∧ ¬K.val.Adj v w) := Iff.rfl
 
-theorem SpanningSubgraph.adj_le_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
-    SpanningSubgraph.Adj H ≤ SpanningSubgraph.Adj K ↔ H ≤ K := by
+@[grind =] theorem SpanningSubgraph.le_iff {G : Digraph V}
+    {H K : G.SpanningSubgraph} :
+    H ≤ K ↔ H.val ≤ K.val := Iff.rfl
+
+@[grind =]
+theorem SpanningSubgraph.adj_le_adj_iff
+    {G : Digraph V} {H K : G.SpanningSubgraph} :
+    H.Adj ≤ K.Adj ↔
+      ∀ ⦃v w⦄, H.val.Adj v w → K.val.Adj v w := by
   constructor
-  · intro h
-    constructor
-    · intro v hv
-      rw [K.property.2]
-      rwa [H.property.2] at hv
-    · intro v w hvw
-      have hG : G.Adj v w := H.property.1.2 hvw
-      exact h ⟨(v, w), hG⟩ hvw
+  · intro h v w hvw
+    exact h ⟨(v, w), H.property.1.2 hvw⟩ hvw
   · intro h e he
-    exact h.2 he
+    exact h he
+
+theorem SpanningSubgraph.adj_le_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
+    H.Adj ≤ K.Adj ↔ H ≤ K := by
+  grind
 
 theorem SpanningSubgraph.adj_injective {G : Digraph V} :
     Function.Injective (SpanningSubgraph.Adj (G := G)) := by
