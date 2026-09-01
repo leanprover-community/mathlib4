@@ -127,6 +127,9 @@ protected def IsSubgraph (x y : Digraph V) : Prop :=
 /-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 
+@[grind =] theorem le_iff {G H : Digraph V} :
+    G ≤ H ↔ G.verts ⊆ H.verts ∧ ∀ ⦃v w⦄, G.Adj v w → H.Adj v w := Iff.rfl
+
 @[simp]
 theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Prop) = (· ≤ ·) := rfl
 
@@ -144,7 +147,10 @@ instance : Max (Digraph V) where
     Adj v w := x.Adj v w ∨ y.Adj v w
   }
 
-@[simp]
+@[grind =]
+theorem sup_verts (x y : Digraph V) : (x ⊔ y).verts = x.verts ∪ y.verts := rfl
+
+@[grind =]
 theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w := Iff.rfl
 
 /-- The infimum of two digraphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
@@ -154,7 +160,10 @@ instance : Min (Digraph V) where
     Adj v w := x.Adj v w ∧ y.Adj v w
   }
 
-@[simp]
+@[grind =]
+theorem inf_verts (x y : Digraph V) : (x ⊓ y).verts = x.verts ∩ y.verts := rfl
+
+@[grind =]
 theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w := Iff.rfl
 
 /-- We define `Gᶜ` to be the `Digraph V` such that no two adjacent vertices in `G`
@@ -227,10 +236,7 @@ def SpanningSubgraph (G : Digraph V) := {H : Digraph V // IsSpanningSubgraph H G
 
 instance {G : Digraph V} : PartialOrder G.SpanningSubgraph where
   le H K := H.val ≤ K.val
-  le_refl H := by
-    constructor
-    · intro v hv; exact hv
-    · intro v w h; exact h
+  le_refl H := by grind
   le_trans H K L hHK hKL := hHK.trans hKL
   le_antisymm H K hHK hKH := by
     apply Subtype.ext
@@ -244,13 +250,7 @@ digraph. -/
 
 /-- The join/union of two spanning subgraphs. -/
 instance {G : Digraph V} : Max G.SpanningSubgraph where
-  max H₁ H₂ := ⟨max H₁.val H₂.val, by
-      have h₁verts : H₁.val.verts = G.verts := H₁.property.2
-      have h₂verts : H₂.val.verts = G.verts := H₂.property.2
-      constructor
-      · simpa [max, SemilatticeSup.sup] using
-          (show H₁.val ⊔ H₂.val ≤ G from _root_.sup_le H₁.property.1 H₂.property.1)
-      · aesop (add simp [max, SemilatticeSup.sup, h₁verts, h₂verts])⟩
+  max H₁ H₂ := ⟨max H₁.val H₂.val, by grind⟩
 
 /--
 The top subgraph `⊤`
@@ -266,16 +266,7 @@ The bottom subgraph `⊥`
 -/
 instance {G : Digraph V} : OrderBot G.SpanningSubgraph where
   bot : G.SpanningSubgraph := ⟨
-    ⟨G.verts, fun _ _ => False, by simp, by simp⟩,
-    by
-      rw [isSpanningSubgraph_iff]
-      constructor
-      · constructor
-        · intro v hv
-          exact hv
-        · intro v w h
-          exact False.elim h
-      · rfl⟩
+    ⟨G.verts, fun _ _ => False, by simp, by simp⟩, by grind⟩
   bot_le := by
     intro H
     constructor
@@ -286,59 +277,31 @@ instance {G : Digraph V} : OrderBot G.SpanningSubgraph where
 
 /-- The complement of a spanning subgraph with respect to its ambient digraph. -/
 instance {G : Digraph V} : Compl G.SpanningSubgraph where
-  compl H := by
-    constructor
-    case val => exact {
+  compl H := ⟨{
       verts := H.val.verts
       Adj v w := G.Adj v w ∧ ¬H.val.Adj v w
-    }
-    case property =>
-      constructor
-      · constructor
-        · intro v hv
-          simpa [H.property.2] using hv
-        · intro _ _ h
-          exact h.1
-      · exact H.property.2
+    }, by grind⟩
 
 /-- The meet/intersection of two spanning subgraphs. -/
 instance {G : Digraph V} : Min G.SpanningSubgraph where
-  min H₁ H₂ := ⟨min H₁.val H₂.val, by
-      have h₁verts : H₁.val.verts = G.verts := H₁.property.2
-      have h₂verts : H₂.val.verts = G.verts := H₂.property.2
-      constructor
-      · simpa [min, SemilatticeInf.inf, Lattice.inf] using
-          (show H₁.val ⊓ H₂.val ≤ G from _root_.inf_le_left.trans H₁.property.1)
-      · aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, h₁verts, h₂verts])⟩
+  min H₁ H₂ := ⟨min H₁.val H₂.val, by grind⟩
 
 /-- The supremum of a set of spanning subgraphs. -/
 instance {G : Digraph V} : SupSet G.SpanningSubgraph where
-  sSup ℋ := {
-    val := {
+  sSup ℋ := ⟨{
       verts := G.verts
       Adj v w := ∃ H ∈ ℋ, H.val.Adj v w
-    }
-    property := by
-      constructor
-      · constructor
-        · simp
-        · rintro v w ⟨H, -, hAdj⟩
-          exact H.property.1.2 hAdj
-      · rfl
-  }
+    }, by grind⟩
 
 /-- The infimum of a set of spanning subgraphs. -/
 instance {G : Digraph V} : InfSet G.SpanningSubgraph where
-  sInf ℋ := {
-    val := {
+  sInf ℋ := ⟨{
       verts := G.verts
       Adj v w := (∀ H ∈ ℋ, H.val.Adj v w) ∧ G.Adj v w
-    }
-    property := by
+    }, by
       constructor
       · constructor <;> aesop
-      · rfl
-  }
+      · rfl⟩
 
 instance {G : Digraph V} : HImp G.SpanningSubgraph where
   himp H K := Hᶜ ⊔ K
