@@ -55,7 +55,7 @@ theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra 
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
   intro μ hμ
   simp only [Introspective] at h
-  let g := AdjoinRoot.liftAlgHom ((X : R[X]) ^ r - 1) (Algebra.ofId R K) μ (by
+  let g := AdjoinRoot.liftAlgHom (X ^ r - 1) (Algebra.ofId R K) μ (by
     simp [(isPrimitiveRoot_of_mem_primitiveRoots hμ).pow_eq_one])
   exact (Iff.mp (Eq.congr (by simp [g]; rfl) (by simp [g]; rfl))) (congrArg g h)
 
