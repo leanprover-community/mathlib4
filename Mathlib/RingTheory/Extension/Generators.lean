@@ -689,7 +689,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         toComp_toAlgHom_monomial ..
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
           this]
-      rw [monomial_mul, ← map_add, Prod.mk_add_mk, add_zero, zero_add, one_mul]
+      rw [monomial_mul_monomial, ← map_add, Prod.mk_add_mk, add_zero, zero_add, one_mul]
     · apply Ideal.mul_mem_left
       refine Ideal.mem_map_of_mem _ ?_
       simp only [ker_eq_ker_aeval_val, AddEquiv.toEquiv_eq_coe, RingHom.mem_ker, map_sum]

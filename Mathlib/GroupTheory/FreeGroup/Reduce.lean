@@ -231,11 +231,6 @@ theorem toWord_pow (x : FreeGroup α) (n : ℕ) :
   simp
 
 @[to_additive (attr := simp)]
-theorem toWord_of_pow (a : α) (n : ℕ) : (of a ^ n).toWord = List.replicate n (a, true) := by
-  rw [of, pow_mk, List.flatten_replicate_singleton, toWord]
-  exact reduce_replicate _ _
-
-@[to_additive (attr := simp)]
 theorem toWord_eq_nil_iff {x : FreeGroup α} : x.toWord = [] ↔ x = 1 :=
   toWord_injective.eq_iff' toWord_one
 
@@ -251,6 +246,20 @@ theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (redu
 theorem toWord_inv (x : FreeGroup α) : x⁻¹.toWord = invRev x.toWord := by
   rcases x with ⟨L⟩
   rw [quot_mk_eq_mk, inv_mk, toWord_mk, toWord_mk, reduce_invRev]
+
+@[to_additive (attr := simp)]
+theorem toWord_of_pow (a : α) (n : ℕ) : (of a ^ n).toWord = List.replicate n (a, true) := by
+  rw [of, pow_mk, List.flatten_replicate_singleton, toWord]
+  exact reduce_replicate _ _
+
+@[to_additive (attr := simp)]
+theorem toWord_of_zpow (a : α) (n : ℤ) :
+    (of a ^ n).toWord = List.replicate n.natAbs (a, decide (0 ≤ n)) := by
+  by_cases! hn : 0 ≤ n
+  · lift n to ℕ using hn
+    simp
+  · rw [zpow_eq_inv_pow_natAbs _ (le_of_lt hn)]
+    simp [FreeGroup.invRev, hn]
 
 @[to_additive]
 theorem reduce_append_reduce_reduce : reduce (reduce L₁ ++ reduce L₂) = reduce (L₁ ++ L₂) := by
@@ -341,7 +350,58 @@ theorem isReduced_iff_reduce_eq : IsReduced L ↔ reduce L = L where
 theorem isReduced_toWord {x : FreeGroup α} : IsReduced x.toWord := by
   simp [isReduced_iff_reduce_eq]
 
+@[to_additive]
+theorem toWord_mk_mul_eq (a : α) (b : Bool) (x : FreeGroup α) :
+    (mk [⟨a, b⟩] * x).toWord =
+      if x.toWord.head? = some ⟨a, !b⟩ then x.toWord.tail else ⟨a, b⟩ :: x.toWord := by
+  simp [toWord_mul]
+  cases x.toWord
+  · simp
+  · simp [Prod.eq_iff_fst_eq_snd_eq]
+    grind
+
+@[to_additive]
+theorem toWord_mul_mk_eq (a : α) (b : Bool) (x : FreeGroup α) :
+    (x * mk [⟨a, b⟩]).toWord =
+      if x.toWord.getLast? = some ⟨a, !b⟩ then x.toWord.dropLast else x.toWord.concat ⟨a, b⟩ := by
+  ext
+  rw [show x * mk [⟨a, b⟩] = ((mk [⟨a, b⟩])⁻¹ * x⁻¹)⁻¹ by simp, toWord_inv]
+  simp [invRev, toWord_mk_mul_eq]
+  split_ifs <;> simp <;> grind
+
+@[to_additive]
+theorem idxOf_toWord_of_mul_eq {a : α} (x : FreeGroup α) {b : α × Bool} (hb₁ : b.1 ≠ a) :
+    (of a * x).toWord.idxOf b =
+      if x.toWord.head? = some (a, false) then x.toWord.idxOf b - 1 else x.toWord.idxOf b + 1 := by
+  rw [of, toWord_mk_mul_eq, Bool.not_true]
+  split_ifs with h
+  · have : x.toWord ≠ [] := by grind
+    rw [List.head?_eq_some_head this, Option.some.injEq] at h
+    exact List.idxOf_tail_of_head_ne this (by simp [h, Prod.eq_iff_fst_eq_snd_eq, hb₁.symm])
+  · grind
+
+@[to_additive]
+theorem idxOf_toWord_mul_of_eq {a : α} (x : FreeGroup α) {b : α × Bool} (hb₁ : b.1 ≠ a)
+    (hb₂ : b ∈ x.toWord) : (x * of a).toWord.idxOf b = x.toWord.idxOf b := by
+  rw [of, toWord_mul_mk_eq]
+  split_ifs
+  · refine List.IsPrefix.idxOf_eq_of_mem (List.dropLast_prefix _) ?_
+    exact List.mem_dropLast_of_mem_of_ne_getLast? hb₂ (by grind)
+  · grind
+
 end Reduce
+
+@[to_additive]
+theorem eq_of_of_zpow_eq_of_zpow {a b : α} (hab : a ≠ b) {n m : ℤ} (h : of a ^ n = of b ^ m) :
+    n = 0 ∧ m = 0 := by
+  classical
+  simp [← toWord_inj, hab] at h
+  lia
+
+@[to_additive]
+theorem eq_of_of_pow_eq_of_pow {a b : α} (hab : a ≠ b) {n m : ℕ} (h : of a ^ n = of b ^ m) :
+    n = 0 ∧ m = 0 := by
+  simpa [← Int.natCast_eq_zero] using eq_of_of_zpow_eq_of_zpow hab h
 
 @[to_additive (attr := simp)]
 theorem one_ne_of (a : α) : 1 ≠ of a :=
@@ -393,6 +453,10 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
 @[to_additive (attr := simp)]
 theorem norm_of_pow (a : α) (n : ℕ) : norm (of a ^ n) = n := by
   rw [norm, toWord_of_pow, List.length_replicate]
+
+@[to_additive (attr := simp)]
+theorem norm_of_zpow (a : α) (n : ℤ) : norm (of a ^ n) = n.natAbs := by
+  rw [norm, toWord_of_zpow, List.length_replicate]
 
 @[to_additive]
 theorem norm_surjective [Nonempty α] : Function.Surjective (norm (α := α)) := by
