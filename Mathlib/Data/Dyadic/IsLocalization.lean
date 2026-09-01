@@ -34,6 +34,8 @@ instance : Invertible (2 : Dyadic) where
   invOf_mul_self := rfl
   mul_invOf_self := rfl
 
+theorem invOf_two_eq_half : (⅟2 : Dyadic) = half := rfl
+
 theorem val_half_eq_ofOdd : half = ofOdd 1 1 rfl := rfl
 
 theorem val_half_zpow_eq_ofOdd (n : ℤ) : ↑(half ^ n) = ofOdd 1 n rfl := by
