@@ -63,7 +63,7 @@ theorem Prime.emultiplicity_prime [CommMonoidWithZero α] [IsCancelMulZero α] [
   split_ifs with h
   · obtain ⟨u, rfl⟩ := h
     rw [emultiplicity_mul hp, hp.emultiplicity_self,
-      emultiplicity_of_unit_right hp.not_unit, add_zero]
+      emultiplicity_of_unit_right hp.not_isUnit, add_zero]
   · rwa [emultiplicity_eq_zero, hp.dvd_prime_iff_associated hq]
 
 /-- An element of a `WfDvdMonoid` is zero iff every power of a fixed prime divides it. -/
