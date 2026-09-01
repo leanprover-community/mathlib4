@@ -523,7 +523,7 @@ group are equal. -/
       /-- Makes the identity additive isomorphism from a proof
       two subgroups of an additive group are equal. -/]
 def subgroupCongr (h : H = K) : H ≃* K :=
-  { Equiv.Set.congr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
 @[to_additive (attr := simp)]
 lemma subgroupCongr_apply (h : H = K) (x) :

@@ -175,7 +175,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
-  toEquiv := Equiv.Set.congr h
+  toEquiv := Set.equivOfEq h
 
 section prod
 
