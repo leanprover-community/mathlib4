@@ -227,16 +227,17 @@ private lemma sum_term_mul_sub_mul_integral_eq {ψ : 𝓢(ℝ, ℂ)}
 
 end FourierIdentities
 
-section HelperFunctions
+section Weight
 
 variable {a c t x : ℝ} {n : ℕ}
 
-private def F₂ (t : ℝ) := (t * (1 + (c₀ * log t) ^ 2))⁻¹
+/-- A weight function appearing in the analysis -/
+private def w (t : ℝ) := (t * (1 + (c₀ * log t) ^ 2))⁻¹
 
-private lemma F₂_nonneg (ht : 0 ≤ t) : 0 ≤ F₂ t := by unfold F₂; positivity
+private lemma w_nonneg (ht : 0 ≤ t) : 0 ≤ w t := by unfold w; positivity
 
-private lemma F₂_deriv (ht : t ≠ 0) : HasDerivAt F₂
-    (- (c₀ ^ 2 * (log t + 1) ^ 2 + (1 - c₀) * (1 + c₀)) * F₂ t ^ 2) t := by
+private lemma w_deriv (ht : t ≠ 0) : HasDerivAt w
+    (- (c₀ ^ 2 * (log t + 1) ^ 2 + (1 - c₀) * (1 + c₀)) * w t ^ 2) t := by
   have : HasDerivAt (fun t ↦ t * (1 + (c₀ * log t) ^ 2))
       (1 + 2 * c₀ ^ 2 * log t + (c₀ * log t) ^ 2) t := by
     convert! (hasDerivAt_id' t).mul ?_ (d' := 2 * c₀ ^ 2 * t⁻¹ * log t) using 1
@@ -244,12 +245,12 @@ private lemma F₂_deriv (ht : t ≠ 0) : HasDerivAt F₂
     convert! (((hasDerivAt_log ht).const_mul _).pow (f' := c₀ * t⁻¹) 2).const_add _ using 1
     ring
   convert! this.inv (by positivity) using 1
-  simp only [F₂]; grind
+  simp only [w]; grind
 
-private lemma F₂_antitone : AntitoneOn F₂ (Ioi 0) := by
+private lemma w_antitone : AntitoneOn w (Ioi 0) := by
   refine antitoneOn_of_hasDerivWithinAt_nonpos (convex_Ioi _)
-    (fun _ _ ↦ (F₂_deriv (by grind)).continuousAt.continuousWithinAt)
-    (fun _ _ ↦ (F₂_deriv (fun _ ↦ by simp_all)).hasDerivWithinAt)
+    (fun _ _ ↦ (w_deriv (by grind)).continuousAt.continuousWithinAt)
+    (fun _ _ ↦ (w_deriv (fun _ ↦ by simp_all)).hasDerivWithinAt)
     (fun x _ ↦ ?_)
   have : 0 < c₀ ^ 2 * (log x + 1) ^ 2 + (1 - c₀) * (1 + c₀) := by
     have : π⁻¹ ≤ 2⁻¹ := by simp [field, two_le_pi]
@@ -257,26 +258,26 @@ private lemma F₂_antitone : AntitoneOn F₂ (Ioi 0) := by
   simp only [neg_mul, Left.neg_nonpos_iff]
   positivity
 
-private lemma F₂_integrable (hc : 0 < c) : IntegrableOn (fun t ↦ a * F₂ (t / c)) (Ici 0) := by
-  have (t) (ht : 0 < t) : t⁻¹ • (a * c * (1 + (c₀ * (log t - log c)) ^ 2)⁻¹) = a * F₂ (t / c)
+private lemma w_integrable (hc : 0 < c) : IntegrableOn (fun t ↦ a * w (t / c)) (Ici 0) := by
+  have (t) (ht : 0 < t) : t⁻¹ • (a * c * (1 + (c₀ * (log t - log c)) ^ 2)⁻¹) = a * w (t / c)
       := by
     have : 0 < 1 + (c₀ * (log t - log c)) ^ 2 := by positivity
-    simp [F₂, log_div ht.ne' hc.ne', field]
+    simp [w, log_div ht.ne' hc.ne', field]
   rw [integrableOn_Ici_iff_integrableOn_Ioi]
   exact ((integrableOn_comp_log_Ioi_zero _).2
     (((integrable_inv_one_add_mul_sq (by positivity)).comp_sub_right _).const_mul _)).congr_fun
     this measurableSet_Ioi
 
-private lemma mul_F₂_antitoneOn (hx : 0 < x) : AntitoneOn (fun t ↦ x⁻¹ * F₂ (t / x)) (Ioc 0 n) := by
+private lemma mul_w_antitoneOn (hx : 0 < x) : AntitoneOn (fun t ↦ x⁻¹ * w (t / x)) (Ioc 0 n) := by
   intro u ⟨_, _⟩ v ⟨_, _⟩ huv
-  apply mul_le_mul le_rfl ?_ (F₂_nonneg (by positivity)) (by positivity)
-  exact F₂_antitone (by rw [mem_Ioi]; positivity) (by rw [mem_Ioi]; positivity) (by grw [huv])
+  apply mul_le_mul le_rfl ?_ (w_nonneg (by positivity)) (by positivity)
+  exact w_antitone (by rw [mem_Ioi]; positivity) (by rw [mem_Ioi]; positivity) (by grw [huv])
 
-private lemma mul_F₂_integrableOn (hx : 0 < x) :
-    IntegrableOn (fun t ↦ x⁻¹ * F₂ (t / x)) (Icc 0 n) volume :=
-  .mono_set (F₂_integrable (by positivity)) Icc_subset_Ici_self
+private lemma mul_w_integrableOn (hx : 0 < x) :
+    IntegrableOn (fun t ↦ x⁻¹ * w (t / x)) (Icc 0 n) volume :=
+  .mono_set (w_integrable (by positivity)) Icc_subset_Ici_self
 
-end HelperFunctions
+end Weight
 
 section LimitingFourierIdentity
 
@@ -296,10 +297,10 @@ private lemma limiting_cor_aux {ψ : ℝ → ℂ} :
   exact (zero_at_infty_fourier ψ).comp <| Tendsto.mono_right
     (tendsto_log_atTop.const_mul_atTop_of_neg (by simp [pi_pos])) atBot_le_cocompact
 
-private abbrev C₀ := 1 + ∫ t in Ioi 0, F₂ t
+private abbrev C₀ := 1 + ∫ t in Ioi 0, w t
 
 private lemma C₀_nonneg : 0 ≤ C₀ :=
-  add_nonneg zero_le_one (setIntegral_nonneg measurableSet_Ioi (by grind [F₂_nonneg]))
+  add_nonneg zero_le_one (setIntegral_nonneg measurableSet_Ioi (by grind [w_nonneg]))
 
 variable {x : ℝ} (Ψ : 𝓢(ℝ, ℂ)) [WienerIkehara]
 
@@ -308,22 +309,22 @@ private lemma bound_sum_log_range (hx : 1 ≤ x) n :
   have hxne : x ≠ 0 := by linarith
   have := C_nonneg
   calc
-    _ ≤ ∑ i ∈ .range n, ‖f i‖ * (if i = 0 then 1 else x⁻¹ * F₂ (i / x)) := by
+    _ ≤ ∑ i ∈ .range n, ‖f i‖ * (if i = 0 then 1 else x⁻¹ * w (i / x)) := by
       gcongr 1 with i
-      by_cases i = 0 <;> simp [*, F₂, field]
-    _ ≤ C * ∑ i ∈ .range n, (if i = 0 then 1 else x⁻¹ * F₂ (i / x)):= by
+      by_cases i = 0 <;> simp [*, w, field]
+    _ ≤ C * ∑ i ∈ .range n, (if i = 0 then 1 else x⁻¹ * w (i / x)):= by
       rw [Finset.mul_sum]
       apply Finset.sum_mul_le_sum_mul_of_sum_range_le (fun k _ ↦ by simpa [mul_comm] using bound k)
       · intro i
-        by_cases i = 0 <;> simp only [F₂, *, ↓reduceIte, Pi.zero_apply] <;> positivity
-      · have (i : ℕ) : x⁻¹ * F₂ (i / x) ≤ 1 := by
-          unfold F₂
+        by_cases i = 0 <;> simp only [w, *, ↓reduceIte, Pi.zero_apply] <;> positivity
+      · have (i : ℕ) : x⁻¹ * w (i / x) ≤ 1 := by
+          unfold w
           by_cases hi : i = 0
           · simp [hi]
           · grw [← sq_nonneg, ← (mod_cast by omega : 1 ≤ (i : ℝ))]; simp [field]
         intro i j _; by_cases i = 0 <;> by_cases j = 0 <;> simp only [↓reduceIte, le_refl, *]
         · omega
-        · gcongr; apply F₂_antitone _ _ (by gcongr) <;> rw [mem_Ioi] <;> positivity
+        · gcongr; apply w_antitone _ _ (by gcongr) <;> rw [mem_Ioi] <;> positivity
     _ ≤ _ := by
       gcongr
       by_cases h : n = 0
@@ -331,22 +332,22 @@ private lemma bound_sum_log_range (hx : 1 ≤ x) n :
       have : Finset.range n = {0} ∪ .Ico 1 n := by grind
       simp only [this, Finset.singleton_union, Finset.mem_Ico, nonpos_iff_eq_zero, one_ne_zero,
         false_and, not_false_eq_true, Finset.sum_insert, ↓reduceIte, add_le_add_iff_left, ge_iff_le]
-      convert_to! ∑ i ∈ .Ico 1 n, x⁻¹ * F₂ (i / x) ≤ _
+      convert_to! ∑ i ∈ .Ico 1 n, x⁻¹ * w (i / x) ≤ _
       · exact Finset.sum_congr rfl (by grind)
       simp_rw [Finset.sum_Ico_eq_sum_range, add_comm 1]
-      trans ∫ t in 0..↑(n - 1), x⁻¹ * F₂ (t / x)
+      trans ∫ t in 0..↑(n - 1), x⁻¹ * w (t / x)
       · simpa using @AntitoneOn.sum_le_integral_of_integrableOn 0 (n - 1)
-          (fun t ↦ x⁻¹ * F₂ (t / x)) (by simpa using mul_F₂_antitoneOn (by positivity))
-          (by simpa using mul_F₂_integrableOn (by positivity))
-      rw [intervalIntegral.integral_comp_div (x⁻¹ * F₂ ·) hxne]
+          (fun t ↦ x⁻¹ * w (t / x)) (by simpa using mul_w_antitoneOn (by positivity))
+          (by simpa using mul_w_integrableOn (by positivity))
+      rw [intervalIntegral.integral_comp_div (x⁻¹ * w ·) hxne]
       simp only [intervalIntegral.integral_const_mul]
       have : (0 : ℝ) ≤ ↑(n - 1) / x := by positivity
       simp only [intervalIntegral.intervalIntegral_eq_integral_uIoc, this, ↓reduceIte, uIoc_of_le,
         smul_eq_mul, one_mul, zero_div, mul_inv_cancel₀ hxne, ← mul_assoc]
       apply integral_mono_measure
       · exact Measure.restrict_mono Ioc_subset_Ioi_self le_rfl
-      · exact eventually_of_mem (self_mem_ae_restrict measurableSet_Ioi) fun x hx ↦ F₂_nonneg hx.le
-      · simpa using! (F₂_integrable (a := 1) zero_lt_one).mono_set Ioi_subset_Ici_self
+      · exact eventually_of_mem (self_mem_ae_restrict measurableSet_Ioi) fun x hx ↦ w_nonneg hx.le
+      · simpa using! (w_integrable (a := 1) zero_lt_one).mono_set Ioi_subset_Ici_self
 
 private lemma summable_sum_log_range (hx : 1 ≤ x) :
     Summable fun n ↦ ‖f n‖ / n * (1 + (c₀ * log (n / x)) ^ 2)⁻¹ := summable_of_sum_range_le
