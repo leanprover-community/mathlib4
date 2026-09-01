@@ -65,10 +65,7 @@ protected theorem one (f : R[X]) : Introspective f 1 r := by
 
 protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CharP R n] :
     Introspective ((X : R[X]) - C (a : R)) n r := by
-  simp only [Introspective.iff_dvd]
-  suffices ((X : R[X]) - C (a : R)) ^ n = ((X : R[X]) ^ n) - C (a : R) by
-    simp_all
-  simp [← frobenius_def n _]
+  simp [Introspective.iff_dvd, ← frobenius_def n]
 
 /-- The product of two polynomials is introspective. -/
 protected theorem mul (hf : Introspective f e r) (hg : Introspective g e r) :
