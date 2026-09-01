@@ -213,10 +213,6 @@ lemma types_comp_apply {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 lemma types_congr_hom {X Y : Type u} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
   ConcreteCategory.congr_hom h x
 
-@[deprecated (since := "2026-02-09")] alias hom_inv_id_apply := Iso.hom_inv_id_apply
-@[deprecated (since := "2026-02-09")] alias inv_hom_id_apply := Iso.inv_hom_id_apply
-@[deprecated (since := "2026-02-09")] alias asHom := ofHom
-
 namespace Functor
 
 variable {J : Type u} [Category.{v} J]
@@ -265,36 +261,18 @@ theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
 theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a :=
   F.map_id_apply X a
 
-@[deprecated (since := "2026-02-09")] alias naturality := NatTrans.naturality_apply
-
 @[deprecated NatTrans.comp_app_apply (since := "2026-03-09")]
 theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
   σ.comp_app_apply τ X x
 
 attribute [elementwise (attr := simp)] eqToHom_map_comp
 
-@[deprecated "Use `elementwise_of% eqToHom_map_comp` instead" (since := "2026-02-09")]
-theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
-    F.map (eqToHom q) (F.map (eqToHom p) x) = F.map (eqToHom <| p.trans q) x := by
-  cat_disch
-
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
-
-@[deprecated "No replacement" (since := "2026-02-09")]
-theorem hcomp (x : (I ⋙ F).obj W) : (ρ ◫ σ).app W x = (G.map (ρ.app W)) (σ.app (I.obj W) x) := by
-  rw [NatTrans.hcomp_app]; rfl
 
 attribute [elementwise nosimp] Functor.map_hom_inv Functor.map_inv_hom
   Functor.map_hom_inv' Functor.map_inv_hom'
 
-@[deprecated (since := "2026-02-09")] alias map_inv_map_hom_apply := Functor.map_hom_inv_apply
-@[deprecated (since := "2026-02-09")] alias map_hom_map_inv_apply := Functor.map_inv_hom_apply
-
 attribute [elementwise (attr := simp)] Iso.hom_inv_id_app Iso.inv_hom_id_app
-
-
-@[deprecated (since := "2026-02-09")] alias hom_inv_id_app_apply := Iso.hom_inv_id_app_apply
-@[deprecated (since := "2026-02-09")] alias inv_hom_id_app_apply := Iso.inv_hom_id_app_apply
 
 lemma naturality_symm {F G : C ⥤ Type*} (e : ∀ j, F.obj j ≃ G.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ F.map f = G.map f ∘ e j) {j j' : C}

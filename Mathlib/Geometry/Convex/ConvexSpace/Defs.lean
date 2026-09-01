@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
-public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 
@@ -87,6 +88,11 @@ lemma total_of_fintype [Fintype M] (w : StdSimplex R M) :
   have := w.total
   rwa [Finsupp.sum_fintype _ _ (by simp)] at this
 
+@[simp]
+lemma total_fin_two (w : StdSimplex R (Fin 2)) :
+    w.weights 0 + w.weights 1 = 1 := by
+  rw [← w.total_of_fintype, Fin.sum_univ_two]
+
 lemma range_toFun_comp_weights [Fintype M] :
     Set.range (fun t ↦ t.weights : StdSimplex R M → (M → R)) =
     (⋂ (i : M), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
@@ -100,6 +106,15 @@ lemma range_toFun_comp_weights [Fintype M] :
       weights := equivFunOnFinite.symm s
       nonneg m := by simpa using h₁ m
       total := by simpa [Finsupp.sum_fintype] }, by simp⟩
+
+@[simp]
+lemma weights_apply_eq_one [Subsingleton M] (s : StdSimplex R M) (m : M) :
+    s.weights m = 1 := by
+  rw [← s.total, Finsupp.sum_eq_single m
+    (fun _ _ h ↦ (h (by subsingleton)).elim) (by simp)]
+
+instance [Subsingleton M] : Subsingleton (StdSimplex R M) where
+  allEq := by aesop
 
 variable [IsStrictOrderedRing R]
 
@@ -121,6 +136,30 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
     congr
     simpa [hwa] using w.total
   mpr := by rintro rfl; simp
+
+lemma single_injective : Function.Injective (single (R := R) (M := M)) :=
+  fun _ _ h ↦ by simpa using congr_arg (Finsupp.support ∘ weights) h
+
+@[simp]
+lemma weights_apply_le_one
+    (s : StdSimplex R M) (m : M) : s.weights m ≤ 1 := by
+  by_cases hm : s.weights m = 0
+  · simpa only [hm] using zero_le_one' R
+  · rw [← s.total]
+    exact Finset.single_le_sum (by simp) (by simpa)
+
+instance [Inhabited M] : Inhabited (StdSimplex R M) where
+  default := .single default
+
+instance [Nonempty M] : Nonempty (StdSimplex R M) :=
+  ⟨.single (Classical.arbitrary _)⟩
+
+instance [Nontrivial M] : Nontrivial (StdSimplex R M) := by
+  obtain ⟨x, y, h⟩ := exists_pair_ne M
+  exact ⟨.single x, .single y, single_injective.ne h⟩
+
+instance [Unique M] : Unique (StdSimplex R M) where
+  uniq := by subsingleton
 
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 @[simps weights]
@@ -216,6 +255,40 @@ lemma mem_range_map_iff
       intro rfl
       simp only [hm, ← Finsupp.notMem_support_iff] at hy
       exact hy z.prop
+
+section
+
+variable {R' : Type*} [Ring R'] [PartialOrder R'] [IsStrictOrderedRing R']
+/-- The bijection between the one dimensional standard simplex
+and the interval `[0, 1]`. -/
+@[simps -isSimp]
+def equivIcc : StdSimplex R' (Fin 2) ≃ Set.Icc (0 : R') 1 where
+  toFun s := ⟨s.weights 1, by simp⟩
+  invFun t := duple (s := 1 - t) (t := t) 0 1 (by grind) (by grind) (by simp)
+  left_inv s := by
+    ext i
+    fin_cases i
+    · simp [sub_eq_iff_eq_add]
+    · simp
+  right_inv t := by simp
+
+attribute [local simp] equivIcc_apply_coe
+
+@[simp]
+lemma equivIcc_single_zero : equivIcc (.single (R := R') 0) = 0 := by aesop
+
+@[simp]
+lemma equivIcc_single_one : equivIcc (.single (R := R') 1) = 1 := by aesop
+
+@[simp]
+lemma equivIcc_symm_zero : equivIcc.symm 0 = .single (R := R') 0 :=
+  equivIcc.injective (by simp)
+
+@[simp]
+lemma equivIcc_symm_one : equivIcc.symm 1 = .single (R := R') 1 :=
+  equivIcc.injective (by simp)
+
+end
 
 /--
 Join operation for standard simplices (monadic join).
@@ -362,6 +435,11 @@ instance : ConvexSpace R (StdSimplex R I) where
 lemma map_sConvexComb (s : StdSimplex R (StdSimplex R I)) (f : I → J) :
     s.sConvexComb.map f = (s.map (map f)).sConvexComb :=
   StdSimplex.map_join s f
+
+@[simp]
+lemma iConvexComb_single (x : StdSimplex R I) :
+    x.iConvexComb single = x := by
+  aesop
 
 variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
 
@@ -515,6 +593,15 @@ lemma map_iConvexComb {f : J → K}
     (s : StdSimplex R I) (g : I → StdSimplex R J) :
     (s.iConvexComb g).map f = s.iConvexComb (map f ∘ g) :=
   (isAffineMap_map R f).map_iConvexComb s g
+
+@[simp]
+lemma sConvexComb_map_iConvexComb (f : I → M) (s : StdSimplex R (StdSimplex R I)) :
+    sConvexComb (map (fun s ↦ iConvexComb s f) s) = iConvexComb (sConvexComb s) f :=
+  calc
+    _ = iConvexComb s fun s ↦ sConvexComb (map f s) := sConvexComb_map _ _
+    _ = sConvexComb (map f (sConvexComb s)) := by
+        rw [StdSimplex.map_sConvexComb, sConvexComb_sConvexComb, sConvexComb_map,
+          iConvexComb_map]
 
 end iConvexComb
 

@@ -23,7 +23,7 @@ public section
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
 open Set
 
@@ -33,7 +33,7 @@ section Semiring
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
+variable [Semiring α] (I : Ideal α) {a : α}
 
 instance (priority := low) : IsTwoSided (⊥ : Ideal α) :=
   ⟨fun _ h ↦ by rw [h, zero_mul]; exact zero_mem _⟩
