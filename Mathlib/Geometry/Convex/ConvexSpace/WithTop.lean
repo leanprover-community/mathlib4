@@ -13,6 +13,10 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
 Adjoining a top/bottom element to a convex space `X` again gives a convex space, by setting
 any convex combination that puts positive weight on `⊤`/`⊥` to `⊤`/`⊥`.
+
+Although this construction is also valid for `Option`, we refrain from adding it as we have no
+application in mind. The `WithTop` and `WithBot` versions are useful to talk about convex functions
+taking extended values.
 -/
 
 public noncomputable section
