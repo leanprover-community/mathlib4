@@ -105,7 +105,7 @@ theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h 
   · grind
   · simp only [Introspective] at *
     set I := mk (span {(X : R[X]) ^ r - C 1})
-    have ⟨ w, hw ⟩ := mem_span_singleton.mp (Ideal.Quotient.eq.mp hg)
+    have ⟨w, hw⟩ := mem_span_singleton.mp (Ideal.Quotient.eq.mp hg)
     have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
     simp only [sub_comp, pow_comp, map_one, mul_comp, X_comp, one_comp, comp_assoc] at hw2
     obtain ⟨ z, hz ⟩  : ((X : R[X]) ^ r - 1 ) ∣ ((X ^ e) ^ r - 1) := by
