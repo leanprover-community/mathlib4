@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Basics for the Rational Numbers
@@ -140,7 +141,7 @@ protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
 attribute [simp] mkRat_eq_zero
 
 -- Extra instances to short-circuit type class resolution
--- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
+-- TODO(Mario): this instance slows down Mathlib.Basic.Real.Basic
 instance nontrivial : Nontrivial ℚ where exists_pair_ne := ⟨1, 0, by decide⟩
 
 /-! ### The rational numbers are a group -/
