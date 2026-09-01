@@ -498,6 +498,7 @@
  ["defsWithUnderscore", "Lean.Elab.Tactic.nonempty_to_inhabited"],
  ["defsWithUnderscore", "Lean.Elab.Tactic.run_for"],
  ["defsWithUnderscore", "Lean.Parser.Command.initialize_simps_projections"],
+ ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNatTR.go"],
  ["defsWithUnderscore",
   "NumberField.mixedEmbedding.fundamentalCone.deriv_expMap_single"],
  ["defsWithUnderscore",
