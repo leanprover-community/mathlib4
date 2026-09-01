@@ -83,7 +83,7 @@ noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
 noncomputable def LDL.diag : Matrix n n 𝕜 :=
   Matrix.diagonal (LDL.diagEntries hS)
 
-theorem LDL.lowerInv_isLowerTriangular : (LDL.lowerInv hS).IsLowerTriangular := by
+theorem LDL.isLowerTriangular_lowerInv : (LDL.lowerInv hS).IsLowerTriangular := by
   intro i j hij
   simp only [OrderDual.toDual_lt_toDual] at hij
   rw [← @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
@@ -109,8 +109,8 @@ theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.low
 noncomputable def LDL.lower :=
   (LDL.lowerInv hS)⁻¹
 
-theorem LDL.lower_isLowerTriangular : (LDL.lower hS).IsLowerTriangular :=
-  blockTriangular_inv_of_blockTriangular (lowerInv_isLowerTriangular hS)
+theorem LDL.isLowerTriangular_lower : (LDL.lower hS).IsLowerTriangular :=
+  blockTriangular_inv_of_blockTriangular (isLowerTriangular_lowerInv hS)
 
 /-- **LDL decomposition**: any positive definite matrix `S` can be
 decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix. -/
