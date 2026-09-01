@@ -3,10 +3,10 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, David Renshaw, Heather Macbeth, Michael Rothgang
 -/
+import Mathlib.Basic.Real.Basic
 import Mathlib.Tactic.Field
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Real.Basic
 
 /-!
 # Tests for the `field_simp` and `field` tactics

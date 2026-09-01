@@ -254,8 +254,8 @@ theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
 
 end Ring.HasFiniteQuotients
 
-/-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`.
-`Infinite R` is needed for multiplicativity to hold at `⊥` (`I * ⊥ = ⊥` forces `absNorm ⊥ = 0`). -/
+-- `Infinite S` is what makes this multiplicative at `⊥`: `I * ⊥ = ⊥` forces `absNorm ⊥ = 0`.
+/-- The absolute norm of the ideal `I : Ideal S` is the cardinality of the quotient `S ⧸ I`. -/
 noncomputable def Ideal.absNorm [IsDedekindDomain S] [Infinite S] :
     Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
