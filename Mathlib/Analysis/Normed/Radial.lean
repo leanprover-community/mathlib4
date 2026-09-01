@@ -87,8 +87,7 @@ section Norm
 open Function
 
 lemma RCLike.isRadial_normSq {K : Type*} [RCLike K] : IsRadial (RCLike.normSq (K := K)) := by
-  intro _ _ _
-  simpa [RCLike.normSq_eq_def']
+  simp [isRadial_def, RCLike.normSq_eq_def']
 
 lemma Complex.normSq_radial : IsRadial (Complex.normSq) := RCLike.normSq_radial
 
