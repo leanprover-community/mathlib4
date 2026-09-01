@@ -131,28 +131,20 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 
 variable (k V) {p₁ p₂ : P}
 
-/-- The affine span of a single point, coerced to a set, contains just that point. -/
-@[simp]
-theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
-  ext x
-  rw [mem_coe, ← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_singleton p)) _,
-    direction_affineSpan]
-  simp
-
 /-- A point is in the affine span of a single point if and only if they are equal. -/
 @[simp]
-theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p₁ = p₂ := by
-  simp [← mem_coe]
-
-@[simp]
 lemma affineSpan_singleton (x : P) : affineSpan k ({x} : Set P) = {x} := by
-  ext; simp
+  ext y
+  simp [← vsub_right_mem_direction_iff_mem (mem_affineSpan k _) _, direction_affineSpan]
 
 @[simp]
 theorem coe_affineSpan_eq_singleton_iff (s : Set P) (x : P) : affineSpan k s = {x} ↔ s = {x} := by
   refine ⟨fun h ↦ ?_, by simp +contextual⟩
   refine Set.Nonempty.subset_singleton_iff ?_ |>.mp (by simpa using affineSpan_le.mp h.le)
   exact affineSpan_nonempty k |>.mp (by simp [h])
+
+theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p₁ = p₂ := by
+  simp
 
 instance unique_affineSpan_singleton (p : P) : Unique (affineSpan k {p}) where
   default := ⟨p, mem_affineSpan _ (Set.mem_singleton _)⟩
