@@ -51,4 +51,4 @@ theorem logDeriv_riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) (hz :
   have := (logDeriv_congr_nhds this).eq_of_nhds
   rw [logDeriv_comp, logDeriv_fun_mul, logDeriv_fun_mul, logDeriv_fun_mul, logDeriv_fun_mul,
     ← digamma_def] at this
-  <;> try first | fun_prop | simp_all <;> grind [differentiableAt_riemannZeta, Gamma_ne_zero, hs 0]
+  <;> first | fun_prop | simp_all <;> grind [differentiableAt_riemannZeta, Gamma_ne_zero, hs 0]
