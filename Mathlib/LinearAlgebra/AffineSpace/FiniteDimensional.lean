@@ -857,7 +857,7 @@ protected theorem finite [FiniteDimensional k V] (b : AffineBasis ι k P) : Fini
 
 protected theorem finite_set [FiniteDimensional k V] {s : Set ι} (b : AffineBasis s k P) :
     s.Finite :=
-  finite_set_of_fin_dim_affineIndependent k b.ind
+  finiteDimensional_iff_finite' k b.ind |>.mp inferInstance
 
 theorem card_eq_finrank_add_one [Fintype ι] (b : AffineBasis ι k P) :
     Fintype.card ι = Module.finrank k V + 1 :=
