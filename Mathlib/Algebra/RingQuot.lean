@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Algebra.Equiv
-public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
 
@@ -278,7 +277,6 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
   sub_eq_add_neg := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp [neg_quot, sub_quot, add_quot, sub_eq_add_neg]
-  zsmul := (· • ·)
   zsmul_zero' := by
     rintro ⟨⟨⟩⟩
     simp [smul_quot, ← zero_quot]
