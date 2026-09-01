@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 module
 
 public import Mathlib.Data.Set.Finite.Range
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Topology.Defs.Filter
 

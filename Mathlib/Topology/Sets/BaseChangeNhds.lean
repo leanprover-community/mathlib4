@@ -127,7 +127,7 @@ instance [T2Space β] [LocallyCompactSpace β] (K : Compacts β) :
   obtain ⟨U, hU1, hU2⟩ := exists_open_set_nhds_of_compactsNhds L
   obtain ⟨M, hM1, hM2, hM3⟩ :=
     exists_compact_between K.isCompact'
-    (IsClosedMap.isOpen_kernImage (IsProperMap.isClosedMap proper_f) U.isOpen)
+    (isClosedMap_iff_kernImage.1 (IsProperMap.isClosedMap proper_f) U.isOpen)
     (Set.subset_kernImage_iff.2 hU1)
   use ⟨⟨M, hM1⟩,
     (compactNhdsMkOfOpens _ ⟨interior M, isOpen_interior⟩
