@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Data.Sign.Defs
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Basic.Sign.Defs
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.Tactic.Linarith
 
