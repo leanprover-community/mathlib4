@@ -191,3 +191,12 @@ lemma CharZero.of_isAddTorsionFree [Nontrivial M] [IsAddTorsionFree M] : CharZer
   simpa using smul_left_injective ℤ hx h
 
 end Semiring
+
+section NonAssocRing
+variable [NonAssocRing R]
+
+theorem isSelfNeg_of_isSMulRegular_two (h : IsSMulRegular R 2) {a : R} :
+    IsSelfNeg a ↔ a = 0 :=
+  isSelfNeg_iff_two_nsmul_eq_zero.trans ⟨(h <| by simpa using ·), (by simp [·])⟩
+
+end NonAssocRing

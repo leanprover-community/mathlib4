@@ -6,7 +6,6 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Basic.Unique
 public import Mathlib.Data.Sum.Basic
@@ -43,10 +42,6 @@ variable {f : I → Type v₁} {g : I → Type v₂} {h : I → Type v₃}
 variable (x : ∀ i, f i) (i : I)
 
 namespace Pi
-
-@[to_additive]
-protected theorem isSelfInv_iff [∀ i, Inv (f i)] :
-    IsSelfInv x ↔ ∀ i, IsSelfInv (x i) := funext_iff
 
 @[to_additive]
 instance isMulCommutative [∀ i, Mul (f i)] [∀ i, IsMulCommutative (f i)] :
