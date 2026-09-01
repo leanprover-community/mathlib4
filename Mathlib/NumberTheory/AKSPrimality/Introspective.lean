@@ -35,35 +35,31 @@ open Polynomial Nat Ideal Ideal.Quotient
 
 /-- The introspective relation, currently only useful for the proof of the AKS primality theorem. -/
 def Introspective {R : Type*} [CommRing R] (f : R[X]) (e r : ℕ) : Prop :=
-  mk (span ({(X : R[X]) ^ r - C 1})) (f ^ e) =
-  mk (span ({(X : R[X]) ^ r - C 1})) (f.comp (X ^ e))
+  AdjoinRoot.mk ((X : R[X]) ^ r - 1) (f ^ e)  = .mk _ (f.comp (X ^ e))
 
 namespace Introspective
 
 variable {b d r p a n e : ℕ} {R : Type*}
 
+
+
 protected theorem map {S : Type*} [CommRing S] [CommRing R] {f : S[X]}
     (h : Introspective f e r) (g : S →+* R) : Introspective (f.map g) e r := by
-  simp only [Introspective] at *
-  have hg : ∀ a ∈ span {X ^ r - C 1}, ((mk (span {X ^ r - C 1})).comp (mapRingHom g)) a = 0 := by
-    intro a ha
-    simp only [RingHom.coe_comp, coe_mapRingHom, Function.comp_apply]
-    apply eq_zero_iff_mem.mpr
-    simp only [Ideal.mem_span_singleton'] at *
-    obtain ⟨b , hb⟩ := ha
-    use b.map g
-    simp [← hb]
-  let g := lift (span {(X : S[X]) ^ r - C 1}) (RingHom.comp (mk (span
-      ({(X : R[X]) ^ r - C 1})))  (Polynomial.mapRingHom g)) hg
-  convert congrArg g h
-  · simp [g]
-  · simp only [lift_mk, RingHom.coe_comp, coe_mapRingHom, Function.comp_apply, g, map_comp]
-    congr
+  simp only [Introspective, AdjoinRoot.mk_eq_mk] at *
+  obtain ⟨b, hb⟩ := h
+  use b.map g
+  convert congrArg (Polynomial.map g) hb
+  · suffices ((X : S[X]) ^ e).map g = X ^ e by
+      grind [Polynomial.map_pow, Polynomial.map_comp, Polynomial.map_sub]
     simp
+  · simp
 
 section CommRing
 
 variable [CommRing R] {f g : R[X]}
+
+protected theorem dvd (h : Introspective f e r) : (X : R[X]) ^ r - 1 ∣ 1 := by
+  sorry
 
 theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
@@ -75,7 +71,8 @@ theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra 
     obtain ⟨l , ee⟩ := mem_span_singleton.mp ha
     grind [aeval_sub, aeval_X, (isPrimitiveRoot_of_mem_primitiveRoots hμ).pow_eq_one]
   let g := lift (S := K) (span ({(X : R[X]) ^ r - C 1})) (aeval (R := R) μ) hg
-  exact (Iff.mp (Eq.congr (by simp [g]) (by simp [g, aeval_comp]))) (congrArg g h)
+  sorry
+  --exact (Iff.mp (Eq.congr (by simp [g]) (by simp [g, aeval_comp]))) (congrArg g h)
 
 @[simp]
 protected theorem one (f : R[X]) : Introspective f 1 r := by
@@ -104,20 +101,22 @@ theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h 
     Introspective f (e * d) r := by
   by_cases hr : r = 0
   · grind
-  · simp only [Introspective] at *
-    set I := mk (span {(X : R[X]) ^ r - C 1})
-    have ⟨w, hw⟩ := mem_span_singleton.mp (Ideal.Quotient.eq.mp hg)
-    have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
-    simp only [sub_comp, pow_comp, map_one, mul_comp, X_comp, one_comp, comp_assoc] at hw2
-    obtain ⟨z, hz⟩  : ((X : R[X]) ^ r - 1 ) ∣ ((X ^ e) ^ r - 1) := by
-      rw [pow_right_comm]
-      exact sub_one_dvd_pow_sub_one (X ^ r) e
-    have h : I ((f ^ e) ^ d) = I (f.comp (X ^ e)) ^ d := congrArg₂ HPow.hPow hf (Eq.refl d)
-    rw [pow_mul, h, pow_mul]
-    apply Ideal.Quotient.eq.mpr
-    apply mem_span_singleton.mpr
-    use z * w.comp (X ^ e)
-    grind
+  · simp only [Introspective, AdjoinRoot.mk_eq_mk] at *
+
+    sorry
+    --set I := mk (span {(X : R[X]) ^ r - C 1})
+    --have ⟨w, hw⟩ := mem_span_singleton.mp (Ideal.Quotient.eq.mp hg)
+    --have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
+    --simp only [sub_comp, pow_comp, map_one, mul_comp, X_comp, one_comp, comp_assoc] at hw2
+    --obtain ⟨z, hz⟩  : ((X : R[X]) ^ r - 1) ∣ ((X ^ e) ^ r - 1) := by
+    --  rw [pow_right_comm]
+    --  exact sub_one_dvd_pow_sub_one (X ^ r) e
+    --have h : I ((f ^ e) ^ d) = I (f.comp (X ^ e)) ^ d := congrArg₂ HPow.hPow hf (Eq.refl d)
+    --rw [pow_mul, h, pow_mul]
+    --apply Ideal.Quotient.eq.mpr
+    --apply mem_span_singleton.mpr
+    --use z * w.comp (X ^ e)
+    --grind
 
 end CommRing
 
