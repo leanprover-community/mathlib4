@@ -6,7 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Defs
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.MetricSpace.Basic
 
@@ -26,7 +26,9 @@ normed group
 variable {𝓕 α ι E F G : Type*}
 
 open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open ENNReal Filter NNReal Pointwise
+
+open scoped Uniformity Topology
 
 section SeminormedGroup
 

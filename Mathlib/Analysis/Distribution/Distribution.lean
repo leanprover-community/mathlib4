@@ -313,24 +313,29 @@ theorem ofFun_eq_zero {f : E → F} {μ : Measure E}
     (hf : ¬ LocallyIntegrableOn f Ω μ) : ofFun Ω f μ n = 0 :=
   TestFunction.integralAgainstBilinCLM_eq_zero hf
 
-@[simp]
+open Classical in
+@[grind =]
+theorem ofFun_apply_eq_ite {f : E → F} {μ : Measure E} {φ : 𝓓^{n}(Ω, ℝ)} :
+    ofFun Ω f μ n φ = if LocallyIntegrableOn f Ω μ then ∫ x, φ x • f x ∂μ else 0 := by
+  grind [ofFun_eq_zero, ofFun_apply]
+
+@[simp, grind =]
 theorem ofFun_zero {μ : Measure E} : ofFun Ω (0 : E → F) μ n = 0 := by
   have h0 : LocallyIntegrableOn (0 : E → F) Ω μ := locallyIntegrableOn_zero
   ext; simp [ofFun_apply h0]
 
 theorem ofFun_congr_ae {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
     ofFun Ω f μ n = ofFun Ω f' μ n := by
+  ext φ
   by_cases hf : LocallyIntegrableOn f Ω μ
   · have hf' : LocallyIntegrableOn f' Ω μ := hf.congr h
-    ext φ
     rw [ofFun_apply hf, ofFun_apply hf']
     have h' : ∀ x ∉ Ω, φ x • f x = 0 ∧ φ x • f' x = 0 := fun x hx ↦ by simp [φ.zero_on_compl hx]
     obtain ⟨h₁, h₂⟩ := forall₂_and.mp h'
     rw [← setIntegral_eq_integral_of_ae_compl_eq_zero (.of_forall h₁),
       ← setIntegral_eq_integral_of_ae_compl_eq_zero (.of_forall h₂)]
     refine integral_congr_ae <| ae_eq_rfl.smul h
-  · have hf' : ¬ LocallyIntegrableOn f' Ω μ := fun c ↦ hf (c.congr h.symm)
-    rw [ofFun_eq_zero hf, ofFun_eq_zero hf']
+  · grind [locallyIntegrableOn_congr]
 
 @[simp]
 theorem ofFun_add {f g : E → F} {μ : Measure E}
@@ -352,15 +357,12 @@ theorem ofFun_neg {f : E → F} {μ : Measure E} :
 @[simp]
 theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
     ofFun Ω (c • f) μ n = c • ofFun Ω f μ n := by
+  ext φ
   by_cases hf : LocallyIntegrableOn f Ω μ
-  · ext φ
-    rw [ofFun_apply (hf.smul c), smul_apply, ofFun_apply hf, ← integral_smul]
+  · rw [ofFun_apply (hf.smul c), smul_apply, ofFun_apply hf, ← integral_smul]
     refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
     simp [smul_comm c]
-  · rcases eq_or_ne c 0 with rfl | hc
-    · simp
-    · have hcf : ¬ LocallyIntegrableOn (c • f) Ω μ := by aesop
-      rw [ofFun_eq_zero hf, ofFun_eq_zero hcf, smul_zero]
+  · grind [zero_smul, locallyIntegrableOn_smul_iff, smul_zero]
 
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 
