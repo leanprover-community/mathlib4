@@ -14,8 +14,7 @@ import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 
 In this file we show that a continuous linear functional `f` on a non-unital C⋆-algebra is
 monotone if `f` tendsto `‖f‖` along any/some approximate unit. Therefore, when
-the algebra
-is unital, `f` is monotone if and only if `‖f‖ = f 1`. -/
+the algebra is unital, `f` is monotone if and only if `‖f‖ = f 1`. -/
 
 public section
 
@@ -35,6 +34,14 @@ theorem norm_apply_le_sqrt_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ← f.coe_toContinuousLinearMap, f.toContinuousLinearMap.le_opNorm (star e * e),
     CStarRing.norm_star_mul_self, he2, he2, one_mul, mul_one]
 
+theorem norm_apply_sq_le_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
+    ‖f x‖ ^ 2 ≤ ‖(f : A →L[ℂ] ℂ)‖ * ‖f (star x * x)‖ := by
+  grw [norm_apply_le_sqrt_opNorm_mul, mul_pow]; simp
+
+theorem nnnorm_apply_sq_le_opNNNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
+    ‖f x‖₊ ^ 2 ≤ ‖(f : A →L[ℂ] ℂ)‖₊ * ‖f (star x * x)‖₊ :=
+  norm_apply_sq_le_opNorm_mul _ _
+
 theorem tendsto_nhds_opNorm (f : A →P[ℂ] ℂ) {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     l.Tendsto (f ·) (𝓝 ‖(f : A →L[ℂ] ℂ)‖) := by
   suffices l.Tendsto (‖f ·‖) (𝓝 ‖f.toContinuousLinearMap‖) from this.ofReal.congr' <| by
@@ -43,9 +50,8 @@ theorem tendsto_nhds_opNorm (f : A →P[ℂ] ℂ) {l : Filter A} (hl : l.IsIncre
   have h : ∀ᶠ x in l, ‖f x‖ ≤ ‖f.toContinuousLinearMap‖ := by
     filter_upwards [hl.eventually_norm] using f.toContinuousLinearMap.unit_le_opNorm
   have h2 : ∀ᶠ x in l, ‖f.toContinuousLinearMap‖ - ε ≤ ‖f x‖ := by
-    obtain ⟨_, ⟨a, ha1, rfl⟩, ha2⟩ := exists_lt_of_lt_csSup (b := ‖f.toContinuousLinearMap‖ - ε / 2)
-      ((Metric.nonempty_closedBall (x := 0).mpr zero_le_one).image (‖f ·‖))
-      (by rw [← f.toContinuousLinearMap.sSup_unitClosedBall_eq_norm]; simp; grind)
+    obtain ⟨a, ha1, ha2⟩ := f.toContinuousLinearMap.exists_lt_apply_of_lt_opNorm
+      (r := ‖f.toContinuousLinearMap‖ - ε / 2) (by grind)
     have h3 : ∀ᶠ x in l, ‖f (x * a)‖ ^ 2 ≤ ‖f x‖ * ‖f.toContinuousLinearMap‖ := by
       filter_upwards [hl.eventually_nonneg, hl.eventually_norm] with x hx1 hx2
       have : ‖f (star x * x)‖ ≤ ‖f x‖ := by
@@ -57,7 +63,7 @@ theorem tendsto_nhds_opNorm (f : A →P[ℂ] ℂ) {l : Filter A} (hl : l.IsIncre
         ← f.coe_toContinuousLinearMap, f.toContinuousLinearMap.le_opNorm (star a * a),
         CStarRing.norm_star_mul_self, ← mul_assoc]
       refine mul_le_of_le_one_right (by positivity) ?_
-      grw [mem_closedBall_zero_iff.mp ha1, mem_closedBall_zero_iff.mp ha1, one_mul]
+      grw [ha1, ha1, one_mul]
     have h4 : ∀ᶠ x in l, ‖f.toContinuousLinearMap‖ - ε / 2 < ‖f (x * a)‖ := by
       refine (Filter.Tendsto.norm ?_).eventually (lt_mem_nhds ha2)
       exact (ContinuousAt.tendsto (by fun_prop)).comp (hl.tendsto_mul_right a)
@@ -76,8 +82,7 @@ variable {f : A →L[ℂ] ℂ}
 /- This lemma is only used to prove `monotone_iff_tendsto_nhds_opNorm` below,
 which can be used to construct a `PositiveContinuousLinearMap`. These may use
 `IsSelfAdjoint.map` to conclude the same property as this lemma, so we mark it
-`private`.
- -/
+`private`. -/
 private lemma im_apply_eq_zero_of_tendsto_nhds_opNorm {l : Filter A}
     (hl : l.IsIncreasingApproximateUnit) (hf : l.Tendsto (f ·) (𝓝 ‖f‖)) {a : A}
     (ha : IsSelfAdjoint a) : (f a).im = 0 := by
