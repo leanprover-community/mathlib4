@@ -73,7 +73,7 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
         is not defeq to inferred instance{indentExpr new}"
   -- Otherwise, try to reduce it to a constructor.
   else
-    (← whnfI inst).withApp fun f args => do
+    inst.withApp fun f args => do
     let error' (m : MessageData) : MetaM Expr := do
       if isStructure (← getEnv) className then
         error trace m
