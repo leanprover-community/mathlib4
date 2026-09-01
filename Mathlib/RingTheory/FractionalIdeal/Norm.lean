@@ -42,6 +42,10 @@ variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 -- A nontrivial free `ℤ`-module is infinite; local to this file to supply `Infinite R`.
 local instance : Infinite R := Module.Free.infinite ℤ R
 
+-- A domain finite over `ℤ` has finite quotients; local to this file to supply
+-- `Ring.HasFiniteQuotients R`.
+local instance : Ring.HasFiniteQuotients R := .of_module_finite ℤ R
+
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
     (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| =

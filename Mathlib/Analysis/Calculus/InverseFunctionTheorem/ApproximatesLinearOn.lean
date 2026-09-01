@@ -111,7 +111,7 @@ theorem lipschitz_sub (hf : ApproximatesLinearOn f f' s c) :
 protected theorem lipschitz (hf : ApproximatesLinearOn f f' s c) :
     LipschitzWith (‖f'‖₊ + c) (s.domRestrict f) := by
   simpa only [domRestrict_apply, add_sub_cancel] using!
-    (f'.lipschitz.restrict s).add hf.lipschitz_sub
+    (f'.lipschitzWith.restrict s).add hf.lipschitz_sub
 
 protected theorem continuous (hf : ApproximatesLinearOn f f' s c) : Continuous (s.domRestrict f) :=
   hf.lipschitz.continuous
