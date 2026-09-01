@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
 
 /-!
-# Modules over presheaves commutative rings
+# Modules over presheaves of commutative rings
 
 This file provides short names for categories and functors obtained from a presheaf of commutative
 rings by forgetting to rings. In particular, these names reduce the need for
@@ -36,11 +36,11 @@ variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
 abbrev mk (obj : ∀ (X : Cᵒᵖ), ModuleCat.{v} (R.obj X)) (map : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y),
       obj X ⟶ (ModuleCat.restrictScalars (R.map f).hom).obj (obj Y))
     (map_id : ∀ (X : Cᵒᵖ), map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)).hom
-      (congrArg CommRingCat.Hom.hom (R.map_id X))).inv.app _)
+      (congrArg CommRingCat.Hom.hom (R.map_id X))).inv.app _ := by cat_disch)
     (map_comp : ∀ {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z),
       map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars _).map (map g) ≫
         (ModuleCat.restrictScalarsComp' (R.map f).hom (R.map g).hom (R.map (f ≫ g)).hom
-          (congrArg CommRingCat.Hom.hom <| R.map_comp f g)).inv.app _) :
+          (congrArg CommRingCat.Hom.hom <| R.map_comp f g)).inv.app _ := by cat_disch) :
     PresheafOfModulesOfCommRing.{v} R where
   obj := obj
   map := map
@@ -57,11 +57,11 @@ abbrev map (F : PresheafOfModulesOfCommRing.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y)
   PresheafOfModules.map _ _
 
 /-- Construct a morphism of presheaves of modules over a presheaf of commutative rings. -/
-abbrev mkHom {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
+abbrev homMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
     (app : ∀ (X : Cᵒᵖ), M₁.obj X ⟶ M₂.obj X)
     (naturality : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y),
       M₁.map f ≫ (ModuleCat.restrictScalars (R.map f).hom).map (app Y) =
-        app X ≫ M₂.map f) : M₁ ⟶ M₂ where
+        app X ≫ M₂.map f := by cat_disch) : M₁ ⟶ M₂ where
   app := app
   naturality := naturality
 
