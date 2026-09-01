@@ -375,11 +375,8 @@ theorem rTensorHomEquivHomRTensor_apply (x : (M →ₗ[R] P) ⊗[R] Q) :
 variable [Projective R N] [Module.Finite R N]
 
 variable (R M N P Q) in
-/-- When `M` and `N` are projective `R` modules, the map `homTensorHomMap` is an equivalence.
-
-Note that `homTensorHomEquiv` is not defined directly in terms of `homTensorHomMap`, but the
-equivalence between the two is given by `homTensorHomEquiv_toLinearMap` and
-`homTensorHomEquiv_apply`. -/
+/-- When `M` and `N` are finite projective `R` modules, the map `homTensorHomMap` is an equivalence.
+-/
 noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
   -- We make sure `homTensorHomEquiv_toLinearMap` is true by definition.
   .ofBijective (homTensorHomMap (.id R) M N P Q) <| by
@@ -411,6 +408,10 @@ variable (R M N) in
 /-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite
 projective modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
+
+Note that `dualDistribEquiv` is not defined directly in terms of `dualDistri`, but the
+equivalence between the two is given by `toLinearMap_dualDistribEquiv` and
+`dualDistribEquiv_tmul_tmul`.
 -/
 noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) :=
   homTensorHomEquiv R M N R R ≪≫ₗ (TensorProduct.rid R R).congrRight
@@ -418,7 +419,7 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 @[simp] lemma toLinearMap_dualDistribEquiv : dualDistribEquiv R M N = dualDistrib R M N := by
   ext; simp [dualDistribEquiv, mul_comm]
 
-@[simp] lemma dualDistribEquiv_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
+@[simp] lemma dualDistribEquiv_tmul_tmul (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
     dualDistribEquiv R M N (f ⊗ₜ g) (m ⊗ₜ n) = g n * f m := rfl
 
 end
@@ -426,19 +427,19 @@ end
 variable {ι κ : Type*} [Fintype ι] [Fintype κ] [DecidableEq ι] [DecidableEq κ]
 
 /-- An inverse to `TensorProduct.dualDistrib` given bases. -/
-@[deprecated dualDistribEquiv (since := "2026-07-07")]
+@[deprecated dualDistribEquiv (since := "2026-09-01")]
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
       applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry (.id R) M N R
 
-@[deprecated dualDistribEquiv (since := "2026-07-07")]
+@[deprecated dualDistribEquiv (since := "2026-09-01")]
 theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
     dualDistribInvOfBasis b c f = ∑ i, ∑ j, f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
   simp [dualDistribInvOfBasis]
 
-@[deprecated dualDistribEquiv (since := "2026-07-07")]
+@[deprecated dualDistribEquiv (since := "2026-09-01")]
 lemma dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
     (dualDistrib R M N).comp (dualDistribInvOfBasis b c) = LinearMap.id := by
   apply (b.tensorProduct c).dualBasis.ext
@@ -454,7 +455,7 @@ lemma dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Bas
   · simpa using mul_comm _ _
   all_goals { intros; simp [*] at * }
 
-@[deprecated dualDistribEquiv (since := "2026-07-07")]
+@[deprecated dualDistribEquiv (since := "2026-09-01")]
 theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
     (dualDistribInvOfBasis b c).comp (dualDistrib R M N) = LinearMap.id := by
   apply (b.dualBasis.tensorProduct c.dualBasis).ext
@@ -469,8 +470,8 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
 /-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
 It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`. -/
-@[simps! (attr := deprecated dualDistribEquiv (since := "2026-07-07")),
-  deprecated dualDistribEquiv (since := "2026-07-07")]
+@[simps! (attr := deprecated dualDistribEquiv (since := "2026-09-01")),
+  deprecated dualDistribEquiv (since := "2026-09-01")]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
   refine LinearEquiv.ofLinearMap (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
