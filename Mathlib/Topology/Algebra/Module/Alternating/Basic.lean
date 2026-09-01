@@ -673,6 +673,8 @@ variable {R M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Top
   [AddCommGroup N] [Module R N] [TopologicalSpace N] [IsTopologicalAddGroup N] [Fintype ι]
   [DecidableEq ι] [ContinuousConstSMul R N]
 
+/-- Alternatization of a continuous multilinear map, as a linear map. See also `alternatizationCLM`
+for the continuous linear map version. -/
 def alternatizationₗ : ContinuousMultilinearMap R (fun _ : ι => M) N →ₗ[R] M [⋀^ι]→L[R] N where
   __ := alternatization
   map_smul' c g := by
