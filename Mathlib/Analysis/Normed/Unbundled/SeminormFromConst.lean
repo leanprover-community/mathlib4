@@ -275,8 +275,9 @@ theorem seminormFromConstRingNormOfField_def {k : K} {g : RingSeminorm K}
     (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) (x : K) :
     normFromConst hg_k hg_pm x = seminormFromConst' k g x := rfl
 
+/-- If `K` is a field, `seminormFromConst` applied to an `AlgebraNorm` is an `AlgebraNorm`. -/
 @[simps!]
-def algebraNormFromConst {k : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
+def algNormFromConst {k : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
     AlgebraNorm F K where
   __ := normFromConst hg_k hg_pm
   smul' x y := by
@@ -287,5 +288,9 @@ def algebraNormFromConst {k : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm
       rw [← Algebra.smul_def, map_smul_eq_mul, hx]
     simp [Algebra.smul_def, seminormFromConst_isMul_of_isMul hg_k hg_pm hy y,
       seminormFromConst_apply_of_isMul hg_k hg_pm hy, hx]
+
+theorem algNormFromConst_def {k x : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
+    algNormFromConst hg_k hg_pm x = seminormFromConst hg_k hg_pm x :=
+  rfl
 
 end Field
