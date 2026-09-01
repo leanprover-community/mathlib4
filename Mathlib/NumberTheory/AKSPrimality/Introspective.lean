@@ -50,15 +50,8 @@ protected theorem iff_dvd : Introspective f e r ↔ (X : R[X]) ^ r - 1 ∣ f ^ e
 
 protected theorem map {S : Type*} [CommRing S] (h : Introspective f e r) (g : R →+* S) :
     Introspective (f.map g) e r := by
-  simp only [Introspective.iff_dvd] at *
-  obtain ⟨b, hb⟩ := h
-  use b.map g
-  convert congrArg (Polynomial.map g) hb
-  · suffices ((X : R[X]) ^ e).map g = X ^ e by
-      grind [Polynomial.map_pow, Polynomial.map_comp, Polynomial.map_sub]
-    simp
-  · simp
-
+  rw [Introspective.iff_dvd] at *
+  simpa [Polynomial.map_comp] using map_dvd g h
 theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
   intro μ hμ
