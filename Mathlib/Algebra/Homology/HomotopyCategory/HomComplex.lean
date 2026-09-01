@@ -481,7 +481,6 @@ lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n�
     add_zero, add_neg_cancel, Units.neg_smul,
     Linear.units_smul_comp, Linear.comp_units_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
     (m₁ m₂ m₁₂ : ℤ) (h₁₂ : n₁₂ + 1 = m₁₂) (h₁ : n₁ + 1 = m₁) (h₂ : n₂ + 1 = m₂) :
     δ n₁₂ m₁₂ (z₁.comp z₂ h) = z₁.comp (δ n₂ m₂ z₂) (by rw [← h₁₂, ← h₂, ← h, add_assoc]) +
@@ -788,14 +787,14 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
   toFun ho := ⟨Cochain.ofHomotopy ho, by simp only [δ_ofHomotopy, sub_add_cancel]⟩
   invFun z :=
     { hom := fun i j => if hij : i + (-1) = j then z.1.v i j hij else 0
-      zero := fun i j (hij : j + 1 ≠ i) => dif_neg (fun _ => hij (by lia))
+      zero := fun i j (hij : j + 1 ≠ i) => dite_eq_right (fun _ => hij (by lia))
       comm := fun p => by
         have eq := Cochain.congr_v z.2 p p (add_zero p)
         have h₁ : (ComplexShape.up ℤ).Rel (p - 1) p := by simp
         have h₂ : (ComplexShape.up ℤ).Rel p (p + 1) := by simp
         simp only [δ_neg_one_cochain, Cochain.ofHom_v, ComplexShape.up_Rel, Cochain.add_v,
           Homotopy.nullHomotopicMap'_f h₁ h₂] at eq
-        rw [dNext_eq _ h₂, prevD_eq _ h₁, eq, dif_pos, dif_pos] }
+        rw [dNext_eq _ h₂, prevD_eq _ h₁, eq, dite_eq_left, dite_eq_left] }
   left_inv := fun ho => by
     ext i j
     dsimp
@@ -805,7 +804,7 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
   right_inv := fun z => by
     ext p q hpq
     dsimp [Cochain.ofHomotopy]
-    rw [dif_pos hpq]
+    rw [dite_eq_left hpq]
 
 @[simp]
 lemma equivHomotopy_apply_of_eq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
@@ -829,14 +828,14 @@ set_option backward.defeqAttrib.useBackward true in
 lemma single_v {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (hpq : p + n = q) :
     (single f n).v p q hpq = f := by
   dsimp [single]
-  rw [if_pos, id_comp, comp_id]
+  rw [ite_eq_left, id_comp, comp_id]
   tauto
 
 lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
     (hp' : p' ≠ p) :
     (single f n).v p' q' hpq' = 0 := by
   dsimp [single]
-  rw [dif_neg]
+  rw [dite_eq_right]
   intro h
   exact hp' (by lia)
 
@@ -860,7 +859,6 @@ lemma single_zero (p q n : ℤ) :
     · simp [single_v_eq_zero' _ _ _ _ _ hq]
   · simp [single_v_eq_zero _ _ _ _ _ hp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
     (p' q' : ℤ) (hp' : p' + 1 = p) (hq' : q + 1 = q') :
     δ n m (single f n) = single (f ≫ L.d q q') m + m.negOnePow • single (K.d p' p ≫ f) m := by
@@ -921,7 +919,6 @@ variable (K L n)
 @[simp]
 protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
     (Φ : C ⥤ D) [Φ.Additive] :
@@ -938,7 +935,6 @@ end Cochain
 
 variable (n)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
   by_cases hnm : n + 1 = m
