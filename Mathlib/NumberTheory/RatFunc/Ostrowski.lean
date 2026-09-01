@@ -5,9 +5,8 @@ Authors: María Inés de Frutos-Fernández, Xavier Généreux
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Valuation
-public import Mathlib.NumberTheory.FunctionField
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.FieldTheory.RatFunc.Valuation
 
 /-!
 # Ostrowski's theorem for `K(X)`
@@ -217,11 +216,11 @@ lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDisc
       have hp0 : p ≠ 0 := by simp_all
       set pi := πᵥ with hpi_def
       have hpi : v.IsUniformizer (pi : RatFunc K) := uniformizingPolynomial_isUniformizer hle
-      simp only [map_div₀, valuation_of_algebraMap, intValuation_def, exp_neg, if_neg hp0,
-        if_neg hq0, div_inv_eq_mul]
+      simp only [map_div₀, valuation_of_algebraMap, intValuation_def, exp_neg, ite_eq_right hp0,
+        ite_eq_right hq0, div_inv_eq_mul]
       rw [valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hp0,
         valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hq0]
-      simp_all [div_le_one₀, inv_mul_le_one₀,
+      simp_all [div_le_one₀, ← exp_add,
         (pow_le_pow_iff_right_of_lt_one₀ (by simp_all) (IsRankOneDiscrete.generator_lt_one v))]
 
 end Associates
