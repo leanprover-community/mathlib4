@@ -22,7 +22,7 @@ homotopy categories. We take advantage of this definition in order to
 show that `F.rightDerivedFunctorPlus` is a triangulated functor.
 We also show that `F.rightDerivedFunctorPlus` may also be thought of
 as a derived functor of the functor `F.mapCochainComplexPlus`
-that `F` induces on the categorie of bounded below cochain complexes.
+that `F` induces on the category of bounded below cochain complexes.
 
 TODO(@joelriou): refactor the definition of `Functor.rightDerived`
 
