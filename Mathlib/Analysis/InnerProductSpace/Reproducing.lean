@@ -602,7 +602,7 @@ theorem integralOperator_inner_right_eq_mercerForm [CompleteSpace V] (f g : Lp V
     ⟪integralOperator hK f, g⟫_𝕜 = mercerForm hK f g := by
   simp [mercerForm, integralOperator]
 
-theorem isSelfAdjoint_integralOperator [CompleteSpace V] [Fact K.PosSemidef] [IsFiniteMeasure μ] :
+theorem isSelfAdjoint_integralOperator [CompleteSpace V] [Fact K.PosSemidef] :
     IsSelfAdjoint (integralOperator hK) := by
   ext f
   apply Lp.ext_iff.mp
