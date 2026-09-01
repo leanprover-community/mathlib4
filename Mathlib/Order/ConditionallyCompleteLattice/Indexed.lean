@@ -495,22 +495,22 @@ namespace GaloisConnection
 variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι] {l : α → β}
   {u : β → α}
 
-@[to_dual]
+@[to_dual u_csInf]
 theorem l_csSup (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
-    l (sSup s) = ⨆ x : s, l x :=
-  Eq.symm <| IsLUB.ciSup_set_eq (gc.isLUB_l_image <| isLUB_csSup hne hbdd) hne
+l (sSup s) = ⨆ x : s, l x :=
+Eq.symm <| IsLUB.ciSup_set_eq (gc.isLUB_l_image <| isLUB_csSup hne hbdd) hne
 
-@[to_dual]
+@[to_dual u_csInf']
 theorem l_csSup' (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
-    l (sSup s) = sSup (l '' s) := by rw [gc.l_csSup hne hbdd, sSup_image']
+l (sSup s) = sSup (l '' s) := by rw [gc.l_csSup hne hbdd, sSup_image']
 
-@[to_dual]
+@[to_dual u_ciInf]
 theorem l_ciSup (gc : GaloisConnection l u) {f : ι → α} (hf : BddAbove (range f)) :
-    l (⨆ i, f i) = ⨆ i, l (f i) := by rw [iSup, gc.l_csSup (range_nonempty _) hf, iSup_range']
+l (⨆ i, f i) = ⨆ i, l (f i) := by rw [iSup, gc.l_csSup (range_nonempty _) hf, iSup_range']
 
-@[to_dual]
+@[to_dual u_ciInf_set]
 theorem l_ciSup_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
-    (hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
+(hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
   have := hne.to_subtype
   rw [image_eq_range] at hf
   exact gc.l_ciSup hf
