@@ -50,7 +50,7 @@ local notation "AE₁E₂" => TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) (fun (b 
 
 section
 
-theorem contMDiffOn_continuousAlternatingMapCoordChange
+theorem contMDiffOn_continuousAlternatingMapCoordChange [CharZero 𝕜]
     [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁']
     [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
@@ -86,19 +86,19 @@ end
 
 section
 
-theorem mdifferentiableOn_continuousAlternatingMapCoordChange
+theorem mdifferentiableOn_continuousAlternatingMapCoordChange [CharZero 𝕜]
     [ContMDiffVectorBundle 1 F₁ E₁ IB] [ContMDiffVectorBundle 1 F₂ E₂ IB]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁']
     [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
     MDiff[e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)]
       (continuousAlternatingMapCoordChange 𝕜 ι e₁ e₁' e₂ e₂') := by
-  have h₁ := contMDiffOn_coordChangeL (IB := IB) e₁' e₁ (n := 1) |>.mdifferentiableOn one_ne_zero
-  have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := 1) |>.mdifferentiableOn one_ne_zero
-  refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
+  apply ContMDiffOn.mdifferentiableOn _ one_ne_zero
+  exact contMDiffOn_continuousAlternatingMapCoordChange
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
-theorem mdifferentiableWithinAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {s : Set M} {x₀ : M} :
+theorem mdifferentiableWithinAt_continuousAlternatingMap_bundle
+    (f : M → AE₁E₂) {s : Set M} {x₀ : M} :
     MDiffAt[s] f x₀ ↔
       MDiffAt[s] (fun x ↦ (f x).1) x₀ ∧
         MDiffAt[s]
@@ -113,62 +113,22 @@ theorem mdifferentiableAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) 
 
 end
 
-variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
+variable [CharZero 𝕜] [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
   [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
 
 instance Bundle.continuousAlternatingMap.vectorPrebundle.isContMDiff :
-    (Bundle.continuousAlternatingMap.vectorPrebundle 𝕜 ι F₁ E₁ F₂ E₂).IsContMDiff IB n where
+    (Bundle.ContinuousAlternatingMap.vectorPrebundle 𝕜 ι F₁ E₁ F₂ E₂).IsContMDiff IB n where
   exists_contMDiffCoordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
-    exact ⟨continuousAlternatingMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂',
+    exact ⟨continuousAlternatingMapCoordChange 𝕜 ι e₁ e₁' e₂ e₂',
       contMDiffOn_continuousAlternatingMapCoordChange,
-      continuousAlternatingMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
+      continuousAlternatingMapCoordChange_apply⟩
 
 instance ContMDiffVectorBundle.continuousAlternatingMap :
-    ContMDiffVectorBundle n (F₁ [⋀^ι]→L[𝕜] F₂) ((fun (b : B) ↦ E₁ b →L[𝕜] E₂ b)) IB :=
-  (Bundle.continuousAlternatingMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).contMDiffVectorBundle IB
+    ContMDiffVectorBundle n (F₁ [⋀^ι]→L[𝕜] F₂) ((fun (b : B) ↦ E₁ b [⋀^ι]→L[𝕜] E₂ b)) IB :=
+  (Bundle.ContinuousAlternatingMap.vectorPrebundle 𝕜 ι F₁ E₁ F₂ E₂).contMDiffVectorBundle IB
 
 end
-
-section symmL
-
-variable {𝕜 B F₁ : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
-  {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace HB B]
-  {E₁ : B → Type*} [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
-  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
-  [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
-  [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
-
-/-- Let `e` be a trivialization of a `C^n` vector bundle `E₁` over `B`. Then `m ↦ e.symmL 𝕜 m`
-defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` over `B`, and this section
-is `C^n` at any point in `e.baseSet`. -/
-lemma Bundle.Trivialization.contMDiffAt_symmL [ContMDiffVectorBundle n F₁ E₁ IB]
-    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
-    {x : B} (hx : x ∈ e.baseSet) :
-    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) n
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (e.symmL 𝕜 m)) x := by
-  have hx' : x ∈ (trivializationAt F₁ E₁ x).baseSet := mem_baseSet_trivializationAt F₁ E₁ x
-  refine contMDiffAt_totalSpace.mpr ⟨contMDiffAt_id, ?_⟩
-  apply (contMDiffAt_coordChangeL hx hx').congr_of_eventuallyEq
-  filter_upwards [e.open_baseSet.mem_nhds hx,
-    (trivializationAt F₁ E₁ x).open_baseSet.mem_nhds hx'] with b hb hb'
-  ext v
-  simp [continuousAlternatingMap_trivializationAt_apply, continuousAlternatingMap.inCoordinates,
-    coordChangeL_apply' e _ ⟨hb, hb'⟩, coe_linearMapAt_of_mem _ hb',
-    e.symmL_apply hb, e.mk_symm hb]
-
-/-- Let `e` be a trivialization of a `C^n` vector bundle `E₁` over `B`. Then `m ↦ e.symmL 𝕜 m`
-defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` over `B`, and this section
-is `C^n` on `e.baseSet`. -/
-lemma Bundle.Trivialization.contMDiffOn_symmL [ContMDiffVectorBundle n F₁ E₁ IB]
-    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e] :
-    ContMDiffOn IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) n
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (e.symmL 𝕜 m)) e.baseSet :=
-  fun _ hx ↦ (e.contMDiffAt_symmL hx).contMDiffWithinAt
-
-end symmL
 
 section
 
@@ -178,7 +138,8 @@ and two vector bundles `E₁` and `E₂` respectively over `B₁` and `B₂` (wi
 
 Also a third manifold `M`, which will be the source of all our maps.
 -/
-variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 F₁ F₂ B₁ B₂ M ι : Type*} [Fintype ι]
+  {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
@@ -195,11 +156,12 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
   {n : WithTop ℕ∞} [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
   {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
-  {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
+  {ϕ : Π (m : M), E₁ (b₁ m) [⋀^ι]→L[𝕜] E₂ (b₂ m)} {v : ι → Π (m : M), E₁ (b₁ m)} {s : Set M}
 
-/-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
-another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
-on `m`, one can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
+/-- Consider `C^n` maps `v₁, ..., vᵢ : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`,
+and another base map `b₂ : M → B₂`. Given alternating maps `ϕ m : E₁ (b₁ m) [⋀^ι]→L[𝕜] E₂ (b₂ m)`
+depending smoothly on `m`, one can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the
+resulting map is `C^n`.
 
 Note that the smoothness of `ϕ` cannot always be stated as smoothness of a map into a manifold,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
@@ -213,12 +175,12 @@ a point.
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
 `inCoordinates`, see `ContMDiffWithinAt.clm_bundle_apply`.
 -/
-lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
+lemma ContMDiffWithinAt.alteratingMap_apply_of_inCoordinates
     (hϕ : CMDiffAt[s] n
-      (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
-    (hv : CMDiffAt[s] n (fun m ↦ (v m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt[s] n b₂ m₀) :
-    CMDiffAt[s] n (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) m₀ := by
-  rw [← contMDiffWithinAt_insert_self] at hϕ hv hb₂ ⊢
+      (fun m ↦ inCoordinates F₁ F₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
+    (hv : ∀ i, CMDiffAt[s] n (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt[s] n b₂ m₀) :
+    CMDiffAt[s] n (fun m ↦ (ϕ m (fun i ↦ v i m) : TotalSpace F₂ E₂)) m₀ := by
+  simp_rw [← contMDiffWithinAt_insert_self] at hϕ hv hb₂ ⊢
   rw [contMDiffWithinAt_totalSpace] at hv ⊢
   refine ⟨hb₂, ?_⟩
   apply (ContMDiffWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
