@@ -41,8 +41,6 @@ transformation between two exact functors
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 universe t t' w w' w''
@@ -83,6 +81,7 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
   simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
     ← Functor.map_comp_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
@@ -205,7 +204,6 @@ end
 
 namespace Abelian.Ext
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mapExactFunctor_mk₀ [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
     (mk₀ f).mapExactFunctor F = mk₀ (F.map f) := by
   dsimp [Ext.mapExactFunctor, mk₀]

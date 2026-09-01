@@ -1005,8 +1005,7 @@ theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.pr
   filter_upwards [Measurable.map_prodMk_left.aemeasurable.ae_of_bind hf] with a ha
   exact lintegral_map' ha (by fun_prop)
 
-omit [SFinite ν] in
-theorem lintegral_prod_le [SFinite ν] (f : α × β → ℝ≥0∞) :
+theorem lintegral_prod_le (f : α × β → ℝ≥0∞) :
     ∫⁻ z, f z ∂μ.prod ν ≤ ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
   rw [Measure.prod]
   exact (lintegral_bind_le _ _ Measurable.map_prodMk_left.aemeasurable).trans <|

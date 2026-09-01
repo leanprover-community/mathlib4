@@ -161,6 +161,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
@@ -4337,6 +4338,7 @@ public import Mathlib.Data.Nat.Init
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.Nat.MaxPrimeFac
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Notation
@@ -5451,6 +5453,7 @@ public import Mathlib.Logic.Equiv.Pairwise
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Logic.Equiv.Prod
 public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Logic.Equiv.Sigma
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Function.Coequalizer
@@ -6417,6 +6420,7 @@ public import Mathlib.Probability.Decision.BayesEstimator
 public import Mathlib.Probability.Decision.Risk.Basic
 public import Mathlib.Probability.Decision.Risk.Countable
 public import Mathlib.Probability.Decision.Risk.Defs
+public import Mathlib.Probability.Decision.Risk.RiskIncrease
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.Beta
