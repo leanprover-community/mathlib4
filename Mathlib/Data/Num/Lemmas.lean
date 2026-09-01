@@ -343,12 +343,12 @@ example (n : Num) (m : Num) : n ≤ n + m := by transfer
 ```
 -/
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
-    (transfer_rw; try grind))
+    ((repeat intro (_ : Num)); transfer_rw; try grind))
 
 instance addMonoid : AddMonoid Num where
   zero_add := zero_add
   add_zero := add_zero
-  add_assoc a b c := by transfer
+  add_assoc := by transfer
   nsmul := nsmulRec
 
 instance addMonoidWithOne : AddMonoidWithOne Num :=
@@ -361,21 +361,21 @@ instance commSemiring : CommSemiring Num where
   __ := Num.addMonoid
   __ := Num.addMonoidWithOne
   npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩
-  mul_zero _ := by transfer
-  zero_mul _ := by transfer
-  mul_one _ := by transfer
-  one_mul _ := by transfer
-  add_comm _ _ := by transfer
-  mul_comm _ _ := by transfer
-  mul_assoc _ _ _ := by transfer
-  left_distrib _ _ _ := by transfer
-  right_distrib _ _ _ := by transfer
+  mul_zero := by transfer
+  zero_mul := by transfer
+  mul_one := by transfer
+  one_mul := by transfer
+  add_comm := by transfer
+  mul_comm := by transfer
+  mul_assoc := by transfer
+  left_distrib := by transfer
+  right_distrib := by transfer
 
 instance partialOrder : PartialOrder Num where
-  lt_iff_le_not_ge a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_ge]
-  le_refl a := by transfer
-  le_trans a b c := by transfer
-  le_antisymm a b := by transfer
+  lt_iff_le_not_ge := by transfer
+  le_refl := by transfer
+  le_trans := by transfer
+  le_antisymm := by transfer
 
 instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
   add_le_add_left a b h c := by revert h; transfer
@@ -520,29 +520,29 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 ```
 -/
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
-    (transfer_rw; try grind))
+    ((repeat intro (_ : PosNum)); transfer_rw; try grind))
 
 instance addCommSemigroup : AddCommSemigroup PosNum where
-  add_assoc a b c := by transfer
-  add_comm a b := by transfer
+  add_assoc := by transfer
+  add_comm := by transfer
 
 instance commMonoid : CommMonoid PosNum where
   npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩
-  mul_assoc a b c := by transfer
-  one_mul a := by transfer
-  mul_one a := by transfer
-  mul_comm a b := by transfer
+  mul_assoc := by transfer
+  one_mul := by transfer
+  mul_one := by transfer
+  mul_comm := by transfer
 
 instance distrib : Distrib PosNum where
-  left_distrib a b c := by transfer
-  right_distrib a b c := by transfer
+  left_distrib := by transfer
+  right_distrib := by transfer
 
 instance linearOrder : LinearOrder PosNum where
-  lt_iff_le_not_ge a b := by transfer
-  le_refl a := by transfer
-  le_trans a b c := by transfer
-  le_antisymm a b := by transfer
-  le_total a b := by transfer
+  lt_iff_le_not_ge := by transfer
+  le_refl := by transfer
+  le_trans := by transfer
+  le_antisymm := by transfer
+  le_total := by transfer
   toDecidableLT := by infer_instance
   toDecidableLE := by infer_instance
   toDecidableEq := by infer_instance
