@@ -9,8 +9,21 @@ public import Mathlib.GroupTheory.DoubleCoset
 public import Mathlib.GroupTheory.Index
 
 /-!
-# Double cosets admitting finite left coset decomposition
+# Double cosets admitting finite left-coset decomposition
 
+This file introduces a finiteness condition `DoubleCoset.IsLeftFinite` on double cosets and its
+bundled version `DoubleCoset₀`.
+
+For a triple `(H₁, H₂, g)`, the property `DoubleCoset.IsLeftFinite H₁ H₂ g` says that the double
+coset H₁gH₂ admits finite decomposition into left cosets, i.e. the set `{xH₂ | H₁xH₂ = H₁gH₂}` is
+finite. The collection of all such double cosets is bundled into a type `DoubleCoset₀`, which allows
+us to describe the intertwining space `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])` as the free module
+`k[DoubleCoset₀ H₁ H₂]`.
+
+# Main definitions
+
+* `DoubleCoset₀`
+* `DoubleCoset.IsLeftFinite`
 
 -/
 
@@ -28,7 +41,7 @@ def Quotient.LeftDecomposition (x : Quotient (H₁ : Set G) (H₂ : Set G)) :
   (Quotient.lift (fun g : G => mk H₁ H₂ g) (fun a b hab => by
     obtain h := QuotientGroup.leftRel_apply.mp hab
     rw [DoubleCoset.eq]
-    exact ⟨1, H₁.one_mem, a⁻¹ * b, h, by simp⟩))⁻¹' {x}
+    exact ⟨1, H₁.one_mem, a⁻¹ * b, h, by simp⟩)) ⁻¹' {x}
 
 @[simp]
 lemma mem_LeftDecomposition_mk (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
@@ -54,16 +67,20 @@ lemma coe_smul_LeftDecomposition {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ 
 lemma stabilizer_leftCoset :
     MulAction.stabilizer H₁ (g : G ⧸ H₂) = (ConjAct.toConjAct g • H₂).subgroupOf H₁ := by
   ext h
-  simp [Subgroup.mem_subgroupOf, Subgroup.mem_conjAct_pointwise_smul_iff, eq_comm, QuotientGroup.eq,
-    MulAction.subgroup_smul_def, mul_assoc]
+  have (x : G) : x ∈ ConjAct.toConjAct g • H₂ ↔ g⁻¹ * x * g ∈ H₂ := by
+    rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv, ConjAct.smul_def,
+      ConjAct.ofConjAct_toConjAct, inv_inv]
+  simp [Subgroup.mem_subgroupOf, this, eq_comm, QuotientGroup.eq, MulAction.subgroup_smul_def,
+    mul_assoc]
 
 variable (H₁ H₂ g) in
-/-- The quotient `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` indexing the left cosets `h₁gH₂` inside
-the double coset `H₁gH₂`. -/
+/-- The quotient `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` indexing the left cosets `h₁gH₂` inside the double coset
+`H₁gH₂`. -/
 abbrev LeftDecompQuotient := H₁ ⧸ MulAction.stabilizer H₁ (g : G ⧸ H₂)
 
 namespace LeftDecompQuotient
 
+/-- The map sending `⟦h₁⟧` to `h₁gH₂`. -/
 def toLeftCoset :
     LeftDecompQuotient H₁ H₂ g → G ⧸ H₂ :=
   MulAction.ofQuotientStabilizer H₁ (g : G ⧸ H₂)
@@ -81,14 +98,14 @@ lemma toLeftCoset_injective :
     Function.Injective (toLeftCoset (H₁ := H₁) (H₂ := H₂) (g := g)) :=
   MulAction.injective_ofQuotientStabilizer H₁ (g : G ⧸ H₂)
 
-lemma mem_range_toLeftCoset_iff {g d : G} :
-    (∃ i, toLeftCoset (H₁ := H₁) (g := g) i = (d : G ⧸ H₂)) ↔ mk H₁ H₂ g = mk H₁ H₂ d := by
+lemma mem_range_toLeftCoset_iff :
+    (∃ i, toLeftCoset (H₁ := H₁) (g := g) i = (g' : G ⧸ H₂)) ↔ mk H₁ H₂ g = mk H₁ H₂ g' := by
   constructor
   · intro ⟨h, heq⟩
     rw [toLeftCoset_apply, QuotientGroup.eq] at heq
-    exact (DoubleCoset.eq H₁ H₂ g d).mpr ⟨_, h.out.prop, _, heq, by simp [mul_assoc]⟩
+    exact (DoubleCoset.eq H₁ H₂ g g').mpr ⟨_, h.out.prop, _, heq, by simp [mul_assoc]⟩
   · intro h
-    obtain ⟨h₁, hh₁, h₂, hh₂, rfl⟩ := (DoubleCoset.eq H₁ H₂ g d).mp h
+    obtain ⟨h₁, hh₁, h₂, hh₂, rfl⟩ := (DoubleCoset.eq H₁ H₂ g g').mp h
     exact ⟨QuotientGroup.mk ⟨h₁, hh₁⟩, by simp [hh₂]⟩
 
 /-- The equivalence between `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` and `{xH₂ | H₁xH₂ = H₁gH₂}`. -/
@@ -96,11 +113,10 @@ lemma mem_range_toLeftCoset_iff {g d : G} :
 noncomputable def toLeftDecompositionEquiv :
     LeftDecompQuotient H₁ H₂ g ≃ (mk H₁ H₂ g).LeftDecomposition :=
   (Equiv.ofInjective toLeftCoset toLeftCoset_injective).trans
-    (Equiv.setCongr (by
+    (Set.equivOfEq (by
       ext x
       rw [← QuotientGroup.out_eq' x, Set.mem_range, mem_range_toLeftCoset_iff,
-        mem_LeftDecomposition_mk]
-      simp [eq_comm]))
+        mem_LeftDecomposition_mk, eq_comm]))
 
 end LeftDecompQuotient
 
@@ -138,7 +154,7 @@ lemma isLeftFinite_iff_relIndexNeZero :
 
 noncomputable instance [IsLeftFinite H₁ H₂ g] : Fintype (LeftDecompQuotient H₁ H₂ g) := by
   simpa [LeftDecompQuotient] using
-  Subgroup.fintypeOfIndexNeZero (isLeftFinite_iff_relIndexNeZero.mp (inferInstance))
+    Subgroup.fintypeOfIndexNeZero (isLeftFinite_iff_relIndexNeZero.mp (inferInstance))
 
 instance instIsLeftFinite_diag_one (H : Subgroup G) : IsLeftFinite H H 1 := by
   simp [isLeftFinite_iff, mk_degree, LeftDecompQuotient]
