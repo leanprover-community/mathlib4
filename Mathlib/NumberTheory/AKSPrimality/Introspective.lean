@@ -179,10 +179,7 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
     congr
     simp only [sub_comp, X_comp, g]
     nth_rw 1 [← CharP.pow_charP_of_nat a]
-    simp only [C_comp]
-    simp only [C_pow, pow_mul]
-    change (frobenius _ _) _  - (frobenius _ _) _ = (frobenius _ _ ) _
-    grind
+    simp [pow_mul, ← frobenius_def p _]
   grind
 
 protected theorem div (h : Introspective ((X : R[X]) - C (a : R)) n r)
