@@ -83,7 +83,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) :
     tensorObj M₁ M₃ ⟶ tensorObj M₂ M₄ :=
-  mkHom (fun X ↦ f.app X ⊗ₘ g.app X)
+  homMk (fun X ↦ f.app X ⊗ₘ g.app X)
     (fun φ ↦ ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₃ ↦ by
       dsimp
       rw [tensorObj_map_tmul]
