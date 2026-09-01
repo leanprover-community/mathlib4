@@ -883,9 +883,7 @@ private lemma exists_isOpenCover_appLE_eq_restrict_of_isLimit (s : Γ(c.pt, ⊤)
           simpa [Scheme.Hom.preimage_inf] using le_inf h₁ h₂
         simpa [← ConcreteCategory.comp_apply, Scheme.Hom.appLE_comp_appLE, -Scheme.Hom.comp_appLE]
           using congr((D.map x).appLE _ V e $(hv _ inf_le_left inf_le_right))
-    have hcpt : IsCompact (X := D.obj n) ↑(D.map w ⁻¹ᵁ W₁.1 ⊓ D.map w ⁻¹ᵁ W₂.1) :=
-      ((hUs W₁.2).preimage (D.map w)).isCompact.inter_of_isOpen
-        ((hUs W₂.2).preimage (D.map w)).isCompact (D.map w ⁻¹ᵁ W₁.1).2 (D.map w ⁻¹ᵁ W₂.1).2
+    have hcpt := ((hUs W₁.2).preimage (D.map w)).isCompact_inf ((hUs W₂.2).preimage (D.map w))
     obtain ⟨k, v, hv⟩ := exists_app_map_eq_map_of_isLimit D c hc hcpt (T W₁ |_ _) (T W₂ |_ _) (by
       dsimp +instances [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
       simp only [← ConcreteCategory.comp_apply, Scheme.Hom.app_eq_appLE, Scheme.Hom.map_appLE]
@@ -1202,9 +1200,7 @@ private lemma exists_forall_homOfLE_comp_eq_of_isAffineOpen :
         simpa [Scheme.Hom.resLE_comp_resLE_assoc] using congr((D.map w).resLE _ O
           (show O ≤ D.map w ⁻¹ᵁ _ by simpa [Scheme.Hom.preimage_inf] using le_inf e₁ e₂) ≫
             $(hv _ inf_le_left inf_le_right))
-    have hcpt : IsCompact (X := D.obj k) ↑(D.map u ⁻¹ᵁ U j₁ ⊓ D.map u ⁻¹ᵁ U j₂) :=
-      ((hU j₁).preimage (D.map u)).isCompact.inter_of_isOpen
-        ((hU j₂).preimage (D.map u)).isCompact (D.map u ⁻¹ᵁ U j₁).2 (D.map u ⁻¹ᵁ U j₂).2
+    have hcpt := ((hU j₁).preimage (D.map u)).isCompact_inf ((hU j₂).preimage (D.map u))
     obtain ⟨l, v, e⟩ := Scheme.exists_resLE_comp_eq_resLE_comp_of_locallyOfFiniteType D t f c hc
       hcpt (Scheme.homOfLE _ inf_le_left ≫ g j₁) (Scheme.homOfLE _ inf_le_right ≫ g j₂)
       (by simp [hg]) (by simp [hg])
