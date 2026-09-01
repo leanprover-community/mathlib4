@@ -58,7 +58,7 @@ theorem contMDiffOn_continuousAlternatingMapCoordChange
       (continuousAlternatingMapCoordChange 𝕜 ι e₁ e₁' e₂ e₂') := by
   have h₁ := contMDiffOn_coordChangeL (IB := IB) e₁' e₁ (n := n)
   have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := n)
-  refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
+  refine (h₁.mono ?_).continuousAlternatingMapCongr (h₂.mono ?_) <;> mfld_set_tac
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
