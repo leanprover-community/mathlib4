@@ -17,28 +17,26 @@ public import Mathlib.Algebra.NeZero
 
 # Tropical algebraic structures
 
-This file defines algebraic structures of the (min-)tropical numbers, up to the tropical semiring.
-Some basic lemmas about conversion from the base type `R` to `Tropical R` are provided, as
-well as the expected implementations of tropical addition and tropical multiplication.
+This file defines algebraic structures of the min/max-tropical numbers, up to the tropical semiring.
+All declarations about `MinTropical` are translated to `MaxTropical` using `to_dual`.
+Some basic lemmas about conversion from the base type `R` to `MinTropical R`/`MaxTropical R` are
+provided, as well as the expected implementations of tropical addition and tropical multiplication.
 
 ## Main declarations
 
-* `Tropical R`: The type synonym of the tropical interpretation of `R`.
+* `MinTropical R`: The type synonym of the tropical interpretation of `R`.
     If `[LinearOrder R]`, then addition on `R` is via `min`.
-* `Semiring (Tropical R)`: A `LinearOrderedAddCommMonoidWithTop R`
-    induces a `Semiring (Tropical R)`. If one solely has `[LinearOrderedAddCommMonoid R]`,
-    then the "tropicalization of `R`" would be `Tropical (WithTop R)`.
+* `Semiring (MinTropical R)`: A `LinearOrderedAddCommMonoidWithTop R`
+    induces a `Semiring (MinTropical R)`. If one solely has `[LinearOrderedAddCommMonoid R]`,
+    then the "tropicalization of `R`" would be `MinTropical (WithTop R)`.
 
 ## Implementation notes
-
-The tropical structure relies on `Top` and `min`. For the max-tropical numbers, use
-`OrderDual R`.
 
 Inspiration was drawn from the implementation of `Additive`/`Multiplicative`/`Opposite`,
 where a type synonym is created with some barebones API, and quickly made irreducible.
 
 Algebraic structures are provided with as few typeclass assumptions as possible, even though
-most references rely on `Semiring (Tropical R)` for building up the whole theory.
+most references rely on `Semiring (MinTropical R)` for building up the whole theory.
 
 ## References followed
 
@@ -397,7 +395,7 @@ theorem trop_mul_def [Add R] (x y : MinTropical R) : x * y = trop (untrop x + un
   rfl
 
 @[to_dual]
-instance instOneTropical [Zero R] : One (MinTropical R) :=
+instance [Zero R] : One (MinTropical R) :=
   ⟨trop 0⟩
 
 @[to_dual (attr := simp)]
@@ -435,12 +433,12 @@ theorem untrop_div [Sub R] (x y : MinTropical R) : untrop (x / y) = untrop x - u
   rfl
 
 @[to_dual]
-instance instSemigroupTropical [AddSemigroup R] : Semigroup (MinTropical R) where
+instance [AddSemigroup R] : Semigroup (MinTropical R) where
   mul_assoc _ _ _ := untrop_injective (add_assoc _ _ _)
 
 @[to_dual]
-instance instCommSemigroupTropical [AddCommSemigroup R] : CommSemigroup (MinTropical R) :=
-  { instSemigroupTropical with mul_comm := fun _ _ => untrop_injective (add_comm _ _) }
+instance [AddCommSemigroup R] : CommSemigroup (MinTropical R) where
+  mul_comm := fun _ _ => untrop_injective (add_comm _ _)
 
 @[to_dual]
 instance {α : Type*} [SMul α R] : Pow (MinTropical R) α where pow x n := trop <| n • untrop x
@@ -497,7 +495,7 @@ end Monoid
 
 section Distrib
 
-instance [LE R] [Add R] [AddLeftMono R] : MulLeftMono (MinTropical R) :=
+instance mulLeftMono [LE R] [Add R] [AddLeftMono R] : MulLeftMono (MinTropical R) :=
   ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
 
 instance mulRightMono [LE R] [Add R] [AddRightMono R] :
@@ -521,12 +519,44 @@ instance mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
     MulRightStrictMono (MinTropical R) :=
   ⟨fun _ y z h => add_lt_add_left (show untrop y < untrop z from h) _⟩
 
+
+@[to_dual existing]
+instance _root_.MaxTropical.mulLeftMono [LE R] [Add R] [AddLeftMono R] :
+    MulLeftMono (MaxTropical R) :=
+  ⟨fun _ y z h => add_le_add_right (show MaxTropical.untrop y ≤ MaxTropical.untrop z from h) _⟩
+
+@[to_dual existing]
+instance _root_.MaxTropical.mulRightMono [LE R] [Add R] [AddRightMono R] :
+    MulRightMono (MaxTropical R) :=
+  ⟨fun _ y z h => add_le_add_left (show MaxTropical.untrop y ≤ MaxTropical.untrop z from h) _⟩
+
+@[to_dual existing]
+instance _root_.MaxTropical.addLeftMono [LinearOrder R] : AddLeftMono (MaxTropical R) :=
+  ⟨fun x y z h => by
+    rcases le_total x z with hx | hz
+    · rw [MaxTropical.add_eq_right hx]
+      rcases le_total x y with hx | hx
+      · rwa [MaxTropical.add_eq_right hx]
+      · rwa [MaxTropical.add_eq_left hx]
+    · rw [MaxTropical.add_eq_left hz, MaxTropical.add_eq_left (h.trans hz)]⟩
+
+@[to_dual existing]
+instance _root_.MaxTropical.mulLeftStrictMono [LT R] [Add R] [AddLeftStrictMono R] :
+    MulLeftStrictMono (MaxTropical R) :=
+  ⟨fun _ _ _ h => add_lt_add_right (MaxTropical.untrop_lt_iff.2 h) _⟩
+
+@[to_dual existing]
+instance _root_.MaxTropical.mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
+    MulRightStrictMono (MaxTropical R) :=
+  ⟨fun _ y z h => add_lt_add_left (show MaxTropical.untrop y < MaxTropical.untrop z from h) _⟩
+
+@[to_dual]
 instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMono R] :
     Distrib (MinTropical R) where
   left_distrib _ _ _ := untrop_injective (min_add_add_left _ _ _).symm
   right_distrib _ _ _ := untrop_injective (min_add_add_right _ _ _).symm
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem add_pow [LinearOrder R] [AddMonoid R] [AddLeftMono R] [AddRightMono R]
     (x y : MinTropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by

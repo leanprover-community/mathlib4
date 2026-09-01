@@ -16,8 +16,8 @@ This file defines the orders induced on tropical algebraic structures by the und
 
 ## Main declarations
 
-* `ConditionallyCompleteLattice (Tropical R)`
-* `ConditionallyCompleteLinearOrder (Tropical R)`
+* `ConditionallyCompleteLattice (MinTropical R)`
+* `ConditionallyCompleteLinearOrder (MinTropical R)`
 
 ## Implementation notes
 
@@ -31,28 +31,33 @@ public section
 
 variable {R : Type*}
 
-open MinTropical
+namespace MinTropical
 
-instance instSemilatticeInfTropical [SemilatticeInf R] : SemilatticeInf (MinTropical R) where
+@[to_dual]
+instance [SemilatticeInf R] : SemilatticeInf (MinTropical R) where
   inf := fun x y ↦ trop (untrop x ⊓ untrop y)
   le_inf := fun _ _ _ ↦ @SemilatticeInf.le_inf R _ _ _ _
   inf_le_left := fun _ _ ↦ inf_le_left
   inf_le_right := fun _ _ ↦ inf_le_right
 
-instance instSemilatticeSupTropical [SemilatticeSup R] : SemilatticeSup (MinTropical R) where
+@[to_dual]
+instance [SemilatticeSup R] : SemilatticeSup (MinTropical R) where
   sup := fun x y ↦ trop (untrop x ⊔ untrop y)
   sup_le := fun _ _ _ ↦ @SemilatticeSup.sup_le R _ _ _ _
   le_sup_left := fun _ _ ↦ le_sup_left
   le_sup_right := fun _ _ ↦ le_sup_right
 
-instance instLatticeTropical [Lattice R] : Lattice (MinTropical R) :=
-  { instSemilatticeInfTropical, instSemilatticeSupTropical with }
+@[to_dual]
+instance [Lattice R] : Lattice (MinTropical R) where
 
+@[to_dual]
 instance [SupSet R] : SupSet (MinTropical R) where sSup s := trop (sSup (untrop '' s))
 
+@[to_dual]
 instance [InfSet R] : InfSet (MinTropical R) where sInf s := trop (sInf (untrop '' s))
 
-instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
+@[to_dual]
+instance [ConditionallyCompleteLattice R] :
     ConditionallyCompleteLattice (MinTropical R) where
   isLUB_csSup _ hn hb :=
     .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)
@@ -60,7 +65,7 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
     .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb)
 
 instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (MinTropical R) :=
-  { instConditionallyCompleteLatticeTropical, instLinearOrder with
+  { instConditionallyCompleteLattice, instLinearOrder with
     csSup_of_not_bddAbove := by
       intro s hs
       have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
@@ -77,3 +82,5 @@ instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder
       contrapose hs
       change BddBelow (tropOrderIso.symm '' s) at hs
       exact tropOrderIso.symm.bddBelow_image.1 hs }
+
+end MinTropical
