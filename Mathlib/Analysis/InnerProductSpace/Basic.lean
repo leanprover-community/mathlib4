@@ -460,7 +460,7 @@ theorem norm_inner_le_norm (x y : E) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 theorem nnnorm_inner_le_nnnorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
   norm_inner_le_norm x y
 
-lemma ennorm_inner_le_ennorm (x y : E) : ‖⟪x, y⟫_𝕜‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
+lemma ennorm_inner_le_ennorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
   grw [← ofReal_norm, norm_inner_le_norm]
   simp [ENNReal.ofReal_mul, ofReal_norm]
 
