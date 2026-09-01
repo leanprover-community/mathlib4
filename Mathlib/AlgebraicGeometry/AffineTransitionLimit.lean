@@ -309,8 +309,32 @@ lemma exists_map_preimage_eq_map_preimage
     simpa only [Scheme.Hom.comp_preimage, Functor.map_comp] using Scheme.Hom.preimage_mono _ e₂
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-open Scheme.Opens in
+include hc in
+lemma exists_appTop_π_eq_of_isAffine_of_isLimit [IsCofiltered I]
+    [∀ i, IsAffine (D.obj i)] (s : Γ(c.pt, ⊤)) :
+    ∃ (i : I) (t : Γ(D.obj i, ⊤)), (c.π.app i).appTop t = s := by
+  have : ∀ i, IsAffine (D.op.obj i).unop := by dsimp; infer_instance
+  exact ⟨_, (Types.jointly_surjective_of_isColimit
+    (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s).choose_spec⟩
+
+include hc in
+lemma exists_appLE_π_eq_of_isAffineOpen [IsCofiltered I]
+    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+    {i : I} {U : (D.obj i).Opens} (hU : IsAffineOpen U) (s : Γ(c.pt, c.π.app i ⁻¹ᵁ U)) :
+    ∃ (j : I) (u : j ⟶ i) (t : Γ(D.obj j, D.map u ⁻¹ᵁ U)),
+      (c.π.app j).appLE _ _ (π_app_preimage_map_preimage D c u U).ge t = s := by
+  have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
+  obtain ⟨j, t, ht⟩ := exists_appTop_π_eq_of_isAffine_of_isLimit _ _
+    (isLimitOpensCone D c hc i U) ((c.π.app i ⁻¹ᵁ U).topIso.inv s)
+  obtain ⟨t, rfl⟩ := (D.map j.hom ⁻¹ᵁ U).topIso.symm.commRingCatIsoToRingEquiv.surjective t
+  refine ⟨j.left, j.hom, t, ?_⟩
+  replace ht : ((c.π.app j.left).resLE (D.map j.hom ⁻¹ᵁ U) (c.π.app i ⁻¹ᵁ U)
+      (π_app_preimage_map_preimage D c j.hom U).ge).appTop
+      ((D.map j.hom ⁻¹ᵁ U).topIso.inv t) = (c.π.app i ⁻¹ᵁ U).topIso.inv s := ht
+  simp only [Scheme.Hom.appTop, Scheme.Hom.resLE_app_top, ConcreteCategory.comp_apply,
+    Iso.inv_hom_id_apply] at ht
+  exact (c.π.app i ⁻¹ᵁ U).topIso.commRingCatIsoToRingEquiv.symm.injective ht
+
 include hc in
 lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] :
     TopologicalSpace.Opens.IsBasis
@@ -319,23 +343,14 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
   obtain ⟨i⟩ := IsCofiltered.nonempty (C := I)
   obtain ⟨_, ⟨V, hV : IsAffineOpen V, rfl⟩, hxV, -⟩ :=
     (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (c.π.app i x)) isOpen_univ
-  have (j : _) : IsAffine ((opensDiagram D i V).op.obj j).unop := hV.preimage _
   have (j : _) : IsAffine ((opensDiagram D i V).obj j) := hV.preimage _
   obtain ⟨r, hrU, hxr⟩ := IsAffineOpen.exists_basicOpen_le
     (Scheme.isAffine_of_isLimit _ (isLimitOpensCone D c hc i V)) (V := U) ⟨x, hxU⟩ hxV
-  obtain ⟨⟨j⟩, s, hs⟩ := (Types.jointly_surjective_of_isColimit (isColimitOfPreserves
-    (Scheme.Γ ⋙ forget _) (isLimitOpensCone D c hc i V).op) ((c.π.app i ⁻¹ᵁ V).topIso.inv r))
-  obtain ⟨s, rfl⟩ := (D.map j.hom ⁻¹ᵁ V).topIso.symm.commRingCatIsoToRingEquiv.surjective s
-  have h : c.π.app j.left ⁻¹ᵁ D.map j.hom ⁻¹ᵁ V = c.π.app i ⁻¹ᵁ V := congr($(c.w j.hom) ⁻¹ᵁ V)
-  have : r = (c.π.app j.left).appLE (D.map j.hom ⁻¹ᵁ V) (c.π.app i ⁻¹ᵁ V) h.ge s := by
-    convert!
-      show r = ((topIso _).inv ≫ ((opensCone D c i V).π.app j).appTop ≫ (topIso _).hom) s from
-        (c.π.app i ⁻¹ᵁ V).topIso.commRingCatIsoToRingEquiv.symm_apply_eq.mp hs.symm using 3
-    simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
-  refine ⟨_, ⟨j.left, _, (hV.preimage _).basicOpen s, rfl⟩, ?_⟩
-  simp only [Functor.const_obj_obj, Scheme.preimage_basicOpen] at this ⊢
-  rw [← c.pt.basicOpen_res_eq _ (eqToHom h.symm).op, ← CommRingCat.comp_apply,
-    Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, ← this]
+  obtain ⟨j, u, s, hs⟩ := exists_appLE_π_eq_of_isAffineOpen D c hc hV r
+  refine ⟨_, ⟨j, _, (hV.preimage _).basicOpen s, rfl⟩, ?_⟩
+  simp only [Functor.const_obj_obj, Scheme.preimage_basicOpen] at hs ⊢
+  rw [← c.pt.basicOpen_res_eq _ (eqToHom (π_app_preimage_map_preimage D c u V).symm).op,
+    ← CommRingCat.comp_apply, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, hs]
   exact ⟨hxr, hrU⟩
 
 set_option backward.defeqAttrib.useBackward true in
@@ -854,41 +869,20 @@ lemma exists_app_map_eq_map_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.
   simpa [sub_eq_zero] using exists_app_map_eq_zero_of_isLimit _ _ hc hU (s - t)
     (by simpa +instances [map_sub, sub_eq_zero])
 
-set_option backward.defeqAttrib.useBackward true in
-include hc in
-lemma exists_appTop_π_eq_of_isAffine_of_isLimit
-    [∀ i, IsAffine (D.obj i)] (s : Γ(c.pt, ⊤)) :
-    ∃ (i : I) (t : Γ(D.obj i, ⊤)), (c.π.app i).appTop t = s := by
-  have : ∀ i, IsAffine (D.op.obj i).unop := by dsimp; infer_instance
-  exact ⟨_, (Types.jointly_surjective_of_isColimit
-    (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s).choose_spec⟩
-
 include hc in
 private lemma exists_appLE_eq_restrict_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     (s : Γ(c.pt, ⊤)) (x : c.pt) :
     ∃ (i : I) (U : (D.obj i).Opens) (_ : IsAffineOpen U) (_ : (c.π.app i).base x ∈ U)
       (t : Γ(D.obj i, U)), ∀ (V : c.pt.Opens) (e : V ≤ c.π.app i ⁻¹ᵁ U),
         (c.π.app i).appLE U V e t = s |_ V := by
-  have i := IsCofiltered.nonempty (C := I).some
-  obtain ⟨_, ⟨U, hU : IsAffineOpen U, rfl⟩, hxU, -⟩ :=
-    (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open
-      (Set.mem_univ ((c.π.app i).base x)) isOpen_univ
-  have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
-  obtain ⟨j, t, hj⟩ := exists_appTop_π_eq_of_isAffine_of_isLimit _ _
-    (isLimitOpensCone D c hc i U) ((c.π.app i ⁻¹ᵁ U).topIso.inv (s |_ _))
-  obtain ⟨t, rfl⟩ := (D.map j.hom ⁻¹ᵁ U).topIso.symm.commRingCatIsoToRingEquiv.surjective t
-  have h := π_app_preimage_map_preimage D c j.hom U
-  replace hj : (c.π.app j.left).appLE (D.map j.hom ⁻¹ᵁ U) (c.π.app i ⁻¹ᵁ U) h.ge t =
-      s |_ (c.π.app i ⁻¹ᵁ U) := by
-    replace hj : ((c.π.app j.left).resLE (D.map j.hom ⁻¹ᵁ U) (c.π.app i ⁻¹ᵁ U) h.ge).appTop
-        ((D.map j.hom ⁻¹ᵁ U).topIso.inv t) =
-        (c.π.app i ⁻¹ᵁ U).topIso.inv (s |_ (c.π.app i ⁻¹ᵁ U)) := hj
-    simp only [Scheme.Hom.appTop, Scheme.Hom.resLE_app_top, ConcreteCategory.comp_apply,
-      Iso.inv_hom_id_apply] at hj
-    exact (c.π.app i ⁻¹ᵁ U).topIso.commRingCatIsoToRingEquiv.symm.injective hj
-  refine ⟨j.left, D.map j.hom ⁻¹ᵁ U, hU.preimage _, h.ge hxU, t, fun V e ↦ ?_⟩
-  simp_rw [Scheme.Hom.appLE, ConcreteCategory.comp_apply] at hj ⊢
-  rw [← TopCat.Presheaf.restrict_restrict (e.trans_eq h) le_top s, ← hj]
+  obtain ⟨_, ⟨i, U, hU, rfl⟩, hxU, -⟩ :=
+    TopologicalSpace.Opens.isBasis_iff_nbhd.mp (isBasis_preimage_isAffineOpen D c hc)
+      (U := ⊤) (x := x) trivial
+  obtain ⟨j, u, t, ht⟩ := exists_appLE_π_eq_of_isAffineOpen D c hc hU (s |_ (c.π.app i ⁻¹ᵁ U))
+  have h := π_app_preimage_map_preimage D c u U
+  refine ⟨j, D.map u ⁻¹ᵁ U, hU.preimage _, h.ge hxU, t, fun V e ↦ ?_⟩
+  simp_rw [Scheme.Hom.appLE, ConcreteCategory.comp_apply] at ht ⊢
+  rw [← TopCat.Presheaf.restrict_restrict (e.trans_eq h) le_top s, ← ht]
   exact (TopCat.Presheaf.restrict_restrict (e.trans_eq h) h.ge _).symm
 
 include hc in
