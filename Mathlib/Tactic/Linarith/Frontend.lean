@@ -533,26 +533,31 @@ elab_rules : tactic
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 /--
+Filter the items of a tactic config syntax, keeping only those satisfying `p`.
+Items that cannot be interpreted as configuration items are conservatively kept.
+-/
+private def filterConfigM {m : Type → Type} [Monad m] [MonadRef m]
+    (p : ConfigEval.ConfigItem → Bool) (cfg : TSyntax ``Lean.Parser.Tactic.optConfig) :
+    m (TSyntax ``Lean.Parser.Tactic.optConfig) := do
+  -- `foldConfigM` unwraps the `configItem` node, so we re-wrap the kept items.
+  let wrap (stx : Syntax) : TSyntax ``Lean.Parser.Tactic.configItem :=
+    if stx.isOfKind ``Lean.Parser.Tactic.configItem then ⟨stx⟩
+    else ⟨mkNode ``Lean.Parser.Tactic.configItem #[stx]⟩
+  -- Implement filter as a fold.
+  let items : TSyntaxArray ``Lean.Parser.Tactic.configItem ←
+    ConfigEval.foldConfigM (init := #[]) cfg.raw
+      (fun items item => pure <| if p item then items.push (wrap item.ref) else items)
+      -- Conservatively keep any item we cannot interpret.
+      (fun items stx => pure <| items.push (wrap stx))
+  return mkOptConfig items
+
+/--
 Filter out `minimize` options from the config syntax.
 -/
-def filterMinimizeFromLinarithConfig (cfg : TSyntax ``Lean.Parser.Tactic.optConfig) :
-    TSyntax ``Lean.Parser.Tactic.optConfig :=
-  -- The config has one arg: a null node containing configItem nodes
-  let nullNode := cfg.raw.getArg 0
-  let configItems := nullNode.getArgs
-
-  -- Filter out configItem nodes that set `minimize`.
-  let filteredItems := configItems.filter fun item =>
-    match item[0]?, item.getKind with
-    | some configItem, ``Lean.Parser.Tactic.configItem =>
-      match configItem[1]? with
-      | some name => name.getId.eraseMacroScopes != `minimize
-      | none => true
-    | _, _ => true
-
-  -- Reconstruct the config with filtered items
-  let newNullNode := nullNode.setArgs filteredItems
-  ⟨cfg.raw.setArg 0 newNullNode⟩
+private def filterMinimizeFromLinarithConfig {m : Type → Type} [Monad m] [MonadRef m]
+    (cfg : TSyntax ``Lean.Parser.Tactic.optConfig) :
+    m (TSyntax ``Lean.Parser.Tactic.optConfig) :=
+  filterConfigM (·.origOptionName != `minimize) cfg
 
 private meta partial def minimize (cfg : Linarith.LinarithConfig) (st : Tactic.SavedState)
     (g : MVarId) (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
@@ -587,7 +592,7 @@ elab_rules : tactic
           st.restore
           discard <| Linarith.linarith true used config g
           replaceMainGoal []
-          let filteredCfg := filterMinimizeFromLinarithConfig cfg
+          let filteredCfg ← filterMinimizeFromLinarithConfig cfg
           -- TODO: we should check for, and deal with, shadowed names here.
           let idsList ← used.mapM fun e => do
             pure (Lean.mkIdent (← e.fvarId!.getUserName))

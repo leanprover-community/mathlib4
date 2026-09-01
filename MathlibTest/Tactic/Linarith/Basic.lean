@@ -803,6 +803,22 @@ example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄
 
 /--
 info: Try this:
+  [apply] linarith only [h₄, h₂, h₁]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? +minimize only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith only [h₄, h₂, h₁]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? (minimize := true) only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
   [apply] linarith (oracle := .fourierMotzkin) only [h]
 -/
 #guard_msgs in
