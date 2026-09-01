@@ -29,10 +29,9 @@ theorem norm_apply_le_sqrt_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
   have hl := CStarAlgebra.increasingApproximateUnit A
   refine le_of_tendsto ((ContinuousAt.tendsto (by fun_prop)).comp (hl.tendsto_mul_right _)).norm ?_
   filter_upwards [hl.eventually_nonneg, hl.eventually_norm] with e he1 he2
-  rw [← he1.star_eq, Function.comp_apply, ← f.coe_toPositiveLinearMap]
-  grw [PositiveLinearMap.cauchy_schwarz_star_mul, coe_toPositiveLinearMap,
+  grw [← he1.star_eq, Function.comp_apply, PositiveLinearMap.cauchy_schwarz_star_mul,
     ← f.coe_toContinuousLinearMap, f.toContinuousLinearMap.le_opNorm (star e * e),
-    CStarRing.norm_star_mul_self, he2, he2, one_mul, mul_one]
+    norm_star_mul_self, he2, he2, one_mul, mul_one]
 
 theorem norm_apply_sq_le_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ‖f x‖ ^ 2 ≤ ‖(f : A →L[ℂ] ℂ)‖ * ‖f (star x * x)‖ := by
@@ -57,11 +56,9 @@ theorem tendsto_nhds_opNorm (f : A →P[ℂ] ℂ) {l : Filter A} (hl : l.IsIncre
       have : ‖f (star x * x)‖ ≤ ‖f x‖ := by
         refine CStarAlgebra.norm_le_norm_of_le_of_nonneg ?_
         exact f.mono <| hx1.star_eq.symm ▸ CStarAlgebra.mul_self_le_of_nonneg_of_norm_le_one hx1 hx2
-      conv_lhs => rw [← hx1.star_eq, ← f.coe_toPositiveLinearMap]
-      grw [PositiveLinearMap.cauchy_schwarz_star_mul _ x a, mul_pow, Real.sq_sqrt (norm_nonneg _),
-        Real.sq_sqrt (norm_nonneg _), f.coe_toPositiveLinearMap, this,
-        ← f.coe_toContinuousLinearMap, f.toContinuousLinearMap.le_opNorm (star a * a),
-        CStarRing.norm_star_mul_self, ← mul_assoc]
+      conv_lhs => rw [← hx1.star_eq]
+      grw [PositiveLinearMap.norm_map_star_mul_sq_le _ x a, this, ← f.coe_toContinuousLinearMap,
+        f.toContinuousLinearMap.le_opNorm (star a * a), norm_star_mul_self, ← mul_assoc]
       refine mul_le_of_le_one_right (by positivity) ?_
       grw [ha1, ha1, one_mul]
     have h4 : ∀ᶠ x in l, ‖f.toContinuousLinearMap‖ - ε / 2 < ‖f (x * a)‖ := by
