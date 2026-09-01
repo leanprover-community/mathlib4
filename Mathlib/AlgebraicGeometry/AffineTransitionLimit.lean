@@ -1172,13 +1172,24 @@ private lemma isBasis_affineOpens_le_preimage {Y Z T : Scheme.{u}} (a : Y ⟶ Z)
     (U := O ⊓ a ⁻¹ᵁ V) (x := y) ⟨hy, hyV⟩
   exact ⟨U, ⟨hU, ⟨V, hV⟩, ⟨W, hW⟩, hUV.trans inf_le_right, hVW⟩, hyU, hUV.trans inf_le_left⟩
 
-variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+open TopologicalSpace in
+lemma Scheme.exists_ι_comp_eq_of_isOpenCover {s : Type*} {X Y : Scheme.{u}} {U : s → X.Opens}
+    (hU : IsOpenCover U) (g : ∀ i, (U i).toScheme ⟶ Y)
+    (h : ∀ i j, X.homOfLE inf_le_left ≫ g i = X.homOfLE inf_le_right ≫ g j) :
+    ∃ f : X ⟶ Y, ∀ i, (U i).ι ≫ f = g i :=
+  ⟨(X.openCoverOfIsOpenCover U hU).glueMorphisms g fun i j ↦ by
+      change pullback.fst (U i).ι (U j).ι ≫ g i = pullback.snd _ _ ≫ g j
+      rw [← cancel_epi (isPullback_opens_inf (U i) (U j)).isoPullback.hom]
+      simpa using h i j,
+    fun i ↦ (X.openCoverOfIsOpenCover U hU).ι_glueMorphisms ..⟩
 
-include hc ha in
-private lemma exists_forall_resLE_comp_eq_of_isAffineOpen [LocallyOfFinitePresentation f]
-    {i : I} {J : Type*} [Finite J] {U : J → (D.obj i).Opens} (hU : ∀ j, IsAffineOpen (U j))
-    (hUV : ∀ j, ∃ (V : X.affineOpens) (W : S.affineOpens),
-      c.π.app i ⁻¹ᵁ U j ≤ a ⁻¹ᵁ (V : X.Opens) ∧ (V : X.Opens) ≤ f ⁻¹ᵁ (W : S.Opens)) :
+variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [LocallyOfFinitePresentation f]
+  {i : I} {J : Type*} [Finite J] {U : J → (D.obj i).Opens} (hU : ∀ j, IsAffineOpen (U j))
+  (hUV : ∀ j, ∃ (V : X.affineOpens) (W : S.affineOpens),
+    c.π.app i ⁻¹ᵁ U j ≤ a ⁻¹ᵁ (V : X.Opens) ∧ (V : X.Opens) ≤ f ⁻¹ᵁ (W : S.Opens))
+
+include hc ha hU hUV in
+private lemma exists_forall_resLE_comp_eq_of_isAffineOpen :
     ∃ (k : I) (u : k ⟶ i), ∀ j, ∃ g : ↑(D.map u ⁻¹ᵁ U j) ⟶ X,
       g ≫ f = (D.map u ⁻¹ᵁ U j).ι ≫ t.app k ∧
         ∀ (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j),
@@ -1224,17 +1235,12 @@ private lemma exists_forall_resLE_comp_eq_of_isAffineOpen [LocallyOfFinitePresen
 
 variable [∀ i, QuasiSeparatedSpace (D.obj i)]
 
-include hc ha in
-private lemma exists_forall_homOfLE_comp_eq_of_isAffineOpen [LocallyOfFinitePresentation f]
-    {i : I} {J : Type*} [Finite J] {U : J → (D.obj i).Opens} (hU : ∀ j, IsAffineOpen (U j))
-    (hUV : ∀ j, ∃ (V : X.affineOpens) (W : S.affineOpens),
-      c.π.app i ⁻¹ᵁ U j ≤ a ⁻¹ᵁ (V : X.Opens) ∧ (V : X.Opens) ≤ f ⁻¹ᵁ (W : S.Opens)) :
+include hc ha hU hUV in
+private lemma exists_forall_homOfLE_comp_eq_of_isAffineOpen :
     ∃ (k : I) (u : k ⟶ i) (g : ∀ j, ↑(D.map u ⁻¹ᵁ U j) ⟶ X),
       (∀ j, g j ≫ f = (D.map u ⁻¹ᵁ U j).ι ≫ t.app k) ∧
-      (∀ j (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j),
-        (c.π.app k).resLE _ O h ≫ g j = O.ι ≫ a) ∧
-      ∀ j₁ j₂ (O : (D.obj k).Opens) (e₁ : O ≤ D.map u ⁻¹ᵁ U j₁) (e₂ : O ≤ D.map u ⁻¹ᵁ U j₂),
-        Scheme.homOfLE _ e₁ ≫ g j₁ = Scheme.homOfLE _ e₂ ≫ g j₂ := by
+      (∀ j, (c.π.app k).resLE _ _ le_rfl ≫ g j = (c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j).ι ≫ a) ∧
+      ∀ j₁ j₂, Scheme.homOfLE _ inf_le_left ≫ g j₁ = Scheme.homOfLE _ inf_le_right ≫ g j₂ := by
   choose k u g hg hg' using exists_forall_resLE_comp_eq_of_isAffineOpen D t f c hc a ha hU hUV
   obtain ⟨l, v, hl⟩ : ∃ (l : I) (v : l ⟶ k), ∀ j₁ j₂ (O : (D.obj l).Opens)
       (e₁ : O ≤ D.map v ⁻¹ᵁ D.map u ⁻¹ᵁ U j₁) (e₂ : O ≤ D.map v ⁻¹ᵁ D.map u ⁻¹ᵁ U j₂),
@@ -1256,11 +1262,11 @@ private lemma exists_forall_homOfLE_comp_eq_of_isAffineOpen [LocallyOfFinitePres
       simpa using congr(Scheme.homOfLE _ (show O ≤ D.map v ⁻¹ᵁ _ by
         simpa [Scheme.Hom.preimage_inf] using le_inf e₁ e₂) ≫ $e)⟩
   have e (j : J) : D.map (v ≫ u) ⁻¹ᵁ U j ≤ D.map v ⁻¹ᵁ D.map u ⁻¹ᵁ U j := by simp
-  refine ⟨l, v ≫ u, fun j ↦ (D.map v).resLE _ _ (e j) ≫ g j, fun j ↦ ?_, fun j O h ↦ ?_,
-    fun j₁ j₂ O e₁ e₂ ↦ ?_⟩
+  refine ⟨l, v ≫ u, fun j ↦ (D.map v).resLE _ _ (e j) ≫ g j, fun j ↦ ?_, fun j ↦ ?_,
+    fun j₁ j₂ ↦ ?_⟩
   · simpa using congr((D.map v).resLE _ _ (e j) ≫ $(hg j))
-  · simpa [Scheme.Hom.resLE_comp_resLE_assoc] using hg' j O (by simpa using h)
-  · simpa using hl j₁ j₂ O (by simpa using e₁) (by simpa using e₂)
+  · simpa [Scheme.Hom.resLE_comp_resLE_assoc] using hg' j _ (by simp)
+  · simpa using hl j₁ j₂ _ (by simp) (by simp)
 
 open TopologicalSpace in
 include hc ha in
@@ -1269,8 +1275,7 @@ Given a cofiltered diagram of qcqs schemes `Dᵢ` over `S` with affine transitio
 If `X` is locally of finite presentation over `S`, then any `S`-morphism `lim Dᵢ ⟶ X` factors
 through some `lim Dᵢ ⟶ Dⱼ ⟶ X` for some `j`.
 -/
-lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
-    [LocallyOfFinitePresentation f] [∀ i, CompactSpace (D.obj i)] :
+lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation [∀ i, CompactSpace (D.obj i)] :
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
   -- The open cover of `c := lim Dᵢ` by the affine opens `U ⊆ c` such that `U` maps into an affine
   -- `V ⊆ X` which in turn maps into an affine `W ⊆ S`.
@@ -1281,15 +1286,11 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     (fun j ↦ (h𝒱𝒰 j).1) fun j ↦ (h𝒱𝒰 j).2 ▸ j.1.2.2
   -- We may glue the morphisms into `Dₗ ⟶ X` and verify that it indeed satisfies the hypothesis.
   have h𝒲 : IsOpenCover (D.map u ⁻¹ᵁ 𝒱 ·) := .mk ((D.map u).iSup_preimage_eq_top h𝒱)
-  let F := (Scheme.openCoverOfIsOpenCover _ _ h𝒲).glueMorphisms g fun j₁ j₂ ↦ by
-    change pullback.fst (D.map u ⁻¹ᵁ 𝒱 j₁).ι (D.map u ⁻¹ᵁ 𝒱 j₂).ι ≫ _ = pullback.snd _ _ ≫ _
-    rw [← cancel_epi (isPullback_opens_inf _ _).isoPullback.hom]
-    simpa using hglue j₁ j₂ _ inf_le_left inf_le_right
-  have hF (j : s) : (D.map u ⁻¹ᵁ 𝒱 j).ι ≫ F = g j := Scheme.Cover.ι_glueMorphisms ..
+  obtain ⟨F, hF⟩ := Scheme.exists_ι_comp_eq_of_isOpenCover h𝒲 g hglue
   refine ⟨l, F, Scheme.hom_ext_of_isOpenCover (.mk ((c.π.app l).iSup_preimage_eq_top h𝒲)) _ _
       fun j ↦ ?_, Scheme.hom_ext_of_isOpenCover h𝒲 _ _ fun j ↦ ?_⟩
   · rw [← Hom.resLE_comp_ι_assoc (c.π.app l) le_rfl, hF]
-    exact hπg j _ _
+    exact hπg j
   · simp [reassoc_of% hF, hg]
 
 set_option backward.defeqAttrib.useBackward true in
