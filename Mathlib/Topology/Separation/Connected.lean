@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Perfect
 
 /-!
 # Interaction of separation properties with connectedness properties
@@ -46,12 +47,9 @@ theorem subsingleton_iff_discrete_and_indiscrete :
     Subsingleton X ↔ DiscreteTopology X ∧ IndiscreteTopology X :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ PreconnectedSpace.trivial_of_discrete⟩
 
-/-- A non-trivial connected T1 space has no isolated points. -/
-instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
-    [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :
-    NeBot (𝓝[≠] x) := by
-  by_contra contra
-  rw [not_neBot, ← isOpen_singleton_iff_punctured_nhds] at contra
-  replace contra := nonempty_inter isOpen_compl_singleton
-    contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
-  simp [compl_inter_self {x}] at contra
+/-- A non-trivial connected T1 space has no isolated points.
+
+Under an old definition of `PerfectSpace` this instance was not automatic, but the conclusion of
+this example is exactly the definition of `PerfectSpace`, so typeclass resolution can prove it. -/
+example [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :
+    NeBot (𝓝[≠] x) := inferInstance
