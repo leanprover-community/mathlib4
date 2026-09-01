@@ -84,7 +84,7 @@ structure IsFarey (ξ : ℝ) (p q r s : ℤ) : Prop where
 
 /-- Divisionless reformulation of Hurwitz bound |ξ - x/y| < 1/(√5y²). -/
 def IsGoodApprox (ξ : ℝ) (x y : ℤ) : Prop :=
-  0 < y ∧ |(y : ℝ) * ξ - x| * y * √5 < 1
+  0 < y ∧ | (y : ℝ) * ξ - x| * y * √5 < 1
 
 -- Frequently used lemmas about sqrt 5
 private lemma sq_sqrt_five : √5 ^ 2 = 5 := sq_sqrt (by norm_num)
