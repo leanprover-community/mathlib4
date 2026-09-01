@@ -483,7 +483,7 @@ lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
 @[simps]
-def toPullbackDiagonal (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
+def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
 
 /-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/
 def Function.pullbackDiagonal (f : X → Y) : Set (f.Pullback f) := {p | p.fst = p.snd}
@@ -521,8 +521,8 @@ theorem Function.Injective.preimage_pullbackDiagonal {f : X → Y} {g : Z → X}
     mapPullback g id g (by rfl) (by rfl) ⁻¹' pullbackDiagonal f = pullbackDiagonal (f ∘ g) :=
   ext fun _ ↦ inj.eq_iff
 
-theorem image_toPullbackDiagonal (f : X → Y) (s : Set X) :
-    toPullbackDiagonal f '' s = pullbackDiagonal f ∩ Subtype.val ⁻¹' s ×ˢ s := by
+theorem image_toPullbackDiag (f : X → Y) (s : Set X) :
+    toPullbackDiag f '' s = pullbackDiagonal f ∩ Subtype.val ⁻¹' s ×ˢ s := by
   ext x
   constructor
   · rintro ⟨x, hx, rfl⟩
@@ -531,11 +531,11 @@ theorem image_toPullbackDiagonal (f : X → Y) (s : Set X) :
     rintro ⟨rfl : x = y, h2x⟩
     exact mem_image_of_mem _ h2x.1
 
-theorem range_toPullbackDiagonal (f : X → Y) :
-    range (toPullbackDiagonal f) = pullbackDiagonal f := by
-  rw [← image_univ, image_toPullbackDiagonal, univ_prod_univ, preimage_univ, inter_univ]
+theorem range_toPullbackDiag (f : X → Y) :
+    range (toPullbackDiag f) = pullbackDiagonal f := by
+  rw [← image_univ, image_toPullbackDiag, univ_prod_univ, preimage_univ, inter_univ]
 
-theorem injective_toPullbackDiagonal (f : X → Y) : (toPullbackDiagonal f).Injective :=
+theorem injective_toPullbackDiag (f : X → Y) : (toPullbackDiag f).Injective :=
   fun _ _ h ↦ congr_arg Prod.fst (congr_arg Subtype.val h)
 
 end Pullback
