@@ -265,7 +265,7 @@ lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻
 lemma iSup_preimage_eq_top {ι} {U : ι → Opens Y} (hU : iSup U = ⊤) :
     ⨆ i, f ⁻¹ᵁ U i = ⊤ := f.preimage_iSup U ▸ hU ▸ rfl
 
-@[gcongr]
+@[gcongr, sheaf_restrict]
 lemma preimage_mono {U U' : Y.Opens} (hUU' : U ≤ U') :
     f ⁻¹ᵁ U ≤ f ⁻¹ᵁ U' :=
   fun _ ha ↦ hUU' ha
@@ -275,6 +275,23 @@ lemma id_preimage (U : X.Opens) : (𝟙 X) ⁻¹ᵁ U = U := rfl
 @[simp]
 lemma comp_preimage {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g) ⁻¹ᵁ U = f ⁻¹ᵁ g ⁻¹ᵁ U := rfl
+
+lemma appLE_apply (e : V ≤ f ⁻¹ᵁ U) (s : Γ(Y, U)) :
+    f.appLE U V e s = (f.app U s) |_ V :=
+  rfl
+
+lemma restrict_appLE (e : V ≤ f ⁻¹ᵁ U) (e' : V' ≤ V) (s : Γ(Y, U)) :
+    (f.appLE U V e s) |_ V' = f.appLE U V' (e'.trans e) s := by
+  rw [appLE_apply, appLE_apply, TopCat.Presheaf.restrict_restrict]
+
+lemma appLE_restrict (e : U' ≤ U) (e' : V ≤ f ⁻¹ᵁ U') (s : Γ(Y, U)) :
+    f.appLE U' V e' (s |_ U') = f.appLE U V (e'.trans (f.preimage_mono e)) s := by
+  rw [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict, ← ConcreteCategory.comp_apply,
+    map_appLE]
+
+lemma app_restrict (e : U' ≤ U) (s : Γ(Y, U)) :
+    f.app U' (s |_ U') = (f.app U s) |_ (f ⁻¹ᵁ U') := by
+  rw [app_eq_appLE, appLE_restrict _ e, appLE_apply]
 
 end Hom
 
@@ -404,6 +421,11 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V e) :
     (f ≫ g).appLE U V e = g.app U ≫ f.appLE _ V e := by
   rw [g.app_eq_appLE, appLE_comp_appLE]
+
+theorem appLE_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) (s : Γ(Z, U)) :
+    f.appLE V W e₂ (g.appLE U V e₁ s) =
+      (f ≫ g).appLE U W (e₂.trans ((Opens.map f.base).map (homOfLE e₁)).le) s := by
+  rw [← ConcreteCategory.comp_apply, appLE_comp_appLE]
 
 theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
     f.app U = g.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)).op := by

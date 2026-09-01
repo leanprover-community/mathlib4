@@ -781,9 +781,9 @@ lemma exists_app_map_eq_zero_of_isLimit {i : I} {U : (D.obj i).Opens}
     (hU : IsCompact (X := D.obj i) U) (s : Γ(D.obj i, U)) (hs : (c.π.app i).app U s = 0) :
     ∃ (j : I) (f : j ⟶ i), (D.map f).app U s = 0 := by
   have h0 {V : (D.obj i).Opens} (hV : V ≤ U) {V' : c.pt.Opens} (e : V' ≤ c.π.app i ⁻¹ᵁ V) :
-      (c.π.app i).appLE V V' e (TopCat.Presheaf.restrictOpen s V hV) = 0 := by
-    rw [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict, ← ConcreteCategory.comp_apply,
-      Scheme.Hom.map_appLE, Scheme.Hom.appLE, ConcreteCategory.comp_apply, hs, map_zero]
+      (c.π.app i).appLE V V' e (s |_ V) = 0 := by
+    rw [Scheme.Hom.appLE_restrict _ hV, Scheme.Hom.appLE, ConcreteCategory.comp_apply, hs,
+      map_zero]
   have key {W : (D.obj i).Opens} (hW : IsAffineOpen W) (hWU : W ≤ U) :
       ∃ (j : I) (f : j ⟶ i), (D.map f).app W (s |_ W) = 0 := by
     have (j : Over i) : IsAffine ((opensDiagram D i W).obj j) := hW.preimage (D.map _)
@@ -841,67 +841,49 @@ variable [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)]
 
 open TopologicalSpace in
 include hc in
-private lemma exists_isOpenCover_appLE_eq_restrict_of_isLimit (s : Γ(c.pt, ⊤)) :
+private lemma exists_isOpenCover_app_eq_restrict_of_isLimit (s : Γ(c.pt, ⊤)) :
     ∃ (k : I) (J : Type u) (U : J → (D.obj k).Opens) (_ : IsOpenCover U)
       (t : ∀ x, Γ(D.obj k, U x)), (D.obj k).presheaf.IsCompatible U t ∧
         ∀ x, (c.π.app k).app (U x) (t x) = s |_ (c.π.app k ⁻¹ᵁ U x) := by
   obtain ⟨i⟩ := IsCofiltered.nonempty (C := I)
-  obtain ⟨Us, hUs, hUsf, hsup⟩ := (D.obj i).isBasis_affineOpens.exists_finite_of_isCompact
-    (U := ⊤) (by simpa using isCompact_univ)
-  have : Finite Us := hUsf
-  have hcov : IsOpenCover fun W : Us ↦ W.1 := .mk (by rw [← sSup_eq_iSup', ← hsup])
-  have key : ∃ (n : I) (w : n ⟶ i), ∀ W : Us, ∃ T : Γ(D.obj n, D.map w ⁻¹ᵁ W.1),
-      ∀ (V : c.pt.Opens) (e : V ≤ c.π.app n ⁻¹ᵁ D.map w ⁻¹ᵁ W.1),
-        (c.π.app n).appLE _ V e T = s |_ V := by
-    refine IsCofiltered.exists_forall ?_ fun W ↦ ?_
-    · rintro n m v w W ⟨T, hT⟩
-      refine ⟨(D.map v).appLE _ _ (by simp) T, fun V e ↦ ?_⟩
-      simpa only [← ConcreteCategory.comp_apply, Scheme.Hom.appLE_comp_appLE, Cone.w]
-        using hT V (by simpa using e)
-    obtain ⟨j, u, T, hT⟩ := exists_appLE_π_eq_of_isAffineOpen D c hc (hUs W.2)
-      (s |_ (c.π.app i ⁻¹ᵁ W.1))
-    refine ⟨j, u, T, fun V e ↦ ?_⟩
-    have h := π_app_preimage_map_preimage D c u W.1
-    simp_rw [Scheme.Hom.appLE, ConcreteCategory.comp_apply] at hT ⊢
-    rw [← TopCat.Presheaf.restrict_restrict (e.trans_eq h) le_top s, ← hT]
-    exact (TopCat.Presheaf.restrict_restrict (e.trans_eq h) h.ge _).symm
-  choose n w T hT using key
+  obtain ⟨Us, hcov⟩ :=
+    (IsOpenCover.mk (iSup_affineOpens_eq_top (D.obj i))).exists_finite_of_compactSpace
+  obtain ⟨n, w, hT⟩ : ∃ (n : I) (w : n ⟶ i), ∀ W : Us, ∃ T : Γ(D.obj n, D.map w ⁻¹ᵁ W.1.1),
+      (c.π.app n).appLE _ (c.π.app i ⁻¹ᵁ W.1.1) (by simp) T = s |_ _ :=
+    IsCofiltered.exists_forall (fun v u W ⟨T, hT⟩ ↦ ⟨(D.map v).appLE _ _ (by simp) T, by
+      simpa only [Scheme.Hom.appLE_appLE, Cone.w] using hT⟩)
+      fun W ↦ exists_appLE_π_eq_of_isAffineOpen D c hc W.1.2 (s |_ _)
+  choose T hT using hT
+  replace hT (W : Us) {V : c.pt.Opens} (e : V ≤ c.π.app n ⁻¹ᵁ D.map w ⁻¹ᵁ W.1.1) :
+      (c.π.app n).appLE _ V e (T W) = s |_ V := by
+    have h := π_app_preimage_map_preimage D c w W.1.1
+    rw [← Scheme.Hom.restrict_appLE _ h.ge (e.trans_eq h), hT W, TopCat.Presheaf.restrict_restrict]
   obtain ⟨k, v, hv⟩ : ∃ (k : I) (v : k ⟶ n), ∀ (W₁ W₂ : Us) (V : (D.obj k).Opens)
-      (h₁ : V ≤ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₁.1) (h₂ : V ≤ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₂.1),
+      (h₁ : V ≤ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₁.1.1) (h₂ : V ≤ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₂.1.1),
         (D.map v).appLE _ V h₁ (T W₁) = (D.map v).appLE _ V h₂ (T W₂) := by
     refine IsCofiltered.exists_forall₂ ?_ fun W₁ W₂ ↦ ?_
-    · exact fun x v W₁ W₂ hv V h₁ h₂ ↦ by
-        have e : V ≤ D.map x ⁻¹ᵁ
-            (D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₁.1 ⊓ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₂.1) := by
-          simpa [Scheme.Hom.preimage_inf] using le_inf h₁ h₂
-        simpa [← ConcreteCategory.comp_apply, Scheme.Hom.appLE_comp_appLE, -Scheme.Hom.comp_appLE]
-          using congr((D.map x).appLE _ V e $(hv _ inf_le_left inf_le_right))
-    have hcpt := ((hUs W₁.2).preimage (D.map w)).isCompact_inf ((hUs W₂.2).preimage (D.map w))
-    obtain ⟨k, v, hv⟩ := exists_app_map_eq_map_of_isLimit D c hc hcpt (T W₁ |_ _) (T W₂ |_ _) (by
-      dsimp +instances [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
-      simp only [← ConcreteCategory.comp_apply, Scheme.Hom.app_eq_appLE, Scheme.Hom.map_appLE]
-      exact (hT W₁ _ _).trans (hT W₂ _ _).symm)
-    refine ⟨k, v, fun V h₁ h₂ ↦ ?_⟩
-    have H : V ≤ D.map v ⁻¹ᵁ (D.map w ⁻¹ᵁ W₁.1 ⊓ D.map w ⁻¹ᵁ W₂.1) := by
-      simpa [Scheme.Hom.preimage_inf] using le_inf h₁ h₂
-    apply_fun (D.obj k).presheaf.map (homOfLE H).op at hv
-    dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict] at hv ⊢
-    simpa [← ConcreteCategory.comp_apply, -Scheme.Hom.comp_appLE,
-      Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE] using hv
-  refine ⟨k, Us, fun W ↦ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W.1,
+    · exact fun v u W₁ W₂ hv V h₁ h₂ ↦ by
+        simpa [Scheme.Hom.appLE_appLE, -Scheme.Hom.comp_appLE] using
+          congr((D.map v).appLE _ V ((le_inf h₁ h₂).trans_eq (by rw [D.map_comp]; rfl))
+            $(hv _ inf_le_left inf_le_right))
+    refine Exists₂.imp (fun k v hv V h₁ h₂ ↦ ?_) (exists_app_map_eq_map_of_isLimit D c hc
+      ((W₁.1.2.preimage (D.map w)).isCompact_inf (W₂.1.2.preimage (D.map w)))
+      (T W₁ |_ _) (T W₂ |_ _) (by
+        simpa [Scheme.Hom.app_restrict, ← Scheme.Hom.appLE_apply] using
+          (hT W₁ _).trans (hT W₂ _).symm))
+    simpa [Scheme.Hom.app_restrict, Scheme.Hom.appLE_apply, TopCat.Presheaf.restrict_restrict]
+      using congr($hv |_ₗ V ⟪(le_inf h₁ h₂).trans_eq (D.map v).preimage_inf.symm⟫)
+  refine ⟨k, Us, fun W ↦ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W.1.1,
     (hcov.preimage (D.map w)).preimage (D.map v), fun W ↦ (D.map v).app _ (T W),
     fun W₁ W₂ ↦ ?_, fun W ↦ ?_⟩
-  · dsimp [Opens.infLELeft, Opens.infLERight]
-    simpa [← ConcreteCategory.comp_apply, Scheme.Hom.app_eq_appLE, -Scheme.Hom.comp_appLE]
-      using hv W₁ W₂ _ inf_le_left inf_le_right
-  · simp only [← ConcreteCategory.comp_apply, Scheme.Hom.app_eq_appLE,
-      Scheme.Hom.appLE_comp_appLE, Cone.w]
-    exact hT W _ _
+  · simpa [Opens.infLELeft, Opens.infLERight, Scheme.Hom.appLE] using
+      hv W₁ W₂ _ inf_le_left inf_le_right
+  · simpa only [Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_appLE, Cone.w] using hT W _
 
 include hc in
 lemma exists_appTop_π_eq_of_isLimit (s : Γ(c.pt, ⊤)) :
     ∃ (i : I) (t : Γ(D.obj i, ⊤)), s = (c.π.app i).appTop t := by
-  obtain ⟨k, J, U, hU, t, hcompat, ht⟩ := exists_isOpenCover_appLE_eq_restrict_of_isLimit D c hc s
+  obtain ⟨k, J, U, hU, t, hcompat, ht⟩ := exists_isOpenCover_app_eq_restrict_of_isLimit D c hc s
   obtain ⟨t₀, ht₀, -⟩ := TopCat.Sheaf.existsUnique_gluing' ⟨_, (D.obj k).IsSheaf⟩ U ⊤
     (fun _ ↦ homOfLE le_top) hU.ge t hcompat
   refine ⟨k, t₀, TopCat.Sheaf.eq_of_locally_eq' ⟨_, c.pt.IsSheaf⟩ (fun x ↦ c.π.app k ⁻¹ᵁ U x) ⊤
