@@ -16,10 +16,9 @@ bundled version `DoubleCoset₀`.
 
 For a triple `(H₁, H₂, g)`, the property `DoubleCoset.IsLeftFinite H₁ H₂ g` says that the double
 coset H₁gH₂ admits a finite decomposition into left cosets, i.e. the set `{xH₂ | H₁xH₂ = H₁gH₂}` is
-finite. The collection of all such double cosets is bundled into a type `DoubleCoset₀`.
-
-One motivation for introducing `DoubleCoset₀` is to describe the intertwining space
-`Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])` as the free module `k[DoubleCoset₀ H₁ H₂]`.
+finite. The collection of all such double cosets is bundled into a type `DoubleCoset₀`, which allows
+us to describe the intertwining space `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])` as the free module
+`k[DoubleCoset₀ H₁ H₂]`.
 
 # Main definitions
 
@@ -113,7 +112,7 @@ lemma mem_range_toLeftCoset_iff {g d : G} :
 noncomputable def toLeftDecompositionEquiv :
     LeftDecompQuotient H₁ H₂ g ≃ (mk H₁ H₂ g).LeftDecomposition :=
   (Equiv.ofInjective toLeftCoset toLeftCoset_injective).trans
-    (Equiv.setCongr (by
+    (Set.equivOfEq (by
       ext x
       rw [← QuotientGroup.out_eq' x, Set.mem_range, mem_range_toLeftCoset_iff,
         mem_LeftDecomposition_mk]
