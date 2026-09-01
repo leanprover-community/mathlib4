@@ -21,7 +21,8 @@ kernel-checked `decide`.
 - `CertInput`, `Certifier`: the input of a certifier, and the certifier interface.
 - `mkCertificate`: build the `Echelon.Decomposition` certificate of a matrix literal.
 - `checkKernelDecide`: check that equality in a ring reduces in the kernel.
-- `mkPerm`, `mkPivotLit`: elaborate the row permutation and the pivot function.
+- `mkPerm`, `mkPivotLit`, `mkMatrixLit`: elaborate the row permutation, the pivot
+  function, and a matrix literal.
 
 ## Implementation notes
 
@@ -64,6 +65,11 @@ structure CertInput where
 /-- Build the numeral of `i` in `Fin $n`. -/
 def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
   mkNumeral q(Fin $n) i
+
+/-- Build the matrix literal of the row-major entries `rows`. -/
+def mkMatrixLit {u : Level} (α : Q(Type u)) (m n : Nat) (rows : Array (Array Expr)) :
+    Q(Matrix (Fin $m) (Fin $n) $α) :=
+  Matrix.mkLiteralQ (α := α) (m := m) (n := n) (.of fun i j => (rows[i]!)[j]!)
 
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
@@ -113,12 +119,10 @@ def mkCertificate : Certifier := fun input => do
   have α : Q(Type u) := input.α
   have A : Q(Matrix (Fin $m) (Fin $n) $α) := input.A
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
-  let lit (r c : Nat) (rows : Array (Array Expr)) : Q(Matrix (Fin $r) (Fin $c) $α) :=
-    Matrix.mkLiteralQ (α := α) (m := r) (n := c) (.of fun i j => (rows[i]!)[j]!)
-  have L : Q(Matrix (Fin $m) (Fin $m) $α) := lit m m data.L
-  have U : Q(Matrix (Fin $m) (Fin $n) $α) := lit m n data.U
+  have L := mkMatrixLit α m m data.L
+  have U := mkMatrixLit α m n data.U
   -- the row of `A_σ = A.submatrix σ id` at position `i` is the row of `A` at `σ i`
-  have Aσ : Q(Matrix (Fin $m) (Fin $n) $α) := lit m n (data.rowOrder.map (entries[·]!))
+  have Aσ := mkMatrixLit α m n (data.rowOrder.map (entries[·]!))
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
   let hperm ← certifyCondition "the row arrangement" q(($A).submatrix $σ id = $Aσ)
