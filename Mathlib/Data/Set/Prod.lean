@@ -584,7 +584,7 @@ theorem diagonal_insert (a : α) (s : Set α) :
 @[simp] theorem diagonal_image (s : Set α) : Function.diagonal '' s = s.diagonal := by grind
 
 theorem image_diagonal {β : Type*} (f : α × α → β) :
-    f '' s.diagonal = (fun x => f (x, x)) '' s := by grind
+    f '' s.diagonal = (f ∘ Function.diagonal) '' s := by grind
 
 theorem preimage_coe_coe_diagonal (s : Set α) :
     Prod.map Subtype.val Subtype.val ⁻¹' s.diagonal = diagonalUniv s := by grind
