@@ -93,6 +93,12 @@ Valid arguments are:
 # Environment variables
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
+* MATHLIB_CACHE_DEBUG_USE_LEGACY
+                          Troubleshooting fallback. Set to 1 or true to take the
+                          tool's legacy path: reads address the Azure storage
+                          account instead of https://cache.mathlib.org. This
+                          variable is unsupported and can go away in any
+                          release; do not depend on it.
 * MATHLIB_CACHE_GET_URL   Download from this single URL, bypassing the containers
 * MATHLIB_CACHE_PUT_URL   Upload to this single URL, bypassing the containers
 * MATHLIB_CACHE_FROM      Comma-separated container list for reads, same shape as
@@ -128,6 +134,9 @@ def main (args : List String) : IO Unit := do
       IO.eprintln s!"Unknown option '{opt}'"
       IO.eprintln help
       Process.exit 1
+
+  -- Resolve the legacy switch once, before anything builds a read URL.
+  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
 
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options

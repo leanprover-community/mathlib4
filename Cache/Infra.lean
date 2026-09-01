@@ -64,6 +64,11 @@ inductive Container where
   | legacy
   deriving DecidableEq, Repr, BEq, Inhabited
 
+/--
+Base URL of the `lakecache` Azure Blob Storage account.
+-/
+def azureAccountURL : String := "https://lakecache.blob.core.windows.net"
+
 namespace Container
 
 /-- Canonical short name for a container, used in CLI flags and URLs. -/
@@ -100,7 +105,7 @@ def azureContainerName : Container → String
 
 /-- Public Azure Blob Storage base URL for a container. -/
 def azureURL (c : Container) : String :=
-  s!"https://lakecache.blob.core.windows.net/{c.azureContainerName}"
+  s!"{azureAccountURL}/{c.azureContainerName}"
 
 /--
 Whether file lookups in this container use the flat `/f/<hash>` layout, or
@@ -152,14 +157,44 @@ later `/{path}` follows a single separator.
 def normalizeBaseURL (value? : Option String) : Option String :=
   (value?.map fun v => (v.trimAscii.dropEndWhile '/').copy).filter (!·.isEmpty)
 
-/-- Default base URL for cache reads: the direct address of the Azure Blob
-Storage account. -/
-def defaultGetBaseURL : String := "https://lakecache.blob.core.windows.net"
+/--
+The Mathlib cache read endpoint: one hostname that serves the whole
+`/{container}/{key}` namespace the storage account holds, and caches artifacts
+at its edge. A read through it costs the project less and lands nearer the
+reader than a read straight from storage.
+-/
+def cacheHostURL : String := "https://cache.mathlib.org"
+
+/--
+Whether the tool takes its legacy path wherever a legacy and a current one
+differ. It governs one such choice: which host serves reads, `azureAccountURL`
+or `cacheHostURL`.
+
+`main` sets this from `MATHLIB_CACHE_DEBUG_USE_LEGACY` at startup, so the
+variable is read once and a value `Cache.Cli.parseEnvFlag` cannot read warns
+once, however many read URLs the command builds.
+
+That variable is a troubleshooting fallback, for the days when the current path
+misbehaves and a contributor needs their build to finish. It is no part of the
+tool's interface: nothing should depend on it, and it goes away with the legacy
+path it selects. A consumer that needs a durable choice of read host names one
+with `MATHLIB_CACHE_BASE_URL`.
+-/
+initialize useLegacy : IO.Ref Bool ← IO.mkRef false
+
+/--
+Default base URL for cache reads: the read endpoint, or the storage account
+itself, which is the legacy read host.
+-/
+def defaultGetBaseURL (useLegacy : Bool) : String :=
+  if useLegacy then azureAccountURL else cacheHostURL
 
 /--
 Base URL for cache reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
-`defaultGetBaseURL`. `normalizeBaseURL` reads the value, so it arrives trimmed,
-free of trailing slashes, and unset when empty.
+`defaultGetBaseURL useLegacy`. `normalizeBaseURL` reads the value, so it
+arrives trimmed, free of trailing slashes, and unset when empty. A base URL
+wins over `useLegacy`, being the more specific answer to the same question:
+which host serves reads.
 
 A read URL is `{base}/{azureContainerName}/{key}`, the namespace the Azure
 account serves. Any host that mirrors that namespace is therefore a valid base.
@@ -169,18 +204,24 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
+The audience follows from what each variable exposes. The chain and the
+container names are mathlib4's own layout, free to change with the containers
+themselves, so only a reader who tracks this repository should bind to them. A
+project that depends on mathlib reads through `MATHLIB_CACHE_GET_URL`, whose
+flat namespace is a stable contract.
+
 Only reads follow this base. Uploads, marker writes, and the blob-listing
 query authenticate against Azure and use `Container.azureURL` directly.
 -/
-def getBaseURLFrom (envValue? : Option String) : String :=
-  (normalizeBaseURL envValue?).getD defaultGetBaseURL
+def getBaseURLFrom (envValue? : Option String) (useLegacy : Bool) : String :=
+  (normalizeBaseURL envValue?).getD (defaultGetBaseURL useLegacy)
 
 /--
 Base URL for cache reads, resolved from the environment.
 Written on top of the pure function above, which is separate to be testable.
 -/
 def getBaseURL : IO String := do
-  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
+  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
 
 /-- Read URL for a container: `{getBaseURL}/{azureContainerName}`. -/
 def Container.getURL (c : Container) : IO String := do
