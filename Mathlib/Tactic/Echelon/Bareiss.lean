@@ -70,6 +70,8 @@ structure BareissResult where
 def mkBareissDecomposition {u : Level} (A : Expr) (m n : Nat) (α : Q(Type u))
     (entries : Array (Array Expr)) : MetaM BareissResult := do
   let d ← (← producerFor α) entries
-  return { cert := ← mkCertificate { u, α, m, n, A, entries, data := d }, data := d }
+  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
+  have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
+  return { cert := ← mkCertificate _cr A entries d, data := d }
 
 end Mathlib.Tactic.Echelon

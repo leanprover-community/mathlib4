@@ -20,7 +20,6 @@ constructor that is parametric on a leaf normaliser.
 
 ## Main definitions
 
-- `CertInput`: the input of a certifier, and the certifier interface.
 - `mkCertificate`: build the `Echelon.Decomposition` certificate of a matrix literal.
 - `checkKernelDecide`: check that equality in a ring reduces in the kernel.
 - `mkPerm`, `mkPivotLit`, `mkMatrixLit`: elaborate the row permutation, the pivot
@@ -37,29 +36,6 @@ public meta section
 open Lean Meta Qq
 
 namespace Mathlib.Tactic.Echelon
-
-/-- The input of a certifier. The matrix literal `A` with its element type and parsed
-entries, and the decomposition data computed by the producer. Certifiers elaborate the
-required components from `data`. -/
-structure CertInput where
-  /-- The universe of the element type. -/
-  u : Level
-  /-- The element type, `Q(Type u)`. -/
-  α : Expr
-  /-- The number of rows. -/
-  m : Nat
-  /-- The number of columns. -/
-  n : Nat
-  /-- The matrix literal, `Q(Matrix (Fin m) (Fin n) α)`. -/
-  A : Expr
-  /-- The parsed entries of `A`. -/
-  entries : Array (Array Expr)
-  /-- The decomposition data computed by the producer. -/
-  data : BareissData Expr
-
-/-- A certifier: prove the certificate conditions, elaborating the
-`Echelon.Decomposition A` term of the input. -/
-def Certifier := CertInput → MetaM Expr
 
 /-- Build the numeral of `i` in `Fin $n`. -/
 def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
@@ -111,13 +87,11 @@ def certifyCondition (name : String) (c : Q(Prop)) : MetaM Q($c) := do
     throwError "cannot verify the rank certificate: {name} failed"
   mkDecideProofQ c
 
-/-- Build the `Echelon.Decomposition` certificate of the input's matrix literal, with the
-certificate conditions proven by kernel-checked `decide`. -/
-def mkCertificate : Certifier := fun input => do
-  let { u, m, n, entries, data, .. } := input
-  have α : Q(Type u) := input.α
-  have A : Q(Matrix (Fin $m) (Fin $n) $α) := input.A
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
+/-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data,
+with the certificate conditions proven by kernel-checked `decide`. -/
+def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr))
+    (data : BareissData Expr) : MetaM Q(Echelon.Decomposition $A) := do
   have L := mkMatrixLit α m m data.L
   have U := mkMatrixLit α m n data.U
   -- the row of `A_σ = A.submatrix σ id` at position `i` is the row of `A` at `σ i`
@@ -131,8 +105,6 @@ def mkCertificate : Certifier := fun input => do
   let hpivot ← certifyCondition "the echelon-pivot condition" q(($U).IsPivotedBy $pivot)
   let hlower ← certifyCondition "lower triangularity of the transform" q(($L).IsLowerTriangular)
   let hdiag ← certifyCondition "the nonzero diagonal of the transform" q(∀ i, ($L).diag i ≠ 0)
-  let cert : Q(Echelon.Decomposition $A) :=
-    q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
-  return cert
+  return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
 
 end Mathlib.Tactic.Echelon
