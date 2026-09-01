@@ -111,14 +111,8 @@ theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h 
     have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
     simp only [sub_comp, pow_comp, map_one, mul_comp, X_comp, one_comp, comp_assoc] at hw2
     obtain ⟨z, hz⟩  : ((X : R[X]) ^ r - 1 ) ∣ ((X ^ e) ^ r - 1) := by
-      simp only [← pow_mul]
-      by_cases he : 1 < e
-      · exact X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd _ (by
-          simp only [mem_properDivisors, dvd_mul_left, true_and]
-          exact lt_mul_left (by lia) (by lia)) |> dvd_of_mul_right_dvd
-      · by_cases he2 : e = 0
-        · simp [he2]
-        · grind [dvd_refl]
+      rw [pow_right_comm]
+      exact sub_one_dvd_pow_sub_one (X ^ r) e
     have h : I ((f ^ e) ^ d) = I (f.comp (X ^ e)) ^ d := congrArg₂ HPow.hPow hf (Eq.refl d)
     rw [pow_mul, h, pow_mul]
     apply Ideal.Quotient.eq.mpr
