@@ -118,15 +118,12 @@ theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h 
       · by_cases he2 : e = 0
         · simp [he2]
         · grind [dvd_refl]
-    calc
-      _ = I (f ^ e) ^ d := by simp [pow_mul]
-      _ = _ := congrArg₂ HPow.hPow hf (Eq.refl d)
-      _ = _ := by
-        simp only [pow_mul]
-        apply Ideal.Quotient.eq.mpr
-        apply mem_span_singleton.mpr
-        use z * w.comp (X ^ e)
-        grind
+    have h : I ((f ^ e) ^ d) = I (f.comp (X ^ e)) ^ d := congrArg₂ HPow.hPow hf (Eq.refl d)
+    rw [pow_mul, h, pow_mul]
+    apply Ideal.Quotient.eq.mpr
+    apply mem_span_singleton.mpr
+    use z * w.comp (X ^ e)
+    grind
 
 end CommRing
 
