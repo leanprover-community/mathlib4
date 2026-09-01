@@ -163,6 +163,29 @@ instance : SetLike (AffineSubspace k P) P where
 
 instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P) P
 
+instance : Singleton P (AffineSubspace k P) where
+  singleton x := {
+    carrier := {x}
+    smul_vsub_vadd_mem' _ _ _ _ := by simp +contextual }
+
+@[simp] theorem coe_singleton (x : P) : ({x} : AffineSubspace k P) = ({x} : Set P) := rfl
+
+@[simp, grind =, push]
+theorem mem_singleton_iff (x y : P) : x ∈ ({y} : AffineSubspace k P) ↔ x = y := by
+  simp [← SetLike.mem_coe]
+
+theorem notMem_singleton_iff (x y : P) : x ∉ ({y} : AffineSubspace k P) ↔ x ≠ y := by
+  simp [← SetLike.mem_coe]
+
+theorem mem_singleton (x : P) : x ∈ ({x} : AffineSubspace k P) := by simp [← SetLike.mem_coe]
+
+theorem eq_of_mem_singleton {x y : P} (h : x ∈ ({y} : AffineSubspace k P)) : x = y := by
+  simpa [← SetLike.mem_coe] using h
+
+@[simp]
+theorem singleton_eq_singleton_iff (x y : P) : {x} = ({y} : AffineSubspace k P) ↔ x = y := by
+  simp [← SetLike.coe_set_eq]
+
 @[simp] lemma carrier_eq_coe (s : AffineSubspace k P) : s.carrier = s := rfl
 
 lemma smul_vsub_vadd_mem (s : AffineSubspace k P) (c : k) {p₁ p₂ p₃ : P} :
@@ -239,6 +262,10 @@ def direction (s : AffineSubspace k P) : Submodule k V :=
 /-- The direction equals the `vectorSpan`. -/
 theorem direction_eq_vectorSpan (s : AffineSubspace k P) : s.direction = vectorSpan k (s : Set P) :=
   rfl
+
+@[simp]
+theorem direction_singleton_eq_bot (x : P) : ({x} : AffineSubspace k P).direction = ⊥ := by
+  simp [AffineSubspace.direction]
 
 /-- Alternative definition of the direction when the affine subspace is nonempty. This is defined so
 that the order on submodules (as used in the definition of `Submodule.span`) can be used in the

@@ -79,6 +79,12 @@ instance finiteDimensional_direction_affineSpan_singleton (p : P) :
   rw [direction_affineSpan]
   infer_instance
 
+/-- The direction of a singleton is finite-dimensional. -/
+instance finiteDimensional_directionsingleton (p : P) :
+    FiniteDimensional k ({p} : AffineSubspace k P).direction := by
+  rw [← affineSpan_singleton]
+  infer_instance
+
 /-- The direction of the affine span of a family indexed by a
 `Fintype` is finite-dimensional. -/
 instance finiteDimensional_direction_affineSpan_range [Finite ι] (p : ι → P) :

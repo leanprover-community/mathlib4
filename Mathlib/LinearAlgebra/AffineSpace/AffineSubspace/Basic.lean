@@ -144,6 +144,16 @@ theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) 
 theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p₁ = p₂ := by
   simp [← mem_coe]
 
+@[simp]
+lemma affineSpan_singleton (x : P) : affineSpan k ({x} : Set P) = {x} := by
+  ext; simp
+
+@[simp]
+theorem coe_affineSpan_eq_singleton_iff (s : Set P) (x : P) : affineSpan k s = {x} ↔ s = {x} := by
+  refine ⟨fun h ↦ ?_, by simp +contextual⟩
+  refine Set.Nonempty.subset_singleton_iff ?_ |>.mp (by simpa using affineSpan_le.mp h.le)
+  exact affineSpan_nonempty k |>.mp (by simp [h])
+
 instance unique_affineSpan_singleton (p : P) : Unique (affineSpan k {p}) where
   default := ⟨p, mem_affineSpan _ (Set.mem_singleton _)⟩
   uniq := fun x ↦ Subtype.ext ((mem_affineSpan_singleton _ _).1 x.property)
