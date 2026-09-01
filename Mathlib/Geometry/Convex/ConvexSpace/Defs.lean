@@ -29,8 +29,9 @@ This file defines convex spaces as an algebraic structure supporting finite conv
 * `Convexity.IsConvexCombComm R S X`: A typeclass for the `R`-convex and `S`-convex space
   structures on `X` to commute.
 * `Convexity.IsCancelConvexSpace`: Typeclass for a convex space in which points can be
-  cancelled from convex combinations. Note that such convex spaces can all be embedded in
-  Euclidean space, but Mathlib doesn't know this yet.
+  cancelled from convex combinations. Over a linearly ordered field, such convex spaces are
+  precisely the ones embedding affinely into a module.
+  See `Convexity.EnvelopingModule.injective_of_iff`.
 
 ## Design
 
@@ -810,7 +811,10 @@ combination, namely if two convex combinations which agree except that one puts 
 
 Torsion-free modules over linearly ordered scalars are cancellative,
 and so are affine spaces over such modules.
-See `Convexity.IsCancelConvexSpace.of_module`, `Convexity.IsCancelConvexSpace.of_addTorsor`. -/
+See `Convexity.IsCancelConvexSpace.of_module`, `Convexity.IsCancelConvexSpace.of_addTorsor`.
+
+Conversely, a convex space over a linearly ordered field is cancellative iff it embeds affinely
+into a module, see `Convexity.EnvelopingModule.injective_of_iff`. -/
 class IsCancelConvexSpace : Prop where
   /-- A point of positive weight can be cancelled from a convex combination. -/
   eq_of_sConvexComb {a : R} (ha : 0 < a) {w : X →₀ R} {w₁ w₂ : StdSimplex R X} {x y : X}
