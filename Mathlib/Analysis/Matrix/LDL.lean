@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 public import Mathlib.Analysis.Matrix.PosDef
+public import Mathlib.LinearAlgebra.Matrix.Block
 
 /-! # LDL decomposition
 
@@ -86,7 +87,9 @@ noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
 noncomputable def LDL.diag : Matrix n n 𝕜 :=
   Matrix.diagonal (LDL.diagEntries hS)
 
-theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
+theorem LDL.lowerInv_isLowerTriangular : (LDL.lowerInv hS).IsLowerTriangular := by
+  intro i j hij
+  simp only [OrderDual.toDual_lt_toDual] at hij
   rw [← @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
       (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ i j hij (Pi.basisFun 𝕜 n),
     Pi.basisFun_repr, LDL.lowerInv]
@@ -109,6 +112,9 @@ theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.low
 /-- The lower triangular matrix `L` of the LDL decomposition. -/
 noncomputable def LDL.lower :=
   (LDL.lowerInv hS)⁻¹
+
+theorem LDL.lower_isLowerTriangular : (LDL.lower hS).IsLowerTriangular :=
+  blockTriangular_inv_of_blockTriangular (lowerInv_isLowerTriangular hS)
 
 /-- **LDL decomposition**: any positive definite matrix `S` can be
 decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix. -/
