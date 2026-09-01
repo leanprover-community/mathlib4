@@ -5,10 +5,14 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.ConjSqrt
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.Convex.Mul
+public import Mathlib.Algebra.Algebra.StrictPositivity
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Order properties of `Ring.inverse` in C⋆-algebras
@@ -99,6 +103,7 @@ public lemma convexOn_ringInverse :
       _ = _ := by
         rw [← ringInverse_conjSqrt _ _ xpos, conjSqrt_conjSqrt_ringInverse _ _ xpos]
 
+set_option backward.isDefEq.respectTransparency.types false in
 public lemma convexOn_ringInverse_algebraMap_add {t : ℝ} (ht : 0 < t) :
     ConvexOn ℝ (Ici (0 : A)) (fun x : A => Ring.inverse (algebraMap ℝ A t + x)) := by
   have : ∀ x ∈ Ici (0 : A), IsStrictlyPositive (algebraMap ℝ A t + x) := by grind

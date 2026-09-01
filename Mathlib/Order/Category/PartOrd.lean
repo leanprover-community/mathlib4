@@ -40,7 +40,6 @@ instance : CoeSort PartOrd (Type _) :=
 
 attribute [coe] PartOrd.carrier
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `PartOrd R`. -/
 @[ext]
 structure Hom (X Y : PartOrd.{u}) where
@@ -83,8 +82,6 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 lemma coe_id {X : PartOrd} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : PartOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[ext]
 lemma ext {X Y : PartOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

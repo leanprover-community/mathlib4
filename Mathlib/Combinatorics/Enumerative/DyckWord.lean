@@ -277,6 +277,7 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
   exact ⟨by lia, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
     p.count_U_eq_count_D]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
@@ -374,6 +375,7 @@ lemma outsidePart_nest : p.nest.outsidePart = 0 := by
   rw [DyckWord.ext_iff]; apply drop_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
+set_option backward.isDefEq.respectTransparency false in
 include h in
 @[simp]
 theorem nest_insidePart_add_outsidePart : p.insidePart.nest + p.outsidePart = p := by
@@ -530,8 +532,6 @@ lemma numNodes_toTree (p : DyckWord) : p.toTree.numNodes = p.semilength := by
 termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt h, semilength_outsidePart_lt h]
 
-@[deprecated (since := "2026-02-03")] alias semilength_eq_numNodes_equivTree := numNodes_toTree
-
 /-- Equivalence between Dyck words of semilength `n` and rooted binary trees with
 `n` internal nodes. -/
 @[simps!]
@@ -553,7 +553,7 @@ end DyckWord
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `p.firstReturn` is positive if `p` is nonzero. -/
 @[positivity DyckWord.firstReturn _]

@@ -152,7 +152,6 @@ example : 1 = Nat.log2 4 → False := by
   test "/0/1/1"
   exact test_sorry
 
-set_option pp.mvars.anonymous false in
 /--
 info: `conv?` would output:
 conv =>
