@@ -395,7 +395,7 @@ theorem exists_rel_or_rel [Std.Refl r] (hs : IsMaxAntichain r s) : ∃ b ∈ s, 
   by_contra! h
   have := hs.2 (hs.1.insert (fun _ hb _ => (h _ hb).1) fun _ hb _ => (h _ hb).2)
     (subset_insert _ _)
-  grind [Std.Refl.refl a]
+  grind [refl a]
 
 protected theorem image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc : IsMaxAntichain r c) :
     IsMaxAntichain s (e '' c) where
