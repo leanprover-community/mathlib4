@@ -119,7 +119,7 @@ end CommRing
 variable [Field R] [CharP R p] [Fact p.Prime]
 
 private theorem _root_.Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Coprime r) :
-    IsReduced (R[X] ⧸ span {(X : R[X]) ^ r - C 1}) := by
+    IsReduced (AdjoinRoot ((X : R[X]) ^ r - 1)) := by
   apply (isRadical_iff_quotient_reduced _).mp
   apply (Ideal.isRadical_iff_pow_one_lt 2 (by grind)).mpr
   intro s hs
@@ -132,7 +132,7 @@ private theorem _root_.Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (hcprm : 
   grind [modEq_zero_iff_dvd, Nat.Prime.coprime_iff_not_dvd Fact.out]
 
 private theorem _root_.Ring.charP_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Coprime r) :
-    CharP (R[X] ⧸ span {(X : R[X]) ^ r - C 1}) p  := by
+    CharP (AdjoinRoot ((X : R[X]) ^ r - 1)) p  := by
   have : r ≠ 0 := by grind [coprime_zero_right, prime_one_false, Fact.out]
   apply CharP.quotient'
   intro z hz
@@ -143,7 +143,7 @@ private theorem _root_.Ring.charP_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Co
   · have : (z : R[X]).natDegree = 0 := by simp
     have : r ≤ (z : R[X]).natDegree := by
       rw [← hy, natDegree_mul]
-      · suffices ((X : R[X]) ^ r - C 1).natDegree = r by lia
+      · suffices ((X : R[X]) ^ r - 1).natDegree = r by lia
         exact natDegree_X_pow_sub_C
       · exact hc
       exact X_pow_sub_C_ne_zero (show 0 < r by lia) _
@@ -161,8 +161,8 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
   have := Ring.charP_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
   simp only [map_pow] at h
   replace h : (frobenius _ p) _ = _ := h
-  have h2 : mk (span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ (m * p))) =
-      frobenius _ p (mk (Ideal.span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ m))) := by
+  have h2 : AdjoinRoot.mk ((X : R[X]) ^ r - 1) (g.comp (X ^ (m * p))) =
+      frobenius _ p (.mk _ (g.comp (X ^ m))) := by
     simp only [frobenius, RingHom.coe_mk, powMonoidHom_apply]
     rw [← map_pow]
     congr
