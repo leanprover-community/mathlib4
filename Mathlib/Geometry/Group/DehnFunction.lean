@@ -143,8 +143,16 @@ lemma IsConjRelDecomp.lift_eq_one (h : P.IsConjRelDecomp w l) : P.lift w = 1 := 
   obtain ⟨y, hy, rfl⟩ := List.mem_map.mp hx
   exact P.lift_eq_one_of_mem_conjugatesOfSet_symmRel (hmem y hy)
 
-lemma area_eq_foo : P.area w = n → ∃ (l : List (FreeGroup α)), P.IsConjRelDecomp w l := by
-  sorry
+/-- The infimum defining the area is attained: a word of finite area admits a decomposition into
+conjugates of relators whose length is exactly its area. -/
+lemma exists_isConjRelDecomp_length_eq_area (h : P.area w ≠ ⊤) :
+    ∃ l, P.IsConjRelDecomp w l ∧ (l.length : ℕ∞) = P.area w := by
+  have hne : ((fun l : List (FreeGroup α) ↦ (l.length : ℕ∞)) ''
+      {l | P.IsConjRelDecomp w l}).Nonempty := by
+    rw [Set.nonempty_iff_ne_empty]
+    rintro he
+    exact h (by rw [area, he, sInf_empty])
+  exact csInf_mem hne
 
 @[simp]
 lemma area_one_eq_zero : P.area (1 : FreeGroup α) = 0 := by
@@ -153,9 +161,12 @@ lemma area_one_eq_zero : P.area (1 : FreeGroup α) = 0 := by
 lemma area_eq_zero_iff : P.area w = 0 ↔ w = (1 : FreeGroup α) := by
   constructor
   · intro h
-    contrapose h
-    sorry
-  · intro h ; simp [h]
+    have hne : P.area w ≠ ⊤ := by simp [h]
+    obtain ⟨l, hl, hlen⟩ := P.exists_isConjRelDecomp_length_eq_area hne
+    rw [h, Nat.cast_eq_zero, List.length_eq_zero_iff] at hlen
+    rw [← hl.prod_eq, hlen, List.prod_nil]
+  · rintro rfl
+    simp
 
 /-- A word is a product of conjugates of relators and inverse relators exactly when it evaluates to
 the identity in `G`. -/
