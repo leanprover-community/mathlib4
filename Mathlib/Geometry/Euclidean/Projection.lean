@@ -623,7 +623,7 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
 lemma orthogonalProjectionSpan_eq_point (s : Simplex 𝕜 P 0) (p : P) :
     s.orthogonalProjectionSpan p = s.points 0 := by
   rw [orthogonalProjectionSpan]
-  convert! orthogonalProjection_affineSpan_singleton _ _
+  convert! orthogonalProjection_singleton _ _
   simp [Fin.fin_one_eq_zero]
 
 lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex 𝕜 P 1) (i : Fin 2)
