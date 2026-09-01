@@ -47,8 +47,7 @@ is `withReducible` with some exceptions.
 partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : Array Name := #[]) :
     MetaM Expr := withReducible do
   -- Telescope since it might be a family of instances.
-  forallTelescopeReducing expectedType fun xs expectedType => do
-  mkLambdaFVars xs <| ← withNewMCtxDepth <| do
+  forallTelescopeReducing expectedType fun xs expectedType => do mkLambdaFVars xs <| ← do
   let inst ← whnfI <| mkAppN inst xs
   withTraceNode `Elab.fast_instance (fun _ => return m!"type: {expectedType}") do
   let some className ← isClass? expectedType
@@ -142,7 +141,7 @@ public def elabFastInstance : TermElab
     let inst ← withSynthesize <| elabTerm arg expectedType?
     let expectedType ← expectedType?.getDM (inferType inst)
     try
-      makeFastInstance inst expectedType
+      withNewMCtxDepth <| makeFastInstance inst expectedType
     catch e =>
       logException e
       return inst
