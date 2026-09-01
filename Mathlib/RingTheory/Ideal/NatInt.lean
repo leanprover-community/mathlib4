@@ -110,5 +110,5 @@ theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
     fin_cases i
     · exact bot_lt_iff_ne_bot.mpr (Ideal.span_singleton_eq_bot.not.mpr two_ne_zero)
     · simp_rw [Nat.maximalIdeal_eq_span_two_three]
-      exact SetLike.lt_iff_le_and_exists.mpr ⟨Ideal.span_mono (by simp),
+      exact IsConcreteLE.lt_iff_le_and_exists.mpr ⟨Ideal.span_mono (by simp),
         3, Ideal.subset_span (by simp), Ideal.mem_span_singleton.not.mpr <| by simp⟩

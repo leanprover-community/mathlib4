@@ -125,7 +125,7 @@ theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →�
 theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
   bot_unique <|
-    SetLike.le_def.2 fun a h => by
+    IsConcreteLE.le_iff.2 fun a h => by
       simp only [mem_iInf, mem_ker, proj_apply] at h
       exact (mem_bot _).2 (funext fun i => h i)
 
@@ -194,7 +194,7 @@ theorem proj_comp_single_ne (i j : ι) (h : i ≠ j) : (proj i).comp (single R �
 theorem iSup_range_single_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (single R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
-  simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
+  simp only [← ker_comp, eq_top_iff, IsConcreteLE.le_iff, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
   rw [proj_comp_single_ne R φ j i, zero_apply]
   rintro rfl
@@ -228,7 +228,7 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
   refine
     Disjoint.mono (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right)
       (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right) ?_
-  simp only [disjoint_iff_inf_le, SetLike.le_def, mem_iInf, mem_inf, mem_ker, mem_bot, proj_apply,
+  simp only [disjoint_iff_inf_le, IsConcreteLE.le_iff, mem_iInf, mem_inf, mem_ker, mem_bot, proj_apply,
     funext_iff]
   rintro b ⟨hI, hJ⟩ i
   classical

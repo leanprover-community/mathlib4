@@ -673,7 +673,7 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
     {E : Type*} [AddCommMonoid E] [Module S E] (p : E →ₗ[S] M) :
     q.comp p = p ↔ range p ≤ range q := by
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
-    SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    IsConcreteLE.le_iff, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
 
 open LinearMap in
 /-- Idempotent operators are equal iff their range and kernels are. -/

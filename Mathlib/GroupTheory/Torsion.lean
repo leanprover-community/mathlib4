@@ -393,7 +393,7 @@ lemma torsion_eq_top_iff : torsion G = ⊤ ↔ IsMulTorsion G :=
 
 @[to_additive]
 lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
-  rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, SetLike.le_def]
+  rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, IsConcreteLE.le_iff]
   simp [not_imp_not, CommGroup.mem_torsion]
 
 @[to_additive]

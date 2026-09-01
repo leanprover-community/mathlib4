@@ -295,7 +295,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFin
   have ⟨i, hi₁, hi₂⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
     p hp (a := id) H s n hs hns
   rw [Set.image_id] at hi₂
-  refine not_lt_iff_le_imp_ge.mpr (Hs hi₁) (SetLike.lt_iff_le_and_exists.mpr ⟨?_, n, ?_, hn⟩)
+  refine not_lt_iff_le_imp_ge.mpr (Hs hi₁) (IsConcreteLE.lt_iff_le_and_exists.mpr ⟨?_, n, ?_, hn⟩)
   · rw [separableClosure_le_separableClosure_iff, adjoin_le_iff]
     intro x hx
     obtain rfl | ne := eq_or_ne x i

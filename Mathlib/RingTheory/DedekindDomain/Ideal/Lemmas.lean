@@ -239,7 +239,7 @@ theorem exist_integer_multiples_notMem {J : Ideal A} (hJ : J ≠ ⊤) {ι : Type
   have hI0 : I ≠ 0 := spanFinset_ne_zero.mpr ⟨j, hjs, hjf⟩
   -- We claim the multiplier `a` we're looking for is in `I⁻¹ \ (J / I)`.
   suffices ↑J / I < I⁻¹ by
-    obtain ⟨_, a, hI, hpI⟩ := SetLike.lt_iff_le_and_exists.mp this
+    obtain ⟨_, a, hI, hpI⟩ := IsConcreteLE.lt_iff_le_and_exists.mp this
     rw [mem_inv_iff hI0] at hI
     refine ⟨a, fun i hi => ?_, ?_⟩
     -- By definition, `a ∈ I⁻¹` multiplies elements of `I` into elements of `1`,

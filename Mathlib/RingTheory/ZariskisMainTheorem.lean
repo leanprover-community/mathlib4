@@ -96,7 +96,7 @@ lemma zariskisMainProperty_iff' {p : Ideal S} :
 lemma zariskisMainProperty_iff_exists_saturation_eq_top {p : Ideal S} :
     ZariskisMainProperty R p ↔ ∃ r ∉ p, ∃ h : IsIntegral R r,
       (integralClosure R S).saturation (.powers r) (by simpa [Submonoid.powers_le]) = ⊤ := by
-  simp [zariskisMainProperty_iff, ← top_le_iff, SetLike.le_def,
+  simp [zariskisMainProperty_iff, ← top_le_iff, IsConcreteLE.le_iff,
     Submonoid.mem_powers_iff, mem_integralClosure_iff]
 
 lemma ZariskisMainProperty.restrictScalars [Algebra S T] [IsScalarTower R S T]
@@ -622,7 +622,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
         exact ⟨(Subalgebra.fg_top _).mpr ⟨_, rfl⟩⟩
     refine this.trans _ ⟨⟨r, hrR'⟩, hrp, ?_⟩
     suffices ⊤ ≤ R'.saturation (.powers r) (by simpa [Submonoid.powers_le]) by
-      simpa [SetLike.le_def, Subalgebra.smul_def, Submonoid.mem_powers_iff,
+      simpa [IsConcreteLE.le_iff, Subalgebra.smul_def, Submonoid.mem_powers_iff,
         SetLike.ext_iff, Algebra.mem_bot] using this
     rw [← hs, Algebra.adjoin_le_iff]
     intro x hx

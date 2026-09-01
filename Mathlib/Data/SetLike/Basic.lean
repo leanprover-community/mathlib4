@@ -213,11 +213,11 @@ end SetLike
 
 /--
 A class to indicate that the order on a type corresponds to set inclusion.
-An instance of this class is automatically available on any order defined via `LE.ofSetLike`.
+An instance of this class is automatically available on any order defined via `LE.ofMembership`.
 -/
 class IsConcreteLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
-  protected le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
+  le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
 section default
 
@@ -226,18 +226,20 @@ variable (A B : Type*)
 /-- The order induced from a `Membership` instance by inclusion.
 An order defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
-@[reducible] def LE.ofSetLike [Membership B A] : LE A where
+@[reducible] def LE.ofMembership [Membership B A] : LE A where
   le := fun H K ↦ ∀ ⦃x⦄, x ∈ H → x ∈ K
 
-instance [Membership B A] : letI := LE.ofSetLike A B; IsConcreteLE A B :=
-  letI := LE.ofSetLike A B; { le_iff := .rfl }
+@[deprecated (since := "2026-09-01")] alias LE.ofSetLike := LE.ofMembership
+
+instance [Membership B A] : letI := LE.ofMembership A B; IsConcreteLE A B :=
+  letI := LE.ofMembership A B; { le_iff := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
 A preorder defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
-@[reducible] def Preorder.ofSetLike [Membership B A] : Preorder A where
-  __ := LE.ofSetLike A B
-  lt s t := letI := LE.ofSetLike A B; s ≤ t ∧ ¬t ≤ s
+@[reducible] def Preorder.ofMembership [Membership B A] : Preorder A where
+  __ := LE.ofMembership A B
+  lt s t := letI := LE.ofMembership A B; s ≤ t ∧ ¬t ≤ s
   le_refl _ _ h := h
   le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
@@ -245,14 +247,12 @@ A preorder defined this way automatically makes available an instance of `IsConc
 A partial order defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike [SetLike A B] : PartialOrder A where
-  __ := Preorder.ofSetLike A B
+  __ := Preorder.ofMembership A B
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
 
 end default
 
-namespace SetLike
-
-section Membership
+namespace IsConcreteLE
 
 variable {A B : Type*} [Membership B A]
 
@@ -260,10 +260,8 @@ section LE
 
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
-alias le_def := IsConcreteLE.le_iff
-
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
+alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simp [le_def]
@@ -282,9 +280,17 @@ theorem exists_of_lt (h : p < q) : ∃ x ∈ q, x ∉ p :=
 
 end PartialOrder
 
-end Membership
+end IsConcreteLE
 
-section SetLike
+@[deprecated (since := "2026-09-01")] alias SetLike.le_def := IsConcreteLE.le_iff
+@[deprecated (since := "2026-09-01")]
+alias SetLike.not_le_iff_exists := IsConcreteLE.not_le_iff_exists
+@[deprecated (since := "2026-09-01")]
+alias IsConcreteLE.lt_iff_le_and_exists := IsConcreteLE.lt_iff_le_and_exists
+@[deprecated (since := "2026-09-01")]
+alias SetLike.exists_of_lt := IsConcreteLE.exists_of_lt
+
+namespace SetLike
 
 variable {A B : Type*} [SetLike A B]
 
@@ -339,7 +345,5 @@ attribute [local instance] instSubtypeSet instSubtype
 end
 
 end PartialOrder
-
-end SetLike
 
 end SetLike

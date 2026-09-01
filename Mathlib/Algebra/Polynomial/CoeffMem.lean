@@ -35,7 +35,7 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Mo
   | p, q, hq, i => by
     rw [divModByMonicAux]
     have H₀ (i) : p.coeff i ∈ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by
-      refine SetLike.le_def.mp ?_ <| subset_span <| mem_range_self i
+      refine IsConcreteLE.le_iff.mp ?_ <| subset_span <| mem_range_self i
       calc
         span R coeffs(p)
         _ = 1 ^ deg(p) * span R coeffs(p) := by simp
@@ -55,9 +55,9 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Mo
       rintro _ ⟨i, rfl⟩
       rw [coeff_sub, ← mul_assoc, coeff_mul_X_pow', coeff_mul_C]
       apply sub_mem
-      · exact SetLike.le_def.mp le_sup_left (subset_span (mem_range_self _))
+      · exact IsConcreteLE.le_iff.mp le_sup_left (subset_span (mem_range_self _))
       · split_ifs
-        · refine SetLike.le_def.mp le_sup_right (mul_mem_mul ?_ ?_) <;> exact subset_span ⟨_, rfl⟩
+        · refine IsConcreteLE.le_iff.mp le_sup_right (mul_mem_mul ?_ ?_) <;> exact subset_span ⟨_, rfl⟩
         · exact zero_mem _
     have deg_r_lt_deg_p : deg(r) < deg(p) := natDegree_lt_natDegree hr' (hr ▸ div_wf_lemma hpq hq)
     have H'' := calc
@@ -89,7 +89,7 @@ lemma coeff_modByMonic_mem_pow_natDegree_mul (p q : S[X])
     (p %ₘ q).coeff i ∈ Mq ^ p.natDegree * Mp := by
   delta modByMonic
   split_ifs with H
-  · refine SetLike.le_def.mp ?_ (coeff_divModByMonicAux_mem_span_pow_mul_span (R := R) p q H i).2
+  · refine IsConcreteLE.le_iff.mp ?_ (coeff_divModByMonicAux_mem_span_pow_mul_span (R := R) p q H i).2
     gcongr <;> exact sup_le (by simpa) (by simpa [Submodule.span_le, Set.range_subset_iff])
   · rw [← one_mul (p.coeff i), ← one_pow p.natDegree]
     exact Submodule.mul_mem_mul (Submodule.pow_mem_pow Mq hq' _) (hp i)
@@ -104,7 +104,7 @@ lemma coeff_divByMonic_mem_pow_natDegree_mul (p q : S[X])
     (p /ₘ q).coeff i ∈ Mq ^ p.natDegree * Mp := by
   delta divByMonic
   split_ifs with H
-  · refine SetLike.le_def.mp ?_ (coeff_divModByMonicAux_mem_span_pow_mul_span (R := R) p q H i).1
+  · refine IsConcreteLE.le_iff.mp ?_ (coeff_divModByMonicAux_mem_span_pow_mul_span (R := R) p q H i).1
     gcongr <;> exact sup_le (by simpa) (by simpa [Submodule.span_le, Set.range_subset_iff])
   · simp
 

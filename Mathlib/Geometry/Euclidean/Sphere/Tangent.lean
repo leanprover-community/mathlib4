@@ -101,7 +101,7 @@ lemma IsTangentAt.dist_sq_eq_of_mem {s : Sphere P} {p q : P} {as : AffineSubspac
     (h : s.IsTangentAt p as) (hq : q ∈ as) :
     (dist q s.center) ^ 2 = s.radius ^ 2 + (dist q p) ^ 2 := by
   rw [← h.mem_sphere]
-  exact s.dist_sq_eq_of_mem_orthRadius (SetLike.le_def.1 h.le_orthRadius hq)
+  exact s.dist_sq_eq_of_mem_orthRadius (IsConcreteLE.le_iff.1 h.le_orthRadius hq)
 
 lemma IsTangentAt.mem_and_mem_iff_eq {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
     (h : s.IsTangentAt p as) : (q ∈ s ∧ q ∈ as) ↔ q = p := by

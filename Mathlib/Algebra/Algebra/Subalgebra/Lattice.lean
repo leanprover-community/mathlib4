@@ -977,7 +977,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A]
 def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
   toFun := toNonUnitalSubalgebra
   inj' := toNonUnitalSubalgebra_injective
-  map_rel_iff' := by simp [SetLike.le_def]
+  map_rel_iff' := by simp [IsConcreteLE.le_iff]
 
 @[simp]
 lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :

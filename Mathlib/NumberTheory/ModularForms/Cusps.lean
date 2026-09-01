@@ -253,7 +253,7 @@ lemma relIndex_strictPeriods :
   by_cases h : 𝒢.strictPeriods = 𝒢.periods
   · simp [h]
   · replace h := 𝒢.strictPeriods_le_periods.lt_of_ne h
-    obtain ⟨u, hu_mem, hu_notMem⟩ := (SetLike.lt_iff_le_and_exists.mp h).2
+    obtain ⟨u, hu_mem, hu_notMem⟩ := (IsConcreteLE.lt_iff_le_and_exists.mp h).2
     rw [AddSubgroup.relIndex_eq_two_iff_exists_notMem_and]
     refine .inr ⟨u, hu_mem, hu_notMem, fun b hb ↦ ?_⟩
     simp only [Subgroup.periods, mem_strictPeriods_iff, mem_adjoinNegOne_iff,

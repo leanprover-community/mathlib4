@@ -309,7 +309,7 @@ theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive] theorem ker_eq_top_iff {f : G →* M} : f.ker = ⊤ ↔ f = 1 := by
-  simp [ker, ← top_le_iff, SetLike.le_def, f.ext_iff]
+  simp [ker, ← top_le_iff, IsConcreteLE.le_iff, f.ext_iff]
 
 @[to_additive] theorem range_eq_bot_iff {f : G →* G'} : f.range = ⊥ ↔ f = 1 := by
   rw [← le_bot_iff, f.range_eq_map, map_le_iff_le_comap, top_le_iff, comap_bot, ker_eq_top_iff]

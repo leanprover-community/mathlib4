@@ -210,7 +210,7 @@ lemma altitudeFoot_mem_affineSpan_faceOpposite {n : ℕ} [NeZero n] (s : Simplex
 
 lemma altitudeFoot_mem_affineSpan {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) : s.altitudeFoot i ∈ affineSpan ℝ (Set.range s.points) := by
-  refine SetLike.le_def.1 (affineSpan_mono _ ?_) (s.altitudeFoot_mem_affineSpan_faceOpposite _)
+  refine IsConcreteLE.le_iff.1 (affineSpan_mono _ ?_) (s.altitudeFoot_mem_affineSpan_faceOpposite _)
   simp
 
 lemma affineSpan_pair_altitudeFoot_eq_altitude
@@ -327,7 +327,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
       ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
     refine ⟨vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
       (mem_affineSpan _ (Set.mem_range_self _)) ?_, ?_⟩
-    · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
+    · refine IsConcreteLE.le_iff.1 (affineSpan_mono _ ?_) (Subtype.property _)
       simp
     · rw [SetLike.mem_coe]
       have hk : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j

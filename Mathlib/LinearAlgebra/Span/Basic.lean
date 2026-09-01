@@ -349,7 +349,7 @@ theorem singleton_span_isCompactElement (x : M) :
     IsCompactElement (span R {x} : Submodule R M) := by
   rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
   intro d hemp hdir hsup
-  have : x ∈ (sSup d) := (SetLike.le_def.mp hsup) (mem_span_singleton_self x)
+  have : x ∈ (sSup d) := (IsConcreteLE.le_iff.mp hsup) (mem_span_singleton_self x)
   obtain ⟨y, ⟨hyd, hxy⟩⟩ := (mem_sSup_of_directed hemp hdir).mp this
   exact ⟨y, ⟨hyd, by simpa only [span_le, singleton_subset_iff] ⟩⟩
 
@@ -413,7 +413,7 @@ theorem prod_inf_prod : prod p q₁ ⊓ prod p' q₁' = prod (p ⊓ p') (q₁ �
 theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ ⊔ q₁') := by
   refine le_antisymm
     (sup_le (prod_mono le_sup_left le_sup_left) (prod_mono le_sup_right le_sup_right)) ?_
-  simp only [SetLike.le_def, mem_prod, and_imp, Prod.forall]; intro xx yy hxx hyy
+  simp only [IsConcreteLE.le_iff, mem_prod, and_imp, Prod.forall]; intro xx yy hxx hyy
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
   exact mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩

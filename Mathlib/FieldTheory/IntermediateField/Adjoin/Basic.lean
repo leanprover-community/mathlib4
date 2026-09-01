@@ -66,7 +66,7 @@ theorem mem_adjoin_simple_iff {α : E} (x : E) :
 theorem forall_mem_adjoin_smul_eq_self_iff {M : Type*} [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] (m : M) :
     (∀ x ∈ adjoin F S, m • x = x) ↔ ∀ x ∈ S, m • x = x := by
-  simpa [-adjoin_le_iff, Set.subset_def, SetLike.le_def, FixedBy.intermediateField_mem_iff] using
+  simpa [-adjoin_le_iff, Set.subset_def, IsConcreteLE.le_iff, FixedBy.intermediateField_mem_iff] using
     adjoin_le_iff (T := FixedBy.intermediateField F E m)
 
 variable {F}
@@ -231,14 +231,14 @@ theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E
 
 theorem exists_finset_of_mem_supr' {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, F⟮(i.2 : E)⟯ := by
-  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le fun i x h ↦ ?_) hx)
-  exact SetLike.le_def.mp (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
+  refine exists_finset_of_mem_iSup (IsConcreteLE.le_iff.mp (iSup_le fun i x h ↦ ?_) hx)
+  exact IsConcreteLE.le_iff.mp (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
 
 theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F E}
     (h : ∀ i, Algebra.IsAlgebraic F (f i)) {x : E} (hx : x ∈ ⨆ i, f i) :
     ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet E) := by
-  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i x1 hx1 => ?_)) hx)
-  refine SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ ?_)
+  refine exists_finset_of_mem_iSup (IsConcreteLE.le_iff.mp (iSup_le (fun i x1 hx1 => ?_)) hx)
+  refine IsConcreteLE.le_iff.mp (le_iSup_of_le ⟨i, x1, hx1⟩ ?_)
     (subset_adjoin F (rootSet (minpoly F x1) E) ?_)
   · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
   · rw [mem_rootSet_of_ne, minpoly.aeval]
@@ -249,7 +249,7 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
   simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
   obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
   classical
-  refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp ?_ hx'⟩
+  refine ⟨s.image Subtype.val, by simp, IsConcreteLE.le_iff.mp ?_ hx'⟩
   simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
   rintro _ h _ rfl
   exact subset_adjoin F _ ⟨_, h, rfl⟩
