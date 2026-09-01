@@ -256,7 +256,11 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
 
 variable {G H} {a b c : α}
 
-@[simp] lemma isNClique_empty : G.IsNClique n ∅ ↔ n = 0 := by simp [isNClique_iff, eq_comm]
+@[simp] lemma isNClique_empty_iff : G.IsNClique n ∅ ↔ n = 0 := by simp [isNClique_iff, eq_comm]
+
+@[deprecated (since := "2026-09-01")] alias isNClique_empty := isNClique_empty_iff
+
+@[simp] lemma isNClique_empty' : G.IsNClique 0 ∅ := by simp
 
 @[simp]
 lemma isNClique_singleton : G.IsNClique n {a} ↔ n = 1 := by simp [isNClique_iff, eq_comm]
@@ -863,6 +867,7 @@ theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w)
 theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
   .rfl
 
+@[simp]
 theorem isIndepSet_empty : G.IsIndepSet ∅ := Set.pairwise_empty _
 
 /-- An independent set is a clique in the complement graph and vice versa. -/
@@ -921,7 +926,11 @@ structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
   isIndepSet : G.IsIndepSet s
   card_eq : s.card = n
 
-theorem isNIndepSet_empty : G.IsNIndepSet 0 ∅ := ⟨by simp, rfl⟩
+@[simp]
+lemma isNIndepSet_empty_iff : G.IsNIndepSet n ∅ ↔ n = 0 := by
+  simp [isNIndepSet_iff,eq_comm]
+
+lemma isNIndepSet_empty : G.IsNIndepSet 0 ∅ := by simp
 
 /-- An `n`-independent set is an `n`-clique in the complement graph and vice versa. -/
 @[simp] theorem isNClique_compl : Gᶜ.IsNClique n s ↔ G.IsNIndepSet n s := by
@@ -1061,9 +1070,8 @@ lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndep
   simp [← isMaximumClique_compl, maximumClique_exists]
 
 theorem indepNum_eq_zero_iff_empty [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
-  constructor
-  · intro h
-    by_contra
+  refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
+  · by_contra
     simp only [not_isEmpty_iff] at this
     obtain ⟨a⟩ := this
     have one_indep : G.IsNIndepSet 1 {a} := by
@@ -1071,13 +1079,12 @@ theorem indepNum_eq_zero_iff_empty [Finite α] : G.indepNum = 0 ↔ IsEmpty α :
       simp only [coe_singleton, Set.pairwise_singleton, card_singleton, and_self]
     have : 1 ≤ G.indepNum  := SimpleGraph.IsIndepSet.card_le_indepNum one_indep.isIndepSet
     grind
-  intro h
-  rw [isEmpty_iff] at h
-  have : ∀ (s : Finset α ) , s = ∅ := by
-    exact fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
-  simp only [indepNum, this, exists_const]
-  have : {n | G.IsNIndepSet n ∅} = {0} := by ext x; simp [isNIndepSet_iff]
-  rw [this]; simp
+  · rw [isEmpty_iff] at h
+    have : ∀ (s : Finset α ) , s = ∅ := by
+      exact fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
+    simp only [indepNum, this, exists_const]
+    have : {n | G.IsNIndepSet n ∅} = {0} := by ext x; simp [isNIndepSet_iff]
+    rw [this]; simp
 
 end IndepNumber
 
