@@ -26,6 +26,7 @@ namespace Representation
 section Bimodule
 
 variable (k H₁ H₂) in
+/-- tbd -/
 abbrev HeckeBimodule := HeckeModule H₁ (ofMulAction k G (G ⧸ H₂))
 
 variable (k) in
@@ -254,6 +255,7 @@ end Bimodule
 section Algebra
 
 variable (k H) in
+/-- tbd -/
 abbrev HeckeAlgebra := MulOpposite (HeckeBimodule k H H)
 
 variable (f : HeckeAlgebra k H) (ρ : Representation k G V) (σ : Representation k G W)
