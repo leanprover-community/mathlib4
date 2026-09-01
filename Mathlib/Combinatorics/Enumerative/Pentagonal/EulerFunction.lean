@@ -140,14 +140,10 @@ theorem eulerFunction_eq_tprod {x : R} (hx : ‖x‖ < 1) :
   · exact (Pentagonal.multipliable_one_sub_pow_add · hx)
   · exact (hasSum_eulerFunction_pentagonal_pair hx).summable
   · apply Tendsto.zero_mul_isBoundedUnder_le
-    · refine isBoundedUnder_le_mul_tendsto_zero ⟨1, ?_⟩ ?_
-      · suffices ∃ a, ∀ b, a ≤ b → ‖(-1 : R) ^ (b + 1)‖ ≤ 1 by simpa
-        refine ⟨0, fun b hb ↦ ?_⟩
-        grw [norm_pow_le]
-        simp
-      · apply (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hx).comp
-        rw [tendsto_atTop_atTop]
-        exact fun k ↦ ⟨k, fun n hn ↦ hn.trans (by grind)⟩
+    · refine isBoundedUnder_le_mul_tendsto_zero ⟨1, by simp⟩ ?_
+      apply (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hx).comp
+      rw [tendsto_atTop_atTop]
+      exact fun k ↦ ⟨k, fun n hn ↦ hn.trans (by grind)⟩
     · exact isBoundedUnder_of ⟨_, fun k ↦ Pentagonal.tsum_pow_mul_prod_bound k hx⟩
 
 /-- **Pentagonal number theorem** for Euler function, expressed as an infinite product.
