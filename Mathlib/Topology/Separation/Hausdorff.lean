@@ -160,12 +160,12 @@ theorem t2_iff_ultrafilter :
     T2Space X ↔ ∀ {x y : X} (f : Ultrafilter X), ↑f ≤ 𝓝 x → ↑f ≤ 𝓝 y → x = y :=
   t2_iff_nhds.trans <| by simp only [← exists_ultrafilter_iff, and_imp, le_inf_iff, exists_imp]
 
-theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
+theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonalUniv X) := by
   simp only [t2Space_iff_disjoint_nhds, ← isOpen_compl_iff, isOpen_iff_mem_nhds, Prod.forall,
-    nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonal_iff, Pairwise]
+    nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonalUniv_iff, Pairwise]
 
 @[closedness ., grind .]
-theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
+theorem isClosed_diagonal [T2Space X] : IsClosed (diagonalUniv X) :=
   t2_iff_isClosed_diagonal.mp ‹_›
 
 theorem t2Space_iff_of_isOpenQuotientMap [TopologicalSpace Y] {π : X → Y}
@@ -548,7 +548,7 @@ theorem Function.LeftInverse.isClosedEmbedding [T2Space X] {f : X → Y} {g : Y 
 
 theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsCompact s)
     (ht : IsCompact t) (hst : Disjoint s t) : SeparatedNhds s t := by
-  simp only [SeparatedNhds, prod_subset_compl_diagonal_iff_disjoint.symm] at hst ⊢
+  simp only [SeparatedNhds, prod_subset_compl_diagonalUniv_iff_disjoint.symm] at hst ⊢
   exact generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
 
 /-- In a `R1Space X`, for disjoint closed sets `s t` such that `closure sᶜ` is compact,

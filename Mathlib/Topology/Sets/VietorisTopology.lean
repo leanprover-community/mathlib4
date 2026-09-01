@@ -546,7 +546,7 @@ theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 �
     intro ⟨K, L⟩ ⟨⟨x, y⟩, ⟨(hx : x ∈ K), (hy : y ∈ L)⟩, hxy⟩
     obtain ⟨V, W, hV, hW, hxV, hyW, hVW⟩ := isOpen_prod_iff.mp hU x y hxy
     grw [preimage_ofPred_eq, ← hVW]
-    simp_rw [Function.comp_apply, coe_prod, prod_inter_prod, prod_nonempty_iff]
+    simp_rw [Function.comp_apply, coe_prod, prod_inter_prod, prod_nonempty]
     exact ⟨_, .rfl,
       (isOpen_inter_nonempty_of_isOpen hV).prod (isOpen_inter_nonempty_of_isOpen hW),
       ⟨x, hx, hxV⟩, ⟨y, hy, hyW⟩⟩

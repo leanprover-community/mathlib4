@@ -63,7 +63,7 @@ def TopologicalSpace.PositiveCompacts.piIcc01 (ι : Type*) [Finite ι] :
   carrier := pi univ fun _ => Icc 0 1
   isCompact' := isCompact_univ_pi fun _ => isCompact_Icc
   interior_nonempty' := by
-    simp only [interior_pi_set, Set.toFinite, interior_Icc, univ_pi_nonempty_iff, nonempty_Ioo,
+    simp only [interior_pi_set, Set.toFinite, interior_Icc, univ_pi_nonempty, nonempty_Ioo,
       imp_true_iff, zero_lt_one]
 
 namespace Module.Basis

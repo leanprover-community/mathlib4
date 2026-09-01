@@ -246,7 +246,7 @@ variable (s t : Finset α)
 
 /-- Given a finite set `s`, the diagonal, `s.diag` is the set of pairs of the form `(a, a)` for
 `a ∈ s`. -/
-def diag : Finset (α × α) := s.map ⟨Function.diag, Function.diag_injective⟩
+def diag : Finset (α × α) := s.map ⟨Function.diagonal, Function.diagonal_injective⟩
 
 -- TODO: define `Multiset.offDiag`, provide basic API, use it here
 /-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`
@@ -283,15 +283,15 @@ variable (s)
 
 @[simp]
 theorem image_diag [DecidableEq β] (f : α × α → β) (s : Finset α) :
-    s.diag.image f = s.image (f ∘ Function.diag) := by
+    s.diag.image f = s.image (f ∘ Function.diagonal) := by
   grind
 
 @[simp, norm_cast]
-theorem coe_diag : (s.diag : Set (α × α)) = (s : Set α).diag :=
+theorem coe_diag : (s.diag : Set (α × α)) = (s : Set α).diagonal :=
   Set.ext fun _ => by simp [mem_diag]
 
 @[simp, norm_cast]
-theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=
+theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiagonal :=
   Set.ext fun _ => mem_offDiag
 
 @[simp]
@@ -336,7 +336,7 @@ theorem diag_inter [DecidableEq α] : (s ∩ t).diag = s.diag ∩ t.diag := by
 theorem offDiag_inter [DecidableEq α] : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   coe_injective <| by
     push_cast
-    exact Set.offDiag_inter _ _
+    exact Set.offDiagonal_inter _ _
 
 theorem diag_union [DecidableEq α] : (s ∪ t).diag = s.diag ∪ t.diag := by
   grind
@@ -347,7 +347,7 @@ theorem offDiag_union [DecidableEq α] (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s :=
   coe_injective <| by
     push_cast
-    exact Set.offDiag_union (disjoint_coe.2 h)
+    exact Set.offDiagonal_union (disjoint_coe.2 h)
 
 @[simp]
 theorem offDiag_singleton (a : α) : ({a} : Finset α).offDiag = ∅ := by simp [← Finset.card_eq_zero]

@@ -21,8 +21,9 @@ This file contains basic results on the following notions, which are defined in 
 
 * `Set.prod`: Binary product of sets. For `s : Set α`, `t : Set β`, we have
   `s.prod t : Set (α × β)`. Denoted by `s ×ˢ t`.
-* `Set.diagonal`: Diagonal of a type. `Set.diagonal α = {(x, x) | x : α}`.
-* `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
+* `Set.diagonalUniv`: Diagonal of a type. `Set.diagonalUniv α = {(x, x) | x : α}`.
+* `Set.diagonal`: Diagonal of a set. `s ×ˢ s` intersected with the diagonal.
+* `Set.offDiagonal`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
 -/
 

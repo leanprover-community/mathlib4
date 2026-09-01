@@ -31,8 +31,8 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.range f`: the range of a function;
   it is more general than `f '' univ` because it allows functions from `Sort*`;
 - `s ×ˢ t`: product of `s : Set α` and `t : Set β` as a set in `α × β`;
-- `Set.diagonal`: the diagonal in `α × α`;
-- `Set.diag s`, `Set.offDiag s`: the diagonal and off-diagonal of `s ×ˢ s`;
+- `Set.diagonalUniv`: the diagonal in `α × α`;
+- `Set.diagonal s`, `Set.offDiagonal s`: the diagonal and off-diagonal of `s ×ˢ s`;
 - `Set.pi`: indexed product of a family of sets `∀ i, Set (α i)`,
   as a set in `∀ i, α i`;
 - `Set.EqOn f g s`: the predicate saying that two functions are equal on a set;

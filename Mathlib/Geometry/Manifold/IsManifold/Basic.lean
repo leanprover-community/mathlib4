@@ -535,7 +535,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     · simp [range_eq_univ_of_not_isRCLikeNormedField, h]
   nonempty_interior' := by
     rw [PartialEquiv.pi_apply, Set.range_piMap]
-    simp [interior_pi_set finite_univ, univ_pi_nonempty_iff, nonempty_interior]
+    simp [interior_pi_set finite_univ, univ_pi_nonempty, nonempty_interior]
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
 
