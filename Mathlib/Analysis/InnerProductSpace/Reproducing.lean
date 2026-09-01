@@ -459,17 +459,6 @@ lemma enorm_inner_le_enorm (f g : V) : ‖⟪f, g⟫_𝕜‖ₑ ≤  ‖f‖ₑ 
 
 variable [MeasurableSpace X] {μ : Measure X}
 variable [MeasurableSpace V] [BorelSpace V]
-
-/-- This expression appears multiple times in the proofs below. Hence, this was introduced to
-shorten the proofs a little. -/
-private lemma meas_fst (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.1 :=
-  (f : X →ₘ[μ] V).measurable.comp measurable_fst
-
-/-- This expression appears multiple times in the proofs below. Hence, this was introduced to
-shorten the proofs a little. -/
-private lemma meas_snd (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.2 :=
-  (f : X →ₘ[μ] V).measurable.comp measurable_snd
-
 variable [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)] [SFinite μ]
 
 private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
@@ -483,8 +472,9 @@ private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 
     _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ *
           (∫⁻ (a : X × X), ‖f a.2‖ₑ ^ 2 * ‖g a.1‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ := by
       have := ENNReal.lintegral_mul_le_Lp_mul_Lq (μ.prod μ) Real.HolderConjugate.two_two
-        hK.aemeasurable.enorm ((meas_snd f).enorm.mul (meas_fst g).enorm).aemeasurable
-      simp only [Pi.mul_apply, ENNReal.rpow_ofNat, one_div] at this
+        hK.aemeasurable.enorm (((f : X →ₘ[μ] V).measurable.comp measurable_snd).enorm.mul
+          ((g : X →ₘ[μ] V).measurable.comp measurable_fst).enorm).aemeasurable
+      simp only [Function.comp_apply, Pi.mul_apply, ENNReal.rpow_ofNat, one_div] at this
       grw [this]
       simp [mul_pow]
     _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ * ((∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) *
