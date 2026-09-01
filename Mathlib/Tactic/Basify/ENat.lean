@@ -22,14 +22,14 @@ namespace Mathlib.Tactic.Basify
 
 attribute [basify_elim] ENat.recTopCoe
 
-attribute [basify_split] top_add ENat.sub_top ENat.top_sub_natCast ENat.mul_top ENat.top_mul
+attribute [basify_simp] top_add ENat.sub_top ENat.top_sub_natCast ENat.mul_top ENat.top_mul
   ENat.natCast_ne_top ENat.top_ne_natCast ENat.natCast_lt_top ENatToNat.not_lt_top
   top_le_iff le_top
   ne_eq not_false_eq_true OfNat.ofNat_ne_zero
 
-attribute [basify_cast, basify_op] ENatToNat.coe_add ENatToNat.coe_sub
+attribute [basify_simp, basify_op] ENatToNat.coe_add ENatToNat.coe_sub
   ENatToNat.coe_mul ENatToNat.coe_ofNat ENatToNat.coe_zero ENatToNat.coe_one
 
-attribute [basify_cast] ENat.natCast_inj ENat.natCast_le_natCast ENat.natCast_lt_natCast
+attribute [basify_simp] ENat.natCast_inj ENat.natCast_le_natCast ENat.natCast_lt_natCast
 
 end Mathlib.Tactic.Basify

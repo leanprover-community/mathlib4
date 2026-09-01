@@ -11,7 +11,7 @@ public meta import Lean.Meta.Tactic.Simp.RegisterCommand
 /-!
 # Attributes for the `basify` tactic
 
-This file declares the four attributes that drive `basify`, together with the two environment
+This file declares the three attributes that drive `basify`, together with the two environment
 extensions backing them. They live in their own file because Lean cannot use an attribute in the
 file that declares it; `Mathlib/Tactic/Basify/Core.lean` documents the tactic itself.
 -/
@@ -20,14 +20,11 @@ public meta section
 
 open Lean Meta Elab Tactic
 
-/-- Simp set applied by `basify` after each case split. It is meant to contain the lemmas that
-make the degenerate branches, the ones where some atom is `⊤` or `⊥`, go away. -/
-register_simp_attr basify_split
-
-/-- Simp set applied by `basify` at the very end. It is meant to contain the lemmas that
-translate a proposition about a registered type into a proposition about the underlying type, such
-as `↑a ≤ ↑b ↔ a ≤ b`. -/
-register_simp_attr basify_cast
+/-- The simp set `basify` runs, both after each case split and once at the end. It holds the lemmas
+that make the degenerate branches go away -- the ones where some atom is `⊤` or `⊥` -- together with
+the lemmas that translate a proposition about a registered type into one about the underlying type,
+such as `↑a ≤ ↑b ↔ a ≤ b`. -/
+register_simp_attr basify_simp
 
 namespace Mathlib.Tactic.Basify
 
@@ -41,6 +38,11 @@ structure ElimEntry where
   `Top.top` and `ENNReal.ofNNReal`: a term of the form `⊤` or `↑x` is already in the shape the
   eliminator produces, so it is not an atom. -/
   altHeads : Array Name
+  /-- How to name what each minor premise introduces, one entry per binder, in order. `none` marks
+  the binder carrying the value -- the one occurring in the alternative's pattern -- which takes the
+  name of the atom being split; any other binder takes that name with its own appended. Splitting
+  `x : ℕ+` with an alternative `∀ (n : ℕ) (_pos : 0 < n), C n.toPNat'` yields `x` and `x_pos`. -/
+  altBinders : Array (Array (Option Name))
   deriving Inhabited
 
 /-- The eliminators registered with `@[basify_elim]`, indexed by the head symbol of the type
@@ -74,15 +76,22 @@ def analyzeElim (elimName : Name) : MetaM (Name × ElimEntry) := do
     let some tyName := (← instantiateMVars (← inferType targets[0]!)).getAppFn.constName? |
       throwError "the target of `{.ofConstName elimName}` does not have a constant as its head"
     let mut altHeads := #[]
+    let mut altBinders := #[]
     for x in xs do
       if x == motive || x == targets[0]! then continue
-      let head? ← forallTelescopeReducing (← inferType x) fun _ b => do
+      let alt? ← forallTelescopeReducing (← inferType x) fun ys b => do
         unless b.getAppFn == motive do return none
         let args := b.getAppArgs
         unless args.size == 1 do return none
-        return args[0]!.getAppFn.constName?
+        let pattern := args[0]!
+        let binders ← ys.mapM fun y => do
+          if pattern.containsFVar y.fvarId! then return none
+          else return some (← y.fvarId!.getUserName).eraseMacroScopes
+        return some (pattern.getAppFn.constName?, binders)
+      let some (head?, binders) := alt? | continue
       if let some head := head? then altHeads := altHeads.push head
-    return (tyName, { elimName, altHeads })
+      altBinders := altBinders.push binders
+    return (tyName, { elimName, altHeads, altBinders })
 
 /-- The explicit arguments of the application `e`. -/
 private def explicitArgs (e : Expr) : MetaM (Array Expr) := do
@@ -145,10 +154,10 @@ is an atom: `basify` generalizes it and case splits on it rather than descending
 
 Both operations the lemma relates are registered, so a single lemma covers the operation upstairs
 and the operation downstairs. The attribute does not add the lemma to a simp set; an operation is
-normally tagged `@[basify_cast ←, basify_op]` or `@[basify_cast, basify_op]`, depending on which
+normally tagged `@[basify_simp ←, basify_op]` or `@[basify_simp, basify_op]`, depending on which
 way the coercion has to travel.
 
-Registering an operation that no `basify_cast` rule can rewrite is worse than not registering it at
+Registering an operation that no `basify_simp` rule can rewrite is worse than not registering it at
 all: `basify` descends into the arguments and splits them, but nothing then moves the operation
 itself down, so every branch is left stranded in the registered type. What has to be covered is the
 head symbol, not necessarily by the same lemma: `ENNReal.coe_ofNat` would serve here but is

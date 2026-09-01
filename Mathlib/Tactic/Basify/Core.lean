@@ -6,9 +6,9 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Tactic.Basify.Attr
+public import Mathlib.Tactic.Cases
 public import Mathlib.Util.AtomM
 public meta import Lean.Meta.Tactic.Generalize
-public meta import Lean.Meta.Tactic.Repeat
 
 /-!
 # The `basify` tactic
@@ -38,16 +38,18 @@ handing `0 ≤ x` over as a binder. A subtype is just a degenerate case split.
 
 The tactic runs three phases.
 
-1. Every *atom* of a registered type is generalized to a local hypothesis, keeping its defining
-   equation so that nothing is lost -- case splitting needs a variable to work on. Doing this once
-   up front is enough: a case split replaces a variable by a constructor pattern whose arguments
-   are themselves fresh variables, so it creates no new atom to generalize.
-2. Until nothing registered is left: destruct one atom with its eliminator, then run the
-   `basify_split` simp set everywhere. That simp set's job is to discharge the degenerate branches
-   (e.g. `⊤ + a = ⊤`) *before* the number of branches explodes.
-3. The `basify_cast` simp set moves the surviving propositions down to the underlying type. For
-   `ℝ≥0∞` this means pulling `ℝ≥0 → ℝ≥0∞` coercions outwards until they can be cancelled, and then
-   pushing `ℝ≥0 → ℝ` coercions inwards until only atoms are left under them.
+1. The *atoms* of a registered type are collected once, and each is turned into a variable, since
+   case splitting needs one to work on: the atoms that are not already variables are generalized,
+   keeping their defining equation so that nothing is lost.
+2. Those variables are then destructed one at a time, running the `basify_simp` simp set after each
+   so that the degenerate branches (e.g. `⊤ + a = ⊤`) die *before* the number of branches explodes.
+   A split introduces fresh variables -- `↑x` gives an `x : ℝ≥0`, which is itself an atom -- and
+   those are appended to the list of variables still to do. That is how the descent
+   `ℝ≥0∞ → ℝ≥0 → ℝ` happens, and why the goal never has to be searched for atoms a second time.
+3. A final `simp_all only [basify_simp]` finishes the descent, using the hypotheses to discharge
+   the side conditions of the conditional cast lemmas. For `ℝ≥0∞` the descent means pulling
+   `ℝ≥0 → ℝ≥0∞` coercions outwards until they can be cancelled, then pushing `ℝ≥0 → ℝ` coercions
+   inwards until only atoms are left under them.
 
 An *atom* is a subterm of a registered type whose head is not an operation registered with
 `@[basify_op]`: `a + b` is not an atom because addition is registered, and the tactic recurses
@@ -63,14 +65,14 @@ the two subtype layers use `Real.toNNReal` and `Nat.toPNat'`.
 
 ## Limitations
 
-* Each case split doubles the number of branches, so the `basify_split` set has to be good
+* Each case split doubles the number of branches, so the `basify_simp` set has to be good
   enough to kill the degenerate ones; a goal with many independent atoms of a registered type will
   otherwise be slow.
 * Truncated subtraction comes out as `max (a - b) 0`, which `linarith` does not understand. Such
   goals usually need a case split on `a ≤ b` afterwards.
 * Generalizing an atom keeps its defining equation, so nothing is lost, but a fact that holds for
   the atom by definition rather than by hypothesis (for instance `ENNReal.ofReal x ≠ ⊤`) is only
-  exploited if the `basify_split` set can derive it from that equation.
+  exploited if the `basify_simp` set can derive it from that equation.
 
 ## Relation to other tactics
 
@@ -90,7 +92,7 @@ base type" rather than a fixed one because the target depends on what is registe
   hypothesis, because it splits on it and discharges the other branch.
 * `norm_cast` removes coercions and therefore lands in the *smallest* type of a cast tower, which
   for `ℝ≥0∞` is `ℝ≥0`, not `ℝ`. Reaching `ℝ` means travelling down one coercion and up another,
-  which is why the `basify_cast` set holds `←` lemmas for the extension layer and forward lemmas
+  which is why the `basify_simp` set holds `←` lemmas for the extension layer and forward lemmas
   for the subtype layer.
 
 What has no counterpart elsewhere is the case split: `⊤ - a` is not a cast-normalisation problem,
@@ -98,7 +100,7 @@ and no amount of rewriting turns it into one.
 
 ## Extending the tactic
 
-Four attributes drive the tactic, so that new constructions can be supported without touching this
+Three attributes drive the tactic, so that new constructions can be supported without touching this
 file:
 
 * `@[basify_elim]` marks an eliminator, i.e. something usable with `cases x using ...`. The
@@ -107,11 +109,10 @@ file:
   corresponding operation of the underlying type, such as `ENNReal.coe_add : ↑(a + b) = ↑a + ↑b`.
   For a subtype this is the statement that the operation agrees with the one upstairs, which has
   the same shape, so the same attribute covers both kinds of type.
-* `@[basify_split]` and `@[basify_cast]` are the two simp sets described above. Like any
-  simp set they accept `←` to register a lemma in the reversed direction, which is what one usually
-  wants in the `basify_cast` set.
+* `@[basify_simp]` is the simp set described above. Like any simp set it accepts `←` to register a
+  lemma in the reversed direction, which is what the lemmas moving a coercion outwards need.
 
-`Mathlib/Tactic/Basify/ENNReal.lean` is a worked example using all four.
+`Mathlib/Tactic/Basify/ENNReal.lean` is a worked example using all three.
 -/
 
 public meta section
@@ -122,12 +123,12 @@ namespace Mathlib.Tactic.Basify
 
 /-! ### Propositional cleanup
 
-The `basify_split` simp set is run with `simp only`, so it has to carry the handful of
+The `basify_simp` simp set is run with `simp only`, so it has to carry the handful of
 propositional lemmas needed to actually make a contradictory branch disappear: without
 `not_true_eq_false`, a hypothesis `⊤ ≠ ⊤` gets stuck at `¬True` instead of closing the goal.
 -/
 
-attribute [basify_split] ne_eq not_true_eq_false not_false_eq_true eq_self_iff_true
+attribute [basify_simp] ne_eq not_true_eq_false not_false_eq_true eq_self_iff_true
   true_and and_true and_self true_or or_true or_self true_iff iff_true
 
 /-! ### Atoms -/
@@ -183,15 +184,7 @@ partial def collectAtoms (e : Expr) : AtomM Unit := do
   | .mdata _ b | .proj _ _ b => collectAtoms b
   | _ => pure ()
 
-/-- The user name given to the equations that `basify` introduces when it generalizes an atom.
-These hypotheses are not searched for atoms again, which is what makes the main loop terminate. -/
-private def atomEqName : Name := `basify_eq
-
-private def isAtomEq (n : Name) : Bool :=
-  n.eraseMacroScopes.toString.startsWith atomEqName.toString
-
-/-- All the atoms of the goal `g`, taken from the target and from every hypothesis except the ones
-`basify` introduced itself when generalizing.
+/-- All the atoms of the goal `g`, taken from the target and from every hypothesis.
 
 Atoms are identified up to `instances` transparency, the setting `generalizeHyp` uses for
 `kabstract`: identifying fewer atoms than the abstraction step goes on to identify would create one
@@ -200,106 +193,94 @@ def goalAtoms (g : MVarId) : MetaM (Array Expr) := g.withContext do
   AtomM.run .instances do
     collectAtoms (← instantiateMVars (← g.getType))
     for decl in ← getLCtx do
-      if decl.isImplementationDetail || isAtomEq decl.userName then continue
+      if decl.isImplementationDetail then continue
       collectAtoms (← instantiateMVars decl.type)
     return (← get).atoms
 
-/-- Head symbols that say nothing about what an atom is, so that a name taken from them would be
-worse than a plain `x`. `DFunLike.coe` is the common one: it heads every application of a bundled
-map, such as the `uniformOn ... s` of a measure. -/
-private def uninformativeNames : Array Name := #[`coe, `cast, `val, `fn, `ofNat, `toFun]
-
-/-- A readable base name for a hypothesis about the atom `e`. -/
-private def atomBaseName (e : Expr) : MetaM Name := do
-  match e.getAppFn with
-  | .const n _ =>
-    let base := n.components.getLast?.getD `x
-    return if uninformativeNames.contains base then `x else base
-  | .fvar fvarId => return (← fvarId.getUserName).eraseMacroScopes
-  | _ => return `x
-
-/-- Pick names based on `bases` that are unused in `lctx` and pairwise distinct. -/
-private def freshNames (lctx : LocalContext) (bases : Array Name) : Array Name := Id.run do
-  let mut used : NameSet := ∅
-  let mut out := #[]
-  for base in bases do
-    let mut name := lctx.getUnusedName base
-    let mut i := 1
-    while used.contains name do
-      name := lctx.getUnusedName (base.appendAfter s!"_{i}")
-      i := i + 1
-    used := used.insert name
-    out := out.push name
-  return out
-
 /-! ### The steps -/
 
-/-- Generalize every atom whose type has an `@[basify_elim]` eliminator, so that it can be
-case split. The defining equation of each atom is kept as a new hypothesis, so this step does not
-lose information. -/
-def generalizeAtoms (g : MVarId) : MetaM MVarId := g.withContext do
-  let atoms ← (← goalAtoms g).filterM fun e => do
-    if e.isFVar then return false
-    return (← elimEntryFor? (← instantiateMVars (← inferType e))).isSome
-  if atoms.isEmpty then return g
-  let names := freshNames (← getLCtx) (← atoms.mapM atomBaseName)
-  let args : Array GeneralizeArg := atoms.zipIdx.map fun (e, i) =>
-    { expr := e, xName? := names[i]!, hName? := atomEqName.appendAfter s!"_{i}" }
+/-- Collect the atoms of `g` and turn each one into a variable, so that it can be case split:
+those that are not variables already are generalized, keeping their defining equation as a new
+hypothesis so that this step loses no information -- asking `GeneralizeArg` for a name is what
+produces the equation at all, and without it the step would discard the link to the original term.
+Each variable gets a short name and its equation that name with `_eq` appended, so that the case
+split has something to name what it introduces after.
+
+Returns the variables to split. They are collected once and then tracked: a case split replaces a
+variable by a constructor pattern whose arguments are fresh variables, and those are added to the
+list as they appear, so there is never a need to search the goal again. -/
+def generalizeAtoms (g : MVarId) : MetaM (MVarId × Array FVarId) := g.withContext do
+  let (varAtoms, termAtoms) := (← goalAtoms g).partition Expr.isFVar
+  let varAtoms := varAtoms.map Expr.fvarId!
+  if termAtoms.isEmpty then return (g, varAtoms)
+  let args : Array GeneralizeArg := ← termAtoms.mapM fun e =>
+    return { expr := e, hName? := ← mkFreshUserName `h }
   let hyps := (← getLCtx).foldl (init := #[]) fun hyps decl =>
     if decl.isImplementationDetail then hyps else hyps.push decl.fvarId
   try
-    return (← g.generalizeHyp args hyps).2.2
+    let (subst, introduced, g) ← g.generalizeHyp args hyps
+    -- `introduced` holds the equations as well as the variables. Only the variables are of a
+    -- registered type, and both follow the order of `args`, so splitting on that pairs each
+    -- variable with its own equation.
+    let mut vars := #[]
+    let mut eqs := #[]
+    for fvarId in introduced do
+      if ← g.withContext do isRegisteredType (← instantiateMVars (← fvarId.getType)) then
+        vars := vars.push fvarId
+      else
+        eqs := eqs.push fvarId
+    -- Name each variable and its equation. Doing so one pair at a time is enough to keep them
+    -- apart: `getUnusedName` sees the names already given out.
+    let mut g := g
+    for fvarId in vars, eqFVarId in eqs do
+      let name ← g.withContext do return (← getLCtx).getUnusedName `x
+      g ← g.rename fvarId name
+      g ← g.withContext do g.rename eqFVarId ((← getLCtx).getUnusedName (name.appendAfter "_eq"))
+    -- `generalizeHyp` may renumber the variables it abstracted inside, so follow the substitution.
+    return (g, varAtoms.map (subst.get · |>.fvarId!) ++ vars)
   catch _ =>
-    return g
+    return (g, varAtoms)
 
-/-- Can `decl` be referred to by its user name? This fails both for the inaccessible names that
-`cases` introduces and for names shadowed by a later hypothesis. -/
-def isNameable (lctx : LocalContext) (decl : LocalDecl) : Bool :=
-  !decl.userName.hasMacroScopes &&
-    (lctx.findFromUserName? decl.userName).any (·.fvarId == decl.fvarId)
+/-- The names to give what an alternative introduces, following the plan recorded for it: the
+binder carrying the value takes `base`, the others take `base` with their own name appended. When
+the atom itself is anonymous everything stays anonymous.
 
-/-- Give a usable name to every hypothesis of `g` that a case split has just introduced, using
-`base` as a suggestion. -/
-def nameNewHypotheses (g : MVarId) (old : FVarIdSet) (base : Name) : MetaM MVarId := do
-  let fvarIds ← g.withContext do
-    (← getLCtx).foldlM (init := #[]) fun fvarIds decl => do
-      if decl.isImplementationDetail || old.contains decl.fvarId then return fvarIds
-      return if isNameable (← getLCtx) decl then fvarIds else fvarIds.push decl.fvarId
-  let mut g := g
-  for fvarId in fvarIds do
-    let name ← g.withContext do
-      let suggestion := if ← isProp (← fvarId.getType) then base.appendBefore "h" else base
-      return (← getLCtx).getUnusedName suggestion
-    g ← g.rename fvarId name
-  return g
+The binder's name is appended verbatim, so an eliminator that writes `_pos` -- as the
+unused-variable linter asks it to for a binder it does not itself use -- yields `x_pos`. -/
+private def altNames (base? : Option Name) (binders : Array (Option Name)) : MetaM (List Name) := do
+  let some base := base? | binders.toList.mapM fun _ => mkFreshUserName `x
+  return binders.toList.map fun
+    | none => base
+    | some binder => base.appendAfter binder.toString
 
-/-- Destruct the first local hypothesis that is an atom of a type carrying an
-`@[basify_elim]` eliminator, keeping the names of the hypotheses it introduces readable.
+/-- Destruct the variable `fvarId` with the eliminator `entry.elimName`, naming what each
+alternative introduces after `fvarId` itself.
 
-Only variables that are atoms are split: one occurring solely inside an opaque atom, or solely in
-an equation left behind by an earlier generalization, has already been accounted for, and splitting
-it would double the number of branches for nothing. -/
-def casesFirstAtom (g : MVarId) : TacticM (List MVarId) := do
-  let (fvarId, base, elimName, old) ← g.withContext do
-    let atomFVars := (← goalAtoms g).foldl (init := (∅ : FVarIdSet)) fun atomFVars e =>
-      if let .fvar fvarId := e then atomFVars.insert fvarId else atomFVars
-    let lctx ← getLCtx
-    let some decl ← lctx.findDeclM? fun decl => do
-        if decl.isImplementationDetail || !atomFVars.contains decl.fvarId then return none
-        if (← elimEntryFor? (← instantiateMVars decl.type)).isSome then return some decl
-        else return none
-      | throwError "`basify` made no progress: there is nothing left to take apart"
-    let some entry ← elimEntryFor? (← instantiateMVars decl.type) | unreachable!
-    let old := lctx.foldl (init := (∅ : FVarIdSet)) fun s d => s.insert d.fvarId
-    return (decl.fvarId, decl.userName.eraseMacroScopes, entry.elimName, old)
-  -- `cases x using e` refers to `x` by name, so rename it first if its name is not usable.
-  let g ← g.withContext do
-    if isNameable (← getLCtx) (← fvarId.getDecl) then pure g
-    else g.rename fvarId ((← getLCtx).getUnusedName base)
-  let name ← g.withContext fvarId.getUserName
-  setGoals [g]
-  evalTactic (← `(tactic| cases $(mkIdent name):ident using $(mkCIdent elimName):ident))
-  (← getGoals).mapM (nameNewHypotheses · old base)
+This is what `cases x using e` does, minus the syntax: going through the tactic would mean making
+`fvarId` referable by name first, which is a rename dance that the `Expr`-level API does not need.
+The alternatives are introduced here rather than through `ElimApp.evalNames` so that the names can
+be handed to `introN` directly. -/
+def casesAtom (g : MVarId) (fvarId : FVarId) (entry : ElimEntry) : TacticM (List MVarId) := do
+  let elimInfo ← getElimInfo entry.elimName
+  let base? ← g.withContext do
+    let name ← fvarId.getUserName
+    return if name.hasMacroScopes then none else some name
+  let targets ← g.withContext do addImplicitTargets elimInfo #[.fvar fvarId]
+  let result ← g.withContext do ElimApp.mkElimApp elimInfo targets (← g.getTag)
+  let elimArgs := result.elimApp.getAppArgs
+  let targets ← g.withContext do elimInfo.targetsPos.mapM (instantiateMVars elimArgs[·]!)
+  let motive := elimArgs[elimInfo.motivePos]!
+  let g ← generalizeTargetsEq g (← g.withContext do inferType motive) targets
+  let (targetsNew, g) ← g.introN targets.size
+  g.withContext do
+    ElimApp.setMotiveArg g motive.mvarId! targetsNew
+    g.assign result.elimApp
+    let mut goals := #[]
+    for alt in result.alts, binders in entry.altBinders do
+      let (_, g) ← alt.mvarId.introN binders.size (← altNames base? binders)
+      let some (g, _) ← Cases.unifyEqs? targets.size g {} | continue
+      goals := goals.push (← targetsNew.foldlM (fun g fv => do return ← g.tryClear fv) g)
+    return goals.toList
 
 /-- Remove the `True` hypotheses that the simp sets leave behind: `simp only ... at *` rewrites a
 hypothesis to `True` and re-asserts it, where `simp_all` would drop it. -/
@@ -308,13 +289,36 @@ def clearTrivialHypotheses (g : MVarId) : MetaM MVarId := g.withContext do
     if decl.isImplementationDetail then return fvarIds
     return if (← instantiateMVars decl.type).isTrue then fvarIds.push decl.fvarId else fvarIds
 
-/-- One step of `basify`: destruct one atom of a registered type and clean up the degenerate
-branches with the `basify_split` simp set. Fails once there is nothing left to take apart, which is
-how the main loop knows it is done. -/
-def basifyStep (g : MVarId) : TacticM (List MVarId) := do
-  setGoals (← casesFirstAtom g)
-  evalTactic (← `(tactic| all_goals try simp only [basify_split] at *))
-  (← getGoals).mapM fun g => do return ← clearTrivialHypotheses g
+/-- The variables of a registered type that `g` has gained relative to `old`. These are the value
+binders of the eliminator that has just been applied: the hypotheses a case split reverts and
+reintroduces are also new, but they are `Prop`s, and no registered type is a `Prop`. -/
+def newAtomVars (g : MVarId) (old : FVarIdSet) : MetaM (Array FVarId) := g.withContext do
+  (← getLCtx).foldlM (init := #[]) fun acc decl => do
+    if decl.isImplementationDetail || old.contains decl.fvarId then return acc
+    return if ← isRegisteredType (← instantiateMVars decl.type) then acc.push decl.fvarId else acc
+
+/-- Destruct the variables in `varsToElim`, one at a time, running the `basify_simp` simp set after
+each so that the degenerate branches (`⊤ + a = ⊤` and friends) die *before* the number of branches
+explodes. The variables a split introduces are appended to the list, which is how the descent
+`ℝ≥0∞ → ℝ≥0 → ℝ` happens without ever searching the goal again.
+
+A variable can disappear before its turn comes, when a branch simplifies it away; such an entry is
+simply dropped. -/
+partial def basifyLoop (g : MVarId) (varsToElim : List FVarId) : TacticM (List MVarId) := do
+  let fvarId :: varsToElim := varsToElim | return [g]
+  let entry? ← g.withContext do
+    let some decl := (← getLCtx).find? fvarId | return none
+    elimEntryFor? (← instantiateMVars decl.type)
+  let some entry := entry? | basifyLoop g varsToElim
+  let old ← g.withContext do
+    return (← getLCtx).foldl (init := (∅ : FVarIdSet)) fun s d => s.insert d.fvarId
+  setGoals (← casesAtom g fvarId entry)
+  evalTactic (← `(tactic| all_goals try simp only [basify_simp] at *))
+  let mut result := []
+  for g in ← getGoals do
+    let g ← clearTrivialHypotheses g
+    result := result ++ (← basifyLoop g (varsToElim ++ (← newAtomVars g old).toList))
+  return result
 
 /--
 `basify` removes the layers that separate a type such as `ℝ≥0∞` or `ℕ∞` from the type its
@@ -332,13 +336,14 @@ example (a b c : ℝ≥0∞) (hab : a ≥ b) (hbc : b ≥ c) : a ≥ c := by bas
 ```
 
 New types are supported by tagging an eliminator with `@[basify_elim]`, its operations with
-`@[basify_op]`, and the relevant rewrite lemmas with `@[basify_split]` and `@[basify_cast]`.
+`@[basify_op]`, and the relevant rewrite lemmas with `@[basify_simp]`.
 -/
 elab "basify" : tactic => focus do
-  setGoals (← Meta.repeat' basifyStep [← generalizeAtoms (← getMainGoal)])
+  let (g, varsToElim) ← generalizeAtoms (← getMainGoal)
+  setGoals (← basifyLoop g varsToElim.toList)
   evalTactic (← `(tactic| all_goals first
-    | simp_all only [basify_split, basify_cast]
-    | simp only [basify_split, basify_cast] at *
+    | simp_all only [basify_simp]
+    | simp only [basify_simp] at *
     | skip))
   setGoals (← (← getGoals).mapM fun g => do return ← clearTrivialHypotheses g)
 

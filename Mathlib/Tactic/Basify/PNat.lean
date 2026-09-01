@@ -22,14 +22,14 @@ namespace Mathlib.Tactic.Basify
 
 /-- A `Subtype.mk`-free eliminator for `ℕ+`, exposing the underlying natural and its positivity. -/
 @[elab_as_elim, basify_elim]
-def _root_.PNat.recToPNat {C : ℕ+ → Sort*} (mk : ∀ (n : ℕ) (_ : 0 < n), C n.toPNat') (t : ℕ+) :
+def _root_.PNat.recToPNat {C : ℕ+ → Sort*} (mk : ∀ (n : ℕ) (_pos : 0 < n), C n.toPNat') (t : ℕ+) :
     C t :=
   PNat.coe_toPNat' t ▸ mk t t.pos
 
-attribute [basify_cast] PNatToNat.coe_inj PNatToNat.coe_le_coe PNatToNat.coe_lt_coe
+attribute [basify_simp] PNatToNat.coe_inj PNatToNat.coe_le_coe PNatToNat.coe_lt_coe
   PNat.toPNat'_coe
 
-attribute [basify_cast, basify_op] PNat.one_coe PNat.val_ofNat PNat.add_coe PNat.mul_coe
+attribute [basify_simp, basify_op] PNat.one_coe PNat.val_ofNat PNat.add_coe PNat.mul_coe
   PNatToNat.sub_coe
 
 end Mathlib.Tactic.Basify

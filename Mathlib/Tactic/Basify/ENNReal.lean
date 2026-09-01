@@ -28,13 +28,13 @@ attribute [basify_elim] ENNReal.recTopCoe
 
 /-- A `Subtype.mk`-free eliminator for `ℝ≥0`, exposing the underlying real and its nonnegativity. -/
 @[elab_as_elim, basify_elim]
-def _root_.NNReal.recToNNReal {C : ℝ≥0 → Sort*} (mk : ∀ (x : ℝ) (_ : 0 ≤ x), C x.toNNReal)
+def _root_.NNReal.recToNNReal {C : ℝ≥0 → Sort*} (mk : ∀ (x : ℝ) (_nonneg : 0 ≤ x), C x.toNNReal)
     (t : ℝ≥0) : C t :=
   Real.toNNReal_coe (r := t) ▸ mk t t.coe_nonneg
 
 /-! ### Getting rid of `⊤` -/
 
-attribute [basify_split] top_add add_top ENNReal.top_mul ENNReal.mul_top ENNReal.sub_top
+attribute [basify_simp] top_add add_top ENNReal.top_mul ENNReal.mul_top ENNReal.sub_top
   ENNReal.top_sub_coe ENNReal.inv_top ENNReal.top_div ENNReal.div_top ENNReal.top_pow
   ENNReal.coe_ne_top ENNReal.top_ne_coe ENNReal.coe_lt_top ENNReal.not_lt_top
   ENNReal.toReal_top le_top top_le_iff lt_top_iff_ne_top ENNReal.coe_eq_zero
@@ -45,17 +45,17 @@ attribute [basify_split] top_add add_top ENNReal.top_mul ENNReal.mul_top ENNReal
 Coercions `ℝ≥0 → ℝ≥0∞` are pulled outwards until they meet a relation, which then cancels them.
 -/
 
-attribute [basify_cast ←, basify_op] ENNReal.coe_zero ENNReal.coe_one
+attribute [basify_simp ←, basify_op] ENNReal.coe_zero ENNReal.coe_one
   ENNReal.coe_natCast ENNReal.coe_add ENNReal.coe_mul ENNReal.coe_sub ENNReal.coe_pow
   ENNReal.coe_inv ENNReal.coe_div ENNReal.coe_min ENNReal.coe_max
 
-attribute [basify_cast] ENNReal.coe_inj ENNReal.coe_le_coe ENNReal.coe_lt_coe
+attribute [basify_simp] ENNReal.coe_inj ENNReal.coe_le_coe ENNReal.coe_lt_coe
   ENNReal.coe_toReal
 
 /-- `ENNReal.coe_ofNat` read from right to left. It is restated here because the `ofNat(n)` on the
 right-hand side of `ENNReal.coe_ofNat` is `no_index`ed, which would make the reversed lemma match
 against every term. -/
-@[basify_cast, basify_op]
+@[basify_simp, basify_op]
 theorem ennreal_ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] :
     (OfNat.ofNat n : ℝ≥0∞) = ((OfNat.ofNat n : ℝ≥0) : ℝ≥0∞) :=
   rfl
@@ -65,11 +65,11 @@ theorem ennreal_ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] :
 Coercions `ℝ≥0 → ℝ` are pushed inwards until only atoms are left under them.
 -/
 
-attribute [basify_cast ←] NNReal.coe_inj NNReal.coe_le_coe NNReal.coe_lt_coe
+attribute [basify_simp ←] NNReal.coe_inj NNReal.coe_le_coe NNReal.coe_lt_coe
 
-attribute [basify_cast] Real.coe_toNNReal
+attribute [basify_simp] Real.coe_toNNReal
 
-attribute [basify_cast, basify_op] NNReal.coe_zero NNReal.coe_one NNReal.coe_ofNat
+attribute [basify_simp, basify_op] NNReal.coe_zero NNReal.coe_one NNReal.coe_ofNat
   NNReal.coe_natCast NNReal.coe_add NNReal.coe_mul NNReal.coe_inv NNReal.coe_div NNReal.coe_pow
   NNReal.coe_max NNReal.coe_min NNReal.coe_sub_def
 

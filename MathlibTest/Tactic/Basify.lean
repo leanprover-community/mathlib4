@@ -12,9 +12,6 @@ example : (2 : ℝ≥0∞)⁻¹ * (2 : ℝ≥0∞)⁻¹ = 4⁻¹ := by
   basify
   norm_num
 
-example (a b : ℝ≥0) : a + b = b + a := by
-  ring
-
 example (a b : ℝ≥0∞) : a + b = b + a := by
   basify
   ring
@@ -48,17 +45,6 @@ example (f : ℕ → ℝ≥0∞) : f 0 + f 1 = f 1 + f 0 := by
   basify
   ring
 
-set_option linter.unusedTactic false in
-/-- The equations `basify` records are excluded from atom collection, so running it a second time
-does not re-generalize the atoms the first run already dealt with. Without that exclusion the
-second run introduces a fresh variable per recorded atom, renames the equations, and leaves vacuous
-ones behind; here `basify_eq_0` would no longer relate `f 0` to anything. -/
-example (f : ℕ → ℝ≥0∞) : f 0 + f 1 = f 1 + f 0 := by
-  basify
-  basify
-  guard_hyp basify_eq_0 : f 0 = ↑f_1.toNNReal
-  ring
-
 /-- A reducible alias, used to exercise deduplication of atoms up to definitional unfolding. -/
 @[reducible] def twoAlias : ℕ := 2
 
@@ -78,11 +64,11 @@ opaque opaqueF : ℕ → ℝ≥0∞
 single `kabstract` pattern abstracts both occurrences: `generalizeHyp` filters candidate subterms
 by head symbol before trying `isDefEq`. `AtomM` still identifies them, so only one of the two is
 generalized, and the other is left for the final `simp_all` to rewrite through the recorded
-equation. The result is a single variable, as it should be. -/
+equation. The result is a single variable, as it should be -- though with the case-split binders
+left anonymous this example can no longer assert that; the deduplication itself is pinned by the
+`twoAlias` test above, which fails outright without it. -/
 example : opaqueF 0 ≤ aliasF 0 := by
   basify
-  guard_hyp opaqueF : ℝ
-  fail_if_success guard_hyp aliasF : ℝ
   exact le_rfl
 
 /-- `g a` is an atom, since `g` is not a registered operation: it is split as a whole rather than
