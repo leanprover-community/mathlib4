@@ -883,7 +883,7 @@ lemma exists_hom_forall {I : Type*} [Finite I] (j : I → C) :
 
 omit [IsCofiltered C] in
 lemma exists_forall [IsCofilteredOrEmpty C] {I : Type*} [Finite I] {i : C}
-    (P : ∀ k : C, (k ⟶ i) → I → Prop)
+    {P : ∀ k : C, (k ⟶ i) → I → Prop}
     (hP : ∀ {k l} (v : l ⟶ k) (u : k ⟶ i) (x : I), P k u x → P l (v ≫ u) x)
     (h : ∀ x, ∃ (k : C) (u : k ⟶ i), P k u x) :
     ∃ (k : C) (u : k ⟶ i), ∀ x, P k u x := by
@@ -893,12 +893,12 @@ lemma exists_forall [IsCofilteredOrEmpty C] {I : Type*} [Finite I] {i : C}
 
 omit [IsCofiltered C] in
 lemma exists_forall₂ [IsCofilteredOrEmpty C] {I J : Type*} [Finite I] [Finite J] {i : C}
-    (P : ∀ k : C, (k ⟶ i) → I → J → Prop)
+    {P : ∀ k : C, (k ⟶ i) → I → J → Prop}
     (hP : ∀ {k l} (v : l ⟶ k) (u : k ⟶ i) (x : I) (y : J), P k u x y → P l (v ≫ u) x y)
     (h : ∀ x y, ∃ (k : C) (u : k ⟶ i), P k u x y) :
     ∃ (k : C) (u : k ⟶ i), ∀ x y, P k u x y :=
-  exists_forall (fun k u x ↦ ∀ y, P k u x y) (fun v u x hx y ↦ hP v u x y (hx y))
-    fun x ↦ exists_forall (fun k u y ↦ P k u x y) (fun v u y ↦ hP v u x y) (h x)
+  exists_forall (P := fun k u x ↦ ∀ y, P k u x y) (fun v u x hx y ↦ hP v u x y (hx y))
+    fun x ↦ exists_forall (P := fun k u y ↦ P k u x y) (fun v u y ↦ hP v u x y) (h x)
 
 end Nonempty
 
