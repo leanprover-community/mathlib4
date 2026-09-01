@@ -50,7 +50,7 @@ protected theorem iff_dvd : Introspective f e r ↔ (X : R[X]) ^ r - 1 ∣ f ^ e
 
 protected theorem map {S : Type*} [CommRing S] (h : Introspective f e r) (g : R →+* S) :
     Introspective (f.map g) e r := by
-  simp only [Introspective.dvd_iff] at *
+  simp only [Introspective.iff_dvd] at *
   obtain ⟨b, hb⟩ := h
   use b.map g
   convert congrArg (Polynomial.map g) hb
@@ -91,7 +91,7 @@ theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h 
     Introspective f (e * d) r := by
   by_cases hr : r = 0
   · grind
-  · simp only [Introspective.dvd_iff] at hg
+  · simp only [Introspective.iff_dvd] at hg
     simp only [Introspective] at *
     set I := AdjoinRoot.mk ((X : R[X]) ^ r - 1)
     have ⟨w, hw⟩ := hg
