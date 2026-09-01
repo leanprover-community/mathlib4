@@ -180,8 +180,10 @@ lemma ContMDiffWithinAt.alteratingMap_apply_of_inCoordinates
       (fun m ↦ inCoordinates F₁ F₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : ∀ i, CMDiffAt[s] n (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt[s] n b₂ m₀) :
     CMDiffAt[s] n (fun m ↦ (ϕ m (fun i ↦ v i m) : TotalSpace F₂ E₂)) m₀ := by
-  simp_rw [← contMDiffWithinAt_insert_self] at hϕ hv hb₂ ⊢
-  rw [contMDiffWithinAt_totalSpace] at hv ⊢
+  rw [← contMDiffWithinAt_insert_self] at hϕ hb₂ ⊢
+
+--  simp_rw [← contMDiffWithinAt_insert_self] at hϕ hv hb₂ ⊢
+  simp_rw [contMDiffWithinAt_totalSpace] at hv ⊢
   refine ⟨hb₂, ?_⟩
   apply (ContMDiffWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
   have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by

@@ -115,6 +115,28 @@ theorem CPolynomialAt.smul (hf : CPolynomialAt 𝕜 f x) (c : 𝕜) : CPolynomia
 theorem CPolynomialOn.smul (hf : CPolynomialOn 𝕜 f s) (c : 𝕜) : CPolynomialOn 𝕜 (c • f) s :=
   fun x hx ↦ (hf x hx).smul c
 
+lemma HasFiniteFPowerSeriesOnBall.prod {g : E → G} {pg : FormalMultilinearSeries 𝕜 E G}
+    (hf : HasFiniteFPowerSeriesOnBall f pf x n r) (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
+    HasFiniteFPowerSeriesOnBall (fun x ↦ (f x, g x)) (pf.prod pg) x (max n m) r :=
+  ⟨by simpa using hf.1.prod hg.1, fun N hN ↦ by simp [FormalMultilinearSeries.prod,
+    hf.finite _ ((le_max_left n m).trans hN), hg.finite _ ((le_max_right n m).trans hN)]⟩
+
+theorem HasFiniteFPowerSeriesAt.prod {g : E → G} {pg : FormalMultilinearSeries 𝕜 E G}
+    (hf : HasFiniteFPowerSeriesAt f pf x n) (hg : HasFiniteFPowerSeriesAt g pg x m) :
+    HasFiniteFPowerSeriesAt (fun x ↦ (f x, g x)) (pf.prod pg) x (max n m) := by
+  rcases (hf.eventually.and hg.eventually).exists with ⟨r, hr⟩
+  exact ⟨r, hr.1.prod hr.2⟩
+
+theorem CPolynomialAt.prod {g : E → G} (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
+    CPolynomialAt 𝕜 (fun x ↦ (f x, g x)) x :=
+  let ⟨_, _, hpf⟩ := hf
+  let ⟨_, _, hqf⟩ := hg
+  (hpf.prod hqf).cpolynomialAt
+
+theorem CPolynomialOn.prod {g : E → G} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
+    CPolynomialOn 𝕜 (fun x ↦ (f x, g x)) s :=
+  fun x hx ↦ (hf x hx).prod (hg x hx)
+
 /-!
 ### Continuous multilinear maps
 
@@ -338,13 +360,13 @@ lemma cpolynomialAt_uncurry_of_linear :
     ContinuousLinearMap.cpolynomialAt _ _
   exact f.flipLinear.cpolynomialAt_uncurry_of_multilinear.comp this
 
-lemma cpolyomialOn_uncurry_of_linear :
+lemma cpolynomialOn_uncurry_of_linear :
     CPolynomialOn 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
   fun _ _ ↦ f.cpolynomialAt_uncurry_of_linear
 
 lemma analyticOnNhd_uncurry_of_linear :
     AnalyticOnNhd 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
-  f.cpolyomialOn_uncurry_of_linear.analyticOnNhd
+  f.cpolynomialOn_uncurry_of_linear.analyticOnNhd
 
 lemma analyticOn_uncurry_of_linear :
     AnalyticOn 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
@@ -356,6 +378,32 @@ lemma analyticAt_uncurry_of_linear : AnalyticAt 𝕜 (fun (p : (Π i, Em i) × G
 lemma analyticWithinAt_uncurry_of_linear :
     AnalyticWithinAt 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s x :=
   f.analyticAt_uncurry_of_linear.analyticWithinAt
+
+lemma cpolynomialAt_apply {f : (ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i)} :
+    CPolynomialAt 𝕜 (fun (p : (ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i)) ↦ p.1 p.2) f :=
+  ContinuousLinearMap.cpolynomialAt_uncurry_of_multilinear
+    (f := ContinuousLinearMap.id 𝕜 (ContinuousMultilinearMap 𝕜 Em F))
+
+lemma cpolynomialOn_apply {s : Set ((ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i))} :
+    CPolynomialOn 𝕜 (fun (p : (ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i)) ↦ p.1 p.2) s :=
+  fun _ _ ↦ cpolynomialAt_apply
+
+lemma analyticOnNhd_apply {s : Set ((ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i))} :
+    AnalyticOnNhd 𝕜 (fun (p : (ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i)) ↦ p.1 p.2) s :=
+  cpolynomialOn_apply.analyticOnNhd
+
+lemma analyticOn_apply {s : Set ((ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i))} :
+    AnalyticOn 𝕜 (fun (p : (ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i)) ↦ p.1 p.2) s :=
+  analyticOnNhd_apply.analyticOn
+
+lemma analyticAt_apply {f : (ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i)} :
+    AnalyticAt 𝕜 (fun (p : (ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i)) ↦ p.1 p.2) f :=
+  cpolynomialAt_apply.analyticAt
+
+lemma analyticWithinAt_apply {s : Set ((ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i))}
+    {f : (ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i)} :
+    AnalyticWithinAt 𝕜 (fun (p : (ContinuousMultilinearMap 𝕜 Em F) × (Π i, Em i)) ↦ p.1 p.2) s f :=
+  analyticAt_apply.analyticWithinAt
 
 variable {t : Set ((Π i, Fm i →L[𝕜] Em i) × (ContinuousMultilinearMap 𝕜 Em G))}
   {q : (Π i, Fm i →L[𝕜] Em i) × (ContinuousMultilinearMap 𝕜 Em G)}
@@ -369,7 +417,7 @@ lemma cpolynomialAt_uncurry_compContinuousLinearMap :
 lemma cpolynomialOn_uncurry_compContinuousLinearMap :
     CPolynomialOn 𝕜 (fun (p : (Π i, Fm i →L[𝕜] Em i) × (ContinuousMultilinearMap 𝕜 Em G))
       ↦ p.2.compContinuousLinearMap p.1) t :=
-  cpolyomialOn_uncurry_of_linear
+  cpolynomialOn_uncurry_of_linear
     (ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear 𝕜 Fm Em G)
 
 lemma analyticOnNhd_uncurry_compContinuousLinearMap :
@@ -397,3 +445,43 @@ lemma analyticWithinAt_uncurry_compContinuousLinearMap :
     (ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear 𝕜 Fm Em G)
 
 end ContinuousMultilinearMap
+
+namespace ContinuousAlternatingMap
+
+variable {ι : Type*} [Fintype ι] {f : (E [⋀^ι]→L[𝕜] F) × (ι → E)}
+  {s : Set ((E [⋀^ι]→L[𝕜] F) × (ι → E))}
+
+lemma cpolynomialAt_apply :
+    CPolynomialAt 𝕜 (fun (p : (E [⋀^ι]→L[𝕜] F) × (ι → E)) ↦ p.1 p.2) f := by
+  have : (fun (p : (E [⋀^ι]→L[𝕜] F) × (ι → E)) ↦ p.1 p.2) =
+    (fun (p : ((ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E) F) × (ι → E))) ↦ p.1 p.2) ∘
+    (fun p ↦ (toContinuousMultilinearMapCLM 𝕜 p.1, p.2)) := rfl
+  rw [this]
+  apply CPolynomialAt.comp
+  · apply ContinuousMultilinearMap.cpolynomialAt_apply
+  · apply CPolynomialAt.prod
+    · apply ContinuousLinearMap.comp_cpolynomialAt
+      exact (ContinuousLinearMap.fst 𝕜 (E [⋀^ι]→L[𝕜] F) (ι → E)).cpolynomialAt _
+    · exact (ContinuousLinearMap.snd 𝕜 (E [⋀^ι]→L[𝕜] F) (ι → E)).cpolynomialAt _
+
+lemma cpolynomialOn_apply :
+    CPolynomialOn 𝕜 (fun (p : (E [⋀^ι]→L[𝕜] F) × (ι → E)) ↦ p.1 p.2) s :=
+  fun _ _ ↦ cpolynomialAt_apply
+
+lemma analyticOnNhd_apply :
+    AnalyticOnNhd 𝕜 (fun (p : (E [⋀^ι]→L[𝕜] F) × (ι → E)) ↦ p.1 p.2) s :=
+  cpolynomialOn_apply.analyticOnNhd
+
+lemma analyticOn_apply :
+    AnalyticOn 𝕜 (fun (p : (E [⋀^ι]→L[𝕜] F) × (ι → E)) ↦ p.1 p.2) s :=
+  analyticOnNhd_apply.analyticOn
+
+lemma analyticAt_apply :
+    AnalyticAt 𝕜 (fun (p : (E [⋀^ι]→L[𝕜] F) × (ι → E)) ↦ p.1 p.2) f :=
+  cpolynomialAt_apply.analyticAt
+
+lemma analyticWithinAt_apply :
+    AnalyticWithinAt 𝕜 (fun (p : (E [⋀^ι]→L[𝕜] F) × (ι → E)) ↦ p.1 p.2) s f :=
+  analyticAt_apply.analyticWithinAt
+
+end ContinuousAlternatingMap
