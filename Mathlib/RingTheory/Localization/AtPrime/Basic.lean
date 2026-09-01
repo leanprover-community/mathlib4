@@ -143,7 +143,7 @@ variable (I : Ideal R) [hI : I.IsPrime] [IsLocalization.AtPrime S I]
 order-preserving bijection with the prime ideals contained in I. -/
 @[simps!]
 def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ p ≤ I } :=
-  (IsLocalization.orderIsoOfPrime I.primeCompl S).trans <| .setCongr _ _ <|
+  (IsLocalization.orderIsoOfPrime I.primeCompl S).trans <| Set.orderIsoOfEq _ _ <|
     show Set.ofPred _ = Set.ofPred _
     by ext; simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
 
@@ -495,14 +495,8 @@ lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R' S' : Type*}
   rw [under_under, ← under_under (B := S), under_map_of_isPrime_disjoint _ _ ‹_› disj,
     LiesOver.over (P := P) (p := p)]
 
-lemma Ideal.IsMaximal.of_isLocalization_of_disjoint [IsLocalization M S] {J : Ideal S}
-    [(J.under R).IsMaximal] : J.IsMaximal := by
-  obtain ⟨m, maxm, hm⟩ := exists_le_maximal J <| by
-    rintro rfl
-    exact Ideal.IsMaximal.ne_top ‹_› (by simp)
-  replace hm : under R J ≤ under R m := comap_mono hm
-  rwa [← IsLocalization.map_under M S J, IsMaximal.eq_of_le ‹_› (IsPrime.under R m).ne_top hm,
-    IsLocalization.map_under M S m]
+@[deprecated (since := "2026-07-04")] alias Ideal.IsMaximal.of_isLocalization_of_disjoint :=
+  IsLocalization.isMaximal_of_isMaximal_under
 
 end
 

@@ -81,7 +81,7 @@ noncomputable section
 
 namespace Module
 
-variable (R A M : Type*)
+variable (R M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 section Prod
@@ -305,6 +305,44 @@ end IsReflexive
 
 end Module
 
+namespace LinearMap
+
+section Projective
+
+variable {R : Type*} [CommSemiring R]
+variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
+
+/-- The identity pairing is right-separating. -/
+protected theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
+  fun x ↦ (forall_dual_apply_eq_zero_iff R x).mp
+
+alias id_separatingRight := SeparatingRight.id
+
+/-- The identity pairing is non-degenerate. -/
+protected theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :=
+  ⟨.id, .id⟩
+
+alias id_nondegenerate := Nondegenerate.id
+
+@[deprecated (since := "2026-04-02")]
+alias dualPairing_nondegenerate := id_nondegenerate
+
+/-- The pairing `Dual.eval` is left-separating. -/
+protected theorem SeparatingLeft.eval : (Dual.eval R M).SeparatingLeft :=
+  id_separatingRight
+
+alias eval_separatingLeft := SeparatingLeft.eval
+
+/-- The pairing `Dual.eval` is non-degenerate. -/
+protected theorem Nondegenerate.eval : (Dual.eval R M).Nondegenerate :=
+  ⟨.eval, .eval⟩
+
+alias eval_nondegenerate := Nondegenerate.eval
+
+end Projective
+
+end LinearMap
+
 namespace Submodule
 
 open Module
@@ -460,7 +498,7 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
   simp
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
-    Function.LeftInverse W.dualRestrict W.dualLift := fun x => by
+    Function.LeftInverse W.dualRestrict W.dualLift := fun x ↦ by
   rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, End.one_apply]
 
 theorem dualLift_rightInverse (W : Subspace K V) :
@@ -621,7 +659,7 @@ The inverse of this is `Submodule.dualCopairing`. -/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
   LinearEquiv.ofLinearMap
-    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
+    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ ↦
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
 
@@ -720,8 +758,8 @@ section VectorSpace
 
 section
 
-variable {K V₁ V₂ : Type*} [DivisionRing K]
-variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
+variable {K V₁ : Type*} [DivisionRing K]
+variable [AddCommGroup V₁] [Module K V₁]
 
 namespace Module.Dual
 
@@ -781,29 +819,6 @@ end Module.Dual
 end
 
 namespace LinearMap
-
-variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
-
-theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
-  separatingLeft_iff_ker_eq_bot.mpr ker_id
-
-theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingLeft
-
-variable [Module.Projective K V]
-
-theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
-  fun x => (forall_dual_apply_eq_zero_iff K x).mp
-
-theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
-
-theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
-  ⟨id_separatingLeft, id_separatingRight⟩
-
-@[deprecated (since := "2026-04-02")]
-alias dualPairing_nondegenerate := id_nondegenerate
-
-theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
-  ⟨eval_separatingLeft, eval_separatingRight⟩
 
 variable {K V₁ V₂ : Type*} [Field K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
@@ -1070,9 +1085,6 @@ lemma Module.exists_dual_forall_apply_eq_one {ι K V : Type*} [Field K] [AddComm
 namespace TensorProduct
 
 variable (R A : Type*) (M : Type*) (N : Type*)
-variable {ι κ : Type*}
-variable [DecidableEq ι] [DecidableEq κ]
-variable [Fintype ι] [Fintype κ]
 
 open TensorProduct
 

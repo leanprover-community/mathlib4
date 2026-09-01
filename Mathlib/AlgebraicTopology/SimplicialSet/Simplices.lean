@@ -32,7 +32,9 @@ not what is called "the category of simplices of `X`" in the literature
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet
 
