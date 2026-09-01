@@ -857,24 +857,22 @@ private lemma exists_isOpenCover_appLE_eq_restrict_of_isLimit (s : Γ(c.pt, ⊤)
     (U := ⊤) (by simpa using isCompact_univ)
   have : Finite Us := hUsf
   have hcov : IsOpenCover fun W : Us ↦ W.1 := .mk (by rw [← sSup_eq_iSup', ← hsup])
-  obtain ⟨n, w, T, hT⟩ : ∃ (n : I) (w : n ⟶ i) (T : ∀ W : Us, Γ(D.obj n, D.map w ⁻¹ᵁ W.1)),
-      ∀ (W : Us) (V : c.pt.Opens) (e : V ≤ c.π.app n ⁻¹ᵁ D.map w ⁻¹ᵁ W.1),
-        (c.π.app n).appLE _ V e (T W) = s |_ V := by
-    choose j u t ht using fun W : Us ↦
-      exists_appLE_π_eq_of_isAffineOpen D c hc (hUs W.2) (s |_ (c.π.app i ⁻¹ᵁ W.1))
-    replace ht (W : Us) (V : c.pt.Opens) (e : V ≤ c.π.app (j W) ⁻¹ᵁ D.map (u W) ⁻¹ᵁ W.1) :
-        (c.π.app (j W)).appLE _ V e (t W) = s |_ V := by
-      have h := π_app_preimage_map_preimage D c (u W) W.1
-      simp_rw [Scheme.Hom.appLE, ConcreteCategory.comp_apply] at ht ⊢
-      rw [← TopCat.Presheaf.restrict_restrict (e.trans_eq h) le_top s, ← ht W]
-      exact (TopCat.Presheaf.restrict_restrict (e.trans_eq h) h.ge _).symm
-    obtain ⟨m, ⟨φ⟩⟩ := IsCofiltered.exists_hom_forall fun W : Us ↦ Over.mk (u W)
-    have hφ (W : Us) : D.map m.hom ⁻¹ᵁ W.1 ≤ D.map (φ W).left ⁻¹ᵁ D.map (u W) ⁻¹ᵁ W.1 :=
-      le_of_eq (by rw [← Scheme.Hom.comp_preimage, ← D.map_comp,
-        show (φ W).left ≫ u W = m.hom from Over.w (φ W)])
-    refine ⟨m.left, m.hom, fun W ↦ (D.map (φ W).left).appLE _ _ (hφ W) (t W), fun W V e ↦ ?_⟩
-    simpa only [Over.mk_left, ← ConcreteCategory.comp_apply, Scheme.Hom.appLE_comp_appLE, Cone.w]
-      using ht W V _
+  have key : ∃ (n : I) (w : n ⟶ i), ∀ W : Us, ∃ T : Γ(D.obj n, D.map w ⁻¹ᵁ W.1),
+      ∀ (V : c.pt.Opens) (e : V ≤ c.π.app n ⁻¹ᵁ D.map w ⁻¹ᵁ W.1),
+        (c.π.app n).appLE _ V e T = s |_ V := by
+    refine IsCofiltered.exists_forall _ ?_ fun W ↦ ?_
+    · rintro n m v w W ⟨T, hT⟩
+      refine ⟨(D.map v).appLE _ _ (by simp) T, fun V e ↦ ?_⟩
+      simpa only [← ConcreteCategory.comp_apply, Scheme.Hom.appLE_comp_appLE, Cone.w]
+        using hT V (by simpa using e)
+    obtain ⟨j, u, T, hT⟩ := exists_appLE_π_eq_of_isAffineOpen D c hc (hUs W.2)
+      (s |_ (c.π.app i ⁻¹ᵁ W.1))
+    refine ⟨j, u, T, fun V e ↦ ?_⟩
+    have h := π_app_preimage_map_preimage D c u W.1
+    simp_rw [Scheme.Hom.appLE, ConcreteCategory.comp_apply] at hT ⊢
+    rw [← TopCat.Presheaf.restrict_restrict (e.trans_eq h) le_top s, ← hT]
+    exact (TopCat.Presheaf.restrict_restrict (e.trans_eq h) h.ge _).symm
+  choose n w T hT using key
   obtain ⟨k, v, hv⟩ : ∃ (k : I) (v : k ⟶ n), ∀ (W₁ W₂ : Us) (V : (D.obj k).Opens)
       (h₁ : V ≤ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₁.1) (h₂ : V ≤ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₂.1),
         (D.map v).appLE _ V h₁ (T W₁) = (D.map v).appLE _ V h₂ (T W₂) := by
