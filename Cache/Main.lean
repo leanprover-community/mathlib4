@@ -94,10 +94,9 @@ Valid arguments are:
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
 * MATHLIB_CACHE_DEBUG_USE_LEGACY
-                          Troubleshooting fallback. Set to 1 or true to take the
-                          tool's legacy path: reads address the Azure storage
-                          account instead of https://cache.mathlib.org. This
-                          variable is for troubleshooting only.
+                          Set to 1 or true to read from the Azure storage
+                          account instead of https://cache.mathlib.org.
+                          For troubleshooting only.
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
 * MATHLIB_CACHE_PUT_URL   Upload artifacts to this URL as a flat namespace.

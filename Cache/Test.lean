@@ -195,14 +195,11 @@ def test_getBaseURLFrom : IO Unit := do
     "https://cache.mathlib.org" (getBaseURLFrom none false)
   assertEq "legacy → the storage account"
     "https://lakecache.blob.core.windows.net" (getBaseURLFrom none true)
-  -- The legacy base is the host the container URLs name, so the flag reproduces
-  -- the read URLs of a tool that knows no endpoint.
+  -- The legacy base is the host the container URLs (`azureURL`) are built on.
   assertEq "the legacy base matches the container URLs"
     azureAccountURL (getBaseURLFrom none true)
   assertEq "override → the given base"
     "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") false)
-  -- The variable names a host, so it answers the same question the legacy flag
-  -- does, and more specifically. It therefore wins.
   assertEq "override wins over legacy"
     "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") true)
   -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
@@ -227,8 +224,6 @@ def test_Container_getURL : IO Unit := do
   assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
   assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
   assertEq "legacy read URL" s!"{base}/mathlib4" (← Container.legacy.getURL)
-  -- The Azure host answers only when the environment selects it, so this guard
-  -- keys on the effective base rather than on the default.
   if base == azureAccountURL then
     assertEq "legacy read URL matches azureURL"
       Container.master.azureURL (← Container.master.getURL)
@@ -634,8 +629,6 @@ def test_markerReadURL : IO Unit := do
   assertEq "probe repo is lowercased in the path"
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     (← markerReadURL .forks "Alice/Mathlib4" "abc123")
-  -- The Azure host answers only when the environment selects it, so this guard
-  -- keys on the effective base rather than on the default.
   if base == azureAccountURL then
     assertEq "legacy probe URL matches the write URL"
       (markerURL .forks "alice/mathlib4" "abc123")
@@ -1037,9 +1030,8 @@ def test_parseFlagOpt : IO Unit := do
 `MATHLIB_CACHE_DEBUG_USE_LEGACY` reads this way with `ifUnset := false`.
 
 `ifUnset` decides the unset case alone: a variable that defaults on still reads
-`0` as off. A value the parser cannot read falls back to `ifUnset` too, and
-warns — a value that silently passed as on would look like a setting that took
-effect. -/
+`0` as off, and a value the parser cannot read warns and falls back to
+`ifUnset`. -/
 def test_parseEnvFlag : IO Unit := do
   IO.println "parseEnvFlag:"
   let shown (flag : Bool) : String := if flag then "on" else "off"

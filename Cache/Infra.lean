@@ -64,9 +64,7 @@ inductive Container where
   | legacy
   deriving DecidableEq, Repr, BEq, Inhabited
 
-/--
-Base URL of the `lakecache` Azure Blob Storage account.
--/
+/-- Base URL of the `lakecache` Azure Blob Storage account. -/
 def azureAccountURL : String := "https://lakecache.blob.core.windows.net"
 
 namespace Container
@@ -158,25 +156,26 @@ def normalizeBaseURL (value? : Option String) : Option String :=
   (value?.map fun v => (v.trimAscii.dropEndWhile '/').copy).filter (!·.isEmpty)
 
 /--
-The Mathlib cache read endpoint: one hostname that serves the whole
-`/{container}/{key}` namespace the storage account holds, and caches artifacts
-at its edge. A read through it costs the project less and lands nearer the
-reader than a read straight from storage.
+The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
+namespace as the storage account and caches artifacts at its edge, so reads
+cost the project less and land nearer the reader.
 -/
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
-Set this from `MATHLIB_CACHE_DEBUG_USE_LEGACY` at startup.
+Whether reads address the Azure storage account instead of
+`publicCacheEndpoint`. `main` sets this from `MATHLIB_CACHE_DEBUG_USE_LEGACY`
+at startup.
 
-That variable is intended a troubleshooting fallback as the public Mathlib endpoint
-(enabled in September 2026) is battle-tested. It should be retired once support for
-the Azure storage account is disabled.
+The variable is a troubleshooting fallback for the transition to the public
+endpoint, enabled in September 2026, and it should be retired together with
+direct reads from the storage account.
 -/
 initialize useLegacy : IO.Ref Bool ← IO.mkRef false
 
 /--
-Default base URL for cache reads: the read endpoint, or the storage account
-itself, which is the legacy read host.
+Default base URL for cache reads: `publicCacheEndpoint`, or `azureAccountURL`
+when `useLegacy` is set.
 -/
 def defaultGetBaseURL (useLegacy : Bool) : String :=
   if useLegacy then azureAccountURL else publicCacheEndpoint
@@ -184,9 +183,7 @@ def defaultGetBaseURL (useLegacy : Bool) : String :=
 /--
 Base URL for cache reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
 `defaultGetBaseURL useLegacy`. `normalizeBaseURL` reads the value, so it
-arrives trimmed, free of trailing slashes, and unset when empty. A base URL
-wins over `useLegacy`, being the more specific answer to the same question:
-which host serves reads.
+arrives trimmed, free of trailing slashes, and unset when empty.
 
 A read URL is `{base}/{azureContainerName}/{key}`, the namespace the Azure
 account serves. Any host that mirrors that namespace is therefore a valid base.

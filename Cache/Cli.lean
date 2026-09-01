@@ -7,7 +7,7 @@ Authors: Marcelo Lynch
 import Cache.Infra
 
 /-!
-# Cache CLI option parsing
+# Cache CLI option and environment flag parsing
 
 Helpers for the cache binary's command line and for the boolean environment
 variables it reads at startup. They live here rather than in `Cache.Main` so
@@ -54,12 +54,8 @@ def isKnownOpt (opt : String) : Bool :=
 /--
 Value of the boolean environment variable `name`, given its raw value `value?`:
 `1` and `true` are on, `0` and `false` are off, and case does not matter. An
-absent, empty, or whitespace-only value takes `ifUnset`, so a variable that
-defaults on and one that defaults off share this parser.
-
-Any other value warns on stderr and takes `ifUnset` as well. The warning is
-what tells the reader their setting had no effect, so it belongs with the parse
-that rejects the value.
+absent, empty, or whitespace-only value takes `ifUnset`; any other value warns
+on stderr and takes `ifUnset` as well.
 -/
 def parseEnvFlag (name : String) (value? : Option String) (ifUnset : Bool) : IO Bool := do
   let some value := nonEmptyEnvValue value? | return ifUnset

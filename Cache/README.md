@@ -123,12 +123,11 @@ lake exe cache get
 
 The variable is intended as a troubleshooting fallback and it might be retired at any time.
 
-
 ## Environment Variables
 
-| Variable                         | Description                                                                                                 | Default                                         |
-|----------------------------------|-------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
-| `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files                                                                          | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
+| Variable            | Description                        | Default                                         |
+|---------------------|------------------------------------|-------------------------------------------------|
+| `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
 
 ## How It Works
 
