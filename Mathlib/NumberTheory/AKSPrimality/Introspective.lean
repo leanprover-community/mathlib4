@@ -130,8 +130,8 @@ private theorem _root_.Ring.charP_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Co
     grind
 
 set_option backward.isDefEq.respectTransparency false in
-theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
-    (hcprm : p.Coprime r) : Introspective ((X : R[X]) - C (a : R)) m r := by
+theorem of_mul {m : ℕ} (h : Introspective (X - C (a : R)) (m * p) r)
+    (hcprm : p.Coprime r) : Introspective (X - C (a : R)) m r := by
   have hp : p.Prime := Fact.out
   simp only [Introspective] at h ⊢
   set g : R[X] := (X : R[X]) - C (a : R)
