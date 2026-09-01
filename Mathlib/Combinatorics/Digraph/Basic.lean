@@ -283,7 +283,7 @@ instance {G : Digraph V} : OrderBot G.SpanningSubgraph where
     intro H
     constructor
     · intro v hv
-      simpa [(isSpanningSubgraph_iff.mp H.property).2] using hv
+      simpa [H.property.2] using hv
     · intro v w h
       exact False.elim h
 
@@ -302,7 +302,7 @@ instance {G : Digraph V} : Compl G.SpanningSubgraph where
           simpa [H.property.2] using hv
         · intro _ _ h
           exact h.1
-      · exact (isSpanningSubgraph_iff.mp H.property).2
+      · exact H.property.2
 
 /-- The meet/intersection of two spanning subgraphs. -/
 instance {G : Digraph V} : Min G.SpanningSubgraph where
@@ -376,10 +376,10 @@ theorem SpanningSubgraph.adj_le_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
   · intro h
     constructor
     · intro v hv
-      rw [(isSpanningSubgraph_iff.mp K.property).2]
-      rwa [(isSpanningSubgraph_iff.mp H.property).2] at hv
+      rw [K.property.2]
+      rwa [H.property.2] at hv
     · intro v w hvw
-      have hG : G.Adj v w := (isSpanningSubgraph_iff.mp H.property).1.2 hvw
+      have hG : G.Adj v w := H.property.1.2 hvw
       exact h ⟨(v, w), hG⟩ hvw
   · intro h e he
     exact h.2 he
