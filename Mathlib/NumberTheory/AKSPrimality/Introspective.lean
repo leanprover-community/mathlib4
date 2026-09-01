@@ -51,7 +51,7 @@ protected theorem map {S : Type*} [CommRing S] [CommRing R] {f : S[X]}
     simp only [RingHom.coe_comp, coe_mapRingHom, Function.comp_apply]
     apply eq_zero_iff_mem.mpr
     simp only [Ideal.mem_span_singleton'] at *
-    obtain ⟨ b , hb ⟩ := ha
+    obtain ⟨b , hb⟩ := ha
     use b.map g
     simp [← hb])
   convert congrArg g h
@@ -71,7 +71,7 @@ theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra 
   have hg : ∀ a ∈ span {(X : R[X]) ^ r - C 1}, ((aeval (R := R) μ) : R[X] →+* K) a = 0 := by
     intro a ha
     simp only [RingHom.coe_coe]
-    obtain ⟨ l , ee ⟩ := mem_span_singleton.mp ha
+    obtain ⟨l , ee⟩ := mem_span_singleton.mp ha
     grind [aeval_sub, aeval_X, (isPrimitiveRoot_of_mem_primitiveRoots hμ).pow_eq_one]
   let g := lift (S := K) (span ({(X : R[X]) ^ r - C 1})) (aeval (R := R) μ) hg
   exact (Iff.mp (Eq.congr (by simp [g]) (by simp [g, aeval_comp]))) (congrArg g h)
@@ -109,7 +109,7 @@ theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h 
     have ⟨w, hw⟩ := mem_span_singleton.mp (Ideal.Quotient.eq.mp hg)
     have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
     simp only [sub_comp, pow_comp, map_one, mul_comp, X_comp, one_comp, comp_assoc] at hw2
-    obtain ⟨ z, hz ⟩  : ((X : R[X]) ^ r - 1 ) ∣ ((X ^ e) ^ r - 1) := by
+    obtain ⟨z, hz⟩  : ((X : R[X]) ^ r - 1 ) ∣ ((X ^ e) ^ r - 1) := by
       simp only [← pow_mul]
       by_cases he : 1 < e
       · exact X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd _ (by
@@ -151,7 +151,7 @@ private theorem _root_.Ring.charP_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Co
   apply CharP.quotient'
   intro z hz
   by_contra!
-  obtain ⟨ y, hy ⟩ := Ideal.mem_span_singleton'.mp hz
+  obtain ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp hz
   by_cases hc : y = 0
   · grind
   · have _ :  (z : R[X]).natDegree = 0 := by simp
