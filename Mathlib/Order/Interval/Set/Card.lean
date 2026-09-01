@@ -103,7 +103,7 @@ section Lattice
 variable [Lattice α] [LocallyFiniteOrder α]
 
 theorem Set.cardinalMk_uIcc (a b : α) : Cardinal.mk (Set.uIcc a b) = #(Finset.uIcc a b) := by
-  simp
+  simp [Set.uIcc, Finset.uIcc]
 
 theorem Set.encard_uIcc (a b : α) : (Set.uIcc a b).encard = #(Finset.uIcc a b) := by
   simp [← Finset.coe_uIcc]
