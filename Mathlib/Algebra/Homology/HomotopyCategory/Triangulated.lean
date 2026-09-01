@@ -64,7 +64,7 @@ lemma mappingConeCompTriangle_mor₃_naturality {Y₁ Y₂ Y₃ : CochainComplex
   -- the following list of lemmas was obtained by doing simp? [ext_from_iff _ (n + 1) _ rfl]
   simp only [Int.reduceNeg, Fin.isValue, assoc, inr_f_desc_f, HomologicalComplex.comp_f,
     ext_from_iff _ (n + 1) _ rfl, inl_v_desc_f_assoc, Cochain.zero_cochain_comp_v, Cochain.ofHom_v,
-    inl_v_triangle_mor₃_f_assoc, triangle_obj₁, shiftFunctor_obj_X', shiftFunctor_obj_X,
+    inl_v_triangle_mor₃_f_assoc, triangle_obj₁, shiftFunctor_obj_X',
     shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, Preadditive.neg_comp,
     id_comp, Preadditive.comp_neg, inr_f_desc_f_assoc, inr_f_triangle_mor₃_f_assoc, zero_comp,
     comp_zero, and_self]
@@ -132,7 +132,6 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
 
 end MappingConeCompHomotopyEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes,
 this is the homotopy equivalence `mappingConeCompHomotopyEquiv f g`
 between `mappingCone g` and the mapping cone of
@@ -144,13 +143,13 @@ noncomputable def mappingConeCompHomotopyEquiv : HomotopyEquiv (mappingCone g)
   homotopyHomInvId := Homotopy.ofEq (by simp)
   homotopyInvHomId := MappingConeCompHomotopyEquiv.homotopyInvHomId f g
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mappingConeCompHomotopyEquiv_hom_inv_id :
     (mappingConeCompHomotopyEquiv f g).hom ≫
       (mappingConeCompHomotopyEquiv f g).inv = 𝟙 _ := by
   simp [mappingConeCompHomotopyEquiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mappingConeCompHomotopyEquiv_comm₁ :

@@ -38,14 +38,14 @@ variable {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
 
 /-- Given a cone `c` over `F`, we can interpret the legs of `c` as structured arrows
     `c.pt ⟶ F.obj -`. -/
-@[simps]
+@[simps, implicit_reducible]
 def Cone.toStructuredArrow {F : J ⥤ C} (c : Cone F) : J ⥤ StructuredArrow c.pt F where
   obj j := StructuredArrow.mk (c.π.app j)
   map f := StructuredArrow.homMk f
 
 /-- If `F` has a limit, then the limit projections can be interpreted as structured arrows
     `limit F ⟶ F.obj -`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def limit.toStructuredArrow (F : J ⥤ C) [HasLimit F] :
     J ⥤ StructuredArrow (limit F) F where
   obj j := StructuredArrow.mk (limit.π F j)
@@ -90,6 +90,7 @@ lemma Cone.toStructuredArrow_comp_toUnder_comp_forget {F : J ⥤ C} (c : Cone F)
     c.toStructuredArrow ⋙ StructuredArrow.toUnder _ _ ⋙ Under.forget _ = F :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A cone `c` on `F : J ⥤ C` lifts to a cone in `Over c.pt` with cone point `𝟙 c.pt`. -/
 @[simps]
@@ -98,6 +99,7 @@ def Cone.toUnder {F : J ⥤ C} (c : Cone F) :
   pt := Under.mk (𝟙 c.pt)
   π := { app := fun j => Under.homMk (c.π.app j) (by simp) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The limit cone for `F : J ⥤ C` lifts to a cocone in `Under (limit F)` with cone point
     `𝟙 (limit F)`. This is automatically also a limit cone. -/
@@ -112,7 +114,6 @@ def Cone.mapConeToUnder {F : J ⥤ C} (c : Cone F) : (Under.forget c.pt).mapCone
   Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram of `StructuredArrow X F`s, we may obtain a cone with cone point `X`. -/
 @[simps!]
 def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X F) :
@@ -150,6 +151,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
         convert! congr_fun (congr_arg NatTrans.app f.w) j
         simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
     functor. -/
@@ -257,6 +259,7 @@ lemma Cocone.toCostructuredArrow_comp_toOver_comp_forget {F : J ⥤ C} (c : Coco
     c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ Over.forget _ = F :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A cocone `c` on `F : J ⥤ C` lifts to a cocone in `Over c.pt` with cone point `𝟙 c.pt`. -/
 @[simps]
@@ -265,6 +268,7 @@ def Cocone.toOver {F : J ⥤ C} (c : Cocone F) :
   pt := Over.mk (𝟙 c.pt)
   ι := { app := fun j => Over.homMk (c.ι.app j) (by simp) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The colimit cocone for `F : J ⥤ C` lifts to a cocone in `Over (colimit F)` with cone point
     `𝟙 (colimit F)`. This is automatically also a colimit cocone. -/
@@ -287,6 +291,7 @@ def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredAr
   pt := X
   ι := { app := fun j => (G.obj j).hom }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a cocone `c : Cocone K` and a map `f : F.obj c.X ⟶ X`, we can construct a cocone of
     costructured arrows over `X` with `f` as the cone point. -/
@@ -315,6 +320,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
     { hom := f.right
       w j := by simp [dsimp% congr_app f.w j] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/

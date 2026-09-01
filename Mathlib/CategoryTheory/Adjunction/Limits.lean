@@ -33,7 +33,7 @@ open Opposite
 
 namespace CategoryTheory
 
-open Functor Limits
+open CategoryTheory.Functor Limits
 
 universe v u v₁ v₂ v₀ u₁ u₂
 
@@ -59,7 +59,6 @@ def functorialityRightAdjoint : Cocone (K ⋙ F) ⥤ Cocone K :=
 attribute [local simp] functorialityRightAdjoint
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The unit for the adjunction for `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.
@@ -70,7 +69,6 @@ def functorialityUnit :
   app c := { hom := adj.unit.app c.pt }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the adjunction for `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.
@@ -174,7 +172,6 @@ def functorialityLeftAdjoint : Cone (K ⋙ G) ⥤ Cone K :=
 attribute [local simp] functorialityLeftAdjoint
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The unit for the adjunction for `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
 Auxiliary definition for `functorialityAdjunction'`.
@@ -185,7 +182,6 @@ def functorialityUnit' :
   app c := { hom := adj.unit.app c.pt }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the adjunction for `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
 Auxiliary definition for `functorialityAdjunction'`.
@@ -272,7 +268,6 @@ theorem has_limits_of_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimitsOfSi
 end PreservationLimits
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- auxiliary construction for `coconesIso` -/
 @[simp]
 def coconesIsoComponentHom {J : Type u} [Category.{v} J] {K : J ⥤ C} (Y : D)
@@ -316,8 +311,8 @@ variable {C : Type u₁} [Category.{v₀} C] {D : Type u₂} [Category.{v₀} D]
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 -- Note: this is natural in K, but we do not yet have the tools to formulate that.
 /-- When `F ⊣ G`,
 the functor associating to each `Y` the cocones over `K ⋙ F` with cone point `Y`
@@ -330,6 +325,7 @@ def coconesIso {J : Type u} [Category.{v} J] {K : J ⥤ C} :
     { hom := ↾(coconesIsoComponentHom adj Y)
       inv := ↾(coconesIsoComponentInv adj Y) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 -- Note: this is natural in K, but we do not yet have the tools to formulate that.
 /-- When `F ⊣ G`,

@@ -5,7 +5,7 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
@@ -35,11 +35,10 @@ noncomputable section
 
 universe w w' v u
 
-open CategoryTheory Functor Opposite
+open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
 
-variable {J : Type w}
 universe uC' uC uD' uD
 variable {C : Type uC} [Category.{uC'} C] [HasZeroMorphisms C]
 variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
@@ -89,7 +88,7 @@ instance BinaryBicone.category {P Q : C} : Category (BinaryBicone P Q) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
-/- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
+/-- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
 -- a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
 the underlying structure. -/
 @[ext]
@@ -141,6 +140,7 @@ def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
       winl := by simp [-BinaryBiconeMorphism.winl, ← f.winl]
       winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full where
   map_surjective t :=
    ⟨{ hom := F.preimage t.hom
@@ -298,6 +298,7 @@ def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone
 abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y :=
   toBinaryBiconeFunctor.obj b
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
 cone. -/
@@ -305,6 +306,7 @@ def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cone.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A bicone over a pair is a colimit cocone if and only if the corresponding binary bicone is a
 colimit cocone. -/
@@ -322,8 +324,8 @@ structure BinaryBicone.IsBilimit {P Q : C} (b : BinaryBicone P Q) where
 attribute [inherit_doc BinaryBicone.IsBilimit] BinaryBicone.IsBilimit.isLimit
   BinaryBicone.IsBilimit.isColimit
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a binary bicone for `P` and `Q` is bilimit, then the binary bicone for `P'` and `Q'`
 obtained using isomorphisms `P ≅ P'` and `Q ≅ Q'` is also bilimit. -/
 def BinaryBicone.IsBilimit.ofIso {P Q P' Q' : C} {b : BinaryBicone P Q} (hb : b.IsBilimit)
@@ -616,7 +618,6 @@ theorem biprod.isoProd_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).hom = prod.lift biprod.fst biprod.snd := by
       ext <;> simp [biprod.isoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod.isoProd_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).inv = biprod.lift prod.fst prod.snd := by
@@ -723,6 +724,7 @@ theorem biprod.conePointUniqueUpToIso_inv (X Y : C) [HasBinaryBiproduct X Y] {b 
     rcases j with ⟨⟨⟩⟩
   all_goals simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Binary biproducts are unique up to isomorphism. This already follows because bilimits are
 limits, but in the case of biproducts we can give an isomorphism with particularly nice
 definitional properties, namely that `biprod.lift b.fst b.snd` and `biprod.desc b.inl b.inr`
@@ -766,7 +768,6 @@ instance prod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     (biprod.isoProd _ _).hom by simp]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Mono (biprod.map f g) := by
   rw [show biprod.map f g = (biprod.isoProd _ _).hom ≫ prod.map f g ≫

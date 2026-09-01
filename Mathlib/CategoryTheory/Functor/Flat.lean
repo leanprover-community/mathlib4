@@ -90,7 +90,6 @@ theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
@@ -196,7 +195,6 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
           (StructuredArrow.proj s.pt F).mapCone s')
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
   simp [lift, ← Functor.map_comp]
 
@@ -332,7 +330,7 @@ noncomputable instance lan_preservesFiniteLimits_of_flat (F : C ⥤ D) [Represen
   intro J _ _
   apply preservesLimitsOfShape_of_evaluation (F.op.lan : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
   intro K
-  haveI : IsFiltered (CostructuredArrow F.op K) :=
+  have : IsFiltered (CostructuredArrow F.op K) :=
     IsFiltered.of_equivalence (structuredArrowOpEquivalence F (unop K))
   exact preservesLimitsOfShape_of_natIso (lanEvaluationIsoColim _ _ _).symm
 
@@ -344,14 +342,14 @@ variable [HasFiniteLimits C]
 
 instance lan_preservesFiniteLimits_of_preservesFiniteLimits (F : C ⥤ D)
     [PreservesFiniteLimits F] : PreservesFiniteLimits (F.op.lan : _ ⥤ Dᵒᵖ ⥤ E) := by
-  haveI := flat_of_preservesFiniteLimits F
+  have := flat_of_preservesFiniteLimits F
   infer_instance
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
   ⟨fun _ => inferInstance, fun H => by
-    haveI := preservesFiniteLimits_of_flat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁)
-    haveI : PreservesFiniteLimits F := by
+    have := preservesFiniteLimits_of_flat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁)
+    have : PreservesFiniteLimits F := by
       apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{u₁}
       intros; apply preservesLimit_of_lan_preservesLimit
     apply flat_of_preservesFiniteLimits⟩
@@ -379,7 +377,6 @@ instance (X : E) [RepresentablyFlat F] : (StructuredArrow.pre X F G).Final :=
 instance (X : E) [RepresentablyCoflat F] : (CostructuredArrow.pre F G X).Initial :=
   ⟨fun _ ↦ isConnected_of_equivalent (CostructuredArrow.preEquivalence _ _).symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
     IsCofiltered (StructuredArrow X (F ⋙ G)) := by
   let T := StructuredArrow.pre X F G

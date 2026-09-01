@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Polynomial.CoeffList
 public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.List.Destutter
-public import Mathlib.Data.Sign.Basic
 
 /-!
 
@@ -101,7 +101,7 @@ theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
     grind
   by_cases h₄ : SignType.sign P.leadingCoeff = SignType.sign P.eraseLead.leadingCoeff
   · grind [SignType.neg_eq_self_iff]
-  rw [if_pos h₄, if_pos ?_]
+  rw [ite_eq_left h₄, ite_eq_left ?_]
   · grind [Nat.sub_add_cancel, List.length_pos_of_ne_nil, List.destutter'_ne_nil]
   cases _ : SignType.sign P.leadingCoeff
   <;> cases _ : SignType.sign P.eraseLead.leadingCoeff
@@ -209,7 +209,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
 lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < η) :
     (monomial d c).signVariations + 1 ≤ ((X - C η) * monomial d c).signVariations := by
   have h₁ : nextCoeff ((X - C η) * monomial d c) = -(η * c) := by
-    convert! coeff_mul_monomial (X - C η) d 0 c using 1
+    convert coeff_mul_monomial (X - C η) d 0 c
     · simp [hc, nextCoeff, natDegree_mul (X_sub_C_ne_zero η)]
     · simp
   have h₂ : eraseLead ((X - C η) * monomial d c) ≠ 0 := by
@@ -291,8 +291,6 @@ lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0
   · rw [← List.destutter_cons', ← List.destutter_cons']
     grind [List.destutter_cons_cons]
 
--- TODO: fix non-terminal simp below; simp followed by rfl
-set_option linter.flexible false in
 /-- Multiplying a polynomial by a linear term `X - η` adds at least one sign change. This is the
 basis for the induction in `roots_countP_pos_le_signVariations`. -/
 theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
@@ -348,20 +346,20 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
         rwa [← eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero hη.ne']
         grind [sign_eq_zero_iff]
       grind [signVariations_le_eraseLead_succ]
-  all_goals (
+  all_goals
     have h₁ : nextCoeff P ≠ 0 := by simp [← sign_ne_zero, hs_nC]
     specialize ih _ h_ih (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₁) rfl
-    have : P.signVariations = P.eraseLead.signVariations + ?_ := by
-      simp [signVariations_eq_eraseLead_add_ite hP, leadingCoeff_eraseLead_eq_nextCoeff h₁,
-        hs_nC, h_lC]
-      exact rfl)
   · /- P starts with [+,+,...]. (X-C)*P starts with [+,?,...]. After dropping the lead of P, this
       becomes [+,...] and [+,...]. So the sign variations on P are unchanged when we induct, while
       (X-C)*P can only lose at most one sign change. -/
+    have : P.signVariations = P.eraseLead.signVariations + 0 := by
+      simp [signVariations_eq_eraseLead_add_ite hP, leadingCoeff_eraseLead_eq_nextCoeff h₁, *]
     grind [sign_eq_one_iff, signVariations_X_sub_C_mul_eraseLead_le]
   · /- P starts with [+,-,...], so (X-C)*P starts with [+,-,...]. After dropping the lead of P, this
     becomes [-,...] and [-,...]. Dropping the first one of each decreases (X-C)*P by one and P by
     one, so we can induct. -/
+    have : P.signVariations = P.eraseLead.signVariations + 1 := by
+      simp [signVariations_eq_eraseLead_add_ite hP, leadingCoeff_eraseLead_eq_nextCoeff h₁, *]
     trans ((X - C η) * P).eraseLead.signVariations + 1
     · grind [signVariations_eraseLead_mul_X_sub_C, sign_eq_neg_one_iff]
     · suffices SignType.sign ((X - C η) * P).nextCoeff = -1 by

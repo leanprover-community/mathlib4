@@ -6,6 +6,7 @@ Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryash
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
@@ -105,7 +106,7 @@ instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ ToType X → ToType Y) where
 abbrev instFunLike {X Y : C} :
     FunLike (X ⟶ Y) (ToType X) (ToType Y) where
   coe f := f
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rw [← ofHom_hom f, ← ofHom_hom g]
     simp_all
 
@@ -166,9 +167,6 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
 @[simp] theorem _root_.CategoryTheory.comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     (x : ToType X) : (f ≫ g) x = g (f x) := by
   simp [ConcreteCategory.comp_apply]
-
-@[deprecated (since := "2026-02-06")] alias _root_.CategoryTheory.comp_apply' :=
-  _root_.CategoryTheory.comp_apply
 
 theorem congr_arg {X Y : C} (f : X ⟶ Y) {x x' : ToType X} (h : x = x') : f x = f x' :=
   congrArg (f : ToType X → ToType Y) h

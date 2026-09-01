@@ -15,6 +15,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Number field discriminant
+
 This file defines the discriminant of a number field.
 
 ## Main result
@@ -51,7 +52,6 @@ theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
     ← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, ← (equivReindex K).symm_symm,
     Algebra.discr_reindex, eq_ratCast]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ComplexConjugate ComplexOrder in
 theorem sign_discr :
     (discr K).sign = (-1) ^ nrComplexPlaces K := by
@@ -85,7 +85,6 @@ theorem rootDiscr_rat : rootDiscr ℚ = 1 := by
 
 end rootDiscr
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
@@ -95,7 +94,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
   let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
   let M := (mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)
   let N := Algebra.embeddingsMatrixReindex ℚ ℂ (integralBasis K ∘ f.symm)
-    RingHom.equivRatAlgHom
+    (RingHom.equivRatAlgHom K ℂ)
   suffices M.map ofRealHom = matrixToStdBasis K *
       (Matrix.reindex (indexEquiv K).symm (indexEquiv K).symm N).transpose by
     calc volume (fundamentalDomain (latticeBasis K))
@@ -411,7 +410,7 @@ theorem finite_of_discr_bdd_of_isReal :
   simp_rw [Set.mem_iUnion]
   -- this is purely an optimization
   have : CharZero K := SubsemiringClass.instCharZero K
-  haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
+  have : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLTFactor K) * B by
     obtain ⟨x, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isReal K hw₀ this
@@ -460,7 +459,7 @@ theorem finite_of_discr_bdd_of_isComplex :
   simp_rw [Set.mem_iUnion]
   -- this is purely an optimization
   have : CharZero K := SubsemiringClass.instCharZero K
-  haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
+  have : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLT'Factor K) * boundOfDiscBdd N by
     obtain ⟨x, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isComplex K hw₀ this
@@ -503,7 +502,7 @@ theorem _root_.NumberField.finite_of_discr_bdd :
   rintro ⟨K, hK₀⟩ hK₁
   -- this is purely an optimization
   have : CharZero K := SubsemiringClass.instCharZero K
-  haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
+  have : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw₀ : IsReal w₀
   · apply Set.mem_union_left

@@ -25,8 +25,6 @@ variable {R : Type u} [Ring R]
 
 namespace CategoryTheory
 
-open Limits
-
 namespace ShortComplex
 
 noncomputable instance : (forget₂ (ModuleCat.{v} R) Ab).PreservesHomology where
@@ -97,7 +95,6 @@ abbrev moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
   S.f.hom.codRestrict _ <| S.moduleCat_zero_apply
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
 not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
@@ -144,7 +141,6 @@ lemma moduleCatCyclesIso_inv_iCycles :
     S.moduleCatCyclesIso.inv ≫ S.iCycles = S.moduleCatLeftHomologyData.i :=
   S.moduleCatLeftHomologyData.cyclesIso_inv_comp_iCycles
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, elementwise)]
 lemma toCycles_moduleCatCyclesIso_hom :
     S.toCycles ≫ S.moduleCatCyclesIso.hom = S.moduleCatLeftHomologyData.f' := by

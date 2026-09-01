@@ -23,7 +23,7 @@ namespace CliffordAlgebra
 variable (Q)
 
 /-- If the quadratic form of a vector is invertible, then so is that vector. -/
-@[implicit_reducible]
+@[instance_reducible]
 def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) where
   invOf := ι Q (⅟(Q m) • m)
   invOf_mul_self := by
@@ -34,12 +34,12 @@ def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) wh
 /-- For a vector with invertible quadratic form, $v^{-1} = \frac{v}{Q(v)}$ -/
 theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] :
     ⅟(ι Q m) = ι Q (⅟(Q m) • m) := by
-  letI := invertibleιOfInvertible Q m
+  let := invertibleιOfInvertible Q m
   convert! (rfl : ⅟(ι Q m) = _)
 
 theorem isUnit_ι_of_isUnit {m : M} (h : IsUnit (Q m)) : IsUnit (ι Q m) := by
   cases h.nonempty_invertible
-  letI := invertibleιOfInvertible Q m
+  let := invertibleιOfInvertible Q m
   exact isUnit_of_invertible (ι Q m)
 
 /-- $aba^{-1}$ is a vector. -/
@@ -58,7 +58,7 @@ section
 variable [Invertible (2 : R)]
 
 /-- Over a ring where `2` is invertible, `Q m` is invertible whenever `ι Q m`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] : Invertible (Q m) :=
   ExteriorAlgebra.invertibleAlgebraMapEquiv M (Q m) <|
     .algebraMapOfInvertibleAlgebraMap (equivExterior Q).toLinearMap (by simp) <|
@@ -66,7 +66,7 @@ def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] : Invertible (Q m) :=
 
 theorem isUnit_of_isUnit_ι {m : M} (h : IsUnit (ι Q m)) : IsUnit (Q m) := by
   cases h.nonempty_invertible
-  letI := invertibleOfInvertibleι Q m
+  let := invertibleOfInvertibleι Q m
   exact isUnit_of_invertible (Q m)
 
 @[simp] theorem isUnit_ι_iff {m : M} : IsUnit (ι Q m) ↔ IsUnit (Q m) :=

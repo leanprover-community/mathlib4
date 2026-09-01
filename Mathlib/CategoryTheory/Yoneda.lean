@@ -31,7 +31,7 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open Opposite Functor
+open Opposite CategoryTheory.Functor
 
 universe w v v₁ v₂ u₁ u₂
 
@@ -39,7 +39,7 @@ universe w v v₁ v₂ u₁ u₂
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The Yoneda embedding, as a functor from `C` into presheaves on `C`. -/
-@[simps obj_obj obj_map map_app, stacks 001O]
+@[implicit_reducible, simps obj_obj obj_map map_app, stacks 001O]
 def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
   obj X :=
     { obj Y := (unop Y) ⟶ X
@@ -711,8 +711,6 @@ instance prodCategoryInstance1 : Category ((Cᵒᵖ ⥤ Type v₁) × Cᵒᵖ) :
 instance prodCategoryInstance2 : Category (Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) :=
   CategoryTheory.prod'.{v₁, max u₁ v₁} Cᵒᵖ (Cᵒᵖ ⥤ Type v₁)
 
-open Yoneda
-
 section YonedaLemma
 
 variable {C}
@@ -720,6 +718,7 @@ variable {C}
 /-- We have a type-level equivalence between natural transformations from the yoneda embedding
 and elements of `F.obj X`, without any universe switching.
 -/
+@[implicit_reducible]
 def yonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type v₁} : (yoneda.obj X ⟶ F) ≃ F.obj (op X) where
   toFun η := η.app (op X) (𝟙 X)
   invFun ξ := { app _ := ↾fun f ↦ F.map f.op ξ }
@@ -739,7 +738,7 @@ theorem yonedaEquiv_symm_app {X : C} {F : Cᵒᵖ ⥤ Type v₁} (x : F.obj (op 
   rfl
 
 theorem yonedaEquiv_symm_app_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (x : F.obj (op X)) (Y : Cᵒᵖ)
-    (f : Y.unop ⟶ X) : (yonedaEquiv.symm x).app Y f = F.map f.op x :=
+    (f : Y.unop ⟶ X) : dsimp% (yonedaEquiv.symm x).app Y f = F.map f.op x :=
   rfl
 
 /-- See also `yonedaEquiv_naturality'` for a more general version. -/
@@ -857,7 +856,6 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     simp [yonedaEquiv, ← NatTrans.naturality_apply])
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The curried version of the Yoneda lemma. -/
 def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
     yoneda.op ⋙ coyoneda ≅
@@ -997,6 +995,7 @@ variable {C}
 /-- We have a type-level equivalence between natural transformations from the coyoneda embedding
 and elements of `F.obj X.unop`, without any universe switching.
 -/
+@[implicit_reducible]
 def coyonedaEquiv {X : C} {F : C ⥤ Type v₁} : (coyoneda.obj (op X) ⟶ F) ≃ F.obj X where
   toFun η := η.app X (𝟙 X)
   invFun ξ := { app _ := ↾fun x ↦ F.map x ξ }
@@ -1011,7 +1010,7 @@ theorem coyonedaEquiv_apply {X : C} {F : C ⥤ Type v₁} (f : coyoneda.obj (op 
 
 @[simp]
 theorem coyonedaEquiv_symm_app_apply {X : C} {F : C ⥤ Type v₁} (x : F.obj X) (Y : C)
-    (f : X ⟶ Y) : (coyonedaEquiv.symm x).app Y f = F.map f x :=
+    (f : X ⟶ Y) : dsimp% (coyonedaEquiv.symm x).app Y f = F.map f x :=
   rfl
 
 lemma coyonedaEquiv_naturality {X Y : C} {F : C ⥤ Type v₁} (f : coyoneda.obj (op X) ⟶ F)
@@ -1184,7 +1183,6 @@ lemma uliftCoyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {F : C ⥤ Type (max w
   rw [uliftCoyonedaEquiv_naturality]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma uliftCoyonedaEquiv_uliftCoyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     DFunLike.coe (β := fun _ ↦ ULift.{w} (Y.unop ⟶ X.unop))
@@ -1309,31 +1307,12 @@ def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFai
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
-@[deprecated homNatIso (since := "2025-10-28")]
-def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D} (hF : F.FullyFaithful)
-    (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ uliftYoneda.{v₂}.obj X :=
-  isoWhiskerLeft F.op (uliftYonedaIsoYoneda.symm.app _) ≪≫ hF.homNatIso _ ≪≫
-    NatIso.ofComponents (fun _ => Equiv.toIso (Equiv.ulift.trans Equiv.ulift.symm))
-
-/-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps! +dsimpLhs]
 def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
     (hF : F.FullyFaithful) :
     F ⋙ uliftYoneda.{v₁} ⋙ (whiskeringLeft _ _ _).obj F.op ≅ uliftYoneda.{v₂} :=
   NatIso.ofComponents (fun X => hF.homNatIso _) fun f => by
     ext; exact Equiv.ulift.injective (hF.map_injective (by simp))
-
-@[deprecated (since := "2025-10-20")] alias compYonedaCompWhiskeringLeft :=
-  compUliftYonedaCompWhiskeringLeft
-
-/-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
-@[deprecated compUliftYonedaCompWhiskeringLeft (since := "2025-10-28")]
-def compYonedaCompWhiskeringLeftMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
-    (hF : F.FullyFaithful) : F ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ≅ uliftYoneda.{v₂} := by
-  refine isoWhiskerLeft F (isoWhiskerRight uliftYonedaIsoYoneda.{v₁}.symm _) ≪≫
-    hF.compUliftYonedaCompWhiskeringLeft ≪≫
-    NatIso.ofComponents (fun _ => NatIso.ofComponents
-      (fun _ => Equiv.toIso (Equiv.ulift.trans Equiv.ulift.symm)))
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism, using coyoneda. -/
 @[simps! hom_app inv_app]

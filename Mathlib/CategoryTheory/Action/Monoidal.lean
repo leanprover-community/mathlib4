@@ -218,6 +218,7 @@ noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
 
 variable [Group G]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).

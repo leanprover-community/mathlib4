@@ -11,6 +11,7 @@ public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.TryThis
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Categories
@@ -230,7 +231,7 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 -- https://github.com/leanprover/lean4/pull/12423, the morphism universe `v` would default to
 -- being a universe output parameter.
 -- See Note [universe output parameters and typeclass caching].
-@[univ_out_params, pp_with_univ, stacks 0014]
+@[univ_out_params, pp_with_univ, stacks 0014, wikidata Q719395]
 class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by cat_disch

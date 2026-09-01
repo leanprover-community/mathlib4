@@ -5,6 +5,8 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -12,8 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Products
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Finite.Sigma
 
 /-!
 # (Co)limits in the category of finite types
@@ -47,7 +47,7 @@ noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J]
   CreatesLimit {K} := createsLimitOfFullyFaithfulOfIso
     (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
-/- Help typeclass inference to infer creation of finite limits for the forgetful functor. -/
+/-- Help typeclass inference to infer creation of finite limits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesLimitsOfShape J (forget FintypeCat) :=
   FintypeCat.inclusionCreatesFiniteLimits
@@ -63,7 +63,7 @@ noncomputable instance inclusion_preservesFiniteLimits :
   preservesFiniteLimits _ :=
     preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape FintypeCat.incl
 
-/- Help typeclass inference to infer preservation of finite limits for the forgetful functor. -/
+/-- Help typeclass inference to infer preservation of finite limits for the forgetful functor. -/
 noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
   FintypeCat.inclusion_preservesFiniteLimits
 
@@ -121,7 +121,7 @@ noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory 
   CreatesColimit {K} := createsColimitOfFullyFaithfulOfIso
     (FintypeCat.of <| colimit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
-/- Help typeclass inference to infer creation of finite colimits for the forgetful functor. -/
+/-- Help typeclass inference to infer creation of finite colimits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesColimitsOfShape J (forget FintypeCat) :=
   FintypeCat.inclusionCreatesFiniteColimits
@@ -137,7 +137,7 @@ noncomputable instance inclusion_preservesFiniteColimits :
   preservesFiniteColimits _ :=
     preservesColimitOfShape_of_createsColimitsOfShape_and_hasColimitsOfShape FintypeCat.incl
 
-/- Help typeclass inference to infer preservation of finite colimits for the forgetful functor. -/
+/-- Help typeclass inference to infer preservation of finite colimits for the forgetful functor. -/
 noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
   FintypeCat.inclusion_preservesFiniteColimits
 

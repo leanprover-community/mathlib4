@@ -75,8 +75,7 @@ theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 /-- The functor from differential graded objects to homological complexes.
 -/
 @[simps]
@@ -87,7 +86,7 @@ def dgoToHomologicalComplex :
     { X := fun i => X.obj i
       d := fun i j =>
         if h : i + b = j then X.d i ≫ X.objEqToHom (show i + (1 : ℤ) • b = j by simp [h]) else 0
-      shape := fun i j w => by dsimp at w; convert! dif_neg w
+      shape := fun i j w => by dsimp at w; convert! dite_eq_right w
       d_comp_d' := fun i j k hij hjk => by
         dsimp at hij hjk; subst hij hjk
         simp [objEqToHom_d_assoc] }
@@ -110,6 +109,7 @@ def homologicalComplexToDGO :
       d := fun i => X.d i _ }
   map {X Y} f := { f := f.f }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism for `dgoEquivHomologicalComplex`.
 -/

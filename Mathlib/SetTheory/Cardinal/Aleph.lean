@@ -180,7 +180,7 @@ theorem range_preOmega : range preOmega = {x | IsInitial x} :=
   range_enumOrd not_bddAbove_isInitial
 
 theorem mem_range_preOmega_iff {x : Ordinal} : x ∈ range preOmega ↔ IsInitial x := by
-  rw [range_preOmega, mem_setOf]
+  rw [range_preOmega, mem_ofPred]
 
 alias ⟨_, IsInitial.mem_range_preOmega⟩ := mem_range_preOmega_iff
 
@@ -253,9 +253,6 @@ theorem omega0_lt_omega_one : ω < ω₁ := by
   rw [← omega_zero, omega_lt_omega]
   exact zero_lt_one
 
-@[deprecated (since := "2025-12-22")]
-alias omega0_lt_omega1 := omega0_lt_omega_one
-
 theorem isNormal_omega : IsNormal omega :=
   isNormal_preOmega.comp (isNormal_add_right _)
 
@@ -272,7 +269,7 @@ theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
     rw [omega_eq_preOmega, Ordinal.add_sub_cancel_of_le ha']
 
 theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
-  rw [range_omega, mem_setOf]
+  rw [range_omega, mem_ofPred]
 
 theorem preOmega_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preOmega o = ω_ o := by
   rw [← opow_natCast] at ho
@@ -303,7 +300,7 @@ theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
 
 @[simp]
 theorem _root_.Ordinal.type_lt_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
-  simpa using preAleph.symm.toRelIsoLT.ordinal_type_eq
+  simpa using preAleph.symm.ordinalType_congr
 
 @[deprecated (since := "2026-03-20")] alias type_cardinal := type_lt_cardinal
 
@@ -784,37 +781,25 @@ variable {c : Cardinal.{u}} {n : ℕ}
 theorem aleph_one_le_lift : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
   simp
 
-@[deprecated (since := "2025-12-22")] alias aleph1_le_lift := aleph_one_le_lift
-
 @[simp]
 theorem lift_le_aleph_one : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
   simpa using lift_le (b := ℵ₁)
-
-@[deprecated (since := "2025-12-22")] alias lift_le_aleph1 := lift_le_aleph_one
 
 @[simp]
 theorem aleph_one_lt_lift : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
   simpa using lift_lt (a := ℵ₁)
 
-@[deprecated (since := "2025-12-22")] alias aleph1_lt_lift := aleph_one_lt_lift
-
 @[deprecated lift_le_aleph0 (since := "2026-03-23")]
 theorem lift_lt_aleph_one : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
   simp
-
-@[deprecated (since := "2025-12-22")] alias lift_lt_aleph1 := lift_lt_aleph_one
 
 @[simp]
 theorem aleph_one_eq_lift : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
   simpa using lift_inj (a := ℵ₁)
 
-@[deprecated (since := "2025-12-22")] alias aleph1_eq_lift := aleph_one_eq_lift
-
 @[simp]
 theorem lift_eq_aleph_one : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
   simp [eqComm]
-
-@[deprecated (since := "2025-12-22")] alias lift_eq_aleph1 := lift_eq_aleph_one
 
 @[simp]
 theorem aleph_natCast_le_lift : ℵ_ n ≤ lift.{v} c ↔ ℵ_ n ≤ c := by

@@ -56,10 +56,9 @@ namespace CategoryTheory.Limits
 section Over
 variable {f : Y ⟶ X} {g : Z ⟶ X}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
-@[simps]
+@[implicit_reducible, simps]
 def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk g) where
   functor.obj c := .mk (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk f) c.fst rfl)
       (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk g) c.snd c.condition.symm)
@@ -94,7 +93,6 @@ def IsLimit.pullbackConeEquivBinaryFanFunctor {c : PullbackCone f g} (hc : IsLim
       · simpa using! congr(($e₁).left)
       · simpa using! congr(($e₂).left)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
 -- This could also be `(IsLimit.ofConeEquiv pullbackConeEquivBinaryFan.symm).symm hc`, but possibly
 -- bad defeqs?
@@ -181,42 +179,33 @@ namespace Over
 section BinaryProduct
 variable {X : C} {Y Z : Over X}
 
-open Limits
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
   ⟨by simp, ⟨hc.pullbackConeEquivBinaryFanInverse⟩⟩
 
 variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of `Y` and `Z` in `Over X` is isomorphic to `Y ×ₓ Z`. -/
 noncomputable
 def prodLeftIsoPullback :
     (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=
   (Over.isPullback_of_binaryFan_isLimit _ (prodIsProd Y Z)).isoPullback
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prodLeftIsoPullback_hom_fst :
     (prodLeftIsoPullback Y Z).hom ≫ pullback.fst _ _ = (prod.fst (X := Y)).left :=
   IsPullback.isoPullback_hom_fst _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prodLeftIsoPullback_hom_snd :
     (prodLeftIsoPullback Y Z).hom ≫ pullback.snd _ _ = (prod.snd (X := Y)).left :=
   IsPullback.isoPullback_hom_snd _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prodLeftIsoPullback_inv_fst :
     (prodLeftIsoPullback Y Z).inv ≫ (prod.fst (X := Y)).left = pullback.fst _ _ :=
   IsPullback.isoPullback_inv_fst _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prodLeftIsoPullback_inv_snd :
     (prodLeftIsoPullback Y Z).inv ≫ (prod.snd (X := Y)).left = pullback.snd _ _ :=
@@ -242,7 +231,6 @@ abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : Cone F) :
@@ -258,7 +246,6 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
         · rw [Category.id_comp, Category.comp_id] }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
@@ -277,7 +264,6 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 -- `conesEquivFunctor`, but doesn't.
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Discrete
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
@@ -287,7 +273,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
       π :=
         { app := fun ⟨j⟩ => Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
           -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `naturality`
-          naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; cat_disch } }
+          naturality := fun ⟨X⟩ ⟨Y⟩ ⟨f⟩ => by dsimp at f ⊢; cat_disch } }
   map f := { hom := Over.homMk f.hom }
 
 -- Porting note: unfortunately `aesop` can't cope with a `cases` rule here for the type synonym
@@ -295,6 +281,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] WidePullbackShape
 -- If this worked we could avoid the `rintro` in `conesEquivUnitIso`.
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps!]
@@ -306,6 +293,7 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
       inv := 𝟙 _ }
     (by rintro (j | j) <;> cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
 --       `Cone.ext`?
@@ -317,6 +305,7 @@ def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     { hom := Over.homMk (𝟙 _)
       inv := Over.homMk (𝟙 _) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) Establish an equivalence between the category of cones for `F` and for the "grown" `F`.
 -/
