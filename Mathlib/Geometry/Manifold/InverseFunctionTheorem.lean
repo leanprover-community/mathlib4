@@ -176,7 +176,8 @@ lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M₁ → M₂} {p : M�
     ContinuousLinearMap.IsInvertible (fderivWithin 𝕜 (writtenInExtChartAt I₁ I₂ p f) (range I₁)
       (extChartAt I₁ p p)) := by
   convert! hf
-  rw [mfderiv, if_pos (mdifferentiableAt_of_mfderiv_injective hf.injective)]
+  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf.injective)]
+  rfl
 
 /-- The inverse function theorem for manifolds. If `f` is `ContMDiff` on a neighborhood of an
 interior point `p` and has bijective differential at `p`, then `f` is a local diffeomorphism at `p`.
