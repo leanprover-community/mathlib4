@@ -66,7 +66,7 @@ theorem ofReal_opNorm_eq_map_one {A : Type*} [CStarAlgebra A] [PartialOrder A] [
 end PositiveContinuousLinearMap
 
 namespace ContinuousLinearMap
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] {f : A →L[ℂ] ℂ}
+variable {f : A →L[ℂ] ℂ}
 
 private lemma im_apply_eq_zero_of_tendsto_nhds_opNorm {l : Filter A}
     (hl : l.IsIncreasingApproximateUnit) (hf : l.Tendsto (f ·) (𝓝 ‖f‖)) {a : A}
