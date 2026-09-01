@@ -170,9 +170,9 @@ theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace 𝕜 P} [N
   rfl
 
 @[simp] lemma orthogonalProjection_affineSpan_singleton (p₁ p₂ : P) :
-    orthogonalProjection (affineSpan 𝕜 {p₁}) p₂ = p₁ := by
-  have h := SetLike.coe_mem (orthogonalProjection (affineSpan 𝕜 {p₁}) p₂)
-  rwa [mem_affineSpan_singleton] at h
+    orthogonalProjection ({p₁} : AffineSubspace 𝕜 P) p₂ = p₁ := by
+  have h := SetLike.coe_mem (orthogonalProjection ({p₁} : AffineSubspace 𝕜 P) p₂)
+  rwa [mem_singleton_iff] at h
 
 /-- The distance to a point's orthogonal projection is 0 iff it lies in the subspace. -/
 theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace 𝕜 P} [Nonempty s]

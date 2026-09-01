@@ -264,8 +264,8 @@ theorem direction_eq_vectorSpan (s : AffineSubspace k P) : s.direction = vectorS
   rfl
 
 @[simp]
-theorem direction_singleton_eq_bot (x : P) : ({x} : AffineSubspace k P).direction = ⊥ := by
-  simp [AffineSubspace.direction]
+theorem direction_singleton (x : P) : ({x} : AffineSubspace k P).direction = ⊥ := by
+  simp [direction]
 
 /-- Alternative definition of the direction when the affine subspace is nonempty. This is defined so
 that the order on submodules (as used in the definition of `Submodule.span`) can be used in the
@@ -991,6 +991,10 @@ alias ⟨_, _root_.Set.Nonempty.affineSpan⟩ := affineSpan_nonempty
 /-- The affine span of a nonempty set is nonempty. -/
 instance [Nonempty s] : Nonempty (affineSpan k s) :=
   ((nonempty_coe_sort.1 ‹_›).affineSpan _).to_subtype
+
+/-- The affine span of a singleton is nonempty. -/
+instance (x : P) : Nonempty ({x} : AffineSubspace k P) :=
+  ⟨x, SetLike.mem_coe.mp rfl⟩
 
 /-- The affine span of a set is `⊥` if and only if that set is empty. -/
 @[simp]
