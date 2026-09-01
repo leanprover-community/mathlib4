@@ -108,7 +108,7 @@ theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndepende
   finiteDimensional_iff_finite k hi |>.mp inferInstance
 
 /-- An affine-independent subset `s` generates a finite-dimensional subspace iff `s` isfinite. -/
-theorem finiteDimensional_iff_finite' {s : Set ι} {f : s → P}
+theorem finiteDimensional_iff_setFinite {s : Set ι} {f : s → P}
     (hi : AffineIndependent k f) : FiniteDimensional k (vectorSpan k (Set.range f)) ↔ s.Finite := by
   refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
   · exact @s.toFinite _ (finiteDimensional_iff_finite k hi |>.mp inferInstance)
@@ -116,10 +116,10 @@ theorem finiteDimensional_iff_finite' {s : Set ι} {f : s → P}
     exact finiteDimensional_vectorSpan_range k f
 
 /-- An affine-independent subset of a finite-dimensional affine subspace is finite. -/
-@[deprecated finiteDimensional_iff_finite' (since := "2026-09-01")]
+@[deprecated finiteDimensional_iff_setFinite (since := "2026-09-01")]
 theorem finite_set_of_fin_dim_affineIndependent {s : Set ι} {f : s → P} (hi : AffineIndependent k f)
     [FiniteDimensional k (vectorSpan k (Set.range f))] : s.Finite :=
-  finiteDimensional_iff_finite' k hi |>.mp inferInstance
+  finiteDimensional_iff_setFinite k hi |>.mp inferInstance
 
 variable {k}
 
@@ -855,9 +855,12 @@ protected theorem finiteDimensional [Finite ι] (b : AffineBasis ι k P) : Finit
 protected theorem finite [FiniteDimensional k V] (b : AffineBasis ι k P) : Finite ι :=
   finiteDimensional_iff_finite k b.ind |>.mp inferInstance
 
-protected theorem finite_set [FiniteDimensional k V] {s : Set ι} (b : AffineBasis s k P) :
+protected theorem setFinite [FiniteDimensional k V] {s : Set ι} (b : AffineBasis s k P) :
     s.Finite :=
-  finiteDimensional_iff_finite' k b.ind |>.mp inferInstance
+  finiteDimensional_iff_setFinite k b.ind |>.mp inferInstance
+
+@[deprecated AffineBasis.setFinite (since := "2026-09-01")]
+protected alias finite_set := AffineBasis.setFinite
 
 theorem card_eq_finrank_add_one [Fintype ι] (b : AffineBasis ι k P) :
     Fintype.card ι = Module.finrank k V + 1 :=
@@ -867,7 +870,7 @@ theorem card_eq_finrank_add_one [Fintype ι] (b : AffineBasis ι k P) :
 theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional k V]
     (h : Fintype.card ι = Module.finrank k V + 1) : Nonempty (AffineBasis ι k P) := by
   obtain ⟨s, b, hb⟩ := AffineBasis.exists_affineBasis k V P
-  lift s to Finset P using b.finite_set
+  lift s to Finset P using b.setFinite
   refine ⟨b.reindex <| Fintype.equivOfCardEq ?_⟩
   rw [h, ← b.card_eq_finrank_add_one]
 
