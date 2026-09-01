@@ -486,13 +486,6 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
 
 section multiplicity
 
-/-- An algorithm for deciding polynomial divisibility.
-Prefer `Classical.dec`, as the algorithm relies on `%ₘ` and so is `noncomputable`.
--/
-@[deprecated Classical.dec (since := "2026-02-07")]
-def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
-  decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
-
 theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (X - C a) p := by
   have := Nontrivial.of_polynomial_ne h0
   refine finiteMultiplicity_of_degree_pos_of_monic ?_ (monic_X_sub_C _) h0
@@ -515,9 +508,6 @@ theorem rootMultiplicity_eq_natFind_of_ne_zero {p : R[X]} (p0 : p ≠ 0) {a : R}
   dsimp [rootMultiplicity]
   rw [dite_eq_right p0]
   congr
-
-@[deprecated (since := "2026-02-12")]
-alias rootMultiplicity_eq_nat_find_of_nonzero := rootMultiplicity_eq_natFind_of_ne_zero
 
 theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
     (p : R[X]) (a : R) :

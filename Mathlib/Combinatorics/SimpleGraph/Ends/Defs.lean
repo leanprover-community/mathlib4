@@ -5,9 +5,9 @@ Authors: Anand Rao, Rémi Bottinelli
 -/
 module
 
+public import Mathlib.Basic.Finite.Set
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Data.Finite.Set
 
 /-!
 # Ends
