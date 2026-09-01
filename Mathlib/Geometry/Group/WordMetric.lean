@@ -79,9 +79,6 @@ theorem exists_isGeodesic : ∃ l, P.IsGeodesic l ∧ P.wordProd l = g := by
 lemma wordLength_wordProd_le : P.wordLength (P.wordProd l) ≤ l.length :=
   Nat.sInf_le ⟨l, rfl, rfl⟩
 
-@[simp]
-lemma wordLength_one : P.wordLength (1 : G) = 0 := eq_zero_of_nonpos (P.wordLength_wordProd_le [])
-
 /-- The characterisation of word length: the word length of a group element is less or equal to `n`
 if and only if there exists a word `l` of length `n` which evaluates to `g`. -/
 theorem wordLength_le_iff {n : ℕ} : P.wordLength g ≤ n ↔ ∃ l, l.length ≤ n ∧ P.wordProd l = g := by
@@ -97,6 +94,10 @@ variable {g} in
 lemma wordLength_eq_zero_iff : P.wordLength g = 0 ↔ g = 1 := by
   rw [← Nat.le_zero, wordLength_le_iff]
   simp [eq_comm]
+
+@[simp]
+lemma wordLength_one : P.wordLength (1 : G) = 0 := by
+  rw [wordLength_eq_zero_iff]
 
 -- This is superceded by `wordLength_inv`.
 private lemma wordLength_inv_le : P.wordLength g⁻¹ ≤ P.wordLength g := by

@@ -384,7 +384,7 @@ theorem wordProd_append (ω ω' : List B) : π (ω ++ ω') = π ω * π ω' := b
 @[simp] theorem wordProd_reverse (ω : List B) : π (reverse ω) = (π ω)⁻¹ := by
   induction ω with
   | nil => simp
-  | cons x ω' ih => simpa [wordProd_cons, wordProd_append] using ih
+  | cons x _ ih => simpa [wordProd_cons, wordProd_append] using ih
 
 theorem wordProd_surjective : Surjective cs.wordProd := by
   intro w
