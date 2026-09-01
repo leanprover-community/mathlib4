@@ -16,8 +16,9 @@ This file defines the orders induced on tropical algebraic structures by the und
 
 ## Main declarations
 
-* `ConditionallyCompleteLattice (MinTropical R)`
-* `ConditionallyCompleteLinearOrder (MinTropical R)`
+* `ConditionallyCompleteLattice (MinTropical R)`/`ConditionallyCompleteLattice (MaxTropical R)`
+* `ConditionallyCompleteLinearOrder (MinTropical R)`/
+  `ConditionallyCompleteLinearOrder (MaxTropical R)`
 
 ## Implementation notes
 

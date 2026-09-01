@@ -53,11 +53,12 @@ universe u v
 
 variable (R : Type u)
 
-/-- The tropicalization of a type `R`. -/
-@[to_dual]
+/-- The min-tropicalization of a type `R`. -/
+@[to_dual /-- The max-tropicalization of a type `R`. -/]
 def MinTropical : Type u :=
   R
 
+/-- The min-tropicalization of a type `R`. -/
 @[deprecated MinTropical (since := "2026-07-24")]
 def Tropical : Type u :=
   R
@@ -66,16 +67,19 @@ variable {R}
 
 namespace MinTropical
 
-/-- Reinterpret `x : R` as an element of `Tropical R`.
-See `Tropical.tropEquiv` for the equivalence.
--/
-@[to_dual]
+/-- Reinterpret `x : R` as an element of `MinTropical R`.
+See `MinTropical.tropEquiv` for the equivalence. -/
+@[to_dual
+/-- Reinterpret `x : R` as an element of `MaxTropical R`.
+See `MaxTropical.tropEquiv` for the equivalence. -/]
 def trop : R → MinTropical R :=
   id
 
-/-- Reinterpret `x : Tropical R` as an element of `R`.
-See `Tropical.tropEquiv` for the equivalence. -/
-@[to_dual (attr := pp_nodot)]
+/-- Reinterpret `x : MinTropical R` as an element of `R`.
+See `MinTropical.tropEquiv` for the equivalence. -/
+@[to_dual (attr := pp_nodot)
+/-- Reinterpret `x : MaxTropical R` as an element of `R`.
+See `MaxTropical.tropEquiv` for the equivalence. -/]
 def untrop : MinTropical R → R :=
   id
 

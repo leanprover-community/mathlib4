@@ -21,7 +21,7 @@ collection of linear functions.
 
 ## Main declarations
 
-* `untrop_sum`
+* `MinTropical.untrop_sum`/`MaxTropical.untrop_sum`
 
 ## Implementation notes
 
@@ -141,7 +141,9 @@ theorem untrop_sum [ConditionallyCompleteLinearOrder R] [Fintype S]
 
 /-- Note we cannot use `i ∈ s` instead of `i : s` here
 as it is simply not true on conditionally complete lattices! -/
-@[to_dual]
+@[to_dual
+/-- Note we cannot use `i ∈ s` instead of `i : s` here
+as it is simply not true on conditionally complete lattices! -/]
 theorem Finset.untrop_sum [ConditionallyCompleteLinearOrder R] (s : Finset S)
     (f : S → MinTropical (WithTop R)) : untrop (∑ i ∈ s, f i) = ⨅ i : s, untrop (f i) := by
   simpa [← MinTropical.untrop_sum] using (sum_attach _ _).symm
