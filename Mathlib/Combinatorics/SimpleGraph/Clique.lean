@@ -795,6 +795,16 @@ lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique 
   obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
   exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
 
+theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
+  rw [isEmpty_iff]
+  refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
+  · intro a
+    have one_clique : G.IsNClique 1 {a} := by simp
+    have : 1 ≤ G.cliqueNum  := IsClique.card_le_cliqueNum (tc := one_clique.isClique)
+    grind
+  · have : ∀ (s : Finset α ) , s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
+    simp [cliqueNum, this, exists_const]
+
 end CliqueNumber
 
 /-! ### Finset of cliques -/
@@ -869,6 +879,8 @@ theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s 
 
 @[simp]
 theorem isIndepSet_empty : G.IsIndepSet ∅ := Set.pairwise_empty _
+
+theorem isIndepSet_singleton (a : α) : G.IsIndepSet {a} := by simp
 
 /-- An independent set is a clique in the complement graph and vice versa. -/
 @[simp] theorem isClique_compl : Gᶜ.IsClique s ↔ G.IsIndepSet s := by
@@ -1070,18 +1082,15 @@ theorem maximumIndepSet_card_eq_indepNum
 lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndepSet s := by
   simp [← isMaximumClique_compl, maximumClique_exists]
 
-lemma isNIndepSet_one (a : α) : G.IsNIndepSet 1 {a} := by
-  rw [isNIndepSet_iff]
-  simp only [coe_singleton, Set.pairwise_singleton, card_singleton, and_self]
+@[simp]
+lemma isNIndepSet_singleton (a : α) {n : ℕ} : G.IsNIndepSet n {a} ↔ n = 1 := by
+  simp [eq_comm, isNIndepSet_iff]
 
-lemma isIndepSet_one (a : α) : G.IsIndepSet {a} := by
-  simp
-
-theorem indepNum_eq_zero_iff_empty [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
+theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
   rw [isEmpty_iff]
   refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
   · intro a
-    have one_indep : G.IsNIndepSet 1 {a} := isNIndepSet_one a
+    have one_indep : G.IsNIndepSet 1 {a} := by simp
     have : 1 ≤ G.indepNum  := IsIndepSet.card_le_indepNum one_indep.isIndepSet
     grind
   · have : ∀ (s : Finset α ) , s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
