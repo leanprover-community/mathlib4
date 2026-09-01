@@ -350,7 +350,7 @@ attribute [local instance] ConvexSpace.ofModule IsModuleConvexSpace.ofModule in
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
     IsCompact (convexHull 𝕜 s) := by
   have := hs.to_subtype
-  rw [hs.convexHull_eq_range_iConvexComb]
+  rw [Set.convexHull_eq_range_iConvexComb]
   exact isCompact_range (by fun_prop)
 
 /-- Convex hull of a finite set is closed. -/
