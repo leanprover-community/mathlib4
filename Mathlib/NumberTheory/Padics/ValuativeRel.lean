@@ -81,7 +81,7 @@ lemma valuation_le_one_iff_norm_le_one :
 
 lemma integers : Valuation.Integers (ValuativeRel.valuation ℚ_[p]) ℤ_[p] where
   hom_inj _ _ := PadicInt.ext
-  map_le_one x := Padic.valuation_le_one_iff_norm_le_one.mpr x.2
+  map_le_one x := valuation_le_one_iff_norm_le_one.mpr x.2
   exists_of_le_one {r} hr := ⟨⟨r, valuation_le_one_iff_norm_le_one.mp hr⟩, rfl⟩
 
 /-- The valuative relation on `ℤ_[p]`, pulled back from `ℚ_[p]` along the inclusion. -/
@@ -96,25 +96,7 @@ instance : ValuativeExtension ℤ_[p] ℚ_[p] where
   vle_iff_vle _ _ := Iff.rfl
 
 /-- The `p`-adic topology of `ℤ_[p]` is the topology of its valuative relation. -/
-instance : IsValuativeTopology ℤ_[p] := by
-  refine .of_mem_nhds_zero_iff_vle (mulValuation.comap (algebraMap ℤ_[p] ℚ_[p])) fun {s} ↦ ?_
-  rw [Metric.mem_nhds_iff]
-  have h1p : (1 : ℝ) < p := mod_cast hp.out.one_lt
-  constructor
-  · -- A metric ball `‖·‖ < ε` contains the valuation ball of radius `v (p ^ n)` for large `n`.
-    intro ⟨ε, hε, hball⟩
-    obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hε (inv_lt_one_of_one_lt₀ h1p)
-    have ha0 : (p : ℤ_[p]) ^ n ≠ 0 := pow_ne_zero _ (Nat.cast_ne_zero.mpr hp.out.ne_zero)
-    have hnorm : ‖(p : ℤ_[p]) ^ n‖ < ε := by simpa [norm_pow, PadicInt.norm_p] using hn
-    refine ⟨Units.mk0 (Valuation.restrict _ (p ^ n)) (by simpa using ha0),
-      fun z hz ↦ hball (mem_ball_zero_iff.mpr ?_)⟩
-    simp only [Set.mem_ofPred_eq, Units.val_mk0, Valuation.restrict_lt_iff] at hz
-    exact (Padic.norm_lt_norm_iff_mulValuation_lt.mpr hz).trans hnorm
-  · -- Conversely, a valuation ball `v · < γ` is the metric ball of radius `p ^ log γ`.
-    intro ⟨γ, hγ⟩
-    refine ⟨p ^ log (embedding γ.val), zpow_pos (by positivity) _, fun z hz ↦ hγ ?_⟩
-    rw [mem_ball_zero_iff, PadicInt.norm_def, norm_lt_zpow_iff_mulValuation_lt_exp,
-      exp_log (by simp)] at hz
-    simpa [restrict_lt_iff_lt_embedding] using hz
+instance : IsValuativeTopology ℤ_[p] :=
+  .of_integers integers Topology.IsInducing.subtypeVal
 
 end Padic

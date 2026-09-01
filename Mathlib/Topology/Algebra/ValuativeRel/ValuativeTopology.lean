@@ -422,6 +422,35 @@ end Valuation
 
 namespace IsValuativeTopology
 
+/-- If `R` is a ring of integers for the valuative relation of a field `K`, and if `R` carries
+the restricted valuative relation together with the topology induced by `R → K`, then the
+topology of `R` is the topology of its valuative relation. -/
+theorem of_integers {K R : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K]
+    [IsValuativeTopology K] [CommRing R] [ValuativeRel R] [Algebra R K] [ValuativeExtension R K]
+    [TopologicalSpace R] [IsTopologicalAddGroup R] (hR : (valuation K).Integers R)
+    (hi : Topology.IsInducing (algebraMap R K)) : IsValuativeTopology R := by
+  set v := (valuation K).comap (algebraMap R K) with hv
+  refine IsValuativeTopology.of_mem_nhds_zero_iff_vle v fun {s} ↦ ?_
+  rw [hi.nhds_eq_comap, map_zero, Filter.mem_comap]
+  constructor
+  · intro ⟨t, ht, hts⟩
+    obtain ⟨γ, hγ⟩ := (mem_nhds_zero_iff t).mp ht
+    obtain ⟨x, hx⟩ := valuation_surjective γ.val
+    obtain ⟨y, hy0, hyγ⟩ : ∃ y, v y ≠ 0 ∧ v y ≤ γ.val := by
+      obtain h | h := le_or_gt (valuation K x) 1
+      · obtain ⟨y, rfl⟩ := hR.exists_of_le_one h
+        use y
+        simp [hv, hx]
+      · use 1
+        simpa [hv, ← hx] using h.le
+    use Units.mk0 (v.restrict y) (by simpa)
+    exact fun z hz ↦ hts <| hγ <| lt_of_lt_of_le (v.restrict_lt_iff.mp hz) hyγ
+  · intro ⟨δ, hδ⟩
+    use {x | valuation K x < embedding δ.val}
+    exact ⟨(hasBasis_nhds_zero K).mem_of_mem (i := Units.mk0 (embedding δ.val) (by simp)) trivial,
+      fun z hz ↦ hδ <| v.restrict_lt_iff_lt_embedding.mpr hz⟩
+
+
 @[deprecated (since := "2026-03-17")] alias isOpen_ball := Valuation.isOpen_ball
 @[deprecated (since := "2026-03-17")] alias isClosed_ball := Valuation.isClosed_ball
 @[deprecated (since := "2026-03-17")] alias isClopen_ball := Valuation.isClopen_ball
