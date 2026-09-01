@@ -232,59 +232,33 @@ section DistribLatticeBot
 
 variable [DistribLattice α] [OrderBot α] {a b c : α}
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem disjoint_sup_left : Disjoint (a ⊔ b) c ↔ Disjoint a c ∧ Disjoint b c := by
   simp only [disjoint_iff, inf_sup_right, sup_eq_bot_iff]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem disjoint_sup_right : Disjoint a (b ⊔ c) ↔ Disjoint a b ∧ Disjoint a c := by
   simp only [disjoint_iff, inf_sup_left, sup_eq_bot_iff]
 
+@[to_dual]
 theorem Disjoint.sup_left (ha : Disjoint a c) (hb : Disjoint b c) : Disjoint (a ⊔ b) c :=
   disjoint_sup_left.2 ⟨ha, hb⟩
 
+@[to_dual]
 theorem Disjoint.sup_right (hb : Disjoint a b) (hc : Disjoint a c) : Disjoint a (b ⊔ c) :=
   disjoint_sup_right.2 ⟨hb, hc⟩
 
+@[to_dual]
 theorem Disjoint.left_le_of_le_sup_right (h : a ≤ b ⊔ c) (hd : Disjoint a c) : a ≤ b :=
   le_of_inf_le_sup_le (le_trans hd.le_bot bot_le) <| sup_le h le_sup_right
 
+@[to_dual]
 theorem Disjoint.left_le_of_le_sup_left (h : a ≤ c ⊔ b) (hd : Disjoint a c) : a ≤ b :=
   hd.left_le_of_le_sup_right <| by rwa [sup_comm]
 
 end DistribLatticeBot
 
 end Disjoint
-
-section Codisjoint
-
-section DistribLatticeTop
-
-variable [DistribLattice α] [OrderTop α] {a b c : α}
-
-@[simp]
-theorem codisjoint_inf_left : Codisjoint (a ⊓ b) c ↔ Codisjoint a c ∧ Codisjoint b c := by
-  simp only [codisjoint_iff, sup_inf_right, inf_eq_top_iff]
-
-@[simp]
-theorem codisjoint_inf_right : Codisjoint a (b ⊓ c) ↔ Codisjoint a b ∧ Codisjoint a c := by
-  simp only [codisjoint_iff, sup_inf_left, inf_eq_top_iff]
-
-theorem Codisjoint.inf_left (ha : Codisjoint a c) (hb : Codisjoint b c) : Codisjoint (a ⊓ b) c :=
-  codisjoint_inf_left.2 ⟨ha, hb⟩
-
-theorem Codisjoint.inf_right (hb : Codisjoint a b) (hc : Codisjoint a c) : Codisjoint a (b ⊓ c) :=
-  codisjoint_inf_right.2 ⟨hb, hc⟩
-
-theorem Codisjoint.left_le_of_le_inf_right (h : a ⊓ b ≤ c) (hd : Codisjoint b c) : a ≤ c :=
-  @Disjoint.left_le_of_le_sup_right αᵒᵈ _ _ _ _ _ h hd.symm
-
-theorem Codisjoint.left_le_of_le_inf_left (h : b ⊓ a ≤ c) (hd : Codisjoint b c) : a ≤ c :=
-  hd.left_le_of_le_inf_right <| by rwa [inf_comm]
-
-end DistribLatticeTop
-
-end Codisjoint
 
 open OrderDual
 
@@ -325,6 +299,7 @@ structure IsCompl [PartialOrder α] [BoundedOrder α] (x y : α) : Prop where
 
 attribute [to_dual existing] IsCompl.disjoint
 attribute [to_dual self (reorder := disjoint codisjoint)] IsCompl.mk
+attribute [to_dual self] IsCompl.casesOn
 
 @[to_dual isCompl_iff']
 theorem isCompl_iff [PartialOrder α] [BoundedOrder α] {a b : α} :
@@ -416,6 +391,7 @@ theorem right_unique (hxy : IsCompl x y) (hxz : IsCompl x z) : y = z :=
 theorem left_unique (hxz : IsCompl x z) (hyz : IsCompl y z) : x = y :=
   hxz.symm.right_unique hyz.symm
 
+@[to_dual]
 theorem sup_inf {x' y'} (h : IsCompl x y) (h' : IsCompl x' y') : IsCompl (x ⊔ x') (y ⊓ y') :=
   of_eq
     (by rw [inf_sup_right, ← inf_assoc, h.inf_eq_bot, bot_inf_eq, bot_sup_eq, inf_left_comm,
@@ -423,16 +399,13 @@ theorem sup_inf {x' y'} (h : IsCompl x y) (h' : IsCompl x' y') : IsCompl (x ⊔ 
     (by rw [sup_inf_left, sup_comm x, sup_assoc, h.sup_eq_top, sup_top_eq, top_inf_eq,
       sup_assoc, sup_left_comm, h'.sup_eq_top, sup_top_eq])
 
-theorem inf_sup {x' y'} (h : IsCompl x y) (h' : IsCompl x' y') : IsCompl (x ⊓ x') (y ⊔ y') :=
-  (h.symm.sup_inf h'.symm).symm
-
 end IsCompl
 
 namespace Prod
 
 variable {β : Type*} [PartialOrder α] [PartialOrder β]
 
-@[grind =]
+@[to_dual (attr := grind =)]
 protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
   constructor
@@ -442,11 +415,6 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     all_goals exact bot_le
   · rintro ⟨ha, hb⟩ z hza hzb
     exact ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
-
-@[grind =]
-protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :
-    Codisjoint x y ↔ Codisjoint x.1 y.1 ∧ Codisjoint x.2 y.2 :=
-  @Prod.disjoint_iff αᵒᵈ βᵒᵈ _ _ _ _ _ _
 
 @[grind =]
 protected theorem isCompl_iff [BoundedOrder α] [BoundedOrder β] {x y : α × β} :
@@ -467,22 +435,16 @@ theorem isCompl_toDual_iff : IsCompl (toDual a) (toDual b) ↔ IsCompl a b :=
 theorem isCompl_ofDual_iff {a b : αᵒᵈ} : IsCompl (ofDual a) (ofDual b) ↔ IsCompl a b :=
   ⟨IsCompl.dual, IsCompl.ofDual⟩
 
+@[to_dual]
 theorem isCompl_bot_top : IsCompl (⊥ : α) ⊤ :=
   IsCompl.of_eq (bot_inf_eq _) (sup_top_eq _)
 
-theorem isCompl_top_bot : IsCompl (⊤ : α) ⊥ :=
-  IsCompl.of_eq (inf_bot_eq _) (top_sup_eq _)
-
+@[to_dual]
 theorem eq_top_of_isCompl_bot (h : IsCompl x ⊥) : x = ⊤ := by rw [← sup_bot_eq x, h.sup_eq_top]
 
+@[to_dual]
 theorem eq_top_of_bot_isCompl (h : IsCompl ⊥ x) : x = ⊤ :=
   eq_top_of_isCompl_bot h.symm
-
-theorem eq_bot_of_isCompl_top (h : IsCompl x ⊤) : x = ⊥ :=
-  eq_top_of_isCompl_bot h.dual
-
-theorem eq_bot_of_top_isCompl (h : IsCompl ⊤ x) : x = ⊥ :=
-  eq_top_of_bot_isCompl h.dual
 
 end
 
@@ -496,21 +458,17 @@ variable [Lattice α] [BoundedOrder α]
 def IsComplemented (a : α) : Prop :=
   ∃ b, IsCompl a b
 
+@[to_dual]
 theorem isComplemented_bot : IsComplemented (⊥ : α) :=
   ⟨⊤, isCompl_bot_top⟩
-
-theorem isComplemented_top : IsComplemented (⊤ : α) :=
-  ⟨⊥, isCompl_top_bot⟩
 
 end Lattice
 
 variable [DistribLattice α] [BoundedOrder α] {a b : α}
 
+@[to_dual]
 theorem IsComplemented.sup : IsComplemented a → IsComplemented b → IsComplemented (a ⊔ b) :=
   fun ⟨a', ha⟩ ⟨b', hb⟩ => ⟨a' ⊓ b', ha.sup_inf hb⟩
-
-theorem IsComplemented.inf : IsComplemented a → IsComplemented b → IsComplemented (a ⊓ b) :=
-  fun ⟨a', ha⟩ ⟨b', hb⟩ => ⟨a' ⊔ b', ha.inf_sup hb⟩
 
 end IsComplemented
 
@@ -572,15 +530,11 @@ theorem coe_lt_coe : (a : α) < b ↔ a < b := by simp
 instance : BoundedOrder (Complementeds α) :=
   Subtype.boundedOrder isComplemented_bot isComplemented_top
 
-@[simp, norm_cast]
+@[to_dual (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Complementeds α) : α) = ⊥ := rfl
 
-@[simp, norm_cast]
-theorem coe_top : ((⊤ : Complementeds α) : α) = ⊤ := rfl
-
+@[to_dual]
 theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := by simp
-
-theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := by simp
 
 instance : Inhabited (Complementeds α) := ⟨⊥⟩
 
@@ -588,36 +542,23 @@ end Lattice
 
 variable [DistribLattice α] [BoundedOrder α] {a b : Complementeds α}
 
+@[to_dual]
 instance : Max (Complementeds α) :=
   ⟨fun a b => ⟨a ⊔ b, a.2.sup b.2⟩⟩
 
-instance : Min (Complementeds α) :=
-  ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
-
-@[simp, norm_cast]
+@[to_dual (attr := simp, norm_cast)]
 theorem coe_sup (a b : Complementeds α) : ↑(a ⊔ b) = (a : α) ⊔ b := rfl
 
-@[simp, norm_cast]
-theorem coe_inf (a b : Complementeds α) : ↑(a ⊓ b) = (a : α) ⊓ b := rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem mk_sup_mk {a b : α} (ha : IsComplemented a) (hb : IsComplemented b) :
     (⟨a, ha⟩ ⊔ ⟨b, hb⟩ : Complementeds α) = ⟨a ⊔ b, ha.sup hb⟩ := rfl
-
-@[simp]
-theorem mk_inf_mk {a b : α} (ha : IsComplemented a) (hb : IsComplemented b) :
-    (⟨a, ha⟩ ⊓ ⟨b, hb⟩ : Complementeds α) = ⟨a ⊓ b, ha.inf hb⟩ := rfl
 
 instance : DistribLattice (Complementeds α) :=
   Complementeds.coe_injective.distribLattice _ .rfl .rfl coe_sup coe_inf
 
-@[simp, norm_cast]
+@[to_dual (attr := simp, norm_cast)]
 theorem disjoint_coe : Disjoint (a : α) b ↔ Disjoint a b := by
   rw [disjoint_iff, disjoint_iff, ← coe_inf, ← coe_bot, coe_inj]
-
-@[simp, norm_cast]
-theorem codisjoint_coe : Codisjoint (a : α) b ↔ Codisjoint a b := by
-  rw [codisjoint_iff, codisjoint_iff, ← coe_sup, ← coe_top, coe_inj]
 
 @[simp, norm_cast]
 theorem isCompl_coe : IsCompl (a : α) b ↔ IsCompl a b := by
