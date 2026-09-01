@@ -195,11 +195,6 @@ definitional equality issues. -/
 lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj M : Type _) = M :=
   rfl
 
-@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-02-25")]
-lemma forget_map {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
-    (forget (SemimoduleCat.{v} R)).map f = (f : _ → _) :=
-  rfl
-
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
   forget₂ :=
     { obj := fun M => .of M
@@ -298,10 +293,6 @@ instance : SMul ℕ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
-
--- There is no `ℤ`-smul operation on a general semimodule!
-@[deprecated (since := "2026-01-06")]
-alias hom_zsmul := hom_nsmul
 
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)

@@ -44,9 +44,9 @@ In lemma names,
 
 @[expose] public section
 
-open Function OrderDual Set
+open OrderDual Set
 
-variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
+variable {α β : Type*} {ι : Sort*}
 
 @[to_dual]
 instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ :=
