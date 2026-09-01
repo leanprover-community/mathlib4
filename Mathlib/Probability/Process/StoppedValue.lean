@@ -321,6 +321,20 @@ theorem stoppedProcess_eq_stoppedValue_apply (t : ι) (ω : Ω) :
     stoppedProcess X τ t ω = 𝓕.stoppedValue X (fun ω ↦ min t (τ ω)) P ω :=
   congrFun₂ stoppedProcess_eq_stoppedValue _ _
 
+theorem stoppedValue_stoppedProcess :
+    𝓕.stoppedValue (stoppedProcess X τ) σ P =
+      fun ω ↦ if σ ω ≠ ⊤ then 𝓕.stoppedValue X (fun ω ↦ min (σ ω) (τ ω)) P ω
+        else 𝓕.limitProcess (stoppedProcess X τ) P ω := by
+  ext ω
+  rw [stoppedValue]
+  split_ifs
+  · grind
+  · rfl
+  rw [stoppedProcess, stoppedValue_of_ne_top]
+  swap; · grind
+  · rw [coe_untop, ← untopA_eq_untop]
+
+
 theorem stoppedValue_stoppedProcess_apply (hω : σ ω ≠ ⊤) :
     𝓕.stoppedValue (stoppedProcess X τ) σ P ω = 𝓕.stoppedValue X (fun ω ↦ min (σ ω) (τ ω)) P ω := by
   rw [stoppedValue_of_ne_top hω, stoppedProcess, stoppedValue_of_ne_top,
