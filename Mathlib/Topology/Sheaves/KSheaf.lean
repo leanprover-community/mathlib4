@@ -34,28 +34,10 @@ variable {A : Type u} [Category.{v} A] {X : TopCat.{w}}
 namespace TopCat
 
 variable (A X) in
-/-- The category of `A`-valued presheaves on a (bundled) topological space `X`. -/
-def KPresheaf : Type max u v w := (Compacts X)ᵒᵖ ⥤ A
-
-instance : Category (KPresheaf.{w, v, u} A X) :=
-  inferInstanceAs (Category ((Compacts X)ᵒᵖ ⥤ A : Type max u v w))
+/-- The category of `A`-valued presheaves on a (bundled) topological space `X` -/
+abbrev KPresheaf : Type max u v w := (Compacts X)ᵒᵖ ⥤ A
 
 namespace KPresheaf
-
-@[simp]
-theorem id_app (P : KPresheaf A X) (K : (Compacts X)ᵒᵖ) : NatTrans.app (𝟙 P) K = 𝟙 _ := rfl
-
-@[simp]
-theorem comp_app (P Q R : KPresheaf A X) (K : (Compacts X)ᵒᵖ) (f : P ⟶ Q) (g : Q ⟶ R) :
-    (f ≫ g).app K = f.app K ≫ g.app K := rfl
-
-@[ext]
-lemma ext (P Q : KPresheaf A X) (f g : P ⟶ Q) (w : ∀ K : Compacts X, f.app (op K) = g.app (op K)) :
-    f = g := by
-  apply NatTrans.ext
-  ext K
-  induction K with | _ K => ?_
-  apply w
 
 /-- The pushforward of a KPresheaf by a proper map -/
 def pushforwardObj {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') (F : KPresheaf A X) :
@@ -110,6 +92,7 @@ lemma hom_K_ext (P : KPresheaf A X) {K : Compacts X} (h : (IsColimit (P.coconeOf
     : f = f' :=
   ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).hom_ext w
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Ksheaf condition. It's a generalisation of the one of J.Pardon that
 corespond to the one of J.Lurie in the case of usual categories.
 
@@ -129,8 +112,12 @@ end KPresheaf
 variable [T2Space X]
 
 variable (X A) in
+/-- The pbject property of being a KSheaf -/
+abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := fun P ↦ P.IsKSheaf
+
+variable (X A) in
 /-- The category of Ksheaves taking values in `A` on a T2Space. -/
-abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.IsKSheaf (X := X) (A := A))
+abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.isKSheaf A X)
 
 namespace KSheaf
 

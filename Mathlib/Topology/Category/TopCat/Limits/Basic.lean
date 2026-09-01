@@ -21,7 +21,7 @@ underlying types are just the limits in the category of types.
 @[expose] public section
 
 
-open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
+open TopologicalSpace CategoryTheory CategoryTheory.Limits
 
 universe v u u' w
 
@@ -85,6 +85,7 @@ instance topologicalSpaceConePtOfConeForget :
     TopologicalSpace (conePtOfConeForget c) :=
   (⨅ j, (F.obj j).str.induced (c.π.app j))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, this is a cone for `F` whose point is
 `c.pt` with the infimum of the induced topologies by the maps `c.π.app j`. -/
@@ -99,6 +100,7 @@ def coneOfConeForget : Cone F where
         ext
         apply ConcreteCategory.congr_hom (c.π.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, the limit of `F` is `c.pt` equipped
 with the infimum of the induced topologies by the maps `c.π.app j`. -/
@@ -198,6 +200,7 @@ instance topologicalSpaceCoconePtOfCoconeForget :
     TopologicalSpace (coconePtOfCoconeForget c) :=
   (⨆ j, (F.obj j).str.coinduced (c.ι.app j))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, this is a cocone for `F` whose point is
 `c.pt` with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
@@ -213,6 +216,7 @@ def coconeOfCoconeForget : Cocone F where
         ext
         apply ConcreteCategory.congr_hom (c.ι.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, the colimit of `F` is `c.pt` equipped
 with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
