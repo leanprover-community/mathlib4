@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Dominic Steinitz. All rights reserved.
+Copyright (c) 2026 Dominic Steinitz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Dominic Steinitz
+Authors: Dominic Steinitz
 -/
 module
 
