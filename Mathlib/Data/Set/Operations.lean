@@ -255,25 +255,26 @@ end Prod
 section Diagonal
 
 /-- `diagonal α` is the set of `α × α` consisting of all pairs of the form `(a, a)`. -/
-def diagonal (α : Type*) : Set (α × α) := {p | p.1 = p.2}
+def diagonalUniv (α : Type*) : Set (α × α) := {p | p.1 = p.2}
 
-theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
+theorem mem_diagonalUniv (x : α) : (x, x) ∈ diagonalUniv α := rfl
 
-@[simp, grind =, push] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
+@[simp, grind =, push] theorem mem_diagonalUniv_iff {x : α × α} :
+    x ∈ diagonalUniv α ↔ x.1 = x.2 := .rfl
 
 /-- The diagonal of a set `s` is the set of pairs `(a, a)` with `a ∈ s`. -/
-def diag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.1 = x.2}
+def diagonal (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.1 = x.2}
 
 @[simp, grind =, push]
-theorem mem_diag {x : α × α} {s : Set α} : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 :=
+theorem mem_diagonal {x : α × α} {s : Set α} : x ∈ s.diagonal ↔ x.1 ∈ s ∧ x.1 = x.2 :=
   Iff.rfl
 
 /-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
-def offDiag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
+def offDiagonal (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
 
 @[simp, grind =, push]
-theorem mem_offDiag {x : α × α} {s : Set α} : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
-  Iff.rfl
+theorem mem_offDiagonal {x : α × α} {s : Set α} :
+    x ∈ s.offDiagonal ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := Iff.rfl
 
 end Diagonal
 
