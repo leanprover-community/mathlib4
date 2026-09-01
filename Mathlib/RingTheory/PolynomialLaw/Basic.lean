@@ -165,8 +165,10 @@ instance : AddCommMonoid (M →ₚₗ[R] N) where
   zero_add f := by ext; simp only [add_def, zero_add, zero_def]
   add_zero f := by ext; simp only [add_def, add_zero, zero_def]
   nsmul n f := (n : R) • f
-  nsmul_zero f := by simp only [Nat.cast_zero, zero_smul f]
-  nsmul_succ n f := by simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
+  nsmul_zero f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Nat.cast_zero, zero_smul f]
+  nsmul_succ n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
   add_comm f g := by ext; simp only [add_def, add_comm]
 
 instance : Module R (M →ₚₗ[R] N) where
@@ -195,15 +197,17 @@ theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
 
 instance : AddCommGroup (M →ₚₗ[R] N) where
   zsmul n f := (n : R) • f
-  zsmul_zero' f := by simp only [Int.cast_zero, zero_smul]
-  zsmul_succ' n f := by simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast,
-    Int.cast_one, add_smul, _root_.one_smul]
+  zsmul_zero' f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Int.cast_zero, zero_smul]
+  zsmul_succ' n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast, Int.cast_one, add_smul, one_smul]
   zsmul_neg' n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
     ext S _ _ m
     rw [neg_def]
-    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, _root_.add_smul,
+    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, add_smul,
       add_def_apply, smul_def_apply, Nat.succ_eq_add_one, Int.cast_add, Int.cast_natCast,
-      Int.cast_one, _root_.one_smul, add_def, smul_def, Pi.smul_apply, Pi.add_apply, smul_add,
+      Int.cast_one, one_smul, add_def, smul_def, Pi.smul_apply, Pi.add_apply, smul_add,
       smul_smul, neg_mul, one_mul]
     rw [add_comm]
   neg_add_cancel f := by
@@ -311,7 +315,7 @@ theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
   rw [← Algebra.adjoin_range_eq_range_aeval]
   congr
   rw [← Function.comp_def, Set.range_comp]
-  simp only [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOf_mem]
+  simp only [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 variable (S)
 
@@ -415,6 +419,7 @@ theorem factorsThrough_toFunLifted_π :
   · simp only [hq, hu, ← LinearMap.comp_apply, comp_toLinearMap, rTensor_comp]
     congr; ext; rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toFun_eq_rTensor_φ_toFun' {t : S ⊗[R] M} {s : Finset S}
     {p : MvPolynomial (Fin s.card) R ⊗[R] M} (ha : π R M S (⟨s, p⟩ : lifts R M S) = t) :
     f.toFun S t = (φ R s).toLinearMap.rTensor N (f.toFun' _ p) := by
@@ -437,7 +442,6 @@ theorem exists_lift_of_mem_range_rTensor
 /-- Tensor products in `S ⊗[R] M` can be lifted to some
 `MvPolynomial R n ⊗[R] M`, for a finite `n`. -/
 theorem π_surjective : Function.Surjective (π R M S) := by
-  classical
   intro t
   obtain ⟨B : Subalgebra R S, hB : B.FG, ht : t ∈ range _⟩ := TensorProduct.Algebra.exists_of_fg t
   obtain ⟨s : Finset S, hs : (PolynomialLaw.φ R s).range = B⟩ := exists_range_φ_eq_of_fg hB
@@ -454,7 +458,6 @@ theorem exists_lift (t : S ⊗[R] M) : ∃ (n : ℕ) (ψ : MvPolynomial (Fin n) 
 theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial (Fin n) R →ₐ[R] S)
     (p : MvPolynomial (Fin n) R ⊗[R] M) (q : MvPolynomial (Fin n) R),
       ψ.toLinearMap.rTensor M p = t ∧ ψ q = s := by
-  classical
   obtain ⟨A, hA, ht⟩ := TensorProduct.Algebra.exists_of_fg t
   have hB : Subalgebra.FG (A ⊔ Algebra.adjoin R ({s} : Finset S)) :=
     Subalgebra.FG.sup hA (Subalgebra.fg_adjoin_finset _)

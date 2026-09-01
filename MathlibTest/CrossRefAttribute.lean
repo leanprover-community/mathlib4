@@ -97,6 +97,71 @@ info:
 /-- info: Q42 -/
 #guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "Q42"
 
+namespace LMFDB
+
+@[lmfdb group.abelian "A vacuous comment"]
+theorem IsAbelian : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: some ([LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `LMFDB.IsAbelian}"
+
+/--
+error: <input>:1:9: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB.tag"
+
+/-- info: lmfdb.tag_99 -/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "lmfdb.tag_99"
+
+/--
+error: <input>:1:5: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB&tag"
+
+/--
+info:
+[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration 'IsAbelian'. (A vacuous comment)
+-/
+#guard_msgs in
+#lmfdb_tags
+
+end LMFDB
+
+namespace DLMF
+
+@[dlmf 5.5.E1 "A vacuous comment"]
+theorem test : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: some ([DLMF 5.5.E1](https://dlmf.nist.gov/5.5.E1) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `DLMF.test}"
+
+/--
+error: <input>:1:6: DLMF references must consist only of (lowercase) roman numerals, the letters E/T/F, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "random*string"
+
+/-- info: 18.30.iv -/
+#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "18.30.iv"
+
+/--
+info:
+[DLMF 5.5.E1](https://dlmf.nist.gov/5.5.E1) corresponds to declaration 'test'. (A vacuous comment)
+-/
+#guard_msgs in
+#dlmf_tags
+
+end DLMF
+
 section errors
 
 open Lean Parser Mathlib.CrossRef

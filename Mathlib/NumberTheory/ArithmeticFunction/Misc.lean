@@ -52,7 +52,7 @@ section ProdPrimeFactors
 /-- The map $n \mapsto \prod_{p \mid n} f(p)$ as an arithmetic function -/
 def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
   toFun d := if d = 0 then 0 else ∏ p ∈ d.primeFactors, f p
-  map_zero' := if_pos rfl
+  map_zero' := ite_eq_left rfl
 
 open Batteries.ExtendedBinder
 
@@ -64,7 +64,7 @@ scoped macro_rules (kind := bigproddvd)
 @[simp]
 theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f : ℕ → R} {n : ℕ} (hn : n ≠ 0) :
     ∏ᵖ p ∣ n, f p = ∏ p ∈ n.primeFactors, f p :=
-  if_neg hn
+  ite_eq_right hn
 
 namespace IsMultiplicative
 
@@ -232,7 +232,6 @@ theorem _root_.Nat.divisors_card_eq_one_iff (n : ℕ) : #n.divisors = 1 ↔ n = 
   · refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     exact (card_le_one.mp h.le 1 (one_mem_divisors.mpr hn) n (n.mem_divisors_self hn)).symm
 
-set_option backward.privateInPublic true in
 /-- `sigma_eq_one_iff` is to be preferred. -/
 private theorem sigma_zero_eq_one_iff (n : ℕ) : σ 0 n = 1 ↔ n = 1 := by
   simp [sigma_zero_apply]
@@ -452,12 +451,12 @@ theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
 end Nat.Coprime
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]
-meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p? e := do
-  let some p := p? | throwError "no PartialOrder instance"
+meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p? e :=
+  match p? with | none => throwError "no PartialOrder instance" | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
     assumeInstancesCommute

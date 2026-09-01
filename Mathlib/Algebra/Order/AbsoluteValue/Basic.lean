@@ -28,7 +28,7 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
 @[expose] public section
 
-variable {ι α R S : Type*}
+variable {α R S : Type*}
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy
@@ -185,7 +185,7 @@ omit [Nontrivial R] in
 /-- An absolute value satisfies `f (n : R) ≤ n` for every `n : ℕ`. -/
 lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
   cases subsingleton_or_nontrivial R
-  · simp [Subsingleton.eq_zero (n : R)]
+  · simp [Subsingleton.eq_zero (α := R)]
   induction n with
   | zero => simp
   | succ n ih =>
@@ -262,8 +262,7 @@ end OrderedCommRing
 
 section LinearOrderedRing
 
-variable {R S : Type*} [Semiring R] [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
-  (abv : AbsoluteValue R S)
+variable {S : Type*} [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
 @[simps]
@@ -317,7 +316,7 @@ def trivial : AbsoluteValue R S where
 
 @[simp]
 lemma trivial_apply {x : R} (hx : x ≠ 0) : AbsoluteValue.trivial (S := S) x = 1 :=
-  if_neg hx
+  ite_eq_right hx
 
 end trivial
 
@@ -416,8 +415,8 @@ open Lean Meta Mathlib Meta Positivity Qq in
 For performance reasons, we only attempt to apply this when `abv` is a variable.
 If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should apply. -/
 @[positivity _]
-meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let (.app f a) ← whnfR e | throwError "not abv ·"
   if !f.getAppFn.isFVar then
     throwError "abv: function is not a variable"

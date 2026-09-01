@@ -81,10 +81,8 @@ lemma finsetProd_mem {ι : Type*} (s : Finset ι) (f : ι → R) (hs : ∃ x ∈
   rcases s
   simpa using multiSetProd_mem (hs := hs)
 
-lemma finsuppProd_mem {ι : Type*} {β : Type*} {M : Type*}
-    [Add M] [CommMonoid M] [Zero β]
-    (h : ι → β → R) {f : ι →₀ β} (H : ∃ i ∈ f.support, h i (f i) ∈ I) :
-    f.prod h ∈ I :=
+lemma finsuppProd_mem {ι : Type*} {β : Type*} [Zero β]
+    (h : ι → β → R) {f : ι →₀ β} (H : ∃ i ∈ f.support, h i (f i) ∈ I) : f.prod h ∈ I :=
   finsetProd_mem _ _ _ H
 
 lemma dfinsuppProd_mem {ι : Type*} {β : ι → Type*}

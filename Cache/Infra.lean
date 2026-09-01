@@ -24,6 +24,22 @@ def MATHLIBREPO := "leanprover-community/mathlib4"
 /-- The full name of the Mathlib nightly-testing GitHub repository. -/
 def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
 
+/-- Whether `repo` is a first-party Mathlib repo rather than a fork. Forks cache
+into the per-commit `forks` namespace; the canonical repos do not. -/
+def isCanonicalRepo (repo : String) : Bool :=
+  repo == MATHLIBREPO || repo == NIGHTLY_TESTING_REPO
+
+/--
+Canonical form of a GitHub `owner/repo` name for use as a cache blob path
+segment.
+
+GitHub treats owner and repository names case-insensitively, while Azure Blob
+Storage paths are case-sensitive. Lowercasing yields one shared key whatever
+capitalization a remote URL or the GitHub Actions context supplies, so a fork's
+uploads and downloads always meet at the same path.
+-/
+def normalizeRepo (repo : String) : String := repo.toLower
+
 /--
 Trust-classified Azure storage containers for the Mathlib cache.
 
@@ -40,10 +56,11 @@ inductive Container where
   | nightlyTesting
   /-- Container for toolchain-PR test runs. -/
   | prToolchainTests
-  /-- The bare `mathlib4` container that older cache clients read from. Only
-  master CI writes here (mirroring its `mathlib4-master` upload), so those
-  clients keep finding master-built artifacts; forks and nightly-testing stay
-  out to keep low-trust writes from reaching readers that predate the split. -/
+  /-- The bare `mathlib4` container that older cache clients read from. CI does
+  not upload here; it is a read-only store of the master-built artifacts that
+  were mirrored from `mathlib4-master`, kept reachable so those older clients
+  can resolve them. The `master` container is a self-contained cache, so reads
+  fall back to `legacy` only for artifacts predating the write cutover. -/
   | legacy
   deriving DecidableEq, Repr, BEq, Inhabited
 
@@ -113,6 +130,63 @@ def flatPath (c : Container) (repo : String) : Bool :=
 end Container
 
 /--
+Trimmed value of an environment variable. An empty or whitespace-only value
+means unset.
+
+CI wires the cache variables from a GitHub Actions `vars` lookup. That lookup
+yields an empty string for an undefined variable, and such a value selects the
+same behavior as an absent one.
+-/
+def nonEmptyEnvValue (value? : Option String) : Option String :=
+  (value?.map (·.trimAscii.copy)).filter (!·.isEmpty)
+
+/-- Reads `name` from the environment through `nonEmptyEnvValue`. -/
+def getEnvNonEmpty (name : String) : IO (Option String) := do
+  return nonEmptyEnvValue (← IO.getEnv name)
+
+/--
+Value of an environment variable that names a base URL. The same empty rule as
+`nonEmptyEnvValue` applies, and the base also loses its trailing slashes, so a
+later `/{path}` follows a single separator.
+-/
+def normalizeBaseURL (value? : Option String) : Option String :=
+  (value?.map fun v => (v.trimAscii.dropEndWhile '/').copy).filter (!·.isEmpty)
+
+/-- Default base URL for cache reads: the direct address of the Azure Blob
+Storage account. -/
+def defaultGetBaseURL : String := "https://lakecache.blob.core.windows.net"
+
+/--
+Base URL for cache reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
+`defaultGetBaseURL`. `normalizeBaseURL` reads the value, so it arrives trimmed,
+free of trailing slashes, and unset when empty.
+
+A read URL is `{base}/{azureContainerName}/{key}`, the namespace the Azure
+account serves. Any host that mirrors that namespace is therefore a valid base.
+This override differs from `MATHLIB_CACHE_GET_URL`. That variable serves
+external consumers: it names one flat endpoint and bypasses the container
+lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
+CI and contributors to the mathlib4 repository. It keeps the lookup chain and
+rebases each container read under the given host.
+
+Only reads follow this base. Uploads, marker writes, and the blob-listing
+query authenticate against Azure and use `Container.azureURL` directly.
+-/
+def getBaseURLFrom (envValue? : Option String) : String :=
+  (normalizeBaseURL envValue?).getD defaultGetBaseURL
+
+/--
+Base URL for cache reads, resolved from the environment.
+Written on top of the pure function above, which is separate to be testable.
+-/
+def getBaseURL : IO String := do
+  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
+
+/-- Read URL for a container: `{getBaseURL}/{azureContainerName}`. -/
+def Container.getURL (c : Container) : IO String := do
+  return s!"{← getBaseURL}/{c.azureContainerName}"
+
+/--
 Comma-separated list parser for `--cache-from=a,b,c`.
 
 Returns `none` if any element is unrecognized.
@@ -139,12 +213,9 @@ def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
     [.master, .legacy]
   else if repo == NIGHTLY_TESTING_REPO then
-    -- Trusted-nightly consumers (`nightly-testing`, `nightly-testing-green`,
-    -- `bump/*`) read only `nightly-testing` + `legacy`; `pr-toolchain-tests` is
-    -- excluded so low-trust toolchain-PR uploads can't reach them. Toolchain-PR
-    -- branches opt into reading their own uploads with `--cache-from=...` (or,
-    -- in CI, via the `MATHLIB_CACHE_FROM` env var).
-    [.nightlyTesting, .legacy]
+    -- `forks` is needed for PRs opened from this repo into mathlib4: their CI
+    -- uploads land in `forks`. `pr-toolchain-tests` is excluded.
+    [.nightlyTesting, .forks, .legacy]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
     -- own container for PR-specific files, then `legacy`.

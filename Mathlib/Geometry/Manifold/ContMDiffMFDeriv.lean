@@ -69,7 +69,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     {t : Set N} {u : Set M}
     (hf : CMDiffAt[t ×ˢ u] n (Function.uncurry f) (x₀, g x₀))
     (hg : CMDiffAt[t] m g x₀) (hx₀ : x₀ ∈ t)
-    (hu : MapsTo g t u) (hmn : m + 1 ≤ n) (h'u : UniqueMDiffOn I u) :
+    (hu : MapsTo g t u) (hmn : m + 1 ≤ n) (h'u : UniqueMDiff[u]) :
     CMDiffAt[t] m (inTangentCoordinates I I' g (fun x ↦ f x (g x))
       (fun x ↦ mfderiv[u] (f x) (g x)) x₀) x₀ := by
   -- first localize the result to a smaller set, to make sure everything happens in chart domains
@@ -148,8 +148,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   apply nhdsWithin_mono _ ht't
   filter_upwards [h2f, h4f, h2g, self_mem_nhdsWithin] with x hx h'x h2 hxt
   have h1 : g x ∈ u := hu hxt
-  have h3 : UniqueMDiffWithinAt 𝓘(𝕜, E)
-      ((extChartAt I (g x₀)).target ∩ (extChartAt I (g x₀)).symm ⁻¹' u)
+  have h3 : UniqueMDiffAt[(extChartAt I (g x₀)).target ∩ (extChartAt I (g x₀)).symm ⁻¹' u]
       ((extChartAt I (g x₀)) (g x)) := by
     apply UniqueDiffWithinAt.uniqueMDiffWithinAt
     apply UniqueMDiffOn.uniqueDiffOn_target_inter h'u
@@ -162,7 +161,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     · apply mdifferentiableWithinAt_extChartAt_symm
       exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
     · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
-  rw [inTangentCoordinates_eq_mfderiv_comp, A,
+  rw [inTangentCoordinates_eq_mfderiv_comp_abuse, A,
     ← mfderivWithin_comp_of_eq, ← mfderiv_comp_mfderivWithin_of_eq]
   · exact mfderivWithin_eq_fderivWithin
   · exact mdifferentiableAt_extChartAt (by simpa using h'x)
@@ -191,7 +190,7 @@ This is a special case of `ContMDiffWithinAt.mfderivWithin` where `f` does not c
 parameters and `g = id`.
 -/
 theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
-    (hf : CMDiffAt[s] n f x₀) (hmn : m + 1 ≤ n) (hx : x₀ ∈ s) (hs : UniqueMDiffOn I s) :
+    (hf : CMDiffAt[s] n f x₀) (hmn : m + 1 ≤ n) (hx : x₀ ∈ s) (hs : UniqueMDiff[s]) :
     CMDiffAt[s] m (inTangentCoordinates I I' id f (mfderiv[s] f) x₀) x₀ := by
   have : CMDiffAt[s ×ˢ s] n (fun x : M × M ↦ f x.2) (x₀, x₀) :=
     hf.comp (x₀, x₀) contMDiffWithinAt_snd mapsTo_snd_prod
@@ -210,7 +209,7 @@ theorem ContMDiffWithinAt.mfderivWithin_apply {x₀ : N'}
     (hf : CMDiffAt[t ×ˢ u] n (Function.uncurry f) (g₁ x₀, g (g₁ x₀)))
     (hg : CMDiffAt[t] m g (g₁ x₀)) (hg₁ : CMDiffAt[v] m g₁ x₀)
     (hg₂ : CMDiffAt[v] m g₂ x₀) (hmn : m + 1 ≤ n) (h'g₁ : MapsTo g₁ v t)
-    (hg₁x₀ : g₁ x₀ ∈ t) (h'g : MapsTo g t u) (hu : UniqueMDiffOn I u) :
+    (hg₁x₀ : g₁ x₀ ∈ t) (h'g : MapsTo g t u) (hu : UniqueMDiff[u]) :
     CMDiffAt[v] m (fun x ↦ (inTangentCoordinates I I' g (fun x ↦ f x (g x))
       (fun x ↦ mfderiv[u] (f x) (g x)) (g₁ x₀) (g₁ x)) (g₂ x)) x₀ :=
   ((hf.mfderivWithin hg hg₁x₀ h'g hmn hu).comp_of_eq hg₁ h'g₁ rfl).clm_apply hg₂
@@ -273,14 +272,13 @@ variable [Is : IsManifold I 1 M] [I's : IsManifold I' 1 M']
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
 is `C^m` when `m+1 ≤ n`. -/
 theorem ContMDiffOn.contMDiffOn_tangentMapWithin
-    (hf : CMDiff[s] n f) (hmn : m + 1 ≤ n) (hs : UniqueMDiffOn I s) :
+    (hf : CMDiff[s] n f) (hmn : m + 1 ≤ n) (hs : UniqueMDiff[s]) :
     CMDiff[(π E (TangentSpace I) ⁻¹' s)] m (tangentMap[s] f) := by
   intro x₀ hx₀
   let s' : Set (TangentBundle I M) := (π E (TangentSpace I) ⁻¹' s)
   let b₁ : TangentBundle I M → M := fun p ↦ p.1
   let v : Π (y : TangentBundle I M), TangentSpace% (b₁ y) := fun y ↦ y.2
-  have hv : ContMDiffWithinAt I.tangent I.tangent m (fun y ↦ (v y : TangentBundle I M)) s' x₀ :=
-    contMDiffWithinAt_id
+  have hv : CMDiffAt[s'] m (fun y ↦ (v y : TangentBundle I M)) x₀ := contMDiffWithinAt_id
   let b₂ : TangentBundle I M → M' := f ∘ b₁
   have hb₂ : CMDiffAt[s'] m b₂ x₀ :=
     ((hf (b₁ x₀) hx₀).of_le (le_self_add.trans hmn)).comp _
@@ -298,7 +296,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
 /-- If a function is `C^n` on a domain with unique derivatives, with `1 ≤ n`, then its bundled
 derivative is continuous there. -/
 theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : CMDiff[s] n f) (hmn : 1 ≤ n)
-    (hs : UniqueMDiffOn I s) :
+    (hs : UniqueMDiff[s]) :
     ContinuousOn (tangentMap[s] f) (π E (TangentSpace I) ⁻¹' s) := by
   have : CMDiff[π E (TangentSpace I) ⁻¹' s] 0 (tangentMap[s] f) :=
     hf.contMDiffOn_tangentMapWithin hmn hs
@@ -361,7 +359,7 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     · exact ModelWithCorners.uniqueDiffWithinAt_image I
     · exact differentiableAt_id.prodMk (differentiableAt_const _)
   simp +unfoldPartialApp only [Bundle.zeroSection, tangentMap, mfderiv, A,
-    if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
+    ite_eq_left, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
     Function.comp_def, map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
@@ -417,7 +415,6 @@ lemma contMDiff_equivTangentBundleProd :
   exact (contMDiff_fst.contMDiff_tangentMap le_rfl).prodMk
     (contMDiff_snd.contMDiff_tangentMap le_rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical equivalence between the product of tangent bundles and the tangent bundle of a
 product is smooth. -/
 lemma contMDiff_equivTangentBundleProd_symm :
@@ -455,7 +452,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM` read in target chart.
-    simp only [prodChartedSpace_chartAt, OpenPartialHomeomorph.prod_toPartialEquiv,
+    simp only [prodChartedSpace_chartAt, OpenPartialHomeomorph.prod_toPartialHomeomorph,
       PartialEquiv.prod_source, mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I) (I ((chartAt H p.1.proj) p.1.proj)) := by
@@ -494,7 +491,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM'` read in target chart.
-    simp only [prodChartedSpace_chartAt, OpenPartialHomeomorph.prod_toPartialEquiv,
+    simp only [prodChartedSpace_chartAt, OpenPartialHomeomorph.prod_toPartialHomeomorph,
       PartialEquiv.prod_source, mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I') (I' ((chartAt H' p.2.proj) p.2.proj)) := by
@@ -526,3 +523,23 @@ lemma contMDiff_equivTangentBundleProd_symm :
     simp [fderivWithin_snd, U]
 
 end EquivTangentBundleProd
+
+variable (I) in
+/-- A version of `VectorField.injective_eval_mdifferentiableAt_sec`
+specialized to vector fields on a `C¹` manifold `M` -/
+lemma injective_eval_mdifferentiableAt_vectorField [IsManifold I 1 M]
+    (V : Type*) [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
+    Function.Injective
+      (fun A : TangentSpace% x →L[𝕜] V ↦
+        fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
+  VectorBundle.injective_eval_mdifferentiableAt_sec ..
+
+variable (I) in
+/-- A version of `VectorField.injective_eval_contMDiffAt_sec`
+specialized to vector fields on a `C¹` manifold `M` -/
+lemma injective_eval_contMDiffAt_vectorField [IsManifold I 1 M]
+    (V : Type*) [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
+    Function.Injective
+      (fun A : TangentSpace% x →L[𝕜] V ↦
+        fun (Z : Π x, TangentSpace I x) (_ : CMDiffAt n (T% Z) x) ↦ A (Z x)) :=
+  VectorBundle.injective_eval_contMDiffAt_sec ..

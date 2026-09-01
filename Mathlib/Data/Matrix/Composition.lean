@@ -41,6 +41,7 @@ def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
 section Basic
 variable {R I J K L}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_one [DecidableEq I] [DecidableEq J] [Zero R] [One R] : comp I I J J R 1 = 1 := by
   ext; simp only [comp, Equiv.coe_fn_mk, one_apply, apply_ite]; aesop
 
