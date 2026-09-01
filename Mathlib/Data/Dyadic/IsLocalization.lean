@@ -35,6 +35,7 @@ instance : Invertible (2 : Dyadic) where
   mul_invOf_self := rfl
 
 theorem val_half_eq_ofOdd : half = ofOdd 1 1 rfl := rfl
+
 theorem val_half_zpow_eq_ofOdd (n : ℤ) : ↑(half ^ n) = ofOdd 1 n rfl := by
   rw [← neg_neg n]
   induction -n using Int.negInduction with
