@@ -96,11 +96,8 @@ private theorem irrational_sqrt_five : Irrational (√5) :=
   Nat.prime_five.irrational_sqrt
 
 -- A lemma to bound the denominators of a Farey interval given both endpoints fail the Hurwitz bound
-private theorem aux₀ {a b c d : ℤ}
-    (hdet : b * c - a * d = 1)
-    (hA : 1 ≤ √5 * b * ((b : ℝ) * ξ - a))
-    (hB : 1 ≤ √5 * d * ((c : ℝ) - d * ξ)) :
-    (b : ℝ) ^ 2 + (d : ℝ) ^ 2 ≤ √5 * (b * d) := by
+private theorem aux₀ {a b c d : ℤ} (hdet : b * c - a * d = 1) (hA : 1 ≤ √5 * b * ((b : ℝ) * ξ - a))
+    (hB : 1 ≤ √5 * d * ((c : ℝ) - d * ξ)) : (b : ℝ) ^ 2 + (d : ℝ) ^ 2 ≤ √5 * (b * d) := by
   have hdetR : (b : ℝ) * c - a * d = 1 := mod_cast hdet
   have hdiff : (d : ℝ) * (b * ξ - a) + b * (c - d * ξ) = 1 := by linear_combination hdetR
   have H : (d : ℝ) ^ 2 * √5 * b * (b * ξ - a) + b ^ 2 * √5 * d * (c - d * ξ) = √5 * b * d := by
