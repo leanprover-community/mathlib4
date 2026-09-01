@@ -134,14 +134,14 @@ theorem of_mul {m : ℕ} (h : Introspective (X - C (a : R)) (m * p) r)
     (hcprm : p.Coprime r) : Introspective (X - C (a : R)) m r := by
   have hp : p.Prime := Fact.out
   simp only [Introspective] at h ⊢
-  set g : R[X] := (X : R[X]) - C (a : R)
+  set g : R[X] := X - C (a : R)
   have rn0 : r ≠ 0 := by grind [coprime_zero_right, prime_one_false]
   rw [pow_mul] at h
   have := Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
   have := Ring.charP_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
   simp only [map_pow] at h
   replace h : (frobenius _ p) _ = _ := h
-  have h2 : AdjoinRoot.mk ((X : R[X]) ^ r - 1) (g.comp (X ^ (m * p))) =
+  have h2 : AdjoinRoot.mk (X ^ r - 1) (g.comp (X ^ (m * p))) =
       frobenius _ p (.mk _ (g.comp (X ^ m))) := by
     simp only [frobenius, RingHom.coe_mk, powMonoidHom_apply]
     rw [← map_pow]
@@ -151,8 +151,8 @@ theorem of_mul {m : ℕ} (h : Introspective (X - C (a : R)) (m * p) r)
     simp [pow_mul, ← frobenius_def p _]
   grind
 
-protected theorem div (h : Introspective ((X : R[X]) - C (a : R)) n r)
-    (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective ((X : R[X]) - C (a : R)) (n / p) r := by
+protected theorem div (h : Introspective (X - C (a : R)) n r)
+    (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective (X - C (a : R)) (n / p) r := by
   grind [of_mul, Nat.div_mul_cancel hd]
 
 /-- Necessary condition for the auxilliary proof. -/
