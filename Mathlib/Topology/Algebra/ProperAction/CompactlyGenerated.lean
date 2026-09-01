@@ -12,17 +12,17 @@ public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 # When a proper action is properly discontinuous
 
 This file proves that if a discrete group acts on a T2 space `X` such that `X × X` is compactly
-generated, and if the action is continuous in the second variable, then the action is properly
+coherent, and if the action is continuous in the second variable, then the action is properly
 discontinuous if and only if it is proper. This is in particular true if `X` is first-countable or
 weakly locally compact.
 
 ## Main statements
 
 * `properlyDiscontinuousSMul_iff_properSMul`: If a discrete group acts on a T2 space `X` such that
-  `X × X` is compactly generated, and if the action is continuous in the second variable,
+  `X × X` is compactly coherent, and if the action is continuous in the second variable,
   then the action is properly discontinuous if and only if it is proper.
 * `MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty`: if `G` is a topological group
-  acting continuously on a T2 space `X` such that `X × X` is compactly generated, then the action is
+  acting continuously on a T2 space `X` such that `X × X` is compactly coherent, then the action is
   proper iff, for each pair of compacts `U, V ⊆ X`, the set of `g : G` such that `g • U` intersects
   `V` is compact.
 
@@ -85,7 +85,7 @@ alias AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty :=
   AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty
 
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly
-generated, and if the action is continuous in the second variable, then the action is properly
+coherent, and if the action is continuous in the second variable, then the action is properly
 discontinuous if and only if it is proper. This is in particular true if `X` is first-countable or
 weakly locally compact. -/
 @[to_additive]

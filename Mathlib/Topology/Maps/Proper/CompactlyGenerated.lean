@@ -11,7 +11,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 /-!
 # A map is proper iff preimage of compact sets are compact
 
-This file proves that if `Y` is a Hausdorff and compactly generated space, a continuous map
+This file proves that if `Y` is a Hausdorff and compactly coherent space, a continuous map
 `f : X → Y` is proper if and only if preimage of compact sets are compact.
 -/
 
@@ -23,7 +23,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable [T2Space Y] [CompactlyCoherentSpace Y]
 variable {f : X → Y}
 
-/-- If `Y` is Hausdorff and compactly generated, then proper maps `X → Y` are exactly
+/-- If `Y` is Hausdorff and compactly coherent, then proper maps `X → Y` are exactly
 continuous maps such that the preimage of any compact set is compact. This is in particular true
 if `Y` is Hausdorff and sequential or locally compact. -/
 theorem isProperMap_iff_isCompact_preimage :
