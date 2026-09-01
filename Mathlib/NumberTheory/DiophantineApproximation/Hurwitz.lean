@@ -103,8 +103,7 @@ private theorem aux₀ {a b c d : ℤ}
     (b : ℝ) ^ 2 + (d : ℝ) ^ 2 ≤ √5 * (b * d) := by
   have hdetR : (b : ℝ) * c - a * d = 1 := mod_cast hdet
   have hdiff : (d : ℝ) * (b * ξ - a) + b * (c - d * ξ) = 1 := by linear_combination hdetR
-  have H : (d : ℝ) ^ 2 * √5 * b * (b * ξ - a) +
-            b ^ 2 * √5 * d * (c - d * ξ) = √5 * b * d := by
+  have H : (d : ℝ) ^ 2 * √5 * b * (b * ξ - a) + b ^ 2 * √5 * d * (c - d * ξ) = √5 * b * d := by
     linear_combination hdiff * (√5 * b * d)
   have h1 := mul_le_mul_of_nonneg_left hA (sq_nonneg (d : ℝ))
   have h2 := mul_le_mul_of_nonneg_left hB (sq_nonneg (b : ℝ))
