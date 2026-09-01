@@ -51,13 +51,17 @@ protected theorem map {S : Type*} [CommRing S] (h : Introspective f e r) (g : R 
   rw [Introspective.iff_dvd] at *
   simpa [Polynomial.map_comp] using map_dvd g h
 
+theorem dvd_aeval_sub {A : Type*} [CommRing A] [Algebra R A] (x : A) (h : Introspective f e r) :
+    x ^ r - 1 ∣ (aeval x) f ^ e - (aeval (x ^ e)) f := by
+  rw [Introspective.iff_dvd] at h
+  simpa [aeval_comp] using map_dvd (aeval x) h
+
 theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
   intro μ hμ
-  simp only [Introspective] at h
-  let g := AdjoinRoot.liftAlgHom (X ^ r - 1) (Algebra.ofId R K) μ (by
-    simp [(isPrimitiveRoot_of_mem_primitiveRoots hμ).pow_eq_one])
-  exact (Iff.mp (Eq.congr (by simp [g]; rfl) (by simp [g]; rfl))) (congrArg g h)
+  obtain ⟨g, hg⟩ := dvd_aeval_sub μ h
+  suffices μ ^ r - 1 = 0 by grind
+  simp [(isPrimitiveRoot_of_mem_primitiveRoots hμ).pow_eq_one]
 
 @[simp]
 protected theorem one (f : R[X]) : Introspective f 1 r := by
