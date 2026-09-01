@@ -125,10 +125,10 @@ lemma affineMap_id (M : Type*) :
     affineMap (R := R) (id : M → M) = .id _ := by
   aesop
 
-/-- Given a map `f : I → X` where `X` is a convex space over `R`, this is the affine
-map `StdSimplex R I → X` which sends -/
-noncomputable def affineMapMk {I X : Type*} [ConvexSpace R X] (f : I → X) :
-    ConvexSpace.AffineMap R (StdSimplex R I) X where
+/-- Given a map `f : M → X` where `X` is a convex space over `R`, this is the affine
+map `StdSimplex R M → X` which sends the vertex corresponding to `m : M` to `f m`. -/
+noncomputable def affineMapMk {M X : Type*} [ConvexSpace R X] (f : M → X) :
+    ConvexSpace.AffineMap R (StdSimplex R M) X where
   toFun x := iConvexComb x f
   isAffineMap_toFun.map_sConvexComb s := by simp
 
