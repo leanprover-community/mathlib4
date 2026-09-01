@@ -930,6 +930,7 @@ structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
 lemma isNIndepSet_empty_iff : G.IsNIndepSet n ∅ ↔ n = 0 := by
   simp [isNIndepSet_iff,eq_comm]
 
+@[simp]
 lemma isNIndepSet_empty : G.IsNIndepSet 0 ∅ := by simp
 
 /-- An `n`-independent set is an `n`-clique in the complement graph and vice versa. -/
@@ -1069,22 +1070,22 @@ theorem maximumIndepSet_card_eq_indepNum
 lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndepSet s := by
   simp [← isMaximumClique_compl, maximumClique_exists]
 
+lemma isNIndepSet_one (a : α) : G.IsNIndepSet 1 {a} := by
+  rw [isNIndepSet_iff]
+  simp only [coe_singleton, Set.pairwise_singleton, card_singleton, and_self]
+
+lemma isIndepSet_one (a : α) : G.IsIndepSet {a} := by
+  simp
+
 theorem indepNum_eq_zero_iff_empty [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
+  rw [isEmpty_iff]
   refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
-  · by_contra
-    simp only [not_isEmpty_iff] at this
-    obtain ⟨a⟩ := this
-    have one_indep : G.IsNIndepSet 1 {a} := by
-      rw [isNIndepSet_iff]
-      simp only [coe_singleton, Set.pairwise_singleton, card_singleton, and_self]
-    have : 1 ≤ G.indepNum  := SimpleGraph.IsIndepSet.card_le_indepNum one_indep.isIndepSet
+  · intro a
+    have one_indep : G.IsNIndepSet 1 {a} := isNIndepSet_one a
+    have : 1 ≤ G.indepNum  := IsIndepSet.card_le_indepNum one_indep.isIndepSet
     grind
-  · rw [isEmpty_iff] at h
-    have : ∀ (s : Finset α ) , s = ∅ := by
-      exact fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
-    simp only [indepNum, this, exists_const]
-    have : {n | G.IsNIndepSet n ∅} = {0} := by ext x; simp [isNIndepSet_iff]
-    rw [this]; simp
+  · have : ∀ (s : Finset α ) , s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
+    simp [indepNum, this, exists_const]
 
 end IndepNumber
 
