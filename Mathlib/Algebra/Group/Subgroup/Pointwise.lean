@@ -331,12 +331,6 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   exact mul_mem hyz (inv_mem (h hz))
 
 @[to_additive]
-lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
-    normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
-  intro g hg
-  simp_rw [mem_inf, mem_normalizer_iff_map_conj_eq, map_sup, hg.1, hg.2] at hg ⊢
-
-@[to_additive]
 theorem iInf_normalizer_le_normalizer_iSup {ι : Sort*} (H : ι → Subgroup G) :
     ⨅ i, normalizer (H i) ≤ normalizer ((⨆ i, H i : Subgroup G) : Set G) := by
   intro g hg
@@ -346,13 +340,13 @@ theorem iInf_normalizer_le_normalizer_iSup {ι : Sort*} (H : ι → Subgroup G) 
 lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
     {H K : Subgroup G} {s : G} (hs : s ∈ normalizer H ⊓ normalizer K) (g : G) (hg : g ∈ H ⊔ K) :
     s * g * s⁻¹ ∈ H ⊔ K :=
-  (normalizer_inf_normalizer_le_normalizer_sup H K hs g).mp hg
+  (inf_normalizer_le_normalizer_sup H K hs g).mp hg
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_left
     {H K : Subgroup G} (hHnK : normalizer H ≤ normalizer (K : Set G)) :
     normalizer H ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) :=
-  (inf_of_le_left hHnK).symm.trans_le (H.normalizer_inf_normalizer_le_normalizer_sup K)
+  (inf_of_le_left hHnK).symm.trans_le (H.inf_normalizer_le_normalizer_sup K)
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_right {H K : Subgroup G}

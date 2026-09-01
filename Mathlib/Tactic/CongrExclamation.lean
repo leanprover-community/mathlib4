@@ -9,7 +9,8 @@ public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.Tactic.Rfl
-public import Mathlib.Logic.Basic
+public meta import Mathlib.Basic.Logic.Basic
+
 public import Mathlib.Lean.Meta.CongrTheorems
 public import Lean.Elab.ConfigEval
 

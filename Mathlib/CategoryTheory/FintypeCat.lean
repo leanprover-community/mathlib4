@@ -5,10 +5,10 @@ Authors: Bhavik Mehta, Adam Topaz
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.Data.Finite.Prod
 
 /-!
 # The category of finite types.
