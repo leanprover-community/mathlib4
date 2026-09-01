@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Geometry.Convex.Star
+public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Tactic.NormNum.Basic
 
@@ -76,6 +77,17 @@ variable [ConvexSpace R M] [IsModuleConvexSpace R M] [ConvexSpace R N] [IsModule
 lemma iConvexComb_eq_sum (w : StdSimplex R I) (f : I → M) :
     w.iConvexComb f = w.weights.sum fun i r ↦ r • f i := by
   simp [iConvexComb, sConvexComb_eq_sum, Finsupp.sum_mapDomain_index, add_smul]
+
+lemma StdSimplex.affineMapMk_apply_eq_sum_of_fintype
+    [Fintype I] (f : I → M) (w : StdSimplex R I) :
+    StdSimplex.affineMapMk (R := R) f w = ∑ (i : I), w.weights i • f i := by
+  rw [affineMapMk_apply, iConvexComb_eq_sum, Finsupp.sum_fintype _ _ (by simp)]
+
+lemma StdSimplex.coe_affineMapMk_of_fintype [Fintype I] (f : I → M) :
+    ⇑(StdSimplex.affineMapMk (R := R) f) =
+      fun w ↦ ∑ (i : I), w.weights i • f i := by
+  ext
+  rw [StdSimplex.affineMapMk_apply_eq_sum_of_fintype]
 
 /-- `convexCombPair` in a module can be expressed as a sum. -/
 @[simp]
