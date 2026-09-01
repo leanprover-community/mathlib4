@@ -8172,7 +8172,6 @@ public import Mathlib.Topology.LocallyFinite
 public import Mathlib.Topology.LocallyFinsupp
 public import Mathlib.Topology.LocallyFinsupp.Pushforward
 public import Mathlib.Topology.Maps.Basic
-public import Mathlib.Topology.Maps.ClosedGraph
 public import Mathlib.Topology.Maps.OpenQuotient
 public import Mathlib.Topology.Maps.Proper.Basic
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated

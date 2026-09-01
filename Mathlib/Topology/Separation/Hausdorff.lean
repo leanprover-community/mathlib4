@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Rel
 public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Irreducible
 public import Mathlib.Topology.Separation.Basic
@@ -499,6 +500,11 @@ protected theorem IsClosed.isClosed_eq [T2Space Y] {f g : X → Y} {s : Set X} (
 theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { y : Y | f y ≠ g y } :=
   isOpen_compl_iff.mpr <| isClosed_eq hf hg
+
+/-- The graph of a continuous function into a Hausdorff space is closed. -/
+theorem Continuous.isClosed_graph [T2Space X] {f : Y → X} (hf : Continuous f) :
+    IsClosed f.graph :=
+  isClosed_eq (hf.comp continuous_fst) continuous_snd
 
 /-- If two continuous maps are equal on `s`, then they are equal on the closure of `s`. See also
 `Set.EqOn.of_subset_closure` for a more general version. -/

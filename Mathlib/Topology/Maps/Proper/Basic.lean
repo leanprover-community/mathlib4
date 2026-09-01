@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Etienne Marion
 -/
 module
 
+public import Mathlib.Basic.Rel
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -29,6 +30,8 @@ other variations.
 * `IsProperMap.pi_map`: any product of proper maps is proper.
 * `isProperMap_iff_isClosedMap_and_compact_fibers`: a map is proper if and only if it is
   continuous, closed, and has compact fibers
+* `continuous_iff_isClosed_graph`: a function into a compact Hausdorff space is continuous if and
+  only if its graph is closed
 
 ## Implementation notes
 
@@ -346,3 +349,20 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
   (h.prodMap isProperMap_id).isClosedMap
+
+/-- A function into a compact space with a closed graph is continuous. -/
+theorem continuous_of_isClosed_graph [CompactSpace Y] (hf : IsClosed f.graph) : Continuous f := by
+  rw [continuous_iff_isClosed]
+  intro C hC
+  have h : f ⁻¹' C = Prod.fst '' (f.graph ∩ univ ×ˢ C) := by
+    ext x
+    simp [Function.graph]
+  exact h ▸ isClosedMap_fst_of_compactSpace _ (hf.inter (isClosed_univ.prod hC))
+
+/-- A function into a compact Hausdorff space is continuous if and only if its graph is closed.
+
+For the closed graph theorem of functional analysis, about linear maps between Banach spaces, see
+`LinearMap.continuous_of_isClosed_graph`. -/
+theorem continuous_iff_isClosed_graph [CompactSpace Y] [T2Space Y] :
+    Continuous f ↔ IsClosed f.graph :=
+  ⟨Continuous.isClosed_graph, continuous_of_isClosed_graph⟩
