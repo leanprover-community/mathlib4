@@ -26,7 +26,9 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {U : Set 𝕜} {x : 𝕜} {f g : 𝕜 → E}
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 namespace MeromorphicAt
 
@@ -132,3 +134,16 @@ theorem eventually_nhdsSet_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U
     exact eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf x hx) (hg x hx) hx (hU x hx) h
 
 end MeromorphicAt
+
+/-- If meromorphic `f` and `g` agree on `codiscreteWithin U`, so do their derivatives. -/
+theorem MeromorphicOn.deriv_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U)
+    (hg : MeromorphicOn g U) (h : f =ᶠ[codiscreteWithin U] g) :
+    deriv f =ᶠ[codiscreteWithin U] deriv g := by
+  rw [eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE]
+  intro x hx
+  by_cases hacc : AccPt x (𝓟 U)
+  · have h : f =ᶠ[𝓝[≠] x] g :=
+      (hf x hx).eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hg x hx) hx hacc h
+    filter_upwards [h.nhdsNE_deriv] using by simp +contextual
+  · rw [accPt_iff_frequently_nhdsNE, not_frequently] at hacc
+    filter_upwards [hacc] using by grind

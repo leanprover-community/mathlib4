@@ -434,6 +434,19 @@ theorem norm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖ ≤ ‖a�
 theorem eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ ≤ ‖a‖ ^ n :=
   eventually_atTop.mpr ⟨1, fun _b h => norm_pow_le' a (Nat.succ_le_iff.mp h)⟩
 
+@[simp]
+theorem norm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖ = ‖a ^ n‖ := by
+  rw [neg_pow, neg_one_pow_eq_ite]
+  split_ifs <;> simp
+
+@[simp]
+theorem nnnorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖₊ = ‖a ^ n‖₊ := by
+  simp [nnnorm]
+
+@[simp]
+theorem enorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖ₑ = ‖a ^ n‖ₑ := by
+  simp [enorm]
+
 instance ULift.seminormedRing : SeminormedRing (ULift α) :=
   { ULift.nonUnitalSeminormedRing, ULift.ring with }
 
@@ -994,3 +1007,43 @@ lemma iSup_prod_eq_prod_iSup_of_nonnegHomClass {F : Type*} [FunLike F R ℝ]
 end prod
 
 end Real
+
+section IsUnital
+
+attribute [local instance] IsUnital.toMulOneClass in
+/-- A unital non-unital seminormed ring is a seminormed ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toSeminormedRing {A : Type*} [NonUnitalSeminormedRing A]
+    [IsUnital A] : SeminormedRing A where
+  __ := ‹NonUnitalSeminormedRing A›
+  __ := toSemiring
+
+attribute [local instance] IsUnital.toSeminormedRing in
+/-- A unital non-unital seminormed commutative ring is a seminormed commutative ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toSeminormedCommRing {A : Type*} [NonUnitalSeminormedCommRing A]
+    [IsUnital A] : SeminormedCommRing A where
+
+attribute [local instance] IsUnital.toMulOneClass in
+/-- A unital non-unital normed ring is a normed ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toNormedRing {A : Type*} [NonUnitalNormedRing A] [IsUnital A] :
+    NormedRing A where
+  __ := ‹NonUnitalNormedRing A›
+  __ := toSemiring
+
+attribute [local instance] IsUnital.toNormedRing in
+/-- A unital non-unital normed commutative ring is a normed commutative ring.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toNormedCommRing {A : Type*} [NonUnitalNormedCommRing A]
+    [IsUnital A] : NormedCommRing A where
+
+end IsUnital

@@ -22,7 +22,7 @@ assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 assert_not_exists Finset.preimage Finset.sigma Fintype.piFinset
 assert_not_exists Finset.piecewise Set.indicator MonoidHom.coeFn Function.support IsSquare
 
-open Fin Function
+open Function
 
 variable {ι κ G M : Type*} {s s₁ s₂ : Finset ι} {a : ι}
 
@@ -152,6 +152,14 @@ lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [Decidab
     [∀ x, Decidable (¬p x)] (f : ι → M) :
     (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
+
+open Classical in
+@[to_additive]
+lemma prod_eq_of_subset
+    {s₁ s₂ : Finset ι} (h : s₁ ⊆ s₂) (f : ι → M) (hf : ∀ (i : ι), i ∈ s₂ → i ∉ s₁ → f i = 1) :
+    ∏ i ∈ s₁, f i = ∏ i ∈ s₂, f i := by
+  rw [show s₂ = s₁.disjUnion (s₂ \ s₁) disjoint_sdiff by simpa, Finset.prod_disjUnion,
+    Finset.prod_eq_one (s := s₂ \ s₁) (by aesop), mul_one]
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive]
@@ -326,11 +334,11 @@ theorem prod_filter (p : ι → Prop) [DecidablePred p] (f : ι → M) :
     ∏ a ∈ s with p a, f a = ∏ a ∈ s, if p a then f a else 1 :=
   calc
     ∏ a ∈ s with p a, f a = ∏ a ∈ s with p a, if p a then f a else 1 :=
-      prod_congr rfl fun a h => by rw [if_pos]; simpa using (mem_filter.1 h).2
+      prod_congr rfl fun a h => by rw [ite_eq_left]; simpa using (mem_filter.1 h).2
     _ = ∏ a ∈ s, if p a then f a else 1 := by
       { refine prod_subset (filter_subset _ s) fun x hs h => ?_
         rw [mem_filter, not_and] at h
-        exact if_neg (by simpa using h hs) }
+        exact ite_eq_right (by simpa using h hs) }
 
 @[to_additive]
 theorem prod_eq_single_of_mem {s : Finset ι} {f : ι → M} (a : ι) (h : a ∈ s)
@@ -484,7 +492,7 @@ theorem prod_congr_set [Fintype ι] (s : Set ι) [DecidablePred (· ∈ s)] (f :
 @[to_additive]
 theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
-  (prod_congr rfl) fun _i hi => if_pos hi
+  (prod_congr rfl) fun _i hi => ite_eq_left hi
 
 /-- Also see `Finset.prod_ite_mem_eq` -/
 @[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
@@ -896,11 +904,17 @@ additive group reduces to the difference of the last and first terms. -/]
 lemma prod_range_div (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f (i + 1) / f i) = f n / f 0 := by
   apply prod_range_induction <;> simp
 
-@[to_additive]
+/-- A reversed telescoping product along `{0, ..., n - 1}` of a commutative-group-valued function
+reduces to the ratio of the first and last factors. -/
+@[to_additive /-- A reversed telescoping sum along `{0, ..., n - 1}` of a function valued in a
+commutative additive group reduces to the difference of the first and last terms. -/]
 lemma prod_range_div' (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f i / f (i + 1)) = f 0 / f n := by
   apply prod_range_induction <;> simp
 
-@[to_additive]
+/-- Express `f n` as `f 0` multiplied by the telescoping product of consecutive ratios from
+`0` to `n - 1`. -/
+@[to_additive /-- Express `f n` as `f 0` plus the telescoping sum of consecutive differences from
+`0` to `n - 1`. -/]
 lemma eq_prod_range_div (f : ℕ → G) (n : ℕ) : f n = f 0 * ∏ i ∈ range n, f (i + 1) / f i := by
   rw [prod_range_div, mul_div_cancel]
 
@@ -1127,6 +1141,3 @@ lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
 theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   induction s using Finset.cons_induction with grind
-
-@[deprecated (since := "2026-02-14")]
-alias nat_abs_sum_le := Int.natAbs_sum_le
