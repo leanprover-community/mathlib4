@@ -81,7 +81,7 @@ theorem_wanted comp_ofCurve (C : Over (Spec (.of k))) [IsProper C.hom]
 /-- The universal property of the Jacobian variety: for any abelian variety `A`, any morphism
 `f : C ⟶ A` such that `f(P) = 0` factors uniquely through the Jacobian of `C`. In other words,
 `Jacobian C` is the Albanese variety of `C`. -/
-theorem_wanted exists_unique_ofCurve_comp (C : Over (Spec (.of k))) [IsProper C.hom]
+theorem_wanted existsUnique_ofCurve_comp (C : Over (Spec (.of k))) [IsProper C.hom]
     [SmoothOfRelativeDimension 1 C.hom] [GeometricallyIrreducible C.hom]
     (P : 𝟙_ (Over (Spec (.of k))) ⟶ C)
     {A : Over (Spec (.of k))} [Smooth A.hom] [IsProper A.hom] [GrpObj A]
