@@ -182,7 +182,7 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
 the isomorphism `End(M) ≃ M* ⊗ M`. -/
 theorem trace_eq_contract' :
     LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap := by
-  rw [dualTensorHomEquiv_eq_dualTensorHomEquivOfBasis (Module.Free.chooseBasis R M)]
+  rw [← dualTensorHomEquivOfBasis_eq_dualTensorHomEquiv (Module.Free.chooseBasis R M)]
   exact trace_eq_contract_of_basis' _
 
 /-- The trace of the identity endomorphism is the dimension of the free module. -/

@@ -375,10 +375,11 @@ theorem rTensorHomEquivHomRTensor_apply (x : (M →ₗ[R] P) ⊗[R] Q) :
 variable [Projective R N] [Module.Finite R N]
 
 variable (R M N P Q) in
-/-- When `M` and `N` are free `R` modules, the map `homTensorHomMap` is an equivalence. Note that
-`homTensorHomEquiv` is not defined directly in terms of `homTensorHomMap`, but the equivalence
-between the two is given by `homTensorHomEquiv_toLinearMap` and `homTensorHomEquiv_apply`.
--/
+/-- When `M` and `N` are projective `R` modules, the map `homTensorHomMap` is an equivalence.
+
+Note that `homTensorHomEquiv` is not defined directly in terms of `homTensorHomMap`, but the
+equivalence between the two is given by `homTensorHomEquiv_toLinearMap` and
+`homTensorHomEquiv_apply`. -/
 noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
   -- We make sure `homTensorHomEquiv_toLinearMap` is true by definition.
   .ofBijective (homTensorHomMap (.id R) M N P Q) <| by
@@ -407,9 +408,8 @@ section
 variable [Module.Finite R M] [Module.Finite R N] [Projective R M] [Projective R N]
 
 variable (R M N) in
-/--
-A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite free
-modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
+/-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite
+projective modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
 -/
 noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) :=
