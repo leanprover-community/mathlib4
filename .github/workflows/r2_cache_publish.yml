@@ -104,6 +104,9 @@ jobs:
          github.event.workflow_run.head_branch == 'master'))
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    # No environment and no `id-token`, both deliberate: this job runs
+    # repository code, so it must stay unable to mint. Adding either would
+    # hand it a write credential.
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       run_id: ${{ steps.resolve.outputs.run_id }}
@@ -307,6 +310,12 @@ jobs:
     needs: [assemble, push]
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # `cache-upload-master` for the GET_URL secret, and deliberately not
+    # `cache-upload-r2-master`: this job runs the Lean toolchain, the
+    # lakefile, and the cache tool. The OIDC `sub` names the environment
+    # and not the job, so declaring the minting environment here — even
+    # only to reach a secret — would let repository code mint a write
+    # credential. Put any secret this job needs in this environment.
     environment: cache-upload-master
     env:
       MATHLIB_CACHE_DIR: ${{ github.workspace }}/verify-cache
@@ -362,6 +371,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: cache-upload-r2-master
+    # Job-level permissions replace the workflow's, so restate what this
+    # job needs. Keep this pair on `push` and `marker` only.
     permissions:
       contents: read
       id-token: write # request the OIDC token the broker verifies
