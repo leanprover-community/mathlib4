@@ -67,7 +67,7 @@ lemma trivializationAt_symm_apply_bilin
     fun u v => by rw [continuousLinearMapAt_symmL ψ hc]
   have h2 : ∀ u v, ϕ u v = w (χ.symm x u) (χ.symm x v) := fun u v => by
     rw [← h1, continuousLinearMapAt_apply, linearMapAt_apply, hom_trivializationAt_apply,
-      if_pos hc, ← inCoordinates_apply_eq₂_bilin hb]
+      ite_eq_left hc, ← inCoordinates_apply_eq₂_bilin hb]
     rw [symmL_apply]
     exact hc
   have h3 := symmL_continuousLinearMapAt (R := ℝ) (trivializationAt F E x₀) hb u
