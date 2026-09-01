@@ -191,19 +191,13 @@ private theorem mulHeight_pow_finrank_of_nonempty {ι : Type*} [Nonempty ι] [Fi
   · simp_rw [← Finset.prod_pow, ← pow_mul, Function.comp_apply, ← comap_apply,
       ← Finset.univ.prod_fiberwise fun v : InfinitePlace L ↦ v.comap (algebraMap K L)]
     apply Finset.prod_congr rfl fun v _ ↦ ?_
-    set s : Finset (InfinitePlace L) := {w | w.comap (algebraMap K L) = v}
-    have key1 w (hw : w ∈ s) i : w.comap (algebraMap K L) (x i) = v (x i) := by
-      rw [Finset.mem_filter_univ, ← liesOver_iff_comap_eq] at hw
-      rw [LiesOver.comap_eq w v]
-    have key2 w (hw : w ∈ s) : v.mult * v.inertiaDeg w = w.mult := by
-      rw [Finset.mem_filter_univ, ← liesOver_iff_comap_eq] at hw
-      rw [inertiaDeg_eq_finrank, mult_mul_finrank]
-    have key3 : (v.placesOver L).toFinset = s := by
-      ext
-      erw [Set.mem_toFinset]
-      simp [InfinitePlace.placesOver, liesOver_iff_comap_eq, s]
-    simp +contextual only [Finset.prod_pow_eq_pow_sum, Finset.mul_sum,
-      ← v.sum_inertiaDeg_eq_finrank K L, key1, key2, key3]
+    rw [← v.sum_inertiaDeg_eq_finrank K L, Finset.mul_sum, ← Finset.prod_pow_eq_pow_sum]
+    refine Finset.prod_congr ?_ fun w hw ↦ ?_
+    · ext
+      rw [Set.mem_toFinset]
+      simp [InfinitePlace.placesOver, liesOver_iff_comap_eq]
+    rw [Finset.mem_filter_univ, ← liesOver_iff_comap_eq] at hw
+    rw [LiesOver.comap_eq w v, inertiaDeg_eq_finrank, mult_mul_finrank]
   · simp_rw [Function.comp_apply, ← finprod_comp_equiv equivHeightOneSpectrum.symm]
     rw [foobar_mul (K := K) (L := L), finprod_pow]
     · refine finprod_congr fun v ↦ ?_
