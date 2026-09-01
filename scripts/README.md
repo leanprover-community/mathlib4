@@ -237,8 +237,9 @@ to module `Foo.Bar` (no `srcDir` indirection).
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
 - `export_crossrefs.lean`
-  Exports a JSON dictionary of every declaration tagged with `@[wikidata]`, `@[stacks]`,
-  `@[kerodon]`, `@[lmfdb]`, or `@[dlmf]` (declaration name, source file, line number, and the cross-reference ids).
+  Exports a JSON dictionary of every declaration carrying a cross-reference attribute
+  (declaration name, source file, line number, and, per reference, the database, the identifier,
+  and the link URL resolved by `Database.url`).
   It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
   so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
   The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded
