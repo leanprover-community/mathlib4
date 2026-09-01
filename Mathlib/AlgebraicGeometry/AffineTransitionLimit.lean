@@ -364,9 +364,7 @@ lemma exists_preimage_eq
   obtain ⟨s, hs, hsf, rfl⟩ := (isBasis_preimage_isAffineOpen D c hc).exists_finite_of_isCompact hU
   have : Finite s := hsf
   choose i V hV hVi using fun x : s ↦ hs x.2
-  obtain ⟨j, fj⟩ := IsCofiltered.inf_objs_exists (hsf.toFinset.attach.image
-    fun x ↦ i ⟨x.1, (by simpa only [Set.Finite.mem_toFinset] using x.2)⟩:)
-  replace fj : ∀ b : s, j ⟶ i b := fun b ↦ (@fj (i b) (by simpa using ⟨b.1, b.2, rfl⟩)).some
+  obtain ⟨j, ⟨fj⟩⟩ := IsCofiltered.exists_hom_forall i
   refine ⟨j, ⨆ (k : s), D.map (fj _) ⁻¹ᵁ V k, ?_, ?_⟩
   · simp only [TopologicalSpace.Opens.iSup_mk, TopologicalSpace.Opens.carrier_eq_coe,
       TopologicalSpace.Opens.map_coe, TopologicalSpace.Opens.coe_mk]
@@ -905,8 +903,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
   obtain ⟨σ, hσ⟩ := CompactSpace.elim_nhds_subcover (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).1)
     (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).2.mem_nhds (by exact hxU x))
   obtain ⟨j, fj, hfj⟩ : ∃ (j : I) (fj : ∀ x : σ, j ⟶ i x), ⨆ x : σ, D.map (fj x) ⁻¹ᵁ U x = ⊤ := by
-    obtain ⟨j₀, hj₀⟩ := IsCofiltered.inf_objs_exists (σ.image i)
-    have fj₀ (x : σ) : j₀ ⟶ i x := (hj₀ (Finset.mem_image_of_mem i x.2)).some
+    obtain ⟨j₀, ⟨fj₀⟩⟩ := IsCofiltered.exists_hom_forall fun x : σ ↦ i x
     obtain ⟨j, w, hw⟩ := exists_map_eq_top D c hc (⨆ x : σ, D.map (fj₀ x) ⁻¹ᵁ U x) (by
       apply SetLike.coe_injective
       simpa [← Set.preimage_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base,
@@ -1059,9 +1056,7 @@ lemma Scheme.exists_isOpenCover_and_isAffine_of_finite [IsCofiltered I]
       IsOpenCover V ∧ ∀ j, IsAffineOpen (V j) ∧ U j = c.π.app i ⁻¹ᵁ (V j) := by
   classical
   choose j V hV hVU using fun k ↦ exists_isAffineOpen_preimage_eq D c hc (U k) (hU' k)
-  cases nonempty_fintype J
-  obtain ⟨i, fi⟩ := IsCofiltered.inf_objs_exists (Finset.univ.image j)
-  replace fi : ∀ k, i ⟶ j k := fun k ↦ (fi (by simp)).some
+  obtain ⟨i, ⟨fi⟩⟩ := IsCofiltered.exists_hom_forall j
   obtain ⟨k, fkj, e⟩ := exists_map_eq_top D c hc (⨆ (k), D.map (fi k) ⁻¹ᵁ V k) (by
     simp_rw [Hom.preimage_iSup, ← Hom.comp_preimage, c.w, hVU]
     exact hU)

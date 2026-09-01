@@ -874,6 +874,13 @@ lemma wideCospan [IsCofilteredOrEmpty C]
     (Finset.univ.image fun x ↦ ⟨j x, i, by simp, by simp, f x⟩)
   exact ⟨k, _, _, fun x ↦ hk _ _ (Finset.mem_image_of_mem _ (Finset.mem_univ _))⟩
 
+lemma exists_hom_forall {I : Type*} [Finite I] (j : I → C) :
+    ∃ k : C, Nonempty (∀ x, k ⟶ j x) := by
+  classical
+  cases nonempty_fintype I
+  obtain ⟨k, hk⟩ := inf_objs_exists (Finset.univ.image j)
+  exact ⟨k, ⟨fun x ↦ (hk (Finset.mem_image_of_mem j (Finset.mem_univ x))).some⟩⟩
+
 omit [IsCofiltered C] in
 lemma exists_forall [IsCofilteredOrEmpty C] {I : Type*} [Finite I] {i : C}
     (P : ∀ k : C, (k ⟶ i) → I → Prop)
