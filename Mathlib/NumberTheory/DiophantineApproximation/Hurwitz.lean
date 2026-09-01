@@ -108,15 +108,13 @@ private theorem aux₀ {a b c d : ℤ} (hdet : b * c - a * d = 1) (hA : 1 ≤ �
 
 /- Another lemma used to bound the denominators of a Farey interval given the first,
 which can be used both ways to derive a contradiction -/
-private theorem aux₁ {b d : ℝ}
-    (hb : 0 < b) (h : b ^ 2 + d ^ 2 ≤ √5 * (b * d)) :
+private theorem aux₁ {b d : ℝ} (hb : 0 < b) (h : b ^ 2 + d ^ 2 ≤ √5 * (b * d)) :
     (√5 - 1) * b ≤ 2 * d ∧ 2 * d ≤ (√5 + 1) * b := by
   have hprod : (2 * d - (√5 - 1) * b) * (2 * d - (√5 + 1) * b) ≤ 0 := by
     nlinarith [sq_sqrt_five, two_lt_sqrt_five]
   constructor <;> nlinarith
 
-private theorem aux₁' {b d : ℝ}
-    (hd : 0 < d) (h : b ^ 2 + d ^ 2 ≤ √5 * (b * d)) :
+private theorem aux₁' {b d : ℝ} (hd : 0 < d) (h : b ^ 2 + d ^ 2 ≤ √5 * (b * d)) :
     (√5 - 1) * d ≤ 2 * b ∧ 2 * b ≤ (√5 + 1) * d := by
   apply aux₁ hd
   linarith
@@ -161,8 +159,7 @@ private lemma two_mul_ne_sqrt_five_sub_one_mul {b d : ℤ} (hb : 0 < b)
 /-! ### Mediant properties -/
 
 private lemma sub_eq_one_div_mul {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
-    (hdet : q * r - p * s = 1) :
-    (r : ℝ) / s - p / q = 1 / ((q : ℝ) * s) := by
+    (hdet : q * r - p * s = 1) : (r : ℝ) / s - p / q = 1 / ((q : ℝ) * s) := by
   have hqR : (0 : ℝ) < q := mod_cast hq
   have hsR : (0 : ℝ) < s := mod_cast hs
   have hdetR : (q : ℝ) * r - p * s = 1 := mod_cast hdet
@@ -170,8 +167,7 @@ private lemma sub_eq_one_div_mul {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
   linear_combination hdetR
 
 private lemma left_lt_mediant {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
-    (hdet : q * r - p * s = 1) :
-    (p : ℝ) / q < ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) := by
+    (hdet : q * r - p * s = 1) : (p : ℝ) / q < ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) := by
   have hqR : (0 : ℝ) < q := mod_cast hq
   have hsR : (0 : ℝ) < s := mod_cast hs
   have hqsR : (0 : ℝ) < q + s := by linarith
@@ -181,8 +177,7 @@ private lemma left_lt_mediant {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
   linarith
 
 private lemma mediant_lt_right {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
-    (hdet : q * r - p * s = 1) :
-    ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) < (r : ℝ) / s := by
+    (hdet : q * r - p * s = 1) : ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) < (r : ℝ) / s := by
   have hqR : (0 : ℝ) < q := mod_cast hq
   have hsR : (0 : ℝ) < s := mod_cast hs
   have hqsR : (0 : ℝ) < q + s := by linarith
@@ -193,8 +188,7 @@ private lemma mediant_lt_right {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
 
 private lemma ne_mediant (hξ : Irrational ξ) {p q r s : ℤ} :
     ξ ≠ ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) := by
-  have hcast : ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ)
-      = (((p + r : ℤ) / (q + s : ℤ) : ℚ) : ℝ) := by
+  have hcast : ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) = (((p + r : ℤ) / (q + s : ℤ) : ℚ) : ℝ) := by
     push_cast; ring
   rw [hcast]
   exact hξ.ne_rat _
@@ -203,8 +197,7 @@ private lemma ne_mediant (hξ : Irrational ξ) {p q r s : ℤ} :
 namespace IsFarey
 
 private theorem of_lt_mediant {p q r s : ℤ} (h : IsFarey ξ p q r s)
-    (hm : ξ < ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ)) :
-    IsFarey ξ p q (p + r) (q + s) where
+    (hm : ξ < ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ)) : IsFarey ξ p q (p + r) (q + s) where
   q_pos := h.q_pos
   s_pos := add_pos h.q_pos h.s_pos
   det := by linear_combination h.det
@@ -212,8 +205,7 @@ private theorem of_lt_mediant {p q r s : ℤ} (h : IsFarey ξ p q r s)
   right := hm
 
 private theorem of_mediant_lt {p q r s : ℤ} (h : IsFarey ξ p q r s)
-    (hm : ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) < ξ) :
-    IsFarey ξ (p + r) (q + s) r s where
+    (hm : ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) < ξ) : IsFarey ξ (p + r) (q + s) r s where
   q_pos := add_pos h.q_pos h.s_pos
   s_pos := h.s_pos
   det := by linear_combination h.det
