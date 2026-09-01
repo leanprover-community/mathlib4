@@ -23,7 +23,7 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 ## Main result
 
 * `LDL.lower_conj_diag` states that any positive definite matrix can be decomposed as `LDLᴴ`.
-* `LDL.lower_isLowerTriangular` states that `L` is lower triangular.
+* `LDL.isLowerTriangular_lower` states that `L` is lower triangular.
 -/
 
 @[expose] public section
