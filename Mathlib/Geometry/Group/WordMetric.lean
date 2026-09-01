@@ -12,8 +12,8 @@ public import Mathlib.Geometry.Group.WordProd
 # The word metric
 
 The word length of an element is the length of a shortest representing word, over a generating
-family given by `Group.Generators`. The word length defines a group norm on `G` inducing
-the word metric `dist g h = ‖g⁻¹ * h‖`.
+family given by `Group.Generators`. The word length defines a norm on `G` inducing the word metric
+`dist g h = ‖g⁻¹ * h‖`.
 
 ## Main definitions
 
