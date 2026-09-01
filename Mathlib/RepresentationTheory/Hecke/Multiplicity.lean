@@ -86,13 +86,4 @@ lemma multiplicity_apply (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂
       Nat.card {p : LeftDecompQuotient H₁ H₂ x.rep × LeftDecompQuotient H₂ H₃ y.rep |
         (p.1.out * x.rep * (p.2.out * y.rep) : G ⧸ H₃) = (z.rep : G ⧸ H₃)} := rfl
 
-lemma multiplicity_mk_mk_mk
-    (g : G) [IsLeftFinite H₁ H₂ g]
-    (h : G) [IsLeftFinite H₂ H₃ h]
-    (d : G) [IsLeftFinite H₁ H₃ d] :
-    multiplicity (mk H₁ H₂ g) (mk H₂ H₃ h) (mk H₁ H₃ d)
-      = Nat.card { p : LeftDecompQuotient H₁ H₂ g × LeftDecompQuotient H₂ H₃ h |
-          (p.1.out * g * (p.2.out * h) : G ⧸ H₃) = (d : G ⧸ H₃)} := by
-  sorry
-
 end DoubleCoset₀
