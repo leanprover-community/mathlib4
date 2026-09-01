@@ -430,7 +430,7 @@ theorem of_integers {K R : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K
     [TopologicalSpace R] [IsTopologicalAddGroup R] (hR : (valuation K).Integers R)
     (hi : Topology.IsInducing (algebraMap R K)) : IsValuativeTopology R := by
   set v := (valuation K).comap (algebraMap R K) with hv
-  refine IsValuativeTopology.of_mem_nhds_zero_iff_vle v fun {s} ↦ ?_
+  refine of_mem_nhds_zero_iff_vle v fun {s} ↦ ?_
   rw [hi.nhds_eq_comap, map_zero, Filter.mem_comap]
   constructor
   · intro ⟨t, ht, hts⟩
