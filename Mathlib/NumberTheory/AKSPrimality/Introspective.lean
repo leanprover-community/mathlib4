@@ -59,7 +59,6 @@ protected theorem map {S : Type*} [CommRing S] (h : Introspective f e r) (g : R 
     simp
   · simp
 
-
 theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
   intro μ hμ
