@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Prod
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Order.SetNotation
+
 /-!
 # Relations as sets of pairs
 
@@ -24,7 +25,7 @@ relations.
 * `SetRel.dom`: Domain of a relation. `a ∈ R.dom` iff there exists `b` such that `a ~[R] b`.
 * `SetRel.cod`: Codomain of a relation. `b ∈ R.cod` iff there exists `a` such that `a ~[R] b`.
 * `SetRel.id`: The identity relation `SetRel α α`.
-* `SetRel.comp`: SetRelation composition. Note that the arguments order follows the category theory
+* `SetRel.comp`: SetRel composition. Note that the arguments order follows the category theory
   convention, namely `(R ○ S) a c ↔ ∃ b, a ~[R] b ∧ b ~[S] z`.
 * `SetRel.image`: Image of a set under a relation. `b ∈ image R s` iff there exists `a ∈ s`
   such that `a ~[R] b`.
@@ -46,9 +47,9 @@ The former approach is used almost everywhere as it is very lightweight and has 
 support from core Lean features, but it cracks at the seams whenever one starts talking about
 operations on relations. For example:
 * composition of relations `R : α → β → Prop`, `S : β → γ → Prop` is
-  `SetRelation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
+  `SetRel.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
 * map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
-  `SetRelation.map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
+  `SetRel.map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
 
 The latter approach is embodied by `SetRel α β`, with dedicated notation like `○` for composition.
 
@@ -124,6 +125,9 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
 
 @[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by aesop
 @[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by aesop
+
+@[simp] lemma dom_eq_empty_iff : R.dom = ∅ ↔ R = ∅ := by simp [Set.ext_iff]
+@[simp] lemma cod_eq_empty_iff : R.cod = ∅ ↔ R = ∅ := by simp [Set.ext_iff, forall_comm (α := α)]
 
 @[simp] lemma dom_univ [Nonempty β] : dom (.univ : SetRel α β) = .univ := by aesop
 @[simp] lemma cod_univ [Nonempty α] : cod (.univ : SetRel α β) = .univ := by aesop
@@ -321,6 +325,10 @@ lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) :
 @[deprecated (since := "2025-07-06")]
 alias image_preimage_subset_inter_codom := inter_cod_subset_image_preimage
 
+lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by aesop
+
+lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by aesop
+
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
 to elements of `S`. Other generalization of `Function.preimage`. -/
@@ -361,6 +369,7 @@ def ball : Set α := {a | a ~[R] b}
 
 @[simp] lemma mem_ball : a ∈ R.ball b ↔ a ~[R] b := .rfl
 
+@[gcongr]
 lemma ball_mono (h : R₁ ⊆ R₂) (b : β) : R₁.ball b ⊆ R₂.ball b := fun _a hab ↦ h hab
 
 variable (R₁ R₂ b) in
@@ -375,7 +384,7 @@ variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
 
 variable (R) in
 /-- A relation `R` is reflexive if `a ~[R] a`. -/
-protected abbrev IsRefl : Prop := IsRefl α (· ~[R] ·)
+protected abbrev IsRefl : Prop := Std.Refl (· ~[R] ·)
 
 variable (R) in
 protected lemma refl [R.IsRefl] (a : α) : a ~[R] a := refl_of (· ~[R] ·) a
@@ -439,7 +448,7 @@ lemma exists_eq_singleton_of_prod_subset_id {s t : Set α} (hs : s.Nonempty) (ht
 
 variable (R) in
 /-- A relation `R` is symmetric if `a ~[R] b ↔ b ~[R] a`. -/
-protected abbrev IsSymm : Prop := IsSymm α (· ~[R] ·)
+protected abbrev IsSymm : Prop := Std.Symm (· ~[R] ·)
 
 variable (R) in
 protected lemma symm [R.IsSymm] (hab : a ~[R] b) : b ~[R] a := symm_of (· ~[R] ·) hab
@@ -491,6 +500,9 @@ instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSy
 lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ R := by
   rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,
     R.inv_eq_self]
+
+lemma preimage_eq_image [R.IsSymm] : R.preimage s = R.image s := by
+  rw [← preimage_inv, inv_eq_self]
 
 variable (R) in
 /-- The maximal symmetric relation contained in a given relation. -/
@@ -552,12 +564,12 @@ instance isTrans_symmetrize [R.IsTrans] : R.symmetrize.IsTrans where
 
 variable (R) in
 /-- A relation `R` is irreflexive if `¬ a ~[R] a`. -/
-protected abbrev IsIrrefl : Prop := IsIrrefl α (· ~[R] ·)
+protected abbrev IsIrrefl : Prop := Std.Irrefl (· ~[R] ·)
 
 variable (R a) in
 protected lemma irrefl [R.IsIrrefl] : ¬ a ~[R] a := irrefl_of (· ~[R] ·) _
 
-instance {R : α → α → Prop} [IsIrrefl α R] : SetRel.IsIrrefl {(a, b) | R a b} := ‹_›
+instance {R : α → α → Prop} [Std.Irrefl R] : SetRel.IsIrrefl {(a, b) | R a b} := ‹_›
 
 variable (R) in
 /-- A relation `R` on a type `α` is well-founded if all elements of `α` are accessible within `R`.
@@ -593,6 +605,10 @@ theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
 
 theorem graph_comp (f : β → γ) (g : α → β) : graph (f ∘ g) = graph g ○ graph f := by aesop
 
+/-- The higher-arity graph of a function. Describes α-argument functions from β to β. -/
+def tupleGraph (f : (α → β) → β) : Set (Option α → β) :=
+  { v | f (v ∘ some) = v none }
+
 end Function
 
 theorem Equiv.graph_inv (f : α ≃ β) : (f.symm : β → α).graph = SetRel.inv (f : α → β).graph := by
@@ -611,7 +627,7 @@ lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
   · aesop
   · exact (h _).unique (hf _)
 
-@[deprecated (since := "2025-07-06")] alias SetRelation.is_graph_iff := SetRel.exists_graph_eq_iff
+@[deprecated (since := "2025-07-06")] alias SetRel.is_graph_iff := SetRel.exists_graph_eq_iff
 
 namespace Set
 

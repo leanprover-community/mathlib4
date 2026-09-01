@@ -560,7 +560,6 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
     ring
   · have aux : ⋃ n, Bs n = univ := by
       convert! DenseRange.iUnion_uniformity_ball xs_dense <| Metric.dist_mem_uniformity half_ε_pos
-      exact (ball_eq_ball' _ _).symm
     simpa only [← aux] using iUnion_disjointed
   · exact disjoint_disjointed Bs
 

@@ -170,13 +170,12 @@ instance (X : Type*) [TopologicalSpace X] [LindelofSpace X] [PseudoMetrizableSpa
   suffices _ : SeparableSpace X from secondCountable_of_separable X
   obtain ⟨V, hVb, hVs⟩ := has_seq_basis X
   choose U hUc hUu using fun n =>
-    LindelofSpace.elim_nhds_subcover (fun x => ball x (V n))
-      (fun x => ball_mem_nhds x (hVb.mem n))
+    LindelofSpace.elim_nhds_subcover (fun x => (V n).ball x)
+      (fun x => SetRel.ball_mem_nhds x (hVb.mem n))
   refine ⟨Set.iUnion U, Set.countable_iUnion hUc, fun x => ?_⟩
   rw [mem_closure_iff_frequently, nhds_eq_comap_uniformity, frequently_comap, hVb.frequently_iff]
   intro n _
   obtain ⟨i, hi, hx⟩ := Set.mem_iUnion₂.1 (Set.eq_univ_iff_forall.1 (hUu n) x)
-  rw [ball_eq_of_symmetry] at hx
   exact ⟨(x, i), hx, i, rfl, Set.mem_iUnion_of_mem n hi⟩
 
 /-- If a set `s` is separable in a pseudo metrizable space, then it admits a countable dense
@@ -191,7 +190,7 @@ theorem IsSeparable.exists_countable_dense_subset [PseudoMetrizableSpace X]
   obtain ⟨t, htc, hst⟩ := hs
   refine ⟨t, htc, fun x hx => ?_⟩
   obtain ⟨y, hyx, hyt⟩ := mem_closure_iff_ball.1 (hst hx) (symmetrize_mem_uniformity hU)
-  exact mem_biUnion hyt (ball_mono SetRel.symmetrize_subset_inv x hyx)
+  exact mem_biUnion hyt (SetRel.symmetrize_subset_inv hyx)
 
 /-- If a set `s` is separable, then the corresponding subtype is separable in a
 pseudo metrizable space.

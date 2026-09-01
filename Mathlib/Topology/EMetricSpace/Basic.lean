@@ -218,8 +218,9 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
     intro U hU
     obtain ⟨ε, hε, hεU⟩ := uniformity_basis_edist_le.mem_iff.1 hU
     obtain ⟨t, tC, ht⟩ := hs ε hε
-    refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy => UniformSpace.ball_mono hεU x ?_)⟩
-    rwa [mem_closedEBall, edist_comm] at hy
+    refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy =>
+      SetRel.ball_mono hεU x ?_)⟩
+    rwa [mem_closedEBall] at hy
   let ⟨t, hts, htc, hst⟩ := hmetric
   ⟨t, hts, htc, hst.trans <| closure.mono WeakPseudoEMetricSpace.topology_le⟩
 
@@ -328,28 +329,33 @@ variable {s : Set γ}
 
 theorem lebesgue_number_lemma_of_emetric {ι : Sort*} {c : ι → Set γ} (hs : IsCompact s)
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, eball x δ ⊆ c i := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
+    Prod.fst_swap, Prod.snd_swap, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma hs hc₁ hc₂
 
 theorem lebesgue_number_lemma_of_emetric_nhds' {c : (x : γ) → x ∈ s → Set γ} (hs : IsCompact s)
     (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ⊆ c y y.2 := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
+    Prod.fst_swap, Prod.snd_swap, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds' hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhds {c : γ → Set γ} (hs : IsCompact s)
     (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ⊆ c y := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
+    Prod.fst_swap, Prod.snd_swap, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhdsWithin' {c : (x : γ) → x ∈ s → Set γ}
     (hs : IsCompact s) (hc : ∀ x hx, c x hx ∈ 𝓝[s] x) :
     ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ∩ s ⊆ c y y.2 := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
+    Prod.fst_swap, Prod.snd_swap, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin' hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhdsWithin {c : γ → Set γ} (hs : IsCompact s)
     (hc : ∀ x ∈ s, c x ∈ 𝓝[s] x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ∩ s ⊆ c y := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
+    Prod.fst_swap, Prod.snd_swap, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin hs hc
 
 theorem lebesgue_number_lemma_of_emetric_sUnion {c : Set (Set γ)} (hs : IsCompact s)
