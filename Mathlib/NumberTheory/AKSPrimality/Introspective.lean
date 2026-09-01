@@ -41,25 +41,24 @@ namespace Introspective
 
 variable {b d r p a n e : ℕ} {R : Type*}
 
-
-
-protected theorem map {S : Type*} [CommRing S] [CommRing R] {f : S[X]}
-    (h : Introspective f e r) (g : S →+* R) : Introspective (f.map g) e r := by
-  simp only [Introspective, AdjoinRoot.mk_eq_mk] at *
-  obtain ⟨b, hb⟩ := h
-  use b.map g
-  convert congrArg (Polynomial.map g) hb
-  · suffices ((X : S[X]) ^ e).map g = X ^ e by
-      grind [Polynomial.map_pow, Polynomial.map_comp, Polynomial.map_sub]
-    simp
-  · simp
-
 section CommRing
 
 variable [CommRing R] {f g : R[X]}
 
-protected theorem dvd (h : Introspective f e r) : (X : R[X]) ^ r - 1 ∣ 1 := by
-  sorry
+protected theorem dvd_iff : Introspective f e r ↔ (X : R[X]) ^ r - 1 ∣ f ^ e - f.comp (X ^ e) := by
+  grind [Introspective, AdjoinRoot.mk_eq_mk]
+
+protected theorem map {S : Type*} [CommRing S] (h : Introspective f e r) (g : R →+* S) :
+    Introspective (f.map g) e r := by
+  simp only [Introspective.dvd_iff] at *
+  obtain ⟨b, hb⟩ := h
+  use b.map g
+  convert congrArg (Polynomial.map g) hb
+  · suffices ((X : R[X]) ^ e).map g = X ^ e by
+      grind [Polynomial.map_pow, Polynomial.map_comp, Polynomial.map_sub]
+    simp
+  · simp
+
 
 theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
@@ -101,7 +100,13 @@ theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h 
     Introspective f (e * d) r := by
   by_cases hr : r = 0
   · grind
-  · simp only [Introspective, AdjoinRoot.mk_eq_mk] at *
+  · simp only [Introspective.dvd_iff] at *
+    obtain ⟨a, ha⟩ := hf
+    obtain ⟨b, hb⟩ := hg
+    obtain ⟨z, hz⟩  : ((X : R[X]) ^ r - 1) ∣ ((X ^ e) ^ r - 1) := by
+      rw [pow_right_comm]
+      exact sub_one_dvd_pow_sub_one (X ^ r) e
+
 
     sorry
     --set I := mk (span {(X : R[X]) ^ r - C 1})
