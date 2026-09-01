@@ -52,6 +52,7 @@ protected theorem map {S : Type*} [CommRing S] (h : Introspective f e r) (g : R 
     Introspective (f.map g) e r := by
   rw [Introspective.iff_dvd] at *
   simpa [Polynomial.map_comp] using map_dvd g h
+
 theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
   intro μ hμ
