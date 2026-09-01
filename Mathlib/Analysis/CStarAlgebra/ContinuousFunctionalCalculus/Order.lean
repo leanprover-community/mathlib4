@@ -514,6 +514,16 @@ theorem _root_.IsSelfAdjoint.norm_le_max_of_le_of_le {a b c : A}
   _ ≤ max ‖a⁻‖ ‖c⁺‖ := by grw [norm_negPart_anti hab, norm_posPart_mono hbc]
   _ ≤ max ‖a‖ ‖c‖ := by gcongr <;> simp
 
+open Unitization in
+lemma norm_sub_le_one_of_nonneg_of_norm_le_one {a b : A} (ha : 0 ≤ a) (ha1 : ‖a‖ ≤ 1) (hb : 0 ≤ b)
+    (hb1 : ‖b‖ ≤ 1) : ‖a - b‖ ≤ 1 := by
+  rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _] at ha1 hb1
+  rw [← norm_inr (𝕜 := ℂ), inr_sub, sub_eq_add_neg]
+  have h1 : -1 ≤ (a : A⁺¹) + -b := by simpa using add_le_add ha.inr (neg_le_neg_iff.mpr hb1)
+  have h2 : (a : A⁺¹) + -b ≤ 1 := by
+    simpa using add_le_add ha1 (by simpa using neg_le_neg hb.inr : -(b : A⁺¹) ≤ 0)
+  simpa using IsSelfAdjoint.norm_le_max_of_le_of_le h1 h2
+
 open scoped ComplexStarModule in
 /-- A set in a non-unital C⋆-algebra which is bounded above and below is
 bounded in norm. -/

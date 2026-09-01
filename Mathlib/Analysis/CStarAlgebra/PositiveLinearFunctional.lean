@@ -1,21 +1,20 @@
-import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
-import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
-import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Positive
+/-
+Copyright (c) 2026 Monica Omar. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Monica Omar
+-/
+module
 
-open scoped ComplexOrder
+public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Positive
+
+import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
+
+public section
+
+open ComplexOrder Topology Filter Complex CStarRing
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-
-open CStarAlgebra Unitization in
-lemma CStarAlgebra.norm_sub_le_one_of_nonneg_of_norm_le_one {A : Type*} [NonUnitalCStarAlgebra A]
-    [PartialOrder A] [StarOrderedRing A] {x y : A} (hx : 0 ≤ x) (hx0 : ‖x‖ ≤ 1) (hy : 0 ≤ y)
-    (hy0 : ‖y‖ ≤ 1) : ‖x - y‖ ≤ 1 := by
-  rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _] at hx0 hy0
-  rw [← norm_inr (𝕜 := ℂ), inr_sub, sub_eq_add_neg]
-  have h1 : -1 ≤ (x : A⁺¹) + -y := by simpa using add_le_add hx.inr (neg_le_neg_iff.mpr hy0)
-  have h2 : (x : A⁺¹) + -y ≤ 1 := by
-    simpa using add_le_add hx0 (by simpa using neg_le_neg hy.inr : -(y : A⁺¹) ≤ 0)
-  simpa using IsSelfAdjoint.norm_le_max_of_le_of_le h1 h2
 
 namespace PositiveContinuousLinearMap
 
@@ -29,7 +28,6 @@ theorem norm_apply_le_sqrt_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ← f.coe_toContinuousLinearMap, f.toContinuousLinearMap.le_opNorm (star e * e),
     CStarRing.norm_star_mul_self, he2, he2, one_mul, mul_one]
 
-open Topology Complex in
 theorem tendsto_nhds_opNorm (f : A →P[ℂ] ℂ) {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     l.Tendsto (f ·) (𝓝 ‖(f : A →L[ℂ] ℂ)‖) := by
   suffices l.Tendsto (‖f ·‖) (𝓝 ‖f.toContinuousLinearMap‖) from this.ofReal.congr' <| by
@@ -69,33 +67,6 @@ end PositiveContinuousLinearMap
 
 namespace ContinuousLinearMap
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] {f : A →L[ℂ] ℂ}
-
-open Topology Filter Complex CStarRing
-
-section unital
-variable {A : Type*} [CStarAlgebra A] {f : A →L[ℂ] ℂ}
-
-lemma im_apply_eq_zero_of_opNorm_eq_map_one (hf : ‖f‖ = f 1) {a : A} (ha : IsSelfAdjoint a) :
-    (f a).im = 0 := by
-  by_cases h : ‖f‖ = 0
-  · simp at h; simp [h]
-  by_cases! Subsingleton A
-  · simp [Subsingleton.eq_zero]
-  suffices ∀ t, ‖f a‖ ^ 2 + ‖f‖ * t * (2 * (f a).im + ‖f‖ * t) ≤ ‖f‖ ^ 2 * (‖a‖ ^ 2 + t ^ 2) by
-    contrapose! this
-    refine ⟨(‖f‖ ^ 2 * ‖a‖ ^ 2 - ‖f a‖ ^ 2 + 1) / (2 * (f a).im * ‖f‖), ?_⟩
-    simp [normSq, Complex.sq_norm (f a)]; field_simp; grind
-  intro t
-  calc _ = ‖f (a + (t * Complex.I) • 1)‖ ^ 2 := by
-        norm_num [Complex.normSq, Complex.sq_norm, ← hf]; ring_nf
-    _ ≤ ‖f‖ ^ 2 * (‖a‖ ^ 2 + t ^ 2) := by
-      grw [f.le_opNorm, mul_pow, mul_le_mul_of_nonneg_left _ (sq_nonneg _)]
-      simp_rw [sq, ← CStarRing.norm_star_mul_self, ha.star_eq]
-      calc _ = ‖a * a + (t * t : ℂ) • 1‖ := by
-            simp [ha.star_eq, mul_add, add_mul, ← smul_assoc, mul_assoc, mul_left_comm]
-        _ ≤ _ := by grw [norm_add_le]; simp
-
-end unital
 
 private lemma im_apply_eq_zero_of_tendsto_nhds_opNorm {l : Filter A}
     (hl : l.IsIncreasingApproximateUnit) (hf : l.Tendsto (f ·) (𝓝 ‖f‖)) {a : A}
