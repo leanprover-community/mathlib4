@@ -376,7 +376,7 @@ theorem exists_rat_isGoodApprox_and_lt (hξ : Irrational ξ) (t : ℚ) :
 
 end Hurwitz
 
-/-- **Hurwitz's theorem.** For irrational `ξ`, the set `{q : ℚ | |ξ - q| < 1/(√5*q.den^2)}`
+/-- **Hurwitz's theorem.** For irrational `ξ`, the set `{q : ℚ | |ξ - q| < 1 / (√5 * q.den ^ 2)}`
 is infinite. -/
 theorem infinite_rat_abs_sub_lt_one_div_sqrt_five_mul_den_sq_of_irrational (hξ : Irrational ξ) :
     {t : ℚ | |ξ - t| < 1 / (√5 * (t.den : ℝ) ^ 2)}.Infinite := by
