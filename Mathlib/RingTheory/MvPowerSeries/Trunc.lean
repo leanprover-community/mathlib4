@@ -270,11 +270,6 @@ theorem coeff_trunc'_mul_trunc'_eq_coeff_mul (n : σ →₀ ℕ)
     (trunc' R n f * trunc' R n g).coeff m = coeff m (f * g) :=
   coeff_trunc'_mul_trunc'_eq_coeff_mul₂ n n f g h h
 
-@[deprecated coeff_trunc'_mul_trunc'_eq_coeff_mul (since := "2026-02-20")]
-theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ) (f g : MvPowerSeries σ R) {m : σ →₀ ℕ}
-    (h : m ≤ n) : coeff m (f * g) = (trunc' R n f * trunc' R n g).coeff m :=
-  (coeff_trunc'_mul_trunc'_eq_coeff_mul n f g h).symm
-
 theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
     trunc' R n ((trunc' R n φ) ^ k) = trunc' R n (φ ^ k) :=
   truncFinset_truncFinset_pow (by intro; grind) hk φ
