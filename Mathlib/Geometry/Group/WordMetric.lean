@@ -12,8 +12,8 @@ public import Mathlib.Geometry.Group.WordProd
 # The word metric
 
 The word length of an element is the length of a shortest representing word, over a generating
-family given by `Group.Generators`, and the word metric is the distance it induces on `G`. The
-resulting object is `NormGroup G` with `dist g h = ‖g⁻¹ * h‖`.
+family given by `Group.Generators`. The word metric is the distance it induces on `G`, which is
+given as a norm over `G` inducing the metric space `NormedGroup G` with `dist g h = ‖g⁻¹ * h‖`.
 
 ## Main definitions
 
@@ -126,7 +126,7 @@ noncomputable def groupNorm : GroupNorm G where
 /-! ### Word metric -/
 
 /-- `G` as a metric space `NormedGroup G` with respect to a generating family `P`. The metric is
-given by `dist g h = ‖g⁻¹ * h‖`, where the norm `groupNorm`. -/
+given by `dist g h = ‖g⁻¹ * h‖`, where the norm is given by `groupNorm`. -/
 @[instance_reducible]
 noncomputable def normedGroup : NormedGroup G := P.groupNorm.toNormedGroup
 
