@@ -4749,7 +4749,6 @@ public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Group.DehnFunction
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
-public import Mathlib.Geometry.Group.WordMetric
 public import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
@@ -8232,7 +8231,6 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 public import Mathlib.Topology.MetricSpace.Pseudo.Real
-public import Mathlib.Topology.MetricSpace.QuasiIsometry
 public import Mathlib.Topology.MetricSpace.Sequences
 public import Mathlib.Topology.MetricSpace.ShrinkingLemma
 public import Mathlib.Topology.MetricSpace.Similarity
