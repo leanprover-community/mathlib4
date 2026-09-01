@@ -105,7 +105,7 @@ private lemma toHeckeCosetModuleMap_apply_mk (x : DoubleCoset₀ H₁ H₂) :
   convert congrArg (fun (r : ℕ) => (r : k)) (LeftDecompQuotient.nat_card_fiber H₁ H₂ x.rep y.rep)
   · simp
   · rw [← DoubleCoset₀.coe_mk, ← DoubleCoset₀.coe_mk, DoubleCoset₀.mk_rep, DoubleCoset₀.mk_rep]
-    simp
+    simp [← Subtype.ext_iff]
 
 private lemma toHeckeCosetModuleMap.injective :
     Function.Injective (toHeckeCosetModuleMap k H₁ H₂) := by
