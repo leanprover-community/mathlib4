@@ -470,7 +470,7 @@ shorten the proofs a little. -/
 private lemma meas_snd (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.2 :=
   (f : X →ₘ[μ] V).measurable.comp measurable_snd
 
-variable [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)]
+variable [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)] [SFinite μ]
 variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
 
 private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
@@ -491,7 +491,7 @@ private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 
     _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ * ((∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) *
           ∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹ := by
       simp_rw [mul_comm (‖f _‖ₑ ^ 2)]
-      grw [lintegral_prod_mul_le ((g : X →ₘ[μ] V).aemeasurable.enorm.pow_const 2)
+      grw [lintegral_prod_mul ((g : X →ₘ[μ] V).aemeasurable.enorm.pow_const 2)
         ((f : X →ₘ[μ] V).aemeasurable.enorm.pow_const 2)]
       simp [mul_comm]
     _ ≤ (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
@@ -569,7 +569,7 @@ lemma mercerForm_apply (f g : Lp V 2 μ) :
     mercerForm hK f g = ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ) := by
   rfl
 
-theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef] [IsFiniteMeasure μ]
+theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef]
     (f g : Lp V 2 μ) : starRingEnd 𝕜 (mercerForm hK f g) = mercerForm hK g f := by
   simp_rw [mercerForm_apply]
   rw [← integral_conj, ← integral_prod_swap]
