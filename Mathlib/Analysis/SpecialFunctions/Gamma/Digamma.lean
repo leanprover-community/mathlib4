@@ -127,33 +127,27 @@ theorem digamma_two_mul {s : ℂ} (hs : ∀ m : ℕ, 2 * s ≠ -(m : ℂ)) :
     hs (2 * m) (by push_cast; linear_combination 2 * h)
   have hs₁ (m : ℕ) : s + 1 / 2 ≠ -(m : ℂ) := fun h ↦
     hs (2 * m + 1) (by push_cast; linear_combination 2 * h)
-  have hsqrt : (√π : ℂ) ≠ 0 := by
-    simpa using Real.sqrt_ne_zero'.mpr Real.pi_pos
   have hpow : (2 : ℂ) ^ (1 - 2 * s) ≠ 0 := by simp [cpow_eq_zero_iff]
-  have hd2 := (((hasDerivAt_id' (x := s)).const_mul 2).const_sub 1).const_cpow
-    (Or.inl (by norm_num : (2 : ℂ) ≠ 0))
-  have hcpow : logDeriv (fun z : ℂ ↦ (2 : ℂ) ^ (1 - 2 * z)) s = -2 * log 2 := by
-    rw [logDeriv_apply, hd2.deriv, div_eq_iff hpow]
-    ring
+  have hd2 := hasDerivAt_id' s |>.const_mul 2 |>.const_sub 1 |>.const_cpow <|
+    .inl (by norm_num : (2 : ℂ) ≠ 0)
   -- take logarithmic derivatives of Legendre's formula `Γ(s) Γ(s + 1/2) = Γ(2s) 2^(1-2s) √π`
-  have key : digamma s + digamma (s + 1 / 2) = 2 * digamma (2 * s) - 2 * log 2 := by
-    calc digamma s + digamma (s + 1 / 2)
-        = logDeriv (fun z ↦ Gamma z * Gamma (z + 1 / 2)) s := by
-          rw [logDeriv_fun_mul (f := Gamma) (g := fun z ↦ Gamma (z + 1 / 2)) s (Gamma_ne_zero hs₀)
-              (Gamma_ne_zero hs₁) (differentiableAt_Gamma s hs₀)
-              ((differentiableAt_Gamma _ hs₁).comp s (by fun_prop)),
-            ((hasDerivAt_id' (x := s)).add_const (1 / 2)).logDeriv_Gamma hs₁, ← digamma_def]
-          ring
-      _ = logDeriv (fun z ↦ Gamma (2 * z) * (2 : ℂ) ^ (1 - 2 * z)
-            * (√π : ℂ)) s := by
-          rw [funext Gamma_mul_Gamma_add_half]
-      _ = 2 * digamma (2 * s) - 2 * log 2 := by
-          rw [logDeriv_mul_const s _ hsqrt,
-            logDeriv_fun_mul (f := fun z ↦ Gamma (2 * z)) (g := fun z ↦ (2 : ℂ) ^ (1 - 2 * z)) s
-              (Gamma_ne_zero hs) hpow ((differentiableAt_Gamma _ hs).comp s (by fun_prop))
-              hd2.differentiableAt,
-            ((hasDerivAt_id' (x := s)).const_mul 2).logDeriv_Gamma hs, hcpow]
-          ring
-  linear_combination (-1 / 2 : ℂ) * key
+  suffices key : digamma s + digamma (s + 1 / 2) = 2 * digamma (2 * s) - 2 * log 2 by
+    linear_combination (-1 / 2 : ℂ) * key
+  calc
+    digamma s + digamma (s + 1 / 2) = logDeriv (fun z ↦ Gamma z * Gamma (z + 1 / 2)) s := by
+      rw [logDeriv_fun_mul (g := fun z ↦ Gamma (z + 1 / 2)) s (Gamma_ne_zero hs₀)
+        (Gamma_ne_zero hs₁) (by fun_prop) (by fun_prop),
+        ((hasDerivAt_id' s).add_const (1 / 2)).logDeriv_Gamma hs₁, ← digamma_def]
+      ring
+    _ = logDeriv (fun z ↦ Gamma (2 * z) * (2 : ℂ) ^ (1 - 2 * z) * (√π : ℂ)) s := by
+      rw [funext Gamma_mul_Gamma_add_half]
+    _ = 2 * digamma (2 * s) - 2 * log 2 := by
+      rw [logDeriv_mul_const s (√π : ℂ) (by grind [ofReal_eq_zero, Real.pi_pos]),
+        logDeriv_fun_mul (f := fun z ↦ Gamma (2 * z)) s
+          (Gamma_ne_zero hs) hpow (by fun_prop) (by fun_prop),
+        ((hasDerivAt_id' s).const_mul 2).logDeriv_Gamma hs, mul_one, sub_eq_add_neg]
+      congr! 1
+      rw [logDeriv_apply, hd2.deriv, div_eq_iff hpow]
+      ring
 
 end Complex
