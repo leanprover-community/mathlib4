@@ -108,7 +108,8 @@ theorem denseRange_zpow_iff_surjective {a : G} :
     DenseRange (a ^ · : ℤ → G) ↔ Surjective (a ^ · : ℤ → G) := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.denseRange⟩
   wlog! ha₀ : 1 < a generalizing a
-  · simp only [← range_eq_univ, DenseRange] at *
+  · try_grind
+    simp only [← range_eq_univ, DenseRange] at *
     rcases ha₀.eq_or_lt with rfl | hlt
     · simpa only [one_zpow, range_const, dense_iff_closure_eq, closure_singleton] using h
     · have H : range (a⁻¹ ^ · : ℤ → G) = range (a ^ · : ℤ → G) := by

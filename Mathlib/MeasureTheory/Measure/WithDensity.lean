@@ -637,10 +637,12 @@ theorem exists_measurable_le_withDensity_eq [SFinite μ] (f : α → ℝ≥0∞)
 instance Measure.withDensity.instSFinite [SFinite μ] {f : α → ℝ≥0∞} :
     SFinite (μ.withDensity f) := by
   wlog hfm : Measurable f generalizing f
-  · rcases exists_measurable_le_withDensity_eq μ f with ⟨g, hgm, -, h⟩
+  · try_grind
+    rcases exists_measurable_le_withDensity_eq μ f with ⟨g, hgm, -, h⟩
     exact h ▸ this hgm
   wlog hμ : IsFiniteMeasure μ generalizing μ
-  · rw [← sum_sfiniteSeq μ, withDensity_sum]
+  · try_grind
+    rw [← sum_sfiniteSeq μ, withDensity_sum]
     have (n : ℕ) : SFinite ((sfiniteSeq μ n).withDensity f) := this inferInstance
     infer_instance
   set s := {x | f x = ∞}

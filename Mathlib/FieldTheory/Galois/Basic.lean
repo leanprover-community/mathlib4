@@ -678,7 +678,8 @@ as a natural number is equal to the index of the fixing subgroup of `L`. -/
 theorem finrank_eq_fixingSubgroup_index (L : IntermediateField F E') [IsGalois F E'] :
     Module.finrank F L = L.fixingSubgroup.index := by
   wlog hnfd : FiniteDimensional F L generalizing L
-  · rw [Module.finrank_of_infinite_dimensional hnfd]
+  · try_grind
+    rw [Module.finrank_of_infinite_dimensional hnfd]
     by_contra! h
     replace h : L.fixingSubgroup.FiniteIndex := ⟨h.symm⟩
     obtain ⟨L', hfd, hL'⟩ :=

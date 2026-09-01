@@ -427,7 +427,8 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton 
     (f : X ⟶ Y) (g : Y ⟶ X) (hg : g ≫ f = 𝟙 Y) :
     IsClosedImmersion g := by
   wlog hX : ∃ R, X = Spec R
-  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) X.affineCover]
+  · try_grind
+    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) X.affineCover]
     intro i
     by_cases hxU : Set.range g ⊆ (X.affineCover.f i).opensRange
     · rw [Scheme.Cover.pullbackHom,
@@ -445,7 +446,8 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton 
       infer_instance
   obtain ⟨R, rfl⟩ := hX
   wlog hY : ∃ S, Y = Spec S
-  · have inst := (Scheme.isoSpec Y).inv.homeomorph.injective.subsingleton
+  · try_grind
+    have inst := (Scheme.isoSpec Y).inv.homeomorph.injective.subsingleton
     rw [← MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion (Scheme.isoSpec Y).inv]
     exact this R (f ≫ (Scheme.isoSpec Y).hom) ((Scheme.isoSpec Y).inv ≫ g)
       (by simp [reassoc_of% hg]) ⟨_, rfl⟩

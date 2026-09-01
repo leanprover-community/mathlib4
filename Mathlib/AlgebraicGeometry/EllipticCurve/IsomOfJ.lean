@@ -223,12 +223,14 @@ private lemma exists_variableChange_of_char_ne_two_or_three
   let : Invertible (2 : F) := invertibleOfNonzero hchar2
   let : Invertible (3 : F) := invertibleOfNonzero hchar3
   wlog _ : E.IsShortNF generalizing E
-  · obtain ⟨C, hE⟩ := E.exists_variableChange_isShortNF
+  · try_grind
+    obtain ⟨C, hE⟩ := E.exists_variableChange_isShortNF
     rw [← variableChange_j E C] at heq
     obtain ⟨C', hC⟩ := this _ heq hE
     exact ⟨C' * C, by rwa [mul_smul]⟩
   wlog _ : E'.IsShortNF generalizing E'
-  · obtain ⟨C, hE'⟩ := E'.exists_variableChange_isShortNF
+  · try_grind
+    obtain ⟨C, hE'⟩ := E'.exists_variableChange_isShortNF
     rw [← variableChange_j E' C] at heq
     obtain ⟨C', hC⟩ := this _ heq hE'
     exact ⟨C⁻¹ * C', by rw [mul_smul, hC, ← mul_smul, inv_mul_cancel, one_smul]⟩

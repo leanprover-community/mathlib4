@@ -89,7 +89,8 @@ include HF
 lemma irreducible_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) : Irreducible F := by
   refine ⟨fun h' ↦ (h'.map (aeval a)).ne_zero hFa, fun q₁ q₂ e ↦ ?_⟩
   wlog h₁ : aeval a q₁ = 0 generalizing q₁ q₂
-  · exact .symm (this q₂ q₁ (e.trans (mul_comm ..)) <| by
+  · try_grind
+    exact .symm (this q₂ q₁ (e.trans (mul_comm ..)) <| by
       simpa [h₁, hFa] using Eq.symm <| congr(aeval a $e))
   have ne := mul_ne_zero_iff.mp (e ▸ hF0)
   have := HF q₁ ne.1 h₁

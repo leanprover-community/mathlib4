@@ -153,7 +153,8 @@ has a unique fixed point given by `fixedPt`. -/
 theorem gl_smul_eq_self_iff_eq_fixedPt (hpos : 0 < g.val.det) (hell : g.IsElliptic) :
     g • z = z ↔ z = fixedPt g hell := by
   wlog hc : 0 < g 1 0 generalizing g
-  · replace hc := hell.c_ne_zero.lt_or_gt.resolve_right hc
+  · try_grind
+    replace hc := hell.c_ne_zero.lt_or_gt.resolve_right hc
     simpa using @this (-g) (by simpa [Matrix.det_neg]) hell.neg (by simpa)
   have hd : discrim (g 1 0 : ℂ) (g 1 1 - g 0 0) (-g 0 1) = (.I * √(-g.val.discr)) ^ 2 := by
     rw [mul_pow, ← Complex.ofReal_pow, Real.sq_sqrt]

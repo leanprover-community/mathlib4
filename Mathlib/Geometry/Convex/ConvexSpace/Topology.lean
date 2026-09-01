@@ -118,7 +118,8 @@ public lemma continuous_iff
 public lemma continuous_map {M : Type*} {N : Type v} (f : M → N) :
     Continuous (map (R := R) f) := by
   wlog h : Finite M generalizing M
-  · rw [continuous_iff]
+  · try_grind
+    rw [continuous_iff]
     intro ι _ g
     rw [← map_comp']
     exact this (f ∘ g) inferInstance

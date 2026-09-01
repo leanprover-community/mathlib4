@@ -392,7 +392,8 @@ theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul �
     {𝔖 : Set (Set E)} (h𝔖 : IsCoherentWith 𝔖) (h𝔖U : ⋃₀ 𝔖 = univ) :
     CompleteSpace (E →SLᵤ[σ, 𝔖] F) := by
   wlog hF : T2Space F generalizing F
-  · rw [(isUniformInducing_postcomp σ (SeparationQuotient.mkCLM 𝕜₂ F)
+  · try_grind
+    rw [(isUniformInducing_postcomp σ (SeparationQuotient.mkCLM 𝕜₂ F)
       SeparationQuotient.isUniformInducing_mk _).completeSpace_congr]
     exacts [this _ inferInstance, SeparationQuotient.postcomp_mkCLM_surjective F σ E]
   rw [completeSpace_iff_isComplete_range (isUniformInducing_coeFn _ _ _)]

@@ -73,7 +73,8 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
     (hfμ : MeasurePreserving f μ μ) (hfν : MeasurePreserving f ν ν) :
     μ.rnDeriv ν ∘ f =ᵐ[ν] μ.rnDeriv ν := by
   wlog hμν : μ ≪ ν generalizing μ
-  · specialize this (hfμ.withDensity_rnDeriv hfν) (withDensity_absolutelyContinuous _ _)
+  · try_grind
+    specialize this (hfμ.withDensity_rnDeriv hfν) (withDensity_absolutelyContinuous _ _)
     refine .trans (.trans ?_ this) (rnDeriv_withDensity ν (measurable_rnDeriv μ ν))
     apply hfν.quasiMeasurePreserving.ae_eq_comp
     exact (rnDeriv_withDensity ν (measurable_rnDeriv μ ν)).symm

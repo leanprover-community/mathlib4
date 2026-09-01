@@ -143,7 +143,8 @@ lemma QuasiSeparatedSpace.isCompact_sInter_of_nonempty {s : Set (Set α)} (hf : 
     (hne : s.Nonempty) (ho : ∀ t ∈ s, IsOpen t ∨ IsClosed t) (hc : ∀ t ∈ s, IsCompact t) :
     IsCompact (⋂₀ s) := by
   wlog h : ∀ t ∈ s, IsOpen t
-  · let a := { t ∈ s | IsOpen t }
+  · try_grind
+    let a := { t ∈ s | IsOpen t }
     let b := { t ∈ s | IsClosed t }
     have heq : s = a ∪ b := subset_antisymm (by grind) (by grind)
     rw [heq, Set.sInter_union]

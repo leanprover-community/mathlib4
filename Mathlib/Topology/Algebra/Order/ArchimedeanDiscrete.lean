@@ -32,7 +32,8 @@ discrete subgroup. -/
 single element form a discrete subgroup. -/]
 instance instDiscreteTopologyZMultiples (g : G) : DiscreteTopology (zpowers g) := by
   wlog ha : 1 ≤ g
-  · specialize this g⁻¹ (one_le_inv'.mpr (le_of_not_ge ha))
+  · try_grind
+    specialize this g⁻¹ (one_le_inv'.mpr (le_of_not_ge ha))
     rwa [zpowers_inv] at this
   rcases eq_or_lt_of_le ha with rfl | ha
   · rw [zpowers_one_eq_bot]

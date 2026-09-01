@@ -59,7 +59,8 @@ private lemma top_le_span_of_aux (v : κ ⊕ σ → M)
   rintro p -
   obtain ⟨m, rfl⟩ := hg p
   wlog h : m ∈ LinearMap.ker s
-  · let x : M := f (s m)
+  · try_grind
+    let x : M := f (s m)
     rw [show g m = g (m - f (s m)) by simp [hfg.apply_apply_eq_zero]]
     apply this hs hfg v hg hslzero hli hsp
     replace hs := DFunLike.congr_fun hs (s m)

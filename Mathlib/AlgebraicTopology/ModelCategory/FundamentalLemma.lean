@@ -69,7 +69,8 @@ variable [IsCofibrant X] [IsFibrant Y]
 lemma bijective_rightHomotopyClassToHom :
     Function.Bijective (rightHomotopyClassToHom L : RightHomotopyClass X Y → _) := by
   wlog _ : IsCofibrant Y generalizing Y
-  · obtain ⟨Y', _, p, _, _⟩ := CofibrantObject.HoCat.exists_resolution Y
+  · try_grind
+    obtain ⟨Y', _, p, _, _⟩ := CofibrantObject.HoCat.exists_resolution Y
     have _ : IsFibrant Y' := isFibrant_of_fibration p
     have hY' := this Y' inferInstance
     simp only [← bijective_leftHomotopyClassToHom_iff_bijective_rightHomotopyClassToHom] at hY' ⊢
@@ -82,7 +83,8 @@ lemma bijective_rightHomotopyClassToHom :
     obtain ⟨f, rfl⟩ := f.mk_surjective
     simp
   wlog _ : IsFibrant X generalizing X
-  · obtain ⟨X', i, _, _, _⟩ : ∃ (X' : C) (i : X ⟶ X'), Cofibration i ∧ WeakEquivalence i ∧
+  · try_grind
+    obtain ⟨X', i, _, _, _⟩ : ∃ (X' : C) (i : X ⟶ X'), Cofibration i ∧ WeakEquivalence i ∧
         IsFibrant X' :=
       ⟨_, FibrantObject.HoCat.iResolutionObj X, inferInstance, inferInstance, inferInstance⟩
     have _ := isCofibrant_of_cofibration i

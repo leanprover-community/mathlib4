@@ -152,7 +152,8 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {P : Polyn
 theorem signVariations_C_mul (P : Polynomial R) (hx : η ≠ 0) :
     signVariations (C η * P) = signVariations P := by
   wlog! hx2 : 0 < η
-  · simpa [lt_of_le_of_ne hx2, hx] using this (η := -η) (P := -P)
+  · try_grind
+    simpa [lt_of_le_of_ne hx2, hx] using this (η := -η) (P := -P)
   rw [signVariations, signVariations]
   rw [coeffList_C_mul _ (lt_or_lt_iff_ne.mp (.inr hx2)), ← List.comp_map]
   congr 5
@@ -300,7 +301,8 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
   induction d using Nat.strong_induction_on generalizing P with | _ d ih =>
   -- can assume it starts positive, otherwise negate P
   wlog h_lC : 0 < leadingCoeff P generalizing P with H
-  · simpa using @H (-P) (by simpa) (by simpa) (by grind [leadingCoeff_eq_zero, leadingCoeff_neg])
+  · try_grind
+    simpa using @H (-P) (by simpa) (by simpa) (by grind [leadingCoeff_eq_zero, leadingCoeff_neg])
   --Adding a new root doesn't make the product zero, and increases degree by exactly one.
   have h_mul : (X - C η) * P ≠ 0 := mul_ne_zero (X_sub_C_ne_zero η) hP
   have h_deg_mul : natDegree ((X - C η) * P) = natDegree P + 1 := by

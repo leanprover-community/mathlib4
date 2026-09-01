@@ -353,7 +353,8 @@ lemma Scheme.Hom.dense_smoothLocus_of_perfectField
     {K : Type u} [Field K] [PerfectField K] [IsReduced X]
     (f : X ⟶ Spec (.of K)) [LocallyOfFinitePresentation f] : Dense (f.smoothLocus : Set X) := by
   wlog H : CompactSpace X generalizing X
-  · rw [dense_iff_closure_eq, Set.eq_univ_iff_forall]
+  · try_grind
+    rw [dense_iff_closure_eq, Set.eq_univ_iff_forall]
     intro x
     obtain ⟨_, ⟨U : X.Opens, hU, rfl⟩, hxU, -⟩ :=
       X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ

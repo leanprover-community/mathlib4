@@ -158,7 +158,8 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
       · congrm ∑ i, ∑ j, _ * ?_
         rw [covariance_eval_projectiveFamily, covariance_map]
         · wlog hij : i.1 ≤ j.1 generalizing i j
-          · rw [covariance_comm, this j i (by grind), min_comm]
+          · try_grind
+            rw [covariance_comm, this j i (by grind), min_comm]
           rw [min_eq_left hij]
           exact h3 i j hij
         any_goals exact Measurable.aestronglyMeasurable (by fun_prop)
@@ -175,7 +176,8 @@ lemma IsPreBrownianReal.hasIndepIncrements (hB : IsPreBrownianReal B P) :
   rw [covariance_fun_sub_fun_sub]
   · simp_rw [hB.covariance_fun_eval]
     wlog h : i < j generalizing i j
-    · simp_rw [← this j i hij.symm (by grind), min_comm]
+    · try_grind
+      simp_rw [← this j i hij.symm (by grind), min_comm]
       grind
     have h1 : i.succ ≤ j.succ := Fin.strictMono_succ h |>.le
     have h2 : i.castSucc ≤ j.succ := Fin.le_of_lt h1

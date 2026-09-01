@@ -246,7 +246,8 @@ lemma det_smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) :
 lemma hasStrictFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
     HasStrictFDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (smulFDeriv g τ) τ := by
   wlog hg : 0 < g.det.val generalizing g
-  · replace hg := g.det.ne_zero.lt_or_gt.resolve_right hg
+  · try_grind
+    replace hg := g.det.ne_zero.lt_or_gt.resolve_right hg
     convert! Complex.conjCLE.hasStrictFDerivAt.neg.comp _ (this (J * g) (by simpa))
     · simp [mul_smul, coe_J_smul]
     · ext

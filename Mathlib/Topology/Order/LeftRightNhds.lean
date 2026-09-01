@@ -156,7 +156,8 @@ theorem countable_setOfPred_isolated_right_within [SecondCountableTopology α] {
   simp only [PairwiseDisjoint, Set.Pairwise, Function.onFun]
   intro a ha b hb hab
   wlog! H : a < b generalizing a b with h
-  · have : b < a := lt_of_le_of_ne H hab.symm
+  · try_grind
+    have : b < a := lt_of_le_of_ne H hab.symm
     exact (h hb ha hab.symm this).symm
   have : y a ≤ b := by
     by_contra!

@@ -385,7 +385,8 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
       have hsucc := Functor.congr_obj hj₂ ⟨j, by simp⟩
       dsimp at hj₂ hsucc
       wlog h : k₂ ≤ j generalizing k₁ k₂
-      · obtain h₂ | rfl := h₂.lt_or_eq
+      · try_grind
+        obtain h₂ | rfl := h₂.lt_or_eq
         · exact this _ _ _ _ ((Order.lt_succ_iff_of_not_isMax hj₁).1 h₂)
         · by_cases h' : k₁ ≤ j
           · apply mapEq_trans _ h₀ (this k₁ j h' h₀ (by simp))
@@ -401,7 +402,8 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
       intro iter₁ iter₂
       refine ext (fun k₁ k₂ h₁₂ h₃ ↦ ?_)
       wlog h₄ : k₂ < j generalizing k₁ k₂; swap
-      · have := h₂ k₂ h₄ (iter₁.trunc h₄.le) (iter₂.trunc h₄.le)
+      · try_grind
+        have := h₂ k₂ h₄ (iter₁.trunc h₄.le) (iter₂.trunc h₄.le)
         simp at this
         simp only [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
       · obtain rfl : j = k₂ := le_antisymm (by simpa using h₄) h₃
@@ -419,7 +421,8 @@ lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iter
     (k : J) (h₁ : k ≤ j₁) (h₂ : k ≤ j₂) :
     iter₁.F.obj ⟨k, h₁⟩ = iter₂.F.obj ⟨k, h₂⟩ := by
   wlog h : j₁ ≤ j₂ generalizing j₁ j₂
-  · exact (this iter₂ iter₁ h₂ h₁ (le_of_lt (by simpa using h))).symm
+  · try_grind
+    exact (this iter₂ iter₁ h₂ h₁ (le_of_lt (by simpa using h))).symm
   rw [Subsingleton.elim iter₁ (iter₂.trunc h)]
   dsimp
 
@@ -427,7 +430,8 @@ lemma congr_arrowMap {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ
     {k₁ k₂ : J} (h : k₁ ≤ k₂) (h₁ : k₂ ≤ j₁) (h₂ : k₂ ≤ j₂) :
     arrowMap iter₁.F k₁ k₂ h h₁ = arrowMap iter₂.F k₁ k₂ h h₂ := by
   wlog hj : j₁ ≤ j₂ generalizing j₁ j₂
-  · simp [this iter₂ iter₁ h₂ h₁ ((not_le.1 hj).le)]
+  · try_grind
+    simp [this iter₂ iter₁ h₂ h₁ ((not_le.1 hj).le)]
   rw [Subsingleton.elim iter₁ (iter₂.trunc hj)]
   rfl
 

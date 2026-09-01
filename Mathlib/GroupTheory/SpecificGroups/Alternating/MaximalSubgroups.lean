@@ -297,7 +297,8 @@ theorem isCoatom_stabilizer {s : Set α}
     IsCoatom (stabilizer (alternatingGroup α) s) := by
   rw [← ncard_add_ncard_compl s, two_mul, ne_eq, Nat.add_left_cancel_iff] at hs
   wlog hs' : ncard s < ncard sᶜ
-  · rw [← stabilizer_compl]
+  · try_grind
+    rw [← stabilizer_compl]
     apply this h1 <;> rw [compl_compl] <;> grind
   · by_cases h0' : s.Nontrivial
     · apply isCoatom_stabilizer_of_ncard_lt_ncard_compl h0' hs'

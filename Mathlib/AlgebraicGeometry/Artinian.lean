@@ -143,7 +143,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := low) {X : Scheme} [DiscreteTopology X] [IsReduced X] :
     IsLocallyArtinian X := by
   wlog hX : Subsingleton X generalizing X
-  · let 𝒰 : X.OpenCover := X.openCoverOfIsOpenCover
+  · try_grind
+    let 𝒰 : X.OpenCover := X.openCoverOfIsOpenCover
       (fun x : X ↦ ⟨{x}, isOpen_discrete _⟩) (.mk (by ext; simp))
     have inst (i : _) : DiscreteTopology (𝒰.X i) := (𝒰.f i).isOpenEmbedding.discreteTopology
     have inst (i : _) : IsReduced (𝒰.X i) := isReduced_of_isOpenImmersion (𝒰.f i)

@@ -93,7 +93,8 @@ open UniformOnFun in
 theorem completeSpace (h : IsCoherentWith {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (E [⋀^ι]→L[𝕜] F) := by
   wlog hF : T2Space F generalizing F
-  · rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
+  · try_grind
+    rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
       SeparationQuotient.isUniformInducing_mk).completeSpace_congr]
     · exact this inferInstance
     · intro f

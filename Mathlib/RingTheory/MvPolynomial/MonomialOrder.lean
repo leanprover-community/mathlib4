@@ -816,7 +816,8 @@ lemma leadingTerm_X {s : σ} : m.leadingTerm (X s : MvPolynomial σ R) = X s := 
 lemma degree_leadingTerm_mul [NoZeroDivisors R] (p q : MvPolynomial σ R) :
     m.degree (m.leadingTerm p * q) = m.degree (p * q) := by
   wlog! +distrib h : p ≠ 0 ∧ q ≠ 0
-  · obtain rfl | rfl := h <;> simp
+  · try_grind
+    obtain rfl | rfl := h <;> simp
   classical
   simp [leadingTerm, degree_mul, h, degree_monomial]
 
@@ -829,7 +830,8 @@ lemma degree_lt_of_left_ne_zero_of_degree_mul_lt [NoZeroDivisors R] {p p' q : Mv
     (hp : p ≠ 0) (h : m.degree (p * q) ≺[m] m.degree (p' * q)) :
     m.degree p ≺[m] m.degree p' := by
   wlog! hq : q ≠ 0
-  · simp [hq] at h
+  · try_grind
+    simp [hq] at h
   apply lt_of_le_of_lt' m.degree_mul_le at h
   simpa [m.degree_mul hp hq] using h
 
@@ -1268,7 +1270,8 @@ lemma degree_sPolynomial_le (f g : MvPolynomial σ R) :
     ((m.degree <| m.sPolynomial f g) ≼[m] m.degree f ⊔ m.degree g) := by
   classical
   wlog! +distrib h0 : f ≠ 0 ∧ g ≠ 0
-  · (obtain rfl | rfl := h0) <;> simp
+  · try_grind
+    (obtain rfl | rfl := h0) <;> simp
   simp only [sPolynomial_def]
   apply degree_sub_le.trans
   apply (sup_le_sup degree_mul_le degree_mul_le).trans
@@ -1315,7 +1318,8 @@ lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R
   classical
   simp only [sPolynomial_def]
   wlog! +distrib H : c₁ ≠ 0 ∧ c₂ ≠ 0 ∧ p₁ ≠ 0 ∧ p₂ ≠ 0
-  · (obtain rfl | rfl | rfl | rfl := H) <;> simp
+  · try_grind
+    (obtain rfl | rfl | rfl | rfl := H) <;> simp
   rcases H with ⟨hc1, hc2, hp1, hp2⟩
   have hm1 := (monomial_eq_zero (s := d₁)).not.mpr hc1
   have hm2 := (monomial_eq_zero (s := d₂)).not.mpr hc2
@@ -1336,7 +1340,8 @@ lemma sPolynomial_monomial_mul' [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ 
       m.sPolynomial p₁ p₂ := by
   classical
   wlog! +distrib H : c₁ ≠ 0 ∧ c₂ ≠ 0 ∧ p₁ ≠ 0 ∧ p₂ ≠ 0
-  · (obtain rfl | rfl | rfl | rfl := H) <;> simp
+  · try_grind
+    (obtain rfl | rfl | rfl | rfl := H) <;> simp
   simp [H, degree_mul, sPolynomial_monomial_mul, degree_monomial]
 
 lemma sPolynomial_leadingTerm_mul [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvPolynomial σ R) :
@@ -1354,7 +1359,8 @@ lemma sPolynomial_leadingTerm_mul' [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvP
         (m.leadingCoeff p₁ * m.leadingCoeff p₂) *
       m.sPolynomial q₁ q₂ := by
   wlog! +distrib H : p₁ ≠ 0 ∧ p₂ ≠ 0 ∧ q₁ ≠ 0 ∧ q₂ ≠ 0
-  · (obtain rfl | rfl | rfl | rfl := H) <;> simp
+  · try_grind
+    (obtain rfl | rfl | rfl | rfl := H) <;> simp
   simp [H, leadingTerm, sPolynomial_monomial_mul, degree_mul]
 
 lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}

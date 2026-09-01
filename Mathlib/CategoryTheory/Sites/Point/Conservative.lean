@@ -187,7 +187,8 @@ private lemma mk'.isLocallySurjective
     (hf : ∀ (Φ : P.FullSubcategory), Function.Surjective (Φ.obj.presheafFiber.map f)) :
     Presheaf.IsLocallySurjective J f := by
   wlog hF₂ : ∃ (U : C), F₂ = shrinkYoneda.obj U generalizing F₁ F₂
-  · refine ⟨fun {U} s ↦ ?_⟩
+  · try_grind
+    refine ⟨fun {U} s ↦ ?_⟩
     let f' := pullback.snd f (shrinkYonedaEquiv.{w}.symm s)
     have hf' (Φ : P.FullSubcategory) :
         Function.Surjective (Φ.obj.presheafFiber.map f') := by

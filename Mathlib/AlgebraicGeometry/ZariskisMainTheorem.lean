@@ -292,7 +292,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
     IsOpen { x | f.QuasiFiniteAt x } := by
   wlog H : IsAffineHom f
-  · rw [isOpen_iff_forall_mem_open]
+  · try_grind
+    rw [isOpen_iff_forall_mem_open]
     intro x hx
     obtain ⟨_, ⟨U : Y.Opens, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
       (Set.mem_univ (f x)) isOpen_univ

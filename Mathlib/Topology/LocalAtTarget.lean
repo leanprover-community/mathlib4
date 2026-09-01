@@ -252,7 +252,8 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     (iV : ∀ i, V i → X) (hiV : ∀ i, Continuous (iV i)) (hV : ∀ i, f ⁻¹' U i ⊆ Set.range (iV i))
     (hV' : ∀ i, IsEmbedding (f ∘ iV i)) : IsEmbedding f := by
   wlog hU' : iSup U = ⊤
-  · let f₀ : X → Set.range f := fun x ↦ ⟨f x, ⟨x, rfl⟩⟩
+  · try_grind
+    let f₀ : X → Set.range f := fun x ↦ ⟨f x, ⟨x, rfl⟩⟩
     suffices IsEmbedding f₀ from IsEmbedding.subtypeVal.comp this
     have hU'' : (⨆ i, (U i).comap ⟨Subtype.val, continuous_subtype_val⟩ :
         Opens (Set.range f)) = ⊤ := by

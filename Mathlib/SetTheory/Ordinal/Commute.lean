@@ -27,7 +27,8 @@ theorem addCommute_iff_eq_mul_natCast {o₁ o₂ : Ordinal} :
   · induction h : o₁ + o₂ using WellFoundedLT.induction generalizing o₁ o₂ with | ind o ih
     subst h
     wlog hle : o₁ ≤ o₂
-    · grind [hcomm.symm]
+    · try_grind
+      grind [hcomm.symm]
     rcases eq_or_ne o₁ 0 with (rfl | h₁)
     · exact ⟨o₂, 0, 1, by simp, by simp⟩
     let o₃ := o₂ - o₁

@@ -156,7 +156,8 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
     simp_rw [← restrictScalars_adjoin_eq_sup, restrictScalars_adjoin] at eq
     rintro _ ⟨π₁, rfl⟩ _ ⟨π₂, rfl⟩ -
     wlog h : π₁ ≤ π₂ generalizing π₁ π₂
-    · exact (this _ _ <| (hc.total π₁.2 π₂.2).resolve_left h).symm
+    · try_grind
+      exact (this _ _ <| (hc.total π₁.2 π₂.2).resolve_left h).symm
     refine .inl (le_iff.mpr ⟨?_, algHom_ext_of_eq_adjoin _ (eq _) ?_⟩)
     · rw [eq, eq]; exact adjoin.mono _ _ _ (Set.union_subset_union_left _ h.1)
     rintro x (hx | hx)

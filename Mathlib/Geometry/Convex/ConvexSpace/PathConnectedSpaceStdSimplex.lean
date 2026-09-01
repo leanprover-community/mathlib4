@@ -23,7 +23,8 @@ lemma continuous_convexCombPair {M : Type*} (x y : StdSimplex ℝ M) :
     Continuous (fun t ↦ convexCombPair (R := ℝ) (unitInterval.symm t) t
         (unitInterval.nonneg _) (unitInterval.nonneg _) (by simp) x y) := by
   wlog hM : Finite M
-  · let s : Finset M := x.weights.support ∪ y.weights.support
+  · try_grind
+    let s : Finset M := x.weights.support ∪ y.weights.support
     let ι : s → M := Subtype.val
     obtain ⟨x', hx⟩ := (mem_range_map_iff ι x).2 (by aesop)
     obtain ⟨y', hy⟩ := (mem_range_map_iff ι y).2 (by aesop)

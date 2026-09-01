@@ -281,7 +281,8 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T)
     (hT : T ≠ 0) (h₂f : IntervalIntegrable f volume t (t + T)) (a₁ a₂ : ℝ) :
     IntervalIntegrable f volume a₁ a₂ := by
   wlog hT : 0 < T
-  · rcases (not_lt.1 hT).eq_or_lt with h | h
+  · try_grind
+    rcases (not_lt.1 hT).eq_or_lt with h | h
     · tauto
     · have hnT : 0 < -T := neg_pos.mpr h
       nth_rw 1 [(by ring : t = (t + T) + (-T))] at h₂f
@@ -320,7 +321,8 @@ Special case of `Function.Periodic.intervalIntegrable`.
 theorem intervalIntegrable_iff {t₁ t₂ : ℝ} (hf : Periodic f T) :
     IntervalIntegrable f volume t₁ (t₁ + T) ↔ IntervalIntegrable f volume t₂ (t₂ + T) := by
   wlog hT : T ≠ 0
-  · simp_all
+  · try_grind
+    simp_all
   exact ⟨(hf.intervalIntegrable hT · t₂ (t₂ + T)), (hf.intervalIntegrable hT · t₁ (t₁ + T))⟩
 
 /--
@@ -344,7 +346,8 @@ depend on `t`. -/
 theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
     ∫ x in t..t + T, f x = ∫ x in s..s + T, f x := by
   wlog hT : 0 < T
-  · rcases (not_lt.1 hT).eq_or_lt with hT | hT
+  · try_grind
+    rcases (not_lt.1 hT).eq_or_lt with hT | hT
     · simp [hT]
     · rw [← neg_inj, ← integral_symm, ← integral_symm]
       simpa only [← sub_eq_add_neg, add_sub_cancel_right] using

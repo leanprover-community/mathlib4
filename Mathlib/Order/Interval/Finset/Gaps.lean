@@ -124,7 +124,8 @@ theorem intervalGapsWithin_surjOn : (Set.Iio k).SurjOn
 theorem intervalGapsWithin_le_fst {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
     a ≤ (F.intervalGapsWithin h a b j).1 := by
   wlog hj : j < k + 1 generalizing j
-  · grind [cast_val_eq_self]
+  · try_grind
+    grind [cast_val_eq_self]
   by_cases hj : j = 0
   · simp [hj]
   · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind))
@@ -135,7 +136,8 @@ theorem intervalGapsWithin_le_fst {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a 
 theorem intervalGapsWithin_snd_le {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
     (F.intervalGapsWithin h a b j).2 ≤ b := by
   wlog hj : j < k + 1 generalizing j
-  · grind [cast_val_eq_self]
+  · try_grind
+    grind [cast_val_eq_self]
   by_cases hj : j = k
   · simp [hj]
   · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j) (by grind))
@@ -147,7 +149,8 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
     (hF : (SetLike.coe F).PairwiseDisjoint (fun z ↦ Set.Icc z.1 z.2)) :
     (F.intervalGapsWithin h a b j).1 ≤ (F.intervalGapsWithin h a b j).2 := by
   wlog hj : j < k + 1 generalizing j
-  · convert! this (j : Fin (k + 1)) (by grind) using 3 <;> grind [cast_val_eq_self]
+  · try_grind
+    convert! this (j : Fin (k + 1)) (by grind) using 3 <;> grind [cast_val_eq_self]
   by_cases hj₁ : j = 0
   · simp only [hj₁]
     by_cases hk : 0 = k
@@ -180,7 +183,8 @@ theorem intervalGapsWithin_pairwiseDisjoint_Ioc {a b : α}
   intro j hj j' hj' hjj'
   rw [mem_Iio] at hj hj'
   wlog hij' : j < j' generalizing j j'
-  · exact (this hj' hj hjj'.symm (by omega)).symm
+  · try_grind
+    exact (this hj' hj hjj'.symm (by omega)).symm
   rw [Function.onFun, Set.disjoint_iff_inter_eq_empty]
   suffices (F.intervalGapsWithin h a b j).2 ≤ (F.intervalGapsWithin h a b j').1 by grind
   have hj'₀ : j' - 1 + 1 = j' := by omega

@@ -259,7 +259,8 @@ lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
     LipschitzWith δ.toNNReal⁻¹ (thickenedIndicator δ_pos E) := by
   intro x y
   wlog h : infEDist x E ≤ infEDist y E generalizing x y
-  · specialize this y x (le_of_not_ge h)
+  · try_grind
+    specialize this y x (le_of_not_ge h)
     rwa [edist_comm, edist_comm x]
   simp_rw [edist_dist, NNReal.dist_eq, thickenedIndicator_apply, coe_toNNReal_eq_toReal]
   rw [← ENNReal.toReal_sub_of_le (thickenedIndicatorAux_mono_infEDist _ h) (by finiteness)]

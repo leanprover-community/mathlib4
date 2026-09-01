@@ -568,7 +568,8 @@ lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈
   classical
   cases nonempty_fintype ι
   wlog hs : s = Set.univ generalizing s t
-  · rw [← pi_univ_ite]
+  · try_grind
+    rw [← pi_univ_ite]
     refine this (fun i _ ↦ ?_) rfl
     split_ifs with hi
     · exact h i hi

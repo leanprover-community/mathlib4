@@ -238,7 +238,8 @@ theorem floor_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
 
 theorem abs_sub_lt_one_of_floor_eq_floor {a b : R} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
   wlog h0 : b ≤ a generalizing a b
-  · rw [abs_sub_comm]
+  · try_grind
+    rw [abs_sub_comm]
     exact this h.symm (le_of_not_ge h0)
   calc |a - b|
     _ = a - b := abs_of_nonneg (sub_nonneg_of_le h0)

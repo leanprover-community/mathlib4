@@ -364,7 +364,8 @@ theorem isPreconnected_sUnion {s : Set (Set α)} (hs : IsPreconnected s)
   by_cases! ht' : t ⊆ U ∨ t ⊆ V
   · -- Consider the case when one of them covers `t`, say `U`.
     wlog htU : t ⊆ U generalizing U V
-    · grind
+    · try_grind
+      grind
     -- There is also some `u ∈ s` that intersects `V`.
     rintro - hV'
     rw [sUnion_eq_biUnion, iUnion₂_inter, nonempty_biUnion] at hV'
@@ -487,15 +488,18 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
     rw [hwV] at hKV
     replace hwV := hwV.symm.subset
     wlog hwK : ∀ W ∈ w, ((K : Set α) ∩ W).Nonempty generalizing w
-    · refine this {W ∈ w | (↑K ∩ W).Nonempty} (fun x hx => ?_) (by grind) (by grind) (by grind)
+    · try_grind
+      refine this {W ∈ w | (↑K ∩ W).Nonempty} (fun x hx => ?_) (by grind) (by grind) (by grind)
       obtain ⟨W, hWw, hxW⟩ := mem_sUnion.mp (hKV hx)
       exact mem_sUnion_of_mem hxW ⟨hWw, x, hx, hxW⟩
     wlog hw : w.Finite generalizing w
-    · rw [sUnion_eq_biUnion] at hKV
+    · try_grind
+      rw [sUnion_eq_biUnion] at hKV
       obtain ⟨w', _⟩ := K.isCompact.elim_finite_subcover_image (fun W hW => hB.isOpen (hwB hW)) hKV
       apply this w' <;> grind [sUnion_eq_biUnion]
     wlog huw : u ⊆ w generalizing w
-    · apply this (u ∪ w) <;> grind [sUnion_union, Finite.union]
+    · try_grind
+      apply this (u ∪ w) <;> grind [sUnion_union, Finite.union]
     rw [exists_mem_image]
     exists w
     #adaptation_note /-- Before leanprover/lean4#13166, this was just `grind`.
@@ -604,7 +608,8 @@ instance [T1Space α] : T0Space (Compacts α) :=
 instance [T2Space α] : T2Space (Compacts α) where
   t2 K₁ K₂ h := by
     wlog h' : ¬(K₁ ≤ K₂) generalizing K₁ K₂
-    · grind [Disjoint.symm, le_antisymm]
+    · try_grind
+      grind [Disjoint.symm, le_antisymm]
     rw [SetLike.not_le_iff_exists] at h'
     obtain ⟨x, hx₁, hx₂⟩ := h'
     obtain ⟨U, V, hU, hV, hU', hV', hUV⟩ := K₂.isCompact.separation_of_notMem hx₂
@@ -767,7 +772,8 @@ theorem isPreconnected_nonempty_subsets {s : Set α} (hs : IsPreconnected s) :
 theorem isPreconnected_Icc {K L : Compacts α} (hK : K ≠ ⊥) (hL : IsPreconnected (L : Set α)) :
     IsPreconnected (Icc K L) := by
   wlog hKL : K ≤ L
-  · simpa [hKL] using isPreconnected_empty
+  · try_grind
+    simpa [hKL] using isPreconnected_empty
   convert (isPreconnected_nonempty_subsets hL).image (K ⊔ ·) (by fun_prop)
   exact subset_antisymm
     (fun M hM => ⟨M, ⟨Compacts.coe_nonempty.mpr (ne_bot_of_le_ne_bot hK hM.1), hM.2⟩,

@@ -139,7 +139,8 @@ theorem irreducible_of_totalDegree_eq_one
     simp [(MvPolynomial.isUnit_iff_totalDegree_of_isReduced.mp H).2] at hp
   isUnit_or_isUnit a b hab := by
     wlog hle : a.totalDegree ≤ b.totalDegree generalizing a b
-    · exact (this b a (by rw [hab, mul_comm]) (by lia)).symm
+    · try_grind
+      exact (this b a (by rw [hab, mul_comm]) (by lia)).symm
     obtain rfl | ha₀ := eq_or_ne a 0; · simp_all
     obtain rfl | hb₀ := eq_or_ne b 0; · simp_all
     have : a.totalDegree + b.totalDegree = 1 := by

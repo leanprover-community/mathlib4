@@ -90,7 +90,8 @@ lemma le_total_of_codirected {r v₁ v₂ : α} (h₁ : r ≤ v₁) (h₂ : r �
   obtain ⟨m, rfl⟩ := h₂.exists_succ_iterate
   clear h₁ h₂
   wlog h : n ≤ m
-  · rw [Or.comm]
+  · try_grind
+    rw [Or.comm]
     apply this
     exact Nat.le_of_not_ge h
   left

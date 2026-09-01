@@ -131,7 +131,8 @@ lemma IsCircuit.eq_of_superset_isCircuit (hC : M.IsCircuit C) (hC' : M.IsCircuit
 lemma isCircuit_iff_dep_forall_sdiff_singleton_indep :
     M.IsCircuit C ↔ M.Dep C ∧ ∀ e ∈ C, M.Indep (C \ {e}) := by
   wlog hCE : C ⊆ M.E
-  · exact iff_of_false (hCE ∘ IsCircuit.subset_ground) (fun h ↦ hCE h.1.subset_ground)
+  · try_grind
+    exact iff_of_false (hCE ∘ IsCircuit.subset_ground) (fun h ↦ hCE h.1.subset_ground)
   simp [isCircuit_iff_minimal_not_indep hCE, ← not_indep_iff hCE,
     minimal_iff_forall_sdiff_singleton (P := (¬ M.Indep ·))
     (fun _ _ hY hYX hX ↦ hY <| hX.subset hYX)]

@@ -240,10 +240,12 @@ theorem LocallyOfFiniteType.isLocallyNoetherian
     [IsLocallyNoetherian Y] : IsLocallyNoetherian X := by
   change id (IsLocallyNoetherian X) -- avoid wlog hypotheses confusing the instance synthesizer
   wlog hY : ∃ R, Y = Spec R
-  · exact (isLocallyNoetherian_iff_openCover (Y.affineCover.pullback₁ f)).mpr fun i ↦
+  · try_grind
+    exact (isLocallyNoetherian_iff_openCover (Y.affineCover.pullback₁ f)).mpr fun i ↦
       this (Limits.pullback.snd f (Y.affineCover.f i)) ⟨_, rfl⟩
   wlog hX : ∃ S, X = Spec S
-  · exact (isLocallyNoetherian_iff_openCover X.affineCover).mpr
+  · try_grind
+    exact (isLocallyNoetherian_iff_openCover X.affineCover).mpr
       fun i ↦ this (X.affineCover.f i ≫ f) hY ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   obtain ⟨S, rfl⟩ := hX

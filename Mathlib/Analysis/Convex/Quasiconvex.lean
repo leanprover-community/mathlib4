@@ -101,7 +101,8 @@ theorem QuasiconvexOn.monotone_comp
   intro a b ha hb hab
   simp only [Function.comp_apply, mem_ofPred_eq]
   wlog h : f x ≤ f y
-  · grind
+  · try_grind
+    grind
   specialize hf (f y) ⟨hx.1, h⟩ ⟨hy.1, le_rfl⟩ ha hb hab
   simp only [mem_ofPred_eq] at hf
   exact ⟨hf.1, le_trans (hg hf.2) hy.2⟩

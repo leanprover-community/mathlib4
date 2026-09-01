@@ -664,7 +664,8 @@ theorem countable_image_lt_image_Ioi_within
     have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
       rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
       wlog hle : u ≤ v generalizing u v
-      · exact (this v vs u us huv.symm (le_of_not_ge hle)).symm
+      · try_grind
+        exact (this v vs u us huv.symm (le_of_not_ge hle)).symm
       have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
       apply disjoint_iff_forall_ne.2
       rintro a ha b hb rfl

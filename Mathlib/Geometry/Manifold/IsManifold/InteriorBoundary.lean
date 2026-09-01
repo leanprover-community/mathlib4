@@ -272,7 +272,8 @@ lemma mem_interior_range_of_mem_interior_range_of_mem_atlas (hn : n ≠ 0)
   /- Reduce the situation to the real case, then apply
   `DifferentiableAt.mem_interior_convex_of_surjective_fderiv`. -/
   wlog _ : IsRCLikeNormedField 𝕜
-  · simp [I.range_eq_univ_of_not_isRCLikeNormedField ‹_›]
+  · try_grind
+    simp [I.range_eq_univ_of_not_isRCLikeNormedField ‹_›]
   let _ := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   have hφx : φ.source ∈ 𝓝 (e.extend I x) := by
@@ -354,7 +355,8 @@ lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x :
     (hx : I.IsInteriorPoint x) : I'.IsInteriorPoint (f x) := by
   -- Since p-adic manifolds don't have boundary, WLOG `𝕜` is `ℝ` or `ℂ` and `E` is normed over `ℝ`.
   wlog _ : IsRCLikeNormedField 𝕜
-  · simp [IsInteriorPoint, I'.range_eq_univ_of_not_isRCLikeNormedField ‹_›]
+  · try_grind
+    simp [IsInteriorPoint, I'.range_eq_univ_of_not_isRCLikeNormedField ‹_›]
   let _ := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   let _ : NormedSpace ℝ E' := NormedSpace.restrictScalars ℝ 𝕜 E'

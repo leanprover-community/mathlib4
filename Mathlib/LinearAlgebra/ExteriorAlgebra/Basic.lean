@@ -275,7 +275,8 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
       dsimp [F]
       clear F
       wlog h : x < y
-      · exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_gt.resolve_left h)
+      · try_grind
+        exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_gt.resolve_left h)
       clear hxy
       induction n with
       | zero => exact x.elim0

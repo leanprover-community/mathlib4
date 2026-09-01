@@ -221,7 +221,8 @@ lemma isField_stalk_of_closure_mem_irreducibleComponents
     (x : X) (hx : closure {x} ∈ irreducibleComponents X) [IsReduced X] :
     IsField (X.presheaf.stalk x) := by
   wlog hX : ∃ R, X = Spec R
-  · obtain ⟨i, x, rfl⟩ := X.affineCover.exists_eq x
+  · try_grind
+    obtain ⟨i, x, rfl⟩ := X.affineCover.exists_eq x
     have inst : IsReduced (X.affineCover.X i) := isReduced_of_isOpenImmersion (X.affineCover.f i)
     refine (asIso <| (X.affineCover.f i).stalkMap x).commRingCatIsoToRingEquiv.isField
       (this _ x ?_ ⟨_, rfl⟩)
@@ -376,7 +377,8 @@ open Order in
 lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
     ringKrullDim (X.presheaf.stalk x) = coheight x := by
   wlog h : ∃ R, X = Spec R
-  · obtain ⟨R, f, hf, hsub⟩ := Scheme.exists_affine_mem_range_and_range_subset
+  · try_grind
+    obtain ⟨R, f, hf, hsub⟩ := Scheme.exists_affine_mem_range_and_range_subset
       (show x ∈ ⊤ from trivial)
     obtain ⟨y, rfl⟩ := Set.mem_range.mp hsub.1
     rw [coheight_eq_of_isOpenImmersion, ← this _ ⟨R, rfl⟩]

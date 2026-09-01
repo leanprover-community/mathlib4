@@ -262,7 +262,8 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
     (hφ : φ.toRingHom.Finite) (hp : φ p * t ∈ (conductor R (φ X)).radical) (i : ℕ) :
     p.coeff i • t ∈ (conductor R (φ X)).radical := by
   wlog hi : i = p.natDegree generalizing p i
-  · clear hi
+  · try_grind
+    clear hi
     simp only [forall_eq, coeff_natDegree] at this
     induction hpn : p.natDegree using Nat.strong_induction_on generalizing p with
     | h n IH =>
@@ -406,7 +407,8 @@ nonrec lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt [IsReduced S]
     (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :
     ¬ IsStronglyTranscendental R x := by
   wlog hS : IsDomain S ∧ FaithfulSMul R S
-  · intro hx
+  · try_grind
+    intro hx
     obtain ⟨p, hp, hpP⟩ := Ideal.exists_minimalPrimes_le (J := P) bot_le
     have inst := hp.1.1
     have inst : (P.map (Ideal.Quotient.mk p)).IsPrime :=
@@ -464,7 +466,8 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p]
     (x : S) (hx : Algebra.adjoin R {x} = ⊤) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
-  · let inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
+  · try_grind
+    let inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
       OreLocalization.instAlgebra
     have inst : Algebra.WeaklyQuasiFiniteAt (integralClosure R S) p :=
       .of_restrictScalars R (integralClosure R S) _
@@ -508,7 +511,8 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p]
     (f : R[X] →ₐ[R] S) (hf : f.Finite) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
-  · let inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
+  · try_grind
+    let inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
       OreLocalization.instAlgebra
     have inst : Algebra.WeaklyQuasiFiniteAt (integralClosure R S) p :=
       .of_restrictScalars R (integralClosure R S) _

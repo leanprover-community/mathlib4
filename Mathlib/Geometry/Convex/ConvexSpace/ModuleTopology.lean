@@ -26,7 +26,8 @@ variable {R E ι : Type*} [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
 public lemma continuous_of_affineMap (f : ConvexSpace.AffineMap R (StdSimplex R ι) E) :
     Continuous f := by
   wlog hι : Finite ι generalizing ι
-  · rw [StdSimplex.continuous_iff]
+  · try_grind
+    rw [StdSimplex.continuous_iff]
     intro ι' _ g
     exact this (f.comp (affineMap g)) inferInstance
   have := Fintype.ofFinite ι

@@ -199,7 +199,8 @@ lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 :=
   simp only [schnirelmannDensity_le_iff_forall, zero_add]
   intro ε hε
   wlog hε₁ : ε ≤ 1 generalizing ε
-  · obtain ⟨n, hn, hn'⟩ := this 1 zero_lt_one le_rfl
+  · try_grind
+    obtain ⟨n, hn, hn'⟩ := this 1 zero_lt_one le_rfl
     exact ⟨n, hn, hn'.trans_le (le_of_not_ge hε₁)⟩
   let n : ℕ := ⌊#A / ε⌋₊ + 1
   have hn : 0 < n := Nat.succ_pos _

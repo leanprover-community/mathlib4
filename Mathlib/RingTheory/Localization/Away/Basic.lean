@@ -572,7 +572,8 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
     ∃! r : R, ∀ a : s, algebraMap R _ r = f a := by
   have mem := (Ideal.eq_top_iff_one _).mp span_eq; clear span_eq
   wlog finset_eq : ∃ t : Finset R, t = s generalizing s
-  · have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span mem
+  · try_grind
+    have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span mem
     have ⟨r, eq, uniq⟩ := this t (fun a ↦ f ⟨a, hts a.2⟩)
       (fun a b ↦ h ⟨a, hts a.2⟩ ⟨b, hts b.2⟩) mem ⟨_, rfl⟩
     refine ⟨r, fun a ↦ ?_, fun _ eq ↦ uniq _ fun a ↦ eq ⟨a, hts a.2⟩⟩

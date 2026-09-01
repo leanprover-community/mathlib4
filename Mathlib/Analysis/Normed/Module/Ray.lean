@@ -39,7 +39,8 @@ theorem norm_add (h : SameRay ℝ x y) : ‖x + y‖ = ‖x‖ + ‖y‖ := by
 theorem norm_sub (h : SameRay ℝ x y) : ‖x - y‖ = |‖x‖ - ‖y‖| := by
   rcases h.exists_eq_smul with ⟨u, a, b, ha, hb, -, rfl, rfl⟩
   wlog hab : b ≤ a generalizing a b with H
-  · rw [SameRay.sameRay_comm] at h
+  · try_grind
+    rw [SameRay.sameRay_comm] at h
     rw [norm_sub_rev, abs_sub_comm]
     exact H b a hb ha h (le_of_not_ge hab)
   rw [← sub_nonneg] at hab

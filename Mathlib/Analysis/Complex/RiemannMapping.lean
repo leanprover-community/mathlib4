@@ -53,7 +53,8 @@ theorem exists_injective_not_dense_image_deriv_ne_zero {U : Set ℂ} (hUo : IsOp
     ∃ f : ℂ → ℂ, Injective f ∧ ¬Dense (f '' U) ∧ ∀ z ∈ U, deriv f z ≠ 0 := by
   -- WLOG, `0 ∉ U`, otherwise we choose `a ∉ U` and replace `U` with `-a +ᵥ U`
   wlog hU₀ : 0 ∉ U
-  · rw [ne_univ_iff_exists_notMem] at hU
+  · try_grind
+    rw [ne_univ_iff_exists_notMem] at hU
     rcases hU with ⟨a, ha⟩
     specialize this (hUo.vadd (-a)) (by simpa) (by simp [hU])
       (by simpa [mem_vadd_set_iff_neg_vadd_mem])

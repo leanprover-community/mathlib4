@@ -105,7 +105,8 @@ theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < cou
 theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
   by_contra h : m ≠ n
   wlog hmn : m < n
-  · exact this hn hm heq.symm h.symm (by grind)
+  · try_grind
+    exact this hn hm heq.symm h.symm (by grind)
   · simpa [heq] using count_strict_mono hm hmn
 
 theorem count_le_card (hp : (Set.ofPred p).Finite) (n : ℕ) : count p n ≤ #hp.toFinset := by

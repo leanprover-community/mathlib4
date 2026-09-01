@@ -116,12 +116,14 @@ instance (priority := 100) (f : X ⟶ Y) [IsIntegralHom f] :
   apply universally_mono
   intro X Y f
   wlog hY : ∃ R, Y = Spec R generalizing X Y
-  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
+  · try_grind
+    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := topologically _) Y.affineCover]
     exact fun a i ↦ this _ ⟨_, rfl⟩ (a i)
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S generalizing X
-  · intro H
+  · try_grind
+    intro H
     have inst : IsAffine X := isAffine_of_isAffineHom f
     rw [← cancel_left_of_respectsIso (P := topologically _) X.isoSpec.inv]
     rw [← cancel_left_of_respectsIso (P := @IsIntegralHom) X.isoSpec.inv] at H
@@ -137,13 +139,15 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
   clear * -
   wlog hY : ∃ R, Y = Spec R
-  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover]
+  · try_grind
+    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover]
     rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @UniversallyClosed) Y.affineCover] at H₁
     rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsAffineHom) Y.affineCover] at H₂
     exact fun _ ↦ this inferInstance inferInstance ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · have inst : IsAffine X := isAffine_of_isAffineHom f
+  · try_grind
+    have inst : IsAffine X := isAffine_of_isAffineHom f
     rw [← cancel_left_of_respectsIso (P := @IsIntegralHom) X.isoSpec.inv]
     exact this _ inferInstance inferInstance ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX

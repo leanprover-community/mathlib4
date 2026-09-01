@@ -485,7 +485,8 @@ private lemma cases_c_zero (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hc : g 1 0
     ((g = T⁻¹ ∨ g = -T⁻¹) ∧ z.re = 1 / 2) ∨
     (g = 1 ∨ g = -1) := by
   wlog hd : 0 ≤ g 1 1
-  · specialize this hz (g := -g) (SL_neg_smul g z ▸ hg) (by simpa using hc) ?_
+  · try_grind
+    specialize this hz (g := -g) (SL_neg_smul g z ▸ hg) (by simpa using hc) ?_
     · simpa using (not_le.mp hd).le
     convert! this using 2 <;> simp [neg_eq_iff_eq_neg, or_comm]
   have hd' : g 1 1 = 1 ∨ g 1 1 = -1 := by
@@ -657,10 +658,12 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
 set_option backward.isDefEq.respectTransparency false in
 private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g • z).im = z.im := by
   wlog hden : z.im ≤ (g • z).im
-  · rw [← this (g := g⁻¹) hg (by simpa using hz) (by simpa using le_of_not_ge hden)]
+  · try_grind
+    rw [← this (g := g⁻¹) hg (by simpa using hz) (by simpa using le_of_not_ge hden)]
     simp
   wlog hc : 0 ≤ g 1 0
-  · -- TODO: `wlog` leaves junk copies of variables in scope
+  · try_grind
+    -- TODO: `wlog` leaves junk copies of variables in scope
     simpa using @this (-g) z (-g) z hz (by simpa using hg)
       (by simpa using hden) (by simpa using (not_le.mp hc).le)
   rw [im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos _ z.im_ne_zero),
@@ -705,7 +708,8 @@ lemma cases_of_mem_fd_smul_mem_fd (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) :
     ((g = T⁻¹ * S ∨ g = -(T⁻¹ * S)) ∧ z = ρ) := by
   have him : (g • z).im = z.im := serreTheorem_im_eq hz hg
   wlog hc : 0 ≤ g 1 0
-  · simpa [neg_eq_iff_eq_neg, or_comm] using @this (-g) z hz (by simpa using hg)
+  · try_grind
+    simpa [neg_eq_iff_eq_neg, or_comm] using @this (-g) z hz (by simpa using hg)
       (by simpa using him) (by simpa using (not_le.mp hc).le)
   rw [im_smul_eq_div_normSq, div_eq_iff (normSq_denom_pos _ z.im_ne_zero).ne',
     eq_comm, mul_eq_left₀ z.im_ne_zero, normSq_eq_norm_sq,

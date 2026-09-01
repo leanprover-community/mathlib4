@@ -38,7 +38,8 @@ The converse holds by `inferInstance`.
 theorem IsOpenImmersion.of_flat_of_mono {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f]
     [LocallyOfFinitePresentation f] [Mono f] : IsOpenImmersion f := by
   wlog hf : Surjective f
-  · let U : Y.Opens := ⟨Set.range f.base, f.isOpenMap.isOpen_range⟩
+  · try_grind
+    let U : Y.Opens := ⟨Set.range f.base, f.isOpenMap.isOpen_range⟩
     -- needed to prevent `wlog` to go in a typeclass loop
     have hU : IsOpenImmersion U.ι := U.instIsOpenImmersionι
     let f' := hU.lift U.ι f (by simp [U])

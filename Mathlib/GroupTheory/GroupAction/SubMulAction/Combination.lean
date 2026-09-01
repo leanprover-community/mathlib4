@@ -279,7 +279,8 @@ that is, when `n = 0` or `Nat.card α ≤ n`. -/
 theorem isPretransitive_alternatingGroup [Fintype α] (hα : 3 ≤ Nat.card α) :
     IsPretransitive (alternatingGroup α) (powersetCard α n) := by
   wlog! hn : 2 * n ≤ Nat.card α
-  · have : IsPretransitive (alternatingGroup α) (powersetCard α (Nat.card α - n)) := by
+  · try_grind
+    have : IsPretransitive (alternatingGroup α) (powersetCard α (Nat.card α - n)) := by
       apply this hα
       grind
     by_cases hn' : n ≤ Nat.card α

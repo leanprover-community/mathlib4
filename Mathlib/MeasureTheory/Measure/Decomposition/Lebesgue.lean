@@ -951,7 +951,8 @@ such that `ξ` is mutually singular with respect to `ν` and `μ = ξ + ν.withD
 nonrec instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
     [SFinite μ] [SigmaFinite ν] : HaveLebesgueDecomposition μ ν := by
   wlog hμ : IsFiniteMeasure μ generalizing μ
-  · exact .sfinite_of_isFiniteMeasure fun μ _ ↦ this μ ‹_›
+  · try_grind
+    exact .sfinite_of_isFiniteMeasure fun μ _ ↦ this μ ‹_›
   -- Take a disjoint cover that consists of sets of finite measure `ν`.
   set s : ℕ → Set α := disjointed (spanningSets ν)
   have hsm : ∀ n, MeasurableSet (s n) := .disjointed <| measurableSet_spanningSets _

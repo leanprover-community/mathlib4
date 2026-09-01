@@ -23,6 +23,11 @@ The new goal will be placed at the top of the goal stack.
 
 -/
 
+/-
+1. does it work in a significant number of cases?
+2. what's the performance impact?
+-/
+
 public meta section
 
 namespace Mathlib.Tactic
@@ -116,6 +121,23 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     easyGoal.assign HApp
   return ⟨reductionGoal, (HFVarId, negHyp), hGoal, hFVar, revertedFVars⟩
 
+syntax "try_grind" tacticSeq : tactic
+
+elab_rules : tactic
+| `(tactic|try_grind%$tk $tacs) => do
+  let s ← saveState
+  try
+    evalTactic <|← `(tactic| grind -verbose)
+    let some l := (← getFileMap).lspRangeOfStx? tk | throwError "No syntax position!"
+    let start : String.Pos.Raw := ⟨((← getFileMap).lineStart (l.start.line + 1) |>.byteIdx) - 1⟩
+    let some ⟨_, stop⟩ := tacs.raw.getRange? | throwError "tactic sequence bad"
+    TryThis.addSuggestion (.ofRange ⟨start, stop⟩) ""
+  catch _ =>
+    s.restore
+    let some range := tk.getRangeWithTrailing? | throwError "No syntax position (failure)"
+    TryThis.addSuggestion (.ofRange range) ""
+    evalTacticSeq tacs
+
 /-- The implementation of `wlog` and `wlog!` -/
 def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `ident))
     (H : Option (TSyntax `ident)) (pushConfig : Option (TSyntax ``optConfig) := none) :
@@ -134,15 +156,6 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
       let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
       Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
         (ifUnchanged := .error)
-  let s ← saveState
-  try
-    evalTactic <|← `(tactic| grind)
-    s.restore (restoreInfo := true)
-    logInfo m!"[wlog 1] grind succeeded"
-  catch _ =>
-    s.restore (restoreInfo := true)
-    logInfo m!"[wlog 0] grind failed"
-
 
 /-- `wlog h : P` adds an assumption `h : P` to the main goal, and adds a side goal that
 requires showing that the case `h : ¬ P` can be reduced to the case where `P` holds
@@ -161,7 +174,7 @@ there will be two additional assumptions:
 * `wlog! +distrib h : P` also calls `push +distrib Not` at the generated hypothesis `h`.
   `wlog! +distrib h : P ∧ Q` will transform `¬ (P ∧ Q)` to `¬P ∨ ¬Q`.
 -/
-syntax (name := wlog) "wlog " binderIdent " : " term
+syntax (name := wlog) "wlog " binderIdent " : " term (discharger)?
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 elab_rules : tactic

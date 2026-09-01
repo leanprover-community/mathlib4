@@ -190,7 +190,8 @@ theorem measurable_join : Measurable (join : Measure (Measure α) → Measure α
 theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : AEMeasurable f (join m)) :
     ∫⁻ x, f x ∂join m = ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
   wlog hfm : Measurable f generalizing f
-  · rcases hf with ⟨g, hgm, hfg⟩
+  · try_grind
+    rcases hf with ⟨g, hgm, hfg⟩
     rw [lintegral_congr_ae hfg, this hgm.aemeasurable hgm]
     exact lintegral_congr_ae <| (ae_ae_of_ae_join hfg).mono fun μ hμ ↦
       .symm <| lintegral_congr_ae hμ

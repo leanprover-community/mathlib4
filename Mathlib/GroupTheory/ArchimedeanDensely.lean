@@ -166,7 +166,8 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rcases key with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
     simp [this.right.le, this.right, mabs]
   · wlog ha : 1 ≤ a generalizing a
-    · convert! @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
+    · try_grind
+      convert! @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
       · simp
       · rwa [mabs_inv]
     rw [mabs, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h
@@ -348,7 +349,8 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discr
       intro hd
       obtain ⟨y, hy⟩ := exists_ne (0 : G)
       wlog! hy' : 0 < y generalizing y
-      · refine this (-y) ?_ ?_
+      · try_grind
+        refine this (-y) ?_ ?_
         · simp [hy]
         · simp [lt_of_le_of_ne hy' hy]
       obtain ⟨⟨z, hz⟩, hz', hz''⟩ := h ({x | ⟨0, le_rfl⟩ < x}) ⟨⟨y, hy'.le⟩, hy'⟩

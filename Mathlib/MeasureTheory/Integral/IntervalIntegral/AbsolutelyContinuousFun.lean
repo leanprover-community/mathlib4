@@ -178,7 +178,8 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
   -- `AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum` to conclude that
   -- `dist (f d) (f b) ≤ r`.
   wlog hab : a ≤ b
-  · exact uIcc_comm b a ▸ this (a := b) (b := a) hf.symm (uIcc_comm a b ▸ hf₀) (by linarith)
+  · try_grind
+    exact uIcc_comm b a ▸ this (a := b) (b := a) hf.symm (uIcc_comm a b ▸ hf₀) (by linarith)
   suffices ∀ x ∈ uIcc a b, f x = f b by use f b
   rw [uIcc_of_le hab] at hf₀ ⊢
   intro d hd
