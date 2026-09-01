@@ -161,7 +161,8 @@ theorem Nontrivial.einfsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.einfsep = edist x y := by
   cases nonempty_fintype s
   simp_rw [einfsep_of_fintype]
-  rcases Finset.exists_mem_eq_inf s.offDiag.toFinset (by simpa) (uncurry edist) with ⟨w, hxy, hed⟩
+  rcases Finset.exists_mem_eq_inf s.offDiagonal.toFinset (by simpa) (uncurry edist) with
+    ⟨w, hxy, hed⟩
   simp_rw [mem_toFinset] at hxy
   exact ⟨w.fst, hxy.1, w.snd, hxy.2.1, hxy.2.2, hed⟩
 
