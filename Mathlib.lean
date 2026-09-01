@@ -161,6 +161,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
@@ -287,6 +288,7 @@ public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 public import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 public import Mathlib.Algebra.ContinuedFractions.Determinant
+public import Mathlib.Algebra.ContinuedFractions.Euler
 public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 public import Mathlib.Algebra.ContinuedFractions.Translations
 public import Mathlib.Algebra.CubicDiscriminant
@@ -3664,6 +3666,7 @@ public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
 public import Mathlib.Combinatorics.Enumerative.Partition.Glaisher
 public import Mathlib.Combinatorics.Enumerative.Pentagonal
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.Basic
+public import Mathlib.Combinatorics.Enumerative.Pentagonal.EulerFunction
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.PowerSeries
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.Ring
 public import Mathlib.Combinatorics.Enumerative.Schroder
@@ -4295,6 +4298,7 @@ public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Data.Nat.Choose.Central
+public import Mathlib.Data.Nat.Choose.Consecutive
 public import Mathlib.Data.Nat.Choose.Dvd
 public import Mathlib.Data.Nat.Choose.Factorization
 public import Mathlib.Data.Nat.Choose.Lucas
@@ -4333,6 +4337,7 @@ public import Mathlib.Data.Nat.Init
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.Nat.MaxPrimeFac
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Notation
@@ -4696,6 +4701,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Barycenter
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
+public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
@@ -5447,6 +5453,7 @@ public import Mathlib.Logic.Equiv.Pairwise
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Logic.Equiv.Prod
 public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Logic.Equiv.Sigma
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Function.Coequalizer
@@ -6413,6 +6420,7 @@ public import Mathlib.Probability.Decision.BayesEstimator
 public import Mathlib.Probability.Decision.Risk.Basic
 public import Mathlib.Probability.Decision.Risk.Countable
 public import Mathlib.Probability.Decision.Risk.Defs
+public import Mathlib.Probability.Decision.Risk.RiskIncrease
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.Beta
@@ -7472,6 +7480,7 @@ public import Mathlib.Tactic.Determinant.Bird.Meta
 public import Mathlib.Tactic.DuplicateDecls
 public import Mathlib.Tactic.ENatToNat
 public import Mathlib.Tactic.Echelon.Bareiss
+public import Mathlib.Tactic.Echelon.Cert
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.Echelon.Parsing
 public import Mathlib.Tactic.Echelon.Rat
@@ -7785,6 +7794,7 @@ public import Mathlib.Topology.Algebra.Indicator
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
+public import Mathlib.Topology.Algebra.InfiniteSum.ContinuousEval
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.DiscreteConvolution
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
@@ -8195,6 +8205,7 @@ public import Mathlib.Topology.MetricSpace.Completion
 public import Mathlib.Topology.MetricSpace.Congruence
 public import Mathlib.Topology.MetricSpace.Contracting
 public import Mathlib.Topology.MetricSpace.Cover
+public import Mathlib.Topology.MetricSpace.CoveringExponent
 public import Mathlib.Topology.MetricSpace.CoveringNumbers
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Dilation
