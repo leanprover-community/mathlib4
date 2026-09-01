@@ -100,28 +100,19 @@ theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h 
     Introspective f (e * d) r := by
   by_cases hr : r = 0
   · grind
-  · simp only [Introspective.dvd_iff] at *
-    obtain ⟨a, ha⟩ := hf
-    obtain ⟨b, hb⟩ := hg
-    obtain ⟨z, hz⟩  : ((X : R[X]) ^ r - 1) ∣ ((X ^ e) ^ r - 1) := by
+  · simp only [Introspective.dvd_iff] at hg
+    simp only [Introspective] at *
+    set I := AdjoinRoot.mk ((X : R[X]) ^ r - 1)
+    have ⟨w, hw⟩ := hg
+    have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
+    simp only [sub_comp, pow_comp, mul_comp, X_comp, one_comp, comp_assoc] at hw2
+    obtain ⟨z, hz⟩ : (X : R[X]) ^ r - 1 ∣ (X ^ e) ^ r - 1 := by
       rw [pow_right_comm]
       exact sub_one_dvd_pow_sub_one (X ^ r) e
-
-
-    sorry
-    --set I := mk (span {(X : R[X]) ^ r - C 1})
-    --have ⟨w, hw⟩ := mem_span_singleton.mp (Ideal.Quotient.eq.mp hg)
-    --have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
-    --simp only [sub_comp, pow_comp, map_one, mul_comp, X_comp, one_comp, comp_assoc] at hw2
-    --obtain ⟨z, hz⟩  : ((X : R[X]) ^ r - 1) ∣ ((X ^ e) ^ r - 1) := by
-    --  rw [pow_right_comm]
-    --  exact sub_one_dvd_pow_sub_one (X ^ r) e
-    --have h : I ((f ^ e) ^ d) = I (f.comp (X ^ e)) ^ d := congrArg₂ HPow.hPow hf (Eq.refl d)
-    --rw [pow_mul, h, pow_mul]
-    --apply Ideal.Quotient.eq.mpr
-    --apply mem_span_singleton.mpr
-    --use z * w.comp (X ^ e)
-    --grind
+    have h : I ((f ^ e) ^ d) = I ((f.comp (X ^ e)) ^ d) := congrArg₂ HPow.hPow hf (Eq.refl d)
+    simp only [pow_mul, h, pow_mul, I, AdjoinRoot.mk_eq_mk]
+    use z * w.comp (X ^ e)
+    grind
 
 end CommRing
 
