@@ -27,7 +27,7 @@ This file defines k-edge-connectivity for simple graphs.
 
 namespace SimpleGraph
 
-variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w x y : V}
+variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ∞} {u v w x y : V}
 
 variable (G k u v) in
 /-- Two vertices are `k`-edge-reachable if they remain reachable after removing strictly fewer than
@@ -59,8 +59,8 @@ lemma IsEdgeReachable.trans (h1 : G.IsEdgeReachable k u v) (h2 : G.IsEdgeReachab
 lemma IsEdgeReachable.mono (hGH : G ≤ H) (h : G.IsEdgeReachable k u v) : H.IsEdgeReachable k u v :=
   fun _ hk ↦ h hk |>.mono <| deleteEdges_mono hGH
 
-@[gcongr]
-lemma IsEdgeReachable.anti (hkl : k ≤ l) (h : G.IsEdgeReachable l u v) : G.IsEdgeReachable k u v :=
+lemma IsEdgeReachable.anti (hkl : k ≤ l)
+    (h : G.IsEdgeReachable l u v) : G.IsEdgeReachable k u v :=
   fun _ hk ↦ h <| by grw [← hkl]; exact hk
 
 @[simp]
@@ -77,7 +77,7 @@ lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
   simp [IsEdgeConnected, Preconnected]
 
 lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : G.Reachable u v :=
-  isEdgeReachable_one.mp (huv.anti (Nat.one_le_iff_ne_zero.mpr hk))
+  isEdgeReachable_one.mp (huv.anti (Order.one_le_iff_ne_zero.mpr hk))
 
 @[nontriviality]
 lemma IsEdgeReachable.of_subsingleton [Subsingleton V] : G.IsEdgeReachable k u v :=
@@ -94,6 +94,7 @@ lemma IsEdgeConnected.connected [Nonempty V] (hk : k ≠ 0) (h : G.IsEdgeConnect
     G.Connected where
   preconnected := h.preconnected hk
 
+variable {k : ℕ} in
 lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachable k u v)
     (huv : u ≠ v) : k ≤ G.degree u := by
   classical
@@ -102,16 +103,18 @@ lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachab
   obtain ⟨w, _⟩ := h hh |>.exists_isPath
   simpa using w.adj_snd <| mt Walk.Nil.eq huv
 
+variable {k : ℕ} in
 lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
     (h : G.IsEdgeConnected k) : k ≤ G.degree u := by
   obtain ⟨v, hv⟩ := exists_ne u
   exact (h u v).le_degree hv.symm
 
+variable {k : ℕ} in
 theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (h : G.IsEdgeConnected k) : k ≤ G.minDegree :=
   le_minDegree_of_forall_le_degree G k fun _ ↦ le_degree h
 
-lemma isEdgeReachable_add_one (hk : k ≠ 0) :
+lemma isEdgeReachable_add_one {k : ℕ∞} (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
   refine ⟨fun h e s hk ↦ ?_, fun h s hs ↦ ?_⟩
   · rw [deleteEdges_deleteEdges, Set.union_comm]
@@ -150,13 +153,13 @@ lemma isBridge_iff_not_isEdgeReachable_two (huv : G.Adj u v) :
 alias isBridge_iff_adj_and_not_isEdgeConnected_two := isBridge_iff_not_isEdgeReachable_two
 
 lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e}).Reachable u v := by
-  simp [isEdgeReachable_add_one]
+  simp [isEdgeReachable_add_one, ←one_add_one_eq_two]
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
 -- TODO: This should be `G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e` after
 -- https://github.com/leanprover-community/mathlib4/pull/32583
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
-  simp [isEdgeConnected_add_one]
+  simp [isEdgeConnected_add_one, ←one_add_one_eq_two]
 
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
@@ -187,6 +190,7 @@ The edge connectivity number of a graph `G` is the largest `k` such that `G` is 
 noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
   ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
 
+variable {k : ℕ} in
 theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) :
     k ≤ G.edgeReachability u v :=
   le_iSup₂ (α := ℕ∞) k h
@@ -194,6 +198,7 @@ theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) :
 theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachability u v ≠ 0 := by
   simpa [← Order.one_le_iff_ne_zero] using isEdgeReachable_one.mpr h |>.le_edgeReachability
 
+variable {k : ℕ} in
 theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
   le_iSup₂ (α := ℕ∞) k h
 
