@@ -247,8 +247,8 @@ def infIccOrderIsoIccSup (a b : α) : Icc (a ⊓ b) a ≃o Icc b (a ⊔ b) where
 /-- The diamond isomorphism between the closed intervals `[a ⊓ b, b]` and `[a, a ⊔ b]` -/
 @[simps!]
 def infIccOrderIsoIccSup' (a b : α) : Icc (a ⊓ b) b ≃o Icc a (a ⊔ b) :=
-  (OrderIso.Set.congr _ _ (by rw [inf_comm])).trans <| (infIccOrderIsoIccSup b a).trans <|
-    OrderIso.Set.congr _ _ (by rw [sup_comm])
+  (Set.orderIsoOfEq _ _ (by rw [inf_comm])).trans <| (infIccOrderIsoIccSup b a).trans <|
+    Set.orderIsoOfEq _ _ (by rw [sup_comm])
 
 theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c => a ⊓ c) (Icc b (a ⊔ b)) :=
   StrictMono.of_domRestrict (infIccOrderIsoIccSup a b).symm.strictMono
@@ -284,8 +284,8 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
 /-- The diamond isomorphism between the open intervals `(a ⊓ b, b)` and `(a, a ⊔ b)`. -/
 @[simps!]
 def infIooOrderIsoIooSup' (a b : α) : Ioo (a ⊓ b) b ≃o Ioo a (a ⊔ b) :=
-  (OrderIso.Set.congr _ _ (by rw [inf_comm])).trans <| (infIooOrderIsoIooSup b a).trans <|
-    OrderIso.Set.congr _ _ (by rw [sup_comm])
+  (Set.orderIsoOfEq _ _ (by rw [inf_comm])).trans <| (infIooOrderIsoIooSup b a).trans <|
+    Set.orderIsoOfEq _ _ (by rw [sup_comm])
 
 -- See note [lower instance priority]
 instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerModularLattice α :=
@@ -310,10 +310,10 @@ variable [Lattice α] [BoundedOrder α] [IsModularLattice α]
 
 /-- The diamond isomorphism between the intervals `Set.Iic a` and `Set.Ici b`. -/
 def IicOrderIsoIci {a b : α} (h : IsCompl a b) : Set.Iic a ≃o Set.Ici b :=
-  (OrderIso.Set.congr (Set.Iic a) (Set.Icc (a ⊓ b) a)
+  (Set.orderIsoOfEq (Set.Iic a) (Set.Icc (a ⊓ b) a)
         (h.inf_eq_bot.symm ▸ Set.Icc_bot.symm)).trans <|
     (infIccOrderIsoIccSup a b).trans
-      (OrderIso.Set.congr (Set.Icc b (a ⊔ b)) (Set.Ici b) (h.sup_eq_top.symm ▸ Set.Icc_top))
+      (Set.orderIsoOfEq (Set.Icc b (a ⊔ b)) (Set.Ici b) (h.sup_eq_top.symm ▸ Set.Icc_top))
 
 end IsCompl
 
