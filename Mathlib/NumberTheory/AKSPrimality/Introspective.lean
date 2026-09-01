@@ -109,10 +109,11 @@ end CommRing
 
 variable [Field R] [CharP R p] [Fact p.Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem _root_.Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Coprime r) :
     IsReduced (AdjoinRoot ((X : R[X]) ^ r - 1)) := by
-  apply (isRadical_iff_quotient_reduced _).mp
-  apply (Ideal.isRadical_iff_pow_one_lt 2 (by grind)).mpr
+  simp only [AdjoinRoot, ← isRadical_iff_quotient_reduced,
+      (Ideal.isRadical_iff_pow_one_lt 2 (by grind))]
   intro s hs
   rw [Ideal.mem_span_singleton] at *
   refine (Squarefree.dvd_pow_iff_dvd ?_ (by lia)).mp hs
