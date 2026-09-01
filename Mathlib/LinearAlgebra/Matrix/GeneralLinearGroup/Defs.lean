@@ -281,9 +281,9 @@ lemma coe_GL_coe_matrix (g : SpecialLinearGroup n R) : ((toGL g) : Matrix n n R)
 lemma range_toGL_eq_ker_det :
     (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker := by
   ext A
-  exact ⟨by rintro ⟨_, rfl⟩; simp, fun hA ↦ ⟨⟨_,
-    (by simpa [GeneralLinearGroup.val_det_apply] using congrArg Units.val hA)⟩,
-      Units.ext rfl⟩⟩
+  simp only [MonoidHom.mem_range, MonoidHom.mem_ker]
+  refine ⟨fun ⟨g, hg⟩ ↦ by simp [← hg], fun hA ↦ ⟨⟨A, ?_⟩, Units.ext rfl⟩⟩
+  rw [← GeneralLinearGroup.val_det_apply, hA, Units.val_one]
 
 /-- `Matrix.SpecialLinearGroup` is isomorphic to `GeneralLinearGroup.det.ker` -/
 def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker where
