@@ -112,8 +112,9 @@ theorem monotone_iff_tendsto_nhds_opNorm {l : Filter A} (hl : l.IsIncreasingAppr
   suffices ‖‖f‖ - f (‖a‖⁻¹ • a)‖ ≤ ‖f‖ by grw [← re_le_norm] at this; simpa
   refine le_of_tendsto (hx := hl.neBot) (hf.sub_const (f _) |>.norm) ?_
   filter_upwards [hl.eventually_nonneg, hl.eventually_norm] with y hy hy2
-  grw [← map_sub, f.le_opNorm, CStarAlgebra.norm_sub_le_one_of_nonneg_of_norm_le_one hy hy2
-    (by simp [smul_nonneg, ha]) (by simp [norm_smul, ha0]), mul_one]
+  grw [← map_sub, f.le_opNorm, CStarAlgebra.norm_sub_le_max_of_nonneg hy
+    (by simp [smul_nonneg, ha]), hy2]
+  simp [norm_smul, ha0]
 
 theorem monotone_iff_opNorm_eq_map_one {A : Type*} [CStarAlgebra A] [PartialOrder A]
     [StarOrderedRing A] {f : A →L[ℂ] ℂ} : Monotone f ↔ ‖f‖ = f 1 := by
