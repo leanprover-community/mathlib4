@@ -234,8 +234,9 @@ variable (C)
 
 /-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
 their compatibilities with shifts. -/
+@[implicit_reducible]
 def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
-  (HomotopyCategory.singleFunctors C).postcomp Qh
+  (CochainComplex.singleFunctors C).postcomp Q
 
 /-- The single functor `C ⥤ DerivedCategory C` which sends `X : C` to the
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
@@ -246,11 +247,6 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
 
--- The object level definitional equality underlying `singleFunctorsPostcompQhIso`.
-@[simp] theorem Qh_obj_singleFunctors_obj (n : ℤ) (X : C) :
-    Qh.obj (((HomotopyCategory.singleFunctors C).functor n).obj X) = (singleFunctor C n).obj X :=
-  rfl
-
 @[simp] theorem Q_obj_single_obj (n : ℤ) (X : C) :
     Q.obj ((HomologicalComplex.single C _ n).obj X) = (singleFunctor C n).obj X :=
   rfl
@@ -260,40 +256,24 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
 by the definition of `DerivedCategory.singleFunctors`. -/
 def singleFunctorsPostcompQhIso :
     singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh :=
-  Iso.refl _
+  SingleFunctors.postcompIsoOfIso _ (quotientCompQhIso C).symm ≪≫
+    (SingleFunctors.postcompPostcompIso _ _ _).symm
 
 /-- The isomorphism
 `DerivedCategory.singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q`. -/
+@[simps! hom_hom inv_hom]
 def singleFunctorsPostcompQIso :
     singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q :=
-  (SingleFunctors.postcompFunctor C ℤ (Qh : _ ⥤ DerivedCategory C)).mapIso
-    (HomotopyCategory.singleFunctorsPostcompQuotientIso C) ≪≫
-      (CochainComplex.singleFunctors C).postcompPostcompIso (HomotopyCategory.quotient _ _) Qh ≪≫
-      SingleFunctors.postcompIsoOfIso
-        (CochainComplex.singleFunctors C) (quotientCompQhIso C)
-
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
-lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
-    (singleFunctorsPostcompQIso C).hom.hom n = 𝟙 _ := by
-  ext X
-  dsimp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso,
-    quotientCompQhIso, HomologicalComplexUpToQuasiIso.quotientCompQhIso]
-  rw [CategoryTheory.Functor.map_id, Category.id_comp]
-  erw [Category.id_comp]
-  rfl
-
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
-lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
-    (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
-  ext X
-  simp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso]
-  rfl
+  Iso.refl _
 
 /-- The isomorphism `singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q`. -/
 def singleFunctorIsoCompQ (n : ℤ) :
     singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q := Iso.refl _
+
+/-- The isomorphism `singleFunctor C n ≅ HomotopyCategory.singleFunctor C n ⋙ Qh`. -/
+def singleFunctorIsoCompQh (n : ℤ) :
+    singleFunctor C n ≅ HomotopyCategory.singleFunctor C n ⋙ Qh :=
+  (SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQhIso C)
 
 lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔ QuasiIso φ := by

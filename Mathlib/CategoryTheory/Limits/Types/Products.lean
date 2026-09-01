@@ -5,10 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Products in `Type`
@@ -69,8 +66,6 @@ def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
 
 @[simp]
 lemma isTerminalPUnit_from_apply {X : Type u} (x : X) : isTerminalPUnit.from X x = .unit := rfl
-
-@[deprecated (since := "2026-02-08")] alias isTerminalPunit := isTerminalPUnit
 
 /-- The category of types has `PUnit` as a terminal object. -/
 def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) := ⟨_, isTerminalPUnit⟩
