@@ -56,9 +56,9 @@ theorem Algebra.IsAlgebraic.separableSpace_of_denseRange {K : Type*} [Field K] [
     (F : Type*) [NormedField F] [NormedAlgebra L F] [Algebra.IsAlgebraic L F] :
     SeparableSpace F := by
   let E := AlgebraicClosure L
-  letI : NormedField E := spectralNorm.normedField L E
-  letI : NormedAlgebra L E := spectralNorm.normedAlgebra L E
-  haveI hEsep : SeparableSpace E := by
+  let : NormedField E := spectralNorm.normedField L E
+  let : NormedAlgebra L E := spectralNorm.normedAlgebra L E
+  have hEsep : SeparableSpace E := by
     -- `k`-algebraic elements in `E` are countable, and are dense in `E` by continuity of roots.
     refine ⟨{z : E | IsAlgebraic K z}, Algebraic.countable K E,
       Metric.dense_iff.mpr <| fun α ε hε ↦ ?_⟩
