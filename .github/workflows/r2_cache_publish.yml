@@ -23,22 +23,27 @@ name: publish cache to R2
 #             between them is the completeness proof the marker asserts.
 #   report    Zulip message when any job fails.
 #
-# Credential isolation: a job's referenced secrets live in the runner process
-# for the job's whole lifetime, so the job — not the step — is the exposure
-# boundary. The jobs that execute repo-derived code (`assemble` and `verify`
-# run the Lean toolchain, the lakefile, and the cache tool) reference no
-# write-capable secret; the jobs that reference the write key (`push`,
-# `marker`) execute only pinned actions, apt-installed rclone, and inline
-# bash.
+# Credential isolation: a job's credentials live in the runner process for
+# the job's whole lifetime, so the job — not the step — is the exposure
+# boundary. `push` and `marker` mint their own short-lived R2 credentials
+# from the cache broker, and execute only pinned actions, apt-installed
+# rclone, and inline bash. `assemble` and `verify` run the Lean toolchain,
+# the lakefile, and the cache tool; they declare neither the minting
+# environment nor `id-token: write`, so they cannot mint. This repository
+# holds no durable storage credential: each minted credential expires on
+# its own, and the one long-lived credential lives in the broker Worker.
 #
 # Required repository configuration:
-#   Environment `cache-upload-master` — the deployment branch policy admits
-#   only refs release managers control (master, staging, v4.* tags), so a
-#   dispatch from any other ref cannot reach these secrets:
-#     MATHLIB_CACHE_R2_WRITE_KEY  S3 credential for the bucket, as
-#                                 `<ACCESS_KEY_ID>:<SECRET_ACCESS_KEY>`
-#                                 (an R2 API token scoped to the cache
-#                                 bucket, Object Read & Write).
+#   Environment `cache-upload-r2-master` — the write identity, declared by
+#   `push` and `marker` only. Its branch policy admits master and v4.* tags.
+#   This environment belongs to this workflow alone: `cache-upload-master`
+#   also carries build_template.yml's Azure upload_cache job, and one
+#   environment shared by two publishers cannot tell them apart. The OIDC
+#   `sub` names the environment and not the job, so every job that declares
+#   it can reach its credentials — keep it off `assemble` and `verify`,
+#   which run repository code.
+#   Environment `cache-upload-master` — read side only, declared by
+#   `verify`. It holds no write-capable secret:
 #     MATHLIB_CACHE_R2_GET_URL    Anonymous read endpoint for verification,
 #                                 e.g. `https://<bucket-public-host>/mathlib4`.
 #                                 A secret, not a variable: public run logs
@@ -46,9 +51,12 @@ name: publish cache to R2
 #                                 resolver (its metrics and cached-404
 #                                 protection only see traffic that goes
 #                                 through it). The S3 endpoint below stays a
-#                                 variable because it is useless without the
-#                                 write key.
+#                                 variable because it is useless without a
+#                                 credential the broker mints.
 #   Repository variables:
+#     MATHLIB_CACHE_BROKER_URL      The cache broker endpoint that mints the
+#                                   upload credentials, e.g.
+#                                   `https://<broker-host>/r2-credentials`.
 #     MATHLIB_CACHE_R2_S3_ENDPOINT  Authenticated S3 endpoint for uploads,
 #                                   e.g. `https://<account>.r2.cloudflarestorage.com`.
 #     MATHLIB_CACHE_BASE_URL        (existing) read base for the top-up fetch.
@@ -229,7 +237,14 @@ jobs:
     needs: assemble
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    environment: cache-upload-master
+    environment: cache-upload-r2-master
+    # Job-level permissions replace the workflow's, so restate what this job
+    # needs. `id-token: write` stays off `assemble` and `verify`: the OIDC
+    # `sub` names the environment and not the job.
+    permissions:
+      contents: read
+      actions: read # download-artifact reads this run's artifacts
+      id-token: write # request the OIDC token the broker verifies
     env:
       RCLONE_CONFIG_R2_TYPE: s3
       RCLONE_CONFIG_R2_PROVIDER: Cloudflare
@@ -250,24 +265,31 @@ jobs:
       - name: Install rclone
         run: sudo apt-get update -qq && sudo apt-get install -y -qq rclone
 
-      - name: Configure the R2 write credential
+      # The job's whole credential: short-lived, scoped to the bucket's
+      # `mathlib4/` prefix, and expiring on its own. The broker answers only
+      # a token whose claims match its grant, so the environment above is
+      # what authorises this mint.
+      - name: Mint short-lived R2 credentials from the broker
         env:
-          R2_WRITE_KEY: ${{ secrets.MATHLIB_CACHE_R2_WRITE_KEY }}
+          BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
         run: |
-          if [ -z "${R2_WRITE_KEY}" ] || [ -z "${RCLONE_CONFIG_R2_ENDPOINT}" ]; then
-            echo "::error::MATHLIB_CACHE_R2_WRITE_KEY (environment secret) and \
-          MATHLIB_CACHE_R2_S3_ENDPOINT (repository variable) must be set"
+          if [ -z "${BROKER_URL}" ] || [ -z "${RCLONE_CONFIG_R2_ENDPOINT}" ]; then
+            echo "::error::MATHLIB_CACHE_BROKER_URL and \
+          MATHLIB_CACHE_R2_S3_ENDPOINT (repository variables) must be set"
             exit 1
           fi
-          key="$(printf %s "${R2_WRITE_KEY}" | tr -d '[:space:]')"
-          access_key_id="${key%%:*}"
-          secret_access_key="${key#*:}"
-          echo "::add-mask::${access_key_id}"
-          echo "::add-mask::${secret_access_key}"
+          jwt="$(curl -sSf -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mathlib-cache-broker" | jq -er .value)"
+          creds="$(curl -sSf -X POST -H "Authorization: Bearer ${jwt}" "${BROKER_URL}")"
+          for field in accessKeyId secretAccessKey sessionToken; do
+            echo "::add-mask::$(jq -er ".${field}" <<<"${creds}")"
+          done
           {
-            echo "RCLONE_CONFIG_R2_ACCESS_KEY_ID=${access_key_id}"
-            echo "RCLONE_CONFIG_R2_SECRET_ACCESS_KEY=${secret_access_key}"
+            echo "RCLONE_CONFIG_R2_ACCESS_KEY_ID=$(jq -er .accessKeyId <<<"${creds}")"
+            echo "RCLONE_CONFIG_R2_SECRET_ACCESS_KEY=$(jq -er .secretAccessKey <<<"${creds}")"
+            echo "RCLONE_CONFIG_R2_SESSION_TOKEN=$(jq -er .sessionToken <<<"${creds}")"
           } >> "$GITHUB_ENV"
+          echo "::notice::minted grant $(jq -r .grant <<<"${creds}") (ttl $(jq -r .ttlSeconds <<<"${creds}")s)"
 
       - name: Upload the set to the bucket
         run: |
@@ -339,7 +361,10 @@ jobs:
     needs: [assemble, push, verify]
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: cache-upload-master
+    environment: cache-upload-r2-master
+    permissions:
+      contents: read
+      id-token: write # request the OIDC token the broker verifies
     env:
       RCLONE_CONFIG_R2_TYPE: s3
       RCLONE_CONFIG_R2_PROVIDER: Cloudflare
@@ -350,24 +375,31 @@ jobs:
       - name: Install rclone
         run: sudo apt-get update -qq && sudo apt-get install -y -qq rclone
 
-      - name: Configure the R2 write credential
+      # The job's whole credential: short-lived, scoped to the bucket's
+      # `mathlib4/` prefix, and expiring on its own. The broker answers only
+      # a token whose claims match its grant, so the environment above is
+      # what authorises this mint.
+      - name: Mint short-lived R2 credentials from the broker
         env:
-          R2_WRITE_KEY: ${{ secrets.MATHLIB_CACHE_R2_WRITE_KEY }}
+          BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
         run: |
-          if [ -z "${R2_WRITE_KEY}" ] || [ -z "${RCLONE_CONFIG_R2_ENDPOINT}" ]; then
-            echo "::error::MATHLIB_CACHE_R2_WRITE_KEY (environment secret) and \
-          MATHLIB_CACHE_R2_S3_ENDPOINT (repository variable) must be set"
+          if [ -z "${BROKER_URL}" ] || [ -z "${RCLONE_CONFIG_R2_ENDPOINT}" ]; then
+            echo "::error::MATHLIB_CACHE_BROKER_URL and \
+          MATHLIB_CACHE_R2_S3_ENDPOINT (repository variables) must be set"
             exit 1
           fi
-          key="$(printf %s "${R2_WRITE_KEY}" | tr -d '[:space:]')"
-          access_key_id="${key%%:*}"
-          secret_access_key="${key#*:}"
-          echo "::add-mask::${access_key_id}"
-          echo "::add-mask::${secret_access_key}"
+          jwt="$(curl -sSf -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mathlib-cache-broker" | jq -er .value)"
+          creds="$(curl -sSf -X POST -H "Authorization: Bearer ${jwt}" "${BROKER_URL}")"
+          for field in accessKeyId secretAccessKey sessionToken; do
+            echo "::add-mask::$(jq -er ".${field}" <<<"${creds}")"
+          done
           {
-            echo "RCLONE_CONFIG_R2_ACCESS_KEY_ID=${access_key_id}"
-            echo "RCLONE_CONFIG_R2_SECRET_ACCESS_KEY=${secret_access_key}"
+            echo "RCLONE_CONFIG_R2_ACCESS_KEY_ID=$(jq -er .accessKeyId <<<"${creds}")"
+            echo "RCLONE_CONFIG_R2_SECRET_ACCESS_KEY=$(jq -er .secretAccessKey <<<"${creds}")"
+            echo "RCLONE_CONFIG_R2_SESSION_TOKEN=$(jq -er .sessionToken <<<"${creds}")"
           } >> "$GITHUB_ENV"
+          echo "::notice::minted grant $(jq -r .grant <<<"${creds}") (ttl $(jq -r .ttlSeconds <<<"${creds}")s)"
 
       - name: Write the marker
         env:
