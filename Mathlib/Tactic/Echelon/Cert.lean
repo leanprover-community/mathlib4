@@ -87,8 +87,8 @@ def certifyCondition (name : String) (c : Q(Prop)) : MetaM Q($c) := do
     throwError "cannot verify the rank certificate: {name} failed"
   mkDecideProofQ c
 
-/-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data,
-with the certificate conditions proven by kernel-checked `decide`. -/
+/-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
+`entries`, the parsed entries of `A`. -/
 def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr))
     (data : BareissData Expr) : MetaM Q(Echelon.Decomposition $A) := do
