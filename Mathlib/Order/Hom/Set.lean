@@ -48,6 +48,22 @@ theorem InjOn.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β}
     Set.InjOn (Sum.elim f g) (Set.sumEquiv.symm s) := by
   rintro (a₁ | b₁) h₁ (a₂ | b₂) h₂ heq <;> aesop
 
+section Preorder
+variable [Preorder α]
+
+/-- Order isomorphism between two equal sets. -/
+@[simps! apply symm_apply]
+def orderIsoOfEq (s t : Set α) (h : s = t) : s ≃o t where
+  toEquiv := equivOfEq h
+  map_rel_iff' := Iff.rfl
+
+@[deprecated (since := "2026-08-29")] alias _root_.OrderIso.Set.congr := orderIsoOfEq
+@[deprecated (since := "2026-08-29")] alias _root_.OrderIso.Set.congr_apply := orderIsoOfEq_apply
+@[deprecated (since := "2026-08-29")]
+alias _root_.OrderIso.Set.congr_symm_apply := orderIsoOfEq_symm_apply
+
+end Preorder
+
 end Set
 
 namespace OrderIso
@@ -92,16 +108,10 @@ open Set
 
 variable [Preorder α]
 
-/-- Order isomorphism between two equal sets. -/
-@[simps! apply symm_apply]
-protected def Set.congr (s t : Set α) (h : s = t) :
-    s ≃o t where
-  toEquiv := Equiv.Set.congr h
-  map_rel_iff' := Iff.rfl
-
-@[deprecated (since := "2026-08-21")] alias setCongr := Set.congr
-@[deprecated (since := "2026-08-21")] alias setCongr_apply := Set.congr_apply
-@[deprecated (since := "2026-08-21")] alias setCongr_symm_apply := Set.congr_symm_apply
+@[deprecated (since := "2026-08-21")] alias setCongr := _root_.Set.orderIsoOfEq
+@[deprecated (since := "2026-08-21")] alias setCongr_apply := _root_.Set.orderIsoOfEq_apply
+@[deprecated (since := "2026-08-21")]
+alias setCongr_symm_apply := _root_.Set.orderIsoOfEq_symm_apply
 
 /-- Order isomorphism between `univ : Set α` and `α`. -/
 def Set.univ : (Set.univ : Set α) ≃o α where
@@ -141,7 +151,7 @@ protected noncomputable def orderIso :
 /-- A strictly monotone surjective function from a linear order is an order isomorphism. -/
 noncomputable def orderIsoOfSurjective : α ≃o β :=
   (h_mono.orderIso f).trans <|
-    (OrderIso.Set.congr _ _ h_surj.range_eq).trans OrderIso.Set.univ
+    (Set.orderIsoOfEq _ _ h_surj.range_eq).trans OrderIso.Set.univ
 
 @[simp]
 theorem coe_orderIsoOfSurjective : (orderIsoOfSurjective f h_mono h_surj : α → β) = f :=
@@ -162,11 +172,11 @@ end StrictMono
 automorphisms. -/
 lemma OrderEmbedding.eq_of_range_eq [Preorder α] [Preorder β] [Subsingleton (α ≃o α)]
     {f g : α ↪o β} (h : Set.range f = Set.range g) : f = g := by
-  let e : α ≃o α := f.orderIso.trans ((OrderIso.Set.congr _ _ h).trans g.orderIso.symm)
+  let e : α ≃o α := f.orderIso.trans ((Set.orderIsoOfEq _ _ h).trans g.orderIso.symm)
   have he : e = OrderIso.refl α := Subsingleton.elim _ _
   ext x
   have : g (e x) = f x := congrArg Subtype.val <|
-    g.orderIso.apply_symm_apply (OrderIso.Set.congr _ _ h (f.orderIso x))
+    g.orderIso.apply_symm_apply (Set.orderIsoOfEq _ _ h (f.orderIso x))
   simp_all
 
 /-- Two strictly monotone functions are equal provided that their ranges are equal, assuming the

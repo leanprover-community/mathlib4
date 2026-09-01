@@ -225,7 +225,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → X}
     X ≃ Σ ω : Ω, orbitRel.Quotient.orbit ω := selfEquivSigmaOrbits' G X
     _ ≃ Σ ω : Ω, G ⧸ stabilizer G (φ ω) :=
       Equiv.sigmaCongrRight fun ω =>
-        (Equiv.Set.congr <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
+        (Set.equivOfEq <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
           orbitEquivQuotientStabilizer G (φ ω)
 
 /-- **Class formula**. This is a special case of
