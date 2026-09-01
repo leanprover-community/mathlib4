@@ -137,14 +137,6 @@ def IsSpanningSubgraph (x y : Digraph V) : Prop :=
     IsSpanningSubgraph x y ↔ x ≤ y ∧ x.verts = y.verts := by
   rfl
 
-@[simp] theorem isSpanningSubgraph_self (G : Digraph V) : IsSpanningSubgraph G G := by
-  rw [isSpanningSubgraph_iff]
-  constructor
-  · constructor
-    · intro v hv; exact hv
-    · intro v w h; exact h
-  · rfl
-
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Max (Digraph V) where
   max x y := {
@@ -217,6 +209,11 @@ instance distribLattice : DistribLattice (Digraph V) :=
   fast_instance% Function.Injective.distribLattice (fun G ↦ (G.verts, G.Adj))
     (fun _ _ h ↦ Digraph.ext (congrArg Prod.fst h) (congrArg Prod.snd h))
     .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+@[simp] theorem isSpanningSubgraph_self (G : Digraph V) : IsSpanningSubgraph G G := by
+  simp [isSpanningSubgraph_iff]
+
+
 section SpanningSubgraphs
 
 /-!
@@ -293,7 +290,7 @@ instance {G : Digraph V} : OrderTop G.SpanningSubgraph where
 /--
 The bottom subgraph `⊥`
 -/
-instance {G : Digraph V} : OrderBot (G.SpanningSubgraph) where
+instance {G : Digraph V} : OrderBot G.SpanningSubgraph where
   bot : G.SpanningSubgraph := ⟨
     ⟨G.verts, fun _ _ => False, by simp, by simp⟩,
     by
@@ -522,6 +519,8 @@ instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
   top_le_sup_compl := top_le_sup_compl
   inf_compl_le_bot := inf_compl_le_bot
 
+end SpanningSubgraphs
+
 instance Top : Top (Digraph V) where
   top := Digraph.completeDigraph V
 
@@ -579,8 +578,6 @@ instance decidableRelAdjCompl : DecidableRel (Gᶜ.Adj) := fun v w => by
   all_goals tauto
 
 end Decidable
-
-end SpanningSubgraphs
 
 end Order
 
