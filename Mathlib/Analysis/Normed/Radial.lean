@@ -94,10 +94,10 @@ variable [Norm E]
 variable (E) in
 lemma Norm.isRadial : (‖·‖ : E → ℝ).IsRadial := by grind [isRadial_def]
 
-lemma comp_norm (g : ℝ → F) : (g ∘ (‖·‖ : E → ℝ)).IsRadial := by
+lemma Function.IsRadial.comp_norm (g : ℝ → F) : (g ∘ (‖·‖ : E → ℝ)).IsRadial := by
   simp [IsRadial.comp_right, Norm.isRadial]
 
 variable (E) in
-lemma isRadial_norm_sq : IsRadial (‖·‖ ^ 2 : E → ℝ) := by grind [isRadial_def]
+lemma Function.isRadial_norm_sq : IsRadial (‖·‖ ^ 2 : E → ℝ) := by grind [isRadial_def]
 
 end Norm
