@@ -43,7 +43,7 @@ section CommRing
 
 variable [CommRing R] {f g : R[X]}
 
-protected theorem iff_dvd : Introspective f e r ↔ (X : R[X]) ^ r - 1 ∣ f ^ e - f.comp (X ^ e) :=
+protected theorem iff_dvd : Introspective f e r ↔ X ^ r - 1 ∣ f ^ e - f.comp (X ^ e) :=
   AdjoinRoot.mk_eq_mk
 
 protected theorem map {S : Type*} [CommRing S] (h : Introspective f e r) (g : R →+* S) :
