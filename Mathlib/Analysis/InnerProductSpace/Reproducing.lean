@@ -452,11 +452,6 @@ open MeasureTheory
 
 omit [CompleteSpace V]
 
-/-- ToDo: Move to right spot in other file. -/
-lemma enorm_inner_le_enorm (f g : V) : ‖⟪f, g⟫_𝕜‖ₑ ≤  ‖f‖ₑ * ‖g‖ₑ := by
-  grw [← ofReal_norm, norm_inner_le_norm]
-  simp [ENNReal.ofReal_mul, ofReal_norm]
-
 variable [MeasurableSpace X] {μ : Measure X}
 variable [MeasurableSpace V] [BorelSpace V]
 variable [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)] [SFinite μ]
