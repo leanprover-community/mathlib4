@@ -236,25 +236,6 @@ instance {G : Digraph V} : PartialOrder G.SpanningSubgraph where
     apply Subtype.ext
     exact le_antisymm hHK hKH
 
-@[simp] theorem SpanningSubgraph.le_iff_val_le {G : Digraph V}
-    {H K : G.SpanningSubgraph} :
-    H ≤ K ↔ H.val ≤ K.val := by
-  rfl
-
-@[simp] theorem SpanningSubgraph.mk_le_mk {G H K : Digraph V}
-    {hH : IsSpanningSubgraph H G} {hK : IsSpanningSubgraph K G} :
-    (⟨H, hH⟩ : G.SpanningSubgraph) ≤ ⟨K, hK⟩ ↔ H ≤ K := by
-  rfl
-
-@[simp] theorem SpanningSubgraph.property_le {G : Digraph V}
-    (H : G.SpanningSubgraph) :
-    H.val ≤ G := by
-  exact (isSpanningSubgraph_iff.mp H.property).1
-
-@[simp] theorem SpanningSubgraph.property_verts {G : Digraph V}
-    (H : G.SpanningSubgraph) :
-    H.val.verts = G.verts := by
-  exact (isSpanningSubgraph_iff.mp H.property).2
 
 /-- The adjacency relation of a spanning subgraph, restricted to the edges of the ambient
 digraph. -/
@@ -274,10 +255,6 @@ instance {G : Digraph V} : Max G.SpanningSubgraph where
           (show H₁.val ⊔ H₂.val ≤ G from _root_.sup_le H₁.property.1 H₂.property.1)
       · aesop (add simp [max, SemilatticeSup.sup, h₁verts, h₂verts])
 
-@[push_cast]
-lemma sup_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
-  (H₁ ⊔ H₂).val = H₁.val ⊔ H₂.val := rfl
-
 /--
 The top subgraph `⊤`
 -/
@@ -285,7 +262,7 @@ instance {G : Digraph V} : OrderTop G.SpanningSubgraph where
   top : G.SpanningSubgraph := ⟨G, by aesop⟩
   le_top := by
     intro ⟨H, ⟨H_sub, H_verts⟩⟩
-    simp_all
+    exact H_sub
 
 /--
 The bottom subgraph `⊥`
@@ -306,7 +283,7 @@ instance {G : Digraph V} : OrderBot G.SpanningSubgraph where
     intro H
     constructor
     · intro v hv
-      simpa [SpanningSubgraph.property_verts H] using hv
+      simpa [(isSpanningSubgraph_iff.mp H.property).2] using hv
     · intro v w h
       exact False.elim h
 
@@ -325,7 +302,7 @@ instance {G : Digraph V} : Compl G.SpanningSubgraph where
           simpa [H.property.2] using hv
         · intro _ _ h
           exact h.1
-      · simp
+      · exact (isSpanningSubgraph_iff.mp H.property).2
 
 /-- The meet/intersection of two spanning subgraphs. -/
 instance {G : Digraph V} : Min G.SpanningSubgraph where
@@ -339,10 +316,6 @@ instance {G : Digraph V} : Min G.SpanningSubgraph where
       · simpa [min, SemilatticeInf.inf, Lattice.inf] using
           (show H₁.val ⊓ H₂.val ≤ G from _root_.inf_le_left.trans H₁.property.1)
       · aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, h₁verts, h₂verts])
-
-@[push_cast]
-lemma inf_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
-  (H₁ ⊓ H₂).val = H₁.val ⊓ H₂.val := rfl
 
 /-- The supremum of a set of spanning subgraphs. -/
 instance {G : Digraph V} : SupSet G.SpanningSubgraph where
@@ -401,13 +374,12 @@ theorem SpanningSubgraph.adj_le_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
     SpanningSubgraph.Adj H ≤ SpanningSubgraph.Adj K ↔ H ≤ K := by
   constructor
   · intro h
-    rw [SpanningSubgraph.le_iff_val_le]
     constructor
     · intro v hv
-      rw [SpanningSubgraph.property_verts K]
-      rwa [SpanningSubgraph.property_verts H] at hv
+      rw [(isSpanningSubgraph_iff.mp K.property).2]
+      rwa [(isSpanningSubgraph_iff.mp H.property).2] at hv
     · intro v w hvw
-      have hG : G.Adj v w := (SpanningSubgraph.property_le H).2 hvw
+      have hG : G.Adj v w := (isSpanningSubgraph_iff.mp H.property).1.2 hvw
       exact h ⟨(v, w), hG⟩ hvw
   · intro h e he
     exact h.2 he
