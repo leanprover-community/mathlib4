@@ -72,7 +72,7 @@ open UniformSpace
 
 lemma ball_subset_of_mem {V : SetRel X X} [V.IsTrans] {x y : X} (hy : y ∈ V.ball x) :
     V.ball y ⊆ V.ball x :=
-  ball_subset_of_comp_subset hy SetRel.comp_subset_self
+  SetRel.ball_subset_ball_of_comp_subset hy SetRel.comp_subset_self
 
 lemma ball_eq_of_mem {V : SetRel X X} [V.IsSymm] [V.IsTrans] {x y : X} (hy : y ∈ V.ball x) :
     V.ball x = V.ball y := by

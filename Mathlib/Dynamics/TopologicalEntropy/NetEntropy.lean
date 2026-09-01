@@ -229,7 +229,7 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) [U.IsRefl] [U.IsSymm]
   --  We have to check that `s` is a cover for `dynEntourage T F (U ○ U) n`.
   -- If `s` is not a cover, then we can add to `s` a point `x` which is not covered
   -- and get a new net. This contradicts the maximality of `s`.
-  rw [IsDynCoverOf, isCover_iff_subset_iUnion_ball]
+  rw [IsDynCoverOf, SetRel.isCover_iff_subset_iUnion_ball]
   by_contra h
   obtain ⟨x, x_F, x_uncov⟩ := not_subset.1 h
   simp only [Finset.mem_coe, mem_iUnion, exists_prop, not_exists, not_and] at x_uncov

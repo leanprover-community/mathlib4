@@ -152,7 +152,7 @@ def comp (R : SetRel α β) (S : SetRel β γ) : SetRel α γ := {(a, c) | ∃ b
 
 @[inherit_doc] scoped infixl:62 " ○ " => comp
 
-@[simp] lemma mem_comp : a ~[R ○ S] c ↔ ∃ b, a ~[R] b ∧ b ~[S] c := .rfl
+@[simp, grind =] lemma mem_comp : a ~[R ○ S] c ↔ ∃ b, a ~[R] b ∧ b ~[S] c := .rfl
 
 lemma prodMk_mem_comp (hab : a ~[R] b) (hbc : b ~[S] c) : a ~[R ○ S] c := ⟨b, hab, hbc⟩
 
@@ -367,7 +367,7 @@ variable (R b) in
 to `b`. -/
 def ball : Set α := {a | a ~[R] b}
 
-@[simp] lemma mem_ball : a ∈ R.ball b ↔ a ~[R] b := .rfl
+@[simp, grind =] lemma mem_ball : a ∈ R.ball b ↔ a ~[R] b := .rfl
 
 @[gcongr]
 lemma ball_mono (h : R₁ ⊆ R₂) (b : β) : R₁.ball b ⊆ R₂.ball b := fun _a hab ↦ h hab
@@ -379,6 +379,9 @@ lemma ball_iInter (R : ι → Set (α × β)) (b : β) : ball (⋂ i, R i) b = �
   ext; simp
 
 variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
+
+lemma ball_subset_ball_of_comp_subset (hab : a ~[R₁] b) (h : R₁ ○ R₁ ⊆ R₂) :
+    R₁.ball a ⊆ R₂.ball b := fun _c hc ↦ h ⟨a, hc, hab⟩
 
 /-! ### Reflexive relations -/
 
@@ -451,6 +454,7 @@ variable (R) in
 protected abbrev IsSymm : Prop := Std.Symm (· ~[R] ·)
 
 variable (R) in
+@[grind →]
 protected lemma symm [R.IsSymm] (hab : a ~[R] b) : b ~[R] a := symm_of (· ~[R] ·) hab
 
 variable (R) in
@@ -496,6 +500,10 @@ instance isSymm_comp_inv : (R ○ R.inv).IsSymm where
 instance isSymm_inv_comp : (R.inv ○ R).IsSymm := isSymm_comp_inv
 
 instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSymm_comp_inv
+
+lemma mem_comp_comp {U V W : SetRel α α} [U.IsSymm] [W.IsSymm] {p : α × α} :
+    p ∈ U ○ V ○ W ↔ (U.ball p.1 ×ˢ W.ball p.2 ∩ V).Nonempty := by
+  grind [Set.nonempty_def, Prod.exists]
 
 lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ R := by
   rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,

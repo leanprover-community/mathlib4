@@ -948,7 +948,7 @@ instance secondCountable_of_separable [SeparableSpace α] : SecondCountableTopol
         ⟨x, refl_mem_uniformity (ht_mem k)⟩ with
       ⟨y, hxy, hys⟩
     refine ⟨_, ⟨y, hys, k, rfl⟩, (t k).symm hxy, fun z hz => ?_⟩
-    exact hUV (ball_subset_of_comp_subset (hk hxy) hUU' (hk hz))
+    exact hUV (SetRel.ball_subset_ball_of_comp_subset (hk hxy) hUU' (hk hz))
 
 variable {α}
 
