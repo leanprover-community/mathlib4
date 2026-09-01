@@ -34,13 +34,15 @@ instance instAddLeftMono : AddLeftMono (Multiset α) where elim _s _t _u := Mult
 instance instAddLeftReflectLE : AddLeftReflectLE (Multiset α) where
   le_of_add_le_add_left := Multiset.le_of_add_le_add_left
 
-instance instAddCancelCommMonoid : AddCancelCommMonoid (Multiset α) where
+instance instAddCommMonoid : AddCommMonoid (Multiset α) where
   add_comm := Multiset.add_comm
   add_assoc := Multiset.add_assoc
   zero_add := Multiset.zero_add
   add_zero := Multiset.add_zero
-  add_left_cancel _ _ _ := Multiset.add_right_inj.1
   nsmul := nsmulRec
+
+instance instAddCancelCommMonoid : AddCancelCommMonoid (Multiset α) where
+  add_left_cancel _ _ _ := Multiset.add_right_inj.1
 
 lemma mem_of_mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h : a ∈ n • s) : a ∈ s := by
   induction n with

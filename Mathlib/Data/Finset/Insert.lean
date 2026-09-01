@@ -111,7 +111,9 @@ theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
 @[simp, norm_cast]
-theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by grind
+theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by
+  ext
+  simp
 
 @[simp, norm_cast]
 theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by grind
@@ -122,8 +124,9 @@ lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by grind
 @[norm_cast]
 lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by grind
 
-theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a := by
-  grind
+theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a :=
+  ⟨fun h ↦ ⟨h ▸ mem_singleton_self a, fun x hx => mem_singleton.1 (h ▸ hx)⟩,
+    fun ⟨ha, hx⟩ ↦ ext fun x ↦ by simpa using ⟨hx x, fun h => h ▸ ha⟩⟩
 
 theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
     s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a := by
@@ -139,7 +142,7 @@ theorem singleton_iff_unique_mem (s : Finset α) : (∃ a, s = {a}) ↔ ∃! a, 
   simp only [eq_singleton_iff_unique_mem, ExistsUnique]
 
 theorem singleton_subset_set_iff {s : Set α} {a : α} : ↑({a} : Finset α) ⊆ s ↔ a ∈ s := by
-  grind
+  simp
 
 @[simp, grind =]
 theorem singleton_subset_iff {s : Finset α} {a : α} : {a} ⊆ s ↔ a ∈ s :=
@@ -436,7 +439,13 @@ theorem ne_insert_of_notMem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ ins
   contrapose h
   simp [h]
 
-theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by grind
+theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
+  constructor
+  · intro h
+    exact ⟨h (mem_insert_self a s), fun _x hx => h (mem_insert_of_mem hx)⟩
+  · rintro ⟨ha, hs⟩ x hx
+    rw [mem_insert] at hx
+    exact hx.elim (fun h => h ▸ ha) (hs ·)
 
 theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
   insert_subset_iff.mpr ⟨ha,hs⟩
