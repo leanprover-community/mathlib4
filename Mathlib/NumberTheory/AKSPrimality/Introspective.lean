@@ -67,7 +67,7 @@ protected theorem one (f : R[X]) : Introspective f 1 r := by
 
 protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CharP R n] :
     Introspective ((X : R[X]) - C (a : R)) n r := by
-  simp only [Introspective, AdjoinRoot.mk_eq_mk]
+  simp only [Introspective.iff_dvd]
   suffices ((X : R[X]) - C (a : R)) ^ n = ((X : R[X]) ^ n) - C (a : R) by
     simp_all
   simp [← frobenius_def n _]
