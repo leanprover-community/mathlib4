@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.CharP.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.NormNum.Basic
 
