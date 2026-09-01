@@ -865,29 +865,38 @@ private lemma exists_appLE_eq_restrict_of_isLimit [∀ {i j} (f : i ⟶ j), IsAf
   exact (TopCat.Presheaf.restrict_restrict (e.trans_eq h) h.ge _).symm
 
 include hc in
-private lemma exists_map_appLE_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    [∀ i, QuasiSeparatedSpace (D.obj i)]
-    {s : Γ(c.pt, ⊤)} {i₁ i₂ k : I} {U₁ : (D.obj i₁).Opens} {U₂ : (D.obj i₂).Opens}
-    (hU₁ : IsAffineOpen U₁) (hU₂ : IsAffineOpen U₂) {t₁ : Γ(D.obj i₁, U₁)} {t₂ : Γ(D.obj i₂, U₂)}
-    (ht₁ : ∀ (V : c.pt.Opens) (e : V ≤ c.π.app i₁ ⁻¹ᵁ U₁), (c.π.app i₁).appLE U₁ V e t₁ = s |_ V)
-    (ht₂ : ∀ (V : c.pt.Opens) (e : V ≤ c.π.app i₂ ⁻¹ᵁ U₂), (c.π.app i₂).appLE U₂ V e t₂ = s |_ V)
-    (u₁ : k ⟶ i₁) (u₂ : k ⟶ i₂) :
-    ∃ (l : I) (v : l ⟶ k), ∀ (V : (D.obj l).Opens) (h₁ : V ≤ D.map (v ≫ u₁) ⁻¹ᵁ U₁)
-      (h₂ : V ≤ D.map (v ≫ u₂) ⁻¹ᵁ U₂),
-        (D.map (v ≫ u₁)).appLE U₁ V h₁ t₁ = (D.map (v ≫ u₂)).appLE U₂ V h₂ t₂ := by
-  obtain ⟨l, v, hv⟩ := exists_app_map_eq_zero_of_isLimit D c hc
-    ((hU₁.preimage (D.map u₁)).isCompact.inter_of_isOpen (hU₂.preimage (D.map u₂)).isCompact
-      (U₁.2.preimage (D.map u₁).continuous) (U₂.2.preimage (D.map u₂).continuous))
-    ((D.map u₁).app U₁ t₁ |_ (D.map u₁ ⁻¹ᵁ U₁ ⊓ D.map u₂ ⁻¹ᵁ U₂) -
-      (D.map u₂).app U₂ t₂ |_ (D.map u₁ ⁻¹ᵁ U₁ ⊓ D.map u₂ ⁻¹ᵁ U₂)) (by
+private lemma exists_forall_map_appLE_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+    [∀ i, QuasiSeparatedSpace (D.obj i)] {s : Γ(c.pt, ⊤)} {J : Type*} [Finite J] {j : I}
+    {i : J → I} {U : ∀ x, (D.obj (i x)).Opens} (hU : ∀ x, IsAffineOpen (U x))
+    {t : ∀ x, Γ(D.obj (i x), U x)} (ht : ∀ x (V : c.pt.Opens) (e : V ≤ c.π.app (i x) ⁻¹ᵁ U x),
+      (c.π.app (i x)).appLE (U x) V e (t x) = s |_ V) (u : ∀ x, j ⟶ i x) :
+    ∃ (k : I) (v : k ⟶ j), ∀ x y (V : (D.obj k).Opens) (h₁ : V ≤ D.map (v ≫ u x) ⁻¹ᵁ U x)
+      (h₂ : V ≤ D.map (v ≫ u y) ⁻¹ᵁ U y),
+        (D.map (v ≫ u x)).appLE _ V h₁ (t x) = (D.map (v ≫ u y)).appLE _ V h₂ (t y) := by
+  refine Exists₂.imp (fun _ _ hv x y ↦ hv (x, y)) (IsCofiltered.exists_forall
+    (fun k (v : k ⟶ j) (x : J × J) ↦ ∀ (V : (D.obj k).Opens)
+      (h₁ : V ≤ D.map (v ≫ u x.1) ⁻¹ᵁ U x.1) (h₂ : V ≤ D.map (v ≫ u x.2) ⁻¹ᵁ U x.2),
+        (D.map (v ≫ u x.1)).appLE _ V h₁ (t x.1) = (D.map (v ≫ u x.2)).appLE _ V h₂ (t x.2)) ?_ ?_)
+  · exact fun w v x hv V h₁ h₂ ↦ by
+      have e : V ≤ D.map w ⁻¹ᵁ (D.map (v ≫ u x.1) ⁻¹ᵁ U x.1 ⊓ D.map (v ≫ u x.2) ⁻¹ᵁ U x.2) := by
+        simpa [Scheme.Hom.preimage_inf] using le_inf h₁ h₂
+      simpa [← ConcreteCategory.comp_apply, Scheme.Hom.appLE_comp_appLE, -Scheme.Hom.comp_appLE]
+        using congr((D.map w).appLE _ V e $(hv _ inf_le_left inf_le_right))
+  rintro ⟨x, y⟩
+  obtain ⟨k, v, hv⟩ := exists_app_map_eq_zero_of_isLimit D c hc
+    (((hU x).preimage (D.map (u x))).isCompact.inter_of_isOpen
+      ((hU y).preimage (D.map (u y))).isCompact ((U x).2.preimage (D.map (u x)).continuous)
+      ((U y).2.preimage (D.map (u y)).continuous))
+    ((D.map (u x)).app _ (t x) |_ (D.map (u x) ⁻¹ᵁ U x ⊓ D.map (u y) ⁻¹ᵁ U y) -
+      (D.map (u y)).app _ (t y) |_ (D.map (u x) ⁻¹ᵁ U x ⊓ D.map (u y) ⁻¹ᵁ U y)) (by
     dsimp +instances [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
     simp only [map_sub, sub_eq_zero, ← ConcreteCategory.comp_apply,
       Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE, Cone.w]
-    exact (ht₁ _ _).trans (ht₂ _ _).symm)
-  refine ⟨l, v, fun V h₁ h₂ ↦ ?_⟩
-  have H : V ≤ D.map v ⁻¹ᵁ (D.map u₁ ⁻¹ᵁ U₁ ⊓ D.map u₂ ⁻¹ᵁ U₂) := by
+    exact (ht x _ _).trans (ht y _ _).symm)
+  refine ⟨k, v, fun V h₁ h₂ ↦ ?_⟩
+  have H : V ≤ D.map v ⁻¹ᵁ (D.map (u x) ⁻¹ᵁ U x ⊓ D.map (u y) ⁻¹ᵁ U y) := by
     simpa [Scheme.Hom.preimage_inf] using le_inf h₁ h₂
-  apply_fun (D.obj l).presheaf.map (homOfLE H).op at hv
+  apply_fun (D.obj k).presheaf.map (homOfLE H).op at hv
   dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict] at hv ⊢
   simpa [sub_eq_zero, ← ConcreteCategory.comp_apply, -Scheme.Hom.comp_appLE,
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE] using hv
@@ -909,17 +918,8 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
       simpa [← Set.preimage_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base,
         Set.iUnion_subtype] using hσ)
     exact ⟨j, fun x ↦ w ≫ fj₀ x, by simpa [Scheme.Hom.preimage_iSup] using hw⟩
-  obtain ⟨k, v, hv⟩ := IsCofiltered.exists_forall
-    (fun l (v : l ⟶ j) (x : σ × σ) ↦ ∀ (V : (D.obj l).Opens)
-      (h₁ : V ≤ D.map (v ≫ fj x.1) ⁻¹ᵁ U x.1) (h₂ : V ≤ D.map (v ≫ fj x.2) ⁻¹ᵁ U x.2),
-        (D.map (v ≫ fj x.1)).appLE _ V h₁ (t x.1) = (D.map (v ≫ fj x.2)).appLE _ V h₂ (t x.2))
-    (fun w u x hu V h₁ h₂ ↦ by
-      have e : V ≤ D.map w ⁻¹ᵁ (D.map (u ≫ fj x.1) ⁻¹ᵁ U x.1 ⊓ D.map (u ≫ fj x.2) ⁻¹ᵁ U x.2) := by
-        simpa [Scheme.Hom.preimage_inf] using le_inf h₁ h₂
-      simpa [← ConcreteCategory.comp_apply, Scheme.Hom.appLE_comp_appLE, -Scheme.Hom.comp_appLE]
-        using congr((D.map w).appLE _ V e $(hu _ inf_le_left inf_le_right)))
-    fun x ↦ exists_map_appLE_eq_of_isLimit D c hc (hU x.1) (hU x.2) (ht x.1) (ht x.2)
-      (fj x.1) (fj x.2)
+  obtain ⟨k, v, hv⟩ := exists_forall_map_appLE_eq_of_isLimit D c hc (J := σ)
+    (fun x ↦ hU x) (fun x ↦ ht x) fj
   have hcov : ⨆ x : σ, D.map (v ≫ fj x) ⁻¹ᵁ U x = ⊤ := by
     simpa [Scheme.Hom.comp_preimage] using (D.map v).iSup_preimage_eq_top hfj
   have H (x : σ) : c.π.app (i x) ⁻¹ᵁ U x = c.π.app k ⁻¹ᵁ D.map (v ≫ fj x) ⁻¹ᵁ U x := by
@@ -928,7 +928,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
     (fun _ ↦ homOfLE le_top) hcov.ge (fun x ↦ (D.map (v ≫ fj x)).app (U x) (t x)) fun x y ↦ by
       dsimp [TopologicalSpace.Opens.infLELeft, TopologicalSpace.Opens.infLERight]
       simpa [← ConcreteCategory.comp_apply, Scheme.Hom.app_eq_appLE, -Scheme.Hom.comp_appLE]
-        using hv (x, y) _ inf_le_left inf_le_right
+        using hv x y _ inf_le_left inf_le_right
   replace ht₀ (x : σ) : t₀ |_ (D.map (v ≫ fj x) ⁻¹ᵁ U x) = (D.map (v ≫ fj x)).app (U x) (t x) :=
     ht₀ x
   refine ⟨k, t₀, TopCat.Sheaf.eq_of_locally_eq' ⟨_, c.pt.IsSheaf⟩
