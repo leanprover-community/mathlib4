@@ -258,7 +258,7 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
   refine ⟨i, fun k hk ↦ ?_, ?_⟩
   all_goals dsimp only [Pi.toLex_apply, ofLex_toLex]
   · conv_rhs => rw [← Equiv.swap_apply_of_ne_of_ne hk.ne (hk.trans_le hle).ne]
-    rw [Finsupp.mapDomain_apply (Equiv.injective _), supDegree]; rfl
+    rw [Finsupp.mapDomain_apply_of_injective (Equiv.injective _), supDegree]; rfl
   · apply hlt.trans_eq
     simp_rw [Finsupp.mapDomain_equiv_apply, Equiv.symm_swap, Equiv.swap_apply_left]
 

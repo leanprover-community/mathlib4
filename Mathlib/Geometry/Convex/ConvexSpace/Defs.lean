@@ -56,7 +56,7 @@ structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (M : Type v) 
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
-attribute [simp] StdSimplex.total
+attribute [simp] StdSimplex.total StdSimplex.nonneg
 grind_pattern StdSimplex.nonneg => self.weights
 grind_pattern StdSimplex.total => self.weights
 
@@ -209,17 +209,6 @@ lemma map_comp' (g₁ : M → N) (g₂ : N → P) :
 lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
   (map_comp ..).symm
-
-/-- Since the weights of a `StdSimplex` are nonnegative, no cancellation can happen when pushing a
-distribution forward, so the support of the pushforward is the image of the support. -/
-@[simp↓] -- We want this to have high priority than `weights_map`
-lemma support_weights_map [DecidableEq N] (s : StdSimplex R M) (f : M → N) :
-    (s.map f).weights.support = s.weights.support.image f := by
-  refine Finset.Subset.antisymm (by simpa using mapDomain_support) fun n hn ↦ ?_
-  obtain ⟨m, hm, rfl⟩ := Finset.mem_image.1 hn
-  rw [weights_map, mem_support_iff, mapDomain_apply_eq_sum]
-  refine (Finset.sum_pos' (fun a _ ↦ s.weights_nonneg a) ⟨m, by simp [hm], ?_⟩).ne'
-  exact (s.weights_nonneg m).lt_of_ne' (mem_support_iff.1 hm)
 
 lemma mem_range_map_iff
     (f : M → N) (s : StdSimplex R N) :

@@ -37,14 +37,14 @@ lemma map_untop_some (w : StdSimplex R (WithTop X)) (hw : w.weights ⊤ = 0) :
   induction b with
   | top => rw [weights_map, Finsupp.mapDomain_of_notMem_range _ _ (by simp), hw]
   | coe x =>
-    rw [weights_map, Finsupp.mapDomain_apply WithTop.coe_injective]
+    rw [weights_map, Finsupp.mapDomain_apply_of_injective WithTop.coe_injective]
     rfl
 
 @[to_dual (attr := simp) (dont_translate := R)]
 lemma untop_map_coe (w : StdSimplex R X) (hw) : (w.map WithTop.some).untop hw = w := by
   ext x
   change (w.map WithTop.some).weights (x : WithTop X) = w.weights x
-  rw [weights_map, Finsupp.mapDomain_apply WithTop.coe_injective]
+  rw [weights_map, Finsupp.mapDomain_apply_of_injective WithTop.coe_injective]
 
 @[to_dual (dont_translate := R)]
 lemma mem_range_map_coe_withTop {w : StdSimplex R (WithTop X)} :
@@ -71,12 +71,13 @@ instance : ConvexSpace R (WithTop X) :=
     simp [c, dite_eq_left <| mem_range_map_coe_withTop.1 ⟨w, rfl⟩]
   have htop (w : StdSimplex R (WithTop X)) : c w = ⊤ ↔ w.weights ⊤ ≠ 0 := by
     classical exact Ne.dite_eq_right_iff <| by simp
-  .mk c
-    (fun x ↦ by
+  .mk
+    (sConvexComb := c)
+    (single := fun x ↦ by
       induction x with
       | top => simp [htop]
       | coe a => rw [← map_single, hcoe, sConvexComb_single])
-    fun F ↦ by
+    (assoc := fun F ↦ by
       classical
       by_cases hF : ∀ v ∈ F.weights.support, v.weights (⊤ : WithTop X) = 0
       · obtain ⟨G, rfl⟩ : F ∈ Set.range (map (map WithTop.some)) := by
@@ -88,8 +89,7 @@ instance : ConvexSpace R (WithTop X) :=
       · have hc : ∃ v ∈ F.weights.support, v.weights (⊤ : WithTop X) ≠ 0 := by
           by_contra hc
           exact hF fun v hv ↦ not_not.1 fun h ↦ hc ⟨v, hv, h⟩
-        have h₁ : c (F.map c) = ⊤ := by
-          simpa [htop, -weights_map, ← Finsupp.mem_support_iff] using hc
+        have h₁ : c (F.map c) = ⊤ := by simpa [htop, ← Finsupp.mem_support_iff] using hc
         have h₂ : c F.sConvexComb = ⊤ := by
           simp only [htop, weights_sConvexComb, Finsupp.sum, Finsupp.coe_finsetSum,
             Finsupp.coe_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, ne_eq]
@@ -97,7 +97,7 @@ instance : ConvexSpace R (WithTop X) :=
           exact (Finset.sum_pos' (fun d _ ↦ mul_nonneg (F.weights_nonneg d) (d.weights_nonneg ⊤))
             ⟨v₀, hv₀, mul_pos ((F.weights_nonneg v₀).lt_of_ne' (Finsupp.mem_support_iff.1 hv₀))
               ((v₀.weights_nonneg ⊤).lt_of_ne' hv₀')⟩).ne'
-        rw [h₁, h₂]
+        rw [h₁, h₂])
 
 @[to_dual (dont_translate := R)]
 lemma sConvexComb_withTop_eq_some (hw : w.weights ⊤ = 0) :
