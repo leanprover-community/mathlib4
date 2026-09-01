@@ -626,12 +626,10 @@ theorem mvfderiv_eq_fderiv : d% f x = fderiv 𝕜 f x := by
   rw [← mvfderivWithin_univ, ← fderivWithin_univ, mvfderivWithin_eq_fderivWithin]
 
 /-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide -/
--- @[simp]
 theorem mfderivWithin_eq_fderivWithin : mfderiv[s] f x = fderivWithin 𝕜 f s x := by
   convert! mvfderivWithin_eq_fderivWithin
 
 /-- For maps between vector spaces, `mfderiv` and `fderiv` coincide -/
--- @[simp]
 theorem mfderiv_eq_fderiv : mfderiv% f x = fderiv 𝕜 f x := by
   convert! mvfderiv_eq_fderiv
 
