@@ -63,7 +63,4 @@ theorem eisensteinSeriesSIF_mdifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (
     (Eventually.of_forall fun s ↦ DifferentiableOn.fun_sum
     fun _ _ ↦ eisSummand_extension_differentiableOn _ _) isOpen_upperHalfPlaneSet
 
-@[deprecated (since := "2026-02-09")]
-alias eisensteinSeries_SIF_MDifferentiable := eisensteinSeriesSIF_mdifferentiable
-
 end EisensteinSeries
