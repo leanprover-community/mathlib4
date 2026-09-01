@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
 /-!
 # Totally nonnegative matrices
@@ -24,6 +25,8 @@ This file defines totally nonnegative matrices and provides basic API for them.
 - `Matrix.IsTotallyNonneg.nonneg`: any entry of a totally nonnegative matrix is nonnegative.
 - `Matrix.IsTotallyNonneg.zero`: the zero matrix is totally nonnegative.
 - `Matrix.IsTotallyNonneg.one`: the identity matrix is totally nonnegative.
+- `Matrix.IsTotallyNonneg.diagonal`: a diagonal matrix with nonnegative diagonal entries is totally
+  nonnegative.
 - `Matrix.IsTotallyNonneg.smul`: a nonnegative scalar multiple of a totally nonnegative matrix
   is totally nonnegative.
 -/
@@ -49,22 +52,32 @@ lemma IsTotallyNonneg.nonneg (hM : M.IsTotallyNonneg) (i j : ι) : 0 ≤ M i j :
   have hcols : StrictMono ![j] := fun _ _ _ ↦ by lia
   grind [det_unique, submatrix_apply, const_fin1_eq, hM hrows hcols]
 
-variable [IsStrictOrderedRing R]
+variable [IsOrderedRing R]
 
 @[simp] protected lemma IsTotallyNonneg.zero : (0 : Matrix ι ι R).IsTotallyNonneg
-  | 0 => by grind [det_fin_zero]
+  | 0 => by simp
   | n + 1 => by simp
 
-@[simp] protected lemma IsTotallyNonneg.one [DecidableEq ι] :
-    (1 : Matrix ι ι R).IsTotallyNonneg := by
+/-- A diagonal matrix with nonnegative diagonal entries is totally nonnegative. -/
+protected lemma IsTotallyNonneg.diagonal [DecidableEq ι] {f : ι → R} (hf : 0 ≤ f) :
+    (diagonal f).IsTotallyNonneg := by
   intro n rows cols hrows hcols
   by_cases h_range : Set.range rows = Set.range cols
-  · simp [hrows.eq_of_range_eq hcols h_range, submatrix_one cols hcols.injective]
+  · rw [hrows.eq_of_range_eq hcols h_range, submatrix_diagonal _ _ hcols.injective, det_diagonal]
+    exact Finset.prod_nonneg fun _ _ ↦ hf _
   · have : ¬(Set.range rows ⊆ Set.range cols) := by
       grind [hrows.injective.range_eq_range_iff_subset]
     obtain ⟨_, ⟨i, _⟩, _⟩ := Set.not_subset.mp this
     have : ∀ j, rows i ≠ cols j := by grind
     simp [det_eq_zero_of_row_eq_zero i, this]
+
+@[simp] lemma isTotallyNonneg_diagonal_iff [DecidableEq ι] {f : ι → R} :
+    (diagonal f).IsTotallyNonneg ↔ 0 ≤ f :=
+  ⟨fun hM i ↦ by simpa using hM.nonneg i i, .diagonal⟩
+
+@[simp] protected lemma IsTotallyNonneg.one [DecidableEq ι] :
+    (1 : Matrix ι ι R).IsTotallyNonneg :=
+  IsTotallyNonneg.diagonal zero_le_one
 
 lemma IsTotallyNonneg.smul {M : Matrix ι ι R}
     (hM : M.IsTotallyNonneg) {c : R} (hc : 0 ≤ c) :
