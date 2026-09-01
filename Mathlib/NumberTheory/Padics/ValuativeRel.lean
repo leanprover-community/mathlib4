@@ -68,14 +68,10 @@ instance : IsValuativeTopology ℚ_[p] := by
     rw [mem_ball_zero_iff, norm_lt_zpow_iff_mulValuation_lt_exp, exp_log (by simp)] at hz
     simpa [restrict_lt_iff_lt_embedding] using hz
 
-variable {x : ℚ_[p]}
-
-lemma vle_one_iff_norm_le_one : x ≤ᵥ 1 ↔ ‖x‖ ≤ 1 :=
+lemma vle_one_iff_norm_le_one {x : ℚ_[p]} : x ≤ᵥ 1 ↔ ‖x‖ ≤ 1 :=
   (Valuation.vle_one_iff mulValuation).trans mulValuation_le_one_iff_norm_le_one
 
-/-- The valuation of `ℚ_[p]` given by its valuative relation is at most one exactly on the
-elements of `p`-adic norm at most one. -/
-lemma valuation_le_one_iff_norm_le_one :
+lemma valuation_le_one_iff_norm_le_one {x : ℚ_[p]} :
     ValuativeRel.valuation ℚ_[p] x ≤ 1 ↔ ‖x‖ ≤ 1 :=
   (Valuation.vle_one_iff _).symm.trans vle_one_iff_norm_le_one
 
@@ -91,11 +87,9 @@ noncomputable instance : ValuativeRel ℤ_[p] :=
 instance : (mulValuation.comap (algebraMap ℤ_[p] ℚ_[p])).Compatible where
   vle_iff_le _ _ := Iff.rfl
 
-/-- The valuative relation on `ℤ_[p]` is the restriction of the one on `ℚ_[p]`. -/
 instance : ValuativeExtension ℤ_[p] ℚ_[p] where
   vle_iff_vle _ _ := Iff.rfl
 
-/-- The `p`-adic topology of `ℤ_[p]` is the topology of its valuative relation. -/
 instance : IsValuativeTopology ℤ_[p] :=
   .of_integers integers Topology.IsInducing.subtypeVal
 
