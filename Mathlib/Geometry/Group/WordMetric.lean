@@ -92,6 +92,7 @@ theorem wordLength_le_iff {n : ℕ} : P.wordLength g ≤ n ↔ ∃ l, l.length �
   · rintro ⟨l, hl, rfl⟩
     exact (P.wordLength_wordProd_le l).trans hl
 
+variable {g} in
 @[simp]
 lemma wordLength_eq_zero_iff : P.wordLength g = 0 ↔ g = 1 := by
   rw [← Nat.le_zero, wordLength_le_iff]
