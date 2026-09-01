@@ -76,8 +76,6 @@ theorem exists_isGeodesic : ∃ l, P.IsGeodesic l ∧ P.wordProd l = g := by
 
 /-! ### Word length -/
 
-/-- The word length of a group element given by a word `l` is smaller or equal to the
-length of `l`. -/
 lemma wordLength_wordProd_le : P.wordLength (P.wordProd l) ≤ l.length :=
   Nat.sInf_le ⟨l, rfl, rfl⟩
 
