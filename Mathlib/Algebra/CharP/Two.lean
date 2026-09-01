@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Ring.Parity
 
 /-!
@@ -194,6 +195,10 @@ alias CommRing.sq_injective := sq_injective
 alias CommRing.sq_inj := sq_inj
 
 end CharTwo
+
+@[simp]
+protected theorem IsSelfNeg.one [AddGroupWithOne R] [CharP R 2] : IsSelfNeg (1 : R) := by
+  rw [isSelfNeg_iff, neg_eq_iff_add_eq_zero, one_add_one_eq_two, CharTwo.two_eq_zero]
 
 section ringChar
 

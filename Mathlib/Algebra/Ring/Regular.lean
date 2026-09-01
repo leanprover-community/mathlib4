@@ -6,7 +6,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 module
 
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.Ring.Defs
 
 /-!
@@ -52,6 +54,10 @@ lemma NoZeroDivisors.toIsCancelMulZero [NonUnitalNonAssocRing α] [NoZeroDivisor
     IsCancelMulZero α where
   mul_left_cancel_of_ne_zero ha := (IsRegular.of_ne_zero' ha).1
   mul_right_cancel_of_ne_zero hb := (IsRegular.of_ne_zero' hb).2
+
+theorem isSelfNeg_of_isSMulRegular_two [NonAssocRing α] (h : IsSMulRegular α 2)
+    {a : α} : IsSelfNeg a ↔ a = 0 :=
+  isSelfNeg_iff_two_nsmul_eq_zero.trans ⟨(h <| by simpa using ·), (by simp [·])⟩
 
 namespace IsDedekindFiniteMonoid
 

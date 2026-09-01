@@ -6,8 +6,6 @@ Authors: Justus Springer
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Self-inverse elements
@@ -44,14 +42,6 @@ protected lemma IsSelfInv.eq_inv (h : IsSelfInv a) : a = a⁻¹ := h.symm
 
 @[to_additive]
 instance [DecidableEq α] : Decidable (IsSelfInv a) := decidable_of_iff _ isSelfInv_iff.symm
-
-@[to_additive]
-theorem Prod.isSelfInv_iff {α β : Type*} [Inv α] [Inv β] {x : α × β} :
-    IsSelfInv x ↔ IsSelfInv x.1 ∧ IsSelfInv x.2 := Prod.ext_iff
-
-@[to_additive]
-protected theorem Pi.isSelfInv_iff {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
-    {f : (i : ι) → α i} : IsSelfInv f ↔ ∀ i, IsSelfInv (f i) := funext_iff
 
 end Inv
 
