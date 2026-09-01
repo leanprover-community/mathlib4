@@ -850,7 +850,7 @@ private lemma exists_appLE_eq_restrict_of_isLimit [∀ {i j} (f : i ⟶ j), IsAf
   obtain ⟨j, t, hj⟩ := exists_appTop_π_eq_of_isAffine_of_isLimit _ _
     (isLimitOpensCone D c hc i U) ((c.π.app i ⁻¹ᵁ U).topIso.inv (s |_ _))
   obtain ⟨t, rfl⟩ := (D.map j.hom ⁻¹ᵁ U).topIso.symm.commRingCatIsoToRingEquiv.surjective t
-  have h : c.π.app j.left ⁻¹ᵁ D.map j.hom ⁻¹ᵁ U = c.π.app i ⁻¹ᵁ U := congr($(c.w j.hom) ⁻¹ᵁ U)
+  have h := π_app_preimage_map_preimage D c j.hom U
   replace hj : (c.π.app j.left).appLE (D.map j.hom ⁻¹ᵁ U) (c.π.app i ⁻¹ᵁ U) h.ge t =
       s |_ (c.π.app i ⁻¹ᵁ U) := by
     replace hj : ((c.π.app j.left).resLE (D.map j.hom ⁻¹ᵁ U) (c.π.app i ⁻¹ᵁ U) h.ge).appTop
@@ -922,8 +922,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
     (fun x ↦ hU x) (fun x ↦ ht x) fj
   have hcov : ⨆ x : σ, D.map (v ≫ fj x) ⁻¹ᵁ U x = ⊤ := by
     simpa [Scheme.Hom.comp_preimage] using (D.map v).iSup_preimage_eq_top hfj
-  have H (x : σ) : c.π.app (i x) ⁻¹ᵁ U x = c.π.app k ⁻¹ᵁ D.map (v ≫ fj x) ⁻¹ᵁ U x := by
-    rw [← Scheme.Hom.comp_preimage, Cone.w]
+  have H (x : σ) := (π_app_preimage_map_preimage D c (v ≫ fj x) (U x)).symm
   obtain ⟨t₀, ht₀, -⟩ := TopCat.Sheaf.existsUnique_gluing' ⟨_, (D.obj k).IsSheaf⟩ _ ⊤
     (fun _ ↦ homOfLE le_top) hcov.ge (fun x ↦ (D.map (v ≫ fj x)).app (U x) (t x)) fun x y ↦ by
       dsimp [TopologicalSpace.Opens.infLELeft, TopologicalSpace.Opens.infLERight]
