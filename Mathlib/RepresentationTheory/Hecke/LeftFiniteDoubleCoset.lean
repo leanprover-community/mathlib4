@@ -80,6 +80,7 @@ abbrev LeftDecompQuotient := H₁ ⧸ MulAction.stabilizer H₁ (g : G ⧸ H₂)
 
 namespace LeftDecompQuotient
 
+/-- The map sending `⟦h₁⟧` to `h₁gH₂`. -/
 def toLeftCoset :
     LeftDecompQuotient H₁ H₂ g → G ⧸ H₂ :=
   MulAction.ofQuotientStabilizer H₁ (g : G ⧸ H₂)
