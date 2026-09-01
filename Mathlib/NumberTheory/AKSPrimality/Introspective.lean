@@ -65,7 +65,7 @@ theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra 
   intro μ hμ
   simp only [Introspective] at h
   let g := AdjoinRoot.liftAlgHom ((X : R[X]) ^ r - 1) (Algebra.ofId R K) μ (by
-    simp[(isPrimitiveRoot_of_mem_primitiveRoots hμ).pow_eq_one])
+    simp [(isPrimitiveRoot_of_mem_primitiveRoots hμ).pow_eq_one])
   exact (Iff.mp (Eq.congr (by simp [g]; rfl) (by simp [g]; rfl))) (congrArg g h)
 
 @[simp]
@@ -74,9 +74,7 @@ protected theorem one (f : R[X]) : Introspective f 1 r := by
 
 protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CharP R n] :
     Introspective ((X : R[X]) - C (a : R)) n r := by
-  simp only [Introspective]
-  apply Ideal.Quotient.eq.mpr
-  convert Ideal.zero_mem _
+  simp only [Introspective, AdjoinRoot.mk_eq_mk]
   suffices ((X : R[X]) - C (a : R)) ^ n = ((X : R[X]) ^ n) - C (a : R) by
     simp_all
   simp [← frobenius_def n _]
