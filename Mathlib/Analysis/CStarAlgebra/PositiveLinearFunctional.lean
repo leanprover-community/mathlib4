@@ -12,8 +12,10 @@ import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 
 /-! # Characterization of positive continuous linear functionals on C⋆-algebras
 
-In this file we show that a continious linear functional `f` on a C⋆-algebra is monotone iff
-`‖f‖ = f 1`. -/
+In this file we show that a continuous linear functional `f` on a non-unital C⋆-algebra is
+monotone if `f` tendsto `‖f‖` along any/some approximate unit. Therefore, when
+the algebra
+is unital, `f` is monotone if and only if `‖f‖ = f 1`. -/
 
 public section
 
@@ -37,13 +39,11 @@ theorem tendsto_nhds_opNorm (f : A →P[ℂ] ℂ) {l : Filter A} (hl : l.IsIncre
     l.Tendsto (f ·) (𝓝 ‖(f : A →L[ℂ] ℂ)‖) := by
   suffices l.Tendsto (‖f ·‖) (𝓝 ‖f.toContinuousLinearMap‖) from this.ofReal.congr' <| by
     filter_upwards [hl.eventually_nonneg] using by simp_all [norm_of_nonneg' (f.map_nonneg _)]
-  refine Metric.tendsto_nhds.mpr fun ε hε ↦ ?_
-  have h : ∀ᶠ x in l, ‖f x‖ ≤ ‖f.toContinuousLinearMap‖ + ε / 2 := by
-    filter_upwards [hl.eventually_norm] with x hx
-    grw [← f.coe_toContinuousLinearMap, ContinuousLinearMap.le_opNorm, hx, mul_one]
-    grind
-  have h2 : ∀ᶠ x in l, ‖f.toContinuousLinearMap‖ - ε / 2 < ‖f x‖ := by
-    obtain ⟨_, ⟨a, ha1, rfl⟩, ha2⟩ := exists_lt_of_lt_csSup (b := ‖f.toContinuousLinearMap‖ - ε / 4)
+  refine Metric.nhds_basis_closedBall.tendsto_right_iff.mpr fun ε hε ↦ ?_
+  have h : ∀ᶠ x in l, ‖f x‖ ≤ ‖f.toContinuousLinearMap‖ := by
+    filter_upwards [hl.eventually_norm] using f.toContinuousLinearMap.unit_le_opNorm
+  have h2 : ∀ᶠ x in l, ‖f.toContinuousLinearMap‖ - ε ≤ ‖f x‖ := by
+    obtain ⟨_, ⟨a, ha1, rfl⟩, ha2⟩ := exists_lt_of_lt_csSup (b := ‖f.toContinuousLinearMap‖ - ε / 2)
       ((Metric.nonempty_closedBall (x := 0).mpr zero_le_one).image (‖f ·‖))
       (by rw [← f.toContinuousLinearMap.sSup_unitClosedBall_eq_norm]; simp; grind)
     have h3 : ∀ᶠ x in l, ‖f (x * a)‖ ^ 2 ≤ ‖f x‖ * ‖f.toContinuousLinearMap‖ := by
@@ -58,11 +58,11 @@ theorem tendsto_nhds_opNorm (f : A →P[ℂ] ℂ) {l : Filter A} (hl : l.IsIncre
         CStarRing.norm_star_mul_self, ← mul_assoc]
       refine mul_le_of_le_one_right (by positivity) ?_
       grw [mem_closedBall_zero_iff.mp ha1, mem_closedBall_zero_iff.mp ha1, one_mul]
-    have h4 : ∀ᶠ x in l, ‖f.toContinuousLinearMap‖ - ε / 4 < ‖f (x * a)‖ := by
+    have h4 : ∀ᶠ x in l, ‖f.toContinuousLinearMap‖ - ε / 2 < ‖f (x * a)‖ := by
       refine (Filter.Tendsto.norm ?_).eventually (lt_mem_nhds ha2)
       exact (ContinuousAt.tendsto (by fun_prop)).comp (hl.tendsto_mul_right a)
     filter_upwards [h3, h4] with x _ _ using by nlinarith [norm_nonneg (f x)]
-  filter_upwards [h, h2] using by grind [Real.dist_eq]
+  filter_upwards [h, h2] using by grind [Real.closedBall_eq_Icc]
 
 theorem ofReal_opNorm_eq_map_one {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
     (f : A →P[ℂ] ℂ) : ‖(f : A →L[ℂ] ℂ)‖ = f 1 :=
@@ -73,6 +73,11 @@ end PositiveContinuousLinearMap
 namespace ContinuousLinearMap
 variable {f : A →L[ℂ] ℂ}
 
+/- This lemma is only used to prove `monotone_iff_tendsto_nhds_opNorm` below,
+which can be used to construct a `PositiveContinuousLinearMap`. These may use
+`IsSelfAdjoint.map` to conclude the same property as this lemma, so we mark it
+`private`.
+ -/
 private lemma im_apply_eq_zero_of_tendsto_nhds_opNorm {l : Filter A}
     (hl : l.IsIncreasingApproximateUnit) (hf : l.Tendsto (f ·) (𝓝 ‖f‖)) {a : A}
     (ha : IsSelfAdjoint a) : (f a).im = 0 := by
