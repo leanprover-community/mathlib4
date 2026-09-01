@@ -45,7 +45,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Functor Category IsHomLift
+open CategoryTheory.Functor Category IsHomLift
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
@@ -95,7 +95,7 @@ end Functor.IsPreFibered
 
 namespace Functor.IsFibered
 
-open IsCartesian IsPreFibered
+open IsCartesian Functor.IsPreFibered
 
 /-- In a fibered category, any Cartesian morphism is strongly Cartesian. -/
 instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R S : 𝒮} (f : R ⟶ S)

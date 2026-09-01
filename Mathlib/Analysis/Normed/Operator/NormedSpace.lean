@@ -96,7 +96,7 @@ section
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
-  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f : E →SL[σ₁₂] F)
+  {σ₁₂ : 𝕜 →+* 𝕜₂} (f : E →SL[σ₁₂] F)
 
 namespace LinearMap
 
@@ -149,7 +149,7 @@ end LinearMap
 
 namespace ContinuousLinearMap
 
-open Set Real
+open Real
 
 /-- An operator is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
@@ -266,7 +266,7 @@ variable [RingHomIsometric σ₂₁]
 
 protected theorem antilipschitz (e : E ≃SL[σ₁₂] F) :
     AntilipschitzWith ‖(e.symm : F →SL[σ₂₁] E)‖₊ e :=
-  e.symm.lipschitz.to_rightInverse e.left_inv
+  e.symm.lipschitzWith.to_rightInverse e.left_inv
 
 theorem one_le_norm_mul_norm_symm [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
     1 ≤ ‖(e : E →SL[σ₁₂] F)‖ * ‖(e.symm : F →SL[σ₂₁] E)‖ := by
@@ -303,7 +303,7 @@ variable (𝕜)
 @[simp]
 theorem coord_norm (x : E) (h : x ≠ 0) : ‖coord 𝕜 x h‖ = ‖x‖⁻¹ := by
   have hx : 0 < ‖x‖ := norm_pos_iff.mpr h
-  haveI : Nontrivial (𝕜 ∙ x) := Submodule.nontrivial_span_singleton h
+  have : Nontrivial (𝕜 ∙ x) := Submodule.nontrivial_span_singleton h
   exact ContinuousLinearMap.homothety_norm _ fun y =>
     homothety_inverse _ hx _ (LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x h) _
 
