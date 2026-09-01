@@ -4335,6 +4335,7 @@ public import Mathlib.Data.Nat.Init
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.Nat.MaxPrimeFac
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Notation
