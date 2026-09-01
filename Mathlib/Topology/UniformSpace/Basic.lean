@@ -393,6 +393,7 @@ theorem UniformSpace.gc_generateFilter_uniformity :
       · exact refl_le_uniformity (seq n).2
     · exact (hdesc (seq n).2).2
 
+/-- Galois insertion between `generateFilter` and `uniformity`. -/
 def UniformSpace.giGenerateFilter :
     GaloisInsertion (@generateFilter α) (@uniformity α) where
   choice f hf :=
