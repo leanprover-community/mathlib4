@@ -51,9 +51,9 @@ structure Digraph (V : Type*) where
   /-- The adjacency relation of a digraph. -/
   Adj : V → V → Prop
   /-- There is no edge of the digraph outside its vertices. -/
-  left_mem_verts_of_adj ⦃v w : V⦄ : Adj v w → v ∈ verts := by aesop
+  left_mem_verts_of_adj ⦃v w : V⦄ : Adj v w → v ∈ verts := by grind
   /-- There is no edge of the digraph outside its vertices. -/
-  right_mem_verts_of_adj ⦃v w : V⦄ : Adj v w → w ∈ verts := by aesop
+  right_mem_verts_of_adj ⦃v w : V⦄ : Adj v w → w ∈ verts := by grind
 
 namespace Digraph
 
@@ -100,12 +100,15 @@ protected def emptyDigraph (V : Type*) : Digraph V where
 Two vertices are adjacent in the complete bipartite digraph on two vertex types
 if and only if they are not from the same side.
 Any bipartite digraph may be regarded as a subgraph of one of these.
-
-Deprecated name; use `completeBipartite` instead. -/
-@[simps, deprecated "completeBipartiteDigraph" (since := "2024-01-01")]
+-/
+@[simps]
 def completeBipartite (V W : Type*) : Digraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
   verts := Set.univ
+
+/-- Deprecated alias for `completeBipartite`. -/
+@[deprecated completeBipartite (since := "2026-09-01")]
+abbrev completeBipartiteGraph := completeBipartite
 
 variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
@@ -130,7 +133,7 @@ theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Pro
 /-- The relation that one `Digraph` is a spanning subgraph of another. -/
 def IsSpanningSubgraph (x y : Digraph V) : Prop :=
   x ≤ y ∧ x.verts = y.verts
-@[simp] theorem isSpanningSubgraph_iff {x y : Digraph V} :
+@[grind =] theorem isSpanningSubgraph_iff {x y : Digraph V} :
     IsSpanningSubgraph x y ↔ x ≤ y ∧ x.verts = y.verts := by
   rfl
 
@@ -146,7 +149,7 @@ def IsSpanningSubgraph (x y : Digraph V) : Prop :=
 instance : Max (Digraph V) where
   max x y := {
     verts := x.verts ∪ y.verts
-    Adj := x.Adj ⊔ y.Adj
+    Adj v w := x.Adj v w ∨ y.Adj v w
   }
 
 @[simp]
@@ -156,7 +159,7 @@ theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w �
 instance : Min (Digraph V) where
   min x y := {
     verts := x.verts ∩ y.verts
-    Adj := x.Adj ⊓ y.Adj
+    Adj v w := x.Adj v w ∧ y.Adj v w
   }
 
 @[simp]
@@ -207,51 +210,13 @@ theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).
 @[simp]
 theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) := by simp [iInf]
 
-instance distribLattice : DistribLattice (Digraph V) where
-    le := fun G H ↦ (G.verts ⊆ H.verts) ∧ (∀ ⦃v w⦄, G.Adj v w → H.Adj v w)
-    le_refl := by aesop
-    le_trans := by
-      intros _ _ _ h₁₂ h₂₃
-      constructor
-      · exact h₁₂.1.trans h₂₃.1
-      · aesop
-    le_antisymm := by
-      intros
-      ext v w <;> tauto
-    sup := max
-    inf := min
-    le_sup_left := by
-      intros
-      constructor <;> aesop (add simp [max, SemilatticeSup.sup])
-    le_sup_right := by
-      intros
-      constructor <;> aesop (add simp [max, SemilatticeSup.sup])
+instance : LT (Digraph V) where
+  lt G H := G ≤ H ∧ ¬H ≤ G
 
-    inf_le_left := by
-      intros
-      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
-
-    inf_le_right := by
-      intros
-      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
-
-    sup_le := by
-      intros
-      constructor <;> aesop (add simp [max, SemilatticeSup.sup])
-
-    le_inf := by
-      intros
-      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
-
-    le_sup_inf := by
-      intros
-      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, max,
-        SemilatticeSup.sup, Set.union_inter_distrib_left])
-
-instance : PartialOrder (Digraph V) where
-  le_antisymm := by
-    intro G H ⟨HsubG_verts, HsubG_edges⟩ ⟨GsubH_verts, GsubH_edges⟩
-    ext <;> grind
+instance distribLattice : DistribLattice (Digraph V) :=
+  fast_instance% Function.Injective.distribLattice (fun G ↦ (G.verts, G.Adj))
+    (fun _ _ h ↦ Digraph.ext (congrArg Prod.fst h) (congrArg Prod.snd h))
+    .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 section SpanningSubgraphs
 
 /-!
@@ -319,7 +284,7 @@ lemma sup_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
 /--
 The top subgraph `⊤`
 -/
-instance {G : Digraph V} : OrderTop (G.SpanningSubgraph) where
+instance {G : Digraph V} : OrderTop G.SpanningSubgraph where
   top : G.SpanningSubgraph := ⟨G, by aesop⟩
   le_top := by
     intro ⟨H, ⟨H_sub, H_verts⟩⟩
