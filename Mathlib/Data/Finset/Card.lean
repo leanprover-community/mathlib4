@@ -934,9 +934,7 @@ theorem strongDownwardInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
   rw [strongDownwardInduction]
 
 theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
-  have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
-    card_lt_card hxy
-  Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
+  InvImage.wf card (Nat.lt_wfRel).wf |>.anti fun _ _ ↦ card_lt_card
 
 /--
 To prove a proposition for an arbitrary `Finset α`,

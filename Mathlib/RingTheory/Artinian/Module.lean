@@ -72,10 +72,9 @@ theorem LinearMap.isArtinian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid 
   ⟨fun _ ↦ e.symm.strictMono.wellFoundedLT, fun _ ↦ e.strictMono.wellFoundedLT⟩
 
 theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
-    IsArtinian R M :=
-  ⟨Subrelation.wf
-    (fun {A B} hAB => show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB)
-    (InvImage.wf (Submodule.map f) IsWellFounded.wf)⟩
+    IsArtinian R M where
+  wf := InvImage.wf (Submodule.map f) IsWellFounded.wf |>.anti
+    fun A B hAB => show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB
 
 instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
   isArtinian_of_injective N.subtype Subtype.val_injective
@@ -85,11 +84,9 @@ theorem isArtinian_of_le {s t : Submodule R M} [IsArtinian R t] (h : s ≤ t) : 
 
 variable (M) in
 theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f) [IsArtinian R M] :
-    IsArtinian R P :=
-  ⟨Subrelation.wf
-    (fun {A B} hAB =>
-      show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
-    (InvImage.wf (Submodule.comap f) IsWellFounded.wf)⟩
+    IsArtinian R P where
+  wf := InvImage.wf (Submodule.comap f) IsWellFounded.wf |>.anti
+    fun A B hAB => show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB
 
 /--
 If `M` is an Artinian `R` module, and `S` is an `R`-algebra with a surjective

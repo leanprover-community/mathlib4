@@ -84,7 +84,7 @@ theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
 
 instance isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
   classical
-  exact Subrelation.isWellFounded (InvImage _ toFinset) toFinset_ssubset.2
+  exact .anti (r := InvImage _ toFinset) fun _ _ ↦ toFinset_ssubset.2
 
 end Multiset
 
