@@ -103,7 +103,7 @@ Uploads target a single container via `--container=NAME`.
 
 ## Public cache endpoint
 
-`cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts. 
+`cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts.
 
 ### Troubleshooting
 
