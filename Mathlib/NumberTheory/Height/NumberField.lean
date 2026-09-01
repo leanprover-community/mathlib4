@@ -198,32 +198,33 @@ private theorem mulHeight_pow_finrank_of_nonempty {ι : Type*} [Nonempty ι] [Fi
       simp [InfinitePlace.placesOver, liesOver_iff_comap_eq]
     rw [Finset.mem_filter_univ, ← liesOver_iff_comap_eq] at hw
     rw [LiesOver.comap_eq w v, inertiaDeg_eq_finrank, mult_mul_finrank]
-  · simp_rw [Function.comp_apply, ← finprod_comp_equiv equivHeightOneSpectrum.symm]
+  · let eK := (equivHeightOneSpectrum (K := K)).symm
+    let eL := (equivHeightOneSpectrum (K := L)).symm
+    simp_rw [Function.comp_apply, ← finprod_comp_equiv eK, ← finprod_comp_equiv eL]
     rw [foobar_mul (K := K) (L := L), finprod_pow]
     · refine finprod_congr fun v ↦ ?_
-      let e := HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot
+      let e := (HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot).symm
       have key (w : v.asIdeal.primesOver (𝓞 L)) x :
-          equivHeightOneSpectrum.symm (e.symm w) (algebraMap K L x) =
-          equivHeightOneSpectrum.symm v x ^ (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
-        have : (e.symm w).1.asIdeal.LiesOver v.asIdeal := by
+          eL (e w) (algebraMap K L x) =
+          eK v x ^ (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
+        have : (e w).1.asIdeal.LiesOver v.asIdeal := by
           rw [Ideal.liesOver_iff_dvd_map]
-          · exact (e.symm w).2
-          · exact (e.symm w).1.2.ne_top
-        have : w.1 = (e.symm w).1 := by
-          conv_lhs => rw [← e.apply_symm_apply w]
+          · exact (e w).2
+          · exact (e w).1.2.ne_top
+        have : w.1 = (e w).1 := by
+          rw [← e.symm_apply_apply w, e.apply_symm_apply]
           rfl
-        have := FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap v (e.symm w).1 x
-        convert this
+        convert FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap v (e w).1 x
       simp only [e] at key
       simp only [key]
-      have pos i : 0 ≤ equivHeightOneSpectrum.symm v (x i) := by positivity
+      have pos i : 0 ≤ eK v (x i) := by positivity
       simp_rw [← Real.iSup_pow pos, Finset.prod_pow_eq_pow_sum,
         Ideal.sum_ramification_inertia_eq_finrank v.1 (𝓞 L),
         IsFractionRing.finrank_eq (𝓞 K) K (𝓞 L) L]
-    · exact Function.HasFiniteMulSupport.iSup fun i ↦ Function.HasFiniteMulSupport.comp_of_injective
-        equivHeightOneSpectrum.symm.injective (FinitePlace.hasFiniteMulSupport (by simp [hx]))
-    · exact Function.HasFiniteMulSupport.iSup fun i ↦ Function.HasFiniteMulSupport.comp_of_injective
-        equivHeightOneSpectrum.symm.injective (FinitePlace.hasFiniteMulSupport (by simp [hx]))
+    · exact Function.HasFiniteMulSupport.iSup fun i ↦
+        (FinitePlace.hasFiniteMulSupport (hx i)).comp_of_injective eK.injective
+    · exact Function.HasFiniteMulSupport.iSup fun i ↦
+        ((FinitePlace.hasFiniteMulSupport (by simp [hx]))).comp_of_injective eL.injective
 
 theorem mulHeight_pow_finrank {ι : Type*} (x : ι → K) [Finite ι] :
     mulHeight x ^ Module.finrank K L = mulHeight (algebraMap K L ∘ x) := by
