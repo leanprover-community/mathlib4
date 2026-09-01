@@ -839,10 +839,15 @@ jobs:
           ## for non-PR builds (push to master / bors); the consumer then falls
           ## back to the commit's associated PRs.
           printf '%s' "${{ github.event.pull_request.number }}" > pr_number.txt
+          ## Executing this runs the export and writes a (gitignored) `crossrefs.json`,
+          ## which doubles as a smoke test of the `export_crossrefs.yml` workflow. The
+          ## output is uploaded below for the post-build `crossref_summary` workflow,
+          ## which diffs it against the published master export.
+          lake env lean scripts/export_crossrefs.lean
 
       - name: ensure dump outputs are regular files
         run: |
-          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
+          for f in decls.txt imports.json import_graph.dot pr_number.txt crossrefs.json; do
             if [ -L "$f" ] || [ ! -f "$f" ]; then
               echo "Refusing to upload: $f is not a regular file." >&2
               ls -la -- "$f" >&2 || true
@@ -859,20 +864,20 @@ jobs:
             decls.txt
             imports.json
             pr_number.txt
+            crossrefs.json
           ## Master pushes: 90 days, so later PRs forked from these commits
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
       - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
+        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt crossrefs.json
 
       - name: check all scripts build successfully
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
-          # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
-          # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
-          lake env lean scripts/export_crossrefs.lean
+          # `scripts/export_crossrefs.lean` is run by the "dump declarations" step above,
+          # which also uploads its output; that invocation is the smoke test for it.
           lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything

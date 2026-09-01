@@ -1,0 +1,194 @@
+# Post-build workflow that comments on a PR with the cross-references it adds.
+#
+# Declarations can be tagged with `@[stacks]`, `@[kerodon]`, `@[wikidata]`,
+# `@[lmfdb]` or `@[dlmf]` (see `Mathlib/Tactic/CrossRefAttribute.lean`). In a diff
+# these appear as bare identifiers, so checking that e.g. `18.5.E1` is the intended
+# DLMF equation means assembling the URL by hand, once per tag. This workflow posts
+# a sticky comment listing each added cross-reference as a clickable link.
+#
+# The data is not re-parsed from the diff: `scripts/export_crossrefs.lean` already
+# computes it from the elaborated environment, and `build_template.yml` runs it on
+# every build and uploads the result in the `import-graph` artifact. This workflow
+# is a set difference between that file and the published master export.
+
+name: Cross-reference summary (post-build)
+
+on:
+  workflow_run:
+    # Match the build workflows by their `name:` — `build.yml` (non-fork PRs,
+    # push-triggered) and `build_fork.yml` (fork PRs, pull_request_target).
+    workflows: ["continuous integration", "continuous integration (mathlib forks)"]
+    types: [completed]
+
+# Per upstream PR (repo + branch), keep only the latest run so rapid pushes don't
+# race to update the comment with a stale table.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read           # for cross-workflow artifact downloads
+  pull-requests: write    # for the sticky comment
+
+env:
+  # Published by `export_crossrefs.yml` after every successful master build.
+  BASELINE_URL: https://raw.githubusercontent.com/leanprover-community/crossref-exports/master/crossrefs.json
+
+jobs:
+  crossrefs:
+    # The build never runs on a `pull_request` event: non-fork PRs build via
+    # `build.yml` on `push` (head_branch = the PR branch), fork PRs via
+    # `build_fork.yml` on `pull_request_target`. Accept both, and for `push`
+    # exclude master and the non-PR maintenance branches.
+    if: >-
+      github.repository == 'leanprover-community/mathlib4'
+      && github.event.workflow_run.conclusion == 'success'
+      && (
+        github.event.workflow_run.event == 'pull_request_target'
+        || (
+          github.event.workflow_run.event == 'push'
+          && github.event.workflow_run.head_branch != 'master'
+          && github.event.workflow_run.head_branch != 'nightly-testing'
+          && !startsWith(github.event.workflow_run.head_branch, 'lean-pr-testing-')
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      # Builds predating the `crossrefs.json` upload still produce this artifact,
+      # just without that file; the report step below skips cleanly in that case.
+      - name: Download the import-graph artifact
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: import-graph
+          path: ./artifact
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve PR number
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          NEW_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          # The build records the PR number in the artifact — reliable for fork
+          # PRs, where the commit-SHA search API lags or misses. Fall back to the
+          # commit's associated PRs for same-repo pushes.
+          PR_NUMBER="$(tr -dc '0-9' < ./artifact/pr_number.txt 2>/dev/null || true)"
+          if [ -z "$PR_NUMBER" ]; then
+            PR_NUMBER="$(gh api "repos/$REPO/commits/$NEW_SHA/pulls" --jq '.[0].number // empty')"
+          fi
+          echo "pr-number=$PR_NUMBER" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Build the comment
+        id: report
+        env:
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          if [ ! -f ./artifact/crossrefs.json ]; then
+            echo "state=skip" >> "$GITHUB_OUTPUT"
+            echo "No crossrefs.json in the artifact; this build predates its upload."
+            exit 0
+          fi
+
+          if ! curl -sSfL --max-time 60 "$BASELINE_URL" -o baseline.json; then
+            echo "state=skip" >> "$GITHUB_OUTPUT"
+            echo "Could not fetch the master baseline; skipping rather than reporting every existing tag as new."
+            exit 0
+          fi
+
+          # Keep the (decl, db, id) triples present in this build but not on master.
+          cat > diff.jq <<'JQ'
+          ([$base[0].entries[] | .decl as $d | .refs[] | "\($d)\t\(.db)\t\(.id)"]
+           | map({key: ., value: true}) | from_entries) as $old
+          | [ .entries[]
+              | .decl as $d | .module as $m | .line as $l
+              | .refs[]
+              | select($old["\($d)\t\(.db)\t\(.id)"] | not)
+              | {decl: $d, module: $m, line: $l, db: .db, id: .id, comment: (.comment // "")} ]
+          JQ
+
+          # `crossrefs.json` is produced by the `post_steps` job, which executes
+          # (potentially fork) PR code unsandboxed, so treat it as untrusted: accept
+          # only the five known databases, ids and module names matching the shapes
+          # Lean's own parsers accept, and a numeric line. Everything else is dropped,
+          # so a crafted entry cannot inject markdown or a `javascript:` URL.
+          # The URL and label tables mirror `Database.url` / `Database.label`.
+          cat > render.jq <<'JQ'
+          def dburl: {
+            dlmf:     "https://dlmf.nist.gov/",
+            kerodon:  "https://kerodon.net/tag/",
+            lmfdb:    "https://www.lmfdb.org/knowledge/show/",
+            stacks:   "https://stacks.math.columbia.edu/tag/",
+            wikidata: "https://www.wikidata.org/wiki/"
+          };
+          def dblabel: {
+            dlmf:     "DLMF",
+            kerodon:  "Kerodon Tag",
+            lmfdb:    "LMFDB",
+            stacks:   "Stacks Tag",
+            wikidata: "Wikidata"
+          };
+          def clean: tostring | gsub("[|`\r\n]"; " ");
+          .[]
+          | select(dburl[.db] != null)
+          | select(((.id | type) == "string") and (.id | test("^[A-Za-z0-9._]+$")))
+          | select(((.module | type) == "string") and (.module | test("^[A-Za-z0-9_.]+$")))
+          | select((.line | type) == "number")
+          | . as $r
+          | (($r.module | gsub("\\."; "/")) + ".lean") as $path
+          | (if ($r.comment | clean | gsub("^ +| +$"; "")) == "" then ""
+             else " (\($r.comment | clean))" end) as $c
+          | "| [`\($r.decl | clean)`](https://github.com/\($repo)/blob/\($sha)/\($path)#L\($r.line)) | [\(dblabel[$r.db]) \($r.id)](\(dburl[$r.db])\($r.id))\($c) |"
+          JQ
+
+          jq --slurpfile base baseline.json -f diff.jq ./artifact/crossrefs.json > added.json
+          jq -r --arg repo "$REPO" --arg sha "$SHA" -f render.jq added.json > rows.md
+
+          if [ ! -s rows.md ]; then
+            echo "state=none" >> "$GITHUB_OUTPUT"
+            echo "This build adds no cross-references beyond the published master export."
+            exit 0
+          fi
+
+          COUNT="$(wc -l < rows.md | tr -d ' ')"
+          {
+            printf '### Cross-references added in this PR\n\n'
+            if [ "$COUNT" -gt 15 ]; then
+              printf '<details><summary>%s new cross-references</summary>\n\n' "$COUNT"
+            fi
+            printf '| Declaration | Reference |\n|---|---|\n'
+            cat rows.md
+            if [ "$COUNT" -gt 15 ]; then
+              printf '\n</details>\n'
+            fi
+          } > report.md
+
+          echo "state=found" >> "$GITHUB_OUTPUT"
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post the cross-reference summary
+        if: steps.report.outputs.state == 'found' && steps.pr.outputs.pr-number != ''
+        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
+        with:
+          header: 'Cross-reference summary'
+          number: ${{ steps.pr.outputs.pr-number }}
+          path: report.md
+
+      # Should do nothing if a 'Cross-reference summary' comment does not exist, so
+      # PRs that never added a cross-reference are never commented on.
+      - name: Clear a stale cross-reference summary
+        if: steps.report.outputs.state == 'none' && steps.pr.outputs.pr-number != ''
+        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
+        with:
+          header: 'Cross-reference summary'
+          number: ${{ steps.pr.outputs.pr-number }}
+          only_update: true
+          message: 'This PR no longer adds any cross-reference attributes.'

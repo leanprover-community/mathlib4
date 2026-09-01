@@ -247,6 +247,10 @@ to module `Foo.Bar` (no `srcDir` indirection).
   successful master build and publishes the result to the
   [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
   (committing only when the entries actually change).
+  The same script also runs during every CI build (in `build_template.yml`), which uploads its
+  output in the `import-graph` artifact for
+  [`crossref_summary.yml`](../.github/workflows/crossref_summary.yml) to diff against the published
+  master export and report a PR's newly added cross-references.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
