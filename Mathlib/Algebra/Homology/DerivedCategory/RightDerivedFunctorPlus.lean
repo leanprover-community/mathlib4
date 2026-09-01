@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
 
 /-!
 # The right derived functor on the bounded below derived category
@@ -66,11 +67,16 @@ instance :
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnith]
   infer_instance
 
-instance : F.rightDerivedFunctorPlus.CommShift ℤ := sorry
+@[no_expose]
+noncomputable instance : F.rightDerivedFunctorPlus.CommShift ℤ :=
+  Functor.IsRightDerivedFunctor.commShift _ F.rightDerivedFunctorPlusUnith
+    (HomotopyCategory.Plus.quasiIso C) ℤ
+
+instance : NatTrans.CommShift F.rightDerivedFunctorPlusUnith ℤ :=
+  Functor.IsRightDerivedFunctor.natTrans_commShift _ F.rightDerivedFunctorPlusUnith
+    (HomotopyCategory.Plus.quasiIso C) ℤ
 
 instance : F.rightDerivedFunctorPlus.IsTriangulated := sorry
-
-instance : NatTrans.CommShift F.rightDerivedFunctorPlusUnith ℤ := sorry
 
 /-- A natural transformation that is part of the data of the right derived functor
 `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
