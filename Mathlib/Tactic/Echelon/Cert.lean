@@ -12,13 +12,15 @@ public import Mathlib.Util.Qq
 /-!
 # Certificate construction for the Bareiss decomposition
 
-The elaboration of the certificate components from the decomposition data, and the
-default certifier `mkCertificate`, which proves the certificate conditions by
-kernel-checked `decide`.
+The certificate constructor from the decomposition data, and the default certifier
+`mkCertificate`, which currently proves the certificate conditions by `decide +kernel`.
+
+This will eventually be generalised to a general certificate
+constructor that is parametric on a leaf normaliser.
 
 ## Main definitions
 
-- `CertInput`, `Certifier`: the input of a certifier, and the certifier interface.
+- `CertInput`: the input of a certifier, and the certifier interface.
 - `mkCertificate`: build the `Echelon.Decomposition` certificate of a matrix literal.
 - `checkKernelDecide`: check that equality in a ring reduces in the kernel.
 - `mkPerm`, `mkPivotLit`, `mkMatrixLit`: elaborate the row permutation, the pivot
@@ -27,10 +29,7 @@ kernel-checked `decide`.
 ## Implementation notes
 
 The elimination records its echelon form `U`, making the product a certificate obligation
-of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`. Deciding
-the pivot condition on the product itself evaluates the multiplication inside the decision
-procedure, leaving no separate goal for a dedicated matrix multiplication tactic to
-discharge.
+of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`.
 -/
 
 public meta section
@@ -60,7 +59,7 @@ structure CertInput where
 
 /-- A certifier: prove the certificate conditions, elaborating the
 `Echelon.Decomposition A` term of the input. -/
-@[expose] def Certifier := CertInput → MetaM Expr
+def Certifier := CertInput → MetaM Expr
 
 /-- Build the numeral of `i` in `Fin $n`. -/
 def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
