@@ -32,7 +32,9 @@ of an edge `inv : Edge x₁ x₀` and simplices `homInvId : CompStruct hom inv (
 
 universe v u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet
 

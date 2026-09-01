@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-public import Mathlib.Data.Countable.Defs
+public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Int.Cast.Lemmas
 
