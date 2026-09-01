@@ -296,7 +296,9 @@ def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R 
 @[simp]
 lemma coe_toGLKerEquiv_apply {g : SpecialLinearGroup n R} : toGLKerEquiv g = toGL g := rfl
 
-lemma coe_toGLKerEquiv_apply_symm {g : SpecialLinearGroup n R} : toGL g = toGLKerEquiv g := rfl
+@[simp]
+lemma coe_toGLKerEquiv_symm_apply {g : (GeneralLinearGroup.det : GL n R →* Rˣ).ker} :
+  toGLKerEquiv.symm g = g.val.val := rfl
 
 variable (S) in
 /-- `mapGL` is the map from the special linear group over `R` to the general linear group over
