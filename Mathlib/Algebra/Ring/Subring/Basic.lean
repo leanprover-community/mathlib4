@@ -949,7 +949,7 @@ variable {s t : Subring R}
 /-- Makes the identity isomorphism from a proof two subrings of a multiplicative
 monoid are equal. -/
 def subringCongr (h : s = t) : s ≃+* t :=
-  { Equiv.Set.congr <| congr_arg _ h with
+  { Set.equivOfEq <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
