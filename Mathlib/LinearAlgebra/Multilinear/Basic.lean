@@ -407,7 +407,6 @@ def mk' [DecidableEq ι] (f : (∀ i, M₁ i) → M₂)
   map_update_smul' m i c x := by convert! h₂ m i c x
 
 /-- Earlier, this name was used by what is now called `MultilinearMap.map_update_smul_left`. -/
-@[simp]
 protected theorem map_update_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
     f (update m i (c • x)) = c • f (update m i x) := by
   simp
