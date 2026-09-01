@@ -477,19 +477,17 @@ equivalent to the type of functions `∀ a, {b : β a // p a b}`. -/
 def subtypePiEquivPi {p : (a : δ') → π a → Prop} :
     { f : (a : δ') → π a // ∀ (a : δ'), p a (f a) } ≃ᵐ ((a : δ') → { b : π a // p a b }) where
   toEquiv := .subtypePiEquivPi
-  measurable_toFun := measurable_pi_lambda _ (fun a =>
+  measurable_toFun := .of_eval (fun a =>
     ((measurable_pi_apply a).comp measurable_subtype_coe).subtype_mk)
-  measurable_invFun := (measurable_pi_lambda _ (fun a =>
+  measurable_invFun := (Measurable.of_eval (fun a =>
     measurable_subtype_coe.comp (measurable_pi_apply a))).subtype_mk
 
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
   between `Π a, β₁ a` and `Π a, β₂ a`. -/
 def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π' a where
   toEquiv := .piCongrRight fun a => (e a).toEquiv
-  measurable_toFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_toFun.comp (measurable_pi_apply i)
-  measurable_invFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
+  measurable_toFun := .of_eval fun i => (e i).measurable_toFun.comp (measurable_pi_apply i)
+  measurable_invFun := .of_eval fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
 
 variable (π) in
 /-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
