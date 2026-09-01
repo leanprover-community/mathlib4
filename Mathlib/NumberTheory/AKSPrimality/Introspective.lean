@@ -68,11 +68,12 @@ theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra 
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
   intro μ hμ
   simp only [Introspective] at h
-  let g := lift (S := K) (span ({(X : R[X]) ^ r - C 1})) (aeval (R := R) μ) (by
+  have hg : ∀ a ∈ span {(X : R[X]) ^ r - C 1}, ((aeval (R := R) μ) : R[X] →+* K) a = 0 := by
     intro a ha
     simp only [RingHom.coe_coe]
     obtain ⟨ l , ee ⟩ := mem_span_singleton.mp ha
-    grind [aeval_sub, aeval_X, (isPrimitiveRoot_of_mem_primitiveRoots hμ).pow_eq_one])
+    grind [aeval_sub, aeval_X, (isPrimitiveRoot_of_mem_primitiveRoots hμ).pow_eq_one]
+  let g := lift (S := K) (span ({(X : R[X]) ^ r - C 1})) (aeval (R := R) μ) hg
   exact (Iff.mp (Eq.congr (by simp [g]) (by simp [g, aeval_comp]))) (congrArg g h)
 
 @[simp]
