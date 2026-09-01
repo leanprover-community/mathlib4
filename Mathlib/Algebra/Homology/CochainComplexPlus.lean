@@ -151,7 +151,7 @@ def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
 /-- The isomorphism between `F.mapCochainComplexPlus ⋙ CochainComplex.Plus.ι D`
 and `CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _` when `F : C ⥤ D`
 is a functor which preserves zero morphisms -/
-@[simps!]
+@[simps! hom_app inv_app]
 def mapCochainComplexPlusCompι :
     F.mapCochainComplexPlus ⋙ CochainComplex.Plus.ι D ≅
       CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _ := Iso.refl _
