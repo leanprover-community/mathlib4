@@ -851,8 +851,7 @@ include hc in
 private lemma exists_isOpenCover_appLE_eq_restrict_of_isLimit (s : Γ(c.pt, ⊤)) :
     ∃ (k : I) (J : Type u) (U : J → (D.obj k).Opens) (_ : IsOpenCover U)
       (t : ∀ x, Γ(D.obj k, U x)), (D.obj k).presheaf.IsCompatible U t ∧
-        ∀ x (V : c.pt.Opens) (e : V ≤ c.π.app k ⁻¹ᵁ U x),
-          (c.π.app k).appLE (U x) V e (t x) = s |_ V := by
+        ∀ x, (c.π.app k).app (U x) (t x) = s |_ (c.π.app k ⁻¹ᵁ U x) := by
   obtain ⟨i⟩ := IsCofiltered.nonempty (C := I)
   obtain ⟨Us, hUs, hUsf, hsup⟩ := (D.obj i).isBasis_affineOpens.exists_finite_of_isCompact
     (U := ⊤) (by simpa using isCompact_univ)
@@ -902,13 +901,13 @@ private lemma exists_isOpenCover_appLE_eq_restrict_of_isLimit (s : Γ(c.pt, ⊤)
       Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE] using hv
   refine ⟨k, Us, fun W ↦ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W.1,
     (hcov.preimage (D.map w)).preimage (D.map v), fun W ↦ (D.map v).app _ (T W),
-    fun W₁ W₂ ↦ ?_, fun W V e ↦ ?_⟩
+    fun W₁ W₂ ↦ ?_, fun W ↦ ?_⟩
   · dsimp [Opens.infLELeft, Opens.infLERight]
     simpa [← ConcreteCategory.comp_apply, Scheme.Hom.app_eq_appLE, -Scheme.Hom.comp_appLE]
       using hv W₁ W₂ _ inf_le_left inf_le_right
   · simp only [← ConcreteCategory.comp_apply, Scheme.Hom.app_eq_appLE,
       Scheme.Hom.appLE_comp_appLE, Cone.w]
-    exact hT W V _
+    exact hT W _ _
 
 include hc in
 lemma exists_appTop_π_eq_of_isLimit (s : Γ(c.pt, ⊤)) :
@@ -918,9 +917,10 @@ lemma exists_appTop_π_eq_of_isLimit (s : Γ(c.pt, ⊤)) :
     (fun _ ↦ homOfLE le_top) hU.ge t hcompat
   refine ⟨k, t₀, TopCat.Sheaf.eq_of_locally_eq' ⟨_, c.pt.IsSheaf⟩ (fun x ↦ c.π.app k ⁻¹ᵁ U x) ⊤
     (fun _ ↦ homOfLE le_top) (hU.preimage (c.π.app k)).ge _ _ fun x ↦ ?_⟩
-  refine (ht x _ le_rfl).symm.trans (Eq.trans ?_ (ConcreteCategory.comp_apply _ _ _))
+  refine (ht x).symm.trans (Eq.trans ?_ (ConcreteCategory.comp_apply _ _ _))
   have key := congr((c.π.app k).appLE _ (c.π.app k ⁻¹ᵁ U x) le_rfl $(ht₀ x))
   simp only [← ConcreteCategory.comp_apply, Scheme.Hom.map_appLE] at key
+  rw [Scheme.Hom.app_eq_appLE]
   exact key.symm
 
 include hc in
