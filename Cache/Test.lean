@@ -185,7 +185,7 @@ def test_envValueNormalization : IO Unit := do
   assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
 
 /-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set.
-Without it, reads address `cacheHostURL`, and address the Azure account when
+Without it, reads address `publicCacheEndpoint`, and address the Azure account when
 `MATHLIB_CACHE_DEBUG_USE_LEGACY` selects the legacy read host. `getBaseURLFrom` is
 pure, so this test covers every branch; the environment-reading wrapper
 (`getBaseURL`) adds no logic of its own. -/
@@ -208,9 +208,9 @@ def test_getBaseURLFrom : IO Unit := do
   -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
   -- undefined, so an empty value must keep the default.
   assertEq "empty value counts as unset"
-    cacheHostURL (getBaseURLFrom (some "") false)
+    publicCacheEndpoint (getBaseURLFrom (some "") false)
   assertEq "whitespace-only value counts as unset"
-    cacheHostURL (getBaseURLFrom (some " \n") false)
+    publicCacheEndpoint (getBaseURLFrom (some " \n") false)
   assertEq "override is trimmed"
     "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n") false)
   -- A base written with a trailing slash must not double the separator in

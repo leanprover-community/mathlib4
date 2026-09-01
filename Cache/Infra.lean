@@ -163,22 +163,14 @@ The Mathlib cache read endpoint: one hostname that serves the whole
 at its edge. A read through it costs the project less and lands nearer the
 reader than a read straight from storage.
 -/
-def cacheHostURL : String := "https://cache.mathlib.org"
+def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
-Whether the tool takes its legacy path wherever a legacy and a current one
-differ. It governs one such choice: which host serves reads, `azureAccountURL`
-or `cacheHostURL`.
+Set this from `MATHLIB_CACHE_DEBUG_USE_LEGACY` at startup.
 
-`main` sets this from `MATHLIB_CACHE_DEBUG_USE_LEGACY` at startup, so the
-variable is read once and a value `Cache.Cli.parseEnvFlag` cannot read warns
-once, however many read URLs the command builds.
-
-That variable is a troubleshooting fallback, for the days when the current path
-misbehaves and a contributor needs their build to finish. It is no part of the
-tool's interface: nothing should depend on it, and it goes away with the legacy
-path it selects. A consumer that needs a durable choice of read host names one
-with `MATHLIB_CACHE_BASE_URL`.
+That variable is intended a troubleshooting fallback as the public Mathlib endpoint
+(enabled in September 2026) is battle-tested. It should be retired once support for
+the Azure storage account is disabled.
 -/
 initialize useLegacy : IO.Ref Bool ← IO.mkRef false
 
@@ -187,7 +179,7 @@ Default base URL for cache reads: the read endpoint, or the storage account
 itself, which is the legacy read host.
 -/
 def defaultGetBaseURL (useLegacy : Bool) : String :=
-  if useLegacy then azureAccountURL else cacheHostURL
+  if useLegacy then azureAccountURL else publicCacheEndpoint
 
 /--
 Base URL for cache reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
@@ -203,12 +195,6 @@ external consumers: it names one flat endpoint and bypasses the container
 lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
-
-The audience follows from what each variable exposes. The chain and the
-container names are mathlib4's own layout, free to change with the containers
-themselves, so only a reader who tracks this repository should bind to them. A
-project that depends on mathlib reads through `MATHLIB_CACHE_GET_URL`, whose
-flat namespace is a stable contract.
 
 Only reads follow this base. Uploads, marker writes, and the blob-listing
 query authenticate against Azure and use `Container.azureURL` directly.

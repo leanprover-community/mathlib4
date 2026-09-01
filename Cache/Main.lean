@@ -97,12 +97,13 @@ Valid arguments are:
                           Troubleshooting fallback. Set to 1 or true to take the
                           tool's legacy path: reads address the Azure storage
                           account instead of https://cache.mathlib.org. This
-                          variable is unsupported and can go away in any
-                          release; do not depend on it.
-* MATHLIB_CACHE_GET_URL   Download from this single URL, bypassing the containers
-* MATHLIB_CACHE_PUT_URL   Upload to this single URL, bypassing the containers
+                          variable is for troubleshooting only.
+* MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
+                          Allows third parties to use their own cache endpoint.
+* MATHLIB_CACHE_PUT_URL   Upload artifacts to this URL as a flat namespace.
+                          Allows third parties to upload to their own cache endpoint.
 * MATHLIB_CACHE_FROM      Comma-separated container list for reads, same shape as
-                          --cache-from. Used by CI to widen reads per job;
+                          --cache-from. Used by mathlib CI to widen reads per job;
                           --cache-from takes precedence when both are set.
 
 An empty value means unset for MATHLIB_CACHE_GET_URL and MATHLIB_CACHE_FROM.

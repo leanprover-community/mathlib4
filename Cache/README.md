@@ -101,18 +101,13 @@ lake exe cache get --cache-from=master,forks
 
 Uploads target a single container via `--container=NAME`.
 
-## Read endpoint
+## Public cache endpoint
 
-`cache get` reads through `https://cache.mathlib.org`. The endpoint serves the
-container namespace above, and it caches artifacts at its edge, so a read costs
-the project less and finishes sooner. It is the default, and a normal checkout
-configures nothing.
+`cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts. 
 
-### When a read fails
+### Troubleshooting
 
-A download that stalls or fails can point at the endpoint.
-`MATHLIB_CACHE_DEBUG_USE_LEGACY` sends reads to the Azure storage account that
-holds the artifacts, so a build can finish while the endpoint misbehaves:
+The public cache endpoint has been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before this endpoint was available, for troubleshooting any issues that might arise in the transition to this new endpoint:
 
 ```bash
 # bash, zsh, Git Bash
@@ -126,21 +121,14 @@ set MATHLIB_CACHE_DEBUG_USE_LEGACY=1
 lake exe cache get
 ```
 
-The one-line prefix form is POSIX shell syntax, so a Windows shell sets the
-variable in its own step. `1` and `true` turn the variable on, in any case. `0`,
-`false`, and an absent value turn it off. Any other value prints a warning and
-changes nothing.
+The variable is intended as a troubleshooting fallback and it might be retired at any time.
 
-The variable is a troubleshooting fallback and nothing more. It is unsupported:
-it can go away in any release, together with the legacy path it selects, so no
-script or workflow should depend on it.
 
 ## Environment Variables
 
 | Variable                         | Description                                                                                                 | Default                                         |
 |----------------------------------|-------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files                                                                          | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
-| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | `1` or `true` takes the legacy path: reads go to the storage account. Troubleshooting only, and unsupported | off                                             |
 
 ## How It Works
 
