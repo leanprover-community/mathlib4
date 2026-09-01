@@ -144,15 +144,15 @@ private theorem _root_.Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (hcprm : 
 
 private theorem _root_.Ring.charP_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Coprime r) :
     CharP (R[X] ⧸ span {(X : R[X]) ^ r - C 1}) p  := by
-  have _ : r ≠ 0 := by grind [coprime_zero_right, prime_one_false, Fact.out]
+  have : r ≠ 0 := by grind [coprime_zero_right, prime_one_false, Fact.out]
   apply CharP.quotient'
   intro z hz
   by_contra!
   obtain ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp hz
   by_cases hc : y = 0
   · grind
-  · have _ :  (z : R[X]).natDegree = 0 := by simp
-    have _ : r ≤ (z : R[X]).natDegree := by
+  · have : (z : R[X]).natDegree = 0 := by simp
+    have : r ≤ (z : R[X]).natDegree := by
       rw [← hy, natDegree_mul]
       · suffices ((X : R[X]) ^ r - C 1).natDegree = r by lia
         exact natDegree_X_pow_sub_C
@@ -168,8 +168,8 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
   set g : R[X] := (X : R[X]) - C (a : R)
   have rn0 : r ≠ 0 := by grind [coprime_zero_right, prime_one_false]
   rw [pow_mul] at h
-  have _ := Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
-  have _ := Ring.charP_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
+  have := Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
+  have := Ring.charP_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
   simp only [map_pow] at h
   replace h : (frobenius _ p) _ = _ := h
   have h2 : mk (span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ (m * p))) =
