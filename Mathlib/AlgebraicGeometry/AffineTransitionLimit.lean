@@ -827,7 +827,7 @@ lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D
   have H : (D.map (𝟙 _) ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ U := by simp
   obtain ⟨j, f, hf⟩ := exists_appTop_map_eq_zero_of_isLimit _ _
     (isLimitOpensCone D c hc i U) (i := .mk (𝟙 i))
-    ((D.obj i).presheaf.map (homOfLE (show (D.map (𝟙 _) ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ U by simp)).op s) (by
+    ((D.obj i).presheaf.map (homOfLE H).op s) (by
       rw [← map_zero (c.pt.presheaf.map (homOfLE
         (show (c.π.app i ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ c.π.app i ⁻¹ᵁ U by simp)).op).hom, ← hs]
       dsimp [Scheme.Opens.toScheme_presheaf_obj]
@@ -900,16 +900,13 @@ private lemma exists_forall_map_appLE_eq_of_isLimit [∀ {i j} (f : i ⟶ j), Is
     ∃ (k : I) (v : k ⟶ j), ∀ x y (V : (D.obj k).Opens) (h₁ : V ≤ D.map (v ≫ u x) ⁻¹ᵁ U x)
       (h₂ : V ≤ D.map (v ≫ u y) ⁻¹ᵁ U y),
         (D.map (v ≫ u x)).appLE _ V h₁ (t x) = (D.map (v ≫ u y)).appLE _ V h₂ (t y) := by
-  refine Exists₂.imp (fun _ _ hv x y ↦ hv (x, y)) (IsCofiltered.exists_forall
-    (fun k (v : k ⟶ j) (x : J × J) ↦ ∀ (V : (D.obj k).Opens)
-      (h₁ : V ≤ D.map (v ≫ u x.1) ⁻¹ᵁ U x.1) (h₂ : V ≤ D.map (v ≫ u x.2) ⁻¹ᵁ U x.2),
-        (D.map (v ≫ u x.1)).appLE _ V h₁ (t x.1) = (D.map (v ≫ u x.2)).appLE _ V h₂ (t x.2)) ?_ ?_)
-  · exact fun w v x hv V h₁ h₂ ↦ by
-      have e : V ≤ D.map w ⁻¹ᵁ (D.map (v ≫ u x.1) ⁻¹ᵁ U x.1 ⊓ D.map (v ≫ u x.2) ⁻¹ᵁ U x.2) := by
+  refine IsCofiltered.exists_forall₂ _ ?_ ?_
+  · exact fun w v x y hv V h₁ h₂ ↦ by
+      have e : V ≤ D.map w ⁻¹ᵁ (D.map (v ≫ u x) ⁻¹ᵁ U x ⊓ D.map (v ≫ u y) ⁻¹ᵁ U y) := by
         simpa [Scheme.Hom.preimage_inf] using le_inf h₁ h₂
       simpa [← ConcreteCategory.comp_apply, Scheme.Hom.appLE_comp_appLE, -Scheme.Hom.comp_appLE]
         using congr((D.map w).appLE _ V e $(hv _ inf_le_left inf_le_right))
-  rintro ⟨x, y⟩
+  intro x y
   obtain ⟨k, v, hv⟩ := exists_app_map_eq_zero_of_isLimit D c hc
     (((hU x).preimage (D.map (u x))).isCompact.inter_of_isOpen
       ((hU y).preimage (D.map (u y))).isCompact ((U x).2.preimage (D.map (u x)).continuous)
@@ -1229,13 +1226,12 @@ private lemma exists_forall_resLE_comp_eq_of_isAffineOpen [LocallyOfFinitePresen
     have e : D.map (v ≫ u) ⁻¹ᵁ U j ≤ D.map v ⁻¹ᵁ D.map u ⁻¹ᵁ U j := by simp
     exact ⟨(D.map v).resLE _ _ e ≫ g, by simpa using congr((D.map v).resLE _ _ e ≫ $hg),
       fun O h ↦ by simpa [Scheme.Hom.resLE_comp_resLE_assoc] using hg' O (by simpa using h)⟩
-  obtain ⟨i', u, hu⟩ :
-      ∃ (i' : I) (u : i' ⟶ i), D.map u ⁻¹ᵁ U j ≤ t.app i' ⁻¹ᵁ (W j : S.Opens) := by
-    obtain ⟨i', u, hu⟩ := exists_map_preimage_le_map_preimage D c hc (hU j).isCompact
-      (V := t.app i ⁻¹ᵁ (W j : S.Opens)) (by
-        rw [← Scheme.Hom.comp_preimage, hπ, Scheme.Hom.comp_preimage]
-        exact (hUV j).trans (a.preimage_mono (hVW j)))
-    exact ⟨i', u, hu.trans_eq (by rw [← Scheme.Hom.comp_preimage, hnat])⟩
+  obtain ⟨i', u, hu⟩ := exists_map_preimage_le_map_preimage D c hc (hU j).isCompact
+    (V := t.app i ⁻¹ᵁ (W j : S.Opens)) (by
+      rw [← Scheme.Hom.comp_preimage, hπ, Scheme.Hom.comp_preimage]
+      exact (hUV j).trans (a.preimage_mono (hVW j)))
+  replace hu : D.map u ⁻¹ᵁ U j ≤ t.app i' ⁻¹ᵁ (W j : S.Opens) :=
+    hu.trans_eq (by rw [← Scheme.Hom.comp_preimage, hnat])
   have _ (k : Over i') : IsAffine ((opensDiagram D i' (D.map u ⁻¹ᵁ U j)).obj k) :=
     ((hU j).preimage _).preimage _
   let τ : opensDiagram D i' (D.map u ⁻¹ᵁ U j) ⟶ (Functor.const (Over i')).obj (W j) :=
@@ -1273,15 +1269,12 @@ private lemma exists_forall_resLE_comp_eq_resLE_comp [LocallyOfFiniteType f]
     ∃ (l : I) (v : l ⟶ k), ∀ j₁ j₂ (O : (D.obj l).Opens) (e₁ : O ≤ D.map v ⁻¹ᵁ U j₁)
       (e₂ : O ≤ D.map v ⁻¹ᵁ U j₂),
         (D.map v).resLE _ O e₁ ≫ g j₁ = (D.map v).resLE _ O e₂ ≫ g j₂ := by
-  refine Exists₂.imp (fun _ _ hl j₁ j₂ ↦ hl (j₁, j₂)) (IsCofiltered.exists_forall
-    (fun l (v : l ⟶ k) (j : J × J) ↦ ∀ (O : (D.obj l).Opens) (e₁ : O ≤ D.map v ⁻¹ᵁ U j.1)
-      (e₂ : O ≤ D.map v ⁻¹ᵁ U j.2),
-        (D.map v).resLE _ O e₁ ≫ g j.1 = (D.map v).resLE _ O e₂ ≫ g j.2) ?_ ?_)
-  · exact fun w v j hv O e₁ e₂ ↦ by
+  refine IsCofiltered.exists_forall₂ _ ?_ ?_
+  · exact fun w v j₁ j₂ hv O e₁ e₂ ↦ by
       simpa [Scheme.Hom.resLE_comp_resLE_assoc] using congr((D.map w).resLE _ O
         (show O ≤ D.map w ⁻¹ᵁ _ by simpa [Scheme.Hom.preimage_inf] using le_inf e₁ e₂) ≫
           $(hv _ inf_le_left inf_le_right))
-  rintro ⟨j₁, j₂⟩
+  intro j₁ j₂
   obtain ⟨l, v, e⟩ := Scheme.exists_resLE_comp_eq_resLE_comp_of_locallyOfFiniteType D t f c hc
     ((hU j₁).inter_of_isOpen (hU j₂) (U j₁).2 (U j₂).2)
     (Scheme.homOfLE _ inf_le_left ≫ g j₁) (Scheme.homOfLE _ inf_le_right ≫ g j₂)
