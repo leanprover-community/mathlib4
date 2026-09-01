@@ -301,10 +301,6 @@ lemma _root_.Disjoint.powersetCard_powersetCard_finset {s t : Finset α}
     Disjoint (powersetCard n s) (powersetCard m t) := by
   grind [disjoint_left]
 
-lemma powersetCard_inter [DecidableEq α] (s t : Finset α) :
-    powersetCard n s ∩ powersetCard n t = powersetCard n (s ∩ t):= by
-  grind
-
 lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Finset α) :
     Disjoint (powersetCard m s) (powersetCard n t) := by
   grind [disjoint_left]
