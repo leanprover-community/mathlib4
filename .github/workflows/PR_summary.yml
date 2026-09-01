@@ -345,18 +345,27 @@ jobs:
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
         fi
 
-  # This job gates merging via the `blocked-by-increases-technical-debt` label
-  # in bors.toml.
+  # This job adds or removes the `blocked-by-increases-technical-debt` label,
+  # whose presence blocks merging because it is listed in `block_labels` in
+  # bors.toml.
   #
-  # Why a separate label?  Bors's block_labels has no conditional logic, so we
-  # need a derived label to express "increases-technical-debt AND NOT
-  # allow-increases-technical-debt".  See the analogous comment on
-  # check-large-import (in a companion PR) for the full rationale.
+  # Why a separate label?  Bors's `block_labels` cannot express a condition like
+  # "block when `increases-technical-debt` is present unless
+  # `allow-increases-technical-debt` is also present", so this job maintains a
+  # single label whose presence records that condition.
   #
   # Three labels, each managed by exactly one actor:
-  #   - `increases-technical-debt`            — managed by the `build` job
-  #   - `blocked-by-increases-technical-debt`  — managed by this job
-  #   - `allow-increases-technical-debt`       — managed by the reviewer
+  #   - `increases-technical-debt`: added/removed by the `build` job
+  #   - `blocked-by-increases-technical-debt`: added/removed by this job
+  #   - `allow-increases-technical-debt`: added/removed by reviewers
+  #
+  # When a PR is opened, updated, or reopened, this job runs after the `build`
+  # job, so it reads the labels after `build` has updated
+  # `increases-technical-debt`.
+  #
+  # When a label is added or removed, the `build` job is skipped, but this job
+  # still runs (`if: always()`), so adding `allow-increases-technical-debt`
+  # unblocks the PR.
   check-technical-debt:
     name: "Check technical debt"
     needs: build
