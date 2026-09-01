@@ -37,7 +37,7 @@ For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.l
 
 open TensorProduct IsLocalRing
 
-@[expose] public section
+public section
 
 namespace Algebra
 

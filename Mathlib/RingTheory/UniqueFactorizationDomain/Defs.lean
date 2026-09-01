@@ -44,8 +44,6 @@ namespace WfDvdMonoid
 
 variable [CommMonoidWithZero α]
 
-open Associates Nat
-
 variable [WfDvdMonoid α]
 
 theorem exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :
@@ -84,7 +82,7 @@ theorem exists_factors (a : α) :
       rw [s.prod_cons i]
       exact hs.2.mul_left i⟩
 
-theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
+theorem not_isUnit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     ¬IsUnit a ↔ ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod = a ∧ f ≠ ∅ :=
   ⟨fun hnu => by
     obtain ⟨f, hi, u, rfl⟩ := exists_factors a hn0
@@ -97,6 +95,9 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     fun ⟨_, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
     not_isUnit_of_not_isUnit_dvd (hi b h).not_isUnit <| he ▸ Multiset.dvd_prod h⟩
+
+@[deprecated (since := "2026-08-02")]
+alias not_unit_iff_exists_factors_eq := not_isUnit_iff_exists_factors_eq
 
 theorem isRelPrime_of_no_irreducible_factors {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : α, Irreducible z → z ∣ x → ¬z ∣ y) : IsRelPrime x y :=
@@ -153,7 +154,7 @@ theorem exists_prime_factors (a : α) :
 
 lemma exists_prime_iff :
     (∃ (p : α), Prime p) ↔ ∃ (x : α), x ≠ 0 ∧ ¬ IsUnit x := by
-  refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_unit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
+  refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_isUnit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
   obtain ⟨f, hf, -⟩ := WfDvdMonoid.exists_irreducible_factor hxu hx₀
   exact ⟨f, UniqueFactorizationMonoid.irreducible_iff_prime.mp hf⟩
 
@@ -190,7 +191,7 @@ noncomputable def factors (a : α) : Multiset α :=
   if h : a = 0 then 0 else Classical.choose (UniqueFactorizationMonoid.exists_prime_factors a h)
 
 theorem factors_prod {a : α} (ane0 : a ≠ 0) : Associated (factors a).prod a := by
-  rw [factors, dif_neg ane0]
+  rw [factors, dite_eq_right ane0]
   exact (Classical.choose_spec (exists_prime_factors a ane0)).2
 
 @[simp]
@@ -205,7 +206,7 @@ theorem dvd_of_mem_factors {p a : α} (h : p ∈ factors a) : p ∣ a :=
 
 theorem prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
   have ane0 := ne_zero_of_mem_factors hx
-  rw [factors, dif_neg ane0] at hx
+  rw [factors, dite_eq_right ane0] at hx
   exact (Classical.choose_spec (UniqueFactorizationMonoid.exists_prime_factors a ane0)).1 x hx
 
 theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>
