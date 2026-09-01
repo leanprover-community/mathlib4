@@ -161,7 +161,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     · apply mdifferentiableWithinAt_extChartAt_symm
       exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
     · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
-  rw [inTangentCoordinates_eq_mfderiv_comp, A,
+  rw [inTangentCoordinates_eq_mfderiv_comp_abuse, A,
     ← mfderivWithin_comp_of_eq, ← mfderiv_comp_mfderivWithin_of_eq]
   · exact mfderivWithin_eq_fderivWithin
   · exact mdifferentiableAt_extChartAt (by simpa using h'x)
@@ -523,3 +523,23 @@ lemma contMDiff_equivTangentBundleProd_symm :
     simp [fderivWithin_snd, U]
 
 end EquivTangentBundleProd
+
+variable (I) in
+/-- A version of `VectorField.injective_eval_mdifferentiableAt_sec`
+specialized to vector fields on a `C¹` manifold `M` -/
+lemma injective_eval_mdifferentiableAt_vectorField [IsManifold I 1 M]
+    (V : Type*) [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
+    Function.Injective
+      (fun A : TangentSpace% x →L[𝕜] V ↦
+        fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
+  VectorBundle.injective_eval_mdifferentiableAt_sec ..
+
+variable (I) in
+/-- A version of `VectorField.injective_eval_contMDiffAt_sec`
+specialized to vector fields on a `C¹` manifold `M` -/
+lemma injective_eval_contMDiffAt_vectorField [IsManifold I 1 M]
+    (V : Type*) [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
+    Function.Injective
+      (fun A : TangentSpace% x →L[𝕜] V ↦
+        fun (Z : Π x, TangentSpace I x) (_ : CMDiffAt n (T% Z) x) ↦ A (Z x)) :=
+  VectorBundle.injective_eval_contMDiffAt_sec ..

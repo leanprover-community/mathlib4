@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Edward van de Meent
 -/
 module
 
-public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Infinite sums in extended nonnegative reals
@@ -28,8 +28,9 @@ public section
 
 open Set Function
 
-open Filter Function Metric Set Topology
-open scoped Finset ENNReal NNReal
+open Filter Function Metric Set
+
+open scoped Topology Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
