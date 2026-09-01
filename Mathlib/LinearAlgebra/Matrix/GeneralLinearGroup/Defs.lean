@@ -293,6 +293,11 @@ def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R 
   right_inv _ := Subtype.ext (Units.ext rfl)
   map_mul' _ _ := Subtype.ext (Units.ext rfl)
 
+@[simp]
+lemma coe_toGLKerEquiv_apply {g : SpecialLinearGroup n R} : toGLKerEquiv g = toGL g := rfl
+
+lemma coe_toGLKerEquiv_apply_symm {g : SpecialLinearGroup n R} : toGL g = toGLKerEquiv g := rfl
+
 variable (S) in
 /-- `mapGL` is the map from the special linear group over `R` to the general linear group over
 `S`, where `S` is an `R`-algebra. -/
