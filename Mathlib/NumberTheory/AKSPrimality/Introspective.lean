@@ -84,9 +84,7 @@ protected theorem mul (hf : Introspective f e r) (hg : Introspective g e r) :
     Introspective (f * g) e r := by
   simp_all only [Introspective, map_pow, map_mul, mul_comp]
   rw [← hf, ← hg]
-  apply Ideal.Quotient.eq.mpr
-  convert Ideal.zero_mem _
-  grind [mul_pow]
+  simp [mul_pow]
 
 /-- The product of coprime exponents is Introspective. -/
 theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h : e.Coprime r) :
