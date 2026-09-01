@@ -111,8 +111,8 @@ theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndepende
 theorem finiteDimensional_iff_finite' {s : Set ι} {f : s → P}
     (hi : AffineIndependent k f) : FiniteDimensional k (vectorSpan k (Set.range f)) ↔ s.Finite := by
   refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
-  · exact @Set.toFinite _ s (finiteDimensional_iff_finite k hi |>.mp inferInstance)
-  · have := Set.Finite.to_subtype h
+  · exact @s.toFinite _ (finiteDimensional_iff_finite k hi |>.mp inferInstance)
+  · have := h.to_subtype
     exact finiteDimensional_vectorSpan_range k f
 
 /-- An affine-independent subset of a finite-dimensional affine subspace is finite. -/
