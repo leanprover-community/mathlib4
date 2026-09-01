@@ -494,6 +494,16 @@ lemma hom_ext_of_isOpenCover {s : Type*} {X Y : Scheme.{u}} {U : s → X.Opens}
     (hU : IsOpenCover U) (f g : X ⟶ Y) (h : ∀ i, (U i).ι ≫ f = (U i).ι ≫ g) : f = g :=
   (X.openCoverOfIsOpenCover U hU).hom_ext f g h
 
+lemma exists_ι_comp_eq_of_isOpenCover {s : Type*} {X Y : Scheme.{u}} {U : s → X.Opens}
+    (hU : IsOpenCover U) (g : ∀ i, (U i).toScheme ⟶ Y)
+    (h : ∀ i j, X.homOfLE inf_le_left ≫ g i = X.homOfLE inf_le_right ≫ g j) :
+    ∃ f : X ⟶ Y, ∀ i, (U i).ι ≫ f = g i :=
+  ⟨(X.openCoverOfIsOpenCover U hU).glueMorphisms g fun i j ↦ by
+      change pullback.fst (U i).ι (U j).ι ≫ g i = pullback.snd _ _ ≫ g j
+      rw [← cancel_epi (isPullback_opens_inf (U i) (U j)).isoPullback.hom]
+      simpa using h i j,
+    fun i ↦ (X.openCoverOfIsOpenCover U hU).ι_glueMorphisms ..⟩
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to covers in subcanonical topologies

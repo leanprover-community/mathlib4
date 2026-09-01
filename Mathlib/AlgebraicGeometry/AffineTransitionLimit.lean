@@ -777,12 +777,13 @@ lemma exists_appTop_map_eq_zero_of_isAffine_of_isLimit
   dsimp at hj
   exact ⟨j.unop, f.unop, by simpa using hj⟩
 
+variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
-lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    {i : I} {U : (D.obj i).Opens} (hU : IsCompact (X := D.obj i) U) (s : Γ(D.obj i, U))
-    (hs : (c.π.app i).app U s = 0) :
+lemma exists_app_map_eq_zero_of_isLimit {i : I} {U : (D.obj i).Opens}
+    (hU : IsCompact (X := D.obj i) U) (s : Γ(D.obj i, U)) (hs : (c.π.app i).app U s = 0) :
     ∃ (j : I) (f : j ⟶ i), (D.map f).app U s = 0 := by
   have key {W : (D.obj i).Opens} (hW : IsAffineOpen W) (hWU : W ≤ U) :
       ∃ (j : I) (f : j ⟶ i), (D.map f).app W (s |_ W) = 0 := by
@@ -830,22 +831,21 @@ lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D
 
 set_option backward.defeqAttrib.useBackward true in
 include hc in
-lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    {i : I} [CompactSpace (D.obj i)] (s : Γ(D.obj i, ⊤)) (hs : (c.π.app i).appTop s = 0) :
+lemma exists_appTop_map_eq_zero_of_isLimit {i : I} [CompactSpace (D.obj i)] (s : Γ(D.obj i, ⊤))
+    (hs : (c.π.app i).appTop s = 0) :
     ∃ (j : I) (f : j ⟶ i), (D.map f).appTop s = 0 :=
   exists_app_map_eq_zero_of_isLimit D c hc (by simpa using isCompact_univ) s hs
 
 include hc in
-lemma exists_app_map_eq_map_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    {i : I} {U : (D.obj i).Opens} (hU : IsCompact (X := D.obj i) U) (s t : Γ(D.obj i, U))
+lemma exists_app_map_eq_map_of_isLimit {i : I} {U : (D.obj i).Opens}
+    (hU : IsCompact (X := D.obj i) U) (s t : Γ(D.obj i, U))
     (hs : (c.π.app i).app U s = (c.π.app i).app U t) :
     ∃ (j : I) (f : j ⟶ i), (D.map f).app U s = (D.map f).app U t := by
   simpa [sub_eq_zero] using exists_app_map_eq_zero_of_isLimit _ _ hc hU (s - t)
     (by simpa +instances [map_sub, sub_eq_zero])
 
 include hc in
-private lemma exists_appLE_eq_restrict_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    (s : Γ(c.pt, ⊤)) (x : c.pt) :
+private lemma exists_appLE_eq_restrict_of_isLimit (s : Γ(c.pt, ⊤)) (x : c.pt) :
     ∃ (i : I) (U : (D.obj i).Opens) (_ : IsAffineOpen U) (_ : (c.π.app i).base x ∈ U)
       (t : Γ(D.obj i, U)), ∀ (V : c.pt.Opens) (e : V ≤ c.π.app i ⁻¹ᵁ U),
         (c.π.app i).appLE U V e t = s |_ V := by
@@ -859,11 +859,11 @@ private lemma exists_appLE_eq_restrict_of_isLimit [∀ {i j} (f : i ⟶ j), IsAf
   rw [← TopCat.Presheaf.restrict_restrict (e.trans_eq h) le_top s, ← ht]
   exact (TopCat.Presheaf.restrict_restrict (e.trans_eq h) h.ge _).symm
 
+variable [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)]
+
 open TopologicalSpace in
 include hc in
-private lemma exists_isOpenCover_appLE_eq_restrict_of_isLimit
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)] (s : Γ(c.pt, ⊤)) :
+private lemma exists_isOpenCover_appLE_eq_restrict_of_isLimit (s : Γ(c.pt, ⊤)) :
     ∃ (k : I) (J : Type u) (U : J → (D.obj k).Opens) (_ : IsOpenCover U)
       (t : ∀ x, Γ(D.obj k, U x)), (D.obj k).presheaf.IsCompatible U t ∧
         ∀ x (V : c.pt.Opens) (e : V ≤ c.π.app k ⁻¹ᵁ U x),
@@ -917,22 +917,20 @@ private lemma exists_isOpenCover_appLE_eq_restrict_of_isLimit
     exact ht x V _
 
 include hc in
-lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    (s : Γ(c.pt, ⊤)) [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)] :
+lemma exists_appTop_π_eq_of_isLimit (s : Γ(c.pt, ⊤)) :
     ∃ (i : I) (t : Γ(D.obj i, ⊤)), s = (c.π.app i).appTop t := by
   obtain ⟨k, J, U, hU, t, hcompat, ht⟩ := exists_isOpenCover_appLE_eq_restrict_of_isLimit D c hc s
   obtain ⟨t₀, ht₀, -⟩ := TopCat.Sheaf.existsUnique_gluing' ⟨_, (D.obj k).IsSheaf⟩ U ⊤
     (fun _ ↦ homOfLE le_top) hU.ge t hcompat
   refine ⟨k, t₀, TopCat.Sheaf.eq_of_locally_eq' ⟨_, c.pt.IsSheaf⟩ (fun x ↦ c.π.app k ⁻¹ᵁ U x) ⊤
-    (fun _ ↦ homOfLE le_top) ((c.π.app k).iSup_preimage_eq_top hU).ge _ _ fun x ↦ ?_⟩
+    (fun _ ↦ homOfLE le_top) (hU.preimage (c.π.app k)).ge _ _ fun x ↦ ?_⟩
   refine (ht x _ le_rfl).symm.trans (Eq.trans ?_ (ConcreteCategory.comp_apply _ _ _))
   have key := congr((c.π.app k).appLE _ (c.π.app k ⁻¹ᵁ U x) le_rfl $(ht₀ x))
   simp only [← ConcreteCategory.comp_apply, Scheme.Hom.map_appLE] at key
   exact key.symm
 
 include hc in
-lemma nonempty_isColimit_Γ_mapCocone [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)] :
+lemma nonempty_isColimit_Γ_mapCocone :
     Nonempty (IsColimit (Scheme.Γ.mapCocone c.op)) := by
   have : ReflectsFilteredColimits (forget CommRingCat) :=
     ⟨fun _ ↦ reflectsColimitsOfShape_of_reflectsIsomorphisms⟩
@@ -941,8 +939,7 @@ lemma nonempty_isColimit_Γ_mapCocone [∀ {i j} (f : i ⟶ j), IsAffineHom (D.m
   · exact fun i s t e ↦ ⟨_, Quiver.Hom.op _,
       (exists_app_map_eq_map_of_isLimit _ _ hc isCompact_univ s t e).choose_spec.choose_spec⟩
 
-instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)] :
+instance :
     PreservesLimit D Scheme.Γ.rightOp :=
   have : PreservesColimit D.op Scheme.Γ := ⟨fun hc ↦ nonempty_isColimit_Γ_mapCocone D _ hc.unop⟩
   preservesLimit_rightOp _ _
@@ -1128,15 +1125,6 @@ section LocallyOfFinitePresentation
 variable [IsCofiltered I] (a : c.pt ⟶ X)
   (ha : c.π ≫ t = (Functor.const _).map (a ≫ f))
 
-private lemma Scheme.exists_appTop_eq {Y Z : Scheme.{u}} [IsAffine Z] (φ : Γ(Z, ⊤) ⟶ Γ(Y, ⊤)) :
-    ∃ g : Y ⟶ Z, g.appTop = φ := by
-  have h : Z.isoSpec.inv.appTop = (Scheme.ΓSpecIso Γ(Z, ⊤)).inv := by
-    rw [← cancel_epi (Scheme.ΓSpecIso Γ(Z, ⊤)).hom, Iso.hom_inv_id, ← Scheme.toSpecΓ_appTop,
-      ← Scheme.Hom.comp_appTop, Scheme.isoSpec_inv_toSpecΓ, Scheme.Hom.id_appTop]
-  refine ⟨Y.toSpecΓ ≫ Spec.map φ ≫ Z.isoSpec.inv, ?_⟩
-  rw [Scheme.Hom.comp_appTop, Scheme.Hom.comp_appTop, h, Scheme.toSpecΓ_appTop, Category.assoc,
-    Scheme.ΓSpecIso_naturality, Iso.inv_hom_id_assoc]
-
 include hc ha in
 /-- See `Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation` for the general case. -/
 private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
@@ -1155,33 +1143,9 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     Γ(S, ⊤) (D.op ⋙ Scheme.Γ) α f.appTop _ (isColimitOfPreserves Scheme.Γ hc.op)
     (HasRingHomProperty.iff_of_isAffine.mp ‹LocallyOfFinitePresentation f›) a.appTop fun i ↦ by
       simpa [α] using congr(Scheme.Hom.appTop $(congr(($ha).app i.unop))).symm
-  obtain ⟨g, rfl⟩ := Scheme.exists_appTop_eq φ
+  obtain ⟨g, rfl⟩ := exists_appTop_eq_of_isAffine φ
   exact ⟨i.unop, g, ext_of_isAffine (by simpa using hφ'.symm),
     ext_of_isAffine (by simpa [α] using hφ)⟩
-
-open TopologicalSpace in
-private lemma isBasis_affineOpens_le_preimage {Y Z T : Scheme.{u}} (a : Y ⟶ Z) (g : Z ⟶ T) :
-    Opens.IsBasis {U : Y.Opens | IsAffineOpen U ∧ ∃ (V : Z.affineOpens) (W : T.affineOpens),
-      U ≤ a ⁻¹ᵁ (V : Z.Opens) ∧ (V : Z.Opens) ≤ g ⁻¹ᵁ (W : T.Opens)} := by
-  refine Opens.isBasis_iff_nbhd.mpr fun {O y} hy ↦ ?_
-  obtain ⟨W, hW, hyW, -⟩ := Opens.isBasis_iff_nbhd.mp T.isBasis_affineOpens
-    (U := ⊤) (x := g (a y)) trivial
-  obtain ⟨V, hV, hyV, hVW⟩ := Opens.isBasis_iff_nbhd.mp Z.isBasis_affineOpens
-    (U := g ⁻¹ᵁ W) (x := a y) hyW
-  obtain ⟨U, hU, hyU, hUV⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
-    (U := O ⊓ a ⁻¹ᵁ V) (x := y) ⟨hy, hyV⟩
-  exact ⟨U, ⟨hU, ⟨V, hV⟩, ⟨W, hW⟩, hUV.trans inf_le_right, hVW⟩, hyU, hUV.trans inf_le_left⟩
-
-open TopologicalSpace in
-lemma Scheme.exists_ι_comp_eq_of_isOpenCover {s : Type*} {X Y : Scheme.{u}} {U : s → X.Opens}
-    (hU : IsOpenCover U) (g : ∀ i, (U i).toScheme ⟶ Y)
-    (h : ∀ i j, X.homOfLE inf_le_left ≫ g i = X.homOfLE inf_le_right ≫ g j) :
-    ∃ f : X ⟶ Y, ∀ i, (U i).ι ≫ f = g i :=
-  ⟨(X.openCoverOfIsOpenCover U hU).glueMorphisms g fun i j ↦ by
-      change pullback.fst (U i).ι (U j).ι ≫ g i = pullback.snd _ _ ≫ g j
-      rw [← cancel_epi (isPullback_opens_inf (U i) (U j)).isoPullback.hom]
-      simpa using h i j,
-    fun i ↦ (X.openCoverOfIsOpenCover U hU).ι_glueMorphisms ..⟩
 
 variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [LocallyOfFinitePresentation f]
   {i : I} {J : Type*} [Finite J] {U : J → (D.obj i).Opens} (hU : ∀ j, IsAffineOpen (U j))
@@ -1279,16 +1243,19 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation [∀ i, Compac
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
   -- The open cover of `c := lim Dᵢ` by the affine opens `U ⊆ c` such that `U` maps into an affine
   -- `V ⊆ X` which in turn maps into an affine `W ⊆ S`.
-  have h𝒰 := (isBasis_affineOpens_le_preimage a f).isOpenCover
+  have h𝒰 := (Scheme.isBasis_affineOpens_le_preimage a
+    (Scheme.isBasis_affineOpens_le_preimage f S.isBasis_affineOpens)).isOpenCover
   obtain ⟨i, s, 𝒱, h𝒱, h𝒱𝒰⟩ := Scheme.exists_isOpenCover_and_isAffine D c hc _ h𝒰 fun U ↦ U.2.1
   -- Each `𝒱 j` factors after passing to some `l`, compatibly on overlaps.
   obtain ⟨l, u, g, hg, hπg, hglue⟩ := exists_forall_homOfLE_comp_eq_of_isAffineOpen D t f c hc a ha
-    (fun j ↦ (h𝒱𝒰 j).1) fun j ↦ (h𝒱𝒰 j).2 ▸ j.1.2.2
+    (fun j ↦ (h𝒱𝒰 j).1) fun j ↦ by
+      obtain ⟨-, V, ⟨hV, W, hW, hVW⟩, hUV⟩ := j.1.2
+      exact ⟨⟨V, hV⟩, ⟨W, hW⟩, (h𝒱𝒰 j).2 ▸ hUV, hVW⟩
   -- We may glue the morphisms into `Dₗ ⟶ X` and verify that it indeed satisfies the hypothesis.
-  have h𝒲 : IsOpenCover (D.map u ⁻¹ᵁ 𝒱 ·) := .mk ((D.map u).iSup_preimage_eq_top h𝒱)
+  have h𝒲 : IsOpenCover (D.map u ⁻¹ᵁ 𝒱 ·) := h𝒱.preimage (D.map u)
   obtain ⟨F, hF⟩ := Scheme.exists_ι_comp_eq_of_isOpenCover h𝒲 g hglue
-  refine ⟨l, F, Scheme.hom_ext_of_isOpenCover (.mk ((c.π.app l).iSup_preimage_eq_top h𝒲)) _ _
-      fun j ↦ ?_, Scheme.hom_ext_of_isOpenCover h𝒲 _ _ fun j ↦ ?_⟩
+  refine ⟨l, F, Scheme.hom_ext_of_isOpenCover (h𝒲.preimage (c.π.app l)) _ _ fun j ↦ ?_,
+    Scheme.hom_ext_of_isOpenCover h𝒲 _ _ fun j ↦ ?_⟩
   · rw [← Hom.resLE_comp_ι_assoc (c.π.app l) le_rfl, hF]
     exact hπg j
   · simp [reassoc_of% hF, hg]

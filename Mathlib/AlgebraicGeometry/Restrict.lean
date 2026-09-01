@@ -177,6 +177,10 @@ lemma stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (x : U) :
 
 end Scheme.Opens
 
+lemma _root_.TopologicalSpace.IsOpenCover.preimage {s : Type*} {X Y : Scheme.{u}} {U : s → Y.Opens}
+    (hU : IsOpenCover U) (f : X ⟶ Y) : IsOpenCover fun i ↦ f ⁻¹ᵁ U i :=
+  .mk (f.iSup_preimage_eq_top hU)
+
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! I₀ X f]
 def Scheme.openCoverOfIsOpenCover {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
