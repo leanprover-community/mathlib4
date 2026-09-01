@@ -119,9 +119,9 @@ lemma wordLength_mul_le : P.wordLength (g * h) ≤ P.wordLength g + P.wordLength
 noncomputable def groupNorm : GroupNorm G where
   toFun g := P.wordLength g
   map_one' := by simp
-  mul_le' g h := by exact_mod_cast P.wordLength_mul_le g h
-  inv' g := by simp
-  eq_one_of_map_eq_zero' g hg := by simpa using hg
+  mul_le' := mod_cast P.wordLength_mul_le
+  inv' := by simp
+  eq_one_of_map_eq_zero' := by simp
 
 /-! ### Word metric -/
 
