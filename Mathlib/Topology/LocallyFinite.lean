@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Sigma
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.ContinuousOn
 

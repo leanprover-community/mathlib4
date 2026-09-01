@@ -373,7 +373,7 @@ theorem paracompactSpace_TFAE_of_regular (X : Type v) [TopologicalSpace X] [Regu
   tfae_have 3 → 4 := by
     intro h α s hso hs
     choose u hu using iUnion_eq_univ_iff.1 hs
-    have := (regularSpace_TFAE X).out 0 3 |>.1 ‹_›
+    have := (regularSpace_TFAE X).out 1 4 |>.1 ‹_›
     choose v hv_nhds hv hvs using fun x ↦ this x (s (u x)) (hso (u x) |>.mem_nhds (hu x))
     obtain ⟨β, t, ht_univ, ht, htv⟩ := h X (fun x ↦ interior (v x)) (fun _ ↦ isOpen_interior)
       (iUnion_eq_univ_iff.2 fun x ↦ ⟨x, mem_interior_iff_mem_nhds.2 (hv_nhds x)⟩)
@@ -420,7 +420,7 @@ theorem paracompactSpace_TFAE_of_regular (X : Type v) [TopologicalSpace X] [Regu
 instance [RegularSpace X] [LindelofSpace X] : ParacompactSpace X := by
   cases isEmpty_or_nonempty X
   · infer_instance
-  have h := paracompactSpace_TFAE_of_regular X |>.out 0 1
+  have h := (paracompactSpace_TFAE_of_regular X).out 1 2
   rw [h]
   intro α s hso hs
   have : Nonempty α := by
