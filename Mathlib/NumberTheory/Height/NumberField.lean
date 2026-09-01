@@ -180,7 +180,7 @@ theorem foobar_mul (f : HeightOneSpectrum (𝓞 L) → ℝ) (hf : f.HasFiniteMul
 open scoped NumberField.LiesOver
 
 open IsDedekindDomain FinitePlace InfinitePlace in
-private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
+private theorem mulHeight_pow_finrank_of_nonempty {ι : Type*} [Nonempty ι] [Finite ι]
     (x : ι → K) (hx : ∀ i, x i ≠ 0) :
     mulHeight x ^ Module.finrank K L = mulHeight (algebraMap K L ∘ x) := by
   classical
@@ -192,8 +192,7 @@ private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
       ← Finset.univ.prod_fiberwise fun v : InfinitePlace L ↦ v.comap (algebraMap K L)]
     apply Finset.prod_congr rfl fun v _ ↦ ?_
     set s : Finset (InfinitePlace L) := {w | w.comap (algebraMap K L) = v}
-    have key1 w (hw : w ∈ s) i :
-        w.comap (algebraMap K L) (x i) = v (x i) := by
+    have key1 w (hw : w ∈ s) i : w.comap (algebraMap K L) (x i) = v (x i) := by
       rw [Finset.mem_filter_univ, ← liesOver_iff_comap_eq] at hw
       rw [LiesOver.comap_eq w v]
     have key2 w (hw : w ∈ s) : v.mult * v.inertiaDeg w = w.mult := by
@@ -214,8 +213,8 @@ private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
           equivHeightOneSpectrum.symm v x ^ (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
         have : (e.symm w).1.asIdeal.LiesOver v.asIdeal := by
           rw [Ideal.liesOver_iff_dvd_map]
-          exact (e.symm w).2
-          exact (e.symm w).1.2.ne_top
+          · exact (e.symm w).2
+          · exact (e.symm w).1.2.ne_top
         have : w.1 = (e.symm w).1 := by
           conv_lhs => rw [← e.apply_symm_apply w]
           rfl
@@ -232,20 +231,15 @@ private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
     · exact Function.HasFiniteMulSupport.iSup fun i ↦ Function.HasFiniteMulSupport.comp_of_injective
         equivHeightOneSpectrum.symm.injective (FinitePlace.hasFiniteMulSupport (by simp [hx]))
 
-open IsDedekindDomain in
 theorem mulHeight_pow_finrank {ι : Type*} (x : ι → K) [Finite ι] :
     mulHeight x ^ Module.finrank K L = mulHeight (algebraMap K L ∘ x) := by
   by_cases hx : x = 0
   · simp [hx]
   have : Nonempty (Function.support x) := by
     rwa [Set.nonempty_coe_sort, Function.support_nonempty_iff]
-  have : Function.support (algebraMap K L ∘ x) = Function.support x := by
-    ext
-    simp
   conv_rhs => rw [mulHeight_eq_mulHeight_restrict_support]
-  rw [this]
-  rw [mulHeight_eq_mulHeight_restrict_support]
-  apply mulHeight_pow_finrank_aux
+  rw [mulHeight_eq_mulHeight_restrict_support, Function.support_comp_eq _ (by simp)]
+  apply mulHeight_pow_finrank_of_nonempty
   simp
 
 theorem mulHeight₁_pow_finrank (x : K) :
