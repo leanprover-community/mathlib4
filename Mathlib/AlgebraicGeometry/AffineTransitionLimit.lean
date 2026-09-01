@@ -1144,6 +1144,9 @@ end IsAffine
 
 section LocallyOfFinitePresentation
 
+variable [IsCofiltered I] (a : c.pt ⟶ X)
+  (ha : c.π ≫ t = (Functor.const _).map (a ≫ f))
+
 private lemma Scheme.exists_appTop_eq {Y Z : Scheme.{u}} [IsAffine Z] (φ : Γ(Z, ⊤) ⟶ Γ(Y, ⊤)) :
     ∃ g : Y ⟶ Z, g.appTop = φ := by
   have h : Z.isoSpec.inv.appTop = (Scheme.ΓSpecIso Γ(Z, ⊤)).inv := by
@@ -1153,12 +1156,10 @@ private lemma Scheme.exists_appTop_eq {Y Z : Scheme.{u}} [IsAffine Z] (φ : Γ(Z
   rw [Scheme.Hom.comp_appTop, Scheme.Hom.comp_appTop, h, Scheme.toSpecΓ_appTop, Category.assoc,
     Scheme.ΓSpecIso_naturality, Iso.inv_hom_id_assoc]
 
-include hc in
+include hc ha in
 /-- See `Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation` for the general case. -/
 private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
-    [IsCofiltered I] [LocallyOfFinitePresentation f]
-    [IsAffine S] [IsAffine X] [∀ i, IsAffine (D.obj i)]
-    (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f)) :
+    [LocallyOfFinitePresentation f] [IsAffine S] [IsAffine X] [∀ i, IsAffine (D.obj i)] :
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
   -- Every scheme involved is affine, so the proof is merely translate to commutative algebra and
   -- use `RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit`.
@@ -1190,11 +1191,10 @@ private lemma isBasis_affineOpens_le_preimage {Y Z T : Scheme.{u}} (a : Y ⟶ Z)
     (U := O ⊓ a ⁻¹ᵁ V) (x := y) ⟨hy, hyV⟩
   exact ⟨U, ⟨hU, ⟨V, hV⟩, ⟨W, hW⟩, hUV.trans inf_le_right, hVW⟩, hyU, hUV.trans inf_le_left⟩
 
-include hc in
-private lemma exists_resLE_comp_eq_of_isAffineOpen
-    [IsCofiltered I] [LocallyOfFinitePresentation f]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f))
+variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+
+include hc ha in
+private lemma exists_resLE_comp_eq_of_isAffineOpen [LocallyOfFinitePresentation f]
     {i : I} {U : (D.obj i).Opens} (hU : IsAffineOpen U) (V : X.affineOpens) (W : S.affineOpens)
     (hVW : (V : X.Opens) ≤ f ⁻¹ᵁ (W : S.Opens)) (hUV : c.π.app i ⁻¹ᵁ U ≤ a ⁻¹ᵁ (V : X.Opens)) :
     ∃ (k : I) (u : k ⟶ i) (g : ↑(D.map u ⁻¹ᵁ U) ⟶ X),
@@ -1235,36 +1235,27 @@ private lemma exists_resLE_comp_eq_of_isAffineOpen
   · have h' : O ≤ c.π.app i' ⁻¹ᵁ D.map u ⁻¹ᵁ U := by simpa using h
     simpa using congr(Scheme.homOfLE _ h' ≫ $hg ≫ (V : X.Opens).ι)
 
-include hc in
-private lemma exists_forall_resLE_comp_eq_of_isAffineOpen
-    [IsCofiltered I] [LocallyOfFinitePresentation f]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f))
+include hc ha in
+private lemma exists_forall_resLE_comp_eq_of_isAffineOpen [LocallyOfFinitePresentation f]
     {i : I} {J : Type*} [Finite J] {U : J → (D.obj i).Opens} (hU : ∀ j, IsAffineOpen (U j))
     (hUV : ∀ j, ∃ (V : X.affineOpens) (W : S.affineOpens),
       c.π.app i ⁻¹ᵁ U j ≤ a ⁻¹ᵁ (V : X.Opens) ∧ (V : X.Opens) ≤ f ⁻¹ᵁ (W : S.Opens)) :
-    ∃ (k : I) (u : k ⟶ i) (g : ∀ j, ↑(D.map u ⁻¹ᵁ U j) ⟶ X),
-      (∀ j, g j ≫ f = (D.map u ⁻¹ᵁ U j).ι ≫ t.app k) ∧
-        ∀ j (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j),
-          (c.π.app k).resLE _ O h ≫ g j = O.ι ≫ a := by
-  choose V W hUV hVW using hUV
-  choose k u g hg hg' using IsCofiltered.exists_forall
-    (fun k (u : k ⟶ i) (j : J) ↦ ∃ g : ↑(D.map u ⁻¹ᵁ U j) ⟶ X,
+    ∃ (k : I) (u : k ⟶ i), ∀ j, ∃ g : ↑(D.map u ⁻¹ᵁ U j) ⟶ X,
       g ≫ f = (D.map u ⁻¹ᵁ U j).ι ≫ t.app k ∧
         ∀ (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j),
-          (c.π.app k).resLE _ O h ≫ g = O.ι ≫ a)
-    (by
-      rintro k₁ k₂ v u j ⟨g, hg, hg'⟩
-      have e : D.map (v ≫ u) ⁻¹ᵁ U j ≤ D.map v ⁻¹ᵁ D.map u ⁻¹ᵁ U j := by simp
-      exact ⟨(D.map v).resLE _ _ e ≫ g, by simpa using congr((D.map v).resLE _ _ e ≫ $hg),
-        fun O h ↦ by
-          simpa [Scheme.Hom.resLE_comp_resLE_assoc] using hg' O (by simpa using h)⟩)
-    fun j ↦ exists_resLE_comp_eq_of_isAffineOpen D t f c hc a ha (hU j) (V j) (W j) (hVW j) (hUV j)
-  exact ⟨k, u, g, hg, hg'⟩
+          (c.π.app k).resLE _ O h ≫ g = O.ι ≫ a := by
+  choose V W hUV hVW using hUV
+  refine IsCofiltered.exists_forall _ ?_ fun j ↦
+    exists_resLE_comp_eq_of_isAffineOpen D t f c hc a ha (hU j) (V j) (W j) (hVW j) (hUV j)
+  rintro k₁ k₂ v u j ⟨g, hg, hg'⟩
+  have e : D.map (v ≫ u) ⁻¹ᵁ U j ≤ D.map v ⁻¹ᵁ D.map u ⁻¹ᵁ U j := by simp
+  exact ⟨(D.map v).resLE _ _ e ≫ g, by simpa using congr((D.map v).resLE _ _ e ≫ $hg),
+    fun O h ↦ by simpa [Scheme.Hom.resLE_comp_resLE_assoc] using hg' O (by simpa using h)⟩
+
+variable [∀ i, QuasiSeparatedSpace (D.obj i)]
 
 include hc in
-private lemma exists_resLE_comp_eq_resLE_comp [IsCofiltered I] [LocallyOfFiniteType f]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ i, QuasiSeparatedSpace (D.obj i)]
+private lemma exists_resLE_comp_eq_resLE_comp [LocallyOfFiniteType f]
     {k : I} {U₁ U₂ : (D.obj k).Opens} (hU₁ : IsCompact (U₁ : Set (D.obj k)))
     (hU₂ : IsCompact (U₂ : Set (D.obj k))) (g₁ : ↑U₁ ⟶ X) (g₂ : ↑U₂ ⟶ X)
     (hg₁ : g₁ ≫ f = U₁.ι ≫ t.app k) (hg₂ : g₂ ≫ f = U₂.ι ≫ t.app k)
@@ -1296,8 +1287,7 @@ private lemma exists_resLE_comp_eq_resLE_comp [IsCofiltered I] [LocallyOfFiniteT
     (show O ≤ D.map v ⁻¹ᵁ (U₁ ⊓ U₂) from le_inf e₁ e₂) ≫ $e)
 
 include hc in
-private lemma exists_forall_resLE_comp_eq_resLE_comp [IsCofiltered I] [LocallyOfFiniteType f]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ i, QuasiSeparatedSpace (D.obj i)]
+private lemma exists_forall_resLE_comp_eq_resLE_comp [LocallyOfFiniteType f]
     {k : I} {J : Type*} [Finite J] {U : J → (D.obj k).Opens}
     (hU : ∀ j, IsCompact (U j : Set (D.obj k))) (g : ∀ j, ↑(U j) ⟶ X)
     (hg : ∀ j, g j ≫ f = (U j).ι ≫ t.app k)
@@ -1305,8 +1295,8 @@ private lemma exists_forall_resLE_comp_eq_resLE_comp [IsCofiltered I] [LocallyOf
       (c.π.app k).resLE _ O e₁ ≫ g j₁ = (c.π.app k).resLE _ O e₂ ≫ g j₂) :
     ∃ (l : I) (v : l ⟶ k), ∀ j₁ j₂ (O : (D.obj l).Opens) (e₁ : O ≤ D.map v ⁻¹ᵁ U j₁)
       (e₂ : O ≤ D.map v ⁻¹ᵁ U j₂),
-        (D.map v).resLE _ O e₁ ≫ g j₁ = (D.map v).resLE _ O e₂ ≫ g j₂ := by
-  obtain ⟨l, v, hl⟩ := IsCofiltered.exists_forall
+        (D.map v).resLE _ O e₁ ≫ g j₁ = (D.map v).resLE _ O e₂ ≫ g j₂ :=
+  Exists₂.imp (fun _ _ hl j₁ j₂ ↦ hl (j₁, j₂)) <| IsCofiltered.exists_forall
     (fun l (v : l ⟶ k) (j : J × J) ↦ ∀ (O : (D.obj l).Opens) (e₁ : O ≤ D.map v ⁻¹ᵁ U j.1)
       (e₂ : O ≤ D.map v ⁻¹ᵁ U j.2),
         (D.map v).resLE _ O e₁ ≫ g j.1 = (D.map v).resLE _ O e₂ ≫ g j.2)
@@ -1316,27 +1306,23 @@ private lemma exists_forall_resLE_comp_eq_resLE_comp [IsCofiltered I] [LocallyOf
           $(hv _ inf_le_left inf_le_right)))
     fun j ↦ exists_resLE_comp_eq_resLE_comp D t f c hc (hU j.1) (hU j.2) _ _ (hg j.1) (hg j.2)
       (h j.1 j.2)
-  exact ⟨l, v, fun j₁ j₂ ↦ hl (j₁, j₂)⟩
 
 open TopologicalSpace in
-include hc in
+include hc ha in
 /--
 Given a cofiltered diagram of qcqs schemes `Dᵢ` over `S` with affine transition maps.
 If `X` is locally of finite presentation over `S`, then any `S`-morphism `lim Dᵢ ⟶ X` factors
 through some `lim Dᵢ ⟶ Dⱼ ⟶ X` for some `j`.
 -/
 lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
-    [IsCofiltered I] [LocallyOfFinitePresentation f]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)]
-    (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f)) :
+    [LocallyOfFinitePresentation f] [∀ i, CompactSpace (D.obj i)] :
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
   -- The open cover of `c := lim Dᵢ` by the affine opens `U ⊆ c` such that `U` maps into an affine
   -- `V ⊆ X` which in turn maps into an affine `W ⊆ S`.
   have h𝒰 := (isBasis_affineOpens_le_preimage a f).isOpenCover
   obtain ⟨i, s, 𝒱, h𝒱, h𝒱𝒰⟩ := Scheme.exists_isOpenCover_and_isAffine D c hc _ h𝒰 fun U ↦ U.2.1
   -- Each `𝒱 j` factors after passing to some `k`, and by finiteness a single `k` works for all `j`.
-  obtain ⟨k, fki, ak, hak, hak'⟩ := exists_forall_resLE_comp_eq_of_isAffineOpen D t f c hc a ha
+  choose k fki ak hak hak' using exists_forall_resLE_comp_eq_of_isAffineOpen D t f c hc a ha
     (fun j ↦ (h𝒱𝒰 j).1) fun j ↦ (h𝒱𝒰 j).2 ▸ j.1.2.2
   -- Likewise the `ak j` pairwise agree on overlaps after passing to some `l`.
   obtain ⟨l, flk, hl⟩ := exists_forall_resLE_comp_eq_resLE_comp D t f c hc
@@ -1372,7 +1358,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Hom_S(-, X)` sends a cofiltered limit of qcqs `S`-schemes with affine transition maps
 to a filtered colimit if `X` is locally of finite presentation over `X`. -/
-instance Scheme.preservesColimit_yoneda (D : I ⥤ Over S) [IsCofiltered I]
+instance Scheme.preservesColimit_yoneda (D : I ⥤ Over S)
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f).left]
     [∀ (i : I), CompactSpace (D.obj i).left] [∀ (i : I), QuasiSeparatedSpace (D.obj i).left]
     (X : Over S) [LocallyOfFinitePresentation X.hom] :
