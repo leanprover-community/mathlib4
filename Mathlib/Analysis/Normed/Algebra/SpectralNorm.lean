@@ -338,7 +338,7 @@ theorem extension_def : v.extension L = (spectralMulAlgNorm (WithAbs v) L).toAbs
   rfl
 
 instance : (v.extension L).LiesOver v where
-  comp_eq := by
+  under_eq := by
     ext x
     change v.extension L (algebraMap K L x) = _ -- lemma for `LiesOver`
     rw [IsScalarTower.algebraMap_apply K (WithAbs v) L, WithAbs.algebraMap_right_apply]
@@ -417,7 +417,8 @@ theorem foo {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ
   simp
 
 open scoped Matrix.Norms.Operator in
-theorem foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
+theorem foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
+    [Fintype α] [Fintype β]
     (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
     ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B := by
   let B : NNReal := ⟨B, hB⟩
@@ -462,8 +463,8 @@ theorem isNonarchimedean_spectralRadiusLimNorm {K L : Type*} [NormedField K] [Fi
   have key n : ‖T (x + y) ^ n‖ ≤ C * (M + ε) ^ n := by
     grw [map_add, ((Commute.all x y).map T).add_pow]
     grw [foobar _ _ (Cx * Cy * (M + ε) ^ n) (by positivity)]
-    simp
-    grind
+    · rw [Fintype.card_fin]
+      grind
     intro k hk
     rw [Finset.mem_range_succ_iff] at hk
     have key : (n.choose k : Matrix (Fin (Module.finrank K L)) (Fin (Module.finrank K L)) K)
