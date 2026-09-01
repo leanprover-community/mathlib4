@@ -724,22 +724,21 @@ lemma Scheme.exists_resLE_comp_eq_resLE_comp_of_locallyOfFiniteType
       (D.map hik).resLE U _ le_rfl ≫ a = (D.map hik).resLE U _ le_rfl ≫ b := by
   have (j : Over i) : CompactSpace ((opensDiagram D i U).obj j) :=
     isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ U.2 hU)
-  let U₀ : (D.obj i).Opens := D.map (𝟙 i) ⁻¹ᵁ U
-  let a₀ : ↑U₀ ⟶ X := Scheme.homOfLE _ (by simp [U₀]) ≫ a
-  let b₀ : ↑U₀ ⟶ X := Scheme.homOfLE _ (by simp [U₀]) ≫ b
-  have ha₀ : U₀.ι ≫ t.app i = a₀ ≫ f := by simp [a₀, ← ha]
-  have hb₀ : U₀.ι ≫ t.app i = b₀ ≫ f := by simp [b₀, ← hb]
-  have hab₀ : (c.π.app i).resLE U₀ (c.π.app i ⁻¹ᵁ U) (by simp [U₀]) ≫ a₀ =
-      (c.π.app i).resLE U₀ (c.π.app i ⁻¹ᵁ U) (by simp [U₀]) ≫ b₀ := by
-    simp only [a₀, b₀, Scheme.Hom.resLE_map_assoc]
+  have h : D.map (𝟙 i) ⁻¹ᵁ U ≤ U := by simp
+  have hres (g : ↑U ⟶ X) (hg : U.ι ≫ t.app i = g ≫ f) :
+      (D.map (𝟙 i) ⁻¹ᵁ U).ι ≫ t.app i = (Scheme.homOfLE _ h ≫ g) ≫ f := by simp [← hg]
+  have hab₀ : (c.π.app i).resLE (D.map (𝟙 i) ⁻¹ᵁ U) _ (by simp) ≫ Scheme.homOfLE _ h ≫ a =
+      (c.π.app i).resLE (D.map (𝟙 i) ⁻¹ᵁ U) (c.π.app i ⁻¹ᵁ U) (by simp) ≫
+        Scheme.homOfLE _ h ≫ b := by
+    simp only [Scheme.Hom.resLE_map_assoc]
     exact hab
   obtain ⟨⟨k, _, u⟩, ⟨u', _, hu⟩, e⟩ := Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
     _ (opensDiagramι .. ≫ (Over.forget i).whiskerLeft t) f _ (isLimitOpensCone D c hc i U)
-    (i := .mk (𝟙 i)) a₀ b₀ ha₀ hb₀ hab₀
+    (i := .mk (𝟙 i)) _ _ (hres a ha) (hres b hb) hab₀
   obtain rfl : u = u' := by simpa using! hu.symm
-  replace e : (D.map u).resLE U₀ (D.map u ⁻¹ᵁ U) (by simp [U₀]) ≫ a₀ =
-      (D.map u).resLE U₀ (D.map u ⁻¹ᵁ U) (by simp [U₀]) ≫ b₀ := e
-  exact ⟨k, u, by simpa [a₀, b₀] using e⟩
+  replace e : (D.map u).resLE _ (D.map u ⁻¹ᵁ U) (by simp) ≫ Scheme.homOfLE _ h ≫ a =
+      (D.map u).resLE _ (D.map u ⁻¹ᵁ U) (by simp) ≫ Scheme.homOfLE _ h ≫ b := e
+  exact ⟨k, u, by simpa using e⟩
 
 end LocallyOfFiniteType
 
