@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.NumberField.Completion.Ramification
 public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.RamificationInertia.Valuation
 public import Mathlib.RingTheory.Algebraic.Denominator
+public import Mathlib.RingTheory.RamificationInertia.Basic
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Hom.Lattice
@@ -234,17 +235,16 @@ private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
 open IsDedekindDomain in
 theorem mulHeight_pow_finrank {ι : Type*} (x : ι → K) [Finite ι] :
     mulHeight x ^ Module.finrank K L = mulHeight (algebraMap K L ∘ x) := by
-  classical
   by_cases hx : x = 0
   · simp [hx]
-  rw [mulHeight_eq_mulHeight_restrict_support]
-  conv_rhs => rw [mulHeight_eq_mulHeight_restrict_support]
+  have : Nonempty (Function.support x) := by
+    rwa [Set.nonempty_coe_sort, Function.support_nonempty_iff]
   have : Function.support (algebraMap K L ∘ x) = Function.support x := by
     ext
     simp
+  conv_rhs => rw [mulHeight_eq_mulHeight_restrict_support]
   rw [this]
-  have : Nonempty (Function.support x) := by
-    rwa [Set.nonempty_coe_sort, Function.support_nonempty_iff]
+  rw [mulHeight_eq_mulHeight_restrict_support]
   apply mulHeight_pow_finrank_aux
   simp
 
@@ -280,7 +280,8 @@ noncomputable def absLogHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : �
 open IntermediateField in
 theorem absMulHeight₁_eq {K : Type*} [Field K] [NumberField K] (x : K) :
     absMulHeight₁ x = Height.mulHeight₁ x ^ (Module.finrank ℚ K : ℝ)⁻¹ := by
-  rw [absMulHeight₁, dif_pos (Algebra.IsIntegral.isIntegral x), ← AdjoinSimple.algebraMap_gen ℚ x,
+  rw [absMulHeight₁, dite_eq_left (Algebra.IsIntegral.isIntegral x),
+    ← AdjoinSimple.algebraMap_gen ℚ x,
     ← mulHeight₁_pow_finrank, AdjoinSimple.algebraMap_gen, ← Real.rpow_natCast,
     ← Real.rpow_mul (by positivity), ← Module.finrank_mul_finrank ℚ ℚ⟮x⟯ K, Nat.cast_mul,
     mul_inv_rev, mul_inv_cancel_left₀ (by simpa using Module.finrank_pos.ne')]
