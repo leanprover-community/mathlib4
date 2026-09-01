@@ -195,7 +195,7 @@ theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries 
   · simp
   · rw [LieSubmodule.eq_bot_iff] at h; apply IsTrivial.mk; intro x m; apply h
     apply LieSubmodule.subset_lieSpan
-    simp only [Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and, Set.mem_setOf]
+    simp only [Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and, Set.mem_ofPred]
     exact ⟨x, m, rfl⟩
 
 section
@@ -475,6 +475,7 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent L M] (h : ¬ IsT
   · exact antitone_lowerCentralSeries _ _ _ (Nat.le_of_lt_succ h)
 
 variable [LieModule R L M]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- For a nilpotent Lie module `M` of a Lie algebra `L`, the first term in the lower central series
 of `M` contains a non-zero element on which `L` acts trivially unless the entire action is trivial.
@@ -713,13 +714,11 @@ theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂
 def maxNilpotentSubmodule :=
   sSup { N : LieSubmodule R L M | IsNilpotent L N }
 
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 instance instMaxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
     IsNilpotent L (maxNilpotentSubmodule R L M) := by
   have hwf := CompleteLattice.WellFoundedGT.isSupClosedCompact (LieSubmodule R L M) inferInstance
   refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun N₁ h₁ N₂ h₂ => ?_ <;>
-  simp_all <;> infer_instance
+  simp_all only [Set.mem_ofPred] <;> infer_instance
 
 theorem isNilpotent_iff_le_maxNilpotentSubmodule [IsNoetherian R M] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ maxNilpotentSubmodule R L M :=
@@ -853,6 +852,8 @@ theorem LieEquiv.nilpotent_iff_equiv_nilpotent (e : L ≃ₗ⁅R⁆ L') :
 
 theorem LieHom.isNilpotent_range [IsNilpotent L] (f : L →ₗ⁅R⁆ L') : IsNilpotent f.range :=
   f.surjective_rangeRestrict.lieAlgebra_isNilpotent
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- Note that this result is not quite a special case of
 `LieModule.isNilpotent_range_toEnd_iff` which concerns nilpotency of the

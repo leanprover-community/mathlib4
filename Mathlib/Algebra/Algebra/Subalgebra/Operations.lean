@@ -54,7 +54,7 @@ theorem mem_of_finsetSum_eq_one_of_pow_smul_mem
   have e' : ∑ i ∈ ι', l' i * s' i = 1 := by
     ext
     change S'.subtype (∑ i ∈ ι', l' i * s' i) = 1
-    simpa only [map_sum, map_mul] using e
+    simpa only [map_sum, map_mul] using! e
   have : Ideal.span (s' '' ι') = ⊤ := by
     rw [Ideal.eq_top_iff_one, ← e']
     apply sum_mem
@@ -91,14 +91,23 @@ def FixedPoints.subsemiring : Subsemiring B' where
   __ := FixedPoints.addSubmonoid G B'
   __ := FixedPoints.submonoid G B'
 
+instance : SMulCommClass G (FixedPoints.subsemiring B' G) B' :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.submonoid G B') B')
+
 /-- The set of fixed points under a group action, as a subring. -/
 def FixedPoints.subring : Subring B where
   __ := FixedPoints.addSubgroup G B
   __ := FixedPoints.submonoid G B
 
+instance : SMulCommClass G (FixedPoints.subring B G) B :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.subsemiring B G) B)
+
 /-- The set of fixed points under a group action, as a subalgebra. -/
 def FixedPoints.subalgebra : Subalgebra A B' where
   __ := FixedPoints.subsemiring B' G
   algebraMap_mem' r g := smul_algebraMap g r
+
+instance : SMulCommClass G (FixedPoints.subalgebra A B' G) B' :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.subsemiring B' G) B')
 
 end MulSemiringAction

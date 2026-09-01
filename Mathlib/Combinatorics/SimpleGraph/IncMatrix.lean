@@ -106,7 +106,7 @@ variable [NonAssocSemiring R] [DecidableEq α] [DecidableRel G.Adj] {a : α} {e 
 
 theorem sum_incMatrix_apply [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     ∑ e, G.incMatrix R a e = G.degree a := by
-  simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
+  simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset, card_incidenceSet_eq_degree]
 
 theorem incMatrix_mul_transpose_diag [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
@@ -162,7 +162,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
   rw [← coe_eq_singleton, coe_filter_univ]
   exact G.incidenceSet_inter_incidenceSet_of_adj h
 
-theorem incMatrix_mul_transpose [∀ a, Fintype (neighborSet G a)] :
+theorem incMatrix_mul_transpose [G.LocallyFinite] :
     G.incMatrix R * (G.incMatrix R)ᵀ =
       of fun a b => if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
   ext a b

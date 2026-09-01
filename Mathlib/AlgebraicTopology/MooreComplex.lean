@@ -10,21 +10,23 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
-## Moore complex
+# Moore complex
 
 We construct the normalized Moore complex, as a functor
 `SimplicialObject C ⥤ ChainComplex C ℕ`,
 for any abelian category `C`.
 
-The `n`-th object is intersection of
+The `n`-th object is the intersection of
 the kernels of `X.δ i : X.obj n ⟶ X.obj (n-1)`, for `i = 1, ..., n`.
 
 The differentials are induced from `X.δ 0`,
 which maps each of these intersections of kernels to the next.
 
-This functor is one direction of the Dold-Kan equivalence, which we're still working towards.
+This functor is one direction of the Dold-Kan equivalence
+`CategoryTheory.Abelian.DoldKan.equivalence`, the other being `CategoryTheory.Abelian.DoldKan.Γ`.
+See `Mathlib/AlgebraicTopology/DoldKan/Equivalence.lean`.
 
-### References
+## References
 
 * https://stacks.math.columbia.edu/tag/0194
 * https://ncatlab.org/nlab/show/Moore+complex
@@ -120,6 +122,8 @@ def obj (X : SimplicialObject C) : ChainComplex C ℕ :=
 
 variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The normalized Moore complex functor, on morphisms.
 -/
 @[simps!]
@@ -139,10 +143,12 @@ end NormalizedMooreComplex
 
 open NormalizedMooreComplex
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 
-The `n`-th object is intersection of
+The `n`-th object is the intersection of
 the kernels of `X.δ i : X.obj n ⟶ X.obj (n-1)`, for `i = 1, ..., n`.
 
 The differentials are induced from `X.δ 0`,
@@ -153,6 +159,8 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 -- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n := by

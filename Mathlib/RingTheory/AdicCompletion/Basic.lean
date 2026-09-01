@@ -123,7 +123,7 @@ theorem IsHausdorff.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorf
   ext r
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
-  simpa using h n r
+  simpa using! h n r
 
 /--
 A variant of `IsHausdorff.StrictMono.funext`, where the target is a ring instead of a module.
@@ -135,7 +135,7 @@ theorem IsHausdorff.StrictMono.funext' {R S : Type*} [CommRing S] (I : Ideal S) 
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
   apply SModEq.mono (Submodule.pow_smul_top_le I S ha.le_apply)
-  simpa using h n m
+  simpa using! h n m
 
 theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
@@ -550,6 +550,7 @@ theorem mk_zero_of (f : AdicCauchySequence I M)
     ← AdicCauchySequence.mk_eq_mk (show n ≤ m by lia)]
   simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))) hl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
   intro x
@@ -595,6 +596,19 @@ lemma eval_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Sub
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m)
     (n : ℕ) (x : M) : (lift I f h x).val n = f n x :=
   rfl
+
+lemma lift_add (f g : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (hf : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m)
+    (hg : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ g n = g m) :
+    lift I (f + g) (fun h ↦ by simp [LinearMap.comp_add, hf h, hg h]) =
+      lift I f hf + lift I g hg := by
+  ext; simp
+
+theorem lift_smul (c : R) (f : ∀ n, M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (hf : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m) :
+    lift I (c • f) (fun h ↦ by simp [LinearMap.comp_smul, hf h]) =
+      c • (lift I f hf) := by
+  ext; simp [val_smul]
 
 section Bijective
 

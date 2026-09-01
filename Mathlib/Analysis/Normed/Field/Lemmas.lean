@@ -84,8 +84,6 @@ lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
 lemma inv_nhdsNE_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
   rw [← inv_cobounded₀, inv_inv]
 
-@[deprecated (since := "2025-11-26")] alias inv_nhdsWithin_ne_zero := inv_nhdsNE_zero
-
 lemma tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
   inv_cobounded₀.le
 
@@ -95,9 +93,6 @@ theorem tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
 lemma tendsto_inv₀_nhdsNE_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
   inv_nhdsNE_zero.le
 
-@[deprecated (since := "2025-11-26")]
-alias tendsto_inv₀_nhdsWithin_ne_zero := tendsto_inv₀_nhdsNE_zero
-
 end Filter
 
 /-- If `s` is a set disjoint from `𝓝 0`, then `fun x ↦ x⁻¹` is uniformly continuous on `s`. -/
@@ -106,7 +101,7 @@ theorem uniformContinuousOn_inv₀ {s : Set α} (hs : sᶜ ∈ 𝓝 0) :
   rw [Metric.uniformContinuousOn_iff_le]
   intro ε hε
   rcases NormedAddGroup.nhds_zero_basis_norm_lt.mem_iff.mp hs with ⟨r, hr₀, hr⟩
-  simp only [Set.subset_compl_comm (t := s), Set.compl_setOf, not_lt] at hr
+  simp only [Set.subset_compl_comm (t := s), Set.compl_ofPred, not_lt] at hr
   have hs₀ : ∀ x ∈ s, x ≠ 0 := fun x hx ↦ norm_pos_iff.mp <| hr₀.trans_le (hr hx)
   refine ⟨ε * r ^ 2, by positivity, fun x hx y hy hxy ↦ ?_⟩
   calc
@@ -207,20 +202,12 @@ instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
 lemma tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   tendsto_norm_cobounded_atTop.comp tendsto_inv₀_nhdsNE_zero
 
-@[deprecated (since := "2025-11-26")]
-alias NormedField.tendsto_norm_inv_nhdsNE_zero_atTop := tendsto_norm_inv_nhdsNE_zero_atTop
-
 lemma tendsto_zpow_nhdsNE_zero_cobounded {m : ℤ} (hm : m < 0) :
     Tendsto (· ^ m) (𝓝[≠] 0) (cobounded α) := by
   obtain ⟨m, rfl⟩ := neg_surjective m
   lift m to ℕ using by lia
   simpa [Function.comp_def] using
     (tendsto_pow_cobounded_cobounded (by lia)).comp tendsto_inv₀_nhdsNE_zero
-
-@[deprecated tendsto_zpow_nhdsNE_zero_cobounded (since := "2025-11-26")]
-lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
-    Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop :=
-  tendsto_norm_cobounded_atTop.comp (tendsto_zpow_nhdsNE_zero_cobounded hm)
 
 end NormedDivisionRing
 

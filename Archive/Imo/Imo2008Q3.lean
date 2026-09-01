@@ -3,15 +3,18 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.NumberTheory.PrimesCongruentOne
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+public import Mathlib.NumberTheory.PrimesCongruentOne
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 2008 Q3
+
 Prove that there exist infinitely many positive integers `n` such that `n^2 + 1` has a prime
 divisor which is greater than `2n + √(2n)`.
 
@@ -26,6 +29,7 @@ and we can take this `n` such that `n ≤ p/2`. Let `k = p - 2n ≥ 0`. Then we 
 Then `p = 2n + k ≥ 2n + √(p - 4) = 2n + √(2n + k - 4) > √(2n)` and we are done.
 -/
 
+public section
 
 open Real
 
@@ -33,7 +37,7 @@ namespace Imo2008Q3
 
 theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) (hp_gt_20 : p > 20) :
     ∃ n : ℕ, p ∣ n ^ 2 + 1 ∧ (p : ℝ) > 2 * n + sqrt (2 * n) := by
-  haveI := Fact.mk hpp
+  have := Fact.mk hpp
   have hp_mod_4_ne_3 : p % 4 ≠ 3 := by linarith [show p % 4 = 1 from hp_mod_4_eq_1]
   obtain ⟨y, hy⟩ := ZMod.exists_sq_eq_neg_one_iff.mpr hp_mod_4_ne_3
   let m := ZMod.valMinAbs y

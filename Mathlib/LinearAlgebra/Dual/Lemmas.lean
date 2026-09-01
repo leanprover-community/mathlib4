@@ -81,7 +81,7 @@ noncomputable section
 
 namespace Module
 
-variable (R A M : Type*)
+variable (R M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 section Prod
@@ -104,7 +104,7 @@ end Module
 
 section
 
-open Module Module.Dual Submodule LinearMap Cardinal Function
+open Module Module.Dual LinearMap Cardinal Function
 
 universe uR uM uK uV uι
 variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
@@ -163,7 +163,7 @@ universe uK uV
 variable {K : Type uK} {V : Type uV}
 variable [CommSemiring K] [AddCommMonoid V] [Module K V] [Projective K V]
 
-open Module Module.Dual Submodule LinearMap Cardinal Basis Module
+open Module Module.Dual Submodule LinearMap Cardinal Module
 
 section
 
@@ -283,7 +283,9 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
 instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
   equiv ULift.moduleEquiv.symm
 
-instance instFiniteDimensionalOfIsReflexive (K V : Type*)
+-- Very low priority because instance resolution will often end up using the instances above
+-- to prove `IsReflexive`, which require proving `Finite` again.
+instance (priority := 90) instFiniteDimensionalOfIsReflexive (K V : Type*)
     [Field K] [AddCommGroup V] [Module K V] [IsReflexive K V] :
     FiniteDimensional K V := by
   rw [FiniteDimensional, ← rank_lt_aleph0_iff]
@@ -302,6 +304,44 @@ instance instFiniteDimensionalOfIsReflexive (K V : Type*)
 end IsReflexive
 
 end Module
+
+namespace LinearMap
+
+section Projective
+
+variable {R : Type*} [CommSemiring R]
+variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
+
+/-- The identity pairing is right-separating. -/
+protected theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
+  fun x ↦ (forall_dual_apply_eq_zero_iff R x).mp
+
+alias id_separatingRight := SeparatingRight.id
+
+/-- The identity pairing is non-degenerate. -/
+protected theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :=
+  ⟨.id, .id⟩
+
+alias id_nondegenerate := Nondegenerate.id
+
+@[deprecated (since := "2026-04-02")]
+alias dualPairing_nondegenerate := id_nondegenerate
+
+/-- The pairing `Dual.eval` is left-separating. -/
+protected theorem SeparatingLeft.eval : (Dual.eval R M).SeparatingLeft :=
+  id_separatingRight
+
+alias eval_separatingLeft := SeparatingLeft.eval
+
+/-- The pairing `Dual.eval` is non-degenerate. -/
+protected theorem Nondegenerate.eval : (Dual.eval R M).Nondegenerate :=
+  ⟨.eval, .eval⟩
+
+alias eval_nondegenerate := Nondegenerate.eval
+
+end Projective
+
+end LinearMap
 
 namespace Submodule
 
@@ -458,7 +498,7 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
   simp
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
-    Function.LeftInverse W.dualRestrict W.dualLift := fun x => by
+    Function.LeftInverse W.dualRestrict W.dualLift := fun x ↦ by
   rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, End.one_apply]
 
 theorem dualLift_rightInverse (W : Subspace K V) :
@@ -575,7 +615,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
 
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
-  coe_injective' φ ψ h := by
+  coe_injective φ ψ h := by
     ext
     simp only [funext_iff] at h
     exact h _
@@ -618,8 +658,8 @@ vanish on `W`.
 The inverse of this is `Submodule.dualCopairing`. -/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
-  LinearEquiv.ofLinear
-    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
+  LinearEquiv.ofLinearMap
+    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ ↦
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
 
@@ -718,8 +758,8 @@ section VectorSpace
 
 section
 
-variable {K V₁ V₂ : Type*} [DivisionRing K]
-variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
+variable {K V₁ : Type*} [DivisionRing K]
+variable [AddCommGroup V₁] [Module K V₁]
 
 namespace Module.Dual
 
@@ -779,29 +819,6 @@ end Module.Dual
 end
 
 namespace LinearMap
-
-variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
-
-theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
-  separatingLeft_iff_ker_eq_bot.mpr ker_id
-
-theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingLeft
-
-variable [Module.Projective K V]
-
-theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
-  fun x => (forall_dual_apply_eq_zero_iff K x).mp
-
-theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
-
-theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
-  ⟨id_separatingLeft, id_separatingRight⟩
-
-@[deprecated (since := "2026-04-02")]
-alias dualPairing_nondegenerate := id_nondegenerate
-
-theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
-  ⟨eval_separatingLeft, eval_separatingRight⟩
 
 variable {K V₁ V₂ : Type*} [Field K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
@@ -879,11 +896,12 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
 -- for `Module.Dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.Dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
 -- be true when the family is inf-closed).
--- TODO: generalize to `Sort`
-theorem dualAnnihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K V₁) :
+theorem dualAnnihilator_iInf_eq {ι : Sort*} [Finite ι] (W : ι → Subspace K V₁) :
     (⨅ i : ι, W i).dualAnnihilator = ⨆ i : ι, (W i).dualAnnihilator := by
-  revert ι
-  apply Finite.induction_empty_option
+  rw [← iInf_plift_down W, ← iSup_plift_down fun i ↦ (W i).dualAnnihilator]
+  refine Finite.induction_empty_option
+    (P := fun α ↦ ∀ W : α → _, (⨅ i, W i).dualAnnihilator = ⨆ i, (W i).dualAnnihilator) ?_ ?_ ?_
+    (PLift ι) (fun i ↦ W i.down)
   · intro α β h hyp W
     rw [← h.iInf_comp, hyp _, ← h.iSup_comp]
   · intro W
@@ -1025,9 +1043,9 @@ open Submodule in
 theorem dualAnnihilator_dualAnnihilator_eq_map (W : Subspace K V) [FiniteDimensional K W] :
     W.dualAnnihilator.dualAnnihilator = W.map (Dual.eval K V) := by
   let e1 := (Free.chooseBasis K W).toDualEquiv ≪≫ₗ W.quotAnnihilatorEquiv.symm
-  haveI := e1.finiteDimensional
+  have := e1.finiteDimensional
   let e2 := (Free.chooseBasis K _).toDualEquiv ≪≫ₗ W.dualAnnihilator.dualQuotEquivDualAnnihilator
-  haveI := LinearEquiv.finiteDimensional (V₂ := W.dualAnnihilator.dualAnnihilator) e2
+  have := LinearEquiv.finiteDimensional (V₂ := W.dualAnnihilator.dualAnnihilator) e2
   rw [eq_of_le_of_finrank_eq (map_le_dualAnnihilator_dualAnnihilator W)]
   rw [← (equivMapOfInjective _ (eval_apply_injective K (V := V)) W).finrank_eq, e1.finrank_eq]
   exact e2.finrank_eq
@@ -1067,9 +1085,6 @@ lemma Module.exists_dual_forall_apply_eq_one {ι K V : Type*} [Field K] [AddComm
 namespace TensorProduct
 
 variable (R A : Type*) (M : Type*) (N : Type*)
-variable {ι κ : Type*}
-variable [DecidableEq ι] [DecidableEq κ]
-variable [Fintype ι] [Fintype κ]
 
 open TensorProduct
 
@@ -1123,71 +1138,5 @@ theorem dualDistrib_apply (f : Dual A M) (g : Dual R N) (m : M) (n : N) :
   rfl
 
 end AlgebraTensorModule
-
-variable {R M N}
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-variable [Module R M] [Module R N]
-
-/-- An inverse to `TensorProduct.dualDistrib` given bases.
--/
-noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  ∑ i, ∑ j,
-    (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
-      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry (.id R) M N R
-
-@[simp]
-theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
-    dualDistribInvOfBasis b c f = ∑ i, ∑ j, f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
-  simp [dualDistribInvOfBasis]
-
-theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistrib R M N) (dualDistribInvOfBasis b c) = LinearMap.id := by
-  apply (b.tensorProduct c).dualBasis.ext
-  rintro ⟨i, j⟩
-  apply (b.tensorProduct c).ext
-  rintro ⟨i', j'⟩
-  simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
-    dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
-    Basis.repr_self, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
-    Basis.tensorProduct_apply, LinearMap.coe_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
-    map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simpa using mul_comm _ _
-  all_goals { intros; simp [*] at * }
-
-theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistribInvOfBasis b c) (dualDistrib R M N) = LinearMap.id := by
-  apply (b.dualBasis.tensorProduct c.dualBasis).ext
-  rintro ⟨i, j⟩
-  simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
-    dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,
-    id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simp
-  all_goals { intros; simp [*] at * }
-
-/-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
-It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simps!]
-noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
-  · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
-  · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
-
-variable (R M N)
-variable [Module.Finite R M] [Module.Finite R N] [Module.Free R M] [Module.Free R N]
-
-/--
-A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite free
-modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simp]
-noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) :=
-  dualDistribEquivOfBasis (Module.Free.chooseBasis R M) (Module.Free.chooseBasis R N)
 
 end TensorProduct

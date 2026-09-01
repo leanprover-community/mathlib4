@@ -131,10 +131,16 @@ as `f`, the pullback of that morphism along `f` exists. -/
 protected class HasPullbacksAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPullback {W} (g : W ⟶ Y) : P g → HasPullback g f
 
+instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : P.HasPullbacksAlong f where
+  hasPullback _ _ := inferInstance
+
 /-- `P.HasPushoutsAlong f` states that for any morphism satisfying `P` with the same domain
 as `f`, the pushout of that morphism along `f` exists. -/
 protected class HasPushoutsAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPushout {W} (g : X ⟶ W) : P g → HasPushout g f
+
+instance {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] : P.HasPushoutsAlong f where
+  hasPushout _ _ := inferInstance
 
 /-- `P.IsStableUnderBaseChangeAlong f` states that for any morphism satisfying `P` with the same
 codomain as `f`, any pullback of that morphism along `f` also satisfies `P`. -/
@@ -177,7 +183,7 @@ theorem IsStableUnderBaseChange.mk' [RespectsIso P]
       P (pullback.fst f g)) :
     IsStableUnderBaseChange P where
   of_isPullback {X Y Y' S f g f' g'} sq hg := by
-    haveI : HasPullback f g := sq.flip.hasPullback
+    have : HasPullback f g := sq.flip.hasPullback
     let e := sq.flip.isoPullback
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
@@ -305,7 +311,7 @@ theorem IsStableUnderCobaseChange.mk' [RespectsIso P]
       P (pushout.inr f g)) :
     IsStableUnderCobaseChange P where
   of_isPushout {A A' B B' f g f' g'} sq hf := by
-    haveI : HasPushout f g := sq.flip.hasPushout
+    have : HasPushout f g := sq.flip.hasPushout
     let e := sq.flip.isoPushout
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
@@ -358,6 +364,7 @@ theorem underPushoutMap [IsStableUnderCobaseChange P] {S S' : C} (f : S' ⟶ S)
     P ((Under.pushout f).map g).right :=
   pushoutDesc_inl_inr f g.w.symm H
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
 theorem pushoutMap
@@ -510,7 +517,6 @@ inductive colimitsOfShape : MorphismProperty C
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f) :
       colimitsOfShape (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
 
-set_option backward.isDefEq.respectTransparency false in
 variable {W J} in
 lemma colimitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Cocone X₂)
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (hf : W.functorCategory J f)
@@ -525,7 +531,7 @@ lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W�
   rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 variable {J} in
 lemma colimitsOfShape_le_of_final {J' : Type*} [Category* J'] (F : J ⥤ J') [F.Final] :
     W.colimitsOfShape J' ≤ W.colimitsOfShape J := by
@@ -571,6 +577,7 @@ lemma colimitsOfShape_colimMap {X Y : J ⥤ C}
     W.colimitsOfShape J (colimMap f) :=
   ⟨_, _, _, _, _, colimit.isColimit Y, _, hf⟩
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] IsCofiltered.isConnected in
 variable {W} in
 lemma colimitsOfShape.of_isColimit
@@ -591,7 +598,6 @@ class IsStableUnderColimitsOfShape : Prop where
     (h₁ : IsColimit c₁) (h₁ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f)
     (φ : c₁.pt ⟶ c₂.pt) (hφ : ∀ j, c₁.ι.app j ≫ φ = f.app j ≫ c₂.ι.app j) : W φ
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isStableUnderColimitsOfShape_iff_colimitsOfShape_le :
     W.IsStableUnderColimitsOfShape J ↔ W.colimitsOfShape J ≤ W := by
   constructor
@@ -613,7 +619,7 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
     W (colimMap f) :=
   colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 variable (C J) in
 instance IsStableUnderColimitsOfShape.isomorphisms :
     (isomorphisms C).IsStableUnderColimitsOfShape J where
@@ -659,6 +665,7 @@ lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
   refine ⟨Shrink J, ?_⟩
   rwa [← W.colimitsOfShape_eq_of_equivalence (Discrete.equivalence (equivShrink.{w} J))]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma le_colimitsOfShape_punit : W ≤ W.colimitsOfShape (Discrete PUnit.{w + 1}) := by
   intro X₁ X₂ f hf
   have h := initialIsInitial (C := Discrete (PUnit.{w + 1}))
@@ -697,7 +704,6 @@ abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape 
 /-- The property that a morphism property `W` is stable under coproducts indexed by a type `J`. -/
 abbrev IsStableUnderCoproductsOfShape (J : Type*) := W.IsStableUnderColimitsOfShape (Discrete J)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasProduct X₁] [HasProduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
@@ -719,7 +725,6 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
     rintro ⟨j⟩
     simp [φ, hα]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasCoproduct X₁] [HasCoproduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
@@ -745,7 +750,7 @@ instance (J : Type*) [(monomorphisms C).IsStableUnderCoproductsOfShape J]
     {X₁ X₂ : J → C} (f : ∀ j, X₁ j ⟶ X₂ j) [HasCoproduct X₁] [HasCoproduct X₂]
     [∀ j, Mono (f j)] :
     Mono (Limits.Sigma.map f) :=
-  MorphismProperty.colimMap _ (fun ⟨j⟩ ↦ by dsimp; infer_instance)
+  MorphismProperty.colimMap _ (fun ⟨j⟩ ↦ inferInstanceAs (Mono (f j)))
 
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
@@ -823,7 +828,6 @@ instance [P.ContainsIdentities] [P.RespectsIso] : P.diagonal.ContainsIdentities 
 
 instance [P.IsMultiplicative] [P.IsStableUnderBaseChange] : P.diagonal.IsMultiplicative where
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.RespectsIso] :
     P.diagonal.IsStableUnderBaseChange :=
   IsStableUnderBaseChange.mk'

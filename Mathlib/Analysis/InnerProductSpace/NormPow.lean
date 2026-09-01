@@ -23,8 +23,9 @@ public section
 
 section ContDiffNormPow
 
-open Asymptotics Real Topology
-open scoped NNReal
+open Asymptotics Real
+
+open scoped Topology NNReal
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -58,7 +59,7 @@ theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
 
 theorem hasDerivAt_norm_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * ‖x‖ ^ (p - 2) * x) x := by
-  convert! hasFDerivAt_norm_rpow x hp |>.hasDerivAt using 1; simp
+  convert hasFDerivAt_norm_rpow x hp |>.hasDerivAt; simp
 
 theorem hasDerivAt_abs_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ |x| ^ p) (p * |x| ^ (p - 2) * x) x := by

@@ -9,7 +9,6 @@ public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.FiniteSupport.Basic
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Fintype.Order
 import Mathlib.RingTheory.Nilpotent.Defs
@@ -189,7 +188,8 @@ open Lean.Meta Qq Height
 
 /-- Extension for the `positivity` tactic: `Height.mulHeight₁` is always positive. -/
 @[positivity Height.mulHeight₁ _]
-meta def evalMulHeight₁ : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulHeight₁ : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight₁ $K $KF $KA $a) =>
     assertInstancesCommute
@@ -198,7 +198,8 @@ meta def evalMulHeight₁ : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for the `positivity` tactic: `Height.logHeight₁` is always nonnegative. -/
 @[positivity Height.logHeight₁ _]
-meta def evalLogHeight₁ : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogHeight₁ : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight₁ $K $KF $KA $a) =>
     assertInstancesCommute
@@ -508,7 +509,8 @@ open Lean.Meta Qq Height
 
 /-- Extension for the `positivity` tactic: `Height.mulHeight` is always positive. -/
 @[positivity Height.mulHeight _]
-meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulHeight : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $a) =>
     -- Check whether there is a `Finite` instance for `$ι` around.
@@ -521,7 +523,8 @@ meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for the `positivity` tactic: `Height.logHeight` is always nonnegative. -/
 @[positivity Height.logHeight _]
-meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogHeight : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $a) =>
     -- Check whether there is a `Finite` instance for `$ι` around.
@@ -542,7 +545,7 @@ namespace Height
 
 open AdmissibleAbsValues Real Function
 
-variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*} {α : Type*} [Finite ι]
+variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*} [Finite ι]
 
 /-- The logarithmic height of a tuple does not change under scaling. -/
 lemma logHeight_smul_eq_logHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
@@ -755,7 +758,7 @@ lemma mulHeight_mul_le (x y : ι → K) : mulHeight (x * y) ≤ mulHeight x * mu
   rcases eq_or_ne y 0 with rfl | hy
   · simpa using one_le_mulHeight x
   rw [← mulHeight_fun_mul_eq hx hy,
-    show x * y = (fun a ↦ x a.1 * y a.2) ∘ fun i ↦ (i, i) by ext1; simp]
+    show x * y = (fun a ↦ x a.1 * y a.2) ∘ Function.diag by ext1; simp]
   exact mulHeight_comp_le ..
 
 open Real in

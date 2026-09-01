@@ -92,20 +92,6 @@ class ContinuousFourierInv (E : Type*) (F : outParam (Type*))
     [TopologicalSpace E] [TopologicalSpace F] [FourierTransformInv E F] where
   continuous_fourierInv : Continuous (𝓕⁻ : E → F)
 
-/-- A `FourierModule` is a function space on which the Fourier transform is a linear map. -/
-@[deprecated "use `FourierAdd` and `FourierSMul` instead" (since := "2026-01-06")]
-structure FourierModule (R : Type*) (E : Type*) (F : outParam (Type*)) [Add E] [Add F] [SMul R E]
-    [SMul R F] extends FourierTransform E F where
-  fourier_add : ∀ (f g : E), 𝓕 (f + g) = 𝓕 f + 𝓕 g
-  fourier_smul : ∀ (r : R) (f : E), 𝓕 (r • f) = r • 𝓕 f
-
-/-- A `FourierInvModule` is a function space on which the Fourier transform is a linear map. -/
-@[deprecated "use `FourierInvAdd` and `FourierInvSMul` instead" (since := "2026-01-06")]
-structure FourierInvModule (R : Type*) (E : Type*) (F : outParam (Type*)) [Add E] [Add F] [SMul R E]
-    [SMul R F] extends FourierTransformInv E F where
-  fourierInv_add : ∀ (f g : E), 𝓕⁻ (f + g) = 𝓕⁻ f + 𝓕⁻ g
-  fourierInv_smul : ∀ (r : R) (f : E), 𝓕⁻ (r • f) = r • 𝓕⁻ f
-
 namespace FourierTransform
 
 export FourierAdd (fourier_add)
@@ -264,8 +250,6 @@ variable (R E) in
 /-- The Fourier transform as a continuous linear equivalence. -/
 def fourierCLE : E ≃L[R] F where
   __ := fourierEquiv R E
-  continuous_toFun := continuous_fourier
-  continuous_invFun := continuous_fourierInv
 
 @[simp]
 lemma fourierCLE_apply (f : E) : fourierCLE R E f = 𝓕 f := rfl

@@ -5,7 +5,7 @@ Authors: Shing Tak Lam
 -/
 module
 
-public import Mathlib.Data.Finite.Sum
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.GroupAction.CardCommute
@@ -250,6 +250,7 @@ instance : IsKleinFour (DihedralGroup 2) where
   card_four := DihedralGroup.nat_card
   exponent_two := DihedralGroup.exponent
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/
 @[simps]
