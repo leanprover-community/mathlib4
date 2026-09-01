@@ -1330,29 +1330,22 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     fun j₁ j₂ O e₁ e₂ ↦ (hak' j₁ O e₁).trans (hak' j₂ O e₂).symm
   -- We may glue the morphisms into `Dₗ ⟶ X` and verify that it indeed satisfies the hypothesis.
   have h𝒲 : IsOpenCover (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 ·) :=
-    (h𝒱.comap (D.map fki).base.hom).comap (D.map flk).base.hom
-  let 𝒲 := Scheme.openCoverOfIsOpenCover _ (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 ·) h𝒲
-  have hglue (j₁ j₂ : s) :
-      pullback.fst (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j₁).ι (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j₂).ι ≫
-          (D.map flk).resLE (D.map fki ⁻¹ᵁ 𝒱 j₁) _ le_rfl ≫ ak j₁ =
-        pullback.snd _ _ ≫ (D.map flk).resLE (D.map fki ⁻¹ᵁ 𝒱 j₂) _ le_rfl ≫ ak j₂ := by
+    .mk ((D.map flk).iSup_preimage_eq_top ((D.map fki).iSup_preimage_eq_top h𝒱))
+  let al (j : s) : ↑(D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j) ⟶ X :=
+    (D.map flk).resLE (D.map fki ⁻¹ᵁ 𝒱 j) _ le_rfl ≫ ak j
+  have hglue (j₁ j₂ : s) : pullback.fst (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j₁).ι
+      (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j₂).ι ≫ al j₁ = pullback.snd _ _ ≫ al j₂ := by
     rw [← cancel_epi (isPullback_opens_inf _ _).isoPullback.hom]
-    simpa using hl j₁ j₂ _ inf_le_left inf_le_right
-  let F := 𝒲.glueMorphisms (fun j ↦ (D.map flk).resLE (D.map fki ⁻¹ᵁ 𝒱 j) _ le_rfl ≫ ak j) hglue
+    simpa [al] using hl j₁ j₂ _ inf_le_left inf_le_right
+  let F := (Scheme.openCoverOfIsOpenCover _ _ h𝒲).glueMorphisms al hglue
   have hF (j : s) : (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j).ι ≫ F =
       (D.map flk).resLE _ _ le_rfl ≫ ak j := Scheme.Cover.ι_glueMorphisms ..
-  have h𝒰' : IsOpenCover (c.π.app l ⁻¹ᵁ D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 ·) :=
-    h𝒲.comap (c.π.app l).base.hom
-  have hπF (j : s) : (c.π.app l ⁻¹ᵁ D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j).ι ≫ c.π.app l ≫ F =
-      (c.π.app l ⁻¹ᵁ D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j).ι ≫ a := by
-    rw [← Hom.resLE_comp_ι_assoc (c.π.app l) le_rfl, hF]
+  refine ⟨l, F, Scheme.hom_ext_of_isOpenCover (.mk ((c.π.app l).iSup_preimage_eq_top h𝒲)) _ _
+      fun j ↦ ?_, Scheme.hom_ext_of_isOpenCover h𝒲 _ _ fun j ↦ ?_⟩
+  · rw [← Hom.resLE_comp_ι_assoc (c.π.app l) le_rfl, hF]
     simp only [Hom.resLE_comp_resLE_assoc, Cone.w]
     exact hak' j _ _
-  have hFf (j : s) : (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j).ι ≫ F ≫ f =
-      (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j).ι ≫ t.app l := by
-    simp [reassoc_of% hF, hak]
-  exact ⟨l, F, Cover.hom_ext (Scheme.openCoverOfIsOpenCover _ _ h𝒰') _ _ hπF,
-    𝒲.hom_ext _ _ hFf⟩
+  · simp [reassoc_of% hF, hak]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

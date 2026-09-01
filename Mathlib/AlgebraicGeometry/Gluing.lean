@@ -490,6 +490,10 @@ lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
       refine ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
   exact 𝒰.hom_ext _ _ hU
 
+lemma hom_ext_of_isOpenCover {s : Type*} {X Y : Scheme.{u}} {U : s → X.Opens}
+    (hU : IsOpenCover U) (f g : X ⟶ Y) (h : ∀ i, (U i).ι ≫ f = (U i).ι ≫ g) : f = g :=
+  (X.openCoverOfIsOpenCover U hU).hom_ext f g h
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to covers in subcanonical topologies
