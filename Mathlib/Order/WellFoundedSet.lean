@@ -100,7 +100,7 @@ theorem _root_.WellFounded.wellFoundedOn : WellFounded r → s.WellFoundedOn r :
 @[simp]
 theorem wellFoundedOn_range : (range f).WellFoundedOn r ↔ WellFounded (r on f) := by
   let f' : β → range f := fun c => ⟨f c, c, rfl⟩
-  refine ⟨fun h => (InvImage.wf f' h).mono fun c c' => id, fun h => ⟨?_⟩⟩
+  refine ⟨fun h => (InvImage.wf f' h).anti fun c c' => id, fun h => ⟨?_⟩⟩
   rintro ⟨_, c, rfl⟩
   refine Acc.of_downward_closed f' ?_ _ ?_
   · rintro _ ⟨_, c', rfl⟩ -
