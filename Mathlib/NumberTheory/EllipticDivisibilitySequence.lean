@@ -305,8 +305,7 @@ lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰
     (odd : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m) 2 0 = 0) {a b c d : ℤ}
     (parity : [a, b, c, d].Pairwise (· % 2 = · % 2)) : atomRel W a b c d = 0 := by
   wlog _ : 0 ≤ a ∧ 0 ≤ b ∧ 0 ≤ c ∧ 0 ≤ d generalizing a b c d with h
-  · exact atomRel_abs neg .. ▸
-      h (by simp [-Nat.cast_natAbs, Int.abs_eq_natAbs] at parity ⊢; omega) <| by simp
+  · exact atomRel_abs neg .. ▸ h (parity.map _ (by grind)) <| by simp
   wlog _ : d ≤ c ∧ c ≤ b ∧ b ≤ a generalizing a b c d with h
   · erw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort ![a, b, c, d]) ![a, b, c, d],
       smul_eq_zero_iff_eq, h <| parity.perm (Equiv.Perm.ofFn_comp_perm _ ![a, b, c, d]).symm .symm]
