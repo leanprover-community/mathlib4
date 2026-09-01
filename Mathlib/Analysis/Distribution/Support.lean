@@ -32,7 +32,7 @@ compactly supported) and all basic properties are proved in an abstract setting 
 
 @[expose] public noncomputable section
 
-variable {ι α β 𝕜 E F F₁ F₂ R V : Type*}
+variable {ι α β E F V : Type*}
 
 open scoped Topology
 
@@ -42,7 +42,7 @@ section IsVanishingOn
 
 variable [FunLike F α β] [TopologicalSpace α] [Zero β]
 
-variable {f g : F → V} {s s₁ s₂ : Set α}
+variable {f : F → V} {s s₁ s₂ : Set α}
 
 /-! ### Vanishing of distributions -/
 
@@ -84,7 +84,7 @@ section Zero
 
 variable [FunLike F α β] [TopologicalSpace α] [Zero β] [Zero V]
 
-variable {f g : F → V} {s s₁ s₂ : Set α}
+variable {f g : F → V} {s : Set α}
 
 /-- The distributional support of `f` is the intersection of all closed sets `s` such that `f`
 vanishes on the complement of `s`.
@@ -259,7 +259,9 @@ end TemperedDistribution
 
 /-! ## Classical distributions -/
 
-open TopologicalSpace Distributions
+open TopologicalSpace
+
+open scoped Distributions
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
