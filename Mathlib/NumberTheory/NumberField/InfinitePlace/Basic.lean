@@ -274,10 +274,10 @@ define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
 theorem IsReal.mult_eq_one {w : InfinitePlace K} (hw : IsReal w) : mult w = 1 :=
-  if_pos hw
+  ite_eq_left hw
 
 theorem IsComplex.mult_eq_two {w : InfinitePlace K} (hw : IsComplex w) : mult w = 2 :=
-  if_neg (not_isReal_iff_isComplex.mpr hw)
+  ite_eq_right (not_isReal_iff_isComplex.mpr hw)
 
 @[simp]
 theorem mult_isReal (w : {w : InfinitePlace K // IsReal w}) :
@@ -371,7 +371,7 @@ theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
   convert! (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
-  · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
+  · rw [norm_prod, ← Fintype.prod_equiv (RingHom.equivRatAlgHom K ℂ) (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
     have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :

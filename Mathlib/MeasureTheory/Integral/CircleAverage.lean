@@ -30,7 +30,9 @@ Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
 
 @[expose] public section
 
-open Complex Filter Metric Real Set Topology
+open Complex Filter Metric Real Set
+
+open scoped Topology
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -203,8 +205,8 @@ theorem ContinuousOn.circleAverage {f : ℂ → E} {s : Set ℝ} {c : ℂ}
     ContinuousOn (circleAverage f c) s := by
   rw [continuousOn_iff_continuous_domRestrict] at *
   apply (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' _ _ _).const_smul
-  have (x : s × ℝ) : circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} :=
-    by simp [abs_of_nonneg (hs x.1 (Subtype.coe_prop x.1))]
+  have (x : s × ℝ) : circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} := by
+    simp [abs_of_nonneg (hs x.1 (Subtype.coe_prop x.1))]
   apply hf.comp (f := (fun x ↦ ⟨circleMap c x.1 x.2, this x⟩))
   fun_prop
 
