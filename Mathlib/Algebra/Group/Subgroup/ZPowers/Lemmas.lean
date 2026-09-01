@@ -37,6 +37,11 @@ theorem range_zpowersHom (g : G) : (zpowersHom G g).range = zpowers g := rfl
 @[to_additive]
 instance (a : G) : Countable (zpowers a) := Set.rangeFactorization_surjective.countable
 
+@[to_additive]
+theorem finsetSup_zpowers (s : Finset G) : s.sup zpowers = closure s := by
+  simp_rw [s.sup_eq_iSup, zpowers_eq_closure, ← closure_iUnion, ← Finset.set_biUnion_coe,
+    Set.biUnion_of_singleton]
+
 end Subgroup
 
 namespace AddSubgroup
@@ -44,10 +49,6 @@ namespace AddSubgroup
 @[simp]
 theorem range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :=
   rfl
-
-theorem finsetSup_zmultiples (s : Finset A) : s.sup zmultiples = closure s := by
-  simp_rw [s.sup_eq_iSup, zmultiples_eq_closure, ← closure_iUnion, ← Finset.set_biUnion_coe,
-    Set.biUnion_of_singleton]
 
 section Ring
 
