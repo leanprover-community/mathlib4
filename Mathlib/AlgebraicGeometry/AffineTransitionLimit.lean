@@ -701,6 +701,33 @@ lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
   use k, hik ≫ IsCofiltered.minToLeft i j, hik ≫ IsCofiltered.minToRight i j
   simpa using heq
 
+omit [∀ i, CompactSpace (D.obj i)] in
+include hc in
+lemma Scheme.exists_resLE_comp_eq_resLE_comp_of_locallyOfFiniteType
+    {i : I} {U : (D.obj i).Opens} (hU : IsCompact (X := D.obj i) U) (a b : ↑U ⟶ X)
+    (ha : U.ι ≫ t.app i = a ≫ f) (hb : U.ι ≫ t.app i = b ≫ f)
+    (hab : (c.π.app i).resLE U _ le_rfl ≫ a = (c.π.app i).resLE U _ le_rfl ≫ b) :
+    ∃ (k : I) (hik : k ⟶ i),
+      (D.map hik).resLE U _ le_rfl ≫ a = (D.map hik).resLE U _ le_rfl ≫ b := by
+  have (j : Over i) : CompactSpace ((opensDiagram D i U).obj j) :=
+    isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ U.2 hU)
+  let U₀ : (D.obj i).Opens := D.map (𝟙 i) ⁻¹ᵁ U
+  let a₀ : ↑U₀ ⟶ X := Scheme.homOfLE _ (by simp [U₀]) ≫ a
+  let b₀ : ↑U₀ ⟶ X := Scheme.homOfLE _ (by simp [U₀]) ≫ b
+  have ha₀ : U₀.ι ≫ t.app i = a₀ ≫ f := by simp [a₀, ← ha]
+  have hb₀ : U₀.ι ≫ t.app i = b₀ ≫ f := by simp [b₀, ← hb]
+  have hab₀ : (c.π.app i).resLE U₀ (c.π.app i ⁻¹ᵁ U) (by simp [U₀]) ≫ a₀ =
+      (c.π.app i).resLE U₀ (c.π.app i ⁻¹ᵁ U) (by simp [U₀]) ≫ b₀ := by
+    simp only [a₀, b₀, Scheme.Hom.resLE_map_assoc]
+    exact hab
+  obtain ⟨⟨k, _, u⟩, ⟨u', _, hu⟩, e⟩ := Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
+    _ (opensDiagramι .. ≫ (Over.forget i).whiskerLeft t) f _ (isLimitOpensCone D c hc i U)
+    (i := .mk (𝟙 i)) a₀ b₀ ha₀ hb₀ hab₀
+  obtain rfl : u = u' := by simpa using! hu.symm
+  replace e : (D.map u).resLE U₀ (D.map u ⁻¹ᵁ U) (by simp [U₀]) ≫ a₀ =
+      (D.map u).resLE U₀ (D.map u ⁻¹ᵁ U) (by simp [U₀]) ≫ b₀ := e
+  exact ⟨k, u, by simpa [a₀, b₀] using e⟩
+
 end LocallyOfFiniteType
 
 /-!
@@ -1255,28 +1282,15 @@ private lemma exists_forall_resLE_comp_eq_resLE_comp [LocallyOfFiniteType f]
         (show O ≤ D.map w ⁻¹ᵁ _ by simpa [Scheme.Hom.preimage_inf] using le_inf e₁ e₂) ≫
           $(hv _ inf_le_left inf_le_right))
   rintro ⟨j₁, j₂⟩
-  have _ (x) : CompactSpace ((opensDiagram D k (U j₁ ⊓ U j₂)).obj x) :=
-    isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ (U j₁ ⊓ U j₂).isOpen
-      ((hU j₁).inter_of_isOpen (hU j₂) (U j₁).2 (U j₂).2))
-  let U₀ : (D.obj k).Opens := D.map (𝟙 k) ⁻¹ᵁ (U j₁ ⊓ U j₂)
-  let a₁ : ↑U₀ ⟶ X := Scheme.homOfLE _ (by simp [U₀]) ≫ g j₁
-  let a₂ : ↑U₀ ⟶ X := Scheme.homOfLE _ (by simp [U₀]) ≫ g j₂
-  have ha₁ : U₀.ι ≫ t.app k = a₁ ≫ f := by simp [a₁, hg]
-  have ha₂ : U₀.ι ≫ t.app k = a₂ ≫ f := by simp [a₂, hg]
-  have hab : (c.π.app k).resLE U₀ (c.π.app k ⁻¹ᵁ (U j₁ ⊓ U j₂)) (by simp [U₀]) ≫ a₁ =
-      (c.π.app k).resLE U₀ (c.π.app k ⁻¹ᵁ (U j₁ ⊓ U j₂)) (by simp [U₀]) ≫ a₂ := by
-    simp only [a₁, a₂, Scheme.Hom.resLE_map_assoc]
-    exact h j₁ j₂ _ _ _
-  obtain ⟨⟨l, ⟨⟨⟩⟩, v⟩, ⟨v', ⟨⟨⟨⟩⟩⟩, hv⟩, e⟩ :=
-    Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
-      _ (opensDiagramι .. ≫ (Over.forget k).whiskerLeft t) f _
-      (isLimitOpensCone D c hc k (U j₁ ⊓ U j₂)) (i := .mk (𝟙 k)) a₁ a₂ ha₁ ha₂ hab
-  obtain rfl : v = v' := by simpa using! hv.symm
-  replace e : (D.map v).resLE U₀ (D.map v ⁻¹ᵁ (U j₁ ⊓ U j₂)) (by simp [U₀]) ≫ a₁ =
-      (D.map v).resLE U₀ (D.map v ⁻¹ᵁ (U j₁ ⊓ U j₂)) (by simp [U₀]) ≫ a₂ := e
-  refine ⟨l, v, fun O e₁ e₂ ↦ ?_⟩
-  simpa [a₁, a₂] using congr(Scheme.homOfLE _
-    (show O ≤ D.map v ⁻¹ᵁ (U j₁ ⊓ U j₂) from le_inf e₁ e₂) ≫ $e)
+  obtain ⟨l, v, e⟩ := Scheme.exists_resLE_comp_eq_resLE_comp_of_locallyOfFiniteType D t f c hc
+    ((hU j₁).inter_of_isOpen (hU j₂) (U j₁).2 (U j₂).2)
+    (Scheme.homOfLE _ inf_le_left ≫ g j₁) (Scheme.homOfLE _ inf_le_right ≫ g j₂)
+    (by simp [hg]) (by simp [hg])
+    (by rw [Scheme.Hom.resLE_map_assoc, Scheme.Hom.resLE_map_assoc]; exact h j₁ j₂ _ _ _)
+  exact ⟨l, v, fun O e₁ e₂ ↦ by
+    simpa using congr(Scheme.homOfLE _
+      (show O ≤ D.map v ⁻¹ᵁ (U j₁ ⊓ U j₂) by simpa [Scheme.Hom.preimage_inf] using le_inf e₁ e₂) ≫
+        $e)⟩
 
 open TopologicalSpace in
 include hc ha in
