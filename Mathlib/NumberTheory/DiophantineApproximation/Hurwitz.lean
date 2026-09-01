@@ -92,9 +92,6 @@ private lemma sq_sqrt_five : √5 ^ 2 = 5 := sq_sqrt (by norm_num)
 private lemma two_lt_sqrt_five : 2 < √5 := by
   nlinarith [sq_sqrt_five, sqrt_nonneg 5]
 
-private theorem irrational_sqrt_five : Irrational (√5) :=
-  Nat.prime_five.irrational_sqrt
-
 -- A lemma to bound the denominators of a Farey interval given both endpoints fail the Hurwitz bound
 private theorem aux₀ {a b c d : ℤ} (hdet : b * c - a * d = 1) (hA : 1 ≤ √5 * b * ((b : ℝ) * ξ - a))
     (hB : 1 ≤ √5 * d * ((c : ℝ) - d * ξ)) : (b : ℝ) ^ 2 + (d : ℝ) ^ 2 ≤ √5 * (b * d) := by
@@ -150,7 +147,7 @@ private lemma sqrt_five_mul_le_of_not_isGoodApprox_right {c d : ℤ} (hd : 0 < d
 
 private lemma two_mul_ne_sqrt_five_sub_one_mul {b d : ℤ} (hb : 0 < b)
     (h : 2 * (d : ℝ) = (√5 - 1) * b) : False := by
-  refine irrational_sqrt_five ⟨(2 * d + b) / b, ?_⟩
+  refine Nat.prime_five.irrational_sqrt ⟨(2 * d + b) / b, ?_⟩
   have hb0 : (b : ℝ) ≠ 0 := mod_cast (ne_of_gt hb)
   push_cast
   rw [div_eq_iff hb0]
