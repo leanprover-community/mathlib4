@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Basify.Core
 
 `ℕ∞` is `WithTop ℕ`, so a single case split separates `⊤` from the natural numbers. The lemmas are
 the ones the specialised `enat_to_nat` tactic already uses; `basify` reuses them so that goals
-mixing `ℕ∞` with other extended types are handled in one pass.
+mixing `ℕ∞` with other registered types are handled in one pass.
 -/
 
 public section

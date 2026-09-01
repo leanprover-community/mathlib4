@@ -48,6 +48,43 @@ example (f : ℕ → ℝ≥0∞) : f 0 + f 1 = f 1 + f 0 := by
   basify
   ring
 
+set_option linter.unusedTactic false in
+/-- The equations `basify` records are excluded from atom collection, so running it a second time
+does not re-generalize the atoms the first run already dealt with. Without that exclusion the
+second run introduces a fresh variable per recorded atom, renames the equations, and leaves vacuous
+ones behind; here `basify_eq_0` would no longer relate `f 0` to anything. -/
+example (f : ℕ → ℝ≥0∞) : f 0 + f 1 = f 1 + f 0 := by
+  basify
+  basify
+  guard_hyp basify_eq_0 : f 0 = ↑f_1.toNNReal
+  ring
+
+/-- A reducible alias, used to exercise deduplication of atoms up to definitional unfolding. -/
+@[reducible] def twoAlias : ℕ := 2
+
+/-- Atoms are interned with `AtomM`, so `f twoAlias` and `f 2` are one atom rather than two.
+Deduplicating them syntactically instead generalizes the second occurrence to a variable that never
+gets case split, and leaves the goal sitting in `ℝ≥0∞`. -/
+example (f : ℕ → ℝ≥0∞) : f twoAlias ≤ f 2 + f twoAlias := by
+  basify
+  linarith
+
+/-- An opaque function and a reducible alias of it, to exhibit the limitation below. -/
+opaque opaqueF : ℕ → ℝ≥0∞
+
+@[reducible] noncomputable def aliasF (n : ℕ) : ℝ≥0∞ := opaqueF n
+
+/-- `aliasF 0` and `opaqueF 0` are definitionally equal but have different head symbols, so no
+single `kabstract` pattern abstracts both occurrences: `generalizeHyp` filters candidate subterms
+by head symbol before trying `isDefEq`. `AtomM` still identifies them, so only one of the two is
+generalized, and the other is left for the final `simp_all` to rewrite through the recorded
+equation. The result is a single variable, as it should be. -/
+example : opaqueF 0 ≤ aliasF 0 := by
+  basify
+  guard_hyp opaqueF : ℝ
+  fail_if_success guard_hyp aliasF : ℝ
+  exact le_rfl
+
 /-- `g a` is an atom, since `g` is not a registered operation: it is split as a whole rather than
 being descended into. -/
 example (g : ℝ≥0∞ → ℝ≥0∞) (a : ℝ≥0∞) : g a ≤ g a + 1 := by
@@ -78,12 +115,12 @@ example (A : ℝ≥0∞) (p q : ℕ) (h : 0 < p + q) (hA : A + p / (p + q) = 1) 
 
 /-! ### `ℝ≥0`
 
-`ℝ≥0` is a subtype, so `basify` does not take it apart: it records `0 ≤ (x : ℝ)` for every
-atom and moves the propositions to `ℝ`.
+`ℝ≥0` is a subtype, so its eliminator has a single case: it replaces an atom by `x.toNNReal` with
+`x : ℝ` and `0 ≤ x`, and the propositions then move to `ℝ`.
 
 Little of that is new. `ℝ≥0` is a semifield, so `ring` and `field_simp` work on it natively, and
 `linarith` ships a preprocessor (`Mathlib/Tactic/Linarith/NNRealPreprocessor.lean`) that performs
-exactly the same move: shift the (in)equalities to `ℝ` and add `NNReal.coe_nonneg` for each atom.
+much the same move: shift the (in)equalities to `ℝ` and add `NNReal.coe_nonneg` for each atom.
 `rify` shifts the propositions without the nonnegativity facts, and `push_cast`/`norm_cast` have
 nothing to do on a goal stated purely in `ℝ≥0` -- there is no cast in it to move.
 
@@ -198,8 +235,8 @@ example (a b : ℕ∞) (h : a = b) : a - b = b - a := by
 
 /-! ### `ℕ+`
 
-`ℕ+` is a subtype like `ℝ≥0`, so it is handled by the `@[basify_fact]` mechanism: `0 < (x : ℕ)` is
-recorded for each atom and the propositions move to `ℕ`. These are the `pnat_to_nat` tests.
+`ℕ+` is a subtype like `ℝ≥0`, so its eliminator has a single case: it exposes the underlying
+natural together with `0 < n`. These are the `pnat_to_nat` tests.
 -/
 
 example (a b : ℕ+) (h : a < b) : 1 < b := by
@@ -217,7 +254,7 @@ example (a b : ℕ+) (h : a < b) : 1 < b := by
   basify
   lia
 
-/-! ### Several extended types at once -/
+/-! ### Several registered types at once -/
 
 example (m : ℕ∞) (a : ℝ≥0∞) (hm : m ≠ ⊤) (ha : a ≠ ⊤) : m + m ≠ ⊤ ∧ a + a ≠ ⊤ := by
   basify

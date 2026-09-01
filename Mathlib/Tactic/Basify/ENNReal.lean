@@ -26,7 +26,11 @@ namespace Mathlib.Tactic.Basify
 
 attribute [basify_elim] ENNReal.recTopCoe
 
-attribute [basify_fact] NNReal.coe_nonneg
+/-- A `Subtype.mk`-free eliminator for `ℝ≥0`, exposing the underlying real and its nonnegativity. -/
+@[elab_as_elim, basify_elim]
+def _root_.NNReal.recToNNReal {C : ℝ≥0 → Sort*} (mk : ∀ (x : ℝ) (_ : 0 ≤ x), C x.toNNReal)
+    (t : ℝ≥0) : C t :=
+  Real.toNNReal_coe (r := t) ▸ mk t t.coe_nonneg
 
 /-! ### Getting rid of `⊤` -/
 
@@ -62,6 +66,8 @@ Coercions `ℝ≥0 → ℝ` are pushed inwards until only atoms are left under t
 -/
 
 attribute [basify_cast ←] NNReal.coe_inj NNReal.coe_le_coe NNReal.coe_lt_coe
+
+attribute [basify_cast] Real.coe_toNNReal
 
 attribute [basify_cast, basify_op] NNReal.coe_zero NNReal.coe_one NNReal.coe_ofNat
   NNReal.coe_natCast NNReal.coe_add NNReal.coe_mul NNReal.coe_inv NNReal.coe_div NNReal.coe_pow

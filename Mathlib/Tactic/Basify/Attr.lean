@@ -11,7 +11,7 @@ public meta import Lean.Meta.Tactic.Simp.RegisterCommand
 /-!
 # Attributes for the `basify` tactic
 
-This file declares the five attributes that drive `basify`, together with the two environment
+This file declares the four attributes that drive `basify`, together with the two environment
 extensions backing them. They live in their own file because Lean cannot use an attribute in the
 file that declares it; `Mathlib/Tactic/Basify/Core.lean` documents the tactic itself.
 -/
@@ -25,7 +25,7 @@ make the degenerate branches, the ones where some atom is `⊤` or `⊥`, go awa
 register_simp_attr basify_split
 
 /-- Simp set applied by `basify` at the very end. It is meant to contain the lemmas that
-translate a proposition about an extended type into a proposition about the underlying type, such
+translate a proposition about a registered type into a proposition about the underlying type, such
 as `↑a ≤ ↑b ↔ a ≤ b`. -/
 register_simp_attr basify_cast
 
@@ -59,14 +59,6 @@ initialize opExt : SimpleScopedEnvExtension (Name × Name) (NameMap NameSet) ←
     initial := {}
   }
 
-/-- The lemmas registered with `@[basify_fact]`, indexed by the head symbol of the type they
-talk about. -/
-initialize factExt : SimpleScopedEnvExtension (Name × Name) (NameMap (Array Name)) ←
-  registerSimpleScopedEnvExtension {
-    addEntry := fun m (n, lem) => m.insert n ((m.find? n |>.getD #[]).push lem)
-    initial := {}
-  }
-
 /-- Read off, from the type of the eliminator `elimName`, the head symbol of the type it destructs
 together with the head symbols of the patterns of its minor premises. -/
 def analyzeElim (elimName : Name) : MetaM (Name × ElimEntry) := do
@@ -91,20 +83,6 @@ def analyzeElim (elimName : Name) : MetaM (Name × ElimEntry) := do
         return args[0]!.getAppFn.constName?
       if let some head := head? then altHeads := altHeads.push head
     return (tyName, { elimName, altHeads })
-
-/-- Read off, from the type of `factName`, the head symbol of the type its first explicit argument
-ranges over. -/
-def analyzeFact (factName : Name) : MetaM Name := do
-  forallTelescopeReducing (← getConstInfo factName).type fun xs _ => do
-    for x in xs do
-      let localDecl ← x.fvarId!.getDecl
-      unless localDecl.binderInfo.isExplicit do continue
-      let some tyName := (← instantiateMVars localDecl.type).getAppFn.constName? |
-        throwError "the first explicit argument of `{.ofConstName factName}` does not have a \
-          constant as the head of its type"
-      return tyName
-    throwError "`{.ofConstName factName}` takes no explicit argument, so `basify` cannot \
-      tell what it is a fact about"
 
 /-- The explicit arguments of the application `e`. -/
 private def explicitArgs (e : Expr) : MetaM (Array Expr) := do
@@ -140,49 +118,46 @@ def analyzeOp (opName : Name) : MetaM (Array (Name × Name)) := do
         there is no operation for `basify` to register"
     return pairs
 
-/-- `@[basify_elim]` registers an eliminator for `basify` to case split with. The
-declaration must be usable as `cases x using foo`: it takes a motive, some minor premises and a
-single target. -/
+/-- `@[basify_elim]` registers an eliminator for `basify` to case split with. The declaration must
+be usable as `cases x using foo`: it takes a motive, some minor premises and a single target. The
+type it destructs and the shape of each of its cases are read off from its type.
+
+This is the only mechanism: a subtype is registered the same way, with an eliminator that has a
+single minor premise. Such an eliminator must present the value through a properly typed
+constructor rather than `Subtype.mk`, because `ℝ≥0` and `ℕ+` are semireducible definitions and a
+goal mentioning `⟨x, hx⟩ : ℝ≥0` is not type-correct at the transparency `simp` checks at. See
+`NNReal.recToNNReal`, which uses `Real.toNNReal`. -/
 syntax (name := basifyElim) "basify_elim" : attr
 
 initialize registerBuiltinAttribute {
   name := `basifyElim
-  descr := "an eliminator that `basify` uses to case split a value of an extended type"
+  descr := "an eliminator that `basify` uses to case split a value of a registered type"
   applicationTime := .afterCompilation
   add := fun declName stx kind => do
     unless stx.isOfKind ``basifyElim do throwUnsupportedSyntax
     elimExt.add (← MetaM.run' <| analyzeElim declName) kind
 }
 
-/-- `@[basify_fact]` registers a lemma of the form `∀ x : X, p x` as a fact that `basify`
-adds to the context for every atom of type `X`. The atom is passed as the lemma's first explicit
-argument, and `X` is read off from that argument's type. This is how a subtype is handled: tagging
-`NNReal.coe_nonneg` makes `basify` record `0 ≤ (x : ℝ)` for every `ℝ≥0`-atom `x`. -/
-syntax (name := basifyFact) "basify_fact" : attr
-
-initialize registerBuiltinAttribute {
-  name := `basifyFact
-  descr := "a fact that `basify` records about every atom of the relevant type"
-  applicationTime := .afterCompilation
-  add := fun declName stx kind => do
-    unless stx.isOfKind ``basifyFact do throwUnsupportedSyntax
-    factExt.add (← MetaM.run' <| analyzeFact declName, declName) kind
-}
-
-/-- `@[basify_op]` registers an operation of an extended type as one that `basify` knows
+/-- `@[basify_op]` registers an operation of a registered type as one that `basify` knows
 how to see inside of, by tagging the lemma that relates it to the corresponding operation of the
-underlying type, such as `ENNReal.coe_add : ↑(a + b) = ↑a + ↑b`. Anything else of an extended type
+underlying type, such as `ENNReal.coe_add : ↑(a + b) = ↑a + ↑b`. Anything else of a registered type
 is an atom: `basify` generalizes it and case splits on it rather than descending into it.
 
 Both operations the lemma relates are registered, so a single lemma covers the operation upstairs
 and the operation downstairs. The attribute does not add the lemma to a simp set; an operation is
-normally tagged `@[basify_cast ←, basify_op]` or `@[basify_cast, basify_op]`,
-depending on which way the coercion has to travel. -/
+normally tagged `@[basify_cast ←, basify_op]` or `@[basify_cast, basify_op]`, depending on which
+way the coercion has to travel.
+
+Registering an operation that no `basify_cast` rule can rewrite is worse than not registering it at
+all: `basify` descends into the arguments and splits them, but nothing then moves the operation
+itself down, so every branch is left stranded in the registered type. What has to be covered is the
+head symbol, not necessarily by the same lemma: `ENNReal.coe_ofNat` would serve here but is
+unusable as a reversed simp lemma, so `Mathlib/Tactic/Basify/ENNReal.lean` restates it. -/
 syntax (name := basifyOp) "basify_op" : attr
 
 initialize registerBuiltinAttribute {
   name := `basifyOp
-  descr := "an operation of an extended type that `basify` looks inside of"
+  descr := "an operation of a registered type that `basify` looks inside of"
   applicationTime := .afterCompilation
   add := fun declName stx kind => do
     unless stx.isOfKind ``basifyOp do throwUnsupportedSyntax
