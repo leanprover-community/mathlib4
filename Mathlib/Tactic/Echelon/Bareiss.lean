@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
+public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Rat
 
 /-!
