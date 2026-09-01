@@ -24,7 +24,6 @@ namespace AlgebraicGeometry.Scheme.Cover
 variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}} [IsZariskiLocalAtSource P]
   [UnivLE.{v, u}]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `𝒰` is a cover of `S`, this is the single object cover where the covering
 object is the disjoint union. -/
 @[simps]

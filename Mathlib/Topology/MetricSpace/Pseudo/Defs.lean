@@ -13,7 +13,7 @@ public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
-## Pseudo-metric spaces
+# Pseudo-metric spaces
 
 This file defines pseudo-metric spaces: these differ from metric spaces by not imposing the
 condition `dist x y = 0 → x = y`.
@@ -99,7 +99,7 @@ abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀
     fun z => ⟨dist z z, forall_eq.2 <| forall_eq.2 le_rfl⟩
 
 /-- The distance function (given an ambient metric space on `α`), which returns
-  a nonnegative real number `dist x y` given `x y : α`. -/
+a real number `dist x y` given `x y : α`. This type class does not enforce non-negativity. -/
 @[ext]
 class Dist (α : Type*) where
   /-- Distance between two points -/
@@ -254,7 +254,7 @@ theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
@@ -1202,7 +1202,7 @@ theorem tendsto_iff_dist_tendsto_zero {f : β → α} {x : Filter β} {a : α} :
 
 namespace Metric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
+variable {x y : α} {ε : ℝ} {s : Set α}
 
 /-- If `f` is a positive radius tending to zero, then the sets of pairs with distance less than
 `f i` form a basis of the uniformity. -/

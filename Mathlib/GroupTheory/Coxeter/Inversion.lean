@@ -51,7 +51,7 @@ assert_not_exists TwoSidedIdeal
 
 namespace CoxeterSystem
 
-open List Matrix Function
+open List Function
 
 variable {B : Type*}
 variable {W : Type*} [Group W]

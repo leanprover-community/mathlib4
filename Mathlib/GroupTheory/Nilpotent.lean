@@ -63,6 +63,8 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * The `Group.nilpotencyClass` of `G ⧸ center G` is given explicitly, and an induction principle
   is derived from that.
 * `IsNilpotent.to_isSolvable`: If `G` is nilpotent, it is solvable.
+*  `IsNilpotent.commute_of_orderOf_coprime` : In a nilpotent group, two elements commute when their
+  orders are coprime.
 
 
 ## Warning
@@ -1198,6 +1200,23 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
     apply map_injective_of_ker_le (mk' (center G)) hkh le_top
     exact (ih H' hH').trans (symm (map_top_of_surjective _ hsur))
 
+/-- In a nilpotent group, two elements commute when their orders are coprime. -/
+@[to_additive /-- In a nilpotent additive group, two elements commute when their orders are
+coprime. -/]
+theorem IsNilpotent.commute_of_orderOf_coprime [IsNilpotent G] {x y : G}
+    (h : (orderOf x).Coprime (orderOf y)) : Commute x y := by
+  revert x y
+  apply @nilpotent_center_quotient_ind _ G _ _ (by simp +contextual)
+  intro G _ _ ih x y h
+  have hcomm : ∀ g : G, Commute g ⁅x, y⁆ := by
+    simp_rw [commute_iff_eq, ← mem_center_iff, ← eq_one_iff, ← mk'_apply,
+      map_commutatorElement, commutatorElement_eq_one_iff_commute]
+    apply ih <| h.of_dvd ?_ ?_ <;> apply orderOf_map_dvd
+  rw [← commutatorElement_eq_one_iff_commute, ← orderOf_eq_one_iff, ← Nat.dvd_one, ← h.gcd_eq_one,
+    Nat.dvd_gcd_iff, orderOf_dvd_iff_pow_eq_one, orderOf_dvd_iff_pow_eq_one,
+    (hcomm x).commutatorElement_pow_left, (hcomm y).commutatorElement_pow_right]
+  simp
+
 end Group
 
 end WithGroup
@@ -1255,7 +1274,7 @@ theorem Group.isNilpotent_of_finite_tfae :
   tfae_finish
 
 instance [IsNilpotent G] {p : ℕ} [Fact p.Prime] {P : Sylow p G} : P.Normal :=
-  isNilpotent_of_finite_tfae.out 0 3 rfl rfl |>.mp ‹_› p ‹_› P
+  isNilpotent_of_finite_tfae.out 1 4 rfl rfl |>.mp ‹_› p ‹_› P
 
 end WithFiniteGroup
 

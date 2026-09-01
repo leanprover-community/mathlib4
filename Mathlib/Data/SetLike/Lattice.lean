@@ -22,14 +22,14 @@ variable (A : Type*) {B : Type*} [Membership B A]
 /-- A class to indicate that the bottom element on a type has no members. -/
 class IsMemBot [Bot A] where
   /-- The bottom element corresponds to the empty set. -/
-  protected notMem_bot {x : B} : x ∉ (⊥ : A) := by rfl
+  protected notMem_bot {x : B} : x ∉ (⊥ : A) := by exact fun h ↦ h
 
 @[simp] alias SetLike.notMem_bot := IsMemBot.notMem_bot
 
 /-- A class to indicate that the top element on a type contains every member. -/
 class IsMemTop [Top A] where
   /-- The top element corresponds to the universal set. -/
-  protected mem_top {x : B} : x ∈ (⊤ : A) := by rfl
+  protected mem_top {x : B} : x ∈ (⊤ : A) := by exact trivial
 
 @[simp] alias SetLike.mem_top := IsMemTop.mem_top
 
@@ -67,21 +67,17 @@ section default
 
 variable (A : Type*) {B : Type*}
 
-@[reducible] def OrderBot.ofMembership [Membership B A] [Bot A] [IsMemBot A] :
-    letI := LE.ofMembership A; OrderBot A where
-  __ := LE.ofMembership A
-  bot := ⊥
-  bot_le := by simp [LE.le]
+instance OrderBot.ofMembership [Membership B A]
+    [LE A] [IsConcreteLE A B] [Bot A] [IsMemBot A] : OrderBot A where
+  bot_le := by simp [SetLike.le_def]
 
-@[reducible] def OrderTop.ofMembership [Membership B A] [Top A] [IsMemTop A] :
-    letI := LE.ofMembership A; OrderTop A where
-  __ := LE.ofMembership A
-  top := ⊤
-  le_top := by simp [LE.le]
+instance OrderTop.ofMembership [Membership B A]
+    [LE A] [IsConcreteLE A B] [Top A] [IsMemTop A] : OrderTop A where
+  le_top := by simp [SetLike.le_def]
 
 @[reducible] def SemilatticeInf.ofSetLike [SetLike A B] [Min A] [IsMemInf A] :
     SemilatticeInf A where
-  __ := PartialOrder.ofSetLike A
+  __ := PartialOrder.ofSetLike A B
   inf := (· ⊓ ·)
   inf_le_left := by simp [LE.le]; grind
   inf_le_right := by simp [LE.le]
@@ -89,7 +85,7 @@ variable (A : Type*) {B : Type*}
 
 @[reducible] def SemilatticeSup.ofSetLike [SetLike A B] [Max A] [IsMemSup A] :
     SemilatticeSup A where
-  __ := PartialOrder.ofSetLike A
+  __ := PartialOrder.ofSetLike A B
   sup := (· ⊔ ·)
   le_sup_left := by simp [LE.le]; grind
   le_sup_right := by simp [LE.le]; grind
@@ -97,23 +93,30 @@ variable (A : Type*) {B : Type*}
 
 @[reducible] def CompleteLattice.ofSetLikeSInf [SetLike A B] [InfSet A] [IsMemSInf A] :
     CompleteLattice A where
-  __ := PartialOrder.ofSetLike A
+  __ := PartialOrder.ofSetLike A B
   __ := completeLatticeOfInf A fun s ↦
     ⟨by simp [lowerBounds, LE.le]; grind,
     by simp [upperBounds, lowerBounds, LE.le]; grind⟩
 
 @[reducible] def CompleteLattice.ofSetLikeSSup [SetLike A B] [SupSet A] [IsMemSSup A] :
     CompleteLattice A where
-  __ := PartialOrder.ofSetLike A
+  __ := PartialOrder.ofSetLike A B
   __ := completeLatticeOfSup A fun s ↦
     ⟨by simp [upperBounds, LE.le]; grind,
     by simp [lowerBounds, upperBounds, LE.le]; grind⟩
 
+-- TODO : move to right place
+-- TODO : replicate for others
+-- TODO : test in concrete cases
+@[reducible] def Min.ofSInf (A : Type*) [InfSet A] : Min A :=
+  ⟨fun S T => sInf {S, T}⟩
+
 /- Matches `.ofSetLikeSInf`. -/
 instance [Membership B A] [InfSet A] [IsMemSInf A] :
-    letI : Min A := { min := (sInf {·, ·}) }; IsMemInf A :=
-  letI : Min A := { min := (sInf {·, ·}) }
-  { mem_inf := by simp }
+    letI := Min.ofSInf A
+    IsMemInf A :=
+  letI : Min A := Min.ofSInf A
+  { mem_inf := by simp [Min.min] }
 
 /- Matches `.ofSetLikeSInf`. -/
 instance [Membership B A] [InfSet A] [IsMemSInf A] :

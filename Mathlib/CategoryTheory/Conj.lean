@@ -51,7 +51,6 @@ theorem conj_comp (f g : End X) : α.conj (f ≫ g) = α.conj f ≫ α.conj g :=
 theorem conj_id : α.conj (𝟙 X) = 𝟙 Y :=
   map_one α.conj
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
   rw [conj_apply, Iso.refl_inv, Iso.refl_hom, Category.id_comp, Category.comp_id]

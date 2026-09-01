@@ -18,7 +18,7 @@ public import Mathlib.Tactic.Bound.Attribute
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
 
-open Function Int
+open Function
 
 variable {α M R : Type*}
 
@@ -77,7 +77,7 @@ section LinearOrderedSemiring
 
 section IsOrderedRing
 
-variable [Semiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R] {m n : ℕ}
+variable [Semiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R] {n : ℕ}
 
 protected lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
