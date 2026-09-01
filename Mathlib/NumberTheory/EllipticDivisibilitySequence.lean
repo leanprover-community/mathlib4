@@ -297,7 +297,7 @@ lemma atomRel_perm (odd : W.Odd) (σ : Equiv.Perm <| Fin 4) (t : Fin 4 → ℤ) 
   | mem _ h => rcases h with ⟨_ | _ | _ | -, rfl⟩ <;>
     simp [Equiv.swap_apply_def] <;> grind only [neg_atomRel₁₂, neg_atomRel₂₃, neg_atomRel₃₄]
   | one => simp
-  | mul σ τ _ _ hσ hτ => simpa [mul_smul] using congrArg _ (hτ ((t ∘ σ) ·)) |>.trans <| hσ t
+  | mul σ τ _ _ hσ hτ => simpa [mul_smul] using congrArg _ (hτ (t ∘ σ)) |>.trans <| hσ t
 
 variable {W} in
 lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
