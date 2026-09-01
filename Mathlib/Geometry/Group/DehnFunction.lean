@@ -21,6 +21,7 @@ inverse relators whose product is `w`. The *Dehn function* of `P` is given by
 
 ## Main definitions
 
+* `Group.Presentation.symmRel`: the relators of `P` together with their inverses.
 * `Group.Presentation.IsConjRelDecomp P w l`:
 * `Group.Presentation.area`:
 * `Group.Presentation.kerBall`:
@@ -71,6 +72,39 @@ variable {G α : Type*} [Group G]
 namespace Group.Presentation
 
 variable (P : Group.Presentation G α)
+
+/-- The symmetric relator set is the set of relators of `P` together with their inverses. -/
+def symmRel : Set (FreeGroup α) := P.rel ∪ P.rel⁻¹
+
+lemma rel_subset_symmRel : P.rel ⊆ P.symmRel := Set.subset_union_left
+
+/-- The symmetric relator set is closed under inversion. -/
+lemma inv_mem_symmRel {x : FreeGroup α} (hx : x ∈ P.symmRel) : x⁻¹ ∈ P.symmRel := by
+  simp only [symmRel, Set.mem_union, Set.mem_inv, inv_inv] at hx ⊢
+  tauto
+
+/-- The conjugates of relators and inverse relators are closed under inversion. -/
+lemma inv_mem_conjugatesOfSet_symmRel {x : FreeGroup α}
+    (hx : x ∈ Group.conjugatesOfSet P.symmRel) :
+    x⁻¹ ∈ Group.conjugatesOfSet P.symmRel := by
+  rw [Group.mem_conjugatesOfSet_iff] at hx ⊢
+  obtain ⟨r, hr, hconj⟩ := hx
+  obtain ⟨c, rfl⟩ := isConj_iff.mp hconj
+  exact ⟨r⁻¹, P.inv_mem_symmRel hr, isConj_iff.mpr ⟨c, by group⟩⟩
+
+/-- Every relator and every inverse relator evaluates to the identity in `G`. -/
+lemma lift_eq_one_of_mem_symmRel {x : FreeGroup α} (hx : x ∈ P.symmRel) : P.lift x = 1 := by
+  rcases hx with h | h
+  · exact P.lift_rel_eq_one h
+  · simpa using P.lift_rel_eq_one (Set.mem_inv.mp h)
+
+/-- Every conjugate of a relator or of an inverse relator evaluates to the identity in `G`. -/
+lemma lift_eq_one_of_mem_conjugatesOfSet_symmRel {x : FreeGroup α}
+    (hx : x ∈ Group.conjugatesOfSet P.symmRel) : P.lift x = 1 := by
+  rw [Group.mem_conjugatesOfSet_iff] at hx
+  obtain ⟨r, hr, hconj⟩ := hx
+  obtain ⟨c, rfl⟩ := isConj_iff.mp hconj
+  simp [P.lift_eq_one_of_mem_symmRel hr]
 
 /-- A list `l` of elements of the free group is a decomposition of `w` into conjugates of relators
 of `P` if every entry of `l` is a conjugate of a relator or of an inverse relator, and the product

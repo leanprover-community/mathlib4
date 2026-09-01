@@ -6,7 +6,7 @@ Authors: Hang Lu Su, Valerio Proietti
 module
 
 public import Mathlib.Analysis.Normed.Group.Defs
-public import Mathlib.GroupTheory.Presentation
+public import Mathlib.GroupTheory.Generators
 public import Mathlib.Topology.MetricSpace.QuasiIsometry
 
 /-!
