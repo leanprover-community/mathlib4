@@ -240,28 +240,25 @@ instance {G : Digraph V} : PartialOrder G.SpanningSubgraph where
 /-- The adjacency relation of a spanning subgraph, restricted to the edges of the ambient
 digraph. -/
 @[simp] def SpanningSubgraph.Adj {G : Digraph V} (H : G.SpanningSubgraph) :
-    ({e : V × V // G.Adj e.1 e.2} → Prop) := fun e ↦ H.val.Adj e.1.1 e.1.2
+    {e : V × V // G.Adj e.1 e.2} → Prop := fun e ↦ H.val.Adj e.1.1 e.1.2
 
 /-- The join/union of two spanning subgraphs. -/
 instance {G : Digraph V} : Max G.SpanningSubgraph where
-  max H₁ H₂ := by
-    constructor
-    case val => exact max H₁.val H₂.val
-    case property =>
+  max H₁ H₂ := ⟨max H₁.val H₂.val, by
       have h₁verts : H₁.val.verts = G.verts := H₁.property.2
       have h₂verts : H₂.val.verts = G.verts := H₂.property.2
       constructor
       · simpa [max, SemilatticeSup.sup] using
           (show H₁.val ⊔ H₂.val ≤ G from _root_.sup_le H₁.property.1 H₂.property.1)
-      · aesop (add simp [max, SemilatticeSup.sup, h₁verts, h₂verts])
+      · aesop (add simp [max, SemilatticeSup.sup, h₁verts, h₂verts])⟩
 
 /--
 The top subgraph `⊤`
 -/
 instance {G : Digraph V} : OrderTop G.SpanningSubgraph where
-  top : G.SpanningSubgraph := ⟨G, by aesop⟩
+  top := ⟨G, by aesop⟩
   le_top := by
-    intro ⟨H, ⟨H_sub, H_verts⟩⟩
+    intro ⟨_, ⟨H_sub, _⟩⟩
     exact H_sub
 
 /--
@@ -306,16 +303,13 @@ instance {G : Digraph V} : Compl G.SpanningSubgraph where
 
 /-- The meet/intersection of two spanning subgraphs. -/
 instance {G : Digraph V} : Min G.SpanningSubgraph where
-  min H₁ H₂ := by
-    constructor
-    case val => exact min H₁.val H₂.val
-    case property =>
+  min H₁ H₂ := ⟨min H₁.val H₂.val, by
       have h₁verts : H₁.val.verts = G.verts := H₁.property.2
       have h₂verts : H₂.val.verts = G.verts := H₂.property.2
       constructor
       · simpa [min, SemilatticeInf.inf, Lattice.inf] using
           (show H₁.val ⊓ H₂.val ≤ G from _root_.inf_le_left.trans H₁.property.1)
-      · aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, h₁verts, h₂verts])
+      · aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, h₁verts, h₂verts])⟩
 
 /-- The supremum of a set of spanning subgraphs. -/
 instance {G : Digraph V} : SupSet G.SpanningSubgraph where
@@ -393,38 +387,32 @@ theorem SpanningSubgraph.adj_injective {G : Digraph V} :
 
 @[simp] theorem SpanningSubgraph.adj_sSup {G : Digraph V} (s : Set G.SpanningSubgraph) :
     SpanningSubgraph.Adj (sSup s) = ⨆ H ∈ s, SpanningSubgraph.Adj H := by
-  funext e
-  apply propext
+  ext e
   simp
 
 @[simp] theorem SpanningSubgraph.adj_sInf {G : Digraph V} (s : Set G.SpanningSubgraph) :
     SpanningSubgraph.Adj (sInf s) = ⨅ H ∈ s, SpanningSubgraph.Adj H := by
-  funext e
-  apply propext
+  ext e
   simp [e.2]
 
 @[simp] theorem SpanningSubgraph.adj_top {G : Digraph V} :
     SpanningSubgraph.Adj (⊤ : G.SpanningSubgraph) = ⊤ := by
-  funext e
-  apply propext
+  ext e
   exact iff_true_intro e.2
 
 @[simp] theorem SpanningSubgraph.adj_compl {G : Digraph V} (H : G.SpanningSubgraph) :
     SpanningSubgraph.Adj Hᶜ = (SpanningSubgraph.Adj H)ᶜ := by
-  funext e
-  apply propext
+  ext e
   simp [Pi.compl_apply, e.2]
 
 @[simp] theorem SpanningSubgraph.adj_himp {G : Digraph V} (H K : G.SpanningSubgraph) :
     SpanningSubgraph.Adj (H ⇨ K) = SpanningSubgraph.Adj H ⇨ SpanningSubgraph.Adj K := by
-  funext e
-  apply propext
+  ext e
   simp [Pi.himp_apply, himp_eq, e.2, or_comm]
 
 @[simp] theorem SpanningSubgraph.adj_sdiff {G : Digraph V} (H K : G.SpanningSubgraph) :
     SpanningSubgraph.Adj (H \ K) = SpanningSubgraph.Adj H \ SpanningSubgraph.Adj K := by
-  funext e
-  apply propext
+  ext e
   simp [Pi.sdiff_apply, sdiff_eq, e.2]
 
 instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph :=
