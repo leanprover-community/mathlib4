@@ -308,12 +308,14 @@ theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α
   | cons t s ih => cases n <;> simp [ih]
 
 lemma _root_.Disjoint.powersetCard_powersetCard_multiset {s t : Multiset α}
-    (h : Disjoint s t) {n : ℕ} (hn : n ≠ 0) (m : ℕ) :
+    (h : Disjoint s t) {n m : ℕ} (hn : n ≠ 0 ∨ m ≠ 0) :
     Disjoint (powersetCard n s) (powersetCard m t) := by
   rw [disjoint_left]
   intro u hu hv
   rw [mem_powersetCard] at hu hv
-  obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp (hu.2.symm ▸ Nat.pos_of_ne_zero hn)
+  obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp
+    (hn.elim (fun h => hu.2.symm ▸ Nat.pos_of_ne_zero h)
+             (fun h => hv.2.symm ▸ Nat.pos_of_ne_zero h))
   exact disjoint_left.1 h (mem_of_le hu.1 hx) (mem_of_le hv.1 hx)
 
 lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Multiset α) :
