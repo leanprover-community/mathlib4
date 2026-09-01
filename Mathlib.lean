@@ -161,6 +161,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
@@ -287,6 +288,7 @@ public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 public import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 public import Mathlib.Algebra.ContinuedFractions.Determinant
+public import Mathlib.Algebra.ContinuedFractions.Euler
 public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 public import Mathlib.Algebra.ContinuedFractions.Translations
 public import Mathlib.Algebra.CubicDiscriminant
@@ -4071,7 +4073,6 @@ public import Mathlib.Data.Finsupp.Option
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.Data.Finsupp.Pointwise
-public import Mathlib.Data.Finsupp.PointwiseSMul
 public import Mathlib.Data.Finsupp.Quotient
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.Data.Finsupp.SMulWithZero
@@ -4334,6 +4335,7 @@ public import Mathlib.Data.Nat.Init
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.Nat.MaxPrimeFac
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Notation
@@ -5163,6 +5165,7 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Product
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
@@ -5447,6 +5450,7 @@ public import Mathlib.Logic.Equiv.Pairwise
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Logic.Equiv.Prod
 public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Logic.Equiv.Sigma
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Function.Coequalizer
@@ -5852,6 +5856,7 @@ public import Mathlib.NumberTheory.Basic
 public import Mathlib.NumberTheory.Bernoulli
 public import Mathlib.NumberTheory.BernoulliPolynomials
 public import Mathlib.NumberTheory.Bertrand
+public import Mathlib.NumberTheory.CarmichaelNumber
 public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
@@ -6031,6 +6036,7 @@ public import Mathlib.NumberTheory.Padics.AddChar
 public import Mathlib.NumberTheory.Padics.Complex
 public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.NumberTheory.Padics.Hensel
+public import Mathlib.NumberTheory.Padics.LocalField
 public import Mathlib.NumberTheory.Padics.MahlerBasis
 public import Mathlib.NumberTheory.Padics.Measure.AmiceTransform
 public import Mathlib.NumberTheory.Padics.Measure.Basic
@@ -8192,6 +8198,7 @@ public import Mathlib.Topology.MetricSpace.Completion
 public import Mathlib.Topology.MetricSpace.Congruence
 public import Mathlib.Topology.MetricSpace.Contracting
 public import Mathlib.Topology.MetricSpace.Cover
+public import Mathlib.Topology.MetricSpace.CoveringExponent
 public import Mathlib.Topology.MetricSpace.CoveringNumbers
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Dilation
