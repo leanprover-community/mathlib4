@@ -57,8 +57,7 @@ lemma condVar_of_ae_eq_zero_or_one {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀)
     [IsFiniteMeasure μ] (hXmeas : AEMeasurable[m₀] X μ) (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) :
     Var[X; μ | m] =ᵐ[μ] μ[X | m] * μ[1 - X | m] := by
   wlog hXmeas : Measurable[m₀] X
-  · try_grind
-    obtain ⟨Y, hYmeas, hXY⟩ := ‹AEMeasurable[m₀] X μ›
+  · obtain ⟨Y, hYmeas, hXY⟩ := ‹AEMeasurable[m₀] X μ›
     calc
       Var[X; μ | m]
       _ =ᵐ[μ] Var[Y; μ | m] := condVar_congr_ae hXY
