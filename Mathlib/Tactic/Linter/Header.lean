@@ -312,12 +312,13 @@ def broadImportsCheck (imports : Array ImportRef) (mainModule : Name) : CommandE
           please do not use it in mathlib."
     | modName =>
       if modName.getRoot == `Lake then
-        Linter.logLint linter.style.header i
-          "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
-          (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and \
+        Linter.logLint linter.style.header i.getIdent
+          "In the past, importing `Lake` in mathlib has led to dramatic slow-downs of the linter \
+          (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). \
+          Please consider carefully if this import is useful and \
           make sure to benchmark it. If this is fine, feel free to silence this linter."
-      else if modName.getRoot == `Init then
-        Linter.logLint linter.style.header i
+      else if modName.getRoot == `Init && !i.importAll then
+        Linter.logLint linter.style.header i.getIdent
           "Importing anything from `Init` is redundant, because it is already imported by default."
 
 /-- Check the syntax `imports` for syntactically duplicate imports.
