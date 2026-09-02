@@ -198,7 +198,7 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ ≠ 1) {ψ :
   classical -- to get `[DecidableEq R]` for `sum_mulShift`
   simp_rw [← Finset.mul_sum, sum_mulShift _ hψ, sub_eq_zero, apply_ite, Nat.cast_zero, mul_zero]
   rw [Finset.sum_ite_eq' Finset.univ (1 : R)]
-  simp only [Finset.mem_univ, map_one, one_mul, if_true]
+  simp only [Finset.mem_univ, map_one, one_mul, ite_true]
 
 /-- If `χ` is a multiplicative character of order `n` on a finite field `F`,
 then `g(χ) * g(χ^(n-1)) = χ(-1)*#F` -/

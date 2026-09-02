@@ -11,6 +11,7 @@ public import Mathlib.Order.Interval.Set.Image
 public import Mathlib.Order.Interval.Set.LinearOrder
 public import Mathlib.Tactic.Common
 public import Mathlib.Order.MinMax
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Intervals without endpoints ordering
@@ -61,7 +62,7 @@ def uIcc (a b : α) : Set α := Icc (a ⊓ b) (a ⊔ b)
 /-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
 scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 
-open Interval
+open scoped Interval
 
 @[simp]
 lemma uIcc_toDual (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
@@ -137,7 +138,7 @@ end Prod
 
 end Lattice
 
-open Interval
+open scoped Interval
 
 section DistribLattice
 
