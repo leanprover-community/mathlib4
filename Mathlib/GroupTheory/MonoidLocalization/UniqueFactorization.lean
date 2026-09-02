@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
   it is nontrivial.
 -/
 
-@[expose] public section
+public section
 
 variable {M N : Type*}
 
