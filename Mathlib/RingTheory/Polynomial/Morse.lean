@@ -24,12 +24,6 @@ polynomial whose roots have at most one collision modulo each maximal ideal.
 
 Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois].
 
-## TODO
-
-- Specialize to the case of number fields where generation by inertia subgroups is a consequence
-  of Minkowski's theorem.
-- Show that the Selmer polynomials `X ^ n - X - 1` have Galois group `S_n`.
-
 ## References
 
 * [J. P. Serre, *Topics in Galois Theory*][serre-galois], Section 4.4
@@ -62,9 +56,25 @@ theorem rootSet_map (R S A : Type*) [CommRing R] [CommRing S] [CommRing A] [IsDo
 
 end Polynomial
 
-namespace Polynomial.Gal
+section Inertia
 
-end Polynomial.Gal
+-- #40955
+theorem NumberField.supr_inertia_primeSpectrum_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
+    [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
+    ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+  sorry
+
+theorem NumberField.supr_inertia_maximalSpectrum_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
+    [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
+    ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+  rw [eq_top_iff, ← NumberField.supr_inertia_primeSpectrum_eq_top S G, iSup_le_iff]
+  intro p
+  obtain ⟨m, hm, hpm⟩ := p.1.exists_le_maximal p.2.ne_top
+  intro x hx
+  apply Subgroup.mem_iSup_of_mem ⟨m, hm⟩
+  exact fun x ↦ hpm (hx x)
+
+end Inertia
 
 namespace Polynomial
 
@@ -121,129 +131,58 @@ theorem Splits.surjective_toPermHom_of_iSup_inertia_eq_top
     exact hf.toPermHom_apply_eq_one_or_isSwap_of_ncard_le_of_mem_inertia m.asIdeal (h m) σ hm
   · simpa [Subgroup.closure_iUnion]
 
-end Polynomial
+open NumberField in
+attribute [local instance] Gal.splits_ℚ_ℂ in
+/-- If the roots of an irreducible monic polynomial `f₀` have at most one collision in each
+residue field, then the Galois group surjects onto the symmetric group `S_n`.
 
-section Inertia
-
-open scoped Pointwise
-
--- PR #30666
-section ram
-
-variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
-variable [IsIntegralClosure 𝒪 ℤ K]
-
-lemma NumberField.exists_not_isUramifiedAt_int (H : 1 < Module.finrank ℚ K) :
-    ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), P ≠ ⊥ ∧ ¬ Algebra.IsUnramifiedAt ℤ P :=
-  sorry
-
-end ram
-
-section ram
-
-open IsGaloisGroup
-
-open NumberField
-
--- #40955
-theorem NumberField.supr_inertia_primeSpectrum_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
-    [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
-    ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
-  sorry
-
-theorem NumberField.supr_inertia_maximalSpectrum_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
-    [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
-    ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
-  rw [eq_top_iff, ← NumberField.supr_inertia_primeSpectrum_eq_top S G, iSup_le_iff]
-  intro p
-  obtain ⟨m, hm, hpm⟩ := p.1.exists_le_maximal p.2.ne_top
-  intro x hx
-  apply Subgroup.mem_iSup_of_mem ⟨m, hm⟩
-  exact fun x ↦ hpm (hx x)
-
-end ram
-
-end Inertia
-
-namespace Polynomial
-
-section Moore
-
-open Equiv Pointwise
-
-open IntermediateField
-
-attribute [local instance] Gal.splits_ℚ_ℂ
-
-open NumberField
-
-open scoped Pointwise
-
-variable (f : ℚ[X])
-
+Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois]. -/
 theorem tada' (f₀ : ℤ[X]) (hif₀ : Irreducible f₀) (hmf₀ : f₀.Monic)
     (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
       f₀.natDegree ≤ (f₀.rootSet F).ncard + 1) :
     Function.Bijective (Gal.galActionHom (f₀.map (algebraMap ℤ ℚ)) ℂ) := by
-  classical
   let f : ℚ[X] := f₀.map (algebraMap ℤ ℚ)
   let K := f.SplittingField
-  have : NumberField K := {}
   let R := 𝓞 K
+  let G := f.Gal
+  suffices Function.Surjective (MulAction.toPermHom G (f.rootSet ℂ)) from
+    ⟨Gal.galActionHom_injective (f₀.map (algebraMap ℤ ℚ)) ℂ, this⟩
+  have : NumberField K := {}
+  have : IsGalois ℚ K := { to_normal := SplittingField.instNormal f }
+  have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
   have hif : Irreducible f := hmf₀.irreducible_iff_irreducible_map_fraction_map.mp hif₀
   have hmf : Monic f := hmf₀.map (algebraMap ℤ ℚ)
   have hsf : (f.map (algebraMap ℚ K)).Splits := SplittingField.splits f
   have hsf₀ : (f₀.map (algebraMap ℤ R)).Splits := by
-    apply Splits.of_splits_algebraMap (A := K)
-    · rwa [map_map] at hsf ⊢
-    · intro x hx
-      rw [rootSet_map] at hx
-      rw [RingHom.mem_range, ← IsIntegralClosure.isIntegral_iff (R := ℤ)]
-      exact ⟨f₀, hmf₀, aeval_eq_zero_of_mem_rootSet hx⟩
-  have := Fact.mk hsf
-  let G := f.Gal
-  have : Normal ℚ K := SplittingField.instNormal f
-  have : IsGalois ℚ K := {}
-  have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
-  have := Gal.galAction_isPretransitive f ℂ hif
-  have hφ : Set.MapsTo (algebraMap R K) (f₀.rootSet R) (f.rootSet K) := by
-    rw [rootSet_map]
-    exact rootSet_mapsTo (IsScalarTower.toAlgHom ℤ R K)
-  let φ : f₀.rootSet R → f.rootSet K := hφ.restrict
-  have hφ2 : Function.Bijective (hφ.restrict) := by
-    rw [Function.Bijective, hφ.restrict_inj, hφ.restrict_surjective_iff]
-    refine ⟨RingOfIntegers.coe_injective.injOn, fun x hx ↦ ?_⟩
+    rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq ℤ R K, ← map_map] at hsf
+    refine hsf.of_splits_algebraMap fun x hx ↦ ?_
     rw [rootSet_map] at hx
-    rwa [hsf₀.image_rootSet_algebraMap] -- can probably get a lot more mileage out of this lemma
-  let e₀ : f₀.rootSet R ≃ f.rootSet K := Equiv.ofBijective hφ.restrict hφ2
-  let e₁ : f₀.rootSet R ≃ f.rootSet K := e₀.trans (Gal.rootsEquivRootsAux f K)
-  let e₂ : f.rootSet K ≃ f.rootSet ℂ := Gal.rootsEquivRoots f K ℂ
-  let e : f₀.rootSet R ≃ f.rootSet ℂ := e₁.trans e₂
-  have he₁ (g : G) (x : f₀.rootSet R) : e₁ (g • x) = g • e₁ x := by
-    erw [Gal.smul_def f K g ((Gal.rootsEquivRootsAux f K) (e₀ x)), symm_apply_apply]
-    rfl
-  have he₂ (g : G) x : e₂ (g • x) = g • e₂ x := (Gal.smul_rootsEquivRoots f K ℂ g x).symm
-  have he (g : G) (x : f₀.rootSet R) : e (g • x) = g • e x := by simp [e, he₁, he₂]
+    exact IsIntegralClosure.isIntegral_iff.mp ⟨f₀, hmf₀, aeval_eq_zero_of_mem_rootSet hx⟩
+  have hφ : (algebraMap R K) '' (f₀.rootSet R) = f.rootSet K := by
+    rw [hsf₀.image_rootSet_algebraMap, rootSet_map]
+  rw [Set.image_eq_iff_surjOn_mapsTo] at hφ
+  let φ : f₀.rootSet R → f.rootSet K := hφ.2.restrict
+  replace hφ : Function.Bijective φ :=
+    Set.BijOn.bijective ⟨hφ.2, RingOfIntegers.coe_injective.injOn, hφ.1⟩
+  let e₀ : f.rootSet K ≃ f.rootSet ℂ := Gal.rootsEquivRootsAux f ℂ
+  let e : f₀.rootSet R ≃ f.rootSet ℂ := (Equiv.ofBijective φ hφ).trans e₀
+  have he (g : G) (x : f₀.rootSet R) : e (g • x) = g • e x :=
+    congrArg (fun a ↦ e₀ (g • a)) (e₀.symm_apply_apply (φ x)).symm
+  have : MulAction.IsPretransitive G (f.rootSet ℂ) := Gal.galAction_isPretransitive f ℂ hif
   have : MulAction.IsPretransitive G (f₀.rootSet R) := by
     refine ⟨fun x y ↦ ?_⟩
-    obtain ⟨g, hg⟩ := MulAction.exists_smul_eq f.Gal (e x) (e y)
+    obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G (e x) (e y)
     exact ⟨g, e.injective ((he g x).trans hg)⟩
   suffices Function.Surjective (MulAction.toPermHom G (f₀.rootSet R)) by
-    use Gal.galActionHom_injective (f₀.map (algebraMap ℤ ℚ)) ℂ
     intro φ
     obtain ⟨g, hg⟩ := this (e.permCongr.symm φ)
-    use g
-    ext x
-    replace hg := Equiv.Perm.ext_iff.mp hg (e.symm x)
-    replace hg : g • x = φ x := by simpa [he] using congrArg e hg
-    exact congrArg Subtype.val hg
+    exact ⟨g, by simp [Equiv.Perm.ext_iff, he, ← e.permCongr.eq_symm_apply.mp hg]⟩
   refine hsf₀.surjective_toPermHom_of_iSup_inertia_eq_top (fun m ↦ ?_)
-    (NumberField.supr_inertia_maximalSpectrum_eq_top (𝓞 K) G)
+    (supr_inertia_maximalSpectrum_eq_top (𝓞 K) G)
   let := Ideal.Quotient.field m.asIdeal
-  refine le_trans (f₀.ncard_rootSet_le R) (h (R ⧸ m.asIdeal) ?_)
-  rw [IsScalarTower.algebraMap_eq ℤ R, ← Polynomial.map_map]
-  exact hsf₀.map _
-
-end Moore
+  grw [ncard_rootSet_le]
+  apply h
+  rw [IsScalarTower.algebraMap_eq ℤ R, ← map_map]
+  apply hsf₀.map
 
 end Polynomial
