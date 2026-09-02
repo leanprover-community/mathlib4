@@ -84,7 +84,8 @@ def defeqOrError (goal : MVarId) (p e : Expr) : MetaM Unit :=
   -- test file for a concrete example.
   --
   -- TODO: `withoutProofIrrelevance` is not doing what we would expect it to do because of what
-  -- seems like a bug in Lean, see the last example in the test file and the issue mentioned there.
+  -- seems like a bug in Lean, see the withoutProofIrrelevance section in the test file and
+  -- the issue mentioned there.
   unless ← withReducible <| withoutProofIrrelevance <| withAssignableSyntheticOpaque
       <| isDefEq p e do
     throwTacticEx `setm goal <| MessageData.ofLazyM (es := #[p, e]) do

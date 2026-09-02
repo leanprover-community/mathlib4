@@ -283,6 +283,10 @@ example {i : Nat} {l : List Nat} (h) : l[i] = l[i] := by
   setm l[i] = ?_
   trivial
 
+section withoutProofIrrelevance
+
+/-! Demonstrate that disabling proof irrelevance can be useful for `setm` --/
+
 /- This test fails due to the current interaction of metavariable assigment and proof irrelevance,
 and perhaps is due to a bug.
 
@@ -299,3 +303,5 @@ k : True → Type
 #guard_msgs in
 example (x : True) (k : True → Type) : k x := by
   setm k ?a
+
+end withoutProofIrrelevance
