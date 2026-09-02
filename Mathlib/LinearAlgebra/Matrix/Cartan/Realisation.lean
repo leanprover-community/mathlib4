@@ -198,6 +198,16 @@ lemma mem_weyl (i : n) :
     (rl.reflection i, rl.coreflection i) ∈ rl.weylGroup :=
   Subgroup.subset_closure <| mem_range_self i
 
+instance : SMul rl.weylGroup (M × N) where smul w p := (w.1.1 p.1, w.1.2 p.2)
+
+lemma weylGroup_smul_def (w : rl.weylGroup) (p : M × N) : w • p = (w.1.1 p.1, w.1.2 p.2) := rfl
+
+instance : DistribMulAction rl.weylGroup (M × N) where
+  mul_smul := by simp [weylGroup_smul_def]
+  one_smul := by simp [weylGroup_smul_def]
+  smul_zero := by simp [weylGroup_smul_def]
+  smul_add := by simp [weylGroup_smul_def]
+
 lemma flip_weyl :
     rl.flip.weylGroup = rl.weylGroup.map (MulEquiv.prodComm.toMonoidHom) := by
   simp [weylGroup, MonoidHom.map_closure, ← image_univ, ← image_comp]
@@ -261,15 +271,109 @@ lemma mapsTo_span_int_range_sRoot {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw :
   | one => intro x hx; simpa using hx
   | mul u v _ _ hu hv => exact fun x hx ↦ hu (hv hx)
 
-instance : SMul rl.weylGroup (M × N) where smul w p := (w.1.1 p.1, w.1.2 p.2)
+private lemma exists_zsum_eq_of_mem_weylGroup {d : n → ℤ} (hd : (rl.matrix * diagonal d).IsSymm)
+    {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weylGroup) (c : n → ℤ) :
+    letI S := rl.matrix * diagonal d
+    ∃ c' : n → ℤ, w.1 (∑ j, c j • rl.sRoot j) = ∑ j, c' j • rl.sRoot j ∧
+      c' ⬝ᵥ S *ᵥ c' = c ⬝ᵥ S *ᵥ c := by
+  set S := rl.matrix * diagonal d with S_def
+  induction hw using weylGroup.induction generalizing c with
+  | mem i =>
+    set t : ℤ := ∑ j, c j * rl.matrix j i with ht
+    have key : (S *ᵥ c) i = d i * t := by
+      rw [mulVec_apply_eq_sum, ht, Finset.mul_sum]
+      have hd' (i j : n) : rl.matrix i j * d j = rl.matrix j i * d i := by
+        simpa [S_def] using hd.apply j i
+      exact Finset.sum_congr rfl fun j _ ↦ by rw [S_def, mul_diagonal, hd' i j]; ring
+    refine ⟨c - Pi.single i t, ?_, ?_⟩
+    · have hp : rl.pairing (∑ j, c j • rl.sRoot j) (rl.sCoroot i) = t := by
+        simp [ht, rl.pairingMatrix]
+      rw [reflection_apply, hp]
+      simp [sub_smul, Finset.sum_sub_distrib, Pi.single_apply, Int.cast_smul_eq_zsmul]
+    · have h₁ : Pi.single i t ⬝ᵥ S *ᵥ c = d i * t * t := by
+        rw [single_dotProduct, key]; ring
+      have h₂ : Pi.single i t ⬝ᵥ S *ᵥ Pi.single i t = 2 * (d i * t * t) := by
+        rw [single_dotProduct, mulVec_apply_eq_sum]
+        simp only [mul_diagonal, Pi.single_apply, mul_ite, mul_zero, Finset.sum_ite_eq',
+          Finset.mem_univ, ite_true, rl.isCartan.diag, S]
+        ring
+      have hcomm (x y : n → ℤ) : x ⬝ᵥ S *ᵥ y = y ⬝ᵥ S *ᵥ x := by
+        rw [dotProduct_mulVec, ← mulVec_transpose, hd.eq, dotProduct_comm]
+      rw [mulVec_sub, sub_dotProduct, dotProduct_sub, dotProduct_sub,
+        hcomm c (Pi.single i t), h₁, h₂]
+      ring
+  | one => exact ⟨c, by simp, rfl⟩
+  | mul u v _ _ hu hv =>
+    obtain ⟨c₁, hc₁, hcc₁⟩ := hv c
+    obtain ⟨c₂, hc₂, hcc₂⟩ := hu c₁
+    exact ⟨c₂, by simp [← hc₁, ← hc₂], by rw [hcc₂, hcc₁]⟩
 
-lemma weylGroup_smul_def (w : rl.weylGroup) (p : M × N) : w • p = (w.1.1 p.1, w.1.2 p.2) := rfl
+private lemma finite_setOf_mem_weylGroup_apply_sRoot :
+    {x : M | ∃ w ∈ rl.weylGroup, ∃ i, w.1 (rl.sRoot i) = x}.Finite := by
+  obtain ⟨d, hd, hS⟩ := rl.isCartan.transpose.exists_posDef
+  set S := rl.matrix * diagonal d with hS_def
+  replace hS : S.PosDef := by rw [hS_def, ← PosDef.transpose_iff]; simpa using hS
+  have hsymm : S.IsSymm := by simpa using hS.isHermitian
+  refine ((hS.finite_setOf_dotProduct_mulVec_le (∑ j, S j j)).image
+    fun c ↦ ∑ j, (c j : R) • rl.sRoot j).subset ?_
+  rintro - ⟨w, hw, i, rfl⟩
+  obtain ⟨c, hc, hQ⟩ := rl.exists_zsum_eq_of_mem_weylGroup hsymm hw (Pi.single i 1)
+  refine ⟨c, ?_, ?_⟩
+  · change c ⬝ᵥ S *ᵥ c ≤ ∑ j, S j j
+    rw [hQ, single_dotProduct, one_mul, Matrix.mulVec_single_one, Matrix.col_apply]
+    exact Finset.single_le_sum (f := fun j ↦ S j j) (fun j _ ↦ hS.diag_pos.le) (Finset.mem_univ i)
+  · simp [← hc, Int.cast_smul_eq_zsmul]
 
-instance : DistribMulAction rl.weylGroup (M × N) where
-  mul_smul := by simp [weylGroup_smul_def]
-  one_smul := by simp [weylGroup_smul_def]
-  smul_zero := by simp [weylGroup_smul_def]
-  smul_add := by simp [weylGroup_smul_def]
+lemma sub_mem_span_range_sRoot {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weylGroup) (x : M) :
+    w.1 x - x ∈ span R (range rl.sRoot) := by
+  induction hw using weylGroup.induction generalizing x with
+  | mem i =>
+    rw [rl.reflection_apply, sub_sub_cancel_left]
+    exact neg_mem <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self i
+  | one => simp
+  | mul u v _ _ hu hv =>
+    have h : (u * v).1 x - x = (u.1 (v.1 x) - v.1 x) + (v.1 x - x) := by simp
+    rw [h]
+    exact add_mem (hu _) (hv _)
+
+lemma sub_mem_span_range_sCoroot {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weylGroup) (y : N) :
+    w.2 y - y ∈ span R (range rl.sCoroot) :=
+  rl.flip.sub_mem_span_range_sRoot (w := (w.2, w.1)) (rl.mem_flip_weyl.mpr hw) y
+
+lemma eq_of_forall_apply_sRoot_eq [CharZero R] [IsDomain R]
+    {w w' : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weylGroup) (hw' : w' ∈ rl.weylGroup)
+    (h : ∀ i, w.1 (rl.sRoot i) = w'.1 (rl.sRoot i)) :
+    w = w' := by
+  suffices ∀ u ∈ rl.weylGroup, (∀ i, u.1 (rl.sRoot i) = rl.sRoot i) → u = 1 by
+    refine (inv_mul_eq_one.mp <| this (w'⁻¹ * w) (mul_mem (inv_mem hw') hw) fun i ↦ ?_).symm
+    change w'.1.symm (w.1 (rl.sRoot i)) = rl.sRoot i
+    rw [h i, LinearEquiv.symm_apply_apply]
+  intro u hu hu'
+  have h₂ (y : N) : u.2 y = y := by
+    rw [← sub_eq_zero]
+    refine (rl.eq_zero_iff_forall_pairing_sRoot_eq_zero
+      (rl.sub_mem_span_range_sCoroot hu y)).mpr fun i ↦ ?_
+    have := rl.pairing_apply_apply_of_mem_weyl hu (rl.sRoot i) y
+    rw [hu' i] at this
+    simp [this]
+  have h₁ (x : M) : u.1 x = x := by
+    rw [← sub_eq_zero]
+    refine (rl.eq_zero_iff_forall_pairing_sCoroot_eq_zero
+      (rl.sub_mem_span_range_sRoot hu x)).mpr fun i ↦ ?_
+    have := rl.pairing_apply_apply_of_mem_weyl hu x (rl.sCoroot i)
+    rw [h₂ (rl.sCoroot i)] at this
+    simp [this]
+  exact Prod.ext (LinearEquiv.ext h₁) (LinearEquiv.ext h₂)
+
+instance [CharZero R] [IsDomain R] : Finite rl.weylGroup := by
+  set f : rl.weylGroup → n → M := fun w i ↦ (w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)).1 (rl.sRoot i)
+  have hinj : Injective f := fun w w' hww' ↦
+    Subtype.ext <| rl.eq_of_forall_apply_sRoot_eq w.2 w'.2 fun i ↦ congr_fun hww' i
+  rw [← Set.finite_univ_iff]
+  refine Set.Finite.of_finite_image (f := f) ?_ hinj.injOn
+  refine (Set.Finite.pi fun _ ↦ rl.finite_setOf_mem_weylGroup_apply_sRoot).subset ?_
+  rintro - ⟨w, -, rfl⟩
+  exact fun i _ ↦ ⟨w, w.2, i, rfl⟩
 
 /-- Taking the Weyl-group orbits of all `(simple root, simple coroot)` pairs, yields a natural
 indexing set for the roots and coroots for the root pairing corresponding to a realisation. -/
@@ -325,106 +429,31 @@ lemma idx_subset_span_int_sprod_span_int :
   exact rl.flip.mapsTo_span_int_range_sRoot (w := (w.2, w.1)) (rl.mem_flip_weyl.mpr hw) <|
     subset_span <| mem_range_self i
 
-variable [CharZero R] [IsDomain R]
+private lemma finite_image_fst_idx : (Prod.fst '' rl.idx).Finite := by
+  obtain ⟨d, hd, hS⟩ := rl.isCartan.transpose.exists_posDef
+  set S := rl.matrix * diagonal d with hS_def
+  replace hS : S.PosDef := by rw [hS_def, ← PosDef.transpose_iff]; simpa using hS
+  have hsymm : S.IsSymm := by simpa using hS.isHermitian
+  refine ((hS.finite_setOf_dotProduct_mulVec_le (∑ j, S j j)).image
+    fun c ↦ ∑ j, c j • rl.sRoot j).subset ?_
+  rintro x ⟨p, ⟨w, hw, i, rfl⟩, rfl⟩
+  obtain ⟨c, hc, hQ⟩ := rl.exists_zsum_eq_of_mem_weylGroup hsymm hw (Pi.single i 1)
+  refine ⟨c, ?_, ?_⟩
+  · change c ⬝ᵥ S *ᵥ c ≤ ∑ j, S j j
+    rw [hQ, single_dotProduct, one_mul, Matrix.mulVec_single_one, Matrix.col_apply]
+    exact Finset.single_le_sum (f := fun j ↦ S j j) (fun j _ ↦ hS.diag_pos.le) (Finset.mem_univ i)
+  · simp [← hc]
 
--- TODO Sort out this lemma (and much of the below)
-lemma exists_coords {d : n → ℤ} (hd : (diagonal d * rl.matrix).IsSymm)
-    {p : M × N} (hp : p ∈ rl.idx) :
-    ∃ (i : n) (b : n → ℤ),
-      b ⬝ᵥ (diagonal d * rl.matrix) *ᵥ b = 2 * d i ∧
-      p.2 = ∑ j, b j • rl.sCoroot j ∧
-      d i • p.1 = ∑ j, (b j * d j) • rl.sRoot j := by
-  obtain ⟨i, hi⟩ : ∃ i, ∀ j, (d i : R) * rl.pairing p.1 (rl.sCoroot j) =
-      (d j : R) * rl.pairing (rl.sRoot j) p.2 := by
-    obtain ⟨w, hw, i, rfl⟩ := hp
-    have hd' (i j : n) : (d i : R) * (rl.matrix i j : R) = (d j : R) * (rl.matrix j i : R) := by
-      have : d i * rl.matrix i j = d j * rl.matrix j i := by simpa using hd.apply j i
-      exact_mod_cast congrArg (Int.cast (R := R)) this
-    suffices ∀ {v : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)}, v ∈ rl.weylGroup → ∀ q : M × N,
-        (∀ j, (d i : R) * rl.pairing q.1 (rl.sCoroot j) =
-          (d j : R) * rl.pairing (rl.sRoot j) q.2) →
-        ∀ j, (d i : R) * rl.pairing (v.1 q.1) (rl.sCoroot j) =
-          (d j : R) * rl.pairing (rl.sRoot j) (v.2 q.2) by
-      exact ⟨i, this hw (rl.sRoot i, rl.sCoroot i) fun j ↦ by
-        simpa [rl.pairingMatrix] using hd' i j⟩
-    intro v hv
-    induction hv using weylGroup.induction with
-    | mem k =>
-      intro q hq j
-      simp only [reflection_apply, coreflection_apply, map_sub, map_smul, LinearMap.sub_apply,
-        LinearMap.smul_apply, smul_eq_mul, rl.pairingMatrix]
-      linear_combination hq j - (rl.matrix k j : R) * hq k + rl.pairing (rl.sRoot k) q.2 * hd' j k
-    | one => exact fun q hq ↦ hq
-    | mul u v _ _ hu hv => exact fun q hq ↦ hu (v.1 q.1, v.2 q.2) (hv q hq)
-  obtain ⟨b, hb⟩ := (Submodule.mem_span_range_iff_exists_fun ℤ).mp
-    (rl.idx_subset_span_int_sprod_span_int hp).2
-  have h2 : p.2 = ∑ j, b j • rl.sCoroot j := hb.symm
-  have hbd : (fun j ↦ b j * d j) = b ᵥ* diagonal d := funext fun j ↦ (vecMul_diagonal b d j).symm
-  have hvecMul (c : n → ℤ) (k : n) :
-      rl.pairing (∑ j, c j • rl.sRoot j) (rl.sCoroot k) = (((c ᵥ* rl.matrix) k : ℤ) : R) := by
-    simp only [map_sum, LinearMap.sum_apply, map_zsmul, LinearMap.smul_apply, rl.pairingMatrix,
-      zsmul_eq_mul, Matrix.vecMul, dotProduct]
-    push_cast
-    rfl
-  have hmulVec (k : n) : rl.pairing (rl.sRoot k) p.2 = (((rl.matrix *ᵥ b) k : ℤ) : R) := by
-    rw [h2]
-    simp only [map_sum, map_zsmul, rl.pairingMatrix, zsmul_eq_mul, Matrix.mulVec, dotProduct]
-    push_cast
-    exact Finset.sum_congr rfl fun j _ ↦ mul_comm _ _
-  have h1 : d i • p.1 = ∑ j, (b j * d j) • rl.sRoot j := by
-    have hmem : d i • p.1 - ∑ j, (b j * d j) • rl.sRoot j ∈ span R (range rl.sRoot) := by
-      simp only [← Int.cast_smul_eq_zsmul R]
-      exact sub_mem (Submodule.smul_mem _ _ (rl.fst_mem_span hp))
-        (Submodule.sum_mem _ fun j _ ↦ Submodule.smul_mem _ _ (subset_span (mem_range_self j)))
-    rw [← sub_eq_zero, rl.eq_zero_iff_forall_pairing_sCoroot_eq_zero (by simpa using hmem)]
-    intro k
-    simp only [map_sub, LinearMap.sub_apply, sub_eq_zero]
-    rw [hvecMul, map_zsmul, LinearMap.smul_apply, zsmul_eq_mul, hi k, hmulVec]
-    have : d k * (rl.matrix *ᵥ b) k = ((fun j ↦ b j * d j) ᵥ* rl.matrix) k := by
-      rw [hbd, vecMul_vecMul, ← mulVec_transpose, hd.eq, ← mulVec_mulVec, mulVec_diagonal]
-    exact_mod_cast congrArg (Int.cast (R := R)) this
-  refine ⟨i, b, ?_, h2, h1⟩
-  have hdiag : b ⬝ᵥ (diagonal d * rl.matrix) *ᵥ b = (fun j ↦ b j * d j) ⬝ᵥ rl.matrix *ᵥ b := by
-    rw [hbd, dotProduct_mulVec, dotProduct_mulVec, vecMul_vecMul]
-  have hdot (c : n → ℤ) :
-      rl.pairing (∑ j, c j • rl.sRoot j) p.2 = ((c ⬝ᵥ rl.matrix *ᵥ b : ℤ) : R) := by
-    simp only [map_sum, LinearMap.sum_apply, map_zsmul, LinearMap.smul_apply, hmulVec,
-      zsmul_eq_mul, dotProduct]
-    push_cast
-    rfl
-  have hnorm : ((b ⬝ᵥ (diagonal d * rl.matrix) *ᵥ b : ℤ) : R) = ((2 * d i : ℤ) : R) := by
-    rw [hdiag, ← hdot, ← h1, map_zsmul, LinearMap.smul_apply, rl.pairing_fst_snd hp, zsmul_eq_mul]
-    push_cast
-    ring
-  exact_mod_cast hnorm
+private lemma finite_image_snd_idx : (Prod.snd '' rl.idx).Finite := by
+  have h := rl.flip.finite_image_fst_idx
+  rw [rl.flip_idx] at h
+  simpa [Set.image_image] using h
 
-instance : Finite rl.idx := by
-  obtain ⟨d, hd_pos, hG⟩ := rl.isCartan.exists_posDef
-  set G : Matrix n n ℤ := Matrix.diagonal d * rl.matrix with hGdef
-  have hd : (Matrix.diagonal d * rl.matrix).IsSymm := by have := hG.isHermitian; aesop
-  choose i b hnorm h2 h1 using fun p : rl.idx ↦ rl.exists_coords hd p.2
-  set K : ℤ := 2 * ∑ j, d j with hK
-  have hbK : ∀ p : rl.idx, b p ⬝ᵥ G *ᵥ b p ≤ K := fun p ↦ by
-    rw [hnorm p, hK]
-    exact mul_le_mul_of_nonneg_left
-      (Finset.single_le_sum (fun j _ ↦ (hd_pos j).le) (Finset.mem_univ _)) (by norm_num)
-  have _i : Finite ↥{c : n → ℤ | c ⬝ᵥ G *ᵥ c ≤ K} :=
-    (hG.finite_setOf_dotProduct_mulVec_le K).to_subtype
-  have : IsReflexive R M := .of_isPerfPair rl.pairing
-  have _i : IsAddTorsionFree M := .of_isTorsionFree R M
-  refine Finite.of_injective
-    (fun p ↦ (i p, (⟨b p, hbK p⟩ : ↥{c : n → ℤ | c ⬝ᵥ G *ᵥ c ≤ K}))) ?_
-  rintro p q hpq
-  simp only [Prod.mk.injEq, Subtype.mk.injEq] at hpq
-  obtain ⟨hi, hb⟩ := hpq
-  refine Subtype.ext (Prod.ext ?_ ?_)
-  · have h : d (i p) • (p : M × N).1 = d (i p) • (q : M × N).1 := by
-      rw [h1 p, hb, hi, ← h1 q]
-    exact zsmul_right_injective (G := M) (hd_pos (i p)).ne' h
-  · rw [h2 p, h2 q, hb]
+instance : Finite rl.idx :=
+  ((rl.finite_image_fst_idx.prod rl.finite_image_snd_idx).subset
+    fun p hp ↦ ⟨⟨p, hp, rfl⟩, ⟨p, hp, rfl⟩⟩).to_subtype
 
 -- TODO drop (or _maybe_ restate) but wait till we see how used below
-omit [CharZero R] [IsDomain R] in
 lemma exists_mem_weyl_of_mem_idx {p : M × N} (hp : p ∈ rl.idx) :
     ∃ w ∈ rl.weylGroup,
       (∀ x : M, w.1 x = x - rl.pairing x p.2 • p.1) ∧
@@ -443,21 +472,14 @@ lemma exists_mem_weyl_of_mem_idx {p : M × N} (hp : p ∈ rl.idx) :
     change v.2 (rl.coreflection i (v.2.symm y)) = _
     simp [coreflection_apply, h]
 
-omit [CharZero R] [IsDomain R] in
-lemma mapsTo_preReflection_fst {p : M × N} (hp : p ∈ rl.idx) :
-    MapsTo (preReflection p.1 (rl.pairing.flip p.2)) (Prod.fst '' rl.idx) (Prod.fst '' rl.idx) := by
-  obtain ⟨w, hw, h₁, -⟩ := rl.exists_mem_weyl_of_mem_idx hp
-  rintro - ⟨q, hq, rfl⟩
-  exact ⟨_, rl.apply_mem_idx hw hq, by simp [preReflection_apply, h₁]⟩
-
-omit [CharZero R] [IsDomain R] in
-lemma mapsTo_preReflection_snd {p : M × N} (hp : p ∈ rl.idx) :
-    MapsTo (preReflection p.2 (rl.pairing p.1)) (Prod.snd '' rl.idx) (Prod.snd '' rl.idx) := by
-  obtain ⟨w, hw, -, h₂⟩ := rl.exists_mem_weyl_of_mem_idx hp
-  rintro - ⟨q, hq, rfl⟩
-  exact ⟨_, rl.apply_mem_idx hw hq, by simp [preReflection_apply, h₂]⟩
+variable [CharZero R] [IsDomain R]
 
 lemma injOn_fst : InjOn Prod.fst rl.idx := by
+  have aux {p : M × N} (hp : p ∈ rl.idx) :
+    MapsTo (preReflection p.1 (rl.pairing.flip p.2)) (Prod.fst '' rl.idx) (Prod.fst '' rl.idx) := by
+    obtain ⟨w, hw, h₁, -⟩ := rl.exists_mem_weyl_of_mem_idx hp
+    rintro - ⟨q, hq, rfl⟩
+    exact ⟨_, rl.apply_mem_idx hw hq, by simp [preReflection_apply, h₁]⟩
   intro p hp q hq h
   have hfin : (Prod.fst '' rl.idx).Finite := Set.toFinite _
   have hx : p.1 ∈ span R (Prod.fst '' rl.idx) := subset_span ⟨p, hp, rfl⟩
@@ -466,9 +488,9 @@ lemma injOn_fst : InjOn Prod.fst rl.idx := by
     rw [h]; simpa using rl.pairing_fst_snd hq
   have hg₂ : MapsTo (preReflection p.1 (rl.pairing.flip q.2))
       (Prod.fst '' rl.idx) (Prod.fst '' rl.idx) := by
-    rw [h]; exact rl.mapsTo_preReflection_fst hq
+    rw [h]; exact aux hq
   have : IsReflexive R M := .of_isPerfPair rl.pairing
-  have key := Dual.eq_of_preReflection_mapsTo' hfin hx hf₁ (rl.mapsTo_preReflection_fst hp) hg₁ hg₂
+  have key := Dual.eq_of_preReflection_mapsTo' hfin hx hf₁ (aux hp) hg₁ hg₂
   refine Prod.ext h (sub_eq_zero.mp <| (rl.eq_zero_iff_forall_pairing_sRoot_eq_zero
     (sub_mem (rl.snd_mem_span hp) (rl.snd_mem_span hq))).mpr fun i ↦ ?_)
   have hi : rl.sRoot i ∈ span R (Prod.fst '' rl.idx) :=

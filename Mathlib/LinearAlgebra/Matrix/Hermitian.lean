@@ -69,6 +69,9 @@ theorem IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, sta
     A.IsHermitian ↔ A.IsSymm := by
   simp [IsHermitian.ext_iff, IsSymm.ext_iff]
 
+lemma IsHermitian.isSymm [TrivialStar α] {A : Matrix n n α} (hA : A.IsHermitian) : A.IsSymm :=
+  isHermitian_iff_isSymm.mp hA
+
 @[simp]
 theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
     (hf : Function.Semiconj f star star) : (A.map f).IsHermitian := by
