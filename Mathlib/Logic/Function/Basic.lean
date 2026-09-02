@@ -940,6 +940,23 @@ theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ �
     ⟨g ∘ surjInv hf.surjective,
      by simp only [comp_assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp_id]⟩⟩
 
+/-- `Function.extend f Sum.inl Sum.inr : β → α ⊕ β` is injective when `f` is:
+elements in the range of `f` are sent into `Sum.inl` along `f`'s (injective) inverse,
+and everything else is sent to itself under `Sum.inr`. -/
+theorem Injective.extend_sum_inl_inr {α β : Type*} {f : α → β} (hf : Injective f) :
+    Injective (extend f (Sum.inl : α → α ⊕ β) (Sum.inr : β → α ⊕ β)) := by
+  intro x y h
+  have h_cases (z : β) : (∃ a, f a = z) ∨ (extend f Sum.inl Sum.inr z = Sum.inr z) := by
+    rw [Classical.or_iff_not_imp_left]
+    simp +contextual
+  rcases h_cases x with ⟨a, rfl⟩ | hx <;> rcases h_cases y with ⟨b, rfl⟩ | hy
+  · rw [hf.extend_apply, hf.extend_apply] at h
+    exact congr_arg f (Sum.inl.inj h)
+  · rw [hf.extend_apply, hy] at h; contradiction
+  · rw [hx, hf.extend_apply] at h; contradiction
+  · rw [hx, hy] at h
+    exact Sum.inr.inj h
+
 end Extend
 
 namespace FactorsThrough
