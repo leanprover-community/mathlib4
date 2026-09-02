@@ -103,7 +103,7 @@ lemma schnirelmannDensity_le_of_notMem {k : ℕ} (hk : k ∉ A) :
   gcongr
   rw [← Nat.cast_pred hk', Nat.cast_le]
   suffices {a ∈ Ioc 0 k | a ∈ A} ⊆ Ioo 0 k from (card_le_card this).trans_eq (by simp)
-  rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
+  rw [← Ioo_insert_right hk', filter_insert, ite_eq_right hk]
   exact filter_subset _ _
 
 /-- The Schnirelmann density of a set not containing `1` is `0`. -/
@@ -226,7 +226,6 @@ lemma schnirelmannDensity_setOfPred_prime : schnirelmannDensity (Set.ofPred Nat.
 @[deprecated (since := "2026-07-09")]
 alias schnirelmannDensity_setOf_prime := schnirelmannDensity_setOfPred_prime
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.
 

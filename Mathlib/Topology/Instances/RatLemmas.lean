@@ -32,9 +32,11 @@ compactification.
 public section
 
 
-open Set Metric Filter TopologicalSpace
+open Set Filter TopologicalSpace
 
-open Topology OnePoint
+open OnePoint
+
+open scoped Topology
 
 local notation "ℚ∞" => OnePoint ℚ
 

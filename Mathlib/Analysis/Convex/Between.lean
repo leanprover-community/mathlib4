@@ -12,6 +12,8 @@ public import Mathlib.Analysis.Convex.Segment
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Tactic.FieldSimp
 
+import Mathlib.Tactic.Bound
+
 /-!
 # Betweenness in affine spaces
 
@@ -34,7 +36,6 @@ open AffineEquiv AffineMap Module
 
 section OrderedRing
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support
 abstract affine combination spaces, this will no longer need to be a separate definition from
 `segment`. However, lemmas involving `+ᵥ` or `-ᵥ` will still be relevant after such a
@@ -351,7 +352,6 @@ theorem Sbtw.ne_right {x y z : P} (h : Sbtw R x y z) : y ≠ z :=
 theorem Sbtw.right_ne {x y z : P} (h : Sbtw R x y z) : z ≠ y :=
   h.2.2.symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Sbtw.mem_image_Ioo {x y z : P} (h : Sbtw R x y z) :
     y ∈ lineMap x z '' Set.Ioo (0 : R) 1 := by
   rcases h with ⟨⟨t, ht, rfl⟩, hyx, hyz⟩
@@ -471,7 +471,7 @@ theorem sbtw_one_zero_iff {x : R} : Sbtw R 1 x 0 ↔ x ∈ Set.Ioo (0 : R) 1 := 
 theorem Wbtw.trans_left {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R w x y) : Wbtw R w x z := by
   rcases h₁ with ⟨t₁, ht₁, rfl⟩
   rcases h₂ with ⟨t₂, ht₂, rfl⟩
-  refine ⟨t₂ * t₁, ⟨mul_nonneg ht₂.1 ht₁.1, mul_le_one₀ ht₂.2 ht₁.1 ht₁.2⟩, ?_⟩
+  refine ⟨t₂ * t₁, ⟨mul_nonneg ht₂.1 ht₁.1, by bound [ht₂.2, ht₁.1, ht₁.2]⟩, ?_⟩
   rw [lineMap_apply, lineMap_apply, lineMap_vsub_left, smul_smul]
 
 theorem Wbtw.trans_right {w x y z : P} (h₁ : Wbtw R w x z) (h₂ : Wbtw R x y z) : Wbtw R w y z := by
@@ -481,7 +481,6 @@ theorem Wbtw.trans_right {w x y z : P} (h₁ : Wbtw R w x z) (h₂ : Wbtw R x y 
 section IsTorsionFree
 variable [IsDomain R] [IsTorsionFree R V] {w x y z : P} {r : R}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sbtw_iff_mem_image_Ioo_and_ne :
     Sbtw R x y z ↔ y ∈ lineMap x z '' Set.Ioo (0 : R) 1 ∧ x ≠ z := by
   refine ⟨fun h => ⟨h.mem_image_Ioo, h.left_ne_right⟩, fun h => ?_⟩
@@ -540,7 +539,6 @@ theorem Sbtw.not_swap_right (h : Sbtw R x y z) : ¬Wbtw R x z y := fun hs =>
 theorem Sbtw.not_rotate (h : Sbtw R x y z) : ¬Wbtw R z x y := fun hs =>
   h.left_ne (h.wbtw.rotate_iff.1 hs)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem wbtw_lineMap_iff :
     Wbtw R x (lineMap x y r) y ↔ x = y ∨ r ∈ Set.Icc (0 : R) 1 := by
@@ -549,7 +547,6 @@ theorem wbtw_lineMap_iff :
     simp
   rw [or_iff_right hxy, Wbtw, affineSegment, (lineMap_injective R hxy).mem_set_image]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sbtw_lineMap_iff :
     Sbtw R x (lineMap x y r) y ↔ x ≠ y ∧ r ∈ Set.Ioo (0 : R) 1 := by
@@ -678,7 +675,6 @@ lemma mem_closedInterior_face_iff_wbtw {n : ℕ} (s : Simplex R P n) {p : P} {i 
     p ∈ (s.face (Finset.card_pair h)).closedInterior ↔ Wbtw R (s.points i) p (s.points j) := by
   rw [s.closedInterior_face_eq_affineSegment h, Wbtw]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The interior of a 1-simplex is a segment between its vertices. -/
 lemma interior_eq_image_Ioo (s : Simplex R P 1) :
     s.interior = AffineMap.lineMap (s.points 0) (s.points 1) '' Set.Ioo (0 : R) 1 := by
@@ -852,7 +848,6 @@ lemma Wbtw.of_le_of_le {x y z : R} (hxy : x ≤ y) (hyz : y ≤ z) : Wbtw R x y 
 lemma Sbtw.of_lt_of_lt {x y z : R} (hxy : x < y) (hyz : y < z) : Sbtw R x y z :=
   ⟨.of_le_of_le hxy.le hyz.le, hxy.ne', hyz.ne⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     Wbtw R x y z ↔ x = y ∨ z ∈ lineMap x y '' Set.Ici (1 : R) := by
   refine ⟨fun h => ?_, fun h => ?_⟩
@@ -870,7 +865,6 @@ theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
       simp only [lineMap_apply, smul_smul, vadd_vsub]
       rw [inv_mul_cancel₀ (one_pos.trans_le hr).ne', one_smul, vsub_vadd]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Wbtw.right_mem_image_Ici_of_left_ne {x y z : P} (h : Wbtw R x y z) (hne : x ≠ y) :
     z ∈ lineMap x y '' Set.Ici (1 : R) :=
   (wbtw_iff_left_eq_or_right_mem_image_Ici.1 h).resolve_left hne
@@ -880,7 +874,6 @@ theorem Wbtw.right_mem_affineSpan_of_left_ne {x y z : P} (h : Wbtw R x y z) (hne
   rcases h.right_mem_image_Ici_of_left_ne hne with ⟨r, ⟨-, rfl⟩⟩
   exact lineMap_mem_affineSpan_pair _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
     Sbtw R x y z ↔ x ≠ y ∧ z ∈ lineMap x y '' Set.Ioi (1 : R) := by
   refine ⟨fun h => ⟨h.left_ne, ?_⟩, fun h => ?_⟩
@@ -900,7 +893,6 @@ theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
     rw [← sub_smul, smul_ne_zero_iff, vsub_ne_zero, sub_ne_zero]
     exact ⟨hr.ne, hne.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Sbtw.right_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
     z ∈ lineMap x y '' Set.Ioi (1 : R) :=
   (sbtw_iff_left_ne_and_right_mem_image_Ioi.1 h).2
@@ -908,12 +900,10 @@ theorem Sbtw.right_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
 theorem Sbtw.right_mem_affineSpan {x y z : P} (h : Sbtw R x y z) : z ∈ line[R, x, y] :=
   h.wbtw.right_mem_affineSpan_of_left_ne h.left_ne
 
-set_option backward.isDefEq.respectTransparency false in
 theorem wbtw_iff_right_eq_or_left_mem_image_Ici {x y z : P} :
     Wbtw R x y z ↔ z = y ∨ x ∈ lineMap z y '' Set.Ici (1 : R) := by
   rw [wbtw_comm, wbtw_iff_left_eq_or_right_mem_image_Ici]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Wbtw.left_mem_image_Ici_of_right_ne {x y z : P} (h : Wbtw R x y z) (hne : z ≠ y) :
     x ∈ lineMap z y '' Set.Ici (1 : R) :=
   h.symm.right_mem_image_Ici_of_left_ne hne
@@ -922,12 +912,10 @@ theorem Wbtw.left_mem_affineSpan_of_right_ne {x y z : P} (h : Wbtw R x y z) (hne
     x ∈ line[R, z, y] :=
   h.symm.right_mem_affineSpan_of_left_ne hne
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sbtw_iff_right_ne_and_left_mem_image_Ioi {x y z : P} :
     Sbtw R x y z ↔ z ≠ y ∧ x ∈ lineMap z y '' Set.Ioi (1 : R) := by
   rw [sbtw_comm, sbtw_iff_left_ne_and_right_mem_image_Ioi]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Sbtw.left_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
     x ∈ lineMap z y '' Set.Ioi (1 : R) :=
   h.symm.right_mem_image_Ioi
@@ -988,8 +976,7 @@ theorem Wbtw.trans_left_right {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R
   refine
     ⟨(t₁ - t₂ * t₁) / (1 - t₂ * t₁),
       ⟨div_nonneg (sub_nonneg.2 (mul_le_of_le_one_left ht₁.1 ht₂.2))
-          (sub_nonneg.2 (mul_le_one₀ ht₂.2 ht₁.1 ht₁.2)), div_le_one_of_le₀
-            (sub_le_sub_right ht₁.2 _) (sub_nonneg.2 (mul_le_one₀ ht₂.2 ht₁.1 ht₁.2))⟩,
+          (by bound [ht₂.2, ht₁.1, ht₁.2]), by bound [ht₂.2, ht₁.1, ht₁.2]⟩,
       ?_⟩
   simp only [lineMap_apply, smul_smul, ← add_vadd, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul,
     ← add_smul, vadd_vsub, vadd_right_cancel_iff, div_mul_eq_mul_div, div_sub_div_same]
@@ -1001,7 +988,7 @@ theorem Wbtw.trans_left_right {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R
     suffices t₁ = 1 by simp [this]
     exact
       eq_of_le_of_not_lt ht₁.2 fun ht₁lt =>
-        (mul_lt_one_of_nonneg_of_lt_one_right ht₂.2 ht₁.1 ht₁lt).ne h
+        ((mul_le_of_le_one_left ht₁.1 ht₂.2).trans_lt ht₁lt).ne h
   · rw [div_self h]
     ring_nf
 
@@ -1105,7 +1092,7 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
   replace hT := hT.comp_embedding ⟨_, h⟩
   rw [affineIndependent_iff_not_collinear] at hT
   contrapose hT
-  simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
+  simp [Set.range_comp, hT.symm.collinear]
 
 variable (R)
 
