@@ -54,10 +54,9 @@ theorem charP_of_monic_of_degree_pos (monic : f.Monic) (deg : 0 < f.degree) :
 
 theorem charP_of_X_pow_sub_one (h : 0 < r) [Nontrivial R] :
     CharP (AdjoinRoot ((X : R[X]) ^ r - 1)) p := by
-  apply charP_of_monic_of_degree_pos
-  · simp [Monic.def, leadingCoeff_X_pow_sub_one h]
-  · refine natDegree_pos_iff_degree_pos.mp ?_
-    suffices ((X : R[X]) ^ r - 1).natDegree = r by grind
-    rw [← C_1, natDegree_X_pow_sub_C]
+  have monic := Polynomial.monic_X_pow_sub_C (1 : R) h.ne.symm
+  apply charP_of_monic_of_degree_pos monic
+  apply natDegree_pos_iff_degree_pos.mp
+  grind [natDegree_X_pow_sub_C]
 
 end AdjoinRoot
