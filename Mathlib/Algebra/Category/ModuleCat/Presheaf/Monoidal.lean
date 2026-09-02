@@ -88,7 +88,7 @@ noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) :
       dsimp
       rw [tensorObj_map_tmul]
       -- Need `erw` because of the type mismatch in `map` and the tensor product.
-      erw [ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul]
+      rw [ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul]
       erw [PresheafOfModules.naturality_apply, PresheafOfModules.naturality_apply]
       simp))
 
