@@ -195,6 +195,11 @@ theorem setIntegral_re_add_im {f : X → 𝕜} {i : Set X} (hf : IntegrableOn f 
 theorem starRingEnd_div_mul_eq_norm (z : 𝕜) : starRingEnd 𝕜 (z / ‖z‖) * z = ‖z‖ := by
   simp [div_mul_eq_mul_div, RCLike.conj_mul, sq]
 
+theorem enorm_integral_mul_starRingEnd_comm {f g : X → 𝕜} :
+    ‖∫ x, f x * starRingEnd 𝕜 (g x) ∂μ‖ₑ = ‖∫ x, g x * starRingEnd 𝕜 (f x) ∂μ‖ₑ := by
+  rw [← RCLike.enorm_conj, ← integral_conj]
+  simp_rw [map_mul, RCLike.conj_conj, mul_comm]
+
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
 lemma swap_integral (f : X → E × F) : (∫ x, f x ∂μ).swap = ∫ x, (f x).swap ∂μ :=
