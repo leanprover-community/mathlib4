@@ -158,7 +158,10 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
       Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
         (ifUnchanged := .error)
   if let some disch := discharger then
-    focusAndDone <| evalTacticSeq disch
+    let s ← saveState
+    try
+      focusAndDone <| evalTacticSeq disch
+    catch _ => s.restore (restoreInfo := true)
 
 /-- A discharger, e.g. `(disch := <tactic sequence>)`. The default discharger may be prevented from
 running by writing `(disch := none)`. -/
