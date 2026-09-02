@@ -8096,6 +8096,7 @@ public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Covering.Deck
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Defs.Basic
+public import Mathlib.Topology.Defs.Cadlag
 public import Mathlib.Topology.Defs.Filter
 public import Mathlib.Topology.Defs.Induced
 public import Mathlib.Topology.Defs.Sequences
