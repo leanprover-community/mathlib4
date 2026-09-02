@@ -81,7 +81,7 @@ protected theorem mul (hf : Introspective f e r) (hg : Introspective g e r) :
   rw [← hf, ← hg]
   simp [mul_pow]
 
-/-- The product of coprime exponents is Introspective. -/
+/-- The product of exponents is Introspective. -/
 theorem mul' (hf : Introspective f e r) (hg : Introspective f d r) : Introspective f (e * d) r := by
   simp only [Introspective.iff_dvd] at hg
   simp only [Introspective] at *
