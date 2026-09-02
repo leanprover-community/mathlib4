@@ -178,6 +178,7 @@ lemma IsDiscrete.isLocallyClosed [T1Space X] (hs : IsDiscrete s) :
     isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet]
   refine fun x hx ↦ ⟨{x}, isClosed_singleton, ?_⟩
   simpa [eventuallyEqSet_iff_inf_principal, nhdsWithin] using hs.nhdsWithin x hx
+
 section cofinite_cocompact
 
 omit [TopologicalSpace X] in
