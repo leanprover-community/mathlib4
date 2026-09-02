@@ -908,15 +908,14 @@ end sections
 
 section IsAffine
 
+variable [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+  [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)]
+
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is quasi-affine, then some `Xᵢ` is quasi-affine. -/
 @[stacks 01Z5]
-lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    [∀ (i : I), CompactSpace (D.obj i)]
-    [∀ (i : I), QuasiSeparatedSpace (D.obj i)]
-    [IsQuasiAffine c.pt] :
+lemma Scheme.exists_isQuasiAffine_of_isLimit [IsQuasiAffine c.pt] :
     ∃ i, IsQuasiAffine (D.obj i) := by
   classical
   have (x : c.pt) : ∃ (i : I) (f : Γ(D.obj i, ⊤)),
@@ -966,11 +965,7 @@ include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is affine, then some `Xᵢ` is affine. -/
 @[stacks 01Z6]
-lemma Scheme.exists_isAffine_of_isLimit [IsCofiltered I]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    [∀ (i : I), CompactSpace (D.obj i)]
-    [∀ (i : I), QuasiSeparatedSpace (D.obj i)]
-    [IsAffine c.pt] :
+lemma Scheme.exists_isAffine_of_isLimit [IsAffine c.pt] :
     ∃ i, IsAffine (D.obj i) := by
   have := isAffineHom_π_app _ _ hc
   obtain ⟨i, hi⟩ := exists_isQuasiAffine_of_isLimit D c hc
@@ -986,12 +981,10 @@ lemma Scheme.exists_isAffine_of_isLimit [IsCofiltered I]
     ((preimage_opensRange_toSpecΓ (D.map fij)).symm.trans hj)⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
+omit [∀ i, CompactSpace (D.obj i)] in
 include hc in
 @[stacks 01Z4 "(1)"]
-lemma exists_isAffineOpen_preimage_eq
-    [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    [∀ i, QuasiSeparatedSpace (D.obj i)]
-    (U : c.pt.Opens) (hU : IsAffineOpen U) :
+lemma exists_isAffineOpen_preimage_eq (U : c.pt.Opens) (hU : IsAffineOpen U) :
     ∃ (i : I) (V : (D.obj i).Opens), IsAffineOpen V ∧ c.π.app i ⁻¹ᵁ V = U := by
   obtain ⟨i, U, hU', rfl⟩ := exists_preimage_eq D c hc U hU.isCompact
   have (j : Over i) : CompactSpace ((opensDiagram D i U).obj j) :=
@@ -1006,9 +999,7 @@ namespace Scheme
 
 open TopologicalSpace in
 include hc in
-lemma exists_isOpenCover_and_isAffine_of_finite [IsCofiltered I]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ (i : I), CompactSpace (D.obj i)]
-    [∀ (i : I), QuasiSeparatedSpace (D.obj i)]
+lemma exists_isOpenCover_and_isAffine_of_finite
     {J : Type*} [Finite J] (U : J → c.pt.Opens) (hU : IsOpenCover U)
     (hU' : ∀ i, IsAffineOpen (U i)) :
     ∃ (i : I) (V : J → (D.obj i).Opens),
@@ -1029,10 +1020,7 @@ open TopologicalSpace in
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 Then any affine open cover of `lim Xᵢ` comes from a finite level. -/
-lemma exists_isOpenCover_and_isAffine [IsCofiltered I]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    [∀ (i : I), CompactSpace (D.obj i)]
-    [∀ (i : I), QuasiSeparatedSpace (D.obj i)]
+lemma exists_isOpenCover_and_isAffine
     {J : Type*} (U : J → c.pt.Opens) (hU : IsOpenCover U) (hU' : ∀ i, IsAffineOpen (U i)) :
     ∃ (i : I) (s : Finset J) (V : s → (D.obj i).Opens),
       IsOpenCover V ∧ ∀ j, IsAffineOpen (V j) ∧ U j = c.π.app i ⁻¹ᵁ (V j) := by
@@ -1049,10 +1037,8 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- Variant of `Scheme.exists_isOpenCover_and_isAffine_of_finite` in terms of `Scheme.OpenCover`. -/
-lemma OpenCover.exists_of_isCofiltered_of_finite [IsCofiltered I]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ (i : I), CompactSpace (D.obj i)]
-    [∀ (i : I), QuasiSeparatedSpace (D.obj i)]
-    (𝒰 : OpenCover.{w} c.pt) [∀ i, IsAffine (𝒰.X i)] [Finite 𝒰.I₀] :
+lemma OpenCover.exists_of_isCofiltered_of_finite (𝒰 : OpenCover.{w} c.pt)
+    [∀ i, IsAffine (𝒰.X i)] [Finite 𝒰.I₀] :
     ∃ (i : I) (R : 𝒰.I₀ → CommRingCat.{u}) (f : ∀ (a : 𝒰.I₀), Spec (R a) ⟶ (D.obj i))
       (_ : Presieve.ofArrows _ f ∈ zariskiPrecoverage _) (g : ∀ (j : 𝒰.I₀), 𝒰.X j ⟶ Spec (R j)),
       ∀ (j : 𝒰.I₀), IsPullback (g j) (𝒰.f j) (f j) (c.π.app i) := by
