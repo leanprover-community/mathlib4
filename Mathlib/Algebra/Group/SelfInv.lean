@@ -34,8 +34,7 @@ def IsSelfInv (a : α) : Prop := a⁻¹ = a
 @[to_additive]
 lemma isSelfInv_iff : IsSelfInv a ↔ a⁻¹ = a := Iff.rfl
 
-@[to_additive]
-protected lemma IsSelfInv.inv_eq (h : IsSelfInv a) : a⁻¹ = a := h
+alias ⟨IsSelfInv.inv_eq, IsSelfInv.of_inv_eq⟩ := isSelfInv_iff
 
 @[to_additive]
 protected lemma IsSelfInv.eq_inv (h : IsSelfInv a) : a = a⁻¹ := h.symm
