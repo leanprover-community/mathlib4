@@ -5,10 +5,7 @@ Authors: Octavian Halmaghi
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Map
-public import Mathlib.GroupTheory.Index
 public import Mathlib.GroupTheory.Nilpotent
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Virtually cyclic groups
