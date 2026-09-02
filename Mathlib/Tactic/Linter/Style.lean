@@ -457,7 +457,7 @@ def longLinePost (readPrev : PrevStateFn) (stx : Syntax) : CommandElabM Unit := 
         -- `impMods` is the syntax for the modules imported in the current file. The state of
         -- the `header` linter provides it when the header checks ran. Otherwise, we parse the
         -- header of the file.
-        let headerStx := (readPrev Style.header.headerLinter).headerSyntax
+        let headerStx := (readPrev Style.Header.headerLinter).headerSyntax
         if headerStx.isMissing then
           let fileMap ← getFileMap
           let (impMods, _) ← Parser.parseHeader

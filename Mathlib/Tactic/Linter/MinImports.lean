@@ -141,7 +141,7 @@ def minImportsPost (readPrev : PrevStateFn) (stx : Syntax) (self : ImportState) 
     -- `header` linter provides it when the header checks ran. Otherwise, we read the current
     -- file and do a custom parsing of the imports: this is a hack to obtain some `Syntax`
     -- information for the `import X` commands.
-    let headerStx := (readPrev Style.header.headerLinter).headerSyntax
+    let headerStx := (readPrev Style.Header.headerLinter).headerSyntax
     let impMods ← if headerStx.isMissing then do
         let fname ← getFileName
         let contents ← IO.FS.readFile fname
