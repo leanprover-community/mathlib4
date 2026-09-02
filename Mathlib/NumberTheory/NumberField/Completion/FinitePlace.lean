@@ -6,18 +6,15 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Submonoid
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.RamificationInertia.Valuation
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
-public import Mathlib.RingTheory.Ideal.Int
-public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 
 import Mathlib.Algebra.FiniteSupport.Basic
-public import Mathlib.RingTheory.RamificationInertia.Inertia
+
 
 /-!
 # Finite places of number fields
@@ -547,3 +544,5 @@ end HeightOneSpectrum
 end LiesOver
 
 end NumberField
+
+#min_imports
