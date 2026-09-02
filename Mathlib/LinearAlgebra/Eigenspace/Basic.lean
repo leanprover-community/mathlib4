@@ -98,6 +98,25 @@ lemma mem_genEigenspace_nat {f : End R M} {μ : R} {k : ℕ} {x : M} :
   · intro hx
     exact ⟨k, le_rfl, hx⟩
 
+/-- `(f.genEigenspace μ k).map φ ≤ g.genEigenspace μ k` if `g ∘ₗ φ = φ ∘ₗ f`. -/
+lemma map_genEigenspace_le {N : Type*} [AddCommGroup N] [Module R N]
+    {f : End R M} {g : End R N} (φ : M →ₗ[R] N) (hφ : g.comp φ = φ.comp f)
+    (μ : R) (k : ℕ∞) :
+    (f.genEigenspace μ k).map φ ≤ g.genEigenspace μ k := by
+  rintro y ⟨x, hx, rfl⟩
+  obtain ⟨l, hl, hx⟩ := mem_genEigenspace.mp hx
+  refine mem_genEigenspace.mpr ⟨l, hl, ?_⟩
+  simp only [LinearMap.mem_ker, Module.End.pow_apply] at hx ⊢
+  suffices (⇑φ).Semiconj ⇑(f - μ • 1) ⇑(g - μ • 1) by rw [← this.iterate_right, hx, map_zero]
+  intro; simpa using congr($hφ _).symm
+
+/-- `map_genEigenspace_le` as `MapsTo`. -/
+lemma mapsTo_genEigenspace_of_comp {N : Type*} [AddCommGroup N] [Module R N]
+    {f : End R M} {g : End R N} (φ : M →ₗ[R] N) (hφ : g.comp φ = φ.comp f) (μ : R) (k : ℕ∞) :
+    MapsTo φ (f.genEigenspace μ k) (g.genEigenspace μ k) := by
+  intro x hx
+  exact mem_of_le_of_mem (map_genEigenspace_le (φ := φ) hφ μ k) (Submodule.mem_map_of_mem hx)
+
 lemma mem_genEigenspace_top {f : End R M} {μ : R} {x : M} :
     x ∈ f.genEigenspace μ ⊤ ↔ ∃ k : ℕ, x ∈ LinearMap.ker ((f - μ • 1) ^ k) := by
   simp [mem_genEigenspace]

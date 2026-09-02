@@ -529,7 +529,7 @@ variable {s t : Subfield K}
 /-- Makes the identity isomorphism from a proof two subfields of a multiplicative
     monoid are equal. -/
 def subfieldCongr (h : s = t) : s ≃+* t :=
-  { Equiv.Set.congr <| SetLike.ext'_iff.1 h with
+  { Set.equivOfEq <| SetLike.ext'_iff.1 h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 

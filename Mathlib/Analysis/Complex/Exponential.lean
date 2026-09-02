@@ -6,10 +6,10 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 module
 
 public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Analysis.Complex.Norm
 public import Mathlib.Algebra.Order.CauSeq.BigOperators
 public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.Analysis.Complex.Norm
+public import Mathlib.Basic.Complex.BigOperators
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Tactic.NormNum.BigOperators
 public import Mathlib.Tactic.NormNum.NatFactorial
@@ -251,8 +251,7 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i ∈ rang
       refine le_lim (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
       simp only [exp', const_apply, re_sum]
       norm_cast
-      refine sum_le_sum_of_subset_of_nonneg (range_mono hj) fun _ _ _ ↦ ?_
-      positivity
+      gcongr
     _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
 
 lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x :=
