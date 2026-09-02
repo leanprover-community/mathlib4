@@ -853,10 +853,10 @@ private lemma exists_isOpenCover_app_eq_restrict_of_isLimit (s : Γ(c.pt, ⊤)) 
       (h₁ : V ≤ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₁.1.1) (h₂ : V ≤ D.map v ⁻¹ᵁ D.map w ⁻¹ᵁ W₂.1.1),
         (D.map v).appLE _ V h₁ (T W₁) = (D.map v).appLE _ V h₂ (T W₂) := by
     refine IsCofiltered.exists_forall₂ ?_ fun W₁ W₂ ↦ ?_
-    · exact fun v u W₁ W₂ hv V h₁ h₂ ↦ by
-        simpa [Scheme.Hom.appLE_appLE, -Scheme.Hom.comp_appLE] using
-          congr((D.map v).appLE _ V ((le_inf h₁ h₂).trans_eq (by rw [D.map_comp]; rfl))
-            $(hv _ inf_le_left inf_le_right))
+    · intros _ _ v u W₁ W₂ hv V h₁ h₂
+      simpa [Scheme.Hom.appLE_appLE, -Scheme.Hom.comp_appLE] using
+        congr((D.map v).appLE _ V ((le_inf h₁ h₂).trans_eq (by rw [D.map_comp]; rfl))
+          $(hv _ inf_le_left inf_le_right))
     refine Exists₂.imp (fun k v hv V h₁ h₂ ↦ ?_) (exists_app_map_eq_map_of_isLimit D c hc
       ((W₁.1.2.preimage (D.map w)).isCompact_inf (W₂.1.2.preimage (D.map w)))
       (T W₁ |_ _) (T W₂ |_ _) (by
