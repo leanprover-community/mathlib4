@@ -309,6 +309,10 @@ theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x •
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
 
+@[simp]
+theorem enorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖(algebraMap 𝕜 𝕜') x‖ₑ = ‖x‖ₑ := by
+  rw [enorm_eq_iff_norm_eq, norm_algebraMap']
+
 /-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem dist_algebraMap' [NormOneClass 𝕜'] (x y : 𝕜) :
