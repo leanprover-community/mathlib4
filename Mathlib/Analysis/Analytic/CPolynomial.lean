@@ -364,6 +364,9 @@ lemma cpolynomialOn_uncurry_of_linear :
     CPolynomialOn 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
   fun _ _ ↦ f.cpolynomialAt_uncurry_of_linear
 
+@[deprecated (since := "2026-09-02")]
+alias cpolyomialOn_uncurry_of_linear := cpolynomialOn_uncurry_of_linear
+
 lemma analyticOnNhd_uncurry_of_linear :
     AnalyticOnNhd 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
   f.cpolynomialOn_uncurry_of_linear.analyticOnNhd
