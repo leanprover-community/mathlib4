@@ -312,9 +312,23 @@ theorem WithSeminorms.isTopologicalAddGroup (hp : WithSeminorms p) : IsTopologic
 @[deprecated (since := "2026-08-21")]
 alias WithSeminorms.topologicalAddGroup := WithSeminorms.isTopologicalAddGroup
 
+variable (𝕜 E) in
+/-- A polynormable space is a topological additive group.
+
+This cannot be an instance, because `𝕜` can't be inferred. -/
+theorem PolynormableSpace.isTopologicalAddGroup [PolynormableSpace 𝕜 E] :
+    IsTopologicalAddGroup E :=
+  PolynormableSpace.withSeminorms 𝕜 E |>.isTopologicalAddGroup
+
 theorem WithSeminorms.continuousSMul (hp : WithSeminorms p) : ContinuousSMul 𝕜 E := by
   rw [hp.withSeminorms_eq]
   exact ModuleFilterBasis.continuousSMul _
+
+variable (𝕜 E) in
+/-- A polynormable space has continuous scalar multiplication. -/
+instance PolynormableSpace.continuousSMul [PolynormableSpace 𝕜 E] :
+    ContinuousSMul 𝕜 E :=
+  PolynormableSpace.withSeminorms 𝕜 E |>.continuousSMul
 
 theorem WithSeminorms.hasBasis (hp : WithSeminorms p) :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ p.basisSets) id := by
@@ -327,6 +341,22 @@ theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
   refine ⟨fun V => ?_⟩
   simp only [hp.hasBasis.mem_iff, SeminormFamily.basisSets_iff, Prod.exists, id_eq]
   grind
+
+variable (𝕜 E) in
+theorem PolynormableSpace.hasBasis_zero_ball [PolynormableSpace 𝕜 E] :
+    (𝓝 (0 : E)).HasBasis
+    (fun p : Seminorm 𝕜 E ↦ Continuous p) (fun p ↦ p.ball 0 1) := by
+  refine (PolynormableSpace.withSeminorms 𝕜 E).hasBasis_zero_ball.to_hasBasis ?_ ?_
+  · intro ⟨s, r⟩ hr
+    use r⁻¹.toNNReal • (s.sup (↑))
+    constructor
+    · have := PolynormableSpace.isTopologicalAddGroup
+      exact (Seminorm.continuous_finsetSup fun t ht ↦ t.2).const_smul _
+    · rw [ball_smul, Real.coe_toNNReal, one_div, inv_inv] <;>
+      positivity
+  · intro p p_cont
+    use ⟨{⟨p, p_cont⟩}, 1⟩, one_pos
+    simp
 
 theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (𝓝 (x : E)).HasBasis
