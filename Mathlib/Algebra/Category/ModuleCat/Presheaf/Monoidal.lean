@@ -75,7 +75,6 @@ noncomputable def tensorObj : PresheafOfModules (R ⋙ forget₂ _ _) where
 
 variable {M₁ M₂ M₃ M₄}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
     DFunLike.coe (α := (M₁.obj X ⊗ M₂.obj X :))
