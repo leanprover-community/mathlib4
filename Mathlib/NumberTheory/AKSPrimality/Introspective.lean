@@ -32,7 +32,7 @@ prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena, Introspec
 
 
 open Polynomial in
-/-- TODO: Move to the proper file. -/
+/-- TODO: Move to the proper file in the next PR. -/
 @[simp]
 theorem Polynomial.comp_X_pow {R : Type*} [Semiring R] (k m : ℕ) :
     ((X : R[X]) ^ k).comp (X ^ m) = X ^ (k * m) := by
@@ -104,6 +104,7 @@ end CommRing
 variable [Field R] [CharP R p] [Fact p.Prime]
 
 set_option backward.isDefEq.respectTransparency false in
+/-- TODO: move to the appropriate place in the next PR. -/
 private theorem _root_.Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Coprime r) :
     IsReduced (AdjoinRoot ((X : R[X]) ^ r - 1)) := by
   simp only [AdjoinRoot, ← isRadical_iff_quotient_reduced,
@@ -117,6 +118,7 @@ private theorem _root_.Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (hcprm : 
   apply ((CharP.natCast_eq_natCast R p).mp).mt
   grind [modEq_zero_iff_dvd, Nat.Prime.coprime_iff_not_dvd Fact.out]
 
+/-- TODO: move to the appropriate place in the next PR. -/
 private theorem _root_.Ring.charP_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Coprime r) :
     CharP (AdjoinRoot ((X : R[X]) ^ r - 1)) p  := by
   have : r ≠ 0 := by grind [coprime_zero_right, prime_one_false, Fact.out]
@@ -158,7 +160,7 @@ protected theorem div {f : R[X]} (hf : f ^ p = f.comp (X ^ p)) (h : Introspectiv
     (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective f (n / p) r := by
   grind [of_mul, Nat.div_mul_cancel hd]
 
-/-- Necessary condition for the auxilliary proof. TODO: Find right generality of `Fin b` -/
+/-- Necessary condition for the auxilliary proof. -/
 theorem of_multiset (s : Multiset (Fin b)) (hcprm : n.Coprime r)
     (hs : ∀ x : Fin b, Introspective (ofMultiset {(x.val : R)}) n r) (hdiv : p ∣ n) :
     Introspective (ofMultiset (s.map fun x ↦ (x.val : R))) (p ^ d * (n / p) ^ e) r := by
