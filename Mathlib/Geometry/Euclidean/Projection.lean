@@ -169,10 +169,15 @@ theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace 𝕜 P} [N
   subst h
   rfl
 
-@[simp] lemma orthogonalProjection_affineSpan_singleton (p₁ p₂ : P) :
+@[simp] lemma orthogonalProjection_singleton (p₁ p₂ : P) :
+    orthogonalProjection ({p₁} : AffineSubspace 𝕜 P) p₂ = p₁ := by
+  have h := SetLike.coe_mem (orthogonalProjection ({p₁} : AffineSubspace 𝕜 P) p₂)
+  rwa [mem_singleton_iff] at h
+
+@[deprecated orthogonalProjection_singleton (since := "2026-09-01")]
+lemma orthogonalProjection_affineSpan_singleton (p₁ p₂ : P) :
     orthogonalProjection (affineSpan 𝕜 {p₁}) p₂ = p₁ := by
-  have h := SetLike.coe_mem (orthogonalProjection (affineSpan 𝕜 {p₁}) p₂)
-  rwa [mem_affineSpan_singleton] at h
+  simp
 
 /-- The distance to a point's orthogonal projection is 0 iff it lies in the subspace. -/
 theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace 𝕜 P} [Nonempty s]
@@ -618,7 +623,7 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
 lemma orthogonalProjectionSpan_eq_point (s : Simplex 𝕜 P 0) (p : P) :
     s.orthogonalProjectionSpan p = s.points 0 := by
   rw [orthogonalProjectionSpan]
-  convert! orthogonalProjection_affineSpan_singleton _ _
+  convert! orthogonalProjection_singleton _ _
   simp [Fin.fin_one_eq_zero]
 
 lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex 𝕜 P 1) (i : Fin 2)

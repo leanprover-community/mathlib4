@@ -195,3 +195,12 @@ lemma smul_left_injective (hm : m ≠ 0) : ((· • m) : R → M).Injective := b
   (smul_left_injective _ hm).eq_iff
 
 end Ring
+
+section NonAssocRing
+variable [NonAssocRing R]
+
+theorem isSelfNeg_of_isSMulRegular_two (h : IsSMulRegular R 2) {a : R} :
+    IsSelfNeg a ↔ a = 0 :=
+  isSelfNeg_iff_two_nsmul_eq_zero.trans ⟨(h <| by simpa using ·), (by simp [·])⟩
+
+end NonAssocRing
