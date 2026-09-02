@@ -210,7 +210,7 @@ public lemma CStarAlgebra.isMulCommutative_nonUnital_adjoin {s : Set A}
 public lemma CStarAlgebra.isMulCommutative_nonUnital_adjoin_pair {x y : A} (h : Commute x y)
     (hx : IsStarNormal x := by cfc_tac) (hy : IsStarNormal y := by cfc_tac) :
     IsMulCommutative (adjoin ℂ {x, y}) :=
-  isMulCommutative_nonUnital_adjoin (by grind) (by grind [Set.Pairwise])
+  isMulCommutative_nonUnital_adjoin (by grind) (Set.pairwise_pair_of_symm_of_refl.mpr h)
 
 end NonUnital
 
@@ -228,6 +228,6 @@ public lemma CStarAlgebra.isMulCommutative_adjoin {s : Set A} (hs : ∀ x ∈ s,
 public lemma CStarAlgebra.isMulCommutative_adjoin_pair {x y : A} (h : Commute x y)
     (hx : IsStarNormal x := by cfc_tac) (hy : IsStarNormal y := by cfc_tac) :
     IsMulCommutative (adjoin ℂ {x, y}) :=
-  isMulCommutative_adjoin (by grind) (by grind [Set.Pairwise])
+  isMulCommutative_adjoin (by grind) (Set.pairwise_pair_of_symm_of_refl.mpr h)
 
 end Unital

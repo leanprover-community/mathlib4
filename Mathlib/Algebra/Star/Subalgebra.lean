@@ -593,7 +593,7 @@ theorem isMulCommutative_adjoin {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal
   apply this at h₂
   rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
   exact Set.centralizer_centralizer_comm_of_comm
-    (by grind [Set.Pairwise.commute_union_star_self_iff]) _ h₁ _ h₂
+    (Set.Pairwise.commute_union_star_self_iff.mpr ⟨hcomm, hcomm_star, hnormal⟩) _ h₁ _ h₂
 
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
