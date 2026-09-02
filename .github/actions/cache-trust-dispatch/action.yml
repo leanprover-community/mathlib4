@@ -49,7 +49,7 @@ outputs:
     value: ${{ steps.dispatch.outputs.repo-scope }}
   service:
     description: |
-      The service class of the upload container: `internal` for the
+      The service class of the upload container: `developer` for the
       work-in-progress containers (forks, nightly-testing,
       pr-toolchain-tests), `public` otherwise. The dispatch owns this
       classification; workflow conditions consume the output rather than
@@ -190,7 +190,7 @@ runs:
         # The container -> service classification (the read side of this
         # mapping lives in the cache tool's Container.service).
         case "$PRIMARY" in
-          forks|nightly-testing|pr-toolchain-tests) SERVICE="internal" ;;
+          forks|nightly-testing|pr-toolchain-tests) SERVICE="developer" ;;
           *) SERVICE="public" ;;
         esac
 

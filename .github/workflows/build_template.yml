@@ -49,7 +49,7 @@ env:
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
   MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
-  MATHLIB_CACHE_INTERNAL_BASE_URL: ${{ vars.MATHLIB_CACHE_INTERNAL_BASE_URL }}
+  MATHLIB_CACHE_DEVELOPER_BASE_URL: ${{ vars.MATHLIB_CACHE_DEVELOPER_BASE_URL }}
 
 jobs:
   build:
@@ -659,7 +659,7 @@ jobs:
           fi
           echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
           # Whether the cache tool built from this tools checkout can sign S3
-          # uploads: the internal-bucket leg below keys on it, so a pre-S3
+          # uploads: the developer-bucket leg below keys on it, so a pre-S3
           # tool skips that leg honestly instead of re-putting to Azure and
           # reporting a green bucket write. The probe asks the binary itself
           # (`cache capabilities`, answered without a Lake workspace), so it
@@ -668,7 +668,7 @@ jobs:
           if "$CACHE_BIN" capabilities 2>/dev/null | grep -qx "s3-put"; then
             echo "CACHE_TOOL_S3_CAPABLE=true" >> "$GITHUB_ENV"
           else
-            echo "::notice::the cache tool is not S3-capable; the internal-bucket upload leg will be skipped"
+            echo "::notice::the cache tool is not S3-capable; the developer-bucket upload leg will be skipped"
           fi
 
       - name: Download cache staging artifact
@@ -683,8 +683,8 @@ jobs:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
-      # Internal-service uploads dual-publish during the transition: the Azure
-      # upload below always runs, and a second upload targets the internal
+      # Developer-cache uploads dual-publish during the transition: the Azure
+      # upload below always runs, and a second upload targets the developer
       # bucket with the credentials this step mints. The mint exchanges this
       # job's OIDC token at the cache broker for short-lived credentials
       # scoped to the container's namespace and points the cache tool's put
@@ -697,21 +697,21 @@ jobs:
       # outage never loses the cache.
       #
       # Gated on the repository variables, so a repository without the
-      # internal bucket configured (or with the variables cleared to roll
+      # developer bucket configured (or with the variables cleared to roll
       # back) keeps the Azure-only flow. The public-service container
       # (`master`) never takes this path: its R2 publish is a separate
       # workflow (#43160), and this job must not hold a public-bucket
       # credential.
-      - name: Mint internal cache credentials from the cache broker
+      - name: Mint developer cache credentials from the cache broker
         if: >-
           vars.MATHLIB_CACHE_BROKER_URL != '' &&
-          vars.MATHLIB_CACHE_INTERNAL_PUT_BASE_URL != '' &&
+          vars.MATHLIB_CACHE_DEVELOPER_PUT_BASE_URL != '' &&
           inputs.cache_environment != '' &&
-          steps.trust-dispatch.outputs.service == 'internal'
+          steps.trust-dispatch.outputs.service == 'developer'
         shell: bash
         env:
           BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
-          INTERNAL_PUT_BASE_URL: ${{ vars.MATHLIB_CACHE_INTERNAL_PUT_BASE_URL }}
+          DEVELOPER_PUT_BASE_URL: ${{ vars.MATHLIB_CACHE_DEVELOPER_PUT_BASE_URL }}
         run: |
           set -euo pipefail
           warn_and_skip() {
@@ -766,17 +766,17 @@ jobs:
           # write to the bucket only on MATHLIB_CACHE_PUT_BASE_URL, so even a
           # truncated write leaves the S3 credentials aimed at Azure — a loud
           # 4xx — never an Azure credential aimed at the bucket.
-          # MINTED is the non-secret sentinel the internal-bucket leg gates
+          # MINTED is the non-secret sentinel the developer-bucket leg gates
           # on; testing a masked credential's presence in an `if:` works but
           # reads poorly.
           {
             echo "MATHLIB_CACHE_S3_ACCESS_KEY_ID=${access_key_id}"
             echo "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY=${secret_access_key}"
             echo "MATHLIB_CACHE_S3_SESSION_TOKEN=${session_token}"
-            echo "MATHLIB_CACHE_PUT_BASE_URL=${INTERNAL_PUT_BASE_URL}"
-            echo "MATHLIB_CACHE_INTERNAL_MINTED=true"
+            echo "MATHLIB_CACHE_PUT_BASE_URL=${DEVELOPER_PUT_BASE_URL}"
+            echo "MATHLIB_CACHE_DEVELOPER_MINTED=true"
           } >> "$GITHUB_ENV"
-          echo "internal cache credentials minted (grant: $(jq -r '.grant // "?"' <<<"${creds}"))"
+          echo "developer cache credentials minted (grant: $(jq -r '.grant // "?"' <<<"${creds}"))"
 
       # First leg of the dual upload: Azure, the established primary. It runs
       # unconditionally, so a broker outage, a bucket fault, or an old cache
@@ -804,7 +804,7 @@ jobs:
           echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
 
-      # Second leg of the dual upload: the internal cache bucket, routed by
+      # Second leg of the dual upload: the developer bucket, routed by
       # the S3 credentials and put base the mint step exported. Non-fatal
       # (continue-on-error) but loud: the Azure leg above already secured the
       # cache, so a bucket fault must not fail the run — while the warning
@@ -821,16 +821,16 @@ jobs:
       # transitive closure during the dual-upload window; before any read
       # cutover the bucket needs a backfill-and-verify pass, not a marker
       # check.
-      - name: Upload staged cache to the internal bucket
-        if: env.MATHLIB_CACHE_INTERNAL_MINTED == 'true' && env.CACHE_TOOL_S3_CAPABLE == 'true'
+      - name: Upload staged cache to the developer bucket
+        if: env.MATHLIB_CACHE_DEVELOPER_MINTED == 'true' && env.CACHE_TOOL_S3_CAPABLE == 'true'
         continue-on-error: true
         shell: bash
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
-          echo "Uploading cache to the internal bucket (container: $MATHLIB_CACHE_PRIMARY, put base: $MATHLIB_CACHE_PUT_BASE_URL)..."
+          echo "Uploading cache to the developer bucket (container: $MATHLIB_CACHE_PRIMARY, put base: $MATHLIB_CACHE_PUT_BASE_URL)..."
           if ! lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"; then
-            echo "::warning::the internal bucket upload failed; the Azure upload succeeded, so the cache is intact but the bucket lags this run"
+            echo "::warning::the developer bucket upload failed; the Azure upload succeeded, so the cache is intact but the bucket lags this run"
             exit 1
           fi
 

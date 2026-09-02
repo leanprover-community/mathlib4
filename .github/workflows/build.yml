@@ -61,7 +61,7 @@ jobs:
       # federated credential. mathlib4-nightly-testing intentionally uses branch/ref-scoped
       # trust instead of an environment: each nightly writer app is RBAC-isolated to its own
       # container, so branch scoping is sufficient there.
-      # The internal-cache broker mint in upload_cache also keys on this environment
+      # The developer-cache broker mint in upload_cache also keys on this environment
       # and runs only when it is non-empty. The nightly repository therefore stays
       # on the Azure flow until its environments and their branch policies exist
       # and this mapping names them — one coordinated change with the cache
