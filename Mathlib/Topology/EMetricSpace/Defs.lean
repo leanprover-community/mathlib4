@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Basic.ENNReal.Inv
 public import Mathlib.Topology.UniformSpace.Basic
 public import Mathlib.Topology.UniformSpace.OfFun
 
@@ -58,7 +58,7 @@ export EDist (edist)
 
 namespace Metric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} [EDist α]
+variable {x y : α} {ε ε₁ ε₂ : ℝ≥0∞} [EDist α]
 
 /-- `Metric.eball x ε` is the set of all points `y` with `edist y x < ε` -/
 def eball (x : α) (ε : ℝ≥0∞) : Set α :=
@@ -374,6 +374,17 @@ theorem uniformContinuous_iff [PseudoEMetricSpace β] {f : α → β} :
     UniformContinuous f ↔ ∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε :=
   uniformity_basis_edist.uniformContinuous_iff uniformity_basis_edist
 
+/-- Version of `EMetric.uniformContinuousOn_iff` with non-strict inequalities. -/
+theorem uniformContinuousOn_iff_le [PseudoEMetricSpace β] {f : α → β} {s : Set α} :
+    UniformContinuousOn f s ↔
+      ∀ ε > 0, ∃ δ > 0, ∀ a ∈ s, ∀ b ∈ s, edist a b ≤ δ → edist (f a) (f b) ≤ ε :=
+  uniformity_basis_edist_le.uniformContinuousOn_iff uniformity_basis_edist_le
+
+/-- Version of `EMetric.uniformContinuous_iff` with non-strict inequalities. -/
+theorem uniformContinuous_iff_le [PseudoEMetricSpace β] {f : α → β} :
+    UniformContinuous f ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃a b : α⦄, edist a b ≤ δ → edist (f a) (f b) ≤ ε :=
+  uniformity_basis_edist_le.uniformContinuous_iff uniformity_basis_edist_le
+
 end EMetric
 
 end
@@ -510,7 +521,7 @@ theorem Prod.edist_eq [PseudoEMetricSpace β] (x y : α × β) :
 namespace Metric
 
 variable {α : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α] {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞}
-  {s t : Set α}
+  {s : Set α}
 
 theorem mem_eball' : y ∈ eball x ε ↔ edist x y < ε := by rw [edist_comm, mem_eball]
 
@@ -698,7 +709,7 @@ end
 end EMetric
 
 namespace Metric
-variable {x : α} {ε : ℝ≥0∞} {s t : Set α}
+variable {x : α} {ε : ℝ≥0∞}
 
 theorem isClosed_eball_top : IsClosed (eball x ⊤) :=
   isOpen_compl_iff.1 <| EMetric.isOpen_iff.2 fun _y hy =>
@@ -780,7 +791,6 @@ protected theorem EMetricSpace.ext
   congr
   ext1
   assumption
-
 
 /-- A weak extended metric space extends a `WeakPseudoEMetricSpace` with the condition
 `edist x y = 0 ↔ x = y`. -/

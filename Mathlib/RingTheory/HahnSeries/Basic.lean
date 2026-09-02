@@ -43,7 +43,7 @@ in the file `Mathlib/RingTheory/LaurentSeries.lean`.
 @[expose] public section
 
 
-open Finset Function
+open Function
 
 noncomputable section
 

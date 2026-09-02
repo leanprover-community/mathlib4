@@ -53,7 +53,6 @@ theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 
     ← imageSubobject_arrow, ← imageUnopOp_inv_comp_op_factorThruImage g.op]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.unop f.unop (by rw [← unop_comp, w, unop_zero]) =
       (imageSubobjectIso _ ≪≫ (imageUnopUnop _).symm).hom ≫
@@ -205,7 +204,6 @@ def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalCom
   NatIso.ofComponents
     fun X => HomologicalComplex.Hom.isoOfComponents fun _ => Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a category of complexes with objects in `Vᵒᵖ`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `V`. -/
 @[simps]

@@ -34,7 +34,8 @@ Some notable properties of `H-spaces` are
   definitionally equal to the product of `H-space` structures on `G` and `G'`.
 * The loop space based at every `x : X` carries a structure of an `H-space`.
 
-## To Do
+## TODO
+
 * Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
   `fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
@@ -74,7 +75,7 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 /-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
-open HSpaces
+open scoped HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where

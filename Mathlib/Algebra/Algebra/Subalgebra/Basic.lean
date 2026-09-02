@@ -314,14 +314,6 @@ section
 
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
-
-instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
-    Module R' S :=
-  inferInstance
-
-instance : Module R S :=
-  inferInstance
-
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstance
 
@@ -405,6 +397,9 @@ theorem toSubsemiring_subtype : S.toSubsemiring.subtype = (S.val : S →+* A) :=
 @[simp]
 theorem toSubring_subtype {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
     S.toSubring.subtype = (S.val : S →+* A) := rfl
+
+@[simp]
+theorem toSubmodule_subtype : S.toSubmodule.subtype = (S.val : S →ₗ[R] A) := rfl
 
 /-- Linear equivalence between `S : Submodule R A` and `S`. Though these types are equal,
 we define it as a `LinearEquiv` to avoid type equalities. -/
@@ -540,7 +535,7 @@ end Submodule
 
 namespace AlgHom
 
-variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
+variable {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
 variable (φ : A →ₐ[R] B)
@@ -738,7 +733,7 @@ variable (S)
 
 /-- Two subalgebras that are equal are also equivalent as algebras.
 
-This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Equiv.setCongr`. -/
+This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Set.equivOfEq`. -/
 @[simps apply]
 def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   __ := LinearEquiv.ofEq _ _ (congr_arg toSubmodule h)
@@ -926,6 +921,18 @@ instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
+
+theorem map_center_le_center {f : A →ₐ[R] B} (hf : Function.Surjective f) :
+    map f (center R A) ≤ center R B :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
+    comap f (center R B) ≤ center R A :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
+  SetLike.coe_injective (Set.image_center_eq f)
 
 end Center
 

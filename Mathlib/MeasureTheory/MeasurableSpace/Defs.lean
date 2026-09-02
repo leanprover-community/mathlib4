@@ -41,9 +41,9 @@ measurable space, σ-algebra, measurable function
 
 assert_not_exists Covariant MonoidWithZero
 
-open Set Encodable Function Equiv
+open Set Function
 
-variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
+variable {α β γ δ : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
 @[class] structure MeasurableSpace (α : Type*) where
@@ -67,7 +67,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-open MeasureTheory
+open scoped MeasureTheory
 
 section
 
