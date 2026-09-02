@@ -666,24 +666,17 @@ instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
-an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
+an actual `StarAlgEquiv`. -/
 @[coe]
-def StarAlgEquiv.ofClass {F R A B : Type*}
-    [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
-    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] (f : F) : A ≃⋆ₐ[R] B :=
+def StarAlgEquiv.ofClass {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
+    [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B]
+    (f : F) : A ≃⋆ₐ[R] B :=
   { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f
     map_smul' := map_smul f }
 
 @[deprecated (since := "2026-09-02")] alias StarAlgEquivClass.toStarAlgEquiv := StarAlgEquiv.ofClass
 
-/-- Any type satisfying `AlgEquivClass` and `StarHomClass` can be cast into `StarAlgEquiv` via
-`StarAlgEquivClass.toStarAlgEquiv`. -/
-instance StarAlgEquivClass.instCoeHead {F R A B : Type*}
-    [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
-    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] :
-    CoeHead F (A ≃⋆ₐ[R] B) :=
-  ⟨.ofClass⟩
 
 namespace StarAlgEquiv
 
