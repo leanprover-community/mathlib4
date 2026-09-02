@@ -12,6 +12,10 @@ example : (2 : ℝ≥0∞)⁻¹ * (2 : ℝ≥0∞)⁻¹ = 4⁻¹ := by
   basify
   norm_num
 
+example (a : ℝ≥0∞) (h : a ≠ ⊤) : a + 0 = a := by
+  basify
+  ring
+
 example (a b : ℝ≥0∞) : a + b = b + a := by
   basify
   ring

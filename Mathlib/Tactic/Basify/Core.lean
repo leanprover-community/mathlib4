@@ -148,16 +148,17 @@ def isRegisteredType (ty : Expr) : MetaM Bool := return (← elimEntryFor? ty).i
 
 /-- Is `e` an atom, i.e. a term of a registered type that `basify` cannot see inside of?
 
-A term of a registered type is *not* an atom when it is a numeric literal, when it is already in
-the shape the eliminator produces (`⊤`, `↑x`, ...), or when its head is an operation registered
-with `@[basify_op]`, in which case its arguments are visited instead. Everything else, an
-application of an unregistered function in particular, is opaque and gets case split as a whole. -/
+A term of a registered type is *not* an atom when it is a numeric literal, or when its head is an
+operation registered with `@[basify_op]`, in which case its arguments are visited instead.
+Everything else, an application of an unregistered function in particular, is opaque and gets
+generalized and case split as a whole -- including `⊤`, which costs a branch that immediately dies
+but keeps `basify` from assuming that a term already in a constructor's shape belongs to that
+constructor's case. Two alternatives can share a pattern and differ in their hypotheses. -/
 def isAtom (e : Expr) : MetaM Bool := do
   let ty ← instantiateMVars (← inferType e)
   unless ← isRegisteredType ty do return false
   let some head := e.getAppFn.constName? | return true
   if literalHeads.contains head then return false
-  if ((← elimEntryFor? ty).elim #[] (·.altHeads)).contains head then return false
   return !(← opsFor ty).contains head
 
 /-- Collect the maximal atoms of `e` that contain no loose bound variables, interning them with
@@ -299,7 +300,7 @@ A variable can disappear before its turn comes, when a branch simplifies it away
 simply dropped. -/
 partial def basifyLoop (g : MVarId) (varsToElim : List FVarId) : TacticM (List MVarId) := do
   let fvarId :: varsToElim := varsToElim | return [g]
-  let entry? ← g.withContext do
+  let entry? : Option ElimEntry ← g.withContext do
     let some decl := (← getLCtx).find? fvarId | return none
     elimEntryFor? (← instantiateMVars decl.type)
   let some entry := entry? | basifyLoop g varsToElim

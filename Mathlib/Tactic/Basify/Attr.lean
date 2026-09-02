@@ -6,6 +6,7 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Init
+public meta import Lean.Meta.Tactic.ElimInfo
 public meta import Lean.Meta.Tactic.Simp.RegisterCommand
 
 /-!
@@ -34,14 +35,11 @@ namespace Mathlib.Tactic.Basify
 structure ElimEntry where
   /-- The name of the eliminator, used as `cases x using elimName`. -/
   elimName : Name
-  /-- The head symbols of the patterns of the minor premises. For `ENNReal.recTopCoe` these are
-  `Top.top` and `ENNReal.ofNNReal`: a term of the form `⊤` or `↑x` is already in the shape the
-  eliminator produces, so it is not an atom. -/
-  altHeads : Array Name
-  /-- How to name what each minor premise introduces, one entry per binder, in order. `none` marks
-  the binder carrying the value -- the one occurring in the alternative's pattern -- which takes the
-  name of the atom being split; any other binder takes that name with its own appended. Splitting
-  `x : ℕ+` with an alternative `∀ (n : ℕ) (_pos : 0 < n), C n.toPNat'` yields `x` and `x_pos`. -/
+  /-- How to name what each minor premise introduces, one entry per premise and then one per
+  binder, in order. `none` marks the binder carrying the value -- the one occurring in the
+  alternative's pattern -- which takes the name of the atom being split; any other binder takes
+  that name with its own appended. Splitting `x : ℕ+` with an alternative
+  `∀ (n : ℕ) (_pos : 0 < n), C n.toPNat'` yields `x` and `x_pos`. -/
   altBinders : Array (Array (Option Name))
   deriving Inhabited
 
@@ -61,37 +59,43 @@ initialize opExt : SimpleScopedEnvExtension (Name × Name) (NameMap NameSet) ←
     initial := {}
   }
 
+/-- Read one alternative: how to name each of the binders it introduces. -/
+private def analyzeAlt (elimName altName : Name) (altType : Expr) : MetaM (Array (Option Name)) :=
+  forallTelescopeReducing altType fun binders concl => do
+    let pattern := concl.getAppArgs[0]!
+    -- A pattern that is a bare variable leaves the target exactly as it was, so splitting with
+    -- such an alternative would queue the same variable again and `basify` would not terminate.
+    unless pattern.getAppFn.isConst do
+      throwError "the `{altName}` alternative of `{.ofConstName elimName}` does not refine its \
+        target: its pattern is a variable, so splitting with it would make no progress"
+    binders.mapM fun binder => do
+      if pattern.containsFVar binder.fvarId! then return none
+      else return some (← binder.fvarId!.getUserName).eraseMacroScopes
+
 /-- Read off, from the type of the eliminator `elimName`, the head symbol of the type it destructs
-together with the head symbols of the patterns of its minor premises. -/
+together with how to name what each of its alternatives introduces.
+
+The motive, the target and the alternatives are located by `getElimInfo`, the same function
+`basify` later hands to `ElimApp`, so what is recorded here lines up with the goals the case split
+produces. -/
 def analyzeElim (elimName : Name) : MetaM (Name × ElimEntry) := do
-  forallTelescopeReducing (← getConstInfo elimName).type fun xs concl => do
-    let motive := concl.getAppFn
-    unless motive.isFVar && xs.contains motive do
-      throwError "`{.ofConstName elimName}` is not an eliminator: its conclusion is not an \
-        application of one of its arguments"
-    let targets := concl.getAppArgs
-    unless targets.size == 1 do
-      throwError "`{.ofConstName elimName}` eliminates {targets.size} targets, but `basify` \
-        only supports eliminators with a single target"
-    let some tyName := (← instantiateMVars (← inferType targets[0]!)).getAppFn.constName? |
-      throwError "the target of `{.ofConstName elimName}` does not have a constant as its head"
-    let mut altHeads := #[]
-    let mut altBinders := #[]
-    for x in xs do
-      if x == motive || x == targets[0]! then continue
-      let alt? ← forallTelescopeReducing (← inferType x) fun ys b => do
-        unless b.getAppFn == motive do return none
-        let args := b.getAppArgs
-        unless args.size == 1 do return none
-        let pattern := args[0]!
-        let binders ← ys.mapM fun y => do
-          if pattern.containsFVar y.fvarId! then return none
-          else return some (← y.fvarId!.getUserName).eraseMacroScopes
-        return some (pattern.getAppFn.constName?, binders)
-      let some (head?, binders) := alt? | continue
-      if let some head := head? then altHeads := altHeads.push head
-      altBinders := altBinders.push binders
-    return (tyName, { elimName, altHeads, altBinders })
+  let elimInfo ← getElimInfo elimName
+  let #[targetPos] := elimInfo.targetsPos |
+    throwError "`{.ofConstName elimName}` eliminates {elimInfo.targetsPos.size} targets, but \
+      `basify` only supports eliminators with a single target"
+  for info in elimInfo.altsInfo do
+    unless info.provesMotive do
+      throwError "the `{info.name}` alternative of `{.ofConstName elimName}` does not conclude \
+        with the motive, so `basify` cannot tell what shape it produces"
+  forallTelescopeReducing elimInfo.elimType fun xs _ => do
+    let tyName := (← instantiateMVars (← inferType xs[targetPos]!)).getAppFn.constName!
+    let altTypes : Array Expr ← xs.zipIdx.filterMapM fun (x, i) => do
+      if i == elimInfo.motivePos || i == targetPos then return none
+      if (← x.fvarId!.getDecl).binderInfo.isExplicit then return some (← inferType x)
+      else return none
+    let altBinders ← elimInfo.altsInfo.zip altTypes |>.mapM fun (info, altType) => do
+      analyzeAlt elimName info.name altType
+    return (tyName, ⟨elimName, altBinders⟩)
 
 /-- The explicit arguments of the application `e`. -/
 private def explicitArgs (e : Expr) : MetaM (Array Expr) := do
