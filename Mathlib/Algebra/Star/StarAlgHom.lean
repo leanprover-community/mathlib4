@@ -77,12 +77,14 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 into an actual `NonUnitalStarAlgHom`. This is declared as the default coercion from `F` to
 `A →⋆ₙₐ[R] B`. -/
 @[coe]
-def toNonUnitalStarAlgHom [StarHomClass F A B] (f : F) : A →⋆ₙₐ[R] B :=
+def _root_.NonUnitalStarAlgHom.ofClass [StarHomClass F A B] (f : F) : A →⋆ₙₐ[R] B :=
   { (f : A →ₙₐ[R] B) with
     map_star' := map_star f }
 
+@[deprecated (since := "2026-09-02")] alias toNonUnitalStarAlgHom := NonUnitalStarAlgHom.ofClass
+
 instance [StarHomClass F A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
-  ⟨toNonUnitalStarAlgHom⟩
+  ⟨.ofClass⟩
 
 instance [StarHomClass F A B] : NonUnitalStarRingHomClass F A B :=
   NonUnitalStarRingHomClass.mk
