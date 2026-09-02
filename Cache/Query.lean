@@ -224,7 +224,7 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
     IO.println s!"`cache get` will print a security notice when --scope is set."
   | none =>
     IO.println s!"No commit-specific cache could be found for fork {repo} within the last {cap} commits."
-    IO.println "If CI has already built this commit, it means there it found nothing new to upload to the cache."
+    IO.println "If CI has already built this commit, it means it found nothing new to upload to the cache."
     IO.println "Simply call:"
     IO.println "  lake exe cache get"
 
