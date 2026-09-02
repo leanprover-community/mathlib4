@@ -143,7 +143,7 @@ variable (I : Ideal R) [hI : I.IsPrime] [IsLocalization.AtPrime S I]
 order-preserving bijection with the prime ideals contained in I. -/
 @[simps!]
 def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ p ≤ I } :=
-  (IsLocalization.orderIsoOfPrime I.primeCompl S).trans <| .setCongr _ _ <|
+  (IsLocalization.orderIsoOfPrime I.primeCompl S).trans <| Set.orderIsoOfEq _ _ <|
     show Set.ofPred _ = Set.ofPred _
     by ext; simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
 
