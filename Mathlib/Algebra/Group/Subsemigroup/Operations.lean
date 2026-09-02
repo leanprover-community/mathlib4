@@ -708,7 +708,7 @@ semigroup are equal. -/
       /-- Makes the identity additive isomorphism from a proof two
       subsemigroups of an additive semigroup are equal. -/]
 def subsemigroupCongr (h : S = T) : S ≃* T :=
-  { Equiv.Set.congr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
 -- this name is primed so that the version to `f.range` instead of `f.srange` can be unprimed.
 /-- A semigroup homomorphism `f : M →ₙ* N` with a left-inverse `g : N → M` defines a multiplicative
