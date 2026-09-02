@@ -942,7 +942,6 @@ lemma induction_sup_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
     rw [Finset.sup_insert]
     exact sup _ _ (base _) ht
 
-@[elab_as_elim]
 lemma induction_add_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
     {motive : Seminorm 𝕜 E → Prop}
     (base : ∀ i, motive (p i))
