@@ -706,27 +706,46 @@ jobs:
             echo "::warning::$1; falling back to the Azure upload"
             exit 0
           }
+          # Every failure before the final export block warns and exits 0, so
+          # a broken mint degrades to the Azure upload instead of losing the
+          # cache. The unbound-variable guard below keeps that promise even if
+          # a permissions change ever removes the id-token grant.
+          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ] || [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            warn_and_skip "the job has no OIDC token endpoint (id-token: write missing?)"
+          fi
           # The audience must match the broker's EXPECTED_AUDIENCE, so a token
-          # minted for another service is useless here and vice versa.
-          oidc_token="$(curl -sSf --retry 3 \
+          # minted for another service is useless here and vice versa. The
+          # requests are idempotent, so retrying transport-level failures
+          # (--retry-all-errors) is safe and avoids spurious Azure fallbacks.
+          oidc_token="$(curl -sSf --retry 3 --retry-all-errors \
             -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mathlib-cache-broker" \
             | jq -r '.value // empty')" \
             || warn_and_skip "could not obtain the GitHub OIDC token"
           [ -n "${oidc_token}" ] || warn_and_skip "the OIDC token response carried no value"
-          creds="$(curl -sSf --retry 3 -X POST \
+          creds="$(curl -sSf --retry 3 --retry-all-errors -X POST \
             -H "Authorization: Bearer ${oidc_token}" \
             "${BROKER_URL}/r2-credentials")" \
             || warn_and_skip "the cache broker did not answer with credentials"
           access_key_id="$(jq -r '.accessKeyId // empty' <<<"${creds}")"
           secret_access_key="$(jq -r '.secretAccessKey // empty' <<<"${creds}")"
           session_token="$(jq -r '.sessionToken // empty' <<<"${creds}")"
-          if [ -z "${access_key_id}" ] || [ -z "${secret_access_key}" ] || [ -z "${session_token}" ]; then
-            warn_and_skip "the broker answer carried no complete credential"
-          fi
+          # Defense in depth against a compromised broker answer: each value
+          # must be a single token from a strict charset before it reaches
+          # ::add-mask:: (which masks only one line) or GITHUB_ENV (where an
+          # embedded newline could define arbitrary variables).
+          for value in "${access_key_id}" "${secret_access_key}" "${session_token}"; do
+            if ! [[ "${value}" =~ ^[A-Za-z0-9+/=._-]+$ ]]; then
+              warn_and_skip "the broker answer carried no well-formed credential"
+            fi
+          done
           echo "::add-mask::${access_key_id}"
           echo "::add-mask::${secret_access_key}"
           echo "::add-mask::${session_token}"
+          # One atomic block, with the put base last: the tool routes the
+          # write to the bucket only on MATHLIB_CACHE_PUT_BASE_URL, so even a
+          # truncated write leaves the S3 credentials aimed at Azure — a loud
+          # 4xx — never an Azure credential aimed at the bucket.
           {
             echo "MATHLIB_CACHE_S3_ACCESS_KEY_ID=${access_key_id}"
             echo "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY=${secret_access_key}"
@@ -746,12 +765,11 @@ jobs:
           # jobs (build, post_steps). Each job writes only into its own trust-level
           # container. The backend follows the credentials in the environment:
           # the scratch bucket when the broker step above minted S3 credentials
-          # (MATHLIB_CACHE_PUT_BASE_URL routes the write), Azure otherwise.
-          if [ -n "${MATHLIB_CACHE_PUT_BASE_URL:-}" ]; then
-            echo "Uploading cache to the scratch bucket (container: $MATHLIB_CACHE_PRIMARY)..."
-          else
-            echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
-          fi
+          # (MATHLIB_CACHE_PUT_BASE_URL routes the write), Azure otherwise. The
+          # log line reports the configuration, not the destination: a cache
+          # tool that predates the S3 support ignores the put base and writes
+          # to Azure whatever is configured.
+          echo "Uploading cache (container: $MATHLIB_CACHE_PRIMARY, configured put base: ${MATHLIB_CACHE_PUT_BASE_URL:-Azure})..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
 
   post_steps:
