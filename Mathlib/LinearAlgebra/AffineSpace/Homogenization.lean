@@ -162,14 +162,19 @@ theorem span_range_ofPoint : Submodule.span R (Set.range (ofPoint (R := R) (P :=
   refine Submodule.add_mem _ (Submodule.sub_mem _ ?_ ?_) (Submodule.smul_mem _ _ ?_) <;>
     exact Submodule.mem_span_of_mem <| Set.mem_range_self _
 
-theorem hom_ext {f g : Homogenization R P →ₗ[R] W}
-    (h : ∀ x, f (ofPoint x) = g (ofPoint x)) : f = g := by
+section
+
+variable {F : Type*} [FunLike F (Homogenization R P) W] [LinearMapClass F R _ _]
+
+theorem hom_ext {f g : F} (h : ∀ x, f (ofPoint x) = g (ofPoint x)) : f = g := by
+  apply LinearMap.toLinearMap_injective
   rwa [← LinearMap.eqLocus_eq_top, eq_top_iff, ← span_range_ofPoint, Submodule.span_le,
     Set.range_subset_iff]
 
-theorem hom_ext_iff {f g : Homogenization R P →ₗ[R] W} :
-    f = g ↔ ∀ x, f (ofPoint x) = g (ofPoint x) :=
+theorem hom_ext_iff {f g : F} : f = g ↔ ∀ x, f (ofPoint x) = g (ofPoint x) :=
   ⟨by rintro rfl _; rfl, hom_ext⟩
+
+end
 
 /-- Auxiliary definition used for defining `Homogenization.lift`. -/
 private def liftAux (f : P →ᵃ[R] W) : Homogenization R P →ₗ[R] W :=
