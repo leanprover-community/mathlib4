@@ -544,5 +544,3 @@ end HeightOneSpectrum
 end LiesOver
 
 end NumberField
-
-#min_imports
