@@ -458,14 +458,14 @@ lemma setLIntegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α �
 theorem lintegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ) :
     ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ :=
-  lintegral_withDensity_eq_lintegral_mul₀' hf (hg.mono' (withDensity_absolutelyContinuous μ f))
+  lintegral_withDensity_eq_lintegral_mul₀' hf (hg.mono_ac (withDensity_absolutelyContinuous μ f))
 
 lemma setLIntegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
     {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ :=
   setLIntegral_withDensity_eq_lintegral_mul₀' hf
-    (hg.mono' (MeasureTheory.withDensity_absolutelyContinuous μ f)) hs
+    (hg.mono_ac (MeasureTheory.withDensity_absolutelyContinuous μ f)) hs
 
 theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by
@@ -761,10 +761,11 @@ variable {M : Type*} [Monoid M] [MeasurableSpace M]
 -- `mconv_smul_left` is in the `Convolution` file. This lemma is here because this is the file in
 -- which we prove the instance that gives `SFinite (c • ν)`.
 @[to_additive conv_smul_right]
-theorem Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
+theorem Measure.mconv_smul_right [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) [SFinite ν]
+    (s : ℝ≥0∞) :
     μ ∗ₘ (s • ν) = s • (μ ∗ₘ ν) := by
   unfold mconv
-  rw [Measure.prod_smul_right, Measure.map_smul]
+  rw [Measure.prod_smul_right, Measure.map_smul _ (by fun_prop)]
 
 variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
