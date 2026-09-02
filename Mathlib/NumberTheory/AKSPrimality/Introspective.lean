@@ -30,6 +30,12 @@ prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena, Introspec
 
 @[expose] public section Introspective
 
+open Polynomial in
+/-- TODO: Move to the proper file. -/
+theorem Polynomial.comp_X_pow {R : Type*} [Semiring R] (k m : ℕ) :
+    ((X : R[X]) ^ k).comp (X ^ m) = X ^ (k * m) := by
+  simp [← pow_mul, mul_comm]
+
 open Polynomial Nat Ideal Ideal.Quotient
 /-- The introspective relation, currently only useful for the proof of the AKS primality theorem. -/
 def Introspective {R : Type*} [CommRing R] (f : R[X]) (e r : ℕ) : Prop :=
@@ -128,25 +134,22 @@ private theorem _root_.Ring.charP_of_quot_X_pow_of_coprime_sub_one (hcprm : p.Co
     grind
 
 set_option backward.isDefEq.respectTransparency false in
-theorem of_mul {m : ℕ} (h : Introspective (X - C (a : R)) (m * p) r)
-    (hcprm : p.Coprime r) : Introspective (X - C (a : R)) m r := by
+theorem of_mul {f : R[X]} (hf : f ^ p = f.comp (X ^ p)) {m : ℕ} (h : Introspective f (m * p) r)
+    (hcprm : p.Coprime r) : Introspective f m r := by
   have hp : p.Prime := Fact.out
   simp only [Introspective] at h ⊢
-  set g : R[X] := X - C (a : R)
   have rn0 : r ≠ 0 := by grind [coprime_zero_right, prime_one_false]
   rw [pow_mul] at h
   have := Ring.isReduced_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
   have := Ring.charP_of_quot_X_pow_of_coprime_sub_one (R := R) hcprm
   simp only [map_pow] at h
   replace h : (frobenius _ p) _ = _ := h
-  have h2 : AdjoinRoot.mk (X ^ r - 1) (g.comp (X ^ (m * p))) =
-      frobenius _ p (.mk _ (g.comp (X ^ m))) := by
+  have h2 : AdjoinRoot.mk (X ^ r - 1) (f.comp (X ^ (m * p))) =
+      frobenius _ p (.mk _ (f.comp (X ^ m))) := by
     simp only [frobenius, RingHom.coe_mk, powMonoidHom_apply]
     rw [← map_pow]
     congr
-    simp only [sub_comp, X_comp, g]
-    nth_rw 1 [← CharP.pow_charP_of_nat a]
-    simp [pow_mul, ← frobenius_def p _]
+    rw [mul_comm, ← comp_X_pow, ← comp_assoc, ← hf,pow_comp]
   grind
 
 protected theorem div (h : Introspective (X - C (a : R)) n r)
