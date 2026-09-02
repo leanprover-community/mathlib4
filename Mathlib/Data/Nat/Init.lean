@@ -55,7 +55,7 @@ The relevant files are:
 assert_not_exists Monoid
 
 namespace Nat
-variable {a b m n k : ℕ} {p : ℕ → Prop}
+variable {a b c m n k : ℕ} {p : ℕ → Prop}
 
 /-! ### `succ`, `pred` -/
 
