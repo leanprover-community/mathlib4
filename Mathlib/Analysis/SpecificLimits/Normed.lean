@@ -280,10 +280,7 @@ switch the statements to use that instead, and improve the proofs. -/
 class HasSummableGeomSeries (K : Type*) [NonUnitalNormedRing K] : Prop where
   summable_geometric_of_norm_lt_one : ∀ (ξ : K), ‖ξ‖ < 1 → Summable ((· * ξ)^[·] ξ)
 
-private lemma _root_.pow_succ_eq_iterate_mul {M : Type*} [Monoid M] (x : M) (n : ℕ) :
-    x ^ (n + 1) = (· * x)^[n] x := by
-  induction n <;> simp [_root_.pow_succ', mul_assoc]
-
+-- this lemma should be removed (and unnecessary) once we have a `Pow G ℕ+` instance for semigroups
 private lemma _root_.iterate_mul_succ' {G : Type*} [Semigroup G] (x : G)
     (n : ℕ) : (· * x)^[n + 1] x = x * (· * x)^[n] x := by
   induction n with
@@ -294,6 +291,7 @@ section NonUnitalNormedRing
 
 variable {R : Type*} [NonUnitalNormedRing R]
 
+-- this lemma should be removed (and unnecessary) once we have a `Pow G ℕ+` instance for semigroups
 private lemma _root_.norm_iterate_mul_le {R : Type*} [NonUnitalNormedRing R] (x : R) (n : ℕ) :
     ‖(· * x)^[n] x‖ ≤ ‖x‖ ^ (n + 1) := by
   induction n with
@@ -326,9 +324,9 @@ theorem tsum_iterate_mul_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     ‖∑' n : ℕ, (· * x)^[n] x‖ ≤ ‖x‖ / (1 - ‖x‖) := by
   by_cases hx : Summable ((· * x)^[·] x)
   · refine tsum_of_norm_bounded (g := ((· * ‖x‖)^[·] ‖x‖)) ?_ ?_
-    · simp_rw [← pow_succ_eq_iterate_mul, _root_.pow_succ']
+    · simp_rw [mul_right_iterate_apply]
       simpa [div_eq_mul_inv] using (hasSum_geometric_of_lt_one (norm_nonneg x) h).mul_left ‖x‖
-    · simpa [← pow_succ_eq_iterate_mul] using norm_iterate_mul_le x
+    · simpa [← _root_.mul_right_iterate_apply_self] using norm_iterate_mul_le x
   · simp only [tsum_eq_zero_of_not_summable hx, norm_zero]
     positivity [sub_pos.mpr h]
 
@@ -392,7 +390,7 @@ variable {R : Type*} [NormedRing R]
 
 lemma hasSummableGeomSeries_iff_summable_pow :
     HasSummableGeomSeries R ↔ ∀ ⦃ξ : R⦄, ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n) := by
-  simp only [hasSummableGeomSeries_iff_summable_iterate_mul, ← pow_succ_eq_iterate_mul,
+  simp only [hasSummableGeomSeries_iff_summable_iterate_mul, mul_right_iterate_apply_self,
     summable_nat_add_iff 1]
 
 alias ⟨_, HasSummableGeomSeries.of_summable_pow⟩ := hasSummableGeomSeries_iff_summable_pow
@@ -409,7 +407,8 @@ theorem hasSummableGeomSeries_iff_isUnit {R : Type*} [NormedRing R] :
 normed ring satisfies the axiom `‖1‖ = 1`. -/
 theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     ‖∑' n : ℕ, x ^ n‖ ≤ ‖(1 : R)‖ - 1 + (1 - ‖x‖)⁻¹ := by
-  have := by simpa only [← pow_succ_eq_iterate_mul] using tsum_iterate_mul_le_of_norm_lt_one x h
+  have := by simpa only [mul_right_iterate_apply_self]
+    using tsum_iterate_mul_le_of_norm_lt_one x h
   by_cases hx : Summable (fun n ↦ x ^ n)
   · grw [hx.tsum_eq_zero_add, norm_add_le, this]
     grind
