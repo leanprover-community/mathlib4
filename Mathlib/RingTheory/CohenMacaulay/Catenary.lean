@@ -180,10 +180,7 @@ lemma maximalIdeal_mem_minimalPrimes_of_surjective {R S : Type*} [CommRing R] [C
     {J : Ideal S} (le : I ≤ J.comap f) (min : maximalIdeal R ∈ I.minimalPrimes) (ne : J ≠ ⊤) :
     maximalIdeal S ∈ J.minimalPrimes := by
   refine ⟨⟨Ideal.IsMaximal.isPrime' _, le_maximalIdeal ne⟩, fun q ⟨hq, Jle⟩ _ ↦ ?_⟩
-  have eq_map : maximalIdeal S = Ideal.map f (maximalIdeal R) := by
-    have := ((local_hom_TFAE f).out 0 4).mp (Function.Surjective.isLocalHom f h)
-    rw [← Ideal.map_comap_of_surjective f h (maximalIdeal S), this]
-  rw [eq_map, Ideal.map_le_iff_le_comap]
+  rw [← map_maximalIdeal_of_surjective f h, Ideal.map_le_iff_le_comap]
   exact min.2 ⟨q.comap_isPrime f, le_trans le (Ideal.comap_mono Jle)⟩
     (le_maximalIdeal_of_isPrime (q.comap f))
 
