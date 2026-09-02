@@ -28,9 +28,7 @@ the maximal sum over `k`-element subsets of the coordinates of `a` is at most th
 
 This is classical (Hardy–Littlewood–Pólya / Schur) majorization: the order lives on the *values* of
 `a` and `b` (needed to form `maxSubsetSum`), while the index `ι` need only be finite. Hence `≺` is
-permutation-invariant (`comp_perm_majorizes_iff`, `majorizes_comp_perm_iff`). In particular it is
-**not** first-order stochastic dominance — the pointwise comparison of the cumulative sums
-`∑_{i ≤ t} a i` along a linearly ordered index — which is a genuinely different order.
+permutation-invariant (`comp_perm_majorizes_iff`, `majorizes_comp_perm_iff`).
 
 The T-transform theory (`RelatedByTTransform`, the decomposition theorem) additionally needs
 subtraction and division, so it lives over an ordered field `K` (`Field`, `LinearOrder`,
@@ -63,6 +61,13 @@ subtraction and division, so it lives over an ordered field `K` (`Field`, `Linea
 
 * `a ≺ b` : `Majorizes a b`.
 
+## See also
+
+Majorization is permutation-invariant and must not be confused with first-order stochastic
+dominance, the pointwise comparison of the cumulative sums `∑_{i ≤ t} a i` along a linearly ordered
+index. That is a genuinely different order (it depends on the order of the index, not just the
+multiset of values) and is not defined in this file.
+
 ## References
 
 * [Marshall–Olkin–Arnold, *Inequalities: Theory of Majorization*][marshallOlkinArnold2011]
@@ -94,13 +99,9 @@ lemma antitone_comp_sortDesc : Antitone (f ∘ sortDesc f) := by
   rw [Function.comp_assoc] at hmono
   exact monotone_toDual_comp_iff.mp hmono
 
-/-- The prefix sum `∑_{x < i} (a ∘ σ) x` of `a` reindexed by the permutation `σ`. -/
-noncomputable def partialSum (i : Fin n) (a : Fin n → M) (σ : Equiv.Perm (Fin n)) : M :=
-  ∑ x < i, (a ∘ σ) x
-
 /-- The `i`-th descending prefix sum of `a`: the sum of its `i` largest coordinates, obtained as the
 prefix sum of `a` after sorting into decreasing order. -/
-noncomputable def descPrefixSum (i : Fin n) (a : Fin n → M) : M := partialSum i a (sortDesc a)
+noncomputable def descPrefixSum (i : Fin n) (a : Fin n → M) : M := ∑ x < i, (a ∘ sortDesc a) x
 
 /-- The maximal sum over `i`-element subsets of the coordinates of `a` (equivalently, the sum of its
 `i` largest coordinates). -/
@@ -124,8 +125,7 @@ private structure MajorizesFin (a1 a2 : Fin n → M) : Prop where
 /-- `a1` is majorized by `a2` (notation `a1 ≺ a2`): the two tuples have equal total sum, and for
 every `i` the maximal sum over `i`-element subsets of `a1` is at most that of `a2`.
 
-The order is on the values, not the index, so `≺` is permutation-invariant; it is *not* stochastic
-dominance (pointwise comparison of cumulative sums along an ordered index). -/
+The order is on the values, not the index, so `≺` is permutation-invariant. -/
 structure Majorizes {ι} [Fintype ι] (a1 a2 : ι → M) : Prop where
   /-- The two tuples have equal total sum. -/
   sum : ∑ x : ι, a1 x = ∑ x : ι, a2 x
@@ -135,11 +135,10 @@ structure Majorizes {ι} [Fintype ι] (a1 a2 : ι → M) : Prop where
 @[inherit_doc] scoped infix:50 " ≺ " => Majorizes
 
 omit [IsOrderedAddMonoid M] in
-private lemma partialSum_congr_of_antitone
+private lemma sum_Iio_comp_congr_of_antitone
     {a : Fin n → M} {p1 p2 : Equiv.Perm (Fin n)}
     (h1 : Antitone (a ∘ p1)) (h2 : Antitone (a ∘ p2)) (i : Fin n) :
-    partialSum i a p1 = partialSum i a p2 := by
-  unfold partialSum
+    ∑ x < i, (a ∘ p1) x = ∑ x < i, (a ∘ p2) x := by
   rw [Tuple.unique_antitone h1 h2]
 
 omit [LinearOrder M] [IsOrderedAddMonoid M] in
@@ -155,9 +154,9 @@ private lemma comp_perm_comp_sortDesc {σ : Equiv.Perm (Fin n)} :
   rwa [Equiv.Perm.coe_mul, ← Function.comp_assoc] at hcomp
 
 omit [IsOrderedAddMonoid M] in
-private lemma partialSum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} {i : Fin n} :
-    partialSum i (a ∘ σ) (sortDesc (a ∘ σ)) = partialSum i a (sortDesc a) := by
-  unfold partialSum
+private lemma descPrefixSum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} {i : Fin n} :
+    descPrefixSum i (a ∘ σ) = descPrefixSum i a := by
+  unfold descPrefixSum
   rw [comp_perm_comp_sortDesc]
 
 omit [IsOrderedAddMonoid M] in
@@ -165,14 +164,14 @@ private lemma comp_perm_majorizesFin_iff {a b : Fin n → M} {σ : Equiv.Perm (F
     MajorizesFin (a ∘ σ) b ↔ MajorizesFin a b := by
   constructor <;> rintro ⟨hsum, hsums⟩ <;>
     exact ⟨by simpa only [sum_comp_perm] using hsum,
-           fun i ↦ by simpa only [descPrefixSum, partialSum_comp_perm] using hsums i⟩
+           fun i ↦ by simpa only [descPrefixSum_comp_perm] using hsums i⟩
 
 omit [IsOrderedAddMonoid M] in
 private lemma majorizesFin_comp_perm_iff {a b : Fin n → M} {σ : Equiv.Perm (Fin n)} :
     MajorizesFin a (b ∘ σ) ↔ MajorizesFin a b := by
   constructor <;> rintro ⟨hsum, hsums⟩ <;>
     exact ⟨by simpa only [sum_comp_perm] using hsum,
-           fun i ↦ by simpa only [descPrefixSum, partialSum_comp_perm] using hsums i⟩
+           fun i ↦ by simpa only [descPrefixSum_comp_perm] using hsums i⟩
 
 omit [IsOrderedAddMonoid M] in
 private lemma MajorizesFin.refl (a : Fin n → M) : MajorizesFin a a :=
@@ -503,9 +502,9 @@ private lemma exists_subset_sum_eq_sortDesc_prefix {i : Fin n} {a : Fin n → K}
     (card_image_of_injective (Iio i) (sortDesc a).injective).trans (Fin.card_Iio i),
     (sum_image (sortDesc a).injective.injOn).symm⟩
 
-private lemma partialSum_domination {n} i {a b : Fin n → K}
-  (t : RelatedByTTransform a b) : partialSum i a (sortDesc a) ≤ partialSum i b (sortDesc b) := by
-  unfold partialSum
+private lemma descPrefixSum_domination {n} i {a b : Fin n → K}
+  (t : RelatedByTTransform a b) : descPrefixSum i a ≤ descPrefixSum i b := by
+  unfold descPrefixSum
   obtain ⟨t1, teqi, to_rewrite⟩ := exists_subset_sum_eq_sortDesc_prefix (a := a) (i := i)
   obtain ⟨t2, teqs, to_rewrite2⟩ := exists_subset_sum_le_of_relatedByTTransform t (s := t1)
   rw [to_rewrite]
@@ -523,7 +522,7 @@ private lemma majorizesFin_of_relatedByTTransform {a b : Fin n → K} :
   have bl : a s.l = b s.l - (b s.l - b s.k) * s.t := by rw [heq, tTransform_apply_l b hkl]
   have other_unchanged : ∀ i, i ≠ s.k ∧ i ≠ s.l → b i = a i := fun i hi => by
     rw [heq, tTransform_apply_of_ne b hi.1 hi.2]
-  refine ⟨?_, fun i ↦ partialSum_domination i ⟨s, ⟨ht0, ht1, ak_gt_al⟩, heq⟩⟩
+  refine ⟨?_, fun i ↦ descPrefixSum_domination i ⟨s, ⟨ht0, ht1, ak_gt_al⟩, heq⟩⟩
   have hrest : (∑ i with i ≠ s.k ∧ i ≠ s.l, a i) = ∑ i with i ≠ s.k ∧ i ≠ s.l, b i :=
     Finset.sum_congr rfl fun x hx ↦ (other_unchanged x (Finset.mem_filter.mp hx).2).symm
   rw [sum_split_two l_ne_k a, sum_split_two l_ne_k b, hrest, bk, bl]
@@ -541,11 +540,11 @@ private lemma majorizesFin_of_reflTransGen_relatedByTTransform {a b : Fin n → 
 /-! ### Majorization implies a chain of T-transforms -/
 
 omit [IsStrictOrderedRing K] in
-/-- For an antitone tuple, `partialSum` (defined via `sortDesc`) is just the prefix sum. -/
-private lemma partialSum_eq_of_antitone {g : Fin n → K} (hg : Antitone g) (j : Fin n) :
-    partialSum j g (sortDesc g) = ∑ x < j, g x := by
-  rw [partialSum_congr_of_antitone (antitone_comp_sortDesc g) (p2 := 1) (by simpa using hg) j,
-      partialSum]
+/-- For an antitone tuple, `descPrefixSum` (defined via `sortDesc`) is just the prefix sum. -/
+private lemma descPrefixSum_eq_of_antitone {g : Fin n → K} (hg : Antitone g) (j : Fin n) :
+    descPrefixSum j g = ∑ x < j, g x := by
+  rw [descPrefixSum,
+      sum_Iio_comp_congr_of_antitone (antitone_comp_sortDesc g) (p2 := 1) (by simpa using hg) j]
   simp
 
 /-- The two coordinates chosen by one decomposition step, returned as **data** (not `∃`) together
@@ -577,8 +576,7 @@ private def tTransform_candidates {n} {a b : Fin n → K} (ha : Antitone a) (hb 
   -- Majorization prefix sums, rewritten via antitonicity into honest prefix sums.
   have hpref : ∀ j : Fin n, ∑ x < j, a x ≤ ∑ x < j, b x := fun j ↦ by
     have hsums_j := majorizes.sums j
-    unfold descPrefixSum at hsums_j
-    rwa [partialSum_eq_of_antitone ha, partialSum_eq_of_antitone hb] at hsums_j
+    rwa [descPrefixSum_eq_of_antitone ha, descPrefixSum_eq_of_antitone hb] at hsums_j
   -- Nonemptiness of the "overtake" set (this is where the classical existence lives, in `Prop`).
   have hne_l : ({i | a i > b i} : Finset (Fin n)).Nonempty := by
     obtain ⟨some_l, pl⟩ := Finset.exists_pos_of_sum_zero_of_exists_nonzero _ a_b_diff_sum_eq_zero
@@ -778,12 +776,10 @@ private def tTransform_step {a b : Fin n → K} (ha : Antitone a) (hb : Antitone
     have a_majorized_by_c : MajorizesFin a c := by
       have hcb : MajorizesFin c b := majorizesFin_of_relatedByTTransform c_b_related_by_ttransform
       refine ⟨majorizes.sum.trans hcb.sum.symm, fun i ↦ ?_⟩
-      unfold descPrefixSum
-      rw [partialSum_eq_of_antitone ha, partialSum_eq_of_antitone hc]
+      rw [descPrefixSum_eq_of_antitone ha, descPrefixSum_eq_of_antitone hc]
       have hab : ∀ j, ∑ x < j, a x ≤ ∑ x < j, b x := fun j ↦ by
         have := majorizes.sums j
-        unfold descPrefixSum at this
-        rwa [partialSum_eq_of_antitone ha, partialSum_eq_of_antitone hb] at this
+        rwa [descPrefixSum_eq_of_antitone ha, descPrefixSum_eq_of_antitone hb] at this
       -- Flat 3-way split on the position of `i` relative to `k`, `l` (no nesting).
       rcases (by omega : i ≤ k ∨ (k < i ∧ i ≤ l) ∨ l < i) with hik | ⟨hik, hil⟩ | hil
       · -- i ≤ k : on `Iio i` we have `c = b`
