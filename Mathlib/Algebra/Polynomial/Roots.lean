@@ -611,6 +611,7 @@ theorem rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra
   Set.toFinite _
 
 variable (T R) in
+@[simp]
 theorem rootSet_map [CommRing S] (p : S[X]) [Algebra S T] [Algebra T R] [Algebra S R]
     [IsScalarTower S T R] : (p.map (algebraMap S T)).rootSet R = p.rootSet R := by
   classical
