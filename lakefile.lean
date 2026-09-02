@@ -17,6 +17,8 @@ require "leanprover-community" / "proofwidgets" @ git "main"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
+-- `sos` supplies the Mathlib-free native certificate-search engine.
+require "leanprover" / "sos" @ git "v0.2.4"
 
 
 /-!
@@ -134,10 +136,19 @@ Runnable standalone — does not require building Mathlib or `MathlibTest`. -/
 lean_exe «cache-test» where
   root := `Cache.Test
 
+-- `check-yaml` loads these modules dynamically, so Lake cannot infer the dependencies.
+target checkYamlImports _pkg : Unit := do
+  let some mathlib ← findModule? `Mathlib
+    | error "module 'Mathlib' not found"
+  let some archive ← findModule? `Archive
+    | error "module 'Archive' not found"
+  return (← mathlib.olean.fetch).mix (← archive.olean.fetch)
+
 /-- `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe «check-yaml» where
   srcDir := "scripts"
   supportInterpreter := true
+  extraDepTargets := #[`checkYamlImports]
 
 /-- `lake exe mk_all` constructs the files containing all imports for a project. -/
 lean_exe mk_all where

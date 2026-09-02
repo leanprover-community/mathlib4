@@ -304,6 +304,14 @@ public import Mathlib.Tactic.Ring.NamePolyVars
 public import Mathlib.Tactic.Ring.NamePowerVars
 public import Mathlib.Tactic.Ring.PNat
 public import Mathlib.Tactic.Ring.RingNF
+public import Mathlib.Tactic.SOS
+public import Mathlib.Tactic.SOS.Certificate
+public import Mathlib.Tactic.SOS.Lift
+public import Mathlib.Tactic.SOS.Polynomial
+public import Mathlib.Tactic.SOS.Raw
+public import Mathlib.Tactic.SOS.Reify
+public import Mathlib.Tactic.SOS.Tactic
+public import Mathlib.Tactic.SOS.Verifier
 public import Mathlib.Tactic.Sat.FromLRAT
 public import Mathlib.Tactic.Says
 public import Mathlib.Tactic.ScopedNS

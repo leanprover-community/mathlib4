@@ -7,6 +7,7 @@ Authors: Arthur Paulino, Jon Eugster, Marcelo Lynch
 import Cache.Cli
 import Cache.Requests
 import Cache.Marker
+import Cache.Native
 import Cache.Query
 import Cache.Warning
 
@@ -128,6 +129,9 @@ def main (args : List String) : IO Unit := do
       IO.eprintln s!"Unknown option '{opt}'"
       IO.eprintln help
       Process.exit 1
+
+  if Cache.Native.shouldPrefetch args then
+    Cache.Native.prefetchDependencies
 
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
