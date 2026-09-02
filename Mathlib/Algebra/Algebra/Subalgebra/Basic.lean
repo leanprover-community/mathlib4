@@ -314,14 +314,6 @@ section
 
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
-
-instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
-    Module R' S :=
-  inferInstance
-
-instance : Module R S :=
-  inferInstance
-
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstance
 
