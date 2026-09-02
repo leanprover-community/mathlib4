@@ -68,13 +68,6 @@ def MeasureTheory.Measure.euclideanHausdorffMeasure (d : ℕ) : Measure X :=
 @[inherit_doc]
 scoped[MeasureTheory] notation "μHE[" d "]" => MeasureTheory.Measure.euclideanHausdorffMeasure d
 
-/-- show the scaling factor equals to the ratio between the volume of `d`-dimensional
-`Metric.ball` with Euclidean metric and with sup metric (i.e. a cube), or explicitly,
-$\pi^{d/2} / (2^d \Gamma (d/2+1))$. -/
-proof_wanted MeasureTheory.Measure.addHaarScalarFactor_hausdorffMeasure_eq (d : ℕ) :
-    addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] =
-    volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) 1) / volume (Metric.ball (0 : Fin d → ℝ) 1)
-
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_def (d : ℕ) :
     (μHE[d] : Measure X) =
     addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] • μH[d] := by
@@ -134,18 +127,19 @@ theorem IsometryEquiv.measurePreserving_euclideanHausdorffMeasure (e : X ≃ᵢ 
 
 theorem Isometry.euclideanHausdorffMeasure_image {f : X → Y} {d : ℕ} (hf : Isometry f) (s : Set X) :
     μHE[d] (f '' s) = μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [Isometry.hausdorffMeasure_image hf (by simp)]
 
 theorem Isometry.euclideanHausdorffMeasure_preimage {f : X → Y} {d : ℕ} (hf : Isometry f)
     (s : Set Y) : μHE[d] (f ⁻¹' s) = μHE[d] (s ∩ Set.range f) := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [Isometry.hausdorffMeasure_preimage hf (by simp)]
 
 theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Isometry f) :
     μHE[d].map f = μHE[d].restrict (Set.range f) := by
   simp_rw [euclideanHausdorffMeasure_def]
-  rw [Measure.map_smul, map_hausdorffMeasure hf (by simp), Measure.restrict_smul]
+  rw [Measure.map_smul _ hf.continuous.aemeasurable, map_hausdorffMeasure hf (by simp),
+    Measure.restrict_smul]
 
 /-!
 ### Applying scalers to `μHE[d]`
@@ -167,13 +161,13 @@ variable {𝕜 V P : Type*} [NormedField 𝕜] [NormedAddCommGroup V] [NormedSpa
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_image (d : ℕ) (x : P) {c : 𝕜}
     (hc : c ≠ 0) (s : Set P) :
     μHE[d] (AffineMap.homothety x c '' s) = ‖c‖₊ ^ d • μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [hausdorffMeasure_homothety_image (by simp) x hc, smul_comm, NNReal.rpow_natCast]
 
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_preimage (d : ℕ) (x : P) {c : 𝕜}
     (hc : c ≠ 0) (s : Set P) :
     μHE[d] (AffineMap.homothety x c ⁻¹' s) = ‖c‖₊⁻¹ ^ d • μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [hausdorffMeasure_homothety_preimage (by simp) x hc, smul_comm, NNReal.rpow_natCast]
 
 end Homothety
@@ -342,7 +336,7 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
       ‖v‖ₑ • (volume : Measure ℝ).map g := by
     unfold g
     rw [euclideanHausdorffMeasure_eq p', ← map_map hadd.measurable hf.measurable,
-      ← Measure.map_smul]
+      ← Measure.map_smul _ (by fun_prop)]
     congr
     let v' : (AffineSubspace.mk' p (ℝ ∙ v)).direction := ⟨v, by simp⟩
     suffices volume = ‖v'‖ₑ • volume.map f by simpa [v']

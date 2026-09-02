@@ -231,7 +231,7 @@ def specializationPreorder : Preorder X :=
     lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
 
 /-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
 
 /-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov
@@ -239,6 +239,14 @@ quotient. This quotient is guaranteed to be a T₀ space. -/
 def SeparationQuotient := Quotient (inseparableSetoid X)
 
 variable {X}
+
+/--
+A set `s` is locally closed at a point `x` if there is a neighborhood `U` of `x` and a closed set
+`Z` such that `U ∩ s = U ∩ Z`.
+Also see `isLocallyClosedAt_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed.lean`.
+-/
+def IsLocallyClosedAt (s : Set X) (x : X) : Prop :=
+  ∃ U ∈ 𝓝 x, ∃ Z, IsClosed Z ∧ U ∩ s = U ∩ Z
 
 section Lim
 
@@ -279,6 +287,7 @@ def IsCompact (s : Set X) :=
 variable (X) in
 /-- Type class for compact spaces. Separation is sometimes included in the definition, especially
 in the French literature, but we do not include it here. -/
+@[wikidata Q381892]
 class CompactSpace : Prop where
   /-- In a compact space, `Set.univ` is a compact set. -/
   isCompact_univ : IsCompact (Set.univ : Set X)

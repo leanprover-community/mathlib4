@@ -9,6 +9,7 @@ public import Mathlib.Tactic.FBinop
 
 /-!
 # Set Product Notation
+
 This file provides notation for a product of sets, and other similar types.
 
 ## Main Definitions

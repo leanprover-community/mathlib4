@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
@@ -201,9 +202,8 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
   set F' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E := fun p => (f' (e p)).comp (e : ℝ × ℝ →L[ℝ] ℂ)
   have hF' : ∀ p : ℝ × ℝ, (-(I • F' p)) (1, 0) + F' p (0, 1) = -(I • f' (e p) 1 - f' (e p) I) := by
     rintro ⟨x, y⟩
-    simp only [F', ContinuousLinearMap.neg_apply, ContinuousLinearMap.smul_apply,
-      ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe, he₁, he₂, neg_add_eq_sub,
-      neg_sub]
+    simp only [F', neg_apply, smul_apply, ContinuousLinearMap.comp_apply,
+      ContinuousLinearEquiv.coe_coe, he₁, he₂, neg_add_eq_sub, neg_sub]
   set R : Set (ℝ × ℝ) := [[z.re, w.re]] ×ˢ [[w.im, z.im]]
   set t : Set (ℝ × ℝ) := e ⁻¹' s
   rw [uIcc_comm z.im] at Hc Hi; rw [min_comm z.im, max_comm z.im] at Hd
@@ -577,6 +577,84 @@ theorem circleIntegral_div_sub_of_differentiable_on_off_countable {R : ℝ} {c w
   simpa only [smul_eq_mul, div_eq_inv_mul] using
     circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw hc hd
 
+omit [CompleteSpace E] in
+/--
+**Derivative of Cauchy-type integrals**: if `f` is circle integrable and `w` does not lie on the
+circle, then for every `n : ℤ` the Cauchy-type integral
+`fun w ↦ ∮ z in C(c, R), (z - w) ^ n • f z` has derivative
+`-n • ∮ z in C(c, R), (z - w) ^ (n - 1) • f z` at `w`.
+-/
+theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w : ℂ} {n : ℤ}
+    (hf : CircleIntegrable f c R) (hw : w ∉ sphere c |R|) :
+    HasDerivAt (fun w ↦ ∮ z in C(c, R), (z - w) ^ n • f z)
+      ((-n : ℂ) • ∮ z in C(c, R), (z - w) ^ (n - 1) • f z) w := by
+  obtain ⟨d, hd, hdist⟩ := exists_ball_forall_le_norm_circleMap_sub hw
+  have hfm : AEStronglyMeasurable (fun θ ↦ f (circleMap c R θ))
+      (volume.restrict (uIoc 0 (2 * π))) := (intervalIntegrable_iff.1 hf).aestronglyMeasurable
+  simp only [circleIntegral, deriv_circleMap]
+  rw [← intervalIntegral.integral_smul]
+  refine (intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le
+    (F' := fun x θ ↦ (-n : ℂ) • ((circleMap 0 R θ * I)
+      • (circleMap c R θ - x) ^ (n - 1) • f (circleMap c R θ)))
+    (bound := fun θ ↦ |(n : ℝ)| * |R| * max (d ^ (n - 1)) ((|R| + dist c w + d) ^ (n - 1)) *
+      ‖f (circleMap c R θ)‖)
+    (ball_mem_nhds w hd) ?_ ?_ ?_ ?_ ?_ ?_).2
+  · -- Measurability of the integrand, for `x` near `w`
+    filter_upwards with x
+    exact (Continuous.aestronglyMeasurable (by fun_prop)).smul
+      ((Measurable.aestronglyMeasurable (by fun_prop)).smul hfm)
+  · -- Integrability of the integrand at `w`
+    simpa only [deriv_circleMap] using (hf.sub_zpow_smul n hw).out
+  · -- Measurability of the differentiated integrand
+    exact ((Continuous.aestronglyMeasurable (by fun_prop)).smul
+      ((Measurable.aestronglyMeasurable (by fun_prop)).smul hfm)).const_smul _
+  · -- Uniform bound for the differentiated integrand near `w`
+    filter_upwards with θ _ x hx
+    have hlb := hdist x hx θ
+    have hub : ‖circleMap c R θ - x‖ ≤ |R| + dist c w + d := by
+      have := mem_ball.1 hx
+      linarith [norm_circleMap_sub_le c R θ x, dist_triangle_right c x w]
+    have key : ‖circleMap c R θ - x‖ ^ (n - 1)
+        ≤ max (d ^ (n - 1)) ((|R| + dist c w + d) ^ (n - 1)) := by
+      rcases le_or_gt 0 (n - 1) with h | h
+      · exact le_max_of_le_right (zpow_le_zpow_left₀ h (norm_nonneg _) hub)
+      · refine le_max_of_le_left ?_
+        rw [show n - 1 = -(1 - n) by ring, zpow_neg, zpow_neg]
+        exact inv_anti₀ (zpow_pos hd _) (zpow_le_zpow_left₀ (by omega) hd.le hlb)
+    have norm_eq : ‖(-n : ℂ) • ((circleMap 0 R θ * I)
+        • (circleMap c R θ - x) ^ (n - 1) • f (circleMap c R θ))‖
+        = |(n : ℝ)| * |R| * ‖circleMap c R θ - x‖ ^ (n - 1) * ‖f (circleMap c R θ)‖ := by
+      rw [norm_smul, norm_smul, norm_smul, norm_neg, Complex.norm_intCast, norm_zpow, norm_mul,
+        Complex.norm_I, mul_one, norm_circleMap_zero]
+      ring
+    rw [norm_eq]
+    exact mul_le_mul_of_nonneg_right (mul_le_mul_of_nonneg_left key (by positivity))
+      (norm_nonneg _)
+  · -- Integrability of the bound
+    exact (IntervalIntegrable.norm hf).const_mul _
+  · -- Differentiability of the integrand in `x`, for `x` near `w`
+    filter_upwards with θ _ x hx
+    have hne : circleMap c R θ - x ≠ 0 := norm_pos_iff.mp (hd.trans_le (hdist x hx θ))
+    have h₁ : HasDerivAt (fun y : ℂ ↦ (circleMap c R θ - y) ^ n)
+        (-((n : ℂ) * (circleMap c R θ - x) ^ (n - 1))) x :=
+      (hasDerivAt_zpow n _ (Or.inl hne)).comp_const_sub (circleMap c R θ) x
+    exact ((h₁.smul_const (f (circleMap c R θ))).const_smul (circleMap 0 R θ * I)).congr_deriv
+      (by module)
+
+omit [CompleteSpace E] in
+/--
+**Derivative of the Cauchy integral**: if `f` is circle integrable and `w` does not lie on the
+circle, then the Cauchy-type integral `fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • f z` has derivative
+`∮ z in C(c, R), (z - w) ^ (-2) • f z` at `w`.
+-/
+theorem hasDerivAt_circleIntegral_sub_inv_smul {f : ℂ → E} {R : ℝ} {c w : ℂ}
+    (hf : CircleIntegrable f c R) (hw : w ∉ sphere c |R|) :
+    HasDerivAt (fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • f z)
+      (∮ z in C(c, R), (z - w) ^ (-2 : ℤ) • f z) w := by
+  simpa only [show (-1 : ℤ) - 1 = -2 by norm_num, zpow_neg_one, Int.cast_neg, Int.cast_one,
+    neg_neg, one_smul]
+    using hasDerivAt_circleIntegral_sub_zpow_smul (n := -1) hf hw
+
 end circle
 
 section analyticity
@@ -656,6 +734,11 @@ protected theorem _root_.Differentiable.contDiff
     {f : ℂ → E} (hf : Differentiable ℂ f) {n : WithTop ℕ∞} :
     ContDiff ℂ n f :=
   contDiff_iff_contDiffAt.mpr fun z ↦ (hf.analyticAt z).contDiffAt
+
+@[fun_prop]
+theorem _root_.Differentiable.deriv {f : ℂ → E} (hf : Differentiable ℂ f) :
+    Differentiable ℂ (deriv f) :=
+  hf.contDiff.differentiable_deriv_two
 
 /-- When `f : ℂ → E` is differentiable, the `cauchyPowerSeries f z R` represents `f` as a power
 series centered at `z` in the entirety of `ℂ`, regardless of `R : ℝ≥0`, with `0 < R`. -/
