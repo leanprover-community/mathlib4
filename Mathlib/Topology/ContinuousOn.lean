@@ -738,6 +738,15 @@ theorem continuousWithinAt_const {b : β} {s : Set α} {x : α} :
     ContinuousWithinAt (fun _ : α => b) s x :=
   continuous_const.continuousWithinAt
 
+@[nontriviality]
+lemma ContinuousWithinAt.of_subsingleton [Subsingleton α] (s : Set α) (x : α) :
+    ContinuousWithinAt f s x :=
+  Continuous.of_subsingleton |>.continuousWithinAt
+
+@[nontriviality]
+lemma ContinuousOn.of_subsingleton [Subsingleton α] (s : Set α) : ContinuousOn f s :=
+  Continuous.of_subsingleton |>.continuousOn
+
 theorem continuousOn_id {s : Set α} : ContinuousOn id s :=
   continuous_id.continuousOn
 
