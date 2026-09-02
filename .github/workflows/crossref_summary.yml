@@ -83,12 +83,13 @@ jobs:
             exit 0
           fi
 
-          python3 "$CI_SCRIPTS_DIR/pr_summary/crossrefsDiff.py" \
+          # Empty output means the PR adds no cross-references.
+          TABLE="$(python3 "$CI_SCRIPTS_DIR/pr_summary/crossrefsDiff.py" \
             --base-crossrefs baseline.json \
             --head-crossrefs ./artifact/crossrefs.json \
-            --repo "$REPO" --new-sha "$SHA" > table.md
+            --repo "$REPO" --new-sha "$SHA")"
 
-          if [ ! -s table.md ]; then
+          if [ -z "$TABLE" ]; then
             echo "state=none" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -96,7 +97,7 @@ jobs:
           {
             printf '%s\n\n' "$MARKER"
             printf '### Cross-references added in this PR\n\n'
-            cat table.md
+            printf '%s\n' "$TABLE"
           } > report.md
 
           echo "state=found" >> "$GITHUB_OUTPUT"
