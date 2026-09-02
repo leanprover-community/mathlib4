@@ -24,7 +24,7 @@ Finish the equivalence with `BoolAlg`.
 
 universe u
 
-open CategoryTheory Order
+open CategoryTheory
 
 /-- The category of Boolean rings. -/
 structure BoolRing where
