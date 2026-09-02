@@ -81,7 +81,7 @@ noncomputable section
 
 namespace Module
 
-variable (R A M : Type*)
+variable (R M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 section Prod
@@ -305,6 +305,44 @@ end IsReflexive
 
 end Module
 
+namespace LinearMap
+
+section Projective
+
+variable {R : Type*} [CommSemiring R]
+variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
+
+/-- The identity pairing is right-separating. -/
+protected theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
+  fun x ↦ (forall_dual_apply_eq_zero_iff R x).mp
+
+alias id_separatingRight := SeparatingRight.id
+
+/-- The identity pairing is non-degenerate. -/
+protected theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :=
+  ⟨.id, .id⟩
+
+alias id_nondegenerate := Nondegenerate.id
+
+@[deprecated (since := "2026-04-02")]
+alias dualPairing_nondegenerate := id_nondegenerate
+
+/-- The pairing `Dual.eval` is left-separating. -/
+protected theorem SeparatingLeft.eval : (Dual.eval R M).SeparatingLeft :=
+  id_separatingRight
+
+alias eval_separatingLeft := SeparatingLeft.eval
+
+/-- The pairing `Dual.eval` is non-degenerate. -/
+protected theorem Nondegenerate.eval : (Dual.eval R M).Nondegenerate :=
+  ⟨.eval, .eval⟩
+
+alias eval_nondegenerate := Nondegenerate.eval
+
+end Projective
+
+end LinearMap
+
 namespace Submodule
 
 open Module
@@ -460,7 +498,7 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
   simp
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
-    Function.LeftInverse W.dualRestrict W.dualLift := fun x => by
+    Function.LeftInverse W.dualRestrict W.dualLift := fun x ↦ by
   rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, End.one_apply]
 
 theorem dualLift_rightInverse (W : Subspace K V) :
@@ -621,7 +659,7 @@ The inverse of this is `Submodule.dualCopairing`. -/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
   LinearEquiv.ofLinearMap
-    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
+    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ ↦
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
 
@@ -720,8 +758,8 @@ section VectorSpace
 
 section
 
-variable {K V₁ V₂ : Type*} [DivisionRing K]
-variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
+variable {K V₁ : Type*} [DivisionRing K]
+variable [AddCommGroup V₁] [Module K V₁]
 
 namespace Module.Dual
 
@@ -781,29 +819,6 @@ end Module.Dual
 end
 
 namespace LinearMap
-
-variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
-
-theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
-  separatingLeft_iff_ker_eq_bot.mpr ker_id
-
-theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingLeft
-
-variable [Module.Projective K V]
-
-theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
-  fun x => (forall_dual_apply_eq_zero_iff K x).mp
-
-theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
-
-theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
-  ⟨id_separatingLeft, id_separatingRight⟩
-
-@[deprecated (since := "2026-04-02")]
-alias dualPairing_nondegenerate := id_nondegenerate
-
-theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
-  ⟨eval_separatingLeft, eval_separatingRight⟩
 
 variable {K V₁ V₂ : Type*} [Field K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
@@ -881,11 +896,12 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
 -- for `Module.Dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.Dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
 -- be true when the family is inf-closed).
--- TODO: generalize to `Sort`
-theorem dualAnnihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K V₁) :
+theorem dualAnnihilator_iInf_eq {ι : Sort*} [Finite ι] (W : ι → Subspace K V₁) :
     (⨅ i : ι, W i).dualAnnihilator = ⨆ i : ι, (W i).dualAnnihilator := by
-  revert ι
-  apply Finite.induction_empty_option
+  rw [← iInf_plift_down W, ← iSup_plift_down fun i ↦ (W i).dualAnnihilator]
+  refine Finite.induction_empty_option
+    (P := fun α ↦ ∀ W : α → _, (⨅ i, W i).dualAnnihilator = ⨆ i, (W i).dualAnnihilator) ?_ ?_ ?_
+    (PLift ι) (fun i ↦ W i.down)
   · intro α β h hyp W
     rw [← h.iInf_comp, hyp _, ← h.iSup_comp]
   · intro W
@@ -997,6 +1013,22 @@ theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
     fun _ ↦ FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 
+theorem dualCoannihilator_inf (W W' : Subspace K (Dual K V))
+    [FiniteDimensional K W] [FiniteDimensional K W'] :
+    (W ⊓ W').dualCoannihilator = W.dualCoannihilator ⊔ W'.dualCoannihilator := by
+  rw [← dualAnnihilator_inj, dualAnnihilator_sup_eq]
+  repeat rw [dualCoannihilator_dualAnnihilator_eq]
+
+theorem dualCoannihilator_iInf {ι : Type*} (W : ι → Subspace K (Module.Dual K V))
+    [∀ i, FiniteDimensional K (W i)] :
+    (⨅ i, W i).dualCoannihilator = ⨆ i, (W i).dualCoannihilator := by
+  cases isEmpty_or_nonempty ι
+  · simp [iInf_of_isEmpty, iSup_of_empty']
+  have := Module.Finite.iff_fg.mpr <|
+    FG.of_le (Module.Finite.iff_fg.mp inferInstance) (iInf_le W <| Classical.arbitrary ι)
+  rw [← dualAnnihilator_inj, dualCoannihilator_dualAnnihilator_eq, dualAnnihilator_iSup_eq]
+  simp only [dualCoannihilator_dualAnnihilator_eq]
+
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order
   isomorphism between the finite-codimensional subspaces in the vector space and the
@@ -1069,9 +1101,6 @@ lemma Module.exists_dual_forall_apply_eq_one {ι K V : Type*} [Field K] [AddComm
 namespace TensorProduct
 
 variable (R A : Type*) (M : Type*) (N : Type*)
-variable {ι κ : Type*}
-variable [DecidableEq ι] [DecidableEq κ]
-variable [Fintype ι] [Fintype κ]
 
 open TensorProduct
 

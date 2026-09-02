@@ -321,7 +321,6 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
   exact (ConcreteCategory.bijective_of_isIso _).2.comp
     ((ConcreteCategory.bijective_of_isIso _).2.comp Ideal.Quotient.mk_surjective)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
     IsClosedImmersion f ↔ ∃ I : Ideal R, ∃ e : X ≅ Spec (.of <| R ⧸ I),
       f = e.hom ≫ Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I)) := by
