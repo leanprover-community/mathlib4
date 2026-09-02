@@ -4,6 +4,7 @@ import Mathlib.Tactic.NormRank
 
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Basic.Real.Basic
 import Mathlib.LinearAlgebra.Matrix.Cartan
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
@@ -131,6 +132,21 @@ example : Matrix.rank (R := GaussianInt) !![0, ⟨0, 1⟩; ⟨0, 1⟩, 1] = 2 :=
 -- handling Zsqrtd.sqrtd def without rewriting
 example : Matrix.rank (R := GaussianInt) !![Zsqrtd.sqrtd, ⟨0, 1⟩] = 1 := by eval_rank
 
+/-! ## Element types whose equality does not reduce in the kernel: `ℝ`, `ℂ`
+
+The certificate conditions are built from proofs of the individual entries by `norm_num`
+instead of being decided. -/
+
+-- a row swap, so that the row arrangement is not the identity; entries that are not
+-- integers, which the product obligation carries; and a rank deficiency, so that a row of
+-- the pivot function is `⊤`
+example : Matrix.rank (R := ℝ) !![0, 0, 3; 1/2, 1, 0; 2, 4, 1] = 2 := by eval_rank
+
+-- no pivot at all: every row of the pivot function is `⊤`
+example : Matrix.rank (R := ℝ) !![0, 0; 0, 0] = 0 := by eval_rank
+
+example : Matrix.rank (R := ℂ) !![1, 2; 2, 4] = 1 := by eval_rank
+
 /-! ## Unfolding, rewrites, and simplifications -/
 
 -- rewrite
@@ -175,20 +191,26 @@ end Binet
 
 /-! ## Behavior inside `simp` -/
 
--- mixed element types in one goal: the ℤ literal is rewritten while the unsupported ℝ
--- literal is skipped, without an error; the ℝ rank is then evaluated by recognizing the
--- identity matrix
+-- mixed element types in one goal: both literals are rewritten, the ℝ one by building the
+-- certificate from `norm_num` leaves
 example :
     Matrix.rank (R := ℤ) !![1, 2; 2, 4] = Matrix.rank (R := ℝ) !![1, 0; 0, 1] - 1 := by
   simp only [norm_rank]
-  simp [← Matrix.one_fin_two, Matrix.rank_one]
 
--- a similar example via `eval_rank`, plus testing that the tactic doesn't hard commit to
--- the first occurrence of Matrix.rank
-example :
-    Matrix.rank (R := ℝ) !![1, 0; 0, 1] = Matrix.rank (R := ℤ) !![1, 2; 2, 4] + 1 := by
+-- an entry no leaf normaliser can settle is skipped, without an error, while a supported
+-- literal in the same goal is rewritten. The second row is twice the first, so the rank is
+-- one, but the tactic cannot see that
+example (h : Matrix.rank (R := ℝ) !![Real.pi, 1; 2 * Real.pi, 2] = 1) :
+    Matrix.rank (R := ℤ) !![1, 2; 2, 4] +
+      Matrix.rank (R := ℝ) !![Real.pi, 1; 2 * Real.pi, 2] = 2 := by
+  simp only [norm_rank]
+  lia
+
+-- testing that the tactic doesn't hard commit to the first occurrence of `Matrix.rank`:
+-- here the skipped literal comes first
+example (h : Matrix.rank (R := ℝ) !![Real.pi, 1; 2 * Real.pi, 2] = 1) :
+    Matrix.rank (R := ℝ) !![Real.pi, 1; 2 * Real.pi, 2] = Matrix.rank (R := ℤ) !![1, 2; 2, 4] := by
   eval_rank
-  simp [← Matrix.one_fin_two, Matrix.rank_one]
 
 -- a literal with symbolic entries is skipped instead of reporting an error
 example (a : ℚ) (h : Matrix.rank (R := ℚ) !![a, 1; 1, a] = 2) :
@@ -264,27 +286,16 @@ example : Matrix.rank (R := ZMod 4) !![1, 2; 3, 4] = 2 := by eval_rank
 
 Rejected today; extensions of the tactic could support these inputs. -/
 
--- Requires a more general cert checker that works for rational literals in types like ℝ
-/--
-error: `eval_rank` made no progress.
-Additional information may be available using `set_option trace.Tactic.evalRank true`.
----
-trace: [Tactic.evalRank] equality in the element type does not reduce in the kernel
-      ℝ
-      !![1, 2; 3, 4]
--/
-#guard_msgs in
-example : Matrix.rank (R := ℝ) !![1, 2; 3, 4] = 2 := by eval_rank
-
 -- Requires computable polynomial ops in the kernel
 open Polynomial in
 /--
 error: `eval_rank` made no progress.
 Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.evalRank] equality in the element type does not reduce in the kernel
+trace: [Tactic.evalRank] equality does not reduce in the kernel; using `norm_num` leaves
       ℚ[X]
-      !![X, 1; 1, X]
+[Tactic.evalRank] the following entry cannot be simplified to a numeral
+      X
 -/
 #guard_msgs in
 example : Matrix.rank (R := ℚ[X]) !![X, 1; 1, X] = 2 := by eval_rank
