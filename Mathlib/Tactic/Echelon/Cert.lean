@@ -110,16 +110,22 @@ def normNumLeaf : LeafProver := fun p => do
   let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
   return (b, prf)
 
-/-- Prove `¬ p` when `decide p` reduces to `false` in the kernel. The index guards of a
-condition are decidable in any ring, as they mention no entries. -/
-def refuteGuard? (p : Q(Prop)) : MetaM (Option Expr) := do
-  let .some inst ← trySynthInstance (← mkAppM ``Decidable #[p]) | return none
-  let d ← mkAppOptM ``Decidable.decide #[p, inst]
-  let .ok r := Kernel.whnf (← getEnv) (← getLCtx) d | return none
-  unless r.isConstOf ``Bool.false do return none
+/-- Refute the condition `c` by a kernel-checked `decide`, the mirror of
+`certifyCondition`. The index guards of a certificate condition are decidable in any ring,
+as they mention no entries. -/
+def refuteCondition (c : Q(Prop)) : MetaM Q(¬ $c) := do
+  let .some inst ← trySynthInstance (← mkAppM ``Decidable #[c])
+    | throwError "cannot refute the rank certificate condition, it is not decidable:\
+        {indentExpr c}"
+  let d ← mkAppOptM ``Decidable.decide #[c, inst]
+  let .ok r := Kernel.whnf (← getEnv) (← getLCtx) d
+    | throwError "cannot refute the rank certificate condition, it does not reduce in the \
+        kernel:{indentExpr c}"
+  unless r.isConstOf ``Bool.false do
+    throwError "cannot refute the rank certificate condition, it holds:{indentExpr c}"
   let ff := mkConst ``Bool.false
   let h ← mkExpectedTypeHint (← mkEqRefl ff) (← mkEq d ff)
-  return some (← mkAppOptM ``of_decide_eq_false #[p, inst, h])
+  mkAppOptM ``of_decide_eq_false #[c, inst, h]
 
 /-- Prove the quantified statement `c` over `Fin n` from proofs of its instances, `head i`
 proving it at index `i`. The proof recurses on the index list `List.finRange n`, so the
@@ -156,19 +162,22 @@ partial def unfoldToForall (c : Q(Prop)) : MetaM Q(Prop) := do
       | throwError "expected a quantified condition:{indentExpr c}"
     unfoldToForall c'.headBeta
 
-/-- Prove a cell that an index guard may make vacuous: where the guard is refutable the
-statement holds by `absurd`, and otherwise `cell` proves the body under it. -/
-def underGuard (c : Q(Prop)) (cell : Q(Prop) → MetaM Expr) : MetaM Expr := do
-  match c with
-  | .forallE nm dom body bi =>
-    if let some ref ← refuteGuard? dom then
-      withLocalDecl nm bi dom fun h => do
-        let tgt := body.instantiate1 h
-        mkLambdaFVars #[h] (← mkAppOptM ``absurd #[some dom, some tgt, some h, some ref])
-    else
-      withLocalDecl nm bi dom fun h => do
-        mkLambdaFVars #[h] (← cell (body.instantiate1 h))
-  | _ => cell c
+/-- Prove an implication `P → Q` where the caller already knows from the recorded data
+whether `P` holds, so that neither side is discovered by reduction: when it holds, `prove`
+supplies `Q` and the hypothesis is discarded, and otherwise `P` is refuted and the
+implication is vacuous. -/
+def mkImplication (holds : Bool) (c : Q(Prop)) (prove : Q(Prop) → MetaM Expr) :
+    MetaM Expr := do
+  let .forallE nm dom body bi := c
+    | throwError "expected an implication:{indentExpr c}"
+  if body.hasLooseBVars then -- shouldn't happen, but a safety check
+    throwError "the conclusion depends on the hypothesis:{indentExpr c}"
+  if holds then
+    return .lam nm dom (← prove body) bi
+  else
+    have p : Q(Prop) := dom
+    -- `Not.elim` is the vacuous implication: from `¬ P` it yields `P → Q` directly
+    mkAppOptM ``Not.elim #[none, some body, ← certifyCondition "an index guard" q(¬ $p)]
 
 /-- Prove a cell whose two sides reduce to the same recorded entry. -/
 def proveRflCell (c : Q(Prop)) : MetaM Expr := do
@@ -200,15 +209,15 @@ the remaining index pairs the triangularity guard is refutable. -/
 def mkLowerCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
   let rows ← unfoldToForall q(($L).IsLowerTriangular)
-  mkListForall m rows fun _ gi => do
-    mkListForall m gi fun _ cell => underGuard cell proveRflCell
+  mkListForall m rows fun i gi => do
+    mkListForall m gi fun j cell => mkImplication (i < j) cell proveRflCell
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot`: the two conditions on the pivot
 function mention no entry and are decided, while the entry conditions are built from the
 recorded entries of `U`. -/
 def mkPivotCond {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : Q(Matrix (Fin $m) (Fin $n) $α)) (pivot : Q(Fin $m → WithTop (Fin $n)))
-    (entries : Array (Array Q($α))) (leaf : LeafProver) :
+    (pivots : Array Nat) (entries : Array (Array Q($α))) (leaf : LeafProver) :
     MetaM Q(($U).IsPivotedBy $pivot) := do
   let zero : Q($α) ← mkNumeral α 0
   let iff ← mkAppOptM ``Matrix.isPivotedBy_iff
@@ -220,10 +229,12 @@ def mkPivotCond {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
       let entryConds ← mkListForall m cells fun i gi => do
         match_expr gi with
         | And zeros nonzeros =>
-          let hz ← mkListForall n zeros fun _ cell =>
-            underGuard cell proveRflCell
+          -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
+          let col? := if h : i < pivots.size then some pivots[i] else none
+          let hz ← mkListForall n zeros fun j cell =>
+            mkImplication (col?.all (j < ·)) cell proveRflCell
           let hn ← mkListForall n nonzeros fun c cell =>
-            underGuard cell fun _ =>
+            mkImplication (col? == some c) cell fun _ =>
               proveNonzeroEntry leaf (entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
           mkAppM ``And.intro #[hz, hn]
         | _ => throwError "unexpected shape of the pivot entry conditions:{indentExpr gi}"
@@ -317,7 +328,7 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
     have hprod : Q($L * $Aσ = $U) :=
       ← mkProductEq _cr L Aσ U data.L aEntries data.U leaf
     have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
-    have hpivot : Q(($U).IsPivotedBy $pivot) := ← mkPivotCond _cr U pivot data.U leaf
+    have hpivot : Q(($U).IsPivotedBy $pivot) := ← mkPivotCond _cr U pivot data.pivot data.U leaf
     have hlower : Q(($L).IsLowerTriangular) := ← mkLowerCond _cr L
     have hdiag : Q(∀ i, ($L).diag i ≠ 0) := ← mkDiagCond _cr L data.L leaf
     return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
