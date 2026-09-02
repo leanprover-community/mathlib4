@@ -26,8 +26,8 @@ Besson–Courtois–Gallot–Sambusetti.
   virtually nilpotent (companion to `Group.IsNilpotent.isVirtuallyNilpotent`).
 * `Group.IsVirtuallyCyclic.of_surjective`,
   `Group.IsVirtuallyCyclic.of_injective` : preservation under surjective
-  homomorphisms and group embeddings. Instances provide the cyclic and finite base cases and
-  closure under subgroups and quotients.
+  homomorphisms and group embeddings. Instances provide the cyclic and finite
+  base cases and closure under subgroups and quotients.
 
 ## TODO
 
@@ -66,7 +66,35 @@ cyclic and of finite index. -/
 @[to_additive]
 -- see Note [lower instance priority]
 instance (priority := 100) [Finite G] : IsVirtuallyCyclic G :=
-  ⟨⊥, inferInstance, ⟨Subgroup.index_ne_zero_of_finite⟩⟩
+  ⟨⊥, inferInstance, inferInstance⟩
+
+/-- The preimage of a finite-index subgroup has finite index. -/
+@[to_additive]
+theorem _root_.Subgroup.FiniteIndex.comap {H : Subgroup G'} (hfi : H.FiniteIndex)
+    (f : G →* G') : (H.comap f).FiniteIndex :=
+  ⟨by
+    rw [Subgroup.index_comap]
+    exact (Subgroup.instFiniteIndex_subgroupOf H f.range).index_ne_zero⟩
+
+/-- The image of a finite-index subgroup under a surjective homomorphism has
+finite index. -/
+@[to_additive]
+theorem _root_.Subgroup.FiniteIndex.map_of_surjective {H : Subgroup G}
+    (hfi : H.FiniteIndex) {f : G →* G'} (hf : Function.Surjective f) :
+    (H.map f).FiniteIndex := by
+  refine ⟨fun h0 => hfi.index_ne_zero ?_⟩
+  have hd := H.index_map_dvd hf
+  rwa [h0, zero_dvd_iff] at hd
+
+/-- The restriction of an injective homomorphism to a preimage subgroup is
+injective. -/
+@[to_additive]
+theorem _root_.MonoidHom.subgroupComap_injective_of_injective (f : G →* G')
+    (H : Subgroup G') (hf : Function.Injective f) :
+    Function.Injective (f.subgroupComap H) := by
+  intro a b h
+  have h2 : f (a : G) = f (b : G) := congrArg Subtype.val h
+  exact Subtype.ext (hf h2)
 
 variable (G) in
 /-- A virtually cyclic group has a subgroup that is cyclic, of finite index
@@ -75,52 +103,41 @@ and normal: the normal core of any cyclic finite-index subgroup. -/
 theorem IsVirtuallyCyclic.exists_isCyclic_and_finiteIndex_and_normal [IsVirtuallyCyclic G] :
     ∃ H : Subgroup G, IsCyclic H ∧ H.FiniteIndex ∧ H.Normal := by
   obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
-  exact ⟨H.normalCore, Subgroup.isCyclic_of_le H.normalCore_le,
-    H.finiteIndex_normalCore, H.normalCore_normal⟩
+  exact ⟨H.normalCore, Subgroup.isCyclic_of_le H.normalCore_le, inferInstance, inferInstance⟩
 
--- TODO: additivize once Mathlib has additive nilpotency.
 /-- A virtually cyclic group is virtually nilpotent: a cyclic group is
 commutative, hence nilpotent. This slots next to
 `Group.IsNilpotent.isVirtuallyNilpotent`. -/
+@[to_additive]
 theorem IsVirtuallyCyclic.isVirtuallyNilpotent [IsVirtuallyCyclic G] :
     IsVirtuallyNilpotent G := by
   obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
-  exact ⟨H, @CommGroup.isNilpotent _ hc.commGroup, hfi⟩
-
-/-- Every subgroup of a virtually cyclic group is virtually cyclic. The
-witness is `H.subgroupOf K`, cyclic because it is isomorphic to `H ⊓ K ≤ H`,
-of finite index in `K` by `Subgroup.instFiniteIndex_subgroupOf`. -/
-@[to_additive]
-instance [IsVirtuallyCyclic G] (K : Subgroup G) : IsVirtuallyCyclic K := by
-  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
-  refine ⟨H.subgroupOf K, ?_, inferInstance⟩
-  have hEq : H.subgroupOf K = (H ⊓ K).subgroupOf K := by
-    ext x
-    simp [Subgroup.mem_subgroupOf]
-  have : IsCyclic (H ⊓ K :) := Subgroup.isCyclic_of_le inf_le_left
-  rw [hEq]
-  exact (Subgroup.subgroupOfEquivOfLe inf_le_right).isCyclic.mpr this
+  exact ⟨H, inferInstance, hfi⟩
 
 /-- The image of a virtually cyclic group under a surjective homomorphism is
-virtually cyclic. Cyclicity of the image subgroup comes from
-`isCyclic_of_surjective` along `f.subgroupMap`; finiteness of its index from
-`Subgroup.index_map_dvd`. -/
+virtually cyclic. -/
 @[to_additive]
 theorem IsVirtuallyCyclic.of_surjective (f : G →* G') (hf : Function.Surjective f)
     [IsVirtuallyCyclic G] : IsVirtuallyCyclic G' := by
   obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
-  refine ⟨H.map f, isCyclic_of_surjective _ (f.subgroupMap_surjective H), ⟨fun h0 ↦ ?_⟩⟩
-  apply hfi.index_ne_zero
-  have hd := H.index_map_dvd hf
-  rwa [h0, zero_dvd_iff] at hd
+  exact ⟨H.map f, isCyclic_of_surjective _ (f.subgroupMap_surjective H),
+    hfi.map_of_surjective hf⟩
 
-/-- A group embedding into a virtually cyclic group is virtually cyclic: it is
-isomorphic to its range, a subgroup of the codomain. -/
+/-- A group embedding into a virtually cyclic group is virtually cyclic: the
+preimage of the cyclic finite-index subgroup witnesses it. -/
 @[to_additive]
 theorem IsVirtuallyCyclic.of_injective (f : G →* G') (hf : Function.Injective f)
-    [IsVirtuallyCyclic G'] : IsVirtuallyCyclic G :=
-  .of_surjective (MonoidHom.ofInjective hf).symm.toMonoidHom
-    (MonoidHom.ofInjective hf).symm.surjective
+    [IsVirtuallyCyclic G'] : IsVirtuallyCyclic G := by
+  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G'›.exists_isCyclic_and_finiteIndex
+  exact ⟨H.comap f,
+    isCyclic_of_injective (f.subgroupComap H)
+      (f.subgroupComap_injective_of_injective H hf),
+    hfi.comap f⟩
+
+/-- Every subgroup of a virtually cyclic group is virtually cyclic. -/
+@[to_additive]
+instance [IsVirtuallyCyclic G] (K : Subgroup G) : IsVirtuallyCyclic K :=
+  .of_injective K.subtype K.subtype_injective
 
 /-- Quotients of virtually cyclic groups are virtually cyclic. -/
 @[to_additive]
