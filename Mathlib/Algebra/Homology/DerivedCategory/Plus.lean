@@ -18,7 +18,9 @@ Let `C` be an abelian category. In this file, we show that
 the bounded below derived category `DerivedCategory.Plus C` (defined
 as a full subcategory of `DerivedCategory C`) is the localization
 of the bounded below homotopy category `HomotopyCategory.Plus C`
-with respect to quasi-isomorphisms.
+with respect to quasi-isomorphisms. We also show that it is the
+localization of the category `CochainComplex.Plus C` of bounded
+below cochain complexes with respect to quasi-isomorphisms.
 
 -/
 
