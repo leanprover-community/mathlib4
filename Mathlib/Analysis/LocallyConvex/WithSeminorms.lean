@@ -924,7 +924,6 @@ lemma bound_sum_of_continuous [t : TopologicalSpace E] (hp : WithSeminorms p)
     _ ≤ C • s.sup p := hC
     _ ≤ _ := by gcongr; apply finset_sup_le_sum
 
-@[elab_as_elim]
 lemma induction_sup_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
     {motive : Seminorm 𝕜 E → Prop}
     (base : ∀ i, motive (p i))
