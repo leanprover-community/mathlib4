@@ -1079,7 +1079,7 @@ abbrev FakeMul (α : Type) := Mul α
 
 variable {α : Type}
 /--
-error: @[to_additive] failed to add declaration `instFakeAddOfAddGroup`.
+error: `@[to_additive]` failed to add declaration `instFakeAddOfAddGroup`.
   The translated value does not have the translated type.
 The value
   fun {α} [AddGroup α] => { add := fun x1 x2 => x1 + x2 }
@@ -1095,8 +1095,8 @@ For help, see the docstring of `to_additive`, section `Troubleshooting`.
 instance [Group α] : FakeMul α := ⟨(· * ·)⟩
 
 /--
-error: @[to_additive] failed to add declaration `instAddOfAddGroup_mathlibTest`.
-  The translated value is not type correct.
+error: `@[to_additive]` failed to add declaration `instAddOfAddGroup_mathlibTest`.
+  The translated type is not type correct.
 Application type mismatch: The argument
   inst✝
 has type
@@ -1113,7 +1113,7 @@ For help, see the docstring of `to_additive`, section `Troubleshooting`.
 instance [Group α] : Mul α := ⟨(· * ·)⟩
 
 /--
-error: @[to_additive] failed to add declaration `fakeAdd_rfl`.
+error: `@[to_additive]` failed to add declaration `fakeAdd_rfl`.
   The translated type is not type correct.
 Application type mismatch: The argument
   inst✝
