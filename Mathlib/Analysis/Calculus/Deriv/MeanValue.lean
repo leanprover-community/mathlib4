@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Slope
 public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Algebra.Group.Order
 /-!
 # Mean value theorem
 
@@ -510,7 +511,6 @@ lemma antitone_of_hasDerivAt_nonpos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lagrange's **Mean Value Theorem**, applied to convex domains. -/
 theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → StrongDual ℝ E}
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :

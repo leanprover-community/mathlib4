@@ -134,7 +134,7 @@ noncomputable irreducible_def exp (x : 𝔸) : 𝔸 :=
 /-- The junk value when `𝔸` can't be equipped with a `ℚ`-algebra structure. -/
 @[simp]
 theorem exp_of_isEmpty_algebra_rat [IsEmpty (Algebra ℚ 𝔸)] (x : 𝔸) : exp x = 1 := by
-  rw [exp, dif_neg (not_nonempty_iff.mpr ‹_›)]
+  rw [exp, dite_eq_right (not_nonempty_iff.mpr ‹_›)]
 
 theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by simp [expSeries]
@@ -157,7 +157,7 @@ theorem expSeries_eq_expSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
 variable (𝕂) in
 theorem exp_eq_expSeries_sum [CharZero 𝕂] : exp = (expSeries 𝕂 𝔸).sum := by
   ext x
-  rw [exp, dif_pos ⟨RestrictScalars.algebra ℚ 𝕂 𝔸⟩, ← @expSeries_sum_eq_rat (𝕂 := 𝕂)]
+  rw [exp, dite_eq_left ⟨RestrictScalars.algebra ℚ 𝕂 𝔸⟩, ← @expSeries_sum_eq_rat (𝕂 := 𝕂)]
 
 variable (𝕂) in
 theorem exp_eq_tsum [CharZero 𝕂] : exp = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : 𝕂) • x ^ n := by
@@ -560,7 +560,7 @@ commute then `NormedSpace.exp (∑ i, f i) = ∏ i, NormedSpace.exp (f i)`. -/
 theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp := by
+      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.forall₂ hi hj).exp := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -568,7 +568,7 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_
-    exact h.of_refl (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
+    exact h.forall₂ (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
 
 theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp (n • x) = exp x ^ n := by
   induction n with
