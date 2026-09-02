@@ -387,10 +387,6 @@ instance [Algebra R T] :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in
--- The `simp` calls are non-terminal merely because the `erw` calls are necessary.
--- If this proof breaks because of a non-terminal `simp` in the future, it is likely that one can
--- simply remove the following `erw`.
 variable (R S T) in
 lemma μ_pullback_left_fst [Algebra R T] :
     (LaxMonoidal.μ (Over.pullback (Spec.map (CommRingCat.ofHom (algebraMap R S))))
@@ -405,17 +401,20 @@ lemma μ_pullback_left_fst [Algebra R T] :
               Algebra.TensorProduct.includeRight.toRingHom
               (by simp [← IsScalarTower.algebraMap_eq])
               (by simp [← IsScalarTower.algebraMap_eq]))) ≫ (pullbackSpecIso R T T).inv := by
-  simp
-  ext <;> simp
+  simp only [Over.tensorObj_left, Over.pullback_obj_left, Over.mk_left, Over.mk_hom,
+    Over.pullback_obj_hom, Over.tensorObj_hom, OverClass.asOver_left, OverClass.asOver_hom,
+    canonicallyOverPullback_over, Iso.trans_hom, AlgHom.toRingHom_eq_coe]
+  ext <;> simp only [Category.assoc, Over.μ_pullback_left_fst_fst', Over.mk_left, Over.mk_hom,
+    Over.pullback_obj_left, Over.pullback_obj_hom, pullbackSpecIso_inv_fst, pullbackSpecIso_inv_snd]
   · simp only [← Spec.map_comp, ← CommRingCat.ofHom_comp,
       Algebra.TensorProduct.mapRingHom_comp_includeLeftRingHom]
-    simp [specOverSpec_over]
+    simp only [specOverSpec_over, ofHom_comp, Spec.map_comp, pullbackSpecIso_hom_fst_assoc]
     erw [Over.tensorHom_left_fst_assoc]
     simp [pullbackSpecIso']
     rfl
   · simp only [← Spec.map_comp, ← CommRingCat.ofHom_comp,
       Algebra.TensorProduct.mapRingHom_comp_includeRight]
-    simp [specOverSpec_over]
+    simp only [specOverSpec_over, ofHom_comp, Spec.map_comp, pullbackSpecIso_hom_snd_assoc]
     erw [Over.tensorHom_left_snd_assoc]
     simp [pullbackSpecIso']
     rfl
