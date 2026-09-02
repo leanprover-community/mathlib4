@@ -90,7 +90,11 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
       rw [continuous_coinduced_dom]
-      continuity }
+      apply continuous_sigma
+      intro i
+      dsimp
+      -- XXX: check here! was continuity
+      sorry }
 
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
