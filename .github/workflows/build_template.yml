@@ -49,6 +49,7 @@ env:
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
   MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+  MATHLIB_CACHE_INTERNAL_BASE_URL: ${{ vars.MATHLIB_CACHE_INTERNAL_BASE_URL }}
 
 jobs:
   build:
@@ -669,7 +670,72 @@ jobs:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
-      - name: Upload staged cache to Azure
+      # Internal-service uploads go to the scratch bucket: exchange this job's
+      # OIDC token at the cache broker for short-lived S3 credentials scoped to
+      # the container's key prefix, and point the cache tool's put base at the
+      # bucket. The broker pins the token's `sub` to this job's deployment
+      # environment (the same claim the Azure federation pins), so only a job
+      # that passed the environment's branch policy can mint.
+      #
+      # The Azure bearer token above is still minted: the cache tool prefers
+      # the S3 credentials when both are set, and a branch whose cache tool
+      # predates the S3 support ignores these variables and keeps writing to
+      # Azure. If the mint fails, this step warns and exports nothing, so the
+      # upload falls back to Azure rather than losing the cache.
+      #
+      # Gated on the repository variables, so a repository without the scratch
+      # bucket configured (or with the variables cleared to roll back) keeps
+      # the Azure-only flow. The public-service container (`master`) never
+      # takes this path: its R2 publish is the separate r2_cache_publish
+      # workflow, and this job must not hold a public-bucket credential.
+      - name: Mint scratch bucket credentials from the cache broker
+        if: >-
+          vars.MATHLIB_CACHE_BROKER_URL != '' &&
+          vars.MATHLIB_CACHE_SCRATCH_PUT_BASE_URL != '' &&
+          inputs.cache_environment != '' &&
+          (env.MATHLIB_CACHE_PRIMARY == 'forks' ||
+           env.MATHLIB_CACHE_PRIMARY == 'nightly-testing' ||
+           env.MATHLIB_CACHE_PRIMARY == 'pr-toolchain-tests')
+        shell: bash
+        env:
+          BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
+          SCRATCH_PUT_BASE_URL: ${{ vars.MATHLIB_CACHE_SCRATCH_PUT_BASE_URL }}
+        run: |
+          set -euo pipefail
+          warn_and_skip() {
+            echo "::warning::$1; falling back to the Azure upload"
+            exit 0
+          }
+          # The audience must match the broker's EXPECTED_AUDIENCE, so a token
+          # minted for another service is useless here and vice versa.
+          oidc_token="$(curl -sSf --retry 3 \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mathlib-cache-broker" \
+            | jq -r '.value // empty')" \
+            || warn_and_skip "could not obtain the GitHub OIDC token"
+          [ -n "${oidc_token}" ] || warn_and_skip "the OIDC token response carried no value"
+          creds="$(curl -sSf --retry 3 -X POST \
+            -H "Authorization: Bearer ${oidc_token}" \
+            "${BROKER_URL}/r2-credentials")" \
+            || warn_and_skip "the cache broker did not answer with credentials"
+          access_key_id="$(jq -r '.accessKeyId // empty' <<<"${creds}")"
+          secret_access_key="$(jq -r '.secretAccessKey // empty' <<<"${creds}")"
+          session_token="$(jq -r '.sessionToken // empty' <<<"${creds}")"
+          if [ -z "${access_key_id}" ] || [ -z "${secret_access_key}" ] || [ -z "${session_token}" ]; then
+            warn_and_skip "the broker answer carried no complete credential"
+          fi
+          echo "::add-mask::${access_key_id}"
+          echo "::add-mask::${secret_access_key}"
+          echo "::add-mask::${session_token}"
+          {
+            echo "MATHLIB_CACHE_S3_ACCESS_KEY_ID=${access_key_id}"
+            echo "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY=${secret_access_key}"
+            echo "MATHLIB_CACHE_S3_SESSION_TOKEN=${session_token}"
+            echo "MATHLIB_CACHE_PUT_BASE_URL=${SCRATCH_PUT_BASE_URL}"
+          } >> "$GITHUB_ENV"
+          echo "scratch bucket credentials minted (grant: $(jq -r '.grant // "?"' <<<"${creds}"))"
+
+      - name: Upload staged cache
         shell: bash
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -678,8 +744,14 @@ jobs:
           # step above, from the shared composite action that owns the (repo,
           # branch) → container mapping for both this job and the read-side
           # jobs (build, post_steps). Each job writes only into its own trust-level
-          # container.
-          echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
+          # container. The backend follows the credentials in the environment:
+          # the scratch bucket when the broker step above minted S3 credentials
+          # (MATHLIB_CACHE_PUT_BASE_URL routes the write), Azure otherwise.
+          if [ -n "${MATHLIB_CACHE_PUT_BASE_URL:-}" ]; then
+            echo "Uploading cache to the scratch bucket (container: $MATHLIB_CACHE_PRIMARY)..."
+          else
+            echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
+          fi
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
 
   post_steps:

@@ -61,6 +61,10 @@ jobs:
       # federated credential. mathlib4-nightly-testing intentionally uses branch/ref-scoped
       # trust instead of an environment: each nightly writer app is RBAC-isolated to its own
       # container, so branch scoping is sufficient there.
+      # The scratch-bucket broker mint in upload_cache also keys on this environment
+      # and runs only when it is non-empty, so the nightly repository stays on the
+      # Azure flow until its environments and their branch policies exist and this
+      # mapping names them (a coordinated change with the broker's GRANTS table).
       cache_environment: >-
         ${{
              (github.repository == 'leanprover-community/mathlib4'
