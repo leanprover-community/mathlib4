@@ -24,7 +24,21 @@ open Lean.Parser.Tactic
 namespace Inclusion
 
 /-- `dyadic_interval` runs `inclusion` with the `core` and `interval_dyadic_real` extension
-families. Additional families and inclusion parameters may be supplied in brackets. -/
+/-- `dyadic_interval` proves real number equalities, inequalities and interval memberships by
+approximating as an interval of dyadic rational numbers.
+
+This tactic is implemented as a family for the `inclusion` tactic: `dyadic_interval` is the same as
+`inclusion [core, interval_dyadic_real]`.
+
+* `dyadic_interval [binSplit := n]` splits each interval `n` times, into `2^n` pieces. Higher values
+  of `n` make the tactic slower but able to prove more. Default: no splitting.
+* `dyadic_interval [prec := n]` uses a precision of `2^-n` when constructing the approximation.
+  Higher values of `n` make the tactic slower but able to prove more. Default value: 0.
+* `dyadic_interval [fam₁, ... famₙ]` uses the inclusion families `fam₁`, ..., `famₙ` for additional
+  reasoning capabilities.
+* `dyadic_interval (config := cfg)` uses `cfg` as a configuration for the `inclusion` tactic.
+  (See there for further details.)
+-/
 syntax (name := dyadicInterval) "dyadic_interval" optConfig
   (" [" inclusionArg,* "]")? : tactic
 
