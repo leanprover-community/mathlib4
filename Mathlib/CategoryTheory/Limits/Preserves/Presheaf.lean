@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Limits.Elements
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 
 /-!
 # Finite-limit-preserving presheaves
@@ -111,7 +113,7 @@ noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
     A.obj (limit K) ≅ limit (K ⋙ A) := calc
   A.obj (limit K) ≅ (colimit (CostructuredArrow.proj yoneda A ⋙ yoneda)).obj (limit K) :=
       (IsColimit.coconePointUniqueUpToIso
-        (Presheaf.isColimitTautologicalCocone A) (colimit.isColimit _)).app _
+        (denseAtYoneda A) (colimit.isColimit _)).app _
   _ ≅ colimit (((CostructuredArrow.proj yoneda A) ⋙ yoneda) ⋙ (evaluation _ _).obj (limit K)) :=
       (colimitObjIsoColimitCompEvaluation _ _)
   _ ≅ colimit ((CostructuredArrow.proj yoneda A) ⋙ yoneda ⋙ (evaluation _ _).obj (limit K)) :=
@@ -132,7 +134,7 @@ noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
           (colimitCompWhiskeringLeftIsoCompColimit (CostructuredArrow.proj yoneda A ⋙ yoneda) K)
   _ ≅ limit (K ⋙ A) := HasLimit.isoOfNatIso (isoWhiskerLeft _
         (IsColimit.coconePointUniqueUpToIso
-          (colimit.isColimit _) (Presheaf.isColimitTautologicalCocone A)))
+          (colimit.isColimit _) (denseAtYoneda A)))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -150,7 +152,7 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
   rw [HasLimit.isoOfNatIso_hom_π, HasLimit.isoOfNatIso_hom_π_assoc, limit.post_π,
     colimitObjIsoColimitCompEvaluation_ι_inv_assoc (CostructuredArrow.proj yoneda A ⋙ yoneda),
     Iso.app_inv, ← NatTrans.comp_app_assoc, colimit.comp_coconePointUniqueUpToIso_inv,
-    Presheaf.tautologicalCocone_ι_app, HasColimit.isoOfNatIso_ι_hom_assoc,
+    HasColimit.isoOfNatIso_ι_hom_assoc,
     HasLimit.isoOfNatIso_hom_π_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     ι_colimitLimitIso_limit_π_assoc, isoAux_hom_app, ← NatTrans.comp_app_assoc,
@@ -161,11 +163,9 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
     ι_colimitCompWhiskeringLeftIsoCompColimit_hom,
     NatTrans.comp_app, Category.assoc, isoWhiskerLeft_hom, NatTrans.comp_app, Category.assoc,
     ← NatTrans.comp_app, ← whiskerLeft_comp, colimit.comp_coconePointUniqueUpToIso_hom]
-  have := i.hom.naturality (limit.π K j)
-  dsimp only [yoneda_obj_obj, Functor.const_obj_obj] at this
-  rw [← this]
   ext
-  simp [flipFunctorToInterchange, functorToInterchangeIso, functorToInterchange]
+  simp [dsimp% i.hom.naturality (limit.π K j), flipFunctorToInterchange,
+    functorToInterchangeIso, functorToInterchange]
 
 theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post K A) :=
   iso_hom A K ▸ inferInstance

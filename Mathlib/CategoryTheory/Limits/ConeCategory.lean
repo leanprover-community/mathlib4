@@ -207,14 +207,14 @@ noncomputable def IsLimit.ofReflectsConeTerminal {F : J ⥤ C} {F' : K ⥤ D} (G
 
 /-- Given a cocone `c` over `F`, we can interpret the legs of `c` as costructured arrows
     `F.obj - ⟶ c.pt`. -/
-@[simps]
+@[implicit_reducible, simps]
 def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ CostructuredArrow F c.pt where
   obj j := CostructuredArrow.mk (c.ι.app j)
   map f := CostructuredArrow.homMk f
 
 /-- If `F` has a colimit, then the colimit inclusions can be interpreted as costructured arrows
     `F.obj - ⟶ colimit F`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def colimit.toCostructuredArrow (F : J ⥤ C) [HasColimit F] :
     J ⥤ CostructuredArrow F (colimit F) where
   obj j := CostructuredArrow.mk (colimit.ι F j)

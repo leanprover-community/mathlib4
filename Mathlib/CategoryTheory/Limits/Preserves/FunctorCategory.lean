@@ -9,7 +9,9 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
+public import Mathlib.CategoryTheory.Functor.KanExtension.Yoneda
 public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
@@ -215,13 +217,13 @@ instance whiskeringRightPreservesColimits {C : Type*} [Category* C] {D : Type*} 
     PreservesColimitsOfSize.{w, w'} ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
 
-/-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
+/-- If `F.op.lan : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 lemma preservesLimit_of_lan_preservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
     [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F :=
-  letI := preservesLimitsOfShape_of_natIso (J := J)
-    (Presheaf.compULiftYonedaIsoULiftYonedaCompLan.{u} F).symm
-  preservesLimitsOfShape_of_reflects_of_preserves F uliftYoneda.{u}
+  have := preservesLimitsOfShape_of_natIso (J := J)
+    (Presheaf.compShrinkYonedaIsoShrinkYonedaCompLan.{u} F).symm
+  preservesLimitsOfShape_of_reflects_of_preserves F shrinkYoneda.{u}
 
 /-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
 lemma preservesFiniteLimits_of_evaluation {D : Type*} [Category* D] {E : Type*} [Category* E]

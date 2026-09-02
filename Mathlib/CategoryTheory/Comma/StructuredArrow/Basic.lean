@@ -83,6 +83,13 @@ end
 def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
 
+/-- The `hom` field of structured arrows in `StructuredArrow S T`,
+as a natural transformation `(Functor.const _).obj T ⟶ proj S T ⋙ S`. -/
+@[implicit_reducible, simps]
+def ι (S : D) (T : C ⥤ D) :
+    (Functor.const _).obj S ⟶ proj S T ⋙ T where
+  app X := X.hom
+
 variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 
 @[ext]
@@ -308,9 +315,8 @@ instance isEquivalence_pre (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.IsEquivalence]
     (pre S F G).IsEquivalence :=
   Comma.isEquivalence_preRight _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
-@[simps]
+@[implicit_reducible, simps]
 def post (S : C) (F : B ⥤ C) (G : C ⥤ D) :
     StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G) where
   obj X := StructuredArrow.mk (G.map X.hom)
@@ -548,6 +554,13 @@ end
 def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
   Comma.fst _ _
 
+/-- The `hom` field of costructured arrows in `CostructuredArrow S T`,
+as a natural transformation `proj S T ⋙ S ⟶ (Functor.const _).obj T`. -/
+@[implicit_reducible, simps]
+def ι (S : C ⥤ D) (T : D) :
+    proj S T ⋙ S ⟶ (Functor.const _).obj T where
+  app X := X.hom
+
 variable {T T' T'' : D} {Y Y' Y'' : C} {S S' : C ⥤ D}
 
 @[ext]
@@ -772,9 +785,8 @@ instance isEquivalence_pre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence]
     (pre F G S).IsEquivalence :=
   Comma.isEquivalence_preLeft _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(F, S) ⥤ (F ⋙ G, G(S))`. -/
-@[simps]
+@[implicit_reducible, simps]
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
     CostructuredArrow F S ⥤ CostructuredArrow (F ⋙ G) (G.obj S) where
   obj X := CostructuredArrow.mk (G.map X.hom)

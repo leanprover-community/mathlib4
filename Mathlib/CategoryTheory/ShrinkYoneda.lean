@@ -143,6 +143,15 @@ noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
     simpa [shrinkYoneda] using ((τ.naturality_apply f.op) (equivShrink _ (𝟙 X))).symm
   right_inv x := by simp
 
+lemma shrinkYonedaEquiv_apply {X : C} {P : Cᵒᵖ ⥤ Type w}
+    (τ : shrinkYoneda.{w}.obj X ⟶ P) :
+    shrinkYonedaEquiv τ = τ.app _ (shrinkYonedaObjObjEquiv.symm (𝟙 X)) := rfl
+
+lemma shrinkYonedaEquiv_symm_app {X : C} {P : Cᵒᵖ ⥤ Type w}
+    (x : P.obj (op X)) {Y : Cᵒᵖ} (f : (shrinkYoneda.{w}.obj X).obj Y) :
+    (shrinkYonedaEquiv.{w}.symm x).app Y f =
+    P.map (shrinkYonedaObjObjEquiv f).op x := rfl
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda.obj X ⟶ P)
@@ -185,6 +194,12 @@ lemma shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm {X : C} {P : Cᵒ�
       P.map f.op s := by
   obtain ⟨g, rfl⟩ := shrinkYonedaEquiv.surjective s
   simp [map_shrinkYonedaEquiv]
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[reassoc]
+lemma shrinkYonedaEquiv_symm_comp {X : Cᵒᵖ} {P Q : Cᵒᵖ ⥤ Type w} (x : P.obj X) (α : P ⟶ Q) :
+    shrinkYonedaEquiv.symm x ≫ α = shrinkYonedaEquiv.symm (α.app _ x) :=
+  shrinkYonedaEquiv.injective (by simp [shrinkYonedaEquiv])
 
 variable (C) in
 /-- The functor `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`
@@ -232,6 +247,40 @@ noncomputable def uliftYonedaIsoShrinkYoneda :
       ext
       exact (shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm _ _).symm)
 
+omit [LocallySmall.{w} C] in
+lemma uliftYonedaIsoShrinkYoneda_inv_app_app
+    {X : C} {Y : Cᵒᵖ} (f : (shrinkYoneda.{max w' v}.obj X).obj Y) :
+    (uliftYonedaIsoShrinkYoneda.{w'}.inv.app X).app Y f =
+      ULift.up (shrinkYonedaObjObjEquiv f) := rfl
+
+omit [LocallySmall.{w} C] in
+lemma uliftYonedaIsoShrinkYoneda_hom_app_app
+    {X : C} {Y : Cᵒᵖ} (f : (uliftYoneda.{w'}.obj X).obj Y) :
+    (uliftYonedaIsoShrinkYoneda.{w'}.hom.app X).app Y f =
+    shrinkYonedaObjObjEquiv.{max w' v}.symm f.down := by
+  rfl
+
+
+omit [LocallySmall.{w} C] in
+@[reassoc (attr := simp)]
+lemma uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm
+    {X : Cᵒᵖ} {P : Cᵒᵖ ⥤ Type max w' v} (x : P.obj X) :
+    uliftYonedaIsoShrinkYoneda.{w'}.inv.app X.unop ≫ uliftYonedaEquiv.symm x =
+      shrinkYonedaEquiv.symm x :=
+  shrinkYonedaEquiv.injective (by
+    simp [shrinkYonedaEquiv_apply.{max w' v},
+      uliftYonedaIsoShrinkYoneda_inv_app_app.{w'},
+      uliftYonedaEquiv, shrinkYonedaEquiv_symm_app.{max w' v}])
+
+omit [LocallySmall.{w} C] in
+@[reassoc]
+lemma uliftYonedaIsoShrinkYoneda_hom_app_comp_shrinkYoneda_symm
+    {X : Cᵒᵖ} {P : Cᵒᵖ ⥤ Type max w' v} (x : P.obj X) :
+    uliftYonedaIsoShrinkYoneda.{w'}.hom.app X.unop ≫ shrinkYonedaEquiv.symm x =
+      uliftYonedaEquiv.symm x := by
+  simp [← cancel_epi (uliftYonedaIsoShrinkYoneda.{w'}.inv.app X.unop),
+    uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm.{w'}]
+
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `shrinkYoneda.{w}` followed by the evaluation
 at `Y : Cᵒᵖ` and `uliftFunctor.{v}` identifies to `coyoneda.obj Y` followed
@@ -254,6 +303,28 @@ def shrinkYonedaRepresentableBy (X : C) : (shrinkYoneda.{w}.obj X).Representable
 
 instance (X : C) : (shrinkYoneda.{w}.obj X).IsRepresentable :=
   (shrinkYonedaRepresentableBy X).isRepresentable
+
+section
+
+variable {D : Type*} [Category* D] [LocallySmall.{w} D]
+
+/-- The natural transformation `shrinkYoneda.obj X ⟶ F.op ⋙ shrinkYoneda.obj (F.obj X)`
+when `F : C ⥤ D` and `X : C`. -/
+@[simps! -isSimp]
+noncomputable def shrinkYonedaMap (F : C ⥤ D) (X : C) :
+    shrinkYoneda.{w}.obj X ⟶ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) where
+  app Y := ↾(fun f ↦ shrinkYonedaObjObjEquiv.symm (F.map (shrinkYonedaObjObjEquiv f)))
+  naturality {Y Z} g := by
+    ext f
+    obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
+    simp [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
+
+lemma shrinkYonedaMap_app_shrinkYonedaObjObjEquiv_symm (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
+    (shrinkYonedaMap.{w} F Y).app (op X) (shrinkYonedaObjObjEquiv.symm f) =
+      shrinkYonedaObjObjEquiv.symm (F.map f) := by
+  simp [shrinkYonedaMap]
+
+end
 
 end Yoneda
 

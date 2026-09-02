@@ -146,7 +146,6 @@ lemma hComp_iff_of_equivalences (eT : C₂ ≌ C₃) (eB : D₂ ≌ D₃)
   have : (w ≫ₕ w'.hom).op = (w.op ≫ᵥ w''.hom) := by ext; simp [w'']
   rw [← guitartExact_op_iff, ← guitartExact_op_iff w,
     ← vComp_iff_of_equivalences _ _ _ w'', this]
-  rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma hComp'_iff_of_equivalences (E : C₂ ≌ C₃) (E' : D₂ ≌ D₃)

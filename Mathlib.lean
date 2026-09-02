@@ -2806,8 +2806,13 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.AdjunctionPreserves
 public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseIff
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
+public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
+public import Mathlib.CategoryTheory.Functor.KanExtension.StrongGenerator
+public import Mathlib.CategoryTheory.Functor.KanExtension.Yoneda
 public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
@@ -3406,6 +3411,7 @@ public import Mathlib.CategoryTheory.Quotient.LocallySmall
 public import Mathlib.CategoryTheory.Quotient.Preadditive
 public import Mathlib.CategoryTheory.RegularCategory.Basic
 public import Mathlib.CategoryTheory.RepresentedBy
+public import Mathlib.CategoryTheory.RestrictedYoneda
 public import Mathlib.CategoryTheory.Retract
 public import Mathlib.CategoryTheory.Shift.Adjunction
 public import Mathlib.CategoryTheory.Shift.Basic

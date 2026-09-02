@@ -124,7 +124,7 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   obtain ⟨k, hk⟩ : ∃ k, Nonempty (limit (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
       yoneda.obj ((CostructuredArrow.toOver yoneda (colimit F)).obj <|
         (CostructuredArrow.pre P.F yoneda (colimit F)).obj <|
-          (map (colimit.ι F i)).obj <| mk _))) :=
+          (CostructuredArrow.map (colimit.ι F i)).obj <| mk _))) :=
     exists_nonempty_limit_obj_of_isColimit F G _ hc _ (Iso.refl _) hi
   have htO : (CostructuredArrow.toOver yoneda (colimit F)).FullyFaithful := .ofFullyFaithful _
   -- Since the inclusion `y : CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` is fully
@@ -150,14 +150,14 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
     fun i => (hF i).finallySmall.exists_small_weakly_terminal_set
   choose s hs j hjs hj using this
   refine finallySmall_of_small_weakly_terminal_set
-    (⋃ i, (map (colimit.ι F i)).obj '' (s i)) (fun A => ?_)
+    (⋃ i, (CostructuredArrow.map (colimit.ι F i)).obj '' (s i)) (fun A => ?_)
   obtain ⟨i, y, hy⟩ := FunctorToTypes.jointly_surjective'.{v, v} F _ (yonedaEquiv A.hom)
   let y' : CostructuredArrow yoneda (F.obj i) := mk (yonedaEquiv.symm y)
   obtain ⟨x⟩ := hj _ y'
-  refine ⟨(map (colimit.ι F i)).obj (j i y'), ?_, ⟨?_⟩⟩
+  refine ⟨(CostructuredArrow.map (colimit.ι F i)).obj (j i y'), ?_, ⟨?_⟩⟩
   · simp only [Set.mem_iUnion, Set.mem_image]
     exact ⟨i, j i y', hjs _ _, rfl⟩
-  · refine ?_ ≫ (map (colimit.ι F i)).map x
+  · refine ?_ ≫ (CostructuredArrow.map (colimit.ι F i)).map x
     refine homMk (𝟙 A.left) (yonedaEquiv.injective ?_)
     simp [-EmbeddingLike.apply_eq_iff_eq, hy, yonedaEquiv_comp, y']
 

@@ -158,6 +158,8 @@ noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
         dsimp [homEquivOfIsLeftKanExtension]
         rw [assoc] }
 
+instance : (L.lan (H := H)).IsLeftAdjoint := (L.lanAdjunction H).isLeftAdjoint
+
 variable (H) in
 @[simp]
 lemma lanAdjunction_unit : (L.lanAdjunction H).unit = L.lanUnit := by

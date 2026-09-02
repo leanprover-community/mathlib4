@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # The category of elements
@@ -214,7 +215,7 @@ open Opposite
 /-- The forward direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F where
   obj X := CostructuredArrow.mk (yonedaEquiv.symm (unop X).2)
   map f :=
@@ -226,7 +227,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) :
     (CostructuredArrow yoneda F)ᵒᵖ ⥤ F.Elements where
   obj X := ⟨op (unop X).1, yonedaEquiv.1 (unop X).3⟩
@@ -240,14 +241,14 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
-@[simps]
+@[implicit_reducible, simps]
 def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
     F.Elementsᵒᵖ ≌ CostructuredArrow yoneda F where
   functor := toCostructuredArrow F
   inverse := (fromCostructuredArrow F).rightOp
   unitIso :=
     NatIso.ofComponents
-      (fun X ↦ Iso.op (CategoryOfElements.isoMk _ _ (Iso.refl _) (by simp; rfl))) (by
+      (fun X ↦ Iso.op (CategoryOfElements.isoMk _ _ (Iso.refl _) (by simp))) (by
         rintro ⟨x⟩ ⟨y⟩ ⟨f : y ⟶ x⟩
         exact Quiver.Hom.unop_inj (by ext; simp))
   counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _) (by
@@ -282,10 +283,9 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ Type (max w v)) :
     F.Elementsᵒᵖ ≌ CostructuredArrow uliftYoneda.{w} F where
   functor :=
@@ -311,6 +311,23 @@ def costructuredArrowULiftYonedaEquivalenceFunctorCompProjIso (F : Cᵒᵖ ⥤ T
     (costructuredArrowULiftYonedaEquivalence.{w} F).functor ⋙ CostructuredArrow.proj _ _ ≅
       (π F).leftOp :=
   Iso.refl _
+
+/-- Given `F : Cᵒᵖ ⥤ Type w` where `C` is a locally `w`-small category, this is the
+equivalence between the opposite of the category of elements of `F` and
+`CostructuredArrow shrinkYoneda.{w} F`. -/
+@[implicit_reducible, simps]
+noncomputable def costructuredArrowShrinkYonedaEquivalence
+    [LocallySmall.{w} C] (F : Cᵒᵖ ⥤ Type w) :
+    F.Elementsᵒᵖ ≌ CostructuredArrow shrinkYoneda.{w} F where
+  functor.obj x := CostructuredArrow.mk (shrinkYonedaEquiv.symm x.unop.2)
+  functor.map f := CostructuredArrow.homMk f.unop.1.unop (by
+    simp [← shrinkYonedaEquiv_symm_map.{w}])
+  inverse.obj x := op (Functor.elementsMk _ _ (shrinkYonedaEquiv x.hom))
+  inverse.map f := (homMk _ _ f.left.op (by simp [shrinkYonedaEquiv_naturality])).op
+  unitIso :=
+    NatIso.ofComponents (fun x ↦ Iso.op (isoMk _ _ (Iso.refl _) (by simp)))
+      (fun _ ↦ Quiver.Hom.unop_inj (by cat_disch))
+  counitIso := NatIso.ofComponents (fun x ↦ CostructuredArrow.isoMk (Iso.refl _))
 
 end CategoryOfElements
 
