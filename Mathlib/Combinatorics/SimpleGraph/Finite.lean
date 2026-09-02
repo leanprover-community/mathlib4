@@ -532,20 +532,16 @@ end Finite
 
 section LocallyFiniteOrder
 
-variable [Fintype V]
-
 /-- `G ≤ H` is decidable when adjacency is decidable on both sides. -/
-instance decidableLE {G H : SimpleGraph V}
-    [DecidableRel G.Adj] [DecidableRel H.Adj] : Decidable (G ≤ H) :=
-  decidable_of_iff (∀ v w, G.Adj v w → H.Adj v w) Iff.rfl
+instance (G H : SimpleGraph V) [Fintype V] [DecidableRel G.Adj]
+    [DecidableRel H.Adj] : Decidable (G ≤ H) :=
+  inferInstanceAs <| Decidable <| ∀ v w, G.Adj v w → H.Adj v w
 
-/-- The lattice of simple graphs on a finite type is locally finite when the order is
-decidable. -/
-instance [DecidableEq V] [DecidableLE (SimpleGraph V)] :
-    LocallyFiniteOrder (SimpleGraph V) :=
-  LocallyFiniteOrder.ofIcc' (SimpleGraph V)
-    (fun G₁ G₂ => {G | G₁ ≤ G ∧ G ≤ G₂})
-    (fun _ _ _ => by simp)
+/-- The lattice of simple graphs on a finite type is locally finite. -/
+noncomputable instance [Finite V] : LocallyFiniteOrder (SimpleGraph V) := by
+  classical
+  letI := Fintype.ofFinite (SimpleGraph V)
+  exact Fintype.toLocallyFiniteOrder
 
 end LocallyFiniteOrder
 
