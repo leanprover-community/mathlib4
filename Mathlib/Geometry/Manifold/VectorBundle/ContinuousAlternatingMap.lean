@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Floris van Doorn. All rights reserved.
+Copyright (c) 2026 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
+Authors: Sébastien Gouëzel
 -/
 module
 
@@ -10,15 +10,13 @@ public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.Notation
 
-/-! # Homs of `C^n` vector bundles over the same base space
+/-! # The bundle of alternating maps between `C^n` vector bundles over the same base space is `C^n`
 
-Here we show that the bundle of continuous linear maps is a `C^n` vector bundle. We also show
-that applying a smooth family of linear maps to a smooth family of vectors gives a smooth
-result, in several versions.
+Here we show that the bundle of continuous alternating linear maps is a `C^n` vector bundle,
+when the base field has characteristic zero.
 
-Note that we only do this for bundles of linear maps, not for bundles of arbitrary semilinear maps.
-Indeed, semilinear maps are typically not smooth. For instance, complex conjugation is not
-`ℂ`-differentiable.
+We also show that applying a smooth family of alternating maps to smooth families of vectors gives
+a smooth result, in several versions.
 -/
 
 public section
@@ -173,9 +171,9 @@ Version for `ContMDiffWithinAt`. We also give a version for `ContMDiffAt`, but n
 a point.
 
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
-`inCoordinates`, see `ContMDiffWithinAt.alteratingMap_bundle_apply`.
+`inCoordinates`, see `ContMDiffWithinAt.continuousAlternatingMap_bundle_apply`.
 -/
-lemma ContMDiffWithinAt.alternatingMap_apply_of_inCoordinates
+lemma ContMDiffWithinAt.continuousAlternatingMap_apply_of_inCoordinates
     (hϕ : CMDiffAt[s] n
       (fun m ↦ inCoordinates F₁ F₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : ∀ i, CMDiffAt[s] n (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt[s] n b₂ m₀) :
@@ -232,48 +230,42 @@ a point.
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
 `inCoordinates`, see `ContMDiffAt.clm_bundle_apply`.
 -/
-lemma ContMDiffAt.alternatingMap_apply_of_inCoordinates
+lemma ContMDiffAt.continuousAlternatingMap_apply_of_inCoordinates
     (hϕ : CMDiffAt n
       (fun m ↦ inCoordinates F₁ F₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : ∀ i, CMDiffAt n (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt n b₂ m₀) :
     CMDiffAt n (fun m ↦ (ϕ m (fun i ↦ v i m) : TotalSpace F₂ E₂)) m₀ := by
   simp_rw [← contMDiffWithinAt_univ] at hϕ hv hb₂ ⊢
-  exact ContMDiffWithinAt.alternatingMap_apply_of_inCoordinates hϕ hv hb₂
+  exact ContMDiffWithinAt.continuousAlternatingMap_apply_of_inCoordinates hϕ hv hb₂
 
+/-- Consider differentiable maps `v₁, ..., vᵢ : M → E₁` to a vector bundle, over a base
+map `b₁ : M → B₁`, and another base map `b₂ : M → B₂`. Given alternating maps
+`ϕ m : E₁ (b₁ m) [⋀^ι]→L[𝕜] E₂ (b₂ m)` depending differentiably on `m`, one can
+apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is differentiable.
 
-/-- Consider `C^n` maps `v₁, ..., vᵢ : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`,
-and another base map `b₂ : M → B₂`. Given alternating maps `ϕ m : E₁ (b₁ m) [⋀^ι]→L[𝕜] E₂ (b₂ m)`
-depending smoothly on `m`, one can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the
-resulting map is `C^n`.
+Note that the differentiability of `ϕ` cannot always be stated as differentiability of a map into
+a manifold, as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only
+when `b₁` and `b₂` are globally smooth, but we want to apply this lemma with only local information.
+Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 
-Note that the smoothness of `ϕ` cannot always be stated as smoothness of a map into a manifold,
-as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
-globally smooth, but we want to apply this lemma with only local information. Therefore, we
-formulate it using smoothness of `ϕ` read in coordinates.
-
-Version for `ContMDiffWithinAt`. We also give a version for `ContMDiffAt`, but no version for
-`ContMDiffOn` or `ContMDiff` as our assumption, written in coordinates, only makes sense around
-a point.
+Version for `MDifferentiableWithinAt`. We also give a version for `MDifferentiableAt`, but no
+version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates,
+only makes sense around a point.
 
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
-`inCoordinates`, see `ContMDiffWithinAt.alteratingMap_bundle_apply`.
+`inCoordinates`, see `MDifferentiableWithinAt.continuousAlternatingMap_bundle_apply`.
 -/
-lemma MDifferentiableWithinAt.alternatingMap_apply_of_inCoordinates
+lemma MDifferentiableWithinAt.continuousAlternatingMap_apply_of_inCoordinates
     (hϕ : MDiffAt[s]
       (fun m ↦ inCoordinates F₁ F₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : ∀ i, MDiffAt[s] (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀) (hb₂ : MDiffAt[s] b₂ m₀) :
     MDiffAt[s] (fun m ↦ (ϕ m (fun i ↦ v i m) : TotalSpace F₂ E₂)) m₀ := by
-/-  rw [← MDifferentiableWithinAt_insert_self] at hϕ hb₂ ⊢
-  replace hv : ∀ i, CMDiffAt[insert m₀ s] n (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀ := by
-    intro i
-    rw [contMDiffWithinAt_insert_self]
-    exact hv i -/
   simp_rw [mdifferentiableWithinAt_totalSpace] at hv ⊢
   refine ⟨hb₂, ?_⟩
-  apply (ContMDiffWithinAt.continuousAlternatingMap_apply hϕ
-    (fun i ↦ (hv i).2)).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
+  apply (MDifferentiableWithinAt.continuousAlternatingMap_apply hϕ
+    (fun i ↦ (hv i).2)).congr_of_eventuallyEq_insert ?_
   have A' : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by
-      apply hb₂.continuousWithinAt
+      apply hb₂.insert.continuousWithinAt
       apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
       exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨i₀⟩⟩
@@ -286,7 +278,7 @@ lemma MDifferentiableWithinAt.alternatingMap_apply_of_inCoordinates
     ext i
     exact hι.elim i
   · have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
-      apply (hv i₀).1.continuousWithinAt
+      apply (hv i₀).1.insert.continuousWithinAt
       apply (trivializationAt F₁ E₁ (b₁ m₀)).open_baseSet.mem_nhds
       exact FiberBundle.mem_baseSet_trivializationAt' (b₁ m₀)
     filter_upwards [A, A'] with m hm h'm
@@ -298,6 +290,31 @@ lemma MDifferentiableWithinAt.alternatingMap_apply_of_inCoordinates
     congr
     ext i
     simp [*]
+
+/-- Consider differentiable maps `v₁, ..., vᵢ : M → E₁` to a vector bundle, over a base
+map `b₁ : M → B₁`, and another base map `b₂ : M → B₂`. Given alternating maps
+`ϕ m : E₁ (b₁ m) [⋀^ι]→L[𝕜] E₂ (b₂ m)` depending differentiably on `m`, one can
+apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is differentiable.
+
+Note that the differentiability of `ϕ` cannot always be stated as differentiability of a map into
+a manifold, as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only
+when `b₁` and `b₂` are globally smooth, but we want to apply this lemma with only local information.
+Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
+
+Version for `MDifferentiableAt`. We also give a version for `MDifferentiableWithinAt`, but no
+version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates,
+only makes sense around a point.
+
+For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
+`inCoordinates`, see `MDifferentiableAt.continuousAlternatingMap_bundle_apply`.
+-/
+lemma MDifferentiableAt.continuousAlternatingMap_apply_of_inCoordinates
+    (hϕ : MDiffAt
+      (fun m ↦ inCoordinates F₁ F₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
+    (hv : ∀ i, MDiffAt (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀) (hb₂ : MDiffAt b₂ m₀) :
+    MDiffAt (fun m ↦ (ϕ m (fun i ↦ v i m) : TotalSpace F₂ E₂)) m₀ := by
+  simp_rw [← mdifferentiableWithinAt_univ] at hϕ hv hb₂ ⊢
+  exact MDifferentiableWithinAt.continuousAlternatingMap_apply_of_inCoordinates hϕ hv hb₂
 
 end
 
@@ -335,98 +352,101 @@ alternating linear maps `ϕ m : E₁ (b m) [⋀^ι]→ E₂ (b m)` depending smo
 One can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is `C^n`.
 
 We give here a version of this statement within a set at a point. -/
-lemma ContMDiffWithinAt.alternatingMap_bundle_apply
+lemma ContMDiffWithinAt.continuousAlternatingMap_bundle_apply
     (hϕ : CMDiffAt[s] n
       (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x [⋀^ι]→L[𝕜] E₂ x))
         (b m) (ϕ m)) x)
     (hv : ∀ i, CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m)) x) :
     CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) x := by
   simp only [contMDiffWithinAt_continuousAlternatingMap_bundle] at hϕ
-  exact hϕ.2.alternatingMap_apply_of_inCoordinates hv hϕ.1
+  exact hϕ.2.continuousAlternatingMap_apply_of_inCoordinates hv hϕ.1
 
 /-- Consider `C^n` maps `vᵢ : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 alternating linear maps `ϕ m : E₁ (b m) [⋀^ι]→ E₂ (b m)` depending smoothly on `m`.
 One can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is `C^n`.
 
 We give here a version of this statement at a point. -/
-lemma ContMDiffAt.alternatingMap_bundle_apply
+lemma ContMDiffAt.continuousAlternatingMap_bundle_apply
     (hϕ : CMDiffAt n
       (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x [⋀^ι]→L[𝕜] E₂ x))
         (b m) (ϕ m)) x)
     (hv : ∀ i, CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m)) x) :
     CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) x :=
-  ContMDiffWithinAt.alternatingMap_bundle_apply hϕ hv
+  ContMDiffWithinAt.continuousAlternatingMap_bundle_apply hϕ hv
 
 /-- Consider `C^n` maps `vᵢ : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 alternating linear maps `ϕ m : E₁ (b m) [⋀^ι]→ E₂ (b m)` depending smoothly on `m`.
 One can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is `C^n`.
 
 We give here a version of this statement on a set. -/
-lemma ContMDiffOn.alternatingMap_bundle_apply
+lemma ContMDiffOn.continuousAlternatingMap_bundle_apply
     (hϕ : CMDiff[s] n
       (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x [⋀^ι]→L[𝕜] E₂ x))
         (b m) (ϕ m)))
     (hv : ∀ i, CMDiff[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m))) :
     CMDiff[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) :=
-  fun x hx ↦ (hϕ x hx).alternatingMap_bundle_apply (fun i ↦ hv i x hx)
+  fun x hx ↦ (hϕ x hx).continuousAlternatingMap_bundle_apply (fun i ↦ hv i x hx)
 
 /-- Consider `C^n` maps `vᵢ : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 alternating linear maps `ϕ m : E₁ (b m) [⋀^ι]→ E₂ (b m)` depending smoothly on `m`.
 One can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is `C^n`. -/
-lemma ContMDiff.alternatingMap_bundle_apply
+lemma ContMDiff.continuousAlternatingMap_bundle_apply
     (hϕ : CMDiff n
       (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x [⋀^ι]→L[𝕜] E₂ x))
         (b m) (ϕ m)))
     (hv : ∀ i, CMDiff n (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m))) :
     CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) :=
-  fun x ↦ (hϕ x).alternatingMap_bundle_apply (fun i ↦ hv i x)
+  fun x ↦ (hϕ x).continuousAlternatingMap_bundle_apply (fun i ↦ hv i x)
 
-/-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
-linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
-One can apply `ϕ m` to `v m`, and the resulting map is differentiable.
+/-- Consider differentiable maps `vᵢ : M → E₁` to a vector bundle, over a base map `b : M → B`, and
+alternating linear maps `ϕ m : E₁ (b m) [⋀^ι]→ E₂ (b m)` depending differentiably on `m`.
+One can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is differentiable.
 
 We give here a version of this statement within a set at a point. -/
-lemma MDifferentiableWithinAt.alternatingMap_bundle_apply
+lemma MDifferentiableWithinAt.continuousAlternatingMap_bundle_apply
     (hϕ : MDiffAt[s]
       (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x [⋀^ι]→L[𝕜] E₂ x))
         (b m) (ϕ m)) x)
     (hv : ∀ i, MDiffAt[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m)) x) :
     MDiffAt[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) x := by
   simp only [mdifferentiableWithinAt_continuousAlternatingMap_bundle] at hϕ
-  exact hϕ.2.alternatingMap_apply_of_inCoordinates hv hϕ.1
+  exact hϕ.2.continuousAlternatingMap_apply_of_inCoordinates hv hϕ.1
 
-/-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
-linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
-One can apply `ϕ m` to `v m`, and the resulting map is differentiable.
+/-- Consider differentiable maps `vᵢ : M → E₁` to a vector bundle, over a base map `b : M → B`, and
+alternating linear maps `ϕ m : E₁ (b m) [⋀^ι]→ E₂ (b m)` depending differentiably on `m`.
+One can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is differentiable.
 
 We give here a version of this statement at a point. -/
-lemma MDifferentiableAt.alternatingMap_bundle_apply
+lemma MDifferentiableAt.continuousAlternatingMap_bundle_apply
     (hϕ : MDiffAt
-      (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
-    (hv : MDiffAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
-    MDiffAt (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
-  MDifferentiableWithinAt.clm_bundle_apply hϕ hv
+      (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x [⋀^ι]→L[𝕜] E₂ x))
+        (b m) (ϕ m)) x)
+    (hv : ∀ i, MDiffAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m)) x) :
+    MDiffAt (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) x :=
+  MDifferentiableWithinAt.continuousAlternatingMap_bundle_apply hϕ hv
 
-/-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
-linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
-One can apply `ϕ m` to `v m`, and the resulting map is differentiable.
+/-- Consider differentiable maps `vᵢ : M → E₁` to a vector bundle, over a base map `b : M → B`, and
+alternating linear maps `ϕ m : E₁ (b m) [⋀^ι]→ E₂ (b m)` depending differentiably on `m`.
+One can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is differentiable.
 
 We give here a version of this statement on a set. -/
-lemma MDifferentiableOn.alternatingMap_bundle_apply
+lemma MDifferentiableOn.continuousAlternatingMap_bundle_apply
     (hϕ : MDiff[s]
-      (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
-    (hv : MDiff[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
-    MDiff[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
-  fun x hx ↦ (hϕ x hx).clm_bundle_apply (hv x hx)
+      (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x [⋀^ι]→L[𝕜] E₂ x))
+        (b m) (ϕ m)))
+    (hv : ∀ i, MDiff[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m))) :
+    MDiff[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) :=
+  fun x hx ↦ (hϕ x hx).continuousAlternatingMap_bundle_apply (fun i ↦ hv i x hx)
 
-/-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
-linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
-One can apply `ϕ m` to `v m`, and the resulting map is differentiable. -/
-lemma MDifferentiable.alternatingMap_bundle_apply
+/-- Consider differentiable maps `vᵢ : M → E₁` to a vector bundle, over a base map `b : M → B`, and
+alternating linear maps `ϕ m : E₁ (b m) [⋀^ι]→ E₂ (b m)` depending differentiably on `m`.
+One can apply `ϕ m` to `(v₁ m, ..., vᵢ m)`, and the resulting map is differentiable. -/
+lemma MDifferentiable.continuousAlternatingMap_bundle_apply
     (hϕ : MDiff
-      (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
-    (hv : MDiff (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
-    MDiff (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
-  fun x ↦ (hϕ x).clm_bundle_apply (hv x)
+      (fun m ↦ TotalSpace.mk' (F₁ [⋀^ι]→L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x [⋀^ι]→L[𝕜] E₂ x))
+        (b m) (ϕ m)))
+    (hv : ∀ i, MDiff (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m))) :
+    MDiff (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) :=
+  fun x ↦ (hϕ x).continuousAlternatingMap_bundle_apply (fun i ↦ hv i x)
 
 end
