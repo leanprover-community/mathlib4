@@ -44,8 +44,6 @@ namespace WfDvdMonoid
 
 variable [CommMonoidWithZero α]
 
-open Associates Nat
-
 variable [WfDvdMonoid α]
 
 theorem exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :

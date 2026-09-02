@@ -22,7 +22,7 @@ assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 assert_not_exists Finset.preimage Finset.sigma Fintype.piFinset
 assert_not_exists Finset.piecewise Set.indicator MonoidHom.coeFn Function.support IsSquare
 
-open Fin Function
+open Function
 
 variable {ι κ G M : Type*} {s s₁ s₂ : Finset ι} {a : ι}
 
@@ -1141,6 +1141,3 @@ lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
 theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   induction s using Finset.cons_induction with grind
-
-@[deprecated (since := "2026-02-14")]
-alias nat_abs_sum_le := Int.natAbs_sum_le

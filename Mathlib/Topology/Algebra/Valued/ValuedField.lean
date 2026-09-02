@@ -101,7 +101,6 @@ instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
       simp only [mem_ofPred_eq, Units.min_val, Units.val_mul] at y_in
       exact Valuation.inversion_estimate _ x_ne y_in }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A valued division ring is separated. -/
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
   suffices T2Space K by infer_instance
@@ -136,7 +135,6 @@ theorem Valued.continuous_valuation [hv : Valued K Γ₀] :
     simp_rw [v.restrict_inj]
     apply Valued.locally_const (by simpa [restrict₀_apply] using v_ne)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     (hsurj : Function.Surjective hv.v) : Continuous hv.v := by
   rw [continuous_iff_continuousAt]
@@ -210,7 +208,6 @@ instance (priority := 100) completable : CompletableTopField K :=
 
 open MonoidWithZeroHom WithZeroTopology
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma valuation_isClosedMap : IsClosedMap (v.restrict : K → (ValueGroup₀ (.ofClass hv.v))) := by
   refine IsClosedMap.of_nonempty ?_
   intro U hU hU'

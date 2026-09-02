@@ -46,7 +46,6 @@ def finsuppAntidiag (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
   (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
     simpa using (mem_piAntidiag.1 f.2).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mem_finsuppAntidiag : f ∈ finsuppAntidiag s n ↔ s.sum f = n ∧ f.support ⊆ s := by
   simp [finsuppAntidiag, ← DFunLike.coe_fn_eq, subset_iff]
 

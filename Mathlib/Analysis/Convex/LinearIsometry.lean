@@ -17,7 +17,7 @@ In this file we prove some basic lemmas about (strict) convexity and linear isom
 
 public section
 
-open Function Set Metric
+open Set Metric
 open scoped Convex
 
 section SeminormedAddCommGroup

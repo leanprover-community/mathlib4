@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Topology.Bornology.Constructions
 
 /-!
@@ -38,7 +39,6 @@ def orderBornology : Bornology α := .ofBounded
   (fun _ hs _ ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩)
   (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma orderBornology_isBounded : orderBornology.IsBounded s ↔ BddBelow s ∧ BddAbove s := by
   simp [IsBounded, IsCobounded, -isCobounded_compl_iff]
 

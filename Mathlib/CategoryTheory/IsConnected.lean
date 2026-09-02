@@ -88,7 +88,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
   obj j := have := Nonempty.intro j
     Discrete.mk (Function.invFun F.obj (F.obj j))
   map {j _} f := have := Nonempty.intro j
-    ⟨⟨congr_arg (Function.invFun F.obj) (Discrete.ext (Discrete.eq_of_hom (F.map f)))⟩⟩
+    ⟨congr_arg (Function.invFun F.obj) (Discrete.ext (Discrete.eq_of_hom (F.map f)))⟩
 
 set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/
@@ -115,7 +115,7 @@ The converse is given in `IsConnected.of_any_functor_const_on_obj`.
 -/
 theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j j' : J) :
     F.obj j = F.obj j' := by
-  ext; exact ((isoConstant F j').hom.app j).down.1
+  ext; exact ((isoConstant F j').hom.app j).1
 
 /-- If any functor to a discrete category is constant on objects, J is connected.
 The converse of `any_functor_const_on_obj`.
@@ -473,7 +473,6 @@ def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] :
 
 variable {C : Type w₂} [Category.{w₁} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a connected
 category must be constant.
