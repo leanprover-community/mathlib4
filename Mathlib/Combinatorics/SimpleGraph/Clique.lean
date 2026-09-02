@@ -258,6 +258,8 @@ variable {G H} {a b c : α}
 
 @[simp] lemma isNClique_empty_iff : G.IsNClique n ∅ ↔ n = 0 := by simp [isNClique_iff, eq_comm]
 
+lemma isNClique_empty' : G.IsNClique 0 ∅ := by simp
+
 @[deprecated (since := "2026-09-01")] alias isNClique_empty := isNClique_empty_iff
 
 @[simp]
@@ -880,7 +882,6 @@ theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w)
 theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
   .rfl
 
-@[simp]
 theorem isIndepSet_empty : G.IsIndepSet ∅ := Set.pairwise_empty _
 
 theorem isIndepSet_singleton (a : α) : G.IsIndepSet {a} := by simp
@@ -945,7 +946,6 @@ structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
 lemma isNIndepSet_empty_iff : G.IsNIndepSet n ∅ ↔ n = 0 := by
   simp [isNIndepSet_iff,eq_comm]
 
-@[simp]
 lemma isNIndepSet_empty : G.IsNIndepSet 0 ∅ := by simp
 
 /-- An `n`-independent set is an `n`-clique in the complement graph and vice versa. -/
