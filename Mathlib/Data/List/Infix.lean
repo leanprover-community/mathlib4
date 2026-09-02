@@ -338,33 +338,27 @@ def infixes (l : List α) : List (List α) := l.tails.flatMap inits
 theorem mem_infixes {s t : List α} : s ∈ t.infixes ↔ s <:+: t := by
   simp [infixes, infix_iff_prefix_suffix, and_comm]
 
-/-- The empty list has exactly one infix: itself. -/
 @[simp]
 theorem infixes_nil : ([] : List α).infixes = [[]] := by simp [infixes]
 
-/-- Cons decomposition of the infix enumerator, the analogue of `tails_cons`: the infixes
-of `a :: l` are the initial segments of `a :: l` followed by the infixes of `l`. -/
 theorem infixes_cons (a : α) (l : List α) :
     (a :: l).infixes = (a :: l).inits ++ l.infixes := by
   simp [infixes, flatMap_cons]
 
-/-- The number of infixes (with multiplicity) grows by `l.length + 2` at each cons: one new
-initial segment for each of the `l.length + 2` prefixes of `a :: l`. -/
 theorem length_infixes_cons (a : α) (l : List α) :
     (a :: l).infixes.length = l.length + 2 + l.infixes.length := by
   rw [infixes_cons, length_append, length_inits, length_cons]
 
-/-- The empty list is an infix of every list. -/
-theorem nil_mem_infixes (l : List α) : [] ∈ l.infixes :=
-  mem_infixes.mpr nil_infix
-
-/-- Every list is an infix of itself. -/
-theorem self_mem_infixes (l : List α) : l ∈ l.infixes :=
-  mem_infixes.mpr (infix_refl l)
-
-/-- `l.infixes` is never empty. -/
-theorem infixes_ne_nil (l : List α) : l.infixes ≠ [] :=
-  ne_nil_of_mem (nil_mem_infixes l)
+@[simp]
+theorem length_infixes (l : List α) :
+    l.infixes.length = (l.length + 1) * (l.length + 2) / 2 := by
+  refine (Nat.div_eq_of_eq_mul_left Nat.zero_lt_two ?_).symm
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    rw [length_infixes_cons, length_cons]
+    simp only [Nat.mul_add, Nat.add_mul, Nat.mul_one, Nat.one_mul] at ih ⊢
+    omega
 
 end InitsTails
 
