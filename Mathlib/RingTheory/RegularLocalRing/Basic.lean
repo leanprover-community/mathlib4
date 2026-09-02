@@ -138,7 +138,7 @@ lemma quotient_span_singleton [IsRegularLocalRing R] {x : R} (mem : x ∈ maxima
     (nmem : x ∉ (maximalIdeal R) ^ 2) : IsRegularLocalRing (R ⧸ Ideal.span {x}) ∧
     (ringKrullDim (R ⧸ Ideal.span {x}) + 1 = ringKrullDim R) := by
   rw [← Nat.cast_one, ← Finset.card_singleton x, ← Finset.coe_singleton x]
-  apply ((quotient_isRegularLocalRing_tfae R {x} (by simpa)).out 1 2).mp
+  apply ((quotient_isRegularLocalRing_tfae R {x} (by simpa)).out 2 3).mp
   simpa [← LinearMap.mem_ker, Ideal.mem_toCotangent_ker] using nmem
 
 lemma FiniteRingKrullDim.ringKrullDim_eq_nat [FiniteRingKrullDim R] :
@@ -151,7 +151,7 @@ lemma FiniteRingKrullDim.ringKrullDim_eq_nat [FiniteRingKrullDim R] :
 variable {R} in
 theorem Ideal.span_singleton_mul_eq_self_of_isPrime {p : Ideal R} [p.IsPrime]
     (x : R) (hx : x ∉ p) (hp : p ≤ Ideal.span {x}) : Ideal.span {x} * p = p := by
-  refine Ideal.mul_le_left.antisymm ?_
+  refine Ideal.mul_le_right.antisymm ?_
   intro y hyp
   obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.mp (hp hyp)
   exact Ideal.mul_mem_mul (Ideal.mem_span_singleton_self _)
@@ -194,7 +194,7 @@ For iff version, should exist after making `IsDiscreteValuationRing` extend `IsD
 lemma IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one [IsRegularLocalRing R]
     (dim : ringKrullDim R = 1) : IsDiscreteValuationRing R := by
   have nisf : ¬ IsField R := (mt ringKrullDim_eq_zero_of_isField (by simp [dim]))
-  apply ((IsDiscreteValuationRing.TFAE R nisf).out 0 4).mpr ((Submodule.spanFinrank_eq_one_iff _).mp
+  apply ((IsDiscreteValuationRing.TFAE R nisf).out 1 5).mpr ((Submodule.spanFinrank_eq_one_iff _).mp
     (Nat.cast_inj.mp (((isRegularLocalRing_iff R).mp ‹_›).trans dim))).1
 
 set_option backward.isDefEq.respectTransparency false in
@@ -217,7 +217,7 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
     refine @isDomain_of_isRegularLocalRing _ _ ?_
     rw [Ideal.ofList, ← (List.take i rs).coe_toFinset]
     refine And.left (((quotient_isRegularLocalRing_tfae R (List.take i rs).toFinset
-      ((Finset.coe_subset.mpr sub).trans mem)).out 0 2).mp ?_)
+      ((Finset.coe_subset.mpr sub).trans mem)).out 1 3).mp ?_)
     use rs.toFinset
     simpa [sub, card] using span
   have : (Ideal.Quotient.mk (Ideal.ofList (List.take i rs))) rs[i] ≠ 0 := by

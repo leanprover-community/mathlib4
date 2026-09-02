@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Zichen Wang
 -/
 module
 
+public import Mathlib.Analysis.Convex.Intrinsic
 public import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
@@ -174,7 +175,7 @@ lemma ConvexOn.locallyLipschitzOn_iff_continuousOn (hC : IsOpen C) (hf : ConvexO
     LocallyLipschitzOn C f ↔ ContinuousOn f C := by
   obtain rfl | hC' := C.eq_empty_or_nonempty
   · simp
-  · exact (hf.continuousOn_tfae hC hC').out 0 1
+  · exact (hf.continuousOn_tfae hC hC').out 1 2
 
 lemma ConcaveOn.locallyLipschitzOn_iff_continuousOn (hC : IsOpen C) (hf : ConcaveOn ℝ C f) :
     LocallyLipschitzOn C f ↔ ContinuousOn f C := by
@@ -187,7 +188,7 @@ protected lemma ConvexOn.locallyLipschitzOn (hC : IsOpen C) (hf : ConvexOn ℝ C
   obtain rfl | ⟨x₀, hx₀⟩ := C.eq_empty_or_nonempty
   · simp
   · obtain ⟨b, hx₀b, hbC⟩ := exists_mem_interior_convexHull_affineBasis (hC.mem_nhds hx₀)
-    refine ((hf.continuousOn_tfae hC ⟨x₀, hx₀⟩).out 3 0).mp ?_
+    refine ((hf.continuousOn_tfae hC ⟨x₀, hx₀⟩).out 4 1).mp ?_
     refine ⟨x₀, hx₀, BddAbove.isBoundedUnder (IsOpen.mem_nhds isOpen_interior hx₀b) ?_⟩
     exact (hf.bddAbove_convexHull ((subset_convexHull ..).trans hbC)
       ((finite_range _).image _).bddAbove).mono (by gcongr; exact interior_subset)
@@ -221,18 +222,33 @@ protected lemma ConvexOn.locallyLipschitz (hf : ConvexOn ℝ univ f) : LocallyLi
 protected lemma ConcaveOn.locallyLipschitz (hf : ConcaveOn ℝ univ f) : LocallyLipschitz f := by
   simpa using hf.locallyLipschitzOn_interior
 
--- Commented out since `intrinsicInterior` is not imported (but should be once these are proved)
--- proof_wanted ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
---     LocallyLipschitzOn (intrinsicInterior ℝ C) f
+lemma ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
+    LocallyLipschitzOn (intrinsicInterior ℝ C) f := by
+  obtain rfl | ⟨p, hp⟩ := C.eq_empty_or_nonempty
+  · simp
+  have : Nonempty (affineSpan ℝ C) := ⟨⟨p, subset_affineSpan ℝ C hp⟩⟩
+  set ψ := (AffineIsometryEquiv.constVSub ℝ (⟨p, subset_affineSpan ℝ C hp⟩ : affineSpan ℝ C)).symm
+  have hiso : Isometry (Subtype.val ∘ ⇑ψ) := isometry_subtype_coe.comp ψ.isometry
+  have hL := (hf.comp_affineMap
+    ((affineSpan ℝ C).subtype.comp ψ.toAffineEquiv.toAffineMap)).locallyLipschitzOn_interior
+  refine (hiso.locallyLipschitzOn_image (by simpa using hL)).mono ?_
+  rw [Set.preimage_comp]
+  rintro x hx
+  obtain ⟨w, hw, rfl⟩ := mem_intrinsicInterior.1 hx
+  exact ⟨ψ.symm w, preimage_interior_subset_interior_preimage ψ.continuous (by simpa using hw),
+    by simp⟩
 
--- proof_wanted ConcaveOn.locallyLipschitzOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
---     LocallyLipschitzOn (intrinsicInterior ℝ C) f
+lemma ConcaveOn.locallyLipschitzOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
+    LocallyLipschitzOn (intrinsicInterior ℝ C) f := by
+  simpa using hf.neg.locallyLipschitzOn_intrinsicInterior
 
--- proof_wanted ConvexOn.continuousOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
+lemma ConvexOn.continuousOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
+    ContinuousOn f (intrinsicInterior ℝ C) :=
+  hf.locallyLipschitzOn_intrinsicInterior.continuousOn
 
--- proof_wanted ConcaveOn.continuousOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
+lemma ConcaveOn.continuousOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
+    ContinuousOn f (intrinsicInterior ℝ C) :=
+  hf.locallyLipschitzOn_intrinsicInterior.continuousOn
 
 section Intervals
 
