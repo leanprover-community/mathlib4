@@ -24,8 +24,6 @@ We also show that `F.rightDerivedFunctorPlus` may also be thought of
 as a derived functor of the functor `F.mapCochainComplexPlus`
 that `F` induces on the category of bounded below cochain complexes.
 
-TODO(@joelriou): refactor the definition of `Functor.rightDerived`
-
 -/
 
 @[expose] public section
@@ -162,6 +160,17 @@ example (K : CochainComplex.Plus (InjectiveObject C)) :
       ((HomotopyCategory.Plus.quotient C).obj
         ((InjectiveObject.ι C).mapCochainComplexPlus.obj K))) := by
   infer_instance
+
+lemma isIso_rightDerivedFunctorPlusUnit_app_of_injective (K : CochainComplex.Plus C)
+    (n : ℤ) (hK : K.obj.IsStrictlyGE n := by infer_instance)
+    (hK' : ∀ (q : ℤ), Injective (K.obj.X q)) :
+    IsIso (F.rightDerivedFunctorPlusUnit.app K) := by
+  sorry
+
+lemma isIso_rightDerivedFunctorPlusUnit_app_of_isKInjective (K : CochainComplex.Plus C)
+    (hK : K.obj.IsKInjective := by infer_instance) :
+    IsIso (F.rightDerivedFunctorPlusUnit.app K) := by
+  sorry
 
 end Functor
 
