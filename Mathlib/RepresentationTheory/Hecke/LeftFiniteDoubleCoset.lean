@@ -20,7 +20,7 @@ concrete convolution product computation.
 
 @[expose] public section
 
-variable {G : Type*} [Group G] {H₁ H₂ : Subgroup G} {g : G}
+variable {G : Type*} [Group G] {H₁ H₂ : Subgroup G} {g g': G}
 
 open DoubleCoset Pointwise
 
