@@ -90,11 +90,11 @@ theorem finSuccEquiv'_symm_some (i : Fin (n + 1)) (j : Fin n) :
 @[simp]
 theorem finSuccEquiv'_eq_some {i j : Fin (n + 1)} {k : Fin n} :
     finSuccEquiv' i j = k ↔ j = i.succAbove k :=
-  (finSuccEquiv' i).apply_eq_iff_eq_symm_apply
+  (finSuccEquiv' i).eq_symm_apply.symm
 
 @[simp]
 theorem finSuccEquiv'_eq_none {i j : Fin (n + 1)} : finSuccEquiv' i j = none ↔ i = j :=
-  (finSuccEquiv' i).apply_eq_iff_eq_symm_apply.trans eq_comm
+  (finSuccEquiv' i).eq_symm_apply.symm.trans eq_comm
 
 theorem finSuccEquiv'_symm_some_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i).symm (some m) = Fin.castSucc m :=
@@ -127,6 +127,9 @@ theorem finSuccEquiv_succ (m : Fin n) : (finSuccEquiv n) m.succ = some m :=
   finSuccEquiv'_above (Fin.zero_le _)
 
 @[simp]
+theorem finSuccEquiv_last (n : ℕ) : finSuccEquiv (n + 1) (Fin.last (n + 1)) = Fin.last n := rfl
+
+@[simp]
 theorem finSuccEquiv_symm_none : (finSuccEquiv n).symm none = 0 :=
   finSuccEquiv'_symm_none _
 
@@ -137,11 +140,11 @@ theorem finSuccEquiv_symm_some (m : Fin n) : (finSuccEquiv n).symm (some m) = m.
 @[simp]
 theorem finSuccEquiv_eq_some {i : Fin (n + 1)} {j : Fin n} :
     finSuccEquiv n i = j ↔ i = j.succ :=
-  (finSuccEquiv n).apply_eq_iff_eq_symm_apply
+  (finSuccEquiv n).eq_symm_apply.symm
 
 @[simp]
 theorem finSuccEquiv_eq_none {i : Fin (n + 1)} : finSuccEquiv n i = none ↔ i = 0 :=
-  (finSuccEquiv n).apply_eq_iff_eq_symm_apply
+  (finSuccEquiv n).eq_symm_apply.symm
 
 /-- The equiv version of `Fin.predAbove_zero`. -/
 theorem finSuccEquiv'_zero : finSuccEquiv' (0 : Fin (n + 1)) = finSuccEquiv n :=
@@ -261,12 +264,12 @@ def finSumNatEquiv (n : ℕ) : Fin n ⊕ ℕ ≃ ℕ where
   toFun := Sum.elim Fin.val (n + ·)
   invFun i := if hi : i < n then .inl ⟨i, hi⟩ else .inr (i - n)
   left_inv i := (i.casesOn
-    (fun _ => dif_pos (Fin.is_lt _))
-    (fun _ => (dif_neg (Nat.le_add_right _ _).not_gt).trans <|
+    (fun _ => dite_eq_left (Fin.is_lt _))
+    (fun _ => (dite_eq_right (Nat.le_add_right _ _).not_gt).trans <|
       congrArg _ (Nat.add_sub_cancel_left _ _)))
   right_inv i := (apply_dite _ _ _ _).trans <| (i.lt_or_ge n).by_cases
-    (fun hi => dif_pos hi)
-    (fun hi => (dif_neg hi.not_gt).trans <| Nat.add_sub_cancel' hi)
+    (fun hi => dite_eq_left hi)
+    (fun hi => (dite_eq_right hi.not_gt).trans <| Nat.add_sub_cancel' hi)
 
 @[simp] theorem finSumNatEquiv_apply_left (i : Fin n) :
     finSumNatEquiv n (.inl i) = i := rfl
@@ -275,10 +278,10 @@ def finSumNatEquiv (n : ℕ) : Fin n ⊕ ℕ ≃ ℕ where
     finSumNatEquiv n (.inr i) = n + i := rfl
 
 @[simp] theorem finSumNatEquiv_symm_apply_of_lt {i : ℕ} (hi : i < n) :
-    (finSumNatEquiv n).symm i = .inl ⟨i, hi⟩ := dif_pos hi
+    (finSumNatEquiv n).symm i = .inl ⟨i, hi⟩ := dite_eq_left hi
 
 @[simp] theorem finSumNatEquiv_symm_apply_of_ge {i : ℕ} (hi : n ≤ i) :
-    (finSumNatEquiv n).symm i = .inr (i - n) := dif_neg (Nat.not_lt_of_ge hi)
+    (finSumNatEquiv n).symm i = .inr (i - n) := dite_eq_right (Nat.not_lt_of_ge hi)
 
 theorem finSumNatEquiv_symm_apply_fin (i : Fin n) :
     (finSumNatEquiv n).symm i = .inl i := by simp

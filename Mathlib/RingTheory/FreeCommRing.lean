@@ -6,7 +6,6 @@ Authors: Kenny Lau, Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.RingTheory.FreeRing
 
@@ -128,6 +127,7 @@ section lift
 
 variable {R : Type v} [CommRing R] (f : α → R)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- A helper to implement `lift`. This is essentially `FreeCommMonoid.lift`, but this does not
 currently exist. -/
@@ -227,7 +227,7 @@ def restriction (s : Set α) [DecidablePred (· ∈ s)] : FreeCommRing α →+* 
 
 section Restriction
 
-variable (s : Set α) [DecidablePred (· ∈ s)] (x y : FreeCommRing α)
+variable (s : Set α) [DecidablePred (· ∈ s)]
 
 @[simp]
 theorem restriction_of (p) : restriction s (of p) = if H : p ∈ s then of ⟨p, H⟩ else 0 :=
@@ -238,8 +238,7 @@ end Restriction
 theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   suffices IsSupported (of p) s → p ∈ s from ⟨this, fun hps => Subring.subset_closure ⟨p, hps, rfl⟩⟩
   fun hps : IsSupported (of p) s => by
-  classical
-  haveI := Classical.decPred (· ∈ s)
+  have := Classical.decPred (· ∈ s)
   have : ∀ x, IsSupported x s →
         ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
     intro x hx
@@ -251,7 +250,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       rw [map_neg, map_one, Int.cast_neg, Int.cast_one]
     · rintro _ ⟨z, hzs, rfl⟩ _ _
       use 0
-      rw [map_mul, lift_of, if_pos hzs, zero_mul]
+      rw [map_mul, lift_of, ite_eq_left hzs, zero_mul]
       norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
       refine ⟨q + r, ?_⟩
@@ -266,7 +265,8 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   rcases this with ⟨w, H⟩
   rw [← Polynomial.C_eq_intCast] at H
   have : Polynomial.X.coeff 1 = (Polynomial.C ↑w).coeff 1 := by rw [H]; rfl
-  rwa [Polynomial.coeff_C, if_neg (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X, if_pos rfl] at this
+  rwa [Polynomial.coeff_C, ite_eq_right (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X,
+    ite_eq_left rfl] at this
 
 theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
@@ -276,7 +276,7 @@ theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
   · rw [map_neg, map_one]
     rfl
   · rintro _ ⟨p, hps, rfl⟩ n ih
-    rw [map_mul, restriction_of, dif_pos hps, map_mul, map_of, ih]
+    rw [map_mul, restriction_of, dite_eq_left hps, map_mul, map_of, ih]
   · intro x y ihx ihy
     rw [map_add, map_add, ihx, ihy]
 
@@ -405,15 +405,9 @@ def freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ
 def freeCommRingPEmptyEquivInt : FreeCommRing PEmpty.{u + 1} ≃+* ℤ :=
   RingEquiv.trans (freeCommRingEquivMvPolynomialInt _) (MvPolynomial.isEmptyRingEquiv _ PEmpty)
 
-@[deprecated (since := "2026-02-08")]
-noncomputable alias freeCommRingPemptyEquivInt := freeCommRingPEmptyEquivInt
-
 /-- The free commutative ring on a type with one term is isomorphic to `ℤ[X]`. -/
 def freeCommRingPUnitEquivPolynomialInt : FreeCommRing PUnit.{u + 1} ≃+* ℤ[X] :=
   (freeCommRingEquivMvPolynomialInt _).trans (MvPolynomial.uniqueAlgEquiv ℤ PUnit).toRingEquiv
-
-@[deprecated (since := "2026-02-08")]
-noncomputable alias freeCommRingPunitEquivPolynomialInt := freeCommRingPUnitEquivPolynomialInt
 
 open FreeRing
 
@@ -421,12 +415,6 @@ open FreeRing
 def freeRingPEmptyEquivInt : FreeRing PEmpty.{u + 1} ≃+* ℤ :=
   RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPEmptyEquivInt
 
-@[deprecated (since := "2026-02-08")]
-noncomputable alias freeRingPemptyEquivInt := freeRingPEmptyEquivInt
-
 /-- The free ring on a type with one term is isomorphic to `ℤ[X]`. -/
 def freeRingPUnitEquivPolynomialInt : FreeRing PUnit.{u + 1} ≃+* ℤ[X] :=
   RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPUnitEquivPolynomialInt
-
-@[deprecated (since := "2026-02-08")]
-noncomputable alias freeRingPunitEquivPolynomialInt := freeRingPUnitEquivPolynomialInt

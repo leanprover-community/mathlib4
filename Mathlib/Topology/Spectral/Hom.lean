@@ -29,7 +29,7 @@ Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/S
 @[expose] public section
 
 
-open Function OrderDual
+open Function
 
 variable {F α β γ δ : Type*}
 
@@ -111,7 +111,7 @@ def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
 
 instance instFunLike : FunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance : SpectralMapClass (SpectralMap α β) α β where
   map_spectral f := f.spectral'

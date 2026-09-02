@@ -87,7 +87,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
   intro h
   rw [bind_dom]
   have hk : (k (encode a)).Dom :=
-    (H _).2.2 (by simpa only [encodek₂, bind_some, coe_some] using h)
+    (H _).2.2 (by simpa only [encodek₂, bind_some, coe_some] using! h)
   exists hk
   simp only [mem_map_iff, mem_coe, mem_bind_iff, Option.mem_def] at H
   obtain ⟨a', _, y, _, e⟩ | ⟨a', _, y, _, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
@@ -171,6 +171,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace Computable
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `P` is computable, and if for every `x` there exists an `n` such that `P x n` holds,
 then the function mapping `x` to the minimal such `n` (using `Nat.find`) is computable.
 This formally bridges `Partrec.rfind` with total unbounded search. -/
@@ -211,7 +212,7 @@ theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computa
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
   unfold REPred
-  dsimp only []
+  dsimp only
   refine
     (Partrec.cond hf (Decidable.Partrec.const' (Part.some ())) Partrec.none).of_eq fun n =>
       Part.ext fun a => ?_

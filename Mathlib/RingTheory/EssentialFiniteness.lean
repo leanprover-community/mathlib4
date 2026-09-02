@@ -162,7 +162,7 @@ lemma essFiniteType_iff_exists_subalgebra : EssFiniteType R S ↔
     ∃ (S₀ : Subalgebra R S) (M : Submonoid S₀), FiniteType R S₀ ∧ IsLocalization M S := by
   refine ⟨fun h ↦ ⟨subalgebra R S, submonoid R S, inferInstance, inferInstance⟩, ?_⟩
   rintro ⟨S₀, M, _, _⟩
-  letI := of_isLocalization S M
+  let := of_isLocalization S M
   exact comp R S₀ S
 
 instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T ⊗[R] S) := by
@@ -199,7 +199,6 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
 
 lemma EssFiniteType.of_comp [h : EssFiniteType R T] : EssFiniteType S T := by
   rw [essFiniteType_iff] at h ⊢
-  classical
   obtain ⟨σ, hσ⟩ := h
   use σ
   intro x

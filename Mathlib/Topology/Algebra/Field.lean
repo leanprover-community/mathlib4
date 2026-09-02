@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Algebra.Order.Nonneg.Field
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Order.LocalExtr
@@ -86,7 +87,7 @@ section Units
 def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
     [IsStrictOrderedRing R] [PosMulReflectLT R]
     [TopologicalSpace R] [ContinuousInv₀ R] :
-    { r : R // 0 ≤ r }ˣ ≃ₜ { r : R // 0 < r } where
+    (Nonneg R)ˣ ≃ₜ { r : R // 0 < r } where
   __ := Nonneg.unitsEquivPos R
   continuous_toFun := by
     rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
@@ -156,7 +157,7 @@ section LocalExtr
 variable {α β : Type*} [TopologicalSpace α]
   [Semifield β] [LinearOrder β] [IsStrictOrderedRing β] {a : α}
 
-open Topology
+open scoped Topology
 
 theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
@@ -179,8 +180,8 @@ theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
   have hmaps : MapsTo f S {1, -1} := by
-    simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
-  simpa using hS.eqOn_const_of_mapsTo (toFinite _).isDiscrete hf hmaps
+    simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using! hsq
+  simpa using! hS.eqOn_const_of_mapsTo (toFinite _).isDiscrete hf hmaps
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then either `f = g` or `f = -g` on

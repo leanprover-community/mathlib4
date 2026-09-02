@@ -63,7 +63,7 @@ def rmap (r : SetRel α β) (l : Filter α) : Filter β where
   univ_sets := by simp
   sets_of_superset hs st := mem_of_superset hs (SetRel.core_mono st)
   inter_sets hs ht := by
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     convert! inter_mem hs ht
     rw [← SetRel.core_inter]
 
@@ -110,7 +110,7 @@ theorem rcomap_rcomap (r : SetRel α β) (s : SetRel β γ) (l : Filter γ) :
     rcomap r (rcomap s l) = rcomap (r.comp s) l :=
   filter_eq <| by
     ext t
-    simp only [rcomap_sets, SetRel.image, Filter.mem_sets, Set.mem_setOf_eq, SetRel.core_comp]
+    simp only [rcomap_sets, SetRel.image, Filter.mem_sets, Set.mem_ofPred_eq, SetRel.core_comp]
     constructor
     · rintro ⟨u, ⟨v, vsets, hv⟩, h⟩
       exact ⟨v, vsets, Set.Subset.trans (SetRel.core_mono hv) h⟩
@@ -122,6 +122,7 @@ theorem rcomap_compose (r : SetRel α β) (s : SetRel β γ) :
     rcomap r ∘ rcomap s = rcomap (r.comp s) :=
   funext <| rcomap_rcomap _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rtendsto_iff_le_rcomap (r : SetRel α β) (l₁ : Filter α) (l₂ : Filter β) :
     RTendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r := by
   rw [rtendsto_def]
@@ -175,6 +176,7 @@ theorem rcomap'_compose (r : SetRel α β) (s : SetRel β γ) :
 def RTendsto' (r : SetRel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁ ≤ l₂.rcomap' r
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rtendsto'_def (r : SetRel α β) (l₁ : Filter α) (l₂ : Filter β) :
     RTendsto' r l₁ l₂ ↔ ∀ s ∈ l₂, r.preimage s ∈ l₁ := by
   unfold RTendsto' rcomap'; constructor
