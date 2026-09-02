@@ -37,6 +37,8 @@ namespace AlgebraicGeometry
 variable {I : Type u} [Category.{u} I] {S X : Scheme.{u}} (D : I ⥤ Scheme.{u})
   (t : D ⟶ (Functor.const I).obj S) (f : X ⟶ S) (c : Cone D) (hc : IsLimit c)
 
+attribute [local simp] Scheme.Hom.resLE_comp_resLE Scheme.Hom.resLE_comp_resLE_assoc
+
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--
@@ -196,8 +198,6 @@ lemma exists_map_eq_top
 lemma π_app_preimage_map_preimage {i j : I} (fji : j ⟶ i) (U : (D.obj i).Opens) :
     c.π.app j ⁻¹ᵁ D.map fji ⁻¹ᵁ U = c.π.app i ⁻¹ᵁ U := by
   rw [← Scheme.Hom.comp_preimage, c.w]
-
-attribute [local simp] Scheme.Hom.resLE_comp_resLE
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a diagram `{ Dᵢ }` of schemes and an open `U ⊆ Dᵢ`,
@@ -1130,63 +1130,50 @@ private lemma exists_forall_homOfLE_comp_eq_of_isAffineOpen :
       g ≫ f = (D.map u ⁻¹ᵁ U j).ι ≫ t.app k ∧
         ∀ (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j),
           (c.π.app k).resLE _ O h ≫ g = O.ι ≫ a := by
-    refine IsCofiltered.exists_forall ?_ fun j ↦ ?_
-    · rintro k₁ k₂ v u j ⟨g, hg, hg'⟩
-      refine ⟨(D.map v).resLE _ _ (by simp) ≫ g, ?_, fun O h ↦ ?_⟩
-      · simpa using congr((D.map v).resLE _ (D.map (v ≫ u) ⁻¹ᵁ U j) (by simp) ≫ $hg)
-      · simpa [Scheme.Hom.resLE_comp_resLE_assoc] using hg' O (by simpa using h)
+    refine IsCofiltered.exists_forall (fun v u j ⟨g, hg, hg'⟩ ↦ ⟨(D.map v).resLE _ _ (by simp) ≫ g,
+      by simp [hg, hnat], fun O h ↦ by simpa using hg' O (h.trans (by simp))⟩) fun j ↦ ?_
     obtain ⟨i', u, hu⟩ := exists_map_preimage_le_map_preimage D c hc (hU j).isCompact
-      (V := t.app i ⁻¹ᵁ (W j : S.Opens)) (by
-        rw [← Scheme.Hom.comp_preimage, hπ, Scheme.Hom.comp_preimage]
-        exact (hUV j).trans (a.preimage_mono (hVW j)))
-    replace hu : D.map u ⁻¹ᵁ U j ≤ t.app i' ⁻¹ᵁ (W j : S.Opens) :=
-      hu.trans_eq (by rw [← Scheme.Hom.comp_preimage, hnat])
+      (V := t.app i ⁻¹ᵁ (W j : S.Opens))
+      (by simpa only [← Scheme.Hom.comp_preimage, hπ] using (hUV j).trans (a.preimage_mono (hVW j)))
     have _ (k : Over i') : IsAffine ((opensDiagram D i' (D.map u ⁻¹ᵁ U j)).obj k) :=
       ((hU j).preimage _).preimage _
     let τ : opensDiagram D i' (D.map u ⁻¹ᵁ U j) ⟶ (Functor.const (Over i')).obj (W j) :=
       { app k := (t.app k.left).resLE _ _ ((Scheme.Hom.preimage_mono _ hu).trans_eq
-          (by rw [← Scheme.Hom.comp_preimage, hnat]))
-        naturality k l v := ((D.map v.left).resLE_comp_resLE _ (t.app l.left) _).trans
-          (Eq.trans ((cancel_mono (W j : S.Opens).ι).mp (by simp [hnat]))
-            (Category.comp_id _).symm) }
-    obtain ⟨k, g, hg, hg'⟩ :
-        ∃ (k : Over i') (g : (D.map k.hom ⁻¹ᵁ D.map u ⁻¹ᵁ U j).toScheme ⟶ (V j : X.Opens).toScheme),
-          (c.π.app k.left).resLE _ (c.π.app i' ⁻¹ᵁ D.map u ⁻¹ᵁ U j) (by simp) ≫ g =
-              a.resLE _ _ (by simpa using hUV j) ∧ g ≫ f.resLE _ _ (hVW j) = τ.app k :=
+          (by simp only [← Scheme.Hom.comp_preimage, hnat]))
+        naturality k l v := by
+          change (D.map v.left).resLE _ _ _ ≫ (t.app l.left).resLE (W j : S.Opens) _ _ = _ ≫ 𝟙 _
+          simp [hnat] }
+    obtain ⟨k, g, hg, hg'⟩ : ∃ (k : Over i') (g : _ ⟶ (V j : X.Opens).toScheme),
+        (c.π.app k.left).resLE _ (c.π.app i' ⁻¹ᵁ D.map u ⁻¹ᵁ U j) (by simp) ≫ g =
+          a.resLE _ _ (by simpa using hUV j) ∧ g ≫ f.resLE _ _ (hVW j) = τ.app k :=
       Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
         _ τ (f.resLE _ _ (hVW j)) _ (isLimitOpensCone D c hc i' _)
         (a.resLE _ _ (by simpa using hUV j)) (by
           ext k
-          exact ((c.π.app k.left).resLE_comp_resLE _ (t.app k.left) _).trans
-            (Eq.trans ((cancel_mono (W j : S.Opens).ι).mp (by simp [hπ]))
-              (a.resLE_comp_resLE _ f _).symm))
+          change (c.π.app k.left).resLE _ _ _ ≫ (t.app k.left).resLE (W j : S.Opens) _ _ =
+            a.resLE (V j : X.Opens) _ _ ≫ f.resLE (W j : S.Opens) _ _
+          simp [hπ])
     have e : D.map (k.hom ≫ u) ⁻¹ᵁ U j ≤ D.map k.hom ⁻¹ᵁ D.map u ⁻¹ᵁ U j := by simp
     refine ⟨k.left, k.hom ≫ u, Scheme.homOfLE _ e ≫ g ≫ (V j : X.Opens).ι, ?_, fun O h ↦ ?_⟩
     · simpa [τ] using congr(Scheme.homOfLE _ e ≫ $hg' ≫ (W j : S.Opens).ι)
-    · have h' : O ≤ c.π.app i' ⁻¹ᵁ D.map u ⁻¹ᵁ U j := by simpa using h
-      simpa using congr(Scheme.homOfLE _ h' ≫ $hg ≫ (V j : X.Opens).ι)
+    · simpa using congr(Scheme.homOfLE _ (h.trans (by simp)) ≫ $hg ≫ (V j : X.Opens).ι)
   choose k u g hg hg' using key
   obtain ⟨l, v, hl⟩ : ∃ (l : I) (v : l ⟶ k), ∀ j₁ j₂ (O : (D.obj l).Opens)
       (e₁ : O ≤ D.map v ⁻¹ᵁ D.map u ⁻¹ᵁ U j₁) (e₂ : O ≤ D.map v ⁻¹ᵁ D.map u ⁻¹ᵁ U j₂),
         (D.map v).resLE _ O e₁ ≫ g j₁ = (D.map v).resLE _ O e₂ ≫ g j₂ := by
-    refine IsCofiltered.exists_forall₂ ?_ fun j₁ j₂ ↦ ?_
-    · exact fun w v j₁ j₂ hv O e₁ e₂ ↦ by
-        simpa [Scheme.Hom.resLE_comp_resLE_assoc] using
-          congr((D.map w).resLE _ O ((le_inf e₁ e₂).trans_eq (by simp [Scheme.Hom.preimage_inf])) ≫
-            $(hv _ inf_le_left inf_le_right))
-    have hcpt := ((hU j₁).preimage (D.map u)).isCompact_inf ((hU j₂).preimage (D.map u))
+    refine IsCofiltered.exists_forall₂ (fun w v j₁ j₂ hv O e₁ e₂ ↦ by
+      simpa using congr((D.map w).resLE _ O ((le_inf e₁ e₂).trans_eq
+        (by simp [Scheme.Hom.preimage_inf])) ≫ $(hv _ inf_le_left inf_le_right))) fun j₁ j₂ ↦ ?_
     obtain ⟨l, v, e⟩ := Scheme.exists_resLE_comp_eq_resLE_comp_of_locallyOfFiniteType D t f c hc
-      hcpt (Scheme.homOfLE _ inf_le_left ≫ g j₁) (Scheme.homOfLE _ inf_le_right ≫ g j₂)
-      (by simp [hg]) (by simp [hg])
-      (by simpa only [Scheme.Hom.resLE_map_assoc] using (hg' j₁ _ _).trans (hg' j₂ _ _).symm)
+      (((hU j₁).preimage (D.map u)).isCompact_inf ((hU j₂).preimage (D.map u)))
+      (Scheme.homOfLE _ inf_le_left ≫ g j₁) (Scheme.homOfLE _ inf_le_right ≫ g j₂)
+      (by simp [hg]) (by simp [hg]) (by simpa using (hg' j₁ _ _).trans (hg' j₂ _ _).symm)
     exact ⟨l, v, fun O e₁ e₂ ↦ by
-      simpa using
-        congr(Scheme.homOfLE _ ((le_inf e₁ e₂).trans_eq (by simp [Scheme.Hom.preimage_inf])) ≫ $e)⟩
-  refine ⟨l, v ≫ u, fun j ↦ (D.map v).resLE _ (D.map (v ≫ u) ⁻¹ᵁ U j) (by simp) ≫ g j,
-    fun j ↦ ?_, fun j ↦ ?_, fun j₁ j₂ ↦ ?_⟩
-  · simpa using congr((D.map v).resLE _ (D.map (v ≫ u) ⁻¹ᵁ U j) (by simp) ≫ $(hg j))
-  · simpa [Scheme.Hom.resLE_comp_resLE_assoc] using hg' j _ (by simp)
-  · simpa using hl j₁ j₂ _ (by simp) (by simp)
+      simpa using congr(Scheme.homOfLE _
+        ((le_inf e₁ e₂).trans_eq (by simp [Scheme.Hom.preimage_inf])) ≫ $e)⟩
+  exact ⟨l, v ≫ u, fun j ↦ (D.map v).resLE _ (D.map (v ≫ u) ⁻¹ᵁ U j) (by simp) ≫ g j,
+    fun j ↦ by simp [hg, hnat], fun j ↦ by simpa using hg' j _ (by simp),
+    fun j₁ j₂ ↦ by simpa using hl j₁ j₂ _ (by simp) (by simp)⟩
 
 open TopologicalSpace in
 include hc ha in
