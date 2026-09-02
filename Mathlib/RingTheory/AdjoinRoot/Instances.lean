@@ -23,15 +23,15 @@ open _root_.Polynomial Ideal
 
 variable {r p : ℕ} {R : Type*} [CommRing R] {f : R[X]}
 
-theorem spanRadical_iff_isReduced : (span {f}).IsRadical ↔ IsReduced (AdjoinRoot f) :=
-  isRadical_iff_quotient_reduced (Ideal.span {f})
+theorem isReduced_iff_spanRadical : IsReduced (AdjoinRoot f) ↔ (span {f}).IsRadical :=
+  (isRadical_iff_quotient_reduced (Ideal.span {f})).symm
 
 variable [CharP R p]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem IsReduced.X_pow_sub_one (hcprm : p.Coprime r) [IsArtinianRing R] [IsReduced R] :
     IsReduced (AdjoinRoot ((X : R[X]) ^ r - 1)) := by
-  simp only [← spanRadical_iff_isReduced, (Ideal.isRadical_iff_pow_one_lt 2 (by grind))]
+  simp only [isReduced_iff_spanRadical, (Ideal.isRadical_iff_pow_one_lt 2 (by grind))]
   intro s hs
   rw [Ideal.mem_span_singleton] at *
   refine (Squarefree.dvd_pow_iff_dvd ?_ (by lia)).mp hs
