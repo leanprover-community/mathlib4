@@ -307,12 +307,14 @@ variable [StarHomClass F A B]
 /-- Turn an element of a type `F` satisfying `AlgHomClass F R A B` and `StarHomClass F A B` into an
 actual `StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
 @[coe]
-def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
+def _root_.StarAlgHom.ofClass (f : F) : A →⋆ₐ[R] B :=
   { (AlgHomClass.toAlgHom f) with
     map_star' := map_star f }
 
+@[deprecated (since := "2026-09-02")] alias toStarAlgHom := StarAlgHom.ofClass
+
 instance : CoeTC F (A →⋆ₐ[R] B) :=
-  ⟨toStarAlgHom⟩
+  ⟨.ofClass⟩
 
 end StarAlgHomClass
 
