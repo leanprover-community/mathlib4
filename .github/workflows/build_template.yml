@@ -727,13 +727,21 @@ jobs:
             -H "Authorization: Bearer ${oidc_token}" \
             "${BROKER_URL}/r2-credentials")" \
             || warn_and_skip "the cache broker did not answer with credentials"
+          # A 200 with a malformed body must also warn-and-skip: an unguarded
+          # jq parse error inside a $(...) assignment would fail the step
+          # under set -e, and the whole point of this step is that no broker
+          # fault can cost the run its upload.
+          jq -e . >/dev/null 2>&1 <<<"${creds}" \
+            || warn_and_skip "the broker answer was not JSON"
           access_key_id="$(jq -r '.accessKeyId // empty' <<<"${creds}")"
           secret_access_key="$(jq -r '.secretAccessKey // empty' <<<"${creds}")"
           session_token="$(jq -r '.sessionToken // empty' <<<"${creds}")"
           # Defense in depth against a compromised broker answer: each value
           # must be a single token from a strict charset before it reaches
           # ::add-mask:: (which masks only one line) or GITHUB_ENV (where an
-          # embedded newline could define arbitrary variables).
+          # embedded newline could define arbitrary variables). The check
+          # deliberately requires a non-empty session token, which the broker
+          # always mints; a static-keypair grant would need this relaxed.
           for value in "${access_key_id}" "${secret_access_key}" "${session_token}"; do
             if ! [[ "${value}" =~ ^[A-Za-z0-9+/=._-]+$ ]]; then
               warn_and_skip "the broker answer carried no well-formed credential"
@@ -781,11 +789,20 @@ jobs:
       # credentials and put base the mint step exported. Non-fatal
       # (continue-on-error) but loud: the Azure leg above already secured the
       # cache, so a bucket fault must not fail the run — while the warning
-      # keeps a stalling migration visible. A cache tool that predates the S3
-      # support ignores the credentials and re-puts to Azure, where
-      # If-None-Match answers every artifact with a benign skip.
+      # keeps a stalling migration visible.
+      #
+      # Gated on the new uploader binary: a pre-split cache tool ignores the
+      # S3 credentials and would re-put to Azure here, reading as a green
+      # bucket write to anyone watching the migration; skipping is honest.
+      #
+      # A skipped or failed leg leaves this run's delta out of the bucket for
+      # good (no later run re-stages it), while later runs still write their
+      # own markers there. Bucket markers therefore do NOT assert a complete
+      # transitive closure during the dual-upload window; before any read
+      # cutover the bucket needs a backfill-and-verify pass, not a marker
+      # check.
       - name: Upload staged cache to the scratch bucket
-        if: env.MATHLIB_CACHE_S3_ACCESS_KEY_ID != ''
+        if: env.MATHLIB_CACHE_S3_ACCESS_KEY_ID != '' && endsWith(env.CACHE_BIN, 'cache-upload')
         continue-on-error: true
         shell: bash
         env:
