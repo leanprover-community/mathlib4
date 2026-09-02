@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.DivInvMonoid
 public import Mathlib.Data.Nat.Init
 public import Mathlib.Tactic.SplitIfs
 

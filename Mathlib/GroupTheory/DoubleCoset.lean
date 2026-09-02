@@ -142,6 +142,18 @@ lemma mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
   rw [eq]
   exact mem_doubleCoset.mp (h.symm ▸ mem_doubleCoset_self H K b)
 
+@[simp]
+lemma mk_mem_mul {H K : Subgroup G} (a : H) (g : G) :
+    mk H K (a * g) = mk H K g := by
+  rw [eq]
+  exact ⟨_, H.inv_mem a.prop, 1, K.one_mem, by simp⟩
+
+@[simp]
+lemma mk_mul_mem {H K : Subgroup G} (b : K) (g : G) :
+    mk H K (g * b) = mk H K g := by
+  rw [eq]
+  exact ⟨1, H.one_mem, _, K.inv_mem b.prop, by simp⟩
+
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
     a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by

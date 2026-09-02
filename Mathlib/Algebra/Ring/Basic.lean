@@ -198,7 +198,7 @@ lemma noZeroDivisors_tfae : List.TFAE
 
 /-- In a ring, `IsCancelMulZero` and `NoZeroDivisors` are equivalent. -/
 lemma isCancelMulZero_iff_noZeroDivisors : IsCancelMulZero R ↔ NoZeroDivisors R :=
-  noZeroDivisors_tfae.out 3 0
+  noZeroDivisors_tfae.out 4 1
 
 variable (R) in
 instance (priority := 100) NoZeroDivisors.to_isCancelMulZero

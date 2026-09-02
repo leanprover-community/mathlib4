@@ -773,7 +773,6 @@ theorem IsBridge.reachable_iff_adj (h : G.IsBridge s(u, v)) : G.Reachable u v �
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
   cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem reachable_deleteEdges_iff_exists_walk {v w v' w' : V} :
     (G.deleteEdges {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
   constructor

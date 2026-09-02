@@ -22,13 +22,13 @@ open RCLike Real Module
 
 open LinearMap (BilinForm)
 
+open scoped InnerProductSpace
+
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 section Submodule
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
-local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-! ### Inner product space structure on subspaces -/
 
@@ -38,7 +38,7 @@ instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 
 
 /-- The inner product on submodules is the same as on the ambient space. -/
 @[simp]
-theorem Submodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫ = ⟪(x : E), ↑y⟫ :=
+theorem Submodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫_𝕜 = ⟪(x : E), y⟫_𝕜 :=
   rfl
 
 theorem Orthonormal.codRestrict {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) (s : Submodule 𝕜 E)
@@ -52,6 +52,21 @@ theorem orthonormal_span {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) :
     Submodule.subset_span (Set.mem_range_self i)
 
 end Submodule
+
+section ClosedSubmodule
+
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+/-- Induced inner product on a closed submodule. -/
+instance ClosedSubmodule.innerProductSpace (W : ClosedSubmodule 𝕜 E) : InnerProductSpace 𝕜 W :=
+  fast_instance% W.toSubmodule.innerProductSpace
+
+/-- The inner product on closed submodules is the same as on the ambient space. -/
+@[simp]
+theorem ClosedSubmodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫_𝕜 = ⟪(x : E), y⟫_𝕜 :=
+  rfl
+
+end ClosedSubmodule
 
 /-! ### Families of mutually-orthogonal subspaces of an inner product space -/
 
@@ -99,7 +114,6 @@ theorem OrthogonalFamily.eq_ite [DecidableEq ι] {i j : ι} (v : G i) (w : G j) 
   · rfl
   · exact hV h v w
 
-set_option backward.isDefEq.respectTransparency false in
 theorem OrthogonalFamily.inner_right_dfinsupp
     [∀ (i) (x : G i), Decidable (x ≠ 0)] [DecidableEq ι] (l : ⨁ i, G i) (i : ι) (v : G i) :
     ⟪V i v, l.sum fun j => V j⟫ = ⟪v, l i⟫ :=
@@ -247,7 +261,7 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-variable {ι : Type*} {G : ι → Type*}
+variable {ι : Type*}
 
 /-- An orthogonal family forms an independent family of subspaces; that is, any collection of
 elements each from a different subspace in the family is linearly independent. In particular, the
