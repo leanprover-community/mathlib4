@@ -1,18 +1,18 @@
 /-
 Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
+Authors: Rémy Degenne, Yongxi Lin, Etienne Marion, Kexing Ying
 -/
 module
 
 public import Mathlib.Analysis.Normed.Group.Continuity
-public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Order.LeftRightLim
 
-/-! # cadlag functions
+/-! # Càdlàg functions
+
+This file defines *càdlàg functions*, i.e. right-continuous functions with left limits. These
+are for instance a common hypothesis made on stochastic processes.
+
+Using the `to_dual` machinery we also define *càglàd functions* (left-continuous with right limits).
 
 -/
 
@@ -21,110 +21,134 @@ public import Mathlib.Topology.Order.LeftRightLim
 open Filter TopologicalSpace Bornology
 open scoped Topology ENNReal
 
-variable {ι E : Type*} [TopologicalSpace ι]
+variable {X Y : Type*} [TopologicalSpace X] {f g : X → Y}
 
-/-- The predicate that a function is right continuous. -/
-abbrev IsRightContinuous [TopologicalSpace E] [Preorder ι] (f : ι → E) :=
+section Basic
+
+variable [Preorder X] [TopologicalSpace Y]
+
+/- TODO: Cannot tag this with `fun_prop` because it fails when tagging a lemma
+because of `to_dual`. -/
+/-- A function `f` is *right-continuous* if for any `a`, `f x → f a` when `x → a` and `x > a`. -/
+@[to_dual /-- A function `f` is *left-continuous* if for any `a`, `f x → f a` when `x → a`
+and `x < a`. -/]
+abbrev IsRightContinuous (f : X → Y) :=
   ∀ a, ContinuousWithinAt f (Set.Ioi a) a
 
-lemma Continuous.isRightContinuous [TopologicalSpace E] [Preorder ι]
-    {f : ι → E} (hf : Continuous f) :
+@[to_dual]
+lemma Continuous.isRightContinuous (hf : Continuous f) :
     IsRightContinuous f :=
   fun _ ↦ hf.continuousWithinAt
 
-lemma IsRightContinuous.continuous_comp {F : Type*} [TopologicalSpace E]
-    [TopologicalSpace F] [Preorder ι] {g : E → F}
-    {f : ι → E} (hg : Continuous g) (hf : IsRightContinuous f) : IsRightContinuous (g ∘ f) :=
+@[to_dual (attr := to_fun)]
+lemma IsRightContinuous.continuous_comp {Z : Type*} [TopologicalSpace Z] {g : Y → Z}
+    (hg : Continuous g) (hf : IsRightContinuous f) :
+    IsRightContinuous (g ∘ f) :=
   fun x ↦ (hg.tendsto (f x)).comp (hf x)
 
-lemma Function.IsRightContinuous.comp_continuous {F : Type*} [TopologicalSpace E]
-    [TopologicalSpace F] [Preorder ι] {g : F → ι} [Preorder F]
-    {f : ι → E} (hg : Continuous g) (hf : IsRightContinuous f)
-    (hg' : StrictMono g) : IsRightContinuous (f ∘ g) := by
-  intro x
-  apply (hf (g x)).comp hg.continuousWithinAt
-  intro y hy
-  grind [StrictMono]
+@[to_dual]
+lemma IsRightContinuous.continuous_comp₂ {Z T : Type*} [TopologicalSpace Z] [TopologicalSpace T]
+    {g : X → Z} {φ : Y → Z → T} (hf : IsRightContinuous f) (hg : IsRightContinuous g)
+    (hφ : Continuous φ.uncurry) :
+    IsRightContinuous (fun x ↦ φ (f x) (g x)) :=
+  fun x ↦ (hφ.tendsto (f x, g x)).comp ((hf x).prodMk_nhds (hg x))
 
-@[simp]
-lemma isRightContinuous_const [TopologicalSpace E] [Preorder ι] (c : E) :
-    IsRightContinuous (fun _ ↦ c : ι → E) :=
+@[to_dual (attr := simp)]
+lemma isRightContinuous_const (c : Y) :
+    IsRightContinuous (fun _ ↦ c : X → Y) :=
   continuous_const.isRightContinuous
 
-@[to_additive (attr := to_fun)]
-lemma IsRightContinuous.mul [TopologicalSpace E] [Preorder ι] [Mul E] [ContinuousMul E]
-    {f g : ι → E} (hf : IsRightContinuous f) (hg : IsRightContinuous g) :
+@[to_additive (attr := to_fun (attr := to_dual))]
+lemma IsRightContinuous.mul [Mul Y] [ContinuousMul Y]
+    (hf : IsRightContinuous f) (hg : IsRightContinuous g) :
     IsRightContinuous (f * g) :=
-  fun x ↦ (hf x).mul (hg x)
+  hf.continuous_comp₂ hg continuous_mul
 
-@[to_additive (attr := to_fun) sub]
-lemma IsRightContinuous.div' [TopologicalSpace E] [Preorder ι] [Div E] [ContinuousDiv E]
-    {f g : ι → E} (hf : IsRightContinuous f) (hg : IsRightContinuous g) :
+@[to_additive (attr := to_fun (attr := to_dual)) sub]
+lemma IsRightContinuous.div' [Div Y] [ContinuousDiv Y]
+    (hf : IsRightContinuous f) (hg : IsRightContinuous g) :
     IsRightContinuous (f / g) :=
-  fun x ↦ (hf x).div' (hg x)
+  hf.continuous_comp₂ hg continuous_div'
 
-@[to_fun]
-lemma IsRightContinuous.div [Preorder ι] [GroupWithZero E] [TopologicalSpace E]
-    [ContinuousInv₀ E] [ContinuousMul E] {f g : ι → E}
+@[to_fun (attr := to_dual)]
+lemma IsRightContinuous.div [GroupWithZero Y] [ContinuousInv₀ Y] [ContinuousMul Y]
     (hf : IsRightContinuous f) (hg : IsRightContinuous g) (h : ∀ x, g x ≠ 0) :
     IsRightContinuous (f / g) :=
   fun x ↦ (hf x).div (hg x) (h x)
 
-/-- A function is cadlag if it is right-continuous and has left limits. -/
-structure IsCadlag [TopologicalSpace E] [Preorder ι] (f : ι → E) : Prop where
-  right_continuous : IsRightContinuous f
-  left_limit : ∀ x, ∃ l, Tendsto f (𝓝[<] x) (𝓝 l)
+@[to_additive (attr := to_fun (attr := to_dual))]
+lemma IsRightContinuous.inv [Inv Y] [ContinuousInv Y] (hf : IsRightContinuous f) :
+    IsRightContinuous (f⁻¹) :=
+  hf.continuous_comp (g := (·⁻¹)) continuous_inv
 
-lemma Continuous.isCadlag [TopologicalSpace E] [Preorder ι] {f : ι → E} (hf : Continuous f) :
+@[to_fun (attr := to_dual)]
+lemma IsRightContinuous.inv₀ [Zero Y] [Inv Y] [ContinuousInv₀ Y]
+    (hf : IsRightContinuous f) (h : ∀ x, f x ≠ 0) :
+    IsRightContinuous (f⁻¹) :=
+  fun x ↦ (hf x).inv₀ (h x)
+
+@[to_fun (attr := to_dual (attr := to_additive))]
+lemma IsRightContinuous.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : R)
+    (hf : IsRightContinuous f) :
+    IsRightContinuous (c • f) :=
+  hf.continuous_comp (g := (c • ·)) (continuous_const_smul c)
+
+/-- A function is *càglàd* if it is left-continuous and has right limits. -/
+structure IsCaglad (f : X → Y) : Prop where
+  isLeftContinuous : IsLeftContinuous f
+  tendsto_nhdsGT : ∀ x, ∃ l, Tendsto f (𝓝[>] x) (𝓝 l)
+
+/-- A function is *càdlàg* if it is right-continuous and has left limits. -/
+@[to_dual existing]
+structure IsCadlag (f : X → Y) : Prop where
+  isRightContinuous : IsRightContinuous f
+  tendsto_nhdsLT : ∀ x, ∃ l, Tendsto f (𝓝[<] x) (𝓝 l)
+
+@[to_dual]
+lemma Continuous.isCadlag (hf : Continuous f) :
     IsCadlag f where
-  right_continuous := hf.isRightContinuous
-  left_limit x := ⟨f x, hf.continuousAt.continuousWithinAt⟩
+  isRightContinuous := hf.isRightContinuous
+  tendsto_nhdsLT x := ⟨f x, hf.continuousAt.continuousWithinAt⟩
 
-@[simp]
-lemma isCadlag_const [TopologicalSpace E] [Preorder ι] (c : E) : IsCadlag (fun _ ↦ c : ι → E) :=
+@[to_dual (attr := simp)]
+lemma isCadlag_const (c : Y) : IsCadlag (fun _ ↦ c : X → Y) :=
   continuous_const.isCadlag
 
-@[to_additive (attr := to_fun)]
-lemma IsCadlag.mul {E : Type*} [Mul E] [TopologicalSpace E] [ContinuousMul E] [Preorder ι]
-    {f g : ι → E} (hf : IsCadlag f) (hg : IsCadlag g) :
-    IsCadlag (f * g) := by
-  refine ⟨fun i ↦ ContinuousWithinAt.mul (hf.1 i) (hg.1 i), fun i ↦ ?_⟩
-  obtain ⟨l, hl⟩ := hf.2 i
-  obtain ⟨m, hm⟩ := hg.2 i
-  exact ⟨l * m, hl.mul hm⟩
-
-@[to_fun]
-lemma IsCadlag.const_smul {E : Type*} [SMul ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
-    [Preorder ι] {f : ι → E} (hf : IsCadlag f) (r : ℝ) :
-    IsCadlag (r • f) := by
-  refine ⟨fun i ↦ ContinuousWithinAt.const_smul (hf.1 i) r, fun i ↦ ?_⟩
-  obtain ⟨l, hl⟩ := hf.2 i
-  exact ⟨r • l, hl.const_smul r⟩
-
-@[to_additive (attr := to_fun)]
-lemma IsCadlag.inv {E : Type*} [Group E] [TopologicalSpace E] [ContinuousInv E] [Preorder ι]
-    {f : ι → E} (hf : IsCadlag f) :
-    IsCadlag (f⁻¹) := by
-  refine ⟨fun i ↦ ContinuousWithinAt.inv (hf.1 i), fun i ↦ ?_⟩
-  obtain ⟨l, hl⟩ := hf.2 i
-  exact ⟨l⁻¹, hl.inv⟩
-
-@[to_fun]
-lemma IsCadlag.sub {E : Type*} [Sub E] [TopologicalSpace E] [ContinuousSub E]
-    [Preorder ι] {f g : ι → E} (hf : IsCadlag f) (hg : IsCadlag g) :
-    IsCadlag (f - g) := by
-  refine ⟨fun i ↦ ContinuousWithinAt.sub (hf.1 i) (hg.1 i), fun i ↦ ?_⟩
-  obtain ⟨l, hl⟩ := hf.2 i
-  obtain ⟨m, hm⟩ := hg.2 i
-  exact ⟨l - m, hl.sub hm⟩
-
-lemma IsCadlag.continuous_comp {κ E F : Type*} [TopologicalSpace κ] [TopologicalSpace E]
-    [TopologicalSpace F] [Preorder κ] {g : E → F} {f : κ → E}
-    (hg : Continuous g) (hf : IsCadlag f) : IsCadlag (g ∘ f) where
-  right_continuous := IsRightContinuous.continuous_comp hg hf.right_continuous
-  left_limit i := by
-    obtain ⟨l, hl⟩ := hf.left_limit i
+@[to_dual (attr := to_fun)]
+lemma IsCadlag.continuous_comp {Z : Type*} [TopologicalSpace Z] {g : Y → Z}
+    (hg : Continuous g) (hf : IsCadlag f) :
+    IsCadlag (g ∘ f) where
+  isRightContinuous := hf.isRightContinuous.continuous_comp hg
+  tendsto_nhdsLT x := by
+    obtain ⟨l, hl⟩ := hf.tendsto_nhdsLT x
     exact ⟨g l, (hg.tendsto l).comp hl⟩
+
+@[to_dual]
+lemma IsCadlag.continuous_comp₂ {Z T : Type*} [TopologicalSpace Z] [TopologicalSpace T]
+    {g : X → Z} {φ : Y → Z → T} (hf : IsCadlag f) (hg : IsCadlag g)
+    (hφ : Continuous φ.uncurry) :
+    IsCadlag (fun x ↦ φ (f x) (g x)) where
+  isRightContinuous := hf.isRightContinuous.continuous_comp₂ hg.isRightContinuous hφ
+  tendsto_nhdsLT x := by
+    obtain ⟨l1, hl1⟩ := hf.tendsto_nhdsLT x
+    obtain ⟨l2, hl2⟩ := hg.tendsto_nhdsLT x
+    exact ⟨φ l1 l2, (hφ.tendsto (l1, l2)).comp (hl1.prodMk_nhds hl2)⟩
+
+@[to_additive (attr := to_fun (attr := to_dual))]
+lemma IsCadlag.mul [Mul Y] [ContinuousMul Y] (hf : IsCadlag f) (hg : IsCadlag g) :
+    IsCadlag (f * g) :=
+  hf.continuous_comp₂ hg continuous_mul
+
+@[to_additive (attr := to_fun (attr := to_dual)) sub]
+lemma IsCadlag.div' [Div Y] [ContinuousDiv Y] (hf : IsCadlag f) (hg : IsCadlag g) :
+    IsCadlag (f / g) :=
+  hf.continuous_comp₂ hg continuous_div'
+
+@[to_fun (attr := to_dual (attr := to_additive))]
+lemma IsCadlag.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : R)
+    (hf : IsCadlag f) :
+    IsCadlag (c • f) :=
+  hf.continuous_comp (g := (c • ·)) (continuous_const_smul c)
 
 lemma IsCadlag.norm {κ F : Type*} [TopologicalSpace κ] [NormedAddCommGroup F] [Preorder κ]
     {f : κ → F} (hf : IsCadlag f) : IsCadlag (fun i ↦ ‖f i‖) :=
@@ -134,24 +158,31 @@ lemma IsCadlag.norm_sq {κ F : Type*} [TopologicalSpace κ] [NormedAddCommGroup 
     {f : κ → F} (hf : IsCadlag f) : IsCadlag (fun i ↦ ‖f i‖ ^ 2) :=
   hf.norm.continuous_comp (continuous_pow 2)
 
+end Basic
+
+section PseudoMetricSpace
+
+variable [LinearOrder X] [PseudoMetricSpace Y]
+
 /-- A càdlàg function is locally bounded. -/
-lemma isLocallyBounded_of_isCadlag {E : Type*} [LinearOrder ι] [PseudoMetricSpace E]
-    {f : ι → E} (hf : IsCadlag f) (x : ι) : ∃ t ∈ 𝓝 x, IsBounded (f '' t) := by
+@[to_dual /-- A càglàd function is locally bounded. -/]
+lemma IsCadlag.isLocallyBounded (hf : IsCadlag f) (x : X) : ∃ t ∈ 𝓝 x, IsBounded (f '' t) := by
   obtain ⟨l, hl⟩ := hf.2 x
-  obtain ⟨U, ⟨⟨A, ⟨hp, ⟨W, hW⟩⟩⟩, hU⟩⟩ := Metric.exists_isBounded_image_of_tendsto hl
-  obtain ⟨V, ⟨⟨B, ⟨hq, ⟨R, hR⟩⟩⟩, hV⟩⟩ := Metric.exists_isBounded_image_of_tendsto (hf.1 x).tendsto
-  refine ⟨A ∩ B, inter_mem hp hq, ?_⟩
-  apply IsBounded.subset ((hU.union hV).union (isBounded_singleton : Bornology.IsBounded ({f x})))
+  obtain ⟨-, ⟨⟨A, ⟨hA, ⟨W, hW, rfl⟩⟩⟩, hAW⟩⟩ := Metric.exists_isBounded_image_of_tendsto hl
+  obtain ⟨-, ⟨⟨B, ⟨hB, ⟨R, hR, rfl⟩⟩⟩, hBR⟩⟩ :=
+    Metric.exists_isBounded_image_of_tendsto (hf.1 x).tendsto
+  refine ⟨A ∩ B, inter_mem hA hB, ?_⟩
+  apply ((hAW.union hBR).union (isBounded_singleton (x := f x))).subset
   rintro _ ⟨y, ⟨hyL, hyR⟩ , rfl⟩
   rcases lt_trichotomy y x with (hlt | heq | hgt)
-  · have : y ∈ U := hW.2 ▸ ⟨hyL, hW.1 hlt⟩
-    grind
+  · grind [hW hlt]
   · grind
-  · have : y ∈ V := hR.2 ▸ ⟨hyR, hR.1 hgt⟩
-    grind
+  · grind [hR hgt]
 
 /-- A càdlàg function maps compact sets to bounded sets. -/
-lemma isBounded_image_of_isCadlag_of_isCompact {E : Type*} [LinearOrder ι] [PseudoMetricSpace E]
-    {f : ι → E} (hf : IsCadlag f) {s : Set ι} (hs : IsCompact s) :
+@[to_dual /-- A càglàd function maps compact sets to bounded sets. -/]
+lemma isBounded_image_of_isCadlag_of_isCompact (hf : IsCadlag f) {s : Set X} (hs : IsCompact s) :
     IsBounded (f '' s) :=
-  isBounded_image_of_isLocallyBounded_of_isCompact hs (isLocallyBounded_of_isCadlag hf)
+  isBounded_image_of_isLocallyBounded_of_isCompact hs hf.isLocallyBounded
+
+end PseudoMetricSpace
