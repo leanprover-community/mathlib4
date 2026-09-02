@@ -152,8 +152,8 @@ theorem of_mul {f : R[X]} (hf : f ^ p = f.comp (X ^ p)) {m : ℕ} (h : Introspec
     rw [mul_comm, ← comp_X_pow, ← comp_assoc, ← hf,pow_comp]
   grind
 
-protected theorem div (h : Introspective (X - C (a : R)) n r)
-    (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective (X - C (a : R)) (n / p) r := by
+protected theorem div {f : R[X]} (hf : f ^ p = f.comp (X ^ p)) (h : Introspective f n r)
+    (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective f (n / p) r := by
   grind [of_mul, Nat.div_mul_cancel hd]
 
 /-- Necessary condition for the auxilliary proof. TODO: Find right generality of `Fin b` -/
