@@ -141,7 +141,7 @@ theorem measurePreserving_mul_prod_inv [IsMulLeftInvariant ν] :
 
 @[to_additive (attr := fun_prop)]
 theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) μ μ := by
-  refine ⟨measurable_inv, AbsolutelyContinuous.mk fun s hsm hμs => ?_⟩
+  refine ⟨measurable_inv.aemeasurable, AbsolutelyContinuous.mk fun s hsm hμs => ?_⟩
   rw [map_apply measurable_inv hsm, inv_preimage]
   have hf : Measurable fun z : G × G => (z.2 * z.1, z.1⁻¹) :=
     (measurable_snd.mul measurable_fst).prodMk measurable_fst.inv
@@ -467,7 +467,7 @@ This should not be confused with `(measurePreserving_mul_right μ g).quasiMeasur
 This should not be confused with `(measurePreserving_add_right μ g).quasiMeasurePreserving`. -/]
 theorem quasiMeasurePreserving_mul_right [IsMulLeftInvariant μ] (g : G) :
     QuasiMeasurePreserving (fun h : G => h * g) μ μ := by
-  refine ⟨measurable_mul_const g, AbsolutelyContinuous.mk fun s hs => ?_⟩
+  refine ⟨(measurable_mul_const g).aemeasurable, AbsolutelyContinuous.mk fun s hs => ?_⟩
   rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
 
 /-- A *right*-invariant measure is quasi-preserved by *left*-multiplication.
