@@ -386,7 +386,7 @@ So that `Nat.dvd_div_of_mul_dvd_right` can have a symmetrical name. -/
 alias dvd_div_of_mul_dvd_left := dvd_div_of_mul_dvd
 
 lemma dvd_div_of_mul_dvd_right (h : a * b ∣ c) : a ∣ c / b :=
-  dvd_div_of_mul_dvd_left (by rwa [Nat.mul_comm] at h)
+  dvd_div_of_mul_dvd_left (by rwa [Nat.mul_comm])
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
