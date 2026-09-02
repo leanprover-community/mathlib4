@@ -37,7 +37,7 @@ open scoped Topology NNReal ENNReal
 
 universe u v w x y
 
-variable {α β γ δ : Type*} {ι : Sort y} {s t u : Set α}
+variable {α β γ δ : Type*} {ι : Sort y} {s u : Set α}
 
 namespace Real
 
@@ -362,7 +362,7 @@ theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0�
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable (∑' i, f i) := by
   convert! Measurable.ennreal_tsum h with x
-  exact tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
+  exact Pi.tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 
 @[fun_prop, deprecated
   "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
@@ -480,7 +480,7 @@ instance : MeasurableAdd₂ EReal := ⟨EReal.lowerSemicontinuous_add.measurable
 
 section MeasurableMul
 
-variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+variable {β γ : Type*} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
 lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))

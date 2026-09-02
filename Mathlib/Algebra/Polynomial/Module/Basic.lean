@@ -45,11 +45,11 @@ structure PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R
   /-- The coefficients `ℕ →₀ M` of an element of the additive monoid algebra `M[X]`. -/
   coeff : ℕ →₀ M
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
-variable {x y : PolynomialModule R M} {r r₁ r₂ : R} {m m' m₁ m₂ m₁' m₂' : M}
+variable {x y : PolynomialModule R M} {r : R} {m m₁ m₂ : M}
 
 lemma coeff_ofCoeff (x : ℕ →₀ M) : (ofCoeff R x).coeff = x := rfl
 lemma ofCoeff_coeff (x : PolynomialModule R M) : ofCoeff R x.coeff = x := rfl
