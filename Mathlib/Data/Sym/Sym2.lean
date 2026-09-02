@@ -182,8 +182,6 @@ protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
 
 theorem eq_swap {a b : α} : s(a, b) = s(b, a) := Quot.sound (Rel.swap _ _)
 
-@[deprecated (since := "2026-02-05")] alias mk_prod_swap_eq := eq_swap
-
 theorem congr_right {a b c : α} : s(a, b) = s(a, c) ↔ b = c := by
   simp +contextual
 
@@ -268,8 +266,6 @@ theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) 
 @[simp]
 theorem map_mk (f : α → β) (a b : α) : map f s(a, b) = s(f a, f b) := rfl
 
-@[deprecated (since := "2026-02-05")] alias map_pair_eq := map_mk
-
 theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) := by
   intro z z'
   refine Sym2.inductionOn₂ z z' (fun x y x' y' => ?_)
@@ -298,6 +294,7 @@ lemma lift_map_apply {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂
   conv_rhs => rw [← lift_comp_map, comp_apply]
 
 section Membership
+variable {x : α}
 
 /-! ### Membership and set coercion -/
 
@@ -360,6 +357,9 @@ theorem out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
 theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
 
+@[simp] lemma fst_out_mk_self : (Quot.out s(x, x)).1 = x := by simpa using out_fst_mem s(x, x)
+@[simp] lemma snd_out_mk_self : (Quot.out s(x, x)).2 = x := by simpa using out_snd_mem s(x, x)
+
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
   simp
 
@@ -367,7 +367,7 @@ theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧
 
 theorem coe_map (f : α → β) (z : Sym2 α) : z.map f = f '' z := by
   cases z
-  simp [Set.image_pair]
+  simp
 
 /-- Given an element of the unordered pair, give the other element using `Classical.choose`.
 See also `Mem.other'` for the computable version.
@@ -512,8 +512,6 @@ def IsDiag : Sym2 α → Prop :=
 theorem mk_isDiag_iff {x y : α} : IsDiag s(x, y) ↔ x = y :=
   Iff.rfl
 
-@[deprecated (since := "2026-02-05")] alias isDiag_iff_proj_eq := mk_isDiag_iff
-
 protected lemma IsDiag.map : z.IsDiag → (z.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) z
 
 lemma isDiag_map (hf : Injective f) : (z.map f).IsDiag ↔ z.IsDiag :=
@@ -593,8 +591,6 @@ def fromRel (sym : Std.Symm r) : Set (Sym2 α) :=
 theorem fromRel_prop {sym : Std.Symm r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
 
-@[deprecated (since := "2026-02-05")] alias fromRel_proj_prop := fromRel_prop
-
 theorem fromRel_mono_iff (sym₁ : Std.Symm r₁) (sym₂ : Std.Symm r₂) :
     fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
   ⟨fun hle a b ↦ @hle s(a, b), fun hle ↦ Sym2.ind hle⟩
@@ -607,7 +603,6 @@ theorem mem_fromRel_comap {r : β → β → Prop} (sym : Std.Symm r) (f : α �
   cases z
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fromRel_bot : fromRel (α := α) (r := ⊥) inferInstance = ∅ :=
   Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
 
@@ -617,7 +612,6 @@ theorem fromRel_bot_iff {sym : Std.Symm r} : fromRel sym = ∅ ↔ r = ⊥ := by
   ext x y
   simpa [h] using fromRel_prop (sym := sym)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fromRel_top : fromRel (α := α) (r := ⊤) inferInstance = .univ :=
   Set.eq_univ_of_forall <| Sym2.ind <| by simp
 
@@ -627,14 +621,12 @@ theorem fromRel_top_iff {sym : Std.Symm r} : fromRel sym = .univ ↔ r = ⊤ := 
   ext x y
   simpa [h] using fromRel_prop (sym := sym)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fromRel_ne : fromRel (α := α) (r := Ne) inferInstance = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
 
 lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.stdSymm := by
   ext ⟨a, b⟩; simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) inferInstance := by
   ext ⟨a, b⟩; simp
 
@@ -651,8 +643,6 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) in
 theorem fromRel_irrefl {sym : Std.Symm r} : Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z where
   mp := by intro ⟨h⟩; apply Sym2.ind; aesop
   mpr h := ⟨fun _ hr ↦ h (fromRel_prop.mpr hr) rfl⟩
-
-@[deprecated (since := "2026-02-12")] alias fromRel_irreflexive := fromRel_irrefl
 
 theorem mem_fromRel_irrefl_other_ne {sym : Std.Symm r} (irrefl : Std.Irrefl r) {a : α}
     {z : Sym2 α} (hz : z ∈ fromRel sym) (h : a ∈ z) : Mem.other h ≠ a :=
@@ -746,7 +736,6 @@ variable (α) in
 def toRelOrderEmbedding : Set (Sym2 α) ↪o (α → α → Prop) :=
   .ofMapLEIff ToRel toRel_mono_iff
 
-set_option backward.isDefEq.respectTransparency false in
 variable (α) in
 /-- `fromRel`/`ToRel` induce an order isomorphism between symmetric relations and `Sym2` sets -/
 @[simps]
@@ -1024,8 +1013,6 @@ For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements f
 def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) ⟨fun _ _ ↦ .symm⟩
 
 @[simp] lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
-
-@[deprecated (since := "2026-02-05")] alias mk'_mem_sym2_iff := mk_mem_sym2_iff
 
 lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := by
   induction z using Sym2.inductionOn

@@ -6,7 +6,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 /-!
@@ -284,6 +284,13 @@ theorem _root_.MeasurableEmbedding.variation_map (hφ : MeasurableEmbedding φ) 
   · apply Measure.le_iff.2 (fun s hs ↦ ?_)
     apply le_trans ?_ (enorm_measure_le_variation _ _)
     by_cases hx : x ∈ s <;> simp [hs, hx]
+
+@[simp] lemma variation_apply_singleton {x : X} [MeasurableSingletonClass X] :
+    μ.variation {x} = ‖μ {x}‖ₑ := by
+  apply le_antisymm ?_ (enorm_measure_le_variation μ {x})
+  rw [show ‖μ {x}‖ₑ = (‖μ {x}‖ₑ • Measure.dirac x) {x} by simp]
+  apply variation_apply_le_of_forall_enorm_le (.singleton x) (fun s hs h's ↦ ?_)
+  obtain rfl | rfl := s.subset_singleton_iff_eq.1 h's <;> simp
 
 end Basic
 
