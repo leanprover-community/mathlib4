@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Modular forms
@@ -691,7 +690,7 @@ end translate
 
 section SL2Z
 
-open ModularForm CuspForm OnePoint
+open ModularForm OnePoint
 
 variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [FunLike F ℍ ℂ] (f : F)
 

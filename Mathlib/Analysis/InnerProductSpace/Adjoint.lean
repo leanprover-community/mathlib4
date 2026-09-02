@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+public import Mathlib.Tactic.CrossRefAttribute
 
 
 /-!
@@ -109,13 +110,14 @@ public section
 
 /-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
   denoted as `A†`. -/
+@[wikidata Q1509647]
 def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
   LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A =>
     ⟨adjointAux A, adjointAux_adjointAux A⟩
 
 @[inherit_doc]
 scoped[InnerProduct] postfix:1000 "†" => ContinuousLinearMap.adjoint
-open InnerProduct
+open scoped InnerProduct
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪(A†) y, x⟫ = ⟪y, A x⟫ :=
@@ -198,6 +200,23 @@ theorem orthogonal_ker (T : E →L[𝕜] F) :
 
 theorem orthogonal_range (T : E →L[𝕜] F) : T.rangeᗮ = T†.ker := by
   rw [← T†.ker.orthogonal_orthogonal, T†.orthogonal_ker]
+  simp
+
+/-- The fitted value `A x` minimizes the distance to `y` among points in `A.range`
+if and only if the adjoint of `A` sends the residual `y - A x` to zero. -/
+theorem norm_eq_iInf_range_iff_adjoint_apply_eq_zero (A : E →L[𝕜] F) (y : F) (x : E) :
+    (‖y - A x‖ = ⨅ z : A.range, ‖y - z‖) ↔ (A†) (y - A x) = 0 := by
+  rw [A.range.norm_eq_iInf_iff_inner_eq_zero (by simp),
+    ← Submodule.mem_orthogonal', A.orthogonal_range, LinearMap.mem_ker, coe_coe]
+
+/-- The residual norm at `x` is minimal among all points of `E` if and only if
+the adjoint of `A` sends the residual `y - A x` to zero. -/
+theorem forall_norm_sub_apply_le_iff_adjoint_apply_sub_eq_zero
+    (A : E →L[𝕜] F) (y : F) (x : E) :
+    (∀ z : E, ‖y - A x‖ ≤ ‖y - A z‖) ↔ (A†) (y - A x) = 0 := by
+  have hb : BddBelow (Set.range fun w : A.range => ‖y - w‖) := ⟨0, by rintro - ⟨_, rfl⟩; positivity⟩
+  rw [← A.norm_eq_iInf_range_iff_adjoint_apply_eq_zero y x, le_antisymm_iff,
+    and_iff_left (ciInf_le hb ⟨A x, x, rfl⟩), le_ciInf_iff hb]
   simp
 
 omit [CompleteSpace E] in
@@ -320,6 +339,12 @@ lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGrou
     (x : E) (y : F) (f : G →L[𝕜] F) :
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
+
+theorem lipschitzWith_adjoint_apply (f : E) :
+    LipschitzWith ‖f‖₊ (fun T : F →L[𝕜] E ↦ T.adjoint f) :=
+  .of_dist_le_mul fun x y ↦ by
+    simp only [dist_eq_norm, coe_nnnorm, ← sub_apply, ← map_sub]
+    grw [le_opNorm, mul_comm, LinearIsometryEquiv.norm_map]
 
 end
 
