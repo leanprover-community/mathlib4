@@ -54,6 +54,7 @@ section Rename
 def rename (f : σ → τ) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
   AddMonoidAlgebra.mapDomainAlgHom _ _ (mapDomain.addMonoidHom f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem rename_C (f : σ → τ) (r : R) : rename f (C r) = C r := by
   unfold rename C monomial MvPolynomial; simp
 
@@ -122,7 +123,7 @@ theorem rename_surjective (f : σ → τ) (hf : Function.Surjective f) :
 
 section
 
-variable {f : σ → τ} (hf : Function.Injective f) {p q : MvPolynomial τ R}
+variable {f : σ → τ} (hf : Function.Injective f) {p : MvPolynomial τ R}
 
 open scoped Classical in
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
@@ -136,7 +137,7 @@ theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
     dsimp
-    rw [rename_X, killCompl, aeval_X, dif_pos ⟨i, rfl⟩, Equiv.ofInjective_symm_apply]
+    rw [rename_X, killCompl, aeval_X, dite_eq_left ⟨i, rfl⟩, Equiv.ofInjective_symm_apply]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPolynomial σ R) : killCompl hf (rename f p) = p :=

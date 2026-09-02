@@ -133,7 +133,6 @@ theorem equivMapDomain_refl (l : SkewMonoidAlgebra k G) : equivMapDomain (Equiv.
 @[simp]
 theorem equivMapDomain_single (f : G ≃ H) (a : G) (b : k) :
     equivMapDomain f (single a b) = single (f a) b := by
-  classical
   apply coeff_injective
   simp_rw [coeff_equivMapDomain, single, Finsupp.equivMapDomain_single]
 

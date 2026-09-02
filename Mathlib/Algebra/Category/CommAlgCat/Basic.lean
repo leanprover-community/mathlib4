@@ -26,7 +26,6 @@ universe w v u
 variable {R : Type u} [CommRing R]
 
 variable (R) in
-set_option backward.privateInPublic true in
 /-- The category of R-algebras and their morphisms. -/
 structure CommAlgCat where
   private mk ::
@@ -57,7 +56,6 @@ abbrev of (X : Type v) [CommRing X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Algebra R X] : (of R X : Type v) = X := rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommAlgCat R`. -/
 @[ext]
 structure Hom (A B : CommAlgCat.{v} R) where
@@ -148,6 +146,17 @@ instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgCat.{v} R) wher
 
 @[simp] lemma forget₂_algCat_map (f : A ⟶ B) :
     (forget₂ (CommAlgCat.{v} R) (AlgCat.{v} R)).map f = AlgCat.ofHom f.hom := rfl
+
+variable (A B) in
+/-- The bijection between the set of morphisms `A ⟶ B` in `CommAlgCat` and the set of morphisms
+`A ⟶ B` in `CommRingCat` commuting with the corresponding algebra maps `R → A` and `R → B`. -/
+@[simps]
+def homEquivCommRingCat :
+    (A ⟶ B) ≃ {f : CommRingCat.of A ⟶ .of B // f.hom.comp (algebraMap R A) = algebraMap R B} where
+  toFun f := ⟨CommRingCat.ofHom f.hom, congr($f.hom.comp_algebraMap)⟩
+  invFun f := CommAlgCat.ofHom ⟨f.val.hom, fun r ↦ congr($f.prop r)⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- Build an isomorphism in the category `CommAlgCat R` from an `AlgEquiv` between commutative
 `Algebra`s. -/

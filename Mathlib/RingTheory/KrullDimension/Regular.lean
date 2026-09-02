@@ -73,6 +73,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
   grw [le_tsub_add (b := p.length) (a := 1), Nat.cast_add_one, supportDim, Order.krullDim,
     ← le_iSup _ q']
 
+set_option backward.isDefEq.respectTransparency.types false in
 omit [IsNoetherianRing R] in
 /-- If `M` is a finite module over a commutative ring `R`, `x ∈ M` is not in any minimal prime of
   `M`, then `dim M/xM + 1 ≤ dim M`. -/
@@ -145,20 +146,6 @@ lemma _root_.ringKrullDim_le_ringKrullDim_quotSMulTop_succ {x : R} (hx : x ∈ m
     ringKrullDim R ≤ ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
   rw [← Module.supportDim_self_eq_ringKrullDim, ← Module.supportDim_quotient_eq_ringKrullDim]
   exact supportDim_le_supportDim_quotSMulTop_succ hx
-
-@[deprecated ringKrullDim_le_ringKrullDim_quotient_add_card (since := "2026-01-12")]
-lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
-    (hS : (S : Set R) ⊆ maximalIdeal R) :
-    ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (SetLike.coe S)) + S.card := by
-  apply ringKrullDim_le_ringKrullDim_quotient_add_card
-  rwa [IsLocalRing.ringJacobson_eq_maximalIdeal]
-
-@[deprecated ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank (since := "2026-01-12")]
-lemma _root_.ringKrullDim_le_ringKrullDim_add_spanFinrank {I : Ideal R} (h : I ≠ ⊤) :
-    ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
-  apply ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank
-  rw [IsLocalRing.ringJacobson_eq_maximalIdeal]
-  exact le_maximalIdeal h
 
 @[stacks 0B52 "the equality case"]
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}

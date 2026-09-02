@@ -55,6 +55,10 @@ probable primes to any base.
 def ProbablePrime (n b : ℕ) : Prop :=
   n ∣ b ^ (n - 1) - 1
 
+theorem probablePrime_iff_zmod_one (n : ℕ) {b : ℕ} (hb : b ≠ 0) :
+    n.ProbablePrime b ↔ (b : ZMod n) ^ (n - 1) = 1 := by
+  rw [ProbablePrime, ← ZMod.natCast_eq_zero_iff, cast_pred (by positivity), sub_eq_zero, cast_pow]
+
 /--
 `n` is a Fermat pseudoprime to base `b` if `n` is a probable prime to base `b` and is composite. By
 this definition, all composite natural numbers are pseudoprimes to base 0 and 1. This definition
@@ -345,8 +349,11 @@ theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.
 
 /-- Infinite set variant of `Nat.exists_infinite_pseudoprimes`
 -/
-theorem infinite_setOf_pseudoprimes {b : ℕ} (h : 1 ≤ b) :
+theorem infinite_setOfPred_pseudoprimes {b : ℕ} (h : 1 ≤ b) :
     Set.Infinite { n : ℕ | FermatPsp n b } :=
   Nat.frequently_atTop_iff_infinite.mp (frequently_atTop_fermatPsp h)
+
+@[deprecated (since := "2026-07-09")]
+alias infinite_setOf_pseudoprimes := infinite_setOfPred_pseudoprimes
 
 end Nat
