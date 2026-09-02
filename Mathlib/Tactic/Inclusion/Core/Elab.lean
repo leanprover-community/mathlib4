@@ -23,7 +23,7 @@ namespace Inclusion
 declare_config_elab elabInclusionConfig InclusionConfig where
   omit paramSettings, families
 
-/-- Syntax for specifying an inclusion family or parameter. -/
+/-- Families and parameters for the `inclusion` tactic -/
 syntax inclusionArg := ident (" := " term)?
 
 /-- Collect the enabled inclusion families and user-set parameter values. -/
