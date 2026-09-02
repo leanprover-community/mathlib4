@@ -130,14 +130,14 @@ theorem dim_eq_finDim_unbot (hs : s ≠ ⊥) [StrongRankCondition R] [Module.Fin
   norm_cast
   exact Cardinal.cast_toNat_of_lt_aleph0 (Module.rank_lt_aleph0 _ _) |>.symm
 
-@[mono]
+@[gcongr]
 theorem dim_mono (h : s ≤ t) : dim s ≤ dim t := by
   by_cases hs : s = ⊥
   · simp [hs]
   simp [dim_eq_rank hs, dim_eq_rank (ne_bot_of_le_ne_bot hs h),
     Submodule.rank_mono (direction_le h)]
 
-@[mono]
+@[gcongr]
 theorem finDim_mono [StrongRankCondition R] [Module.Finite R t.direction] (h : s ≤ t) :
     finDim s ≤ finDim t := by
   by_cases hs : s = ⊥
@@ -202,7 +202,7 @@ section DivisionRing
 variable [DivisionRing R] [Module R V]
 variable {s t : AffineSubspace R A}
 
-@[mono]
+@[gcongr]
 theorem finDim_strictMono [Module.Finite R t.direction] (h : s < t) : finDim s < finDim t := by
   by_cases hs : s = ⊥
   · simp_all [bot_lt_iff_ne_bot]
