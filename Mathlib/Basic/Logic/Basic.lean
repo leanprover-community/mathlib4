@@ -369,9 +369,7 @@ theorem or_congr_left' {c a b : Prop} (h : ¬c → (a ↔ b)) : a ∨ c ↔ b �
 theorem or_congr_right' {c : Prop} (h : ¬a → (b ↔ c)) : a ∨ b ↔ a ∨ c :=
   open scoped Classical in Decidable.or_congr_right' h
 
-/-! ### Declarations about distributivity -/
-
-/-! Declarations about `iff` -/
+/-! ### Declarations about `iff` -/
 
 alias Iff.iff := iff_congr
 
@@ -733,8 +731,6 @@ alias Iff.eq := propext
 
 lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
 
--- They were not used in Lean 3 and there are already lemmas with those names in Lean 4
-
 /-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
@@ -787,10 +783,6 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 
--- This can be removed after https://github.com/leanprover/lean4/pull/11316
--- arrives in a release candidate.
-grind_pattern Exists.choose_spec => P.choose
-
 @[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
 
 @[simp]
@@ -800,11 +792,6 @@ lemma choose_eq' (a : α) : @Exists.choose _ (a = ·) ⟨a, rfl⟩ = a :=
 alias axiom_of_choice := axiomOfChoice -- TODO: remove? rename in core?
 alias by_cases := byCases -- TODO: remove? rename in core?
 alias by_contradiction := byContradiction -- TODO: remove? rename in core?
-
--- The remaining theorems in this section were ported from Lean 3,
--- but are currently unused in Mathlib, so have been deprecated.
--- If any are being used downstream, please remove the deprecation.
-
 alias prop_complete := propComplete -- TODO: remove? rename in core?
 
 end Classical

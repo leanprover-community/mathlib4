@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Data.Finite.Defs
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Fintype.Card
 
 /-!
