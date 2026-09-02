@@ -40,7 +40,7 @@ lemma single_le_prod [IsOrderedMonoid α] : (∀ x ∈ s, (1 : α) ≤ x) → �
 lemma prod_le_pow_card [MulLeftMono α] (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) :
     s.prod ≤ n ^ card s := by
   induction s using Quotient.inductionOn
-  simpa using List.prod_le_pow_card _ _ h
+  simpa using List.prod_le_pow_length _ _ h
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
 lemma all_one_of_le_one_le_of_prod_eq_one {α : Type*} [CommMonoid α]
