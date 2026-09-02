@@ -174,7 +174,12 @@ instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
   coeffEquiv.decidableEq
 
 @[to_additive] instance : Zero R[M] := ⟨⟨0⟩⟩
+
 @[no_expose, to_additive] instance : Add R[M] := coeffEquiv.add
+
+@[to_additive (dont_translate := S R)]
+instance [SMulZeroClass S R] : SMul S R[M] where
+  smul a x := ofCoeff (a • x.coeff)
 
 @[to_additive instAddMonoid]
 instance instAddMonoid : AddMonoid R[M] := fast_instance% coeffEquiv.addMonoid
