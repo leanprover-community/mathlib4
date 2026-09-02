@@ -348,7 +348,7 @@ namespace PreLp
 
 -- The `SMul` instance exists to avoid a zsmul diamond.
 variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] in
-deriving instance SMul 𝕜, AddCommGroup for PreLp E
+deriving instance SMul 𝕜, AddCommMonoid, AddCommGroup for PreLp E
 
 @[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
 @[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
@@ -1083,7 +1083,7 @@ noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
       right_inv _ := Finsupp.ext fun _ ↦ rfl }
 
 set_option backward.isDefEq.respectTransparency false in
-lemma zeroBasis_apply (i : α) : zeroBasis (𝕜 := 𝕜) i = lp.single 0 i (1 : 𝕜) := by
+lemma zeroBasis_apply (i : α) : zeroBasis i = lp.single 0 i (1 : 𝕜) := by
   ext; simp [zeroBasis, Finsupp.single_apply, Pi.single, Function.update, eq_comm]
 
 protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
