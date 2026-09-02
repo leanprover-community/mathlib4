@@ -107,7 +107,7 @@ theorem one_one : (1 : ArithmeticFunction R) 1 = 1 :=
 
 @[simp]
 theorem one_apply_ne {x : ℕ} (h : x ≠ 1) : (1 : ArithmeticFunction R) x = 0 :=
-  if_neg h
+  ite_eq_right h
 
 end One
 
@@ -363,17 +363,17 @@ def dirichletInverseFun (n : ℕ) : R :=
 
 @[simp]
 theorem dirichletInverseFun_apply_zero : dirichletInverseFun f hf 0 = 0 := by
-  rw [dirichletInverseFun, if_pos rfl]
+  rw [dirichletInverseFun, ite_eq_left rfl]
 
 @[simp]
 theorem dirichletInverseFun_apply_one : dirichletInverseFun f hf 1 = ⅟(f 1) := by
-  rw [dirichletInverseFun, if_neg one_ne_zero, if_pos rfl]
+  rw [dirichletInverseFun, ite_eq_right one_ne_zero, ite_eq_left rfl]
 
 @[simp]
 theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
     dirichletInverseFun f hf n =
       - ⅟(f 1) * ∑ d ∈ n.properDivisors, f (n / d) * dirichletInverseFun f hf d := by
-  rw [dirichletInverseFun, if_neg hn0, if_neg hn1]
+  rw [dirichletInverseFun, ite_eq_right hn0, ite_eq_right hn1]
   conv_rhs => rw [← Finset.sum_attach, Finset.attach_eq_univ]
 
 /-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. -/

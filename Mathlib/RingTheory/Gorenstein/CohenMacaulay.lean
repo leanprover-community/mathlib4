@@ -270,6 +270,7 @@ instance (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
     Small.{v} (LocalizedModule S M) :=
   small_of_surjective (IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
     {p q : PrimeSpectrum R} (lt : p < q) (eq_of_le : ∀ r : PrimeSpectrum R, p < r → r ≤ q → r = q)
     (i : ℕ) (ntr : Nontrivial (Ext (ModuleCat.of (Localization p.1.primeCompl)
@@ -359,6 +360,7 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
   have isl2 : IsLocalizedModule (p.1.map f).primeCompl f2 :=
     isLocalizedModule_map_of_disjoint q.1.primeCompl Rq (p.1.map f)
     (M.localizedModuleMkLinearMap q.1.primeCompl) (M.localizedModuleMkLinearMap p.1.primeCompl)
+  --tech debt
   have isl := Ext.isLocalizedModule (p.1.map f).primeCompl Rp f1 isl1 f2 isl2 i
   absurd nontrivial_of_islocalizedModule isl ntr
   exact not_nontrivial_iff_subsingleton.mpr sub'
@@ -481,6 +483,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 open Limits in
 lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Module.Finite R M] [Nontrivial M] :
@@ -569,6 +572,7 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
       _ = _ := by
         rcases Ideal.Quotient.mk_surjective (e y * (e x)⁻¹) with ⟨r, hr⟩
         rw [← hr, ← Ideal.Quotient.algebraMap_eq, ← Algebra.smul_def]
+        --tech debt
         simp [LinearMap.mem_ker.mp hx]
     let g : ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R)) ⟶
       ModuleCat.of R (Shrink.{v} R ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R))) :=
