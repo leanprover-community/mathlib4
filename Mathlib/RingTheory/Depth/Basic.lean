@@ -145,9 +145,9 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
   have (n : ℕ) : (∀ i < n, Subsingleton (Ext N M i)) ↔
     (∀ i < n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i)) := by
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · apply ((exists_isRegular_tfae I n M smul_lt).out 1 2).mpr
+    · apply ((exists_isRegular_tfae I n M smul_lt).out 2 3).mpr
       use N
-    · have rees := ((exists_isRegular_tfae I n M smul_lt).out 0 1).mpr h
+    · have rees := ((exists_isRegular_tfae I n M smul_lt).out 1 2).mpr h
       exact rees N Nntr Nfin (le_of_eq hsupp)
   simp only [moduleDepth_eq_sup_nat, Ideal.depth]
   congr
@@ -311,10 +311,10 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
   refine ⟨fun ⟨lt_top, h⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
   · rcases ENat.ne_top_iff_exists.mp lt_top.ne with ⟨n, hn⟩
     simp only [← hn, Nat.cast_lt, Nat.cast_inj] at h ⊢
-    rcases ((exists_isRegular_tfae I n M smul_lt).out 2 3).mp (by use N) with ⟨rs, len, mem, reg⟩
+    rcases ((exists_isRegular_tfae I n M smul_lt).out 3 4).mp (by use N) with ⟨rs, len, mem, reg⟩
     use rs
   · simp only [← len, ENat.natCast_lt_top, Nat.cast_lt, true_and]
-    have rees := ((exists_isRegular_tfae I rs.length M smul_lt).out 3 0).mp (by use rs)
+    have rees := ((exists_isRegular_tfae I rs.length M smul_lt).out 4 1).mp (by use rs)
     exact rees N Nntr Nfin (le_of_eq hsupp)
 
 lemma IsLocalRing.ideal_depth_eq_sSup_length_regular [IsLocalRing R] [IsNoetherianRing R]
