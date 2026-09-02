@@ -6,6 +6,7 @@ Authors: Jiaxi Mo
 module
 
 public import Mathlib.GroupTheory.DoubleCoset
+public import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Double cosets admitting finite left-coset decomposition
