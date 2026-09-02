@@ -352,9 +352,6 @@ theorem _root_.Homeomorph.toHomeomorph_flow_eq {f : α ≃ₜ α} {n : ℤ} :
 
 theorem isInvariant_iff_image_eq (s : Set α) : s.IsInvariant ϕ ↔ ∀ t, ϕ t '' s = s :=
   (Set.isInvariant_iff_image _ _).trans
-
-theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
-  (isInvariant_iff_image _ _).trans
     (Iff.intro
       (fun h t => Subset.antisymm (h t) fun _ hx => ⟨_, h (-t) ⟨_, hx, rfl⟩, by simp [← map_add]⟩)
       fun h t => by rw [h t])
