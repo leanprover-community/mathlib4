@@ -299,7 +299,7 @@ section LE
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
 @[simp, norm_cast, gcongr] lemma coe_subset_coe : (p : Set B) ⊆ q ↔ p ≤ q :=
-  (SetLike.le_def (A := A)).symm
+  (IsConcreteLE.le_iff (A := A)).symm
 
 end LE
 
