@@ -78,6 +78,12 @@ example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
     assumption
   exact h
 
+-- `rwa` doesn't support `(config := ...)`, so the linter must not fire here.
+#guard_msgs in
+example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
+  rw (occs := .pos [1]) [h₁]
+  assumption
+
 end rwaSuggestion
 
 section rwMerge
