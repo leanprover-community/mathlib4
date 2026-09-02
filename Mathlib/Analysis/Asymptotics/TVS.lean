@@ -828,9 +828,6 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
 
 alias ⟨IsBigOTVS.isBigO, IsBigO.isBigOTVS⟩ := isBigOTVS_iff_isBigO
 
-@[deprecated (since := "2026-02-03")]
-alias isBigOTVS.isBigO := IsBigOTVS.isBigO
-
 lemma isThetaTVS_iff_isTheta : f =Θ[𝕜; l] g ↔ f =Θ[l] g :=
   .and isBigOTVS_iff_isBigO isBigOTVS_iff_isBigO
 

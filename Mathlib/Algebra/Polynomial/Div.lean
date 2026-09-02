@@ -486,13 +486,6 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
 
 section multiplicity
 
-/-- An algorithm for deciding polynomial divisibility.
-Prefer `Classical.dec`, as the algorithm relies on `%ₘ` and so is `noncomputable`.
--/
-@[deprecated Classical.dec (since := "2026-02-07")]
-def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
-  decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
-
 theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (X - C a) p := by
   have := Nontrivial.of_polynomial_ne h0
   refine finiteMultiplicity_of_degree_pos_of_monic ?_ (monic_X_sub_C _) h0
@@ -515,9 +508,6 @@ theorem rootMultiplicity_eq_natFind_of_ne_zero {p : R[X]} (p0 : p ≠ 0) {a : R}
   dsimp [rootMultiplicity]
   rw [dite_eq_right p0]
   congr
-
-@[deprecated (since := "2026-02-12")]
-alias rootMultiplicity_eq_nat_find_of_nonzero := rootMultiplicity_eq_natFind_of_ne_zero
 
 theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
     (p : R[X]) (a : R) :
@@ -668,24 +658,44 @@ lemma modByMonic_eq_of_dvd_sub (hq : q.Monic) (h : q ∣ p₁ - p₂) : p₁ %�
   refine (div_modByMonic_unique (p₂ /ₘ q + f) _ hq ⟨?_, degree_modByMonic_lt _ hq⟩).2
   rw [sub_eq_iff_eq_add.mp sub_eq, mul_add, ← add_assoc, modByMonic_add_div, add_comm]
 
-lemma add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
+private lemma add_divByMonic_modByMonic (p₁ p₂ : R[X]) :
+    (p₁ + p₂) /ₘ q = p₁ /ₘ q + p₂ /ₘ q ∧
+    (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
   by_cases hq : q.Monic
   · rcases subsingleton_or_nontrivial R with hR | hR
-    · simp only [eq_iff_true_of_subsingleton]
-    · exact
-      (div_modByMonic_unique (p₁ /ₘ q + p₂ /ₘ q) _ hq
-          ⟨by
-            rw [mul_add, add_left_comm, add_assoc, modByMonic_add_div, ← add_assoc,
-              add_comm (q * _), modByMonic_add_div],
-            (degree_add_le _ _).trans_lt
-              (max_lt (degree_modByMonic_lt _ hq) (degree_modByMonic_lt _ hq))⟩).2
-  · simp_rw [modByMonic_eq_of_not_monic _ hq]
+    · simp [eq_iff_true_of_subsingleton]
+    · exact div_modByMonic_unique (p₁ /ₘ q + p₂ /ₘ q) (p₁ %ₘ q + p₂ %ₘ q) hq
+        ⟨by
+          rw [mul_add, add_left_comm, add_assoc, modByMonic_add_div, ← add_assoc,
+            add_comm (q * _), modByMonic_add_div],
+          (degree_add_le _ _).trans_lt
+            (max_lt (degree_modByMonic_lt _ hq) (degree_modByMonic_lt _ hq))⟩
+  · simp [divByMonic_eq_of_not_monic _ hq, modByMonic_eq_of_not_monic _ hq]
+
+lemma add_divByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) /ₘ q = p₁ /ₘ q + p₂ /ₘ q :=
+  (add_divByMonic_modByMonic p₁ p₂).1
+
+lemma add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q :=
+  (add_divByMonic_modByMonic p₁ p₂).2
+
+lemma neg_divByMonic (p q : R[X]) : (-p) /ₘ q = -(p /ₘ q) := by
+  rw [eq_neg_iff_add_eq_zero, ← add_divByMonic, neg_add_cancel, zero_divByMonic]
 
 lemma neg_modByMonic (p q : R[X]) : (-p) %ₘ q = -(p %ₘ q) := by
   rw [eq_neg_iff_add_eq_zero, ← add_modByMonic, neg_add_cancel, zero_modByMonic]
 
+lemma sub_divByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) /ₘ q = p₁ /ₘ q - p₂ /ₘ q := by
+  simp [sub_eq_add_neg, add_divByMonic, neg_divByMonic]
+
 lemma sub_modByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) %ₘ q = p₁ %ₘ q - p₂ %ₘ q := by
   simp [sub_eq_add_neg, add_modByMonic, neg_modByMonic]
+
+lemma mul_divByMonic_assoc (p₁ p₂ q : R[X]) (hd : q ∣ p₂) :
+    (p₁ * p₂) /ₘ q = p₁ * (p₂ /ₘ q) := by
+  by_cases h : q.Monic
+  · obtain ⟨k, rfl⟩ := hd
+    rw [mul_left_comm]; simp only [mul_divByMonic_cancel_left _ h]
+  · simp [divByMonic_eq_of_not_monic _ h]
 
 lemma mul_modByMonic (p₁ p₂ q : R[X]) : (p₁ * p₂) %ₘ q = (p₁ %ₘ q) * (p₂ %ₘ q) %ₘ q := by
   by_cases! h : ¬ q.Monic
