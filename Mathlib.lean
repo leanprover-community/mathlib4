@@ -1750,6 +1750,7 @@ public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 public import Mathlib.Analysis.CStarAlgebra.Module.Defs
 public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 public import Mathlib.Analysis.CStarAlgebra.Multiplier
+public import Mathlib.Analysis.CStarAlgebra.PositiveLinearFunctional
 public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.Projection
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
