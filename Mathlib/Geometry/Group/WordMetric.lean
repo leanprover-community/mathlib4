@@ -33,9 +33,9 @@ family given by `Group.Generators`. The word length defines a norm on `G` induci
 ## Implementation notes
 
 * The API in this file is modelled on the length API for Coxeter groups (`CoxeterSystem.length`).
-* The definition of `wordLength` uses `sInf` as `InfSet ℕ` already uses `Nat.find`, saving us from
-  having to rewrite `classical`. The junk value `0` on `∅` is never reached because every group
-  element has at least one word representing it. It uses `@[no_expose]` as it has no useful defeqs.
+* We define `wordLength` in terms of `sInf` instead of `Nat.find` to avoid having to produce the
+  `DecidablePred` instance. The definition of `wordLength` has no useful defeqs and is
+  characterized by `wordLength_le_iff`, so we tag it with `@[no_expose]`.
 
 ## TODO
 * Relate the word metric to the distance in the Cayley graph.
