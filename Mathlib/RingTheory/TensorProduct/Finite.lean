@@ -22,7 +22,6 @@ is again finitely generated.
 public section
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
@@ -76,7 +75,7 @@ end Submodule
 
 section ModuleAndAlgebra
 
-variable (R A B M N : Type*)
+variable (R A M N : Type*)
 
 instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
