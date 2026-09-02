@@ -47,6 +47,14 @@ outputs:
       master / nightly / pr-toolchain-tests uploads where scoping isn't
       applied.
     value: ${{ steps.dispatch.outputs.repo-scope }}
+  service:
+    description: |
+      The service class of the upload container: `internal` for the
+      work-in-progress containers (forks, nightly-testing,
+      pr-toolchain-tests), `public` otherwise. The dispatch owns this
+      classification; workflow conditions consume the output rather than
+      re-listing container names.
+    value: ${{ steps.dispatch.outputs.service }}
 
 runs:
   using: composite
@@ -179,6 +187,14 @@ runs:
           REPO_SCOPE="$HEAD_SHA"
         fi
 
+        # The container -> service classification (the read side of this
+        # mapping lives in the cache tool's Container.service).
+        case "$PRIMARY" in
+          forks|nightly-testing|pr-toolchain-tests) SERVICE="internal" ;;
+          *) SERVICE="public" ;;
+        esac
+
+        echo "service=$SERVICE"           >> "$GITHUB_OUTPUT"
         echo "primary=$PRIMARY"           >> "$GITHUB_OUTPUT"
         echo "read-chain=$READ_CHAIN"     >> "$GITHUB_OUTPUT"
         echo "repo-scope=$REPO_SCOPE"     >> "$GITHUB_OUTPUT"

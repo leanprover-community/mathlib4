@@ -634,6 +634,7 @@ jobs:
       # ref in the contexts where this job runs), which is what the OIDC token's
       # container scoping is keyed to.
       - name: Compute cache trust dispatch
+        id: trust-dispatch
         uses: ./.github/actions/cache-trust-dispatch
         with:
           repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -658,12 +659,16 @@ jobs:
           fi
           echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
           # Whether the cache tool built from this tools checkout can sign S3
-          # uploads: the internal-bucket leg below keys on it, so a pre-S3 tool
-          # skips that leg honestly instead of re-putting to Azure and reporting
-          # a green bucket write. A source grep, not a version check: the
-          # variable name and the capability appear together.
-          if grep -q "MATHLIB_CACHE_S3_ACCESS_KEY_ID" Cache/Requests.lean 2>/dev/null; then
+          # uploads: the internal-bucket leg below keys on it, so a pre-S3
+          # tool skips that leg honestly instead of re-putting to Azure and
+          # reporting a green bucket write. The probe asks the binary itself
+          # (`cache capabilities`, answered without a Lake workspace), so it
+          # survives any source reorganization; a tool that predates the
+          # subcommand prints no matching token and reads as not capable.
+          if "$CACHE_BIN" capabilities 2>/dev/null | grep -qx "s3-put"; then
             echo "CACHE_TOOL_S3_CAPABLE=true" >> "$GITHUB_ENV"
+          else
+            echo "::notice::the cache tool is not S3-capable; the internal-bucket upload leg will be skipped"
           fi
 
       - name: Download cache staging artifact
@@ -693,17 +698,16 @@ jobs:
       #
       # Gated on the repository variables, so a repository without the
       # internal bucket configured (or with the variables cleared to roll
-      # back) keeps the Azure-only flow. The public-service container (`master`) never
-      # takes this path: its R2 publish is the separate r2_cache_publish
-      # workflow, and this job must not hold a public-bucket credential.
+      # back) keeps the Azure-only flow. The public-service container
+      # (`master`) never takes this path: its R2 publish is a separate
+      # workflow (#43160), and this job must not hold a public-bucket
+      # credential.
       - name: Mint internal cache credentials from the cache broker
         if: >-
           vars.MATHLIB_CACHE_BROKER_URL != '' &&
           vars.MATHLIB_CACHE_INTERNAL_PUT_BASE_URL != '' &&
           inputs.cache_environment != '' &&
-          (env.MATHLIB_CACHE_PRIMARY == 'forks' ||
-           env.MATHLIB_CACHE_PRIMARY == 'nightly-testing' ||
-           env.MATHLIB_CACHE_PRIMARY == 'pr-toolchain-tests')
+          steps.trust-dispatch.outputs.service == 'internal'
         shell: bash
         env:
           BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
@@ -762,11 +766,15 @@ jobs:
           # write to the bucket only on MATHLIB_CACHE_PUT_BASE_URL, so even a
           # truncated write leaves the S3 credentials aimed at Azure — a loud
           # 4xx — never an Azure credential aimed at the bucket.
+          # MINTED is the non-secret sentinel the internal-bucket leg gates
+          # on; testing a masked credential's presence in an `if:` works but
+          # reads poorly.
           {
             echo "MATHLIB_CACHE_S3_ACCESS_KEY_ID=${access_key_id}"
             echo "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY=${secret_access_key}"
             echo "MATHLIB_CACHE_S3_SESSION_TOKEN=${session_token}"
             echo "MATHLIB_CACHE_PUT_BASE_URL=${INTERNAL_PUT_BASE_URL}"
+            echo "MATHLIB_CACHE_INTERNAL_MINTED=true"
           } >> "$GITHUB_ENV"
           echo "internal cache credentials minted (grant: $(jq -r '.grant // "?"' <<<"${creds}"))"
 
@@ -774,7 +782,10 @@ jobs:
       # unconditionally, so a broker outage, a bucket fault, or an old cache
       # tool never costs the run its cache, and pre-split readers (older
       # binaries reading Azure directly) keep seeing fresh artifacts through
-      # the transition. Retiring this step is the write-side cutover lever.
+      # the transition. Retiring this step cuts the Azure write traffic; the
+      # mint's fallback posture, the capability gate's skip semantics, and
+      # the Azure credential plumbing in the callers retire with it (the
+      # infrastructure design document carries the cutover checklist).
       - name: Upload staged cache to Azure
         shell: bash
         env:
@@ -811,7 +822,7 @@ jobs:
       # cutover the bucket needs a backfill-and-verify pass, not a marker
       # check.
       - name: Upload staged cache to the internal bucket
-        if: env.MATHLIB_CACHE_S3_ACCESS_KEY_ID != '' && env.CACHE_TOOL_S3_CAPABLE == 'true'
+        if: env.MATHLIB_CACHE_INTERNAL_MINTED == 'true' && env.CACHE_TOOL_S3_CAPABLE == 'true'
         continue-on-error: true
         shell: bash
         env:
