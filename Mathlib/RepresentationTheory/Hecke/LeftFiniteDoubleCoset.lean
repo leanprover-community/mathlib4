@@ -6,7 +6,6 @@ Authors: Jiaxi Mo
 module
 
 public import Mathlib.GroupTheory.DoubleCoset
-public import Mathlib.GroupTheory.Index
 
 /-!
 # Double cosets admitting finite left-coset decomposition
@@ -20,7 +19,7 @@ concrete convolution product computation.
 
 @[expose] public section
 
-variable {G : Type*} [Group G] {H₁ H₂ : Subgroup G} {g g': G}
+variable {G : Type*} [Group G] {H₁ H₂ : Subgroup G} {g g' : G}
 
 open DoubleCoset Pointwise
 
