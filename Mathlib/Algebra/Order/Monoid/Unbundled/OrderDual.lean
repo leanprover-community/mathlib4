@@ -3,10 +3,14 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Synonym
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
 /-! # Unbundled ordered monoid structures on the order dual. -/
+
+public section
 
 universe u
 
@@ -17,16 +21,18 @@ open Function
 namespace OrderDual
 
 @[to_additive]
-instance mulLeftReflectLE [LE α] [Mul α] [c : MulLeftReflectLE α] : MulLeftReflectLE αᵒᵈ :=
-  ⟨c.1.flip⟩
+instance mulLeftReflectLE [LE α] [Mul α] [MulLeftReflectLE α] : MulLeftReflectLE αᵒᵈ where
+  le_of_mul_le_mul_left' :=
+    Contravariant.flip (μ := (· * ·)) (fun _ ↦ ‹MulLeftReflectLE α›.le_of_mul_le_mul_left') _
 
 @[to_additive]
 instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] : MulLeftMono αᵒᵈ :=
   ⟨c.1.flip⟩
 
 @[to_additive]
-instance mulRightReflectLE [LE α] [Mul α] [c : MulRightReflectLE α] : MulRightReflectLE αᵒᵈ :=
-  ⟨c.1.flip⟩
+instance mulRightReflectLE [LE α] [Mul α] [MulRightReflectLE α] : MulRightReflectLE αᵒᵈ where
+  le_of_mul_le_mul_right' :=
+    Contravariant.flip (μ := swap (· * ·)) (fun _ ↦ ‹MulRightReflectLE α›.le_of_mul_le_mul_right') _
 
 @[to_additive]
 instance mulRightMono [LE α] [Mul α] [c : MulRightMono α] : MulRightMono αᵒᵈ :=

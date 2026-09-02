@@ -3,16 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Filter.AtTopBot.Tendsto
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Tendsto
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # `Filter.atTop` and `Filter.atBot` in (conditionally) complete lattices
 -/
 
+public section
+
 assert_not_exists Finset
 
-variable {ι ι' α β γ : Type*}
+variable {α β γ : Type*}
 
 open Set
 
@@ -22,7 +27,7 @@ namespace Filter
 theorem Subsingleton.atTop_eq (α) [Subsingleton α] [Preorder α] : (atTop : Filter α) = ⊤ := by
   refine top_unique fun s hs x => ?_
   rw [atTop, ciInf_subsingleton x, mem_principal] at hs
-  exact hs left_mem_Ici
+  exact hs self_mem_Ici
 
 @[nontriviality]
 theorem Subsingleton.atBot_eq (α) [Subsingleton α] [Preorder α] : (atBot : Filter α) = ⊤ :=

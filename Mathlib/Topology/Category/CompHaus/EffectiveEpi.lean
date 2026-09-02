@@ -3,15 +3,17 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.CompHaus.Limits
-import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
+module
+
+public import Mathlib.Topology.Category.CompHaus.Limits
+public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 /-!
 
 # Effective epimorphisms in `CompHaus`
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `CompHaus`.
 As a consequence we deduce from the material in
-`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `CompHaus` is `Preregular`
+`Mathlib/Topology/Category/CompHausLike/EffectiveEpi.lean` that `CompHaus` is `Preregular`
 and `Precoherent`.
 
 We also prove that for a finite family of morphisms in `CompHaus` with fixed
@@ -24,6 +26,8 @@ equivalent.
 - Define coherent categories, and show that `CompHaus` is actually coherent.
 
 -/
+
+public section
 
 universe u
 
@@ -45,7 +49,7 @@ theorem effectiveEpi_tfae
   tfae_finish
 
 instance : Preregular CompHaus :=
-  preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp
+  preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 1 3).mp
 
 example : Precoherent CompHaus.{u} := inferInstance
 
@@ -61,7 +65,7 @@ theorem effectiveEpiFamily_tfae
     ] := by
   tfae_have 2 → 1
   | _ => by
-    simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
+    simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 1 2]
   tfae_have 1 → 2
   | _ => inferInstance
   tfae_have 3 → 2
@@ -83,13 +87,13 @@ theorem effectiveEpiFamily_tfae
     refine ⟨q.1,q.2,?_⟩
     have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
     rw [this]
-    show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
+    change _ = (i.inv ≫ Sigma.desc π) (i.hom t)
     suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X π by
       rw [this]; rfl
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext
     rintro ⟨a⟩
-    simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
+    simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_ι_app,
       colimit.comp_coconePointUniqueUpToIso_hom_assoc]
     ext; rfl
   tfae_finish
@@ -99,6 +103,6 @@ theorem effectiveEpiFamily_of_jointly_surjective
     (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :
     EffectiveEpiFamily X π :=
-  ((effectiveEpiFamily_tfae X π).out 2 0).mp surj
+  ((effectiveEpiFamily_tfae X π).out 3 1).mp surj
 
 end CompHaus

@@ -3,11 +3,15 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 -/
+module
 
-import Mathlib.Data.Nat.Notation
-import Mathlib.Order.TypeTags
+public import Batteries.Tactic.Alias
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Order.TypeTags
 
 /-! # Definition and notation for extended natural numbers -/
+
+@[expose] public section
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 def ENat : Type := WithTop ℕ deriving Top, Inhabited
@@ -30,8 +34,10 @@ theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) 
   rfl
 
 @[simp]
-theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
+theorem recTopCoe_natCast {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ↑x = f x :=
   rfl
+
+@[deprecated (since := "2026-07-17")] alias recTopCoe_coe := recTopCoe_natCast
 
 end ENat

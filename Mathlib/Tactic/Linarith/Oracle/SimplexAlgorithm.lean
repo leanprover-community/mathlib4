@@ -3,8 +3,11 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+module
+
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
 
 /-!
 # The oracle based on Simplex Algorithm
@@ -14,8 +17,9 @@ The algorithm's entry point is the function `Linarith.SimplexAlgorithm.findPosit
 See the file `PositiveVector.lean` for details of how the procedure works.
 -/
 
-namespace Linarith.SimplexAlgorithm
-open Mathlib
+public meta section
+
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /-- Preprocess the goal to pass it to `Linarith.SimplexAlgorithm.findPositiveVector`. -/
 def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)
@@ -56,4 +60,4 @@ def CertificateOracle.simplexAlgorithmDense : CertificateOracle where
     let vec ← findPositiveVector A strictIndexes
     return postprocess vec
 
-end Linarith
+end Mathlib.Tactic.Linarith

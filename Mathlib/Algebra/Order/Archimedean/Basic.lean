@@ -3,32 +3,37 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Floor.Semiring
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Archimedean.Defs
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Order.Directed
+public import Mathlib.Data.Rat.Floor
+
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
-import Mathlib.Data.Rat.Floor
+public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
-# Archimedean groups and fields.
+# Archimedean groups and fields
 
-This file defines the archimedean property for ordered groups and proves several results connected
-to this notion. Being archimedean means that for all elements `x` and `y>0` there exists a natural
-number `n` such that `x ≤ n • y`.
+This file proves several results connected to the notion of Archimedean groups. Being Archimedean
+means that for all elements `x` and `y > 0` there exists a natural number `n` such that `x ≤ n • y`.
 
 ## Main definitions
 
-* `Archimedean` is a typeclass for an ordered additive commutative monoid to have the archimedean
-  property.
-* `MulArchimedean` is a typeclass for an ordered commutative monoid to have the "mul-archimedean
-  property" where for `x` and `y > 1`, there exists a natural number `n` such that `x ≤ y ^ n`.
-* `Archimedean.floorRing` defines a floor function on an archimedean linearly ordered ring making
-  it into a `floorRing`.
+* `Archimedean.floorRing` defines a floor function on an archimedean linearly ordered ring making it
+  into a `floorRing`.
 
 ## Main statements
 
 * `ℕ`, `ℤ`, and `ℚ` are archimedean.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -36,31 +41,21 @@ open Int Set
 
 variable {G M R K : Type*}
 
-/-- An ordered additive commutative monoid is called `Archimedean` if for any two elements `x`, `y`
-such that `0 < y`, there exists a natural number `n` such that `x ≤ n • y`. -/
-class Archimedean (M) [AddCommMonoid M] [PartialOrder M] : Prop where
-  /-- For any two elements `x`, `y` such that `0 < y`, there exists a natural number `n`
-  such that `x ≤ n • y`. -/
-  arch : ∀ (x : M) {y : M}, 0 < y → ∃ n : ℕ, x ≤ n • y
-
-section MulArchimedean
-
-/-- An ordered commutative monoid is called `MulArchimedean` if for any two elements `x`, `y`
-such that `1 < y`, there exists a natural number `n` such that `x ≤ y ^ n`. -/
-@[to_additive Archimedean]
-class MulArchimedean (M) [CommMonoid M] [PartialOrder M] : Prop where
-  /-- For any two elements `x`, `y` such that `1 < y`, there exists a natural number `n`
-  such that `x ≤ y ^ n`. -/
-  arch : ∀ (x : M) {y : M}, 1 < y → ∃ n : ℕ, x ≤ y ^ n
-
-end MulArchimedean
+@[to_additive]
+lemma MulArchimedean.comap [CommMonoid G] [LinearOrder G] [CommMonoid M] [PartialOrder M]
+    [MulArchimedean M] (f : G →* M) (hf : StrictMono f) :
+    MulArchimedean G where
+  arch x _ h := by
+    refine (MulArchimedean.arch (f x) (by simpa using hf h)).imp ?_
+    simp [← map_pow, hf.le_iff_le]
 
 @[to_additive]
 instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
     [MulArchimedean G] :
     MulArchimedean Gᵒᵈ :=
   ⟨fun x y hy =>
-    let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (inv_lt_one_iff_one_lt.2 hy)
+    have hy : (ofDual y) < 1 := hy
+    let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (one_lt_inv'.2 hy)
     ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
 
 instance Additive.instArchimedean [CommGroup G] [PartialOrder G] [MulArchimedean G] :
@@ -71,21 +66,14 @@ instance Multiplicative.instMulArchimedean [AddCommGroup G] [PartialOrder G] [Ar
     MulArchimedean (Multiplicative G) :=
   ⟨fun x _ hy ↦ Archimedean.arch x.toAdd hy⟩
 
-@[to_additive]
-theorem exists_lt_pow [CommMonoid M] [PartialOrder M] [MulArchimedean M]
-    [MulLeftStrictMono M] {a : M} (ha : 1 < a) (b : M) :
-    ∃ n : ℕ, b < a ^ n :=
-  let ⟨k, hk⟩ := MulArchimedean.arch b ha
-  ⟨k + 1, hk.trans_lt <| pow_lt_pow_right' ha k.lt_succ_self⟩
-
-section LinearOrderedCommGroup
+section IsOrderedMonoid
 
 variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 
 /-- An archimedean decidable linearly ordered `CommGroup` has a version of the floor: for
 `a > 1`, any `g` in the group lies between some two consecutive powers of `a`. -/
-@[to_additive "An archimedean decidable linearly ordered `AddCommGroup` has a version of the floor:
-for `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/"]
+@[to_additive /-- An archimedean decidable linearly ordered `AddCommGroup` has a version of the
+floor: for `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/]
 theorem existsUnique_zpow_near_of_one_lt {a : G} (ha : 1 < a) (g : G) :
     ∃! k : ℤ, a ^ k ≤ g ∧ g < a ^ (k + 1) := by
   let s : Set ℤ := { n : ℤ | a ^ n ≤ g }
@@ -139,25 +127,22 @@ theorem existsUnique_sub_zpow_mem_Ioc {a : G} (ha : 1 < a) (b c : G) :
     simpa only [Equiv.neg_apply, zpow_neg, div_inv_eq_mul] using
       existsUnique_add_zpow_mem_Ioc ha b c
 
-end LinearOrderedCommGroup
+end IsOrderedMonoid
 
-theorem exists_nat_ge [Semiring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R] (x : R) :
-    ∃ n : ℕ, x ≤ n := by
-  nontriviality R
-  exact (Archimedean.arch x one_pos).imp fun n h => by rwa [← nsmul_one]
+section OrderedSemiring
 
-instance (priority := 100) [Semiring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R] :
-    IsDirected R (· ≤ ·) :=
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R]
+
+instance (priority := 100) : IsDirectedOrder R :=
   ⟨fun x y ↦
     let ⟨m, hm⟩ := exists_nat_ge x; let ⟨n, hn⟩ := exists_nat_ge y
     let ⟨k, hmk, hnk⟩ := exists_ge_ge m n
     ⟨k, hm.trans <| Nat.mono_cast hmk, hn.trans <| Nat.mono_cast hnk⟩⟩
 
+end OrderedSemiring
+
 section StrictOrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R] {y : R}
-
-lemma exists_nat_gt (x : R) : ∃ n : ℕ, x < n :=
-  (exists_lt_nsmul zero_lt_one x).imp fun n hn ↦ by rwa [← nsmul_one]
 
 theorem add_one_pow_unbounded_of_pos (x : R) (hy : 0 < y) : ∃ n : ℕ, x < (y + 1) ^ n :=
   have : 0 ≤ 1 + y := add_nonneg zero_le_one hy.le
@@ -167,7 +152,7 @@ theorem add_one_pow_unbounded_of_pos (x : R) (hy : 0 < y) : ∃ n : ℕ, x < (y 
       _ = n * y := nsmul_eq_mul _ _
       _ < 1 + n * y := lt_one_add _
       _ ≤ (1 + y) ^ n :=
-        one_add_mul_le_pow' (mul_nonneg hy.le hy.le) (mul_nonneg this this)
+        one_add_mul_le_pow_of_sq_nonneg (pow_nonneg hy.le _) (pow_nonneg this _)
           (add_nonneg zero_le_two hy.le) _
       _ = (y + 1) ^ n := by rw [add_comm]
 
@@ -182,12 +167,7 @@ section OrderedRing
 
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R]
 
-theorem exists_int_ge (x : R) : ∃ n : ℤ, x ≤ n := let ⟨n, h⟩ := exists_nat_ge x; ⟨n, mod_cast h⟩
-
-theorem exists_int_le (x : R) : ∃ n : ℤ, n ≤ x :=
-  let ⟨n, h⟩ := exists_int_ge (-x); ⟨-n, by simpa [neg_le] using h⟩
-
-instance (priority := 100) : IsDirected R (· ≥ ·) where
+instance (priority := 100) : IsCodirectedOrder R where
   directed a b :=
     let ⟨m, hm⟩ := exists_int_le a; let ⟨n, hn⟩ := exists_int_le b
     ⟨(min m n : ℤ), le_trans (Int.cast_mono <| min_le_left _ _) hm,
@@ -198,25 +178,14 @@ end OrderedRing
 section StrictOrderedRing
 variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R]
 
-theorem exists_int_gt (x : R) : ∃ n : ℤ, x < n :=
-  let ⟨n, h⟩ := exists_nat_gt x
-  ⟨n, by rwa [Int.cast_natCast]⟩
-
-theorem exists_int_lt (x : R) : ∃ n : ℤ, (n : R) < x :=
-  let ⟨n, h⟩ := exists_int_gt (-x)
-  ⟨-n, by rw [Int.cast_neg]; exact neg_lt.1 h⟩
-
+/-- See `exists_floor'` for a more general version which only assumes the element is bounded by
+two integers. -/
 theorem exists_floor (x : R) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : R) ≤ x := by
-  haveI := Classical.propDecidable
-  have : ∃ ub : ℤ, (ub : R) ≤ x ∧ ∀ z : ℤ, (z : R) ≤ x → z ≤ ub :=
-    Int.exists_greatest_of_bdd
-      (let ⟨n, hn⟩ := exists_int_gt x
-      ⟨n, fun z h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
-      (let ⟨n, hn⟩ := exists_int_lt x
-      ⟨n, le_of_lt hn⟩)
-  refine this.imp fun fl h z => ?_
-  obtain ⟨h₁, h₂⟩ := h
-  exact ⟨fun h => le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
+  apply exists_floor'
+  · obtain ⟨n, hn⟩ := exists_int_lt x
+    exact ⟨n, hn.le⟩
+  · obtain ⟨n, hn⟩ := exists_int_gt x
+    exact ⟨n, hn.le⟩
 
 end StrictOrderedRing
 
@@ -228,14 +197,14 @@ variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R] [E
 natural-number powers of every y greater than one. -/
 theorem exists_nat_pow_near (hx : 1 ≤ x) (hy : 1 < y) : ∃ n : ℕ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
   have h : ∃ n : ℕ, x < y ^ n := pow_unbounded_of_one_lt _ hy
-  classical exact
+  exact
       let n := Nat.find h
       have hn : x < y ^ n := Nat.find_spec h
       have hnp : 0 < n :=
         pos_iff_ne_zero.2 fun hn0 => by rw [hn0, pow_zero] at hn; exact not_le_of_gt hn hx
       have hnsp : Nat.pred n + 1 = n := Nat.succ_pred_eq_of_pos hnp
       have hltn : Nat.pred n < n := Nat.pred_lt (ne_of_gt hnp)
-      ⟨Nat.pred n, le_of_not_lt (Nat.find_min h hltn), by rwa [hnsp]⟩
+      ⟨Nat.pred n, le_of_not_gt (Nat.find_min h hltn), by rwa [hnsp]⟩
 
 end LinearOrderedSemiring
 
@@ -256,22 +225,19 @@ variable [ExistsAddOfLE K]
 another `y` greater than one. This is the same as `exists_mem_Ioc_zpow`,
 but with ≤ and < the other way around. -/
 theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
-  classical exact
-      let ⟨N, hN⟩ := pow_unbounded_of_one_lt x⁻¹ hy
-      have he : ∃ m : ℤ, y ^ m ≤ x :=
-        ⟨-N,
-          le_of_lt
-            (by
-              rw [zpow_neg y ↑N, zpow_natCast]
-              exact (inv_lt_comm₀ hx (lt_trans (inv_pos.2 hx) hN)).1 hN)⟩
-      let ⟨M, hM⟩ := pow_unbounded_of_one_lt x hy
-      have hb : ∃ b : ℤ, ∀ m, y ^ m ≤ x → m ≤ b :=
-        ⟨M, fun m hm =>
-          le_of_not_lt fun hlt =>
-            not_lt_of_ge (zpow_le_zpow_right₀ hy.le hlt.le)
-              (lt_of_le_of_lt hm (by rwa [← zpow_natCast] at hM))⟩
-      let ⟨n, hn₁, hn₂⟩ := Int.exists_greatest_of_bdd hb he
-      ⟨n, hn₁, lt_of_not_ge fun hge => not_le_of_gt (Int.lt_succ _) (hn₂ _ hge)⟩
+  have he : ∃ m : ℤ, y ^ m ≤ x := by
+    obtain ⟨N, hN⟩ := pow_unbounded_of_one_lt x⁻¹ hy
+    use -N
+    rw [zpow_neg y ↑N, zpow_natCast]
+    exact ((inv_lt_comm₀ hx (lt_trans (inv_pos.2 hx) hN)).1 hN).le
+  have hb : ∃ b : ℤ, ∀ m, y ^ m ≤ x → m ≤ b := by
+    obtain ⟨M, hM⟩ := pow_unbounded_of_one_lt x hy
+    refine ⟨M, fun m hm ↦ ?_⟩
+    contrapose! hM
+    rw [← zpow_natCast]
+    exact le_trans (zpow_le_zpow_right₀ hy.le hM.le) hm
+  obtain ⟨n, hn₁, hn₂⟩ := Int.exists_greatest_of_bdd hb he
+  exact ⟨n, hn₁, lt_of_not_ge fun hge => (Int.lt_succ _).not_ge (hn₂ _ hge)⟩
 
 /-- Every positive `x` is between two successive integer powers of
 another `y` greater than one. This is the same as `exists_mem_Ico_zpow`,
@@ -284,11 +250,10 @@ theorem exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (
 
 /-- For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. -/
 theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x := by
-  by_cases y_pos : y ≤ 0
+  by_cases! y_pos : y ≤ 0
   · use 1
     simp only [pow_one]
     exact y_pos.trans_lt hx
-  rw [not_le] at y_pos
   rcases pow_unbounded_of_one_lt x⁻¹ ((one_lt_inv₀ y_pos).2 hy) with ⟨q, hq⟩
   exact ⟨q, by rwa [inv_pow, inv_lt_inv₀ hx (pow_pos y_pos _)] at hq⟩
 
@@ -314,7 +279,7 @@ lemma exists_pow_btwn_of_lt_mul {a b c : K} (h : a < b * c) (hb₀ : 0 < b) (hb�
     intro hf
     simp only [hf, pow_zero] at H
     exact (H.trans <| (mul_lt_of_lt_one_right hb₀ hc₁).trans_le hb₁).false
-  rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_right hc₀] at H
+  rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_iff_left₀ hc₀] at H
   exact Nat.find_min this (Nat.sub_one_lt hn) H
 
 /-- If `a < b * c`, `b` is positive and `0 < c < 1`, then there is a power `c ^ n` with `n : ℤ`
@@ -322,13 +287,13 @@ strictly between `a` and `b`. -/
 lemma exists_zpow_btwn_of_lt_mul {a b c : K} (h : a < b * c) (hb₀ : 0 < b) (hc₀ : 0 < c)
     (hc₁ : c < 1) :
     ∃ n : ℤ, a < c ^ n ∧ c ^ n < b := by
-  rcases le_or_lt a 0 with ha | ha
+  rcases le_or_gt a 0 with ha | ha
   · obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hb₀ hc₁
     exact ⟨n, ha.trans_lt (zpow_pos hc₀ _), mod_cast hn⟩
-  · rcases le_or_lt b 1 with hb₁ | hb₁
+  · rcases le_or_gt b 1 with hb₁ | hb₁
     · obtain ⟨n, hn⟩ := exists_pow_btwn_of_lt_mul h hb₀ hb₁ hc₀ hc₁
       exact ⟨n, mod_cast hn⟩
-    · rcases lt_or_le a 1 with ha₁ | ha₁
+    · rcases lt_or_ge a 1 with ha₁ | ha₁
       · refine ⟨0, ?_⟩
         rw [zpow_zero]
         exact ⟨ha₁, hb₁⟩
@@ -393,23 +358,24 @@ theorem exists_rat_lt (x : K) : ∃ q : ℚ, (q : K) < x :=
   let ⟨n, h⟩ := exists_int_lt x
   ⟨n, by rwa [Rat.cast_intCast]⟩
 
-theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : K) < y := by
-  obtain ⟨n, nh⟩ := exists_nat_gt (y - x)⁻¹
+theorem exists_div_btwn {x y : K} {n : ℕ} (h : x < y) (nh : (y - x)⁻¹ < n) :
+    ∃ z : ℤ, x < (z : K) / n ∧ (z : K) / n < y := by
   obtain ⟨z, zh⟩ := exists_floor (x * n)
-  refine ⟨(z + 1 : ℤ) / n, ?_⟩
+  refine ⟨z + 1, ?_⟩
   have n0' := (inv_pos.2 (sub_pos.2 h)).trans nh
-  have n0 := Nat.cast_pos.1 n0'
-  rw [Rat.cast_div_of_ne_zero, Rat.cast_natCast, Rat.cast_intCast, div_lt_iff₀ n0']
-  · refine ⟨(lt_div_iff₀ n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), ?_⟩
-    rw [Int.cast_add, Int.cast_one]
-    refine lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) ?_
-    rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff₀' (sub_pos.2 h), one_div]
-  · rw [Rat.den_intCast, Nat.cast_one]
-    exact one_ne_zero
-  · intro H
-    rw [Rat.num_natCast, Int.cast_natCast, Nat.cast_eq_zero] at H
-    subst H
-    cases n0
+  rw [div_lt_iff₀ n0']
+  refine ⟨(lt_div_iff₀ n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), ?_⟩
+  rw [Int.cast_add, Int.cast_one]
+  grw [(zh _).1 le_rfl]
+  rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff₀' (sub_pos.2 h), one_div]
+
+theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ q < y := by
+  obtain ⟨n, nh⟩ := exists_nat_gt (y - x)⁻¹
+  obtain ⟨z, zh, zh'⟩ := exists_div_btwn h nh
+  refine ⟨(z : ℚ) / n, ?_, ?_⟩ <;> simpa
+
+theorem exists_rat_mem_uIoo {x y : K} (h : x ≠ y) : ∃ q : ℚ, ↑q ∈ Set.uIoo x y :=
+  exists_rat_btwn (min_lt_max.mpr h)
 
 theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 < y) :
     ∃ q : K, 0 < q ∧ x < q ^ n ∧ q ^ n < y := by
@@ -423,9 +389,9 @@ theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 <
   let m := Nat.find ex
   have m_pos : 0 < m := (Nat.find_pos _).mpr <| by simpa [zero_pow hn] using hy
   let q := m.pred * δ
-  have qny : q ^ n < y := lt_of_not_le (Nat.find_min ex <| Nat.pred_lt m_pos.ne')
+  have qny : q ^ n < y := lt_of_not_ge (Nat.find_min ex <| Nat.pred_lt m_pos.ne')
   have q1y : |q| < max 1 y := (abs_eq_self.mpr <| by positivity).trans_lt <| lt_max_iff.mpr
-    (or_iff_not_imp_left.mpr fun q1 ↦ (le_self_pow₀ (le_of_not_lt q1) hn).trans_lt qny)
+    (or_iff_not_imp_left.mpr fun q1 ↦ (le_self_pow₀ (le_of_not_gt q1) hn).trans_lt qny)
   have xqn : max x 0 < q ^ n :=
     calc _ = y - (y - max x 0) := by rw [sub_sub_cancel]
       _ ≤ (m * δ) ^ n - (y - max x 0) := sub_le_sub_right (Nat.find_spec ex) _
@@ -436,8 +402,6 @@ theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 <
       _ = q ^ n := sub_sub_cancel ..
   exact ⟨q, lt_of_le_of_ne (by positivity) fun q0 ↦
     (le_sup_right.trans_lt xqn).ne <| q0 ▸ (zero_pow hn).symm, le_sup_left.trans_lt xqn, qny⟩
-
-@[deprecated (since := "2024-12-26")] alias exists_rat_pow_btwn_rat := exists_pow_btwn
 
 /-- There is a rational power between any two positive elements of an archimedean ordered field. -/
 theorem exists_rat_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 < y) :
@@ -450,14 +414,14 @@ theorem exists_rat_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy :
   refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans ?_, hy₂.trans' ?_⟩ <;> assumption_mod_cast
 
 theorem le_of_forall_rat_lt_imp_le (h : ∀ q : ℚ, (q : K) < x → (q : K) ≤ y) : x ≤ y :=
-  le_of_not_lt fun hyx =>
+  le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
-    hy.not_le <| h _ hx
+    hy.not_ge <| h _ hx
 
 theorem le_of_forall_lt_rat_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x ≤ y :=
-  le_of_not_lt fun hyx =>
+  le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
-    hx.not_le <| h _ hy
+    hx.not_ge <| h _ hy
 
 theorem le_iff_forall_rat_lt_imp_le : x ≤ y ↔ ∀ q : ℚ, (q : K) < x → (q : K) ≤ y :=
   ⟨fun hxy _ hqx ↦ hqx.le.trans hxy, le_of_forall_rat_lt_imp_le⟩
@@ -493,14 +457,14 @@ instance : Archimedean ℤ :=
     ⟨n.toNat,
       le_trans (Int.self_le_toNat _) <| by
         simpa only [nsmul_eq_mul, zero_add, mul_one] using
-          mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.toNat)⟩⟩
+          mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.natCast_nonneg n.toNat)⟩⟩
 
 instance Nonneg.instArchimedean [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [Archimedean M] :
     Archimedean { x : M // 0 ≤ x } :=
   ⟨fun x y hy =>
     let ⟨n, hr⟩ := Archimedean.arch (x : M) (hy : (0 : M) < y)
-    ⟨n, show (x : M) ≤ (n • y : { x : M // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
+    ⟨n, mod_cast hr⟩⟩
 
 instance Nonneg.instMulArchimedean [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
     [Archimedean R] [ExistsAddOfLE R] :
@@ -512,10 +476,10 @@ instance : MulArchimedean NNRat := Nonneg.instMulArchimedean
 
 /-- A linear ordered archimedean ring is a floor ring. This is not an `instance` because in some
 cases we have a computable `floor` function. -/
+@[instance_reducible]
 noncomputable def Archimedean.floorRing (R) [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
     [Archimedean R] : FloorRing R :=
-  FloorRing.ofFloor R (fun a => Classical.choose (exists_floor a)) fun z a =>
-    (Classical.choose_spec (exists_floor a) z).symm
+  .ofBounded _ exists_nat_ge
 
 -- see Note [lower instance priority]
 /-- A linear ordered field that is a floor ring is archimedean. -/
@@ -535,7 +499,7 @@ instance WithBot.instArchimedean (M) [AddCommMonoid M] [PartialOrder M] [Archime
   constructor
   intro x y hxy
   cases y with
-  | bot => exact absurd hxy bot_le.not_lt
+  | bot => exact absurd hxy bot_le.not_gt
   | coe y =>
     cases x with
     | bot => refine ⟨0, bot_le⟩
@@ -546,8 +510,8 @@ instance WithZero.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArc
   constructor
   intro x y hxy
   cases y with
-  | zero => exact absurd hxy (zero_le _).not_lt
+  | zero => cases hxy.pos.false
   | coe y =>
     cases x with
-    | zero => refine ⟨0, zero_le _⟩
+    | zero => refine ⟨0, zero_le⟩
     | coe x => simpa [← WithZero.coe_pow] using (MulArchimedean.arch x (by simpa using hxy))

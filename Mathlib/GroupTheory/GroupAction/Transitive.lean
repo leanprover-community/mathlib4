@@ -3,8 +3,10 @@ Copyright (c) 2022 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-! # Complements to pretransitive actions
 
@@ -28,14 +30,16 @@ Given `MulAction G X` where `G` is a group,
 
 -/
 
+public section
+
 variable {G X : Type*} [Group G] [MulAction G X]
 
 namespace MulAction
 
 /-- An action of a group is pretransitive iff any element can be moved from a fixed given one. -/
 @[to_additive
-  "An additive action of an additive group is pretransitive
-  iff any element can be moved from a fixed given one."]
+  /-- An additive action of an additive group is pretransitive
+  iff any element can be moved from a fixed given one. -/]
 theorem isPretransitive_iff_base (a : X) :
     IsPretransitive G X ↔ ∀ x : X, ∃ g : G, g • a = x where
   mp hG x := exists_smul_eq _ a x
@@ -46,7 +50,7 @@ theorem isPretransitive_iff_base (a : X) :
 
 /-- An action of a group is pretransitive iff the orbit of every given element is full -/
 @[to_additive
-  "An action of a group is pretransitive iff the orbit of every given element is full"]
+  /-- An action of a group is pretransitive iff the orbit of every given element is full -/]
 theorem isPretransitive_iff_orbit_eq_univ (a : X) :
     IsPretransitive G X ↔ orbit G a = .univ := by
   rw [isPretransitive_iff_base a, Set.ext_iff]

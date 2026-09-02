@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.DirectSum
-import Mathlib.Algebra.Module.Presentation.Cokernel
+module
+
+public import Mathlib.Algebra.Module.Presentation.DirectSum
+public import Mathlib.Algebra.Module.Presentation.Cokernel
 
 /-!
 # Presentation of the restriction of scalars of a module
@@ -15,9 +17,11 @@ a presentation of `B` as a `A`-module (and some additional data).
 
 ## TODO
 * deduce that if `B` is a finitely presented as an `A`-module and `M` is
-finitely presented as an `B`-module, then `M` is finitely presented as an `A`-module
+  finitely presented as an `B`-module, then `M` is finitely presented as an `A`-module
 
 -/
+
+@[expose] public section
 
 namespace Module
 

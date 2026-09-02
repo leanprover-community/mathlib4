@@ -3,7 +3,9 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Polynomials over subrings.
@@ -13,10 +15,12 @@ with coefficients in `R` to `R[X]`. We provide several lemmas to deal with
 coefficients, degree, and evaluation of `Polynomial.int`.
 This is useful when dealing with integral elements in an extension of fields.
 
-# Main Definitions
+## Main Definitions
 * `Polynomial.int` : given a polynomial `P` in `K[X]` whose coefficients all belong to a subring `R`
   of the field `K`, `P.int R` is the corresponding polynomial in `R[X]`.
 -/
+
+@[expose] public section
 
 variable {K : Type*} [Field K] (R : Subring K)
 
@@ -25,11 +29,9 @@ open scoped Polynomial
 /-- Given a polynomial in `K[X]` such that all coefficients belong to the subring `R`,
   `Polynomial.int` is the corresponding polynomial in `R[X]`. -/
 def Polynomial.int (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R) : R[X] where
-  toFinsupp :=
-  { support := P.support
-    toFun := fun n => ⟨P.coeff n, hP n⟩
-    mem_support_toFun := fun n => by
-      rw [ne_eq, ← Subring.coe_eq_zero_iff, mem_support_iff] }
+  toFinsupp.coeff.toFun n := ⟨P.coeff n, hP n⟩
+  toFinsupp.coeff.support := P.support
+  toFinsupp.coeff.mem_support_toFun n := by rw [ne_eq, ← Subring.coe_eq_zero_iff, mem_support_iff]
 
 namespace Polynomial
 

@@ -3,22 +3,25 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
-import Mathlib.ModelTheory.Algebra.Field.Basic
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
+public import Mathlib.ModelTheory.Algebra.Field.Basic
 
 /-!
-# First order theory of fields
+# First-order theory of fields
 
-This file defines the first order theory of fields of characteristic `p` as a theory over the
+This file defines the first-order theory of fields of characteristic `p` as a theory over the
 language of rings
 
 ## Main definitions
 
-- `FirstOrder.Language.Theory.fieldOfChar` : the first order theory of fields of characteristic `p`
+- `FirstOrder.Language.Theory.fieldOfChar` : the first-order theory of fields of characteristic `p`
   as a theory over the language of rings
 -/
+
+@[expose] public section
 
 variable {p : ℕ} {K : Type*}
 
@@ -26,7 +29,7 @@ namespace FirstOrder
 
 namespace Field
 
-open Language Ring
+open Language FirstOrder.Ring
 
 /-- For a given natural number `n`, `eqZero n` is the sentence in the language of rings
 saying that `n` is zero. -/
@@ -35,10 +38,12 @@ noncomputable def eqZero (n : ℕ) : Language.ring.Sentence :=
 
 @[simp] theorem realize_eqZero [CommRing K] [CompatibleRing K] (n : ℕ)
     (v : Empty → K) : (Formula.Realize (eqZero n) v) ↔ ((n : K) = 0) := by
-  simp [eqZero, Term.realize]
+  simp [eqZero]
 
-/-- The first order theory of fields of characteristic `p` as a theory over the language of rings -/
-def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theory :=
+/-- The first-order theory of fields of characteristic `p` as a theory over the language of rings -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theory :=
   Theory.field ∪
   if p = 0
   then (fun q => ∼(eqZero q)) '' {q : ℕ | q.Prime}
@@ -53,7 +58,7 @@ instance model_hasChar_of_charP [Field K] [CompatibleRing K] [CharP K p] :
     simp [hp.ne_zero, hp, Sentence.Realize]
   | inr hp =>
     subst hp
-    simp only [ite_false, ite_true, Theory.model_iff, Set.mem_image, Set.mem_setOf_eq,
+    simp only [ite_true, Theory.model_iff, Set.mem_image, Set.mem_ofPred_eq,
       Sentence.Realize, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       Formula.realize_not, realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact CharP.charP_to_charZero K
@@ -64,7 +69,7 @@ theorem charP_iff_model_fieldOfChar [Field K] [CompatibleRing K] :
     (show (Theory.field.Model K) by infer_instance), true_and]
   split_ifs with hp0 hp
   · subst hp0
-    simp only [Theory.model_iff, Set.mem_image, Set.mem_setOf_eq, Sentence.Realize,
+    simp only [Theory.model_iff, Set.mem_image, Set.mem_ofPred_eq, Sentence.Realize,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Formula.realize_not,
       realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact ⟨fun _ => CharP.ofCharZero _, fun _ => CharP.charP_to_charZero K⟩

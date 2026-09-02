@@ -3,16 +3,20 @@ Copyright (c) 2022 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Rfl
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.Rfl
 
 /-!
 # `Lean.MVarId.liftReflToEq`
 
 Convert a goal of the form `x ~ y` into the form `x = y`, where `~` is a reflexive
-relation, that is, a relation which has a reflexive lemma tagged with the attribute `[refl]`.
+relation, that is, a relation which has a reflexive lemma tagged with the attribute `@[refl]`.
 If this can't be done, returns the original `MVarId`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -20,7 +24,7 @@ open Lean Meta Elab Tactic Rfl
 
 /--
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
-relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
+relation, that is, a relation which has a reflexive lemma tagged with the attribute `@[refl]`.
 -/
 def rflTac : TacticM Unit :=
   withMainContext do liftMetaFinishingTactic (·.applyRfl)

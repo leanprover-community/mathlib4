@@ -1,30 +1,43 @@
 /-
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
+Authors: Johannes Hölzl, Loic Simon
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Unsigned Hahn decomposition theorem
 
 This file proves the unsigned version of the Hahn decomposition theorem.
 
+## Main definitions
+
+* `MeasureTheory.IsHahnDecomposition`: characterizes a set where `μ ≤ ν` (and the
+  reverse inequality on the complement),
+
 ## Main statements
 
 * `hahn_decomposition` : Given two finite measures `μ` and `ν`, there exists a measurable set `s`
-    such that any measurable set `t` included in `s` satisfies `ν t ≤ μ t`, and any
-    measurable set `u` included in the complement of `s` satisfies `μ u ≤ ν u`.
+  such that any measurable set `t` included in `s` satisfies `ν t ≤ μ t`, and any
+  measurable set `u` included in the complement of `s` satisfies `μ u ≤ ν u`.
+* `exists_isHahnDecomposition` : reformulation of `hahn_decomposition` using the
+  `IsHahnDecomposition` structure which relies on the measure restriction.
 
 ## Tags
 
 Hahn decomposition
 -/
 
+public section
+
 assert_not_exists MeasureTheory.Measure.rnDeriv
 assert_not_exists MeasureTheory.VectorMeasure
 
-open Set Filter Topology ENNReal
+open Set Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -43,7 +56,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
   have to_nnreal_ν : ∀ s, ((ν s).toNNReal : ℝ≥0∞) = ν s := fun s => ENNReal.coe_toNNReal <| hν _
   have d_split s t (ht : MeasurableSet t) : d s = d (s \ t) + d (s ∩ t) := by
     dsimp only [d]
-    rw [← measure_inter_add_diff s ht, ← measure_inter_add_diff s ht,
+    rw [← measure_inter_add_sdiff s ht, ← measure_inter_add_sdiff s ht,
       ENNReal.toNNReal_add (hμ _) (hμ _), ENNReal.toNNReal_add (hν _) (hν _), NNReal.coe_add,
       NNReal.coe_add]
     simp only [sub_eq_add_neg, neg_add]
@@ -86,7 +99,8 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
     exact biInter_subset_biInter_left (Finset.Ico_subset_Ico hab <| Nat.succ_le_succ hcd)
   have f_succ n m (hnm : n ≤ m) : f n (m + 1) = f n m ∩ e (m + 1) := by
     have : n ≤ m + 1 := le_of_lt (Nat.succ_le_succ hnm)
-    simp_rw [f, Nat.Ico_succ_right_eq_insert_Ico this, Finset.inf_insert, Set.inter_comm]
+    simp_rw [f, ← Finset.insert_Ico_right_eq_Ico_add_one this, Finset.inf_insert,
+      Set.inter_comm]
     rfl
   have le_d_f n m (h : m ≤ n) : γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n ≤ d (f m n) := by
     refine Nat.le_induction ?_ ?_ n h
@@ -94,22 +108,21 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
       simp_rw [f, Nat.Ico_succ_singleton, Finset.inf_singleton]
       linarith
     · intro n (hmn : m ≤ n) ih
-      have : γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤ γ + d (f m (n + 1)) := by
-        calc
-          γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) =
-              γ + (γ - 2 * (1 / 2) ^ m + ((1 / 2) ^ n - (1 / 2) ^ (n + 1))) := by
-            rw [pow_succ, mul_one_div, _root_.sub_half]
-          _ = γ - (1 / 2) ^ (n + 1) + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n) := by
-            simp only [sub_eq_add_neg]; abel
-          _ ≤ d (e (n + 1)) + d (f m n) := add_le_add (le_of_lt <| he₂ _) ih
-          _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
-            rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (he₁ _), add_assoc]
-          _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
-            rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_diff_left, union_inter_cancel_left]
-            · abel
-            · exact he₁ _
-          _ ≤ γ + d (f m (n + 1)) := add_le_add_right (d_le_γ _ <| (he₁ _).union (hf _ _)) _
-      exact (add_le_add_iff_left γ).1 this
+      refine le_of_add_le_add_left (a := γ) ?_
+      calc
+        γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) =
+            γ + (γ - 2 * (1 / 2) ^ m + ((1 / 2) ^ n - (1 / 2) ^ (n + 1))) := by
+          rw [pow_succ, mul_one_div, _root_.sub_half]
+        _ = γ - (1 / 2) ^ (n + 1) + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n) := by
+          simp only [sub_eq_add_neg]; abel
+        _ ≤ d (e (n + 1)) + d (f m n) := add_le_add (le_of_lt <| he₂ _) ih
+        _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
+          rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (he₁ _), add_assoc]
+        _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
+          rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_sdiff_left, union_inter_cancel_left]
+          · abel
+          · exact he₁ _
+        _ ≤ γ + d (f m (n + 1)) := by grw [d_le_γ _ <| (he₁ _).union (hf _ _)]
   let s := ⋃ m, ⋂ n, f m n
   have γ_le_d_s : γ ≤ d s := by
     have hγ : Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 γ) := by
@@ -144,7 +157,6 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
           γ + 0 ≤ d s := by rw [add_zero]; exact γ_le_d_s
           _ = d (s \ t) + d t := by rw [d_split s _ ht, inter_eq_self_of_subset_right hts]
           _ ≤ γ + d t := add_le_add (d_le_γ _ (hs.diff ht)) le_rfl
-
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
     simpa only [d, le_sub_iff_add_le, zero_add] using this
   · intro t ht hts
@@ -153,11 +165,33 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
         calc
           γ + d t ≤ d s + d t := by gcongr
           _ = d (s ∪ t) := by
-            rw [d_split (s ∪ t) _ ht, union_diff_right, union_inter_cancel_right,
+            rw [d_split (s ∪ t) _ ht, union_sdiff_right, union_inter_cancel_right,
               (subset_compl_iff_disjoint_left.1 hts).sdiff_eq_left]
           _ ≤ γ + 0 := by rw [add_zero]; exact d_le_γ _ (hs.union ht)
-
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
     simpa only [d, sub_le_iff_le_add, zero_add] using this
+
+
+/-- A set where `μ ≤ ν` (and the reverse inequality on the complement),
+defined via measurable set and measure restriction comparisons. -/
+structure IsHahnDecomposition (μ ν : Measure α) (s : Set α) : Prop where
+  measurableSet : MeasurableSet s
+  le_on : μ.restrict s ≤ ν.restrict s
+  ge_on_compl : ν.restrict sᶜ ≤ μ.restrict sᶜ
+
+lemma IsHahnDecomposition.compl {μ ν : Measure α} {s : Set α}
+    (h : IsHahnDecomposition μ ν s) : IsHahnDecomposition ν μ sᶜ where
+  measurableSet := h.measurableSet.compl
+  le_on := h.ge_on_compl
+  ge_on_compl := by simpa using h.le_on
+
+lemma exists_isHahnDecomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    ∃ s : Set α, IsHahnDecomposition μ ν s := by
+  obtain ⟨s, hs, h₁, h₂⟩ := hahn_decomposition ν μ
+  refine ⟨s, hs, ?_, ?_⟩
+  all_goals
+    rw [Measure.le_iff]
+    intros
+    simp [*]
 
 end MeasureTheory

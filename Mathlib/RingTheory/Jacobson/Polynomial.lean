@@ -3,12 +3,16 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.RingTheory.Polynomial.Quotient
+module
+
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.Polynomial.Quotient
 /-!
 # Jacobson radical of polynomial ring
 
 -/
+
+public section
 
 namespace Ideal
 
@@ -21,7 +25,7 @@ variable {R : Type*} [CommRing R]
 theorem jacobson_bot_polynomial_le_sInf_map_maximal :
     jacobson (⊥ : Ideal R[X]) ≤ sInf (map (C : R →+* R[X]) '' { J : Ideal R | J.IsMaximal }) := by
   refine le_sInf fun J => exists_imp.2 fun j hj => ?_
-  haveI : j.IsMaximal := hj.1
+  have : j.IsMaximal := hj.1
   refine Trans.trans (jacobson_mono bot_le) (le_of_eq ?_ : J.jacobson ≤ J)
   suffices t : (⊥ : Ideal (Polynomial (R ⧸ j))).jacobson = ⊥ by
     rw [← hj.2, jacobson_eq_iff_jacobson_quotient_eq_bot]

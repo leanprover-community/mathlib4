@@ -3,53 +3,42 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Module.Basic
+module
+
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.Asymptotics.Prod
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Asymptotic equivalence up to a constant
 
-In this file we define `Asymptotics.IsTheta l f g` (notation: `f =Θ[l] g`) as
-`f =O[l] g ∧ g =O[l] f`, then prove basic properties of this equivalence relation.
+In this file we prove basic properties of the equivalence relation
+given by `f =Θ[l] g ↔ f =O[l] g ∧ g =O[l] f`.
 -/
+
+public section
 
 
 open Filter
 
-open Topology
+open scoped Topology
 
 namespace Asymptotics
 
 
 variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {R : Type*}
-  {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*}
+  {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
-  [SeminormedRing R']
+  [NormedAddCommGroup E''] [NormedAddCommGroup F'']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 variable {f'' : α → E''} {g'' : α → F''}
 variable {l l' : Filter α}
-
-/-- We say that `f` is `Θ(g)` along a filter `l` (notation: `f =Θ[l] g`) if `f =O[l] g` and
-`g =O[l] f`. -/
-def IsTheta (l : Filter α) (f : α → E) (g : α → F) : Prop :=
-  IsBigO l f g ∧ IsBigO l g f
-
-@[inherit_doc]
-notation:100 f " =Θ[" l "] " g:100 => IsTheta l f g
-
-theorem IsBigO.antisymm (h₁ : f =O[l] g) (h₂ : g =O[l] f) : f =Θ[l] g :=
-  ⟨h₁, h₂⟩
-
-lemma IsTheta.isBigO (h : f =Θ[l] g) : f =O[l] g := h.1
-
-lemma IsTheta.isBigO_symm (h : f =Θ[l] g) : g =O[l] f := h.2
 
 @[refl]
 theorem isTheta_refl (f : α → E) (l : Filter α) : f =Θ[l] f :=
@@ -140,14 +129,8 @@ alias ⟨IsTheta.of_norm_right, IsTheta.norm_right⟩ := isTheta_norm_right
 theorem IsTheta.of_norm_eventuallyEq_norm (h : (fun x ↦ ‖f x‖) =ᶠ[l] fun x ↦ ‖g x‖) : f =Θ[l] g :=
   ⟨.of_bound' h.le, .of_bound' h.symm.le⟩
 
-@[deprecated (since := "2025-01-03")]
-alias isTheta_of_norm_eventuallyEq := IsTheta.of_norm_eventuallyEq_norm
-
 theorem IsTheta.of_norm_eventuallyEq {g : α → ℝ} (h : (fun x ↦ ‖f' x‖) =ᶠ[l] g) : f' =Θ[l] g :=
   of_norm_eventuallyEq_norm <| h.mono fun x hx ↦ by simp only [← hx, norm_norm]
-
-@[deprecated (since := "2025-01-03")]
-alias isTheta_of_norm_eventuallyEq' := IsTheta.of_norm_eventuallyEq
 
 theorem IsTheta.isLittleO_congr_left (h : f' =Θ[l] g') : f' =o[l] k ↔ g' =o[l] k :=
   ⟨h.symm.trans_isLittleO, h.trans_isLittleO⟩
@@ -236,7 +219,7 @@ theorem IsTheta.pow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : �
 theorem IsTheta.zpow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : ℤ) :
     (fun x ↦ f x ^ n) =Θ[l] fun x ↦ g x ^ n := by
   cases n
-  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using h.pow _
+  · simpa only [Int.ofNat_eq_natCast, zpow_natCast] using h.pow _
   · simpa only [zpow_negSucc] using (h.pow _).inv
 
 theorem isTheta_const_const {c₁ : E''} {c₂ : F''} (h₁ : c₁ ≠ 0) (h₂ : c₂ ≠ 0) :
@@ -296,6 +279,15 @@ lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
     (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
   add_comm f₁ f₂ ▸ hΘ.add_isLittleO ho
 
+theorem isTheta_of_div_tendsto_nhds_ne_zero {c : 𝕜} {f g : α → 𝕜}
+    (h : Tendsto (fun x ↦ g x / f x) l (𝓝 c)) (hc : c ≠ 0) :
+    f =Θ[l] g := by
+  refine ⟨isBigO_of_div_tendsto_nhds_of_ne_zero h hc,
+    isBigO_of_div_tendsto_nhds_of_ne_zero ?_ (inv_ne_zero hc)⟩
+  convert! h.inv₀ hc using 1
+  ext
+  simp
+
 section
 
 variable {f : α × β → E} {g : α × β → F} {l' : Filter β}
@@ -317,11 +309,11 @@ section
 variable (l' : Filter β)
 
 protected theorem IsTheta.comp_fst : f =Θ[l] g → (f ∘ Prod.fst) =Θ[l ×ˢ l'] (g ∘ Prod.fst) := by
-  simp only [IsTheta, eventually_and]
+  simp only [IsTheta]
   exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.comp_fst l', h₂.comp_fst l'⟩
 
 protected theorem IsTheta.comp_snd : f =Θ[l] g → (f ∘ Prod.snd) =Θ[l' ×ˢ l] (g ∘ Prod.snd) := by
-  simp only [IsTheta, eventually_and]
+  simp only [IsTheta]
   exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.comp_snd l', h₂.comp_snd l'⟩
 
 end

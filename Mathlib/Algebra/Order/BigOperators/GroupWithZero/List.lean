@@ -3,8 +3,11 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Daniel Weber
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
+public import Mathlib.Data.FunLike.Basic
 
 /-!
 # Big operators on a list in ordered groups with zeros
@@ -12,6 +15,8 @@ import Mathlib.Algebra.BigOperators.Group.List.Defs
 This file contains the results concerning the interaction of list big operators with ordered
 groups with zeros.
 -/
+
+public section
 
 namespace List
 variable {R : Type*} [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R]
@@ -44,19 +49,15 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
     apply mul_le_mul
     · apply h
       simp
-    · apply hind
-      · intro i hi
-        apply h0
-        simp [hi]
-      · intro i hi
-        apply h
-        simp [hi]
-    · apply prod_nonneg
-      simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-      intro a ha
-      apply h0
-      simp [ha]
-    · apply (h0 _ _).trans (h _ _) <;> simp
+    · grind
+    · grind [prod_nonneg]
+    · apply (h0 _ _).trans (h _ _) <;> simp only [mem_cons, true_or]
+
+theorem prod_map_le_pow_length₀ {F L : Type*} [FunLike F L R] {f : F} {r : R} {t : List L}
+    (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
+    (map f t).prod ≤ r ^ length t := by
+  convert! prod_map_le_prod_map₀ f (Function.const L r) hf0 hf
+  simp [map_const, prod_replicate]
 
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
@@ -90,10 +91,7 @@ theorem prod_map_lt_prod_map {ι : Type*} {s : List ι} (hs : s ≠ [])
         apply h
         simp [hi]
     · apply prod_pos
-      simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-      intro a ha
-      apply h0
-      simp [ha]
+      grind
     · apply le_of_lt ((h0 _ _).trans (h _ _)) <;> simp
 
 end List

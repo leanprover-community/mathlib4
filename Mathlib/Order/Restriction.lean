@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Data.Finset.Update
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Update
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Restriction of a function indexed by a preorder
@@ -23,6 +25,8 @@ and `Preorder.frestrictLe₂`.
 * `Preorder.restrictLe a f`: Restricts the function `f` to the variables indexed by elements `≤ a`.
 -/
 
+@[expose] public section
+
 namespace Preorder
 
 variable {α : Type*} [Preorder α] {π : α → Type*}
@@ -32,14 +36,14 @@ section Set
 open Set
 
 /-- Restrict domain of a function `f` indexed by `α` to elements `≤ a`. -/
-def restrictLe (a : α) := (Iic a).restrict (π := π)
+def restrictLe (a : α) := (Iic a).domRestrict (π := π)
 
 @[simp]
 lemma restrictLe_apply (a : α) (f : (a : α) → π a) (i : Iic a) : restrictLe a f i = f i := rfl
 
 /-- If a function `f` indexed by `α` is restricted to elements `≤ π`, and `a ≤ b`,
 this is the restriction to elements `≤ a`. -/
-def restrictLe₂ {a b : α} (hab : a ≤ b) := Set.restrict₂ (π := π) (Iic_subset_Iic.2 hab)
+def restrictLe₂ {a b : α} (hab : a ≤ b) := Set.domRestrict₂ (π := π) (Iic_subset_Iic.2 hab)
 
 @[simp]
 lemma restrictLe₂_apply {a b : α} (hab : a ≤ b) (f : (i : Iic b) → π i) (i : Iic a) :
@@ -52,7 +56,7 @@ theorem restrictLe₂_comp_restrictLe₂ {a b c : α} (hab : a ≤ b) (hbc : b �
     (restrictLe₂ (π := π) hab) ∘ (restrictLe₂ hbc) = restrictLe₂ (hab.trans hbc) := rfl
 
 lemma dependsOn_restrictLe (a : α) : DependsOn (restrictLe (π := π) a) (Iic a) :=
-  (Iic a).dependsOn_restrict
+  (Iic a).dependsOn_domRestrict
 
 end Set
 

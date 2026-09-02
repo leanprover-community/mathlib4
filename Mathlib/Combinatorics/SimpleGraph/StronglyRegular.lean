@@ -3,8 +3,11 @@ Copyright (c) 2021 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Jeremy Tan
 -/
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+module
+
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+public import Mathlib.Combinatorics.SimpleGraph.Diam
 
 /-!
 # Strongly regular graphs
@@ -26,6 +29,8 @@ import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
   `I` be the identity matrix, then `A ^ 2 = k • I + ℓ • A + μ • C`.
 -/
 
+public section
+
 
 open Finset
 
@@ -37,10 +42,10 @@ variable {V : Type u} [Fintype V]
 variable (G : SimpleGraph V) [DecidableRel G.Adj]
 
 /-- A graph is strongly regular with parameters `n k ℓ μ` if
- * its vertex set has cardinality `n`
- * it is regular with degree `k`
- * every pair of adjacent vertices has `ℓ` common neighbors
- * every pair of nonadjacent vertices has `μ` common neighbors
+* its vertex set has cardinality `n`
+* it is regular with degree `k`
+* every pair of adjacent vertices has `ℓ` common neighbors
+* every pair of nonadjacent vertices has `μ` common neighbors
 -/
 structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
   card : Fintype.card V = n
@@ -54,17 +59,25 @@ variable {G} {n k ℓ μ : ℕ}
 for empty graphs, since there are no pairs of adjacent vertices. -/
 theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
-  regular := bot_degree
+  regular := .bot
   of_adj _ _ h := h.elim
   of_not_adj v w _ := by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
-    simp [mem_commonNeighbors]
+    simp
 
-/-- **Conway's 99-graph problem** (from https://oeis.org/A248380/a248380.pdf)
-can be reformulated as the existence of a strongly regular graph with params (99, 14, 1, 2).
-This is an open problem, and has no known proof of existence. -/
-proof_wanted conway_99 : ∃ α : Type*, ∃ (g : SimpleGraph α), IsSRGWith G 99 14 1 2
+theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht : G ≠ ⊤) (hm : μ ≠ 0) :
+    G.ediam = 2 := by
+  apply le_antisymm
+  · rw [ediam_le_iff]
+    intro u v
+    by_contra! hc
+    obtain ⟨hn, ha, he⟩ := two_lt_edist_iff.mp hc
+    have h := h.of_not_adj hn ha
+    simp_all
+  · by_contra
+    have := not_subsingleton V
+    simp_all [Order.le_one_iff]
 
 variable [DecidableEq V]
 
@@ -77,6 +90,7 @@ theorem IsSRGWith.top :
   of_adj _ _ := card_commonNeighbors_top
   of_not_adj v w h h' := (h' ((top_adj v w).2 h)).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
     #(G.neighborFinset v ∪ G.neighborFinset w) =
       2 * k - Fintype.card (G.commonNeighbors v w) := by
@@ -104,20 +118,12 @@ theorem IsSRGWith.card_neighborFinset_union_of_adj {v w : V} (h : G.IsSRGWith n 
 theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
     (G.neighborFinset v)ᶜ \ {v} ∩ ((G.neighborFinset w)ᶜ \ {w}) =
       ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) := by
-  ext
-  rw [← not_iff_not]
-  simp [imp_iff_not_or, or_assoc, or_comm, or_left_comm]
+  grind
 
 theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
     ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) =
       (G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ := by
-  ext
-  simp only [and_imp, mem_union, mem_sdiff, mem_compl, and_iff_left_iff_imp, mem_neighborFinset,
-    mem_inter, mem_singleton]
-  rintro hnv hnw (rfl | rfl)
-  · exact hnv h
-  · apply hnw
-    rwa [adj_comm]
+  simpa using ⟨h, adj_symm _ h⟩
 
 theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
     Gᶜ.IsRegularOfDegree (n - k - 1) := by
@@ -127,11 +133,12 @@ theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
 theorem IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
     (ha : Gᶜ.Adj v w) : Fintype.card (Gᶜ.commonNeighbors v w) = n - (2 * k - μ) - 2 := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
-    Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
+    Set.toFinset_sdiff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
   simp_rw [compl_neighborFinset_sdiff_inter_eq]
   have hne : v ≠ w := ne_of_adj _ ha
   rw [compl_adj] at ha
-  rw [card_sdiff, ← insert_eq, card_insert_of_not_mem, card_singleton, ← Finset.compl_union]
+  rw [card_sdiff_of_subset, ← insert_eq, card_insert_of_notMem, card_singleton,
+    ← Finset.compl_union]
   · rw [card_compl, h.card_neighborFinset_union_of_not_adj hne ha.2, ← h.card]
   · simp only [hne.symm, not_false_iff, mem_singleton]
   · intro u
@@ -142,7 +149,7 @@ theorem IsSRGWith.card_commonNeighbors_eq_of_not_adj_compl (h : G.IsSRGWith n k 
     (hn : v ≠ w) (hna : ¬Gᶜ.Adj v w) :
     Fintype.card (Gᶜ.commonNeighbors v w) = n - (2 * k - ℓ) := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
-    Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
+    Set.toFinset_sdiff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
   simp only [not_and, Classical.not_not, compl_adj] at hna
   have h2' := hna hn
   simp_rw [compl_neighborFinset_sdiff_inter_eq, sdiff_compl_neighborFinset_inter_eq h2']
@@ -162,10 +169,10 @@ theorem IsSRGWith.param_eq
     {V : Type u} [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj]
     (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     k * (k - ℓ - 1) = (n - k - 1) * μ := by
-  letI := Classical.decEq V
+  let := Classical.decEq V
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn
-  convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
+  convert! card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
   · simp [h.regular v]
   · simp [h.compl.regular v]
   · intro w hw
@@ -173,9 +180,10 @@ theorem IsSRGWith.param_eq
     simp_rw [bipartiteAbove, ← mem_neighborFinset, filter_mem_eq_inter]
     have s : {v} ⊆ G.neighborFinset w \ G.neighborFinset v := by
       rw [singleton_subset_iff, mem_sdiff, mem_neighborFinset]
-      exact ⟨hw.symm, G.not_mem_neighborFinset_self v⟩
-    rw [inter_comm, neighborFinset_compl, ← inter_sdiff_assoc, ← sdiff_eq_inter_compl, card_sdiff s,
-      card_singleton, ← sdiff_inter_self_left, card_sdiff inter_subset_left]
+      exact ⟨hw.symm, G.notMem_neighborFinset_self v⟩
+    rw [inter_comm, neighborFinset_compl, ← inter_sdiff_assoc, ← sdiff_eq_inter_compl,
+      card_sdiff_of_subset s, card_singleton, ← sdiff_inter_self_left,
+      card_sdiff_of_subset inter_subset_left]
     congr
     · simp [h.regular w]
     · simp_rw [inter_comm, neighborFinset_def, ← Set.toFinset_inter, ← h.of_adj v w hw,
@@ -189,6 +197,7 @@ theorem IsSRGWith.param_eq
       ← Set.toFinset_card]
     congr!
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` and `C` be the adjacency matrices of a strongly regular graph with parameters `n k ℓ μ`
 and its complement respectively and `I` be the identity matrix,
 then `A ^ 2 = k • I + ℓ • A + μ • C`. `C` is equivalent to the expression `J - I - A`
@@ -196,9 +205,10 @@ more often found in the literature, where `J` is the all-ones matrix. -/
 theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
     G.adjMatrix α ^ 2 = k • (1 : Matrix V V α) + ℓ • G.adjMatrix α + μ • Gᶜ.adjMatrix α := by
   ext v w
-  simp only [adjMatrix_pow_apply_eq_card_walk, Set.coe_setOf, Matrix.add_apply, Matrix.smul_apply,
+  simp only [adjMatrix_pow_apply_eq_card_walk, Matrix.add_apply, Matrix.smul_apply,
     adjMatrix_apply, compl_adj]
-  rw [Fintype.card_congr (G.walkLengthTwoEquivCommonNeighbors v w)]
+  rw [@Fintype.card_congr _ _ (G.fintypeSetWalkLength v w 2) _
+    (G.walkLengthTwoEquivCommonNeighbors v w)]
   obtain rfl | hn := eq_or_ne v w
   · rw [← Set.toFinset_card]
     simp [commonNeighbors, ← neighborFinset_def, h.regular v]

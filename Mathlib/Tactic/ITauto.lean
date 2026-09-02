@@ -3,22 +3,26 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Tactic.Exact
-import Batteries.Tactic.Init
-import Mathlib.Logic.Basic
-import Mathlib.Util.AtomM
-import Qq
+module
+
+public meta import Mathlib.Util.AtomM
+public meta import Qq
+
+public import Batteries.Tactic.Exact
+public import Batteries.Tactic.Init
+public import Mathlib.Basic.Logic.Basic  -- shake: keep (Qq output dependency)
+public import Mathlib.Util.AtomM
 
 /-!
 
 # Intuitionistic tautology (`itauto`) decision procedure
 
-The `itauto` tactic will prove any intuitionistic tautology. It implements the well known
+The `itauto` tactic will prove any intuitionistic tautology. It implements the well-known
 `G4ip` algorithm:
 [Dyckhoff, *Contraction-free sequent calculi for intuitionistic logic*][dyckhoff_1992].
 
 All built in propositional connectives are supported: `True`, `False`, `And`, `Or`, `→`,
-`Not`, `Iff`, `Xor'`, as well as `Eq` and `Ne` on propositions. Anything else, including definitions
+`Not`, `Iff`, `Xor`, as well as `Eq` and `Ne` on propositions. Anything else, including definitions
 and predicate logical connectives (`∀` and `∃`), are not supported, and will have to be
 simplified or instantiated before calling this tactic.
 
@@ -70,8 +74,8 @@ The intuitionistic logic rules are separated into three groups:
 This covers the core algorithm, which only handles `True`, `False`, `And`, `Or`, and `→`.
 For `Iff` and `Eq`, we treat them essentially the same as `(p → q) ∧ (q → p)`, although we use
 a different `IProp` representation because we have to remember to apply different theorems during
-replay. For definitions like `Not` and `Xor'`, we just eagerly unfold them. (This could potentially
-cause a blowup issue for `Xor'`, but it isn't used very often anyway. We could add it to the `IProp`
+replay. For definitions like `Not` and `Xor`, we just eagerly unfold them. (This could potentially
+cause a blowup issue for `Xor`, but it isn't used very often anyway. We could add it to the `IProp`
 grammar if it matters.)
 
 ## Tags
@@ -79,6 +83,10 @@ grammar if it matters.)
 propositional logic, intuitionistic logic, decision procedure
 -/
 
+public meta section
+
+
+open Std (TreeMap TreeSet)
 
 namespace Mathlib.Tactic.ITauto
 
@@ -97,22 +105,22 @@ inductive IProp : Type
   | and' : AndKind → IProp → IProp → IProp -- p ∧ q, p ↔ q, p = q
   | or : IProp → IProp → IProp   -- p ∨ q
   | imp : IProp → IProp → IProp  -- p → q
-  deriving Lean.ToExpr, DecidableEq
+  deriving Lean.ToExpr
 
 /-- Constructor for `p ∧ q`. -/
-@[match_pattern] def IProp.and : IProp → IProp → IProp := .and' .and
+@[match_pattern, expose] def IProp.and : IProp → IProp → IProp := .and' .and
 
 /-- Constructor for `p ↔ q`. -/
-@[match_pattern] def IProp.iff : IProp → IProp → IProp := .and' .iff
+@[match_pattern, expose] def IProp.iff : IProp → IProp → IProp := .and' .iff
 
 /-- Constructor for `p = q`. -/
-@[match_pattern] def IProp.eq : IProp → IProp → IProp := .and' .eq
+@[match_pattern, expose] def IProp.eq : IProp → IProp → IProp := .and' .eq
 
 /-- Constructor for `¬ p`. -/
-@[match_pattern] def IProp.not (a : IProp) : IProp := a.imp .false
+@[match_pattern, expose] def IProp.not (a : IProp) : IProp := a.imp .false
 
 /-- Constructor for `xor p q`. -/
-@[match_pattern] def IProp.xor (a b : IProp) : IProp := (a.and b.not).or (b.and a.not)
+@[match_pattern, expose] def IProp.xor (a b : IProp) : IProp := (a.and b.not).or (b.and a.not)
 
 instance : Inhabited IProp := ⟨IProp.true⟩
 
@@ -338,11 +346,11 @@ def Proof.check : Lean.NameMap IProp → Proof → Option IProp
 @[inline] def freshName : StateM Nat Name := fun n => (Name.mkSimple s!"h{n}", n + 1)
 
 /-- The context during proof search is a map from propositions to proof values. -/
-def Context := Lean.RBMap IProp Proof IProp.cmp
+abbrev Context := TreeMap IProp Proof IProp.cmp
 
 /-- Debug printer for the context. -/
 def Context.format (Γ : Context) : Std.Format :=
-  Γ.fold (init := "") fun f P p => P.format ++ " := " ++ p.format ++ ",\n" ++ f
+  Γ.foldl (init := "") fun f P p => P.format ++ " := " ++ p.format ++ ",\n" ++ f
 
 instance : Std.ToFormat Context := ⟨Context.format⟩
 
@@ -387,7 +395,7 @@ def isOk : (Bool × Proof) × Nat → Option (Proof × Nat)
   | ((false, _), _) => none
   | ((true, p), n) => some (p, n)
 
-/-- Skip the continuation and return a failed proof if the boolean is false. -/
+/-- Skip the continuation and return a failed proof if the Boolean is false. -/
 def whenOk : Bool → IProp → StateM Nat (Bool × Proof) → StateM Nat (Bool × Proof)
   | false, _, _ => pure (false, .sorry)
   | true, _, f => f
@@ -406,12 +414,12 @@ prove `A₁ → A₂`, which can be written `A₂ → C, A₁ ⊢ A₂` (where w
 potentially many implications to split like this, and we have to try all of them if we want to be
 complete. -/
 partial def search (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) := do
-  if let some p := Γ.find? B then return (true, p)
+  if let some p := Γ[B]? then return (true, p)
   fun n =>
-  let search₁ := Γ.fold (init := none) fun r A p => do
+  let search₁ := Γ.foldl (init := none) fun r A p => do
     if let some r := r then return r
     let .imp A' C := A | none
-    if let some q := Γ.find? A' then
+    if let some q := Γ[A']? then
       isOk <| Context.withAdd (Γ.erase A) C (p.app q) B prove n
     else
       let .imp A₁ A₂ := A' | none
@@ -454,7 +462,7 @@ partial def prove (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) :=
     let (ok, p) ← prove Γ A
     mapProof (p.andIntro ak) <$> whenOk ok B (prove Γ B)
   | B =>
-    Γ.fold
+    Γ.foldl
       (init := fun found Γ => bif found then prove Γ B else search Γ B)
       (f := fun IH A p found Γ => do
         if let .or A₁ A₂ := A then
@@ -480,7 +488,7 @@ partial def reify (e : Q(Prop)) : AtomM IProp :=
   | ~q($a ∧ $b) => return .and (← reify a) (← reify b)
   | ~q($a ∨ $b) => return .or (← reify a) (← reify b)
   | ~q($a ↔ $b) => return .iff (← reify a) (← reify b)
-  | ~q(Xor' $a $b) => return .xor (← reify a) (← reify b)
+  | ~q(Xor $a $b) => return .xor (← reify a) (← reify b)
   | ~q(@Eq Prop $a $b) => return .eq (← reify a) (← reify b)
   | ~q(@Ne Prop $a $b) => return .not (.eq (← reify a) (← reify b))
   | e =>
@@ -639,11 +647,11 @@ partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit
 def itautoCore (g : MVarId)
     (useDec useClassical : Bool) (extraDec : Array Expr) : MetaM Unit := do
   AtomM.run (← getTransparency) do
-    let mut hs := mkRBMap ..
+    let mut hs := mkNameMap Expr
     let t ← g.getType
     let (g, t) ← if ← isProp t then pure (g, ← reify t) else pure (← g.exfalso, .false)
-    let mut Γ : Except (IProp → Proof) ITauto.Context := .ok (mkRBMap ..)
-    let mut decs := mkRBMap ..
+    let mut Γ : Except (IProp → Proof) ITauto.Context := .ok TreeMap.empty
+    let mut decs := TreeMap.empty
     for ldecl in ← getLCtx do
       if !ldecl.isImplementationDetail then
         let e := ldecl.type
@@ -658,7 +666,7 @@ def itautoCore (g : MVarId)
             if useDec then
               let A ← reify p
               decs := decs.insert A (false, Expr.fvar ldecl.fvarId)
-    let addDec (force : Bool) (decs : RBMap IProp (Bool × Expr) IProp.cmp) (e : Q(Prop)) := do
+    let addDec (force : Bool) (decs : TreeMap IProp (Bool × Expr) IProp.cmp) (e : Q(Prop)) := do
       let A ← reify e
       let dec_e := q(Decidable $e)
       let res ← trySynthInstance q(Decidable $e)
@@ -669,9 +677,9 @@ def itautoCore (g : MVarId)
         pure (decs.insert A (match res with | .some e => (false, e) | _ => (true, e)))
     decs ← extraDec.foldlM (addDec true) decs
     if useDec then
-      let mut decided := mkRBTree Nat compare
+      let mut decided := TreeSet.empty (cmp := compare)
       if let .ok Γ' := Γ then
-        decided := Γ'.fold (init := decided) fun m p _ =>
+        decided := Γ'.foldl (init := decided) fun m p _ =>
           match p with
           | .var i => m.insert i
           | .not (.var i) => m.insert i
@@ -692,19 +700,23 @@ def itautoCore (g : MVarId)
 
 open Elab Tactic
 
-/-- A decision procedure for intuitionistic propositional logic. Unlike `finish` and `tauto!` this
-tactic never uses the law of excluded middle (without the `!` option), and the proof search is
-tailored for this use case. (`itauto!` will work as a classical SAT solver, but the algorithm is
-not very good in this situation.)
+/-- `itauto` solves the main goal when it is a tautology of intuitionistic propositional logic.
+Unlike `grind` and `tauto!` this tactic never uses the law of excluded middle (without the `!`
+option), and the proof search is tailored for this use case. `itauto` is complete for intuitionistic
+propositional logic: it will solve any goal that is provable in this logic.
 
+* `itauto [a, b]` will additionally attempt case analysis on `a` and `b` assuming that it can derive
+  `Decidable a` and `Decidable b`.
+* `itauto *` will case on all decidable propositions that it can find among the atomic propositions.
+* `itauto!` will work as a classical SAT solver, but the algorithm is not very good in this
+  situation.
+* `itauto! *` will case on all propositional atoms. *Warning:* This can blow up the proof search, so
+  it should be used sparingly.
+
+Example:
 ```lean
 example (p : Prop) : ¬ (p ↔ ¬ p) := by itauto
 ```
-
-`itauto [a, b]` will additionally attempt case analysis on `a` and `b` assuming that it can derive
-`Decidable a` and `Decidable b`. `itauto *` will case on all decidable propositions that it can
-find among the atomic propositions, and `itauto! *` will case on all propositional atoms.
-*Warning:* This can blow up the proof search, so it should be used sparingly.
 -/
 syntax (name := itauto) "itauto" "!"? (" *" <|> (" [" term,* "]"))? : tactic
 
@@ -715,7 +727,7 @@ elab_rules : tactic
     let hs ← hs.getElems.mapM (Term.elabTermAndSynthesize · none)
     liftMetaTactic (itautoCore · true cl.isSome hs *> pure [])
 
-@[inherit_doc itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
+@[tactic_alt itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
 
 macro_rules
   | `(tactic| itauto!) => `(tactic| itauto !)

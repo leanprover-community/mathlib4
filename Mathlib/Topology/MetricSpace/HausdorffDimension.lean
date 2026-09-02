@@ -3,8 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.RCLike
-import Mathlib.MeasureTheory.Measure.Hausdorff
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.MeasureTheory.Measure.Hausdorff
+import Mathlib.Analysis.Convex.Intrinsic
 
 /-!
 # Hausdorff dimension
@@ -50,15 +53,15 @@ properties of Hausdorff dimension.
 
 ### Hausdorff measure in `ℝⁿ`
 
-* `Real.dimH_of_nonempty_interior`: if `s` is a set in a finite dimensional real vector space `E`
+* `Real.dimH_of_nonempty_interior`: if `s` is a set in a finite-dimensional real vector space `E`
   with nonempty interior, then the Hausdorff dimension of `s` is equal to the dimension of `E`.
-* `dense_compl_of_dimH_lt_finrank`: if `s` is a set in a finite dimensional real vector space `E`
+* `dense_compl_of_dimH_lt_finrank`: if `s` is a set in a finite-dimensional real vector space `E`
   with Hausdorff dimension strictly less than the dimension of `E`, the `s` has a dense complement.
-* `ContDiff.dense_compl_range_of_finrank_lt_finrank`: the complement to the range of a `C¹`
-  smooth map is dense provided that the dimension of the domain is strictly less than the dimension
-  of the codomain.
+* `Differentiable.dense_compl_range_of_finrank_lt_finrank`: the complement to the range of a
+  differentiable map is dense provided that the dimension of the domain is strictly less than the
+  dimension of the codomain.
 
-## Notations
+## Notation
 
 We use the following notation localized in `MeasureTheory`. It is defined in
 `MeasureTheory.Measure.Hausdorff`.
@@ -80,6 +83,8 @@ We use the following notation localized in `MeasureTheory`. It is defined in
 
 Hausdorff measure, Hausdorff dimension, dimension
 -/
+
+@[expose] public section
 
 
 open scoped MeasureTheory ENNReal NNReal Topology
@@ -116,7 +121,7 @@ theorem dimH_le {s : Set X} {d : ℝ≥0∞} (H : ∀ d' : ℝ≥0, μH[d'] s = 
   (dimH_def s).trans_le <| iSup₂_le H
 
 theorem dimH_le_of_hausdorffMeasure_ne_top {s : Set X} {d : ℝ≥0} (h : μH[d] s ≠ ∞) : dimH s ≤ d :=
-  le_of_not_lt <| mt hausdorffMeasure_of_lt_dimH h
+  le_of_not_gt <| mt hausdorffMeasure_of_lt_dimH h
 
 theorem le_dimH_of_hausdorffMeasure_eq_top {s : Set X} {d : ℝ≥0} (h : μH[d] s = ∞) :
     ↑d ≤ dimH s := by
@@ -126,7 +131,7 @@ theorem hausdorffMeasure_of_dimH_lt {s : Set X} {d : ℝ≥0} (h : dimH s < d) :
   rw [dimH_def] at h
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hsd', hd'd⟩
   rw [ENNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hd'd
-  exact (hausdorffMeasure_zero_or_top hd'd s).resolve_right fun h₂ => hsd'.not_le <|
+  exact (hausdorffMeasure_zero_or_top hd'd s).resolve_right fun h₂ => hsd'.not_ge <|
     le_iSup₂ (α := ℝ≥0∞) d' h₂
 
 theorem measure_zero_of_dimH_lt {μ : Measure X} {d : ℝ≥0} (h : μ ≪ μH[d]) {s : Set X}
@@ -134,23 +139,38 @@ theorem measure_zero_of_dimH_lt {μ : Measure X} {d : ℝ≥0} (h : μ ≪ μH[d
   h <| hausdorffMeasure_of_dimH_lt hd
 
 theorem le_dimH_of_hausdorffMeasure_ne_zero {s : Set X} {d : ℝ≥0} (h : μH[d] s ≠ 0) : ↑d ≤ dimH s :=
-  le_of_not_lt <| mt hausdorffMeasure_of_dimH_lt h
+  le_of_not_gt <| mt hausdorffMeasure_of_dimH_lt h
 
 theorem dimH_of_hausdorffMeasure_ne_zero_ne_top {d : ℝ≥0} {s : Set X} (h : μH[d] s ≠ 0)
     (h' : μH[d] s ≠ ∞) : dimH s = d :=
   le_antisymm (dimH_le_of_hausdorffMeasure_ne_top h') (le_dimH_of_hausdorffMeasure_ne_zero h)
 
+/-- The Hausdorff dimension of a set `s` is the infimum of all `d : ℝ≥0` such that the
+`d`-dimensional Hausdorff measure of `s` is zero. This infimum is taken in `ℝ≥0∞`.
+This gives an equivalent definition of the Hausdorff dimension. -/
+theorem dimH_eq_iInf (s : Set X) : dimH s = ⨅ (d : ℝ≥0) (_ : μH[d] s = 0), (d : ℝ≥0∞) := by
+  apply le_antisymm
+  · rw [dimH_def]
+    simp only [le_iInf_iff, iSup_le_iff, ENNReal.coe_le_coe]
+    intro i hi j hj
+    by_contra! hij
+    simpa [hi, hj] using hausdorffMeasure_mono hij.le s
+  · by_contra! h
+    rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hdim_lt, hlt⟩
+    have h0 : μH[d'] s = 0 := hausdorffMeasure_of_dimH_lt hdim_lt
+    exact hlt.not_ge (iInf₂_le d' h0)
+
 end Measurable
 
-@[mono]
+@[gcongr, mono]
 theorem dimH_mono {s t : Set X} (h : s ⊆ t) : dimH s ≤ dimH t := by
   borelize X
   exact dimH_le fun d hd => le_dimH_of_hausdorffMeasure_eq_top <| top_unique <| hd ▸ measure_mono h
 
 theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
   borelize X
-  apply le_antisymm _ (zero_le _)
-  refine dimH_le_of_hausdorffMeasure_ne_top ?_
+  rw [← nonpos_iff_eq_zero]
+  apply dimH_le_of_hausdorffMeasure_ne_top
   exact ((hausdorffMeasure_le_one_of_subsingleton h le_rfl).trans_lt ENNReal.one_lt_top).ne
 
 alias Set.Subsingleton.dimH_zero := dimH_subsingleton
@@ -177,7 +197,7 @@ theorem dimH_iUnion {ι : Sort*} [Countable ι] (s : ι → Set X) :
 @[simp]
 theorem dimH_bUnion {s : Set ι} (hs : s.Countable) (t : ι → Set X) :
     dimH (⋃ i ∈ s, t i) = ⨆ i ∈ s, dimH (t i) := by
-  haveI := hs.toEncodable
+  have := hs.toEncodable
   rw [biUnion_eq_iUnion, dimH_iUnion, ← iSup_subtype'']
 
 @[simp]
@@ -265,7 +285,7 @@ theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
   rw [hd, ← ENNReal.coe_rpow_of_nonneg _ d.coe_nonneg, top_le_iff] at this
   have Hrd : μH[(r * d : ℝ≥0)] s = ⊤ := by
     contrapose this
-    exact ENNReal.mul_ne_top ENNReal.coe_ne_top this
+    finiteness
   rw [ENNReal.le_div_iff_mul_le, mul_comm, ← ENNReal.coe_mul]
   exacts [le_dimH_of_hausdorffMeasure_eq_top Hrd, Or.inl (mt ENNReal.coe_eq_zero.1 hr.ne'),
     Or.inl ENNReal.coe_ne_top]
@@ -361,7 +381,7 @@ theorem dimH_preimage_le (hf : AntilipschitzWith K f) (s : Set Y) : dimH (f ⁻�
 
 theorem le_dimH_image (hf : AntilipschitzWith K f) (s : Set X) : dimH s ≤ dimH (f '' s) :=
   calc
-    dimH s ≤ dimH (f ⁻¹' (f '' s)) := dimH_mono (subset_preimage_image _ _)
+    dimH s ≤ dimH (f ⁻¹' f '' s) := dimH_mono (subset_preimage_image _ _)
     _ ≤ dimH (f '' s) := hf.dimH_preimage_le _
 
 end AntilipschitzWith
@@ -372,7 +392,7 @@ end AntilipschitzWith
 
 
 theorem Isometry.dimH_image (hf : Isometry f) (s : Set X) : dimH (f '' s) = dimH s :=
-  le_antisymm (hf.lipschitz.dimH_image_le _) (hf.antilipschitz.le_dimH_image _)
+  le_antisymm (hf.lipschitzWith.dimH_image_le _) (hf.antilipschitzWith.le_dimH_image _)
 
 namespace IsometryEquiv
 
@@ -396,8 +416,8 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E
 
 @[simp]
 theorem dimH_image (e : E ≃L[𝕜] F) (s : Set E) : dimH (e '' s) = dimH s :=
-  le_antisymm (e.lipschitz.dimH_image_le s) <| by
-    simpa only [e.symm_image_image] using e.symm.lipschitz.dimH_image_le (e '' s)
+  le_antisymm (e.lipschitzWith.dimH_image_le s) <| by
+    simpa only [e.symm_image_image] using e.symm.lipschitzWith.dimH_image_le (e '' s)
 
 @[simp]
 theorem dimH_preimage (e : E ≃L[𝕜] F) (s : Set F) : dimH (e ⁻¹' s) = dimH s := by
@@ -453,6 +473,19 @@ theorem dimH_of_nonempty_interior {s : Set E} (h : (interior s).Nonempty) : dimH
   let ⟨_, hx⟩ := h
   dimH_of_mem_nhds (mem_interior_iff_mem_nhds.1 hx)
 
+/-- The Hausdorff dimension of a nonempty convex set equals the dimension of its affine span. -/
+theorem Convex.dimH_eq_finrank_vectorSpan {s : Set E} (hcvx : Convex ℝ s) (hne : s.Nonempty) :
+    dimH s = finrank ℝ (vectorSpan ℝ s) := by
+  have := hne.to_subtype
+  let φ := AffineIsometryEquiv.constVSub ℝ
+    (⟨hne.some, subset_affineSpan ℝ s hne.some_mem⟩ : affineSpan ℝ s)
+  have hs_eq : s = (↑) '' ((↑) ⁻¹' s : Set (affineSpan ℝ s)) :=
+    (image_preimage_eq_of_subset <| (subset_affineSpan ℝ s).trans Subtype.range_coe.superset).symm
+  rw [hs_eq, isometry_subtype_coe.dimH_image, ← φ.isometry.dimH_image,
+      Real.dimH_of_nonempty_interior, direction_affineSpan ℝ s, ← hs_eq]
+  simp_rw [← AffineIsometryEquiv.coe_toHomeomorph, ← φ.toHomeomorph.image_interior, image_nonempty]
+  simpa [intrinsicInterior] using (intrinsicInterior_nonempty hcvx).mpr hne
+
 variable (E)
 
 theorem dimH_univ_eq_finrank : dimH (univ : Set E) = finrank ℝ E :=
@@ -463,6 +496,14 @@ theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
 
 variable {E}
 
+/-- The Hausdorff dimension of any set in a finite-dimensional real normed space is finite. -/
+theorem dimH_lt_top (s : Set E) : dimH s < ⊤ := by calc
+  dimH s ≤ dimH (univ : Set E) := dimH_mono (subset_univ s)
+  _ = finrank ℝ E := dimH_univ_eq_finrank E
+  _ < ⊤ := by simp
+
+theorem dimH_ne_top (s : Set E) : dimH s ≠ ⊤ := (dimH_lt_top s).ne
+
 lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ}
     (hd : finrank ℝ E < d) : (μH[d] : Measure E) = 0 := by
   lift d to ℝ≥0 using (Nat.cast_nonneg _).trans hd.le
@@ -471,55 +512,138 @@ lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ
   rw [dimH_univ_eq_finrank]
   exact mod_cast hd
 
+/-- The Hausdorff dimension of a non-degenerate segment in a real normed space is 1. -/
+theorem dimH_segment {x y : E} (h : x ≠ y) :
+    dimH (segment ℝ x y) = 1 := by
+  rw [Convex.dimH_eq_finrank_vectorSpan (convex_segment x y) ⟨x, left_mem_segment ℝ x y⟩,
+      vectorSpan_segment]
+  simp [finrank_span_singleton (sub_ne_zero.mpr h.symm)]
+
 end Real
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-
-theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
-  refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_le ?_
-  rw [← diff_eq, diff_eq_empty] at he
+theorem dense_compl_of_dimH_lt_finrank {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
+  have : FiniteDimensional ℝ E := .of_finrank_pos <| by simpa using zero_le.trans_lt hs
+  refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_ge ?_
+  rw [← sdiff_eq, sdiff_eq_empty] at he
   rw [← Real.dimH_of_mem_nhds ht]
   exact dimH_mono he
 
 /-!
-### Hausdorff dimension and `C¹`-smooth maps
+### Hausdorff dimension and differentiable maps
 
-`C¹`-smooth maps are locally Lipschitz continuous, hence they do not increase the Hausdorff
-dimension of sets.
+Differentiable maps (in particular `C¹`-smooth maps) do not increase Hausdorff dimension. In fact,
+they satisfy the Luzin N property with respect to the Hausdorff measure `μH[d]` for every
+`0 ≤ d`: they send `μH[d]`-null sets to `μH[d]`-null sets
+(`DifferentiableOn.hausdorffMeasure_image_eq_zero`).
 -/
 
+section Differentiable
 
-/-- Let `f` be a function defined on a finite dimensional real normed space. If `f` is `C¹`-smooth
-on a convex set `s`, then the Hausdorff dimension of `f '' s` is less than or equal to the Hausdorff
-dimension of `s`.
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {t : Set E}
 
-TODO: do we actually need `Convex ℝ s`? -/
-theorem ContDiffOn.dimH_image_le {f : E → F} {s t : Set E} (hf : ContDiffOn ℝ 1 f s)
-    (hc : Convex ℝ s) (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t :=
+/-- If `f` is differentiable on a set `t` with `μH[d] t = 0` for some `0 ≤ d`, then
+`μH[d] (f '' t) = 0`. -/
+theorem DifferentiableOn.hausdorffMeasure_image_eq_zero [MeasurableSpace E] [BorelSpace E]
+    [MeasurableSpace F] [BorelSpace F] (hf : DifferentiableOn 𝕜 f t) {d : ℝ} (hd : 0 ≤ d)
+    (ht : μH[d] t = 0) : μH[d] (f '' t) = 0 := by
+  obtain ⟨c, hcc, htc⟩ := isSeparable_of_hausdorffMeasure_ne_top (ht.trans_ne ENNReal.zero_ne_top)
+  let P (n : ℕ) (y : E) : Set E :=
+    {x ∈ t | ∀ z ∈ t, dist z x ≤ (n + 1 : ℝ)⁻¹ → dist (f z) (f x) ≤ n * dist z x} ∩
+      Metric.ball y ((n + 1 : ℝ)⁻¹ / 2)
+  have hcover : t ⊆ ⋃ n, ⋃ y ∈ c, P n y := by
+    intro x hx
+    obtain ⟨C, hC⟩ := (hf x hx).isBigO_sub.bound
+    simp only [← dist_eq_norm, Metric.nhdsWithin_basis_ball.eventually_iff] at hC
+    obtain ⟨δ, hδ₀, hδ⟩ := hC
+    obtain ⟨n, hn⟩ := exists_nat_gt (max C δ⁻¹)
+    have hnδ : (n + 1 : ℝ)⁻¹ < δ := by rw [inv_lt_comm₀ (by positivity) hδ₀]; grind
+    obtain ⟨y, hyc, hy⟩ := Metric.mem_closure_iff.1 (htc hx) _
+      (by positivity : (0 : ℝ) < (n + 1 : ℝ)⁻¹ / 2)
+    refine mem_iUnion_of_mem n (mem_biUnion hyc ⟨⟨hx, fun z hz hzx ↦ ?_⟩, Metric.mem_ball.2 hy⟩)
+    calc
+      dist (f z) (f x) ≤ C * dist z x := hδ ⟨Metric.mem_ball.2 (hzx.trans_lt hnδ), hz⟩
+      _ ≤ n * dist z x := by grw [((le_max_left _ _).trans_lt hn).le]
+  have hlip (n : ℕ) (y : E) : LipschitzOnWith n f (P n y) :=
+    .of_dist_le_mul fun z ⟨⟨hzt, _⟩, hzb⟩ w ⟨⟨_, hwP⟩, hwb⟩ ↦ hwP z hzt <| by
+      linarith [dist_triangle_right z w y, Metric.mem_ball.1 hzb, Metric.mem_ball.1 hwb]
+  refine measure_mono_null (image_mono hcover) ?_
+  simp only [image_iUnion, measure_iUnion_null_iff, measure_biUnion_null_iff hcc]
+  intro n y _
+  have hP : μH[d] (P n y) = 0 := measure_mono_null (fun x hx ↦ hx.1.1) ht
+  simpa [hP] using (hlip n y).hausdorffMeasure_image_le hd
+
+/-- If `f` is differentiable on a set `t`, then `dimH (f '' t) ≤ dimH t`. -/
+theorem DifferentiableOn.dimH_image_le (hf : DifferentiableOn 𝕜 f t) :
+    dimH (f '' t) ≤ dimH t := by
+  borelize E F
+  simpa [dimH_eq_iInf] using biInf_mono (fun r ↦ hf.hausdorffMeasure_image_eq_zero r.2)
+
+variable [NormedSpace ℝ E] [NormedSpace ℝ F]
+
+/-- The Hausdorff dimension of the range of a differentiable function defined on a
+finite-dimensional real normed space is at most the dimension of its domain as a vector space over
+`ℝ`. -/
+theorem Differentiable.dimH_range_le [FiniteDimensional ℝ E] (h : Differentiable ℝ f) :
+    dimH (range f) ≤ finrank ℝ E :=
+  calc
+    dimH (range f) = dimH (f '' univ) := by rw [image_univ]
+    _ ≤ dimH (univ : Set E) := h.differentiableOn.dimH_image_le
+    _ = finrank ℝ E := Real.dimH_univ_eq_finrank E
+
+/-- A particular case of Sard's Theorem. Let `f : E → F` be a map between real normed spaces.
+Suppose that `f` is differentiable on a set `t` of Hausdorff dimension strictly less than the
+dimension of `F`. Then the complement of the image `f '' t` is dense in `F`. -/
+theorem DifferentiableOn.dense_compl_image_of_dimH_lt_finrank (h : DifferentiableOn ℝ f t)
+    (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
+  dense_compl_of_dimH_lt_finrank <| h.dimH_image_le.trans_lt htF
+
+/-- A particular case of Sard's Theorem. If `f` is a differentiable map from a real vector space
+to a real vector space `F` of strictly larger dimension, then the complement of the range of `f`
+is dense in `F`. -/
+theorem Differentiable.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ E]
+    (h : Differentiable ℝ f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
+  dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
+
+variable [FiniteDimensional ℝ E] {s : Set E}
+
+@[deprecated DifferentiableOn.dimH_image_le (since := "2026-08-03")]
+theorem ContDiffOn.dimH_image_le (hf : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s) :
+    dimH (f '' t) ≤ dimH t :=
   dimH_image_le_of_locally_lipschitzOn fun x hx =>
     let ⟨C, u, hu, hf⟩ := (hf x (ht hx)).exists_lipschitzOnWith hc
     ⟨C, u, nhdsWithin_mono _ ht hu, hf⟩
 
-/-- The Hausdorff dimension of the range of a `C¹`-smooth function defined on a finite dimensional
-real normed space is at most the dimension of its domain as a vector space over `ℝ`. -/
-theorem ContDiff.dimH_range_le {f : E → F} (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finrank ℝ E :=
+@[deprecated Differentiable.dimH_range_le (since := "2026-08-03")]
+theorem ContDiff.dimH_range_le (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finrank ℝ E :=
   calc
     dimH (range f) = dimH (f '' univ) := by rw [image_univ]
     _ ≤ dimH (univ : Set E) := h.contDiffOn.dimH_image_le convex_univ Subset.rfl
     _ = finrank ℝ E := Real.dimH_univ_eq_finrank E
 
-/-- A particular case of Sard's Theorem. Let `f : E → F` be a map between finite dimensional real
-vector spaces. Suppose that `f` is `C¹` smooth on a convex set `s` of Hausdorff dimension strictly
-less than the dimension of `F`. Then the complement of the image `f '' s` is dense in `F`. -/
-theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
-    {s t : Set E} (h : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s)
+@[deprecated DifferentiableOn.dense_compl_image_of_dimH_lt_finrank (since := "2026-08-03")]
+theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F]
+    (h : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s)
     (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le hc ht).trans_lt htF
 
-/-- A particular case of Sard's Theorem. If `f` is a `C¹` smooth map from a real vector space to a
-real vector space `F` of strictly larger dimension, then the complement of the range of `f` is dense
-in `F`. -/
-theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
+@[deprecated Differentiable.dense_compl_range_of_finrank_lt_finrank (since := "2026-08-03")]
+theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F]
     (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
+
+end Differentiable
+
+/--
+The Hausdorff dimension of the orthogonal projection of a set `s` onto a subspace `K`
+is less than or equal to the Hausdorff dimension of `s`.
+-/
+theorem dimH_orthogonalProjectionOnto_le {𝕜 E : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (s : Set E) :
+    dimH (K.orthogonalProjectionOnto '' s) ≤ dimH s :=
+  K.lipschitzWith_orthogonalProjectionOnto.dimH_image_le s
+
+@[deprecated (since := "2026-05-05")] alias dimH_orthogonalProjection_le :=
+  dimH_orthogonalProjectionOnto_le

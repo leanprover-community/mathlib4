@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Bases in normed affine spaces.
@@ -13,12 +15,14 @@ This file contains results about bases in normed affine spaces.
 
 ## Main definitions:
 
- * `continuous_barycentric_coord`
- * `isOpenMap_barycentric_coord`
- * `AffineBasis.interior_convexHull`
- * `IsOpen.exists_subset_affineIndependent_span_eq_top`
- * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
+* `continuous_barycentric_coord`
+* `isOpenMap_barycentric_coord`
+* `AffineBasis.interior_convexHull`
+* `IsOpen.exists_subset_affineIndependent_span_eq_top`
+* `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
+
+public section
 
 assert_not_exists HasFDerivAt
 
@@ -59,14 +63,14 @@ theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCom
       AffineSubspace.eq_univ_of_subsingleton_span_eq_top (subsingleton_range _) b.tot
     simp [this]
   · -- The positive-dimensional case.
-    haveI : FiniteDimensional ℝ E := b.finiteDimensional
+    have : FiniteDimensional ℝ E := b.finiteDimensional
     have : convexHull ℝ (range b) = ⋂ i, b.coord i ⁻¹' Ici 0 := by
-      rw [b.convexHull_eq_nonneg_coord, setOf_forall]; rfl
+      rw [b.convexHull_eq_nonneg_coord, ofPred_forall]; rfl
     ext
     simp only [this, interior_iInter_of_finite, ←
       IsOpenMap.preimage_interior_eq_interior_preimage (isOpenMap_barycentric_coord b _)
         (continuous_barycentric_coord b _),
-      interior_Ici, mem_iInter, mem_setOf_eq, mem_Ioi, mem_preimage]
+      interior_Ici, mem_iInter, mem_ofPred_eq, mem_Ioi, mem_preimage]
 
 variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -96,8 +100,8 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
   · intro p hp; use ⟨p, ht₁ hp⟩; simp [w, hp]
   · rintro y ⟨⟨p, hp⟩, rfl⟩
     by_cases hps : p ∈ s <;>
-    simp only [w, hps, lineMap_apply_one, Units.val_mk0, dif_neg, dif_pos, not_false_iff,
-      Units.val_one, Subtype.coe_mk] <;>
+    simp only [w, hps, lineMap_apply_one, Units.val_mk0, dite_eq_right, dite_eq_left, not_false_iff,
+      Units.val_one] <;>
     [exact hsu hps; exact hf p]
   · exact (ht₂.units_lineMap ⟨q, ht₁ hq⟩ w).range
   · rw [affineSpan_eq_affineSpan_lineMap_units (ht₁ hq) w, ht₃]
@@ -122,8 +126,8 @@ theorem affineSpan_eq_top_of_nonempty_interior {s : Set V}
 
 theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : AffineBasis ι ℝ V) :
     Finset.univ.centroid ℝ b ∈ interior (convexHull ℝ (range b)) := by
-  haveI := b.nonempty
-  simp only [b.interior_convexHull, mem_setOf_eq, b.coord_apply_centroid (Finset.mem_univ _),
+  have := b.nonempty
+  simp only [b.interior_convexHull, mem_ofPred_eq, b.coord_apply_centroid (Finset.mem_univ _),
     inv_pos, Nat.cast_pos, Finset.card_pos, Finset.univ_nonempty, forall_true_iff]
 
 theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V} :
@@ -131,7 +135,7 @@ theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional �
   refine ⟨affineSpan_eq_top_of_nonempty_interior, fun h => ?_⟩
   obtain ⟨t, hts, b, hb⟩ := AffineBasis.exists_affine_subbasis h
   suffices (interior (convexHull ℝ (range b))).Nonempty by
-    rw [hb, Subtype.range_coe_subtype, setOf_mem_eq] at this
+    rw [hb, Subtype.range_coe_subtype, ofPred_mem_eq] at this
     refine this.mono (by gcongr)
   lift t to Finset V using b.finite_set
   exact ⟨_, b.centroid_mem_interior_convexHull⟩

@@ -3,9 +3,10 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 
 /-! # Facts about `CFC.posPart` and `CFC.negPart` involving norms
 
@@ -19,6 +20,8 @@ C⋆-algebra that involve the norm.
   respectively.
 -/
 
+public section
+
 variable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [StarRing A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
@@ -28,7 +31,7 @@ lemma CStarAlgebra.norm_posPart_le (a : A) : ‖a⁺‖ ≤ ‖a‖ := by
   by_cases ha : IsSelfAdjoint a
   case neg => simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha]
   refine norm_cfcₙ_le fun x hx ↦ ?_
-  obtain (h | h) := le_or_lt x 0
+  obtain (h | h) := le_or_gt x 0
   · simp [posPart_def, max_eq_right h]
   · simp only [posPart_def, max_eq_left h.le]
     exact NonUnitalIsometricContinuousFunctionalCalculus.norm_quasispectrum_le a hx ha

@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Widget.StringDiagram
 import ProofWidgets.Component.Panel.SelectionPanel
 
-/-! ## Example use of string diagram widgets -/
+/-! # Example use of string diagram widgets -/
 
 open ProofWidgets Mathlib.Tactic.Widget
 
@@ -41,12 +41,12 @@ lemma yang_baxter' {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ �
   exact w.elim
 
 lemma yang_baxter'' {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) (w : False) :
-    (R V₁ V₂ ⊗ 𝟙 V₃) ≫ (α_ _ ..).hom ≫
-      (𝟙 V₂ ⊗ R V₁ V₃) ≫ (α_ _ ..).inv ≫
-        (R V₂ V₃ ⊗ 𝟙 V₁) ≫ (α_ _ ..).hom =
-      (α_ _ ..).hom ≫ (𝟙 V₁ ⊗ R V₂ V₃) ≫
-        (α_ _ ..).inv ≫ (R V₁ V₃ ⊗ 𝟙 V₂) ≫
-          (α_ _ ..).hom ≫ (𝟙 V₃ ⊗ R V₁ V₂) := by
+    (R V₁ V₂ ⊗ₘ 𝟙 V₃) ≫ (α_ _ ..).hom ≫
+      (𝟙 V₂ ⊗ₘ R V₁ V₃) ≫ (α_ _ ..).inv ≫
+        (R V₂ V₃ ⊗ₘ 𝟙 V₁) ≫ (α_ _ ..).hom =
+      (α_ _ ..).hom ≫ (𝟙 V₁ ⊗ₘ R V₂ V₃) ≫
+        (α_ _ ..).inv ≫ (R V₁ V₃ ⊗ₘ 𝟙 V₂) ≫
+          (α_ _ ..).hom ≫ (𝟙 V₃ ⊗ₘ R V₁ V₂) := by
   exact w.elim
 
 example {X Y : C} (f : X ⟶ Y) (g : X ⊗ X ⊗ Y ⟶ Y ⊗ X ⊗ Y) (w : False) : f ▷ (X ⊗ Y) = g := by
@@ -55,7 +55,7 @@ example {X Y : C} (f : X ⟶ Y) (g : X ⊗ X ⊗ Y ⟶ Y ⊗ X ⊗ Y) (w : False
 example {X Y : C} (f : X ⟶ Y) (g : 𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y) (w : False) : 𝟙_ C ◁ f = g := by
   exact w.elim
 
-example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ := by
+example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f ⊗ₘ g = X₁ ◁ g ≫ f ▷ Y₂ := by
   rw [MonoidalCategory.whisker_exchange]
   rw [MonoidalCategory.tensorHom_def]
 
@@ -66,7 +66,7 @@ set_option trace.string_diagram true
 variable {C : Type u} [Category.{v} C] [i : MonoidalCategory C] {X Y : C}
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Left(E_1_0_0, E_1_1_1)
     Left(E_2_0_0, E_2_1_1)
@@ -99,7 +99,7 @@ info: [string_diagram] Penrose substance:
 #guard_msgs (whitespace := lax) in
 #string_diagram MonoidalCategory.whisker_exchange
 
-/-- info: [string_diagram] Penrose substance:
+/-- trace: [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Left(E_1_0_0, E_1_1_1)
     Left(E_2_0_0, E_2_1_1)
@@ -134,7 +134,7 @@ info: [string_diagram] Penrose substance:
 #string_diagram MonoidalCategory.whisker_exchange_assoc
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
 
 [string_diagram] Penrose substance:
 -/
@@ -142,7 +142,7 @@ info: [string_diagram] Penrose substance:
 #string_diagram MonoidalCategory.pentagon
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
 
 [string_diagram] Penrose substance:
 -/
@@ -150,7 +150,7 @@ info: [string_diagram] Penrose substance:
 #string_diagram MonoidalCategory.whiskerLeft_id
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Left(E_1_0_0, E_1_0_2)
     Left(E_2_0_0, E_2_1_1)
     Above(E_0_0_0, E_1_0_0)
@@ -168,7 +168,7 @@ info: [string_diagram] Penrose substance:
 #string_diagram left_triangle
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Left(E_0_1_1, E_0_2_2)
     Left(E_1_0_0, E_1_2_2)
@@ -222,7 +222,7 @@ info: [string_diagram] Penrose substance:
 #string_diagram yang_baxter
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Left(E_0_1_1, E_0_2_2)
     Left(E_1_0_0, E_1_2_2)
@@ -276,7 +276,7 @@ info: [string_diagram] Penrose substance:
 #string_diagram yang_baxter'
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Left(E_0_1_1, E_0_2_2)
     Left(E_1_0_0, E_1_2_2)
@@ -330,7 +330,7 @@ info: [string_diagram] Penrose substance:
 #string_diagram yang_baxter''
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Above(E_0_0_0, E_1_0_0)
     Above(E_1_0_0, E_2_0_0)
     Above(E_2_0_0, E_3_0_0)
@@ -354,7 +354,7 @@ info: [string_diagram] Penrose substance:
 #string_diagram Category.assoc
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Above(E_0_0_0, E_1_0_0)
     Above(E_1_0_0, E_2_0_0)
     Mor1 f_0_0 := MakeString (E_0_0_0, E_1_0_0)
@@ -372,7 +372,7 @@ info: [string_diagram] Penrose substance:
 #string_diagram Functor.map_comp
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Above(E_0_0_0, E_1_0_0)
     Above(E_1_0_0, E_2_0_0)
     Above(E_2_0_0, E_3_0_0)
@@ -393,7 +393,7 @@ info: [string_diagram] Penrose substance:
 
 variable (f : 𝟙_ _ ⟶ X ⊗ Y) in
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Left(E_2_0_0, E_2_1_1)
     Above(E_1_0_0, E_2_0_0)
     Mor1 f_1_0 := MakeString (E_1_0_0, E_2_0_0)
@@ -404,7 +404,7 @@ info: [string_diagram] Penrose substance:
 
 variable (g : Y ⊗ X ⟶ 𝟙_ _) in
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Above(E_0_0_0, E_1_0_0)
     Mor1 f_0_0 := MakeString (E_0_0_0, E_1_0_0)
@@ -417,7 +417,7 @@ abbrev yangBaxterLhs {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ 
   R V₁ V₂ ▷ V₃ ≫ (α_ _ ..).hom ≫ _ ◁ R _ _ ≫ (α_ _ ..).inv ≫ R _ _ ▷ _ ≫ (α_ _ ..).hom
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Left(E_0_1_1, E_0_2_2)
     Left(E_1_0_0, E_1_2_2)
@@ -454,7 +454,7 @@ open CategoryTheory
 set_option trace.string_diagram true
 
 /--
-info: [string_diagram] Penrose substance:
+trace: [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Left(E_1_0_0, E_1_1_1)
     Left(E_2_0_0, E_2_1_1)

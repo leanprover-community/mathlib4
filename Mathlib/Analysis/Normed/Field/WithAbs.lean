@@ -3,8 +3,15 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.Normed.Ring.WithAbs
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Field.TransferInstance
+public import Mathlib.Analysis.Normed.Ring.WithAbs
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.Topology.Algebra.UniformField
+public import Mathlib.Topology.MetricSpace.Completion
 
 /-!
 # WithAbs for fields
@@ -15,53 +22,80 @@ on an absolute value. This is useful when dealing with several absolute values o
 In particular this allows us to define the completion of a field at a given absolute value.
 -/
 
+public section
+
 open Topology
-
-noncomputable section
-
-variable {R S : Type*} [Semiring S] [PartialOrder S] [IsOrderedRing S]
 
 namespace WithAbs
 
-section more_instances
+variable {R S : Type*} [Semiring S] [PartialOrder S]
 
-instance normedField [Field R] (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
-  v.toNormedField
+section Field
 
-end more_instances
+variable [Field R] {T : Type*} [Field T] (v : AbsoluteValue R S)
+
+instance : Field (WithAbs v) := fast_instance% (equiv v).field
+
+noncomputable instance normedField (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
+  letI := v.toNormedField
+  fast_instance% (equiv v).normedField
+
+instance [Module R T] [FiniteDimensional R T] :
+    FiniteDimensional (WithAbs v) T :=
+  Module.Finite.of_restrictScalars_finite R (WithAbs v) T
+
+instance [Module T R] [FiniteDimensional T R] :
+    FiniteDimensional T (WithAbs v) :=
+  Module.Finite.equiv (linearEquiv T v).symm
+
+instance [Algebra R T] [Algebra.IsSeparable R T] :
+    Algebra.IsSeparable (WithAbs v) T :=
+  .of_equiv_equiv (equiv v).symm (.refl T) (by ext; simp [algebraMap_left_apply])
+
+instance [Algebra T R] [Algebra.IsSeparable T R] :
+    Algebra.IsSeparable T (WithAbs v) :=
+  AlgEquiv.Algebra.isSeparable (algEquiv T v).symm
+
+@[simp] lemma toAbs_div (x y : R) : toAbs v (x / y) = toAbs v x / toAbs v y := rfl
+@[simp] lemma ofAbs_div (x y : WithAbs v) : ofAbs (x / y) = ofAbs x / ofAbs y := rfl
+
+@[simp] lemma toAbs_inv (x : R) : toAbs v x⁻¹ = (toAbs v x)⁻¹ := rfl
+@[simp] lemma ofAbs_inv (x : WithAbs v) : ofAbs (x⁻¹) = (ofAbs x)⁻¹ := rfl
+
+/- Note that `AbsoluteValue.tendsto_div_one_add_pow_nhds_one` would follow from the below
+result if `WithAbs v` had a topology for general value rings `S`. Currently `WithAbs v` only has
+a topology when `S = ℝ`. -/
+theorem tendsto_one_div_one_add_pow_nhds_one {v : AbsoluteValue R ℝ} {a : R} (ha : v a < 1) :
+    Filter.atTop.Tendsto (fun n ↦ (equiv v).symm (1 / (1 + a ^ n))) (𝓝 1) := by
+  simpa using! inv_one (G := WithAbs v) ▸ (tendsto_inv_iff₀ one_ne_zero).2
+    (tendsto_iff_norm_sub_tendsto_zero.2 <| by simpa using! ha)
+
+end Field
+
+section CommRing
+
+variable [CommRing R] {T : Type*} [Field T] [Algebra R T] (w : AbsoluteValue T ℝ)
+
+instance : UniformContinuousConstSMul R (WithAbs w) where
+  uniformContinuous_const_smul r := by
+    simp_rw [Algebra.smul_def]
+    exact (Ring.uniformContinuousConstSMul _).uniformContinuous_const_smul _
+
+end CommRing
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : AbsoluteValue K ℝ)
+  (w : AbsoluteValue L ℝ) [w.LiesOver v]
+
+theorem isometry_map : Isometry (WithAbs.map v w (algebraMap K L)) := by
+  rw [← AbsoluteValue.LiesOver.under_eq w v, AddMonoidHomClass.isometry_iff_norm]
+  simp_rw [map_apply, norm_eq_apply_ofAbs]
+  simp [AbsoluteValue.under_def]
+
+end WithAbs
 
 /-!
 ### The completion of a field at an absolute value.
 -/
-
-variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ}
-  {L : Type*} [NormedField L] {f : WithAbs v →+* L}
-
-/-- If the absolute value `v` factors through an embedding `f` into a normed field, then
-`f` is an isometry. -/
-theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f :=
-  Isometry.of_dist_eq <| fun x y => by simp only [‹NormedField L›.dist_eq, ← f.map_sub, h]; rfl
-
-/-- If the absolute value `v` factors through an embedding `f` into a normed field, then
-the pseudo metric space associated to the absolute value is the same as the pseudo metric space
-induced by `f`. -/
-theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v x) :
-    PseudoMetricSpace.induced f inferInstance = (normedField v).toPseudoMetricSpace := by
-  ext; exact isometry_of_comp h |>.dist_eq _ _
-
-/-- If the absolute value `v` factors through an embedding `f` into a normed field, then
-the uniform structure associated to the absolute value is the same as the uniform structure
-induced by `f`. -/
-theorem uniformSpace_comap_eq_of_comp (h : ∀ x, ‖f x‖ = v x) :
-    UniformSpace.comap f inferInstance = (normedField v).toUniformSpace := by
-  simp only [← pseudoMetricSpace_induced_of_comp h, PseudoMetricSpace.toUniformSpace]
-
-/-- If the absolute value `v` factors through an embedding `f` into a normed field, then
-`f` is uniform inducing. -/
-theorem isUniformInducing_of_comp (h : ∀ x, ‖f x‖ = v x) : IsUniformInducing f :=
-  isUniformInducing_iff_uniformSpace.2 <| uniformSpace_comap_eq_of_comp h
-
-end WithAbs
 
 namespace AbsoluteValue
 
@@ -72,53 +106,63 @@ variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 /-- The completion of a field with respect to a real absolute value. -/
 abbrev Completion := UniformSpace.Completion (WithAbs v)
 
-@[deprecated (since := "2024-12-01")] alias completion := Completion
-
 namespace Completion
 
-instance : Coe K v.Completion :=
-  inferInstanceAs <| Coe (WithAbs v) (UniformSpace.Completion (WithAbs v))
+noncomputable instance : Coe K v.Completion where
+  coe k : v.Completion := ↑(toAbs v k)
+
+section Algebra
+
+variable {L : Type*} [Field L] [Algebra K L] (w : AbsoluteValue L ℝ) [w.LiesOver v]
+
+/-- If `w` lies over `v` with completions `K_v` and `L_w`, then there is a unique `K_v`-algebra
+structure on `L_w` satisfying both `IsScalarTower K K_v L_w` and `ContinuousSMul K_v L_w`,
+see `AbsoluteValue.Completion.algebraMap_eq` and `AbsoluteValue.Completion.algebra_eq`. -/
+@[instance_reducible]
+noncomputable def algebraOfLiesOver : Algebra v.Completion w.Completion :=
+  (UniformSpace.Completion.mapRingHom (WithAbs.map v w (algebraMap K L))
+    (WithAbs.isometry_map v w).continuous).toAlgebra
+
+instance : letI := algebraOfLiesOver v w
+    IsScalarTower K v.Completion w.Completion :=
+  let := algebraOfLiesOver v w
+  IsScalarTower.of_algebraMap_eq fun x ↦ (UniformSpace.Completion.mapRingHom_coe
+    (WithAbs.isometry_map v w).continuous (WithAbs.toAbs v x)).symm
+
+instance : letI := algebraOfLiesOver v w
+    ContinuousSMul v.Completion w.Completion :=
+  let := algebraOfLiesOver v w
+  continuousSMul_of_algebraMap v.Completion w.Completion
+    (UniformSpace.Completion.isometry_mapRingHom (WithAbs.isometry_map v w)).continuous
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul v.Completion w.Completion]
+
+open UniformSpace.Completion in
+theorem algebraMap_eq : algebraMap v.Completion w.Completion =
+    UniformSpace.Completion.mapRingHom (WithAbs.map v w (algebraMap K L))
+      (WithAbs.isometry_map v w).continuous := by
+  refine DFunLike.ext' (extension_unique ?_ ?_ ?_).symm
+  · exact (uniformContinuous_coe (WithAbs w)).comp (isometry_map v w).uniformContinuous
+  · exact uniformContinuous_addMonoidHom_of_continuous (continuous_algebraMap _ _)
+  · exact fun _ ↦ IsScalarTower.algebraMap_apply ..
+
+theorem algebraMap_apply (x : v.Completion) :
+    algebraMap v.Completion w.Completion x = UniformSpace.Completion.mapRingHom
+      (WithAbs.map v w (algebraMap K L)) (WithAbs.isometry_map v w).continuous x := by
+  rw [algebraMap_eq]
+
+theorem algebra_eq : ‹_› = algebraOfLiesOver v w :=
+  Algebra.algebra_ext _ _ (algebraMap_apply v w)
+
+end Algebra
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
-`L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/
-abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.Completion →+* L :=
-  UniformSpace.Completion.extensionHom _
-    (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous
-
-theorem extensionEmbedding_of_comp_coe (h : ∀ x, ‖f x‖ = v x) (x : K) :
-    extensionEmbedding_of_comp h x = f x := by
-  rw [← UniformSpace.Completion.extensionHom_coe f
-    (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous]
-
-/-- If the absolute value of a normed field factors through an embedding into another normed field,
-then the extended embedding `v.Completion →+* L` preserves distances. -/
-theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v.Completion) :
-    dist (extensionEmbedding_of_comp h x) (extensionEmbedding_of_comp h y) =
-      dist x y := by
-  refine UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_)
-  · refine isClosed_eq ?_ continuous_dist
-    exact continuous_iff_continuous_dist.1 UniformSpace.Completion.continuous_extension
-  · simp only [extensionEmbedding_of_comp_coe]
-    exact UniformSpace.Completion.dist_eq x y ▸ (WithAbs.isometry_of_comp h).dist_eq _ _
-
-/-- If the absolute value of a normed field factors through an embedding into another normed field,
-then the extended embedding `v.Completion →+* L` is an isometry. -/
-theorem isometry_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
-    Isometry (extensionEmbedding_of_comp h) :=
-  Isometry.of_dist_eq <| extensionEmbedding_dist_eq_of_comp h
-
-/-- If the absolute value of a normed field factors through an embedding into another normed field,
-then the extended embedding `v.Completion →+* L` is a closed embedding. -/
-theorem isClosedEmbedding_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
-    IsClosedEmbedding (extensionEmbedding_of_comp h) :=
-  (isometry_extensionEmbedding_of_comp h).isClosedEmbedding
-
-/-- If the absolute value of a normed field factors through an embedding into another normed field
 that is locally compact, then the completion of the first normed field is also locally compact. -/
-theorem locallyCompactSpace [LocallyCompactSpace L] (h : ∀ x, ‖f x‖ = v x)  :
-    LocallyCompactSpace (v.Completion) :=
-  (isClosedEmbedding_extensionEmbedding_of_comp h).locallyCompactSpace
+theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometry f) :
+    LocallyCompactSpace v.Completion :=
+  h.completion_extension.isClosedEmbedding.locallyCompactSpace
 
 end AbsoluteValue.Completion

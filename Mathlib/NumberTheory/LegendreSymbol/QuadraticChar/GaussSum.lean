@@ -3,8 +3,10 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
-import Mathlib.NumberTheory.GaussSum
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
+public import Mathlib.NumberTheory.GaussSum
 
 /-!
 # Quadratic characters of finite fields
@@ -12,6 +14,8 @@ import Mathlib.NumberTheory.GaussSum
 Further facts relying on Gauss sums.
 
 -/
+
+public section
 
 
 /-!
@@ -42,16 +46,16 @@ theorem FiniteField.isSquare_two_iff :
   by_cases hF : ringChar F = 2
   · have h := FiniteField.even_card_of_char_two hF
     simp only [FiniteField.isSquare_of_char_two hF, true_iff]
-    omega
+    lia
   · have h := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (Ring.two_ne_zero hF), quadraticChar_two hF,
       χ₈_nat_eq_if_mod_eight]
-    omega
+    lia
 
 /-- The value of the quadratic character at `-2` -/
 theorem quadraticChar_neg_two [DecidableEq F] (hF : ringChar F ≠ 2) :
     quadraticChar F (-2) = χ₈' (Fintype.card F) := by
-  rw [(by norm_num : (-2 : F) = -1 * 2), map_mul, χ₈'_eq_χ₄_mul_χ₈, quadraticChar_neg_one hF,
+  rw [(by simp : (-2 : F) = -1 * 2), map_mul, χ₈'_eq_χ₄_mul_χ₈, quadraticChar_neg_one hF,
     quadraticChar_two hF, @cast_natCast _ (ZMod 4) _ _ _ (by decide : 4 ∣ 8)]
 
 /-- `-2` is a square in `F` iff `#F` is not congruent to `5` or `7` mod `8`. -/
@@ -61,11 +65,11 @@ theorem FiniteField.isSquare_neg_two_iff :
   by_cases hF : ringChar F = 2
   · have h := FiniteField.even_card_of_char_two hF
     simp only [FiniteField.isSquare_of_char_two hF, true_iff]
-    omega
+    lia
   · have h := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (Ring.two_ne_zero hF)),
       quadraticChar_neg_two hF, χ₈'_nat_eq_if_mod_eight]
-    omega
+    lia
 
 /-- The relation between the values of the quadratic character of one field `F` at the
 cardinality of another field `F'` and of the quadratic character of `F'` at the cardinality
@@ -100,15 +104,9 @@ theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fa
     (hp : p ≠ 2) :
     IsSquare (p : F) ↔ quadraticChar (ZMod p) (χ₄ (Fintype.card F) * Fintype.card F) ≠ -1 := by
   classical
-  by_cases hFp : ringChar F = p
-  · rw [show (p : F) = 0 by rw [← hFp]; exact ringChar.Nat.cast_ringChar]
-    simp only [IsSquare.zero, Ne, true_iff, map_mul]
-    obtain ⟨n, _, hc⟩ := FiniteField.card F (ringChar F)
-    have hchar : ringChar F = ringChar (ZMod p) := by rw [hFp]; exact (ringChar_zmod_n p).symm
-    conv => enter [1, 1, 2]; rw [hc, Nat.cast_pow, map_pow, hchar, map_ringChar]
-    simp only [zero_pow n.ne_zero, mul_zero, zero_eq_neg, one_ne_zero, not_false_iff]
-  · rw [← Iff.not_left (@quadraticChar_neg_one_iff_not_isSquare F _ _ _ _),
-      quadraticChar_odd_prime hF hp]
-    exact hFp
+  rcases eq_or_ne (ringChar F) p with rfl | hFp
+  · obtain ⟨q, hq, hq'⟩ := FiniteField.card F (ringChar F)
+    simp [hq']
+  · rwa [← Iff.not_left quadraticChar_neg_one_iff_not_isSquare, quadraticChar_odd_prime hF hp]
 
 end SpecialValues

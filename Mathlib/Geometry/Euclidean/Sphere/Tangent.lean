@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Sphere.Basic
+module
+
+public import Mathlib.Geometry.Euclidean.Sphere.PolePolar
 
 /-!
 # Tangency for spheres.
@@ -11,9 +13,6 @@ import Mathlib.Geometry.Euclidean.Sphere.Basic
 This file defines notions of spheres being tangent to affine subspaces and other spheres.
 
 ## Main definitions
-
-* `EuclideanGeometry.Sphere.orthRadius`: the affine subspace orthogonal to the radius vector at
-  a point (the tangent space, if that point lies in the sphere).
 
 * `EuclideanGeometry.Sphere.IsTangentAt`: the property of an affine subspace being tangent to a
   sphere at a given point.
@@ -47,80 +46,19 @@ This file defines notions of spheres being tangent to affine subspaces and other
 
 -/
 
+@[expose] public section
+
 
 namespace EuclideanGeometry
 
 namespace Sphere
 
-open AffineSubspace RealInnerProductSpace
+open AffineSubspace
+
+open scoped RealInnerProductSpace Affine
 
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
-
-/-- The affine subspace orthogonal to the radius vector of the sphere `s` at the point `p` (in
-the typical cases, `p` lies in `s` and this is the tangent space). -/
-def orthRadius (s : Sphere P) (p : P) : AffineSubspace ℝ P := .mk' p (ℝ ∙ (p -ᵥ s.center))ᗮ
-
-lemma self_mem_orthRadius (s : Sphere P) (p : P) : p ∈ s.orthRadius p :=
-  self_mem_mk' _ _
-
-lemma mem_orthRadius_iff_inner_left {s : Sphere P} {p x : P} :
-    x ∈ s.orthRadius p ↔ ⟪x -ᵥ p, p -ᵥ s.center⟫ = 0 := by
-  rw [orthRadius, mem_mk'_iff_vsub_mem, Submodule.mem_orthogonal_singleton_iff_inner_left]
-
-lemma mem_orthRadius_iff_inner_right {s : Sphere P} {p x : P} :
-    x ∈ s.orthRadius p ↔ ⟪p -ᵥ s.center, x -ᵥ p⟫ = 0 := by
-  rw [mem_orthRadius_iff_inner_left, inner_eq_zero_symm]
-
-@[simp] lemma direction_orthRadius (s : Sphere P) (p : P) :
-    (s.orthRadius p).direction = (ℝ ∙ (p -ᵥ s.center))ᗮ := by
-  rw [orthRadius, direction_mk']
-
-@[simp] lemma orthRadius_center (s : Sphere P) : s.orthRadius s.center = ⊤ := by
-  simp [orthRadius]
-
-@[simp] lemma center_mem_orthRadius_iff {s : Sphere P} {p : P} :
-    s.center ∈ s.orthRadius p ↔ p = s.center := by
-  rw [mem_orthRadius_iff_inner_left, ← neg_vsub_eq_vsub_rev, inner_neg_left]
-  simp
-
-lemma orthRadius_le_orthRadius_iff {s : Sphere P} {p q : P} :
-    s.orthRadius p ≤ s.orthRadius q ↔ p = q ∨ q = s.center := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have h' := direction_le h
-    simp only [direction_orthRadius] at h'
-    have h'' := Submodule.orthogonal_le h'
-    simp only [Submodule.orthogonal_orthogonal, Submodule.span_singleton_le_iff_mem,
-      Submodule.mem_span_singleton] at h''
-    rcases h'' with ⟨r, hr⟩
-    have hp : p ∈ s.orthRadius q := h (s.self_mem_orthRadius p)
-    rw [mem_orthRadius_iff_inner_left, ← vsub_sub_vsub_cancel_right p q s.center, ← hr,
-      inner_sub_left, real_inner_smul_left, real_inner_smul_right, ← mul_assoc, ← sub_mul,
-      mul_eq_zero] at hp
-    rcases hp with hp | hp
-    · nth_rw 1 [← one_mul r] at hp
-      rw [← sub_mul, mul_eq_zero] at hp
-      rcases hp with hp | rfl
-      · rw [sub_eq_zero] at hp
-        rw [← hp, one_smul, vsub_left_cancel_iff] at hr
-        exact .inl hr
-      · rw [zero_smul, eq_comm, vsub_eq_zero_iff_eq] at hr
-        exact .inr hr
-    · simp only [inner_self_eq_zero, vsub_eq_zero_iff_eq] at hp
-      rw [hp, vsub_self, smul_zero, eq_comm, vsub_eq_zero_iff_eq] at hr
-      exact .inr hr
-  · rcases h with rfl | rfl <;> simp
-
-@[simp] lemma orthRadius_eq_orthRadius_iff {s : Sphere P} {p q : P} :
-    s.orthRadius p = s.orthRadius q ↔ p = q := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ rfl⟩
-  have hpq := orthRadius_le_orthRadius_iff.1 h.le
-  have hqp := orthRadius_le_orthRadius_iff.1 h.symm.le
-  by_cases he : p = q
-  · exact he
-  · simp only [he, false_or] at hpq
-    simp only [Ne.symm he, false_or] at hqp
-    rw [hpq, hqp]
 
 /-- The affine subspace `as` is tangent to the sphere `s` at the point `p`. -/
 structure IsTangentAt (s : Sphere P) (p : P) (as : AffineSubspace ℝ P) : Prop where
@@ -159,6 +97,57 @@ lemma isTangentAt_center_iff {s : Sphere P} {as : AffineSubspace ℝ P} :
     · rw [center_mem_iff, hr]
     · simp
 
+lemma IsTangentAt.dist_sq_eq_of_mem {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p as) (hq : q ∈ as) :
+    (dist q s.center) ^ 2 = s.radius ^ 2 + (dist q p) ^ 2 := by
+  rw [← h.mem_sphere]
+  exact s.dist_sq_eq_of_mem_orthRadius (SetLike.le_def.1 h.le_orthRadius hq)
+
+lemma IsTangentAt.mem_and_mem_iff_eq {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p as) : (q ∈ s ∧ q ∈ as) ↔ q = p := by
+  refine ⟨fun ⟨hs, has⟩ ↦ ?_, ?_⟩
+  · have hd := h.dist_sq_eq_of_mem has
+    rw [hs] at hd
+    simpa using hd
+  · rintro rfl
+    exact ⟨h.mem_sphere, h.mem_space⟩
+
+lemma IsTangentAt.eq_of_mem_of_mem {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p as) (hs : q ∈ s) (has : q ∈ as) : q = p :=
+  h.mem_and_mem_iff_eq.1 ⟨hs, has⟩
+
+/-- If two tangent lines to a sphere pass through the same point `q`,
+then the distances from `q` to the tangent points are equal. -/
+lemma IsTangentAt.dist_eq_of_mem_of_mem {s : Sphere P} {p₁ p₂ q : P}
+    {as₁ as₂ : AffineSubspace ℝ P}
+    (h₁ : s.IsTangentAt p₁ as₁) (h₂ : s.IsTangentAt p₂ as₂) (hq_mem₁ : q ∈ as₁)
+    (hq_mem₂ : q ∈ as₂) :
+    dist q p₁ = dist q p₂ := by
+  have h1 := dist_sq_eq_of_mem h₁ hq_mem₁
+  have h2 := dist_sq_eq_of_mem h₂ hq_mem₂
+  rwa [h1, add_left_cancel_iff, sq_eq_sq₀ dist_nonneg dist_nonneg] at h2
+
+lemma IsTangentAt.radius_lt_dist_center {s : Sphere P} {as : AffineSubspace ℝ P} {p q : P}
+    (h : s.IsTangentAt p as) (hq : q ∈ as) (hqp : q ≠ p) : s.radius < dist q s.center := by
+  suffices s.radius ^ 2 < dist q s.center ^ 2 by
+    simpa [sq_lt_sq, abs_of_nonneg (s.radius_nonneg_of_mem h.mem_sphere)] using this
+  rw [h.dist_sq_eq_of_mem hq]
+  simp [hqp]
+
+lemma IsTangentAt.eq_orthRadius_of_finrank_add_one_eq {s : Sphere P} {as : AffineSubspace ℝ P}
+    {p : P} (ht : s.IsTangentAt p as) (hr : s.radius ≠ 0)
+    (hfr : Module.finrank ℝ as.direction + 1 = Module.finrank ℝ V) : as = s.orthRadius p := by
+  have : FiniteDimensional ℝ V := Module.finite_of_finrank_eq_succ hfr.symm
+  have hp : p ≠ s.center := fun h ↦ (h ▸ s.center_mem_iff).not.2 hr ht.mem_sphere
+  rw [← finrank_orthRadius hp, Nat.add_right_cancel_iff] at hfr
+  exact eq_of_direction_eq_of_nonempty_of_le
+    (Submodule.eq_of_le_of_finrank_eq (direction_le ht.le_orthRadius) hfr) ⟨p, ht.mem_space⟩
+    ht.le_orthRadius
+
+lemma IsTangentAt.mem_polar_of_mem {s : Sphere P} {p₁ p₂ : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p₂ as) (hp₁ : p₁ ∈ as) : p₂ ∈ s.polar p₁ :=
+  mem_polar_of_mem_of_mem_orthRadius h.mem_sphere (SetLike.le_def.1 h.le_orthRadius hp₁)
+
 /-- The affine subspace `as` is tangent to the sphere `s` at some point. -/
 def IsTangent (s : Sphere P) (as : AffineSubspace ℝ P) : Prop :=
   ∃ p, s.IsTangentAt p as
@@ -177,8 +166,106 @@ lemma IsTangentAt.isTangent {s : Sphere P} {p : P} {as : AffineSubspace ℝ P}
   · rw [center_mem_orthRadius_iff] at hsp
     rwa [← hsp] at hs
 
+lemma IsTangent.radius_le_dist_center {s : Sphere P} {as : AffineSubspace ℝ P} (h : s.IsTangent as)
+    {p : P} (hp : p ∈ as) : s.radius ≤ dist p s.center := by
+  obtain ⟨x, h⟩ := h
+  refine le_of_sq_le_sq ?_ dist_nonneg
+  rw [h.dist_sq_eq_of_mem hp, le_add_iff_nonneg_right]
+  exact sq_nonneg _
+
+lemma IsTangent.notMem_of_dist_lt {s : Sphere P} {as : AffineSubspace ℝ P} (h : s.IsTangent as)
+    {p : P} (hp : dist p s.center < s.radius) : p ∉ as := by
+  contrapose! hp
+  exact h.radius_le_dist_center hp
+
+lemma IsTangent.infDist_eq_radius {s : Sphere P} {as : AffineSubspace ℝ P} (h : s.IsTangent as) :
+    Metric.infDist s.center as = s.radius := by
+  obtain ⟨p, h⟩ := h
+  refine le_antisymm ?_ ?_
+  · convert! Metric.infDist_le_dist_of_mem h.mem_space
+    rw [mem_sphere'.1 h.mem_sphere]
+  · rw [Metric.infDist_eq_iInf]
+    have : Nonempty as := ⟨⟨p, h.mem_space⟩⟩
+    refine le_ciInf fun x ↦ ?_
+    rw [dist_comm]
+    exact h.isTangent.radius_le_dist_center x.property
+
+lemma dist_orthogonalProjection_eq_radius_iff_isTangentAt {s : Sphere P} {as : AffineSubspace ℝ P}
+    [Nonempty as] [as.direction.HasOrthogonalProjection] :
+    dist s.center (orthogonalProjection as s.center) = s.radius ↔
+      s.IsTangentAt (orthogonalProjection as s.center) as := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · refine ⟨?_, orthogonalProjection_mem _, fun p hp ↦ ?_⟩
+    · rwa [mem_sphere']
+    · rw [mem_orthRadius_iff_inner_left]
+      exact orthogonalProjection_vsub_mem_direction_orthogonal as s.center _
+        (vsub_orthogonalProjection_mem_direction s.center hp)
+  · rw [dist_orthogonalProjection_eq_infDist, h.isTangent.infDist_eq_radius]
+
+lemma dist_orthogonalProjection_eq_radius_iff_isTangent {s : Sphere P} {as : AffineSubspace ℝ P}
+    [Nonempty as] [as.direction.HasOrthogonalProjection] :
+    dist s.center (orthogonalProjection as s.center) = s.radius ↔ s.IsTangent as := by
+  refine ⟨fun h ↦ (dist_orthogonalProjection_eq_radius_iff_isTangentAt.1 h).isTangent, fun h ↦ ?_⟩
+  rw [dist_orthogonalProjection_eq_infDist, h.infDist_eq_radius]
+
+lemma infDist_eq_radius_iff_isTangent {s : Sphere P} {as : AffineSubspace ℝ P}
+    [Nonempty as] [as.direction.HasOrthogonalProjection] :
+    Metric.infDist s.center as = s.radius ↔ s.IsTangent as := by
+  rw [← dist_orthogonalProjection_eq_infDist, dist_orthogonalProjection_eq_radius_iff_isTangent]
+
+lemma isTangent_iff_isTangentAt_orthogonalProjection {s : Sphere P} {as : AffineSubspace ℝ P}
+    [Nonempty as] [as.direction.HasOrthogonalProjection] :
+    s.IsTangent as ↔ s.IsTangentAt (orthogonalProjection as s.center) as := by
+  rw [← dist_orthogonalProjection_eq_radius_iff_isTangent,
+    dist_orthogonalProjection_eq_radius_iff_isTangentAt]
+
+alias ⟨IsTangent.isTangentAt, _⟩ := isTangent_iff_isTangentAt_orthogonalProjection
+
+lemma IsTangent.eq_orthRadius_or_eq_orthRadius_pointReflection_of_parallel_orthRadius {s : Sphere P}
+    {as : AffineSubspace ℝ P} {p : P} (h : s.IsTangent as) (hpar : as ∥ s.orthRadius p)
+    (hp : p ∈ s) :
+    as = s.orthRadius p ∨ as = s.orthRadius (Equiv.pointReflection s.center p) := by
+  rcases h with ⟨q, hqs, hqas, hqo⟩
+  have hd := direction_le hqo
+  rw [hpar.direction_eq, direction_orthRadius_le_iff] at hd
+  obtain ⟨r, hr⟩ := hd
+  rcases eq_or_ne s.radius 0 with hrad | hrad
+  · rw [mem_sphere, hrad, dist_eq_zero] at hp hqs
+    rw [hp, orthRadius_center] at hpar ⊢
+    rw [hqs, orthRadius_center] at hqo
+    exact .inl (eq_of_direction_eq_of_nonempty_of_le hpar.direction_eq ⟨q, hqas⟩ hqo)
+  obtain rfl : as = s.orthRadius q := by
+    refine eq_of_direction_eq_of_nonempty_of_le ?_ ⟨q, hqas⟩ hqo
+    rw [hpar.direction_eq, direction_orthRadius, direction_orthRadius]
+    congr 1
+    rcases eq_or_ne r 0 with rfl | hr0
+    · simp_all
+    · rw [hr, Submodule.span_singleton_smul_eq hr0.isUnit]
+  rcases eq_or_ne r 0 with rfl | hr0
+  · simp_all
+  · have hr' : ‖q -ᵥ s.center‖ = ‖r • (p -ᵥ s.center)‖ := by
+      rw [hr]
+    simp_rw [norm_smul, Real.norm_eq_abs, ← dist_eq_norm_vsub, mem_sphere.1 hp,
+      mem_sphere.1 hqs, right_eq_mul₀ hrad] at hr'
+    rcases eq_or_eq_neg_of_abs_eq hr' with rfl | rfl
+    · simp_all
+    · right
+      convert! rfl
+      rw [← eq_vadd_iff_vsub_eq] at hr
+      rw [hr]
+      simp [Equiv.pointReflection_apply]
+
+lemma IsTangentAt.eq_orthogonalProjection {s : Sphere P} {p : P} {as : AffineSubspace ℝ P}
+    [Nonempty as] [as.direction.HasOrthogonalProjection] (h : s.IsTangentAt p as) :
+    p = orthogonalProjection as s.center := by
+  refine h.eq_of_isTangentAt ?_
+  have h' := h.isTangent
+  rwa [isTangent_iff_isTangentAt_orthogonalProjection] at h'
+
 /-- The set of all maximal tangent spaces to the sphere `s`. -/
-def tangentSet (s : Sphere P) : Set (AffineSubspace ℝ P) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def tangentSet (s : Sphere P) : Set (AffineSubspace ℝ P) :=
   s.orthRadius '' s
 
 lemma mem_tangentSet_iff {as : AffineSubspace ℝ P} {s : Sphere P} :
@@ -210,8 +297,59 @@ lemma isTangent_of_mem_tangentsFrom {as : AffineSubspace ℝ P} {s : Sphere P} {
     (h : as ∈ s.tangentsFrom p) : s.IsTangent as :=
   isTangent_of_mem_tangentSet h.1
 
+lemma tangentsFrom_eq_image_orthRadius_inter_polar {s : Sphere P} {p : P} (hp : p ≠ s.center) :
+    s.tangentsFrom p = s.orthRadius '' (s ∩ s.polar p) := by
+  ext as
+  rw [tangentsFrom, tangentSet, Set.mem_ofPred, Set.image_inter s.orthRadius_injective,
+    Set.mem_inter_iff, and_congr_right_iff]
+  rintro ⟨p₂, hp₂, rfl⟩
+  rw [s.orthRadius_injective.mem_set_image]
+  exact mem_orthRadius_iff_mem_polar_of_mem hp hp₂
+
+lemma orthRadius_mem_tangentsFrom_iff_mem_and_mem_polar {s : Sphere P} {p₁ p₂ : P}
+    (hp₁ : p₁ ≠ s.center) : s.orthRadius p₂ ∈ s.tangentsFrom p₁ ↔ p₂ ∈ s ∧ p₂ ∈ s.polar p₁ := by
+  rw [tangentsFrom_eq_image_orthRadius_inter_polar hp₁, s.orthRadius_injective.mem_set_image]
+  simp
+
+lemma tangentsFrom_eq_empty_of_dist_lt_radius {s : Sphere P} {p : P}
+    (hp : dist p s.center < s.radius) : s.tangentsFrom p = ∅ := by
+  ext as
+  rw [tangentsFrom, tangentSet]
+  simp only [Set.mem_image, Metric.mem_sphere, mem_coe', Set.mem_ofPred_eq, Set.mem_empty_iff_false,
+    iff_false, not_and, forall_exists_index, and_imp]
+  rintro p' hp' rfl hpm
+  exact (isTangent_orthRadius_iff_mem.2 hp').radius_le_dist_center hpm |>.not_gt hp
+
+lemma tangentsFrom_eq_singleton_orthRadius_of_mem {s : Sphere P} {p : P} (hp : p ∈ s) :
+    s.tangentsFrom p = {s.orthRadius p} := by
+  by_cases hr : s.radius = 0
+  · ext as
+    rw [mem_sphere, hr, dist_eq_zero] at hp
+    simp +contextual [tangentsFrom, tangentSet, hp, hr]
+  have hpc : p ≠ s.center := by
+    rintro rfl
+    simp_all
+  rw [tangentsFrom_eq_image_orthRadius_inter_polar hpc,
+    (polar_eq_orthRadius_self_iff (radius_nonneg_of_mem hp)).2 (.inl hp), ← Set.image_singleton]
+  congr
+  ext p'
+  simp only [Set.mem_inter_iff, Metric.mem_sphere, mem_coe', SetLike.mem_coe, Set.mem_singleton_iff]
+  constructor
+  · exact fun ⟨hp', hp'p⟩ ↦ (isTangentAt_orthRadius_iff_mem.2 hp).eq_of_mem_of_mem hp' hp'p
+  · rintro rfl
+    simp [hp]
+
+lemma ncard_tangentsFrom_eq_two_of_radius_lt_dist [Fact (Module.finrank ℝ V = 2)] {s : Sphere P}
+    (hs : 0 < s.radius) {p : P} (hp : s.radius < dist p s.center) :
+    (s.tangentsFrom p).ncard = 2 := by
+  rw [tangentsFrom_eq_image_orthRadius_inter_polar (fun h ↦ by rw [h, dist_self] at hp; grind),
+    Set.ncard_image_of_injective _ s.orthRadius_injective,
+    ncard_inter_polar_eq_two_of_radius_lt_dist hs hp]
+
 /-- The set of all maximal common tangent spaces to the spheres `s₁` and `s₂`. -/
-def commonTangents (s₁ s₂ : Sphere P) : Set (AffineSubspace ℝ P) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def commonTangents (s₁ s₂ : Sphere P) : Set (AffineSubspace ℝ P) :=
   s₁.tangentSet ∩ s₂.tangentSet
 
 lemma mem_commonTangents_iff {as : AffineSubspace ℝ P} {s₁ s₂ : Sphere P} :
@@ -249,10 +387,9 @@ lemma mem_commonExtTangents_iff {as : AffineSubspace ℝ P} {s₁ s₂ : Sphere 
   rw [Set.mem_union, mem_commonIntTangents_iff, mem_commonExtTangents_iff, ← and_or_left,
     and_iff_left_iff_imp]
   rintro -
-  by_cases h : ∃ p ∈ as, Wbtw ℝ s₁.center p s₂.center
+  by_cases! h : ∃ p ∈ as, Wbtw ℝ s₁.center p s₂.center
   · exact .inl h
   · refine .inr ?_
-    simp_rw [not_exists, not_and] at h
     rintro p hp
     exact mt Sbtw.wbtw (h p hp)
 
@@ -360,11 +497,11 @@ lemma isExtTangent_iff_dist_center {s₁ s₂ : Sphere P} : s₁.IsExtTangent s�
     · refine ⟨?_, ?_, ?_⟩
       · simp only [mem_sphere, dist_lineMap_left, norm_div, Real.norm_eq_abs, h, abs_of_nonneg h₁,
           abs_of_nonneg (add_nonneg h₁ h₂)]
-        field_simp
+        field
       · simp only [mem_sphere, dist_lineMap_right, Real.norm_eq_abs, h]
         rw [one_sub_div h0, add_sub_cancel_left, abs_div, abs_of_nonneg h₂,
           abs_of_nonneg (add_nonneg h₁ h₂)]
-        field_simp
+        field
       · simp only [wbtw_lineMap_iff]
         refine .inr ⟨?_, ?_⟩
         · positivity
@@ -395,10 +532,10 @@ lemma isIntTangent_iff_dist_center [Nontrivial V] {s₁ s₂ : Sphere P} : s₁.
               ?_, ?_, ?_⟩
       · simp only [mem_sphere, dist_lineMap_right, Real.norm_eq_abs, h, one_sub_div hr0, abs_div,
           sub_sub_cancel_left, abs_neg, abs_of_nonneg h₁, ha]
-        field_simp
+        field
       · simp only [mem_sphere, dist_lineMap_left, norm_div, Real.norm_eq_abs, h, ha,
           abs_of_nonneg h₂]
-        field_simp
+        field
       · rw [wbtw_iff_left_eq_or_right_mem_image_Ici]
         simp only [Ne.symm h0, Set.mem_image, Set.mem_Ici, AffineMap.lineMap_eq_lineMap_iff,
           false_or, exists_eq_right]

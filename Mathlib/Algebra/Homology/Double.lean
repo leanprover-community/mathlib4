@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HasNoLoop
-import Mathlib.Algebra.Homology.Single
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.Algebra.Homology.HasNoLoop
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # A homological complex lying in two degrees
@@ -17,18 +19,20 @@ with the differential `X₀ ⟶ X₁` given by `f`, and zero everywhere else.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits ZeroObject Opposite
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
 
 section
 
 variable {X₀ X₁ : C} (f : X₀ ⟶ X₁) {ι : Type*} {c : ComplexShape ι}
   {i₀ i₁ : ι} (hi₀₁ : c.Rel i₀ i₁)
 
-open Classical in
+open scoped Classical in
 /-- Given a complex shape `c`, two indices `i₀` and `i₁` such that `c.Rel i₀ i₁`,
 and `f : X₀ ⟶ X₁`, this is the homological complex which, if `i₀ ≠ i₁`, only
 consists of the map `f` in degrees `i₀` and `i₁`, and zero everywhere else. -/
@@ -36,8 +40,8 @@ noncomputable def double : HomologicalComplex C c where
   X k := if k = i₀ then X₀ else if k = i₁ then X₁ else 0
   d k k' :=
     if hk : k = i₀ ∧ k' = i₁ ∧ i₀ ≠ i₁ then
-      eqToHom (if_pos hk.1) ≫ f ≫ eqToHom (by
-        rw [if_neg, if_pos hk.2.1]
+      eqToHom (ite_eq_left hk.1) ≫ f ≫ eqToHom (by
+        rw [ite_eq_right, ite_eq_left hk.2.1]
         aesop)
     else 0
   d_comp_d' := by
@@ -47,40 +51,40 @@ noncomputable def double : HomologicalComplex C c where
     · subst hi
       by_cases hj : j = i₁
       · subst hj
-        nth_rw 2 [dif_neg (by tauto)]
+        nth_rw 2 [dite_eq_right (by tauto)]
         rw [comp_zero]
-      · rw [dif_neg (by tauto), zero_comp]
-    · rw [dif_neg (by tauto), zero_comp]
-  shape i j hij := dif_neg (by aesop)
+      · rw [dite_eq_right (by tauto), zero_comp]
+    · rw [dite_eq_right (by tauto), zero_comp]
+  shape i j hij := dite_eq_right (by aesop)
 
 lemma isZero_double_X (k : ι) (h₀ : k ≠ i₀) (h₁ : k ≠ i₁) :
     IsZero ((double f hi₀₁).X k) := by
   dsimp [double]
-  rw [if_neg h₀, if_neg h₁]
+  rw [ite_eq_right h₀, ite_eq_right h₁]
   exact Limits.isZero_zero C
 
 /-- The isomorphism `(double f hi₀₁).X i₀ ≅ X₀`. -/
 noncomputable def doubleXIso₀ : (double f hi₀₁).X i₀ ≅ X₀ :=
-  eqToIso (dif_pos rfl)
+  eqToIso (dite_eq_left rfl)
 
 /-- The isomorphism `(double f hi₀₁).X i₁ ≅ X₁`. -/
 noncomputable def doubleXIso₁ (h : i₀ ≠ i₁) : (double f hi₀₁).X i₁ ≅ X₁ :=
   eqToIso (by
     dsimp [double]
-    rw [if_neg h.symm, if_pos rfl])
+    rw [ite_eq_right h.symm, ite_eq_left rfl])
 
 lemma double_d (h : i₀ ≠ i₁) :
     (double f hi₀₁).d i₀ i₁ =
       (doubleXIso₀ f hi₀₁).hom ≫ f ≫ (doubleXIso₁ f hi₀₁ h).inv :=
-  dif_pos ⟨rfl, rfl, h⟩
+  dite_eq_left ⟨rfl, rfl, h⟩
 
 lemma double_d_eq_zero₀ (a b : ι) (ha : a ≠ i₀) :
     (double f hi₀₁).d a b = 0 :=
-  dif_neg (by tauto)
+  dite_eq_right (by tauto)
 
 lemma double_d_eq_zero₁ (a b : ι) (hb : b ≠ i₁) :
     (double f hi₀₁).d a b = 0 :=
-  dif_neg (by tauto)
+  dite_eq_right (by tauto)
 
 variable {f hi₀₁} in
 @[ext]
@@ -108,7 +112,7 @@ variable {f} (h : i₀ ≠ i₁) {K : HomologicalComplex C c} (φ₀ : X₀ ⟶ 
   (comm : φ₀ ≫ K.d i₀ i₁ = f ≫ φ₁)
   (hφ : ∀ (k : ι), c.Rel i₁ k → φ₁ ≫ K.d i₁ k = 0)
 
-open Classical in
+open scoped Classical in
 /-- Constructor for morphisms from a homological complex `double f hi₀₁`. -/
 noncomputable def mkHomFromDouble : double f hi₀₁ ⟶ K where
   f k :=
@@ -118,17 +122,16 @@ noncomputable def mkHomFromDouble : double f hi₀₁ ⟶ K where
       eqToHom (by rw [hk₁]) ≫ (doubleXIso₁ f hi₀₁ h).hom ≫ φ₁ ≫ eqToHom (by rw [hk₁])
     else 0
   comm' k₀ k₁ hk := by
-    dsimp
     by_cases h₀ : k₀ = i₀
     · subst h₀
-      rw [dif_pos rfl]
+      rw [dite_eq_left rfl]
       obtain rfl := c.next_eq hk hi₀₁
-      simp [dif_neg h.symm, dif_pos rfl, double_d f hi₀₁ h, comm]
-    · rw [dif_neg h₀]
+      simp [dite_eq_right h.symm, double_d f hi₀₁ h, comm]
+    · rw [dite_eq_right h₀]
       by_cases h₁ : k₀ = i₁
       · subst h₁
         dsimp
-        rw [if_pos rfl, comp_id, id_comp, assoc, hφ k₁ hk, comp_zero,
+        rw [ite_eq_left rfl, comp_id, id_comp, assoc, hφ k₁ hk, comp_zero,
           double_d_eq_zero₀ _ _ _ _ h.symm, zero_comp]
       · apply (isZero_double_X f hi₀₁ k₀ h₀ h₁).eq_of_src
 
@@ -137,14 +140,14 @@ lemma mkHomFromDouble_f₀ :
     (mkHomFromDouble hi₀₁ h φ₀ φ₁ comm hφ).f i₀ =
       (doubleXIso₀ f hi₀₁).hom ≫ φ₀ := by
   dsimp [mkHomFromDouble]
-  rw [if_pos rfl, id_comp, comp_id]
+  rw [ite_eq_left rfl, id_comp, comp_id]
 
 @[simp, reassoc]
 lemma mkHomFromDouble_f₁ :
     (mkHomFromDouble hi₀₁ h φ₀ φ₁ comm hφ).f i₁ =
       (doubleXIso₁ f hi₀₁ h).hom ≫ φ₁ := by
   dsimp [mkHomFromDouble]
-  rw [dif_neg h.symm, if_pos rfl, id_comp, comp_id]
+  rw [dite_eq_right h.symm, ite_eq_left rfl, id_comp, comp_id]
 
 end
 
@@ -178,13 +181,13 @@ noncomputable def evalCompCoyonedaCorepresentableBySingle (i : ι) [DecidableEq 
   homEquiv {K} :=
     { toFun g := (singleObjXSelf c i X).inv ≫ g.f i
       invFun f := mkHomFromSingle f (fun j hj ↦ (hi j hj).elim)
-      left_inv g := by aesop_cat
+      left_inv g := by cat_disch
       right_inv f := by simp }
   homEquiv_comp := by simp
 
-variable [c.HasNoLoop] [DecidableEq ι]
+variable [c.HasNoLoop]
 
-open Classical in
+open scoped Classical in
 /-- Given a complex shape `c : ComplexShape ι` (with no loop), `X : C` and `j : ι`,
 this is a quite explicit choice of corepresentative of the functor which sends
 `K : HomologicalComplex C c` to `X ⟶ K.X j`. -/
@@ -201,12 +204,11 @@ noncomputable def evalCompCoyonedaCorepresentable (X : C) (j : ι) :
     (eval C c j ⋙ coyoneda.obj (op X)).CorepresentableBy
       (evalCompCoyonedaCorepresentative c X j) := by
   dsimp [evalCompCoyonedaCorepresentative]
-  by_cases h : ∃ (k : ι), c.Rel j k
-  · rw [dif_pos h]
-    exact evalCompCoyonedaCorepresentableByDoubleId _
+  classical
+  split_ifs with h
+  · exact evalCompCoyonedaCorepresentableByDoubleId _
       (fun hj ↦ c.not_rel_of_eq hj h.choose_spec) _
-  · rw [dif_neg h]
-    apply evalCompCoyonedaCorepresentableBySingle
+  · apply evalCompCoyonedaCorepresentableBySingle
     obtain _ | _ := c.exists_distinct_prev_or j <;> tauto
 
 instance (X : C) (j : ι) : (eval C c j ⋙ coyoneda.obj (op X)).IsCorepresentable where

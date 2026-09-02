@@ -3,9 +3,11 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
-import Mathlib.Tactic.WithoutCDot
-import Lean.Meta.Tactic.Util
-import Lean.Elab.Tactic.Basic
+module
+
+public meta import Lean.Meta.Tactic.Util
+public meta import Lean.Elab.Tactic.Basic
+public import Mathlib.Init
 
 /-!
 # The `use` tactic
@@ -19,6 +21,8 @@ that more closely matches `use` from mathlib3.
 Note: The `use!` tactic is almost exactly the mathlib3 `use` except that it does not try
 applying `exists_prop`. See the failing test in `MathlibTest/Use.lean`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic
@@ -97,7 +101,7 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc insts : Li
           "argument is not definitionally equal to inferred value{indentExpr (.mvar g)}"
       return ← useLoop eager gs' args' acc insts
     -- Type ascription is a workaround for `refine` ensuring the type after synthesizing mvars.
-    let refineArg ← `(tactic| refine without_cdot($arg : $(← Term.exprToSyntax (← g.getType))))
+    let refineArg ← `(tactic| refine ($arg : $(← Term.exprToSyntax (← g.getType))))
     if eager then
       -- In eager mode, first try refining with the argument before applying the constructor
       if let some newGoals ← observing? (run g do withoutRecover <| evalTactic refineArg) then
@@ -134,8 +138,15 @@ def runUse (eager : Bool) (discharger : TacticM Unit) (args : List Term) : Tacti
           trace[tactic.use] "running discharger on {g}"
           discard <| run g discharger
 
-/-- Default discharger to try to use for the `use` and `use!` tactics.
-This is similar to the `trivial` tactic but doesn't do things like `contradiction` or `decide`. -/
+/-- `use_discharger` is used by `use` to discharge side goals.
+
+This is an extensible tactic using `macro_rules`. By default it can:
+* rewrite a goal `∃ _ : p, q` into `p ∧ q` if `p` is in Prop;
+* solve the goal `p ∧ q` by creating subgoals `p` and `q`;
+* apply `rfl`;
+* solve a goal by applying an assumption;
+* solve the goal `True`.
+-/
 syntax "use_discharger" : tactic
 
 macro_rules | `(tactic| use_discharger) => `(tactic| apply exists_prop.mpr <;> use_discharger)
@@ -158,10 +169,25 @@ def mkUseDischarger (discharger? : Option (TSyntax ``Parser.Tactic.discharger)) 
   return evalTactic discharger
 
 /--
-`use e₁, e₂, ⋯` is similar to `exists`, but unlike `exists` it is equivalent to applying the tactic
-`refine ⟨e₁, e₂, ⋯, ?_, ⋯, ?_⟩` with any number of placeholders (rather than just one) and
+`use e₁, e₂, ⋯` instantiates all existential quantifiers in the main goal by using `e₁`, `e₂`, ...
+as witnesses, creates goals for all the remaining witnesses, and tries to discharge these goals
+automatically.
+
+`use` is similar to `exists` or `existsi`, but unlike `exists` it is equivalent to applying the
+tactic `refine ⟨e₁, e₂, ⋯, ?_, ⋯, ?_⟩` with any number of placeholders (rather than just one) and
 then trying to close goals associated to the placeholders with a configurable discharger (rather
 than just `try trivial`).
+
+* `use! e₁, e₂, ⋯` applies constructors everywhere rather than just for goals that correspond to the
+  last argument of a constructor. This gives the effect that nested constructors are being flattened
+  out, with the supplied values being used along the leaves and nodes of the tree of constructors.
+* `use (discharger := tac) e₁, e₂, ...` calls `tac` as a discharger, on all remaining `Prop`-valued
+  goals. If this option is omitted, `use` calls `try with_reducible use_discharger` as default
+  discharger.
+  To turn off the discharger and keep all goals, use `(discharger := skip)`.
+  To allow "heavy refls", use `(discharger := try use_discharger)`.
+  If `tac` fails on the new goal, `use (discharger := tac)` fails (hint: you might want to use
+  `(discharger := try tac)` instead).
 
 Examples:
 
@@ -170,36 +196,30 @@ example : ∃ x : Nat, x = x := by use 42
 
 example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 
-example : ∃ x : String × String, x.1 = x.2 := by use ("forty-two", "forty-two")
-```
+example : Nonempty Nat := by use 5
 
-`use! e₁, e₂, ⋯` is similar but it applies constructors everywhere rather than just for
-goals that correspond to the last argument of a constructor. This gives the effect that
-nested constructors are being flattened out, with the supplied values being used along the
-leaves and nodes of the tree of constructors.
-With `use!` one can feed in each `42` one at a time:
+example : Nonempty (PNat ≃ Nat) := by
+  use PNat.natPred, Nat.succPNat
+  · exact PNat.succPNat_natPred
+  · intro; rfl
 
-```lean
-example : ∃ p : Nat × Nat, p.1 = p.2 := by use! 42, 42
+-- With `use!` one can feed in each `42` one at a time:
+example : ∃ n : {n : Nat // n % 2 = 0}, n.val > 10 := by use! 20; simp
 
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use! (42, 42)
-```
-
+/-
 The second line makes use of the fact that `use!` tries refining with the argument before
 applying a constructor. Also note that `use`/`use!` by default uses a tactic
 called `use_discharger` to discharge goals, so `use! 42` will close the goal in this example since
 `use_discharger` applies `rfl`, which as a consequence solves for the other `Nat` metavariable.
-
-These tactics take an optional discharger to handle remaining explicit `Prop` constructor arguments.
-By default it is `use (discharger := try with_reducible use_discharger) e₁, e₂, ⋯`.
-To turn off the discharger and keep all goals, use `(discharger := skip)`.
-To allow "heavy refls", use `(discharger := try use_discharger)`.
+-/
+```
 -/
 elab (name := useSyntax)
     "use" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse false (← mkUseDischarger discharger?) args.getElems.toList
 
-@[inherit_doc useSyntax]
+@[tactic_alt useSyntax]
 elab "use!" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse true (← mkUseDischarger discharger?) args.getElems.toList
 

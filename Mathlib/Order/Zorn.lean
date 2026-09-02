@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.CompleteLattice.Chain
-import Mathlib.Order.Minimal
+module
+
+public import Mathlib.Order.CompleteLattice.Chain
+public import Mathlib.Order.Minimal
 
 /-!
 # Zorn's lemmas
@@ -59,9 +61,11 @@ Originally ported from Isabelle/HOL. The
 Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
+public section
+
 open Set
 
-variable {α β : Type*} {r : α → α → Prop} {c : Set α}
+variable {α : Type*} {r : α → α → Prop} {c : Set α}
 
 /-- Local notation for the relation being considered. -/
 local infixl:50 " ≺ " => r

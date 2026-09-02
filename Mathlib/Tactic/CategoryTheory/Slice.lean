@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Tactic.Conv
+module
+
+public import Mathlib.CategoryTheory.Category.Basic  -- shake: keep (tactic output dependency)
 
 /-!
 # The `slice` tactic
@@ -14,14 +15,14 @@ of `Category.comp`.
 
 -/
 
+public meta section
+
+namespace Mathlib.Tactic.Slice
 open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
 -- TODO someone might like to generalise this tactic to work with other associative structures.
 
-/- Porting note: moved `repeat_with_results` to `repeat_count` to `Mathlib.Tactic.Core` -/
-
-open Tactic
 open Parser.Tactic.Conv
 
 /--
@@ -35,7 +36,7 @@ syntax (name := slice) "slice " num ppSpace num : conv
 `evalSlice`
 - rewrites the target expression using `Category.assoc`.
 - uses `congr` to split off the first `a-1` terms and rotates to `a`-th (last) term
-- counts the number `k` of rewrites as it uses `←Category.assoc` to bring the target to
+- counts the number `k` of rewrites as it uses `← Category.assoc` to bring the target to
   left associated form; from the first step this is the total number of remaining terms from `C`
 - it now splits off `b-a` terms from target using `congr` leaving the desired subterm
 - finally, it rewrites it once more using `Category.assoc` to bring it to right-associated
@@ -58,7 +59,7 @@ def evalSlice (a b : Nat) : TacticM Unit := do
 elab "slice " a:num ppSpace b:num : conv => evalSlice a.getNat b.getNat
 
 /--
-`slice_lhs a b => tac` zooms to the left hand side, uses associativity for categorical
+`slice_lhs a b => tac` zooms to the left-hand side, uses associativity for categorical
 composition as needed, zooms in on the `a`-th through `b`-th morphisms, and invokes `tac`.
 -/
 syntax (name := sliceLHS) "slice_lhs " num ppSpace num " => " convSeq : tactic
@@ -67,7 +68,7 @@ macro_rules
     `(tactic| conv => lhs; slice $a $b; ($seq:convSeq))
 
 /--
-`slice_rhs a b => tac` zooms to the right hand side, uses associativity for categorical
+`slice_rhs a b => tac` zooms to the right-hand side, uses associativity for categorical
 composition as needed, zooms in on the `a`-th through `b`-th morphisms, and invokes `tac`.
 -/
 syntax (name := sliceRHS) "slice_rhs " num ppSpace num " => " convSeq : tactic
@@ -82,3 +83,4 @@ macro_rules
 --     declNames := [`tactic.interactive.sliceLHS, `tactic.interactive.sliceRHS]
 --     tags := ["category theory"] }
 --
+end Mathlib.Tactic.Slice

@@ -3,16 +3,18 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.ModuleCat.Free
-import Mathlib.Topology.Category.Profinite.Nobeling.Span
-import Mathlib.Topology.Category.Profinite.Nobeling.Successor
-import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Free
+public import Mathlib.Topology.Category.Profinite.Nobeling.Span
+public import Mathlib.Topology.Category.Profinite.Nobeling.Successor
+public import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 
 /-!
 # Nöbeling's theorem
 
 This file proves Nöbeling's theorem. For the overall proof outline see
-`Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+`Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## Main result
 
@@ -24,7 +26,9 @@ This file proves Nöbeling's theorem. For the overall proof outline see
 - [scholze2019condensed], Theorem 5.4.
 -/
 
-open Topology
+@[expose] public section
+
+open Module Topology
 
 universe u
 
@@ -52,7 +56,7 @@ We also define
 
 theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   have : C ⊆ {(fun _ ↦ false)} := fun c hc ↦ by
-    ext x; exact Bool.eq_false_iff.mpr (fun ht ↦ (Ordinal.not_lt_zero (ord I x)) (hsC c hc x ht))
+    ext x; exact Bool.eq_false_iff.mpr (fun ht ↦ not_lt_zero (hsC c hc x ht))
   rw [Set.subset_singleton_iff_eq] at this
   cases this
   · subst C
@@ -60,13 +64,13 @@ theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   · subst C
     exact linearIndependentSingleton
 
-theorem GoodProducts.Plimit (o : Ordinal) (ho : Ordinal.IsLimit o) :
+theorem GoodProducts.Plimit (o : Ordinal) (ho : Order.IsSuccLimit o) :
     (∀ (o' : Ordinal), o' < o → P I o') → P I o := by
   intro h hho C hC hsC
   rw [linearIndependent_iff_union_smaller C ho hsC, linearIndependent_subtype_iff]
   exact linearIndepOn_iUnion_of_directed
     (Monotone.directed_le fun _ _ h ↦ GoodProducts.smaller_mono C h) fun ⟨o', ho'⟩ ↦
-    (linearIndependent_iff_smaller _ _).mp (h o' ho' (le_of_lt (lt_of_lt_of_le ho' hho))
+    (linearIndependent_iff_smaller _ _).mp (h o' ho' (ho'.le.trans hho)
     (π C (ord I · < o')) (isClosed_proj _ _ hC) (contained_proj _ _))
 
 theorem GoodProducts.linearIndependentAux (μ : Ordinal) : P I μ := by
@@ -104,7 +108,7 @@ Given a profinite set `S` and a closed embedding `S → (I → Bool)`, the `ℤ`
 -/
 theorem Nobeling_aux : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
   (Module.Free.of_basis <| GoodProducts.Basis _ hι.isClosed_range) (LocallyConstant.congrLeftₗ ℤ
-    (.ofIsEmbedding ι hι.isEmbedding)).symm
+    hι.isEmbedding.toHomeomorph).symm
 
 end NobelingProof
 
@@ -115,35 +119,31 @@ open scoped Classical in
 noncomputable
 def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
 
-open scoped Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
 theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
+  classical
   apply Continuous.isClosedEmbedding
-  · dsimp (config := { unfoldPartialApp := true }) [ι]
+  · dsimp +unfoldPartialApp [ι]
     refine continuous_pi ?_
     intro C
     rw [← IsLocallyConstant.iff_continuous]
-    refine ((IsLocallyConstant.tfae _).out 0 3).mpr ?_
+    refine ((IsLocallyConstant.tfae _).out 1 4).mpr ?_
     rintro ⟨⟩
     · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
-      convert C.2
+      convert! C.2
       ext x
-      simp only [Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff,
-        decide_eq_false_iff_not, not_not]
+      simp
     · refine IsClopen.isOpen ?_
-      convert C.2
+      convert! C.2
       ext x
       simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
   · intro a b h
     by_contra hn
     obtain ⟨C, hC, hh⟩ := exists_isClopen_of_totally_separated hn
     apply hh.2 ∘ of_decide_eq_true
-    dsimp (config := { unfoldPartialApp := true }) [ι] at h
+    dsimp +unfoldPartialApp [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
-
-@[deprecated (since := "2024-10-26")]
-alias Nobeling.embedding := Nobeling.isClosedEmbedding
 
 end Profinite
 
@@ -153,5 +153,5 @@ open Profinite NobelingProof
 `S : Profinite`. -/
 instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
     Module.Free ℤ (LocallyConstant S ℤ) := by
-  obtain ⟨_, _⟩ := exists_wellOrder {C : Set S // IsClopen C}
+  obtain ⟨_, _⟩ := exists_wellFoundedLT {C : Set S // IsClopen C}
   exact @Nobeling_aux {C : Set S // IsClopen C} _ _ S (Nobeling.ι S) (Nobeling.isClosedEmbedding S)

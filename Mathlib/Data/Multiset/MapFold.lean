@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.Multiset.Replicate
-import Mathlib.Data.Set.List
+module
+
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.Multiset.Replicate
+public import Mathlib.Data.Set.List
 
 /-!
 # Mapping and folding multisets
@@ -18,10 +20,12 @@ import Mathlib.Data.Set.List
 
 ## TODO
 
-Many lemmas about `Multiset.map` are proven in `Mathlib.Data.Multiset.Filter`: should we switch the
-import direction?
+Many lemmas about `Multiset.map` are proven in `Mathlib/Data/Multiset/Filter.lean`:
+should we switch the import direction?
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -51,7 +55,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
   exact congr_arg _ (List.map_congr_left h)
 
 theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
-    (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (map f m) (map f' m) := by
+    (hf : ∀ a ∈ m, f a ≍ f' a) : map f m ≍ map f' m := by
   subst h; simp at hf
   simp [map_congr rfl hf]
 
@@ -106,6 +110,10 @@ theorem card_map (f : α → β) (s) : card (map f s) = card s :=
 theorem map_eq_zero {s : Multiset α} {f : α → β} : s.map f = 0 ↔ s = 0 := by
   rw [← Multiset.card_eq_zero, Multiset.card_map, Multiset.card_eq_zero]
 
+@[simp]
+theorem zero_eq_map {s : Multiset α} {f : α → β} : 0 = s.map f ↔ s = 0 := by
+  rw [eq_comm, map_eq_zero]
+
 theorem mem_map_of_mem (f : α → β) {a : α} {s : Multiset α} (h : a ∈ s) : f a ∈ map f s :=
   mem_map.2 ⟨_, h, rfl⟩
 
@@ -134,11 +142,7 @@ theorem map_eq_cons [DecidableEq α] (f : α → β) (s : Multiset α) (t : Mult
     refine ⟨a, mem_cons_self _ _, rfl, ?_⟩
     rw [Multiset.erase_cons_head, h]
 
--- The simpNF linter says that the LHS can be simplified via `Multiset.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `H` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {s : Multiset α} :
     f a ∈ map f s ↔ a ∈ s :=
   Quot.inductionOn s fun _l => List.mem_map_of_injective H
@@ -171,12 +175,14 @@ theorem map_le_map {f : α → β} {s t : Multiset α} (h : s ≤ t) : map f s �
 
 @[simp, gcongr]
 theorem map_lt_map {f : α → β} {s t : Multiset α} (h : s < t) : s.map f < t.map f := by
-  refine (map_le_map h.le).lt_of_not_le fun H => h.ne <| eq_of_le_of_card_le h.le ?_
+  refine (map_le_map h.le).lt_of_not_ge fun H => h.ne <| eq_of_le_of_card_le h.le ?_
   rw [← s.card_map f, ← t.card_map f]
   exact card_le_card H
 
+@[gcongr]
 theorem map_mono (f : α → β) : Monotone (map f) := fun _ _ => map_le_map
 
+@[gcongr]
 theorem map_strictMono (f : α → β) : StrictMono (map f) := fun _ _ => map_lt_map
 
 @[simp, gcongr]
@@ -334,17 +340,18 @@ theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i 
 theorem attach_map_val (s : Multiset α) : s.attach.map Subtype.val = s :=
   (attach_map_val' _ _).trans s.map_id
 
+set_option backward.isDefEq.respectTransparency false in
 theorem attach_cons (a : α) (m : Multiset α) :
     (a ::ₘ m).attach =
       ⟨a, mem_cons_self a m⟩ ::ₘ m.attach.map fun p => ⟨p.1, mem_cons_of_mem p.2⟩ :=
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
       congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.eq rfl
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl
 
 section
 
-variable [DecidableEq α] {s t u : Multiset α}
+variable [DecidableEq α] {s : Multiset α}
 
 lemma erase_attach_map_val (s : Multiset α) (x : {x // x ∈ s}) :
     (s.attach.erase x).map (↑) = s.erase x := by
@@ -360,11 +367,11 @@ end
 /-! ### Subtraction -/
 
 section sub
-variable [DecidableEq α] {s t u : Multiset α} {a : α}
+variable [DecidableEq α] {s t : Multiset α}
 
 lemma sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase s t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ => by
-    show ofList (l₁.diff l₂) = foldl erase l₁ l₂
+    change ofList (l₁.diff l₂) = foldl erase l₁ l₂
     rw [diff_eq_foldl l₁ l₂]
     symm
     exact foldl_hom _ fun x y => rfl

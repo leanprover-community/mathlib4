@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.HomCongr
 /-!
 
 # Restricting adjunctions
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.HomCongr
 `Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
 inclusions.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Adjunction
 
@@ -54,12 +58,14 @@ noncomputable def restrictFullyFaithful : L ⊣ R :=
           simp [Trans.trans, this]
         apply comm2.hom.naturality g }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_unit_app (X : C) :
     iC.map ((adj.restrictFullyFaithful hiC hiD comm1 comm2).unit.app X) =
     adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫ comm2.hom.app (L.obj X) := by
   simp [restrictFullyFaithful]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_counit_app (X : D) :
     iD.map ((adj.restrictFullyFaithful hiC hiD comm1 comm2).counit.app X) =
@@ -73,7 +79,7 @@ lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
         R'.map (iD.map f) ≫ comm2.hom.app Y) := by
   -- This proof was just `simp [restrictFullyFaithful]` before https://github.com/leanprover-community/mathlib4/pull/16317
   apply hiC.map_injective
-  simp only [homEquiv_apply, Functor.comp_obj, Functor.map_comp, map_restrictFullyFaithful_unit_app,
+  simp only [homEquiv_apply, Functor.map_comp, map_restrictFullyFaithful_unit_app,
     Functor.id_obj, assoc, Functor.FullyFaithful.map_preimage]
   congr 2
   exact (comm2.hom.naturality _).symm

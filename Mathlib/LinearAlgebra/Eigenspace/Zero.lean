@@ -3,12 +3,14 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Results on the eigenvalue 0
@@ -29,6 +31,8 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
   is the trailing degree of its characteristic polynomial
 
 -/
+
+public section
 
 variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]
@@ -79,7 +83,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
 
 lemma charpoly_eq_X_pow_iff [IsNoetherian R M] (φ : Module.End R M) :
     φ.charpoly = X ^ finrank R M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 :=
-  (charpoly_nilpotent_tfae φ).out 1 2
+  (charpoly_nilpotent_tfae φ).out 2 3
 
 open Module.Free in
 lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
@@ -115,7 +119,7 @@ lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
 
 lemma charpoly_constantCoeff_eq_zero_iff (φ : Module.End K M) :
     constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
-  (hasEigenvalue_zero_tfae φ).out 2 5
+  (hasEigenvalue_zero_tfae φ).out 3 6
 
 open Module.Free in
 lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
@@ -128,13 +132,13 @@ lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
       ∀ (m : M), φ m = 0 → m = 0 ] := by
   have := (hasEigenvalue_zero_tfae φ).not
   dsimp only [List.map] at this
-  push_neg at this
+  push Not at this
   have aux₁ : ∀ m, (m ≠ 0 → φ m ≠ 0) ↔ (φ m = 0 → m = 0) := by intro m; apply not_imp_not
   have aux₂ : ker φ = ⊥ ↔ ¬ ⊥ < ker φ := by rw [bot_lt_iff_ne_bot, not_not]
   simpa only [aux₁, aux₂] using this
 
 open Module.Free in
-lemma finrank_maxGenEigenspace (φ : Module.End K M) :
+lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     finrank K (φ.maxGenEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   set V := φ.maxGenEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
@@ -148,13 +152,13 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
       forall_exists_index]
     intro x n hx
     use n
-    rw [← LinearMap.mul_apply, ← pow_succ, pow_succ', LinearMap.mul_apply, hx, map_zero]
+    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply, hx, map_zero]
   have hφW : ∀ x ∈ W, φ x ∈ W := by
     simp only [W, Submodule.mem_iInf, mem_range]
     intro x H n
     obtain ⟨y, rfl⟩ := H n
     use φ y
-    rw [← LinearMap.mul_apply, ← pow_succ, pow_succ', LinearMap.mul_apply]
+    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply]
   let F := φ.restrict hφV
   let G := φ.restrict hφW
   let ψ := F.prodMap G
@@ -168,13 +172,13 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
       LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp, LinearEquiv.coe_coe,
       Function.comp_apply, coprod_apply, Submodule.coe_subtype, map_add, Sum.forall, Sum.elim_inl,
       map_zero, ZeroMemClass.coe_zero, add_zero, LinearEquiv.eq_symm_apply, and_self,
-      Submodule.coe_prodEquivOfIsCompl', restrict_coe_apply, implies_true, Sum.elim_inr, zero_add,
+      Submodule.coe_prodEquivOfIsCompl', coe_restrict_apply, implies_true, Sum.elim_inr, zero_add,
       e, V, W, ψ, F, G, b]
   rw [← e.symm.charpoly_conj φ, ← hψ, charpoly_prodMap,
     natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
   have hG : natTrailingDegree (charpoly G) = 0 := by
     apply Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
-    apply ((not_hasEigenvalue_zero_tfae G).out 2 5).mpr
+    apply ((not_hasEigenvalue_zero_tfae G).out 3 6).mpr
     intro x hx
     apply Subtype.ext
     suffices x.1 ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
@@ -184,7 +188,7 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
     rw [pow_one]
     rwa [Subtype.ext_iff] at hx
   rw [hG, add_zero, eq_comm]
-  apply ((charpoly_nilpotent_tfae F).out 2 3).mp
+  apply ((charpoly_nilpotent_tfae F).out 3 4).mp
   simp only [Subtype.forall, Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, V, F]
   rintro x ⟨n, hx⟩
   use n
@@ -193,8 +197,20 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
   refine .trans ?_ hx
   generalize_proofs h'
   clear hx
-  induction n with
-  | zero => simp only [pow_zero, one_apply]
-  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, restrict_apply]
+  induction n <;> simp [pow_succ', *]
+
+lemma finrank_maxGenEigenspace_eq (φ : Module.End K M) (μ : K) :
+    finrank K (φ.maxGenEigenspace μ) = φ.charpoly.rootMultiplicity μ := by
+  rw [φ.maxGenEigenspace_eq_maxGenEigenspace_zero, finrank_maxGenEigenspace_zero_eq,
+    Polynomial.rootMultiplicity_eq_natTrailingDegree, LinearMap.charpoly_sub_smul]
+
+lemma finrank_genEigenspace_le (φ : Module.End K M) (μ : K) (k : ℕ) :
+    finrank K (φ.genEigenspace μ k) ≤ φ.charpoly.rootMultiplicity μ := by
+  grw [Submodule.finrank_mono (φ.genEigenspace_le_maximal μ k), finrank_maxGenEigenspace_eq]
+
+/-- The geometric multiplicity of an eigenvalue is at most the algebraic multiplicity. -/
+lemma finrank_eigenspace_le (φ : Module.End K M) (μ : K) :
+    finrank K (φ.eigenspace μ) ≤ φ.charpoly.rootMultiplicity μ :=
+  finrank_genEigenspace_le ..
 
 end LinearMap

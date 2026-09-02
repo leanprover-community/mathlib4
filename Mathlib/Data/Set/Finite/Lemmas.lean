@@ -3,11 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Lemmas on finiteness of sets
@@ -20,13 +21,15 @@ If your proof has as *result* `Set.Finite`, then it should go to a more specific
 finite sets
 -/
 
-assert_not_exists OrderedRing MonoidWithZero
+public section
+
+assert_not_exists IsOrderedRing MonoidWithZero
 
 open Set Function
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v}
 
 namespace Set
 
@@ -35,7 +38,7 @@ namespace Set
 theorem Finite.fin_embedding {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n ↪ α), range f = s :=
   ⟨_, (Fintype.equivFin (h.toFinset : Set α)).symm.asEmbedding, by
-    simp only [Finset.coe_sort_coe, Equiv.asEmbedding_range, Finite.coe_toFinset, setOf_mem_eq]⟩
+    simp only [Finset.coe_sort_coe, Equiv.asEmbedding_range, Finite.coe_toFinset, ofPred_mem_eq]⟩
 
 theorem Finite.fin_param {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n → α), Injective f ∧ range f = s :=
@@ -59,9 +62,12 @@ theorem Finite.induction_to_univ [Finite α] {C : Set α → Prop} (S0 : Set α)
     (H0 : C S0) (H1 : ∀ S ≠ univ, C S → ∃ a ∉ S, C (insert a S)) : C univ :=
   finite_univ.induction_to S0 (subset_univ S0) H0 (by simpa [ssubset_univ_iff])
 
+theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {(s : Set X) | Set.Finite s} = Set.univ :=
+  sUnion_eq_univ_iff.mpr fun x ↦ ⟨{x}, finite_singleton x, rfl⟩
+
 /-! ### Infinite sets -/
 
-variable {s t : Set α}
+variable {s : Set α}
 
 /-! ### Order properties -/
 

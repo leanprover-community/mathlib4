@@ -3,11 +3,14 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Batteries.Logic
-import Batteries.Data.List.Basic
-import Mathlib.Tactic.TypeStar
+module
+
+public import Batteries.Data.List.Basic
+public import Mathlib.Init
 
 /-! ### lookmap -/
+
+public section
 
 variable {α β : Type*}
 
@@ -23,33 +26,40 @@ private theorem lookmap.go_append (l : List α) (acc : Array α) :
     rw [lookmap, go, go]
     cases f hd with
     | none =>
-      simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.push_toList]
+      simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.toList_push]
       rfl
-    | some a => rfl
+    | some a => simp
 
-@[simp]
+@[simp, grind =]
 theorem lookmap_nil : [].lookmap f = [] :=
   rfl
 
 @[simp]
 theorem lookmap_cons_none {a : α} (l : List α) (h : f a = none) :
     (a :: l).lookmap f = a :: l.lookmap f := by
-  simp only [lookmap, lookmap.go, Array.toListAppend_eq, List.toList_toArray, nil_append]
-  rw [lookmap.go_append, h]; rfl
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, nil_append]
+  rw [lookmap.go_append, lookmap, h]; simp
 
 @[simp]
 theorem lookmap_cons_some {a b : α} (l : List α) (h : f a = some b) :
     (a :: l).lookmap f = b :: l := by
-  simp only [lookmap, lookmap.go, Array.toListAppend_eq, List.toList_toArray, nil_append]
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, nil_append]
   rw [h]
+
+@[grind =]
+theorem lookmap_cons {a : α} {l : List α} :
+    (a :: l).lookmap f = match f a with
+    | none => a :: l.lookmap f
+    | some b => b :: l := by
+  cases h : f a <;> simp_all
 
 theorem lookmap_some : ∀ l : List α, l.lookmap some = l
   | [] => rfl
-  | _ :: _ => rfl
+  | _ :: rest => lookmap_cons_some some rest rfl
 
 theorem lookmap_none : ∀ l : List α, (l.lookmap fun _ => none) = l
   | [] => rfl
-  | a :: l => (lookmap_cons_none _ l rfl).trans (congr_arg (cons a) (lookmap_none l))
+  | a :: l => (lookmap_cons_none _ l rfl).trans (congrArg (cons a) (lookmap_none l))
 
 theorem lookmap_congr {f g : α → Option α} :
     ∀ {l : List α}, (∀ a ∈ l, f a = g a) → l.lookmap f = l.lookmap g
@@ -74,6 +84,7 @@ theorem lookmap_map_eq (g : α → β) (h : ∀ (a), ∀ b ∈ f a, g a = g b) :
 theorem lookmap_id' (h : ∀ (a), ∀ b ∈ f a, a = b) (l : List α) : l.lookmap f = l := by
   rw [← map_id (l.lookmap f), lookmap_map_eq, map_id]; exact h
 
+@[simp, grind =]
 theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
   rw [← length_map, lookmap_map_eq _ fun _ => (), length_map]; simp
 
@@ -89,15 +100,13 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     · simp [lookmap_cons_some _ _ h, p]
   | swap a b l =>
     rcases h₁ : f a with - | c <;> rcases h₂ : f b with - | d
-    · simpa [h₁, h₂] using swap _ _ _
-    · simpa [h₁, lookmap_cons_some _ _ h₂] using swap _ _ _
-    · simpa [lookmap_cons_some _ _ h₁, h₂] using swap _ _ _
+    · simpa [h₁, h₂] using Perm.swap _ _ _
+    · simpa [h₁, lookmap_cons_some _ _ h₂] using Perm.swap _ _ _
+    · simpa [lookmap_cons_some _ _ h₁, h₂] using Perm.swap _ _ _
     · rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
       exact Perm.refl _
   | trans p₁ _ IH₁ IH₂ =>
     refine (IH₁ H).trans (IH₂ ((p₁.pairwise_iff ?_).1 H))
-    intro x y h c hc d hd
-    rw [@eq_comm _ y, @eq_comm _ c]
-    apply h d hd c hc
+    grind
 
 end List

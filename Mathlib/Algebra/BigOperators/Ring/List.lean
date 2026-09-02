@@ -3,12 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Ring.Commute
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Big operators on a list in rings
@@ -16,7 +18,9 @@ import Mathlib.Algebra.BigOperators.Group.List.Basic
 This file contains the results concerning the interaction of list big operators with rings.
 -/
 
-open MulOpposite List
+public section
+
+open List
 
 variable {ι κ M M₀ R : Type*}
 
@@ -42,7 +46,7 @@ variable [Monoid M] [HasDistribNeg M]
 @[simp]
 lemma prod_map_neg (l : List M) :
     (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
-  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
+  induction l <;> simp [*, pow_succ, Commute.left_comm]
 
 end HasDistribNeg
 
@@ -50,7 +54,7 @@ section MonoidWithZero
 variable [MonoidWithZero M₀] {l : List M₀}
 
 /-- If zero is an element of a list `l`, then `List.prod l = 0`. If the domain is a nontrivial
-monoid with zero with no divisors, then this implication becomes an `iff`, see
+monoid with zero with no zero divisors, then this implication becomes an `iff`, see
 `List.prod_eq_zero_iff`. -/
 lemma prod_eq_zero : ∀ {l : List M₀}, (0 : M₀) ∈ l → l.prod = 0
   -- |  absurd h (not_mem_nil _)
@@ -89,7 +93,7 @@ lemma dvd_sum [NonUnitalSemiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) 
     rw [List.sum_cons]
     exact dvd_add (h _ mem_cons_self) (ih fun x hx ↦ h x (mem_cons_of_mem _ hx))
 
-@[simp] lemma sum_zipWith_distrib_left [Semiring R] (f : ι → κ → R) (a : R) :
+@[simp] lemma sum_zipWith_distrib_left [NonUnitalNonAssocSemiring R] (f : ι → κ → R) (a : R) :
     ∀ (l₁ : List ι) (l₂ : List κ),
       (zipWith (fun i j ↦ a * f i j) l₁ l₂).sum = a * (zipWith f l₁ l₂).sum
   | [], _ => by simp

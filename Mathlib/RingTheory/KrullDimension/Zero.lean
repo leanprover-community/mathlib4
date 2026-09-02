@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Jacobson.Ring
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.RingTheory.Jacobson.Ring
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 
@@ -14,6 +16,8 @@ We provide further API for zero-dimensional rings.
 Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/Basic.lean`.
 
 -/
+
+public section
 
 section CommSemiring
 
@@ -28,14 +32,23 @@ lemma Ring.KrullDimLE.mem_minimalPrimes_iff_le_of_isPrime {I J : Ideal R} [I.IsP
   rwa [mem_minimalPrimes_iff, and_iff_right]
 
 variable (R) in
-lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isPrime :
+lemma Ring.KrullDimLE.minimalPrimes_eq_setOfPred_isPrime :
     minimalPrimes R = { I | I.IsPrime } := by
-  ext; simp [minimalPrimes, mem_minimalPrimes_iff]
+  ext
+  exact Ideal.mem_minimalPrimes_iff_isPrime
+
+@[deprecated (since := "2026-07-09")]
+alias Ring.KrullDimLE.minimalPrimes_eq_setOf_isPrime :=
+  Ring.KrullDimLE.minimalPrimes_eq_setOfPred_isPrime
 
 variable (R) in
-lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :
+lemma Ring.KrullDimLE.minimalPrimes_eq_setOfPred_isMaximal :
     minimalPrimes R = { I | I.IsMaximal } := by
-  ext; simp [minimalPrimes_eq_setOf_isPrime, Ideal.isMaximal_iff_isPrime]
+  ext; simp [minimalPrimes_eq_setOfPred_isPrime, Ideal.isMaximal_iff_isPrime]
+
+@[deprecated (since := "2026-07-09")]
+alias Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :=
+  Ring.KrullDimLE.minimalPrimes_eq_setOfPred_isMaximal
 
 /-- Note that the `ringKrullDim` of the trivial ring is `⊥` and not `0`. -/
 example [Subsingleton R] : Ring.KrullDimLE 0 R := inferInstance
@@ -43,7 +56,7 @@ example [Subsingleton R] : Ring.KrullDimLE 0 R := inferInstance
 lemma Ring.KrullDimLE.isField_of_isDomain [IsDomain R] : IsField R := by
   by_contra h
   obtain ⟨p, hp, h⟩ := Ring.not_isField_iff_exists_prime.mp h
-  exact hp.symm (Ideal.bot_prime.isMaximal'.eq_of_le h.ne_top bot_le)
+  exact hp.symm (Ideal.isPrime_bot.isMaximal'.eq_of_le h.ne_top bot_le)
 
 omit [Ring.KrullDimLE 0 R] in
 lemma ringKrullDimZero_iff_ringKrullDim_eq_zero [Nontrivial R] :
@@ -51,6 +64,19 @@ lemma ringKrullDimZero_iff_ringKrullDim_eq_zero [Nontrivial R] :
   rw [Ring.KrullDimLE, Order.krullDimLE_iff, le_antisymm_iff, ← ringKrullDim, Nat.cast_zero,
     iff_self_and]
   exact fun _ ↦ ringKrullDim_nonneg_of_nontrivial
+
+/-- A quotient `R ⧸ I` has krull dimension at most zero if and only if all minimal primes over `I`
+are maximal. -/
+theorem Ideal.krullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal
+    {R : Type*} [CommRing R] {I : Ideal R} :
+    Ring.KrullDimLE 0 (R ⧸ I) ↔ ∀ J ∈ I.minimalPrimes, J.IsMaximal := by
+  rw [Ring.krullDimLE_zero_iff_forall_minimalPrimes_isMaximal, minimalPrimes_eq_comap,
+    Set.forall_mem_image]
+  refine forall₂_congr fun J hJ ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective
+  · have := map_eq_top_or_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective h
+    rw [map_comap_of_surjective (Quotient.mk I) Quotient.mk_surjective] at this
+    exact this.resolve_left hJ.1.1.ne_top
 
 section IsLocalRing
 
@@ -64,7 +90,7 @@ lemma Ring.krullDimLE_zero_and_isLocalRing_tfae :
       (nilradical R).IsMaximal ] := by
   tfae_have 1 → 3 := by
     intro ⟨h₁, h₂⟩ x
-    show x ∈ nilradical R ↔ x ∈ IsLocalRing.maximalIdeal R
+    change x ∈ nilradical R ↔ x ∈ IsLocalRing.maximalIdeal R
     rw [nilradical, Ideal.radical_eq_sInf]
     simp [← Ideal.isMaximal_iff_isPrime, IsLocalRing.isMaximal_iff]
   tfae_have 3 → 4 := by
@@ -83,21 +109,29 @@ lemma Ring.krullDimLE_zero_and_isLocalRing_tfae :
   tfae_finish
 
 @[simp]
-lemma le_isUnit_iff_zero_not_mem [IsLocalRing R]
+lemma le_isUnit_iff_zero_notMem [IsLocalRing R]
     {M : Submonoid R} : M ≤ IsUnit.submonoid R ↔ 0 ∉ M := by
-  have := ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 2 rfl rfl).mp ⟨‹_›, ‹_›⟩
+  have := ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 1 3 rfl rfl).mp ⟨‹_›, ‹_›⟩
   exact ⟨fun h₁ h₂ ↦ not_isUnit_zero (h₁ h₂),
     fun H x hx ↦ (this x).not_left.mp fun ⟨n, hn⟩ ↦ H (hn ▸ pow_mem hx n)⟩
 
 variable (R) in
 theorem Ring.KrullDimLE.existsUnique_isPrime [IsLocalRing R] :
     ∃! I : Ideal R, I.IsPrime :=
-  ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 1 rfl rfl).mp ⟨‹_›, ‹_›⟩
+  ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 1 2 rfl rfl).mp ⟨‹_›, ‹_›⟩
 
 theorem Ring.KrullDimLE.eq_maximalIdeal_of_isPrime [IsLocalRing R] (J : Ideal R) [J.IsPrime] :
     J = IsLocalRing.maximalIdeal R :=
-  (((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 1 rfl rfl).mp ⟨‹_›, ‹_›⟩).unique
+  (((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 1 2 rfl rfl).mp ⟨‹_›, ‹_›⟩).unique
     ‹_› inferInstance
+
+lemma Ring.KrullDimLE.radical_eq_maximalIdeal [IsLocalRing R] (I : Ideal R) (hI : I ≠ ⊤) :
+    I.radical = IsLocalRing.maximalIdeal R := by
+  rw [Ideal.radical_eq_sInf]
+  refine (sInf_le ?_).antisymm (le_sInf ?_)
+  · exact ⟨IsLocalRing.le_maximalIdeal hI, inferInstance⟩
+  · rintro J ⟨h₁, h₂⟩
+    exact (Ring.KrullDimLE.eq_maximalIdeal_of_isPrime J).ge
 
 variable (R) in
 theorem Ring.KrullDimLE.subsingleton_primeSpectrum [IsLocalRing R] :
@@ -107,7 +141,7 @@ theorem Ring.KrullDimLE.subsingleton_primeSpectrum [IsLocalRing R] :
 
 theorem Ring.KrullDimLE.isNilpotent_iff_mem_maximalIdeal [IsLocalRing R] {x} :
     IsNilpotent x ↔ x ∈ IsLocalRing.maximalIdeal R :=
-  ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 2 rfl rfl).mp ⟨‹_›, ‹_›⟩ x
+  ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 1 3 rfl rfl).mp ⟨‹_›, ‹_›⟩ x
 
 theorem Ring.KrullDimLE.isNilpotent_iff_mem_nonunits [IsLocalRing R] {x} :
     IsNilpotent x ↔ x ∈ nonunits R :=
@@ -122,13 +156,13 @@ omit [Ring.KrullDimLE 0 R] in
 variable (R) in
 theorem IsLocalRing.of_isMaximal_nilradical [(nilradical R).IsMaximal] :
     IsLocalRing R :=
-  (((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 3 0 rfl rfl).mp ‹_›).2
+  (((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 4 1 rfl rfl).mp ‹_›).2
 
 omit [Ring.KrullDimLE 0 R] in
 variable (R) in
 theorem Ring.KrullDimLE.of_isMaximal_nilradical [(nilradical R).IsMaximal] :
     Ring.KrullDimLE 0 R :=
-  (((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 3 0 rfl rfl).mp ‹_›).1
+  (((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 4 1 rfl rfl).mp ‹_›).1
 
 omit [Ring.KrullDimLE 0 R] in
 lemma Ring.KrullDimLE.of_isLocalization (p : Ideal R) (hp : p ∈ minimalPrimes R)
@@ -145,6 +179,14 @@ instance PrimeSpectrum.unique_of_ringKrullDimLE_zero [IsLocalRing R] : Unique (P
   ⟨⟨IsLocalRing.closedPoint _⟩,
     fun _ ↦ PrimeSpectrum.ext (Ring.KrullDimLE.eq_maximalIdeal_of_isPrime _)⟩
 
+lemma PrimeSpectrum.subsingleton_iff_isField_of_isReduced
+    {R : Type*} [CommRing R] [IsReduced R] [Nontrivial R] :
+    Subsingleton (PrimeSpectrum R) ↔ IsField R := by
+  refine ⟨fun H ↦ ?_, fun H ↦ letI := H.toField; inferInstance⟩
+  have : Subsingleton (MaximalSpectrum R) := MaximalSpectrum.toPrimeSpectrum_injective.subsingleton
+  have : IsLocalRing R := .of_singleton_maximalSpectrum
+  exact Ring.KrullDimLE.isField_of_isReduced
+
 end IsLocalRing
 
 end CommSemiring
@@ -160,57 +202,3 @@ instance (priority := 100) [Ring.KrullDimLE 0 R] : IsJacobsonRing R :=
   ⟨fun I hI ↦ by rw [I.jacobson_eq_radical, hI.radical]⟩
 
 end CommRing
-
-section Deprecated
-
-namespace Localization.AtPrime
-
-variable {R : Type*} [CommSemiring R] {I : Ideal R} [hI : I.IsPrime] (hMin : I ∈ minimalPrimes R)
-include hMin
-
-@[deprecated Ring.KrullDimLE.existsUnique_isPrime (since := "2024-12-20")]
-lemma _root_.IsLocalization.AtPrime.prime_unique_of_minimal {S} [CommSemiring S] [Algebra R S]
-    [IsLocalization.AtPrime S I] {J K : Ideal S} [J.IsPrime] [K.IsPrime] : J = K :=
-  haveI := Ring.KrullDimLE.of_isLocalization I hMin S
-  haveI := IsLocalization.AtPrime.isLocalRing S I
-  (Ring.KrullDimLE.existsUnique_isPrime _).unique inferInstance inferInstance
-
-@[deprecated (since := "2024-12-20")]
-alias prime_unique_of_minimal := Ring.KrullDimLE.eq_maximalIdeal_of_isPrime
-
-@[deprecated (since := "2024-12-20")]
-alias nilpotent_iff_mem_maximal_of_minimal := Ring.KrullDimLE.isNilpotent_iff_mem_maximalIdeal
-
-@[deprecated (since := "2024-12-20")]
-alias nilpotent_iff_not_unit_of_minimal := Ring.KrullDimLE.isNilpotent_iff_mem_nonunits
-
-end Localization.AtPrime
-
-@[deprecated "Use `PrimeSpectrum.unique_of_ringKrullDimLE_zero` with
-  `Ring.KrullDimLE.of_isLocalization`" (since := "2024-12-20")]
-alias PrimeSpectrum.primeSpectrum_unique_of_localization_at_minimal :=
-  PrimeSpectrum.unique_of_ringKrullDimLE_zero
-
-section Nilrad_max_localization
-
-open Ideal
-
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.of_nilradical_isMaximal := IsLocalRing.of_isMaximal_nilradical
-
-variable {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] [Algebra R S] {M : Submonoid R}
-
-attribute [local instance]
-  IsLocalRing.of_isMaximal_nilradical Ring.KrullDimLE.of_isMaximal_nilradical in
-/--
-Let `S` be the localization of a commutative semiring `R` at a submonoid `M` that does not
-contain 0. If the nilradical of `R` is maximal then there is a `R`-algebra isomorphism between
-`R` and `S`. -/
-@[deprecated IsLocalization.atUnits (since := "2024-12-20")]
-noncomputable def localizationEquivSelfOfNilradicalIsMaximal [h : (nilradical R).IsMaximal]
-    (h' : (0 : R) ∉ M) [IsLocalization M S] : R ≃ₐ[R] S :=
-  IsLocalization.atUnits _ _ (by simpa)
-
-end Nilrad_max_localization
-
-end Deprecated
