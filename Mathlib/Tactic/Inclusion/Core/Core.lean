@@ -12,6 +12,12 @@ public meta import Lean.Meta.Native
 # Core implementation of the `inclusion` tactic
 
 This file defines the `TacticM` core of the `inclusion` tactic.
+
+## Implimentation Notes
+
+The approach to the `kernel == true` and `native == true` options mirrors the approach used by
+the `decide` tactic (and reuses the code where possible).
+
 -/
 
 @[expose] public meta section

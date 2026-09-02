@@ -13,6 +13,22 @@ public meta import Lean.Meta.DiscrTree
 
 This file provides an API for scoped environment extensions whose declarations are indexed by
 elaborated expression patterns in a `DiscrTree`.
+
+## Implimentation Notes
+
+The inclusion tactic uses two seperate types of `DiscrTree` indexed environment extensions. These
+have nearly identical APIs except the stored values are different types (one is `InclusionExt`s
+and the other is `HypothesisExt`s). This file essentially generalizes the `DiscrTree` valued
+environment extension API from the implimentation for the `norm_num` tactic so that it can take
+arbitrary values.
+
+## TODO
+
+Investigate the possibility of using this API for other tactics in Mathlib with `DiscrTree`
+indexed environment extensions such as `norm_num` and `positivity`. This should perhaps be
+part of a wider investigation into whether more API from the environment extensions of various
+Mathlib tactics could be unified.
+
 -/
 
 public meta section
