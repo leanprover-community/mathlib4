@@ -50,36 +50,27 @@ a fixed reference bump. -/
 def bumpR (R : ℝ) (x : E) : ℝ := (someContDiffBumpBase E).toFun 2 (R⁻¹ • x)
 
 @[simp]
-lemma bumpR_eq_one (hR : 0 < R) {x : E} (hx : ‖x‖ ≤ R) : bumpR R x = 1 := by
-  refine (someContDiffBumpBase E).eq_one 2 one_lt_two _ ?_
-  rw [norm_smul, Real.norm_eq_abs, abs_of_pos (by positivity), inv_mul_le_one₀ hR]
-  exact hx
+lemma bumpR_eq_one (hR : 0 < R) {x : E} (hx : ‖x‖ ≤ R) : bumpR R x = 1 :=
+  (someContDiffBumpBase E).eq_one 2 one_lt_two _
+    (by rwa [norm_smul, norm_eq_abs, abs_of_pos (by positivity), inv_mul_le_one₀ hR])
 
-lemma bumpR_nonneg (R : ℝ) (x : E) : 0 ≤ bumpR R x := ((someContDiffBumpBase E).mem_Icc 2 _).1
+lemma bumpR_nonneg (R) (x : E) : 0 ≤ bumpR R x := ((someContDiffBumpBase E).mem_Icc 2 _).1
 
-lemma bumpR_le_one (R : ℝ) (x : E) : bumpR R x ≤ 1 := ((someContDiffBumpBase E).mem_Icc 2 _).2
+lemma bumpR_le_one (R) (x : E) : bumpR R x ≤ 1 := ((someContDiffBumpBase E).mem_Icc 2 _).2
 
-private lemma contDiff_someBump : ContDiff ℝ ∞ ((someContDiffBumpBase E).toFun 2) := by
-  rw [contDiff_iff_contDiffAt]
-  intro x
-  have h : (someContDiffBumpBase E).toFun 2
-      = uncurry (someContDiffBumpBase E).toFun ∘ (fun y : E => ((2 : ℝ), y)) := rfl
-  rw [h]
-  exact ((someContDiffBumpBase E).smooth.contDiffAt
+private lemma contDiff_someBump : ContDiff ℝ ∞ ((someContDiffBumpBase E).toFun 2) :=
+  contDiff_iff_contDiffAt.mpr fun x ↦ ((someContDiffBumpBase E).smooth.contDiffAt
     (prod_mem_nhds (Ioi_mem_nhds one_lt_two) univ_mem)).comp x
     (contDiffAt_const.prodMk contDiffAt_id)
 
 @[fun_prop]
-lemma contDiff_bumpR (R : ℝ) : ContDiff ℝ ∞ (bumpR R (E := E)) :=
+lemma contDiff_bumpR (R) : ContDiff ℝ ∞ (bumpR R (E := E)) :=
   contDiff_someBump.comp (contDiff_const_smul R⁻¹)
 
 lemma support_bumpR (hR : 0 < R) : support (bumpR R (E := E)) ⊆ closedBall (0 : E) (2 * R) := by
-  intro x hx
-  rw [mem_closedBall_zero_iff]
-  change R⁻¹ • x ∈ support ((someContDiffBumpBase E).toFun 2) at hx
-  rw [(someContDiffBumpBase E).support 2 one_lt_two, mem_ball_zero_iff, norm_smul,
-    Real.norm_eq_abs, abs_of_pos (by positivity), inv_mul_lt_iff₀ hR] at hx
-  linarith
+  intro x (hx : R⁻¹ • x ∈ support ((someContDiffBumpBase E).toFun 2))
+  simp [(someContDiffBumpBase E).support 2 one_lt_two, norm_smul] at hx
+  grind [abs_of_pos, inv_mul_lt_iff₀, mem_closedBall_zero_iff]
 
 lemma hasCompactSupport_bumpR (hR : 0 < R) : HasCompactSupport (bumpR R (E := E)) :=
   IsCompact.of_isClosed_subset (isCompact_closedBall 0 (2 * R)) (isClosed_tsupport _)
@@ -98,16 +89,16 @@ lemma iteratedFDeriv_bumpR_eq_zero (hR : 0 < R) {n : ℕ} (hn : 1 ≤ n) {x : E}
   exact bumpR_eq_one hR hy.le
 
 /-- Each derivative of `bumpR R = bumpR 1 (R⁻¹ • ·)` is a rescaling of that of `bumpR 1`. -/
-lemma iteratedFDeriv_bumpR (R : ℝ) (n : ℕ) (x : E) :
+lemma iteratedFDeriv_bumpR (R) (n) (x : E) :
     iteratedFDeriv ℝ n (bumpR R) x = R⁻¹ ^ n • iteratedFDeriv ℝ n (bumpR 1) (R⁻¹ • x) := by
-  have hb1 : (bumpR 1 : E → ℝ) = (someContDiffBumpBase E).toFun 2 := by ext y; simp [bumpR]
-  rw [show (bumpR R : E → ℝ) = fun z ↦ (someContDiffBumpBase E).toFun 2 (R⁻¹ • z) from rfl,
-    iteratedFDeriv_comp_const_smul _ (contDiff_someBump.of_le (mod_cast le_top)), hb1]
+  rw [(by rfl : bumpR R = fun z ↦ (someContDiffBumpBase E).toFun 2 (R⁻¹ • z)),
+    iteratedFDeriv_comp_const_smul _ (contDiff_someBump.of_le (mod_cast le_top)),
+    (by ext; simp [bumpR] : bumpR 1 = (someContDiffBumpBase E).toFun 2)]
 
 /-- Each derivative of `bumpR R` gains a factor `R⁻ⁿ`. -/
-lemma norm_iteratedFDeriv_bumpR_le (hR : 0 < R) (n : ℕ) (x : E) :
+lemma norm_iteratedFDeriv_bumpR_le (hR : 0 < R) (n) (x : E) :
     ‖iteratedFDeriv ℝ n (bumpR R) x‖ ≤ R⁻¹ ^ n * ‖iteratedFDeriv ℝ n (bumpR 1) (R⁻¹ • x)‖ := by
-  rw [iteratedFDeriv_bumpR, norm_smul, norm_pow, Real.norm_eq_abs, abs_of_pos (by positivity)]
+  rw [iteratedFDeriv_bumpR, norm_smul, norm_pow, norm_eq_abs, abs_of_pos (by positivity)]
 
 /-- The smooth truncation of a Schwartz function `f` by the rescaled bump `bumpR R`. -/
 def truncate (R : ℝ) : 𝓢(E, F) := smulLeftCLM F (bumpR R) f
@@ -124,8 +115,7 @@ lemma hasCompactSupport_truncate (hR : 0 < R) : HasCompactSupport (truncate f R 
 private lemma tendsto_seminorm_truncate_sub (k n) :
     Tendsto (fun R ↦ (truncate f R - f).seminorm ℝ k n) atTop (𝓝 0) := by
   obtain ⟨A, hA0, hA⟩ :=
-    (hasCompactSupport_bumpR (E := E) (R := 1) one_pos).exists_bound_iteratedFDeriv
-      (contDiff_bumpR 1) n
+    (hasCompactSupport_bumpR (E := E) one_pos).exists_bound_iteratedFDeriv (contDiff_bumpR 1) n
   set C := (max 1 A) * ∑ i ∈ range (n + 1), (n.choose i) * SchwartzMap.seminorm ℝ (k + 1) (n - i) f
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' (h := (C * ·⁻¹)) tendsto_const_nhds
   · simpa using tendsto_inv_atTop_zero.const_mul C
