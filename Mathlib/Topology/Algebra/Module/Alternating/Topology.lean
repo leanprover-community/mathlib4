@@ -244,7 +244,6 @@ lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι 
     liftCLM f hf x v = f x v :=
   rfl
 
-variable (𝕜 ι E F) in
 /-- alternatization of a continuous multilinear map to a continuous alternating map, as a
 continuous linear map. -/
 noncomputable def _root_.ContinuousMultilinearMap.alternatizationCLM [Fintype ι] [DecidableEq ι] :
@@ -265,7 +264,7 @@ noncomputable def _root_.ContinuousMultilinearMap.alternatizationCLM [Fintype ι
 
 theorem _root_.ContinuousMultilinearMap.alternatizationCLM_apply [Fintype ι] [DecidableEq ι]
     (g : ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) (v : ι → E) :
-    ContinuousMultilinearMap.alternatizationCLM 𝕜 ι E F g v =
+    ContinuousMultilinearMap.alternatizationCLM g v =
       ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • g (v ∘ σ) :=
   ContinuousMultilinearMap.alternatization_apply_apply g v
 
