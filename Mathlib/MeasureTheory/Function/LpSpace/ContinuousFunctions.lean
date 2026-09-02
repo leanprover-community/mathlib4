@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
@@ -24,7 +23,7 @@ as `BoundedContinuousFunction.toLp`.
 open BoundedContinuousFunction MeasureTheory Filter
 open scoped ENNReal
 
-variable {α E : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+variable {α E : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
   [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup E] [SecondCountableTopologyEither α E]
 
 variable (E p μ) in

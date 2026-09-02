@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Set.Countable
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.Measurability
@@ -42,9 +41,9 @@ measurable space, σ-algebra, measurable function
 
 assert_not_exists Covariant MonoidWithZero
 
-open Set Encodable Function Equiv
+open Set Function
 
-variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
+variable {α β γ δ : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
 @[class] structure MeasurableSpace (α : Type*) where
@@ -68,7 +67,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-open MeasureTheory
+open scoped MeasureTheory
 
 section
 
@@ -195,7 +194,7 @@ protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t
     (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂) : MeasurableSet (t.ite s₁ s₂) :=
   (h₁.inter ht).union (h₂.diff ht)
 
-open Classical in
+open scoped Classical in
 theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s)
     (ht : ¬p → MeasurableSet t) : MeasurableSet (ite p s t) := by
   split_ifs with h
@@ -203,7 +202,7 @@ theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s
 
 @[simp, measurability]
 protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
-    (h₂ : MeasurableSet s₂) {i : Bool} : MeasurableSet (cond i s₁ s₂) := by
+    (h₂ : MeasurableSet s₂) {i : Bool} : MeasurableSet (if i = true then s₁ else s₂) := by
   cases i
   exacts [h₂, h₁]
 
@@ -290,7 +289,7 @@ namespace MeasurableSpace
 
 /-- Copy of a `MeasurableSpace` with a new `MeasurableSet` equal to the old one. Useful to fix
 definitional equalities. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def copy (m : MeasurableSpace α) (p : Set α → Prop) (h : ∀ s, p s ↔ MeasurableSet[m] s) :
     MeasurableSpace α where
   MeasurableSet' := p
@@ -327,7 +326,7 @@ inductive GenerateMeasurable (s : Set (Set α)) : Set α → Prop
       GenerateMeasurable s (⋃ i, f i)
 
 /-- Construct the smallest measure space containing a collection of basic sets -/
-@[implicit_reducible]
+@[instance_reducible]
 def generateFrom (s : Set (Set α)) : MeasurableSpace α where
   MeasurableSet' := GenerateMeasurable s
   measurableSet_empty := .empty
@@ -374,7 +373,7 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
 the same sets as `g`, then `g` was already a `σ`-algebra. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def mkOfClosure (g : Set (Set α)) (hg : { t | MeasurableSet[generateFrom g] t } = g) :
     MeasurableSpace α :=
   (generateFrom g).copy (· ∈ g) <| Set.ext_iff.1 hg.symm
@@ -467,7 +466,7 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
     MeasurableSet[sSup ms] s ↔
       GenerateMeasurable { s : Set α | ∃ m ∈ ms, MeasurableSet[m] s } s := by
   change GenerateMeasurable (⋃₀ _) _ ↔ _
-  simp [← setOf_exists]
+  simp [← ofPred_exists]
 
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
@@ -527,8 +526,6 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
   fun _ h => hf (hg h)
 
 attribute [fun_prop] Measurable.fun_comp
-
-@[deprecated (since := "2026-01-23")] alias Measurable.comp' := Measurable.fun_comp
 
 @[simp, fun_prop]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :

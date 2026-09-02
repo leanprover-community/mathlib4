@@ -11,7 +11,7 @@ public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 
 /-!
 # Galois theory for cyclotomic fields
@@ -116,13 +116,12 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
   let τ := IsFractionRing.stabilizerHom Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
      (ℤ ⧸ span {(p : ℤ)}) (𝓞 K ⧸ P) ⟨σ, hσ⟩
   have : CharP (ℤ ⧸ span {(p : ℤ)}) p := ringChar.of_eq <| Int.ringChar_idealQuot p
-  have : Finite (𝓞 K ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient (NeZero.ne P)
   obtain ⟨i, hi⟩ := FiniteField.exists_forall_apply_eq_pow (ℤ ⧸ span {(p : ℤ)}) p (𝓞 K ⧸ P) τ
   refine ⟨i, ?_⟩
   have h₀ : IsPrimitiveRoot (Ideal.Quotient.mk P hζ.toInteger) n := by
     refine hζ.toInteger_isPrimitiveRoot.idealQuotient_mk
       (by simpa using IsMaximal.ne_top inferInstance) ?_
-    rw [Ideal.absNorm_eq_pow_inertiaDeg' _ hp.out]
+    rw [← pow_inertiaDeg p]
     exact Nat.Coprime.pow_left _ hn
   have h₁ := IsFractionRing.stabilizerHom_apply_apply_mk Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
       (ℤ ⧸ span {(p : ℤ)}) (𝓞 K ⧸ P) ⟨σ, hσ⟩ hζ.toInteger

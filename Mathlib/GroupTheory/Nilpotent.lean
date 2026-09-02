@@ -63,6 +63,8 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * The `Group.nilpotencyClass` of `G ⧸ center G` is given explicitly, and an induction principle
   is derived from that.
 * `IsNilpotent.to_isSolvable`: If `G` is nilpotent, it is solvable.
+*  `IsNilpotent.commute_of_orderOf_coprime` : In a nilpotent group, two elements commute when their
+  orders are coprime.
 
 
 ## Warning
@@ -192,7 +194,7 @@ theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
-    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq, mem_center_iff]
+    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_ofPred_eq, mem_center_iff]
   exact forall_congr' fun y => by
     rw [commutatorElement_def, mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
 
@@ -201,7 +203,7 @@ theorem _root_.AddSubgroup.upperCentralSeries_one (G : Type*) [AddGroup G] :
   ext
   simp only [AddSubgroup.upperCentralSeries, AddSubgroup.upperCentralSeriesAux,
     AddSubgroup.upperCentralSeriesStep, AddSubgroup.mem_bot, AddSubgroup.mem_mk,
-    AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_setOf_eq, AddSubgroup.mem_center_iff]
+    AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_ofPred_eq, AddSubgroup.mem_center_iff]
   exact forall_congr' fun y => by
     rw [addCommutatorElement_def, add_neg_eq_zero, add_neg_eq_iff_eq_add, eq_comm]
 
@@ -217,6 +219,14 @@ the `x` such that `⁅x,G⁆ ⊆ H n`. -/]
 theorem mem_upperCentralSeries_succ_iff {n : ℕ} {x : G} :
     x ∈ upperCentralSeries G (n + 1) ↔ ∀ y : G, ⁅x, y⁆ ∈ upperCentralSeries G n :=
   Iff.rfl
+
+variable (G) in
+@[to_additive]
+theorem commutator_upperCentralSeries_top_le (n : ℕ) :
+    ⁅upperCentralSeries G (n + 1), ⊤⁆ ≤ upperCentralSeries G n := by
+  apply closure_le _ |>.mpr
+  rintro _ ⟨h, hh, g, _, rfl⟩
+  exact mem_upperCentralSeries_succ_iff.mp hh g
 
 @[to_additive (attr := simp)]
 lemma comap_upperCentralSeries {H : Type*} [Group H] (e : H ≃* G) :
@@ -461,7 +471,8 @@ theorem descending_central_series_ge_lower (H : ℕ → Subgroup G) (hH : IsDesc
       hH.2 x n (descending_central_series_ge_lower H hH n hx) q
 
 /-- The lower central series commutes with images under a group homomorphism. -/
-@[to_additive]
+@[to_additive
+/-- The lower central series commutes with images under an additive group homomorphism. -/]
 theorem map_lowerCentralSeries {K : Type*} [Group K] (f : G →* K) (n : ℕ) :
     (S.lowerCentralSeries n).map f = (S.map f).lowerCentralSeries n := by
   induction n with
@@ -471,7 +482,10 @@ theorem map_lowerCentralSeries {K : Type*} [Group K] (f : G →* K) (n : ℕ) :
 
 /-- The lower central series of `H : Subgroup G` computed in the ambient group `G` coincides with
 the lower central series of `H` viewed as its own group, mapped back to `G`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp)
+/-- The lower central series of `H : AddSubgroup G` computed in the ambient additive group `G`
+coincides with the lower central series of `H` viewed as its own additive group, mapped back
+to `G`. -/]
 theorem top_subtype_lowerCentralSeries (H : Subgroup G) (n : ℕ) :
     (lowerCentralSeries ⊤ n).map H.subtype = H.lowerCentralSeries n := by
   rw [map_lowerCentralSeries, ← MonoidHom.range_eq_map, subtype_range]
@@ -519,7 +533,7 @@ noncomputable def Group.nilpotencyClass : ℕ :=
 @[to_additive]
 theorem Group.nilpotencyClass_of_not_nilpotent (hG : ¬ IsNilpotent G) :
     Group.nilpotencyClass G = 0 :=
-  dif_neg hG
+  dite_eq_right hG
 
 variable [hG : IsNilpotent G]
 
@@ -527,7 +541,7 @@ open scoped Classical in
 @[to_additive]
 theorem Group.nilpotencyClass_def :
     Group.nilpotencyClass G = Nat.find (IsNilpotent.nilpotent G) :=
-  dif_pos hG
+  dite_eq_left hG
 
 namespace Subgroup
 
@@ -904,7 +918,7 @@ theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Pr
   obtain ⟨n, h⟩ : ∃ n, Group.nilpotencyClass G = n := ⟨_, rfl⟩
   induction n generalizing G with
   | zero =>
-    haveI := nilpotencyClass_zero_iff_subsingleton.mp h
+    have := nilpotencyClass_zero_iff_subsingleton.mp h
     exact hbase _
   | succ n ih =>
     have hn : Group.nilpotencyClass (G ⧸ center G) = n := by
@@ -954,7 +968,7 @@ theorem CommGroup.nilpotencyClass_le_one {G : Type*} [CommGroup G] :
 
 /-- Groups with nilpotency class at most one are abelian. -/
 @[to_additive /-- Additive groups with nilpotency class at most one are abelian. -/,
-  implicit_reducible]
+  instance_reducible]
 def commGroupOfNilpotencyClass [IsNilpotent G] (h : Group.nilpotencyClass G ≤ 1) : CommGroup G :=
   Group.commGroupOfCenterEqTop <| by
     rw [← upperCentralSeries_one]
@@ -1026,10 +1040,25 @@ lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass {a : ℕ}
 
 end Subgroup
 
+/-- Any nontrivial normal subgroup of a nilpotent group intersects the center nontrivially. -/
+@[to_additive /-- Any nontrivial normal subgroup of a nilpotent group intersects the center
+nontrivially. -/]
+theorem Group.IsNilpotent.inf_center_ne_bot_of_normal [Group.IsNilpotent G]
+    {H : Subgroup G} [H.Normal] (hH : H ≠ ⊥) : H ⊓ center G ≠ ⊥ := by
+  classical
+  have hk : ∃ n, H ⊓ lowerCentralSeries ⊤ n ≠ ⊥ ∧ H ⊓ lowerCentralSeries ⊤ (n + 1) = ⊥ := by
+    have : H ⊓ lowerCentralSeries ⊤ 0 ≠ ⊥ := by simpa
+    have key : ∃ k, H ⊓ lowerCentralSeries ⊤ k = ⊥ := ⟨nilpotencyClass G, by simp⟩
+    exact ⟨Nat.find key - 1, by grind [Nat.find_min key]⟩
+  obtain ⟨k, k_min, k_spec⟩ := hk
+  refine ne_bot_of_le_ne_bot k_min (le_inf inf_le_left ?_)
+  rw [← commutator_top_right_eq_bot_iff_le_center, eq_bot_iff, ← k_spec, lowerCentralSeries_succ]
+  exact le_inf ((commutator_le_left _ _).trans inf_le_left) (commutator_mono inf_le_right le_rfl)
+
 variable (G) in
 @[to_additive]
-theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ :=
-  .symm <| by simpa using mt (upperCentralSeries.eq_top zero_ne_one) <| by simp
+theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ := by
+  simpa using inf_center_ne_bot_of_normal top_ne_bot
 
 section Prod
 
@@ -1044,7 +1073,7 @@ theorem Subgroup.lowerCentralSeries_prod (S₁ : Subgroup G₁) (S₂ : Subgroup
   | succ n ih => simp_rw [lowerCentralSeries_succ, ih, commutator_prod_prod]
 
 /-- The ⊤-specialization of `lowerCentralSeries_prod`. -/
-@[to_additive]
+@[to_additive /-- The ⊤-specialization of `lowerCentralSeries_sum`. -/]
 theorem Subgroup.top_lowerCentralSeries_prod (n : ℕ) :
     (⊤ : Subgroup (G₁ × G₂)).lowerCentralSeries n =
       ((⊤ : Subgroup G₁).lowerCentralSeries n).prod ((⊤ : Subgroup G₂).lowerCentralSeries n) := by
@@ -1087,7 +1116,7 @@ theorem Subgroup.lowerCentralSeries_pi_le (Ss : ∀ i, Subgroup (Gs i)) (n : ℕ
     grw [commutator_mono ih le_rfl, commutator_pi_pi_le]
 
 /-- The ⊤-specialization of `lowerCentralSeries_pi_le`. -/
-@[to_additive]
+@[to_additive /-- The ⊤-specialization of `lowerCentralSeries_pi_le`. -/]
 theorem Subgroup.top_lowerCentralSeries_pi_le (n : ℕ) :
     (⊤ : Subgroup (∀ i, Gs i)).lowerCentralSeries n ≤ Subgroup.pi Set.univ
       fun i => (⊤ : Subgroup (Gs i)).lowerCentralSeries n := by
@@ -1120,7 +1149,7 @@ theorem Subgroup.lowerCentralSeries_pi_of_finite [Finite η] (Ss : ∀ i, Subgro
   | succ n ih => simp_rw [lowerCentralSeries_succ, ih, commutator_pi_pi_of_finite]
 
 /-- The ⊤-specialization of `lowerCentralSeries_pi_of_finite`. -/
-@[to_additive]
+@[to_additive /-- The ⊤-specialization of `lowerCentralSeries_pi_of_finite`. -/]
 theorem Subgroup.top_lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
     (⊤ : Subgroup (∀ i, Gs i)).lowerCentralSeries n = Subgroup.pi Set.univ
       fun i => (⊤ : Subgroup (Gs i)).lowerCentralSeries n := by
@@ -1150,7 +1179,7 @@ theorem Group.nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
 end FinitePi
 
 /-- A nilpotent subgroup is solvable -/
-instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSolvable G := by
+instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group.IsSolvable G := by
   obtain ⟨n, hn⟩ := nilpotent_iff_lowerCentralSeries.1 h
   use n
   rw [eq_bot_iff, ← hn]
@@ -1186,6 +1215,23 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
     apply map_injective_of_ker_le (mk' (center G)) hkh le_top
     exact (ih H' hH').trans (symm (map_top_of_surjective _ hsur))
 
+/-- In a nilpotent group, two elements commute when their orders are coprime. -/
+@[to_additive /-- In a nilpotent additive group, two elements commute when their orders are
+coprime. -/]
+theorem IsNilpotent.commute_of_orderOf_coprime [IsNilpotent G] {x y : G}
+    (h : (orderOf x).Coprime (orderOf y)) : Commute x y := by
+  revert x y
+  apply @nilpotent_center_quotient_ind _ G _ _ (by simp +contextual)
+  intro G _ _ ih x y h
+  have hcomm : ∀ g : G, Commute g ⁅x, y⁆ := by
+    simp_rw [commute_iff_eq, ← mem_center_iff, ← eq_one_iff, ← mk'_apply,
+      map_commutatorElement, commutatorElement_eq_one_iff_commute]
+    apply ih <| h.of_dvd ?_ ?_ <;> apply orderOf_map_dvd
+  rw [← commutatorElement_eq_one_iff_commute, ← orderOf_eq_one_iff, ← Nat.dvd_one, ← h.gcd_eq_one,
+    Nat.dvd_gcd_iff, orderOf_dvd_iff_pow_eq_one, orderOf_dvd_iff_pow_eq_one,
+    (hcomm x).commutatorElement_pow_left, (hcomm y).commutatorElement_pow_right]
+  simp
+
 end Group
 
 end WithGroup
@@ -1199,23 +1245,15 @@ variable {G : Type*} [hG : Group G]
 /-- A p-group is nilpotent -/
 theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h : IsPGroup p G) :
     IsNilpotent G := by
-  cases nonempty_fintype G
-  classical
-    revert hG
-    apply @Fintype.induction_subsingleton_or_nontrivial _ G _
-    · intro _ _ _ _
-      infer_instance
-    · intro G _ _ ih _ h
-      have hcq : Fintype.card (G ⧸ center G) < Fintype.card G := by
-        simp only [← Nat.card_eq_fintype_card]
-        rw [card_eq_card_quotient_mul_card_subgroup (center G)]
-        simp only [Nat.card_eq_fintype_card]
-        apply lt_mul_of_one_lt_right
-        · exact Fintype.card_pos_iff.mpr One.instNonempty
-        · simp only [← Nat.card_eq_fintype_card]
-          exact (Subgroup.one_lt_card_iff_ne_bot _).mpr (ne_of_gt h.bot_lt_center)
-      have hnq : IsNilpotent (G ⧸ center G) := ih _ hcq (h.to_quotient (center G))
-      exact of_quotient_center_nilpotent hnq
+  induction G using Finite.induction_subsingleton_or_nontrivial generalizing hG with
+  | hbase => infer_instance
+  | hstep G ih =>
+    have hcq : Nat.card (G ⧸ center G) < Nat.card G := by
+      rw [card_eq_card_quotient_mul_card_subgroup (center G)]
+      apply lt_mul_of_one_lt_right Nat.card_pos
+      exact (Subgroup.one_lt_card_iff_ne_bot _).mpr (ne_of_gt h.bot_lt_center)
+    have hnq : IsNilpotent (G ⧸ center G) := ih _ hcq (h.to_quotient (center G))
+    exact of_quotient_center_nilpotent hnq
 
 variable [Finite G]
 
@@ -1223,13 +1261,12 @@ variable [Finite G]
 theorem Group.isNilpotent_of_product_of_sylow_group
     (e : (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G) :
     IsNilpotent G := by
-  classical
-    let ps := (Nat.card G).primeFactors
-    have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
-      intro p P
-      haveI : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
-      exact P.isPGroup'.isNilpotent
-    exact nilpotent_of_mulEquiv e
+  let ps := (Nat.card G).primeFactors
+  have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
+    intro p P
+    have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
+    exact P.isPGroup'.isNilpotent
+  exact nilpotent_of_mulEquiv e
 
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
 normal and iff all Sylow groups are normal and iff the group is the direct product of its Sylow
@@ -1252,7 +1289,46 @@ theorem Group.isNilpotent_of_finite_tfae :
   tfae_finish
 
 instance [IsNilpotent G] {p : ℕ} [Fact p.Prime] {P : Sylow p G} : P.Normal :=
-  isNilpotent_of_finite_tfae.out 0 3 rfl rfl |>.mp ‹_› p ‹_› P
+  isNilpotent_of_finite_tfae.out 1 4 rfl rfl |>.mp ‹_› p ‹_› P
+
+/-- An extension of `Group.IsNilpotent.center_ne_bot` for finite nilpotent groups: every prime
+diving `Nat.card G` divides the cardinality of the center. -/
+lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fact p.Prime]
+    (hcard : p ∣ Nat.card G) : p ∣ Nat.card (center G) := by
+  obtain P : Sylow p G := Classical.arbitrary ..
+  refine dvd_trans ?_ <| (↑P ⊓ center G).card_dvd_of_le inf_le_right
+  have hnt := mt (eq_bot_iff_card _).mpr (inf_center_ne_bot_of_normal (P.ne_bot_of_dvd_card hcard))
+  exact P.isPGroup'.to_inf_left.card_eq_or_dvd.resolve_left hnt
+
+/-- A finite nilpotent group has normal subgroups of every possible index. -/
+theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k : ℕ}
+    (hdvd : k ∣ Nat.card G) : ∃ H : Subgroup G, H.index = k ∧ H.Normal := by
+  induction hm : Nat.card G using Nat.strong_induction_on generalizing k G with | h m ih =>
+  have ⟨m', hmul⟩ := hdvd
+  by_cases hm1 : m' = 1
+  · refine ⟨⊥, by simp [hmul, hm1], normal_bot⟩
+  · obtain ⟨p, hp, m'', rfl⟩ : ∃ p, p.Prime ∧ p ∣ m' := m'.ne_one_iff_exists_prime_dvd.mp hm1
+    obtain ⟨N, hNcard, hN⟩ : ∃ N : Subgroup G, Nat.card N = p ∧ N.Normal := by
+      suffices ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G by
+        grind [normal_of_le_center]
+      refine Sylow.exists_subgroup_card_pow_prime_le_le hp (by simp) ?_ bot_le
+      exact prime_dvd_card_center (hp := ⟨by simpa⟩) ⟨k * m'', by grind⟩
+    obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), K.index = k ∧ K.Normal := by
+      refine ih (Nat.card (G ⧸ N)) ?_ ?_ rfl
+      · rw [← hm, N.card_eq_card_quotient_mul_card_subgroup, hNcard]
+        exact lt_mul_right Nat.card_pos hp.one_lt
+      · refine ⟨m'', Nat.eq_of_mul_eq_mul_right hp.pos ?_⟩
+        grind [N.card_eq_card_quotient_mul_card_subgroup]
+    use K.comap (QuotientGroup.mk' N)
+    simp [index_comap, normal_comap, hKcard]
+
+/-- A finite nilpotent group has normal subgroups of every possible cardinality. -/
+theorem Group.IsNilpotent.exists_normal_card_eq_of_dvd_card [IsNilpotent G] {n : ℕ}
+    (hdvd : n ∣ Nat.card G) : ∃ H : Subgroup G, Nat.card H = n ∧ H.Normal := by
+  obtain ⟨k, hk⟩ := hdvd
+  obtain ⟨H, hind, hH⟩ := exists_normal_index_eq_of_dvd_card (Dvd.intro_left n hk.symm)
+  refine ⟨H, ?_, hH⟩
+  rwa [← H.card_mul_index, ← hind, Nat.mul_left_inj FiniteIndex.index_ne_zero] at hk
 
 end WithFiniteGroup
 

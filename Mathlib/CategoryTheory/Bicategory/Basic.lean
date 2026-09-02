@@ -58,7 +58,6 @@ These associators and unitors satisfy the pentagon and triangle equations.
 
 See https://ncatlab.org/nlab/show/bicategory.
 -/
-@[nolint checkUnivs]
 class Bicategory (B : Type u) extends CategoryStruct.{v} B where
   /-- The category structure on the collection of 1-morphisms -/
   homCategory : ∀ a b : B, Category.{w} (a ⟶ b) := by infer_instance

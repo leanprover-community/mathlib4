@@ -57,6 +57,7 @@ abbrev toRingedSpace : RingedSpace :=
   X.toSheafedSpace
 
 /-- The underlying topological space of a locally ringed space. -/
+@[implicit_reducible]
 def toTopCat : TopCat :=
   X.1.carrier
 
@@ -84,7 +85,7 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
   X.toSheafedSpace ⟶ Y.toSheafedSpace := InducedCategory.homMk f.1
 
-@[simp, nolint simpVarHead]
+@[simp]
 lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
     (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) :
   Hom.toShHom ⟨f, hf⟩ = InducedCategory.homMk f := rfl
@@ -99,7 +100,7 @@ instance : Quiver LocallyRingedSpace :=
 /-- A morphism of locally ringed spaces `f : X ⟶ Y` induces
 a local ring homomorphism from `Y.stalk (f x)` to `X.stalk x` for any `x : X`.
 -/
-noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x : X) :
+noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
   f.toShHom.hom.stalkMap x
 
@@ -211,7 +212,6 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to an isomorphism `X ⟶ Y` as locally ringed spaces.
 
@@ -314,7 +314,7 @@ def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.I
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
-  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_setOf_eq,
+  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_ofPred_eq,
     Opens.coe_bot, Set.mem_empty_iff_false,
     iff_false, not_exists]
   intro hx
@@ -444,6 +444,7 @@ lemma stalkMap_germ_apply (U : Opens Y) (x : X) (hx : f.base x ∈ U) (y) :
       X.presheaf.germ ((Opens.map f.base).obj U) x hx (f.c.app (op U) y) :=
   PresheafedSpace.stalkMap_germ_apply f.toHom U x hx y
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Opens Y}
     (s : Y.presheaf.obj (op U)) :
     (Opens.map f.base).obj (Y.toRingedSpace.basicOpen s) =
