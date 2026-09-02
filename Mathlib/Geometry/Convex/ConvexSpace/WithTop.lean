@@ -45,7 +45,7 @@ lemma map_untop_some (w : StdSimplex R (WithTop X)) (hw : w.weights ⊤ = 0) :
     rfl
 
 @[to_dual (attr := simp) (dont_translate := R)]
-lemma untop_map_coe (w : StdSimplex R X) (hw) : (w.map WithTop.some).untop hw = w := by
+lemma untop_map_some (w : StdSimplex R X) (hw) : (w.map WithTop.some).untop hw = w := by
   ext x
   change (w.map WithTop.some).weights (x : WithTop X) = w.weights x
   rw [weights_map, Finsupp.mapDomain_apply_of_injective WithTop.coe_injective]
@@ -116,7 +116,7 @@ lemma sConvexComb_withTop_eq_top : sConvexComb w = ⊤ ↔ w.weights ⊤ ≠ 0 :
 @[to_dual (attr := simp) (dont_translate := R)]
 lemma sConvexComb_map_withTopSome (v : StdSimplex R X) :
     sConvexComb (v.map WithTop.some) = ↑v.sConvexComb := by
-  rw [sConvexComb_withTop_eq_some (mem_range_map_coe_withTop.1 ⟨v, rfl⟩), untop_map_coe]
+  rw [sConvexComb_withTop_eq_some (mem_range_map_coe_withTop.1 ⟨v, rfl⟩), untop_map_some]
 
 @[to_dual (attr := fun_prop) (dont_translate := R)]
 lemma isAffineMap_withTopSome : IsAffineMap R (.some : X → WithTop X) :=
