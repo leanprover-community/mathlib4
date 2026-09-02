@@ -6613,7 +6613,7 @@ public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 public import Mathlib.RingTheory.Adjoin.PowerBasis
 public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.Adjoin.Tower
-public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.AdjoinRoot.Basic
 public import Mathlib.RingTheory.AlgebraTower
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.Algebraic.Cardinality
@@ -6951,8 +6951,8 @@ public import Mathlib.RingTheory.LocalRing.Subring
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.AsSubring
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.Localization.AtPrime.Extension
-public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+public import Mathlib.RingTheory.Localization.AtPrime.ExtensionAdjoinRoot
+public import Mathlib.RingTheory.Localization.Away.
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.Away.Lemmas
 public import Mathlib.RingTheory.Localization.BaseChange
