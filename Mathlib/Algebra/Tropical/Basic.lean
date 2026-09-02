@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Algebra.NeZero
 
@@ -176,7 +176,7 @@ instance [DecidableEq R] : DecidableEq (MinTropical R) := fun _ _ =>
 section Order
 
 @[to_dual]
-instance instLETropical [LE R] : LE (MinTropical R) where le x y := untrop x ≤ untrop y
+instance [LE R] : LE (MinTropical R) where le x y := untrop x ≤ untrop y
 
 @[to_dual (attr := simp)]
 theorem untrop_le_iff [LE R] {x y : MinTropical R} : untrop x ≤ untrop y ↔ x ≤ y :=
@@ -267,7 +267,7 @@ instance : Add (MinTropical R) :=
   ⟨fun x y => trop (min (untrop x) (untrop y))⟩
 
 @[to_dual]
-instance instAddCommSemigroupTropical : AddCommSemigroup (MinTropical R) where
+instance : AddCommSemigroup (MinTropical R) where
   add_assoc _ _ _ := untrop_injective (min_assoc _ _ _)
   add_comm _ _ := untrop_injective (min_comm _ _)
 
@@ -397,6 +397,13 @@ theorem trop_add [Add R] (x y : R) : trop (x + y) = trop x * trop y :=
 @[to_dual]
 theorem trop_mul_def [Add R] (x y : MinTropical R) : x * y = trop (untrop x + untrop y) :=
   rfl
+
+@[to_dual]
+def equivMaxTropical [LinearOrder R] [Add R] : MinTropical R ≃+* MaxTropical Rᵒᵈ where
+  toFun a := .trop (OrderDual.toDual a.untrop)
+  invFun a := .trop (OrderDual.ofDual a.untrop)
+  map_add' a b := by simp
+  map_mul' a b := by simp
 
 @[to_dual]
 instance [Zero R] : One (MinTropical R) :=
@@ -555,7 +562,7 @@ instance _root_.MaxTropical.mulRightStrictMono [Preorder R] [Add R] [AddRightStr
   ⟨fun _ y z h => add_lt_add_left (show MaxTropical.untrop y < MaxTropical.untrop z from h) _⟩
 
 @[to_dual]
-instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMono R] :
+instance [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMono R] :
     Distrib (MinTropical R) where
   left_distrib _ _ _ := untrop_injective (min_add_add_left _ _ _).symm
   right_distrib _ _ _ := untrop_injective (min_add_add_right _ _ _).symm
