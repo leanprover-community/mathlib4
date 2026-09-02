@@ -13,16 +13,15 @@ public meta import Lean.Meta.Tactic.Generalize
 /-!
 # The `basify` tactic
 
-Mathlib has many types that are built from a well-behaved type by a construction that makes the
-resulting arithmetic partial or truncated:
+Mathlib has many types built from a well-behaved type by a construction that makes the resulting
+arithmetic partial or truncated:
 
 * *extensions* by a point at infinity, such as `ℕ∞ = WithTop ℕ` and `ℝ≥0∞ = WithTop ℝ≥0`;
 * *subtypes* cut out by an inequality, such as `ℝ≥0 = {r : ℝ // 0 ≤ r}`.
 
-Goals about such types are painful, because the decision procedures one would like to use (`lia`,
-`linarith`, `nlinarith`, `positivity`, `norm_num`) only understand the underlying type.
-`basify` peels these constructions off, turning the goal into an equivalent goal about the
-underlying type, which can then be handed to those tactics:
+Goals about them are painful, because the decision procedures one would like to use (`lia`,
+`linarith`, `nlinarith`, `positivity`, `norm_num`) only understand the underlying type. `basify`
+peels the construction off, turning the goal into an equivalent one about that type:
 
 ```
 example (a b : ℝ≥0∞) (h : a ≤ b) : a - b = 0 := by basify <;> simp_all
@@ -30,87 +29,80 @@ example (a b : ℝ≥0∞) (h : a ≤ b) : a - b = 0 := by basify <;> simp_all
 
 ## Implementation
 
-The two constructions are not handled by two mechanisms. Every registered type is taken apart the
-same way, by case splitting on the eliminator registered for it with `@[basify_elim]`, and the only
-thing that distinguishes them is how many cases that eliminator has: `ENNReal.recTopCoe` has two,
-`⊤` and `↑x` with `x : ℝ≥0`, while a subtype's has one, replacing `t : ℝ≥0` by `x.toNNReal` and
-handing `0 ≤ x` over as a binder. A subtype is just a degenerate case split.
+Both constructions go through one mechanism: case splitting on the eliminator registered with
+`@[basify_elim]`. All that distinguishes them is how many cases it has. `ENNReal.recTopCoe` has
+two, `⊤` and `↑x` with `x : ℝ≥0`; a subtype's has one, replacing `t : ℝ≥0` by `x.toNNReal` and
+handing `0 ≤ x` over as a binder. A subtype is a degenerate case split.
 
-The tactic runs three phases.
-
-1. The *atoms* of a registered type are collected once, and each is turned into a variable, since
-   case splitting needs one to work on: the atoms that are not already variables are generalized,
-   keeping their defining equation so that nothing is lost.
-2. Those variables are then destructed one at a time, running the `basify_simp` simp set after each
-   so that the degenerate branches (e.g. `⊤ + a = ⊤`) die *before* the number of branches explodes.
-   A split introduces fresh variables -- `↑x` gives an `x : ℝ≥0`, which is itself an atom -- and
-   those are appended to the list of variables still to do. That is how the descent
-   `ℝ≥0∞ → ℝ≥0 → ℝ` happens, and why the goal never has to be searched for atoms a second time.
-3. A final `simp_all only [basify_simp]` finishes the descent, using the hypotheses to discharge
-   the side conditions of the conditional cast lemmas. For `ℝ≥0∞` the descent means pulling
-   `ℝ≥0 → ℝ≥0∞` coercions outwards until they can be cancelled, then pushing `ℝ≥0 → ℝ` coercions
-   inwards until only atoms are left under them.
+1. The *atoms* of a registered type are collected once and each turned into a variable, since a
+   case split needs one to work on: those that are not variables already are generalized, keeping
+   the defining equation so that nothing is lost.
+2. The variables are destructed one at a time, running `basify_simp` after each so that the
+   degenerate branches (`⊤ + a = ⊤` and friends) die *before* the number of branches explodes. A
+   split makes fresh variables -- `↑x` gives an `x : ℝ≥0`, itself an atom -- which join the list
+   still to do. That is the descent `ℝ≥0∞ → ℝ≥0 → ℝ`, and why the goal is never searched twice.
+3. A final `simp_all only [basify_simp]` finishes it, using the hypotheses to discharge the side
+   conditions of the conditional cast lemmas. For `ℝ≥0∞` the descent pulls `ℝ≥0 → ℝ≥0∞` coercions
+   outwards until they cancel, then pushes `ℝ≥0 → ℝ` coercions inwards until only atoms remain
+   under them.
 
 An *atom* is a subterm of a registered type whose head is not an operation registered with
-`@[basify_op]`: `a + b` is not an atom because addition is registered, and the tactic recurses
-into `a` and `b`, whereas `f x` for an unregistered `f` is one and gets generalized and split as a
-whole. This is why the operations have to be declared rather than inferred: knowing that `↑a + ↑b`
-is worth descending into is exactly the content of `ENNReal.coe_add`.
+`@[basify_op]`: `a + b` is not one, so the tactic recurses into `a` and `b`, whereas `f x` for an
+unregistered `f` is, and gets generalized and split whole. Operations have to be declared rather
+than inferred: that `↑a + ↑b` is worth descending into is exactly the content of `ENNReal.coe_add`.
 
-One constraint on eliminators, and the reason subtypes can be handled this way at all: an
-eliminator must not produce `Subtype.mk` terms. `ℝ≥0` and `ℕ+` are semireducible definitions, so a
-goal mentioning `⟨x, hx⟩ : ℝ≥0` is not type-correct at the transparency `simp` checks at, and every
-subsequent `simp` fails outright. Present the value through a properly typed constructor instead;
-the two subtype layers use `Real.toNNReal` and `Nat.toPNat'`.
+Names come from the eliminator. What a case introduces is named after the atom being split, with
+the eliminator's own binder name appended, so splitting `a : ℝ≥0∞` yields `a : ℝ` and
+`a_nonneg : 0 ≤ a`. A generalized atom has no name to inherit, so it gets `x` and its equation
+`x_eq`.
 
 ## Limitations
 
-* Each case split doubles the number of branches, so the `basify_simp` set has to be good
-  enough to kill the degenerate ones; a goal with many independent atoms of a registered type will
-  otherwise be slow.
-* Truncated subtraction comes out as `max (a - b) 0`, which `linarith` does not understand. Such
+* Conditional cast lemmas fire only when the context implies their hypothesis: `ℝ≥0∞` division and
+  inverse need a `≠ 0` in hand, and without one the descent stops part-way, on a goal belonging to
+  neither type. Supplying the fact as a `have` beforehand is the fix.
+* Truncated subtraction comes out as `max (a - b) 0`, which `linarith` does not understand; such
   goals usually need a case split on `a ≤ b` afterwards.
-* Generalizing an atom keeps its defining equation, so nothing is lost, but a fact that holds for
-  the atom by definition rather than by hypothesis (for instance `ENNReal.ofReal x ≠ ⊤`) is only
-  exploited if the `basify_simp` set can derive it from that equation.
+* A subterm mentioning a bound variable is never an atom, so `h : ∀ i, f i ≤ 1` is left
+  untranslated; instantiating it first is the way round.
+* Generalizing keeps the defining equation, so nothing is lost, but a fact true of an atom by
+  definition rather than by hypothesis (`ENNReal.ofReal x ≠ ⊤`) is only used if `basify_simp` can
+  derive it from that equation.
 
 ## Relation to other tactics
 
-`basify` belongs to the `zify`/`qify`/`rify` family in what it achieves -- it shifts propositions to
-a type where the arithmetic is total -- but not in how: those tactics deliberately leave every
-variable's type alone, whereas `basify` destructs the variables, so an `ℝ≥0` hypothesis really does
-become an `ℝ` one paired with `0 ≤ ·`. In that respect it is closer to `lift`. The name says "the
-base type" rather than a fixed one because the target depends on what is registered: `ℕ` for `ℕ∞`,
-`ℝ` for `ℝ≥0∞`.
+`basify` achieves what `zify`/`qify`/`rify` achieve -- propositions shifted to a type where the
+arithmetic is total -- but not in the same way: those leave every variable's type alone, whereas
+`basify` destructs the variables, so an `ℝ≥0` hypothesis really does become an `ℝ` one paired with
+`0 ≤ ·`. In that respect it is closer to `lift`. The name says "the base type" rather than a fixed
+one because the target depends on what is registered: `ℕ` for `ℕ∞`, `ℝ` for `ℝ≥0∞`.
 
-* `rify` already covers `ℝ≥0 → ℝ`, and `linarith` ships a preprocessor doing the same shift
-  together with the nonnegativity facts. On a goal stated purely in `ℝ≥0` those are usually
-  enough; `basify` earns its keep there only on truncated subtraction, which it rewrites with the
-  unconditional `NNReal.coe_sub_def`.
-* `lift` is the per-variable version of the interesting branch of a case split: `lift a to ℝ≥0
-  using ha` is what one writes by hand once `a ≠ ⊤` is known. `basify` does not need that
-  hypothesis, because it splits on it and discharges the other branch.
+* `rify` already covers `ℝ≥0 → ℝ`, and `linarith` ships a preprocessor doing the same shift with
+  the nonnegativity facts. On a goal stated purely in `ℝ≥0` those usually suffice; `basify` earns
+  its keep there only on truncated subtraction, which it rewrites with `NNReal.coe_sub_def`.
+* `lift` is the per-variable version of the interesting branch of a split: `lift a to ℝ≥0 using ha`
+  is what one writes by hand once `a ≠ ⊤` is known. `basify` splits on it instead, and discharges
+  the other branch.
 * `norm_cast` removes coercions and therefore lands in the *smallest* type of a cast tower, which
   for `ℝ≥0∞` is `ℝ≥0`, not `ℝ`. Reaching `ℝ` means travelling down one coercion and up another,
-  which is why the `basify_simp` set holds `←` lemmas for the extension layer and forward lemmas
-  for the subtype layer.
+  which is why `basify_simp` holds `←` lemmas for the extension layer and forward ones for the
+  subtype layer.
 
-What has no counterpart elsewhere is the case split: `⊤ - a` is not a cast-normalisation problem,
-and no amount of rewriting turns it into one.
+The case split has no counterpart elsewhere: `⊤ - a` is not a cast-normalisation problem, and no
+amount of rewriting turns it into one.
 
 ## Extending the tactic
 
-Three attributes drive the tactic, so that new constructions can be supported without touching this
-file:
+Three attributes drive the tactic, so that a new construction needs no change to this file:
 
-* `@[basify_elim]` marks an eliminator, i.e. something usable with `cases x using ...`. The
-  type it destructs and the shapes of its cases are read off from its type.
-* `@[basify_op]` marks the lemma relating an operation of a registered type to the
-  corresponding operation of the underlying type, such as `ENNReal.coe_add : ↑(a + b) = ↑a + ↑b`.
-  For a subtype this is the statement that the operation agrees with the one upstairs, which has
-  the same shape, so the same attribute covers both kinds of type.
-* `@[basify_simp]` is the simp set described above. Like any simp set it accepts `←` to register a
-  lemma in the reversed direction, which is what the lemmas moving a coercion outwards need.
+* `@[basify_elim]` marks an eliminator; the type it destructs and the shape of each of its cases
+  are read off from its type. It must not produce `Subtype.mk` terms, for the reason given in its
+  own docstring.
+* `@[basify_op]` marks the lemma relating an operation of a registered type to the corresponding
+  operation below, such as `ENNReal.coe_add : ↑(a + b) = ↑a + ↑b`. For a subtype that is the
+  statement that the operation agrees with the one upstairs, which has the same shape.
+* `@[basify_simp]` is the simp set described above. Like any simp set it accepts `←`, which is what
+  the lemmas moving a coercion outwards need.
 
 `Mathlib/Tactic/Basify/ENNReal.lean` is a worked example using all three.
 -/
@@ -125,11 +117,12 @@ namespace Mathlib.Tactic.Basify
 
 The `basify_simp` simp set is run with `simp only`, so it has to carry the handful of
 propositional lemmas needed to actually make a contradictory branch disappear: without
-`not_true_eq_false`, a hypothesis `⊤ ≠ ⊤` gets stuck at `¬True` instead of closing the goal.
+`not_true_eq_false` a hypothesis `⊤ ≠ ⊤` gets stuck at `¬True` instead of closing the goal, and
+without `implies_true` a goal under a binder gets stuck at `∀ i, True`.
 -/
 
 attribute [basify_simp] ne_eq not_true_eq_false not_false_eq_true eq_self_iff_true
-  true_and and_true and_self true_or or_true or_self true_iff iff_true
+  true_and and_true and_self true_or or_true or_self true_iff iff_true implies_true forall_const
 
 /-! ### Atoms -/
 
@@ -333,6 +326,13 @@ normally finished off by a decision procedure for the underlying type:
 example : (2 : ℝ≥0∞)⁻¹ * (2 : ℝ≥0∞)⁻¹ = 4⁻¹ := by basify; norm_num
 example (a b : ℕ∞) (h : a ≤ b) : a - b < b + 1 := by basify; lia
 example (a b c : ℝ≥0∞) (hab : a ≥ b) (hbc : b ≥ c) : a ≥ c := by basify <;> linarith
+```
+
+The cast lemmas for division and inverse are conditional, and are discharged from the context, so a
+goal using them needs the relevant `≠ 0` to be available; without it the descent stops part-way.
+
+```
+example (a : ℝ≥0∞) (h : a ≠ 0) (h' : a ≠ ⊤) : a * a⁻¹ = 1 := by basify; field_simp
 ```
 
 New types are supported by tagging an eliminator with `@[basify_elim]`, its operations with

@@ -58,7 +58,7 @@ example (f : ℕ → ℝ≥0∞) : f twoAlias ≤ f 2 + f twoAlias := by
 /-- An opaque function and a reducible alias of it, to exhibit the limitation below. -/
 opaque opaqueF : ℕ → ℝ≥0∞
 
-@[reducible] noncomputable def aliasF (n : ℕ) : ℝ≥0∞ := opaqueF n
+@[reducible] def aliasF (n : ℕ) : ℝ≥0∞ := opaqueF n
 
 /-- `aliasF 0` and `opaqueF 0` are definitionally equal but have different head symbols, so no
 single `kabstract` pattern abstracts both occurrences: `generalizeHyp` filters candidate subterms
@@ -94,10 +94,38 @@ measure of a set, which is an atom, so it is generalized and split, and everythi
 `ℝ`. The original proof spelled out `ENNReal.eq_sub_of_add_eq`, `ENNReal.eq_div_iff`,
 `ENNReal.mul_sub`, `ENNReal.mul_div_cancel` and `ENNReal.add_sub_cancel_left` by hand. -/
 example (A : ℝ≥0∞) (p q : ℕ) (h : 0 < p + q) (hA : A + p / (p + q) = 1) : A = q / (p + q) := by
-  have h' : (p + q : ℝ≥0∞) ≠ 0 := mod_cast h.ne'
+  have h' : (p + q : ℝ≥0∞) ≠ 0 := by
+    basify
+    rify at h
+    grind
   basify
-  field_simp at hA ⊢
-  linarith
+  grind
+
+/-! #### Atoms under binders
+
+`collectAtoms` descends into `∀`, `fun` and `let` bodies, but only records subterms free of loose
+bound variables, since a term mentioning a bound variable cannot be generalized out of the goal.
+-/
+
+/-- An atom under a `∀` in the target is found and split. `forall_const` then strips the vacuous
+binder, so no `intro` is needed afterwards. -/
+example (a b : ℝ≥0∞) : ∀ _ : ℕ, a + b = b + a := by
+  basify
+  ring
+
+/-- The same for a `∀` in a hypothesis: `h` comes out as a statement about `ℝ`. -/
+example (a b : ℝ≥0∞) (h : ∀ _ : ℕ, a ≤ b) : a ≤ b := by
+  basify <;> exact h 0
+
+/-- And under a `fun`. -/
+example (a b : ℝ≥0∞) (h : (fun _ : ℕ => a) = fun _ => b) : a + 0 = a := by
+  basify <;> ring
+
+/-- A subterm containing a bound variable is *not* an atom, so the `f i` in `h` is left alone.
+Bringing a closed instance into scope first is what lets the hypothesis be translated too. -/
+example (f : ℕ → ℝ≥0∞) (h : ∀ i, f i ≤ 1) : f 0 ≤ 1 := by
+  have := h 0
+  basify
 
 /-! ### `ℝ≥0`
 
