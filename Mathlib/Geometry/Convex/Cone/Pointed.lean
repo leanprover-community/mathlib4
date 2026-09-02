@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Geometry.Convex.Cone.Basic
-
 
 /-!
 # Pointed cones
@@ -378,6 +378,34 @@ theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R 
   simp_rw [gc_ofSubmodule_lineal.le_iff_le, Set.Iic_def, csSup_Iic]
 
 end Lineal
+
+section AffineSpan
+
+variable [Ring R] [Lattice R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+lemma sum_posPart_mem_hull {s : Set E} {c : E →₀ R} (hc : ↑c.support ⊆ s) :
+    c⁺.sum (fun a b ↦ b • a) ∈ hull R s :=
+  mem_hull_set.mpr ⟨c⁺, le_trans (by simpa using Finsupp.support_posPart_subset c) hc, by simp⟩
+
+lemma sum_negPart_mem_hull {s : Set E} {c : E →₀ R} (hc : ↑c.support ⊆ s) :
+    c⁻.sum (fun a b ↦ b • a) ∈ hull R s :=
+  mem_hull_set.mpr ⟨c⁻, le_trans (by simpa using Finsupp.support_negPart_subset c) hc, by simp⟩
+
+theorem affineSpan_hull_eq_toAffineSubspace_span {K : Set E} :
+    affineSpan R (hull R K) = (span R K).toAffineSubspace := by
+  apply le_antisymm
+  · grw [affineSpan_le_toAffineSubspace_span, Submodule.span_span_of_tower]
+  refine fun x hx ↦ ⟨0, by simp, ?_⟩
+  obtain ⟨c, hc₁, rfl⟩ := Submodule.mem_span_set.mp hx
+  rw [← posPart_sub_negPart c, Finsupp.sum_sub_index (by simp [sub_smul])]
+  simpa using vsub_mem_vectorSpan R (sum_posPart_mem_hull hc₁) (sum_negPart_mem_hull hc₁)
+
+theorem affineSpan_hull_eq_affineSpan_insert {K : Set E} :
+    affineSpan R (hull R K) = affineSpan R (insert 0 K) := by
+  rw [AffineSubspace.ext_iff, affineSpan_insert_zero, affineSpan_hull_eq_toAffineSubspace_span]
+  norm_cast
+
+end AffineSpan
 
 section Salient
 

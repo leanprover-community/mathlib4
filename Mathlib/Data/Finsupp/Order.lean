@@ -6,6 +6,7 @@ Authors: Johan Commelin, Aaron Anderson
 module
 
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Algebra.Order.Sub.Basic
@@ -310,6 +311,24 @@ lemma support_add_eq_union {f1 f2 : ι →₀ α} [DecidableEq ι] :
     (support_mono le_self_add) (support_mono le_add_self)
 
 end PartialOrder
+
+section PosPart
+
+variable [AddGroup α] [Lattice α] {f : ι →₀ α}
+
+@[simp, grind =]
+lemma posPart_apply (f : ι →₀ α) (i : ι) : f⁺ i = (f i)⁺ := rfl
+
+@[simp, grind =]
+lemma negPart_apply (f : ι →₀ α) (i : ι) : f⁻ i = (f i)⁻ := rfl
+
+lemma support_posPart_subset (f : ι →₀ α) : f⁺.support ⊆ f.support := by
+  grind [posPart_zero]
+
+lemma support_negPart_subset (f : ι →₀ α) : f⁻.support ⊆ f.support := by
+  grind [negPart_zero]
+
+end PosPart
 
 section LinearOrder
 
