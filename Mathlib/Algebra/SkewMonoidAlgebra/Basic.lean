@@ -442,7 +442,7 @@ theorem sum_add {S : Type*} [AddCommMonoid S] (p : SkewMonoidAlgebra k G) (f g :
 theorem sum_zero_index {S : Type*} [AddCommMonoid S] {f : G → k → S} :
     (0 : SkewMonoidAlgebra k G).sum f = 0 := by simp [sum]
 
-@[deprecated Finsupp.sum_zero (since := "2026-07-04")]
+@[deprecated Finsupp.sum_fun_zero (since := "2026-07-04")]
 theorem sum_zero {N : Type*} [AddCommMonoid N] {f : SkewMonoidAlgebra k G} :
     (f.sum fun _ _ ↦ (0 : N)) = 0 := Finset.sum_const_zero
 
@@ -530,7 +530,7 @@ variable {f v}
 theorem mapDomain_id : mapDomain id v = v := by ext; simp
 
 theorem mapDomain_comp : mapDomain (g ∘ f) v = mapDomain g (mapDomain f v) := by
-  ext; simp [Finsupp.mapDomain_comp]
+  ext; simp [Finsupp.mapDomain_fun_comp]
 
 @[deprecated Finsupp.sum_mapDomain_index (since := "2026-07-04")]
 theorem sum_mapDomain_index {k' : Type*} [AddCommMonoid k'] {h : G' → k → k'}
