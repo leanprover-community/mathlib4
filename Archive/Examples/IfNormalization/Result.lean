@@ -3,15 +3,19 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Archive.Examples.IfNormalization.Statement
-import Mathlib.Data.List.AList
-import Mathlib.Tactic.Recall
+module
+
+public import Archive.Examples.IfNormalization.Statement
+public import Mathlib.Data.List.AList
+public import Mathlib.Tactic.Recall
 
 /-!
 # A solution to the if normalization challenge in Lean.
 
 See `Statement.lean` for background.
 -/
+
+@[expose] public section
 
 local macro "◾" : tactic => `(tactic| aesop)
 local macro "◾" : term => `(term| by aesop)
