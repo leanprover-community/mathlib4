@@ -40,8 +40,8 @@ noncomputable section
 
 namespace SchwartzMap
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {F} [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable {R : ℝ} (f : 𝓢(E, F))
 
 /-- The reference bump rescaled by `R`: equal to `1` on `ball 0 R`, supported in `ball 0 (2R)`,
@@ -54,9 +54,9 @@ lemma bumpR_eq_one (hR : 0 < R) {x : E} (hx : ‖x‖ ≤ R) : bumpR R x = 1 :=
   (someContDiffBumpBase E).eq_one 2 one_lt_two _
     (by rwa [norm_smul, norm_eq_abs, abs_of_pos (by positivity), inv_mul_le_one₀ hR])
 
-lemma bumpR_nonneg (R) (x : E) : 0 ≤ bumpR R x := ((someContDiffBumpBase E).mem_Icc 2 _).1
+lemma bumpR_nonneg R (x : E) : 0 ≤ bumpR R x := ((someContDiffBumpBase E).mem_Icc 2 _).1
 
-lemma bumpR_le_one (R) (x : E) : bumpR R x ≤ 1 := ((someContDiffBumpBase E).mem_Icc 2 _).2
+lemma bumpR_le_one R (x : E) : bumpR R x ≤ 1 := ((someContDiffBumpBase E).mem_Icc 2 _).2
 
 private lemma contDiff_someBump : ContDiff ℝ ∞ ((someContDiffBumpBase E).toFun 2) :=
   contDiff_iff_contDiffAt.mpr fun x ↦ ((someContDiffBumpBase E).smooth.contDiffAt
@@ -64,7 +64,7 @@ private lemma contDiff_someBump : ContDiff ℝ ∞ ((someContDiffBumpBase E).toF
     (contDiffAt_const.prodMk contDiffAt_id)
 
 @[fun_prop]
-lemma contDiff_bumpR (R) : ContDiff ℝ ∞ (bumpR R (E := E)) :=
+lemma contDiff_bumpR R : ContDiff ℝ ∞ (bumpR R (E := E)) :=
   contDiff_someBump.comp (contDiff_const_smul R⁻¹)
 
 lemma support_bumpR (hR : 0 < R) : support (bumpR R (E := E)) ⊆ closedBall (0 : E) (2 * R) := by
@@ -119,14 +119,11 @@ private lemma tendsto_seminorm_truncate_sub (k n) :
   set C := (max 1 A) * ∑ i ∈ range (n + 1), (n.choose i) * SchwartzMap.seminorm ℝ (k + 1) (n - i) f
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' (h := (C * ·⁻¹)) tendsto_const_nhds
   · simpa using tendsto_inv_atTop_zero.const_mul C
-  · filter_upwards with R using apply_nonneg _ _
+  · filter_upwards with _ using apply_nonneg _ _
   filter_upwards [eventually_ge_atTop 1] with R hR
   have hR0 : 0 < R := by linarith
-  have hRinv0 : 0 ≤ R⁻¹ := by positivity
-  have hRinv1 : R⁻¹ ≤ 1 := by simp [inv_le_one₀ hR0, hR]
   refine seminorm_le_bound ℝ k n _ (by positivity) fun x ↦ ?_
-  have : ⇑(truncate f R - f) = fun x ↦ (bumpR R x - 1) • f x := by funext; simp [hR0, sub_smul]
-  rw [this]
+  rw [(by funext; simp [hR0, sub_smul] : ⇑(truncate f R - f) = fun x ↦ (bumpR R x - 1) • f x)]
   rcases lt_or_ge ‖x‖ R with hxR | hxR
   · suffices iteratedFDeriv ℝ n (fun y ↦ (bumpR R y - 1) • f y) x = 0 by
       rw [this, norm_zero, mul_zero]; positivity
@@ -136,23 +133,21 @@ private lemma tendsto_seminorm_truncate_sub (k n) :
     simp [hR0, hy.le]
   · have : 0 < ‖x‖ := by linarith
     calc
-      _ ≤ ‖x‖ ^ k * ∑ i ∈ range (n + 1), (n.choose i) *
-            ‖iteratedFDeriv ℝ i (bumpR R · - 1) x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
+      _ ≤ ∑ i ∈ range (n + 1), (n.choose i) * ‖iteratedFDeriv ℝ i (bumpR R · - 1) x‖ *
+            (‖x‖ ^ k * ‖iteratedFDeriv ℝ (n - i) f x‖) := by
           grw [norm_iteratedFDeriv_smul_le ((contDiff_bumpR R).sub contDiff_const)
             (f.smooth ⊤) x (mod_cast le_top)]
-      _ = ∑ i ∈ range (n + 1), (n.choose i) * ‖iteratedFDeriv ℝ i (bumpR R · - 1) x‖ *
-            (‖x‖ ^ k * ‖iteratedFDeriv ℝ (n - i) f x‖) := by grind [mul_sum]
+          grind [mul_sum]
       _ ≤ ∑ i ∈ range (n + 1), (n.choose i) * (max 1 A) * (f.seminorm ℝ (k + 1) (n - i) * R⁻¹) := by
           refine sum_le_sum fun i _ ↦ ?_
           suffices ‖iteratedFDeriv ℝ i (bumpR R · - 1) x‖ ≤ max 1 A by
-            grw [this, ← le_seminorm ℝ _ _ f x, pow_succ, hxR]
+            grw [this, ← le_seminorm ℝ, pow_succ, hxR]
             field_simp; rfl
           rcases i.eq_zero_or_pos with rfl | _
           · grind [norm_iteratedFDeriv_zero, norm_eq_abs, bumpR_nonneg, bumpR_le_one]
           · suffices iteratedFDeriv ℝ i (bumpR R · - 1) x = iteratedFDeriv ℝ i (bumpR R) x by
-              grw [this, norm_iteratedFDeriv_bumpR_le hR0, pow_le_one₀ hRinv0 hRinv1,
-                hA i (by grind) _]
-              grind
+              grw [this, norm_iteratedFDeriv_bumpR_le, pow_le_one₀, hA]
+                <;> grind [inv_le_one₀, inv_nonneg]
             rw [(by rfl : (bumpR R · - 1) = bumpR R - fun _ ↦ 1), iteratedFDeriv_sub_apply
               ((contDiff_bumpR R).contDiffAt.of_le (mod_cast le_top)) contDiffAt_const,
               iteratedFDeriv_const_of_ne (by omega)]
@@ -166,8 +161,8 @@ lemma tendsto_truncate : Tendsto (truncate f) atTop (𝓝 f) := by
   simpa using (tendsto_seminorm_truncate_sub f k n).eventually (isOpen_Iio.mem_nhds hε)
 
 /-- Compactly supported Schwartz functions are dense in `𝓢(E, F)`. -/
-theorem dense_hasCompactSupport : Dense {f : 𝓢(E, F) | HasCompactSupport (f : E → F)} := by
-  refine fun f ↦ mem_closure_of_tendsto (tendsto_truncate f) ?_
-  filter_upwards [eventually_gt_atTop 0] with R hR using hasCompactSupport_truncate f hR
+theorem dense_hasCompactSupport : Dense {f : 𝓢(E, F) | HasCompactSupport (f : E → F)} :=
+  fun f ↦ mem_closure_of_tendsto (tendsto_truncate f)
+    (by filter_upwards [eventually_gt_atTop 0] with R hR using hasCompactSupport_truncate f hR)
 
 end SchwartzMap

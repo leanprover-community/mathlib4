@@ -659,7 +659,7 @@ lemma HasCompactSupport.exists_bound_iteratedFDeriv {E F : Type*} [NormedAddComm
     [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
     (hf : HasCompactSupport f) (hf' : ContDiff ℝ ∞ f) (m : ℕ) :
     ∃ C, 0 ≤ C ∧ ∀ i ≤ m, ∀ y, ‖_root_.iteratedFDeriv ℝ i f y‖ ≤ C := by
-  have key (i) : ∃ C, ∀ y, ‖_root_.iteratedFDeriv ℝ i f y‖ ≤ C :=
+  have key i : ∃ C, ∀ y, ‖_root_.iteratedFDeriv ℝ i f y‖ ≤ C :=
     (hf'.continuous_iteratedFDeriv (mod_cast le_top)).bounded_above_of_compact_support
       (hf.iteratedFDeriv i)
   choose A hA using key
