@@ -454,11 +454,6 @@ private lemma pIntegral_iff_not_dvd_den {p : ℕ} [Fact p.Prime] {x : ℚ} :
     pIntegral p x ↔ ¬ p ∣ x.den :=
   Rat.padicValuation_le_one_iff
 
-@[simp]
-lemma Rat.padicValuation_natCast (p : ℕ) [Fact p.Prime] (x : ℕ) :
-    Rat.padicValuation p x = Int.padicValuation p x :=
-  rfl
-
 /- Dividing a `p`-integral rational by a `p`-coprime nat stays `p`-integral. -/
 private lemma pIntegral_div_natCast {p : ℕ} [Fact p.Prime] {a : ℚ} {n : ℕ}
     (ha : pIntegral p a) (hn : ¬ p ∣ n) : pIntegral p (a / n) := by
@@ -1000,7 +995,7 @@ theorem voronoi_congr {p : ℕ} [Fact p.Prime] {c k : ℕ} (hc : ¬ p ∣ c) (hk
   have hp : p.Prime := Fact.out
   have hp0 : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr hp.ne_zero
   obtain ⟨C, hC⟩ := voronoi_int (p := p) hc
-  obtain ⟨W, hWden, hWeq⟩ := faulhaber_mod_sq (p := p) hk hk2 hk1
+  obtain ⟨W, hWden, hWeq⟩ := faulhaber_mod_sq (p := p) hk hk1
   have hWpint : pIntegral p W := Rat.padicValuation_le_one_iff.mpr hWden
   set Sz : ℤ := ∑ j ∈ Ico 1 p, (j : ℤ) ^ k with hSz
   set Vz : ℤ := ∑ j ∈ Ico 1 p, ((c * j / p : ℕ) : ℤ) * (j : ℤ) ^ (k - 1) with hVz
@@ -1155,7 +1150,9 @@ variable {k p : ℕ} [Fact p.Prime]
 number `B₂ₖ` is `WithZero.exp 1`, the valuation of `1 / p`. -/
 theorem padicValuation_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
     Rat.padicValuation p (bernoulli (2 * k)) = WithZero.exp 1 := by
-  have hkey := not_dvd_den_bernoulli_add_indicator (k := k) (p := p) hk
+  have hkey : ¬ p ∣ (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p).den :=
+    Rat.padicValuation_le_one_iff.mp (pIntegral_bernoulli_add_indicator (k := 2 * k) (by lia)
+      ⟨k, two_mul k⟩)
   rw [show vonStaudtIndicator (2 * k) p = 1 by simp [vonStaudtIndicator, hpk]] at hkey
   have h1 : 1 < Rat.padicValuation p (1 / (p : ℚ)) := by simp
   simpa using (Rat.padicValuation p).map_sub_eq_of_lt_right
