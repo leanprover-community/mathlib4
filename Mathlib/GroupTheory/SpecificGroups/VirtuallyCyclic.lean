@@ -47,8 +47,7 @@ subgroup of finite index. -/
 class _root_.AddGroup.IsVirtuallyAddCyclic (G : Type*) [AddGroup G] : Prop where
   exists_isAddCyclic_and_finiteIndex : ∃ H : AddSubgroup G, IsAddCyclic H ∧ H.FiniteIndex
 
-/-- A group is **virtually cyclic** if it has a cyclic subgroup of finite
-index. -/
+/-- A group is **virtually cyclic** if it has a cyclic subgroup of finite index. -/
 @[mk_iff, to_additive existing]
 class IsVirtuallyCyclic : Prop where
   exists_isCyclic_and_finiteIndex : ∃ H : Subgroup G, IsCyclic H ∧ H.FiniteIndex
@@ -67,34 +66,6 @@ cyclic and of finite index. -/
 -- see Note [lower instance priority]
 instance (priority := 100) [Finite G] : IsVirtuallyCyclic G :=
   ⟨⊥, inferInstance, inferInstance⟩
-
-/-- The preimage of a finite-index subgroup has finite index. -/
-@[to_additive]
-theorem _root_.Subgroup.FiniteIndex.comap {H : Subgroup G'} (hfi : H.FiniteIndex)
-    (f : G →* G') : (H.comap f).FiniteIndex :=
-  ⟨by
-    rw [Subgroup.index_comap]
-    exact (Subgroup.instFiniteIndex_subgroupOf H f.range).index_ne_zero⟩
-
-/-- The image of a finite-index subgroup under a surjective homomorphism has
-finite index. -/
-@[to_additive]
-theorem _root_.Subgroup.FiniteIndex.map_of_surjective {H : Subgroup G}
-    (hfi : H.FiniteIndex) {f : G →* G'} (hf : Function.Surjective f) :
-    (H.map f).FiniteIndex := by
-  refine ⟨fun h0 => hfi.index_ne_zero ?_⟩
-  have hd := H.index_map_dvd hf
-  rwa [h0, zero_dvd_iff] at hd
-
-/-- The restriction of an injective homomorphism to a preimage subgroup is
-injective. -/
-@[to_additive]
-theorem _root_.MonoidHom.subgroupComap_injective_of_injective (f : G →* G')
-    (H : Subgroup G') (hf : Function.Injective f) :
-    Function.Injective (f.subgroupComap H) := by
-  intro a b h
-  have h2 : f (a : G) = f (b : G) := congrArg Subtype.val h
-  exact Subtype.ext (hf h2)
 
 variable (G) in
 /-- A virtually cyclic group has a subgroup that is cyclic, of finite index
