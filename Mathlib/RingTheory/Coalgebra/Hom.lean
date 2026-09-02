@@ -100,7 +100,7 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Modu
 
 instance funLike : FunLike (A →ₗc[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
     rcases g with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
     congr
@@ -242,7 +242,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₗc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl

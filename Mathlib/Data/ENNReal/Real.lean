@@ -30,13 +30,13 @@ This file provides a `positivity` extension for `ENNReal.ofReal`.
 
 assert_not_exists Finset
 
-open Set NNReal ENNReal
+open NNReal ENNReal
 
 namespace ENNReal
 
 section Real
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a b c : ℝ≥0∞} {r p q : ℝ≥0}
 
 theorem toReal_add (ha : a ≠ ∞) (hb : b ≠ ∞) : (a + b).toReal = a.toReal + b.toReal := by
   lift a to ℝ≥0 using ha
@@ -331,7 +331,7 @@ theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal 
 
 /-- `ENNReal.toReal` as a `MonoidHom`. -/
 noncomputable def toRealHom : ℝ≥0∞ →*₀ ℝ :=
-  (NNReal.toRealHom : ℝ≥0 →*₀ ℝ).comp toNNRealHom
+  (.ofClass NNReal.toRealHom : ℝ≥0 →*₀ ℝ).comp toNNRealHom
 
 @[simp]
 theorem toReal_mul : (a * b).toReal = a.toReal * b.toReal :=
@@ -388,15 +388,16 @@ end ENNReal
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]
-meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa))
     | _ => pure .none

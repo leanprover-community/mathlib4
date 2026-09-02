@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 # The canonical measure on the unit interval
 
 This file provides a `MeasureTheory.MeasureSpace` instance on `unitInterval`,
-and shows it is a probability measure with no atoms.
+and shows it is a probability measure with value zero on singletons.
 
 It also contains some basic results on the volume of various interval sets.
 -/
@@ -43,7 +43,7 @@ lemma volume_apply {s : Set I} : volume s = volume (Subtype.val '' s) :=
 lemma measurePreserving_coe : MeasurePreserving ((↑) : I → ℝ) volume (volume.restrict I) :=
   measurePreserving_subtype_coe measurableSet_Icc
 
-instance : NoAtoms (volume : Measure I) where
+instance : NullSingletonClass (volume : Measure I) where
   measure_singleton x := by simp [volume_apply]
 
 @[fun_prop]

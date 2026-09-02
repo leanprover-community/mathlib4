@@ -13,7 +13,7 @@ public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.Instances.Real
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Tactic.Module
 
@@ -89,18 +89,18 @@ the orthogonal complement of an element `v` of `E`. It is smooth away from the a
 through `v` parallel to the orthogonal complement.  It restricts on the sphere to the stereographic
 projection. -/
 def stereoToFun (x : E) : (ℝ ∙ v)ᗮ :=
-  (2 / ((1 : ℝ) - innerSL ℝ v x)) • (ℝ ∙ v)ᗮ.orthogonalProjection x
+  (2 / ((1 : ℝ) - innerSL ℝ v x)) • (ℝ ∙ v)ᗮ.orthogonalProjectionOnto x
 
 variable {v}
 
 @[simp]
 theorem stereoToFun_apply (x : E) :
-    stereoToFun v x = (2 / ((1 : ℝ) - innerSL ℝ v x)) • (ℝ ∙ v)ᗮ.orthogonalProjection x :=
+    stereoToFun v x = (2 / ((1 : ℝ) - innerSL ℝ v x)) • (ℝ ∙ v)ᗮ.orthogonalProjectionOnto x :=
   rfl
 
 theorem contDiffOn_stereoToFun {n : ℕ∞ω} :
     ContDiffOn ℝ n (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
-  refine ContDiffOn.fun_smul ?_ (ℝ ∙ v)ᗮ.orthogonalProjection.contDiff.contDiffOn
+  refine ContDiffOn.fun_smul ?_ (ℝ ∙ v)ᗮ.orthogonalProjectionOnto.contDiff.contDiffOn
   refine contDiff_const.contDiffOn.div ?_ ?_
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
   · intro x h h'
@@ -208,7 +208,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   simp only [stereoToFun_apply, stereoInvFun_apply, smul_add]
   -- name two frequently-occurring quantities and write down their basic properties
   set a : ℝ := innerSL _ v x
-  set y := (ℝ ∙ v)ᗮ.orthogonalProjection x
+  set y := (ℝ ∙ v)ᗮ.orthogonalProjectionOnto x
   have split : ↑x = a • v + ↑y := by
     rw [← ((ℝ ∙ v).starProjection_add_starProjection_orthogonal x),
       Submodule.starProjection_unit_singleton ℝ hv x]
@@ -234,9 +234,9 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul,
-    innerSL_apply_apply, Submodule.orthogonalProjection_mem_subspace_eq_self]
-  have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjection v = 0 :=
-    Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero v
+    innerSL_apply_apply, Submodule.orthogonalProjectionOnto_mem_subspace_eq_self]
+  have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjectionOnto v = 0 :=
+    Submodule.orthogonalProjectionOnto_orthogonalComplement_singleton_eq_zero v
   have h₂ : ⟪v, w⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
   have h₃ : ⟪v, v⟫ = 1 := by simp [hv]
   rw [h₁, h₂, h₃]
@@ -269,7 +269,7 @@ def stereographic (hv : ‖v‖ = 1) : OpenPartialHomeomorph (sphere (0 : E) 1) 
   continuousOn_invFun := (continuous_stereoInvFun hv).continuousOn
 
 theorem stereographic_apply (hv : ‖v‖ = 1) (x : sphere (0 : E) 1) :
-    stereographic hv x = (2 / ((1 : ℝ) - ⟪v, x⟫)) • (ℝ ∙ v)ᗮ.orthogonalProjection x :=
+    stereographic hv x = (2 / ((1 : ℝ) - ⟪v, x⟫)) • (ℝ ∙ v)ᗮ.orthogonalProjectionOnto x :=
   rfl
 
 @[simp]
@@ -283,7 +283,7 @@ theorem stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Se
 @[simp]
 theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere v) (-v) = 0 := by
-  simp [stereographic_apply, Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero]
+  simp [stereographic_apply]
 
 @[simp]
 theorem stereographic_neg_apply (v : sphere (0 : E) 1) :
@@ -306,7 +306,7 @@ theorem range_stereographic_symm (hv : ‖v‖ = 1) (hv' : v ∈ sphere 0 1 := b
 
 lemma isOpenEmbedding_stereographic_symm (hv : ‖v‖ = 1) :
     Topology.IsOpenEmbedding (stereographic hv).symm :=
-  (stereographic hv).symm.to_isOpenEmbedding (by simp)
+  (stereographic hv).symm.isOpenEmbedding (by simp)
 
 end StereographicProjection
 
@@ -410,7 +410,8 @@ instance EuclideanSpace.instIsManifoldSphere
         OpenPartialHomeomorph.symm_toPartialEquiv, PartialEquiv.trans_source,
         PartialEquiv.symm_source, stereographic'_target, stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
-        Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
+        Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq,
+        Set.preimage_ofPred_eq]
       simp only [id, comp_apply, OpenPartialHomeomorph.coe_toPartialEquiv_symm,
         innerSL_apply_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
@@ -477,26 +478,24 @@ private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   simp only [EmbeddingLike.map_eq_zero_iff]
   apply stereographic_neg_apply
 
--- TODO: rephrase this using `mvfderiv`, avoiding the defeq abuse
+-- Without this option, the lemmas `EmbeddingLike.map_eq_zero_iff` and `Submodule.range_subtype`
+-- are not applied by simp below.
 set_option backward.isDefEq.respectTransparency false in
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
 of `v` in `E`.
-
-Note that there is an abuse here of the defeq between `E` and the tangent space to `E` at `(v:E)`.
-In general this defeq is not canonical, but in this case (the tangent space of a vector space) it is
-canonical. -/
-theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v : TangentSpace (𝓡 n) v →L[ℝ] E).range =
-      (ℝ ∙ (v : E))ᗮ := by
-  rw [((contMDiff_coe_sphere v).mdifferentiableAt one_ne_zero).mfderiv]
+-/
+theorem range_mvfderiv_subtypeVal {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+    (mvfderiv (𝓡 n) ((↑) : sphere (0 : E) 1 → E) v).range = (ℝ ∙ (v : E))ᗮ := by
+  rw [((contMDiff_coe_sphere v).mdifferentiableAt one_ne_zero).mvfderiv]
   dsimp [chartAt]
   simp only [fderivWithin_univ, mfld_simps]
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ) n
     (ne_zero_of_mem_unit_sphere (-v))).repr
   suffices
       (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0).range = (ℝ ∙ (v : E))ᗮ by
-    convert! this using 4
+    rw [← this]
+    congr 3
     apply stereographic'_neg
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
@@ -519,27 +518,41 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     rw [Submodule.neg_mem_iff]
     exact Submodule.mem_span_singleton_self (v : E)
 
--- TODO: rephrase this using `mvfderiv`, avoiding the defeq abuse
-set_option backward.isDefEq.respectTransparency false in
+@[deprecated range_mvfderiv_subtypeVal (since := "2026-08-02")]
+theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+    (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v : TangentSpace (𝓡 n) v →L[ℝ] E).range =
+      (ℝ ∙ (v : E))ᗮ := by
+  convert! range_mvfderiv_subtypeVal v
+
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  This map is injective. -/
-theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
-  rw [((contMDiff_coe_sphere v).mdifferentiableAt one_ne_zero).mfderiv]
+theorem injective_mvfderiv_subtypeVal_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)]
+    (v : sphere (0 : E) 1) :
+    Injective (mvfderiv (𝓡 n) ((↑) : sphere (0 : E) 1 → E) v) := by
+  rw [((contMDiff_coe_sphere v).mdifferentiableAt one_ne_zero).mvfderiv]
   simp only [chartAt, fderivWithin_univ, mfld_simps]
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton
       (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
   suffices Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) by
     convert! this using 3
-    apply stereographic'_neg
+    congr 2
+    apply stereographic'_neg (v := v)
   have : HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert! hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
+    -- Otherwise, the lemma `EmbeddingLike.map_eq_zero_iff` is not applied.
+    set_option backward.isDefEq.respectTransparency false in
     simp
   have := congr_arg DFunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   refine Eq.subst this.symm ?_
-  rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
+  rw [ContinuousLinearMap.coe_comp, ContinuousLinearEquiv.coe_coe]
+  set_option backward.isDefEq.respectTransparency false in
   simpa [-Subtype.val_injective] using Subtype.val_injective
+
+@[deprecated injective_mvfderiv_subtypeVal_sphere (since := "2026-08-02")]
+theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+    Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
+  convert! injective_mvfderiv_subtypeVal_sphere v
 
 end ContMDiffManifold
 

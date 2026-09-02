@@ -345,8 +345,11 @@ theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.
 
 /-- Infinite set variant of `Nat.exists_infinite_pseudoprimes`
 -/
-theorem infinite_setOf_pseudoprimes {b : ℕ} (h : 1 ≤ b) :
+theorem infinite_setOfPred_pseudoprimes {b : ℕ} (h : 1 ≤ b) :
     Set.Infinite { n : ℕ | FermatPsp n b } :=
   Nat.frequently_atTop_iff_infinite.mp (frequently_atTop_fermatPsp h)
+
+@[deprecated (since := "2026-07-09")]
+alias infinite_setOf_pseudoprimes := infinite_setOfPred_pseudoprimes
 
 end Nat
