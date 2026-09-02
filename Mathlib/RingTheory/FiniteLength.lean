@@ -106,7 +106,7 @@ theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
   tfae_finish
 
 instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
-  (IsSemisimpleModule.finite_tfae.out 0 2).mp ‹_›
+  (IsSemisimpleModule.finite_tfae.out 1 3).mp ‹_›
 
 variable {f : M →ₗ[R] N}
 
