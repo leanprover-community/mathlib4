@@ -187,12 +187,12 @@ public lemma IsStarNormal.commute_star_left (ha : IsStarNormal a) (h : Commute a
 public lemma Set.Pairwise.commute_star_right {A : Type*} [NonUnitalCStarAlgebra A]
     {s : Set A} (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
     s.Pairwise (Commute · <| star ·) :=
-  hs.imp_on <| by grind [IsStarNormal.commute_star_right, Set.Pairwise]
+  fun _ hx _ hy hxy ↦ (hs' _ hy).commute_star_right (hs hx hy hxy)
 
 public lemma Set.Pairwise.commute_star_left {A : Type*} [NonUnitalCStarAlgebra A]
     {s : Set A} (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
     s.Pairwise (fun x y ↦ Commute (star x) y) :=
-  hs.imp_on <| by grind [IsStarNormal.commute_star_left, Set.Pairwise]
+  fun _ hx _ hy hxy ↦ (hs' _ hx).commute_star_left (hs hx hy hxy)
 
 open NonUnitalStarAlgebra
 
