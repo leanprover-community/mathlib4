@@ -151,6 +151,24 @@ lemma Module.isTorsionFree_int_iff_isAddTorsionFree : IsTorsionFree ℤ M ↔ Is
 end AddCommGroup
 end Semiring
 
+section NonAssocSemiring
+
+variable [NonAssocSemiring R] {n : ℕ}
+
+@[simp]
+theorem isLeftRegular_natCast : IsLeftRegular (n : R) ↔ IsSMulRegular R n := by
+  simp [IsSMulRegular, IsLeftRegular]
+
+@[simp]
+theorem isRightRegular_natCast : IsRightRegular (n : R) ↔ IsSMulRegular R n := by
+  simp [IsRightRegular, IsSMulRegular, Nat.cast_comm]
+
+@[simp]
+theorem isRegular_natCast : IsRegular (n : R) ↔ IsSMulRegular R n := by
+  simp [isRegular_iff]
+
+end NonAssocSemiring
+
 section Ring
 variable [Ring R] [AddCommGroup M] [Module R M] {m : M} {r₁ r₂ : R}
 
@@ -191,3 +209,12 @@ lemma CharZero.of_isAddTorsionFree [Nontrivial M] [IsAddTorsionFree M] : CharZer
   simpa using smul_left_injective ℤ hx h
 
 end Semiring
+
+section NonAssocRing
+variable [NonAssocRing R]
+
+theorem isSelfNeg_of_isSMulRegular_two (h : IsSMulRegular R 2) {a : R} :
+    IsSelfNeg a ↔ a = 0 :=
+  isSelfNeg_iff_two_nsmul_eq_zero.trans ⟨(h <| by simpa using ·), (by simp [·])⟩
+
+end NonAssocRing

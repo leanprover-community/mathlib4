@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Yongxi Lin, Etienne Marion, Kexing Ying
+Authors: Rémy Degenne, Nick Kuhn, Yongxi Lin, Rohit Manokaran, Etienne Marion, Kexing Ying
 -/
 module
 
@@ -149,14 +149,6 @@ lemma IsCadlag.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : 
     (hf : IsCadlag f) :
     IsCadlag (c • f) :=
   hf.continuous_comp (g := (c • ·)) (continuous_const_smul c)
-
-lemma IsCadlag.norm {κ F : Type*} [TopologicalSpace κ] [NormedAddCommGroup F] [Preorder κ]
-    {f : κ → F} (hf : IsCadlag f) : IsCadlag (fun i ↦ ‖f i‖) :=
-  hf.continuous_comp continuous_norm
-
-lemma IsCadlag.norm_sq {κ F : Type*} [TopologicalSpace κ] [NormedAddCommGroup F] [Preorder κ]
-    {f : κ → F} (hf : IsCadlag f) : IsCadlag (fun i ↦ ‖f i‖ ^ 2) :=
-  hf.norm.continuous_comp (continuous_pow 2)
 
 end Basic
 
