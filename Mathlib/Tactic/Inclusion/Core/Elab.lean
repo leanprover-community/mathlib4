@@ -62,19 +62,13 @@ elab (name := inclusion) "inclusion" cfg:optConfig " [" args:inclusionArg,* "]" 
   closeMainGoalUsing `inclusion fun goal _ => inclusionCore goal config
 
 /-- Tactic for quickly checking if the `inclusion` tactic will succeed. -/
-syntax (name := inclusion?) "inclusion?" " [" inclusionArg,* "]" : tactic
-
-/-- Elaborator for the `inclusion?` tactic. -/
-@[tactic inclusion?]
-def inclusion?Tac : Tactic
-  | `(tactic| inclusion? [$args,*]) => do
-      let config ← collectInclusionArgs args.getElems
-      withoutModifyingStateWithInfoAndMessages <| withMainContext do
-        try
-          discard <| inclusionCore (← getMainTarget) config
-          logInfo "The inclusion check succeeded."
-        catch err =>
-          logError m!"The inclusion check failed:\n{err.toMessageData}"
-  | _ => throwUnsupportedSyntax
+elab (name := inclusion?) "inclusion?" " [" args:inclusionArg,* "]" : tactic => do
+  let config ← collectInclusionArgs args.getElems
+  withoutModifyingStateWithInfoAndMessages <| withMainContext do
+    try
+      discard <| inclusionCore (← getMainTarget) config
+      logInfo "The inclusion check succeeded."
+    catch err =>
+      logError m!"The inclusion check failed:\n{err.toMessageData}"
 
 end Inclusion
