@@ -84,7 +84,7 @@ lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v} R] : globalDi
     ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M := by
   have aux (n : ℕ): globalDimension.{v} R ≤ n ↔
     ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M ≤ n := by
-    simpa only [iSup_le_iff, projectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 0 1
+    simpa only [iSup_le_iff, projectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 1 2
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
@@ -101,7 +101,7 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
     ⨆ (M : ModuleCat.{v} R), injectiveDimension.{v} M := by
   have aux (n : ℕ): globalDimension.{v} R ≤ n ↔
     ⨆ (M : ModuleCat.{v} R), injectiveDimension.{v} M ≤ n := by
-    simpa only [iSup_le_iff, injectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 0 3
+    simpa only [iSup_le_iff, injectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 1 4
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
