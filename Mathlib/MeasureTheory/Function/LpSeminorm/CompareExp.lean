@@ -273,13 +273,9 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (hf : AEStr
     by_cases hfg : eLpNorm f p μ * eLpNorm g q μ = 0
     · rw [hc, mul_assoc, ENNReal.top_mul', ite_eq_left hfg, nonpos_iff_eq_zero]
       apply eLpNorm_eq_zero_of_ae_zero
-      rcases mul_eq_zero.mp hfg with hf0 | hg0
-      · have hp : p ≠ 0 := ne_bot_of_le_ne_bot hr (HolderTriple.le p q r)
-        filter_upwards [h, (eLpNorm_eq_zero_iff hf hp).mp hf0] with x hx hfx
-        simpa [hfx] using hx
-      · have hq : q ≠ 0 := ne_bot_of_le_ne_bot hr (HolderTriple.le q p r)
-        filter_upwards [h, (eLpNorm_eq_zero_iff hg hq).mp hg0] with x hx hgx
-        simpa [hgx] using hx
+      obtain ⟨hp, hq⟩ : p ≠ 0 ∧ q ≠ 0 := by grind [hpqr.le, hpqr.symm.le]
+      obtain (h' | h') := by simpa [eLpNorm_eq_zero_iff, hp, hf, hq, hg] using hfg
+      all_goals filter_upwards [h, h'] with x hx hfg; simpa [hfg] using hx
     · simp [hc, mul_assoc, hfg]
   · lift c to ℝ≥0 using hc
     apply eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c
