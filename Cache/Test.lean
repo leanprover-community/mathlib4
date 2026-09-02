@@ -216,17 +216,26 @@ def test_getBaseURLFrom : IO Unit := do
     "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org/") false)
 
 /-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
-`azureURL`, under whichever base the environment selects. The two URL families
-coincide only when that base is the storage account itself. -/
+`azureURL`, under whichever base the environment selects. Without a base-URL
+override, both positions of the legacy switch are pinned: the endpoint by
+default, `azureURL` under legacy. -/
 def test_Container_getURL : IO Unit := do
   IO.println "Container.getURL:"
   let base ← getBaseURL
   assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
   assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
   assertEq "legacy read URL" s!"{base}/mathlib4" (← Container.legacy.getURL)
-  if base == azureAccountURL then
+  -- A base-URL override answers for both switch positions, so the pinned
+  -- assertions run only without one.
+  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
+    let ambient ← useLegacy.get
+    useLegacy.set false
+    assertEq "default read URL is on the endpoint"
+      s!"{publicCacheEndpoint}/mathlib4-master" (← Container.master.getURL)
+    useLegacy.set true
     assertEq "legacy read URL matches azureURL"
       Container.master.azureURL (← Container.master.getURL)
+    useLegacy.set ambient
 
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
 repo (`/f/<repo>/<hash>`). The layout is fixed per container so that all of a
@@ -618,8 +627,9 @@ def test_markerURL : IO Unit := do
     (markerURL .forks "Alice/Mathlib4" "abc123")
 
 /-- Marker probes read through the base URL; marker writes address Azure
-directly (`markerURL`). The two URLs agree only when the read base is the
-storage account itself. -/
+directly (`markerURL`). Without a base-URL override, both positions of the
+legacy switch are pinned: probes address the endpoint by default, and under
+legacy they match the write URL. -/
 def test_markerReadURL : IO Unit := do
   IO.println "markerReadURL:"
   let base ← getBaseURL
@@ -629,10 +639,17 @@ def test_markerReadURL : IO Unit := do
   assertEq "probe repo is lowercased in the path"
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     (← markerReadURL .forks "Alice/Mathlib4" "abc123")
-  if base == azureAccountURL then
+  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
+    let ambient ← useLegacy.get
+    useLegacy.set false
+    assertEq "default probe URL is on the endpoint"
+      s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
+      (← markerReadURL .forks "alice/mathlib4" "abc123")
+    useLegacy.set true
     assertEq "legacy probe URL matches the write URL"
       (markerURL .forks "alice/mathlib4" "abc123")
       (← markerReadURL .forks "alice/mathlib4" "abc123")
+    useLegacy.set ambient
 
 end Marker
 
@@ -1398,7 +1415,7 @@ def runAll : IO Unit := do
 
 end Cache.Test
 
-open Cache.Test Cache.Requests Cache.Cli in
+open Cache Cache.Test Cache.Requests in
 def main : IO UInt32 := do
   -- Resolve the legacy switch the way the tool's `main` does, so the read-base
   -- assertions see the setting the environment names.

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch, Arthur Paulino
 -/
 
+import Cache.Env
+
 /-!
 # Cache backend infrastructure
 
@@ -131,29 +133,6 @@ def flatPath (c : Container) (repo : String) : Bool :=
   | _ => false
 
 end Container
-
-/--
-Trimmed value of an environment variable. An empty or whitespace-only value
-means unset.
-
-CI wires the cache variables from a GitHub Actions `vars` lookup. That lookup
-yields an empty string for an undefined variable, and such a value selects the
-same behavior as an absent one.
--/
-def nonEmptyEnvValue (value? : Option String) : Option String :=
-  (value?.map (·.trimAscii.copy)).filter (!·.isEmpty)
-
-/-- Reads `name` from the environment through `nonEmptyEnvValue`. -/
-def getEnvNonEmpty (name : String) : IO (Option String) := do
-  return nonEmptyEnvValue (← IO.getEnv name)
-
-/--
-Value of an environment variable that names a base URL. The same empty rule as
-`nonEmptyEnvValue` applies, and the base also loses its trailing slashes, so a
-later `/{path}` follows a single separator.
--/
-def normalizeBaseURL (value? : Option String) : Option String :=
-  (value?.map fun v => (v.trimAscii.dropEndWhile '/').copy).filter (!·.isEmpty)
 
 /--
 The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
