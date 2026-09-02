@@ -24,7 +24,7 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 
 namespace PositiveContinuousLinearMap
 
-theorem norm_apply_le_sqrt_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
+theorem norm_map_le_sqrt_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ‖f x‖ ≤ √‖(f : A →L[ℂ] ℂ)‖ * √‖f (star x * x)‖ := by
   have hl := CStarAlgebra.increasingApproximateUnit A
   refine le_of_tendsto ((ContinuousAt.tendsto (by fun_prop)).comp (hl.tendsto_mul_right _)).norm ?_
@@ -33,17 +33,17 @@ theorem norm_apply_le_sqrt_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ← f.coe_toContinuousLinearMap, f.toContinuousLinearMap.le_opNorm (star e * e),
     norm_star_mul_self, he2, he2, one_mul, mul_one]
 
-theorem nnnorm_apply_le_sqrt_opNNNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
+theorem nnnorm_map_le_sqrt_opNNNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ‖f x‖₊ ≤ ‖(f : A →L[ℂ] ℂ)‖₊.sqrt * ‖f (star x * x)‖₊.sqrt := by
-  grw [NNReal.toReal_le]; simp [norm_apply_le_sqrt_opNorm_mul]
+  grw [NNReal.toReal_le]; simp [norm_map_le_sqrt_opNorm_mul]
 
-theorem norm_apply_sq_le_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
+theorem norm_map_sq_le_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ‖f x‖ ^ 2 ≤ ‖(f : A →L[ℂ] ℂ)‖ * ‖f (star x * x)‖ := by
-  grw [norm_apply_le_sqrt_opNorm_mul, mul_pow]; simp
+  grw [norm_map_le_sqrt_opNorm_mul, mul_pow]; simp
 
-theorem nnnorm_apply_sq_le_opNNNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
+theorem nnnorm_map_sq_le_opNNNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ‖f x‖₊ ^ 2 ≤ ‖(f : A →L[ℂ] ℂ)‖₊ * ‖f (star x * x)‖₊ :=
-  norm_apply_sq_le_opNorm_mul _ _
+  norm_map_sq_le_opNorm_mul _ _
 
 theorem tendsto_nhds_opNorm (f : A →P[ℂ] ℂ) {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     l.Tendsto (f ·) (𝓝 ‖(f : A →L[ℂ] ℂ)‖) := by
