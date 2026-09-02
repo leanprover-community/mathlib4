@@ -386,37 +386,6 @@ theorem norm_image_sub_le (f : E [⋀^ι]→L[𝕜] F) (m₁ m₂ : ι → E) :
 
 end ContinuousAlternatingMap
 
-namespace ContinuousMultilinearMap
-
-variable [Fintype ι] [DecidableEq ι]
-
-/-- alternatization of a continuous multilinear map to a continuous alternating map, as a
-continuous linear map. -/
-def alternatizationCLM :
-    ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F →L[𝕜] E [⋀^ι]→L[𝕜] F :=
-  LinearMap.mkContinuous alternatizationₗ
-    ((Fintype.card ι)! : ℝ) fun g ↦ by
-      refine ContinuousAlternatingMap.opNorm_le_bound _ (by positivity) fun v ↦ ?_
-      calc ‖ContinuousMultilinearMap.alternatization g v‖
-          = ‖∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • g (v ∘ σ)‖ := by
-            rw [ContinuousMultilinearMap.alternatization_apply_apply ]
-        _ ≤ ∑ σ : Equiv.Perm ι, ‖Equiv.Perm.sign σ • g (v ∘ σ)‖ := norm_sum_le _ _
-        _ ≤ ∑ _σ : Equiv.Perm ι, ‖g‖ * ∏ i, ‖v i‖ := by
-            refine Finset.sum_le_sum fun σ _ ↦ ?_
-            rw [norm_units_zsmul]
-            refine (g.le_opNorm _).trans_eq ?_
-            congr 1
-            exact Fintype.prod_equiv σ _ _ fun i ↦ rfl
-        _ = ((Fintype.card ι)! : ℝ) * ‖g‖ * ∏ i, ‖v i‖ := by
-            rw [Finset.sum_const, Finset.card_univ, Fintype.card_perm, nsmul_eq_mul, mul_assoc]
-
-theorem alternatizationCLM_apply_apply
-    (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F) (v : ι → E) :
-    alternatizationCLM f v = ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f (v ∘ σ) :=
-  alternatization_apply_apply f v
-
-end ContinuousMultilinearMap
-
 variable [Fintype ι]
 
 /-- If a continuous alternating map is constructed from an alternating map via the constructor
