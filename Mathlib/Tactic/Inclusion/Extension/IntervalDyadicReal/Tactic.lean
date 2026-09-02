@@ -23,7 +23,6 @@ open Lean.Parser.Tactic
 
 namespace Inclusion
 
-/-- `dyadic_interval` runs `inclusion` with the `core` and `interval_dyadic_real` extension
 /-- `dyadic_interval` proves real number equalities, inequalities and interval memberships by
 approximating as an interval of dyadic rational numbers.
 
