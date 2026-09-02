@@ -29,9 +29,9 @@ theorem isReduced_iff_spanRadical : IsReduced (AdjoinRoot f) ↔ (span {f}).IsRa
 variable [CharP R p]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem IsReduced.X_pow_sub_one (hcprm : p.Coprime r) [IsArtinianRing R] [IsReduced R] :
-    IsReduced (AdjoinRoot ((X : R[X]) ^ r - 1)) := by
-  simp only [isReduced_iff_spanRadical, (Ideal.isRadical_iff_pow_one_lt 2 (by grind))]
+theorem IsRadical.X_pow_sub_one (hcprm : p.Coprime r) [IsArtinianRing R] [IsReduced R] :
+    (span {(X : R[X]) ^ r - 1}).IsRadical := by
+  simp only [(Ideal.isRadical_iff_pow_one_lt 2 (by grind))]
   intro s hs
   rw [Ideal.mem_span_singleton] at *
   refine (Squarefree.dvd_pow_iff_dvd ?_ (by lia)).mp hs
@@ -40,6 +40,11 @@ theorem IsReduced.X_pow_sub_one (hcprm : p.Coprime r) [IsArtinianRing R] [IsRedu
   apply separable_X_pow_sub_C_unit 1
   convert ((ZMod.isUnit_iff_coprime _ _).mpr hcprm.symm).map (ZMod.castHom (Nat.dvd_refl p) R)
   simp
+
+theorem IsReduced.X_pow_sub_one (hcprm : p.Coprime r) [IsArtinianRing R] [IsReduced R] :
+    IsReduced (AdjoinRoot ((X : R[X]) ^ r - 1)) := by
+  simp only [isReduced_iff_spanRadical]
+  exact IsRadical.X_pow_sub_one hcprm
 
 theorem charP_of_monic_of_degree_pos (monic : f.Monic) (deg : 0 < f.degree) :
     CharP (AdjoinRoot f) p  := by
