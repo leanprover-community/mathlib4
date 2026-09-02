@@ -673,7 +673,7 @@ protected lemma IsInduced.map {H : G.Subgraph} (hH : H.IsInduced) (e : G ↪g G'
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hAdj
   exact ⟨a, b, hH ha hb (e.map_adj_iff.mp hAdj), rfl, rfl⟩
 
-@[simp] protected lemma IsInduced.map_iff (e : G ≃g G') {H : G.Subgraph} :
+@[simp] protected lemma isInduced_map_iso (e : G ≃g G') {H : G.Subgraph} :
     (H.map e.toHom).IsInduced ↔ H.IsInduced :=
   ⟨fun h ↦ by simpa [← map_comp] using h.map e.symm.toEmbedding, fun h ↦ h.map e.toEmbedding⟩
 
