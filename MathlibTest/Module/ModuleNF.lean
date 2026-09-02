@@ -117,13 +117,15 @@ example (f : M → M) (a b : R) (x : M) (h : f ((a + b) • x) = 0) :
   calc f (a • x + b • x) = f ((a + b) • x) := by module_nf
     _ = 0 := h
 
-example (p : M → Prop) (f : M → M) (a b : R) (x : M) (h : p (f ((a + b) • x))) :
+example (p : M → Prop) (f : M → M) (a b : R) (x : M) (h : p (f (b • x + a • x))) :
     p (f (a • x + b • x)) := by
-  module_nf
+  module_nf at h ⊢
+  guard_target =~ p (f ((_ : R) • x))
   exact h
 
 example [Preorder M] (a b : R) (x y : M) (h : (a + b) • x ≤ y) : a • x + b • x ≤ y := by
-  module_nf
+  module_nf at h ⊢
+  guard_target =~ (_ : R) • x ≤ y
   exact h
 
 -- atoms are identified at `.instances` transparency, like `match_scalars` and `module`:
@@ -132,7 +134,8 @@ example (f : R → M) : f ((2 : ℕ) : R) + f ((2 : ℕ) : R) = f (2 : R) + f ((
   module_nf
 
 example (s : Set M) (a b : R) (x : M) (h : (a + b) • x ∈ s) : a • x + b • x ∈ s := by
-  module_nf
+  module_nf at h ⊢
+  guard_target =~ (_ : R) • x ∈ s
   exact h
 
 example (a b : R) (h : a + b = 1) (x y : M) :
@@ -150,7 +153,8 @@ example (a b : R) : ∀ y : M, a • y + b • y = (a + b) • y := by
   exact fun _ => trivial
 
 example (a b : R) (h : ∀ y : M, a • y + b • y = 0) (x : M) : (a + b) • x = 0 := by
-  module_nf at h
+  module_nf at h ⊢
+  guard_target =~ (_ : R) • x = 0
   exact h x
 
 example (a b : R) : (fun y : M => a • y + b • y) = (fun y => (a + b) • y) := by module_nf
@@ -168,19 +172,19 @@ example {A : Type*} [Ring A] [Module A M] (a b : A) (x : M) :
 example {S : Type*} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M]
     (a b : R) (u : S) (x y : M) (P : M → Prop) (h : P (b • x + y)) :
     P (a • x + u • y + (1 - u) • y - (a - b) • x) := by
-  module_nf
+  module_nf at h ⊢
   exact h
 
 example {S : Type*} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M]
     (a b : R) (u : S) (x y : M) (P : M → Prop) (h : P (b • x + u • y)) :
     P (a • x + 1 • y + (u - 1) • y - (a - b) • x) := by
-  module_nf
+  module_nf at h ⊢
   exact h
 
 example {S : Type*} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M]
     (a b : R) (u v : S) (x y : M) (P : M → Prop) (h : P (b • x + y)) :
     P (a • x + u • y + (1 - u) • y - (a - b) • x + v • x - v • x) := by
-  module_nf
+  module_nf at h ⊢
   exact h
 
 example {K : Type*} [Field K] [Module K M] (a : K) (ha : a ≠ 0) (x : M) :
@@ -190,7 +194,8 @@ example {K : Type*} [Field K] [Module K M] (a : K) (ha : a ≠ 0) (x : M) :
 
 example (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
     P (x + x) ∧ P ((2 : ℤ) • x) := by
-  module_nf with ℤ
+  module_nf with ℤ at h ⊢
+  guard_target =~ P ((_ : ℤ) • x) ∧ P ((_ : ℤ) • x)
   exact ⟨h, h⟩
 
 -- `with R` requires `R` to be a semiring
@@ -203,19 +208,22 @@ example (x : M) : ((2 : ℤ) • x = (x + x)) ∧ ((2 : R) • x = (2 : ℤ) •
   exact ⟨trivial, trivial⟩
 
 example {K : Type*} [Field K] [Module K M] (x y : M) (h : x + x = y) : (2 : K) • x = y := by
-  module_nf with K at h
+  module_nf with K at h ⊢
+  guard_target =~ (_ : K) • x = y
   exact h
 
 -- `h` cannot use the scalar ring `ℤ` but it falls back to `R`, its own ring
 example (a : R) (x y : M) (h : a • x + a • x = y) : (a * 2) • x = y := by
-  module_nf with ℤ at h
+  module_nf with ℤ at h ⊢
+  guard_target =~ (_ : R) • x = y
   exact h
 
 example {S T : Type*} [CommRing S] [CommRing T] [Module S M] [Module T M]
     (s : S) (t : T) (x y : M)
     (h₁ : s • x + s • x = 0) (h₂ : t • y + t • y = 0) :
     (s * 2) • x = 0 ∧ (t * 2) • y = 0 := by
-  module_nf at h₁ h₂
+  module_nf at h₁ h₂ ⊢
+  guard_target =~ (_ : S) • x = 0 ∧ (_ : T) • y = 0
   exact ⟨h₁, h₂⟩
 
 example (f : M → M) (c a b : R) (x : M) :
