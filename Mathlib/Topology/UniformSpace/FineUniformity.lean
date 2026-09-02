@@ -29,6 +29,7 @@ open Topology Uniformity Set
 
 public section
 
+set_option warn.classDefReducibility false in
 variable (α) in
 /--
 The fine uniformity on a topological space is the finest uniformity
@@ -37,29 +38,30 @@ is coarser than the ambient topology, they coincide only for completely regular 
 -/
 @[expose]
 def fineUniformity [TopologicalSpace α] : UniformSpace α :=
-  ⨅ (u : UniformSpace α) (_ : ‹TopologicalSpace α› ≤ u.toTopologicalSpace), u
-
-theorem fineUniformity_mono {t₁ t₂ : TopologicalSpace α} (h : t₁ ≤ t₂) :
-    @fineUniformity α t₁ ≤ @fineUniformity α t₂ :=
-  biInf_mono fun _ => h.trans
-
-theorem monotone_fineUniformity : Monotone (@fineUniformity α) :=
-  @fineUniformity_mono α
+  UniformSpace.generateFilter (nhdsSet (Set.diagonal α))
 
 theorem gc_fineUniformity :
     GaloisConnection (@fineUniformity α) (@UniformSpace.toTopologicalSpace α) := by
-  apply GaloisConnection.monotone_intro
-  · exact @UniformSpace.toTopologicalSpace_mono α
-  · exact monotone_fineUniformity
-  · simp [UniformSpace.toTopologicalSpace_iInf]
-  · intro a
-    unfold fineUniformity
-    -- fixme: why does this timeout
-    -- exact iInf₂_le (f := fun u (b : a.toTopologicalSpace ≤ u.toTopologicalSpace) => u) a le_rfl
-    trans ⨅ (_ : a.toTopologicalSpace ≤ a.toTopologicalSpace), a
-    · -- PS: why does `exact` timeout here
-      apply iInf_le (fun u => ⨅ (_ : a.toTopologicalSpace ≤ u.toTopologicalSpace), u) a
-    · exact iInf_le (fun _ => a) le_rfl
+  intro a b
+  unfold fineUniformity
+  rw [UniformSpace.gc_generateFilter_uniformity.le_iff_le, nhdsSet_diagonal,
+    iSup_le_iff, le_iff_nhds]
+  refine forall_congr' fun x => ?_
+  rw [nhds_prod_eq]
+  constructor
+  · intro h
+    rw [nhds_eq_comap_uniformity, ← Filter.map_le_iff_le_comap, ← Filter.pure_prod]
+    exact (Filter.prod_le_prod.2 ⟨pure_le_nhds x, le_rfl⟩).trans h
+  · intro h
+    rw [← cauchy_iff_le]
+    exact cauchy_nhds.mono h
+
+theorem fineUniformity_mono {t₁ t₂ : TopologicalSpace α} (h : t₁ ≤ t₂) :
+    @fineUniformity α t₁ ≤ @fineUniformity α t₂ :=
+  gc_fineUniformity.monotone_l h
+
+theorem monotone_fineUniformity : Monotone (@fineUniformity α) :=
+  @fineUniformity_mono α
 
 theorem fineUniformity_le_iff {t : TopologicalSpace α} {u : UniformSpace α} :
     @fineUniformity α t ≤ u ↔ t ≤ u.toTopologicalSpace := gc_fineUniformity.le_iff_le
@@ -87,7 +89,7 @@ theorem fineUniformity_discrete [TopologicalSpace α] [DiscreteTopology α] :
 theorem toTopologicalSpace_fineUniformity_eq [TopologicalSpace α] [CompletelyRegularSpace α] :
     (fineUniformity α).toTopologicalSpace = ‹TopologicalSpace α› :=
   ((gc_fineUniformity.exists_eq_u _).mp
-    (CompletelyRegularSpace.exists_uniformity.elim fun u hu => ⟨u, hu.symm⟩)).symm
+    (CompletelyRegularSpace.exists_uniformSpace.elim fun u hu => ⟨u, hu.symm⟩)).symm
 
 theorem fineUniformity_top : @fineUniformity α ⊤ = ⊤ := by
   ext s
@@ -114,7 +116,7 @@ theorem fineUniformity_top : @fineUniformity α ⊤ = ⊤ := by
 theorem uniformContinuous_fineUniformity_iff {t : TopologicalSpace α} {u : UniformSpace β}
     {f : α → β} : UniformContinuous[@fineUniformity α t, u] f ↔
     Continuous[t, u.toTopologicalSpace] f := by
-  rw [uniformContinuous_iff, fineUniformity_le_iff, continuous_iff_le_induced,
+  rw [uniformContinuous_iff_le_comap, fineUniformity_le_iff, continuous_iff_le_induced,
     UniformSpace.toTopologicalSpace_comap]
 
 theorem uniformContinuous_fineUniformity_fineUniformity
