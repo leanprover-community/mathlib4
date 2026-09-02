@@ -13,14 +13,13 @@ public import Mathlib.Util.Qq
 # Certificate construction for the Bareiss decomposition
 
 The certificate constructor from the decomposition data, and the default certifier
-`mkCertificate`, which currently proves the certificate conditions by `decide +kernel`.
-
-This will eventually be generalised to a general certificate
-constructor that is parametric on a leaf normaliser.
+`mkCertificate`, which proves the certificate conditions by `decide +kernel`, or from
+proofs of the individual entries supplied by a leaf normaliser.
 
 ## Main definitions
 
 - `mkCertificate`: build the `Echelon.Decomposition` certificate of a matrix literal.
+- `LeafProver`: settle a proposition about a single entry.
 - `checkKernelDecide`: check that equality in a ring reduces in the kernel.
 - `mkPerm`, `mkPivotLit`, `mkMatrixLit`: elaborate the row permutation, the pivot
   function, and a matrix literal.
@@ -29,6 +28,14 @@ constructor that is parametric on a leaf normaliser.
 
 The elimination records its echelon form `U`, making the product a certificate obligation
 of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`.
+
+At a concrete pair of indices a product entry reduces to the fold of its terms, so
+`mkProductEq` states each cell in that shape and leaves it to the leaf normaliser rather
+than rewriting with `Matrix.mul_apply`.
+
+A quantifier over `Fin n` is discharged by recursion on `List.finRange n`, where the motive
+is spelled once, rather than by chaining `Fin.forall_fin_succ`, which respells it at every
+index.
 -/
 
 public meta section
@@ -63,9 +70,9 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
   return acc
 
-/-- Check that equality with zero in `α` reduces to a verdict in the kernel, as the
-certificate conditions will be decided by kernel reduction. This needs to be changed when
-the cert-checking tactic is updated. -/
+/-- Check that equality with zero in `α` reduces to a verdict in the kernel, which decides
+whether the certificate conditions can be discharged by `decide` or need a leaf
+normaliser. -/
 def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
@@ -117,7 +124,7 @@ motive is spelled once rather than once per index. -/
 def mkListForall (n : Nat) (motive : Expr) (head : Nat → Expr → MetaM Expr) : MetaM Expr := do
   let fin ← mkAppM ``Fin #[mkNatLit n]
   let mut acc : Expr := mkConst ``True.intro
-  for k in [0:n] do
+  for k in 0...n do
     let i := n - 1 - k
     let h ← head i (← whnfR (mkApp motive (← mkNumeral fin i)))
     -- the conjunction takes its statement from the proofs, so that the one defeq check
@@ -200,7 +207,7 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     | _ => throwError "expected a quantified statement:{indentExpr e}"
   let cell (i j : Nat) : MetaM Expr := do
     let mut sum ← mkNumeral α 0
-    for k in [0:m] do
+    for k in 0...m do
       let c := m - 1 - k
       let term ← mkAppM ``HMul.hMul #[(lEntries[i]!)[c]!, (aEntries[c]!)[j]!]
       sum ← mkAppM ``HAdd.hAdd #[term, sum]
