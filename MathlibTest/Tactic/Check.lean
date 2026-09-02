@@ -1,6 +1,5 @@
 import Mathlib.Tactic.Check
 
-set_option pp.mvars.anonymous false
 set_option linter.unusedTactic false
 set_option linter.unusedVariables false
 
