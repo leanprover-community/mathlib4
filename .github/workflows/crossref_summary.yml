@@ -86,10 +86,9 @@ jobs:
           python3 "$CI_SCRIPTS_DIR/pr_summary/crossrefsDiff.py" \
             --base-crossrefs baseline.json \
             --head-crossrefs ./artifact/crossrefs.json \
-            --repo "$REPO" --new-sha "$SHA" \
-            --table-out table.md
+            --repo "$REPO" --new-sha "$SHA" > table.md
 
-          if [ ! -f table.md ]; then
+          if [ ! -s table.md ]; then
             echo "state=none" >> "$GITHUB_OUTPUT"
             exit 0
           fi
