@@ -11,6 +11,7 @@ public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.AdjoinRoot.Basic
 public import Mathlib.RingTheory.Artinian.Instances
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.Algebra.CharP.Algebra
 
 /-!
 # Instances related to `AdjoinRoot`
@@ -18,14 +19,14 @@ public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 public section
 
-namespace AdjoinRoot.Polynomial
+namespace AdjoinRoot
 
 open _root_.Polynomial Ideal
 
-variable {r p : ℕ} {R : Type*} [CommRing R]
+variable {r p : ℕ} {R : Type*} [CommRing R] {f : R[X]}
 
-theorem spanRadical_iff_isReduced {f : R[X]} : (span {f}).IsRadical ↔ IsReduced (AdjoinRoot f) :=
-    isRadical_iff_quotient_reduced (Ideal.span {f})
+theorem spanRadical_iff_isReduced : (span {f}).IsRadical ↔ IsReduced (AdjoinRoot f) :=
+  isRadical_iff_quotient_reduced (Ideal.span {f})
 
 variable [CharP R p]
 
@@ -42,22 +43,18 @@ theorem IsReduced.X_pow_sub_one (hcprm : p.Coprime r) [IsArtinianRing R] [IsRedu
   convert ((ZMod.isUnit_iff_coprime _ _).mpr hcprm.symm).map (ZMod.castHom (Nat.dvd_refl p) R)
   simp
 
-theorem CharP.X_pow_sub_one (hcprm : p.Coprime r) [Nontrivial R] :
-    CharP (AdjoinRoot ((X : R[X]) ^ r - 1)) p  := by
-  have hr : r ≠ 0 := by grind [Nat.coprime_zero_right, CharP.char_ne_one R p]
-  apply CharP.quotient'
-  intro z hz
-  by_contra!
-  obtain ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp hz
-  by_cases hc : y = 0
-  · grind
-  · have : (z : R[X]).natDegree = 0 := by simp
-    have : r ≤ (z : R[X]).natDegree := by
-      rw [← hy, natDegree_mul']
-      · suffices ((X : R[X]) ^ r - 1).natDegree = r by lia
-        exact natDegree_X_pow_sub_C
-      suffices ((X : R[X]) ^ r - 1).leadingCoeff = 1 by grind [leadingCoeff_eq_zero, mul_one]
-      exact leadingCoeff_X_pow_sub_one (by lia)
-    grind
+theorem charP_of_monic_of_degree_pos (monic : f.Monic) (deg : 0 < f.degree) :
+    CharP (AdjoinRoot f) p  := by
+  refine _root_.charP_of_injective_algebraMap (R := R) ?_ _
+  apply (faithfulSMul_iff_algebraMap_injective R _).mp
+  exact (faithfulSMul_of_monic_of_degree_pos monic deg)
 
-end AdjoinRoot.Polynomial
+theorem charP_of_X_pow_sub_one (h : 0 < r) [Nontrivial R] :
+    CharP (AdjoinRoot ((X : R[X]) ^ r - 1)) p := by
+  apply charP_of_monic_of_degree_pos
+  · simp [Monic.def, leadingCoeff_X_pow_sub_one h]
+  · refine natDegree_pos_iff_degree_pos.mp ?_
+    suffices ((X : R[X]) ^ r - 1).natDegree = r by grind
+    rw [← C_1, natDegree_X_pow_sub_C]
+
+end AdjoinRoot
