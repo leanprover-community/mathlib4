@@ -348,8 +348,8 @@ theorem Splits.of_splits_map_of_injective {S : Type*} [CommRing S] [IsDomain S] 
 
 omit [IsDomain R] in
 theorem Splits.of_splits_algebraMap [FaithfulSMul R A] (hf : Splits (f.map (algebraMap R A)))
-    (hi : ∀ a ∈ f.rootSet A, a ∈ (algebraMap R A).range) : Splits f := by
-  apply hf.of_splits_map_of_injective (FaithfulSMul.algebraMap_injective R A) fun a ha ↦ hi a ?_
+    (h : ∀ a ∈ f.rootSet A, a ∈ (algebraMap R A).range) : Splits f := by
+  apply hf.of_splits_map_of_injective (FaithfulSMul.algebraMap_injective R A) fun a ha ↦ h a ?_
   rwa [mem_rootSet', ← eval_map_algebraMap, ← IsRoot.def, ← mem_roots']
 
 theorem Splits.mem_lift_of_roots_mem_range (hf : f.Splits) (hm : f.Monic)
