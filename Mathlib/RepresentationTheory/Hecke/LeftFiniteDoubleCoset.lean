@@ -14,17 +14,17 @@ public import Mathlib.GroupTheory.Index
 This file introduces a finiteness condition `DoubleCoset.IsLeftFinite` on double cosets and its
 bundled version `DoubleCoset₀`.
 
+We begin by introducing two indexing types for the left-coset decomposition: the intrinsic
+`LeftDecomposition` and the computational `LeftDecompQuotient`. They are equivalent via
+`toLeftDecompositionEquiv`. The first `LeftDecomposition` is useful for coordinate-free definitions
+and proofs, while the second `LeftDecompQuotient` carries a base point `gH₂` and remains useful for
+concrete convolution product computation.
+
 For a triple `(H₁, H₂, g)`, the property `DoubleCoset.IsLeftFinite H₁ H₂ g` says that the double
 coset H₁gH₂ admits finite decomposition into left cosets, i.e. the set `{xH₂ | H₁xH₂ = H₁gH₂}` is
 finite. The collection of all such double cosets is bundled into a type `DoubleCoset₀`, which allows
 us to describe the intertwining space `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])` as the free module
 `k[DoubleCoset₀ H₁ H₂]`.
-
-# Main definitions
-
-* `DoubleCoset₀`
-* `DoubleCoset.IsLeftFinite`
-
 -/
 
 @[expose] public section
@@ -134,8 +134,7 @@ lemma degree_def :
 
 lemma mk_degree (g : G) :
     (mk H₁ H₂ g).degree = Nat.card (LeftDecompQuotient H₁ H₂ g) := by
-  rw [degree_def,
-    Nat.card_eq_of_bijective _ LeftDecompQuotient.toLeftDecompositionEquiv.bijective]
+  rw [degree_def, Nat.card_eq_of_bijective _ LeftDecompQuotient.toLeftDecompositionEquiv.bijective]
 
 end degree
 
@@ -151,6 +150,10 @@ lemma isLeftFinite_iff_relIndexNeZero :
     IsLeftFinite H₁ H₂ g ↔ (ConjAct.toConjAct g • H₂).relIndex H₁ ≠ 0 := by
   rw [isLeftFinite_iff, mk_degree, LeftDecompQuotient, stabilizer_leftCoset, Subgroup.relIndex,
     Subgroup.index]
+
+instance [IsLeftFinite H₁ H₂ g] : Finite (mk H₁ H₂ g).LeftDecomposition := by
+  apply Nat.finite_of_card_ne_zero
+  simpa [degree_def] using IsLeftFinite.degreeNeZero
 
 noncomputable instance [IsLeftFinite H₁ H₂ g] : Fintype (LeftDecompQuotient H₁ H₂ g) := by
   simpa [LeftDecompQuotient] using
