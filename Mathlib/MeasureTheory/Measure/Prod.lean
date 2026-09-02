@@ -835,24 +835,17 @@ theorem prod_zero (μ : Measure α) : μ.prod (0 : Measure β) = 0 := by simp [M
 
 /-- Version of `map_prod_map` for a.e. measurable maps. -/
 theorem map_prod_map_of_aemeasurable {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ}
-    (μa : Measure α) (μc : Measure γ) [SFinite μa] [SFinite μc] (hf : AEMeasurable f μa)
+    (μa : Measure α) (μc : Measure γ) [SFinite μc] (hf : AEMeasurable f μa)
     (hg : AEMeasurable g μc) :
     (map f μa).prod (map g μc) = map (Prod.map f g) (μa.prod μc) := by
   have hfg : AEMeasurable (Prod.map f g) (μa.prod μc) := by fun_prop
-  simp_rw [← sum_sfiniteSeq μa, ← sum_sfiniteSeq μc] at hf hg hfg ⊢
-  rw [prod_sum] at hfg
-  rw [map_sum hf, map_sum hg, prod_sum, prod_sum, map_sum (by fun_prop)]
-  congr 1
-  ext1 p
-  have hfg' : AEMeasurable (Prod.map f g) ((sfiniteSeq μa p.1).prod (sfiniteSeq μc p.2)) :=
-    hfg.mono_measure (le_sum _ p)
-  have := (sfiniteSeq μa p.1).isFiniteMeasure_map f
-  have := (sfiniteSeq μc p.2).isFiniteMeasure_map g
-  refine prod_eq fun s t hs ht => ?_
-  rw [map_apply_of_aemeasurable hfg' (hs.prod ht),
-    map_apply_of_aemeasurable (hf.mono_measure (le_sum _ _)) hs,
-    map_apply_of_aemeasurable (hg.mono_measure (le_sum _ _)) ht]
-  exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
+  simp only [Measure.prod] at hfg ⊢
+  rw [bind_map hf Measurable.map_prodMk_left.aemeasurable,
+    map_bind Measurable.map_prodMk_left.aemeasurable hfg]
+  refine bind_congr_right ?_
+  filter_upwards [Measurable.map_prodMk_left.aemeasurable.ae_of_bind hfg] with a ha
+  exact (measurable_prodMk_left.aemeasurable.map_map_of_aemeasurable hg).trans
+    (ha.map_map_of_aemeasurable measurable_prodMk_left.aemeasurable).symm
 
 theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (μa : Measure α)
     (μc : Measure γ) [SFinite μa] [SFinite μc] (hf : Measurable f) (hg : Measurable g) :
