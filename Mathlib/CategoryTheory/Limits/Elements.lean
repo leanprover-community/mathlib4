@@ -45,7 +45,6 @@ namespace CreatesLimitsAux
 variable (F : I ⥤ A.Elements)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `lim_i A(Fi)`. -/
 noncomputable def liftedConeElement' : limit ((F ⋙ π A) ⋙ A) :=
   Types.Limit.mk _ (fun i => (F.obj i).2) (by simp)
@@ -61,7 +60,6 @@ variable [HasLimitsOfShape I C] [PreservesLimitsOfShape I A]
 noncomputable def liftedConeElement : A.obj (limit (F ⋙ π A)) :=
   (preservesLimitIso A (F ⋙ π A)).inv (liftedConeElement' F)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_lift_mapCone (c : Cone F) :
     dsimp% A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd = liftedConeElement F := by
@@ -72,7 +70,6 @@ lemma map_lift_mapCone (c : Cone F) :
   have h₂ := (c.π.app i).property
   simpa [-Functor.comp_obj, ← comp_apply, ← Functor.map_comp, liftedConeElement, liftedConeElement']
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_π_liftedConeElement (i : I) :
     dsimp% A.map (limit.π (F ⋙ π A) i) (liftedConeElement F) = (F.obj i).snd := by
@@ -86,7 +83,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 noncomputable def liftedCone : Cone F where
   pt := ⟨_, liftedConeElement F⟩
   π :=
-    { app := fun i => ⟨limit.π (F ⋙ π A) i, by simpa using! map_π_liftedConeElement _ _⟩
+    { app := fun i => ⟨limit.π (F ⋙ π A) i, by simp⟩
       naturality := fun i i' f => by ext; simpa using! (limit.w _ _).symm }
 
 /-- (implementation) The constructed limit cone is a lift of the limit cone in `C`. -/
