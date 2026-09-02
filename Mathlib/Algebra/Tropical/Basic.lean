@@ -398,7 +398,8 @@ theorem trop_add [Add R] (x y : R) : trop (x + y) = trop x * trop y :=
 theorem trop_mul_def [Add R] (x y : MinTropical R) : x * y = trop (untrop x + untrop y) :=
   rfl
 
-@[to_dual]
+/-- The ring structure on `MinTropical R` is the same as on `MaxTropical Rᵒᵈ`. -/
+@[to_dual /-- The ring structure on `MaxTropical R` is the same as on `MinTropical Rᵒᵈ`. -/]
 def equivMaxTropical [LinearOrder R] [Add R] : MinTropical R ≃+* MaxTropical Rᵒᵈ where
   toFun a := .trop (OrderDual.toDual a.untrop)
   invFun a := .trop (OrderDual.ofDual a.untrop)
