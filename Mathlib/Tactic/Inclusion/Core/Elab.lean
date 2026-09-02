@@ -61,7 +61,9 @@ elab (name := inclusion) "inclusion" cfg:optConfig " [" args:inclusionArg,* "]" 
   let config := { config with kernel := options.kernel, native := options.native }
   closeMainGoalUsing `inclusion fun goal _ => inclusionCore goal config
 
-/-- Tactic for quickly checking if the `inclusion` tactic will succeed. -/
+/-- `inclusion? [fam₁, ...]` is a proof writing aid that quickly checks if `inclusion [fam₁, ...]`
+would close the goal, without doing the expensive kernel computation that actually closes the goal.
+-/
 elab (name := inclusion?) "inclusion?" " [" args:inclusionArg,* "]" : tactic => do
   let config ← collectInclusionArgs args.getElems
   withoutModifyingStateWithInfoAndMessages <| withMainContext do
