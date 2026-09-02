@@ -6,8 +6,7 @@ Authors: Marcelo Lynch
 module
 
 public meta import Lean.Elab.Command
--- Import `Mathlib.Init` so that this file has a valid copyright header and module docstring.
-public import Mathlib.Init  -- shake: keep
+public import Mathlib.Init
 
 /-! # The `declaredNames` producer linter
 
@@ -27,33 +26,21 @@ open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
-/-- Persistent state of the `declaredNames` producer: the local constants seen so far. -/
-public structure DeclaredSeen where
-  /-- The names of `env.constants.map₂` entries that earlier commands declared. -/
-  seen : NameSet := {}
-  deriving Inhabited
-
-/-- Pre-phase payload of the `declaredNames` producer: the constants of the current command. -/
-public structure DeclaredNew where
-  /-- The names that the current command added to the environment. -/
-  new : Array Name := #[]
-  deriving Inhabited
-
 /--
 The `declaredNames` producer computes the names that each command declares, as an exact
-environment diff. Consumers read the payload with `readCurrentPreState`.
+environment diff. Its persistent state is the set of names that earlier commands declared;
+its pre-phase payload is the array of names that the current command adds. Consumers read
+the payload with `readCurrentPreState`.
 -/
-public initialize declaredNames : StatefulLinter DeclaredSeen DeclaredNew ←
+public initialize declaredNames : StatefulLinter NameSet (Array Name) ←
   registerStatefulLinter {}
-    (pre := fun _ self _ => do
-      let env ← getEnv
+    (pre := fun _ seen _ => do
       let mut new := #[]
-      for (n, _) in env.constants.map₂ do
-        unless self.seen.contains n do
+      for (n, _) in (← getEnv).constants.map₂ do
+        unless seen.contains n do
           new := new.push n
-      return some { new })
-    (post := fun _ self selfPre _ _ => do
-      let some p := selfPre | return self
-      return { seen := p.new.foldl (·.insert ·) self.seen })
+      return some new)
+    (post := fun _ seen new _ _ =>
+      return (new.getD #[]).foldl (·.insert ·) seen)
 
 end Mathlib.Linter

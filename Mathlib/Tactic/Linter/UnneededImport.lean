@@ -75,8 +75,8 @@ def unneededImportPost (readPre : PreStateFn) (stx : Syntax) (self : UsedModules
     if let some d := optionDecls.find? i then
       if let some idx := env.getModuleIdxFor? d.declName then
         used := used.insert env.allImportedModuleNames[idx.toNat]!
-  if let some p := readPre declaredNames then
-    for n in p.new do
+  if let some new := readPre declaredNames then
+    for n in new do
       if let some ci := env.find? n then
         for c in ci.getUsedConstantsAsSet do
           if let some idx := env.getModuleIdxFor? c then
