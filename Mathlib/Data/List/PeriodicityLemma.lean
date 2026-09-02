@@ -262,8 +262,7 @@ lemma hasPeriod_flatten_replicate (n : ℕ) (l : List α) :
     have h := ih.take_append l.length l.length (replicate (n + 1) l).flatten
       (dvd_refl l.length) hlen
     rw [htake] at h
-    rw [replicate_succ, flatten_cons]
-    exact h
+    rwa [replicate_succ, flatten_cons]
 
 /-- A list with period `p` and length `r * p` is the `r`-fold repetition of its
 length-`p` prefix. This is the converse of `hasPeriod_flatten_replicate`. -/
