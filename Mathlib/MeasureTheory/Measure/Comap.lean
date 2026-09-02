@@ -83,8 +83,7 @@ lemma comap_undef {μ : Measure β}
 theorem le_comap_apply (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ) (s : Set α) :
     μ (f '' s) ≤ comap f μ s := by
-  rw [comap, dite_eq_left (And.intro hfi hf)]
-  exact le_toMeasure_apply _ _ _
+  grw [comap, dite_eq_left (And.intro hfi hf), ← le_toMeasure_apply]; rfl
 
 theorem comap_apply (f : α → β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β) (hs : MeasurableSet s) :
