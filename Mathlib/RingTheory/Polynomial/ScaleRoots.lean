@@ -46,8 +46,7 @@ theorem zero_scaleRoots (s : R) : scaleRoots 0 s = 0 := by
 theorem scaleRoots_ne_zero {p : R[X]} (hp : p ≠ 0) (s : R) : scaleRoots p s ≠ 0 := by
   intro h
   have : p.coeff p.natDegree ≠ 0 := mt leadingCoeff_eq_zero.mp hp
-  have : (scaleRoots p s).coeff p.natDegree = 0 :=
-    congr_fun (congr_arg (coeff : R[X] → ℕ → R) h) p.natDegree
+  have : (scaleRoots p s).coeff p.natDegree = 0 := by rw [h]; simp
   rw [coeff_scaleRoots_natDegree] at this
   contradiction
 
@@ -157,6 +156,11 @@ theorem scaleRoots_eval₂_eq_zero {p : S[X]} (f : S →+* R) {r : R} {s : S} (h
 lemma scaleRoots_eval_mul (p : R[X]) (r s : R) :
     eval (s * r) (p.scaleRoots s) = s ^ p.natDegree * eval r p :=
   scaleRoots_eval₂_mul _ _ _
+
+lemma scaleRoots_aeval_smul {S} [CommSemiring S] [Algebra S R] {p : S[X]} (r : R) (s : S) :
+    (p.scaleRoots s).aeval (s • r) = s ^ p.natDegree • p.aeval r := by
+  simp_rw [Algebra.smul_def, map_pow]
+  exact scaleRoots_eval₂_mul _ _ _
 
 theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
     aeval (algebraMap R A r * a) (scaleRoots p r) = 0 := by

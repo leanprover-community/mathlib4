@@ -254,6 +254,27 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
   rintro _ h _ rfl
   exact subset_adjoin F _ ⟨_, h, rfl⟩
 
+/-- Adjoining `x + algebraMap F E y`, where `y` lies in the base field, yields the same simple
+extension as adjoining `x`. -/
+theorem adjoin_simple_add_algebraMap (x : E) (y : F) : F⟮x + algebraMap F E y⟯ = F⟮x⟯ := by
+  apply le_antisymm
+  · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
+    exact add_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
+  · rw [adjoin_simple_le_iff]
+    convert IntermediateField.sub_mem _ (mem_adjoin_simple_self F _) (algebraMap_mem _ y)
+    rw [eq_sub_iff_add_eq]
+
+/-- Adjoining `x * algebraMap F E y`, where `y` is a nonzero element of the base field, yields the
+same simple extension as adjoining `x`. -/
+theorem adjoin_simple_mul_algebraMap (x : E) (y : F) (hy : y ≠ 0) :
+    F⟮x * algebraMap F E y⟯ = F⟮x⟯ := by
+  apply le_antisymm
+  · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
+    exact mul_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
+  · rw [adjoin_simple_le_iff]
+    convert IntermediateField.div_mem _ (mem_adjoin_simple_self F _) (algebraMap_mem _ y)
+    rw [mul_div_cancel_right₀ x (by rwa [_root_.map_ne_zero])]
+
 end AdjoinDef
 
 section AdjoinIntermediateFieldLattice
@@ -592,6 +613,24 @@ theorem finiteDimensional_adjoin {S : Set L} [Finite S] (hS : ∀ x ∈ S, IsInt
   rw [← biSup_adjoin_simple, ← iSup_subtype'']
   have (x : S) := adjoin.finiteDimensional (hS x.1 x.2)
   exact finiteDimensional_iSup_of_finite
+
+/-- If `x` generates `L` over `K` (i.e., `K⟮x⟯ = ⊤`) and is integral over `K`, then `x`
+defines a `PowerBasis` for `L` over `K`. See `PowerBasis.ofAdjoinEqTop` for a version with
+`Algebra.adjoin`. -/
+noncomputable def _root_.PowerBasis.ofAdjoinSimpleEqTop {x : L} (h : IsIntegral K x)
+    (hgen : K⟮x⟯ = ⊤) : PowerBasis K L :=
+  (adjoin.powerBasis h).map ((IntermediateField.equivOfEq hgen).trans IntermediateField.topEquiv)
+
+@[simp]
+lemma _root_.PowerBasis.ofAdjoinSimpleEqTop_gen {x : L} (h : IsIntegral K x)
+    (hgen : K⟮x⟯ = ⊤) : (PowerBasis.ofAdjoinSimpleEqTop h hgen).gen = x := by
+  simp [PowerBasis.ofAdjoinSimpleEqTop]
+
+@[simp]
+lemma _root_.PowerBasis.ofAdjoinSimpleEqTop_dim {x : L} (h : IsIntegral K x)
+    (hgen : K⟮x⟯ = ⊤) :
+    (PowerBasis.ofAdjoinSimpleEqTop h hgen).dim = (minpoly K x).natDegree := by
+  simp [PowerBasis.ofAdjoinSimpleEqTop]
 
 end PowerBasis
 
