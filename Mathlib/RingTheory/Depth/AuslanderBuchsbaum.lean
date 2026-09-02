@@ -306,13 +306,10 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
           using WithBot.le_add_self (WithBot.natCast_ne_bot n) 1
       have projX₂ : Projective S.X₂ := inferInstance
       have projdim : projectiveDimension S.X₁ = n := by
-        apply le_antisymm
-        · simpa [projectiveDimension_le_iff, ← S_exact.hasProjectiveDimensionLT_X₃_iff n projX₂]
-            using (projectiveDimension_le_iff M (n + 1)).mp (le_of_eq hn)
-        · have : n - 1 + 2 = n + 1 := by omega
-          rw [projectiveDimension_ge_iff, (Nat.sub_one_add_one eq0).symm,
-            ← S_exact.hasProjectiveDimensionLT_X₃_iff _ projX₂, ← projectiveDimension_ge_iff, this]
-          simp [S, hn]
+        have nproj : ¬ Projective M := by
+          simp [projective_iff_hasProjectiveDimensionLE_zero, ← projectiveDimension_le_iff, hn]
+        rw [← ENat.WithBot.add_one_cancel, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_one,
+          ← S_exact.projectiveDimension_X₃_eq_succ_of_not_projective projX₂ nproj, hn]
       have h_ker := ih S.X₁ (by simpa [projdim] using not_eq_of_beq_eq_false rfl) projdim
       have h_ker' : n + IsLocalRing.depth S.X₁ =
         IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
