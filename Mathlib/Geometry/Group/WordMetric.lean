@@ -34,7 +34,8 @@ family given by `Group.Generators`. The word length defines a norm on `G` induci
 
 * The API in this file is modelled on the length API for Coxeter groups (`CoxeterSystem.length`).
 * We define `wordLength` in terms of `sInf` instead of `Nat.find` to avoid having to produce the
-  `DecidablePred` instance. The definition of `wordLength` has no useful defeqs and is
+  `DecidablePred` instance. The junk value `0` on `∅` is never reached because every group element
+  has at least one word representing it.The definition of `wordLength` has no useful defeqs and is
   characterized by `wordLength_le_iff`, so we tag it with `@[no_expose]`.
 
 ## TODO
