@@ -32,6 +32,8 @@ end Preorder
 
 @[to_additive] instance [PartialOrder α] : PartialOrder αᵐᵒᵖ := PartialOrder.lift _ unop_injective
 
+@[to_additive] instance [LinearOrder α] : LinearOrder αᵐᵒᵖ := LinearOrder.lift' unop unop_injective
+
 section OrderedCommMonoid
 variable [CommMonoid α] [PartialOrder α]
 

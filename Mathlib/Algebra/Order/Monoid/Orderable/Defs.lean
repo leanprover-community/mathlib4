@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Equiv.Opposite
-public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Order.Group.Opposite
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
@@ -229,7 +229,7 @@ theorem MulEquiv.isBiOrderable_congr (e : M ≃* N) : IsBiOrderable M ↔ IsBiOr
 monoid `Mᵃᵒᵖ`. -/]
 instance [IsRightOrderable M] : IsLeftOrderable Mᵐᵒᵖ := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulRightMono M
-  refine ⟨LinearOrder.lift' MulOpposite.unop MulOpposite.unop_injective, ⟨fun c a b hab ↦ ?_⟩⟩
+  refine ⟨inferInstance, ⟨fun c a b hab ↦ ?_⟩⟩
   change (c * a).unop ≤ (c * b).unop
   rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
   gcongr
@@ -240,7 +240,7 @@ instance [IsRightOrderable M] : IsLeftOrderable Mᵐᵒᵖ := by
 monoid `Mᵃᵒᵖ`. -/]
 instance [IsLeftOrderable M] : IsRightOrderable Mᵐᵒᵖ := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono M
-  refine ⟨LinearOrder.lift' MulOpposite.unop MulOpposite.unop_injective, ⟨fun c a b hab ↦ ?_⟩⟩
+  refine ⟨inferInstance, ⟨fun c a b hab ↦ ?_⟩⟩
   change (a * c).unop ≤ (b * c).unop
   rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
   gcongr
@@ -251,8 +251,7 @@ instance [IsLeftOrderable M] : IsRightOrderable Mᵐᵒᵖ := by
 monoid `Mᵃᵒᵖ`. -/]
 instance [IsBiOrderable M] : IsBiOrderable Mᵐᵒᵖ := by
   obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono M
-  refine ⟨.lift' MulOpposite.unop MulOpposite.unop_injective,
-    ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
+  refine ⟨inferInstance, ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
   · change (_ : Mᵐᵒᵖ).unop ≤ (_ : Mᵐᵒᵖ).unop
     rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
     gcongr
