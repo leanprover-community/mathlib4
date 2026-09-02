@@ -780,31 +780,26 @@ include hc in
 lemma exists_app_map_eq_zero_of_isLimit {i : I} {U : (D.obj i).Opens}
     (hU : IsCompact (X := D.obj i) U) (s : Γ(D.obj i, U)) (hs : (c.π.app i).app U s = 0) :
     ∃ (j : I) (f : j ⟶ i), (D.map f).app U s = 0 := by
-  have h0 {V : (D.obj i).Opens} (hV : V ≤ U) {V' : c.pt.Opens} (e : V' ≤ c.π.app i ⁻¹ᵁ V) :
-      (c.π.app i).appLE V V' e (s |_ V) = 0 := by
-    rw [Scheme.Hom.appLE_restrict _ hV, Scheme.Hom.appLE, ConcreteCategory.comp_apply, hs,
-      map_zero]
+  have h0 {V : c.pt.Opens} (e : V ≤ c.π.app i ⁻¹ᵁ U) : (c.π.app i).appLE U V e s = 0 := by
+    rw [Scheme.Hom.appLE, ConcreteCategory.comp_apply, hs, map_zero]
   have key {W : (D.obj i).Opens} (hW : IsAffineOpen W) (hWU : W ≤ U) :
-      ∃ (j : I) (f : j ⟶ i), (D.map f).app W (s |_ W) = 0 := by
+      ∃ (j : I) (f : j ⟶ i),
+        (D.map f).appLE U (D.map f ⁻¹ᵁ W) ((D.map f).preimage_mono hWU) s = 0 := by
     have (j : Over i) : IsAffine ((opensDiagram D i W).obj j) := hW.preimage (D.map _)
     have hle : D.map (𝟙 i) ⁻¹ᵁ W ≤ U := by simpa using hWU
-    obtain ⟨j, v, hv⟩ := exists_appTop_map_eq_zero_of_isAffine_of_isLimit _ _
-      (isLimitOpensCone D c hc i W) (.mk (𝟙 i))
-      ((D.map (𝟙 i) ⁻¹ᵁ W).topIso.inv (TopCat.Presheaf.restrictOpen s _ hle)) (by
-        change ((c.π.app i).resLE (D.map (𝟙 i) ⁻¹ᵁ W) (c.π.app i ⁻¹ᵁ W) (by simp)).appTop _ = 0
-        simp only [Scheme.Hom.appTop, Scheme.Hom.resLE_app_top, ConcreteCategory.comp_apply,
-          Iso.inv_hom_id_apply, h0, map_zero])
+    obtain ⟨j, v, hv⟩ : ∃ (j : Over i) (v : j ⟶ .mk (𝟙 i)),
+        ((D.map v.left).resLE (D.map (𝟙 i) ⁻¹ᵁ W) (D.map j.hom ⁻¹ᵁ W)
+            (by simp [← Over.w v])).appTop
+          ((D.map (𝟙 i) ⁻¹ᵁ W).topIso.inv (TopCat.Presheaf.restrictOpen s _ hle)) = 0 :=
+      exists_appTop_map_eq_zero_of_isAffine_of_isLimit _ _ (isLimitOpensCone D c hc i W)
+        (.mk (𝟙 i)) _ (by
+          change ((c.π.app i).resLE (D.map (𝟙 i) ⁻¹ᵁ W) (c.π.app i ⁻¹ᵁ W) (by simp)).appTop _ = 0
+          simp only [Scheme.Hom.resLE_appTop_apply, Iso.inv_hom_id_apply,
+            Scheme.Hom.appLE_restrict, h0, map_zero])
     have hv' : v.left = j.hom := by simpa using Over.w v
-    replace hv : ((D.map v.left).resLE (D.map (𝟙 i) ⁻¹ᵁ W) (D.map j.hom ⁻¹ᵁ W)
-        (by rw [hv']; simp)).appTop
-        ((D.map (𝟙 i) ⁻¹ᵁ W).topIso.inv (TopCat.Presheaf.restrictOpen s _ hle)) = 0 := hv
-    replace hv := congr((D.map j.hom ⁻¹ᵁ W).topIso.hom $hv)
-    simp only [Scheme.Hom.appTop, Scheme.Hom.resLE_app_top, ConcreteCategory.comp_apply,
-      Iso.inv_hom_id_apply, map_zero, hv'] at hv
-    refine ⟨j.left, j.hom, ?_⟩
-    simpa only [Scheme.Hom.app_eq_appLE, TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict,
-      ← ConcreteCategory.comp_apply, Category.assoc, Iso.inv_hom_id_assoc,
-      Scheme.Hom.map_appLE] using hv
+    exact ⟨j.left, j.hom, by
+      simpa only [Scheme.Hom.resLE_appTop_apply, Iso.inv_hom_id_apply, hv',
+        Scheme.Hom.appLE_restrict, map_zero] using congr((D.map j.hom ⁻¹ᵁ W).topIso.hom $hv)⟩
   obtain ⟨Us, hUs, hUsf, hsup⟩ := (D.obj i).isBasis_affineOpens.exists_finite_of_isCompact hU
   have : Finite Us := hUsf
   have hle (W : Us) : (W : (D.obj i).Opens) ≤ U := (le_sSup W.2).trans hsup.ge
@@ -814,14 +809,10 @@ lemma exists_app_map_eq_zero_of_isLimit {i : I} {U : (D.obj i).Opens}
     (fun W : Us ↦ D.map v ⁻¹ᵁ (W : (D.obj i).Opens)) _
     (fun W ↦ homOfLE ((D.map v).preimage_mono (hle W))) ?_ _ _ fun W ↦ ?_⟩
   · rw [hsup, sSup_eq_iSup', Scheme.Hom.preimage_iSup]
-  · have h₂ : D.map v ⁻¹ᵁ (W : (D.obj i).Opens) ≤
-        D.map (w W) ⁻¹ᵁ D.map (u W) ⁻¹ᵁ (W : (D.obj i).Opens) := by
-      rw [← Scheme.Hom.comp_preimage, ← D.map_comp, hw W]
-    convert! congr((D.map (w W)).appLE _ _ h₂ $(H W))
-    · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
-      simp [Scheme.Hom.app_eq_appLE, ← ConcreteCategory.comp_apply, -CommRingCat.hom_comp,
-        Scheme.Hom.appLE_comp_appLE, ← Functor.map_comp, hw W]
-    · simp
+  · have h := congr((D.map (w W)).appLE _ (D.map v ⁻¹ᵁ (W : (D.obj i).Opens))
+      (by rw [← Scheme.Hom.comp_preimage, ← D.map_comp, hw W]) $(H W))
+    simp only [Scheme.Hom.appLE_appLE, ← Functor.map_comp, hw W, map_zero] at h
+    exact h.trans (map_zero _).symm
 
 include hc in
 lemma exists_appTop_map_eq_zero_of_isLimit {i : I} [CompactSpace (D.obj i)] (s : Γ(D.obj i, ⊤))

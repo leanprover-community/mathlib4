@@ -830,6 +830,10 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma resLE_app_top : (f.resLE U V e).app ⊤ =
     U.topIso.hom ≫ f.appLE U V e ≫ V.topIso.inv := by simp [Scheme.Hom.resLE]
 
+lemma resLE_appTop_apply (s : Γ(U, ⊤)) :
+    (f.resLE U V e).appTop s = V.topIso.inv (f.appLE U V e (U.topIso.hom s)) := by
+  rw [Scheme.Hom.appTop, resLE_app_top, ConcreteCategory.comp_apply, ConcreteCategory.comp_apply]
+
 set_option backward.isDefEq.respectTransparency false in
 lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
     (O : U.toScheme.Opens) (W : V.toScheme.Opens) (e' : W ≤ resLE f U V e ⁻¹ᵁ O) :
