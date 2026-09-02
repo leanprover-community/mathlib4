@@ -287,7 +287,7 @@ lemma liftPath_trans {x y z : X} {e : E} (hpe : x = p e) (γ : Path x y) (γ' : 
   · refine congr_fun (cov.liftPath_lifts γ' _ ?_) _
     simpa using congr($(cov.liftPath_lifts γ ..) 1).symm
 
-theorem surjective_restrictPathComponent (e₀ : E) [PathConnectedSpace X] :
+theorem comp_subtypeVal_pathComponent_surjective (e₀ : E) [PathConnectedSpace X] :
     Surjective (fun x : pathComponent e₀ ↦ p x) := by
   intro x
   let γ := PathConnectedSpace.somePath (p e₀) x
