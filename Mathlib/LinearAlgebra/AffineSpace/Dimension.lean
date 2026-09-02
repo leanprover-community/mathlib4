@@ -58,6 +58,16 @@ theorem findim_bot : findim (⊥ : AffineSubspace R A) = ⊥ := by
   simp [findim]
 
 @[simp]
+theorem dim_singleton [Nontrivial R] (x : A) : dim ({x} : AffineSubspace R A) = 0 := by
+  unfold dim
+  rw [direction_singleton]
+  simp
+
+@[simp]
+theorem findim_singleton [Nontrivial R] (x : A) : findim ({x} : AffineSubspace R A) = 0 := by
+  simp [findim]
+
+@[simp]
 theorem dim_eq_bot_iff : dim s = ⊥ ↔ s = ⊥ := by
   simp [dim]
 
