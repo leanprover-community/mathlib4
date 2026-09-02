@@ -515,7 +515,7 @@ lemma kernel_span_singleton (f : H) :
   ext
   simp [kernel_submodule, starProjection_singleton, division_def, smul_smul, mul_comm]
 
-lemma kernel_span_singleton_perp (f : H) :
+lemma kernel_orthogonal_span_singleton (f : H) :
     kernel (𝕜 ∙ f)ᗮ = kernel H - (1 / (‖f‖ : 𝕜) ^ 2) • outerKernel 𝕜 f := by
   ext
   simp [kernel_submodule, starProjection_singleton, division_def, smul_smul, mul_comm]
@@ -528,7 +528,7 @@ theorem posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
   have hp : (‖f‖ ^ 2 : 𝕜) ≠ 0 := by simpa
   rw [← smul_inv_smul₀ hp (outerKernel 𝕜 f), ← smul_sub]
   refine Matrix.PosSemidef.smul ?_ (by simp)
-  simpa [kernel_span_singleton_perp] using posSemidef_kernel (𝕜 ∙ f)ᗮ
+  simpa [kernel_orthogonal_span_singleton] using posSemidef_kernel (𝕜 ∙ f)ᗮ
 
 end outerKernel
 
