@@ -5,11 +5,12 @@ Authors: Yaël Dillies, Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Distributions.Bernoulli
+public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.SetBernoulli
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
+import Mathlib.Probability.HasLawExists
 
 /-!
 # Binomial random variables
@@ -26,8 +27,8 @@ of `Set.Iic n` such that each `k ∈ Set.Iic n` belongs to `U` independently wit
 
 ## Implementation details
 
-We provide the definition `binomial` with notation `Bin(n, P)` as the corresponding measure
-over `ℕ`. We also introduce a notation `Bin(R, n p)` for the same measure but over a general
+We provide the definition `binomial` with notation `Bin(n, p)` as the corresponding measure
+over `ℕ`. We also introduce a notation `Bin(R, n, p)` for the same measure but over a general
 `AddMonoidWithOne R`, that stands for `Bin(n, p).map (Nat.cast : ℕ → R)`. This is in particular
 useful if one is interested in the binomial distribution as a measure over `ℝ` or `ℤ`.
 Results should be proven for both `Bin(n, p)` and `Bin(R, n, p)` when possible, using the first
@@ -46,7 +47,7 @@ use `map_cast_binomial`.
 public section
 
 open MeasureTheory Set Measure
-open scoped NNReal ProbabilityTheory unitInterval ENNReal
+open scoped NNReal ProbabilityTheory unitInterval ENNReal Set.Notation
 
 namespace ProbabilityTheory
 variable {R Ω : Type*} [MeasurableSpace R] [AddMonoidWithOne R] {m : MeasurableSpace Ω}
@@ -174,17 +175,8 @@ lemma integral_map_cast_binomial [MeasurableSingletonClass R] (f : R → E) :
   rw [integral_map .of_discrete (integrable_map_cast_binomial f).aestronglyMeasurable,
     integral_binomial]
 
-end Integral
-
-/-! ### Binomial random variables -/
-
-variable {X : Ω → ℝ}
-
-/-- **Expectation of a binomial random variable**.
-
-The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
-theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n := by
-  rw [hX.integral_eq, integral_map_cast_binomial, ← n.range_succ_eq_Iic, Finset.sum_range_succ']
+lemma integral_id_binomial : ∫ x, x ∂Bin(ℝ, n, p) = p * n := by
+  rw [integral_map_cast_binomial, ← n.range_succ_eq_Iic, Finset.sum_range_succ']
   cases n with norm_num | succ n
   calc
     _ = p * ∑ x ∈ Finset.range (n + 1), (n + 1).choose (x + 1) * (x + 1) *
@@ -197,5 +189,87 @@ theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.
       rw [mul_assoc, Finset.mul_sum (a := (n : ℝ) + 1)]
       group
     _ = p * (n + 1) := by grind [add_pow p.val (1 - p) n, one_pow]
+
+lemma measurePreserving_ncard_setBernoulli_binomial_ncard {ι : Type*} [Countable ι] {u : Set ι}
+    (hu : u.Finite) :
+    MeasurePreserving ncard setBer(u, p) Bin(u.ncard, p) where
+  measurable := by fun_prop
+  map_eq := by
+    refine ext_of_singleton fun k ↦ ?_
+    rw [binomial_singleton, map_ncard_setBernoulli_singleton hu]
+
+/-- A sum of independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_finsetSum_map_cast_binomial {ι R : Type*} {s : Finset ι} {X : ι → Ω → R}
+    [MeasurableSpace R] [AddCommMonoidWithOne R] [MeasurableSingletonClass R] [MeasurableAdd₂ R]
+    (hX : iIndepFun (s.restrict X) P) (lawX : ∀ i ∈ s, HasLaw (X i) Ber(1, 0, p) P) :
+    HasLaw (∑ i ∈ s, X i) Bin(R, s.card, p) P := by
+  classical
+  obtain ⟨Ω', mΩ', P', S, -, hS⟩ := setBer((Finset.univ (α := s) : Set s), p).exists_hasLaw
+  convert (hS.hasLaw_indicator_infinitePi_ite_of_setBernoulli 1).comp_of_hasLaw_comp
+    (f := fun x ↦ ∑ i, x i) (Y := fun ω i ↦ X i.1 ω) (by fun_prop) ?_ ?_
+  · simp only [Finset.sum_apply]
+    rw [← Finset.sum_coe_sort, ← Finset.sum_coe_sort]
+  · rw [infinitePi_eq_pi]
+    exact hX.hasLaw_pi (by simpa)
+  have : HasLaw (fun ω ↦ ((S ω).ncard : R)) Bin(R, s.card, p) P' := by
+    convert (hasLaw_map .of_discrete).comp <|
+      (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS <;> simp
+  convert this with ω
+  rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), Finset.card_eq_sum_ite (Finset.subset_univ _)]
+  simp [Set.indicator]
+
+/-- A sum of independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_finsetSum_binomial {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ}
+    (hX : iIndepFun (s.restrict X) P) (lawX : ∀ i ∈ s, HasLaw (X i) Ber(1, 0, p) P) :
+    HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
+  convert hX.hasLaw_finsetSum_map_cast_binomial lawX
+  simp
+
+/-- A sum of independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_sum_map_cast_binomial {ι : Type*} (R : Type*) [Fintype ι] {X : ι → Ω → R}
+    [MeasurableSpace R] [AddCommMonoidWithOne R] [MeasurableSingletonClass R] [MeasurableAdd₂ R]
+    (hX : iIndepFun X P) (lawX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) :
+    HasLaw (∑ i, X i) Bin(R, Fintype.card ι, p) P := by
+  convert (hX.restrict _).hasLaw_finsetSum_map_cast_binomial ?_
+  · simp
+  · simpa
+
+/-- A sum of independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_sum_binomial {ι : Type*} [Fintype ι] {X : ι → Ω → ℕ}
+    (hX : iIndepFun X P) (lawX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) :
+    HasLaw (∑ i, X i) Bin(Fintype.card ι, p) P := by
+  convert hX.hasLaw_sum_map_cast_binomial ℕ lawX
+  simp
+
+lemma variance_id_binomial : Var[id; Bin(ℝ, n, p)] = p * (1 - p) * n := by
+  obtain ⟨Ω', mΩ', P', X, -, lawX, hX, _⟩ := exists_hasLaw_indepFun (fun _ ↦ ℝ)
+    (fun i : Fin n ↦ Ber(1, 0, p))
+  have := hX.hasLaw_sum_map_cast_binomial ℝ lawX
+  rw [Fintype.card_fin] at this
+  rw [← this.variance_eq, IndepFun.variance_sum]
+  · simp [fun i ↦ (lawX i).variance_eq, variance_id_bernoulliMeasure]
+    ring
+  · exact fun i _ ↦ (lawX i).memLp_bernoulliMeasure 2
+  · intro _ _ _ _ h
+    exact hX.indepFun h
+
+end Integral
+
+/-! ### Binomial random variables -/
+
+variable {X : Ω → ℝ}
+
+/-- **Expectation of a binomial random variable**.
+
+The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
+theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n := by
+  rw [hX.integral_eq, integral_id_binomial]
+
+/-- **Variance of a binomial random variable**.
+
+The variance of a binomial random variable with parameters `n` and `p` is `p(1 - p)n`. -/
+theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
+    Var[X; P] = p * (1 - p) * n := by
+  rw [hX.variance_eq, variance_id_binomial]
 
 end ProbabilityTheory

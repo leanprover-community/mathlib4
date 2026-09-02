@@ -175,10 +175,15 @@ section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
 
+@[simp]
+lemma memLp_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) (q : ℝ≥0∞) :
+    MemLp f q Ber(x, y, p) := by
+  simp [bernoulliMeasure_def, memLp_add_measure, MemLp.smul_measure_nnreal]
+
+@[simp]
 lemma integrable_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
-    Integrable f Ber(x, y, p) := by
-  simp [bernoulliMeasure_def, integrable_add_measure, integrable_dirac,
-    Integrable.smul_measure_nnreal]
+    Integrable f Ber(x, y, p) :=
+  memLp_one_iff_integrable.1 (memLp_bernoulliMeasure ..)
 
 variable [NormedSpace ℝ E] [CompleteSpace E]
 
@@ -188,6 +193,14 @@ lemma integral_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (
   · simp [NNReal.smul_def]
   all_goals exact (integrable_dirac (by simp)).smul_measure_nnreal
 
+lemma integral_id_bernoulliMeasure : ∫ x : ℝ, x ∂Ber(1, 0, p) = p := by
+  simp [integral_bernoulliMeasure]
+
+lemma variance_id_bernoulliMeasure : Var[id; Ber(1, 0, p)] = p * (1 - p) := by
+  rw [variance_eq_integral (by fun_prop)]
+  simp [integral_bernoulliMeasure]
+  ring
+
 end Integral
 
 section HasLaw
@@ -195,6 +208,24 @@ section HasLaw
 /-! ### Bernoulli random variables -/
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+
+lemma HasLaw.memLp_comp_bernoulliMeasure {E : Type*} [NormedAddCommGroup E]
+    [MeasurableSingletonClass X] {f : Ω → X} (g : X → E) (q : ℝ≥0∞) (hf : HasLaw f Ber(x, y, p) P) :
+    MemLp (g ∘ f) q P :=
+  hf.memLp_comp (by simp)
+
+lemma HasLaw.memLp_bernoulliMeasure [NormedAddCommGroup X] [MeasurableSingletonClass X] {f : Ω → X}
+    (q : ℝ≥0∞) (hf : HasLaw f Ber(x, y, p) P) :
+    MemLp f q P := hf.memLp_comp_bernoulliMeasure id q
+
+lemma HasLaw.integrable_comp_bernoulliMeasure {E : Type*} [NormedAddCommGroup E]
+    [MeasurableSingletonClass X] {f : Ω → X} (g : X → E) (hf : HasLaw f Ber(x, y, p) P) :
+    Integrable (g ∘ f) P :=
+  hf.integrable_comp (by simp)
+
+lemma HasLaw.integrable_bernoulliMeasure [NormedAddCommGroup X] [MeasurableSingletonClass X]
+    {f : Ω → X} (hf : HasLaw f Ber(x, y, p) P) :
+    Integrable f P := hf.integrable_comp_bernoulliMeasure id
 
 /-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]
