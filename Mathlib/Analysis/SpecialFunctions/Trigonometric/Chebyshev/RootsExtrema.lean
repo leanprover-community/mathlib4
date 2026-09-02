@@ -80,13 +80,13 @@ theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx 
 
 theorem one_le_abs_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ |x|) :
     1 ≤ |(T ℝ n).eval x| := by
-  wlog! h : 0 ≤ x
+  wlog! (disch := none) h : 0 ≤ x
   · simpa [T_eval_neg, abs_mul, abs_unit_intCast] using @this n (-x) (by grind) (by grind)
   · exact one_le_eval_T_real n (abs_of_nonneg h ▸ hx) |>.trans <| le_abs_self _
 
 theorem one_lt_abs_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < |x|) :
     1 < |(T ℝ n).eval x| := by
-  wlog! h : 0 ≤ x
+  wlog! (disch := none) h : 0 ≤ x
   · simpa [T_eval_neg, abs_mul, abs_unit_intCast] using @this n hn (-x) (by grind) (by grind)
   · exact one_lt_eval_T_real hn (abs_of_nonneg h ▸ hx) |>.trans_le <| le_abs_self _
 
