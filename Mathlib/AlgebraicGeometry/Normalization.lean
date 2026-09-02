@@ -41,7 +41,6 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 open AffineZariskiSite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a morphism `f : X ⟶ Y`, this is the presheaf of integral closure of `Y` in `X`. -/
 def normalizationDiagram : Y.Opensᵒᵖ ⥤ CommRingCat where
   obj U :=
@@ -112,9 +111,6 @@ lemma coequifibered_normalizationDiagramMap :
   have : IsScalarTower Γ(Y, U.1) (integralClosure Γ(Y, U.1) Γ(X, f ⁻¹ᵁ U.1))
     (integralClosure Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r)) := .of_algebraMap_eq' rfl
   exact IsLocalization.Away.integralClosure r
-
-@[deprecated (since := "2026-02-01")]
-alias preservesLocalization_normalizationDiagramMap := coequifibered_normalizationDiagramMap
 
 /-- The diagram of affine schemes that we glue to form the normalization. -/
 def normalizationGlueData := relativeGluingData f.coequifibered_normalizationDiagramMap
