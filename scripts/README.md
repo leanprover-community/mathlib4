@@ -237,9 +237,8 @@ to module `Foo.Bar` (no `srcDir` indirection).
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
 - `export_crossrefs.lean`
-  Exports a JSON dictionary of every declaration carrying a cross-reference attribute
-  (declaration name, source file, line number, and, per reference, the database, the identifier,
-  and the link URL resolved by `Database.url`).
+  Exports a JSON dictionary of every declaration with a `CrossRef.Tag` attribute (eg: `@[stacks]`)
+  with declaration name, source file, line number, cross-reference ids and resolved url.
   It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
   so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
   The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded
@@ -248,10 +247,6 @@ to module `Foo.Bar` (no `srcDir` indirection).
   successful master build and publishes the result to the
   [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
   (committing only when the entries actually change).
-  The same script also runs during every CI build (in `build_template.yml`), which uploads its
-  output in the `import-graph` artifact for
-  [`crossref_summary.yml`](../.github/workflows/crossref_summary.yml) to diff against the published
-  master export and report a PR's newly added cross-references.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format

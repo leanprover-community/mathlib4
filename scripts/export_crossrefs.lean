@@ -9,10 +9,9 @@ import Mathlib
 /-!
 # Export cross-reference data as JSON
 
-Elaborating this file writes a JSON file listing every Mathlib declaration carrying a
-cross-reference attribute (`@[stacks ...]` and friends, see `Mathlib.Tactic.CrossRefAttribute`),
-together with its source file and line number and, for each reference, the database, the
-identifier, and the resolved link URL.
+Elaborating this file writes a JSON file listing every Mathlib declaration with a `CrossRef.Tag`
+attribute (eg: `@[stacks ...]`), with its source file, line number, referenced identifier and
+resolved reference url.
 
 The cross-references are read from the ambient environment (like the `#stacks_tags` command), so
 the file must be run with the full `Mathlib` import elaborated:
@@ -51,7 +50,6 @@ def buildEntries (env : Environment) : Array Json := Id.run do
     -- Canonical ref order (by database, then id) keeps the published file stable.
     let tags := tags.qsort fun a b =>
       (compare a.database b.database).then (compare a.tag b.tag) |>.isLT
-    -- `url` is resolved here: it is not a prefix concatenation for every database.
     let refs : Array Json := tags.map fun t =>
       json% { db : $(t.database.shortName), id : $(t.tag), comment : $(t.comment),
               url : $(t.database.url t.tag) }
