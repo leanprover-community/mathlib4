@@ -162,6 +162,10 @@ theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ �
   have : G.Connected := ⟨(Not.imp_symm .of_not_reachable <| h s(·, ·))⟩
   exact (this.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
 
+theorem not_isEdgeConnected_two : ¬G.IsEdgeConnected 2 ↔ ∃ e, G.IsBridge e := by
+  contrapose!
+  exact isEdgeConnected_two_iff_forall_not_isBridge
+
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
   obtain ⟨w, hw⟩ := h.reachable (by simp) |>.exists_isPath
