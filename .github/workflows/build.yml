@@ -62,9 +62,10 @@ jobs:
       # trust instead of an environment: each nightly writer app is RBAC-isolated to its own
       # container, so branch scoping is sufficient there.
       # The internal-cache broker mint in upload_cache also keys on this environment
-      # and runs only when it is non-empty, so the nightly repository stays on the
-      # Azure flow until its environments and their branch policies exist and this
-      # mapping names them (a coordinated change with the broker's GRANTS table).
+      # and runs only when it is non-empty. The nightly repository therefore stays
+      # on the Azure flow until its environments and their branch policies exist
+      # and this mapping names them — one coordinated change with the cache
+      # broker's grant configuration.
       cache_environment: >-
         ${{
              (github.repository == 'leanprover-community/mathlib4'

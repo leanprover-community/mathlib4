@@ -657,9 +657,9 @@ jobs:
             exit 1
           fi
           echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
-          # Whether this tools checkout's cache tool can sign S3 uploads: the
-          # internal-storage leg below keys on it, so a pre-S3 tool skips
-          # that leg honestly instead of re-putting to Azure while reading as
+          # Whether the cache tool built from this tools checkout can sign S3
+          # uploads: the internal-bucket leg below keys on it, so a pre-S3 tool
+          # skips that leg honestly instead of re-putting to Azure and reporting
           # a green bucket write. A source grep, not a version check: the
           # variable name and the capability appear together.
           if grep -q "MATHLIB_CACHE_S3_ACCESS_KEY_ID" Cache/Requests.lean 2>/dev/null; then
@@ -680,9 +680,9 @@ jobs:
 
       # Internal-service uploads dual-publish during the transition: the Azure
       # upload below always runs, and a second upload targets the internal
-      # cache bucket with the credentials this step mints — exchange this
+      # bucket with the credentials this step mints. The mint exchanges this
       # job's OIDC token at the cache broker for short-lived credentials
-      # scoped to the container's namespace, and point the cache tool's put
+      # scoped to the container's namespace and points the cache tool's put
       # base at the bucket. The broker pins the token's `sub` to this job's deployment
       # environment (the same claim the Azure federation pins), so only a job
       # that passed the environment's branch policy can mint.
@@ -721,7 +721,7 @@ jobs:
           if [ -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ] || [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
             warn_and_skip "the job has no OIDC token endpoint (id-token: write missing?)"
           fi
-          # The audience must match the broker's EXPECTED_AUDIENCE, so a token
+          # The audience must be the one the broker expects, so a token
           # minted for another service is useless here and vice versa. The
           # requests are idempotent, so retrying transport-level failures
           # (--retry-all-errors) is safe and avoids spurious Azure fallbacks.
