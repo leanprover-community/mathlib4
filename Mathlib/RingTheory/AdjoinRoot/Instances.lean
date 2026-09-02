@@ -5,8 +5,6 @@ Authors: metakunt
 -/
 module
 
-public import Mathlib.Algebra.CharP.Quotient
-public import Mathlib.Data.ZMod.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.AdjoinRoot.Basic
 public import Mathlib.RingTheory.Artinian.Instances
