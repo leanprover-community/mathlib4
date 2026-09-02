@@ -184,15 +184,21 @@ public lemma IsStarNormal.commute_star_left (ha : IsStarNormal a) (h : Commute a
     Commute (star a) x :=
   ha.commute_star_right h.symm |>.symm
 
-public lemma Set.Pairwise.commute_star_right {A : Type*} [NonUnitalCStarAlgebra A]
-    {s : Set A} (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
+public lemma Set.Pairwise.commute_star_right {s : Set A}
+    (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
     s.Pairwise (Commute · <| star ·) :=
   fun _ hx _ hy hxy ↦ (hs' _ hy).commute_star_right (hs hx hy hxy)
 
-public lemma Set.Pairwise.commute_star_left {A : Type*} [NonUnitalCStarAlgebra A]
-    {s : Set A} (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
+public lemma Set.Pairwise.commute_star_left {s : Set A}
+    (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
     s.Pairwise (fun x y ↦ Commute (star x) y) :=
   fun _ hx _ hy hxy ↦ (hs' _ hx).commute_star_left (hs hx hy hxy)
+
+public lemma Set.Pairwise.commute_union_star_self_iff_of_isStarNormal {s : Set A}
+    (hs : ∀ x ∈ s, IsStarNormal x) :
+    (s ∪ star s).Pairwise Commute ↔ s.Pairwise Commute := by
+  rw [commute_union_star_self_iff, and_iff_left_iff_imp]
+  exact fun hs' ↦ ⟨hs'.commute_star_right hs, hs⟩
 
 open NonUnitalStarAlgebra
 

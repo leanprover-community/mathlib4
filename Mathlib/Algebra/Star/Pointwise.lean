@@ -141,6 +141,6 @@ lemma commute_star_iff {α : Type*} [Mul α] [StarMul α] {s : Set α} :
   conv_rhs => simp +singlePass only [star_involutive.surjective.forall]
   simp
 
-alias ⟨commute_star, commute_of_star⟩ := commute_star_iff
+alias ⟨commute_of_star, commute_star⟩ := commute_star_iff
 
 end Set.Pairwise
