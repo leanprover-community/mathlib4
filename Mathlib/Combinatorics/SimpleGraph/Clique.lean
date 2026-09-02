@@ -260,8 +260,6 @@ variable {G H} {a b c : α}
 
 @[deprecated (since := "2026-09-01")] alias isNClique_empty := isNClique_empty_iff
 
-@[simp] lemma isNClique_empty' : G.IsNClique 0 ∅ := by simp
-
 @[simp]
 lemma isNClique_singleton : G.IsNClique n {a} ↔ n = 1 := by simp [isNClique_iff, eq_comm]
 
@@ -439,7 +437,7 @@ theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G
 alias not_cliqueFree_card_of_top_embedding := IsContained.not_cliqueFree_card
 
 @[simp] lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
-  fun h ↦ h ∅ <| isNClique_empty.mpr rfl
+  fun h ↦ h ∅ <| isNClique_empty_iff.mpr rfl
 
 @[simp]
 theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
