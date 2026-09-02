@@ -128,6 +128,30 @@ instance (X : C) : IsIso (F.toRightDerived₀.app X) := by
 
 instance : IsIso F.toRightDerived₀ := NatIso.isIso_of_isIso_app _
 
+@[simps! hom]
+noncomputable def isoRightDerived₀ : F ≅ F.rightDerived 0 :=
+  asIso F.toRightDerived₀
+
+@[reassoc (attr := simp)]
+lemma isoRightDerived₀_hom_inv_id :
+    F.toRightDerived₀ ≫ F.isoRightDerived₀.inv = 𝟙 _ :=
+  F.isoRightDerived₀.hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoRightDerived₀_inv_hom_id :
+    F.isoRightDerived₀.inv ≫ F.toRightDerived₀ = 𝟙 _ :=
+  F.isoRightDerived₀.inv_hom_id
+
+@[reassoc (attr := simp)]
+lemma isoRightDerived₀_hom_inv_id_app (X : C) :
+    F.toRightDerived₀.app X ≫ F.isoRightDerived₀.inv.app X = 𝟙 _ :=
+  F.isoRightDerived₀.hom_inv_id_app X
+
+@[reassoc (attr := simp)]
+lemma isoRightDerived₀_inv_hom_id_app (X : C) :
+    F.isoRightDerived₀.inv.app X ≫ F.toRightDerived₀.app X = 𝟙 _ :=
+  F.isoRightDerived₀.inv_hom_id_app X
+
 end Functor
 
 end CategoryTheory
