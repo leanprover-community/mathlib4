@@ -233,19 +233,22 @@ theorem extremePoints_pi (s : ∀ i, Set (M i)) :
 
 end OrderedSemiring
 
+lemma semilinear_image_extremePoints {L 𝕜' : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [Semiring 𝕜']
+    [PartialOrder 𝕜'] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜' F]
+    {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [EquivLike L E F]
+    [SemilinearEquivClass L σ E F] (f : L) (s : Set E) (hσ : ∀ a : 𝕜, 0 < σ a ↔ 0 < a := by simp) :
+    f '' extremePoints 𝕜 s = extremePoints 𝕜' (f '' s) := by
+  ext b
+  obtain ⟨a, rfl⟩ := EquivLike.surjective f b
+  simp [mem_extremePoints, ← semilinear_image_openSegment f _ _ hσ]
+
 section OrderedRing
-variable {L : Type*} [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+variable {L : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
+  [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
   [EquivLike L E F] [LinearEquivClass L 𝕜 E F]
 
 lemma image_extremePoints (f : L) (s : Set E) :
-    f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := by
-  ext b
-  obtain ⟨a, rfl⟩ := EquivLike.surjective f b
-  have : ∀ x y, f '' openSegment 𝕜 x y = openSegment 𝕜 (f x) (f y) :=
-    image_openSegment _ (LinearMapClass.linearMap f).toAffineMap
-  simp only [mem_extremePoints, (EquivLike.surjective f).forall,
-    (EquivLike.injective f).mem_set_image, (EquivLike.injective f).eq_iff, ← this]
+    f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := semilinear_image_extremePoints f s
 
 end OrderedRing
 
