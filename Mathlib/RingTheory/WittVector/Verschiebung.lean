@@ -45,7 +45,7 @@ theorem verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
   simp only [verschiebungFun]
 
 theorem verschiebungFun_coeff_zero (x : 𝕎 R) : (verschiebungFun x).coeff 0 = 0 := by
-  rw [verschiebungFun_coeff, if_pos rfl]
+  rw [verschiebungFun_coeff, ite_eq_left rfl]
 
 @[simp]
 theorem verschiebungFun_coeff_succ (x : 𝕎 R) (n : ℕ) :
@@ -62,7 +62,7 @@ theorem ghostComponent_zero_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) :
 theorem ghostComponent_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
-  rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
+  rw [Finset.sum_range_succ', verschiebungFun_coeff, ite_eq_left rfl,
     zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
   rintro i -
   simp only [pow_succ', verschiebungFun_coeff_succ, Nat.succ_sub_succ_eq_sub, mul_assoc]
@@ -81,7 +81,7 @@ theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
   rcases n with - | n
   · simp only [verschiebungPoly, ite_true, map_zero, verschiebungFun_coeff_zero]
-  · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
+  · rw [verschiebungPoly, verschiebungFun_coeff_succ, ite_eq_right n.succ_ne_zero, aeval_X,
       add_tsub_cancel_right]
 
 variable (p)

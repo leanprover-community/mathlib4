@@ -6,6 +6,7 @@ Authors: Markus Himmel, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
@@ -126,7 +127,6 @@ end MonObj
 namespace Mon
 variable [BraidedCategory C]
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] tensorObj.one_def tensorObj.mul_def in
 @[to_additive]
 instance : CartesianMonoidalCategory (Mon C) where

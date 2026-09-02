@@ -104,3 +104,27 @@ example : True := by
   done
 
 end allowing_more_unused_tactics
+
+section ignore_tactic_kind
+
+syntax (name := doEmitWarningStx) "doEmitWarning" tactic : command
+macro_rules
+  | `(command| doEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
+
+syntax (name := doNotEmitWarningStx) "doNotEmitWarning" tactic : command
+macro_rules
+  | `(command| doNotEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
+
+-- `#eval` instead of `initialize` so that the effect can be tested in this file
+#eval Mathlib.Linter.UnusedTactic.addIgnoreTacticKind ``doNotEmitWarningStx
+
+/--
+warning: Unused tactic linter: `congr` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in doEmitWarning congr
+
+#guard_msgs in doNotEmitWarning congr
+
+end ignore_tactic_kind
