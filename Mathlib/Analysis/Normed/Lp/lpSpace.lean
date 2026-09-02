@@ -1083,7 +1083,7 @@ noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
       right_inv _ := Finsupp.ext fun _ ↦ rfl }
 
 set_option backward.isDefEq.respectTransparency false in
-lemma zeroBasis_apply (i : α) : zeroBasis i = lp.single 0 i (1 : 𝕜) := by
+lemma zeroBasis_apply (i : α) : zeroBasis (𝕜 := 𝕜) i = lp.single 0 i (1 : 𝕜) := by
   ext; simp [zeroBasis, Finsupp.single_apply, Pi.single, Function.update, eq_comm]
 
 protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
