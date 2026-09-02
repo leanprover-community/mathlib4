@@ -833,6 +833,20 @@ theorem zero_prod (ν : Measure β) : (0 : Measure α).prod ν = 0 := by
 @[simp]
 theorem prod_zero (μ : Measure α) : μ.prod (0 : Measure β) = 0 := by simp [Measure.prod]
 
+/-- Version of `map_prod_map` for a.e. measurable maps. -/
+theorem map_prod_map_of_aemeasurable {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ}
+    (μa : Measure α) (μc : Measure γ) [SFinite μc] (hf : AEMeasurable f μa)
+    (hg : AEMeasurable g μc) :
+    (map f μa).prod (map g μc) = map (Prod.map f g) (μa.prod μc) := by
+  have hfg : AEMeasurable (Prod.map f g) (μa.prod μc) := by fun_prop
+  simp only [Measure.prod] at hfg ⊢
+  rw [bind_map hf Measurable.map_prodMk_left.aemeasurable,
+    map_bind Measurable.map_prodMk_left.aemeasurable hfg]
+  refine bind_congr_right ?_
+  filter_upwards [Measurable.map_prodMk_left.aemeasurable.ae_of_bind hfg] with a ha
+  exact (measurable_prodMk_left.aemeasurable.map_map_of_aemeasurable hg).trans
+    (ha.map_map_of_aemeasurable measurable_prodMk_left.aemeasurable).symm
+
 theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (μa : Measure α)
     (μc : Measure γ) [SFinite μa] [SFinite μc] (hf : Measurable f) (hg : Measurable g) :
     (map f μa).prod (map g μc) = map (Prod.map f g) (μa.prod μc) := by
