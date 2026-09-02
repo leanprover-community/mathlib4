@@ -515,6 +515,14 @@ section Semiring
 
 variable [Semiring S] {f : R →+* S}
 
+lemma comp_X_add_C_eq_zero_iff {p : S[X]} {t : S} : p.comp (X + C t) = 0 ↔ p = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual⟩
+  nontriviality S
+  simpa [h] using (p.coeff_comp_degree_mul_degree <| ne_zero_of_eq_one <| natDegree_X_add_C t).symm
+
+lemma comp_X_add_C_ne_zero_iff {p : S[X]} {t : S} : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 :=
+  comp_X_add_C_eq_zero_iff.not
+
 theorem aeval_eq_sum_range [Algebra R S] {p : R[X]} (x : S) :
     aeval x p = ∑ i ∈ Finset.range (p.natDegree + 1), p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
@@ -663,11 +671,6 @@ theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →�
 lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (X + C t) := by
   convert! (map_dvd_iff <| algEquivAevalXAddC t).symm using 2
   simp [C_eq_algebraMap]
-
-lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
-  EmbeddingLike.map_eq_zero_iff (f := algEquivAevalXAddC t)
-
-lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
 lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
     p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟a * (X - C b)) ∣ q := by

@@ -86,7 +86,6 @@ lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j) :
         (hS₁.homology_exact₂ j).exact_toComposableArrows))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The map between the exact sequences `S₁.X₁.homology i ⟶ S₁.X₂.homology i ⟶ S₁.X₃.homology i`
 and `S₂.X₁.homology i ⟶ S₂.X₂.homology i ⟶ S₂.X₃.homology i` that is induced by `φ : S₁ ⟶ S₂`. -/
 @[simp]

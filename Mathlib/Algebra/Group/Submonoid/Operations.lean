@@ -1096,7 +1096,7 @@ monoid are equal. -/
   /-- Makes the identity additive isomorphism from a proof two submonoids of an additive monoid are
   equal. -/]
 def submonoidCongr (h : S = T) : S ≃* T :=
-  { Equiv.Set.congr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
 -- this name is primed so that the version to `f.range` instead of `f.mrange` can be unprimed.
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
