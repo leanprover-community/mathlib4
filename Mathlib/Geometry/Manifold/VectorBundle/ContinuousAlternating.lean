@@ -173,7 +173,7 @@ Version for `ContMDiffWithinAt`. We also give a version for `ContMDiffAt`, but n
 a point.
 
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
-`inCoordinates`, see `ContMDiffWithinAt.clm_bundle_apply`.
+`inCoordinates`, see `ContMDiffWithinAt.alteratingMap_bundle_apply`.
 -/
 lemma ContMDiffWithinAt.alteratingMap_apply_of_inCoordinates
     (hϕ : CMDiffAt[s] n
@@ -181,22 +181,38 @@ lemma ContMDiffWithinAt.alteratingMap_apply_of_inCoordinates
     (hv : ∀ i, CMDiffAt[s] n (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt[s] n b₂ m₀) :
     CMDiffAt[s] n (fun m ↦ (ϕ m (fun i ↦ v i m) : TotalSpace F₂ E₂)) m₀ := by
   rw [← contMDiffWithinAt_insert_self] at hϕ hb₂ ⊢
-
---  simp_rw [← contMDiffWithinAt_insert_self] at hϕ hv hb₂ ⊢
+  replace hv : ∀ i, CMDiffAt[insert m₀ s] n (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀ := by
+    intro i
+    rw [contMDiffWithinAt_insert_self]
+    exact hv i
   simp_rw [contMDiffWithinAt_totalSpace] at hv ⊢
   refine ⟨hb₂, ?_⟩
-  apply (ContMDiffWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
-  have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
-    apply hv.1.continuousWithinAt
-    apply (trivializationAt F₁ E₁ (b₁ m₀)).open_baseSet.mem_nhds
-    exact FiberBundle.mem_baseSet_trivializationAt' (b₁ m₀)
+  apply (ContMDiffWithinAt.continuousAlternatingMap_apply hϕ
+    (fun i ↦ (hv i).2)).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
   have A' : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by
-    apply hb₂.continuousWithinAt
-    apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
-    exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
-  filter_upwards [A, A'] with m hm h'm
-  rw [inCoordinates_eq hm h'm]
-  simp [*]
+      apply hb₂.continuousWithinAt
+      apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
+      exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
+  rcases isEmpty_or_nonempty ι with hι | ⟨⟨i₀⟩⟩
+  · filter_upwards [A'] with m h'm
+    rw [inCoordinates_eq_of_mem]
+    simp
+
+  · have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
+      apply (hv i₀).1.continuousWithinAt
+      apply (trivializationAt F₁ E₁ (b₁ m₀)).open_baseSet.mem_nhds
+      exact FiberBundle.mem_baseSet_trivializationAt' (b₁ m₀)
+    filter_upwards [A, A'] with m hm h'm
+    rw [inCoordinates_eq _ _ hm h'm]
+    simp only [compContinuousLinearMap_apply, ContinuousLinearEquiv.coe_coe,
+      Trivialization.continuousLinearEquivAt_symm_apply,
+      ContinuousLinearMap.compContinuousAlternatingMap_coe,
+      Trivialization.continuousLinearEquivAt_apply, Function.comp_apply]
+    congr
+    ext i
+    simp [*]
+
+#exit
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
 another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly

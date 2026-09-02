@@ -383,22 +383,21 @@ theorem ContMDiff.continuousAlternatingMapCongr [CharZero 𝕜]
   fun x ↦ (hf x).continuousAlternatingMapCongr (hg x)
 
 /-- Applying an alternating map to a family of vectors is smooth within a set.
-Version in vector spaces. For
-versions in nontrivial vector bundles, see
+Version in vector spaces. For versions in nontrivial vector bundles, see
 `ContMDiffWithinAt.continuousAlternatingMap_apply_of_inCoordinates` and
 `ContMDiffWithinAt.continuousAlternatingMap_bundle_apply`. -/
 theorem ContMDiffWithinAt.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
     (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) n g s x)
     (hf : ∀ i, ContMDiffWithinAt I 𝓘(𝕜, F₁) n (f i) s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, F₂) n (fun x ↦ g x (fun i ↦ f i x)) s x := by
-  apply ContDiffWithinAt.comp_contMDiffWithinAt (t := univ)
+    ContMDiffWithinAt I 𝓘(𝕜, F₂) n (fun x ↦ g x (fun i ↦ f i x)) s x :=
+  ContDiffWithinAt.comp_contMDiffWithinAt (t := univ)
     (g := fun x : (F₁ [⋀^ι]→L[𝕜] F₂) × (ι → F₁) => x.1 x.2)
-    (f := fun x : M ↦ (g x, fun i ↦ f i x)) ?_
+    (f := fun x : M ↦ (g x, fun i ↦ f i x))
+    ContinuousAlternatingMap.cpolynomialAt_apply.contDiffAt
     (hg.prodMk_space (contMDiffWithinAt_pi_space.mpr hf)) (by simp)
-  sorry
 
-/-- Applying a linear map to a vector is smooth. Version in vector spaces. For
+/-- Applying an alternating map to a family of vectors is smooth. Version in vector spaces. For
 versions in nontrivial vector bundles, see
 `ContMDiffAt.continuousAlternatingMap_apply_of_inCoordinates` and
 `ContMDiffAt.continuousAlternatingMap_bundle_apply`. -/
