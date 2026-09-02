@@ -10,8 +10,9 @@ import Mathlib
 # Export cross-reference data as JSON
 
 Elaborating this file writes a JSON file listing every Mathlib declaration carrying a
-cross-reference attribute `crossRefAttribute` (ex. `@[stacks ...]`) together with its source file,
-line number, and, for each reference, the database, the identifier, and the resolved link URL.
+cross-reference attribute (`@[stacks ...]` and friends, see `Mathlib.Tactic.CrossRefAttribute`),
+together with its source file and line number and, for each reference, the database, the
+identifier, and the resolved link URL.
 
 The cross-references are read from the ambient environment (like the `#stacks_tags` command), so
 the file must be run with the full `Mathlib` import elaborated:
