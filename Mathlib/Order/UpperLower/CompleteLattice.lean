@@ -98,7 +98,7 @@ instance completeLattice : CompleteLattice (UpperSet α) :=
 instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
   .ofMinimalAxioms <|
     (toDual.injective.comp SetLike.coe_injective).completelyDistribLatticeMinimalAxioms .of _
-      .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+      (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[to_dual existing]
 instance _root_.LowerSet.instPartialOrder : PartialOrder (LowerSet α) :=
@@ -112,7 +112,7 @@ instance _root_.LowerSet.completeLattice : CompleteLattice (LowerSet α) :=
 @[to_dual existing]
 instance _root_.LowerSet.completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
   .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
-    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+    (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[to_dual]
 instance : Inhabited (UpperSet α) :=
@@ -124,6 +124,12 @@ theorem coe_subset_coe : (s : Set α) ⊆ t ↔ t ≤ s :=
 
 @[to_dual (attr := simp 1100, norm_cast)]
 lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ t < s := Iff.rfl
+
+@[to_dual (attr := simp)]
+lemma mk_le_mk {s t : Set α} (hs ht) : mk s hs ≤ mk t ht ↔ t ≤ s := Iff.rfl
+
+@[to_dual (attr := simp)]
+lemma mk_lt_mk {s t : Set α} (hs ht) : mk s hs < mk t ht ↔ t < s := Iff.rfl
 
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_top : ((⊤ : UpperSet α) : Set α) = ∅ :=
