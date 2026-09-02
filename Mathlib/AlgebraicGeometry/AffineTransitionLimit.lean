@@ -228,24 +228,8 @@ def opensCone (i : I) (U : (D.obj i).Opens) : Cone (opensDiagram D i U) where
   pt := c.π.app i ⁻¹ᵁ U
   π.app j := (c.π.app j.left).resLE _ _ (by rw [← Scheme.Hom.comp_preimage, c.w])
 
-attribute [local instance] CategoryTheory.isConnected_of_hasTerminal
-
-variable [IsCofiltered I]
-
-set_option backward.isDefEq.respectTransparency false in
-/-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and an open `U ⊆ Dᵢ`,
-the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
-noncomputable
-def isLimitOpensCone (i : I) (U : (D.obj i).Opens) :
-    IsLimit (opensCone D c i U) :=
-  isLimitOfIsPullbackOfIsConnected (opensDiagramι D i U) _ _
-    (by exact { hom := (c.π.app i ⁻¹ᵁ U).ι })
-    (fun j ↦ IsOpenImmersion.isPullback _ _ _ _ (by simp) (by simp [← Scheme.Hom.comp_preimage]))
-    ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-omit [IsCofiltered I] in
 instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     (U : (D.obj i).Opens) {j k : Over i} (f : j ⟶ k) :
     IsAffineHom ((opensDiagram D i U).map f) := by
@@ -272,11 +256,34 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     rw [← Scheme.Hom.comp_apply] at h₁
     rwa [← D.map_comp, Over.w f] at h₁
 
+attribute [local instance] CategoryTheory.isConnected_of_hasTerminal
+
+variable [IsCofiltered I]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and an open `U ⊆ Dᵢ`,
+the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
+noncomputable
+def isLimitOpensCone (i : I) (U : (D.obj i).Opens) :
+    IsLimit (opensCone D c i U) :=
+  isLimitOfIsPullbackOfIsConnected (opensDiagramι D i U) _ _
+    (by exact { hom := (c.π.app i ⁻¹ᵁ U).ι })
+    (fun j ↦ IsOpenImmersion.isPullback _ _ _ _ (by simp) (by simp [← Scheme.Hom.comp_preimage]))
+    ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
+
+include hc in
+lemma exists_appTop_π_eq_of_isAffine_of_isLimit [∀ i, IsAffine (D.obj i)] (s : Γ(c.pt, ⊤)) :
+    ∃ (i : I) (t : Γ(D.obj i, ⊤)), (c.π.app i).appTop t = s := by
+  have : ∀ i, IsAffine (D.op.obj i).unop := by dsimp; infer_instance
+  exact ⟨_, (Types.jointly_surjective_of_isColimit
+    (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s).choose_spec⟩
+
+variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_map_preimage_le_map_preimage
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     {i : I} {U V : (D.obj i).Opens} (hU : IsCompact (U : Set (D.obj i)))
     (H : c.π.app i ⁻¹ᵁ U ≤ c.π.app i ⁻¹ᵁ V) :
     ∃ (j : I) (fji : j ⟶ i), D.map fji ⁻¹ᵁ U ≤ D.map fji ⁻¹ᵁ V := by
@@ -297,7 +304,6 @@ lemma exists_map_preimage_le_map_preimage
 include hc in
 @[stacks 01Z4 "(2)"]
 lemma exists_map_preimage_eq_map_preimage
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     {i : I} {U V : (D.obj i).Opens} (hU : IsCompact (U : Set (D.obj i)))
     (hV : IsCompact (V : Set (D.obj i))) (H : c.π.app i ⁻¹ᵁ U = c.π.app i ⁻¹ᵁ V) :
     ∃ (j : I) (fji : j ⟶ i), D.map fji ⁻¹ᵁ U = D.map fji ⁻¹ᵁ V := by
@@ -310,15 +316,8 @@ lemma exists_map_preimage_eq_map_preimage
     simpa only [Scheme.Hom.comp_preimage, Functor.map_comp] using Scheme.Hom.preimage_mono _ e₂
 
 include hc in
-lemma exists_appTop_π_eq_of_isAffine_of_isLimit [∀ i, IsAffine (D.obj i)] (s : Γ(c.pt, ⊤)) :
-    ∃ (i : I) (t : Γ(D.obj i, ⊤)), (c.π.app i).appTop t = s := by
-  have : ∀ i, IsAffine (D.op.obj i).unop := by dsimp; infer_instance
-  exact ⟨_, (Types.jointly_surjective_of_isColimit
-    (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s).choose_spec⟩
-
-include hc in
-lemma exists_appLE_π_eq_of_isAffineOpen [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    {i : I} {U : (D.obj i).Opens} (hU : IsAffineOpen U) (s : Γ(c.pt, c.π.app i ⁻¹ᵁ U)) :
+lemma exists_appLE_π_eq_of_isAffineOpen {i : I} {U : (D.obj i).Opens} (hU : IsAffineOpen U)
+    (s : Γ(c.pt, c.π.app i ⁻¹ᵁ U)) :
     ∃ (j : I) (u : j ⟶ i) (t : Γ(D.obj j, D.map u ⁻¹ᵁ U)),
       (c.π.app j).appLE _ _ (π_app_preimage_map_preimage D c u U).ge t = s := by
   have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
@@ -334,7 +333,7 @@ lemma exists_appLE_π_eq_of_isAffineOpen [∀ {i j} (f : i ⟶ j), IsAffineHom (
   exact (c.π.app i ⁻¹ᵁ U).topIso.commRingCatIsoToRingEquiv.symm.injective ht
 
 include hc in
-lemma isBasis_preimage_isAffineOpen [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] :
+lemma isBasis_preimage_isAffineOpen :
     TopologicalSpace.Opens.IsBasis
       { (c.π.app i ⁻¹ᵁ V : c.pt.Opens) | (i : I) (V : (D.obj i).Opens) (_ : IsAffineOpen V) } := by
   refine TopologicalSpace.Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_
@@ -354,8 +353,7 @@ lemma isBasis_preimage_isAffineOpen [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map
 set_option backward.defeqAttrib.useBackward true in
 include hc in
 @[stacks 01Z4 "(1)"]
-lemma exists_preimage_eq [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
-    (U : c.pt.Opens) (hU : IsCompact (U : Set c.pt)) :
+lemma exists_preimage_eq (U : c.pt.Opens) (hU : IsCompact (U : Set c.pt)) :
     ∃ (i : I) (V : (D.obj i).Opens), IsCompact (V : Set (D.obj i)) ∧ c.π.app i ⁻¹ᵁ V = U := by
   classical
   obtain ⟨s, hs, hsf, rfl⟩ := (isBasis_preimage_isAffineOpen D c hc).exists_finite_of_isCompact hU
