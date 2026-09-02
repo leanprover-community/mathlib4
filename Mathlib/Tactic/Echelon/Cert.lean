@@ -142,7 +142,7 @@ def mkListForall (n : Nat) (motive : Expr) (head : Nat → Expr → MetaM Expr) 
   let mut acc : Expr := mkConst ``True.intro
   for k in 0...n do
     let i := n - 1 - k
-    let h ← head i (← whnfR (mkApp motive (← mkNumeral fin i)))
+    let h ← head i (mkApp motive (← mkNumeral fin i)).headBeta
     -- the conjunction takes its statement from the proofs, so that the one defeq check
     -- against the quantified goal is left to the kernel rather than run here as well
     acc ← if k == 0 then pure h else mkAppM ``And.intro #[h, acc]
@@ -153,7 +153,26 @@ def mkListForall (n : Nat) (motive : Expr) (head : Nat → Expr → MetaM Expr) 
   withLocalDeclD `i fin fun i => do
     let body := mkApp2 hAll i (← mkAppM ``List.mem_finRange #[i])
     mkExpectedTypeHint (← mkLambdaFVars #[i] body)
-      (← mkForallFVars #[i] (← whnfR (mkApp motive i)))
+      (← mkForallFVars #[i] (mkApp motive i).headBeta)
+
+/-- Prove that the entry at `path` is nonzero, by having `leaf` refute its equation with
+`rhs`. -/
+def proveNonzero (leaf : LeafProver) (ents : EntryLookup) (path : Array Nat) (rhs : Expr) :
+    MetaM Expr := do
+  let (b, prf) ← leaf (← mkEq (← ents path) rhs)
+  if b then throwError "the entry at {path} was expected to be nonzero"
+  return prf
+
+/-- Decide the condition `c` in the kernel; if it is not decidable, unfold its head and
+hand the result back to `retry`. -/
+def decideOrUnfold (c : Q(Prop)) (retry : Q(Prop) → MetaM Expr) : MetaM Expr := do
+  try
+    certifyCondition "a condition mentioning no entries" c
+  catch e =>
+    let some c' ← unfoldDefinition? c
+      | throwError "cannot verify the rank certificate:{indentExpr c}\
+          \nis neither decidable nor reducible:{indentD e.toMessageData}"
+    retry c'.headBeta
 
 /-- Prove one cell of a certificate condition, on the shape of its statement: a conjunction
 splits, an equality of functions is split by `funext`, a quantifier over `Fin k` is taken
@@ -162,39 +181,8 @@ elimination emitted as zero is closed by `rfl`, and a nonzero entry is left to `
 statement of none of these shapes, such as the pivot function's monotonicity, mentions no
 entry and is decided in the kernel. -/
 partial def proveCell (leaf : LeafProver) (ents : EntryLookup) (path : Array Nat)
-    (goal : Q(Prop)) : MetaM Expr := do
-  let g ← whnfR goal
-  -- the entry the elimination emitted at `path` is nonzero
-  let nonzero (rhs : Expr) : MetaM Expr := do
-    let (b, prf) ← leaf (← mkEq (← ents path) rhs)
-    if b then throwError "the entry at {path} was expected to be nonzero"
-    return prf
-  -- no entry of ours occurs: decide it, and only then unfold and try again
-  let byKernel : MetaM Expr := do
-    try
-      certifyCondition "a condition on the pivot function" g
-    catch e =>
-      let some g' ← unfoldDefinition? g
-        | throwError "cannot verify the rank certificate:{indentExpr g}\
-            \nis neither decidable nor reducible:{indentD e.toMessageData}"
-      proveCell leaf ents path g'
+    (g : Q(Prop)) : MetaM Expr := do
   match g with
-  | .app (.app (.const ``And _) a) b =>
-    mkAppM ``And.intro #[← proveCell leaf ents path a, ← proveCell leaf ents path b]
-  -- `whnfR` has unfolded any `Ne` to this shape
-  | .app (.const ``Not _) (.app (.app (.app (.const ``Eq _) _) _) rhs) => nonzero rhs
-  | .app (.app (.app (.const ``Eq _) ty) lhs) rhs =>
-    if ← isDefEq lhs rhs then
-      mkEqRefl lhs
-    else
-      -- an equality of functions, a matrix among them: `funext` once and continue
-      -- pointwise, which keeps the obligations as coarse as they can be
-      match ← whnf ty with
-      | .forallE nm dom _ bi =>
-        let pointwise ← withLocalDecl nm bi dom fun x => do
-          mkForallFVars #[x] (← mkEq (← mkAppM' lhs #[x]) (← mkAppM' rhs #[x]))
-        mkAppM ``funext #[← proveCell leaf ents path pointwise]
-      | _ => byKernel
   | .forallE nm dom body bi =>
     if let .app (.const ``Fin _) card := dom then
       if let some k ← getNatValue? (← whnfR card) then
@@ -207,7 +195,24 @@ partial def proveCell (leaf : LeafProver) (ents : EntryLookup) (path : Array Nat
     else
       withLocalDecl nm bi dom fun h => do
         mkLambdaFVars #[h] (← proveCell leaf ents path (body.instantiate1 h))
-  | _ => byKernel
+  | _ =>
+    match_expr g with
+    | And a b =>
+      mkAppM ``And.intro #[← proveCell leaf ents path a, ← proveCell leaf ents path b]
+    | Ne _ _ rhs => proveNonzero leaf ents path rhs
+    | Eq ty lhs rhs =>
+      if ← isDefEq lhs rhs then
+        mkEqRefl lhs
+      else
+        -- an equality of functions, a matrix among them: `funext` once and continue
+        -- pointwise, which keeps the obligations as coarse as they can be
+        match ← whnf ty with
+        | .forallE nm dom _ bi =>
+          let pointwise ← withLocalDecl nm bi dom fun x => do
+            mkForallFVars #[x] (← mkEq (lhs.beta #[x]) (rhs.beta #[x]))
+          mkAppM ``funext #[← proveCell leaf ents path pointwise]
+        | _ => decideOrUnfold g (proveCell leaf ents path)
+    | _ => decideOrUnfold g (proveCell leaf ents path)
 
 /-- Prove the row arrangement `A.submatrix σ id = Matrix.of rows`, with `rows` the literal
 of the permuted rows, by proving the reindexing functions equal and lifting that with
