@@ -45,7 +45,7 @@ attribute [basify_simp] top_add add_top ENNReal.top_mul ENNReal.mul_top ENNReal.
 Coercions `ℝ≥0 → ℝ≥0∞` are pulled outwards until they meet a relation, which then cancels them.
 -/
 
-attribute [basify_simp ←, basify_op] ENNReal.coe_zero ENNReal.coe_one
+attribute [basify_op ←] ENNReal.coe_zero ENNReal.coe_one
   ENNReal.coe_natCast ENNReal.coe_add ENNReal.coe_mul ENNReal.coe_sub ENNReal.coe_pow
   ENNReal.coe_inv ENNReal.coe_div ENNReal.coe_min ENNReal.coe_max
 
@@ -55,9 +55,17 @@ attribute [basify_simp] ENNReal.coe_inj ENNReal.coe_le_coe ENNReal.coe_lt_coe
 /-- `ENNReal.coe_ofNat` read from right to left. It is restated here because the `ofNat(n)` on the
 right-hand side of `ENNReal.coe_ofNat` is `no_index`ed, which would make the reversed lemma match
 against every term. -/
-@[basify_simp, basify_op]
+@[basify_op]
 theorem ennreal_ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] :
     (OfNat.ofNat n : ℝ≥0∞) = ((OfNat.ofNat n : ℝ≥0) : ℝ≥0∞) :=
+  rfl
+
+/-- The decimal-literal counterpart of `ennreal_ofNat_eq_coe`. Mathlib has no `coe_ofScientific`
+for `ℝ≥0∞`, and without one a literal like `1.5` is an atom that nothing can rewrite. -/
+@[basify_op]
+theorem ennreal_ofScientific_eq_coe (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℝ≥0∞)
+      = ((OfScientific.ofScientific m s e : ℝ≥0) : ℝ≥0∞) :=
   rfl
 
 /-! ### From `ℝ≥0` down to `ℝ`
@@ -69,8 +77,14 @@ attribute [basify_simp ←] NNReal.coe_inj NNReal.coe_le_coe NNReal.coe_lt_coe
 
 attribute [basify_simp] Real.coe_toNNReal
 
-attribute [basify_simp, basify_op] NNReal.coe_zero NNReal.coe_one NNReal.coe_ofNat
+attribute [basify_op] NNReal.coe_zero NNReal.coe_one NNReal.coe_ofNat
   NNReal.coe_natCast NNReal.coe_add NNReal.coe_mul NNReal.coe_inv NNReal.coe_div NNReal.coe_pow
   NNReal.coe_max NNReal.coe_min NNReal.coe_sub_def
+
+/-- The decimal-literal counterpart of `NNReal.coe_ofNat`, which Mathlib does not have. -/
+@[basify_op]
+theorem nnreal_coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ((OfScientific.ofScientific m s e : ℝ≥0) : ℝ) = OfScientific.ofScientific m s e :=
+  rfl
 
 end Mathlib.Tactic.Basify

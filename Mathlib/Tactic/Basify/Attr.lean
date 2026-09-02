@@ -157,16 +157,15 @@ underlying type, such as `ENNReal.coe_add : ↑(a + b) = ↑a + ↑b`. Anything 
 is an atom: `basify` generalizes it and case splits on it rather than descending into it.
 
 Both operations the lemma relates are registered, so a single lemma covers the operation upstairs
-and the operation downstairs. The attribute does not add the lemma to a simp set; an operation is
-normally tagged `@[basify_simp ←, basify_op]` or `@[basify_simp, basify_op]`, depending on which
-way the coercion has to travel.
+and the operation downstairs.
 
-Registering an operation that no `basify_simp` rule can rewrite is worse than not registering it at
-all: `basify` descends into the arguments and splits them, but nothing then moves the operation
-itself down, so every branch is left stranded in the registered type. What has to be covered is the
-head symbol, not necessarily by the same lemma: `ENNReal.coe_ofNat` would serve here but is
-unusable as a reversed simp lemma, so `Mathlib/Tactic/Basify/ENNReal.lean` restates it. -/
-syntax (name := basifyOp) "basify_op" : attr
+The lemma is also added to the `basify_simp` set, reversed if `←` is given, since an operation
+`basify` can look inside of but not rewrite through is worse than one it does not know at all: it
+descends into the arguments and splits them, but nothing then moves the operation itself down, and
+every branch is left stranded in the compound type. A lemma unusable as a rewrite therefore cannot
+be registered as an operation -- `ENNReal.coe_ofNat` is one, its `no_index`ed right-hand side
+matching everything when reversed, so `Mathlib/Tactic/Basify/ENNReal.lean` restates it. -/
+syntax (name := basifyOp) "basify_op" (" ←")? : attr
 
 initialize registerBuiltinAttribute {
   name := `basifyOp
@@ -174,6 +173,10 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun declName stx kind => do
     unless stx.isOfKind ``basifyOp do throwUnsupportedSyntax
+    let some ext ← getSimpExtension? `basify_simp |
+      throwError "the `basify_simp` simp set is not registered"
+    MetaM.run' <| addSimpTheorem ext declName (post := true) (inv := !stx[1].isNone) kind
+      (prio := eval_prio default)
     for pair in ← MetaM.run' <| analyzeOp declName do
       opExt.add pair kind
 }

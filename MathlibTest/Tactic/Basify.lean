@@ -12,6 +12,17 @@ example : (2 : ℝ≥0∞)⁻¹ * (2 : ℝ≥0∞)⁻¹ = 4⁻¹ := by
   basify
   norm_num
 
+/-- Numeric literals are registered operations like any other, so they are looked through rather
+than generalized: the goal reaches `ℝ` with the literal still a literal. Decimal literals need
+`ennreal_ofScientific_eq_coe` and `nnreal_coe_ofScientific`, which Mathlib does not provide. -/
+example (a : ℝ≥0∞) (h : a ≠ ⊤) : (1.5 : ℝ≥0∞) + a = a + 1.5 := by
+  basify
+  ring
+
+example : (0.5 : ℝ≥0∞) + 0.5 = 1 := by
+  basify
+  norm_num
+
 example (a : ℝ≥0∞) (h : a ≠ ⊤) : a + 0 = a := by
   basify
   ring
@@ -34,6 +45,12 @@ example (a b : ℝ≥0∞) (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a + b ≠ ⊤ := 
   basify
 
 example (a : ℝ≥0∞) : a ≤ a + 1 := by
+  basify <;> linarith
+
+/-- An atom that is an inaccessible variable already keeps everything anonymous: there is no name to
+build `a_nonneg` from, so what the split introduces stays inaccessible too. -/
+example : ∀ a : ℝ≥0∞, a ≤ a + 1 := by
+  intro _
   basify <;> linarith
 
 /-- Truncated subtraction becomes `max (· - ·) 0`. -/
@@ -119,7 +136,7 @@ example (a b : ℝ≥0∞) : ∀ _ : ℕ, a + b = b + a := by
 
 /-- The same for a `∀` in a hypothesis: `h` comes out as a statement about `ℝ`. -/
 example (a b : ℝ≥0∞) (h : ∀ _ : ℕ, a ≤ b) : a ≤ b := by
-  basify <;> exact h 0
+  basify
 
 /-- And under a `fun`. -/
 example (a b : ℝ≥0∞) (h : (fun _ : ℕ => a) = fun _ => b) : a + 0 = a := by
