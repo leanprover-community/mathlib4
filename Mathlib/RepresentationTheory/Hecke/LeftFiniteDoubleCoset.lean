@@ -156,14 +156,14 @@ noncomputable instance [IsLeftFinite H₁ H₂ g] : Fintype (LeftDecompQuotient 
   simpa [LeftDecompQuotient] using
     Subgroup.fintypeOfIndexNeZero (isLeftFinite_iff_relIndexNeZero.mp (inferInstance))
 
-instance instIsLeftFinite_diag_one (H : Subgroup G) : IsLeftFinite H H 1 := by
+instance (H : Subgroup G) : IsLeftFinite H H 1 := by
   simp [isLeftFinite_iff, mk_degree, LeftDecompQuotient]
 
-instance instIsLeftFinite_mulLeft [IsLeftFinite H₁ H₂ g] (h₁ : H₁) :
+instance [IsLeftFinite H₁ H₂ g] (h₁ : H₁) :
     IsLeftFinite H₁ H₂ (h₁ * g) := by
   simp [isLeftFinite_iff, IsLeftFinite.degreeNeZero]
 
-instance instIsLeftFinite_mulRight [IsLeftFinite H₁ H₂ g] (h₂ : H₂) :
+instance [IsLeftFinite H₁ H₂ g] (h₂ : H₂) :
     IsLeftFinite H₁ H₂ (g * h₂) := by
   simp [isLeftFinite_iff, IsLeftFinite.degreeNeZero]
 
@@ -177,7 +177,7 @@ lemma isLeftFinite_trans [IsLeftFinite H₁ H₂ g] [IsLeftFinite H₂ H₃ g'] 
     simp [Subgroup.relIndex_pointwise_smul, isLeftFinite_iff_relIndexNeZero.mp]
   simpa [isLeftFinite_iff_relIndexNeZero, mul_smul] using Subgroup.relIndex_ne_zero_trans h₂₃ h₁₂
 
-instance instIsLeftFinite_trans [IsLeftFinite H₁ H₂ g]
+instance [IsLeftFinite H₁ H₂ g]
     [IsLeftFinite H₂ H₃ g'] (h₂ : H₂) : IsLeftFinite H₁ H₃ (g * h₂ * g') :=
   isLeftFinite_trans H₁ H₂ H₃ (g * h₂) g'
 
