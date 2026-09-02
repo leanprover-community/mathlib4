@@ -110,19 +110,6 @@ def normNumLeaf : LeafProver := fun p => do
   let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
   return (b, prf)
 
-/-- The entries of the matrix a condition speaks about, addressed by the index path that
-the condition's quantifiers have introduced so far. Only a condition stating that an entry
-is nonzero consults one. -/
-abbrev EntryLookup := Array Nat → MetaM Expr
-
-/-- Look up the entry of the recorded entries `t` at a row and column index path. -/
-def entryAt (t : Array (Array Expr)) : EntryLookup := fun p =>
-  return (t[p[0]!]!)[p[1]!]!
-
-/-- Look up the diagonal entry of the recorded entries `t` at a row index path. -/
-def diagAt (t : Array (Array Expr)) : EntryLookup := fun p =>
-  return (t[p[0]!]!)[p[0]!]!
-
 /-- Prove `¬ p` when `decide p` reduces to `false` in the kernel. The index guards of a
 condition are decidable in any ring, as they mention no entries. -/
 def refuteGuard? (p : Q(Prop)) : MetaM (Option Expr) := do
@@ -134,10 +121,14 @@ def refuteGuard? (p : Q(Prop)) : MetaM (Option Expr) := do
   let h ← mkExpectedTypeHint (← mkEqRefl ff) (← mkEq d ff)
   return some (← mkAppOptM ``of_decide_eq_false #[p, inst, h])
 
-/-- Prove `∀ i : Fin n, motive i` from proofs of its instances, `head i` proving the
-statement at index `i`. The proof recurses on the index list `List.finRange n`, so the
+/-- Prove the quantified statement `c` over `Fin n` from proofs of its instances, `head i`
+proving it at index `i`. The proof recurses on the index list `List.finRange n`, so the
 motive is spelled once rather than once per index. -/
-def mkListForall (n : Nat) (motive : Expr) (head : Nat → Expr → MetaM Expr) : MetaM Expr := do
+def mkListForall (n : Nat) (c : Q(Prop)) (head : Nat → Q(Prop) → MetaM Expr) :
+    MetaM Expr := do
+  let .forallE nm dom body bi := c
+    | throwError "expected a quantified statement:{indentExpr c}"
+  let motive : Expr := .lam nm dom body bi
   let fin ← mkAppM ``Fin #[mkNatLit n]
   let mut acc : Expr := mkConst ``True.intro
   for k in 0...n do
@@ -155,84 +146,118 @@ def mkListForall (n : Nat) (motive : Expr) (head : Nat → Expr → MetaM Expr) 
     mkExpectedTypeHint (← mkLambdaFVars #[i] body)
       (← mkForallFVars #[i] (mkApp motive i).headBeta)
 
-/-- Prove that the entry at `path` is nonzero, by having `leaf` refute its equation with
-`rhs`. -/
-def proveNonzero (leaf : LeafProver) (ents : EntryLookup) (path : Array Nat) (rhs : Expr) :
-    MetaM Expr := do
-  let (b, prf) ← leaf (← mkEq (← ents path) rhs)
-  if b then throwError "the entry at {path} was expected to be nonzero"
-  return prf
-
-/-- Decide the condition `c` in the kernel; if it is not decidable, unfold its head and
-hand the result back to `retry`. -/
-def decideOrUnfold (c : Q(Prop)) (retry : Q(Prop) → MetaM Expr) : MetaM Expr := do
-  try
-    certifyCondition "a condition mentioning no entries" c
-  catch e =>
+/-- Unfold `c` until its head is a quantifier, as `Matrix.IsLowerTriangular` has to be
+before its entry conditions are reachable. -/
+partial def unfoldToForall (c : Q(Prop)) : MetaM Q(Prop) := do
+  match c with
+  | .forallE .. => return c
+  | _ =>
     let some c' ← unfoldDefinition? c
-      | throwError "cannot verify the rank certificate:{indentExpr c}\
-          \nis neither decidable nor reducible:{indentD e.toMessageData}"
-    retry c'.headBeta
+      | throwError "expected a quantified condition:{indentExpr c}"
+    unfoldToForall c'.headBeta
 
-/-- Prove one cell of a certificate condition, on the shape of its statement: a conjunction
-splits, an equality of functions is split by `funext`, a quantifier over `Fin k` is taken
-apart index by index, a guard that no index satisfies is refuted, an entry that the
-elimination emitted as zero is closed by `rfl`, and a nonzero entry is left to `leaf`. A
-statement of none of these shapes, such as the pivot function's monotonicity, mentions no
-entry and is decided in the kernel. -/
-partial def proveCell (leaf : LeafProver) (ents : EntryLookup) (path : Array Nat)
-    (g : Q(Prop)) : MetaM Expr := do
-  match g with
+/-- Prove a cell that an index guard may make vacuous: where the guard is refutable the
+statement holds by `absurd`, and otherwise `cell` proves the body under it. -/
+def underGuard (c : Q(Prop)) (cell : Q(Prop) → MetaM Expr) : MetaM Expr := do
+  match c with
   | .forallE nm dom body bi =>
-    if let .app (.const ``Fin _) card := dom then
-      if let some k ← getNatValue? (← whnfR card) then
-        return ← mkListForall k (.lam nm dom body bi) fun i gi =>
-          proveCell leaf ents (path.push i) gi
     if let some ref ← refuteGuard? dom then
       withLocalDecl nm bi dom fun h => do
         let tgt := body.instantiate1 h
         mkLambdaFVars #[h] (← mkAppOptM ``absurd #[some dom, some tgt, some h, some ref])
     else
       withLocalDecl nm bi dom fun h => do
-        mkLambdaFVars #[h] (← proveCell leaf ents path (body.instantiate1 h))
-  | _ =>
-    match_expr g with
-    | And a b =>
-      mkAppM ``And.intro #[← proveCell leaf ents path a, ← proveCell leaf ents path b]
-    | Ne _ _ rhs => proveNonzero leaf ents path rhs
-    | Eq ty lhs rhs =>
-      if ← isDefEq lhs rhs then
-        mkEqRefl lhs
-      else
-        -- an equality of functions, a matrix among them: `funext` once and continue
-        -- pointwise, which keeps the obligations as coarse as they can be
-        match ← whnf ty with
-        | .forallE nm dom _ bi =>
-          let pointwise ← withLocalDecl nm bi dom fun x => do
-            mkForallFVars #[x] (← mkEq (lhs.beta #[x]) (rhs.beta #[x]))
-          mkAppM ``funext #[← proveCell leaf ents path pointwise]
-        | _ => decideOrUnfold g (proveCell leaf ents path)
-    | _ => decideOrUnfold g (proveCell leaf ents path)
+        mkLambdaFVars #[h] (← cell (body.instantiate1 h))
+  | _ => cell c
 
-/-- Prove the row arrangement `A.submatrix σ id = Matrix.of rows`, with `rows` the literal
-of the permuted rows, by proving the reindexing functions equal and lifting that with
+/-- Prove a cell whose two sides reduce to the same recorded entry. -/
+def proveRflCell (c : Q(Prop)) : MetaM Expr := do
+  match_expr c with
+  | Eq _ lhs rhs =>
+    unless ← isDefEq lhs rhs do
+      throwError "the entry was expected to be zero:{indentExpr c}"
+    mkEqRefl lhs
+  | _ => throwError "expected an equation:{indentExpr c}"
+
+/-- Prove that a recorded `entry` is nonzero, by having `leaf` refute its equation with
+`zero`; `site` names the entry in errors. -/
+def proveNonzeroEntry (leaf : LeafProver) (entry zero : Expr) (site : MessageData) :
+    MetaM Expr := do
+  let (b, prf) ← leaf (← mkEq entry zero)
+  if b then throwError "{site} is zero"
+  return prf
+
+/-- Prove `∀ i, L.diag i ≠ 0` from the recorded entries of `L`. -/
+def mkDiagCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (L : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Q($α))) (leaf : LeafProver) :
+    MetaM Q(∀ i, ($L).diag i ≠ 0) := do
+  let zero : Q($α) ← mkNumeral α 0
+  mkListForall m q(∀ i, ($L).diag i ≠ 0) fun i _ =>
+    proveNonzeroEntry leaf (entries[i]!)[i]! zero m!"the diagonal entry of the transform at {i}"
+
+/-- Prove `L.IsLowerTriangular`: above the diagonal the elimination emitted zero, and at
+the remaining index pairs the triangularity guard is refutable. -/
+def mkLowerCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
+  let rows ← unfoldToForall q(($L).IsLowerTriangular)
+  mkListForall m rows fun _ gi => do
+    mkListForall m gi fun _ cell => underGuard cell proveRflCell
+
+/-- Prove the characterisation of `U.IsPivotedBy pivot`: the two conditions on the pivot
+function mention no entry and are decided, while the entry conditions are built from the
+recorded entries of `U`. -/
+def mkPivotCond {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (U : Q(Matrix (Fin $m) (Fin $n) $α)) (pivot : Q(Fin $m → WithTop (Fin $n)))
+    (entries : Array (Array Q($α))) (leaf : LeafProver) :
+    MetaM Q(($U).IsPivotedBy $pivot) := do
+  let zero : Q($α) ← mkNumeral α 0
+  let iff ← mkAppOptM ``Matrix.isPivotedBy_iff
+    #[none, none, none, none, some U, some pivot, none, none]
+  match_expr (← whnfR (← inferType iff)).appArg! with
+  | And mono rest =>
+    match_expr rest with
+    | And strict cells =>
+      let entryConds ← mkListForall m cells fun i gi => do
+        match_expr gi with
+        | And zeros nonzeros =>
+          let hz ← mkListForall n zeros fun _ cell =>
+            underGuard cell proveRflCell
+          let hn ← mkListForall n nonzeros fun c cell =>
+            underGuard cell fun _ =>
+              proveNonzeroEntry leaf (entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
+          mkAppM ``And.intro #[hz, hn]
+        | _ => throwError "unexpected shape of the pivot entry conditions:{indentExpr gi}"
+      let hMono ← certifyCondition "monotonicity of the pivot function" mono
+      let hStrict ← certifyCondition "strict monotonicity of the pivot function" strict
+      mkAppM ``Iff.mpr
+        #[iff, ← mkAppM ``And.intro #[hMono, ← mkAppM ``And.intro #[hStrict, entryConds]]]
+    | _ => throwError "unexpected shape of `Matrix.isPivotedBy_iff`:{indentExpr rest}"
+  | _ => throwError "unexpected shape of `Matrix.isPivotedBy_iff`"
+
+/-- Prove the row arrangement `A.submatrix σ id = Aσ`, with `Aσ` the literal `mkMatrixLit`
+built from `entries`, by proving the reindexing functions equal and lifting that with
 `congrArg`. Directly constructing the goal with `.submatrix` causes some exponential explosion
 in kernel unfolds. -/
-def mkPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
-    (rows : Q(Fin $m → Fin $n → $α)) (σ : Q(Equiv.Perm (Fin $m))) :
-    MetaM Q(($A).submatrix $σ id = Matrix.of $rows) := do
-  -- every cell is an equation between two spellings of one entry of `A`, so none of them
-  -- reaches a leaf normaliser or asks for an entry
-  let noLeaf : LeafProver := fun p =>
-    throwError "the row arrangement is not entrywise definitional:{indentExpr p}"
-  let noEntries : EntryLookup := fun p =>
-    throwError "the row arrangement is not definitional at {p}"
+def mkPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m) (Fin $n) $α))
+    (entries : Array (Array Q($α))) (σ : Q(Equiv.Perm (Fin $m))) :
+    MetaM Q(($A).submatrix $σ id = $Aσ) := do
+  -- the rows of `Aσ`, which `mkMatrixLit` built from the same entries, so that the closing
+  -- ascription compares two identical terms
+  have rows : Q(Fin $m → Fin $n → $α) := mkRowsLit α m n entries
+  -- every cell is an equation between two spellings of one entry of `A`, so all of them
+  -- close by `rfl` and none consults a leaf normaliser
   have reindexed : Q(Fin $m → Fin $n → $α) := q(fun i j => $A ($σ i) (id j))
-  let h ← proveCell noLeaf noEntries #[] q($reindexed = $rows)
+  let rowStmt ← withLocalDeclD `i q(Fin $m) fun i => do
+    mkForallFVars #[i] (← mkEq (mkApp reindexed i).headBeta (mkApp rows i))
+  let rowEq ← mkListForall m rowStmt fun i _ => do
+    let iN ← mkFinNumeral m i
+    let colStmt ← withLocalDeclD `j q(Fin $n) fun j => do
+      mkForallFVars #[j] (← mkEq (mkApp2 reindexed iN j).headBeta (mkApp2 rows iN j))
+    mkAppM ``funext #[← mkListForall n colStmt fun _ cell => proveRflCell cell]
   have wrap : Q((Fin $m → Fin $n → $α) → Matrix (Fin $m) (Fin $n) $α) :=
     q(fun g => Matrix.of g)
-  mkExpectedTypeHint (← mkAppM ``congrArg #[wrap, h])
-    q(($A).submatrix $σ id = Matrix.of $rows)
+  mkExpectedTypeHint (← mkAppM ``congrArg #[wrap, ← mkAppM ``funext #[rowEq]])
+    q(($A).submatrix $σ id = $Aσ)
 
 /-- Prove the product `L * Aσ = U` entrywise from the recorded entries `lEntries`,
 `aEntries` and `uEntries`. At concrete indices the product reduces to the fold of its
@@ -241,10 +266,6 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) (Aσ U : Q(Matrix (Fin $m) (Fin $n) $α))
     (lEntries aEntries uEntries : Array (Array Q($α))) (leaf : LeafProver) :
     MetaM Q($L * $Aσ = $U) := do
-  let motiveOf (e : Expr) : MetaM Expr := do
-    match ← whnfR e with
-    | .forallE nm dom body bi => return .lam nm dom body bi
-    | _ => throwError "expected a quantified statement:{indentExpr e}"
   let zero ← mkNumeral α 0
   -- `HMul.hMul` and `HAdd.hAdd` with their instances resolved and the two placeholder
   -- operands dropped, so that the folds do not re-run instance synthesis at every term
@@ -259,9 +280,8 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     unless b do
       throwError "the product of the transform does not match the echelon form at ({i}, {j})"
     return prf
-  let rows ← motiveOf q(∀ i j, ($L * $Aσ) i j = $U i j)
-  mkAppM ``Matrix.ext #[← mkListForall m rows fun i gi => do
-    mkListForall n (← motiveOf gi) fun j _ => cell i j]
+  mkAppM ``Matrix.ext #[← mkListForall m q(∀ i j, ($L * $Aσ) i j = $U i j) fun i gi => do
+    mkListForall n gi fun j _ => cell i j]
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
 `entries`, the parsed entries of `A`, deciding every condition in the kernel unless `leaf?`
@@ -276,8 +296,7 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
   have U := mkMatrixLit α m n data.U
   -- the row of `A_σ` at position `i` is the row of `A` at `σ i`
   let aEntries := data.rowOrder.map (entries[·]!)
-  have aRows : Q(Fin $m → Fin $n → $α) := mkRowsLit α m n aEntries
-  have Aσ : Q(Matrix (Fin $m) (Fin $n) $α) := q(Matrix.of $aRows)
+  have Aσ := mkMatrixLit α m n aEntries
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
   match leaf? with
@@ -294,21 +313,13 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
       q(∀ i, ($L).diag i ≠ 0)
     return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
   | some leaf =>
-    have hperm : Q(($A).submatrix $σ id = $Aσ) := ← mkPermEq A aRows σ
+    have hperm : Q(($A).submatrix $σ id = $Aσ) := ← mkPermEq A Aσ aEntries σ
     have hprod : Q($L * $Aσ = $U) :=
       ← mkProductEq _cr L Aσ U data.L aEntries data.U leaf
     have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
-    -- the pivot condition through its characterisation: the two conditions on the pivot
-    -- function are decided, and the entry conditions constructed
-    let pivotIff ← mkAppOptM ``Matrix.isPivotedBy_iff
-      #[none, none, none, none, some U, some pivot, none, none]
-    let pivotRhs := (← whnfR (← inferType pivotIff)).appArg!
-    have hpivot : Q(($U).IsPivotedBy $pivot) :=
-      ← mkAppM ``Iff.mpr #[pivotIff, ← proveCell leaf (entryAt data.U) #[] pivotRhs]
-    have hlower : Q(($L).IsLowerTriangular) :=
-      ← proveCell leaf (entryAt data.L) #[] q(($L).IsLowerTriangular)
-    have hdiag : Q(∀ i, ($L).diag i ≠ 0) :=
-      ← proveCell leaf (diagAt data.L) #[] q(∀ i, ($L).diag i ≠ 0)
+    have hpivot : Q(($U).IsPivotedBy $pivot) := ← mkPivotCond _cr U pivot data.U leaf
+    have hlower : Q(($L).IsLowerTriangular) := ← mkLowerCond _cr L
+    have hdiag : Q(∀ i, ($L).diag i ≠ 0) := ← mkDiagCond _cr L data.L leaf
     return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
 
 end Mathlib.Tactic.Echelon
