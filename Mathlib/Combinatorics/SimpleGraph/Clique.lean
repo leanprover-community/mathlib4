@@ -743,7 +743,12 @@ private lemma finite_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsN
   rw [← syc.right]
   exact Finset.card_le_card (Finset.subset_univ s)
 
+@[deprecated "use `IsClique.card_le_cliqueNum'`" (since := "2026-09-02")]
 lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} {tc : G.IsClique t} :
+    #t ≤ G.cliqueNum := by
+  exact le_csSup G.finite_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
+
+lemma IsClique.card_le_cliqueNum' [Finite α] {t : Finset α} (tc : G.IsClique t) :
     #t ≤ G.cliqueNum := by
   exact le_csSup G.finite_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
 
@@ -756,7 +761,7 @@ theorem cliqueNum_induce_le [Finite α] (s : Set α) :
     (G.induce s).cliqueNum ≤ G.cliqueNum := by
   have ⟨t', tc⟩ := (G.induce s).exists_isNClique_cliqueNum
   rw [isNClique_induce_iff] at tc
-  exact tc.card_eq ▸ tc.isClique.card_le_cliqueNum
+  exact tc.card_eq ▸ tc.isClique.card_le_cliqueNum'
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
 -- TODO: replace with `MaximalFor (G.IsClique ∘ (↑)) card s`
@@ -789,18 +794,18 @@ lemma maximumClique_card_eq_cliqueNum [Finite α] (s : Finset α) (sm : G.IsMaxi
     #s = G.cliqueNum := by
   obtain ⟨sc, sm⟩ := sm
   obtain ⟨t, tc, tcard⟩ := G.exists_isNClique_cliqueNum
-  exact eq_of_le_of_not_lt sc.card_le_cliqueNum (by simp [← tcard, sm t tc])
+  exact eq_of_le_of_not_lt sc.card_le_cliqueNum' (by simp [← tcard, sm t tc])
 
 lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique s := by
   obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
-  exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
+  exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum'⟩⟩
 
 theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
   rw [isEmpty_iff]
   refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
   · intro a
     have one_clique : G.IsNClique 1 {a} := by simp
-    have : 1 ≤ G.cliqueNum  := IsClique.card_le_cliqueNum (tc := one_clique.isClique)
+    have : 1 ≤ G.cliqueNum  := IsClique.card_le_cliqueNum' one_clique.isClique
     grind
   · have : ∀ (s : Finset α ) , s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
     simp [cliqueNum, this, exists_const]
@@ -1033,7 +1038,7 @@ theorem IsIndepSet.card_le_indepNum
     [Finite α] {t : Finset α} (tc : G.IsIndepSet t) : #t ≤ G.indepNum := by
   rw [← isClique_compl] at tc
   simp_rw [indepNum, ← isNClique_compl]
-  exact tc.card_le_cliqueNum
+  exact tc.card_le_cliqueNum'
 
 lemma exists_isNIndepSet_indepNum : ∃ s, G.IsNIndepSet G.indepNum s := by
   simp_rw [indepNum, ← isNClique_compl]
