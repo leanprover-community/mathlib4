@@ -797,7 +797,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
     else
       trace[translate_detail] "Already visited {tgt} as translation of {src}."
     return
-  let srcDecl ← getConstInfo src
+  let srcDecl ← withoutExporting do getConstInfo src
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `rootSrc`
