@@ -167,6 +167,8 @@ If the semifield has positive characteristic `p`, our division by zero conventio
 `nnratCast (1 / p) = 1 / 0 = 0`. -/
 class Semifield (K : Type*) extends CommSemiring K, DivisionSemiring K, CommGroupWithZero K
 
+attribute [instance 500] Semifield.toCommSemiring
+
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
 An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
