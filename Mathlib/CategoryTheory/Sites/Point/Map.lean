@@ -35,6 +35,7 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   {J : GrothendieckTopology C} (Φ : Point.{w} J) (F : C ⥤ D)
   (K : GrothendieckTopology D) [F.IsCocontinuous J K]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma map_aux ⦃X : D⦄ (R : Sieve X) (hR : R ∈ K X)
     ⦃u : Φ.fiber.Elements⦄ (f : (CategoryOfElements.π Φ.fiber ⋙ F).obj u ⟶ X) :
@@ -125,7 +126,6 @@ lemma toPresheafFiber_presheafFiberMapObjIso_inv (P : Dᵒᵖ ⥤ A) (X : C) (x 
     (Φ.toPresheafFiberMap_presheafFiberMapObjIso_hom F K ..).symm =≫
       (Φ.presheafFiberMapObjIso F K P).inv
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Relation between the fiber functors on presheaves for the points `Φ.map F K`
 and `Φ` when `F : C ⥤ D` is a cocontinuous functor between sites `(C, J)` and `(D, K)`. -/

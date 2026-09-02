@@ -457,7 +457,7 @@ theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
   · simp [h0, ENNReal.zero_rpow_of_pos hq_pos]
   by_cases hp_top : p = ∞
   · simp only [hp_top, eLpNorm_exponent_top, ENNReal.top_mul', hq_pos.not_ge,
-      ENNReal.ofReal_eq_zero, if_false, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
+      ENNReal.ofReal_eq_zero, ite_false, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
     have h_rpow : essSup (‖‖f ·‖ₑ ^ q‖ₑ) μ = essSup (‖f ·‖ₑ ^ q) μ := by congr
     rw [h_rpow]
     have h_rpow_mono := ENNReal.strictMono_rpow_of_pos hq_pos
@@ -657,6 +657,12 @@ theorem eLpNorm_smul_measure_of_ne_zero {c : ℝ≥0∞} (hc : c ≠ 0) (f : α 
   · simp [*]
   exact eLpNorm_smul_measure_of_ne_zero_of_ne_top hp0 hp_top c
 
+theorem eLpNorm_smul_measure_le (c : ℝ≥0∞) (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) :
+    eLpNorm f p (c • μ) ≤ c ^ (1 / p).toReal • eLpNorm f p μ := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  · exact (eLpNorm_smul_measure_of_ne_zero hc f p μ).le
+
 /-- See `eLpNorm_smul_measure_of_ne_zero` for a version with scalar multiplication by `ℝ≥0∞`. -/
 lemma eLpNorm_smul_measure_of_ne_zero' {c : ℝ≥0} (hc : c ≠ 0) (f : α → ε) (p : ℝ≥0∞)
     (μ : Measure α) : eLpNorm f p (c • μ) = c ^ p.toReal⁻¹ • eLpNorm f p μ :=
@@ -680,15 +686,16 @@ theorem eLpNorm_one_smul_measure {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
   rw [eLpNorm_smul_measure_of_ne_top] <;> simp
 
+theorem eLpNorm_le_of_measure_le_smul {c : ℝ≥0∞}
+    {μ μ' : Measure α} (h : μ' ≤ c • μ) {f : α → ε} {p : ℝ≥0∞} :
+    eLpNorm f p μ' ≤ c ^ (1 / p).toReal • eLpNorm f p μ := by
+  grw [h, eLpNorm_smul_measure_le]
+
 theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
-  refine (eLpNorm_mono_measure f hμ'_le).trans_lt ?_
-  by_cases hc0 : c = 0
-  · simp [hc0]
-  rw [eLpNorm_smul_measure_of_ne_zero hc0, smul_eq_mul]
-  refine ENNReal.mul_lt_top (Ne.lt_top ?_) hf.2
-  simp [hc, hc0]
+  grw [eLpNorm_le_of_measure_le_smul hμ'_le]
+  exact ENNReal.mul_lt_top (Ne.lt_top (by simp [hc])) hf.2
 
 theorem MemLp.smul_measure {f : α → ε} {c : ℝ≥0∞} (hf : MemLp f p μ) (hc : c ≠ ∞) :
     MemLp f p (c • μ) :=
@@ -701,12 +708,12 @@ theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
   rw [lintegral_add_measure _ μ ν]
 
 theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
-    eLpNorm f p μ ≤ eLpNorm f p (μ + ν) :=
-  eLpNorm_mono_measure f <| Measure.le_add_right <| le_refl _
+    eLpNorm f p μ ≤ eLpNorm f p (μ + ν) := by
+  grw [← Measure.le_add_right le_rfl]
 
 theorem eLpNorm_le_add_measure_left (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
-    eLpNorm f p ν ≤ eLpNorm f p (μ + ν) :=
-  eLpNorm_mono_measure f <| Measure.le_add_left <| le_refl _
+    eLpNorm f p ν ≤ eLpNorm f p (μ + ν) := by
+  grw [← Measure.le_add_left le_rfl]
 
 variable {ε : Type*} [ENorm ε] in
 lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → ε) : eLpNormEssSup f μ = ⨆ a, ‖f a‖ₑ :=

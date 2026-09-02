@@ -19,6 +19,8 @@ The main ingredients are:
 
 -/
 
+@[expose] public section
+
 namespace AbelRuffini
 
 open IsAlgClosed Polynomial Polynomial.Gal

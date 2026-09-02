@@ -51,6 +51,7 @@ def Functor.Elements (F : C ⥤ Type w) :=
 /-- Constructor for the type `F.Elements` when `F` is a functor to types. -/
 abbrev Functor.elementsMk (F : C ⥤ Type w) (X : C) (x : F.obj X) : F.Elements := ⟨X, x⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst = y.fst)
     (h₂ : F.map (eqToHom h₁) x.snd = y.snd) : x = y := by
   cases x
@@ -139,7 +140,7 @@ namespace CategoryOfElements
 variable (F : C ⥤ Type w)
 
 /-- The functor out of the category of elements which forgets the element. -/
-@[simps]
+@[implicit_reducible, simps]
 def π : F.Elements ⥤ C where
   obj X := X.1
   map f := f.val
@@ -157,7 +158,7 @@ instance : (π F).ReflectsIsomorphisms where
 
 /-- A natural transformation between functors induces a functor between the categories of elements.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements where
   obj t := ⟨t.1, α.app t.1 t.2⟩
   map {t₁ t₂} k := ⟨k.1, by simpa [map_snd] using (NatTrans.naturality_apply α k.1 t₁.2).symm⟩
@@ -198,6 +199,7 @@ theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
       ⟨f.right, by simp [ConcreteCategory.congr_hom f.w.symm PUnit.unit]; rfl⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between the category of elements `F.Elements`
 and the comma category `(*, F)`. -/
 @[simps]
@@ -235,6 +237,7 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 @[simps]
@@ -252,6 +255,7 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
     simpa only [Functor.map_id, Category.id_comp] using!
       (yonedaEquiv.symm_apply_apply X.hom).symm))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `(-.Elements)ᵒᵖ ≅ (yoneda, -)` of is actually a natural isomorphism of functors.
 -/
@@ -279,7 +283,6 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
   Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
 @[simps]

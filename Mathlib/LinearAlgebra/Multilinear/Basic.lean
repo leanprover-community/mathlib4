@@ -178,7 +178,7 @@ theorem map_update_zero [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : f (updat
 
 @[simp]
 theorem map_zero [Nonempty ι] : f 0 = 0 := by
-  obtain ⟨i, _⟩ : ∃ i : ι, i ∈ Set.univ := Set.exists_mem_of_nonempty ι
+  obtain ⟨i⟩ := ‹Nonempty ι›
   exact map_coord_zero f i rfl
 
 instance : Add (MultilinearMap R M₁ M₂) :=
@@ -486,7 +486,7 @@ coordinate. Here, we give an auxiliary statement tailored for an inductive proof
 `map_sum_finset`. -/
 theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, #(A i)) = n) :
     (f fun i => ∑ j ∈ A i, g i j) = ∑ r ∈ piFinset A, f fun i => g i (r i) := by
-  letI := fun i => Classical.decEq (α i)
+  let := fun i => Classical.decEq (α i)
   induction n using Nat.strong_induction_on generalizing A with | h n IH =>
   -- If one of the sets is empty, then all the sums are zero
   by_cases! Ai_empty : ∃ i, A i = ∅
@@ -678,11 +678,11 @@ def domDomCongr (σ : ι₁ ≃ ι₂) (m : MultilinearMap R (fun _ : ι₁ => M
     MultilinearMap R (fun _ : ι₂ => M₂) M₃ where
   toFun v := m fun i => v (σ i)
   map_update_add' v i a b := by
-    letI := σ.injective.decidableEq
+    let := σ.injective.decidableEq
     simp_rw [Function.update_apply_equiv_apply v]
     rw [m.map_update_add]
   map_update_smul' v i a b := by
-    letI := σ.injective.decidableEq
+    let := σ.injective.decidableEq
     simp_rw [Function.update_apply_equiv_apply v]
     rw [m.map_update_smul]
 
@@ -947,24 +947,24 @@ def domDomCongrLinearEquiv' {ι' : Type*} (σ : ι ≃ ι') :
   toFun f :=
     { toFun := f ∘ (σ.piCongrLeft' M₁).symm
       map_update_add' := fun m i => by
-        letI := σ.decidableEq
+        let := σ.decidableEq
         rw [← σ.apply_symm_apply i]
         intro x y
         simp only [comp_apply, piCongrLeft'_symm_update, f.map_update_add]
       map_update_smul' := fun m i c => by
-        letI := σ.decidableEq
+        let := σ.decidableEq
         rw [← σ.apply_symm_apply i]
         intro x
         simp only [Function.comp, piCongrLeft'_symm_update, f.map_update_smul] }
   invFun f :=
     { toFun := f ∘ σ.piCongrLeft' M₁
       map_update_add' := fun m i => by
-        letI := σ.symm.decidableEq
+        let := σ.symm.decidableEq
         rw [← σ.symm_apply_apply i]
         intro x y
         simp only [comp_apply, piCongrLeft'_update, f.map_update_add]
       map_update_smul' := fun m i c => by
-        letI := σ.symm.decidableEq
+        let := σ.symm.decidableEq
         rw [← σ.symm_apply_apply i]
         intro x
         simp only [Function.comp, piCongrLeft'_update, f.map_update_smul] }
@@ -1060,7 +1060,7 @@ noncomputable def iteratedFDerivComponent {α : Type*}
   map_update_add' := by intros; ext; simp
   map_update_smul' := by intros; ext; simp
 
-open Classical in
+open scoped Classical in
 /-- The `k`-th iterated derivative of a multilinear map `f` at the point `x`. It is a multilinear
 map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
@@ -1359,13 +1359,13 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M�
   rw [← s.piecewise_idem_right b a, map_sub_map_piecewise]
   refine Finset.sum_congr rfl fun i hi ↦ congr_arg f <| funext fun j ↦ ?_
   by_cases hjs : j ∈ s
-  · rw [if_pos hjs]; by_cases hji : j < i
-    · rw [if_pos fun _ ↦ hji, if_pos hji, s.piecewise_eq_of_mem _ _ hjs]
-    rw [if_neg (Classical.not_imp.mpr ⟨hjs, hji⟩), if_neg hji]
+  · rw [ite_eq_left hjs]; by_cases hji : j < i
+    · rw [ite_eq_left fun _ ↦ hji, ite_eq_left hji, s.piecewise_eq_of_mem _ _ hjs]
+    rw [ite_eq_right (Classical.not_imp.mpr ⟨hjs, hji⟩), ite_eq_right hji]
     obtain rfl | hij := eq_or_ne i j
-    · rw [if_pos rfl, if_pos rfl, s.piecewise_eq_of_mem _ _ hi]
-    · rw [if_neg hij, if_neg hij.symm]
-  · rw [if_neg hjs, if_pos fun h ↦ (hjs h).elim, s.piecewise_eq_of_notMem _ _ hjs]
+    · rw [ite_eq_left rfl, ite_eq_left rfl, s.piecewise_eq_of_mem _ _ hi]
+    · rw [ite_eq_right hij, ite_eq_right hij.symm]
+  · rw [ite_eq_right hjs, ite_eq_left fun h ↦ (hjs h).elim, s.piecewise_eq_of_notMem _ _ hjs]
 
 open Finset in
 lemma map_add_eq_map_add_linearDeriv_add [DecidableEq ι] [Fintype ι] (x h : (i : ι) → M₁ i) :
@@ -1373,7 +1373,7 @@ lemma map_add_eq_map_add_linearDeriv_add [DecidableEq ι] [Fintype ι] (x h : (i
   rw [add_comm, map_add_univ, ← Finset.powerset_univ,
       ← sum_filter_add_sum_filter_not _ (2 ≤ #·)]
   simp_rw [not_le, Nat.lt_succ_iff, le_iff_lt_or_eq (b := 1), Nat.lt_one_iff, filter_or,
-    ← powersetCard_eq_filter, sum_union (univ.pairwise_disjoint_powersetCard zero_ne_one),
+    ← powersetCard_eq_filter, sum_union (disjoint_powersetCard_of_ne zero_ne_one _ _),
     powersetCard_zero, powersetCard_one, sum_singleton, Finset.piecewise_empty, sum_map,
     Function.Embedding.coeFn_mk, Finset.piecewise_singleton, linearDeriv_apply, add_comm]
 
@@ -1424,7 +1424,7 @@ def map [Nonempty ι] (f : MultilinearMap R M₁ M₂) (p : ∀ i, Submodule R (
   carrier := f '' { v | ∀ i, v i ∈ p i }
   smul_mem' := fun c _ ⟨x, hx, hf⟩ => by
     let ⟨i⟩ := ‹Nonempty ι›
-    letI := Classical.decEq ι
+    let := Classical.decEq ι
     refine ⟨update x i (c • x i), fun j => if hij : j = i then ?_ else ?_, hf ▸ ?_⟩
     · rw [hij, update_self]
       exact (p i).smul_mem _ (hx i)
