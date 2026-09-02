@@ -90,9 +90,7 @@ lemma posPart_neg (a : A) : (-a)⁺ = a⁻ := by
   by_cases ha : IsSelfAdjoint a
   · rw [posPart_def, negPart_def, ← cfcₙ_comp_neg _ _]
     congr! 2
-  · have ha' : ¬ IsSelfAdjoint (-a) := fun h ↦ ha (by simpa using h.neg)
-    rw [posPart_def, negPart_def, cfcₙ_apply_of_not_predicate a ha,
-      cfcₙ_apply_of_not_predicate _ ha']
+  · grind [posPart_def, negPart_def, IsSelfAdjoint.neg, neg_neg]
 
 @[simp]
 lemma negPart_neg (a : A) : (-a)⁻ = a⁺ := by
@@ -112,8 +110,7 @@ lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   · obtain (rfl | hr) := eq_or_ne r 0
     · simp
     · have := (not_iff_not.mpr <| (IsSelfAdjoint.all r).smul_iff hr.isUnit (x := a)) |>.mpr ha
-      simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha,
-        cfcₙ_apply_of_not_predicate _ this]
+      grind [CFC.posPart_def, smul_zero]
 
 @[simp]
 lemma negPart_smul {r : ℝ≥0} {a : A} : (r • a)⁻ = r • a⁻ := by

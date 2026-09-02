@@ -195,6 +195,9 @@ lemma mkD_of_not_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀
   rw [continuousOn_iff_continuous_domRestrict] at hf
   exact mkD_of_not_continuous hf
 
+grind_pattern ContinuousMapZero.mkD_of_not_continuousOn => mkD (s.domRestrict f) g where
+  guard ¬ ContinuousOn f s
+
 set_option backward.isDefEq.respectTransparency false in
 lemma mkD_apply_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀} {x : s}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :

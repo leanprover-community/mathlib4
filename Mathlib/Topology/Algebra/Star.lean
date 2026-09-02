@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Star.Pi
 
 /-!
 # Continuity of `star`
@@ -31,7 +32,12 @@ export ContinuousStar (continuous_star)
 
 section Continuity
 
-variable {α R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R]
+
+variable {α R : Type*} [TopologicalSpace R]
+
+section Star
+
+variable [Star R] [ContinuousStar R]
 
 theorem continuousOn_star {s : Set R} : ContinuousOn star s :=
   continuous_star.continuousOn
@@ -51,26 +57,53 @@ theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto 
 
 variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
 
-@[continuity, fun_prop]
-theorem Continuous.star (hf : Continuous f) : Continuous fun x => star (f x) :=
+@[to_fun (attr := fun_prop)]
+theorem Continuous.star (hf : Continuous f) : Continuous (star f) :=
   continuous_star.comp hf
 
-@[fun_prop]
-theorem ContinuousAt.star (hf : ContinuousAt f x) : ContinuousAt (fun x => star (f x)) x :=
+@[to_fun (attr := fun_prop)]
+theorem ContinuousAt.star (hf : ContinuousAt f x) : ContinuousAt (star f) x :=
   continuousAt_star.comp hf
 
-@[fun_prop]
-theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (fun x => star (f x)) s :=
+@[to_fun (attr := fun_prop)]
+theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (star f) s :=
   continuous_star.comp_continuousOn hf
 
+@[to_fun (attr := fun_prop)]
 theorem ContinuousWithinAt.star (hf : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => star (f x)) s x :=
+    ContinuousWithinAt (star f) s x :=
   Filter.Tendsto.star hf
 
 /-- The star operation bundled as a continuous map. -/
 @[simps]
 def starContinuousMap : C(R, R) :=
   ⟨star, continuous_star⟩
+
+end Star
+
+section InvolutiveStar
+
+variable [InvolutiveStar R] [ContinuousStar R]
+variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
+
+@[to_fun (attr := simp) continuous_fun_star_iff]
+theorem continuous_star_iff : Continuous (star f) ↔ Continuous f :=
+  ⟨fun h ↦ star_star f ▸ h.star, fun h ↦ h.star⟩
+
+@[to_fun (attr := simp) continuousAt_fun_star_iff]
+theorem continuousAt_star_iff : ContinuousAt (star f) x ↔ ContinuousAt f x :=
+  ⟨fun h ↦ star_star f ▸ h.star, fun h ↦ h.star⟩
+
+@[to_fun (attr := simp) continuousOn_fun_star_iff]
+theorem continuousOn_star_iff : ContinuousOn (star f) s ↔ ContinuousOn f s :=
+  ⟨fun h ↦ star_star f ▸ h.star, fun h ↦ h.star⟩
+
+@[to_fun (attr := simp) continuousWithinAt_fun_star_iff]
+theorem continuousWithinAt_star_iff :
+    ContinuousWithinAt (star f) s x ↔ ContinuousWithinAt f s x :=
+  ⟨fun h ↦ star_star f ▸ h.star, fun h ↦ h.star⟩
+
+end InvolutiveStar
 
 end Continuity
 
