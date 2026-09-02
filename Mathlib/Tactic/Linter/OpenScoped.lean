@@ -133,9 +133,9 @@ def openScopedPost (readPre : PreStateFn) (stx : Syntax) (self : OpenScopedState
   levels := levels.map fun lvl => lvl.map fun e =>
     if e.scopedUse then e
     else if ks.any (fun k => e.nss.any (·.isPrefixOf k)) then { e with scopedUse := true } else e
-  if let some p := readPre declaredNames then
+  if let some new := readPre declaredNames then
     let mut consts : NameSet := {}
-    for n in p.new do
+    for n in new do
       if let some ci := env.find? n then
         consts := ci.getUsedConstantsAsSet.foldl (·.insert ·) consts
     if !consts.isEmpty then
