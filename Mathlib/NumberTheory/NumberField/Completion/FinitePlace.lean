@@ -128,16 +128,10 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
     exact Ring.HasFiniteQuotients.finiteQuotient v.ne_bot
   lia
 
-lemma two_le_absNorm : 2 ≤ absNorm v.asIdeal :=
-  have : v.asIdeal.IsPrime := v.isPrime
-  have : NeZero v.asIdeal := ⟨v.ne_bot⟩
-  have h : 2 ≤ (v.asIdeal.under ℤ).absNorm := by simp [(Nat.absNorm_under_prime v.asIdeal).two_le]
-  h.trans (Nat.le_of_dvd (by grind [one_lt_absNorm v]) (Int.absNorm_under_dvd_absNorm v.asIdeal))
-
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
 
-lemma two_le_absNorm_nnreal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast two_le_absNorm v
+lemma two_le_absNorm_nnreal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
 lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
@@ -316,8 +310,7 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
 
 lemma FinitePlace.two_le_norm_of_one_lt_norm {v : HeightOneSpectrum R}
-    (x : v.adicCompletion K) (h : 1 < ‖x‖) :
-    2 ≤ ‖x‖ := by
+    (x : v.adicCompletion K) (h : 1 < ‖x‖) : 2 ≤ ‖x‖ := by
   rw [FinitePlace.norm_def, WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero v) (by aesop)]
   apply (two_le_absNorm_nnreal v).trans
   conv_lhs => rw [← zpow_one (v.asIdeal.absNorm : NNReal)]
