@@ -49,8 +49,8 @@ theorem IsReduced.X_pow_sub_one (hcprm : p.Coprime r) [IsArtinianRing R] [IsRedu
 theorem charP_of_monic_of_degree_pos (monic : f.Monic) (deg : 0 < f.degree) :
     CharP (AdjoinRoot f) p  := by
   refine _root_.charP_of_injective_algebraMap (R := R) ?_ _
-  apply (faithfulSMul_iff_algebraMap_injective R _).mp
-  exact (faithfulSMul_of_monic_of_degree_pos monic deg)
+  rw [← faithfulSMul_iff_algebraMap_injective]
+  exact faithfulSMul_of_monic_of_degree_pos monic deg
 
 theorem charP_of_X_pow_sub_one (h : 0 < r) [Nontrivial R] :
     CharP (AdjoinRoot ((X : R[X]) ^ r - 1)) p := by
