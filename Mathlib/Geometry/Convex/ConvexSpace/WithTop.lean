@@ -51,7 +51,7 @@ lemma untop_map_some (w : StdSimplex R X) (hw) : (w.map WithTop.some).untop hw =
   rw [weights_map, Finsupp.mapDomain_apply_of_injective WithTop.coe_injective]
 
 @[to_dual (dont_translate := R)]
-lemma mem_range_map_coe_withTop {w : StdSimplex R (WithTop X)} :
+lemma mem_range_map_withTopSome {w : StdSimplex R (WithTop X)} :
     w ∈ Set.range (map WithTop.some) ↔ w.weights ⊤ = 0 where
   mp := by rintro ⟨v, rfl⟩; rw [weights_map, Finsupp.mapDomain_of_notMem_range _ _ (by simp)]
   mpr hw := ⟨w.untop hw, map_untop_some w hw⟩
@@ -72,7 +72,7 @@ instance : ConvexSpace R (WithTop X) :=
   let c (w : StdSimplex R (WithTop X)) : WithTop X :=
     open scoped Classical in if hw : w.weights ⊤ = 0 then ↑(w.untop hw).sConvexComb else ⊤
   have hcoe (w : StdSimplex R X) : c (w.map WithTop.some) = ↑w.sConvexComb := by
-    simp [c, dite_eq_left <| mem_range_map_coe_withTop.1 ⟨w, rfl⟩]
+    simp [c, dite_eq_left <| mem_range_map_withTopSome.1 ⟨w, rfl⟩]
   have htop (w : StdSimplex R (WithTop X)) : c w = ⊤ ↔ w.weights ⊤ ≠ 0 := by
     classical exact Ne.dite_eq_right_iff <| by simp
   .mk
@@ -116,7 +116,7 @@ lemma sConvexComb_withTop_eq_top : sConvexComb w = ⊤ ↔ w.weights ⊤ ≠ 0 :
 @[to_dual (attr := simp) (dont_translate := R)]
 lemma sConvexComb_map_withTopSome (v : StdSimplex R X) :
     sConvexComb (v.map WithTop.some) = ↑v.sConvexComb := by
-  rw [sConvexComb_withTop_eq_some (mem_range_map_coe_withTop.1 ⟨v, rfl⟩), untop_map_some]
+  rw [sConvexComb_withTop_eq_some (mem_range_map_withTopSome.1 ⟨v, rfl⟩), untop_map_some]
 
 @[to_dual (attr := fun_prop) (dont_translate := R)]
 lemma isAffineMap_withTopSome : IsAffineMap R (.some : X → WithTop X) :=
