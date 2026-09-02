@@ -525,11 +525,10 @@ theorem posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
     ((‖f‖ : 𝕜) ^ 2 • K - outerKernel 𝕜 f).PosSemidef := by
   by_cases hf : f = 0
   · simp [hf, Matrix.PosSemidef.zero]
-  suffices ((‖f‖ : 𝕜) ^ 2 • (K - (1 / (‖f‖ : 𝕜) ^ 2) • outerKernel 𝕜 f)).PosSemidef by
-    have hp : (‖f‖ ^ 2 : 𝕜) ≠ 0 := by simpa
-    simpa [smul_sub, smul_inv_smul₀ hp (outerKernel 𝕜 ⇑f)] using this
+  have hp : (‖f‖ ^ 2 : 𝕜) ≠ 0 := by simpa
+  rw [← smul_inv_smul₀ hp (outerKernel 𝕜 f), ← smul_sub]
   refine Matrix.PosSemidef.smul ?_ (by simp)
-  simpa [kernel_span_singleton_perp] using (posSemidef_kernel ↥(𝕜 ∙ f)ᗮ)
+  simpa [kernel_span_singleton_perp] using posSemidef_kernel (𝕜 ∙ f)ᗮ
 
 end outerKernel
 
