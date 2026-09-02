@@ -6281,6 +6281,7 @@ public import Mathlib.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.Interval.Lex
 public import Mathlib.Order.Interval.Multiset
 public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.Card
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.Interval.Set.Disjoint
 public import Mathlib.Order.Interval.Set.Fin
