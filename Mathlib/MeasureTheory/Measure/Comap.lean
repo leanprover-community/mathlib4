@@ -62,7 +62,8 @@ then for each measurable set `s` we have `comap f μ s = μ (f '' s)`.
 Note that if `f` is not injective, this definition assigns `Set.univ` measure zero. -/
 def comap [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure β) : Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ then
-    (OuterMeasure.comap f μ.toOuterMeasure).toMeasure fun s hs t => by
+    (OuterMeasure.comap f μ.toOuterMeasure).toMeasure <| by
+      intro s hs t
       simp only [OuterMeasure.comap_apply, image_inter hf.1, image_sdiff hf.1]
       exact (measure_inter_add_sdiff₀ _ (hf.2 s hs)).symm
   else 0
