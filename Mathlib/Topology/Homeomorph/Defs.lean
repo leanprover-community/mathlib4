@@ -37,7 +37,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 open Set Topology Filter
 
-variable {X Y W Z : Type*}
+variable {X Y Z : Type*}
 
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
@@ -54,8 +54,7 @@ infixl:25 " ≃ₜ " => Homeomorph
 
 namespace Homeomorph
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
-  {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
@@ -152,6 +151,9 @@ theorem symm_apply_apply (h : X ≃ₜ Y) (x : X) : h.symm (h x) = x :=
 
 theorem symm_apply_eq (h : X ≃ₜ Y) {x : X} {y : Y} : h.symm y = x ↔ y = h x :=
   Equiv.symm_apply_eq _
+
+theorem eq_symm_apply (h : X ≃ₜ Y) {x : X} {y : Y} : x = h.symm y ↔ h x = y :=
+  Equiv.eq_symm_apply _
 
 @[simp]
 theorem self_trans_symm (h : X ≃ₜ Y) : h.trans h.symm = Homeomorph.refl X := by
@@ -355,6 +357,37 @@ theorem comp_isOpenQuotientMap_iff (e : Y ≃ₜ Z) {f : X → Y} :
     IsOpenQuotientMap (e ∘ f) ↔ IsOpenQuotientMap f :=
   ⟨fun h ↦ by simpa [← Function.comp_assoc] using e.symm.isOpenQuotientMap.comp h,
     fun hf ↦ e.isOpenQuotientMap.comp hf⟩
+
+@[simp]
+theorem isEmbedding_comp_iff (e : X ≃ₜ Y) {f : Y → Z} : IsEmbedding (f ∘ e) ↔ IsEmbedding f :=
+  ⟨fun h ↦ by simpa [Function.comp_assoc] using h.comp e.symm.isEmbedding,
+    fun hf ↦ hf.comp e.isEmbedding⟩
+
+@[simp]
+theorem comp_isEmbedding_iff (e : Y ≃ₜ Z) {f : X → Y} : IsEmbedding (e ∘ f) ↔ IsEmbedding f :=
+  e.isEmbedding.of_comp_iff
+
+@[simp]
+theorem isOpenEmbedding_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
+    IsOpenEmbedding (f ∘ e) ↔ IsOpenEmbedding f :=
+  ⟨fun h ↦ by simpa [Function.comp_assoc] using h.comp e.symm.isOpenEmbedding,
+    fun hf ↦ hf.comp e.isOpenEmbedding⟩
+
+@[simp]
+theorem comp_isOpenEmbedding_iff (e : Y ≃ₜ Z) {f : X → Y} :
+    IsOpenEmbedding (e ∘ f) ↔ IsOpenEmbedding f :=
+  e.isOpenEmbedding.of_comp_iff f
+
+@[simp]
+theorem isClosedEmbedding_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
+    IsClosedEmbedding (f ∘ e) ↔ IsClosedEmbedding f :=
+  ⟨fun h ↦ by simpa [Function.comp_assoc] using h.comp e.symm.isClosedEmbedding,
+    fun hf ↦ hf.comp e.isClosedEmbedding⟩
+
+@[simp]
+theorem comp_isClosedEmbedding_iff (e : Y ≃ₜ Z) {f : X → Y} :
+    IsClosedEmbedding (e ∘ f) ↔ IsClosedEmbedding f :=
+  e.isClosedEmbedding.of_comp_iff
 
 variable (X Y) in
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/

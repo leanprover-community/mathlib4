@@ -123,7 +123,7 @@ theorem rename_surjective (f : σ → τ) (hf : Function.Surjective f) :
 
 section
 
-variable {f : σ → τ} (hf : Function.Injective f) {p q : MvPolynomial τ R}
+variable {f : σ → τ} (hf : Function.Injective f) {p : MvPolynomial τ R}
 
 open scoped Classical in
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
@@ -137,7 +137,7 @@ theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
     dsimp
-    rw [rename_X, killCompl, aeval_X, dif_pos ⟨i, rfl⟩, Equiv.ofInjective_symm_apply]
+    rw [rename_X, killCompl, aeval_X, dite_eq_left ⟨i, rfl⟩, Equiv.ofInjective_symm_apply]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPolynomial σ R) : killCompl hf (rename f p) = p :=
@@ -189,7 +189,7 @@ lemma coeff_killCompl {s} :
     rw [killCompl_monomial]
     split_ifs with h
     · simp [← (Finsupp.mapDomain_injective hf).eq_iff, u.mapDomain_comapDomain _ hf h]
-    · simp? says simp only [coeff_zero, coeff_monomial, right_eq_ite_iff]
+    · simp only [coeff_zero, Finsupp.zero_apply, coeff_monomial, right_eq_ite_iff]
       intro rfl
       contrapose! h
       apply subset_trans <| SetLike.coe_subset_coe.mpr <| Finsupp.mapDomain_support
@@ -339,14 +339,13 @@ theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolyno
     rw [rename_monomial, coeff_monomial, coeff_monomial]
     simp only [(Finsupp.mapDomain_injective hf).eq_iff]
   | add =>
-    simp only [*, map_add, coeff_add]
+    simp only [*, map_add, coeff_add, Finsupp.add_apply]
 
 @[simp]
 theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
     (rename f φ).coeff (d.embDomain f) = φ.coeff d := by
   rw [Finsupp.embDomain_eq_mapDomain f, coeff_rename_mapDomain f f.injective]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)
     (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 := by
   classical
