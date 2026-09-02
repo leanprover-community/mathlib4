@@ -26,7 +26,7 @@ and the affine span of a set of points.
 
 noncomputable section
 
-open Affine
+open scoped Affine
 
 open Set
 open scoped Pointwise
@@ -112,7 +112,6 @@ theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P
 
 end AffineSubspace
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
@@ -132,18 +131,25 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 
 variable (k V) {p₁ p₂ : P}
 
-/-- The affine span of a single point, coerced to a set, contains just that point. -/
-@[simp]
-theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
-  ext x
-  rw [mem_coe, ← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_singleton p)) _,
-    direction_affineSpan]
-  simp
-
 /-- A point is in the affine span of a single point if and only if they are equal. -/
 @[simp]
+lemma affineSpan_singleton (x : P) : affineSpan k ({x} : Set P) = {x} := by
+  ext y
+  simp [← vsub_right_mem_direction_iff_mem (mem_affineSpan k _) _, direction_affineSpan]
+
+/-- The affine span of a single point, coerced to a set, contains just that point. -/
+@[deprecated affineSpan_singleton (since := "2026-09-01")]
+theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
+  simp
+
+@[simp]
+theorem coe_affineSpan_eq_singleton_iff (s : Set P) (x : P) : affineSpan k s = {x} ↔ s = {x} := by
+  refine ⟨fun h ↦ ?_, by simp +contextual⟩
+  refine Set.Nonempty.subset_singleton_iff ?_ |>.mp (by simpa using affineSpan_le.mp h.le)
+  exact affineSpan_nonempty k |>.mp (by simp [h])
+
 theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p₁ = p₂ := by
-  simp [← mem_coe]
+  simp
 
 instance unique_affineSpan_singleton (p : P) : Unique (affineSpan k {p}) where
   default := ⟨p, mem_affineSpan _ (Set.mem_singleton _)⟩
@@ -170,8 +176,8 @@ theorem subsingleton_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingle
     (h₂ : affineSpan k s = ⊤) : Subsingleton P := by
   obtain ⟨p, hp⟩ := AffineSubspace.nonempty_of_affineSpan_eq_top k V P h₂
   have : s = {p} := Subset.antisymm (fun q hq => h₁ hq hp) (by simp [hp])
-  rw [this, AffineSubspace.ext_iff, AffineSubspace.coe_affineSpan_singleton,
-    AffineSubspace.top_coe, eq_comm, ← subsingleton_iff_singleton (mem_univ _)] at h₂
+  rw [this, AffineSubspace.ext_iff, AffineSubspace.top_coe, eq_comm, affineSpan_singleton,
+    coe_singleton, ← subsingleton_iff_singleton (mem_univ _)] at h₂
   exact subsingleton_of_univ_subsingleton h₂
 
 theorem eq_univ_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
@@ -261,7 +267,7 @@ theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i
     vectorSpan k (p '' s) = Submodule.span k ((p i -ᵥ ·) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi, ←
-      Set.insert_sdiff_singleton, Set.image_insert_eq, Set.image_insert_eq]
+      Set.insert_sdiff_singleton, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
@@ -270,7 +276,7 @@ theorem vectorSpan_image_eq_span_vsub_set_right_ne (p : ι → P) {s : Set ι} {
     vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ p i) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_right k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi,
-      ← Set.insert_sdiff_singleton, Set.image_insert_eq, Set.image_insert_eq]
+      ← Set.insert_sdiff_singleton, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` of an indexed family is the span of the pairwise subtractions with a given
@@ -367,13 +373,11 @@ theorem mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
   rw [vectorSpan_pair_rev, Submodule.mem_span_singleton]
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A combination of two points expressed with `lineMap` lies in their affine span. -/
 theorem AffineMap.lineMap_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :
     AffineMap.lineMap p₁ p₂ r ∈ line[k, p₁, p₂] :=
   AffineMap.lineMap_mem _ (left_mem_affineSpan_pair _ _ _) (right_mem_affineSpan_pair _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A combination of two points expressed with `lineMap` (with the two points reversed) lies in
 their affine span. -/
 theorem AffineMap.lineMap_rev_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :
@@ -406,7 +410,6 @@ theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
   rw [vadd_mem_iff_mem_direction _ (right_mem_affineSpan_pair _ _ _), direction_affineSpan,
     mem_vectorSpan_pair]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
     p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₁ p₂ r = p := by
   constructor
@@ -418,7 +421,6 @@ lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
   · rintro ⟨r, rfl⟩
     exact AffineMap.lineMap_mem_affineSpan_pair _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_affineSpan_pair_iff_exists_lineMap_rev_eq {p p₁ p₂ : P} :
     p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₂ p₁ r = p := by
   rw [Set.pair_comm, mem_affineSpan_pair_iff_exists_lineMap_eq]
@@ -473,10 +475,9 @@ the subspace. -/
 theorem direction_affineSpan_insert {s : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s) :
     (affineSpan k (insert p₂ (s : Set P))).direction =
     Submodule.span k {p₂ -ᵥ p₁} ⊔ s.direction := by
-  rw [sup_comm, ← Set.union_singleton, ← coe_affineSpan_singleton k V p₂]
-  change (s ⊔ affineSpan k {p₂}).direction = _
-  rw [direction_sup hp₁ (mem_affineSpan k (Set.mem_singleton _)), direction_affineSpan]
-  simp
+  rw [sup_comm, ← Set.union_singleton, ← AffineSubspace.coe_singleton (k := k) p₂]
+  change (s ⊔ {p₂}).direction = _
+  simp [direction_sup hp₁ (mem_singleton _)]
 
 /-- Given a point `p₁` in an affine subspace `s`, and a point `p₂`, a point `p` is in the span of
 `s` with `p₂` added if and only if it is a multiple of `p₂ -ᵥ p₁` added to a point in `s`. -/
@@ -524,10 +525,6 @@ variable (f : P₁ →ᵃ[k] P₂)
 theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
-
--- this name was backwards
-@[deprecated (since := "2026-01-20")]
-alias AffineMap.vectorSpan_image_eq_submodule_map := AffineMap.map_vectorSpan
 
 namespace AffineSubspace
 
@@ -692,7 +689,7 @@ variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
 This is the affine version of `LinearEquiv.ofEq`. -/
 @[simps linear]
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
-  toEquiv := Equiv.setCongr <| congr_arg _ h
+  toEquiv := Set.equivOfEq <| congr_arg _ h
   linear := .ofEq _ _ <| congr_arg _ h
   map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
 

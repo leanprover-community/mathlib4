@@ -5,11 +5,12 @@ Authors: Jeremy Avigad, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Asymptotics.Ring
 public import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 /-!
 # Further basic lemmas about asymptotics
@@ -18,26 +19,27 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 public section
 
-open Set Topology Filter NNReal
+open Set Filter
+
+open scoped Topology
 
 namespace Asymptotics
 
 
 variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {E''' : Type*}
-  {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*}
+  {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
+  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R]
   [SeminormedAddGroup E''']
-  [SeminormedRing R']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
-variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
-variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
-variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
-variable {l l' : Filter α}
+variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F}
+variable {f' : α → E'} {g' : α → F'}
+variable {f'' : α → E''} {g'' : α → F''}
+variable {l : Filter α}
 @[simp]
 theorem isBigOWith_principal {s : Set α} : IsBigOWith c (𝓟 s) f g ↔ ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ := by
   rw [IsBigOWith_def, eventually_principal]
