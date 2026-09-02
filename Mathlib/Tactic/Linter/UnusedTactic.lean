@@ -163,6 +163,7 @@ elab (name := allowUnusedTactic) "allow_unused_tactic" pers:("!")? ppSpace colGt
 macro "allow_unused_tactic!" ppSpace colGt ids:ident* : command =>
   `(command| allow_unused_tactic ! $[$ids]*)
 
+/-- `#allow_unused_tactic` is deprecated in favour of `allow_unused_tactic` -/
 syntax (name := hashStx) "#allow_unused_tactic" ("!")? ppSpace colGt ident* : command
 
 macro_rules
