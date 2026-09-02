@@ -68,7 +68,7 @@ instance (priority := 100) [LE α] [Zero α] [One α] [IsBotZeroClass α] : Zero
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) [Preorder α] [One α] [Subsingleton α] : IsBotOneClass α where
-  isBot_one := fun a ↦ (Subsingleton.allEq _ a).le
+  isBot_one a := (Subsingleton.allEq _ a).le
 
 section Preorder
 variable [Preorder α] [One α] [IsBotOneClass α]
