@@ -68,7 +68,7 @@ theorem lift_add (a b : Ordinal.{v}) : lift.{u} (a + b) = lift.{u} a + lift.{u} 
 theorem lift_add_one (a : Ordinal.{v}) : lift.{u} (a + 1) = lift.{u} a + 1 := by
   simp
 
--- TODO: deprecate
+@[deprecated lift_add_one (since := "2026-06-17")]
 theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) :=
   lift_add_one a
 
@@ -508,9 +508,6 @@ theorem isSuccLimit_mul_right {a b : Ordinal} (a0 : 0 < a) (l : IsSuccLimit b) :
     IsSuccLimit (a * b) :=
   (isNormal_mul_right a0).map_isSuccLimit l
 
-@[deprecated (since := "2026-02-01")]
-alias isSuccLimit_mul := isSuccLimit_mul_right
-
 theorem isSuccPrelimit_mul_right {a b : Ordinal} (hb : IsSuccLimit b) : IsSuccPrelimit (a * b) := by
   obtain rfl | ha := eq_zero_or_pos a
   · rw [zero_mul]
@@ -552,13 +549,13 @@ theorem add_mul_add_one {a b : Ordinal} (c) (ba : b + a = a) :
   | add_one c IH => rw [mul_add_one, IH, ← add_assoc, add_assoc _ b, ba, ← mul_add_one]
   | limit c l IH => rw [mul_add_one, add_mul_limit_aux ba l IH, mul_add_one, add_assoc]
 
--- TODO: deprecate
+@[deprecated add_mul_add_one (since := "2026-06-17")]
 theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b :=
   add_mul_add_one c ba
 
 theorem add_mul_of_isSuccLimit {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLimit c) :
     (a + b) * c = a * c :=
-  add_mul_limit_aux ba l fun c' _ => add_mul_succ c' ba
+  add_mul_limit_aux ba l fun c' _ => add_mul_add_one c' ba
 
 protected theorem mul_two (o : Ordinal) : o * 2 = o + o := by
   rw [← one_add_one_eq_two, mul_add, mul_one]
@@ -598,14 +595,6 @@ theorem lt_div {a b c : Ordinal} (h : c ≠ 0) : a < b / c ↔ c * succ a ≤ b 
   rw [← not_le, div_le h, not_lt]
 
 theorem div_pos {b c : Ordinal} (h : c ≠ 0) : 0 < b / c ↔ c ≤ b := by simp [lt_div h]
-
-@[deprecated mul_le_iff_le_div (since := "2026-02-27")]
-theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
-  (mul_le_iff_le_div c0).symm
-
-@[deprecated lt_mul_iff_div_lt (since := "2026-02-27")]
-theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
-  (lt_mul_iff_div_lt b0).symm
 
 theorem div_le_of_le_mul {a b c : Ordinal} (h : a ≤ b * c) : a / b ≤ c := by
   obtain rfl | b0 := eq_or_ne b 0
@@ -990,10 +979,6 @@ theorem isSuccPrelimit_iff_omega0_dvd {a : Ordinal} : IsSuccPrelimit a ↔ ω �
     exact (lt_sub.1 <| natCast_lt_of_isSuccLimit (isSuccLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
     exact isSuccPrelimit_mul_left isSuccLimit_omega0
-
-@[deprecated isSuccPrelimit_iff_omega0_dvd (since := "2026-02-01")]
-theorem isSuccLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
-  rw [isSuccLimit_iff, isSuccPrelimit_iff_omega0_dvd]
 
 @[simp]
 theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=

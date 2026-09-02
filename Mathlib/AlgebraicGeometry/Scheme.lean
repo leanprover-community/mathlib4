@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Spec
 public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.AlgebraicGeometry.Spec
 public import Mathlib.CategoryTheory.Elementwise
 
 /-!
@@ -486,6 +486,11 @@ theorem Spec.map_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f :=
   Scheme.Hom.ext' <| Spec.locallyRingedSpaceMap_comp f g
 
+/-- The map of `Spec` functors induced by an `algebraMap`. -/
+protected noncomputable abbrev Spec.algebraMap (R : Type u) [CommRing R] (A : Type u) [CommRing A]
+    [Algebra R A] : Spec (.of A) ⟶ Spec (.of R) :=
+  map <| CommRingCat.ofHom <| algebraMap R A
+
 /-- The spectrum, as a contravariant functor from commutative rings to schemes. -/
 @[simps, implicit_reducible]
 protected def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
@@ -616,7 +621,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 -- This is not marked simp to respect the abstraction
 lemma ΓSpecIso_inv : (ΓSpecIso R).inv = CommRingCat.ofHom (algebraMap _ _) := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma toOpen_eq (U) :
     CommRingCat.ofHom (algebraMap R <| (Spec.structureSheaf R).presheaf.obj (.op U)) =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl

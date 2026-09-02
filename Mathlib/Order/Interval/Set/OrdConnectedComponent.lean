@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
 # Order connected components of a set
@@ -20,7 +21,9 @@ so we only add API needed for this lemma.
 @[expose] public section
 
 
-open Interval Function OrderDual
+open Function OrderDual
+
+open scoped Interval
 
 namespace Set
 

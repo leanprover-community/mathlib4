@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
 
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # Segments in vector spaces
@@ -165,7 +164,7 @@ end Module
 
 end OrderedSemiring
 
-open Convex
+open scoped Convex
 
 section OrderedRing
 
@@ -601,22 +600,22 @@ end LinearOrderedField
 
 namespace Nonneg
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y z : 𝕜}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y : 𝕜}
 
-protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
-    Icc x y ⊆ segment {t : 𝕜 // 0 ≤ t} x y := by
+protected lemma Icc_subset_segment {x y : Nonneg 𝕜} :
+    Icc x y ⊆ segment (Nonneg 𝕜) x y := by
   intro a ⟨hxa, hay⟩
   rw [← Subtype.coe_le_coe] at hxa hay
   rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
   refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le, zero_le, ?_, ?_⟩ <;>
   ext <;> simpa
 
-protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :
-    segment {t : 𝕜 // 0 ≤ t} x y = Icc x y := by
+protected lemma segment_eq_Icc {x y : Nonneg 𝕜} (hxy : x ≤ y) :
+    segment (Nonneg 𝕜) x y = Icc x y := by
   refine subset_antisymm (segment_subset_Icc hxy) Nonneg.Icc_subset_segment
 
-protected lemma segment_eq_uIcc {x y : {t : 𝕜 // 0 ≤ t}} :
-    segment {t : 𝕜 // 0 ≤ t} x y = uIcc x y := by
+protected lemma segment_eq_uIcc {x y : Nonneg 𝕜} :
+    segment (Nonneg 𝕜) x y = uIcc x y := by
   rcases le_total x y with h | h
   · simp [h, Nonneg.segment_eq_Icc]
   · simp [h, segment_symm _ x y, Nonneg.segment_eq_Icc]

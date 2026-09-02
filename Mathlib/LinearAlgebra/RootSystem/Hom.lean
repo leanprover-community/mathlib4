@@ -280,25 +280,27 @@ add_decl_doc Equiv.toHom
 
 namespace Equiv
 
+variable {P Q}
+
 /-- The linear equivalence of weight spaces given by an equivalence of root pairings. -/
 def weightEquiv (e : RootPairing.Equiv P Q) : M ≃ₗ[R] M₂ :=
     LinearEquiv.ofBijective _ e.bijective_weightMap
 
 @[simp]
 lemma weightEquiv_apply (e : RootPairing.Equiv P Q) (m : M) :
-    weightEquiv P Q e m = e.toHom.weightMap m :=
+    e.weightEquiv m = e.toHom.weightMap m :=
   rfl
 
 @[simp]
 lemma weightEquiv_symm_weightMap (e : RootPairing.Equiv P Q) (m : M) :
-    (weightEquiv P Q e).symm (e.toHom.weightMap m) = m :=
-  (LinearEquiv.symm_apply_eq (weightEquiv P Q e)).mpr rfl
+    e.weightEquiv.symm (e.toHom.weightMap m) = m :=
+  (LinearEquiv.symm_apply_eq e.weightEquiv).mpr rfl
 
 @[simp]
 lemma weightMap_weightEquiv_symm (e : RootPairing.Equiv P Q) (m : M₂) :
-    e.toHom.weightMap ((weightEquiv P Q e).symm m) = m := by
+    e.toHom.weightMap (e.weightEquiv.symm m) = m := by
   rw [← weightEquiv_apply]
-  exact LinearEquiv.apply_symm_apply (weightEquiv P Q e) m
+  exact LinearEquiv.apply_symm_apply e.weightEquiv m
 
 /-- The contravariant equivalence of coweight spaces given by an equivalence of root pairings. -/
 def coweightEquiv (e : RootPairing.Equiv P Q) : N₂ ≃ₗ[R] N :=
@@ -306,19 +308,19 @@ def coweightEquiv (e : RootPairing.Equiv P Q) : N₂ ≃ₗ[R] N :=
 
 @[simp]
 lemma coweightEquiv_apply (e : RootPairing.Equiv P Q) (n : N₂) :
-    coweightEquiv P Q e n = e.toHom.coweightMap n :=
+    e.coweightEquiv n = e.toHom.coweightMap n :=
   rfl
 
 @[simp]
 lemma coweightEquiv_symm_coweightMap (e : RootPairing.Equiv P Q) (n : N₂) :
-    (coweightEquiv P Q e).symm (e.toHom.coweightMap n) = n :=
-  (LinearEquiv.symm_apply_eq (coweightEquiv P Q e)).mpr rfl
+    e.coweightEquiv.symm (e.toHom.coweightMap n) = n :=
+  (LinearEquiv.symm_apply_eq e.coweightEquiv).mpr rfl
 
 @[simp]
 lemma coweightMap_coweightEquiv_symm (e : RootPairing.Equiv P Q) (n : N) :
-    e.toHom.coweightMap ((coweightEquiv P Q e).symm n) = n := by
+    e.toHom.coweightMap (e.coweightEquiv.symm n) = n := by
   rw [← coweightEquiv_apply]
-  exact LinearEquiv.apply_symm_apply (coweightEquiv P Q e) n
+  exact LinearEquiv.apply_symm_apply e.coweightEquiv n
 
 /-- The identity equivalence of a root pairing. -/
 @[simps!]
@@ -401,40 +403,40 @@ lemma mul_eq_comp {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P) :
 
 @[simp]
 lemma weightEquiv_comp_toLin {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P) :
-    weightEquiv P P (Equiv.comp x y) = weightEquiv P P y ≪≫ₗ weightEquiv P P x := by
+    (Equiv.comp x y).weightEquiv = y.weightEquiv ≪≫ₗ x.weightEquiv := by
   ext; simp
 
 @[simp]
 lemma weightEquiv_mul {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P) :
-    weightEquiv P P x * weightEquiv P P y = weightEquiv P P y ≪≫ₗ weightEquiv P P x := by
+    x.weightEquiv * y.weightEquiv = y.weightEquiv ≪≫ₗ x.weightEquiv := by
   rfl
 
 @[simp]
 lemma coweightEquiv_comp_toLin {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P) :
-    coweightEquiv P P (Equiv.comp x y) = coweightEquiv P P x ≪≫ₗ coweightEquiv P P y := by
+    (Equiv.comp x y).coweightEquiv = x.coweightEquiv ≪≫ₗ y.coweightEquiv := by
   ext; simp
 
 @[simp]
 lemma coweightEquiv_mul {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P) :
-    coweightEquiv P P x * coweightEquiv P P y = coweightEquiv P P y ≪≫ₗ coweightEquiv P P x := by
+    x.coweightEquiv * y.coweightEquiv = y.coweightEquiv ≪≫ₗ x.coweightEquiv := by
   rfl
 
 /-- The inverse of a root pairing equivalence. -/
 def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (f : RootPairing.Equiv P Q) :
     RootPairing.Equiv Q P where
-  weightMap := (weightEquiv P Q f).symm
-  coweightMap := (coweightEquiv P Q f).symm
+  weightMap := f.weightEquiv.symm
+  coweightMap := f.coweightEquiv.symm
   indexEquiv := f.indexEquiv.symm
   weight_coweight_transpose := by
     ext n m
-    nth_rw 2 [show m = (weightEquiv P Q f) ((weightEquiv P Q f).symm m) by
-      exact (LinearEquiv.symm_apply_eq (weightEquiv P Q f)).mp rfl]
-    nth_rw 1 [show n = (coweightEquiv P Q f) ((coweightEquiv P Q f).symm n) by
-      exact (LinearEquiv.symm_apply_eq (coweightEquiv P Q f)).mp rfl]
+    nth_rw 2 [show m = f.weightEquiv (f.weightEquiv.symm m) by
+      exact (LinearEquiv.symm_apply_eq f.weightEquiv).mp rfl]
+    nth_rw 1 [show n = f.coweightEquiv (f.coweightEquiv.symm n) by
+      exact (LinearEquiv.symm_apply_eq f.coweightEquiv).mp rfl]
     have := f.weight_coweight_transpose
     rw [LinearMap.ext_iff₂] at this
-    exact Eq.symm (this ((coweightEquiv P Q f).symm n) ((weightEquiv P Q f).symm m))
+    exact Eq.symm (this (f.coweightEquiv.symm n) (f.weightEquiv.symm m))
   root_weightMap := by
     ext i
     simp only [LinearEquiv.coe_coe, comp_apply]
@@ -453,21 +455,21 @@ def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommG
     simp [← this]
   bijective_weightMap := by
     simp only [LinearEquiv.coe_coe]
-    exact LinearEquiv.bijective (weightEquiv P Q f).symm
+    exact LinearEquiv.bijective f.weightEquiv.symm
   bijective_coweightMap := by
     simp only [LinearEquiv.coe_coe]
-    exact LinearEquiv.bijective (coweightEquiv P Q f).symm
+    exact LinearEquiv.bijective f.coweightEquiv.symm
 
 @[simp]
 lemma inv_weightMap {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂]
     [Module R N₂] (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂)
-    (f : RootPairing.Equiv P Q) : (symm P Q f).weightMap = (weightEquiv P Q f).symm :=
+    (f : RootPairing.Equiv P Q) : (symm P Q f).weightMap = f.weightEquiv.symm :=
   rfl
 
 @[simp]
 lemma inv_coweightMap {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂]
     [Module R N₂] (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂)
-    (f : RootPairing.Equiv P Q) : (symm P Q f).coweightMap = (coweightEquiv P Q f).symm :=
+    (f : RootPairing.Equiv P Q) : (symm P Q f).coweightMap = f.coweightEquiv.symm :=
   rfl
 
 @[simp]
@@ -515,6 +517,48 @@ def mk' [IsDomain R] [CharZero R] [Module.IsTorsionFree R M₂] [Finite ι₂]
     · simp [hf, RootPairing.map, RootPairing.map]
   bijective_weightMap := LinearEquiv.bijective _
   bijective_coweightMap := LinearEquiv.bijective _
+
+variable (e : P.Equiv Q) (i : ι) (x : M) (y : N) (i₂ : ι₂) (x₂ : M₂) (y₂ : N₂)
+
+lemma toLinearMap_weightEquiv :
+    Q.toLinearMap (e.weightEquiv x) y₂ = P.toLinearMap x (e.coweightEquiv y₂) := by
+  simpa using LinearMap.congr_fun (e.weight_coweight_transpose_apply P Q y₂) x
+
+lemma coroot'_weightEquiv :
+    Q.coroot' (e.indexEquiv i) (e.weightEquiv x) = P.coroot' i x := by
+  have : e.coweightEquiv (Q.coroot (e.indexEquiv i)) = P.coroot i := by
+    simp [Hom.coroot_coweightMap_apply]
+  simpa [this] using e.toLinearMap_weightEquiv x (Q.coroot (e.indexEquiv i))
+
+lemma root'_coweightEquiv :
+    Q.root' (e.indexEquiv i) (e.coweightEquiv.symm y) = P.root' i y := by
+  have : Q.root (e.indexEquiv i) = e.weightEquiv (P.root i) := by simp [Hom.root_weightMap_apply]
+  simpa [root', this] using e.toLinearMap_weightEquiv (P.root i) (e.coweightEquiv.symm y)
+
+lemma weightEquiv_reflection :
+    e.weightEquiv (P.reflection i x) = Q.reflection (e.indexEquiv i) (e.weightEquiv x) := by
+  have : e.weightEquiv (P.root i) = Q.root (e.indexEquiv i) := by simp [Hom.root_weightMap_apply]
+  rw [reflection_apply, reflection_apply, map_sub, map_smul, this, e.coroot'_weightEquiv]
+
+lemma coweightEquiv_coreflection :
+    e.coweightEquiv (Q.coreflection i₂ y₂) =
+      P.coreflection (e.indexEquiv.symm i₂) (e.coweightEquiv y₂) := by
+  have this : e.coweightEquiv (Q.coroot i₂) = P.coroot (e.indexEquiv.symm i₂) := by
+    simp [Hom.coroot_coweightMap_apply]
+  rw [coreflection_apply, coreflection_apply, map_sub, map_smul, this, ← e.root'_coweightEquiv]
+  simp
+
+lemma weightEquiv_symm_conj_reflection :
+    e.weightEquiv.symm.conj (Q.reflection (e.indexEquiv i)) = P.reflection i := by
+  ext x
+  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.symm_symm, LinearEquiv.coe_coe,
+    ← e.weightEquiv_reflection, weightEquiv_apply, weightEquiv_symm_weightMap]
+
+lemma coweightEquiv_conj_coreflection :
+    e.coweightEquiv.conj (Q.coreflection (e.indexEquiv i)) = P.coreflection i := by
+  ext y
+  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.coe_coe, e.coweightEquiv_coreflection,
+    Equiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
 
 end Equiv
 
@@ -569,7 +613,7 @@ lemma toEndUnit_inv (P : RootPairing ι R M N) (g : Aut P) :
 /-- The weight space representation of automorphisms -/
 @[simps]
 def weightHom (P : RootPairing ι R M N) : Aut P →* (M ≃ₗ[R] M) where
-  toFun := weightEquiv P P
+  toFun := weightEquiv
   map_one' := by ext; simp
   map_mul' x y := by ext; simp
 
@@ -587,13 +631,13 @@ lemma weightHom_injective (P : RootPairing ι R M N) : Injective (Equiv.weightHo
 
 @[simp]
 lemma weightEquiv_inv {P : RootPairing ι R M N} (g : Aut P) :
-    weightEquiv P P g⁻¹ = (weightEquiv P P g)⁻¹ :=
+    weightEquiv g⁻¹ = (weightEquiv g)⁻¹ :=
   LinearEquiv.toLinearMap_inj.mp rfl
 
 /-- The coweight space representation of automorphisms -/
 @[simps]
 def coweightHom (P : RootPairing ι R M N) : Aut P →* (N ≃ₗ[R] N)ᵐᵒᵖ where
-  toFun g := MulOpposite.op (coweightEquiv P P g)
+  toFun g := MulOpposite.op (coweightEquiv g)
   map_one' := by
     simp only [MulOpposite.op_eq_one_iff]
     exact LinearEquiv.toLinearMap_inj.mp rfl
@@ -618,12 +662,12 @@ lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (Equiv.coweig
   exact MulOpposite.unop_inj.mp h
 
 lemma coweightHom_op {P : RootPairing ι R M N} (g : Aut P) :
-    MulOpposite.unop (coweightHom P g) = coweightEquiv P P g :=
+    MulOpposite.unop (coweightHom P g) = coweightEquiv g :=
   rfl
 
 @[simp]
 lemma coweightEquiv_inv {P : RootPairing ι R M N} (g : Aut P) :
-    coweightEquiv P P g⁻¹ = (coweightEquiv P P g)⁻¹ :=
+    coweightEquiv g⁻¹ = (coweightEquiv g)⁻¹ :=
   LinearEquiv.toLinearMap_inj.mp rfl
 
 /-- The permutation representation of the automorphism group on the root index set -/
