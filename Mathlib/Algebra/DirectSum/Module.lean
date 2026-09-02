@@ -297,7 +297,7 @@ lemma range_lmap :
 end AddCommMonoid
 
 section AddCommGroup
-variable {R : Type u} {ι : Type v} {M : ι → Type w} {N : ι → Type*}
+variable {ι : Type v} {M : ι → Type w} {N : ι → Type*}
 
 lemma ker_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i) :
     (map f).ker =
@@ -476,14 +476,12 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σ i, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨i, a⟩ = (v i).repr ⟨x, hx⟩ a := by
   change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
   simp [h.ofBijective_coeLinearMap_of_mem hx]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem_ne (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i j : ι} (hij : i ≠ j) {a : α j} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨j, a⟩ = 0 := by

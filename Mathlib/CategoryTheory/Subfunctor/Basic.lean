@@ -43,7 +43,7 @@ structure Subfunctor (F : C ⥤ Type w) where
   `F i x` is in `F(V)`. -/
   map : ∀ {U V : C} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
 
-variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
+variable {F F' : C ⥤ Type w} (G G' : Subfunctor F)
 
 instance : PartialOrder (Subfunctor F) :=
   PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
@@ -187,8 +187,6 @@ theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
 theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congrArg Subtype.val (NatTrans.naturality_apply f i x)
-
-@[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map
 
 end Subfunctor
 
