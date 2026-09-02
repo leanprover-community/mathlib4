@@ -417,7 +417,6 @@ theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
     Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
   ext (i | j) <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
     Function.Injective (Fin.append xs ys) ↔
       Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
@@ -674,7 +673,6 @@ theorem append_right_cons {n m} {α : Sort*} (xs : Fin n → α) (y : α) (ys : 
       Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_add_succ ..).symm := by
   rw [append_left_snoc]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α) :
     Fin.append (cons a as) bs
     = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
@@ -689,7 +687,6 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
     · have : ¬i < n := Nat.not_le_of_gt <| Nat.le_of_lt_succ <| Nat.gt_of_not_le h
       simp [addCases, this]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem append_snoc {α : Sort*} (as : Fin n → α) (bs : Fin m → α) (b : α) :
     Fin.append as (snoc bs b) = snoc (Fin.append as bs) b := by
   funext i
@@ -1109,7 +1106,6 @@ section Find
 
 variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
-set_option backward.privateInPublic true in
 private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
     { i : Fin n // p i ∧ ∀ j < i, ¬ p j } := go n (by grind) where
   go (m : Nat) (hj : ∀ j (hm : j < n - m), ¬p ⟨j, by grind⟩) := match m with
@@ -1117,10 +1113,9 @@ private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p
     then ⟨_, ⟨hnm, (hj ·.val)⟩⟩ else go m (by grind)
   | 0 => absurd h (fun ⟨⟨_, _⟩, _⟩ => by grind)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- `Fin.find p h` returns the smallest index `k : Fin n` where `p k` is satisfied,
   given that it is satisfied for some `k`. -/
+@[no_expose]
 protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=
   (Fin.findX p h).1
 
