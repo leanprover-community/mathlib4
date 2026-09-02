@@ -243,6 +243,9 @@ instance {G : Digraph V} : PartialOrder G.SpanningSubgraph where
     apply Subtype.ext
     exact le_antisymm hHK hKH
 
+@[grind =] theorem SpanningSubgraph.le_iff {G : Digraph V}
+    {H K : G.SpanningSubgraph} :
+    H ≤ K ↔ H.val ≤ K.val := Iff.rfl
 
 
 /-- The adjacency relation of a spanning subgraph, restricted to the edges of the ambient
@@ -269,13 +272,7 @@ The bottom subgraph `⊥`
 instance {G : Digraph V} : OrderBot G.SpanningSubgraph where
   bot : G.SpanningSubgraph := ⟨
     ⟨G.verts, fun _ _ => False, by simp, by simp⟩, by grind⟩
-  bot_le := by
-    intro H
-    constructor
-    · intro v hv
-      simpa [H.property.2] using hv
-    · intro v w h
-      exact False.elim h
+  bot_le := by grind
 
 /-- The complement of a spanning subgraph with respect to its ambient digraph. -/
 instance {G : Digraph V} : Compl G.SpanningSubgraph where
@@ -328,10 +325,6 @@ instance {G : Digraph V} : SDiff G.SpanningSubgraph where
 @[simp] theorem SpanningSubgraph.sdiff_val_adj {G : Digraph V} (H K : G.SpanningSubgraph)
     (v w : V) : (H \ K).val.Adj v w ↔
       H.val.Adj v w ∧ (G.Adj v w ∧ ¬K.val.Adj v w) := Iff.rfl
-
-@[grind =] theorem SpanningSubgraph.le_iff {G : Digraph V}
-    {H K : G.SpanningSubgraph} :
-    H ≤ K ↔ H.val ≤ K.val := Iff.rfl
 
 @[grind =]
 theorem SpanningSubgraph.adj_le_adj_iff
