@@ -6617,7 +6617,6 @@ public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.Adjoin.Tower
 public import Mathlib.RingTheory.AdjoinRoot.Basic
 public import Mathlib.RingTheory.AdjoinRoot.Instances
-public import Mathlib.RingTheory.AdjoinRoot.MapCyclotomic
 public import Mathlib.RingTheory.AlgebraTower
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.Algebraic.Cardinality
