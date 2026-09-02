@@ -92,13 +92,16 @@ lemma isSelfInv_singleton_iff {a : α} : IsSelfInv ({a} : Set α) ↔ IsSelfInv 
 lemma isSelfInv_iff_subset_inv : IsSelfInv s ↔ s ⊆ s⁻¹ :=
   inv_eq_self_iff_inv_subset.trans inv_subset
 
-alias ⟨IsSelfInv.subset_inv, IsSelfInv.of_subset_inv⟩ := isSelfInv_iff_subset_inv
+@[to_additive]
+protected alias ⟨IsSelfInv.subset_inv, IsSelfInv.of_subset_inv⟩ := isSelfInv_iff_subset_inv
 
 @[to_additive]
 lemma isSelfInv_iff_inv_subset : IsSelfInv s ↔ s⁻¹ ⊆ s :=
   inv_eq_self_iff_inv_subset
 
-alias ⟨IsSelfInv.inv_subset, IsSelfInv.of_inv_subset⟩ := isSelfInv_iff_inv_subset
+@[to_additive]
+protected alias ⟨IsSelfInv.inv_subset, IsSelfInv.of_inv_subset⟩ := isSelfInv_iff_inv_subset
+
 @[to_additive]
 lemma isSelfInv_iff_forall_inv_mem : IsSelfInv s ↔ ∀ ⦃x⦄, x ∈ s → x⁻¹ ∈ s := by
   rw [isSelfInv_iff_forall_inv_mem_iff]
