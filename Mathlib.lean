@@ -27,6 +27,8 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.Algebra.Semialgebra.Equiv
+public import Mathlib.Algebra.Algebra.Semialgebra.Hom
 public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Algebra.Algebra.Spectrum.Pi
