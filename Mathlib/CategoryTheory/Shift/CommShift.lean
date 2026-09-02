@@ -405,6 +405,9 @@ lemma of_isIso [IsIso τ] [NatTrans.CommShift τ A] :
 variable (F₁) in
 instance id : NatTrans.CommShift (𝟙 F₁) A where
 
+instance isoRefl_hom : NatTrans.CommShift (Iso.refl F₁).hom A := by
+  dsimp; infer_instance
+
 attribute [local simp] Functor.commShiftIso_comp_hom_app
   shift_app_comm shift_app_comm_assoc
 
@@ -436,7 +439,7 @@ namespace Functor
 
 namespace CommShift
 
-variable {C D E : Type*} [Category* C] [Category* D]
+variable {C D : Type*} [Category* C] [Category* D]
   {F : C ⥤ D} {G : C ⥤ D} (e : F ≅ G)
   (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
   [F.CommShift A]
