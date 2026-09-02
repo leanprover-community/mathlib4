@@ -1228,6 +1228,7 @@ end Centralizer
 
 end NonUnitalStarSubalgebra
 
+-- TODO: this could potentially be moved earlier, but currently no file has enough imports.
 /-- `s ∪ star s` commutes pairwise if and only if all elements of `s` are normal, elements of `s`
 commute pairwise, and distinct elements of `s` commute with the `star` of the other. -/
 lemma Set.Pairwise.commute_union_star_self_iff {R : Type*} [Mul R] [StarMul R] {s : Set R} :
@@ -1271,8 +1272,8 @@ lemma commute_of_mem_adjoin_self {a b : A} [IsStarNormal a] (hb : b ∈ adjoin R
   commute_of_mem_adjoin_singleton_of_commute hb rfl (isStarNormal_iff a |>.mp inferInstance).symm
 
 variable (R) in
-/-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
-is commutative. -/
+/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
+`star` of elements in this set, then `adjoin R s` is commutative. -/
 theorem isMulCommutative_adjoin {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
     (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
     IsMulCommutative (adjoin R s) := by
@@ -1291,8 +1292,8 @@ instance isMulCommutative_adjoin_singleton (a : A) [IsStarNormal a] :
 
 open scoped IsMulCommutative in
 variable (R) in
-/-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
-is a non-unital commutative semiring.
+/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
+`star` of elements in this set, then `adjoin R s` is a non-unital commutative semiring.
 
 See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
@@ -1310,8 +1311,8 @@ instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A]
     (fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ (star_mem h₂))
 
 open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
-is a non-unital commutative ring.
+/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
+`star` of elements in this set, then `adjoin R s` is a non-unital commutative ring.
 
 See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
