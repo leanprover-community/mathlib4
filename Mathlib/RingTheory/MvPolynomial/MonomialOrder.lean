@@ -163,9 +163,12 @@ theorem ne_zero_of_degree_ne_zero {f : MvPolynomial σ R} (h : m.degree f ≠ 0)
   exact h m.degree_zero
 
 @[simp, nontriviality]
-theorem degree_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
+theorem degree_of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.degree f = 0 := by
   rw [Subsingleton.eq_zero f, degree_zero]
+
+@[deprecated (since := "2026-08-16")]
+alias degree_subsingleton := degree_of_subsingleton
 
 @[simp]
 theorem leadingCoeff_zero : m.leadingCoeff (0 : MvPolynomial σ R) = 0 := by
@@ -342,7 +345,8 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
   · right
     apply m.le_degree
     simp only [notMem_support_iff] at hf
-    simpa only [mem_support_iff, coeff_add, hf, zero_add] using hb
+    simpa only [mem_support_iff, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hf, zero_add]
+      using hb
 
 theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
     (m.toSyn <| m.degree <| ∑ x ∈ s, f x) ≤ s.sup fun x ↦ (m.toSyn <| m.degree <| f x) := by
@@ -359,8 +363,8 @@ theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
   · apply le_trans degree_add_le
     simp only [sup_le_iff, le_refl, true_and, le_of_lt h]
   · apply le_degree
-    rw [mem_support_iff, coeff_add, m.coeff_eq_zero_of_lt h, add_zero,
-      ← leadingCoeff, leadingCoeff_ne_zero_iff]
+    rw [mem_support_iff, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, m.coeff_eq_zero_of_lt h,
+      add_zero, ← leadingCoeff, leadingCoeff_ne_zero_iff]
     intro hf
     rw [← not_le, hf] at h
     apply h
@@ -374,7 +378,8 @@ theorem degree_add_eq_right_of_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[
 
 theorem leadingCoeff_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.leadingCoeff (f + g) = m.leadingCoeff f := by
-  simp only [leadingCoeff, m.degree_add_of_lt h, coeff_add, coeff_eq_zero_of_lt h, add_zero]
+  simp only [leadingCoeff, m.degree_add_of_lt h, AddMonoidAlgebra.coeff_add, Finsupp.add_apply,
+    coeff_eq_zero_of_lt h, add_zero]
 
 theorem Monic.add_of_lt {f g : MvPolynomial σ R} (hf : m.Monic f) (h : m.degree g ≺[m] m.degree f) :
     m.Monic (f + g) := by
@@ -665,7 +670,7 @@ theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset �
     simp only [map_add, add_le_add_iff_left, hrec]
 
 theorem coeff_prod_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s : Finset ι) :
-    coeff (∑ i ∈ s, m.degree (P i)) (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingCoeff (P i) := by
+    (∏ i ∈ s, P i).coeff (∑ i ∈ s, m.degree (P i)) = ∏ i ∈ s, m.leadingCoeff (P i) := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -758,7 +763,7 @@ lemma leadingTerm_one : m.leadingTerm (1 : MvPolynomial σ R) = 1 := by
 @[simp]
 lemma leadingTerm_of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.leadingTerm f = f := by
-  simp [leadingTerm, (m.degree_eq_zero_iff.mp degree_subsingleton).symm]
+  simp [leadingTerm, (m.degree_eq_zero_iff.mp degree_of_subsingleton).symm]
 
 /--
 The set of leading terms of non-zero polynomials within a set `B` is equal to the set of
@@ -1274,8 +1279,10 @@ lemma degree_sPolynomial_le (f g : MvPolynomial σ R) :
 lemma coeff_sPolynomial_sup_eq_zero (f g : MvPolynomial σ R) :
     (m.sPolynomial f g).coeff (m.degree f ⊔ m.degree g) = 0 := by
   rw [sPolynomial_def, coeff_sub]
-  nth_rewrite 1 [← tsub_add_cancel_of_le le_sup_left, coeff_monomial_mul]
-  nth_rewrite 1 [← tsub_add_cancel_of_le le_sup_right, coeff_monomial_mul]
+  nth_rewrite 2 [← tsub_add_cancel_of_le le_sup_left]
+  rw [coeff_monomial_mul]
+  nth_rewrite 2 [← tsub_add_cancel_of_le le_sup_right]
+  rw [coeff_monomial_mul]
   unfold leadingCoeff
   ring
 
@@ -1387,7 +1394,7 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
         apply Finset.sum_congr rfl
         intro b' hb'
         rcases hd b' hb' with h | h <;> simp [h]
-      · rw [← coeff_sum, ← coeff_add, ← notMem_support_iff]
+      · rw [← coeff_sum, ← Finsupp.add_apply, ← AddMonoidAlgebra.coeff_add, ← notMem_support_iff]
         exact m.notMem_support_of_degree_lt hfd
     · apply Finset.sum_congr rfl
       intro b' hb'
