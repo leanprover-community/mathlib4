@@ -112,7 +112,7 @@ lemma hasCompactSupport_truncate (hR : 0 < R) : HasCompactSupport (truncate f R 
     simpa [this] using (hasCompactSupport_bumpR hR).smul_right
   funext; simp [hR]
 
-private lemma tendsto_seminorm_truncate_sub (k n) :
+private lemma tendsto_seminorm_truncate_sub k n :
     Tendsto (fun R ↦ (truncate f R - f).seminorm ℝ k n) atTop (𝓝 0) := by
   obtain ⟨A, hA0, hA⟩ :=
     (hasCompactSupport_bumpR (E := E) one_pos).exists_bound_iteratedFDeriv (contDiff_bumpR 1) n
