@@ -577,7 +577,7 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
   | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
   | (Nat.succ n) =>
     simp_rw [Nat.pred_succ]
-    exact (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) (by grind)).trans
+    exact (List.sum_eq_length_nsmul _ (x.fst ^ n • x.snd) (by grind)).trans
       (by rw [List.length_map, List.length_range])
 where
   aux : ∀ n : ℕ, x.snd <• x.fst ^ n = x.fst ^ n •> x.snd := by
@@ -726,6 +726,7 @@ theorem mul_right_eq_one (x : tsze R M) (r : R) (h : x.fst * r = 1) :
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `x : tzre R M` is invertible when `x.fst : R` is. -/
 abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible x where
   invOf := (⅟x.fst, -(⅟x.fst •> x.snd <• ⅟x.fst))

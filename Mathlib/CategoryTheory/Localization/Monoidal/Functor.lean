@@ -27,7 +27,8 @@ universe u
 
 namespace CategoryTheory
 
-open CategoryTheory MonoidalCategory Functor Monoidal LaxMonoidal OplaxMonoidal
+open CategoryTheory MonoidalCategory CategoryTheory.Functor MonoidalCategory.Functor Monoidal
+open LaxMonoidal OplaxMonoidal
 
 namespace Localization.Monoidal
 
@@ -65,7 +66,6 @@ lemma curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
   simp [curriedTensorPreIsoPost]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     (e₁ : Y₁ ≅ L.obj X₁) (e₂ : Y₂ ≅ L.obj X₂) :
     letI e := Lifting.iso L W G F
@@ -83,7 +83,6 @@ lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     tensorHom_comp_tensorHom, Iso.inv_hom_id, Iso.inv_hom_id, tensorHom_id, id_whiskerRight,
     Category.comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
@@ -130,7 +129,7 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def functorMonoidalOfComp : F.Monoidal :=
   (functorCoreMonoidalOfComp L W F G).toMonoidal
 
@@ -147,7 +146,6 @@ lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
         F.map (δ L _ _) := by
   simp [Functor.CoreMonoidal.toLaxMonoidal_μ, curriedTensorPreIsoPost_hom_app_app]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 When `F` is given the monoidal structure `functorMonoidalOfComp` that is obtained by lifting along
 a monoidal localization functor `L`, then the lifting isomorphism is a monoidal natural

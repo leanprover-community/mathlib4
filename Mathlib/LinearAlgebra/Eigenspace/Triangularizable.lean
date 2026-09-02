@@ -142,6 +142,7 @@ namespace Submodule
 
 variable {p : Submodule K V} {f : Module.End K V}
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) (k : ℕ∞) :
     p ⊓ ⨆ μ, f.genEigenspace μ k = ⨆ μ, p ⊓ f.genEigenspace μ k := by
   refine le_antisymm (fun m hm ↦ ?_)
@@ -169,7 +170,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
   have hg₀ : g (m.sum fun _μ mμ ↦ mμ) = g (m μ) := by
     suffices ∀ μ' ∈ m.support, g (m μ') = if μ' = μ then g (m μ) else 0 by
       rw [map_finsuppSum, Finsupp.sum_congr (g2 := fun μ' _ ↦ if μ' = μ then g (m μ) else 0) this,
-        Finsupp.sum_ite_eq', if_pos hμ]
+        Finsupp.sum_ite_eq', ite_eq_left hμ]
     rintro μ' hμ'
     split_ifs with hμμ'
     · rw [hμμ']

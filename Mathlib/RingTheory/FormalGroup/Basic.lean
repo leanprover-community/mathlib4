@@ -221,6 +221,7 @@ lemma coeff_one_Xzero : F.Xzero.coeff 1 = 1 := by
     simp [hd₁]
   · exact HasSubst.X_zero
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Xzero_subst_Xzero : F.Xzero.subst F.Xzero = F.Xzero := by
   calc
@@ -272,6 +273,7 @@ lemma coeff_one_zeroX : F.zeroX.coeff 1 = 1 := by
     simp [hd₁]
   · exact HasSubst.zero_X
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma zeroX_subst_zeroX : F.zeroX.subst F.zeroX = F.zeroX := by
   calc

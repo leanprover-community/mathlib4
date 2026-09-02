@@ -317,10 +317,12 @@ theorem coe_liftHom : (h.liftHom x hx' : S →+* T) = h.lift (algebraMap R T) x 
 
 theorem lift_algebraMap_apply (z : S) : h.lift (algebraMap R T) x hx' z = h.liftHom x hx' z := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem liftHom_map (z : R[X]) : h.liftHom x hx' (h.map z) = aeval x z := by
   rw [← lift_algebraMap_apply, lift_map, aeval_def]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem liftHom_root : h.liftHom x hx' h.root = x := by rw [← lift_algebraMap_apply, lift_root]
 
@@ -496,7 +498,7 @@ def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (g : R[X] →ₗ[R] T)
 -/
 def coeff : S →ₗ[R] ℕ → R :=
   h.liftPolyₗ
-    { toFun := Polynomial.coeff
+    { toFun p := ⇑p.coeff
       map_add' p q := funext (Polynomial.coeff_add p q)
       map_smul' c p := funext (Polynomial.coeff_smul c p) }
 
@@ -576,6 +578,7 @@ variable (h : IsAdjoinRoot S f)
 
 section lift
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem lift_self_apply (x : S) : h.lift (algebraMap R S) h.root h.aeval_root_self x = x := by
   rw [← h.map_repr x, lift_map, ← aeval_def, h.aeval_root_eq_map]
@@ -643,6 +646,7 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
             (hirr.isUnit_or_isUnit hq).resolve_left <| minpoly.not_isUnit R h.root
       rw [mul_one]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `α` generates `S` as an algebra and `S` is free and finite,
 then `S` is given by adjoining a root of `minpoly R α`.
 Does not require that `R` is an integral domain, unlike `mkOfAdjoinEqTop`. -/
@@ -682,7 +686,7 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [IsTors
     minpoly R x = minpoly R (Algebra.adjoin.powerBasis' hx').gen := by
   have := isDomain_of_prime (prime_of_isIntegrallyClosed hx')
   have :=
-    noZeroSMulDivisors_of_prime_of_degree_ne_zero (prime_of_isIntegrallyClosed hx')
+    isTorsionFree_of_prime_of_degree_ne_zero (prime_of_isIntegrallyClosed hx')
       (degree_pos hx').ne'
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,
@@ -700,6 +704,13 @@ open scoped IntermediateField
 variable {F E : Type*} [Field F] [Field E] [Algebra F E] {f : F[X]}
 
 namespace IsAdjoinRoot
+
+theorem isField_iff_irreducible {E : Type*} [Ring E] [Algebra F E] (h : IsAdjoinRoot E f) :
+    IsField E ↔ Irreducible f := by
+  rw [← MulEquiv.isField_congr h.adjoinRootAlgEquiv.toMulEquiv, AdjoinRoot.isField_iff_irreducible]
+
+protected theorem irreducible (h : IsAdjoinRoot E f) : Irreducible f :=
+  (isField_iff_irreducible h).mp (Field.toIsField E)
 
 theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
   IntermediateField.adjoin_eq_top_of_algebra F {h.root} (adjoin_root_eq_top h)

@@ -109,7 +109,7 @@ theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / 
 
 /-- An auxiliary `MetricSpace` instance on the upper half-plane. This instance has bad projection
 to `TopologicalSpace`. We replace it later. -/
-@[implicit_reducible]
+@[instance_reducible]
 def metricSpaceAux : MetricSpace ℍ where
   dist := dist
   dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, mul_zero]
@@ -195,8 +195,8 @@ theorem dist_le_iff_dist_coe_center_le :
   le_iff_le_of_cmp_eq_cmp (cmp_dist_eq_cmp_dist_coe_center z w r)
 
 theorem le_dist_iff_le_dist_coe_center :
-    r < dist z w ↔ w.im * Real.sinh r < dist (z : ℂ) (w.center r) :=
-  lt_iff_lt_of_cmp_eq_cmp (cmp_eq_cmp_symm.1 <| cmp_dist_eq_cmp_dist_coe_center z w r)
+    r ≤ dist z w ↔ w.im * Real.sinh r ≤ dist (z : ℂ) (w.center r) :=
+  le_iff_le_of_cmp_eq_cmp (cmp_eq_cmp_symm.1 <| cmp_dist_eq_cmp_dist_coe_center z w r)
 
 /-- For two points on the same vertical line, the distance is equal to the distance between the
 logarithms of their imaginary parts. -/

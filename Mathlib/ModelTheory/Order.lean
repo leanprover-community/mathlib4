@@ -205,7 +205,7 @@ variable (L M)
 
 /-- Any linearly-ordered type is naturally a structure in the language `Language.order`.
 This is not an instance, because sometimes the `Language.order.Structure` is defined first. -/
-@[implicit_reducible]
+@[instance_reducible]
 def orderStructure [LE M] : Language.order.Structure M where
   RelMap | .le => (fun x => x 0 ≤ x 1)
 
@@ -234,6 +234,7 @@ instance [Language.order.Structure M] [Language.order.OrderedStructure M]
 
 variable [L.OrderedStructure M]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Language.order.Structure M] [Language.order.OrderedStructure M] :
     LHom.IsExpansionOn (orderLHom L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
@@ -354,7 +355,7 @@ section structure_to_order
 variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
-@[implicit_reducible]
+@[instance_reducible]
 def leOfStructure : LE M where
   le a b := Structure.RelMap (leSymb : L.Relations 2) ![a, b]
 
@@ -375,7 +376,7 @@ def decidableLEOfStructure
     DecidableLE M := h
 
 /-- Any model of a theory of preorders is a preorder. -/
-@[implicit_reducible]
+@[instance_reducible]
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
   __ := L.leOfStructure M
   le_refl := (Relations.realize_reflexive.mp <|
@@ -384,14 +385,14 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
     Theory.model_iff _ |>.mp h _ <| by simp [preorderTheory]).trans
 
 /-- Any model of a theory of partial orders is a partial order. -/
-@[implicit_reducible]
+@[instance_reducible]
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   __ := L.preorderOfModels M
   le_antisymm := (Relations.realize_antisymmetric.mp <|
     Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
 /-- Any model of a theory of linear orders is a linear order. -/
-@[implicit_reducible]
+@[instance_reducible]
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
@@ -408,6 +409,7 @@ variable [Language.order.Structure M] [LE M] [Language.order.OrderedStructure M]
   {N : Type*} [Language.order.Structure N] [LE N] [Language.order.OrderedStructure N]
   {F : Type*}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :=
   ⟨fun _ => isEmptyElim, by
     simp only [forall_relations, relation_eq_leSymb, relMap_leSymb, Fin.isValue,
@@ -415,11 +417,13 @@ instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :
     exact fun φ x => map_rel φ⟩
 
 -- If `OrderEmbeddingClass` or `RelEmbeddingClass` is defined, this should be generalized.
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Language.order.StrongHomClass (M ↪o N) M N :=
   ⟨fun _ => isEmptyElim,
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
     Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [EquivLike F M N] [OrderIsoClass F M N] : Language.order.StrongHomClass F M N :=
   ⟨fun _ => isEmptyElim,
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
@@ -480,11 +484,11 @@ lemma dlo_isExtensionPair
   have := NoTopOrder.to_noMaxOrder N
   have hS : Set.Finite (S : Set M) := (S.fg_iff_structure_fg.1 S_fg).finite
   obtain ⟨g, hg⟩ := Order.exists_orderEmbedding_insert hS.toFinset
-    ((OrderIso.setCongr hS.toFinset (S : Set M) hS.coe_toFinset).toOrderEmbedding.trans
+    ((Set.orderIsoOfEq hS.toFinset (S : Set M) hS.coe_toFinset).toOrderEmbedding.trans
       (OrderEmbedding.ofStrictMono f (HomClass.strictMono f))) m
   let g' :
     ((Substructure.closure Language.order).toFun {m} ⊔ S : Language.order.Substructure M) ↪o N :=
-    ((OrderIso.setCongr _ _ (by
+    ((Set.orderIsoOfEq _ _ (by
       convert!
         LowerAdjoint.closure_eq_self_of_mem_closed _
           (Substructure.mem_closed_of_isRelational Language.order

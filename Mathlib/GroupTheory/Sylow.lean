@@ -10,6 +10,8 @@ public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.GroupTheory.PGroup
 public import Mathlib.GroupTheory.NoncommPiCoprod
 
+import Mathlib.Data.Fintype.Lattice
+
 /-!
 # Sylow theorems
 
@@ -118,6 +120,34 @@ def ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
 @[simp, norm_cast]
 theorem coe_ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
     (card_eq : Nat.card H = p ^ (Nat.card G).factorization p) : ofCard H card_eq = H :=
+  rfl
+
+theorem eq_top_of_zero (H : Sylow 0 G) : (H : Subgroup G) = ⊤ :=
+  (H.is_maximal' (.zero _) le_top).symm
+
+theorem eq_bot_of_one (H : Sylow 1 G) : (H : Subgroup G) = ⊥ :=
+  have := isPGroup_one_iff_subsingleton.mp H.isPGroup'
+  eq_bot_of_subsingleton _
+
+/-- The type of Sylow `p`-subgroups depends only on the prime factors of `p`. -/
+def equivProdPrimeFactors (h : p ≠ 0) : Sylow p G ≃ Sylow (p.primeFactors.prod id) G where
+  toFun H := { H with
+    isPGroup' := isPGroup_iff_isPGroup_prod_primeFactors h |>.mp H.isPGroup',
+    is_maximal' hQ := H.is_maximal' <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr hQ }
+  invFun H := { H with
+    isPGroup' := isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr H.isPGroup',
+    is_maximal' hQ := H.is_maximal' <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mp hQ }
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simp]
+theorem coe_equivProdPrimeFactors_apply (h : p ≠ 0) (H : Sylow p G) :
+    (equivProdPrimeFactors h H : Subgroup G) = H :=
+  rfl
+
+@[simp]
+theorem coe_symm_equivProdPrimeFactors_apply (h : p ≠ 0) (H : Sylow (p.primeFactors.prod id) G) :
+    (equivProdPrimeFactors h |>.symm H : Subgroup G) = H :=
   rfl
 
 variable (P : Sylow p G)
@@ -408,7 +438,7 @@ noncomputable def equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : Sylow p G ≃ G ⧸ normalizer P :=
   calc
     Sylow p G ≃ (⊤ : Set (Sylow p G)) := (Equiv.Set.univ (Sylow p G)).symm
-    _ ≃ orbit G P := Equiv.setCongr P.orbit_eq_top.symm
+    _ ≃ orbit G P := Set.equivOfEq P.orbit_eq_top.symm
     _ ≃ G ⧸ stabilizer G P := orbitEquivQuotientStabilizer G P
     _ ≃ G ⧸ normalizer P := by rw [P.stabilizer_eq_normalizer]
 
@@ -494,6 +524,7 @@ theorem mapSurjective_surjective (p : ℕ) [Fact p.Prime] :
 
 end mapSurjective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
@@ -521,7 +552,7 @@ end Sylow
 
 end InfiniteSylow
 
-open Equiv Equiv.Perm Finset Function List QuotientGroup
+open Equiv Equiv.Perm Finset Function QuotientGroup
 
 universe u
 
@@ -665,6 +696,19 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
         ⟨K', by rw [hK'.1, tsub_add_cancel_of_le h0m.nat_succ_le], le_trans hK.2 hK'.2⟩)
       fun hnm : n = m => ⟨H, by simp [hH, hnm]⟩
 
+theorem exists_subgroup_card_pow_prime_le_le {p : ℕ} (hp : p.Prime) {n : ℕ}
+    {H L : Subgroup G} [Finite L] (hH : Nat.card H ∣ p ^ n) (hL : p ^ n ∣ Nat.card L)
+    (hHL : H ≤ L) :
+    ∃ K : Subgroup G, Nat.card K = p ^ n ∧ H ≤ K ∧ K ≤ L := by
+  obtain ⟨k, hkn, hH⟩ := (Nat.dvd_prime_pow hp).mp hH
+  have : Fact p.Prime := ⟨hp⟩
+  have hcardeq := (Nat.card_congr (Subgroup.subgroupOfEquivOfLe hHL).toEquiv).trans hH
+  obtain ⟨K, hcard, hHK⟩ := exists_subgroup_card_pow_prime_le p hL (H.subgroupOf L) hcardeq hkn
+  refine ⟨K.map L.subtype, ?_, ?_, map_subtype_le K⟩
+  · rwa [Subgroup.card_map_of_injective L.subtype_injective]
+  · rw [← Subgroup.map_subgroupOf_eq_of_le hHL]
+    exact Subgroup.map_mono hHK
+
 /-- A generalisation of **Sylow's first theorem**. If `p ^ n` divides
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
 theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Prime]
@@ -672,6 +716,63 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
   let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥
     (by rw [card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
+
+/-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of `G`, then any chain
+of subgroups whose orders divide `p ^ n` can be completed to a tower of subgroups of orders
+`p ^ 0, …, p ^ n`. -/
+theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
+    (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
+    (hcard : ∀ H ∈ s, Nat.card H ∣ p ^ n) :
+    ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
+  suffices ∀ (n : ℕ) (H : Subgroup G) (hdvd : p ^ n ∣ Nat.card H) (s : Set (Subgroup G))
+      (hchain : IsChain (· ≤ ·) s) (hcard : ∀ K ∈ s, Nat.card K ∣ p ^ n) (hle : ∀ K ∈ s, K ≤ H),
+      ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧
+        ∀ k, Nat.card (f k) = p ^ k.val ∧ f k ≤ H by
+    obtain ⟨f, hf⟩ := this n ⊤ (by simpa) s hchain hcard (by simp)
+    grind
+  intro n H hdvd s hchain hcard hle
+  classical
+  have : Fact p.Prime := ⟨hp⟩
+  induction n generalizing H s with
+  | zero => exact ⟨.ofStrictMono ![⊥] (by simp), by simpa using hcard⟩
+  | succ n ih =>
+    have h : ∃ T ≤ H, Nat.card T ∣ p ^ (n + 1) ∧ ∀ K ∈ s, K ≤ T := by
+      let : LinearOrder s := hchain.linearOrder
+      by_cases! h : Nonempty s
+      · obtain ⟨⟨t, hts⟩, ht⟩ := Finite.exists_max (fun x : s ↦ x)
+        exact ⟨t, hle t hts, hcard t hts, fun g hg ↦ ht ⟨g, hg⟩⟩
+      · exact ⟨⊥, by simp [s.eq_empty_of_isEmpty]⟩
+    obtain ⟨T, hTH, hTcard, hsT⟩ : ∃ t ≤ H, Nat.card t = p ^ (n + 1) ∧ ∀ K ∈ s, K ≤ t := by
+      obtain ⟨T, hTH, hTcard, hsT⟩ := h
+      obtain ⟨T, hcardT, hleT, hTle⟩ := exists_subgroup_card_pow_prime_le_le hp hTcard hdvd hTH
+      exact ⟨T, hTle, hcardT, fun g hg ↦ (hsT g hg).trans hleT⟩
+    have hcard' (K : Subgroup G) (hg : K ∈ s \ {T}) : Nat.card K ∣ p ^ n := by
+      obtain ⟨m, hmn, hm⟩ := (Nat.dvd_prime_pow hp).mp (hcard K hg.1)
+      have hlt : Nat.card K < Nat.card T := card_lt_of_lt <| (hsT K hg.1).lt_of_ne hg.2
+      rw [hm, hTcard, pow_lt_pow_iff_right₀ hp.one_lt, Nat.lt_add_one_iff] at hlt
+      exact hm ▸ pow_dvd_pow p hlt
+    obtain ⟨f', hsf', hf'⟩ := ih T (by simp [hTcard, pow_add]) (s \ {T})
+      (hchain.mono Set.sdiff_subset) hcard' fun g hg ↦ hsT g hg.1
+    have hf : StrictMono (Fin.snoc f' T) := fun x y h ↦ by
+      obtain ⟨x, rfl⟩ := Fin.exists_castSucc_eq.mpr (Fin.ne_last_of_lt h)
+      rcases y.eq_castSucc_or_eq_last with ⟨y, rfl⟩ | rfl
+      · simpa
+      · rw [Fin.snoc_castSucc, Fin.snoc_last]
+        apply lt_of_le_of_ne (hf' x).2
+        grind [Nat.pow_right_inj hp.one_lt]
+    refine ⟨.ofStrictMono (Fin.snoc f' T) hf, fun K hK ↦ ?_, fun x ↦ ?_⟩
+    · rw [OrderEmbedding.coe_ofStrictMono, Fin.range_snoc]
+      exact Set.sdiff_singleton_subset_iff.mp hsf' hK
+    · rcases x.eq_castSucc_or_eq_last with ⟨x, rfl⟩ | rfl
+      · simp [(hf' x).1, (hf' x).2.trans hTH]
+      · simp [hTcard, hTH]
+
+/-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
+there is a tower of subgroups of orders `p ^ 0, …, p ^ n`. -/
+theorem exists_orderEmbedding [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
+    ∃ f : Fin (n + 1) ↪o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val := by
+  obtain ⟨f, _, hcard⟩ := exists_orderEmbedding_of_isChain hp h IsChain.empty (by simp)
+  exact ⟨f, hcard⟩
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`
 then there is a subgroup of cardinality `p ^ n`. -/
@@ -750,7 +851,7 @@ theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] : Nat.card G ∣ ∏ g : 
   simp [Finset.card_sdiff, ← Nat.card_eq_fintype_card, hH]
 
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : Unique (Sylow p G) := by
   refine { uniq := fun Q ↦ ?_ }

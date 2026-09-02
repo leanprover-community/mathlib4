@@ -45,11 +45,11 @@ structure PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R
   /-- The coefficients `ℕ →₀ M` of an element of the additive monoid algebra `M[X]`. -/
   coeff : ℕ →₀ M
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
-variable {x y : PolynomialModule R M} {r r₁ r₂ : R} {m m' m₁ m₂ m₁' m₂' : M}
+variable {x y : PolynomialModule R M} {r : R} {m m₁ m₂ : M}
 
 lemma coeff_ofCoeff (x : ℕ →₀ M) : (ofCoeff R x).coeff = x := rfl
 lemma ofCoeff_coeff (x : PolynomialModule R M) : ofCoeff R x.coeff = x := rfl
@@ -142,15 +142,15 @@ lemma single_add (n : ℕ) (m₁ m₂ : M) :
     single R n (m₁ + m₂) = single R n m₁ + single R n m₂ := by ext; simp
 
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
-instance : Module S (PolynomialModule R M) := (coeffEquiv R).module _
+instance : Module S (PolynomialModule R M) := coeffAddEquiv.module _
 
 instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
-    IsScalarTower S R (PolynomialModule R M) := (coeffEquiv R).isScalarTower _ _
+    IsScalarTower S R (PolynomialModule R M) := coeffAddEquiv.isScalarTower _ _
 
 variable (R S) in
 /-- `PolynomialModule.coeff` as a linear equiv. -/
 @[simps! apply symm_apply]
-def coeffLinearEquiv : PolynomialModule R M ≃ₗ[S] ℕ →₀ M := (coeffEquiv _).linearEquiv _
+def coeffLinearEquiv : PolynomialModule R M ≃ₗ[S] ℕ →₀ M := (coeffAddEquiv (M := M)).linearEquiv S
 
 variable (R) in
 /-- `PolynomialModule.single` as a linear map. -/
@@ -234,7 +234,6 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
       (monomial f_n f_a).coeff i • g.coeff j, monomial_smul_apply]
     simp [Polynomial.coeff_monomial]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
   toAddEquiv := coeffAddEquiv.trans <| AddMonoidAlgebra.coeffAddEquiv.symm.trans

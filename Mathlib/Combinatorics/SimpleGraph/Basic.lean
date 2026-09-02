@@ -5,13 +5,15 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
+public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Rel
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Tactic.CrossRefAttribute
+
+import Mathlib.Data.Set.Lattice.Disjoint
 
 /-!
 # Simple graphs
@@ -154,7 +156,7 @@ def completeBipartiteGraph (V W : Type*) : SimpleGraph (V ⊕ W) where
 
 namespace SimpleGraph
 
-variable {ι : Sort*} {V : Type u} (G : SimpleGraph V) {a b c u v w : V} {e : Sym2 V}
+variable {ι : Sort*} {V : Type u} (G H : SimpleGraph V) {a b c u v w : V} {e : Sym2 V}
 
 @[simp]
 protected theorem irrefl {v : V} : ¬G.Adj v v :=
@@ -198,6 +200,11 @@ theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ 
 
 instance symm_adj (f : ι → V) : Std.Symm fun i j ↦ G.Adj (f i) (f j) where symm _ _ := .symm
 
+instance [Infinite V] : Infinite (SimpleGraph V) := by
+  let f := Infinite.natEmbedding V
+  refine .of_injective (fun n ↦ fromRel (· = f 0 ∧ · = f (n + 1))) fun a b h ↦ ?_
+  simpa using congr(($h).Adj (f 0) (f (a + 1)))
+
 section Order
 
 /-- The relation that one `SimpleGraph` is a subgraph of another.
@@ -218,7 +225,7 @@ instance : Max (SimpleGraph V) where
     { Adj := x.Adj ⊔ y.Adj
       symm.symm v w h := by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
 
-@[simp]
+@[simp, grind =]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
   Iff.rfl
 
@@ -511,9 +518,6 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
 theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
   simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
 
-@[deprecated (since := "2025-12-10")]
-alias edgeSet_subset_setOf_not_isDiag := edgeSet_subset_compl_diagSet
-
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
   ext ⟨x, y⟩
@@ -554,6 +558,11 @@ variable {G G₁ G₂}
 
 @[simp] lemma disjoint_edgeSet : Disjoint G₁.edgeSet G₂.edgeSet ↔ Disjoint G₁ G₂ := by
   rw [Set.disjoint_iff, disjoint_iff_inf_le, ← edgeSet_inf, ← edgeSet_bot, OrderEmbedding.le_iff_le]
+
+theorem disjoint_of_disjoint_support (h : Disjoint G.support H.support) : Disjoint G H := by
+  simp_rw [Set.disjoint_left, mem_support] at h
+  rw [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall]
+  grind [mem_edgeSet]
 
 @[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [← edgeSet_bot, edgeSet_inj]
 
@@ -757,6 +766,17 @@ theorem mk'_mem_incidenceSet_right_iff : s(a, b) ∈ G.incidenceSet b ↔ G.Adj 
 theorem edge_mem_incidenceSet_iff {e : G.edgeSet} : ↑e ∈ G.incidenceSet a ↔ a ∈ (e : Sym2 V) :=
   and_iff_right e.2
 
+theorem iUnion_incidenceSet : ⋃ v, G.incidenceSet v = G.edgeSet := by
+  ext ⟨_, _⟩
+  simp [mk'_mem_incidenceSet_iff]
+
+variable {G H} in
+theorem disjoint_incidenceSet :
+    (∀ v, Disjoint (G.incidenceSet v) (H.incidenceSet v)) ↔ Disjoint G H := by
+  simp_rw [← disjoint_edgeSet, ← iUnion_incidenceSet, Set.disjoint_iUnion_left,
+    Set.disjoint_iUnion_right, Set.disjoint_left, Sym2.forall]
+  grind [mk'_mem_incidenceSet_iff]
+
 theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
     G.incidenceSet a ∩ G.incidenceSet b ⊆ {s(a, b)} := fun _e he =>
   (Sym2.mem_and_mem_iff h).1 ⟨he.1.2, he.2.2⟩
@@ -799,6 +819,37 @@ theorem neighborSet_subset_compl : G.neighborSet v ⊆ {v}ᶜ := by
 variable (v) in
 theorem neighborSet_ne_univ : G.neighborSet v ≠ .univ :=
   Set.ne_univ_iff_exists_notMem _ |>.mpr ⟨v, G.notMem_neighborSet_self⟩
+
+variable {G H} in
+theorem disjoint_neighborSet :
+    (∀ v, Disjoint (G.neighborSet v) (H.neighborSet v)) ↔ Disjoint G H := by
+  simp_rw [← disjoint_edgeSet, Set.disjoint_left, mem_neighborSet, Sym2.forall, mem_edgeSet]
+
+@[simp]
+theorem neighborSet_sup {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊔ G₂).neighborSet v = G₁.neighborSet v ∪ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_inf {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊓ G₂).neighborSet v = G₁.neighborSet v ∩ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_sdiff {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ \ G₂).neighborSet v = G₁.neighborSet v \ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_iSup {s : ι → SimpleGraph V} (v : V) :
+    (⨆ i, s i).neighborSet v = ⋃ i, (s i).neighborSet v := by
+  ext; simp
+
+@[simp]
+theorem neighborSet_iInf [Nonempty ι] {s : ι → SimpleGraph V} (v : V) :
+    (⨅ i, s i).neighborSet v = ⋂ i, (s i).neighborSet v := by
+  ext
+  simp_rw [Set.mem_iInter, mem_neighborSet, iInf_adj_of_nonempty]
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
@@ -891,6 +942,12 @@ theorem commonNeighbors_subset_neighborSet_right (v w : V) :
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
     DecidablePred (· ∈ G.commonNeighbors v w) :=
   inferInstanceAs <| DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w
+
+variable {G H} in
+theorem disjoint_commonNeighbors :
+    (∀ u v, Disjoint (G.commonNeighbors u v) (H.commonNeighbors u v)) ↔ Disjoint G H := by
+  simp_rw [← disjoint_edgeSet, Set.disjoint_left, mem_commonNeighbors, Sym2.forall, mem_edgeSet]
+  grind
 
 theorem commonNeighbors_top_eq {v w : V} :
     (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by
@@ -995,6 +1052,15 @@ theorem notMem_support_iff_isIsolated : v ∉ G.support ↔ G.IsIsolated v := by
 variable {G} in
 theorem exists_adj_iff_not_isIsolated : (∃ u, G.Adj v u) ↔ ¬G.IsIsolated v := by
   simp [IsIsolated]
+
+variable {G} in
+theorem isIsolated_iff_forall_edgeSet_notMem : G.IsIsolated v ↔ ∀ e ∈ G.edgeSet, v ∉ e :=
+  ⟨fun hv _ he ⟨u, heq⟩ ↦ hv u (heq ▸ he :), fun h u hvu ↦ h s(v, u) hvu <| Sym2.mem_mk_left v u⟩
+
+variable {G} in
+theorem not_isIsolated_iff_exists_edgeSet_mem : ¬G.IsIsolated v ↔ ∃ e ∈ G.edgeSet, v ∈ e := by
+  contrapose!
+  exact isIsolated_iff_forall_edgeSet_notMem
 
 @[simp]
 theorem IsIsolated.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :

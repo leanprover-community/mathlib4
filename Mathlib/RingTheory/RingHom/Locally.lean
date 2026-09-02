@@ -176,6 +176,7 @@ end OfLocalizationSpanTarget
 
 section Stability
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `P` respects isomorphism, so does `Locally P`. -/
 lemma locally_respectsIso (hPi : RespectsIso P) : RespectsIso (Locally P) where
   left {R S T} _ _ _ f e := fun ⟨s, hsone, hs⟩ ↦ by
@@ -271,10 +272,6 @@ lemma locally_stableUnderCompositionWithLocalizationAwayTarget
     apply hPa _ (algebraMap S (Localization.Away a) t)
     apply hs a ha
 
-@[deprecated (since := "2026-02-11")]
-alias locally_StableUnderCompositionWithLocalizationAwayTarget :=
-  locally_stableUnderCompositionWithLocalizationAwayTarget
-
 /-- If `P` is stable under composition with localization away maps on the left,
 then so is `Locally P`. -/
 lemma locally_stableUnderCompositionWithLocalizationAwaySource
@@ -285,10 +282,6 @@ lemma locally_stableUnderCompositionWithLocalizationAwaySource
   rw [← comp_assoc]
   exact hPa _ r _ (hs t ht)
 
-@[deprecated (since := "2026-02-11")]
-alias locally_StableUnderCompositionWithLocalizationAwaySource :=
-  locally_stableUnderCompositionWithLocalizationAwaySource
-
 /-- If `P` is stable under base change, then so is `Locally P`. -/
 lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnderBaseChange P) :
     IsStableUnderBaseChange (Locally P) := by
@@ -298,7 +291,7 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
     ← hf.span_eq_top, Ideal.map_le_iff_le_comap, Ideal.span_le]
   intro g hg
   apply Ideal.subset_span
-  simp only [Set.mem_setOf_eq, Algebra.TensorProduct.includeRight_apply,
+  simp only [Set.mem_ofPred_eq, Algebra.TensorProduct.includeRight_apply,
     ← IsScalarTower.algebraMap_eq] at hg ⊢
   let e := IsLocalization.Away.tensorProductEquivTMulRight R S g (Localization.Away g)
   rw [← e.toAlgHom.comp_algebraMap]

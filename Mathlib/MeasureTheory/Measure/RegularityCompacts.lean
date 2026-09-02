@@ -6,7 +6,8 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 module
 
 public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.Topology.MetricSpace.Polish
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!
 # Inner regularity of finite measures
@@ -214,9 +215,5 @@ theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [TopologicalSpac
     rw [sdiff_eq]
     exact ⟨hs_compact.inter_right ht_open.isClosed_compl,
       hs_closed.inter (isClosed_compl_iff.mpr ht_open)⟩
-
-@[deprecated (since := "2025-12-08")] alias
-PolishSpace.innerRegular_isCompact_isClosed_measurableSet :=
-innerRegular_isCompact_isClosed_measurableSet_of_finite
 
 end MeasureTheory

@@ -150,7 +150,7 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
   le_antisymm := by
     rintro ⟨a⟩ ⟨b⟩ ⟨e, rfl⟩ ⟨f, hf⟩
-    by_cases hb : b = 0; · simp [hb]
+    by_cases hb : b = 0; · rw [hb, smul_zero]
     have : IsUnit e := by
       apply isUnit_of_dvd_one
       use f
@@ -315,8 +315,6 @@ theorem _root_.PreValuationRing.iff_ideal_total [CommRing R] :
   have := H.total (Ideal.span {a}) (Ideal.span {b})
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
-
-variable (K)
 
 theorem dvd_total [Semigroup R] [h : PreValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
   (PreValuationRing.iff_dvd_total.mp h).total x y

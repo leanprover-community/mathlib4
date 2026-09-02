@@ -41,8 +41,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
 
 universe u v w x y z u' v' w' y'
 
-variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
-variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x}
+variable {R : Type u} {M : Type v} {M₂ : Type w}
+variable {M₃ : Type y} {M₄ : Type z} {ι : Type x}
 variable {M₅ M₆ : Type*}
 
 section Prod
@@ -822,6 +822,7 @@ variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂] [Unique M₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying by the trivial module from the left does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.uniqueProd`. -/
 @[simps!]
@@ -831,6 +832,7 @@ def uniqueProd : (M₂ × M) ≃ₗ[R] M :=
 lemma coe_uniqueProd :
     (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying by the trivial module from the right does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
 @[simps!]

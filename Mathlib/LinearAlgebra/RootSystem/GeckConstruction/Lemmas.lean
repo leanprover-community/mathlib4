@@ -262,6 +262,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   simp only [P.chainBotCoeff_if_one_zero, hik_mem, him_mem, hjl_mem, hjk_mem]
   simp [key₁, key₂, key₃, key₄]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 open RootPositiveForm in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
