@@ -20,7 +20,6 @@ open Lean.Parser.Tactic
 
 namespace Inclusion
 
-/-- Declare elaborator for the configuration `InclusionConfig` of the `inclusion` tactic. -/
 declare_config_elab elabInclusionConfig InclusionConfig where
   omit paramSettings, families
 
