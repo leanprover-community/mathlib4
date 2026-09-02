@@ -33,8 +33,7 @@ prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena, Introspec
 
 open Polynomial in
 /-- TODO: Move to the proper file in the next PR. -/
-@[simp]
-theorem Polynomial.comp_X_pow {R : Type*} [Semiring R] (k m : ℕ) :
+theorem Polynomial.X_pow_comp_X_pow {R : Type*} [Semiring R] (k m : ℕ) :
     ((X : R[X]) ^ k).comp (X ^ m) = X ^ (k * m) := by
   simp [← pow_mul, mul_comm]
 
@@ -153,7 +152,7 @@ theorem of_mul {f : R[X]} (hf : f ^ p = f.comp (X ^ p)) {m : ℕ} (h : Introspec
     simp only [frobenius, RingHom.coe_mk, powMonoidHom_apply]
     rw [← map_pow]
     congr
-    rw [mul_comm, ← comp_X_pow, ← comp_assoc, ← hf, pow_comp]
+    rw [mul_comm, ← X_pow_comp_X_pow, ← comp_assoc, ← hf, pow_comp]
   grind
 
 protected theorem div {f : R[X]} (hf : f ^ p = f.comp (X ^ p)) (h : Introspective f n r)
