@@ -21,10 +21,9 @@ public meta section
 
 open Lean Meta Elab Tactic
 
-/-- The simp set `basify` runs, both after each case split and once at the end. It holds the lemmas
-that make the degenerate branches go away -- the ones where some atom is `⊤` or `⊥` -- together with
-the lemmas that translate a proposition about a registered type into one about the underlying type,
-such as `↑a ≤ ↑b ↔ a ≤ b`. -/
+/-- The simp set `basify` runs, after each case split and once at the end: the lemmas that clear
+away the degenerate branches, where some atom is `⊤` or `⊥`, and those that translate a proposition
+down, such as `↑a ≤ ↑b ↔ a ≤ b`. Lemmas tagged `@[basify_op]` are added here as well. -/
 register_simp_attr basify_simp
 
 namespace Mathlib.Tactic.Basify
@@ -73,12 +72,10 @@ private def analyzeAlt (elimName altName : Name) (altType : Expr) : MetaM (Array
       else return some (← binder.fvarId!.getUserName).eraseMacroScopes
 
 /-- Read off, from the type of the eliminator `elimName`, the head symbol of the type it destructs
-together with how to name what each of its alternatives introduces.
-
-The motive, the target and the alternatives are located by `getElimInfo`, the same function
-`basify` later hands to `ElimApp`, so what is recorded here lines up with the goals the case split
-produces. -/
+together with how to name what each of its alternatives introduces. -/
 def analyzeElim (elimName : Name) : MetaM (Name × ElimEntry) := do
+  -- `basify` hands the same `getElimInfo` to `ElimApp`, so what is recorded here lines up with the
+  -- goals the case split produces.
   let elimInfo ← getElimInfo elimName
   let #[targetPos] := elimInfo.targetsPos |
     throwError "`{.ofConstName elimName}` eliminates {elimInfo.targetsPos.size} targets, but \
@@ -112,16 +109,16 @@ private def headPair? (e : Expr) : MetaM (Option (Name × Name)) := do
   let some tyName := (← instantiateMVars (← inferType e)).getAppFn.constName? | return none
   return some (tyName, head)
 
-/-- Read the operations related by an `@[basify_op]` lemma
-`↑(f a₁ … aₙ) = g ↑a₁ … ↑aₙ`: both `f`, at the type it operates on, and `g`, at the type it
-operates on. Either of the two sides may be the coerced one, so both are inspected, and a side is
-looked through when it is a one-argument application such as a coercion. -/
+/-- The operations related by an `@[basify_op]` lemma `↑(f a₁ … aₙ) = g ↑a₁ … ↑aₙ`, namely `f` and
+`g`, each paired with the type it operates on. -/
 def analyzeOp (opName : Name) : MetaM (Array (Name × Name)) := do
   forallTelescopeReducing (← getConstInfo opName).type fun _ concl => do
     let some (_, lhs, rhs) := concl.eq? |
       throwError "the conclusion of `{.ofConstName opName}` is not an equation, so `basify` \
         cannot tell which operations it relates; it should look like `↑(f a₁ … aₙ) = g ↑a₁ … ↑aₙ`"
     let mut pairs := #[]
+    -- Either side may be the coerced one, so both are inspected, and a side is looked through when
+    -- it is a one-argument application such as a coercion.
     for side in #[lhs, rhs] do
       if let some pair ← headPair? side then pairs := pairs.push pair
       if let #[arg] ← explicitArgs side then
@@ -135,11 +132,10 @@ def analyzeOp (opName : Name) : MetaM (Array (Name × Name)) := do
 be usable as `cases x using foo`: it takes a motive, some minor premises and a single target. The
 type it destructs and the shape of each of its cases are read off from its type.
 
-This is the only mechanism: a subtype is registered the same way, with an eliminator that has a
-single minor premise. Such an eliminator must present the value through a properly typed
-constructor rather than `Subtype.mk`, because `ℝ≥0` and `ℕ+` are semireducible definitions and a
-goal mentioning `⟨x, hx⟩ : ℝ≥0` is not type-correct at the transparency `simp` checks at. See
-`NNReal.recToNNReal`, which uses `Real.toNNReal`. -/
+A subtype is registered the same way, with an eliminator that has a single minor premise. It must
+present the value through a properly typed constructor rather than `Subtype.mk`: `ℝ≥0` and `ℕ+` are
+semireducible definitions, so a goal mentioning `⟨x, hx⟩ : ℝ≥0` is not type-correct at the
+transparency `simp` checks at. See `NNReal.recToNNReal`, which uses `Real.toNNReal`. -/
 syntax (name := basifyElim) "basify_elim" : attr
 
 initialize registerBuiltinAttribute {
@@ -156,15 +152,10 @@ how to see inside of, by tagging the lemma that relates it to the corresponding 
 underlying type, such as `ENNReal.coe_add : ↑(a + b) = ↑a + ↑b`. Anything else of a registered type
 is an atom: `basify` generalizes it and case splits on it rather than descending into it.
 
-Both operations the lemma relates are registered, so a single lemma covers the operation upstairs
-and the operation downstairs.
-
-The lemma is also added to the `basify_simp` set, reversed if `←` is given, since an operation
-`basify` can look inside of but not rewrite through is worse than one it does not know at all: it
-descends into the arguments and splits them, but nothing then moves the operation itself down, and
-every branch is left stranded in the compound type. A lemma unusable as a rewrite therefore cannot
-be registered as an operation -- `ENNReal.coe_ofNat` is one, its `no_index`ed right-hand side
-matching everything when reversed, so `Mathlib/Tactic/Basify/ENNReal.lean` restates it. -/
+The lemma is also added to `basify_simp`, reversed if `←` is given, so that what `basify` looks
+inside of it can also rewrite through. That rules out a lemma unusable as a rewrite:
+`ENNReal.coe_ofNat` has a `no_index`ed right-hand side that would match everything when reversed,
+so `Mathlib/Tactic/Basify/ENNReal.lean` restates it. -/
 syntax (name := basifyOp) "basify_op" (" ←")? : attr
 
 initialize registerBuiltinAttribute {
