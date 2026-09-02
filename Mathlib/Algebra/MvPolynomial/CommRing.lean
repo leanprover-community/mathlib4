@@ -65,18 +65,19 @@ theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
   map_neg _ _
 
 @[simp]
-theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
-  Finsupp.neg_apply _ _
+theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p := by
+  simp [coeff]
 
 @[simp, grind =]
-theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
-  Finsupp.sub_apply _ _ _
+theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) :
+    coeff m (p - q) = coeff m p - coeff m q := by
+  simp [coeff]
 
 @[simp] lemma support_neg : (-p).support = p.support := by ext; simp
 
 theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
-    (p - q).support ⊆ p.support ∪ q.support :=
-  Finsupp.support_sub
+    (p - q).support ⊆ p.support ∪ q.support := by
+  simpa [support] using Finsupp.support_sub
 
 variable {σ} (p)
 
