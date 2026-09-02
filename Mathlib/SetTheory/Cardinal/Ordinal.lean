@@ -35,17 +35,11 @@ lemma mk_biUnion_le_of_le_lift {β : Type v} {o : Ordinal.{u}} {c : Cardinal.{v}
   intro i
   simpa using hA _ i.toOrd.prop
 
-@[deprecated (since := "2026-01-26")]
-alias mk_iUnion_Ordinal_lift_le_of_le := mk_biUnion_le_of_le_lift
-
 lemma mk_biUnion_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
   apply mk_biUnion_le_of_le_lift _ hc A hA
   rwa [Cardinal.lift_le]
-
-@[deprecated (since := "2026-01-26")]
-alias mk_iUnion_Ordinal_le_of_le := mk_biUnion_le_of_le
 
 end Cardinal
 
