@@ -108,21 +108,17 @@ lemma extendScalars'_map_exact [Module.Flat R S]
       ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp h)
   have : Function.Exact (ExtendScalars'.map' S T.f) (ExtendScalars'.map' S T.g) := by
     simp only [ExtendScalars'.map', hom_ofHom, LinearMap.exact_iff, LinearEquiv.range_comp]
-    rw [LinearMap.comp_assoc, LinearEquiv.ker_comp]
-    ext x
-    simp only [LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      ModuleCat.ExtendScalars'.obj']
-    convert exac ((Shrink.linearEquiv S (TensorProduct R S T.X₂)) x)
-    rw [LinearMap.range_comp, ← Submodule.comap_equiv_eq_map_symm, Submodule.mem_comap]
-    rfl
+    rw [LinearMap.comp_assoc, LinearEquiv.ker_comp, ← LinearMap.exact_iff,
+      LinearEquiv.conj_symm_exact_iff_exact]
+    exact exac
   exact (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr this
 
 instance [Module.Flat R S] : Limits.PreservesFiniteLimits (extendScalars' R S) := by
-  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_exact S))
+  have := (((extendScalars' R S).exact_tfae.out 2 4).mp (extendScalars'_map_exact S))
   exact this.1
 
 instance [Module.Flat R S] : Limits.PreservesFiniteColimits (extendScalars' R S) := by
-  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_exact S))
+  have := (((extendScalars' R S).exact_tfae.out 2 4).mp (extendScalars'_map_exact S))
   exact this.2
 
 namespace Algebra'

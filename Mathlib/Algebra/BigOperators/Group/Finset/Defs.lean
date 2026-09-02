@@ -345,7 +345,7 @@ end BigOperators
 
 namespace Finset
 
-variable {s s₁ s₂ : Finset ι} {a : ι} {f g : ι → M}
+variable {s : Finset ι} {a : ι} {f : ι → M}
 
 @[to_additive]
 theorem prod_eq_multiset_prod [CommMonoid M] (s : Finset ι) (f : ι → M) :
@@ -367,7 +367,7 @@ theorem map_prod [CommMonoid M] [CommMonoid N] {G : Type*} [FunLike G M N] [Mono
     (g : G) (f : ι → M) (s : Finset ι) : g (∏ x ∈ s, f x) = ∏ x ∈ s, g (f x) := by
   simp only [Finset.prod_eq_multiset_prod, map_multiset_prod, Multiset.map_map]; rfl
 
-variable {s s₁ s₂ : Finset ι} {a : ι} {f g : ι → M}
+variable {s : Finset ι} {a : ι} {f g : ι → M}
 
 namespace Finset
 

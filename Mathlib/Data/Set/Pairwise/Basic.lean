@@ -32,7 +32,7 @@ on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 @[expose] public section
 
 
-open Function Order Set
+open Function Set
 
 variable {α β γ ι ι' : Type*} {r p : α → α → Prop}
 
@@ -99,11 +99,6 @@ theorem pairwise_empty (r : α → α → Prop) : (∅ : Set α).Pairwise r :=
 @[simp]
 theorem pairwise_singleton (a : α) (r : α → α → Prop) : Set.Pairwise {a} r :=
   subsingleton_singleton.pairwise r
-
-theorem pairwise_iff_of_refl [Std.Refl r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
-  forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
-
-alias ⟨Pairwise.of_refl, _⟩ := pairwise_iff_of_refl
 
 theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.Nonempty) :
     s.Pairwise (r on f) ↔ ∃ z, ∀ x ∈ s, r (f x) z := by
