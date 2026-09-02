@@ -244,13 +244,25 @@ lemma isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet {x : X} : IsLocallyC
     ∃ Z, IsClosed Z ∧ s =ᶠ[𝓝 x] Z :=
   (isLocallyClosedAt_tfae s x).out 1 5
 
+@[deprecated (since := "2026-09-02")]
+alias isLocallyClosedAt_iff_exists_isClosed_eventuallyEq :=
+  isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet
+
 lemma isLocallyClosedAt_iff_eventuallyEqSet_closure {x : X} : IsLocallyClosedAt s x ↔
     s =ᶠ[𝓝 x] closure s :=
   (isLocallyClosedAt_tfae s x).out 1 6
 
+@[deprecated (since := "2026-09-02")]
+alias isLocallyClosedAt_iff_eventuallyEq_closure :=
+  isLocallyClosedAt_iff_eventuallyEqSet_closure
+
 lemma isLocallyClosedAt_iff_closure_eventuallySubset {x : X} : IsLocallyClosedAt s x ↔
     closure s ≤ᶠ[𝓝 x] s :=
   (isLocallyClosedAt_tfae s x).out 1 7
+
+@[deprecated (since := "2026-09-02")]
+alias isLocallyClosedAt_iff_closure_eventuallyLE :=
+  isLocallyClosedAt_iff_closure_eventuallySubset
 
 lemma isLocallyClosedAt_iff_coborder_mem_nhds {x : X} : IsLocallyClosedAt s x ↔ coborder s ∈ 𝓝 x :=
   (isLocallyClosedAt_tfae s x).out 1 9
