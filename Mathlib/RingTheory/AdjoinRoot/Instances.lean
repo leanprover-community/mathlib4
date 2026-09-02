@@ -52,11 +52,16 @@ theorem charP_of_monic_of_degree_pos (monic : f.Monic) (deg : 0 < f.degree) :
   rw [← faithfulSMul_iff_algebraMap_injective]
   exact faithfulSMul_of_monic_of_degree_pos monic deg
 
-theorem charP_of_X_pow_sub_one (h : 0 < r) [Nontrivial R] :
-    CharP (AdjoinRoot ((X : R[X]) ^ r - 1)) p := by
-  have monic := Polynomial.monic_X_pow_sub_C (1 : R) h.ne.symm
+theorem charP_of_X_pow_sub_C {a : R} (h : 0 < r) [Nontrivial R] :
+    CharP (AdjoinRoot ((X : R[X]) ^ r - C a)) p := by
+  have monic := Polynomial.monic_X_pow_sub_C (a : R) h.ne.symm
   apply charP_of_monic_of_degree_pos monic
   apply natDegree_pos_iff_degree_pos.mp
   grind [natDegree_X_pow_sub_C]
+
+theorem charP_of_X_pow_sub_one (h : 0 < r) [Nontrivial R] :
+    CharP (AdjoinRoot ((X : R[X]) ^ r - 1)) p := by
+  rw [← C_1]
+  exact charP_of_X_pow_sub_C h
 
 end AdjoinRoot
