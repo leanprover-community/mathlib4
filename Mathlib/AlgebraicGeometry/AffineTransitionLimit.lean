@@ -1100,18 +1100,18 @@ private lemma exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
 variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [LocallyOfFinitePresentation f]
   [∀ i, QuasiSeparatedSpace (D.obj i)]
   {i : I} {J : Type*} [Finite J] {U : J → (D.obj i).Opens} (hU : ∀ j, IsAffineOpen (U j))
+  (hcov : TopologicalSpace.IsOpenCover U)
   (hUV : ∀ j, ∃ (V : X.affineOpens) (W : S.affineOpens),
     c.π.app i ⁻¹ᵁ U j ≤ a ⁻¹ᵁ (V : X.Opens) ∧ (V : X.Opens) ≤ f ⁻¹ᵁ (W : S.Opens))
 
-include hc ha hU hUV in
-private lemma exists_forall_homOfLE_comp_eq_of_isAffineOpen :
-    ∃ (k : I) (u : k ⟶ i) (g : ∀ j, ↑(D.map u ⁻¹ᵁ U j) ⟶ X),
-      (∀ j, g j ≫ f = (D.map u ⁻¹ᵁ U j).ι ≫ t.app k) ∧
-      (∀ j, (c.π.app k).resLE _ _ le_rfl ≫ g j = (c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j).ι ≫ a) ∧
-      ∀ j₁ j₂, Scheme.homOfLE _ inf_le_left ≫ g j₁ = Scheme.homOfLE _ inf_le_right ≫ g j₂ := by
+include hc ha hU hcov hUV in
+/-- See `Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation` for the general case. -/
+private lemma exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffineOpen :
+    ∃ (k : I) (g : D.obj k ⟶ X), c.π.app k ≫ g = a ∧ g ≫ f = t.app k := by
   have hnat {j k : I} (v : j ⟶ k) : D.map v ≫ t.app k = t.app j := by simp
   have hπ (j : I) : c.π.app j ≫ t.app j = a ≫ f := congr(($ha).app j)
   choose V W hUV hVW using hUV
+  -- Each `U j` factors after passing to some `l`, compatibly on overlaps.
   have key : ∃ (k : I) (u : k ⟶ i), ∀ j, ∃ g : ↑(D.map u ⁻¹ᵁ U j) ⟶ X,
       g ≫ f = (D.map u ⁻¹ᵁ U j).ι ≫ t.app k ∧
         ∀ (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j),
@@ -1157,11 +1157,16 @@ private lemma exists_forall_homOfLE_comp_eq_of_isAffineOpen :
     exact ⟨l, v, fun O e₁ e₂ ↦ by
       simpa using
         congr(Scheme.homOfLE _ ((le_inf e₁ e₂).trans_eq (by simp [Hom.preimage_inf])) ≫ $e)⟩
-  exact ⟨l, v ≫ u, fun j ↦ (D.map v).resLE _ (D.map (v ≫ u) ⁻¹ᵁ U j) (by simp) ≫ g j,
-    fun j ↦ by simp [hg, hnat], fun j ↦ by simpa using hg' j _ (by simp),
-    fun j₁ j₂ ↦ by simpa using hl j₁ j₂ _ (by simp) (by simp)⟩
+  -- We may glue the morphisms into `Dₗ ⟶ X` and verify that it indeed satisfies the hypothesis.
+  have h𝒲 := (hcov.preimage (D.map u)).preimage (D.map v)
+  obtain ⟨F, hF⟩ := exists_ι_comp_eq_of_isOpenCover h𝒲 (fun j ↦ (D.map v).resLE _ _ le_rfl ≫ g j)
+    fun j₁ j₂ ↦ by simpa using hl j₁ j₂ _ inf_le_left inf_le_right
+  refine ⟨l, F, hom_ext_of_isOpenCover (h𝒲.preimage (c.π.app l)) _ _ fun j ↦ ?_,
+    hom_ext_of_isOpenCover h𝒲 _ _ fun j ↦ ?_⟩
+  · rw [← Hom.resLE_comp_ι_assoc (c.π.app l) le_rfl, hF]
+    simpa using hg' j _ (by simp)
+  · simp [reassoc_of% hF, hg]
 
-open TopologicalSpace in
 include hc ha in
 /--
 Given a cofiltered diagram of qcqs schemes `Dᵢ` over `S` with affine transition maps.
@@ -1175,19 +1180,10 @@ lemma exists_π_app_comp_eq_of_locallyOfFinitePresentation [∀ i, CompactSpace 
   have h𝒰 := (isBasis_affineOpens_le_preimage a
     (isBasis_affineOpens_le_preimage f S.isBasis_affineOpens)).isOpenCover
   obtain ⟨i, s, 𝒱, h𝒱, h𝒱𝒰⟩ := exists_isOpenCover_and_isAffine D c hc _ h𝒰 fun U ↦ U.2.1
-  -- Each `𝒱 j` factors after passing to some `l`, compatibly on overlaps.
-  obtain ⟨l, u, g, hg, hπg, hglue⟩ := exists_forall_homOfLE_comp_eq_of_isAffineOpen D t f c hc a ha
-    (fun j ↦ (h𝒱𝒰 j).1) fun j ↦ by
+  exact exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffineOpen D t f c hc a ha
+    (fun j ↦ (h𝒱𝒰 j).1) h𝒱 fun j ↦ by
       obtain ⟨-, V, ⟨hV, W, hW, hVW⟩, hUV⟩ := j.1.2
       exact ⟨⟨V, hV⟩, ⟨W, hW⟩, (h𝒱𝒰 j).2 ▸ hUV, hVW⟩
-  -- We may glue the morphisms into `Dₗ ⟶ X` and verify that it indeed satisfies the hypothesis.
-  have h𝒲 : IsOpenCover (D.map u ⁻¹ᵁ 𝒱 ·) := h𝒱.preimage (D.map u)
-  obtain ⟨F, hF⟩ := exists_ι_comp_eq_of_isOpenCover h𝒲 g hglue
-  refine ⟨l, F, hom_ext_of_isOpenCover (h𝒲.preimage (c.π.app l)) _ _ fun j ↦ ?_,
-    hom_ext_of_isOpenCover h𝒲 _ _ fun j ↦ ?_⟩
-  · rw [← Hom.resLE_comp_ι_assoc (c.π.app l) le_rfl, hF]
-    exact hπg j
-  · simp [reassoc_of% hF, hg]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
