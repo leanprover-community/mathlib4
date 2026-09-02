@@ -286,7 +286,7 @@ end IsConcreteLE
 @[deprecated (since := "2026-09-01")]
 alias SetLike.not_le_iff_exists := IsConcreteLE.not_le_iff_exists
 @[deprecated (since := "2026-09-01")]
-alias IsConcreteLE.lt_iff_le_and_exists := IsConcreteLE.lt_iff_le_and_exists
+alias SetLike.lt_iff_le_and_exists := IsConcreteLE.lt_iff_le_and_exists
 @[deprecated (since := "2026-09-01")]
 alias SetLike.exists_of_lt := IsConcreteLE.exists_of_lt
 
