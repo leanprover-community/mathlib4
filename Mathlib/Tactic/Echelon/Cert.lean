@@ -27,7 +27,10 @@ proofs of the individual entries supplied by a leaf normaliser.
 ## Implementation notes
 
 The elimination records its echelon form `U`, making the product a certificate obligation
-of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`.
+of its own, `L * A.submatrix σ id = U`, decided separately from the pivot condition on `U`.
+Stating it against the submatrix rather than against a literal of the permuted rows costs
+nothing, as the recorded entries carry the row order, and it saves the row arrangement its
+own obligation.
 
 At a concrete pair of indices a product entry reduces to the fold of its terms, so
 `mkProductEq` states each cell in that shape and leaves it to the leaf normaliser rather
@@ -145,23 +148,42 @@ satisfies is refuted, an entry that the elimination emitted as zero is closed by
 a nonzero entry is left to `leaf`. A statement of none of these shapes, such as the pivot
 function's monotonicity, mentions no entry and is decided in the kernel. -/
 partial def proveCell (leaf : LeafProver) (ents : EntryLookup) (path : Array Nat)
-    (goal : Expr) : MetaM Expr := do
+    (goal : Q(Prop)) : MetaM Expr := do
   let g ← whnfR goal
-  if let some (a, b) := g.and? then
-    return ← mkAppM ``And.intro #[← proveCell leaf ents path a, ← proveCell leaf ents path b]
-  -- `e ≠ 0`, in either spelling: the entry is nonzero
-  let negated? : Option Expr :=
-    match g.ne? with
-    | some (_, _, rhs) => some rhs
-    | none => (g.not?.bind (·.eq?)).map (·.2.2)
-  if let some rhs := negated? then
+  -- the entry the elimination emitted at `path` is nonzero
+  let nonzero (rhs : Expr) : MetaM Expr := do
     let (b, prf) ← leaf (← mkEq (← ents path) rhs)
     if b then throwError "the entry at {path} was expected to be nonzero"
     return prf
+  -- no entry of ours occurs: decide it, and only then unfold and try again
+  let byKernel : MetaM Expr := do
+    try
+      certifyCondition "a condition on the pivot function" g
+    catch e =>
+      let some g' ← unfoldDefinition? g
+        | throwError "cannot verify the rank certificate:{indentExpr g}\
+            \nis neither decidable nor reducible:{indentD e.toMessageData}"
+      proveCell leaf ents path g'
   match g with
+  | .app (.app (.const ``And _) a) b =>
+    mkAppM ``And.intro #[← proveCell leaf ents path a, ← proveCell leaf ents path b]
+  -- `whnfR` has unfolded any `Ne` to this shape
+  | .app (.const ``Not _) (.app (.app (.app (.const ``Eq _) _) _) rhs) => nonzero rhs
+  | .app (.app (.app (.const ``Eq _) ty) lhs) rhs =>
+    if ← isDefEq lhs rhs then
+      mkEqRefl lhs
+    else
+      -- an equality of functions, a matrix among them: `funext` once and continue
+      -- pointwise, which keeps the obligations as coarse as they can be
+      match ← whnf ty with
+      | .forallE nm dom _ bi =>
+        let pointwise ← withLocalDecl nm bi dom fun x => do
+          mkForallFVars #[x] (← mkEq (← mkAppM' lhs #[x]) (← mkAppM' rhs #[x]))
+        mkAppM ``funext #[← proveCell leaf ents path pointwise]
+      | _ => byKernel
   | .forallE nm dom body bi =>
-    if dom.isAppOfArity ``Fin 1 then
-      if let some k ← getNatValue? (← whnfR dom.appArg!) then
+    if let .app (.const ``Fin _) card := dom then
+      if let some k ← getNatValue? (← whnfR card) then
         return ← mkListForall k (.lam nm dom body bi) fun i gi =>
           proveCell leaf ents (path.push i) gi
     if let some ref ← refuteGuard? dom then
@@ -171,28 +193,7 @@ partial def proveCell (leaf : LeafProver) (ents : EntryLookup) (path : Array Nat
     else
       withLocalDecl nm bi dom fun h => do
         mkLambdaFVars #[h] (← proveCell leaf ents path (body.instantiate1 h))
-  | _ =>
-    if let some (_, lhs, rhs) := g.eq? then
-      if ← isDefEq lhs rhs then
-        return ← mkEqRefl lhs
-    -- no entry of ours occurs: decide it, and only then unfold and try again
-    try
-      certifyCondition "a condition on the pivot function" g
-    catch e =>
-      let some g' ← unfoldDefinition? g
-        | throwError "cannot verify the rank certificate:{indentExpr g}\
-            \nis neither decidable nor reducible:{indentD e.toMessageData}"
-      proveCell leaf ents path g'
-
-/-- Prove the row arrangement `A.submatrix σ id = Aσ` entrywise: at concrete indices both
-sides reduce to the same entry of `A`, so every cell is closed by `rfl`. -/
-def mkPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m) (Fin $n) $α))
-    (σ : Q(Equiv.Perm (Fin $m))) (leaf : LeafProver) :
-    MetaM Q(($A).submatrix $σ id = $Aσ) := do
-  let noEntries : EntryLookup := fun p =>
-    throwError "the row arrangement is not entrywise definitional at {p}"
-  mkAppM ``Matrix.ext
-    #[← proveCell leaf noEntries #[] q(∀ i j, ($A).submatrix $σ id i j = $Aσ i j)]
+  | _ => byKernel
 
 /-- Prove the product `L * Aσ = U` entrywise from the recorded entries `lEntries`,
 `aEntries` and `uEntries`. At concrete indices the product reduces to the fold of its
@@ -233,19 +234,14 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
   -- reduce a matrix literal at a concrete index, so no entry would be recognised as zero
   have L := mkMatrixLit α m m data.L
   have U := mkMatrixLit α m n data.U
-  -- the row of `A_σ = A.submatrix σ id` at position `i` is the row of `A` at `σ i`
+  -- the row of `A_σ` at position `i` is the row of `A` at `σ i`
   let aEntries := data.rowOrder.map (entries[·]!)
-  have Aσ := mkMatrixLit α m n aEntries
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
   match leaf? with
   | none =>
-    have hperm : Q(($A).submatrix $σ id = $Aσ) :=
-      ← certifyCondition "the row arrangement" q(($A).submatrix $σ id = $Aσ)
-    -- TODO: switch to a dedicated matrix multiplication tactic once implemented
-    have hprod : Q($L * $Aσ = $U) :=
-      ← certifyCondition "the product of the transform" q($L * $Aσ = $U)
-    have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
+    have hU : Q($L * ($A).submatrix $σ id = $U) :=
+      ← certifyCondition "the product of the transform" q($L * ($A).submatrix $σ id = $U)
     let hpivot ← certifyCondition "the echelon-pivot condition" q(($U).IsPivotedBy $pivot)
     let hlower ← certifyCondition "lower triangularity of the transform"
       q(($L).IsLowerTriangular)
@@ -253,10 +249,8 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
       q(∀ i, ($L).diag i ≠ 0)
     return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
   | some leaf =>
-    have hperm : Q(($A).submatrix $σ id = $Aσ) := ← mkPermEq A Aσ σ leaf
-    have hprod : Q($L * $Aσ = $U) :=
-      ← mkProductEq _cr L Aσ U data.L aEntries data.U leaf
-    have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
+    have hU : Q($L * ($A).submatrix $σ id = $U) :=
+      ← mkProductEq _cr L q(($A).submatrix $σ id) U data.L aEntries data.U leaf
     let uEnts : EntryLookup := fun p => return (data.U[p[0]!]!)[p[1]!]!
     let lEnts : EntryLookup := fun p => return (data.L[p[0]!]!)[p[1]!]!
     let diagEnts : EntryLookup := fun p => return (data.L[p[0]!]!)[p[0]!]!
