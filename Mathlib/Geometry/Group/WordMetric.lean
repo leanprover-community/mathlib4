@@ -38,7 +38,7 @@ family given by `Group.Generators`. The word length defines a norm on `G` induci
   element has at least one word representing it. It uses `@[no_expose]` as it has no useful defeqs.
 
 ## TODO
-* Bridge the word metric to the distance in the Cayley graph.
+* Relate the word metric to the distance in the Cayley graph.
 
 ## Tags
 
