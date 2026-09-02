@@ -140,7 +140,7 @@ namespace CategoryOfElements
 variable (F : C ⥤ Type w)
 
 /-- The functor out of the category of elements which forgets the element. -/
-@[simps]
+@[implicit_reducible, simps]
 def π : F.Elements ⥤ C where
   obj X := X.1
   map f := f.val
@@ -158,7 +158,7 @@ instance : (π F).ReflectsIsomorphisms where
 
 /-- A natural transformation between functors induces a functor between the categories of elements.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements where
   obj t := ⟨t.1, α.app t.1 t.2⟩
   map {t₁ t₂} k := ⟨k.1, by simpa [map_snd] using (NatTrans.naturality_apply α k.1 t₁.2).symm⟩
@@ -211,7 +211,6 @@ def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F where
 
 open Opposite
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forward direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.
 -/
@@ -284,7 +283,6 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
   Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
 @[simps]

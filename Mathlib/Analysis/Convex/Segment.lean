@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
 
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # Segments in vector spaces
@@ -95,8 +94,6 @@ theorem openSegment_subset_iff :
 
 end SMul
 
-open Convex
-
 section MulActionWithZero
 
 variable (𝕜)
@@ -167,7 +164,7 @@ end Module
 
 end OrderedSemiring
 
-open Convex
+open scoped Convex
 
 section OrderedRing
 
@@ -216,24 +213,20 @@ theorem openSegment_eq_image' (x y : E) :
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
-set_option backward.isDefEq.respectTransparency false in
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
     AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
   convert segment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
   convert openSegment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
     AffineMap.lineMap a b t ∈ openSegment 𝕜 a b :=
   openSegment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem lineMap_mem_segment (a b : E) {t : 𝕜} (ht : t ∈ Icc 0 1) :
     AffineMap.lineMap a b t ∈ [a -[𝕜] b] :=
   segment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
@@ -421,7 +414,6 @@ theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (
 
 open AffineMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `z = lineMap x y c` is a point on the line passing through `x` and `y`, then the open
 segment `openSegment 𝕜 x y` is included in the union of the open segments `openSegment 𝕜 x z`,
 `openSegment 𝕜 z y`, and the point `z`. Informally, `(x, y) ⊆ {z} ∪ (x, z) ∪ (z, y)`. -/
@@ -608,22 +600,22 @@ end LinearOrderedField
 
 namespace Nonneg
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y z : 𝕜}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y : 𝕜}
 
-protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
-    Icc x y ⊆ segment {t : 𝕜 // 0 ≤ t} x y := by
+protected lemma Icc_subset_segment {x y : Nonneg 𝕜} :
+    Icc x y ⊆ segment (Nonneg 𝕜) x y := by
   intro a ⟨hxa, hay⟩
   rw [← Subtype.coe_le_coe] at hxa hay
   rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
   refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le, zero_le, ?_, ?_⟩ <;>
   ext <;> simpa
 
-protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :
-    segment {t : 𝕜 // 0 ≤ t} x y = Icc x y := by
+protected lemma segment_eq_Icc {x y : Nonneg 𝕜} (hxy : x ≤ y) :
+    segment (Nonneg 𝕜) x y = Icc x y := by
   refine subset_antisymm (segment_subset_Icc hxy) Nonneg.Icc_subset_segment
 
-protected lemma segment_eq_uIcc {x y : {t : 𝕜 // 0 ≤ t}} :
-    segment {t : 𝕜 // 0 ≤ t} x y = uIcc x y := by
+protected lemma segment_eq_uIcc {x y : Nonneg 𝕜} :
+    segment (Nonneg 𝕜) x y = uIcc x y := by
   rcases le_total x y with h | h
   · simp [h, Nonneg.segment_eq_Icc]
   · simp [h, segment_symm _ x y, Nonneg.segment_eq_Icc]

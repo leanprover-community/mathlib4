@@ -12,7 +12,7 @@ public import Mathlib.Topology.MetricSpace.Basic
 
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Analysis.MeanInequalities
-import Mathlib.Data.ENNReal.BigOperators
+import Mathlib.Basic.ENNReal.BigOperators
 import Mathlib.Tactic.Positivity.Finset
 
 /-!
