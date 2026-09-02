@@ -76,23 +76,20 @@ protected theorem mul (hf : Introspective f e r) (hg : Introspective g e r) :
   simp [mul_pow]
 
 /-- The product of coprime exponents is Introspective. -/
-theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h : e.Coprime r) :
-    Introspective f (e * d) r := by
-  by_cases hr : r = 0
-  · grind
-  · simp only [Introspective.iff_dvd] at hg
-    simp only [Introspective] at *
-    set I := AdjoinRoot.mk ((X : R[X]) ^ r - 1)
-    have ⟨w, hw⟩ := hg
-    have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
-    simp only [sub_comp, pow_comp, mul_comp, X_comp, one_comp, comp_assoc] at hw2
-    obtain ⟨z, hz⟩ : (X : R[X]) ^ r - 1 ∣ (X ^ e) ^ r - 1 := by
-      rw [pow_right_comm]
-      exact sub_one_dvd_pow_sub_one (X ^ r) e
-    have h : I ((f ^ e) ^ d) = I ((f.comp (X ^ e)) ^ d) := congrArg₂ HPow.hPow hf (Eq.refl d)
-    simp only [pow_mul, h, pow_mul, I, AdjoinRoot.mk_eq_mk]
-    use z * w.comp (X ^ e)
-    grind
+theorem mul' (hf : Introspective f e r) (hg : Introspective f d r) : Introspective f (e * d) r := by
+  simp only [Introspective.iff_dvd] at hg
+  simp only [Introspective] at *
+  set I := AdjoinRoot.mk ((X : R[X]) ^ r - 1)
+  have ⟨w, hw⟩ := hg
+  have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
+  simp only [sub_comp, pow_comp, mul_comp, X_comp, one_comp, comp_assoc] at hw2
+  obtain ⟨z, hz⟩ : (X : R[X]) ^ r - 1 ∣ (X ^ e) ^ r - 1 := by
+    rw [pow_right_comm]
+    exact sub_one_dvd_pow_sub_one (X ^ r) e
+  have h : I ((f ^ e) ^ d) = I ((f.comp (X ^ e)) ^ d) := congrArg₂ HPow.hPow hf (Eq.refl d)
+  simp only [pow_mul, h, pow_mul, I, AdjoinRoot.mk_eq_mk]
+  use z * w.comp (X ^ e)
+  grind
 
 end CommRing
 
@@ -156,7 +153,7 @@ protected theorem div (h : Introspective (X - C (a : R)) n r)
     (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective (X - C (a : R)) (n / p) r := by
   grind [of_mul, Nat.div_mul_cancel hd]
 
-/-- Necessary condition for the auxilliary proof. -/
+/-- Necessary condition for the auxilliary proof. TODO: Find right generality of `Fin b` -/
 theorem of_multiset (s : Multiset (Fin b)) (hcprm : n.Coprime r)
     (hs : ∀ x : Fin b, Introspective (ofMultiset {(x.val : R)}) n r) (hdiv : p ∣ n) :
     Introspective (ofMultiset (s.map fun x ↦ (x.val : R))) (p ^ d * (n / p) ^ e) r := by
@@ -168,17 +165,17 @@ theorem of_multiset (s : Multiset (Fin b)) (hcprm : n.Coprime r)
     simp only [Multiset.map_cons, Multiset.prod_cons]
     refine Introspective.mul ?_ h1
     clear h1
-    refine mul_of_coprime ?_ ?_ (by grind [Coprime.pow_left])
+    refine mul' ?_ ?_
     · induction d with
       | zero => simp
       | succ i hi =>
         simp only [map_natCast, pow_succ, mul_comm]
-        exact mul_of_coprime Introspective.X_sub_C hi hcprm2
+        exact mul' Introspective.X_sub_C hi
     · induction e with
       | zero => simp
       | succ i hi =>
         simp only [pow_succ, mul_comm]
-        refine mul_of_coprime ?_ hi (by grind [Coprime.coprime_div_left])
+        refine mul' ?_ hi
         have hsx := hs x
         simp only [ofMultiset_apply, Multiset.map_singleton, Multiset.prod_singleton] at hsx
         exact Introspective.div hsx hdiv hcprm2
