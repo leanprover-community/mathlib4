@@ -150,14 +150,6 @@ lemma IsCadlag.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : 
     IsCadlag (c • f) :=
   hf.continuous_comp (g := (c • ·)) (continuous_const_smul c)
 
-lemma IsCadlag.norm {κ F : Type*} [TopologicalSpace κ] [NormedAddCommGroup F] [Preorder κ]
-    {f : κ → F} (hf : IsCadlag f) : IsCadlag (fun i ↦ ‖f i‖) :=
-  hf.continuous_comp continuous_norm
-
-lemma IsCadlag.norm_sq {κ F : Type*} [TopologicalSpace κ] [NormedAddCommGroup F] [Preorder κ]
-    {f : κ → F} (hf : IsCadlag f) : IsCadlag (fun i ↦ ‖f i‖ ^ 2) :=
-  hf.norm.continuous_comp (continuous_pow 2)
-
 end Basic
 
 section PseudoMetricSpace
