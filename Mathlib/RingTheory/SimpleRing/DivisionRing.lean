@@ -29,7 +29,7 @@ Noncommutative algebra, simple module, division ring
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

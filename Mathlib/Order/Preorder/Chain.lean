@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Set.Notation
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Data.SetLike.Basic
@@ -58,7 +59,7 @@ def SuperChain (s t : Set α) : Prop :=
 def IsMaxChain (s : Set α) : Prop :=
   IsChain r s ∧ ∀ ⦃t⦄, IsChain r t → s ⊆ t → s = t
 
-variable {r} {c c₁ c₂ s t : Set α} {a b x y : α}
+variable {r} {c s t : Set α} {a b x y : α}
 
 @[simp] lemma IsChain.empty : IsChain r ∅ := pairwise_empty _
 @[simp] lemma IsChain.singleton : IsChain r {a} := pairwise_singleton ..
@@ -149,17 +150,9 @@ theorem IsChain.image [FunLike F α β] [RelHomClass F r r'] (hs : IsChain r s) 
     IsChain r' (φ '' s) :=
   hs.image_of_map_rel _ _ _ (fun _ _ h ↦ map_rel φ h)
 
-@[deprecated IsChain.image (since := "2026-02-26")]
-theorem IsChain.image_relEmbedding (hs : IsChain r s) (φ : r ↪r r') : IsChain r' (φ '' s) :=
-  hs.image _
-
 theorem IsChain.preimage_relEmbedding {t : Set β} (ht : IsChain r' t) (φ : r ↪r r') :
     IsChain r (φ ⁻¹' t) :=
   ht.preimage _ _ _ φ.injective (fun _ _ h ↦ φ.map_rel_iff.mp h)
-
-@[deprecated IsChain.image (since := "2026-02-26")]
-theorem IsChain.image_relIso (hs : IsChain r s) (φ : r ≃r r') : IsChain r' (φ '' s) :=
-  hs.image φ.toRelEmbedding
 
 theorem IsChain.preimage_relIso {t : Set β} (hs : IsChain r' t) (φ : r ≃r r') :
     IsChain r (φ ⁻¹' t) :=
@@ -171,11 +164,6 @@ theorem IsChain.image_relEmbedding_iff {φ : r ↪r r'} : IsChain r' (φ '' s) �
 theorem IsChain.image_relIso_iff {φ : r ≃r r'} : IsChain r' (φ '' s) ↔ IsChain r s :=
   @image_relEmbedding_iff _ _ _ _ _ (φ : r ↪r r')
 
-@[deprecated IsChain.image (since := "2026-02-26")]
-theorem IsChain.image_embedding [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ↪o β) :
-    IsChain (· ≤ ·) (φ '' s) :=
-  image hs _
-
 theorem IsChain.preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ ·) t) (φ : α ↪o β) :
     IsChain (· ≤ ·) (φ ⁻¹' t) :=
   preimage_relEmbedding ht _
@@ -183,11 +171,6 @@ theorem IsChain.preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsChain (�
 theorem IsChain.image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
     IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
   image_relEmbedding_iff
-
-@[deprecated IsChain.image (since := "2026-02-26")]
-theorem IsChain.image_iso [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ≃o β) :
-    IsChain (· ≤ ·) (φ '' s) :=
-  image hs _
 
 theorem IsChain.image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
     IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
@@ -263,6 +246,12 @@ theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
 theorem IsMaxChain.not_superChain (h : IsMaxChain r s) : ¬SuperChain r s t := fun ht =>
   ht.2.ne <| h.2 ht.1 ht.2.1
 
+theorem maximal_isChain_iff : Maximal (IsChain r) s ↔ IsMaxChain r s where
+  mp h := ⟨h.prop, fun _ ht hst ↦ hst.antisymm <| h.le_of_ge ht hst⟩
+  mpr h := ⟨h.isChain, fun _ ht hst ↦ h.right ht hst |>.ge⟩
+
+alias ⟨_, IsMaxChain.maximal_isChain⟩ := maximal_isChain_iff
+
 theorem IsMaxChain.bot_mem [LE α] [OrderBot α] (h : IsMaxChain (· ≤ ·) s) : ⊥ ∈ s :=
   (h.2 (h.1.insert fun _ _ _ => Or.inl bot_le) <| subset_insert _ _).symm ▸ mem_insert _ _
 
@@ -292,19 +281,21 @@ theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
 open scoped Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/
-def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then h.choose else s
 
 theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
     SuperChain r s (SuccChain r s) := by
   have : IsChain r s ∧ SuperChain r s h.choose := h.choose_spec
-  simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
+  simpa [SuccChain, dite_eq_left, exists_and_left.mp h] using this.2
 
 theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) := by
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).1
   else
     rw [exists_and_left] at h
-    simpa [SuccChain, dif_neg, h] using hs
+    simpa [SuccChain, dite_eq_right, h] using hs
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
@@ -316,6 +307,10 @@ theorem subset_succChain : s ⊆ SuccChain r s := by
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).2.1
   else
     simp [SuccChain, h]
+
+theorem List.IsChain.isChain_setOfPred_mem [IsTrans α r] {l : List α} (h : l.IsChain r) :
+    _root_.IsChain r {a | a ∈ l} :=
+  h.pairwise.imp Relation.SymmGen.of_rel |>.set_pairwise
 
 end Chain
 
