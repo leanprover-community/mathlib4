@@ -337,6 +337,32 @@ theorem tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 
     (m : Π i, E i) : (∑' a, p a) m = ∑' a, p a m :=
   (hasSum_eval hp.hasSum m).tsum_eq.symm
 
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+  [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+
+/-- An equivalence of the index set defines an equivalence between the spaces of continuous
+multilinear maps. This is the forward map of this equivalence, as a continuous linear map. -/
+def domDomCongrL {ι' : Type*} (e : ι ≃ ι') :
+    ContinuousMultilinearMap 𝕜 (fun _ : ι => F) G →L[𝕜]
+      ContinuousMultilinearMap 𝕜 (fun _ : ι' => F) G :=
+  letI aux : ContinuousMultilinearMap 𝕜 (fun _ : ι => F) G →ₗ[𝕜]
+      ContinuousMultilinearMap 𝕜 (fun _ : ι' => F) G :=
+    { toFun := domDomCongr e
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl }
+  { toLinearMap := aux
+    cont := by
+      apply continuous_of_tendsto_nhds_zero aux
+      rw [ContinuousMultilinearMap.hasBasis_nhds_zero.tendsto_iff
+        ContinuousMultilinearMap.hasBasis_nhds_zero]
+      rintro ⟨S, V⟩ ⟨hS, hV⟩
+      refine ⟨((fun v : ι' → F ↦ v ∘ e) '' S, V), ⟨?_, hV⟩, fun g hg v hv ↦ hg ⟨v, hv, rfl⟩⟩
+      rw [isVonNBounded_pi_iff] at hS ⊢
+      intro i
+      have : eval i '' ((fun v ↦ v ∘ e) '' S) = eval (e i) '' S := by simp [Set.image_image, eval]
+      rw [this]
+      exact hS (e i) }
+
 end ContinuousMultilinearMap
 
 namespace ContinuousLinearMap
