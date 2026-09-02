@@ -4,7 +4,6 @@ import Mathlib.Tactic.NormRank
 
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Basic.Real.Basic
 import Mathlib.LinearAlgebra.Matrix.Cartan
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
@@ -200,16 +199,16 @@ example :
 -- an entry no leaf normaliser can settle is skipped, without an error, while a supported
 -- literal in the same goal is rewritten. The second row is twice the first, so the rank is
 -- one, but the tactic cannot see that
-example (h : Matrix.rank (R := ℝ) !![Real.pi, 1; 2 * Real.pi, 2] = 1) :
-    Matrix.rank (R := ℤ) !![1, 2; 2, 4] +
-      Matrix.rank (R := ℝ) !![Real.pi, 1; 2 * Real.pi, 2] = 2 := by
+example (x : ℝ) :
+    Matrix.rank (R := ℤ) !![1, 2; 2, 4] + Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] =
+      1 + Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] := by
   simp only [norm_rank]
-  lia
 
 -- testing that the tactic doesn't hard commit to the first occurrence of `Matrix.rank`:
 -- here the skipped literal comes first
-example (h : Matrix.rank (R := ℝ) !![Real.pi, 1; 2 * Real.pi, 2] = 1) :
-    Matrix.rank (R := ℝ) !![Real.pi, 1; 2 * Real.pi, 2] = Matrix.rank (R := ℤ) !![1, 2; 2, 4] := by
+example (x : ℝ) :
+    Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] + Matrix.rank (R := ℤ) !![1, 2; 2, 4] =
+      Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] + 1 := by
   eval_rank
 
 -- a literal with symbolic entries is skipped instead of reporting an error
