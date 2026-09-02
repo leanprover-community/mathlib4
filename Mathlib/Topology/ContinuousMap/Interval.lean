@@ -16,7 +16,9 @@ In this file we prove a few results about `ContinuousMap` when the domain is an 
 
 @[expose] public section
 
-open Set ContinuousMap Filter Topology
+open Set ContinuousMap Filter
+
+open scoped Topology
 
 namespace ContinuousMap
 
@@ -47,7 +49,6 @@ theorem IccExtendCM_of_mem {f : C(Icc a b, E)} {x : α} (hx : x ∈ Icc a b) :
     IccExtendCM f x = f ⟨x, hx⟩ := by
   simp [IccExtendCM, projIccCM, projIcc, hx.1, hx.2]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The concatenation of two continuous maps defined on adjacent intervals. If the values of the
 functions on the common bound do not agree, this is defined as an arbitrarily chosen constant
 map. See `concatCM` for the corresponding map on the subtype of compatible function pairs. -/
