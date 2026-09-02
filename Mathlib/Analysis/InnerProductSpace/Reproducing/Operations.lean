@@ -39,6 +39,7 @@ variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [Complete
 variable [RKHS 𝕜 H X V]
 variable (c : 𝕜)
 
+/-- The operator `f ↦ c • ↑f`, where scalar multiplication is in `X → V`. -/
 def generator : H →L[𝕜] (X → V) := c • coeCLM 𝕜
 
 variable {H} in
