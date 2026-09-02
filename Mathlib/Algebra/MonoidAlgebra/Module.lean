@@ -65,13 +65,13 @@ variable [Semiring R] [Semiring S] [Module R S] {s t : Set M} {x : S[M]}
 @[to_additive (dont_translate := R)]
 instance : Module R S[M] := fast_instance% coeffAddEquiv.module _
 
-@[to_additive (dont_translate := R)]
+@[to_additive]
 instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
   coeffAddEquiv.moduleIsTorsionFree _
 
 variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
-@[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
+@[to_additive (attr := simps! apply symm_apply)
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/]
 def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffAddEquiv.linearEquiv _
 
