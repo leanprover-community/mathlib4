@@ -40,19 +40,6 @@ public section
 
 namespace Polynomial.Gal
 
-noncomputable def rootsEquivRoots' {F : Type*} [Field F] (p : F[X])
-    (E E' : Type*) [Field E] [Field E'] [Algebra F E] [Algebra F E']
-    [Fact (map (algebraMap F E) p).Splits] [Fact (map (algebraMap F E') p).Splits] :
-    p.rootSet E ≃ p.rootSet E' :=
-  (rootsEquivRoots p E).symm.trans (rootsEquivRoots p E')
-
-theorem smul_rootsEquivRoots' {F : Type*} [Field F] (p : F[X])
-    (E E' : Type*) [Field E] [Field E'] [Algebra F E] [Algebra F E']
-    [Fact (map (algebraMap F E) p).Splits] [Fact (map (algebraMap F E') p).Splits]
-    (g : p.Gal) (x : p.rootSet E) :
-    g • rootsEquivRoots' p E E' x = rootsEquivRoots' p E E' (g • x) := by
-  simp [rootsEquivRoots', smul_def]
-
 end Polynomial.Gal
 
 namespace Polynomial
@@ -213,13 +200,13 @@ theorem tada' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₀' : f₀.Monic)
     rw [mem_rootSet, and_iff_right hf₀.ne_zero]
     simpa using (foo y f₀).symm.trans h0
   let e₀ : f₀.rootSet R ≃ f.rootSet K := Equiv.ofBijective hφ.restrict hφ2
-  let e₁ : f₀.rootSet R ≃ f.rootSet K := e₀.trans (Gal.rootsEquivRoots f K)
+  let e₁ : f₀.rootSet R ≃ f.rootSet K := e₀.trans (Gal.rootsEquivRootsAux f K)
   have he₁ (g : G) (x : f₀.rootSet R) : e₁ (g • x) = g • e₁ x := by
-    erw [Gal.smul_def f K g ((Gal.rootsEquivRoots f K) (e₀ x)), symm_apply_apply]
+    erw [Gal.smul_def f K g ((Gal.rootsEquivRootsAux f K) (e₀ x)), symm_apply_apply]
     rfl
-  let e₂ : f.rootSet K ≃ f.rootSet ℂ := Gal.rootsEquivRoots' f K ℂ
+  let e₂ : f.rootSet K ≃ f.rootSet ℂ := Gal.rootsEquivRoots f K ℂ
   have he₂ (g : G) (x : f.rootSet K) : e₂ (g • x) = g • e₂ x :=
-    (Gal.smul_rootsEquivRoots' f K ℂ g x).symm
+    (Gal.smul_rootsEquivRoots f K ℂ g x).symm
   let e : f₀.rootSet R ≃ f.rootSet ℂ := e₁.trans e₂
   have he (g : G) (x : f₀.rootSet R) : e (g • x) = g • e x := by
     simp [e, he₁, he₂]
