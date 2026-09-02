@@ -174,8 +174,9 @@ instance : Compl (Digraph V) where
     Adj v w := v ∈ G.verts ∧ w ∈ G.verts ∧ ¬G.Adj v w
   }
 
-@[simp] theorem compl_adj (G : Digraph V) (v w : V) (hv : v ∈ G.verts) (hw : w ∈ G.verts) :
-  Gᶜ.Adj v w ↔ ¬G.Adj v w := ⟨fun h => h.2.2, fun h => ⟨hv, hw, h⟩⟩
+@[simp] theorem compl_adj (G : Digraph V) (v w : V) (hv : v ∈ G.verts)
+    (hw : w ∈ G.verts) : Gᶜ.Adj v w ↔ ¬G.Adj v w :=
+  ⟨fun h => h.2.2, fun h => ⟨hv, hw, h⟩⟩
 
 /-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
 instance sdiff : SDiff (Digraph V) where
@@ -241,6 +242,7 @@ instance {G : Digraph V} : PartialOrder G.SpanningSubgraph where
   le_antisymm H K hHK hKH := by
     apply Subtype.ext
     exact le_antisymm hHK hKH
+
 
 
 /-- The adjacency relation of a spanning subgraph, restricted to the edges of the ambient
