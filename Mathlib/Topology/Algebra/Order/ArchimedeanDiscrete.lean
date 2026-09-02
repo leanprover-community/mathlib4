@@ -7,7 +7,7 @@ module
 
 public import Mathlib.GroupTheory.ArchimedeanDensely
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Order.DenselyOrdered
 
@@ -70,7 +70,7 @@ lemma discrete_iff_cyclic {H : Subgroup G} : IsCyclic H ↔ DiscreteTopology H :
     refine fun hA ↦ this.elim (fun h ↦ ?_) id
     -- remains to show a contradiction assuming `H` is both dense and discrete
     obtain rfl : H = ⊤ := by
-      rw [← coe_eq_univ, ← (dense_iff_closure_eq.mp h), H.isClosed_of_discrete.closure_eq]
+      rw [← coe_eq_univ, ← (dense_iff_closure_eq.mp h), H.isClosed_of_discreteTopology.closure_eq]
     have : DiscreteTopology G := by rwa [← (Homeomorph.Set.univ G).discreteTopology_iff]
     exact isCyclic_iff_exists_zpowers_eq_top.mp inferInstance
 
