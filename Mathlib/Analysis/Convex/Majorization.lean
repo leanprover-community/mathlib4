@@ -88,16 +88,7 @@ variable {n : ℕ} {α : Type*} [LinearOrder α] (f : Fin n → α)
 variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [IsOrderedAddMonoid M]
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
-/-! ### Sorting into decreasing order and partial sums -/
-
-/-- A permutation that sorts `f` into decreasing (antitone) order. -/
-def sortDesc : Equiv.Perm (Fin n) :=
-  Tuple.sort (toDual ∘ f)
-
-lemma antitone_comp_sortDesc : Antitone (f ∘ sortDesc f) := by
-  have hmono : Monotone ((toDual ∘ f) ∘ Tuple.sort (toDual ∘ f)) := Tuple.monotone_sort _
-  rw [Function.comp_assoc] at hmono
-  exact monotone_toDual_comp_iff.mp hmono
+/-! ### Descending prefix sums -/
 
 /-- The `i`-th descending prefix sum of `a`: the sum of its `i` largest coordinates, obtained as the
 prefix sum of `a` after sorting into decreasing order. -/
@@ -145,19 +136,11 @@ omit [LinearOrder M] [IsOrderedAddMonoid M] in
 private lemma sum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} :
     ∑ x, (a ∘ σ) x = ∑ x, a x := Equiv.sum_comp σ a
 
-private lemma comp_perm_comp_sortDesc {σ : Equiv.Perm (Fin n)} :
-    (f ∘ σ) ∘ (sortDesc (f ∘ ⇑σ)) = f ∘ (sortDesc f) := by
-  have hcomp : f ∘ (σ * sortDesc (f ∘ σ)) = f ∘ (sortDesc f) :=
-    Tuple.unique_antitone
-      (by rw [Equiv.Perm.coe_mul, ← Function.comp_assoc]; exact antitone_comp_sortDesc (f ∘ ⇑σ))
-      (antitone_comp_sortDesc f)
-  rwa [Equiv.Perm.coe_mul, ← Function.comp_assoc] at hcomp
-
 omit [IsOrderedAddMonoid M] in
 private lemma descPrefixSum_comp_perm {a : Fin n → M} {σ : Equiv.Perm (Fin n)} {i : Fin n} :
     descPrefixSum i (a ∘ σ) = descPrefixSum i a := by
   unfold descPrefixSum
-  rw [comp_perm_comp_sortDesc]
+  rw [Tuple.comp_perm_comp_sortDesc_eq_comp_sortDesc]
 
 omit [IsOrderedAddMonoid M] in
 private lemma comp_perm_majorizesFin_iff {a b : Fin n → M} {σ : Equiv.Perm (Fin n)} :
@@ -308,7 +291,7 @@ private lemma subset_sum_le_sum_greatest {n} {a : Fin n → M} {i : Fin n} {t : 
     have ht_image : t = image sortA preimg := by
       rw [Finset.image_image, Equiv.self_comp_symm, Finset.image_id]
     rw [ht_image, Finset.sum_image hinj]
-    exact sum_le_sum_Iio_of_antitone (antitone_comp_sortDesc a) (hcard.trans hs)
+    exact sum_le_sum_Iio_of_antitone (Tuple.antitone_sortDesc a) (hcard.trans hs)
 
 omit [IsOrderedAddMonoid M] in
 private lemma sum_image_sortDesc_Iio {n} {a : Fin n → M} {i : Fin n} {t : Finset (Fin n)}
@@ -544,7 +527,7 @@ omit [IsStrictOrderedRing K] in
 private lemma descPrefixSum_eq_of_antitone {g : Fin n → K} (hg : Antitone g) (j : Fin n) :
     descPrefixSum j g = ∑ x < j, g x := by
   rw [descPrefixSum,
-      sum_Iio_comp_congr_of_antitone (antitone_comp_sortDesc g) (p2 := 1) (by simpa using hg) j]
+      sum_Iio_comp_congr_of_antitone (Tuple.antitone_sortDesc g) (p2 := 1) (by simpa using hg) j]
   simp
 
 /-- The two coordinates chosen by one decomposition step, returned as **data** (not `∃`) together
@@ -883,7 +866,7 @@ private lemma majorizesFin_iff_reflTransGen_relatedByTTransform {a b : Fin n →
   MajorizesFin a b ↔ Relation.ReflTransGen RelatedByTTransform (a ∘ sortDesc a) (b ∘ sortDesc b) :=
     ⟨ by
         have hchain := reflTransGen_relatedByTTransform_of_majorizesFin
-          (antitone_comp_sortDesc a) (antitone_comp_sortDesc b)
+          (Tuple.antitone_sortDesc a) (Tuple.antitone_sortDesc b)
         rw [show (MajorizesFin (a ∘ sortDesc a) (b ∘ sortDesc b)) = (MajorizesFin a b) from
               propext (comp_perm_majorizesFin_iff.trans majorizesFin_comp_perm_iff)] at hchain
         exact hchain
@@ -919,7 +902,7 @@ data. -/
   let maj' : MajorizesFin ((a ∘ e.symm) ∘ sortDesc (a ∘ e.symm))
       ((b ∘ e.symm) ∘ sortDesc (b ∘ e.symm)) :=
     (comp_perm_majorizesFin_iff.trans majorizesFin_comp_perm_iff).mpr maj
-  let r := tStepList (antitone_comp_sortDesc _) (antitone_comp_sortDesc _) maj'
+  let r := tStepList (Tuple.antitone_sortDesc _) (Tuple.antitone_sortDesc _) maj'
   ⟨r.1, r.2.1, r.2.2.1⟩
 
 /-- `∃`-form of `majorizesTStepList`. -/
