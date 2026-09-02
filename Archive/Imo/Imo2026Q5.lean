@@ -3,9 +3,11 @@ Copyright (c) 2026 Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi Yuan
 -/
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.Order.IntermediateValue
+module
+
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.Order.IntermediateValue
 
 /-!
 # IMO 2026 Q5
@@ -39,6 +41,8 @@ positive reals. Since the positive reals are connected, the displacement is cons
 `f x = x + c` with `c ≥ 0`. A direct calculation verifies that every such translation is a
 solution.
 -/
+
+@[expose] public section
 
 namespace Imo2026Q5
 
