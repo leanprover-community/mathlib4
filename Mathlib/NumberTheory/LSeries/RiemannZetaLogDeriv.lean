@@ -42,7 +42,7 @@ theorem logDeriv_riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) (hz :
   have : logDeriv (fun z ↦ cos (π * z / 2)) s = -(π / 2 * tan (π * s / 2)) := by
     simp [logDeriv_apply, (by simpa using ((hasDerivAt_id s).const_mul _).div_const 2 :
       HasDerivAt ((π : ℂ) * · / 2) (π / 2) s).ccos.deriv, tan_eq_sin_div_cos, field]
-  have := ((hasDerivAt_neg' s).const_cpow (Or.inl h2π)).differentiableAt
+  have := (hasDerivAt_neg' s).differentiableAt.const_cpow (Or.inl h2π)
   have : riemannZeta ∘ (1 - ·) =ᶠ[𝓝 s]
       fun z ↦ 2 * (2 * π) ^ (-z) * Gamma z * cos (π * z / 2) * riemannZeta z := by
     filter_upwards [isClosed_range_intCast.isOpen_compl.mem_nhds (by grind)] with z hz
