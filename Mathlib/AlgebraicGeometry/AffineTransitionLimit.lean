@@ -263,9 +263,7 @@ variable [IsCofiltered I]
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and an open `U ⊆ Dᵢ`,
 the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
-noncomputable
-def isLimitOpensCone (i : I) (U : (D.obj i).Opens) :
-    IsLimit (opensCone D c i U) :=
+noncomputable def isLimitOpensCone (i : I) (U : (D.obj i).Opens) : IsLimit (opensCone D c i U) :=
   isLimitOfIsPullbackOfIsConnected (opensDiagramι D i U) _ _
     (by exact { hom := (c.π.app i ⁻¹ᵁ U).ι })
     (fun j ↦ IsOpenImmersion.isPullback _ _ _ _ (by simp) (by simp [← Scheme.Hom.comp_preimage]))
@@ -278,13 +276,12 @@ lemma exists_appTop_π_eq_of_isAffine_of_isLimit [∀ i, IsAffine (D.obj i)] (s 
   exact ⟨_, (Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s).choose_spec⟩
 
-variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I} {U V : (D.obj i).Opens}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
-lemma exists_map_preimage_le_map_preimage
-    {i : I} {U V : (D.obj i).Opens} (hU : IsCompact (U : Set (D.obj i)))
+lemma exists_map_preimage_le_map_preimage (hU : IsCompact (U : Set (D.obj i)))
     (H : c.π.app i ⁻¹ᵁ U ≤ c.π.app i ⁻¹ᵁ V) :
     ∃ (j : I) (fji : j ⟶ i), D.map fji ⁻¹ᵁ U ≤ D.map fji ⁻¹ᵁ V := by
   have (j : Over i) : CompactSpace ↥((opensDiagram D i U).obj j) :=
@@ -303,8 +300,7 @@ lemma exists_map_preimage_le_map_preimage
 
 include hc in
 @[stacks 01Z4 "(2)"]
-lemma exists_map_preimage_eq_map_preimage
-    {i : I} {U V : (D.obj i).Opens} (hU : IsCompact (U : Set (D.obj i)))
+lemma exists_map_preimage_eq_map_preimage (hU : IsCompact (U : Set (D.obj i)))
     (hV : IsCompact (V : Set (D.obj i))) (H : c.π.app i ⁻¹ᵁ U = c.π.app i ⁻¹ᵁ V) :
     ∃ (j : I) (fji : j ⟶ i), D.map fji ⁻¹ᵁ U = D.map fji ⁻¹ᵁ V := by
   obtain ⟨j₁, fj₁i, e₁⟩ := exists_map_preimage_le_map_preimage D c hc hU H.le
@@ -316,8 +312,7 @@ lemma exists_map_preimage_eq_map_preimage
     simpa only [Scheme.Hom.comp_preimage, Functor.map_comp] using Scheme.Hom.preimage_mono _ e₂
 
 include hc in
-lemma exists_appLE_π_eq_of_isAffineOpen {i : I} {U : (D.obj i).Opens} (hU : IsAffineOpen U)
-    (s : Γ(c.pt, c.π.app i ⁻¹ᵁ U)) :
+lemma exists_appLE_π_eq_of_isAffineOpen (hU : IsAffineOpen U) (s : Γ(c.pt, c.π.app i ⁻¹ᵁ U)) :
     ∃ (j : I) (u : j ⟶ i) (t : Γ(D.obj j, D.map u ⁻¹ᵁ U)),
       (c.π.app j).appLE _ _ (π_app_preimage_map_preimage D c u U).ge t = s := by
   have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
@@ -333,9 +328,8 @@ lemma exists_appLE_π_eq_of_isAffineOpen {i : I} {U : (D.obj i).Opens} (hU : IsA
   exact (c.π.app i ⁻¹ᵁ U).topIso.commRingCatIsoToRingEquiv.symm.injective ht
 
 include hc in
-lemma isBasis_preimage_isAffineOpen :
-    TopologicalSpace.Opens.IsBasis
-      { (c.π.app i ⁻¹ᵁ V : c.pt.Opens) | (i : I) (V : (D.obj i).Opens) (_ : IsAffineOpen V) } := by
+lemma isBasis_preimage_isAffineOpen : TopologicalSpace.Opens.IsBasis
+    { (c.π.app i ⁻¹ᵁ V : c.pt.Opens) | (i : I) (V : (D.obj i).Opens) (_ : IsAffineOpen V) } := by
   refine TopologicalSpace.Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_
   obtain ⟨i⟩ := IsCofiltered.nonempty (C := I)
   obtain ⟨_, ⟨V, hV : IsAffineOpen V, rfl⟩, hxV, -⟩ :=
@@ -367,21 +361,18 @@ lemma exists_preimage_eq (U : c.pt.Opens) (hU : IsCompact (U : Set c.pt)) :
   · simp [-TopologicalSpace.Opens.iSup_mk, Scheme.Hom.preimage_iSup,
       ← Scheme.Hom.comp_preimage, c.w, hVi, sSup_eq_iSup']
 
-end Opens
-
 include hc in
-lemma isAffineHom_π_app [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] (i : I) :
-    IsAffineHom (c.π.app i) where
+lemma isAffineHom_π_app (i : I) : IsAffineHom (c.π.app i) where
   isAffine_preimage U hU := have (j : _) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage _
     Scheme.isAffine_of_isLimit _ (isLimitOpensCone D c hc i U)
 
 include hc in
-lemma Scheme.compactSpace_of_isLimit [IsCofiltered I]
-    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ i, CompactSpace (D.obj i)] :
-    CompactSpace c.pt := by
+lemma Scheme.compactSpace_of_isLimit [∀ i, CompactSpace (D.obj i)] : CompactSpace c.pt := by
   obtain ⟨i⟩ := IsCofiltered.nonempty (C := I)
   have := isAffineHom_π_app _ _ hc
   exact QuasiCompact.compactSpace_of_compactSpace (c.π.app i)
+
+end Opens
 
 /-!
 
