@@ -146,7 +146,7 @@ private lemma tendsto_seminorm_truncate_sub (k n) :
           rcases i.eq_zero_or_pos with rfl | _
           · grind [norm_iteratedFDeriv_zero, norm_eq_abs, bumpR_nonneg, bumpR_le_one]
           · suffices iteratedFDeriv ℝ i (bumpR R · - 1) x = iteratedFDeriv ℝ i (bumpR R) x by
-              grw [this, norm_iteratedFDeriv_bumpR_le, pow_le_one₀, hA]
+              grw [this, norm_iteratedFDeriv_bumpR_le, pow_le_one₀]
                 <;> grind [inv_le_one₀, inv_nonneg]
             rw [(by rfl : (bumpR R · - 1) = bumpR R - fun _ ↦ 1), iteratedFDeriv_sub_apply
               ((contDiff_bumpR R).contDiffAt.of_le (mod_cast le_top)) contDiffAt_const,
