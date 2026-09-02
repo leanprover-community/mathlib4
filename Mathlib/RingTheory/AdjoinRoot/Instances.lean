@@ -5,7 +5,6 @@ Authors: metakunt
 -/
 module
 
-
 public import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.FieldTheory.Separable
@@ -21,15 +20,19 @@ public section
 
 namespace AdjoinRoot.Polynomial
 
-open _root_.Polynomial
+open _root_.Polynomial Ideal
 
-variable {r p : ℕ} {R : Type*} [CommRing R] [CharP R p]
+variable {r p : ℕ} {R : Type*} [CommRing R]
+
+theorem spanRadical_iff_isReduced {f : R[X]} : (span {f}).IsRadical ↔ IsReduced (AdjoinRoot f) :=
+    isRadical_iff_quotient_reduced (Ideal.span {f})
+
+variable [CharP R p]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem IsReduced.X_pow_sub_one (hcprm : p.Coprime r) [IsArtinianRing R] [IsReduced R] :
     IsReduced (AdjoinRoot ((X : R[X]) ^ r - 1)) := by
-  simp only [AdjoinRoot, ← Ideal.isRadical_iff_quotient_reduced,
-    (Ideal.isRadical_iff_pow_one_lt 2 (by grind))]
+  simp only [← spanRadical_iff_isReduced, (Ideal.isRadical_iff_pow_one_lt 2 (by grind))]
   intro s hs
   rw [Ideal.mem_span_singleton] at *
   refine (Squarefree.dvd_pow_iff_dvd ?_ (by lia)).mp hs
