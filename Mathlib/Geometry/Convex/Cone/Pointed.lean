@@ -6,6 +6,7 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
@@ -398,7 +399,7 @@ variable {E : Type*} [AddCommGroup E] [Module R E]
 variable {C : PointedCone R E} {x : E}
 
 /-- A cone that is closed under negation forms a submodule. -/
-abbrev toSubmodule (hC : -C = C) : Submodule R E where
+abbrev toSubmodule (hC : IsSelfNeg C) : Submodule R E where
   __ := C
   smul_mem' a x hx := by
     obtain ⟨b, hab, hb⟩ := exists_ge_ge a 0
@@ -407,24 +408,24 @@ abbrev toSubmodule (hC : -C = C) : Submodule R E where
       abel_nf at this
       exact this
     have : -(b - a) • x ∈ C := by
-      rw [← hC]
+      rw [hC.eq_neg]
       simpa [← neg_smul] using smul_mem _ (sub_nonneg.mpr hab) hx
     aesop
 
-@[simp] lemma ofSubmodule_toSubmodule (hC : -C = C) : C.toSubmodule hC = C := rfl
+@[simp] lemma ofSubmodule_toSubmodule (hC : IsSelfNeg C) : C.toSubmodule hC = C := rfl
 
-lemma coe_toSubmodule (hC : -C = C) : (C.toSubmodule hC : Set E) = C := by simp
+lemma coe_toSubmodule (hC : IsSelfNeg C) : (C.toSubmodule hC : Set E) = C := by simp
 
-lemma mem_toSubmodule {hC : -C = C} : x ∈ C.toSubmodule hC ↔ x ∈ C := by simp
+lemma mem_toSubmodule {hC : IsSelfNeg C} : x ∈ C.toSubmodule hC ↔ x ∈ C := by simp
 
-instance : CanLift (PointedCone R E) (Submodule R E) ofSubmodule (fun C => -C = C) where
+instance : CanLift (PointedCone R E) (Submodule R E) ofSubmodule IsSelfNeg where
   prf _ h := ⟨toSubmodule h, ofSubmodule_toSubmodule h⟩
 
 variable (R)
 
 lemma span_eq_hull_neg_sup_hull (s : Set E) : span R s = hull R (-s) ⊔ hull R s := by
   suffices span R s = (hull R (-s) ⊔ hull R s).toSubmodule
-    (by simp [← span_neg_eq_neg, sup_comm]) by simp [this]
+    (by simp [isSelfNeg_iff, ← span_neg_eq_neg, sup_comm]) by simp [this]
   refine span_eq_of_le _ (fun x hx ↦ ?_) ?_
   · simpa using mem_sup_right (Submodule.subset_span hx)
   · rw [← ofSubmodule_le_ofSubmodule]
