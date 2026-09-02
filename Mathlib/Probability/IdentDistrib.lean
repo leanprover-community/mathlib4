@@ -54,7 +54,7 @@ so on.
 public section
 
 
-open MeasureTheory Filter Finset
+open MeasureTheory Filter
 
 noncomputable section
 
@@ -205,8 +205,8 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentD
   by_cases h0 : p = 0
   · simp [h0]
   by_cases h_top : p = ∞
-  · simp only [h_top, eLpNorm, eLpNormEssSup, ENNReal.top_ne_zero, if_true,
-      if_false]
+  · simp only [h_top, eLpNorm, eLpNormEssSup, ENNReal.top_ne_zero, ite_true,
+      ite_false]
     apply essSup_eq
     exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
   simp only [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', one_div]
@@ -292,12 +292,9 @@ end IdentDistrib
 
 section UniformIntegrable
 
-open TopologicalSpace
-
 variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
   {μ : Measure α} [IsFiniteMeasure μ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This lemma is superseded by `MemLp.uniformIntegrable_of_identDistrib` which only requires
 `AEStronglyMeasurable`. -/
 theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
@@ -306,21 +303,21 @@ theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α 
   refine uniformIntegrable_of' hp hp' hfmeas fun ε hε => ?_
   by_cases hι : Nonempty ι
   swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
-  obtain ⟨C, hC₁, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le (hfmeas _) hε
-  refine ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq ?_) hC₂⟩
-  have : {x | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
+  obtain ⟨C, -, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le (hfmeas _) hε
+  refine ⟨C.toNNReal, fun i ↦ le_trans (le_of_eq ?_) hC₂⟩
+  have : {x | C.toNNReal ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
-    simp_rw [← norm_toNNReal]
-    exact Real.le_toNNReal_iff_coe_le (norm_nonneg _)
+    simp_rw [Set.mem_ofPred_eq, Real.toNNReal_le_iff_le_coe, coe_nnnorm]
   rw [this, ← eLpNorm_norm, ← eLpNorm_norm (Set.indicator _ _)]
   simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
-  let F : E → ℝ := (fun x : E => if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then ‖x‖ else 0)
+  let F : E → ℝ := (fun x : E ↦ if C.toNNReal ≤ ‖x‖₊ then ‖x‖ else 0)
   have F_meas : Measurable F := by
     apply measurable_norm.indicator (measurableSet_le measurable_const measurable_nnnorm)
   have : ∀ k, (fun x ↦ Set.indicator {x | C ≤ ‖f k x‖} (fun a ↦ ‖f k a‖) x) = F ∘ f k := by
     intro k
     ext x
-    simp only [Set.indicator, Set.mem_ofPred_eq]; norm_cast
+    simp only [F, Set.indicator, Set.mem_ofPred_eq, Function.comp_apply,
+      Real.toNNReal_le_iff_le_coe, coe_nnnorm]
   rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
     (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 

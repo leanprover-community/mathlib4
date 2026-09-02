@@ -20,7 +20,9 @@ public section
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
   {a : α} {s : Set α}
 
-open Filter Order Set Topology
+open Filter Order Set
+
+open scoped Topology
 
 namespace SuccOrder
 variable [SuccOrder α]
