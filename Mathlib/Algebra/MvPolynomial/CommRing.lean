@@ -66,12 +66,12 @@ theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
 
 @[simp]
 theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : (-p).coeff m = -p.coeff m := by
-  simp [coeff]
+  simp
 
 @[simp, grind =]
 theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) :
     (p - q).coeff m = p.coeff m - q.coeff m := by
-  simp [coeff]
+  simp
 
 @[simp] lemma support_neg : (-p).support = p.support := by ext; simp
 
