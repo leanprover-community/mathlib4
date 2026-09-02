@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
-public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 # Splitting fields
@@ -37,11 +36,11 @@ noncomputable section
 
 universe u v w
 
-variable {F : Type u} {K : Type v} {L : Type w}
+variable {K : Type v} {L : Type w}
 
 namespace Polynomial
 
-variable [Field K] [Field L] [Field F]
+variable [Field K] [Field L]
 
 open Polynomial
 
@@ -66,7 +65,7 @@ attribute [local instance] fact_irreducible_factor
 
 theorem factor_dvd_of_not_isUnit {f : K[X]} (hf1 : ¬IsUnit f) : factor f ∣ f := by
   by_cases hf2 : f = 0; · rw [hf2]; exact dvd_zero _
-  rw [factor, dif_pos (WfDvdMonoid.exists_irreducible_factor hf1 hf2)]
+  rw [factor, dite_eq_left (WfDvdMonoid.exists_irreducible_factor hf1 hf2)]
   exact (Classical.choose_spec <| WfDvdMonoid.exists_irreducible_factor hf1 hf2).2
 
 theorem factor_dvd_of_degree_ne_zero {f : K[X]} (hf : f.degree ≠ 0) : factor f ∣ f :=
@@ -214,7 +213,7 @@ end SplittingFieldAux
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
-deriving Inhabited, CommRing
+deriving Inhabited
 
 namespace SplittingField
 
@@ -222,6 +221,8 @@ variable (f : K[X])
 
 variable {S : Type*} [DistribSMul S K] [IsScalarTower S K K] in
 deriving instance SMul S for SplittingField f
+
+instance : CommRing (SplittingField f) := inferInstanceAs <| CommRing (_ ⧸ _)
 
 variable {R : Type*} [CommSemiring R] [Algebra R K] in
 deriving instance Algebra R, IsScalarTower R K for SplittingField f

@@ -128,6 +128,7 @@ lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk
   rw [one_mul, ← pow_add, tsub_add_cancel_of_le (by linarith), pow_add, hζ.1, mul_one] at h₂
   rw [h₂, e]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A Frobenius element at `Q` restricts to an automorphism of `S_Q`. -/
 noncomputable
 def localize [Q.IsPrime] : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q where
@@ -143,6 +144,7 @@ lemma localize_algebraMap [Q.IsPrime] (x : S) :
 
 open IsLocalRing nonZeroDivisors
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdeal _) := by
   have h : Nat.card (R ⧸ (maximalIdeal _).comap (algebraMap R (Localization.AtPrime Q))) =
       Nat.card (R ⧸ Q.under R) := by

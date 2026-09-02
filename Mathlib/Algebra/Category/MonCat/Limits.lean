@@ -38,7 +38,6 @@ variable {J : Type v} [Category.{w} J] (F : J ⥤ MonCat.{u})
 instance monoidObj (j : J) : Monoid (F.obj j) :=
   inferInstanceAs <| Monoid (F.obj j)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `MonCat` form a submonoid of all sections. -/
 @[to_additive
 /-- The flat sections of a functor into `AddMonCat` form an additive submonoid of all sections. -/]
@@ -53,7 +52,6 @@ instance sectionsMonoid : Monoid (F ⋙ forget MonCat.{u}).sections :=
 
 variable [Small.{u} (Functor.sections (F ⋙ forget MonCat))]
 
-set_option backward.inferInstanceAs.wrap.data false in
 @[to_additive]
 noncomputable instance limitMonoid :
     Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt :=
@@ -180,8 +178,7 @@ noncomputable instance forget_createsLimit :
       simp only [Types.Small.limitCone_pt, Functor.comp_obj, Functor.mapCone_pt,
         Types.Small.limitConeIsLimit_lift, Functor.const_obj_obj, Functor.mapCone_π_app,
         ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, map_mul]
-      congr
-      simp only [Functor.comp_obj, Equiv.symm_apply_apply]
+      rw [← equivShrink_mul]
       rfl
   · exact fun _ ↦ rfl
 
