@@ -322,13 +322,9 @@ protected theorem Summable.add_self_mul_geom_series {x : R} (h : Summable ((· *
 normed ring satisfies the axiom `‖1‖ = 1`. -/
 theorem tsum_iterate_mul_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     ‖∑' n : ℕ, (· * x)^[n] x‖ ≤ ‖x‖ / (1 - ‖x‖) := by
-  by_cases hx : Summable ((· * x)^[·] x)
-  · refine tsum_of_norm_bounded (g := ((· * ‖x‖)^[·] ‖x‖)) ?_ ?_
-    · simp_rw [mul_right_iterate_apply]
-      simpa [div_eq_mul_inv] using (hasSum_geometric_of_lt_one (norm_nonneg x) h).mul_left ‖x‖
-    · simpa [← _root_.mul_right_iterate_apply_self] using norm_iterate_mul_le x
-  · simp only [tsum_eq_zero_of_not_summable hx, norm_zero]
-    positivity [sub_pos.mpr h]
+  refine tsum_of_norm_bounded ?_ (norm_iterate_mul_le x)
+  simpa [_root_.pow_succ', div_eq_mul_inv] using
+    (hasSum_geometric_of_lt_one (norm_nonneg x) h).mul_left _
 
 /-- If `‖x‖ < 1` and `x` lies in a non-unital normed ring, then `∑' n : ℕ, x ^ (n + 1)` is summable
 if and only if `-x` is quasiregular. -/
@@ -364,7 +360,7 @@ theorem summable_iterate_mul_iff_isQuasiregular {x : R} (h : ‖x‖ < 1) :
       exact (norm_mul_le _ _).trans (by gcongr)
 
 /-- A non-unital normed ring `R` has summable geometric series if and only if every element of
-in the unit ball is quasiregular. -/
+in the open unit ball is quasiregular. -/
 theorem hasSummableGeomSeries_iff_isQuasiregular :
     HasSummableGeomSeries R ↔ ∀ ⦃x : R⦄, ‖x‖ < 1 → IsQuasiregular x := by
   rw [neg_involutive.surjective.forall, hasSummableGeomSeries_iff_summable_iterate_mul]
@@ -395,7 +391,7 @@ lemma hasSummableGeomSeries_iff_summable_pow :
 
 alias ⟨_, HasSummableGeomSeries.of_summable_pow⟩ := hasSummableGeomSeries_iff_summable_pow
 
-/-- If `‖x‖ < 1` and `x` lies in a non-unital normed ring, then `∑' n : ℕ, x ^ n` is summable
+/-- If `‖x‖ < 1` and `x` lies in a normed ring, then `∑' n : ℕ, x ^ n` is summable
 if and only if `1 - x` is invertible. -/
 theorem hasSummableGeomSeries_iff_isUnit {R : Type*} [NormedRing R] :
     HasSummableGeomSeries R ↔ ∀ ⦃x : R⦄, ‖x‖ < 1 → IsUnit (1 - x) := by
