@@ -196,7 +196,7 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
       ring
     · rw [dvd_add_left (dvd_mul_of_dvd_right (dvd_pow (by simp [m, minpoly.dvd_iff]) (by simp)) _),
         ← isUnit_iff_dvd_one]
-      exact hm.not_unit
+      exact hm.not_isUnit
   have hm' : derivative m ≠ 0 :=
     (separable_iff_derivative_ne_zero hm.irreducible).mp (IsSeparable.isSeparable ..)
   suffices ¬m ∣ derivative (q.map (algebraMap R _)) by

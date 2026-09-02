@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
-public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 
@@ -81,6 +82,40 @@ lemma nonempty [Nontrivial R] (w : StdSimplex R M) : Nonempty M :=
 
 @[ext] alias ⟨ext, _⟩ := weights_inj
 
+@[simp]
+lemma total_of_fintype [Fintype M] (w : StdSimplex R M) :
+    ∑ i, w.weights i = 1 := by
+  have := w.total
+  rwa [Finsupp.sum_fintype _ _ (by simp)] at this
+
+@[simp]
+lemma total_fin_two (w : StdSimplex R (Fin 2)) :
+    w.weights 0 + w.weights 1 = 1 := by
+  rw [← w.total_of_fintype, Fin.sum_univ_two]
+
+lemma range_toFun_comp_weights [Fintype M] :
+    Set.range (fun t ↦ t.weights : StdSimplex R M → (M → R)) =
+    (⋂ (i : M), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
+  ext s
+  simp only [Set.mem_range, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  refine ⟨?_, ?_⟩
+  · rintro ⟨s, rfl⟩
+    exact ⟨s.weights_nonneg, by simp⟩
+  · rintro ⟨h₁, h₂⟩
+    exact ⟨{
+      weights := equivFunOnFinite.symm s
+      nonneg m := by simpa using h₁ m
+      total := by simpa [Finsupp.sum_fintype] }, by simp⟩
+
+@[simp]
+lemma weights_apply_eq_one [Subsingleton M] (s : StdSimplex R M) (m : M) :
+    s.weights m = 1 := by
+  rw [← s.total, Finsupp.sum_eq_single m
+    (fun _ _ h ↦ (h (by subsingleton)).elim) (by simp)]
+
+instance [Subsingleton M] : Subsingleton (StdSimplex R M) where
+  allEq := by aesop
+
 variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
@@ -101,6 +136,30 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
     congr
     simpa [hwa] using w.total
   mpr := by rintro rfl; simp
+
+lemma single_injective : Function.Injective (single (R := R) (M := M)) :=
+  fun _ _ h ↦ by simpa using congr_arg (Finsupp.support ∘ weights) h
+
+@[simp]
+lemma weights_apply_le_one
+    (s : StdSimplex R M) (m : M) : s.weights m ≤ 1 := by
+  by_cases hm : s.weights m = 0
+  · simpa only [hm] using zero_le_one' R
+  · rw [← s.total]
+    exact Finset.single_le_sum (by simp) (by simpa)
+
+instance [Inhabited M] : Inhabited (StdSimplex R M) where
+  default := .single default
+
+instance [Nonempty M] : Nonempty (StdSimplex R M) :=
+  ⟨.single (Classical.arbitrary _)⟩
+
+instance [Nontrivial M] : Nontrivial (StdSimplex R M) := by
+  obtain ⟨x, y, h⟩ := exists_pair_ne M
+  exact ⟨.single x, .single y, single_injective.ne h⟩
+
+instance [Unique M] : Unique (StdSimplex R M) where
+  uniq := by subsingleton
 
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 @[simps weights]
@@ -136,13 +195,100 @@ lemma map_duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M
 lemma map_id (f : StdSimplex R M) : f.map id = f := by
   ext; simp
 
+lemma map_id' : map (R := R) (id : M → M) = id := by aesop
+
 lemma map_comp (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     f.map (g₂ ∘ g₁) = (f.map g₁).map g₂ := by
-  ext; simp [mapDomain_comp]
+  ext; simp [← mapDomain_comp]
+
+lemma map_comp' (g₁ : M → N) (g₂ : N → P) :
+    map (R := R) (g₂ ∘ g₁) = map g₂ ∘ map g₁ := by
+  ext : 1
+  simp [map_comp]
 
 lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
   (map_comp ..).symm
+
+lemma mem_range_map_iff
+    (f : M → N) (s : StdSimplex R N) :
+    s ∈ Set.range (map f) ↔ ∀ (x : N), x ∉ Set.range f → s.weights x = 0 := by
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨s, rfl⟩
+    intro x hx
+    simpa using Finsupp.mapDomain_of_notMem_range s.weights x hx
+  · have (i : s.weights.support) : ∃ (m : M), f m = i := by grind
+    choose m hm using this
+    refine ⟨{
+      weights := ∑ (y : s.weights.support), .single (m y) (s.weights y)
+      nonneg x := by
+        simp only [Finsupp.coe_finsetSum, Finset.sum_apply,
+          Finsupp.coe_zero, Pi.zero_apply]
+        refine Finset.sum_nonneg' (fun y ↦ ?_)
+        by_cases hy : m y = x
+        · subst hy
+          simp
+        · rw [Finsupp.single_eq_of_ne' hy]
+      total := by
+        rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp), ← s.total]
+        conv_rhs => dsimp [Finsupp.sum]; rw [← Finset.sum_attach]
+        congr
+        ext
+        simp }, ?_⟩
+    ext y
+    by_cases hy : y ∈ s.weights.support
+    · simp only [Finset.univ_eq_attach, weights_map, Finsupp.mapDomain, Finsupp.sum_apply]
+      rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp),
+        Finset.sum_eq_single ⟨y, hy⟩ ?_ (by simp)]
+      · simp [hm]
+      · intro z hz hz'
+        simp only [hm, Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply,
+          Finsupp.sum_single_index]
+        aesop
+    · rw [Finsupp.notMem_support_iff] at hy
+      rw [hy]
+      refine Finsupp.mapDomain_of_not_mem_image_support ?_
+      simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, Finsupp.mem_support_iff,
+        Finsupp.coe_finsetSum, Finset.sum_apply, ne_eq, not_exists, not_and]
+      intro x hx rfl
+      refine hx (Finset.sum_eq_zero (fun z hz ↦ Finsupp.single_eq_of_ne ?_))
+      intro rfl
+      simp only [hm, ← Finsupp.notMem_support_iff] at hy
+      exact hy z.prop
+
+section
+
+variable {R' : Type*} [Ring R'] [PartialOrder R'] [IsStrictOrderedRing R']
+/-- The bijection between the one dimensional standard simplex
+and the interval `[0, 1]`. -/
+@[simps -isSimp]
+def equivIcc : StdSimplex R' (Fin 2) ≃ Set.Icc (0 : R') 1 where
+  toFun s := ⟨s.weights 1, by simp⟩
+  invFun t := duple (s := 1 - t) (t := t) 0 1 (by grind) (by grind) (by simp)
+  left_inv s := by
+    ext i
+    fin_cases i
+    · simp [sub_eq_iff_eq_add]
+    · simp
+  right_inv t := by simp
+
+attribute [local simp] equivIcc_apply_coe
+
+@[simp]
+lemma equivIcc_single_zero : equivIcc (.single (R := R') 0) = 0 := by aesop
+
+@[simp]
+lemma equivIcc_single_one : equivIcc (.single (R := R') 1) = 1 := by aesop
+
+@[simp]
+lemma equivIcc_symm_zero : equivIcc.symm 0 = .single (R := R') 0 :=
+  equivIcc.injective (by simp)
+
+@[simp]
+lemma equivIcc_symm_one : equivIcc.symm 1 = .single (R := R') 1 :=
+  equivIcc.injective (by simp)
+
+end
 
 /--
 Join operation for standard simplices (monadic join).
@@ -289,6 +435,11 @@ instance : ConvexSpace R (StdSimplex R I) where
 lemma map_sConvexComb (s : StdSimplex R (StdSimplex R I)) (f : I → J) :
     s.sConvexComb.map f = (s.map (map f)).sConvexComb :=
   StdSimplex.map_join s f
+
+@[simp]
+lemma iConvexComb_single (x : StdSimplex R I) :
+    x.iConvexComb single = x := by
+  aesop
 
 variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
 
@@ -442,6 +593,15 @@ lemma map_iConvexComb {f : J → K}
     (s : StdSimplex R I) (g : I → StdSimplex R J) :
     (s.iConvexComb g).map f = s.iConvexComb (map f ∘ g) :=
   (isAffineMap_map R f).map_iConvexComb s g
+
+@[simp]
+lemma sConvexComb_map_iConvexComb (f : I → M) (s : StdSimplex R (StdSimplex R I)) :
+    sConvexComb (map (fun s ↦ iConvexComb s f) s) = iConvexComb (sConvexComb s) f :=
+  calc
+    _ = iConvexComb s fun s ↦ sConvexComb (map f s) := sConvexComb_map _ _
+    _ = sConvexComb (map f (sConvexComb s)) := by
+        rw [StdSimplex.map_sConvexComb, sConvexComb_sConvexComb, sConvexComb_map,
+          iConvexComb_map]
 
 end iConvexComb
 
