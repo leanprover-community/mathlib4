@@ -417,25 +417,10 @@ theorem IsLocalMax.deriv_deriv_nonpos
     (hx : IsLocalMax f x₀)
     (hc : ContinuousAt f x₀) :
     deriv (deriv f) x₀ ≤ 0 := by
-  have hfirst : deriv f x₀ = 0 := hx.deriv_eq_zero
-  by_contra h
-  have hpos : 0 < deriv (deriv f) x₀ := lt_of_not_ge h
+  by_contra! h
   have hmin : IsLocalMin f x₀ :=
-    isLocalMin_of_deriv_deriv_pos hpos hfirst hc
-  have hmin_filter : IsMinFilter f (𝓝 x₀) x₀ := hmin
-  have hmax_filter : IsMaxFilter f (𝓝 x₀) x₀ := hx
-  have heq :
-      Filter.EventuallyEq (𝓝 x₀) f (fun _ : ℝ ↦ f x₀) :=
-    eventuallyEq_of_isMinFilter_of_isMaxFilter hmin_filter hmax_filter
-  have hder :
-      Filter.EventuallyEq (𝓝 x₀) (deriv f) (fun _ : ℝ ↦ 0) := by
-    have hlocal := heq.deriv
-    simpa using hlocal
-  have hzero : deriv (deriv f) x₀ = 0 := by
-    have hlocal := hder.deriv_eq
-    simpa using hlocal
-  rw [hzero] at hpos
-  exact (lt_irrefl 0) hpos
+    isLocalMin_of_deriv_deriv_pos h hx.deriv_eq_zero hc
+  simp [eventuallyEq_of_isMinFilter_of_isMaxFilter hmin hx |>.deriv.deriv_eq] at h
 
 /-- If `f` is continuous at a local minimum `x₀`, then
 `deriv (deriv f) x₀` is nonnegative. -/
@@ -443,24 +428,6 @@ theorem IsLocalMin.deriv_deriv_nonneg
     (hx : IsLocalMin f x₀)
     (hc : ContinuousAt f x₀) :
     0 ≤ deriv (deriv f) x₀ := by
-  have hfirst : deriv f x₀ = 0 := hx.deriv_eq_zero
-  by_contra h
-  have hneg : deriv (deriv f) x₀ < 0 := lt_of_not_ge h
-  have hmax : IsLocalMax f x₀ :=
-    isLocalMax_of_deriv_deriv_neg hneg hfirst hc
-  have hmin_filter : IsMinFilter f (𝓝 x₀) x₀ := hx
-  have hmax_filter : IsMaxFilter f (𝓝 x₀) x₀ := hmax
-  have heq :
-      Filter.EventuallyEq (𝓝 x₀) f (fun _ : ℝ ↦ f x₀) :=
-    eventuallyEq_of_isMinFilter_of_isMaxFilter hmin_filter hmax_filter
-  have hder :
-      Filter.EventuallyEq (𝓝 x₀) (deriv f) (fun _ : ℝ ↦ 0) := by
-    have hlocal := heq.deriv
-    simpa using hlocal
-  have hzero : deriv (deriv f) x₀ = 0 := by
-    have hlocal := hder.deriv_eq
-    simpa using hlocal
-  rw [hzero] at hneg
-  exact (lt_irrefl 0) hneg
+  simpa using hx.neg.deriv_deriv_nonpos hc.neg
 
 end SecondDeriv
