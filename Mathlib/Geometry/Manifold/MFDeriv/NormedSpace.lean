@@ -388,7 +388,7 @@ theorem MDifferentiable.continuousAlternatingMapCongr [CharZero 𝕜]
           (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) :=
   fun x ↦ (hf x).continuousAlternatingMapCongr (hg x)
 
-/-- Applying an alternating map to a family of vectors is smooth within a set.
+/-- Applying an alternating map to a family of vectors is differentiable within a set.
 Version in vector spaces. For versions in nontrivial vector bundles, see
 `MDifferentiableWithinAt.continuousAlternatingMap_apply_of_inCoordinates` and
 `MDifferentiableWithinAt.continuousAlternatingMap_bundle_apply`. -/
@@ -403,8 +403,8 @@ theorem MDifferentiableWithinAt.continuousAlternatingMap_apply
     (ContinuousAlternatingMap.cpolynomialAt_apply.contDiffAt.differentiableWithinAt one_ne_zero)
     (hg.prodMk_space (mdifferentiableWithinAt_pi_space.mpr hf)) (by simp)
 
-/-- Applying an alternating map to a family of vectors is smooth. Version in vector spaces. For
-versions in nontrivial vector bundles, see
+/-- Applying an alternating map to a family of vectors is differentiable. Version in vector spaces.
+For versions in nontrivial vector bundles, see
 `MDifferentiableAt.continuousAlternatingMap_apply_of_inCoordinates` and
 `MDifferentiableAt.continuousAlternatingMap_bundle_apply`. -/
 nonrec theorem MDifferentiableAt.continuousAlternatingMap_apply
@@ -427,9 +427,6 @@ theorem MDifferentiable.continuousAlternatingMap_apply
     (hf : ∀ i, MDifferentiable I 𝓘(𝕜, F₁) (f i)) :
     MDifferentiable I 𝓘(𝕜, F₂) (fun x ↦ g x (fun i ↦ f i x)) :=
   fun x ↦ (hg x).continuousAlternatingMap_apply (fun i ↦ (hf i x))
-
-#exit
-
 
 /-! ### Differentiability of scalar multiplication -/
 
