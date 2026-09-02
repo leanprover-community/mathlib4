@@ -203,10 +203,10 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   have hα_ne_zero : α ≠ 0 := fun h ↦ by simp [h, ← hα] at this
   -- As `adjoint y ∘ y` is positive, we then get `0 < α`.
   have hα_nonneg : 0 ≤ α := by
-    have := hα_re.symm ▸ (nonneg_iff_isPositive _ |>.mpr
+    have := hα_re.symm ▸ (nonneg_iff_isPositive |>.mpr
       (hα_re ▸ hα ▸ isPositive_adjoint_comp_self y.toContinuousLinearMap))
     rw [← LinearMap.isPositive_one.isPositive_smul_iff (E := V) (one_ne_zero' (V →ₗ[𝕜] V))]
-    exact (nonneg_iff_isPositive _).mp this
+    exact nonneg_iff_isPositive.mp this
   have hα_pos := RCLike.ofReal_pos.mp <| hα_re ▸ (lt_of_le_of_ne' hα_nonneg hα_ne_zero)
   -- We also get `y ∘ adjoint y = α • id`.
   have h_comp_adjoint : y.toContinuousLinearMap ∘L adjoint y.toContinuousLinearMap =

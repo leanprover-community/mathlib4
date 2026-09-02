@@ -93,9 +93,9 @@ theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
   rw [coeff_trunc]
   split_ifs with h
   · have : d + 1 < n + 1 := succ_lt_succ_iff.2 h
-    rw [coeff_derivative, Polynomial.coeff_derivative, coeff_trunc, if_pos this]
+    rw [coeff_derivative, Polynomial.coeff_derivative, coeff_trunc, ite_eq_left this]
   · have : ¬d + 1 < n + 1 := by rwa [succ_lt_succ_iff]
-    rw [Polynomial.coeff_derivative, coeff_trunc, if_neg this, zero_mul]
+    rw [Polynomial.coeff_derivative, coeff_trunc, ite_eq_right this, zero_mul]
 
 theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
     trunc (n - 1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by
