@@ -96,7 +96,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
       m.degree ((monomial (m.degree f - m.degree b)) (hb.unit⁻¹ * m.leadingCoeff f)) +
         m.degree b := by
     classical
-    rw [degree_monomial, if_neg]
+    rw [degree_monomial, ite_eq_right]
     · ext d
       rw [tsub_add_cancel_of_le hbf]
     · simp only [Units.mul_right_eq_zero, leadingCoeff_eq_zero_iff]
@@ -210,15 +210,15 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       exact bot_le
     · exact (div hb) (m.subLTerm f)
 termination_by WellFounded.wrap
-  ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
+  ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wellFoundedLT_syn) (m.toSyn (m.degree f))
 decreasing_by
-· exact deg_reduce
-· apply degree_sub_LTerm_lt
-  intro hf0
-  apply hf'0
-  simp only [subLTerm, sub_eq_zero]
-  nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
-  simp
+  · exact deg_reduce
+  · apply degree_sub_LTerm_lt
+    intro hf0
+    apply hf'0
+    simp only [subLTerm, sub_eq_zero]
+    nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
+    simp
 
 /-!
 Module doc as workaround for a parser error that prevents using `set_option`

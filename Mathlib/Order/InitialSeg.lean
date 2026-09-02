@@ -64,7 +64,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
 scoped[InitialSeg] infixl:25 " ≼i " => InitialSeg
 
 /-- An `InitialSeg` between the `<` relations of two types. -/
-notation:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
+notation3:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
 
 namespace InitialSeg
 
@@ -73,7 +73,7 @@ instance : Coe (r ≼i s) (r ↪r s) :=
 
 instance : FunLike (r ≼i s) α β where
   coe f := f.toFun
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨f, hf⟩ ⟨g, hg⟩ h
     congr with x
     exact congr_fun h x
@@ -251,7 +251,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
 scoped[InitialSeg] infixl:25 " ≺i " => PrincipalSeg
 
 /-- A `PrincipalSeg` between the `<` relations of two types. -/
-notation:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
+notation3:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
 
 open scoped InitialSeg
 
@@ -457,8 +457,6 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
 abbrev pemptyToPUnit : @emptyRelation PEmpty ≺i @emptyRelation PUnit :=
   (@ofIsEmpty _ _ emptyRelation _ _ PUnit.unit) fun _ => not_false
 
-@[deprecated (since := "2026-02-08")] alias pemptyToPunit := pemptyToPUnit
-
 protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   (f : r ≼i s).acc a
 
@@ -473,7 +471,7 @@ theorem wellFounded_iff_principalSeg {β : Type u} {s : β → β → Prop} [IsT
 
 namespace InitialSeg
 
-open Classical in
+open scoped Classical in
 /-- Every initial segment embedding into a well order can be turned into an isomorphism if
 surjective, or into a principal segment embedding if not. -/
 noncomputable def principalSumRelIso [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) :=
@@ -563,6 +561,13 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
         exact ⟨Sum.inl <| (f.symm.trans g.subrelIso).toInitialSeg⟩
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
           (fun a => _root_.trans (g.lt_top a) h) h).transRelIso f.subrelIso⟩
+
+/-- For any two well orders, one is a principal segment of the other, or they are isomorphic. -/
+noncomputable def PrincipalSeg.trichotomy (r s) [IsWellOrder α r] [IsWellOrder β s] :
+    (r ≺i s) ⊕ (r ≃r s) ⊕ (s ≺i r) :=
+  match InitialSeg.total r s with
+  | .inl f => f.principalSumRelIso.elim .inl (.inr ∘ .inl)
+  | .inr g => g.principalSumRelIso.elim (.inr ∘ .inr) (.inr ∘ .inl ∘ .symm)
 
 /-! ### Initial or principal segments with `<` -/
 

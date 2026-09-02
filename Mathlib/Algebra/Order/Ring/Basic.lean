@@ -18,7 +18,7 @@ public import Mathlib.Tactic.Bound.Attribute
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
 
-open Function Int
+open Function
 
 variable {α M R : Type*}
 
@@ -77,13 +77,20 @@ section LinearOrderedSemiring
 
 section IsOrderedRing
 
-variable [Semiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R] {m n : ℕ}
+variable [Semiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R] {n : ℕ}
 
 protected lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
 
 lemma pow_four_le_pow_two_of_pow_two_le {a b : R} (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left₀ (sq_nonneg a) h 2
+
+lemma pow_add_pow_eq_zero_iff_of_even [NoZeroDivisors R]
+    {n : ℕ} (hn : n ≠ 0) (hn' : Even n) (x y : R) :
+    x ^ n + y ^ n = 0 ↔ x = 0 ∧ y = 0 := by
+  obtain ⟨m, rfl⟩ := hn'
+  simp only [pow_add]
+  grind [mul_self_add_mul_self_eq_zero, pow_eq_zero_iff]
 
 end IsOrderedRing
 
@@ -96,11 +103,10 @@ def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α
 /-!
 ### Lemmas for canonically linear ordered semirings or linear ordered rings
 
-The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
+The slightly unusual typeclass assumptions `[IsStrictOrderedRing R] [ExistsAddOfLE R]` cover two
 more familiar settings:
-* `[LinearOrderedRing R]`, e.g. `ℤ`, `ℚ` or `ℝ`
-* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), e.g. `ℕ`,
-  `ℚ≥0` or `ℝ≥0`
+* linearly ordered rings, e.g. `ℤ`, `ℚ` or `ℝ`
+* canonically ordered semirings, e.g. `ℕ`, `ℚ≥0` or `ℝ≥0`
 -/
 
 variable [ExistsAddOfLE R]

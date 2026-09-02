@@ -5,11 +5,11 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Order.Directed
+public import Mathlib.Data.Set.Lattice.Indexed
 
 /-!
 # Union lift
+
 This file defines `Set.iUnionLift` to glue together functions defined on each of a collection of
 sets to make a function on the Union of those sets.
 

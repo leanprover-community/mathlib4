@@ -82,21 +82,15 @@ def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1} where
 
 namespace CondensedSet
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
+@[simps!]
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
   TopCat.ofHom
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
       rw [continuous_coinduced_dom]
       continuity }
-
-/-- `simp`-normal form of the lemma that `@[simps]` would generate. -/
-@[simp] lemma topCatAdjunctionCounit_hom_apply (X : TopCat) (x) :
-    -- We have to specify here to not infer the `TopologicalSpace` instance on `C(PUnit, X)`,
-    -- which suggests type synonyms are being unfolded too far somewhere.
-    DFunLike.coe (F := @ContinuousMap C(PUnit, X) X (_) _)
-        (TopCat.Hom.hom (topCatAdjunctionCounit X)) x =
-      x PUnit.unit := rfl
 
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
@@ -110,6 +104,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u + 1}) :
     Function.Bijective (topCatAdjunctionCounit X) :=
   (topCatAdjunctionCounitEquiv X).bijective
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
 @[simps hom_app]
 noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
@@ -123,11 +118,12 @@ noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat
         apply continuous_coinduced_rng }
     naturality := fun _ _ _ ↦ by
       ext
-      simp only [TopCat.toSheafCompHausLike_obj_obj, TypeCat.Fun.toFun_apply,
+      simp only [TypeCat.Fun.toFun_apply,
         comp_apply, TopCat.toSheafCompHausLike_obj_map, ConcreteCategory.hom_ofHom,
         TypeCat.Fun.coe_mk, ← Functor.map_comp_apply]
       rfl }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
 noncomputable def topCatAdjunction : condensedSetToTopCat.{u} ⊣ topCatToCondensedSet where

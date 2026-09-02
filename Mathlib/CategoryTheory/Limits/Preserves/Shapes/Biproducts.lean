@@ -51,7 +51,6 @@ section Bicone
 
 variable {J : Type w₁}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of a bicone under a functor. -/
 @[simps]
 def mapBicone {f : J → C} (b : Bicone f) : Bicone (F.obj ∘ f) where
@@ -86,7 +85,7 @@ namespace Limits
 
 section Bicone
 
-variable {J : Type w₁} {K : Type w₂}
+variable {J : Type w₁}
 
 /-- A functor `F` preserves biproducts of `f` if `F` maps every bilimit bicone over `f` to a
 bilimit bicone over `F.obj ∘ f`. -/
@@ -144,7 +143,7 @@ lemma preservesBiproducts_shrink (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 instance (priority := 100) preservesFiniteBiproductsOfPreservesBiproducts (F : C ⥤ D)
     [PreservesZeroMorphisms F] [PreservesBiproducts.{w₁} F] : PreservesFiniteBiproducts F where
-  preserves {J} _ := by letI := preservesBiproducts_shrink.{0} F; infer_instance
+  preserves {J} _ := by let := preservesBiproducts_shrink.{0} F; infer_instance
 
 /-- A functor `F` preserves binary biproducts of `X` and `Y` if `F` maps every bilimit bicone over
 `X` and `Y` to a bilimit bicone over `F.obj X` and `F.obj Y`. -/
@@ -167,6 +166,8 @@ class PreservesBinaryBiproducts (F : C ⥤ D) [PreservesZeroMorphisms F] : Prop 
 
 attribute [inherit_doc PreservesBinaryBiproducts] PreservesBinaryBiproducts.preserves
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
 lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)
     [PreservesZeroMorphisms F] (X Y : C) [PreservesBiproduct (pairFunction X Y) F] :
@@ -228,7 +229,6 @@ theorem ι_biproductComparison' (j : J) :
 
 variable [PreservesZeroMorphisms F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition in the opposite direction is equal to the identity if and only if `F` preserves
 the biproduct, see `preservesBiproduct_of_monoBiproductComparison`. -/
 @[reassoc (attr := simp)]
@@ -386,7 +386,6 @@ theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
   dsimp only [Function.comp_def]
   simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc, ← F.map_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem biproduct.mapBiproduct_hom_desc (g : ∀ j, f j ⟶ W) :
     ((F.mapBiproduct f).hom ≫ biproduct.desc fun j => F.map (g j)) = F.map (biproduct.desc g) := by
   rw [← biproduct.mapBiproduct_inv_map_desc, Iso.hom_inv_id_assoc]
@@ -397,6 +396,7 @@ section BinaryBicone
 
 variable (X Y : C) [HasBinaryBiproduct X Y] [PreservesBinaryBiproduct X Y F] {W : C}
 
+set_option backward.defeqAttrib.useBackward true in
 theorem biprod.map_lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
     F.map (biprod.lift f g) ≫ (F.mapBiprod X Y).hom = biprod.lift (F.map f) (F.map g) := by
   ext <;> simp [mapBiprod, ← F.map_comp]
@@ -405,6 +405,7 @@ theorem biprod.lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
     biprod.lift (F.map f) (F.map g) ≫ (F.mapBiprod X Y).inv = F.map (biprod.lift f g) := by
   rw [← biprod.map_lift_mapBiprod, Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem biprod.mapBiprod_inv_map_desc (f : X ⟶ W) (g : Y ⟶ W) :
     (F.mapBiprod X Y).inv ≫ F.map (biprod.desc f g) = biprod.desc (F.map f) (F.map g) := by
   ext <;> simp [mapBiprod, ← F.map_comp]

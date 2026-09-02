@@ -22,7 +22,9 @@ public section
 
 namespace MeasureTheory
 
-open Set Filter ENNReal Topology NNReal SimpleFunc
+open Set Filter ENNReal NNReal SimpleFunc
+
+open scoped Topology
 
 variable {α β : Type*} {m : MeasurableSpace α} {μ : Measure α}
 
@@ -62,7 +64,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   have mono : ∀ r : ℝ≥0∞, Monotone fun n => rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a } := by
     intro r i j h
     refine inter_subset_inter_right _ ?_
-    simp_rw [subset_def, mem_setOf]
+    simp_rw [subset_def, mem_ofPred]
     intro x hx
     exact le_trans hx (h_mono h x)
   have h_meas : ∀ n, MeasurableSet {a : α | map c rs a ≤ f n a} := fun n =>
@@ -102,7 +104,7 @@ theorem lintegral_iSup' {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, AEMeasurabl
     intro n m hnm x
     by_cases hx : x ∈ aeSeqSet hf p
     · exact aeSeq.prop_of_mem_aeSeqSet hf hx hnm
-    · simp only [aeSeq, hx, if_false, le_rfl]
+    · simp only [aeSeq, hx, ite_false, le_rfl]
   rw [lintegral_congr_ae (aeSeq.iSup hf hp).symm]
   simp_rw [iSup_apply]
   rw [lintegral_iSup (aeSeq.measurable hf p) h_ae_seq_mono]
@@ -131,7 +133,7 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
   let ⟨s, hs⟩ := exists_measurable_superset_of_null (ae_iff.1 (ae_all_iff.2 h_mono))
   let g n a := if a ∈ s then 0 else f n a
   have g_eq_f : ∀ᵐ a ∂μ, ∀ n, g n a = f n a :=
-    (measure_eq_zero_iff_ae_notMem.1 hs.2.2).mono fun a ha n => if_neg ha
+    (measure_eq_zero_iff_ae_notMem.1 hs.2.2).mono fun a ha n => ite_eq_right ha
   calc
     ∫⁻ a, ⨆ n, f n a ∂μ = ∫⁻ a, ⨆ n, g n a ∂μ :=
       lintegral_congr_ae <| g_eq_f.mono fun a ha => by simp only [ha]
@@ -143,7 +145,7 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
   split_ifs with h
   · rfl
   · have := Set.notMem_subset hs.1 h
-    simp only [not_forall, not_le, mem_setOf_eq, not_exists, not_lt] at this
+    simp only [not_forall, not_le, mem_ofPred_eq, not_exists, not_lt] at this
     exact this n
 
 open Encodable in
@@ -187,7 +189,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
         by_cases hx : x ∈ aeSeqSet hf p
         · repeat rw [aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet hf hx]
           apply_rules [hz₁, hz₂]
-        · simp only [aeSeq, hx, if_false]
+        · simp only [aeSeq, hx, ite_false]
           exact le_rfl
   convert! lintegral_iSup_directed_of_measurable (aeSeq.measurable hf p) h_ae_seq_directed using 1
   · simp_rw [← iSup_apply]
@@ -441,12 +443,19 @@ theorem lintegral_mul_const_le (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
 theorem lintegral_mul_const' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :
     ∫⁻ a, f a * r ∂μ = (∫⁻ a, f a ∂μ) * r := by simp_rw [mul_comm, lintegral_const_mul' r f hr]
 
-/- A double integral of a product where each factor contains only one variable
-  is a product of integrals -/
+/-- A double integral of a product where each factor contains only one variable
+is a product of integrals -/
 theorem lintegral_lintegral_mul {β} [MeasurableSpace β] {ν : Measure β} {f : α → ℝ≥0∞}
     {g : β → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
     ∫⁻ x, ∫⁻ y, f x * g y ∂ν ∂μ = (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by
   simp [lintegral_const_mul'' _ hg, lintegral_mul_const'' _ hf]
+
+theorem lintegral_lintegral_mul_le {β} [MeasurableSpace β] {ν : Measure β} (f : α → ℝ≥0∞)
+    (g : β → ℝ≥0∞) :
+    (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν ≤ ∫⁻ x, ∫⁻ y, f x * g y ∂ν ∂μ := by
+  grw [lintegral_mul_const_le]
+  refine lintegral_mono fun a ↦ ?_
+  grw [lintegral_const_mul_le]
 
 end Mul
 

@@ -18,7 +18,7 @@ and proves some properties of it.
 
 @[expose] public section
 
-open Filter Topology
+open Filter
 
 variable {X : Type*} [TopologicalSpace X]
 
@@ -29,7 +29,7 @@ theorem AccPt.map {β : Type*} [TopologicalSpace β] {F : Filter X} {x : X}
   rw [Filter.map_inf hf2]
   gcongr
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf1.continuousWithinAt
-  simpa [hf2.eq_iff] using eventually_mem_nhdsWithin
+  simpa [hf2.eq_iff] using! eventually_mem_nhdsWithin
 
 /--
 The derived set of a set is the set of all accumulation points of it.
@@ -45,6 +45,16 @@ lemma derivedSet_union (A B : Set X) : derivedSet (A ∪ B) = derivedSet A ∪ d
 
 lemma derivedSet_mono (A B : Set X) (h : A ⊆ B) : derivedSet A ⊆ derivedSet B :=
   fun _ hx ↦ hx.mono <| le_principal_iff.mpr <| mem_principal.mpr h
+
+/-- The relative derived set operator viewed as a monotone self-map of `Set X`. -/
+def relDerivedSet : Set X →o Set X where
+  toFun s := derivedSet s ∩ s
+  monotone' s t h := Set.inter_subset_inter (derivedSet_mono s t h) h
+
+@[simp] lemma relDerivedSet_apply (A : Set X) : relDerivedSet A = derivedSet A ∩ A := rfl
+
+lemma relDerivedSet_subset {A : Set X} : relDerivedSet A ⊆ A :=
+  Set.inter_subset_right
 
 theorem Continuous.image_derivedSet {β : Type*} [TopologicalSpace β] {A : Set X} {f : X → β}
     (hf1 : Continuous f) (hf2 : Function.Injective f) :
@@ -67,6 +77,10 @@ lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A �
     have : A = A \ {a} := by simp [nh]
     rw [this, ← accPt_principal_iff_clusterPt] at ha
     exact nh (h ha)
+
+lemma IsClosed.relDerivedSet_eq {A : Set X} (hA : IsClosed A) :
+    relDerivedSet A = derivedSet A := by
+  simpa using (isClosed_iff_derivedSet_subset A).mp hA
 
 lemma closure_eq_self_union_derivedSet (A : Set X) : closure A = A ∪ derivedSet A := by
   ext
@@ -94,6 +108,9 @@ lemma isClosed_derivedSet [T1Space X] (A : Set X) : IsClosed (derivedSet A) := b
 
 lemma preperfect_iff_subset_derivedSet {U : Set X} : Preperfect U ↔ U ⊆ derivedSet U :=
   Iff.rfl
+
+lemma preperfect_iff_eq_relDerivedSet {U : Set X} : Preperfect U ↔ U = relDerivedSet U := by
+  simp [preperfect_iff_subset_derivedSet]
 
 lemma perfect_iff_eq_derivedSet {U : Set X} : Perfect U ↔ U = derivedSet U := by
   rw [perfect_def, isClosed_iff_derivedSet_subset, preperfect_iff_subset_derivedSet,

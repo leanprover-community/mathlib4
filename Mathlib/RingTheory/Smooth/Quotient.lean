@@ -5,8 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.Kaehler.TensorProduct
-public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.RingHom.Smooth
 
@@ -20,8 +18,6 @@ In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism
 -/
 
 public section
-
-open IsLocalRing
 
 variable {R : Type*} [CommRing R]
 
@@ -77,23 +73,24 @@ private lemma mul_le_ker_of_range_le_mul_of_sq_zero {J I : Ideal R} (sq : I ^ 2 
     (le : f.range ≤ (Submodule.comap J.subtype (I * J)).map J.toCotangent) :
     (Submodule.comap J.subtype (I * J)).map J.toCotangent ≤ f.ker := by
   rw [pow_two] at sq
-  have {x : R} (h : x ∈ I * J) : f (J.toCotangent ⟨x, Ideal.mul_le_left h⟩) = 0 := by
+  have {x : R} (h : x ∈ I * J) : f (J.toCotangent ⟨x, Ideal.mul_le_right h⟩) = 0 := by
     induction h using Submodule.mul_induction_on' with
     | mem_mul_mem y hy z hz =>
       rcases Submodule.mem_map.mp (le (f.mem_range_self (J.toCotangent ⟨z, hz⟩))) with ⟨w, hw, eqz⟩
       have mem_bot := Ideal.mul_mem_mul hy (Submodule.mem_comap.mp hw)
       simp only [← mul_assoc, sq, Submodule.bot_mul, Submodule.mem_bot] at mem_bot
       have eq0 : y • w = 0 := SetCoe.ext mem_bot
-      have : ⟨y * z, Ideal.mul_le_left (Submodule.mul_mem_mul hy hz)⟩ = y • (⟨z, hz⟩ : J) := rfl
+      have : ⟨y * z, Ideal.mul_le_right (Submodule.mul_mem_mul hy hz)⟩ = y • (⟨z, hz⟩ : J) := rfl
       rw [this, map_smul, map_smul, ← eqz, ← map_smul, eq0, map_zero]
     | add y ymem z zmem hy hz =>
-      have : (⟨y + z, Ideal.mul_le_left (add_mem ymem zmem)⟩ : J) =
-        ⟨y, Ideal.mul_le_left ymem⟩ + ⟨z, Ideal.mul_le_left zmem⟩ := rfl
+      have : (⟨y + z, Ideal.mul_le_right (add_mem ymem zmem)⟩ : J) =
+        ⟨y, Ideal.mul_le_right ymem⟩ + ⟨z, Ideal.mul_le_right zmem⟩ := rfl
       rw [this, map_add, map_add, hy, hz, add_zero]
   intro x hx
   rcases Submodule.mem_map.mp hx with ⟨x', hx', eq⟩
   simpa [← eq] using this hx'
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For flat ring homomorphism `f : R →+* S`, `I` an ideal of `R` which is square zero,
 if `R ⧸ I →+* S ⧸ IS` is formally smooth, so is `f`. -/
 @[stacks 031L]
@@ -143,8 +140,8 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
     have : x ∈ I • (J.restrictScalars R) := by
       change x ∈ I • (IsScalarTower.toAlgHom R P.Ring S).toLinearMap.ker
       rw [← LinearMap.ker_inf_smul_top_eq_smul_of_flat I _ surjP]
-      simpa using ⟨hx.2, hx.1⟩
-    simpa [← Ideal.smul_restrictScalars I J, Submodule.restrictScalars_mem] using this
+      simpa using! ⟨hx.2, hx.1⟩
+    simpa [← Ideal.smul_restrictScalars I J, Submodule.restrictScalars_mem] using! this
   have h : J'.comap (algebraMap P.Ring P'.Ring) = RingHom.ker (algebraMap P.Ring P'.Ring) ⊔ J :=
     comap_ker_eq_sup_of_ker_eq_map surjP (by simp [kerP, ← ISeq, eqmap, IS, I])
   have Jle : J ≤ J'.comap (algebraMap P.Ring P'.Ring) := le_of_le_of_eq le_sup_right h.symm
@@ -167,7 +164,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
       ⟨(algebraMap P.Ring P'.Ring) y.1, Jle y.2⟩ =
       mapTen ((KaehlerDifferential.kerToTensor R P.Ring S) y) := by
       simp [KaehlerDifferential.kerToTensor, mapTen]
-    simpa [mapcot] using this
+    simpa [mapcot] using! this
   let ediff : Ω[P.Ring⁄R] ≃ₗ[P.Ring] S →₀ P.Ring := KaehlerDifferential.mvPolynomialEquiv R S
   let eTen : TensorProduct P.Ring S Ω[P.Ring⁄R] ≃ₗ[P.Ring] (S →₀ S) :=
     ((ediff.lTensor S).trans (TensorProduct.finsuppRight P.Ring P.Ring _ _ S)).trans
@@ -186,7 +183,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
     simp only [LinearMap.comp_assoc, toJcot, Finsupp.lsum_comp_lsingle]
     rcases Ideal.Quotient.mk_surjective (eS.symm s) with ⟨p, hp⟩
     have (x : J.Cotangent) : mapcot (eS.symm s • x) = p • mapcot x := hp ▸ map_smul mapcot p x
-    have psmul : p • 1 = s := by simpa [Algebra.smul_def, eS] using eS.eq_symm_apply.mp hp
+    have psmul : p • 1 = s := by simpa [Algebra.smul_def, eS] using! eS.eq_symm_apply.mp hp
     simp [this, Classical.choose_spec (cotsurj (toJ'cot (Finsupp.single i 1))), ← map_smul, psmul]
   let σ' := toJcot.comp eTen.toLinearMap
   have σ'_spec' : mapcot.comp σ' = (σ.restrictScalars P.Ring).comp mapTen := by

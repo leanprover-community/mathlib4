@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
-public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 
@@ -81,6 +82,40 @@ lemma nonempty [Nontrivial R] (w : StdSimplex R M) : Nonempty M :=
 
 @[ext] alias ⟨ext, _⟩ := weights_inj
 
+@[simp]
+lemma total_of_fintype [Fintype M] (w : StdSimplex R M) :
+    ∑ i, w.weights i = 1 := by
+  have := w.total
+  rwa [Finsupp.sum_fintype _ _ (by simp)] at this
+
+@[simp]
+lemma total_fin_two (w : StdSimplex R (Fin 2)) :
+    w.weights 0 + w.weights 1 = 1 := by
+  rw [← w.total_of_fintype, Fin.sum_univ_two]
+
+lemma range_toFun_comp_weights [Fintype M] :
+    Set.range (fun t ↦ t.weights : StdSimplex R M → (M → R)) =
+    (⋂ (i : M), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
+  ext s
+  simp only [Set.mem_range, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  refine ⟨?_, ?_⟩
+  · rintro ⟨s, rfl⟩
+    exact ⟨s.weights_nonneg, by simp⟩
+  · rintro ⟨h₁, h₂⟩
+    exact ⟨{
+      weights := equivFunOnFinite.symm s
+      nonneg m := by simpa using h₁ m
+      total := by simpa [Finsupp.sum_fintype] }, by simp⟩
+
+@[simp]
+lemma weights_apply_eq_one [Subsingleton M] (s : StdSimplex R M) (m : M) :
+    s.weights m = 1 := by
+  rw [← s.total, Finsupp.sum_eq_single m
+    (fun _ _ h ↦ (h (by subsingleton)).elim) (by simp)]
+
+instance [Subsingleton M] : Subsingleton (StdSimplex R M) where
+  allEq := by aesop
+
 variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
@@ -94,7 +129,6 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
 
 @[simp] lemma support_weights_eq_singleton : w.weights.support = {x} ↔ w = single x where
   mp := by
-    classical
     rw [support_eq_singleton']
     rintro ⟨a, ha, hwa⟩
     ext : 1
@@ -102,6 +136,30 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
     congr
     simpa [hwa] using w.total
   mpr := by rintro rfl; simp
+
+lemma single_injective : Function.Injective (single (R := R) (M := M)) :=
+  fun _ _ h ↦ by simpa using congr_arg (Finsupp.support ∘ weights) h
+
+@[simp]
+lemma weights_apply_le_one
+    (s : StdSimplex R M) (m : M) : s.weights m ≤ 1 := by
+  by_cases hm : s.weights m = 0
+  · simpa only [hm] using zero_le_one' R
+  · rw [← s.total]
+    exact Finset.single_le_sum (by simp) (by simpa)
+
+instance [Inhabited M] : Inhabited (StdSimplex R M) where
+  default := .single default
+
+instance [Nonempty M] : Nonempty (StdSimplex R M) :=
+  ⟨.single (Classical.arbitrary _)⟩
+
+instance [Nontrivial M] : Nontrivial (StdSimplex R M) := by
+  obtain ⟨x, y, h⟩ := exists_pair_ne M
+  exact ⟨.single x, .single y, single_injective.ne h⟩
+
+instance [Unique M] : Unique (StdSimplex R M) where
+  uniq := by subsingleton
 
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 @[simps weights]
@@ -137,13 +195,100 @@ lemma map_duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M
 lemma map_id (f : StdSimplex R M) : f.map id = f := by
   ext; simp
 
+lemma map_id' : map (R := R) (id : M → M) = id := by aesop
+
 lemma map_comp (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     f.map (g₂ ∘ g₁) = (f.map g₁).map g₂ := by
-  ext; simp [mapDomain_comp]
+  ext; simp [← mapDomain_comp]
+
+lemma map_comp' (g₁ : M → N) (g₂ : N → P) :
+    map (R := R) (g₂ ∘ g₁) = map g₂ ∘ map g₁ := by
+  ext : 1
+  simp [map_comp]
 
 lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
   (map_comp ..).symm
+
+lemma mem_range_map_iff
+    (f : M → N) (s : StdSimplex R N) :
+    s ∈ Set.range (map f) ↔ ∀ (x : N), x ∉ Set.range f → s.weights x = 0 := by
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨s, rfl⟩
+    intro x hx
+    simpa using Finsupp.mapDomain_of_notMem_range s.weights x hx
+  · have (i : s.weights.support) : ∃ (m : M), f m = i := by grind
+    choose m hm using this
+    refine ⟨{
+      weights := ∑ (y : s.weights.support), .single (m y) (s.weights y)
+      nonneg x := by
+        simp only [Finsupp.coe_finsetSum, Finset.sum_apply,
+          Finsupp.coe_zero, Pi.zero_apply]
+        refine Finset.sum_nonneg' (fun y ↦ ?_)
+        by_cases hy : m y = x
+        · subst hy
+          simp
+        · rw [Finsupp.single_eq_of_ne' hy]
+      total := by
+        rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp), ← s.total]
+        conv_rhs => dsimp [Finsupp.sum]; rw [← Finset.sum_attach]
+        congr
+        ext
+        simp }, ?_⟩
+    ext y
+    by_cases hy : y ∈ s.weights.support
+    · simp only [Finset.univ_eq_attach, weights_map, Finsupp.mapDomain, Finsupp.sum_apply]
+      rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp),
+        Finset.sum_eq_single ⟨y, hy⟩ ?_ (by simp)]
+      · simp [hm]
+      · intro z hz hz'
+        simp only [hm, Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply,
+          Finsupp.sum_single_index]
+        aesop
+    · rw [Finsupp.notMem_support_iff] at hy
+      rw [hy]
+      refine Finsupp.mapDomain_of_not_mem_image_support ?_
+      simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, Finsupp.mem_support_iff,
+        Finsupp.coe_finsetSum, Finset.sum_apply, ne_eq, not_exists, not_and]
+      intro x hx rfl
+      refine hx (Finset.sum_eq_zero (fun z hz ↦ Finsupp.single_eq_of_ne ?_))
+      intro rfl
+      simp only [hm, ← Finsupp.notMem_support_iff] at hy
+      exact hy z.prop
+
+section
+
+variable {R' : Type*} [Ring R'] [PartialOrder R'] [IsStrictOrderedRing R']
+/-- The bijection between the one dimensional standard simplex
+and the interval `[0, 1]`. -/
+@[simps -isSimp]
+def equivIcc : StdSimplex R' (Fin 2) ≃ Set.Icc (0 : R') 1 where
+  toFun s := ⟨s.weights 1, by simp⟩
+  invFun t := duple (s := 1 - t) (t := t) 0 1 (by grind) (by grind) (by simp)
+  left_inv s := by
+    ext i
+    fin_cases i
+    · simp [sub_eq_iff_eq_add]
+    · simp
+  right_inv t := by simp
+
+attribute [local simp] equivIcc_apply_coe
+
+@[simp]
+lemma equivIcc_single_zero : equivIcc (.single (R := R') 0) = 0 := by aesop
+
+@[simp]
+lemma equivIcc_single_one : equivIcc (.single (R := R') 1) = 1 := by aesop
+
+@[simp]
+lemma equivIcc_symm_zero : equivIcc.symm 0 = .single (R := R') 0 :=
+  equivIcc.injective (by simp)
+
+@[simp]
+lemma equivIcc_symm_one : equivIcc.symm 1 = .single (R := R') 1 :=
+  equivIcc.injective (by simp)
+
+end
 
 /--
 Join operation for standard simplices (monadic join).
@@ -291,6 +436,11 @@ lemma map_sConvexComb (s : StdSimplex R (StdSimplex R I)) (f : I → J) :
     s.sConvexComb.map f = (s.map (map f)).sConvexComb :=
   StdSimplex.map_join s f
 
+@[simp]
+lemma iConvexComb_single (x : StdSimplex R I) :
+    x.iConvexComb single = x := by
+  aesop
+
 variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
 
 lemma convexCombPair_restrict_restrict_compl (w : StdSimplex K I) (s : Set I) (hs hs')
@@ -339,6 +489,11 @@ lemma IsAffineMap.comp {g : N → P} (hg : IsAffineMap R g) {f : M → N} (hf : 
     IsAffineMap R (g ∘ f) where
   map_sConvexComb s := by
     simp [StdSimplex.map_comp, hf.map_sConvexComb, hg.map_sConvexComb]
+
+@[fun_prop]
+lemma IsAffineMap.const (x : N) :
+    IsAffineMap R (fun (_ : M) ↦ x) where
+  map_sConvexComb _ := by simp
 
 variable (R) in
 @[fun_prop]
@@ -439,6 +594,15 @@ lemma map_iConvexComb {f : J → K}
     (s.iConvexComb g).map f = s.iConvexComb (map f ∘ g) :=
   (isAffineMap_map R f).map_iConvexComb s g
 
+@[simp]
+lemma sConvexComb_map_iConvexComb (f : I → M) (s : StdSimplex R (StdSimplex R I)) :
+    sConvexComb (map (fun s ↦ iConvexComb s f) s) = iConvexComb (sConvexComb s) f :=
+  calc
+    _ = iConvexComb s fun s ↦ sConvexComb (map f s) := sConvexComb_map _ _
+    _ = sConvexComb (map f (sConvexComb s)) := by
+        rw [StdSimplex.map_sConvexComb, sConvexComb_sConvexComb, sConvexComb_map,
+          iConvexComb_map]
+
 end iConvexComb
 
 variable {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1)
@@ -487,6 +651,7 @@ lemma IsAffineMap.map_convexCombPair {f : M → N} (hf : IsAffineMap R f)
     f (convexCombPair s t hs ht h x y) = convexCombPair s t hs ht h (f x) (f y) := by
   simp [hf.map_sConvexComb, convexCombPair]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Flattening with the outer combination specialized to `convexCombPair`. -/
 lemma convexCombPair_iConvexComb_iConvexComb {J₁ : Type u₁} {J₂ : Type u₂}
     (g₁ : StdSimplex R J₁) (g₂ : StdSimplex R J₂)
@@ -527,13 +692,13 @@ lemma convexCombPair_iConvexComb_right (m : M) (g : StdSimplex R J) (e : J → M
 lemma convexCombPair_convexCombPair_left_eq_sConvexComb (m₁ m₂ m₃ : M) :
     convexCombPair s t hs ht h (convexCombPair s' t' hs' ht' h' m₁ m₂) m₃ =
       (convexCombPair s t hs ht h (duple m₁ m₂ hs' ht' h') (single m₃)).sConvexComb := by
-  simpa using convexCombPair_iConvexComb_left hs ht h (.duple m₁ m₂ hs' ht' h') id m₃
+  simpa using! convexCombPair_iConvexComb_left hs ht h (.duple m₁ m₂ hs' ht' h') id m₃
 
 /-- Flattening nested binary convex combination into a single convex combination. -/
 lemma convexCombPair_convexCombPair_right_eq_sConvexComb (m₁ m₂ m₃ : M) :
     convexCombPair s t hs ht h m₁ (convexCombPair s' t' hs' ht' h' m₂ m₃) =
       (convexCombPair s t hs ht h (.single m₁) (duple m₂ m₃ hs' ht' h')).sConvexComb := by
-  simpa using convexCombPair_iConvexComb_right hs ht h m₁ (.duple m₂ m₃ hs' ht' h') id
+  simpa using! convexCombPair_iConvexComb_right hs ht h m₁ (.duple m₂ m₃ hs' ht' h') id
 
 lemma convexCombPair_convexCombPair_assoc_left (H : t * s'' = s * t' * t'') (m₁ m₂ m₃ : M) :
     convexCombPair s t hs ht h (convexCombPair s' t' hs' ht' h' m₁ m₂) m₃ =
@@ -585,7 +750,7 @@ lemma iConvexComb_convexCombPair_comm_right (f : StdSimplex R I) (m : M) (e : I 
 
 lemma isAffineMap_convexCombPair (m : M) :
     IsAffineMap R (convexCombPair s t hs ht h m) :=
-  ⟨fun f ↦ by simpa using (iConvexComb_convexCombPair_comm_right hs ht h f m id).symm⟩
+  ⟨fun f ↦ by simpa using! (iConvexComb_convexCombPair_comm_right hs ht h f m id).symm⟩
 
 end CommSemiring
 

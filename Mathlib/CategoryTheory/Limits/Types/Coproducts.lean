@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -211,8 +211,6 @@ noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
 noncomputable def isInitialPEmpty : IsInitial (PEmpty : Type u) :=
   initialIsInitial.ofIso initialIso
 
-@[deprecated (since := "2026-02-08")] alias isInitialPunit := isInitialPEmpty
-
 /-- An object in `Type u` is initial if and only if it is empty. -/
 lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := by
   constructor
@@ -272,6 +270,7 @@ theorem binaryCoproductIso_inr_comp_inv (X Y : Type u) :
 
 open Function (Injective)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔

@@ -50,7 +50,7 @@ theorem HasStrictFDerivAt.pow' (h : HasStrictFDerivAt f f' x) (n : ℕ) :
     HasStrictFDerivAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x :=
   match n with
-  | 0 => by simpa using hasStrictFDerivAt_const 1 x
+  | 0 => by simpa using! hasStrictFDerivAt_const 1 x
   | 1 => by simpa using h
   | n + 1 + 1 => by
     have := h.mul' (h.pow' (n + 1))
@@ -67,7 +67,7 @@ theorem HasFDerivWithinAt.pow' (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
     HasFDerivWithinAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) s x :=
   match n with
-  | 0 => by simpa using hasFDerivWithinAt_const 1 x s
+  | 0 => by simpa using! hasFDerivWithinAt_const 1 x s
   | 1 => by simpa using h
   | n + 1 + 1 => by
     have := h.mul' (h.pow' (n + 1))
@@ -83,7 +83,7 @@ theorem hasFDerivWithinAt_pow' (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
 theorem HasFDerivAt.pow' (h : HasFDerivAt f f' x) (n : ℕ) :
     HasFDerivAt (f ^ n) (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x :=
   match n with
-  | 0 => by simpa using hasFDerivAt_const 1 x
+  | 0 => by simpa using! hasFDerivAt_const 1 x
   | 1 => by simpa using h
   | n + 1 + 1 => by
     have := h.mul' (h.pow' (n + 1))

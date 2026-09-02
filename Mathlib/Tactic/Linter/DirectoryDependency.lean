@@ -7,9 +7,9 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Lean.Linter.Basic
 public meta import Lean.Elab.AssertExists
 public import Lean.Message
+
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -86,6 +86,9 @@ def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
 
+-- The new behaviour of `inferInstanceAs` from leanprover/lean4#12897 needs to be updated,
+-- to ensure that if we are in a `meta` section then the auxiliary definitions are also `meta`.
+-- Fixed in https://github.com/leanprover/lean4/pull/13043
 instance : EmptyCollection NamePrefixRel := inferInstanceAs (EmptyCollection (NameMap _))
 
 /-- Make all names with prefix `n₁` related to names with prefix `n₂`. -/
@@ -200,12 +203,13 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.Lemma),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.ToAdditive),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic), -- split this up further?
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Basic),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data), -- split this up further?
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Algebra.Notation),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Notation),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Array),
 
-  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Data),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Basic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Logic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
@@ -214,6 +218,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Logic),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Trans),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Init),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Basic),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Data),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
@@ -224,12 +229,15 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.ContextInfo),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Elab.Tactic.Meta),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr.Basic),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Elab.InfoTree),
 
   (`Mathlib.Logic, `Batteries),
+  (`Mathlib.Logic, `Mathlib.Basic),
   -- TODO: should the next import direction be flipped?
   (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
@@ -255,13 +263,14 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
 
   (`Mathlib.Testing, `Batteries),
   -- TODO: this next import should be eliminated.
-  (`Mathlib.Testing, `Mathlib.GroupTheory),
-  (`Mathlib.Testing, `Mathlib.Control),
   (`Mathlib.Testing, `Mathlib.Algebra),
+  (`Mathlib.Testing, `Mathlib.Basic),
+  (`Mathlib.Testing, `Mathlib.Control),
   (`Mathlib.Testing, `Mathlib.Data),
+  (`Mathlib.Testing, `Mathlib.GroupTheory),
+  (`Mathlib.Testing, `Mathlib.Lean),
   (`Mathlib.Testing, `Mathlib.Logic),
   (`Mathlib.Testing, `Mathlib.Order),
-  (`Mathlib.Testing, `Mathlib.Lean),
   (`Mathlib.Testing, `Mathlib.Tactic),
   (`Mathlib.Testing, `Mathlib.Util),
 ]
@@ -278,6 +287,11 @@ outside `Mathlib/Algebra/Notation.lean`.
 def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra),
   (`Mathlib, `Mathlib.Deprecated),
+  -- Files in `Wanted` look like theorems but have no proofs (`proof_wanted`), so importing them
+  -- is banned everywhere: they may import from `Mathlib`, never the other way around.
+  (`Mathlib, `Wanted),
+  (`Archive, `Wanted),
+  (`Counterexamples, `Wanted),
 
   -- This is used to test the linter.
   (`MathlibTest.Header, `Mathlib.Deprecated),
@@ -326,6 +340,20 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Analysis, `Mathlib.RepresentationTheory),
   (`Mathlib.Analysis, `Mathlib.Testing),
   (`Mathlib.Analysis.Calculus, `Mathlib.AlgebraicTopology),
+  (`Mathlib.Basic, `Mathlib.AlgebraicGeometry),
+  (`Mathlib.Basic, `Mathlib.AlgebraicTopology),
+  (`Mathlib.Basic, `Mathlib.Analysis),
+  (`Mathlib.Basic, `Mathlib.Computability),
+  (`Mathlib.Basic, `Mathlib.Condensed),
+  (`Mathlib.Basic, `Mathlib.FieldTheory),
+  (`Mathlib.Basic, `Mathlib.Geometry.Euclidean),
+  (`Mathlib.Basic, `Mathlib.Geometry.Group),
+  (`Mathlib.Basic, `Mathlib.Geometry.Manifold),
+  (`Mathlib.Basic, `Mathlib.Geometry.RingedSpace),
+  (`Mathlib.Basic, `Mathlib.InformationTheory),
+  (`Mathlib.Basic, `Mathlib.ModelTheory),
+  (`Mathlib.Basic, `Mathlib.RepresentationTheory),
+  (`Mathlib.Basic, `Mathlib.Testing),
   (`Mathlib.CategoryTheory, `Mathlib.AlgebraicGeometry),
   (`Mathlib.CategoryTheory, `Mathlib.Analysis),
   (`Mathlib.CategoryTheory, `Mathlib.Computability),
@@ -346,9 +374,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Combinatorics, `Mathlib.Geometry.Manifold),
   (`Mathlib.Combinatorics, `Mathlib.Geometry.RingedSpace),
   (`Mathlib.Combinatorics, `Mathlib.InformationTheory),
-  (`Mathlib.Combinatorics, `Mathlib.MeasureTheory),
   (`Mathlib.Combinatorics, `Mathlib.ModelTheory),
-  (`Mathlib.Combinatorics, `Mathlib.Probability),
   (`Mathlib.Combinatorics, `Mathlib.RepresentationTheory),
   (`Mathlib.Combinatorics, `Mathlib.Testing),
   (`Mathlib.Computability, `Mathlib.AlgebraicGeometry),
@@ -610,7 +636,15 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Analysis.Convex.SimplicialComplex.Basic, `Mathlib.AlgebraicTopology),
   (`Mathlib.Analysis.Convex.SimplicialComplex.AffineIndependentUnion, `Mathlib.AlgebraicTopology),
   (`Mathlib.Probability.Kernel.Category, `Mathlib.CategoryTheory), -- For the category of s-finite/Markov kernels
-  (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology) -- For continuous representations
+  (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology), -- For continuous representations
+  (`Mathlib.RepresentationTheory.Homological.ContCohomology, `Mathlib.Topology),  -- For continuous cohomology
+  -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
+  (`Mathlib.Algebra.Order.Archimedean.Real, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Star.CHSH, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Order.Star.Real, `Mathlib.Analysis),
+  (`Mathlib.Topology.ContinuousMap.ContinuousSqrt, `Mathlib.Algebra.Order),
+  (`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus, `Mathlib.Algebra.Order),
+  (`Mathlib.Algebra.Order.Ring.StandardPart, `Mathlib.Analysis),
 ]
 
 end DirectoryDependency
@@ -619,7 +653,7 @@ open DirectoryDependency
 
 /-- Check if one of the imports `imports` to `mainModule` is forbidden by `forbiddenImportDirs`;
 if so, return an error describing how the import transitively arises. -/
-private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
+def checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
   match forbiddenImportDirs.findAny mainModule imports with
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
@@ -655,7 +689,7 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
     -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
-      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames, `Mathlib.Tactic.Linter.DeprecatedModule]
+      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
     let exclude := [
       `Init, `Std, `Lean,
       `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient

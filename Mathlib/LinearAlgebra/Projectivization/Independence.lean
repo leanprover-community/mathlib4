@@ -25,7 +25,6 @@ ambient vector space. Similarly for the definition of dependence.
 
 ## Future Work
 
-- Define collinearity in projective space.
 - Prove the axioms of a projective geometry are satisfied by the dependence relation.
 - Define projective linear subspaces.
 -/

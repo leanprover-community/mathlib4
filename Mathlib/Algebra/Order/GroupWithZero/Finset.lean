@@ -6,7 +6,7 @@ Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
@@ -70,7 +70,7 @@ end GroupWithZero
 lemma sup_div₀ [LinearOrderedCommGroupWithZero G₀] {a : G₀} (ha : 0 ≤ a)
     (s : Finset ι) (f : ι → G₀) : s.sup f / a = s.sup fun i ↦ f i / a := by
   obtain rfl | hs := s.eq_empty_or_nonempty
-  · simp [← show (0 : G₀) = ⊥ from bot_unique zero_le']
+  · simp [bot_eq_zero]
   rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs, sup'_div₀ (ha := ha)]
 
 end Finset

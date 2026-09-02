@@ -25,7 +25,9 @@ of length `n`.
 
 universe v u
 
-open CategoryTheory Opposite Simplicial SimplexCategory
+open CategoryTheory Opposite SimplexCategory
+
+open scoped Simplicial
 
 namespace SSet
 namespace Truncated
@@ -302,9 +304,9 @@ lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
     X.spine m (X.δ 0 x) = (X.spine (m + 1) x).interval 1 m := by
   obtain _ | m := m
   · ext
-    simp [spine, Path.vertex, Truncated.Path.vertex, SimplicialObject.truncation,
-      Truncated.spine, Path.interval, Truncated.Path.interval, Truncated.inclusion,
-      Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const, ← SimplicialObject.δ_def]
+    simp [spine, Path.vertex, Truncated.Path.vertex,
+      Truncated.spine, Path.interval, Truncated.Path.interval,
+      Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const]
     rfl
   · ext i
     dsimp

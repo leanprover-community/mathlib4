@@ -24,7 +24,7 @@ We also develop basic API about these equivalences.
 @[expose] public section
 
 open scoped NNReal ENNReal
-open Function Set Filter Bornology
+open Function Filter Bornology
 open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
@@ -86,6 +86,12 @@ theorem symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) �
 
 @[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
 @[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
+
+theorem symm_apply_eq (e : X ≃ᵈ Y) {x : X} {y : Y} : e.symm y = x ↔ y = e x :=
+  Equiv.symm_apply_eq _
+
+theorem eq_symm_apply (e : X ≃ᵈ Y) {x : X} {y : Y} : x = e.symm y ↔ e x = y :=
+  Equiv.eq_symm_apply _
 
 /-- See Note [custom simps projection]. -/
 def Simps.symm_apply (e : X ≃ᵈ Y) : Y → X := e.symm
@@ -184,7 +190,7 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
 -- of `DilationEquivClass` assuming `IsometryEquivClass`.
 /-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/
 def _root_.IsometryEquiv.toDilationEquiv (e : X ≃ᵢ Y) : X ≃ᵈ Y where
-  edist_eq' := ⟨1, one_ne_zero, by simpa using e.isometry⟩
+  edist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
   __ := e.toEquiv
 
 @[simp]
