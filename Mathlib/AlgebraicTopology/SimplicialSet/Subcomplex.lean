@@ -67,6 +67,10 @@ abbrev ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subfunctor.ι A
 instance (A : X.Subcomplex) : Mono A.ι :=
   inferInstanceAs (Mono (Subfunctor.ι A))
 
+@[ext]
+lemma hom_ext {A : X.Subcomplex} {f g : Y ⟶ A} (h : f ≫ A.ι = g ≫ A.ι) : f = g := by
+  simpa only [cancel_mono] using h
+
 section
 
 variable {S₁ S₂ : X.Subcomplex} (h : S₁ ≤ S₂)
@@ -205,7 +209,7 @@ instance [Mono f] : IsIso (toRange f) :=
 lemma range_eq_top_iff : Subcomplex.range f = ⊤ ↔ Epi f := by
   rw [NatTrans.epi_iff_epi_app, Subfunctor.ext_iff, funext_iff]
   simp only [epi_iff_surjective, Subfunctor.range_obj, Subfunctor.top_obj,
-    Set.top_eq_univ, Set.range_eq_univ]
+    Set.range_eq_univ]
 
 lemma range_eq_top [Epi f] : Subcomplex.range f = ⊤ := by
   rwa [range_eq_top_iff]
