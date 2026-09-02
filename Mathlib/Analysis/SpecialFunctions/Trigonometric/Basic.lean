@@ -863,7 +863,7 @@ end CosDivSq
 
 /-- `Real.sin` as an `OrderIso` between `[-(π / 2), π / 2]` and `[-1, 1]`. -/
 def sinOrderIso : Icc (-(π / 2)) (π / 2) ≃o Icc (-1 : ℝ) 1 :=
-  (strictMonoOn_sin.orderIso _ _).trans <| OrderIso.Set.congr _ _ bijOn_sin.image_eq
+  (strictMonoOn_sin.orderIso _ _).trans <| Set.orderIsoOfEq _ _ bijOn_sin.image_eq
 
 @[simp]
 theorem coe_sinOrderIso_apply (x : Icc (-(π / 2)) (π / 2)) : (sinOrderIso x : ℝ) = sin x :=

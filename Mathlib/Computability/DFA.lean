@@ -5,8 +5,8 @@ Authors: Fox Thomson, Chris Wong, Rudy Peterson
 -/
 module
 
+public import Mathlib.Basic.Countable.Small
 public import Mathlib.Computability.Language
-public import Mathlib.Data.Countable.Small
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Tactic.NormNum
