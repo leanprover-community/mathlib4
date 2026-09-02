@@ -658,7 +658,9 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     MetaM (ConstantInfo × Option RelevantArg) :=
   -- Set `Elab.async` to `false` so that we can catch kernel errors.
   withOptions (Elab.async.set · false) do
-  let decl ← withExporting (isExporting := (← getEnv).hasExposedBody srcDecl.name) do←
+  -- Expose the target body when source body is exposed
+  let exposeBody := (← getEnv).hasExposedBody srcDecl.name
+  let decl ← withExporting (isExporting := exposeBody) do←
     if let some unfoldBoundaries := t.unfoldBoundaries? then
       let env ← getEnv
       -- First attempt to generate the translation without unfold boundaries.
@@ -676,7 +678,7 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let value := decl.1.value! (allowOpaque := true)
   trace[translate] "generating\n{tgt} : {decl.1.type} :={indentExpr value}"
   try
-    addDecl decl.1.toDeclaration!
+    withExporting (isExporting := exposeBody) <| addDecl decl.1.toDeclaration!
     return decl
   catch ex =>
     try
@@ -686,7 +688,7 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
         The translated type is not type correct.\n\
         {ex.toMessageData}\n\n\
         For help, see the docstring of `to_additive`, section `Troubleshooting`."
-    withExporting (isExporting := (← getEnv).hasExposedBody srcDecl.name) do
+    withExporting (isExporting := exposeBody) <|
     try
       check value
     catch ex =>
@@ -776,10 +778,9 @@ occurring in `src` using the `translations` dictionary.
 -/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
     (reorder : ArgReorder := {}) (rename : NameMap Name := {}) : CoreM Unit := do
-  let env ← getEnv
   trace[translate_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
-  if (findTranslation? env t src).isSome && src != rootSrc then
+  if (findTranslation? (← getEnv) t src).isSome && src != rootSrc then
     return
   -- if this declaration is not `rootSrc` and not an internal declaration, we return an error,
   -- since we should have already translated this declaration.
@@ -787,10 +788,12 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
     throwError "The declaration {rootSrc} depends on the declaration {src} \
     which is in the namespace {rootSrc}, but does not have the `@[{t.attrName}]` attribute. \
     This is not supported.\nWorkaround: move {src} to a different namespace."
+  -- Ensure `tgt` is private if an only if `src` is.
+  withExporting (isExporting := !isPrivateName src) do
   -- we find, or guess, the translated name of `src`
-  let tgt ← findTargetName env t src rootSrc rootTgt
+  let tgt ← findTargetName (← getEnv) t src rootSrc rootTgt
   -- we skip if we already transformed this declaration before.
-  if env.contains tgt then
+  if (← getEnv).contains tgt then
     if tgt == src then
       -- Note: this can happen for equation lemmas of declarations without a translation.
       trace[translate_detail] "Auxiliary declaration {src} will be translated to itself."
@@ -803,7 +806,6 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   -- we then transform all auxiliary declarations generated when elaborating `rootSrc`
   for n in ← findAuxDecls srcDecl rootSrc do
     transformDeclRec t cfg rootSrc rootTgt n
-  -- expose target body when source body is exposed
   -- We still lack a heuristic that automatically infers the `dontTranslate`,
   -- so for now we do a best guess based on argument names.
   let dontTranslate ← if cfg.dontTranslate.isEmpty then pure [] else
