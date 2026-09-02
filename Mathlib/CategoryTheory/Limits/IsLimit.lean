@@ -350,15 +350,11 @@ def conePointsIsoOfNatIso {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit
 attribute [to_dual existing coconePointsIsoOfNatIso_inv] conePointsIsoOfNatIso_hom
 attribute [to_dual existing coconePointsIsoOfNatIso_hom] conePointsIsoOfNatIso_inv
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 @[to_dual (attr := reassoc) comp_coconePointsIsoOfNatIso_inv]
 theorem conePointsIsoOfNatIso_hom_comp {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s)
     (Q : IsLimit t) (w : F ≅ G) (j : J) :
     (conePointsIsoOfNatIso P Q w).hom ≫ t.π.app j = s.π.app j ≫ w.hom.app j := by simp
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 @[to_dual (attr := reassoc) comp_coconePointsIsoOfNatIso_hom]
 theorem conePointsIsoOfNatIso_inv_comp {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s)
     (Q : IsLimit t) (w : F ≅ G) (j : J) :
@@ -638,7 +634,6 @@ def ofRepresentableBy {X : C} (h : F.cones.RepresentableBy X) : IsLimit (limitCo
     dsimp [Cone.extend]; cases s; congr with j; exact w j
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a limit cone, `F.cones` is representable by the point of the cone. -/
 def representableBy (hc : IsLimit t) : F.cones.RepresentableBy t.pt where
   homEquiv := hc.homEquiv
@@ -765,7 +760,6 @@ def ofCorepresentableBy {X : C} (h : F.cocones.CorepresentableBy X) :
     dsimp [Cocone.extend]; cases s; congr with j; exact w j
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a colimit cocone, `F.cocones` is corepresentable by the point of the cocone. -/
 def corepresentableBy (hc : IsColimit t) : F.cocones.CorepresentableBy t.pt where
   homEquiv := hc.homEquiv
