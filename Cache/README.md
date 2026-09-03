@@ -184,7 +184,7 @@ The variable is intended as a troubleshooting fallback and it might be retired a
 Run `lake exe cache --help` for the full list, including the flat-endpoint
 overrides `MATHLIB_CACHE_GET_URL` / `MATHLIB_CACHE_PUT_URL`, the
 `MATHLIB_CACHE_FROM` read-chain override, and `put`'s credential variables
-(the S3 triple, the Azure bearer token, and the SAS token) with the
+(the S3 triple and the Azure bearer token) with the
 `MATHLIB_CACHE_PUT_BASE_URL` destination override.
 
 ## How It Works

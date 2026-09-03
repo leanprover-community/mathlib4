@@ -1122,8 +1122,8 @@ section RunCmdErrors
 
 /-- With `showArgsOnError := false` a failing command's error names only the
 command: the argument list can carry a credential (the marker uploads pass
-`--oauth2-bearer` and SAS-tokened URLs). The default keeps the argument list
-in the message. -/
+`--oauth2-bearer` or the S3 `--user` keypair). The default keeps the argument
+list in the message. -/
 def test_runCmd_showArgsOnError : IO Unit := do
   IO.println "runCmd showArgsOnError:"
   let secret := "hunter2-credential"
@@ -1228,11 +1228,11 @@ def test_mkPutConfigContent : IO Unit := do
     { base := "https://example.invalid"
       filesPrefix := "mathlib4-master/f"
       markerPrefix := "mathlib4-master/m/leanprover-community/mathlib4" }
-  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"] (.azureSas "tok")
+  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"]
   assertTrue "uploads the file" ((cfg.splitOn "-T /tmp/00000000deadbeef.ltar").length == 2)
-  assertTrue "addresses {base}/{filesPrefix}/{name} with the SAS query"
+  assertTrue "addresses {base}/{filesPrefix}/{name}"
     ((cfg.splitOn
-      "url = https://example.invalid/mathlib4-master/f/00000000deadbeef.ltar?tok").length == 2)
+      "url = https://example.invalid/mathlib4-master/f/00000000deadbeef.ltar").length == 2)
   assertTrue "discards the response body" ((cfg.splitOn s!"-o {IO.nullDevice}").length == 2)
 
 /-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
@@ -1269,10 +1269,10 @@ def test_capabilities : IO Unit := do
     (capabilities.all fun c => !c.isEmpty && c.all fun ch => ch.isAlphanum || ch == '-')
 
 /-- `uploadAuthFrom` picks the upload credential mechanism: the S3 pair (with
-its optional session token) first, then the Azure bearer token, then SAS. A
-half-set S3 pair errors instead of falling through, so a misconfigured job
-cannot silently upload to a different backend than the one its credentials
-name. -/
+its optional session token) first, then the Azure bearer token. A half-set S3
+pair errors instead of falling through, so a misconfigured job cannot
+silently upload to a different backend than the one its credentials name; the
+retired MATHLIB_CACHE_SAS errors with the replacement named. -/
 def test_uploadAuthFrom : IO Unit := do
   IO.println "uploadAuthFrom:"
   assertTrue "S3 pair with a session token"
@@ -1288,11 +1288,13 @@ def test_uploadAuthFrom : IO Unit := do
     (uploadAuthFrom (some "AK") none none (some "bear") none matches .error _)
   assertTrue "secret without a key id errors"
     (uploadAuthFrom none (some "SK") none (some "bear") none matches .error _)
-  assertTrue "bearer wins over SAS"
+  assertTrue "bearer wins over a lingering SAS token"
     (uploadAuthFrom none none none (some "bear") (some "sas")
       matches .ok (.azureBearer "bear"))
-  assertTrue "SAS alone"
-    (uploadAuthFrom none none none none (some "sas") matches .ok (.azureSas "sas"))
+  assertTrue "SAS alone errors as retired"
+    (match uploadAuthFrom none none none none (some "sas") with
+      | .error e => e.startsWith "MATHLIB_CACHE_SAS is retired"
+      | .ok _ => false)
   assertTrue "a stray session token alone selects nothing"
     (uploadAuthFrom none none (some "ST") none none matches .error _)
 
@@ -1440,7 +1442,7 @@ def test_stagedUploadDestFrom : IO Unit := do
 shape — SigV4 with region `auto`, the `UNSIGNED-PAYLOAD` hash that lets curl
 sign a `-T` upload, and the session-token header for temporary credentials —
 and the `If-None-Match: *` guard that a non-overwrite put adds on every
-mechanism. The bearer branch spawns `date`, so this covers SAS and S3 only. -/
+mechanism. The bearer branch spawns `date`, so this covers S3 only. -/
 def test_uploadAuthArgs : IO Unit := do
   IO.println "uploadAuthArgs:"
   let s3 ← uploadAuthArgs (.s3 "AK" "SK" (some "ST")) (overwrite := false)
@@ -1458,11 +1460,6 @@ def test_uploadAuthArgs : IO Unit := do
   assertTrue "a static keypair sends no session token"
     (s3Static.all (!·.startsWith "x-amz-security-token"))
   assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
-  let sas ← uploadAuthArgs (.azureSas "tok") (overwrite := false)
-  assertTrue "SAS sends the Azure blob-type header" (sas.contains "x-ms-blob-type: BlockBlob")
-  assertTrue "SAS signs through the URL, not the args" (!sas.contains "tok")
-  assertEq "SAS query carries the token" "?tok" (UploadAuth.azureSas "tok").sasQuery
-  assertEq "S3 auth adds no URL query" "" (UploadAuth.s3 "AK" "SK" none).sasQuery
 
 /-- The transfer-engine policy for `put` (`MATHLIB_CACHE_UPLOADER`): curl by
 default, rclone required when named, availability- and credential-gated under

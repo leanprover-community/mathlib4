@@ -133,7 +133,6 @@ together):
                           broker for CI. The session token is optional.
 * MATHLIB_CACHE_AZURE_BEARER_TOKEN
                           Azure OIDC bearer token.
-* MATHLIB_CACHE_SAS       Azure SAS token.
 
 Upload destination overrides for 'put':
 

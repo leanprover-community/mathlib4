@@ -30,7 +30,6 @@ open System (FilePath)
 
 /-- Authentication method used for cache upload operations. -/
 inductive UploadAuth where
-  | azureSas (token : String)
   | azureBearer (token : String)
   /-- S3-compatible credentials for a direct bucket write, signed per request
   with SigV4 by curl. `sessionToken?` carries the session token of a temporary
@@ -49,7 +48,10 @@ mechanism first:
    would send the upload to a different storage backend than the one the
    half-set credentials name.
 2. `MATHLIB_CACHE_AZURE_BEARER_TOKEN`.
-3. `MATHLIB_CACHE_SAS`.
+
+`MATHLIB_CACHE_SAS` (`sas?`) is retired: an environment where it is the only
+credential errors with the replacement named, rather than reading as
+missing-credential.
 
 Pure so the precedence is testable; `getUploadAuth` wires the environment in.
 -/
@@ -64,10 +66,12 @@ def uploadAuthFrom (s3KeyId? s3Secret? s3Session? bearer? sas? : Option String) 
   | none, none =>
     match bearer?, sas? with
     | some token, _ => .ok (.azureBearer token)
-    | none, some token => .ok (.azureSas token)
+    | none, some _ => .error
+        "MATHLIB_CACHE_SAS is retired: upload with the S3 credential pair or an \
+        Azure OIDC bearer token (MATHLIB_CACHE_AZURE_BEARER_TOKEN)"
     | none, none => .error
-        "environment variable MATHLIB_CACHE_S3_ACCESS_KEY_ID/MATHLIB_CACHE_S3_SECRET_ACCESS_KEY, \
-        MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
+        "environment variable MATHLIB_CACHE_S3_ACCESS_KEY_ID/MATHLIB_CACHE_S3_SECRET_ACCESS_KEY \
+        or MATHLIB_CACHE_AZURE_BEARER_TOKEN must be set to upload caches"
 
 /--
 Capability tokens `cache capabilities` prints, one per line. CI probes them to
@@ -193,23 +197,13 @@ def getAzureDateHeader : IO String := do
   return s!"x-ms-date: {out.stdout.trimAscii.copy}"
 
 /--
-Query string an upload appends to each destination URL: `?{token}` for SAS
-auth, which signs through the URL, and empty for the header-based mechanisms.
--/
-def UploadAuth.sasQuery : UploadAuth → String
-  | .azureSas token => s!"?{token}"
-  | _ => ""
-
-/--
 The authentication and header curl arguments for an upload with `auth`, shared
-by the artifact, commit, and marker PUT paths. A non-overwrite put adds
+by the artifact and marker PUT paths. A non-overwrite put adds
 `If-None-Match: *`, which Azure and S3-compatible backends answer with 409/412
 for a blob that already exists (`classifyUpload` excuses those).
 
-* Azure needs the `x-ms-blob-type` header; the bearer form adds the api-version
-  and date headers and the OAuth token.
-* SAS signs through the URL query (`UploadAuth.sasQuery`), so it contributes
-  only the Azure headers here.
+* Azure needs the `x-ms-blob-type` header, the api-version and date headers,
+  and the OAuth token.
 * S3 signs each request with SigV4 (`--aws-sigv4`; region `auto` fits R2). The
   explicit `x-amz-content-sha256: UNSIGNED-PAYLOAD` header is what lets curl
   sign a `-T` file upload (supported from curl 7.87); this path runs in CI,
@@ -223,8 +217,6 @@ has; callers therefore print curl failures without their argument lists
 def uploadAuthArgs (auth : UploadAuth) (overwrite : Bool) : IO (Array String) := do
   let ifNoneMatch : Array String := if overwrite then #[] else #["-H", "If-None-Match: *"]
   match auth with
-  | .azureSas _ =>
-    return #["-H", "x-ms-blob-type: BlockBlob"] ++ ifNoneMatch
   | .azureBearer token =>
     return #["-H", "x-ms-blob-type: BlockBlob"] ++ ifNoneMatch ++
       #["-H", azureBearerApiVersionHeader, "-H", ← getAzureDateHeader,
@@ -241,11 +233,9 @@ uploaded: each staged file lands at `{base}/{filesPrefix}/{fileName}`, with
 the destination resolved once by `stagedUploadDest`. The response body goes
 to the null device: stdout must carry only the per-transfer JSON reports that
 `monitorCurl` parses. -/
-def mkPutConfigContent (dest : StagedUploadDest) (files : Array FilePath)
-    (auth : UploadAuth) : String :=
-  let token := auth.sasQuery
+def mkPutConfigContent (dest : StagedUploadDest) (files : Array FilePath) : String :=
   let l := files.toList.map fun file : FilePath =>
-    s!"-T {file.toString}\nurl = {dest.base}/{dest.filesPrefix}/{file.fileName.get!}{token}\n\
+    s!"-T {file.toString}\nurl = {dest.base}/{dest.filesPrefix}/{file.fileName.get!}\n\
       -o {IO.nullDevice}"
   "\n".intercalate l
 
@@ -259,7 +249,7 @@ def putFilesAbsolute
   -- TODO: reimplement using HEAD requests?
   let size := files.size
   if size > 0 then
-    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files auth)
+    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files)
     IO.println s!"Attempting to upload {size} file(s) under {dest.filesPrefix} (container: {target})"
     let args ← uploadAuthArgs auth overwrite
     -- A retry after a PUT that landed is safe: a non-overwrite put answers
@@ -308,7 +298,7 @@ def uploadMarker (dest : StagedUploadDest) (sha : String) (auth : UploadAuth) :
   IO.FS.writeFile path s!"{sha}\n"
   try
     let args := (← uploadAuthArgs auth (overwrite := true)) ++
-      #["-X", "PUT", "-T", path.toString, s!"{url}{auth.sasQuery}"]
+      #["-X", "PUT", "-T", path.toString, url]
     -- The argument list carries the credential; keep it out of the failure message.
     discard <| IO.runCurl args (showArgsOnError := false)
   catch e =>
