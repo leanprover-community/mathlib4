@@ -41,7 +41,7 @@ variable (M₀) in
 protected abbrev mulActionWithZero (e : A ≃ B) [MonoidWithZero M₀] [Zero A] [Zero B]
     [MulActionWithZero M₀ B] (map_zero : e 0 = 0) : MulActionWithZero M₀ A where
   __ := e.smulWithZero M₀ map_zero
-  __ := e.mulAction M₀
+  __ := e.monoidAction M₀
 
 end Equiv
 
@@ -59,7 +59,7 @@ variable (M) in
 protected abbrev distribMulAction [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M B]
     (e : A ≃+ B) : DistribMulAction M A where
   __ := e.distribSMul M
-  __ := e.mulAction M
+  __ := e.monoidAction M
 
 end AddEquiv
 

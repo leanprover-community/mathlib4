@@ -24,8 +24,8 @@ variable {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {F : Type*} (f : F) [FunLike F �
 
 local notation "𝒬" => ℋ ⧸ (𝒢.subgroupOf ℋ)
 
-instance : MulAction ℋ ℋ := Monoid.toMulAction ..
-instance : MulAction ℋ 𝒬 := .quotient ..
+instance : MonoidAction ℋ ℋ := Monoid.toMonoidAction ..
+instance : MonoidAction ℋ 𝒬 := .quotient ..
 
 namespace SlashInvariantForm
 
@@ -57,7 +57,7 @@ protected def trace : SlashInvariantForm ℋ k where
   slash_action_eq' h hh := by
     let := Fintype.ofFinite 𝒬
     simpa [SlashAction.sum_slash, quotientFunc_smul f hh]
-      using Equiv.sum_comp (MulAction.toPerm (_ : ℋ)) _
+      using Equiv.sum_comp (MonoidAction.toPerm (_ : ℋ)) _
 
 /-- The norm of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
@@ -67,7 +67,7 @@ protected def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.ca
     let := Fintype.ofFinite 𝒬
     simpa [← Finset.card_univ, ModularForm.prod_slash,
       quotientFunc_smul f hh, Subgroup.HasDetPlusMinusOne.abs_det hh,
-      -Matrix.GeneralLinearGroup.val_det_apply] using Equiv.prod_comp (MulAction.toPerm (_ : ℋ)) _
+      -Matrix.GeneralLinearGroup.val_det_apply] using Equiv.prod_comp (MonoidAction.toPerm (_ : ℋ)) _
 
 end SlashInvariantForm
 

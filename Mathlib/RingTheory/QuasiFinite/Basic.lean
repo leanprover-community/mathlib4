@@ -317,7 +317,7 @@ lemma of_isIntegral_of_finiteType [Algebra.IsIntegral R S] [Algebra.FiniteType R
   let := f.toAlgebra
   let : Algebra A (Localization.Away sA) := OreLocalization.instAlgebra
   let : SMul A (Localization.Away sA) := Algebra.toSMul
-  let : MulAction A (Localization.Away sA) := Algebra.toModule.toDistribMulAction.toMulAction
+  let : MonoidAction A (Localization.Away sA) := Algebra.toModule.toDistribMulAction.toMonoidAction
   have : IsScalarTower R A (Localization.Away sA) := OreLocalization.instIsScalarTower
   have : IsScalarTower A (Localization.Away sA) T :=
     .of_algebraMap_eq (by simp [f, RingHom.algebraMap_toAlgebra, A])

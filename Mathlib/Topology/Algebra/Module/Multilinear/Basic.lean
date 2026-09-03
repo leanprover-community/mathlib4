@@ -170,8 +170,8 @@ section SMulMonoid
 variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, Module A (M₁ i)]
   [Module A M₂] [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
 
-instance : MulAction R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
-  Function.Injective.mulAction toMultilinearMap toMultilinearMap_injective fun _ _ => rfl
+instance : MonoidAction R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
+  Function.Injective.monoidAction toMultilinearMap toMultilinearMap_injective fun _ _ => rfl
 
 end SMulMonoid
 

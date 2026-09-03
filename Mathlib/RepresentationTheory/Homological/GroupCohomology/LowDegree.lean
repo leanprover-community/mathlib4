@@ -497,7 +497,7 @@ end
 
 section
 
-variable {G A : Type*} [Monoid G] [AddCommGroup A] [MulAction G A]
+variable {G A : Type*} [Monoid G] [AddCommGroup A] [MonoidAction G A]
 
 theorem map_one_of_isCocycle₁ {f : G → A} (hf : IsCocycle₁ f) :
     f 1 = 0 := by
@@ -515,7 +515,7 @@ end
 
 section
 
-variable {G A : Type*} [Group G] [AddCommGroup A] [MulAction G A]
+variable {G A : Type*} [Group G] [AddCommGroup A] [MonoidAction G A]
 
 @[scoped simp] theorem map_inv_of_isCocycle₁ {f : G → A} (hf : IsCocycle₁ f) (g : G) :
     g • f g⁻¹ = -f g := by
@@ -629,7 +629,7 @@ end
 
 section
 
-variable {G M : Type*} [Monoid G] [CommGroup M] [MulAction G M]
+variable {G M : Type*} [Monoid G] [CommGroup M] [MonoidAction G M]
 
 theorem map_one_of_isMulCocycle₁ {f : G → M} (hf : IsMulCocycle₁ f) :
     f 1 = 1 := by
@@ -647,7 +647,7 @@ end
 
 section
 
-variable {G M : Type*} [Group G] [CommGroup M] [MulAction G M]
+variable {G M : Type*} [Group G] [CommGroup M] [MonoidAction G M]
 
 @[scoped simp] theorem map_inv_of_isMulCocycle₁ {f : G → M} (hf : IsMulCocycle₁ f) (g : G) :
     g • f g⁻¹ = (f g)⁻¹ := by

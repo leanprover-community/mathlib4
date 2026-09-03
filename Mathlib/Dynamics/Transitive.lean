@@ -29,7 +29,7 @@ open scoped Pointwise
 *topologically transitive* if for any pair of nonempty open sets `U` and `V` in `α` there exists an
 `m : M` such that `(m +ᵥ U) ∩ V` is nonempty. -/
 class AddMonoidAction.IsTopologicallyTransitive (M α : Type*) [AddMonoid M] [TopologicalSpace α]
-    [AddAction M α] : Prop where
+    [AddMonoidAction M α] : Prop where
   exists_vadd_inter : ∀ {U V : Set α}, IsOpen U → U.Nonempty → IsOpen V → V.Nonempty →
     ∃ m : M, ((m +ᵥ U) ∩ V).Nonempty
 
@@ -45,7 +45,7 @@ any pair of nonempty open sets `U` and `V` in `α` there exists an `m : M` such 
 nonempty. -/
 @[to_additive]
 class MonoidAction.IsTopologicallyTransitive (M α : Type*) [Monoid M] [TopologicalSpace α]
-    [MulAction M α] : Prop where
+    [MonoidAction M α] : Prop where
   exists_smul_inter : ∀ {U V : Set α}, IsOpen U → U.Nonempty → IsOpen V → V.Nonempty →
     ∃ m : M, ((m • U) ∩ V).Nonempty
 
@@ -56,9 +56,9 @@ abbrev MulAction.IsTopologicallyTransitive := @MonoidAction.IsTopologicallyTrans
 alias MulAction.IsTopologicallyTransitive.exists_smul_inter :=
   MonoidAction.IsTopologicallyTransitive.exists_smul_inter
 
-open MulAction Set
+open MonoidAction Set
 
-variable (M : Type*) {α : Type*} [TopologicalSpace α] [Monoid M] [MulAction M α]
+variable (M : Type*) {α : Type*} [TopologicalSpace α] [Monoid M] [MonoidAction M α]
 
 section IsTopologicallyTransitive
 

@@ -229,8 +229,8 @@ instance isCentralScalar [SMul S R] [SMul S M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒ
     [IsCentralScalar S M] : IsCentralScalar S (tsze R M) :=
   inferInstanceAs <| IsCentralScalar S (R × M)
 
-instance monoidAction [Monoid S] [MulAction S R] [MulAction S M] : MulAction S (tsze R M) :=
-  inferInstanceAs <| MulAction S (R × M)
+instance monoidAction [Monoid S] [MonoidAction S R] [MonoidAction S M] : MonoidAction S (tsze R M) :=
+  inferInstanceAs <| MonoidAction S (R × M)
 
 @[deprecated (since := "2026-09-02")] alias _root_.TrivSqZeroExt.mulAction := monoidAction
 

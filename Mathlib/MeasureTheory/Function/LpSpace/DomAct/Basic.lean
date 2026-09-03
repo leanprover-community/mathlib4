@@ -122,12 +122,12 @@ instance : IsIsometricSMul Mᵈᵐᵃ (Lp E p μ) := ⟨edist_smul_Lp⟩
 
 end SMul
 
-section MulAction
+section MonoidAction
 
-variable [Monoid M] [MulAction M α] [SMulInvariantMeasure M α μ] [MeasurableConstSMul M α]
+variable [Monoid M] [MonoidAction M α] [SMulInvariantMeasure M α μ] [MeasurableConstSMul M α]
 
 @[to_additive]
-instance : MulAction Mᵈᵐᵃ (Lp E p μ) := Subtype.val_injective.mulAction _ fun _ _ ↦ rfl
+instance : MonoidAction Mᵈᵐᵃ (Lp E p μ) := Subtype.val_injective.monoidAction _ fun _ _ ↦ rfl
 
 instance : DistribMulAction Mᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.distribMulAction ⟨⟨_, rfl⟩, fun _ _ ↦ rfl⟩ fun _ _ ↦ rfl

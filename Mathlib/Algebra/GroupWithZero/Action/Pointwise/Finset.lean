@@ -96,8 +96,8 @@ end SMulWithZero
 section GroupWithZero
 variable [GroupWithZero α]
 
-section MulAction
-variable [MulAction α β] {s t : Finset β} {a : α} {b : β}
+section MonoidAction
+variable [MonoidAction α β] {s t : Finset β} {a : α} {b : β}
 
 @[simp] lemma smul_mem_smul_finset_iff₀ (ha : a ≠ 0) : a • b ∈ a • s ↔ b ∈ s :=
   smul_mem_smul_finset_iff (Units.mk0 a ha)
@@ -115,7 +115,7 @@ lemma smul_finset_subset_smul_finset_iff₀ (ha : a ≠ 0) : a • s ⊆ a • t
 theorem pairwiseDisjoint_smul_iff₀ {s : Set α} {t : Finset β} (hs : ∀ a ∈ s, a ≠ 0) :
     s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × β)).InjOn fun p => p.1 • p.2 := by
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset]
-  exact Set.pairwiseDisjoint_image_right_iff (fun a ha => MulAction.injective₀ (hs a ha))
+  exact Set.pairwiseDisjoint_image_right_iff (fun a ha => MonoidAction.injective₀ (hs a ha))
 
 lemma smul_finset_subset_iff₀ (ha : a ≠ 0) : a • s ⊆ t ↔ s ⊆ a⁻¹ • t :=
   show Units.mk0 a ha • s ⊆ _ ↔ _ from smul_finset_subset_iff
@@ -124,14 +124,14 @@ lemma subset_smul_finset_iff₀ (ha : a ≠ 0) : s ⊆ a • t ↔ a⁻¹ • s 
   show _ ⊆ Units.mk0 a ha • t ↔ _ from subset_smul_finset_iff
 
 lemma smul_finset_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter _ _ <| MulAction.injective₀ ha
+  image_inter _ _ <| MonoidAction.injective₀ ha
 
 lemma smul_finset_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
-  image_sdiff _ _ <| MulAction.injective₀ ha
+  image_sdiff _ _ <| MonoidAction.injective₀ ha
 
 open scoped symmDiff in
 lemma smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff _ _ <| MulAction.injective₀ ha
+  image_symmDiff _ _ <| MonoidAction.injective₀ ha
 
 lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
   coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
@@ -151,13 +151,13 @@ lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (un
 
 @[simp]
 lemma card_smul_finset₀ (ha : a ≠ 0) (s : Finset β) : (a • s).card = s.card :=
-  card_image_of_injective _ (MulAction.injective₀ ha)
+  card_image_of_injective _ (MonoidAction.injective₀ ha)
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/
 lemma card_dvd_card_smul_right₀ {s : Finset α} (hs : ∀ a ∈ s, a ≠ 0) :
     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
-  card_dvd_card_image₂_right fun a ha => MulAction.injective₀ (hs a ha)
+  card_dvd_card_image₂_right fun a ha => MonoidAction.injective₀ (hs a ha)
 
 end MonoidAction
 

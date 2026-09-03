@@ -10,10 +10,10 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
-# MulAction and MulDistribMulAction of quotient group on fixed points
+# MonoidAction and MulDistribMulAction of quotient group on fixed points
 
-Given a `MulAction`/`MulDistribMulAction` of a group `G` on `A` and a normal subgroup `H` of `G`,
-there is a `MulAction`/`MulDistribMulAction` of the quotient group `G ⧸ H` on `fixedPoints H A`.
+Given a `MonoidAction`/`MulDistribMulAction` of a group `G` on `A` and a normal subgroup `H` of `G`,
+there is a `MonoidAction`/`MulDistribMulAction` of the quotient group `G ⧸ H` on `fixedPoints H A`.
 
 -/
 
@@ -21,11 +21,11 @@ public section
 
 namespace MonoidAction
 
-variable {G : Type*} [Group G] {A : Type*} [MulAction G A]
+variable {G : Type*} [Group G] {A : Type*} [MonoidAction G A]
 
 variable {H : Subgroup G} [H.Normal]
 
-instance : MulAction (G ⧸ H) (fixedPoints H A) :=
+instance : MonoidAction (G ⧸ H) (fixedPoints H A) :=
   ofEndHom <|
     QuotientGroup.lift H (toEndHom : G →* Function.End (fixedPoints H A))
     (fun g hg ↦ by funext a; ext; exact a.2 ⟨g, hg⟩)
@@ -50,14 +50,14 @@ end MonoidAction
 
 namespace MulDistribMulAction
 
-open MulAction
+open MonoidAction
 
 variable {G : Type*} [Group G] {A : Type*} [Monoid A] [MulDistribMulAction G A]
 
 variable {H : Subgroup G} [H.Normal]
 
 instance : MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H A) where
-  __ := (inferInstance : MulAction (G ⧸ H) (fixedPoints H A))
+  __ := (inferInstance : MonoidAction (G ⧸ H) (fixedPoints H A))
   smul_mul g a b := g.induction_on fun g ↦ Subtype.ext (smul_mul g a.1 b.1)
   smul_one g := g.induction_on fun g ↦ Subtype.ext (smul_one g)
 

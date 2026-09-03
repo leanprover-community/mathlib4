@@ -143,7 +143,7 @@ def congr {D₁ Q₁ D₂ Q₂ : Type*} [Group D₁] [Group Q₁] [Group D₂] [
 
 section perm
 
-variable (D Q) (Λ : Type*) [MulAction D Λ]
+variable (D Q) (Λ : Type*) [MonoidAction D Λ]
 
 instance : SMul (D ≀ᵣ Q) (Λ × Q) where
   smul w p := ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
@@ -151,7 +151,7 @@ instance : SMul (D ≀ᵣ Q) (Λ × Q) where
 @[simp]
 lemma smul_def {w : D ≀ᵣ Q} {p : Λ × Q} : w • p = ⟨(w.1 (w.2 * p.2)) • p.1, w.2 * p.2⟩ := rfl
 
-instance : MulAction (D ≀ᵣ Q) (Λ × Q) where
+instance : MonoidAction (D ≀ᵣ Q) (Λ × Q) where
   one_smul := by simp
   mul_smul := by simp [smul_smul, mul_assoc]
 
@@ -172,9 +172,9 @@ instance [Nonempty Q] [Nonempty Λ] : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
 /-- The map sending the wreath product `D ≀ᵣ Q` to its representation as a permutation of `Λ × Q`
 given `D`-set `Λ`. -/
 def toPerm : D ≀ᵣ Q →* Equiv.Perm (Λ × Q) :=
-  MulAction.toPermHom (D ≀ᵣ Q) (Λ × Q)
+  MonoidAction.toPermHom (D ≀ᵣ Q) (Λ × Q)
 
-theorem toPermInj [Nonempty Λ] : Function.Injective (toPerm D Q Λ) := MulAction.toPerm_injective
+theorem toPermInj [Nonempty Λ] : Function.Injective (toPerm D Q Λ) := MonoidAction.toPerm_injective
 
 end perm
 
@@ -222,7 +222,7 @@ def iteratedWreathToPermHom (G : Type*) [Group G] :
     (n : ℕ) → (IteratedWreathProduct G n →* Equiv.Perm (Fin n → G))
   | 0 => 1
   | n + 1 => by
-      let _ := MulAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
+      let _ := MonoidAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
       exact (Fin.succFunEquiv G n).symm.permCongrHom.toMonoidHom.comp
         (RegularWreathProduct.toPerm (IteratedWreathProduct G n) G (Fin n → G))
 
@@ -232,7 +232,7 @@ lemma iteratedWreathToPermHomInj (G : Type*) [Group G] :
       simp only [IteratedWreathProduct_zero]
       apply Function.injective_of_subsingleton
   | n + 1 => by
-      let _ := MulAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
+      let _ := MonoidAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
       have : FaithfulSMul (IteratedWreathProduct G n) (Fin n → G) :=
         ⟨fun h ↦ iteratedWreathToPermHomInj G n (Equiv.ext h)⟩
       exact ((Fin.succFunEquiv G n).symm.permCongrHom.toEquiv.comp_injective _).mpr

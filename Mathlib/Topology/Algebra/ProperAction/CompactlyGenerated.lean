@@ -22,7 +22,7 @@ weakly locally compact.
 * `properlyDiscontinuousSMul_iff_properSMul`: If a discrete group acts on a T2 space `X` such that
   `X × X` is compactly generated, and if the action is continuous in the second variable,
   then the action is properly discontinuous if and only if it is proper.
-* `MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty`: if `G` is a topological group
+* `MonoidAction.properSMul_iff_isCompact_setOfPred_inter_nonempty`: if `G` is a topological group
   acting continuously on a T2 space `X` such that `X × X` is compactly generated, then the action is
   proper iff, for each pair of compacts `U, V ⊆ X`, the set of `g : G` such that `g • U` intersects
   `V` is compact.
@@ -39,7 +39,7 @@ open Prod Set
 public section
 
 variable {G X : Type*} [TopologicalSpace X] [Group G]
-  [TopologicalSpace G] [MulAction G X] [CompactlyGeneratedSpace (X × X)] [T2Space X]
+  [TopologicalSpace G] [MonoidAction G X] [CompactlyGeneratedSpace (X × X)] [T2Space X]
 
 /-- The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
 the set of `g` such that `U` intersects `g • V` is compact.
@@ -92,11 +92,11 @@ alias AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty :=
 
 @[deprecated (since := "2026-07-09")]
 alias MonoidAction.properSMul_iff_isCompact_setOf_inter_nonempty :=
-  MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty
+  MonoidAction.properSMul_iff_isCompact_setOfPred_inter_nonempty
 
 @[deprecated (since := "2026-07-09")]
 alias AddMonoidAction.properVAdd_iff_isCompact_setOf_inter_nonempty :=
-  AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty
+  AddMonoidAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty
 
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly
 generated, and if the action is continuous in the second variable, then the action is properly
@@ -106,7 +106,7 @@ weakly locally compact. -/
 theorem properlyDiscontinuousSMul_iff_properSMul [DiscreteTopology G] [ContinuousConstSMul G X] :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X := by
   have : ContinuousSMul G X := ⟨continuous_prod_of_discrete_left.mpr continuous_const_smul⟩
-  simp only [MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty, isCompact_iff_finite]
+  simp only [MonoidAction.properSMul_iff_isCompact_setOfPred_inter_nonempty, isCompact_iff_finite]
   rw [properlyDiscontinuousSMul_iff]
 
 end

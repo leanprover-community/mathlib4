@@ -69,7 +69,7 @@ variable {R' : Type*} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseMonoidAction : MulAction R' (Subalgebra R A) where
+protected def pointwiseMonoidAction : MonoidAction R' (Subalgebra R A) where
   smul a S := S.map (MulSemiringAction.toAlgHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (AlgHom.ext <| one_smul R')).trans S.map_id
   mul_smul _a₁ _a₂ S :=
@@ -78,7 +78,7 @@ protected def pointwiseMonoidAction : MulAction R' (Subalgebra R A) where
 @[deprecated (since := "2026-09-02")]
 alias _root_.Subalgebra.pointwiseMulAction := _root_.Subalgebra.pointwiseMonoidAction
 
-scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
+scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMonoidAction
 
 open scoped Pointwise
 

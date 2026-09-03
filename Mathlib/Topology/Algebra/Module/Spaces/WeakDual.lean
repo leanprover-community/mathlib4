@@ -71,8 +71,8 @@ variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [Topo
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
 instance instMonoidAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
-  inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
+    [ContinuousConstSMul M 𝕜] : MonoidAction M (WeakDual 𝕜 E) :=
+  inferInstanceAs <| MonoidAction M (E →L[𝕜] 𝕜)
 
 deriving instance AddCommMonoid, ContinuousAdd for WeakDual
 

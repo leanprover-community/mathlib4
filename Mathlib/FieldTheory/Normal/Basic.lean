@@ -236,7 +236,7 @@ theorem AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
 
 open IntermediateField in
 theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :
-    minpoly F x = minpoly F y ↔ x ∈ MulAction.orbit Gal(E/F) y := by
+    minpoly F x = minpoly F y ↔ x ∈ MonoidAction.orbit Gal(E/F) y := by
   refine ⟨fun he ↦ ?_, fun ⟨f, he⟩ ↦ he ▸ minpoly.algEquiv_eq f y⟩
   obtain ⟨φ, hφ⟩ := exists_algHom_of_splits_of_aeval (normal_iff.mp h) (he ▸ minpoly.aeval F x)
   exact ⟨AlgEquiv.ofBijective φ (φ.normal_bijective F E E), hφ⟩

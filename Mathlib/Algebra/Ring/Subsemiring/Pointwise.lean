@@ -10,8 +10,8 @@ public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-! # Pointwise instances on `Subsemiring`s
 
-This file provides the action `Subsemiring.PointwiseMulAction` which matches the action of
-`MulActionSet`.
+This file provides the action `Subsemiring.PointwiseMonoidAction` which matches the action of
+`MonoidActionSet`.
 
 This actions is available in the `Pointwise` locale.
 
@@ -38,7 +38,7 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseMonoidAction : MulAction M (Subsemiring R) where
+protected def pointwiseMonoidAction : MonoidAction M (Subsemiring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
   mul_smul _a₁ _a₂ S :=
@@ -47,7 +47,7 @@ protected def pointwiseMonoidAction : MulAction M (Subsemiring R) where
 @[deprecated (since := "2026-09-02")]
 alias _root_.Subsemiring.pointwiseMulAction := _root_.Subsemiring.pointwiseMonoidAction
 
-scoped[Pointwise] attribute [instance] Subsemiring.pointwiseMulAction
+scoped[Pointwise] attribute [instance] Subsemiring.pointwiseMonoidAction
 
 open scoped Pointwise
 

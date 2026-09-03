@@ -131,8 +131,8 @@ theorem Ici_one : Ici (1 : α) = 1 :=
   rfl
 
 @[to_additive]
-instance : MulAction α (UpperSet α) :=
-  SetLike.coe_injective.mulAction _ (fun _ _ => rfl)
+instance : MonoidAction α (UpperSet α) :=
+  SetLike.coe_injective.monoidAction _ (fun _ _ => rfl)
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (UpperSet α) :=
@@ -187,8 +187,8 @@ theorem Iic_one : Iic (1 : α) = 1 :=
   rfl
 
 @[to_additive]
-instance : MulAction α (LowerSet α) :=
-  SetLike.coe_injective.mulAction _ (fun _ _ => rfl)
+instance : MonoidAction α (LowerSet α) :=
+  SetLike.coe_injective.monoidAction _ (fun _ _ => rfl)
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (LowerSet α) :=

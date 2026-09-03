@@ -252,9 +252,9 @@ theorem IsHermitian.smul {A : Matrix n n α} (h : A.IsHermitian) {k : R} (hk : I
 
 end StarModule
 
-section MulAction_StarModule
+section MonoidAction_StarModule
 
-variable {R : Type*} [Monoid R] [Star R] [Star α] [MulAction R α] [StarModule R α]
+variable {R : Type*} [Monoid R] [Star R] [Star α] [MonoidAction R α] [StarModule R α]
 
 theorem IsHermitian.of_smul {A : Matrix n n α} {k : R} [Invertible k] (h : (k • A).IsHermitian)
     (hk : IsSelfAdjoint k) : A.IsHermitian := by

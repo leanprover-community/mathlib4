@@ -913,7 +913,7 @@ end RingEquiv
 
 /-! ### Actions by `Subsemiring`s
 
-These are just copies of the definitions about `Submonoid` starting from `Submonoid.mulAction`.
+These are just copies of the definitions about `Submonoid` starting from `Submonoid.monoidAction`.
 The only new result is `Subsemiring.module`.
 
 When `R` is commutative, `Algebra.ofSubsemiring` provides a stronger result than those found in
@@ -948,11 +948,11 @@ instance smulCommClass_right [SMul α β] [SMul R' β] [SMulCommClass α R' β] 
     SMulCommClass α S β :=
   inferInstance
 
-instance {R M : Type*} [Semiring R] [MulAction R M] :
+instance {R M : Type*} [Semiring R] [MonoidAction R M] :
     SMulCommClass R (Subsemiring.center R) M :=
   inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
 
-instance {R M : Type*} [Semiring R] [MulAction R M] :
+instance {R M : Type*} [Semiring R] [MonoidAction R M] :
     SMulCommClass (Subsemiring.center R) R M :=
   inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
 
@@ -983,7 +983,7 @@ end NonAssocSemiring
 variable [Semiring R']
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance monoidAction [MulAction R' α] (S : Subsemiring R') : MulAction S α :=
+instance monoidAction [MonoidAction R' α] (S : Subsemiring R') : MonoidAction S α :=
   inferInstance
 
 @[deprecated (since := "2026-09-02")] alias _root_.Subsemiring.mulAction := monoidAction

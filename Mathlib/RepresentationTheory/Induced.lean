@@ -143,7 +143,7 @@ noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u
     fun g ↦ by
       ext h x
       simp only [LinearMap.coe_comp, Function.comp_apply, MonoidAlgebra.lsingle_apply]
-      simp [ofMulAction_single, mul_inv_rev, hom_comm_apply f g], fun g ↦ by ext; simp⟩
+      simp [ofMonoidAction_single, mul_inv_rev, hom_comm_apply f g], fun g ↦ by ext; simp⟩
   left_inv f := by
     ext h a
     simpa using (hom_comm_apply f h⁻¹ (IndV.mk φ A.ρ 1 a)).symm

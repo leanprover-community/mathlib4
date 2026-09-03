@@ -21,7 +21,7 @@ namespace RelHom
 variable {α : Type*} {r : α → α → Prop}
 
 /-- The tautological action by `r →r r` on `α`. -/
-instance applyMonoidAction : MulAction (r →r r) α where
+instance applyMonoidAction : MonoidAction (r →r r) α where
   smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -38,7 +38,7 @@ namespace RelEmbedding
 variable {α : Type*} {r : α → α → Prop}
 
 /-- The tautological action by `r ↪r r` on `α`. -/
-instance applyMonoidAction : MulAction (r ↪r r) α where
+instance applyMonoidAction : MonoidAction (r ↪r r) α where
   smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -55,7 +55,7 @@ namespace RelIso
 variable {α : Type*} {r : α → α → Prop}
 
 /-- The tautological action by `r ≃r r` on `α`. -/
-instance applyMonoidAction : MulAction (r ≃r r) α where
+instance applyMonoidAction : MonoidAction (r ≃r r) α where
   smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl

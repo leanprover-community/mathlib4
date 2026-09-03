@@ -122,7 +122,7 @@ theorem Filter.map_mul_right_nhdsNE {c a : G} :
 
 @[to_additive]
 theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
-  MulAction.IsPretransitive.discreteTopology_iff G 1
+  MonoidAction.IsPretransitive.discreteTopology_iff G 1
 
 @[to_additive]
 theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :

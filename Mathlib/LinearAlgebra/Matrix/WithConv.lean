@@ -89,10 +89,10 @@ instance [Mul α] [StarMul α] : StarMul (WithConv (Matrix m n α)) where
 instance [NonUnitalNonAssocSemiring α] [StarRing α] : StarRing (WithConv (Matrix m n α)) where
   star_add := by simp
 
-instance [Monoid β] [MulAction β α] [Mul α] [SMulCommClass β α α] :
+instance [Monoid β] [MonoidAction β α] [Mul α] [SMulCommClass β α α] :
     SMulCommClass β (WithConv (Matrix m n α)) (WithConv (Matrix m n α)) where smul_comm := by simp
 
-instance [Monoid β] [MulAction β α] [Mul α] [IsScalarTower β α α] :
+instance [Monoid β] [MonoidAction β α] [Mul α] [IsScalarTower β α α] :
     IsScalarTower β (WithConv (Matrix m n α)) (WithConv (Matrix m n α)) where smul_assoc := by simp
 
 instance [CommSemiring β] [Semiring α] [Algebra β α] : Algebra β (WithConv (Matrix m n α)) :=

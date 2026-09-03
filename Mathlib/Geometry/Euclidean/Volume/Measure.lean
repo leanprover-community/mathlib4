@@ -226,7 +226,7 @@ theorem AffineSubspace.euclideanHausdorffMeasure_coe_image (d : ℕ) (s : Affine
 ### `μHE[d]` is translation invariant
 -/
 
-instance {α : Type*} [AddGroup α] [AddAction α X] [IsIsometricVAdd α X] (d : ℕ) :
+instance {α : Type*} [AddGroup α] [AddMonoidAction α X] [IsIsometricVAdd α X] (d : ℕ) :
     VAddInvariantMeasure α X μHE[d] := by
   rw [euclideanHausdorffMeasure_def]
   infer_instance

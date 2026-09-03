@@ -28,7 +28,7 @@ variable (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
 /-- The decomposition subgroup defined as the stabilizer of the action
 on the type of all valuation subrings of the field. -/
 abbrev decompositionSubgroup (A : ValuationSubring L) : Subgroup (L ≃ₐ[K] L) :=
-  MulAction.stabilizer (L ≃ₐ[K] L) A
+  MonoidAction.stabilizer (L ≃ₐ[K] L) A
 
 /-- The valuation subring `A` (considered as a subset of `L`)
 is stable under the action of the decomposition group. -/
@@ -39,7 +39,7 @@ def subMulAction (A : ValuationSubring L) : SubMulAction (A.decompositionSubgrou
 /-- The multiplicative action of the decomposition subgroup on `A`. -/
 instance decompositionSubgroupMulSemiringAction (A : ValuationSubring L) :
     MulSemiringAction (A.decompositionSubgroup K) A :=
-  { SubMulAction.mulAction (A.subMulAction K) with
+  { SubMulAction.monoidAction (A.subMulAction K) with
     smul_add := fun g k l => Subtype.ext <| smul_add (A := L) g k l
     smul_zero := fun g => Subtype.ext <| smul_zero g
     smul_one := fun g => Subtype.ext <| smul_one g

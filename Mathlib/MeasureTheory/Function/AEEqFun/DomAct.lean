@@ -77,12 +77,12 @@ instance [AddMonoid β] [ContinuousAdd β] : DistribSMul Mᵈᵐᵃ (α →ₘ[�
 
 end SMul
 
-section MulAction
+section MonoidAction
 
-variable [Monoid M] [MulAction M α] [MeasurableConstSMul M α] [SMulInvariantMeasure M α μ]
+variable [Monoid M] [MonoidAction M α] [MeasurableConstSMul M α] [SMulInvariantMeasure M α μ]
 
 @[to_additive]
-instance : MulAction Mᵈᵐᵃ (α →ₘ[μ] β) where
+instance : MonoidAction Mᵈᵐᵃ (α →ₘ[μ] β) where
   one_smul := (AEEqFun.induction_on · fun _ _ ↦ by
     simp only [← mk_one, mk_smul_mk_aeeqFun, one_smul])
   mul_smul := mk.surjective.forall.2 fun _ ↦ mk.surjective.forall.2 fun _ ↦

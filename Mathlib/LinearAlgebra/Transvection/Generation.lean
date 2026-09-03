@@ -59,7 +59,7 @@ public section
 
 namespace LinearEquiv
 
-open Module.End Module MulAction Submodule LinearMap
+open Module.End Module MonoidAction Submodule LinearMap
 
 open scoped Pointwise
 

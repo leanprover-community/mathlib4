@@ -867,7 +867,7 @@ theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsIsometricSMul α X] {d
   (isometry_smul X c).hausdorffMeasure_image h _
 
 @[to_additive]
-instance {α : Type*} [Group α] [MulAction α X] [IsIsometricSMul α X] {d : ℝ} :
+instance {α : Type*} [Group α] [MonoidAction α X] [IsIsometricSMul α X] {d : ℝ} :
     SMulInvariantMeasure α X μH[d] where
   measure_preimage_smul c _ _ := (IsometryEquiv.constSMul c).hausdorffMeasure_preimage _ _
 

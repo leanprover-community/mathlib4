@@ -437,7 +437,7 @@ theorem monodromy_trans_apply {x y z : X}
 
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
 @[reducible] def fundamentalGroupMonoidAction (x : X) :
-    MulAction (FundamentalGroup X x) (p ⁻¹' {x}) :=
+    MonoidAction (FundamentalGroup X x) (p ⁻¹' {x}) :=
   { smul := cov.monodromy (x := x) (y := x)
     mul_smul _ _ _ := cov.monodromy_trans_apply ..
     one_smul := congr_fun cov.monodromy_refl }
@@ -447,8 +447,8 @@ alias _root_.IsCoveringMap.fundamentalGroupMulAction := fundamentalGroupMonoidAc
 
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
 def monodromyPerm (x : X) : FundamentalGroup X x →* Equiv.Perm (p ⁻¹' {x}) :=
-  letI := cov.fundamentalGroupMulAction x
-  MulAction.toPermHom _ _
+  letI := cov.fundamentalGroupMonoidAction x
+  MonoidAction.toPermHom _ _
 
 @[simp] theorem coe_monodromyPerm {x γ} : cov.monodromyPerm x γ = cov.monodromy γ := rfl
 
@@ -561,7 +561,7 @@ theorem IsCoveringMapOn.existsUnique_continuousMap_lifts [SimplyConnectedSpace A
 
 namespace IsQuotientCoveringMap
 
-variable {G : Type*} [Group G] [MulAction G E] (hp : IsQuotientCoveringMap p G) {g : G}
+variable {G : Type*} [Group G] [MonoidAction G E] (hp : IsQuotientCoveringMap p G) {g : G}
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The monodromy action of a quotient covering map commutes with the group action. -/
@@ -700,7 +700,7 @@ end IsQuotientCoveringMap
 
 namespace IsAddQuotientCoveringMap
 
-variable {G : Type*} [AddGroup G] [AddAction G E] (hp : IsAddQuotientCoveringMap p G) {g : G}
+variable {G : Type*} [AddGroup G] [AddMonoidAction G E] (hp : IsAddQuotientCoveringMap p G) {g : G}
 
 theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e : p ⁻¹' {x}} :
     letI monodromy := hp.isCoveringMap.monodromy

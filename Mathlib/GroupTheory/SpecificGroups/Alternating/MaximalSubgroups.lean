@@ -40,7 +40,7 @@ public section
 
 open scoped Pointwise
 
-open Equiv.Perm Equiv Set MulAction
+open Equiv.Perm Equiv Set MonoidAction
 
 variable {α : Type*} [Fintype α] [DecidableEq α]
 
@@ -292,7 +292,7 @@ theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
     alternatingGroup.isPreprimitive_of_three_le_card α h3
   apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
 
-/-- `MulAction.stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
+/-- `MonoidAction.stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
 provided `s ≠ ∅`, `sᶜ ≠ ∅` and `Nat.card α ≠ 2 * s.ncard`.
 
 This is the intransitive case of the O'Nan–Scott classification. -/

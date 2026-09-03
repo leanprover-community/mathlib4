@@ -26,9 +26,9 @@ locally path-connected base) belong to follow-up files.
 
 ## Main results
 
-* `deck p` is a `Group`, acts on `E` via `MulAction`, the action is faithful and
+* `deck p` is a `Group`, acts on `E` via `MonoidAction`, the action is faithful and
   continuous in the second variable; these all follow automatically from the
-  `Subgroup`-action transfers together with `Homeomorph.applyMulAction`.
+  `Subgroup`-action transfers together with `Homeomorph.applyMonoidAction`.
 * `deck.proj_smul`: deck transformations commute with `p`.
 -/
 

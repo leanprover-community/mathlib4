@@ -27,7 +27,7 @@ variable {G H α : Type*}
 
 section Set
 section Group
-variable [Group G] [Group H] [MulAction G α] {a : G} {s t : Set α}
+variable [Group G] [Group H] [MonoidAction G α] {a : G} {s t : Set α}
 
 @[to_additive (attr := simp)]
 lemma stabilizer_empty : stabilizer G (∅ : Set α) = ⊤ :=
@@ -59,7 +59,7 @@ lemma mem_stabilizer_set {s : Set α} : a ∈ stabilizer G s ↔ ∀ b, a • b 
   refine mem_stabilizer_iff.trans ⟨fun h b ↦ ?_, fun h ↦ ?_⟩
   · rw [← (smul_mem_smul_set_iff : a • b ∈ _ ↔ _), h]
   simp_rw [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
-  exact ((MulAction.toPerm a).forall_congr' <| by simp [Iff.comm]).1 h
+  exact ((MonoidAction.toPerm a).forall_congr' <| by simp [Iff.comm]).1 h
 
 @[deprecated (since := "2026-09-02")]
 alias _root_.MulAction.mem_stabilizer_set := mem_stabilizer_set
@@ -220,7 +220,7 @@ alias _root_.AddAction.vadd_set_stabilizer_subset :=
 end CommGroup
 end Set
 
-variable [Group G] [Group H] [MulAction G α] {a : G}
+variable [Group G] [Group H] [MonoidAction G α] {a : G}
 
 /-! ### Stabilizer of a subgroup -/
 

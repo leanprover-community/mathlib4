@@ -182,7 +182,7 @@ lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z 
 
 section PosRealAction
 
-instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
+instance posRealAction : MonoidAction {x : ℝ // 0 < x} ℍ where
   smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
   one_smul _ := UpperHalfPlane.ext <| one_smul _ _
   mul_smul x y z := UpperHalfPlane.ext <| mul_smul (x : ℝ) y (z : ℂ)
@@ -208,9 +208,9 @@ theorem pos_real_smul_injective (z : ℍ) :
 
 end PosRealAction
 
-section RealAddAction
+section RealAddMonoidAction
 
-instance : AddAction ℝ ℍ where
+instance : AddMonoidAction ℝ ℍ where
   vadd x z := mk (x + z) <| by simpa using z.im_pos
   zero_vadd _ := by simp [HVAdd.hVAdd]
   add_vadd x y z := by simp [HVAdd.hVAdd, add_assoc]

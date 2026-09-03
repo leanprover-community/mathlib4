@@ -38,10 +38,10 @@ which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, 
 `(g₀, g₀g₁, ..., g₀g₁...gₙ)`. -/
 abbrev diagonalSuccIsoTensorTrivial :
     diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G k[Fin n → G] :=
-  linearizationOfMulActionIso k G (Fin (n + 1) → G) ≪≫ (linearization k G).mapIso
+  linearizationOfMonoidActionIso k G (Fin (n + 1) → G) ≪≫ (linearization k G).mapIso
     (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
     (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
-    tensorIso (linearizationOfMulActionIso k G G) (linearizationTrivialIso k G (Fin n → G))
+    tensorIso (linearizationOfMonoidActionIso k G G) (linearizationTrivialIso k G (Fin n → G))
 
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the right-hand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
@@ -195,7 +195,7 @@ instance leftRegular_projective :
 
 instance trivial_projective_of_subsingleton [Subsingleton G] :
     Projective (trivial k G k) :=
-  Projective.of_iso (ofMulActionSubsingletonIsoTrivial _ _ (Fin 1 → G)) diagonal_succ_projective
+  Projective.of_iso (ofMonoidActionSubsingletonIsoTrivial _ _ (Fin 1 → G)) diagonal_succ_projective
 
 end
 

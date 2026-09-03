@@ -41,7 +41,7 @@ variable {G K V : Type*} [AddCommGroup V] [DivisionRing K] [Module K V]
 set_option backward.isDefEq.respectTransparency false in
 /-- Any group acting `K`-linearly on `V` (such as the general linear group) acts on `ℙ V`. -/
 @[simps -isSimp]
-instance : MulAction G (ℙ K V) where
+instance : MonoidAction G (ℙ K V) where
   smul g x := x.map (DistribMulAction.toModuleEnd _ _ g)
     (DistribMulAction.toLinearEquiv _ _ g).injective
   one_smul x := show map _ _ _ = _ by simp [map_one, Module.End.one_eq_id]
@@ -65,7 +65,7 @@ lemma smul_mk (g : G) {v : V} (hv : v ≠ 0) :
 
 section transitivity
 
-open MulAction FiniteDimensional LinearEquiv
+open MonoidAction FiniteDimensional LinearEquiv
 
 variable (K V) in
 instance linearEquiv_is_two_pretransitive :
@@ -109,7 +109,7 @@ end DivisionRing
 
 section Field
 
-open MulAction LinearEquiv SpecialLinearGroup
+open MonoidAction LinearEquiv SpecialLinearGroup
 
 variable {K V : Type*} [AddCommGroup V] [Field K] [Module K V]
 
@@ -187,7 +187,7 @@ instance prePrimitive_SL : IsPreprimitive (Matrix.SpecialLinearGroup ι K) (ℙ 
   isPreprimitive_of_is_two_pretransitive inferInstance
 
 lemma SL_monoidAction_ker :
-    (MulAction.toPermHom (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K))).ker =
+    (MonoidAction.toPermHom (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K))).ker =
       Subgroup.center (Matrix.SpecialLinearGroup ι K) := by
   ext m
   simp only [MonoidHom.mem_ker, toPermHom_apply, Equiv.Perm.one_def, DFunLike.ext_iff, toPerm_apply,
@@ -217,10 +217,10 @@ alias _root_.Projectivization.SL_mulAction_ker := SL_monoidAction_ker
 projective special linear group `PSL = SL ⧸ Z(SL)`. -/
 def PSLAction.toPermHom :
     Matrix.ProjectiveSpecialLinearGroup ι K →* Equiv.Perm (ℙ K (ι → K)) :=
-  QuotientGroup.lift _ (MulAction.toPermHom _ _) (le_of_eq SL_mulAction_ker.symm)
+  QuotientGroup.lift _ (MonoidAction.toPermHom _ _) (le_of_eq SL_monoidAction_ker.symm)
 
-instance : MulAction (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
-  MulAction.compHom _ PSLAction.toPermHom
+instance : MonoidAction (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
+  MonoidAction.compHom _ PSLAction.toPermHom
 
 lemma _root_.Matrix.ProjectiveSpecialLinearGroup.smul_proj_mk (g : Matrix.SpecialLinearGroup ι K)
     (p : ℙ K (ι → K)) : (g : Matrix.ProjectiveSpecialLinearGroup ι K) • p = g • p := rfl
@@ -230,7 +230,7 @@ theorem _root_.Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective :
   rw [injective_iff_map_eq_one]
   intro g hg
   rwa [← MonoidHom.mem_ker, PSLAction.toPermHom,
-    QuotientGroup.ker_lift, SL_mulAction_ker, QuotientGroup.map_mk'_self,
+    QuotientGroup.ker_lift, SL_monoidAction_ker, QuotientGroup.map_mk'_self,
     Subgroup.mem_bot] at hg
 
 instance : FaithfulSMul (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
@@ -239,7 +239,7 @@ instance : FaithfulSMul (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι �
       simpa using! hg x
 
 instance : IsPreprimitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
-  @MulAction.IsPreprimitive.of_surjective _ _ _ _ _ _ _ _ (QuotientGroup.mk' _)
+  @MonoidAction.IsPreprimitive.of_surjective _ _ _ _ _ _ _ _ (QuotientGroup.mk' _)
     {toFun := id, map_smul' := by intros; simp; rfl} (prePrimitive_SL (ι := ι) (K := K))
     Function.surjective_id
 
@@ -247,8 +247,8 @@ open Matrix.ProjGenLinGroup
 
 open scoped MatrixGroups
 
-instance : MulAction PGL(ι, K) (ℙ K (ι → K)) :=
-  mulActionOfGL fun u ↦ ind fun v hv ↦ by
+instance : MonoidAction PGL(ι, K) (ℙ K (ι → K)) :=
+  monoidActionOfGL fun u ↦ ind fun v hv ↦ by
     simp only [smul_mk, mk_eq_mk_iff]
     exact ⟨u, by simp [Units.smul_def]⟩
 

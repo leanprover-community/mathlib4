@@ -41,11 +41,11 @@ variable {M G α β : Type*}
 `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y` (or `g +ᵥ x = y`
 for an additive action). A transitive action should furthermore have `α` nonempty.
 
-In this section we define typeclasses `MulAction.IsPretransitive` and
-`AddAction.IsPretransitive` and provide `MulAction.exists_smul_eq`/`AddAction.exists_vadd_eq`,
-`MulAction.surjective_smul`/`AddAction.surjective_vadd` as public interface to access this
+In this section we define typeclasses `MonoidAction.IsPretransitive` and
+`AddMonoidAction.IsPretransitive` and provide `MonoidAction.exists_smul_eq`/`AddMonoidAction.exists_vadd_eq`,
+`MonoidAction.surjective_smul`/`AddMonoidAction.surjective_vadd` as public interface to access this
 property. We do not provide typeclasses `*Action.IsTransitive`; users should assume
-`[MulAction.IsPretransitive M α] [Nonempty α]` instead.
+`[MonoidAction.IsPretransitive M α] [Nonempty α]` instead.
 -/
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g +ᵥ x = y`.
@@ -79,8 +79,8 @@ alias AddAction.isPretransitive_iff := AddMonoidAction.isPretransitive_iff
 
 @[to_additive]
 instance MonoidAction.instIsPretransitiveOfSubsingleton
-    {M α : Type*} [Monoid M] [MulAction M α] [Subsingleton α] :
-    MulAction.IsPretransitive M α where
+    {M α : Type*} [Monoid M] [MonoidAction M α] [Subsingleton α] :
+    MonoidAction.IsPretransitive M α where
   exists_smul_eq x y := ⟨1, by
     simp only [one_smul, Subsingleton.elim x y] ⟩
 
@@ -126,7 +126,7 @@ alias _root_.AddAction.Regular.isPretransitive_addOpposite :=
 a single element whose orbit is everything. -/
 @[to_additive /-- If `G` is a group acting additively on a set, then the action is transitive if
 there is a single element whose orbit is everything. -/]
-lemma IsPretransitive.of_orbit {X : Type*} [Group G] [MulAction G X] {x₀ : X}
+lemma IsPretransitive.of_orbit {X : Type*} [Group G] [MonoidAction G X] {x₀ : X}
     (ha : ∀ x, ∃ g : G, g • x₀ = x) :
     IsPretransitive G X := by
   constructor
@@ -161,7 +161,7 @@ section CompatibleScalar
 
 @[to_additive]
 lemma MonoidAction.IsPretransitive.of_isScalarTower (M : Type*) {N α : Type*} [Monoid N] [SMul M N]
-    [MulAction N α] [SMul M α] [IsScalarTower M N α] [IsPretransitive M α] : IsPretransitive N α :=
+    [MonoidAction N α] [SMul M α] [IsScalarTower M N α] [IsPretransitive M α] : IsPretransitive N α :=
   of_smul_eq (fun x : M ↦ x • 1) (smul_one_smul N _ _)
 
 @[deprecated (since := "2026-09-02")]
@@ -178,16 +178,16 @@ section
 
 open Additive Multiplicative
 
-instance Additive.addMonoidAction_isPretransitive [Monoid α] [MulAction α β]
-    [MulAction.IsPretransitive α β] : AddAction.IsPretransitive (Additive α) β :=
-  ⟨@MulAction.exists_smul_eq α _ _ _⟩
+instance Additive.addMonoidAction_isPretransitive [Monoid α] [MonoidAction α β]
+    [MonoidAction.IsPretransitive α β] : AddMonoidAction.IsPretransitive (Additive α) β :=
+  ⟨@MonoidAction.exists_smul_eq α _ _ _⟩
 
 @[deprecated (since := "2026-09-02")]
 alias Additive.addAction_isPretransitive := Additive.addMonoidAction_isPretransitive
 
-instance Multiplicative.monoidAction_isPretransitive [AddMonoid α] [AddAction α β]
-    [AddAction.IsPretransitive α β] : MulAction.IsPretransitive (Multiplicative α) β :=
-  ⟨@AddAction.exists_vadd_eq α _ _ _⟩
+instance Multiplicative.monoidAction_isPretransitive [AddMonoid α] [AddMonoidAction α β]
+    [AddMonoidAction.IsPretransitive α β] : MonoidAction.IsPretransitive (Multiplicative α) β :=
+  ⟨@AddMonoidAction.exists_vadd_eq α _ _ _⟩
 
 @[deprecated (since := "2026-09-02")]
 alias Multiplicative.mulAction_isPretransitive := Multiplicative.monoidAction_isPretransitive

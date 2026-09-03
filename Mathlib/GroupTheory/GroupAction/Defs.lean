@@ -19,10 +19,10 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 
 ## Main definitions
 
-* `MulAction.orbit`
-* `MulAction.fixedPoints`
-* `MulAction.fixedBy`
-* `MulAction.stabilizer`
+* `MonoidAction.orbit`
+* `MonoidAction.fixedPoints`
+* `MonoidAction.fixedBy`
+* `MonoidAction.stabilizer`
 
 -/
 
@@ -38,7 +38,7 @@ open Function
 
 namespace MonoidAction
 
-variable (M γ α : Type*) [SMul γ α] [Monoid M] [MulAction M α]
+variable (M γ α : Type*) [SMul γ α] [Monoid M] [MonoidAction M α]
 
 section Orbit
 
@@ -124,7 +124,7 @@ theorem orbit_smul_subset (m : M) (a : α) : orbit M (m • a) ⊆ orbit M a :=
 alias _root_.AddAction.orbit_vadd_subset := _root_.AddMonoidAction.orbit_vadd_subset
 
 @[to_additive]
-instance {a : α} : MulAction M (orbit M a) where
+instance {a : α} : MonoidAction M (orbit M a) where
   smul m := (mapsTo_smul_orbit m a).restrict _ _ _
   one_smul m := Subtype.ext (one_smul M (m : α))
   mul_smul m m' a' := Subtype.ext (mul_smul m m' (a' : α))
@@ -269,7 +269,7 @@ variable [Monoid α] [MulDistribMulAction M α]
 
 /-- The submonoid of elements fixed under the whole action. -/
 def FixedPoints.submonoid : Submonoid α where
-  carrier := MulAction.fixedPoints M α
+  carrier := MonoidAction.fixedPoints M α
   one_mem' := smul_one
   mul_mem' ha hb _ := by rw [smul_mul', ha, hb]
 
@@ -307,7 +307,7 @@ end Group
 end FixedPoints
 
 namespace MonoidAction
-variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
+variable {G α β : Type*} [Group G] [MonoidAction G α] [MonoidAction G β]
 
 section Orbit
 
@@ -397,15 +397,15 @@ alias _root_.AddAction.mem_orbit_trans := _root_.AddMonoidAction.mem_orbit_trans
 
 @[to_additive]
 lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
-    a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
+    a ∈ MonoidAction.orbit H b ↔ (a : α) ∈ MonoidAction.orbit H (b : α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, rfl⟩
-    exact MulAction.mem_orbit _ g
+    exact MonoidAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
     dsimp at h
     rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
-    exact MulAction.mem_orbit _ g
+    exact MonoidAction.mem_orbit _ g
 
 @[deprecated (since := "2026-09-02")]
 alias _root_.MulAction.mem_subgroup_orbit_iff := mem_subgroup_orbit_iff
@@ -443,7 +443,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
     Quotient.mk' ⁻¹' Quotient.mk' '' U = ⋃ g : G, (g • ·) '' U := by
   let := orbitRel G α
-  set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  set f : α → Quotient (MonoidAction.orbitRel G α) := Quotient.mk'
   ext a
   constructor
   · rintro ⟨b, hb, hab⟩
@@ -470,7 +470,7 @@ theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
   let := orbitRel G α
-  set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  set f : α → Quotient (MonoidAction.orbitRel G α) := Quotient.mk'
   refine
     ⟨fun h a a_in_U g g_in_V =>
       h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, ?_⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, ?_⟩
@@ -499,9 +499,9 @@ alias _root_.AddAction.image_inter_image_iff := _root_.AddMonoidAction.image_int
 
 variable (G α)
 
-/-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
+/-- The quotient by `MonoidAction.orbitRel`, given a name to enable dot notation. -/
 @[to_additive
-    /-- The quotient by `AddAction.orbitRel`, given a name to enable dot notation. -/]
+    /-- The quotient by `AddMonoidAction.orbitRel`, given a name to enable dot notation. -/]
 abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
@@ -521,10 +521,10 @@ alias _root_.MulAction.orbitRel.Quotient.quotient_smul_eq := orbitRel.Quotient.q
 alias _root_.AddAction.orbitRel.Quotient.quotient_vadd_eq :=
   _root_.AddMonoidAction.orbitRel.Quotient.quotient_vadd_eq
 
-/-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
-@[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
+/-- The orbit corresponding to an element of the quotient by `MonoidAction.orbitRel` -/
+@[to_additive /-- The orbit corresponding to an element of the quotient by `AddMonoidAction.orbitRel` -/]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
-  Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
+  Quotient.liftOn' x (orbit G) fun _ _ => MonoidAction.orbit_eq_iff.2
 
 @[deprecated (since := "2026-09-02")]
 alias _root_.MulAction.orbitRel.Quotient.orbit := orbitRel.Quotient.orbit
@@ -533,7 +533,7 @@ alias _root_.AddAction.orbitRel.Quotient.orbit := _root_.AddMonoidAction.orbitRe
 
 @[to_additive (attr := simp)]
 theorem orbitRel.Quotient.orbit_mk (a : α) :
-    orbitRel.Quotient.orbit (Quotient.mk'' a : orbitRel.Quotient G α) = MulAction.orbit G a :=
+    orbitRel.Quotient.orbit (Quotient.mk'' a : orbitRel.Quotient G α) = MonoidAction.orbit G a :=
   rfl
 
 @[deprecated (since := "2026-09-02")]
@@ -559,7 +559,7 @@ alias _root_.AddAction.orbitRel.Quotient.mem_orbit :=
 @[to_additive /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
     {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
-    orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
+    orbitRel.Quotient.orbit x = MonoidAction.orbit G (φ x) := by
   conv_lhs => rw [← hφ x]
   rfl
 
@@ -644,7 +644,7 @@ alias _root_.AddAction.orbitRel.Quotient.mapsTo_vadd_orbit :=
   _root_.AddMonoidAction.orbitRel.Quotient.mapsTo_vadd_orbit
 
 @[to_additive]
-instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
+instance (x : orbitRel.Quotient G α) : MonoidAction G x.orbit where
   smul g := (orbitRel.Quotient.mapsTo_smul_orbit g x).restrict _ _ _
   one_smul a := Subtype.ext (one_smul G (a : α))
   mul_smul g g' a' := Subtype.ext (mul_smul g g' (a' : α))
@@ -662,15 +662,15 @@ alias _root_.AddAction.orbitRel.Quotient.orbit.coe_vadd :=
 
 @[to_additive (attr := norm_cast, simp)]
 lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
-    {a b : x.orbit} : (a : α) ∈ MulAction.orbit H (b : α) ↔ a ∈ MulAction.orbit H b := by
+    {a b : x.orbit} : (a : α) ∈ MonoidAction.orbit H (b : α) ↔ a ∈ MonoidAction.orbit H b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, h⟩
     dsimp at h
     rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
-    exact MulAction.mem_orbit _ g
+    exact MonoidAction.mem_orbit _ g
   · rcases h with ⟨g, rfl⟩
-    exact MulAction.mem_orbit _ g
+    exact MonoidAction.mem_orbit _ g
 
 @[deprecated (since := "2026-09-02")]
 alias _root_.MulAction.orbitRel.Quotient.mem_subgroup_orbit_iff :=
@@ -696,7 +696,7 @@ alias _root_.AddAction.orbitRel.Quotient.addSubgroup_quotient_eq_iff :=
 @[to_additive]
 lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Quotient G α}
     {a b : x.orbit} {c : α} (h : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧) :
-    (a : α) ∈ MulAction.orbit H c ↔ (b : α) ∈ MulAction.orbit H c := by
+    (a : α) ∈ MonoidAction.orbit H c ↔ (b : α) ∈ MonoidAction.orbit H c := by
   simp_rw [mem_orbit_symm (a₂ := c)]
   convert! Iff.rfl using 2
   rw [orbit_eq_iff]
@@ -721,13 +721,13 @@ local notation "Ω" => orbitRel.Quotient G α
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 
-This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
-`MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
+This version is expressed in terms of `MonoidAction.orbitRel.Quotient.orbit` instead of
+`MonoidAction.orbit`, to avoid mentioning `Quotient.out`. -/
 @[to_additive
   /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
-  This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
-  `AddAction.orbit`, to avoid mentioning `Quotient.out`. -/]
+  This version is expressed in terms of `AddMonoidAction.orbitRel.Quotient.orbit` instead of
+  `AddMonoidAction.orbit`, to avoid mentioning `Quotient.out`. -/]
 def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
@@ -757,9 +757,9 @@ alias _root_.MulAction.selfEquivSigmaOrbits := selfEquivSigmaOrbits
 alias _root_.AddAction.selfEquivSigmaOrbits := _root_.AddMonoidAction.selfEquivSigmaOrbits
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
-Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
+Phrased as a set union. See `MonoidAction.selfEquivSigmaOrbits` for the type isomorphism. -/
 @[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
-group action. Phrased as a set union. See `AddAction.selfEquivSigmaOrbits` for the type
+group action. Phrased as a set union. See `AddMonoidAction.selfEquivSigmaOrbits` for the type
 isomorphism. -/]
 lemma univ_eq_iUnion_orbit :
     Set.univ (α := α) = ⋃ x : Ω, x.orbit := by
@@ -812,10 +812,10 @@ alias _root_.MulAction.le_stabilizer_smul_left := le_stabilizer_smul_left
 @[deprecated (since := "2026-09-02")]
 alias _root_.AddAction.le_stabilizer_vadd_left := _root_.AddMonoidAction.le_stabilizer_vadd_left
 
--- This lemma does not need `MulAction G α`, only `SMul G α`.
+-- This lemma does not need `MonoidAction G α`, only `SMul G α`.
 -- We use `G'` instead of `G` to locally reduce the typeclass assumptions.
 @[to_additive]
-lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MulAction G' β]
+lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MonoidAction G' β]
     [SMulCommClass G' α β] (a : α) (b : β) :
     stabilizer G' b ≤ stabilizer G' (a • b) := by
   simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
@@ -837,7 +837,7 @@ alias _root_.MulAction.stabilizer_smul_eq_left := stabilizer_smul_eq_left
 alias _root_.AddAction.stabilizer_vadd_eq_left := _root_.AddMonoidAction.stabilizer_vadd_eq_left
 
 @[to_additive (attr := simp)]
-lemma stabilizer_smul_eq_right {α} [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
+lemma stabilizer_smul_eq_right {α} [Group α] [MonoidAction α β] [SMulCommClass G α β] (a : α) (b : β) :
     stabilizer G (a • b) = stabilizer G b :=
   (le_stabilizer_smul_right _ _).antisymm' <| (le_stabilizer_smul_right a⁻¹ _).trans_eq <| by
     rw [inv_smul_smul]

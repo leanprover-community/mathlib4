@@ -69,12 +69,12 @@ noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
   if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.inertiaDeg A else 0
 
-section MulAction
+section MonoidAction
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
   {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-instance : MulAction G (primesOver p B) where
+instance : MonoidAction G (primesOver p B) where
   smul σ Q := primesOver.mk p (σ • Q.1)
   one_smul Q := Subtype.ext (one_smul G Q.1)
   mul_smul σ τ Q := Subtype.ext (mul_smul σ τ Q.1)
@@ -92,7 +92,7 @@ variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [A
   [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [IsIntegralClosure B A L] [FiniteDimensional K L]
 
-noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
+noncomputable instance : MonoidAction Gal(L/K) (primesOver p B) where
   smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
   one_smul Q := by
     apply Subtype.val_inj.mp
@@ -129,7 +129,7 @@ theorem exists_smul_eq_of_isGaloisGroup : ∃ σ : G, σ • P = Q := by
     (over_def P p).symm.trans (over_def Q p) with ⟨σ, hs⟩
   exact ⟨σ, hs.symm⟩
 
-instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesOver p B) where
+instance isPretransitive_of_isGaloisGroup : MonoidAction.IsPretransitive G (primesOver p B) where
   exists_smul_eq := by
     intro ⟨P, _, _⟩ ⟨Q, _, _⟩
     rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, hs⟩
@@ -240,7 +240,7 @@ variable {A B : Type*} [CommRing A] [CommRing B]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
 
 include G GAC in
-open IsGaloisGroup MulAction in
+open IsGaloisGroup MonoidAction in
 theorem ncard_primesOver_mul_ncard_primesOver :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
   have : Algebra.IsIntegral A C := isInvariant.isIntegral A C GAC
@@ -286,7 +286,7 @@ open Algebra
 attribute [local instance] Ideal.Quotient.field in
 theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
-    Nat.card (MulAction.stabilizer G P) = Nat.card (inertia G P) * P.inertiaDeg R := by
+    Nat.card (MonoidAction.stabilizer G P) = Nat.card (inertia G P) * P.inertiaDeg R := by
   let := Localization.AtPrime.algebraOfLiesOver p P
   have heq : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
       (algebraMap p.ResidueField P.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField) := by
@@ -302,7 +302,7 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
   have : Subgroup.index _ = _ := Nat.card_congr
     (IsFractionRing.stabilizerQuotientInertiaEquiv G p P p.ResidueField P.ResidueField).toEquiv
   rw [inertiaDeg_eq p P, ← IsGalois.card_aut_eq_finrank p.ResidueField P.ResidueField, ← this,
-    ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
+    ← ((inertia G P).subgroupOf (MonoidAction.stabilizer G P)).card_mul_index,
     Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv,
     AddSubgroup.subgroupOf_inertia]
 
@@ -311,7 +311,7 @@ lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (p.primesOver S).ncard * Nat.card (P.inertia G) * P.inertiaDeg R = Nat.card G := by
   rw [mul_assoc, ← card_stabilizer_eq_card_inertia_mul_finrank p P,
     ← IsInvariant.orbit_eq_primesOver R S G p P]
-  simpa using Nat.card_congr (MulAction.orbitProdStabilizerEquivGroup G P)
+  simpa using Nat.card_congr (MonoidAction.orbitProdStabilizerEquivGroup G P)
 
 /-- The cardinality of the inertia group is equal to the ramification index. -/
 lemma card_inertia_eq_ramificationIdxIn [IsDomain R] [IsDomain S] [Module.Finite R S] [Flat R S]
@@ -330,7 +330,7 @@ inertia degree. -/
 lemma card_stabilizer_eq [IsDomain R] [IsDomain S] [Module.Finite R S] [Flat R S]
     (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [PerfectField p.ResidueField] :
-    Nat.card (MulAction.stabilizer G P) = p.ramificationIdxIn S * p.inertiaDegIn S := by
+    Nat.card (MonoidAction.stabilizer G P) = p.ramificationIdxIn S * p.inertiaDegIn S := by
   rw [card_stabilizer_eq_card_inertia_mul_finrank p P, card_inertia_eq_ramificationIdxIn p,
     inertiaDegIn_eq_inertiaDeg p P G]
 

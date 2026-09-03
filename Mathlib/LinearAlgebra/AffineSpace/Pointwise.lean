@@ -10,7 +10,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-! # Pointwise instances on `AffineSubspace`s
 
-This file provides the additive action `AffineSubspace.pointwiseAddAction` in the
+This file provides the additive action `AffineSubspace.pointwiseAddMonoidAction` in the
 `Pointwise` locale.
 
 -/
@@ -49,13 +49,13 @@ scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseVAdd
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseAddMonoidAction : AddAction V (AffineSubspace k P) :=
-  SetLike.coe_injective.addAction _ coe_pointwise_vadd
+protected def pointwiseAddMonoidAction : AddMonoidAction V (AffineSubspace k P) :=
+  SetLike.coe_injective.addMonoidAction _ coe_pointwise_vadd
 
 @[deprecated (since := "2026-09-02")]
 alias _root_.AffineSubspace.pointwiseAddAction := _root_.AffineSubspace.pointwiseAddMonoidAction
 
-scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddAction
+scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddMonoidAction
 
 theorem pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
     v +ᵥ s = s.map (AffineEquiv.constVAdd k P v) :=
@@ -119,7 +119,7 @@ lemma smul_span (a : M) (s : Set V) : a • affineSpan k s = affineSpan k (a •
 
 end SMul
 
-section MulAction
+section MonoidAction
 variable [Monoid M] [DistribMulAction M V] [SMulCommClass M k V] {a : M} {s : AffineSubspace k V}
   {p : V}
 
@@ -131,13 +131,13 @@ This is available as an instance in the `Pointwise` locale.
 TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
 @[instance_reducible]
-protected def monoidAction : MulAction M (AffineSubspace k V) :=
-  SetLike.coe_injective.mulAction _ coe_smul
+protected def monoidAction : MonoidAction M (AffineSubspace k V) :=
+  SetLike.coe_injective.monoidAction _ coe_smul
 
 @[deprecated (since := "2026-09-02")]
 alias _root_.AffineSubspace.mulAction := _root_.AffineSubspace.monoidAction
 
-scoped[Pointwise] attribute [instance] AffineSubspace.mulAction
+scoped[Pointwise] attribute [instance] AffineSubspace.monoidAction
 
 lemma smul_mem_smul_iff_of_isUnit (ha : IsUnit a) : a • p ∈ a • s ↔ p ∈ s :=
   smul_mem_smul_iff (a := ha.unit)

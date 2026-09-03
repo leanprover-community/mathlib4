@@ -186,8 +186,8 @@ instance instIsScalarTower [SMul ℂ α] [SMul ℂ β] [SMul α β] [IsScalarTow
     IsScalarTower Circle α β :=
   inferInstanceAs <| IsScalarTower (Submonoid.unitSphere _) α β
 
-instance instMonoidAction [MulAction ℂ α] : MulAction Circle α :=
-  inferInstanceAs <| MulAction (Submonoid.unitSphere _) α
+instance instMonoidAction [MonoidAction ℂ α] : MonoidAction Circle α :=
+  inferInstanceAs <| MonoidAction (Submonoid.unitSphere _) α
 
 instance instDistribMulAction [AddMonoid M] [DistribMulAction ℂ M] :
     DistribMulAction Circle M :=
@@ -195,7 +195,7 @@ instance instDistribMulAction [AddMonoid M] [DistribMulAction ℂ M] :
 
 lemma smul_def [SMul ℂ α] (z : Circle) (a : α) : z • a = (z : ℂ) • a := rfl
 
-instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [ContinuousSMul ℂ α] :
+instance instContinuousSMul [TopologicalSpace α] [MonoidAction ℂ α] [ContinuousSMul ℂ α] :
     ContinuousSMul Circle α :=
   inferInstanceAs <| ContinuousSMul (Submonoid.unitSphere _) α
 

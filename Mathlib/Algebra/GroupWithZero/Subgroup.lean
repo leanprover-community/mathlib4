@@ -56,7 +56,7 @@ variable [Monoid M] [AddGroup A] [DistribMulAction M A] {a : M}
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseMonoidAction : MulAction M (AddSubgroup A) where
+protected def pointwiseMonoidAction : MonoidAction M (AddSubgroup A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=
     (congr_arg (fun f : AddMonoid.End A => S.map f) (map_one _)).trans S.map_id
@@ -66,7 +66,7 @@ protected def pointwiseMonoidAction : MulAction M (AddSubgroup A) where
 @[deprecated (since := "2026-09-02")]
 alias _root_.AddSubgroup.pointwiseMulAction := _root_.AddSubgroup.pointwiseMonoidAction
 
-scoped[Pointwise] attribute [instance] AddSubgroup.pointwiseMulAction
+scoped[Pointwise] attribute [instance] AddSubgroup.pointwiseMonoidAction
 
 lemma pointwise_smul_def (S : AddSubgroup A) :
     a • S = S.map (DistribMulAction.toAddMonoidEnd _ _ a) :=

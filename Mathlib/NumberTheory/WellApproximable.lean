@@ -292,7 +292,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
   rw [← eventuallyEqSet_empty, ← eventuallyEqSet_univ]
   have hC : ∀ p : Nat.Primes, u p +ᵥ C p = C p := by
     intro p
-    let e := (AddAction.toPerm (u p) : Equiv.Perm 𝕊).toOrderIsoSet
+    let e := (AddMonoidAction.toPerm (u p) : Equiv.Perm 𝕊).toOrderIsoSet
     change e (C p) = C p
     rw [OrderIso.apply_blimsup e, ← hu₀ p]
     exact blimsup_congr (Eventually.of_forall fun n hn =>

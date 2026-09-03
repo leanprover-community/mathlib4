@@ -21,7 +21,7 @@ addition/multiplication operator.
 
 public section
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists MonoidWithZero MonoidAction
 
 open Function
 

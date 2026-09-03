@@ -1065,7 +1065,7 @@ end Subring
 /-! ## Actions by `Subring`s
 
 These are just copies of the definitions about `Subsemiring` starting from
-`Subsemiring.MulAction`.
+`Subsemiring.MonoidAction`.
 
 When `R` is commutative, `Algebra.ofSubring` provides a stronger result than those found in
 this file, which uses the same scalar action.
@@ -1098,7 +1098,7 @@ example [SMul α β] [SMul R α] [SMul R β] [IsScalarTower R α β] (S : Subrin
 example [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α := by infer_instance
 
 /-- The action by a subring is the action by the underlying ring. -/
-example {R} [Ring R] [MulAction R α] (S : Subring R) : MulAction S α := by infer_instance
+example {R} [Ring R] [MonoidAction R α] (S : Subring R) : MonoidAction S α := by infer_instance
 
 /-- The action by a subring is the action by the underlying ring. -/
 example {R} [Ring R] [AddMonoid α] [DistribMulAction R α] (S : Subring R) :
@@ -1132,12 +1132,12 @@ instance center.smulCommClass_right {R} [Ring R] : SMulCommClass R (center R) R 
   Subsemiring.center.smulCommClass_right
 
 /-- The center of a semiring acts commutatively on any `R`-module -/
-instance {R M : Type*} [Ring R] [MulAction R M] :
+instance {R M : Type*} [Ring R] [MonoidAction R M] :
     SMulCommClass R (Subring.center R) M :=
   inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
 
 /-- The center of a semiring acts commutatively on any `R`-module -/
-instance {R M : Type*} [Ring R] [MulAction R M] :
+instance {R M : Type*} [Ring R] [MonoidAction R M] :
     SMulCommClass (Subring.center R) R M :=
   inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
 

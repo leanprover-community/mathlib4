@@ -75,11 +75,11 @@ instance monoid {C : Type u} [Category.{v} C] {X : C} : Monoid (End X) where
   one_mul := Category.comp_id
   mul_assoc := fun x y z => (Category.assoc z y x).symm
 
-section MulAction
+section MonoidAction
 
 variable {C : Type u} [Category.{v} C]
 
-instance monoidActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
+instance monoidActionRight {X Y : C} : MonoidAction (End Y) (X ⟶ Y) where
   smul r f := f ≫ r
   one_smul := Category.comp_id
   mul_smul _ _ _ := Eq.symm <| Category.assoc _ _ _
@@ -87,7 +87,7 @@ instance monoidActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
 @[deprecated (since := "2026-09-02")]
 alias _root_.CategoryTheory.End.mulActionRight := monoidActionRight
 
-instance monoidActionLeft {X Y : C} : MulAction (End X)ᵐᵒᵖ (X ⟶ Y) where
+instance monoidActionLeft {X Y : C} : MonoidAction (End X)ᵐᵒᵖ (X ⟶ Y) where
   smul r f := r.unop ≫ f
   one_smul := Category.id_comp
   mul_smul _ _ _ := Category.assoc _ _ _

@@ -273,7 +273,7 @@ abbrev Function.Injective.torsor {G P Q : Type*}
     (hf : Function.Injective f)
     (smul : ∀ (c : G) (x : Q), f (c • x) = c • f x)
     (sdiv : ∀ (x y : Q), x /ₛ y = f x /ₛ f y) : Torsor G Q where
-  __ := hf.mulAction f smul
+  __ := hf.monoidAction f smul
   sdiv_smul' x y := hf <| by simp only [sdiv, smul, sdiv_smul]
   smul_sdiv' c x := by simp [sdiv, smul]
 
@@ -284,7 +284,7 @@ abbrev Function.Surjective.torsor {G P Q : Type*}
     (f : P → Q) (hf : Surjective f)
     (smul : ∀ (c : G) (x : P), f (c • x) = c • f x)
     (sdiv : ∀ (x y : P), x /ₛ y = f x /ₛ f y) : Torsor G Q where
-  __ := hf.mulAction f smul
+  __ := hf.monoidAction f smul
   nonempty := Torsor.nonempty.map f
   sdiv_smul' := by simp [hf.forall, ← smul, ← sdiv]
   smul_sdiv' := by simp [hf.forall, ← smul, ← sdiv]

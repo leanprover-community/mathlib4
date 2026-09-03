@@ -871,7 +871,7 @@ section RestrictScalars
 section Equiv
 
 variable (R : Type*) {S A B : Type*} [CommSemiring R] [CommSemiring S]
-  [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S] [Module S A]
+  [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MonoidAction R S] [Module S A]
   [Module S B] [Module R A] [Module R B] [IsScalarTower R S A] [IsScalarTower R S B]
   [Star A] [Star B]
 

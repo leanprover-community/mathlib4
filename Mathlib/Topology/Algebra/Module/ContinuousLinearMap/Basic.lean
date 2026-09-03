@@ -317,7 +317,7 @@ section SMulMonoid
 variable {S₂ : Type*} [Monoid S₂]
 variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConstSMul S₂ M₂]
 
-instance monoidAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.mulAction
+instance monoidAction : MonoidAction S₂ (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.monoidAction
 
 @[deprecated (since := "2026-09-02")] alias _root_.ContinuousLinearMap.mulAction := monoidAction
 
@@ -644,7 +644,7 @@ variable [ContinuousAdd M₁]
 
 /-- The tautological action by `M₁ →L[R₁] M₁` on `M`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMonoidAction`. -/
 instance applyModule : Module (M₁ →L[R₁] M₁) M₁ :=
   Module.compHom _ toLinearMapRingHom
 

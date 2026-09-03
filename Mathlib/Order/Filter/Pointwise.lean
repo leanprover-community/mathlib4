@@ -1079,7 +1079,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 @[to_additive (attr := instance_reducible)
   /-- An additive action of an additive monoid `α` on a type `β` gives an additive
 action of `Filter α` on `Filter β`. -/]
-protected def monoidAction [Monoid α] [MulAction α β] : MulAction (Filter α) (Filter β) where
+protected def monoidAction [Monoid α] [MonoidAction α β] : MonoidAction (Filter α) (Filter β) where
   one_smul f := map₂_pure_left.trans <| by simp_rw [one_smul, map_id']
   mul_smul _ _ _ := map₂_assoc mul_smul
 
@@ -1091,7 +1091,7 @@ protected def monoidAction [Monoid α] [MulAction α β] : MulAction (Filter α)
 @[to_additive (attr := instance_reducible)
   /-- An additive action of an additive monoid on a type `β` gives an additive action on
 `Filter β`. -/]
-protected def monoidActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
+protected def monoidActionFilter [Monoid α] [MonoidAction α β] : MonoidAction α (Filter β) where
   mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
   one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
 
@@ -1100,8 +1100,8 @@ alias _root_.Filter.mulActionFilter := _root_.Filter.monoidActionFilter
 @[deprecated (since := "2026-09-02")]
 alias _root_.Filter.addActionFilter := _root_.Filter.addMonoidActionFilter
 
-scoped[Pointwise] attribute [instance] Filter.mulAction Filter.addAction Filter.mulActionFilter
-  Filter.addActionFilter
+scoped[Pointwise] attribute [instance] Filter.monoidAction Filter.addMonoidAction Filter.monoidActionFilter
+  Filter.addMonoidActionFilter
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Filter β`. -/
@@ -1157,7 +1157,7 @@ end SMulWithZero
 section Cancel
 
 @[to_additive]
-theorem _root_.IsUnit.smul_tendsto_smul_iff [Monoid γ] [MulAction γ β] {m : α → β} {c : γ}
+theorem _root_.IsUnit.smul_tendsto_smul_iff [Monoid γ] [MonoidAction γ β] {m : α → β} {c : γ}
     {f : Filter α} {g : Filter β} (hc : IsUnit c) :
     Tendsto (c • m) f (c • g) ↔ Tendsto m f g := by
   rcases hc.exists_left_inv with ⟨d, hd⟩
@@ -1165,11 +1165,11 @@ theorem _root_.IsUnit.smul_tendsto_smul_iff [Monoid γ] [MulAction γ β] {m : �
   simpa [Function.comp_def, smul_smul, hd] using (tendsto_map (f := (d • ·))).comp H
 
 @[to_additive (attr := simp)]
-theorem smul_tendsto_smul_iff [Group γ] [MulAction γ β] {m : α → β} {c : γ} {f : Filter α}
+theorem smul_tendsto_smul_iff [Group γ] [MonoidAction γ β] {m : α → β} {c : γ} {f : Filter α}
     {g : Filter β} : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
   Group.isUnit _ |>.smul_tendsto_smul_iff
 
-theorem smul_tendsto_smul_iff₀ [GroupWithZero γ] [MulAction γ β] {m : α → β} {c : γ} {f : Filter α}
+theorem smul_tendsto_smul_iff₀ [GroupWithZero γ] [MonoidAction γ β] {m : α → β} {c : γ} {f : Filter α}
     {g : Filter β} (hc : c ≠ 0) : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
   hc.isUnit.smul_tendsto_smul_iff
 

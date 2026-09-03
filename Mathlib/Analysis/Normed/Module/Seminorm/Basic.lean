@@ -188,8 +188,8 @@ instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid (Seminorm 𝕜 E) :=
   Function.Injective.isOrderedCancelAddMonoid DFunLike.coe FunLike.coe_add .rfl
 
-instance instMonoidAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
-    MulAction R (Seminorm 𝕜 E) := fast_instance% FunLike.mulAction
+instance instMonoidAction [Monoid R] [MonoidAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
+    MonoidAction R (Seminorm 𝕜 E) := fast_instance% FunLike.monoidAction
 
 variable (𝕜 E)
 

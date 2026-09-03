@@ -23,7 +23,7 @@ When adding new definitions that transfer type-classes across an equivalence, pl
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists MonoidWithZero MonoidAction
 
 library_note «instance transfer via equivalence» /--
 For many type classes, we have a definition that lets us transfer instances from one type to another

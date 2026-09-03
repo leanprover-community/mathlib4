@@ -64,7 +64,7 @@ of a subgroup. -/
   /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/]
 def leftRel : Setoid α :=
-  MulAction.orbitRel s.op α
+  MonoidAction.orbitRel s.op α
 
 variable {s} in
 @[to_additive]
@@ -104,7 +104,7 @@ subgroup. -/
   /-- The equivalence relation corresponding to the partition of a group by right cosets
   of a subgroup. -/]
 def rightRel : Setoid α :=
-  MulAction.orbitRel s α
+  MonoidAction.orbitRel s α
 
 variable {s} in
 @[to_additive]

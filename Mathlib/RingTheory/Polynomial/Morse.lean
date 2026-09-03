@@ -53,7 +53,7 @@ theorem Splits.toPermHom_apply_eq_one_or_isSwap_of_ncard_le_of_mem_inertia
     [DecidableEq (f.rootSet S)] (hf : (f.map (algebraMap R S)).Splits)
     (p : Ideal S) [p.IsPrime] (hp : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ p)).ncard + 1)
     (g : G) (hg : g ∈ p.inertia G) :
-    MulAction.toPermHom G (f.rootSet S) g = 1 ∨ (MulAction.toPermHom G (f.rootSet S) g).IsSwap := by
+    MonoidAction.toPermHom G (f.rootSet S) g = 1 ∨ (MonoidAction.toPermHom G (f.rootSet S) g).IsSwap := by
   classical
   by_cases hfp : f.map (algebraMap R (S ⧸ p)) = 0
   · rw [rootSet_def f (S ⧸ p), aroots_def, hfp, roots_zero, Multiset.toFinset_zero,
@@ -67,7 +67,7 @@ theorem Splits.toPermHom_apply_eq_one_or_isSwap_of_ncard_le_of_mem_inertia
   rintro ⟨x, hx : g • x ≠ x⟩
   refine ⟨g • x, x, hx, ?_⟩
   ext z
-  simp only [Equiv.swap_apply_def, MulAction.toPermHom_apply, MulAction.toPerm_apply]
+  simp only [Equiv.swap_apply_def, MonoidAction.toPermHom_apply, MonoidAction.toPerm_apply]
   split_ifs with hz hz'
   · subst hz
     have key := hp (g • g • x) (g • g • x).2 (g • x) (g • x).2 (g • x) (g • x).2 x x.2
@@ -82,10 +82,10 @@ surjects onto the symmetric group `S_n`.
 
 Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois]. -/
 theorem Splits.surjective_toPermHom_of_iSup_inertia_eq_top
-    (hf : (f.map (algebraMap R S)).Splits) [MulAction.IsPretransitive G (f.rootSet S)]
+    (hf : (f.map (algebraMap R S)).Splits) [MonoidAction.IsPretransitive G (f.rootSet S)]
     (h : ∀ m : MaximalSpectrum S, (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1)
     (hG : ⨆ m : MaximalSpectrum S, m.asIdeal.inertia G = ⊤) :
-    Function.Surjective (MulAction.toPermHom G (f.rootSet S)) := by
+    Function.Surjective (MonoidAction.toPermHom G (f.rootSet S)) := by
   classical
   apply surjective_of_isSwap_of_isPretransitive'
       (⋃ m : MaximalSpectrum S, m.asIdeal.inertia G)

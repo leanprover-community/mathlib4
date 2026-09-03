@@ -268,7 +268,7 @@ variable [hGKL : IsGaloisGroup G K L]
 -- and if the theorem was `fixingSubgroup G Set.univ = ⊥` then `K` couldn't be inferred
 theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : Set L) = ⊥ := by
   have := hGKL.faithful
-  ext; simpa [mem_fixingSubgroup_iff, Set.ext_iff] using MulAction.fixedBy_eq_univ_iff_eq_one
+  ext; simpa [mem_fixingSubgroup_iff, Set.ext_iff] using MonoidAction.fixedBy_eq_univ_iff_eq_one
 
 @[simp]
 theorem fixedPoints_top :
@@ -389,7 +389,7 @@ theorem quotient [Finite G] (N : Subgroup G) [N.Normal] [MulSemiringAction G C]
         (FaithfulSMul.algebraMap_injective B C).eq_iff]
     have {g : G} : Quotient.mk'' g = QuotientGroup.mk' N g := rfl
     simp_rw [← inv_smul_eq_iff, this, ← map_inv, smul_smul, ← map_mul,
-      QuotientGroup.mk'_apply, MulAction.coe_quotient_smul] at h
+      QuotientGroup.mk'_apply, MonoidAction.coe_quotient_smul] at h
     have := h' _ h
     rwa [QuotientGroup.eq, ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv]
   commutes := inferInstance
@@ -398,7 +398,7 @@ theorem quotient [Finite G] (N : Subgroup G) [N.Normal] [MulSemiringAction G C]
     apply hG.isInvariant.isInvariant (algebraMap B C x)
     intro g
     have := (FaithfulSMul.algebraMap_injective B C).eq_iff.mpr <| h g
-    rwa [MulAction.coe_quotient_smul, algebraMap.smul'] at this
+    rwa [MonoidAction.coe_quotient_smul, algebraMap.smul'] at this
 
 /-- If `G` is a Galois group for `C/A`, the normal subgroup `N ≤ G` is a Galois group for `C/B`,
 and `G'` is a Galois group for `B/A`, then `G ⧸ N ≃* G'`. -/
@@ -509,12 +509,12 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
     commutes := ⟨by
       intro ⟨_, g, hg, rfl⟩ x y
       apply FaithfulSMul.algebraMap_injective F L
-      simpa [MulAction.subgroup_smul_def, algebraMap.coe_smul', algebraMap.coe_smul]
+      simpa [MonoidAction.subgroup_smul_def, algebraMap.coe_smul', algebraMap.coe_smul]
         using hE.commutes.smul_comm ⟨g, hg⟩ x (y : L)⟩
     isInvariant := ⟨fun x h ↦ by
       obtain ⟨a, ha⟩ := hE.isInvariant.isInvariant (algebraMap F L x) (by
         rintro ⟨g, hg⟩
-        rw [MulAction.subgroup_smul_def, ← algebraMap.smul']
+        rw [MonoidAction.subgroup_smul_def, ← algebraMap.smul']
         exact congr_arg (algebraMap F L) <| h ⟨g, ⟨g, hg, rfl⟩⟩)
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha])⟩⟩ }

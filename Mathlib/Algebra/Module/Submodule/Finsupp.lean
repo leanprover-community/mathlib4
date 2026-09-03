@@ -83,7 +83,7 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
 /-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
 @[instance_reducible]
 protected noncomputable def pointwiseSetMonoidAction [SMulCommClass R R M] :
-    MulAction (Set R) (Submodule R M) where
+    MonoidAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
       fun h => ⟨m, h, (one_smul _ _).symm⟩⟩
@@ -100,9 +100,9 @@ protected noncomputable def pointwiseSetMonoidAction [SMulCommClass R R M] :
 @[deprecated (since := "2026-09-02")]
 alias _root_.Submodule.pointwiseSetMulAction := _root_.Submodule.pointwiseSetMonoidAction
 
-scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
+scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMonoidAction
 
--- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.
+-- This cannot be generalized to `Set S` because `MonoidAction` can't be generalized already.
 /-- In a ring, sets acts on submodules. -/
 @[instance_reducible]
 protected noncomputable def pointwiseSetDistribMulAction [SMulCommClass R R M] :

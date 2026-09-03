@@ -13,7 +13,7 @@ public import Mathlib.Basic.ENNReal.Operations
 # Scalar multiplication on `ℝ≥0∞`.
 
 This file defines basic scalar actions on extended nonnegative reals, showing that
-`MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
+`MonoidAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
 
 public section
@@ -27,26 +27,26 @@ variable {a b c : ℝ≥0∞} {r : ℝ≥0}
 -- TODO: generalize some of these to `WithTop α`
 section Actions
 
-noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : SMul ℝ≥0 M :=
+noncomputable instance {M : Type*} [MonoidAction ℝ≥0∞ M] : SMul ℝ≥0 M :=
   ⟨fun c m ↦ (c : ℝ≥0∞) • m⟩
 
-/-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
-noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
-  fast_instance% MulAction.compHom M ofNNRealHom.toMonoidHom
+/-- A `MonoidAction` over `ℝ≥0∞` restricts to a `MonoidAction` over `ℝ≥0`. -/
+noncomputable instance {M : Type*} [MonoidAction ℝ≥0∞ M] : MonoidAction ℝ≥0 M :=
+  fast_instance% MonoidAction.compHom M ofNNRealHom.toMonoidHom
 
-theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
+theorem smul_def {M : Type*} [MonoidAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
 
 @[simp]
 theorem smul_one (c : ℝ≥0) : c • (1 : ℝ≥0∞) = (c : ℝ≥0∞) := by simp [smul_def]
 
-instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
+instance {M N : Type*} [MonoidAction ℝ≥0∞ M] [MonoidAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ≥0∞)
 
-instance smulCommClass_left {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
+instance smulCommClass_left {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := smul_comm (r : ℝ≥0∞)
 
-instance smulCommClass_right {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
+instance smulCommClass_right {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := smul_comm m (r : ℝ≥0∞)
 
 /-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/

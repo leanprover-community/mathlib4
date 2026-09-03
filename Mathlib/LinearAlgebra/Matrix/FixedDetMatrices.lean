@@ -52,7 +52,7 @@ lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrix n R m))
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
+instance (m : R) : MonoidAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
   one_smul b := by rw [smul_def]; simp only [coe_one, one_mul, Subtype.coe_eta]
   mul_smul x y b := by simp_rw [smul_def, ← mul_assoc, coe_mul]
 

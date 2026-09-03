@@ -27,8 +27,8 @@ A point `x : α` is a periodic point of `f : α → α` of period `n` if `f^[n] 
 * `minimalPeriod f x` : the minimal period of a point `x` under an endomorphism `f` or zero
   if `x` is not a periodic point of `f`.
 * `orbit f x`: the cycle `[x, f x, f (f x), ...]` for a periodic point.
-* `MulAction.period g x` : the minimal period of a point `x` under the multiplicative action of `g`;
-  an equivalent `AddAction.period g x` is defined for additive actions.
+* `MonoidAction.period g x` : the minimal period of a point `x` under the multiplicative action of `g`;
+  an equivalent `AddMonoidAction.period g x` is defined for additive actions.
 
 ## Main statements
 
@@ -545,8 +545,8 @@ open Function
 
 universe u v
 variable {α : Type v}
-variable {G : Type u} [Group G] [MulAction G α]
-variable {M : Type u} [Monoid M] [MulAction M α]
+variable {G : Type u} [Group G] [MonoidAction G α]
+variable {M : Type u} [Monoid M] [MonoidAction M α]
 
 /--
 The period of a multiplicative action of `g` on `a` is the smallest positive `n` such that
@@ -559,11 +559,11 @@ noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m •
 @[deprecated (since := "2026-09-02")] alias _root_.MulAction.period := period
 @[deprecated (since := "2026-09-02")] alias _root_.AddAction.period := _root_.AddMonoidAction.period
 
-/-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
-@[to_additive /-- `AddAction.period m a` is definitionally equal to
+/-- `MonoidAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
+@[to_additive /-- `AddMonoidAction.period m a` is definitionally equal to
 `Function.minimalPeriod (m +ᵥ ·) a` -/]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
-    MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
+    MonoidAction.period m a = minimalPeriod (fun x => m • x) a := rfl
 
 @[deprecated (since := "2026-09-02")]
 alias _root_.MulAction.period_eq_minimalPeriod := period_eq_minimalPeriod
@@ -589,7 +589,7 @@ alias _root_.MulAction.isPeriodicPt_smul_iff := isPeriodicPt_smul_iff
 @[deprecated (since := "2026-09-02")]
 alias _root_.AddAction.isPeriodicPt_vadd_iff := _root_.AddMonoidAction.isPeriodicPt_vadd_iff
 
-/-! ### Multiples of `MulAction.period`
+/-! ### Multiples of `MonoidAction.period`
 
 It is easy to convince oneself that if `g ^ n • a = a` (resp. `(n • g) +ᵥ a = a`),
 then `n` must be a multiple of `period g a`.

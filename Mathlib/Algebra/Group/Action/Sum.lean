@@ -81,8 +81,8 @@ instance FaithfulSMulRight [FaithfulSMul M β] : FaithfulSMul M (α ⊕ β) :=
 end SMul
 
 @[to_additive]
-instance {m : Monoid M} [MulAction M α] [MulAction M β] :
-    MulAction M (α ⊕ β) where
+instance {m : Monoid M} [MonoidAction M α] [MonoidAction M β] :
+    MonoidAction M (α ⊕ β) where
   mul_smul a b x := by
     cases x
     exacts [congr_arg inl (mul_smul _ _ _), congr_arg inr (mul_smul _ _ _)]

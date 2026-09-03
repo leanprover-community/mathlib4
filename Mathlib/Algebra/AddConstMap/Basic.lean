@@ -376,9 +376,9 @@ theorem coe_vadd {K : Type*} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G �
     ⇑(c +ᵥ f) = c +ᵥ ⇑f :=
   rfl
 
-instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
-    AddAction K (G →+c[a, b] H) :=
-  DFunLike.coe_injective.addAction _ coe_vadd
+instance {K : Type*} [AddMonoid K] [AddMonoidAction K H] [VAddAssocClass K H H] :
+    AddMonoidAction K (G →+c[a, b] H) :=
+  DFunLike.coe_injective.addMonoidAction _ coe_vadd
 
 /-!
 ### Monoid structure on endomorphisms `G →+c[a, a] G`

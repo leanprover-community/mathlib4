@@ -11,7 +11,7 @@ public import Mathlib.GroupTheory.Subgroup.Center
 /-!
 # Actions by `Subgroup`s
 
-These are just copies of the definitions about `Submonoid` starting from `Submonoid.mulAction`.
+These are just copies of the definitions about `Submonoid` starting from `Submonoid.monoidAction`.
 
 ## Tags
 subgroup, subgroups
@@ -24,12 +24,12 @@ public section
 namespace Subgroup
 variable {G α β : Type*} [Group G]
 
-section MulAction
-variable [MulAction G α] {S : Subgroup G}
+section MonoidAction
+variable [MonoidAction G α] {S : Subgroup G}
 
 /-- This shortcut instance provides a speedup. -/
 @[to_additive /-- This shortcut instance provides a speedup. -/]
-instance : MulAction S α := inferInstance
+instance : MonoidAction S α := inferInstance
 
 @[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
 
@@ -39,23 +39,23 @@ lemma mk_smul (g : G) (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • 
 end MonoidAction
 
 @[to_additive]
-instance smulCommClass_left [MulAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :
+instance smulCommClass_left [MonoidAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :
     SMulCommClass S α β :=
   S.toSubmonoid.smulCommClass_left
 
 @[to_additive]
-instance smulCommClass_right [SMul α β] [MulAction G β] [SMulCommClass α G β] (S : Subgroup G) :
+instance smulCommClass_right [SMul α β] [MonoidAction G β] [SMulCommClass α G β] (S : Subgroup G) :
     SMulCommClass α S β :=
   S.toSubmonoid.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S G G` which is needed by `smul_mul_assoc`. -/
 @[to_additive]
-instance [SMul α β] [MulAction G α] [MulAction G β] [IsScalarTower G α β] (S : Subgroup G) :
+instance [SMul α β] [MonoidAction G α] [MonoidAction G β] [IsScalarTower G α β] (S : Subgroup G) :
     IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubmonoid α β)
 
 @[to_additive]
-instance [MulAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S α :=
+instance [MonoidAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubmonoid α)
 
 /-- The action by a subgroup is the action by the underlying group. -/

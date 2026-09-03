@@ -35,7 +35,7 @@ end monoid, aut group
 
 @[expose] public section
 
-assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
+assert_not_exists HeytingAlgebra MonoidWithZero MonoidAction RelIso
 
 variable {A M G α β γ : Type*}
 
@@ -716,7 +716,7 @@ def toPerm : MulAut M →* Equiv.Perm M where
 
 /-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
-See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance
+See also the type `ConjAct G` for any group `G`, which has a `MonoidAction (ConjAct G) G` instance
 where `conj G` acts on `G` by conjugation. -/
 @[to_additive /-- Group conjugation, `AddAut.addConj g h = g + h + -g`, as an additive homomorphism
 mapping addition in `G` into addition in the additive automorphism group `AddAut G`. -/]

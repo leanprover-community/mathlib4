@@ -103,7 +103,7 @@ end restrict
 section stabilizer
 
 open scoped Pointwise
-open MulAction Ideal
+open MonoidAction Ideal
 
 variable (p : ℕ) [hp : Fact (Nat.Prime p)] (P : Ideal (𝓞 K)) [P.IsMaximal]
   [P.LiesOver (Ideal.span {(p : ℤ)})] (hn : p.Coprime n)

@@ -1168,7 +1168,7 @@ end ConjClasses
 namespace AddSubgroup
 
 variable {M : Type*} [AddGroup M] (I J : AddSubgroup M) (G : Type*)
-    [Group G] [MulAction G M]
+    [Group G] [MonoidAction G M]
 
 /-- Suppose `G` acts on `M` and `I` is a subgroup of `M`.
 The inertia subgroup of `I` is the subgroup of `G` whose action is trivial mod `I`. -/

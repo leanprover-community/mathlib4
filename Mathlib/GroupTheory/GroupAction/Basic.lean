@@ -24,10 +24,10 @@ of `•` belong elsewhere.
 
 ## Main definitions
 
-* `MulAction.orbit`
-* `MulAction.fixedPoints`
-* `MulAction.fixedBy`
-* `MulAction.stabilizer`
+* `MonoidAction.orbit`
+* `MonoidAction.fixedPoints`
+* `MonoidAction.fixedBy`
+* `MonoidAction.stabilizer`
 
 -/
 
@@ -41,15 +41,15 @@ open scoped Pointwise
 
 namespace MonoidAction
 
-variable (M : Type u) [Monoid M] (α : Type v) [MulAction M α] {β : Type*} [MulAction M β]
+variable (M : Type u) [Monoid M] (α : Type v) [MonoidAction M α] {β : Type*} [MonoidAction M β]
 
 section Orbit
 
 variable {α M}
 
 @[to_additive]
-lemma fst_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MulAction.orbit M y) :
-    x.1 ∈ MulAction.orbit M y.1 := by
+lemma fst_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MonoidAction.orbit M y) :
+    x.1 ∈ MonoidAction.orbit M y.1 := by
   rcases h with ⟨g, rfl⟩
   exact mem_orbit _ _
 
@@ -60,8 +60,8 @@ alias _root_.AddAction.fst_mem_orbit_of_mem_orbit :=
   _root_.AddMonoidAction.fst_mem_orbit_of_mem_orbit
 
 @[to_additive]
-lemma snd_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MulAction.orbit M y) :
-    x.2 ∈ MulAction.orbit M y.2 := by
+lemma snd_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MonoidAction.orbit M y) :
+    x.2 ∈ MonoidAction.orbit M y.2 := by
   rcases h with ⟨g, rfl⟩
   exact mem_orbit _ _
 
@@ -128,8 +128,8 @@ alias _root_.AddAction.mem_fixedPoints_iff_card_orbit_eq_one :=
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
-    DecidablePred fun b : β => b ∈ MulAction.fixedBy β m := fun b ↦ by
-  simp only [MulAction.mem_fixedBy]
+    DecidablePred fun b : β => b ∈ MonoidAction.fixedBy β m := fun b ↦ by
+  simp only [MonoidAction.mem_fixedBy]
   infer_instance
 
 end FixedPoints
@@ -147,7 +147,7 @@ theorem smul_cancel_of_non_zero_divisor {M G : Type*} [Monoid M] [AddGroup G]
   rw [smul_sub, h', sub_self]
 
 namespace MonoidAction
-variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
+variable {G α β : Type*} [Group G] [MonoidAction G α] [MonoidAction G β]
 
 @[to_additive] theorem fixedPoints_of_subsingleton [Subsingleton α] :
     fixedPoints G α = .univ := by
@@ -176,7 +176,7 @@ alias _root_.AddAction.nontrivial_of_fixedPoints_ne_univ :=
 
 section Orbit
 
--- TODO: This proof is redoing a special case of `MulAction.IsInvariantBlock.isBlock`. Can we move
+-- TODO: This proof is redoing a special case of `MonoidAction.IsInvariantBlock.isBlock`. Can we move
 -- this lemma earlier to golf?
 @[to_additive (attr := simp)]
 theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
@@ -233,10 +233,10 @@ alias _root_.AddAction.orbitRel_addSubgroupOf := _root_.AddMonoidAction.orbitRel
 
 variable (G α)
 
-/-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
+/-- An action is pretransitive if and only if the quotient by `MonoidAction.orbitRel` is a
 subsingleton. -/
 @[to_additive /-- An additive action is pretransitive if and only if the quotient by
-`AddAction.orbitRel` is a subsingleton. -/]
+`AddMonoidAction.orbitRel` is a subsingleton. -/]
 theorem pretransitive_iff_subsingleton_quotient :
     IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
   refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
@@ -293,7 +293,7 @@ lemma _root_.Finite.of_finite_monoidAction_orbitRel_quotient [Finite G] [Finite 
   have : ∀ g : Ω, Finite g.orbit := by
     intro g
     induction g using Quotient.inductionOn'
-    simpa [Set.finite_coe_iff] using Finite.finite_mulAction_orbit _
+    simpa [Set.finite_coe_iff] using Finite.finite_monoidAction_orbit _
   exact Finite.instSigma
 
 @[deprecated (since := "2026-09-02")]
@@ -460,14 +460,14 @@ namespace AddMonoidAction
 end AddMonoidAction
 
 theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a b : α} :
-    Equiv.swap a b ∈ MulAction.stabilizer (Equiv.Perm α) S ↔ (a ∈ S ↔ b ∈ S) := by
-  rw [MulAction.mem_stabilizer_iff, Set.ext_iff, ← swap_inv]
+    Equiv.swap a b ∈ MonoidAction.stabilizer (Equiv.Perm α) S ↔ (a ∈ S ↔ b ∈ S) := by
+  rw [MonoidAction.mem_stabilizer_iff, Set.ext_iff, ← swap_inv]
   simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
   exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
 
 namespace MonoidAction
 
-variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
+variable {G : Type*} [Group G] {α : Type*} [MonoidAction G α]
 
 /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/
 @[to_additive
@@ -501,7 +501,7 @@ variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTo
 
 variable {M} in
 lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
-    MulAction.stabilizer Rˣ x = ⊥ := by
+    MonoidAction.stabilizer Rˣ x = ⊥ := by
   rw [eq_bot_iff]
   intro g (hg : g.val • x = x)
   ext
@@ -510,14 +510,14 @@ lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
 end
 
 @[simp] lemma Multiplicative.monoidAction_orbit {α β : Type*} [VAdd α β] (b : β) :
-    MulAction.orbit (Multiplicative α) b = AddAction.orbit α b :=
+    MonoidAction.orbit (Multiplicative α) b = AddMonoidAction.orbit α b :=
   rfl
 
 @[deprecated (since := "2026-09-02")]
 alias Multiplicative.mulAction_orbit := Multiplicative.monoidAction_orbit
 
 @[simp] lemma Additive.monoidAction_orbit {α β : Type*} [SMul α β] (b : β) :
-    AddAction.orbit (Additive α) b = MulAction.orbit α b :=
+    AddMonoidAction.orbit (Additive α) b = MonoidAction.orbit α b :=
   rfl
 
 @[deprecated (since := "2026-09-02")] alias Additive.mulAction_orbit := Additive.monoidAction_orbit

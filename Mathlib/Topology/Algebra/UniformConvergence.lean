@@ -183,11 +183,11 @@ instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
     SMulCommClass M N (α →ᵤ[𝔖] β) :=
   inferInstanceAs <| SMulCommClass M N (α → β)
 
-instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) :=
-  inferInstanceAs <| MulAction M (α → β)
+instance {M : Type*} [Monoid M] [MonoidAction M β] : MonoidAction M (α →ᵤ β) :=
+  inferInstanceAs <| MonoidAction M (α → β)
 
-instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) :=
-  inferInstanceAs <| MulAction M (α → β)
+instance {M : Type*} [Monoid M] [MonoidAction M β] : MonoidAction M (α →ᵤ[𝔖] β) :=
+  inferInstanceAs <| MonoidAction M (α → β)
 
 instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ β) :=

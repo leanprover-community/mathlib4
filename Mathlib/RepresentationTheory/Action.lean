@@ -248,8 +248,8 @@ lemma linearizeTrivialIso_symm_apply {X : Type w} (f : k[X]) :
 
 variable (k G) in
 /-- This a type-changing equivalence to avoid abusing defeq. -/
-def linearizeOfMonoidActionIso (H : Type w) [MulAction G H] :
-    (linearize k G (Action.ofMulAction G H)).Equiv (ofMulAction k G H) :=
+def linearizeOfMonoidActionIso (H : Type w) [MonoidAction G H] :
+    (linearize k G (Action.ofMonoidAction G H)).Equiv (ofMonoidAction k G H) :=
   .mk (.refl ..) fun _ ↦ rfl
 
 @[deprecated (since := "2026-09-02")]
@@ -258,7 +258,7 @@ alias _root_.Representation.linearizeOfMulActionIso := linearizeOfMonoidActionIs
 variable (k G) in
 /-- This a type-changing equivalence to avoid abusing defeq. -/
 abbrev linearizeDiagonalEquiv (n : ℕ) : (linearize k G (Action.diagonal G n)).Equiv
-    (diagonal k G n) := linearizeOfMulActionIso k G (Fin n → G)
+    (diagonal k G n) := linearizeOfMonoidActionIso k G (Fin n → G)
 
 end
 

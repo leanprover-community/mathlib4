@@ -61,7 +61,7 @@ alias _root_.AddAction.Supports.mono := _root_.AddMonoidAction.Supports.mono
 
 end SMul
 
-variable [Group H] [SMul G α] [SMul G β] [MulAction H α] [SMul H β] [SMulCommClass G H β]
+variable [Group H] [SMul G α] [SMul G β] [MonoidAction H α] [SMul H β] [SMulCommClass G H β]
   [SMulCommClass G H α] {s : Set α} {b : β}
 
 -- TODO: This should work without `SMulCommClass`

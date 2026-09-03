@@ -252,10 +252,10 @@ section LinearOrderedField
 
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
-section MulAction
+section MonoidAction
 
 variable [AddCommMonoid M]
-variable [MulAction 𝕜 M] (C : ConvexCone 𝕜 M)
+variable [MonoidAction 𝕜 M] (C : ConvexCone 𝕜 M)
 
 theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
   ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc) h, C.smul_mem hc⟩

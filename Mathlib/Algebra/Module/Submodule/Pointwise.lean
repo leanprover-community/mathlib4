@@ -21,7 +21,7 @@ and the actions
 * `Submodule.pointwiseDistribMulAction`
 * `Submodule.pointwiseMulActionWithZero`
 
-which matches the action of `Set.mulActionSet`.
+which matches the action of `Set.monoidActionSet`.
 
 This file also provides:
 * `Submodule.pointwiseSetSMulSubmodule`: for `R`-module `M`, a `s : Set R` can act on
@@ -469,7 +469,7 @@ variable {R G M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [Group G] [DistribMulAction G M] [SMulCommClass G R M]
     {S : Submodule R M}
 
-open MulAction
+open MonoidAction
 
 lemma stabilizer_coe :
     stabilizer G S = stabilizer G (S : Set M) := by

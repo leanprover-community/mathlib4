@@ -16,7 +16,7 @@ This file contains results about quotients of manifolds by group actions.
 
 ## Main results
 
-* `MulAction.instChartedSpaceQuotient`: a choice of charted space structure on the quotient of a
+* `MonoidAction.instChartedSpaceQuotient`: a choice of charted space structure on the quotient of a
   charted space by a free, properly-discontinuous group action.
 
 ## TODO
@@ -33,7 +33,7 @@ public noncomputable section
 namespace MonoidAction
 
 variable {M : Type*} [TopologicalSpace M]
-  {G : Type*} [Group G] [MulAction G M]
+  {G : Type*} [Group G] [MonoidAction G M]
   [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M] [IsCancelSMul G M]
   [T2Space M] [LocallyCompactSpace M]
   {H : Type*} [TopologicalSpace H] [ChartedSpace H M]

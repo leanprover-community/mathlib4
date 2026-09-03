@@ -166,7 +166,7 @@ noncomputable def cuspsSubMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
 
 /-- The type of cusp orbits of `𝒢`, i.e. orbits for the action of `𝒢` on its own cusps. -/
 abbrev CuspOrbits (𝒢 : Subgroup (GL (Fin 2) ℝ)) :=
-  MulAction.orbitRel.Quotient 𝒢 (cuspsSubMulAction 𝒢)
+  MonoidAction.orbitRel.Quotient 𝒢 (cuspsSubMulAction 𝒢)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Surjection from `SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ))` to cusp orbits of `𝒢`. Mostly useful for showing

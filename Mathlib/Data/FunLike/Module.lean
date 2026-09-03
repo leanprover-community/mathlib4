@@ -56,12 +56,12 @@ protected abbrev distribSMul [AddZeroClass β] [AddZeroClass F] [DistribSMul M �
   DFunLike.coe_injective.distribSMul (coeAddMonoidHom F α β) FunLike.coe_smul
 
 /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`
-is a `MulAction` if `β` is a `MulAction`. -/
+is a `MonoidAction` if `β` is a `MonoidAction`. -/
 @[to_additive /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`
-is an `AddAction` if `β` is an `AddAction`. -/]
-protected abbrev monoidAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulApply M F α β] :
-    MulAction M F :=
-  DFunLike.coe_injective.mulAction _ FunLike.coe_smul
+is an `AddMonoidAction` if `β` is an `AddMonoidAction`. -/]
+protected abbrev monoidAction [SMul M F] [Monoid M] [MonoidAction M β] [IsSMulApply M F α β] :
+    MonoidAction M F :=
+  DFunLike.coe_injective.monoidAction _ FunLike.coe_smul
 
 @[deprecated (since := "2026-09-02")] alias _root_.FunLike.mulAction := _root_.FunLike.monoidAction
 @[deprecated (since := "2026-09-02")]

@@ -26,7 +26,7 @@ universe u u' v v' w w'
 
 variable {k : Type u} [Semiring k] {G : Type v} [Monoid G] {V : Type v'} [AddCommMonoid V]
   [Module k V] {W : Type w'} [AddCommMonoid W] [Module k W] (H : Type w) [Subsingleton H]
-  [MulOneClass H] [MulAction G H]
+  [MulOneClass H] [MonoidAction G H]
 
 namespace Representation
 
@@ -35,7 +35,7 @@ noncomputable section
 variable (k G) in
 /-- If there exists `G`-action on a trivial monoid `H` then the induced representation
   on `k[H]` is equivalent to the trivial representation. -/
-def ofMonoidActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
+def ofMonoidActionSubsingletonEquivTrivial : (ofMonoidAction k G H).Equiv (trivial k G k) :=
   .mk (MonoidAlgebra.uniqueLinearEquiv k H) fun g ↦ by ext a; simp [Subsingleton.elim (g • a) a]
 
 @[deprecated (since := "2026-09-02")]
@@ -44,7 +44,7 @@ alias _root_.Representation.ofMulActionSubsingletonEquivTrivial :=
 
 @[simp]
 lemma ofMonoidActionSubsingletonEquivTrivial_apply (f : k[H]) :
-    (ofMulActionSubsingletonEquivTrivial k G H).toIntertwiningMap.toLinearMap f = f.coeff 1 := rfl
+    (ofMonoidActionSubsingletonEquivTrivial k G H).toIntertwiningMap.toLinearMap f = f.coeff 1 := rfl
 
 @[deprecated (since := "2026-09-02")]
 alias _root_.Representation.ofMulActionSubsingletonEquivTrivial_apply :=
@@ -52,7 +52,7 @@ alias _root_.Representation.ofMulActionSubsingletonEquivTrivial_apply :=
 
 @[simp]
 lemma ofMonoidActionSubsingletonEquivTrivial_symm_apply (r : k) :
-    (ofMulActionSubsingletonEquivTrivial k G H).symm.toIntertwiningMap.toLinearMap r =
+    (ofMonoidActionSubsingletonEquivTrivial k G H).symm.toIntertwiningMap.toLinearMap r =
       .single 1 r := rfl
 
 @[deprecated (since := "2026-09-02")]

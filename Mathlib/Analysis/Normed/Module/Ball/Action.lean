@@ -36,7 +36,7 @@ instance : SMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
           mul_lt_mul' (mem_closedBall_zero_iff.1 c.2) (mem_ball_zero_iff.1 x.2) (norm_nonneg _)
             one_pos⟩
 
-instance monoidActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
+instance monoidActionClosedBallBall : MonoidAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
   one_smul _c₂ := Subtype.ext <| one_smul 𝕜 _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
@@ -54,7 +54,7 @@ instance : SMul (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
             zero_le_one⟩
 
 instance monoidActionClosedBallClosedBall :
-    MulAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
+    MonoidAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
   one_smul _ := Subtype.ext <| one_smul 𝕜 _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
@@ -72,7 +72,7 @@ section Sphere
 instance : SMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
 
-instance monoidActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
+instance monoidActionSphereBall : MonoidAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
@@ -84,7 +84,7 @@ instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball
 instance : SMul (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
 
-instance monoidActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
+instance monoidActionSphereClosedBall : MonoidAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
@@ -102,7 +102,7 @@ instance : SMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
         rw [norm_smul, mem_sphere_zero_iff_norm.1 c.coe_prop, mem_sphere_zero_iff_norm.1 x.coe_prop,
           one_mul]⟩
 
-instance monoidActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
+instance monoidActionSphereSphere : MonoidAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 

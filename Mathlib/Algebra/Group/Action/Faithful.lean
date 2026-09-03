@@ -88,7 +88,7 @@ lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
   · simpa using hr 1
 
 @[to_additive]
-theorem faithfulSMul_iff [Group G] [MulAction G α] :
+theorem faithfulSMul_iff [Group G] [MonoidAction G α] :
     FaithfulSMul G α ↔ (∀ g : G, (∀ a : α, g • a = a) → g = 1) := by
   refine ⟨fun h a ha ↦ h.eq_of_smul_eq_smul ?_, fun h ↦ ⟨fun {a₁ a₂} h' ↦ ?_⟩⟩
   · simpa only [one_smul]
@@ -97,7 +97,7 @@ theorem faithfulSMul_iff [Group G] [MulAction G α] :
 
 @[to_additive]
 lemma FaithfulSMul.tower_bot (R S T : Type*) [Monoid S] [MulOneClass T]
-    [SMul R S] [SMul R T] [MulAction S T]
+    [SMul R S] [SMul R T] [MonoidAction S T]
     [IsScalarTower R S S] [IsScalarTower R T T]
     [IsScalarTower R S T] [FaithfulSMul R T] : FaithfulSMul R S := by
   rw [faithfulSMul_iff_injective_smul_one]
@@ -106,7 +106,7 @@ lemma FaithfulSMul.tower_bot (R S T : Type*) [Monoid S] [MulOneClass T]
 
 @[to_additive]
 lemma FaithfulSMul.trans (R S T : Type*) [Monoid S] [MulOneClass T]
-    [SMul R S] [IsScalarTower R S S] [MulAction S T] [IsScalarTower S T T]
+    [SMul R S] [IsScalarTower R S S] [MonoidAction S T] [IsScalarTower S T T]
     [SMul R T] [IsScalarTower R T T] [IsScalarTower R S T] [FaithfulSMul R S]
     [FaithfulSMul S T] : FaithfulSMul R T := by
   simpa [faithfulSMul_iff_injective_smul_one, Function.comp_def] using

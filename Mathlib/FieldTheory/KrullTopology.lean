@@ -251,14 +251,14 @@ instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Fiel
   rw [← IntermediateField.fixingSubgroup_top]
   exact IntermediateField.fixingSubgroup_isOpen ⊤
 
-section MulAction
+section MonoidAction
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 /-- If `L/K` is an algebraic field extension, then the stabilizer
 in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
 theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
-    IsOpen (MulAction.stabilizer Gal(L/K) x : Set Gal(L/K)) := by
+    IsOpen (MonoidAction.stabilizer Gal(L/K) x : Set Gal(L/K)) := by
   open IntermediateField in
   let E := adjoin K {x}
   have hL : FiniteDimensional K E := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
