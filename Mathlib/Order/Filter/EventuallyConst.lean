@@ -73,10 +73,8 @@ theorem eventuallyConst_pred {p : α → Prop} :
 /-- A set `s` is *eventually empty or eventually universal* along a filter `l` if it is eventually
 equal to `∅` or to `univ`.
 
-This is the specialization of `Filter.EventuallyConst` to `s : Set α`, defined as a separate
-definition (rather than used directly) so that lemmas about it do not need to unfold `Set α` to
-`α → Prop`. -/
-def EventuallyEmptyOrUniv (s : Set α) (l : Filter α) : Prop := EventuallyConst s l
+This is the specialization of `Filter.EventuallyConst` to `s : Set α`. -/
+def EventuallyEmptyOrUniv (s : Set α) (l : Filter α) : Prop := EventuallyConst (· ∈ s) l
 
 theorem eventuallyEmptyOrUniv_iff' {s : Set α} :
     EventuallyEmptyOrUniv s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
