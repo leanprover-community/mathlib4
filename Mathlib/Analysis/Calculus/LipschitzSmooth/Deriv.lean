@@ -27,10 +27,6 @@ theorem lipschitzSmoothWith_iff_deriv :
     LipschitzSmoothWith 𝕜 K f ↔ Differentiable 𝕜 f ∧
       ∀ x y : 𝕜,
         ‖f y - f x - (y - x) • deriv f x‖ ≤ K / 2 * ‖y - x‖ ^ 2 := by
-  constructor
-  · rintro ⟨hf, hbound⟩
-    refine ⟨hf, fun x y ↦ ?_⟩
-    simpa only [fderiv_eq_smul_deriv, dist_eq_norm, norm_sub_rev] using hbound x y
-  · rintro ⟨hf, hbound⟩
-    refine ⟨hf, fun x y ↦ ?_⟩
-    simpa only [fderiv_eq_smul_deriv, dist_eq_norm, norm_sub_rev] using hbound x y
+  constructor <;>
+    exact fun ⟨hf, hbound⟩ ↦ ⟨hf, by
+      simpa only [fderiv_eq_smul_deriv, dist_eq_norm, norm_sub_rev] using hbound⟩

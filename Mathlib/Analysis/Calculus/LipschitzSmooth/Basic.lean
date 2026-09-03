@@ -54,9 +54,8 @@ theorem lipschitzSmoothOnWith_univ {K : NNReal} {f : E → F} :
     LipschitzSmoothOnWith 𝕜 K f Set.univ ↔ LipschitzSmoothWith 𝕜 K f := by
   constructor
   · rintro ⟨hf, hbound⟩
-    refine ⟨differentiableOn_univ.mp hf, fun x y ↦ ?_⟩
-    simpa only [fderivWithin_univ] using
-      hbound x (Set.mem_univ x) y (Set.mem_univ y)
+    exact ⟨differentiableOn_univ.mp hf, by
+      simpa only [Set.mem_univ, forall_const, fderivWithin_univ] using hbound⟩
   · rintro ⟨hf, hbound⟩
-    refine ⟨differentiableOn_univ.mpr hf, fun x _ y _ ↦ ?_⟩
-    simpa only [fderivWithin_univ] using hbound x y
+    exact ⟨differentiableOn_univ.mpr hf, by
+      simpa only [Set.mem_univ, forall_const, fderivWithin_univ] using hbound⟩

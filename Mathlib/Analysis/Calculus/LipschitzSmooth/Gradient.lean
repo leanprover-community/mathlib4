@@ -31,13 +31,9 @@ open scoped Gradient RealInnerProductSpace
 theorem lipschitzSmoothWith_iff_inner_gradient :
     LipschitzSmoothWith ℝ K f ↔ Differentiable ℝ f ∧
       ∀ x y : F, ‖f y - f x - ⟪∇ f x, y - x⟫‖ ≤ K / 2 * ‖y - x‖ ^ 2 := by
-  constructor
-  · rintro ⟨hf, hbound⟩
-    refine ⟨hf, fun x y ↦ ?_⟩
-    simpa only [inner_gradient_left, dist_eq_norm'] using hbound x y
-  · rintro ⟨hf, hbound⟩
-    refine ⟨hf, fun x y ↦ ?_⟩
-    simpa only [inner_gradient_left, dist_eq_norm'] using hbound x y
+  constructor <;>
+    exact fun ⟨hf, hbound⟩ ↦ ⟨hf, by
+      simpa only [inner_gradient_left, dist_eq_norm'] using hbound⟩
 
 /-! ### Cocoercivity -/
 
