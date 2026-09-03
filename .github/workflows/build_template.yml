@@ -876,8 +876,6 @@ jobs:
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
-          # `scripts/export_crossrefs.lean` is run by the "dump declarations" step above,
-          # which also uploads its output; that invocation is the smoke test for it.
           lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
