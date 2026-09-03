@@ -368,6 +368,10 @@ theorem hasSummableGeomSeries_iff_isQuasiregular :
   congr!
   exact summable_iterate_mul_iff_isQuasiregular ‹_›
 
+lemma IsQuasiregular.of_norm_lt_one [HasSummableGeomSeries R]
+    {x : R} (h : ‖x‖ < 1) : IsQuasiregular x :=
+  hasSummableGeomSeries_iff_isQuasiregular.mp inferInstance h
+
 variable [HasSummableGeomSeries R]
 
 theorem add_geom_series_mul_self {x : R} (hx : ‖x‖ < 1) :
