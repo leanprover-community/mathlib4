@@ -802,7 +802,7 @@ lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique 
 
 theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
   rw [isEmpty_iff]
-  refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · intro a
     have one_clique : G.IsNClique 1 {a} := by simp
     have : 1 ≤ G.cliqueNum := IsClique.card_le_cliqueNum' one_clique.isClique
