@@ -343,6 +343,61 @@ lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFac
   rw [← toFinset_factors, List.prod_toFinset _ hn.nodup_primeFactorsList,
     List.map_id', Nat.prod_primeFactorsList hn.ne_zero]
 
+lemma primeFactors_of_squarefree_of_card_two (sq : Squarefree n) (nc : (primeFactors n).card = 2) :
+    primeFactors n = {n.minFac, n / n.minFac} := by
+  obtain ⟨a, b, ab, nab⟩ := Finset.card_eq_two.mp nc
+  wlog hab : a < b
+  · exact this sq nc b a ab.symm (by grind) (by grind)
+  have n_one : n ≠ 1 := by
+    contrapose! nc
+    simp [nc]
+  have a_eq : a = n.minFac := by
+    have : n.minFac ∈ ({a, b} : Finset ℕ) := by
+      simp [← nab, n_one, sq.ne_zero, minFac_dvd n]
+    simp only [Finset.mem_insert, Finset.mem_singleton] at this
+    rcases this with rfl | rfl
+    · rfl
+    contrapose! hab
+    refine minFac_le_of_dvd ?_ ?_
+    · exact (prime_of_mem_primeFactors (n := n) (by simp [nab])).two_le
+    · apply dvd_of_mem_primeFactors
+      simp [nab]
+  have b_eq : b = n / n.minFac := by
+    have abn : a * b = n := by
+      rw [← prod_primeFactors_of_squarefree sq, nab, Finset.prod_pair ab]
+    apply (Nat.mul_right_inj (a := n.minFac) (by grind [sq.ne_zero])).mp
+    rw [Nat.mul_div_cancel' (minFac_dvd n), ← a_eq, ← prod_primeFactors_of_squarefree sq, nab,
+      Finset.prod_pair ab]
+  rw [nab, a_eq, b_eq]
+
+theorem squarefree_and_primeFactors_card_two_iff (n : ℕ) :
+    Squarefree n ∧ (primeFactors n).card = 2
+      ↔ ∃ p q : ℕ, p < q ∧ p.Prime ∧ q.Prime ∧ p * q = n := by
+  refine ⟨fun ⟨sq, nc⟩ ↦ ?_, fun ⟨p, q, pq, hp, hq, hn⟩ ↦ ?_⟩
+  · refine ⟨n.minFac, n / n.minFac, ?_⟩
+    have n_one : n ≠ 1 := by
+      contrapose! nc
+      simp [nc]
+    have pf : n.primeFactors = {n.minFac, n / n.minFac} :=
+      primeFactors_of_squarefree_of_card_two sq nc
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · apply minFac_lt
+      · exact (prime_of_mem_primeFactors (n := n) (by simp [pf])).two_le
+      · exact div_dvd_of_dvd <| minFac_dvd n
+      · contrapose! sq
+        have : n = n.minFac ^ 2 := by
+          rw [pow_two, sq]
+          exact Nat.eq_mul_of_div_eq_left (by grind) (by grind)
+        rw [this, squarefree_pow_iff (minFac_prime_iff.mpr n_one).ne_one two_ne_zero]
+        simp
+    · exact minFac_prime_iff.mpr n_one
+    · apply prime_of_mem_primeFactors (n := n)
+      simp [pf]
+    · exact Nat.mul_div_cancel' <| minFac_dvd n
+  · rw [← hn, squarefree_mul <| (coprime_primes hp hq).mpr pq.ne,
+      primeFactors_mul hp.ne_zero hq.ne_zero, hp.primeFactors, hq.primeFactors]
+    exact ⟨⟨(prime_iff.mp hp).squarefree, (prime_iff.mp hq).squarefree⟩, by grind⟩
+
 lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s, p) = s := by
   have hn : ∏ p ∈ s, p ≠ 0 := prod_ne_zero_iff.2 fun p hp ↦ (hs _ hp).ne_zero
   ext p
