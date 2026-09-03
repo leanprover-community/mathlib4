@@ -157,11 +157,11 @@ theorem limsSup_le_limsSup {f g : Filter α}
 
 @[to_dual (reorder := hu hv)]
 theorem limsup_le_limsup {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
-    (h : u ≤ᶠ[f] v)
+    (h : ∀ᶠ a in f, u a ≤ v a)
     (hu : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (hv : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault) :
     limsup u f ≤ limsup v f :=
-  limsSup_le_limsSup hu hv fun _ => h.trans
+  limsSup_le_limsSup hu hv fun _ => EventuallyLE.trans h
 
 @[to_dual (reorder := hf hg)]
 theorem limsSup_le_limsSup_of_le {f g : Filter α} (h : f ≤ g)
