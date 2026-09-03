@@ -515,7 +515,7 @@ instance (f : X → V) : Fact (outerKernel 𝕜 f).PosSemidef := by
   simp [fact_iff, posSemidef_outerKernel 𝕜 f]
 
 lemma kernel_span_singleton (f : H) :
-    kernel (𝕜 ∙ f) = (1 / (‖f‖ : 𝕜) ^ 2) • outerKernel 𝕜 f := by
+    kernel (𝕜 ∙ f) = (‖f‖⁻¹ : 𝕜) ^ 2 • outerKernel 𝕜 f := by
   ext
   simp [kernel_submodule, starProjection_singleton, division_def, smul_smul, mul_comm]
 
