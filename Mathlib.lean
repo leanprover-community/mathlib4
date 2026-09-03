@@ -5804,9 +5804,13 @@ public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.JordanSub
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.VectorMeasure.Defs
 public import Mathlib.MeasureTheory.VectorMeasure.Integral
 public import Mathlib.MeasureTheory.VectorMeasure.IntegrationByParts
+public import Mathlib.MeasureTheory.VectorMeasure.Operations
+public import Mathlib.MeasureTheory.VectorMeasure.Order
 public import Mathlib.MeasureTheory.VectorMeasure.Prod
+public import Mathlib.MeasureTheory.VectorMeasure.Relations
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
@@ -7578,6 +7582,7 @@ public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.Multigoal
@@ -7601,6 +7606,7 @@ public import Mathlib.Tactic.MinImports
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.ModCases
 public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Monotonicity
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.Monotonicity.Basic

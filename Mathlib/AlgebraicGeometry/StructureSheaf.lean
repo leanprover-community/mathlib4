@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Topology.Sheaves.LocalPredicate
+public import Mathlib.Tactic.ModuleNF
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
@@ -476,7 +477,9 @@ theorem exists_le_iSup_basicOpen_and_smul_eq_smul_and_eq_const
     have : n i j + 1 ≤ N := (t ×ˢ t).le_sup (f := fun x ↦ n x.1 x.2 + 1) (b := ⟨_, _⟩) (by simp)
     rw [← Nat.sub_add_cancel this, pow_add, mul_smul, mul_smul]
     congr 1
-    convert! (hn i j).symm using 1 <;> module
+    have h := (hn i j).symm
+    module_nf at h ⊢
+    exact h
   · convert! congr((structureSheafInType R M).presheaf.map (homOfLE ?_).op $((H i).symm)) using 1
     · refine Subtype.ext <| funext fun x ↦ LocalizedModule.mk_eq.mpr ⟨1, ?_⟩
       simp [Submonoid.smul_def, pow_succ', mul_smul]

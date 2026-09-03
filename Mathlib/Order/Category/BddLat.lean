@@ -51,25 +51,21 @@ theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
 /-- The type of morphisms in `BddLat`. -/
 @[ext]
 structure Hom (X Y : BddLat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
 instance : Inhabited BddLat :=
   ⟨of PUnit⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : LargeCategory.{u} BddLat where
   Hom := Hom
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddLat` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : BddLat.{u}} (f : Hom X Y) :=
