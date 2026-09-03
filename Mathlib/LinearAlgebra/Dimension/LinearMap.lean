@@ -29,7 +29,7 @@ open Cardinal Submodule Function Set
 
 namespace LinearMap
 
-section Ring
+section Semiring
 
 variable [Semiring K] [AddCommMonoid V] [Module K V] [AddCommMonoid V₁] [Module K V₁]
 variable [AddCommMonoid V'] [Module K V']
@@ -77,12 +77,12 @@ theorem rank_comp_le (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) :
     rank (f.comp g) ≤ min (rank f) (rank g) := by
   simpa only [Cardinal.lift_id] using lift_rank_comp_le g f
 
-end Ring
+end Semiring
 
-section DivisionRing
+section HasRankNullity
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
-variable [AddCommGroup V'] [Module K V']
+variable [Ring K] [HasRankNullity.{v'} K] [AddCommGroup V] [Module K V] [AddCommGroup V₁]
+  [Module K V₁] [AddCommGroup V'] [Module K V']
 
 theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
   calc
@@ -95,10 +95,18 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
 
 theorem rank_finsetSum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
     rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
+  have := nontrivial_of_hasRankNullity K
   @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
     (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (by gcongr)
 
 @[deprecated (since := "2026-04-08")] alias rank_finset_sum_le := rank_finsetSum_le
+
+end HasRankNullity
+
+section DivisionRing
+
+variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
+variable [AddCommGroup V'] [Module K V']
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,

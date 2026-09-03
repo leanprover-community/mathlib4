@@ -11,7 +11,6 @@ public import Mathlib.Data.Prod.Basic
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Order.Defs.LinearOrder
 
-
 /-!
 # Nontrivial types
 

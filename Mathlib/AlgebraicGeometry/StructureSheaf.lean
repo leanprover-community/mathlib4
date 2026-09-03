@@ -554,8 +554,6 @@ public lemma algebraMap_germ
   rw [← (structurePresheafInCommRingCat R).germ_res (homOfLE (le_top : U ≤ ⊤)) _ hxU]
   rfl
 
-@[deprecated (since := "2026-02-10")] public alias toOpen_germ := algebraMap_germ
-
 public
 instance (x : PrimeSpectrum.Top R) : Algebra R ((structurePresheafInCommRingCat R).stalk x) :=
   (toStalk R x).hom.toAlgebra
@@ -890,19 +888,11 @@ def _root_.AlgebraicGeometry.Spec.structureSheaf : Sheaf CommRingCat (PrimeSpect
 
 open Spec (structureSheaf)
 
-/-- The canonical ring homomorphism interpreting an element of `R` as
-a section of the structure sheaf. -/
-@[deprecated "algebraMap" (since := "2026-02-10")]
-def toOpen (U : Opens (PrimeSpectrum.Top R)) :
-    CommRingCat.of R ⟶ (structureSheaf R).1.obj (op U) := CommRingCat.ofHom (algebraMap _ _)
-
 @[simp]
 theorem algebraMap_self_map (U V : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (i : V ⟶ U) :
     CommRingCat.ofHom (algebraMap R _) ≫ (Spec.structureSheaf R).1.map i =
       CommRingCat.ofHom (algebraMap R _) :=
   rfl
-
-@[deprecated (since := "2026-02-10")] alias toOpen_res := algebraMap_self_map
 
 instance stalkAlgebra (p : PrimeSpectrum R) : Algebra R ((structureSheaf R).presheaf.stalk p) :=
   (toStalk R p).hom.toAlgebra

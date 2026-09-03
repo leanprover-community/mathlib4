@@ -48,7 +48,7 @@ def modulesSpecToSheaf :
 
 /-- The global section functor for `𝒪_{Spec R}` modules -/
 noncomputable
-def moduleSpecΓFunctor : (Spec (.of R)).Modules ⥤ ModuleCat R :=
+def moduleSpecΓFunctor : (Spec R).Modules ⥤ ModuleCat R :=
   modulesSpecToSheaf ⋙ TopCat.Sheaf.forget _ _ ⋙ (evaluation _ _).obj (.op ⊤)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -229,7 +229,7 @@ lemma toOpen_map_app {M N : ModuleCat R} (f : M ⟶ N)
 
 variable (R) in
 /-- Tilde as a functor -/
-@[simps] protected noncomputable def functor : ModuleCat R ⥤ (Spec (.of R)).Modules where
+@[simps] protected noncomputable def functor : ModuleCat R ⥤ (Spec R).Modules where
   obj := tilde
   map := tilde.map
 
@@ -252,7 +252,7 @@ end tilde
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the counit of the tilde-Gamma adjunction. -/
-noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
+noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec R).Modules) :
     tilde ((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)) ⟶ M :=
   SpecModulesToSheafFullyFaithful.preimage
     ⟨TopCat.Sheaf.restrictHomEquivHom _ _ isBasis_basic_opens
@@ -287,7 +287,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
-lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec (.of R)).Modules) (U) :
+lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec R).Modules) (U) :
     tilde.toOpen ((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)) U ≫
       (modulesSpecToSheaf.map M.fromTildeΓ).1.app (.op U) =
     (modulesSpecToSheaf.obj M).1.map (homOfLE le_top).op := by
@@ -905,12 +905,3 @@ def tildeEquiv :
 end IsQuasicoherent
 
 end AlgebraicGeometry
-
-namespace ModuleCat
-
-@[deprecated (since := "2026-02-11")] noncomputable alias tilde := AlgebraicGeometry.tilde
-@[deprecated (since := "2026-02-11")] noncomputable alias Tilde.toOpen := tilde.toOpen
-@[deprecated (since := "2026-02-11")] alias Tilde.toOpen_res := tilde.toOpen_res
-@[deprecated (since := "2026-02-11")] noncomputable alias Tilde.toStalk := tilde.toStalk
-
-end ModuleCat

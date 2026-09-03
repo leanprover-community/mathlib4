@@ -337,9 +337,6 @@ theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMu
 
 attribute [local instance] SMulCommClass.symm
 
-@[deprecated (since := "2026-02-21")]
-alias mapOfCompatibleSMul' := mapOfCompatibleSMul
-
 /-- If the R- and S-actions on A and B satisfy `CompatibleSMul` both ways,
 then `A ⊗[S] B` is canonically isomorphic to `A ⊗[R] B`. -/
 def equivOfCompatibleSMul [CompatibleSMul S R A B] : A ⊗[S] B ≃ₐ[T] A ⊗[R] B where

@@ -145,18 +145,7 @@ end PartialOrder
 
 section LinearOrder
 
-variable [LinearOrder α]
-
-section SuccOrder
-variable [SuccOrder α]
-
-@[deprecated (since := "2026-02-05")] alias succ_max := Order.succ_max
-@[deprecated (since := "2026-02-05")] alias succ_min := Order.succ_min
-
-@[deprecated (since := "2026-02-05")] alias pred_max := Order.pred_max
-@[deprecated (since := "2026-02-05")] alias pred_min := Order.pred_min
-
-variable [IsSuccArchimedean α] {a b : α}
+variable [LinearOrder α] [SuccOrder α] [IsSuccArchimedean α] {a b : α}
 
 @[to_dual]
 theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b = a :=
@@ -165,8 +154,6 @@ theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b =
 @[to_dual Pred.rec_linear]
 theorem Succ.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) (a b : α) : p a ↔ p b :=
   (le_total a b).elim (Succ.rec_iff hsucc) fun h => (Succ.rec_iff hsucc h).symm
-
-end SuccOrder
 
 end LinearOrder
 
@@ -192,10 +179,6 @@ lemma StrictMono.not_bddAbove_range_of_isSuccArchimedean [NoMaxOrder α] [SuccOr
 lemma StrictAnti.not_bddAbove_range_of_isSuccArchimedean [NoMinOrder α] [SuccOrder β]
     [IsSuccArchimedean β] (hf : StrictAnti f) : ¬ BddAbove (Set.range f) :=
   hf.dual_right.not_bddBelow_range_of_isPredArchimedean
-
-@[deprecated (since := "2026-02-05")]
-alias StrictMono.not_bddBelow_range_of_isSuccArchimedean :=
-  StrictMono.not_bddAbove_range_of_isSuccArchimedean
 
 end bdd_range
 

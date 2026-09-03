@@ -93,7 +93,6 @@ theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
   grind [Std.Irrefl]
 
 @[deprecated (since := "2026-06-30")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
-@[deprecated (since := "2026-02-12")] alias irreflexive_iff_subrelation_ne := irrefl_iff_le_ne
 
 protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
   ⟨symm_of r, symm_of r⟩
@@ -134,8 +133,6 @@ instance Std.Symm.comap [Std.Symm r] (f : α → β) : Std.Symm (r on f) where
 
 instance IsTrans.comap [IsTrans β r] (f : α → β) : IsTrans α (r on f) where
   trans _ _ _ := trans_of r
-
-@[deprecated (since := "2026-02-21")] alias Transitive.comap := IsTrans.comap
 
 instance IsEquiv.comap [IsEquiv β r] (f : α → β) : IsEquiv α (r on f) where
 
@@ -276,8 +273,6 @@ lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
   exact ⟨x, z, trans_of r hxy <| trans_of r (hf y y' <| hy' ▸ hy) hyz, hx, hz⟩
 
 @[deprecated (since := "2026-03-27")] alias isTrans_map := IsTrans.map
-
-@[deprecated (since := "2026-02-21")] alias map_transitive := isTrans_map
 
 lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β) (hf : f.Surjective)
     (hf_ker : ∀ x y, f x = f y → r x y) : Equivalence (Relation.Map r f f) where
@@ -647,9 +642,6 @@ theorem transGen_eq_self [IsTrans α r] : TransGen r = r :=
       | single hc => exact hc
       | tail _ hcd hac => exact IsTrans.trans _ _ _ hac hcd, TransGen.single⟩
 
-@[deprecated inferInstance (since := "2026-02-21")]
-theorem transitive_transGen : IsTrans α (TransGen r) := inferInstance
-
 @[deprecated transGen_eq_self (since := "2026-03-27"), grind =]
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self
@@ -735,9 +727,6 @@ instance : IsPreorder α (ReflTransGen r) where
 
 @[deprecated inferInstance (since := "2026-03-27")]
 theorem reflexive_reflTransGen : Std.Refl (ReflTransGen r) := inferInstance
-
-@[deprecated inferInstance (since := "2026-02-21")]
-theorem transitive_reflTransGen : IsTrans α (ReflTransGen r) := inferInstance
 
 @[deprecated reflTransGen_eq_self (since := "2026-03-27"), grind =]
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
@@ -934,8 +923,6 @@ theorem isTrans_join [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b
   let ⟨z, hxz, hyz⟩ := h b x y hbx hby
   ⟨z, trans_of r hax hxz, trans_of r hcy hyz⟩⟩
 
-@[deprecated (since := "2026-02-21")] alias transitive_join := isTrans_join
-
 theorem equivalence_join [IsPreorder α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
     Equivalence (Join r) :=
   ⟨Join.refl.refl, Join.symm.symm _ _, isTrans_join h |>.trans _ _ _⟩
@@ -957,9 +944,6 @@ theorem reflTransGen_le_of_le {r' : α → α → Prop} [Std.Refl r] [IsTrans α
 
 @[deprecated (since := "2026-06-30")]
 alias reflTransGen_of_isTrans_reflexive := reflTransGen_le_of_le
-
-@[deprecated (since := "2026-02-21")]
-alias reflTransGen_of_transitive_reflexive := reflTransGen_le_of_le
 
 theorem reflTransGen_le_of_equivalence_of_le {r' : α → α → Prop} (hr : Equivalence r) :
     r' ≤ r → ReflTransGen r' ≤ r :=

@@ -211,8 +211,6 @@ def NormalExpr.nodes (e : NormalExpr) : CoherenceM ρ (List (List Node)) :=
   | NormalExpr.nil _ _ => return []
   | NormalExpr.cons _ _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
 
-@[deprecated (since := "2026-02-26")] meta alias pairs := List.consecutivePairs
-
 /-- The list of strands associated with a 2-morphism. -/
 def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do
   let l ← e.nodes

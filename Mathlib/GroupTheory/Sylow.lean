@@ -438,7 +438,7 @@ noncomputable def equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : Sylow p G ≃ G ⧸ normalizer P :=
   calc
     Sylow p G ≃ (⊤ : Set (Sylow p G)) := (Equiv.Set.univ (Sylow p G)).symm
-    _ ≃ orbit G P := Equiv.setCongr P.orbit_eq_top.symm
+    _ ≃ orbit G P := Set.equivOfEq P.orbit_eq_top.symm
     _ ≃ G ⧸ stabilizer G P := orbitEquivQuotientStabilizer G P
     _ ≃ G ⧸ normalizer P := by rw [P.stabilizer_eq_normalizer]
 

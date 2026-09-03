@@ -55,6 +55,10 @@ probable primes to any base.
 def ProbablePrime (n b : ℕ) : Prop :=
   n ∣ b ^ (n - 1) - 1
 
+theorem probablePrime_iff_zmod_one (n : ℕ) {b : ℕ} (hb : b ≠ 0) :
+    n.ProbablePrime b ↔ (b : ZMod n) ^ (n - 1) = 1 := by
+  rw [ProbablePrime, ← ZMod.natCast_eq_zero_iff, cast_pred (by positivity), sub_eq_zero, cast_pow]
+
 /--
 `n` is a Fermat pseudoprime to base `b` if `n` is a probable prime to base `b` and is composite. By
 this definition, all composite natural numbers are pseudoprimes to base 0 and 1. This definition

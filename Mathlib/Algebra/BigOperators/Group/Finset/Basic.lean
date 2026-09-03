@@ -1141,6 +1141,3 @@ lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
 theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   induction s using Finset.cons_induction with grind
-
-@[deprecated (since := "2026-02-14")]
-alias nat_abs_sum_le := Int.natAbs_sum_le

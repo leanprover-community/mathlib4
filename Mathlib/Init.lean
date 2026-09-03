@@ -101,7 +101,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.longLine
   linter.style.longFile
   linter.style.multiGoal
-  linter.style.nativeDecide
+  linter.style.native
   linter.style.openClassical
   linter.style.maxHeartbeats
   linter.style.missingEnd

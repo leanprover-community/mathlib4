@@ -154,9 +154,6 @@ unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
   R ≟ R' ⊢
   (forget SemiRingCat).obj R ≟ SemiRingCat.carrier R'
 
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
-
 instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
   inferInstanceAs <| Semiring R.carrier
 
@@ -322,9 +319,6 @@ An example where this is needed is in applying
 unif_hint forget_obj_eq_coe (R R' : RingCat) where
   R ≟ R' ⊢
   (forget RingCat).obj R ≟ RingCat.carrier R'
-
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
   inferInstanceAs <| Ring R.carrier
@@ -494,9 +488,6 @@ unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
   R ≟ R' ⊢
   (forget CommSemiRingCat).obj R ≟ CommSemiRingCat.carrier R'
 
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
-
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
   inferInstanceAs <| CommSemiring R.carrier
 
@@ -659,9 +650,6 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
-
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 

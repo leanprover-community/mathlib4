@@ -165,7 +165,7 @@ noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat G)
   haveI : MulAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
   let e : X.V ≃ G ⧸ MulAction.stabilizer G x :=
     (Equiv.Set.univ X.V).symm.trans <|
-      (Equiv.setCongr ((MulAction.orbit_eq_univ G x).symm)).trans <|
+      (Set.equivOfEq ((MulAction.orbit_eq_univ G x).symm)).trans <|
       MulAction.orbitEquivQuotientStabilizer G x
   Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ : G ↦ by
     ext (a : G ⧸ MulAction.stabilizer G x)

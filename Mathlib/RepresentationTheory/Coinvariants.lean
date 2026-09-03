@@ -372,14 +372,14 @@ lemma coinvariantsFunctor_hom_ext {M : ModuleCat k} {f g : (coinvariantsFunctor 
 representation, factors through `A_G`. -/
 noncomputable abbrev desc [B.ρ.IsTrivial] (f : A ⟶ B) :
     (coinvariantsFunctor k G).obj A ⟶ ModuleCat.of k B.V :=
-  ModuleCat.ofHom <| Representation.Coinvariants.lift _ f.hom.toLinearMap <| by simp [f.hom.2]
+  ModuleCat.ofHom <| Representation.Coinvariants.lift _ f.hom.toLinearMap <| by
+    simp [f.hom.2, isTrivial_def]
 
 variable (k G)
 
 instance : (coinvariantsFunctor k G).Additive where
 instance : (coinvariantsFunctor k G).Linear k where
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The adjunction between the functor sending a representation to its coinvariants and the functor
 equipping a module with the trivial representation. -/
 @[simps]
@@ -394,7 +394,6 @@ theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleC
     ((coinvariantsMk k G).app X ≫ f).hom := by
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
     (f : X ⟶ (trivialFunctor k G).obj Y) :

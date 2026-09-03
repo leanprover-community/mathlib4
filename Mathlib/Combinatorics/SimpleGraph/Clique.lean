@@ -389,9 +389,6 @@ theorem IsContained.not_cliqueFree {n : ℕ} (h : completeGraph (Fin n) ⊑ G) :
   rw [Fintype.card_fin] at this
   exact (· _ this)
 
-@[deprecated (since := "2026-02-21")]
-alias not_cliqueFree_of_top_embedding := IsContained.not_cliqueFree
-
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
 noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     completeGraph (Fin n) ↪g G := by
@@ -430,9 +427,6 @@ theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G
     ¬G.CliqueFree (card α) := by
   rw [not_cliqueFree_iff_top_isContained]
   exact (Iso.completeGraph <| equivFin α).isContained'.trans f
-
-@[deprecated (since := "2026-02-21")]
-alias not_cliqueFree_card_of_top_embedding := IsContained.not_cliqueFree_card
 
 @[simp] lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
   fun h ↦ h ∅ <| isNClique_empty.mpr rfl

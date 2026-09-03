@@ -950,7 +950,7 @@ theorem π_comp_H0IsoOfIsTrivial_hom :
 variable {A} in
 @[simp]
 theorem H0IsoOfIsTrivial_inv_apply (x : A) :
-    (H0IsoOfIsTrivial A).inv x = (H0Iso A).inv ⟨x, by simp⟩ := rfl
+    (H0IsoOfIsTrivial A).inv x = (H0Iso A).inv ⟨x, by simp [isTrivial_apply]⟩ := rfl
 
 end IsTrivial
 end H0
@@ -1015,7 +1015,7 @@ def H1IsoOfIsTrivial :
     H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
   (HomologicalComplex.isoHomologyπ _ 0 1 (CochainComplex.prev_nat_succ 0) <| by
     ext; simp [inhomogeneousCochains.d, Unique.eq_default (α := Fin 0 → G),
-      CochainComplex.of.d]).symm ≪≫
+      CochainComplex.of.d, isTrivial_apply]).symm ≪≫
   isoCocycles₁ A ≪≫ cocycles₁IsoOfIsTrivial A
 
 set_option backward.isDefEq.respectTransparency false in
