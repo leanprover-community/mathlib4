@@ -49,8 +49,8 @@ Commands:
   put!         Same as 'put', overwriting files the server already holds.
   put-staged   Bulk-upload the *.ltar files in the staging directory to the
                --container of choice, under the same path contract. The
-               CI upload path, and the engine-flexible one: the upload hook
-               and MATHLIB_CACHE_UPLOADER apply here.
+               CI upload path, and the engine-flexible one:
+               MATHLIB_CACHE_UPLOADER applies here.
 
 Uploading needs a writer credential that only CI normally holds. Anyone
 operating their own cache endpoint does not need 'put': 'stage' the
@@ -143,18 +143,7 @@ Upload destination overrides for 'put':
                           path policy. CI uses it to select the upload storage.
 * MATHLIB_CACHE_PUT_URL   Upload to this single URL as a flat namespace. Any
                           set value counts, an empty one included.
-* MATHLIB_CACHE_UPLOAD_HOOK
-                          External uploader for 'put-staged': the tool resolves the
-                          destination and runs
-                            HOOK <local> <relative-dest> <absolute-dest>
-                          once for the staged *.ltar files and once for the
-                          marker (when a scope and a container apply),
-                          instead of uploading with curl. The hook
-                          copies into the destination prefix, preserving base
-                          names, with its own transport and credentials (e.g.
-                          a script around rclone). See Cache/README.md.
-* MATHLIB_CACHE_UPLOADER  Transfer engine for 'put-staged' when no hook is
-                          set:
+* MATHLIB_CACHE_UPLOADER  Transfer engine for 'put-staged':
                           'curl' (the default), 'rclone' (a system rclone,
                           required), or 'auto' (rclone when available and the
                           credentials are the S3 pair; curl otherwise). The
@@ -290,19 +279,12 @@ def main (args : List String) : IO Unit := do
       IO.eprintln "--staging-dir must be a directory"
       Process.exit 1
     let repo := repo?.getD MATHLIBREPO
-    -- One destination resolution feeds every upload: the artifact puts, the
-    -- per-SHA marker, and the hook all address {base}/{prefix}/{name}.
+    -- One destination resolution feeds every upload: the artifact puts and
+    -- the per-SHA marker, on every engine, address {base}/{prefix}/{name}.
     let dest ← stagedUploadDest container? repo
     -- The marker is written when the upload is SHA-scoped into a container:
     -- it lets `cache query` discover cached commits with a cheap HEAD probe.
     let markerSha? ← if container?.isSome then getRepoScope else pure none
-    -- MATHLIB_CACHE_UPLOAD_HOOK hands the transfers to an external uploader
-    -- (rclone, say): the tool resolves the destination contract, the hook
-    -- moves the bytes with its own transport and credentials. Without it,
-    -- the built-in curl path uploads with the credentials in the environment.
-    if let some hook ← getEnvNonEmpty "MATHLIB_CACHE_UPLOAD_HOOK" then
-      putStagedViaHook hook dest markerSha? stagingDir
-      return
     let auth ← getUploadAuth
     -- MATHLIB_CACHE_UPLOADER selects the transfer engine. The rclone engine
     -- exists only for the S3 pair (`resolveUploadEngine` enforces it); every
@@ -370,17 +352,15 @@ def main (args : List String) : IO Unit := do
   -- `pack`-and-upload: the hash memo scopes the file list to what this
   -- checkout's build links, so nothing else in the shared per-user cache
   -- directory leaves the machine. It shares `put-staged`'s destination and
-  -- credential resolution and uploads with the built-in curl engine — the
-  -- upload hook and MATHLIB_CACHE_UPLOADER apply to `put-staged`, whose
-  -- staged set is what those transports copy.
+  -- credential resolution and uploads with the built-in curl engine —
+  -- MATHLIB_CACHE_UPLOADER applies to `put-staged`, whose staged set is what
+  -- the rclone engine copies.
   let put (overwrite := false) := do
     let repo := repo?.getD MATHLIBREPO
     let dest ← stagedUploadDest container? repo
-    if (← getEnvNonEmpty "MATHLIB_CACHE_UPLOAD_HOOK").isSome
-        || (← getEnvNonEmpty "MATHLIB_CACHE_UPLOADER").isSome then
+    if (← getEnvNonEmpty "MATHLIB_CACHE_UPLOADER").isSome then
       IO.println "note: put uploads its build-scoped file list with the built-in \
-        engine; MATHLIB_CACHE_UPLOAD_HOOK and MATHLIB_CACHE_UPLOADER apply to \
-        `put-staged`"
+        engine; MATHLIB_CACHE_UPLOADER applies to `put-staged`"
     -- Credentials resolve before the pack, so a missing credential fails
     -- fast instead of after the expensive packing pass.
     let auth ← getUploadAuth

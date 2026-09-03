@@ -15,9 +15,8 @@ Everything that moves staged bytes to a cache destination lives here:
   environment;
 * the one destination resolution every upload consumes
   (`StagedUploadDest`, `stagedUploadDest`);
-* the transfer engines: the built-in curl engine (`putFilesAbsolute`), a
-  system rclone (`putStagedViaRclone`), and the external uploader hook
-  (`putStagedViaHook`);
+* the transfer engines: the built-in curl engine (`putFilesAbsolute`) and a
+  system rclone (`putStagedViaRclone`);
 * the per-SHA marker upload (`uploadMarker`).
 
 The read side (`Cache/Requests.lean`) shares the path contract through
@@ -77,11 +76,10 @@ the code that implements the capabilities and moves with it:
 
 * `s3-put`: `put` signs uploads with the S3 credentials
   (`uploadAuthFrom`'s first branch).
-* `upload-hook`: `put` delegates transfers to `MATHLIB_CACHE_UPLOAD_HOOK`.
 * `rclone-put`: `put` can drive a system rclone for S3 uploads
   (`MATHLIB_CACHE_UPLOADER`).
 -/
-def capabilities : List String := ["s3-put", "upload-hook", "rclone-put"]
+def capabilities : List String := ["s3-put", "rclone-put"]
 
 /-- Retrieves upload credentials from the environment via `uploadAuthFrom`. -/
 def getUploadAuth : IO UploadAuth := do
@@ -111,11 +109,10 @@ def warnUploadLegacyFallback : IO Unit :=
     "         explicitly to choose a trust-level container."
 
 /--
-The resolved destination of a staged (`put`) upload, in the form the external
-uploader hook consumes: `base` is the upload base the operator configured, and
-the prefixes are relative to it, with no trailing slash. Every staged file
-lands under `filesPrefix` with its base name kept; the per-SHA marker lands
-under `markerPrefix` with the SHA as its name.
+The resolved destination of a staged (`put`) upload: `base` is the upload base
+the operator configured, and the prefixes are relative to it, with no trailing
+slash. Every staged file lands under `filesPrefix` with its base name kept;
+the per-SHA marker lands under `markerPrefix` with the SHA as its name.
 -/
 structure StagedUploadDest where
   base : String
@@ -148,8 +145,8 @@ def stagedUploadDestFrom (putUrl? putBase? : Option String)
     Except String StagedUploadDest :=
   let filesRel := fun (c? : Option Container) =>
     let pre := filePathPrefix c? repo scope?
-    -- `filePathPrefix` is empty or `/`-terminated; the hook contract carries
-    -- no trailing slash.
+    -- `filePathPrefix` is empty or `/`-terminated; the prefixes carry no
+    -- trailing slash.
     if pre.isEmpty then "f" else s!"f/{(pre.dropEnd 1).copy}"
   let markerRel := markerDirPath repo
   let under := fun (c : Container) (rel : String) => s!"{c.pathSegment}/{rel}"
@@ -173,8 +170,8 @@ def stagedUploadDestFrom (putUrl? putBase? : Option String)
 
 /--
 `stagedUploadDestFrom`, resolved from the environment. The one destination
-resolution every upload consumes: the curl artifact puts, the marker put, and
-the hook all address `{base}/{prefix}/{name}`.
+resolution every upload consumes: the artifact puts and the marker put, on
+every engine, address `{base}/{prefix}/{name}`.
 -/
 def stagedUploadDest (container? : Option Container) (repo : String) :
     IO StagedUploadDest := do
@@ -185,56 +182,6 @@ def stagedUploadDest (container? : Option Container) (repo : String) :
   match stagedUploadDestFrom putUrl? putBase? container? repo (← getRepoScope) with
   | .error e => throw <| IO.userError e
   | .ok dest => return dest
-
-/--
-Run the external upload hook once: `hook <localPath> <relativeDest>
-<absoluteDest>`. The hook copies the named file — or the `*.ltar` files of the
-named directory — into the destination prefix, preserving base names, with
-whatever transport and credentials it owns; the tool passes it no credential.
-`relativeDest` is relative to the configured upload base and `absoluteDest` is
-`{base}/{relativeDest}`; a hook uses whichever fits its remote naming. The
-hook's output passes through to the user; the returned exit code is the
-hook's.
--/
-def runUploadHook (hook : String) (localPath : FilePath) (dest : StagedUploadDest)
-    (rel : String) : IO UInt32 := do
-  let child ← IO.Process.spawn
-    { cmd := hook, args := #[localPath.toString, rel, s!"{dest.base}/{rel}"] }
-  child.wait
-
-/--
-`put` through the external uploader hook (`MATHLIB_CACHE_UPLOAD_HOOK`): the
-tool resolves the destination contract and the hook does the transfers. Files
-first; then, mirroring the curl path, the per-SHA marker when a scope and a
-container are given — written as a file named after the SHA, so the hook's
-basename-preserving copy lands it at `{markerPrefix}/{sha}`. A files failure
-exits 1; a marker failure only warns, as on the curl path.
-
-One contract difference from the curl path: curl uploads send
-`If-None-Match: *` and never replace an existing object, while overwrite
-behavior here is the hook's own. Artifact names are content hashes, so an
-honest re-put writes identical bytes; a hook that can decline existing
-objects (rclone `--ignore-existing`, say) restores the full guarantee.
--/
-def putStagedViaHook (hook : String) (dest : StagedUploadDest)
-    (markerSha? : Option String) (stagingDir : FilePath) : IO Unit := do
-  let count := (← IO.getFilesWithExtension stagingDir "ltar").size
-  IO.println s!"Uploading {count} staged file(s) via {hook} to \
-    {dest.base}/{dest.filesPrefix}"
-  let code ← runUploadHook hook stagingDir dest dest.filesPrefix
-  if code != 0 then
-    IO.eprintln s!"upload hook failed with exit code {code}"
-    IO.Process.exit 1
-  if let some sha := markerSha? then
-      let dir ← IO.FS.createTempDir
-      try
-        let markerFile := dir / sha
-        IO.FS.writeFile markerFile s!"{sha}\n"
-        let code ← runUploadHook hook markerFile dest dest.markerPrefix
-        if code != 0 then
-          IO.eprintln s!"warning: marker upload via hook failed (exit code {code})"
-      finally
-        IO.FS.removeDirAll dir
 
 def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
 
@@ -368,10 +315,8 @@ def uploadMarker (dest : StagedUploadDest) (sha : String) (auth : UploadAuth) :
     IO.eprintln s!"warning: marker upload to {url} failed: {e}"
   IO.FS.removeFile path
 
-/--
-The built-in transfer engine `put` uses when no external uploader hook is
-configured: the curl engine, or a system rclone.
--/
+/-- The transfer engine `put` uses: the built-in curl engine, or a system
+rclone. -/
 inductive UploadEngine where
   | curl
   | rclone

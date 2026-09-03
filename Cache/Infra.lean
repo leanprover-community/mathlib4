@@ -142,8 +142,8 @@ The path prefix between `f/` and the file name, per the container's layout
 policy (`Container.flatPath`): empty for a flat container, `{repo}/` for a
 repo-namespaced one, `{repo}/{scope}/` when a per-SHA scope applies. `repo` is
 lowercased via `normalizeRepo`. `mkFileURL` and the staged-upload destination
-(`stagedUploadDestFrom`) both build on this, so reads, curl uploads, and
-hook uploads share one path contract by construction.
+(`stagedUploadDestFrom`) both build on this, so reads and every upload engine
+share one path contract by construction.
 -/
 def filePathPrefix (container : Option Container) (repo : String)
     (repoScope : Option String) : String :=

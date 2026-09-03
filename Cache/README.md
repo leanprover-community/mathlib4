@@ -49,7 +49,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
 | `put`       | Run `pack`, then upload the files this build links, straight from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
 | `put!`      | Same as `put`, overwriting files the server already holds             |
-| `put-staged`| Bulk-upload the `*.ltar` files in `--staging-dir` to the `--container` of choice, under the same path contract. The CI upload path, and the engine-flexible one: the upload hook and `MATHLIB_CACHE_UPLOADER` apply here. |
+| `put-staged`| Bulk-upload the `*.ltar` files in `--staging-dir` to the `--container` of choice, under the same path contract. The CI upload path, and the engine-flexible one: `MATHLIB_CACHE_UPLOADER` applies here. |
 
 Upload and read live in one binary on purpose: the upload commands write
 with the same URL construction `get` reads, so the two sides cannot drift
@@ -59,7 +59,7 @@ mints per job; see the environment variables in `lake exe cache --help`.
 #### The rclone engine
 
 `put-staged` uploads with curl by default. `MATHLIB_CACHE_UPLOADER` selects
-the transfer engine when no upload hook is set:
+the transfer engine:
 
 - `curl` (the default): the built-in engine. Parallel PUTs, each signed per
   request; an upload never replaces an existing object (`If-None-Match: *`).
@@ -75,47 +75,9 @@ the transfer engine when no upload hook is set:
 The tool sets the rclone credentials, endpoint, provider (`Other` unless the
 environment names one), and region; every other `RCLONE_S3_*` option
 inherits from the environment, so an operator can set
-`RCLONE_S3_PROVIDER=Cloudflare` or tune `--transfers` without a tool change.
+`RCLONE_S3_PROVIDER=Cloudflare` without a tool change.
 
-#### The upload hook
-
-`MATHLIB_CACHE_UPLOAD_HOOK` hands `put-staged`'s transfers to an external uploader,
-for bulk-transfer performance or a transport the built-in curl path does not
-speak. The tool still resolves the destination — the same path contract the
-reads use — and runs the hook twice: once for the staged files, once for the
-per-SHA marker (when a scope and a container apply):
-
-```
-HOOK <local-path> <relative-dest-prefix> <absolute-dest-prefix>
-```
-
-The hook copies the named file, or the `*.ltar` files of the named
-directory, into the destination prefix, preserving base names, with its own
-transport and credentials — the tool passes it none. `<relative-dest-prefix>`
-is relative to the configured upload base: `MATHLIB_CACHE_PUT_BASE_URL` or
-`MATHLIB_CACHE_PUT_URL`, else the Azure account. `<absolute-dest-prefix>` is
-the base-joined form. Use whichever fits your remote naming; when no base is
-configured, key on the relative form. The staging directory can hold other
-temporary files, so copy `*.ltar` only. A nonzero exit fails the upload (a
-marker failure — the second invocation, made when a scope and a container
-apply — only warns). One contract difference from the built-in path: curl
-uploads never replace an existing object (`If-None-Match: *`), while
-overwrite behavior is the hook's own. Artifact names are content hashes, so
-an honest re-put writes identical bytes; pass your uploader's
-decline-existing flag to restore the full guarantee. An rclone hook is three
-lines:
-
-```bash
-#!/bin/bash
-# $2 is relative to the bucket the put base names.
-exec rclone copy "$1" "remote:my-cache-bucket/$2" --include '*.ltar' --ignore-existing --transfers 32
-```
-
-(The same line serves both invocations: for a single-file source — the
-marker — rclone treats the copy as a one-line `--files-from` transfer and
-ignores `--include`, so the marker is copied too.)
-
-Anyone operating a cache of their own does not need the uploader at all.
+Anyone operating a cache of their own does not need the upload commands at all.
 The path contract for a `MATHLIB_CACHE_GET_URL` endpoint: readers request
 `{endpoint}/f/{hash}.ltar` — the flat `f/` namespace — so the staged files
 must land under an `f/` prefix on your storage. (`stage` writes the `.ltar`

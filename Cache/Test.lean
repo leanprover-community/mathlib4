@@ -1264,7 +1264,7 @@ uploads, so the set changes only deliberately, here. -/
 def test_capabilities : IO Unit := do
   IO.println "capabilities:"
   assertTrue "s3-put is declared" (capabilities.contains "s3-put")
-  assertTrue "upload-hook is declared" (capabilities.contains "upload-hook")
+  assertTrue "rclone-put is declared" (capabilities.contains "rclone-put")
   assertTrue "tokens are single words"
     (capabilities.all fun c => !c.isEmpty && c.all fun ch => ch.isAlphanum || ch == '-')
 
@@ -1326,10 +1326,9 @@ def test_isValidScope : IO Unit := do
   finally
     scopeOverride.set saved
 
-/-- `filePathPrefix` is the one path policy behind `mkFileURL`, the curl
-uploads, and the hook uploads: empty for a flat container, repo-namespaced
-otherwise, with the per-SHA scope inserted when given, and the repo
-lowercased. -/
+/-- `filePathPrefix` is the one path policy behind `mkFileURL` and every
+upload engine: empty for a flat container, repo-namespaced otherwise, with
+the per-SHA scope inserted when given, and the repo lowercased. -/
 def test_filePathPrefix : IO Unit := do
   IO.println "filePathPrefix:"
   assertEq "flat container → empty prefix"
@@ -1345,9 +1344,9 @@ def test_filePathPrefix : IO Unit := do
   assertEq "the repo is lowercased"
     "alice/mathlib4/" (filePathPrefix (some .forks) "Alice/Mathlib4" none)
 
-/-- `stagedUploadDestFrom` resolves the hook contract: the configured upload
-base plus the relative files and marker prefixes, no trailing slashes, built
-on the same `filePathPrefix` policy as every other upload path. -/
+/-- `stagedUploadDestFrom` resolves the destination contract: the configured
+upload base plus the relative files and marker prefixes, no trailing slashes,
+built on the same `filePathPrefix` policy as every other upload path. -/
 def test_stagedUploadDestFrom : IO Unit := do
   IO.println "stagedUploadDestFrom:"
   let putBase := "https://s3.example.org/bucket-prefix"
@@ -1401,27 +1400,27 @@ def test_stagedUploadDestFrom : IO Unit := do
   assertTrue "a put base loses its trailing slashes"
     ((stagedUploadDestFrom none (some "https://s3.example.org/bucket-prefix//") (some .forks)
       "alice/mathlib4" none).toOption.map (·.base) == some "https://s3.example.org/bucket-prefix")
-  -- The hook destination and the curl destination must never disagree: the
+  -- The resolved prefixes and the curl destination must never disagree: the
   -- curl URL for a file is exactly {base}/{filesPrefix}/{fileName}.
   if let .ok d := stagedUploadDestFrom none (some putBase)
       (some .forks) "Alice/Mathlib4" (some "sha1") then
-    assertEq "hook prefix matches the curl URL shape"
+    assertEq "files prefix matches the curl URL shape"
       (mkFileURL (some .forks) "Alice/Mathlib4"
         s!"{putBase}/mathlib4-forks" "x.ltar" (some "sha1"))
       s!"{d.base}/{d.filesPrefix}/x.ltar"
-    assertEq "hook marker prefix matches the marker path"
+    assertEq "marker prefix matches the marker path"
       (markerUploadURL s!"{d.base}/mathlib4-forks" "Alice/Mathlib4" "sha1")
       s!"{d.base}/{d.markerPrefix}/sha1"
   else
-    assertTrue "hook destination resolves" false
+    assertTrue "put-base destination resolves" false
   -- The same cross-pin for the flat PUT_URL case.
   if let .ok d := stagedUploadDestFrom (some "https://my.example.org") none none
       "alice/mathlib4" (some "abc1") then
-    assertEq "flat-URL hook prefix matches the curl URL shape"
+    assertEq "flat-URL files prefix matches the curl URL shape"
       (mkFileURL none "alice/mathlib4" "https://my.example.org" "x.ltar" (some "abc1"))
       s!"{d.base}/{d.filesPrefix}/x.ltar"
   else
-    assertTrue "flat-URL hook destination resolves" false
+    assertTrue "flat-URL destination resolves" false
   -- And for the Azure default and the legacy fallback rows, so all four
   -- resolution rows are pinned against `mkFileURL`'s shape.
   if let .ok d := stagedUploadDestFrom none none (some .forks) "alice/mathlib4" (some "abc1") then
