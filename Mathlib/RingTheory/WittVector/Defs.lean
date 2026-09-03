@@ -58,6 +58,10 @@ structure WittVector (p : ℕ) (R : Type*) where
   -/
   coeff : ℕ → R
 
+/-- Construct a Witt vector `mk' x : 𝕎 R` from a sequence `x` of elements of `R`. -/
+@[deprecated WittVector.mk (since := "2026-09-03")]
+def WittVector.mk' {p : ℕ} {R : Type*} (coeff : ℕ → R) : WittVector p R := WittVector.mk p coeff
+
 section Notation
 
 open Lean.PrettyPrinter.Delaborator
