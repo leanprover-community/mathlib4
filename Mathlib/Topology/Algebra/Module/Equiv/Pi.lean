@@ -20,7 +20,6 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `piCongrLeft`: `Equiv.piCongrLeft` as a continuous linear equivalence.
 * `sumPiEquivProdPi`: `Equiv.sumPiEquivProdPi` as a continuous linear equivalence.
 * `piUnique`: `Equiv.piUnique` as a continuous linear equivalence.
-* `sumPiEquivProdPi`: `Equiv.sumPiEquivProdPi` as a continuous linear equivalence.
 * `Fin.consEquivL`: `Fin.consEquiv` as a continuous linear equivalence.
 * `ContinuousLinearMap.finCons`: `Fin.cons` in the codomain of continuous linear maps.
 
