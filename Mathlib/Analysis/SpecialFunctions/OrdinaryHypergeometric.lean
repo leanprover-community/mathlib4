@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.OfScalars
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Ordinary hypergeometric function in a Banach algebra
@@ -135,7 +136,7 @@ end Field
 
 section RCLike
 
-open Asymptotics Filter Real Set Nat
+open Filter Real Nat
 
 open scoped Topology
 

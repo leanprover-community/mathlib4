@@ -48,7 +48,7 @@ open scoped Set.Notation
 
 universe u v u' v'
 
-variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
+variable {X : Type u} {Y : Type v} {Z : Type*}
 
 section Constructions
 
@@ -299,7 +299,6 @@ def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
 
 instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by
   simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
     WithTopology.preimage_toTopology, image_nonempty,
@@ -572,6 +571,12 @@ theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f)
   h.restrict _
 
 @[fun_prop]
+lemma Topology.IsInducing.restrict {f : X → Y}
+    (hf : IsInducing f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) :
+    IsInducing H.restrict :=
+  .of_comp (hf.continuous.restrict H) continuous_subtype_val (hf.comp .subtypeVal)
+
+@[fun_prop]
 lemma Topology.IsEmbedding.restrict {f : X → Y}
     (hf : IsEmbedding f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) :
     IsEmbedding H.restrict :=
@@ -768,6 +773,7 @@ theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i :=
 theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
   continuous_pi_iff.2 h
 
+/-- The projection maps out of the product topology are continuous. -/
 @[continuity, fun_prop]
 theorem continuous_apply (i : ι) : Continuous fun p : ∀ i, A i => p i :=
   continuous_iInf_dom continuous_induced_dom
@@ -1088,10 +1094,10 @@ theorem isOpen_pi_iff {s : Set (∀ a, A a)} :
     refine ⟨I, fun a => ite (a ∈ I) (t a) univ, fun i => ?_, ?_⟩
     · by_cases hi : i ∈ I
       · use t i
-        simp_rw [if_pos hi]
+        simp_rw [ite_eq_left hi]
         exact ⟨Subset.rfl, (h1 i) hi⟩
       · use univ
-        simp_rw [if_neg hi]
+        simp_rw [ite_eq_right hi]
         exact ⟨Subset.rfl, isOpen_univ, mem_univ _⟩
     · rw [← univ_pi_ite]
       simp only [← ite_and, ← Finset.mem_coe, and_self_iff, univ_pi_ite, h2]

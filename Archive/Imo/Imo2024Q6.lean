@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Rat.Floor
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # IMO 2024 Q6
@@ -25,6 +27,7 @@ so there are at most two values of `f(x)+f(-x)`. All this works over any `AddCom
 `ℚ`, we then show that `⌊x⌋ - Int.fract x` achieves two different values of `f(x)+f(-x)`.
 -/
 
+@[expose] public section
 
 namespace Imo2024Q6
 
@@ -214,10 +217,10 @@ lemma fract_fExample (x : ℚ) :
 lemma floor_fExample (x : ℚ) :
     ⌊fExample x⌋ = if Int.fract x = 0 then x else ⌊x⌋ - 1 := by
   by_cases h : Int.fract x = 0
-  · simp only [h, if_true, fExample, sub_zero, Int.floor_intCast]
+  · simp only [h, ite_true, fExample, sub_zero, Int.floor_intCast]
     rw [Int.fract, sub_eq_zero] at h
     exact h.symm
-  · simp only [h, if_false, fExample, sub_eq_add_neg, Int.floor_intCast_add, Int.cast_add,
+  · simp only [h, ite_false, fExample, sub_eq_add_neg, Int.floor_intCast_add, Int.cast_add,
                add_right_inj]
     suffices ⌊-Int.fract x⌋ = -1 from mod_cast this
     rw [Int.floor_eq_iff]
@@ -233,7 +236,7 @@ lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) 
       by_cases h : Int.fract y = 0
       · simp [fract_fExample, floor_fExample, h]
       · refine .inr ?_
-        simp only [fract_fExample, floor_fExample, h, if_false, sub_add_sub_cancel,
+        simp only [fract_fExample, floor_fExample, h, ite_false, sub_add_sub_cancel,
                    Int.fract_neg_eq_zero]
         rw [Int.fract_neg h, Int.floor_neg, Int.cast_neg, Int.ceil_eq_add_one_sub_fract h,
             ← Int.self_sub_fract]

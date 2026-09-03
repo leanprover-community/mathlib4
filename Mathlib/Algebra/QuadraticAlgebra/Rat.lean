@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.QuadraticAlgebra.Discr
+public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 public import Mathlib.Data.Rat.Squarefree
 
 /-!
@@ -41,7 +41,8 @@ theorem exists_squarefree_algEquiv (a b : ℚ) (hd : discr a b ≠ 0) :
     intro rfl
     exact hd (by simpa using hc.symm)
   exact ⟨d, hd', ⟨(algEquivDiscrZero a b).trans
-    (mapEquiv (d : ℚ) 0 (Units.mk0 r hr) 0 (by simpa [Units.val_mk0] using hc.symm) (by ring))⟩⟩
+    (changeGeneratorEquiv (d : ℚ) 0 (Units.mk0 r hr) 0
+      (by simpa [Units.val_mk0] using hc.symm) (by ring))⟩⟩
 
 /-- For squarefree integers `d₁`, `d₂`, the standard forms `QuadraticAlgebra ℚ d₁ 0` and
 `QuadraticAlgebra ℚ d₂ 0` are isomorphic if and only if `d₁ = d₂`. -/
