@@ -49,7 +49,6 @@ instance (X : HomotopyCategory.Plus (InjectiveObject C)) (n : ℤ) :
     Injective (((InjectiveObject.ι C).mapHomotopyCategoryPlus.obj X).obj.as.X n) :=
   inferInstanceAs (Injective ((InjectiveObject.ι C).obj (X.obj.as.X n)))
 
-set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex.Plus (InjectiveObject C)) :
     CochainComplex.IsKInjective
       (((InjectiveObject.ι C).mapHomologicalComplex (.up ℤ)).obj K.obj) := by
