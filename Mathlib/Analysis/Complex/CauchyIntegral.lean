@@ -865,9 +865,10 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
 
 end tendsto_zero
 
-section eventually_eq_zero
+section tendsto
 
-private lemma hzero (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+private lemma integral_intermediate_rectangle_eq_zero
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x) :
     ∀ m ≥ y, (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) - (∫ (x : ℝ) in x₁..x₂, f (x + m * I)) +
       (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) - (I • ∫ (t : ℝ) in y..m, f (x₁ + t * I))
@@ -883,11 +884,6 @@ private lemma hzero (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s :
       · grind [hcont.mono, reProdIm_subset_iff, uIcc_of_le]
       · grind [mem_reProdIm]
 
-
-end eventually_eq_zero
-
-section tendsto
-
 /-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
 that a function satisfies Cauchy-Goursat conditions between them, interval integrals of increasing
 interval length along the first contour tend to the sum of a translation integral and the limit of
@@ -901,7 +897,7 @@ theorem tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_t
     Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop <|
       𝓝 ((∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂) := by
   refine .congr' ((eventually_ge_atTop y).mono fun m hm ↦
-    sub_eq_zero.mp (hzero y hcont s hs hdiff m hm)) ?_
+    sub_eq_zero.mp (integral_intermediate_rectangle_eq_zero y hcont s hs hdiff m hm)) ?_
   simpa using (tendsto_const_nhds.sub
     (tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero htendsto)).add hC₂
 
@@ -974,6 +970,7 @@ end integrable
 end unbounded
 
 section derivatives
+
 /-!
 ## Circle integrals for higher derivatives
 
