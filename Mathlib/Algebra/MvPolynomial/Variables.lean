@@ -70,6 +70,10 @@ def vars (p : MvPolynomial σ R) : Finset σ :=
   letI := Classical.decEq σ
   p.degrees.toFinset
 
+theorem vars_def [DecidableEq σ] (p : MvPolynomial σ R) : p.vars = p.degrees.toFinset := by
+  rw [vars]
+  convert! rfl
+
 theorem coe_vars_subset_iff {p : MvPolynomial σ R} {s : Set σ} :
     (p.vars : Set σ) ⊆ s ↔ p ∈ (rename ((↑) : s → σ)).range := by
   classical
@@ -119,10 +123,6 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
     ∃ i : σ, i ∈ φ.vars ∧ f i = j := by
   classical
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
-
-theorem vars_def [DecidableEq σ] (p : MvPolynomial σ R) : p.vars = p.degrees.toFinset := by
-  rw [vars]
-  convert! rfl
 
 @[simp]
 theorem vars_0 : (0 : MvPolynomial σ R).vars = ∅ := by
