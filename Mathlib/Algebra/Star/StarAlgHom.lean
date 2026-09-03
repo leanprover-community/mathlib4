@@ -716,10 +716,12 @@ instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe_injective := DFunLike.coe_injective
 
 @[simp]
-theorem toStarRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = e := rfl
+theorem toStarRingEquiv_eq_ofClass (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = .ofClass e := rfl
+@[deprecated (since := "2026-09-03")] alias toStarRingEquiv_eq_coe := toStarRingEquiv_eq_ofClass
 
-theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
+theorem toRingEquiv_eq_ofClass (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = StarRingEquiv.ofClass e :=
   rfl
+@[deprecated (since := "2026-09-03")] alias toRingEquiv_eq_coe := toRingEquiv_eq_ofClass
 
 @[ext]
 theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
