@@ -163,8 +163,6 @@ noncomputable def isoOfEquiv (f : M ≃ₗ[R] N) {x : M} {y : N} (h : f x = y) :
 
 end functoriality
 
-section specialX
-
 lemma isZero_X_of_card_generators_le (x : M) {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulCocomplex R x).X i) :=
@@ -176,8 +174,6 @@ lemma isZero_X_ofList_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
   isZero_X_of_card_generators_le R l.get
   (Pi.basisFun R (Fin l.length)) (Pi.basisFun R (Fin l.length)).span_eq i
   (by simpa [Nat.card_eq_fintype_card] using hi)
-
-end specialX
 
 section basechange
 
