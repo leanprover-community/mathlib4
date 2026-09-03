@@ -367,8 +367,7 @@ theorem mem_map {S : NonUnitalStarSubalgebra R A} {f : A →⋆ₙₐ[R] B} {y :
   NonUnitalSubalgebra.mem_map
 
 theorem map_toNonUnitalSubalgebra {S : NonUnitalStarSubalgebra R A} {f : A →⋆ₙₐ[R] B} :
-    (map f S : NonUnitalStarSubalgebra R B).toNonUnitalSubalgebra =
-      NonUnitalSubalgebra.map f S.toNonUnitalSubalgebra :=
+    (map f S).toNonUnitalSubalgebra = NonUnitalSubalgebra.map f S.toNonUnitalSubalgebra :=
   SetLike.coe_injective rfl
 
 @[simp, norm_cast]
@@ -838,7 +837,7 @@ theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} {x : A} :
     x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι]
-    [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F)
+    [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : A →⋆ₙₐ[R] B)
     (hf : Function.Injective f) (S : ι → NonUnitalStarSubalgebra R A) :
     ((⨅ i, S i).map f : NonUnitalStarSubalgebra R B) = ⨅ i, (S i).map f := by
   apply SetLike.coe_injective
