@@ -62,14 +62,15 @@ def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
     return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ))
   mkProducer ops prepare mkEntry
 
-/-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
+/-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`, whose
+equality reduces in the kernel, so the certificate conditions are decided there. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
-  producer? R := do
+  model? R := do
     -- unfold reducible aliases such as `GaussianInt` before matching
     let R ← whnfR R
     let_expr Zsqrtd dE := R | return none
     let some d ← getIntValue? dE | return none
     have dQ : Q(ℤ) := dE
-    return some (zsqrtdProducer dQ d)
+    return some { producer := zsqrtdProducer dQ d, leafCertifier? := none }
 
 end Mathlib.Tactic.Echelon

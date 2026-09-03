@@ -14,12 +14,11 @@ public import Mathlib.Util.Qq
 
 The certificate constructor from the decomposition data, and the default certifier
 `mkCertificate`, which proves the certificate conditions by `decide +kernel`, or from
-proofs of the individual entries supplied by a leaf normaliser.
+proofs of the individual entries supplied by a leaf certifier.
 
 ## Main definitions
 
 - `mkCertificate`: build the `Echelon.Decomposition` certificate of a matrix literal.
-- `LeafProver`: settle a proposition about a single entry.
 - `mkPerm`, `mkPivotLit`, `mkRowsLit`, `mkMatrixLit`: elaborate the row permutation, the
   pivot function, and a matrix literal unwrapped or wrapped in `Matrix.of`.
 
@@ -91,15 +90,11 @@ def certifyCondition (name : String) (p : Q(Prop)) : MetaM Q($p) := do
     throwError "cannot verify the rank certificate: {name} failed"
   mkDecideProofQ p
 
-/-- A leaf normaliser settles a proposition about a single entry, returning its truth value
-together with a proof of the proposition or of its negation. -/
-@[expose] def LeafProver := Q(Prop) → MetaM (Bool × Expr)
-
-/-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `proofAt i`
+/-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `certifier i`
 proving it at index `i`, unfolding `p` when its quantifier is behind a definition. The proof
 recurses on the index list `List.finRange n`, so the motive is spelled once rather than once
 per index. -/
-def mkForallFin (n : Nat) (p : Q(Prop)) (proofAt : Nat → (q : Q(Prop)) → MetaM Q($q)) :
+def mkForallFin (n : Nat) (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) → MetaM Q($q)) :
     MetaM Q($p) :=
   forallBoundedTelescope p (some 1) (whnfType := true) fun is body => do
     let #[i] := is
@@ -109,7 +104,7 @@ def mkForallFin (n : Nat) (p : Q(Prop)) (proofAt : Nat → (q : Q(Prop)) → Met
     let mut acc : Expr := mkConst ``True.intro
     for k in 0...n do
       let j := n - 1 - k
-      let h ← proofAt j (mkApp motive (← mkNumeral fin j)).headBeta
+      let h ← certifier j (mkApp motive (← mkNumeral fin j)).headBeta
       -- the conjunction takes its statement from the proofs, so that the one defeq check
       -- against the quantified goal is left to the kernel rather than run here as well
       acc ← if k == 0 then pure h else mkAppM ``And.intro #[h, acc]
@@ -121,23 +116,23 @@ def mkForallFin (n : Nat) (p : Q(Prop)) (proofAt : Nat → (q : Q(Prop)) → Met
       (← mkLambdaFVars is (mkApp2 hAll i (← mkAppM ``List.mem_finRange #[i]))) p
 
 /-- Prove an implication `P → Q` where the caller already knows from the recorded data
-whether `P` holds, so that neither side is discovered by reduction: when it holds, `proof`
-supplies `Q` and the hypothesis is discarded, and otherwise `P` is refuted and the
-implication is vacuous. -/
-def mkImplication (holds : Bool) (p : Q(Prop)) (proof : (q : Q(Prop)) → MetaM Q($q)) :
+whether `P` holds, so that neither side is discovered by reduction: when it holds,
+`certifier` supplies `Q` and the hypothesis is discarded, and otherwise `P` is refuted and
+the implication is vacuous. -/
+def mkImplication (holds : Bool) (p : Q(Prop)) (certifier : (q : Q(Prop)) → MetaM Q($q)) :
     MetaM Q($p) := do
   let .forallE nm dom body bi := p
     | throwError "expected an implication:{indentExpr p}"
   if body.hasLooseBVars then -- shouldn't happen, but a safety check
     throwError "the conclusion depends on the hypothesis:{indentExpr p}"
   if holds then
-    return .lam nm dom (← proof body) bi
+    return .lam nm dom (← certifier body) bi
   else
     have hyp : Q(Prop) := dom
     mkAppOptM ``Not.elim #[none, some body, ← certifyCondition "an index guard" q(¬ $hyp)]
 
 /-- Prove a cell whose two sides reduce to the same recorded entry. -/
-def proveRflCell (p : Q(Prop)) : MetaM Q($p) := do
+def certifyRflCell (p : Q(Prop)) : MetaM Q($p) := do
   match_expr p with
   | Eq _ lhs rhs =>
     unless ← isDefEq lhs rhs do
@@ -147,7 +142,7 @@ def proveRflCell (p : Q(Prop)) : MetaM Q($p) := do
 
 /-- Prove that a recorded `entry` is nonzero, by having `leaf` refute its equation with
 `zero`; `site` names the entry in errors. -/
-def proveNonzeroEntry {u : Level} {α : Q(Type u)} (leaf : LeafProver) (entry zero : Q($α))
+def certifyNonzeroEntry {u : Level} {α : Q(Type u)} (leaf : LeafCertifier) (entry zero : Q($α))
     (site : MessageData) : MetaM Q($entry ≠ $zero) := do
   let (b, prf) ← leaf q($entry = $zero)
   if b then throwError "{site} is zero"
@@ -155,11 +150,11 @@ def proveNonzeroEntry {u : Level} {α : Q(Type u)} (leaf : LeafProver) (entry ze
 
 /-- Prove `∀ i, L.diag i ≠ 0` from the recorded entries of `L`. -/
 def mkDiagCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (L : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Q($α))) (leaf : LeafProver) :
+    (L : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Q($α))) (leaf : LeafCertifier) :
     MetaM Q(∀ i, ($L).diag i ≠ 0) := do
   let zero : Q($α) ← mkNumeral α 0
   mkForallFin m q(∀ i, ($L).diag i ≠ 0) fun i _ =>
-    proveNonzeroEntry leaf (entries[i]!)[i]! zero m!"the diagonal entry of the transform at {i}"
+    certifyNonzeroEntry leaf (entries[i]!)[i]! zero m!"the diagonal entry of the transform at {i}"
 
 /-- Prove `L.IsLowerTriangular`: above the diagonal the elimination emitted zero, and at
 the remaining index pairs the triangularity guard is refutable. -/
@@ -167,14 +162,14 @@ def mkLowerCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
   -- the unfolded guard is `toDual j < toDual i`, which is `i < j` in the original order
   mkForallFin m q(($L).IsLowerTriangular) fun i gi => do
-    mkForallFin m gi fun j cell => mkImplication (i < j) cell proveRflCell
+    mkForallFin m gi fun j cell => mkImplication (i < j) cell certifyRflCell
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot`: the two conditions on the pivot
 function mention no entry and are decided, while the entry conditions are built from the
 recorded entries of `U`. -/
 def mkPivotCond {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
-    (pivot : Q(Fin $m → WithTop (Fin $n))) (pivots : Array Nat) (leaf : LeafProver) :
+    (pivot : Q(Fin $m → WithTop (Fin $n))) (pivots : Array Nat) (leaf : LeafCertifier) :
     MetaM Q(($U).IsPivotedBy $pivot) := do
   let zero : Q($α) ← mkNumeral α 0
   let iff ← mkAppOptM ``Matrix.isPivotedBy_iff
@@ -189,10 +184,10 @@ def mkPivotCond {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
           -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
           let col? := if h : i < pivots.size then some pivots[i] else none
           let hz ← mkForallFin n zeros fun j cell =>
-            mkImplication (col?.all (j < ·)) cell proveRflCell
+            mkImplication (col?.all (j < ·)) cell certifyRflCell
           let hn ← mkForallFin n nonzeros fun c cell =>
             mkImplication (col? == some c) cell fun _ =>
-              proveNonzeroEntry leaf (entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
+              certifyNonzeroEntry leaf (entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
           mkAppM ``And.intro #[hz, hn]
         | _ => throwError "unexpected shape of the pivot entry conditions:{indentExpr gi}"
       let hMono ← certifyCondition "monotonicity of the pivot function" mono
@@ -211,7 +206,7 @@ def mkPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m)
     MetaM Q(($A).submatrix $σ id = $Aσ) := do
   have rows : Q(Fin $m → Fin $n → $α) := mkRowsLit α m n entries
   -- every cell is an equation between two spellings of one entry of `A`, so all of them
-  -- close by `rfl` and none consults a leaf normaliser
+  -- close by `rfl` and none consults a leaf certifier
   have reindexed : Q(Fin $m → Fin $n → $α) := q(fun i j => $A ($σ i) (id j))
   have rowStmt : Q(Prop) := ← withLocalDeclD `i q(Fin $m) fun i => do
     mkForallFVars #[i] (← mkEq (mkApp reindexed i).headBeta (mkApp rows i))
@@ -219,7 +214,7 @@ def mkPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m)
     let iN ← mkFinNumeral m i
     have colStmt : Q(Prop) := ← withLocalDeclD `j q(Fin $n) fun j => do
       mkForallFVars #[j] (← mkEq (mkApp2 reindexed iN j).headBeta (mkApp2 rows iN j))
-    mkAppM ``funext #[← mkForallFin n colStmt fun _ cell => proveRflCell cell]
+    mkAppM ``funext #[← mkForallFin n colStmt fun _ cell => certifyRflCell cell]
   have wrap : Q((Fin $m → Fin $n → $α) → Matrix (Fin $m) (Fin $n) $α) :=
     q(fun g => Matrix.of g)
   mkExpectedTypeHint (← mkAppM ``congrArg #[wrap, ← mkAppM ``funext #[rowEq]])
@@ -232,7 +227,7 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) (lEntries : Array (Array Q($α)))
     (Aσ : Q(Matrix (Fin $m) (Fin $n) $α)) (aEntries : Array (Array Q($α)))
     (U : Q(Matrix (Fin $m) (Fin $n) $α)) (uEntries : Array (Array Q($α)))
-    (leaf : LeafProver) : MetaM Q($L * $Aσ = $U) := do
+    (leaf : LeafCertifier) : MetaM Q($L * $Aσ = $U) := do
   have zero : Q($α) := ← mkNumeral α 0
   -- synthesised once, so that every cell references one instance node rather than rebuilding
   -- the projection path from `_cr`
@@ -253,10 +248,10 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
 `entries`, the parsed entries of `A`, deciding every condition in the kernel unless `leaf?`
-supplies a normaliser for the entry ones. -/
+supplies a certifier for the entry ones. -/
 def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
-    (data : BareissData Expr) (leaf? : Option LeafProver) :
+    (data : BareissData Expr) (leaf? : Option LeafCertifier) :
     MetaM Q(Echelon.Decomposition $A) := withDefault do
   -- `withDefault`: the ambient transparency inside `simp` is `reducible`, which does not
   -- reduce a matrix literal at a concrete index, so no entry would be recognised as zero

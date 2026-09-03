@@ -20,6 +20,7 @@ tactic selects a model through the `bareiss_ext` extension registry.
 - `RingOps`: the arithmetic of a model's value type.
 - `bareissDecomp`: fraction-free Gaussian elimination over a model's values.
 - `mkProducer`: assemble a producer from a model's parts.
+- `Model`: what a registered extension supplies, the producer with the leaf certifier.
 - `bareiss_ext`: the attribute registering a `BareissExt` computation model.
 
 ## Implementation notes
@@ -91,6 +92,10 @@ def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
 the decomposition constructed. -/
 @[expose] def Producer := Array (Array Expr) → MetaM (BareissData Expr)
 
+/-- A leaf certifier settles a proposition about a single entry, returning its truth value
+together with a proof of the proposition or of its negation. -/
+@[expose] def LeafCertifier := Expr → MetaM (Bool × Expr)
+
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
 
@@ -159,11 +164,19 @@ def mkProducer {V : Type} (ops : RingOps V)
   let d ← bareissDecomp ops values
   (restore d).mapM mkEntry
 
+/-- A computation model for a ring: the producer that runs the elimination, and the leaf
+certifier its certificate conditions are built with. -/
+structure Model where
+  /-- Run the elimination on the entries of a matrix literal. -/
+  producer : Producer
+  /-- Settle a proposition about a single entry, or `none` when the kernel decides. -/
+  leafCertifier? : Option LeafCertifier
+
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
   /-- The computation model for the ring type `R`, or `none` if the extension does not
   handle `R`. -/
-  producer? (R : Expr) : MetaM (Option Producer)
+  model? (R : Expr) : MetaM (Option Model)
 
 /-- Read a `bareiss_ext` extension from a declaration of the right type. -/
 def mkBareissExt (n : Name) : ImportM BareissExt := do

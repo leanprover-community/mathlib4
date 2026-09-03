@@ -199,7 +199,7 @@ example :
     Matrix.rank (R := ℤ) !![1, 2; 2, 4] = Matrix.rank (R := ℝ) !![1, 0; 0, 1] - 1 := by
   simp only [norm_rank]
 
--- an entry no leaf normaliser can settle is skipped, without an error, while a supported
+-- an entry no leaf certifier can settle is skipped, without an error, while a supported
 -- literal in the same goal is rewritten. The second row is twice the first, so the rank is
 -- one, but the tactic cannot see that
 example (x : ℝ) :
@@ -294,7 +294,9 @@ open Polynomial in
 error: `eval_rank` made no progress.
 Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.evalRank] the following entry cannot be simplified to a numeral
+trace: [Tactic.evalRank] equality does not reduce in the kernel; using `norm_num` leaves
+      ℚ[X]
+[Tactic.evalRank] the following entry cannot be simplified to a numeral
       X
 -/
 #guard_msgs in
