@@ -6,9 +6,6 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Tactic.Basify.Core
-public import Mathlib.Tactic.Basify.ENat
-public import Mathlib.Tactic.Basify.ENNReal
-public import Mathlib.Tactic.Basify.PNat
 
 /-!
 # The `basify` tactic

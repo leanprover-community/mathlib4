@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Extended non-negative reals
@@ -765,3 +766,27 @@ meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e :=
   | _, _, _ => throwError "not ENNReal.ofNNReal"
 
 end Mathlib.Meta.Positivity
+
+-- Registrations for the `basify` tactic.
+attribute [basify_elim] ENNReal.recTopCoe
+attribute [basify_op ←] ENNReal.coe_zero ENNReal.coe_one ENNReal.coe_natCast ENNReal.coe_add
+  ENNReal.coe_mul ENNReal.coe_pow ENNReal.coe_min ENNReal.coe_max
+attribute [basify_simp] ENNReal.coe_ne_top ENNReal.top_ne_coe ENNReal.coe_lt_top
+  ENNReal.toReal_top ENNReal.coe_eq_zero ENNReal.coe_inj ENNReal.coe_le_coe ENNReal.coe_lt_coe
+  ENNReal.coe_toReal
+
+/-- `ENNReal.coe_ofNat` read from right to left, restated because the `ofNat(n)` on the right-hand
+side of `ENNReal.coe_ofNat` is `no_index`ed, which would make the reversed lemma match every term.
+-/
+theorem ENNReal.ofNat_eq_coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (OfNat.ofNat n : ℝ≥0∞) = ((OfNat.ofNat n : ℝ≥0) : ℝ≥0∞) :=
+  rfl
+
+attribute [basify_op] ENNReal.ofNat_eq_coe_ofNat
+
+/-- The decimal-literal counterpart of `ENNReal.ofNat_eq_coe_ofNat`. -/
+theorem ENNReal.ofScientific_eq_coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℝ≥0∞) = ((OfScientific.ofScientific m s e : ℝ≥0) : ℝ≥0∞) :=
+  rfl
+
+attribute [basify_op] ENNReal.ofScientific_eq_coe_ofScientific

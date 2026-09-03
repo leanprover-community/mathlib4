@@ -10,6 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public meta import Mathlib.Data.Nat.NthRoot.Defs
 public import Mathlib.Tactic.Rify
 public import Qq
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Power function on `ℝ≥0` and `ℝ≥0∞`
@@ -1280,3 +1281,7 @@ meta def evalNNRealRPow : NormNumExt where eval {u αR} e := do
   | _ => failure
 
 end Mathlib.Meta.NormNum
+
+-- Registrations for the `basify` tactic.
+attribute [basify_op] NNReal.coe_rpow
+attribute [basify_op ←] ENNReal.coe_rpow_of_nonneg

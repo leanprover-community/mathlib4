@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Data.ENat.Basic
+import Mathlib.Tactic.Basify.Attr
 
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Data.Nat.Cast.Order.Basic
@@ -320,3 +321,6 @@ lemma add_le_add_one_left_iff {a b : WithBot ℕ∞} : 1 + a ≤ 1 + b ↔ a ≤
 
 end WithBot
 end ENat
+
+-- Registrations for the `basify` tactic.
+attribute [basify_simp] ENat.mul_top ENat.top_mul

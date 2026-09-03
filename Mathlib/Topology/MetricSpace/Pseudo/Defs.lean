@@ -11,6 +11,7 @@ public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Pseudo-metric spaces
@@ -1282,3 +1283,6 @@ variable [PseudoMetricSpace X]
 @[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
 
 end
+
+-- Registrations for the `basify` tactic.
+attribute [basify_op] coe_nndist

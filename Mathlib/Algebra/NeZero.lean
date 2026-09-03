@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # `NeZero` typeclass
@@ -60,3 +61,6 @@ variable {M : Type*} {x : M}
 theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x := ⟨ne_of_gt h⟩
 
 end NeZero
+
+-- Registrations for the `basify` tactic.
+attribute [basify_simp] one_ne_zero

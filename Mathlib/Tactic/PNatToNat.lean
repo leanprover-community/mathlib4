@@ -6,6 +6,7 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Data.PNat.Basic
+import Mathlib.Tactic.Basify.Attr
 public meta import Mathlib.Tactic.ToAdditive
 
 
@@ -72,3 +73,8 @@ macro "pnat_to_nat" : tactic => `(tactic| focus (
 )
 
 end Mathlib.Tactic.PNatToNat
+
+-- Registrations for the `basify` tactic.
+attribute [basify_op] Mathlib.Tactic.PNatToNat.sub_coe
+attribute [basify_simp] Mathlib.Tactic.PNatToNat.coe_inj Mathlib.Tactic.PNatToNat.coe_le_coe
+  Mathlib.Tactic.PNatToNat.coe_lt_coe

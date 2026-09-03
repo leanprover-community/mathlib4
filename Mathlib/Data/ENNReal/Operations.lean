@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.ENNReal.Real
 public import Mathlib.Tactic.Finiteness
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
@@ -716,3 +717,8 @@ lemma exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠ 0
 end iSup
 
 end ENNReal
+
+-- Registrations for the `basify` tactic.
+attribute [basify_op ←] ENNReal.coe_sub
+attribute [basify_simp] ENNReal.top_mul ENNReal.mul_top ENNReal.sub_top ENNReal.top_sub_coe
+  ENNReal.top_pow ENNReal.not_lt_top

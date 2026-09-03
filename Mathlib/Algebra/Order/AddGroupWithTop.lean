@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Regular.Basic
+import Mathlib.Tactic.Basify.Attr
 
 
 /-!
@@ -271,3 +272,6 @@ instance [LinearOrder G] [IsOrderedAddMonoid G] : LinearOrderedAddCommGroupWithT
   add_neg_cancel_of_ne_top | (a : G), _ => mod_cast add_neg_cancel a
 
 end WithTop.LinearOrderedAddCommGroup
+
+-- Registrations for the `basify` tactic.
+attribute [basify_simp] top_add add_top

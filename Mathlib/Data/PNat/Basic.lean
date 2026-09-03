@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Positive.Ring
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.PNat.Equiv
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # The positive natural numbers
@@ -360,3 +361,6 @@ theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
   exact PNat.ne_zero n (eq_zero_of_zero_dvd h)
 
 end PNat
+
+-- Registrations for the `basify` tactic.
+attribute [basify_op] PNat.val_ofNat PNat.add_coe PNat.mul_coe

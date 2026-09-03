@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Order.Nat
+import Mathlib.Tactic.Basify.Attr
 
 import Mathlib.Algebra.Order.Group.Nat
 
@@ -378,3 +379,7 @@ lemma eq_top_iff_forall_ge {n : WithBot ℕ∞} : n = ⊤ ↔ ∀ m : ℕ, m ≤
   _root_.WithBot.eq_top_iff_forall_ge
 
 end ENat.WithBot
+
+-- Registrations for the `basify` tactic.
+attribute [basify_simp] ENat.sub_top ENat.top_sub_natCast ENat.natCast_ne_top ENat.top_ne_natCast
+  ENat.natCast_lt_top ENat.natCast_inj ENat.natCast_le_natCast ENat.natCast_lt_natCast

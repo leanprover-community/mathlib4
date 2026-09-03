@@ -8,6 +8,7 @@ module
 public import Batteries.Tactic.Alias
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.TypeTags
+import Mathlib.Tactic.Basify.Attr
 
 /-! # Definition and notation for extended natural numbers -/
 
@@ -41,3 +42,6 @@ theorem recTopCoe_natCast {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C
 @[deprecated (since := "2026-07-17")] alias recTopCoe_coe := recTopCoe_natCast
 
 end ENat
+
+-- `basify` destructs an `ℕ∞` into `⊤` and the naturals.
+attribute [basify_elim] ENat.recTopCoe

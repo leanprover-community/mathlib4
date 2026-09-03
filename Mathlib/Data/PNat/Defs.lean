@@ -11,6 +11,7 @@ public import Mathlib.Data.PNat.Notation
 public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # The positive natural numbers
@@ -238,3 +239,16 @@ instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
         Int.natAbs_of_nonneg hn.le]⟩⟩
 
 end CanLift
+
+-- Registrations for the `basify` tactic.
+attribute [basify_op] PNat.one_coe
+attribute [basify_simp] PNat.toPNat'_coe
+
+/-- A `Subtype.mk`-free eliminator for `ℕ+`, exposing the underlying natural and its positivity.
+See `NNReal.recToNNReal` for why `basify` needs this shape. -/
+@[elab_as_elim]
+def PNat.recToPNat {C : ℕ+ → Sort*} (mk : ∀ (n : ℕ) (_pos : 0 < n), C n.toPNat') (t : ℕ+) :
+    C t :=
+  PNat.coe_toPNat' t ▸ mk t t.pos
+
+attribute [basify_elim] PNat.recToPNat

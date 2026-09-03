@@ -9,6 +9,7 @@ public import Mathlib.Order.Max
 public import Mathlib.Order.ULift
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -476,3 +477,6 @@ theorem bot_eq_false : ⊥ = false :=
   rfl
 
 end Bool
+
+-- Registrations for the `basify` tactic.
+attribute [basify_simp] top_le_iff le_top lt_top_iff_ne_top

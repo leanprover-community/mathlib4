@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 
@@ -123,3 +124,6 @@ instance charZero_ofNat {M} {n : ℕ} [n.AtLeastTwo] [AddMonoidWithOne M] [CharZ
   ⟨OfNat.ofNat_ne_zero n⟩
 
 end NeZero
+
+-- Registrations for the `basify` tactic.
+attribute [basify_simp] OfNat.ofNat_ne_zero

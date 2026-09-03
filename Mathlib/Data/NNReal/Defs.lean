@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Nonnegative real numbers
@@ -1043,3 +1044,22 @@ meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e :=
   | _, _, _ => throwError "not Real.nnabs"
 
 end Mathlib.Meta.Positivity
+
+-- Registrations for the `basify` tactic.
+attribute [basify_op] NNReal.coe_zero NNReal.coe_one NNReal.coe_ofNat NNReal.coe_natCast
+  NNReal.coe_add NNReal.coe_mul NNReal.coe_inv NNReal.coe_div NNReal.coe_pow NNReal.coe_max
+  NNReal.coe_min NNReal.coe_sub_def
+attribute [basify_simp] Real.coe_toNNReal
+attribute [basify_simp ←] NNReal.coe_inj NNReal.coe_le_coe NNReal.coe_lt_coe
+
+/-- A `Subtype.mk`-free eliminator for `ℝ≥0`, exposing the underlying real and its nonnegativity.
+Used by the `basify` tactic: a goal mentioning `⟨x, hx⟩ : ℝ≥0` is not type-correct at the
+transparency `simp` checks at, because `ℝ≥0` is semireducible. -/
+@[elab_as_elim]
+def NNReal.recToNNReal {C : ℝ≥0 → Sort*} (mk : ∀ (x : ℝ) (_nonneg : 0 ≤ x), C x.toNNReal)
+    (t : ℝ≥0) : C t :=
+  Real.toNNReal_coe (r := t) ▸ mk t t.coe_nonneg
+
+attribute [basify_elim] NNReal.recToNNReal
+
+attribute [basify_op] NNReal.coe_ofScientific

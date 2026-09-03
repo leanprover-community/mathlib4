@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.Data.NNReal.Basic
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # (Semi)normed groups: basic theory
@@ -1134,3 +1135,6 @@ meta def evalAddNorm : PositivityExt where eval {u α} _ pα? e :=
   | _, _, _ => throwError "not `‖·‖`"
 
 end Mathlib.Meta.Positivity
+
+-- Registrations for the `basify` tactic.
+attribute [basify_op] coe_nnnorm coe_nnnorm'
