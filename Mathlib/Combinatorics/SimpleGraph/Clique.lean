@@ -805,7 +805,7 @@ theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
   refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
   · intro a
     have one_clique : G.IsNClique 1 {a} := by simp
-    have : 1 ≤ G.cliqueNum  := IsClique.card_le_cliqueNum' one_clique.isClique
+    have : 1 ≤ G.cliqueNum := IsClique.card_le_cliqueNum' one_clique.isClique
     grind
   · have : ∀ (s : Finset α ) , s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
     simp [cliqueNum, this, exists_const]
