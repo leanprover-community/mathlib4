@@ -72,8 +72,8 @@ def vars (p : MvPolynomial σ R) : Finset σ :=
 
 theorem coe_vars_subset_iff {p : MvPolynomial σ R} {s : Set σ} :
     (p.vars : Set σ) ⊆ s ↔ p ∈ (rename ((↑) : s → σ)).range := by
-  unfold vars
-  rw [AlgHom.mem_range]
+  classical
+  rw [MvPolynomial.vars_def, AlgHom.mem_range]
   constructor
   · intro h
     refine ⟨p.killCompl Subtype.val_injective, ext _ _ fun m => ?_⟩
