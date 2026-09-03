@@ -14,7 +14,7 @@ public import Mathlib.Data.Finset.Image
 -/
 
 public section
-assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
+assert_not_exists MonoidWithZero MonoidAction IsOrderedMonoid
 
 variable {α β : Type*}
 

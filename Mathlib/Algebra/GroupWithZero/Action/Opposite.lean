@@ -76,7 +76,7 @@ reversed.
 
 open MulOpposite
 
-/-- `Monoid.toOppositeMulAction` is faithful on nontrivial cancellative monoids with zero. -/
+/-- `Monoid.toOppositeMonoidAction` is faithful on nontrivial cancellative monoids with zero. -/
 instance IsLeftCancelMulZero.toFaithfulSMul_opposite [MonoidWithZero α] [IsLeftCancelMulZero α] :
     FaithfulSMul αᵐᵒᵖ α where
   eq_of_smul_eq_smul h := by

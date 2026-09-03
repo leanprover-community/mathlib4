@@ -195,7 +195,7 @@ end
 
 /-- The tautological action by `Module.End R M` (aka `M →ₗ[R] M`) on `M`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMonoidAction`. -/
 instance applyModule : Module (Module.End R M) M where
   smul := (· <| ·)
   smul_zero := map_zero

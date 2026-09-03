@@ -75,7 +75,7 @@ lemma PSL.iSup_iwasawaT_eq_top :
   rw [step1, PSL.iSup_lineStab_eq_top]
   exact Subgroup.map_top_of_surjective _ (QuotientGroup.mk'_surjective _)
 
-open MulAction
+open MonoidAction
 
 /-- The Iwasawa structure on PSL(2, F). -/
 noncomputable abbrev PSL2.Iwasawa : IwasawaStructure PSL(2, F) (ℙ F (Fin 2 → F)) where
@@ -120,7 +120,7 @@ end SL2Simple
 theorem Matrix.ProjectiveSpecialLinearGroup.rank_two_simple'
     (hF : ∃ a : F, a ≠ 0 ∧ a ^ 2 ≠ 1) :
     IsSimpleGroup PSL(2, F) :=
-  MulAction.IwasawaStructure.isSimpleGroup
+  MonoidAction.IwasawaStructure.isSimpleGroup
     (SL2Simple.PSL_commutator_eq_top hF) PSL2.Iwasawa inferInstance
 
 private lemma field_cond_of_four_le_card (hF : 4 ≤ Nat.card F) :

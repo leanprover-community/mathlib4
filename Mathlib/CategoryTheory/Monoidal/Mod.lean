@@ -36,7 +36,7 @@ variable (M : C) [AddMonObj M]
 an action of an additive monoid object `M` in `C` on an object `X` in `D` is the data of a
 map `vadd : M ⊙ₗ X ⟶ X` that satisfies zero-additivity and associativity with addition.
 
-See `AddAction` for the non-categorical version. -/
+See `AddMonoidAction` for the non-categorical version. -/
 class AddModObj (X : D) where
   /-- The action map -/
   vadd : M ⊙ₗ X ⟶ X
@@ -54,7 +54,7 @@ an action of a monoid object `M` in `C` on an object `X` in `D` is the data of a
 map `smul : M ⊙ₗ X ⟶ X` that satisfies unitality and associativity with
 multiplication.
 
-See `MulAction` for the non-categorical version. -/
+See `MonoidAction` for the non-categorical version. -/
 @[to_additive]
 class ModObj (X : D) where
   /-- The action map -/
@@ -122,9 +122,9 @@ theorem ext {X : C} (h₁ h₂ : ModObj M X) (H : h₁.smul = h₂.smul) :
   rfl
 
 open MonoidalLeftAction in
-/-- Transfer a `MulActionObj` along isomorphisms. -/
+/-- Transfer a `MonoidActionObj` along isomorphisms. -/
 @[to_additive (attr := simps! -isSimp, implicit_reducible)
-/-- Transfer an `AddActionObj` along isomorphisms. -/]
+/-- Transfer an `AddMonoidActionObj` along isomorphisms. -/]
 def ofIso {X : D} {N : C} [MonObj N] (e₁ : M ≅ N) [IsMonHom e₁.hom]
       {Y : D} (e₂ : X ≅ Y) [ModObj M X] :
     ModObj N Y where

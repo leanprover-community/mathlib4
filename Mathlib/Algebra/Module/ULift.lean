@@ -13,7 +13,7 @@ public import Mathlib.Data.ULift
 /-!
 # `ULift` instances for module and multiplicative actions
 
-This file defines instances for `Module`, `MulAction` and related structures on `ULift` types.
+This file defines instances for `Module`, `MonoidAction` and related structures on `ULift` types.
 
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 
@@ -53,14 +53,20 @@ instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar 
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
 @[to_additive]
-instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
+instance monoidAction [Monoid R] [MonoidAction R M] : MonoidAction (ULift R) M where
   mul_smul _ _ := mul_smul _ _
   one_smul := one_smul _
 
+@[deprecated (since := "2026-09-02")] alias _root_.ULift.mulAction := monoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.ULift.addAction := addMonoidAction
+
 @[to_additive]
-instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
+instance monoidAction' [Monoid R] [MonoidAction R M] : MonoidAction R (ULift M) where
   mul_smul := fun _ _ _ => congr_arg ULift.up <| mul_smul _ _ _
   one_smul := fun _ => congr_arg ULift.up <| one_smul _ _
+
+@[deprecated (since := "2026-09-02")] alias _root_.ULift.mulAction' := monoidAction'
+@[deprecated (since := "2026-09-02")] alias _root_.ULift.addAction' := addMonoidAction'
 
 instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M :=
   { ULift.smulLeft with smul_zero := fun _ => smul_zero _ }
@@ -78,11 +84,11 @@ instance distribSMul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift 
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction (ULift R) M :=
-  { ULift.mulAction, ULift.distribSMul with }
+  { ULift.monoidAction, ULift.distribSMul with }
 
 instance distribMulAction' [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (ULift M) :=
-  { ULift.mulAction', ULift.distribSMul' with }
+  { ULift.monoidAction', ULift.distribSMul' with }
 
 instance mulDistribMulAction [Monoid R] [Monoid M] [MulDistribMulAction R M] :
     MulDistribMulAction (ULift R) M where
@@ -91,7 +97,7 @@ instance mulDistribMulAction [Monoid R] [Monoid M] [MulDistribMulAction R M] :
 
 instance mulDistribMulAction' [Monoid R] [Monoid M] [MulDistribMulAction R M] :
     MulDistribMulAction R (ULift M) :=
-  { ULift.mulAction' with
+  { ULift.monoidAction' with
     smul_one := fun _ => by
       ext
       simp [smul_one]

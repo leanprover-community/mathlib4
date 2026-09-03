@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Group.Action
 
 In this file we define the a.e. stabilizer of a set under a measure-preserving group action.
 
-The a.e. stabilizer `MulAction.aestabilizer G μ s` of a set `s`
+The a.e. stabilizer `MonoidAction.aestabilizer G μ s` of a set `s`
 is the set of the elements `g : G` such that `s` is a.e.-invariant under `(g • ·)`.
 
 For a measure-preserving group action, this set is a subgroup of `G`.
@@ -33,10 +33,10 @@ but we don't have the corresponding typeclass.
 open Filter Set MeasureTheory
 open scoped Pointwise
 
-variable (G : Type*) {α : Type*} [Group G] [MulAction G α]
+variable (G : Type*) {α : Type*} [Group G] [MonoidAction G α]
   {_ : MeasurableSpace α} (μ : Measure α) [SMulInvariantMeasure G α μ]
 
-namespace MulAction
+namespace MonoidAction
 
 /-- A.e. stabilizer of a set under a group action. -/
 @[to_additive (attr := simps) /-- A.e. stabilizer of a set under an additive group action. -/]
@@ -47,27 +47,58 @@ def aestabilizer (s : Set α) : Subgroup G where
   mul_mem' {g₁ g₂} h₁ h₂ := by simpa only [smul_smul] using! ((smul_set_ae_eq g₁).2 h₂).trans h₁
   inv_mem' {g} h := by simpa using! (smul_set_ae_eq g⁻¹).2 h.out.symm
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.aestabilizer := aestabilizer
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.coe_aestabilizer := coe_aestabilizer
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.aestabilizer := _root_.AddMonoidAction.aestabilizer
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.coe_aestabilizer := _root_.AddMonoidAction.coe_aestabilizer
+
 variable {G μ}
 variable {g : G} {s t : Set α}
 
 @[to_additive (attr := simp)]
 lemma mem_aestabilizer : g ∈ aestabilizer G μ s ↔ g • s =ᵐ[μ] s := .rfl
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.mem_aestabilizer := mem_aestabilizer
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.mem_aestabilizer := _root_.AddMonoidAction.mem_aestabilizer
+
 @[to_additive]
 lemma stabilizer_le_aestabilizer (s : Set α) : stabilizer G s ≤ aestabilizer G μ s := by
   intro g hg
   simp_all
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.stabilizer_le_aestabilizer := stabilizer_le_aestabilizer
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.stabilizer_le_aestabilizer :=
+  _root_.AddMonoidAction.stabilizer_le_aestabilizer
+
 @[to_additive (attr := simp)]
 lemma aestabilizer_empty : aestabilizer G μ ∅ = ⊤ := top_unique fun _ _ ↦ by simp
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.aestabilizer_empty := aestabilizer_empty
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.aestabilizer_empty := _root_.AddMonoidAction.aestabilizer_empty
+
 @[to_additive (attr := simp)]
 lemma aestabilizer_univ : aestabilizer G μ univ = ⊤ := top_unique fun _ _ ↦ by simp
+
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.aestabilizer_univ := aestabilizer_univ
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.aestabilizer_univ := _root_.AddMonoidAction.aestabilizer_univ
 
 @[to_additive]
 lemma aestabilizer_congr (h : s =ᵐ[μ] t) : aestabilizer G μ s = aestabilizer G μ t := by
   ext g
   rw [mem_aestabilizer, mem_aestabilizer, h.congr_right, ((smul_set_ae_eq g).2 h).congr_left]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.aestabilizer_congr := aestabilizer_congr
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.aestabilizer_congr := _root_.AddMonoidAction.aestabilizer_congr
 
 lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G μ s = ⊤ := by
   refine top_unique fun g _ ↦ ?_
@@ -75,7 +106,10 @@ lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G 
   | inl h => simp [aestabilizer_congr h]
   | inr h => simp [aestabilizer_congr h]
 
-end MulAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.aestabilizer_of_aeconst := aestabilizer_of_aeconst
+
+end MonoidAction
 
 variable {G μ}
 variable {x y : G} {s : Set α}
@@ -85,11 +119,11 @@ namespace MeasureTheory
 @[to_additive]
 theorem smul_ae_eq_self_of_mem_zpowers (hs : (x • s : Set α) =ᵐ[μ] s)
     (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐ[μ] s := by
-  rw [← MulAction.mem_aestabilizer, ← Subgroup.zpowers_le] at hs
+  rw [← MonoidAction.mem_aestabilizer, ← Subgroup.zpowers_le] at hs
   exact hs hy
 
 @[to_additive]
 theorem inv_smul_ae_eq_self (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=
-  inv_mem (s := MulAction.aestabilizer G μ s) hs
+  inv_mem (s := MonoidAction.aestabilizer G μ s) hs
 
 end MeasureTheory

@@ -13,7 +13,7 @@ public import Mathlib.Basic.Finite.Prod
 
 public section
 
-assert_not_exists MulAction MonoidWithZero
+assert_not_exists MonoidAction MonoidWithZero
 
 open scoped Pointwise
 

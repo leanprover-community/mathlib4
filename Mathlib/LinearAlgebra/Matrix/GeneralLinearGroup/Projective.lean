@@ -199,16 +199,19 @@ theorem lift_comp_mk {f : GL n R →* M} (hf) : (lift f hf).comp mk = f := by
 /-- Given an action of `GL n R` such that the scalar matrices act trivially,
 define an action of `PGL n R`. -/
 @[instance_reducible]
-def mulActionOfGL {α : Type*} [MulAction (GL n R) α]
+def monoidActionOfGL {α : Type*} [MonoidAction (GL n R) α]
     (h : ∀ (u : Rˣ) (a : α), GeneralLinearGroup.scalar n u • a = a) :
-    MulAction (PGL(n, R)) α :=
-  .ofEndHom <| lift MulAction.toEndHom <| by
+    MonoidAction (PGL(n, R)) α :=
+  .ofEndHom <| lift MonoidAction.toEndHom <| by
     ext u
     funext a -- TODO: should we add an `ext` lemma for `Function.End`?
     exact h u a
 
-theorem mk_smul {α : Type*} [MulAction (GL n R) α] (h) (g : GL n R) (a : α) :
-    letI : MulAction (PGL(n, R)) α := mulActionOfGL h
+@[deprecated (since := "2026-09-02")]
+alias _root_.Matrix.ProjGenLinGroup.mulActionOfGL := monoidActionOfGL
+
+theorem mk_smul {α : Type*} [MonoidAction (GL n R) α] (h) (g : GL n R) (a : α) :
+    letI : MonoidAction (PGL(n, R)) α := monoidActionOfGL h
     mk g • a = g • a := by
   rfl
 

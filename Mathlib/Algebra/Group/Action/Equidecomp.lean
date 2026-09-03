@@ -137,7 +137,7 @@ end SMul
 
 section Monoid
 
-variable [Monoid G] [MulAction G X]
+variable [Monoid G] [MonoidAction G X]
 
 variable (X G)
 
@@ -176,7 +176,7 @@ end Monoid
 
 section Group
 
-variable [Group G] [MulAction G X]
+variable [Group G] [MonoidAction G X]
 
 open scoped Classical in
 theorem IsDecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}

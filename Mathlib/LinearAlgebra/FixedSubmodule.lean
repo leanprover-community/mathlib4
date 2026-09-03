@@ -60,7 +60,7 @@ end LinearMap
 namespace LinearEquiv
 
 open scoped Pointwise
-open LinearMap Submodule MulAction
+open LinearMap Submodule MonoidAction
 
 variable {R : Type*} [Semiring R]
   {U V : Type*} [AddCommMonoid U] [AddCommMonoid V]

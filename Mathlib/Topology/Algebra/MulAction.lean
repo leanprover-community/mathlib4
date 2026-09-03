@@ -73,7 +73,7 @@ section SMul
 variable [SMul M X] [ContinuousSMul M X]
 
 lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid N] [SMul M N]
-    [MulAction N α] [SMul M α] [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
+    [MonoidAction N α] [SMul M α] [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
     [TopologicalSpace α] [ContinuousSMul M N] [ContinuousSMul N α] : ContinuousSMul M α :=
   { continuous_smul := by
       suffices Continuous (fun p : M × α ↦ (p.1 • (1 : N)) • p.2) by simpa
@@ -229,7 +229,7 @@ end SMulWithZero
 
 section Monoid
 
-variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
+variable [Monoid M] [MonoidAction M X] [ContinuousSMul M X]
 
 @[to_additive]
 protected theorem Filter.Tendsto.one_smul {f : α → M} {g : α → X} {l : Filter α} {a : X}
@@ -249,12 +249,17 @@ instance Units.continuousSMul : ContinuousSMul Mˣ X :=
 /-- If an action is continuous, then composing this action with a continuous homomorphism gives
 again a continuous action. -/
 @[to_additive]
-theorem MulAction.continuousSMul_compHom
+theorem MonoidAction.continuousSMul_compHom
     {N : Type*} [TopologicalSpace N] [Monoid N] {f : N →* M} (hf : Continuous f) :
-    letI : MulAction N X := MulAction.compHom _ f
+    letI : MonoidAction N X := MonoidAction.compHom _ f
     ContinuousSMul N X := by
-  let _ : MulAction N X := MulAction.compHom _ f
+  let _ : MonoidAction N X := MonoidAction.compHom _ f
   exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
+
+@[deprecated (since := "2026-09-02")]
+alias MulAction.continuousSMul_compHom := MonoidAction.continuousSMul_compHom
+@[deprecated (since := "2026-09-02")]
+alias AddAction.continuousVAdd_compHom := AddMonoidAction.continuousVAdd_compHom
 
 @[to_additive]
 instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
@@ -264,7 +269,7 @@ end Monoid
 
 section Group
 
-variable [Group M] [MulAction M X] [ContinuousSMul M X]
+variable [Group M] [MonoidAction M X] [ContinuousSMul M X]
 
 @[to_additive]
 instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
@@ -273,19 +278,20 @@ instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
 variable (M)
 
 /-- The stabilizer of a continuous group action on a discrete space is an open subgroup. -/
-lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabilizer M x : Set M) :=
+lemma stabilizer_isOpen [DiscreteTopology X] (x : X) :
+    IsOpen (MonoidAction.stabilizer M x : Set M) :=
   IsOpen.preimage (f := fun g ↦ g • x) (by fun_prop) (isOpen_discrete {x})
 
 end Group
 
 section IsTopologicalGroup
 
-variable [Group M] [IsTopologicalGroup M] [MulAction M X]
+variable [Group M] [IsTopologicalGroup M] [MonoidAction M X]
 
 /-- A group action of a topological group on a discrete space is continuous if and only if
 each stabilizer is an open subgroup. -/
 theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
-    ContinuousSMul M X ↔ ∀ x : X, IsOpen (MulAction.stabilizer M x : Set M) := by
+    ContinuousSMul M X ↔ ∀ x : X, IsOpen (MonoidAction.stabilizer M x : Set M) := by
   refine ⟨fun _ _ ↦ stabilizer_isOpen .., fun h ↦ ⟨?_⟩⟩
   rw [continuous_prod_of_discrete_right]
   intro y

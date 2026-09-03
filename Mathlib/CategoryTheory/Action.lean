@@ -25,13 +25,13 @@ where M is a group, this category is a groupoid -- the *action groupoid*.
 @[expose] public section
 
 
-open MulAction SemidirectProduct
+open MonoidAction SemidirectProduct
 
 namespace CategoryTheory
 
 universe u
 
-variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
+variable (M : Type*) [Monoid M] (X : Type u) [MonoidAction M X]
 
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
   and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
@@ -39,7 +39,7 @@ variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
   map f := ↾(f • ·)
-  map_id _ := by ext; exact MulAction.one_smul _
+  map_id _ := by ext; exact MonoidAction.one_smul _
   map_comp f g := by ext x; exact (smul_smul g f x).symm
 
 /-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
@@ -134,7 +134,7 @@ instance [IsPretransitive M X] [Nonempty X] : IsConnected (ActionCategory M X) :
 
 section Group
 
-variable {G : Type*} [Group G] [MulAction G X]
+variable {G : Type*} [Group G] [MonoidAction G X]
 
 instance : Groupoid (ActionCategory G X) :=
   CategoryTheory.groupoidOfElements _

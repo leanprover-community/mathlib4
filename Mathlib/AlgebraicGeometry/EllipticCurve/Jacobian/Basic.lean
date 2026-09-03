@@ -148,19 +148,19 @@ lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f 
   ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
 
 /-- The multiplicative action for a Jacobian point representative on a Weierstrass curve. -/
-scoped instance : MulAction R <| Fin 3 → R where
+scoped instance : MonoidAction R <| Fin 3 → R where
   one_smul _ := by simp only [smul_fin3, one_pow, one_mul, fin3_def]
   mul_smul _ _ _ := by simp only [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
 
 /-- The equivalence setoid for a Jacobian point representative on a Weierstrass curve. -/
 @[reducible]
 scoped instance : Setoid <| Fin 3 → R :=
-  MulAction.orbitRel Rˣ <| Fin 3 → R
+  MonoidAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
 /-- The equivalence class of a Jacobian point representative on a Weierstrass curve. -/
 abbrev PointClass : Type r :=
-  MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
+  MonoidAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
 lemma smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : u • P ≈ P :=
   ⟨hu.unit, rfl⟩

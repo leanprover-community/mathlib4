@@ -64,10 +64,11 @@ Foelner, Følner filter, amenability, amenable group
 open MeasureTheory Filter Set
 open scoped ENNReal Pointwise symmDiff Topology Filter
 
-variable {G X : Type*} [MeasurableSpace X] {μ : Measure X} [Group G] [MulAction G X]
+variable {G X : Type*} [MeasurableSpace X] {μ : Measure X} [Group G] [MonoidAction G X]
 variable {ι : Type*} {l : Filter ι} {u : Ultrafilter ι} {F : ι → Set X}
 
-variable (G : Type*) {X : Type*} [MeasurableSpace X] (μ : Measure X) [AddGroup G] [AddAction G X]
+variable (G : Type*) {X : Type*} [MeasurableSpace X] (μ : Measure X) [AddGroup G]
+         [AddMonoidAction G X]
          {ι : Type*} (l : Filter ι) (F : ι → Set X) in
 /-- Consider an additive group `G` acting on a measure space `X`.
   A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action,

@@ -13,7 +13,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 * `Equiv.Perm.isCoatom_stabilizer`:
   if neither `s : Set α` nor its complementary subset is empty,
   and the cardinality of `s` is not half of that of `α`,
-  then `MulAction.stabilizer (Equiv.Perm α) s` is
+  then `MonoidAction.stabilizer (Equiv.Perm α) s` is
   a maximal subgroup of the symmetric group `Equiv.Perm α`.
 
   This is the *intransitive case* of the O'Nan-Scott classification.
@@ -39,9 +39,9 @@ open scoped Pointwise
 
 open Set
 
-variable {M α : Type*} [Group M] [MulAction M α] {s : Set α}
+variable {M α : Type*} [Group M] [MonoidAction M α] {s : Set α}
 
-namespace MulAction
+namespace MonoidAction
 
 open Equiv
 
@@ -60,6 +60,10 @@ theorem isPreprimitive_stabilizer_of_surjective
   rw [isPreprimitive_congr hs hf]
   infer_instance
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPreprimitive_stabilizer_of_surjective :=
+  isPreprimitive_stabilizer_of_surjective
+
 /-- A (mostly trivial) primitivity criterion for stabilizers. -/
 theorem isPreprimitive_stabilizer_subgroup [IsPreprimitive (stabilizer M s) s]
     {G : Subgroup M} (hG : stabilizer M s ≤ G) :
@@ -70,6 +74,9 @@ theorem isPreprimitive_stabilizer_subgroup [IsPreprimitive (stabilizer M s) s]
       toFun := id
       map_smul' _ _ := rfl }
   IsPreprimitive.of_surjective (f := f) Function.surjective_id
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPreprimitive_stabilizer_subgroup := isPreprimitive_stabilizer_subgroup
 
 theorem IsPretransitive.of_partition
     (hs : ∀ a ∈ s, ∀ b ∈ s, ∃ g : M, g • a = b)
@@ -92,11 +99,14 @@ theorem IsPretransitive.of_partition
   by_contra hb
   exact hM a b g ha (Set.mem_compl hb) hgab
 
-end MulAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.of_partition := IsPretransitive.of_partition
+
+end MonoidAction
 
 namespace Equiv.Perm
 
-open MulAction
+open MonoidAction
 
 theorem ofSubtype_mem_stabilizer [DecidablePred fun x ↦ x ∈ s] (g : Perm s) :
     g.ofSubtype ∈ stabilizer (Perm α) s := by
@@ -220,14 +230,14 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
 
 end Equiv.Perm
 
-namespace MulAction.IsBlock
+namespace MonoidAction.IsBlock
 
-open Equiv Equiv.Perm MulAction SubMulAction
+open Equiv Equiv.Perm MonoidAction SubMulAction
 
 lemma subsingleton_of_ssubset_of_stabilizer_le
     {B : Set α} (hB_ss_sc : B ⊂ s) (hB : IsBlock M B)
     (hG : Function.Surjective
-      (MulAction.toPerm : stabilizer M (s : Set α) → Perm (s : Set α))) :
+      (MonoidAction.toPerm : stabilizer M (s : Set α) → Perm (s : Set α))) :
     B.Subsingleton := by
   rw [← inter_eq_self_of_subset_right (subset_of_ssubset hB_ss_sc), ← Subtype.image_preimage_val]
   apply Set.Subsingleton.image
@@ -244,6 +254,10 @@ lemma subsingleton_of_ssubset_of_stabilizer_le
     exact hB.preimage f'
   exact isPreprimitive_stabilizer_of_surjective _ hG
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.subsingleton_of_ssubset_of_stabilizer_le :=
+  subsingleton_of_ssubset_of_stabilizer_le
+
 lemma subsingleton_of_ssubset_of_stabilizer_Perm_le
     {B : Set α} {G : Subgroup (Perm α)} (hB : IsBlock G B)
     (hB_ss_sc : B ⊂ s) (hG : stabilizer (Perm α) s ≤ G) :
@@ -254,6 +268,10 @@ lemma subsingleton_of_ssubset_of_stabilizer_Perm_le
   let h : G := ⟨k, hG hk⟩
   have : h ∈ stabilizer G s := by aesop
   exact ⟨⟨h, this⟩, rfl⟩
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.subsingleton_of_ssubset_of_stabilizer_Perm_le :=
+  subsingleton_of_ssubset_of_stabilizer_Perm_le
 
 lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
     {G : Subgroup M} [IsPreprimitive (stabilizer G s) s]
@@ -272,7 +290,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
       obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's
       suffices (g' • B).Subsingleton by
-        exact subsingleton_of_image (MulAction.injective g') B this
+        exact subsingleton_of_image (MonoidAction.injective g') B this
       apply hB_not_le_sc (⟨g', hg'⟩ • B) (hB.translate _)
       exact Disjoint.subset_compl_right h
   -- `IsTrivialBlock (Subtype.val ⁻¹' B : Set s)`
@@ -283,8 +301,12 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
     let f' : s →ₑ[φ'] α := {
       toFun := Subtype.val
       map_smul' _ _ := rfl }
-    apply MulAction.IsBlock.preimage f' hB
+    apply MonoidAction.IsBlock.preimage f' hB
   infer_instance
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.subsingleton_of_stabilizer_lt_of_subset :=
+  subsingleton_of_stabilizer_lt_of_subset
 
 variable [Finite α]
 
@@ -310,7 +332,7 @@ lemma compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
       exact Set.smul_mem_smul_set ha
     · -- `k ∈ G`
       apply hG
-      exact MulAction.fixingSubgroup_le_stabilizer _ _ hk
+      exact MonoidAction.fixingSubgroup_le_stabilizer _ _ hk
   · -- `∃ (k : fixingSubgroup (Perm α) s), k • b = x`
     suffices h : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s) by
       obtain ⟨k, hk⟩ := h.exists_smul_eq (⟨b, hb'⟩ : ofFixingSubgroup M s) ⟨x, hx'⟩
@@ -320,11 +342,15 @@ lemma compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
     rw [← is_one_pretransitive_iff]
     apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
 
-end MulAction.IsBlock
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl :=
+  compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
+
+end MonoidAction.IsBlock
 
 namespace Equiv.Perm
 
-open MulAction Equiv
+open MonoidAction Equiv
 
 variable [Finite α]
 
@@ -385,10 +411,11 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     hB.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs
   -- Step 4 : `sᶜ ⊆ B`
   have _ := isMultiplyPretransitive α (s.ncard + 1)
-  apply MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le <;>
+  apply MonoidAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le
+    <;>
     grind
 
-/-- `MulAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,
+/-- `MonoidAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,
 provided `s` and `sᶜ` are nonempty, and `Nat.card α ≠ 2 * Nat.card s`.
 
 This is the intransitive case of the O'Nan–Scott classification. -/

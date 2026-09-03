@@ -26,7 +26,7 @@ variable {G P R V : Type*}
 namespace MonoidAlgebra
 
 @[to_additive]
-theorem mem_smulAntidiagonal_of_group [Group G] [MulAction G P] [Semiring R] [Zero V]
+theorem mem_smulAntidiagonal_of_group [Group G] [MonoidAction G P] [Semiring R] [Zero V]
     (f : R[G]) (x : P → V) (p : P) (gh : G × P) :
     gh ∈ Finset.SMulAntidiagonal p
       (Set.SMulAntidiagonal.finite_of_finite_fst f.coeff.support.finite_toSet x.support p) ↔
@@ -53,8 +53,8 @@ theorem smul_eq [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddCommMonoid V]
     (f • x) p = ∑ gh ∈ Finset.SMulAntidiagonal p hp, f.coeff gh.1 • x gh.2 :=
   rfl
 
-@[to_additive (dont_translate := R) smul_apply_addAction]
-theorem smul_apply_mulAction [Group G] [MulAction G P] [Semiring R] [AddCommMonoid V]
+@[to_additive (dont_translate := R) smul_apply_addMonoidAction]
+theorem smul_apply_monoidAction [Group G] [MonoidAction G P] [Semiring R] [AddCommMonoid V]
     [SMulWithZero R V] (f : MonoidAlgebra R G) (x : P → V) (p : P) :
     (f • x) p = ∑ i ∈ f.coeff.support, (f.coeff i) • x (i⁻¹ • p) := by
   have hp : ((f.coeff.support : Set G).smulAntidiagonal (Function.support x) p).Finite :=
@@ -72,5 +72,11 @@ theorem smul_apply_mulAction [Group G] [MulAction G P] [Semiring R] [AddCommMono
       aesop
   rw [smul_eq, Finset.sum_of_injOn Prod.fst h₁ h₂ h₃]
   aesop
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MonoidAlgebra.smul_apply_mulAction := smul_apply_monoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddMonoidAlgebra.smul_apply_addAction :=
+  _root_.AddMonoidAlgebra.smul_apply_addMonoidAction
 
 end MonoidAlgebra

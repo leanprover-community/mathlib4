@@ -70,7 +70,7 @@ namespace DiscreteTiling
 open Function
 open scoped Pointwise
 
-variable {G X ιₚ : Type*} [Group G] [MulAction G X]
+variable {G X ιₚ : Type*} [Group G] [MonoidAction G X]
 
 variable (G X) in
 /-- A `Prototile G X` describes a tile in `X`, copies of which under elements of `G` may be used in
@@ -82,7 +82,7 @@ related, even if they have the same points, are considered distinct. -/
       `coe_injective`. -/
   carrier : Set X
   /-- The group elements considered to be symmetries of the prototile. -/
-  symmetries : Subgroup (MulAction.stabilizer G carrier)
+  symmetries : Subgroup (MonoidAction.stabilizer G carrier)
 
 namespace Prototile
 
@@ -197,7 +197,7 @@ directly. -/
   Quotient.liftOn' pt.groupElts (fun g ↦ g • (ps pt.index : Set X))
     fun a b r ↦ by
       rw [QuotientGroup.leftRel_eq] at r
-      rw [eq_comm, ← inv_smul_eq_iff, smul_smul, ← MulAction.mem_stabilizer_iff]
+      rw [eq_comm, ← inv_smul_eq_iff, smul_smul, ← MonoidAction.mem_stabilizer_iff]
       exact SetLike.le_def.1 (Subgroup.map_subtype_le _) r
 
 instance : CoeOut (PlacedTile ps) (Set X) where
@@ -255,7 +255,7 @@ set_option backward.isDefEq.respectTransparency false in
   induction pt using PlacedTile.induction_on
   simp [coeSet, mul_smul]
 
-instance : MulAction G (PlacedTile ps) where
+instance : MonoidAction G (PlacedTile ps) where
   __ : SMul G (PlacedTile ps) := inferInstance
   one_smul pt := by
     induction pt using PlacedTile.induction_on

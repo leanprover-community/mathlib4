@@ -286,7 +286,7 @@ If `g : Γ` is an element of a group acting on `G` and `H` is subnormal, then `g
 -/
 protected lemma smul {Γ : Type*} [Group Γ] [MulDistribMulAction Γ G] (hS : H.IsSubnormal)
     (g : Γ) : (g • H).IsSubnormal :=
-  hS.map (MulAction.surjective g)
+  hS.map (MonoidAction.surjective g)
 
 /-- If the subgroup `H` of a group `G` is trivial, then it is subnormal. -/
 @[to_additive /-- If the additive subgroup `H` of a group `G` is trivial, then it is subnormal. -/]

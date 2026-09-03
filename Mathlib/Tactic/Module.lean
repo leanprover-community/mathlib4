@@ -217,7 +217,7 @@ theorem algebraMap_cons [CommSemiring S] [Semiring R] [Algebra S R] (p : S × M)
     (p ::ᵣ l).algebraMap R = (Algebra.algebraMap S R p.1, p.2) ::ᵣ (l.algebraMap R) := rfl
 
 theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [SMul S M]
-    [MulAction R M] [IsScalarTower S R M] (l : NF S M) :
+    [MonoidAction R M] [IsScalarTower S R M] (l : NF S M) :
     (l.algebraMap R).eval = l.eval := by
   induction l with
   | nil => rfl

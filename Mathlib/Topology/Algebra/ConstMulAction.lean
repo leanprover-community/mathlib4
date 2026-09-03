@@ -194,7 +194,7 @@ end SMulZeroClass
 section Monoid
 
 variable [TopologicalSpace α]
-variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
+variable [Monoid M] [MonoidAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]
 instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
@@ -202,8 +202,8 @@ instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
 
 @[to_additive]
 theorem smul_closure_orbit_subset (c : M) (x : α) :
-    c • closure (MulAction.orbit M x) ⊆ closure (MulAction.orbit M x) :=
-  (smul_closure_subset c _).trans <| closure_mono <| MulAction.smul_orbit_subset _ _
+    c • closure (MonoidAction.orbit M x) ⊆ closure (MonoidAction.orbit M x) :=
+  (smul_closure_subset c _).trans <| closure_mono <| MonoidAction.smul_orbit_subset _ _
 
 end Monoid
 
@@ -213,19 +213,22 @@ variable {X : Type*} [TopologicalSpace X]
 
 /-- The tautological action by `X ≃ₜ X` on `X`.
 
-This generalizes `Equiv.Perm.applyMulAction`. -/
-instance Homeomorph.applyMulAction : MulAction (X ≃ₜ X) X where
+This generalizes `Equiv.Perm.applyMonoidAction`. -/
+instance Homeomorph.applyMonoidAction : MonoidAction (X ≃ₜ X) X where
   smul f x := f x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
+@[deprecated (since := "2026-09-02")]
+alias Homeomorph.applyMulAction := Homeomorph.applyMonoidAction
+
 @[simp]
 protected theorem Homeomorph.smul_def (f : X ≃ₜ X) (x : X) : f • x = f x := rfl
 
-/-- `Homeomorph.applyMulAction` is faithful. -/
+/-- `Homeomorph.applyMonoidAction` is faithful. -/
 instance Homeomorph.applyFaithfulSMul : FaithfulSMul (X ≃ₜ X) X := ⟨Homeomorph.ext⟩
 
-/-- `Homeomorph.applyMulAction` is continuous in the second variable. -/
+/-- `Homeomorph.applyMonoidAction` is continuous in the second variable. -/
 instance Homeomorph.continuousConstSMul : ContinuousConstSMul (X ≃ₜ X) X :=
   ⟨fun h ↦ h.continuous⟩
 
@@ -233,7 +236,7 @@ end Homeomorph
 
 section Group
 
-variable {G : Type*} [TopologicalSpace α] [Group G] [MulAction G α] [ContinuousConstSMul G α]
+variable {G : Type*} [TopologicalSpace α] [Group G] [MonoidAction G α] [ContinuousConstSMul G α]
 
 @[to_additive]
 theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} (c : G) :
@@ -265,7 +268,7 @@ theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ 
   `T` is a homeomorphism from `T` to itself. -/
 @[to_additive (attr := simps!)]
 def Homeomorph.smul (γ : G) : α ≃ₜ α where
-  toEquiv := MulAction.toPerm γ
+  toEquiv := MonoidAction.toPerm γ
 
 @[to_additive]
 lemma Homeomorph.smul_symm {g : G} : (Homeomorph.smul (α := α) g).symm = Homeomorph.smul g⁻¹ :=
@@ -337,7 +340,7 @@ theorem smul_mem_nhds_self [TopologicalSpace G] [ContinuousConstSMul G G] {g : G
     g • s ∈ 𝓝 g ↔ s ∈ 𝓝 1 := by
   rw [← smul_mem_nhds_smul_iff g⁻¹]; simp
 
-namespace MulAction.IsPretransitive
+namespace MonoidAction.IsPretransitive
 
 variable (G)
 
@@ -345,26 +348,38 @@ variable (G)
 lemma t1Space_iff (x : α) [IsPretransitive G α] :
     T1Space α ↔ IsClosed {x} := by
   refine ⟨fun H ↦ isClosed_singleton, fun hx ↦ ⟨fun y ↦ ?_⟩⟩
-  rcases MulAction.exists_smul_eq G x y with ⟨g, rfl⟩
+  rcases MonoidAction.exists_smul_eq G x y with ⟨g, rfl⟩
   rw [← image_singleton, image_smul]
   exact hx.smul _
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.t1Space_iff := t1Space_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPretransitive.t1Space_iff :=
+  _root_.AddMonoidAction.IsPretransitive.t1Space_iff
 
 @[to_additive]
 lemma discreteTopology_iff (x : α) [IsPretransitive G α] :
     DiscreteTopology α ↔ IsOpen {x} := by
   rw [discreteTopology_iff_isOpen_singleton]
   refine ⟨fun H ↦ H _, fun hx y ↦ ?_⟩
-  rcases MulAction.exists_smul_eq G x y with ⟨g, rfl⟩
+  rcases MonoidAction.exists_smul_eq G x y with ⟨g, rfl⟩
   rw [← image_singleton, image_smul]
   exact hx.smul _
 
-end MulAction.IsPretransitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.discreteTopology_iff := discreteTopology_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPretransitive.discreteTopology_iff :=
+  _root_.AddMonoidAction.IsPretransitive.discreteTopology_iff
+
+end MonoidAction.IsPretransitive
 
 end Group
 
 section GroupWithZero
 
-variable {G₀ : Type*} [TopologicalSpace α] [GroupWithZero G₀] [MulAction G₀ α]
+variable {G₀ : Type*} [TopologicalSpace α] [GroupWithZero G₀] [MonoidAction G₀ α]
   [ContinuousConstSMul G₀ α]
 
 theorem tendsto_const_smul_iff₀ {f : β → α} {l : Filter β} {a : α} {c : G₀} (hc : c ≠ 0) :
@@ -471,7 +486,7 @@ end GroupWithZero
 
 namespace IsUnit
 
-variable [Monoid M] [TopologicalSpace α] [MulAction M α] [ContinuousConstSMul M α]
+variable [Monoid M] [TopologicalSpace α] [MonoidAction M α] [ContinuousConstSMul M α]
 
 nonrec theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c : M} (hc : IsUnit c) :
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
@@ -589,7 +604,7 @@ variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
 
 end
 
-variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ T]
+variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MonoidAction Γ T]
 
 /-- A finite group action is always properly discontinuous. -/
 @[to_additive /-- A finite group action is always properly discontinuous. -/]
@@ -597,7 +612,7 @@ instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
     ProperlyDiscontinuousSMul Γ T where finite_disjoint_inter_image _ _ := Set.toFinite _
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.finite_stabilizer [ProperlyDiscontinuousSMul Γ T]
-    (x : T) : (MulAction.stabilizer Γ x : Set Γ).Finite :=
+    (x : T) : (MonoidAction.stabilizer Γ x : Set Γ).Finite :=
   ProperlyDiscontinuousSMul.finite_stabilizer' Γ x
 
 /-- The quotient map by a group action is open, i.e. the quotient by a group action is an open
@@ -605,24 +620,29 @@ instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
 @[to_additive /-- The quotient map by a group action is open, i.e. the quotient by a group
 action is an open quotient. -/]
 theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
-    letI := MulAction.orbitRel Γ T
-    IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
-  rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
+    letI := MonoidAction.orbitRel Γ T
+    IsOpenMap (Quotient.mk' : T → Quotient (MonoidAction.orbitRel Γ T)) := fun U hU => by
+  rw [isOpen_coinduced, MonoidAction.quotient_preimage_image_eq_union_mul U]
   exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
 
 @[to_additive]
-theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
-    IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
+theorem MonoidAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
+    IsOpenQuotientMap (Quotient.mk (MonoidAction.orbitRel Γ T)) :=
   ⟨Quot.mk_surjective, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
+
+@[deprecated (since := "2026-09-02")]
+alias MulAction.isOpenQuotientMap_quotientMk := MonoidAction.isOpenQuotientMap_quotientMk
+@[deprecated (since := "2026-09-02")]
+alias AddAction.isOpenQuotientMap_quotientMk := AddMonoidAction.isOpenQuotientMap_quotientMk
 
 /-- The quotient by a discontinuous group action of a locally compact T₂ space is T₂. -/
 @[to_additive /-- The quotient by a discontinuous group action of a locally compact T₂
 space is T₂. -/]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
     [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
-    T2Space (Quotient (MulAction.orbitRel Γ T)) := by
-  let := MulAction.orbitRel Γ T
-  set Q := Quotient (MulAction.orbitRel Γ T)
+    T2Space (Quotient (MonoidAction.orbitRel Γ T)) := by
+  let := MonoidAction.orbitRel Γ T
+  set Q := Quotient (MonoidAction.orbitRel Γ T)
   rw [t2Space_iff_nhds]
   let f : T → Q := Quotient.mk'
   have f_op : IsOpenMap f := isOpenMap_quotient_mk'_mul
@@ -643,7 +663,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
     exact (continuous_const_smul _).continuousAt (hu γ)
   have V_nhds : f '' V₀ ∈ 𝓝 (f y₀) :=
     f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
-  refine ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 ?_⟩
+  refine ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MonoidAction.disjoint_image_image_iff.2 ?_⟩
   rintro x ⟨x_in_U₀₀, x_in_K₀⟩ γ
   by_cases H : γ ∈ bad_Γ_set
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
@@ -655,14 +675,14 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
 @[to_additive /-- The quotient of a second countable space by an additive group action is second
 countable. -/]
 theorem ContinuousConstSMul.secondCountableTopology [SecondCountableTopology T]
-    [ContinuousConstSMul Γ T] : SecondCountableTopology (Quotient (MulAction.orbitRel Γ T)) :=
+    [ContinuousConstSMul Γ T] : SecondCountableTopology (Quotient (MonoidAction.orbitRel Γ T)) :=
   TopologicalSpace.Quotient.secondCountableTopology isOpenMap_quotient_mk'_mul
 
 section nhds
 
-section MulAction
+section MonoidAction
 
-variable {G₀ : Type*} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
+variable {G₀ : Type*} [GroupWithZero G₀] [MonoidAction G₀ α] [TopologicalSpace α]
   [ContinuousConstSMul G₀ α]
 
 /-- Scalar multiplication by a nonzero scalar preserves neighborhoods. -/
@@ -672,7 +692,7 @@ theorem smul_mem_nhds_smul_iff₀ {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0
 
 alias ⟨_, smul_mem_nhds_smul₀⟩ := smul_mem_nhds_smul_iff₀
 
-end MulAction
+end MonoidAction
 
 section DistribMulAction
 

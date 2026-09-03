@@ -43,7 +43,7 @@ degree            ramif. index   inertia deg.
 variable (A K L : Type*) {B : Type*} [Field K] [Field L] [Algebra K L] [CommRing A] [CommRing B]
   [Algebra A B] {p : Ideal A} (P : Ideal B) [P.LiesOver p]
 
-open MulAction Pointwise Ideal
+open MonoidAction Pointwise Ideal
 
 section basic
 

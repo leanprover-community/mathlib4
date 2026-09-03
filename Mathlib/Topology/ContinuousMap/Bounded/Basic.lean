@@ -741,14 +741,14 @@ instance instIsBoundedSMul : IsBoundedSMul 𝕜 (α →ᵇ β) where
 
 end SMul
 
-section MulAction
+section MonoidAction
 
-variable [MonoidWithZero 𝕜] [Zero β] [MulAction 𝕜 β] [IsBoundedSMul 𝕜 β]
+variable [MonoidWithZero 𝕜] [Zero β] [MonoidAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 
-instance instMulAction : MulAction 𝕜 (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.mulAction _ coe_smul
+instance instMonoidAction : MonoidAction 𝕜 (α →ᵇ β) := fast_instance%
+  DFunLike.coe_injective.monoidAction _ coe_smul
 
-end MulAction
+end MonoidAction
 
 section DistribMulAction
 

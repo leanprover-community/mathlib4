@@ -197,7 +197,7 @@ variable (H : Subgroup Gal(E/F)) (K : IntermediateField F E)
 def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] : IntermediateField F E :=
   { FixedPoints.subfield M E with
-    carrier := MulAction.fixedPoints M E
+    carrier := MonoidAction.fixedPoints M E
     algebraMap_mem' := fun a g => smul_algebraMap g a }
 
 @[simp] lemma FixedPoints.mem_intermediateField_iff
@@ -212,8 +212,8 @@ def fixedField : IntermediateField F E :=
 
 @[simp] lemma mem_fixedField_iff (x) :
     x ∈ fixedField H ↔ ∀ f ∈ H, f x = x := by
-  change x ∈ MulAction.fixedPoints H E ↔ _
-  simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
+  change x ∈ MonoidAction.fixedPoints H E ↔ _
+  simp only [MonoidAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
 
 @[simp] lemma fixedField_bot : fixedField (⊥ : Subgroup Gal(E/F)) = ⊤ := by
   ext

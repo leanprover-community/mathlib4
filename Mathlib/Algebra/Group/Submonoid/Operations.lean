@@ -33,7 +33,7 @@ In this file we define various operations on `Submonoid`s and `MonoidHom`s.
 
 ### Group actions by submonoids
 
-* `Submonoid.MulAction`, `Submonoid.DistribMulAction`: a submonoid inherits (distributive)
+* `Submonoid.MonoidAction`, `Submonoid.DistribMulAction`: a submonoid inherits (distributive)
   multiplicative actions.
 
 ### Operations on submonoids

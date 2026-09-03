@@ -130,7 +130,7 @@ theorem IsSymm.smul [SMul R α] {A : Matrix n n α} (h : A.IsSymm) (k : R) : (k 
   (transpose_smul _ _).trans (congr_arg _ h)
 
 @[simp]
-theorem isSymm_smul_iff [Monoid R] [MulAction R α] {A : Matrix n n α} (k : R) [Invertible k] :
+theorem isSymm_smul_iff [Monoid R] [MonoidAction R α] {A : Matrix n n α} (k : R) [Invertible k] :
     (k • A).IsSymm ↔ A.IsSymm := by
   refine ⟨fun h ↦ ?_, (·.smul k)⟩
   rw [← invOf_smul_smul k A]

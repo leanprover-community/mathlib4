@@ -15,12 +15,12 @@ over the sigma type `GradedMonoid A` such that `(•) : A i → M j → M (i +�
 has an additively-graded multiplicative action on `M`. The typeclasses are:
 
 * `GradedMonoid.GSMul A M`
-* `GradedMonoid.GMulAction A M`
+* `GradedMonoid.GMonoidAction A M`
 
 With the `SigmaGraded` scope open, these respectively imbue:
 
 * `SMul (GradedMonoid A) (GradedMonoid M)`
-* `MulAction (GradedMonoid A) (GradedMonoid M)`
+* `MonoidAction (GradedMonoid A) (GradedMonoid M)`
 
 For now, these typeclasses are primarily used in the construction of `DirectSum.GModule.Module` and
 the rest of that file.
@@ -39,7 +39,7 @@ which provides the API lemma
 
 Note that there is no need for `SetLike.graded_mul_action` or similar, as all the information it
 would contain is already supplied by `GradedSMul` when the objects within `A` and `M` have
-a `MulAction` instance.
+a `MonoidAction` instance.
 
 ## Tags
 
@@ -76,23 +76,39 @@ theorem mk_smul_mk [VAdd ιA ιM] [GSMul A M] {i j} (a : A i) (b : M j) :
     mk i a • mk j b = mk (i +ᵥ j) (GSMul.smul a b) :=
   rfl
 
-/-- A graded version of `MulAction`. -/
-class GMulAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] extends GSMul A M where
+/-- A graded version of `MonoidAction`. -/
+class GMonoidAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] extends GSMul A M where
   /-- One is the neutral element for `•` -/
   one_smul (b : GradedMonoid M) : (1 : GradedMonoid A) • b = b
   /-- Associativity of `•` and `*` -/
   mul_smul (a a' : GradedMonoid A) (b : GradedMonoid M) : (a * a') • b = a • a' • b
 
-/-- The graded version of `Monoid.toMulAction`. -/
-instance GMonoid.toGMulAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
+/-- Deprecated alias for `GradedMonoid.GMonoidAction`. -/
+@[deprecated _root_.GradedMonoid.GMonoidAction (since := "2026-09-02")]
+abbrev _root_.GradedMonoid.GMulAction := @_root_.GradedMonoid.GMonoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMulAction.mul_smul := GMonoidAction.mul_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMulAction.one_smul := GMonoidAction.one_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMulAction.toGSMul := GMonoidAction.toGSMul
+
+/-- The graded version of `Monoid.toMonoidAction`. -/
+instance GMonoid.toGMonoidAction [AddMonoid ιA] [GMonoid A] : GMonoidAction A A :=
   { GMul.toGSMul _ with
     one_smul := GMonoid.one_mul
     mul_smul := GMonoid.mul_assoc }
 
-instance GMulAction.toMulAction [AddMonoid ιA] [GMonoid A] [VAdd ιA ιM] [GMulAction A M] :
-    MulAction (GradedMonoid A) (GradedMonoid M) where
-  one_smul := GMulAction.one_smul
-  mul_smul := GMulAction.mul_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMonoid.toGMulAction := GMonoid.toGMonoidAction
+
+instance GMonoidAction.toMonoidAction [AddMonoid ιA] [GMonoid A] [VAdd ιA ιM] [GMonoidAction A M] :
+    MonoidAction (GradedMonoid A) (GradedMonoid M) where
+  one_smul := GMonoidAction.one_smul
+  mul_smul := GMonoidAction.mul_smul
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMulAction.toMulAction := GMonoidAction.toMonoidAction
 
 end Defs
 

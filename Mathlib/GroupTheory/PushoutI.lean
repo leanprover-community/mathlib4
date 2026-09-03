@@ -281,7 +281,7 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
 
 open Subgroup.IsComplement
 
-instance baseAction : MulAction H (NormalWord d) :=
+instance baseAction : MonoidAction H (NormalWord d) :=
   { smul := fun h w => { w with head := h * w.head },
     one_smul := by simp +instances [instHSMul]
     mul_smul := by simp +instances [instHSMul, mul_assoc] }
@@ -434,7 +434,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
     left_inv := leftInv
     right_inv := fun _ => rcons_injective (leftInv _) }
 
-noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
+noncomputable instance summandAction (i : ι) : MonoidAction (G i) (NormalWord d) :=
   { smul := fun g w => (equivPair i).symm
       { equivPair i w with
         head := g * (equivPair i w).head }
@@ -452,13 +452,13 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
         head := g * (equivPair i w).head } := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
-  MulAction.ofEndHom <|
+noncomputable instance monoidAction : MonoidAction (PushoutI φ) (NormalWord d) :=
+  MonoidAction.ofEndHom <|
     lift
-      (fun _ => MulAction.toEndHom)
-      MulAction.toEndHom <| by
+      (fun _ => MonoidAction.toEndHom)
+      MonoidAction.toEndHom <| by
     intro i
-    simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
+    simp only [MonoidAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
       OneHom.coe_mk, comp_apply]
     intro h
     funext w
@@ -467,6 +467,9 @@ noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
       Equiv.coe_fn_symm_mk, Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul,
       Word.rcons_eq_smul, equiv_fst_eq_mul_inv, map_mul, map_inv, mul_smul, inv_smul_smul,
       smul_inv_smul, base_smul_def', MonoidHom.apply_ofInjective_symm]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Monoid.PushoutI.NormalWord.mulAction := monoidAction
 
 theorem base_smul_def (h : H) (w : NormalWord d) :
     base φ h • w = { w with head := h * w.head } := rfl

@@ -14,25 +14,25 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 /-!
 # Properties of `fixedPoints` and `fixedBy`
 
-This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
+This module contains some useful properties of `MonoidAction.fixedPoints` and `MonoidAction.fixedBy`
 that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`,
 as well as their interaction with `MulActionHom`.
 
 ## Main theorems
 
-* `MulAction.fixedBy_mul`: `fixedBy α (g * h) ⊆ fixedBy α g ∪ fixedBy α h`
-* `MulAction.fixedBy_conj` and `MulAction.smul_fixedBy`: the pointwise group action of `h` on
+* `MonoidAction.fixedBy_mul`: `fixedBy α (g * h) ⊆ fixedBy α g ∪ fixedBy α h`
+* `MonoidAction.fixedBy_conj` and `MonoidAction.smul_fixedBy`: the pointwise group action of `h` on
   `fixedBy α g` is equal to the `fixedBy` set of the conjugation of `h` with `g`
   (`fixedBy α (h * g * h⁻¹)`).
-* `MulAction.set_mem_fixedBy_of_movedBy_subset` shows that if a set `s` is a superset of
+* `MonoidAction.set_mem_fixedBy_of_movedBy_subset` shows that if a set `s` is a superset of
   `(fixedBy α g)ᶜ`, then the group action of `g` cannot send elements of `s` outside of `s`.
-  This is expressed as `s ∈ fixedBy (Set α) g`, and `MulAction.set_mem_fixedBy_iff` allows one
+  This is expressed as `s ∈ fixedBy (Set α) g`, and `MonoidAction.set_mem_fixedBy_iff` allows one
   to convert the relationship back to `g • x ∈ s ↔ x ∈ s`.
-* `MulAction.not_commute_of_disjoint_smul_movedBy` allows one to prove that `g` and `h`
+* `MonoidAction.not_commute_of_disjoint_smul_movedBy` allows one to prove that `g` and `h`
   do not commute from the disjointness of the `(fixedBy α g)ᶜ` set and `h • (fixedBy α g)ᶜ`,
   which is a property used in the proof of Rubin's theorem.
 
-The theorems above are also available for `AddAction`.
+The theorems above are also available for `AddMonoidAction`.
 
 ## Pointwise group action and `fixedBy (Set α) g`
 
@@ -41,7 +41,7 @@ a set `s : Set α` can be expressed using `fixedBy (Set α) g`.
 To properly use theorems using `fixedBy (Set α) g`, you should `open Pointwise` in your file.
 
 `s ∈ fixedBy (Set α) g` means that `g • s = s`, which is equivalent to say that
-`∀ x, g • x ∈ s ↔ x ∈ s` (the translation can be done using `MulAction.set_mem_fixedBy_iff`).
+`∀ x, g • x ∈ s ↔ x ∈ s` (the translation can be done using `MonoidAction.set_mem_fixedBy_iff`).
 
 `s ∈ fixedBy (Set α) g` is a weaker statement than `s ⊆ fixedBy α g`: the latter requires that
 all points in `s` are fixed by `g`, whereas the former only requires that `g • x ∈ s`.
@@ -49,12 +49,12 @@ all points in `s` are fixed by `g`, whereas the former only requires that `g •
 
 public section
 
-namespace MulAction
+namespace MonoidAction
 open scoped Pointwise
 
 variable {α : Type*}
-variable {G : Type*} [Group G] [MulAction G α]
-variable {M : Type*} [Monoid M] [MulAction M α]
+variable {G : Type*} [Group G] [MonoidAction G α]
+variable {M : Type*} [Monoid M] [MonoidAction M α]
 
 
 section FixedPoints
@@ -67,21 +67,43 @@ theorem fixedBy_inv (g : G) : fixedBy α g⁻¹ = fixedBy α g := by
   ext
   rw [mem_fixedBy, mem_fixedBy, inv_smul_eq_iff, eq_comm]
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.fixedBy_inv := fixedBy_inv
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.fixedBy_neg := _root_.AddMonoidAction.fixedBy_neg
+
 @[to_additive]
 theorem smul_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
     g • a ∈ fixedBy α g ↔ a ∈ fixedBy α g := by
   rw [mem_fixedBy, smul_left_cancel_iff]
   rfl
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.smul_mem_fixedBy_iff_mem_fixedBy := smul_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.vadd_mem_fixedBy_iff_mem_fixedBy :=
+  _root_.AddMonoidAction.vadd_mem_fixedBy_iff_mem_fixedBy
+
 @[to_additive]
 theorem smul_inv_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
     g⁻¹ • a ∈ fixedBy α g ↔ a ∈ fixedBy α g := by
   rw [← fixedBy_inv, smul_mem_fixedBy_iff_mem_fixedBy, fixedBy_inv]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.smul_inv_mem_fixedBy_iff_mem_fixedBy := smul_inv_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.vadd_neg_mem_fixedBy_iff_mem_fixedBy :=
+  _root_.AddMonoidAction.vadd_neg_mem_fixedBy_iff_mem_fixedBy
+
 @[to_additive minimalPeriod_eq_one_iff_fixedBy]
 theorem minimalPeriod_eq_one_iff_fixedBy {a : α} {g : G} :
     Function.minimalPeriod (fun x => g • x) a = 1 ↔ a ∈ fixedBy α g :=
   Function.minimalPeriod_eq_one_iff_isFixedPt
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.minimalPeriod_eq_one_iff_fixedBy := minimalPeriod_eq_one_iff_fixedBy
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.minimalPeriod_eq_one_iff_fixedBy :=
+  _root_.AddMonoidAction.minimalPeriod_eq_one_iff_fixedBy
 
 @[to_additive]
 theorem mem_fixedBy_zpow {g : G} {a : α} (h : a ∈ fixedBy α g) (j : ℤ) :
@@ -90,10 +112,20 @@ theorem mem_fixedBy_zpow {g : G} {a : α} (h : a ∈ fixedBy α g) (j : ℤ) :
     Int.natCast_one]
   exact one_dvd j
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.mem_fixedBy_zpow := mem_fixedBy_zpow
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.mem_fixedBy_zsmul := _root_.AddMonoidAction.mem_fixedBy_zsmul
+
 @[to_additive]
 theorem mem_fixedBy_zpowers_iff_mem_fixedBy {g : G} {a : α} :
     (∀ j : ℤ, a ∈ fixedBy α (g ^ j)) ↔ a ∈ fixedBy α g :=
   ⟨fun h ↦ by simpa using h 1, fun h j ↦ mem_fixedBy_zpow h j⟩
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.mem_fixedBy_zpowers_iff_mem_fixedBy := mem_fixedBy_zpowers_iff_mem_fixedBy
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.mem_fixedBy_zmultiples_iff_mem_fixedBy :=
+  _root_.AddMonoidAction.mem_fixedBy_zmultiples_iff_mem_fixedBy
 
 variable (α) in
 @[to_additive]
@@ -101,16 +133,31 @@ theorem fixedBy_subset_fixedBy_zpow (g : G) (j : ℤ) :
     fixedBy α g ⊆ fixedBy α (g ^ j) :=
   fun _ h ↦ mem_fixedBy_zpow h j
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.fixedBy_subset_fixedBy_zpow := fixedBy_subset_fixedBy_zpow
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.fixedBy_subset_fixedBy_zsmul :=
+  _root_.AddMonoidAction.fixedBy_subset_fixedBy_zsmul
+
 variable (M α) in
 @[to_additive (attr := simp)]
 theorem fixedBy_one_eq_univ : fixedBy α (1 : M) = Set.univ :=
   Set.eq_univ_iff_forall.mpr <| one_smul M
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.fixedBy_one_eq_univ := fixedBy_one_eq_univ
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.fixedBy_zero_eq_univ := _root_.AddMonoidAction.fixedBy_zero_eq_univ
 
 variable (α) in
 @[to_additive]
 theorem fixedBy_mul (m₁ m₂ : M) : fixedBy α m₁ ∩ fixedBy α m₂ ⊆ fixedBy α (m₁ * m₂) := by
   intro a ⟨h₁, h₂⟩
   rw [mem_fixedBy, mul_smul, h₂, h₁]
+
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.fixedBy_mul := fixedBy_mul
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.fixedBy_add := _root_.AddMonoidAction.fixedBy_add
 
 variable (α) in
 @[to_additive]
@@ -119,13 +166,23 @@ theorem smul_fixedBy (g h : G) :
   ext a
   simp_rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, mul_smul, smul_eq_iff_eq_inv_smul h]
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.smul_fixedBy := smul_fixedBy
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.vadd_fixedBy := _root_.AddMonoidAction.vadd_fixedBy
+
 lemma fixedBy_mul_eq_empty_iff [IsRightCancelMul M] {m : M} :
     fixedBy M m = ∅ ↔ m ≠ 1 := by
-  simp [MulAction.fixedBy, Set.eq_empty_iff_forall_notMem]
+  simp [MonoidAction.fixedBy, Set.eq_empty_iff_forall_notMem]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.fixedBy_mul_eq_empty_iff := fixedBy_mul_eq_empty_iff
 
 lemma fixedBy_mul_op_eq_empty_iff [IsLeftCancelMul M] {m : M} :
     fixedBy M (MulOpposite.op m) = ∅ ↔ m ≠ 1 := by
-  simp [MulAction.fixedBy, Set.eq_empty_iff_forall_notMem]
+  simp [MonoidAction.fixedBy, Set.eq_empty_iff_forall_notMem]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.fixedBy_mul_op_eq_empty_iff := fixedBy_mul_op_eq_empty_iff
 
 end FixedPoints
 
@@ -148,9 +205,20 @@ theorem set_mem_fixedBy_iff (s : Set α) (g : G) :
     s ∈ fixedBy (Set α) g ↔ ∀ x, g • x ∈ s ↔ x ∈ s := by
   simp_rw [mem_fixedBy, ← eq_inv_smul_iff, Set.ext_iff, Set.mem_inv_smul_set_iff, Iff.comm]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.set_mem_fixedBy_iff := set_mem_fixedBy_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.set_mem_fixedBy_iff := _root_.AddMonoidAction.set_mem_fixedBy_iff
+
 @[to_additive]
 theorem smul_mem_of_set_mem_fixedBy {s : Set α} {g : G} (s_in_fixedBy : s ∈ fixedBy (Set α) g)
     {x : α} : g • x ∈ s ↔ x ∈ s := (set_mem_fixedBy_iff s g).mp s_in_fixedBy x
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.smul_mem_of_set_mem_fixedBy := smul_mem_of_set_mem_fixedBy
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.vadd_mem_of_set_mem_fixedBy :=
+  _root_.AddMonoidAction.vadd_mem_of_set_mem_fixedBy
 
 /--
 If `s ⊆ fixedBy α g`, then `g • s = s`, which means that `s ∈ fixedBy (Set α) g`.
@@ -171,12 +239,22 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
   rw [← fixedBy_inv] at s_ss_fixedBy
   rwa [← s_ss_fixedBy gxs, inv_smul_smul] at gxs
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.set_mem_fixedBy_of_subset_fixedBy := set_mem_fixedBy_of_subset_fixedBy
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.set_mem_fixedBy_of_subset_fixedBy :=
+  _root_.AddMonoidAction.set_mem_fixedBy_of_subset_fixedBy
+
 theorem smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
     (s_in_fixedBy : s ∈ fixedBy (Set α) g) : g • t ⊆ s :=
   (Set.smul_set_subset_smul_set_iff.mpr t_ss_s).trans s_in_fixedBy.subset
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.smul_subset_of_set_mem_fixedBy := smul_subset_of_set_mem_fixedBy
+
 /-!
-If a set `s : Set α` is a superset of `(MulAction.fixedBy α g)ᶜ` (resp. `(AddAction.fixedBy α g)ᶜ`),
+If a set `s :
+  Set α` is a superset of `(MonoidAction.fixedBy α g)ᶜ` (resp. `(AddMonoidAction.fixedBy α g)ᶜ`),
 then no point or subset of `s` can be moved outside of `s` by the group action of `g`.
 -/
 
@@ -194,6 +272,12 @@ theorem set_mem_fixedBy_of_movedBy_subset {s : Set α} {g : G} (s_subset : (fixe
     constructor <;> (intro; apply s_subset)
     · exact a_moved
     · rwa [Set.mem_compl_iff, smul_mem_fixedBy_iff_mem_fixedBy]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.set_mem_fixedBy_of_movedBy_subset := set_mem_fixedBy_of_movedBy_subset
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.set_mem_fixedBy_of_movedBy_subset :=
+  _root_.AddMonoidAction.set_mem_fixedBy_of_movedBy_subset
 
 end Pointwise
 
@@ -221,6 +305,12 @@ theorem fixedBy_mem_fixedBy_of_commute {g h : G} (comm : Commute g h) :
   rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, ← mul_smul, comm.inv_right, mul_smul,
     smul_left_cancel_iff, mem_fixedBy]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.fixedBy_mem_fixedBy_of_commute := fixedBy_mem_fixedBy_of_commute
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.fixedBy_mem_fixedBy_of_addCommute :=
+  _root_.AddMonoidAction.fixedBy_mem_fixedBy_of_addCommute
+
 /--
 If `g` and `h` commute, then `g` fixes `(h ^ j) • x` iff `g` fixes `x`.
 -/
@@ -228,6 +318,12 @@ If `g` and `h` commute, then `g` fixes `(h ^ j) • x` iff `g` fixes `x`.
 theorem smul_zpow_fixedBy_eq_of_commute {g h : G} (comm : Commute g h) (j : ℤ) :
     h ^ j • fixedBy α g = fixedBy α g :=
   fixedBy_subset_fixedBy_zpow (Set α) h j (fixedBy_mem_fixedBy_of_commute comm)
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.smul_zpow_fixedBy_eq_of_commute := smul_zpow_fixedBy_eq_of_commute
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.vadd_zsmul_fixedBy_eq_of_addCommute :=
+  _root_.AddMonoidAction.vadd_zsmul_fixedBy_eq_of_addCommute
 
 /--
 If `g` and `h` commute, then `g` moves `h • x` iff `g` moves `x`.
@@ -239,6 +335,12 @@ theorem movedBy_mem_fixedBy_of_commute {g h : G} (comm : Commute g h) :
     (fixedBy α g)ᶜ ∈ fixedBy (Set α) h := by
   rw [mem_fixedBy, Set.smul_set_compl, fixedBy_mem_fixedBy_of_commute comm]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.movedBy_mem_fixedBy_of_commute := movedBy_mem_fixedBy_of_commute
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.movedBy_mem_fixedBy_of_addCommute :=
+  _root_.AddMonoidAction.movedBy_mem_fixedBy_of_addCommute
+
 /--
 If `g` and `h` commute, then `g` moves `h ^ j • x` iff `g` moves `x`.
 -/
@@ -246,6 +348,12 @@ If `g` and `h` commute, then `g` moves `h ^ j • x` iff `g` moves `x`.
 theorem smul_zpow_movedBy_eq_of_commute {g h : G} (comm : Commute g h) (j : ℤ) :
     h ^ j • (fixedBy α g)ᶜ = (fixedBy α g)ᶜ :=
   fixedBy_subset_fixedBy_zpow (Set α) h j (movedBy_mem_fixedBy_of_commute comm)
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.smul_zpow_movedBy_eq_of_commute := smul_zpow_movedBy_eq_of_commute
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.vadd_zsmul_movedBy_eq_of_addCommute :=
+  _root_.AddMonoidAction.vadd_zsmul_movedBy_eq_of_addCommute
 
 end Commute
 
@@ -262,6 +370,12 @@ theorem fixedBy_eq_univ_iff_eq_one {m : M} : fixedBy α m = Set.univ ↔ m = 1 :
   rw [← (smul_left_injective' (M := M) (α := α)).eq_iff, Set.eq_univ_iff_forall]
   simp_rw [funext_iff, one_smul, mem_fixedBy]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.fixedBy_eq_univ_iff_eq_one := fixedBy_eq_univ_iff_eq_one
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.fixedBy_eq_univ_iff_eq_zero :=
+  _root_.AddMonoidAction.fixedBy_eq_univ_iff_eq_zero
+
 /--
 If the image of the `(fixedBy α g)ᶜ` set by the pointwise action of `h: G`
 is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute.
@@ -274,25 +388,32 @@ theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
   rwa [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
     compl_inj_iff, fixedBy_eq_univ_iff_eq_one] at disjoint
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.not_commute_of_disjoint_movedBy_preimage :=
+  not_commute_of_disjoint_movedBy_preimage
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.not_addCommute_of_disjoint_movedBy_preimage :=
+  _root_.AddMonoidAction.not_addCommute_of_disjoint_movedBy_preimage
+
 end Faithful
 
-end MulAction
+end MonoidAction
 
 namespace MulActionHom
 
 /-- `MulActionHom` maps `fixedPoints` to `fixedPoints`. -/
 @[to_additive /-- `AddActionHom` maps `fixedPoints` to `fixedPoints`. -/]
-lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
-    (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
-    f a ∈ MulAction.fixedPoints H B := by
+lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidAction G B]
+    (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MonoidAction.fixedPoints H A) :
+    f a ∈ MonoidAction.fixedPoints H B := by
   intro ⟨h, _⟩
   simp_all [← f.map_smul h a]
 
 /-- `MulActionHom` maps `fixedBy` to `fixedBy`. -/
 @[to_additive /-- `AddActionHom` maps `fixedBy` to `fixedBy`. -/]
-lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
-    (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MulAction.fixedBy A g) :
-    f a ∈ MulAction.fixedBy B g := by
+lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidAction G B]
+    (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MonoidAction.fixedBy A g) :
+    f a ∈ MonoidAction.fixedBy B g := by
   simpa using congr_arg f ha
 
 end MulActionHom

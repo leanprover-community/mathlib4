@@ -52,7 +52,7 @@ class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X :
 variable {C : Type u₁} [Category.{u₂, u₁} C]
 
 /-- The natural action of `Aut X` on `F.obj X`. -/
-instance autMulFiber (F : C ⥤ FintypeCat.{w}) (X : C) : MulAction (Aut X) (F.obj X) where
+instance autMulFiber (F : C ⥤ FintypeCat.{w}) (X : C) : MonoidAction (Aut X) (F.obj X) where
   smul σ a := F.map σ.hom a
   one_smul a := by
     change F.map (𝟙 X) a = a
@@ -68,7 +68,7 @@ the quotient `F.obj X / Aut X` has exactly one element. -/
 noncomputable def quotientByAutTerminalEquivUniqueQuotient
     (X : C) [IsConnected X] :
     IsTerminal (colimit <| SingleObj.functor <| Aut.toEnd X) ≃
-    Unique (MulAction.orbitRel.Quotient (Aut X) (F.obj X)) := by
+    Unique (MonoidAction.orbitRel.Quotient (Aut X) (F.obj X)) := by
   let J : SingleObj (Aut X) ⥤ C := SingleObj.functor (Aut.toEnd X)
   let e : (F ⋙ FintypeCat.incl).obj (colimit J) ≅ _ :=
     preservesColimitIso (F ⋙ FintypeCat.incl) J ≪≫
@@ -85,9 +85,9 @@ lemma isGalois_iff_aux (X : C) [IsConnected X] :
 /-- Given a fiber functor `F` and a connected object `X` of `C`. Then `X` is Galois if and only if
 the natural action of `Aut X` on `F.obj X` is transitive. -/
 theorem isGalois_iff_pretransitive (X : C) [IsConnected X] :
-    IsGalois X ↔ MulAction.IsPretransitive (Aut X) (F.obj X) := by
+    IsGalois X ↔ MonoidAction.IsPretransitive (Aut X) (F.obj X) := by
   rw [isGalois_iff_aux, Equiv.nonempty_congr <| quotientByAutTerminalEquivUniqueQuotient F X]
-  exact (MulAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
+  exact (MonoidAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
 
 /-- If `X` is Galois, the quotient `X / Aut X` is terminal. -/
 noncomputable def isTerminalQuotientOfIsGalois (X : C) [IsGalois X] :
@@ -97,24 +97,24 @@ noncomputable def isTerminalQuotientOfIsGalois (X : C) [IsGalois X] :
 /-- If `X` is Galois, then the action of `Aut X` on `F.obj X` is
 transitive for every fiber functor `F`. -/
 instance isPretransitive_of_isGalois (X : C) [IsGalois X] :
-    MulAction.IsPretransitive (Aut X) (F.obj X) := by
+    MonoidAction.IsPretransitive (Aut X) (F.obj X) := by
   rw [← isGalois_iff_pretransitive]
   infer_instance
 
 lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
-    Subgroup.Normal (MulAction.stabilizer (Aut F) x) where
+    Subgroup.Normal (MonoidAction.stabilizer (Aut F) x) where
   conj_mem n ninstab g := by
-    rw [MulAction.mem_stabilizer_iff]
+    rw [MonoidAction.mem_stabilizer_iff]
     change g • n • (g⁻¹ • x) = x
     have : ∃ (φ : Aut X), F.map φ.hom x = g⁻¹ • x :=
-      MulAction.IsPretransitive.exists_smul_eq x (g⁻¹ • x)
+      MonoidAction.IsPretransitive.exists_smul_eq x (g⁻¹ • x)
     obtain ⟨φ, h⟩ := this
-    rw [← h, mulAction_naturality, ninstab, h]
+    rw [← h, monoidAction_naturality, ninstab, h]
     simp
 
 theorem evaluation_aut_surjective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :
     Function.Surjective (fun f : Aut A ↦ F.map f.hom a) :=
-  MulAction.IsPretransitive.exists_smul_eq a
+  MonoidAction.IsPretransitive.exists_smul_eq a
 
 theorem evaluation_aut_bijective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :
     Function.Bijective (fun f : Aut A ↦ F.map f.hom a) :=
@@ -192,7 +192,7 @@ lemma autMap_surjective_of_isGalois {A B : C} [IsGalois A] [IsGalois B] (f : A �
   let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   obtain ⟨a', ha'⟩ := surjective_of_nonempty_fiber_of_isConnected F f (F.map σ.hom (F.map f a))
-  obtain ⟨τ, (hτ : F.map τ.hom a = a')⟩ := MulAction.exists_smul_eq (Aut A) a a'
+  obtain ⟨τ, (hτ : F.map τ.hom a = a')⟩ := MonoidAction.exists_smul_eq (Aut A) a a'
   use τ
   apply evaluation_aut_injective_of_isConnected F B (F.map f a)
   simp [hτ, ha']

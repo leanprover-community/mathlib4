@@ -53,7 +53,7 @@ computing group (co)homology.
 
 ## Main definitions
 
-* `groupCohomology.resolution.ofMulActionBasis`
+* `groupCohomology.resolution.ofMonoidActionBasis`
 * `classifyingSpaceUniversalCover`
 * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
 * `Rep.standardResolution`
@@ -85,7 +85,7 @@ variable (G)
 @[simps obj map]
 def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) G) where
-  obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
+  obj n := Action.ofMonoidAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := ↾fun x => x ∘ f.unop.toOrderHom
       comm := fun _ => rfl }
@@ -101,10 +101,10 @@ variable [Monoid G]
 set_option backward.isDefEq.respectTransparency false in
 /-- When the category is `G`-Set, `cechNerveTerminalFrom` of `G` with the left regular action is
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
-def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMulAction G (G)) ≅
+def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMonoidAction G (G)) ≅
     classifyingSpaceUniversalCover G :=
-  NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
-    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
+  NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMonoidActionLimitCone _ _)) fun f => by
+    refine IsLimit.hom_ext (Action.ofMonoidActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
     dsimp only [cechNerveTerminalFrom, Pi.lift]
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
@@ -199,7 +199,7 @@ variable (k G) [Monoid G]
 
 /-- The `n`th object of the standard resolution of `k` is definitionally isomorphic to `k[Gⁿ⁺¹]`
 equipped with the representation induced by the diagonal action of `G`. -/
-def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
+def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMonoidAction k G (Fin (n + 1) → G) :=
   Iso.refl _
 
 instance x_projective (G : Type u) [Group G] (n : ℕ) :
@@ -207,14 +207,14 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
   exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
 set_option backward.defeqAttrib.useBackward true in
-unif_hint where ⊢ Action.V (Action.ofMulAction G (Fin (n + 1) → G)) ≟ Fin (n + 1) → G in
+unif_hint where ⊢ Action.V (Action.ofMonoidAction G (Fin (n + 1) → G)) ≟ Fin (n + 1) → G in
 set_option backward.isDefEq.respectTransparency false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
     d k G (n + 1) := by
   refine MonoidAlgebra.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [standardComplex, Action.ofMulAction_V, SimplicialObject.δ, SimplexCategory.δ,
+  simp [standardComplex, Action.ofMonoidAction_V, SimplicialObject.δ, SimplexCategory.δ,
     Fin.succAboveOrderEmb, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), ← ofHom_smul, ← ofHom_sum,
     Representation.IntertwiningMap.coe_toLinearMap, Representation.IntertwiningMap.sum_apply,
     Representation.IntertwiningMap.smul_apply, (Representation.linearizeMap_single),
@@ -258,7 +258,7 @@ def forget₂ToModuleCatHomotopyEquiv :
              (Finsupp.uniqueLinearEquiv k k default)).toModuleIso))
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
-def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k := ofHom
+def ε : Rep.ofMonoidAction k G (Fin 1 → G) ⟶ Rep.trivial k G k := ofHom
   ⟨(Finsupp.linearCombination _ fun _ ↦ (1 : k)) ∘ₗ (MonoidAlgebra.coeffLinearEquiv k).toLinearMap,
     fun _ ↦ MonoidAlgebra.lhom_ext' fun _ => LinearMap.ext_ring <| by simp⟩
 
@@ -377,7 +377,7 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
           (single f (.single g r)) = .single g 1 ⊗ₜ[k] .single f r :=
         Representation.leftRegularTensorTrivialIsoFree_symm_apply_single_single f g r
       rw [step1]
-      simp only [mkIso_inv, Representation.linearizeOfMulActionIso, Representation.Equiv.mk_symm,
+      simp only [mkIso_inv, Representation.linearizeOfMonoidActionIso, Representation.Equiv.mk_symm,
         LinearEquiv.refl_symm, ConcreteCategory.hom_ofHom, Action.tensorObj_V, Action.trivial_V,
         Functor.mapIso_inv, tensor_V, tensor_ρ, Iso.symm_inv, Functor.Monoidal.μIso_hom, μ_hom,
         MonoidalCategory.tensorIso_inv, Representation.linearizeTrivialIso, hom_tensorHom,

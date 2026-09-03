@@ -25,7 +25,7 @@ is an abbreviation for `RelIso`, there is no need for an additional instance.
 
 public section
 
-assert_not_exists MulAction MonoidWithZero
+assert_not_exists MonoidAction MonoidWithZero
 
 variable {α : Type*} {r : α → α → Prop}
 

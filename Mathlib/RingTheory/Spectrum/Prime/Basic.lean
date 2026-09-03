@@ -504,7 +504,7 @@ section Action
 
 variable {G : Type*} [Group G] [MulSemiringAction G R]
 
-instance : MulAction G (PrimeSpectrum R) where
+instance : MonoidAction G (PrimeSpectrum R) where
   smul g P := ⟨g • P, P.2.smul g⟩
   mul_smul g h P := PrimeSpectrum.ext (mul_smul g h P.1)
   one_smul P := PrimeSpectrum.ext (one_smul G P.1)

@@ -189,7 +189,7 @@ instance Prod.contMDiffSMul [SMul G M] [SMul G N] {n : ℕ∞ω} [ContMDiffSMul 
 `M`, then `G` acts continuously differentiably on `M`. -/
 @[to_additive]
 lemma IsScalarTower.contMDiffSMul (G' : Type*) [TopologicalSpace G'] [ChartedSpace H'' G']
-    [Monoid G'] [SMul G G'] [MulAction G' M] [SMul G M] [IsScalarTower G G' M] {n : ℕ∞ω}
+    [Monoid G'] [SMul G G'] [MonoidAction G' M] [SMul G M] [IsScalarTower G G' M] {n : ℕ∞ω}
     [ContMDiffSMul I I'' n G G'] [ContMDiffSMul I'' I' n G' M] : ContMDiffSMul I I' n G M where
   contMDiff_smul := by
     suffices CMDiff n (fun p : G × M ↦ (p.1 • (1 : G')) • p.2) by simpa
@@ -198,13 +198,18 @@ lemma IsScalarTower.contMDiffSMul (G' : Type*) [TopologicalSpace G'] [ChartedSpa
 /-- If an action is continuously differentiable, then post-composing this action with a continuously
 differentiable homomorphism gives again a continuously differentiable action. -/
 @[to_additive]
-theorem MulAction.contMDiffSMul_compHom [Monoid G] [MulAction G M] {n : ℕ∞ω}
+theorem MonoidAction.contMDiffSMul_compHom [Monoid G] [MonoidAction G M] {n : ℕ∞ω}
     [ContMDiffSMul I I' n G M] {G' : Type*} [TopologicalSpace G'] [ChartedSpace H'' G'] [Monoid G']
     {f : G' →* G} (hf : CMDiff n f) :
-    letI : MulAction G' M := MulAction.compHom _ f
+    letI : MonoidAction G' M := MonoidAction.compHom _ f
     ContMDiffSMul I'' I' n G' M := by
-  let _ : MulAction G' M := MulAction.compHom _ f
+  let _ : MonoidAction G' M := MonoidAction.compHom _ f
   exact ⟨(hf.comp contMDiff_fst).smul contMDiff_snd⟩
+
+@[deprecated (since := "2026-09-02")]
+alias MulAction.contMDiffSMul_compHom := MonoidAction.contMDiffSMul_compHom
+@[deprecated (since := "2026-09-02")]
+alias AddAction.contMDiffVAdd_compHom := AddMonoidAction.contMDiffVAdd_compHom
 
 /-- The scalar multiplication `𝕜 × E → E` of any normed vector space `E` over `𝕜` is smooth. -/
 instance {n : ℕ∞ω} : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, E) n 𝕜 E where
@@ -300,7 +305,7 @@ instance Prod.contMDiffConstSMul [SMul Γ N] [ContMDiffConstSMul I n Γ M]
 such that `Γ`, `Γ'` and `M` form a scalar tower, then the induced action on `M` by any element of
 `Γ` is continuously differentiable as well. -/
 @[to_additive]
-lemma IsScalarTower.contMDiffConstSMul (Γ' : Type*) [Monoid Γ'] [SMul Γ Γ'] [MulAction Γ' M]
+lemma IsScalarTower.contMDiffConstSMul (Γ' : Type*) [Monoid Γ'] [SMul Γ Γ'] [MonoidAction Γ' M]
     [IsScalarTower Γ Γ' M] [ContMDiffConstSMul I n Γ' M] : ContMDiffConstSMul I n Γ M where
   contMDiff_const_smul γ := by
     suffices h : CMDiff n (fun x : M ↦ (γ • (1 : Γ')) • x) by
@@ -311,12 +316,17 @@ lemma IsScalarTower.contMDiffConstSMul (Γ' : Type*) [Monoid Γ'] [SMul Γ Γ'] 
 this action with any homomorphism `f : Γ' →* Γ` makes again the action on `M` by any element of `Γ'`
 continuously differentiable . -/
 @[to_additive]
-theorem MulAction.contMDiffConstSMul_compHom {Γ Γ' : Type*} [Monoid Γ] [MulAction Γ M]
+theorem MonoidAction.contMDiffConstSMul_compHom {Γ Γ' : Type*} [Monoid Γ] [MonoidAction Γ M]
     [ContMDiffConstSMul I n Γ M] [Monoid Γ'] {f : Γ' →* Γ} :
-    letI : MulAction Γ' M := MulAction.compHom _ f
+    letI : MonoidAction Γ' M := MonoidAction.compHom _ f
     ContMDiffConstSMul I n Γ' M := by
-  let _ : MulAction Γ' M := MulAction.compHom _ f
+  let _ : MonoidAction Γ' M := MonoidAction.compHom _ f
   exact ⟨fun g ↦ contMDiff_id.const_smul (f g)⟩
+
+@[deprecated (since := "2026-09-02")]
+alias MulAction.contMDiffConstSMul_compHom := MonoidAction.contMDiffConstSMul_compHom
+@[deprecated (since := "2026-09-02")]
+alias AddAction.contMDiffConstVAdd_compHom := AddMonoidAction.contMDiffConstVAdd_compHom
 
 end ContMDiffConstSMul
 
@@ -329,7 +339,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'}
   {G : Type*} [TopologicalSpace G] [ChartedSpace H G]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
-  [Group G] [MulAction G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G)
+  [Group G] [MonoidAction G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G)
 
 variable (I I' n) in
 /-- The diffeomorphism given by scalar multiplication by an element of a group `G` acting
@@ -340,7 +350,7 @@ multiplication by `g⁻¹`. -/
 Cⁿ-differentiably on a manifold `M` is a diffeomorphism from `M` to itself. Its inverse is
 addition of `-g`. -/]
 def Diffeomorph.smul : M ≃ₘ^n⟮I', I'⟯ M where
-  toEquiv := MulAction.toPerm g
+  toEquiv := MonoidAction.toPerm g
   contMDiff_toFun := ContMDiffSMul.contMDiff_const_smul (I := I) g
   contMDiff_invFun := ContMDiffSMul.contMDiff_const_smul (I := I) g⁻¹
 

@@ -80,8 +80,8 @@ instance [AddMonoid A] : AddMonoid (WithConv A) := (WithConv.equiv A).addMonoid
 instance [AddCommMonoid A] : AddCommMonoid (WithConv A) := (WithConv.equiv A).addCommMonoid
 instance [AddGroup A] : AddGroup (WithConv A) := (WithConv.equiv A).addGroup
 instance [AddCommGroup A] : AddCommGroup (WithConv A) := (WithConv.equiv A).addCommGroup
-@[to_additive] instance [Monoid R] [MulAction R A] : MulAction R (WithConv A) :=
-  fast_instance% (WithConv.equiv A).mulAction R
+@[to_additive] instance [Monoid R] [MonoidAction R A] : MonoidAction R (WithConv A) :=
+  fast_instance% (WithConv.equiv A).monoidAction R
 
 /-- Lift an equivalence between `A` and `B` to `WithConv A` and `WithConv B`. -/
 protected def congr (f : A ≃ B) : WithConv A ≃ WithConv B :=
@@ -103,9 +103,9 @@ variable [AddGroup A]
 
 end AddGroup
 
-@[simp] lemma ofConv_smul [Monoid R] [MulAction R A] (c : R) (x : WithConv A) :
+@[simp] lemma ofConv_smul [Monoid R] [MonoidAction R A] (c : R) (x : WithConv A) :
     ofConv (c • x) = c • ofConv x := rfl
-@[simp] lemma toConv_smul [Monoid R] [MulAction R A] (c : R) (x : A) :
+@[simp] lemma toConv_smul [Monoid R] [MonoidAction R A] (c : R) (x : A) :
     toConv (c • x) = c • toConv x := rfl
 
 section

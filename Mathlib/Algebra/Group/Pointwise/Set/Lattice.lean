@@ -23,7 +23,7 @@ pointwise subtraction
 
 public section
 
-assert_not_exists MulAction MonoidWithZero
+assert_not_exists MonoidAction MonoidWithZero
 
 variable {α β : Type*}
 

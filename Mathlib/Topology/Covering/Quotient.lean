@@ -17,7 +17,7 @@ public import Mathlib.Topology.Covering.Basic
 @[expose] public section
 
 variable {E X : Type*} [TopologicalSpace E] [TopologicalSpace X] (f : E → X)
-variable (G : Type*) [Group G] [MulAction G E]
+variable (G : Type*) [Group G] [MonoidAction G E]
 
 open Topology
 
@@ -25,9 +25,9 @@ open Topology
 topological space `X` is a quotient covering map if it is a quotient map, the action is
 continuous and transitive on fibers, and every point of `E` has a neighborhood whose translates
 by the group elements are pairwise disjoint. -/
-structure IsAddQuotientCoveringMap (G) [AddGroup G] [AddAction G E] : Prop
+structure IsAddQuotientCoveringMap (G) [AddGroup G] [AddMonoidAction G E] : Prop
     extends IsQuotientMap f, ContinuousConstVAdd G E where
-  apply_eq_iff_mem_orbit {e₁ e₂} : f e₁ = f e₂ ↔ e₁ ∈ AddAction.orbit G e₂
+  apply_eq_iff_mem_orbit {e₁ e₂} : f e₁ = f e₂ ↔ e₁ ∈ AddMonoidAction.orbit G e₂
   disjoint (e : E) : ∃ U ∈ 𝓝 e, ∀ g : G, ((g +ᵥ ·) '' U ∩ U).Nonempty → g = 0
 
 /-- A function from a topological space `E` with an action by a discrete group to another
@@ -36,12 +36,12 @@ continuous and transitive on fibers, and every point of `E` has a neighborhood w
 by the group elements are pairwise disjoint. -/
 @[mk_iff, to_additive]
 structure IsQuotientCoveringMap : Prop extends IsQuotientMap f, ContinuousConstSMul G E where
-  apply_eq_iff_mem_orbit {e₁ e₂} : f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂
+  apply_eq_iff_mem_orbit {e₁ e₂} : f e₁ = f e₂ ↔ e₁ ∈ MonoidAction.orbit G e₂
   disjoint (e : E) : ∃ U ∈ 𝓝 e, ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g = 1
 
 attribute [to_additive] isQuotientCoveringMap_iff
 
-lemma IsAddQuotientCoveringMap.toMultiplicative (G) [AddGroup G] [AddAction G E]
+lemma IsAddQuotientCoveringMap.toMultiplicative (G) [AddGroup G] [AddMonoidAction G E]
     (hf : IsAddQuotientCoveringMap f G) :
     IsQuotientCoveringMap f (Multiplicative G) where
   __ := hf.toIsQuotientMap
@@ -51,7 +51,7 @@ lemma IsAddQuotientCoveringMap.toMultiplicative (G) [AddGroup G] [AddAction G E]
     obtain ⟨U, hU, hU'⟩ := hf.disjoint e
     exact ⟨U, hU, fun g ↦ by simpa using hU' (Multiplicative.ofAdd.symm g)⟩
 
-lemma IsQuotientCoveringMap.toAdditive (G) [Group G] [MulAction G E]
+lemma IsQuotientCoveringMap.toAdditive (G) [Group G] [MonoidAction G E]
     (hf : IsQuotientCoveringMap f G) :
     IsAddQuotientCoveringMap f (Additive G) where
   __ := hf.toIsQuotientMap
@@ -113,26 +113,36 @@ set_option backward.isDefEq.respectTransparency.types false in
   congr($((hf.fiberEquivGroup e).symm_apply_apply e'))
 
 /-- The action of `G` restricted to the fiber. -/
-@[implicit_reducible] def mulActionFiber (x : X) : MulAction G (f ⁻¹' {x}) :=
-  SubMulAction.mulAction ⟨f ⁻¹' {x}, fun g _ h ↦ (hf.map_smul g).trans h⟩
+@[implicit_reducible] def monoidActionFiber (x : X) : MonoidAction G (f ⁻¹' {x}) :=
+  SubMulAction.monoidAction ⟨f ⁻¹' {x}, fun g _ h ↦ (hf.map_smul g).trans h⟩
 
-@[simp] lemma coe_mulActionFiber_smul (x : X) (g : G) (e : f ⁻¹' {x}) :
-    letI := hf.mulActionFiber x
+@[deprecated (since := "2026-09-02")]
+alias _root_.IsQuotientCoveringMap.mulActionFiber := monoidActionFiber
+
+@[simp] lemma coe_monoidActionFiber_smul (x : X) (g : G) (e : f ⁻¹' {x}) :
+    letI := hf.monoidActionFiber x
     (↑(g • e) : E) = g • (e : E) :=
   rfl
 
-lemma mulActionFiber_isPretransitive (x : X) :
-    letI := hf.mulActionFiber x
-    MulAction.IsPretransitive G (f ⁻¹' {x}) := by
-  let := hf.mulActionFiber x
+@[deprecated (since := "2026-09-02")]
+alias _root_.IsQuotientCoveringMap.coe_mulActionFiber_smul := coe_monoidActionFiber_smul
+
+lemma monoidActionFiber_isPretransitive (x : X) :
+    letI := hf.monoidActionFiber x
+    MonoidAction.IsPretransitive G (f ⁻¹' {x}) := by
+  let := hf.monoidActionFiber x
   constructor
   intro e e'
   obtain ⟨g, hg⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm)
   exact ⟨g, Subtype.ext hg⟩
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.IsQuotientCoveringMap.mulActionFiber_isPretransitive :=
+  monoidActionFiber_isPretransitive
+
 /-- A quotient covering map `f` induces a permutation action on each fiber. -/
 @[simps!] def toPermFiber (x : X) : G →* Equiv.Perm (f ⁻¹' {x}) :=
-  (hf.mulActionFiber x).toPermHom
+  (hf.monoidActionFiber x).toPermHom
 
 theorem toPermFiber_ext (x : X) (e : f ⁻¹' {x}) {g g' : G}
     (eq : hf.toPermFiber x g e = hf.toPermFiber x g' e) : g = g' :=
@@ -144,9 +154,9 @@ theorem toPermFiber_injective (x : X) : Function.Injective (hf.toPermFiber x) :=
   fun _ _ eq ↦ hf.toPermFiber_ext x ⟨e, he⟩ congr($eq _)
 
 theorem exists_toPermFiber_eq {x : X} (e e' : f ⁻¹' {x}) : ∃ g, hf.toPermFiber x g e = e' := by
-  let := hf.mulActionFiber x
-  have := hf.mulActionFiber_isPretransitive x
-  obtain ⟨g, rfl⟩ := MulAction.IsPretransitive.exists_smul_eq e e' (M := G)
+  let := hf.monoidActionFiber x
+  have := hf.monoidActionFiber_isPretransitive x
+  obtain ⟨g, rfl⟩ := MonoidAction.IsPretransitive.exists_smul_eq e e' (M := G)
   use g
   ext
   simp
@@ -158,12 +168,12 @@ namespace Topology.IsQuotientMap
 variable {f G} (hf : IsQuotientMap f)
 include hf
 
-section MulAction
+section MonoidAction
 
 open Bundle
 
 variable [ContinuousConstSMul G E]
-variable (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂)
+variable (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MonoidAction.orbit G e₂)
 include hfG
 
 /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all other
@@ -206,9 +216,10 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
 
 @[to_additive] lemma isCoveringMapOn_of_smul_disjoint
     (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g • e = e) :
-    IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) := by
+    IsCoveringMapOn f (f '' {e | MonoidAction.stabilizer G e = ⊥}) := by
   let : TopologicalSpace G := ⊥; have : DiscreteTopology G := ⟨rfl⟩
-  suffices ∀ x ∈ f '' {e | MulAction.stabilizer G e = ⊥}, ∃ t : Trivialization G f, x ∈ t.baseSet by
+  suffices ∀ x ∈ f '' {e | MonoidAction.stabilizer G e = ⊥}, ∃ t :
+    Trivialization G f, x ∈ t.baseSet by
     choose t ht using this; exact IsCoveringMapOn.mk _ _ _ _ fun x ↦ ht x x.2
   rintro x ⟨e, he, rfl⟩
   have ⟨U, heU, hU⟩ := disjoint e
@@ -222,7 +233,7 @@ section ProperlyDiscontinuousSMul
 variable [ProperlyDiscontinuousSMul G E] [LocallyCompactSpace E] [T2Space E]
 
 @[to_additive] lemma isCoveringMapOn_of_properlyDiscontinuousSMul :
-    IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) :=
+    IsCoveringMapOn f (f '' {e | MonoidAction.stabilizer G e = ⊥}) :=
   hf.isCoveringMapOn_of_smul_disjoint hfG
     (ProperlyDiscontinuousSMul.exists_nhds_image_smul_eq_self G)
 
@@ -238,16 +249,16 @@ omit hf hfG
 
 @[to_additive] lemma _root_.isCoveringMapOn_quotientMk_of_properlyDiscontinuousSMul :
     IsCoveringMapOn (Quotient.mk _) <|
-      (Quotient.mk <| MulAction.orbitRel G E) '' {e | MulAction.stabilizer G e = ⊥} :=
+      (Quotient.mk <| MonoidAction.orbitRel G E) '' {e | MonoidAction.stabilizer G e = ⊥} :=
   isQuotientMap_quotient_mk'.isCoveringMapOn_of_properlyDiscontinuousSMul Quotient.eq''
 
 @[to_additive] lemma _root_.isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul
-    [IsCancelSMul G E] : IsQuotientCoveringMap (Quotient.mk <| MulAction.orbitRel G E) G :=
+    [IsCancelSMul G E] : IsQuotientCoveringMap (Quotient.mk <| MonoidAction.orbitRel G E) G :=
   isQuotientMap_quotient_mk'.isQuotientCoveringMap_of_properlyDiscontinuousSMul Quotient.eq''
 
 end ProperlyDiscontinuousSMul
 
-end MulAction
+end MonoidAction
 
 @[to_additive] lemma isQuotientCoveringMap_of_subgroup [Group E] [IsTopologicalGroup E]
     (G : Subgroup E) (hG : IsDiscrete (G : Set E)) (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₂ * e₁⁻¹ ∈ G) :
@@ -317,7 +328,7 @@ end IsQuotientCoveringMap
 
 @[to_additive] theorem isQuotientCoveringMap_iff_isCoveringMap_and :
     IsQuotientCoveringMap f G ↔ IsCoveringMap f ∧ f.Surjective ∧ ContinuousConstSMul G E ∧
-      IsCancelSMul G E ∧ ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂ where
+      IsCancelSMul G E ∧ ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MonoidAction.orbit G e₂ where
   mp h := have := h.toContinuousConstSMul
     ⟨h.isCoveringMap, h.surjective, this, h.isCancelSMul, h.apply_eq_iff_mem_orbit⟩
   mpr h := (isQuotientCoveringMap_iff ..).mpr ⟨h.1.isQuotientMap h.2.1, h.2.2.1, h.2.2.2.2, fun e ↦

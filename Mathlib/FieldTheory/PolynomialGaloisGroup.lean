@@ -155,7 +155,7 @@ noncomputable def rootsEquivRoots [Fact (map (algebraMap F E) p).Splits]
     [Fact (map (algebraMap F E') p).Splits] : p.rootSet E ≃ p.rootSet E' :=
   (rootsEquivRootsAux p E).symm.trans (rootsEquivRootsAux p E')
 
-instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
+instance galActionAux : MonoidAction p.Gal (rootSet p p.SplittingField) where
   smul ϕ := Set.MapsTo.restrict ϕ _ _ <| rootSet_mapsTo ϕ.toAlgHom
   one_smul _ := by ext; rfl
   mul_smul _ _ _ := by ext; rfl
@@ -173,13 +173,13 @@ theorem smul_rootsEquivRoots [Fact (map (algebraMap F E) p).Splits]
   simp [rootsEquivRoots, smul_def]
 
 /-- The action of `gal p` on the roots of `p` in `E`. -/
-instance galAction [Fact ((p.map (algebraMap F E)).Splits)] : MulAction p.Gal (rootSet p E) where
+instance galAction [Fact ((p.map (algebraMap F E)).Splits)] : MonoidAction p.Gal (rootSet p E) where
   one_smul _ := by simp only [smul_def, Equiv.apply_symm_apply, one_smul]
   mul_smul _ _ _ := by
     simp only [smul_def, Equiv.symm_apply_apply, mul_smul]
 
 lemma galAction_isPretransitive [Fact ((p.map (algebraMap F E)).Splits)] (hp : Irreducible p) :
-    MulAction.IsPretransitive p.Gal (p.rootSet E) := by
+    MonoidAction.IsPretransitive p.Gal (p.rootSet E) := by
   refine ⟨fun x y ↦ ?_⟩
   have hx := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm x).2).2
   have hy := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm y).2).2
@@ -202,7 +202,7 @@ variable (p E)
 
 /-- `Polynomial.Gal.galAction` as a permutation representation -/
 def galActionHom [Fact ((p.map (algebraMap F E)).Splits)] : p.Gal →* Equiv.Perm (rootSet p E) :=
-  MulAction.toPermHom _ _
+  MonoidAction.toPermHom _ _
 
 theorem galActionHom_restrict [Fact ((p.map (algebraMap F E)).Splits)] (ϕ : Gal(E/F))
     (x : rootSet p E) : ↑(galActionHom p E (restrict p E ϕ) x) = ϕ x :=

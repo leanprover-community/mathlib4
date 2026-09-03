@@ -55,7 +55,7 @@ multiplication component by component with `mixedEmbedding K u`. -/
 instance unitSMul : SMul (𝓞 K)ˣ (mixedSpace K) where
   smul u x := mixedEmbedding K u * x
 
-instance : MulAction (𝓞 K)ˣ (mixedSpace K) where
+instance : MonoidAction (𝓞 K)ˣ (mixedSpace K) where
   one_smul := fun _ ↦ by simp_rw [unitSMul_smul, Units.coe_one, map_one, one_mul]
   mul_smul := fun _ _ _ ↦ by simp_rw [unitSMul_smul, Units.coe_mul, map_mul, mul_assoc]
 
@@ -325,7 +325,7 @@ theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (h�
 instance integerSetTorsionSMul : SMul (torsion K) (integerSet K) where
   smul := fun ⟨ζ, hζ⟩ ⟨x, hx⟩ ↦ ⟨ζ • x, torsion_unitSMul_mem_integerSet hζ hx⟩
 
-instance : MulAction (torsion K) (integerSet K) where
+instance : MonoidAction (torsion K) (integerSet K) where
   one_smul := fun _ ↦ by
     rw [Subtype.mk_eq_mk, integerSetTorsionSMul_smul_coe, OneMemClass.coe_one, one_smul]
   mul_smul := fun _ _ _ ↦ by
@@ -344,7 +344,7 @@ theorem intNorm_coe (a : integerSet K) :
 
 /-- The norm `intNorm` lifts to a function on `integerSet K` modulo `torsion K`. -/
 def quotIntNorm :
-    Quotient (MulAction.orbitRel (torsion K) (integerSet K)) → ℕ :=
+    Quotient (MonoidAction.orbitRel (torsion K) (integerSet K)) → ℕ :=
   Quotient.lift (fun x ↦ intNorm x) fun a b ⟨u, hu⟩ ↦ by
     rw [← Nat.cast_inj (R := ℝ), intNorm_coe, intNorm_coe, ← hu, integerSetTorsionSMul_smul_coe,
       norm_unit_smul]
@@ -391,14 +391,14 @@ theorem integerSetToAssociates_eq_iff (a b : integerSet K) :
 variable (K) in
 /-- The equivalence between `integerSet K` modulo `torsion K` and `Associates (𝓞 K)⁰`. -/
 def integerSetQuotEquivAssociates :
-    Quotient (MulAction.orbitRel (torsion K) (integerSet K)) ≃ Associates (𝓞 K)⁰ :=
+    Quotient (MonoidAction.orbitRel (torsion K) (integerSet K)) ≃ Associates (𝓞 K)⁰ :=
   Equiv.ofBijective
     (Quotient.lift (integerSetToAssociates K)
       fun _ _ h ↦ ((integerSetToAssociates_eq_iff _ _).mpr h).symm)
     ⟨Setoid.lift_injective_iff_ker_eq_of_le _ |>.mpr <| by
         ext a b
         rw [Setoid.ker_def, eq_comm, integerSetToAssociates_eq_iff b a,
-          MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
+          MonoidAction.orbitRel_apply, MonoidAction.mem_orbit_iff],
         (Quot.surjective_lift _).mpr (integerSetToAssociates_surjective K)⟩
 
 @[simp]
@@ -406,9 +406,9 @@ theorem integerSetQuotEquivAssociates_apply (a : integerSet K) :
     integerSetQuotEquivAssociates K ⟦a⟧ = ⟦preimageOfMemIntegerSet a⟧ := rfl
 
 theorem integerSetTorsionSMul_stabilizer (a : integerSet K) :
-    MulAction.stabilizer (torsion K) a = ⊥ := by
+    MonoidAction.stabilizer (torsion K) a = ⊥ := by
   refine (Subgroup.eq_bot_iff_forall _).mpr fun ζ hζ ↦ ?_
-  rwa [MulAction.mem_stabilizer_iff, Subtype.ext_iff, integerSetTorsionSMul_smul_coe,
+  rwa [MonoidAction.mem_stabilizer_iff, Subtype.ext_iff, integerSetTorsionSMul_smul_coe,
     unitSMul_smul, ← mixedEmbedding_preimageOfMemIntegerSet, ← map_mul,
     (mixedEmbedding_injective K).eq_iff, ← map_mul, ← RingOfIntegers.ext_iff, mul_eq_right₀,
     Units.val_eq_one, OneMemClass.coe_eq_one] at hζ
@@ -421,7 +421,7 @@ variable (K) in
 ideals of `K` and the torsion of `K`. -/
 def integerSetEquiv :
     integerSet K ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val} × torsion K :=
-  (MulAction.selfEquivSigmaOrbitsQuotientStabilizer (torsion K) (integerSet K)).trans
+  (MonoidAction.selfEquivSigmaOrbitsQuotientStabilizer (torsion K) (integerSet K)).trans
     ((Equiv.sigmaEquivProdOfEquiv (by
         intro _
         simp_rw [integerSetTorsionSMul_stabilizer]

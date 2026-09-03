@@ -50,7 +50,7 @@ theorem ofClosedSubgroup {G : Type*} [Group G] [TopologicalSpace G] [IsTopologic
     (H : Subgroup G) [H.Normal] (hH : IsClosed (H : Set G)) :
     TopologicalGroup.IsSES H.subtype (QuotientGroup.mk' H) where
   isClosedEmbedding := ⟨⟨Topology.IsInducing.subtypeVal, H.subtype_injective⟩, by simpa⟩
-  isOpenQuotientMap := MulAction.isOpenQuotientMap_quotientMk
+  isOpenQuotientMap := MonoidAction.isOpenQuotientMap_quotientMk
   mulExact := by simp [Function.MulExact]
 
 end TopologicalGroup.IsSES

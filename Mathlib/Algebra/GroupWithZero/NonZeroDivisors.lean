@@ -105,7 +105,7 @@ scoped[nonZeroDivisors] notation:9000 M₀ "⁰" => nonZeroDivisors M₀
 collection of non-zero smul-divisors forms a submonoid.
 
 These elements are also called `M`-regular. -/
-def nonZeroSMulDivisors (M₀ : Type*) [MonoidWithZero M₀] (M : Type*) [Zero M] [MulAction M₀ M] :
+def nonZeroSMulDivisors (M₀ : Type*) [MonoidWithZero M₀] (M : Type*) [Zero M] [MonoidAction M₀ M] :
     Submonoid M₀ where
   carrier := { r | ∀ m : M, r • m = 0 → m = 0}
   one_mem' m h := (one_smul M₀ m) ▸ h
@@ -359,7 +359,7 @@ section nonZeroSMulDivisors
 
 open nonZeroSMulDivisors
 
-variable {M₀ M : Type*} [MonoidWithZero M₀] [Zero M] [MulAction M₀ M] {x : M₀}
+variable {M₀ M : Type*} [MonoidWithZero M₀] [Zero M] [MonoidAction M₀ M] {x : M₀}
 
 lemma mem_nonZeroSMulDivisors_iff : x ∈ M₀⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
 

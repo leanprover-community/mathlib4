@@ -61,7 +61,7 @@ and `ConjAct.toConjAct`.
 
 open scoped Pointwise
 
-open MulAction Equiv.Perm Equiv Set.powersetCard Subgroup
+open MonoidAction Equiv.Perm Equiv Set.powersetCard Subgroup
 
 namespace Equiv.Perm
 

@@ -60,11 +60,11 @@ lemma relIndex_zmultiples_mul (a b : ℕ) :
 end Int
 
 
-namespace AddAction
+namespace AddMonoidAction
 
 open AddSubgroup AddMonoidHom AddEquiv Function
 
-variable {α β : Type*} [AddGroup α] (a : α) [AddAction α β] (b : β)
+variable {α β : Type*} [AddGroup α] (a : α) [AddMonoidAction α β] (b : β)
 
 /-- The quotient `(ℤ ∙ a) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod (a +ᵥ ·) b`. -/
 noncomputable def zmultiplesQuotientStabilizerEquiv :
@@ -84,18 +84,25 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
             induction_on q fun ⟨_, n, rfl⟩ => ⟨n, rfl⟩⟩).symm.trans
     (Int.quotientZMultiplesNatEquivZMod (minimalPeriod (a +ᵥ ·) b))
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.zmultiplesQuotientStabilizerEquiv := zmultiplesQuotientStabilizerEquiv
+
 theorem zmultiplesQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod (a +ᵥ ·) b)) :
     (zmultiplesQuotientStabilizerEquiv a b).symm n =
       (cast n : ℤ) • (⟨a, mem_zmultiples a⟩ : zmultiples a) :=
   rfl
 
-end AddAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.zmultiplesQuotientStabilizerEquiv_symm_apply :=
+  zmultiplesQuotientStabilizerEquiv_symm_apply
 
-namespace MulAction
+end AddMonoidAction
 
-open AddAction Subgroup AddSubgroup Function
+namespace MonoidAction
 
-variable {α β : Type*} [Group α] (a : α) [MulAction α β] (b : β)
+open AddMonoidAction Subgroup AddSubgroup Function
+
+variable {α β : Type*} [Group α] (a : α) [MonoidAction α β] (b : β)
 
 /-- The quotient `(a ^ ℤ) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod ((•) a) b`. -/
 noncomputable def zpowersQuotientStabilizerEquiv :
@@ -103,20 +110,32 @@ noncomputable def zpowersQuotientStabilizerEquiv :
   letI f := zmultiplesQuotientStabilizerEquiv (Additive.ofMul a) b
   AddEquiv.toMultiplicative f
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.zpowersQuotientStabilizerEquiv := zpowersQuotientStabilizerEquiv
+
 theorem zpowersQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod (a • ·) b)) :
     (zpowersQuotientStabilizerEquiv a b).symm n = (⟨a, mem_zpowers a⟩ : zpowers a) ^ (cast n : ℤ) :=
   rfl
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.zpowersQuotientStabilizerEquiv_symm_apply :=
+  zpowersQuotientStabilizerEquiv_symm_apply
 
 /-- The orbit `(a ^ ℤ) • b` is a cycle of order `minimalPeriod ((•) a) b`. -/
 noncomputable def orbitZPowersEquiv : orbit (zpowers a) b ≃ ZMod (minimalPeriod (a • ·) b) :=
   (orbitEquivQuotientStabilizer _ b).trans (zpowersQuotientStabilizerEquiv a b).toEquiv
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.orbitZPowersEquiv := orbitZPowersEquiv
+
 /-- The orbit `(ℤ • a) +ᵥ b` is a cycle of order `minimalPeriod (a +ᵥ ·) b`. -/
-noncomputable def _root_.AddAction.orbitZMultiplesEquiv {α β : Type*} [AddGroup α] (a : α)
-    [AddAction α β] (b : β) :
-    AddAction.orbit (zmultiples a) b ≃ ZMod (minimalPeriod (a +ᵥ ·) b) :=
-  (AddAction.orbitEquivQuotientStabilizer (zmultiples a) b).trans
+noncomputable def _root_.AddMonoidAction.orbitZMultiplesEquiv {α β : Type*} [AddGroup α] (a : α)
+    [AddMonoidAction α β] (b : β) :
+    AddMonoidAction.orbit (zmultiples a) b ≃ ZMod (minimalPeriod (a +ᵥ ·) b) :=
+  (AddMonoidAction.orbitEquivQuotientStabilizer (zmultiples a) b).trans
     (zmultiplesQuotientStabilizerEquiv a b).toEquiv
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.orbitZMultiplesEquiv := _root_.AddMonoidAction.orbitZMultiplesEquiv
 
 attribute [to_additive existing] orbitZPowersEquiv
 
@@ -126,19 +145,32 @@ theorem orbitZPowersEquiv_symm_apply (k : ZMod (minimalPeriod (a • ·) b)) :
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ (cast k : ℤ) • ⟨b, mem_orbit_self b⟩ :=
   rfl
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.orbitZPowersEquiv_symm_apply := orbitZPowersEquiv_symm_apply
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.orbitZMultiplesEquiv_symm_apply :=
+  _root_.AddMonoidAction.orbitZMultiplesEquiv_symm_apply
+
 theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :
     (orbitZPowersEquiv a b).symm k =
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ k • ⟨b, mem_orbit_self b⟩ := by
   rw [orbitZPowersEquiv_symm_apply, ZMod.coe_intCast]
   exact Subtype.ext (zpow_smul_mod_minimalPeriod _ _ k)
 
-theorem _root_.AddAction.orbitZMultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
-    [AddAction α β] (b : β) (k : ℤ) :
-    (AddAction.orbitZMultiplesEquiv a b).symm k =
-      k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
-  rw [AddAction.orbitZMultiplesEquiv_symm_apply, ZMod.coe_intCast]
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.orbitZPowersEquiv_symm_apply' := orbitZPowersEquiv_symm_apply'
+
+theorem _root_.AddMonoidAction.orbitZMultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
+    [AddMonoidAction α β] (b : β) (k : ℤ) :
+    (AddMonoidAction.orbitZMultiplesEquiv a b).symm k =
+      k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddMonoidAction.mem_orbit_self b⟩ := by
+  rw [AddMonoidAction.orbitZMultiplesEquiv_symm_apply, ZMod.coe_intCast]
   -- Making `a` explicit turns this from ~190000 heartbeats to ~700.
   exact Subtype.ext (zsmul_vadd_mod_minimalPeriod a _ k)
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.orbitZMultiplesEquiv_symm_apply' :=
+  _root_.AddMonoidAction.orbitZMultiplesEquiv_symm_apply'
 
 attribute [to_additive existing]
   orbitZPowersEquiv_symm_apply'
@@ -147,6 +179,11 @@ attribute [to_additive existing]
 theorem minimalPeriod_eq_card [Fintype (orbit (zpowers a) b)] :
     minimalPeriod (a • ·) b = Fintype.card (orbit (zpowers a) b) := by
   rw [← Fintype.ofEquiv_card (orbitZPowersEquiv a b), ZMod.card]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.minimalPeriod_eq_card := minimalPeriod_eq_card
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.minimalPeriod_eq_card := _root_.AddMonoidAction.minimalPeriod_eq_card
 
 @[to_additive]
 instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
@@ -157,7 +194,11 @@ instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
     rw [minimalPeriod_eq_card]
     exact Fintype.card_ne_zero⟩
 
-end MulAction
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.minimalPeriod_pos := minimalPeriod_pos
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.minimalPeriod_pos := _root_.AddMonoidAction.minimalPeriod_pos
+
+end MonoidAction
 
 section Group
 
@@ -168,7 +209,7 @@ variable {α : Type*} [Group α] (a : α)
 /-- See also `Fintype.card_zpowers`. -/
 @[to_additive (attr := simp) /-- See also `Fintype.card_zmultiples`. -/]
 theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
-  have := Nat.card_congr (MulAction.orbitZPowersEquiv a (1 : α))
+  have := Nat.card_congr (MonoidAction.orbitZPowersEquiv a (1 : α))
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this
 
 variable {a}
@@ -189,7 +230,7 @@ end Group
 namespace Subgroup
 variable {G : Type*} [Group G] (H : Subgroup G) (g : G)
 
-open Equiv Function MulAction
+open Equiv Function MonoidAction
 
 /-- Partition `G ⧸ H` into orbits of the action of `g : G`. -/
 noncomputable def quotientEquivSigmaZMod :
@@ -209,14 +250,14 @@ lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
 set_option backward.isDefEq.respectTransparency false in
 /-- The sum of minimal periods over all orbits equals the index `[G:H]`. -/
 lemma index_eq_sum_minimalPeriod (g : G) [Finite (G ⧸ H)]
-    [Fintype (Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)))] :
-    H.index = ∑ q : Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)),
+    [Fintype (Quotient (MonoidAction.orbitRel (zpowers g) (G ⧸ H)))] :
+    H.index = ∑ q : Quotient (MonoidAction.orbitRel (zpowers g) (G ⧸ H)),
       Function.minimalPeriod (g • ·) q.out := by
   have : Fintype (G ⧸ H) := Fintype.ofFinite _
-  have (q : Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H))) :
-      Fintype (MulAction.orbit (zpowers g) q.out) := Fintype.ofFinite _
-  simp only [MulAction.minimalPeriod_eq_card, index_eq_card, Nat.card_eq_fintype_card]
+  have (q : Quotient (MonoidAction.orbitRel (zpowers g) (G ⧸ H))) :
+      Fintype (MonoidAction.orbit (zpowers g) q.out) := Fintype.ofFinite _
+  simp only [MonoidAction.minimalPeriod_eq_card, index_eq_card, Nat.card_eq_fintype_card]
   rw [← Fintype.card_sigma]
-  exact Fintype.card_congr (MulAction.selfEquivSigmaOrbits (zpowers g) (G ⧸ H))
+  exact Fintype.card_congr (MonoidAction.selfEquivSigmaOrbits (zpowers g) (G ⧸ H))
 
 end Subgroup

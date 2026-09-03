@@ -18,7 +18,7 @@ In this file we prove theorems about products and sums indexed by a `Finset`.
 public section
 
 assert_not_exists AddCommMonoidWithOne
-assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
+assert_not_exists MonoidWithZero MonoidAction IsOrderedMonoid
 assert_not_exists Finset.preimage Finset.sigma Fintype.piFinset
 assert_not_exists Finset.piecewise Set.indicator MonoidHom.coeFn Function.support IsSquare
 

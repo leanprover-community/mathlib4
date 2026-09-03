@@ -31,12 +31,12 @@ variable {α β : Type*}
 
 namespace Set
 
-lemma smul_set_pi₀ {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MulAction M (α i)]
+lemma smul_set_pi₀ {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MonoidAction M (α i)]
     {c : M} (hc : c ≠ 0) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=
   smul_set_pi_of_isUnit (.mk0 _ hc) I s
 
 /-- A slightly more general version of `Set.smul_set_pi₀`. -/
-lemma smul_set_pi₀' {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MulAction M (α i)]
+lemma smul_set_pi₀' {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MonoidAction M (α i)]
     {c : M} {I : Set ι} (h : c ≠ 0 ∨ I = univ) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=
   h.elim (fun hc ↦ smul_set_pi_of_isUnit (.mk0 _ hc) I s) (fun hI ↦ hI ▸ smul_set_univ_pi ..)
 
@@ -121,7 +121,7 @@ instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) where
     exact (eq_zero_or_eq_zero_of_mul_eq_zero <| h.subset <| mul_mem_mul hs ht).elim ha hb
 
 section GroupWithZero
-variable [GroupWithZero α] [MulAction α β] {s t : Set β} {a : α}
+variable [GroupWithZero α] [MonoidAction α β] {s t : Set β} {a : α}
 
 @[simp]
 lemma smul_mem_smul_set_iff₀ (ha : a ≠ 0) (A : Set β) (x : β) : a • x ∈ a • A ↔ x ∈ A :=
@@ -153,14 +153,14 @@ lemma smul_set_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :
   show Units.mk0 a ha • _ = _ from smul_set_inter
 
 lemma smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
-  image_sdiff (MulAction.injective₀ ha) _ _
+  image_sdiff (MonoidAction.injective₀ ha) _ _
 
 open scoped symmDiff in
 lemma smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff (MulAction.injective₀ ha) _ _
+  image_symmDiff (MonoidAction.injective₀ ha) _ _
 
 lemma smul_set_univ₀ (ha : a ≠ 0) : a • (univ : Set β) = univ :=
-  image_univ_of_surjective <| MulAction.surjective₀ ha
+  image_univ_of_surjective <| MonoidAction.surjective₀ ha
 
 lemma smul_univ₀ {s : Set α} (hs : ¬s ⊆ 0) : s • (univ : Set β) = univ :=
   let ⟨a, ha, ha₀⟩ := not_subset.1 hs

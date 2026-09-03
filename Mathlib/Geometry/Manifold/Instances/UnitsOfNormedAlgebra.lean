@@ -83,9 +83,9 @@ instance : LieGroup 𝓘(𝕜, R) n Rˣ where
 
 /-- If a complete normed ring `R` acts continuously differentiably on a manifold `M`, its
 submanifold of units does as well. -/
-instance contMDiffSMul [MulAction R M] [ContMDiffSMul 𝓘(𝕜, R) I n R M] :
+instance contMDiffSMul [MonoidAction R M] [ContMDiffSMul 𝓘(𝕜, R) I n R M] :
     ContMDiffSMul 𝓘(𝕜, R) I n Rˣ M :=
-  MulAction.contMDiffSMul_compHom (f := coeHom R) contMDiff_val
+  MonoidAction.contMDiffSMul_compHom (f := coeHom R) contMDiff_val
 
 /-- The general linear group `(V →L[𝕜] V)ˣ` of a Banach space `V` is a Lie group. -/
 example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :

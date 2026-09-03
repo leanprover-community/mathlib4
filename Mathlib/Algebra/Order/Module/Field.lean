@@ -24,7 +24,7 @@ section LinearOrderedSemifield
 variable [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup G] [PartialOrder G]
 
 -- See note [lower instance priority]
-instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction 𝕜 G] [PosSMulMono 𝕜 G] :
+instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MonoidAction 𝕜 G] [PosSMulMono 𝕜 G] :
     PosSMulReflectLE 𝕜 G where
   le_of_smul_le_smul_left _a ha b₁ b₂ h := by
     simpa [ha.ne'] using smul_le_smul_of_nonneg_left h <| inv_nonneg.2 ha.le

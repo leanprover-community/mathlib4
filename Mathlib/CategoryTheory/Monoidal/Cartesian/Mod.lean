@@ -59,9 +59,12 @@ instance (Y : C) : SMul (Y ⟶ M) (Y ⟶ X) where
 morphisms into `X`. -/
 @[to_additive /-- If `M` is an additive monoid object acting on `X`, then morphisms into `M` act on
 morphisms into `X`. -/]
-instance mulAction (Z : C) : MulAction (Z ⟶ M) (Z ⟶ X) where
+instance monoidAction (Z : C) : MonoidAction (Z ⟶ M) (Z ⟶ X) where
   one_smul x := by simp [one_def, smul_def, ← lift_whiskerRight]
   mul_smul m n x := by simp [mul_def, smul_def, ← lift_whiskerRight]
+
+@[deprecated (since := "2026-09-02")] alias _root_.CategoryTheory.Hom.mulAction := monoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.CategoryTheory.Hom.addAction := addMonoidAction
 
 end Hom
 

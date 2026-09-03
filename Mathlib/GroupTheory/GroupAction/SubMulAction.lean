@@ -14,17 +14,17 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 
-# Sets invariant to a `MulAction`
+# Sets invariant to a `MonoidAction`
 
-In this file we define `SubMulAction R M`; a subset of a `MulAction R M` which is closed with
+In this file we define `SubMulAction R M`; a subset of a `MonoidAction R M` which is closed with
 respect to scalar multiplication.
 
 For most uses, typically `Submodule R M` is more powerful.
 
 ## Main definitions
 
-* `SubMulAction.mulAction` - the `MulAction R M` transferred to the subtype.
-* `SubMulAction.mulAction'` - the `MulAction S M` transferred to the subtype when
+* `SubMulAction.monoidAction` - the `MonoidAction R M` transferred to the subtype.
+* `SubMulAction.monoidAction'` - the `MonoidAction S M` transferred to the subtype when
   `IsScalarTower S R M`.
 * `SubMulAction.isScalarTower` - the `IsScalarTower S R M` transferred to the subtype.
 * `SubMulAction.inclusion` — the inclusion of a `SubMulAction`, as an equivariant map
@@ -105,7 +105,7 @@ instance (priority := 50) smul : SMul R s :=
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
 @[to_additive] theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]
-    [SMul M N] [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+    [SMul M N] [SMul M α] [Monoid N] [MonoidAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
     SMulMemClass S M α :=
   { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
@@ -130,7 +130,7 @@ theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.2⟩ :=
   rfl
 
 @[simp]
-theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike S M]
+theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MonoidAction R M] [SetLike S M]
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
 
@@ -143,7 +143,7 @@ theorem smul_subset_self {S R M : Type*} [SetLike S M] [SMul R M] [SMulMemClass 
 
 open scoped Pointwise in
 @[to_additive (attr := simp)]
-theorem units_smul {S R M : Type*} [SetLike S M] [Monoid R] [MulAction R M] [SMulMemClass S R M]
+theorem units_smul {S R M : Type*} [SetLike S M] [Monoid R] [MonoidAction R M] [SMulMemClass S R M]
     (s : S) (r : Rˣ) : r • s = (s : Set M) := by
   apply subset_antisymm (smul_subset_self _ s)
   rintro x hx
@@ -154,7 +154,7 @@ end SMul
 section OfTower
 
 variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
-    [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] (s : S)
+    [MonoidAction N α] [SMulMemClass S N α] [IsScalarTower M N α] (s : S)
 
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
@@ -331,14 +331,20 @@ end SMul
 
 namespace SMulMemClass
 
-variable [Monoid R] [MulAction R M] {A : Type*} [SetLike A M]
+variable [Monoid R] [MonoidAction R M] {A : Type*} [SetLike A M]
 variable [hA : SMulMemClass A R M] (S' : A)
 
--- Prefer subclasses of `MulAction` over `SMulMemClass`.
-/-- A `SubMulAction` of a `MulAction` is a `MulAction`. -/
-@[to_additive /-- A `SubAddAction` of an `AddAction` is an `AddAction`. -/]
-instance (priority := 75) toMulAction : MulAction R S' :=
-  Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
+-- Prefer subclasses of `MonoidAction` over `SMulMemClass`.
+/-- A `SubMulAction` of a `MonoidAction` is a `MonoidAction`. -/
+@[to_additive /-- A `SubAddAction` of an `AddMonoidAction` is an `AddMonoidAction`. -/]
+instance (priority := 75) toMonoidAction : MonoidAction R S' :=
+  Subtype.coe_injective.monoidAction Subtype.val (SetLike.val_smul S')
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.SubMulAction.SMulMemClass.toMulAction := toMonoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.SubAddAction.SMulMemClass.toAddAction :=
+  _root_.SubAddAction.SMulMemClass.toAddMonoidAction
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
 @[to_additive /-- The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`. -/]
@@ -360,9 +366,9 @@ protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.v
 
 end SMulMemClass
 
-section MulActionMonoid
+section MonoidActionMonoid
 
-variable [Monoid R] [MulAction R M]
+variable [Monoid R] [MonoidAction R M]
 
 section
 
@@ -391,7 +397,7 @@ theorem val_smul_of_tower (s : S) (x : p) : ((s • x : p) : M) = s • (x : M) 
   rfl
 
 @[to_additive (attr := simp)]
-theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M] (g : G)
+theorem smul_mem_iff' {G} [Group G] [SMul G R] [MonoidAction G M] [IsScalarTower G R M] (g : G)
     {x : M} : g • x ∈ p ↔ x ∈ p :=
   ⟨fun h => inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
 
@@ -405,53 +411,61 @@ end
 
 section
 
-variable [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
+variable [Monoid S] [SMul S R] [MonoidAction S M] [IsScalarTower S R M]
 variable (p : SubMulAction R M)
 
-/-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
+/-- If the scalar product forms a `MonoidAction`, then the subset inherits this action -/
 @[to_additive]
-instance mulAction' : MulAction S p where
+instance monoidAction' : MonoidAction S p where
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 
+@[deprecated (since := "2026-09-02")] alias _root_.SubMulAction.mulAction' := monoidAction'
+@[deprecated (since := "2026-09-02")]
+alias _root_.SubAddAction.addAction' := _root_.SubAddAction.addMonoidAction'
+
 @[to_additive]
-instance mulAction : MulAction R p :=
-  p.mulAction'
+instance monoidAction : MonoidAction R p :=
+  p.monoidAction'
+
+@[deprecated (since := "2026-09-02")] alias _root_.SubMulAction.mulAction := monoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.SubAddAction.addAction := _root_.SubAddAction.addMonoidAction
 
 end
 
 /-- Orbits in a `SubMulAction` coincide with orbits in the ambient space. -/
 @[to_additive]
 theorem val_image_orbit {p : SubMulAction R M} (m : p) :
-    Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
+    Subtype.val '' MonoidAction.orbit R m = MonoidAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
 
 @[to_additive]
 theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
-    Subtype.val ⁻¹' MulAction.orbit R (m : M) = MulAction.orbit R m := by
+    Subtype.val ⁻¹' MonoidAction.orbit R (m : M) = MonoidAction.orbit R m := by
   rw [← val_image_orbit, Subtype.val_injective.preimage_image]
 
 @[to_additive]
 lemma mem_orbit_subMul_iff {p : SubMulAction R M} {x m : p} :
-    x ∈ MulAction.orbit R m ↔ (x : M) ∈ MulAction.orbit R (m : M) := by
+    x ∈ MonoidAction.orbit R m ↔ (x : M) ∈ MonoidAction.orbit R (m : M) := by
   rw [← val_preimage_orbit, Set.mem_preimage]
 
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 @[to_additive]
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
-    MulAction.stabilizerSubmonoid R m = MulAction.stabilizerSubmonoid R (m : M) := by
+    MonoidAction.stabilizerSubmonoid R m = MonoidAction.stabilizerSubmonoid R (m : M) := by
   ext
-  simp only [MulAction.mem_stabilizerSubmonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
+  simp only [MonoidAction.mem_stabilizerSubmonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
 
-end MulActionMonoid
+end MonoidActionMonoid
 
-section MulActionGroup
+section MonoidActionGroup
 
-variable [Group R] [MulAction R M]
+variable [Group R] [MonoidAction R M]
 
 @[to_additive]
 lemma orbitRel_of_subMul (p : SubMulAction R M) :
-    MulAction.orbitRel R p = (MulAction.orbitRel R M).comap Subtype.val := by
+    MonoidAction.orbitRel R p = (MonoidAction.orbitRel R M).comap Subtype.val := by
   refine Setoid.ext_iff.2 (fun x y ↦ ?_)
   rw [Setoid.comap_rel]
   exact mem_orbit_subMul_iff
@@ -459,7 +473,7 @@ lemma orbitRel_of_subMul (p : SubMulAction R M) :
 /-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
 @[to_additive]
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
-    MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
+    MonoidAction.stabilizer R m = MonoidAction.stabilizer R (m : M) := by
   rw [← Subgroup.toSubmonoid_inj]
   exact stabilizer_of_subMul.submonoid m
 
@@ -471,7 +485,7 @@ instance : Compl (SubMulAction R M) where
 @[to_additive]
 theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
 
-end MulActionGroup
+end MonoidActionGroup
 
 section Module
 
@@ -520,8 +534,8 @@ end SubMulAction
 
 namespace SubMulAction
 
-variable [GroupWithZero S] [Monoid R] [MulAction R M]
-variable [SMul S R] [MulAction S M] [IsScalarTower S R M]
+variable [GroupWithZero S] [Monoid R] [MonoidAction R M]
+variable [SMul S R] [MonoidAction S M] [IsScalarTower S R M]
 variable (p : SubMulAction R M) {s : S} {x : M}
 
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
@@ -532,7 +546,7 @@ end SubMulAction
 namespace SubMulAction
 
 /- The inclusion of a `SubMulAction`, as an equivariant map -/
-variable {M α : Type*} [Monoid M] [MulAction M α]
+variable {M α : Type*} [Monoid M] [MonoidAction M α]
 
 
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
@@ -573,8 +587,8 @@ def nonZeroSubMul : SubMulAction Rˣ M where
   carrier := { x : M | x ≠ 0 }
   smul_mem' := by simp [Units.smul_def]
 
-instance : MulAction Rˣ { x : M // x ≠ 0 } :=
-  inferInstanceAs <| MulAction Rˣ (nonZeroSubMul R M)
+instance : MonoidAction Rˣ { x : M // x ≠ 0 } :=
+  inferInstanceAs <| MonoidAction Rˣ (nonZeroSubMul R M)
 
 @[simp]
 lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
@@ -582,19 +596,19 @@ lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
   rfl
 
 lemma orbitRel_nonZero_iff (x y : { v : M // v ≠ 0 }) :
-    MulAction.orbitRel Rˣ { v // v ≠ 0 } x y ↔ MulAction.orbitRel Rˣ M x y :=
+    MonoidAction.orbitRel Rˣ { v // v ≠ 0 } x y ↔ MonoidAction.orbitRel Rˣ M x y :=
   ⟨by rintro ⟨a, rfl⟩; exact ⟨a, by simp⟩, by intro ⟨a, ha⟩; exact ⟨a, by ext; simpa⟩⟩
 
 end Units
 
 section FixedPoints
 
-variable {G : Type*} [Group G] {α : Type*} [MulAction G α] {H : Subgroup G}
+variable {G : Type*} [Group G] {α : Type*} [MonoidAction G α] {H : Subgroup G}
 
 @[to_additive]
 lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
-    (g : G) {a : α} (ha : a ∈ MulAction.fixedPoints H α) :
-    g • a ∈ MulAction.fixedPoints H α := by
+    (g : G) {a : α} (ha : a ∈ MonoidAction.fixedPoints H α) :
+    g • a ∈ MonoidAction.fixedPoints H α := by
   intro h
   rw [Subgroup.smul_def, ← inv_smul_eq_iff, smul_smul, smul_smul]
   exact ha ⟨_, hH.conj_mem' _ h.2 _⟩
@@ -602,16 +616,16 @@ lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
 /-- The set of fixed points of a normal subgroup is stable under the group action. -/
 @[to_additive /-- The set of fixed points of a normal subgroup is stable under the group action. -/]
 def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
-  carrier := MulAction.fixedPoints H α
+  carrier := MonoidAction.fixedPoints H α
   smul_mem' := smul_mem_fixedPoints_of_normal
 
-instance [hH : H.Normal] : MulAction G (MulAction.fixedPoints H α) :=
-  inferInstanceAs <| MulAction G fixedPointsSubMulOfNormal
+instance [hH : H.Normal] : MonoidAction G (MonoidAction.fixedPoints H α) :=
+  inferInstanceAs <| MonoidAction G fixedPointsSubMulOfNormal
 
 @[simp]
 lemma coe_smul_fixedPoints_of_normal [hH : H.Normal]
-    (g : G) (a : MulAction.fixedPoints H α) :
-    (g • a : MulAction.fixedPoints H α) = g • (a : α) :=
+    (g : G) (a : MonoidAction.fixedPoints H α) :
+    (g • a : MonoidAction.fixedPoints H α) = g • (a : α) :=
   rfl
 
 end FixedPoints

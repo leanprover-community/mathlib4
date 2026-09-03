@@ -179,7 +179,7 @@ theorem mul_smul' (g h : GL (Fin 2) ℝ) (z : ℍ) :
 
 /-- Action of `GL (Fin 2) ℝ` on the upper half-plane, with `GL(2, ℝ)⁺` acting by Moebius
 transformations in the usual way, extended to all of `GL (Fin 2) ℝ` using complex conjugation. -/
-instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
+instance glAction : MonoidAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
     change smulAux 1 z = z
@@ -254,7 +254,7 @@ theorem glScalar_smul (u : ℝˣ) (z : ℍ) :
   · simp
   · simp [sq_pos_iff]
 
-instance : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ where
+instance : MonoidAction.IsPretransitive (GL (Fin 2) ℝ) ℍ where
   exists_smul_eq z w := by
     set m : Matrix (Fin 2) (Fin 2) ℝ := !![w.im, z.im * w.re - w.im * z.re; 0, z.im]
     refine ⟨.mkOfDetNeZero m <| by simp [m, im_ne_zero], ?_⟩
@@ -265,29 +265,29 @@ end GLAction
 
 section PGLAction
 
-instance : MulAction PGL(2, ℝ) ℍ :=
-  Matrix.ProjGenLinGroup.mulActionOfGL glScalar_smul
+instance : MonoidAction PGL(2, ℝ) ℍ :=
+  Matrix.ProjGenLinGroup.monoidActionOfGL glScalar_smul
 
 @[simp]
 theorem pglMk_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
     ProjGenLinGroup.mk g • z = g • z :=
   ProjGenLinGroup.mk_smul ..
 
-instance : MulAction.IsPretransitive PGL(2, ℝ) ℍ :=
+instance : MonoidAction.IsPretransitive PGL(2, ℝ) ℍ :=
   .of_smul_eq .mk <| pglMk_smul _ _
 
 end PGLAction
 
 section SLAction
 
-noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
-  MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
+noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MonoidAction SL(2, R) ℍ :=
+  MonoidAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
 
 theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     ↑(g • z) =
       (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
       ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ))) := by
-  rw [MulAction.compHom_smul_def, coe_smul_of_det_pos (by simp)]
+  rw [MonoidAction.compHom_smul_def, coe_smul_of_det_pos (by simp)]
   rfl
 
 theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
@@ -365,12 +365,12 @@ lemma toSL2R_apply (z : ℍ) : z.toSL2R =
     Real.sqrt_mul_self z.im_pos.le, re_add_im, div_eq_mul_inv]
 
 /-- `SL(2, ℝ)` acts transitively on the upper half-plane. -/
-instance isPretransitiveSL2R : MulAction.IsPretransitive SL(2, ℝ) ℍ :=
+instance isPretransitiveSL2R : MonoidAction.IsPretransitive SL(2, ℝ) ℍ :=
   .of_orbit fun z ↦ ⟨_, toSL2R_smul_I z⟩
 
 /-- `GL(2, ℝ)` acts transitively on the upper half-plane. -/
-instance isPretransitiveGL2R : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ :=
-  .of_smul_eq ((↑) : SL(2, ℝ) → _) fun {g z} ↦ (MulAction.compHom_smul_def _ g z).symm
+instance isPretransitiveGL2R : MonoidAction.IsPretransitive (GL (Fin 2) ℝ) ℍ :=
+  .of_smul_eq ((↑) : SL(2, ℝ) → _) fun {g z} ↦ (MonoidAction.compHom_smul_def _ g z).symm
 
 end toSL2R
 

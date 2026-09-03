@@ -21,7 +21,7 @@ pointwise subtraction
 
 public section
 
-assert_not_exists MulAction IsOrderedMonoid Ring
+assert_not_exists MonoidAction IsOrderedMonoid Ring
 
 open scoped Pointwise
 

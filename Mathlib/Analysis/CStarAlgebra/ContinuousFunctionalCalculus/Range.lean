@@ -94,7 +94,7 @@ theorem cfc_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
 
 @[deprecated (since := "2026-03-20")] alias cfc_apply_mem_elemental := cfc_mem_elemental
 
-lemma cfc_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [SubringClass S A]
+lemma cfc_mem {𝕜' S : Type*} [Monoid 𝕜'] [MonoidAction 𝕜' A] [SetLike S A] [SubringClass S A]
     [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}
     [hs : IsClosed (s : Set A)] (f : 𝕜 → 𝕜) {a : A} (has : a ∈ s) :
     cfc f a ∈ s :=
@@ -141,7 +141,7 @@ lemma range_cfc_nnreal
     ⟨f, (cfc_nonneg_iff f a hf' ha').mp (by simpa), by simp [cfc_apply f a ha' hf']⟩
 
 theorem cfc_nnreal_mem {𝕜 : Type*} [RCLike 𝕜] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-    {S : Type*} [MulAction 𝕜 A] [SetLike S A]
+    {S : Type*} [MonoidAction 𝕜 A] [SetLike S A]
     [SubringClass S A] [IsScalarTower ℝ 𝕜 A]
     [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} [hs : IsClosed (s : Set A)]
     (f : ℝ≥0 → ℝ≥0) {a : A} (has : a ∈ s) :
@@ -214,7 +214,8 @@ theorem cfcₙ_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
 
 @[deprecated (since := "2026-03-20")] alias cfcₙ_apply_mem_elemental := cfcₙ_mem_elemental
 
-lemma cfcₙ_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [NonUnitalSubringClass S A]
+lemma cfcₙ_mem {𝕜' S : Type*} [Monoid 𝕜'] [MonoidAction 𝕜' A] [SetLike S A]
+    [NonUnitalSubringClass S A]
     [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}
     [hs : IsClosed (s : Set A)] (f : 𝕜 → 𝕜) {a : A} (has : a ∈ s) :
     cfcₙ f a ∈ s :=
@@ -271,7 +272,7 @@ lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 
 open NNReal in
 theorem cfcₙ_nnreal_mem {𝕜 : Type*} [RCLike 𝕜]
     [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-    {S : Type*} [MulAction 𝕜 A] [SetLike S A]
+    {S : Type*} [MonoidAction 𝕜 A] [SetLike S A]
     [NonUnitalSubringClass S A] [IsScalarTower ℝ 𝕜 A]
     [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} [hs : IsClosed (s : Set A)]
     (f : ℝ≥0 → ℝ≥0) {a : A} (has : a ∈ s) :

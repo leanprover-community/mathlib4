@@ -16,10 +16,10 @@ public import Mathlib.GroupTheory.GroupAction.ConjAct
 
 This file provides the actions
 
-* `Subgroup.pointwiseMulAction`
-* `AddSubgroup.pointwiseMulAction`
+* `Subgroup.pointwiseMonoidAction`
+* `AddSubgroup.pointwiseMonoidAction`
 
-which matches the action of `Set.mulActionSet`.
+which matches the action of `Set.monoidActionSet`.
 
 These actions are available in the `Pointwise` locale.
 
@@ -392,7 +392,7 @@ theorem sSup_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, H.Normal) : sSup 
   exact biSup_normal Hs id h
 
 @[to_additive]
-theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {t : Set X}
+theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MonoidAction G X] {s : Set G} {t : Set X}
     (hs : ∀ g ∈ s, g⁻¹ ∈ s) (hst : ∀ᵉ (g ∈ s) (x ∈ t), g • x ∈ t) {g : G}
     (hg : g ∈ Subgroup.closure s) {x : X} (hx : x ∈ t) : g • x ∈ t := by
   induction hg using Subgroup.closure_induction'' generalizing x with
@@ -423,7 +423,7 @@ variable [Monoid α] [MulDistribMulAction α G]
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseMulAction : MulAction α (Subgroup G) where
+protected def pointwiseMonoidAction : MonoidAction α (Subgroup G) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ _ a)
   one_smul S := by
     change S.map _ = S
@@ -432,7 +432,10 @@ protected def pointwiseMulAction : MulAction α (Subgroup G) where
     (congr_arg (fun f : Monoid.End G => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
-scoped[Pointwise] attribute [instance] Subgroup.pointwiseMulAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.Subgroup.pointwiseMulAction := _root_.Subgroup.pointwiseMonoidAction
+
+scoped[Pointwise] attribute [instance] Subgroup.pointwiseMonoidAction
 
 theorem pointwise_smul_def {a : α} (S : Subgroup G) :
     a • S = S.map (MulDistribMulAction.toMonoidEnd _ _ a) :=

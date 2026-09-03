@@ -78,7 +78,8 @@ private lemma cdsq_le {K : Set ℍ} (hK : IsCompact K) :
     match hK.exists_isMinOn hKne continuous_im.continuousOn with | ⟨z, _, h⟩ => ⟨_, z.im_pos, h⟩
   refine ⟨1 / δ, fun g hg ↦ ?_⟩
   specialize hδK (g • I) hg
-  simp only [MulAction.compHom_smul_def, im_smul_eq_div_normSq, Matrix.SpecialLinearGroup.det_mapGL,
+  simp only
+    [MonoidAction.compHom_smul_def, im_smul_eq_div_normSq, Matrix.SpecialLinearGroup.det_mapGL,
     Units.val_one, abs_one, I_im, mul_one] at hδK
   rw [le_div_iff₀ (normSq_denom_pos (Matrix.SpecialLinearGroup.mapGL ℝ g) (show I.im ≠ 0 by simp)),
     mul_comm, ← le_div_iff₀ hδ] at hδK
@@ -120,7 +121,7 @@ lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
     exact Real.le_sqrt_of_sq_le <| le_trans (by fin_cases j <;> simp [sq_nonneg]) (hA' g hg)
 
 instance instProperSMul : ProperSMul SL(2, ℝ) ℍ :=
-  MulAction.properSMul_of_proper_orbitMap isProperMap_smul_I
+  MonoidAction.properSMul_of_proper_orbitMap isProperMap_smul_I
 
 end proper_orbit_map
 

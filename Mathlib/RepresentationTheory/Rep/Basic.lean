@@ -334,16 +334,18 @@ variable (k G)
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
-abbrev ofMulAction (H : Type w') [MulAction G H] : Rep k G :=
-  of <| Representation.ofMulAction k G H
+abbrev ofMonoidAction (H : Type w') [MonoidAction G H] : Rep k G :=
+  of <| Representation.ofMonoidAction k G H
+
+@[deprecated (since := "2026-09-02")] alias _root_.Rep.ofMulAction := ofMonoidAction
 
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
 abbrev leftRegular : Rep k G :=
-  ofMulAction k G G
+  ofMonoidAction k G G
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
 abbrev diagonal (n : ℕ) : Rep k G :=
-  ofMulAction k G (Fin n → G)
+  ofMonoidAction k G (Fin n → G)
 
 /-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
 multiplication in `G`. -/
@@ -352,10 +354,13 @@ abbrev diagonalOneIsoLeftRegular :
 
 /-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
 isomorphic to the trivial representation on `k`. -/
-abbrev ofMulActionSubsingletonIsoTrivial
-    (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
-    ofMulAction k G H ≅ trivial k G k :=
-  mkIso <| Representation.ofMulActionSubsingletonEquivTrivial k G H
+abbrev ofMonoidActionSubsingletonIsoTrivial
+    (H : Type u) [Subsingleton H] [MulOneClass H] [MonoidAction G H] :
+    ofMonoidAction k G H ≅ trivial k G k :=
+  mkIso <| Representation.ofMonoidActionSubsingletonEquivTrivial k G H
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Rep.ofMulActionSubsingletonIsoTrivial := ofMonoidActionSubsingletonIsoTrivial
 
 section
 
@@ -1033,9 +1038,12 @@ abbrev linearizationTrivialIso (X : Type u) :
 variable (k G) in
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
-abbrev linearizationOfMulActionIso (H : Type u) [MulAction G H] :
-    (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
-  Rep.mkIso (Representation.linearizeOfMulActionIso k G H)
+abbrev linearizationOfMonoidActionIso (H : Type u) [MonoidAction G H] :
+    (linearization k G).obj (Action.ofMonoidAction G H) ≅ ofMonoidAction k G H :=
+  Rep.mkIso (Representation.linearizeOfMonoidActionIso k G H)
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Rep.linearizationOfMulActionIso := linearizationOfMonoidActionIso
 
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/

@@ -45,7 +45,7 @@ The Sylow theorems are the following results for every finite group `G` and ever
 @[expose] public section
 
 
-open MulAction Subgroup
+open MonoidAction Subgroup
 
 section InfiniteSylow
 
@@ -273,9 +273,9 @@ theorem finite_of_finiteIndex (P : Sylow p G) [P.FiniteIndex] : Finite (Sylow p 
 
 open scoped Pointwise
 
-/-- `Subgroup.pointwiseMulAction` preserves Sylow subgroups. -/
-instance pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
-    MulAction α (Sylow p G) where
+/-- `Subgroup.pointwiseMonoidAction` preserves Sylow subgroups. -/
+instance pointwiseMonoidAction {α : Type*} [Group α] [MulDistribMulAction α G] :
+    MonoidAction α (Sylow p G) where
   smul g P :=
     ⟨g • P.toSubgroup, P.2.map _, fun {Q} hQ hS =>
       inv_smul_eq_iff.mp
@@ -285,12 +285,16 @@ instance pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
   one_smul P := ext (one_smul α P.toSubgroup)
   mul_smul g h P := ext (mul_smul g h P.toSubgroup)
 
+@[deprecated (since := "2026-09-02")] alias _root_.Sylow.pointwiseMulAction := pointwiseMonoidAction
+
 theorem pointwise_smul_def {α : Type*} [Group α] [MulDistribMulAction α G] {g : α}
     {P : Sylow p G} : ↑(g • P) = g • (P : Subgroup G) :=
   rfl
 
-instance mulAction : MulAction G (Sylow p G) :=
+instance monoidAction : MonoidAction G (Sylow p G) :=
   compHom _ MulAut.conj
+
+@[deprecated (since := "2026-09-02")] alias _root_.Sylow.mulAction := monoidAction
 
 theorem smul_def {g : G} {P : Sylow p G} : g • P = MulAut.conj g • P :=
   rfl
@@ -564,7 +568,7 @@ theorem QuotientGroup.card_preimage_mk (s : Subgroup G) (t : Set (G ⧸ s)) :
 
 namespace Sylow
 theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Finite (H : Set G)]
-    {x : G} : (x : G ⧸ H) ∈ MulAction.fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
+    {x : G} : (x : G ⧸ H) ∈ MonoidAction.fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
   ⟨fun hx =>
     have ha : ∀ {y : G ⧸ H}, y ∈ orbit H (x : G ⧸ H) → y = x := mem_fixedPoints'.1 hx _
     (inv_mem_iff (G := G)).1
@@ -587,10 +591,10 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
 
 /-- The fixed points of the action of `H` on its cosets correspond to `normalizer H / H`. -/
 def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] :
-    MulAction.fixedPoints H (G ⧸ H) ≃
+    MonoidAction.fixedPoints H (G ⧸ H) ≃
       normalizer H ⧸ H.comap (normalizer (H : Set G)).subtype :=
   @subtypeQuotientEquivQuotientSubtype G (· ∈ normalizer H) (_) (_)
-    (· ∈ MulAction.fixedPoints H (G ⧸ H))
+    (· ∈ MonoidAction.fixedPoints H (G ⧸ H))
     (fun _ => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
       intros

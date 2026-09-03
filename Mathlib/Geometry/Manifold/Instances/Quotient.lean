@@ -16,7 +16,7 @@ This file contains results about quotients of manifolds by group actions.
 
 ## Main results
 
-* `MulAction.instChartedSpaceQuotient`: a choice of charted space structure on the quotient of a
+* `MonoidAction.instChartedSpaceQuotient`: a choice of charted space structure on the quotient of a
   charted space by a free, properly-discontinuous group action.
 
 ## TODO
@@ -30,10 +30,10 @@ smooth manifold, smooth action, quotient manifold
 
 public noncomputable section
 
-namespace MulAction
+namespace MonoidAction
 
 variable {M : Type*} [TopologicalSpace M]
-  {G : Type*} [Group G] [MulAction G M]
+  {G : Type*} [Group G] [MonoidAction G M]
   [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M] [IsCancelSMul G M]
   [T2Space M] [LocallyCompactSpace M]
   {H : Type*} [TopologicalSpace H] [ChartedSpace H M]
@@ -49,4 +49,4 @@ instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
     |>.isLocalHomeomorph.chartedSpace Quotient.mk_surjective
 
-end MulAction
+end MonoidAction

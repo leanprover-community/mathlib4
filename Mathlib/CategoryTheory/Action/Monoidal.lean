@@ -277,14 +277,14 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n 
   | zero =>
     funext (x : Fin 1)
     simp [diagonalSuccIsoTensorTrivial, diagonalOneIsoLeftRegular, Subsingleton.elim x 0,
-      ofMulAction_V, types_tensorObj_def, types_tensorUnit_def]
+      ofMonoidAction_V, types_tensorObj_def, types_tensorUnit_def]
   | succ n hn =>
     funext x
     induction x using Fin.cases with
     | zero => simp; rfl
     | succ i =>
       simpa [diagonalSuccIsoTensorTrivial, types_tensorObj_def, mul_assoc, Fin.partialProd_succ',
-        ofMulAction_V] using! congrFun (hn (g * f 0) (Fin.tail f)) i
+        ofMonoidAction_V] using! congrFun (hn (g * f 0) (Fin.tail f)) i
 
 end
 

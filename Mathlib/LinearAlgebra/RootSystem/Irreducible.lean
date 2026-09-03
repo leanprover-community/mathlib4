@@ -28,7 +28,7 @@ This file contains basic definitions and results about irreducible root systems.
 open Function Set
 open Submodule (span span_le)
 open LinearMap (ker)
-open MulAction (orbit mem_orbit_self mem_orbit_iff)
+open MonoidAction (orbit mem_orbit_self mem_orbit_iff)
 open Module.End (invtSubmodule)
 open scoped MonoidAlgebra
 

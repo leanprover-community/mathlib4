@@ -109,7 +109,7 @@ section RowEquivalent
 
 /-- Row-equivalence via the left action of `GL m R` on `Matrix m n R`. -/
 abbrev RowEquivalent (A B : Matrix m n R) : Prop :=
-  B ∈ MulAction.orbit (GL m R) A
+  B ∈ MonoidAction.orbit (GL m R) A
 
 lemma rowEquivalent_iff_associated_op_op {A B : Matrix m m R} :
     RowEquivalent A B ↔ Associated (MulOpposite.op A) (MulOpposite.op B) := by
@@ -121,14 +121,14 @@ lemma rowEquivalent_iff_associated_op_op {A B : Matrix m m R} :
     simpa using congrArg MulOpposite.unop h
 
 lemma RowEquivalent.refl (A : Matrix m n R) : RowEquivalent A A :=
-  MulAction.mem_orbit_self _
+  MonoidAction.mem_orbit_self _
 
 lemma RowEquivalent.symm {A B : Matrix m n R} (h : RowEquivalent A B) : RowEquivalent B A :=
-  MulAction.mem_orbit_symm.mp h
+  MonoidAction.mem_orbit_symm.mp h
 
 lemma RowEquivalent.trans {A B C : Matrix m n R}
     (hAB : RowEquivalent A B) (hBC : RowEquivalent B C) : RowEquivalent A C :=
-  MulAction.mem_orbit_trans hBC hAB
+  MonoidAction.mem_orbit_trans hBC hAB
 
 namespace RowEquivalent
 

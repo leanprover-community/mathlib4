@@ -825,12 +825,12 @@ theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞
     (h : AEStronglyMeasurable f μ) (c : R) : AEStronglyMeasurable f (c • μ) :=
   ⟨h.mk f, h.stronglyMeasurable_mk, ae_smul_measure h.ae_eq_mk c⟩
 
-section MulAction
+section MonoidAction
 
 variable {M G G₀ : Type*}
-variable [Monoid M] [MulAction M β]
-variable [Group G] [MulAction G β]
-variable [GroupWithZero G₀] [MulAction G₀ β]
+variable [Monoid M] [MonoidAction M β]
+variable [Group G] [MonoidAction G β]
+variable [GroupWithZero G₀] [MonoidAction G₀ β]
 
 theorem _root_.aestronglyMeasurable_const_smul_iff [ContinuousConstSMul G β] (c : G) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
@@ -865,7 +865,7 @@ theorem _root_.aestronglyMeasurable_smul_iff₀ [TopologicalSpace G₀] [Continu
   filter_upwards [hc0] with x hx
   simp [hx]
 
-end MulAction
+end MonoidAction
 
 end AEStronglyMeasurable
 end AEStronglyMeasurable

@@ -106,7 +106,7 @@ theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F
   rfl
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): writing directly the `Module` instance makes things very slow.
-instance colimitMulAction : MulAction R (M F) where
+instance colimitMonoidAction : MonoidAction R (M F) where
   one_smul x := by
     obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
     simp
@@ -114,8 +114,11 @@ instance colimitMulAction : MulAction R (M F) where
     obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
     simp [mul_smul]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.ModuleCat.FilteredColimits.colimitMulAction := colimitMonoidAction
+
 instance colimitSMulWithZero : SMulWithZero R (M F) :=
-{ colimitMulAction F with
+{ colimitMonoidAction F with
   smul_zero := fun r => by
     rw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
   zero_smul := fun x => by
@@ -123,7 +126,7 @@ instance colimitSMulWithZero : SMulWithZero R (M F) :=
     simp [← colimit_zero_eq] }
 
 instance colimitModule : Module R (M F) :=
-{ colimitMulAction F,
+{ colimitMonoidAction F,
   colimitSMulWithZero F with
   smul_add := fun r x y => by
     obtain ⟨i, x, rfl⟩ := M.mk_surjective F x

@@ -10,8 +10,8 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Pointwise instances on `Ideal`s
 
-This file provides the action `Ideal.pointwiseMulAction` which morally matches the action of
-`mulActionSet` (though here an extra `Ideal.span` is inserted).
+This file provides the action `Ideal.pointwiseMonoidAction` which morally matches the action of
+`monoidActionSet` (though here an extra `Ideal.span` is inserted).
 
 This action is available in the `Pointwise` locale.
 
@@ -161,17 +161,17 @@ theorem inertia_smul {R : Type*} [Ring R] [MulSemiringAction M R]
   ext x
   simp_rw [Subgroup.map_equiv_eq_comap_symm, Subgroup.mem_comap, MonoidHom.coe_coe,
     MulAut.conj_symm_apply, mem_inertia, mem_pointwise_smul_iff_inv_smul_mem]
-  rw [← (MulAction.toPerm g).forall_congr_right]
+  rw [← (MonoidAction.toPerm g).forall_congr_right]
   simp [mul_smul, smul_sub]
 
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-    inertia M P ≤ MulAction.stabilizer M P := by
+    inertia M P ≤ MonoidAction.stabilizer M P := by
   refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
   rw [Ideal.mem_pointwise_smul_iff_inv_smul_mem,
     ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
 
 instance {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-    (P.inertia (MulAction.stabilizer M P)).Normal := by
+    (P.inertia (MonoidAction.stabilizer M P)).Normal := by
   simp_rw [Subgroup.normal_iff_map_conj_eq, ← inertia_smul]
   exact fun g ↦ congrArg (inertia _) g.2
 
@@ -182,20 +182,20 @@ Assume that `M` and `N` are isomorphic and act in a compatible way on `R`, then 
 ideal `I` of `R`, the stabilizer of `I` in `M` is isomorphic to the stabilizer of `I` in `N`.
 -/
 def stabilizerEquiv (I : Ideal R) (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x) :
-    MulAction.stabilizer M I ≃* MulAction.stabilizer N I where
+    MonoidAction.stabilizer M I ≃* MonoidAction.stabilizer N I where
   toEquiv := Equiv.subtypeEquiv e fun _ ↦ by
     simp [Ideal.ext_iff, Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv, he]
   map_mul' _ _ := by simp
 
 @[simp]
 theorem stabilizerEquiv_apply_smul (I : Ideal R) (e : M ≃* N)
-    (he : ∀ (m : M) (x : R), (e m) • x = m • x) (m : MulAction.stabilizer M I) (x : R) :
+    (he : ∀ (m : M) (x : R), (e m) • x = m • x) (m : MonoidAction.stabilizer M I) (x : R) :
     stabilizerEquiv I e he m • x = m • x := by
-  simp [stabilizerEquiv, MulAction.subgroup_smul_def, ← he m x]
+  simp [stabilizerEquiv, MonoidAction.subgroup_smul_def, ← he m x]
 
 @[simp]
 theorem stabilizerEquiv_symm_apply_smul (I : Ideal R) (e : M ≃* N)
-    (he : ∀ (m : M) (x : R), (e m) • x = m • x) (n : MulAction.stabilizer N I) (x : R) :
+    (he : ∀ (m : M) (x : R), (e m) • x = m • x) (n : MonoidAction.stabilizer N I) (x : R) :
     (stabilizerEquiv I e he).symm n • x = n • x := by
   rw [← (stabilizerEquiv I e he).apply_symm_apply n, stabilizerEquiv_apply_smul,
     (stabilizerEquiv I e he).apply_symm_apply]
@@ -216,7 +216,7 @@ theorem inertiaEquiv_apply_smul {R : Type*} [Ring R] [MulSemiringAction M R] [Mu
     (I : Ideal R) (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x) (m : inertia M I)
     (x : R) :
     inertiaEquiv I e he m • x = m • x := by
-  simp [inertiaEquiv, MulAction.subgroup_smul_def, ← he m x]
+  simp [inertiaEquiv, MonoidAction.subgroup_smul_def, ← he m x]
 
 @[simp]
 theorem inertiaEquiv_symm_apply_smul {R : Type*} [Ring R] [MulSemiringAction M R]

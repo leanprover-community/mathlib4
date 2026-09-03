@@ -156,8 +156,8 @@ theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
 instance : Inhabited 𝔻 :=
   ⟨0⟩
 
-instance instMulActionCircle : MulAction Circle 𝔻 :=
-  inferInstanceAs <| MulAction (sphere _ _) (ball _ _)
+instance instMonoidActionCircle : MonoidAction Circle 𝔻 :=
+  inferInstanceAs <| MonoidAction (sphere _ _) (ball _ _)
 
 instance instIsScalarTower_circle_circle : IsScalarTower Circle Circle 𝔻 :=
   inferInstanceAs <| IsScalarTower (sphere _ _) (sphere _ _) (ball _ _)
@@ -369,8 +369,8 @@ theorem coe_eq_one {z : 𝕔𝔻} : (z : ℂ) = 1 ↔ z = 1 :=
 instance : Inhabited 𝕔𝔻 :=
   ⟨0⟩
 
-instance : MulAction Circle 𝕔𝔻 :=
-  inferInstanceAs <| MulAction (sphere _ _) (closedBall _ _)
+instance : MonoidAction Circle 𝕔𝔻 :=
+  inferInstanceAs <| MonoidAction (sphere _ _) (closedBall _ _)
 
 instance : IsScalarTower Circle Circle 𝕔𝔻 :=
   inferInstanceAs <| IsScalarTower (sphere _ _) (sphere _ _) (closedBall _ _)
@@ -384,8 +384,8 @@ instance : SMulCommClass Circle 𝕔𝔻 𝕔𝔻 :=
 instance : SMulCommClass 𝕔𝔻 Circle 𝕔𝔻 :=
   SMulCommClass.symm _ _ _
 
-instance instMulActionClosedBall : MulAction 𝕔𝔻 𝔻 :=
-  inferInstanceAs <| MulAction (closedBall _ _) (ball _ _)
+instance instMonoidActionClosedBall : MonoidAction 𝕔𝔻 𝔻 :=
+  inferInstanceAs <| MonoidAction (closedBall _ _) (ball _ _)
 
 instance instIsScalarTower_closedBall_closedBall :
     IsScalarTower 𝕔𝔻 𝕔𝔻 𝔻 :=

@@ -17,7 +17,7 @@ This file provides some API for handling them in the context of a group action.
 * `Set.powersetCard.subMulAction`:
   When a group `G` acts on `α`, the `SubMulAction` of `G` on `powersetCard α n`.
 
-This induces a `MulAction G (powersetCard α n)` instance. Then:
+This induces a `MonoidAction G (powersetCard α n)` instance. Then:
 
 * `Set.powerSetCard.mulActionHom_of_embedding`:
   the equivariant map from `Fin n ↪ α` to `powersetCard α n`.
@@ -43,9 +43,9 @@ namespace Set.powersetCard
 
 open scoped Pointwise
 
-open MulAction Finset Set Equiv Equiv.Perm
+open MonoidAction Finset Set Equiv Equiv.Perm
 
-variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+variable (G : Type*) [Group G] {α : Type*} [MonoidAction G α]
   {n : ℕ} {s : powersetCard α n}
 
 section
@@ -60,8 +60,8 @@ def subMulAction : SubMulAction G (Finset α) where
   smul_mem' g s := (card_smul_finset g s).trans
 
 @[to_additive]
-instance : MulAction G (powersetCard α n) :=
-  inferInstanceAs <| MulAction G (subMulAction G α n)
+instance : MonoidAction G (powersetCard α n) :=
+  inferInstanceAs <| MonoidAction G (subMulAction G α n)
 
 variable {G}
 
@@ -70,15 +70,19 @@ theorem coe_smul {n : ℕ} {g : G} {s : powersetCard α n} :
     ((g • s : powersetCard α n) : Finset α) = g • s :=
   SubMulAction.val_smul (p := subMulAction G α n) g s
 
-@[to_additive addAction_stabilizer_coe]
+@[to_additive addMonoidAction_stabilizer_coe]
 theorem stabilizer_coe {n : ℕ} (s : powersetCard α n) :
     stabilizer G s = stabilizer G (s : Set α) := by
   ext g
   simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← coe_inj]
 
-theorem addAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
+@[deprecated (since := "2026-09-02")]
+alias _root_.Set.powersetCard.addAction_stabilizer_coe := addMonoidAction_stabilizer_coe
+
+theorem addMonoidAction_faithful {G : Type*} [AddGroup G] [AddMonoidAction G α] {n : ℕ}
     (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
-    AddAction.toPerm g = (1 : Perm (powersetCard α n)) ↔ AddAction.toPerm g = (1 : Perm α) := by
+    AddMonoidAction.toPerm g = (1 : Perm (powersetCard α n)) ↔ AddMonoidAction.toPerm g =
+      (1 : Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose h with h
     have : ∃ a, (g +ᵥ a : α) ≠ a := by simpa [Equiv.ext_iff] using h
@@ -87,25 +91,28 @@ theorem addAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
     rw [Equiv.ext_iff, not_forall]
     use s
     contrapose has'
-    simp only [AddAction.toPerm_apply, coe_one, id_eq] at has'
+    simp only [AddMonoidAction.toPerm_apply, coe_one, id_eq] at has'
     rw [← has']
     simpa [← mem_coe_iff]
-  · simp only [Equiv.ext_iff, AddAction.toPerm_apply] at h ⊢
+  · simp only [Equiv.ext_iff, AddMonoidAction.toPerm_apply] at h ⊢
     simp [Subtype.ext_iff, Finset.ext_iff, mem_vadd_finset, h]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Set.powersetCard.addAction_faithful := addMonoidAction_faithful
 
 /-- If an additive group `G` acts faithfully on `α`,
 then it acts faithfully on `powersetCard α n`,
 provided `1 ≤ n < ENat.card α`. -/
-theorem faithfulVAdd {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
+theorem faithfulVAdd {G : Type*} [AddGroup G] [AddMonoidAction G α] {n : ℕ}
     (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulVAdd G α] :
     FaithfulVAdd G (powersetCard α n) := by
   rw [faithfulVAdd_iff]
   intro g hg
-  apply AddAction.toPerm_injective (α := G) (β := α)
-  rw [AddAction.toPerm_zero, ← addAction_faithful hn hα]
+  apply AddMonoidAction.toPerm_injective (α := G) (β := α)
+  rw [AddMonoidAction.toPerm_zero, ← addMonoidAction_faithful hn hα]
   exact Perm.ext_iff.mpr hg
 
-theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
+theorem monoidAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     toPerm g = (1 : Perm (powersetCard α n)) ↔ toPerm g = (1 : Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose h with h
@@ -121,6 +128,9 @@ theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
   · simp only [Equiv.ext_iff, toPerm_apply] at h ⊢
     simp [Subtype.ext_iff, Finset.ext_iff, mem_smul_finset, h]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Set.powersetCard.mulAction_faithful := monoidAction_faithful
+
 /-- If a group `G` acts faithfully on `α`, then
 it acts faithfully on `powersetCard α n` provided `1 ≤ n < ENat.card α`. -/
 theorem faithfulSMul (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulSMul G α] :
@@ -128,7 +138,7 @@ theorem faithfulSMul (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulSMul G α]
   rw [faithfulSMul_iff]
   intro g hg
   apply toPerm_injective (α := G) (β := α)
-  rw [toPerm_one, ← mulAction_faithful hn hα]
+  rw [toPerm_one, ← monoidAction_faithful hn hα]
   exact Perm.ext_iff.mpr hg
 
 attribute [to_additive existing] faithfulSMul
@@ -220,7 +230,7 @@ theorem fixedPoints_ne_univ_of_faithfulSMul
     exact eq_univ_iff_forall.mp h s g
   rwa [← toPermHom_apply, map_eq_one_iff] at h
   have := powersetCard.faithfulSMul (G := G) (α := α) hn ?_
-  · exact MulAction.toPerm_injective
+  · exact MonoidAction.toPerm_injective
   ·   simpa [ENat.card_eq_coe_natCard, Nat.cast_lt, Nat.finite_of_card_ne_zero (ne_zero_of_lt hn')]
 
 variable (α)

@@ -38,7 +38,7 @@ Given `x ∈ s` and a semiring extension `𝕜 ⊆ 𝕜'`, the tangent cone of `
 respect to `𝕜` is contained in the tangent cone of `s` at `x` with respect to `𝕜'`.
 -/
 theorem tangentConeAt_mono_field
-    {𝕜' : Type*} [Monoid 𝕜'] [SMul 𝕜 𝕜'] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
+    {𝕜' : Type*} [Monoid 𝕜'] [SMul 𝕜 𝕜'] [MonoidAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜' s x := by
   simp only [tangentConeAt_def, ofPred_subset_ofPred]
   refine fun y hy ↦ hy.mono ?_

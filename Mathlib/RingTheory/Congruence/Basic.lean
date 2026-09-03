@@ -81,9 +81,9 @@ instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R 
   haveI := SMulCommClass.symm R α R
   SMulCommClass.symm _ _ _
 
-instance [Monoid α] [NonAssocSemiring R] [MulAction α R] [IsScalarTower α R R]
-    (c : RingCon R) : MulAction α c.Quotient :=
-  inferInstanceAs <| MulAction α c.toCon.Quotient
+instance [Monoid α] [NonAssocSemiring R] [MonoidAction α R] [IsScalarTower α R R]
+    (c : RingCon R) : MonoidAction α c.Quotient :=
+  inferInstanceAs <| MonoidAction α c.toCon.Quotient
 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient where

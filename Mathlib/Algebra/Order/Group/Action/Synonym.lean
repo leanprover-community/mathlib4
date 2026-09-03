@@ -26,10 +26,10 @@ variable {M N α : Type*}
 namespace OrderDual
 
 @[to_additive]
-instance [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α := inferInstanceAs <| MulAction M α
+instance [Monoid M] [MonoidAction M α] : MonoidAction Mᵒᵈ α := inferInstanceAs <| MonoidAction M α
 
 @[to_additive]
-instance [Monoid M] [MulAction M α] : MulAction M αᵒᵈ := inferInstanceAs <| MulAction M α
+instance [Monoid M] [MonoidAction M α] : MonoidAction M αᵒᵈ := inferInstanceAs <| MonoidAction M α
 
 @[to_additive]
 instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α :=
@@ -60,12 +60,12 @@ end OrderDual
 namespace Lex
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction (Lex M) α :=
-  inferInstanceAs <| MulAction M α
+instance instMonoidAction [Monoid M] [MonoidAction M α] : MonoidAction (Lex M) α :=
+  inferInstanceAs <| MonoidAction M α
 
 @[to_additive]
-instance instMulAction' [Monoid M] [MulAction M α] : MulAction M (Lex α) :=
-  inferInstanceAs <| MulAction M α
+instance instMonoidAction' [Monoid M] [MonoidAction M α] : MonoidAction M (Lex α) :=
+  inferInstanceAs <| MonoidAction M α
 
 @[to_additive]
 instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :

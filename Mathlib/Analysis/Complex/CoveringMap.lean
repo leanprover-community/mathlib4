@@ -95,7 +95,7 @@ theorem isCoveringMapOn_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
   · convert! (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr _) using 1
     ext; simpa using! (this _).not
 
-attribute [-instance] Units.mulAction'
+attribute [-instance] Units.monoidAction'
 
 theorem isQuotientCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0)
     (surj : (fun x : 𝕜 ↦ x ^ n).Surjective) :

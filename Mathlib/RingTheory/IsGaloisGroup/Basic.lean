@@ -234,7 +234,7 @@ instance isScalarTower_mulSemiringActionQuotient [MulSemiringAction G B] [SMulDi
 
 /-- If `G` acts on `C` commuting with `A`, then the action of `G ⧸ N` on `B` commutes with `A`. -/
 theorem smulCommClassQuotient [N.Normal] [Algebra A B] [IsScalarTower A B C] [SMulCommClass G A C]
-    [MulSemiringAction G B] [MulAction (G ⧸ N) B] [SMulDistribClass G B C]
+    [MulSemiringAction G B] [MonoidAction (G ⧸ N) B] [SMulDistribClass G B C]
     [IsScalarTower G (G ⧸ N) B] :
     SMulCommClass (G ⧸ N) A B :=
   ⟨fun g k x ↦ Quotient.inductionOn' g fun g ↦

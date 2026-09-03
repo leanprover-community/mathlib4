@@ -21,10 +21,12 @@ namespace RelHom
 variable {α : Type*} {r : α → α → Prop}
 
 /-- The tautological action by `r →r r` on `α`. -/
-instance applyMulAction : MulAction (r →r r) α where
+instance applyMonoidAction : MonoidAction (r →r r) α where
   smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+
+@[deprecated (since := "2026-09-02")] alias _root_.RelHom.applyMulAction := applyMonoidAction
 
 @[simp] lemma smul_def (f : r →r r) (a : α) : f • a = f a := rfl
 
@@ -36,10 +38,12 @@ namespace RelEmbedding
 variable {α : Type*} {r : α → α → Prop}
 
 /-- The tautological action by `r ↪r r` on `α`. -/
-instance applyMulAction : MulAction (r ↪r r) α where
+instance applyMonoidAction : MonoidAction (r ↪r r) α where
   smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+
+@[deprecated (since := "2026-09-02")] alias _root_.RelEmbedding.applyMulAction := applyMonoidAction
 
 @[simp] lemma smul_def (f : r ↪r r) (a : α) : f • a = f a := rfl
 
@@ -51,10 +55,12 @@ namespace RelIso
 variable {α : Type*} {r : α → α → Prop}
 
 /-- The tautological action by `r ≃r r` on `α`. -/
-instance applyMulAction : MulAction (r ≃r r) α where
+instance applyMonoidAction : MonoidAction (r ≃r r) α where
   smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+
+@[deprecated (since := "2026-09-02")] alias _root_.RelIso.applyMulAction := applyMonoidAction
 
 @[simp] lemma smul_def (f : r ≃r r) (a : α) : f • a = f a := rfl
 

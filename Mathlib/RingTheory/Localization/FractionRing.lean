@@ -647,7 +647,7 @@ theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
 protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
   h.nontrivial_iff_nontrivial.mp hR
 
-section MulAction
+section MonoidAction
 
 variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAction G B]
   [Algebra A B] [Field K] [Field L] [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L]
@@ -700,7 +700,7 @@ theorem fixingSubgroup_range_algebraMap :
   · simp_rw [algebraMap.smul', ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply A K L, h]
 
-end MulAction
+end MonoidAction
 
 end IsFractionRing
 

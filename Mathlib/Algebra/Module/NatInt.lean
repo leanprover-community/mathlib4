@@ -35,7 +35,7 @@ universe u v
 
 variable {R S M M₂ : Type*}
 
-instance [AddMonoid M] : MulAction ℕ M where
+instance [AddMonoid M] : MonoidAction ℕ M where
   one_smul := one_nsmul
   mul_smul _ _ _ := mul_nsmul' ..
 
@@ -43,7 +43,7 @@ instance [AddMonoid M] : SMulWithZero ℕ M where
   smul_zero := nsmul_zero
   zero_smul := zero_nsmul
 
-instance [SubtractionMonoid M] : MulAction ℤ M where
+instance [SubtractionMonoid M] : MonoidAction ℤ M where
   one_smul := one_zsmul
   mul_smul _ _ _ := mul_zsmul ..
 

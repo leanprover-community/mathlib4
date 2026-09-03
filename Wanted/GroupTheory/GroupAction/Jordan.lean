@@ -7,11 +7,11 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.Jordan
 
-open MulAction SubMulAction Subgroup
+open MonoidAction SubMulAction Subgroup
 
 section Jordan
 
-variable {G α : Type*} [Group G] [MulAction G α]
+variable {G α : Type*} [Group G] [MonoidAction G α]
 
 -- Wielandt claims that this is proved by the same method as
 -- `normalClosure_of_stabilizer_eq_top` in `Mathlib/GroupTheory/GroupAction/Jordan.lean`.
@@ -21,7 +21,7 @@ proof_wanted IsPreprimitive.is_two_pretransitive'
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPretransitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2
 
--- Wielandt claims that this stronger version of `MulAction.IsPreprimitive.is_two_preprimitive`
+-- Wielandt claims that this stronger version of `MonoidAction.IsPreprimitive.is_two_preprimitive`
 -- is proved in the same way.
 proof_wanted is_two_preprimitive_strong_jordan
     (hG : IsPreprimitive G α)

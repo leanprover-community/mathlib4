@@ -38,7 +38,7 @@ Let `α` and `ι` by types and let `f : α → ι`
 
 assert_not_exists Field
 
-open Equiv MulAction
+open Equiv MonoidAction
 
 variable {α ι : Type*} {f : α → ι}
 
@@ -46,9 +46,9 @@ namespace DomMulAct
 
 lemma mem_stabilizer_iff {g : (Perm α)ᵈᵐᵃ} :
     g ∈ stabilizer (Perm α)ᵈᵐᵃ f ↔ f ∘ (mk.symm g :) = f := by
-  simp only [MulAction.mem_stabilizer_iff]; rfl
+  simp only [MonoidAction.mem_stabilizer_iff]; rfl
 
-/-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) f`
+/-- The `invFun` component of `MulEquiv` from `MonoidAction.stabilizer (Perm α) f`
   to the product of the `Equiv.Perm {a // f a = i}`. -/
 def stabilizerEquiv_invFun (g : ∀ i, Perm {a // f a = i}) (a : α) : α := g (f a) ⟨a, rfl⟩
 
@@ -59,7 +59,7 @@ lemma comp_stabilizerEquiv_invFun (g : ∀ i, Perm {a // f a = i}) (a : α) :
     f (stabilizerEquiv_invFun g a) = f a :=
   (g (f a) ⟨a, rfl⟩).prop
 
-/-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) p`
+/-- The `invFun` component of `MulEquiv` from `MonoidAction.stabilizer (Perm α) p`
   to the product of the `Equiv.Perm {a | f a = i}` (as an `Equiv.Perm α`). -/
 def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // f a = i}) : Perm α where
   toFun := stabilizerEquiv_invFun g
@@ -72,7 +72,7 @@ def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // f a = i}) : Perm α where
     exact congr_arg Subtype.val ((g <| f a).right_inv _)
 
 variable (f) in
-/-- The `MulEquiv` from the `MulOpposite` of `MulAction.stabilizer (Perm α)ᵈᵐᵃ f`
+/-- The `MulEquiv` from the `MulOpposite` of `MonoidAction.stabilizer (Perm α)ᵈᵐᵃ f`
   to the product of the `Equiv.Perm {a // f a = i}` -/
 def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i, Perm {a // f a = i}) where
   toFun g i := Perm.subtypePerm (mk.symm g.unop) fun a ↦ by
