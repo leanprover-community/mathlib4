@@ -106,7 +106,7 @@ theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ �
 
 theorem exists_rename_coe_vars_eq (p : MvPolynomial σ R) :
     ∃ q : MvPolynomial p.vars R, rename (↑) q = p :=
-  exists_rename_eq_of_vars_subset_range p _ Subtype.val_injective Subtype.range_coe.ge
+  exists_rename_eq_of_vars_subset_range p _ Subtype.val_injective Subtype.range_coe.superset
 
 theorem vars_rename [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
     (rename f φ).vars ⊆ φ.vars.image f := by
