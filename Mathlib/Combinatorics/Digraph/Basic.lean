@@ -243,8 +243,7 @@ def SpanningSubgraph (G : Digraph V) := {H : Digraph V // IsSpanningSubgraph H G
 instance {G : Digraph V} : PartialOrder G.SpanningSubgraph :=
   Subtype.partialOrder _
 
-@[grind =] theorem SpanningSubgraph.le_iff {G : Digraph V}
-    {H K : G.SpanningSubgraph} :
+@[grind =] theorem SpanningSubgraph.le_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
     H ≤ K ↔ H.val ≤ K.val := .rfl
 
 
