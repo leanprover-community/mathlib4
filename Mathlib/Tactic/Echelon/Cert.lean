@@ -13,7 +13,7 @@ public import Mathlib.Util.Qq
 # Certificate construction for the Bareiss decomposition
 
 `certifyDecomposition` builds the `Echelon.Decomposition` certificate from the decomposition
-data, proving each certificate condition by `decide +kernel`, or from proofs of the
+data, proving each certificate condition by `decide`, or from proofs of the
 individual entries supplied by a leaf certifier.
 
 ## Main definitions
