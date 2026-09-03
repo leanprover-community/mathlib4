@@ -293,10 +293,7 @@ instance {G : Digraph V} : InfSet G.SpanningSubgraph where
   sInf ℋ := ⟨{
       verts := G.verts
       Adj v w := (∀ H ∈ ℋ, H.val.Adj v w) ∧ G.Adj v w
-    }, by
-      constructor
-      · constructor <;> aesop
-      · rfl⟩
+    }, by grind⟩
 
 instance {G : Digraph V} : HImp G.SpanningSubgraph where
   himp H K := Hᶜ ⊔ K
