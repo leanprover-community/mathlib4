@@ -474,21 +474,25 @@ theorem range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) 
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
 /-- Restrict the codomain of a non-unital star algebra homomorphism. -/
-def codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →⋆ₙₐ[R] S where
+def codRestrict
+    (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →⋆ₙₐ[R] S where
   toNonUnitalAlgHom := NonUnitalAlgHom.codRestrict f S.toNonUnitalSubalgebra hf
   map_star' := fun a => Subtype.ext <| map_star f a
 
 @[simp]
-theorem subtype_comp_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+theorem subtype_comp_codRestrict
+    (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     (NonUnitalStarSubalgebraClass.subtype S).comp (NonUnitalStarAlgHom.codRestrict f S hf) = f :=
   NonUnitalStarAlgHom.ext fun _ => rfl
 
 @[simp]
-theorem coe_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
+theorem coe_codRestrict
+    (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
     ↑(NonUnitalStarAlgHom.codRestrict f S hf x) = f x :=
   rfl
 
-theorem injective_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+theorem injective_codRestrict
+    (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (NonUnitalStarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
   ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
 
@@ -501,12 +505,12 @@ abbrev rangeRestrict (f : A →⋆ₙₐ[R] B) :
     (NonUnitalStarAlgHom.mem_range_self f)
 
 /-- The equalizer of two non-unital star `R`-algebra homomorphisms -/
-def equalizer (ϕ ψ : F) : NonUnitalStarSubalgebra R A where
+def equalizer (ϕ ψ : A →⋆ₙₐ[R] B) : NonUnitalStarSubalgebra R A where
   toNonUnitalSubalgebra := NonUnitalAlgHom.equalizer ϕ ψ
   star_mem' := @fun x (hx : ϕ x = ψ x) => by simp [map_star, hx]
 
 @[simp]
-theorem mem_equalizer (φ ψ : F) (x : A) :
+theorem mem_equalizer (φ ψ : A →⋆ₙₐ[R] B) (x : A) :
     x ∈ NonUnitalStarAlgHom.equalizer φ ψ ↔ φ x = ψ x :=
   Iff.rfl
 
