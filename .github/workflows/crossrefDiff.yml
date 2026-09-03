@@ -2,9 +2,8 @@
 # Comments on a PR with the cross-references it adds, each as a clickable link.
 #
 # - Reads `crossrefs.json` from the build's `import-graph` artifact (written by
-#   `scripts/export_crossrefs.lean`; see `build_template.yml`'s `post_steps`).
-# - Subtracts the same file from the master build at the PR's merge base, so a
-#   tag that landed on master meanwhile is not reported as added here.
+#   `scripts/export_crossrefs.lean`; see `build_template.yml`'s `post_steps`) and
+#   subtracts the same file from the master build at the PR's merge base.
 # - Posts or updates a marker-keyed comment on the PR.
 
 name: Cross-reference summary (post-build)
