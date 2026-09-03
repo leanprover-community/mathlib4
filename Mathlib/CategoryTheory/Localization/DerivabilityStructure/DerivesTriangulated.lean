@@ -67,10 +67,10 @@ set_option backward.isDefEq.respectTransparency.types false in
 include hF in
 lemma isTriangulated_of_isLeftDerivedFunctor
     [Φ.IsLeftDerivabilityStructure] [Φ.arrow.HasLeftResolutions]
-    {RF : D₂ ⥤ H} [RF.CommShift ℤ]
-    (α : L ⋙ RF ⟶ F) [NatTrans.CommShift α ℤ]
-    [RF.IsLeftDerivedFunctor α W₂] :
-    RF.IsTriangulated :=
+    {LF : D₂ ⥤ H} [LF.CommShift ℤ]
+    (α : L ⋙ LF ⟶ F) [NatTrans.CommShift α ℤ]
+    [LF.IsLeftDerivedFunctor α W₂] :
+    LF.IsTriangulated :=
   Functor.isTriangulated_of_rightExtension _ α (fun X Y f ↦ by
     obtain ⟨φ, ⟨eφ⟩⟩ := Functor.EssSurj.mem_essImage (F := L.mapArrow) (Arrow.mk f)
     let R : Φ.arrow.LeftResolution φ := Classical.arbitrary _
