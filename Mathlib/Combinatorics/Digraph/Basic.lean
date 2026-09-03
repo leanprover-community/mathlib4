@@ -59,6 +59,12 @@ namespace Digraph
 
 attribute [grind →] left_mem_verts_of_adj right_mem_verts_of_adj
 
+theorem Adj.left_mem_verts {v w : V} (h : G.Adj v w) : v ∈ verts :=
+  G.left_mem_verts_of_adj h
+
+theorem Adj.right_mem_verts {v w : V} (h : G.Adj v w) : w ∈ verts :=
+  G.right_mem_verts_of_adj h
+
 /--
 Constructor for digraphs using a Boolean function.
 This is useful for creating a digraph with a decidable `Adj` relation.
