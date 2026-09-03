@@ -41,7 +41,9 @@ absolute value, Ostrowski's theorem
 
 @[expose] public section
 
-open Filter Nat Real Topology
+open Filter Nat Real
+
+open scoped Topology
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
 private lemma tendsto_const_rpow_inv {C : ℝ} (hC : 0 < C) :
