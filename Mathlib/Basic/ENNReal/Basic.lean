@@ -335,8 +335,7 @@ theorem toNNReal_ne_one : a.toNNReal ≠ 1 ↔ a ≠ 1 :=
 theorem toReal_ne_one : a.toReal ≠ 1 ↔ a ≠ 1 :=
   a.toReal_eq_one_iff.not
 
-@[simp, aesop (rule_sets := [finiteness]) safe apply]
-@[basify_simp]
+@[simp, aesop (rule_sets := [finiteness]) safe apply, basify_simp]
 theorem coe_ne_top : (r : ℝ≥0∞) ≠ ∞ := WithTop.coe_ne_top
 
 @[simp, basify_simp] theorem top_ne_coe : ∞ ≠ (r : ℝ≥0∞) := WithTop.top_ne_coe
@@ -372,9 +371,11 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 
 @[simp] theorem zero_lt_top : 0 < ∞ := coe_lt_top
 
-@[simp, norm_cast, gcongr, basify_simp] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
+@[simp, norm_cast, gcongr, basify_simp]
+theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
 
-@[simp, norm_cast, gcongr, basify_simp] theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
+@[simp, norm_cast, gcongr, basify_simp]
+theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
 
 @[deprecated (since := "2026-08-04")] alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 
