@@ -115,11 +115,12 @@ def normNumLeaf : LeafProver := fun p => do
   return (b, prf)
 
 /-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `proofAt i`
-proving it at index `i`. The proof recurses on the index list `List.finRange n`, so the
-motive is spelled once rather than once per index. -/
+proving it at index `i`, unfolding `p` when its quantifier is behind a definition. The proof
+recurses on the index list `List.finRange n`, so the motive is spelled once rather than once
+per index. -/
 def mkForallFin (n : Nat) (p : Q(Prop)) (proofAt : Nat → (q : Q(Prop)) → MetaM Q($q)) :
     MetaM Q($p) :=
-  forallBoundedTelescope p (some 1) fun is body => do
+  forallBoundedTelescope p (some 1) (whnfType := true) fun is body => do
     let #[i] := is
       | throwError "expected a quantified statement:{indentExpr p}"
     let motive ← mkLambdaFVars is body
@@ -137,16 +138,6 @@ def mkForallFin (n : Nat) (p : Q(Prop)) (proofAt : Nat → (q : Q(Prop)) → Met
         ← mkExpectedTypeHint acc (← mkAppM ``List.Forall #[motive, range])]
     mkExpectedTypeHint
       (← mkLambdaFVars is (mkApp2 hAll i (← mkAppM ``List.mem_finRange #[i]))) p
-
-/-- Unfold `p` until its head is a quantifier, as `Matrix.IsLowerTriangular` has to be
-before its entry conditions are reachable. -/
-partial def unfoldToForall (p : Q(Prop)) : MetaM Q(Prop) := do
-  match p with
-  | .forallE .. => return p
-  | _ =>
-    let some p' ← unfoldDefinition? p
-      | throwError "expected a quantified condition:{indentExpr p}"
-    unfoldToForall p'.headBeta
 
 /-- Prove an implication `P → Q` where the caller already knows from the recorded data
 whether `P` holds, so that neither side is discovered by reduction: when it holds, `proof`
@@ -193,9 +184,8 @@ def mkDiagCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
 the remaining index pairs the triangularity guard is refutable. -/
 def mkLowerCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
-  let rows ← unfoldToForall q(($L).IsLowerTriangular)
   -- the unfolded guard is `toDual j < toDual i`, which is `i < j` in the original order
-  mkForallFin m rows fun i gi => do
+  mkForallFin m q(($L).IsLowerTriangular) fun i gi => do
     mkForallFin m gi fun j cell => mkImplication (i < j) cell proveRflCell
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot`: the two conditions on the pivot
