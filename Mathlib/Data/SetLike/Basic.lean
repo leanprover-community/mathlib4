@@ -213,6 +213,7 @@ end SetLike
 
 /--
 A class to indicate that the order on a type corresponds to set inclusion.
+
 An instance of this class is automatically available on any order defined via `LE.ofMembership`.
 -/
 class IsConcreteLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
@@ -224,10 +225,11 @@ section default
 variable (A B : Type*)
 
 /-- The order induced from a `Membership` instance by inclusion.
+
 An order defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
 @[reducible] def LE.ofMembership [Membership B A] : LE A where
-  le := fun H K ↦ ∀ ⦃x⦄, x ∈ H → x ∈ K
+  le H K := ∀ ⦃x⦄, x ∈ H → x ∈ K
 
 @[deprecated (since := "2026-09-01")] alias LE.ofSetLike := LE.ofMembership
 
@@ -235,11 +237,12 @@ instance [Membership B A] : letI := LE.ofMembership A B; IsConcreteLE A B :=
   letI := LE.ofMembership A B; { le_iff := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
+
 A preorder defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
 @[reducible] def Preorder.ofMembership [Membership B A] : Preorder A where
   __ := LE.ofMembership A B
-  lt s t := letI := LE.ofMembership A B; s ≤ t ∧ ¬t ≤ s
+  lt s t := s ≤ t ∧ ¬t ≤ s
   le_refl _ _ h := h
   le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
@@ -268,9 +271,9 @@ theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
 
 end LE
 
-section PartialOrder
+section Preorder
 
-variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
+variable [Preorder A] [IsConcreteLE A B] {p q : A}
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
@@ -278,7 +281,7 @@ theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
 theorem exists_of_lt (h : p < q) : ∃ x ∈ q, x ∉ p :=
   (lt_iff_le_and_exists.mp h).2
 
-end PartialOrder
+end Preorder
 
 end IsConcreteLE
 
