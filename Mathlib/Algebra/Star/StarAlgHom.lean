@@ -792,10 +792,11 @@ theorem refl_symm : (StarAlgEquiv.refl R A).symm = .refl R A :=
   rfl
 
 @[simp]
-theorem toStarRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃⋆+* A) = (e : A ≃⋆+* B).symm := rfl
+theorem toStarRingEquiv_symm (e : A ≃⋆ₐ[R] B) : e.symm.toStarRingEquiv = e.toStarRingEquiv.symm :=
+  rfl
 
 @[simp]
-theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e : A ≃⋆+* B).symm = (e : A ≃+* B).symm := rfl
+theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv.symm = (e.toRingEquiv).symm := rfl
 
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
