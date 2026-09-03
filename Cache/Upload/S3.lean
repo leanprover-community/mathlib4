@@ -22,7 +22,7 @@ The s3 upload path. This module holds:
 * the transfer entry point (`s3PutStaged`).
 
 The destination is the container's root that `MATHLIB_CACHE_PUT_URL` names
-(see `stagedUploadDest`).
+(see `stagedUploadDestFrom`).
 -/
 
 namespace Cache.Requests
@@ -105,7 +105,7 @@ def s3CurlArgs (creds : S3Credentials) (region : String) : Array String :=
 Split an S3 upload base into the endpoint origin and the bucket path:
 `https://host/bucket[/prefix]` becomes `(https://host, bucket[/prefix])`.
 rclone addresses a destination as `:s3:{bucket}/{key}` against an endpoint.
-`stagedUploadDestFrom` rejects an s3 base that does not split.
+`uploadFiles` rejects an s3 URL that does not split.
 -/
 def s3EndpointSplit (base : String) : Except String (String × String) :=
   match base.splitOn "://" with

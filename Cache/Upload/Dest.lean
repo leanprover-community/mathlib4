@@ -10,7 +10,7 @@ import Cache.Marker
 # The upload destination contract
 
 The resolved destination every upload consumes (`StagedUploadDest`) and the
-container write it resolves to (`containerUploadDest`). `stagedUploadDest`
+container write it resolves to (`containerUploadDest`). `stagedUploadDestFrom`
 (`Cache/Upload/Defs.lean`) picks the container's base. The prefixes build on
 `fileDirPath` and `markerDirPath` (`Cache/Infra.lean`, `Cache/Marker.lean`),
 the same policies the reads use, so every upload follows the read-side path
