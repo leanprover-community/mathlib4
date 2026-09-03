@@ -146,6 +146,12 @@ theorem _root_.NumberField.InfinitePlace.liesOver_iff_comap_eq {K L : Type*} [Fi
   rw [AbsoluteValue.liesOver_iff, AbsoluteValue.ext_iff, InfinitePlace.ext_iff]
   rfl
 
+theorem foo {ι κ M : Type*} [CommMonoid M] [DecidableEq κ]
+    [Fintype κ] (s : Finset ι) (g : ι → κ) (f : ι → M) :
+    ∏ᶠ j, ∏ᶠ i : g ⁻¹' {j}, f i = ∏ᶠ i, f i := by
+  have := finprod_fibe
+  sorry
+
 variable {L} in
 open IsDedekindDomain in
 -- @[to_additive]
