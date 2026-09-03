@@ -35,6 +35,11 @@ but is several times slower.
 A quantifier over `Fin n` is discharged by recursion on `List.finRange n`, where the motive
 is spelled once, rather than by chaining `Fin.forall_fin_succ`, which respells it at every
 index.
+
+Each condition maker takes both an elaborated term and the recorded data it was built from,
+`U` with `data.U` and `pivot` with `data.pivot`: the term is what the statement names, while
+the data is indexed for the entries and compared to decide the index guards. They cannot be
+bundled, as a dependent return type can splice only plain binders.
 -/
 
 public meta section
@@ -86,7 +91,6 @@ def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
   -- is only decidable against zero should pass
   let some inst ← synthInstance? q(Decidable (((1 : ℤ) : $α) = 0))
     | throwError "equality with zero in the element type is not decidable{indentExpr α}"
-  -- check if the equality reduced to a concrete false
   unless (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
       (·.isAppOf ``Decidable.isFalse) do
     throwError "equality in the element type does not reduce in the kernel{indentExpr α}"
@@ -109,23 +113,6 @@ together with a proof of the proposition or of its negation. -/
 def normNumLeaf : LeafProver := fun p => do
   let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
   return (b, prf)
-
-/-- Refute the condition `c` by a kernel-checked `decide`, the mirror of
-`certifyCondition`. The index guards of a certificate condition are decidable in any ring,
-as they mention no entries. -/
-def refuteCondition (c : Q(Prop)) : MetaM Q(¬ $c) := do
-  let .some inst ← trySynthInstance (← mkAppM ``Decidable #[c])
-    | throwError "cannot refute the rank certificate condition, it is not decidable:\
-        {indentExpr c}"
-  let d ← mkAppOptM ``Decidable.decide #[c, inst]
-  let .ok r := Kernel.whnf (← getEnv) (← getLCtx) d
-    | throwError "cannot refute the rank certificate condition, it does not reduce in the \
-        kernel:{indentExpr c}"
-  unless r.isConstOf ``Bool.false do
-    throwError "cannot refute the rank certificate condition, it holds:{indentExpr c}"
-  let ff := mkConst ``Bool.false
-  let h ← mkExpectedTypeHint (← mkEqRefl ff) (← mkEq d ff)
-  mkAppOptM ``of_decide_eq_false #[c, inst, h]
 
 /-- Prove the quantified statement `c` over `Fin n` from proofs of its instances, `head i`
 proving it at index `i`. The proof recurses on the index list `List.finRange n`, so the
@@ -176,7 +163,6 @@ def mkImplication (holds : Bool) (c : Q(Prop)) (prove : Q(Prop) → MetaM Expr) 
     return .lam nm dom (← prove body) bi
   else
     have p : Q(Prop) := dom
-    -- `Not.elim` is the vacuous implication: from `¬ P` it yields `P → Q` directly
     mkAppOptM ``Not.elim #[none, some body, ← certifyCondition "an index guard" q(¬ $p)]
 
 /-- Prove a cell whose two sides reduce to the same recorded entry. -/
@@ -184,7 +170,7 @@ def proveRflCell (c : Q(Prop)) : MetaM Expr := do
   match_expr c with
   | Eq _ lhs rhs =>
     unless ← isDefEq lhs rhs do
-      throwError "the entry was expected to be zero:{indentExpr c}"
+      throwError "the two sides do not reduce to the same recorded entry:{indentExpr c}"
     mkEqRefl lhs
   | _ => throwError "expected an equation:{indentExpr c}"
 
@@ -209,6 +195,7 @@ the remaining index pairs the triangularity guard is refutable. -/
 def mkLowerCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
   let rows ← unfoldToForall q(($L).IsLowerTriangular)
+  -- the unfolded guard is `toDual j < toDual i`, which is `i < j` in the original order
   mkListForall m rows fun i gi => do
     mkListForall m gi fun j cell => mkImplication (i < j) cell proveRflCell
 
@@ -216,8 +203,8 @@ def mkLowerCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
 function mention no entry and are decided, while the entry conditions are built from the
 recorded entries of `U`. -/
 def mkPivotCond {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (U : Q(Matrix (Fin $m) (Fin $n) $α)) (pivot : Q(Fin $m → WithTop (Fin $n)))
-    (pivots : Array Nat) (entries : Array (Array Q($α))) (leaf : LeafProver) :
+    (U : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
+    (pivot : Q(Fin $m → WithTop (Fin $n))) (pivots : Array Nat) (leaf : LeafProver) :
     MetaM Q(($U).IsPivotedBy $pivot) := do
   let zero : Q($α) ← mkNumeral α 0
   let iff ← mkAppOptM ``Matrix.isPivotedBy_iff
@@ -252,8 +239,6 @@ in kernel unfolds. -/
 def mkPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m) (Fin $n) $α))
     (entries : Array (Array Q($α))) (σ : Q(Equiv.Perm (Fin $m))) :
     MetaM Q(($A).submatrix $σ id = $Aσ) := do
-  -- the rows of `Aσ`, which `mkMatrixLit` built from the same entries, so that the closing
-  -- ascription compares two identical terms
   have rows : Q(Fin $m → Fin $n → $α) := mkRowsLit α m n entries
   -- every cell is an equation between two spellings of one entry of `A`, so all of them
   -- close by `rfl` and none consults a leaf normaliser
@@ -274,19 +259,20 @@ def mkPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m)
 `aEntries` and `uEntries`. At concrete indices the product reduces to the fold of its
 terms, which `leaf` settles against the entry of `U`. -/
 def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (L : Q(Matrix (Fin $m) (Fin $m) $α)) (Aσ U : Q(Matrix (Fin $m) (Fin $n) $α))
-    (lEntries aEntries uEntries : Array (Array Q($α))) (leaf : LeafProver) :
-    MetaM Q($L * $Aσ = $U) := do
+    (L : Q(Matrix (Fin $m) (Fin $m) $α)) (lEntries : Array (Array Q($α)))
+    (Aσ : Q(Matrix (Fin $m) (Fin $n) $α)) (aEntries : Array (Array Q($α)))
+    (U : Q(Matrix (Fin $m) (Fin $n) $α)) (uEntries : Array (Array Q($α)))
+    (leaf : LeafProver) : MetaM Q($L * $Aσ = $U) := do
   let zero ← mkNumeral α 0
   -- `HMul.hMul` and `HAdd.hAdd` with their instances resolved and the two placeholder
   -- operands dropped, so that the folds do not re-run instance synthesis at every term
   let mul := (← mkAppM ``HMul.hMul #[zero, zero]).appFn!.appFn!
   let add := (← mkAppM ``HAdd.hAdd #[zero, zero]).appFn!.appFn!
   let cell (i j : Nat) : MetaM Expr := do
-    let mut sum := zero
-    for k in 0...m do
-      let c := m - 1 - k
-      sum := mkApp2 add (mkApp2 mul (lEntries[i]!)[c]! (aEntries[c]!)[j]!) sum
+    -- the shape `Finset.sum` reduces to: the products in index order, folded to the right
+    -- and closed by the ring's zero, so that the cell is definitionally the product entry
+    let terms := Array.ofFn (n := m) fun c => mkApp2 mul (lEntries[i]!)[c]! (aEntries[c]!)[j]!
+    let sum := terms.foldr (mkApp2 add) zero
     let (b, prf) ← leaf (← mkEq sum (uEntries[i]!)[j]!)
     unless b do
       throwError "the product of the transform does not match the echelon form at ({i}, {j})"
@@ -305,7 +291,6 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
   -- reduce a matrix literal at a concrete index, so no entry would be recognised as zero
   have L := mkMatrixLit α m m data.L
   have U := mkMatrixLit α m n data.U
-  -- the row of `A_σ` at position `i` is the row of `A` at `σ i`
   let aEntries := data.rowOrder.map (entries[·]!)
   have Aσ := mkMatrixLit α m n aEntries
   let σ ← mkPerm m data.swaps
@@ -326,9 +311,9 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
   | some leaf =>
     have hperm : Q(($A).submatrix $σ id = $Aσ) := ← mkPermEq A Aσ aEntries σ
     have hprod : Q($L * $Aσ = $U) :=
-      ← mkProductEq _cr L Aσ U data.L aEntries data.U leaf
+      ← mkProductEq _cr L data.L Aσ aEntries U data.U leaf
     have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
-    have hpivot : Q(($U).IsPivotedBy $pivot) := ← mkPivotCond _cr U pivot data.pivot data.U leaf
+    have hpivot : Q(($U).IsPivotedBy $pivot) := ← mkPivotCond _cr U data.U pivot data.pivot leaf
     have hlower : Q(($L).IsLowerTriangular) := ← mkLowerCond _cr L
     have hdiag : Q(∀ i, ($L).diag i ≠ 0) := ← mkDiagCond _cr L data.L leaf
     return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
