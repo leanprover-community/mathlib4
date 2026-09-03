@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Algebra.Order.Nonneg.Field
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Order.LocalExtr
@@ -86,7 +87,7 @@ section Units
 def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
     [IsStrictOrderedRing R] [PosMulReflectLT R]
     [TopologicalSpace R] [ContinuousInv₀ R] :
-    { r : R // 0 ≤ r }ˣ ≃ₜ { r : R // 0 < r } where
+    (Nonneg R)ˣ ≃ₜ { r : R // 0 < r } where
   __ := Nonneg.unitsEquivPos R
   continuous_toFun := by
     rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
