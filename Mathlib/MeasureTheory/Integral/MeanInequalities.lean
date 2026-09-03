@@ -99,19 +99,19 @@ theorem lintegral_mul_eq_one_iff_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.H
   · exact fun ⟨hf, hg⟩ ↦ lt_top_of_mul_ne_top_right ha hf |>.trans_eq' hg |>.false
 
 /-- Function multiplied by the inverse of its p-seminorm `(∫⁻ f^p ∂μ) ^ 1/p` -/
-def funMulInvSnorm (f : α → ℝ≥0∞) (p : ℝ) (μ : Measure α) : α → ℝ≥0∞ := fun a =>
+private def funMulInvSnorm (f : α → ℝ≥0∞) (p : ℝ) (μ : Measure α) : α → ℝ≥0∞ := fun a =>
   f a * ((∫⁻ c, f c ^ p ∂μ) ^ (1 / p))⁻¹
 
 private theorem _root_.AEMeasurable.funMulInvSnorm {f : α → ℝ≥0∞} (p : ℝ) {μ : Measure α}
     (hf : AEMeasurable f μ) : AEMeasurable (funMulInvSnorm f p μ) μ :=
   hf.mul_const _
 
-theorem fun_eq_funMulInvSnorm_mul_eLpNorm {p : ℝ} (f : α → ℝ≥0∞)
+private theorem fun_eq_funMulInvSnorm_mul_eLpNorm {p : ℝ} (f : α → ℝ≥0∞)
     (hf_nonzero : (∫⁻ a, f a ^ p ∂μ) ≠ 0) (hf_top : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤) {a : α} :
     f a = funMulInvSnorm f p μ a * (∫⁻ c, f c ^ p ∂μ) ^ (1 / p) := by
   simp [funMulInvSnorm, mul_assoc, ENNReal.inv_mul_cancel, hf_nonzero, hf_top]
 
-theorem funMulInvSnorm_rpow {p : ℝ} (hp0 : 0 < p) {f : α → ℝ≥0∞} {a : α} :
+private theorem funMulInvSnorm_rpow {p : ℝ} (hp0 : 0 < p) {f : α → ℝ≥0∞} {a : α} :
     funMulInvSnorm f p μ a ^ p = f a ^ p * (∫⁻ c, f c ^ p ∂μ)⁻¹ := by
   rw [funMulInvSnorm, mul_rpow_of_nonneg _ _ (le_of_lt hp0)]
   suffices h_inv_rpow : ((∫⁻ c : α, f c ^ p ∂μ) ^ (1 / p))⁻¹ ^ p = (∫⁻ c : α, f c ^ p ∂μ)⁻¹ by
@@ -123,7 +123,7 @@ private theorem funMulInvSnorm_rpow' {p : ℝ} (hp0 : 0 < p) (f : α → ℝ≥0
   ext a
   simp [funMulInvSnorm_rpow hp0, mul_comm]
 
-theorem lintegral_rpow_funMulInvSnorm_eq_one {p : ℝ} (hp0_lt : 0 < p) {f : α → ℝ≥0∞}
+private theorem lintegral_rpow_funMulInvSnorm_eq_one {p : ℝ} (hp0_lt : 0 < p) {f : α → ℝ≥0∞}
     (hf_nonzero : (∫⁻ a, f a ^ p ∂μ) ≠ 0) (hf_top : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤) :
     ∫⁻ c, funMulInvSnorm f p μ c ^ p ∂μ = 1 := by
   simp_rw [funMulInvSnorm_rpow hp0_lt]
