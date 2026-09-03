@@ -70,6 +70,33 @@ def vars (p : MvPolynomial σ R) : Finset σ :=
   letI := Classical.decEq σ
   p.degrees.toFinset
 
+theorem coe_vars_subset_iff {p : MvPolynomial σ R} {s : Set σ} :
+    (p.vars : Set σ) ⊆ s ↔ p ∈ (rename ((↑) : s → σ)).range := by
+  unfold vars
+  rw [AlgHom.mem_range]
+  constructor
+  · intro h
+    refine ⟨p.killCompl Subtype.val_injective, ext _ _ fun m => ?_⟩
+    by_cases hm : m ∈ Set.range (Finsupp.mapDomain ((↑) : s → σ))
+    · obtain ⟨m, rfl⟩ := hm
+      rw [coeff_rename_mapDomain _ Subtype.val_injective, coeff_killCompl]
+    · suffices hp : coeff m p = 0 by
+        rw [hp]
+        apply coeff_rename_eq_zero
+        rintro m rfl
+        rw [coeff_killCompl, hp]
+      rw [mem_range_mapDomain_iff _ Subtype.val_injective, Subtype.range_coe] at hm
+      push Not at hm
+      obtain ⟨b, hb, hm⟩ := hm
+      contrapose! hb
+      apply h
+      rw [SetLike.mem_coe, @Multiset.mem_toFinset, mem_degrees]
+      exact ⟨m, hb, Finsupp.mem_support_iff.2 hm⟩
+  · rintro ⟨x, rfl⟩
+    rw [degrees_rename_of_injective Subtype.val_injective,
+      @Multiset.coe_toFinset, Set.ofPred_subset, Multiset.forall_mem_map_iff]
+    simp
+
 theorem vars_def [DecidableEq σ] (p : MvPolynomial σ R) : p.vars = p.degrees.toFinset := by
   rw [vars]
   convert! rfl
