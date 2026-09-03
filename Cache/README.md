@@ -5,7 +5,8 @@ This directory contains the implementation of Mathlib's build cache system (`lak
 > **Note**: A new `lake cache` command is currently being designed and implemented in Lake itself. This will eventually replace the Mathlib-specific `lake exe cache` and work for all repositories. Until then, this cache system remains the primary way to get pre-built artifacts for Mathlib.
 
 > **Trust model & security**: see [`SECURITY.md`](./SECURITY.md) for the
-> trust model behind the multi-container split.
+> trust model behind the multi-container split, and [`WORKFLOWS.md`](./WORKFLOWS.md)
+> for the three workflows the tool runs.
 
 ## Quick Start
 
@@ -37,7 +38,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `clean`         | Delete non-linked files                                             |
 | `clean!`        | Delete everything on the local cache                                |
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
-| `query`         | Find the most recent commit with cached entries on the current branch |
+| `query`         | Find the most recent commit of the branch that CI has cached (developer-cache workflow) |
 
 
 ### Operating an external cache
@@ -55,9 +56,11 @@ A custom cache can rely on the staging commands:
 
 To operate an external cache, run `stage` to produce the artifact set, upload
 it under an `f/` prefix with any storage client, and point readers at the
-endpoint with `MATHLIB_CACHE_GET_URL`. `get` requests
-`{endpoint}/f/{hash}.ltar`; `stage` writes the `.ltar` files flat into the
-staging directory, so the upload adds the `f/` segment.
+endpoint with `MATHLIB_CACHE_GET_URL`. A reader with that variable set takes
+the [public-cache workflow](./WORKFLOWS.md#the-public-cache-workflow) whatever
+repository its checkout names, and `get` requests `{endpoint}/f/{hash}.ltar`;
+`stage` writes the `.ltar` files flat into the staging directory, so the
+upload adds the `f/` segment.
 
 Example:
 
@@ -81,52 +84,63 @@ The `get`, `get!`, `get-`, and `lookup` commands accept:
 
 When arguments are provided, only the specified files and their transitive imports are downloaded.
 
-### Options
+### Flags
 
-| Option              | Description                                                                                |
+Each command declares its flags; `lake exe cache <command> --help` lists them.
+A flag follows the command (`lake exe cache get --repo=OWNER/REPO`); a flag
+before the command is moved after it. A command rejects a flag it does not
+declare, and a workflow rejects the flags of another workflow.
+
+| Flag                | Description                                                                                |
 |---------------------|--------------------------------------------------------------------------------------------|
-| `--repo=OWNER/REPO` | Override the repository to fetch cache from (e.g., `--repo=leanprover-community/mathlib4`) |
-| `--cache-from=LIST` | For `get`/`get!`/`get-`/`lookup`: trust-ordered, comma-separated list of containers to read from. Overrides the per-repo default (see [Trust-ordered containers](#trust-ordered-containers)). |
-| `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Triggers the non-default-scope security notice. |
-| `--unsafe`          | For `get`/`get!`/`get-`: instead of pinning one `--scope`, automatically walk this branch's history and read the `forks` container at the most recent cached fork commit (newest first if `--unsafe-window` allows more than one), until the cache is satisfied (see [Unsafe automatic scope walk](#unsafe-automatic-scope-walk)). Mutually exclusive with `--scope`; always triggers the security notice. |
-| `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
-| `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. |
+| `--repo=OWNER/REPO` | For `get`/`get!`/`get-`/`query`: the repository whose cache to read (e.g., `--repo=leanprover-community/mathlib4`). Selects the workflow. |
+| `--cache-from=LIST` | For `get`/`get!`/`get-` under the developer-cache and nightly workflows: the trust-ordered, comma-separated list of containers to read, replacing the workflow's chain (see [Trust-ordered containers](./WORKFLOWS.md#trust-ordered-containers)). |
+| `--scope=REF`       | For `get`/`get!`/`get-` under the developer-cache and nightly workflows: the commit whose fork cache to read, as any git ref (see [`query`](./WORKFLOWS.md#finding-cached-commits-with-query)). |
+| `--unsafe`          | For `get`/`get!`/`get-` under the developer-cache workflow: read the most recent cached fork commits of the branch, found automatically (see [Unsafe automatic scope walk](./WORKFLOWS.md#unsafe-automatic-scope-walk)). |
+| `--unsafe-window=N` | The number of cached fork commits `--unsafe` tries (default `1`). Implies `--unsafe`. |
+| `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. Required. |
 
-Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
+The public-cache workflow has no flags of its own; the others are listed per
+workflow in [`WORKFLOWS.md`](./WORKFLOWS.md#which-workflow-runs).
 
-## Trust-ordered containers
+## Workflows
 
-The cache is split across multiple containers, logical namespaces in the URL
-contract `/{container}/{key}`. Container names accepted by `--cache-from=LIST`:
-`master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
+`lake exe cache get` runs one of three workflows, chosen from the repository
+your checkout names (its git remote, or `--repo=OWNER/REPO`) and the flags,
+and prints the one it runs. [`WORKFLOWS.md`](./WORKFLOWS.md) describes the
+three in full.
 
-`cache get` resolves a file by trying a default chain of containers in
-order, depending on the repo:
+**If you have Mathlib as a dependency**, or work on a checkout of
+`leanprover-community/mathlib4` itself, `lake exe cache get` runs the
+public-cache workflow. It fetches each file once from the public cache at
+`https://cache.mathlib.org/mathlib4` and nothing else. No flag is needed.
 
-| GitHub repo                                     | Container order tried       |
-|-------------------------------------------------|-----------------------------|
-| `leanprover-community/mathlib4`                 | `master`, `legacy`          |
-| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `legacy` |
-| any fork (PRs)                                  | `master`, `forks`, `legacy` |
-| downstream with mathlib as a dependency         | `master`, `legacy`          |
+**If you are a mathlib developer working on a fork**, `lake exe cache get`
+runs the developer-cache workflow. It reads mathlib's `master` cache first,
+then your fork's own cache for the commit you have checked out, which CI
+fills when it builds your PR. `lake exe cache query` lists the commits of your
+branch that CI has cached, and `--scope=SHA` reads one of them. Reading
+another commit's artifacts means trusting whoever built them, so the tool
+prints a security notice when you do.
 
-Override the read chain with `--cache-from=LIST`:
+The nightly workflow serves the nightly-testing repository.
 
-```bash
-# Read only from the master container
-lake exe cache get --cache-from=master
+## Environment Variables
 
-# Read master first, then forks
-lake exe cache get --cache-from=master,forks
-```
+| Variable                         | Description                        | Default                                         |
+|----------------------------------|------------------------------------|-------------------------------------------------|
+| `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
+| `MATHLIB_CACHE_GET_URL`          | Download from this single URL as a flat namespace (see [Operating an external cache](#operating-an-external-cache)) | unset |
+| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | See [Troubleshooting](#troubleshooting) | unset |
 
-## Public cache endpoint
+An empty value means unset. The variables of the chain read
+(`MATHLIB_CACHE_FROM`, `MATHLIB_CACHE_REPO_SCOPE`) are listed in
+[`WORKFLOWS.md`](./WORKFLOWS.md#environment-variables); the upload variables
+are internal to mathlib CI, see [`CI.md`](./CI.md).
 
-`cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts.
+## Troubleshooting
 
-### Troubleshooting
-
-The public cache endpoint has been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before this endpoint was available, for troubleshooting any issues that might arise in the transition to this new endpoint:
+The cache endpoints have been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to read both caches from the Azure storage account instead, the behavior before the endpoints were available, for troubleshooting any issues that might arise in the transition:
 
 ```bash
 # bash, zsh, Git Bash
@@ -142,16 +156,6 @@ lake exe cache get
 
 The variable is intended as a troubleshooting fallback and it might be retired at any time.
 
-## Environment Variables
-
-| Variable                         | Description                        | Default                                         |
-|----------------------------------|------------------------------------|-------------------------------------------------|
-| `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
-| `MATHLIB_CACHE_GET_URL`          | Download from this single URL as a flat namespace (see [Operating an external cache](#operating-an-external-cache)) | unset |
-| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | See [Troubleshooting](#troubleshooting) | unset |
-
-An empty value means unset. The upload variables are internal to mathlib CI;
-see [`CI.md`](./CI.md).
 
 ## How It Works
 
@@ -200,121 +204,10 @@ The cache covers these packages:
 - `Archive`
 - `Counterexamples`
 
-## Finding Cached Commits with `query`
-
-For branches with per-commit SHA scoping (e.g., fork PRs), you can use
-`lake exe cache query` to discover which recent commits on your branch have
-cached entries. This is useful when your current branch has diverged from
-upstream and you want to avoid waiting for CI to build everything.
-
-```bash
-# Find the most recent cached commit on the current branch
-lake exe cache query
-
-# Example output (on a fork checkout; the canonical repos have no
-# per-commit namespace and `query` says so instead):
-# Most recent cached commit on this branch for fork alice/mathlib4: 5a3c7e9a...
-#
-# To use this cache, run:
-#   lake exe cache get --scope=5a3c7e9a...
-```
-
-The `query` command walks your git log backwards from `HEAD`, stopping at the
-merge base with `master` or a hard cap of 50 commits (whichever comes first),
-and probes each commit for a completed SHA-scoped upload in the `forks`
-container. That signal is written by `cache put` only after a successful
-upload, so its presence is a reliable "this commit was cached" signal. `query`
-prints the SHA to stdout (and does not auto-apply it) — you manually copy the
-result into your `cache get` command if desired.
-
-### Boolean probe on a single commit
-
-`lake exe cache query <REF>` checks a specific commit and exits with 0 (cached)
-or 1 (not cached). The ref can be `HEAD`, a branch name, a tag, or a SHA — anything
-`git rev-parse` accepts.
-
-```bash
-# Is the current checkout's HEAD cached?
-lake exe cache query HEAD && echo "yes" || echo "no"
-
-# Is a specific SHA cached?
-lake exe cache query 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
-# prints "cached: 5a3c7e9a..." (exit 0) or "not cached: 5a3c7e9a..." (exit 1)
-```
-
-By default `query` (both modes) targets the cwd's git remote — pass `--repo=`
-to override.
-
-### Unsafe automatic scope walk
-
-`cache get --unsafe` folds the `query` discovery into the download itself: rather
-than asking you to copy one SHA into `--scope=`, it walks your branch history
-(`HEAD` back to the merge base with `master`) for commits that have a cached fork
-build and reads the `forks` container at their scope. By
-default it uses just the single most recent such commit; `--unsafe-window=N`
-widens this to the `N` most recent, tried newest first with files fetched in one
-round dropped from the next.
-
-```bash
-lake exe cache get --unsafe             # use the most recent cached fork commit
-lake exe cache get --unsafe-window=10   # try the 10 most recent (implies --unsafe)
-```
-
-The trust-ordered container chain is unchanged: `master` is still tried first and
-serves the bulk of every fork's files by hash; only the `forks` round is expanded
-into one round per discovered SHA. If no cached fork commit is found in range,
-`--unsafe` falls back to a plain unscoped read.
-
-`--unsafe` trusts the artifacts of *every* commit it tries, so it always prints
-the [non-default-scope security notice](#security-warning-non-default-scope). It
-is mutually exclusive with `--scope=` (which pins exactly one commit).
-
-### Heads-up note from `cache get`
-
-When you run `cache get` on a fork-trust repo and HEAD has not been built and
-cached at fork-trust level, the tool prints a stderr note pointing you at
-`cache query` (and warning that picking a different commit means trusting its
-artifacts). Costs one HTTP HEAD per `cache get` invocation; only fires when the
-resolved repo's default chain includes `forks` and no `--scope=` / `--cache-from`
-override is supplied.
-
-## Security Warning: Non-Default Scope
-
-When you read cache artifacts at a non-default scope, the cache tool prints a
-security warning to stderr. This happens when:
-
-1. **`--unsafe` is passed** — you are letting the tool walk history and trust the
-   artifacts of whichever recent fork commit(s) it finds cached.
-2. **`--scope=` is passed** — you are reading from a specific commit's
-   namespace instead of the repo's default trust chain.
-3. **`--cache-from` widens the read chain** — you are explicitly telling the tool
-   to trust containers beyond the repo default.
-4. **`--repo` overrides the detected git remote** — you are reading cache for a
-   different repository than your cwd's git remote.
-
-Example warning:
-
-```
-=================================================================
-SECURITY: reading cache at a non-default scope
-=================================================================
-You are reading cache artifacts at a scope outside the default trust
-boundary for this repo. The cache cannot verify the contents of these
-artifacts; you are choosing to trust whoever uploaded them.
-
-Repository: leanprover-community/mathlib4
-Reason: --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e (explicit per-commit scope)
-=================================================================
-```
-
-This warning is always printed — it cannot be suppressed with `--quiet`. The
-warning is purely informational; it does not prompt for confirmation (so it
-doesn't interfere with CI).
-
 ## Tests
 
-The cache tool's pure logic (container URL construction, per-repo allowlist,
-CLI parsing) is covered by a standalone test exe:
+The cache tool's pure logic (container URL construction, the workflow
+decision, the command line) is covered by a standalone test exe:
 
 ```bash
 lake exe cache-test
