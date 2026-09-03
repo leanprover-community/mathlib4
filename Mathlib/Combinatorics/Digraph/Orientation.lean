@@ -28,7 +28,8 @@ the edge orientations of `Digraph`.
 - Define more ways to orient a `SimpleGraph`.
 - Provide lemmas on how `toSimpleGraphInclusive` and `toSimpleGraphStrict` relate to other lattice
   structures on `SimpleGraph`s and `Digraph`s.
-
+- Note that currently both definitions ignore the vertex set since
+  `SimpleGraph` doesn't have vertex sets yet.
 ## Tags
 
 digraph, simple graph, oriented graphs
@@ -46,13 +47,15 @@ section toSimpleGraph
 
 /--
 Orientation-forgetting map from `Digraph` to `SimpleGraph` that gives an unoriented edge if
-either orientation is present.
+either orientation is present. Currently this definition ignores vertex sets since `SimpleGraph`
+doesn't have vertex sets yet.
 -/
 def toSimpleGraphInclusive (G : Digraph V) : SimpleGraph V := SimpleGraph.fromRel G.Adj
 
 /--
 Orientation-forgetting map from `Digraph` to `SimpleGraph` that gives an unoriented edge if
-both orientations are present.
+both orientations are present. Currently this definition ignores vertex sets since `SimpleGraph`
+doesn't have vertex sets yet.
 -/
 def toSimpleGraphStrict (G : Digraph V) : SimpleGraph V where
   Adj v w := v ≠ w ∧ G.Adj v w ∧ G.Adj w v
