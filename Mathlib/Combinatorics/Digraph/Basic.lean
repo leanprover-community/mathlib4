@@ -296,6 +296,8 @@ instance : InfSet G.SpanningSubgraph where
 instance : HImp G.SpanningSubgraph where
   himp H K := Hᶜ ⊔ K
 
+instance : HNot G.SpanningSubgraph where
+  hnot H := Hᶜ
 instance : SDiff G.SpanningSubgraph where
   sdiff H K := H ⊓ Kᶜ
 
