@@ -536,7 +536,7 @@ namespace Real
 
 section ToNNReal
 
-@[simp, basify_simp]
+@[simp]
 theorem coe_toNNReal' (r : ℝ) : (Real.toNNReal r : ℝ) = max r 0 :=
   rfl
 
