@@ -34,25 +34,13 @@ public section
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] {f g : R[X]} {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B]
-  [Algebra R A] [Algebra R B] [IsDomain R]
+variable {R A : Type*} [CommRing R] {f : R[X]} [CommRing A] [IsDomain A] [Algebra R A]
 
-omit [IsDomain R] in
 theorem Splits.of_splits_algebraMap [FaithfulSMul R A]
     (hf : Splits (f.map (algebraMap R A)))
     (hi : ∀ a ∈ f.rootSet A, a ∈ (algebraMap R A).range) : Splits f := by
   apply hf.of_splits_map_of_injective (FaithfulSMul.algebraMap_injective R A) fun a ha ↦ hi a ?_
   rwa [mem_rootSet', ← eval_map_algebraMap, ← IsRoot.def, ← mem_roots']
-
-end Polynomial
-
-namespace Polynomial
-
-theorem rootSet_map (R S A : Type*) [CommRing R] [CommRing S] [CommRing A] [IsDomain A]
-    [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] (p : R[X]) :
-    (p.map (algebraMap R S)).rootSet A = p.rootSet A := by
-  classical
-  rw [rootSet_def, rootSet_def, aroots_map]
 
 end Polynomial
 
@@ -137,7 +125,8 @@ attribute [local instance] Gal.splits_ℚ_ℂ in
 residue field, then the Galois group surjects onto the symmetric group `S_n`.
 
 Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois]. -/
-theorem tada' (f₀ : ℤ[X]) (hif₀ : Irreducible f₀) (hmf₀ : f₀.Monic)
+theorem bijective_toPermHom_of_natDegree_le_ncard_rootSet_of_splits
+    (f₀ : ℤ[X]) (hif₀ : Irreducible f₀) (hmf₀ : f₀.Monic)
     (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
       f₀.natDegree ≤ (f₀.rootSet F).ncard + 1) :
     Function.Bijective (Gal.galActionHom (f₀.map (algebraMap ℤ ℚ)) ℂ) := by
@@ -178,7 +167,7 @@ theorem tada' (f₀ : ℤ[X]) (hif₀ : Irreducible f₀) (hmf₀ : f₀.Monic)
     obtain ⟨g, hg⟩ := this (e.permCongr.symm φ)
     exact ⟨g, by simp [Equiv.Perm.ext_iff, he, ← e.permCongr.eq_symm_apply.mp hg]⟩
   refine hsf₀.surjective_toPermHom_of_iSup_inertia_eq_top (fun m ↦ ?_)
-    (supr_inertia_maximalSpectrum_eq_top (𝓞 K) G)
+    (supr_inertia_maximalSpectrum_eq_top R G)
   let := Ideal.Quotient.field m.asIdeal
   grw [ncard_rootSet_le]
   apply h

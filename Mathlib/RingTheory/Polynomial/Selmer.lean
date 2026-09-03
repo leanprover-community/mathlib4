@@ -6,18 +6,6 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
-public import Mathlib.FieldTheory.Finite.GaloisField
-public import Mathlib.FieldTheory.Galois.IsGaloisGroup
-public import Mathlib.FieldTheory.KrullTopology
-public import Mathlib.FieldTheory.Relrank
-public import Mathlib.GroupTheory.Perm.ClosureSwap
-public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-public import Mathlib.NumberTheory.NumberField.Discriminant.Different
-public import Mathlib.NumberTheory.NumberField.Ideal.Basic
-public import Mathlib.NumberTheory.RamificationInertia.Galois
-public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
-public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.Polynomial.Morse
 
 /-!
@@ -88,12 +76,7 @@ theorem X_pow_sub_X_sub_one_irreducible_rat (hn1 : n ≠ 1) : Irreducible (X ^ n
       Polynomial.map_X] at h
   · exact hp ▸ (trinomial_monic zero_lt_one hn).isPrimitive
 
-open Equiv Pointwise
-
-open IntermediateField
-
-attribute [local instance] Gal.splits_ℚ_ℂ
-
+attribute [local instance] Gal.splits_ℚ_ℂ in
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
   rcases le_or_gt n 1 with hn | hn
@@ -106,7 +89,7 @@ theorem X_pow_sub_X_sub_one_gal :
     apply Unique.bijective
   have hp : (X ^ n - X - 1 : ℤ[X]) = trinomial 0 1 n (-1) (-1) 1 := by
     simp only [trinomial, C_neg, C_1]; ring
-  have h := tada'' (X ^ n - X - 1)
+  have h := bijective_toPermHom_of_natDegree_le_ncard_rootSet_of_splits (X ^ n - X - 1)
     (X_pow_sub_X_sub_one_irreducible hn.ne') (hp ▸ trinomial_monic zero_lt_one hn) ?_
   · rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
       Polynomial.map_X] at h

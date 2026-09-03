@@ -41,7 +41,8 @@ theorem gal_quintic : Function.Bijective (galActionHom quintic ℂ) :=
 
 theorem not_solvable_by_rad (x : ℂ) (hx : aeval x quintic = 0) : x ∉ solvableByRad ℚ ℂ := by
   refine mt (fun h ↦ isSolvable_gal_of_irreducible h irreducible_quintic hx)
-    fun h ↦ Equiv.Perm.not_solvable (rootSet quintic ℂ) ?_ (solvable_of_surjective gal_quintic.2)
+    fun h ↦ Equiv.Perm.not_isSolvable (rootSet quintic ℂ) ?_
+      (Group.isSolvable_of_surjective gal_quintic.2)
   rw [Cardinal.mk_fintype, card_rootSet_eq_natDegree irreducible_quintic.separable (splits _),
     natDegree_eq_of_degree_eq_some degree_quintic, Nat.ofNat_le_cast]
 
