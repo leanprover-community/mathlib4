@@ -169,8 +169,10 @@ variable [NoMinOrder α]
 
 lemma Icc_pred_right_eq_Ico (a b : α) : Icc a (pred b) = Ico a b := coe_injective <| by simp
 lemma Ioc_pred_left_eq_Icc (a b : α) : Ioc (pred a) b = Icc a b := coe_injective <| by simp
-lemma Ioo_pred_left_eq_Ioc (a b : α) : Ioo (pred a) b = Ico a b := coe_injective <| by simp
+lemma Ioo_pred_left_eq_Ico (a b : α) : Ioo (pred a) b = Ico a b := coe_injective <| by simp
 lemma Ioc_pred_pred_eq_Ico (a b : α) : Ioc (pred a) (pred b) = Ico a b := coe_injective <| by simp
+
+@[deprecated (since := "2026-09-03")] alias Ioo_pred_left_eq_Ioc := Ioo_pred_left_eq_Ico
 
 /-! ##### Inserting into intervals -/
 
