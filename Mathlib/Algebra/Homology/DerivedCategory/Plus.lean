@@ -218,7 +218,8 @@ lemma isIso_iff {X Y : Plus C} (f : X ⟶ Y) :
 
 /-- The localization functor `CochainComplex.Plus C ⥤ DerivedCategory.Plus C`. -/
 noncomputable def Q : CochainComplex.Plus C ⥤ DerivedCategory.Plus C :=
-  HomotopyCategory.Plus.quotient C ⋙ Qh
+  ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ DerivedCategory.Q)
+    (fun ⟨K, n, hn⟩ ↦ ⟨n, by dsimp; infer_instance⟩)
 
 -- TODO: show that `Q` is indeed a localization functor with respect to quasi-isomorphisms
 
