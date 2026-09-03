@@ -329,11 +329,8 @@ theorem SpanningSubgraph.adj_le_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
   grind
 
 theorem SpanningSubgraph.adj_injective {G : Digraph V} :
-    Function.Injective (SpanningSubgraph.Adj (G := G)) := by
-  intro H K h
-  apply le_antisymm
-  · exact SpanningSubgraph.adj_le_iff.mp h.le
-  · exact SpanningSubgraph.adj_le_iff.mp h.ge
+    Function.Injective (SpanningSubgraph.Adj (G := G)) :=
+  fun _ _ h ↦ (SpanningSubgraph.adj_le_iff.mp h.le).antisymm (SpanningSubgraph.adj_le_iff.mp h.ge)
 
 @[simp] theorem SpanningSubgraph.adj_sSup {G : Digraph V} (s : Set G.SpanningSubgraph) :
     SpanningSubgraph.Adj (sSup s) = ⨆ H ∈ s, SpanningSubgraph.Adj H := by
