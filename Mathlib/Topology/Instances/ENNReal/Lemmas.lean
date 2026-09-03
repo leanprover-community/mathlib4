@@ -6,13 +6,13 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Data.ENNReal.BigOperators
-public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.Basic.ENNReal.BigOperators
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Instances.NNReal.Lemmas
-public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.Metrizable.Uniformity
+public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Topology on extended non-negative reals
