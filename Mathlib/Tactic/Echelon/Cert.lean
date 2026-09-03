@@ -30,9 +30,9 @@ path this is built one entry at a time, but should eventually be replaced by a d
 matrix mult normalising tactic. `norm_num` does close it today (via @[simp] rewrites), but is
 several times slower and does not handle some edge cases (e.g. 0x0).
 
-A quantifier over `Fin n` is discharged by recursion on `List.finRange n`, where the motive
-is spelled once, rather than by chaining `Fin.forall_fin_succ`, which respells it at every
-index.
+A quantifier over `Fin n` is discharged through `List.Forall` over `List.finRange n`, where
+the motive is spelled once, rather than by chaining `Fin.forall_fin_succ`, which respells it
+at every index.
 
 Each condition maker takes both an elaborated term and the recorded data it was built from,
 `U` with `data.U` and `pivot` with `data.pivot`: the term is what the statement names, while
@@ -80,17 +80,6 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
   return acc
 
-/-- Prove the certificate condition `p` by a kernel-checked `decide`, with `name` naming
-the condition in errors. -/
-def proveByDecide (name : String) (p : Q(Prop)) : MetaM Q($p) := do
-  let d ← mkDecide p
-  let .ok r := Kernel.whnf (← getEnv) (← getLCtx) d
-    | throwError "cannot verify the decomposition certificate: {name} does not reduce in \
-        the kernel"
-  unless r.isConstOf ``Bool.true do
-    throwError "cannot verify the decomposition certificate: {name} failed"
-  mkDecideProofQ p
-
 /-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `certifier i`
 proving it at index `i`, unfolding `p` when its quantifier is behind a definition. The proof
 recurses on the index list `List.finRange n`, so the motive is spelled once rather than once
@@ -130,15 +119,12 @@ def certifyImplication (holds : Bool) (p : Q(Prop)) (certifier : (q : Q(Prop)) �
     return .lam nm dom (← certifier body) bi
   else
     have hyp : Q(Prop) := dom
-    mkAppOptM ``Not.elim #[none, some body, ← proveByDecide "an index guard" q(¬ $hyp)]
+    mkAppOptM ``Not.elim #[none, some body, ← mkDecideProofQ q(¬ $hyp)]
 
 /-- Prove a cell whose two sides reduce to the same recorded entry. -/
 def certifyRflCell (p : Q(Prop)) : MetaM Q($p) := do
   match_expr p with
-  | Eq _ lhs rhs =>
-    unless ← isDefEq lhs rhs do
-      throwError "the two sides do not reduce to the same recorded entry:{indentExpr p}"
-    mkEqRefl lhs
+  | Eq _ lhs _ => mkEqRefl lhs
   | _ => throwError "expected an equation:{indentExpr p}"
 
 /-- Prove that a recorded `entry` is nonzero, by having `leaf` refute its equation with
@@ -192,8 +178,8 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
               certifyNonzeroEntry leaf (entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
           mkAppM ``And.intro #[hz, hn]
         | _ => throwError "unexpected shape of the pivot entry conditions:{indentExpr gi}"
-      let hMono ← proveByDecide "monotonicity of the pivot function" mono
-      let hStrict ← proveByDecide "strict monotonicity of the pivot function" strict
+      let hMono ← mkDecideProofQ mono
+      let hStrict ← mkDecideProofQ strict
       mkAppM ``Iff.mpr
         #[iff, ← mkAppM ``And.intro #[hMono, ← mkAppM ``And.intro #[hStrict, entryConds]]]
     | _ => throwError "unexpected second conjunct in `Matrix.isPivotedBy_iff`:{indentExpr rest}"
@@ -263,22 +249,18 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have Aσ : Q(Matrix (Fin $m) (Fin $n) $α) := q(Matrix.of $aRows)
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
-  let cond (name : String) (p : Q(Prop)) (certify : LeafCertifier → MetaM Q($p)) :
-      MetaM Q($p) :=
+  let cond (p : Q(Prop)) (certify : LeafCertifier → MetaM Q($p)) : MetaM Q($p) :=
     match leaf? with
-    | none => proveByDecide name p
+    | none => mkDecideProofQ p
     | some leaf => certify leaf
-  let hperm ← cond "the row arrangement" q(($A).submatrix $σ id = $Aσ) fun _ =>
-    certifyPermEq A Aσ aRows σ
-  let hprod ← cond "the product of the transform" q($L * $Aσ = $U) fun leaf =>
+  let hperm ← cond q(($A).submatrix $σ id = $Aσ) fun _ => certifyPermEq A Aσ aRows σ
+  let hprod ← cond q($L * $Aσ = $U) fun leaf =>
     certifyProductEq _cr L data.L Aσ aEntries U data.U leaf
   have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
-  let hpivot ← cond "the echelon-pivot condition" q(($U).IsPivotedBy $pivot) fun leaf =>
+  let hpivot ← cond q(($U).IsPivotedBy $pivot) fun leaf =>
     certifyPivotedBy _cr U data.U pivot data.pivot leaf
-  let hlower ← cond "lower triangularity of the transform" q(($L).IsLowerTriangular) fun _ =>
-    certifyLowerTriangular _cr L
-  let hdiag ← cond "the nonzero diagonal of the transform" q(∀ i, ($L).diag i ≠ 0) fun leaf =>
-    certifyNonzeroDiag _cr L data.L leaf
+  let hlower ← cond q(($L).IsLowerTriangular) fun _ => certifyLowerTriangular _cr L
+  let hdiag ← cond q(∀ i, ($L).diag i ≠ 0) fun leaf => certifyNonzeroDiag _cr L data.L leaf
   return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
 
 end Mathlib.Tactic.Echelon
