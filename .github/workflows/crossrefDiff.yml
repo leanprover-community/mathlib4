@@ -1,0 +1,215 @@
+# Cross-reference summary (post-build)
+# Comments on a PR with the cross-references it adds, each as a clickable link.
+#
+# - Reads `crossrefs.json` from the build's `import-graph` artifact (written by
+#   `scripts/export_crossrefs.lean`; see `build_template.yml`'s `post_steps`).
+# - Subtracts the same file from the master build at the PR's merge base, so a
+#   tag that landed on master meanwhile is not reported as added here.
+# - Posts or updates a marker-keyed comment on the PR.
+
+name: Cross-reference summary (post-build)
+
+on:
+  workflow_run:
+    # Match the build workflows by their `name:` — `build.yml` (non-fork PRs,
+    # push-triggered) and `build_fork.yml` (fork PRs, pull_request_target).
+    workflows: ["continuous integration", "continuous integration (mathlib forks)"]
+    types: [completed]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read           # for cross-workflow artifact downloads
+  pull-requests: write    # for the `#### Crossref summary` comment
+
+env:
+  COMMENT_HEADER: '#### Crossref summary'
+
+jobs:
+  crossrefs:
+    # The build never runs on a `pull_request` event: non-fork PRs build via
+    # `build.yml` on `push` (head_branch = the PR branch), fork PRs via
+    # `build_fork.yml` on `pull_request_target`. Accept both, and for `push`
+    # exclude master and the non-PR maintenance branches.
+    if: >-
+      github.repository == 'leanprover-community/mathlib4'
+      && github.event.workflow_run.conclusion == 'success'
+      && (
+        github.event.workflow_run.event == 'pull_request_target'
+        || (
+          github.event.workflow_run.event == 'push'
+          && github.event.workflow_run.head_branch != 'master'
+          && github.event.workflow_run.head_branch != 'nightly-testing'
+          && !startsWith(github.event.workflow_run.head_branch, 'lean-pr-testing-')
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve Build run + SHA
+        id: meta
+        run: |
+          set -euo pipefail
+          RUN_ID="${{ github.event.workflow_run.id }}"
+          NEW_SHA="${{ github.event.workflow_run.head_sha }}"
+          {
+            echo "run-id=$RUN_ID"
+            echo "new-sha=$NEW_SHA"
+          } | tee -a "$GITHUB_OUTPUT"
+
+      - name: Checkout new commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.meta.outputs.new-sha }}
+          fetch-depth: 0
+          # `new-sha` is fork PR code already built by build_fork.yml; allow the
+          # fork checkout under this workflow_run.
+          allow-unsafe-pr-checkout: true
+
+      - name: Resolve merge-base against master
+        id: resolve
+        env:
+          NEW_SHA: ${{ steps.meta.outputs.new-sha }}
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin master
+          MB="$(git merge-base "$NEW_SHA" origin/master)"
+          echo "merge-base=$MB" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Download new-side artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: import-graph
+          path: ./new-artifact
+          run-id: ${{ steps.meta.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve PR number
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          NEW_SHA: ${{ steps.meta.outputs.new-sha }}
+        run: |
+          set -euo pipefail
+          # The build records the PR number in the artifact — reliable for fork
+          # PRs, where the commit-SHA search API lags or misses. Fall back to the
+          # commit's associated PRs for same-repo pushes (commit is on this repo).
+          PR_NUMBER="$(tr -dc '0-9' < ./new-artifact/pr_number.txt 2>/dev/null || true)"
+          if [ -z "$PR_NUMBER" ]; then
+            PR_NUMBER="$(gh api "repos/$REPO/commits/$NEW_SHA/pulls" --jq '.[0].number // empty')"
+          fi
+          echo "pr-number=$PR_NUMBER" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Find master Build for the merge-base
+        id: master-run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          MB: ${{ steps.resolve.outputs.merge-base }}
+        run: |
+          set -euo pipefail
+          RUN="$(gh api "repos/$REPO/actions/runs?head_sha=$MB&event=push&status=success&branch=master" \
+                  --jq '[.workflow_runs[] | select(.name=="continuous integration")] | .[0].id // ""')"
+          # A successful run is not enough: it must also carry the `import-graph` artifact.
+          HAS_ARTIFACT=""
+          if [ -n "$RUN" ]; then
+            HAS_ARTIFACT="$(gh api "repos/$REPO/actions/runs/$RUN/artifacts" \
+                    --jq '[.artifacts[] | select(.name=="import-graph")] | length')"
+          fi
+          if [ -n "$RUN" ] && [ "${HAS_ARTIFACT:-0}" -gt 0 ]; then
+            {
+              echo "found=true"
+              echo "run-id=$RUN"
+            } | tee -a "$GITHUB_OUTPUT"
+          else
+            echo "found=false" | tee -a "$GITHUB_OUTPUT"
+            echo "No usable master Build for merge-base $MB (no run, or run lacks the import-graph artifact)."
+          fi
+
+      - name: Download master-side artifact
+        if: steps.master-run.outputs.found == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: import-graph
+          path: ./ref-artifact
+          run-id: ${{ steps.master-run.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Actions come from the base repo at the pinned workflow commit, not from
+      # the PR tree checked out above.
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Build cross-references changes summary
+        id: report
+        env:
+          REPO: ${{ github.repository }}
+          SHA: ${{ steps.meta.outputs.new-sha }}
+        run: |
+          set -euo pipefail
+
+          # Skip if missing either artifact.
+          if [ ! -f ./new-artifact/crossrefs.json ] || [ ! -f ./ref-artifact/crossrefs.json ]; then
+            echo "state=skip" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          TABLE="$(python3 "$CI_SCRIPTS_DIR/pr_summary/crossrefsDiff.py" \
+            --base-crossrefs ./ref-artifact/crossrefs.json \
+            --head-crossrefs ./new-artifact/crossrefs.json \
+            --repo "$REPO" --new-sha "$SHA")"
+
+          if [ -z "$TABLE" ]; then
+            echo "state=none" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          {
+            printf '%s\n\n' "$COMMENT_HEADER"
+            printf '%s\n' "$TABLE"
+          } > report.md
+
+          echo "state=found" >> "$GITHUB_OUTPUT"
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Find existing cross-reference comment
+        if: steps.pr.outputs.pr-number != ''
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4
+        id: find-comment
+        with:
+          issue-number: ${{ steps.pr.outputs.pr-number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: ${{ env.COMMENT_HEADER }}
+
+      - name: Post or update the cross-reference summary
+        if: steps.report.outputs.state == 'found' && steps.pr.outputs.pr-number != ''
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ steps.pr.outputs.pr-number }}
+          body-path: report.md
+          edit-mode: replace
+
+      # Only when a comment already exists, so PRs that never added a
+      # cross-reference are not commented on.
+      - name: Clear a stale cross-reference summary
+        if: steps.report.outputs.state == 'none' && steps.find-comment.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ steps.pr.outputs.pr-number }}
+          body: |
+            ${{ env.COMMENT_HEADER }}
+            This PR no longer adds any cross-reference attributes.
+          edit-mode: replace

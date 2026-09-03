@@ -841,8 +841,8 @@ jobs:
           printf '%s' "${{ github.event.pull_request.number }}" > pr_number.txt
           ## Executing this runs the export and writes a (gitignored) `crossrefs.json`,
           ## which doubles as a smoke test of the `export_crossrefs.yml` workflow. The
-          ## output is uploaded below for the post-build `crossref_summary` workflow,
-          ## which diffs it against the published master export.
+          ## output is uploaded below for the post-build `crossrefDiff` workflow,
+          ## which diffs it against the build at the PR's merge base.
           lake env lean scripts/export_crossrefs.lean
 
       - name: ensure dump outputs are regular files
