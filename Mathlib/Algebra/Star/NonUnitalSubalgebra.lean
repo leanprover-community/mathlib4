@@ -446,21 +446,21 @@ variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 /-- Range of an `NonUnitalAlgHom` as a `NonUnitalStarSubalgebra`. -/
-protected def range (φ : F) : NonUnitalStarSubalgebra R B where
+protected def range (φ : A →⋆ₙₐ[R] B) : NonUnitalStarSubalgebra R B where
   toNonUnitalSubalgebra := NonUnitalAlgHom.range (φ : A →ₙₐ[R] B)
   star_mem' := by rintro _ ⟨a, rfl⟩; exact ⟨star a, map_star φ a⟩
 
 @[simp]
-theorem mem_range (φ : F) {y : B} :
+theorem mem_range (φ : A →⋆ₙₐ[R] B) {y : B} :
     y ∈ (NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) ↔ ∃ x : A, φ x = y :=
   NonUnitalRingHom.mem_srange
 
-theorem mem_range_self (φ : F) (x : A) :
+theorem mem_range_self (φ : A →⋆ₙₐ[R] B) (x : A) :
     φ x ∈ (NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) :=
   (NonUnitalAlgHom.mem_range φ).2 ⟨x, rfl⟩
 
 @[simp, norm_cast]
-theorem coe_range (φ : F) :
+theorem coe_range (φ : A →⋆ₙₐ[R] B) :
     ((NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) : Set B) =
     Set.range (φ : A → B) := by
   rfl
@@ -495,7 +495,7 @@ theorem injective_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : �
 /-- Restrict the codomain of a non-unital star algebra homomorphism `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-abbrev rangeRestrict (f : F) :
+abbrev rangeRestrict (f : A →⋆ₙₐ[R] B) :
     A →⋆ₙₐ[R] (NonUnitalStarAlgHom.range f : NonUnitalStarSubalgebra R B) :=
   NonUnitalStarAlgHom.codRestrict f (NonUnitalStarAlgHom.range f)
     (NonUnitalStarAlgHom.mem_range_self f)
@@ -523,7 +523,7 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 to its range.
 
 This is a computable alternative to `StarAlgEquiv.ofInjective`. -/
-def ofLeftInverse' {g : B → A} {f : F} (h : Function.LeftInverse g f) :
+def ofLeftInverse' {g : B → A} {f : A →⋆ₙₐ[R] B} (h : Function.LeftInverse g f) :
     A ≃⋆ₐ[R] NonUnitalStarAlgHom.range f :=
   { NonUnitalStarAlgHom.rangeRestrict f with
     toFun := NonUnitalStarAlgHom.rangeRestrict f
@@ -535,29 +535,28 @@ def ofLeftInverse' {g : B → A} {f : F} (h : Function.LeftInverse g f) :
         show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]
-theorem ofLeftInverse'_apply {g : B → A} {f : F} (h : Function.LeftInverse g f) (x : A) :
+theorem ofLeftInverse'_apply {g : B → A} {f : A →⋆ₙₐ[R] B} (h : Function.LeftInverse g f) (x : A) :
     ofLeftInverse' h x = f x :=
   rfl
 
 @[simp]
-theorem ofLeftInverse'_symm_apply {g : B → A} {f : F} (h : Function.LeftInverse g f)
+theorem ofLeftInverse'_symm_apply {g : B → A} {f : A →⋆ₙₐ[R] B} (h : Function.LeftInverse g f)
     (x : NonUnitalStarAlgHom.range f) : (ofLeftInverse' h).symm x = g x :=
   rfl
 
 /-- Restrict an injective non-unital star algebra homomorphism to a star algebra isomorphism -/
-noncomputable def ofInjective' (f : F) (hf : Function.Injective f) :
+noncomputable def ofInjective' (f : A →⋆ₙₐ[R] B) (hf : Function.Injective f) :
     A ≃⋆ₐ[R] NonUnitalStarAlgHom.range f :=
   ofLeftInverse' (Classical.choose_spec hf.hasLeftInverse)
 
 @[simp]
-theorem ofInjective'_apply (f : F) (hf : Function.Injective f) (x : A) :
+theorem ofInjective'_apply (f : A →⋆ₙₐ[R] B) (hf : Function.Injective f) (x : A) :
     ofInjective' f hf x = f x :=
   rfl
 
 end StarAlgEquiv
 
 /-! ### The star closure of a subalgebra -/
-
 
 namespace NonUnitalSubalgebra
 
@@ -888,12 +887,12 @@ def toTop : A →⋆ₙₐ[R] (⊤ : NonUnitalStarSubalgebra R A) :=
 end StarSubAlgebraA
 
 theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
-    (f : F) : NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔
+    (f : A →⋆ₙₐ[R] B) : NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔
       Function.Surjective f :=
   NonUnitalStarAlgebra.eq_top_iff
 
 @[simp]
-theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : A →⋆ₙₐ[R] A) :
+theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : A →⋆ₙₐ[R] B) :
     (⊤ : NonUnitalStarSubalgebra R A).map f = NonUnitalStarAlgHom.range f :=
   SetLike.coe_injective Set.image_univ
 
