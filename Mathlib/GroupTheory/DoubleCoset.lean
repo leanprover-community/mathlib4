@@ -126,7 +126,7 @@ lemma eq {H K : Subgroup G} {a b : G} :
   rw [eq'']
   exact rel_iff
 
-lemma out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out = q :=
+lemma out_eq' {H K : Subgroup G} (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
 
 lemma mk_out_eq_mul (H K : Subgroup G) (g : G) :
