@@ -97,7 +97,7 @@ theorem prodXSubSMul.smul (x : R) (g : G) : g • prodXSubSMul G R x = prodXSubS
 
 theorem prodXSubSMul.coeff (x : R) (g : G) (n : ℕ) :
     g • (prodXSubSMul G R x).coeff n = (prodXSubSMul G R x).coeff n := by
-  rw [← Polynomial.coeff_smul, prodXSubSMul.smul]
+  rw [← AddMonoidAlgebra.coeff_smul_apply, prodXSubSMul.smul]
 
 end CommRing
 

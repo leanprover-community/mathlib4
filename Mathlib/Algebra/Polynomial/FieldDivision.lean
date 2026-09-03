@@ -25,7 +25,7 @@ This file starts looking like the ring theory of $R[X]$
 
 noncomputable section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 open scoped Nat
 
 namespace Polynomial

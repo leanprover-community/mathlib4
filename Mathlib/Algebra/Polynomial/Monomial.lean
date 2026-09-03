@@ -43,7 +43,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
     · have : f.coeff i = 0 := by
         rw [← notMem_support_iff]
         exact fun hi' => hi (Finset.mem_singleton.1 (hn hi'))
-      simp [this, Ne.symm hi, coeff_monomial]
+      simp [this, Ne.symm hi]
   · rintro ⟨n, a, rfl⟩
     rw [← Finset.card_singleton n]
     apply Finset.card_le_card

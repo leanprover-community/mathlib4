@@ -38,16 +38,11 @@ variable [Semiring R] {p q r : R[X]}
 section Coeff
 
 @[simp]
-theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
-  rcases p with ⟨⟩
-  rcases q with ⟨⟩
-  simp_rw [← AddMonoidAlgebra.ofCoeff_add, coeff]
-  exact Finsupp.add_apply _ _ _
+theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := rfl
 
-@[simp]
-theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
-    coeff (r • p) n = r • coeff p n := by
-  rfl
+@[deprecated AddMonoidAlgebra.coeff_smul_apply (since := "2026-09-03")]
+protected theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
+    coeff (r • p) n = r • coeff p n := coeff_smul_apply ..
 
 theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
@@ -68,14 +63,14 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
-    simp only [sum_def, Finset.smul_sum, coeff_smul, map_smul, RingHom.id_apply]
+    simp only [sum_def, Finset.smul_sum, coeff_smul_apply, map_smul, RingHom.id_apply]
 
 variable (R) in
 /-- The nth coefficient, as a linear map. -/
 def lcoeff (n : ℕ) : R[X] →ₗ[R] R where
   toFun p := coeff p n
   map_add' p q := coeff_add p q n
-  map_smul' r p := coeff_smul r p n
+  map_smul' _ _ := coeff_smul_apply ..
 
 @[simp]
 theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
@@ -122,7 +117,7 @@ theorem mul_coeff_one (p q : R[X]) :
 @[simps]
 def constantCoeff : R[X] →+* R where
   toFun p := coeff p 0
-  map_one' := coeff_one_zero
+  map_one' := AddMonoidAlgebra.coeff_one_zero
   map_mul' := mul_coeff_zero
   map_zero' := coeff_zero 0
   map_add' p q := coeff_add p q 0
@@ -151,7 +146,7 @@ theorem coeff_C_mul (p : R[X]) : coeff (C a * p) n = a * coeff p n :=
 
 theorem C_mul' (a : R) (f : R[X]) : C a * f = a • f := by
   ext
-  rw [coeff_C_mul, coeff_smul, smul_eq_mul]
+  rw [coeff_C_mul, coeff_smul_apply, smul_eq_mul]
 
 @[simp]
 theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n * a :=

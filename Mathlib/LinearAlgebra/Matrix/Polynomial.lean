@@ -29,7 +29,7 @@ matrix determinant, polynomial
 public section
 
 
-open Matrix Polynomial
+open AddMonoidAlgebra Matrix Polynomial
 
 variable {n α : Type*} [DecidableEq n] [Fintype n] [CommRing α]
 
@@ -64,7 +64,7 @@ theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
   rw [det_apply, finsetSum_coeff, det_apply]
   refine Finset.sum_congr rfl ?_
   rintro g -
-  convert! coeff_smul (R := α) (sign g) _ 0
+  convert! coeff_smul_apply (R := α) (sign g) _ 0
   rw [coeff_zero_prod]
   refine Finset.prod_congr rfl ?_
   simp
@@ -75,7 +75,7 @@ theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
   refine Finset.sum_congr rfl ?_
   simp only [Finset.mem_univ, forall_true_left]
   intro g
-  convert! coeff_smul (R := α) (sign g) _ _
+  convert! coeff_smul_apply (R := α) (sign g) _ _
   rw [← mul_one (Fintype.card n)]
   convert! (coeff_prod_of_natDegree_le (R := α) _ _ _ _).symm
   · simp [coeff_C]

@@ -24,7 +24,7 @@ public import Mathlib.GroupTheory.GroupAction.Ring
 
 noncomputable section
 
-open Finset
+open AddMonoidAlgebra Finset
 
 open Polynomial
 

@@ -459,25 +459,23 @@ theorem X_mul_monomial (n : ℕ) (r : R) : X * monomial n r = monomial (n + 1) r
 theorem X_pow_mul_monomial (k n : ℕ) (r : R) : X ^ k * monomial n r = monomial (n + k) r := by
   rw [X_pow_mul, monomial_mul_X_pow]
 
-/-- `coeff p n` (often denoted `p.coeff n`) is the coefficient of `X^n` in `p`. -/
-def coeff (p : R[X]) : ℕ → R := AddMonoidAlgebra.coeff p
-
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem coeff_ofFinsupp (p) : coeff (ofFinsupp p : R[X]) = p.coeff := rfl
 
-theorem coeff_ofCoeff (q : ℕ →₀ R) : coeff (.ofCoeff q : R[X]) = q := rfl
+@[deprecated AddMonoidAlgebra.coeff_ofCoeff (since := "2026-09-03")]
+protected theorem coeff_ofCoeff (q : ℕ →₀ R) : coeff (.ofCoeff q : R[X]) = q := rfl
 
-theorem coeff_injective : Injective (coeff : R[X] → ℕ →₀ R) := by rintro ⟨p⟩ ⟨q⟩; simp [coeff]
+@[deprecated AddMonoidAlgebra.coeff_injective (since := "2026-09-03")]
+protected theorem coeff_injective : Injective (coeff : R[X] → ℕ →₀ R) := coeff_injective
 
-@[simp]
-theorem coeff_inj : p.coeff = q.coeff ↔ p = q :=
-  coeff_injective.eq_iff
+@[deprecated AddMonoidAlgebra.coeff_inj (since := "2026-09-03")]
+protected theorem coeff_inj : p.coeff = q.coeff ↔ p = q := coeff_inj
 
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp.coeff i = f.coeff i := rfl
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  simp [coeff, monomial, Finsupp.single_apply]
+  simp [monomial, Finsupp.single_apply]
 
 @[simp]
 theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
@@ -495,9 +493,8 @@ theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
   simp_rw [eq_comm (a := n) (b := 0)]
   exact coeff_monomial
 
-@[simp]
-theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by
-  simp [coeff_one]
+@[deprecated AddMonoidAlgebra.coeff_one_zero (since := "2026-09-03")]
+protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := coeff_one_zero
 
 @[simp]
 theorem coeff_X_one : coeff (X : R[X]) 1 = 1 :=
@@ -508,7 +505,7 @@ theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 :=
   coeff_monomial
 
 @[simp]
-theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp [coeff_monomial]
+theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp
 
 @[aesop simp]
 theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
@@ -520,7 +517,7 @@ theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := b
 @[simp, grind =]
 theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
   rcases p with ⟨⟩
-  simp [support, coeff]
+  simp [support]
 
 theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
@@ -597,7 +594,7 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
   simpa only [← subsingleton_iff] using subsingleton_iff_subsingleton
 
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
-  simp [AddMonoidAlgebra.ext_iff, DFunLike.ext_iff, coeff]
+  simp [AddMonoidAlgebra.ext_iff, DFunLike.ext_iff]
 
 -- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`,  `AddMonoidAlgebra.ext` also  applies to
 -- equalities in `R[X]`. We make this ext lemma have higher priority to avoid exposing
@@ -869,12 +866,12 @@ theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).e
   simp [support, erase_def, Finsupp.support_erase]
 
 theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.erase n = p := by
-  simp [monomial, erase, coeff]
+  simp [monomial, erase]
 
 theorem coeff_erase (p : R[X]) (n i : ℕ) :
     (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
   rcases p with ⟨⟩
-  simp only [erase_def, coeff]
+  simp only [erase_def]
   exact ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[simp]
@@ -898,7 +895,7 @@ If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`. -/
 def update (p : R[X]) (n : ℕ) (a : R) : R[X] := AddMonoidAlgebra.update n a p
 
 theorem coeff_update (p : R[X]) (n : ℕ) (a : R) :
-    (p.update n a).coeff = Function.update p.coeff n a := by simp [update, coeff]
+    (p.update n a).coeff = Function.update p.coeff n a := by simp [update]
 
 theorem coeff_update_apply (p : R[X]) (n : ℕ) (a : R) (i : ℕ) :
     (p.update n a).coeff i = if i = n then a else p.coeff i := by
@@ -989,11 +986,10 @@ theorem ofFinsupp_intCast (z : ℤ) : (ofFinsupp z : R[X]) = z := rfl
 theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 
 @[simp]
-theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by simp [coeff]
+theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by simp
 
 @[simp]
-theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by
-  simp [coeff, sub_eq_add_neg]
+theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by simp
 
 @[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by

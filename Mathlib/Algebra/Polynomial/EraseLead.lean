@@ -301,7 +301,7 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
     rw [← self_sub_monomial_natDegree_leadingCoeff, mul_sub, coeff_sub,
       sub_zero, sub_zero, eq_sub_iff_add_eq, add_eq_left]
     rcases hn₂ : n
-    · simpa [coeff_monomial, hp] using! fun _ ↦ by lia
+    · simp [hdP]
     · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, ite_eq_right (by lia),
         ite_eq_right (by lia), mul_zero, sub_zero]
   · --n ≥ P.natDegree, so all the coefficients are zero.

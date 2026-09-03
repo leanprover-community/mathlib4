@@ -40,6 +40,8 @@ coefficient, or vice versa, with any number of zero coefficients in between.
 
 @[expose] public section
 
+open AddMonoidAlgebra
+
 namespace Polynomial
 
 section Semiring

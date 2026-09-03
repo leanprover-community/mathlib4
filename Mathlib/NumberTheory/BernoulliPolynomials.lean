@@ -219,8 +219,9 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
   | zero => simp
   | succ n =>
   ext i
-  rw [← neg_one_mul, ← C_1, ← C_neg, Polynomial.comp_C_mul_X_coeff, coeff_smul, coeff_add,
-    coeff_smul, coeff_bernoulli, coeff_X_pow]
+  rw [← neg_one_mul, ← C_1, ← C_neg, Polynomial.comp_C_mul_X_coeff,
+    AddMonoidAlgebra.coeff_smul_apply, coeff_add, AddMonoidAlgebra.coeff_smul_apply,
+    coeff_bernoulli, coeff_X_pow]
   split_ifs with h h'
   · subst h'
     simp

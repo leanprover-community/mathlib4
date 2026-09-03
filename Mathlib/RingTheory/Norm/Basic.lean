@@ -63,7 +63,7 @@ section EqProdRoots
 /-- Given `pb : PowerBasis K S`, then the norm of `pb.gen` is
 `(-1) ^ pb.dim * coeff (minpoly K pb.gen) 0`. -/
 theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
-    norm R pb.gen = (-1) ^ pb.dim * coeff (minpoly R pb.gen) 0 := by
+    norm R pb.gen = (-1) ^ pb.dim * (minpoly R pb.gen).coeff 0 := by
   rw [norm_eq_matrix_det pb.basis, det_eq_sign_charpoly_coeff, charpoly_leftMulMatrix,
     Fintype.card_fin]
 

@@ -26,6 +26,8 @@ A polynomial `f : R[X]` splits if it is a product of constant and monic linear p
 
 variable {R : Type*}
 
+open AddMonoidAlgebra
+
 namespace Polynomial
 
 section Semiring

@@ -137,7 +137,7 @@ theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
 
 theorem eval₂_eq_liftNC {f : R →+* S} {x : S} {p : R[X]} :
     eval₂ f x p = liftNC (↑f) (powersHom S x) p := by
-  simp only [eval₂_eq_sum, sum, support, coeff]
+  simp only [eval₂_eq_sum, sum, support]
   rfl
 
 theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :

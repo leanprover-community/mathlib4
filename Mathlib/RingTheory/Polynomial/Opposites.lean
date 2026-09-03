@@ -18,7 +18,7 @@ over a semiring and the polynomial ring over the opposite semiring. -/
 @[expose] public section
 
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 open MulOpposite
 
@@ -81,7 +81,7 @@ theorem opRingEquiv_symm_C_mul_X_pow (r : Rᵐᵒᵖ) (n : ℕ) :
 @[simp]
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
     (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by
-  simp [opRingEquiv, coeff]
+  simp [opRingEquiv]
 
 @[simp]
 theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support := by

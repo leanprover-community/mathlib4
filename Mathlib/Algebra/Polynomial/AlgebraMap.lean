@@ -36,7 +36,7 @@ assert_not_exists Ideal
 
 noncomputable section
 
-open Finset
+open AddMonoidAlgebra Finset
 
 open Polynomial
 
@@ -97,7 +97,6 @@ theorem algHom_ext' {f g : A[X] →ₐ[R] B}
 
 set_option backward.defeqAttrib.useBackward true in
 variable (R) in
-open AddMonoidAlgebra in
 /-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
 @[deprecated "Now a tautology" (since := "2026-07-18"), simps! -isSimp apply symm_apply]
@@ -736,7 +735,8 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   · apply eq_zero_of_mul_eq_zero_of_smul _ h (P.coeff l • Q)
     rw [smul_eq_C_mul, mul_left_comm, hQ, mul_zero]
   suffices P.coeff l * Q.leadingCoeff = 0 by
-    rwa [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul, hl, coeff_natDegree, smul_eq_mul]
+    rwa [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul_apply, hl,
+      coeff_natDegree, smul_eq_mul]
   let m := Q.natDegree
   suffices (P * Q).coeff (l + m) = P.coeff l * Q.leadingCoeff by rw [← this, hQ, coeff_zero]
   rw [coeff_mul]

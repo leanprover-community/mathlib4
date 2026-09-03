@@ -17,7 +17,7 @@ We define `integralNormalization`, which relate arbitrary polynomials to monic o
 @[expose] public section
 
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 
@@ -54,13 +54,13 @@ theorem integralNormalization_coeff {i : ℕ} :
     (integralNormalization p).coeff i =
       if p.degree = i then 1 else coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) := by
   have : p.coeff i = 0 → p.degree ≠ i := fun hc hd => coeff_ne_zero_of_eq_degree hd hc
-  simp +contextual [sum_def, integralNormalization, coeff_monomial, this,
+  simp +contextual [sum_def, integralNormalization, Finsupp.single_apply, this,
     mem_support_iff]
 
 theorem support_integralNormalization_subset :
     (integralNormalization p).support ⊆ p.support := by
   intro
-  simp +contextual [sum_def, integralNormalization, coeff_monomial, mem_support_iff]
+  simp +contextual [sum_def, integralNormalization, Finsupp.single_apply, mem_support_iff]
 
 theorem integralNormalization_coeff_degree {i : ℕ} (hi : p.degree = i) :
     (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, ite_eq_left hi]

@@ -546,7 +546,7 @@ theorem natDegree_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
 
 theorem leadingCoeff_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
     (p : R[X]) (h : IsSMulRegular R k) : (k • p).leadingCoeff = k • p.leadingCoeff := by
-  rw [Polynomial.leadingCoeff, Polynomial.leadingCoeff, coeff_smul,
+  rw [Polynomial.leadingCoeff, Polynomial.leadingCoeff, AddMonoidAlgebra.coeff_smul_apply,
     natDegree_smul_of_smul_regular p h]
 
 theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
@@ -561,7 +561,7 @@ theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q
     rw [← smul_eq_zero_iff_eq h.unit⁻¹] at hp
     have : h.unit⁻¹ • (p * q) = h.unit⁻¹ • p * q := by
       ext
-      simp only [Units.smul_def, coeff_smul, coeff_mul, smul_eq_mul, mul_sum]
+      simp only [Units.smul_def, AddMonoidAlgebra.coeff_smul_apply, coeff_mul, smul_eq_mul, mul_sum]
       refine sum_congr rfl fun x _ => ?_
       rw [← mul_assoc]
     rwa [this, Monic.mul_right_eq_zero_iff] at hp

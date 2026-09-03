@@ -30,7 +30,7 @@ public import Mathlib.Order.SuccPred.WithBot
 
 @[expose] public section
 
-open Finset
+open AddMonoidAlgebra Finset
 
 namespace Polynomial
 

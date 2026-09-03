@@ -23,7 +23,7 @@ coefficients of `f` and `g` do not multiply to zero.
 
 namespace Polynomial
 
-open Finsupp Finset
+open AddMonoidAlgebra Finsupp Finset
 
 open scoped Polynomial
 
@@ -95,7 +95,7 @@ theorem reflect_support (N : ℕ) (f : R[X]) :
 @[simp, grind =]
 theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f.coeff (revAt N i) := by
   rcases f with ⟨f⟩
-  simp only [reflect, coeff]
+  simp only [reflect]
   calc
     f.embDomain (revAt N) i
       = f.embDomain (revAt N) (revAt N (revAt N i)) := by rw [revAt_invol]

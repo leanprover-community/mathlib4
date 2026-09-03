@@ -21,7 +21,7 @@ public section
 
 noncomputable section
 
-open Finsupp Finset
+open AddMonoidAlgebra Finsupp Finset
 
 open Polynomial
 
@@ -65,7 +65,7 @@ for any `n` satisfying `p.natDegree < n`.
 theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) (n : ℕ)
     (hn : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
   have := supp_subset_range hn
-  simp only [Polynomial.sum, support, coeff] at this ⊢
+  simp only [Polynomial.sum, support] at this ⊢
   exact Finsupp.sum_of_support_subset _ this _ fun n _hn => h n
 
 /-- We can reexpress a sum over `p.support` as a sum over `range (p.natDegree + 1)`.

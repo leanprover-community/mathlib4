@@ -22,7 +22,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Defs
 
 noncomputable section
 
-open Finsupp Finset
+open AddMonoidAlgebra Finsupp Finset
 
 open Polynomial
 
@@ -470,7 +470,7 @@ theorem natDegree_smul_le {S : Type*} [SMulZeroClass S R] (a : S) (p : R[X]) :
 theorem degree_smul_of_isRightRegular_leadingCoeff (ha : a ≠ 0)
     (hp : IsRightRegular p.leadingCoeff) : (a • p).degree = p.degree := by
   refine le_antisymm (degree_smul_le a p) <| degree_le_degree ?_
-  rw [coeff_smul, coeff_natDegree, smul_eq_mul, ne_eq]
+  rw [coeff_smul_apply, coeff_natDegree, smul_eq_mul, ne_eq]
   exact hp.mul_right_eq_zero_iff.ne.mpr ha
 
 theorem degree_lt_degree_mul_X (hp : p ≠ 0) : p.degree < (p * X).degree := by
@@ -534,7 +534,7 @@ theorem natDegree_X_pow_le {R : Type*} [Semiring R] (n : ℕ) : (X ^ n : R[X]).n
 
 theorem not_isUnit_X : ¬IsUnit (X : R[X]) := fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ =>
   zero_ne_one' R <| by
-    rw [← coeff_one_zero, ← hgf]
+    rw [← AddMonoidAlgebra.coeff_one_zero (R := R) (M := ℕ), ← hgf]
     simp
 
 @[simp]

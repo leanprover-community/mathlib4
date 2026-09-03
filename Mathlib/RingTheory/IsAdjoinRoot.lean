@@ -439,7 +439,7 @@ def basis : Basis (Fin (natDegree f)) R S where
     · rw [Finsupp.mapDomain_apply Fin.val_injective]
     rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero]
     intro m hm
-    rw [Polynomial.coeff_ofCoeff]
+    rw [AddMonoidAlgebra.coeff_ofCoeff]
     rw [Finsupp.mapDomain_of_notMem_range]
     rw [Set.mem_range, not_exists]
     rintro i rfl
@@ -504,7 +504,7 @@ def coeff : S →ₗ[R] ℕ → R :=
   h.liftPolyₗ
     { toFun p := ⇑p.coeff
       map_add' p q := funext (Polynomial.coeff_add p q)
-      map_smul' c p := funext (Polynomial.coeff_smul c p) }
+      map_smul' c p := funext fun _ ↦ AddMonoidAlgebra.coeff_smul_apply c p _ }
 
 theorem coeff_apply_lt (z : S) (i : ℕ) (hi : i < natDegree f) :
     h.coeff z i = h.basis.repr z ⟨i, hi⟩ := by
