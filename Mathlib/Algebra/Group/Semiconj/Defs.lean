@@ -75,11 +75,6 @@ additive semigroup is transitive. -/]
 protected theorem isTrans : IsTrans S fun a b ↦ ∃ c, SemiconjBy c a b :=
   ⟨fun _ _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨y * x, hy.mul_left hx⟩⟩
 
-@[deprecated (since := "2026-02-20")]
-protected alias _root_.AddSemiconjBy.transitive := AddSemiconjBy.isTrans
-@[to_additive existing, deprecated (since := "2026-02-20")]
-protected alias transitive := SemiconjBy.isTrans
-
 end Semigroup
 
 section MulOneClass
