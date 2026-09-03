@@ -66,7 +66,7 @@ lemma coe_of : (of (I := I) (n := n) X : Type u) = X := rfl
 /-- The type of morphisms in `ModelWithCorners.MfldCat I n`. -/
 @[ext]
 structure Hom (M N : MfldCat.{u} I n) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `C^n` map. -/
   hom' : ContMDiffMap I I M N n
 
