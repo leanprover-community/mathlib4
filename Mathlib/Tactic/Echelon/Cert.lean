@@ -80,17 +80,20 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
   return acc
 
-/-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `certifier i`
-proving it at index `i`, unfolding `p` when its quantifier is behind a definition. The proof
-recurses on the index list `List.finRange n`, so the motive is spelled once rather than once
-per index. -/
-def certifyForallFin (n : Nat) (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) → MetaM Q($q)) :
+/-- Prove the quantified statement `p` over a literal `Fin` domain from proofs of its
+instances, `certifier i` proving it at index `i`, unfolding `p` when its quantifier is behind
+a definition. The proof recurses on the index list `List.finRange n`, so the motive is
+spelled once rather than once per index. -/
+def certifyForallFin (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) → MetaM Q($q)) :
     MetaM Q($p) :=
   forallBoundedTelescope p (some 1) (whnfType := true) fun is body => do
     let #[i] := is
       | throwError "expected a quantified statement:{indentExpr p}"
     let motive ← mkLambdaFVars is body
-    have fin : Q(Type) := q(Fin $n)
+    let fin ← inferType i
+    let_expr Fin nE := fin | throwError "expected a quantifier over `Fin`:{indentExpr p}"
+    let some n ← getNatValue? nE
+      | throwError "expected a literal `Fin` domain:{indentExpr p}"
     let mut acc : Expr := mkConst ``True.intro
     for k in 0...n do
       let j := n - 1 - k
@@ -98,7 +101,8 @@ def certifyForallFin (n : Nat) (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) 
       -- the conjunction takes its statement from the proofs, so that the one defeq check
       -- against the quantified goal is left to the kernel rather than run here as well
       acc ← if k == 0 then pure h else mkAppM ``And.intro #[h, acc]
-    have range : Q(List (Fin $n)) := q(List.finRange $n)
+    have nQ : Q(ℕ) := nE
+    have range : Q(List (Fin $nQ)) := q(List.finRange $nQ)
     let hAll ← mkAppM ``Iff.mp
       #[← mkAppOptM ``List.forall_iff_forall_mem #[none, some motive, some range],
         ← mkExpectedTypeHint acc (← mkAppM ``List.Forall #[motive, range])]
@@ -140,7 +144,7 @@ def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Q($α))) (leaf : LeafCertifier) :
     MetaM Q(∀ i, ($L).diag i ≠ 0) := do
   let zero : Q($α) ← mkNumeral α 0
-  certifyForallFin m q(∀ i, ($L).diag i ≠ 0) fun i _ =>
+  certifyForallFin q(∀ i, ($L).diag i ≠ 0) fun i _ =>
     certifyNonzeroEntry leaf (entries[i]!)[i]! zero m!"the diagonal entry of the transform at {i}"
 
 /-- Prove `L.IsLowerTriangular`: above the diagonal the elimination emitted zero, and at
@@ -148,8 +152,8 @@ the remaining index pairs the triangularity guard is refutable. -/
 def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
   -- the unfolded guard is `toDual j < toDual i`, which is `i < j` in the original order
-  certifyForallFin m q(($L).IsLowerTriangular) fun i gi => do
-    certifyForallFin m gi fun j cell => certifyImplication (i < j) cell certifyRflCell
+  certifyForallFin q(($L).IsLowerTriangular) fun i gi => do
+    certifyForallFin gi fun j cell => certifyImplication (i < j) cell certifyRflCell
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot`: the two conditions on the pivot
 function mention no entry and are decided, while the entry conditions are built from the
@@ -166,14 +170,14 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   | And mono rest =>
     match_expr rest with
     | And strict cells =>
-      let entryConds ← certifyForallFin m cells fun i gi => do
+      let entryConds ← certifyForallFin cells fun i gi => do
         match_expr gi with
         | And zeros nonzeros =>
           -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
           let col? := if h : i < pivots.size then some pivots[i] else none
-          let hz ← certifyForallFin n zeros fun j cell =>
+          let hz ← certifyForallFin zeros fun j cell =>
             certifyImplication (col?.all (j < ·)) cell certifyRflCell
-          let hn ← certifyForallFin n nonzeros fun c cell =>
+          let hn ← certifyForallFin nonzeros fun c cell =>
             certifyImplication (col? == some c) cell fun _ =>
               certifyNonzeroEntry leaf (entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
           mkAppM ``And.intro #[hz, hn]
@@ -194,14 +198,11 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fi
     MetaM Q(($A).submatrix $σ id = $Aσ) := do
   -- every cell is an equation between two spellings of one entry of `A`, so all of them
   -- close by `rfl` and none consults a leaf certifier
-  have reindexed : Q(Fin $m → Fin $n → $α) := q(fun i j => $A ($σ i) (id j))
-  have rowStmt : Q(Prop) := ← withLocalDeclD `i q(Fin $m) fun i => do
-    mkForallFVars #[i] (← mkEq (mkApp reindexed i).headBeta (mkApp rows i))
-  let rowEq ← certifyForallFin m rowStmt fun i _ => do
+  let rowEq ← certifyForallFin
+      q(∀ i : Fin $m, (fun j : Fin $n => $A ($σ i) (id j)) = $rows i) fun i _ => do
     let iN ← mkFinNumeral m i
-    have colStmt : Q(Prop) := ← withLocalDeclD `j q(Fin $n) fun j => do
-      mkForallFVars #[j] (← mkEq (mkApp2 reindexed iN j).headBeta (mkApp2 rows iN j))
-    mkAppM ``funext #[← certifyForallFin n colStmt fun _ cell => certifyRflCell cell]
+    mkAppM ``funext #[← certifyForallFin
+      q(∀ j : Fin $n, $A ($σ $iN) (id j) = $rows $iN j) fun _ cell => certifyRflCell cell]
   have wrap : Q((Fin $m → Fin $n → $α) → Matrix (Fin $m) (Fin $n) $α) :=
     q(fun g => Matrix.of g)
   mkExpectedTypeHint (← mkAppM ``congrArg #[wrap, ← mkAppM ``funext #[rowEq]])
@@ -230,8 +231,8 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     unless b do
       throwError "the product of the transform does not match the echelon form at ({i}, {j})"
     return prf
-  return q(Matrix.ext $(← certifyForallFin m q(∀ i j, ($L * $Aσ) i j = $U i j) fun i gi => do
-    certifyForallFin n gi fun j _ => cell i j))
+  return q(Matrix.ext $(← certifyForallFin q(∀ i j, ($L * $Aσ) i j = $U i j) fun i gi => do
+    certifyForallFin gi fun j _ => cell i j))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
 `entries`, the parsed entries of `A`, deciding every condition in the kernel unless `leaf?`
