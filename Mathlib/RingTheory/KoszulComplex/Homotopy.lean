@@ -43,6 +43,7 @@ lemma contraction_wedge_zero_degree
   rw  [hwedge, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
   simp [koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply]
 
+@[stacks 0626]
 lemma contraction_wedge_cartan_formula (x : M) (φ : M →ₗ[R] R) (n : ℕ) :
     (koszulCocomplex.d R M x n).comp (koszulComplex.d φ n) +
       (koszulComplex.d φ (n + 1)).comp (koszulCocomplex.d R M x (n + 1)) =
