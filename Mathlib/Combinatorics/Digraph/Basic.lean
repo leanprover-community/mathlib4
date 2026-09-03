@@ -312,8 +312,7 @@ instance : SDiff G.SpanningSubgraph where
     (v w : V) : (H ⇨ K).val.Adj v w ↔ (G.Adj v w ∧ ¬H.val.Adj v w) ∨ K.val.Adj v w := .rfl
 
 @[simp] theorem SpanningSubgraph.sdiff_val_adj {G : Digraph V} (H K : G.SpanningSubgraph)
-    (v w : V) : (H \ K).val.Adj v w ↔
-      H.val.Adj v w ∧ (G.Adj v w ∧ ¬K.val.Adj v w) := .rfl
+    (v w : V) : (H \ K).val.Adj v w ↔ H.val.Adj v w ∧ (G.Adj v w ∧ ¬K.val.Adj v w) := .rfl
 
 @[grind =]
 theorem SpanningSubgraph.adj_le_adj_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
