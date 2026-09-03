@@ -21,10 +21,17 @@ These tests cover the pure logic of the cache system, including:
 - CLI flag parsing (`--cache-from`, `--scope`, `--unsafe`, `--repo`, etc.)
 - `--unsafe` download-round expansion (`expandDownloadRounds`) and the
   non-default-scope security warning it triggers
+- Decompression-pipeline carry across download rounds (`DecompState`,
+  `finalizeDecomp`, `monitorCurl`)
+- Transfer classification (`classifyDownload`/`classifyUpload`): delivered,
+  miss, skip, or failed, per HTTP status and curl exit code
+- The two retry-flag tiers (`curlRetryArgs`)
 - Utility functions (URL extraction, filename hashing, etc.)
 
-Anything that touches `curl` or the network is left to CI, which exercises the
-`cache get`/`put` paths end-to-end on real containers.
+Anything that touches the network is left to CI, which exercises the
+`cache get`/`put` paths end-to-end on real containers. The unit tests spawn
+two local processes, `curl --version` and one leantar run on a nonexistent
+archive; neither makes a network request.
 
 ## Invariants these tests defend
 
@@ -40,6 +47,10 @@ Anything that touches `curl` or the network is left to CI, which exercises the
    collide.
 5. `legacy` stays readable with its mixed layout (flat for the canonical repo,
    prefixed for forks) so older clients keep working.
+6. Multi-round downloads decompress every file they fetch: the decompression
+   pipeline state is carried from each container round into the next and
+   drained after the last one, so a fork-PR `get` leaves no downloaded file
+   compressed on disk.
 
 ## Running the tests
 
@@ -59,7 +70,7 @@ open Cache.Requests
 initialize failures : IO.Ref Nat ← IO.mkRef 0
 
 /-- A single named assertion. On failure, prints details and bumps the counter. -/
-def assert (name : String) (cond : Bool) : IO Unit := do
+def assertTrue (name : String) (cond : Bool) : IO Unit := do
   if cond then
     IO.println s!"  ok: {name}"
   else
@@ -115,18 +126,18 @@ def test_Container_name : IO Unit := do
 def test_Container_parse : IO Unit := do
   IO.println "Container.parse?:"
   -- Every canonical name round-trips back to its enum case.
-  assert "master parses"          (Container.parse? "master" == some .master)
-  assert "forks parses"           (Container.parse? "forks" == some .forks)
-  assert "nightly-testing parses" (Container.parse? "nightly-testing" == some .nightlyTesting)
-  assert "pr-toolchain-tests parses"
+  assertTrue "master parses"          (Container.parse? "master" == some .master)
+  assertTrue "forks parses"           (Container.parse? "forks" == some .forks)
+  assertTrue "nightly-testing parses" (Container.parse? "nightly-testing" == some .nightlyTesting)
+  assertTrue "pr-toolchain-tests parses"
     (Container.parse? "pr-toolchain-tests" == some .prToolchainTests)
-  assert "legacy parses"          (Container.parse? "legacy" == some .legacy)
+  assertTrue "legacy parses"          (Container.parse? "legacy" == some .legacy)
   -- Matching is case-insensitive, so `--container=Master` canonicalizes too.
-  assert "case-insensitive"       (Container.parse? "Master" == some .master)
+  assertTrue "case-insensitive"       (Container.parse? "Master" == some .master)
   -- An unknown name returns `none` so `--container=bogus` errors out rather than
   -- defaulting to some container the user didn't ask for.
-  assert "unknown rejected"       (Container.parse? "bogus" == none)
-  assert "empty rejected"         (Container.parse? "" == none)
+  assertTrue "unknown rejected"       (Container.parse? "bogus" == none)
+  assertTrue "empty rejected"         (Container.parse? "" == none)
 
 /-- The Azure URL each container resolves to: `mathlib4-{name}` for the
 trust-level containers, bare `mathlib4` for `legacy`. These URLs go into every
@@ -151,6 +162,66 @@ def test_Container_azureURL : IO Unit := do
     "https://lakecache.blob.core.windows.net/mathlib4"
     Container.legacy.azureURL
 
+/-- A variable that names a read URL or a read chain arrives trimmed, and an
+empty or whitespace-only value means unset. `MATHLIB_CACHE_BASE_URL`,
+`MATHLIB_CACHE_GET_URL`, and `MATHLIB_CACHE_FROM` follow that rule. CI wires
+them from a GitHub Actions `vars` lookup, which yields `""` for an undefined
+variable, and such a value behaves as an absent one. The upload endpoint
+`MATHLIB_CACHE_PUT_URL` keeps the opposite rule: an empty value there fails the
+upload rather than divert it to the fallback container. -/
+def test_envValueNormalization : IO Unit := do
+  IO.println "nonEmptyEnvValue / normalizeBaseURL:"
+  -- `<unset>` stands in for `none`, so a failure shows both sides as strings.
+  let shown (value? : Option String) : String := value?.getD "<unset>"
+  assertEq "absent value reads as unset" "<unset>" (shown (nonEmptyEnvValue none))
+  assertEq "empty value reads as unset" "<unset>" (shown (nonEmptyEnvValue (some "")))
+  assertEq "whitespace-only value reads as unset" "<unset>"
+    (shown (nonEmptyEnvValue (some " \n")))
+  assertEq "value is trimmed" "master,forks" (shown (nonEmptyEnvValue (some " master,forks\n")))
+  assertEq "URL keeps its own path" "https://cache.example.org/mathlib4"
+    (shown (normalizeBaseURL (some "https://cache.example.org/mathlib4")))
+  assertEq "trailing slashes are stripped" "https://cache.example.org"
+    (shown (normalizeBaseURL (some "https://cache.example.org///")))
+  assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
+
+/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set
+and falls back to the Azure account when it is not. `getBaseURLFrom` is pure,
+so this test covers both branches; the environment-reading wrapper
+(`getBaseURL`) adds no logic of its own. -/
+def test_getBaseURLFrom : IO Unit := do
+  IO.println "getBaseURLFrom:"
+  assertEq "no override → the Azure account"
+    defaultGetBaseURL (getBaseURLFrom none)
+  assertEq "override → the given base"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org"))
+  -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
+  -- undefined, so an empty value must keep the default.
+  assertEq "empty value counts as unset"
+    defaultGetBaseURL (getBaseURLFrom (some ""))
+  assertEq "whitespace-only value counts as unset"
+    defaultGetBaseURL (getBaseURLFrom (some " \n"))
+  assertEq "override is trimmed"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n"))
+  -- A base written with a trailing slash must not double the separator in
+  -- `{base}/{container}/{key}`.
+  assertEq "trailing slash is stripped"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org/"))
+
+/-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
+`azureURL`, under whichever base `MATHLIB_CACHE_BASE_URL` selects. With no
+override, reads address Azure directly and the two URL families coincide. -/
+def test_Container_getURL : IO Unit := do
+  IO.println "Container.getURL:"
+  let base ← getBaseURL
+  assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
+  assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
+  assertEq "legacy read URL" s!"{base}/mathlib4" (← Container.legacy.getURL)
+  -- The effective base drives this guard, so an empty variable reaches the
+  -- assertions below: it means unset, and the Azure host answers for it.
+  if base == defaultGetBaseURL then
+    assertEq "default read URL matches azureURL"
+      Container.master.azureURL (← Container.master.getURL)
+
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
 repo (`/f/<repo>/<hash>`). The layout is fixed per container so that all of a
 container's writers stay on non-colliding paths:
@@ -162,23 +233,23 @@ container's writers stay on non-colliding paths:
 -/
 def test_Container_flatPath : IO Unit := do
   IO.println "Container.flatPath:"
-  assert "master is flat for the canonical repo"
+  assertTrue "master is flat for the canonical repo"
     (Container.master.flatPath MATHLIBREPO == true)
-  assert "master is flat for a fork repo too"
+  assertTrue "master is flat for a fork repo too"
     (Container.master.flatPath "alice/mathlib4" == true)
-  assert "legacy is flat for the canonical repo"
+  assertTrue "legacy is flat for the canonical repo"
     (Container.legacy.flatPath MATHLIBREPO == true)
-  assert "legacy is prefixed for a fork repo"
+  assertTrue "legacy is prefixed for a fork repo"
     (Container.legacy.flatPath "alice/mathlib4" == false)
-  assert "forks is prefixed for the canonical repo"
+  assertTrue "forks is prefixed for the canonical repo"
     (Container.forks.flatPath MATHLIBREPO == false)
-  assert "forks is prefixed for a fork repo"
+  assertTrue "forks is prefixed for a fork repo"
     (Container.forks.flatPath "alice/mathlib4" == false)
-  assert "nightly-testing is prefixed for the nightly-testing repo"
+  assertTrue "nightly-testing is prefixed for the nightly-testing repo"
     (Container.nightlyTesting.flatPath NIGHTLY_TESTING_REPO == false)
-  assert "nightly-testing is prefixed for the canonical repo"
+  assertTrue "nightly-testing is prefixed for the canonical repo"
     (Container.nightlyTesting.flatPath MATHLIBREPO == false)
-  assert "pr-toolchain-tests is prefixed for the nightly-testing repo"
+  assertTrue "pr-toolchain-tests is prefixed for the nightly-testing repo"
     (Container.prToolchainTests.flatPath NIGHTLY_TESTING_REPO == false)
 
 end ContainerModel
@@ -198,21 +269,43 @@ the trust boundary. Key points the tests pin:
 -/
 def test_defaultContainersForRepo : IO Unit := do
   IO.println "defaultContainersForRepo:"
-  assert "canonical repo → [master, legacy]"
+  assertTrue "canonical repo → [master, legacy]"
     (defaultContainersForRepo MATHLIBREPO == [.master, .legacy])
-  assert "nightly-testing repo → [nightly-testing, forks, legacy], no pr-toolchain-tests"
+  assertTrue "nightly-testing repo → [nightly-testing, forks, legacy], no pr-toolchain-tests"
     (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.nightlyTesting, .forks, .legacy])
-  assert "fork repo → [master, forks, legacy]"
+  assertTrue "fork repo → [master, forks, legacy]"
     (defaultContainersForRepo "alice/mathlib4" == [.master, .forks, .legacy])
-  assert "unknown repo falls back to the fork chain"
+  assertTrue "unknown repo falls back to the fork chain"
     (defaultContainersForRepo "some/other-repo" == [.master, .forks, .legacy])
   -- Every chain ends with `legacy`; dropping it would quietly shrink hit rates.
-  assert "fork chain ends with legacy"
+  assertTrue "fork chain ends with legacy"
     ((defaultContainersForRepo "alice/mathlib4").getLast? == some .legacy)
-  assert "canonical chain ends with legacy"
+  assertTrue "canonical chain ends with legacy"
     ((defaultContainersForRepo MATHLIBREPO).getLast? == some .legacy)
-  assert "nightly-testing chain ends with legacy"
+  assertTrue "nightly-testing chain ends with legacy"
     ((defaultContainersForRepo NIGHTLY_TESTING_REPO).getLast? == some .legacy)
+
+/-- `effectiveGetURLs` pairs the lookup chain with read URLs in trust order.
+This test covers the default chain and the `--cache-from` override. The
+`MATHLIB_CACHE_GET_URL` and `MATHLIB_CACHE_FROM` branches need process state,
+so the CI integration tests exercise them instead. -/
+def test_effectiveGetURLs : IO Unit := do
+  IO.println "effectiveGetURLs:"
+  if (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
+      (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome then
+    IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
+    return
+  let base ← getBaseURL
+  assertTrue "default chain pairs each container with its read URL"
+    ((← effectiveGetURLs MATHLIBREPO) ==
+      [(some .master, s!"{base}/mathlib4-master"),
+       (some .legacy, s!"{base}/mathlib4")])
+  cacheFromOverride.set (some [.forks, .master])
+  assertTrue "--cache-from override keeps its order"
+    ((← effectiveGetURLs MATHLIBREPO) ==
+      [(some .forks, s!"{base}/mathlib4-forks"),
+       (some .master, s!"{base}/mathlib4-master")])
+  cacheFromOverride.set none
 
 end PerRepoAllowlist
 
@@ -295,24 +388,24 @@ or empty input fails the whole list rather than degrading to a default, so a
 typo surfaces instead of silently changing where the cache is read. -/
 def test_parseCacheFromList : IO Unit := do
   IO.println "parseCacheFromList:"
-  assert "single container"
+  assertTrue "single container"
     (parseCacheFromList "master" == some [.master])
-  assert "two containers"
+  assertTrue "two containers"
     (parseCacheFromList "master,forks" == some [.master, .forks])
-  assert "all five containers"
+  assertTrue "all five containers"
     (parseCacheFromList "master,forks,nightly-testing,pr-toolchain-tests,legacy" ==
       some [.master, .forks, .nightlyTesting, .prToolchainTests, .legacy])
-  assert "master,legacy"
+  assertTrue "master,legacy"
     (parseCacheFromList "master,legacy" == some [.master, .legacy])
   -- Order is preserved, not normalized: `forks,master` reverses the priority.
-  assert "preserves the given order"
+  assertTrue "preserves the given order"
     (parseCacheFromList "forks,master" == some [.forks, .master])
   -- Whitespace around commas is tolerated, so the flag survives shell expansion.
-  assert "whitespace around names is tolerated"
+  assertTrue "whitespace around names is tolerated"
     (parseCacheFromList " master , forks " == some [.master, .forks])
-  assert "one unknown name rejects the whole list"
+  assertTrue "one unknown name rejects the whole list"
     (parseCacheFromList "master,bogus" == none)
-  assert "empty input is rejected"
+  assertTrue "empty input is rejected"
     (parseCacheFromList "" == none)
 
 end ParseCacheFromList
@@ -326,20 +419,20 @@ direct remote (e.g. `gh pr checkout`). Unparseable input returns `none`, and the
 caller falls back to `MATHLIBREPO`. -/
 def test_extractRepoFromUrl : IO Unit := do
   IO.println "extractRepoFromUrl:"
-  assert "ssh URL with .git suffix"
+  assertTrue "ssh URL with .git suffix"
     (extractRepoFromUrl "git@github.com:alice/mathlib4.git" == some "alice/mathlib4")
-  assert "ssh URL without .git suffix"
+  assertTrue "ssh URL without .git suffix"
     (extractRepoFromUrl "git@github.com:alice/mathlib4" == some "alice/mathlib4")
-  assert "https URL with .git suffix"
+  assertTrue "https URL with .git suffix"
     (extractRepoFromUrl "https://github.com/alice/mathlib4.git" == some "alice/mathlib4")
-  assert "https URL without .git suffix"
+  assertTrue "https URL without .git suffix"
     (extractRepoFromUrl "https://github.com/alice/mathlib4" == some "alice/mathlib4")
   -- A hyphenated owner is part of the repo identity and must survive intact.
-  assert "hyphenated owner is preserved"
+  assertTrue "hyphenated owner is preserved"
     (extractRepoFromUrl "https://github.com/leanprover-community/mathlib4.git" == some "leanprover-community/mathlib4")
-  assert "empty input returns none"
+  assertTrue "empty input returns none"
     (extractRepoFromUrl "" == none)
-  assert "a token with no slash or colon returns none"
+  assertTrue "a token with no slash or colon returns none"
     (extractRepoFromUrl "norepo" == none)
 
 end ExtractRepoFromUrl
@@ -351,22 +444,22 @@ segment must be `pr`, last must be a Nat". -/
 def test_extractPRNumber : IO Unit := do
   IO.println "extractPRNumber:"
   -- The shape git produces for fetched PR refs.
-  assert "standard PR ref format"
+  assertTrue "standard PR ref format"
     (extractPRNumber "refs/remotes/upstream/pr/1234" == some 1234)
   -- Branch refs are not PR refs; must not match.
-  assert "master branch returns none"
+  assertTrue "master branch returns none"
     (extractPRNumber "refs/heads/master" == none)
   -- Minimal `pr/N` is also accepted — the parser only inspects the trailing two segments.
-  assert "simple pr number"
+  assertTrue "simple pr number"
     (extractPRNumber "pr/42" == some 42)
   -- The tail must be a valid Nat; non-numeric tails are rejected (no partial parsing).
-  assert "non-numeric tail returns none"
+  assertTrue "non-numeric tail returns none"
     (extractPRNumber "refs/remotes/upstream/pr/foo" == none)
   -- `0` is a valid Nat; pin down that it isn't special-cased.
-  assert "zero PR number"
+  assertTrue "zero PR number"
     (extractPRNumber "refs/remotes/upstream/pr/0" == some 0)
   -- A numeric tail without the `pr/` parent must not be mistaken for a PR ref.
-  assert "missing pr segment returns none"
+  assertTrue "missing pr segment returns none"
     (extractPRNumber "refs/remotes/upstream/42" == none)
 
 end ExtractPRNumber
@@ -374,25 +467,56 @@ end ExtractPRNumber
 section HashFromFileName
 
 /-- Recovers the UInt64 cache hash from a cached file's path, the inverse of
-`UInt64.asLTar`. The subtle case is `.ltar.part` — the suffix curl writes during
-a download — where `.part` must be stripped before `.ltar`. A regression here
-corrupts cache lookups, so both suffixes and a non-hex stem are covered. -/
+`UInt64.asLTar`. The subtle cases are the in-flight suffixes curl writes during a
+download: today's process-tagged `.ltar.<pid>.part` (see `IO.PARTSUFFIX`) and the
+untagged `.ltar.part` a cache from before tagging may have left in the shared
+directory. A regression here corrupts cache lookups, so every suffix and a
+non-hex stem are covered. -/
 def test_hashFromFileName : IO Unit := do
   IO.println "hashFromFileName:"
-  assert "plain .ltar file"
+  assertTrue "plain .ltar file"
     (hashFromFileName "abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
-  assert "in-flight .ltar.part file strips both suffixes"
+  assertTrue "in-flight process-tagged .part file strips all three suffixes"
+    (hashFromFileName "abc123def.ltar.31415.part" == String.parseHexToUInt64? "000000abc123def")
+  assertTrue "legacy untagged .ltar.part file strips both suffixes"
     (hashFromFileName "abc123def.ltar.part" == String.parseHexToUInt64? "000000abc123def")
-  assert "full 16-digit hex stem"
+  assertTrue "the tag this process actually writes round-trips"
+    (hashFromFileName ("abc123def.ltar" ++ IO.PARTSUFFIX) ==
+      String.parseHexToUInt64? "000000abc123def")
+  assertTrue "full 16-digit hex stem"
     (hashFromFileName "deadbeef00112233.ltar" == String.parseHexToUInt64? "deadbeef00112233")
   -- A non-hex stem returns none rather than a garbage hash.
-  assert "non-hex stem returns none"
+  assertTrue "non-hex stem returns none"
     (hashFromFileName "nothexa.ltar" == none)
+  assertTrue "non-hex stem returns none for a tagged part file too"
+    (hashFromFileName "nothexa.ltar.31415.part" == none)
   -- Directory components are ignored; only the basename's stem is parsed.
-  assert "leading path is ignored"
+  assertTrue "leading path is ignored"
     (hashFromFileName "/path/to/abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
 
 end HashFromFileName
+
+section TempFileNames
+
+/-- Every temporary file `cache` writes into the shared `CACHEDIR` carries this process's
+tag, so two runs in flight in one cache directory cannot write each other's curl
+configuration or each other's partial downloads. The `.part` ending is load-bearing
+beyond uniqueness: the download monitor keys both its rename-on-success and its
+remove-on-error off it. -/
+def test_tempFileNames : IO Unit := do
+  IO.println "temporary file names:"
+  assertTrue "the process tag is non-empty" (!IO.PROCTAG.isEmpty)
+  assertTrue "the in-flight suffix still ends in .part" (IO.PARTSUFFIX.endsWith ".part")
+  assertTrue "the in-flight suffix is tagged, not a bare .part" (IO.PARTSUFFIX != ".part")
+  assertTrue "the in-flight suffix carries the tag" ((IO.PARTSUFFIX.splitOn IO.PROCTAG).length == 2)
+  assertTrue "the curl config carries the tag"
+    ((IO.CURLCFG.toString.splitOn IO.PROCTAG).length == 2)
+  assertTrue "the curl config sits in the cache directory"
+    (IO.CURLCFG.parent == some IO.CACHEDIR)
+  -- The tag must not reintroduce a path separator or a shell/curl-config hazard.
+  assertTrue "the tag is a bare identifier" (IO.PROCTAG.all fun c => c.isAlphanum)
+
+end TempFileNames
 
 section IsRemoteURL
 
@@ -401,20 +525,20 @@ Used to decide whether to short-circuit `git remote get-url` lookups. -/
 def test_isRemoteURL : IO Unit := do
   IO.println "isRemoteURL:"
   -- The three protocols accepted by the cache tool.
-  assert "https URL is remote"
+  assertTrue "https URL is remote"
     (isRemoteURL "https://github.com/alice/mathlib4.git" == true)
-  assert "http URL is remote"
+  assertTrue "http URL is remote"
     (isRemoteURL "http://github.com/alice/mathlib4" == true)
-  assert "ssh URL is remote"
+  assertTrue "ssh URL is remote"
     (isRemoteURL "git@github.com:alice/mathlib4.git" == true)
   -- Absolute and relative local paths must be classified as not-remote so they
   -- get routed through `git remote get-url`.
-  assert "local path is not remote"
+  assertTrue "local path is not remote"
     (isRemoteURL "/local/path/to/repo" == false)
-  assert "relative path is not remote"
+  assertTrue "relative path is not remote"
     (isRemoteURL "./local/repo" == false)
   -- Defensive — empty input shouldn't accidentally match the predicate.
-  assert "empty string is not remote"
+  assertTrue "empty string is not remote"
     (isRemoteURL "" == false)
 
 end IsRemoteURL
@@ -453,11 +577,11 @@ read a file back as a different hash, causing misses or collisions. -/
 def test_hash_roundtrip : IO Unit := do
   IO.println "hash roundtrip (asLTar then hashFromFileName):"
   let h1 : UInt64 := 0xdeadbeef00112233
-  assert "full-width hash round-trips"
+  assertTrue "full-width hash round-trips"
     (hashFromFileName h1.asLTar == some h1)
   -- A short hash exercises both pad-on-write and trim-on-read.
   let h2 : UInt64 := 0xabc123
-  assert "padded hash round-trips"
+  assertTrue "padded hash round-trips"
     (hashFromFileName h2.asLTar == some h2)
 
 end RoundTrip
@@ -487,6 +611,24 @@ def test_markerURL : IO Unit := do
     "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
     (markerURL .forks "Alice/Mathlib4" "abc123")
 
+/-- Marker probes read through the base URL; marker writes address Azure
+directly (`markerURL`). The two URLs agree only under the default base. -/
+def test_markerReadURL : IO Unit := do
+  IO.println "markerReadURL:"
+  let base ← getBaseURL
+  assertEq "probe URL follows the read base"
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
+    (← markerReadURL .forks "alice/mathlib4" "abc123")
+  assertEq "probe repo is lowercased in the path"
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
+    (← markerReadURL .forks "Alice/Mathlib4" "abc123")
+  -- The effective base drives this guard, so an empty variable reaches the
+  -- assertions below: it means unset, and the Azure host answers for it.
+  if base == defaultGetBaseURL then
+    assertEq "default probe URL matches the write URL"
+      (markerURL .forks "alice/mathlib4" "abc123")
+      (← markerReadURL .forks "alice/mathlib4" "abc123")
+
 end Marker
 
 section ScopeResolution
@@ -503,18 +645,18 @@ def test_getRepoScope : IO Unit := do
   let saved ← scopeOverride.get
   try
     scopeOverride.set none
-    assert "no scope set returns none" ((← withSuppressedOutput getRepoScope) == none)
+    assertTrue "no scope set returns none" ((← withSuppressedOutput getRepoScope) == none)
 
     scopeOverride.set (some "abc123")
-    assert "the flag value is returned" ((← withSuppressedOutput getRepoScope) == some "abc123")
+    assertTrue "the flag value is returned" ((← withSuppressedOutput getRepoScope) == some "abc123")
 
     -- The flag value is returned as-is, without trimming or normalization.
     scopeOverride.set (some "deadbeef")
-    assert "the flag value is returned verbatim"
+    assertTrue "the flag value is returned verbatim"
       ((← withSuppressedOutput getRepoScope) == some "deadbeef")
 
     scopeOverride.set none
-    assert "clearing the flag returns none" ((← withSuppressedOutput getRepoScope) == none)
+    assertTrue "clearing the flag returns none" ((← withSuppressedOutput getRepoScope) == none)
   finally
     scopeOverride.set saved
 
@@ -543,11 +685,11 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
   try
     scopeOverride.set none
 
-    assert "plain get with no flags does not warn"
+    assertTrue "plain get with no flags does not warn"
       (!(← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
 
     scopeOverride.set (some "abc123")
-    assert "a set scope warns"
+    assertTrue "a set scope warns"
       (← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO))
     scopeOverride.set none
 
@@ -556,44 +698,44 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     let head? ← try some <$> withSuppressedOutput getGitCommitHash catch _ => pure none
     if let some head := head? then
       scopeOverride.set (some head)
-      assert "a scope equal to HEAD does not warn"
+      assertTrue "a scope equal to HEAD does not warn"
         (!(← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
       scopeOverride.set none
 
     -- --cache-from equal to the repo's default chain is not widening.
     let mathlibDefault := defaultContainersForRepo MATHLIBREPO
-    assert "--cache-from equal to the default does not warn"
+    assertTrue "--cache-from equal to the default does not warn"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope none none (some mathlibDefault) MATHLIBREPO)))
 
-    assert "--cache-from widening the chain warns"
+    assertTrue "--cache-from widening the chain warns"
       (← withSuppressedOutput
           (shouldWarnNonDefaultScope none none (some [.master, .forks, .legacy]) MATHLIBREPO))
 
     -- A fork checkout (remote ≠ resolved repo) stays silent without an explicit --repo.
-    assert "a fork checkout without --repo does not warn"
+    assertTrue "a fork checkout without --repo does not warn"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope none (some "alice/mathlib4") none "alice/mathlib4")))
 
-    assert "--repo differing from the remote warns"
+    assertTrue "--repo differing from the remote warns"
       (← withSuppressedOutput
           (shouldWarnNonDefaultScope (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4"))
 
-    assert "--repo matching the remote does not warn"
+    assertTrue "--repo matching the remote does not warn"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope (some "alice/mathlib4") (some "alice/mathlib4") none
             "alice/mathlib4")))
 
     -- With no detectable remote there is nothing to compare --repo against.
-    assert "--repo with no detectable remote does not warn"
+    assertTrue "--repo with no detectable remote does not warn"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope (some "bob/mathlib4") none none "bob/mathlib4")))
 
     -- `--unsafe` (any window) always warns; it walks several untrusted scopes.
-    assert "--unsafe warns regardless of other inputs"
+    assertTrue "--unsafe warns regardless of other inputs"
       (← withSuppressedOutput
           (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := some 5)))
-    assert "no --unsafe (none window) does not warn on its own"
+    assertTrue "no --unsafe (none window) does not warn on its own"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := none))))
   finally
@@ -611,16 +753,16 @@ def test_getNonDefaultScopeReason : IO Unit := do
 
     -- A placeholder rather than a crash if nothing matches.
     let reason ← withSuppressedOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
-    assert "no trigger yields a placeholder reason" (reason == "unknown reason")
+    assertTrue "no trigger yields a placeholder reason" (reason == "unknown reason")
 
     scopeOverride.set (some "abc123")
     let reason ← withSuppressedOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
-    assert "scope reason names the flag and SHA"
+    assertTrue "scope reason names the flag and SHA"
       (reason == "--scope=abc123 (explicit per-commit scope)")
 
     -- Scope outranks cache-from when both apply.
     let reason ← withSuppressedOutput (getNonDefaultScopeReason none none (some [.forks]) MATHLIBREPO)
-    assert "scope is reported ahead of cache-from"
+    assertTrue "scope is reported ahead of cache-from"
       (reason == "--scope=abc123 (explicit per-commit scope)")
     scopeOverride.set none
 
@@ -631,24 +773,24 @@ def test_getNonDefaultScopeReason : IO Unit := do
       scopeOverride.set (some head)
       let reason ←
         withSuppressedOutput (getNonDefaultScopeReason none none (some [.forks, .legacy]) MATHLIBREPO)
-      assert "a HEAD scope yields the cache-from reason"
+      assertTrue "a HEAD scope yields the cache-from reason"
         (reason == "--cache-from=forks, legacy (explicit container override)")
       scopeOverride.set none
 
     let reason ←
       withSuppressedOutput (getNonDefaultScopeReason none none (some [.forks, .legacy]) MATHLIBREPO)
-    assert "cache-from reason names the container list"
+    assertTrue "cache-from reason names the container list"
       (reason == "--cache-from=forks, legacy (explicit container override)")
 
     let reason ← withSuppressedOutput
       (getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4")
-    assert "repo reason names the override and the detected remote"
+    assertTrue "repo reason names the override and the detected remote"
       (reason == "--repo=bob/mathlib4 (overrides detected git remote: alice/mathlib4)")
 
     -- --cache-from equal to the default is not a trigger, so no reason applies.
     let reason ←
       withSuppressedOutput (getNonDefaultScopeReason none none (some [.master, .legacy]) MATHLIBREPO)
-    assert "cache-from equal to the default yields the placeholder"
+    assertTrue "cache-from equal to the default yields the placeholder"
       (reason == "unknown reason")
 
     -- `--unsafe` outranks every other trigger and names its window.
@@ -656,7 +798,7 @@ def test_getNonDefaultScopeReason : IO Unit := do
     let reason ← withSuppressedOutput
       (getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") (some [.forks])
         "bob/mathlib4" (unsafeWindow? := some 7))
-    assert "unsafe reason names the window and outranks scope/cache-from/repo"
+    assertTrue "unsafe reason names the window and outranks scope/cache-from/repo"
       (reason == "--unsafe (automatic walk over up to 7 fork commit(s); trusting whoever built them)")
     scopeOverride.set none
   finally
@@ -670,7 +812,7 @@ returns `none` with no probe. -/
 def test_findMostRecentSHAWithCache : IO Unit := do
   IO.println "findMostRecentSHAWithCache:"
   let result ← withSuppressedOutput (findMostRecentSHAWithCache [] MATHLIBREPO)
-  assert "empty SHA list returns none without probing" (result == none)
+  assertTrue "empty SHA list returns none without probing" (result == none)
 
 /-- `findRecentSHAsWithCache` collects up to `limit` marked SHAs. The non-empty
 cases hit the network (a marker HEAD probe per SHA); here we pin that an empty
@@ -678,9 +820,9 @@ candidate list returns `[]` for any limit, with no probe. -/
 def test_findRecentSHAsWithCache : IO Unit := do
   IO.println "findRecentSHAsWithCache:"
   let result ← withSuppressedOutput (findRecentSHAsWithCache [] MATHLIBREPO 5)
-  assert "empty SHA list returns [] without probing" (result == [])
+  assertTrue "empty SHA list returns [] without probing" (result == [])
   let result ← withSuppressedOutput (findRecentSHAsWithCache [] MATHLIBREPO 0)
-  assert "limit 0 returns [] without probing" (result == [])
+  assertTrue "limit 0 returns [] without probing" (result == [])
 
 end NonDefaultScope
 
@@ -710,21 +852,21 @@ def test_getRemoteRepo_gitFallback : IO Unit := do
   -- The try...catch in getRemoteRepo must intercept it and return none.
   let fakePath := "/tmp/surely-nonexistent-mathlib-cache-test-xyz-9999999"
   let r1 ← withSuppressedOutput (getRemoteRepo fakePath)
-  assert "getRemoteRepo returns none when git throws (nonexistent cwd)" (r1 == none)
+  assertTrue "getRemoteRepo returns none when git throws (nonexistent cwd)" (r1 == none)
 
   -- Case 2: existing directory that is not a git repo (git returns exit 128).
   -- This exercises the exit-code fallback path that predates the try...catch.
   let r2 ← withSuppressedOutput (getRemoteRepo "/tmp")
-  assert "getRemoteRepo returns none in a non-git directory" (r2 == none)
+  assertTrue "getRemoteRepo returns none in a non-git directory" (r2 == none)
 
   -- resolveRepo propagates the fallback correctly:
   --   detected? = none, resolved = MATHLIBREPO → master-only chain.
   let (detected?, resolved) ← withSuppressedOutput (resolveRepo none fakePath)
-  assert "resolveRepo detected? is none on git failure" (detected? == none)
-  assert "resolveRepo falls back to MATHLIBREPO on git failure" (resolved == MATHLIBREPO)
-  assert "fallback chain includes master"
+  assertTrue "resolveRepo detected? is none on git failure" (detected? == none)
+  assertTrue "resolveRepo falls back to MATHLIBREPO on git failure" (resolved == MATHLIBREPO)
+  assertTrue "fallback chain includes master"
     ((defaultContainersForRepo resolved).contains .master)
-  assert "fallback chain excludes forks (no fork container for dependency builds)"
+  assertTrue "fallback chain excludes forks (no fork container for dependency builds)"
     (!(defaultContainersForRepo resolved).contains .forks)
 
 /-- `headIsAncestorOfMaster` gates the uncached-fork-HEAD note: when HEAD is
@@ -749,10 +891,10 @@ def test_headIsAncestorOfMaster_gitFallback : IO Unit := do
   IO.println "headIsAncestorOfMaster git fallback:"
   let fakePath := "/tmp/surely-nonexistent-mathlib-cache-test-xyz-9999999"
   let r1 ← withSuppressedOutput (headIsAncestorOfMaster fakePath)
-  assert "headIsAncestorOfMaster returns false when git throws (nonexistent cwd)"
+  assertTrue "headIsAncestorOfMaster returns false when git throws (nonexistent cwd)"
     (r1 == false)
   let r2 ← withSuppressedOutput (headIsAncestorOfMaster "/tmp")
-  assert "headIsAncestorOfMaster returns false in a non-git directory" (r2 == false)
+  assertTrue "headIsAncestorOfMaster returns false in a non-git directory" (r2 == false)
 
 end GitFallback
 
@@ -774,45 +916,45 @@ unknown options or reject known ones. -/
 def test_isKnownOpt : IO Unit := do
   IO.println "isKnownOpt:"
   -- Every named option is recognized when used with `=value` form.
-  assert "--repo=foo is known"           (isKnownOpt "--repo=foo")
-  assert "--cache-from=master is known"  (isKnownOpt "--cache-from=master")
-  assert "--scope=HEAD is known"         (isKnownOpt "--scope=HEAD")
-  assert "--container=master is known"   (isKnownOpt "--container=master")
-  assert "--staging-dir=/tmp is known"   (isKnownOpt "--staging-dir=/tmp")
-  assert "--unsafe-window=5 is known" (isKnownOpt "--unsafe-window=5")
+  assertTrue "--repo=foo is known"           (isKnownOpt "--repo=foo")
+  assertTrue "--cache-from=master is known"  (isKnownOpt "--cache-from=master")
+  assertTrue "--scope=HEAD is known"         (isKnownOpt "--scope=HEAD")
+  assertTrue "--container=master is known"   (isKnownOpt "--container=master")
+  assertTrue "--staging-dir=/tmp is known"   (isKnownOpt "--staging-dir=/tmp")
+  assertTrue "--unsafe-window=5 is known" (isKnownOpt "--unsafe-window=5")
 
   -- Empty value passes recognition (parseNamedOpt returns the empty string
   -- for these — callers decide whether to treat that as an error).
-  assert "--scope= (empty value) is known" (isKnownOpt "--scope=")
+  assertTrue "--scope= (empty value) is known" (isKnownOpt "--scope=")
 
   -- Flags use the bare `--name` form, no `=`.
-  assert "--help (no =) is known" (isKnownOpt "--help")
-  assert "--unsafe (no =) is known" (isKnownOpt "--unsafe")
+  assertTrue "--help (no =) is known" (isKnownOpt "--help")
+  assertTrue "--unsafe (no =) is known" (isKnownOpt "--unsafe")
 
   -- `--unsafe` is a flag, not a named option: the `=value` form is a user error.
-  assert "--unsafe=5 is NOT known (flags don't take values)"
+  assertTrue "--unsafe=5 is NOT known (flags don't take values)"
     (!isKnownOpt "--unsafe=5")
 
   -- A typo on a known option name should fail recognition, not be silently
   -- accepted. This is the regression-guard: if `--scoop=` were accepted, the
   -- user's `--scope=` would be silently dropped and reads would fall back to
   -- the default chain with no warning.
-  assert "--scoop=foo (typo on scope) is NOT known" (!isKnownOpt "--scoop=foo")
-  assert "--bogus=foo (unknown name) is NOT known" (!isKnownOpt "--bogus=foo")
+  assertTrue "--scoop=foo (typo on scope) is NOT known" (!isKnownOpt "--scoop=foo")
+  assertTrue "--bogus=foo (unknown name) is NOT known" (!isKnownOpt "--bogus=foo")
 
   -- A named option without `=` must NOT be accepted as a flag — `--scope`
   -- (no value) is a user error, distinct from the `--help` flag form.
-  assert "--scope (no =) is NOT known (named opts require value)"
+  assertTrue "--scope (no =) is NOT known (named opts require value)"
     (!isKnownOpt "--scope")
 
   -- Symmetric: a flag with `=` must NOT be accepted as a named opt.
-  assert "--help=foo is NOT known (flags don't take values)"
+  assertTrue "--help=foo is NOT known (flags don't take values)"
     (!isKnownOpt "--help=foo")
 
   -- A bare positional doesn't even look like an option. The cache binary
   -- splits args by `startsWith "--"` before consulting `isKnownOpt`, so this
   -- case should never reach us, but we pin it anyway for safety.
-  assert "bare positional 'scope' is NOT known" (!isKnownOpt "scope")
+  assertTrue "bare positional 'scope' is NOT known" (!isKnownOpt "scope")
 
 /-- `parseNamedOpt` extracts the value of a `--name=value` option from a
 list of args. The rules tests pin:
@@ -829,32 +971,32 @@ def test_parseNamedOpt : IO Unit := do
   IO.println "parseNamedOpt:"
   -- Empty arg list.
   let v ← parseNamedOpt "scope" []
-  assert "empty args → none" (v == none)
+  assertTrue "empty args → none" (v == none)
 
   -- Args without the target option.
   let v ← parseNamedOpt "scope" ["--repo=foo", "get"]
-  assert "no matching option → none" (v == none)
+  assertTrue "no matching option → none" (v == none)
 
   -- Single occurrence.
   let v ← parseNamedOpt "scope" ["--scope=abc123"]
-  assert "single occurrence → some value" (v == some "abc123")
+  assertTrue "single occurrence → some value" (v == some "abc123")
 
   -- `--scope=` is recognized with the empty string as its value, distinct from
   -- "not passed" (none).
   let v ← parseNamedOpt "scope" ["--scope="]
-  assert "empty value → some \"\"" (v == some "")
+  assertTrue "empty value → some \"\"" (v == some "")
 
   -- Multiple occurrences: last wins, matching shell precedence.
   let v ← parseNamedOpt "scope" ["--scope=first", "--scope=second"]
-  assert "duplicate option → last value wins" (v == some "second")
+  assertTrue "duplicate option → last value wins" (v == some "second")
 
   -- Surrounding positionals and other options don't interfere.
   let v ← parseNamedOpt "scope" ["get", "--repo=foo", "--scope=mid", "Mathlib/Init.lean"]
-  assert "found among other args" (v == some "mid")
+  assertTrue "found among other args" (v == some "mid")
 
   -- A longer lookalike name must not match.
   let v ← parseNamedOpt "scope" ["--scope-other=foo"]
-  assert "--scope-other does not match --scope" (v == none)
+  assertTrue "--scope-other does not match --scope" (v == none)
 
 /-- `parseFlagOpt` checks whether a bare `--name` flag is present in args.
 Used for `--help` today. The contract is strict equality — `--help` matches,
@@ -862,23 +1004,75 @@ Used for `--help` today. The contract is strict equality — `--help` matches,
 def test_parseFlagOpt : IO Unit := do
   IO.println "parseFlagOpt:"
   -- Empty args.
-  assert "empty args → false" (!parseFlagOpt "help" [])
+  assertTrue "empty args → false" (!parseFlagOpt "help" [])
 
   -- Bare `--help` present.
-  assert "--help present → true" (parseFlagOpt "help" ["--help"])
+  assertTrue "--help present → true" (parseFlagOpt "help" ["--help"])
 
   -- `--help=` with a value is NOT a bare flag. (`isKnownOpt` would also
   -- reject it; this is the parser-level guarantee.)
-  assert "--help=true is NOT a bare flag" (!parseFlagOpt "help" ["--help=true"])
+  assertTrue "--help=true is NOT a bare flag" (!parseFlagOpt "help" ["--help=true"])
 
   -- Flag absent among other args.
-  assert "no flag among args → false"
+  assertTrue "no flag among args → false"
     (!parseFlagOpt "help" ["get", "--repo=foo"])
 
   -- Lookalike: `--help-me` isn't the `--help` flag.
-  assert "lookalike prefix doesn't match" (!parseFlagOpt "help" ["--help-me"])
+  assertTrue "lookalike prefix doesn't match" (!parseFlagOpt "help" ["--help-me"])
 
 end CliOptions
+
+section ReadRedirects
+
+/-- Reads follow redirects, so a read base can answer with the blob's current
+location. This test pins the flag set, because each flag bounds what a redirect
+may do: `--proto-redir =https` holds a transfer on an encrypted protocol, and
+`--max-redirs` bounds the chain. The upload path builds its own `curl`
+arguments and carries none of these flags. -/
+def test_curlFollowRedirectArgs : IO Unit := do
+  IO.println "curlFollowRedirectArgs:"
+  assertEq "read redirect flags"
+    "--location --proto-redir =https --max-redirs 5"
+    (" ".intercalate curlFollowRedirectArgs.toList)
+
+end ReadRedirects
+
+section RetryFlags
+
+/-- Only a path with a curl 7.71 floor may pass `--retry-all-errors`; an older
+curl rejects the whole command. The legacy tier serves the serial download
+path, so it must stay free of that flag. -/
+def test_curlRetryArgs : IO Unit := do
+  IO.println "curlRetryArgs:"
+  assertEq "legacy tier" "--retry 5"
+    (" ".intercalate (curlRetryArgs (supportLegacyCurl := true)).toList)
+  assertEq "full tier" "--retry 5 --retry-all-errors"
+    (" ".intercalate (curlRetryArgs (supportLegacyCurl := false)).toList)
+
+end RetryFlags
+
+section RunCmdErrors
+
+/-- With `showArgsOnError := false` a failing command's error names only the
+command: the argument list can carry a credential (the marker uploads pass
+`--oauth2-bearer` and SAS-tokened URLs). The default keeps the argument list
+in the message. -/
+def test_runCmd_showArgsOnError : IO Unit := do
+  IO.println "runCmd showArgsOnError:"
+  let secret := "hunter2-credential"
+  let hidden ← try
+      discard <| IO.runCmd "curl" #["--not-a-curl-flag", secret] (showArgsOnError := false)
+      pure "no failure"
+    catch e => pure (toString e)
+  assertTrue "the failure throws" (hidden != "no failure")
+  assertTrue "the message hides the arguments" ((hidden.splitOn secret).length == 1)
+  let shown ← try
+      discard <| IO.runCmd "curl" #["--not-a-curl-flag", secret]
+      pure "no failure"
+    catch e => pure (toString e)
+  assertTrue "the default shows the arguments" ((shown.splitOn secret).length == 2)
+
+end RunCmdErrors
 
 section CacheMissStatus
 
@@ -891,15 +1085,19 @@ revoked ahead of retirement). This guards old clients — whose chain still list
 def test_isCacheMissStatus : IO Unit := do
   IO.println "isCacheMissStatus:"
   -- 404 is a miss regardless of the flag.
-  assert "404 is a miss (flag off)"        (isCacheMissStatus 404 false)
-  assert "404 is a miss (flag on)"         (isCacheMissStatus 404 true)
+  assertTrue "404 is a miss (flag off)"        (isCacheMissStatus 404 false)
+  assertTrue "404 is a miss (flag on)"         (isCacheMissStatus 404 true)
   -- 403 is a miss only when the flag is set (i.e. for `legacy`).
-  assert "403 is a failure when flag off"  (!isCacheMissStatus 403 false)
-  assert "403 is a miss when flag on"      (isCacheMissStatus 403 true)
+  assertTrue "403 is a failure when flag off"  (!isCacheMissStatus 403 false)
+  assertTrue "403 is a miss when flag on"      (isCacheMissStatus 403 true)
   -- Success and server errors are never misses; they must surface.
-  assert "200 is not a miss"               (!isCacheMissStatus 200 true)
-  assert "500 is not a miss"               (!isCacheMissStatus 500 true)
-  assert "403-as-miss is scoped to 403"    (!isCacheMissStatus 401 true)
+  assertTrue "200 is not a miss"               (!isCacheMissStatus 200 true)
+  assertTrue "500 is not a miss"               (!isCacheMissStatus 500 true)
+  assertTrue "403-as-miss is scoped to 403"    (!isCacheMissStatus 401 true)
+  -- A refused redirect (`--proto-redir`, `--max-redirs`) leaves its status
+  -- here. A miss verdict would make it look like an empty cache and send the
+  -- read silently down the container chain, so it counts as a failure.
+  assertTrue "302 is not a miss"               (!isCacheMissStatus 302 true)
 
 end CacheMissStatus
 
@@ -910,14 +1108,80 @@ that already exists; both mean "present", not a failure. -/
 def test_isAlreadyPresentStatus : IO Unit := do
   IO.println "isAlreadyPresentStatus:"
   -- 409/412 are the codes Azure returns for a blob that already exists.
-  assert "409 is already-present" (isAlreadyPresentStatus 409)
-  assert "412 is already-present" (isAlreadyPresentStatus 412)
+  assertTrue "409 is already-present" (isAlreadyPresentStatus 409)
+  assertTrue "412 is already-present" (isAlreadyPresentStatus 412)
   -- Successes, misses, and server errors are not.
-  assert "201 is not already-present" (!isAlreadyPresentStatus 201)
-  assert "404 is not already-present" (!isAlreadyPresentStatus 404)
-  assert "500 is not already-present" (!isAlreadyPresentStatus 500)
+  assertTrue "201 is not already-present" (!isAlreadyPresentStatus 201)
+  assertTrue "404 is not already-present" (!isAlreadyPresentStatus 404)
+  assertTrue "500 is not already-present" (!isAlreadyPresentStatus 500)
 
 end AlreadyPresentStatus
+
+section TransferClassification
+
+/-- `classifyDownload` is the decision table shared by the parallel and serial
+download paths. The clean-exit rows guard against renaming a truncated body: a
+transport error that outlives the retries reports `http_code: 200` with a
+nonzero `exitcode`. -/
+def test_classifyDownload : IO Unit := do
+  IO.println "classifyDownload:"
+  -- A clean 200/201 delivers.
+  assertTrue "200 + exit 0 delivers"
+    (classifyDownload (some 200) 0 false matches .delivered)
+  assertTrue "201 + exit 0 delivers"
+    (classifyDownload (some 201) 0 false matches .delivered)
+  -- A 200 with a nonzero exit code carries a truncated body.
+  assertTrue "200 + exit 18 fails"
+    (classifyDownload (some 200) 18 false matches .failed)
+  assertTrue "201 + exit 18 fails"
+    (classifyDownload (some 201) 18 false matches .failed)
+  -- The status alone decides a miss.
+  assertTrue "404 is a miss"
+    (classifyDownload (some 404) 0 false matches .miss)
+  assertTrue "404 + nonzero exit is still a miss"
+    (classifyDownload (some 404) 18 false matches .miss)
+  assertTrue "403 is a miss with treatForbiddenAsMiss"
+    (classifyDownload (some 403) 0 true matches .miss)
+  assertTrue "403 fails otherwise"
+    (classifyDownload (some 403) 0 false matches .failed)
+  assertTrue "409 fails on a read"
+    (classifyDownload (some 409) 0 false matches .failed)
+  -- No usable status is a failure (a connection error reports `000`).
+  assertTrue "status 0 fails"
+    (classifyDownload (some 0) 0 false matches .failed)
+  assertTrue "no status fails"
+    (classifyDownload none 0 false matches .failed)
+
+/-- The put config discards every response body: stdout must carry only the
+per-transfer JSON reports (`--write-out '%{json}'`) that `monitorCurl`
+parses. -/
+def test_mkPutConfigContent : IO Unit := do
+  IO.println "mkPutConfigContent:"
+  let cfg ← mkPutConfigContent (some .master) MATHLIBREPO "https://example.invalid"
+    #["/tmp/00000000deadbeef.ltar"] (.azureSas "tok")
+  assertTrue "uploads the file" ((cfg.splitOn "-T /tmp/00000000deadbeef.ltar").length == 2)
+  assertTrue "discards the response body" ((cfg.splitOn s!"-o {IO.nullDevice}").length == 2)
+
+/-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
+non-overwrite put, and every other answer — a 404 included — is a failure. -/
+def test_classifyUpload : IO Unit := do
+  IO.println "classifyUpload:"
+  assertTrue "201 + exit 0 delivers"
+    (classifyUpload (some 201) 0 false matches .delivered)
+  assertTrue "201 + exit 18 fails"
+    (classifyUpload (some 201) 18 false matches .failed)
+  assertTrue "409 skips on a non-overwrite put"
+    (classifyUpload (some 409) 0 true matches .skip)
+  assertTrue "412 skips on a non-overwrite put"
+    (classifyUpload (some 412) 0 true matches .skip)
+  assertTrue "409 fails on an overwrite put"
+    (classifyUpload (some 409) 0 false matches .failed)
+  assertTrue "404 fails"
+    (classifyUpload (some 404) 0 true matches .failed)
+  assertTrue "no status fails"
+    (classifyUpload none 0 true matches .failed)
+
+end TransferClassification
 
 section UnsafeRounds
 
@@ -937,58 +1201,134 @@ def test_expandDownloadRounds : IO Unit := do
     [(some .master, "U_m"), (some .forks, "U_f"), (some .legacy, "U_l")]
 
   -- No unsafe scopes: one round per container, each carrying the base scope.
-  assert "no unsafe scopes, no base scope → scope none on every round"
+  assertTrue "no unsafe scopes, no base scope → scope none on every round"
     (expandDownloadRounds chain none [] ==
       [(some .master, "U_m", none), (some .forks, "U_f", none), (some .legacy, "U_l", none)])
-  assert "no unsafe scopes, base scope → base scope on every round"
+  assertTrue "no unsafe scopes, base scope → base scope on every round"
     (expandDownloadRounds chain (some "S") [] ==
       [(some .master, "U_m", some "S"), (some .forks, "U_f", some "S"),
        (some .legacy, "U_l", some "S")])
 
   -- With no base scope the forks round defaults to the HEAD scope; the other
   -- containers' layouts are not SHA-scoped, so it must not leak into them.
-  assert "no base scope, head scope → forks at head, others unscoped"
+  assertTrue "no base scope, head scope → forks at head, others unscoped"
     (expandDownloadRounds chain none [] (some "H") ==
       [(some .master, "U_m", none), (some .forks, "U_f", some "H"),
        (some .legacy, "U_l", none)])
-  assert "explicit base scope wins over head scope"
+  assertTrue "explicit base scope wins over head scope"
     (expandDownloadRounds chain (some "S") [] (some "H") ==
       [(some .master, "U_m", some "S"), (some .forks, "U_f", some "S"),
        (some .legacy, "U_l", some "S")])
-  assert "unsafe mode ignores head scope"
+  assertTrue "unsafe mode ignores head scope"
     (expandDownloadRounds chain none ["a"] (some "H") ==
       [(some .master, "U_m", none), (some .forks, "U_f", some "a"),
        (some .legacy, "U_l", none)])
 
   -- Unsafe scopes: only forks fans out, in order; others unscoped, base dropped.
-  assert "unsafe scopes fan out forks (in order), others unscoped"
+  assertTrue "unsafe scopes fan out forks (in order), others unscoped"
     (expandDownloadRounds chain (some "ignored") ["a", "b"] ==
       [(some .master, "U_m", none),
        (some .forks, "U_f", some "a"), (some .forks, "U_f", some "b"),
        (some .legacy, "U_l", none)])
 
   -- A chain without forks admits no SHA-scoped reads, so it is left unchanged.
-  assert "no forks container → unsafe scopes have no effect"
+  assertTrue "no forks container → unsafe scopes have no effect"
     (expandDownloadRounds [(some .master, "U_m"), (some .legacy, "U_l")] none ["a", "b"] ==
       [(some .master, "U_m", none), (some .legacy, "U_l", none)])
 
 end UnsafeRounds
 
+section DecompPipeline
+
+/-- Shared `DecompConfig` for the pipeline tests. `hashToMod` is unused here;
+`isMathlibRoot := true` makes `decompressBatch` treat pending paths as plain
+entries, so `mathlibDepPath` is unused too. -/
+private def testDecompConfig : DecompConfig :=
+  { hashToMod := ∅, force := false, isMathlibRoot := true, mathlibDepPath := "." }
+
+/-- `finalizeDecomp` drains the decompression pipeline after the last download
+round: it harvests the in-flight leantar batch, then decompresses the pending
+files. A pipeline dropped at a round boundary leaves downloaded files
+compressed on disk, forcing a rebuild. This test pins the harvest/counter
+logic and the pending-drain failure path; successful pending decompression
+needs real archives and is covered by CI. -/
+def test_finalizeDecomp : IO Unit := do
+  IO.println "finalizeDecomp:"
+  -- An empty pipeline passes the counters through unchanged.
+  let (d, f) ← withSuppressedOutput <|
+    finalizeDecomp { decompressed := 5, decompFailed := 2 } testDecompConfig
+  assertTrue "empty pipeline passes counters through" (d == 5 && f == 2)
+
+  -- A finished successful batch is harvested into the success counter.
+  let okTask : Task (Except IO.Error Unit) := Task.pure (.ok ())
+  let (d, f) ← withSuppressedOutput <| finalizeDecomp
+    { currentTask := some okTask, lastBatchSize := 3, decompressed := 5 } testDecompConfig
+  assertTrue "successful in-flight batch adds its size to decompressed" (d == 8 && f == 0)
+
+  -- A failed batch is harvested into the failure counter, not the success one.
+  let errTask : Task (Except IO.Error Unit) := Task.pure (.error (IO.userError "boom"))
+  let (d, f) ← withSuppressedOutput <| finalizeDecomp
+    { currentTask := some errTask, lastBatchSize := 4, decompressed := 5, decompFailed := 1 }
+    testDecompConfig
+  assertTrue "failed in-flight batch adds its size to decompFailed" (d == 5 && f == 5)
+
+  -- Pending files are drained even with no in-flight task; a batch whose
+  -- leantar invocation fails lands in the failure counter.
+  let (d, f) ← withSuppressedOutput <| finalizeDecomp
+    { pending := #[(System.FilePath.mk "cache-test-missing-dir/bogus.ltar", `Mathlib.Bogus)]
+      decompressed := 5 } testDecompConfig
+  assertTrue "failed pending drain adds its size to decompFailed" (d == 5 && f == 1)
+
+/-- A download round returns its decompression pipeline state in
+`TransferState.decomp` so `downloadFiles` can hand it to the next round and
+the final drain. A round in which curl transfers nothing, e.g. a container
+missing every requested file, must return the carried state intact; otherwise
+a prior round's queued files would be lost at the round boundary.
+`curl --version` drives `monitorCurl` through a real curl spawn with no
+downloads and no network. This pins `monitorCurl`'s half of the carry; the
+round loop's half is exercised by the CI integration tests. -/
+def test_monitorCurl_carries_decomp_state : IO Unit := do
+  IO.println "monitorCurl carries decompression state:"
+  let okTask : Task (Except IO.Error Unit) := Task.pure (.ok ())
+  let carried : DecompState := {
+    pending := #[(System.FilePath.mk "some/file.ltar", `Mathlib.SomeModule)]
+    currentTask := some okTask
+    lastBatchSize := 7
+    decompressed := 42
+    decompFailed := 1 }
+  let (s, served) ← withSuppressedOutput <|
+    monitorCurl #["--version"] 1 "Downloaded" "speed_download"
+      (classifyDownload · · false) (decompState := carried)
+  assertTrue "no transfers → an empty served set" served.isEmpty
+  assertTrue "pending files survive the round" (s.decomp.pending.size == 1)
+  assertTrue "the in-flight task survives the round" s.decomp.currentTask.isSome
+  assertTrue "the batch size survives the round" (s.decomp.lastBatchSize == 7)
+  assertTrue "the decompressed counter survives the round" (s.decomp.decompressed == 42)
+  assertTrue "the decompFailed counter survives the round" (s.decomp.decompFailed == 1)
+
+end DecompPipeline
+
 def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
   test_Container_azureURL
+  test_Container_getURL
+  test_envValueNormalization
+  test_getBaseURLFrom
   test_Container_flatPath
   test_defaultContainersForRepo
+  test_effectiveGetURLs
   test_mkFileURL
   test_parseCacheFromList
   test_extractRepoFromUrl
   test_extractPRNumber
   test_hashFromFileName
+  test_tempFileNames
   test_isRemoteURL
   test_UInt64_asLTar
   test_hash_roundtrip
   test_markerURL
+  test_markerReadURL
   test_getRepoScope
   test_shouldWarnNonDefaultScope
   test_getNonDefaultScopeReason
@@ -999,9 +1339,17 @@ def runAll : IO Unit := do
   test_isKnownOpt
   test_parseNamedOpt
   test_parseFlagOpt
+  test_curlFollowRedirectArgs
+  test_curlRetryArgs
+  test_runCmd_showArgsOnError
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
+  test_classifyDownload
+  test_classifyUpload
+  test_mkPutConfigContent
   test_expandDownloadRounds
+  test_finalizeDecomp
+  test_monitorCurl_carries_decomp_state
 
 end Cache.Test
 

@@ -360,7 +360,7 @@ private lemma ιMulti_family_span_fixedDegree_aux
   have α_card : (Finset.image α Finset.univ).card = n :=
     (Finset.card_image_of_injective Finset.univ α_inj).trans (Finset.card_fin n)
   use (Finset.orderIsoOfFin (Finset.image α Finset.univ) α_card).toEquiv.trans
-    ((Equiv.setCongr Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
+    ((Set.equivOfEq Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
   apply Submodule.mem_span_of_mem
   use ⟨(Finset.image α Finset.univ), α_card⟩
   rw [ExteriorAlgebra.ιMulti_family, Function.comp_assoc]
@@ -415,31 +415,14 @@ lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
 
 end ιMulti_family
 
-lemma span_ιMulti_orderEmbedding_of_span_eq_top {ι : Type*} [LinearOrder ι] {g : ι → M}
-    (hg : Submodule.span R (Set.range g) = ⊤) (n : ℕ) :
-    Submodule.span R (Set.range (fun (x : Fin n ↪o ι) ↦ ιMulti R _ (g ∘ x))) = ⊤ := by
-  have hrange : Set.range (ιMulti_family R n g) =
-      Set.range (fun x : Fin n ↪o ι ↦ ιMulti R n (g ∘ x)) := by
-    ext y
-    constructor
-    · rintro ⟨s, rfl⟩
-      exact ⟨Set.powersetCard.ofFinEmbEquiv.symm s, by simp [ιMulti_family]⟩
-    · rintro ⟨x, rfl⟩
-      exact ⟨Set.powersetCard.ofFinEmbEquiv x, by simp [ιMulti_family]⟩
-  simpa [hrange] using ιMulti_family_span_of_span R (n := n) hg
-
-lemma subsingleton_of_card_generators_le {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
-    (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
+lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+    (hg : Submodule.span R (range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     Subsingleton (⋀[R]^i M) := by
-  let : Fintype ι := Fintype.ofFinite ι
-  have hcard : Fintype.card ι < i := by simpa [Nat.card_eq_fintype_card] using hi
-  have hbotTop : (⊥ : Submodule R (⋀[R]^i M)) = ⊤ := by
-    rw [← exteriorPower.span_ιMulti_orderEmbedding_of_span_eq_top (R := R) (M := M) hg i]
-    convert Submodule.span_empty.symm
-    refine Set.range_eq_empty_iff.mpr ⟨fun f ↦ ?_⟩
-    absurd hcard
-    simpa using Fintype.card_le_of_injective f f.injective
-  exact (Submodule.subsingleton_iff R).mp <| (subsingleton_iff_bot_eq_top).mp hbotTop
+  replace hi : range (ιMulti_family R i g) = ∅ := by
+    rw [range_eq_empty_iff, powersetCard.eq_empty_iff.mpr hi, isEmpty_coe_sort]
+  suffices (⊥ : Submodule R (⋀[R]^i M)) = ⊤ by
+    rwa [subsingleton_iff_bot_eq_top, Submodule.subsingleton_iff] at this
+  rw [← ιMulti_family_span_of_span R hg, hi, Submodule.span_empty]
 
 /-! Linear equivalences in degrees 0 and 1. -/
 
@@ -447,8 +430,7 @@ variable (R M) in
 /-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
-  LinearEquiv.ofLinear
-    (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
       map_add' := by intros; simp only [add_smul]
       map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
@@ -466,22 +448,21 @@ variable (R M) in
 /-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
-  LinearEquiv.ofLinear
-    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
-      have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
-        ext i
-        fin_cases i
-        rfl
-      exact
-        { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
-          map_add' := fun m₁ m₂ ↦ by
-            rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_add]
-          map_smul' := fun r m ↦ by
-            dsimp
-            rw [h]; nth_rw 2 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_smul] })
-    (by aesop) (by aesop)
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
+    have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
+      ext i
+      fin_cases i
+      rfl
+    exact
+      { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
+        map_add' := fun m₁ m₂ ↦ by
+          rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_add]
+        map_smul' := fun r m ↦ by
+          dsimp
+          rw [h]; nth_rw 2 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_smul] })
+  (by aesop) (by aesop)
 
 @[simp]
 lemma oneEquiv_ιMulti (f : Fin 1 → M) :

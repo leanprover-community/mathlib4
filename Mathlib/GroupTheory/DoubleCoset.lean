@@ -106,7 +106,9 @@ lemma rel_bot_eq_right_group_rel (H : Subgroup G) :
     exact ⟨b * a⁻¹, h, 1, rfl, by rw [mul_one, inv_mul_cancel_right]⟩
 
 /-- Create a double coset out of an element of `H \ G / K` -/
-def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
   doubleCoset q.out H K
 
 /-- Map from `G` to `H \ G / K` -/
@@ -139,6 +141,18 @@ lemma mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
     (h : doubleCoset a H K = doubleCoset b H K) : mk H K a = mk H K b := by
   rw [eq]
   exact mem_doubleCoset.mp (h.symm ▸ mem_doubleCoset_self H K b)
+
+@[simp]
+lemma mk_mem_mul {H K : Subgroup G} (a : H) (g : G) :
+    mk H K (a * g) = mk H K g := by
+  rw [eq]
+  exact ⟨_, H.inv_mem a.prop, 1, K.one_mem, by simp⟩
+
+@[simp]
+lemma mk_mul_mem {H K : Subgroup G} (b : K) (g : G) :
+    mk H K (g * b) = mk H K g := by
+  rw [eq]
+  exact ⟨1, H.one_mem, _, K.inv_mem b.prop, by simp⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
