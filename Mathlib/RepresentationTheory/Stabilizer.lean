@@ -42,19 +42,19 @@ lemma stabilizer_zero (ρ : Representation k G V) : stabilizer ρ 0 = ⊤ := by
 
 lemma le_stabilizer_smul (ρ : Representation k G V) (c : k) (v : V) :
     stabilizer ρ v ≤ stabilizer ρ (c • v) := by
-  simp +contextual [SetLike.le_def]
+  simp +contextual [IsConcreteLE.le_iff]
 
 lemma le_stabilizer_add (ρ : Representation k G V) (v1 v2 : V) :
     (stabilizer ρ v1) ⊓ (stabilizer ρ v2) ≤ stabilizer ρ (v1 + v2) := by
-  simp +contextual [SetLike.le_def]
+  simp +contextual [IsConcreteLE.le_iff]
 
 lemma le_stabilizer_sum {ι : Type*} [Fintype ι] (ρ : Representation k G V) (v : ι → V) :
     ⨅ i, (stabilizer ρ (v i)) ≤ stabilizer ρ (∑ i, v i) := by
-  simp +contextual [SetLike.le_def]
+  simp +contextual [IsConcreteLE.le_iff]
 
 lemma IntertwiningMap.stabilizer_le {ρ : Representation k G V} {ρ' : Representation k G V'}
     (f : ρ.IntertwiningMap ρ') (v : V) : stabilizer ρ v ≤ stabilizer ρ' (f v) := by
-  simp +contextual [SetLike.le_def, ← IntertwiningMap.isIntertwining]
+  simp +contextual [IsConcreteLE.le_iff, ← IntertwiningMap.isIntertwining]
 
 /-- The stabilizer of `ρ g v` is the conjugate of the stabilizer of `v`. -/
 lemma stabilizer_conj (ρ : Representation k G V) (g : G) (v : V) :

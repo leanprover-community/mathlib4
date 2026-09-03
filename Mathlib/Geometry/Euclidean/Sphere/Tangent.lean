@@ -146,7 +146,7 @@ lemma IsTangentAt.eq_orthRadius_of_finrank_add_one_eq {s : Sphere P} {as : Affin
 
 lemma IsTangentAt.mem_polar_of_mem {s : Sphere P} {p₁ p₂ : P} {as : AffineSubspace ℝ P}
     (h : s.IsTangentAt p₂ as) (hp₁ : p₁ ∈ as) : p₂ ∈ s.polar p₁ :=
-  mem_polar_of_mem_of_mem_orthRadius h.mem_sphere (SetLike.le_def.1 h.le_orthRadius hp₁)
+  mem_polar_of_mem_of_mem_orthRadius h.mem_sphere (IsConcreteLE.le_iff.1 h.le_orthRadius hp₁)
 
 /-- The affine subspace `as` is tangent to the sphere `s` at some point. -/
 def IsTangent (s : Sphere P) (as : AffineSubspace ℝ P) : Prop :=
