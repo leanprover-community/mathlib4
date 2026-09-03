@@ -299,12 +299,13 @@ New types are supported by tagging an eliminator with `@[basify_elim]`, its oper
 -/
 elab "basify" facts:((" [" term,* "]")?) : tactic => focus do
   let factStx := if facts.raw.isNone then #[] else facts.raw[1].getSepArgs
-  -- Elaborate every fact against the original goal, before any of them is added: `note` assigns
-  -- the goal, and the elaborator reads the main goal for its context.
-  let es ← factStx.mapM fun fact => elabTermWithoutNewMVars `basify ⟨fact⟩
-  let mut g ← getMainGoal
-  for e in es do
-    g ← (·.2) <$> g.note (← mkFreshUserName `fact) e
+  -- The facts are elaborated in the goal's context, which is what `withMainContext` provides:
+  -- a plain `elabTerm` would not see variables introduced by `intro`. They go in under fresh
+  -- inaccessible names, so they neither shadow each other nor clobber an existing `this`.
+  for fact in factStx do
+    let e ← withMainContext do elabTermWithoutNewMVars `basify ⟨fact⟩
+    liftMetaTactic1 fun g => do return (← g.note (← mkFreshUserName `fact) e).2
+  let g ← getMainGoal
   let (g', varsToElim) ← generalizeAtoms g
   setGoals (← basifyLoop g' varsToElim.toList)
   evalTactic (← `(tactic| all_goals first
