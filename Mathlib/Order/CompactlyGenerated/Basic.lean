@@ -696,3 +696,18 @@ theorem complementedLattice_iff_isAtomistic : ComplementedLattice α ↔ IsAtomi
   · exact complementedLattice_of_isAtomistic
 
 end
+
+section Frame
+
+variable {α : Type*} [Order.Frame α]
+
+lemma IsAtom.isCompactElement {x : α} (h : IsAtom x) : IsCompactElement x := by
+  intro s u _ _ hu hx
+  rwa [←hu.sSup_eq, IsAtom.le_sSup h] at hx
+
+instance [IsAtomistic α] : IsCompactlyGenerated α where
+  exists_sSup_eq x := by
+    obtain ⟨s, hx, hs⟩ := isLUB_atoms x
+    refine ⟨s, fun a ha => (hs a ha).isCompactElement, hx.sSup_eq⟩
+
+end Frame
