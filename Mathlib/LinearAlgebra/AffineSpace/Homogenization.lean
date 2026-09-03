@@ -86,6 +86,9 @@ instance instModule {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalar
     Module S (Homogenization R P) :=
   equivProdAux.addEquiv.module S
 
+/- Test that `NSMul`/`ZSMul` instances are defeq. See `Mathlib/Algebra/Group/Monoid.lean` for
+design notes on `NSMul`. -/
+
 example : instAddCommGroup.toNSMul = @NSMul.ofSMul (Homogenization R P) instModule.toSMul := by
   with_implicit rfl
 
