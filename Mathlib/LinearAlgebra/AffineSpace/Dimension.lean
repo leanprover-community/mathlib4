@@ -24,12 +24,14 @@ is similary defined using `Module.finrank`.
 
 public section
 
+open Cardinal
+
 namespace AffineSubspace
 
 universe u v v' a a'
 
-variable {R : Type u} {V : Type v} {V' : Type v'} {A : Type a} {A' : Type a'}
-variable [AddCommGroup V] [AddTorsor V A] [AddCommGroup V'] [AddTorsor V' A']
+variable {R : Type u} {V : Type v} {V' : Type v'} {A A₁ : Type a} {A' : Type a'}
+variable [AddCommGroup V] [AddTorsor V A] [AddTorsor V A₁] [AddCommGroup V'] [AddTorsor V' A']
 
 section Ring
 
@@ -101,13 +103,12 @@ theorem finDim_eq_finrank_of_not_finite [Module.Free R s.direction] [StrongRankC
 
 @[simp]
 theorem dim_lt_aleph0 [StrongRankCondition R] (s : AffineSubspace R A)
-    [Module.Finite R s.direction] : dim s < Cardinal.aleph0 := by
+    [Module.Finite R s.direction] : dim s < ℵ₀ := by
   dsimp [dim]
   split_ifs <;> simp [Module.rank_lt_aleph0]
 
 theorem finite_iff_dim_lt_aleph0 [StrongRankCondition R] (s : AffineSubspace R A)
-    [Module.Free R s.direction] :
-    Module.Finite R s.direction ↔ dim s < Cardinal.aleph0 := by
+    [Module.Free R s.direction] : Module.Finite R s.direction ↔ dim s < ℵ₀ := by
   refine ⟨fun h ↦ dim_lt_aleph0 s, fun h ↦ ?_⟩
   rcases eq_or_ne s ⊥ with rfl | hs
   · rw [direction_bot]
@@ -145,13 +146,16 @@ theorem finDim_mono [StrongRankCondition R] [Module.Finite R t.direction] (h : s
   simp [finDim_eq_finrank hs, finDim_eq_finrank (ne_bot_of_le_ne_bot hs h),
     Submodule.finrank_mono (direction_le h)]
 
-theorem map_lift_dim_map_le (f : A →ᵃ[R] A') (s : AffineSubspace R A) :
+theorem lift_dim_map_le (f : A →ᵃ[R] A') (s : AffineSubspace R A) :
     WithBot.map Cardinal.lift.{v} (map f s).dim ≤
       WithBot.map Cardinal.lift.{v'} s.dim := by
   by_cases hs : map f s = ⊥
   · simp [hs]
   rw [dim_eq_rank hs, dim_eq_rank (by simp_all), map_direction]
   simp [lift_rank_map_le]
+
+theorem dim_map_le (f : A →ᵃ[R] A₁) (s : AffineSubspace R A) : (map f s).dim ≤ s.dim := by
+  simpa using lift_dim_map_le f s
 
 theorem finDim_map_le_finDim [StrongRankCondition R] (f : A →ᵃ[R] A') (s : AffineSubspace R A)
     [Module.Finite R s.direction] : (map f s).finDim ≤ s.finDim := by
@@ -160,7 +164,7 @@ theorem finDim_map_le_finDim [StrongRankCondition R] (f : A →ᵃ[R] A') (s : A
   rw [finDim_eq_finrank hs, finDim_eq_finrank (by simp_all), map_direction]
   simp [Submodule.finrank_map_le]
 
-theorem map_lift_dim_map_eq_of_injective {f : A →ᵃ[R] A'} (hf : Function.Injective f)
+theorem lift_dim_map_of_injective {f : A →ᵃ[R] A'} (hf : Function.Injective f)
     (s : AffineSubspace R A) :
     WithBot.map Cardinal.lift.{v} (map f s).dim =
       WithBot.map Cardinal.lift.{v'} s.dim := by
@@ -171,7 +175,11 @@ theorem map_lift_dim_map_eq_of_injective {f : A →ᵃ[R] A'} (hf : Function.Inj
   refine LinearEquiv.lift_rank_eq <| (Submodule.equivMapOfInjective _ ?_ _).symm
   exact f.linear_injective_iff.mpr hf
 
-theorem finDim_map_eq_finDim_of_injective {f : A →ᵃ[R] A'} (hf : Function.Injective f)
+theorem dim_map_of_injective {f : A →ᵃ[R] A₁} (hf : Function.Injective f)
+    (s : AffineSubspace R A) : (map f s).dim = s.dim := by
+  simpa using lift_dim_map_of_injective hf s
+
+theorem finDim_map_of_injective {f : A →ᵃ[R] A'} (hf : Function.Injective f)
     (s : AffineSubspace R A) : (map f s).finDim = s.finDim := by
   by_cases hs : map f s = ⊥
   · simp_all
