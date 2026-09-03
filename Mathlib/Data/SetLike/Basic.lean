@@ -242,7 +242,6 @@ A preorder defined this way automatically makes available an instance of `IsConc
 -/
 @[reducible] def Preorder.ofMembership [Membership B A] : Preorder A where
   __ := LE.ofMembership A B
-  lt s t := s ≤ t ∧ ¬t ≤ s
   le_refl _ _ h := h
   le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
