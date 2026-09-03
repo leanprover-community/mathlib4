@@ -546,6 +546,14 @@ instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
   fast_instance% Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one
     coe_mul coe_pow
 
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_finsetProd [CommMonoid β] (f : γ → α →ₛ β) (s : Finset γ) :
+    ⇑(∏ t ∈ s, f t) = ∏ t ∈ s, ⇑(f t) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha ih => rw [Finset.prod_insert ha, Finset.prod_insert ha, SimpleFunc.coe_mul, ih]
+
 @[to_additive existing]
 instance instGroup [Group β] : Group (α →ₛ β) :=
   fast_instance% Function.Injective.group (fun f => show α → β from f) coe_injective coe_one

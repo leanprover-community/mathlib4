@@ -18,25 +18,17 @@ every path `X · ω` is right-continuous, then that path map is strongly measura
 
 * `stronglyMeasurable_path_of_isRightContinuous`: the path map of a right-continuous process
   with strongly measurable marginals is strongly measurable.
-* `MeasureTheory.StronglyAdapted.stronglyMeasurable_path`: the same statement for a strongly
+* `StronglyAdapted.stronglyMeasurable_path`: the same statement for a strongly
   adapted process with right-continuous paths.
 
 -/
 
-@[expose] public section
+public section
 
-open Filter Function Set TopologicalSpace
+open Filter Set TopologicalSpace
 open scoped Topology
 
 namespace MeasureTheory
-
-lemma SimpleFunc.coe_finset_sum {α β γ : Type*} {_ : MeasurableSpace α} [AddCommMonoid β]
-    (f : γ → SimpleFunc α β) (s : Finset γ) :
-    ⇑(∑ t ∈ s, f t) = ∑ t ∈ s, ⇑(f t) := by
-  classical
-  induction s using Finset.induction with
-  | empty => simp
-  | insert a s ha ih => rw [Finset.sum_insert ha, Finset.sum_insert ha, SimpleFunc.coe_add, ih]
 
 section PathApprox
 
@@ -56,7 +48,7 @@ private noncomputable def pathApprox (X : ι → Ω → E) (hX : ∀ t, Measurab
 private lemma pathApprox_apply (hX : ∀ t, Measurable (X t)) (ω : Ω) (i : ι) :
     pathApprox X hX e s n ω i =
       ∑ t ∈ s, if i ≤ t ∧ ∀ u ∈ s, i ≤ u → t ≤ u then SimpleFunc.nearestPt e n (X t ω) else 0 := by
-  simp [pathApprox, SimpleFunc.coe_finset_sum]
+  simp [pathApprox, SimpleFunc.coe_finsetSum]
 
 /-- Evaluation of `pathApprox` at a time `i` for which `t₀` is the smallest element of `s`
 that is `≥ i`. -/
