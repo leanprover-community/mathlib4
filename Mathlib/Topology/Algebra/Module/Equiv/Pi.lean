@@ -27,9 +27,11 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 
 @[expose] public section
 
+variable (R : Type*) [Semiring R]
+
 namespace ContinuousLinearMap
 
-variable (R : Type*) [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
   {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂] {ι : Type*} (φ : ι → Type*)
   [∀ i, TopologicalSpace (φ i)] [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)]
 
@@ -52,8 +54,6 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
 end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
-
-variable (R : Type*) [Semiring R]
 
 section Pi
 
