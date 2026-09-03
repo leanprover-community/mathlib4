@@ -27,6 +27,11 @@ a reason, and lints against using them.
 - This linter could be accompanied by an environment linter to ensure that no forbidden constructor
   is used in final expressions. Currently this is an elaboration-time linter.
 - This linter could be generalized to allow forbidding other sorts of API besides constructors.
+- Performance. Currently, this linter has a small but non-negligible performance cost. Depending on
+  where exactly the performance cost is coming from, it might be useful to either:
+  - merge the `ContextInfo`s lazily (e.g. only when we need its `Environment`)
+  - run this linter in parallel alongside other similar infotree-traversing linters, within a single
+    infotree traversal
 -/
 
 open Lean Elab Command
