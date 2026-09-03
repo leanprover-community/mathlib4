@@ -1071,7 +1071,6 @@ include hc ha hU hcov hUV in
 /-- See `Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation` for the general case. -/
 private lemma exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffineOpen :
     ∃ (k : I) (g : D.obj k ⟶ X), c.π.app k ≫ g = a ∧ g ≫ f = t.app k := by
-  have hnat {j k : I} (v : j ⟶ k) : D.map v ≫ t.app k = t.app j := by simp
   have hπ (j : I) : c.π.app j ≫ t.app j = a ≫ f := congr(($ha).app j)
   choose V W hUV hVW using hUV
   -- Each `U j` factors after passing to some `l`, compatibly on overlaps.
@@ -1080,7 +1079,7 @@ private lemma exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffineOp
         ∀ (O : c.pt.Opens) (h : O ≤ c.π.app k ⁻¹ᵁ D.map u ⁻¹ᵁ U j),
           (c.π.app k).resLE _ O h ≫ g = O.ι ≫ a := by
     refine IsCofiltered.exists_forall (fun v u j ⟨g, hg, hg'⟩ ↦ ⟨(D.map v).resLE _ _ (by simp) ≫ g,
-      by simp [hg, hnat], fun O h ↦ by simpa using hg' O (h.trans (by simp))⟩) fun j ↦ ?_
+      by simp [hg], fun O h ↦ by simpa using hg' O (h.trans (by simp))⟩) fun j ↦ ?_
     obtain ⟨i', u, hu⟩ := exists_map_preimage_le_map_preimage D c hc (hU j).isCompact
       (V := t.app i ⁻¹ᵁ (W j : S.Opens))
       (by simpa only [← Hom.comp_preimage, hπ] using (hUV j).trans (a.preimage_mono (hVW j)))
@@ -1088,19 +1087,12 @@ private lemma exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffineOp
       ((hU j).preimage _).preimage _
     let τ : opensDiagram D i' (D.map u ⁻¹ᵁ U j) ⟶ (Functor.const (Over i')).obj (W j) :=
       { app k := (t.app k.left).resLE _ _ ((Hom.preimage_mono _ hu).trans_eq
-          (by simp only [← Hom.comp_preimage, hnat]))
-        naturality _ _ v := by
-          dsimp only [opensDiagram, Functor.const_obj_map]
-          simp [hnat] }
-    obtain ⟨k, g, hg, hg'⟩ : ∃ (k : Over i') (g : _ ⟶ (V j : X.Opens).toScheme),
-        (c.π.app k.left).resLE _ (c.π.app i' ⁻¹ᵁ D.map u ⁻¹ᵁ U j) (by simp) ≫ g =
-          a.resLE _ _ (by simpa using hUV j) ∧ g ≫ f.resLE _ _ (hVW j) = τ.app k :=
-      exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
-        _ τ (f.resLE _ _ (hVW j)) _ (isLimitOpensCone D c hc i' _)
-        (a.resLE _ _ (by simpa using hUV j)) (by
-          ext k
-          dsimp only [τ, opensCone, opensDiagram]
-          simp [hπ])
+          (by simp [← Hom.comp_preimage]))
+        naturality _ _ v := by simp [opensDiagram] }
+    obtain ⟨k, g, hg, hg'⟩ := exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
+      _ τ (f.resLE _ _ (hVW j)) _ (isLimitOpensCone D c hc i' _)
+      (a.resLE _ _ (by simpa using hUV j)) (by ext k; simp [τ, opensCone, opensDiagram, hπ])
+    dsimp only [opensCone, opensDiagram] at g hg hg'
     have e : D.map (k.hom ≫ u) ⁻¹ᵁ U j ≤ D.map k.hom ⁻¹ᵁ D.map u ⁻¹ᵁ U j := by simp
     refine ⟨k.left, k.hom ≫ u, Scheme.homOfLE _ e ≫ g ≫ (V j : X.Opens).ι, ?_, fun O h ↦ ?_⟩
     · simpa [τ] using congr(Scheme.homOfLE _ e ≫ $hg' ≫ (W j : S.Opens).ι)
@@ -1116,9 +1108,8 @@ private lemma exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffineOp
       (((hU j₁).preimage (D.map u)).isCompact_inf ((hU j₂).preimage (D.map u)))
       (Scheme.homOfLE _ inf_le_left ≫ g j₁) (Scheme.homOfLE _ inf_le_right ≫ g j₂)
       (by simp [hg]) (by simp [hg]) (by simpa using (hg' j₁ _ _).trans (hg' j₂ _ _).symm)
-    exact ⟨l, v, fun O e₁ e₂ ↦ by
-      simpa using
-        congr(Scheme.homOfLE _ ((le_inf e₁ e₂).trans_eq (by simp [Hom.preimage_inf])) ≫ $e)⟩
+    refine ⟨l, v, fun O e₁ e₂ ↦ ?_⟩
+    simpa using congr(Scheme.homOfLE _ ((le_inf e₁ e₂).trans_eq (by simp [Hom.preimage_inf])) ≫ $e)
   -- We may glue the morphisms into `Dₗ ⟶ X` and verify that it indeed satisfies the hypothesis.
   have h𝒲 := (hcov.preimage (D.map u)).preimage (D.map v)
   obtain ⟨F, hF⟩ := exists_ι_comp_eq_of_isOpenCover h𝒲 (fun j ↦ (D.map v).resLE _ _ le_rfl ≫ g j)
