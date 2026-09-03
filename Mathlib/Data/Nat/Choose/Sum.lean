@@ -91,7 +91,7 @@ theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
 namespace Nat
 
 /-- The sum of entries in a row of Pascal's triangle -/
-theorem sum_range_choose (n : ℕ) : (∑ m ∈ range (n + 1), n.choose m) = 2 ^ n := by
+theorem sum_range_choose (n : ℕ) : ∑ m ∈ range (n + 1), n.choose m = 2 ^ n := by
   have := (add_pow 1 1 n).symm
   simpa [one_add_one_eq_two] using this
 
@@ -125,6 +125,10 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     _ = ∑ m ∈ range (2 * n + 1), (2 * n).choose m := by simp [-Nat.reduceAdd, add_pow]
     _ ≤ ∑ _ ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
+
+lemma four_pow_le_add_one_mul_choose (n : ℕ) : 4 ^ n ≤ (n + 1) * (2 * n + 1).choose n :=
+  (four_pow_le_two_mul_add_one_mul_central_binom n).trans_eq (by
+    rw [add_one_mul_choose_eq, choose_symm_half, mul_comm])
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by

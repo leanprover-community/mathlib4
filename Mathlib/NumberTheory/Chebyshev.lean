@@ -216,6 +216,9 @@ theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by simp [lcmUpto]
 
 theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
 
+lemma lcmUpto_dvd_lcmUpto {m n : ℕ} (h : m ≤ n) : lcmUpto m ∣ lcmUpto n :=
+  Finset.lcm_dvd fun _ _ ↦ dvd_lcm (by grind)
+
 theorem factorization_lcmUpto (n : ℕ) {p : ℕ} (hp : p.Prime) :
     (lcmUpto n).factorization p = p.log n := by
   rw [lcmUpto, Finset.factorization_lcm (fun _ _ ↦ by grind)]
@@ -324,6 +327,40 @@ theorem two_pow_le_mul_lcmUpto (n : ℕ) : 2 ^ n ≤ (n + 1) * lcmUpto n := calc
     gcongr with k hk
     exact le_of_dvd (lcmUpto_pos n) (choose_dvd_lcmUpto <| by grind)
   _ = _ := by simp
+
+lemma mul_choose_dvd_lcmUpto {n k : ℕ} (nk : k ≠ 0) (lk : k ≤ n) : k * n.choose k ∣ lcmUpto n := by
+  rw [← factorization_prime_le_iff_dvd (mul_ne_zero nk (choose_ne_zero lk)) (lcmUpto_ne_zero n)]
+  intro p pp
+  rw [factorization_lcmUpto n pp, factorization_mul nk (choose_ne_zero lk), Finsupp.add_apply]
+  exact factorization_add_factorization_choose_le_log lk
+
+lemma mul_mul_choose_dvd_lcmUpto {n : ℕ} (hn : n ≠ 0) :
+    n * (n + 1) * (2 * n + 1).choose n ∣ lcmUpto (2 * n + 1) := by
+  have co : n.Coprime (n + 1) := by simp [Coprime]
+  rw [← co.lcm_eq_mul, ← lcm_mul_right]
+  apply Nat.lcm_dvd (mul_choose_dvd_lcmUpto hn (by lia))
+  rw [← choose_symm_half]
+  apply mul_choose_dvd_lcmUpto <;> lia
+
+lemma mul_four_pow_le_lcmUpto {n : ℕ} (hn : n ≠ 0) : n * 4 ^ n ≤ lcmUpto (2 * n + 1) := calc
+  _ ≤ _ := mul_le_mul_left _ (four_pow_le_add_one_mul_choose n)
+  _ = _ := (mul_assoc ..).symm
+  _ ≤ _ := le_of_dvd (lcmUpto_pos _) (mul_mul_choose_dvd_lcmUpto hn)
+
+theorem two_pow_le_lcmUpto {n : ℕ} (hn : 7 ≤ n) : 2 ^ n ≤ lcmUpto n := by
+  have p2 (k) : 2 ^ (2 * k) = 4 ^ k := by simp [pow_mul]
+  obtain ⟨k, rfl | rfl⟩ := n.even_or_odd'
+  · obtain rfl | gk : k = 4 ∨ 4 ≤ k - 1 := by lia
+    · decide
+    · rw [p2, ← k.sub_one_add_one (by lia), pow_succ']
+      calc
+        _ ≤ _ := mul_le_mul_left gk _
+        _ ≤ _ := mul_four_pow_le_lcmUpto (by lia)
+        _ ≤ _ := le_of_dvd (lcmUpto_pos _) (lcmUpto_dvd_lcmUpto (by lia))
+  · rw [pow_succ', p2]
+    calc
+      _ ≤ _ := by gcongr; lia
+      _ ≤ _ := mul_four_pow_le_lcmUpto (by lia)
 
 /-!
 ## Relating `ψ` and `θ`
