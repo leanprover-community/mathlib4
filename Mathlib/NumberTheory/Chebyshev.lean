@@ -527,6 +527,10 @@ theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ ψ 
   · exact floor_le hx
   · exact one_le_two
 
+lemma psi_ge_of_seven_le {n : ℕ} (hn : 7 ≤ n) : n * log 2 ≤ ψ n := by
+  rw [psi_eq_log_lcmUpto, ← log_pow 2]
+  exact log_le_log (by positivity) <| mod_cast two_pow_le_lcmUpto hn
+
 theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : ψ x - θ x ≤ 2 * √x * log x := by
   grw [← abs_psi_sub_theta_le_sqrt_mul_log hx]
   exact le_abs_self _
@@ -853,6 +857,18 @@ theorem pi_ge' {x : ℝ} (hx : 1 < x) :
     ((x - 1) * log 2 - log (x + 2)) / log x ≤ π ⌊x⌋₊ := by
   grw [div_le_iff₀ (log_pos hx), ← psi_le_primeCounting_mul_log', psi_ge']
   positivity
+
+lemma pi_ge_of_four_le {n : ℕ} (hn : 4 ≤ n) : n * log 2 / log n ≤ π n := by
+  obtain rfl | rfl | rfl | large : n = 4 ∨ n = 5 ∨ n = 6 ∨ 7 ≤ n := by lia
+  all_goals grw [div_le_iff₀ (log_pos (mod_cast (by lia)))]
+  on_goal 4 => grw [← psi_le_primeCounting_mul_log, psi_ge_of_seven_le large]
+  all_goals grw [← le_div_iff₀ (by positivity), mul_div_assoc, log_div_log,
+    ← div_le_iff₀' (mod_cast (by decide)), le_logb_iff_rpow_le one_lt_two (by simp)]
+  · norm_num [show π 4 = 2 by decide]
+  · grw [show π 5 = 3 by decide, div_eq_mul_inv, rpow_mul zero_le_two,
+      ← rpow_le_rpow_iff (by positivity) (by positivity) zero_lt_three, ← rpow_mul (by positivity)]
+    norm_num
+  · norm_num [show π 6 = 3 by decide]
 
 theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
   (theta_le_psi n).trans (psi_le_primeCounting_mul_log n)
