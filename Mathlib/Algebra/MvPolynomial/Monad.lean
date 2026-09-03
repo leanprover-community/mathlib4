@@ -105,7 +105,7 @@ def join₂ : MvPolynomial σ (MvPolynomial σ R) →+* MvPolynomial σ R :=
 theorem aeval_eq_bind₁ (f : σ → MvPolynomial τ R) : aeval f = bind₁ f :=
   rfl
 
-@[deprecated aeval_eq_eval₂Hom (since := "2026-09-02")]
+@[deprecated coe_aeval_eq_eval₂Hom (since := "2026-09-02")]
 theorem eval₂Hom_C_eq_bind₁ (f : σ → MvPolynomial τ R) : eval₂Hom C f = bind₁ f :=
   rfl
 
