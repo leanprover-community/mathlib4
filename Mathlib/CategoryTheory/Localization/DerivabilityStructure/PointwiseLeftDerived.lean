@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Final
 
 In this file, we show how a left derivability structure can be used in
 order to construct (pointwise) left derived functors.
-Let `Φ` be a right derivability structure from `W₁ : MorphismProperty C₁`
+Let `Φ` be a left derivability structure from `W₁ : MorphismProperty C₁`
 to `W₂ : MorphismProperty C₂`. Let `F : C₂ ⥤ H` be a functor.
 Then, the lemma `hasPointwiseLeftDerivedFunctor_iff_of_isLeftDerivabilityStructure`
 says that `F` has a pointwise left derived functor with respect to `W₂`
