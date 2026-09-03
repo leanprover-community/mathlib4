@@ -39,7 +39,9 @@ namespace Mathlib.Tactic.Echelon
 
 /-- Check that equality with zero in `α` reduces to a verdict in the kernel, which decides
 whether the certificate conditions can be discharged by `decide` or need a leaf
-certifier. -/
+certifier.
+Note that ℝ has a decidableEq instance via classical but isn't usable, so a mere instance synthesis
+check is insufficient. -/
 def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
@@ -75,6 +77,7 @@ def modelFor {u : Level} (α : Q(Type u)) : MetaM Model := do
     if let some m ← ext.model? α then
       trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr α}"
       return m
+  -- fallback model (rational literals)
   let leaf? ← try
       checkKernelDecide α
       pure none

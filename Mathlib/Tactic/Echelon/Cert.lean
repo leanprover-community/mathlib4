@@ -27,8 +27,8 @@ individual entries supplied by a leaf certifier.
 The elimination records its echelon form `U`, making the product a certificate obligation
 of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`. On the leaf
 path this is built one entry at a time, but should eventually be replaced by a dedicated
-matrix mult normalising tactic, which is why `A_σ` is a literal. `norm_num` does close it
-but is several times slower.
+matrix mult normalising tactic. `norm_num` does close it today (via @[simp] rewrites), but is
+several times slower and does not handle some edge cases (e.g. 0x0).
 
 A quantifier over `Fin n` is discharged by recursion on `List.finRange n`, where the motive
 is spelled once, rather than by chaining `Fin.forall_fin_succ`, which respells it at every
