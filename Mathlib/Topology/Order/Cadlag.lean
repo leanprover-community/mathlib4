@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Nick Kuhn, Yongxi Lin, Rohit Manokaran, Etienne Marion, 
 module
 
 public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.Order.LeftRightLim
 
 /-! # Càdlàg functions
 
@@ -151,6 +152,16 @@ lemma IsCadlag.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : 
   hf.continuous_comp (continuous_const_smul c)
 
 end Basic
+
+section LinearOrder
+
+variable [LinearOrder X] [TopologicalSpace Y]
+
+lemma IsCadlag.tendsto_nhdsLT_leftLim [OrderTopology X] (hf : IsCadlag f) (x : X) :
+    Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
+  tendsto_leftLim_of_tendsto (hf.tendsto_nhdsLT x)
+
+end LinearOrder
 
 section PseudoMetricSpace
 
