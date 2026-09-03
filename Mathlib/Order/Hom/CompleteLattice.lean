@@ -608,6 +608,75 @@ theorem symm_dual_comp (g : CompleteLatticeHom βᵒᵈ γᵒᵈ) (f : CompleteL
 
 end CompleteLatticeHom
 
+
+/-! ### Adjoint homs -/
+
+section Adjoint
+
+variable {α β : Type*}
+
+/-- The right order adjoint (or Galois adjoint) to a morphism between orders. See
+  `rightOrderAdj_gc` for the defining Galois connection, in the case that `f` preserves suprema. -/
+@[to_dual leftOrderAdj /-- The left order adjoint (or Galois adjoint) to a morphism between
+  orders. See `leftOrderAdj_gc` for the defining Galois connection, in the case that `f` preserves
+  infima. -/]
+def rightOrderAdj [SupSet α] [LE β] (f : α → β) : β → α := (sSup {a | f a ≤ ·})
+
+@[to_dual (attr := simp) leftOrderAdj_apply]
+theorem rightOrderAdj_apply [SupSet α] [LE β] (f : α → β) (b : β) :
+    rightOrderAdj f b = sSup {a | f a ≤ b} := rfl
+
+@[to_dual (rename := f ↔ g) (reorder := f g) leftOrderAdj_le_leftOrderAdj]
+theorem rightOrderAdj_le_rightOrderAdj [CompleteLattice α] [Preorder β] {f g : α → β} (h : f ≤ g) :
+    rightOrderAdj g ≤ rightOrderAdj f :=
+  fun _ => sSup_le_sSup <| fun x hx => (h x).trans hx
+
+@[to_dual leftOrderAdj_apply_le]
+theorem le_rightOrderAdj_apply [CompleteLattice α] [LE β] {f : α → β} {a : α} {b : β}
+    (h : f a ≤ b) : a ≤ rightOrderAdj f b := le_sSup h
+
+variable [CompleteLattice α] [CompleteLattice β] {F : Type*} [FunLike F α β] [sSupHomClass F α β]
+
+@[to_dual leftOrderAdj_gc]
+theorem rightOrderAdj_gc (f : F) : GaloisConnection f (rightOrderAdj f) := by
+  intro x y
+  refine ⟨le_rightOrderAdj_apply, fun h => (OrderHomClass.monotone f h).trans ?_⟩
+  simp
+
+@[to_dual (attr := simp) rightOrderAdj_leftOrderAdj]
+theorem leftOrderAdj_rightOrderAdj (f : F) : leftOrderAdj (rightOrderAdj f) = f := by
+  ext x
+  refine GaloisConnection.l_unique ?_ (rightOrderAdj_gc f) (fun _ => rfl)
+  convert leftOrderAdj_gc (F := sInfHom β α) ⟨rightOrderAdj f,
+    fun _ => (rightOrderAdj_gc f).u_sInf_eq_sInf_image⟩
+  all_goals simp
+
+@[to_dual (attr := simp) (reorder := f g) (rename := f ↔ g) leftOrderAdj_le_leftOrderAdj_iff]
+theorem rightOrderAdj_le_rightOrderAdj_iff {f g : F} :
+    rightOrderAdj f ≤ rightOrderAdj g ↔ (g : α → β) ≤ f := by
+  refine ⟨fun h x => ?_, rightOrderAdj_le_rightOrderAdj⟩
+  rw [(rightOrderAdj_gc g).le_iff_le]
+  exact ((rightOrderAdj_gc f).le_u_l x).trans (h _)
+
+/-- Taking order adjoints defines an equivalence between `sSupHom α β` and `sInfHom β α`. -/
+@[to_dual (attr := simps) /-- Taking order adjoints defines an equivalence between `sInfHom α β` and
+  `sSupHom β α`. -/]
+def sSupHom.adjEquiv : sSupHom α β ≃ sInfHom β α where
+  toFun f := ⟨rightOrderAdj f, fun _ => (rightOrderAdj_gc f).u_sInf_eq_sInf_image⟩
+  invFun g := ⟨leftOrderAdj g, fun _ => (leftOrderAdj_gc g).l_sSup_eq_sSup_image⟩
+  left_inv f := DFunLike.coe_injective <| leftOrderAdj_rightOrderAdj f
+  right_inv g := DFunLike.coe_injective <| rightOrderAdj_leftOrderAdj g
+
+/-- Taking order adjoints defines an order isomorphism between `sSupHom α β` and
+  `(sInfHom β α)ᵒᵈ`. -/
+@[to_dual /-- Taking order adjoints defines an order isomorphism between `sInfHom α β` and
+  `(sSupHom β α)ᵒᵈ`. -/]
+def sSupHom.adjOrderIsoDual : sSupHom α β ≃o (sInfHom β α)ᵒᵈ where
+  __ := adjEquiv.trans toDual
+  map_rel_iff' := rightOrderAdj_le_rightOrderAdj_iff
+
+end Adjoint
+
 /-! ### Concrete homs -/
 
 
