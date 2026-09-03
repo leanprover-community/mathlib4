@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.Basic
 
+import Mathlib.Tactic.Bound
+
 /-!
 # Balanced Core and Balanced Hull
 
@@ -22,14 +24,14 @@ public import Mathlib.Analysis.LocallyConvex.Basic
 
 ## Implementation details
 
-The hull is defined as the `ClosureOperator` associated to the predicate `Balanced 𝕜` (which is
-stable under `Balanced.sInter`), i.e. as the intersection over all balanced sets containing `s`;
-the `ClosureOperator` API then supplies its defining properties `subset_balancedHull` and
-`Balanced.balancedHull_subset_of_subset`. The core is defined directly as the union over all
-balanced sets contained in `s`, its defining properties being `balancedCore_subset` and
-`Balanced.subset_balancedCore_of_subset`. Dually to the hull, it could be defined as the
-`ClosureOperator` on `(Set E)ᵒᵈ` associated to `Balanced 𝕜` (which is stable under
-`Balanced.sUnion`), but that gains little over the four one-line proofs below.
+The `balancedHull` is defined as the `ClosureOperator` associated to the predicate `Balanced 𝕜`,
+i.e., as the intersection over all balanced sets containing `s`. The `ClosureOperator` API then
+provides most of the main results about the hull, e.g., `subset_balancedHull` and
+`Balanced.balancedHull_subset_of_subset`.
+
+On the other hand, `balancedCore 𝕜 s` is defined directly as the union of all balanced subsets
+of `s`. This is exactly the `ClosureOperator` of `Balanced 𝕜` on the order dual `(Set E)ᵒᵈ`, but
+there's not much support for such objects at this time in Mathlib.
 
 Under slightly stronger assumptions, the hull can be described as the union over `r • s`, for `r`
 the scalars with `‖r‖ ≤ 1`; this is `balancedHull_eq_iUnion`. Likewise, the core can be
@@ -47,7 +49,9 @@ balanced
 @[expose] public section
 
 
-open Set Pointwise Topology Filter
+open Set Pointwise Filter
+
+open scoped Topology
 
 variable {𝕜 E ι : Type*}
 

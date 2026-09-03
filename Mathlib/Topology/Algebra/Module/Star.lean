@@ -70,7 +70,6 @@ def starL' : A ≃L[R] A :=
 theorem symm_starL' : (starL' R : A ≃L[R] A).symm = starL' R :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated "Use `symm_starL'` and `starL'_apply` instead" (since := "2026-06-03")]
 theorem starL'_symm_apply (x : A) : (starL' R).symm x = starAddEquiv.symm x := by
   simp

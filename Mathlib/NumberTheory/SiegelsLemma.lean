@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Data.Pi.Interval
-public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
 
 /-!
 # Siegel's Lemma
@@ -67,71 +65,50 @@ section preparation
 and
 # Step 2: #S < #T
 Pigeonhole will give different x and y in T with A.mulVec x = A.mulVec y in S
-Their difference is the solution we are looking for
+Their difference is the solution we are looking for.
 -/
 
 -- # Step 1: ∀ v ∈ T, A *ᵥ v ∈  S
 
 private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
   rw [mem_Icc] at hv ⊢
-  have mulVec_def : A.mulVec v =
-      fun i ↦ Finset.sum univ fun j : β ↦ A i j * v j := rfl
-  rw [mulVec_def]
   refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩
   all_goals
-    simp only [mul_neg]
+    simp only [mulVec_apply_eq_sum, mul_neg]
     gcongr ∑ _ : β, ?_ with j _ -- Get rid of sums
-    rw [← mul_comm (v j)] -- Move A i j to the right of the products
-    -- We have to distinguish cases: we have now 4 goals
-    rcases le_total 0 (A i j) with hsign | hsign
-  · rw [negPart_eq_zero.2 hsign]
-    exact mul_nonneg (hv.1 j) hsign
-  · rw [negPart_eq_neg.2 hsign]
-    simp only [mul_neg, neg_neg]
-    exact mul_le_mul_of_nonpos_right (hv.2 j) hsign
-  · rw [posPart_eq_self.2 hsign]
-    gcongr
-    apply hv.2
-  · rw [posPart_eq_zero.2 hsign]
-    exact mul_nonpos_of_nonneg_of_nonpos (hv.1 j) hsign
+    conv in A i j * v j => rw [← posPart_sub_negPart (A i j)]
+    linarith [mul_nonneg (hv.1 j) (posPart_nonneg (A i j)),
+      mul_nonneg (hv.1 j) (negPart_nonneg (A i j)),
+      mul_nonneg (sub_nonneg.mpr (hv.2 j)) (posPart_nonneg (A i j)),
+      mul_nonneg (sub_nonneg.mpr (hv.2 j)) (negPart_nonneg (A i j))]
 
 -- # Preparation for Step 2
 
 private lemma card_T_eq [DecidableEq β] : #T = (B + 1) ^ n := by
-  rw [Pi.card_Icc 0 B']
-  simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_natCast_add_one, prod_const, card_univ]
+  simp [Pi.card_Icc]
 
 -- This lemma is necessary to be able to apply the formula #(Icc a b) = b + 1 - a
 private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
-  calc N i
-  _ ≤ 0 := by
-    apply Finset.sum_nonpos
-    intro j _
-    simp only [mul_neg, Left.neg_nonpos_iff]
-    positivity
-  _ ≤ P i + 1 := by
-    apply le_trans (Finset.sum_nonneg _) (Int.le_add_one (le_refl P i))
-    intro j _
-    positivity
+  calc
+    N i ≤ 0 := by
+      simpa using sum_nonneg fun _ _ ↦ by positivity
+    _ ≤ P i + 1 :=
+      add_nonneg (sum_nonneg fun _ _ ↦ by positivity) zero_le_one
 
 private lemma card_S_eq [DecidableEq α] : #(Finset.Icc N P) = ∏ i : α, (P i - N i + 1) := by
   rw [Pi.card_Icc N P, Nat.cast_prod]
-  congr
-  ext i
+  congr with i
   rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one A i)]
   exact add_sub_right_comm (P i) 1 (N i)
 
-/-- The sup norm of a non-zero integer matrix is at least one -/
+/-- The sup norm of a non-zero integer matrix is at least one. -/
 lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
-  by_contra! h
-  apply hA
-  ext i j
-  simp only [Matrix.zero_apply]
-  rw [norm_lt_iff Real.zero_lt_one] at h
-  specialize h i j
-  rw [Int.norm_eq_abs] at h
-  norm_cast at h
-  exact Int.abs_lt_one_iff.1 h
+  obtain ⟨i, j, hij⟩ := (Function.ne_iff.mp hA).imp fun _ hi ↦ Function.ne_iff.mp hi
+  calc
+    1 ≤ ‖A i j‖ := by
+      rw [Int.norm_eq_abs, ← Int.cast_abs, ← Int.cast_one, Int.cast_le]
+      exact Int.one_le_abs hij
+    _ ≤ ‖A‖ := norm_entry_le_entrywise_sup_norm A
 
 -- # Step 2: #S < #T
 
@@ -152,8 +129,7 @@ private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
         linarith only [h]
       · simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, add_le_add_iff_right]
         have h1 : n * max 1 ‖A‖ * B = ∑ _ : β, max 1 ‖A‖ * B := by
-          simp
-          ring
+          simp [mul_assoc]
         simp_rw [h1, ← Finset.sum_add_distrib, ← mul_add, mul_comm (max 1 ‖A‖), ← Int.cast_add]
         gcongr with j _
         rw [posPart_add_negPart (A i j), Int.cast_abs]
@@ -162,17 +138,15 @@ private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
   _ ≤ (n * max 1 ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow, mul_add, mul_one]
         gcongr
-        have H : 1 ≤ (n : ℝ) := mod_cast (hm.trans hn)
-        exact one_le_mul_of_one_le_of_one_le H <| le_max_left ..
+        exact one_le_mul_of_one_le_of_one_le (mod_cast hm.trans hn) <| le_max_left ..
   _ = ((n * max 1 ‖A‖) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
         congr 1
-        rw [← rpow_mul (mul_nonneg (Nat.cast_nonneg' n) (le_trans zero_le_one (le_max_left ..))),
-          ← Real.rpow_natCast, div_mul_cancel₀]
+        rw [← rpow_mul (by positivity), ← Real.rpow_natCast, div_mul_cancel₀]
         exact sub_ne_zero_of_ne (mod_cast hn.ne')
   _ < (B + 1) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
         gcongr
         · exact sub_pos.mpr (mod_cast hn)
-        · exact Nat.lt_floor_add_one ((n * max 1 ‖A‖) ^ e)
+        · exact Nat.lt_floor_add_one _
   _ = (B + 1) ^ n := by
         rw [← rpow_natCast, ← rpow_add (Nat.cast_add_one_pos B), ← rpow_natCast, sub_add_cancel]
 
@@ -183,40 +157,28 @@ theorem exists_ne_zero_int_vec_norm_le
     A *ᵥ t = 0 ∧ ‖t‖ ≤ (n * max 1 ‖A‖) ^ ((m : ℝ) / (n - m)) := by
   classical
   -- Pigeonhole
-  rcases Finset.exists_ne_map_eq_of_card_lt_of_maps_to
-    (card_S_lt_card_T A hn hm) (image_T_subset_S A)
+  rcases exists_ne_map_eq_of_card_lt_of_maps_to (card_S_lt_card_T A hn hm) (image_T_subset_S A)
     with ⟨x, hxT, y, hyT, hneq, hfeq⟩
   -- Proofs that x - y ≠ 0 and x - y is a solution
-  refine ⟨x - y, sub_ne_zero.mpr hneq, by simp only [mulVec_sub, sub_eq_zero, hfeq], ?_⟩
+  refine ⟨x - y, sub_ne_zero.mpr hneq, by simp [mulVec_sub, hfeq], ?_⟩
   -- Inequality
   have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * max 1 ‖A‖) ^ e := by positivity
   rw [← norm_replicateCol (ι := Unit), norm_le_iff n_mul_norm_A_pow_e_nonneg]
   intro i j
-  simp only [replicateCol_apply, Pi.sub_apply]
-  rw [Int.norm_eq_abs, ← Int.cast_abs]
-  refine le_trans ?_ (Nat.floor_le n_mul_norm_A_pow_e_nonneg)
-  norm_cast
-  rw [abs_le]
-  rw [Finset.mem_Icc] at hxT hyT
-  constructor
-  · simp only [neg_le_sub_iff_le_add]
-    apply le_trans (hyT.2 i)
-    norm_cast
-    simp only [le_add_iff_nonneg_left]
-    exact hxT.1 i
-  · simp only [tsub_le_iff_right]
-    apply le_trans (hxT.2 i)
-    norm_cast
-    simp only [le_add_iff_nonneg_right]
-    exact hyT.1 i
-
+  simp only [replicateCol_apply, Pi.sub_apply, Int.norm_eq_abs, ← Int.cast_abs]
+  calc
+    ((|x i - y i| : ℤ) : ℝ) ≤ ((B : ℤ) : ℝ) := by
+      rw [Int.cast_le, abs_le]
+      rw [Finset.mem_Icc] at hxT hyT
+      have : 0 ≤ x i ∧ x i ≤ B ∧ 0 ≤ y i ∧ y i ≤ B := ⟨hxT.1 i, hxT.2 i, hyT.1 i, hyT.2 i⟩
+      lia
+    _ ≤ _ := by simpa only [Int.cast_natCast] using Nat.floor_le n_mul_norm_A_pow_e_nonneg
 
 theorem exists_ne_zero_int_vec_norm_le'
     (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α) (hA : A ≠ 0) :
     ∃ t : β → ℤ, t ≠ 0 ∧
     A *ᵥ t = 0 ∧ ‖t‖ ≤ (n * ‖A‖) ^ ((m : ℝ) / (n - m)) := by
-  have := exists_ne_zero_int_vec_norm_le A hn hm
-  rwa [max_eq_right] at this
-  exact Int.Matrix.one_le_norm_A_of_ne_zero _ hA
+  simpa [max_eq_right (one_le_norm_A_of_ne_zero A hA)] using
+    exists_ne_zero_int_vec_norm_le A hn hm
 
 end Int.Matrix

@@ -5,10 +5,10 @@ Authors: Bhavik Mehta, Adam Topaz
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.Data.Finite.Prod
 
 /-!
 # The category of finite types.
@@ -277,8 +277,7 @@ lemma uSwitchEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
 
 lemma uSwitchEquiv_symm_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y) (x : X) :
     uSwitch.map f (X.uSwitchEquiv.symm x) = Y.uSwitchEquiv.symm (f x) := by
-  rw [← Equiv.apply_eq_iff_eq_symm_apply, ← uSwitchEquiv_naturality f,
-    Equiv.apply_symm_apply]
+  rw [Equiv.eq_symm_apply, ← uSwitchEquiv_naturality f, Equiv.apply_symm_apply]
 
 lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     uSwitch.map (uSwitch.map f) =
