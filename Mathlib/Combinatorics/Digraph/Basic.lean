@@ -216,10 +216,9 @@ theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i)
 instance : LT (Digraph V) where
   lt G H := G ≤ H ∧ ¬H ≤ G
 
-instance distribLattice : DistribLattice (Digraph V) :=
-  fast_instance% Function.Injective.distribLattice (fun G ↦ (G.verts, G.Adj))
-    (fun _ _ h ↦ Digraph.ext (congrArg Prod.fst h) (congrArg Prod.snd h))
-    .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+instance : DistribLattice (Digraph V) :=
+  fast_instance% Function.Injective.distribLattice (fun G ↦ (G.verts, G.Adj)) (fun _ _ ↦ by simp)
+    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[simp] theorem isSpanningSubgraph_self (G : Digraph V) : IsSpanningSubgraph G G := by
   simp [isSpanningSubgraph_iff]
