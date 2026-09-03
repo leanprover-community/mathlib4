@@ -1094,7 +1094,7 @@ theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · intro a
     have one_indep : G.IsNIndepSet 1 {a} := by simp
-    have : 1 ≤ G.indepNum  := IsIndepSet.card_le_indepNum one_indep.isIndepSet
+    have : 1 ≤ G.indepNum := IsIndepSet.card_le_indepNum one_indep.isIndepSet
     grind
   · have : ∀ (s : Finset α), s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
     simp [indepNum, this, exists_const]
