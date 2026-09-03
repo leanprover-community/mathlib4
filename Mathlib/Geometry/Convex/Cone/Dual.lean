@@ -42,7 +42,7 @@ variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
 
-local notation3 "R≥0" => {c : R // 0 ≤ c}
+local notation3 "R≥0" => Nonneg R
 
 variable (p) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
@@ -116,8 +116,8 @@ alias dual_span := dual_hull
 
 variable {M' : Type*} [AddCommMonoid M'] [Module R M']
 
-@[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s :=
-  by ext; simp
+@[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s := by
+  ext; simp
 
 /-- Duality with respect to a general bilinear map can be expressed as duality using the
   identity pairing. -/

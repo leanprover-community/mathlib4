@@ -70,7 +70,6 @@ lemma freeHomEquiv_comp_apply {M N : SheafOfModules.{u} R} {I : Type u}
     (f : free I ⟶ M) (p : M ⟶ N) (i : I) :
     N.freeHomEquiv (f ≫ p) i = sectionsMap p (M.freeHomEquiv f i) := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma freeHomEquiv_symm_comp {M N : SheafOfModules.{u} R} {I : Type u} (s : I → M.sections)
     (p : M ⟶ N) :
     M.freeHomEquiv.symm s ≫ p = N.freeHomEquiv.symm (fun i ↦ sectionsMap p (s i)) :=

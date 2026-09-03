@@ -146,12 +146,12 @@ def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ :=
 
 theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ IsMaxRank u) :
     regOfFamily u = 0 := by
-  rw [regOfFamily, dif_neg hu]
+  rw [regOfFamily, dite_eq_right hu]
 
 open scoped Classical in
 theorem regOfFamily_of_isMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
     regOfFamily u = ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank hu))) := by
-  rw [regOfFamily, dif_pos hu]
+  rw [regOfFamily, dite_eq_left hu]
 
 theorem regOfFamily_pos {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
     0 < regOfFamily u := by
@@ -245,17 +245,17 @@ theorem finrank_mul_regOfFamily_eq_det (u : Fin (rank K) → (𝓞 K)ˣ) (w' : I
   rw [← det_reindex_self f.symm, det_eq_sum_row_mul_submatrix_succAbove_succAbove_det _ (f.symm w')
     (f.symm w'), abs_mul, abs_mul, abs_neg_one_pow, one_mul]
   · simp_rw [reindex_apply, submatrix_submatrix, ← f.symm.sum_comp, f.symm_symm, submatrix_apply,
-      Function.comp_def, Equiv.apply_symm_apply, of_apply, dif_pos, ← Nat.cast_sum, sum_mult_eq,
-      Nat.abs_cast]
+      Function.comp_def, Equiv.apply_symm_apply, of_apply, dite_eq_left, ← Nat.cast_sum,
+      sum_mult_eq, Nat.abs_cast]
     rw [regOfFamily_eq_det u w' e, ← Matrix.det_reindex_self g]
     congr with i j
-    rw [reindex_apply, submatrix_apply, submatrix_apply, of_apply, of_apply, dif_neg]
+    rw [reindex_apply, submatrix_apply, submatrix_apply, of_apply, of_apply, dite_eq_right]
     rfl
   · simp_rw [Equiv.forall_congr_left f, ← f.symm.sum_comp, reindex_apply, submatrix_apply,
       of_apply, f.symm_symm, f.apply_symm_apply, Finset.sum_dite_irrel, ne_eq,
       EmbeddingLike.apply_eq_iff_eq]
     intro _ h
-    rw [dif_neg h, sum_mult_mul_log]
+    rw [dite_eq_right h, sum_mult_mul_log]
 
 end regOfFamily
 

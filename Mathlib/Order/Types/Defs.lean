@@ -42,7 +42,7 @@ order type, order isomorphism, linear order
 
 public noncomputable section
 
-open Function Set Equiv Order
+open Function Equiv
 
 universe u v
 variable {α β : Type u} [LinearOrder α] [LinearOrder β] {δ : Sort v}
