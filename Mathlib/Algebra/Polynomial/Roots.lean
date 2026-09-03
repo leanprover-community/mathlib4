@@ -12,6 +12,7 @@ public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.SetTheory.Cardinal.Order
+public import Mathlib.Order.Filter.TendstoCofinite
 
 /-!
 # Theory of univariate polynomials
@@ -68,12 +69,12 @@ theorem roots_def [DecidableEq R] (p : R[X]) [Decidable (p = 0)] :
 
 @[simp]
 theorem roots_zero : (0 : R[X]).roots = 0 :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem card_roots (hp0 : p ≠ 0) : (Multiset.card (roots p) : WithBot ℕ) ≤ degree p := by
   classical
   unfold roots
-  rw [dif_neg hp0]
+  rw [dite_eq_right hp0]
   exact (Classical.choose_spec (exists_multiset_roots hp0)).1
 
 theorem card_roots' (p : R[X]) : Multiset.card p.roots ≤ natDegree p := by
@@ -96,10 +97,9 @@ theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
 
 @[simp]
 theorem count_roots [DecidableEq R] (p : R[X]) : p.roots.count a = rootMultiplicity a p := by
-  classical
   by_cases hp : p = 0
   · simp [hp]
-  rw [roots_def, dif_neg hp]
+  rw [roots_def, dite_eq_right hp]
   exact (Classical.choose_spec (exists_multiset_roots hp)).2 a
 
 @[simp]
@@ -137,25 +137,46 @@ theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ 
     #Z ≤ p.natDegree :=
   (Multiset.card_le_card (Finset.val_le_iff_val_subset.2 h)).trans (Polynomial.card_roots' p)
 
-theorem finite_setOf_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsRoot p x } := by
+theorem finite_setOfPred_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsRoot p x } := by
   classical
-  simpa only [← Finset.setOf_mem, Multiset.mem_toFinset, mem_roots hp]
+  simpa only [← Finset.setOfPred_mem, Multiset.mem_toFinset, mem_roots hp]
     using p.roots.toFinset.finite_toSet
 
+@[deprecated (since := "2026-07-09")] alias finite_setOf_isRoot := finite_setOfPred_isRoot
+
+/-- Nonzero polynomials have no roots away from a finite set. -/
+lemma eventually_cofinite_not_isRoot {p : R[X]} (hp : p ≠ 0) :
+    ∀ᶠ x in Filter.cofinite, ¬p.IsRoot x :=
+  (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+/-- Nonzero polynomials are nonzero away from a finite set. -/
+lemma eventually_eval_ne_zero_cofinite {p : R[X]} (hp : p ≠ 0) :
+    ∀ᶠ x in Filter.cofinite, p.eval x ≠ 0 :=
+  eventually_cofinite_not_isRoot hp
+
 theorem eq_zero_of_infinite_isRoot (p : R[X]) (h : Set.Infinite { x | IsRoot p x }) : p = 0 :=
-  not_imp_comm.mp finite_setOf_isRoot h
+  not_imp_comm.mp finite_setOfPred_isRoot h
 
 theorem exists_max_root [LinearOrder R] (p : R[X]) (hp : p ≠ 0) : ∃ x₀, ∀ x, p.IsRoot x → x ≤ x₀ :=
-  Set.exists_upper_bound_image _ _ <| finite_setOf_isRoot hp
+  Set.exists_upper_bound_image _ _ <| finite_setOfPred_isRoot hp
 
 theorem exists_min_root [LinearOrder R] (p : R[X]) (hp : p ≠ 0) : ∃ x₀, ∀ x, p.IsRoot x → x₀ ≤ x :=
-  Set.exists_lower_bound_image _ _ <| finite_setOf_isRoot hp
+  Set.exists_lower_bound_image _ _ <| finite_setOfPred_isRoot hp
 
 theorem eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = eval x q }) :
     p = q := by
   rw [← sub_eq_zero]
   apply eq_zero_of_infinite_isRoot
   simpa only [IsRoot, eval_sub, sub_eq_zero]
+
+/-- Non-constant polynomials have finite fibres, provided the coefficients are a domain. -/
+lemma tendstoCofinite_of_natDegree_ne_zero {R : Type} [CommRing R] [IsDomain R] (p : R[X])
+    (hp : p.natDegree ≠ 0) : Filter.TendstoCofinite p.eval := by
+  rw [Filter.tendstoCofinite_iff_finite_preimage_singleton]
+  intro x
+  by_contra! hx
+  obtain ⟨rfl⟩ : p = C x := p.eq_of_infinite_eval_eq (C x) (by simpa)
+  simp at hp
 
 theorem roots_mul {p q : R[X]} (hpq : p * q ≠ 0) : (p * q).roots = p.roots + q.roots := by
   classical
@@ -330,8 +351,6 @@ theorem roots_eq_of_degree_le_card_of_ne_zero {S : Finset R}
 theorem roots_eq_of_degree_eq_card {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val :=
   roots_eq_of_degree_le_card_of_ne_zero hS (by grind) (by contrapose! hcard; simp [hcard])
-
-@[deprecated (since := "2025-12-16")] alias roots_eq_of_degree_le_card := roots_eq_of_degree_eq_card
 
 theorem roots_eq_of_natDegree_le_card_of_ne_zero {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.natDegree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val :=
@@ -591,6 +610,13 @@ theorem rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra
     (p.rootSet S).Finite :=
   Set.toFinite _
 
+variable (T R) in
+@[simp]
+theorem rootSet_map [CommRing S] (p : S[X]) [Algebra S T] [Algebra T R] [Algebra S R]
+    [IsScalarTower S T R] : (p.map (algebraMap S T)).rootSet R = p.rootSet R := by
+  classical
+  rw [rootSet_def, rootSet_def, aroots_map]
+
 /-- The set of roots of all polynomials of bounded degree and having coefficients in a finite set
 is finite. -/
 theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S] [DecidableEq S]
@@ -609,7 +635,7 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
     fun _ _ => Finset.finite_toSet _
 
 /-- A version of `mem_rootSet` that requires the polynomial to be non-zero after mapping
-instead of requiring it to be non-zero and `NoZeroSMulDivisors`. -/
+instead of requiring it to be non-zero and `Module.IsTorsionFree`. -/
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical

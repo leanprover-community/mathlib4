@@ -46,7 +46,9 @@ argument, and return `LipschitzWith (Real.toNNReal K) f`.
 
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal Bornology
+open Filter Function Set NNReal ENNReal
+
+open scoped Topology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
@@ -94,15 +96,16 @@ lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : Loca
 protected lemma LocallyLipschitz.locallyLipschitzOn (h : LocallyLipschitz f) :
     LocallyLipschitzOn s f := (locallyLipschitzOn_univ.2 h).mono s.subset_univ
 
-theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K (s.restrict f) := by
+theorem lipschitzOnWith_iff_restrict :
+    LipschitzOnWith K f s ↔ LipschitzWith K (s.domRestrict f) := by
   simp [LipschitzOnWith, LipschitzWith]
 
 lemma lipschitzOnWith_restrict {t : Set s} :
-    LipschitzOnWith K (s.restrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
+    LipschitzOnWith K (s.domRestrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
   simp [LipschitzOnWith]
 
 lemma locallyLipschitzOn_iff_restrict :
-    LocallyLipschitzOn s f ↔ LocallyLipschitz (s.restrict f) := by
+    LocallyLipschitzOn s f ↔ LocallyLipschitz (s.domRestrict f) := by
   simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall',
     lipschitzOnWith_restrict,
     nhds_subtype_eq_comap_nhdsWithin, mem_comap]
@@ -148,14 +151,8 @@ theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : edist x 
 theorem mapsTo_closedEBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
     MapsTo f (closedEBall x r) (closedEBall (f x) (K * r)) := fun _y hy => h.edist_le_mul_of_le hy
 
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_closedBall := mapsTo_closedEBall
-
 theorem mapsTo_eball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ≥0∞) :
     MapsTo f (eball x r) (eball (f x) (K * r)) := fun _y hy => h.edist_lt_mul_of_lt hK hy
-
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_ball := mapsTo_eball
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
@@ -221,8 +218,8 @@ protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [
   LipschitzWith.of_edist_le fun f g => by convert! edist_le_pi_edist f g i
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
-protected theorem restrict (hf : LipschitzWith K f) (s : Set α) : LipschitzWith K (s.restrict f) :=
-  fun x y => hf x y
+protected theorem restrict (hf : LipschitzWith K f) (s : Set α) :
+    LipschitzWith K (s.domRestrict f) := fun x y => hf x y
 
 /-- The composition of Lipschitz functions is Lipschitz. -/
 protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : LipschitzWith Kf f)
@@ -418,7 +415,7 @@ namespace LocallyLipschitzOn
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {f : α → β} {s : Set α}
 
 protected lemma continuousOn (hf : LocallyLipschitzOn s f) : ContinuousOn f s :=
-  continuousOn_iff_continuous_restrict.2 hf.restrict.continuous
+  continuousOn_iff_continuous_domRestrict.2 hf.restrict.continuous
 
 end LocallyLipschitzOn
 

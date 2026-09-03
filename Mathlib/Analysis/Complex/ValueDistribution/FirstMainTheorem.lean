@@ -30,7 +30,7 @@ Approximation*][MR3156076] for a detailed discussion.
 public section
 namespace ValueDistribution
 
-open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicAt MeromorphicOn Metric Real
+open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicOn Metric Real
 
 section FirstPart
 
@@ -58,6 +58,7 @@ lemma characteristic_sub_characteristic_inv (h : Meromorphic f) :
   _ = circleAverage (log ‖f ·‖) 0 - (divisor f Set.univ).logCounting := by
     rw [← ValueDistribution.log_counting_zero_sub_logCounting_top]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Helper lemma for the first part of the First Main Theorem: Away from zero, the difference between
 the characteristic functions of `f` and `f⁻¹` equals `log ‖meromorphicTrailingCoeffAt f 0‖`.
@@ -74,7 +75,7 @@ lemma characteristic_sub_characteristic_inv_of_ne_zero
     unfold Function.locallyFinsuppWithin.logCounting
     have : (divisor f (closedBall 0 |R|)) = (divisor f Set.univ).toClosedBall R :=
       (divisor_restrict hf.meromorphicOn (by tauto)).symm
-    simp [this, toClosedBall, restrictMonoidHom, restrict_apply]
+    simp [this, toClosedBall_apply, restrict_apply]
 
 /--
 Helper lemma for the first part of the First Main Theorem: At 0, the difference between the
@@ -134,7 +135,7 @@ theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphi
     h.meromorphicOn.circleIntegrable_posLog_norm
   have h₂f : CircleIntegrable (fun x ↦ log⁺ ‖f x - a₀‖) 0 r := by
     apply MeromorphicOn.circleIntegrable_posLog_norm
-    apply h.meromorphicOn.sub (MeromorphicOn.const a₀)
+    fun_prop
   rw [← Pi.sub_apply, characteristic_sub_characteristic_eq_proximity_sub_proximity h]
   simp only [proximity, reduceDIte, Pi.sub_apply, ← circleAverage_sub h₁f h₂f]
   apply le_trans abs_circleAverage_le_circleAverage_abs
@@ -147,7 +148,7 @@ theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphi
         using (posLog_norm_add_le (f θ - a₀) a₀)
     · simp only [abs_of_nonpos (le_of_not_ge h), neg_sub, tsub_le_iff_right,
         add_comm (log⁺ ‖a₀‖ + log 2), ← add_assoc]
-      convert! posLog_norm_add_le (-f θ) (a₀) using 2
+      convert! posLog_norm_add_le (-f θ) a₀ using 2
       · rw [← norm_neg]
         abel_nf
       · simp

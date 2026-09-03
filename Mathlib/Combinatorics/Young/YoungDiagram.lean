@@ -73,7 +73,7 @@ namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
-  coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
+  coe_injective μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
 instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram (ℕ × ℕ)
 
@@ -259,6 +259,7 @@ theorem mem_row_iff {μ : YoungDiagram} {i : ℕ} {c : ℕ × ℕ} : c ∈ μ.ro
 
 theorem mk_mem_row_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.row i ↔ (i, j) ∈ μ := by simp [row]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem exists_notMem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
   obtain ⟨j, hj⟩ :=
     Infinite.exists_notMem_finset

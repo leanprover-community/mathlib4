@@ -7,6 +7,7 @@ module
 
 public import Aesop
 public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Int.Init
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.SimpRw
@@ -31,24 +32,21 @@ variable {α β G M : Type*}
 section ite
 variable [Pow α β]
 
-@[to_additive (attr := simp) dite_smul]
+@[to_additive (attr := simp, to_additive) dite_smul]
 lemma pow_dite (p : Prop) [Decidable p] (a : α) (b : p → β) (c : ¬ p → β) :
     a ^ (if h : p then b h else c h) = if h : p then a ^ b h else a ^ c h := by split_ifs <;> rfl
 
-@[to_additive (attr := simp) smul_dite]
+@[to_additive (attr := simp, to_additive) smul_dite]
 lemma dite_pow (p : Prop) [Decidable p] (a : p → α) (b : ¬ p → α) (c : β) :
     (if h : p then a h else b h) ^ c = if h : p then a h ^ c else b h ^ c := by split_ifs <;> rfl
 
-@[to_additive (attr := simp) ite_smul]
+@[to_additive (attr := simp, to_additive) ite_smul]
 lemma pow_ite (p : Prop) [Decidable p] (a : α) (b c : β) :
     a ^ (if p then b else c) = if p then a ^ b else a ^ c := pow_dite _ _ _ _
 
-@[to_additive (attr := simp) smul_ite]
+@[to_additive (attr := simp, to_additive) smul_ite]
 lemma ite_pow (p : Prop) [Decidable p] (a b : α) (c : β) :
     (if p then a else b) ^ c = if p then a ^ c else b ^ c := dite_pow _ _ _ _
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
 
 end ite
 
@@ -446,6 +444,10 @@ lemma one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp only [
 
 @[to_additive zsmul_zero_sub]
 lemma one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
+
+@[to_additive]
+theorem zpow_eq_inv_pow_natAbs (a : α) {n : ℤ} (hn : n ≤ 0) : a ^ n = a⁻¹ ^ n.natAbs := by
+  rw [← zpow_natCast, inv_zpow', Int.ofNat_natAbs_of_nonpos hn, Int.neg_neg]
 
 variable {a b c}
 
@@ -1009,9 +1011,9 @@ section multiplicative
 
 variable [Monoid β] (p r : α → α → Prop) [Std.Total r] (f : α → α → β)
 
-@[to_additive additive_of_symmetric_of_total]
-lemma multiplicative_of_symmetric_of_total
-    (hsymm : Symmetric p) (hf_swap : ∀ {a b}, p a b → f a b * f b a = 1)
+@[to_additive additive_of_symm_of_total]
+lemma multiplicative_of_symm_of_total [Std.Symm p]
+    (hf_swap : ∀ {a b}, p a b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a b → p b c → p a c → f a c = f a b * f b c)
     {a b c : α} (pab : p a b) (pbc : p b c) (pac : p a c) : f a c = f a b * f b c := by
   have hmul' : ∀ {b c}, r b c → p a b → p b c → p a c → f a c = f a b * f b c := by
@@ -1020,16 +1022,16 @@ lemma multiplicative_of_symmetric_of_total
     · exact hmul rab rbc pab pbc pac
     rw [← one_mul (f a c), ← hf_swap pab, mul_assoc]
     obtain rac | rca := total_of r a c
-    · rw [hmul rba rac (hsymm pab) pac pbc]
-    · rw [hmul rbc rca pbc (hsymm pac) (hsymm pab), mul_assoc, hf_swap (hsymm pac), mul_one]
+    · rw [hmul rba rac (symm pab) pac pbc]
+    · rw [hmul rbc rca pbc (symm pac) (symm pab), mul_assoc, hf_swap (symm pac), mul_one]
   obtain rbc | rcb := total_of r b c
   · exact hmul' rbc pab pbc pac
-  · rw [hmul' rcb pac (hsymm pbc) pab, mul_assoc, hf_swap (hsymm pbc), mul_one]
+  · rw [hmul' rcb pac (symm pbc) pab, mul_assoc, hf_swap (symm pbc), mul_one]
 
-@[deprecated (since := "2026-01-09")]
-alias additive_of_symmetric_of_isTotal := additive_of_symmetric_of_total
-@[to_additive existing additive_of_symmetric_of_isTotal, deprecated (since := "2026-01-09")]
-alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symmetric_of_total
+@[deprecated (since := "2026-06-10")]
+alias additive_of_symmetric_of_total := additive_of_symm_of_total
+@[to_additive existing additive_of_symmetric_of_total, deprecated (since := "2026-06-10")]
+alias multiplicative_of_symmetric_of_total := multiplicative_of_symm_of_total
 
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
@@ -1042,15 +1044,11 @@ alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symmetric_of_t
 theorem multiplicative_of_total (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
     (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by
-  apply multiplicative_of_symmetric_of_total (fun a b => p a ∧ p b) r f fun _ _ => And.symm
+  have : Std.Symm (p · ∧ p ·) := { symm _ _ := And.symm }
+  apply multiplicative_of_symm_of_total (p · ∧ p ·) r f
   · simp_rw [and_imp]; exact @hswap
   · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
-
-@[deprecated (since := "2026-01-09")]
-alias additive_of_isTotal := additive_of_total
-@[to_additive existing additive_of_isTotal, deprecated (since := "2026-01-09")]
-alias multiplicative_of_isTotal := multiplicative_of_total
 
 end multiplicative
 
