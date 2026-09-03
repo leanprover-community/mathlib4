@@ -118,7 +118,7 @@ def normNumLeaf : LeafProver := fun p => do
 proving it at index `i`. The proof recurses on the index list `List.finRange n`, so the
 motive is spelled once rather than once per index. -/
 def mkListForall (n : Nat) (c : Q(Prop)) (head : Nat → Q(Prop) → MetaM Expr) :
-    MetaM Expr := do
+    MetaM Q($c) := do
   let .forallE nm dom body bi := c
     | throwError "expected a quantified statement:{indentExpr c}"
   let motive : Expr := .lam nm dom body bi
@@ -243,11 +243,11 @@ def mkPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m)
   -- every cell is an equation between two spellings of one entry of `A`, so all of them
   -- close by `rfl` and none consults a leaf normaliser
   have reindexed : Q(Fin $m → Fin $n → $α) := q(fun i j => $A ($σ i) (id j))
-  let rowStmt ← withLocalDeclD `i q(Fin $m) fun i => do
+  have rowStmt : Q(Prop) := ← withLocalDeclD `i q(Fin $m) fun i => do
     mkForallFVars #[i] (← mkEq (mkApp reindexed i).headBeta (mkApp rows i))
   let rowEq ← mkListForall m rowStmt fun i _ => do
     let iN ← mkFinNumeral m i
-    let colStmt ← withLocalDeclD `j q(Fin $n) fun j => do
+    have colStmt : Q(Prop) := ← withLocalDeclD `j q(Fin $n) fun j => do
       mkForallFVars #[j] (← mkEq (mkApp2 reindexed iN j).headBeta (mkApp2 rows iN j))
     mkAppM ``funext #[← mkListForall n colStmt fun _ cell => proveRflCell cell]
   have wrap : Q((Fin $m → Fin $n → $α) → Matrix (Fin $m) (Fin $n) $α) :=
@@ -273,8 +273,8 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     unless b do
       throwError "the product of the transform does not match the echelon form at ({i}, {j})"
     return prf
-  mkAppM ``Matrix.ext #[← mkListForall m q(∀ i j, ($L * $Aσ) i j = $U i j) fun i gi => do
-    mkListForall n gi fun j _ => cell i j]
+  return q(Matrix.ext $(← mkListForall m q(∀ i j, ($L * $Aσ) i j = $U i j) fun i gi => do
+    mkListForall n gi fun j _ => cell i j))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
 `entries`, the parsed entries of `A`, deciding every condition in the kernel unless `leaf?`
