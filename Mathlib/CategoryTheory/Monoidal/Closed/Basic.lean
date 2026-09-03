@@ -73,7 +73,7 @@ variable [Closed A]
 
 /-- This is the internal hom `A ⟶[C] -`.
 -/
-def ihom : C ⥤ C :=
+@[implicit_reducible] def ihom : C ⥤ C :=
   Closed.rightAdj (X := A)
 
 namespace ihom

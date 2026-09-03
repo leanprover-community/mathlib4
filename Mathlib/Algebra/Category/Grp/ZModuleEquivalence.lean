@@ -10,10 +10,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 /-!
 The forgetful functor from ℤ-modules to additive commutative groups is
 an equivalence of categories.
-
-TODO:
-either use this equivalence to transport the monoidal structure from `Module ℤ` to `Ab`,
-or, having constructed that monoidal structure directly, show this functor is monoidal.
 -/
 
 public section
@@ -24,28 +20,24 @@ universe u
 
 namespace ModuleCat
 
-/-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is full. -/
-instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).Full where
-  map_surjective {A B}
-    -- `AddMonoidHom.toIntLinearMap` doesn't work here because `A` and `B` are not
-    -- definitionally equal to the canonical `AddCommGroup.toIntModule` module
-    -- instances it expects.
-    f := ⟨@ModuleCat.ofHom _ _ _ _ _ A.isModule _ B.isModule <|
-            @LinearMap.mk _ _ _ _ _ _ _ _ _ A.isModule B.isModule
-            { toFun := f,
-              map_add' := map_add f.hom }
-            (fun n x => by
-              convert! AddMonoidHom.map_zsmul f.hom n x <;>
-                ext <;> apply int_smul_eq_zsmul), rfl⟩
+/-- The forgetful functor from `ModuleCat ℤ` to `Ab` admits an inverse. -/
+@[implicit_reducible, expose, simps functor inverse]
+def intEquivalence : ModuleCat.{u} ℤ ≌ Ab.{u} where
+  functor := forget₂ ..
+  inverse.obj G := of ℤ G
+  inverse.map f := ofHom f.hom.toIntLinearMap
+  unitIso := NatIso.ofComponents
+    (fun G ↦ (AddEquiv.toIntLinearEquiv { __ := Equiv.refl G, map_add' _ _ := rfl }).toModuleIso)
+    fun _ ↦ rfl
+  counitIso := .refl _
 
-/-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is essentially surjective. -/
-instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).EssSurj where
-  mem_essImage A :=
-    ⟨ModuleCat.of ℤ A,
-      ⟨{  hom := 𝟙 A
-          inv := 𝟙 A }⟩⟩
+instance forget₂AddCommGroupIsEquivalence : (forget₂ (ModuleCat ℤ) Ab.{u}).IsEquivalence :=
+  intEquivalence.isEquivalence_functor
 
-noncomputable instance forget₂AddCommGroupIsEquivalence :
-    (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).IsEquivalence where
+/-- The forgetful functor from `ModuleCat ℤ` to `Ab` is full. -/
+instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) Ab.{u}).Full := inferInstance
+
+/-- The forgetful functor from `ModuleCat ℤ` to `Ab` is essentially surjective. -/
+instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) Ab.{u}).EssSurj := inferInstance
 
 end ModuleCat
