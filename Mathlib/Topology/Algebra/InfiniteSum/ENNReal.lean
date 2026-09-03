@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Edward van de Meent
 -/
 module
 
-public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Infinite sums in extended nonnegative reals
@@ -28,8 +28,9 @@ public section
 
 open Set Function
 
-open Filter Function Metric Set Topology
-open scoped Finset ENNReal NNReal
+open Filter Function Metric Set
+
+open scoped Topology Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -240,7 +241,7 @@ theorem tendsto_tsum_compl_atTop_zero {α : Type*} {f : α → ℝ≥0∞} (hf :
 
 protected theorem tsum_apply {ι α : Type*} {f : ι → α → ℝ≥0∞} {x : α} :
     (∑' i, f i) x = ∑' i, f i x :=
-  tsum_apply <| Pi.summable.mpr fun _ => ENNReal.summable
+  Pi.tsum_apply <| Pi.summable.mpr fun _ => ENNReal.summable
 
 theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : ∑' i, g i ≠ ∞) (h₂ : g ≤ f) :
     ∑' i, (f i - g i) = ∑' i, f i - ∑' i, g i :=
@@ -283,8 +284,11 @@ theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
     ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x :=
-  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
-  _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
+  calc
+    ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b : Bool, if b = true then s else t, f x :=
+      tsum_congr_set_coe _ (by ext x; simp [or_comm])
+    _ ≤ _ := by
+      simpa using tsum_iUnion_le f (fun b : Bool => if b = true then s else t)
 
 open scoped Classical in
 theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
@@ -436,8 +440,6 @@ theorem tsum_indicator_ne_zero {f : α → ℝ≥0} (hf : Summable f) {s : Set �
   let ⟨a, ha, hap⟩ := h
   hap ((Set.indicator_apply_eq_self.mpr (absurd ha)).symm.trans
     ((indicator_summable hf s).tsum_eq_zero_iff.1 h' a))
-
-open Finset
 
 /-- For `f : ℕ → ℝ≥0`, then `∑' k, f (k + i)` tends to zero. This does not require a summability
 assumption on `f`, as otherwise all sums are zero. -/

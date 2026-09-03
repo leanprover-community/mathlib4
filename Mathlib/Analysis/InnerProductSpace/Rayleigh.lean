@@ -182,9 +182,10 @@ theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
 theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
     spectralRadius 𝕜 T = ‖T‖₊ := by
   nontriviality E
-  apply le_antisymm (spectrum.spectralRadius_le_nnnorm T)
+  apply le_antisymm (spectralRadius_le_nnnorm T)
   suffices h : algebraMap ℝ 𝕜 ‖T‖ ∈ spectrum 𝕜 T ∨ algebraMap ℝ 𝕜 (-‖T‖) ∈ spectrum 𝕜 T by
-    rcases h with h | h <;> exact le_trans (by simp) (le_biSup _ h)
+    rcases h with h | h <;>
+      exact le_trans (by simp) (le_biSup _ (spectrum_subset_quasispectrum 𝕜 T h))
   simp_rw [spectrum, Set.mem_compl_iff, map_neg]
   by_contra! h
   obtain ⟨c, hc0, hc⟩ := T.abs_rayleighQuotient_le_of_norm_mem_resolventSet h.1 h.2
@@ -276,7 +277,7 @@ quotient. -/
 theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMaxOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (⨆ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
-  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.localize)
+  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.isLocalMaxOn)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iSup_rayleigh_eq_iSup_rayleigh_sphere hx₀']
@@ -295,7 +296,7 @@ quotient. -/
 theorem hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMinOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (⨅ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
-  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.localize)
+  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.isLocalMinOn)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iInf_rayleigh_eq_iInf_rayleigh_sphere hx₀']
