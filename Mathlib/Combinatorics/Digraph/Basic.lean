@@ -235,13 +235,8 @@ The type of spanning subgraphs of a digraph `G`
 -/
 def SpanningSubgraph (G : Digraph V) := {H : Digraph V // IsSpanningSubgraph H G}
 
-instance {G : Digraph V} : PartialOrder G.SpanningSubgraph where
-  le H K := H.val ≤ K.val
-  le_refl H := by grind
-  le_trans H K L hHK hKL := hHK.trans hKL
-  le_antisymm H K hHK hKH := by
-    apply Subtype.ext
-    exact le_antisymm hHK hKH
+instance {G : Digraph V} : PartialOrder G.SpanningSubgraph :=
+  Subtype.partialOrder _
 
 @[grind =] theorem SpanningSubgraph.le_iff {G : Digraph V}
     {H K : G.SpanningSubgraph} :
