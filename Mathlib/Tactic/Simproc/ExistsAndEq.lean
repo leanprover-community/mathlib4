@@ -66,27 +66,21 @@ def eqDetermines (a x y : Expr) : Bool :=
 This is a fast version that quickly returns `none` when the simproc
 is not applicable. -/
 partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
-    MetaM <| Option Path := do
+    OptionT MetaM Path := do
   match_expr P with
   | Eq _ x y =>
     if eqDetermines a x y then
-      return some []
+      return []
     if eqDetermines a y x then
-      return some []
-    return none
+      return []
+    failure
   | And L R =>
-    if let some path ← findEqPath a L then
-      return some (.andLeft :: path)
-    if let some path ← findEqPath a R then
-      return some (.andRight :: path)
-    return none
+    ((.andLeft :: ·) <$> findEqPath a L) <|> ((.andRight :: ·) <$> findEqPath a R)
   | Exists tb pb =>
-    if (tb.containsFVar a.fvarId!) then
-      return none
-    let .lam _ _ body _ := pb | return none
-    let some path ← findEqPath a body | return none
-    return some (.existsBody :: path)
-  | _ => return none
+    guard !(tb.containsFVar a.fvarId!)
+    let .lam _ _ body _ := pb | failure
+    (.existsBody :: ·) <$> findEqPath a body
+  | _ => failure
 
 /-- Given `P : Prop` and `a : α`, traverses the expression `P` to find a subexpression of
 the form `a = a'` or `a' = a` for some `a'`. It branches at each `And` and walks into
@@ -139,8 +133,7 @@ def mkNestedExists (fvars : List VarQ) (body : Q(Prop)) : MetaM Q(Prop) := do
   | [] => pure body
   | ⟨_, β, b⟩ :: tl =>
     let res ← mkNestedExists tl body
-    let name := (← getLCtx).findFVar? b |>.get!.userName
-    let p : Q($β → Prop) ← Impl.mkLambdaQ name b res
+    let p : Q($β → Prop) ← mkLambdaFVars #[b] res
     pure q(Exists $p)
 
 /-- The path to the equation in the result formula: the quantifiers entered along `path` are moved
@@ -275,8 +268,7 @@ def mkBeforeToAfter {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
           let e := fvarSubst.apply leaf
           return ⟨← inferType e, e⟩
         goal'.assign (← construct (goal := P') fvars path.forResult leaves)
-      have pf : Q($P') := ← instantiateMVars goal
-      return pf
+      instantiateMVars goal
     let pf2 : Q(∀ a : $α, $p a → $P') ← mkLambdaFVars #[a, ha] pf1
     let pf3 : Q($P') := q(Exists.elim $h $pf2)
     mkLambdaFVars #[h] pf3
@@ -313,7 +305,7 @@ def mkAfterToBefore {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
     MetaM <| Q($P' → (∃ a, $p a)) := do
   withLocalDeclQ .anonymous .default P' fun (h : Q($P')) => do
     let pf : Q(∃ a, $p a) ← destruct h fvars path.forResult [] fun leaves _ => do
-      let pf1 : Q($p $a') ← construct (goal := q($p $a')) fvars path leaves
+      let pf1 : Q($p $a') ← construct fvars path leaves
       return q(Exists.intro $a' $pf1)
     mkLambdaFVars #[h] pf
 
@@ -345,7 +337,7 @@ def withAbstractMVars (e : Expr) (k : Expr → MetaM Simp.Step) : MetaM Simp.Ste
 /-- The implementation of `existsAndEq`, for an expression without metavariables. -/
 def existsAndEqCore (e : Expr) : MetaM Simp.Step := do
   let_expr f@Exists α p := e | return .continue
-  lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => withNewMCtxDepth do
+  lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => do
     let some u := f.constLevels![0]? | unreachable!
     have α : Q(Sort $u) := α; have p : Q($α → Prop) := p
     let some (a : Q($α)) := xs[0]? | return .continue
