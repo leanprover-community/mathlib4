@@ -108,7 +108,7 @@ def completeBipartite (V W : Type*) : Digraph (Sum V W) where
 
 /-- Deprecated alias for `completeBipartite`. -/
 @[deprecated completeBipartite (since := "2026-09-01")]
-abbrev completeBipartiteGraph := completeBipartite
+alias completeBipartiteGraph := completeBipartite
 
 variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
