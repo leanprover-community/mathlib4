@@ -79,6 +79,14 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjec
     (K.map (f.toLinearIsometry : E →ₗ[𝕜] E')).HasOrthogonalProjection :=
   HasOrthogonalProjection.map_linearIsometryEquiv K f
 
+instance HasOrthogonalProjection.comap {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+    {f : E' →ₗᵢ[𝕜] E} [(K ⊓ f.range).HasOrthogonalProjection] :
+    (K.comap f.toLinearMap).HasOrthogonalProjection where
+  exists_orthogonal v := by
+    obtain ⟨w, hw1, hw2⟩ := HasOrthogonalProjection.exists_orthogonal (K := K ⊓ f.range) (f v)
+    obtain ⟨u, rfl⟩ := hw1.2
+    exact ⟨u, by simpa using hw1, by simpa [← comap_orthogonal] using hw2⟩
+
 instance : (⊤ : Submodule 𝕜 E).HasOrthogonalProjection := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
 
 instance (K : ClosedSubmodule 𝕜 E) [CompleteSpace E] : K.HasOrthogonalProjection := by
