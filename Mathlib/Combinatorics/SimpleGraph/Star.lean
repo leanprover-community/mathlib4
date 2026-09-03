@@ -84,4 +84,10 @@ lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
     (starGraph r).degree r = Fintype.card V - 1 := by
   simp
 
+theorem starGraph_inl_unitMk : starGraph (.inl ()) = completeBipartiteGraph Unit V := by
+  ext (_ | _) (_ | _) <;> simp
+
+theorem starGraph_inr_unitMk : starGraph (.inr ()) = completeBipartiteGraph V Unit := by
+  ext (_ | _) (_ | _) <;> simp
+
 end SimpleGraph
