@@ -265,11 +265,11 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (leaf : LeafProver) : MetaM Q($L * $Aσ = $U) := do
   let zero ← mkNumeral α 0
   let cell (i j : Nat) : MetaM Expr := do
-    -- the shape `Finset.sum` reduces to: the products in index order, folded to the right
-    -- and closed by the ring's zero, so that the cell is definitionally the product entry
+    -- the fold must match `Finset.sum`'s own reduction, or the cell is not defeq to the entry
     let terms ← Array.ofFnM (n := m) fun c => mkMul (lEntries[i]!)[c]! (aEntries[c]!)[j]!
-    let sum ← terms.foldrM mkAdd zero
-    let (b, prf) ← leaf (← mkEq sum (uEntries[i]!)[j]!)
+    have sum : Q($α) := ← terms.foldlM (fun acc t => mkAdd acc t) zero
+    have entry : Q($α) := (uEntries[i]!)[j]!
+    let (b, prf) ← leaf q($sum = $entry)
     unless b do
       throwError "the product of the transform does not match the echelon form at ({i}, {j})"
     return prf
