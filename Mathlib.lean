@@ -593,6 +593,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.MapAdjunction
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.MapBijective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
@@ -1750,6 +1751,7 @@ public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 public import Mathlib.Analysis.CStarAlgebra.Module.Defs
 public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 public import Mathlib.Analysis.CStarAlgebra.Multiplier
+public import Mathlib.Analysis.CStarAlgebra.PositiveLinearFunctional
 public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.Projection
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
@@ -6279,6 +6281,7 @@ public import Mathlib.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.Interval.Lex
 public import Mathlib.Order.Interval.Multiset
 public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.Card
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.Interval.Set.Disjoint
 public import Mathlib.Order.Interval.Set.Fin
@@ -7685,6 +7688,7 @@ public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
 public import Mathlib.Tactic.SetLike
 public import Mathlib.Tactic.SetNotationForOrder
+public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.Divisors
