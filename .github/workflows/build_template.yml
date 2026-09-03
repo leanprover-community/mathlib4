@@ -617,8 +617,8 @@ jobs:
     if: ${{ always() && needs.build.outputs.cache-staging-has-files == 'true' }}
     steps:
       # Build the write-side cache tool (and load the trust-dispatch action below)
-      # from the branch under test, so a PR's `--container`-aware tool is what
-      # writes the cache. This job only runs in trusted in-repo contexts (bors,
+      # from the branch under test, so the PR's own `--container`-aware `put`
+      # is what writes the cache. This job only runs in trusted in-repo contexts (bors,
       # dev branches, the nightly-testing repo) — fork PRs run master's
       # `build_template` via `pull_request_target`, never this one — so
       # `pr_branch_ref` is always a trusted ref here. Fork PRs keep `master`.

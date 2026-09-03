@@ -17,6 +17,10 @@ import Cache.Lean
 
 These tests cover the pure logic of the cache system, including:
 - Container model (trust levels, URL shapes, Azure integration)
+- The public/developer cache split: container → service mapping, per-service
+  read bases, and the usage-context chains (developer use vs downstream)
+- Upload destination and credential resolution (`stagedUploadDestFrom`,
+  `uploadAuthFrom`, `uploadAuthArgs`)
 - Trust-ordered fallback chains per repo
 - URL construction (`mkFileURL`) with support for per-SHA scoping
 - CLI flag parsing (`--cache-from`, `--scope`, `--unsafe`, `--repo`, etc.)
@@ -185,57 +189,101 @@ def test_envValueNormalization : IO Unit := do
     (shown (normalizeBaseURL (some "https://cache.example.org///")))
   assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
 
-/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set.
-Without it, reads address `publicCacheEndpoint`, and address the Azure account when
-`MATHLIB_CACHE_DEBUG_USE_LEGACY` selects the legacy read host. `getBaseURLFrom` is
-pure, so this test covers every branch; the environment-reading wrapper
-(`getBaseURL`) adds no logic of its own. -/
+/-- Each service resolves its own read base. The precedence is
+`MATHLIB_CACHE_DEVELOPER_BASE_URL` (developer cache only) over
+`MATHLIB_CACHE_BASE_URL` (both services) over the service's endpoint, and
+`MATHLIB_CACHE_DEBUG_USE_LEGACY` sends both services' defaults to the Azure
+account. `getBaseURLFrom` is pure, so this test covers every branch; the
+environment-reading wrapper (`getBaseURL`) adds no logic of its own. -/
 def test_getBaseURLFrom : IO Unit := do
   IO.println "getBaseURLFrom:"
-  assertEq "no override → the read endpoint"
-    "https://cache.mathlib.org" (getBaseURLFrom none false)
-  assertEq "legacy → the storage account"
-    "https://lakecache.blob.core.windows.net" (getBaseURLFrom none true)
+  assertEq "no override → the public endpoint for the public service"
+    "https://cache.mathlib.org" (getBaseURLFrom .published none none false)
+  assertEq "no override → the developer cache endpoint for the developer cache"
+    "https://devcache.mathlib.org" (getBaseURLFrom .developer none none false)
+  assertEq "legacy → the storage account for the public service"
+    "https://lakecache.blob.core.windows.net" (getBaseURLFrom .published none none true)
+  assertEq "legacy → the storage account for the developer cache too"
+    "https://lakecache.blob.core.windows.net" (getBaseURLFrom .developer none none true)
   -- The legacy base is the host the container URLs (`azureURL`) are built on.
   assertEq "the legacy base matches the container URLs"
-    azureAccountURL (getBaseURLFrom none true)
-  assertEq "override → the given base"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") false)
+    azureAccountURL (getBaseURLFrom .published none none true)
+  assertEq "base override → the given base for the public service"
+    "https://cache.example.org" (getBaseURLFrom .published (some "https://cache.example.org") none false)
+  assertEq "base override alone covers the developer cache too"
+    "https://cache.example.org" (getBaseURLFrom .developer (some "https://cache.example.org") none false)
+  assertEq "developer-cache override wins for the developer cache"
+    "https://int.example.org" (getBaseURLFrom .developer
+      (some "https://cache.example.org") (some "https://int.example.org") false)
+  assertEq "developer-cache override does not touch the public service"
+    "https://cache.example.org" (getBaseURLFrom .published
+      (some "https://cache.example.org") (some "https://int.example.org") false)
+  assertEq "developer-cache override alone keeps the public default"
+    publicCacheEndpoint (getBaseURLFrom .published none (some "https://int.example.org") false)
   assertEq "override wins over legacy"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") true)
+    "https://cache.example.org" (getBaseURLFrom .published (some "https://cache.example.org") none true)
+  assertEq "developer-cache override wins over legacy"
+    "https://int.example.org" (getBaseURLFrom .developer none (some "https://int.example.org") true)
   -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
   -- undefined, so an empty value must keep the default.
   assertEq "empty value counts as unset"
-    publicCacheEndpoint (getBaseURLFrom (some "") false)
+    publicCacheEndpoint (getBaseURLFrom .published (some "") none false)
+  assertEq "empty developer-cache value counts as unset"
+    developerCacheEndpoint (getBaseURLFrom .developer none (some "") false)
   assertEq "whitespace-only value counts as unset"
-    publicCacheEndpoint (getBaseURLFrom (some " \n") false)
+    publicCacheEndpoint (getBaseURLFrom .published (some " \n") none false)
   assertEq "override is trimmed"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n") false)
+    "https://cache.example.org" (getBaseURLFrom .published (some "https://cache.example.org\n") none false)
   -- A base written with a trailing slash must not double the separator in
   -- `{base}/{container}/{key}`.
   assertEq "trailing slash is stripped"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org/") false)
+    "https://cache.example.org" (getBaseURLFrom .published (some "https://cache.example.org/") none false)
 
-/-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
-`azureURL`, under whichever base the environment selects. Without a base-URL
-override, both positions of the legacy switch are pinned: the endpoint by
-default, `azureURL` under legacy. -/
+/-- The container → service mapping is the boundary between the public cache
+and the developer cache: it decides which endpoint serves a container's reads
+and which storage its writers target. A container joining or leaving the
+developer cache must be a deliberate edit to this test. -/
+def test_Container_service : IO Unit := do
+  IO.println "Container.service:"
+  assertTrue "master is public" (Container.master.service == .published)
+  assertTrue "legacy is public" (Container.legacy.service == .published)
+  assertTrue "forks is developer-cache" (Container.forks.service == .developer)
+  assertTrue "nightly-testing is developer-cache" (Container.nightlyTesting.service == .developer)
+  assertTrue "pr-toolchain-tests is developer-cache" (Container.prToolchainTests.service == .developer)
+  assertEq "public service endpoint"
+    "https://cache.mathlib.org" Service.published.endpoint
+  assertEq "developer cache endpoint"
+    "https://devcache.mathlib.org" Service.developer.endpoint
+
+/-- Read URLs follow `getBaseURL` for the container's service: the same
+`/{container}` namespace as `azureURL`, under whichever base the environment
+selects for that service. Without a base-URL override, both positions of the
+legacy switch are pinned: each service's endpoint by default, `azureURL` under
+legacy. -/
 def test_Container_getURL : IO Unit := do
   IO.println "Container.getURL:"
-  let base ← getBaseURL
-  assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
-  assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
-  assertEq "legacy read URL" s!"{base}/mathlib4" (← Container.legacy.getURL)
+  let publicBase ← getBaseURL .published
+  let developerBase ← getBaseURL .developer
+  assertEq "master read URL" s!"{publicBase}/mathlib4-master" (← Container.master.getURL)
+  assertEq "forks read URL" s!"{developerBase}/mathlib4-forks" (← Container.forks.getURL)
+  assertEq "legacy read URL" s!"{publicBase}/mathlib4" (← Container.legacy.getURL)
   -- A base-URL override answers for both switch positions, so the pinned
   -- assertions run only without one.
-  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
+  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone &&
+      (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_DEVELOPER_BASE_URL")).isNone then
     let ambient ← useLegacy.get
     useLegacy.set false
-    assertEq "default read URL is on the endpoint"
+    assertEq "default read URL is on the public endpoint"
       s!"{publicCacheEndpoint}/mathlib4-master" (← Container.master.getURL)
+    assertEq "default forks read URL is on the developer cache endpoint"
+      s!"{developerCacheEndpoint}/mathlib4-forks" (← Container.forks.getURL)
+    assertEq "default nightly-testing read URL is on the developer cache endpoint"
+      s!"{developerCacheEndpoint}/mathlib4-nightly-testing" (← Container.nightlyTesting.getURL)
     useLegacy.set true
     assertEq "legacy read URL matches azureURL"
       Container.master.azureURL (← Container.master.getURL)
+    assertEq "legacy forks read URL matches azureURL"
+      Container.forks.azureURL (← Container.forks.getURL)
     useLegacy.set ambient
 
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
@@ -283,26 +331,109 @@ the trust boundary. Key points the tests pin:
   repo's toolchain gives it a different root hash.
 - Every chain ends with `legacy`, so older clients' artifacts stay reachable.
 -/
-def test_defaultContainersForRepo : IO Unit := do
-  IO.println "defaultContainersForRepo:"
+def test_developerContainers : IO Unit := do
+  IO.println "developerContainers:"
   assertTrue "canonical repo → [master, legacy]"
-    (defaultContainersForRepo MATHLIBREPO == [.master, .legacy])
+    (developerContainers MATHLIBREPO == [.master, .legacy])
   assertTrue "nightly-testing repo → [nightly-testing, forks, legacy], no pr-toolchain-tests"
-    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.nightlyTesting, .forks, .legacy])
+    (developerContainers NIGHTLY_TESTING_REPO == [.nightlyTesting, .forks, .legacy])
   assertTrue "fork repo → [master, forks, legacy]"
-    (defaultContainersForRepo "alice/mathlib4" == [.master, .forks, .legacy])
+    (developerContainers "alice/mathlib4" == [.master, .forks, .legacy])
   assertTrue "unknown repo falls back to the fork chain"
-    (defaultContainersForRepo "some/other-repo" == [.master, .forks, .legacy])
+    (developerContainers "some/other-repo" == [.master, .forks, .legacy])
   -- Every chain ends with `legacy`; dropping it would quietly shrink hit rates.
   assertTrue "fork chain ends with legacy"
-    ((defaultContainersForRepo "alice/mathlib4").getLast? == some .legacy)
+    ((developerContainers "alice/mathlib4").getLast? == some .legacy)
   assertTrue "canonical chain ends with legacy"
-    ((defaultContainersForRepo MATHLIBREPO).getLast? == some .legacy)
+    ((developerContainers MATHLIBREPO).getLast? == some .legacy)
   assertTrue "nightly-testing chain ends with legacy"
-    ((defaultContainersForRepo NIGHTLY_TESTING_REPO).getLast? == some .legacy)
+    ((developerContainers NIGHTLY_TESTING_REPO).getLast? == some .legacy)
 
-/-- `effectiveGetURLs` pairs the lookup chain with read URLs in trust order.
-This test covers the default chain and the `--cache-from` override. The
+/-- The usage context decides which default lookup chain applies: the inner
+loop (a mathlib checkout, or an explicit `--repo`) keeps the per-repo trust
+chain, and a downstream project reads the public service only, whatever repo
+the resolution lands on. -/
+def test_defaultContainersFor : IO Unit := do
+  IO.println "UsageContext / defaultContainersFor:"
+  assertTrue "a mathlib checkout is developer use"
+    (UsageContext.resolve true none == .developer)
+  assertTrue "an explicit --repo is developer use even off a mathlib checkout"
+    (UsageContext.resolve false (some "alice/mathlib4") == .developer)
+  assertTrue "everything else is downstream"
+    (UsageContext.resolve false none == .downstream)
+  assertTrue "developer use keeps the per-repo chain"
+    (defaultContainersFor .developer "alice/mathlib4" ==
+      developerContainers "alice/mathlib4")
+  assertTrue "downstream → [master, legacy]"
+    (defaultContainersFor .downstream MATHLIBREPO == [.master, .legacy])
+  assertTrue "downstream stays public-only even for a fork repo"
+    (defaultContainersFor .downstream "alice/mathlib4" == [.master, .legacy])
+  -- A nightly-pinned dependency keeps its cache (it exists nowhere else), but
+  -- without the `forks` entry that serves the repo's PR flows in developer use.
+  assertTrue "downstream nightly dependency → [nightly-testing, legacy]"
+    (defaultContainersFor .downstream NIGHTLY_TESTING_REPO == [.nightlyTesting, .legacy])
+  assertTrue "the constant downstream chain is public-service only"
+    (downstreamContainers.all (·.service == .published))
+  -- No downstream chain, whatever the repo, may name the fork or
+  -- toolchain-experiment containers: those hold artifacts a downstream build
+  -- must never consume by default.
+  for repo in [MATHLIBREPO, NIGHTLY_TESTING_REPO, "alice/mathlib4", "some/other-repo"] do
+    assertTrue s!"downstream chain for {repo} excludes forks and pr-toolchain-tests"
+      ((defaultContainersFor .downstream repo).all
+        (fun c => c != .forks && c != .prToolchainTests))
+
+/-- Downstream repo resolution honors only a canonical detection, so a fork
+remote on the dependency checkout can never steer a downstream read into that
+fork's artifacts; the nightly-testing repo passes through because its
+artifacts exist nowhere else. -/
+def test_resolveDownstreamRepo : IO Unit := do
+  IO.println "resolveDownstreamRepo:"
+  assertEq "no detection → canonical mathlib"
+    MATHLIBREPO (resolveDownstreamRepo none)
+  assertEq "canonical detection passes through"
+    MATHLIBREPO (resolveDownstreamRepo (some MATHLIBREPO))
+  assertEq "nightly-testing detection passes through"
+    NIGHTLY_TESTING_REPO (resolveDownstreamRepo (some NIGHTLY_TESTING_REPO))
+  assertEq "a fork detection is ignored"
+    MATHLIBREPO (resolveDownstreamRepo (some "alice/mathlib4"))
+  assertEq "an unrelated detection is ignored"
+    MATHLIBREPO (resolveDownstreamRepo (some "some/other-repo"))
+
+/-- Integration check of `resolveRepo` under the downstream context: against a
+real git checkout whose `origin` is a fork, the probe still reports the fork
+(`detectedRepo?`, which feeds the `--repo` warning), while the resolved repo —
+what the read path uses — stays canonical. Skipped when git is unavailable. -/
+def test_resolveRepo_downstream : IO Unit := do
+  IO.println "resolveRepo (downstream):"
+  let dir ← IO.FS.createTempDir
+  try
+    let git (args : Array String) : IO Bool := do
+      try
+        let out ← IO.Process.output {cmd := "git", args, cwd := dir}
+        pure (out.exitCode == 0)
+      catch _ => pure false
+    unless (← git #["init", "-q"]) do
+      IO.println "  skipped: git unavailable"
+      return
+    discard <| git #["remote", "add", "origin", "https://github.com/alice/mathlib4.git"]
+    let ambient ← usageContext.get
+    usageContext.set .downstream
+    let (detected?, resolved) ← withSuppressedOutput (resolveRepo none dir)
+    assertTrue "the probe still reports the fork remote"
+      (detected? == some "alice/mathlib4")
+    assertEq "the downstream resolution ignores the fork remote"
+      MATHLIBREPO resolved
+    -- The same checkout resolves to the fork in developer use.
+    usageContext.set .developer
+    let (_, innerResolved) ← withSuppressedOutput (resolveRepo none dir)
+    usageContext.set ambient
+    assertEq "developer use honors the fork remote" "alice/mathlib4" innerResolved
+  finally
+    IO.FS.removeDirAll dir
+
+/-- `effectiveGetURLs` pairs the lookup chain with read URLs in trust order,
+each container under its own service's read base. This test covers the default
+chain per usage context and the `--cache-from` override. The
 `MATHLIB_CACHE_GET_URL` and `MATHLIB_CACHE_FROM` branches need process state,
 so the CI integration tests exercise them instead. -/
 def test_effectiveGetURLs : IO Unit := do
@@ -311,17 +442,38 @@ def test_effectiveGetURLs : IO Unit := do
       (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome then
     IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
     return
-  let base ← getBaseURL
+  let publicBase ← getBaseURL .published
+  let developerBase ← getBaseURL .developer
+  let ambient ← usageContext.get
+  usageContext.set .developer
   assertTrue "default chain pairs each container with its read URL"
     ((← effectiveGetURLs MATHLIBREPO) ==
-      [(some .master, s!"{base}/mathlib4-master"),
-       (some .legacy, s!"{base}/mathlib4")])
+      [(some .master, s!"{publicBase}/mathlib4-master"),
+       (some .legacy, s!"{publicBase}/mathlib4")])
+  assertTrue "a fork chain crosses to the developer base for its forks round"
+    ((← effectiveGetURLs "alice/mathlib4") ==
+      [(some .master, s!"{publicBase}/mathlib4-master"),
+       (some .forks, s!"{developerBase}/mathlib4-forks"),
+       (some .legacy, s!"{publicBase}/mathlib4")])
+  -- Downstream, the same fork repo resolves to the public-only chain. This is
+  -- also the ambient default: a read that runs before `main` resolves the
+  -- context must get the narrow chain, never a silently widened one.
+  usageContext.set .downstream
+  assertTrue "downstream chain reads the public service only"
+    ((← effectiveGetURLs "alice/mathlib4") ==
+      [(some .master, s!"{publicBase}/mathlib4-master"),
+       (some .legacy, s!"{publicBase}/mathlib4")])
+  usageContext.set ambient
+  assertTrue "the ambient default is the narrow context"
+    ((← usageContext.get) == .downstream)
+  usageContext.set .developer
   cacheFromOverride.set (some [.forks, .master])
   assertTrue "--cache-from override keeps its order"
     ((← effectiveGetURLs MATHLIBREPO) ==
-      [(some .forks, s!"{base}/mathlib4-forks"),
-       (some .master, s!"{base}/mathlib4-master")])
+      [(some .forks, s!"{developerBase}/mathlib4-forks"),
+       (some .master, s!"{publicBase}/mathlib4-master")])
   cacheFromOverride.set none
+  usageContext.set ambient
 
 end PerRepoAllowlist
 
@@ -454,29 +606,6 @@ def test_extractRepoFromUrl : IO Unit := do
 end ExtractRepoFromUrl
 
 section ExtractPRNumber
-
-/-- Extracts a PR number from a git ref. The contract is "second-to-last
-segment must be `pr`, last must be a Nat". -/
-def test_extractPRNumber : IO Unit := do
-  IO.println "extractPRNumber:"
-  -- The shape git produces for fetched PR refs.
-  assertTrue "standard PR ref format"
-    (extractPRNumber "refs/remotes/upstream/pr/1234" == some 1234)
-  -- Branch refs are not PR refs; must not match.
-  assertTrue "master branch returns none"
-    (extractPRNumber "refs/heads/master" == none)
-  -- Minimal `pr/N` is also accepted — the parser only inspects the trailing two segments.
-  assertTrue "simple pr number"
-    (extractPRNumber "pr/42" == some 42)
-  -- The tail must be a valid Nat; non-numeric tails are rejected (no partial parsing).
-  assertTrue "non-numeric tail returns none"
-    (extractPRNumber "refs/remotes/upstream/pr/foo" == none)
-  -- `0` is a valid Nat; pin down that it isn't special-cased.
-  assertTrue "zero PR number"
-    (extractPRNumber "refs/remotes/upstream/pr/0" == some 0)
-  -- A numeric tail without the `pr/` parent must not be mistaken for a PR ref.
-  assertTrue "missing pr segment returns none"
-    (extractPRNumber "refs/remotes/upstream/42" == none)
 
 end ExtractPRNumber
 
@@ -637,18 +766,19 @@ container's service endpoint by default, and under legacy they match the
 Azure write URL. -/
 def test_markerReadURL : IO Unit := do
   IO.println "markerReadURL:"
-  let base ← getBaseURL
-  assertEq "probe URL follows the read base"
+  let base ← getBaseURL .developer
+  assertEq "probe URL follows the developer read base"
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     (← markerReadURL .forks "alice/mathlib4" "abc123")
   assertEq "probe repo is lowercased in the path"
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     (← markerReadURL .forks "Alice/Mathlib4" "abc123")
-  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
+  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone &&
+      (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_DEVELOPER_BASE_URL")).isNone then
     let ambient ← useLegacy.get
     useLegacy.set false
-    assertEq "default probe URL is on the endpoint"
-      s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
+    assertEq "default probe URL is on the developer cache endpoint"
+      s!"{developerCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
       (← markerReadURL .forks "alice/mathlib4" "abc123")
     useLegacy.set true
     assertEq "legacy probe URL matches the Azure write URL"
@@ -731,7 +861,7 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
       scopeOverride.set none
 
     -- --cache-from equal to the repo's default chain is not widening.
-    let mathlibDefault := defaultContainersForRepo MATHLIBREPO
+    let mathlibDefault := developerContainers MATHLIBREPO
     assertTrue "--cache-from equal to the default does not warn"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope none none (some mathlibDefault) MATHLIBREPO)))
@@ -754,10 +884,16 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
           (shouldWarnNonDefaultScope (some "alice/mathlib4") (some "alice/mathlib4") none
             "alice/mathlib4")))
 
-    -- With no detectable remote there is nothing to compare --repo against.
-    assertTrue "--repo with no detectable remote does not warn"
+    -- With no detectable remote there is nothing to compare --repo against, so
+    -- a non-canonical --repo warns on the flag alone (it reads that fork's
+    -- container purely on the user's say-so), while a canonical one is the
+    -- default trust boundary and stays silent.
+    assertTrue "a non-canonical --repo with no detectable remote warns"
+      (← withSuppressedOutput
+          (shouldWarnNonDefaultScope (some "bob/mathlib4") none none "bob/mathlib4"))
+    assertTrue "a canonical --repo with no detectable remote does not warn"
       (!(← withSuppressedOutput
-          (shouldWarnNonDefaultScope (some "bob/mathlib4") none none "bob/mathlib4")))
+          (shouldWarnNonDefaultScope (some MATHLIBREPO) none none MATHLIBREPO)))
 
     -- `--unsafe` (any window) always warns; it walks several untrusted scopes.
     assertTrue "--unsafe warns regardless of other inputs"
@@ -893,9 +1029,9 @@ def test_getRemoteRepo_gitFallback : IO Unit := do
   assertTrue "resolveRepo detected? is none on git failure" (detected? == none)
   assertTrue "resolveRepo falls back to MATHLIBREPO on git failure" (resolved == MATHLIBREPO)
   assertTrue "fallback chain includes master"
-    ((defaultContainersForRepo resolved).contains .master)
+    ((developerContainers resolved).contains .master)
   assertTrue "fallback chain excludes forks (no fork container for dependency builds)"
-    (!(defaultContainersForRepo resolved).contains .forks)
+    (!(developerContainers resolved).contains .forks)
 
 /-- `headIsAncestorOfMaster` gates the uncached-fork-HEAD note: when HEAD is
 already part of master's history, `master` (first in the fork lookup chain)
@@ -947,9 +1083,11 @@ def test_isKnownOpt : IO Unit := do
   assertTrue "--repo=foo is known"           (isKnownOpt "--repo=foo")
   assertTrue "--cache-from=master is known"  (isKnownOpt "--cache-from=master")
   assertTrue "--scope=HEAD is known"         (isKnownOpt "--scope=HEAD")
-  assertTrue "--container=master is known"   (isKnownOpt "--container=master")
   assertTrue "--staging-dir=/tmp is known"   (isKnownOpt "--staging-dir=/tmp")
   assertTrue "--unsafe-window=5 is known" (isKnownOpt "--unsafe-window=5")
+  -- `--container` selects `put`'s upload destination; reads and uploads share
+  -- one binary so the write path can never drift from the read contract.
+  assertTrue "--container=master is known"   (isKnownOpt "--container=master")
 
   -- Empty value passes recognition (parseNamedOpt returns the empty string
   -- for these — callers decide whether to treat that as an error).
@@ -1732,13 +1870,16 @@ def runAll : IO Unit := do
   test_Container_getURL
   test_envValueNormalization
   test_getBaseURLFrom
+  test_Container_service
   test_Container_flatPath
-  test_defaultContainersForRepo
+  test_developerContainers
+  test_defaultContainersFor
+  test_resolveDownstreamRepo
+  test_resolveRepo_downstream
   test_effectiveGetURLs
   test_mkFileURL
   test_parseCacheFromList
   test_extractRepoFromUrl
-  test_extractPRNumber
   test_hashFromFileName
   test_tempFileNames
   test_isRemoteURL

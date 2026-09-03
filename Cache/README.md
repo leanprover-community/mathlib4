@@ -132,14 +132,30 @@ contract `/{container}/{key}`, whatever backend serves them. Container names
 accepted by `--cache-from=LIST` and `--container=NAME`:
 `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 
+The containers belong to two services (see [The public cache and the
+developer cache](#the-public-cache-and-the-developer-cache)): `master` and
+`legacy` are the public service, the other three are the developer cache.
+
 `cache get` resolves a file by trying a default chain of containers in
-order, depending on the repo:
+order. On a mathlib checkout (canonical or fork) the chain depends on the
+repo:
 
 | GitHub repo                                     | Container order tried       |
 |-------------------------------------------------|-----------------------------|
 | `leanprover-community/mathlib4`                 | `master`, `legacy`          |
 | `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `legacy` |
 | any fork (PRs)                                  | `master`, `forks`, `legacy` |
+
+In a downstream project — Mathlib as a dependency — the default chain is
+`master`, `legacy`: a downstream build consumes the public master cache and
+never fetches fork or toolchain-experiment artifacts. Downstream resolution
+honors only canonical repos: a dependency pinned to the nightly-testing repo
+(or one of its `nightly-testing-*` tags) reads `nightly-testing`, `legacy`,
+because its artifacts exist nowhere else; a fork remote on the dependency
+checkout is ignored. An explicit `--repo=` opts back into the per-repo chain
+(for example, a downstream project building against a fork commit), and
+`--cache-from=` overrides the chain outright; both carry the usual security
+notice when they widen the read.
 
 Override the read chain with `--cache-from=LIST`:
 
@@ -153,13 +169,32 @@ lake exe cache get --cache-from=master,forks
 
 Uploads (`put`, `put!`, `put-staged`) target a single container via `--container=NAME`.
 
-## Public cache endpoint
+## Public and developer caches
 
-`cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts.
+The cache is split into two services, each with its own storage, read
+endpoint, and write credential flow:
+
+| Service  | Containers                                   | Read endpoint                        | Written by                          |
+|----------|----------------------------------------------|--------------------------------------|-------------------------------------|
+| public    | `master`, `legacy`                           | `https://cache.mathlib.org`          | master-trust CI only                |
+| developer | `forks`, `nightly-testing`, `pr-toolchain-tests` | `https://devcache.mathlib.org` | fork PR CI, nightly CI, toolchain CI |
+
+The public service holds the master-built cache that anyone may consume. The
+developer cache holds the work-in-progress artifacts: fork
+PR builds, the nightly-testing repo, and toolchain experiments. The storage
+split keeps a work-in-progress writer physically away from the artifacts the
+public consumes; the split endpoints let each side be re-pointed, cached, and
+retired independently. A downstream default reads the developer cache only
+for the first-party `nightly-testing` container, when the dependency itself
+is the nightly-testing repo.
+
+`cache get` picks the endpoint per container, so a fork chain like
+`master, forks, legacy` reads `master` and `legacy` from the public endpoint
+and `forks` from the developer one.
 
 ### Troubleshooting
 
-The public cache endpoint has been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before this endpoint was available, for troubleshooting any issues that might arise in the transition to this new endpoint:
+The cache endpoints have been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before the endpoints were available — reading both services from the Azure storage account — for troubleshooting any issues that might arise in the transition:
 
 ```bash
 # bash, zsh, Git Bash
@@ -180,6 +215,8 @@ The variable is intended as a troubleshooting fallback and it might be retired a
 | Variable            | Description                        | Default                                         |
 |---------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
+| `MATHLIB_CACHE_BASE_URL` | Read base URL for both services: a host that mirrors the whole `/{container}/{key}` namespace | unset (per-service endpoints) |
+| `MATHLIB_CACHE_DEVELOPER_BASE_URL` | Read base URL for the developer cache only; wins over `MATHLIB_CACHE_BASE_URL` for its containers | unset |
 
 Run `lake exe cache --help` for the full list, including the flat-endpoint
 overrides `MATHLIB_CACHE_GET_URL` / `MATHLIB_CACHE_PUT_URL`, the
