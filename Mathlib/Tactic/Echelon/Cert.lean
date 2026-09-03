@@ -264,15 +264,11 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : Q(Matrix (Fin $m) (Fin $n) $α)) (uEntries : Array (Array Q($α)))
     (leaf : LeafProver) : MetaM Q($L * $Aσ = $U) := do
   let zero ← mkNumeral α 0
-  -- `HMul.hMul` and `HAdd.hAdd` with their instances resolved and the two placeholder
-  -- operands dropped, so that the folds do not re-run instance synthesis at every term
-  let mul := (← mkAppM ``HMul.hMul #[zero, zero]).appFn!.appFn!
-  let add := (← mkAppM ``HAdd.hAdd #[zero, zero]).appFn!.appFn!
   let cell (i j : Nat) : MetaM Expr := do
     -- the shape `Finset.sum` reduces to: the products in index order, folded to the right
     -- and closed by the ring's zero, so that the cell is definitionally the product entry
-    let terms := Array.ofFn (n := m) fun c => mkApp2 mul (lEntries[i]!)[c]! (aEntries[c]!)[j]!
-    let sum := terms.foldr (mkApp2 add) zero
+    let terms ← Array.ofFnM (n := m) fun c => mkMul (lEntries[i]!)[c]! (aEntries[c]!)[j]!
+    let sum ← terms.foldrM mkAdd zero
     let (b, prf) ← leaf (← mkEq sum (uEntries[i]!)[j]!)
     unless b do
       throwError "the product of the transform does not match the echelon form at ({i}, {j})"
