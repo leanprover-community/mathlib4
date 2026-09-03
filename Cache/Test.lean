@@ -1258,16 +1258,6 @@ end TransferClassification
 
 section UploadDestination
 
-/-- The capability tokens CI probes (`cache capabilities`). A token is a
-contract with the workflows: removing or renaming one silently reroutes CI
-uploads, so the set changes only deliberately, here. -/
-def test_capabilities : IO Unit := do
-  IO.println "capabilities:"
-  assertTrue "s3-put is declared" (capabilities.contains "s3-put")
-  assertTrue "rclone-put is declared" (capabilities.contains "rclone-put")
-  assertTrue "tokens are single words"
-    (capabilities.all fun c => !c.isEmpty && c.all fun ch => ch.isAlphanum || ch == '-')
-
 /-- `uploadAuthFrom` picks the upload credential mechanism: the S3 pair (with
 its optional session token) first, then the Azure bearer token. A half-set S3
 pair errors instead of falling through, so a misconfigured job cannot
@@ -1775,7 +1765,6 @@ def runAll : IO Unit := do
   test_classifyDownload
   test_classifyUpload
   test_mkPutConfigContent
-  test_capabilities
   test_uploadAuthFrom
   test_isValidScope
   test_filePathPrefix

@@ -736,7 +736,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
               return msg
             let msg? := result.getObjValAs? String "errormsg"
             -- A download is named by its part file, an upload by its URL —
-            -- query-stripped: a SAS put carries its token there.
+            -- query-stripped, so a credential in the query string never prints.
             let src? : Except String String := match dir with
               | .download => fn?
               | .upload =>

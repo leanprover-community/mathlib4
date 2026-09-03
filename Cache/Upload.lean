@@ -73,18 +73,6 @@ def uploadAuthFrom (s3KeyId? s3Secret? s3Session? bearer? sas? : Option String) 
         "environment variable MATHLIB_CACHE_S3_ACCESS_KEY_ID/MATHLIB_CACHE_S3_SECRET_ACCESS_KEY \
         or MATHLIB_CACHE_AZURE_BEARER_TOKEN must be set to upload caches"
 
-/--
-Capability tokens `cache capabilities` prints, one per line. CI probes them to
-decide which upload flows this tool supports, so the list is declared beside
-the code that implements the capabilities and moves with it:
-
-* `s3-put`: `put` signs uploads with the S3 credentials
-  (`uploadAuthFrom`'s first branch).
-* `rclone-put`: `put` can drive a system rclone for S3 uploads
-  (`MATHLIB_CACHE_UPLOADER`).
--/
-def capabilities : List String := ["s3-put", "rclone-put"]
-
 /-- Retrieves upload credentials from the environment via `uploadAuthFrom`. -/
 def getUploadAuth : IO UploadAuth := do
   let auth := uploadAuthFrom

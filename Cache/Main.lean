@@ -32,8 +32,6 @@ Commands:
   lookup [ARGS]  Show information about cache files for the given Lean files
   query [REF]    Without REF: find most recent cached commit on this branch.
                  With REF (e.g. HEAD, a SHA): boolean probe; exit 0 if cached, 1 if not.
-  capabilities   Print this tool's upload capability tokens, one per line.
-                 For CI probes; works without a Lake workspace.
 
   # Staging and upload (CI, and external cache operators)
   stage        Move files not already 'pack'ed to an output directory
@@ -165,12 +163,6 @@ open Cache Cli IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if args.isEmpty || parseFlagOpt "help" args then
     println help
-    Process.exit 0
-  -- `capabilities` answers before `CacheM.run`, which needs a Lake-provided
-  -- search path: CI probes the bare binary for its upload capabilities, and
-  -- the probe must work without a workspace.
-  if args == ["capabilities"] then
-    Requests.capabilities.forM println
     Process.exit 0
   CacheM.run do
 
