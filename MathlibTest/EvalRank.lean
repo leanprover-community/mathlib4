@@ -294,9 +294,7 @@ open Polynomial in
 error: `eval_rank` made no progress.
 Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.evalRank] equality does not reduce in the kernel; using `norm_num` leaves
-      ℚ[X]
-[Tactic.evalRank] the following entry cannot be simplified to a numeral
+trace: [Tactic.evalRank] the following entry cannot be simplified to a numeral
       X
 -/
 #guard_msgs in

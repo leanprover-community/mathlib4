@@ -20,7 +20,6 @@ proofs of the individual entries supplied by a leaf normaliser.
 
 - `mkCertificate`: build the `Echelon.Decomposition` certificate of a matrix literal.
 - `LeafProver`: settle a proposition about a single entry.
-- `checkKernelDecide`: check that equality in a ring reduces in the kernel.
 - `mkPerm`, `mkPivotLit`, `mkRowsLit`, `mkMatrixLit`: elaborate the row permutation, the
   pivot function, and a matrix literal unwrapped or wrapped in `Matrix.of`.
 
@@ -82,19 +81,6 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
   return acc
 
-/-- Check that equality with zero in `α` reduces to a verdict in the kernel, which decides
-whether the certificate conditions can be discharged by `decide` or need a leaf
-normaliser. -/
-def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
-  -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
-  -- is only decidable against zero should pass
-  let some inst ← synthInstance? q(Decidable (((1 : ℤ) : $α) = 0))
-    | throwError "equality with zero in the element type is not decidable{indentExpr α}"
-  unless (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
-      (·.isAppOf ``Decidable.isFalse) do
-    throwError "equality in the element type does not reduce in the kernel{indentExpr α}"
-
 /-- Prove the certificate condition `p` by a kernel-checked `decide`, with `name` naming
 the condition in errors. -/
 def certifyCondition (name : String) (p : Q(Prop)) : MetaM Q($p) := do
@@ -108,11 +94,6 @@ def certifyCondition (name : String) (p : Q(Prop)) : MetaM Q($p) := do
 /-- A leaf normaliser settles a proposition about a single entry, returning its truth value
 together with a proof of the proposition or of its negation. -/
 @[expose] def LeafProver := Q(Prop) → MetaM (Bool × Expr)
-
-/-- `norm_num`'s core as a leaf normaliser. -/
-def normNumLeaf : LeafProver := fun p => do
-  let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
-  return (b, prf)
 
 /-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `proofAt i`
 proving it at index `i`, unfolding `p` when its quantifier is behind a definition. The proof
@@ -166,9 +147,9 @@ def proveRflCell (p : Q(Prop)) : MetaM Q($p) := do
 
 /-- Prove that a recorded `entry` is nonzero, by having `leaf` refute its equation with
 `zero`; `site` names the entry in errors. -/
-def proveNonzeroEntry (leaf : LeafProver) (entry zero : Expr) (site : MessageData) :
-    MetaM Expr := do
-  let (b, prf) ← leaf (← mkEq entry zero)
+def proveNonzeroEntry {u : Level} {α : Q(Type u)} (leaf : LeafProver) (entry zero : Q($α))
+    (site : MessageData) : MetaM Q($entry ≠ $zero) := do
+  let (b, prf) ← leaf q($entry = $zero)
   if b then throwError "{site} is zero"
   return prf
 
@@ -275,7 +256,7 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
 supplies a normaliser for the entry ones. -/
 def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
-    (data : BareissData Expr) (leaf? : Option LeafProver := none) :
+    (data : BareissData Expr) (leaf? : Option LeafProver) :
     MetaM Q(Echelon.Decomposition $A) := withDefault do
   -- `withDefault`: the ambient transparency inside `simp` is `reducible`, which does not
   -- reduce a matrix literal at a concrete index, so no entry would be recognised as zero
