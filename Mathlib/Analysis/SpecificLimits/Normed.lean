@@ -298,7 +298,7 @@ private lemma _root_.norm_iterate_mul_le (x : R) (n : ℕ) :
   | zero => simp
   | succ n ih => grw [iterate_succ_apply', norm_mul_le, ih, ← pow_succ]
 
-lemma summable_geometric_iterate_of_norm_lt_one [HasSummableGeomSeries R] {x : R} (h : ‖x‖ < 1) :
+lemma summable_iterate_mul_of_norm_lt_one [HasSummableGeomSeries R] {x : R} (h : ‖x‖ < 1) :
     Summable ((· * x)^[·] x) :=
   HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
 
@@ -372,11 +372,11 @@ variable [HasSummableGeomSeries R]
 
 theorem add_geom_series_mul_self {x : R} (hx : ‖x‖ < 1) :
     x + (∑' i : ℕ, (· * x)^[i] x) * x = (∑' i : ℕ, (· * x)^[i] x) :=
-  summable_geometric_iterate_of_norm_lt_one hx |>.add_geom_series_mul_self
+  summable_iterate_mul_of_norm_lt_one hx |>.add_geom_series_mul_self
 
 theorem add_self_mul_geom_series {x : R} (hx : ‖x‖ < 1) :
     x + x * (∑' i : ℕ, (· * x)^[i] x) = (∑' i : ℕ, (· * x)^[i] x) :=
-  summable_geometric_iterate_of_norm_lt_one hx |>.add_self_mul_geom_series
+  summable_iterate_mul_of_norm_lt_one hx |>.add_self_mul_geom_series
 
 end NonUnitalNormedRing
 
