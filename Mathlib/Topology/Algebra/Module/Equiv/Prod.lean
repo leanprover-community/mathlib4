@@ -28,70 +28,62 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 
 assert_not_exists TrivialStar
 
-variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃]
-  {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-  {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
-  {σ₁₃ : R₁ →+* R₃} {σ₃₁ : R₃ →+* R₁} [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
-  [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁] {M₁ : Type*}
-  [TopologicalSpace M₁] [AddCommMonoid M₁]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] {M₃ : Type*} [TopologicalSpace M₃]
-  [AddCommMonoid M₃] {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R₁ M₁]
-  [Module R₂ M₂] [Module R₃ M₃]
+variable {R : Type*} [Semiring R]
+  {M₁ : Type*} [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R M₁]
+  {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
+  {M₃ : Type*} [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R M₃]
+  {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R M₄]
 
 namespace ContinuousLinearEquiv
 
 section prodCongr
 
-variable [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄]
-
 /-- Product of two continuous linear equivalences. The map comes from `Equiv.prodCongr`. -/
-def prodCongr (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
-    (M₁ × M₃) ≃L[R₁] M₂ × M₄ where
+def prodCongr (e : M₁ ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) :
+    (M₁ × M₃) ≃L[R] M₂ × M₄ where
   __ := e.toLinearEquiv.prodCongr e'.toLinearEquiv
 
 @[simp, norm_cast]
-theorem prodCongr_apply (e : M₁ ≃L[R₁] M₂)
-    (e' : M₃ ≃L[R₁] M₄) (x) : e.prodCongr e' x = (e x.1, e' x.2) :=
+theorem prodCongr_apply (e : M₁ ≃L[R] M₂)
+    (e' : M₃ ≃L[R] M₄) (x) : e.prodCongr e' x = (e x.1, e' x.2) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_prodCongr (e : M₁ ≃L[R₁] M₂)
-    (e' : M₃ ≃L[R₁] M₄) :
-    (e.prodCongr e' : M₁ × M₃ →L[R₁] M₂ × M₄) = (e : M₁ →L[R₁] M₂).prodMap (e' : M₃ →L[R₁] M₄) :=
+theorem coe_prodCongr (e : M₁ ≃L[R] M₂)
+    (e' : M₃ ≃L[R] M₄) :
+    (e.prodCongr e' : M₁ × M₃ →L[R] M₂ × M₄) = (e : M₁ →L[R] M₂).prodMap (e' : M₃ →L[R] M₄) :=
   rfl
 
 @[simp]
-theorem prodCongr_symm (e : M₁ ≃L[R₁] M₂)
-    (e' : M₃ ≃L[R₁] M₄) : (e.prodCongr e').symm = e.symm.prodCongr e'.symm :=
+theorem prodCongr_symm (e : M₁ ≃L[R] M₂)
+    (e' : M₃ ≃L[R] M₄) : (e.prodCongr e').symm = e.symm.prodCongr e'.symm :=
   rfl
 
 end prodCongr
 
 section prodComm
 
-variable (R₁ M₁ M₂) [Module R₁ M₂]
+variable (R M₁ M₂)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Product of topological modules is commutative up to continuous linear isomorphism. -/
 @[simps! apply toLinearEquiv]
-def prodComm : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
-  __ := LinearEquiv.prodComm R₁ M₁ M₂
+def prodComm : (M₁ × M₂) ≃L[R] M₂ × M₁ where
+  __ := LinearEquiv.prodComm R M₁ M₂
 
-@[simp] lemma prodComm_symm : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
+@[simp] lemma prodComm_symm : (prodComm R M₁ M₂).symm = prodComm R M₂ M₁ := rfl
 
 /-- Composition of a map on a product with the exchange of the product factors -/
-theorem _root_.ContinuousLinearMap.coprod_comp_prodComm [Module R₁ M₃]
-    [ContinuousAdd M₃] (f : M₁ →L[R₁] M₃) (g : M₂ →L[R₁] M₃) :
-    f.coprod g ∘L ContinuousLinearEquiv.prodComm R₁ M₂ M₁ = g.coprod f := by
+theorem _root_.ContinuousLinearMap.coprod_comp_prodComm
+    [ContinuousAdd M₃] (f : M₁ →L[R] M₃) (g : M₂ →L[R] M₃) :
+    f.coprod g ∘L ContinuousLinearEquiv.prodComm R M₂ M₁ = g.coprod f := by
   ext <;> simp
 
 end prodComm
 
 section prodAssoc
 
-variable (R M₁ M₂ M₃ : Type*) [Semiring R]
-  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
-  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃]
+variable (R M₁ M₂ M₃)
 
 /-- The product of topological modules is associative up to continuous linear isomorphism.
 This is `LinearEquiv.prodAssoc` prodAssoc as a continuous linear equivalence. -/
@@ -122,10 +114,7 @@ end prodAssoc
 
 section prodProdProdComm
 
-variable (R M₁ M₂ M₃ M₄ : Type*) [Semiring R]
-  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-  [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]
-  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃] [TopologicalSpace M₄]
+variable (R M₁ M₂ M₃ M₄)
 
 /-- The product of topological modules is four-way commutative up to continuous linear isomorphism.
 This is `LinearEquiv.prodProdProdComm` prodAssoc as a continuous linear equivalence. -/
@@ -155,39 +144,37 @@ end prodProdProdComm
 
 section prodUnique
 
-variable (R M N : Type*) [Semiring R]
-  [TopologicalSpace M] [AddCommMonoid M] [TopologicalSpace N] [AddCommMonoid N]
-  [Unique N] [Module R M] [Module R N]
+variable (R M₁ M₂) [Unique M₂]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural equivalence `M × N ≃L[R] M` for any `Unique` type `N`.
 This is `Equiv.prodUnique` as a continuous linear equivalence. -/
-def prodUnique : (M × N) ≃L[R] M where
+def prodUnique : (M₁ × M₂) ≃L[R] M₁ where
   toLinearEquiv := LinearEquiv.prodUnique
 
 @[simp]
-lemma coe_prodUnique : (prodUnique R M N).toEquiv = Equiv.prodUnique M N := rfl
+lemma coe_prodUnique : (prodUnique R M₁ M₂).toEquiv = Equiv.prodUnique M₁ M₂ := rfl
 
 @[simp]
-lemma prodUnique_apply (x : M × N) : prodUnique R M N x = x.1 := rfl
+lemma prodUnique_apply (x : M₁ × M₂) : prodUnique R M₁ M₂ x = x.1 := rfl
 
 @[simp]
-lemma prodUnique_symm_apply (x : M) : (prodUnique R M N).symm x = (x, default) := rfl
+lemma prodUnique_symm_apply (x : M₁) : (prodUnique R M₁ M₂).symm x = (x, default) := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural equivalence `N × M ≃L[R] M` for any `Unique` type `N`.
 This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
-def uniqueProd : (N × M) ≃L[R] M where
+def uniqueProd : (M₂ × M₁) ≃L[R] M₁ where
   toLinearEquiv := LinearEquiv.uniqueProd
 
 @[simp]
-lemma coe_uniqueProd : (uniqueProd R M N).toEquiv = Equiv.uniqueProd M N := rfl
+lemma coe_uniqueProd : (uniqueProd R M₁ M₂).toEquiv = Equiv.uniqueProd M₁ M₂ := rfl
 
 @[simp]
-lemma uniqueProd_apply (x : N × M) : uniqueProd R M N x = x.2 := rfl
+lemma uniqueProd_apply (x : M₂ × M₁) : uniqueProd R M₁ M₂ x = x.2 := rfl
 
 @[simp]
-lemma uniqueProd_symm_apply (x : M) : (uniqueProd R M N).symm x = (default, x) := rfl
+lemma uniqueProd_symm_apply (x : M₁) : (uniqueProd R M₁ M₂).symm x = (default, x) := rfl
 
 end prodUnique
 
