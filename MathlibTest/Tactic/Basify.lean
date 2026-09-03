@@ -139,6 +139,27 @@ example (a b : ℕ+) (h : b < a) : a - b < a := by
   basify
   lia
 
+/-! ## Supplying facts
+
+`basify [f₁, f₂, …]` adds the facts to the context before collecting atoms, so they can both
+prune `⊤` branches and supply the content of the goal.
+-/
+
+/-- Without the two `≠ ⊤` facts, the branches where `f 0` or `f 1` is `⊤` survive and the goal is
+out of reach. -/
+example (f : ℕ → ℝ≥0∞) (hf : ∀ n, f n ≠ ⊤) (h : f 0 + f 1 = f 1) : f 0 = 0 := by
+  basify [hf 0, hf 1]
+  linarith
+
+/-- A fact can also carry the content: nothing in `basify_simp` knows `min_le_left`. -/
+example (b c : ℝ≥0∞) (hb : b ≠ ⊤) (hc : c ≠ ⊤) : min b c ≤ b := by
+  basify [min_le_left b c]
+
+/-- An atom occurring only inside a fact is collected like any other. -/
+example (f : ℕ → ℝ≥0∞) (hf : ∀ n, f n ≠ ⊤) (h : ∀ n, f n ≤ f (n + 1)) : f 0 ≤ f 2 := by
+  basify [hf 0, hf 1, hf 2, h 0, h 1]
+  linarith
+
 /-! ## Atoms -/
 
 /-- An atom that is not a variable is generalized before it can be split. -/
