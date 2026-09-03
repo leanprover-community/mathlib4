@@ -32,24 +32,24 @@ attribute [enat_to_nat_top] OfNat.ofNat_ne_zero ne_eq not_false_eq_true ENat.nat
   ENat.top_ne_natCast ENat.natCast_lt_top top_le_iff le_top
 attribute [enat_to_nat_top] top_add ENat.sub_top ENat.top_sub_natCast ENat.mul_top ENat.top_mul
 
-@[enat_to_nat_top] lemma not_lt_top (x : ENat) :
+@[enat_to_nat_top, basify_simp] lemma not_lt_top (x : ENat) :
     ¬(⊤ < x) := by cases x <;> simp
 
-@[enat_to_nat_coe] lemma coe_add (m n : ℕ) :
+@[enat_to_nat_coe, basify_op] lemma coe_add (m n : ℕ) :
     (m : ENat) + (n : ENat) = ((m + n : ℕ) : ENat) := rfl
 
-@[enat_to_nat_coe] lemma coe_sub (m n : ℕ) :
+@[enat_to_nat_coe, basify_op] lemma coe_sub (m n : ℕ) :
     (m : ENat) - (n : ENat) = ((m - n : ℕ) : ENat) := rfl
 
-@[enat_to_nat_coe] lemma coe_mul (m n : ℕ) :
+@[enat_to_nat_coe, basify_op] lemma coe_mul (m n : ℕ) :
     (m : ENat) * (n : ENat) = ((m * n : ℕ) : ENat) := rfl
 
-@[enat_to_nat_coe] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[enat_to_nat_coe, basify_op] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     (OfNat.ofNat n : ENat) = (OfNat.ofNat n : ℕ) := rfl
 
-@[enat_to_nat_coe] lemma coe_zero : (0 : ENat) = ((0 : ℕ) : ENat) := rfl
+@[enat_to_nat_coe, basify_op] lemma coe_zero : (0 : ENat) = ((0 : ℕ) : ENat) := rfl
 
-@[enat_to_nat_coe] lemma coe_one : (1 : ENat) = ((1 : ℕ) : ENat) := rfl
+@[enat_to_nat_coe, basify_op] lemma coe_one : (1 : ENat) = ((1 : ℕ) : ENat) := rfl
 
 attribute [enat_to_nat_coe] ENat.natCast_inj ENat.natCast_le_natCast ENat.natCast_lt_natCast
 
@@ -88,8 +88,3 @@ macro "enat_to_nat" : tactic => `(tactic| focus (
 
 end Mathlib.Tactic.ENatToNat
 
--- Registrations for the `basify` tactic.
-attribute [basify_op] Mathlib.Tactic.ENatToNat.coe_add Mathlib.Tactic.ENatToNat.coe_sub
-  Mathlib.Tactic.ENatToNat.coe_mul Mathlib.Tactic.ENatToNat.coe_ofNat
-  Mathlib.Tactic.ENatToNat.coe_zero Mathlib.Tactic.ENatToNat.coe_one
-attribute [basify_simp] Mathlib.Tactic.ENatToNat.not_lt_top

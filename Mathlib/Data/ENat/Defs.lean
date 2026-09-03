@@ -24,7 +24,7 @@ namespace ENat
 instance instNatCast : NatCast ℕ∞ := ⟨WithTop.some⟩
 
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
+@[elab_as_elim, induction_eliminator, cases_eliminator, basify_elim]
 def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
   | none => top
   | Option.some a => coe a
@@ -42,6 +42,3 @@ theorem recTopCoe_natCast {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C
 @[deprecated (since := "2026-07-17")] alias recTopCoe_coe := recTopCoe_natCast
 
 end ENat
-
--- `basify` destructs an `ℕ∞` into `⊤` and the naturals.
-attribute [basify_elim] ENat.recTopCoe

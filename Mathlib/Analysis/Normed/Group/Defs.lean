@@ -87,6 +87,7 @@ variable {E : Type*} [NNNorm E] {x : E} {r : ℝ≥0}
 
 instance NNNorm.toENorm : ENorm E where enorm := (‖·‖₊ : E → ℝ≥0∞)
 
+@[basify_op]
 lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
 @[simp] lemma toNNReal_enorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
@@ -457,5 +458,3 @@ abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommG
   { f.toNormedGroup with
     mul_comm := mul_comm }
 
--- Registrations for the `basify` tactic.
-attribute [basify_op] enorm_eq_nnnorm

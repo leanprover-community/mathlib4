@@ -55,11 +55,11 @@ class LinearOrderedAddCommGroupWithTop (α : Type*)
 section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α] {a b c : α}
 
-@[simp]
+@[simp, basify_simp]
 theorem top_add (a : α) : ⊤ + a = ⊤ :=
   LinearOrderedAddCommMonoidWithTop.top_add' a
 
-@[simp]
+@[simp, basify_simp]
 theorem add_top (a : α) : a + ⊤ = ⊤ :=
   Trans.trans (add_comm _ _) (top_add _)
 
@@ -273,5 +273,3 @@ instance [LinearOrder G] [IsOrderedAddMonoid G] : LinearOrderedAddCommGroupWithT
 
 end WithTop.LinearOrderedAddCommGroup
 
--- Registrations for the `basify` tactic.
-attribute [basify_simp] top_add add_top

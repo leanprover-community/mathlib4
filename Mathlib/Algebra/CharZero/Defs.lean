@@ -91,7 +91,7 @@ namespace OfNat
 
 variable [AddMonoidWithOne R] [CharZero R]
 
-@[simp] lemma ofNat_ne_zero (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) ≠ 0 :=
+@[simp, basify_simp] lemma ofNat_ne_zero (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) ≠ 0 :=
   Nat.cast_ne_zero.2 (NeZero.ne n)
 
 @[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (ofNat(n) : R) :=
@@ -125,5 +125,3 @@ instance charZero_ofNat {M} {n : ℕ} [n.AtLeastTwo] [AddMonoidWithOne M] [CharZ
 
 end NeZero
 
--- Registrations for the `basify` tactic.
-attribute [basify_simp] OfNat.ofNat_ne_zero

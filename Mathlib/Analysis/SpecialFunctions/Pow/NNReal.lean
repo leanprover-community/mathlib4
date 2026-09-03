@@ -44,7 +44,7 @@ noncomputable instance : Pow ℝ≥0 ℝ :=
 theorem rpow_eq_pow (x : ℝ≥0) (y : ℝ) : rpow x y = x ^ y :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem coe_rpow (x : ℝ≥0) (y : ℝ) : ((x ^ y : ℝ≥0) : ℝ) = (x : ℝ) ^ y :=
   rfl
 
@@ -542,7 +542,7 @@ theorem coe_rpow_of_ne_zero {x : ℝ≥0} (h : x ≠ 0) (y : ℝ) : (↑(x ^ y) 
   dsimp only [(· ^ ·), Pow.pow, rpow]
   simp [h]
 
-@[norm_cast]
+@[norm_cast, basify_op ←]
 theorem coe_rpow_of_nonneg (x : ℝ≥0) {y : ℝ} (h : 0 ≤ y) : ↑(x ^ y) = (x : ℝ≥0∞) ^ y := by
   by_cases hx : x = 0
   · rcases le_iff_eq_or_lt.1 h with (H | H)
@@ -1282,6 +1282,3 @@ meta def evalNNRealRPow : NormNumExt where eval {u αR} e := do
 
 end Mathlib.Meta.NormNum
 
--- Registrations for the `basify` tactic.
-attribute [basify_op] NNReal.coe_rpow
-attribute [basify_op ←] ENNReal.coe_rpow_of_nonneg

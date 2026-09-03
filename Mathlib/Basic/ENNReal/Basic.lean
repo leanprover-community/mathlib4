@@ -189,7 +189,7 @@ instance : Unique (AddUnits ℝ≥0∞) where
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
+@[elab_as_elim, induction_eliminator, cases_eliminator, basify_elim]
 def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
 
@@ -209,7 +209,7 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.c
 
 lemma coe_injective : Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
 
-@[simp, norm_cast] lemma coe_inj : (p : ℝ≥0∞) = q ↔ p = q := coe_injective.eq_iff
+@[simp, norm_cast, basify_simp] lemma coe_inj : (p : ℝ≥0∞) = q ↔ p = q := coe_injective.eq_iff
 
 lemma coe_ne_coe : (p : ℝ≥0∞) ≠ q ↔ p ≠ q := coe_inj.not
 
@@ -269,9 +269,9 @@ theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.o
 
 @[simp] theorem ofReal_coe_nnreal : ENNReal.ofReal p = p := (coe_nnreal_eq p).symm
 
-@[simp, norm_cast] theorem coe_zero : ↑(0 : ℝ≥0) = (0 : ℝ≥0∞) := rfl
+@[simp, norm_cast, basify_op ←] theorem coe_zero : ↑(0 : ℝ≥0) = (0 : ℝ≥0∞) := rfl
 
-@[simp, norm_cast] theorem coe_one : ↑(1 : ℝ≥0) = (1 : ℝ≥0∞) := rfl
+@[simp, norm_cast, basify_op ←] theorem coe_one : ↑(1 : ℝ≥0) = (1 : ℝ≥0∞) := rfl
 
 @[simp] theorem toReal_nonneg {a : ℝ≥0∞} : 0 ≤ a.toReal := a.toNNReal.2
 
@@ -282,13 +282,13 @@ theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.o
 
 @[simp] theorem toNNReal_top : ∞.toNNReal = 0 := rfl
 
-@[simp] theorem toReal_top : ∞.toReal = 0 := rfl
+@[simp, basify_simp] theorem toReal_top : ∞.toReal = 0 := rfl
 
 @[simp] theorem toReal_one : (1 : ℝ≥0∞).toReal = 1 := rfl
 
 @[simp] theorem toNNReal_one : (1 : ℝ≥0∞).toNNReal = 1 := rfl
 
-@[simp] theorem coe_toReal (r : ℝ≥0) : (r : ℝ≥0∞).toReal = r := rfl
+@[simp, basify_simp] theorem coe_toReal (r : ℝ≥0) : (r : ℝ≥0∞).toReal = r := rfl
 
 @[simp] theorem toNNReal_zero : (0 : ℝ≥0∞).toNNReal = 0 := rfl
 
@@ -336,11 +336,12 @@ theorem toReal_ne_one : a.toReal ≠ 1 ↔ a ≠ 1 :=
   a.toReal_eq_one_iff.not
 
 @[simp, aesop (rule_sets := [finiteness]) safe apply]
+@[basify_simp]
 theorem coe_ne_top : (r : ℝ≥0∞) ≠ ∞ := WithTop.coe_ne_top
 
-@[simp] theorem top_ne_coe : ∞ ≠ (r : ℝ≥0∞) := WithTop.top_ne_coe
+@[simp, basify_simp] theorem top_ne_coe : ∞ ≠ (r : ℝ≥0∞) := WithTop.top_ne_coe
 
-@[simp] theorem coe_lt_top : (r : ℝ≥0∞) < ∞ := WithTop.coe_lt_top r
+@[simp, basify_simp] theorem coe_lt_top : (r : ℝ≥0∞) < ∞ := WithTop.coe_lt_top r
 
 @[simp, aesop (rule_sets := [finiteness]) safe apply]
 theorem ofReal_ne_top {r : ℝ} : ENNReal.ofReal r ≠ ∞ := coe_ne_top
@@ -371,9 +372,9 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 
 @[simp] theorem zero_lt_top : 0 < ∞ := coe_lt_top
 
-@[simp, norm_cast, gcongr] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
+@[simp, norm_cast, gcongr, basify_simp] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
 
-@[simp, norm_cast, gcongr] theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
+@[simp, norm_cast, gcongr, basify_simp] theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
 
 @[deprecated (since := "2026-08-04")] alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 
@@ -383,7 +384,7 @@ theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 
 theorem coe_strictMono : StrictMono ofNNReal := fun _ _ => coe_lt_coe.2
 
-@[simp, norm_cast] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_inj
+@[simp, norm_cast, basify_simp] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_inj
 
 @[simp, norm_cast] theorem zero_eq_coe : 0 = (↑r : ℝ≥0∞) ↔ 0 = r := coe_inj
 
@@ -397,13 +398,13 @@ theorem coe_ne_zero : (r : ℝ≥0∞) ≠ 0 ↔ r ≠ 0 := WithTop.coe_ne_zero
 
 lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := WithTop.coe_ne_one
 
-@[simp, norm_cast] lemma coe_add (x y : ℝ≥0) : (↑(x + y) : ℝ≥0∞) = x + y := rfl
+@[simp, norm_cast, basify_op ←] lemma coe_add (x y : ℝ≥0) : (↑(x + y) : ℝ≥0∞) = x + y := rfl
 
-@[simp, norm_cast] lemma coe_mul (x y : ℝ≥0) : (↑(x * y) : ℝ≥0∞) = x * y := rfl
+@[simp, norm_cast, basify_op ←] lemma coe_mul (x y : ℝ≥0) : (↑(x * y) : ℝ≥0∞) = x * y := rfl
 
 @[norm_cast] lemma coe_nsmul (n : ℕ) (x : ℝ≥0) : (↑(n • x) : ℝ≥0∞) = n • x := rfl
 
-@[simp, norm_cast] lemma coe_pow (x : ℝ≥0) (n : ℕ) : (↑(x ^ n) : ℝ≥0∞) = x ^ n := rfl
+@[simp, norm_cast, basify_op ←] lemma coe_pow (x : ℝ≥0) (n : ℕ) : (↑(x ^ n) : ℝ≥0∞) = x ^ n := rfl
 
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ≥0∞) = ofNat(n) := rfl
@@ -500,7 +501,7 @@ theorem coe_lt_one_iff : (↑p : ℝ≥0∞) < 1 ↔ p < 1 := coe_lt_coe
 @[simp, norm_cast]
 theorem one_lt_coe_iff : 1 < (↑p : ℝ≥0∞) ↔ 1 < p := coe_lt_coe
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op ←]
 theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 
 @[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
@@ -655,10 +656,10 @@ theorem iInter_Ici_coe_nat : ⋂ n : ℕ, Ici (n : ℝ≥0∞) = {∞} := by
 theorem iInter_Ioi_coe_nat : ⋂ n : ℕ, Ioi (n : ℝ≥0∞) = {∞} := by
   simp only [← compl_Iic, ← compl_iUnion, iUnion_Iic_coe_nat, compl_compl]
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op ←]
 theorem coe_min (r p : ℝ≥0) : ((min r p : ℝ≥0) : ℝ≥0∞) = min (r : ℝ≥0∞) p := rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op ←]
 theorem coe_max (r p : ℝ≥0) : ((max r p : ℝ≥0) : ℝ≥0∞) = max (r : ℝ≥0∞) p := rfl
 
 theorem le_of_top_imp_top_of_toNNReal_le {a b : ℝ≥0∞} (h : a = ⊤ → b = ⊤)
@@ -768,26 +769,17 @@ meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e :=
 
 end Mathlib.Meta.Positivity
 
--- Registrations for the `basify` tactic.
-attribute [basify_elim] ENNReal.recTopCoe
-attribute [basify_op ←] ENNReal.coe_zero ENNReal.coe_one ENNReal.coe_natCast ENNReal.coe_add
-  ENNReal.coe_mul ENNReal.coe_pow ENNReal.coe_min ENNReal.coe_max
-attribute [basify_simp] ENNReal.coe_ne_top ENNReal.top_ne_coe ENNReal.coe_lt_top
-  ENNReal.toReal_top ENNReal.coe_eq_zero ENNReal.coe_inj ENNReal.coe_le_coe ENNReal.coe_lt_coe
-  ENNReal.coe_toReal
 
 /-- `ENNReal.coe_ofNat` read from right to left, restated because the `ofNat(n)` on the right-hand
 side of `ENNReal.coe_ofNat` is `no_index`ed, which would make the reversed lemma match every term.
 -/
+@[basify_op]
 theorem ENNReal.ofNat_eq_coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     (OfNat.ofNat n : ℝ≥0∞) = ((OfNat.ofNat n : ℝ≥0) : ℝ≥0∞) :=
   rfl
 
-attribute [basify_op] ENNReal.ofNat_eq_coe_ofNat
-
 /-- The decimal-literal counterpart of `ENNReal.ofNat_eq_coe_ofNat`. -/
+@[basify_op]
 theorem ENNReal.ofScientific_eq_coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     (OfScientific.ofScientific m s e : ℝ≥0∞) = ((OfScientific.ofScientific m s e : ℝ≥0) : ℝ≥0∞) :=
   rfl
-
-attribute [basify_op] ENNReal.ofScientific_eq_coe_ofScientific

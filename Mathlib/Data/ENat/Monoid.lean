@@ -33,13 +33,15 @@ variable {a b c m n : ℕ∞}
 
 @[deprecated (since := "2026-07-17")] alias coe_mul := natCast_mul
 
-@[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
-@[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
+@[simp, basify_simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
+@[simp, basify_simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
 
 /-- A version of `mul_top` where the RHS is stated as an `ite` -/
+@[basify_simp]
 theorem mul_top' : m * ⊤ = if m = 0 then 0 else ⊤ := WithTop.mul_top' m
 
 /-- A version of `top_mul` where the RHS is stated as an `ite` -/
+@[basify_simp]
 theorem top_mul' : ⊤ * m = if m = 0 then 0 else ⊤ := WithTop.top_mul' m
 
 @[simp] lemma top_pow {n : ℕ} (hn : n ≠ 0) : (⊤ : ℕ∞) ^ n = ⊤ := WithTop.top_pow hn
@@ -322,5 +324,3 @@ lemma add_le_add_one_left_iff {a b : WithBot ℕ∞} : 1 + a ≤ 1 + b ↔ a ≤
 end WithBot
 end ENat
 
--- Registrations for the `basify` tactic.
-attribute [basify_simp] ENat.mul_top ENat.top_mul

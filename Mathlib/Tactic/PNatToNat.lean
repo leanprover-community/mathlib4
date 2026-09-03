@@ -46,19 +46,19 @@ elab "pnat_positivity" : tactic => withMainContext do
     return mvarIdNew
   setGoals [result]
 
-@[pnat_to_nat_coe]
+@[pnat_to_nat_coe, basify_simp]
 lemma coe_inj (m n : PNat) : m = n ↔ (m : ℕ) = (n : ℕ) := by simp
 
-@[pnat_to_nat_coe]
+@[pnat_to_nat_coe, basify_simp]
 lemma coe_le_coe (m n : PNat) : m ≤ n ↔ (m : ℕ) ≤ (n : ℕ) := by simp
 
-@[pnat_to_nat_coe]
+@[pnat_to_nat_coe, basify_simp]
 lemma coe_lt_coe (m n : PNat) : m < n ↔ (m : ℕ) < (n : ℕ) := by simp
 
 attribute [pnat_to_nat_coe] PNat.add_coe PNat.mul_coe PNat.val_ofNat
 
 set_option backward.isDefEq.respectTransparency false in
-@[pnat_to_nat_coe]
+@[pnat_to_nat_coe, basify_op]
 lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := by
   cases a
   cases b
@@ -74,7 +74,3 @@ macro "pnat_to_nat" : tactic => `(tactic| focus (
 
 end Mathlib.Tactic.PNatToNat
 
--- Registrations for the `basify` tactic.
-attribute [basify_op] Mathlib.Tactic.PNatToNat.sub_coe
-attribute [basify_simp] Mathlib.Tactic.PNatToNat.coe_inj Mathlib.Tactic.PNatToNat.coe_le_coe
-  Mathlib.Tactic.PNatToNat.coe_lt_coe

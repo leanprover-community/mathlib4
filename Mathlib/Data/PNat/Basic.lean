@@ -60,7 +60,7 @@ theorem natPred_le_natPred {m n : ℕ+} : m.natPred ≤ n.natPred ↔ m ≤ n :=
 theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
   natPred_injective.eq_iff
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 lemma val_ofNat (n : ℕ) [NeZero n] :
     ((ofNat(n) : ℕ+) : ℕ) = OfNat.ofNat n :=
   rfl
@@ -111,7 +111,7 @@ subtraction, division and powers.
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
   Subtype.ext_iff.symm
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 
@@ -194,7 +194,7 @@ theorem ofNat_inj {m n : ℕ} [NeZero m] [NeZero n] :
     (ofNat(m) : ℕ+) = ofNat(n) ↔ OfNat.ofNat m = OfNat.ofNat n :=
   Subtype.mk_eq_mk
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
   rfl
 
@@ -362,5 +362,3 @@ theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
 
 end PNat
 
--- Registrations for the `basify` tactic.
-attribute [basify_op] PNat.val_ofNat PNat.add_coe PNat.mul_coe

@@ -80,7 +80,7 @@ section LE
 
 variable [LE α] [OrderTop α] {a : α}
 
-@[to_dual (attr := simp) bot_le]
+@[to_dual (attr := simp) bot_le, basify_simp]
 theorem le_top : a ≤ ⊤ :=
   OrderTop.le_top a
 
@@ -165,7 +165,7 @@ alias ⟨IsMax.eq_top, _⟩ := isMax_iff_eq_top
 @[to_dual]
 alias ⟨IsTop.eq_top, _⟩ := isTop_iff_eq_top
 
-@[to_dual (attr := simp) le_bot_iff]
+@[to_dual (attr := simp) le_bot_iff, basify_simp]
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
   le_top.ge_iff_eq
 
@@ -182,7 +182,7 @@ theorem eq_top_iff : a = ⊤ ↔ ⊤ ≤ a :=
 theorem eq_top_mono (h : a ≤ b) (h₂ : a = ⊤) : b = ⊤ :=
   top_unique <| h₂ ▸ h
 
-@[to_dual bot_lt_iff_ne_bot]
+@[to_dual bot_lt_iff_ne_bot, basify_simp]
 theorem lt_top_iff_ne_top : a < ⊤ ↔ a ≠ ⊤ :=
   le_top.lt_iff_ne
 
@@ -478,5 +478,3 @@ theorem bot_eq_false : ⊥ = false :=
 
 end Bool
 
--- Registrations for the `basify` tactic.
-attribute [basify_simp] top_le_iff le_top lt_top_iff_ne_top

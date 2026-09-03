@@ -156,6 +156,7 @@ protected theorem «exists» {p : ℝ≥0 → Prop} :
 def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
   .mk (max r 0) (le_max_right _ _)
 
+@[basify_simp]
 theorem _root_.Real.coe_toNNReal (r : ℝ) (hr : 0 ≤ r) : (Real.toNNReal r : ℝ) = r :=
   max_eq_left hr
 
@@ -194,30 +195,30 @@ example : Nontrivial ℝ≥0 := by infer_instance
 
 protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype.coe_injective
 
-@[simp, norm_cast] lemma coe_inj {r₁ r₂ : ℝ≥0} : (r₁ : ℝ) = r₂ ↔ r₁ = r₂ :=
+@[simp, norm_cast, basify_simp ←] lemma coe_inj {r₁ r₂ : ℝ≥0} : (r₁ : ℝ) = r₂ ↔ r₁ = r₂ :=
   NNReal.coe_injective.eq_iff
 
 
-@[simp, norm_cast] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
+@[simp, norm_cast, basify_op] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
 
-@[simp, norm_cast] lemma coe_one : ((1 : ℝ≥0) : ℝ) = 1 := rfl
+@[simp, norm_cast, basify_op] lemma coe_one : ((1 : ℝ≥0) : ℝ) = 1 := rfl
 
 @[simp] lemma mk_zero : NNReal.mk 0 le_rfl = 0 := rfl
 @[simp] lemma mk_one : NNReal.mk 1 zero_le_one = 1 := rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 protected theorem coe_add (r₁ r₂ : ℝ≥0) : ((r₁ + r₂ : ℝ≥0) : ℝ) = r₁ + r₂ :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 protected theorem coe_mul (r₁ r₂ : ℝ≥0) : ((r₁ * r₂ : ℝ≥0) : ℝ) = r₁ * r₂ :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 protected theorem coe_inv (r : ℝ≥0) : ((r⁻¹ : ℝ≥0) : ℝ) = (r : ℝ)⁻¹ :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 protected theorem coe_div (r₁ r₂ : ℝ≥0) : ((r₁ / r₂ : ℝ≥0) : ℝ) = (r₁ : ℝ) / r₂ :=
   rfl
 
@@ -300,7 +301,7 @@ example : CommMonoidWithZero ℝ≥0 := by infer_instance
 
 noncomputable example : CommGroupWithZero ℝ≥0 := by infer_instance
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem coe_pow (r : ℝ≥0) (n : ℕ) : ((r ^ n : ℝ≥0) : ℝ) = (r : ℝ) ^ n := rfl
 
 @[simp, norm_cast]
@@ -311,15 +312,15 @@ variable {ι : Type*}
 @[simp, norm_cast] lemma coe_nsmul (r : ℝ≥0) (n : ℕ) : ↑(n • r) = n • (r : ℝ) := rfl
 @[simp, norm_cast] lemma coe_nnqsmul (q : ℚ≥0) (x : ℝ≥0) : ↑(q • x) = (q • x : ℝ) := rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
   map_natCast toRealHom n
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ) = ofNat(n) :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 protected theorem coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     ↑(OfScientific.ofScientific m s e : ℝ≥0) = (OfScientific.ofScientific m s e : ℝ) :=
   rfl
@@ -329,9 +330,9 @@ lemma algebraMap_eq_coe : (algebraMap ℝ≥0 ℝ : ℝ≥0 → ℝ) = (↑) := 
 
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
-@[simp, norm_cast, gcongr] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
+@[simp, norm_cast, gcongr, basify_simp ←] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
 
-@[simp, norm_cast, gcongr] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
+@[simp, norm_cast, gcongr, basify_simp ←] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
 @[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
@@ -511,11 +512,11 @@ theorem mul_sup (a b c : ℝ≥0) : a * (b ⊔ c) = a * b ⊔ a * c :=
 theorem sup_mul (a b c : ℝ≥0) : (a ⊔ b) * c = a * c ⊔ b * c :=
   max_mul_of_nonneg _ _ zero_le
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem coe_max (x y : ℝ≥0) : ((max x y : ℝ≥0) : ℝ) = max (x : ℝ) (y : ℝ) :=
   NNReal.coe_mono.map_max
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem coe_min (x y : ℝ≥0) : ((min x y : ℝ≥0) : ℝ) = min (x : ℝ) (y : ℝ) :=
   NNReal.coe_mono.map_min
 
@@ -535,7 +536,7 @@ namespace Real
 
 section ToNNReal
 
-@[simp]
+@[simp, basify_simp]
 theorem coe_toNNReal' (r : ℝ) : (Real.toNNReal r : ℝ) = max r 0 :=
   rfl
 
@@ -746,6 +747,7 @@ typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSu
 theorem sub_def {r p : ℝ≥0} : r - p = Real.toNNReal (r - p) :=
   rfl
 
+@[basify_op]
 theorem coe_sub_def {r p : ℝ≥0} : ↑(r - p) = max (r - p : ℝ) 0 :=
   rfl
 
@@ -1045,21 +1047,11 @@ meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e :=
 
 end Mathlib.Meta.Positivity
 
--- Registrations for the `basify` tactic.
-attribute [basify_op] NNReal.coe_zero NNReal.coe_one NNReal.coe_ofNat NNReal.coe_natCast
-  NNReal.coe_add NNReal.coe_mul NNReal.coe_inv NNReal.coe_div NNReal.coe_pow NNReal.coe_max
-  NNReal.coe_min NNReal.coe_sub_def
-attribute [basify_simp] Real.coe_toNNReal
-attribute [basify_simp ←] NNReal.coe_inj NNReal.coe_le_coe NNReal.coe_lt_coe
 
 /-- A `Subtype.mk`-free eliminator for `ℝ≥0`, exposing the underlying real and its nonnegativity.
 Used by the `basify` tactic: a goal mentioning `⟨x, hx⟩ : ℝ≥0` is not type-correct at the
 transparency `simp` checks at, because `ℝ≥0` is semireducible. -/
-@[elab_as_elim]
+@[elab_as_elim, basify_elim]
 def NNReal.recToNNReal {C : ℝ≥0 → Sort*} (mk : ∀ (x : ℝ) (_nonneg : 0 ≤ x), C x.toNNReal)
     (t : ℝ≥0) : C t :=
   Real.toNNReal_coe (r := t) ▸ mk t t.coe_nonneg
-
-attribute [basify_elim] NNReal.recToNNReal
-
-attribute [basify_op] NNReal.coe_ofScientific

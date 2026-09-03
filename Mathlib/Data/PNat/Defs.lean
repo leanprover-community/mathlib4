@@ -125,6 +125,7 @@ theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
 instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
   ⟨a.ne_zero⟩
 
+@[basify_simp]
 theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
   succ_pred_eq_of_pos
 
@@ -148,7 +149,7 @@ instance : Inhabited ℕ+ :=
 theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
 
-@[norm_cast]
+@[norm_cast, basify_op]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 
@@ -240,15 +241,10 @@ instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
 
 end CanLift
 
--- Registrations for the `basify` tactic.
-attribute [basify_op] PNat.one_coe
-attribute [basify_simp] PNat.toPNat'_coe
 
 /-- A `Subtype.mk`-free eliminator for `ℕ+`, exposing the underlying natural and its positivity.
 See `NNReal.recToNNReal` for why `basify` needs this shape. -/
-@[elab_as_elim]
+@[elab_as_elim, basify_elim]
 def PNat.recToPNat {C : ℕ+ → Sort*} (mk : ∀ (n : ℕ) (_pos : 0 < n), C n.toPNat') (t : ℕ+) :
     C t :=
   PNat.coe_toPNat' t ▸ mk t t.pos
-
-attribute [basify_elim] PNat.recToPNat

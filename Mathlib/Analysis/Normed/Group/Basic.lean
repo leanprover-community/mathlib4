@@ -369,7 +369,7 @@ section NNNorm
 instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
   ⟨fun a => .mk ‖a‖ (norm_nonneg' a)⟩
 
-@[to_additive (attr := simp, norm_cast) coe_nnnorm]
+@[to_additive (attr := simp, norm_cast, basify_op) coe_nnnorm, basify_op]
 theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
 
 @[to_additive (attr := simp) coe_comp_nnnorm]
@@ -1120,5 +1120,3 @@ meta def evalAddNorm : PositivityExt where eval {u α} _ pα? e :=
 
 end Mathlib.Meta.Positivity
 
--- Registrations for the `basify` tactic.
-attribute [basify_op] coe_nnnorm coe_nnnorm'
