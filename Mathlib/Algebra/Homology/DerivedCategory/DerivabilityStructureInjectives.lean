@@ -240,12 +240,7 @@ instance (L : Plus C ⥤ H) [L.IsLocalization (quasiIso C)] :
     simpa [quasiIso, quotient_map_mem_quasiIso_iff]
   · intro K L f hf
     exact homotopyEquivalences_le_quasiIso _ _ _ hf
-  · rintro K L f hf
-    obtain ⟨K, rfl⟩ := Plus.quotient_obj_surjective K
-    obtain ⟨L, rfl⟩ := Plus.quotient_obj_surjective L
-    obtain ⟨f, rfl⟩ := (Plus.quotient C).map_surjective f
-    apply MorphismProperty.map_mem_map
-    simpa [quasiIso, quotient_map_mem_quasiIso_iff] using! hf
+  · rw [quasiIso_map_quotient_eq_quasiIso]
 
 namespace isRightDerivabilityStructure
 
