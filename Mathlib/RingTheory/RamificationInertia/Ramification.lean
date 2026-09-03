@@ -144,6 +144,7 @@ theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
       IsLocalization.under_le_under_iff q.primeCompl Sq] at h1
     rwa [← hmax.eq_of_le IsPrime.ne_top' (h1 (IsLocalRing.le_maximalIdeal_of_isPrime (r.under Sq)))]
 
+variable {p} in
 /-- This theorem proves positivity of `ramificationIdx` when `S` is a Dedekind domain.
 See `Ideal.ramificationIdx_pos` for a version that holds when `S` is finite as an `R`-module. -/
 theorem ramificationIdx_pos_of_isDedekindDomain [q.IsPrime] [q.LiesOver p]
@@ -153,16 +154,17 @@ theorem ramificationIdx_pos_of_isDedekindDomain [q.IsPrime] [q.LiesOver p]
   ramificationIdx_pos_of_mem_minimalPrimes p q
     (mem_minimalPrimes_of_ne_bot hp (map_le_of_le_comap (q.over_def p).le))
 
+variable {p} in
 theorem ramificationIdx_pos_of_isDedekindDomain' [q.IsPrime] [q.LiesOver p]
     (hp : p ≠ ⊥) [FaithfulSMul R S] [Ring.DimensionLEOne S]
     [IsNoetherianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q)))] :
     0 < q.ramificationIdx R :=
-  ramificationIdx_pos_of_isDedekindDomain p q (map_ne_bot_of_ne_bot hp)
+  ramificationIdx_pos_of_isDedekindDomain q (map_ne_bot_of_ne_bot hp)
 
 /-- Ramification index is positive when `S` is a Dedekind domain. -/
 example [q.IsPrime] [q.LiesOver p] (hp : p ≠ ⊥) [FaithfulSMul R S] [IsDedekindDomain S] :
     0 < q.ramificationIdx R :=
-  ramificationIdx_pos_of_isDedekindDomain' p q hp
+  ramificationIdx_pos_of_isDedekindDomain' q hp
 
 variable (R) in
 /-- This theorem proves positivity of `ramificationIdx` when `S` is finite as an `R`-module.

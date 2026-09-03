@@ -45,7 +45,7 @@ theorem intValuation_liesOver (x : A) :
     v.intValuation x ^ (w.asIdeal.ramificationIdx A) =
       w.intValuation (algebraMap A B x) := by
   rcases eq_or_ne x 0 with rfl | hx
-  · simp [(Ideal.ramificationIdx_pos_of_isDedekindDomain' v.asIdeal w.asIdeal v.ne_bot).ne']
+  · simp [(Ideal.ramificationIdx_pos_of_isDedekindDomain' w.asIdeal v.ne_bot).ne']
   rw [intValuation_eq_exp_neg_multiplicity v hx, intValuation_eq_exp_neg_multiplicity w (by simpa),
     ← Set.image_singleton, ← Ideal.map_span, exp_neg, exp_neg, inv_pow, ← exp_nsmul,
     Int.nsmul_eq_mul, inv_inj, exp_inj, ← Nat.cast_mul, Nat.cast_inj]
@@ -112,7 +112,7 @@ theorem uniformContinuous_algebraMap_liesOver :
     ← log_lt_log (by simp_all) (by simp [EmbeddingLike.map_eq_zero_iff (f := σwV)]), log_pow,
     nsmul_eq_mul, mul_comm]
   exact Int.mul_lt_of_lt_ediv
-    (mod_cast (Ideal.ramificationIdx_pos_of_isDedekindDomain' v.asIdeal w.asIdeal v.ne_bot)) hx
+    (mod_cast (Ideal.ramificationIdx_pos_of_isDedekindDomain' w.asIdeal v.ne_bot)) hx
 
 end AKLB
 
