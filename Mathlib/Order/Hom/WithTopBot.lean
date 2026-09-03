@@ -134,7 +134,7 @@ variable [Preorder α] [Preorder β]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
   toFun := WithBot.map f
   inj' := WithBot.map_injective f.injective
-  map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
+  map_rel_iff' := WithBot.map_le_map_iff f f.map_rel_iff
 
 -- `simps` could generate this theorem, but `to_dual` is not happy with that version.
 @[to_dual (attr := simp)]
