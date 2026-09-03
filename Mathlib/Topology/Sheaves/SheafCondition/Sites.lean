@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 # Coverings and sieves; from sheaves on sites and sheaves on spaces
 
 In this file, we connect coverings in a topological space to sieves in the associated Grothendieck
-topology, in preparation of connecting the sheaf condition on sites to the various sheaf conditions
+topology, in preparation for connecting the sheaf condition on sites to the various sheaf conditions
 on spaces.
 
 We also specialize results about sheaves on sites to sheaves on spaces; we show that the inclusion
@@ -100,13 +100,13 @@ theorem mem_grothendieckTopology :
   exact ⟨U i, Opens.leSupr U i, ⟨U i, 𝟙 _, Opens.leSupr U i, ⟨i, rfl⟩, Category.id_comp _⟩, hxi⟩
 
 /-- An index `i : ι` can be turned into a dependent pair `(V, f)`, where `V` is an open set and
-`f : V ⟶ iSup U` is a member of `presieveOfCovering U f`.
+`f : V ⟶ iSup U` is a member of `presieveOfCovering U`.
 -/
 def homOfIndex (i : ι) : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f } :=
   ⟨U i, Opens.leSupr U i, i, rfl⟩
 
 /-- By using the axiom of choice, a dependent pair `(V, f)` where `f : V ⟶ iSup U` is a member of
-`presieveOfCovering U f` can be turned into an index `i : ι`, such that `V = U i`.
+`presieveOfCovering U` can be turned into an index `i : ι`, such that `V = U i`.
 -/
 def indexOfHom (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
   f.2.2.choose
