@@ -120,7 +120,7 @@ noncomputable def fromZetaAut : Gal(L/K) :=
 
 theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   simp_rw [fromZetaAut, autEquivPow_symm_apply]
-  generalize_proofs _ _ hζ h _ hμ _
+  generalize_proofs _ hζ h _ hμ _
   nth_rewrite 4 [← hζ.powerBasis_gen K]
   rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
   convert! h.choose_spec.2
