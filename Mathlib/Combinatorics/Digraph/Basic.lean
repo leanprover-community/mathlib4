@@ -258,12 +258,9 @@ instance : OrderTop G.SpanningSubgraph where
   top := ⟨G, by simp⟩
   le_top H := H.prop.left
 
-/--
-The bottom subgraph `⊥`
--/
-instance {G : Digraph V} : OrderBot G.SpanningSubgraph where
-  bot : G.SpanningSubgraph := ⟨
-    ⟨G.verts, fun _ _ => False, by simp, by simp⟩, by grind⟩
+/-- The bottom subgraph `⊥` -/
+instance : OrderBot G.SpanningSubgraph where
+  bot : G.SpanningSubgraph := ⟨⟨G.verts, fun _ _ => False, by simp, by simp⟩, by grind⟩
   bot_le := by grind
 
 /-- The complement of a spanning subgraph with respect to its ambient digraph. -/
