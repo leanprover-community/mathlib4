@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Final
 
 In this file, we show how a left derivability structure can be used in
 order to construct (pointwise) left derived functors.
-Let `Φ` be a right derivability structure from `W₁ : MorphismProperty C₁`
+Let `Φ` be a left derivability structure from `W₁ : MorphismProperty C₁`
 to `W₂ : MorphismProperty C₂`. Let `F : C₂ ⥤ H` be a functor.
 Then, the lemma `hasPointwiseLeftDerivedFunctor_iff_of_isLeftDerivabilityStructure`
 says that `F` has a pointwise left derived functor with respect to `W₂`
@@ -37,11 +37,9 @@ This file contains the dual results to those obtained in the file
 
 @[expose] public section
 
-universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
-
 namespace CategoryTheory
 
-open Limits Category CategoryTheory.Functor
+open CategoryTheory.Functor
 
 variable {C₁ C₂ H D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* H]
   [Category* D₁] [Category* D₂]

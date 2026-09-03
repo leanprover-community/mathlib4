@@ -868,7 +868,7 @@ variable {s t : Subsemiring R}
 /-- Makes the identity isomorphism from a proof two subsemirings of a multiplicative
 monoid are equal. -/
 def subsemiringCongr (h : s = t) : s ≃+* t :=
-  { Equiv.Set.congr <| congr_arg _ h with
+  { Set.equivOfEq <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
