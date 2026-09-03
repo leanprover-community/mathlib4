@@ -1,4 +1,4 @@
-# Cross-reference summary (post-build)
+# Cross-reference diff (post-build)
 # Comments on a PR with the cross-references it adds, each as a clickable link.
 #
 # - Reads `crossrefs.json` from the build's `import-graph` artifact (written by
@@ -6,7 +6,7 @@
 #   subtracts the same file from the master build at the PR's merge base.
 # - Posts or updates a marker-keyed comment on the PR.
 
-name: Cross-reference summary (post-build)
+name: Cross-reference diff (post-build)
 
 on:
   workflow_run:
@@ -25,7 +25,7 @@ permissions:
   pull-requests: write    # for the `#### Crossref summary` comment
 
 env:
-  COMMENT_HEADER: '#### Crossref summary'
+  COMMENT_HEADER: '#### Crossref diff'
 
 jobs:
   crossrefs:
