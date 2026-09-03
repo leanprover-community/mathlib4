@@ -35,7 +35,7 @@ generating pretopologies.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 
@@ -229,6 +229,7 @@ alias smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology :=
 
 variable {P Q}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
     R ∈ (S.smallPretopology P Q).toGrothendieck X ↔
       ∀ x : X.left, ∃ (Y : Q.Over ⊤ S) (f : Y ⟶ X) (y : Y.left),

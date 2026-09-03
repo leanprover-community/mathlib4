@@ -24,7 +24,7 @@ In later files once the additive group structure is set up, we provide
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w x y

@@ -196,7 +196,7 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
       ring
     · rw [dvd_add_left (dvd_mul_of_dvd_right (dvd_pow (by simp [m, minpoly.dvd_iff]) (by simp)) _),
         ← isUnit_iff_dvd_one]
-      exact hm.not_unit
+      exact hm.not_isUnit
   have hm' : derivative m ≠ 0 :=
     (separable_iff_derivative_ne_zero hm.irreducible).mp (IsSeparable.isSeparable ..)
   suffices ¬m ∣ derivative (q.map (algebraMap R _)) by
@@ -205,6 +205,7 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
   obtain ⟨c, hc⟩ := hmp₁
   simp_all [hm.dvd_mul, dvd_add_left, pow_two, mul_dvd_mul_iff_left, hm.ne_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [IsUnramifiedAt R Q]
     [Algebra (Localization.AtPrime (Q.under R)) (Localization.AtPrime Q)]
@@ -379,6 +380,7 @@ lemma IsEtaleAt.exists_isStandardEtale
     exact .trans (PrimeSpectrum.basicOpen_mul_le_left _ _) h
   exact ⟨f * g, ‹Q.IsPrime›.mul_notMem hfQ hgQ, (hg.of_dvd (by simp)).isStandardEtale⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `S` a finitely presented `R`-algebra, and `p` a prime of `S`. If `S` is smooth over `R`
 at `p`, then there exists `f ∉ p` such that `R → S[1/f]` factors through some `R[X₁,...,Xₙ]`,
 and that `S[1/f]` is standard etale over `R[X₁,...,Xₙ]`. -/

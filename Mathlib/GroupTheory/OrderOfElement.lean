@@ -40,6 +40,8 @@ order of an element
 
 @[expose] public section
 
+set_option linter.style.longFile 1600
+
 assert_not_exists Field
 
 open Function Fintype Nat Pointwise Subgroup Submonoid
@@ -203,7 +205,7 @@ theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
 
 @[to_additive]
 theorem orderOf_eq_zero (h : ¬IsOfFinOrder x) : orderOf x = 0 := by
-  rwa [orderOf, minimalPeriod, dif_neg]
+  rwa [orderOf, minimalPeriod, dite_eq_right]
 
 @[to_additive (attr := simp)]
 theorem orderOf_eq_zero_iff : orderOf x = 0 ↔ ¬IsOfFinOrder x :=
@@ -222,6 +224,7 @@ lemma orderOf_zero (M₀ : Type*) [MonoidWithZero M₀] [Nontrivial M₀] : orde
   rw [orderOf_eq_zero_iff, isOfFinOrder_iff_pow_eq_one]
   simp +contextual [ne_of_gt]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem orderOf_eq_iff {n} (h : 0 < n) :
     orderOf x = n ↔ x ^ n = 1 ∧ ∀ m, m < n → 0 < m → x ^ m ≠ 1 := by
@@ -578,6 +581,7 @@ noncomputable def finEquivPowers {x : G} (hx : IsOfFinOrder x) : Fin (orderOf x)
 lemma finEquivPowers_apply {x : G} (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :
     finEquivPowers hx n = ⟨x ^ (n : ℕ), n, rfl⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma finEquivPowers_symm_apply {x : G} (hx : IsOfFinOrder x) (n : ℕ) :
     (finEquivPowers hx).symm ⟨x ^ n, _, rfl⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
@@ -776,6 +780,22 @@ theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_
 theorem orderOf_dvd_sub_iff_zpow_eq_zpow {a b : ℤ} : (orderOf x : ℤ) ∣ a - b ↔ x ^ a = x ^ b := by
   rw [orderOf_dvd_iff_zpow_eq_one, zpow_sub, mul_inv_eq_one]
 
+@[to_additive]
+theorem isSelfInv_iff_isOfFinOrder_and_orderOf_le_two {a : G} :
+    IsSelfInv a ↔ IsOfFinOrder a ∧ orderOf a ≤ 2 := by
+  rw [isSelfInv_iff_sq_eq_one]
+  refine ⟨fun h ↦ ⟨isOfFinOrder_iff_pow_eq_one.mpr ⟨2, zero_lt_two, h⟩,
+    orderOf_le_of_pow_eq_one zero_lt_two h⟩, fun ⟨hfin, _⟩ ↦ ?_⟩
+  have : orderOf a = 1 ∨ orderOf a = 2 := by grind [hfin.orderOf_pos]
+  rcases this with h₁ | h₂
+  · simp [orderOf_eq_one_iff.mp h₁]
+  · rw [← h₂, pow_orderOf_eq_one a]
+
+@[to_additive]
+theorem IsOfFinOrder.isSelfInv_iff {a : G} (h : IsOfFinOrder a) :
+    IsSelfInv a ↔ orderOf a ≤ 2 := by
+  rw [isSelfInv_iff_isOfFinOrder_and_orderOf_le_two, and_iff_right h]
+
 namespace Subgroup
 variable {H : Subgroup G}
 
@@ -864,7 +884,7 @@ lemma Subgroup.closure_toSubmonoid_of_isOfFinOrder {s : Set G} (hs : ∀ x ∈ s
 `Subgroup.zmultiples a`, sending `i` to `i • a`. -/]
 noncomputable def finEquivZPowers (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ zpowers x :=
-  (finEquivPowers hx).trans <| Equiv.setCongr hx.powers_eq_zpowers
+  (finEquivPowers hx).trans <| Set.equivOfEq hx.powers_eq_zpowers
 
 @[to_additive]
 lemma finEquivZPowers_apply (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :
@@ -963,7 +983,7 @@ lemma isOfFinOrder_of_finite (x : G) : IsOfFinOrder x := by
   by_contra h; exact infinite_not_isOfFinOrder h <| Set.toFinite _
 
 /-- Every finite left cancellative monoid is a group. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- Every finite left cancellative additive monoid is an additive group. -/]
 noncomputable def LeftCancelMonoid.groupOfFinite : Group G where
   inv x := x ^ (orderOf x - 1)
@@ -972,7 +992,7 @@ noncomputable def LeftCancelMonoid.groupOfFinite : Group G where
     exact (isOfFinOrder_of_finite x).orderOf_pos
 
 /-- Every finite right cancellative monoid is a group. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- Every finite right cancellative additive monoid is an additive group. -/]
 noncomputable def RightCancelMonoid.groupOfFinite {H : Type*} [RightCancelMonoid H] [Finite H] :
     Group H := by
@@ -1045,6 +1065,15 @@ section FiniteGroup
 variable [Group G] {x y : G}
 
 @[to_additive]
+theorem orderOf_pow_natAbs (x : G) (n : ℤ) : orderOf (x ^ n.natAbs) = orderOf (x ^ n) := by
+  cases n <;> simp
+
+@[to_additive]
+theorem orderOf_zpow' (x : G) {n : ℤ} (h : n ≠ 0) :
+    orderOf (x ^ n) = orderOf x / (orderOf x).gcd n.natAbs := by
+  rw [← orderOf_pow' _ (Int.natAbs_ne_zero.mpr h), orderOf_pow_natAbs]
+
+@[to_additive]
 theorem zpow_eq_one_iff_modEq {n : ℤ} : x ^ n = 1 ↔ n ≡ 0 [ZMOD orderOf x] := by
   rw [Int.modEq_zero_iff_dvd, orderOf_dvd_iff_zpow_eq_one]
 
@@ -1088,6 +1117,11 @@ theorem mem_zpowers_pow_iff {g : G} {k : ℕ} :
 
 section Finite
 variable [Finite G]
+
+@[to_additive]
+theorem orderOf_zpow (x : G) (n : ℤ) :
+    orderOf (x ^ n) = orderOf x / (orderOf x).gcd n.natAbs := by
+  rw [← orderOf_pow, orderOf_pow_natAbs]
 
 @[to_additive]
 theorem exists_zpow_eq_one (x : G) : ∃ (i : ℤ) (_ : i ≠ 0), x ^ (i : ℤ) = 1 := by
@@ -1188,9 +1222,6 @@ theorem pow_card_eq_one' {G : Type*} [Group G] {x : G} : x ^ Nat.card G = 1 :=
 @[to_additive (attr := simp) card_nsmul_eq_zero]
 theorem pow_card_eq_one : x ^ Fintype.card G = 1 := by
   rw [← Nat.card_eq_fintype_card, pow_card_eq_one']
-
-@[deprecated "Use simp" (since := "2025-12-05")]
-theorem pow_gcd_card_eq_one_iff : x ^ n.gcd (Fintype.card G) = 1 ↔ x ^ n = 1 := by simp
 
 @[to_additive]
 theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H] (g : G) :

@@ -5,12 +5,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
   Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Huang's sensitivity theorem
@@ -37,7 +39,7 @@ namespace Sensitivity
 
 /-! The next two lines assert we do not want to give a constructive proof,
 but rather use classical logic. -/
-noncomputable section
+@[expose] public noncomputable section
 
 local notation "√" => Real.sqrt
 
@@ -140,7 +142,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
 
 @[symm]
 theorem adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
-  simp only [adjacent, ne_comm, Set.mem_setOf_eq]
+  simp only [adjacent, ne_comm, Set.mem_ofPred_eq]
 
 end Q
 
@@ -387,12 +389,12 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [rank_range_of_injective (g m) g_injective]
     apply dim_V
   have dimW : dim W = card H := by
-    have li : LinearIndependent ℝ (H.restrict e) := by
+    have li : LinearIndependent ℝ (H.domRestrict e) := by
       convert! (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
       rw [(dualBases_e_ε _).coe_basis]
       rfl
     have hdW := rank_span li
-    rw [Set.range_restrict] at hdW
+    rw [Set.range_domRestrict] at hdW
     convert! hdW
     rw [← (dualBases_e_ε _).coe_basis, Cardinal.mk_image_eq (dualBases_e_ε _).basis.injective,
       Cardinal.mk_fintype]
@@ -436,13 +438,13 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       (norm_sum_le _ fun p => coeffs y p * _)
     _ = ∑ p ∈ (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
       simp only [abs_mul, f_matrix]
-    _ = ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y p| := by
-      simp [sum_filter]; rfl
-    _ ≤ ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y q| := sum_le_sum fun p _ ↦ H_max p
-    _ = #{p ∈ (coeffs y).support | q.adjacent p} * |coeffs y q| := by
+    _ = ∑ p ∈ (coeffs y).support with p ∈ q.adjacent, |coeffs y p| := by
+      simp [sum_filter]
+    _ ≤ ∑ p ∈ (coeffs y).support with p ∈ q.adjacent, |coeffs y q| := sum_le_sum fun p _ ↦ H_max p
+    _ = #{p ∈ (coeffs y).support | p ∈ q.adjacent} * |coeffs y q| := by
       rw [sum_const, nsmul_eq_mul]
     _ = #((coeffs y).support ∩ q.adjacent.toFinset) * |coeffs y q| := by
-      congr with x; simp; rfl
+      congr with x; simp
     _ ≤ #(H ∩ q.adjacent).toFinset * |ε q y| := by
       refine (mul_le_mul_iff_left₀ H_q_pos).2 ?_
       norm_cast

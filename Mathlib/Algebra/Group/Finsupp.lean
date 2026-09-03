@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finsupp.Single
 
@@ -176,6 +177,7 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   refine subset_trans Finsupp.support_add <| union_subset_iff.mpr ⟨?_, ?_⟩ <;>
   exact subset_trans Finsupp.support_single_subset (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated uniqueAddEquiv_symm_apply (since := "2026-05-06")]
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
     AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
@@ -437,7 +439,7 @@ lemma mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf :
   ext fun _ => by simp only [hf', sub_apply, mapRange_apply]
 
 section AddGroup
-variable [AddGroup G] {p : ι → Prop} {v v' : ι →₀ G}
+variable [AddGroup G] {v : ι →₀ G}
 
 lemma mapRange_neg' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F G H]
     {f : F} (v : ι →₀ G) :

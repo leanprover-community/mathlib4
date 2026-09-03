@@ -141,7 +141,7 @@ def labelGraph (C : EdgeLabeling G K) (k : K) : SimpleGraph V :=
 theorem labelGraph_adj {C : EdgeLabeling G K} {k : K} (x y : V) :
     (C.labelGraph k).Adj x y ↔ ∃ H : G.Adj x y, C ⟨s(x, y), H⟩ = k := by
   rw [EdgeLabeling.labelGraph]
-  simp only [mem_edgeSet, fromEdgeSet_adj, Set.mem_setOf_eq, Ne.eq_def]
+  simp only [mem_edgeSet, fromEdgeSet_adj, Set.mem_ofPred_eq, Ne.eq_def]
   grind [Adj.ne]
 
 instance [DecidableRel G.Adj] [DecidableEq K] (k : K) {C : EdgeLabeling G K} :

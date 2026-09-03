@@ -256,6 +256,7 @@ variable {R : Type*} [CommRing R] (M : Submonoid R)
 
 open IsLocalization
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] [IsLocalization M S] [IsFractionRing R T]
     (hM : M ≤ nonZeroDivisors R) : IsFractionRing S T := by

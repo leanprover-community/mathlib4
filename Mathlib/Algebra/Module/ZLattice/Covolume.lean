@@ -140,6 +140,7 @@ theorem covolume_eq_det_inv {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι →
     IsUnit.unit_spec, ← Basis.det_basis, LinearEquiv.coe_det]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the index of `L₁` inside `L₂` is equal to
 `covolume L₁ / covolume L₂`.
@@ -188,6 +189,7 @@ theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] (L : Submo
     LinearEquiv.symm_symm, covolume_eq_det_inv L b, ENNReal.div_eq_inv_mul,
     ENNReal.ofReal_inv_of_pos (abs_pos.2 (LinearEquiv.det _).ne_zero), inv_inv, LinearEquiv.coe_det]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A more general version of `ZLattice.volume_image_eq_volume_div_covolume`;
 see the `Naming conventions` section in the introduction. -/
 theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
@@ -214,12 +216,15 @@ namespace covolume
 
 section General
 
-open Filter Fintype Pointwise Topology BoxIntegral Bornology
+open Filter Fintype Pointwise BoxIntegral Bornology
+
+open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L]
 variable {ι : Type*} [Fintype ι] (b : Basis ι ℤ L)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A version of `ZLattice.covolume.tendsto_card_div_pow` for the general case;
 see the `Naming convention` section in the introduction. -/
 theorem tendsto_card_div_pow'' [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
@@ -246,7 +251,7 @@ private theorem tendsto_card_le_div''_aux
     {F : E → ℝ} (hF₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ card ι * (F x)) {c : ℝ} (hc : 0 < c) :
     c • {x ∈ X | F x ≤ 1} = {x ∈ X | F x ≤ c ^ card ι} := by
   ext x
-  simp_rw [Set.mem_smul_set_iff_inv_smul_mem₀ hc.ne', Set.mem_setOf_eq, hF₁ _
+  simp_rw [Set.mem_smul_set_iff_inv_smul_mem₀ hc.ne', Set.mem_ofPred_eq, hF₁ _
     (inv_pos_of_pos hc).le, inv_pow, inv_mul_le_iff₀ (pow_pos hc _), mul_one, and_congr_left_iff]
   exact fun _ ↦ ⟨fun h ↦ (smul_inv_smul₀ hc.ne' x) ▸ hX h hc, fun h ↦ hX h (inv_pos_of_pos hc)⟩
 
@@ -295,7 +300,9 @@ end General
 
 section Pi
 
-open Filter Fintype Pointwise Topology Bornology
+open Filter Fintype Pointwise Bornology
+
+open scoped Topology
 
 private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Finite ι]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
@@ -338,7 +345,9 @@ end Pi
 
 section InnerProductSpace
 
-open Filter Pointwise Topology Bornology
+open Filter Pointwise Bornology
+
+open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]

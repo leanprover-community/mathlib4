@@ -62,7 +62,6 @@ theorem IsVanKampenColimit.isUniversal {F : J ⥤ C} {c : Cocone F} (H : IsVanKa
   fun _ c' α f h hα => (H c' α f h hα).mpr
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A universal colimit is a colimit. -/
 noncomputable def IsUniversalColimit.isColimit {F : J ⥤ C} {c : Cocone F}
     (h : IsUniversalColimit c) : IsColimit c := by
@@ -76,7 +75,6 @@ noncomputable def IsVanKampenColimit.isColimit {F : J ⥤ C} {c : Cocone F}
     (h : IsVanKampenColimit c) : IsColimit c :=
   h.isUniversal.isColimit
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : IsInitial X) :
     IsVanKampenColimit (asEmptyCocone X) := by
   intro F' c' α f hf hα
@@ -112,7 +110,6 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
   have : IsIso e.inv.hom := Functor.map_isIso (Cocone.forget _) e.inv
   exact (IsPullback.of_vert_isIso ⟨by simp⟩).paste_vert_iff (NatTrans.congr_app h j).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit ((Cocone.precompose α).obj c) := by
@@ -126,7 +123,6 @@ theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIs
   rw [← IsPullback.paste_vert_iff this _, Category.comp_id]
   exact (congr_app e j).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsUniversalColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} (hc : IsUniversalColimit c) :
     IsUniversalColimit ((Cocone.precompose α).obj c) := by
@@ -176,7 +172,6 @@ theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone
     exact hc.of_iso (Cocone.ext (G.asEquivalence.unitIso.app c.pt) (fun j => (by simp [e])))⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
     IsUniversalColimit (c.whisker e.functor) := by
@@ -201,7 +196,6 @@ theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category* K] (e :
       (Cocone.ext (Iso.refl _) (by simp)), IsUniversalColimit.whiskerEquivalence e⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit (c.whisker e.functor) := by
@@ -259,7 +253,6 @@ end Functor
 section reflective
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem IsUniversalColimit.map_reflective
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     {F : J ⥤ D} {c : Cocone (F ⋙ Gr)}
@@ -357,7 +350,6 @@ theorem IsUniversalColimit.map_reflective
       simp only [pullback.lift_snd]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     {F : J ⥤ D} {c : Cocone (F ⋙ Gr)} (H : IsVanKampenColimit c)
@@ -419,6 +411,7 @@ end reflective
 
 section Initial
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem hasStrictInitial_of_isUniversal [HasInitial C]
     (H : IsUniversalColimit (BinaryCofan.mk (𝟙 (⊥_ C)) (𝟙 (⊥_ C)))) : HasStrictInitialObjects C :=
@@ -524,6 +517,7 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
     exact (BinaryCofan.mk _ _).isColimitCompRightIso e₂.hom
       ((BinaryCofan.mk _ _).isColimitCompLeftIso e₁.hom (h₂ f))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : Mono c.inr := by
@@ -535,6 +529,7 @@ theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : Binary
       dsimp
       infer_instance)).some
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem BinaryCofan.isPullback_initial_to_of_isVanKampen [HasInitial C] {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : IsPullback (initial.to _) (initial.to _) c.inl c.inr := by
@@ -668,7 +663,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   induction j using Fin.inductionOn with
   | zero => exact t₂' ⟨WalkingPair.left⟩
   | succ j _ =>
-    have t₁' := (@t₁ (Discrete.functor (fun j ↦ F.obj ⟨j.succ⟩)) (Cofan.mk _ _) (Discrete.natTrans
+    have t₁' := (t₁ (Cofan.mk _ (Sigma.ι fun j : Fin n ↦ F.obj ⟨j.succ⟩)) (Discrete.natTrans
       fun i ↦ α.app _) (Sigma.desc (fun j ↦ α.app _ ≫ c₁.inj _)) ?_
       (.of_discrete _)).mp ⟨coproductIsCoproduct _⟩ ⟨j⟩
     rotate_left
@@ -685,14 +680,15 @@ set_option backward.defeqAttrib.useBackward true in
 theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → C}
     {c : Cofan X} (hc : IsVanKampenColimit c) (i j : ι) [DecidableEq ι] :
     IsPullback (P := (if j = i then X i else ⊥_ C))
-      (if h : j = i then eqToHom (if_pos h) else eqToHom (if_neg h) ≫ initial.to (X i))
-      (if h : j = i then eqToHom ((if_pos h).trans (congr_arg X h.symm))
-        else eqToHom (if_neg h) ≫ initial.to (X j))
+      (if h : j = i then eqToHom (ite_eq_left h) else eqToHom (ite_eq_right h) ≫ initial.to (X i))
+      (if h : j = i then eqToHom ((ite_eq_left h).trans (congr_arg X h.symm))
+        else eqToHom (ite_eq_right h) ≫ initial.to (X j))
       (Cofan.inj c i) (Cofan.inj c j) := by
   refine (hc (Cofan.mk (X i) (f := fun k ↦ if k = i then X i else ⊥_ C)
-    (fun k ↦ if h : k = i then (eqToHom <| if_pos h) else (eqToHom <| if_neg h) ≫ initial.to _))
-    (Discrete.natTrans (fun k ↦ if h : k.1 = i then (eqToHom <| (if_pos h).trans
-      (congr_arg X h.symm)) else (eqToHom <| if_neg h) ≫ initial.to _))
+    (fun k ↦
+      if h : k = i then (eqToHom <| ite_eq_left h) else (eqToHom <| ite_eq_right h) ≫ initial.to _))
+    (Discrete.natTrans (fun k ↦ if h : k.1 = i then (eqToHom <| (ite_eq_left h).trans
+      (congr_arg X h.symm)) else (eqToHom <| ite_eq_right h) ≫ initial.to _))
     (c.inj i) ?_ (.of_discrete _)).mp ⟨?_⟩ ⟨j⟩
   · ext ⟨k⟩
     simp only [Discrete.functor_obj, Functor.const_obj_obj, NatTrans.comp_app,
@@ -700,7 +696,7 @@ theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → 
     split
     · subst ‹k = i›; rfl
     · simp
-  · refine Cofan.IsColimit.mk _ (fun t ↦ (eqToHom (if_pos rfl).symm) ≫ t.inj i) ?_ ?_
+  · refine Cofan.IsColimit.mk _ (fun t ↦ (eqToHom (ite_eq_left rfl).symm) ≫ t.inj i) ?_ ?_
     · intro t j
       simp only [Cofan.mk_pt, cofan_mk_inj]
       split
@@ -721,9 +717,8 @@ theorem isPullback_initial_to_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {
   subst this
   have : ∀ i, Subsingleton (⊥_ C ⟶ (Discrete.functor f).obj i) := inferInstance
   convert! isPullback_of_cofan_isVanKampen hc i.as j.as
-  exact (if_neg (mt Discrete.ext hi.symm)).symm
+  exact (ite_eq_right (mt Discrete.ext hi.symm)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι ⥤ C}
     {c : Cocone F} (hc : IsVanKampenColimit c) (i : Discrete ι) : Mono (c.ι.app i) := by
   classical
@@ -736,7 +731,7 @@ theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι �
   nth_rw 1 [← Category.id_comp (c.ι.app i)]
   convert! IsPullback.paste_vert _ (isPullback_of_cofan_isVanKampen hc i.as i.as)
   swap
-  · exact (eqToHom (if_pos rfl).symm)
+  · exact (eqToHom (ite_eq_left rfl).symm)
   · simp
   · exact IsPullback.of_vert_isIso ⟨by simp⟩
 
@@ -748,6 +743,7 @@ variable {ι ι' : Type*} {S : C}
 variable {B : C} {X : ι → C} {a : Cofan X} (hau : IsUniversalColimit a) (f : ∀ i, X i ⟶ S)
   (u : a.pt ⟶ S) (v : B ⟶ S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 include hau in
 /-- Pullbacks distribute over universal coproducts on the left: This is the isomorphism
@@ -812,6 +808,7 @@ lemma IsUniversalColimit.isPullback_of_isColimit_left {d : Cofan P} (hd : IsColi
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 include hau in
 /-- Pullbacks distribute over universal coproducts on the right: This is the isomorphism

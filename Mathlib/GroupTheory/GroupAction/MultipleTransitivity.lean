@@ -9,7 +9,6 @@ public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.SpecificGroups.Alternating
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.SetTheory.Cardinal.Embedding
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Multiple transitivity
 
@@ -33,7 +32,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
 
-## Results for `SubMulAction`.
+## Results for `SubMulAction`
 
 * `SubMulAction.ofStabilizer.isPretransitive_iff_conj` shows
   that for `a`, `b` and `g` such that `g • a = b`, the actions
@@ -95,8 +94,6 @@ theorem Function.Injective.mulActionHom_embedding_isInjective
   ext
   apply hf
   simp only [← hf.mulActionHom_embedding_apply, hxy]
-
-variable (hf' : Function.Bijective f)
 
 @[to_additive]
 theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bijective f) :
@@ -663,16 +660,3 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end alternatingGroup
-
-namespace AlternatingGroup
-
-@[deprecated (since := "2025-12-16")]
-alias isMultiplyPretransitive := alternatingGroup.isMultiplyPretransitive
-@[deprecated (since := "2025-12-16")]
-alias isPretransitive_of_three_le_card := alternatingGroup.isPretransitive_of_three_le_card
-@[deprecated (since := "2025-12-16")]
-alias isTrivialBlock_of_isBlock := alternatingGroup.isTrivialBlock_of_isBlock
-@[deprecated (since := "2025-12-16")]
-alias isPreprimitive_of_three_le_card := alternatingGroup.isPreprimitive_of_three_le_card
-
-end AlternatingGroup

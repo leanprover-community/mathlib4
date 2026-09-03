@@ -79,8 +79,8 @@ class JordanHolderLattice (X : Type u) [Lattice X] where
 
 namespace JordanHolderLattice
 
-/-- Every modular lattice is a Jordan Hölder lattice. -/
-instance (X : Type u) [Lattice X] [IsModularLattice X] : JordanHolderLattice X where
+/-- Every weakly lower modular lattice is a Jordan Hölder lattice. -/
+instance (X : Type u) [Lattice X] [IsWeakLowerModularLattice X] : JordanHolderLattice X where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
   sup_eq_of_isMaximal hxz hyz := hxz.wcovBy.sup_eq hyz.wcovBy
@@ -116,7 +116,7 @@ theorem Iso.rel
     (h_rel : ∀ {x y}, IsMaximal x (x ⊔ y) → e (x, x ⊔ y) (x ⊓ y, y))
     {x y : X × X} (h_iso : Iso x y) : e x y := by
   have : IsEquiv (X × X) e := { refl _ := h_refl, symm _ _ := h_symm, trans _ _ _ := h_trans }
-  refine Relation.EqvGen.eqvGen_le ?_ h_iso
+  refine Relation.EqvGen.eqvGen_le ?_ _ _ h_iso
   rintro ⟨a, b⟩ ⟨c, d⟩ ⟨h, rfl : b = a ⊔ d, rfl : c = a ⊓ d⟩
   exact h_rel h
 
@@ -215,6 +215,7 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
 theorem last_eraseLast_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
   simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     (hx : x ≠ s.last) (hxs : x ∈ s) : x ∈ s.eraseLast := by
   rcases hxs with ⟨i, rfl⟩
@@ -242,7 +243,7 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
   rw [last_eraseLast, last]
   have := s.step ⟨s.length - 1, by lia⟩
-  simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
+  simp only [Fin.castSucc_mk, Fin.succ_mk, mem_ofPred_eq] at this
   convert! this using 3
   exact (tsub_add_cancel_of_le h).symm
 
@@ -252,6 +253,7 @@ theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
   simp only [mem_snoc, mem_eraseLast h, ne_eq]
   by_cases h : x = s.last <;> simp [*, s.last_mem]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem snoc_eraseLast_last {s : CompositionSeries X} (h : IsMaximal s.eraseLast.last s.last) :
     s.eraseLast.snoc s.last h = s :=

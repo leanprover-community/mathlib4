@@ -208,6 +208,7 @@ theorem fac_lift {F : MonoFactorisation f} (hF : IsImage F) (F' : MonoFactorisat
 
 variable (f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The trivial factorisation of a monomorphism satisfies the universal property. -/
 @[simps]
 def self [Mono f] : IsImage (MonoFactorisation.self f) where lift F' := F'.e
@@ -249,6 +250,7 @@ def ofArrowIso {f g : Arrow C} {F : MonoFactorisation f.hom} (hF : IsImage F) (s
     simpa only [MonoFactorisation.ofArrowIso_m, Arrow.inv_right, ← Category.assoc,
       IsIso.comp_inv_eq] using hF.lift_fac (F'.ofArrowIso (inv sq))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f` that is an image and an isomorphism `I ≅ I'`,
 the induced mono factorisation by the isomorphism is also an image.
@@ -351,6 +353,7 @@ def Image.isImage : IsImage (Image.monoFactorisation f) :=
   (Image.imageFactorisation f).isImage
 
 /-- The categorical image of a morphism. -/
+@[implicit_reducible]
 def image : C :=
   (Image.monoFactorisation f).I
 
@@ -470,7 +473,6 @@ theorem imageMonoIsoSource_hom_self [Mono f] : (imageMonoIsoSource f).hom ≫ f 
   simp only [← imageMonoIsoSource_inv_ι f]
   rw [← Category.assoc, Iso.hom_inv_id, Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 -- This is the proof that `factorThruImage f` is an epimorphism
 -- from https://en.wikipedia.org/wiki/Image_%28category_theory%29, which is in turn taken from:
 -- Mitchell, Barry (1965), Theory of categories, MR 0202787, p.12, Proposition 10.1
@@ -704,7 +706,6 @@ theorem ImageMap.factor_map {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (s
     (m : ImageMap sq) : factorThruImage f.hom ≫ m.map = sq.left ≫ factorThruImage g.hom :=
   (cancel_mono (image.ι g.hom)).1 <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To give an image map for a commutative square with `f` at the top and `g` at the bottom, it
 suffices to give a map between any mono factorisation of `f` and any image factorisation of `g`. -/
 def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
