@@ -76,6 +76,7 @@ local notation "f₁" => t₁.snd
 
 variable {t₁} {t₂}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given
 ```
@@ -105,6 +106,7 @@ def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.
 
 variable (t₁)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given
 ```
@@ -267,6 +269,7 @@ local notation "i₃" => t₂.inr
 
 variable {t₁} {t₂}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given
 ```
@@ -297,6 +300,7 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
 
 variable (t₂)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given
 

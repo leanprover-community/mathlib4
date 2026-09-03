@@ -87,8 +87,8 @@ lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
     (x y : A ⊗[R] B) : f (x * y) = f x * f y :=
   f.map_mul_iff.2 (by
     -- these instances are needed by the statement of `ext`, but not by the current definition.
-    letI : Algebra R C := .restrictScalars R S C
-    letI : IsScalarTower R S C := .restrictScalars R S C
+    let : Algebra R C := .restrictScalars R S C
+    let : IsScalarTower R S C := .restrictScalars R S C
     ext
     dsimp
     exact hf _ _ _ _) x y
@@ -170,6 +170,7 @@ theorem lift_tmul (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commut
     lift f g hfg (a ⊗ₜ b) = f a * g b :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_includeLeft_includeRight :
     lift includeLeft includeRight (fun _ _ => (Commute.one_right _).tmul (Commute.one_left _)) =
@@ -293,6 +294,10 @@ lemma linearMap_comp_rid : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R 
     (TensorProduct.rid R R S).toLinearMap = (Algebra.linearMap R B).lTensor S := by
   ext; simp
 
+@[simp] lemma rid_comp_includeLeftRingHom :
+    (Algebra.TensorProduct.rid R S A : A ⊗[R] R →+* A).comp includeLeftRingHom = .id A := by
+  ext; simp
+
 section
 
 variable (R A B C : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] [Semiring B]
@@ -332,9 +337,6 @@ theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMu
 
 attribute [local instance] SMulCommClass.symm
 
-@[deprecated (since := "2026-02-21")]
-alias mapOfCompatibleSMul' := mapOfCompatibleSMul
-
 /-- If the R- and S-actions on A and B satisfy `CompatibleSMul` both ways,
 then `A ⊗[S] B` is canonically isomorphic to `A ⊗[R] B`. -/
 def equivOfCompatibleSMul [CompatibleSMul S R A B] : A ⊗[S] B ≃ₐ[T] A ⊗[R] B where
@@ -352,7 +354,6 @@ def lidOfCompatibleSMul : S ⊗[R] A ≃ₐ[S] A :=
 
 theorem lidOfCompatibleSMul_tmul (s a) : lidOfCompatibleSMul R S A (s ⊗ₜ[R] a) = s • a := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance {R M N : Type*} [CommSemiring R] [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] [Module ℚ M] [Module ℚ N] : CompatibleSMul R ℚ M N where
   smul_tmul q m n := by
@@ -488,6 +489,49 @@ end
 
 variable {R S A}
 
+section mapRingHom
+variable {R S T R' S' T' : Type*}
+  [CommSemiring R] [CommSemiring S] [CommSemiring T] [Algebra R S] [Algebra R T]
+  [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [Algebra R' S'] [Algebra R' T']
+  (fR : R →+* R') (fS : S →+* S') (fT : T →+* T')
+  (HS : fS.comp (algebraMap _ _) = (algebraMap _ _).comp fR)
+  (HT : fT.comp (algebraMap _ _) = (algebraMap _ _).comp fR)
+
+/-- Heterobasic version of `Algebra.TensorProduct.map` as a ring homomorphism.
+
+Note that this would generalise `map` if we were to have `SemiAlgHom`. -/
+def mapRingHom : S ⊗[R] T →+* S' ⊗[R'] T' :=
+  letI := fR.toAlgebra
+  letI := ((algebraMap R' S').comp fR).toAlgebra
+  letI := ((algebraMap R' T').comp fR).toAlgebra
+  letI := fS.toAlgebra
+  letI := fT.toAlgebra
+  letI : IsScalarTower R R' S' := .of_algebraMap_eq' rfl
+  letI : IsScalarTower R R' T' := .of_algebraMap_eq' rfl
+  letI : IsScalarTower R S S' := .of_algebraMap_eq' HS.symm
+  letI : IsScalarTower R T T' := .of_algebraMap_eq' HT.symm
+  (lift (R := R) (S := R) (includeLeft.comp (IsScalarTower.toAlgHom R S S'))
+    ((includeRight.restrictScalars R).comp (IsScalarTower.toAlgHom R T T'))
+    (fun _ _ ↦ .all _ _)).toRingHom
+
+@[simp]
+lemma mapRingHom_tmul (s : S) (t : T) : mapRingHom fR fS fT HS HT (s ⊗ₜ t) = fS s ⊗ₜ fT t := by
+  trans (fS s * 1 : S') ⊗ₜ[R'] (1 * fT t : T')
+  · dsimp [mapRingHom, lift_tmul, algebraMap]
+  · simp
+
+@[simp]
+lemma mapRingHom_comp_includeLeftRingHom :
+    (mapRingHom fR fS fT HS HT).comp (includeLeftRingHom) = includeLeftRingHom.comp fS := by
+  ext; simp
+
+@[simp]
+lemma mapRingHom_comp_includeRight :
+    (mapRingHom fR fS fT HS HT).comp (RingHomClass.toRingHom includeRight) =
+      (RingHomClass.toRingHom includeRight).comp fT := by ext; simp
+
+end mapRingHom
+
 /-- The tensor product of a pair of algebra morphisms. -/
 def map (f : A →ₐ[S] C) (g : B →ₐ[R] D) : A ⊗[R] B →ₐ[S] C ⊗[R] D :=
   algHomOfLinearMapTensorProduct (AlgebraTensorModule.map f.toLinearMap g.toLinearMap) (by simp)
@@ -522,6 +566,10 @@ lemma map_comp_id
 theorem map_comp_includeLeft (f : A →ₐ[S] C) (g : B →ₐ[R] D) :
     (map f g).comp includeLeft = includeLeft.comp f :=
   AlgHom.ext <| by simp
+
+@[simp] lemma map_comp_includeLeftRingHom (f : A →ₐ[S] C) (g : B →ₐ[R] D) :
+    (map f g : A ⊗[R] B →+* C ⊗[R] D).comp includeLeftRingHom =
+      includeLeftRingHom.comp (f : A →+* C) := by ext; simp
 
 @[simp]
 theorem map_restrictScalars_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[R] D) :

@@ -208,7 +208,7 @@ theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs
   · exact ((Disjoint.inter_right _ (disjoint.mp h)).inter_left _).aedisjoint
   · exact lt_top_iff_ne_top.mp <| measure_lt_top_of_subset
       (by simp only [Set.iUnion_subset_iff, Set.inter_subset_right, implies_true]) hs₂
-  · rw [Set.mem_setOf, Set.inter_eq_self_of_subset_left hν, volume_box]
+  · rw [Set.mem_ofPred, Set.inter_eq_self_of_subset_left hν, volume_box]
 
 /-- For `B : BoxIntegral.Box`, the set of indices of `unitPartition.box` that are subsets of `B`.
 This is a finite set. These boxes cover `B` if it has integral vertices, see
@@ -220,7 +220,7 @@ def admissibleIndex (B : Box ι) : Finset (ι → ℤ) := by
 variable {n} in
 theorem mem_admissibleIndex_iff {B : Box ι} {ν : ι → ℤ} :
     ν ∈ admissibleIndex n B ↔ box n ν ≤ B := by
-  rw [admissibleIndex, Set.Finite.mem_toFinset, Set.mem_setOf_eq, Box.coe_subset_coe]
+  rw [admissibleIndex, Set.Finite.mem_toFinset, Set.mem_ofPred_eq, Box.coe_subset_coe]
 
 open scoped Classical in
 /-- For `B : BoxIntegral.Box`, the `TaggedPrepartition` formed by the set of all
@@ -238,11 +238,12 @@ def prepartition (B : Box ι) : TaggedPrepartition B where
     if hI : ∃ ν ∈ admissibleIndex n B, I = box n ν then tag n hI.choose else B.exists_mem.choose
   tag_mem_Icc I := by
     by_cases hI : ∃ ν ∈ admissibleIndex n B, I = box n ν
-    · simp_rw [dif_pos hI]
+    · simp_rw [dite_eq_left hI]
       exact Box.coe_subset_Icc <| (mem_admissibleIndex_iff.mp hI.choose_spec.1) (tag_mem n _)
-    · simp_rw [dif_neg hI]
+    · simp_rw [dite_eq_right hI]
       exact Box.coe_subset_Icc B.exists_mem.choose_spec
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {n} in
 @[simp]
 theorem mem_prepartition_iff {B I : Box ι} :
@@ -259,7 +260,7 @@ theorem prepartition_tag {ν : ι → ℤ} {B : Box ι} (hν : ν ∈ admissible
     (prepartition n B).tag (box n ν) = tag n ν := by
   dsimp only [prepartition]
   have h : ∃ ν' ∈ admissibleIndex n B, box n ν = box n ν' := ⟨ν, hν, rfl⟩
-  rw [dif_pos h, (tag_injective n).eq_iff, ← (box_injective n).eq_iff]
+  rw [dite_eq_left h, (tag_injective n).eq_iff, ← (box_injective n).eq_iff]
   exact h.choose_spec.2.symm
 
 theorem box_index_tag_eq_self {B I : Box ι} (hI : I ∈ (prepartition n B).boxes) :
@@ -320,7 +321,7 @@ theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralVertices B) :
 
 end fintype
 
-open Submodule Pointwise
+open Submodule
 
 open scoped Pointwise
 

@@ -95,6 +95,7 @@ theorem id_traverse {α : Type*} (x : Multiset α) : traverse (pure : α → Id 
   induction x using Quotient.inductionOn
   simp [traverse]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] [CommApplicative G]
     [CommApplicative H] {α β γ : Type _} (g : α → G β) (h : β → H γ) (x : Multiset α) :
     traverse (Comp.mk ∘ Functor.map h ∘ g) x =
