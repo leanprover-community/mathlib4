@@ -63,12 +63,12 @@ info: @AlgEquiv K K (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²
   (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
   (@RingHom.id K
     (@Semiring.toNonAssocSemiring K
-      (@DivisionSemiring.toSemiring K (@Semifield.toDivisionSemiring K (@Field.toSemifield K inst✝²)))))
+      (@CommSemiring.toSemiring K (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²)))))
   (@RingHom.id K
     (@Semiring.toNonAssocSemiring K
       (@CommSemiring.toSemiring K (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²)))))
-  ⋯ ⋯ L L (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹)))
-  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
+  ⋯ ⋯ L L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))
+  (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
 -/
 #guard_msgs in
 #check Gal(L/K)
