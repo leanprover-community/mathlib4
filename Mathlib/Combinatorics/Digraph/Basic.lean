@@ -271,27 +271,27 @@ instance {G : Digraph V} : Compl G.SpanningSubgraph where
     }, by grind⟩
 
 /-- The meet/intersection of two spanning subgraphs. -/
-instance {G : Digraph V} : Min G.SpanningSubgraph where
+instance : Min G.SpanningSubgraph where
   min H₁ H₂ := ⟨min H₁.val H₂.val, by grind⟩
 
 /-- The supremum of a set of spanning subgraphs. -/
-instance {G : Digraph V} : SupSet G.SpanningSubgraph where
+instance : SupSet G.SpanningSubgraph where
   sSup ℋ := ⟨{
       verts := G.verts
       Adj v w := ∃ H ∈ ℋ, H.val.Adj v w
     }, by grind⟩
 
 /-- The infimum of a set of spanning subgraphs. -/
-instance {G : Digraph V} : InfSet G.SpanningSubgraph where
+instance : InfSet G.SpanningSubgraph where
   sInf ℋ := ⟨{
       verts := G.verts
       Adj v w := (∀ H ∈ ℋ, H.val.Adj v w) ∧ G.Adj v w
     }, by grind⟩
 
-instance {G : Digraph V} : HImp G.SpanningSubgraph where
+instance : HImp G.SpanningSubgraph where
   himp H K := Hᶜ ⊔ K
 
-instance {G : Digraph V} : SDiff G.SpanningSubgraph where
+instance : SDiff G.SpanningSubgraph where
   sdiff H K := H ⊓ Kᶜ
 
 @[simp] theorem SpanningSubgraph.sSup_val_adj {G : Digraph V} (s : Set G.SpanningSubgraph)
