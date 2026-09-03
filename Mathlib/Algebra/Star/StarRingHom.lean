@@ -71,12 +71,14 @@ variable [FunLike F A B] [NonUnitalRingHomClass F A B]
 /-- Turn an element of a type `F` satisfying `NonUnitalStarRingHomClass F A B` into an actual
 `NonUnitalStarRingHom`. This is declared as the default coercion from `F` to `A →⋆ₙ+ B`. -/
 @[coe]
-def toNonUnitalStarRingHom [NonUnitalStarRingHomClass F A B] (f : F) : A →⋆ₙ+* B :=
+def _root_.NonUnitalStarRingHom.ofClass [NonUnitalStarRingHomClass F A B] (f : F) : A →⋆ₙ+* B :=
   { (f : A →ₙ+* B) with
     map_star' := map_star f }
 
+@[deprecated (since := "2026-09-03")] alias toNonUnitalStarRingHom := NonUnitalStarRingHom.ofClass
+
 instance [NonUnitalStarRingHomClass F A B] : CoeHead F (A →⋆ₙ+* B) :=
-  ⟨toNonUnitalStarRingHom⟩
+  ⟨.ofClass⟩
 
 end NonUnitalStarRingHomClass
 
@@ -108,9 +110,11 @@ def Simps.apply (f : A →⋆ₙ+* B) : A → B := f
 initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [NonUnitalRingHomClass F A B]
-    [NonUnitalStarRingHomClass F A B] (f : F) : ⇑(f : A →⋆ₙ+* B) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [NonUnitalRingHomClass F A B]
+    [NonUnitalStarRingHomClass F A B] (f : F) : ⇑(ofClass f) = f :=
   rfl
+@[deprecated (since := "2026-09-03")] alias coe_coe := NonUnitalStarRingHom.coe_ofClass
+
 
 @[simp]
 theorem coe_toNonUnitalRingHom (f : A →⋆ₙ+* B) : ⇑f.toNonUnitalRingHom = f :=
@@ -271,16 +275,18 @@ instance (priority := 100) {F A B : Type*} [NonUnitalNonAssocSemiring A] [Star A
 /-- Turn an element of a type `F` satisfying `StarRingEquivClass F A B` into an actual
 `StarRingEquiv`. This is declared as the default coercion from `F` to `A ≃⋆+* B`. -/
 @[coe]
-def toStarRingEquiv {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
+def _root_.StarRingEquiv.ofClass {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
   { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f }
+
+@[deprecated (since := "2026-09-03")] alias toStarRingEquiv := StarRingEquiv.ofClass
 
 /-- Any type satisfying `StarRingEquivClass` can be cast into `StarRingEquiv` via
 `StarRingEquivClass.toStarRingEquiv`. -/
 instance instCoeHead {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [StarRingEquivClass F A B] : CoeHead F (A ≃⋆+* B) :=
-  ⟨toStarRingEquiv⟩
+  ⟨.ofClass⟩
 
 end StarRingEquivClass
 
