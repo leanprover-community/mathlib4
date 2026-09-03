@@ -1091,7 +1091,7 @@ lemma isNIndepSet_singleton (a : α) {n : ℕ} : G.IsNIndepSet n {a} ↔ n = 1 :
 
 theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
   rw [isEmpty_iff]
-  refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · intro a
     have one_indep : G.IsNIndepSet 1 {a} := by simp
     have : 1 ≤ G.indepNum  := IsIndepSet.card_le_indepNum one_indep.isIndepSet
