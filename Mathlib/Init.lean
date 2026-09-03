@@ -1,7 +1,6 @@
 module  -- shake: keep-all, shake: keep-downstream
 
 public import Lean.Linter.Sets -- for the definition of linter sets
-public import Lean.Elab.DocString.Builtin.Postponed -- Deferred docstring linting
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
@@ -86,7 +85,6 @@ register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
   linter.auxLemma
-  linter.doc.deferred
   linter.flexible
   linter.hashCommand
   linter.oldObtain
