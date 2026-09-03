@@ -59,24 +59,20 @@ def restrict : AlgebraicCycle X R where
     classical
     exact if z ∈ t then D z else 0
   supportWithinDomain' := by simp
-  supportLocallyFiniteWithinDomain' := by
-    intro z hz
+  supportLocallyFiniteWithinDomain' z hz := by
     obtain ⟨U, hU⟩ := D.supportLocallyFiniteWithinDomain z hz
-    use U, hU.1
-    apply Finite.subset hU.2
-    apply inter_subset_inter (Subset.refl U)
-    simp
+    exact ⟨U, hU.1, Finite.subset hU.2 <| inter_subset_inter (Subset.refl U) (by simp)⟩
 
 open Classical in
 lemma restrict_apply (z : X) : D.restrict t z = if z ∈ t then D z else 0 := rfl
 
 @[simp]
 lemma restrict_eq_of_mem (z : X) (hz : z ∈ t) :
-    D.restrict t z = D z := dif_pos hz
+    D.restrict t z = D z := dite_eq_left hz
 
 @[simp]
 lemma restrict_eq_zero_of_not_mem (z : X) (hz : z ∉ t) :
-    D.restrict t z = 0 := dif_neg hz
+    D.restrict t z = 0 := dite_eq_right hz
 
 lemma restrict_eqOn : Set.EqOn (D.restrict t) D t := by
   intro _ _

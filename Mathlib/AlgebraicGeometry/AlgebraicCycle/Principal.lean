@@ -60,7 +60,7 @@ lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionF
     contradiction
   refine ⟨⟨hxW, fun a ↦ hxsup ?_⟩, this⟩
   rw [← hgf]
-  exact ord_of_isUnit hg this a
+  exact ord_of_isUnit hg a
 
 /--
 On an locally Noetherian integral scheme, given `f : X.functionField` and `hf : x ≠ 0`,
@@ -103,7 +103,7 @@ theorem div_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X] {U : X.Open
   simp_all only [AlgebraicCycle.restrict_support, mem_union, mem_inter_iff, Function.mem_support,
     div_eq_ord, ne_eq, SetLike.mem_coe, Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply,
     not_true_eq_false, or_false, AlgebraicCycle.restrict_eq_of_mem]
-  have := ord_of_isUnit hg this hz.2
+  have := ord_of_isUnit hg hz.2
   exact hz.1 this
 
 lemma div_eq_zero_of_isUnit_top
