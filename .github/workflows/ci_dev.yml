@@ -1,52 +1,49 @@
 name: ci dev
 
+# Cache-warmth probe (ci-dev experiment): verify a fresh job on the
+# Hetzner fleet reuses the host cache store. `lake exe cache get` must
+# find almost every .ltar archive already local (the hourly warmup keeps
+# the store at master), and after unpacking, `lake build --no-build`
+# must report nothing left to build. The probe branch is master content,
+# so a warm store means near-zero downloads and a no-op build.
+
 on:
   workflow_dispatch:
-    inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
-        required: false
-        type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
-        required: false
-        type: string
-        default: 'master'
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
-  id-token: write
-  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
 
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
+  cache-warmth:
+    name: cache warmth probe
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
-      cache_environment: cache-upload-forks
-      runs_on: pr
-    secrets: inherit
+    runs-on: pr
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: host cache state before
+        run: |
+          echo "runner: $RUNNER_NAME"
+          export PATH="$HOME/.elan/bin:$PATH"
+          echo "== elan toolchains (host store) =="
+          elan toolchain list || echo "no elan on PATH — store not mounted?"
+          echo "== mathlib .ltar store size =="
+          du -sh "$HOME/.cache/mathlib" || true
+          find "$HOME/.cache/mathlib" -name '*.ltar' 2>/dev/null | wc -l | xargs echo ".ltar files:"
+
+      - name: cache get (should be local hits, minimal download)
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          start=$(date +%s)
+          lake exe cache get 2>&1 | tee cache-get.log
+          echo "== cache get wall time: $(( $(date +%s) - start ))s =="
+          # Surface the download/decompress summary lines for the report.
+          grep -iE "download|decompress|local|attempt" cache-get.log | tail -10 || true
+
+      - name: assert the build is a no-op
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          start=$(date +%s)
+          lake build --no-build
+          echo "== --no-build check wall time: $(( $(date +%s) - start ))s =="
+          echo "cache fully covered this commit: nothing left to build"
