@@ -253,7 +253,8 @@ theorem smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
 alias _root_.MulAction.smul_subset_of_set_mem_fixedBy := smul_subset_of_set_mem_fixedBy
 
 /-!
-If a set `s : Set α` is a superset of `(MonoidAction.fixedBy α g)ᶜ` (resp. `(AddMonoidAction.fixedBy α g)ᶜ`),
+If a set `s :
+  Set α` is a superset of `(MonoidAction.fixedBy α g)ᶜ` (resp. `(AddMonoidAction.fixedBy α g)ᶜ`),
 then no point or subset of `s` can be moved outside of `s` by the group action of `g`.
 -/
 

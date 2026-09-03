@@ -211,7 +211,8 @@ lemma Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMu
   smul_comm c₁ c₂ := hf.forall.2 fun x ↦ by simp only [← h₁, ← h₂, smul_comm c₁ c₂ x]
 
 @[to_additive]
-instance smulCommClass_self (M α : Type*) [CommMonoid M] [MonoidAction M α] : SMulCommClass M M α where
+instance smulCommClass_self (M α : Type*) [CommMonoid M] [MonoidAction M α] :
+    SMulCommClass M M α where
   smul_comm a a' b := by rw [← mul_smul, mul_comm, mul_smul]
 
 /-- An instance of `VAddAssocClass M N α` states that the additive action of `M` on `α` is
@@ -579,7 +580,8 @@ lemma SMulCommClass.of_commMonoid
       smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
 
 lemma IsScalarTower.of_commMonoid (R₁ R : Type*)
-    [Monoid R₁] [CommMonoid R] [MonoidAction R₁ R] [SMulCommClass R₁ R R] : IsScalarTower R₁ R R where
+    [Monoid R₁] [CommMonoid R] [MonoidAction R₁ R] [SMulCommClass R₁ R R] :
+      IsScalarTower R₁ R R where
   smul_assoc x₁ y z := by rw [smul_eq_mul, mul_comm, ← smul_eq_mul, ← smul_comm, smul_eq_mul,
     mul_comm, ← smul_eq_mul]
 
@@ -670,7 +672,8 @@ The key axiom here is `vadd_add : g +ᵥ (x + y) = (g +ᵥ x) + (g +ᵥ y)`.
 If `G` is an additive group with additive automorphism group `Γ`, then there is a natural instance
 of `AddDistribAddAction Γ G`. -/
 @[ext]
-class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddMonoidAction M N where
+class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends
+    AddMonoidAction M N where
   /-- Acting on `0` by a scalar gives `0` -/
   vadd_zero : ∀ r : M, r +ᵥ (0 : N) = 0
   /-- Distributivity of `+ᵥ` across `+` -/

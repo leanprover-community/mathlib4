@@ -92,7 +92,8 @@ instance : SMulCommClass S A (S ⊗[R] Ω[A⁄R]) where
   smul_comm s a x := by
     induction x
     · simp only [smul_zero]
-    · rw [monoidActionBaseChange_smul_tmul, smul_tmul', smul_tmul', monoidActionBaseChange_smul_tmul]
+    · rw
+      [monoidActionBaseChange_smul_tmul, smul_tmul', smul_tmul', monoidActionBaseChange_smul_tmul]
     · simp only [smul_add, *]
 
 instance : SMulCommClass A S (S ⊗[R] Ω[A⁄R]) where

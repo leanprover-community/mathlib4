@@ -176,7 +176,8 @@ alias _root_.AddAction.nontrivial_of_fixedPoints_ne_univ :=
 
 section Orbit
 
--- TODO: This proof is redoing a special case of `MonoidAction.IsInvariantBlock.isBlock`. Can we move
+-- TODO: This proof is redoing a special case of `MonoidAction.IsInvariantBlock.isBlock`. Can we
+-- move
 -- this lemma earlier to golf?
 @[to_additive (attr := simp)]
 theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=

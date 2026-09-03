@@ -41,7 +41,8 @@ instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β where sm
 
 @[simp] lemma ofAdd_smul [VAdd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b := rfl
 
-instance Additive.addMonoidAction [Monoid α] [MonoidAction α β] : AddMonoidAction (Additive α) β where
+instance Additive.addMonoidAction [Monoid α] [MonoidAction α β] :
+    AddMonoidAction (Additive α) β where
   zero_vadd := MonoidAction.one_smul
   add_vadd := mul_smul (α := α)
 

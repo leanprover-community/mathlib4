@@ -411,7 +411,8 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     hB.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs
   -- Step 4 : `sᶜ ⊆ B`
   have _ := isMultiplyPretransitive α (s.ncard + 1)
-  apply MonoidAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le <;>
+  apply MonoidAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le
+    <;>
     grind
 
 /-- `MonoidAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,

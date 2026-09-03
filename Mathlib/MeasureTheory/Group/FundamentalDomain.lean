@@ -76,7 +76,8 @@ variable {G H α β E : Type*}
 
 namespace IsFundamentalDomain
 
-variable [Group G] [Group H] [MonoidAction G α] [MeasurableSpace α] [MonoidAction H β] [MeasurableSpace β]
+variable [Group G] [Group H] [MonoidAction G α] [MeasurableSpace α] [MonoidAction H β]
+  [MeasurableSpace β]
   [NormedAddCommGroup E] {s t : Set α} {μ : Measure α}
 
 /-- If for each `x : α`, exactly one of `g • x`, `g : G`, belongs to a measurable set `s`, then `s`

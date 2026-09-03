@@ -105,7 +105,8 @@ alias _root_.Finset.addActionFinset := _root_.Finset.addMonoidActionFinset
 
 scoped[Pointwise]
   attribute [instance]
-    Finset.monoidActionFinset Finset.addMonoidActionFinset Finset.monoidAction Finset.addMonoidAction
+    Finset.monoidActionFinset Finset.addMonoidActionFinset Finset.monoidAction
+      Finset.addMonoidAction
 
 end Instances
 

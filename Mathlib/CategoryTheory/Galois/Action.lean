@@ -52,7 +52,8 @@ instance (X : C) : MonoidAction (Aut X) ((functorToAction F).obj X).V :=
 
 variable [GaloisCategory C] [FiberFunctor F]
 
-instance (X : C) [IsGalois X] : MonoidAction.IsPretransitive (Aut X) ((functorToAction F).obj X).V :=
+instance (X : C) [IsGalois X] :
+    MonoidAction.IsPretransitive (Aut X) ((functorToAction F).obj X).V :=
   isPretransitive_of_isGalois F X
 
 instance : Functor.Faithful (functorToAction F) :=

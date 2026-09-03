@@ -261,7 +261,8 @@ instance instIsCentralScalar [SMul S R] [SMul S A] [SMul Sᵐᵒᵖ R] [SMul S�
     [IsCentralScalar S A] : IsCentralScalar S (Unitization R A) :=
   equiv.isCentralScalar S
 
-instance instMonoidAction [Monoid S] [MonoidAction S R] [MonoidAction S A] : MonoidAction S (Unitization R A) :=
+instance instMonoidAction [Monoid S] [MonoidAction S R] [MonoidAction S A] :
+    MonoidAction S (Unitization R A) :=
   fast_instance% equiv.monoidAction S
 
 variable (R A) in

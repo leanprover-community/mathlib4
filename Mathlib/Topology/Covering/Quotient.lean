@@ -218,7 +218,8 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
     (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g • e = e) :
     IsCoveringMapOn f (f '' {e | MonoidAction.stabilizer G e = ⊥}) := by
   let : TopologicalSpace G := ⊥; have : DiscreteTopology G := ⟨rfl⟩
-  suffices ∀ x ∈ f '' {e | MonoidAction.stabilizer G e = ⊥}, ∃ t : Trivialization G f, x ∈ t.baseSet by
+  suffices ∀ x ∈ f '' {e | MonoidAction.stabilizer G e = ⊥}, ∃ t :
+    Trivialization G f, x ∈ t.baseSet by
     choose t ht using this; exact IsCoveringMapOn.mk _ _ _ _ fun x ↦ ht x x.2
   rintro x ⟨e, he, rfl⟩
   have ⟨U, heU, hU⟩ := disjoint e

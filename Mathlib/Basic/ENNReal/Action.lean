@@ -40,13 +40,16 @@ theorem smul_def {M : Type*} [MonoidAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) :
 @[simp]
 theorem smul_one (c : ℝ≥0) : c • (1 : ℝ≥0∞) = (c : ℝ≥0∞) := by simp [smul_def]
 
-instance {M N : Type*} [MonoidAction ℝ≥0∞ M] [MonoidAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
+instance {M N : Type*} [MonoidAction ℝ≥0∞ M] [MonoidAction ℝ≥0∞ N] [SMul M N]
+    [IsScalarTower ℝ≥0∞ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ≥0∞)
 
-instance smulCommClass_left {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
+instance smulCommClass_left {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N]
+    [SMulCommClass ℝ≥0∞ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := smul_comm (r : ℝ≥0∞)
 
-instance smulCommClass_right {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
+instance smulCommClass_right {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N]
+    [SMulCommClass M ℝ≥0∞ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := smul_comm m (r : ℝ≥0∞)
 
 /-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/

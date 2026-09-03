@@ -81,7 +81,8 @@ alias _root_.Set.powersetCard.addAction_stabilizer_coe := addMonoidAction_stabil
 
 theorem addMonoidAction_faithful {G : Type*} [AddGroup G] [AddMonoidAction G α] {n : ℕ}
     (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
-    AddMonoidAction.toPerm g = (1 : Perm (powersetCard α n)) ↔ AddMonoidAction.toPerm g = (1 : Perm α) := by
+    AddMonoidAction.toPerm g = (1 : Perm (powersetCard α n)) ↔ AddMonoidAction.toPerm g =
+      (1 : Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose h with h
     have : ∃ a, (g +ᵥ a : α) ≠ a := by simpa [Equiv.ext_iff] using h

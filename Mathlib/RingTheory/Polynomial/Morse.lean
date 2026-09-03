@@ -53,7 +53,8 @@ theorem Splits.toPermHom_apply_eq_one_or_isSwap_of_ncard_le_of_mem_inertia
     [DecidableEq (f.rootSet S)] (hf : (f.map (algebraMap R S)).Splits)
     (p : Ideal S) [p.IsPrime] (hp : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ p)).ncard + 1)
     (g : G) (hg : g ∈ p.inertia G) :
-    MonoidAction.toPermHom G (f.rootSet S) g = 1 ∨ (MonoidAction.toPermHom G (f.rootSet S) g).IsSwap := by
+    MonoidAction.toPermHom G (f.rootSet S) g = 1 ∨ (MonoidAction.toPermHom G (f.rootSet S) g).IsSwap
+      := by
   classical
   by_cases hfp : f.map (algebraMap R (S ⧸ p)) = 0
   · rw [rootSet_def f (S ⧸ p), aroots_def, hfp, roots_zero, Multiset.toFinset_zero,

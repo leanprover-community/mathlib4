@@ -47,7 +47,8 @@ theorem mk_smul_mulActionHom_apply (c : M) (f : α →[N] β) (a : α) : (mk c �
 
 end SMul
 
-instance {M α N β : Type*} [Monoid M] [MonoidAction M α] [SMul N α] [SMulCommClass M N α] [SMul N β] :
+instance {M α N β : Type*} [Monoid M] [MonoidAction M α] [SMul N α] [SMulCommClass M N α]
+    [SMul N β] :
     MonoidAction Mᵈᵐᵃ (α →[N] β) :=
   DFunLike.coe_injective.monoidAction _ fun _ _ ↦ rfl
 

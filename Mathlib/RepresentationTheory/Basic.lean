@@ -410,7 +410,8 @@ noncomputable abbrev diagonal (n : ℕ) := ofMonoidAction k G (Fin n → G)
 variable {k G H}
 
 theorem ofMonoidAction_def (g : G) :
-    ofMonoidAction k G H g = (coeffLinearEquiv k).symm.toLinearMap ∘ₗ Finsupp.lmapDomain k k (g • ·) ∘ₗ
+    ofMonoidAction k G H g = (coeffLinearEquiv k).symm.toLinearMap ∘ₗ Finsupp.lmapDomain k k (g • ·)
+      ∘ₗ
       (coeffLinearEquiv k).toLinearMap := rfl
 
 @[deprecated (since := "2026-09-02")]
@@ -518,7 +519,8 @@ alias ofMonoidAction_self_smul_eq_mul := asAlgebraHom_ofMonoidAction_smul_eq_mul
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural
 `k[G]`-module structure. -/
 @[simps]
-noncomputable def ofMonoidActionSelfAsModuleEquiv : (ofMonoidAction k G G).asModule ≃ₗ[k[G]] k[G] where
+noncomputable def ofMonoidActionSelfAsModuleEquiv :
+    (ofMonoidAction k G G).asModule ≃ₗ[k[G]] k[G] where
   toAddEquiv := (asModuleEquiv _).toAddEquiv
   map_smul' := by simp
 

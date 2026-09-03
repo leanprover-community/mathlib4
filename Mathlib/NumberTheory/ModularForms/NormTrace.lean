@@ -67,7 +67,8 @@ protected def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.ca
     let := Fintype.ofFinite 𝒬
     simpa [← Finset.card_univ, ModularForm.prod_slash,
       quotientFunc_smul f hh, Subgroup.HasDetPlusMinusOne.abs_det hh,
-      -Matrix.GeneralLinearGroup.val_det_apply] using Equiv.prod_comp (MonoidAction.toPerm (_ : ℋ)) _
+      -Matrix.GeneralLinearGroup.val_det_apply] using Equiv.prod_comp (MonoidAction.toPerm
+        (_ : ℋ)) _
 
 end SlashInvariantForm
 

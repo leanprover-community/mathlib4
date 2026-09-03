@@ -85,7 +85,8 @@ instance isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower 
   smul_assoc c x y := by simp [smul_def, mul_def, smul_mul_assoc]
 
 @[to_additive]
-instance monoidAction [Monoid M] [MonoidAction M α] [MonoidAction M β] : MonoidAction M (α × β) where
+instance monoidAction [Monoid M] [MonoidAction M α] [MonoidAction M β] :
+    MonoidAction M (α × β) where
   mul_smul _ _ _ := by ext <;> exact mul_smul ..
   one_smul _ := by ext <;> exact one_smul ..
 
@@ -121,7 +122,8 @@ variable (M N α) [Monoid M] [Monoid N]
 @[to_additive AddMonoidAction.prodOfVAddCommClass
 /-- Construct an `AddMonoidAction` by a product monoid from `AddMonoidAction`s by the factors.
 This is not an instance to avoid diamonds for example when `α := M × N`. -/]
-abbrev MonoidAction.prodOfSMulCommClass [MonoidAction M α] [MonoidAction N α] [SMulCommClass M N α] :
+abbrev MonoidAction.prodOfSMulCommClass [MonoidAction M α] [MonoidAction N α]
+    [SMulCommClass M N α] :
     MonoidAction (M × N) α where
   smul mn a := mn.1 • mn.2 • a
   one_smul a := (one_smul M _).trans (one_smul N a)
@@ -134,11 +136,14 @@ alias MulAction.prodOfSMulCommClass := MonoidAction.prodOfSMulCommClass
 @[deprecated (since := "2026-09-02")]
 alias AddAction.prodOfVAddCommClass := AddMonoidAction.prodOfVAddCommClass
 
-/-- A `MonoidAction` by a product monoid is equivalent to commuting `MonoidAction`s by the factors. -/
+/-- A `MonoidAction` by a product monoid is equivalent to commuting `MonoidAction`s by
+the factors. -/
 @[to_additive AddMonoidAction.prodEquiv
-/-- An `AddMonoidAction` by a product monoid is equivalent to commuting `AddMonoidAction`s by the factors. -/]
+/-- An `AddMonoidAction` by a product monoid is equivalent to commuting `AddMonoidAction`s by
+the factors. -/]
 def MonoidAction.prodEquiv :
-    MonoidAction (M × N) α ≃ Σ' (_ : MonoidAction M α) (_ : MonoidAction N α), SMulCommClass M N α where
+    MonoidAction (M × N) α ≃
+      Σ' (_ : MonoidAction M α) (_ : MonoidAction N α), SMulCommClass M N α where
   toFun _ :=
     letI instM := MonoidAction.compHom α (.inl M N)
     letI instN := MonoidAction.compHom α (.inr M N)

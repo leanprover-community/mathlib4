@@ -30,7 +30,8 @@ open scoped Pointwise
 
 /-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit
 of every point `x : α` is dense. -/
-class AddMonoidAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α] [AddMonoidAction M α] :
+class AddMonoidAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α]
+    [AddMonoidAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (AddMonoidAction.orbit M x)
 

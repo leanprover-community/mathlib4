@@ -44,7 +44,8 @@ alias _root_.Representation.ofMulActionSubsingletonEquivTrivial :=
 
 @[simp]
 lemma ofMonoidActionSubsingletonEquivTrivial_apply (f : k[H]) :
-    (ofMonoidActionSubsingletonEquivTrivial k G H).toIntertwiningMap.toLinearMap f = f.coeff 1 := rfl
+    (ofMonoidActionSubsingletonEquivTrivial k G H).toIntertwiningMap.toLinearMap f = f.coeff 1 :=
+      rfl
 
 @[deprecated (since := "2026-09-02")]
 alias _root_.Representation.ofMulActionSubsingletonEquivTrivial_apply :=

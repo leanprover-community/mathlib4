@@ -189,7 +189,8 @@ def AddMonoidAction.toEndHom [AddMonoidAction M α] : M →+ Additive (Function.
 /-- The additive action induced by a hom to `Additive (Function.End α)`
 
 See note [reducible non-instances]. -/
-abbrev AddMonoidAction.ofEndHom (f : M →+ Additive (Function.End α)) : AddMonoidAction M α := .compHom α f
+abbrev AddMonoidAction.ofEndHom (f : M →+ Additive (Function.End α)) :
+    AddMonoidAction M α := .compHom α f
 
 @[deprecated (since := "2026-09-02")] alias AddAction.ofEndHom := AddMonoidAction.ofEndHom
 
@@ -229,7 +230,8 @@ variable (G α) [AddGroup G] [AddMonoidAction G α]
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
 @[simps!]
-def AddMonoidAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MonoidAction.toPermHom ..).toAdditiveRight
+def AddMonoidAction.toPermHom :
+    G →+ Additive (Equiv.Perm α) := (MonoidAction.toPermHom ..).toAdditiveRight
 
 @[deprecated (since := "2026-09-02")] alias AddAction.toPermHom := AddMonoidAction.toPermHom
 @[deprecated (since := "2026-09-02")]

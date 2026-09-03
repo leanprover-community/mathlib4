@@ -171,7 +171,8 @@ on `Set β`. -/
 @[to_additive (attr := instance_reducible)
 /-- An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
 on `Set β` -/]
-protected noncomputable def monoidAction [Monoid α] [MonoidAction α β] : MonoidAction (Set α) (Set β) where
+protected noncomputable def monoidAction [Monoid α] [MonoidAction α β] :
+    MonoidAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
@@ -188,7 +189,8 @@ protected def monoidActionSet [Monoid α] [MonoidAction α β] : MonoidAction α
 @[deprecated (since := "2026-09-02")] alias _root_.Set.mulActionSet := _root_.Set.monoidActionSet
 @[deprecated (since := "2026-09-02")] alias _root_.Set.addActionSet := _root_.Set.addMonoidActionSet
 
-scoped[Pointwise] attribute [instance] Set.monoidActionSet Set.addMonoidActionSet Set.monoidAction Set.addMonoidAction
+scoped[Pointwise] attribute [instance] Set.monoidActionSet Set.addMonoidActionSet Set.monoidAction
+  Set.addMonoidAction
 
 section Group
 

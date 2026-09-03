@@ -135,7 +135,8 @@ instance [SMul Rᵐᵒᵖ ℝ≥0∞] [IsCentralScalar R ℝ≥0∞] :
 
 end SMul
 
-instance [Monoid R] [MonoidAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] : MonoidAction R (Measure α) :=
+instance [Monoid R] [MonoidAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
+    MonoidAction R (Measure α) :=
   Injective.monoidAction _ toOuterMeasure_injective smul_toOuterMeasure
 
 instance : AddCommMonoid (Measure α) :=
