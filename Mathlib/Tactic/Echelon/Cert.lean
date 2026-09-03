@@ -263,11 +263,16 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (Aσ : Q(Matrix (Fin $m) (Fin $n) $α)) (aEntries : Array (Array Q($α)))
     (U : Q(Matrix (Fin $m) (Fin $n) $α)) (uEntries : Array (Array Q($α)))
     (leaf : LeafProver) : MetaM Q($L * $Aσ = $U) := do
-  let zero ← mkNumeral α 0
+  have zero : Q($α) := ← mkNumeral α 0
+  -- synthesised once, so that every cell references one instance node rather than rebuilding
+  -- the projection path from `_cr`
+  have _hmul : Q(HMul $α $α $α) := ← synthInstanceQ q(HMul $α $α $α)
+  have _hadd : Q(HAdd $α $α $α) := ← synthInstanceQ q(HAdd $α $α $α)
   let cell (i j : Nat) : MetaM Expr := do
-    let terms ← Array.ofFnM (n := m) fun c => mkMul (lEntries[i]!)[c]! (aEntries[c]!)[j]!
+    let terms : Array Q($α) := Array.ofFn (n := m) fun c =>
+      q($((lEntries[i]!)[c]!) * $((aEntries[c]!)[j]!))
     -- the fold must reproduce what `(L * Aσ) i j` expands to
-    have sum : Q($α) := ← terms.foldrM mkAdd zero
+    have sum : Q($α) := terms.foldr (fun t acc => q($t + $acc)) zero
     have entry : Q($α) := (uEntries[i]!)[j]!
     let (b, prf) ← leaf q($sum = $entry)
     unless b do
