@@ -74,9 +74,7 @@ lemma koszulComplexAuxAlternating_apply (n : ℕ) (x : Fin (n + 1) → M) :
   rw [koszulComplexAuxAlternating, AlternatingMap.alternatizeUncurryFin_apply]
   refine Finset.sum_congr rfl ?_
   intro i _
-  have hremove : x ∘ i.succAbove = i.removeNth x := rfl
-  simp [LinearMap.smulRight_apply, AlternatingMap.smul_apply, ← hremove,
-    ← Int.cast_smul_eq_zsmul R, smul_smul]
+  simp [← Int.cast_smul_eq_zsmul R, smul_smul]
 
 /-- The auxiliary differential for Koszul complex. -/
 noncomputable def koszulComplexAux (n : ℕ) : ⋀[R]^(n + 1) M →ₗ[R] ⋀[R]^n M :=
@@ -96,18 +94,15 @@ lemma koszulComplexAux_comp_eq_zero (n : ℕ) :
       AlternatingMap.alternatizeUncurryFin_apply, Finset.smul_sum]
   simpa [koszulComplexAux, ← exteriorPower.alternatingMapLinearEquiv_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Koszul complex, with objects exterior powers and differential `koszulComplexAux`. -/
 noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
-  ChainComplex.of
-    (ModuleCat.of R M).exteriorPower
+  ChainComplex.of (fun n ↦ ModuleCat.of R (⋀[R]^n M))
     (fun n ↦ ModuleCat.ofHom (koszulComplexAux φ n))
-    (fun n ↦ by simp [← ModuleCat.ofHom_comp, koszulComplexAux_comp_eq_zero])
+    (fun n ↦ by rw [← ModuleCat.ofHom_comp, koszulComplexAux_comp_eq_zero, ModuleCat.ofHom_zero])
 
 lemma koszulComplex.X_eq_exteriorPower (i : ℕ) :
     (koszulComplex φ).X i = ModuleCat.of R (⋀[R]^i M) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma koszulComplex.d_eq_aux (i : ℕ) :
     (koszulComplex φ).d (i + 1) i = ModuleCat.ofHom (koszulComplexAux φ i) := by
   simp [koszulComplex]
@@ -187,7 +182,6 @@ section specialX
 noncomputable def XZeroLinearEquivRing : (koszulComplex φ).X 0 ≃ₗ[R] R :=
   exteriorPower.zeroEquiv R M
 
-set_option backward.isDefEq.respectTransparency false in
 lemma X_isZero_of_card_generators_lt {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulComplex φ).X i) :=
