@@ -45,7 +45,7 @@ variable [SuccOrder α] {a b : α}
 ##### Equalities of intervals
 -/
 
-@[to_dual Ioc_pred_right_eq_Ioo]
+@[to_dual (reorder := a b) Ioc_pred_right_eq_Ioo]
 lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b := by
   by_cases ha : IsMax a
   · rw [Ico_eq_empty (ha.mono <| le_succ _).not_lt, Ioo_eq_empty ha.not_lt]
@@ -106,19 +106,19 @@ lemma insert_Ioc_succ_left_eq_Ioc (h : a < b) : insert (succ a) (Ioc (succ a) b)
 
 variable [NoMaxOrder α]
 
-@[to_dual Icc_pred_right_eq_Ico]
+@[to_dual (reorder := a b) Icc_pred_right_eq_Ico]
 lemma Icc_succ_left_eq_Ioc (a b : α) : Icc (succ a) b = Ioc a b :=
   Icc_succ_left_eq_Ioc_of_not_isMax (not_isMax _) _
 
-@[to_dual Ioc_pred_left_eq_Icc]
+@[to_dual (reorder := a b) Ioc_pred_left_eq_Icc]
 lemma Ico_succ_right_eq_Icc (a b : α) : Ico a (succ b) = Icc a b :=
   Ico_succ_right_eq_Icc_of_not_isMax (not_isMax _) _
 
-@[to_dual Ioo_pred_left_eq_Ico]
+@[to_dual (reorder := a b) Ioo_pred_left_eq_Ico]
 lemma Ioo_succ_right_eq_Ioc (a b : α) : Ioo a (succ b) = Ioc a b :=
   Ioo_succ_right_eq_Ioc_of_not_isMax (not_isMax _) _
 
-@[to_dual]
+@[to_dual (reorder := a b)]
 lemma Ico_succ_succ_eq_Ioc (a b : α) : Ico (succ a) (succ b) = Ioc a b :=
   Ico_succ_succ_eq_Ioc_of_not_isMax (not_isMax _) _
 

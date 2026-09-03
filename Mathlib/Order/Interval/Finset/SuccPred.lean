@@ -127,8 +127,11 @@ lemma Icc_pred_right_eq_Ico_of_not_isMin (hb : ¬ IsMin b) (a : α) : Icc a (pre
 lemma Ioc_pred_left_eq_Icc_of_not_isMin (ha : ¬ IsMin a) (b : α) : Ioc (pred a) b = Icc a b :=
   coe_injective <| by simpa using Set.Ioc_pred_left_eq_Icc_of_not_isMin ha _
 
-lemma Ioo_pred_left_eq_Ioc_of_not_isMin (ha : ¬ IsMin a) (b : α) : Ioo (pred a) b = Ico a b :=
-  coe_injective <| by simpa using Set.Ioo_pred_left_eq_Ioc_of_not_isMin ha _
+lemma Ioo_pred_left_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) : Ioo (pred a) b = Ico a b :=
+  coe_injective <| by simpa using Set.Ioo_pred_left_eq_Ico_of_not_isMin ha _
+
+@[deprecated (since := "2026-09-03")]
+alias Ioo_pred_left_eq_Ioc_of_not_isMin := Ioo_pred_left_eq_Ico_of_not_isMin
 
 lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
     Ioc (pred a) (pred b) = Ico a b :=
