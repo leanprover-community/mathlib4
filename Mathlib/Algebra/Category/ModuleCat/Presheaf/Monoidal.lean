@@ -74,7 +74,7 @@ variable {M₁ M₂ M₃ M₄}
 lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
     DFunLike.coe (α := (M₁.obj X ⊗ M₂.obj X :))
       (β := fun _ ↦ (ModuleCat.restrictScalars (R.map f).hom).obj (M₁.obj Y ⊗ M₂.obj Y))
-      (ModuleCat.Hom.hom (R := ↑(R.obj X)) ((tensorObj M₁ M₂).map f)) (m₁ ⊗ₜ[R.obj X] m₂) =
+      (ModuleCat.Hom.hom ((tensorObj M₁ M₂).map f)) (m₁ ⊗ₜ[R.obj X] m₂) =
     M₁.map f m₁ ⊗ₜ[R.obj Y] M₂.map f m₂ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
@@ -137,7 +137,7 @@ open BraidedCategory
 noncomputable instance symmetricCategory :
     SymmetricCategory (PresheafOfModulesOfCommRing.{u} R) where
   braiding M₁ M₂ :=
-    isoMk (fun X ↦ braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X))
+    isoMk (fun X ↦ braiding (M₁.obj X) (M₂.obj X))
       (fun _ _ f ↦ ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl))
   braiding_naturality_right _ _ _ _ := by
     ext : 1
@@ -160,71 +160,69 @@ section
 variable (M₁ M₂ M₃ M₄ : PresheafOfModulesOfCommRing.{u} R)
 
 lemma tensorObj_obj (X : Cᵒᵖ) :
-    (M₁ ⊗ M₂).obj X =
-      MonoidalCategory.tensorObj (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X) := rfl
+    (M₁ ⊗ M₂).obj X = MonoidalCategory.tensorObj (M₁.obj X) (M₂.obj X) := rfl
 
 attribute [local simp] tensorObj_obj
 
 variable {M₂ M₃} in
 @[simp]
 lemma whiskerLeft_app (f : M₂ ⟶ M₃) (X : Cᵒᵖ) :
-    dsimp% (M₁ ◁ f).app' X = whiskerLeft (C := ModuleCat (R.obj X)) (M₁.obj X) (f.app' X) :=
-  rfl
+    dsimp% (M₁ ◁ f).app' X = whiskerLeft (M₁.obj X) (f.app' X) := rfl
 
 variable {M₁ M₂} in
 @[simp]
 lemma whiskerRight_app (f : M₁ ⟶ M₂) (M₃ : PresheafOfModulesOfCommRing.{u} R)
     (X : Cᵒᵖ) :
-    dsimp% (f ▷ M₃).app' X = whiskerRight (C := ModuleCat (R.obj X)) (f.app' X) (M₃.obj X) := rfl
+    dsimp% (f ▷ M₃).app' X = whiskerRight (f.app' X) (M₃.obj X) := rfl
 
 variable {M₁ M₂ M₃ M₄} in
 @[simp]
 lemma tensorHom_app (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) (X : Cᵒᵖ) :
     dsimp% (f ⊗ₘ g).app' X =
-      MonoidalCategory.tensorHom (C := ModuleCat (R.obj X)) (f.app' X) (g.app' X) := rfl
+      MonoidalCategory.tensorHom (f.app' X) (g.app' X) := rfl
 
 @[simp]
 lemma leftUnitor_hom_app (X : Cᵒᵖ) :
-    dsimp% (λ_ M₁).hom.app' X = (leftUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).hom :=
+    dsimp% (λ_ M₁).hom.app' X = (leftUnitor (M₁.obj X)).hom :=
   rfl
 
 @[simp]
 lemma leftUnitor_inv_app (X : Cᵒᵖ) :
-    dsimp% (λ_ M₁).inv.app' X = (leftUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).inv := by
+    dsimp% (λ_ M₁).inv.app' X = (leftUnitor (M₁.obj X)).inv := by
   rfl
 
 @[simp]
 lemma rightUnitor_hom_app (X : Cᵒᵖ) :
-    dsimp% (ρ_ M₁).hom.app' X = (rightUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).hom :=
+    dsimp% (ρ_ M₁).hom.app' X = (rightUnitor (M₁.obj X)).hom :=
   rfl
 
 @[simp]
 lemma rightUnitor_inv_app (X : Cᵒᵖ) :
-    dsimp% (ρ_ M₁).inv.app' X = (rightUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).inv :=
+    dsimp% (ρ_ M₁).inv.app' X = (rightUnitor (M₁.obj X)).inv :=
   rfl
 
 @[simp]
 lemma associator_hom_app (X : Cᵒᵖ) :
     (α_ M₁ M₂ M₃).hom.app' X =
-      (associator (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X) (M₃.obj X)).hom :=
+      (associator (M₁.obj X) (M₂.obj X) (M₃.obj X)).hom :=
   rfl
 
 @[simp]
 lemma associator_inv_app (X : Cᵒᵖ) :
     (α_ M₁ M₂ M₃).inv.app' X =
-      (associator (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X) (M₃.obj X)).inv :=
+      (associator (M₁.obj X) (M₂.obj X) (M₃.obj X)).inv :=
   rfl
 
 @[simp]
 lemma braiding_hom_app (X : Cᵒᵖ) :
     dsimp% (braiding M₁ M₂).hom.app' X =
-      (braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X)).hom := by
+      (braiding (M₁.obj X) (M₂.obj X)).hom := by
   rfl
 
 @[simp]
 lemma braiding_inv_app (X : Cᵒᵖ) :
     dsimp% (braiding M₁ M₂).inv.app' X =
-      (braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X)).inv := rfl
+      (braiding (M₁.obj X) (M₂.obj X)).inv := rfl
 
 end
 
