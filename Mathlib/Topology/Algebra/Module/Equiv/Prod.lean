@@ -20,7 +20,8 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `prodComm`: `LinearEquiv.prodComm` as a continuous linear equivalence.
 * `prodAssoc`: `LinearEquiv.prodAssoc` as a continuous linear equivalence.
 * `prodProdProdComm`: `LinearEquiv.prodProdProdComm` as a continuous linear equivalence.
-* `prodUnique`: `Equiv.uniqueProd` as a continuous linear equivalence.
+* `prodUnique`: `Equiv.prodUnique` as a continuous linear equivalence.
+* `uniqueProd`: `Equiv.uniqueProd` as a continuous linear equivalence.
 
 -/
 
@@ -161,6 +162,12 @@ lemma prodUnique_apply (x : M₁ × M₂) : prodUnique R M₁ M₂ x = x.1 := rf
 @[simp]
 lemma prodUnique_symm_apply (x : M₁) : (prodUnique R M₁ M₂).symm x = (x, default) := rfl
 
+end prodUnique
+
+section uniqueProd
+
+variable (R M₁ M₂) [Unique M₂]
+
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural equivalence `N × M ≃L[R] M` for any `Unique` type `N`.
 This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
@@ -176,6 +183,6 @@ lemma uniqueProd_apply (x : M₂ × M₁) : uniqueProd R M₁ M₂ x = x.2 := rf
 @[simp]
 lemma uniqueProd_symm_apply (x : M₁) : (uniqueProd R M₁ M₂).symm x = (default, x) := rfl
 
-end prodUnique
+end uniqueProd
 
 end ContinuousLinearEquiv
