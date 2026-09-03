@@ -247,6 +247,10 @@ to module `Foo.Bar` (no `srcDir` indirection).
   successful master build and publishes the result to the
   [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
   (committing only when the entries actually change).
+- [`crossrefDiff.yml`](../.github/workflows/crossrefDiff.yml)
+  Post-build workflow that diffs a PR build's `crossrefs.json` against the master build at the
+  PR's merge base, then comments on the PR with the cross-references it adds, each linked to its
+  database entry. The table is rendered by mathlib-ci's `pr_summary/crossrefsDiff.py`.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
