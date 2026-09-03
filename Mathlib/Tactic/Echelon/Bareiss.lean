@@ -79,8 +79,8 @@ def modelFor {u : Level} (α : Q(Type u)) : MetaM Model := do
       checkKernelDecide α
       pure none
     catch _ =>
-      trace[Tactic.evalRank] "equality does not reduce in the kernel; \
-        using `norm_num` leaves{indentExpr α}"
+      trace[Tactic.evalRank] "equality in the element type cannot be decided in the \
+        kernel; using `norm_num` leaves{indentExpr α}"
       pure (some normNumCertifier)
   return { producer := ← ratProducer α, leafCertifier? := leaf? }
 

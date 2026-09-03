@@ -93,7 +93,8 @@ the decomposition constructed. -/
 @[expose] def Producer := Array (Array Expr) → MetaM (BareissData Expr)
 
 /-- A leaf certifier settles a proposition about a single entry, returning its truth value
-together with a proof of the proposition or of its negation. -/
+together with a proof of the proposition or of its negation, and throwing on a proposition
+it cannot settle. -/
 @[expose] def LeafCertifier := Expr → MetaM (Bool × Expr)
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied

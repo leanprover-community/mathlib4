@@ -136,10 +136,10 @@ example : Matrix.rank (R := GaussianInt) !![Zsqrtd.sqrtd, ⟨0, 1⟩] = 1 := by 
 The certificate conditions are built from proofs of the individual entries by `norm_num`
 instead of being decided. -/
 
--- a row swap, so that the row arrangement is not the identity; entries that are not
--- integers, which the product obligation carries; and a rank deficiency, so that a row of
--- the pivot function is `⊤`
-example : Matrix.rank (R := ℝ) !![0, 0, 3; 1/2, 1, 0; 2, 4, 1] = 2 := by eval_rank
+-- a row swap, so that the row arrangement is not the identity; negative and non-integer
+-- entries, which the product obligation carries; more columns than rows; and a rank
+-- deficiency, so that a row of the pivot function is `⊤`
+example : Matrix.rank (R := ℝ) !![0, 0, 3, -1; 1/2, 1, 0, 0; 2, 4, 3, -1] = 2 := by eval_rank
 
 -- no pivot at all: every row of the pivot function is `⊤`
 example : Matrix.rank (R := ℝ) !![0, 0; 0, 0] = 0 := by eval_rank
@@ -147,7 +147,8 @@ example : Matrix.rank (R := ℝ) !![0, 0; 0, 0] = 0 := by eval_rank
 -- no rows, so every quantifier over an index is empty
 example : Matrix.rank (R := ℝ) !![] = 0 := by eval_rank
 
-example : Matrix.rank (R := ℂ) !![1, 2; 2, 4] = 1 := by eval_rank
+-- more rows than columns
+example : Matrix.rank (R := ℂ) !![1, 2; 2, 4; 3, 6] = 1 := by eval_rank
 
 /-! ## Unfolding, rewrites, and simplifications -/
 
@@ -294,7 +295,7 @@ open Polynomial in
 error: `eval_rank` made no progress.
 Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.evalRank] equality does not reduce in the kernel; using `norm_num` leaves
+trace: [Tactic.evalRank] equality in the element type cannot be decided in the kernel; using `norm_num` leaves
       ℚ[X]
 [Tactic.evalRank] the following entry cannot be simplified to a numeral
       X

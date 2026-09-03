@@ -12,9 +12,9 @@ public import Mathlib.Util.Qq
 /-!
 # Certificate construction for the Bareiss decomposition
 
-The certificate constructor from the decomposition data, and the default certifier
-`certifyDecomposition`, which proves the certificate conditions by `decide +kernel`, or from
-proofs of the individual entries supplied by a leaf certifier.
+`certifyDecomposition` builds the `Echelon.Decomposition` certificate from the decomposition
+data, proving each certificate condition by `decide +kernel`, or from proofs of the
+individual entries supplied by a leaf certifier.
 
 ## Main definitions
 
@@ -175,7 +175,8 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   let zero : Q($α) ← mkNumeral α 0
   let iff ← mkAppOptM ``Matrix.isPivotedBy_iff
     #[none, none, none, none, some U, some pivot, none, none]
-  match_expr (← whnfR (← inferType iff)).appArg! with
+  let rhs := (← whnfR (← inferType iff)).appArg!
+  match_expr rhs with
   | And mono rest =>
     match_expr rest with
     | And strict cells =>
@@ -195,17 +196,16 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
       let hStrict ← proveByDecide "strict monotonicity of the pivot function" strict
       mkAppM ``Iff.mpr
         #[iff, ← mkAppM ``And.intro #[hMono, ← mkAppM ``And.intro #[hStrict, entryConds]]]
-    | _ => throwError "unexpected shape of `Matrix.isPivotedBy_iff`:{indentExpr rest}"
-  | _ => throwError "unexpected shape of `Matrix.isPivotedBy_iff`"
+    | _ => throwError "unexpected second conjunct in `Matrix.isPivotedBy_iff`:{indentExpr rest}"
+  | _ => throwError "unexpected statement of `Matrix.isPivotedBy_iff`:{indentExpr rhs}"
 
-/-- Prove the row arrangement `A.submatrix σ id = Aσ`, with `Aσ` the literal `mkMatrixLit`
-built from `entries`, by proving the reindexing functions equal and lifting that with
-`congrArg`. Directly constructing the goal with `.submatrix` causes some exponential explosion
-in kernel unfolds. -/
+/-- Prove the row arrangement `A.submatrix σ id = Aσ`, with `Aσ` the literal `Matrix.of $rows`,
+by proving the reindexing functions equal and lifting that with `congrArg`. Directly
+constructing the goal with `.submatrix` causes some exponential explosion in kernel
+unfolds. -/
 def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m) (Fin $n) $α))
-    (entries : Array (Array Q($α))) (σ : Q(Equiv.Perm (Fin $m))) :
+    (rows : Q(Fin $m → Fin $n → $α)) (σ : Q(Equiv.Perm (Fin $m))) :
     MetaM Q(($A).submatrix $σ id = $Aσ) := do
-  have rows : Q(Fin $m → Fin $n → $α) := mkRowsLit α m n entries
   -- every cell is an equation between two spellings of one entry of `A`, so all of them
   -- close by `rfl` and none consults a leaf certifier
   have reindexed : Q(Fin $m → Fin $n → $α) := q(fun i j => $A ($σ i) (id j))
@@ -259,32 +259,26 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have L := mkMatrixLit α m m data.L
   have U := mkMatrixLit α m n data.U
   let aEntries := data.rowOrder.map (entries[·]!)
-  have Aσ := mkMatrixLit α m n aEntries
+  have aRows : Q(Fin $m → Fin $n → $α) := mkRowsLit α m n aEntries
+  have Aσ : Q(Matrix (Fin $m) (Fin $n) $α) := q(Matrix.of $aRows)
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
-  match leaf? with
-  | none =>
-    -- the type has decidable equality; every proof term can be constructed by `decide`
-    have hperm : Q(($A).submatrix $σ id = $Aσ) :=
-      ← proveByDecide "the row arrangement" q(($A).submatrix $σ id = $Aσ)
-    have hprod : Q($L * $Aσ = $U) :=
-      ← proveByDecide "the product of the transform" q($L * $Aσ = $U)
-    have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
-    let hpivot ← proveByDecide "the echelon-pivot condition" q(($U).IsPivotedBy $pivot)
-    let hlower ← proveByDecide "lower triangularity of the transform"
-      q(($L).IsLowerTriangular)
-    let hdiag ← proveByDecide "the nonzero diagonal of the transform"
-      q(∀ i, ($L).diag i ≠ 0)
-    return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
-  | some leaf =>
-    have hperm : Q(($A).submatrix $σ id = $Aσ) := ← certifyPermEq A Aσ aEntries σ
-    have hprod : Q($L * $Aσ = $U) :=
-      ← certifyProductEq _cr L data.L Aσ aEntries U data.U leaf
-    have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
-    have hpivot : Q(($U).IsPivotedBy $pivot) :=
-      ← certifyPivotedBy _cr U data.U pivot data.pivot leaf
-    have hlower : Q(($L).IsLowerTriangular) := ← certifyLowerTriangular _cr L
-    have hdiag : Q(∀ i, ($L).diag i ≠ 0) := ← certifyNonzeroDiag _cr L data.L leaf
-    return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
+  let cond (name : String) (p : Q(Prop)) (certify : LeafCertifier → MetaM Q($p)) :
+      MetaM Q($p) :=
+    match leaf? with
+    | none => proveByDecide name p
+    | some leaf => certify leaf
+  let hperm ← cond "the row arrangement" q(($A).submatrix $σ id = $Aσ) fun _ =>
+    certifyPermEq A Aσ aRows σ
+  let hprod ← cond "the product of the transform" q($L * $Aσ = $U) fun leaf =>
+    certifyProductEq _cr L data.L Aσ aEntries U data.U leaf
+  have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
+  let hpivot ← cond "the echelon-pivot condition" q(($U).IsPivotedBy $pivot) fun leaf =>
+    certifyPivotedBy _cr U data.U pivot data.pivot leaf
+  let hlower ← cond "lower triangularity of the transform" q(($L).IsLowerTriangular) fun _ =>
+    certifyLowerTriangular _cr L
+  let hdiag ← cond "the nonzero diagonal of the transform" q(∀ i, ($L).diag i ≠ 0) fun leaf =>
+    certifyNonzeroDiag _cr L data.L leaf
+  return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
 
 end Mathlib.Tactic.Echelon
