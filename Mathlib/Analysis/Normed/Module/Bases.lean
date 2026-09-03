@@ -5,15 +5,8 @@ Authors: Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.Sym.Sym2
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.RingTheory.LocalRing.Basic
-public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Schauder Bases and Generalized Bases
@@ -138,6 +131,32 @@ abbrev UnconditionalSchauderBasis (β : Type*)
     (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X] :=
   GeneralSchauderBasis β 𝕜 X (SummationFilter.unconditional β)
 
+namespace Module.Basis
+
+open SummationFilter
+
+variable [CompleteSpace 𝕜] [Finite β]
+
+/-- When there is a finite basis, it can be regarded as an unconditional Schauder basis. -/
+def toUnconditionalSchauderBasis (b : Module.Basis β 𝕜 X) :
+    UnconditionalSchauderBasis β 𝕜 X :=
+  letI : Fintype β := Fintype.ofFinite β
+  letI : FiniteDimensional 𝕜 X := b.finiteDimensional_of_finite
+  { basis := b
+    coord i := (b.coord i).toContinuousLinearMap
+    ortho i j := by simp [Finsupp.single]
+    expansion x := by simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) }
+
+@[simp]
+lemma basis_toUnconditionalSchauderBasis (b : Module.Basis β 𝕜 X) :
+    b.toUnconditionalSchauderBasis.basis = b := rfl
+
+@[simp]
+lemma coord_toUnconditionalSchauderBasis_eq_coord (b : Module.Basis β 𝕜 X) (i : β) (x : X) :
+    b.toUnconditionalSchauderBasis.coord i x = b.coord i x := rfl
+
+end Module.Basis
+
 /-- Coercion from a `GeneralSchauderBasis` to the underlying basis function. -/
 instance : CoeFun (GeneralSchauderBasis β 𝕜 X L) (fun _ ↦ β → X) where
   coe b := b.basis
@@ -145,6 +164,16 @@ attribute [coe] GeneralSchauderBasis.basis
 namespace GeneralSchauderBasis
 
 variable (b : GeneralSchauderBasis β 𝕜 X L)
+
+/-- The expansion of `x` as `tsum`. -/
+@[simp]
+theorem tsum_coord_smul [L.NeBot] (x : X) :
+    ∑'[L] i, b.coord i x • b i = x := (b.expansion x).tsum_eq
+
+/-- The expansion of `x` as `sum` when `Fintype β`. -/
+@[simp]
+theorem sum_coord_smul [Fintype β] [L.LeAtTop] [L.NeBot] (x : X) :
+    ∑ i, b.coord i x • b i = x := (hasSum_fintype _ L).unique (b.expansion x)
 
 /-- The basis vectors are linearly independent. -/
 theorem linearIndependent : LinearIndependent 𝕜 b := by
