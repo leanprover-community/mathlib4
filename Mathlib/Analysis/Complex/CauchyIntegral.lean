@@ -883,23 +883,6 @@ private lemma hzero (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s :
       · grind [hcont.mono, reProdIm_subset_iff, uIcc_of_le]
       · grind [mem_reProdIm]
 
-/-- A direct consequence of the **Cauchy-Goursat Theorem for rectangles**: given the conditions of
-the Cauchy-Goursat Theorem between two vertical lines in the Complex plane, fixing some `y`, the
-integral around rectangles bounded by these vertical lines, the horizontal line with imaginary
-part `y`, and a horizontal line with imaginary part `m` is eventually equal to `0`.
-
-By Cauchy-Goursat, it is immediate that this is true when `m ≥ y`. Indeed, the contents of this
-lemma are not particularly nontrivial. The point is to state this fact using `eventually` result so
-it will be compatible with `tendsto_congr'`, which is useful for applications. -/
-lemma integral_boundary_rect_eq_zero_eventually_atTop_of_differentiable_on_off_countable
-    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
-    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x) :
-    (fun (m : ℝ) ↦
-      (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) -
-      (∫ (x : ℝ) in x₁..x₂, f (x + m * I)) +
-      (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) -
-      (I • ∫ (t : ℝ) in y..m, f (x₁ + t * I))) =ᶠ[atTop] (fun (_ : ℝ) ↦ 0) := by
-  filter_upwards [eventually_ge_atTop y] with m hm using hzero y hcont s hs hdiff m hm
 
 end eventually_eq_zero
 
