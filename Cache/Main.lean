@@ -12,7 +12,7 @@ import Cache.Query
 import Cache.Warning
 
 /-- The known container names, interpolated into the help text so the list
-cannot drift from the model. -/
+always matches `Container.all`. -/
 def knownContainersLine : String :=
   ", ".intercalate (Cache.Requests.Container.all.map Cache.Requests.Container.name)
 
@@ -38,23 +38,23 @@ Commands:
   stage!       Move all linked cache files to an output directory
   unstage      Copy *.ltar files from the staging directory to the local cache
   unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
-  put          Run 'pack', then upload the files this build links, straight
-               from the local cache: the build graph scopes the upload, so
-               nothing else in the shared cache directory leaves the machine.
-               Uploads to the --container of choice with the same path
-               contract 'get' reads (a scope adds the per-commit namespace
-               and its marker). Needs an upload credential; see below.
+  put          Run 'pack', then upload the files this build links from the
+               local cache. The build graph scopes the upload: nothing else
+               in the shared cache directory leaves the machine. Uploads to
+               the selected --container with the same path contract 'get'
+               reads; a scope adds the per-commit namespace and its marker.
+               Needs an upload credential; see below.
   put!         Same as 'put', overwriting files the server already holds.
-  put-staged   Bulk-upload the *.ltar files in the staging directory to the
-               --container of choice, under the same path contract. The
-               CI upload path, and the engine-flexible one:
-               MATHLIB_CACHE_UPLOADER applies here.
+  put-staged   Upload the *.ltar files in the staging directory to the
+               selected --container, under the same path contract. CI
+               uploads with this command; MATHLIB_CACHE_UPLOADER selects
+               its transfer engine.
 
-Uploading needs a writer credential that only CI normally holds. Anyone
+Uploading needs a writer credential, which normally only CI holds. Anyone
 operating their own cache endpoint does not need 'put': 'stage' the
 artifacts, upload the staging directory under the endpoint's `f/` path with
 any storage client, and serve it to readers via MATHLIB_CACHE_GET_URL (see
-Cache/README.md for the recipe).
+Cache/README.md).
 
 Options:
   --repo=OWNER/REPO  Override the repository to fetch (or upload) cache for
@@ -87,8 +87,8 @@ Options:
                      1). Implies --unsafe.
 
 * Linked files refer to local cache files with corresponding Lean sources
-* Commands ending with '!' skip nothing: use them manually when a hot-fix needs
-  to force re-downloading, re-packing, or overwriting
+* Commands ending with '!' skip no files: use them manually when a hot-fix
+  needs to force re-downloading, re-packing, or overwriting
 
 # The arguments for 'get', 'get!', 'get-' and 'lookup'
 
@@ -158,7 +158,6 @@ its own early dispatch. -/
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!"]
 
-
 open Cache Cli IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if args.isEmpty || parseFlagOpt "help" args then
@@ -180,7 +179,6 @@ def main (args : List String) : IO Unit := do
   useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
 
   let repo? ← parseNamedOpt "repo" options
-
   let stagingDir? ← parseNamedOpt "staging-dir" options
   let cacheFromStr? ← parseNamedOpt "cache-from" options
   let containerStr? ← parseNamedOpt "container" options
@@ -254,11 +252,10 @@ def main (args : List String) : IO Unit := do
   | "query" :: _ =>
     IO.eprintln "Usage: cache query [REF]"
     Process.exit 1
-  -- `put-staged` uploads the staging directory: it needs no
-  -- hash memo, so it dispatches here, with `query`, before the expensive
-  -- build below. Sharing this binary with `get` is deliberate — the upload
-  -- writes with the same URL construction the reads use, so the two sides
-  -- cannot drift apart.
+  -- `put-staged` uploads the staging directory: it needs no hash memo, so it
+  -- dispatches here, with `query`, before the expensive build below. The
+  -- upload uses the same URL construction as the reads, so both sides follow
+  -- one path contract.
   | ["put-staged"] =>
     let some stagingDir := stagingDir? | do
       IO.eprintln "put-staged requires --staging-dir= (it uploads a staged set; \
@@ -278,8 +275,8 @@ def main (args : List String) : IO Unit := do
     let markerSha? ← if container?.isSome then getRepoScope else pure none
     let auth ← getUploadAuth
     -- MATHLIB_CACHE_UPLOADER selects the transfer engine. The rclone engine
-    -- exists only for the S3 pair (`resolveUploadEngine` enforces it); every
-    -- other combination takes the curl engine below.
+    -- requires the S3 credential pair (`resolveUploadEngine` enforces this);
+    -- every other combination uses the curl engine below.
     match ← resolveUploadEngine auth, auth with
     | .rclone, .s3 keyId secret sessionToken? =>
       putStagedViaRclone dest keyId secret sessionToken? markerSha? stagingDir
@@ -343,9 +340,8 @@ def main (args : List String) : IO Unit := do
   -- `pack`-and-upload: the hash memo scopes the file list to what this
   -- checkout's build links, so nothing else in the shared per-user cache
   -- directory leaves the machine. It shares `put-staged`'s destination and
-  -- credential resolution and uploads with the built-in curl engine —
-  -- MATHLIB_CACHE_UPLOADER applies to `put-staged`, whose staged set is what
-  -- the rclone engine copies.
+  -- credential resolution but always uploads with the built-in curl engine;
+  -- MATHLIB_CACHE_UPLOADER applies only to `put-staged`.
   let put (overwrite := false) := do
     let repo := repo?.getD MATHLIBREPO
     let dest ← stagedUploadDest container? repo

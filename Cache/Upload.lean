@@ -9,7 +9,7 @@ import Cache.Marker
 /-!
 # Cache uploads
 
-Everything that moves staged bytes to a cache destination lives here:
+This module holds everything that moves staged bytes to a cache destination:
 
 * the upload credentials (`UploadAuth`) and their resolution from the
   environment;
@@ -20,8 +20,8 @@ Everything that moves staged bytes to a cache destination lives here:
 * the per-SHA marker upload (`uploadMarker`).
 
 The read side (`Cache/Requests.lean`) shares the path contract through
-`filePathPrefix` and `markerDirPath` (`Cache/Infra.lean`), so no upload
-engine can drift from the URLs the readers probe.
+`filePathPrefix` and `markerDirPath` (`Cache/Infra.lean`), so every upload
+engine addresses the URLs the readers probe.
 -/
 
 namespace Cache.Requests
@@ -130,7 +130,7 @@ relative prefixes for a staged set. The precedence:
    wrapper warns.
 
 The prefixes build on `filePathPrefix` and `markerDirPath`, the same policies
-the reads use, so no upload path can drift from the path contract.
+the reads use, so every upload path follows the read-side path contract.
 -/
 def stagedUploadDestFrom (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :
@@ -262,9 +262,9 @@ def putFilesAbsolute
 
 /--
 Upload a tiny marker blob to `{markerPrefix}/{sha}` of the already-resolved
-destination (see `stagedUploadDest`), so the marker lands where the artifacts
-just went. The blob content is the SHA itself, as a debugging aid; existence
-is the signal.
+destination (see `stagedUploadDest`), so the marker lands at the same
+destination as the artifacts. The blob content is the SHA itself, as a
+debugging aid; existence is the signal.
 
 Called from `cache put` after the `.ltar` artifact uploads complete. A marker
 overwrites freely (its content is its own name), so a re-upload of an
@@ -272,11 +272,11 @@ already-marked commit does not fail here. If this PUT fails the artifacts are
 already uploaded — the only loss is that `cache query` will not find this
 commit — so failures here are logged but not fatal.
 
-A marker speaks only for its own destination: it asserts that the writing
+A marker applies only to its own destination: it records that the writing
 `put` completed there. When several destinations receive uploads
-independently, one destination's markers do not assert that it holds a
-commit's full transitive closure; the infrastructure documentation governs
-when a destination's markers may be trusted for completeness.
+independently, one destination's marker does not say that the destination
+holds a commit's full transitive closure; the infrastructure documentation
+governs when a destination's markers may be trusted for completeness.
 -/
 def uploadMarker (dest : StagedUploadDest) (sha : String) (auth : UploadAuth) :
     IO Unit := do
@@ -311,7 +311,7 @@ Resolve the transfer engine from `MATHLIB_CACHE_UPLOADER` (`uploader?`):
 * unset or `curl`: the built-in curl engine.
 * `rclone`: a system rclone, required — a missing binary or non-S3
   credentials error rather than silently changing engines.
-* `auto`: rclone when the binary answers and the credentials are the S3
+* `auto`: rclone when the binary is available and the credentials are the S3
   pair; the curl engine otherwise. rclone signs S3 requests only, so the
   Azure mechanisms always take the curl engine.
 
@@ -328,13 +328,13 @@ def uploadEngineFrom (uploader? : Option String) (authIsS3 rcloneAvailable : Boo
       .error "MATHLIB_CACHE_UPLOADER=rclone signs uploads with the S3 credential pair, \
         and the environment provides a different upload mechanism"
     else if !rcloneAvailable then
-      .error "MATHLIB_CACHE_UPLOADER=rclone, but rclone did not answer on PATH"
+      .error "MATHLIB_CACHE_UPLOADER=rclone, but no working rclone was found on PATH"
     else .ok .rclone
   | some "auto" => .ok (if authIsS3 && rcloneAvailable then .rclone else .curl)
   | some other =>
     .error s!"unknown MATHLIB_CACHE_UPLOADER value '{other}' (known: curl, rclone, auto)"
 
-/-- Whether a working rclone answers on PATH. -/
+/-- Whether a working rclone is available on PATH. -/
 def rcloneAvailable : IO Bool := do
   try
     let out ← IO.Process.output { cmd := "rclone", args := #["version"] }
@@ -380,7 +380,7 @@ def rcloneCommonFlags : Array String := #["--s3-no-check-bucket", "--retries", "
 
 /--
 The rclone invocation for the staged `.ltar` files: a directory copy into the
-files prefix. `--ignore-existing` declines objects the destination already
+files prefix. `--ignore-existing` skips objects the destination already
 holds, matching the curl engine's `If-None-Match: *`; artifact names are
 content hashes, so a skipped re-put loses nothing.
 -/
@@ -403,7 +403,7 @@ def rcloneMarkerArgs (bucketPath : String) (dest : StagedUploadDest)
 The rclone S3 backend configuration, passed through the child environment so
 no credential reaches a command line. `RCLONE_S3_SESSION_TOKEN` is set for a
 temporary credential and cleared otherwise, so a stale token in the caller's
-environment cannot ride along. Region `auto` matches the curl engine's SigV4
+environment is not inherited. Region `auto` matches the curl engine's SigV4
 region. rclone refuses to run without a provider, so `provider` must carry
 one; `putStagedViaRclone` keeps the caller's `RCLONE_S3_PROVIDER` and
 defaults to the generic `Other`. Every other `RCLONE_S3_*` option inherits

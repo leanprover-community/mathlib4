@@ -96,8 +96,8 @@ def parse? (s : String) : Option Container :=
 /--
 The container's segment in the URL contract: read URLs are
 `{base}/{pathSegment}/{key}`, and a bucket backend uses the same string as its
-key prefix. The segment doubles as the Azure storage container name on the
-`lakecache` account, which is why `Container.azureURL` reuses it.
+key prefix. The segment is also the Azure storage container name on the
+`lakecache` account; `Container.azureURL` builds its URL from it.
 
 Trust-level containers follow the `mathlib4-{name}` convention; `legacy` is the
 bare `mathlib4` segment.
@@ -141,9 +141,8 @@ end Container
 The path prefix between `f/` and the file name, per the container's layout
 policy (`Container.flatPath`): empty for a flat container, `{repo}/` for a
 repo-namespaced one, `{repo}/{scope}/` when a per-SHA scope applies. `repo` is
-lowercased via `normalizeRepo`. `mkFileURL` and the staged-upload destination
-(`stagedUploadDestFrom`) both build on this, so reads and every upload engine
-share one path contract by construction.
+lowercased via `normalizeRepo`. `mkFileURL` and `stagedUploadDestFrom` both
+build on this, so reads and uploads share one path contract.
 -/
 def filePathPrefix (container : Option Container) (repo : String)
     (repoScope : Option String) : String :=

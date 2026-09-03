@@ -1496,7 +1496,7 @@ def test_s3EndpointSplit : IO Unit := do
     (s3EndpointSplit "host.example/bucket" matches .error _)
 
 /-- The rclone invocations, pinned: the files copy filters to `*.ltar` and
-declines existing objects (the curl engine's `If-None-Match: *`); the marker
+skips existing objects (the curl engine's `If-None-Match: *`); the marker
 copy overwrites freely, like the curl marker put; and both remotes are the
 same `{prefix}/{name}` shape every other engine addresses. -/
 def test_rcloneArgs : IO Unit := do
@@ -1509,7 +1509,7 @@ def test_rcloneArgs : IO Unit := do
     assertTrue "files copy is a copy" (files[0]! == "copy")
     assertTrue "files copy filters to ltar"
       ((files.toList.zip files.toList.tail).contains ("--include", "*.ltar"))
-    assertTrue "files copy declines existing objects"
+    assertTrue "files copy skips existing objects"
       (files.contains "--ignore-existing")
     assertTrue "files copy skips the bucket-creation probe"
       (files.contains "--s3-no-check-bucket")
@@ -1584,7 +1584,7 @@ def test_putStagedViaRclone : IO Unit := do
     -- The env parameter extends the parent environment (each pair sets or
     -- unsets one variable), so the child keeps HOME, PATH, and any RCLONE_*
     -- tuning of the caller. Pinned here so a runtime change cannot silently
-    -- strand rclone without them.
+    -- drop them from rclone's environment.
     assertTrue "the parent environment is inherited alongside the credentials"
       ((copyEnv.splitOn "\n").any (·.startsWith "HOME="))
     -- The fake exits 3 on `copyto`, so this pins the marker invocation shape

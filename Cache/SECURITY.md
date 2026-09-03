@@ -40,7 +40,7 @@ containers a consumer reads from:
 | forks (PRs)             | `master`, `forks`    |
 
 The table shows trust classes; every chain also ends with the
-read-only `legacy` container, elided here. The nightly chain includes `forks`
+read-only `legacy` container, omitted here. The nightly chain includes `forks`
 because PRs from that repo into mathlib4 upload there; it excludes
 `pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
 branch cannot reach a trusted nightly consumer.
@@ -75,9 +75,9 @@ outside the one container the credential grants.
 
 The cache binary is built from a trusted branch, never from the PR's checkout,
 so the PR's toolchain never reaches the compiler that produces it. Reads and
-uploads share one binary on purpose: `put` writes with the same URL
-construction `get` reads, so the write path cannot drift from the read
-contract. The isolation is the job, not the binary. The binary runs in two
+uploads share one binary: `put` writes with the same URL construction `get`
+reads, so the write path always matches the read contract. Isolation comes
+from the job split, not from separate binaries. The binary runs in two
 separate jobs — one that fetches and packs artifacts, one that uploads
 them — and each job builds its own copy from the trusted source. The PR's own
 build writes only its artifacts, which the trusted binary later packs.
@@ -142,27 +142,24 @@ The tool reads no endpoint and no lookup chain from the working tree — there
 is no repo-local cache configuration file, and changes must not add one. The
 reasons:
 
-The design severs tree-to-tool trust deliberately, and the severance is
-load-bearing. In CI, the read-side binary is built from a trusted branch and
-run against the PR's tree; the routing rule is that the lookup policy loads
-from the trusted branch, never from the PR. A tree-sourced configuration file
-would let PR-controlled bytes choose where that trusted binary reads. A read
-endpoint serves unverified artifacts that Lean loads, so endpoint choice is
-code execution. A committed file also persists and
-propagates in a way an environment variable never does: one merged line
-silently redirects every future clone, developer, and CI run of that
+In CI, the read-side binary is built from a trusted branch and run against
+the PR's tree; the lookup policy loads from the trusted branch, never from
+the PR. A tree-sourced configuration file would let PR-controlled bytes
+choose where that trusted binary reads. A read endpoint serves unverified
+artifacts that Lean loads, so endpoint choice is code execution. A committed
+file also persists and propagates in a way an environment variable does not:
+one merged line redirects every future clone, developer, and CI run of that
 repository.
 
-The argument that the lakefile already executes arbitrary code does not
-change this: that equivalence holds only for a user who deliberately builds
-an untrusted branch, and fails for the CI consumer above, which never opted
-in.
+The lakefile can already execute arbitrary code, but only for a user who
+deliberately builds an untrusted branch. The CI consumer above never opts
+in, so a tree-sourced endpoint would expose more than the lakefile does.
 
-The supported way to give a project a default endpoint is to commit the
-*environment*, not tool configuration: a `direnv` `.envrc` (guarded by
-direnv's own per-machine `direnv allow`) or a CI variable, setting
-`MATHLIB_CACHE_GET_URL`. The environment is invoker-owned and per-invocation;
-the tree never names an endpoint.
+A project sets a default endpoint through the environment, not through tool
+configuration: a `direnv` `.envrc` (guarded by direnv's per-machine
+`direnv allow`) or a CI variable, setting `MATHLIB_CACHE_GET_URL`. The
+environment is invoker-owned and per-invocation; the tree never names an
+endpoint.
 
 ## Explicitly out of scope
 

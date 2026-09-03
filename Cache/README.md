@@ -47,14 +47,14 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `stage!`    | Copy all linked cache files to `--staging-dir`                       |
 | `unstage`   | Copy `*.ltar` files from `--staging-dir` into the local cache        |
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
-| `put`       | Run `pack`, then upload the files this build links, straight from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
+| `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
 | `put!`      | Same as `put`, overwriting files the server already holds             |
-| `put-staged`| Bulk-upload the `*.ltar` files in `--staging-dir` to the `--container` of choice, under the same path contract. The CI upload path, and the engine-flexible one: `MATHLIB_CACHE_UPLOADER` applies here. |
+| `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`, under the same path contract. CI uploads with this command; `MATHLIB_CACHE_UPLOADER` selects its transfer engine. |
 
-Upload and read live in one binary on purpose: the upload commands write
-with the same URL construction `get` reads, so the two sides cannot drift
-apart. Uploading needs a writer credential in the environment, which CI
-mints per job; see the environment variables in `lake exe cache --help`.
+The upload commands write with the same URL construction `get` reads, so
+uploads and reads follow one path contract. Uploading needs a writer
+credential in the environment, which CI mints per job; see the environment
+variables in `lake exe cache --help`.
 
 #### The rclone engine
 
@@ -65,19 +65,19 @@ the transfer engine:
   request; an upload never replaces an existing object (`If-None-Match: *`).
 - `rclone`: a system [rclone](https://rclone.org). The tool resolves the
   same destination the curl engine addresses and hands rclone the S3
-  credentials through its environment (`RCLONE_S3_*`), so this engine works
-  exactly when the S3 credential pair is the upload mechanism. rclone brings
-  transfer scheduling for large staged sets and verifies each object's
-  checksum after upload. `--ignore-existing` stands in for `If-None-Match`.
-- `auto`: `rclone` when the binary answers on PATH and the credentials are
-  the S3 pair; `curl` otherwise.
+  credentials through its environment (`RCLONE_S3_*`); this engine requires
+  the S3 credential pair. rclone schedules transfers for large staged sets
+  and verifies each object's checksum after upload. `--ignore-existing`
+  replaces `If-None-Match`.
+- `auto`: `rclone` when the binary is available on PATH and the credentials
+  are the S3 pair; `curl` otherwise.
 
 The tool sets the rclone credentials, endpoint, provider (`Other` unless the
 environment names one), and region; every other `RCLONE_S3_*` option
 inherits from the environment, so an operator can set
 `RCLONE_S3_PROVIDER=Cloudflare` without a tool change.
 
-Anyone operating a cache of their own does not need the upload commands at all.
+Anyone operating their own cache does not need the upload commands.
 The path contract for a `MATHLIB_CACHE_GET_URL` endpoint: readers request
 `{endpoint}/f/{hash}.ltar` — the flat `f/` namespace — so the staged files
 must land under an `f/` prefix on your storage. (`stage` writes the `.ltar`
@@ -92,12 +92,11 @@ rclone copy ./cache-out remote:my-bucket/my-prefix/f/
 MATHLIB_CACHE_GET_URL=https://cache.example.org/my-prefix lake exe cache get
 ```
 
-To make that endpoint the project default for everyone who clones your
-repo, commit the environment, not a config file the tool would have to
-trust. Use a [`direnv`](https://direnv.net) `.envrc` with
-`export MATHLIB_CACHE_GET_URL=...` — `direnv allow` is a deliberate
-per-machine opt-in — and set the same variable in your CI configuration. The
-cache tool itself never reads endpoints from the working tree; see
+To make that endpoint the default for everyone who clones your repo, set it
+in the environment: a [`direnv`](https://direnv.net) `.envrc` with
+`export MATHLIB_CACHE_GET_URL=...` (each machine opts in with
+`direnv allow`), and the same variable in your CI configuration. The cache
+tool reads no endpoints from the working tree; see
 [`SECURITY.md`](./SECURITY.md#no-routing-configuration-from-the-working-tree).
 
 ### Arguments
