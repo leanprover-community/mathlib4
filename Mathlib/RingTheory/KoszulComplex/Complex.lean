@@ -52,6 +52,7 @@ The Koszul complex of a sequence `f₁, …, fᵣ` of elements of `R` is the spe
 ## References
 
 * [The Stacks project, Section 15.29 *The Koszul complex*](https://stacks.math.columbia.edu/tag/0621)
+-/
 
 @[expose] public section
 
