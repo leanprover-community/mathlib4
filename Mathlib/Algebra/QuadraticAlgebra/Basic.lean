@@ -94,10 +94,6 @@ theorem basis_apply_one : basis a b 1 = ω := by
   ext <;> simp [basis]
 
 @[simp]
-theorem basis_apply_one : (basis a b) 1 = ω := by
-  ext <;> simp [basis]
-
-@[simp]
 theorem omega_mul_mk (x y : R) : (ω : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨a * y, x + b * y⟩ := by
   ext <;> simp
 
