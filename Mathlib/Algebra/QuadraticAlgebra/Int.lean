@@ -6,7 +6,9 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
+public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.NumberTheory.FundamentalDiscriminant
+public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
