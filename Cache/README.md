@@ -47,18 +47,19 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `stage!`    | Copy all linked cache files to `--staging-dir`                       |
 | `unstage`   | Copy `*.ltar` files from `--staging-dir` into the local cache        |
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
-| `put`       | Bulk-upload the `*.ltar` files in `--staging-dir` to the `--container` of choice; a `--scope` adds the per-commit namespace and its completeness marker. `put-staged` is an accepted alias. |
+| `put`       | Run `pack`, then upload the files this build links, straight from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
+| `put!`      | Same as `put`, overwriting files the server already holds             |
+| `put-staged`| Bulk-upload the `*.ltar` files in `--staging-dir` to the `--container` of choice, under the same path contract. The CI upload path, and the engine-flexible one: the upload hook and `MATHLIB_CACHE_UPLOADER` apply here. |
 
-Upload and read live in one binary on purpose: `put` writes with the same
-URL construction `get` reads, so the two sides cannot drift apart. `put`
-needs a writer credential in the environment, which CI mints per job; see
-the environment variables in `lake exe cache --help`. There is no
-pack-and-upload command: `pack`, `stage`, and `put` compose that flow.
+Upload and read live in one binary on purpose: the upload commands write
+with the same URL construction `get` reads, so the two sides cannot drift
+apart. Uploading needs a writer credential in the environment, which CI
+mints per job; see the environment variables in `lake exe cache --help`.
 
 #### The rclone engine
 
-`put` uploads with curl by default. `MATHLIB_CACHE_UPLOADER` selects the
-transfer engine when no upload hook is set:
+`put-staged` uploads with curl by default. `MATHLIB_CACHE_UPLOADER` selects
+the transfer engine when no upload hook is set:
 
 - `curl` (the default): the built-in engine. Parallel PUTs, each signed per
   request; an upload never replaces an existing object (`If-None-Match: *`).
@@ -78,7 +79,7 @@ inherits from the environment, so an operator can set
 
 #### The upload hook
 
-`MATHLIB_CACHE_UPLOAD_HOOK` hands `put`'s transfers to an external uploader,
+`MATHLIB_CACHE_UPLOAD_HOOK` hands `put-staged`'s transfers to an external uploader,
 for bulk-transfer performance or a transport the built-in curl path does not
 speak. The tool still resolves the destination — the same path contract the
 reads use — and runs the hook twice: once for the staged files, once for the
@@ -95,7 +96,7 @@ is relative to the configured upload base: `MATHLIB_CACHE_PUT_BASE_URL` or
 `MATHLIB_CACHE_PUT_URL`, else the Azure account. `<absolute-dest-prefix>` is
 the base-joined form. Use whichever fits your remote naming; when no base is
 configured, key on the relative form. The staging directory can hold other
-temporary files, so copy `*.ltar` only. A nonzero exit fails the `put` (a
+temporary files, so copy `*.ltar` only. A nonzero exit fails the upload (a
 marker failure — the second invocation, made when a scope and a container
 apply — only warns). One contract difference from the built-in path: curl
 uploads never replace an existing object (`If-None-Match: *`), while
@@ -157,8 +158,8 @@ When arguments are provided, only the specified files and their transitive impor
 | `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Triggers the non-default-scope security notice. |
 | `--unsafe`          | For `get`/`get!`/`get-`: instead of pinning one `--scope`, automatically walk this branch's history and read the `forks` container at the most recent cached fork commit (newest first if `--unsafe-window` allows more than one), until the cache is satisfied (see [Unsafe automatic scope walk](#unsafe-automatic-scope-walk)). Mutually exclusive with `--scope`; always triggers the security notice. |
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
-| `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`/`put`: the staging directory. |
-| `--container=NAME`  | For `put`: the target container. |
+| `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`/`put-staged`: the staging directory. |
+| `--container=NAME`  | For `put`/`put!`/`put-staged`: the target container. |
 
 Container names (for `--cache-from` and `--container`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 
@@ -188,7 +189,7 @@ lake exe cache get --cache-from=master
 lake exe cache get --cache-from=master,forks
 ```
 
-Uploads (`cache put`) target a single container via `--container=NAME`.
+Uploads (`put`, `put!`, `put-staged`) target a single container via `--container=NAME`.
 
 ## Public cache endpoint
 

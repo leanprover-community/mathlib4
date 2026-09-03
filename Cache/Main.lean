@@ -40,11 +40,17 @@ Commands:
   stage!       Move all linked cache files to an output directory
   unstage      Copy *.ltar files from the staging directory to the local cache
   unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
-  put          Bulk-upload the *.ltar files in the staging directory to the
-               --container of choice, with the same path contract 'get' reads
-               (a scope adds the per-commit namespace and its marker). Needs an
-               upload credential in the environment; see below. 'put-staged' is
-               an accepted alias.
+  put          Run 'pack', then upload the files this build links, straight
+               from the local cache: the build graph scopes the upload, so
+               nothing else in the shared cache directory leaves the machine.
+               Uploads to the --container of choice with the same path
+               contract 'get' reads (a scope adds the per-commit namespace
+               and its marker). Needs an upload credential; see below.
+  put!         Same as 'put', overwriting files the server already holds.
+  put-staged   Bulk-upload the *.ltar files in the staging directory to the
+               --container of choice, under the same path contract. The
+               CI upload path, and the engine-flexible one: the upload hook
+               and MATHLIB_CACHE_UPLOADER apply here.
 
 Uploading needs a writer credential that only CI normally holds. Anyone
 operating their own cache endpoint does not need 'put': 'stage' the
@@ -55,8 +61,9 @@ Cache/README.md for the recipe).
 Options:
   --repo=OWNER/REPO  Override the repository to fetch (or upload) cache for
   --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage',
-                     'unstage!' and 'put': staging directory.
-  --container=NAME   For 'put': target container. Known containers:
+                     'unstage!' and 'put-staged': staging directory.
+  --container=NAME   For 'put', 'put!' and 'put-staged': target container.
+                     Known containers:
                      " ++ knownContainersLine ++ ". Pass this
                      explicitly; with neither it nor MATHLIB_CACHE_PUT_URL
                      set, the upload falls back to `legacy` and warns.
@@ -137,7 +144,7 @@ Upload destination overrides for 'put':
 * MATHLIB_CACHE_PUT_URL   Upload to this single URL as a flat namespace. Any
                           set value counts, an empty one included.
 * MATHLIB_CACHE_UPLOAD_HOOK
-                          External uploader for 'put': the tool resolves the
+                          External uploader for 'put-staged': the tool resolves the
                           destination and runs
                             HOOK <local> <relative-dest> <absolute-dest>
                           once for the staged *.ltar files and once for the
@@ -146,7 +153,8 @@ Upload destination overrides for 'put':
                           copies into the destination prefix, preserving base
                           names, with its own transport and credentials (e.g.
                           a script around rclone). See Cache/README.md.
-* MATHLIB_CACHE_UPLOADER  Transfer engine for 'put' when no hook is set:
+* MATHLIB_CACHE_UPLOADER  Transfer engine for 'put-staged' when no hook is
+                          set:
                           'curl' (the default), 'rclone' (a system rclone,
                           required), or 'auto' (rclone when available and the
                           credentials are the S3 pair; curl otherwise). The
@@ -159,10 +167,10 @@ variables above, except MATHLIB_CACHE_PUT_URL, where any set value counts.
 See Cache/README.md for more details.
 "
 
-/-- Commands which (potentially) call `curl` for downloading files. `put`
-validates curl in its own early dispatch. -/
+/-- Commands which (potentially) call `curl`. `put-staged` validates curl in
+its own early dispatch. -/
 def curlArgs : List String :=
-  ["get", "get!", "get-"]
+  ["get", "get!", "get-", "put", "put!"]
 
 
 open Cache Cli IO Hashing Requests System in
@@ -266,15 +274,16 @@ def main (args : List String) : IO Unit := do
   | "query" :: _ =>
     IO.eprintln "Usage: cache query [REF]"
     Process.exit 1
-  -- `put` (alias `put-staged`) uploads the staging directory: it needs no
+  -- `put-staged` uploads the staging directory: it needs no
   -- hash memo, so it dispatches here, with `query`, before the expensive
   -- build below. Sharing this binary with `get` is deliberate — the upload
   -- writes with the same URL construction the reads use, so the two sides
   -- cannot drift apart.
-  | ["put"] | ["put-staged"] =>
+  | ["put-staged"] =>
     let some stagingDir := stagingDir? | do
-      IO.eprintln "put requires --staging-dir= (put uploads a staged set; \
-        produce one with `cache pack` and `cache stage --staging-dir=DIR`)"
+      IO.eprintln "put-staged requires --staging-dir= (it uploads a staged set; \
+        produce one with `cache pack` and `cache stage --staging-dir=DIR`, \
+        or pack-and-upload in one step with `cache put`)"
       Process.exit 1
     let stagingDir : FilePath := stagingDir
     if !(← stagingDir.isDir) then
@@ -309,13 +318,13 @@ def main (args : List String) : IO Unit := do
       if let some sha := markerSha? then
         uploadMarker dest sha auth
     return
-  | "put" :: _ | "put-staged" :: _ =>
-    IO.eprintln "Usage: cache put --staging-dir=DIR [--container=NAME] [--repo=OWNER/REPO]"
+  | "put-staged" :: _ =>
+    IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] [--repo=OWNER/REPO]"
     Process.exit 1
-  | "put!" :: _ | "put-unpacked" :: _ | "commit" :: _ | "commit!" :: _ =>
-    IO.eprintln "There is no pack-and-upload command: `put` uploads a staging \
-      directory. Compose the flow from `cache pack` (or `pack!`), `cache stage \
-      --staging-dir=DIR`, and `cache put --staging-dir=DIR --container=NAME`."
+  | "put-unpacked" :: _ | "commit" :: _ | "commit!" :: _ =>
+    IO.eprintln "This command is retired: `put` packs and uploads the files this \
+      build links (`put!` overwrites), and `put-staged` uploads a staging \
+      directory produced by `cache stage`."
     Process.exit 1
   | _ => pure ()
 
@@ -358,6 +367,30 @@ def main (args : List String) : IO Unit := do
     getFiles resolvedRepo hashMap force force goodCurl decompress (unsafeScopes := unsafeScopes)
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
+  -- `pack`-and-upload: the hash memo scopes the file list to what this
+  -- checkout's build links, so nothing else in the shared per-user cache
+  -- directory leaves the machine. It shares `put-staged`'s destination and
+  -- credential resolution and uploads with the built-in curl engine — the
+  -- upload hook and MATHLIB_CACHE_UPLOADER apply to `put-staged`, whose
+  -- staged set is what those transports copy.
+  let put (overwrite := false) := do
+    let repo := repo?.getD MATHLIBREPO
+    let dest ← stagedUploadDest container? repo
+    if (← getEnvNonEmpty "MATHLIB_CACHE_UPLOAD_HOOK").isSome
+        || (← getEnvNonEmpty "MATHLIB_CACHE_UPLOADER").isSome then
+      IO.println "note: put uploads its build-scoped file list with the built-in \
+        engine; MATHLIB_CACHE_UPLOAD_HOOK and MATHLIB_CACHE_UPLOADER apply to \
+        `put-staged`"
+    -- Credentials resolve before the pack, so a missing credential fails
+    -- fast instead of after the expensive packing pass.
+    let auth ← getUploadAuth
+    let fileNames ← pack overwrite (verbose := true)
+    let files := fileNames.map (fun (f : String) => IO.CACHEDIR / f)
+    putFilesAbsolute dest (container?.map Container.name |>.getD "(env override)")
+      files IO.CURLCFG overwrite auth
+    if container?.isSome then
+      if let some sha ← getRepoScope then
+        uploadMarker dest sha auth
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do
@@ -372,6 +405,9 @@ def main (args : List String) : IO Unit := do
   | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
   | ["unpack!"] => unpackCache hashMap true
+  -- We allow arguments for `put*` so they can be added to the roots.
+  | "put" :: _ => put
+  | "put!" :: _ => put (overwrite := true)
   | ["unstage"] => unstage
   | ["unstage!"] => unstage (overwrite := true)
   | ["clean"] =>
