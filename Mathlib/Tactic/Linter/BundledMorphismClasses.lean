@@ -39,25 +39,36 @@ meta def morphismClassesToLint : Array Name := #[
   `SemilinearMapClass,
 ]
 
-open Expr
-
 open Batteries.Tactic.Lint in
 /-- Linter that checks for definitions which take a bundled morphism class (such as
 `LinearMapClass`) as an argument: usually, this is a bad idea. -/
 @[env_linter] public meta def defsWithMorphismClass : Batteries.Tactic.Lint.Linter where
-  noErrorsFound := "no definitions with an underscore in their name found."
-  errorsFound := "FOUND definitions with an underscore in their name."
+  noErrorsFound := "no definitions with a bundled morphism argument found."
+  errorsFound := "FOUND definitions with a bundled morphism argument."
   test declName := do
     unless ((← getEnv).find? declName).get!.isDefinition do
       return none
-    -- Type of the definition we are processing: see if
+    -- Type of the definition we are processing.
     let defType := ((← getEnv).find? declName).get!.type
+    -- Attempt at a proper check, re-using the `unusedInstancesInType` linter's logic.
     let unusedInstances ← defType.collectUnnecessaryInstanceBinderIdxsWhere (fun e ↦
       morphismClassesToLint.any fun cls ↦ e.isConstOf cls)
     -- We still lint in the presence of sorries: we don't care about this check!
-    if !unusedInstances.isEmpty then
-      return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument. \
-        Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad
-        idea: please make the definition accept a `LinearMap` argument instead.\n\
-        Note that this linter has false positives if a LinearMapClass is just coerced to a function."
+    -- HACKY check: print the type and check for occurrences of `LinearMapClass`
+    let hackyCheck := (← (m!"{defType}").toString).contains "LinearMapClass"
+    if hackyCheck && unusedInstances.isEmpty then
+    --if !unusedInstances.isEmpty then
+      return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument.\n\
+        Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
+        idea:\nplease change the definition to take in a `LinearMap` argument instead.\n\
+        Note that this linter has false positives if a LinearMapClass is just coerced to a function.\n\
+        Note: the 'proper' linter check doesn't fire here; there's still a bug to fix!"
+    else if !unusedInstances.isEmpty then
+      if !hackyCheck then return m!"curious: proper check reports errors; hacky check succeeds:\n\
+        definition's type is {defType}, proper check reports is {unusedInstances}"
+      else
+        return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument.\n\
+          Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
+          idea:\nplease the definition to take in a `LinearMap` argument instead.\n\
+          Note that this linter has false positives if a LinearMapClass is just coerced to a function."
     return none
