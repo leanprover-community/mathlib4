@@ -6,11 +6,11 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Monoid.PNat
-public import Mathlib.Data.Sign.Defs
+public import Mathlib.Basic.Sign.Defs
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Divisible Hull of an abelian group
