@@ -463,6 +463,10 @@ lemma kernel_submodule (x y : X) :
   refine ext_inner_right 𝕜 ?_
   simp [kernel_apply, kerFun_submodule, Submodule.adjoint_orthogonalProjectionOnto]
 
+lemma kernel_orthogonal : kernel H₀ᗮ = kernel H - kernel H₀ := by
+  ext
+  simp [kernel_submodule]
+
 end RKHSSubmodule
 
 section outerKernel
@@ -515,11 +519,6 @@ lemma kernel_span_singleton (f : H) :
   ext
   simp [kernel_submodule, starProjection_singleton, division_def, smul_smul, mul_comm]
 
-lemma kernel_orthogonal_span_singleton (f : H) :
-    kernel (𝕜 ∙ f)ᗮ = kernel H - (1 / (‖f‖ : 𝕜) ^ 2) • outerKernel 𝕜 f := by
-  ext
-  simp [kernel_submodule, starProjection_singleton, division_def, smul_smul, mul_comm]
-
 open ComplexOrder in
 theorem posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
     ((‖f‖ : 𝕜) ^ 2 • K - outerKernel 𝕜 f).PosSemidef := by
@@ -528,7 +527,7 @@ theorem posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
   have hp : (‖f‖ ^ 2 : 𝕜) ≠ 0 := by simpa
   rw [← smul_inv_smul₀ hp (outerKernel 𝕜 f), ← smul_sub]
   refine Matrix.PosSemidef.smul ?_ (by simp)
-  simpa [kernel_orthogonal_span_singleton] using posSemidef_kernel (𝕜 ∙ f)ᗮ
+  simpa [kernel_span_singleton, kernel_orthogonal] using posSemidef_kernel (𝕜 ∙ f)ᗮ
 
 end outerKernel
 
