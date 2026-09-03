@@ -498,7 +498,7 @@ def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (g : R[X] →ₗ[R] T)
 -/
 def coeff : S →ₗ[R] ℕ → R :=
   h.liftPolyₗ
-    { toFun := Polynomial.coeff
+    { toFun p := ⇑p.coeff
       map_add' p q := funext (Polynomial.coeff_add p q)
       map_smul' c p := funext (Polynomial.coeff_smul c p) }
 
@@ -704,6 +704,13 @@ open scoped IntermediateField
 variable {F E : Type*} [Field F] [Field E] [Algebra F E] {f : F[X]}
 
 namespace IsAdjoinRoot
+
+theorem isField_iff_irreducible {E : Type*} [Ring E] [Algebra F E] (h : IsAdjoinRoot E f) :
+    IsField E ↔ Irreducible f := by
+  rw [← MulEquiv.isField_congr h.adjoinRootAlgEquiv.toMulEquiv, AdjoinRoot.isField_iff_irreducible]
+
+protected theorem irreducible (h : IsAdjoinRoot E f) : Irreducible f :=
+  (isField_iff_irreducible h).mp (Field.toIsField E)
 
 theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
   IntermediateField.adjoin_eq_top_of_algebra F {h.root} (adjoin_root_eq_top h)

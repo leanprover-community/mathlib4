@@ -12,6 +12,8 @@ public import Mathlib.Order.Atoms
 public import Mathlib.Order.RelSeries
 public import Mathlib.Tactic.FinCases
 
+import Mathlib.Data.Nat.Cast.Order.Basic
+
 /-!
 # Krull dimension of a preordered set and height of an element
 
@@ -1048,6 +1050,19 @@ set_option backward.isDefEq.respectTransparency false in
     intro p hlast
     let p' := p.map _ WithTop.coe_strictMono
     apply le_iSup₂_of_le p' (by simp [p', hlast]) (by simp [p'])
+
+/--
+For preorders `α` and `β`, if there is a strictly monotone function `f : WithTop α → β`, then if
+`f x` has coheight `1`, then `x` has coheight `0`.
+-/
+lemma coheight_zero_of_coheight_one_of_strictMono
+    {α β : Type*} [Preorder α] [Preorder β] (f : WithTop α → β) (hf : StrictMono f) (x : α)
+    (h : coheight (f x) = 1) : coheight x = 0 := by
+  have := coheight_le_coheight_apply_of_strictMono f hf x
+  rw [h] at this
+  have h₁ : coheight (x : WithTop α) = 1 := le_antisymm this (by simp)
+  simpa using h₁
+
 
 @[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x :=
   height_coe_withTop (α := αᵒᵈ) x

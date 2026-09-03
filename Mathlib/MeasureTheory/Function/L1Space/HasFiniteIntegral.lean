@@ -32,7 +32,9 @@ finite integral
 
 noncomputable section
 
-open Topology ENNReal MeasureTheory NNReal
+open ENNReal MeasureTheory NNReal
+
+open scoped Topology
 
 open Set Filter TopologicalSpace ENNReal MeasureTheory
 
@@ -507,7 +509,7 @@ end count
 
 section restrict
 
-variable {E : Type*} [NormedAddCommGroup E] {f : α → ε}
+variable {f : α → ε}
 
 @[fun_prop]
 lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :

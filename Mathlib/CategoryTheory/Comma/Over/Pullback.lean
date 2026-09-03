@@ -7,11 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Mates
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-public import Mathlib.CategoryTheory.Monad.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+public import Mathlib.CategoryTheory.Monad.Products
 
 /-!
 # Adjunctions related to the over category
@@ -234,7 +232,6 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
   }
 
 set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in -- simp followed by infer_instance
 /-- The pushout along a mono that's preserved under pushouts is faithful.
 
 This "preserved under pushouts" condition is automatically satisfied in abelian categories:
@@ -244,7 +241,8 @@ example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
 -/
 instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
     [∀ Z (g : X ⟶ Z), Mono (pushout.inl g f)] : (pushout f).Faithful := by
-  have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by simp; infer_instance
+  have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by
+    rw [mapPushoutAdj_unit_app]; infer_instance
   exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
