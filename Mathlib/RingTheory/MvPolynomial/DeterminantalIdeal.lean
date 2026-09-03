@@ -45,14 +45,14 @@ noncomputable def mvPolynomialMinor (R : Type*) [CommRing R]
 
 /-- The unique `0 × 0` generic minor is `1`. -/
 @[simp]
-theorem mvPolynomialMinor_zero (R : Type*) [CommRing R]
+theorem mvPolynomialMinor_zero
     (row : Fin 0 ↪o Fin m) (col : Fin 0 ↪o Fin n) :
     mvPolynomialMinor R row col = 1 := by
   rw [mvPolynomialMinor, detSubmatrix, det_isEmpty]
 
 /-- A `1 × 1` generic minor is the corresponding variable. -/
 @[simp]
-theorem mvPolynomialMinor_one (R : Type*) [CommRing R]
+theorem mvPolynomialMinor_one
     (row : Fin 1 ↪o Fin m) (col : Fin 1 ↪o Fin n) :
     mvPolynomialMinor R row col = MvPolynomial.X (row 0, col 0) := by
   simp [mvPolynomialMinor, detSubmatrix]
@@ -110,7 +110,6 @@ noncomputable def determinantalMinorFinset
 
 /-- Membership in the finite set of all generic minors. -/
 theorem mem_determinantalMinorFinset
-    (R : Type*) [CommRing R]
     {f : MvPolynomial (Fin m × Fin n) R} :
     f ∈ determinantalMinorFinset R m n t
       ↔ ∃ row : Fin t ↪o Fin m, ∃ col : Fin t ↪o Fin n,
@@ -131,25 +130,23 @@ noncomputable def determinantalIdeal
 
 /-- Every `t × t` generic minor belongs to the corresponding determinantal ideal. -/
 theorem mvPolynomialMinor_mem_determinantalIdeal
-    (R : Type*) [CommRing R]
     (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n) :
     Matrix.mvPolynomialMinor R row col ∈ determinantalIdeal R m n t := by
-  exact Ideal.subset_span ((mem_determinantalMinorFinset R).2 ⟨row, col, rfl⟩)
+  exact Ideal.subset_span (mem_determinantalMinorFinset.2 ⟨row, col, rfl⟩)
 
 /-- A determinantal ideal is contained in `J` iff every generating minor belongs to `J`. -/
 theorem determinantalIdeal_le_iff
-    (R : Type*) [CommRing R]
     {J : Ideal (MvPolynomial (Fin m × Fin n) R)} :
     determinantalIdeal R m n t ≤ J
       ↔ ∀ (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n),
         Matrix.mvPolynomialMinor R row col ∈ J := by
   constructor
   · intro h row col
-    exact h (mvPolynomialMinor_mem_determinantalIdeal R row col)
+    exact h (mvPolynomialMinor_mem_determinantalIdeal row col)
   · intro h
     rw [determinantalIdeal]
     exact Ideal.span_le.mpr fun f hf => by
-      rcases (mem_determinantalMinorFinset R).1 hf with ⟨row, col, hI⟩
+      rcases mem_determinantalMinorFinset.1 hf with ⟨row, col, hI⟩
       rw [← hI]
       exact h row col
 
@@ -178,14 +175,14 @@ theorem map_determinantalIdeal
   ext p
   constructor
   · rintro ⟨q, hq, rfl⟩
-    rcases (mem_determinantalMinorFinset R).1 hq with ⟨row, col, hI⟩
+    rcases mem_determinantalMinorFinset.1 hq with ⟨row, col, hI⟩
     rw [← hI]
-    exact (mem_determinantalMinorFinset S).2
+    exact mem_determinantalMinorFinset.2
       ⟨row, col, (Matrix.map_mvPolynomialMinor f row col).symm⟩
   · intro hp
-    rcases (mem_determinantalMinorFinset S).1 hp with ⟨row, col, hI⟩
+    rcases mem_determinantalMinorFinset.1 hp with ⟨row, col, hI⟩
     refine ⟨Matrix.mvPolynomialMinor R row col,
-      (mem_determinantalMinorFinset R).2 ⟨row, col, rfl⟩, ?_⟩
+      mem_determinantalMinorFinset.2 ⟨row, col, rfl⟩, ?_⟩
     rw [Matrix.map_mvPolynomialMinor f row col, hI]
 
 end MvPolynomial
