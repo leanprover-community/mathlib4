@@ -364,14 +364,11 @@ theorem SpanningSubgraph.adj_injective {G : Digraph V} :
 
 instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph :=
   fast_instance% Function.Injective.completeBooleanAlgebra SpanningSubgraph.Adj
-    SpanningSubgraph.adj_injective SpanningSubgraph.adj_le_iff
-      (by
-        intro H K
-        rw [lt_iff_le_not_ge, lt_iff_le_not_ge, SpanningSubgraph.adj_le_iff,
-          SpanningSubgraph.adj_le_iff])
-      (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) SpanningSubgraph.adj_sSup
-      SpanningSubgraph.adj_sInf SpanningSubgraph.adj_top (by rfl)
-      SpanningSubgraph.adj_compl SpanningSubgraph.adj_himp SpanningSubgraph.adj_sdiff
+    SpanningSubgraph.adj_injective SpanningSubgraph.adj_le_iff (fun {_ _} ↦ ?_) (fun _ _ ↦ rfl)
+      (fun _ _ ↦ rfl) SpanningSubgraph.adj_sSup SpanningSubgraph.adj_sInf SpanningSubgraph.adj_top
+      rfl SpanningSubgraph.adj_compl SpanningSubgraph.adj_himp SpanningSubgraph.adj_sdiff
+where finally
+  simp_rw [lt_iff_le_not_ge, SpanningSubgraph.adj_le_iff]
 
 end SpanningSubgraphs
 
