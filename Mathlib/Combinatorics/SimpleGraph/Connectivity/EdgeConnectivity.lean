@@ -144,7 +144,7 @@ lemma isBridge_iff_not_isEdgeReachable_two (huv : G.Adj u v) :
 alias isBridge_iff_adj_and_not_isEdgeConnected_two := isBridge_iff_not_isEdgeReachable_two
 
 lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e}).Reachable u v := by
-  simp [isEdgeReachable_add_one, ←one_add_one_eq_two]
+  simp [isEdgeReachable_add_one, ← one_add_one_eq_two]
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
 -- TODO: This should be `G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e` after
