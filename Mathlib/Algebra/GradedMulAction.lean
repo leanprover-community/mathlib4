@@ -83,16 +83,32 @@ class GMonoidAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] extends GSMul A M
   /-- Associativity of `•` and `*` -/
   mul_smul (a a' : GradedMonoid A) (b : GradedMonoid M) : (a * a') • b = a • a' • b
 
+/-- Deprecated alias for `GradedMonoid.GMonoidAction`. -/
+@[deprecated _root_.GradedMonoid.GMonoidAction (since := "2026-09-02")]
+abbrev _root_.GradedMonoid.GMulAction := @_root_.GradedMonoid.GMonoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMulAction.mul_smul := GMonoidAction.mul_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMulAction.one_smul := GMonoidAction.one_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMulAction.toGSMul := GMonoidAction.toGSMul
+
 /-- The graded version of `Monoid.toMulAction`. -/
 instance GMonoid.toGMonoidAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
   { GMul.toGSMul _ with
     one_smul := GMonoid.one_mul
     mul_smul := GMonoid.mul_assoc }
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMonoid.toGMulAction := GMonoid.toGMonoidAction
+
 instance GMonoidAction.toMonoidAction [AddMonoid ιA] [GMonoid A] [VAdd ιA ιM] [GMulAction A M] :
     MulAction (GradedMonoid A) (GradedMonoid M) where
   one_smul := GMulAction.one_smul
   mul_smul := GMulAction.mul_smul
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GMulAction.toMulAction := GMonoidAction.toMonoidAction
 
 end Defs
 

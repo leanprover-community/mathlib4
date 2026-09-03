@@ -41,6 +41,9 @@ class GdistribMulAction [AddMonoid ιA] [VAdd ιA ιB] [GMonoid A] [∀ i, AddMo
   smul_add {i j} (a : A i) (b c : M j) : smul a (b + c) = smul a b + smul a c
   smul_zero {i j} (a : A i) : smul a (0 : M j) = 0
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.DirectSum.GdistribMulAction.toGMulAction := GdistribMulAction.toGMonoidAction
+
 /-- A graded version of `Module`. -/
 class Gmodule [AddMonoid ιA] [VAdd ιA ιB] [∀ i, AddMonoid (A i)] [∀ i, AddMonoid (M i)] [GMonoid A]
     extends GdistribMulAction A M where
@@ -168,6 +171,8 @@ instance gmonoidAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetL
     one_smul := fun ⟨_i, _m⟩ => Sigma.subtype_ext (zero_vadd _ _) (one_smul _ _)
     mul_smul := fun ⟨_i, _a⟩ ⟨_j, _a'⟩ ⟨_k, _b⟩ =>
       Sigma.subtype_ext (add_vadd _ _ _) (mul_smul _ _ _) }
+
+@[deprecated (since := "2026-09-02")] alias _root_.SetLike.gmulAction := gmonoidAction
 
 instance gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
     [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜] :

@@ -206,6 +206,11 @@ theorem MonoidAction.contMDiffSMul_compHom [Monoid G] [MulAction G M] {n : ℕ�
   let _ : MulAction G' M := MulAction.compHom _ f
   exact ⟨(hf.comp contMDiff_fst).smul contMDiff_snd⟩
 
+@[deprecated (since := "2026-09-02")]
+alias MulAction.contMDiffSMul_compHom := MonoidAction.contMDiffSMul_compHom
+@[deprecated (since := "2026-09-02")]
+alias AddAction.contMDiffVAdd_compHom := AddMonoidAction.contMDiffVAdd_compHom
+
 /-- The scalar multiplication `𝕜 × E → E` of any normed vector space `E` over `𝕜` is smooth. -/
 instance {n : ℕ∞ω} : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, E) n 𝕜 E where
   contMDiff_smul := by
@@ -317,6 +322,11 @@ theorem MonoidAction.contMDiffConstSMul_compHom {Γ Γ' : Type*} [Monoid Γ] [Mu
     ContMDiffConstSMul I n Γ' M := by
   let _ : MulAction Γ' M := MulAction.compHom _ f
   exact ⟨fun g ↦ contMDiff_id.const_smul (f g)⟩
+
+@[deprecated (since := "2026-09-02")]
+alias MulAction.contMDiffConstSMul_compHom := MonoidAction.contMDiffConstSMul_compHom
+@[deprecated (since := "2026-09-02")]
+alias AddAction.contMDiffConstVAdd_compHom := AddMonoidAction.contMDiffConstVAdd_compHom
 
 end ContMDiffConstSMul
 

@@ -220,6 +220,8 @@ instance monoidAction : MulAction R (P1 →ᵃ[k] V2) where
   one_smul _ := ext fun _ => one_smul _ _
   mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 
+@[deprecated (since := "2026-09-02")] alias _root_.AffineMap.mulAction := monoidAction
+
 @[simp, norm_cast]
 theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=
   rfl

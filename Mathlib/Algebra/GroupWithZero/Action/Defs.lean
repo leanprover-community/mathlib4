@@ -189,6 +189,9 @@ class MulActionWithZero extends MonoidAction M₀ A where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : A, (0 : M₀) • m = 0
 
+@[deprecated (since := "2026-09-02")]
+alias MulActionWithZero.toMulAction := MulActionWithZero.toMonoidAction
+
 -- see Note [lower instance priority]
 instance (priority := 100) MulActionWithZero.toSMulWithZero (M₀ A) {_ : MonoidWithZero M₀}
     {_ : Zero A} [m : MulActionWithZero M₀ A] : SMulWithZero M₀ A :=
@@ -348,6 +351,9 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MonoidActi
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+
+@[deprecated (since := "2026-09-02")]
+alias DistribMulAction.toMulAction := DistribMulAction.toMonoidAction
 
 section
 

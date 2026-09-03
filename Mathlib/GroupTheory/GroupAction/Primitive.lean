@@ -85,6 +85,16 @@ class _root_.AddMonoidAction.IsPreprimitive [VAdd G X] : Prop extends AddMonoidA
   the only blocks are the trivial ones -/
   isTrivialBlock_of_isBlock : ∀ {B : Set X}, AddAction.IsBlock G B → AddAction.IsTrivialBlock B
 
+/-- Deprecated alias for `AddMonoidAction.IsPreprimitive`. -/
+@[deprecated _root_.AddMonoidAction.IsPreprimitive (since := "2026-09-02")]
+abbrev _root_.AddAction.IsPreprimitive := @_root_.AddMonoidAction.IsPreprimitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.isTrivialBlock_of_isBlock :=
+  _root_.AddMonoidAction.IsPreprimitive.isTrivialBlock_of_isBlock
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.toIsPretransitive :=
+  _root_.AddMonoidAction.IsPreprimitive.toIsPretransitive
+
 /-- An action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
 @[to_additive]
@@ -92,6 +102,15 @@ class IsPreprimitive [SMul G X] : Prop extends IsPretransitive G X where
   /-- An action is preprimitive if it is pretransitive and
   the only blocks are the trivial ones -/
   isTrivialBlock_of_isBlock : ∀ {B : Set X}, IsBlock G B → IsTrivialBlock B
+
+/-- Deprecated alias for `MonoidAction.IsPreprimitive`. -/
+@[deprecated _root_.MonoidAction.IsPreprimitive (since := "2026-09-02")]
+abbrev _root_.MulAction.IsPreprimitive := @_root_.MonoidAction.IsPreprimitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.isTrivialBlock_of_isBlock :=
+  IsPreprimitive.isTrivialBlock_of_isBlock
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.toIsPretransitive := IsPreprimitive.toIsPretransitive
 
 open IsPreprimitive
 
@@ -103,12 +122,32 @@ class _root_.AddMonoidAction.IsQuasiPreprimitive
     ∀ {N : AddSubgroup G} [N.Normal], AddAction.fixedPoints N X ≠ .univ →
       AddAction.IsPretransitive N X
 
+/-- Deprecated alias for `AddMonoidAction.IsQuasiPreprimitive`. -/
+@[deprecated _root_.AddMonoidAction.IsQuasiPreprimitive (since := "2026-09-02")]
+abbrev _root_.AddAction.IsQuasiPreprimitive := @_root_.AddMonoidAction.IsQuasiPreprimitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsQuasiPreprimitive.isPretransitive_of_normal :=
+  _root_.AddMonoidAction.IsQuasiPreprimitive.isPretransitive_of_normal
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsQuasiPreprimitive.toIsPretransitive :=
+  _root_.AddMonoidAction.IsQuasiPreprimitive.toIsPretransitive
+
 /-- An action of a group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
 @[to_additive]
 class IsQuasiPreprimitive [Group G] [MulAction G X] : Prop extends IsPretransitive G X where
   isPretransitive_of_normal :
     ∀ {N : Subgroup G} [N.Normal], fixedPoints N X ≠ .univ → IsPretransitive N X
+
+/-- Deprecated alias for `MonoidAction.IsQuasiPreprimitive`. -/
+@[deprecated _root_.MonoidAction.IsQuasiPreprimitive (since := "2026-09-02")]
+abbrev _root_.MulAction.IsQuasiPreprimitive := @_root_.MonoidAction.IsQuasiPreprimitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsQuasiPreprimitive.isPretransitive_of_normal :=
+  IsQuasiPreprimitive.isPretransitive_of_normal
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsQuasiPreprimitive.toIsPretransitive :=
+  IsQuasiPreprimitive.toIsPretransitive
 
 variable {G X}
 
@@ -117,6 +156,12 @@ theorem IsBlock.subsingleton_or_eq_univ
     [SMul G X] [IsPreprimitive G X] {B : Set X} (hB : IsBlock G B) :
     B.Subsingleton ∨ B = .univ :=
   isTrivialBlock_of_isBlock hB
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.subsingleton_or_eq_univ := IsBlock.subsingleton_or_eq_univ
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsBlock.subsingleton_or_eq_univ :=
+  _root_.AddMonoidAction.IsBlock.subsingleton_or_eq_univ
 
 @[to_additive (attr := nontriviality)]
 theorem IsPreprimitive.of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] :
@@ -129,12 +174,21 @@ theorem IsPreprimitive.of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] 
     left
     exact Set.subsingleton_of_subsingleton
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.of_subsingleton := IsPreprimitive.of_subsingleton
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.of_subsingleton :=
+  _root_.AddMonoidAction.IsPreprimitive.of_subsingleton
+
 theorem isTrivialBlock_of_card_le_two
     [Finite X] (hX : Nat.card X ≤ 2) (B : Set X) :
     IsTrivialBlock B := by
   rw [IsTrivialBlock, ← B.ncard_le_one_iff_subsingleton, B.eq_univ_iff_ncard]
   have := B.ncard_le_card
   grind
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isTrivialBlock_of_card_le_two := isTrivialBlock_of_card_le_two
 
 variable [Group G] [MulAction G X]
 
@@ -156,6 +210,13 @@ theorem IsPreprimitive.of_isTrivialBlock_base [IsPretransitive G X] (a : X)
       apply H _ (hB.translate g)
       rw [← hg]
       use b
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.of_isTrivialBlock_base :=
+  IsPreprimitive.of_isTrivialBlock_base
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.of_isTrivialBlock_base :=
+  _root_.AddMonoidAction.IsPreprimitive.of_isTrivialBlock_base
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) (based condition) -/
@@ -182,6 +243,13 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
         rw [← IsTrivialBlock.smul_iff g]
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints :=
+  IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints :=
+  _root_.AddMonoidAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
+
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
 @[to_additive
@@ -193,6 +261,11 @@ theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
   simp only [Set.top_eq_univ, Set.ne_univ_iff_exists_notMem] at Hnt
   obtain ⟨_, ha⟩ := Hnt
   exact .of_isTrivialBlock_of_notMem_fixedPoints ha fun {B} _ ↦ H
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.mk' := IsPreprimitive.mk'
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.mk' := _root_.AddMonoidAction.IsPreprimitive.mk'
 
 section EquivariantMap
 
@@ -209,6 +282,12 @@ theorem IsPreprimitive.of_surjective [IsPreprimitive M α] (hf : Function.Surjec
     apply IsTrivialBlock.image hf
     exact isTrivialBlock_of_isBlock (IsBlock.preimage f hB)
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.of_surjective := IsPreprimitive.of_surjective
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.of_surjective :=
+  _root_.AddMonoidAction.IsPreprimitive.of_surjective
+
 @[to_additive]
 theorem isPreprimitive_congr (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
     IsPreprimitive M α ↔ IsPreprimitive N β := by
@@ -222,6 +301,11 @@ theorem isPreprimitive_congr (hφ : Function.Surjective φ) (hf : Function.Bijec
         rw [← Set.preimage_image_eq B hf.injective]
         exact IsTrivialBlock.preimage hf.injective
           (isTrivialBlock_of_isBlock (hB.image f hφ hf.injective)) }
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPreprimitive_congr := isPreprimitive_congr
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isPreprimitive_congr := _root_.AddMonoidAction.isPreprimitive_congr
 
 end EquivariantMap
 
@@ -255,6 +339,13 @@ theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontriv
     | inr h =>
       simp [BlockMem.coe_top, h]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isSimpleOrder_blockMem_iff_isPreprimitive :=
+  isSimpleOrder_blockMem_iff_isPreprimitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isSimpleOrder_blockMem_iff_isPreprimitive :=
+  _root_.AddMonoidAction.isSimpleOrder_blockMem_iff_isPreprimitive
+
 /-- A pretransitive action is preprimitive
 iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
 @[to_additive
@@ -266,12 +357,25 @@ theorem isCoatom_stabilizer_iff_preprimitive [IsPretransitive G X] [Nontrivial X
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (block_stabilizerOrderIso G a), OrderIso.map_bot]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isCoatom_stabilizer_iff_preprimitive := isCoatom_stabilizer_iff_preprimitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isCoatom_stabilizer_iff_preprimitive :=
+  _root_.AddMonoidAction.isCoatom_stabilizer_iff_preprimitive
+
 /-- In a preprimitive action, stabilizers are maximal subgroups -/
 @[to_additive /-- In a preprimitive action, stabilizers are maximal subgroups. -/]
 theorem IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
     [Nontrivial X] [IsPreprimitive G X] (a : X) :
     IsCoatom (stabilizer G a) := by
   rwa [isCoatom_stabilizer_iff_preprimitive]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive :=
+  IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive :=
+  _root_.AddMonoidAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
 
 end Stabilizer
 
@@ -300,6 +404,12 @@ instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M 
     ext b
     rw [Set.Subsingleton.eq_singleton_of_mem h (MulAction.mem_orbit_self a)]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.isQuasiPreprimitive := IsPreprimitive.isQuasiPreprimitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.isQuasiPreprimitive :=
+  _root_.AddMonoidAction.IsPreprimitive.isQuasiPreprimitive
+
 end Normal
 
 section Finite
@@ -316,6 +426,12 @@ theorem of_prime_card [hGX : IsPretransitive G X] (hp : Nat.Prime (Nat.card X)) 
   have : Finite X := (Nat.card_ne_zero.mp hp.ne_zero).2
   rw [Set.eq_univ_iff_ncard, eq_comm, ← hp.dvd_iff_eq ((Set.one_lt_ncard).mpr hB').ne']
   exact hB.ncard_dvd_card hB'.nonempty
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.of_prime_card := of_prime_card
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.of_prime_card :=
+  _root_.AddMonoidAction.IsPreprimitive.of_prime_card
 
 variable {φ : G → H} {f : X →ₑ[φ] Y}
 
@@ -359,6 +475,10 @@ theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
     rw [mul_comm, mul_le_mul_iff_left₀ Nat.succ_pos']
     apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.IsPreprimitive.of_card_lt := of_card_lt
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.of_card_lt := _root_.AddMonoidAction.IsPreprimitive.of_card_lt
+
 /- The finiteness assumption is necessary :
   For G = ℤ acting on itself, no translate of ℕ contains 0 but not 1.
   (See comment before `IsBlock.of_subset`.) -/
@@ -395,6 +515,13 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     obtain ⟨x, hx⟩ := hA
     obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
     use g, x
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPreprimitive.exists_mem_smul_and_notMem_smul :=
+  exists_mem_smul_and_notMem_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd :=
+  _root_.AddMonoidAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
 
 end IsPreprimitive
 

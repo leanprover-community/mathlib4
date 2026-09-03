@@ -468,6 +468,9 @@ noncomputable instance monoidAction : MulAction (PushoutI φ) (NormalWord d) :=
       Word.rcons_eq_smul, equiv_fst_eq_mul_inv, map_mul, map_inv, mul_smul, inv_smul_smul,
       smul_inv_smul, base_smul_def', MonoidHom.apply_ofInjective_symm]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Monoid.PushoutI.NormalWord.mulAction := monoidAction
+
 theorem base_smul_def (h : H) (w : NormalWord d) :
     base φ h • w = { w with head := h * w.head } := rfl
 

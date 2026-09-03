@@ -225,6 +225,9 @@ protected def pointwiseMonoidAction : MulAction α (Submonoid M) where
     (congr_arg (fun f : Monoid.End M => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Submonoid.pointwiseMulAction := _root_.Submonoid.pointwiseMonoidAction
+
 scoped[Pointwise] attribute [instance] Submonoid.pointwiseMulAction
 
 @[simp, norm_cast]

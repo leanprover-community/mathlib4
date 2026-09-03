@@ -898,9 +898,19 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
   (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
     (Nat.card_coe_set_eq (orbit G x))
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.index_stabilizer := index_stabilizer
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.index_stabilizer := _root_.AddMonoidAction.index_stabilizer
+
 @[to_additive] theorem index_stabilizer_of_transitive [IsPretransitive G X] :
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.index_stabilizer_of_transitive := index_stabilizer_of_transitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.index_stabilizer_of_transitive :=
+  _root_.AddMonoidAction.index_stabilizer_of_transitive
 
 end MonoidAction
 

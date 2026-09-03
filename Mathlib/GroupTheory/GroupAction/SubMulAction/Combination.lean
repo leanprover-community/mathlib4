@@ -76,6 +76,9 @@ theorem stabilizer_coe {n : ℕ} (s : powersetCard α n) :
   ext g
   simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← coe_inj]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Set.powersetCard.addAction_stabilizer_coe := addMonoidAction_stabilizer_coe
+
 theorem addMonoidAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
     (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     AddAction.toPerm g = (1 : Perm (powersetCard α n)) ↔ AddAction.toPerm g = (1 : Perm α) := by
@@ -92,6 +95,9 @@ theorem addMonoidAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : 
     simpa [← mem_coe_iff]
   · simp only [Equiv.ext_iff, AddAction.toPerm_apply] at h ⊢
     simp [Subtype.ext_iff, Finset.ext_iff, mem_vadd_finset, h]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Set.powersetCard.addAction_faithful := addMonoidAction_faithful
 
 /-- If an additive group `G` acts faithfully on `α`,
 then it acts faithfully on `powersetCard α n`,
@@ -120,6 +126,9 @@ theorem monoidAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     simpa only [coe_smul, smul_mem_smul_finset_iff, ← mem_coe_iff]
   · simp only [Equiv.ext_iff, toPerm_apply] at h ⊢
     simp [Subtype.ext_iff, Finset.ext_iff, mem_smul_finset, h]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Set.powersetCard.mulAction_faithful := monoidAction_faithful
 
 /-- If a group `G` acts faithfully on `α`, then
 it acts faithfully on `powersetCard α n` provided `1 ≤ n < ENat.card α`. -/

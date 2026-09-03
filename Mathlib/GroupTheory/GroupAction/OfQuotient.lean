@@ -34,11 +34,17 @@ instance : MulAction (G ⧸ H) (fixedPoints H A) :=
 lemma coe_quotient_smul_fixedPoints (g : G) (a : fixedPoints H A) :
     (g : G ⧸ H) • a = g • a := rfl
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.coe_quotient_smul_fixedPoints := coe_quotient_smul_fixedPoints
+
 @[simp]
 lemma quotient_out_smul_fixedPoints (g : G ⧸ H) (a : fixedPoints H A) :
     g.out • a = g • a := by
   conv_rhs => rw [← g.out_eq]
   rfl
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.quotient_out_smul_fixedPoints := quotient_out_smul_fixedPoints
 
 end MonoidAction
 

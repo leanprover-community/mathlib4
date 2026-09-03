@@ -116,10 +116,16 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[implicit_reducible] def monoidActionFiber (x : X) : MulAction G (f ⁻¹' {x}) :=
   SubMulAction.mulAction ⟨f ⁻¹' {x}, fun g _ h ↦ (hf.map_smul g).trans h⟩
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.IsQuotientCoveringMap.mulActionFiber := monoidActionFiber
+
 @[simp] lemma coe_monoidActionFiber_smul (x : X) (g : G) (e : f ⁻¹' {x}) :
     letI := hf.mulActionFiber x
     (↑(g • e) : E) = g • (e : E) :=
   rfl
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.IsQuotientCoveringMap.coe_mulActionFiber_smul := coe_monoidActionFiber_smul
 
 lemma monoidActionFiber_isPretransitive (x : X) :
     letI := hf.mulActionFiber x
@@ -129,6 +135,10 @@ lemma monoidActionFiber_isPretransitive (x : X) :
   intro e e'
   obtain ⟨g, hg⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm)
   exact ⟨g, Subtype.ext hg⟩
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.IsQuotientCoveringMap.mulActionFiber_isPretransitive :=
+  monoidActionFiber_isPretransitive
 
 /-- A quotient covering map `f` induces a permutation action on each fiber. -/
 @[simps!] def toPermFiber (x : X) : G →* Equiv.Perm (f ⁻¹' {x}) :=

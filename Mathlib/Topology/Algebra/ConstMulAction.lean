@@ -219,6 +219,9 @@ instance Homeomorph.applyMonoidAction : MulAction (X ≃ₜ X) X where
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
+@[deprecated (since := "2026-09-02")]
+alias Homeomorph.applyMulAction := Homeomorph.applyMonoidAction
+
 @[simp]
 protected theorem Homeomorph.smul_def (f : X ≃ₜ X) (x : X) : f • x = f x := rfl
 
@@ -349,6 +352,12 @@ lemma t1Space_iff (x : α) [IsPretransitive G α] :
   rw [← image_singleton, image_smul]
   exact hx.smul _
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.t1Space_iff := t1Space_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPretransitive.t1Space_iff :=
+  _root_.AddMonoidAction.IsPretransitive.t1Space_iff
+
 @[to_additive]
 lemma discreteTopology_iff (x : α) [IsPretransitive G α] :
     DiscreteTopology α ↔ IsOpen {x} := by
@@ -357,6 +366,12 @@ lemma discreteTopology_iff (x : α) [IsPretransitive G α] :
   rcases MulAction.exists_smul_eq G x y with ⟨g, rfl⟩
   rw [← image_singleton, image_smul]
   exact hx.smul _
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.discreteTopology_iff := discreteTopology_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPretransitive.discreteTopology_iff :=
+  _root_.AddMonoidAction.IsPretransitive.discreteTopology_iff
 
 end MonoidAction.IsPretransitive
 
@@ -614,6 +629,11 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
 theorem MonoidAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
     IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
   ⟨Quot.mk_surjective, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
+
+@[deprecated (since := "2026-09-02")]
+alias MulAction.isOpenQuotientMap_quotientMk := MonoidAction.isOpenQuotientMap_quotientMk
+@[deprecated (since := "2026-09-02")]
+alias AddAction.isOpenQuotientMap_quotientMk := AddMonoidAction.isOpenQuotientMap_quotientMk
 
 /-- The quotient by a discontinuous group action of a locally compact T₂ space is T₂. -/
 @[to_additive /-- The quotient by a discontinuous group action of a locally compact T₂

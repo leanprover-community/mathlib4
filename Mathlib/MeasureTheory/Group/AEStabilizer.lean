@@ -47,33 +47,67 @@ def aestabilizer (s : Set α) : Subgroup G where
   mul_mem' {g₁ g₂} h₁ h₂ := by simpa only [smul_smul] using! ((smul_set_ae_eq g₁).2 h₂).trans h₁
   inv_mem' {g} h := by simpa using! (smul_set_ae_eq g⁻¹).2 h.out.symm
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.aestabilizer := aestabilizer
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.coe_aestabilizer := coe_aestabilizer
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.aestabilizer := _root_.AddMonoidAction.aestabilizer
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.coe_aestabilizer := _root_.AddMonoidAction.coe_aestabilizer
+
 variable {G μ}
 variable {g : G} {s t : Set α}
 
 @[to_additive (attr := simp)]
 lemma mem_aestabilizer : g ∈ aestabilizer G μ s ↔ g • s =ᵐ[μ] s := .rfl
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.mem_aestabilizer := mem_aestabilizer
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.mem_aestabilizer := _root_.AddMonoidAction.mem_aestabilizer
+
 @[to_additive]
 lemma stabilizer_le_aestabilizer (s : Set α) : stabilizer G s ≤ aestabilizer G μ s := by
   intro g hg
   simp_all
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.stabilizer_le_aestabilizer := stabilizer_le_aestabilizer
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.stabilizer_le_aestabilizer :=
+  _root_.AddMonoidAction.stabilizer_le_aestabilizer
+
 @[to_additive (attr := simp)]
 lemma aestabilizer_empty : aestabilizer G μ ∅ = ⊤ := top_unique fun _ _ ↦ by simp
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.aestabilizer_empty := aestabilizer_empty
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.aestabilizer_empty := _root_.AddMonoidAction.aestabilizer_empty
+
 @[to_additive (attr := simp)]
 lemma aestabilizer_univ : aestabilizer G μ univ = ⊤ := top_unique fun _ _ ↦ by simp
+
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.aestabilizer_univ := aestabilizer_univ
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.aestabilizer_univ := _root_.AddMonoidAction.aestabilizer_univ
 
 @[to_additive]
 lemma aestabilizer_congr (h : s =ᵐ[μ] t) : aestabilizer G μ s = aestabilizer G μ t := by
   ext g
   rw [mem_aestabilizer, mem_aestabilizer, h.congr_right, ((smul_set_ae_eq g).2 h).congr_left]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.aestabilizer_congr := aestabilizer_congr
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.aestabilizer_congr := _root_.AddMonoidAction.aestabilizer_congr
+
 lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G μ s = ⊤ := by
   refine top_unique fun g _ ↦ ?_
   cases eventuallyConst_set'.mp hs with
   | inl h => simp [aestabilizer_congr h]
   | inr h => simp [aestabilizer_congr h]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.aestabilizer_of_aeconst := aestabilizer_of_aeconst
 
 end MonoidAction
 

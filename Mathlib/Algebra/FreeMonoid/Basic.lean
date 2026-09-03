@@ -356,6 +356,10 @@ def mkMonoidAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   one_smul _ := rfl
   mul_smul _ _ _ := List.foldr_append
 
+@[deprecated (since := "2026-09-02")] alias _root_.FreeMonoid.mkMulAction := mkMonoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.FreeAddMonoid.mkAddAction := _root_.FreeAddMonoid.mkAddMonoidAction
+
 @[to_additive]
 theorem smul_def (f : α → β → β) (l : FreeMonoid α) (b : β) :
     haveI := mkMulAction f

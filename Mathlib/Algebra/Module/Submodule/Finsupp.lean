@@ -97,6 +97,9 @@ protected noncomputable def pointwiseSetMonoidAction [SMulCommClass R R M] :
       exact Submodule.sum_mem _ fun r' hr' ↦
         mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).2)
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Submodule.pointwiseSetMulAction := _root_.Submodule.pointwiseSetMonoidAction
+
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 
 -- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.

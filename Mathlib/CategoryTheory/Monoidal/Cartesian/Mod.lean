@@ -63,6 +63,9 @@ instance monoidAction (Z : C) : MulAction (Z ⟶ M) (Z ⟶ X) where
   one_smul x := by simp [one_def, smul_def, ← lift_whiskerRight]
   mul_smul m n x := by simp [mul_def, smul_def, ← lift_whiskerRight]
 
+@[deprecated (since := "2026-09-02")] alias _root_.CategoryTheory.Hom.mulAction := monoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.CategoryTheory.Hom.addAction := addMonoidAction
+
 end Hom
 
 variable {Y : C} [ModObj M Y]

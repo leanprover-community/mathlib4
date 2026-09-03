@@ -126,6 +126,11 @@ instance t2Space_quotient_monoidAction_of_properSMul [ProperSMul G X] :
     rw [Quotient.eq', MulAction.orbitRel_apply, MulAction.mem_orbit_iff]
   all_goals infer_instance
 
+@[deprecated (since := "2026-09-02")]
+alias t2Space_quotient_mulAction_of_properSMul := t2Space_quotient_monoidAction_of_properSMul
+@[deprecated (since := "2026-09-02")]
+alias t2Space_quotient_addAction_of_properVAdd := t2Space_quotient_addMonoidAction_of_properVAdd
+
 /-- If a T1 group acts properly on a topological space, then this topological space is T2. -/
 @[to_additive /-- If a T1 group acts properly on a topological space,
 then this topological space is T2. -/]
@@ -297,5 +302,10 @@ lemma MonoidAction.properSMul_of_proper_orbitMap
   refine isProperMap_of_comp_of_surj (by fun_prop) (by fun_prop) ?_ hfsurj
   simpa [Function.comp_def, Prod.map_apply, mul_smul]
     using! (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
+
+@[deprecated (since := "2026-09-02")]
+alias MulAction.properSMul_of_proper_orbitMap := MonoidAction.properSMul_of_proper_orbitMap
+@[deprecated (since := "2026-09-02")]
+alias AddAction.properVAdd_of_proper_orbitMap := AddMonoidAction.properVAdd_of_proper_orbitMap
 
 end

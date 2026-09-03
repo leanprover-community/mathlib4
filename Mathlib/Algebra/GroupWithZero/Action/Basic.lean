@@ -60,11 +60,17 @@ variable [GroupWithZero G₀] [MulAction G₀ α] {a : G₀}
 protected lemma MonoidAction.bijective₀ (ha : a ≠ 0) : Bijective (a • · : α → α) :=
   MulAction.bijective <| Units.mk0 a ha
 
+@[deprecated (since := "2026-09-02")] alias MulAction.bijective₀ := MonoidAction.bijective₀
+
 protected lemma MonoidAction.injective₀ (ha : a ≠ 0) : Injective (a • · : α → α) :=
   (MulAction.bijective₀ ha).injective
 
+@[deprecated (since := "2026-09-02")] alias MulAction.injective₀ := MonoidAction.injective₀
+
 protected lemma MonoidAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : α → α) :=
   (MulAction.bijective₀ ha).surjective
+
+@[deprecated (since := "2026-09-02")] alias MulAction.surjective₀ := MonoidAction.surjective₀
 
 end GroupWithZero
 

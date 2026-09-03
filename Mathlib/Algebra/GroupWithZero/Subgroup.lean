@@ -63,6 +63,9 @@ protected def pointwiseMonoidAction : MulAction M (AddSubgroup A) where
   mul_smul _ _ S :=
     (congr_arg (fun f : AddMonoid.End A => S.map f) (map_mul _ _ _)).trans (S.map_map _ _).symm
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddSubgroup.pointwiseMulAction := _root_.AddSubgroup.pointwiseMonoidAction
+
 scoped[Pointwise] attribute [instance] AddSubgroup.pointwiseMulAction
 
 lemma pointwise_smul_def (S : AddSubgroup A) :

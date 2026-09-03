@@ -810,6 +810,9 @@ This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
 def pointwiseMonoidAction : MulAction G (ValuationSubring K) :=
   toSubring_injective.mulAction toSubring pointwise_smul_toSubring
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.ValuationSubring.pointwiseMulAction := pointwiseMonoidAction
+
 scoped[Pointwise] attribute [instance] ValuationSubring.pointwiseMulAction
 
 open scoped Pointwise

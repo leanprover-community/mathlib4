@@ -48,6 +48,11 @@ theorem isPretransitive_iff_base (a : X) :
     obtain ⟨h, hy⟩ := hG y
     exact ⟨h * g⁻¹, by rw [← hx, smul_smul, inv_mul_cancel_right, hy]⟩
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPretransitive_iff_base := isPretransitive_iff_base
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isPretransitive_iff_base := _root_.AddMonoidAction.isPretransitive_iff_base
+
 /-- An action of a group is pretransitive iff the orbit of every given element is full -/
 @[to_additive
   /-- An action of a group is pretransitive iff the orbit of every given element is full -/]
@@ -57,6 +62,12 @@ theorem isPretransitive_iff_orbit_eq_univ (a : X) :
   apply forall_congr'
   intro x
   simp_rw [Set.mem_univ, iff_true, mem_orbit_iff]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPretransitive_iff_orbit_eq_univ := isPretransitive_iff_orbit_eq_univ
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isPretransitive_iff_orbit_eq_univ :=
+  _root_.AddMonoidAction.isPretransitive_iff_orbit_eq_univ
 
 variable {M N α β : Type*} [Monoid M] [Monoid N] [MulAction M α] [MulAction N β]
 
@@ -70,6 +81,12 @@ theorem IsPretransitive.of_surjective_map {φ : M → N} {f : α →ₑ[φ] β}
   obtain ⟨y', rfl⟩ := hf y
   obtain ⟨g, rfl⟩ := h.exists_smul_eq x' y'
   exact ⟨φ g, by simp only [map_smulₛₗ]⟩
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.of_surjective_map := IsPretransitive.of_surjective_map
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPretransitive.of_surjective_map :=
+  _root_.AddMonoidAction.IsPretransitive.of_surjective_map
 
 @[to_additive]
 theorem isPretransitive_congr {φ : M → N} {f : α →ₑ[φ] β}
@@ -85,5 +102,10 @@ theorem isPretransitive_congr {φ : M → N} {f : α →ₑ[φ] β}
     use g
     apply hf.injective
     simp only [hk, map_smulₛₗ]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPretransitive_congr := isPretransitive_congr
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isPretransitive_congr := _root_.AddMonoidAction.isPretransitive_congr
 
 end MonoidAction

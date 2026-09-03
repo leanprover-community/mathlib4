@@ -114,6 +114,10 @@ variable [Monoid M']
 instance monoidAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
   inferInstance
 
+@[deprecated (since := "2026-09-02")] alias _root_.Submonoid.mulAction := monoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddSubmonoid.addAction := _root_.AddSubmonoid.addMonoidAction
+
 instance smulDistribClass {β S : Type*} [SMul M' α] [SMul M' β] [SMul α β] [SetLike S M']
     [h : SMulDistribClass M' α β] (N' : S) :
     SMulDistribClass N' α β := ⟨fun g _ _ ↦ h.smul_distrib_smul g _ _⟩

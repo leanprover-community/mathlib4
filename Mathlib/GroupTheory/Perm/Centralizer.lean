@@ -143,6 +143,10 @@ def Subgroup.Centralizer.cycleFactorsFinset_monoidAction :
       ConjAct.toConjAct (k : Perm α) • (ConjAct.toConjAct (l : Perm α)) • c.val
     simp only [map_mul, mul_smul]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Equiv.Perm.OnCycleFactors.Subgroup.Centralizer.cycleFactorsFinset_mulAction :=
+  Subgroup.Centralizer.cycleFactorsFinset_monoidAction
+
 /-- The conjugation action of `Subgroup.centralizer {g}` on `g.cycleFactorsFinset` -/
 scoped instance : MulAction (centralizer {g}) (g.cycleFactorsFinset) :=
   (Subgroup.Centralizer.cycleFactorsFinset_mulAction g)

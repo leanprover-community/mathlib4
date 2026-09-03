@@ -60,6 +60,10 @@ theorem isPreprimitive_stabilizer_of_surjective
   rw [isPreprimitive_congr hs hf]
   infer_instance
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPreprimitive_stabilizer_of_surjective :=
+  isPreprimitive_stabilizer_of_surjective
+
 /-- A (mostly trivial) primitivity criterion for stabilizers. -/
 theorem isPreprimitive_stabilizer_subgroup [IsPreprimitive (stabilizer M s) s]
     {G : Subgroup M} (hG : stabilizer M s ≤ G) :
@@ -70,6 +74,9 @@ theorem isPreprimitive_stabilizer_subgroup [IsPreprimitive (stabilizer M s) s]
       toFun := id
       map_smul' _ _ := rfl }
   IsPreprimitive.of_surjective (f := f) Function.surjective_id
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPreprimitive_stabilizer_subgroup := isPreprimitive_stabilizer_subgroup
 
 theorem IsPretransitive.of_partition
     (hs : ∀ a ∈ s, ∀ b ∈ s, ∃ g : M, g • a = b)
@@ -91,6 +98,9 @@ theorem IsPretransitive.of_partition
   rintro g _ b ⟨a, ha, hgab⟩
   by_contra hb
   exact hM a b g ha (Set.mem_compl hb) hgab
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.of_partition := IsPretransitive.of_partition
 
 end MonoidAction
 
@@ -244,6 +254,10 @@ lemma subsingleton_of_ssubset_of_stabilizer_le
     exact hB.preimage f'
   exact isPreprimitive_stabilizer_of_surjective _ hG
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.subsingleton_of_ssubset_of_stabilizer_le :=
+  subsingleton_of_ssubset_of_stabilizer_le
+
 lemma subsingleton_of_ssubset_of_stabilizer_Perm_le
     {B : Set α} {G : Subgroup (Perm α)} (hB : IsBlock G B)
     (hB_ss_sc : B ⊂ s) (hG : stabilizer (Perm α) s ≤ G) :
@@ -254,6 +268,10 @@ lemma subsingleton_of_ssubset_of_stabilizer_Perm_le
   let h : G := ⟨k, hG hk⟩
   have : h ∈ stabilizer G s := by aesop
   exact ⟨⟨h, this⟩, rfl⟩
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.subsingleton_of_ssubset_of_stabilizer_Perm_le :=
+  subsingleton_of_ssubset_of_stabilizer_Perm_le
 
 lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
     {G : Subgroup M} [IsPreprimitive (stabilizer G s) s]
@@ -285,6 +303,10 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
       map_smul' _ _ := rfl }
     apply MulAction.IsBlock.preimage f' hB
   infer_instance
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.subsingleton_of_stabilizer_lt_of_subset :=
+  subsingleton_of_stabilizer_lt_of_subset
 
 variable [Finite α]
 
@@ -319,6 +341,10 @@ lemma compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
     -- Prove pretransitivity…
     rw [← is_one_pretransitive_iff]
     apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl :=
+  compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
 
 end MonoidAction.IsBlock
 

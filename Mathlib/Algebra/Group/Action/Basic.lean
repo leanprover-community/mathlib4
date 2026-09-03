@@ -34,6 +34,15 @@ variable [Group α] [MulAction α β]
 def MonoidAction.toPerm (a : α) : Equiv.Perm β :=
   ⟨fun x => a • x, fun x => a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
 
+@[deprecated (since := "2026-09-02")] alias MulAction.toPerm := MonoidAction.toPerm
+@[deprecated (since := "2026-09-02")] alias MulAction.toPerm_apply := MonoidAction.toPerm_apply
+@[deprecated (since := "2026-09-02")]
+alias MulAction.toPerm_symm_apply := MonoidAction.toPerm_symm_apply
+@[deprecated (since := "2026-09-02")] alias AddAction.toPerm := AddMonoidAction.toPerm
+@[deprecated (since := "2026-09-02")] alias AddAction.toPerm_apply := AddMonoidAction.toPerm_apply
+@[deprecated (since := "2026-09-02")]
+alias AddAction.toPerm_symm_apply := AddMonoidAction.toPerm_symm_apply
+
 /-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 add_decl_doc AddAction.toPerm
 
@@ -43,17 +52,31 @@ lemma MonoidAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
 
+@[deprecated (since := "2026-09-02")]
+alias MulAction.toPerm_injective := MonoidAction.toPerm_injective
+@[deprecated (since := "2026-09-02")]
+alias AddAction.toPerm_injective := AddMonoidAction.toPerm_injective
+
 @[to_additive]
 protected lemma MonoidAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
   (MulAction.toPerm g).bijective
+
+@[deprecated (since := "2026-09-02")] alias MulAction.bijective := MonoidAction.bijective
+@[deprecated (since := "2026-09-02")] alias AddAction.bijective := AddMonoidAction.bijective
 
 @[to_additive]
 protected lemma MonoidAction.injective (g : α) : Function.Injective (g • · : β → β) :=
   (MulAction.bijective g).injective
 
+@[deprecated (since := "2026-09-02")] alias MulAction.injective := MonoidAction.injective
+@[deprecated (since := "2026-09-02")] alias AddAction.injective := AddMonoidAction.injective
+
 @[to_additive]
 protected lemma MonoidAction.surjective (g : α) : Function.Surjective (g • · : β → β) :=
   (MulAction.bijective g).surjective
+
+@[deprecated (since := "2026-09-02")] alias MulAction.surjective := MonoidAction.surjective
+@[deprecated (since := "2026-09-02")] alias AddAction.surjective := AddMonoidAction.surjective
 
 @[to_additive]
 lemma smul_left_cancel (g : α) {x y : β} (h : g • x = g • y) : x = y := MulAction.injective g h
@@ -106,6 +129,9 @@ def arrowAction : MulAction G (A → B) where
     change (fun a => f ((x * y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
 
+@[deprecated (since := "2026-09-02")] alias arrowAddAction := arrowAddMonoidAction
+@[deprecated (since := "2026-09-02")] alias arrowAddAction_vadd := arrowAddMonoidAction_vadd
+
 attribute [local instance] arrowAction
 
 variable [Monoid M]
@@ -152,8 +178,15 @@ variable (M α) in
 def toFun : α ↪ M → α :=
   ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert! congr_fun H 1⟩
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.toFun := toFun
+@[deprecated (since := "2026-09-02")] alias _root_.AddAction.toFun := _root_.AddMonoidAction.toFun
+
 @[to_additive (attr := simp)]
 lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl
+
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.toFun_apply := toFun_apply
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.toFun_apply := _root_.AddMonoidAction.toFun_apply
 
 end MonoidAction
 

@@ -79,6 +79,10 @@ instance monoidAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M
   one_smul _ := Units.ext <| one_smul _ _
   mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
+@[deprecated (since := "2026-09-02")] alias _root_.Units.mulAction' := monoidAction'
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddUnits.addAction' := _root_.AddUnits.addMonoidAction'
+
 /-- `Units.mulAction' : MulAction G Mˣ` creates a diamond when `G = Mˣ` and `M` is commutative.
 
 Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/

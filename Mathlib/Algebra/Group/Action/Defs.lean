@@ -121,6 +121,12 @@ class AddMonoidAction (G : Type*) (P : Type*) [AddMonoid G] extends AddSemigroup
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
 
+/-- Deprecated alias for `AddMonoidAction`. -/
+@[deprecated AddMonoidAction (since := "2026-09-02")] abbrev AddAction := @AddMonoidAction
+@[deprecated (since := "2026-09-02")]
+alias AddAction.toAddSemigroupAction := AddMonoidAction.toAddSemigroupAction
+@[deprecated (since := "2026-09-02")] alias AddAction.zero_vadd := AddMonoidAction.zero_vadd
+
 /--
 Type class for monoid actions on types, with notation `g • p`.
 
@@ -136,6 +142,16 @@ say "let `G` act on the set `X`" they will probably mean `[MulAction G X]`.
 class MonoidAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
+
+/-- Deprecated alias for `MonoidAction`. -/
+@[deprecated MonoidAction (since := "2026-09-02")] abbrev MulAction := @MonoidAction
+@[deprecated (since := "2026-09-02")] alias MulAction.ext := MonoidAction.ext
+@[deprecated (since := "2026-09-02")] alias MulAction.ext_iff := MonoidAction.ext_iff
+@[deprecated (since := "2026-09-02")] alias MulAction.one_smul := MonoidAction.one_smul
+@[deprecated (since := "2026-09-02")]
+alias MulAction.toSemigroupAction := MonoidAction.toSemigroupAction
+@[deprecated (since := "2026-09-02")] alias AddAction.ext := AddMonoidAction.ext
+@[deprecated (since := "2026-09-02")] alias AddAction.ext_iff := AddMonoidAction.ext_iff
 
 /-! ### Scalar tower and commuting actions -/
 
@@ -447,6 +463,11 @@ protected abbrev Function.Injective.monoidAction [SMul M β] (f : β → α) (hf
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 
+@[deprecated (since := "2026-09-02")]
+alias Function.Injective.mulAction := Function.Injective.monoidAction
+@[deprecated (since := "2026-09-02")]
+alias Function.Injective.addAction := Function.Injective.addMonoidAction
+
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive
@@ -455,6 +476,11 @@ protected abbrev Function.Surjective.monoidAction [SMul M β] (f : α → β) (h
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   one_smul := by simp [hf.forall, ← smul]
   mul_smul := by simp [hf.forall, ← smul, mul_smul]
+
+@[deprecated (since := "2026-09-02")]
+alias Function.Surjective.mulAction := Function.Surjective.monoidAction
+@[deprecated (since := "2026-09-02")]
+alias Function.Surjective.addAction := Function.Surjective.addMonoidAction
 
 section
 variable (M)
@@ -471,6 +497,9 @@ instance (priority := 1100) Monoid.toMonoidAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
+
+@[deprecated (since := "2026-09-02")] alias Monoid.toMulAction := Monoid.toMonoidAction
+@[deprecated (since := "2026-09-02")] alias AddMonoid.toAddAction := AddMonoid.toAddMonoidAction
 
 @[to_additive]
 instance IsScalarTower.left : IsScalarTower M M α where
@@ -632,6 +661,9 @@ class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MonoidActi
   /-- Distributivity of `•` across `*` -/
   smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
 
+@[deprecated (since := "2026-09-02")]
+alias MulDistribMulAction.toMulAction := MulDistribMulAction.toMonoidAction
+
 /-- Typeclass for additive actions on additive structures.
 
 The key axiom here is `vadd_add : g +ᵥ (x + y) = (g +ᵥ x) + (g +ᵥ y)`.
@@ -643,6 +675,9 @@ class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddM
   vadd_zero : ∀ r : M, r +ᵥ (0 : N) = 0
   /-- Distributivity of `+ᵥ` across `+` -/
   vadd_add : ∀ (r : M) (x y : N), r +ᵥ (x + y) = (r +ᵥ x) + (r +ᵥ y)
+
+@[deprecated (since := "2026-09-02")]
+alias AddDistribAddAction.toAddAction := AddDistribAddAction.toAddMonoidAction
 
 export MulDistribMulAction (smul_one)
 export AddDistribAddAction (vadd_zero)

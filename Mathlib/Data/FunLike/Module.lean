@@ -63,6 +63,10 @@ protected abbrev monoidAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulAppl
     MulAction M F :=
   DFunLike.coe_injective.mulAction _ FunLike.coe_smul
 
+@[deprecated (since := "2026-09-02")] alias _root_.FunLike.mulAction := _root_.FunLike.monoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.FunLike.addAction := _root_.FunLike.addMonoidAction
+
 /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`, `0 x = 0`,
 `(f + g) x = f x + g x` is a `DistribMulAction` if `β` is a `DistribMulAction`. -/
 protected abbrev distribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMulAction M β]

@@ -858,6 +858,9 @@ def comapMonoidAction : MulAction G (SkewMonoidAlgebra M α) where
   mul_smul g g' f := by
     rw [comapSMul_def, comapSMul_def, comapSMul_def, ← comp_smul_left, mapDomain_comp]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.SkewMonoidAlgebra.comapMulAction := comapMonoidAction
+
 attribute [local instance] comapMulAction
 /-- This is not an instance as it conflicts with `SkewMonoidAlgebra.distribMulAction`
   when `G = kˣ`. -/

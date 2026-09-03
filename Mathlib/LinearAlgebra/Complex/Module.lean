@@ -82,6 +82,8 @@ instance (priority := 90) monoidAction [Monoid R] [MulAction R ℝ] : MulAction 
   one_smul x := by ext <;> simp [smul_re, smul_im, one_smul]
   mul_smul r s x := by ext <;> simp [smul_re, smul_im, mul_smul]
 
+@[deprecated (since := "2026-09-02")] alias _root_.Complex.mulAction := monoidAction
+
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
   smul_add r x y := by ext <;> simp [smul_re, smul_im, smul_add]

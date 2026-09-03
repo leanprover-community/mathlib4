@@ -75,6 +75,9 @@ protected def pointwiseMonoidAction : MulAction R' (Subalgebra R A) where
   mul_smul _a₁ _a₂ S :=
     (congr_arg (fun f => S.map f) (AlgHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Subalgebra.pointwiseMulAction := _root_.Subalgebra.pointwiseMonoidAction
+
 scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
 
 open scoped Pointwise

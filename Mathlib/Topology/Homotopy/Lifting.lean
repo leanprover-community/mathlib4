@@ -442,6 +442,9 @@ theorem monodromy_trans_apply {x y z : X}
     mul_smul _ _ _ := cov.monodromy_trans_apply ..
     one_smul := congr_fun cov.monodromy_refl }
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.IsCoveringMap.fundamentalGroupMulAction := fundamentalGroupMonoidAction
+
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
 def monodromyPerm (x : X) : FundamentalGroup X x →* Equiv.Perm (p ⁻¹' {x}) :=
   letI := cov.fundamentalGroupMulAction x

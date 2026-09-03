@@ -70,6 +70,8 @@ def comapMonoidAction : MulAction G (α →₀ M) where
   mul_smul g g' f := by
     rw [comapSMul_def, comapSMul_def, comapSMul_def, ← comp_smul_left, mapDomain_comp]
 
+@[deprecated (since := "2026-09-02")] alias _root_.Finsupp.comapMulAction := comapMonoidAction
+
 attribute [local instance] comapMulAction
 
 /-- `Finsupp.comapSMul` is distributive -/

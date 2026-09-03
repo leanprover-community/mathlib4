@@ -62,6 +62,8 @@ class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddMonoidA
   /-- Torsor addition and subtraction with the same element cancels out. -/
   vadd_vsub' : ∀ (g : G) (p : P), (g +ᵥ p) -ᵥ p = g
 
+@[deprecated (since := "2026-09-02")] alias AddTorsor.toAddAction := AddTorsor.toAddMonoidAction
+
 /-- A `Torsor G P` gives a structure to the nonempty type `P`,
 acted on by a `Group G` with a transitive and free action given
 by the `•` operation and a corresponding division given by the
@@ -73,6 +75,8 @@ class Torsor (G : outParam Type*) (P : Type*) [Group G] extends MonoidAction G P
   sdiv_smul' : ∀ p₁ p₂ : P, (p₁ /ₛ p₂ : G) • p₂ = p₁
   /-- Scalar multiplication and division with the same element cancels out. -/
   smul_sdiv' : ∀ (g : G) (p : P), (g • p) /ₛ p = g
+
+@[deprecated (since := "2026-09-02")] alias Torsor.toMulAction := Torsor.toMonoidAction
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed `nolint instance_priority`; lint not ported yet
 attribute [instance 100] AddTorsor.nonempty

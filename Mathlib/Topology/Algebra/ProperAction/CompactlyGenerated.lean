@@ -83,6 +83,13 @@ lemma MonoidAction.properSMul_iff_isCompact_setOfPred_inter_nonempty [Continuous
   · exact (hU.prod hV).isClosed.preimage (by fun_prop)
   · exact fun ⟨g, x⟩ ⟨hgx, hgx'⟩ ↦ ⟨⟨g • x, smul_mem_smul_set hgx', hgx⟩, hgx'⟩
 
+@[deprecated (since := "2026-09-02")]
+alias MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty :=
+  MonoidAction.properSMul_iff_isCompact_setOfPred_inter_nonempty
+@[deprecated (since := "2026-09-02")]
+alias AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty :=
+  AddMonoidAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty
+
 @[deprecated (since := "2026-07-09")]
 alias MonoidAction.properSMul_iff_isCompact_setOf_inter_nonempty :=
   MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty

@@ -73,4 +73,10 @@ theorem smul_apply_monoidAction [Group G] [MulAction G P] [Semiring R] [AddCommM
   rw [smul_eq, Finset.sum_of_injOn Prod.fst h₁ h₂ h₃]
   aesop
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MonoidAlgebra.smul_apply_mulAction := smul_apply_monoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddMonoidAlgebra.smul_apply_addAction :=
+  _root_.AddMonoidAlgebra.smul_apply_addMonoidAction
+
 end MonoidAlgebra

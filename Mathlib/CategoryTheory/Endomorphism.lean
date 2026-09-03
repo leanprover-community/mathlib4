@@ -84,10 +84,16 @@ instance monoidActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
   one_smul := Category.comp_id
   mul_smul _ _ _ := Eq.symm <| Category.assoc _ _ _
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.CategoryTheory.End.mulActionRight := monoidActionRight
+
 instance monoidActionLeft {X Y : C} : MulAction (End X)ᵐᵒᵖ (X ⟶ Y) where
   smul r f := r.unop ≫ f
   one_smul := Category.id_comp
   mul_smul _ _ _ := Category.assoc _ _ _
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.CategoryTheory.End.mulActionLeft := monoidActionLeft
 
 theorem smul_right {X Y : C} {r : End Y} {f : X ⟶ Y} : r • f = f ≫ r :=
   rfl

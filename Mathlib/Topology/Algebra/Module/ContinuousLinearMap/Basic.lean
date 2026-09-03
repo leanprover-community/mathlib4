@@ -319,6 +319,8 @@ variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [Continuous
 
 instance monoidAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.mulAction
 
+@[deprecated (since := "2026-09-02")] alias _root_.ContinuousLinearMap.mulAction := monoidAction
+
 end SMulMonoid
 
 /-- The continuous map that is constantly zero. -/

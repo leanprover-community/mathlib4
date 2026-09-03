@@ -51,6 +51,8 @@ instance monoidAction [Monoid R] : MulAction R PUnit where
   one_smul := by subsingleton
   mul_smul := by subsingleton
 
+@[deprecated (since := "2026-09-02")] alias _root_.PUnit.mulAction := monoidAction
+
 instance distribMulAction [Monoid R] : DistribMulAction R PUnit where
   __ := PUnit.mulAction
   smul_zero := by subsingleton

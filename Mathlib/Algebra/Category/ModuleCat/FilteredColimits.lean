@@ -114,6 +114,9 @@ instance colimitMonoidAction : MulAction R (M F) where
     obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
     simp [mul_smul]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.ModuleCat.FilteredColimits.colimitMulAction := colimitMonoidAction
+
 instance colimitSMulWithZero : SMulWithZero R (M F) :=
 { colimitMulAction F with
   smul_zero := fun r => by

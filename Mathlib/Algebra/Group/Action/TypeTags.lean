@@ -45,10 +45,14 @@ instance Additive.addMonoidAction [Monoid α] [MulAction α β] : AddAction (Add
   zero_vadd := MulAction.one_smul
   add_vadd := mul_smul (α := α)
 
+@[deprecated (since := "2026-09-02")] alias Additive.addAction := Additive.addMonoidAction
+
 instance Multiplicative.monoidAction [AddMonoid α] [AddAction α β] :
     MulAction (Multiplicative α) β where
   one_smul := AddAction.zero_vadd
   mul_smul := add_vadd (G := α)
+
+@[deprecated (since := "2026-09-02")] alias Multiplicative.mulAction := Multiplicative.monoidAction
 
 instance Additive.vaddCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     VAddCommClass (Additive α) (Additive β) γ :=

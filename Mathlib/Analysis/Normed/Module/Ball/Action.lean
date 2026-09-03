@@ -40,6 +40,8 @@ instance monoidActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball 
   one_smul _c₂ := Subtype.ext <| one_smul 𝕜 _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
+@[deprecated (since := "2026-09-02")] alias mulActionClosedBallBall := monoidActionClosedBallBall
+
 instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) :=
   ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
@@ -56,6 +58,9 @@ instance monoidActionClosedBallClosedBall :
   one_smul _ := Subtype.ext <| one_smul 𝕜 _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
+@[deprecated (since := "2026-09-02")]
+alias mulActionClosedBallClosedBall := monoidActionClosedBallClosedBall
+
 instance continuousSMul_closedBall_closedBall :
     ContinuousSMul (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) :=
   ⟨Continuous.subtype_mk (by fun_prop) _⟩
@@ -71,6 +76,8 @@ instance monoidActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) 
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
+@[deprecated (since := "2026-09-02")] alias mulActionSphereBall := monoidActionSphereBall
+
 instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) :=
   ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
@@ -80,6 +87,9 @@ instance : SMul (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
 instance monoidActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
+
+@[deprecated (since := "2026-09-02")]
+alias mulActionSphereClosedBall := monoidActionSphereClosedBall
 
 instance continuousSMul_sphere_closedBall :
     ContinuousSMul (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) :=
@@ -95,6 +105,8 @@ instance : SMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
 instance monoidActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
+
+@[deprecated (since := "2026-09-02")] alias mulActionSphereSphere := monoidActionSphereSphere
 
 instance continuousSMul_sphere_sphere : ContinuousSMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) :=
   ⟨Continuous.subtype_mk (by fun_prop) _⟩

@@ -210,6 +210,9 @@ lemma SL_monoidAction_ker :
     change _ = m.1 • v
     simp [← hr2]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Projectivization.SL_mulAction_ker := SL_monoidAction_ker
+
 /-- The action of the special linear group on `ℙ F (ι → F)` factors through the
 projective special linear group `PSL = SL ⧸ Z(SL)`. -/
 def PSLAction.toPermHom :

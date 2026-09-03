@@ -986,6 +986,8 @@ variable [Semiring R']
 instance monoidAction [MulAction R' α] (S : Subsemiring R') : MulAction S α :=
   inferInstance
 
+@[deprecated (since := "2026-09-02")] alias _root_.Subsemiring.mulAction := monoidAction
+
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance distribMulAction [AddMonoid α] [DistribMulAction R' α] (S : Subsemiring R') :
     DistribMulAction S α :=

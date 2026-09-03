@@ -38,14 +38,26 @@ variable (k G) in
 def ofMonoidActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
   .mk (MonoidAlgebra.uniqueLinearEquiv k H) fun g ↦ by ext a; simp [Subsingleton.elim (g • a) a]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.ofMulActionSubsingletonEquivTrivial :=
+  ofMonoidActionSubsingletonEquivTrivial
+
 @[simp]
 lemma ofMonoidActionSubsingletonEquivTrivial_apply (f : k[H]) :
     (ofMulActionSubsingletonEquivTrivial k G H).toIntertwiningMap.toLinearMap f = f.coeff 1 := rfl
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.ofMulActionSubsingletonEquivTrivial_apply :=
+  ofMonoidActionSubsingletonEquivTrivial_apply
 
 @[simp]
 lemma ofMonoidActionSubsingletonEquivTrivial_symm_apply (r : k) :
     (ofMulActionSubsingletonEquivTrivial k G H).symm.toIntertwiningMap.toLinearMap r =
       .single 1 r := rfl
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.ofMulActionSubsingletonEquivTrivial_symm_apply :=
+  ofMonoidActionSubsingletonEquivTrivial_symm_apply
 
 variable (k G) in
 /-- The equivalence of representations between `(Fin 1 → G) →₀ k` and `G →₀ k`. -/

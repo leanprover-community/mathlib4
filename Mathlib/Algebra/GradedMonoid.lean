@@ -356,6 +356,9 @@ instance GradeZero.monoidAction {i} : MulAction (A 0) (A i) :=
   letI := MulAction.compHom (GradedMonoid A) (mkZeroMonoidHom A)
   Function.Injective.mulAction (mk i) sigma_mk_injective mk_zero_smul
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.GradedMonoid.GradeZero.mulAction := GradeZero.monoidAction
+
 end MonoidAction
 
 end GradeZero

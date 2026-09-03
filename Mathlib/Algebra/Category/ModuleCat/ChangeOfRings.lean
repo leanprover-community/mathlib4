@@ -471,6 +471,9 @@ instance monoidAction : MulAction S <| (restrictScalars f).obj (of _ S) →ₗ[R
     one_smul := fun g => LinearMap.ext fun s : S => by simp
     mul_smul := fun (s t : S) g => LinearMap.ext fun x : S => by simp [mul_assoc] }
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.ModuleCat.CoextendScalars.mulAction := monoidAction
+
 set_option backward.isDefEq.respectTransparency.types false in
 instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
   { CoextendScalars.mulAction f _ with

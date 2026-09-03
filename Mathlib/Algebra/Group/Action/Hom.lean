@@ -36,6 +36,11 @@ abbrev Function.Surjective.monoidActionLeft {R S M : Type*} [Monoid R] [MulActio
   one_smul b := by rw [← f.map_one, hsmul, one_smul]
   mul_smul := hf.forall₂.mpr fun a b x ↦ by simp only [← f.map_mul, hsmul, mul_smul]
 
+@[deprecated (since := "2026-09-02")]
+alias Function.Surjective.mulActionLeft := Function.Surjective.monoidActionLeft
+@[deprecated (since := "2026-09-02")]
+alias Function.Surjective.addActionLeft := Function.Surjective.addMonoidActionLeft
+
 namespace MonoidAction
 
 variable (α)
@@ -50,6 +55,10 @@ abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
   one_smul _ := by simpa [(· • ·)] using one_smul ..
   mul_smul _ _ _ := by simpa [(· • ·)] using mul_smul ..
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.compHom := compHom
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.compHom := _root_.AddMonoidAction.compHom
+
 /-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
 an additive action of `N` on `α`.
 
@@ -61,6 +70,10 @@ lemma compHom_smul_def
     {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G] (f : E →* F) (a : E) (x : G) :
     letI : MulAction E G := MulAction.compHom _ f
     a • x = (f a) • x := rfl
+
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.compHom_smul_def := compHom_smul_def
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.compHom_vadd_def := _root_.AddMonoidAction.compHom_vadd_def
 
 /-- If an action is transitive, then composing this action with a surjective homomorphism gives
 again a transitive action. -/
@@ -75,10 +88,21 @@ lemma isPretransitive_compHom {E F G : Type*} [Monoid E] [Monoid F] [MulAction F
   obtain ⟨e, rfl⟩ : ∃ e, f e = m := hf m
   exact ⟨e, rfl⟩
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPretransitive_compHom := isPretransitive_compHom
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isPretransitive_compHom := _root_.AddMonoidAction.isPretransitive_compHom
+
 @[to_additive]
 lemma IsPretransitive.of_compHom {M N α : Type*} [Monoid M] [Monoid N] [MulAction N α]
     (f : M →* N) [h : letI := compHom α f; IsPretransitive M α] : IsPretransitive N α :=
   letI := compHom α f; h.of_smul_eq f rfl
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.of_compHom := IsPretransitive.of_compHom
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPretransitive.of_compHom :=
+  _root_.AddMonoidAction.IsPretransitive.of_compHom
 
 end MonoidAction
 end
@@ -107,5 +131,10 @@ def monoidHomEquivMonoidActionIsScalarTower (M N) [Monoid M] [Monoid N] :
   invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom
   left_inv f := MonoidHom.ext fun m ↦ mul_one (f m)
   right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext <| funext₂ <| smul_one_smul N
+
+@[deprecated (since := "2026-09-02")]
+alias monoidHomEquivMulActionIsScalarTower := monoidHomEquivMonoidActionIsScalarTower
+@[deprecated (since := "2026-09-02")]
+alias addMonoidHomEquivAddActionVAddAssocClass := addMonoidHomEquivAddMonoidActionVAddAssocClass
 
 end CompatibleScalar

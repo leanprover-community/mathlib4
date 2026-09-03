@@ -198,6 +198,9 @@ noncomputable def MonoidAction.automorphize [Group α] [MulAction α β] (f : β
   congr 1
   simp only [mul_smul]
 
+@[deprecated (since := "2026-09-02")] alias MulAction.automorphize := MonoidAction.automorphize
+@[deprecated (since := "2026-09-02")] alias AddAction.automorphize := AddMonoidAction.automorphize
+
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 @[to_additive (dont_translate := R) automorphize_smul_left /--
@@ -218,6 +221,11 @@ lemma MonoidAction.automorphize_smul_left [Group α] [MulAction α β] (f : β �
   change ∑' a : α, g (π (a • b)) • f (a • b) = g (π b) • ∑' a : α, f (a • b)
   simp_rw [H₁]
   exact tsum_const_smul'' _
+
+@[deprecated (since := "2026-09-02")]
+alias MulAction.automorphize_smul_left := MonoidAction.automorphize_smul_left
+@[deprecated (since := "2026-09-02")]
+alias AddAction.automorphize_smul_left := AddMonoidAction.automorphize_smul_left
 
 section
 

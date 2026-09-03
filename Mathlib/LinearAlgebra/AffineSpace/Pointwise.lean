@@ -52,6 +52,9 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseAddMonoidAction : AddAction V (AffineSubspace k P) :=
   SetLike.coe_injective.addAction _ coe_pointwise_vadd
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.AffineSubspace.pointwiseAddAction := _root_.AffineSubspace.pointwiseAddMonoidAction
+
 scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddAction
 
 theorem pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
@@ -130,6 +133,9 @@ TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which a
 @[instance_reducible]
 protected def monoidAction : MulAction M (AffineSubspace k V) :=
   SetLike.coe_injective.mulAction _ coe_smul
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.AffineSubspace.mulAction := _root_.AffineSubspace.monoidAction
 
 scoped[Pointwise] attribute [instance] AffineSubspace.mulAction
 

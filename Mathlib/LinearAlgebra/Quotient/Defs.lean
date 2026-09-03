@@ -164,8 +164,12 @@ instance monoidAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R 
     (P : Submodule R M) : MulAction S (M ⧸ P) := fast_instance%
   Function.Surjective.mulAction mk Quot.mk_surjective <| Submodule.Quotient.mk_smul P
 
+@[deprecated (since := "2026-09-02")] alias _root_.Submodule.Quotient.mulAction' := monoidAction'
+
 instance monoidAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
   Quotient.mulAction' P
+
+@[deprecated (since := "2026-09-02")] alias _root_.Submodule.Quotient.mulAction := monoidAction
 
 instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P : Submodule R M) :
     SMulZeroClass S (M ⧸ P) :=

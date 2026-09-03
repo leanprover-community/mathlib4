@@ -199,9 +199,15 @@ lemma monoidAction_def {X : C} (σ : Aut F) (x : F.obj X) :
     σ • x = σ.hom.app X x :=
   rfl
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.CategoryTheory.PreGaloisCategory.mulAction_def := monoidAction_def
+
 lemma monoidAction_naturality {X Y : C} (σ : Aut F) (f : X ⟶ Y) (x : F.obj X) :
     σ • F.map f x = F.map f (σ • x) :=
   NatTrans.naturality_apply σ.hom f x
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.CategoryTheory.PreGaloisCategory.mulAction_naturality := monoidAction_naturality
 
 /-- An object that is neither initial or connected has a non-trivial subobject. -/
 lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)

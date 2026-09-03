@@ -34,12 +34,24 @@ class AddMonoidAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace �
     Prop where
   dense_orbit : ∀ x : α, Dense (AddAction.orbit M x)
 
+/-- Deprecated alias for `AddMonoidAction.IsMinimal`. -/
+@[deprecated AddMonoidAction.IsMinimal (since := "2026-09-02")]
+abbrev AddAction.IsMinimal := @AddMonoidAction.IsMinimal
+@[deprecated (since := "2026-09-02")]
+alias AddAction.IsMinimal.dense_orbit := AddMonoidAction.IsMinimal.dense_orbit
+
 /-- An action of a monoid `M` on a topological space is called *minimal* if the `M`-orbit of every
 point `x : α` is dense. -/
 @[to_additive]
 class MonoidAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MulAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (MulAction.orbit M x)
+
+/-- Deprecated alias for `MonoidAction.IsMinimal`. -/
+@[deprecated MonoidAction.IsMinimal (since := "2026-09-02")]
+abbrev MulAction.IsMinimal := @MonoidAction.IsMinimal
+@[deprecated (since := "2026-09-02")]
+alias MulAction.IsMinimal.dense_orbit := MonoidAction.IsMinimal.dense_orbit
 
 open MulAction Set
 
@@ -50,6 +62,9 @@ variable (M G : Type*) {α : Type*} [Monoid M] [Group G] [TopologicalSpace α] [
 theorem MonoidAction.dense_orbit [IsMinimal M α] (x : α) : Dense (orbit M x) :=
   MulAction.IsMinimal.dense_orbit x
 
+@[deprecated (since := "2026-09-02")] alias MulAction.dense_orbit := MonoidAction.dense_orbit
+@[deprecated (since := "2026-09-02")] alias AddAction.dense_orbit := AddMonoidAction.dense_orbit
+
 @[to_additive]
 theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M ↦ c • x :=
   MulAction.dense_orbit M x
@@ -58,6 +73,11 @@ theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M ↦ c �
 instance (priority := 100) MonoidAction.isMinimal_of_pretransitive [IsPretransitive M α] :
     IsMinimal M α :=
   ⟨fun x ↦ (surjective_smul M x).denseRange⟩
+
+@[deprecated (since := "2026-09-02")]
+alias MulAction.isMinimal_of_pretransitive := MonoidAction.isMinimal_of_pretransitive
+@[deprecated (since := "2026-09-02")]
+alias AddAction.isMinimal_of_pretransitive := AddMonoidAction.isMinimal_of_pretransitive
 
 @[to_additive]
 theorem IsOpen.exists_smul_mem [IsMinimal M α] (x : α) {U : Set α} (hUo : IsOpen U)

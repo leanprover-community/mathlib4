@@ -432,6 +432,9 @@ protected def pointwiseMonoidAction : MulAction α (Subgroup G) where
     (congr_arg (fun f : Monoid.End G => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Subgroup.pointwiseMulAction := _root_.Subgroup.pointwiseMonoidAction
+
 scoped[Pointwise] attribute [instance] Subgroup.pointwiseMulAction
 
 theorem pointwise_smul_def {a : α} (S : Subgroup G) :

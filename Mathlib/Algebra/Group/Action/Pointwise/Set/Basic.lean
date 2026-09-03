@@ -175,12 +175,18 @@ protected noncomputable def monoidAction [Monoid α] [MulAction α β] : MulActi
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
+@[deprecated (since := "2026-09-02")] alias _root_.Set.mulAction := _root_.Set.monoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.Set.addAction := _root_.Set.addMonoidAction
+
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Set β`. -/
 @[to_additive (attr := instance_reducible)
 /-- An additive action of an additive monoid on a type `β` gives an additive action on `Set β`. -/]
 protected def monoidActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
   mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
   one_smul _ := by simp only [← image_smul, one_smul, image_id']
+
+@[deprecated (since := "2026-09-02")] alias _root_.Set.mulActionSet := _root_.Set.monoidActionSet
+@[deprecated (since := "2026-09-02")] alias _root_.Set.addActionSet := _root_.Set.addMonoidActionSet
 
 scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mulAction Set.addAction
 

@@ -205,6 +205,10 @@ theorem subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
   rw [stabilizer_compl] at hk
   exact ⟨⟨⟨k, hG hk⟩, by aesop⟩, rfl⟩
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le :=
+  subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
+
 end MonoidAction.IsBlock
 
 namespace alternatingGroup

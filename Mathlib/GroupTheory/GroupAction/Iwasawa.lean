@@ -54,6 +54,18 @@ structure IwasawaStructure where
   /-- The subgroups generate the group -/
   is_generator : iSup T = ⊤
 
+/-- Deprecated alias for `MonoidAction.IwasawaStructure`. -/
+@[deprecated _root_.MonoidAction.IwasawaStructure (since := "2026-09-02")]
+abbrev _root_.MulAction.IwasawaStructure := @_root_.MonoidAction.IwasawaStructure
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IwasawaStructure.T := IwasawaStructure.T
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IwasawaStructure.is_comm := IwasawaStructure.is_comm
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IwasawaStructure.is_conj := IwasawaStructure.is_conj
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IwasawaStructure.is_generator := IwasawaStructure.is_generator
+
 variable {M α}
 
 namespace IwasawaStructure
@@ -78,6 +90,9 @@ theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
   have hk' : k ∈ N ⊔ IwaS.T a := Subgroup.mem_sup_right hk
   exact (N ⊔ IwaS.T a).mul_mem ((N ⊔ IwaS.T a).mul_mem hg' hk') ((N ⊔ IwaS.T a).inv_mem hg')
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IwasawaStructure.commutator_le := commutator_le
+
 /-- The Iwasawa criterion for simplicity -/
 theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
     [IsQuasiPreprimitive M α] (IwaS : IwasawaStructure M α) (is_faithful : FaithfulSMul M α) :
@@ -92,5 +107,8 @@ theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
     rw [one_smul]
     exact Set.eq_univ_iff_forall.mp h x ⟨n, hn⟩
   | inr h => exact Or.inr (top_le_iff.mp (le_trans (ge_of_eq is_perfect) h))
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IwasawaStructure.isSimpleGroup := isSimpleGroup
 
 end MonoidAction.IwasawaStructure

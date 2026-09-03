@@ -207,6 +207,9 @@ def monoidActionOfGL {α : Type*} [MulAction (GL n R) α]
     funext a -- TODO: should we add an `ext` lemma for `Function.End`?
     exact h u a
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Matrix.ProjGenLinGroup.mulActionOfGL := monoidActionOfGL
+
 theorem mk_smul {α : Type*} [MulAction (GL n R) α] (h) (g : GL n R) (a : α) :
     letI : MulAction (PGL(n, R)) α := mulActionOfGL h
     mk g • a = g • a := by

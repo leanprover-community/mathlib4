@@ -140,6 +140,10 @@ theorem _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
     ext
     simp [AddAction.stabilizerEquivStabilizer, H, AddAut.addConj, ← add_assoc]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.stabilizerEquivStabilizer_compTriple :=
+  _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
+
 set_option backward.isDefEq.respectTransparency false in
 variable {hg hh hk} in
 @[to_additive existing]
@@ -149,6 +153,10 @@ theorem _root_.MonoidAction.stabilizerEquivStabilizer_compTriple (H : k = h * g)
   comp_eq := by
     ext
     simp [stabilizerEquivStabilizer, H, MulAut.conj, ← mul_assoc]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.stabilizerEquivStabilizer_compTriple :=
+  _root_.MonoidAction.stabilizerEquivStabilizer_compTriple
 
 variable {hg hh hk} in
 @[to_additive]

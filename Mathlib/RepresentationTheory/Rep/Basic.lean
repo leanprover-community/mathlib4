@@ -337,6 +337,8 @@ variable (k G)
 abbrev ofMonoidAction (H : Type w') [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 
+@[deprecated (since := "2026-09-02")] alias _root_.Rep.ofMulAction := ofMonoidAction
+
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
 abbrev leftRegular : Rep k G :=
   ofMulAction k G G
@@ -356,6 +358,9 @@ abbrev ofMonoidActionSubsingletonIsoTrivial
     (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
     ofMulAction k G H ≅ trivial k G k :=
   mkIso <| Representation.ofMulActionSubsingletonEquivTrivial k G H
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Rep.ofMulActionSubsingletonIsoTrivial := ofMonoidActionSubsingletonIsoTrivial
 
 section
 
@@ -1036,6 +1041,9 @@ variable (k G) in
 abbrev linearizationOfMonoidActionIso (H : Type u) [MulAction G H] :
     (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
   Rep.mkIso (Representation.linearizeOfMulActionIso k G H)
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Rep.linearizationOfMulActionIso := linearizationOfMonoidActionIso
 
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/

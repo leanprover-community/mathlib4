@@ -340,6 +340,12 @@ variable [hA : SMulMemClass A R M] (S' : A)
 instance (priority := 75) toMonoidAction : MulAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.SubMulAction.SMulMemClass.toMulAction := toMonoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.SubAddAction.SMulMemClass.toAddAction :=
+  _root_.SubAddAction.SMulMemClass.toAddMonoidAction
+
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
 @[to_additive /-- The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`. -/]
 protected def subtype : S' →[R] M where
@@ -414,9 +420,17 @@ instance monoidAction' : MulAction S p where
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 
+@[deprecated (since := "2026-09-02")] alias _root_.SubMulAction.mulAction' := monoidAction'
+@[deprecated (since := "2026-09-02")]
+alias _root_.SubAddAction.addAction' := _root_.SubAddAction.addMonoidAction'
+
 @[to_additive]
 instance monoidAction : MulAction R p :=
   p.mulAction'
+
+@[deprecated (since := "2026-09-02")] alias _root_.SubMulAction.mulAction := monoidAction
+@[deprecated (since := "2026-09-02")]
+alias _root_.SubAddAction.addAction := _root_.SubAddAction.addMonoidAction
 
 end
 

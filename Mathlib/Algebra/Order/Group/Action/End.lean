@@ -26,6 +26,8 @@ instance applyMonoidAction : MulAction (r →r r) α where
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
+@[deprecated (since := "2026-09-02")] alias _root_.RelHom.applyMulAction := applyMonoidAction
+
 @[simp] lemma smul_def (f : r →r r) (a : α) : f • a = f a := rfl
 
 instance apply_faithfulSMul : FaithfulSMul (r →r r) α where eq_of_smul_eq_smul h := RelHom.ext h
@@ -41,6 +43,8 @@ instance applyMonoidAction : MulAction (r ↪r r) α where
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
+@[deprecated (since := "2026-09-02")] alias _root_.RelEmbedding.applyMulAction := applyMonoidAction
+
 @[simp] lemma smul_def (f : r ↪r r) (a : α) : f • a = f a := rfl
 
 instance apply_faithfulSMul : FaithfulSMul (r ↪r r) α where eq_of_smul_eq_smul h := ext h
@@ -55,6 +59,8 @@ instance applyMonoidAction : MulAction (r ≃r r) α where
   smul := (⇑)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+
+@[deprecated (since := "2026-09-02")] alias _root_.RelIso.applyMulAction := applyMonoidAction
 
 @[simp] lemma smul_def (f : r ≃r r) (a : α) : f • a = f a := rfl
 

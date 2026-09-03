@@ -119,10 +119,21 @@ if the associated action on `Fin n ↪ α` is pretransitive. -/
 is `n`-pretransitive if the associated action on `Fin n ↪ α` is pretransitive. -/]
 abbrev IsMultiplyPretransitive (n : ℕ) := IsPretransitive G (Fin n ↪ α)
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsMultiplyPretransitive := IsMultiplyPretransitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsMultiplyPretransitive := _root_.AddMonoidAction.IsMultiplyPretransitive
+
 @[to_additive]
 theorem isMultiplyPretransitive_iff {n : ℕ} :
     IsMultiplyPretransitive G α n ↔ ∀ x y : Fin n ↪ α, ∃ g : G, g • x = y :=
   isPretransitive_iff _ _
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isMultiplyPretransitive_iff := isMultiplyPretransitive_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isMultiplyPretransitive_iff :=
+  _root_.AddMonoidAction.isMultiplyPretransitive_iff
 
 variable {H β : Type*} [Group H] [MulAction H β] {σ : G → H}
   {f : α →ₑ[σ] β} (hf : Function.Injective f)
@@ -149,11 +160,23 @@ theorem IsPretransitive.of_embedding {n : Type*}
     rw [smul_apply]
     simp [← aux_apply, ← hg, MulActionHom.map_smul']
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.of_embedding := IsPretransitive.of_embedding
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPretransitive.of_embedding :=
+  _root_.AddMonoidAction.IsPretransitive.of_embedding
+
 @[to_additive]
 theorem IsPretransitive.of_embedding_congr {n : Type*}
     (hσ : Function.Surjective σ) (hf : Function.Bijective f) :
     IsPretransitive G (n ↪ α) ↔ IsPretransitive H (n ↪ β) :=
   isPretransitive_congr hσ hf.mulActionHom_embedding_isBijective
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsPretransitive.of_embedding_congr := IsPretransitive.of_embedding_congr
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.IsPretransitive.of_embedding_congr :=
+  _root_.AddMonoidAction.IsPretransitive.of_embedding_congr
 
 section Zero
 
@@ -162,10 +185,20 @@ section Zero
 theorem is_zero_pretransitive {n : Type*} [IsEmpty n] :
     IsPretransitive G (n ↪ α) := inferInstance
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.is_zero_pretransitive := is_zero_pretransitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.is_zero_pretransitive := _root_.AddMonoidAction.is_zero_pretransitive
+
 /-- Any action is 0-pretransitive. -/
 @[to_additive]
 theorem is_zero_pretransitive' :
     IsMultiplyPretransitive G α 0 := inferInstance
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.is_zero_pretransitive' := is_zero_pretransitive'
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.is_zero_pretransitive' := _root_.AddMonoidAction.is_zero_pretransitive'
 
 end Zero
 
@@ -191,11 +224,22 @@ theorem oneEmbedding_isPretransitive_iff :
     IsPretransitive G (one ↪ α) ↔ IsPretransitive G α :=
   isPretransitive_congr Function.surjective_id oneEmbeddingMap_bijective
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.oneEmbedding_isPretransitive_iff := oneEmbedding_isPretransitive_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.zeroEmbedding_isPretransitive_iff :=
+  _root_.AddMonoidAction.zeroEmbedding_isPretransitive_iff
+
 /-- An action is `1`-pretransitive iff it is pretransitive. -/
 @[to_additive /-- An additive action is `1`-pretransitive iff it is pretransitive. -/]
 theorem is_one_pretransitive_iff :
     IsMultiplyPretransitive G α 1 ↔ IsPretransitive G α :=
   oneEmbedding_isPretransitive_iff
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.is_one_pretransitive_iff := is_one_pretransitive_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.is_zero_pretransitive_iff := _root_.AddMonoidAction.is_zero_pretransitive_iff
 
 end One
 
@@ -225,6 +269,11 @@ theorem is_two_pretransitive_iff :
     · simp [hi, h]
     · simp [eq_one_of_ne_zero i hi, h']
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.is_two_pretransitive_iff := is_two_pretransitive_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.is_two_pretransitive_iff := _root_.AddMonoidAction.is_two_pretransitive_iff
+
 /-- A `2`-pretransitive action is pretransitive. -/
 @[to_additive /-- A `2`-pretransitive additive action is pretransitive. -/]
 theorem isPretransitive_of_is_two_pretransitive
@@ -235,6 +284,13 @@ theorem isPretransitive_of_is_two_pretransitive
     · rw [is_two_pretransitive_iff] at h2
       obtain ⟨g, h, _⟩ := h2 h (Ne.symm h)
       exact ⟨g, h⟩
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPretransitive_of_is_two_pretransitive :=
+  isPretransitive_of_is_two_pretransitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isPretransitive_of_is_two_pretransitive :=
+  _root_.AddMonoidAction.isPretransitive_of_is_two_pretransitive
 
 /-- A `2`-transitive action is primitive. -/
 @[to_additive /-- A `2`-transitive additive action is primitive. -/]
@@ -257,6 +313,13 @@ theorem isPreprimitive_of_is_two_pretransitive
       rw [MulAction.isBlock_iff_smul_eq_of_mem] at hB
       rw [← hB (g := g) ha (by rw [hga]; exact ha), ← hgb]
       exact smul_mem_smul_set hb
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPreprimitive_of_is_two_pretransitive :=
+  isPreprimitive_of_is_two_pretransitive
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isPreprimitive_of_is_two_pretransitive :=
+  _root_.AddMonoidAction.isPreprimitive_of_is_two_pretransitive
 
 end Two
 
@@ -291,6 +354,12 @@ theorem isMultiplyPretransitive_of_le' {m n : ℕ} [IsMultiplyPretransitive G α
     (f := embMap G α (castAddEmb p))
     (Fin.Embedding.restrictSurjective_of_add_le_ENatCard hα) inferInstance
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isMultiplyPretransitive_of_le' := isMultiplyPretransitive_of_le'
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isMultiplyPretransitive_of_le' :=
+  _root_.AddMonoidAction.isMultiplyPretransitive_of_le'
+
 /-- If `α` has at least `n` elements, then an `n`-pretransitive action
 is `m`-pretransitive for any `m ≤ n`.
 
@@ -306,6 +375,12 @@ theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α 
   obtain ⟨p, rfl⟩ := Nat.exists_eq_add_of_le hmn
   exact IsPretransitive.of_surjective_map (f := embMap G α (castAddEmb p))
     (Fin.Embedding.restrictSurjective_of_add_le_natCard hα) inferInstance
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isMultiplyPretransitive_of_le := isMultiplyPretransitive_of_le
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isMultiplyPretransitive_of_le :=
+  _root_.AddMonoidAction.isMultiplyPretransitive_of_le
 
 end Higher
 
@@ -489,6 +564,10 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     convert! hrec (ofStabilizer.isMultiplyPretransitive.mp Hk) htcard
     all_goals { rw [nat_card_ofStabilizer_eq G a] }
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsMultiplyPretransitive.index_of_fixingSubgroup_mul :=
+  IsMultiplyPretransitive.index_of_fixingSubgroup_mul
+
 /-- For a multiply pretransitive action,
 computes the index of the `fixingSubgroup` of a subset
 of adequate cardinality. -/
@@ -500,6 +579,10 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_eq
   rw [hMk.index_of_fixingSubgroup_mul rfl, Nat.choose_mul_factorial_mul_factorial]
   rw [← ncard_univ]
   exact ncard_le_ncard (subset_univ s)
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.IsMultiplyPretransitive.index_of_fixingSubgroup_eq :=
+  IsMultiplyPretransitive.index_of_fixingSubgroup_eq
 
 end Index
 

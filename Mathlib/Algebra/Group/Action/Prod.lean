@@ -89,6 +89,9 @@ instance monoidAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M
   mul_smul _ _ _ := by ext <;> exact mul_smul ..
   one_smul _ := by ext <;> exact one_smul ..
 
+@[deprecated (since := "2026-09-02")] alias _root_.Prod.mulAction := monoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.Prod.addAction := addMonoidAction
+
 end Prod
 
 /-! ### Scalar multiplication as a homomorphism -/
@@ -126,6 +129,11 @@ abbrev MonoidAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulC
     change (x.1 * y.1) • (x.2 * y.2) • a = x.1 • x.2 • y.1 • y.2 • a
     rw [mul_smul, mul_smul, smul_comm y.1 x.2]
 
+@[deprecated (since := "2026-09-02")]
+alias MulAction.prodOfSMulCommClass := MonoidAction.prodOfSMulCommClass
+@[deprecated (since := "2026-09-02")]
+alias AddAction.prodOfVAddCommClass := AddMonoidAction.prodOfVAddCommClass
+
 /-- A `MulAction` by a product monoid is equivalent to commuting `MulAction`s by the factors. -/
 @[to_additive AddMonoidAction.prodEquiv
 /-- An `AddAction` by a product monoid is equivalent to commuting `AddAction`s by the factors. -/]
@@ -153,5 +161,8 @@ def MonoidAction.prodEquiv :
     · funext; congr; ext m a; (conv_rhs => rw [← hN.one_smul a]); rfl
     · ext n a; (conv_rhs => rw [← hM.one_smul (SMul.smul n a)]); rfl
     · exact proof_irrel_heq ..
+
+@[deprecated (since := "2026-09-02")] alias MulAction.prodEquiv := MonoidAction.prodEquiv
+@[deprecated (since := "2026-09-02")] alias AddAction.prodEquiv := AddMonoidAction.prodEquiv
 
 end Action_by_Prod

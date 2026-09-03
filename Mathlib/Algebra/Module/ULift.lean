@@ -57,10 +57,16 @@ instance monoidAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
   mul_smul _ _ := mul_smul _ _
   one_smul := one_smul _
 
+@[deprecated (since := "2026-09-02")] alias _root_.ULift.mulAction := monoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.ULift.addAction := addMonoidAction
+
 @[to_additive]
 instance monoidAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
   mul_smul := fun _ _ _ => congr_arg ULift.up <| mul_smul _ _ _
   one_smul := fun _ => congr_arg ULift.up <| one_smul _ _
+
+@[deprecated (since := "2026-09-02")] alias _root_.ULift.mulAction' := monoidAction'
+@[deprecated (since := "2026-09-02")] alias _root_.ULift.addAction' := addMonoidAction'
 
 instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M :=
   { ULift.smulLeft with smul_zero := fun _ => smul_zero _ }

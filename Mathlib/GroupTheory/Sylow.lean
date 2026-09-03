@@ -285,12 +285,16 @@ instance pointwiseMonoidAction {α : Type*} [Group α] [MulDistribMulAction α G
   one_smul P := ext (one_smul α P.toSubgroup)
   mul_smul g h P := ext (mul_smul g h P.toSubgroup)
 
+@[deprecated (since := "2026-09-02")] alias _root_.Sylow.pointwiseMulAction := pointwiseMonoidAction
+
 theorem pointwise_smul_def {α : Type*} [Group α] [MulDistribMulAction α G] {g : α}
     {P : Sylow p G} : ↑(g • P) = g • (P : Subgroup G) :=
   rfl
 
 instance monoidAction : MulAction G (Sylow p G) :=
   compHom _ MulAut.conj
+
+@[deprecated (since := "2026-09-02")] alias _root_.Sylow.mulAction := monoidAction
 
 theorem smul_def {g : G} {P : Sylow p G} : g • P = MulAut.conj g • P :=
   rfl

@@ -1083,6 +1083,9 @@ protected def monoidAction [Monoid α] [MulAction α β] : MulAction (Filter α)
   one_smul f := map₂_pure_left.trans <| by simp_rw [one_smul, map_id']
   mul_smul _ _ _ := map₂_assoc mul_smul
 
+@[deprecated (since := "2026-09-02")] alias _root_.Filter.mulAction := _root_.Filter.monoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.Filter.addAction := _root_.Filter.addMonoidAction
+
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Filter β`.
 -/
 @[to_additive (attr := instance_reducible)
@@ -1091,6 +1094,11 @@ protected def monoidAction [Monoid α] [MulAction α β] : MulAction (Filter α)
 protected def monoidActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
   mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
   one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Filter.mulActionFilter := _root_.Filter.monoidActionFilter
+@[deprecated (since := "2026-09-02")]
+alias _root_.Filter.addActionFilter := _root_.Filter.addMonoidActionFilter
 
 scoped[Pointwise] attribute [instance] Filter.mulAction Filter.addAction Filter.mulActionFilter
   Filter.addActionFilter

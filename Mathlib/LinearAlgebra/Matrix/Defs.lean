@@ -246,6 +246,8 @@ instance isCentralScalar [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
 instance monoidAction [Monoid R] [MulAction R α] : MulAction R (Matrix m n α) :=
   inferInstanceAs <| MulAction R (m → n → α)
 
+@[deprecated (since := "2026-09-02")] alias _root_.Matrix.mulAction := monoidAction
+
 instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R (Matrix m n α) :=
   inferInstanceAs <| DistribMulAction R (m → n → α)

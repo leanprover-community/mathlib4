@@ -399,6 +399,8 @@ noncomputable def ofMonoidAction : Representation k G k[H] where
   map_one' := by ext; simp
   map_mul' x y := by ext; simp [mul_smul]
 
+@[deprecated (since := "2026-09-02")] alias _root_.Representation.ofMulAction := ofMonoidAction
+
 /-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
 noncomputable abbrev leftRegular := ofMulAction k G G
 
@@ -411,9 +413,15 @@ theorem ofMonoidAction_def (g : G) :
     ofMulAction k G H g = (coeffLinearEquiv k).symm.toLinearMap ∘ₗ Finsupp.lmapDomain k k (g • ·) ∘ₗ
       (coeffLinearEquiv k).toLinearMap := rfl
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.ofMulAction_def := ofMonoidAction_def
+
 @[simp]
 theorem ofMonoidAction_single (g : G) (x : H) (r : k) :
     ofMulAction k G H g (single x r) = single (g • x) r := by simp [ofMulAction_def]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.ofMulAction_single := ofMonoidAction_single
 
 end MonoidAction
 section DistribMulAction
@@ -477,6 +485,9 @@ theorem coeff_ofMonoidAction {H : Type*} [MulAction G H] (g : G) (f : k[H]) (h :
     simp
   simp [ofMulAction_def, Finsupp.mapDomain_apply, hg]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.coeff_ofMulAction := coeff_ofMonoidAction
+
 @[deprecated (since := "2026-06-18")] alias ofMonoidAction_apply := coeff_ofMulAction
 
 -- Noncomputable since `MonoidAlgebra.instMul` is now noncomputable
@@ -496,6 +507,10 @@ lemma asAlgebraHom_ofMonoidAction_smul_eq_mul (x y : k[G]) :
   | add x y hx hy => simp [hx, hy, add_mul]
   | smul r x hx => simp [← hx]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.asAlgebraHom_ofMulAction_smul_eq_mul :=
+  asAlgebraHom_ofMonoidAction_smul_eq_mul
+
 @[deprecated (since := "2026-06-18")]
 alias ofMonoidAction_self_smul_eq_mul := asAlgebraHom_ofMulAction_smul_eq_mul
 
@@ -506,6 +521,15 @@ alias ofMonoidAction_self_smul_eq_mul := asAlgebraHom_ofMulAction_smul_eq_mul
 noncomputable def ofMonoidActionSelfAsModuleEquiv : (ofMulAction k G G).asModule ≃ₗ[k[G]] k[G] where
   toAddEquiv := (asModuleEquiv _).toAddEquiv
   map_smul' := by simp
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.ofMulActionSelfAsModuleEquiv := ofMonoidActionSelfAsModuleEquiv
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.ofMulActionSelfAsModuleEquiv_apply :=
+  ofMonoidActionSelfAsModuleEquiv_apply
+@[deprecated (since := "2026-09-02")]
+alias _root_.Representation.ofMulActionSelfAsModuleEquiv_symm_apply :=
+  ofMonoidActionSelfAsModuleEquiv_symm_apply
 
 /-- When `G` is a group, a `k`-linear representation of `G` on `V` can be thought of as
 a group homomorphism from `G` into the invertible `k`-linear endomorphisms of `V`.

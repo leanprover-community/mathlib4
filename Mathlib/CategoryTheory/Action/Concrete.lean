@@ -65,10 +65,16 @@ def ofMonoidAction (G : Type*) (H : Type u) [Monoid G] [MulAction G H] :
   V := H
   ρ := (TypeCat.endEquiv _).toMonoidHom.comp (@MulAction.toEndHom _ _ _ (by assumption))
 
+@[deprecated (since := "2026-09-02")] alias _root_.Action.ofMulAction := ofMonoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.Action.ofMulAction_V := ofMonoidAction_V
+@[deprecated (since := "2026-09-02")] alias _root_.Action.ofMulAction_ρ := ofMonoidAction_ρ
+
 @[simp]
 theorem ofMonoidAction_apply {G : Type*} {H : Type*} [Monoid G] [MulAction G H] (g : G) (x : H) :
     (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
+
+@[deprecated (since := "2026-09-02")] alias _root_.Action.ofMulAction_apply := ofMonoidAction_apply
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a family `F` of types with `G`-actions, this is the limit cone demonstrating that the
@@ -93,6 +99,9 @@ def ofMonoidActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι 
         dsimp at *
         rw [← h ⟨j⟩]
         rfl }
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Action.ofMulActionLimitCone := ofMonoidActionLimitCone
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
 abbrev leftRegular (G : Type u) [Monoid G] : Action (Type u) G :=
@@ -121,10 +130,15 @@ def ofMonoidAction (G : Type*) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
   ρ := InducedCategory.endEquiv.symm.toMonoidHom.comp <| (TypeCat.endEquiv _).toMonoidHom.comp
     MulAction.toEndHom
 
+@[deprecated (since := "2026-09-02")] alias _root_.Action.FintypeCat.ofMulAction := ofMonoidAction
+
 @[simp]
 theorem ofMonoidAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
     (g : G) (x : H) : ConcreteCategory.hom ((FintypeCat.ofMulAction G H).ρ g) x = (g • x : H) :=
   rfl
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Action.FintypeCat.ofMulAction_apply := ofMonoidAction_apply
 
 section
 

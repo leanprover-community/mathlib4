@@ -38,16 +38,25 @@ noncomputable
 abbrev monoidActionBaseChange : MulAction A (S ⊗[R] Ω[A⁄R]) :=
   (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.KaehlerDifferential.mulActionBaseChange := monoidActionBaseChange
+
 attribute [local instance] mulActionBaseChange
 
 @[simp]
 lemma monoidActionBaseChange_smul_tmul (a : A) (s : S) (x : Ω[A⁄R]) :
     a • (s ⊗ₜ[R] x) = s ⊗ₜ (a • x) := rfl
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.KaehlerDifferential.mulActionBaseChange_smul_tmul := monoidActionBaseChange_smul_tmul
+
 @[local simp]
 lemma monoidActionBaseChange_smul_zero (a : A) :
     a • (0 : S ⊗[R] Ω[A⁄R]) = 0 := by
   rw [← zero_tmul _ (0 : Ω[A⁄R]), mulActionBaseChange_smul_tmul, smul_zero]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.KaehlerDifferential.mulActionBaseChange_smul_zero := monoidActionBaseChange_smul_zero
 
 @[local simp]
 lemma monoidActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
@@ -55,6 +64,9 @@ lemma monoidActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
   change (TensorProduct.comm R S Ω[A⁄R]).symm (a • (TensorProduct.comm R S Ω[A⁄R]) (x + y)) = _
   rw [map_add, smul_add, map_add]
   rfl
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.KaehlerDifferential.mulActionBaseChange_smul_add := monoidActionBaseChange_smul_add
 
 /-- (Implementation). `A`-module structure on `S ⊗[R] Ω[A⁄R]`. -/
 noncomputable

@@ -556,21 +556,38 @@ The period of a multiplicative action of `g` on `a` is the smallest positive `n`
 such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist. -/]
 noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.period := period
+@[deprecated (since := "2026-09-02")] alias _root_.AddAction.period := _root_.AddMonoidAction.period
+
 /-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
 @[to_additive /-- `AddAction.period m a` is definitionally equal to
 `Function.minimalPeriod (m +ᵥ ·) a` -/]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
     MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.period_eq_minimalPeriod := period_eq_minimalPeriod
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.period_eq_minimalPeriod := _root_.AddMonoidAction.period_eq_minimalPeriod
+
 /-- `m ^ (period m a)` fixes `a`. -/
 @[to_additive (attr := simp) /-- `(period m a) • m` fixes `a`. -/]
 theorem pow_period_smul (m : M) (a : α) : m ^ (period m a) • a = a := by
   rw [period_eq_minimalPeriod, ← smul_iterate_apply, iterate_minimalPeriod]
 
+@[deprecated (since := "2026-09-02")] alias _root_.MulAction.pow_period_smul := pow_period_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.nsmul_period_vadd := _root_.AddMonoidAction.nsmul_period_vadd
+
 @[to_additive]
 lemma isPeriodicPt_smul_iff {m : M} {a : α} {n : ℕ} :
     IsPeriodicPt (m • ·) n a ↔ m ^ n • a = a := by
   rw [← smul_iterate_apply, IsPeriodicPt, IsFixedPt]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.isPeriodicPt_smul_iff := isPeriodicPt_smul_iff
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.isPeriodicPt_vadd_iff := _root_.AddMonoidAction.isPeriodicPt_vadd_iff
 
 /-! ### Multiples of `MulAction.period`
 
@@ -585,6 +602,12 @@ theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α} :
     m ^ n • a = a ↔ period m a ∣ n := by
   rw [period_eq_minimalPeriod, ← isPeriodicPt_iff_minimalPeriod_dvd, isPeriodicPt_smul_iff]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.pow_smul_eq_iff_period_dvd := pow_smul_eq_iff_period_dvd
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.nsmul_vadd_eq_iff_period_dvd :=
+  _root_.AddMonoidAction.nsmul_vadd_eq_iff_period_dvd
+
 @[to_additive]
 theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
@@ -594,11 +617,22 @@ theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     rw [zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, Int.dvd_neg, Int.natCast_dvd_natCast,
       pow_smul_eq_iff_period_dvd]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.zpow_smul_eq_iff_period_dvd := zpow_smul_eq_iff_period_dvd
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.zsmul_vadd_eq_iff_period_dvd :=
+  _root_.AddMonoidAction.zsmul_vadd_eq_iff_period_dvd
+
 @[to_additive (attr := simp)]
 theorem pow_mod_period_smul (n : ℕ) {m : M} {a : α} :
     m ^ (n % period m a) • a = m ^ n • a := by
   conv_rhs => rw [← Nat.mod_add_div n (period m a), pow_add, mul_smul,
     pow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.pow_mod_period_smul := pow_mod_period_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.nsmul_mod_period_vadd := _root_.AddMonoidAction.nsmul_mod_period_vadd
 
 @[to_additive (attr := simp)]
 theorem zpow_mod_period_smul (j : ℤ) {g : G} {a : α} :
@@ -606,25 +640,50 @@ theorem zpow_mod_period_smul (j : ℤ) {g : G} {a : α} :
   conv_rhs => rw [← Int.emod_add_mul_ediv j (period g a), zpow_add, mul_smul,
     zpow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.zpow_mod_period_smul := zpow_mod_period_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.zsmul_mod_period_vadd := _root_.AddMonoidAction.zsmul_mod_period_vadd
+
 @[to_additive (attr := simp)]
 theorem pow_add_period_smul (n : ℕ) (m : M) (a : α) :
     m ^ (n + period m a) • a = m ^ n • a := by
   rw [← pow_mod_period_smul, Nat.add_mod_right, pow_mod_period_smul]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.pow_add_period_smul := pow_add_period_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.nsmul_add_period_vadd := _root_.AddMonoidAction.nsmul_add_period_vadd
 
 @[to_additive (attr := simp)]
 theorem pow_period_add_smul (n : ℕ) (m : M) (a : α) :
     m ^ (period m a + n) • a = m ^ n • a := by
   rw [← pow_mod_period_smul, Nat.add_mod_left, pow_mod_period_smul]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.pow_period_add_smul := pow_period_add_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.nsmul_period_add_vadd := _root_.AddMonoidAction.nsmul_period_add_vadd
+
 @[to_additive (attr := simp)]
 theorem zpow_add_period_smul (i : ℤ) (g : G) (a : α) :
     g ^ (i + period g a) • a = g ^ i • a := by
   rw [← zpow_mod_period_smul, Int.add_emod_right, zpow_mod_period_smul]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.zpow_add_period_smul := zpow_add_period_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.zsmul_add_period_vadd := _root_.AddMonoidAction.zsmul_add_period_vadd
+
 @[to_additive (attr := simp)]
 theorem zpow_period_add_smul (i : ℤ) (g : G) (a : α) :
     g ^ (period g a + i) • a = g ^ i • a := by
   rw [← zpow_mod_period_smul, Int.add_emod_left, zpow_mod_period_smul]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.zpow_period_add_smul := zpow_period_add_smul
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.zsmul_period_add_vadd := _root_.AddMonoidAction.zsmul_period_add_vadd
 
 variable {a : G} {b : α}
 
@@ -633,10 +692,22 @@ theorem pow_smul_eq_iff_minimalPeriod_dvd {n : ℕ} :
     a ^ n • b = b ↔ minimalPeriod (a • ·) b ∣ n := by
   rw [← period_eq_minimalPeriod, pow_smul_eq_iff_period_dvd]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.pow_smul_eq_iff_minimalPeriod_dvd := pow_smul_eq_iff_minimalPeriod_dvd
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.nsmul_vadd_eq_iff_minimalPeriod_dvd :=
+  _root_.AddMonoidAction.nsmul_vadd_eq_iff_minimalPeriod_dvd
+
 @[to_additive]
 theorem zpow_smul_eq_iff_minimalPeriod_dvd {n : ℤ} :
     a ^ n • b = b ↔ (minimalPeriod (a • ·) b : ℤ) ∣ n := by
   rw [← period_eq_minimalPeriod, zpow_smul_eq_iff_period_dvd]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.zpow_smul_eq_iff_minimalPeriod_dvd := zpow_smul_eq_iff_minimalPeriod_dvd
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.zsmul_vadd_eq_iff_minimalPeriod_dvd :=
+  _root_.AddMonoidAction.zsmul_vadd_eq_iff_minimalPeriod_dvd
 
 variable (a b)
 
@@ -645,9 +716,21 @@ theorem pow_smul_mod_minimalPeriod (n : ℕ) :
     a ^ (n % minimalPeriod (a • ·) b) • b = a ^ n • b := by
   rw [← period_eq_minimalPeriod, pow_mod_period_smul]
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.pow_smul_mod_minimalPeriod := pow_smul_mod_minimalPeriod
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.nsmul_vadd_mod_minimalPeriod :=
+  _root_.AddMonoidAction.nsmul_vadd_mod_minimalPeriod
+
 @[to_additive (attr := simp)]
 theorem zpow_smul_mod_minimalPeriod (n : ℤ) :
     a ^ (n % (minimalPeriod (a • ·) b : ℤ)) • b = a ^ n • b := by
   rw [← period_eq_minimalPeriod, zpow_mod_period_smul]
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.MulAction.zpow_smul_mod_minimalPeriod := zpow_smul_mod_minimalPeriod
+@[deprecated (since := "2026-09-02")]
+alias _root_.AddAction.zsmul_vadd_mod_minimalPeriod :=
+  _root_.AddMonoidAction.zsmul_vadd_mod_minimalPeriod
 
 end MonoidAction

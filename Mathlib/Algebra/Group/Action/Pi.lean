@@ -99,12 +99,18 @@ instance monoidAction (M) {m : Monoid M} [∀ i, MulAction M (α i)] : @MulActio
   mul_smul _ _ _ := funext fun _ ↦ mul_smul _ _ _
   one_smul _ := funext fun _ ↦ one_smul _ _
 
+@[deprecated (since := "2026-09-02")] alias _root_.Pi.mulAction := monoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.Pi.addAction := addMonoidAction
+
 @[to_additive]
 instance monoidAction' {m : ∀ i, Monoid (α i)} [∀ i, MulAction (α i) (β i)] :
     @MulAction (∀ i, α i) (∀ i, β i)
       (@Pi.monoid ι α m) where
   mul_smul _ _ _ := funext fun _ ↦ mul_smul _ _ _
   one_smul _ := funext fun _ ↦ one_smul _ _
+
+@[deprecated (since := "2026-09-02")] alias _root_.Pi.mulAction' := monoidAction'
+@[deprecated (since := "2026-09-02")] alias _root_.Pi.addAction' := addMonoidAction'
 
 end Pi
 

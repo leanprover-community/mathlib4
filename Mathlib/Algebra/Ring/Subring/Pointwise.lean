@@ -46,6 +46,9 @@ protected def pointwiseMonoidAction : MulAction M (Subring R) where
   mul_smul _ _ S :=
     (congr_arg (fun f => S.map f) (RingHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
 
+@[deprecated (since := "2026-09-02")]
+alias _root_.Subring.pointwiseMulAction := _root_.Subring.pointwiseMonoidAction
+
 scoped[Pointwise] attribute [instance] Subring.pointwiseMulAction
 
 open scoped Pointwise

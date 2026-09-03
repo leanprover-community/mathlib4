@@ -87,6 +87,9 @@ protected def monoidAction [DecidableEq α] [Monoid α] [MulAction α β] :
   mul_smul _ _ _ := image₂_assoc mul_smul
   one_smul s := image₂_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
+@[deprecated (since := "2026-09-02")] alias _root_.Finset.mulAction := _root_.Finset.monoidAction
+@[deprecated (since := "2026-09-02")] alias _root_.Finset.addAction := _root_.Finset.addMonoidAction
+
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Finset β`.
 -/
 @[to_additive (attr := instance_reducible)
@@ -94,6 +97,11 @@ protected def monoidAction [DecidableEq α] [Monoid α] [MulAction α β] :
       on `Finset β`. -/]
 protected def monoidActionFinset [Monoid α] [MulAction α β] : MulAction α (Finset β) :=
   coe_injective.mulAction _ coe_smul_finset
+
+@[deprecated (since := "2026-09-02")]
+alias _root_.Finset.mulActionFinset := _root_.Finset.monoidActionFinset
+@[deprecated (since := "2026-09-02")]
+alias _root_.Finset.addActionFinset := _root_.Finset.addMonoidActionFinset
 
 scoped[Pointwise]
   attribute [instance]
