@@ -1183,7 +1183,7 @@ theorem comap_center_le_center [IsScalarTower R B B] [SMulCommClass R B B]
 
 @[simp]
 theorem map_center_eq [IsScalarTower R B B] [SMulCommClass R B B] (f : A ≃⋆ₐ[R] B) :
-    map f (center R A) = center R B :=
+    map (.ofClass f) (center R A) = center R B :=
   SetLike.coe_injective (Set.image_center_eq f)
 
 protected theorem center_prod [IsScalarTower R B B] [SMulCommClass R B B] :
