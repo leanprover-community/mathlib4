@@ -356,11 +356,14 @@ theorem order_one : order (1 : R⟦X⟧) = 0 := by
   simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 
 /-- The order of an invertible power series is `0`. -/
-theorem order_zero_of_unit {f : R⟦X⟧} : IsUnit f → f.order = 0 := by
+theorem order_zero_of_isUnit {f : R⟦X⟧} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
   apply And.left
   rw [← add_eq_zero, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
   exact order_mul_ge _ _
+
+@[deprecated (since := "2026-08-18")]
+alias order_zero_of_unit := order_zero_of_isUnit
 
 /-- The order of the formal power series `X` is `1`. -/
 @[simp]

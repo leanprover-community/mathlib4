@@ -28,8 +28,10 @@ when `X` has dimension `< d`.
 
 universe w v u
 
-open CategoryTheory Limits HomologicalComplex Simplicial
+open CategoryTheory Limits HomologicalComplex
   AlgebraicTopology.DoldKan
+
+open scoped Simplicial
 
 namespace SSet
 

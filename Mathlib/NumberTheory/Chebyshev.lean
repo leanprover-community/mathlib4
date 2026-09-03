@@ -14,7 +14,6 @@ public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
-import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Data.Nat.Prime.Int
