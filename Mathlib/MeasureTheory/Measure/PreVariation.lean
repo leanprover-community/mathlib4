@@ -5,7 +5,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Operations
 public import Mathlib.Order.Partition.Finpartition
 
 /-!
@@ -47,7 +47,7 @@ section
 
 variable (f : Set X → ℝ≥0∞)
 
-open Classical in
+open scoped Classical in
 /-- If `s` is measurable then `preVariationFun f s` is the supremum over partitions `P` of `s` of
 the quantity `∑ p ∈ P.parts, f p`. If `s` is not measurable then it is set to `0`. -/
 noncomputable def preVariationFun (s : Set X) : ℝ≥0∞ :=

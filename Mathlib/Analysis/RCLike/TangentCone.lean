@@ -23,12 +23,12 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [h𝕜 : IsRCLikeNormedFi
 
 theorem tangentConeAt_real_subset_isRCLikeNormedField :
     tangentConeAt ℝ s x ⊆ tangentConeAt 𝕜 s x := by
-  letI := h𝕜.rclike
+  let := h𝕜.rclike
   exact tangentConeAt_mono_field
 
 theorem UniqueDiffWithinAt.of_real (hs : UniqueDiffWithinAt ℝ s x) :
     UniqueDiffWithinAt 𝕜 s x := by
-  letI := h𝕜.rclike
+  let := h𝕜.rclike
   exact hs.mono_field
 
 theorem UniqueDiffOn.of_real (hs : UniqueDiffOn ℝ s) :

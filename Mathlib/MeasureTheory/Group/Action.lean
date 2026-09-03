@@ -164,7 +164,7 @@ theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
-  simp only [Filter.eventuallyLE_antisymm_iff, smul_set_ae_le]
+  simp only [Filter.eventuallySubset_antisymm_iff, smul_set_ae_le]
 
 end AE
 

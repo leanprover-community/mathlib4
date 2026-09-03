@@ -72,7 +72,7 @@ instance interPairsFilter_neBot (s : Set (Set α)) : (interPairsFilter s).NeBot 
   split_ifs with hxs
   · refine Finset.mem_image_of_mem (fun i => hF.toFinset.filter (· ∈ i)) ?_
     simp [hx, hxs]
-  · simp_rw [mem_compl_iff, mem_setOf, Finset.mem_image, Finset.mem_filter,
+  · simp_rw [mem_compl_iff, Set.mem_ofPred, Finset.mem_image, Finset.mem_filter,
       not_exists, not_and, and_imp, ← SetLike.coe_injective.eq_iff, Finset.coe_filter,
       Set.Finite.mem_toFinset, ← symmDiff_nonempty, nonempty_def, mem_symmDiff, ← xor_def]
     intro y hy hys
@@ -90,14 +90,14 @@ theorem interPairsFilter_pairwiseDisjoint : Set.univ.Pairwise
   unfold interPairsFilter
   obtain ⟨x, hx | hx⟩ := hst
   · exact ⟨interPair x, Filter.mem_iInf_of_mem x
-      (if_pos hx.1 ▸ Filter.mem_principal_self (interPair x)),
+      (ite_eq_left hx.1 ▸ Filter.mem_principal_self (interPair x)),
       (interPair x)ᶜ, Filter.mem_iInf_of_mem x
-      (if_neg hx.2 ▸ Filter.mem_principal_self (interPair x)ᶜ),
+      (ite_eq_right hx.2 ▸ Filter.mem_principal_self (interPair x)ᶜ),
       disjoint_compl_right⟩
   · exact ⟨(interPair x)ᶜ, Filter.mem_iInf_of_mem x
-      (if_neg hx.2 ▸ Filter.mem_principal_self (interPair x)ᶜ),
+      (ite_eq_right hx.2 ▸ Filter.mem_principal_self (interPair x)ᶜ),
       interPair x, Filter.mem_iInf_of_mem x
-      (if_pos hx.1 ▸ Filter.mem_principal_self (interPair x)),
+      (ite_eq_left hx.1 ▸ Filter.mem_principal_self (interPair x)),
       disjoint_compl_left⟩
 
 variable [Infinite α]
