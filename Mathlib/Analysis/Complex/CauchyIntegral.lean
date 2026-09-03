@@ -171,7 +171,7 @@ function is analytic on the open ball.
 
 * The results on unbounded rectangles only cover rectangles that are unbounded above. Add versions
   for rectangles that are unbounded below, to the left and to the right, together with lemmas
-  transferring statements between the four cases, so that these follow readily from the the results
+  transferring statements between the four cases, so that these follow readily from the results
   already formalised in this file.
 
 ## Tags
