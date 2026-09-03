@@ -356,9 +356,8 @@ def UniformSpace.generateFilter (f : Filter (α × α)) : UniformSpace α :=
       intro U hU
       obtain ⟨seq, rfl, hseq⟩ := hU
       refine ⟨fun n => Prod.swap ⁻¹' seq n, rfl, fun n => ⟨?_, ?_⟩⟩
-      · rw [← mem_map, map_sup, map_principal, ← Equiv.coe_prodComm, Equiv.image_eq_preimage_symm,
-          Equiv.prodComm_symm, Equiv.coe_prodComm, ← SetRel.inv, SetRel.inv_id,
-          sup_comm f, map_sup, map_map, Prod.swap_swap_eq, map_id]
+      · rw [← mem_map, map_sup, map_principal, image_swap_eq_preimage_swap, ← SetRel.inv,
+          SetRel.inv_id, sup_comm f, map_sup, map_map, Prod.swap_swap_eq, map_id]
         exact (hseq n).1
       · beta_reduce
         rw [← SetRel.inv, ← SetRel.inv, ← SetRel.inv_comp]
