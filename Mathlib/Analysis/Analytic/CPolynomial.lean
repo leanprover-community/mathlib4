@@ -210,7 +210,7 @@ lemma cpolynomialAt_smul_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
   -/
   classical
   let A : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E) G →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
-    ContinuousMultilinearMap.alternatizationCLM
+    ContinuousMultilinearMap.alternatizationL
   let B : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ (E →L[𝕜] F))
       ((ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ F) G)
         →L[𝕜] (ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E) G)) :=

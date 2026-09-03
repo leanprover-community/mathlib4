@@ -246,7 +246,7 @@ lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι 
 
 /-- alternatization of a continuous multilinear map to a continuous alternating map, as a
 continuous linear map. -/
-noncomputable def _root_.ContinuousMultilinearMap.alternatizationCLM [Fintype ι] [DecidableEq ι] :
+noncomputable def _root_.ContinuousMultilinearMap.alternatizationL [Fintype ι] [DecidableEq ι] :
     ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F →L[𝕜] (E [⋀^ι]→L[𝕜] F) where
   toFun g := ContinuousMultilinearMap.alternatization g
   map_add' g h := map_add _ g h
@@ -262,9 +262,9 @@ noncomputable def _root_.ContinuousMultilinearMap.alternatizationCLM [Fintype ι
     refine continuous_finsetSum _ fun σ _ ↦ ?_
     exact (continuous_zsmul _).comp (ContinuousMultilinearMap.domDomCongrL σ).continuous
 
-theorem _root_.ContinuousMultilinearMap.alternatizationCLM_apply [Fintype ι] [DecidableEq ι]
+theorem _root_.ContinuousMultilinearMap.alternatizationL_apply [Fintype ι] [DecidableEq ι]
     (g : ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) (v : ι → E) :
-    ContinuousMultilinearMap.alternatizationCLM g v =
+    ContinuousMultilinearMap.alternatizationL g v =
       ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • g (v ∘ σ) :=
   ContinuousMultilinearMap.alternatization_apply_apply g v
 
