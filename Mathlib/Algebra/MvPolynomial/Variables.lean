@@ -121,8 +121,58 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
 
 theorem vars_def [DecidableEq σ] (p : MvPolynomial σ R) : p.vars = p.degrees.toFinset := by
-  rw [vars]
-  convert! rfl
+  unfold vars
+  congr!
+
+theorem coe_vars_subset_iff {p : MvPolynomial σ R} {s : Set σ} :
+    (p.vars : Set σ) ⊆ s ↔ p ∈ (rename ((↑) : s → σ)).range := by
+  classical
+  rw [MvPolynomial.vars_def, AlgHom.mem_range]
+  constructor
+  · intro h
+    refine ⟨p.killCompl Subtype.val_injective, ext _ _ fun m => ?_⟩
+    by_cases hm : m ∈ Set.range (Finsupp.mapDomain ((↑) : s → σ))
+    · obtain ⟨m, rfl⟩ := hm
+      rw [coeff_rename_mapDomain _ Subtype.val_injective, coeff_killCompl]
+    · suffices hp : p.coeff m = 0 by
+        rw [hp]
+        apply coeff_rename_eq_zero
+        rintro m rfl
+        rw [coeff_killCompl, hp]
+      rw [mem_range_mapDomain_iff _ Subtype.val_injective, Subtype.range_coe] at hm
+      push Not at hm
+      obtain ⟨b, hb, hm⟩ := hm
+      contrapose! hb
+      apply h
+      rw [SetLike.mem_coe, Multiset.mem_toFinset, mem_degrees]
+      exact ⟨m, hb, Finsupp.mem_support_iff.2 hm⟩
+  · rintro ⟨x, rfl⟩
+    rw [degrees_rename_of_injective Subtype.val_injective,
+      Multiset.coe_toFinset, Set.ofPred_subset, Multiset.forall_mem_map_iff]
+    simp
+
+theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ → σ) (hfi : Injective f)
+    (hf : ↑p.vars ⊆ Set.range f) : ∃ q : MvPolynomial τ R, rename f q = p := by
+  rw [coe_vars_subset_iff, AlgHom.mem_range] at hf
+  obtain ⟨q, hq⟩ := hf
+  refine ⟨q.rename (Equiv.ofInjective f hfi).symm, ?_⟩
+  rw [rename_rename, Equiv.self_comp_ofInjective_symm, hq]
+
+theorem exists_rename_coe_vars_eq (p : MvPolynomial σ R) :
+    ∃ q : MvPolynomial p.vars R, rename (↑) q = p :=
+  exists_rename_eq_of_vars_subset_range p _ Subtype.val_injective Subtype.range_coe.superset
+
+theorem vars_rename [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
+    (rename f φ).vars ⊆ φ.vars.image f := by
+  obtain ⟨p, hp⟩ := exists_rename_coe_vars_eq φ
+  rw [← Finset.coe_subset, coe_vars_subset_iff, AlgHom.mem_range]
+  refine ⟨p.rename (fun x => ⟨f x, Finset.mem_image.2 ⟨x, x.2, rfl⟩⟩), ?_⟩
+  rw [rename_rename, Function.comp_def, ← Function.comp_def f, ← rename_rename, hp]
+
+theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j ∈ (rename f φ).vars) :
+    ∃ i : σ, i ∈ φ.vars ∧ f i = j := by
+  classical
+  simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
 
 @[simp]
 theorem vars_0 : (0 : MvPolynomial σ R).vars = ∅ := by

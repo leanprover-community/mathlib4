@@ -118,22 +118,20 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
-lemma eq'' {a b : G} (H K : Subgroup G) : mk H K a = mk H K b ↔ setoid H K a b :=
+lemma eq'' {a b : G} {H K : Subgroup G} : mk H K a = mk H K b ↔ setoid H K a b :=
   Quotient.eq
 
-lemma eq (H K : Subgroup G) (a b : G) :
+lemma eq {H K : Subgroup G} {a b : G} :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
   rw [eq'']
   exact rel_iff
 
-lemma out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out = q :=
+lemma out_eq' {H K : Subgroup G} (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
 
 lemma mk_out_eq_mul (H K : Subgroup G) (g : G) :
     ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out = h * g * k := by
-  have := eq H K (mk H K g : Quotient ↑H ↑K).out g
-  rw [out_eq'] at this
-  obtain ⟨h, h_h, k, hk, T⟩ := this.1 rfl
+  obtain ⟨h, h_h, k, hk, T⟩ := eq.mp (out_eq' (mk H K g))
   refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
   rw [← mul_assoc, ← T]
 
@@ -158,8 +156,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
     a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
   refine ⟨fun hg ↦ by simp [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg)], fun hg ↦ ?_⟩
-  rw [← out_eq' _ _ i] at hg
-  exact mem_doubleCoset.mpr ((eq _ _ _ a).mp hg.symm)
+  rw [← out_eq' i] at hg
+  exact mem_doubleCoset.mpr (eq.mp hg.symm)
 
 lemma disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doubleCoset a.out H K) (doubleCoset b.out (H : Set G) K) := by
