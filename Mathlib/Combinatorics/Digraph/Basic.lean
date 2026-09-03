@@ -198,7 +198,7 @@ instance supSet : SupSet (Digraph V) where
 instance infSet : InfSet (Digraph V) where
   sInf s := {
     verts := {v | ∀ G ∈ s, v ∈ G.verts}
-    Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b)
+    Adj a b := ∀ ⦃G⦄, G ∈ s → Adj G a b
   }
 
 @[simp]
