@@ -40,42 +40,52 @@ variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring 
 
 namespace ContinuousLinearEquiv
 
+section prodCongr
+
+variable [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄]
+
 /-- Product of two continuous linear equivalences. The map comes from `Equiv.prodCongr`. -/
-def prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
+def prodCongr (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
     (M₁ × M₃) ≃L[R₁] M₂ × M₄ where
   __ := e.toLinearEquiv.prodCongr e'.toLinearEquiv
 
 @[simp, norm_cast]
-theorem prodCongr_apply [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
+theorem prodCongr_apply (e : M₁ ≃L[R₁] M₂)
     (e' : M₃ ≃L[R₁] M₄) (x) : e.prodCongr e' x = (e x.1, e' x.2) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
+theorem coe_prodCongr (e : M₁ ≃L[R₁] M₂)
     (e' : M₃ ≃L[R₁] M₄) :
     (e.prodCongr e' : M₁ × M₃ →L[R₁] M₂ × M₄) = (e : M₁ →L[R₁] M₂).prodMap (e' : M₃ →L[R₁] M₄) :=
   rfl
 
 @[simp]
-theorem prodCongr_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
+theorem prodCongr_symm (e : M₁ ≃L[R₁] M₂)
     (e' : M₃ ≃L[R₁] M₄) : (e.prodCongr e').symm = e.symm.prodCongr e'.symm :=
   rfl
 
-variable (R₁ M₁ M₂)
+end prodCongr
+
+section prodComm
+
+variable (R₁ M₁ M₂) [Module R₁ M₂]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Product of topological modules is commutative up to continuous linear isomorphism. -/
 @[simps! apply toLinearEquiv]
-def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
+def prodComm : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
   __ := LinearEquiv.prodComm R₁ M₁ M₂
 
-@[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
+@[simp] lemma prodComm_symm : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
 
 /-- Composition of a map on a product with the exchange of the product factors -/
-theorem _root_.ContinuousLinearMap.coprod_comp_prodComm [Module R₁ M₂] [Module R₁ M₃]
+theorem _root_.ContinuousLinearMap.coprod_comp_prodComm [Module R₁ M₃]
     [ContinuousAdd M₃] (f : M₁ →L[R₁] M₃) (g : M₂ →L[R₁] M₃) :
     f.coprod g ∘L ContinuousLinearEquiv.prodComm R₁ M₂ M₁ = g.coprod f := by
   ext <;> simp
+
+end prodComm
 
 section prodAssoc
 
