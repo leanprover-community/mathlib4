@@ -34,37 +34,49 @@ open scoped commutatorElement
 
 variable {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
 
+/-- The derived series of the additive group `G`, obtained by starting from the additive subgroup
+`⊤` and repeatedly taking the commutator of the previous additive subgroup with itself `n` times. -/
+def AddSubgroup.derivedSeries (G : Type*) [AddGroup G] : ℕ → AddSubgroup G
+  | 0 => ⊤
+  | n + 1 => ⁅derivedSeries G n, derivedSeries G n⁆
+
+namespace Subgroup
+
 section derivedSeries
 
 variable (G)
 
 /-- The derived series of the group `G`, obtained by starting from the subgroup `⊤` and repeatedly
   taking the commutator of the previous subgroup with itself for `n` times. -/
+@[to_additive existing]
 def derivedSeries : ℕ → Subgroup G
   | 0 => ⊤
   | n + 1 => ⁅derivedSeries n, derivedSeries n⁆
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem derivedSeries_zero : derivedSeries G 0 = ⊤ :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem derivedSeries_succ (n : ℕ) :
     derivedSeries G (n + 1) = ⁅derivedSeries G n, derivedSeries G n⁆ :=
   rfl
 
+@[to_additive]
 theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   induction n with
   | zero => exact (⊤ : Subgroup G).normal_of_characteristic
   | succ n ih => exact Subgroup.commutator_normal (derivedSeries G n) (derivedSeries G n)
 
-@[simp 1100]
-theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
+@[to_additive (attr := simp 1100) AddSubgroup.derivedSeries_one]
+theorem derivedSeries_one : derivedSeries G 1 = _root_.commutator G :=
   rfl
 
+@[to_additive]
 theorem derivedSeries_antitone : Antitone (derivedSeries G) :=
   antitone_nat_of_succ_le fun n => (derivedSeries G n).commutator_le_self
 
+@[to_additive]
 instance derivedSeries_characteristic (n : ℕ) : (derivedSeries G n).Characteristic := by
   induction n with
   | zero => exact Subgroup.topCharacteristic
@@ -77,18 +89,21 @@ section CommutatorMap
 section DerivedSeriesMap
 
 variable (f) in
+@[to_additive]
 theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
     (derivedSeries G n).map f ≤ derivedSeries G' n := by
   induction n with
   | zero => exact le_top
   | succ n ih => simp only [derivedSeries_succ, map_commutator, commutator_mono, ih]
 
+@[to_additive]
 theorem derivedSeries_le_map_derivedSeries (hf : Function.Surjective f) (n : ℕ) :
     derivedSeries G' n ≤ (derivedSeries G n).map f := by
   induction n with
   | zero => exact (map_top_of_surjective f hf).ge
   | succ n ih => exact commutator_le_map_commutator ih ih
 
+@[to_additive]
 theorem map_derivedSeries_eq (hf : Function.Surjective f) (n : ℕ) :
     (derivedSeries G n).map f = derivedSeries G' n :=
   le_antisymm (map_derivedSeries_le_derivedSeries f n) (derivedSeries_le_map_derivedSeries hf n)
@@ -97,7 +112,29 @@ end DerivedSeriesMap
 
 end CommutatorMap
 
+end Subgroup
+
+@[deprecated (since := "2026-08-25")] alias derivedSeries := derivedSeries
+@[deprecated (since := "2026-08-25")] alias derivedSeries_zero := derivedSeries_zero
+@[deprecated (since := "2026-08-25")] alias derivedSeries_succ := derivedSeries_succ
+@[deprecated (since := "2026-08-25")] alias derivedSeries_normal := derivedSeries_normal
+@[deprecated (since := "2026-08-25")] alias derivedSeries_one := derivedSeries_one
+@[deprecated (since := "2026-08-25")] alias derivedSeries_antitone := derivedSeries_antitone
+@[deprecated (since := "2026-08-25")] alias derivedSeries_characteristic :=
+  derivedSeries_characteristic
+@[deprecated (since := "2026-08-25")] alias map_derivedSeries_le_derivedSeries :=
+  map_derivedSeries_le_derivedSeries
+@[deprecated (since := "2026-08-25")] alias derivedSeries_le_map_derivedSeries :=
+  derivedSeries_le_map_derivedSeries
+@[deprecated (since := "2026-08-25")] alias map_derivedSeries_eq := map_derivedSeries_eq
+
 section Solvable
+
+/-- An additive group `G` is solvable if its derived series is eventually trivial. -/
+@[mk_iff isSolvable_def]
+class AddGroup.IsSolvable (G : Type*) [AddGroup G] : Prop where
+  /-- An additive group `G` is solvable if its derived series is eventually trivial. -/
+  solvable : ∃ n : ℕ, AddSubgroup.derivedSeries G n = ⊥
 
 variable (G)
 
@@ -105,10 +142,10 @@ namespace Group
 
 /-- A group `G` is solvable if its derived series is eventually trivial. We use this definition
   because it's the most convenient one to work with. -/
-@[mk_iff isSolvable_def, wikidata Q759832]
+@[mk_iff isSolvable_def, wikidata Q759832, to_additive existing]
 class IsSolvable : Prop where
   /-- A group `G` is solvable if its derived series is eventually trivial. -/
-  solvable : ∃ n : ℕ, derivedSeries G n = ⊥
+  solvable : ∃ n : ℕ, Subgroup.derivedSeries G n = ⊥
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.IsSolvable := Group.IsSolvable
@@ -116,9 +153,11 @@ alias _root_.IsSolvable := Group.IsSolvable
 @[deprecated (since := "2026-07-17")]
 alias _root_.isSolvable_def := Group.isSolvable_def
 
+@[to_additive]
 instance (priority := 100) {G : Type*} [CommGroup G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 
+@[to_additive]
 theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
     IsSolvable G := by
   let hG' : CommGroup G := { hG with mul_comm := h }
@@ -128,17 +167,20 @@ theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = 
 @[deprecated (since := "2026-07-16")]
 alias _root_.isSolvable_of_comm := Group.isSolvable_of_comm
 
+@[to_additive]
 theorem isSolvable_of_top_eq_bot (h : (⊤ : Subgroup G) = ⊥) : IsSolvable G :=
   ⟨⟨0, h⟩⟩
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.isSolvable_of_top_eq_bot := Group.isSolvable_of_top_eq_bot
 
+@[to_additive]
 instance (priority := 100) [Subsingleton G] : IsSolvable G :=
   isSolvable_of_top_eq_bot G (by simp [eq_iff_true_of_subsingleton])
 
 variable {G}
 
+@[to_additive]
 theorem isSolvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' →* G)
     (g : G →* G'') (hfg : g.ker ≤ f.range) [hG' : IsSolvable G'] [hG'' : IsSolvable G''] :
     IsSolvable G := by
@@ -148,13 +190,14 @@ theorem isSolvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : 
   clear hm
   induction m with
   | zero =>
-    exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
-      (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
+    exact f.range_eq_map ▸ ((Subgroup.derivedSeries G n).map_eq_bot_iff.mp
+      (le_bot_iff.mp ((Subgroup.map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
   | succ m hm => exact commutator_le_map_commutator hm hm
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.solvable_of_ker_le_range := isSolvable_of_ker_le_range
 
+@[to_additive]
 theorem isSolvable_of_isSolvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
   isSolvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot hf).symm ▸ bot_le)
@@ -162,30 +205,36 @@ theorem isSolvable_of_isSolvable_injective (hf : Function.Injective f) [IsSolvab
 @[deprecated (since := "2026-07-16")]
 alias _root_.solvable_of_solvable_injective := isSolvable_of_isSolvable_injective
 
+@[to_additive]
 instance (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
   isSolvable_of_isSolvable_injective H.subtype_injective
 
+@[to_additive]
 theorem isSolvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
   isSolvable_of_ker_le_range f (1 : G' →* G) (f.range_eq_top_of_surjective hf ▸ le_top)
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.solvable_of_surjective := isSolvable_of_surjective
 
+@[to_additive]
 instance (H : Subgroup G) [H.Normal] [IsSolvable G] :
     IsSolvable (G ⧸ H) :=
   isSolvable_of_surjective (QuotientGroup.mk'_surjective H)
 
+@[to_additive]
 theorem isSolvable_iff_subgroup_quotient (H : Subgroup G) [H.Normal] :
     IsSolvable G ↔ IsSolvable H ∧ IsSolvable (G ⧸ H) :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦
     isSolvable_of_ker_le_range H.subtype (QuotientGroup.mk' H) (by simp)⟩
 
+@[to_additive]
 instance {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
   isSolvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
     ⟨x.1, Prod.ext rfl hx.symm⟩
 
 variable (G) in
+@[to_additive]
 theorem IsSolvable.commutator_lt_top_of_nontrivial [hG : IsSolvable G] [Nontrivial G] :
     commutator G < ⊤ := by
   rw [lt_top_iff_ne_top]
@@ -193,13 +242,14 @@ theorem IsSolvable.commutator_lt_top_of_nontrivial [hG : IsSolvable G] [Nontrivi
   contrapose! hn
   refine ne_of_eq_of_ne ?_ top_ne_bot
   induction n with
-  | zero => exact derivedSeries_zero G
-  | succ n h => rwa [derivedSeries_succ, h]
+  | zero => exact Subgroup.derivedSeries_zero G
+  | succ n h => rwa [Subgroup.derivedSeries_succ, h]
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.IsSolvable.commutator_lt_top_of_nontrivial :=
   Group.IsSolvable.commutator_lt_top_of_nontrivial
 
+@[to_additive]
 theorem IsSolvable.commutator_lt_of_ne_bot [IsSolvable G] {H : Subgroup G} (hH : H ≠ ⊥) :
     ⁅H, H⁆ < H := by
   rw [← nontrivial_iff_ne_bot] at hH
@@ -209,6 +259,7 @@ theorem IsSolvable.commutator_lt_of_ne_bot [IsSolvable G] {H : Subgroup G} (hH :
 @[deprecated (since := "2026-07-16")]
 alias _root_.IsSolvable.commutator_lt_of_ne_bot := Group.IsSolvable.commutator_lt_of_ne_bot
 
+@[to_additive]
 theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
     IsSolvable G ↔ ∀ H : Subgroup G, H ≠ ⊥ → ⁅H, H⁆ < H := by
   refine ⟨fun _ _ ↦ IsSolvable.commutator_lt_of_ne_bot, fun h ↦ ?_⟩
@@ -224,9 +275,10 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
     clear hn
     induction n with
     | zero =>
-      rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
-        ← MonoidHom.range_eq_map, ← MonoidHom.range_eq_map, range_subtype, range_subtype]
-    | succ n ih => rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
+      rw [zero_add, Subgroup.derivedSeries_one, Subgroup.derivedSeries_zero, map_commutator_eq,
+        ← MonoidHom.range_eq_map, range_subtype, range_subtype]
+    | succ n ih => rw [Subgroup.derivedSeries_succ, map_commutator, ih, Subgroup.derivedSeries_succ,
+        map_commutator]
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.isSolvable_iff_commutator_lt := Group.isSolvable_iff_commutator_lt
@@ -239,15 +291,18 @@ section IsSimpleGroup
 
 variable [IsSimpleGroup G]
 
-theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = commutator G := by
+@[to_additive]
+theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} :
+    Subgroup.derivedSeries G n.succ = commutator G := by
   induction n with
-  | zero => exact derivedSeries_one G
+  | zero => exact Subgroup.derivedSeries_one G
   | succ n ih =>
-    rw [_root_.derivedSeries_succ, ih, _root_.commutator]
+    rw [Subgroup.derivedSeries_succ, ih, _root_.commutator]
     rcases (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h | h
     · rw [h, commutator_bot_left]
     · rwa [h]
 
+@[to_additive]
 theorem IsSimpleGroup.comm_iff_isSolvable : (∀ a b : G, a * b = b * a) ↔ Group.IsSolvable G :=
   ⟨Group.isSolvable_of_comm, fun ⟨⟨n, hn⟩⟩ => by
     cases n
@@ -264,11 +319,15 @@ end IsSimpleGroup
 
 section PermNotSolvable
 
-theorem not_isSolvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
-    (h2 : ∀ n : ℕ, g ∈ derivedSeries G n) : ¬Group.IsSolvable G :=
+@[to_additive]
+theorem Group.not_isSolvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
+    (h2 : ∀ n : ℕ, g ∈ Subgroup.derivedSeries G n) : ¬Group.IsSolvable G :=
   mt (Group.isSolvable_def _).mp
     (not_exists_of_forall_not fun n h =>
       h1 (Subgroup.mem_bot.mp ((congr_arg (g ∈ ·) h).mp (h2 n))))
+
+@[deprecated (since := "2026-08-25")] alias not_isSolvable_of_mem_derivedSeries :=
+  Group.not_isSolvable_of_mem_derivedSeries
 
 @[deprecated (since := "2026-07-16")]
 alias not_solvable_of_mem_derivedSeries := not_isSolvable_of_mem_derivedSeries
@@ -278,12 +337,12 @@ theorem Equiv.Perm.not_isSolvable_fin_5 : ¬Group.IsSolvable (Equiv.Perm (Fin 5)
   let y : Equiv.Perm (Fin 5) := ⟨![3, 4, 2, 0, 1], ![3, 4, 2, 0, 1], by decide, by decide⟩
   let z : Equiv.Perm (Fin 5) := ⟨![0, 3, 2, 1, 4], ![0, 3, 2, 1, 4], by decide, by decide⟩
   have key : x = z * ⁅x, y * x * y⁻¹⁆ * z⁻¹ := by unfold x y z; decide
-  refine not_isSolvable_of_mem_derivedSeries (show x ≠ 1 by decide) fun n => ?_
+  refine Group.not_isSolvable_of_mem_derivedSeries (show x ≠ 1 by decide) fun n => ?_
   induction n with
   | zero => exact mem_top x
   | succ n ih =>
-    rw [key, (derivedSeries_normal _ _).mem_comm_iff, inv_mul_cancel_left]
-    exact commutator_mem_commutator ih ((derivedSeries_normal _ _).conj_mem _ ih _)
+    rw [key, (Subgroup.derivedSeries_normal _ _).mem_comm_iff, inv_mul_cancel_left]
+    exact commutator_mem_commutator ih ((Subgroup.derivedSeries_normal _ _).conj_mem _ ih _)
 
 @[deprecated (since := "2026-07-16")]
 alias Equiv.Perm.fin_5_not_solvable := Equiv.Perm.not_isSolvable_fin_5
