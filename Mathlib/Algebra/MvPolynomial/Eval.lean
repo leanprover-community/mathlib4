@@ -211,10 +211,10 @@ theorem eval₂Hom_smul (f : R →+* S₁) (g : σ → S₁) (r : R) (P : MvPoly
 
 section
 
+-- TODO: deduplicate
 theorem eval₂_comp_left {S₂} [CommSemiring S₂] (k : S₁ →+* S₂) (f : R →+* S₁) (g : σ → S₁) (p) :
-    k (eval₂ f g p) = eval₂ (k.comp f) (k ∘ g) p := by
-  apply MvPolynomial.induction_on p <;>
-    simp +contextual [eval₂_add, k.map_add, eval₂_mul, k.map_mul]
+    k (eval₂ f g p) = eval₂ (k.comp f) (k ∘ g) p :=
+  hom_eval₂ p f k g
 
 end
 
@@ -433,6 +433,11 @@ theorem eval_map (f : R →+* S₁) (g : σ → S₁) (p : MvPolynomial σ R) :
     eval g (map f p) = eval₂ f g p := by
   apply MvPolynomial.induction_on p <;> · simp +contextual
 
+@[simp]
+theorem eval_comp_map (f : R →+* S₁) (g : σ → S₁) :
+    (eval g).comp (map f) = eval₂Hom f g :=
+  RingHom.ext (by simp)
+
 theorem eval₂_comp (f : R →+* S₁) (g : σ → R) (p : MvPolynomial σ R) :
     f (eval g p) = eval₂ f (f ∘ g) p := by
   rw [← p.map_id, eval_map, eval₂_comp_right]
@@ -619,6 +624,12 @@ theorem map_aeval {B : Type*} [CommSemiring B] (g : σ → S₁) (φ : S₁ →+
     φ (aeval g p) = eval₂Hom (φ.comp (algebraMap R S₁)) (fun i => φ (g i)) p := by
   rw [← comp_eval₂Hom]
   rfl
+
+theorem map_aeval_eq_aeval_map {R₂ : Type*} [CommSemiring R₂] [Algebra R₂ S₂]
+    (φ : R →+* R₂) (ψ : S₁ →+* S₂) (h : (algebraMap R₂ S₂).comp φ = ψ.comp (algebraMap R S₁))
+    (p : MvPolynomial σ R) (f : σ → S₁) :
+    ψ (aeval f p) = aeval (fun i => ψ (f i)) (p.map φ) := by
+  rw [map_aeval, aeval_def, eval₂_map, coe_eval₂Hom, h]
 
 theorem aeval_range : (aeval f).range = Algebra.adjoin R (Set.range f) := by
   apply le_antisymm
