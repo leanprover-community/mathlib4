@@ -2,9 +2,9 @@
 Tests for norm_cast
 -/
 
+import Mathlib.Basic.Complex.Basic
+import Mathlib.Basic.ENNReal.Inv
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.ENNReal.Inv
 
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
