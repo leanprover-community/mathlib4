@@ -350,17 +350,17 @@ theorem SpanningSubgraph.adj_injective {G : Digraph V} :
 @[simp] theorem SpanningSubgraph.adj_compl {G : Digraph V} (H : G.SpanningSubgraph) :
     SpanningSubgraph.Adj Hᶜ = (SpanningSubgraph.Adj H)ᶜ := by
   ext e
-  simp [Pi.compl_apply, e.2]
+  simp [e.2]
 
 @[simp] theorem SpanningSubgraph.adj_himp {G : Digraph V} (H K : G.SpanningSubgraph) :
     SpanningSubgraph.Adj (H ⇨ K) = SpanningSubgraph.Adj H ⇨ SpanningSubgraph.Adj K := by
   ext e
-  simp [Pi.himp_apply, himp_eq, e.2, or_comm]
+  simp [himp_eq, e.2, or_comm]
 
 @[simp] theorem SpanningSubgraph.adj_sdiff {G : Digraph V} (H K : G.SpanningSubgraph) :
     SpanningSubgraph.Adj (H \ K) = SpanningSubgraph.Adj H \ SpanningSubgraph.Adj K := by
   ext e
-  simp [Pi.sdiff_apply, sdiff_eq, e.2]
+  simp [sdiff_eq, e.2]
 
 instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph :=
   fast_instance% Function.Injective.completeBooleanAlgebra SpanningSubgraph.Adj
