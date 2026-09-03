@@ -181,7 +181,8 @@ instance : Compl (Digraph V) where
     Adj v w := v ∈ G.verts ∧ w ∈ G.verts ∧ ¬G.Adj v w
   }
 
-@[simp] theorem compl_adj {G : Digraph V} : Gᶜ.Adj v w ↔ v ∈ G.verts ∧ w ∈ G.verts ∧ ¬G.Adj v w :=
+@[simp] theorem compl_adj {G : Digraph V} {v w : V} :
+    Gᶜ.Adj v w ↔ v ∈ G.verts ∧ w ∈ G.verts ∧ ¬G.Adj v w :=
   .rfl
 
 /-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
