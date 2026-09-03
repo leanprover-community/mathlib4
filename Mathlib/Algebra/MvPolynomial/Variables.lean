@@ -80,7 +80,7 @@ theorem coe_vars_subset_iff {p : MvPolynomial σ R} {s : Set σ} :
     by_cases hm : m ∈ Set.range (Finsupp.mapDomain ((↑) : s → σ))
     · obtain ⟨m, rfl⟩ := hm
       rw [coeff_rename_mapDomain _ Subtype.val_injective, coeff_killCompl]
-    · suffices hp : coeff m p = 0 by
+    · suffices hp : p.coeff m = 0 by
         rw [hp]
         apply coeff_rename_eq_zero
         rintro m rfl
