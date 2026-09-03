@@ -113,7 +113,7 @@ lemma convOne_apply (c : C) : (1 : WithConv <| C →ₐc[R] A) c = algebraMap R 
 
 @[simp]
 lemma toLinearMap_convOne :
-    toConv (SemilinearMapClass.semilinearMap (1 : WithConv <| C →ₐc[R] A).ofConv) = 1 := rfl
+    toConv (SemilinearMap.ofClass (1 : WithConv <| C →ₐc[R] A).ofConv) = 1 := rfl
 
 @[simp] lemma toAlgHom_convOne : toConv (1 : WithConv <| C →ₐc[R] A).ofConv.toAlgHom = 1 := rfl
 
@@ -131,7 +131,7 @@ lemma convMul_def (f g : WithConv <| C →ₐc[R] A) :
 
 private lemma convPow_succ (f : WithConv <| C →ₐc[R] A) (n : ℕ) : f ^ (n + 1) = (f ^ n) * f := rfl
 
--- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
+-- TODO: Make simp once `SemilinearMap.ofClass` is not simp nf anymore.
 -- @[simp]
 lemma toLinearMap_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toLinearMap = toConv f.ofConv.toLinearMap * toConv g.ofConv.toLinearMap :=
@@ -142,7 +142,7 @@ lemma toAlgHom_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toAlgHom = toConv f.ofConv.toAlgHom * toConv g.ofConv.toAlgHom :=
   rfl
 
--- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
+-- TODO: Make simp once `SemilinearMap.ofClass` is not simp nf anymore.
 -- @[simp]
 lemma toLinearMap_convPow (f : WithConv <| C →ₐc[R] A) :
     ∀ n, toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n

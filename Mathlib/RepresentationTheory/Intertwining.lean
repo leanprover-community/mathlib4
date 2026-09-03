@@ -75,7 +75,7 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
 -- See e.g. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Concrete.20homomorphism.20type.20vs.20abstract.20class/with/492579416
 @[simp]
 lemma coe_eq_toLinearMap {f : IntertwiningMap ρ σ} :
-  SemilinearMapClass.semilinearMap f = f.toLinearMap := rfl
+  SemilinearMap.ofClass f = f.toLinearMap := rfl
 
 @[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
 

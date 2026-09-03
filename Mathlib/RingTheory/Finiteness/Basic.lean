@@ -265,7 +265,7 @@ instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] 
 
 /-- The range of a linear map from a finite module is finite. -/
 instance range [Module.Finite R M] (f : M →ₗ[R] N) : Module.Finite R f.range :=
-  of_surjective (SemilinearMapClass.semilinearMap f).rangeRestrict
+  of_surjective (SemilinearMap.ofClass f).rangeRestrict
     fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
 /-- Pushforwards of finite submodules are finite. -/
