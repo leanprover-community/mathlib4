@@ -264,7 +264,7 @@ variable [LE A] [IsConcreteLE A B] {p q : A}
 alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
-  simp [le_def]
+  simp [le_iff]
 
 end LE
 
