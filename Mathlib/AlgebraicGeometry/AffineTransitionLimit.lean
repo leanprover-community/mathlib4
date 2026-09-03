@@ -64,23 +64,20 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
       let g (j) := IsCofiltered.infTo (insert i (Finset.univ.image i'))
         (Finset.univ.image fun j : 𝒰.I₀ ↦ ⟨_, _, by simp, by simp, f j⟩) (X := j)
       have (j : 𝒰.I₀) : IsEmpty ((𝒰.pullback₁ (D.map (g i (by simp)))).X j) := by
-        let F : (𝒰.pullback₁ (D.map (g i (by simp)))).X j ⟶
-            (𝒰.pullback₁ (D.map (f j))).X j :=
+        let F : (𝒰.pullback₁ (D.map (g i (by simp)))).X j ⟶ (𝒰.pullback₁ (D.map (f j))).X j :=
           pullback.map _ _ _ _ (D.map (g _ (by simp))) (𝟙 _) (𝟙 _) (by
             rw [← D.map_comp, IsCofiltered.infTo_commutes]
             · simp [g]
             · simp
             · exact Finset.mem_image_of_mem _ (Finset.mem_univ _)) (by simp)
         exact Function.isEmpty F
-      obtain ⟨x, -⟩ :=
-        Cover.covers (𝒰.pullback₁ (D.map (g i (by simp)))) (Nonempty.some inferInstance)
-      exact (this _).elim x
+      exact (this _).elim (Cover.covers (𝒰.pullback₁ (D.map (g i (by simp))))
+        (Nonempty.some inferInstance)).choose
     let F := Over.post D ⋙ Over.pullback (𝒰.f j) ⋙ Over.forget _
-    have (i' : _) : IsAffine (F.obj i') :=
-      inferInstanceAs (IsAffine (pullback (D.map i'.hom) (𝒰.f j)))
+    have (k : _) : IsAffine (F.obj k) := inferInstanceAs (IsAffine (pullback (D.map k.hom) (𝒰.f j)))
     have hFne (i' : _) : Nonempty (F.obj i') := H i'.hom
     let e : F ⟶ (F ⋙ Γ.rightOp) ⋙ Scheme.Spec := Functor.whiskerLeft F ΓSpec.adjunction.unit
-    have (i : _) : IsIso (e.app i) := IsAffine.affine
+    have (k : _) : IsIso (e.app k) := IsAffine.affine
     have : IsIso e := NatIso.isIso_of_isIso_app e
     let c' : LimitCone F := ⟨_, (IsLimit.postcomposeInvEquiv (asIso e) _).symm
       (isLimitOfPreserves Scheme.Spec (limit.isLimit (F ⋙ Γ.rightOp)))⟩
@@ -94,7 +91,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
     let α : F ⟶ Over.forget _ ⋙ D := Functor.whiskerRight
       (Functor.whiskerLeft (Over.post D) (Over.mapPullbackAdj (𝒰.f j)).counit) (Over.forget _)
     exact this.map (((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc).lift
-        ((Cone.postcompose α).obj c'.1))
+      ((Cone.postcompose α).obj c'.1))
 
 include hc in
 open Scheme.IdealSheafData in
@@ -407,21 +404,16 @@ private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOf
   · let e : D ⟶ D ⋙ Γ.rightOp ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
     have inst (i) : IsIso (e.app i) := by dsimp [e]; infer_instance
     have inst : IsIso e := NatIso.isIso_of_isIso_app e
-    have inst (i) : IsAffine ((D ⋙ Γ.rightOp ⋙ Scheme.Spec).obj i) := by
-      dsimp; infer_instance
-    have inst : IsAffine ((Cone.postcompose (asIso e).hom).obj c).pt := by
-      dsimp; infer_instance
+    have inst (i) : IsAffine ((D ⋙ Γ.rightOp ⋙ Scheme.Spec).obj i) := by dsimp; infer_instance
+    have inst : IsAffine ((Cone.postcompose (asIso e).hom).obj c).pt := by dsimp; infer_instance
     have := this (D ⋙ Γ.rightOp ⋙ Scheme.Spec) ((Cone.postcompose (asIso e).hom).obj c)
       ((IsLimit.postcomposeHomEquiv (asIso e) c).symm hc) (inv e ≫ t)
       ((inv e).app _ ≫ a) ((inv e).app _ ≫ b)
       (by simp only [Cone.postcompose_obj_π, NatTrans.comp_app, NatIso.isIso_inv_app,
-            Category.assoc, IsIso.hom_inv_id_assoc, asIso_hom]
-          exact hab)
-      (by simp [ha]) (by simp [hb])
-      ⟨D ⋙ Γ.rightOp, rfl⟩
-    simp_rw [(inv e).naturality_assoc] at this
+        Category.assoc, IsIso.hom_inv_id_assoc, asIso_hom]; exact hab)
+      (by simp [ha]) (by simp [hb]) ⟨D ⋙ Γ.rightOp, rfl⟩
     obtain ⟨k, hik, hjk, H⟩ := this
-    exact ⟨k, hik, hjk, (cancel_epi _).mp H⟩
+    exact ⟨k, hik, hjk, (cancel_epi _).mp (by simpa only [(inv e).naturality_assoc] using H)⟩
   obtain ⟨D, rfl⟩ := hD
   obtain ⟨a, rfl⟩ := Spec.map_surjective a
   obtain ⟨b, rfl⟩ := Spec.map_surjective b
@@ -439,8 +431,7 @@ private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOf
     a (Spec.map_injective (by simpa using! ha.symm))
     b (Spec.map_injective (by simpa using! hb.symm))
     (Spec.map_injective (by
-      simp only [coconeLeftOpOfCone_pt, Functor.const_obj_obj,
-        Functor.leftOp_obj, coconeLeftOpOfCone_ι_app, Spec.map_comp]
+      simp only [coconeLeftOpOfCone_ι_app, Spec.map_comp]
       simp only [← Scheme.Spec_map, ← liftedLimitMapsToOriginal_hom_π, Category.assoc, hab]))
   exact ⟨k.unop, hik.unop, hjk.unop, by simpa [← Spec.map_comp, Spec.map_inj] using! H⟩
 
@@ -630,8 +621,7 @@ lemma exists_hom_comp_eq_comp_of_locallyOfFiniteType
   · exact ⟨A.i', A.hii', isInitialOfIsEmpty.hom_ext _ _⟩
   let O : Finset I := {A.i'} ∪ Finset.univ.image (fun i : 𝒰Df.I₀ ↦ k <| A.𝒰D.idx i.1)
   let o := Nonempty.some (inferInstance : Nonempty 𝒰Df.I₀)
-  have ho : k (A.𝒰D.idx o.1) ∈ O := by
-    simp [O]
+  have ho : k (A.𝒰D.idx o.1) ∈ O := by simp [O]
   obtain ⟨l, hl1, hl2⟩ := IsCofiltered.inf_exists O
     (Finset.univ.image (fun i : 𝒰Df.I₀ ↦
       ⟨k <| A.𝒰D.idx i.1, A.i', by simp [O], by simp [O], hki' <| A.𝒰D.idx i.1⟩))
@@ -650,8 +640,7 @@ lemma exists_hom_comp_eq_comp_of_locallyOfFiniteType
     pullback.map _ _ _ _ (D.map <| hl1 hu)
       (𝟙 _) (𝟙 _) (by rw [Category.comp_id, ← D.map_comp, this o u]) rfl
   have hF : F ≫ pullback.fst (D.map (hki' _)) (A.𝒰D.f _) =
-      pullback.fst _ _ ≫ D.map (hl1 hu) := by
-    simp [F, pullback.lift_fst]
+      pullback.fst _ _ ≫ D.map (hl1 hu) := by simp [F, pullback.lift_fst]
   dsimp only [Precoverage.ZeroHypercover.pullback₁, PreZeroHypercover.pullback₁] at heq ⊢
   simp only [Functor.map_comp, Category.assoc] at heq ⊢
   simp_rw [← D.map_comp_assoc, reassoc_of% this o u, D.map_comp_assoc]
