@@ -60,6 +60,42 @@ example (a b : ℝ≥0∞) (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a + b ≤ 2 * max
 example (a b : ℝ≥0∞) (ha : a ≠ ⊤) (hb : b ≠ ⊤) : (a + b).toReal = a.toReal + b.toReal := by
   basify
 
+/-! ## Real powers -/
+
+example (a : ℝ≥0∞) (y : ℝ) (hy : 0 ≤ y) (h : a ≠ ⊤) : a ^ y ≤ a ^ y + 1 := by
+  basify
+  linarith
+
+example (a b : ℝ≥0∞) (y : ℝ) (hy : 0 ≤ y) (ha : a ≠ ⊤) (hb : b ≠ ⊤) (h : a ≤ b) :
+    a ^ y ≤ b ^ y := by
+  basify
+  gcongr
+
+example (a : ℝ≥0) (y : ℝ) (hy : 0 ≤ y) : ((a : ℝ≥0∞) ^ y).toReal = (a : ℝ) ^ y := by
+  basify
+
+/-! ## Norms and distances -/
+
+section Norm
+variable {E : Type*} [NormedAddCommGroup E]
+
+example (a b : E) : ‖a + b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
+  basify
+  exact norm_add_le a b
+
+example (a : E) : ‖a‖ₑ ≠ ⊤ := by
+  basify
+
+example (a b : E) : ‖a‖₊ ≤ ‖a - b‖₊ + ‖b‖₊ := by
+  basify
+  exact norm_le_norm_sub_add a b
+
+example (a b c : E) : nndist a c ≤ nndist a b + nndist b c := by
+  basify
+  exact dist_triangle a b c
+
+end Norm
+
 /-! ## Operations of `ℕ∞` -/
 
 example (a : ℕ∞) : a + 0 = a := by

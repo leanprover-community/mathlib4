@@ -5,6 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Data.ENNReal.Inv
 public import Mathlib.Tactic.Basify.Core
 
@@ -14,6 +16,8 @@ public import Mathlib.Tactic.Basify.Core
 `ℝ≥0∞` is two constructions away from `ℝ`: it is `WithTop ℝ≥0`, and `ℝ≥0` is the subtype of the
 nonnegative reals. This file registers both layers with `basify`, so that a goal about `ℝ≥0∞`
 becomes a goal about `ℝ` together with nonnegativity hypotheses.
+
+It also registers real powers and the norms and distances that take values in these types.
 -/
 
 public section
@@ -86,5 +90,15 @@ attribute [basify_op] NNReal.coe_zero NNReal.coe_one NNReal.coe_ofNat
 theorem nnreal_coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     ((OfScientific.ofScientific m s e : ℝ≥0) : ℝ) = OfScientific.ofScientific m s e :=
   rfl
+
+/-! ### Real powers -/
+
+attribute [basify_op ←] ENNReal.coe_rpow_of_nonneg
+
+attribute [basify_op] NNReal.coe_rpow
+
+/-! ### Norms and distances -/
+
+attribute [basify_op] enorm_eq_nnnorm coe_nnnorm coe_nnnorm' coe_nndist
 
 end Mathlib.Tactic.Basify

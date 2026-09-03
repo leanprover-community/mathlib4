@@ -99,6 +99,7 @@ propositional lemmas needed to actually make a contradictory branch disappear.
 attribute [basify_simp] ne_eq not_true_eq_false not_false_eq_true eq_self_iff_true
   true_and and_true and_self true_or or_true or_self true_iff iff_true
   true_implies implies_true false_implies forall_const
+  if_true if_false ite_self
 
 /-! ### Atoms -/
 
