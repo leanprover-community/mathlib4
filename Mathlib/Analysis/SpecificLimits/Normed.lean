@@ -370,6 +370,9 @@ theorem hasSummableGeomSeries_iff_isQuasiregular :
 
 variable [HasSummableGeomSeries R]
 
+theorem IsQuasiregular.of_norm_lt_one ⦃x : R⦄ (hx : ‖x‖ < 1) : IsQuasiregular x :=
+  hasSummableGeomSeries_iff_isQuasiregular.mp ‹_› hx
+
 theorem add_geom_series_mul_self {x : R} (hx : ‖x‖ < 1) :
     x + (∑' i : ℕ, (· * x)^[i] x) * x = (∑' i : ℕ, (· * x)^[i] x) :=
   summable_geometric_iterate_of_norm_lt_one hx |>.add_geom_series_mul_self
