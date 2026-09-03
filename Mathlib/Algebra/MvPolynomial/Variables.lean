@@ -71,8 +71,8 @@ def vars (p : MvPolynomial σ R) : Finset σ :=
   p.degrees.toFinset
 
 theorem vars_def [DecidableEq σ] (p : MvPolynomial σ R) : p.vars = p.degrees.toFinset := by
-  rw [vars]
-  convert! rfl
+  unfold vars
+  congr!
 
 theorem coe_vars_subset_iff {p : MvPolynomial σ R} {s : Set σ} :
     (p.vars : Set σ) ⊆ s ↔ p ∈ (rename ((↑) : s → σ)).range := by
