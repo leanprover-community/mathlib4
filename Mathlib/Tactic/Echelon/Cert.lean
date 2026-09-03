@@ -85,9 +85,10 @@ the condition in errors. -/
 def proveByDecide (name : String) (p : Q(Prop)) : MetaM Q($p) := do
   let d ← mkDecide p
   let .ok r := Kernel.whnf (← getEnv) (← getLCtx) d
-    | throwError "cannot verify the rank certificate: {name} does not reduce in the kernel"
+    | throwError "cannot verify the decomposition certificate: {name} does not reduce in \
+        the kernel"
   unless r.isConstOf ``Bool.true do
-    throwError "cannot verify the rank certificate: {name} failed"
+    throwError "cannot verify the decomposition certificate: {name} failed"
   mkDecideProofQ p
 
 /-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `certifier i`
@@ -263,6 +264,7 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
   let pivot ← mkPivotLit m n data.pivot
   match leaf? with
   | none =>
+    -- the type has decidable equality; every proof term can be constructed by `decide`
     have hperm : Q(($A).submatrix $σ id = $Aσ) :=
       ← proveByDecide "the row arrangement" q(($A).submatrix $σ id = $Aσ)
     have hprod : Q($L * $Aσ = $U) :=
