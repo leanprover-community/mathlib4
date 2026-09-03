@@ -136,7 +136,9 @@ theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Pro
 /-- The relation that one `Digraph` is a spanning subgraph of another. -/
 def IsSpanningSubgraph (x y : Digraph V) : Prop :=
   x ≤ y ∧ x.verts = y.verts
-@[grind =] theorem isSpanningSubgraph_iff {x y : Digraph V} :
+
+@[grind =]
+theorem isSpanningSubgraph_iff {x y : Digraph V} :
     IsSpanningSubgraph x y ↔ x ≤ y ∧ x.verts = y.verts := by
   rfl
 
