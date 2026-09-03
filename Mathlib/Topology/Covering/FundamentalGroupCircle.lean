@@ -66,7 +66,7 @@ lemma coe_zmultiplesOneEquivInt_symm (m : ℤ) :
 lemma zmultiplesOneEquivInt_apply_intCast (m : ℤ)
     (h : (m : ℝ) ∈ AddSubgroup.zmultiples (1 : ℝ)) :
     zmultiplesOneEquivInt ⟨(m : ℝ), h⟩ = m :=
-  zmultiplesOneEquivInt.apply_eq_iff_eq_symm_apply.mpr <|
+  zmultiplesOneEquivInt.eq_symm_apply.mp <|
     Subtype.ext (coe_zmultiplesOneEquivInt_symm m).symm
 
 /-- **The fundamental group of the circle is `ℤ`**: the isomorphism sends the class of the loop
