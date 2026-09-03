@@ -97,7 +97,8 @@ propositional lemmas needed to actually make a contradictory branch disappear.
 -/
 
 attribute [basify_simp] ne_eq not_true_eq_false not_false_eq_true eq_self_iff_true
-  true_and and_true and_self true_or or_true or_self true_iff iff_true implies_true forall_const
+  true_and and_true and_self true_or or_true or_self true_iff iff_true
+  true_implies implies_true false_implies forall_const
 
 /-! ### Atoms -/
 
@@ -118,9 +119,10 @@ def isRegisteredType (ty : Expr) : MetaM Bool := return (← elimEntryFor? ty).i
 /-- Is `e` an atom, i.e. a term of a registered type that `basify` cannot see inside of?
 
 A term of a registered type is *not* an atom when its head is an operation registered with
-`@[basify_op]`, in which case its arguments are visited instead. Everything else is opaque and gets
-generalized and case split as a whole. -/
+`@[basify_op]`, in which case its arguments are visited instead, and when it is a `let`, whose value
+is visited instead. Everything else is opaque and gets generalized and case split as a whole. -/
 def isAtom (e : Expr) : MetaM Bool := do
+  if e.isLet then return false
   let ty ← instantiateMVars (← inferType e)
   unless ← isRegisteredType ty do return false
   let some head := e.getAppFn.constName? | return true
