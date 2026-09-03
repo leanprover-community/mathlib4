@@ -421,8 +421,7 @@ instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
 instance decidableRelAdjCompl : DecidableRel (Gᶜ.Adj) :=
-  inferInstanceAs <| DecidableRel fun v w ↦
-    v ∈ G.verts ∧ w ∈ G.verts ∧ ¬G.Adj v w
+  inferInstanceAs <| DecidableRel fun v w ↦ v ∈ G.verts ∧ w ∈ G.verts ∧ ¬G.Adj v w
 
 end Decidable
 
