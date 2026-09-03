@@ -1,21 +1,19 @@
 /-
 Copyright (c) 2025 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
+Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio, Edison Xie
 -/
 module
 
 public import Mathlib.Algebra.GroupWithZero.Range
-public import Mathlib.Algebra.Order.GroupWithZero.WithZero
-public import Mathlib.Algebra.Order.Hom.MonoidWithZero
-public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Cyclic
+public import Mathlib.Algebra.Order.GroupWithZero.Subgroup
 
 /-! # The range of a MonoidWithZeroHom
 
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `LinearOrderedCommGroupWithZero`,
-we provide some order properties of the `MonoidWithZeroHom.ValueGroup₀` as defined in
+we provide some order properties of `MonoidWithZeroHom.valueGroup₀` as defined in
 `Mathlib.Algebra.GroupWithZero.Range`.
-
 -/
 
 @[expose] public section
@@ -24,43 +22,38 @@ namespace MonoidWithZeroHom
 
 variable {A B : Type*} [MonoidWithZero A] [LinearOrderedCommGroupWithZero B] {f : A →*₀ B}
 
-namespace ValueGroup₀
+namespace valueGroup₀
 
-open WithZero
+lemma coe_unit_ne_zero (a : (valueGroup₀ f)ˣ) : (a.1 : B) ≠ 0 :=
+  ZeroMemClass.coe_eq_zero.not.2 a.ne_zero
 
-variable (f) in
-/-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as a homomorphism of monoids with zero. -/
-def orderMonoidWithZeroHom : ValueGroup₀ f →*₀o WithZero Bˣ where
-  __ := WithZero.map' (valueGroup f).subtype
-  monotone' := map'_strictMono (Subtype.strictMono_coe _) |>.monotone
+lemma coe_unit_pos (a : (valueGroup₀ f)ˣ) : 0 < (a.1 : B) := zero_lt_iff.2 (coe_unit_ne_zero a)
 
-lemma monoidWithZeroHom_strictMono :
-    StrictMono (orderMonoidWithZeroHom f) :=
-  map'_strictMono (Subtype.strictMono_coe _)
+variable {r₁ s₁ r₂ s₂ : A}
 
-lemma embedding_strictMono : StrictMono (embedding (f := f)) := by
-  intro x y hxy
-  rw [← monoidWithZeroHom_strictMono.lt_iff_lt] at hxy
-  simpa using! (OrderEmbedding.lt_iff_lt (OrderIso.withZeroUnits.toOrderEmbedding)).mpr hxy
+/-- Comparing two ratios, when the denominators do not vanish. -/
+theorem mk_le_mk_iff (f : A →*₀ B) (hr₁ : f r₁ ≠ 0) (hr₂ : f r₂ ≠ 0) :
+    mk f r₁ s₁ ≤ mk f r₂ s₂ ↔ f (s₁ * r₂) ≤ f (s₂ * r₁) := by
+  rw [← Subtype.coe_le_coe, coe_mk, coe_mk, inv_mul_eq_div, inv_mul_eq_div,
+    div_le_div_iff₀ (zero_lt_iff.2 hr₁) (zero_lt_iff.2 hr₂), map_mul, map_mul]
 
-instance : IsOrderedMonoid (ValueGroup₀ f) :=
-  Function.Injective.isOrderedMonoid embedding (map_mul _) embedding_strictMono.le_iff_le
+end valueGroup₀
 
-instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
-  isBot_zero _ := by simp
-  mul_lt_mul_of_pos_left a ha b c hbc := by
-    simp only [← (embedding_strictMono (f := f)).lt_iff_lt, map_mul] at *
-    exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
+/-! ### Bridging the with-zero hypotheses to the `Subgroup Bˣ` API
 
-lemma embedding_unit_pos (a : (ValueGroup₀ f)ˣ) :
-    0 < embedding a.1 := by
-  conv_lhs => rw [← map_zero f, ← ValueGroup₀.embedding_restrict₀ (0 : A)]
-  rw [embedding_strictMono.lt_iff_lt]
-  simp
+`valueGroup f` is by definition `(valueGroup₀ f).units`, but instance search does not unfold it,
+so the transfers are declared explicitly. The canonical form for a non-degeneracy or cyclicity
+hypothesis is `valueGroup f`; the with-zero forms are derived from it. -/
 
-lemma embedding_unit_ne_zero (a : (ValueGroup₀ f)ˣ) :
-    embedding a.1 ≠ 0 := (embedding_unit_pos a).ne.symm
+instance [Nontrivial (valueGroup f)] : Nontrivial (valueGroup₀ f)ˣ := by
+  have : Nontrivial ↥(valueGroup₀ f).units := by rw [units_valueGroup₀]; infer_instance
+  exact (SubgroupWithZero.unitsMulEquiv (valueGroup₀ f)).symm.toEquiv.injective.nontrivial
 
-end ValueGroup₀
+instance [Subsingleton (valueGroup f)] : Subsingleton (valueGroup₀ f)ˣ := by
+  have : Subsingleton ↥(valueGroup₀ f).units := by rw [units_valueGroup₀]; infer_instance
+  exact (SubgroupWithZero.unitsMulEquiv (valueGroup₀ f)).toEquiv.subsingleton
+
+instance [IsCyclicWithZero (valueGroup₀ f)] : IsCyclic (valueGroup f) :=
+  SubgroupWithZero.isCyclic_units (valueGroup₀ f)
 
 end MonoidWithZeroHom

@@ -672,11 +672,11 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
   refine ⟨?_, fun _ hP ↦ ?_⟩
   · obtain ⟨x, hx⟩ := LaurentSeries.valuation_surjective K γ
     have : Valued.v.restrict x ≠ 0 := fun h ↦ NeZero.ne γ.1 <|
-      hx ▸ MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.1 h
+      hx ▸ MonoidWithZeroHom.rangeRestrict_eq_zero_iff.1 h
     rw [← hx]
     nth_rw 2 [← Valuation.coe_ofClass]
-    rw [← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
-    simp_rw [← Valued.v.restrict_lt_iff_lt_embedding]
+    rw [← MonoidWithZeroHom.coe_rangeRestrict]
+    simp_rw [← Valued.v.restrict_lt_iff_lt_coe]
     exact (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem
       (i := Units.mk0 (Valued.v.restrict x) this) (by tauto)
   · simpa [eq_coeff_of_valuation_sub_lt K hP.le (lt_add_one _)] using mem_uniformity_of_eq hS rfl
@@ -706,7 +706,7 @@ result in full generality and deduce the case `Γ = ℤ` from that one. -/
 lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
   let entourage : Set (K⸨X⸩ × K⸨X⸩) := {P : K⸨X⸩ × K⸨X⸩ | Valued.v.restrict (P.snd - P.fst) < 1}
-  let ζ : (MonoidWithZeroHom.ValueGroup₀ <| .ofClass (Valued.v (R := K⸨X⸩)))ˣ :=
+  let ζ : (MonoidWithZeroHom.valueGroup₀ <| .ofClass (Valued.v (R := K⸨X⸩)))ˣ :=
     Units.mk0 1 (zero_ne_one.symm)
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
     <| (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (i := ζ) (by tauto)
@@ -800,17 +800,17 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
       simp
 
 open scoped Topology
-open MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 /-- The main result showing that the Cauchy filter tends to the `Cauchy.limit` -/
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
     {U : Set K⸨X⸩} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
-  suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < embedding γ.1} by
-    simp_rw [← Valued.v.restrict_lt_iff_lt_embedding] at this
+  suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < γ.1.val} by
+    simp_rw [← Valued.v.restrict_lt_iff_lt_coe] at this
     apply this.mono fun _ hf ↦ hU₁ hf
-  set D := -(log (embedding γ.1) - 1) with hD₀
-  have hD : exp (-D) < embedding γ.1 := by
+  set D := -(log (γ.1.val) - 1) with hD₀
+  have hD : exp (-D) < γ.1.val := by
     rw [← lt_log_iff_exp_lt (by simp), hD₀]
     simp
   apply coeff_eventually_equal (D := D) hℱ |>.mono
@@ -889,7 +889,7 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
       ← PowerSeries.coe_sub, ← coe_algebraMap, adicValued_apply, valuation_of_algebraMap]
     exact hP
 
-open MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [denseRange_iff_closure_range]
@@ -900,15 +900,15 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
-  have := (embedding γ.1)
+  have := (γ.1.val)
   obtain ⟨P, hP⟩ := exists_ratFunc_val_lt f
-    <| γ.map (embedding (f := .ofClass (valued K).v))
+    <| γ.map (SubmonoidWithZeroClass.subtype (valueGroup₀ (.ofClass (valued K).v)))
   use P
   apply hT₁
   apply hγ
   simpa only [Units.coe_map, MonoidHom.coe_mk, ZeroHom.toFun_eq_coe, OneHom.coe_mk, add_comm,
     MonoidWithZeroHom.toZeroHom_coe, ← sub_eq_add_neg, Set.mem_ofPred_eq,
-    Valuation.restrict_lt_iff_lt_embedding]
+    Valuation.restrict_lt_iff_lt_coe]
 
 end Dense
 
@@ -924,7 +924,7 @@ lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : K⟮X⟯, Valued.v f = Valued
   rw [zpow_neg, map_inv₀, map_zpow₀, v_def, valuation_X_eq_neg_one, ← exp_zsmul, ← exp_neg]
   simp [exp_log, hx]
 
-open MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup₀
 
 theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
@@ -934,37 +934,37 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   constructor
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR
-    use {P : K⟮X⟯ | Valued.v P < embedding d.1}
+    use {P : K⟮X⟯ | Valued.v P < d.1.val}
     simp only [Valued.mem_nhds, sub_zero]
     refine ⟨?_, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
-    · obtain ⟨x, hx⟩ := RatFunc.valuation_surjective K (embedding d.1)
+    · obtain ⟨x, hx⟩ := RatFunc.valuation_surjective K (d.1).val
       use Units.mk0 (Valued.v.restrict x) (by
-        rw [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff]; simp [hx])
+        rw [Valuation.restrict_def, ne_eq, rangeRestrict_eq_zero_iff]; simp [hx])
       simp [v_def, Valuation.restrict_lt_iff, ← hx]
     apply hd
     simp only [sub_zero, Set.mem_ofPred_eq]
-    rw [← map_sub, Valuation.restrict_lt_iff_lt_embedding]
+    rw [← map_sub, Valuation.restrict_lt_iff_lt_coe]
     simp only [valuation_def]
     rwa [← valuation_eq_LaurentSeries_valuation]
   · rintro ⟨_, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
-    set X := {f : K⸨X⸩ | Valued.v f < embedding d.1} with X_def
+    set X := {f : K⸨X⸩ | Valued.v f < d.1.val} with X_def
     refine ⟨(fun x : K⸨X⸩ × K⸨X⸩ ↦ x.snd - x.fst) ⁻¹' X, ⟨X, ?_⟩, ?_⟩
     · refine ⟨?_, Set.Subset.refl _⟩
-      · simp only [Valued.mem_nhds, sub_zero, Valuation.restrict_lt_iff_lt_embedding]
-        obtain ⟨x, hx⟩ := restrict₀_surjective _ d.1
+      · simp only [Valued.mem_nhds, sub_zero, Valuation.restrict_lt_iff_lt_coe]
+        obtain ⟨x, hx⟩ := rangeRestrict_surjective _ d.1
         use Units.mk0 (Valued.v.restrict (x : K⸨X⸩)) (by
           simp only [ne_eq, map_eq_zero]
           intro h
           simp only [h, map_zero] at hx
           exact Units.ne_zero _ hx.symm)
-        simp only [Units.val_mk0, ← Valuation.restrict_lt_iff_lt_embedding,
+        simp only [Units.val_mk0, ← Valuation.restrict_lt_iff_lt_coe,
           X_def, Set.ofPred_subset_ofPred, Valuation.restrict_lt_iff]
-        rw [← hx, embedding_restrict₀]
+        rw [← hx, coe_rangeRestrict]
         simp [v_def, valuation_coe_ratFunc]
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      rw [Set.mem_ofPred_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
+      rw [Set.mem_ofPred_eq, sub_zero, Valuation.restrict_lt_iff_lt_coe, v_def,
         valuation_eq_LaurentSeries_valuation, map_sub]
       assumption
 

@@ -141,9 +141,9 @@ instance : Finite 𝓀[K] :=
   letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   letI : (Valued.v (R := K)).RankOne :=
-  { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
+  { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp (SubmonoidWithZeroClass.subtype _)
     strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
-        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
+        (SubmonoidWithZeroClass.subtype_strictMono _) }
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).2.2
 
@@ -156,9 +156,9 @@ variable (K : Type*) [Field K] [ValuativeRel K]
 
 instance : CompleteSpace K :=
   letI : (Valued.v (R := K)).RankOne :=
-  { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
+  { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp (SubmonoidWithZeroClass.subtype _)
     strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
-        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
+        (SubmonoidWithZeroClass.subtype_strictMono _) }
   open scoped Valued in
   have : ProperSpace K := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace K
   (properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField.mp
@@ -166,9 +166,9 @@ instance : CompleteSpace K :=
 
 instance : CompleteSpace 𝒪[K] :=
   letI : (Valued.v (R := K)).RankOne :=
-  { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
+  { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp (SubmonoidWithZeroClass.subtype _)
     strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
-        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
+        (SubmonoidWithZeroClass.subtype_strictMono _) }
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
 

@@ -101,13 +101,13 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
   rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
-open MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom.valueGroup₀
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `PadicAlgCl p` has rank one. -/
 instance : RankOne (PadicAlgCl.valued p).v where
-  hom'        := embedding
-  strictMono' := embedding_strictMono
+  hom'        := SubmonoidWithZeroClass.subtype _
+  strictMono' := (SubmonoidWithZeroClass.subtype_strictMono _)
   exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
@@ -163,13 +163,13 @@ theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]), ← coe_eq, valuation_extends,
     PadicAlgCl.valuation_p]
 
-open MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom.valueGroup₀
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `ℂ_[p]` has rank one. -/
 instance : RankOne (PadicComplex.valued p).v where
-  hom'        := embedding
-  strictMono' := embedding_strictMono
+  hom'        := SubmonoidWithZeroClass.subtype _
+  strictMono' := (SubmonoidWithZeroClass.subtype_strictMono _)
   exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
@@ -178,7 +178,8 @@ instance : RankOne (PadicComplex.valued p).v where
     exact ⟨hp.ne_zero, hp.ne_one⟩
 
 @[simp]
-theorem RankOne.hom_eq_embedding : RankOne.hom (PadicComplex.valued p).v = embedding := rfl
+theorem RankOne.hom_eq_subtype :
+    RankOne.hom (PadicComplex.valued p).v = SubmonoidWithZeroClass.subtype _ := rfl
 
 /-- `ℂ_[p]` is a normed field, where the norm extends from `PadicAlgCl` along completion. -/
 instance normedField : NormedField ℂ_[p] := inferInstance
@@ -210,8 +211,9 @@ theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
     let := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
     exact @uniformContinuous_norm ℂ_[p] this
   · intro x
-    simp only [Valued.v.norm_def, RankOne.hom_eq_embedding]
-    rw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends,
+    simp only [Valued.v.norm_def, RankOne.hom_eq_subtype,
+      SubmonoidWithZeroClass.subtype_apply]
+    rw [coe_restrict (v := (PadicComplex.valued p).v) x, valuation_extends,
       ← PadicAlgCl.valuation_coe]
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
