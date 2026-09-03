@@ -715,7 +715,6 @@ instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective
 
-@[simp]
 theorem toStarRingEquiv_eq_ofClass (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = .ofClass e := rfl
 @[deprecated (since := "2026-09-03")] alias toStarRingEquiv_eq_coe := toStarRingEquiv_eq_ofClass
 
