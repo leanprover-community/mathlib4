@@ -19,11 +19,11 @@ by all minors of a fixed size.
 
 @[expose] public section
 
-variable {R S : Type*}
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 namespace Matrix
 
-variable [CommRing R] [CommRing S] {m n t : ℕ}
+variable {m n t : ℕ}
 
 /-- The concrete minor of a matrix selected by row and column order embeddings. -/
 def detSubmatrix
@@ -109,8 +109,6 @@ theorem map_mvPolynomialMinor (f : R →+* S)
 end Matrix
 
 namespace MvPolynomial
-
-variable [CommRing R] [CommRing S]
 
 variable (R)
 
