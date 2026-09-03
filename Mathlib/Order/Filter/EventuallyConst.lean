@@ -61,7 +61,7 @@ alias ⟨EventuallyConst.eventuallyEq_const, _⟩ := eventuallyConst_iff_exists_
 
 theorem eventuallyConst_pred' {p : α → Prop} :
     EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by
-  simp only [eventuallyConst_iff_exists_eventuallyEq, Prop.exists_iff]
+  simp only [eventuallyConst_iff_exists_eventuallyEq, Prop.exists]
 
 theorem eventuallyConst_pred {p : α → Prop} :
     EventuallyConst p l ↔ (∀ᶠ x in l, p x) ∨ (∀ᶠ x in l, ¬p x) := by
