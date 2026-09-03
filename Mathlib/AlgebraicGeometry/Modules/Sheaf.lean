@@ -93,9 +93,6 @@ scoped[AlgebraicGeometry] notation3 "Γ(" M ", " U ")" => (Scheme.Modules.preshe
 
 instance : Module Γ(X, U) Γ(M, U) := (M.val.obj (.op U)).isModule
 
-lemma toSheaf_obj_obj (M : X.Modules) :
-    ((SheafOfModules.toSheaf X.ringCatSheaf).obj M).obj = M.presheaf := rfl
-
 variable (M) in
 @[simp] lemma map_smul (i : U ⟶ V) (r : Γ(X, V)) (x : Γ(M, V)) :
     M.presheaf.map i.op (r • x) = X.presheaf.map i.op r • M.presheaf.map i.op x :=
