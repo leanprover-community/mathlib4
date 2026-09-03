@@ -316,11 +316,6 @@ theorem HasDerivAtFilter.isTheta_sub (hf : HasDerivAtFilter f f' L) (hf' : f' �
     (fun p ↦ f p.1 - f p.2) =Θ[L] (fun p ↦ p.1 - p.2) :=
   HasFDerivAtFilter.isTheta_sub hf <| isInducing_toSpanSingleton hf'
 
-@[deprecated HasDerivAtFilter.isTheta_sub (since := "2026-02-04")]
-theorem HasDerivAtFilter.isBigO_sub_rev (hf : HasDerivAtFilter f f' L) (hf' : f' ≠ 0) :
-    (fun p => p.1 - p.2) =O[L] fun p => f p.1 - f p.2 :=
-  hf.isTheta_sub hf' |>.isBigO_symm
-
 theorem HasStrictDerivAt.hasDerivAt (h : HasStrictDerivAt f f' x) : HasDerivAt f f' x :=
   h.hasStrictFDerivAt.hasFDerivAt
 
