@@ -1237,11 +1237,11 @@ end IsHomeomorph
 
 @[simp]
 lemma toLinearEquiv_inv (f : V ≃L[R] V) :
-    (f⁻¹).toLinearEquiv = f.toLinearEquiv ⁻¹ := rfl
+    (f⁻¹).toLinearEquiv = f.toLinearEquiv⁻¹ := rfl
 
 @[simp]
 lemma toLinearEquiv_mul (f g : V ≃L[R] V) :
-    (f * g).toLinearEquiv = f * g := rfl
+    (f * g).toLinearEquiv = f.toLinearEquiv * g := rfl
 
 /-- `ContinuousLinearEquiv.toLinearEquiv` as a multiplicative monoid homomorphism `MonoidHom`. -/
 @[simps]
