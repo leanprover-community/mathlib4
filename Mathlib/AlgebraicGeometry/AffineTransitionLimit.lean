@@ -540,50 +540,33 @@ lemma exists_eq (j : A.𝒰D.I₀) : ∃ (k : I) (hki' : k ⟶ A.i'),
     (A.𝒰D.pullback₁ (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.a =
       (A.𝒰D.pullback₁ (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.b := by
   have : IsAffine (A.𝒰D.X j) := inferInstanceAs (IsAffine ((A.𝒰D₀.X j.1).affineCover.X j.2))
-  have _ (i) : IsAffine ((Over.post D ⋙ Over.pullback (A.𝒰D.f j) ⋙ Over.forget _).obj i) :=
+  have _ (i) : IsAffine ((A.D' j).obj i) :=
     inferInstanceAs (IsAffine (pullback (D.map i.hom) (A.𝒰D.f j)))
-  have : IsAffine ((Over.pullback (A.𝒰D.f j) ⋙ Over.forget (A.𝒰D.X j)).mapCone
-      ((Over.conePost D A.i').obj A.c)).pt :=
-    inferInstanceAs (IsAffine (pullback (A.c.π.app A.i') (A.𝒰D.f j)))
-  have : LocallyOfFiniteType ((A.𝒰X j.fst.fst).f j.fst.snd ≫ A.𝒰S.pullbackHom f j.fst.fst) := by
-    dsimp [Scheme.Cover.pullbackHom]; infer_instance
-  have H₁ := congr($(pullback.condition (f := A.g) (g := (Scheme.Pullback.diagonalCover f
-    A.𝒰S A.𝒰X).f ⟨j.1.1, (j.1.2, j.1.2)⟩)) ≫ pullback.fst _ _)
-  have H₂ := congr($(pullback.condition (f := A.g) (g := (Scheme.Pullback.diagonalCover f
-    A.𝒰S A.𝒰X).f ⟨j.1.1, (j.1.2, j.1.2)⟩)) ≫ pullback.snd _ _)
+  have : IsAffine (A.c' j).pt := inferInstanceAs (IsAffine (pullback (A.c.π.app A.i') (A.𝒰D.f j)))
+  let f' := (A.𝒰X j.1.1).f j.1.2 ≫ A.𝒰S.pullbackHom f j.1.1
+  let toDiag := (A.𝒰D₀.X j.1).affineCover.f j.2 ≫
+    (Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X).pullbackHom A.g ⟨j.1.1, (j.1.2, j.1.2)⟩
+  have : LocallyOfFiniteType f' := by dsimp [f', Scheme.Cover.pullbackHom]; infer_instance
+  have hpb := pullback.condition (f := A.g)
+    (g := (Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X).f ⟨j.1.1, (j.1.2, j.1.2)⟩)
+  have H₁ := congr($hpb ≫ pullback.fst _ _)
+  have H₂ := congr($hpb ≫ pullback.snd _ _)
   simp only [Scheme.Cover.pullbackHom, g, Category.assoc, limit.lift_π,
     PullbackCone.mk_π_app, Scheme.Pullback.diagonalCover_map] at H₁ H₂
   obtain ⟨k, hik, hjk, H⟩ := Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOfFiniteType
-    (Over.post D ⋙ Over.pullback (A.𝒰D.f j) ⋙ Over.forget _)
-    ((Over.post D ⋙ Over.pullback (A.𝒰D.f j)).whiskerLeft (Comma.natTrans _ _) ≫
-      (Functor.const _).map ((A.𝒰D₀.X j.1).affineCover.f j.2 ≫
-      (Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X).pullbackHom _ _ ≫
-      pullback.fst _ _ ≫
-      (A.𝒰X j.fst.fst).f j.fst.snd ≫ Scheme.Cover.pullbackHom A.𝒰S f j.fst.fst))
-    (((A.𝒰X j.1.1).f j.1.2 ≫ A.𝒰S.pullbackHom f j.1.1))
-    ((Over.pullback (A.𝒰D.f j) ⋙ Over.forget _).mapCone ((Over.conePost _ _).obj A.c))
-    (by
-      refine isLimitOfPreserves (Over.pullback (A.𝒰D.f j) ⋙ Over.forget _) ?_
-      apply isLimitOfReflects (Over.forget (D.obj A.i'))
-      exact (Functor.Initial.isLimitWhiskerEquiv (Over.forget A.i') A.c).symm A.hc)
-    (i := Over.mk (𝟙 _))
-    (pullback.snd _ _ ≫ (A.𝒰D₀.X j.1).affineCover.f j.2 ≫
-      (Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X).pullbackHom _ _ ≫
-      pullback.fst _ _)
-    (by simp)
-    (j := Over.mk (𝟙 _))
-    (pullback.snd _ _ ≫ (A.𝒰D₀.X j.1).affineCover.f j.2 ≫
-      (Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X).pullbackHom _ _ ≫
-      pullback.snd _ _)
-    (by simp [pullback.condition])
+    (A.D' j) ((Over.post D ⋙ Over.pullback (A.𝒰D.f j)).whiskerLeft (Comma.natTrans _ _) ≫
+      (Functor.const _).map (toDiag ≫ pullback.fst _ _ ≫ f')) f' (A.c' j) (A.hc' j)
+    (i := Over.mk (𝟙 _)) (pullback.snd _ _ ≫ toDiag ≫ pullback.fst _ _) (by simp)
+    (j := Over.mk (𝟙 _)) (pullback.snd _ _ ≫ toDiag ≫ pullback.snd _ _)
+    (by simp [f', pullback.condition])
     (by
       rw [← cancel_mono ((A.𝒰X j.1.1).f j.1.2), ← cancel_mono (pullback.fst f (A.𝒰S.f j.1.1))]
       have H₃ := congr(pullback.fst (A.c.π.app A.i') (A.𝒰D.f j) ≫ $(A.hab))
       simp only [pullback.condition_assoc, 𝒰D, ← A.c.w A.hii', Category.assoc] at H₃
-      simpa [Scheme.Cover.pullbackHom, g, ← H₁, ← H₂, -Cone.w, -Cone.w_assoc] using! H₃)
+      simpa [c', toDiag, Scheme.Cover.pullbackHom, g, ← H₁, ← H₂, -Cone.w, -Cone.w_assoc] using! H₃)
   refine ⟨k.left, k.hom, ?_⟩
-  dsimp only [Precoverage.ZeroHypercover.pullback₁, PreZeroHypercover.pullback₁]
-  simpa [← cancel_mono ((A.𝒰X j.1.1).f j.1.2), ← cancel_mono (pullback.fst f (A.𝒰S.f j.1.1)),
+  simpa [Precoverage.ZeroHypercover.pullback₁, PreZeroHypercover.pullback₁, D', toDiag,
+    ← cancel_mono ((A.𝒰X j.1.1).f j.1.2), ← cancel_mono (pullback.fst f (A.𝒰S.f j.1.1)),
     Scheme.Cover.pullbackHom, g, ← H₁, ← H₂, pullback.condition_assoc] using! H
 
 end
