@@ -320,15 +320,10 @@ instance {G : Digraph V} : SDiff G.SpanningSubgraph where
       H.val.Adj v w ∧ (G.Adj v w ∧ ¬K.val.Adj v w) := Iff.rfl
 
 @[grind =]
-theorem SpanningSubgraph.adj_le_adj_iff
-    {G : Digraph V} {H K : G.SpanningSubgraph} :
-    H.Adj ≤ K.Adj ↔
-      ∀ ⦃v w⦄, H.val.Adj v w → K.val.Adj v w := by
-  constructor
-  · intro h v w hvw
-    exact h ⟨(v, w), H.property.1.2 hvw⟩ hvw
-  · intro h e he
-    exact h he
+theorem SpanningSubgraph.adj_le_adj_iff {G : Digraph V}
+    {H K : G.SpanningSubgraph} :
+    H.Adj ≤ K.Adj ↔ ∀ ⦃v w⦄, H.val.Adj v w → K.val.Adj v w :=
+  ⟨fun h v w hvw ↦ h ⟨(v, w), H.property.left.right hvw⟩ hvw, fun h _ he ↦ h he⟩
 
 theorem SpanningSubgraph.adj_le_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
     H.Adj ≤ K.Adj ↔ H ≤ K := by
