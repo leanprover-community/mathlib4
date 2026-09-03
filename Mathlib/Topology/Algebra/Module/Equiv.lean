@@ -1250,10 +1250,12 @@ def toLinearEquivMonoidHom : (V ≃L[R] V) →* (V ≃ₗ[R] V) where
   map_one' := rfl
   map_mul' _ _ := rfl
 
+@[simp]
 lemma toLinearEquiv_pow (f : V ≃L[R] V) (n : ℕ) :
     (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
   map_pow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
 
+@[simp]
 lemma toLinearEquiv_zpow (f : V ≃L[R] V) (n : ℤ) :
     (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
   map_zpow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
