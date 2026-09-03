@@ -795,9 +795,10 @@ theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
 
 variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
 
+-- TODO: change this definition to take a concrete morphism instead
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A where
-  toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
+  toSubalgebra := AlgHom.equalizer (StarAlgHom.ofClass f : A →ₐ[R] B) (StarAlgHom.ofClass g)
   star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using! congrArg star ha
 
 @[simp]
