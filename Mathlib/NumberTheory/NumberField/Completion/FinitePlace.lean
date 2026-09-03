@@ -6,7 +6,6 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Submonoid
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.RamificationInertia.Valuation
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation

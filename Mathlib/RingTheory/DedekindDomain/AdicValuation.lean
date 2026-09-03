@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.Algebra.Group.Submonoid.Units
 
 /-!
 # Adic valuations on Dedekind domains

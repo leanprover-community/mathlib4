@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Parsing
+public meta import Mathlib.Tactic.Echelon.Bareiss
 
 /-!
 # `eval_rank`: rank of matrix literals by Bareiss elimination

@@ -6,7 +6,6 @@ Authors: Johan Commelin, Simon Hudon
 module
 
 public import Batteries.Tactic.Alias
-public import Batteries.Data.List.Basic
 public import Mathlib.Init
 
 /-!
