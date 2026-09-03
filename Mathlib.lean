@@ -7672,7 +7672,6 @@ public import Mathlib.Tactic.Relation.Symm
 public import Mathlib.Tactic.Rename
 public import Mathlib.Tactic.RenameBVar
 public import Mathlib.Tactic.Replace
-public import Mathlib.Tactic.RewriteSearch
 public import Mathlib.Tactic.Rify
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Ring.Basic
