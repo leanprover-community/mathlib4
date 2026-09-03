@@ -133,7 +133,12 @@ lemma supp_ne_bot_of_mem (hx : x ∈ P) : P.supp ≠ ⊥ :=
 
 @[deprecated (since := "2026-07-28")] alias ne_bot_of_mem' := supp_ne_bot_of_mem
 
-/-- A constructor for `Partition α` that removes `⊥` from the set of parts. -/
+/-- The natural equivalence between the subtype of parts and the subtype of parts of a copy. -/
+@[simps!]
+def partscopyEquiv (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
+  Set.equivOfEq rfl
+
+/-- A constructor for `Partition s` that removes `⊥` from the set of parts. -/
 @[simps]
 def removeBot (P : Set α) (indep : _root_.sSupIndep P) : Partition α where
   parts := P \ {⊥}
