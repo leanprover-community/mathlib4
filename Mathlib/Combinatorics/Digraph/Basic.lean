@@ -54,16 +54,17 @@ structure Digraph (V : Type*) where
   left_mem_verts_of_adj ⦃v w : V⦄ : Adj v w → v ∈ verts := by grind
   /-- There is no edge of the digraph outside its vertices. -/
   right_mem_verts_of_adj ⦃v w : V⦄ : Adj v w → w ∈ verts := by grind
+theorem Adj.left_mem_verts {V : Type*} {G : Digraph V} {v w : V}
+    (h : G.Adj v w) : v ∈ G.verts :=
+  G.left_mem_verts_of_adj h
+
+theorem Adj.right_mem_verts {V : Type*} {G : Digraph V} {v w : V}
+    (h : G.Adj v w) : w ∈ G.verts :=
+  G.right_mem_verts_of_adj h
 
 namespace Digraph
 
 attribute [grind →] left_mem_verts_of_adj right_mem_verts_of_adj
-
-theorem Adj.left_mem_verts {v w : V} (h : G.Adj v w) : v ∈ verts :=
-  G.left_mem_verts_of_adj h
-
-theorem Adj.right_mem_verts {v w : V} (h : G.Adj v w) : w ∈ verts :=
-  G.right_mem_verts_of_adj h
 
 /--
 Constructor for digraphs using a Boolean function.
