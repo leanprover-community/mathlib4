@@ -381,11 +381,11 @@ theorem Iso.isNClique_iff {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g
   constructor
   · rintro ⟨h, hc⟩
     have hc' : #((s.map f) : Finset β) = n := (s.card_map _).trans hc
-    have h' : G'.IsClique (f '' s) := (f.isClique_iff s).mp h
+    have h' : G'.IsClique (f '' s) := f.toEmbedding.isClique_iff.mp h
     exact ⟨hcast ▸ h', hc'⟩
   · rintro ⟨h', hc'⟩
     have hc : #s = n := (hc'.symm.trans (s.card_map _)).symm
-    have h : G.IsClique s := (f.isClique_iff s).mpr (hcast ▸ h')
+    have h : G.IsClique s := f.toEmbedding.isClique_iff.mpr (hcast ▸ h')
     exact ⟨h, hc⟩
 
 end NClique
@@ -756,7 +756,7 @@ theorem Iso.cliqueSet_eq {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g 
     G.cliqueSet n = (.map f.symm) '' G'.cliqueSet n := by
   classical
   ext s
-  simp only [cliqueSet, Set.mem_setOf_eq, Set.mem_image]
+  simp only [cliqueSet, Set.mem_ofPred_eq, Set.mem_image]
   constructor
   · intro hs
     exact ⟨s.map f, (f.isNClique_iff n s).mp hs, by simp [Finset.map_map]⟩
@@ -943,7 +943,7 @@ theorem Iso.cliqueFinset_eq {G : SimpleGraph α} [DecidableRel G.Adj]
     (G.cliqueFinset n).map (f : α ≃ β).finsetCongr.toEmbedding = G'.cliqueFinset n := by
   unfold cliqueFinset
   ext s'
-  simp [f.isNClique_iff, Finset.map_map]
+  simp [f.isNClique_iff, Equiv.finsetCongr_symm, Finset.map_map]
 
 end CliqueFinset
 
