@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.QuadraticAlgebra.Discr
+public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 
 /-!
 # Quadratic algebras over `ℤ`
@@ -47,7 +47,7 @@ obtained by translating `ω` by the integer `⌊b / 2⌋`. -/
 @[simps!]
 def algEquivOfDiscr (a b : ℤ) :
     QuadraticAlgebra ℤ a b ≃ₐ[ℤ] ofDiscr (discr a b) :=
-  mapEquiv (discr a b / 4) (discr a b % 4) 1 (b / 2)
+  changeGeneratorEquiv (discr a b / 4) (discr a b % 4) 1 (b / 2)
     (by
       rw [discr_def]
       have : (b % 2) * (b / 2) = b ^ 2 / 4 - (b / 2) ^ 2 := by

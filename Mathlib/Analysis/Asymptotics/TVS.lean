@@ -7,11 +7,10 @@ module
 
 public import Mathlib.Analysis.Convex.EGauge
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 import Mathlib.Tactic.Peel
-public import Mathlib.Tactic.Bound
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
@@ -828,9 +827,6 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
       _ ≤ _ := div_le_egauge_ball _ _ _
 
 alias ⟨IsBigOTVS.isBigO, IsBigO.isBigOTVS⟩ := isBigOTVS_iff_isBigO
-
-@[deprecated (since := "2026-02-03")]
-alias isBigOTVS.isBigO := IsBigOTVS.isBigO
 
 lemma isThetaTVS_iff_isTheta : f =Θ[𝕜; l] g ↔ f =Θ[l] g :=
   .and isBigOTVS_iff_isBigO isBigOTVS_iff_isBigO
