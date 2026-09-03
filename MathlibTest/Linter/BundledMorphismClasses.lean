@@ -12,6 +12,7 @@ def LinearMap.foo (_f : M →ₗ[R] N) : ℕ := 37
 -- A definition taking in a LinearMapClass argument is not.
 
 -- Note: the linter does not fire here, because the typeclass assumption is not actually used.
+-- Only the hacky approach of type printing would fire here.
 def LinearMap.bar (_f : F) : ℕ := 37
 
 -- But the linter fires on this declaration.
@@ -25,9 +26,8 @@ FOUND definitions with a bundled morphism argument.
 This linter can be disabled with `@[nolint defsWithMorphismClass]`. -/
 #check @LinearMap.baz /- The definition `LinearMap.baz` takes a `LinearMapClass` argument.
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad idea:
-please change the definition to take in a `LinearMap` argument instead.
-Note that this linter has false positives if a LinearMapClass is just coerced to a function.
-Note: the 'proper' linter check doesn't fire here; there's still a bug to fix! -/
+please the definition to take in a `LinearMap` argument instead.
+Note that this linter has false positives if a LinearMapClass is just coerced to a function. -/
 -/
 #guard_msgs in
 #lint only defsWithMorphismClass

@@ -37,6 +37,11 @@ open Lean
 meta def morphismClassesToLint : Array Name := #[
   `LinearMapClass,
   `SemilinearMapClass,
+  `StarRingHomClass,
+  `StarRingEquivClass,
+  `NonUnitalStarAlgHomClass,
+  `StarAlgHomClass,
+  `StarAlgEquivClass,
 ]
 
 open Batteries.Tactic.Lint in
@@ -46,29 +51,42 @@ open Batteries.Tactic.Lint in
   noErrorsFound := "no definitions with a bundled morphism argument found."
   errorsFound := "FOUND definitions with a bundled morphism argument."
   test declName := do
-    unless ((← getEnv).find? declName).get!.isDefinition do
-      return none
-    -- Type of the definition we are processing.
-    let defType := ((← getEnv).find? declName).get!.type
-    -- Attempt at a proper check, re-using the `unusedInstancesInType` linter's logic.
-    let unusedInstances ← defType.collectUnnecessaryInstanceBinderIdxsWhere (fun e ↦
-      morphismClassesToLint.any fun cls ↦ e.isConstOf cls)
-    -- We still lint in the presence of sorries: we don't care about this check!
-    -- HACKY check: print the type and check for occurrences of `LinearMapClass`
-    let hackyCheck := (← (m!"{defType}").toString).contains "LinearMapClass"
-    if hackyCheck && unusedInstances.isEmpty then
-    --if !unusedInstances.isEmpty then
+    -- We still lint in the presence of sorries: completing a sorry should not influence this check.
+    let constantInfo := ((← getEnv).find? declName).get!
+    if !constantInfo.isDefinition then return none
+    -- TODO: can I check if `declName` is an instance, and return if so?
+
+
+    -- Attempt one at a proper check, re-using the `unusedInstancesInType` linter's logic.
+    -- let unusedInstances ← constantInfo.type.collectUnnecessaryInstanceBinderIdxsWhere (fun e ↦
+    --   morphismClassesToLint.any fun cls ↦ e.isConstOf cls)
+    -- Did not appear to work.
+
+    -- Attempt two: does any of the constants we care about appear in the type?
+    let classConstantsUsed := constantInfo.type.getUsedConstantsAsSet |>.filter (morphismClassesToLint.contains ·)
+    if !classConstantsUsed.isEmpty then
       return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument.\n\
-        Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
-        idea:\nplease change the definition to take in a `LinearMap` argument instead.\n\
-        Note that this linter has false positives if a LinearMapClass is just coerced to a function.\n\
-        Note: the 'proper' linter check doesn't fire here; there's still a bug to fix!"
-    else if !unusedInstances.isEmpty then
-      if !hackyCheck then return m!"curious: proper check reports errors; hacky check succeeds:\n\
-        definition's type is {defType}, proper check reports is {unusedInstances}"
-      else
-        return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument.\n\
-          Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
-          idea:\nplease the definition to take in a `LinearMap` argument instead.\n\
-          Note that this linter has false positives if a LinearMapClass is just coerced to a function."
+      Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
+      idea:\nplease the definition to take in a `LinearMap` argument instead.\n\
+      Note that this linter has false positives if a LinearMapClass is just coerced to a function."
     return none
+
+    -- return m!"unusedInstances is {unusedInstances}, constants used is {constantInfo.type.getUsedConstantsAsSet.toArray}"
+    -- -- HACKY check: print the type and check for occurrences of `LinearMapClass`
+    -- let typeStr ← (m!"{constantInfo.type}").toString
+    -- let hackyCheck := morphismClassesToLint.any (fun cls ↦ (typeStr.contains (cls.toString.drop 1)))
+    -- if hackyCheck && classConstantsUsed.isEmpty then
+    --   return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument.\n\
+    --     Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
+    --     idea:\nplease change the definition to take in a `LinearMap` argument instead.\n\
+    --     Note that this linter has false positives if a LinearMapClass is just coerced to a function.\n\
+    --     Note: the 'proper' linter check doesn't fire here; there's still a bug to fix!"
+    -- else if classConstantsUsed.isEmpty then
+    --   if !hackyCheck then return m!"curious: proper check reports errors; hacky check succeeds:\n\
+    --     definition's type is {constantInfo.type}, proper check reports is {classConstantsUsed.toArray}"
+    --   else
+    --     return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument.\n\
+    --       Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
+    --       idea:\nplease the definition to take in a `LinearMap` argument instead.\n\
+    --       Note that this linter has false positives if a LinearMapClass is just coerced to a function."
+    -- return none
