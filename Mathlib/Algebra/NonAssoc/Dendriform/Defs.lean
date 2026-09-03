@@ -11,13 +11,13 @@ public import Mathlib.Algebra.NonAssoc.PreLie.Basic
 
 ## Main definitions
 A nonunital dendriform semiring `M` is a `Semiring` where the associative product can be split into
-two operations `left : M → M → M` and `right : M → M → M` satisfying
-* `left (left a b) c = left a (right b c + left b c)`
-* `right a (left b c) = left (right a b) c`
-* `right a (right b c) = right (right a b + left a b) c`
+two operations `prec : M → M → M` and `succ : M → M → M` satisfying
+* `prec (prec a b) c = prec a (succ b c + prec b c)`
+* `succ a (prec b c) = prec (succ a b) c`
+* `succ a (succ b c) = succ (succ a b + prec a b) c`
 
-These identities ensure that `* := left + right` is indeed associative.
-In the literature it is common to denote `left` and `right` as ≺ and ≻, respectively.
+These identities ensure that `* := prec + succ` is indeed associative.
+In the literature it is common to denote `prec` and `succ` as ≺ and ≻, respectively.
 
 Their unital version requires the existence of a unit `1` such that `1 ≻ a = a ≺ 1 = a` and
 `1 ≺ a = a ≻ 1 = 0` for all `a ≠ 1`. Note that `1 ≺ 1` and `1 ≻ 1` are left undefined.
@@ -37,53 +37,53 @@ antisymmetrization of operations: either `a ≻ b - b ≺ a` or `a ≺ b - b ≻
 @[expose] public section
 
 /-- A nonunital nonassociative dendriform semiring is an `AddCommMonoid` with two operations
-satisfying certain axioms, such that `a * b = left a b + right a b` is associative. -/
+satisfying certain axioms, such that `a * b = prec a b + succ a b` is associative. -/
 class NonUnitalDendriformSemiring (M) extends AddCommMonoid M where
-  /-- The left operation splitting the associative product -/
-  left : M → M → M
-  /-- The right operation splitting the associative product -/
-  right : M → M → M
-  add_left' a b c : left (a + b) c = left a c + left b c
-  left_add' a b c : left a (b + c) = left a b + left a c
-  add_right' a b c : right (a + b) c = right a c + right b c
-  right_add' a b c : right a (b + c) = right a b + right a c
-  left_zero' a : left a 0 = 0
-  zero_left' a : left 0 a = 0
-  right_zero' a : right a 0 = 0
-  zero_right' a : right 0 a = 0
-  right_right_eq_mul_right' a b c : right a (right b c) = right (right a b + left a b) c
-  right_left_assoc' a b c : left (right a b) c = right a (left b c) 
-  left_mul_eq_left_left' a b c : left a (right b c + left b c) = left (left a b) c
+  /-- The "left" operation splitting the associative product -/
+  prec : M → M → M
+  /-- The "right" operation splitting the associative product -/
+  succ : M → M → M
+  add_prec' a b c : prec (a + b) c = prec a c + prec b c
+  prec_add' a b c : prec a (b + c) = prec a b + prec a c
+  add_succ' a b c : succ (a + b) c = succ a c + succ b c
+  succ_add' a b c : succ a (b + c) = succ a b + succ a c
+  prec_zero' a : prec a 0 = 0
+  zero_prec' a : prec 0 a = 0
+  succ_zero' a : succ a 0 = 0
+  zero_succ' a : succ 0 a = 0
+  succ_succ_eq_mul_succ' a b c : succ a (succ b c) = succ (succ a b + prec a b) c
+  succ_prec_assoc' a b c : prec (succ a b) c = succ a (prec b c) 
+  prec_mul_eq_prec_prec' a b c : prec a (succ b c + prec b c) = prec (prec a b) c
 
 /-- Notation for the right operation. The symbol points right. -/
-infixr:75 " ≻ " => NonUnitalDendriformSemiring.right
+infixr:75 " ≻ " => NonUnitalDendriformSemiring.succ
 /-- Notation for the left operation. The symbol point left. -/
-infixr:75 " ≺ " => NonUnitalDendriformSemiring.left
+infixr:75 " ≺ " => NonUnitalDendriformSemiring.prec
 
 /-- A dendriform semiring is a `NonUnitalDendriformSemiring` where the unit satisfies certain axioms
 ensuring that `1 * a = a * 1` for all `a : M`.
 -/
 class DendriformSemiring (M) extends NonUnitalDendriformSemiring M, One M where
-  left_id_one a : a ≠ 1 → left a 1 = a
-  left_one_id a : a ≠ 1 →  left 1 a = 0
-  right_one_id a : a ≠ 1 → right 1 a = a
-  right_id_one a : a ≠ 1 → right a 1 = 0
-  one_mul_one_eq_one' : right 1 1 + left 1 1 = 1
+  prec_id_one a : a ≠ 1 → prec a 1 = a
+  prec_one_id a : a ≠ 1 →  prec 1 a = 0
+  succ_one_id a : a ≠ 1 → succ 1 a = a
+  succ_id_one a : a ≠ 1 → succ a 1 = 0
+  one_mul_one_eq_one' : succ 1 1 + prec 1 1 = 1
 
 /-- A dendriform ring has a `Neg` instance compatible with both `≺` and `≻`. -/
 class DendriformRing (M) extends DendriformSemiring M, AddCommGroup M where
-  left_id_neg a b : left a (- b) = - left a b
-  left_neg_id a b : left (- a) b = - left a b
-  right_id_neg a b : right a (- b) = - right a b
-  right_neg_id a b : right (- a) b = - right a b
+  prec_id_neg a b : prec a (- b) = - prec a b
+  prec_neg_id a b : prec (- a) b = - prec a b
+  succ_id_neg a b : succ a (- b) = - succ a b
+  succ_neg_id a b : succ (- a) b = - succ a b
 
 /-- A dendriform algebra is a `DendriformSemiring` with a `Module` structure compatible with `≺` and
 `≻`. -/
 class DendriformAlgebra (R M) [CommSemiring R] extends DendriformSemiring M, Module R M where
-  smul_left' (r : R) (a b : M) : (r • a) ≺ b = r • (a ≺ b)
-  left_smul' (r : R) (a b : M) : a ≺ (r • b) = r • (a ≺ b)
-  smul_right' (r : R) (a b : M) : (r • a) ≻ b = r • (a ≻ b)
-  right_smul' (r : R) (a b : M) : a ≻ (r • b) = r • (a ≻ b)
+  smul_prec' (r : R) (a b : M) : (r • a) ≺ b = r • (a ≺ b)
+  prec_smul' (r : R) (a b : M) : a ≺ (r • b) = r • (a ≺ b)
+  smul_succ' (r : R) (a b : M) : (r • a) ≻ b = r • (a ≻ b)
+  succ_smul' (r : R) (a b : M) : a ≻ (r • b) = r • (a ≻ b)
 
 namespace NonUnitalDendriformSemiring
 
@@ -96,37 +96,37 @@ instance : Mul M where
 @[simp]
 lemma mul_def : a * b = a ≻ b + a ≺ b := rfl
 @[simp]
-lemma right_zero : a ≻ 0 = (0 : M) := right_zero' a
+lemma succ_zero : a ≻ 0 = (0 : M) := succ_zero' a
 
 @[simp]
-lemma zero_right : 0 ≻ a = (0 : M) := zero_right' a
+lemma zero_succ : 0 ≻ a = (0 : M) := zero_succ' a
 
 @[simp]
-lemma left_zero : a ≺ 0 = (0 : M) := left_zero' a
+lemma prec_zero : a ≺ 0 = (0 : M) := prec_zero' a
 
 @[simp]
-lemma zero_left : 0 ≺ a = (0 : M) := zero_left' a
+lemma zero_prec : 0 ≺ a = (0 : M) := zero_prec' a
 
 @[simp]
-lemma add_right : (a + b) ≻ c = a ≻ c + b ≻ c := add_right' a b c
+lemma add_succ : (a + b) ≻ c = a ≻ c + b ≻ c := add_succ' a b c
 
 @[simp]
-lemma right_add : a ≻ (b + c) = a ≻ b + a ≻ c := right_add' a b c
+lemma succ_add : a ≻ (b + c) = a ≻ b + a ≻ c := succ_add' a b c
 
 @[simp]
-lemma add_left : (a + b) ≺ c = a ≺ c + b ≺ c := add_left' a b c
+lemma add_prec : (a + b) ≺ c = a ≺ c + b ≺ c := add_prec' a b c
 
 @[simp]
-lemma left_add : a ≺ (b + c) = a ≺ b + a ≺ c := left_add' a b c
+lemma prec_add : a ≺ (b + c) = a ≺ b + a ≺ c := prec_add' a b c
 
 @[simp]
-lemma right_left_assoc : (a ≻ b) ≺ c = a ≻ b ≺ c := right_left_assoc' a b c
+lemma succ_prec_assoc : (a ≻ b) ≺ c = a ≻ b ≺ c := succ_prec_assoc' a b c
 
 @[simp]
-lemma left_left_eq_left_mul : (a ≺ b) ≺ c = a ≺ (b * c) := by simp [← left_mul_eq_left_left']
+lemma prec_prec_eq_prec_mul : (a ≺ b) ≺ c = a ≺ (b * c) := by simp [← prec_mul_eq_prec_prec']
 
 @[simp]
-lemma right_right_eq_mul_right : a ≻ (b ≻ c) = (a * b) ≻ c := by simp [right_right_eq_mul_right']
+lemma succ_succ_eq_mul_succ : a ≻ (b ≻ c) = (a * b) ≻ c := by simp [succ_succ_eq_mul_succ']
 
 instance : NonUnitalSemiring M where
   left_distrib a b c := by simpa using by abel_nf
@@ -142,16 +142,16 @@ namespace DendriformSemiring
 variable {M} [DendriformSemiring M]
 
 @[simp]
-lemma left_one {a : M} (ha : a ≠ 1) : a ≺ 1 = a := left_id_one a ha
+lemma prec_one {a : M} (ha : a ≠ 1) : a ≺ 1 = a := prec_id_one a ha
 
 @[simp]
-lemma one_left {a : M} (ha : a ≠ 1) : 1 ≺ a = 0 := left_one_id a ha
+lemma one_prec {a : M} (ha : a ≠ 1) : 1 ≺ a = 0 := prec_one_id a ha
 
 @[simp]
-lemma one_right {a : M} (ha : a ≠ 1) : 1 ≻ a = a := right_one_id a ha
+lemma one_succ {a : M} (ha : a ≠ 1) : 1 ≻ a = a := succ_one_id a ha
 
 @[simp]
-lemma right_one {a : M} (ha : a ≠ 1) : a ≻ 1 = 0 := right_id_one a ha
+lemma succ_one {a : M} (ha : a ≠ 1) : a ≻ 1 = 0 := succ_id_one a ha
 
 @[simp]
 lemma one_mul_one_eq_one : (1 : M) ≻ 1 + 1 ≺ 1 = 1 := one_mul_one_eq_one'
@@ -160,11 +160,11 @@ instance : Semiring M where
   one_mul a := by
     rcases eq_or_ne a 1 with (rfl | ha)
     · exact one_mul_one_eq_one
-    · simp [one_right ha, one_left ha]
+    · simp [one_succ ha, one_prec ha]
   mul_one a := by
     rcases eq_or_ne a 1 with (rfl | ha)
     · exact one_mul_one_eq_one
-    · simp [right_one ha, left_one ha]
+    · simp [succ_one ha, prec_one ha]
 
 end DendriformSemiring
 
@@ -174,28 +174,28 @@ variable {M} [DendriformRing M]
 variable (a b c : M)
 
 @[simp]
-lemma neg_left : (- a) ≺ b = -(a ≺ b) := left_neg_id a b
+lemma neg_prec : (- a) ≺ b = -(a ≺ b) := prec_neg_id a b
 
 @[simp]
-lemma left_neg : a ≺ (- b) = -(a ≺ b) := left_id_neg a b
+lemma prec_neg : a ≺ (- b) = -(a ≺ b) := prec_id_neg a b
 
 @[simp]
-lemma neg_right : (- a) ≻ b = -(a ≻ b) := right_neg_id a b
+lemma neg_succ : (- a) ≻ b = -(a ≻ b) := succ_neg_id a b
 
 @[simp]
-lemma right_neg : a ≻ (- b) = -(a ≻ b) := right_id_neg a b
+lemma succ_neg : a ≻ (- b) = -(a ≻ b) := succ_id_neg a b
 
 @[simp]
-lemma sub_left : (a - b) ≺ c = a ≺ c - b ≺ c := by simp [sub_eq_add_neg]
+lemma sub_prec : (a - b) ≺ c = a ≺ c - b ≺ c := by simp [sub_eq_add_neg]
 
 @[simp]
-lemma left_sub : a ≺ (b - c) = a ≺ b - a ≺ c := by simp [sub_eq_add_neg]
+lemma prec_sub : a ≺ (b - c) = a ≺ b - a ≺ c := by simp [sub_eq_add_neg]
 
 @[simp]
-lemma sub_right : (a - b) ≻ c = a ≻ c - b ≻ c := by simp [sub_eq_add_neg]
+lemma sub_succ : (a - b) ≻ c = a ≻ c - b ≻ c := by simp [sub_eq_add_neg]
 
 @[simp]
-lemma right_sub : a ≻ (b - c) = a ≻ b - a ≻ c := by simp [sub_eq_add_neg]
+lemma succ_sub : a ≻ (b - c) = a ≻ b - a ≻ c := by simp [sub_eq_add_neg]
 
 instance : Ring M where
 
@@ -209,8 +209,8 @@ def preLieRL := a ≺ b - b ≻ a
 See note [reducible non-instances] -/
 abbrev toNonAssocNonUnitalRingLR : NonUnitalNonAssocRing M where
   mul := preLieLR
-  left_distrib a b c := by simpa [HMul.hMul, preLieLR] using by abel_nf
-  right_distrib a b c := by simpa [HMul.hMul, preLieLR] using by abel_nf
+  prec_distrib a b c := by simpa [HMul.hMul, preLieLR] using by abel_nf
+  succ_distrib a b c := by simpa [HMul.hMul, preLieLR] using by abel_nf
   zero_mul a := by simp [HMul.hMul, preLieLR]
   mul_zero a := by simp [HMul.hMul, preLieLR]
 
@@ -224,8 +224,8 @@ abbrev toLeftPreLieRing : LeftPreLieRing M where
 See note [reducible non-instances] -/
 abbrev toNonUnitalNonAssocRingRL : NonUnitalNonAssocRing M where
   mul := preLieRL
-  left_distrib a b c := by simpa [HMul.hMul, preLieRL] using by abel_nf
-  right_distrib a b c := by simpa [HMul.hMul, preLieRL] using by abel_nf
+  prec_distrib a b c := by simpa [HMul.hMul, preLieRL] using by abel_nf
+  succ_distrib a b c := by simpa [HMul.hMul, preLieRL] using by abel_nf
   zero_mul a := by simp [HMul.hMul, preLieRL]
   mul_zero a := by simp [HMul.hMul, preLieRL]
 
@@ -246,16 +246,16 @@ variable {R M} [CommSemiring R] [DendriformAlgebra R M]
 variable (r : R) (a b : M)
 
 @[simp]
-lemma smul_left : (r • a) ≺ b = r • (a ≺ b) := smul_left' r a b
+lemma smul_prec : (r • a) ≺ b = r • (a ≺ b) := smul_prec' r a b
 
 @[simp]
-lemma left_smul : a ≺ (r • b) = r • (a ≺ b) := left_smul' r a b
+lemma prec_smul : a ≺ (r • b) = r • (a ≺ b) := prec_smul' r a b
 
 @[simp]
-lemma smul_right : (r • a) ≻ b = r • (a ≻ b) := smul_right' r a b
+lemma smul_succ : (r • a) ≻ b = r • (a ≻ b) := smul_succ' r a b
 
 @[simp]
-lemma right_smul : a ≻ (r • b) = r • (a ≻ b) := right_smul' r a b
+lemma succ_smul : a ≻ (r • b) = r • (a ≻ b) := succ_smul' r a b
 
 instance : Algebra R M := Algebra.ofModule (by simp) (by simp)
 
