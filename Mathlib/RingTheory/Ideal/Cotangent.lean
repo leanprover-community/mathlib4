@@ -170,15 +170,9 @@ theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
-def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by
-  refine { Ideal.Quotient.lift (RingHom.ker f.toRingHom ^ 2) f.toRingHom ?_ with commutes' := ?_ }
-  · intro a ha; exact Ideal.pow_le_self two_ne_zero ha
-  · intro r
-    rw [IsScalarTower.algebraMap_apply R A, RingHom.toFun_eq_coe, Ideal.Quotient.algebraMap_eq,
-      Ideal.Quotient.lift_mk]
-    exact f.map_algebraMap r
+def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B :=
+  Ideal.Quotient.liftₐ _ f (pow_le_self two_ne_zero)
 
 -- Can't be `simp`, because `RingHom.ker f.toRingHom` in the definition of `AlgHom.kerSquareLift`
 -- is not simp NF. Will be fixed by removing `RingHomClass` in the definition of `RingHom.ker`.
