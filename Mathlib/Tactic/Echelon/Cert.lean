@@ -102,12 +102,10 @@ def certifyForallFin (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) → MetaM 
       -- against the quantified goal is left to the kernel rather than run here as well
       acc ← if k == 0 then pure h else mkAppM ``And.intro #[h, acc]
     have nQ : Q(ℕ) := nE
-    have range : Q(List (Fin $nQ)) := q(List.finRange $nQ)
-    let hAll ← mkAppM ``Iff.mp
-      #[← mkAppOptM ``List.forall_iff_forall_mem #[none, some motive, some range],
-        ← mkExpectedTypeHint acc (← mkAppM ``List.Forall #[motive, range])]
+    have motiveQ : Q(Fin $nQ → Prop) := motive
+    have forAll : Q((List.finRange $nQ).Forall $motiveQ) := acc
     mkExpectedTypeHint
-      (← mkLambdaFVars is (mkApp2 hAll i (← mkAppM ``List.mem_finRange #[i]))) p
+      q(fun i => List.forall_iff_forall_mem.mp $forAll i (List.mem_finRange i)) p
 
 /-- Prove an implication `P → Q` where the caller already knows from the recorded data
 whether `P` holds, so that neither side is discovered by reduction: when it holds,
