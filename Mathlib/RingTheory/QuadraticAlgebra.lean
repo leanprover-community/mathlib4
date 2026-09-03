@@ -68,5 +68,5 @@ theorem Algebra.discr_quadraticAlgebra :
   rw [Algebra.discr_def, Matrix.det_fin_two, QuadraticAlgebra.discr_def]
   simp only [Algebra.traceMatrix_apply, Algebra.traceForm_apply,
     Algebra.trace_quadraticAlgebra_apply, basis_apply_zero, basis_apply_one, one_mul, mul_one,
-    omega_mul_omega_eq_mk, QuadraticAlgebra.trace_def, re_one, im_one, omega_re, omega_im]
+    omega_mul_omega_eq_mk, QuadraticAlgebra.trace_def, re_one, im_one, re_omega, im_omega]
   ring
