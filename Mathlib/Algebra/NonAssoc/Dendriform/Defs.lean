@@ -52,7 +52,7 @@ class NonUnitalDendriformSemiring (M) extends AddCommMonoid M where
   succ_zero' a : succ a 0 = 0
   zero_succ' a : succ 0 a = 0
   succ_succ_eq_mul_succ' a b c : succ a (succ b c) = succ (succ a b + prec a b) c
-  succ_prec_assoc' a b c : prec (succ a b) c = succ a (prec b c) 
+  succ_prec_assoc' a b c : prec (succ a b) c = succ a (prec b c)
   prec_mul_eq_prec_prec' a b c : prec a (succ b c + prec b c) = prec (prec a b) c
 
 /-- Notation for the right operation. The symbol points right. -/
