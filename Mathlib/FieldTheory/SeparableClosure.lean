@@ -372,7 +372,8 @@ lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
     · convert! hs.isAlgebraic_field <;> simp [s]
   have : Module.Finite ((separableClosure (adjoin F (s : Set E)) E).restrictScalars F) E :=
     inferInstanceAs <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
-  exact d.not_lt_argminOn _ ht (by apply finrank_lt_of_gt H)
+  apply d.not_lt_argminOn {s | IsTranscendenceBasis (ι := s) F Subtype.val} ht
+  apply finrank_lt_of_gt H
 
 @[simp]
 theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by
