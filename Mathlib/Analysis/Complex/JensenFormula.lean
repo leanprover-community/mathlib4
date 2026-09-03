@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Complex.Harmonic.Poisson
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
-import Mathlib.Algebra.FiniteSupport.Basic
 
 /-!
 # Jensen's Formula of Complex Analysis
@@ -145,7 +144,7 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
       (countable_singleton ρ).preimage_circleMap 0 (hR.ne') |>.measure_zero _
   · -- IntervalIntegrable bound volume 0 (2 * π)
     apply (IntervalIntegrable.add (by simp) (by simp)).add ?_ |>.const_mul
-    exact .abs <| MeromorphicOn.circleIntegrable_log_norm (f := fun z ↦ z - ρ) (by intro; fun_prop)
+    exact .abs <| MeromorphicOn.circleIntegrable_log_norm (f := fun z ↦ z - ρ) (by fun_prop)
   · -- Pointwise convergence outside a null set
     have h_measure_zero : volume {θ : ℝ | circleMap 0 R θ = w ∨ circleMap 0 R θ = ρ} = 0 :=
       countable_singleton w |>.preimage_circleMap 0 (hR.ne') |>.union
@@ -265,7 +264,8 @@ circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.
 lemma AnalyticOnNhd.circleAverage_log_norm_of_ne_zero {R : ℝ} {c : ℂ} {g : ℂ → ℂ}
     (h₁g : AnalyticOnNhd ℂ g (closedBall c |R|)) (h₂g : ∀ u ∈ closedBall c |R|, g u ≠ 0) :
     circleAverage (Real.log ‖g ·‖) c R = Real.log ‖g c‖ :=
-  HarmonicOnNhd.circleAverage_eq (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g x hx))
+  InnerProductSpace.HarmonicOnNhd.circleAverage_eq
+    (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g x hx))
 
 set_option backward.isDefEq.respectTransparency.types false in
 /--
@@ -368,7 +368,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     rw [circleAverage_congr_codiscreteWithin (f₂ := 0) _ hR]
     · simp only [circleAverage, mul_inv_rev, Pi.zero_apply, intervalIntegral.integral_zero,
         smul_eq_mul, mul_zero]
-    apply Filter.codiscreteWithin_mono (U := CB) sphere_subset_closedBall
+    apply Filter.codiscreteWithin_mono (s := CB) sphere_subset_closedBall
     filter_upwards [this] with z hz
     simp_all
 
