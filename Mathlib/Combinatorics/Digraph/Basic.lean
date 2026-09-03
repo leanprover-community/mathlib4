@@ -113,9 +113,7 @@ def completeBipartite (V W : Type*) : Digraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
   verts := Set.univ
 
-/-- Deprecated alias for `completeBipartite`. -/
-@[deprecated completeBipartite (since := "2026-09-01")]
-alias completeBipartiteGraph := completeBipartite
+@[deprecated (since := "2026-09-01")] alias completeBipartiteGraph := completeBipartite
 
 variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
