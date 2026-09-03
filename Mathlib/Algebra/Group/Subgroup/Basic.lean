@@ -522,6 +522,19 @@ theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ normaliz
 theorem le_normalizer_of_normal [H.Normal] : K ≤ normalizer H := subset_normalizer_of_normal
 
 @[to_additive]
+lemma inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
+    normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
+  intro g hg
+  simp_rw [mem_inf, mem_normalizer_iff_map_conj_eq, map_sup, hg.1, hg.2] at hg ⊢
+
+@[deprecated (since := "2026-08-27")] alias normalizer_inf_normalizer_le_normalizer_sup :=
+  inf_normalizer_le_normalizer_sup
+
+@[deprecated (since := "2026-08-27")]
+alias _root_.AddSubgroup.normalizer_inf_normalizer_le_normalizer_sup :=
+  AddSubgroup.inf_normalizer_le_normalizer_sup
+
+@[to_additive]
 theorem inf_normalizer_le_normalizer_inf :
     normalizer H ⊓ normalizer K ≤ normalizer ((H ⊓ K :) : Set G) :=
   fun _ h g ↦ and_congr (h.1 g) (h.2 g)

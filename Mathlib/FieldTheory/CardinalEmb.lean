@@ -236,7 +236,9 @@ private local instance (i : ι) : Decidable (succ i = i) := .isFalse (lt_succ i)
 
 /-- Extend `succEquiv` from `ι` to `WithTop ι`. -/
 def equivSucc (i : WithTop ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē) × factor i :=
-  i.recTopCoe (((equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <| .symm <| .prodPUnit _)
+  i.recTopCoe
+    (((IntermediateField.equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <|
+      .symm <| .prodPUnit _)
     (succEquiv ·)
 
 theorem equivSucc_coherence (i f) : (equivSucc i f).1 = embFunctor F E (le_succ i) f := by
