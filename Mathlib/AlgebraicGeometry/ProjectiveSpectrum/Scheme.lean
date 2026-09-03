@@ -256,7 +256,7 @@ open Lean
 * `y ^ n` where `i = n • j` and `y ∈ 𝒜 j`.
 * a natural number `n`.
 -/
-macro "mem_tac" : tactic =>
+local macro "mem_tac" : tactic =>
   `(tactic| first | exact pow_mem_graded _ (SetLike.coe_mem _) | exact natCast_mem_graded _ _ |
     exact pow_mem_graded _ f_deg)
 
