@@ -874,6 +874,7 @@ example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆
 syntax (name := gcongr) "gcongr" (ppSpace colGt term)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
+/-- Run the `gcongr` tactic. -/
 def runGCongr (g : MVarId) (template : Option Term) (patterns? : Option (TSyntaxArray `rintroPat)) :
     TermElabM State := do
   g.withContext do
@@ -902,7 +903,7 @@ def runGCongr (g : MVarId) (template : Option Term) (patterns? : Option (TSyntax
       let g ← g.replaceTargetDefEq (updateRel type patt true)
       g.gcongr true |>.run patterns
   unless progress do
-    throwError "`gcongr` did not make progress\n\n{g}"
+    throwError "`gcongr` did not make progress.\n\n{g}"
   return s
 
 elab_rules : tactic

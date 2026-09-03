@@ -212,7 +212,7 @@ example (f : ℕ → ℕ) (h : toInf f) : toInf (fun n => 2 * f n) := by
   gconvert h
 
 /--
-error: `gcongr` did not make progress
+error: `gcongr` did not make progress.
 
 h : ∃ y, ∀ (x : ℕ), x ≠ y
 ⊢ (∃ y, ∀ (x : ℕ), x ≠ y) → ∀ (x : ℕ), ∃ y, x ≠ y
@@ -222,7 +222,7 @@ example (h : ∃ y : ℕ, ∀ x, x ≠ y) : ∀ x : ℕ, ∃ y, x ≠ y := by
   gconvert h
 
 /--
-error: `gcongr` did not make progress
+error: `gcongr` did not make progress.
 
 h : ∀ (n : ℕ), 0 ≤ n
 ⊢ (∀ (n : ℕ), 0 ≤ n) → ∀ (n : ℤ), 0 ≤ n
@@ -232,7 +232,7 @@ example (h : ∀ n : ℕ, 0 ≤ n) : ∀ n : ℤ, 0 ≤ n := by
   gconvert h
 
 /--
-error: `gcongr` did not make progress
+error: `gcongr` did not make progress.
 
 h : ∃ n, 0 ≤ n
 ⊢ (∃ n, 0 ≤ n) → ∃ n, 0 ≤ n
@@ -242,7 +242,7 @@ example (h : ∃ n : ℕ, 0 ≤ n) : ∃ n : ℤ, 0 ≤ n := by
   gconvert h using 1
 
 /--
-error: `gcongr` did not make progress
+error: `gcongr` did not make progress.
 
 h : ∃ᶠ (n : ℕ) in atTop, 0 ≤ n
 ⊢ (∃ᶠ (n : ℕ) in atTop, 0 ≤ n) → ∃ᶠ (n : ℕ) in atBot, 0 ≤ n
@@ -252,7 +252,7 @@ example (h : ∃ᶠ n : ℕ in atTop, 0 ≤ n) : ∃ᶠ n : ℕ in atBot, 0 ≤ 
   gconvert h using 1
 
 /--
-error: `gcongr` did not make progress
+error: `gcongr` did not make progress.
 
 h : ∀ᶠ (n : ℕ) in atTop, 0 ≤ n
 ⊢ (∀ᶠ (n : ℕ) in atTop, 0 ≤ n) → ∀ᶠ (n : ℕ) in atBot, 0 ≤ n

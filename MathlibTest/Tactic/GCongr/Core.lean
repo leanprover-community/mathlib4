@@ -29,7 +29,7 @@ example (h : c → b) : (a → b → c) → (a → b → b) := by
   gcongr 1
 
 /--
-error: `gcongr` did not make progress
+error: `gcongr` did not make progress.
 
 a b c d : Prop
 ⊢ (∀ (n : Nat), 0 ≤ n) → ∀ (n : Int), 0 ≤ n
