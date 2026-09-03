@@ -5,13 +5,13 @@ Authors: Nailin Guan, Jingting Wang
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
-public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorPower.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
-public import  Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
 
 /-!
 
@@ -187,8 +187,8 @@ open TensorProduct
 
 lemma exteriorPower.baseChangeIso_comm_aux (S : Type w) [CommRing S] [Algebra R S] (x : M) (i : ℕ) :
     (exteriorPower.baseChangeIso R M S (i + 1)).toLinearMap.comp
-    ((koszulCocomplexAux R M x i).baseChange S) =
-    (koszulCocomplexAux S (S ⊗[R] M) (1 ⊗ₜ[R] x) i).comp
+    ((koszulCocomplex.d R M x i).baseChange S) =
+    (koszulCocomplex.d S (S ⊗[R] M) (1 ⊗ₜ[R] x) i).comp
     (exteriorPower.baseChangeIso R M S i).toLinearMap := by
   ext m
   rw [Subtype.val_inj]
@@ -198,7 +198,7 @@ lemma exteriorPower.baseChangeIso_comm_aux (S : Type w) [CommRing S] [Algebra R 
     rcases Fin.eq_zero_or_eq_succ j with rfl|⟨i, rfl⟩
     · simp
     · simp
-  simp [exteriorPower.baseChangeIso_apply_tmul, koszulCocomplexAux_apply_ιMulti, this]
+  simp [exteriorPower.baseChangeIso_apply_tmul, koszulCocomplex.d_apply_ιMulti, this]
 
 instance (T : Type v) [CommRing T] (g : R →+* T) :
     (ModuleCat.extendScalars.{u, v, u} g).Additive where
