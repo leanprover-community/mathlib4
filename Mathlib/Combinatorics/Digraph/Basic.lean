@@ -360,11 +360,12 @@ theorem SpanningSubgraph.adj_injective {G : Digraph V} :
   ext e
   simp [sdiff_eq, e.2]
 
-instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph :=
-  fast_instance% Function.Injective.completeBooleanAlgebra SpanningSubgraph.Adj
+instance : CompleteAtomicBooleanAlgebra G.SpanningSubgraph :=
+  fast_instance% Function.Injective.completeAtomicBooleanAlgebra SpanningSubgraph.Adj
     SpanningSubgraph.adj_injective SpanningSubgraph.adj_le_iff (fun {_ _} ↦ ?_) (fun _ _ ↦ rfl)
       (fun _ _ ↦ rfl) SpanningSubgraph.adj_sSup SpanningSubgraph.adj_sInf SpanningSubgraph.adj_top
-      rfl SpanningSubgraph.adj_compl SpanningSubgraph.adj_himp SpanningSubgraph.adj_sdiff
+      rfl SpanningSubgraph.adj_compl SpanningSubgraph.adj_himp SpanningSubgraph.adj_compl
+      SpanningSubgraph.adj_sdiff
 where finally
   simp_rw [lt_iff_le_not_ge, SpanningSubgraph.adj_le_iff]
 
