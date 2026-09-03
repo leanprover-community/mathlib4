@@ -95,15 +95,15 @@ def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
       (·.isAppOf ``Decidable.isFalse) do
     throwError "equality in the element type does not reduce in the kernel{indentExpr α}"
 
-/-- Prove the certificate condition `c` by a kernel-checked `decide`, with `name` naming
+/-- Prove the certificate condition `p` by a kernel-checked `decide`, with `name` naming
 the condition in errors. -/
-def certifyCondition (name : String) (c : Q(Prop)) : MetaM Q($c) := do
-  let d ← mkDecide c
+def certifyCondition (name : String) (p : Q(Prop)) : MetaM Q($p) := do
+  let d ← mkDecide p
   let .ok r := Kernel.whnf (← getEnv) (← getLCtx) d
     | throwError "cannot verify the rank certificate: {name} does not reduce in the kernel"
   unless r.isConstOf ``Bool.true do
     throwError "cannot verify the rank certificate: {name} failed"
-  mkDecideProofQ c
+  mkDecideProofQ p
 
 /-- A leaf normaliser settles a proposition about a single entry, returning its truth value
 together with a proof of the proposition or of its negation. -/
@@ -114,15 +114,15 @@ def normNumLeaf : LeafProver := fun p => do
   let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
   return (b, prf)
 
-/-- Prove the quantified statement `c` over `Fin n` from proofs of its instances, `head i`
+/-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `head i`
 proving it at index `i`. The proof recurses on the index list `List.finRange n`, so the
 motive is spelled once rather than once per index. -/
-def mkListForall (n : Nat) (c : Q(Prop)) (head : Nat → Q(Prop) → MetaM Expr) :
-    MetaM Q($c) := do
-  let .forallE nm dom body bi := c
-    | throwError "expected a quantified statement:{indentExpr c}"
+def mkListForall (n : Nat) (p : Q(Prop)) (head : Nat → (q : Q(Prop)) → MetaM Q($q)) :
+    MetaM Q($p) := do
+  let .forallE nm dom body bi := p
+    | throwError "expected a quantified statement:{indentExpr p}"
   let motive : Expr := .lam nm dom body bi
-  let fin ← mkAppM ``Fin #[mkNatLit n]
+  have fin : Q(Type) := q(Fin $n)
   let mut acc : Expr := mkConst ``True.intro
   for k in 0...n do
     let i := n - 1 - k
@@ -130,7 +130,7 @@ def mkListForall (n : Nat) (c : Q(Prop)) (head : Nat → Q(Prop) → MetaM Expr)
     -- the conjunction takes its statement from the proofs, so that the one defeq check
     -- against the quantified goal is left to the kernel rather than run here as well
     acc ← if k == 0 then pure h else mkAppM ``And.intro #[h, acc]
-  let range ← mkAppM ``List.finRange #[mkNatLit n]
+  have range : Q(List (Fin $n)) := q(List.finRange $n)
   let hAll ← mkAppM ``Iff.mp
     #[← mkAppOptM ``List.forall_iff_forall_mem #[none, some motive, some range],
       ← mkExpectedTypeHint acc (← mkAppM ``List.Forall #[motive, range])]
@@ -139,40 +139,40 @@ def mkListForall (n : Nat) (c : Q(Prop)) (head : Nat → Q(Prop) → MetaM Expr)
     mkExpectedTypeHint (← mkLambdaFVars #[i] body)
       (← mkForallFVars #[i] (mkApp motive i).headBeta)
 
-/-- Unfold `c` until its head is a quantifier, as `Matrix.IsLowerTriangular` has to be
+/-- Unfold `p` until its head is a quantifier, as `Matrix.IsLowerTriangular` has to be
 before its entry conditions are reachable. -/
-partial def unfoldToForall (c : Q(Prop)) : MetaM Q(Prop) := do
-  match c with
-  | .forallE .. => return c
+partial def unfoldToForall (p : Q(Prop)) : MetaM Q(Prop) := do
+  match p with
+  | .forallE .. => return p
   | _ =>
-    let some c' ← unfoldDefinition? c
-      | throwError "expected a quantified condition:{indentExpr c}"
-    unfoldToForall c'.headBeta
+    let some p' ← unfoldDefinition? p
+      | throwError "expected a quantified condition:{indentExpr p}"
+    unfoldToForall p'.headBeta
 
 /-- Prove an implication `P → Q` where the caller already knows from the recorded data
 whether `P` holds, so that neither side is discovered by reduction: when it holds, `prove`
 supplies `Q` and the hypothesis is discarded, and otherwise `P` is refuted and the
 implication is vacuous. -/
-def mkImplication (holds : Bool) (c : Q(Prop)) (prove : Q(Prop) → MetaM Expr) :
-    MetaM Expr := do
-  let .forallE nm dom body bi := c
-    | throwError "expected an implication:{indentExpr c}"
+def mkImplication (holds : Bool) (p : Q(Prop)) (prove : (q : Q(Prop)) → MetaM Q($q)) :
+    MetaM Q($p) := do
+  let .forallE nm dom body bi := p
+    | throwError "expected an implication:{indentExpr p}"
   if body.hasLooseBVars then -- shouldn't happen, but a safety check
-    throwError "the conclusion depends on the hypothesis:{indentExpr c}"
+    throwError "the conclusion depends on the hypothesis:{indentExpr p}"
   if holds then
     return .lam nm dom (← prove body) bi
   else
-    have p : Q(Prop) := dom
-    mkAppOptM ``Not.elim #[none, some body, ← certifyCondition "an index guard" q(¬ $p)]
+    have hyp : Q(Prop) := dom
+    mkAppOptM ``Not.elim #[none, some body, ← certifyCondition "an index guard" q(¬ $hyp)]
 
 /-- Prove a cell whose two sides reduce to the same recorded entry. -/
-def proveRflCell (c : Q(Prop)) : MetaM Expr := do
-  match_expr c with
+def proveRflCell (p : Q(Prop)) : MetaM Q($p) := do
+  match_expr p with
   | Eq _ lhs rhs =>
     unless ← isDefEq lhs rhs do
-      throwError "the two sides do not reduce to the same recorded entry:{indentExpr c}"
+      throwError "the two sides do not reduce to the same recorded entry:{indentExpr p}"
     mkEqRefl lhs
-  | _ => throwError "expected an equation:{indentExpr c}"
+  | _ => throwError "expected an equation:{indentExpr p}"
 
 /-- Prove that a recorded `entry` is nonzero, by having `leaf` refute its equation with
 `zero`; `site` names the entry in errors. -/
