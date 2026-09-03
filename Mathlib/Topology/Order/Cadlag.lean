@@ -54,7 +54,7 @@ lemma IsRightContinuous.continuous_comp₂ {Z T : Type*} [TopologicalSpace Z] [T
   fun x ↦ (hφ.tendsto (f x, g x)).comp ((hf x).prodMk_nhds (hg x))
 
 @[to_dual (attr := simp)]
-lemma IsRightContinuous.const (c : Y) :
+lemma IsRightContinuous.const {c : Y} :
     IsRightContinuous (fun _ ↦ c : X → Y) :=
   continuous_const.isRightContinuous
 
@@ -111,7 +111,7 @@ lemma Continuous.isCadlag (hf : Continuous f) :
   tendsto_nhdsLT x := ⟨f x, hf.continuousAt.continuousWithinAt⟩
 
 @[to_dual (attr := simp)]
-lemma IsCadlag.const (c : Y) : IsCadlag (fun _ ↦ c : X → Y) :=
+lemma IsCadlag.const {c : Y} : IsCadlag (fun _ ↦ c : X → Y) :=
   continuous_const.isCadlag
 
 @[to_dual (attr := to_fun)]
