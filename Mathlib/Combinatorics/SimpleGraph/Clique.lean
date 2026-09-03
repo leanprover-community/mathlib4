@@ -233,21 +233,14 @@ theorem isClique_range_copy_top (f : Copy (⊤ : SimpleGraph β) G) :
   rwa [← f.topEmbedding.coe_toEmbedding, (f.topEmbedding.apply_eq_iff_eq _ _).ne,
     ← top_adj, ← f.topEmbedding.map_adj_iff] at nh
 
-theorem Iso.isClique_iff {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g G') (s : Set α) :
-    G.IsClique s ↔ G'.IsClique (f '' s) := by
-  constructor
-  · intro h u' hu' v' hv' huv'
-    rw [Set.mem_image] at hu' hv'
-    obtain ⟨u, hu, hfu⟩ := hu'
-    obtain ⟨v, hv, hfv⟩ := hv'
-    rw [← hfu, ← hfv] at ⊢ huv'
-    rw [f.map_adj_iff]
-    exact h hu hv (f.apply_eq_iff_eq.not.mp huv')
-  · intro h u hu v hv huv
-    have hu' : f u ∈ f '' s := s.mem_image_of_mem f hu
-    have hv' : f v ∈ f '' s := s.mem_image_of_mem f hv
-    rw [← f.map_adj_iff]
-    exact h hu' hv' (f.apply_eq_iff_eq.not.mpr huv)
+theorem IsClique.image {G' : SimpleGraph β} (f : G →g G') (h : G.IsClique s) :
+    G'.IsClique (f '' s) := by
+  rintro _ ⟨u, hu, rfl⟩ _ ⟨v, hv, rfl⟩ hne
+  exact f.map_adj <| h hu hv (mt (congrArg f) hne)
+
+theorem Embedding.isClique_iff {G' : SimpleGraph β} (f : G ↪g G') :
+    G.IsClique s ↔ G'.IsClique (f '' s) :=
+  ⟨.image f.toHom, (f.map_adj_iff.mp <| · ⟨·, ·, rfl⟩ ⟨·, ·, rfl⟩ <| f.injective.ne ·)⟩
 
 end Clique
 
