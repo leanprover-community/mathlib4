@@ -228,6 +228,9 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal {R S : Type*} [CommRing R] [C
   have : Algebra.IsIntegral R S := ⟨hf⟩
   isMaximal_under_of_isIntegral_of_isMaximal (R := R) (S := S) I
 
+@[deprecated (since := "2026-09-03")] alias isMaximal_comap_of_isIntegral_of_isMaximal' :=
+  isMaximal_comap_of_isIntegral_of_isMaximal
+
 section IsIntegral
 
 variable {A : Type*} [CommRing A] [Algebra R A] [Algebra.IsIntegral R A]
