@@ -82,7 +82,7 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
 
 /-- Prove the certificate condition `p` by a kernel-checked `decide`, with `name` naming
 the condition in errors. -/
-def certifyCondition (name : String) (p : Q(Prop)) : MetaM Q($p) := do
+def proveByDecide (name : String) (p : Q(Prop)) : MetaM Q($p) := do
   let d ← mkDecide p
   let .ok r := Kernel.whnf (← getEnv) (← getLCtx) d
     | throwError "cannot verify the rank certificate: {name} does not reduce in the kernel"
@@ -129,7 +129,7 @@ def mkImplication (holds : Bool) (p : Q(Prop)) (certifier : (q : Q(Prop)) → Me
     return .lam nm dom (← certifier body) bi
   else
     have hyp : Q(Prop) := dom
-    mkAppOptM ``Not.elim #[none, some body, ← certifyCondition "an index guard" q(¬ $hyp)]
+    mkAppOptM ``Not.elim #[none, some body, ← proveByDecide "an index guard" q(¬ $hyp)]
 
 /-- Prove a cell whose two sides reduce to the same recorded entry. -/
 def certifyRflCell (p : Q(Prop)) : MetaM Q($p) := do
@@ -190,8 +190,8 @@ def mkPivotCond {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
               certifyNonzeroEntry leaf (entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
           mkAppM ``And.intro #[hz, hn]
         | _ => throwError "unexpected shape of the pivot entry conditions:{indentExpr gi}"
-      let hMono ← certifyCondition "monotonicity of the pivot function" mono
-      let hStrict ← certifyCondition "strict monotonicity of the pivot function" strict
+      let hMono ← proveByDecide "monotonicity of the pivot function" mono
+      let hStrict ← proveByDecide "strict monotonicity of the pivot function" strict
       mkAppM ``Iff.mpr
         #[iff, ← mkAppM ``And.intro #[hMono, ← mkAppM ``And.intro #[hStrict, entryConds]]]
     | _ => throwError "unexpected shape of `Matrix.isPivotedBy_iff`:{indentExpr rest}"
@@ -264,14 +264,14 @@ def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α
   match leaf? with
   | none =>
     have hperm : Q(($A).submatrix $σ id = $Aσ) :=
-      ← certifyCondition "the row arrangement" q(($A).submatrix $σ id = $Aσ)
+      ← proveByDecide "the row arrangement" q(($A).submatrix $σ id = $Aσ)
     have hprod : Q($L * $Aσ = $U) :=
-      ← certifyCondition "the product of the transform" q($L * $Aσ = $U)
+      ← proveByDecide "the product of the transform" q($L * $Aσ = $U)
     have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
-    let hpivot ← certifyCondition "the echelon-pivot condition" q(($U).IsPivotedBy $pivot)
-    let hlower ← certifyCondition "lower triangularity of the transform"
+    let hpivot ← proveByDecide "the echelon-pivot condition" q(($U).IsPivotedBy $pivot)
+    let hlower ← proveByDecide "lower triangularity of the transform"
       q(($L).IsLowerTriangular)
-    let hdiag ← certifyCondition "the nonzero diagonal of the transform"
+    let hdiag ← proveByDecide "the nonzero diagonal of the transform"
       q(∀ i, ($L).diag i ≠ 0)
     return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
   | some leaf =>
