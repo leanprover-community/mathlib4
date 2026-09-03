@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.QuadraticAlgebra.Discr
+public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.Data.Rat.Lemmas
 

@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Star.Unitary
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Quadratic algebras: involution, norm, trace, and change of generator.
+# Quadratic algebras: involution, norm, trace, change of generator, etc.
 
 Let `R` be a commutative ring. We define:
 
@@ -25,7 +25,7 @@ Let `R` be a commutative ring. We define:
   map, respectively isomorphism (when `u` is a unit), induced by the change of generator
   `ω ↦ u • ω + k`
 
-* `QuadraticAlgebra.baseChange`: the `R`-algebra map induced by a base change `R → S`
+* `QuadraticAlgebra.baseChange`: the `R`-algebra homomorphism induced by a base change `R → S`
 
 We prove:
 
