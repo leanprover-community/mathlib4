@@ -30,7 +30,7 @@ https://ncatlab.org/nlab/show/monad
 This file proves the equivalence between the category of *compact Hausdorff topological spaces*
 and the category of algebras for the *ultrafilter monad*.
 
-## Notation:
+## Notation
 
 Here are the main objects introduced in this file.
 - `Compactum` is the type of compacta, which we define as algebras for the ultrafilter monad.
@@ -266,8 +266,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   suffices ⋂₀ ι T ∈ C2 by exact claim6 _ this
   -- Finish
   apply claim4.finiteInter_mem T
-  intro t ht
-  exact finiteInterClosure.basic (@hT t ht)
+  grw [← subset_finiteInterClosure, ← hT]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -343,8 +342,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   -- Finish...
   intro T hT
   refine claim6 _ (finiteInter_mem (.finiteInterClosure_finiteInter _) _ ?_)
-  intro t ht
-  exact finiteInterClosure.basic (@hT t ht)
+  grw [← subset_finiteInterClosure, ← hT]
 
 theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=
   fun h => le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]

@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.AlgHom
-public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Data.Nat.Prime.Int
 
 /-!
@@ -117,6 +116,38 @@ def algEquivDiscrZero [Invertible (2 : R)] (a b : R) :
     QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R (discr a b) 0 :=
   (changeGeneratorEquiv a b (unitOfInvertible (2 : R)) (-b)
     (by grind [discr_def, val_unitOfInvertible]) (by grind [val_unitOfInvertible])).symm
+
+@[simp]
+theorem re_algEquivDiscrZero_apply [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
+    (algEquivDiscrZero a b z).re = z.re + ⅟2 * b * z.im := by
+  simp [algEquivDiscrZero, mul_comm]
+
+@[simp]
+theorem im_algEquivDiscrZero_apply [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
+    (algEquivDiscrZero a b z).im = ⅟2 * z.im := by
+  simp [algEquivDiscrZero, mul_comm]
+
+@[simp]
+theorem re_algEquivDiscrZero_symm_apply [Invertible (2 : R)]
+    (z : QuadraticAlgebra R (discr a b) 0) :
+    ((algEquivDiscrZero a b).symm z).re = z.re - b * z.im := by
+  simp [algEquivDiscrZero, mul_comm, sub_eq_add_neg]
+
+@[simp]
+theorem im_algEquivDiscrZero_symm_apply [Invertible (2 : R)]
+    (z : QuadraticAlgebra R (discr a b) 0) :
+    ((algEquivDiscrZero a b).symm z).im = 2 * z.im := by
+  simp [algEquivDiscrZero, mul_comm]
+
+@[simp]
+theorem algEquivDiscrZero_apply_add_smul [Invertible (2 : R)] (x y : R) :
+    algEquivDiscrZero a b (x • 1 + y • ω) = (x + ⅟2 * b * y) • 1 + (⅟2 * y) • ω := by
+  ext <;> simp [mul_comm]
+
+@[simp]
+theorem algEquivDiscrZero_symm_apply_add_smul [Invertible (2 : R)] (x y : R) :
+    (algEquivDiscrZero a b).symm (x • 1 + y • ω) = (x - b * y) • 1 + (2 * y) • ω := by
+  ext <;> simp [mul_comm, sub_eq_add_neg]
 
 /-- If `2` is regular, `QuadraticAlgebra R a b` and `QuadraticAlgebra R a' b'` are isomorphic
 iff `discr a b = u ^ 2 * discr a' b'` for some unit `u` with `2 ∣ b - u * b'`. -/

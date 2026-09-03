@@ -13,7 +13,7 @@ public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
-## Boundedness in (pseudo)-metric spaces
+# Boundedness in (pseudo)-metric spaces
 
 This file contains one definition, and various results on boundedness in pseudo-metric spaces.
 * `Metric.diam s` : The `iSup` of the distances of members of `s`.
@@ -665,3 +665,19 @@ theorem exists_forall_ge_of_isBounded {f : β → α} (hf : Continuous f) (x₀ 
   hf.exists_forall_le_of_isBounded (α := αᵒᵈ) x₀ h
 
 end Continuous
+
+/-- If `U : ι → Set X` is an open covering of a compact metric space `X`,
+there exists `ε > 0` such that any subset of `X` of diameter `≤ ε`
+is contained in some `U i`. -/
+lemma CompactSpace.lebesgue_number_lemma {X : Type*} [MetricSpace X] [CompactSpace X]
+    {ι : Type*} (U : ι → Set X) (hU : ∀ i, IsOpen (U i)) (hU' : ⋃ i, U i = Set.univ) :
+    ∃ ε > 0, ∀ (S : Set X) (_ : S.Nonempty) (_ : Metric.diam S ≤ ε), ∃ (i : ι), S ⊆ U i := by
+  obtain ⟨δ, hδ, hδ'⟩ := lebesgue_number_lemma_of_metric isCompact_univ hU (by simp [hU'])
+  refine ⟨δ / 2, by simpa, fun S ⟨x, hx⟩ hS₂ ↦ ?_⟩
+  obtain ⟨i, hi⟩ := hδ' x (by simp)
+  refine ⟨i, fun s hs ↦ hi ?_⟩
+  simp only [Metric.mem_ball]
+  refine lt_of_le_of_lt (Metric.dist_le_diam_of_mem' ?_ hs hx)
+    (lt_of_le_of_lt hS₂ (by simpa))
+  simpa only [← Metric.isBounded_iff_ediam_ne_top] using
+    Metric.isBounded_of_compactSpace

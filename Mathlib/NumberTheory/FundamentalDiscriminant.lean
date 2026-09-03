@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Data.Nat.Squarefree
-public import Mathlib.RingTheory.Int.Basic
 
 /-!
 # Fundamental discriminants
@@ -29,6 +28,8 @@ independent of the theory of quadratic fields.
   it is squarefree.
 * `Int.isFundamentalDiscr_four_mul`: `4m` is a fundamental discriminant if and only if `m` is
   squarefree and `m ≡ 2, 3 mod 4`.
+* `Int.isFundamentalDiscr_iff_forall_prime`: the characterization uniform in the prime `p`, where
+  the clause singling out `p = 2` in the definition disappears.
 -/
 
 @[expose] public section
@@ -41,20 +42,22 @@ def IsFundamentalDiscr (D : ℤ) : Prop :=
   (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ x, D = 4 * x → ¬ 4 ∣ x ∧ x % 4 ≠ 1) ∧
     ∀ p : ℕ, p.Prime → Odd p → ¬ (p : ℤ) ^ 2 ∣ D
 
-theorem isFundamentalDiscr_def {D : ℤ} :
+variable {D : ℤ}
+
+theorem isFundamentalDiscr_def :
     IsFundamentalDiscr D ↔
       (D % 4 = 0 ∨ D % 4 = 1) ∧ (∀ x, D = 4 * x → ¬ 4 ∣ x ∧ x % 4 ≠ 1) ∧
         ∀ p : ℕ, p.Prime → Odd p → ¬ (p : ℤ) ^ 2 ∣ D := Iff.rfl
 
-theorem IsFundamentalDiscr.ne_zero {D : ℤ} (h : IsFundamentalDiscr D) : D ≠ 0 := by
+theorem IsFundamentalDiscr.ne_zero (h : IsFundamentalDiscr D) : D ≠ 0 := by
   grind [isFundamentalDiscr_def]
 
-theorem IsFundamentalDiscr.emod_four_eq_zero_or_one {D : ℤ} (h : IsFundamentalDiscr D) :
+theorem IsFundamentalDiscr.emod_four_eq_zero_or_one (h : IsFundamentalDiscr D) :
     D % 4 = 0 ∨ D % 4 = 1 := h.1
 
 /-- `D` is a fundamental discriminant if and only if either `D ≡ 1 mod 4` and `D` is squarefree,
 or `D = 4 * d` with `d` squarefree and `d ≡ 2, 3 mod 4`. -/
-theorem isFundamentalDiscr_iff_squarefree {D : ℤ} :
+theorem isFundamentalDiscr_iff_squarefree :
     IsFundamentalDiscr D ↔
       (D % 4 = 1 ∧ Squarefree D) ∨
         (D % 4 = 0 ∧ Squarefree (D / 4) ∧ (D / 4 % 4 = 2 ∨ D / 4 % 4 = 3)) := by
@@ -71,7 +74,9 @@ theorem isFundamentalDiscr_iff_squarefree {D : ℤ} :
     grind [isFundamentalDiscr_def]
   · grind [isFundamentalDiscr_def]
 
-theorem isFundamentalDiscr_iff_forall_prime {D : ℤ} :
+/-- Prime-by-prime characterisation of fundamental discriminants, uniform in `p`. Unlike the
+definition, which singles out `p = 2`, the second clause is the same for every prime. -/
+theorem isFundamentalDiscr_iff_forall_prime :
     IsFundamentalDiscr D ↔ (D % 4 = 0 ∨ D % 4 = 1) ∧
       ∀ p : ℕ, p.Prime → ¬ ∃ e : ℤ, D = (p : ℤ) ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
   rw [Nat.forall_prime_iff_two_and_odd, isFundamentalDiscr_def]
