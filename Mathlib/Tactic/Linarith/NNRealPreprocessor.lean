@@ -6,7 +6,7 @@ Authors: David Ledvinka
 module
 
 public meta import Mathlib.Tactic.Linarith
-public import Mathlib.Data.NNReal.Basic -- shake: keep (tactic dependency)
+public import Mathlib.Basic.NNReal.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Rify
 
 /-!

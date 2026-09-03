@@ -66,33 +66,29 @@ end MonCat
 /-- The type of morphisms in `AddMonCat`. -/
 @[ext]
 structure AddMonCat.Hom (A B : AddMonCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
 /-- The type of morphisms in `MonCat`. -/
 @[to_additive, ext]
 structure MonCat.Hom (A B : MonCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
 namespace MonCat
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category MonCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory MonCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `MonCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddMonCat` back into an `AddMonoidHom`. -/]
@@ -252,33 +248,29 @@ end CommMonCat
 /-- The type of morphisms in `AddCommMonCat`. -/
 @[ext]
 structure AddCommMonCat.Hom (A B : AddCommMonCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
 /-- The type of morphisms in `CommMonCat`. -/
 @[to_additive, ext]
 structure CommMonCat.Hom (A B : CommMonCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
 namespace CommMonCat
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category CommMonCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory CommMonCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommMonCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddCommMonCat` back into an `AddMonoidHom`. -/]
@@ -307,8 +299,6 @@ lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
