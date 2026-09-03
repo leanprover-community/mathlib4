@@ -109,13 +109,30 @@ Valid arguments are:
   'Mathlib/**/Order/*.lean'. However, one would need to write `Mathlib.Data.\\*`
   to prevent glob expansion.
 
+# Read endpoints
+
+Reads are split across two services. The public service (containers master,
+legacy) serves the master-built cache at https://cache.mathlib.org. The
+developer cache (containers forks, nightly-testing, pr-toolchain-tests)
+serves work-in-progress artifacts at https://devcache.mathlib.org.
+On a mathlib checkout (canonical or fork) reads follow the per-repo trust
+chain across both services. In a downstream project they default to the
+public service; only a dependency pinned to the nightly-testing repo also
+reads that repo's own container, and a fork remote on the dependency
+checkout is ignored (pass --repo to opt in).
+
 # Environment variables
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
 * MATHLIB_CACHE_DEBUG_USE_LEGACY
                           Set to 1 or true to read from the Azure storage
-                          account instead of https://cache.mathlib.org.
+                          account instead of the cache endpoints.
                           For troubleshooting only.
+* MATHLIB_CACHE_BASE_URL  Read base URL override for both services: a host
+                          that mirrors the whole /{container}/{key} namespace.
+* MATHLIB_CACHE_DEVELOPER_BASE_URL
+                          Read base URL override for the developer cache only;
+                          wins over MATHLIB_CACHE_BASE_URL for its containers.
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
 * MATHLIB_CACHE_FROM      Comma-separated container list for reads, same shape as
@@ -201,6 +218,10 @@ def main (args : List String) : IO Unit := do
 
   let repo? ← parseNamedOpt "repo" options
 
+  -- Resolve the usage context once, before anything resolves a repo or a
+  -- lookup chain: a mathlib checkout (or an explicit --repo) is the inner
+  -- loop, everything else is a downstream project reading the public cache.
+  usageContext.set (UsageContext.resolve (← IO.isMathlibRoot) repo?)
   let stagingDir? ← parseNamedOpt "staging-dir" options
   let cacheFromStr? ← parseNamedOpt "cache-from" options
   let containerStr? ← parseNamedOpt "container" options

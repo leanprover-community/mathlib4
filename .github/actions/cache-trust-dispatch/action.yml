@@ -28,7 +28,7 @@ inputs:
     required: true
 
 # Outputs are mirrored to $GITHUB_ENV inside the step, which is what
-# downstream `cache get` / `cache put-staged` calls actually read. We
+# downstream `cache get` / `cache put` calls actually read. We
 # also expose them as action outputs for callers that need them in
 # `with:` blocks (e.g. constructing further `if:` conditions).
 outputs:

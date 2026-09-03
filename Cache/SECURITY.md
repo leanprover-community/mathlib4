@@ -19,27 +19,37 @@ or below.
 The model spans four storage containers, each written by a distinct class of
 CI job and assigned a trust level:
 
-| Container             | Who may write                                          | Trust  |
-|-----------------------|--------------------------------------------------------|--------|
-| `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
-| `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
-| `nightly-testing`     | nightly-testing's trusted branches                     | medium |
-| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    |
+| Container             | Who may write                                          | Trust  | Service  |
+|-----------------------|--------------------------------------------------------|--------|----------|
+| `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   | public    |
+| `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium | developer |
+| `nightly-testing`     | nightly-testing's trusted branches                     | medium | developer |
+| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    | developer |
 
 Each writer identity is granted write access to exactly one container, enforced
 by the storage backend. An upload aimed at any other container is rejected,
 regardless of what the cache binary requests.
 
-On the read side, each repo has a default lookup chain — the ordered list of
-containers a consumer reads from:
+The containers are split across two services. The public service (`master`,
+plus the read-only `legacy` container) holds only master-trust artifacts; the
+developer cache holds every work-in-progress container. The split is
+physical: separate storage, separate read endpoints
+(`https://cache.mathlib.org` and `https://devcache.mathlib.org`), and
+separate write credential flows. A credential for the developer cache's storage cannot
+name the public storage at all, so the container isolation for fork-trust
+writers is backed by a storage boundary, not only by per-container grants.
+
+On the read side, each consumer has a default lookup chain — the ordered list
+of containers it reads from:
 
 | Consumer                | Default lookup chain |
 |-------------------------|----------------------|
 | mathlib4                | `master`             |
 | nightly-testing         | `nightly-testing`, `forks` |
 | forks (PRs)             | `master`, `forks`    |
+| downstream projects     | `master` (`nightly-testing` for a nightly-pinned dependency) |
 
-The table shows trust classes; every chain also ends with the
+The table shows trust classes; every developer chain also ends with the
 read-only `legacy` container, elided here. The nightly chain includes `forks`
 because PRs from that repo into mathlib4 upload there; it excludes
 `pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
@@ -47,6 +57,16 @@ branch cannot reach a trusted nightly consumer.
 
 Branches that legitimately need to read their own prior low-trust uploads opt
 into a wider chain explicitly.
+
+A downstream project — Mathlib as a dependency — honors only a canonical
+detection of its dependency checkout: a fork remote there never steers the
+read, so a downstream default never fetches fork or toolchain-experiment
+artifacts. The one canonical exception is a dependency pinned to the
+nightly-testing repo, which reads that repo's own first-party container (its
+artifacts exist nowhere else); the fork container stays out of that chain
+too. A downstream user opts into a fork's chain explicitly with `--repo=` or
+`--cache-from=`, which carries the usual security notice when it widens the
+read.
 
 ## Four enforcement layers
 
@@ -61,11 +81,12 @@ only when the workflow's identity — stamped by GitHub from the repo, event
 type, and ref — matches a pre-registered grant. The credential's scope is
 fixed when it is issued and cannot be widened afterward.
 
-Two credential shapes implement this. Azure writes mint an OIDC-federated
-bearer token whose RBAC role covers exactly one container. An S3-compatible
-destination takes a short-lived credential pair scoped to one container's
-namespace, and the tool signs each request with it (SigV4); CI mints the
-pair per job the same OIDC-gated way.
+Two flows implement this, one per service. Azure writes mint an OIDC-federated
+bearer token whose RBAC role covers exactly one container. Developer-cache
+writes exchange the job's GitHub OIDC token at the cache broker for temporary
+credentials scoped to one container's namespace inside the developer cache's storage.
+That storage holds no public artifacts, so no credential on this
+flow can reach what public consumers read.
 
 This is the boundary's anchor: a compromised cache binary, a tampered workflow,
 or a malicious PR that captures and replays the credential still cannot upload
@@ -142,20 +163,23 @@ The tool reads no endpoint and no lookup chain from the working tree — there
 is no repo-local cache configuration file, and changes must not add one. The
 reasons:
 
-The design severs tree-to-tool trust deliberately, and the severance is
+The design severs tree-to-tool trust in exactly two places, and both are
 load-bearing. In CI, the read-side binary is built from a trusted branch and
 run against the PR's tree; the routing rule is that the lookup policy loads
 from the trusted branch, never from the PR. A tree-sourced configuration file
 would let PR-controlled bytes choose where that trusted binary reads. A read
 endpoint serves unverified artifacts that Lean loads, so endpoint choice is
-code execution. A committed file also persists and
+code execution. Downstream, `resolveDownstreamRepo` refuses to let
+anything found in the dependency checkout steer the read; a configuration
+file inside a transitively pinned mathlib checkout would hand exactly that
+steering to whoever authored the pin. A committed file also persists and
 propagates in a way an environment variable never does: one merged line
 silently redirects every future clone, developer, and CI run of that
 repository.
 
 The argument that the lakefile already executes arbitrary code does not
 change this: that equivalence holds only for a user who deliberately builds
-an untrusted branch, and fails for the CI consumer above, which never opted
+an untrusted branch, and fails for the two consumers above, who never opted
 in.
 
 The supported way to give a project a default endpoint is to commit the
@@ -173,9 +197,11 @@ The trust model does not attempt to defend against:
 - **Compromised storage tenant** — admin-level compromise defeats the access
   grants.
 - **Substituted read endpoint** — the cache does not verify downloaded bytes, so
-  whichever host answers a read carries the storage tenant's trust. That is the
-  default read host `https://cache.mathlib.org`, or a host named by
-  `MATHLIB_CACHE_GET_URL`.
+  whichever host answers a read carries the storage tenant's trust. Those are
+  the default read hosts `https://cache.mathlib.org` and
+  `https://devcache.mathlib.org`, or a host named by
+  `MATHLIB_CACHE_GET_URL` / `MATHLIB_CACHE_BASE_URL` /
+  `MATHLIB_CACHE_DEVELOPER_BASE_URL`.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
 - **Maintainer trust on the trusted branches** — write access to a branch the
   cache binary is built from can land a bad tool, workflow, or toolchain.
@@ -188,10 +214,11 @@ The trust model does not attempt to defend against:
 
 | Concern                                        | File(s)                                                          |
 |------------------------------------------------|------------------------------------------------------------------|
-| Container model, URL shape, per-repo defaults  | [`Cache/Infra.lean`](Infra.lean)                                 |
+| Container model, service split, URL shape, per-repo and per-context defaults | [`Cache/Infra.lean`](Infra.lean) (`Container.service`, `UsageContext`, `defaultContainersFor`) |
 | Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`)      |
 | Upload destination, credentials, and engines   | [`Cache/Upload.lean`](Upload.lean) (`stagedUploadDest`, `uploadAuthFrom`) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
+| Repository-placement policy (tool vs CI blocks vs services) | `docs/developer-cache-split.md` in `mathlib-initiative/cache-infrastructure` |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md)   |
 | OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
 | (repo, ref) → trust class policy table         | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
