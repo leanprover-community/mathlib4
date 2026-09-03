@@ -49,9 +49,9 @@ section restrict
 
 variable [Zero R] (D : AlgebraicCycle X R) (t : Set X)
 /--
-Restriction of an algebraic cycle to some set. This is distinct from `Function.locallyFinsuppWithin`
-because here we get something which is locally of finite support on the whole space rather than just
-within the set we're restricting to.
+Restriction of an algebraic cycle to some set. This is distinct from
+`Function.locallyFinsuppWithin.restrict` because here we get something which is locally of finite
+support on the whole space rather than just within the set we're restricting to.
 -/
 noncomputable
 def restrict : AlgebraicCycle X R where
