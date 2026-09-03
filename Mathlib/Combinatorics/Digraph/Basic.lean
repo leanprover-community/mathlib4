@@ -139,8 +139,7 @@ def IsSpanningSubgraph (x y : Digraph V) : Prop :=
 
 @[grind =]
 theorem isSpanningSubgraph_iff {x y : Digraph V} :
-    IsSpanningSubgraph x y ↔ x ≤ y ∧ x.verts = y.verts := by
-  rfl
+    IsSpanningSubgraph x y ↔ x ≤ y ∧ x.verts = y.verts := .rfl
 
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Max (Digraph V) where
@@ -162,11 +161,11 @@ instance : Min (Digraph V) where
     Adj v w := x.Adj v w ∧ y.Adj v w
   }
 
-@[grind =]
+@[simp, grind =]
 theorem inf_verts (x y : Digraph V) : (x ⊓ y).verts = x.verts ∩ y.verts := rfl
 
-@[grind =]
-theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w := Iff.rfl
+@[simp, grind =]
+theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w := .rfl
 
 /-- We define `Gᶜ` to be the `Digraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent. -/
