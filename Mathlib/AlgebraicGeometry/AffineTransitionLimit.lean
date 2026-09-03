@@ -391,48 +391,40 @@ private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOf
     ∃ (k : I) (hik : k ⟶ i) (hjk : k ⟶ j),
       D.map hik ≫ a = D.map hjk ≫ b := by
   wlog hS : ∃ R, S = Spec R generalizing S
-  · exact this (t ≫ ((Functor.const I).mapIso S.isoSpec).hom)
-      (f ≫ S.isoSpec.hom) (by simp [ha]) (by simp [hb]) ⟨_, rfl⟩
-  obtain ⟨R, rfl⟩ := hS
-  wlog hX : ∃ S, X = Spec S generalizing X
-  · simpa using! this (a ≫ X.isoSpec.hom) (b ≫ X.isoSpec.hom) (by simp [hab]) (X.isoSpec.inv ≫ f)
+  · exact this (t ≫ (Functor.const I).map S.isoSpec.hom) (f ≫ S.isoSpec.hom)
       (by simp [ha]) (by simp [hb]) ⟨_, rfl⟩
-  obtain ⟨S, rfl⟩ := hX
+  obtain ⟨R, rfl⟩ := hS
+  wlog hX : ∃ A, X = Spec A generalizing X
+  · simpa using this (a ≫ X.isoSpec.hom) (b ≫ X.isoSpec.hom) (by simp [hab]) (X.isoSpec.inv ≫ f)
+      (by simp [ha]) (by simp [hb]) ⟨_, rfl⟩
+  obtain ⟨A, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   wlog hD : ∃ D' : I ⥤ CommRingCatᵒᵖ, D = D' ⋙ Scheme.Spec generalizing D
-  · let e : D ⟶ D ⋙ Γ.rightOp ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
-    have _ (i) : IsIso (e.app i) := by dsimp [e]; infer_instance
-    have _ : IsIso e := NatIso.isIso_of_isIso_app e
-    have _ (i) : IsAffine ((D ⋙ Γ.rightOp ⋙ Scheme.Spec).obj i) := by dsimp; infer_instance
-    have _ : IsAffine ((Cone.postcompose (asIso e).hom).obj c).pt := by dsimp; infer_instance
-    have := this (D ⋙ Γ.rightOp ⋙ Scheme.Spec) ((Cone.postcompose (asIso e).hom).obj c)
-      ((IsLimit.postcomposeHomEquiv (asIso e) c).symm hc) (inv e ≫ t)
-      ((inv e).app _ ≫ a) ((inv e).app _ ≫ b)
-      (by simp only [Cone.postcompose_obj_π, NatTrans.comp_app, NatIso.isIso_inv_app,
-        Category.assoc, IsIso.hom_inv_id_assoc, asIso_hom]; exact hab)
-      (by simp [ha]) (by simp [hb]) ⟨D ⋙ Γ.rightOp, rfl⟩
-    obtain ⟨k, hik, hjk, H⟩ := this
-    exact ⟨k, hik, hjk, (cancel_epi _).mp (by simpa only [(inv e).naturality_assoc] using H)⟩
+  · let D' := D ⋙ Γ.rightOp
+    let e : D ≅ D' ⋙ Scheme.Spec :=
+      NatIso.ofComponents (fun i ↦ (D.obj i).isoSpec) fun _ ↦ (isoSpec_hom_naturality _).symm
+    have _ (i) : IsAffine ((D' ⋙ Scheme.Spec).obj i) := isAffine_Spec _
+    have _ : IsAffine ((Cone.postcompose e.hom).obj c).pt := ‹_›
+    obtain ⟨k, hik, hjk, H⟩ := this (D' ⋙ Scheme.Spec) ((Cone.postcompose e.hom).obj c)
+      ((IsLimit.postcomposeHomEquiv e c).symm hc) (e.inv ≫ t) (e.inv.app _ ≫ a) (e.inv.app _ ≫ b)
+      (by simpa using hab) (by simp [ha]) (by simp [hb]) ⟨D', rfl⟩
+    exact ⟨k, hik, hjk, (cancel_epi _).mp (by simpa only [e.inv.naturality_assoc] using H)⟩
   obtain ⟨D, rfl⟩ := hD
   obtain ⟨a, rfl⟩ := Spec.map_surjective a
   obtain ⟨b, rfl⟩ := Spec.map_surjective b
-  let e : ((Functor.const Iᵒᵖ).obj R).rightOp ⋙ Scheme.Spec ≅ (Functor.const I).obj (Spec R) :=
-    NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp)
-  obtain ⟨t, rfl⟩ : ∃ t' : (Functor.const Iᵒᵖ).obj R ⟶ D.leftOp,
-      t = Functor.whiskerRight (NatTrans.rightOp t') Scheme.Spec ≫ e.hom :=
+  obtain ⟨t', ht⟩ : ∃ t' : (Functor.const Iᵒᵖ).obj R ⟶ D.leftOp,
+      ∀ i, t.app i = Spec.map (t'.app (Opposite.op i)) :=
     ⟨⟨fun i ↦ Spec.preimage (t.app i.unop), fun _ _ f ↦ Spec.map_injective
-      (by simpa using! (t.naturality f.unop).symm)⟩, by ext : 2; simp [e]⟩
+      (by simpa using (t.naturality f.unop).symm)⟩, fun _ ↦ by simp⟩
   have := monadicCreatesLimits Scheme.Spec
   obtain ⟨k, hik, hjk, H⟩ := (HasRingHomProperty.Spec_iff.mp ‹LocallyOfFiniteType (Spec.map φ)›)
-    |>.essFiniteType.exists_comp_map_eq_of_isColimit _ D.leftOp t _
-    (coconeLeftOpOfCone (liftLimit hc))
-    (isColimitCoconeLeftOpOfCone _ (liftedLimitIsLimit _))
-    a (Spec.map_injective (by simpa using! ha.symm))
-    b (Spec.map_injective (by simpa using! hb.symm))
-    (Spec.map_injective (by
-      simp only [coconeLeftOpOfCone_ι_app, Spec.map_comp]
-      simp only [← Scheme.Spec_map, ← liftedLimitMapsToOriginal_hom_π, Category.assoc, hab]))
-  exact ⟨k.unop, hik.unop, hjk.unop, by simpa [← Spec.map_comp, Spec.map_inj] using! H⟩
+    |>.essFiniteType.exists_comp_map_eq_of_isColimit _ D.leftOp t' _
+    (coconeLeftOpOfCone (liftLimit hc)) (isColimitCoconeLeftOpOfCone _ (liftedLimitIsLimit _))
+    a (Spec.map_injective (by simpa [ht] using ha.symm))
+    b (Spec.map_injective (by simpa [ht] using hb.symm))
+    (Spec.map_injective (by simp only [coconeLeftOpOfCone_ι_app, Spec.map_comp,
+      ← Scheme.Spec_map, ← liftedLimitMapsToOriginal_hom_π, Category.assoc, hab]))
+  exact ⟨k.unop, hik.unop, hjk.unop, by simpa [← Spec.map_comp, Spec.map_inj] using H⟩
 
 /-- (Implementation)
 An auxiliary structure used to prove `Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType`.
