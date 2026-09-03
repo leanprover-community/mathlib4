@@ -503,6 +503,14 @@ lemma iSupIndep.disjoint_biSup_biSup {ι : Type*} [IsModularLattice α]
   disjoint_biSup_of_finite_disjoint_biSup fun _ h₁ h₂ ↦
     disjoint_biSup_biSup' hf (Set.disjoint_of_subset_left h₁ hst) h₂
 
+theorem sSupIndep.disjoint_sSup_sSup [IsModularLattice α] {s t u : Set α} (hs : sSupIndep s)
+    (hts : t ⊆ s) (hus : u ⊆ s) (hdisj : Disjoint t u) :
+    Disjoint (sSup t) (sSup u) := by
+  have hsub {v : Set α} (hvs : v ⊆ s) : v ⊆ Set.range (Subtype.val (p := (· ∈ s))) :=
+    fun x hx => ⟨⟨x, hvs hx⟩, rfl⟩
+  rw [←biSup_preimage (hsub hts), ←biSup_preimage (hsub hus)]
+  exact (sSupIndep_iff s |>.mp hs).disjoint_biSup_biSup (hdisj.preimage _)
+
 end
 
 namespace CompleteLattice
