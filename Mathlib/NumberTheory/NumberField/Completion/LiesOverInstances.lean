@@ -38,8 +38,8 @@ theorem continuous_completionMap : Continuous (completionMap v w) :=
     UniformSpace.Completion.continuous_map.comp (continuous_toCompletion v)
 
 theorem completionMap_coe (x : WithAbs v.1) :
-    completionMap (x : v.Completion) = ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) :
-      w.Completion) :=
+    completionMap v w (x : v.Completion) =
+      ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) : w.Completion) :=
   Completion.ext <| UniformSpace.Completion.mapRingHom_coe _ x
 
 /-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
