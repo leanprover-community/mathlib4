@@ -47,3 +47,13 @@ instance Pi.instIsRightOrderable [∀ i, Monoid (G i)] [∀ i, IsRightCancelMul 
   choose l hl using fun i ↦ exists_linearOrder_mulRightStrictMono (G i)
   obtain ⟨_, _⟩ := exists_wellFoundedLT ι
   exact .of_mulEquiv (ofLexMulEquiv (∀ i, G i))
+
+/-- An indexed product of cancellative bi-orderable monoids is bi-orderable, via the lexicographic
+order along a well-ordering of the index (strict on every factor). -/
+@[to_additive /-- An indexed product of cancellative bi-orderable additive monoids is bi-orderable,
+via the lexicographic order along a well-ordering of the index (strict on every factor). -/]
+instance Pi.instIsBiOrderable [∀ i, Monoid (G i)] [∀ i, IsCancelMul (G i)]
+    [∀ i, IsBiOrderable (G i)] : IsBiOrderable (∀ i, G i) := by
+  choose l hl hr using fun i ↦ exists_linearOrder_mulLeftStrictMono_mulRightStrictMono (G i)
+  obtain ⟨_, _⟩ := exists_wellFoundedLT ι
+  exact .of_mulEquiv (ofLexMulEquiv (∀ i, G i))

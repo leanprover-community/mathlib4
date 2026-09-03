@@ -42,3 +42,14 @@ instance Prod.instIsRightOrderable [IsRightCancelMul G] [IsRightOrderable G] [Is
   obtain ⟨_, _⟩ := exists_linearOrder_mulRightStrictMono G
   obtain ⟨_, _⟩ := exists_linearOrder_mulRightMono H
   exact .of_mulEquiv (ofLexMulEquiv (G × H))
+
+/-- The product of a cancellative bi-orderable monoid `G` and a bi-orderable monoid `H` is
+bi-orderable, via the lexicographic order (strict on `G`, monotone on `H`). -/
+@[to_additive /-- The product of a cancellative bi-orderable additive monoid `G` and a
+bi-orderable additive monoid `H` is bi-orderable, via the lexicographic order (strict on `G`,
+monotone on `H`). -/]
+instance Prod.instIsBiOrderable [IsCancelMul G] [IsBiOrderable G] [IsBiOrderable H] :
+    IsBiOrderable (G × H) := by
+  obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftStrictMono_mulRightStrictMono G
+  obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono H
+  exact .of_mulEquiv (ofLexMulEquiv (G × H))
