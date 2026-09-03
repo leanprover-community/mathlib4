@@ -116,7 +116,7 @@ instance : MulAction M (SchreierGraph V ι) where
     ext
     exact mul_smul a b x.toVertex
 
-end MulAction
+end MonoidAction
 
 section GroupAction
 

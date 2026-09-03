@@ -108,7 +108,7 @@ theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bij
 
 end Functoriality
 
-namespace MulAction
+namespace MonoidAction
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
@@ -309,7 +309,7 @@ theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α 
 
 end Higher
 
-end MulAction
+end MonoidAction
 
 namespace SubMulAction.ofStabilizer
 
@@ -425,7 +425,7 @@ end ofFixingSubgroup
 
 end SubMulAction
 
-namespace MulAction
+namespace MonoidAction
 
 section Index
 
@@ -503,7 +503,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_eq
 
 end Index
 
-end MulAction
+end MonoidAction
 
 namespace Equiv.Perm
 

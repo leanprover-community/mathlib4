@@ -34,7 +34,7 @@ public section
 
 variable {G X : Type*} [Group G] [MulAction G X]
 
-namespace MulAction
+namespace MonoidAction
 
 /-- An action of a group is pretransitive iff any element can be moved from a fixed given one. -/
 @[to_additive
@@ -86,4 +86,4 @@ theorem isPretransitive_congr {φ : M → N} {f : α →ₑ[φ] β}
     apply hf.injective
     simp only [hk, map_smulₛₗ]
 
-end MulAction
+end MonoidAction

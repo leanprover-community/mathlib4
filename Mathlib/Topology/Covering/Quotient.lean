@@ -113,15 +113,15 @@ set_option backward.isDefEq.respectTransparency.types false in
   congr($((hf.fiberEquivGroup e).symm_apply_apply e'))
 
 /-- The action of `G` restricted to the fiber. -/
-@[implicit_reducible] def mulActionFiber (x : X) : MulAction G (f ⁻¹' {x}) :=
+@[implicit_reducible] def monoidActionFiber (x : X) : MulAction G (f ⁻¹' {x}) :=
   SubMulAction.mulAction ⟨f ⁻¹' {x}, fun g _ h ↦ (hf.map_smul g).trans h⟩
 
-@[simp] lemma coe_mulActionFiber_smul (x : X) (g : G) (e : f ⁻¹' {x}) :
+@[simp] lemma coe_monoidActionFiber_smul (x : X) (g : G) (e : f ⁻¹' {x}) :
     letI := hf.mulActionFiber x
     (↑(g • e) : E) = g • (e : E) :=
   rfl
 
-lemma mulActionFiber_isPretransitive (x : X) :
+lemma monoidActionFiber_isPretransitive (x : X) :
     letI := hf.mulActionFiber x
     MulAction.IsPretransitive G (f ⁻¹' {x}) := by
   let := hf.mulActionFiber x
@@ -247,7 +247,7 @@ omit hf hfG
 
 end ProperlyDiscontinuousSMul
 
-end MulAction
+end MonoidAction
 
 @[to_additive] lemma isQuotientCoveringMap_of_subgroup [Group E] [IsTopologicalGroup E]
     (G : Subgroup E) (hG : IsDiscrete (G : Set E)) (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₂ * e₁⁻¹ ∈ G) :

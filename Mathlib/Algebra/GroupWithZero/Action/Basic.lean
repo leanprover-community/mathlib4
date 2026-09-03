@@ -57,13 +57,13 @@ variable {G G₀ A M₀ N₀ R α : Type*}
 section GroupWithZero
 variable [GroupWithZero G₀] [MulAction G₀ α] {a : G₀}
 
-protected lemma MulAction.bijective₀ (ha : a ≠ 0) : Bijective (a • · : α → α) :=
+protected lemma MonoidAction.bijective₀ (ha : a ≠ 0) : Bijective (a • · : α → α) :=
   MulAction.bijective <| Units.mk0 a ha
 
-protected lemma MulAction.injective₀ (ha : a ≠ 0) : Injective (a • · : α → α) :=
+protected lemma MonoidAction.injective₀ (ha : a ≠ 0) : Injective (a • · : α → α) :=
   (MulAction.bijective₀ ha).injective
 
-protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : α → α) :=
+protected lemma MonoidAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : α → α) :=
   (MulAction.bijective₀ ha).surjective
 
 end GroupWithZero

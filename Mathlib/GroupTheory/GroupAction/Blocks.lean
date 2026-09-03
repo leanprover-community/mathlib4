@@ -54,7 +54,7 @@ We follow [Wielandt-1964].
 open Set
 open scoped Pointwise
 
-namespace MulAction
+namespace MonoidAction
 
 section orbits
 
@@ -746,4 +746,4 @@ end Finite
 
 end Group
 
-end MulAction
+end MonoidAction

@@ -96,6 +96,6 @@ instance [AddMonoid β] [ContinuousAdd β] : DistribMulAction Mᵈᵐᵃ (α →
   smul_zero := smul_zero
   smul_add := smul_add
 
-end MulAction
+end MonoidAction
 
 end DomMulAct

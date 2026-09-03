@@ -37,7 +37,7 @@ Additivize. The issue is that it requires to additivize `commutator`
 
 public section
 
-namespace MulAction
+namespace MonoidAction
 
 open scoped Pointwise
 
@@ -93,4 +93,4 @@ theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
     exact Set.eq_univ_iff_forall.mp h x ⟨n, hn⟩
   | inr h => exact Or.inr (top_le_iff.mp (le_trans (ge_of_eq is_perfect) h))
 
-end MulAction.IwasawaStructure
+end MonoidAction.IwasawaStructure

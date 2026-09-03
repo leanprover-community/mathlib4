@@ -182,7 +182,7 @@ variable (M₀ A) [MonoidWithZero M₀] [MonoidWithZero M₀'] [Zero A]
 /-- An action of a monoid with zero `M₀` on a Type `A`, also with `0`, extends `MulAction` and
 is compatible with `0` (both in `M₀` and in `A`), with `1 ∈ M₀`, and with associativity of
 multiplication on the monoid `A`. -/
-class MulActionWithZero extends MulAction M₀ A where
+class MulActionWithZero extends MonoidAction M₀ A where
   -- these fields are copied from `SMulWithZero`, as `extends` behaves poorly
   /-- Scalar multiplication by any element send `0` to `0`. -/
   smul_zero : ∀ r : M₀, r • (0 : A) = 0
@@ -343,7 +343,7 @@ Mathematically, `DistribMulAction G A` is equivalent to giving `A` the structure
 a `ℤ[G]`-module.
 -/
 @[ext]
-class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
+class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MonoidAction M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/

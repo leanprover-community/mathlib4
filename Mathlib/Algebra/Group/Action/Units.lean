@@ -49,7 +49,7 @@ instance [Monoid M] [SMul M α] [FaithfulSMul M α] : FaithfulSMul Mˣ α where
   eq_of_smul_eq_smul h := Units.ext <| eq_of_smul_eq_smul h
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction Mˣ α where
+instance instMonoidAction [Monoid M] [MulAction M α] : MulAction Mˣ α where
   one_smul := one_smul M
   mul_smul m n := mul_smul (m : M) n
 
@@ -70,7 +70,7 @@ instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
 /-- If an action `G` associates and commutes with multiplication on `M`, then it lifts to an
 action on `Mˣ`. Notably, this provides `MulAction Mˣ Nˣ` under suitable conditions. -/
 @[to_additive]
-instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
+instance monoidAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     [IsScalarTower G M M] : MulAction G Mˣ where
   smul g m :=
     ⟨g • (m : M), (g⁻¹ • ((m⁻¹ : Mˣ) : M)),

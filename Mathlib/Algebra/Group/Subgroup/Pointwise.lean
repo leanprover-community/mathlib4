@@ -423,7 +423,7 @@ variable [Monoid α] [MulDistribMulAction α G]
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseMulAction : MulAction α (Subgroup G) where
+protected def pointwiseMonoidAction : MulAction α (Subgroup G) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ _ a)
   one_smul S := by
     change S.map _ = S

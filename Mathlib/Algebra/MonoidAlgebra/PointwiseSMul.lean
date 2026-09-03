@@ -53,8 +53,8 @@ theorem smul_eq [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddCommMonoid V]
     (f • x) p = ∑ gh ∈ Finset.SMulAntidiagonal p hp, f.coeff gh.1 • x gh.2 :=
   rfl
 
-@[to_additive (dont_translate := R) smul_apply_addAction]
-theorem smul_apply_mulAction [Group G] [MulAction G P] [Semiring R] [AddCommMonoid V]
+@[to_additive (dont_translate := R) smul_apply_addMonoidAction]
+theorem smul_apply_monoidAction [Group G] [MulAction G P] [Semiring R] [AddCommMonoid V]
     [SMulWithZero R V] (f : MonoidAlgebra R G) (x : P → V) (p : P) :
     (f • x) p = ∑ i ∈ f.coeff.support, (f.coeff i) • x (i⁻¹ • p) := by
   have hp : ((f.coeff.support : Set G).smulAntidiagonal (Function.support x) p).Finite :=

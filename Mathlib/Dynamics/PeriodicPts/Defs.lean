@@ -539,7 +539,7 @@ end Pi
 
 end Function
 
-namespace MulAction
+namespace MonoidAction
 
 open Function
 
@@ -650,4 +650,4 @@ theorem zpow_smul_mod_minimalPeriod (n : ℤ) :
     a ^ (n % (minimalPeriod (a • ·) b : ℤ)) • b = a ^ n • b := by
   rw [← period_eq_minimalPeriod, zpow_mod_period_smul]
 
-end MulAction
+end MonoidAction

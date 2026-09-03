@@ -30,7 +30,7 @@ smooth manifold, smooth action, quotient manifold
 
 public noncomputable section
 
-namespace MulAction
+namespace MonoidAction
 
 variable {M : Type*} [TopologicalSpace M]
   {G : Type*} [Group G] [MulAction G M]
@@ -49,4 +49,4 @@ instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
     |>.isLocalHomeomorph.chartedSpace Quotient.mk_surjective
 
-end MulAction
+end MonoidAction

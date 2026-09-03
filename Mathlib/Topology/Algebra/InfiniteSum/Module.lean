@@ -186,7 +186,7 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Typ
 @[to_additive /-- Given an additive group `α` acting on a type `β`, and a function `f : β → M`,
   we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
   `b ↦ ∑' (a : α), f(a • b)`. -/]
-noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β → M) :
+noncomputable def MonoidAction.automorphize [Group α] [MulAction α β] (f : β → M) :
     Quotient (MulAction.orbitRel α β) → M := by
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
@@ -203,7 +203,7 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
 @[to_additive (dont_translate := R) automorphize_smul_left /--
 Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/]
-lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
+lemma MonoidAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
     (g : Quotient (MulAction.orbitRel α β) → R) :
     MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by

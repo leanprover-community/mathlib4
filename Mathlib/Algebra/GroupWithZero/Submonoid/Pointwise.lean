@@ -60,7 +60,7 @@ variable [DistribMulAction M A]
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseMulAction : MulAction M (AddSubmonoid A) where
+protected def pointwiseMonoidAction : MulAction M (AddSubmonoid A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=
     (congr_arg (fun f : AddMonoid.End A => S.map f) (map_one _)).trans S.map_id

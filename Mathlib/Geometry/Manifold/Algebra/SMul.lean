@@ -198,7 +198,7 @@ lemma IsScalarTower.contMDiffSMul (G' : Type*) [TopologicalSpace G'] [ChartedSpa
 /-- If an action is continuously differentiable, then post-composing this action with a continuously
 differentiable homomorphism gives again a continuously differentiable action. -/
 @[to_additive]
-theorem MulAction.contMDiffSMul_compHom [Monoid G] [MulAction G M] {n : ℕ∞ω}
+theorem MonoidAction.contMDiffSMul_compHom [Monoid G] [MulAction G M] {n : ℕ∞ω}
     [ContMDiffSMul I I' n G M] {G' : Type*} [TopologicalSpace G'] [ChartedSpace H'' G'] [Monoid G']
     {f : G' →* G} (hf : CMDiff n f) :
     letI : MulAction G' M := MulAction.compHom _ f
@@ -311,7 +311,7 @@ lemma IsScalarTower.contMDiffConstSMul (Γ' : Type*) [Monoid Γ'] [SMul Γ Γ'] 
 this action with any homomorphism `f : Γ' →* Γ` makes again the action on `M` by any element of `Γ'`
 continuously differentiable . -/
 @[to_additive]
-theorem MulAction.contMDiffConstSMul_compHom {Γ Γ' : Type*} [Monoid Γ] [MulAction Γ M]
+theorem MonoidAction.contMDiffConstSMul_compHom {Γ Γ' : Type*} [Monoid Γ] [MulAction Γ M]
     [ContMDiffConstSMul I n Γ M] [Monoid Γ'] {f : Γ' →* Γ} :
     letI : MulAction Γ' M := MulAction.compHom _ f
     ContMDiffConstSMul I n Γ' M := by

@@ -186,7 +186,7 @@ instance instIsScalarTower [SMul ℂ α] [SMul ℂ β] [SMul α β] [IsScalarTow
     IsScalarTower Circle α β :=
   inferInstanceAs <| IsScalarTower (Submonoid.unitSphere _) α β
 
-instance instMulAction [MulAction ℂ α] : MulAction Circle α :=
+instance instMonoidAction [MulAction ℂ α] : MulAction Circle α :=
   inferInstanceAs <| MulAction (Submonoid.unitSphere _) α
 
 instance instDistribMulAction [AddMonoid M] [DistribMulAction ℂ M] :

@@ -214,7 +214,7 @@ variable {X : Type*} [TopologicalSpace X]
 /-- The tautological action by `X ≃ₜ X` on `X`.
 
 This generalizes `Equiv.Perm.applyMulAction`. -/
-instance Homeomorph.applyMulAction : MulAction (X ≃ₜ X) X where
+instance Homeomorph.applyMonoidAction : MulAction (X ≃ₜ X) X where
   smul f x := f x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -337,7 +337,7 @@ theorem smul_mem_nhds_self [TopologicalSpace G] [ContinuousConstSMul G G] {g : G
     g • s ∈ 𝓝 g ↔ s ∈ 𝓝 1 := by
   rw [← smul_mem_nhds_smul_iff g⁻¹]; simp
 
-namespace MulAction.IsPretransitive
+namespace MonoidAction.IsPretransitive
 
 variable (G)
 
@@ -358,7 +358,7 @@ lemma discreteTopology_iff (x : α) [IsPretransitive G α] :
   rw [← image_singleton, image_smul]
   exact hx.smul _
 
-end MulAction.IsPretransitive
+end MonoidAction.IsPretransitive
 
 end Group
 
@@ -611,7 +611,7 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
   exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
 
 @[to_additive]
-theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
+theorem MonoidAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
     IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
   ⟨Quot.mk_surjective, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
 
@@ -672,7 +672,7 @@ theorem smul_mem_nhds_smul_iff₀ {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0
 
 alias ⟨_, smul_mem_nhds_smul₀⟩ := smul_mem_nhds_smul_iff₀
 
-end MulAction
+end MonoidAction
 
 section DistribMulAction
 

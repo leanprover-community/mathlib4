@@ -155,7 +155,7 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
     MulAction.mem_aestabilizer, ← preimage_smul]
   exact hs.eventuallyEq
 
-end MulActionGroup
+end MonoidActionGroup
 
 section IsTopologicalGroup
 

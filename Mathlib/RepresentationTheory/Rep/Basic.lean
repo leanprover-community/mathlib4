@@ -334,7 +334,7 @@ variable (k G)
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
-abbrev ofMulAction (H : Type w') [MulAction G H] : Rep k G :=
+abbrev ofMonoidAction (H : Type w') [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
@@ -352,7 +352,7 @@ abbrev diagonalOneIsoLeftRegular :
 
 /-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
 isomorphic to the trivial representation on `k`. -/
-abbrev ofMulActionSubsingletonIsoTrivial
+abbrev ofMonoidActionSubsingletonIsoTrivial
     (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
     ofMulAction k G H ≅ trivial k G k :=
   mkIso <| Representation.ofMulActionSubsingletonEquivTrivial k G H
@@ -1033,7 +1033,7 @@ abbrev linearizationTrivialIso (X : Type u) :
 variable (k G) in
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
-abbrev linearizationOfMulActionIso (H : Type u) [MulAction G H] :
+abbrev linearizationOfMonoidActionIso (H : Type u) [MulAction G H] :
     (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
   Rep.mkIso (Representation.linearizeOfMulActionIso k G H)
 

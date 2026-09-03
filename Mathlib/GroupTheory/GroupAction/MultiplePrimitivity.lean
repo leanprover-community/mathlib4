@@ -41,7 +41,7 @@ public section
 
 open scoped Pointwise Cardinal
 
-namespace MulAction
+namespace MonoidAction
 
 open SubMulAction
 
@@ -82,7 +82,7 @@ end Preprimitive
   and if, when `n ≥ 1`, for every set `s` of cardinality `n - 1`,
   the action of `fixingAddSubgroup M s` on the complement of `s` is preprimitive. -/
 @[mk_iff]
-class _root_.AddAction.IsMultiplyPreprimitive
+class _root_.AddMonoidAction.IsMultiplyPreprimitive
     (M α : Type*) [AddGroup M] [AddAction M α] (n : ℕ) where
   /-- An `n`-preprimitive action is `n`-pretransitive. -/
   isMultiplyPretransitive (M α n) : AddAction.IsMultiplyPretransitive M α n
@@ -353,4 +353,4 @@ theorem isMultiplyPreprimitive_congr
         simp only [mem_ofFixingSubgroup_iff, Set.mem_image, not_exists, not_and, t] at hx ⊢
         exact fun hy ↦ hx y hy rfl
 
-end MulAction
+end MonoidAction

@@ -50,25 +50,25 @@ property. We do not provide typeclasses `*Action.IsTransitive`; users should ass
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g +ᵥ x = y`.
   A transitive action should furthermore have `α` nonempty. -/
-class AddAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
+class AddMonoidAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
   /-- There is `g` such that `g +ᵥ x = y`. -/
   exists_vadd_eq : ∀ x y : α, ∃ g : M, g +ᵥ x = y
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y`.
   A transitive action should furthermore have `α` nonempty. -/
 @[to_additive (attr := mk_iff)]
-class MulAction.IsPretransitive (M α : Type*) [SMul M α] : Prop where
+class MonoidAction.IsPretransitive (M α : Type*) [SMul M α] : Prop where
   /-- There is `g` such that `g • x = y`. -/
   exists_smul_eq : ∀ x y : α, ∃ g : M, g • x = y
 
 @[to_additive]
-instance MulAction.instIsPretransitiveOfSubsingleton
+instance MonoidAction.instIsPretransitiveOfSubsingleton
     {M α : Type*} [Monoid M] [MulAction M α] [Subsingleton α] :
     MulAction.IsPretransitive M α where
   exists_smul_eq x y := ⟨1, by
     simp only [one_smul, Subsingleton.elim x y] ⟩
 
-namespace MulAction
+namespace MonoidAction
 variable (M) [SMul M α] [IsPretransitive M α]
 
 @[to_additive]
@@ -100,21 +100,21 @@ lemma IsPretransitive.of_orbit {X : Type*} [Group G] [MulAction G X] {x₀ : X}
   rcases ha y with ⟨h, rfl⟩
   exact ⟨h * g⁻¹, by simp [mul_smul]⟩
 
-end MulAction
+end MonoidAction
 
-namespace MulAction
+namespace MonoidAction
 
 @[to_additive]
 lemma IsPretransitive.of_smul_eq {M N α : Type*} [SMul M α] [SMul N α] [IsPretransitive M α]
     (f : M → N) (hf : ∀ {c : M} {x : α}, f c • x = c • x) : IsPretransitive N α where
   exists_smul_eq x y := (exists_smul_eq x y).elim fun m h ↦ ⟨f m, hf.trans h⟩
 
-end MulAction
+end MonoidAction
 
 section CompatibleScalar
 
 @[to_additive]
-lemma MulAction.IsPretransitive.of_isScalarTower (M : Type*) {N α : Type*} [Monoid N] [SMul M N]
+lemma MonoidAction.IsPretransitive.of_isScalarTower (M : Type*) {N α : Type*} [Monoid N] [SMul M N]
     [MulAction N α] [SMul M α] [IsScalarTower M N α] [IsPretransitive M α] : IsPretransitive N α :=
   of_smul_eq (fun x : M ↦ x • 1) (smul_one_smul N _ _)
 
@@ -126,11 +126,11 @@ section
 
 open Additive Multiplicative
 
-instance Additive.addAction_isPretransitive [Monoid α] [MulAction α β]
+instance Additive.addMonoidAction_isPretransitive [Monoid α] [MulAction α β]
     [MulAction.IsPretransitive α β] : AddAction.IsPretransitive (Additive α) β :=
   ⟨@MulAction.exists_smul_eq α _ _ _⟩
 
-instance Multiplicative.mulAction_isPretransitive [AddMonoid α] [AddAction α β]
+instance Multiplicative.monoidAction_isPretransitive [AddMonoid α] [AddAction α β]
     [AddAction.IsPretransitive α β] : MulAction.IsPretransitive (Multiplicative α) β :=
   ⟨@AddAction.exists_vadd_eq α _ _ _⟩
 

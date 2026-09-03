@@ -278,7 +278,7 @@ variable [TopologicalSpace V] [IsTopologicalAddTorsor P] [IsTopologicalAddGroup 
 theorem smul_contLinear (t : S) (f : P →ᴬ[R] W) : (t • f).contLinear = t • f.contLinear :=
   rfl
 
-end MulAction
+end MonoidAction
 
 variable [IsTopologicalAddGroup W]
 

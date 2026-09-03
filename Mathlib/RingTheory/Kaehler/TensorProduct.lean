@@ -35,22 +35,22 @@ namespace KaehlerDifferential
 
 /-- (Implementation). `A`-action on `S ⊗[R] Ω[A⁄R]`. -/
 noncomputable
-abbrev mulActionBaseChange : MulAction A (S ⊗[R] Ω[A⁄R]) :=
+abbrev monoidActionBaseChange : MulAction A (S ⊗[R] Ω[A⁄R]) :=
   (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
 
 attribute [local instance] mulActionBaseChange
 
 @[simp]
-lemma mulActionBaseChange_smul_tmul (a : A) (s : S) (x : Ω[A⁄R]) :
+lemma monoidActionBaseChange_smul_tmul (a : A) (s : S) (x : Ω[A⁄R]) :
     a • (s ⊗ₜ[R] x) = s ⊗ₜ (a • x) := rfl
 
 @[local simp]
-lemma mulActionBaseChange_smul_zero (a : A) :
+lemma monoidActionBaseChange_smul_zero (a : A) :
     a • (0 : S ⊗[R] Ω[A⁄R]) = 0 := by
   rw [← zero_tmul _ (0 : Ω[A⁄R]), mulActionBaseChange_smul_tmul, smul_zero]
 
 @[local simp]
-lemma mulActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
+lemma monoidActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
     a • (x + y) = a • x + a • y := by
   change (TensorProduct.comm R S Ω[A⁄R]).symm (a • (TensorProduct.comm R S Ω[A⁄R]) (x + y)) = _
   rw [map_add, smul_add, map_add]

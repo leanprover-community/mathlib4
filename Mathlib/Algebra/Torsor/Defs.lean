@@ -54,7 +54,7 @@ acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
 `-ᵥ` operation. In the case of a vector space, it is an affine
 space. -/
-class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction G P,
+class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddMonoidAction G P,
   VSub G P where
   [nonempty : Nonempty P]
   /-- Torsor subtraction and addition with the same element cancels out. -/
@@ -67,7 +67,7 @@ acted on by a `Group G` with a transitive and free action given
 by the `•` operation and a corresponding division given by the
 `/ₛ` operation. -/
 @[to_additive existing]
-class Torsor (G : outParam Type*) (P : Type*) [Group G] extends MulAction G P, SDiv G P where
+class Torsor (G : outParam Type*) (P : Type*) [Group G] extends MonoidAction G P, SDiv G P where
   [nonempty : Nonempty P]
   /-- Scalar division and multiplication with the same element cancels out. -/
   sdiv_smul' : ∀ p₁ p₂ : P, (p₁ /ₛ p₂ : G) • p₂ = p₁

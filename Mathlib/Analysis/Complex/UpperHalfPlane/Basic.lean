@@ -241,7 +241,7 @@ instance : Infinite ℍ :=
 
 instance : Nontrivial ℍ := inferInstance
 
-end RealAddAction
+end RealAddMonoidAction
 
 section upperHalfPlaneSet
 

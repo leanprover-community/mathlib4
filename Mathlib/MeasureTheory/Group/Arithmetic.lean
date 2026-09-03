@@ -687,7 +687,7 @@ theorem aemeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
   (IsUnit.mk0 c hc).aemeasurable_const_smul_iff
 
 end GroupWithZero
-end MulAction
+end MonoidAction
 
 /-!
 ### Opposite monoid

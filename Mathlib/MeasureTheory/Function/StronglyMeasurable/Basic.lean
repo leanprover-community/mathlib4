@@ -559,7 +559,7 @@ theorem _root_.stronglyMeasurable_const_smul_iff₀ {_ : MeasurableSpace α} {c 
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
   (IsUnit.mk0 _ hc).stronglyMeasurable_const_smul_iff
 
-end MulAction
+end MonoidAction
 
 section Order
 

@@ -807,7 +807,7 @@ This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
 @[instance_reducible]
-def pointwiseMulAction : MulAction G (ValuationSubring K) :=
+def pointwiseMonoidAction : MulAction G (ValuationSubring K) :=
   toSubring_injective.mulAction toSubring pointwise_smul_toSubring
 
 scoped[Pointwise] attribute [instance] ValuationSubring.pointwiseMulAction

@@ -700,7 +700,7 @@ theorem fixingSubgroup_range_algebraMap :
   · simp_rw [algebraMap.smul', ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply A K L, h]
 
-end MulAction
+end MonoidAction
 
 end IsFractionRing
 

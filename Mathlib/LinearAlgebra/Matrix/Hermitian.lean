@@ -273,7 +273,7 @@ theorem isHermitian_smul_iff {A : Matrix n n α} {k : R} [Invertible k] (hk : Is
     (k • A).IsHermitian ↔ A.IsHermitian :=
   ⟨(·.of_smul hk), (·.smul hk)⟩
 
-end MulAction_StarModule
+end MonoidAction_StarModule
 
 section NonUnitalSemiring
 

@@ -452,7 +452,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
         head := g * (equivPair i w).head } := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
+noncomputable instance monoidAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
       (fun _ => MulAction.toEndHom)

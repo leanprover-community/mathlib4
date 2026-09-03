@@ -195,11 +195,11 @@ instance (X : C) : MulAction (Aut F) (F.obj X) where
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
-lemma mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
+lemma monoidAction_def {X : C} (σ : Aut F) (x : F.obj X) :
     σ • x = σ.hom.app X x :=
   rfl
 
-lemma mulAction_naturality {X Y : C} (σ : Aut F) (f : X ⟶ Y) (x : F.obj X) :
+lemma monoidAction_naturality {X Y : C} (σ : Aut F) (f : X ⟶ Y) (x : F.obj X) :
     σ • F.map f x = F.map f (σ • x) :=
   NatTrans.naturality_apply σ.hom f x
 

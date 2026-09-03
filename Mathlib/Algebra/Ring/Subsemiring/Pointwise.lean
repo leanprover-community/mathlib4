@@ -38,7 +38,7 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseMulAction : MulAction M (Subsemiring R) where
+protected def pointwiseMonoidAction : MulAction M (Subsemiring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
   mul_smul _a₁ _a₂ S :=

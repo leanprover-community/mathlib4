@@ -42,7 +42,7 @@ Actions on the opposite type just act on the underlying type.
 namespace MulOpposite
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction M αᵐᵒᵖ where
+instance instMonoidAction [Monoid M] [MulAction M α] : MulAction M αᵐᵒᵖ where
   one_smul _ := unop_injective <| one_smul _ _
   mul_smul _ _ _ := unop_injective <| mul_smul _ _ _
 
@@ -158,7 +158,7 @@ instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α �
 
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
 @[to_additive /-- Like `AddMonoid.toAddAction`, but adds on the right. -/]
-instance Monoid.toOppositeMulAction [Monoid α] : MulAction αᵐᵒᵖ α where
+instance Monoid.toOppositeMonoidAction [Monoid α] : MulAction αᵐᵒᵖ α where
   one_smul := mul_one
   mul_smul _ _ _ := (mul_assoc _ _ _).symm
 

@@ -186,7 +186,7 @@ instance : IsMultiplyPretransitive (Matrix.SpecialLinearGroup ι K) (ℙ K (ι �
 instance prePrimitive_SL : IsPreprimitive (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K)) :=
   isPreprimitive_of_is_two_pretransitive inferInstance
 
-lemma SL_mulAction_ker :
+lemma SL_monoidAction_ker :
     (MulAction.toPermHom (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K))).ker =
       Subgroup.center (Matrix.SpecialLinearGroup ι K) := by
   ext m

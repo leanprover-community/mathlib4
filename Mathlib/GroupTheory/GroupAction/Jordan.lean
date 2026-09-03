@@ -97,7 +97,7 @@ open scoped Pointwise
 
 /-- Simultaneously prove `MulAction.IsPreprimitive.is_two_pretransitive`
 and `MulAction.IsPreprimitive.is_two_preprimitive`. -/
-theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
+theorem MonoidAction.IsPreprimitive.is_two_motive_of_is_motive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α) :
     (IsPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s)
@@ -214,7 +214,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     exact IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs_trans hsgs_ne_top
 
 /-- A criterion due to Jordan for being 2-pretransitive (Wielandt, 13.1) -/
-theorem MulAction.IsPreprimitive.is_two_pretransitive
+theorem MonoidAction.IsPreprimitive.is_two_pretransitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
@@ -222,7 +222,7 @@ theorem MulAction.IsPreprimitive.is_two_pretransitive
   (hG.is_two_motive_of_is_motive hsn hsn').1 hs_trans
 
 /-- A criterion due to Jordan for being 2-preprimitive (Wielandt, 13.1) -/
-theorem MulAction.IsPreprimitive.is_two_preprimitive
+theorem MonoidAction.IsPreprimitive.is_two_preprimitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
@@ -230,7 +230,7 @@ theorem MulAction.IsPreprimitive.is_two_preprimitive
   (hG.is_two_motive_of_is_motive hsn hsn').2 hs_prim
 
 /-- Jordan's multiple primitivity criterion (Wielandt, 13.3) -/
-theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
+theorem MonoidAction.IsPreprimitive.isMultiplyPreprimitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hprim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :

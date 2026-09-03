@@ -22,7 +22,7 @@ then by convention `MulAction.period` and `AddAction.period` return 0.
 
 public section
 
-namespace MulAction
+namespace MonoidAction
 
 universe u v
 variable {α : Type v}
@@ -126,4 +126,4 @@ theorem period_bounded_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M)
 end MonoidExponent
 
 
-end MulAction
+end MonoidAction

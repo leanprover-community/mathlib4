@@ -36,7 +36,7 @@ instance : MulAction S α := inferInstance
 @[to_additive (attr := simp)]
 lemma mk_smul (g : G) (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
 
-end MulAction
+end MonoidAction
 
 @[to_additive]
 instance smulCommClass_left [MulAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :

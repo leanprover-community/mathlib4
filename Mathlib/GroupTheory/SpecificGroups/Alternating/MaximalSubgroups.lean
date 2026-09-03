@@ -190,7 +190,7 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
 
 end alternatingGroup
 
-namespace MulAction.IsBlock
+namespace MonoidAction.IsBlock
 
 open alternatingGroup
 
@@ -205,7 +205,7 @@ theorem subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
   rw [stabilizer_compl] at hk
   exact ⟨⟨⟨k, hG hk⟩, by aesop⟩, rfl⟩
 
-end MulAction.IsBlock
+end MonoidAction.IsBlock
 
 namespace alternatingGroup
 

@@ -983,7 +983,7 @@ end NonAssocSemiring
 variable [Semiring R']
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance mulAction [MulAction R' α] (S : Subsemiring R') : MulAction S α :=
+instance monoidAction [MulAction R' α] (S : Subsemiring R') : MulAction S α :=
   inferInstance
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/

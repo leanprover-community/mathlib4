@@ -78,7 +78,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     (ht.preimage continuous_snd)
 
 @[to_additive]
-theorem MulAction.isClosedMap_quotient [CompactSpace α] :
+theorem MonoidAction.isClosedMap_quotient [CompactSpace α] :
     letI := orbitRel α β
     IsClosedMap (Quotient.mk' : β → Quotient (orbitRel α β)) := by
   intro t ht

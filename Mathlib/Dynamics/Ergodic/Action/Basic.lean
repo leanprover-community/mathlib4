@@ -72,7 +72,7 @@ theorem aeconst_of_forall_smul_ae_eq (hm : NullMeasurableSet s μ) (h : ∀ g : 
     simpa only [preimage_smul] using h g⁻¹
 
 @[to_additive]
-theorem _root_.MulAction.aeconst_of_aestabilizer_eq_top
+theorem _root_.MonoidAction.aeconst_of_aestabilizer_eq_top
     (hm : NullMeasurableSet s μ) (h : aestabilizer G μ s = ⊤) : EventuallyConst s (ae μ) :=
   aeconst_of_forall_smul_ae_eq G hm <| (Subgroup.eq_top_iff' _).1 h
 

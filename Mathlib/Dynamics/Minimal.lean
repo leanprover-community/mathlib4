@@ -30,14 +30,14 @@ open scoped Pointwise
 
 /-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit
 of every point `x : α` is dense. -/
-class AddAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α] [AddAction M α] :
+class AddMonoidAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α] [AddAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (AddAction.orbit M x)
 
 /-- An action of a monoid `M` on a topological space is called *minimal* if the `M`-orbit of every
 point `x : α` is dense. -/
 @[to_additive]
-class MulAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MulAction M α] :
+class MonoidAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MulAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (MulAction.orbit M x)
 
@@ -47,7 +47,7 @@ variable (M G : Type*) {α : Type*} [Monoid M] [Group G] [TopologicalSpace α] [
   [MulAction G α]
 
 @[to_additive]
-theorem MulAction.dense_orbit [IsMinimal M α] (x : α) : Dense (orbit M x) :=
+theorem MonoidAction.dense_orbit [IsMinimal M α] (x : α) : Dense (orbit M x) :=
   MulAction.IsMinimal.dense_orbit x
 
 @[to_additive]
@@ -55,7 +55,7 @@ theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M ↦ c �
   MulAction.dense_orbit M x
 
 @[to_additive]
-instance (priority := 100) MulAction.isMinimal_of_pretransitive [IsPretransitive M α] :
+instance (priority := 100) MonoidAction.isMinimal_of_pretransitive [IsPretransitive M α] :
     IsMinimal M α :=
   ⟨fun x ↦ (surjective_smul M x).denseRange⟩
 

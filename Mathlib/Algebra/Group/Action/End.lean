@@ -53,13 +53,13 @@ This is generalized to bundled endomorphisms by:
 * `RelEmbedding.applyMulAction`
 * `RelIso.applyMulAction`
 -/
-instance applyMulAction : MulAction (Function.End α) α where
+instance applyMonoidAction : MulAction (Function.End α) α where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
 /-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
-instance applyAddAction : AddAction (Additive (Function.End α)) α := inferInstance
+instance applyAddMonoidAction : AddAction (Additive (Function.End α)) α := inferInstance
 
 @[simp] lemma smul_def (f : Function.End α) (a : α) : f • a = f a := rfl
 
@@ -81,7 +81,7 @@ namespace Equiv.Perm
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyMulAction (α : Type*) : MulAction (Perm α) α where
+instance applyMonoidAction (α : Type*) : MulAction (Perm α) α where
   smul f a := f a
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -109,7 +109,7 @@ variable [Monoid M]
 
 /-- The tautological action by `MulAut M` on `M`. -/
 @[to_additive /-- The tautological action by `AddAut M` on `M`. -/]
-instance applyMulAction : MulAction (MulAut M) M where
+instance applyMonoidAction : MulAction (MulAut M) M where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -148,7 +148,7 @@ variable [Monoid M]
 /-- The monoid hom representing a monoid action.
 
 When `M` is a group, see `MulAction.toPermHom`. -/
-def MulAction.toEndHom [MulAction M α] : M →* Function.End α where
+def MonoidAction.toEndHom [MulAction M α] : M →* Function.End α where
   toFun := (· • ·)
   map_one' := funext (one_smul M)
   map_mul' x y := funext (mul_smul x y)
@@ -156,7 +156,7 @@ def MulAction.toEndHom [MulAction M α] : M →* Function.End α where
 /-- The monoid action induced by a monoid hom to `Function.End α`
 
 See note [reducible non-instances]. -/
-abbrev MulAction.ofEndHom (f : M →* Function.End α) : MulAction M α := .compHom α f
+abbrev MonoidAction.ofEndHom (f : M →* Function.End α) : MulAction M α := .compHom α f
 
 end Monoid
 
@@ -166,13 +166,13 @@ variable [AddMonoid M]
 /-- The additive monoid hom representing an additive monoid action.
 
 When `M` is a group, see `AddAction.toPermHom`. -/
-def AddAction.toEndHom [AddAction M α] : M →+ Additive (Function.End α) :=
+def AddMonoidAction.toEndHom [AddAction M α] : M →+ Additive (Function.End α) :=
   MulAction.toEndHom.toAdditiveRight
 
 /-- The additive action induced by a hom to `Additive (Function.End α)`
 
 See note [reducible non-instances]. -/
-abbrev AddAction.ofEndHom (f : M →+ Additive (Function.End α)) : AddAction M α := .compHom α f
+abbrev AddMonoidAction.ofEndHom (f : M →+ Additive (Function.End α)) : AddAction M α := .compHom α f
 
 end AddMonoid
 
@@ -181,16 +181,16 @@ variable (G α) [Group G] [MulAction G α]
 
 /-- Given an action of a group `G` on a set `α`, each `g : G` defines a permutation of `α`. -/
 @[simps]
-def MulAction.toPermHom : G →* Equiv.Perm α where
+def MonoidAction.toPermHom : G →* Equiv.Perm α where
   toFun := MulAction.toPerm
   map_one' := Equiv.ext <| one_smul G
   map_mul' u₁ u₂ := Equiv.ext <| mul_smul (u₁ : G) u₂
 
-lemma MulAction.coe_toPermHom :
+lemma MonoidAction.coe_toPermHom :
     ⇑(MulAction.toPermHom G α) = MulAction.toPerm :=
   rfl
 
-lemma MulAction.toPerm_one :
+lemma MonoidAction.toPerm_one :
     (MulAction.toPerm (1 : G)) = (1 : Equiv.Perm α) := by
   aesop
 
@@ -202,13 +202,13 @@ variable (G α) [AddGroup G] [AddAction G α]
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
 @[simps!]
-def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
+def AddMonoidAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
 
-lemma AddAction.coe_toPermHom :
+lemma AddMonoidAction.coe_toPermHom :
     ⇑(AddAction.toPermHom G α) = AddAction.toPerm :=
   rfl
 
-theorem AddAction.toPerm_zero :
+theorem AddMonoidAction.toPerm_zero :
     (AddAction.toPerm (0 : G)) = (1 : Equiv.Perm α) := by
   aesop
 

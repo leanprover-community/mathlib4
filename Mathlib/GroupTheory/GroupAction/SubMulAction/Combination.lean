@@ -70,13 +70,13 @@ theorem coe_smul {n : ℕ} {g : G} {s : powersetCard α n} :
     ((g • s : powersetCard α n) : Finset α) = g • s :=
   SubMulAction.val_smul (p := subMulAction G α n) g s
 
-@[to_additive addAction_stabilizer_coe]
+@[to_additive addMonoidAction_stabilizer_coe]
 theorem stabilizer_coe {n : ℕ} (s : powersetCard α n) :
     stabilizer G s = stabilizer G (s : Set α) := by
   ext g
   simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← coe_inj]
 
-theorem addAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
+theorem addMonoidAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
     (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     AddAction.toPerm g = (1 : Perm (powersetCard α n)) ↔ AddAction.toPerm g = (1 : Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -105,7 +105,7 @@ theorem faithfulVAdd {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
   rw [AddAction.toPerm_zero, ← addAction_faithful hn hα]
   exact Perm.ext_iff.mpr hg
 
-theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
+theorem monoidAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     toPerm g = (1 : Perm (powersetCard α n)) ↔ toPerm g = (1 : Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose h with h

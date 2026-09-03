@@ -25,7 +25,7 @@ open scoped Pointwise
 
 variable {G H α β : Type*}
 
-namespace MulAction
+namespace MonoidAction
 
 section SMul
 
@@ -61,4 +61,4 @@ theorem Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g •
   have := Set.forall_mem_image.1 hg' ha
   rwa [smul_comm, smul_left_cancel_iff] at this
 
-end MulAction
+end MonoidAction

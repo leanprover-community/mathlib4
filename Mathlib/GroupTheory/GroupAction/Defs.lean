@@ -36,7 +36,7 @@ open scoped Pointwise
 
 open Function
 
-namespace MulAction
+namespace MonoidAction
 
 variable (M γ α : Type*) [SMul γ α] [Monoid M] [MulAction M α]
 
@@ -170,7 +170,7 @@ theorem mem_stabilizerSubmonoid_iff {a : α} {m : M} : m ∈ stabilizerSubmonoid
 
 end Stabilizers
 
-end MulAction
+end MonoidAction
 
 section FixedPoints
 
@@ -219,7 +219,7 @@ end FixedPoints
 end Group
 end FixedPoints
 
-namespace MulAction
+namespace MonoidAction
 variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 
 section Orbit
@@ -559,4 +559,4 @@ lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
 
 end Stabilizer
 
-end MulAction
+end MonoidAction

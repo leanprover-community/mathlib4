@@ -39,7 +39,7 @@ universe u v
 open Function Module
 open scoped Pointwise
 
-namespace MulAction
+namespace MonoidAction
 
 variable (M : Type u) [Monoid M] (α : Type v) [MulAction M α] {β : Type*} [MulAction M β]
 
@@ -60,7 +60,7 @@ lemma snd_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MulAction.orbit M y
   exact mem_orbit _ _
 
 @[to_additive]
-lemma _root_.Finite.finite_mulAction_orbit [Finite M] (a : α) : Set.Finite (orbit M a) :=
+lemma _root_.Finite.finite_monoidAction_orbit [Finite M] (a : α) : Set.Finite (orbit M a) :=
   Set.finite_range _
 
 variable (M)
@@ -99,7 +99,7 @@ instance (m : M) [DecidableEq β] :
 
 end FixedPoints
 
-end MulAction
+end MonoidAction
 
 /-- `smul` by a `k : M` over a group is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
@@ -111,7 +111,7 @@ theorem smul_cancel_of_non_zero_divisor {M G : Type*} [Monoid M] [AddGroup G]
   refine h _ ?_
   rw [smul_sub, h', sub_self]
 
-namespace MulAction
+namespace MonoidAction
 variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 
 @[to_additive] theorem fixedPoints_of_subsingleton [Subsingleton α] :
@@ -213,7 +213,7 @@ variable (G) (α)
 local notation "Ω" => orbitRel.Quotient G α
 
 @[to_additive]
-lemma _root_.Finite.of_finite_mulAction_orbitRel_quotient [Finite G] [Finite Ω] : Finite α := by
+lemma _root_.Finite.of_finite_monoidAction_orbitRel_quotient [Finite G] [Finite Ω] : Finite α := by
   rw [(selfEquivSigmaOrbits' G _).finite_iff]
   have : ∀ g : Ω, Finite g.orbit := by
     intro g
@@ -306,14 +306,14 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
 
 end Stabilizer
 
-end MulAction
+end MonoidAction
 
-namespace AddAction
+namespace AddMonoidAction
 
 @[deprecated (since := "2026-05-26")] alias stabilizer_vadd_eq_stabilizer_map_conj :=
   stabilizer_vadd_eq_stabilizer_map_addConj
 
-end AddAction
+end AddMonoidAction
 
 theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a b : α} :
     Equiv.swap a b ∈ MulAction.stabilizer (Equiv.Perm α) S ↔ (a ∈ S ↔ b ∈ S) := by
@@ -321,7 +321,7 @@ theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a 
   simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
   exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
 
-namespace MulAction
+namespace MonoidAction
 
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
@@ -345,7 +345,7 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
       simp only [Set.smul_mem_smul_set_iff, hx]
     · simp only [smul_inv_smul]
 
-end MulAction
+end MonoidAction
 
 section
 variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
@@ -360,10 +360,10 @@ lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
 
 end
 
-@[simp] lemma Multiplicative.mulAction_orbit {α β : Type*} [VAdd α β] (b : β) :
+@[simp] lemma Multiplicative.monoidAction_orbit {α β : Type*} [VAdd α β] (b : β) :
     MulAction.orbit (Multiplicative α) b = AddAction.orbit α b :=
   rfl
 
-@[simp] lemma Additive.mulAction_orbit {α β : Type*} [SMul α β] (b : β) :
+@[simp] lemma Additive.monoidAction_orbit {α β : Type*} [SMul α β] (b : β) :
     AddAction.orbit (Additive α) b = MulAction.orbit α b :=
   rfl

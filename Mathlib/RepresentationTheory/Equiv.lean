@@ -35,15 +35,15 @@ noncomputable section
 variable (k G) in
 /-- If there exists `G`-action on a trivial monoid `H` then the induced representation
   on `k[H]` is equivalent to the trivial representation. -/
-def ofMulActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
+def ofMonoidActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
   .mk (MonoidAlgebra.uniqueLinearEquiv k H) fun g ↦ by ext a; simp [Subsingleton.elim (g • a) a]
 
 @[simp]
-lemma ofMulActionSubsingletonEquivTrivial_apply (f : k[H]) :
+lemma ofMonoidActionSubsingletonEquivTrivial_apply (f : k[H]) :
     (ofMulActionSubsingletonEquivTrivial k G H).toIntertwiningMap.toLinearMap f = f.coeff 1 := rfl
 
 @[simp]
-lemma ofMulActionSubsingletonEquivTrivial_symm_apply (r : k) :
+lemma ofMonoidActionSubsingletonEquivTrivial_symm_apply (r : k) :
     (ofMulActionSubsingletonEquivTrivial k G H).symm.toIntertwiningMap.toLinearMap r =
       .single 1 r := rfl
 

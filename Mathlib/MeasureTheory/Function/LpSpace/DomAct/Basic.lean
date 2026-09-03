@@ -132,6 +132,6 @@ instance : MulAction Mᵈᵐᵃ (Lp E p μ) := Subtype.val_injective.mulAction _
 instance : DistribMulAction Mᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.distribMulAction ⟨⟨_, rfl⟩, fun _ _ ↦ rfl⟩ fun _ _ ↦ rfl
 
-end MulAction
+end MonoidAction
 
 end DomMulAct

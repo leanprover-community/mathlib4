@@ -436,7 +436,7 @@ theorem monodromy_trans_apply {x y z : X}
   exact Subtype.ext (congr($(cov.liftPath_trans e.2.symm ..) 1).trans (Path.target _))
 
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
-@[reducible] def fundamentalGroupMulAction (x : X) :
+@[reducible] def fundamentalGroupMonoidAction (x : X) :
     MulAction (FundamentalGroup X x) (p ⁻¹' {x}) :=
   { smul := cov.monodromy (x := x) (y := x)
     mul_smul _ _ _ := cov.monodromy_trans_apply ..

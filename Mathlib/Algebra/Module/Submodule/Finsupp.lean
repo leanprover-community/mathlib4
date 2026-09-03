@@ -82,7 +82,7 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
 -- should be true.
 /-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
 @[instance_reducible]
-protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
+protected noncomputable def pointwiseSetMonoidAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],

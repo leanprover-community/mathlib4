@@ -60,20 +60,20 @@ end
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
 @[simps -isSimp]
-def ofMulAction (G : Type*) (H : Type u) [Monoid G] [MulAction G H] :
+def ofMonoidAction (G : Type*) (H : Type u) [Monoid G] [MulAction G H] :
     Action (Type u) G where
   V := H
   ρ := (TypeCat.endEquiv _).toMonoidHom.comp (@MulAction.toEndHom _ _ _ (by assumption))
 
 @[simp]
-theorem ofMulAction_apply {G : Type*} {H : Type*} [Monoid G] [MulAction G H] (g : G) (x : H) :
+theorem ofMonoidAction_apply {G : Type*} {H : Type*} [Monoid G] [MulAction G H] (g : G) (x : H) :
     (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a family `F` of types with `G`-actions, this is the limit cone demonstrating that the
 product of `F` as types is a product in the category of `G`-sets. -/
-def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι → Type max v u)
+def ofMonoidActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι → Type max v u)
     [∀ i : ι, MulAction G (F i)] :
     LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G (F i)) where
   cone :=
@@ -115,14 +115,14 @@ instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
   inferInstanceAs <| MulAction G X
 
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
-def ofMulAction (G : Type*) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
+def ofMonoidAction (G : Type*) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat G where
   V := H
   ρ := InducedCategory.endEquiv.symm.toMonoidHom.comp <| (TypeCat.endEquiv _).toMonoidHom.comp
     MulAction.toEndHom
 
 @[simp]
-theorem ofMulAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
+theorem ofMonoidAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
     (g : G) (x : H) : ConcreteCategory.hom ((FintypeCat.ofMulAction G H).ρ g) x = (g • x : H) :=
   rfl
 
@@ -208,7 +208,7 @@ section ToMulAction
 variable {V : Type (u + 1)} [LargeCategory V] {FV : V → V → Type*} {CV : V → Type*}
 variable [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV]
 
-instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
+instance instMonoidAction {G : Type*} [Monoid G] (X : Action V G) :
     MulAction G (ToType X) where
   smul g x := ConcreteCategory.hom (X.ρ g) x
   one_smul x := by
@@ -223,6 +223,6 @@ instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
 instance {G : Type*} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
 
-end ToMulAction
+end ToMonoidAction
 
 end Action

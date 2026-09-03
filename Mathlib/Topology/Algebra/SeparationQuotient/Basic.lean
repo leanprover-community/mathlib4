@@ -81,7 +81,7 @@ instance instSMulZeroClass {M X : Type*} [Zero X] [SMulZeroClass M X] [Topologic
   ZeroHom.smulZeroClass ⟨mk, mk_zero⟩ mk_smul
 
 @[to_additive]
-instance instMulAction {M X : Type*} [Monoid M] [MulAction M X] [TopologicalSpace X]
+instance instMonoidAction {M X : Type*} [Monoid M] [MulAction M X] [TopologicalSpace X]
     [ContinuousConstSMul M X] : MulAction M (SeparationQuotient X) :=
   surjective_mk.mulAction mk mk_smul
 

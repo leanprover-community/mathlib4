@@ -85,7 +85,7 @@ instance isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower 
   smul_assoc c x y := by simp [smul_def, mul_def, smul_mul_assoc]
 
 @[to_additive]
-instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (α × β) where
+instance monoidAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (α × β) where
   mul_smul _ _ _ := by ext <;> exact mul_smul ..
   one_smul _ := by ext <;> exact one_smul ..
 
@@ -115,10 +115,10 @@ variable (M N α) [Monoid M] [Monoid N]
 
 /-- Construct a `MulAction` by a product monoid from `MulAction`s by the factors.
   This is not an instance to avoid diamonds for example when `α := M × N`. -/
-@[to_additive AddAction.prodOfVAddCommClass
+@[to_additive AddMonoidAction.prodOfVAddCommClass
 /-- Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
 This is not an instance to avoid diamonds for example when `α := M × N`. -/]
-abbrev MulAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
+abbrev MonoidAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
     MulAction (M × N) α where
   smul mn a := mn.1 • mn.2 • a
   one_smul a := (one_smul M _).trans (one_smul N a)
@@ -127,9 +127,9 @@ abbrev MulAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulComm
     rw [mul_smul, mul_smul, smul_comm y.1 x.2]
 
 /-- A `MulAction` by a product monoid is equivalent to commuting `MulAction`s by the factors. -/
-@[to_additive AddAction.prodEquiv
+@[to_additive AddMonoidAction.prodEquiv
 /-- An `AddAction` by a product monoid is equivalent to commuting `AddAction`s by the factors. -/]
-def MulAction.prodEquiv :
+def MonoidAction.prodEquiv :
     MulAction (M × N) α ≃ Σ' (_ : MulAction M α) (_ : MulAction N α), SMulCommClass M N α where
   toFun _ :=
     letI instM := MulAction.compHom α (.inl M N)

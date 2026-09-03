@@ -49,7 +49,7 @@ scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseVAdd
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseAddAction : AddAction V (AffineSubspace k P) :=
+protected def pointwiseAddMonoidAction : AddAction V (AffineSubspace k P) :=
   SetLike.coe_injective.addAction _ coe_pointwise_vadd
 
 scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddAction
@@ -128,7 +128,7 @@ This is available as an instance in the `Pointwise` locale.
 TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
 @[instance_reducible]
-protected def mulAction : MulAction M (AffineSubspace k V) :=
+protected def monoidAction : MulAction M (AffineSubspace k V) :=
   SetLike.coe_injective.mulAction _ coe_smul
 
 scoped[Pointwise] attribute [instance] AffineSubspace.mulAction
@@ -143,7 +143,7 @@ lemma smul_mem_smul_iff₀ {G₀ : Type*} [GroupWithZero G₀] [DistribMulAction
 @[simp] lemma smul_top (ha : IsUnit a) : a • (⊤ : AffineSubspace k V) = ⊤ := by
   ext x; simpa [smul_eq_map, map_top] using ⟨ha.unit⁻¹ • x, smul_inv_smul ha.unit _⟩
 
-end MulAction
+end MonoidAction
 
 end Ring
 

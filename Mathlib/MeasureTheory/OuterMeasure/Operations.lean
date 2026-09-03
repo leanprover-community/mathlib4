@@ -106,7 +106,7 @@ instance instIsCentralScalar [SMul Rᵐᵒᵖ ℝ≥0∞] [IsCentralScalar R ℝ
 
 end SMul
 
-instance instMulAction {R : Type*} [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
+instance instMonoidAction {R : Type*} [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
     MulAction R (OuterMeasure α) := fast_instance% FunLike.mulAction
 
 instance addCommMonoid : AddCommMonoid (OuterMeasure α) := fast_instance% FunLike.addCommMonoid

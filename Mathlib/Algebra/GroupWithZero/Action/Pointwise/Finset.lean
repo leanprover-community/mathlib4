@@ -159,7 +159,7 @@ lemma card_dvd_card_smul_right₀ {s : Finset α} (hs : ∀ a ∈ s, a ≠ 0) :
     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
   card_dvd_card_image₂_right fun a ha => MulAction.injective₀ (hs a ha)
 
-end MulAction
+end MonoidAction
 
 variable [DecidableEq α] {s : Finset α}
 

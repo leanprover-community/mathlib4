@@ -865,7 +865,7 @@ theorem _root_.aestronglyMeasurable_smul_iff₀ [TopologicalSpace G₀] [Continu
   filter_upwards [hc0] with x hx
   simp [hx]
 
-end MulAction
+end MonoidAction
 
 end AEStronglyMeasurable
 end AEStronglyMeasurable

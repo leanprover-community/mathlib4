@@ -66,7 +66,7 @@ but this follows from various more familiar conditions,
 such as `FirstCountableTopology X`.
 Importing `Mathlib.Topology.Sequences` makes this implication available.
 -/]
-lemma MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty [ContinuousSMul G X] :
+lemma MonoidAction.properSMul_iff_isCompact_setOfPred_inter_nonempty [ContinuousSMul G X] :
     ProperSMul G X ↔
     (∀ {U V : Set X}, IsCompact U → IsCompact V → IsCompact {g : G | (g • U ∩ V).Nonempty}) := by
   refine ⟨fun h ↦ ProperSMul.isCompact_setOfPred_inter_nonempty, fun h ↦ ⟨?_⟩⟩
@@ -84,11 +84,11 @@ lemma MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty [ContinuousSMu
   · exact fun ⟨g, x⟩ ⟨hgx, hgx'⟩ ↦ ⟨⟨g • x, smul_mem_smul_set hgx', hgx⟩, hgx'⟩
 
 @[deprecated (since := "2026-07-09")]
-alias MulAction.properSMul_iff_isCompact_setOf_inter_nonempty :=
+alias MonoidAction.properSMul_iff_isCompact_setOf_inter_nonempty :=
   MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty
 
 @[deprecated (since := "2026-07-09")]
-alias AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty :=
+alias AddMonoidAction.properVAdd_iff_isCompact_setOf_inter_nonempty :=
   AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty
 
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly

@@ -620,7 +620,7 @@ theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c
   rfl
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
+instance instMonoidAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
   one_smul f :=
     inductionOn f fun f => by
       norm_cast
@@ -631,7 +631,7 @@ instance instMulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) whe
       simp [mul_smul]
 
 @[to_additive]
-instance instMulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l β) where
+instance instMonoidAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l β) where
   one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
   mul_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by

@@ -59,7 +59,7 @@ protected abbrev distribSMul [AddZeroClass β] [AddZeroClass F] [DistribSMul M �
 is a `MulAction` if `β` is a `MulAction`. -/
 @[to_additive /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`
 is an `AddAction` if `β` is an `AddAction`. -/]
-protected abbrev mulAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulApply M F α β] :
+protected abbrev monoidAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulApply M F α β] :
     MulAction M F :=
   DFunLike.coe_injective.mulAction _ FunLike.coe_smul
 

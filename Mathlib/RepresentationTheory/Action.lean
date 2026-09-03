@@ -248,7 +248,7 @@ lemma linearizeTrivialIso_symm_apply {X : Type w} (f : k[X]) :
 
 variable (k G) in
 /-- This a type-changing equivalence to avoid abusing defeq. -/
-def linearizeOfMulActionIso (H : Type w) [MulAction G H] :
+def linearizeOfMonoidActionIso (H : Type w) [MulAction G H] :
     (linearize k G (Action.ofMulAction G H)).Equiv (ofMulAction k G H) :=
   .mk (.refl ..) fun _ ↦ rfl
 

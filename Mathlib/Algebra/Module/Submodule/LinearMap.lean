@@ -112,7 +112,7 @@ variable {α : Type*}
 instance [AddAction M α] : AddAction p α :=
   AddSubmonoid.instAddActionSubtypeMem p
 
-end AddAction
+end AddMonoidAction
 
 end AddCommMonoid
 

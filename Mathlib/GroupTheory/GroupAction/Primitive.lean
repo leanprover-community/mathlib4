@@ -73,14 +73,14 @@ public section
 
 open scoped Pointwise
 
-namespace MulAction
+namespace MonoidAction
 
 variable (G : Type*) (X : Type*)
 
 -- Note : if the action is degenerate, singletons may not be blocks.
 /-- An additive action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
-class _root_.AddAction.IsPreprimitive [VAdd G X] : Prop extends AddAction.IsPretransitive G X where
+class _root_.AddMonoidAction.IsPreprimitive [VAdd G X] : Prop extends AddMonoidAction.IsPretransitive G X where
   /-- An action is preprimitive if it is pretransitive and
   the only blocks are the trivial ones -/
   isTrivialBlock_of_isBlock : ∀ {B : Set X}, AddAction.IsBlock G B → AddAction.IsTrivialBlock B
@@ -97,8 +97,8 @@ open IsPreprimitive
 
 /-- An additive action of an additive group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
-class _root_.AddAction.IsQuasiPreprimitive
-    [AddGroup G] [AddAction G X] : Prop extends AddAction.IsPretransitive G X where
+class _root_.AddMonoidAction.IsQuasiPreprimitive
+    [AddGroup G] [AddAction G X] : Prop extends AddMonoidAction.IsPretransitive G X where
   isPretransitive_of_normal :
     ∀ {N : AddSubgroup G} [N.Normal], AddAction.fixedPoints N X ≠ .univ →
       AddAction.IsPretransitive N X
@@ -400,4 +400,4 @@ end IsPreprimitive
 
 end Finite
 
-end MulAction
+end MonoidAction

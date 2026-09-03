@@ -442,7 +442,7 @@ instance instSMulCommClass [SMulCommClass M N F] : SMulCommClass M N (E →ₛ�
 instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E →ₛₗ.[σ] F) :=
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
 
-instance instMulAction : MulAction M (E →ₛₗ.[σ] F) where
+instance instMonoidAction : MulAction M (E →ₛₗ.[σ] F) where
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
 
@@ -532,7 +532,7 @@ theorem vadd_apply (f : E →ₛₗ[σ] F) (g : E →ₛₗ.[σ] F) (x : (f +ᵥ
 theorem coe_vadd (f : E →ₛₗ[σ] F) (g : E →ₛₗ.[σ] F) : ⇑(f +ᵥ g) = ⇑(f.comp g.domain.subtype) + ⇑g :=
   rfl
 
-instance instAddAction : AddAction (E →ₛₗ[σ] F) (E →ₛₗ.[σ] F) where
+instance instAddMonoidAction : AddAction (E →ₛₗ[σ] F) (E →ₛₗ.[σ] F) where
   vadd := (· +ᵥ ·)
   zero_vadd := fun ⟨_s, _f⟩ => ext' <| zero_add _
   add_vadd := fun _f₁ _f₂ ⟨_s, _g⟩ => ext' <| LinearMap.ext fun _x => add_assoc _ _ _

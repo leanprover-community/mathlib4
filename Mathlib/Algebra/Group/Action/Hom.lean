@@ -30,13 +30,13 @@ See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.mod
 -/
 @[to_additive
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`. -/]
-abbrev Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
+abbrev Function.Surjective.monoidActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Surjective f) (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MulAction S M where
   one_smul b := by rw [← f.map_one, hsmul, one_smul]
   mul_smul := hf.forall₂.mpr fun a b x ↦ by simp only [← f.map_mul, hsmul, mul_smul]
 
-namespace MulAction
+namespace MonoidAction
 
 variable (α)
 
@@ -80,7 +80,7 @@ lemma IsPretransitive.of_compHom {M N α : Type*} [Monoid M] [Monoid N] [MulActi
     (f : M →* N) [h : letI := compHom α f; IsPretransitive M α] : IsPretransitive N α :=
   letI := compHom α f; h.of_smul_eq f rfl
 
-end MulAction
+end MonoidAction
 end
 
 section CompatibleScalar
@@ -101,7 +101,7 @@ multiplicative action of M on N that is compatible with the multiplication on N.
 @[to_additive
 /-- A monoid homomorphism between two additive monoids M and N can be equivalently
 specified by an additive action of M on N that is compatible with the addition on N. -/]
-def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
+def monoidHomEquivMonoidActionIsScalarTower (M N) [Monoid M] [Monoid N] :
     (M →* N) ≃ {_inst : MulAction M N // IsScalarTower M N N} where
   toFun f := ⟨MulAction.compHom N f, SMul.comp.isScalarTower _⟩
   invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom

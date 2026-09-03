@@ -30,7 +30,7 @@ variable {α β : Type*}
 
 open Function
 
-namespace MulAction
+namespace MonoidAction
 
 variable (α β)
 variable [Group α] [MulAction α β]
@@ -64,7 +64,7 @@ theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fi
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α ω.out) :=
   card_eq_sum_card_group_div_card_stabilizer' α β Quotient.out_eq'
 
-end MulAction
+end MonoidAction
 
 set_option backward.isDefEq.respectTransparency false in
 instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :

@@ -111,7 +111,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] :
 
 /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
 @[to_additive /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/]
-instance t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
+instance t2Space_quotient_monoidAction_of_properSMul [ProperSMul G X] :
     T2Space (Quotient (MulAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal]
   set R := MulAction.orbitRel G X
@@ -288,7 +288,7 @@ alias ProperVAdd.isCompact_setOf_inter_nonempty := ProperVAdd.isCompact_setOfPre
 /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
 action is proper. -/
 @[to_additive]
-lemma MulAction.properSMul_of_proper_orbitMap
+lemma MonoidAction.properSMul_of_proper_orbitMap
     [ContinuousSMul G X] [IsTopologicalGroup G] [MulAction.IsPretransitive G X]
     {x : X} (hx : IsProperMap fun g : G ↦ g • x) : ProperSMul G X := by
   constructor

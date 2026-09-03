@@ -853,7 +853,7 @@ lemma lt_smul_of_one_lt_left [SMulPosStrictMono α β] (hb : 0 < b) (h : 1 < a) 
   simpa only [one_smul] using smul_lt_smul_of_pos_right h hb
 
 end Preorder
-end MulAction
+end MonoidAction
 
 section Semiring
 variable [Semiring α] [AddCommGroup β] [Module α β]

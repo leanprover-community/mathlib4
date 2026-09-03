@@ -46,7 +46,7 @@ instance smulWithZero [Zero R] : SMulWithZero R PUnit where
   smul_zero := by subsingleton
   zero_smul := by subsingleton
 
-instance mulAction [Monoid R] : MulAction R PUnit where
+instance monoidAction [Monoid R] : MulAction R PUnit where
   __ := PUnit.smul
   one_smul := by subsingleton
   mul_smul := by subsingleton

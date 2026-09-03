@@ -41,7 +41,7 @@ open Set
 
 variable {M α : Type*} [Group M] [MulAction M α] {s : Set α}
 
-namespace MulAction
+namespace MonoidAction
 
 open Equiv
 
@@ -92,7 +92,7 @@ theorem IsPretransitive.of_partition
   by_contra hb
   exact hM a b g ha (Set.mem_compl hb) hgab
 
-end MulAction
+end MonoidAction
 
 namespace Equiv.Perm
 
@@ -220,7 +220,7 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
 
 end Equiv.Perm
 
-namespace MulAction.IsBlock
+namespace MonoidAction.IsBlock
 
 open Equiv Equiv.Perm MulAction SubMulAction
 
@@ -320,7 +320,7 @@ lemma compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
     rw [← is_one_pretransitive_iff]
     apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
 
-end MulAction.IsBlock
+end MonoidAction.IsBlock
 
 namespace Equiv.Perm
 

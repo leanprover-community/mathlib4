@@ -337,7 +337,7 @@ variable [hA : SMulMemClass A R M] (S' : A)
 -- Prefer subclasses of `MulAction` over `SMulMemClass`.
 /-- A `SubMulAction` of a `MulAction` is a `MulAction`. -/
 @[to_additive /-- A `SubAddAction` of an `AddAction` is an `AddAction`. -/]
-instance (priority := 75) toMulAction : MulAction R S' :=
+instance (priority := 75) toMonoidAction : MulAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
@@ -410,12 +410,12 @@ variable (p : SubMulAction R M)
 
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
 @[to_additive]
-instance mulAction' : MulAction S p where
+instance monoidAction' : MulAction S p where
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 
 @[to_additive]
-instance mulAction : MulAction R p :=
+instance monoidAction : MulAction R p :=
   p.mulAction'
 
 end
@@ -443,7 +443,7 @@ theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
   ext
   simp only [MulAction.mem_stabilizerSubmonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
 
-end MulActionMonoid
+end MonoidActionMonoid
 
 section MulActionGroup
 
@@ -471,7 +471,7 @@ instance : Compl (SubMulAction R M) where
 @[to_additive]
 theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
 
-end MulActionGroup
+end MonoidActionGroup
 
 section Module
 

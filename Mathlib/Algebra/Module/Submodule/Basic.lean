@@ -111,7 +111,7 @@ variable {p}
 theorem vadd_def [VAdd M α] (g : p) (m : α) : g +ᵥ m = (g : M) +ᵥ m :=
   rfl
 
-end AddAction
+end AddMonoidAction
 
 end AddCommMonoid
 

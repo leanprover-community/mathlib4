@@ -156,7 +156,7 @@ theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
 instance : Inhabited 𝔻 :=
   ⟨0⟩
 
-instance instMulActionCircle : MulAction Circle 𝔻 :=
+instance instMonoidActionCircle : MulAction Circle 𝔻 :=
   inferInstanceAs <| MulAction (sphere _ _) (ball _ _)
 
 instance instIsScalarTower_circle_circle : IsScalarTower Circle Circle 𝔻 :=
@@ -384,7 +384,7 @@ instance : SMulCommClass Circle 𝕔𝔻 𝕔𝔻 :=
 instance : SMulCommClass 𝕔𝔻 Circle 𝕔𝔻 :=
   SMulCommClass.symm _ _ _
 
-instance instMulActionClosedBall : MulAction 𝕔𝔻 𝔻 :=
+instance instMonoidActionClosedBall : MulAction 𝕔𝔻 𝔻 :=
   inferInstanceAs <| MulAction (closedBall _ _) (ball _ _)
 
 instance instIsScalarTower_closedBall_closedBall :

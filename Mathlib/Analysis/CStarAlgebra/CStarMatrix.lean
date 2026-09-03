@@ -185,7 +185,7 @@ instance instIsCentralScalar [SMul R A] [SMul Rᵐᵒᵖ A] [IsCentralScalar R A
     IsCentralScalar R (CStarMatrix m n A) :=
   inferInstanceAs <| IsCentralScalar R (Matrix m n A)
 
-instance instMulAction [Monoid R] [MulAction R A] : MulAction R (CStarMatrix m n A) :=
+instance instMonoidAction [Monoid R] [MulAction R A] : MulAction R (CStarMatrix m n A) :=
   inferInstanceAs <| MulAction R (Matrix m n A)
 
 instance instDistribMulAction [Monoid R] [AddMonoid A] [DistribMulAction R A] :

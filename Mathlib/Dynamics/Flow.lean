@@ -193,7 +193,7 @@ variable [AddMonoid τ] (ϕ : Flow τ α)
 
 /-- Convert a flow to an additive monoid action. -/
 @[instance_reducible]
-def toAddAction : AddAction τ α where
+def toAddMonoidAction : AddAction τ α where
   vadd := ϕ
   add_vadd := ϕ.map_add'
   zero_vadd := ϕ.map_zero'

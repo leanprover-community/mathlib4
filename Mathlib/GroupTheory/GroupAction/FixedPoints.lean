@@ -49,7 +49,7 @@ all points in `s` are fixed by `g`, whereas the former only requires that `g •
 
 public section
 
-namespace MulAction
+namespace MonoidAction
 open scoped Pointwise
 
 variable {α : Type*}
@@ -276,7 +276,7 @@ theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
 
 end Faithful
 
-end MulAction
+end MonoidAction
 
 namespace MulActionHom
 

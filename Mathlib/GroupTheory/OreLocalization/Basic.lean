@@ -410,7 +410,7 @@ theorem oreDiv_pow (r : R) (s : S) (n : ℕ) (h : Commute r (s : R)) :
     exact h.pow_right _ |>.symm
 
 @[to_additive]
-instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where
+instance instMonoidActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where
   one_smul := OreLocalization.one_smul
   mul_smul := OreLocalization.mul_smul
 

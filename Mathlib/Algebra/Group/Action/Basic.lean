@@ -31,7 +31,7 @@ variable [Group α] [MulAction α β]
 
 /-- Given an action of a group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 @[to_additive (attr := simps)]
-def MulAction.toPerm (a : α) : Equiv.Perm β :=
+def MonoidAction.toPerm (a : α) : Equiv.Perm β :=
   ⟨fun x => a • x, fun x => a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
 
 /-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
@@ -39,20 +39,20 @@ add_decl_doc AddAction.toPerm
 
 /-- `MulAction.toPerm` is injective on faithful actions. -/
 @[to_additive /-- `AddAction.toPerm` is injective on faithful actions. -/]
-lemma MulAction.toPerm_injective [FaithfulSMul α β] :
+lemma MonoidAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
 
 @[to_additive]
-protected lemma MulAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
+protected lemma MonoidAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
   (MulAction.toPerm g).bijective
 
 @[to_additive]
-protected lemma MulAction.injective (g : α) : Function.Injective (g • · : β → β) :=
+protected lemma MonoidAction.injective (g : α) : Function.Injective (g • · : β → β) :=
   (MulAction.bijective g).injective
 
 @[to_additive]
-protected lemma MulAction.surjective (g : α) : Function.Surjective (g • · : β → β) :=
+protected lemma MonoidAction.surjective (g : α) : Function.Surjective (g • · : β → β) :=
   (MulAction.bijective g).surjective
 
 @[to_additive]
@@ -89,13 +89,13 @@ lemma smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟c • y :=
   smul_eq_iff_eq_inv_smul (g := unitOfInvertible c)
 
 end Monoid
-end MulAction
+end MonoidAction
 
 section Arrow
 variable {G A B : Type*} [DivisionMonoid G] [MulAction G A]
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
-@[to_additive (attr := instance_reducible, simps) arrowAddAction
+@[to_additive (attr := instance_reducible, simps) arrowAddMonoidAction
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)` -/]
 def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
@@ -142,7 +142,7 @@ variable [Group α] [Monoid β] [MulAction α β] [SMulCommClass α β β] [IsSc
 
 end SMul
 
-namespace MulAction
+namespace MonoidAction
 variable [Monoid M] [MulAction M α]
 
 variable (M α) in
@@ -155,7 +155,7 @@ def toFun : α ↪ M → α :=
 @[to_additive (attr := simp)]
 lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl
 
-end MulAction
+end MonoidAction
 
 section MulDistribMulAction
 variable [Monoid M] [Monoid A] [MulDistribMulAction M A]

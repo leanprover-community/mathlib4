@@ -77,19 +77,19 @@ theorem mk_smul_mk [VAdd ιA ιM] [GSMul A M] {i j} (a : A i) (b : M j) :
   rfl
 
 /-- A graded version of `MulAction`. -/
-class GMulAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] extends GSMul A M where
+class GMonoidAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] extends GSMul A M where
   /-- One is the neutral element for `•` -/
   one_smul (b : GradedMonoid M) : (1 : GradedMonoid A) • b = b
   /-- Associativity of `•` and `*` -/
   mul_smul (a a' : GradedMonoid A) (b : GradedMonoid M) : (a * a') • b = a • a' • b
 
 /-- The graded version of `Monoid.toMulAction`. -/
-instance GMonoid.toGMulAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
+instance GMonoid.toGMonoidAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
   { GMul.toGSMul _ with
     one_smul := GMonoid.one_mul
     mul_smul := GMonoid.mul_assoc }
 
-instance GMulAction.toMulAction [AddMonoid ιA] [GMonoid A] [VAdd ιA ιM] [GMulAction A M] :
+instance GMonoidAction.toMonoidAction [AddMonoid ιA] [GMonoid A] [VAdd ιA ιM] [GMulAction A M] :
     MulAction (GradedMonoid A) (GradedMonoid M) where
   one_smul := GMulAction.one_smul
   mul_smul := GMulAction.mul_smul

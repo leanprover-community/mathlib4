@@ -112,7 +112,7 @@ theorem coe_smul_primesOver_mk_eq_map_galRestrict (σ : Gal(L/K)) (P : Ideal B) 
     [P.LiesOver p] : (σ • primesOver.mk p P).1 = map (galRestrict A K L B σ) P :=
   rfl
 
-end MulAction
+end MonoidAction
 
 section RamificationInertia
 

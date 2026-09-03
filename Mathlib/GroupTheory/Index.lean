@@ -889,7 +889,7 @@ lemma AddSubgroup.relIndex_pointwise_smul [AddGroup G] [DistribMulAction H G]
 
 end Pointwise
 
-namespace MulAction
+namespace MonoidAction
 
 variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 
@@ -902,7 +902,7 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
 
-end MulAction
+end MonoidAction
 
 namespace MonoidHom
 

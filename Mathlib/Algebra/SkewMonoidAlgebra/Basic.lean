@@ -853,7 +853,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
 
 /-- `comapSMul` is multiplicative -/
 @[instance_reducible]
-def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
+def comapMonoidAction : MulAction G (SkewMonoidAlgebra M α) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
     rw [comapSMul_def, comapSMul_def, comapSMul_def, ← comp_smul_left, mapDomain_comp]

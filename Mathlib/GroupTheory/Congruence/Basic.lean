@@ -304,7 +304,7 @@ instance instIsCentralScalar {α M : Type*} [MulOneClass M] [SMul α M] [SMul α
   op_smul_eq_smul a := Quotient.ind' fun m => congr_arg Quotient.mk'' <| op_smul_eq_smul a m
 
 @[to_additive]
-instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
+instance monoidAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
     (c : Con M) : MulAction α c.Quotient where
   one_smul := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| one_smul _ _
   mul_smul _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _

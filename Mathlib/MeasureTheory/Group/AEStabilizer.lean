@@ -36,7 +36,7 @@ open scoped Pointwise
 variable (G : Type*) {α : Type*} [Group G] [MulAction G α]
   {_ : MeasurableSpace α} (μ : Measure α) [SMulInvariantMeasure G α μ]
 
-namespace MulAction
+namespace MonoidAction
 
 /-- A.e. stabilizer of a set under a group action. -/
 @[to_additive (attr := simps) /-- A.e. stabilizer of a set under an additive group action. -/]
@@ -75,7 +75,7 @@ lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G 
   | inl h => simp [aestabilizer_congr h]
   | inr h => simp [aestabilizer_congr h]
 
-end MulAction
+end MonoidAction
 
 variable {G μ}
 variable {x y : G} {s : Set α}

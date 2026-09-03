@@ -20,7 +20,7 @@ public section
 open MulOpposite Set
 open scoped Pointwise
 
-namespace MulAction
+namespace MonoidAction
 variable {G H α : Type*}
 
 /-! ### Stabilizer of a set -/
@@ -232,11 +232,11 @@ lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :
   lift s to Finset α using hs
   classical simp [-mem_stabilizer_iff, mem_stabilizer_finset']
 
-end MulAction
+end MonoidAction
 
 /-! ### Stabilizer in a commutative group -/
 
-namespace MulAction
+namespace MonoidAction
 variable {G : Type*} [CommGroup G] (s : Set G)
 
 @[to_additive (attr := simp)]
@@ -256,4 +256,4 @@ lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
   rwa [QuotientGroup.image_coe_inj, mul_smul_comm, stabilizer_mul_self] at h
 
-end MulAction
+end MonoidAction

@@ -1079,7 +1079,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 @[to_additive (attr := instance_reducible)
   /-- An additive action of an additive monoid `α` on a type `β` gives an additive
 action of `Filter α` on `Filter β`. -/]
-protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (Filter β) where
+protected def monoidAction [Monoid α] [MulAction α β] : MulAction (Filter α) (Filter β) where
   one_smul f := map₂_pure_left.trans <| by simp_rw [one_smul, map_id']
   mul_smul _ _ _ := map₂_assoc mul_smul
 
@@ -1088,7 +1088,7 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
 @[to_additive (attr := instance_reducible)
   /-- An additive action of an additive monoid on a type `β` gives an additive action on
 `Filter β`. -/]
-protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
+protected def monoidActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
   mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
   one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
 

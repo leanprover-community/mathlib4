@@ -117,7 +117,7 @@ acts on `P`.
 For example, if `A` is an additive group and `X` is a type, if a mathematician says
 say "let `A` act on the set `X`" they will usually mean `[AddAction A X]`.
 -/
-class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends AddSemigroupAction G P where
+class AddMonoidAction (G : Type*) (P : Type*) [AddMonoid G] extends AddSemigroupAction G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
 
@@ -133,7 +133,7 @@ For example, if `G` is a group and `X` is a type, if a mathematician says
 say "let `G` act on the set `X`" they will probably mean `[MulAction G X]`.
 -/
 @[to_additive (attr := ext, wikidata Q288465)]
-class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
+class MonoidAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
 
@@ -442,7 +442,7 @@ lemma smul_iterate_apply (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n �
 See note [reducible non-instances]. -/
 @[to_additive
     /-- Pullback an additive action along an injective map respecting `+ᵥ`. -/]
-protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
+protected abbrev Function.Injective.monoidAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
@@ -451,7 +451,7 @@ protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : 
 See note [reducible non-instances]. -/
 @[to_additive
     /-- Pushforward an additive action along a surjective map respecting `+ᵥ`. -/]
-protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
+protected abbrev Function.Surjective.monoidAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   one_smul := by simp [hf.forall, ← smul]
   mul_smul := by simp [hf.forall, ← smul, mul_smul]
@@ -467,7 +467,7 @@ This is promoted to a module by `Semiring.toModule`. -/
 /-- The regular action of a monoid on itself by left addition.
 
 This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
-instance (priority := 1100) Monoid.toMulAction : MulAction M M where
+instance (priority := 1100) Monoid.toMonoidAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
@@ -626,7 +626,7 @@ The axiom is also satisfied by a Galois group $Gal(L/K)$ acting on the field `L`
 but here you can use the even stronger class `MulSemiringAction`, which captures
 how the action plays with both multiplication and addition. -/
 @[ext]
-class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
+class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MonoidAction M N where
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : N) = 1
   /-- Distributivity of `•` across `*` -/
@@ -638,7 +638,7 @@ The key axiom here is `vadd_add : g +ᵥ (x + y) = (g +ᵥ x) + (g +ᵥ y)`.
 If `G` is an additive group with additive automorphism group `Γ`, then there is a natural instance
 of `AddDistribAddAction Γ G`. -/
 @[ext]
-class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddAction M N where
+class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddMonoidAction M N where
   /-- Acting on `0` by a scalar gives `0` -/
   vadd_zero : ∀ r : M, r +ᵥ (0 : N) = 0
   /-- Distributivity of `+ᵥ` across `+` -/

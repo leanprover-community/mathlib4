@@ -19,7 +19,7 @@ there is a `MulAction`/`MulDistribMulAction` of the quotient group `G ⧸ H` on 
 
 public section
 
-namespace MulAction
+namespace MonoidAction
 
 variable {G : Type*} [Group G] {A : Type*} [MulAction G A]
 
@@ -40,7 +40,7 @@ lemma quotient_out_smul_fixedPoints (g : G ⧸ H) (a : fixedPoints H A) :
   conv_rhs => rw [← g.out_eq]
   rfl
 
-end MulAction
+end MonoidAction
 
 namespace MulDistribMulAction
 
