@@ -174,7 +174,7 @@ theorem pow_lt_self (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) 
 
 theorem exists_mem_pow_notMem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) :
     ∃ x ∈ I ^ e, x ∉ I ^ (e + 1) :=
-  SetLike.exists_of_lt (I.pow_right_strictAnti hI0 hI1 e.lt_succ_self)
+  IsConcreteLE.exists_of_lt (I.pow_right_strictAnti hI0 hI1 e.lt_succ_self)
 
 open UniqueFactorizationMonoid
 

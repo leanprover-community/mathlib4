@@ -269,7 +269,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
     · -- `Subtype.val ⁻¹' B = s`
       have hBs' : B = s := Set.Subset.antisymm hBs (by simp_all)
       subst hBs'
-      obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
+      obtain ⟨g', hg', hg's⟩ := IsConcreteLE.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's
       suffices (g' • B).Subsingleton by
         exact subsingleton_of_image (MulAction.injective g') B this
