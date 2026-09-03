@@ -181,6 +181,14 @@ abbrev root' (i : ι) : Dual R N := P.toLinearMap (P.root i)
 /-- Coroots written as functionals on the weight space. -/
 abbrev coroot' (i : ι) : Dual R M := P.toLinearMap.flip (P.coroot i)
 
+lemma root'_ne_zero [NeZero (2 : R)] : P.root' i ≠ 0 := by
+  change P.toLinearMap.toPerfPair (P.root i) ≠ 0
+  simpa only [EmbeddingLike.map_ne_zero_iff] using P.ne_zero i
+
+lemma coroot'_ne_zero [NeZero (2 : R)] : (P.coroot' i : Dual R M) ≠ 0 := by
+  change P.toLinearMap.flip.toPerfPair (P.coroot i) ≠ 0
+  simpa only [EmbeddingLike.map_ne_zero_iff] using P.ne_zero' i
+
 /-- This is the pairing between roots and coroots. -/
 def pairing : R := P.root' i (P.coroot j)
 
