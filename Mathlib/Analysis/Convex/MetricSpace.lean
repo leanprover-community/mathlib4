@@ -166,7 +166,7 @@ lemma dist_convexCombPair_convexCombPair_le
     {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y x' y' : X) :
     dist (convexCombPair s t hs ht h x y) (convexCombPair s t hs ht h x' y') ≤
       s * dist x x' + t * dist y y' := by
-  convert dist_iConvexComb_le (.duple (M := Fin 2) 0 1 hs ht h) ![x, y] ![x', y']
+  convert dist_iConvexComb_le (.duple (X := Fin 2) 0 1 hs ht h) ![x, y] ![x', y']
   · simp [convexCombPair_def]
   · simp [convexCombPair_def]
   · simp [Finsupp.sum_fintype, Fin.sum_univ_succ, StdSimplex.duple, iConvexComb_eq_sum]

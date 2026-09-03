@@ -165,8 +165,8 @@ section CommRing
 variable [CommRing R]
 variable [AddCommGroup M₁] [AddCommGroup M₂]
 variable [Module R M₁] [Module R M₂]
-variable [Module.Free R M₁] [Module.Finite R M₁]
-variable [Module.Free R M₂] [Module.Finite R M₂]
+variable [Module.Projective R M₁] [Module.Finite R M₁]
+variable [Module.Projective R M₂] [Module.Finite R M₂]
 
 namespace BilinForm
 
@@ -186,17 +186,13 @@ noncomputable def tensorDistribEquiv :
 theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) (B₁ ⊗ₜ[R] B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
-      = B₁ m₁ m₁' * B₂ m₂ m₂' :=
+      = B₂ m₂ m₂' * B₁ m₁ m₁' :=
   rfl
 
 variable (R M₁ M₂) in
--- TODO: make this `rfl`
 @[simp]
 theorem tensorDistribEquiv_toLinearMap :
-    (tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib R R := by
-  ext B₁ B₂ : 3
-  ext
-  exact mul_comm _ _
+    (tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib R R := rfl
 
 @[simp]
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
