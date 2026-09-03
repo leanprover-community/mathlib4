@@ -54,7 +54,7 @@ impose here that the `ℤ`-multiplication field from the module structure is def
 from the `isAddCommGroup` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
 structure ModuleCat where
-  private mk ::
+  _mkInternal ::
   /-- the underlying type of an object in `ModuleCat R` -/
   carrier : Type v
   [isAddCommGroup : AddCommGroup carrier]
@@ -71,8 +71,6 @@ instance : CoeSort (ModuleCat.{v} R) (Type v) :=
 
 attribute [coe] ModuleCat.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
 abbrev of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
@@ -85,27 +83,22 @@ lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
 example (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X := by with_reducible rfl
 example (M : ModuleCat.{v} R) : of R M = M := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `ModuleCat R`. -/
 @[ext]
 structure Hom (M N : ModuleCat.{v} R) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying linear map. -/
   hom' : M →ₗ[R] N
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance moduleCategory : Category.{v, max (v + 1) u} (ModuleCat.{v} R) where
   Hom M N := Hom M N
   id _ := ⟨LinearMap.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (ModuleCat.{v} R) (· →ₗ[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 section
 
@@ -196,8 +189,6 @@ def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
   invFun := ofHom
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The categorical equivalence between `ModuleCat` and `SemimoduleCat`.
 
 In the inverse direction, data (such as the negation operation) is created which may lead to
@@ -287,7 +278,7 @@ variable {X Y : ModuleCat R}
 
 /-- Build a `LinearEquiv` from an isomorphism in the category `ModuleCat R`. -/
 def toLinearEquiv (i : X ≅ Y) : X ≃ₗ[R] Y :=
-  .ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+  .ofLinearMap i.hom.hom i.inv.hom (by aesop) (by aesop)
 
 @[simp] lemma toLinearEquiv_apply (i : X ≅ Y) (x : X) : i.toLinearEquiv x = i.hom x := rfl
 @[simp] lemma toLinearEquiv_symm (i : X ≅ Y) : i.toLinearEquiv.symm = i.symm.toLinearEquiv := rfl
@@ -311,43 +302,31 @@ section AddCommGroup
 
 variable {M N : ModuleCat.{v} R}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Add (M ⟶ N) where
   add f g := ⟨f.hom + g.hom⟩
 
 @[simp] lemma hom_add (f g : M ⟶ N) : (f + g).hom = f.hom + g.hom := rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Zero (M ⟶ N) where
   zero := ⟨0⟩
 
 @[simp] lemma hom_zero : (0 : M ⟶ N).hom = 0 := rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : SMul ℕ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Neg (M ⟶ N) where
   neg f := ⟨-f.hom⟩
 
 @[simp] lemma hom_neg (f : M ⟶ N) : (-f).hom = -f.hom := rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Sub (M ⟶ N) where
   sub f g := ⟨f.hom - g.hom⟩
 
 @[simp] lemma hom_sub (f g : M ⟶ N) : (f - g).hom = f.hom - g.hom := rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : SMul ℤ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
@@ -401,8 +380,6 @@ section SMul
 
 variable {M N : ModuleCat.{v} R} {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : SMul S (M ⟶ N) where
   smul c f := ⟨c • f.hom⟩
 
@@ -470,14 +447,10 @@ lemma lsmul_eq_smul_id (M : ModuleCat.{v} S) (s : S) :
 
 variable {X Y X' Y' : ModuleCat.{v} S}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
     Iso.homCongr i j f = ⟨LinearEquiv.arrowCongr i.toLinearEquiv j.toLinearEquiv f.hom⟩ :=
   rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
     Iso.conj i f = ⟨LinearEquiv.conj i.toLinearEquiv f.hom⟩ :=
   rfl
@@ -495,7 +468,6 @@ variable (M N : ModuleCat.{v} R)
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrpCat).obj M) where
@@ -570,8 +542,6 @@ variable {M N}
       (forget₂ (ModuleCat R) AddCommGrpCat).obj N)
   (hφ : ∀ (r : R), φ ≫ N.smul r = M.smul r ≫ φ)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Constructor for morphisms in `ModuleCat R` which takes as inputs
 a morphism between the underlying objects in `AddCommGrpCat` and the compatibility
 with the scalar multiplication. -/
