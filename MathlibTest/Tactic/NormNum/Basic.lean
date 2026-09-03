@@ -754,3 +754,22 @@ theorem large1 {α} [Ring α] : 2^(2^2000) + (2*2) - 2^(2^2000) = (4 : α) := by
   set_option exponentiation.threshold 20 in
     norm_num1 -- TODO: this should warn, but the warning is discarded
   simp only [add_sub_cancel_left]
+
+-- Remaining `at` locations error if an earlier one closed the goal.
+-- https://github.com/leanprover-community/mathlib4/issues/28703
+example (h : 0 = 1) : False := by
+  norm_num at h
+
+/--
+error: Goal was closed before the tactic could be applied at `_h2`
+-/
+#guard_msgs in
+example (h : 0 = 1) (_h2 : 0 = 2) : False := by
+  norm_num at h _h2
+
+/--
+error: Goal was closed before the tactic could be applied at ⊢
+-/
+#guard_msgs in
+example (h : 0 = 1) : False := by
+  norm_num at h ⊢
