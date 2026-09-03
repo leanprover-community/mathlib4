@@ -30,6 +30,7 @@ the edge orientations of `Digraph`.
   structures on `SimpleGraph`s and `Digraph`s.
 - Note that currently both definitions ignore the vertex set since
   `SimpleGraph` doesn't have vertex sets yet.
+
 ## Tags
 
 digraph, simple graph, oriented graphs
