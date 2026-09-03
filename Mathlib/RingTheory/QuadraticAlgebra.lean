@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.QuadraticAlgebra.Discr
+public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 public import Mathlib.RingTheory.Discriminant
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 
@@ -49,7 +49,7 @@ variable {a b}
 theorem Algebra.trace_quadraticAlgebra_apply (z : QuadraticAlgebra R a b) :
     Algebra.trace R (QuadraticAlgebra R a b) z = QuadraticAlgebra.trace z := by
   simp [Algebra.trace_eq_matrix_trace (basis a b), Matrix.trace_fin_two,
-    QuadraticAlgebra.trace_apply, Algebra.leftMulMatrix_eq_repr_mul, basis_repr_apply,
+    QuadraticAlgebra.trace_def, Algebra.leftMulMatrix_eq_repr_mul, basis_repr_apply,
     basis_apply_zero, basis_apply_one]
   ring
 
@@ -68,5 +68,5 @@ theorem Algebra.discr_quadraticAlgebra :
   rw [Algebra.discr_def, Matrix.det_fin_two, QuadraticAlgebra.discr_def]
   simp only [Algebra.traceMatrix_apply, Algebra.traceForm_apply,
     Algebra.trace_quadraticAlgebra_apply, basis_apply_zero, basis_apply_one, one_mul, mul_one,
-    omega_mul_omega_eq_mk, QuadraticAlgebra.trace_apply, re_one, im_one, omega_re, omega_im]
+    omega_mul_omega_eq_mk, QuadraticAlgebra.trace_def, re_one, im_one, omega_re, omega_im]
   ring
