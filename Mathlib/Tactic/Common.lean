@@ -126,6 +126,8 @@ public import Mathlib.Util.WhatsNew
 public import Lean.Elab.Tactic.Try
 public meta import Lean.Meta.Tactic.Try.Collect
 
+public import Mathlib.Tactic.Linter.BundledMorphismClasses
+
 /-!
 # Common tactics, linters, and utilities
 

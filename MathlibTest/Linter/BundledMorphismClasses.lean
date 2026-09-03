@@ -1,7 +1,7 @@
 module
 
-import Mathlib.Tactic.Linter.BundledMorphismClasses
-import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Tactic.Linter.BundledMorphismClasses
+public import Mathlib.Algebra.Module.LinearMap.Defs
 
 variable {R M N : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
   {F : Type*} [FunLike F M N] [LinearMapClass F R M N]
