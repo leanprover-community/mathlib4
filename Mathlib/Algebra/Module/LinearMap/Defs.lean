@@ -169,7 +169,8 @@ instance instCoeToSemilinearMap : CoeHead F (M →ₛₗ[σ] M₃) where
 
 end SemilinearMapClass
 
-@[deprecated (since := "2026-09-03")] alias SemilinearMapClass.semilinearMap := SemilinearMap.ofClass
+@[deprecated (since := "2026-09-03")] alias SemilinearMapClass.semilinearMap :=
+  SemilinearMap.ofClass
 
 namespace LinearMapClass
 variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]

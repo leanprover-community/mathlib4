@@ -76,6 +76,7 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
 @[simp]
 lemma ofClass_eq_toLinearMap {f : IntertwiningMap ρ σ} :
   SemilinearMap.ofClass f = f.toLinearMap := rfl
+
 @[deprecated (since := "2026-09-03")] alias coe_eq_toLinearMap := ofClass_eq_toLinearMap
 
 @[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
