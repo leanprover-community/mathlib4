@@ -156,7 +156,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
     a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
   refine ⟨fun hg ↦ by simp [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg)], fun hg ↦ ?_⟩
-  rw [← out_eq' _ _ i] at hg
+  rw [← out_eq' i] at hg
   exact mem_doubleCoset.mpr (eq.mp hg.symm)
 
 lemma disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
