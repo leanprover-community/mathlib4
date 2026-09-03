@@ -72,7 +72,7 @@ variable (F G : ComposableArrows C n)
 
 -- We do not yet replace `omega` with `lia` here, as it is measurably slower.
 /-- A wrapper for `omega` which prefaces it with some quick and useful attempts -/
-local macro "valid" : tactic =>
+macro "valid" : tactic =>
   `(tactic| first | assumption | apply zero_le | apply le_rfl | transitivity <;> assumption | omega)
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
