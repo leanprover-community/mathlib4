@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Basic.ENNReal.Operations
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Results about division in extended non-negative reals
@@ -973,3 +974,7 @@ theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
 
 end Inv
 end ENNReal
+
+-- Registrations for the `basify` tactic.
+attribute [basify_op ←] ENNReal.coe_inv ENNReal.coe_div
+attribute [basify_simp] ENNReal.inv_top ENNReal.top_div ENNReal.div_top
