@@ -5,10 +5,9 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
+public import Mathlib.Basic.Unique
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
-public import Mathlib.Logic.OpClass
-public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas
 public import Batteries.Tactic.Lint.Simp
@@ -138,7 +137,7 @@ instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 instance [DecidableEq α] : LawfulSingleton α (List α) :=
   { insert_empty_eq := fun x =>
-      show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg not_mem_nil }
+      show (if x ∈ ([] : List α) then [] else [x]) = [x] from ite_eq_right not_mem_nil }
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
@@ -360,10 +359,6 @@ theorem getLastI_eq_getLast?_getD [Inhabited α] : ∀ l : List α, l.getLastI =
   | [_, _, _] => rfl
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast?_getD (c :: l)]
 
-@[deprecated getLastI_eq_getLast?_getD (since := "2026-01-05")]
-theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.getD default :=
-  getLastI_eq_getLast?_getD
-
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
   | [], _, _ => rfl
@@ -402,10 +397,6 @@ theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
 
 theorem head!_eq_head?_getD [Inhabited α] (l : List α) : head! l = (head? l).getD default := by
   cases l <;> rfl
-
-@[deprecated head!_eq_head?_getD (since := "2026-01-05")]
-theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).getD default :=
-  head!_eq_head?_getD l
 
 theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
 
@@ -504,6 +495,23 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
 theorem getElem_mem_tail {k : ℕ} (l : List α) (h : k ≠ 0) (hk : k < l.length) :
     l[k]'hk ∈ l.tail := by
   cases l <;> grind
+
+theorem tail_eq_nil_iff : l.tail = [] ↔ l.length ≤ 1 := by
+  grind [length_tail, length_eq_zero_iff]
+
+theorem dropLast_eq_nil_iff : l.dropLast = [] ↔ l.length ≤ 1 := by
+  grind [length_dropLast, length_eq_zero_iff]
+
+theorem eq_of_head?_eq_of_tail_eq (hh : l₁.head? = l₂.head?) (ht : l₁.tail = l₂.tail) :
+    l₁ = l₂ := by
+  by_cases! hnil : l₁ = [] ∨ l₂ = []
+  · grind [head?_eq_none_iff]
+  · grind [cons_head_tail hnil.1, cons_head_tail hnil.2]
+
+theorem eq_of_tail_eq_of_dropLast_eq (h : 1 < l₁.length) (ht : l₁.tail = l₂.tail)
+    (hd : l₁.dropLast = l₂.dropLast) : l₁ = l₂ := by
+  have hnil : l₁.dropLast ≠ [] ∧ l₂.dropLast ≠ [] := by grind [dropLast_eq_nil_iff]
+  grind [cons_head_tail, head_dropLast hnil.1, head_dropLast hnil.2]
 
 /-! ### sublists -/
 
@@ -605,6 +613,10 @@ theorem idxOf_getLast {l : List α} (hl : l ≠ []) (hl' : l.getLast hl ∉ l.dr
   Nat.le_antisymm (Nat.le_pred_of_lt <| l.idxOf_lt_length_of_mem <| getLast_mem hl) <| by
     contrapose hl'
     rwa [mem_dropLast_iff_idxOf_lt <| getLast_mem hl, ← Nat.not_le]
+
+theorem idxOf_tail_of_head_ne {a : α} (hl : l ≠ []) (ha : l.head hl ≠ a) :
+    l.tail.idxOf a = l.idxOf a - 1 := by
+  induction l <;> simp_all
 
 end IndexOf
 
@@ -930,7 +942,11 @@ theorem filter_singleton {a : α} : [a].filter p = bif p a then [a] else [] :=
 
 theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
-  induction l <;> simp [*, filter]; rfl
+  induction l with
+  | nil => rfl
+  | cons a l ih =>
+    simp [filter, ih]
+    cases p a <;> rfl
 
 @[simp]
 theorem filter_subset_self (l : List α) : filter p l ⊆ l :=

@@ -484,11 +484,11 @@ lemma dlo_isExtensionPair
   have := NoTopOrder.to_noMaxOrder N
   have hS : Set.Finite (S : Set M) := (S.fg_iff_structure_fg.1 S_fg).finite
   obtain ⟨g, hg⟩ := Order.exists_orderEmbedding_insert hS.toFinset
-    ((OrderIso.setCongr hS.toFinset (S : Set M) hS.coe_toFinset).toOrderEmbedding.trans
+    ((Set.orderIsoOfEq hS.toFinset (S : Set M) hS.coe_toFinset).toOrderEmbedding.trans
       (OrderEmbedding.ofStrictMono f (HomClass.strictMono f))) m
   let g' :
     ((Substructure.closure Language.order).toFun {m} ⊔ S : Language.order.Substructure M) ↪o N :=
-    ((OrderIso.setCongr _ _ (by
+    ((Set.orderIsoOfEq _ _ (by
       convert!
         LowerAdjoint.closure_eq_self_of_mem_closed _
           (Substructure.mem_closed_of_isRelational Language.order
