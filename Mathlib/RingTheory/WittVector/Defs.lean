@@ -58,6 +58,16 @@ structure WittVector (p : ℕ) (R : Type*) where
   -/
   coeff : ℕ → R
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `mk p x` being printed as `{ coeff := x }` by `delabStructureInstance`. -/
+@[app_delab WittVector.mk]
+meta def WittVector.delabMk : Delab := delabApp
+
+end Notation
+
 variable {p : ℕ}
 
 /- We cannot make this `localized` notation, because the `p` on the RHS doesn't occur on the left
