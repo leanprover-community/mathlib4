@@ -26,11 +26,11 @@ public section
 
 namespace ValuativeRel
 
-variable {A B : Type*} [CommRing A] [CommRing B]
+variable {A B : Type*} [Semiring A] [Semiring B]
 
 /-- The pullback of a `ValuativeRel` along `φ : A →+* B`:
 `a₁ ≤ᵥ a₂ ↔ φ(a₁) ≤ᵥ φ(a₂)`. -/
-@[expose, implicit_reducible]
+@[expose, instance_reducible]
 def comap (φ : A →+* B) (v : ValuativeRel B) : ValuativeRel A where
   vle a₁ a₂ := (φ a₁) ≤ᵥ (φ a₂)
   vle_total a₁ a₂ := v.vle_total (φ a₁) (φ a₂)
@@ -43,22 +43,29 @@ def comap (φ : A →+* B) (v : ValuativeRel B) : ValuativeRel A where
   not_vle_one_zero := by simp [v.not_vle_one_zero]
   vle_mul_comm := by simp only [map_mul]; exact v.vle_mul_comm
 
+/-- The relation pulled back along `φ` compares images under `φ`. -/
+@[simp]
 theorem comap_vle (φ : A →+* B) (v : ValuativeRel B) (a₁ a₂ : A) :
     (comap φ v).vle a₁ a₂ ↔ v.vle (φ a₁) (φ a₂) := Iff.rfl
 
+/-- The strict relation pulled back along `φ` compares images under `φ`. -/
+@[simp]
 theorem comap_vlt (φ : A →+* B) (v : ValuativeRel B) (a₁ a₂ : A) :
     (comap φ v).vlt a₁ a₂ ↔ v.vlt (φ a₁) (φ a₂) := Iff.rfl
 
+/-- Pulling back along the identity homomorphism is the identity. -/
 @[simp]
 theorem comap_id (v : ValuativeRel A) : comap (RingHom.id A) v = v := by
   ext a₁ a₂; rfl
 
-theorem comap_comp {C : Type*} [CommRing C] (φ : A →+* B) (ψ : B →+* C) (v : ValuativeRel C) :
+/-- Pulling back along a composite is the composite of the pullbacks. -/
+@[simp]
+theorem comap_comp {C : Type*} [Semiring C] (φ : A →+* B) (ψ : B →+* C) (v : ValuativeRel C) :
     comap (ψ.comp φ) v = comap φ (comap ψ v) := by
   ext a₁ a₂; rfl
 
 /-- If `f` is a unit, then `¬ f ≤ᵥ 0`. -/
-theorem not_vle_zero_of_isUnit {A : Type*} [CommRing A] [ValuativeRel A] {f : A} (hf : IsUnit f) :
+theorem not_vle_zero_of_isUnit {A : Type*} [Semiring A] [ValuativeRel A] {f : A} (hf : IsUnit f) :
     ¬ f ≤ᵥ (0 : A) := by
   obtain ⟨u, rfl⟩ := hf
   intro h
