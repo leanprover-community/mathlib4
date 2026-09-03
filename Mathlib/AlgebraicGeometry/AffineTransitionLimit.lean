@@ -53,37 +53,37 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
   cases isEmpty_or_nonempty I
   · have e := (isLimitEquivIsTerminalOfIsEmpty _ _ hc).uniqueUpToIso specULiftZIsTerminal
     exact Nonempty.map e.inv inferInstance
-  · have i := Nonempty.some ‹Nonempty I›
+  · have i : I := Classical.ofNonempty
     have : IsCofiltered I := ⟨⟩
     let 𝒰 := (D.obj i).affineCover.finiteSubcover
-    have (i' : _) : IsAffine (𝒰.X i') := inferInstanceAs (IsAffine (Spec _))
+    have _ (i') : IsAffine (𝒰.X i') := inferInstanceAs (IsAffine (Spec _))
     obtain ⟨j, H⟩ :
         ∃ j : 𝒰.I₀, ∀ {i'} (f : i' ⟶ i), Nonempty ((𝒰.pullback₁ (D.map f)).X j) := by
       by_contra! H
       choose i' f hf using H
       let g (j) := IsCofiltered.infTo (insert i (Finset.univ.image i'))
         (Finset.univ.image fun j : 𝒰.I₀ ↦ ⟨_, _, by simp, by simp, f j⟩) (X := j)
-      have (j : 𝒰.I₀) : IsEmpty ((𝒰.pullback₁ (D.map (g i (by simp)))).X j) := by
-        let F : (𝒰.pullback₁ (D.map (g i (by simp)))).X j ⟶ (𝒰.pullback₁ (D.map (f j))).X j :=
+      let 𝒱 := 𝒰.pullback₁ (D.map (g i (by simp)))
+      have (j : 𝒰.I₀) : IsEmpty (𝒱.X j) := by
+        let F : 𝒱.X j ⟶ (𝒰.pullback₁ (D.map (f j))).X j :=
           pullback.map _ _ _ _ (D.map (g _ (by simp))) (𝟙 _) (𝟙 _) (by
             rw [← D.map_comp, IsCofiltered.infTo_commutes]
             · simp [g]
             · simp
             · exact Finset.mem_image_of_mem _ (Finset.mem_univ _)) (by simp)
         exact Function.isEmpty F
-      exact (this _).elim (Cover.covers (𝒰.pullback₁ (D.map (g i (by simp))))
-        (Nonempty.some inferInstance)).choose
+      exact (this _).elim (Cover.covers 𝒱 Classical.ofNonempty).choose
     let F := Over.post D ⋙ Over.pullback (𝒰.f j) ⋙ Over.forget _
-    have (k : _) : IsAffine (F.obj k) := inferInstanceAs (IsAffine (pullback (D.map k.hom) (𝒰.f j)))
-    have hFne (i' : _) : Nonempty (F.obj i') := H i'.hom
+    have _ (k) : IsAffine (F.obj k) := inferInstanceAs (IsAffine (pullback (D.map k.hom) (𝒰.f j)))
+    have hFne (i') : Nonempty (F.obj i') := H i'.hom
     let e : F ⟶ (F ⋙ Γ.rightOp) ⋙ Scheme.Spec := Functor.whiskerLeft F ΓSpec.adjunction.unit
-    have (k : _) : IsIso (e.app k) := IsAffine.affine
+    have _ (k) : IsIso (e.app k) := IsAffine.affine
     have : IsIso e := NatIso.isIso_of_isIso_app e
     let c' : LimitCone F := ⟨_, (IsLimit.postcomposeInvEquiv (asIso e) _).symm
       (isLimitOfPreserves Scheme.Spec (limit.isLimit (F ⋙ Γ.rightOp)))⟩
     have : Nonempty c'.1.pt := by
       apply +allowSynthFailures PrimeSpectrum.instNonemptyOfNontrivial
-      have (i' : _) : Nontrivial ((F ⋙ Γ.rightOp).leftOp.obj i') := by
+      have _ (i') : Nontrivial ((F ⋙ Γ.rightOp).leftOp.obj i') := by
         apply +allowSynthFailures component_nontrivial
         exact (hFne _).elim fun x ↦ ⟨⟨x, trivial⟩⟩
       exact CommRingCat.FilteredColimits.nontrivial
@@ -311,7 +311,7 @@ lemma isBasis_preimage_isAffineOpen : TopologicalSpace.Opens.IsBasis
   obtain ⟨i⟩ := IsCofiltered.nonempty (C := I)
   obtain ⟨_, ⟨V, hV : IsAffineOpen V, rfl⟩, hxV, -⟩ :=
     (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (c.π.app i x)) isOpen_univ
-  have (j : _) : IsAffine ((opensDiagram D i V).obj j) := hV.preimage _
+  have _ (j) : IsAffine ((opensDiagram D i V).obj j) := hV.preimage _
   obtain ⟨r, hrU, hxr⟩ := IsAffineOpen.exists_basicOpen_le
     (Scheme.isAffine_of_isLimit _ (isLimitOpensCone D c hc i V)) (V := U) ⟨x, hxU⟩ hxV
   obtain ⟨j, u, s, hs⟩ := exists_appLE_π_eq_of_isAffineOpen D c hc hV r
@@ -339,7 +339,7 @@ lemma exists_preimage_eq (U : c.pt.Opens) (hU : IsCompact (U : Set c.pt)) :
 
 include hc in
 lemma isAffineHom_π_app (i : I) : IsAffineHom (c.π.app i) where
-  isAffine_preimage U hU := have (j : _) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage _
+  isAffine_preimage U hU := have _ (j) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage _
     Scheme.isAffine_of_isLimit _ (isLimitOpensCone D c hc i U)
 
 include hc in
@@ -402,10 +402,10 @@ private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOf
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   wlog hD : ∃ D' : I ⥤ CommRingCatᵒᵖ, D = D' ⋙ Scheme.Spec generalizing D
   · let e : D ⟶ D ⋙ Γ.rightOp ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
-    have inst (i) : IsIso (e.app i) := by dsimp [e]; infer_instance
-    have inst : IsIso e := NatIso.isIso_of_isIso_app e
-    have inst (i) : IsAffine ((D ⋙ Γ.rightOp ⋙ Scheme.Spec).obj i) := by dsimp; infer_instance
-    have inst : IsAffine ((Cone.postcompose (asIso e).hom).obj c).pt := by dsimp; infer_instance
+    have _ (i) : IsIso (e.app i) := by dsimp [e]; infer_instance
+    have _ : IsIso e := NatIso.isIso_of_isIso_app e
+    have _ (i) : IsAffine ((D ⋙ Γ.rightOp ⋙ Scheme.Spec).obj i) := by dsimp; infer_instance
+    have _ : IsAffine ((Cone.postcompose (asIso e).hom).obj c).pt := by dsimp; infer_instance
     have := this (D ⋙ Γ.rightOp ⋙ Scheme.Spec) ((Cone.postcompose (asIso e).hom).obj c)
       ((IsLimit.postcomposeHomEquiv (asIso e) c).symm hc) (inv e ≫ t)
       ((inv e).app _ ≫ a) ((inv e).app _ ≫ b)
@@ -549,7 +549,7 @@ lemma exists_eq (j : A.𝒰D.I₀) : ∃ (k : I) (hki' : k ⟶ A.i'),
     (A.𝒰D.pullback₁ (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.a =
       (A.𝒰D.pullback₁ (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.b := by
   have : IsAffine (A.𝒰D.X j) := inferInstanceAs (IsAffine ((A.𝒰D₀.X j.1).affineCover.X j.2))
-  have (i : _) : IsAffine ((Over.post D ⋙ Over.pullback (A.𝒰D.f j) ⋙ Over.forget _).obj i) :=
+  have _ (i) : IsAffine ((Over.post D ⋙ Over.pullback (A.𝒰D.f j) ⋙ Over.forget _).obj i) :=
     inferInstanceAs (IsAffine (pullback (D.map i.hom) (A.𝒰D.f j)))
   have : IsAffine ((Over.pullback (A.𝒰D.f j) ⋙ Over.forget (A.𝒰D.X j)).mapCone
       ((Over.conePost D A.i').obj A.c)).pt :=
@@ -620,7 +620,7 @@ lemma exists_hom_comp_eq_comp_of_locallyOfFiniteType
   rcases isEmpty_or_nonempty (D.obj A.i') with h | h
   · exact ⟨A.i', A.hii', isInitialOfIsEmpty.hom_ext _ _⟩
   let O : Finset I := {A.i'} ∪ Finset.univ.image (fun i : 𝒰Df.I₀ ↦ k <| A.𝒰D.idx i.1)
-  let o := Nonempty.some (inferInstance : Nonempty 𝒰Df.I₀)
+  let o : 𝒰Df.I₀ := Classical.ofNonempty
   have ho : k (A.𝒰D.idx o.1) ∈ O := by simp [O]
   obtain ⟨l, hl1, hl2⟩ := IsCofiltered.inf_exists O
     (Finset.univ.image (fun i : 𝒰Df.I₀ ↦
@@ -919,7 +919,7 @@ lemma Scheme.exists_isAffine_of_isLimit [IsAffine c.pt] :
   obtain ⟨i, hi⟩ := exists_isQuasiAffine_of_isLimit D c hc
   have : ∀ {i j : I} (f : i ⟶ j), IsAffineHom ((D ⋙ Γ.rightOp ⋙ Scheme.Spec).map f) := by
     dsimp; infer_instance
-  have (j : _) : CompactSpace ((D ⋙ Γ.rightOp ⋙ Scheme.Spec).obj j) :=
+  have _ (j) : CompactSpace ((D ⋙ Γ.rightOp ⋙ Scheme.Spec).obj j) :=
     inferInstanceAs (CompactSpace (Spec Γ(D.obj j, ⊤)))
   obtain ⟨j, fij, hj⟩ := exists_map_eq_top _ _
     (isLimitOfPreserves (Γ.rightOp ⋙ Scheme.Spec) hc) (D.obj i).toSpecΓ.opensRange
