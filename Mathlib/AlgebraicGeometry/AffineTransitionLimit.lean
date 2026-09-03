@@ -65,13 +65,12 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
         (Finset.univ.image fun j : 𝒰.I₀ ↦ ⟨_, _, by simp, by simp, f j⟩) (X := j)
       let 𝒱 := 𝒰.pullback₁ (D.map (g i (by simp)))
       have (j : 𝒰.I₀) : IsEmpty (𝒱.X j) := by
-        let F : 𝒱.X j ⟶ (𝒰.pullback₁ (D.map (f j))).X j :=
-          pullback.map _ _ _ _ (D.map (g _ (by simp))) (𝟙 _) (𝟙 _) (by
-            rw [← D.map_comp, IsCofiltered.infTo_commutes]
-            · simp [g]
-            · simp
-            · exact Finset.mem_image_of_mem _ (Finset.mem_univ _)) (by simp)
-        exact Function.isEmpty F
+        apply @Function.isEmpty _ _ (hf j) (?_ : 𝒱.X j ⟶ _)
+        refine pullback.map _ _ _ _ (D.map (g _ (by simp))) (𝟙 _) (𝟙 _) ?_ (by simp)
+        rw [← D.map_comp, IsCofiltered.infTo_commutes]
+        · simp [g]
+        · simp
+        · exact Finset.mem_image_of_mem _ (Finset.mem_univ j)
       exact (this _).elim (Cover.covers 𝒱 Classical.ofNonempty).choose
     let F := Over.post D ⋙ Over.pullback (𝒰.f j) ⋙ Over.forget _
     have _ (k) : IsAffine (F.obj k) := inferInstanceAs (IsAffine (pullback (D.map k.hom) (𝒰.f j)))
