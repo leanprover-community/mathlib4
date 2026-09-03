@@ -292,7 +292,7 @@ section NonUnitalNormedRing
 variable {R : Type*} [NonUnitalNormedRing R]
 
 -- this lemma should be removed (and unnecessary) once we have a `Pow G ℕ+` instance for semigroups
-private lemma _root_.norm_iterate_mul_le {R : Type*} [NonUnitalNormedRing R] (x : R) (n : ℕ) :
+private lemma _root_.norm_iterate_mul_le (x : R) (n : ℕ) :
     ‖(· * x)^[n] x‖ ≤ ‖x‖ ^ (n + 1) := by
   induction n with
   | zero => simp
@@ -311,7 +311,7 @@ instance [CompleteSpace R] : HasSummableGeomSeries R where
 protected theorem Summable.add_geom_series_mul_self {x : R} (h : Summable ((· * x)^[·] x)) :
     x + (∑' i : ℕ, (· * x)^[i] x) * x = (∑' i : ℕ, (· * x)^[i] x) := by
   rw [← h.tsum_mul_right, h.tsum_eq_zero_add]
-  simp [Function.iterate_succ_apply']
+  simp [iterate_succ_apply']
 
 protected theorem Summable.add_self_mul_geom_series {x : R} (h : Summable ((· * x)^[·] x)) :
     x + x * (∑' i : ℕ, (· * x)^[i] x) = (∑' i : ℕ, (· * x)^[i] x) := by
@@ -393,7 +393,7 @@ alias ⟨_, HasSummableGeomSeries.of_summable_pow⟩ := hasSummableGeomSeries_if
 
 /-- If `‖x‖ < 1` and `x` lies in a normed ring, then `∑' n : ℕ, x ^ n` is summable
 if and only if `1 - x` is invertible. -/
-theorem hasSummableGeomSeries_iff_isUnit {R : Type*} [NormedRing R] :
+theorem hasSummableGeomSeries_iff_isUnit :
     HasSummableGeomSeries R ↔ ∀ ⦃x : R⦄, ‖x‖ < 1 → IsUnit (1 - x) := by
   rw [neg_involutive.surjective.forall]
   simp_rw [norm_neg, sub_neg_eq_add, hasSummableGeomSeries_iff_isQuasiregular,
