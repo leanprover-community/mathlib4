@@ -231,8 +231,8 @@ lemma pow_subset {H : Subgroup G} {n : ℕ} (hs : s ⊆ H) : s ^ n ⊆ H := by
 @[to_additive]
 theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
   sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
-    (closure S ⊔ closure T).mul_mem (IsConcreteLE.le_iff.mp le_sup_left <| subset_closure hs)
-      (IsConcreteLE.le_iff.mp le_sup_right <| subset_closure ht)
+    (closure S ⊔ closure T).mul_mem (mem_of_le_of_mem le_sup_left <| subset_closure hs)
+      (mem_of_le_of_mem le_sup_right <| subset_closure ht)
 
 @[to_additive]
 lemma closure_pow_le {n : ℕ} : closure (s ^ n) ≤ closure s := by simp

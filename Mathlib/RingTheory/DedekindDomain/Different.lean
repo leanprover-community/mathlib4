@@ -676,7 +676,7 @@ open Polynomial Pointwise in
 lemma aeval_derivative_mem_differentIdeal
     (x : B) (hx : Algebra.adjoin K {algebraMap B L x} = ⊤) :
     aeval x (derivative (minpoly A x)) ∈ differentIdeal A B := by
-  refine IsConcreteLE.le_iff.mp ?_ (Ideal.mem_span_singleton_self _)
+  refine mem_of_le_of_mem ?_ (Ideal.mem_span_singleton_self _)
   rw [← conductor_mul_differentIdeal A K L x hx]
   exact Ideal.mul_le_right
 

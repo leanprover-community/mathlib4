@@ -529,9 +529,9 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     ∃ (r : R) (hr : r ∈ S)
       (l' : LocalizedModule.Away r M ≃ₗ[Localization (.powers r)]
         LocalizedModule.Away r N),
-      (LocalizedModule.lift (.powers r) g fun s ↦ map_units g ⟨s.1, IsConcreteLE.le_iff.mp
+      (LocalizedModule.lift (.powers r) g fun s ↦ map_units g ⟨s.1, mem_of_le_of_mem
         (Submonoid.powers_le.mpr hr) s.2⟩) ∘ₗ l'.toLinearMap =
-        l ∘ₗ (LocalizedModule.lift (.powers r) f fun s ↦ map_units f ⟨s.1, IsConcreteLE.le_iff.mp
+        l ∘ₗ (LocalizedModule.lift (.powers r) f fun s ↦ map_units f ⟨s.1, mem_of_le_of_mem
         (Submonoid.powers_le.mpr hr) s.2⟩) := by
   obtain ⟨l', s, H⟩ := Module.FinitePresentation.exists_lift_of_isLocalizedModule S g (l ∘ₗ f)
   have : Function.Bijective (IsLocalizedModule.map S f g l') := by
@@ -554,7 +554,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
       (LocalizedModule rs N))))).comp (hr' (r * s) (dvd_mul_right _ _))
   refine ⟨r * s, mul_mem hr s.2, LinearEquiv.ofBijective _ this, ?_⟩
   apply IsLocalizedModule.ext rs (LocalizedModule.mkLinearMap rs M) fun x ↦ map_units g
-    ⟨x.1, IsConcreteLE.le_iff.mp (Submonoid.powers_le.mpr (mul_mem hr s.2)) x.2⟩
+    ⟨x.1, mem_of_le_of_mem (Submonoid.powers_le.mpr (mul_mem hr s.2)) x.2⟩
   ext x
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g s)).1
   have : ∀ x, g (l' x) = s.1 • (l (f x)) := LinearMap.congr_fun H

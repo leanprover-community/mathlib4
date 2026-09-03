@@ -228,8 +228,8 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
   refine
     Disjoint.mono (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right)
       (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right) ?_
-  simp only [disjoint_iff_inf_le, IsConcreteLE.le_iff, mem_iInf, mem_inf, mem_ker, mem_bot, proj_apply,
-    funext_iff]
+  simp only [disjoint_iff_inf_le, IsConcreteLE.le_iff, mem_iInf, mem_inf, mem_ker, mem_bot,
+    proj_apply, funext_iff]
   rintro b ⟨hI, hJ⟩ i
   classical
     by_cases hiI : i ∈ I

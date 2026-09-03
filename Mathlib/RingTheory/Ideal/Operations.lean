@@ -988,7 +988,8 @@ lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
 
 theorem IsPrime.mul_le {I J P : Ideal R} (hp : IsPrime P) : I * J ≤ P ↔ I ≤ P ∨ J ≤ P := by
   rw [or_comm, Ideal.mul_le]
-  simp_rw [hp.mul_mem_iff_mem_or_mem, IsConcreteLE.le_iff, ← forall_or_left, or_comm, forall_or_left]
+  simp_rw [hp.mul_mem_iff_mem_or_mem, IsConcreteLE.le_iff, ← forall_or_left, or_comm,
+    forall_or_left]
 
 theorem IsPrime.inf_le {I J P : Ideal R} (hp : IsPrime P) : I ⊓ J ≤ P ↔ I ≤ P ∨ J ≤ P :=
   ⟨fun h ↦ hp.mul_le.1 <| mul_le_inf.trans h, fun h ↦ h.elim inf_le_left.trans inf_le_right.trans⟩

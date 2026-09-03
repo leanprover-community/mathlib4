@@ -349,7 +349,7 @@ theorem singleton_span_isCompactElement (x : M) :
     IsCompactElement (span R {x} : Submodule R M) := by
   rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
   intro d hemp hdir hsup
-  have : x ∈ (sSup d) := (IsConcreteLE.le_iff.mp hsup) (mem_span_singleton_self x)
+  have : x ∈ (sSup d) := (mem_of_le_of_mem hsup) (mem_span_singleton_self x)
   obtain ⟨y, ⟨hyd, hxy⟩⟩ := (mem_sSup_of_directed hemp hdir).mp this
   exact ⟨y, ⟨hyd, by simpa only [span_le, singleton_subset_iff] ⟩⟩
 

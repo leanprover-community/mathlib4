@@ -483,7 +483,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           split_ifs with hkj
           · subst hkj; exact (degree_modByMonic_le _ hi).trans hle
           · rfl
-      refine ⟨(hS' C hC).1.trans deg_bound₁, fun k ↦ IsConcreteLE.le_iff.mp ?_ ((hS' C hC).2 k)⟩
+      refine ⟨(hS' C hC).1.trans deg_bound₁, fun k ↦ mem_of_le_of_mem ?_ ((hS' C hC).2 k)⟩
       change c'.coeffSubmodule R₀ ^ c'.powBound ≤ _
       delta powBound
       suffices hij : c'.coeffSubmodule R₀ ≤ c.coeffSubmodule R₀ ^ (c.val j).degree.succ by
@@ -566,7 +566,7 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
     intro x y hy hx
     have H : degBound ⟨y.g⟩ ≤ S.degBound :=
       Finset.le_sup (f := fun e ↦ ∑ i, (e.g i).degree.succ) hy
-    refine ⟨(hf₂ y x hx).trans H, fun i ↦ IsConcreteLE.le_iff.mp ?_ (hf₃ y x hx i)⟩
+    refine ⟨(hf₂ y x hx).trans H, fun i ↦ mem_of_le_of_mem ?_ (hf₃ y x hx i)⟩
     gcongr
     · simpa [Submodule.one_eq_span]
     · refine Submodule.span_le.mpr ?_
@@ -733,7 +733,7 @@ lemma chevalley_mvPolynomialC
   let N := (k * (1 + d.count 0)) ^ (k * (1 + d.count 0))
   have (C) (hCT : C ∈ T) (a) : C.g a ∈ coeffsIn (Fin n) (M ^ N) ⊓
         (degreesLE R (Fin n) (N • B)).restrictScalars ℤ := by
-    refine IsConcreteLE.le_iff.mp ?_ ((hT₂ C hCT).2 a)
+    refine mem_of_le_of_mem ?_ ((hT₂ C hCT).2 a)
     refine pow_inf_le.trans (inf_le_inf ?_ ?_)
     · refine (pow_le_pow_right' ?_ (Nat.pow_self_mono hS')).trans le_coeffsIn_pow
       simpa [MvPolynomial.coeff_one, apply_ite] using hM
@@ -742,7 +742,7 @@ lemma chevalley_mvPolynomialC
       simp
   have h1M : 1 ≤ M := Submodule.one_le.mpr hM
   obtain ⟨U, hU₁, hU₂⟩ := IH (M := M ^ N)
-    (IsConcreteLE.le_iff.mp (le_self_pow h1M Nat.pow_self_pos.ne') hM) _ _ T
+    (mem_of_le_of_mem (le_self_pow h1M Nat.pow_self_pos.ne') hM) _ _ T
     (fun C hCT ↦ (hT₂ C hCT).1)
     (fun C hCT k ↦ this C hCT k)
   simp only [Multiset.map_nsmul, Multiset.count_nsmul, ← pow_mul, N] at hU₂

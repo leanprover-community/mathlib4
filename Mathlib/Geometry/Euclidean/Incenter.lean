@@ -234,7 +234,7 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
     rw [real_inner_smul_right]
     convert! mul_zero _
     rw [← Submodule.mem_orthogonal_singleton_iff_inner_right]
-    refine IsConcreteLE.le_iff.1 (Submodule.orthogonal_le ?_)
+    refine mem_of_le_of_mem (Submodule.orthogonal_le ?_)
       (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
     rw [Submodule.span_singleton_le_iff_mem, direction_affineSpan]
     simp only [Finset.mem_erase, Finset.mem_univ, and_true] at hj
@@ -808,7 +808,7 @@ lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1))
 /-- A weaker version of `touchpoint_mem_affineSpan`. -/
 lemma touchpoint_mem_affineSpan_simplex (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     s.touchpoint signs i ∈ affineSpan ℝ (Set.range s.points) := by
-  refine IsConcreteLE.le_iff.1 (affineSpan_mono _ ?_) (s.touchpoint_mem_affineSpan signs i)
+  refine mem_of_le_of_mem (affineSpan_mono _ ?_) (s.touchpoint_mem_affineSpan signs i)
   simp
 
 lemma touchpoint_eq_point_rev (s : Simplex ℝ P 1) (signs : Finset (Fin 2)) (i : Fin 2) :

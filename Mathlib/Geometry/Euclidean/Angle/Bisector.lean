@@ -160,7 +160,7 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
       hc.mem_affineSpan_of_mem_of_ne (by grind) (by grind) (by grind) (by grind)
     have h₁' : (orthogonalProjection s₁ p : P) ∈ s₁ ⊓ s₂ :=
       ⟨orthogonalProjection_mem _,
-        IsConcreteLE.le_iff.1 (affineSpan_pair_le_of_mem_of_mem hp'₂ (orthogonalProjection_mem _)) h₁⟩
+        mem_of_le_of_mem (affineSpan_pair_le_of_mem_of_mem hp'₂ (orthogonalProjection_mem _)) h₁⟩
     have h₁'' : (orthogonalProjection s₁ p : P) = (orthogonalProjection (s₁ ⊓ s₂) p : P) := by
       rw [← orthogonalProjection_orthogonalProjection_of_le inf_le_left, eq_comm,
         orthogonalProjection_eq_self_iff]
@@ -168,7 +168,7 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
     have h₂ : (orthogonalProjection s₂ p : P) ∈ line[ℝ, p', (orthogonalProjection s₁ p : P)] :=
       hc.mem_affineSpan_of_mem_of_ne (by grind) (by grind) (by grind) (by grind)
     have h₂' : (orthogonalProjection s₂ p : P) ∈ s₁ ⊓ s₂ :=
-      ⟨IsConcreteLE.le_iff.1 (affineSpan_pair_le_of_mem_of_mem hp'₁ (orthogonalProjection_mem _)) h₂,
+      ⟨mem_of_le_of_mem (affineSpan_pair_le_of_mem_of_mem hp'₁ (orthogonalProjection_mem _)) h₂,
         orthogonalProjection_mem _⟩
     have h₂'' : (orthogonalProjection s₂ p : P) = (orthogonalProjection (s₁ ⊓ s₂) p : P) := by
       rw [← orthogonalProjection_orthogonalProjection_of_le inf_le_right, eq_comm,

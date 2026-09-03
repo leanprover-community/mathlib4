@@ -75,8 +75,8 @@ lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
   apply le_antisymm
   · simp [idealOfVars, Ideal.span_le, Set.range_subset_iff, restrictSupportIdeal, X]
-  · simp only [IsConcreteLE.le_iff, restrictSupportIdeal, Submodule.mem_mk, Submodule.mem_toAddSubmonoid,
-      ← Submodule.restrictScalars_mem R (idealOfVars σ R)]
+  · simp only [IsConcreteLE.le_iff, restrictSupportIdeal, Submodule.mem_mk,
+      Submodule.mem_toAddSubmonoid, ← Submodule.restrictScalars_mem R (idealOfVars σ R)]
     rw [← IsConcreteLE.le_iff, restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
     intro x hx
     obtain ⟨i, hi⟩ : x.support.Nonempty := by aesop
