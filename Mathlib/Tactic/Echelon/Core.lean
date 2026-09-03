@@ -170,7 +170,7 @@ certifier its certificate conditions are built with. -/
 structure Model where
   /-- Run the elimination on the entries of a matrix literal. -/
   producer : Producer
-  /-- Settle a proposition about a single entry, or `none` when the kernel decides. -/
+  /-- Settle a proposition about a single entry, or `none` when `decide` proves them all. -/
   leafCertifier? : Option LeafCertifier
 
 /-- An extension of the Bareiss ring computation model. -/

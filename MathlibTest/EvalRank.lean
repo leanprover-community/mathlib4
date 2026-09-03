@@ -131,7 +131,7 @@ example : Matrix.rank (R := GaussianInt) !![0, ⟨0, 1⟩; ⟨0, 1⟩, 1] = 2 :=
 -- handling Zsqrtd.sqrtd def without rewriting
 example : Matrix.rank (R := GaussianInt) !![Zsqrtd.sqrtd, ⟨0, 1⟩] = 1 := by eval_rank
 
-/-! ## Element types whose equality does not reduce in the kernel: `ℝ`, `ℂ`
+/-! ## Element types whose equality `decide` cannot settle
 
 The certificate conditions are built from proofs of the individual entries by `norm_num`
 instead of being decided. -/
@@ -295,7 +295,7 @@ open Polynomial in
 error: `eval_rank` made no progress.
 Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.evalRank] equality in the element type cannot be decided in the kernel; using `norm_num` leaves
+trace: [Tactic.evalRank] `decide` cannot settle equality in the element type; using `norm_num` leaves
       ℚ[X]
 [Tactic.evalRank] the following entry cannot be simplified to a numeral
       X

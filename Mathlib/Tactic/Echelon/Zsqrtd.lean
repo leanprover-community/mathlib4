@@ -63,7 +63,7 @@ def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
   mkProducer ops prepare mkEntry
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`, whose
-equality reduces in the kernel, so the certificate conditions are decided there. -/
+equality `decide` settles, so the certificate conditions carry no leaf certifier. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
   model? R := do
     -- unfold reducible aliases such as `GaussianInt` before matching

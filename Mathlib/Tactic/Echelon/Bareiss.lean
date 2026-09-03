@@ -13,9 +13,8 @@ public import Mathlib.Tactic.Echelon.Rat
 
 Given a matrix literal `A` over a commutative domain, the entry point
 `mkBareissDecomposition` selects a computation model for the element type, runs the
-elimination, and elaborates a certificate `⟨L, σ, pivot, …⟩ : Echelon.Decomposition A`,
-whose conditions are discharged in the kernel, or by the model's leaf certifier when it
-supplies one. The elimination itself is the model-parameterized `bareissDecomp` in
+elimination, and elaborates a certificate `⟨L, σ, pivot, …⟩ : Echelon.Decomposition A`.
+The elimination itself is the model-parameterized `bareissDecomp` in
 `Mathlib.Tactic.Echelon.Core`, and the certificate construction `certifyDecomposition` in
 `Mathlib.Tactic.Echelon.Cert`.
 
@@ -24,7 +23,7 @@ supplies one. The elimination itself is the model-parameterized `bareissDecomp` 
 - `mkBareissDecomposition`: produce and elaborate the decomposition of a matrix literal.
 - `BareissResult`: the elaborated certificate together with the computed decomposition data.
 - `checkBareissApplicable`: the applicability check of the Bareiss method.
-- `checkKernelDecide`: check that equality in a ring reduces in the kernel.
+- `checkDecideEq`: check that `decide` settles equality in a ring.
 - `normNumCertifier`: `norm_num`'s core as a leaf certifier.
 - `modelFor`: select the computation model for a ring.
 -/
@@ -37,12 +36,10 @@ initialize registerTraceClass `Tactic.evalRank
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Check that equality with zero in `α` reduces to a verdict in the kernel, which decides
-whether the certificate conditions can be discharged by `decide` or need a leaf
-certifier.
-Note that ℝ has a decidableEq instance via classical but isn't usable, so a mere instance
+/-- Check whether the equality with zero in `α` directly reduces to a verdict by `decide`.
+Note that ℝ has a `DecidableEq` instance via classical that isn't usable, so a mere instance
 synthesis check is insufficient. -/
-def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
+def checkDecideEq {u : Level} (α : Q(Type u)) : MetaM Unit := do
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass
@@ -50,7 +47,7 @@ def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
     | throwError "equality with zero in the element type is not decidable{indentExpr α}"
   unless (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
       (·.isAppOf ``Decidable.isFalse) do
-    throwError "equality in the element type does not reduce in the kernel{indentExpr α}"
+    throwError "`decide` cannot settle equality in the element type{indentExpr α}"
 
 /-- `norm_num`'s core as a leaf certifier. -/
 def normNumCertifier : LeafCertifier := fun p => do
@@ -69,8 +66,8 @@ def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
 
 /-- Select the computation model for the element type `α`: the first registered
 `bareiss_ext` extension that handles it, or the rational fallback. The fallback serves
-many rings, so it also probes for its leaf certifier: none where equality reduces in
-the kernel, where every certificate condition is decided outright, and `norm_num`
+many rings, so it also probes for its leaf certifier: none where `decide` settles
+equality, so every certificate condition is decided outright, and `norm_num`
 otherwise. -/
 def modelFor {u : Level} (α : Q(Type u)) : MetaM Model := do
   for (name, ext) in bareissExt.getState (← getEnv) do
@@ -79,11 +76,11 @@ def modelFor {u : Level} (α : Q(Type u)) : MetaM Model := do
       return m
   -- fallback model (rational literals)
   let leaf? ← try
-      checkKernelDecide α
+      checkDecideEq α
       pure none
     catch _ =>
-      trace[Tactic.evalRank] "equality in the element type cannot be decided in the \
-        kernel; using `norm_num` leaves{indentExpr α}"
+      trace[Tactic.evalRank] "`decide` cannot settle equality in the element type; \
+        using `norm_num` leaves{indentExpr α}"
       pure (some normNumCertifier)
   return { producer := ← ratProducer α, leafCertifier? := leaf? }
 

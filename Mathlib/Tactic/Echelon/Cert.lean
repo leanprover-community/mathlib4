@@ -233,7 +233,7 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     certifyForallFin gi fun j _ => cell i j))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
-`entries`, the parsed entries of `A`, deciding every condition in the kernel unless `leaf?`
+`entries`, the parsed entries of `A`, proving every condition by `decide` unless `leaf?`
 supplies a certifier for the entry ones. -/
 def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
@@ -248,18 +248,18 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have Aσ : Q(Matrix (Fin $m) (Fin $n) $α) := q(Matrix.of $aRows)
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
-  let cond (p : Q(Prop)) (certify : LeafCertifier → MetaM Q($p)) : MetaM Q($p) :=
+  let dispatch (p : Q(Prop)) (certifier : LeafCertifier → MetaM Q($p)) : MetaM Q($p) :=
     match leaf? with
     | none => mkDecideProofQ p
-    | some leaf => certify leaf
-  let hperm ← cond q(($A).submatrix $σ id = $Aσ) fun _ => certifyPermEq A Aσ aRows σ
-  let hprod ← cond q($L * $Aσ = $U) fun leaf =>
+    | some leaf => certifier leaf
+  let hperm ← dispatch q(($A).submatrix $σ id = $Aσ) fun _ => certifyPermEq A Aσ aRows σ
+  let hprod ← dispatch q($L * $Aσ = $U) fun leaf =>
     certifyProductEq _cr L data.L Aσ aEntries U data.U leaf
   have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
-  let hpivot ← cond q(($U).IsPivotedBy $pivot) fun leaf =>
+  let hpivot ← dispatch q(($U).IsPivotedBy $pivot) fun leaf =>
     certifyPivotedBy _cr U data.U pivot data.pivot leaf
-  let hlower ← cond q(($L).IsLowerTriangular) fun _ => certifyLowerTriangular _cr L
-  let hdiag ← cond q(∀ i, ($L).diag i ≠ 0) fun leaf => certifyNonzeroDiag _cr L data.L leaf
+  let hlower ← dispatch q(($L).IsLowerTriangular) fun _ => certifyLowerTriangular _cr L
+  let hdiag ← dispatch q(∀ i, ($L).diag i ≠ 0) fun leaf => certifyNonzeroDiag _cr L data.L leaf
   return q(⟨$L, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
 
 end Mathlib.Tactic.Echelon
