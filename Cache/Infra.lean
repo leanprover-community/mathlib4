@@ -94,18 +94,21 @@ def parse? (s : String) : Option Container :=
   | _                    => none
 
 /--
-Azure storage container name on the `lakecache` storage account.
+The container's segment in the URL contract: read URLs are
+`{base}/{pathSegment}/{key}`, and a bucket backend uses the same string as its
+key prefix. The segment doubles as the Azure storage container name on the
+`lakecache` account, which is why `Container.azureURL` reuses it.
 
 Trust-level containers follow the `mathlib4-{name}` convention; `legacy` is the
-bare `mathlib4` container.
+bare `mathlib4` segment.
 -/
-def azureContainerName : Container → String
+def pathSegment : Container → String
   | .legacy => "mathlib4"
   | c       => s!"mathlib4-{c.name}"
 
 /-- Public Azure Blob Storage base URL for a container. -/
 def azureURL (c : Container) : String :=
-  s!"{azureAccountURL}/{c.azureContainerName}"
+  s!"{azureAccountURL}/{c.pathSegment}"
 
 /--
 Whether file lookups in this container use the flat `/f/<hash>` layout, or
@@ -133,6 +136,38 @@ def flatPath (c : Container) (repo : String) : Bool :=
   | _ => false
 
 end Container
+
+/--
+The path prefix between `f/` and the file name, per the container's layout
+policy (`Container.flatPath`): empty for a flat container, `{repo}/` for a
+repo-namespaced one, `{repo}/{scope}/` when a per-SHA scope applies. `repo` is
+lowercased via `normalizeRepo`. `mkFileURL` and the staged-upload destination
+(`stagedUploadDestFrom`) both build on this, so reads, curl uploads, and
+hook uploads share one path contract by construction.
+-/
+def filePathPrefix (container : Option Container) (repo : String)
+    (repoScope : Option String) : String :=
+  let repo := normalizeRepo repo
+  let flat := match container with
+    | some c => c.flatPath repo
+    | none => repo == MATHLIBREPO
+  if flat then ""
+  else match repoScope with
+    | some s => s!"{repo}/{s}/"
+    | none => s!"{repo}/"
+
+/--
+Blob path of the directory that holds a repo's per-SHA markers: `m/{repo}`,
+with `repo` lowercased via `normalizeRepo`. A marker for one commit lives at
+`{markerDirPath repo}/{sha}`; its presence signals that the writing `put`
+completed its upload to that destination.
+-/
+def markerDirPath (repo : String) : String :=
+  s!"m/{normalizeRepo repo}"
+
+/-- Blob path of the per-SHA marker: `m/{repo}/{sha}` (see `markerDirPath`). -/
+def markerPath (repo sha : String) : String :=
+  s!"{markerDirPath repo}/{sha}"
 
 /--
 The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
@@ -164,7 +199,7 @@ Base URL for cache reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
 `defaultGetBaseURL useLegacy`. `normalizeBaseURL` reads the value, so it
 arrives trimmed, free of trailing slashes, and unset when empty.
 
-A read URL is `{base}/{azureContainerName}/{key}`, the namespace the Azure
+A read URL is `{base}/{pathSegment}/{key}`, the namespace the Azure
 account serves. Any host that mirrors that namespace is therefore a valid base.
 This override differs from `MATHLIB_CACHE_GET_URL`. That variable serves
 external consumers: it names one flat endpoint and bypasses the container
@@ -185,9 +220,9 @@ Written on top of the pure function above, which is separate to be testable.
 def getBaseURL : IO String := do
   return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
 
-/-- Read URL for a container: `{getBaseURL}/{azureContainerName}`. -/
+/-- Read URL for a container: `{getBaseURL}/{pathSegment}`. -/
 def Container.getURL (c : Container) : IO String := do
-  return s!"{← getBaseURL}/{c.azureContainerName}"
+  return s!"{← getBaseURL}/{c.pathSegment}"
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.

@@ -36,11 +36,15 @@ containers a consumer reads from:
 | Consumer                | Default lookup chain |
 |-------------------------|----------------------|
 | mathlib4                | `master`             |
-| nightly-testing         | `nightly-testing`    |
+| nightly-testing         | `nightly-testing`, `forks` |
 | forks (PRs)             | `master`, `forks`    |
 
-The nightly default excludes the low-trust container, so a poisoned upload from
-an experimental toolchain branch cannot reach a trusted nightly consumer.
+The table shows trust classes; every chain also ends with the
+read-only `legacy` container, elided here. The nightly chain includes `forks`
+because PRs from that repo into mathlib4 upload there; it excludes
+`pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
+branch cannot reach a trusted nightly consumer.
+
 Branches that legitimately need to read their own prior low-trust uploads opt
 into a wider chain explicitly.
 
@@ -51,23 +55,32 @@ guarantees and additional containment.
 
 ### 1. Token-scoped uploads (server-side)
 
-Before uploading, the workflow obtains a short-lived token for the writer
-identity tied to its container. The identity provider issues the token only
-when the workflow's identity — stamped by GitHub from the repo, event type, and
-ref — matches a pre-registered credential. The token's scope is fixed when it
-is issued and cannot be widened afterward.
+Before uploading, the workflow obtains a short-lived credential for the writer
+identity tied to its container. The identity provider issues the credential
+only when the workflow's identity — stamped by GitHub from the repo, event
+type, and ref — matches a pre-registered grant. The credential's scope is
+fixed when it is issued and cannot be widened afterward.
+
+Two credential shapes implement this. Azure writes mint an OIDC-federated
+bearer token whose RBAC role covers exactly one container. An S3-compatible
+destination takes a short-lived credential pair scoped to one container's
+namespace, and the tool signs each request with it (SigV4); CI mints the
+pair per job the same OIDC-gated way.
 
 This is the boundary's anchor: a compromised cache binary, a tampered workflow,
-or a malicious PR that captures and replays the token still cannot upload
-outside the one container the token grants.
+or a malicious PR that captures and replays the credential still cannot upload
+outside the one container the credential grants.
 
 ### 2. Isolation of the cache binary
 
 The cache binary is built from a trusted branch, never from the PR's checkout,
-so the PR's toolchain never reaches the compiler that produces it. The binary
-runs in two separate jobs — one that fetches and packs artifacts, and one that
-uploads them — and each builds its own copy from the trusted source. The PR's
-own build writes only its artifacts, which the trusted binary later packs.
+so the PR's toolchain never reaches the compiler that produces it. Reads and
+uploads share one binary on purpose: `put` writes with the same URL
+construction `get` reads, so the write path cannot drift from the read
+contract. The isolation is the job, not the binary. The binary runs in two
+separate jobs — one that fetches and packs artifacts, one that uploads
+them — and each job builds its own copy from the trusted source. The PR's own
+build writes only its artifacts, which the trusted binary later packs.
 
 The two jobs also run on different runner pools, and the upload token is minted
 only in the upload job, so it never reaches the build host; a compromised build
@@ -123,6 +136,34 @@ the trust decision itself — so both forms print the non-default-scope security
 notice before reading. Neither runs in CI; CI routing (above) is loaded from
 the trusted branch.
 
+## No routing configuration from the working tree
+
+The tool reads no endpoint and no lookup chain from the working tree — there
+is no repo-local cache configuration file, and changes must not add one. The
+reasons:
+
+The design severs tree-to-tool trust deliberately, and the severance is
+load-bearing. In CI, the read-side binary is built from a trusted branch and
+run against the PR's tree; the routing rule is that the lookup policy loads
+from the trusted branch, never from the PR. A tree-sourced configuration file
+would let PR-controlled bytes choose where that trusted binary reads. A read
+endpoint serves unverified artifacts that Lean loads, so endpoint choice is
+code execution. A committed file also persists and
+propagates in a way an environment variable never does: one merged line
+silently redirects every future clone, developer, and CI run of that
+repository.
+
+The argument that the lakefile already executes arbitrary code does not
+change this: that equivalence holds only for a user who deliberately builds
+an untrusted branch, and fails for the CI consumer above, which never opted
+in.
+
+The supported way to give a project a default endpoint is to commit the
+*environment*, not tool configuration: a `direnv` `.envrc` (guarded by
+direnv's own per-machine `direnv allow`) or a CI variable, setting
+`MATHLIB_CACHE_GET_URL`. The environment is invoker-owned and per-invocation;
+the tree never names an endpoint.
+
 ## Explicitly out of scope
 
 The trust model does not attempt to defend against:
@@ -148,7 +189,8 @@ The trust model does not attempt to defend against:
 | Concern                                        | File(s)                                                          |
 |------------------------------------------------|------------------------------------------------------------------|
 | Container model, URL shape, per-repo defaults  | [`Cache/Infra.lean`](Infra.lean)                                 |
-| Read-fallback resolution, upload URL, dispatch | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`, `effectiveUploadURL`) |
+| Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`)      |
+| Upload destination, credentials, and engines   | [`Cache/Upload.lean`](Upload.lean) (`stagedUploadDest`, `uploadAuthFrom`) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md)   |
 | OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
