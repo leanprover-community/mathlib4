@@ -62,7 +62,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Field
 
-open List Function Order Set
+open Function Order Set
 
 noncomputable section
 
@@ -261,7 +261,7 @@ theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
 theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by
-  simp [← mk_congr (Equiv.ofBijective _ Set.setOf_bijective), ← one_add_one_eq_two]
+  simp [← mk_congr (Equiv.ofBijective _ Set.ofPred_bijective), ← one_add_one_eq_two]
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
@@ -380,7 +380,7 @@ instance : ConditionallyCompleteLinearOrderBot Cardinal :=
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
-  dif_neg Set.not_nonempty_empty
+  dite_eq_right Set.not_nonempty_empty
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 @[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
@@ -514,7 +514,7 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
               (Equiv.trans
                 (by
                   rw [Equiv.image_eq_preimage_symm]
-                  simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_setOf_eq, coe_setOf]
+                  simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_ofPred_eq, coe_ofPred]
                   exact Equiv.refl _)
                 Equiv.ulift.symm)).trans_le
         (hf b)
@@ -547,19 +547,17 @@ instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 
 variable (α) in
-/-- The **well-ordering theorem** (or **Zermelo's theorem**):
-every type has a linear order which satisfies `WellFoundedGT` -/
-lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
-  classical
-  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
-    by simpa [isWellFounded_iff] using! WellOrderingRel.isWellOrder.wf⟩
-
-variable (α) in
-/-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
-@[to_dual existing]
+/-- The **well-ordering theorem** (or **Zermelo's theorem**): every type can be well-ordered. -/
 theorem exists_wellFoundedLT : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
-  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
+  exact ⟨linearOrderOfSTO WellOrderingRel, ⟨WellOrderingRel.isWellOrder.wf⟩⟩
+
+variable (α) in
+/-- The **well-ordering theorem** (or **Zermelo's theorem**): every type can be co-well-ordered. -/
+@[to_dual existing]
+lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
+  classical
+  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel), ⟨WellOrderingRel.isWellOrder.wf⟩⟩
 
 @[deprecated (since := "2026-04-12")] alias exists_wellOrder := exists_wellFoundedLT
 

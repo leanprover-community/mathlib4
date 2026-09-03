@@ -5,7 +5,7 @@ Authors: Minchao Wu, Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.Halting
+public import Mathlib.Computability.RE
 
 /-!
 # Strong reducibility and degrees.
@@ -67,8 +67,6 @@ instance stdRefl_manyOneReducible {α} [Primcodable α] : Std.Refl (@ManyOneRedu
 instance isTrans_manyOneReducible {α} [Primcodable α] : IsTrans (α → Prop) ManyOneReducible where
   trans _ _ _ := ManyOneReducible.trans
 
-@[deprecated (since := "2026-02-21")] alias transitive_manyOneReducible := isTrans_manyOneReducible
-
 /--
 `p` is one-one reducible to `q` if there is an injective computable function translating questions
 about `p` to questions about `q`.
@@ -113,8 +111,6 @@ instance stdRefl_oneOneReducible {α} [Primcodable α] : Std.Refl (@OneOneReduci
 
 instance isTrans_oneOneReducible {α} [Primcodable α] : IsTrans (α → Prop) OneOneReducible where
   trans _ _ _ := OneOneReducible.trans
-
-@[deprecated (since := "2026-02-21")] alias transitive_oneOneReducible := isTrans_oneOneReducible
 
 namespace ComputablePred
 
@@ -291,7 +287,7 @@ theorem toNat_manyOneReducible {p : Set α} : toNat p ≤₀ p :=
 
 @[simp]
 theorem manyOneReducible_toNat {p : Set α} : p ≤₀ toNat p :=
-  ⟨Encodable.encode, Computable.encode, by simp [toNat, setOf]⟩
+  ⟨Encodable.encode, Computable.encode, by simp [toNat, Set.ofPred]⟩
 
 @[simp]
 theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} : toNat p ≤₀ toNat q ↔ p ≤₀ q :=
