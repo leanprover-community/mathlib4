@@ -828,29 +828,14 @@ $\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero {g : ℝ → ℂ → E}
     (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
-  wlog hne : x₁ ≠ x₂
-  · simp_all
-  simp only [NormedAddGroup.tendsto_nhds_zero, eventually_atTop]
-  intro ε hε
-  have hε' : 0 < (1 / 2) * (ε / |x₂ - x₁|) := by linarith [div_pos hε (abs_sub_pos.mpr hne.symm)]
-  obtain ⟨pa, hpa, pb, hpb, hp⟩ :=
-    eventually_prod_iff.mp <| Metric.tendstoUniformlyOnFilter_iff.mp htendsto _ hε'
-  simp only [eventually_atTop, eventually_comap, eventually_inf_principal] at hpa hpb
-  obtain ⟨M₁, hM₁⟩ := hpa
-  obtain ⟨K, hK⟩ := hpb
-  refine ⟨max y (max M₁ K), fun m hm ↦ ?_⟩
-  calc ‖∫ (x : ℝ) in x₁..x₂, g m (↑x + ↑m * I)‖
-    _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| := by
-      simp only [Pi.zero_apply, dist_zero] at hp
-      refine intervalIntegral.norm_integral_le_of_norm_le_const fun x hx ↦ le_of_lt <| hp ?_ ?_
-      · exact hM₁ m <| le_of_max_le_left <| le_of_max_le_right hm
-      · apply hK m (le_of_max_le_right <| le_of_max_le_right <| hm) (x + m * I) (by simp)
-        simp only [mem_reProdIm, add_re, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, I_im,
-          mul_one, sub_self, add_zero, add_im, mul_im, zero_add, mem_Ici]
-        refine ⟨?_, le_of_max_le_left hm⟩
-        grind [mem_uIcc, mem_uIoc]
-    _ = (1 / 2) * ε := by field_simp
-    _ < ε := by linarith
+  apply TendstoUniformlyOn.tendsto_intervalIntegral_nhds_zero
+  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter]
+  rw [tendstoUniformlyOnFilter_iff_tendsto] at htendsto ⊢
+  refine htendsto.comp <| tendsto_fst.prodMk <| tendsto_inf.mpr ⟨?_, tendsto_principal.mpr ?_⟩
+  · simpa [Function.comp_def] using tendsto_fst
+  · filter_upwards [tendsto_fst.eventually_ge_atTop y,
+      tendsto_snd.eventually (eventually_principal.mpr fun _ h ↦ h)] with q hq₁ hq₂
+    simpa [Complex.mem_reProdIm] using ⟨hq₂, hq₁⟩
 
 /-- If $f(z) \to 0$ as $\Im(z) \to \infty$ within `[[x₁, x₂]] ×ℂ univ`, then
 $\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
