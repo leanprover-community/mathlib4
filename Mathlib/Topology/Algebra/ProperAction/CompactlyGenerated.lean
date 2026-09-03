@@ -91,11 +91,11 @@ alias AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty :=
   AddMonoidAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty
 
 @[deprecated (since := "2026-07-09")]
-alias MonoidAction.properSMul_iff_isCompact_setOf_inter_nonempty :=
+alias MulAction.properSMul_iff_isCompact_setOf_inter_nonempty :=
   MonoidAction.properSMul_iff_isCompact_setOfPred_inter_nonempty
 
 @[deprecated (since := "2026-07-09")]
-alias AddMonoidAction.properVAdd_iff_isCompact_setOf_inter_nonempty :=
+alias AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty :=
   AddMonoidAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty
 
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly

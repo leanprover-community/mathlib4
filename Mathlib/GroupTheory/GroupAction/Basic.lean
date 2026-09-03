@@ -455,7 +455,8 @@ end MonoidAction
 
 namespace AddMonoidAction
 
-@[deprecated (since := "2026-05-26")] alias stabilizer_vadd_eq_stabilizer_map_conj :=
+@[deprecated (since := "2026-05-26")]
+alias _root_.AddAction.stabilizer_vadd_eq_stabilizer_map_conj :=
   stabilizer_vadd_eq_stabilizer_map_addConj
 
 end AddMonoidAction

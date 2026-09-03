@@ -489,7 +489,7 @@ theorem coeff_ofMonoidAction {H : Type*} [MonoidAction G H] (g : G) (f : k[H]) (
 @[deprecated (since := "2026-09-02")]
 alias _root_.Representation.coeff_ofMulAction := coeff_ofMonoidAction
 
-@[deprecated (since := "2026-06-18")] alias ofMonoidAction_apply := coeff_ofMonoidAction
+@[deprecated (since := "2026-06-18")] alias ofMulAction_apply := coeff_ofMonoidAction
 
 -- Noncomputable since `MonoidAlgebra.instMul` is now noncomputable
 noncomputable instance : HMul k[G] (ofMonoidAction k G G).asModule k[G] where
@@ -513,7 +513,7 @@ alias _root_.Representation.asAlgebraHom_ofMulAction_smul_eq_mul :=
   asAlgebraHom_ofMonoidAction_smul_eq_mul
 
 @[deprecated (since := "2026-06-18")]
-alias ofMonoidAction_self_smul_eq_mul := asAlgebraHom_ofMonoidAction_smul_eq_mul
+alias ofMulAction_self_smul_eq_mul := asAlgebraHom_ofMonoidAction_smul_eq_mul
 
 /-- If we equip `k[G]` with the `k`-linear `G`-representation induced by the left regular action of
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural
