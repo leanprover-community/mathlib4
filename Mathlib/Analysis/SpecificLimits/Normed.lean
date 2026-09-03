@@ -418,6 +418,11 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
 
 variable [HasSummableGeomSeries R]
 
+/-- The element `1 - x` also available bundled as a term of `Rˣ` with inverse `∑' n : ℕ, x ^ n`
+in `Units.oneSub`. -/
+theorem IsUnit.one_sub_of_norm_lt_one {x : R} (hx : ‖x‖ < 1) : IsUnit (1 - x) :=
+  hasSummableGeomSeries_iff_isUnit.mp inferInstance hx
+
 lemma summable_geometric_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : Summable (fun n ↦ x ^ n) :=
   hasSummableGeomSeries_iff_summable_pow.mp inferInstance h
 
