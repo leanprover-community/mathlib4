@@ -147,10 +147,9 @@ lemma le_iff_of_support_subset {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : Al
   by_cases o : z ∈ t
   · exact m o
   simp only [support_subset_iff, ne_eq] at hD₁
-  specialize hD₁ z
-  by_cases p : D₁ z = 0
+  by_cases hz : D₁ z = 0
   · simp_all
-  specialize hD₁ p
+  specialize hD₁ z hz
   contradiction
 
 
