@@ -3,11 +3,13 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Erdős–Szekeres theorem
@@ -24,6 +26,8 @@ https://en.wikipedia.org/wiki/Erdos-Szekeres_theorem#Pigeonhole_principle.
 
 sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Erdős-Szekeres
 -/
+
+@[expose] public section
 
 open Function Finset
 
@@ -79,7 +83,6 @@ then `maxDecSequencesTo f i < maxDecSequencesTo f j`.
 -/
 private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
     maxIncSequencesTo f i < maxIncSequencesTo f j := by
-  classical
   rw [Nat.lt_iff_add_one_le]
   refine le_max' _ _ ?_
   have : maxIncSequencesTo f i ∈ incSequencesTo f i := max'_mem _ incSequencesTo_nonempty

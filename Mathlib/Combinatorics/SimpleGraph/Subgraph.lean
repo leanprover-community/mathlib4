@@ -111,6 +111,7 @@ theorem adj_symm (G' : Subgraph G) {u v : V} (h : G'.Adj u v) : G'.Adj v u :=
 protected theorem Adj.symm {G' : Subgraph G} {u v : V} (h : G'.Adj u v) : G'.Adj v u :=
   G'.adj_symm h
 
+@[grind →]
 protected theorem Adj.adj_sub {H : G.Subgraph} {u v : V} (h : H.Adj u v) : G.Adj u v :=
   H.adj_sub h
 
@@ -169,11 +170,13 @@ protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   symm := G'.symm
   loopless.irrefl _ hadj := G.irrefl hadj.adj_sub
 
+attribute [grind =] Subgraph.spanningCoe_adj
+
 @[simp]
 lemma spanningCoe_coe (G' : G.Subgraph) : G'.coe.spanningCoe = G'.spanningCoe := by
   ext
   simp only [map_adj, Function.Embedding.subtype_apply, Subtype.exists]
-  grind [spanningCoe_adj, coe_adj, edge_vert, adj_symm]
+  grind [coe_adj, edge_vert, adj_symm]
 
 theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCoe.Adj u v) :
     G.Adj u v :=
@@ -466,11 +469,8 @@ instance : BoundedOrder (Subgraph G) where
   le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
-/-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
-@[implicit_reducible]
-def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph where
-  le_top G' := ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
-  bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
+set_option linter.unusedVariables false in
+instance : CompleteLattice (Subgraph G) where
   isLUB_sSup _ :=
     ⟨fun G' hG' ↦ ⟨Set.subset_biUnion_of_mem hG', fun _ _ hab => ⟨G', hG', hab⟩⟩,
       fun G' hG' ↦
@@ -479,12 +479,13 @@ def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxio
     ⟨fun G' hG' ↦ ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩,
       fun G' hG' ↦
         ⟨Set.subset_iInter₂ fun _ hH => (hG' hH).1, fun _ _ hab =>
-          ⟨fun _ hH => (hG' hH).2 hab, G'.adj_sub hab⟩⟩⟩
-  iInf_iSup_eq f := Subgraph.ext (by simpa using! iInf_iSup_eq)
-    (by ext; simp [Classical.skolem])
+         ⟨fun _ hH => (hG' hH).2 hab, G'.adj_sub hab⟩⟩⟩
 
+/-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
 instance : CompletelyDistribLattice G.Subgraph :=
-  fast_instance% .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
+  fast_instance% .ofMinimalAxioms {
+    iInf_iSup_eq f := Subgraph.ext (by simpa using! iInf_iSup_eq)
+      (by ext; simp [Classical.skolem]) }
 
 @[gcongr] lemma verts_mono {H H' : G.Subgraph} (h : H ≤ H') : H.verts ⊆ H'.verts := h.1
 lemma verts_monotone : Monotone (verts : G.Subgraph → Set V) := fun _ _ h ↦ h.1
@@ -663,10 +664,19 @@ theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
 @[simp] lemma map_iso_top {H : SimpleGraph W} (e : G ≃g H) : Subgraph.map e.toHom ⊤ = ⊤ := by
-  ext <;> simp [Relation.Map, e.apply_eq_iff_eq_symm_apply, ← e.map_rel_iff]
+  ext <;> simp [Relation.Map, ← e.eq_symm_apply, ← e.map_rel_iff]
 
 @[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
     (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap ..
+
+protected lemma IsInduced.map {H : G.Subgraph} (hH : H.IsInduced) (e : G ↪g G') :
+    (H.map e.toHom).IsInduced := by
+  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hAdj
+  exact ⟨a, b, hH ha hb (e.map_adj_iff.mp hAdj), rfl, rfl⟩
+
+@[simp] protected lemma isInduced_map_iso (e : G ≃g G') {H : G.Subgraph} :
+    (H.map e.toHom).IsInduced ↔ H.IsInduced :=
+  ⟨fun h ↦ by simpa [← map_comp] using h.map e.symm.toEmbedding, fun h ↦ h.map e.toEmbedding⟩
 
 end map
 
@@ -772,7 +782,7 @@ instance finiteAt {G' : Subgraph G} (v : G'.verts) [DecidableRel G'.Adj]
 /-- If a subgraph is locally finite at a vertex, then so are subgraphs of that subgraph.
 
 This is not an instance because `G''` cannot be inferred. -/
-@[implicit_reducible]
+@[instance_reducible]
 def finiteAtOfSubgraph {G' G'' : Subgraph G} [DecidableRel G'.Adj] (h : G' ≤ G'') (v : G'.verts)
     [Fintype (G''.neighborSet v)] : Fintype (G'.neighborSet v) :=
   Set.fintypeSubset (G''.neighborSet v) (neighborSet_subset_of_subgraph h v)
@@ -863,6 +873,23 @@ lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
   Set.ext_iff.mp (neighborSet_eq_of_equiv h hfin) _
 
 end Subgraph
+
+/-- The canonical embedding of an induced subgraph into the ambient graph.
+Unlike `Subgraph.hom`, this is an embedding rather than a homomorphism, since induced subgraphs
+reflect adjacency. -/
+def Embedding.ofIsInduced {G : SimpleGraph V} (G' : G.Subgraph) (hG' : G'.IsInduced) :
+    G'.coe ↪g G where
+  toEmbedding := .subtype _
+  map_rel_iff' := hG'.adj.symm
+
+@[simp] lemma Embedding.toHom_ofIsInduced {G : SimpleGraph V} (G' : G.Subgraph)
+    (hG' : G'.IsInduced) : (Embedding.ofIsInduced G' hG').toHom = G'.hom := rfl
+
+@[simp] lemma Embedding.coe_ofIsInduced {G : SimpleGraph V} (G' : G.Subgraph)
+    (hG' : G'.IsInduced) : ⇑(Embedding.ofIsInduced G' hG') = (↑) := rfl
+
+@[simp] lemma Embedding.toEmbedding_ofIsInduced {G : SimpleGraph V} (G' : G.Subgraph)
+    (hG' : G'.IsInduced) : (Embedding.ofIsInduced G' hG').toEmbedding = .subtype _ := rfl
 
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
     (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
@@ -1105,6 +1132,7 @@ theorem deleteEdges_spanningCoe_eq :
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     G'.coe.deleteEdges s = (G'.deleteEdges (Sym2.map (↑) '' s)).coe := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
@@ -1121,6 +1149,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   · intro h' hs
     exact h' _ hs rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_deleteEdges_eq (s : Set (Sym2 V)) :
     (G'.deleteEdges s).coe = G'.coe.deleteEdges (Sym2.map (↑) ⁻¹' s) := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
@@ -1145,6 +1174,7 @@ theorem deleteEdges_inter_edgeSet_right_eq :
     G'.deleteEdges (s ∩ G'.edgeSet) = G'.deleteEdges s := by
   ext <;> simp +contextual [imp_false]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_deleteEdges_le : (G'.deleteEdges s).coe ≤ (G'.coe : SimpleGraph G'.verts) := by
   intro v w
   simp +contextual
@@ -1172,6 +1202,7 @@ def induce (G' : G.Subgraph) (s : Set V) : G.Subgraph where
   edge_vert h := h.1
   symm.symm _ _ h := ⟨h.2.1, h.1, h.2.2.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
     G.induce s = ((⊤ : G.Subgraph).induce s).coe := by
   ext
@@ -1309,6 +1340,7 @@ theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
   induce_mono h (Set.sdiff_subset_sdiff_left h.1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[mono]
 lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
     ((⊤ : Subgraph G).deleteVerts u).coe ≤ ((⊤ : Subgraph G').deleteVerts u).coe := by

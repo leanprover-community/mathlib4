@@ -343,7 +343,6 @@ namespace Limits
 
 variable {J : Type u'} [SmallCategory J] (F : J ⥤ CommRingCat.{u}) {c : Cone F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_iff_forall_isUnit (hc : IsLimit c) (r : c.pt) : IsUnit r ↔
     ∀ (j : J), IsUnit (c.π.app j r) := by
   refine ⟨fun h _ ↦ h.map _, fun h ↦ ?_⟩
@@ -485,7 +484,7 @@ instance pullbackFst_isLocalHom (f : A ⟶ C) (g : B ⟶ C) [IsLocalHom g.hom] :
     IsLocalHom (pullback.fst f g).hom := by
   refine Limits.π_isLocalHom _ (limit.isLimit _) left fun x hx i ↦ ?_
   rcases i with _ | _ | _
-  · exact ⟨one, 𝟙 _, Hom.inl, inferInstance, by simp; rfl⟩
+  · exact ⟨one, 𝟙 _, Hom.inl, inferInstance, by simp⟩
   · exact ⟨left, 𝟙 _, 𝟙 _, inferInstance, by simp⟩
   · refine ⟨one, Hom.inr, Hom.inl, ‹_›, ?_⟩
     exact DFunLike.congr_fun (congr(Hom.hom $(pullback.condition (f := f) (g := g)))) x |>.symm

@@ -38,7 +38,7 @@ notation:25 𝒜 " →ₐᵍ[" R "] " ℬ => GradedAlgHom R 𝒜 ℬ
 
 namespace GradedAlgHom
 
-variable {R S T U V A B C D ι : Type*}
+variable {R A B C D ι : Type*}
   [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
   [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
   [DecidableEq ι] [AddMonoid ι]
@@ -202,7 +202,7 @@ theorem id_comp : (GradedAlgHom.id R ℬ).comp f = f := rfl
 theorem comp_assoc (fCD : 𝒞 →ₐᵍ[R] 𝒟) (fBC : ℬ →ₐᵍ[R] 𝒞) (fAB : 𝒜 →ₐᵍ[R] ℬ) :
     (fCD.comp fBC).comp fAB = fCD.comp (fBC.comp fAB) := rfl
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance : Monoid (𝒜 →ₐᵍ[R] 𝒜) where
   mul := comp
   one := .id R 𝒜

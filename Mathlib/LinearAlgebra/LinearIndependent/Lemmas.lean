@@ -206,7 +206,7 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
     intro f hfsupp g hgsupp hsum
     rcases eq_empty_or_nonempty c with (rfl | hn)
     · rw [show f = 0 by simpa using! hfsupp, show g = 0 by simpa using! hgsupp]
-    haveI : Std.Refl r := ⟨fun _ => Set.Subset.refl _⟩
+    have : Std.Refl r := ⟨fun _ => Set.Subset.refl _⟩
     classical
     obtain ⟨I, _I_mem, hI⟩ : ∃ I ∈ c, (f.support ∪ g.support : Set ι) ⊆ I :=
       f.support.coe_union _ ▸ hc.directedOn.exists_mem_subset_of_finset_subset_biUnion hn <| by
@@ -293,6 +293,19 @@ lemma LinearIndependent.pair_symm_iff :
 variable {S : Type*} [CommRing S] [IsDomain S] [Module S R] [Module S M]
   [SMulCommClass S R M] [IsScalarTower S R M] [IsTorsionFree S R]
   (a b c d : S)
+
+lemma LinearIndependent.pair_smul_smul_iff {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
+    LinearIndependent R ![u • x, v • y] ↔ LinearIndependent R ![x, y] := by
+  simp only [LinearIndependent.pair_iff]
+  refine ⟨fun h s t hst ↦ ?_, fun h s t hst ↦ ?_⟩
+  · specialize h (s * hu.unit⁻¹) (t * hv.unit⁻¹)
+    simp only [Units.mul_left_eq_zero] at h
+    apply h
+    simpa [← mul_smul, mul_assoc]
+  · specialize h (s * hu.unit) (t * hv.unit)
+    simp only [Units.mul_left_eq_zero] at h
+    apply h
+    simpa [mul_smul]
 
 lemma LinearIndependent.pair_smul_iff {u : S} (hu : u ≠ 0) :
     LinearIndependent R ![u • x, u • y] ↔ LinearIndependent R ![x, y] := by

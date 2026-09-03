@@ -318,6 +318,9 @@ def toLinearMap : A →ₛₗ[φ] B where
   map_add' := map_add _
   map_smul' := map_smulₛₗ _
 
+theorem toLinearMap_eq_coe (f : A →ₐ[R] B) : f.toLinearMap = f :=
+  rfl
+
 @[simp]
 theorem toLinearMap_apply (p : A) : f.toLinearMap p = f p :=
   rfl
@@ -418,7 +421,7 @@ theorem comp_toLinearMap :
 
 end comp
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -499,6 +502,13 @@ lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
 lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     f.toNatAlgHom x = f x := rfl
 
+variable (R) (S) in
+/-- Ring homomorphisms are the same as `ℕ`-algebra homomorphisms. -/
+@[simps]
+def equivNatAlgHom [Semiring R] [Semiring S] : (R →+* S) ≃ (R →ₐ[ℕ] S) where
+  toFun := RingHom.toNatAlgHom
+  invFun := AlgHom.toRingHom
+
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with commutes' _ := by simp }
@@ -513,6 +523,13 @@ lemma toIntAlgHom_apply [Ring R] [Ring S] (f : R →+* S) (x : R) :
 lemma toIntAlgHom_injective [Ring R] [Ring S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
+
+variable (R) (S) in
+/-- Ring homomorphisms are the same as `ℤ`-algebra homomorphisms. -/
+@[simps]
+def equivIntAlgHom [Ring R] [Ring S] : (R →+* S) ≃ (R →ₐ[ℤ] S) where
+  toFun := RingHom.toIntAlgHom
+  invFun := AlgHom.toRingHom
 
 end RingHom
 
@@ -585,7 +602,7 @@ end Algebra
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {M : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.
