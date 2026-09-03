@@ -207,23 +207,23 @@ variable (R M) in
 noncomputable abbrev XZeroEquiv : ⋀[R]^0 M ≃ₗ[R] ⋀[R]^0 (M × R):=
   (exteriorPower.zeroEquiv R _).trans (exteriorPower.zeroEquiv R _).symm
 
-/-- Caratcerization of differential under `exteriorPowerProdEquivProd` at zero degree. -/
-lemma koszulComplexAux_eq_zero :
-    (koszulComplexAux (appendMap φ a) 0).comp (exteriorPowerProdEquivProd R M 0).toLinearMap =
-      (XZeroEquiv R M).toLinearMap.comp ((koszulComplexAux φ 0).comp (LinearMap.fst R _ _) +
+/-- Charatcerization of differential under `exteriorPowerProdEquivProd` at zero degree. -/
+lemma appendMap_d_eq_zero :
+    (koszulComplex.d (appendMap φ a) 0).comp (exteriorPowerProdEquivProd R M 0).toLinearMap =
+      (XZeroEquiv R M).toLinearMap.comp ((koszulComplex.d φ 0).comp (LinearMap.fst R _ _) +
         a • (LinearMap.snd R _ _)) := by
   ext m
   · simp only [LinearMap.compAlternatingMap_apply, LinearMap.coe_comp, Function.comp_apply,
       LinearEquiv.coe_coe, LinearMap.add_apply, LinearMap.coe_fst,
       LinearMap.smul_apply, LinearMap.coe_snd, smul_zero, add_zero, LinearMap.coe_inl]
     rw [exteriorPowerProdEquivProd_apply_inl_ιMulti]
-    simp [koszulComplexAux, koszulComplexAuxAlternating_apply, XZeroEquiv, appendMap,
+    simp [koszulComplex.d, koszulComplex.dAlternating_apply, XZeroEquiv, appendMap,
       exteriorPower.zeroEquiv_symm_apply]
   · have hE : (exteriorPowerProdEquivProd R M 0) (0, exteriorPower.ιMulti R 0 m) =
         exteriorPower.ιMulti R 1 (fun _ => ((0, 1) : M × R)) := by
       apply Subtype.ext
       simp [exteriorPowerProdEquivProd_apply_inr_ιMulti]
-    simp [hE, koszulComplexAux, koszulComplexAuxAlternating_apply, XZeroEquiv, appendMap,
+    simp [hE, koszulComplex.d, koszulComplex.dAlternating_apply, XZeroEquiv, appendMap,
       exteriorPower.zeroEquiv_symm_apply]
 
 variable (n : ℕ)
@@ -251,13 +251,13 @@ lemma exteriorPowerProdEquivProd_apply_inr_eq_snoc (k : ℕ) (v : Fin k → M) :
     ExteriorAlgebra.ιMulti_mul_ιMulti, Fin.append_right_eq_snoc]
   simp
 
-/-- Caratcerization of differential under `exteriorPowerProdEquivProd` at positive degree. -/
-lemma koszulComplexAux_eq_pos (n : ℕ) :
-    (koszulComplexAux (appendMap φ a) (n + 1)).comp
+/-- Charatcerization of differential under `exteriorPowerProdEquivProd` at positive degree. -/
+lemma appendMap_d_eq_pos (n : ℕ) :
+    (koszulComplex.d (appendMap φ a) (n + 1)).comp
       (exteriorPowerProdEquivProd R M (n + 1)).toLinearMap =
         (exteriorPowerProdEquivProd R M n).toLinearMap.comp
-          ((LinearMap.inl R _ _).comp ((koszulComplexAux φ (n + 1)).comp (LinearMap.fst R _ _)) +
-            (LinearMap.inr R _ _).comp ((koszulComplexAux φ n).comp (LinearMap.snd R _ _)) +
+          ((LinearMap.inl R _ _).comp ((koszulComplex.d φ (n + 1)).comp (LinearMap.fst R _ _)) +
+            (LinearMap.inr R _ _).comp ((koszulComplex.d φ n).comp (LinearMap.snd R _ _)) +
               (-1 : ℤ) ^ (n + 1) • a • (LinearMap.inl R _ _).comp (LinearMap.snd R _ _)) := by
   have h : (appendMap φ a) ∘ₗ (LinearMap.inl R M R) = φ := by ext x; simp
   ext m
@@ -269,8 +269,8 @@ lemma koszulComplexAux_eq_pos (n : ℕ) :
       LinearEquiv.coe_coe, LinearMap.add_apply, LinearMap.coe_fst, LinearMap.coe_inl,
       LinearMap.smul_apply, LinearMap.coe_snd, smul_zero, add_zero, map_zero, Prod.mk_zero_zero]
     rw [exteriorPowerProdEquivProd_apply_inl_ιMulti]
-    simp only [koszulComplexAux, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti,
-      koszulComplexAuxAlternating_apply]
+    simp only [koszulComplex.d, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti,
+      koszulComplex.dAlternating_apply]
     simp only [hrm2, ← exteriorPowerProdEquivProd_apply_inl_ιMulti, hinl, map_sum, map_smul]
     simp [appendMap]
   · have hrm (j : Fin (n + 1)) : j.removeNth (⇑(LinearMap.inl R M R) ∘ m) =
@@ -281,8 +281,8 @@ lemma koszulComplexAux_eq_pos (n : ℕ) :
       LinearEquiv.coe_coe, LinearMap.add_apply, LinearMap.coe_fst, LinearMap.coe_inr, zero_add,
       LinearMap.smul_apply, LinearMap.coe_snd, map_zero, LinearMap.coe_inl, Prod.mk_zero_zero]
     rw [exteriorPowerProdEquivProd_apply_inr_eq_snoc]
-    simp only [koszulComplexAux, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti,
-      koszulComplexAuxAlternating_apply, Fin.sum_univ_castSucc]
+    simp only [koszulComplex.d, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti,
+      koszulComplex.dAlternating_apply, Fin.sum_univ_castSucc]
     simp only [Fin.snoc_castSucc,  Fin.val_castSucc, Fin.snoc_last, Fin.val_last,
       Fin.removeNth_last, Fin.init_snoc, removeNth_castSucc_snoc, hrm]
     rw [← exteriorPowerProdEquivProd_apply_inl_ιMulti]
@@ -304,15 +304,15 @@ lemma from_ofList_hom_comm_zero :
     fromOfListHomSucc φ a 0 ≫ (koszulComplex (appendMap φ a)).d (0 + 1) 0 =
       (koszulComplex φ).d (0 + 1) 0 ≫ fromOfListHomZero φ a := by
   ext y
-  have h := LinearMap.congr_fun (koszulComplexAux_eq_zero φ a) (y, 0)
-  simpa [d_eq_aux, fromOfListHomSucc, fromOfListHomZero] using! h
+  have h := LinearMap.congr_fun (appendMap_d_eq_zero φ a) (y, 0)
+  simpa [d_eq_d, fromOfListHomSucc, fromOfListHomZero] using! h
 
 lemma from_ofList_hom_comm_pos (i : ℕ) :
     fromOfListHomSucc φ a (i + 1) ≫ (koszulComplex (appendMap φ a)).d (i + 1 + 1) (i + 1) =
       (koszulComplex φ).d (i + 1 + 1) (i + 1) ≫ fromOfListHomSucc φ a i := by
   ext y
-  have h := LinearMap.congr_fun (koszulComplexAux_eq_pos φ a i) (y, 0)
-  simpa [d_eq_aux, fromOfListHomSucc] using! h
+  have h := LinearMap.congr_fun (appendMap_d_eq_pos φ a i) (y, 0)
+  simpa [d_eq_d, fromOfListHomSucc] using! h
 
 /-- The homomorphism given by inclusion to the first component
 using `exteriorPowerProdEquivProd`. -/
@@ -355,16 +355,16 @@ set_option backward.isDefEq.respectTransparency false in
 lemma to_self_hom_comm (i : ℕ) :
     toUpOneHom φ a (i + 1) ≫ (koszulComplex φ).d (i + 1) i =
       (koszulComplex (appendMap φ a)).d (i + 1 + 1) (i + 1) ≫ toUpOneHom φ a i := by
-  rw [d_eq_aux, d_eq_aux]
+  rw [d_eq_d, d_eq_d]
   ext y
-  have h := LinearMap.congr_fun (koszulComplexAux_eq_pos φ a i)
+  have h := LinearMap.congr_fun (appendMap_d_eq_pos φ a i)
     ((exteriorPowerProdEquivProd R M (i + 1)).symm y)
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
     LinearEquiv.apply_symm_apply] at h
-  change koszulComplexAux φ i ((LinearMap.snd R _ _)
+  change koszulComplex.d φ i ((LinearMap.snd R _ _)
       ((exteriorPowerProdEquivProd R M (i + 1)).symm y)) =
     (LinearMap.snd R _ _) ((exteriorPowerProdEquivProd R M i).symm
-      (koszulComplexAux (appendMap φ a) (i + 1) y))
+      (koszulComplex.d (appendMap φ a) (i + 1) y))
   rw [h, LinearEquiv.symm_apply_apply]
   simp
 
@@ -440,15 +440,15 @@ lemma shortComplexProd_δ_eq (i : ℕ) :
   have hx₁ : (((-1 : R) ^ i * a) • ((upOne φ).iCycles (i + 1))) ≫ (shortComplexProd φ a).f.f i =
     ((upOne φ).iCycles (i + 1) ≫ ModuleCat.ofHom compinr) ≫
       (koszulComplex (appendMap φ a)).d (i + 1) i := by
-    rw [d_eq_aux]
+    rw [d_eq_d]
     rcases i with _ | n
     · ext z
-      have h := LinearMap.congr_fun (koszulComplexAux_eq_zero φ a) (0, ((upOne φ).iCycles 1).hom z)
+      have h := LinearMap.congr_fun (appendMap_d_eq_zero φ a) (0, ((upOne φ).iCycles 1).hom z)
       simpa using! h.symm
     · ext z
-      have hcyc : koszulComplexAux φ n (((upOne φ).iCycles (n + 2)).hom z) = 0 := by
-        simpa [d_eq_aux] using! congrArg (fun F => ModuleCat.Hom.hom F z) hx₃
-      have h := LinearMap.congr_fun (koszulComplexAux_eq_pos φ a n)
+      have hcyc : koszulComplex.d φ n (((upOne φ).iCycles (n + 2)).hom z) = 0 := by
+        simpa [d_eq_d] using! congrArg (fun F => ModuleCat.Hom.hom F z) hx₃
+      have h := LinearMap.congr_fun (appendMap_d_eq_pos φ a n)
         (0, ((upOne φ).iCycles (n + 2)).hom z)
       have hsc : ((-1 : ℤ) ^ (n + 1)) • a • (((upOne φ).iCycles (n + 2)).hom z, 0) =
           ((((-1 : R) ^ (n + 1) * a) • ((upOne φ).iCycles (n + 2)).hom z), (0 : ⋀[R]^n M)) := by
@@ -505,20 +505,20 @@ variable (φ : M →ₗ[R] R)
 
 /-- The equivalence between zeroth homology and cokernel of the differential. -/
 noncomputable def zeroHomologyLinearEquivAux : (koszulComplex φ).homology 0 ≃ₗ[R]
-    (⋀[R]^0 M) ⧸ (koszulComplexAux φ 0).range :=
+    (⋀[R]^0 M) ⧸ (koszulComplex.d φ 0).range :=
   (((koszulComplex φ).isoHomologyι₀.trans
     ((koszulComplex φ).opcyclesIsoSc' 1 0 0 (by simp) (by simp))).trans
       ((koszulComplex φ).sc' 1 0 0).moduleCatOpcyclesIso).toLinearEquiv
 
-lemma equiv_comp_koszulComplexAux_zero_eq :
-    (exteriorPower.zeroEquiv R M).toLinearMap.comp (koszulComplexAux φ 0) =
+lemma equiv_comp_koszulComplex.d_zero_eq :
+    (exteriorPower.zeroEquiv R M).toLinearMap.comp (koszulComplex.d φ 0) =
       φ.comp (exteriorPower.oneEquiv R M).toLinearMap := by
   ext m
-  simp [koszulComplexAux, koszulComplexAuxAlternating_apply]
+  simp [koszulComplex.d, koszulComplex.dAlternating_apply]
 
-lemma koszulComplexAux_zero_range_map :
-    (koszulComplexAux φ 0).range.map (exteriorPower.zeroEquiv R _).toLinearMap = φ.range := by
-  rw [← LinearMap.range_comp, equiv_comp_koszulComplexAux_zero_eq]
+lemma d_zero_range_map :
+    (koszulComplex.d φ 0).range.map (exteriorPower.zeroEquiv R _).toLinearMap = φ.range := by
+  rw [← LinearMap.range_comp, equiv_comp_koszulComplex.d_zero_eq]
   simp
 
 /-- Zeroth homology of Koszul complex generated by a list of elements is isomorphic to
@@ -526,7 +526,7 @@ the ring quotient by these elements. -/
 noncomputable def zeroHomologyOfListLinearEquiv (l : List R) :
     (ofList l).homology 0 ≃ₗ[R] R ⧸ Ideal.ofList l :=
   (zeroHomologyLinearEquivAux _).trans (Submodule.Quotient.equiv _ _ (exteriorPower.zeroEquiv R _)
-    (by simp [koszulComplexAux_zero_range_map]))
+    (by simp [koszulComplex.d_zero_range_map]))
 
 end H0
 
@@ -581,7 +581,7 @@ lemma exactAt_of_isRegular (rs : List R) (reg : IsRegular R rs)
   induction n generalizing rs i with
   | zero =>
     apply ShortComplex.exact_of_isZero_X₂
-    exact ofList_X_isZero_of_length_lt rs i (by simpa [h, ← Nat.ne_zero_iff_zero_lt])
+    exact isZero_X_ofList_of_length_lt rs i (by simpa [h, ← Nat.ne_zero_iff_zero_lt])
   | succ n ih =>
     have nenil : rs ≠ [] := List.ne_nil_of_length_eq_add_one h
     let rs' := rs.dropLast
