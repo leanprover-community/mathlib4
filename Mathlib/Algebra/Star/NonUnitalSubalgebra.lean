@@ -339,16 +339,16 @@ theorem toSubring_subtype {R A : Type*} [CommRing R] [NonUnitalNonAssocRing A] [
   rfl
 
 /-- Transport a non-unital star subalgebra via a non-unital star algebra homomorphism. -/
-def map (f : F) (S : NonUnitalStarSubalgebra R A) : NonUnitalStarSubalgebra R B where
+def map (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R A) : NonUnitalStarSubalgebra R B where
   toNonUnitalSubalgebra := S.toNonUnitalSubalgebra.map (f : A →ₙₐ[R] B)
   star_mem' := by rintro _ ⟨a, ha, rfl⟩; exact ⟨star a, star_mem (s := S) ha, map_star f a⟩
 
 @[gcongr]
-theorem map_mono {S₁ S₂ : NonUnitalStarSubalgebra R A} {f : F} :
+theorem map_mono {S₁ S₂ : NonUnitalStarSubalgebra R A} {f : A →⋆ₙₐ[R] B} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalStarSubalgebra R B) ≤ map f S₂ :=
   Set.image_mono
 
-theorem map_injective {f : F} (hf : Function.Injective f) :
+theorem map_injective {f : A →⋆ₙₐ[R] B} (hf : Function.Injective f) :
     Function.Injective (map f : NonUnitalStarSubalgebra R A → NonUnitalStarSubalgebra R B) :=
   fun _S₁ _S₂ ih =>
   ext <| Set.ext_iff.1 <| Set.image_injective.2 hf <| Set.ext <| SetLike.ext_iff.mp ih
@@ -362,38 +362,41 @@ theorem map_map (S : NonUnitalStarSubalgebra R A) (g : B →⋆ₙₐ[R] C) (f :
   SetLike.coe_injective <| Set.image_image _ _ _
 
 @[simp]
-theorem mem_map {S : NonUnitalStarSubalgebra R A} {f : F} {y : B} :
+theorem mem_map {S : NonUnitalStarSubalgebra R A} {f : A →⋆ₙₐ[R] B} {y : B} :
     y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   NonUnitalSubalgebra.mem_map
 
-theorem map_toNonUnitalSubalgebra {S : NonUnitalStarSubalgebra R A} {f : F} :
+theorem map_toNonUnitalSubalgebra {S : NonUnitalStarSubalgebra R A} {f : A →⋆ₙₐ[R] B} :
     (map f S : NonUnitalStarSubalgebra R B).toNonUnitalSubalgebra =
       NonUnitalSubalgebra.map f S.toNonUnitalSubalgebra :=
   SetLike.coe_injective rfl
 
 @[simp, norm_cast]
-theorem coe_map (S : NonUnitalStarSubalgebra R A) (f : F) : map f S = f '' S :=
+theorem coe_map (S : NonUnitalStarSubalgebra R A) (f : A →⋆ₙₐ[R] B) : map f S = f '' S :=
   rfl
 
 /-- Preimage of a non-unital star subalgebra under a non-unital star algebra homomorphism. -/
-def comap (f : F) (S : NonUnitalStarSubalgebra R B) : NonUnitalStarSubalgebra R A where
+def comap (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) : NonUnitalStarSubalgebra R A where
   toNonUnitalSubalgebra := S.toNonUnitalSubalgebra.comap f
   star_mem' := @fun a (ha : f a ∈ S) =>
     show f (star a) ∈ S from (map_star f a).symm ▸ star_mem (s := S) ha
 
-theorem map_le {S : NonUnitalStarSubalgebra R A} {f : F} {U : NonUnitalStarSubalgebra R B} :
+theorem map_le
+    {S : NonUnitalStarSubalgebra R A} {f : A →⋆ₙₐ[R] B} {U : NonUnitalStarSubalgebra R B} :
     map f S ≤ U ↔ S ≤ comap f U :=
   Set.image_subset_iff
 
-theorem gc_map_comap (f : F) : GaloisConnection (map f) (comap f) :=
+theorem gc_map_comap (f : A →⋆ₙₐ[R] B) : GaloisConnection (map f) (comap f) :=
   fun _S _U => map_le
 
 @[simp]
-theorem mem_comap (S : NonUnitalStarSubalgebra R B) (f : F) (x : A) : x ∈ comap f S ↔ f x ∈ S :=
+theorem mem_comap (S : NonUnitalStarSubalgebra R B) (f : A →⋆ₙₐ[R] B) (x : A) :
+    x ∈ comap f S ↔ f x ∈ S :=
   Iff.rfl
 
 @[simp, norm_cast]
-theorem coe_comap (S : NonUnitalStarSubalgebra R B) (f : F) : comap f S = f ⁻¹' (S : Set B) :=
+theorem coe_comap (S : NonUnitalStarSubalgebra R B) (f : A →⋆ₙₐ[R] B) :
+    comap f S = f ⁻¹' (S : Set B) :=
   rfl
 
 instance instNoZeroDivisors {R A : Type*} [CommSemiring R] [NonUnitalSemiring A] [NoZeroDivisors A]
@@ -786,12 +789,12 @@ theorem mul_mem_sup {S T : NonUnitalStarSubalgebra R A} {x y : A} (hx : x ∈ S)
     x * y ∈ S ⊔ T :=
   mul_mem (mem_sup_left hx) (mem_sup_right hy)
 
-theorem map_sup [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F)
+theorem map_sup [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : A →⋆ₙₐ[R] B)
     (S T : NonUnitalStarSubalgebra R A) :
     ((S ⊔ T).map f : NonUnitalStarSubalgebra R B) = S.map f ⊔ T.map f :=
   (NonUnitalStarSubalgebra.gc_map_comap f).l_sup
 
-theorem map_inf [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F)
+theorem map_inf [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : A →⋆ₙₐ[R] B)
     (hf : Function.Injective f) (S T : NonUnitalStarSubalgebra R A) :
     ((S ⊓ T).map f : NonUnitalStarSubalgebra R B) = S.map f ⊓ T.map f :=
   SetLike.coe_injective (Set.image_inter hf)
@@ -869,12 +872,12 @@ theorem range_id : NonUnitalStarAlgHom.range (NonUnitalStarAlgHom.id R A) = ⊤ 
   SetLike.coe_injective Set.range_id
 
 @[simp]
-theorem map_bot [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F) :
+theorem map_bot [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : A →⋆ₙₐ[R] B) :
     (⊥ : NonUnitalStarSubalgebra R A).map f = ⊥ :=
   SetLike.coe_injective <| by simp [NonUnitalStarSubalgebra.coe_map]
 
 @[simp]
-theorem comap_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F) :
+theorem comap_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : A →⋆ₙₐ[R] B) :
     (⊤ : NonUnitalStarSubalgebra R B).comap f = ⊤ :=
   eq_top_iff.2 fun _x => mem_top
 
@@ -950,13 +953,13 @@ variable [StarRing R]
 variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
 variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
 
-lemma _root_.NonUnitalStarAlgHom.map_adjoin (f : F) (s : Set A) :
+lemma _root_.NonUnitalStarAlgHom.map_adjoin (f : A →⋆ₙₐ[R] B) (s : Set A) :
     map f (adjoin R s) = adjoin R (f '' s) :=
   Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) NonUnitalStarAlgebra.gi.gc
     NonUnitalStarAlgebra.gi.gc fun _t => rfl
 
 @[simp]
-lemma _root_.NonUnitalStarAlgHom.map_adjoin_singleton (f : F) (x : A) :
+lemma _root_.NonUnitalStarAlgHom.map_adjoin_singleton (f : A →⋆ₙₐ[R] B) (x : A) :
     map f (adjoin R {x}) = adjoin R {f x} := by
   simp [NonUnitalStarAlgHom.map_adjoin]
 
@@ -1166,19 +1169,18 @@ instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Modul
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
 
-theorem map_center_le_center {F} [IsScalarTower R B B] [SMulCommClass R B B] [FunLike F A B]
-    [NonUnitalAlgHomClass F R A B] [StarHomClass F A B] {f : F} (hf : Function.Surjective f) :
+theorem map_center_le_center [IsScalarTower R B B] [SMulCommClass R B B]
+    {f : A →⋆ₙₐ[R] B} (hf : Function.Surjective f) :
     map f (center R A) ≤ center R B :=
   Set.image_center_subset hf
 
-theorem comap_center_le_center {F} [IsScalarTower R B B] [SMulCommClass R B B] [FunLike F A B]
-    [NonUnitalAlgHomClass F R A B] [StarHomClass F A B] {f : F} (hf : Function.Injective f) :
+theorem comap_center_le_center [IsScalarTower R B B] [SMulCommClass R B B]
+    {f : A →⋆ₙₐ[R] B} (hf : Function.Injective f) :
     comap f (center R B) ≤ center R A :=
   Set.preimage_center_subset hf
 
 @[simp]
-theorem map_center_eq {F} [IsScalarTower R B B] [SMulCommClass R B B] [EquivLike F A B]
-    [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] (f : F) :
+theorem map_center_eq [IsScalarTower R B B] [SMulCommClass R B B] (f : A ≃⋆ₐ[R] B) :
     map f (center R A) = center R B :=
   SetLike.coe_injective (Set.image_center_eq f)
 
