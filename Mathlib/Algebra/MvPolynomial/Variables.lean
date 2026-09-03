@@ -90,11 +90,11 @@ theorem coe_vars_subset_iff {p : MvPolynomial σ R} {s : Set σ} :
       obtain ⟨b, hb, hm⟩ := hm
       contrapose! hb
       apply h
-      rw [SetLike.mem_coe, @Multiset.mem_toFinset, mem_degrees]
+      rw [SetLike.mem_coe, Multiset.mem_toFinset, mem_degrees]
       exact ⟨m, hb, Finsupp.mem_support_iff.2 hm⟩
   · rintro ⟨x, rfl⟩
     rw [degrees_rename_of_injective Subtype.val_injective,
-      @Multiset.coe_toFinset, Set.ofPred_subset, Multiset.forall_mem_map_iff]
+      Multiset.coe_toFinset, Set.ofPred_subset, Multiset.forall_mem_map_iff]
     simp
 
 theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ → σ) (hfi : Injective f)
