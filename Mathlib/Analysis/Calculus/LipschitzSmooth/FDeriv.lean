@@ -30,12 +30,14 @@ variable {K : NNReal} {f : E → F}
 theorem fderiv_apply_sub_norm_le (h : LipschitzSmoothWith 𝕜 K f) (x y : E) :
     ‖fderiv 𝕜 f y (y - x) - fderiv 𝕜 f x (y - x)‖ ≤ K * dist x y ^ 2 := by
   calc
-    ‖fderiv 𝕜 f y (y - x) - fderiv 𝕜 f x (y - x)‖ ≤
-        ‖f x - f y - fderiv 𝕜 f y (x - y)‖ +
-          ‖f y - f x - fderiv 𝕜 f x (y - x)‖ := by
+    ‖fderiv 𝕜 f y (y - x) - fderiv 𝕜 f x (y - x)‖ =
+        ‖(f x - f y - fderiv 𝕜 f y (x - y)) +
+          (f y - f x - fderiv 𝕜 f x (y - x))‖ := by
       rw [← neg_sub y x, map_neg]
-      convert norm_add_le _ _ using 1
-      abel_nf
+      congr 1
+      abel
+    _ ≤ ‖f x - f y - fderiv 𝕜 f y (x - y)‖ +
+        ‖f y - f x - fderiv 𝕜 f x (y - x)‖ := norm_add_le _ _
     _ ≤ K / 2 * dist y x ^ 2 + K / 2 * dist x y ^ 2 :=
       add_le_add (h.fderiv_norm_le y x) (h.fderiv_norm_le x y)
     _ = K * dist x y ^ 2 := by rw [dist_comm y x]; ring
@@ -63,12 +65,6 @@ theorem fderiv_descent_ge (h : LipschitzSmoothWith ℝ K f) (x y : E) :
 theorem fderiv_apply_sub_le (h : LipschitzSmoothWith ℝ K f) (x y : E) :
     fderiv ℝ f y (y - x) - fderiv ℝ f x (y - x) ≤ K * dist x y ^ 2 :=
   le_of_abs_le (h.fderiv_apply_sub_norm_le x y)
-
-/-- The one-sided variation bound in functional form. -/
-theorem fderiv_sub_apply_le (h : LipschitzSmoothWith ℝ K f) (x y : E) :
-    (fderiv ℝ f y - fderiv ℝ f x) (y - x) ≤ K * dist x y ^ 2 := by
-  rw [sub_apply]
-  exact h.fderiv_apply_sub_le x y
 
 end Real
 

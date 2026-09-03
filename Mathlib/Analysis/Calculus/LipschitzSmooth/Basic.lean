@@ -44,6 +44,26 @@ structure LipschitzSmoothOnWith (K : NNReal) (f : E → F) (s : Set E) : Prop wh
 
 variable {𝕜}
 
+/-- Construct global Lipschitz smoothness using a specified Fréchet derivative. -/
+theorem LipschitzSmoothWith.of_hasFDerivAt {K : NNReal} {f : E → F}
+    {f' : E → E →L[𝕜] F} (hf : ∀ x, HasFDerivAt f (f' x) x)
+    (hbound : ∀ x y, ‖f y - f x - f' x (y - x)‖ ≤ K / 2 * dist x y ^ 2) :
+    LipschitzSmoothWith 𝕜 K f :=
+  ⟨fun x ↦ (hf x).differentiableAt, fun x y ↦ by
+    rw [(hf x).fderiv]
+    exact hbound x y⟩
+
+/-- Construct setwise Lipschitz smoothness using a specified Fréchet derivative within the
+set. -/
+theorem LipschitzSmoothOnWith.of_hasFDerivWithinAt {K : NNReal} {f : E → F} {s : Set E}
+    {f' : E → E →L[𝕜] F} (hs : UniqueDiffOn 𝕜 s)
+    (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x)
+    (hbound : ∀ x ∈ s, ∀ y ∈ s, ‖f y - f x - f' x (y - x)‖ ≤ K / 2 * dist x y ^ 2) :
+    LipschitzSmoothOnWith 𝕜 K f s :=
+  ⟨fun x hx ↦ (hf x hx).differentiableWithinAt, fun x hx y hy ↦ by
+    rw [(hf x hx).fderivWithin (hs.uniqueDiffWithinAt hx)]
+    exact hbound x hx y hy⟩
+
 @[simp]
 theorem lipschitzSmoothOnWith_empty (K : NNReal) (f : E → F) :
     LipschitzSmoothOnWith 𝕜 K f ∅ :=
@@ -52,10 +72,22 @@ theorem lipschitzSmoothOnWith_empty (K : NNReal) (f : E → F) :
 @[simp]
 theorem lipschitzSmoothOnWith_univ {K : NNReal} {f : E → F} :
     LipschitzSmoothOnWith 𝕜 K f Set.univ ↔ LipschitzSmoothWith 𝕜 K f := by
-  constructor
-  · rintro ⟨hf, hbound⟩
-    exact ⟨differentiableOn_univ.mp hf, by
+  constructor <;>
+    rintro ⟨hf, hbound⟩ <;>
+    exact ⟨by simpa only [differentiableOn_univ] using hf, by
       simpa only [Set.mem_univ, forall_const, fderivWithin_univ] using hbound⟩
-  · rintro ⟨hf, hbound⟩
-    exact ⟨differentiableOn_univ.mpr hf, by
-      simpa only [Set.mem_univ, forall_const, fderivWithin_univ] using hbound⟩
+
+/-- Lipschitz smoothness within a uniquely differentiable set is monotone in the set. -/
+theorem LipschitzSmoothOnWith.mono {K : NNReal} {f : E → F} {s t : Set E}
+    (h : LipschitzSmoothOnWith 𝕜 K f t) (hs : UniqueDiffOn 𝕜 s) (hst : s ⊆ t) :
+    LipschitzSmoothOnWith 𝕜 K f s := by
+  refine ⟨h.differentiableOn.mono hst, fun x hx y hy ↦ ?_⟩
+  rw [fderivWithin_subset hst (hs.uniqueDiffWithinAt hx) (h.differentiableOn x (hst hx))]
+  exact h.fderivWithin_norm_le x (hst hx) y (hst hy)
+
+/-- A globally Lipschitz-smooth function is Lipschitz smooth on every uniquely differentiable
+set. -/
+protected theorem LipschitzSmoothWith.lipschitzSmoothOnWith {K : NNReal} {f : E → F}
+    (h : LipschitzSmoothWith 𝕜 K f) {s : Set E} (hs : UniqueDiffOn 𝕜 s) :
+    LipschitzSmoothOnWith 𝕜 K f s :=
+  (lipschitzSmoothOnWith_univ.mpr h).mono hs (Set.subset_univ s)
