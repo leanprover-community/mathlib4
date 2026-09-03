@@ -14,10 +14,10 @@ public import Mathlib.Tactic.Echelon.Rat
 Given a matrix literal `A` over a commutative domain, the entry point
 `mkBareissDecomposition` selects a computation model for the element type, runs the
 elimination, and elaborates a certificate `⟨L, σ, pivot, …⟩ : Echelon.Decomposition A`,
-with the certificate conditions decided by the kernel, or built from `norm_num` leaves
-when equality in the element type does not reduce there. The elimination
-itself is the model-parameterized `bareissDecomp` in `Mathlib.Tactic.Echelon.Core`, and
-the certificate construction `mkCertificate` in `Mathlib.Tactic.Echelon.Cert`.
+whose conditions are discharged in the kernel, or by the model's leaf certifier when it
+supplies one. The elimination itself is the model-parameterized `bareissDecomp` in
+`Mathlib.Tactic.Echelon.Core`, and the certificate construction `certifyDecomposition` in
+`Mathlib.Tactic.Echelon.Cert`.
 
 ## Main definitions
 
@@ -99,6 +99,6 @@ def mkBareissDecomposition {u : Level} (A : Expr) (m n : Nat) (α : Q(Type u))
   let d ← model.producer entries
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
-  return { cert := ← mkCertificate _cr A entries d model.leafCertifier?, data := d }
+  return { cert := ← certifyDecomposition _cr A entries d model.leafCertifier?, data := d }
 
 end Mathlib.Tactic.Echelon
