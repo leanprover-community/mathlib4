@@ -265,9 +265,9 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (leaf : LeafProver) : MetaM Q($L * $Aσ = $U) := do
   let zero ← mkNumeral α 0
   let cell (i j : Nat) : MetaM Expr := do
-    -- the fold must match `Finset.sum`'s own reduction, or the cell is not defeq to the entry
     let terms ← Array.ofFnM (n := m) fun c => mkMul (lEntries[i]!)[c]! (aEntries[c]!)[j]!
-    have sum : Q($α) := ← terms.foldlM (fun acc t => mkAdd acc t) zero
+    -- the fold must reproduce what `(L * Aσ) i j` expands to
+    have sum : Q($α) := ← terms.foldrM mkAdd zero
     have entry : Q($α) := (uEntries[i]!)[j]!
     let (b, prf) ← leaf q($sum = $entry)
     unless b do
