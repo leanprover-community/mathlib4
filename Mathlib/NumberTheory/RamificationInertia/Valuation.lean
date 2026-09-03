@@ -10,6 +10,12 @@ public import Mathlib.NumberTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.Valuation.Extension
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.RingTheory.Valuation.Discrete.RankOne
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 
 /-!
@@ -112,6 +118,29 @@ theorem uniformContinuous_algebraMap_liesOver :
     nsmul_eq_mul, mul_comm]
   exact Int.mul_lt_of_lt_ediv
     (mod_cast pos_of_ne_zero (ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
+
+
+variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
+
+
+set_option backward.isDefEq.respectTransparency false in
+open WithZeroTopology UniformSpace.Completion in
+theorem valued_liesOver (x : v.adicCompletion K) :
+    Valued.v x ^ v.asIdeal.ramificationIdx' w.asIdeal =
+      Valued.v (algebraMap _ (w.adicCompletion L) x) := by
+  induction x using adicCompletion.induction_on
+  · refine isClosed_eq ?_ ?_
+    · exact (Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K)).pow _)
+    · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
+        (continuous_algebraMap _ _))
+  · have := IsScalarTower.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) ‹_›
+
+    simp only [algebraMap_def, WithVal.algebraMap_right_apply, WithVal.algebraMap_left_apply,
+      Algebra.algebraMap_self, RingHom.id_apply] at this
+    simp only [Valued.valuedCompletion_apply, ← this, WithVal.valued_toVal]
+    rw [← valuation_liesOver L v, WithVal.valued_toVal]
 
 end AKLB
 

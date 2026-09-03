@@ -783,6 +783,34 @@ theorem continuous_ofCompletion : Continuous (ofCompletion (K := K) (v := v)) :=
 instance : T0Space (adicCompletion K v) :=
   (uniformEquiv K v).toHomeomorph.isEmbedding.t0Space
 
+theorem denseRange_coe : DenseRange ((↑) : K → adicCompletion K v) :=
+  (ofCompletion_surjective K v).denseRange.comp
+    (UniformSpace.Completion.denseRange_coe.comp
+      (WithVal.equiv (v.valuation K)).symm.surjective.denseRange
+      (UniformSpace.Completion.continuous_coe _))
+    (continuous_ofCompletion K v)
+
+@[elab_as_elim]
+theorem induction_on {p : adicCompletion K v → Prop} (x : adicCompletion K v)
+    (hp : IsClosed {x | p x}) (ih : ∀ a : K, p a) : p x :=
+  (denseRange_coe K v).induction_on x hp ih
+
+@[elab_as_elim]
+theorem induction_on₂ {p : adicCompletion K v → adicCompletion K v → Prop}
+    (x y : adicCompletion K v)
+    (hp : IsClosed {q : adicCompletion K v × adicCompletion K v | p q.1 q.2})
+    (ih : ∀ a b : K, p a b) : p x y :=
+  (denseRange_coe K v).induction_on₂ hp ih x y
+
+@[elab_as_elim]
+theorem induction_on₃
+    {p : adicCompletion K v → adicCompletion K v → adicCompletion K v → Prop}
+    (x y z : adicCompletion K v)
+    (hp : IsClosed {q : adicCompletion K v × adicCompletion K v × adicCompletion K v |
+      p q.1 q.2.1 q.2.2})
+    (ih : ∀ a b c : K, p a b c) : p x y z :=
+  (denseRange_coe K v).induction_on₃ hp ih x y z
+
 end adicCompletion
 
 lemma valuedAdicCompletion_surjective :
