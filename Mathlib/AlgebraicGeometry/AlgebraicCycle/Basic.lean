@@ -149,8 +149,7 @@ lemma le_iff_of_support_subset {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : Al
   simp only [support_subset_iff, ne_eq] at hD₁
   by_cases hz : D₁ z = 0
   · simp_all
-  specialize hD₁ z hz
-  contradiction
+  exact m <| hD₁ z hz
 
 
 end AlgebraicGeometry.AlgebraicCycle
