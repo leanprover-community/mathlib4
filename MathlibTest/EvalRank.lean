@@ -144,6 +144,9 @@ example : Matrix.rank (R := ℝ) !![0, 0, 3; 1/2, 1, 0; 2, 4, 1] = 2 := by eval_
 -- no pivot at all: every row of the pivot function is `⊤`
 example : Matrix.rank (R := ℝ) !![0, 0; 0, 0] = 0 := by eval_rank
 
+-- no rows, so every quantifier over an index is empty
+example : Matrix.rank (R := ℝ) !![] = 0 := by eval_rank
+
 example : Matrix.rank (R := ℂ) !![1, 2; 2, 4] = 1 := by eval_rank
 
 /-! ## Unfolding, rewrites, and simplifications -/
