@@ -893,7 +893,7 @@ theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B
   NonUnitalStarAlgebra.eq_top_iff
 
 @[simp]
-theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : F) :
+theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : A →⋆ₙₐ[R] A) :
     (⊤ : NonUnitalStarSubalgebra R A).map f = NonUnitalStarAlgHom.range f :=
   SetLike.coe_injective Set.image_univ
 
