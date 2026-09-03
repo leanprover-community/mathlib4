@@ -120,20 +120,20 @@ theorem ramificationIdx_eq [q.LiesOver p] [q.IsPrime] :
 theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
     (hq : q ∈ (p.map (algebraMap R S)).minimalPrimes)
     [IsNoetherianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q)))] :
-      0 < q.ramificationIdx R := by
+    0 < q.ramificationIdx R := by
   let Sq := Localization.AtPrime q
-  have max := IsLocalRing.maximalIdeal.isMaximal Sq
+  have hmax := IsLocalRing.maximalIdeal.isMaximal Sq
   rw [ramificationIdx_eq p q]
   apply ENat.toNat_pos
   · rw [← pos_iff_ne_zero, Module.length_pos_iff, Submodule.Quotient.nontrivial_iff,
       IsScalarTower.algebraMap_eq R S, ← map_map, ← lt_top_iff_ne_top, q.over_def p]
-    grw [map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal, max.lt_top]
+    grw [map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal, hmax.lt_top]
   · rw [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
       Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength,
       isArtinianRing_iff_krullDimLE_zero, Ring.krullDimLE_zero_iff]
     intro r hr
-    apply Ideal.isMaximal_of_isIntegral_of_isMaximal_comap (R := Sq)
-    change (r.under Sq).IsMaximal
+    apply isMaximal_of_isIntegral_of_isMaximal_comap (R := Sq)
+    rw [← Ideal.under_def]
     have key : map (algebraMap R S) p ≤ under S r := by
       have := r.ker_le_comap (algebraMap Sq _)
       rw [Ideal.Quotient.algebraMap_eq, mk_ker] at this
@@ -142,7 +142,7 @@ theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
     simp_rw [← Localization.AtPrime.under_maximalIdeal (I := q),
       ← under_under (A := S) (B := Sq) (C := Sq ⧸ _),
       IsLocalization.under_le_under_iff q.primeCompl Sq] at h1
-    rwa [← max.eq_of_le IsPrime.ne_top' (h1 (IsLocalRing.le_maximalIdeal_of_isPrime (r.under Sq)))]
+    rwa [← hmax.eq_of_le IsPrime.ne_top' (h1 (IsLocalRing.le_maximalIdeal_of_isPrime (r.under Sq)))]
 
 /-- This theorem proves positivity of `ramificationIdx` when `S` is a Dedekind domain.
 See `Ideal.ramificationIdx_pos` for a version that holds when `S` is finite as an `R`-module. -/
