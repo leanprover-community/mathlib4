@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.Matrix.Hermitian
-public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Positive operators
@@ -159,7 +161,7 @@ theorem IsPositive.nonneg_eigenvalues [FiniteDimensional 𝕜 E]
     inner_self_eq_norm_sq, OrthonormalBasis.norm_eq_one, one_pow, mul_one]
       using hT.right (hT.isSymmetric.eigenvectorBasis hn i)
 
-section PartialOrder
+section Order
 
 /-- The (Loewner) partial order on linear maps on a Hilbert space determined by `f ≤ g`
 if and only if `g - f` is a positive linear map (in the sense of `LinearMap.IsPositive`). -/
@@ -175,14 +177,20 @@ instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
     rw [← h₂.isSymmetric.coe_re_inner_apply_self, RCLike.ofReal_eq_zero]
     exact le_antisymm hba2 (h₂.2 _)
 
-lemma le_def (f g : E →ₗ[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
+lemma le_def {f g : E →ₗ[𝕜] E} : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
-lemma nonneg_iff_isPositive (f : E →ₗ[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
-  simpa using le_def 0 f
+lemma nonneg_iff_isPositive {f : E →ₗ[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
+  simpa using le_def (f:=0) (g:=f)
 
 instance : IsOrderedAddMonoid (E →ₗ[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
 
-end PartialOrder
+instance instIsOrderedModule : IsOrderedModule 𝕜 (E →ₗ[𝕜] E) where
+  smul_le_smul_of_nonneg_left f hf b₁ b₂ hb := by
+    simpa [LinearMap.le_def, ← smul_sub] using (sub_nonneg.mpr hb).smul_of_nonneg hf
+  smul_le_smul_of_nonneg_right f hf b₁ b₂ hb := by
+    simpa [LinearMap.le_def, ← sub_smul] using hf.smul_of_nonneg (sub_nonneg.mpr hb)
+
+end Order
 
 /-- An idempotent linear map is positive iff it is symmetric. -/
 theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT : IsIdempotentElem T) :
@@ -242,7 +250,6 @@ theorem IsPositive.trace_nonneg {f : E →ₗ[𝕜] E} (hf : f.IsPositive) : 0 �
   unfold trace
   split_ifs with h
   · have : FiniteDimensional 𝕜 E := Module.Finite.of_basis h.choose_spec.some
-    classical
     simp_rw [traceAux_eq 𝕜 _ (stdOrthonormalBasis 𝕜 E).toBasis]
     exact posSemidef_toMatrix_iff (stdOrthonormalBasis 𝕜 E) |>.mpr hf |>.trace_nonneg
   · simp
@@ -402,8 +409,8 @@ end LinearMap
 theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
     [U.HasOrthogonalProjection] :
     (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
-  simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
-    Function.comp_apply, coe_comp']
+  simp only [isPositive_iff, IsSymmetric, toLinearMap_comp, LinearMap.coe_comp, coe_coe,
+    Function.comp_apply, comp_apply]
   simp_rw [← coe_coe, U.starProjection_isSymmetric _, hT.isSymmetric _,
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
@@ -411,8 +418,8 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
 theorem IsPositive.orthogonalProjectionOnto_comp {T : E →L[𝕜] E} (hT : T.IsPositive)
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     (U.orthogonalProjectionOnto ∘L T ∘L U.subtypeL).IsPositive := by
-  simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
-    Function.comp_apply, coe_comp']
+  simp only [isPositive_iff, IsSymmetric, toLinearMap_comp, LinearMap.coe_comp, coe_coe,
+    Function.comp_apply, comp_apply]
   simp_rw [U.inner_orthogonalProjectionOnto_eq_of_mem_right, Submodule.subtypeL_apply,
     U.inner_orthogonalProjectionOnto_eq_of_mem_left, ← coe_coe, hT.isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
@@ -453,7 +460,7 @@ theorem isPositive_iff_complex (T : E' →L[ℂ] E') :
 
 end Complex
 
-section PartialOrder
+section Order
 
 /-- The (Loewner) partial order on continuous linear maps on a Hilbert space determined by
 `f ≤ g` if and only if `g - f` is a positive linear map (in the sense of
@@ -465,16 +472,25 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
   le_antisymm _ _ h₁ h₂ := coe_inj.mp (le_antisymm h₁.toLinearMap h₂.toLinearMap)
 
-lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
+lemma le_def {f g : E →L[𝕜] E} : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
-lemma coe_le_coe_iff (f g : E →L[𝕜] E) :
+@[simp]
+lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
     (f : E →ₗ[𝕜] E) ≤ g ↔ f ≤ g :=
   isPositive_toLinearMap_iff (g - f)
 
-lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
-  simpa using le_def 0 f
+lemma nonneg_iff_isPositive {f : E →L[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
+  simpa using le_def (f:=0) (g:=f)
 
-end PartialOrder
+instance : IsOrderedAddMonoid (E →L[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
+
+instance instIsOrderedModule : IsOrderedModule 𝕜 (E →L[𝕜] E) where
+  smul_le_smul_of_nonneg_left f hf b₁ b₂ hb := by
+    rw [← coe_le_coe_iff] at hb ⊢; exact smul_le_smul_of_nonneg_left hb hf
+  smul_le_smul_of_nonneg_right f hf b₁ b₂ hb := by
+    rw [← coe_le_coe_iff]; exact smul_le_smul_of_nonneg_right hb (by simpa)
+
+end Order
 
 /-- An idempotent operator is positive if and only if it is self-adjoint. -/
 @[grind →]
@@ -547,7 +563,7 @@ theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional �
   let a (i : Fin (Module.finrank 𝕜 E)) : E :=
     ((hT.isSymmetric.eigenvalues rfl i).sqrt : 𝕜) • hT.isSymmetric.eigenvectorBasis rfl i
   refine ⟨Module.finrank 𝕜 E, a, ext fun _ ↦ ?_⟩
-  simp_rw [sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
+  simp_rw [_root_.sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
     mul_comm (⟪_, _⟫_𝕜), ← mul_assoc, ← ofReal_mul,
     ← Real.sqrt_mul (hT.toLinearMap.nonneg_eigenvalues rfl _),
     Real.sqrt_mul_self (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜),
@@ -561,6 +577,6 @@ theorem Matrix.posSemidef_iff_eq_sum_vecMulVec {n : Type*} [Finite n] {M : Matri
   rw [← isPositive_toEuclideanLin_iff, ← isPositive_toContinuousLinearMap_iff,
     isPositive_iff_eq_sum_rankOne]
   simp_rw [eq_comm, ← LinearEquiv.symm_apply_eq, coe_toContinuousLinearMap_symm,
-    ContinuousLinearMap.coe_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
+    ContinuousLinearMap.toLinearMap_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
   exact ⟨fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ (u i).ofLp, hu⟩,
     fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ WithLp.toLp 2 (u i), hu⟩⟩

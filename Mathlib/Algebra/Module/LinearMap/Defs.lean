@@ -174,7 +174,9 @@ variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Mod
   (f : F) [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
-abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
+abbrev _root_.LinearMap.ofClass : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
+
+@[deprecated (since := "2026-09-03")] alias linearMap := LinearMap.ofClass
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 instance instCoeToLinearMap : CoeHead F (M₁ →ₗ[R] M₂) where
@@ -196,11 +198,11 @@ variable {σ : R →+* S}
 
 instance instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
@@ -264,7 +266,7 @@ theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass
   exact DFunLike.congr_fun h m
 
 /-- Identity map as a `LinearMap` -/
-@[implicit_reducible]
+@[instance_reducible]
 def id : M →ₗ[R] M :=
   { DistribMulActionHom.id R with toFun x := x }
 
@@ -482,7 +484,7 @@ variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {modu
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
 
 /-- Composition of two linear maps is a linear map -/
-@[implicit_reducible]
+@[instance_reducible]
 def comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂) :
     M₁ →ₛₗ[σ₁₃] M₃ where
   toFun x := f (g x)
@@ -558,6 +560,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ']
 
 /-- If a function `g` is a left and right inverse of a linear map `f`, then `g` is linear itself. -/
+@[implicit_reducible]
 def inverse (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f) (h₂ : RightInverse g f) :
     M₂ →ₛₗ[σ'] M := by
   dsimp [LeftInverse, Function.RightInverse] at h₁ h₂
@@ -830,6 +833,8 @@ instance : Add (M →ₛₗ[σ₁₂] M₂) :=
       map_add' := by simp [add_comm, add_left_comm]
       map_smul' := by simp [smul_add] }⟩
 
+@[simp] protected theorem coe_add (f g : M →ₛₗ[σ₁₂] M₂) : ⇑(f + g) = ⇑f + ⇑g := rfl
+
 @[simp]
 theorem add_apply (f g : M →ₛₗ[σ₁₂] M₂) (x : M) : (f + g) x = f x + g x :=
   rfl
@@ -1030,8 +1035,6 @@ theorem mulLeft_apply (a b : A) : mulLeft R a b = a * b := rfl
 @[simp]
 theorem toAddMonoidHom_mulLeft (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom.mulLeft a := rfl
 
-@[deprecated (since := "2025-12-30")] alias mulLeft_toAddMonoidHom := toAddMonoidHom_mulLeft
-
 variable (A) in
 @[simp]
 theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext zero_mul
@@ -1056,8 +1059,6 @@ theorem mulRight_apply (a b : A) : mulRight R a b = b * a := rfl
 
 @[simp]
 theorem toAddMonoidHom_mulRight (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a := rfl
-
-@[deprecated (since := "2025-12-30")] alias mulRight_toAddMonoidHom := toAddMonoidHom_mulRight
 
 variable (A) in
 @[simp]

@@ -49,7 +49,7 @@ variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B : Type*} {a b
 section CommSemiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable {p q r : R[X]}
+variable {p r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
 instance algebraOfAlgebra : Algebra R A[X] where
@@ -319,6 +319,9 @@ theorem aeval_comp {A : Type*} [Semiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
   eval₂_comp' x p q
 
+@[gcongr]
+theorem aeval_dvd (h : p ∣ q) : p.aeval x ∣ q.aeval x := _root_.map_dvd (aeval x) h
+
 section IsScalarTower
 
 variable {A : Type*} (B C : Type*) [CommSemiring A] [CommSemiring B] [Semiring C]
@@ -453,12 +456,12 @@ variable (x : Π i, A i) (p : R[X])
 /-- Polynomial evaluation on an indexed tuple is the indexed product of the evaluations
 on the components.
 Generalizes `Polynomial.aeval_prod` to indexed products. -/
-theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = Pi.algHom R A (fun i ↦ aeval (x i)) :=
+theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = AlgHom.pi (fun i ↦ aeval (x i)) :=
   (funext fun i ↦ aeval_algHom (Pi.evalAlgHom R A i) x) ▸
-    (Pi.algHom_comp R A (Pi.evalAlgHom R A) (aeval x))
+    (AlgHom.pi_comp (Pi.evalAlgHom R A) (aeval x))
 
 theorem aeval_pi_apply₂ (j : I) : p.aeval x j = p.aeval (x j) :=
-  aeval_pi (R := R) x ▸ Pi.algHom_apply R A (fun i ↦ aeval (x i)) p j
+  aeval_pi (R := R) x ▸ AlgHom.pi_apply (fun i ↦ aeval (x i)) p j
 
 /-- Polynomial evaluation on an indexed tuple is the indexed tuple of the evaluations
 on the components.
@@ -505,14 +508,20 @@ theorem aeval_eq_aeval_map [Semiring S] [CommSemiring T] [Algebra R S]
     (p : R[X]) (a : S) : aeval a p = aeval a (p.map φ) :=
   map_aeval_eq_aeval_map (by rwa [RingHom.id_comp]) p a
 
-theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
-    {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
-  rw [← eval_map_algebraMap] at h₂ ⊢
-  exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
+theorem aeval_eq_zero_of_dvd_aeval_eq_zero {x : B} (h₁ : p ∣ q) (h₂ : aeval x p = 0) :
+    aeval x q = 0 := zero_dvd_iff.mp (h₂ ▸ aeval_dvd _ h₁)
 
 section Semiring
 
 variable [Semiring S] {f : R →+* S}
+
+lemma comp_X_add_C_eq_zero_iff {p : S[X]} {t : S} : p.comp (X + C t) = 0 ↔ p = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual⟩
+  nontriviality S
+  simpa [h] using (p.coeff_comp_degree_mul_degree <| ne_zero_of_eq_one <| natDegree_X_add_C t).symm
+
+lemma comp_X_add_C_ne_zero_iff {p : S[X]} {t : S} : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 :=
+  comp_X_add_C_eq_zero_iff.not
 
 theorem aeval_eq_sum_range [Algebra R S] {p : R[X]} (x : S) :
     aeval x p = ∑ i ∈ Finset.range (p.natDegree + 1), p.coeff i • x ^ i := by
@@ -662,11 +671,6 @@ theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →�
 lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (X + C t) := by
   convert! (map_dvd_iff <| algEquivAevalXAddC t).symm using 2
   simp [C_eq_algebraMap]
-
-lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
-  EmbeddingLike.map_eq_zero_iff (f := algEquivAevalXAddC t)
-
-lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
 lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
     p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟a * (X - C b)) ∣ q := by

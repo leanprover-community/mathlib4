@@ -52,9 +52,9 @@ namespace FirstOrder
 
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- A first-order language consists of a type of functions of every natural-number arity and a
   type of relations of every natural-number arity. -/
-@[nolint checkUnivs]
 structure Language where
   /-- For every arity, a `Type u` of functions of that arity -/
   Functions : ℕ → Type u
@@ -109,12 +109,7 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
   fun _ => instIsEmptySum
 
 @[simp]
-theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
-  sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
-
-instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
-  simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
-  exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
+theorem card_empty : Language.empty.card = 0 := by simp [card]
 
 instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
@@ -236,6 +231,7 @@ instance : CoeTC L.Constants M :=
 theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
   congr rfl (funext finZeroElim)
 
+variable (L M) in
 /-- Given a language with a nonempty type of constants, any structure will be nonempty. This cannot
   be a global instance, because `L` becomes a metavariable. -/
 theorem nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :=
@@ -282,7 +278,7 @@ namespace Hom
 
 instance instFunLike : FunLike (M →[L] N) M N where
   coe := Hom.toFun
-  coe_injective' f g h := by cases f; cases g; cases h; rfl
+  coe_injective f g h := by cases f; cases g; cases h; rfl
 
 instance homClass : HomClass L (M →[L] N) M N where
   map_fun := map_fun'
@@ -366,7 +362,7 @@ namespace Embedding
 
 instance funLike : FunLike (M ↪[L] N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -763,7 +759,7 @@ end SumStructure
 section Empty
 
 /-- Any type can be made uniquely into a structure over the empty language. -/
-@[implicit_reducible]
+@[instance_reducible]
 def emptyStructure : Language.empty.Structure M where
 
 instance : Unique (Language.empty.Structure M) :=
@@ -807,7 +803,7 @@ open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
-@[simps!, implicit_reducible]
+@[simps!, instance_reducible]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
   ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
 

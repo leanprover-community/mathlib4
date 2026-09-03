@@ -92,10 +92,10 @@ theorem noetherianSpace_TFAE :
   tfae_finish
 
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
-  (noetherianSpace_TFAE α).out 0 2
+  (noetherianSpace_TFAE α).out 1 3
 
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
-  Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
+  Iff.mp ((noetherianSpace_TFAE α).out 1 2) ‹_›
 
 instance {α} : NoetherianSpace (CofiniteTopology α) := by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,
@@ -204,19 +204,13 @@ theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [Noet
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
     ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ⊆ Z := by
   have hα : (irreducibleComponents α).Finite := finite_irreducibleComponents
-  have hZ := closure_sUnion_irreducibleComponents_diff_singleton hα Z H
+  have hZ := closure_sUnion_irreducibleComponents_sdiff_singleton hα Z H
   refine ⟨(⋃₀ (irreducibleComponents α \ {Z}))ᶜ, ?_, ?_, subset_closure.trans hZ.le⟩
   · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
-    exact hα.diff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
+    exact hα.sdiff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
   · contrapose! hZ
     rw [hZ, closure_empty, ← Set.nonempty_iff_empty_ne]
     exact H.1.nonempty
-
-@[deprecated exists_isOpen_nonempty_subset_irreducibleComponent (since := "2025-12-11")]
-theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
-    (Z : Set α) (H : Z ∈ irreducibleComponents α) :
-    ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ≤ Z := by
-  simpa using exists_isOpen_nonempty_subset_irreducibleComponent Z H
 
 lemma NoetherianSpace.of_subset {W V : Set α} [NoetherianSpace W]
     (h : V ⊆ W) : NoetherianSpace V :=
