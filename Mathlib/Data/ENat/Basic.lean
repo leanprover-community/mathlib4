@@ -380,4 +380,3 @@ lemma eq_top_iff_forall_ge {n : WithBot ℕ∞} : n = ⊤ ↔ ∀ m : ℕ, m ≤
   _root_.WithBot.eq_top_iff_forall_ge
 
 end ENat.WithBot
-

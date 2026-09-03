@@ -361,4 +361,3 @@ theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
   exact PNat.ne_zero n (eq_zero_of_zero_dvd h)
 
 end PNat
-

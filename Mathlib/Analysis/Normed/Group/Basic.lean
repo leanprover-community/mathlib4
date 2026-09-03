@@ -1119,4 +1119,3 @@ meta def evalAddNorm : PositivityExt where eval {u α} _ pα? e :=
   | _, _, _ => throwError "not `‖·‖`"
 
 end Mathlib.Meta.Positivity
-

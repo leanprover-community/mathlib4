@@ -1283,4 +1283,3 @@ variable [PseudoMetricSpace X]
 @[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
 
 end
-

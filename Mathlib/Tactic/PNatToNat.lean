@@ -73,4 +73,3 @@ macro "pnat_to_nat" : tactic => `(tactic| focus (
 )
 
 end Mathlib.Tactic.PNatToNat
-

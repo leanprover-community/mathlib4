@@ -272,4 +272,3 @@ instance [LinearOrder G] [IsOrderedAddMonoid G] : LinearOrderedAddCommGroupWithT
   add_neg_cancel_of_ne_top | (a : G), _ => mod_cast add_neg_cancel a
 
 end WithTop.LinearOrderedAddCommGroup
-

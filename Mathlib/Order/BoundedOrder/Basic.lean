@@ -477,4 +477,3 @@ theorem bot_eq_false : ⊥ = false :=
   rfl
 
 end Bool
-

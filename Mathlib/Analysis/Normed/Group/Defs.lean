@@ -457,4 +457,3 @@ instance on `E`). -/]
 abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGroup E :=
   { f.toNormedGroup with
     mul_comm := mul_comm }
-

@@ -1281,4 +1281,3 @@ meta def evalNNRealRPow : NormNumExt where eval {u αR} e := do
   | _ => failure
 
 end Mathlib.Meta.NormNum
-

@@ -124,4 +124,3 @@ instance charZero_ofNat {M} {n : ℕ} [n.AtLeastTwo] [AddMonoidWithOne M] [CharZ
   ⟨OfNat.ofNat_ne_zero n⟩
 
 end NeZero
-

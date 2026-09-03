@@ -323,4 +323,3 @@ lemma add_le_add_one_left_iff {a b : WithBot ℕ∞} : 1 + a ≤ 1 + b ↔ a ≤
 
 end WithBot
 end ENat
-
