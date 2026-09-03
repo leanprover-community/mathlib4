@@ -253,14 +253,10 @@ digraph. -/
 instance {G : Digraph V} : Max G.SpanningSubgraph where
   max H₁ H₂ := ⟨max H₁.val H₂.val, by grind⟩
 
-/--
-The top subgraph `⊤`
--/
-instance {G : Digraph V} : OrderTop G.SpanningSubgraph where
-  top := ⟨G, by aesop⟩
-  le_top := by
-    intro ⟨_, ⟨H_sub, _⟩⟩
-    exact H_sub
+/-- The top subgraph `⊤` -/
+instance : OrderTop G.SpanningSubgraph where
+  top := ⟨G, by simp⟩
+  le_top H := H.prop.left
 
 /--
 The bottom subgraph `⊥`
