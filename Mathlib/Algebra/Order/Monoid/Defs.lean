@@ -14,7 +14,7 @@ This file provides the definitions of ordered monoids.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Function
@@ -35,6 +35,8 @@ class IsOrderedMonoid (α : Type*) [CommMonoid α] [Preorder α] where
   protected mul_le_mul_left (a b : α) : a ≤ b → ∀ c, a * c ≤ b * c
   protected mul_le_mul_right (a b : α) : a ≤ b → ∀ c, c * a ≤ c * b := fun h c ↦ by
     rw [mul_comm c, mul_comm c]; exact mul_le_mul_left a b h c
+
+attribute [to_dual self] IsOrderedMonoid.mk IsOrderedAddMonoid.mk
 
 section IsOrderedMonoid
 variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
@@ -78,18 +80,15 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE
-  {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] :
-    MulLeftReflectLE α :=
-  ⟨IsOrderedCancelMonoid.le_of_mul_le_mul_left⟩
+  {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] : MulLeftReflectLE α where
+  le_of_mul_le_mul_left' := IsOrderedCancelMonoid.le_of_mul_le_mul_left _ _ _
 
 @[to_additive]
-instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT :
-    MulLeftReflectLT α where
-  elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
+instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT : MulLeftReflectLT α where
+  elim := contravariant_lt_of_contravariant_le α α _ fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
 
 @[to_additive]
-theorem IsOrderedCancelMonoid.toMulRightReflectLT :
-    MulRightReflectLT α :=
+theorem IsOrderedCancelMonoid.toMulRightReflectLT : MulRightReflectLT α :=
   inferInstance
 
 -- See note [lower instance priority]

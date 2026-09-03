@@ -31,7 +31,7 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 convex, convex body
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Pointwise Topology NNReal
@@ -59,7 +59,7 @@ variable [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
 
 instance : SetLike (ConvexBody V) V where
   coe := ConvexBody.carrier
-  coe_injective' K L h := by
+  coe_injective K L h := by
     cases K
     cases L
     congr
@@ -180,9 +180,6 @@ theorem hausdorffEDist_ne_top {K L : ConvexBody V} : Metric.hausdorffEDist (K : 
   apply_rules [Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
     ConvexBody.isBounded]
 
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_ne_top := hausdorffEDist_ne_top
-
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
 metric. -/
 noncomputable instance : PseudoMetricSpace (ConvexBody V) where
@@ -199,9 +196,6 @@ theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
 theorem hausdorffEDist_coe : Metric.hausdorffEDist (K : Set V) L = edist K L := by
   rw [edist_dist]
   exact (ENNReal.ofReal_toReal hausdorffEDist_ne_top).symm
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_coe := hausdorffEDist_coe
 
 open Filter
 
@@ -225,7 +219,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     specialize hn n le_rfl
     rw [lt_div_iff₀' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn
     refine lt_of_le_of_lt ?_ hn
-    exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
+    gcongr; exact hC_bdd _ hyK
   · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
     exact le_add_of_nonneg_right (by positivity)
 

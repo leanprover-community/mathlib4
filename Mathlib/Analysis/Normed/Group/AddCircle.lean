@@ -25,7 +25,7 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -158,7 +158,7 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
   · rcases eq_or_ne p 0 with (rfl | hp)
     · simp only [abs_zero, zero_div] at hε
       simp only [not_lt.mpr hε, coe_real_preimage_closedBall_period_zero, abs_zero, zero_div,
-        if_false, inter_eq_right]
+        ite_false, inter_eq_right]
       exact hs.trans (closedBall_subset_closedBall <| by simp [hε])
     simp [closedBall_eq_univ_of_half_period_le p hp (↑x) hε, not_lt.mpr hε]
   · suffices ∀ z : ℤ, closedBall (x + z • p) ε ∩ s = if z = 0 then closedBall x ε ∩ s else ∅ by
@@ -168,7 +168,7 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     simp only [Real.closedBall_eq_Icc] at hs ⊢
     rcases eq_or_ne z 0 with (rfl | hz)
     · simp
-    simp only [hz, zsmul_eq_mul, if_false, eq_empty_iff_forall_notMem]
+    simp only [hz, zsmul_eq_mul, ite_false, eq_empty_iff_forall_notMem]
     rintro y ⟨⟨hy₁, hy₂⟩, hy₀⟩
     obtain ⟨hy₃, hy₄⟩ := hs hy₀
     rcases lt_trichotomy 0 p with (hp | (rfl : 0 = p) | hp)
@@ -211,7 +211,7 @@ theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFi
   conv_lhs => rw [← mul_one p]
   rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel₀ _ hu,
     mul_le_mul_iff_right₀ hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
-  contrapose! hu'
+  contrapose hu'
   simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero] using hn
 
 end FiniteOrderPoints

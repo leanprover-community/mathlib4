@@ -49,11 +49,10 @@ namespace AddCommGrpCat
 /-- The free functor `Type u ⥤ AddCommGroup` sending a type `X` to the
 free abelian group with generators `x : X`.
 -/
+@[simps obj map]
 def free : Type u ⥤ AddCommGrpCat where
   obj α := of (FreeAbelianGroup α)
   map f := ofHom (FreeAbelianGroup.map f)
-  map_id _ := AddCommGrpCat.ext FreeAbelianGroup.map_id_apply
-  map_comp _ _ := AddCommGrpCat.ext FreeAbelianGroup.map_comp_apply
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
@@ -62,20 +61,26 @@ theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup �
 -- This currently can't be a `simp` lemma,
 -- because `free_obj_coe` will simplify implicit arguments in the LHS.
 -- (The `simpNF` linter will, correctly, complain.)
-theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) :
+theorem free_map_coe {α β : Type u} {f : α ⟶ β} (x : FreeAbelianGroup α) :
     (free.map f) x = f <$> x :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for abelian groups.
 -/
 def adj : free ⊣ forget AddCommGrpCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeAbelianGroup.lift.symm
+    { homEquiv X Y := by
+        refine ConcreteCategory.homEquiv.trans (Equiv.trans ?_ TypeCat.homEquiv.symm)
+        exact FreeAbelianGroup.lift.symm
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be just `by intros; ext; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext
-        simpa using FreeAbelianGroup.lift_comp .. }
+        dsimp [ConcreteCategory.homEquiv]
+        rw [← FreeAbelianGroup.lift_comp]
+        rfl }
 
 instance : free.{u}.IsLeftAdjoint :=
   ⟨_, ⟨adj⟩⟩
@@ -89,7 +94,7 @@ the monomorphisms in `AddCommGroup` are just the injective functions.
 (This proof works in all universes.)
 -/
 example {G H : AddCommGrpCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
-  (mono_iff_injective (f : G → H)).mp (Functor.map_mono (forget AddCommGrpCat) f)
+  (mono_iff_injective _).mp (Functor.map_mono (forget AddCommGrpCat) f)
 
 instance : (free.{u}).PreservesMonomorphisms where
   preserves {X Y} f _ := by
@@ -100,7 +105,7 @@ instance : (free.{u}).PreservesMonomorphisms where
         ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
     · have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
-      have : IsSplitMono f := IsSplitMono.mk' { retraction := g }
+      have : IsSplitMono f := IsSplitMono.mk' { retraction := ↾g }
       infer_instance
 
 end AddCommGrpCat
@@ -117,7 +122,9 @@ def free : Type u ⥤ GrpCat where
 -/
 def adj : free ⊣ forget GrpCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeGroup.lift.symm
+    { homEquiv X Y :=
+        ConcreteCategory.homEquiv.trans
+          (Equiv.trans (FreeGroup.lift.symm) TypeCat.homEquiv.symm)
       homEquiv_naturality_left_symm := by
         intros
         ext : 1
@@ -139,12 +146,12 @@ def abelianize : GrpCat.{u} ⥤ CommGrpCat.{u} where
   map_id := by
     intros
     ext : 1
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    apply (Equiv.eq_symm_apply Abelianization.lift).mp
     rfl
   map_comp := by
     intros
     ext : 1
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    apply (Equiv.eq_symm_apply Abelianization.lift).mp
     rfl
 
 /-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/

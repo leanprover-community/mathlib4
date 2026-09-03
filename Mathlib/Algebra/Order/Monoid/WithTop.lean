@@ -11,19 +11,19 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
 variable {α : Type u}
 
-open Function
-
 namespace WithTop
 
-instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
+@[to_dual]
+instance [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
     IsOrderedAddMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
+  add_le_add_right _ _ := add_le_add_right
 
 instance canonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedAdd (WithTop α) where
@@ -39,10 +39,6 @@ instance canonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α]
 end WithTop
 
 namespace WithBot
-
-instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
-    IsOrderedAddMonoid (WithBot α) :=
-  { add_le_add_left := fun _ _ h c => add_le_add_left h c }
 
 protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
     {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :

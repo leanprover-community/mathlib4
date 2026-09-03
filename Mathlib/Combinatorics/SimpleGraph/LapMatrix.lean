@@ -19,7 +19,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.degMatrix`: The degree matrix of a simple graph
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
-* `isPosSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
+* `posSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
@@ -52,10 +52,18 @@ omit [Fintype V] in
 theorem isHermitian_adjMatrix [NonAssocSemiring R] [StarRing R] : (G.adjMatrix R).IsHermitian :=
   G.isAdjMatrix_adjMatrix R |>.isHermitian
 
+theorem IsRegularOfDegree.mem_spectrum_adjMatrix [DecidableEq V] [Nonempty V] [Nontrivial R]
+    [CommRing R] {d : ℕ} (hd : G.IsRegularOfDegree d) : (d : R) ∈ spectrum R (G.adjMatrix R) := by
+  rw [← Matrix.spectrum_toLin']
+  apply End.HasEigenvalue.mem_spectrum
+  refine End.hasEigenvalue_of_hasEigenvector (x := 1) ⟨End.mem_genEigenspace_one.mpr ?_, by simp⟩
+  ext v
+  simp [hd.degree_eq v]
+
 theorem degree_eq_sum_if_adj {R : Type*} [AddCommMonoidWithOne R] (i : V) :
     (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
   unfold degree neighborFinset neighborSet
-  rw [sum_boole, Set.toFinset_setOf]
+  rw [sum_boole, Set.toFinset_ofPred]
 
 variable [DecidableEq V]
 
@@ -84,15 +92,72 @@ theorem degMatrix_mulVec_apply [NonAssocSemiring R] (v : V) (vec : V → R) :
     (G.degMatrix R *ᵥ vec) v = G.degree v * vec v := by
   rw [degMatrix, mulVec_diagonal]
 
+variable (R) in
+theorem IsRegularOfDegree.degMatrix_eq [AddMonoidWithOne R] {d : ℕ}
+    (hd : G.IsRegularOfDegree d) : G.degMatrix R = d := by
+  simp [degMatrix, diagonal_natCast, hd.degree_eq]
+
+variable (R) in
+@[simp]
+theorem degMatrix_bot [AddMonoidWithOne R] : (⊥ : SimpleGraph V).degMatrix R = 0 := by
+  simp [degMatrix]
+
+variable (R) in
+@[simp]
+theorem degMatrix_top [AddMonoidWithOne R] :
+    (⊤ : SimpleGraph V).degMatrix R = (Fintype.card V - 1 : ℕ) :=
+  IsRegularOfDegree.top.degMatrix_eq R
+
+variable (R) in
+theorem IsIsolated.not_isUnit_degMatrix [Nontrivial R] [CommRing R] {v : V} (h : G.IsIsolated v) :
+    ¬IsUnit (G.degMatrix R) :=
+  (isUnit_diagonal.mp · |>.apply v |>.ne_zero <| by simp [h])
+
 theorem lapMatrix_mulVec_apply [NonAssocRing R] (v : V) (vec : V → R) :
     (G.lapMatrix R *ᵥ vec) v = G.degree v * vec v - ∑ u ∈ G.neighborFinset v, vec u := by
   simp_rw [lapMatrix, sub_mulVec, Pi.sub_apply, degMatrix_mulVec_apply, adjMatrix_mulVec_apply]
 
-theorem lapMatrix_mulVec_const_eq_zero [NonAssocRing R] :
-    mulVec (G.lapMatrix R) (fun _ ↦ 1) = 0 := by
+theorem lapMatrix_mulVec_apply' [NonAssocRing R] (v : V) (vec : V → R) :
+    (G.lapMatrix R *ᵥ vec) v = ∑ u ∈ G.neighborFinset v, (vec v - vec u) := by
+  simp [lapMatrix_mulVec_apply]
+
+variable (R) in
+theorem lapMatrix_mulVec_one_eq_zero [NonAssocRing R] : G.lapMatrix R *ᵥ 1 = 0 := by
   ext1 i
-  rw [lapMatrix_mulVec_apply]
+  simp [lapMatrix_mulVec_apply]
+
+variable (R) in
+@[simp]
+theorem det_lapMatrix_eq_zero [Nonempty V] [CommRing R] : (G.lapMatrix R).det = 0 := by
+  have ⟨v⟩ := ‹Nonempty V›
+  apply det_eq_zero_of_mulVec_eq_zero_of_mem_nonZeroDivisors (i := v) <|
+    G.lapMatrix_mulVec_one_eq_zero R
   simp
+
+variable (R) in
+theorem not_isUnit_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
+    ¬IsUnit (G.lapMatrix R) := by
+  simp [isUnit_iff_isUnit_det]
+
+variable (R) in
+/-- `0` is an eigenvalue of the Laplacian matrix of any graph. -/
+theorem zero_mem_spectrum_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
+    0 ∈ spectrum R (G.lapMatrix R) :=
+  spectrum.zero_mem R <| G.not_isUnit_lapMatrix R
+
+variable (R) in
+@[simp]
+theorem lapMatrix_bot [AddGroupWithOne R] : (⊥ : SimpleGraph V).lapMatrix R = 0 := by
+  simp [lapMatrix]
+
+variable (R) in
+@[simp]
+theorem lapMatrix_top [AddGroupWithOne R] :
+    (⊤ : SimpleGraph V).lapMatrix R = Fintype.card V - .of 1 := by
+  ext i j
+  rcases eq_or_ne i j with rfl | h
+  · simp [lapMatrix, Nat.cast_pred <| Fintype.card_pos_iff.mpr ⟨i⟩, sub_eq_add_neg]
+  · simp [lapMatrix, Matrix.natCast_apply, h]
 
 theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
     x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
@@ -136,9 +201,9 @@ theorem lapMatrix_mulVec_eq_zero_iff_forall_adj {x : V → ℝ} :
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
 
-theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLinearMap₂' ℝ (G.lapMatrix ℝ) x x = 0 ↔
-      ∀ i j : V, G.Reachable i j → x i = x j := by
+theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable [Field R] [LinearOrder R]
+    [IsStrictOrderedRing R] (x : V → R) :
+    (G.lapMatrix R).toLinearMap₂' R x x = 0 ↔ ∀ i j, G.Reachable i j → x i = x j := by
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
   intro h i j ⟨w⟩
@@ -150,15 +215,6 @@ theorem lapMatrix_mulVec_eq_zero_iff_forall_reachable {x : V → ℝ} :
     G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
-
-@[simp]
-theorem det_lapMatrix_eq_zero [h : Nonempty V] : (G.lapMatrix ℝ).det = 0 := by
-  rw [← Matrix.exists_mulVec_eq_zero_iff]
-  use fun _ ↦ 1
-  refine ⟨?_, (lapMatrix_mulVec_eq_zero_iff_forall_adj G).mpr fun _ _ _ ↦ rfl⟩
-  rw [← Function.support_nonempty_iff]
-  use Classical.choice h
-  simp
 
 section
 
@@ -187,7 +243,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   rw [Subtype.ext_iff] at h0
   have h : ∑ c, g c • lapMatrix_ker_basis_aux G c = fun i ↦ g (connectedComponentMk G i) := by
     simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk]
-    repeat rw [AddSubmonoid.coe_finset_sum]
+    repeat rw [AddSubmonoid.coe_finsetSum]
     ext i
     simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero, sum_ite_eq,
       mem_univ, ↓reduceIte]
@@ -196,6 +252,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
   exact h' ▸ congrFun h0 i
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
@@ -204,7 +261,7 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ← toLin'_apply, LinearMap.map_coe_ker])
   ext j
   simp only [lapMatrix_ker_basis_aux]
-  rw [AddSubmonoid.coe_finset_sum]
+  rw [AddSubmonoid.coe_finsetSum]
   simp only [SetLike.mk_smul_mk, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one,
     mul_zero, sum_ite_eq, mem_univ, ↓reduceIte]
   rfl

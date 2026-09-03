@@ -43,7 +43,9 @@ profinite
 
 universe v u
 
-open CategoryTheory Topology CompHausLike
+open CategoryTheory CompHausLike
+
+open scoped Topology
 
 /-- The type of profinite topological spaces. -/
 @[to_additive_do_translate] -- This is required
@@ -140,14 +142,14 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
-@[simps! -isSimp map_hom_hom_apply]
+@[simps! -isSimp map_hom_hom_apply obj]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
   map f := ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
-  preimage f := InducedCategory.homMk (f : _ → _)
+  preimage f := InducedCategory.homMk <| ↾(f : _ → _)
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -248,14 +250,14 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         ext x
         dsimp [g, LocallyConstant.ofIsClopen]
         rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, ConcreteCategory.hom_ofHom,
-          ContinuousMap.coe_mk, Function.comp_apply, if_neg]
+          ContinuousMap.coe_mk, Function.comp_apply, ite_eq_right]
         refine mt (fun α => hVU α) ?_
         simp [U, C]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, ite_eq_left hyV] at H
       exact top_ne_bot H
-  · rw [← CategoryTheory.epi_iff_surjective]
+  · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
 
 /-- The pi-type of profinite spaces is profinite. -/

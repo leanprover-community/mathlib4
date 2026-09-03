@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
-public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
 
 /-!
@@ -265,20 +264,20 @@ instance instIsCentralScalar [SMul S R] [SMul S A] [SMul Sᵐᵒᵖ R] [SMul S�
 instance instMulAction [Monoid S] [MulAction S R] [MulAction S A] : MulAction S (Unitization R A) :=
   fast_instance% equiv.mulAction S
 
-instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
-    [DistribMulAction S A] : DistribMulAction S (Unitization R A) :=
-  fast_instance% equiv.distribMulAction S
-
-instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
-    Module S (Unitization R A) :=
-  fast_instance% equiv.module S
-
 variable (R A) in
 /-- The identity map between `Unitization R A` and `R × A` as an `AddEquiv`. -/
 @[simps! apply symm_apply]
 def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A where
   toEquiv := equiv
   map_add' _ _ := rfl
+
+instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
+    [DistribMulAction S A] : DistribMulAction S (Unitization R A) :=
+  fast_instance% (addEquiv _ _).distribMulAction S
+
+instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
+    Module S (Unitization R A) :=
+  fast_instance% (addEquiv _ _).module S
 
 -- not marked `simp` because the LHS would not be in simp normal form.
 lemma toEquiv_addEquiv [Add R] [Add A] : (addEquiv R A).toEquiv = equiv :=
@@ -362,23 +361,23 @@ section
 
 variable (R)
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_zero [Zero R] [Zero A] : ↑(0 : A) = (0 : Unitization R A) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_add [AddZeroClass R] [Add A] (m₁ m₂ : A) : (↑(m₁ + m₂) : Unitization R A) = m₁ + m₂ :=
   Unitization.ext (add_zero 0).symm rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_neg [AddGroup R] [Neg A] (m : A) : (↑(-m) : Unitization R A) = -m :=
   Unitization.ext neg_zero.symm rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_sub [AddGroup R] [AddGroup A] (m₁ m₂ : A) : (↑(m₁ - m₂) : Unitization R A) = m₁ - m₂ :=
   Unitization.ext (sub_zero 0).symm rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S A] (r : S) (m : A) :
     (↑(r • m) : Unitization R A) = r • (m : Unitization R A) :=
   Unitization.ext (smul_zero _).symm rfl
@@ -405,19 +404,23 @@ theorem linearMap_ext {N} [CommSemiring S] [AddCommMonoid R] [AddCommMonoid A] [
   (linearEquiv S R A).arrowCongr (.refl ..) |>.injective <|
     LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
 
-variable (R A)
+variable [Semiring S] [Semiring R] [AddCommMonoid A] [SMul R A] [Module S R] [Module S A]
 
--- TODO: generalize to `S`-linear
-/-- The canonical `R`-linear inclusion `A → Unitization R A`. -/
+variable (S R A) in
+/-- The canonical `S`-linear inclusion `A → Unitization R A`. -/
 @[simps apply]
-def inrHom [Semiring R] [AddCommMonoid A] [Module R A] : A →ₗ[R] Unitization R A where
+def inrHom : A →ₗ[S] Unitization R A where
   toFun := (↑)
   map_add' := inr_add R
   map_smul' := inr_smul R
 
-/-- The canonical `R`-linear projection `Unitization R A → A`. -/
+omit [SMul R A] in
+lemma inrHom_injective : Function.Injective (inrHom S R A) := Unitization.inr_injective
+
+variable (S R A) in
+/-- The canonical `S`-linear projection `Unitization R A → A`. -/
 @[simps apply]
-def sndHom [Semiring R] [AddCommMonoid A] [Module R A] : Unitization R A →ₗ[R] A where
+def sndHom : Unitization R A →ₗ[S] A where
   toFun a := a.snd
   map_add' := snd_add
   map_smul' := snd_smul
@@ -485,10 +488,12 @@ theorem inr_mul [MulZeroClass R] [AddZeroClass A] [Mul A] [SMulWithZero R A] (a�
 
 end
 
+@[norm_cast]
 theorem inl_mul_inr [MulZeroClass R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r : R)
     (a : A) : ((inl r : Unitization R A) * a) = ↑(r • a) :=
   Unitization.ext (mul_zero r) <| by simp
 
+@[norm_cast]
 theorem inr_mul_inl [MulZeroClass R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r : R)
     (a : A) : a * (inl r : Unitization R A) = ↑(r • a) :=
   Unitization.ext (zero_mul r) <| by simp
@@ -590,7 +595,7 @@ theorem inl_star [Star R] [AddMonoid A] [StarAddMonoid A] (r : R) :
     inl (star r) = star (inl r : Unitization R A) :=
   Unitization.ext rfl (by simp only [snd_star, star_zero, snd_inl])
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
     ↑(star a) = star (a : Unitization R A) :=
   Unitization.ext (by simp only [fst_star, star_zero, fst_inr]) rfl
@@ -666,7 +671,7 @@ section coe
 
 /-- The coercion from a non-unital `R`-algebra `A` to its unitization `Unitization R A`
 realized as a non-unital algebra homomorphism. -/
-@[simps]
+@[simps toFun]
 def inrNonUnitalAlgHom (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] :
     A →ₙₐ[R] Unitization R A where
   toFun := (↑)
@@ -757,7 +762,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
 set_option backward.isDefEq.respectTransparency false in
 /-- Non-unital algebra homomorphisms from `A` into a unital `R`-algebra `C` lift uniquely to
 `Unitization R A →ₐ[R] C`. This is the universal property of the unitization. -/
-@[simps! apply symm_apply apply_apply]
+@[simps! apply symm_apply]
 def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   toFun := NonUnitalAlgHom.toAlgHom
   invFun φ := φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A)
@@ -794,7 +799,7 @@ variable [StarModule R C]
 
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
-@[simps! apply symm_apply apply_apply]
+@[simps! apply symm_apply]
 def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 { toFun := fun φ ↦
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
@@ -804,9 +809,7 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
   left_inv _ := by ext; simp,
   right_inv _ := by ext; simp }
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
-theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) :
+@[simp] theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) :
     Unitization.starLift.symm φ a = φ a :=
   rfl
 
@@ -846,8 +849,8 @@ lemma starMap_injective {φ : A →⋆ₙₐ[R] B} (hφ : Function.Injective φ)
     Function.Injective (starMap φ) := by
   intro x y h
   ext
-  · simpa using congr($(h).fst)
-  · exact hφ <| by simpa [algebraMap_eq_inl] using congr($(h).snd)
+  · simpa using! congr($(h).fst)
+  · exact hφ <| by simpa [algebraMap_eq_inl] using! congr($(h).snd)
 
 /-- If `φ : A →⋆ₙₐ[R] B` is surjective, the lift
 `starMap φ : Unitization R A →⋆ₐ[R] Unitization R B` is also surjective. -/

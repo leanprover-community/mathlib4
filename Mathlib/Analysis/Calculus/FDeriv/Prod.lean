@@ -22,7 +22,7 @@ Cartesian products of functions, and functions into Pi-types.
 public section
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set
 
 noncomputable section
 
@@ -34,10 +34,10 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {f' f₁' : E →L[𝕜] F}
 variable (e : E →L[𝕜] F)
 variable {x : E}
-variable {s t : Set E}
+variable {s : Set E}
 variable {L : Filter (E × E)}
 
 section CartesianProduct
@@ -301,7 +301,7 @@ end Snd
 
 section prodMap
 
-variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} {y : G} (p : E × G)
+variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} (p : E × G)
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.prodMap (hf : HasStrictFDerivAt f f' p.1)
@@ -481,6 +481,15 @@ theorem fderivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (φ i) s x)
 theorem fderiv_pi (h : ∀ i, DifferentiableAt 𝕜 (φ i) x) :
     fderiv 𝕜 (fun x i => φ i x) x = pi fun i => fderiv 𝕜 (φ i) x :=
   (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).fderiv
+
+theorem fderivWithin_apply (hΦ : DifferentiableWithinAt 𝕜 Φ s x)
+    (hs : UniqueDiffWithinAt 𝕜 s x) (i : ι) :
+    fderivWithin 𝕜 (fun x => Φ x i) s x = (proj i).comp (fderivWithin 𝕜 Φ s x) :=
+  (hasFDerivWithinAt_pi'.1 hΦ.hasFDerivWithinAt i).fderivWithin hs
+
+theorem fderiv_apply (hΦ : DifferentiableAt 𝕜 Φ x) (i : ι) :
+    fderiv 𝕜 (fun x => Φ x i) x = (proj i).comp (fderiv 𝕜 Φ x) :=
+  (hasFDerivAt_pi'.1 hΦ.hasFDerivAt i).fderiv
 
 end Pi
 

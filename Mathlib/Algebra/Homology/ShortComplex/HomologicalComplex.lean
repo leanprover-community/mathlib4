@@ -48,6 +48,8 @@ complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. 
 noncomputable def shortComplexFunctor (i : ι) :=
   shortComplexFunctor' C c (c.prev i) i (c.next i)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k`
 when `c.prev j = i` and `c.next j = k`. -/
 @[simps!]
@@ -382,6 +384,27 @@ lemma opcyclesMap_comp : opcyclesMap (φ ≫ ψ) i = opcyclesMap φ i ≫ opcycl
   dsimp [opcyclesMap]
   rw [Functor.map_comp, ShortComplex.opcyclesMap_comp]
 
+instance [IsIso φ] : IsIso (homologyMap φ i) where
+  out := ⟨homologyMap (inv φ) i, by simp [← homologyMap_comp]⟩
+
+instance [IsIso φ] : IsIso (cyclesMap φ i) where
+  out := ⟨cyclesMap (inv φ) i, by simp [← cyclesMap_comp]⟩
+
+instance [IsIso φ] : IsIso (opcyclesMap φ i) where
+  out := ⟨opcyclesMap (inv φ) i, by simp [← opcyclesMap_comp]⟩
+
+@[simp ←, push]
+lemma homologyMap_inv [IsIso φ] : inv (homologyMap φ i) = homologyMap (inv φ) i := by
+  simp [← cancel_epi (homologyMap φ i), ← homologyMap_comp]
+
+@[simp ←, push]
+lemma cyclesMap_inv [IsIso φ] : inv (cyclesMap φ i) = cyclesMap (inv φ) i := by
+  simp [← cancel_epi (cyclesMap φ i), ← cyclesMap_comp]
+
+@[simp ←, push]
+lemma opcyclesMap_inv [IsIso φ] : inv (opcyclesMap φ i) = opcyclesMap (inv φ) i := by
+  simp [← cancel_epi (opcyclesMap φ i), ← opcyclesMap_comp]
+
 variable (K L)
 
 @[simp]
@@ -487,6 +510,7 @@ noncomputable def opcyclesFunctor [CategoryWithHomology C] : HomologicalComplex 
   obj K := K.opcycles i
   map f := opcyclesMap f i
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.homologyπ i : K.cycles i ⟶ K.homology i`
 for all `K : HomologicalComplex C c`. -/
 @[simps]
@@ -494,6 +518,7 @@ noncomputable def natTransHomologyπ [CategoryWithHomology C] :
     cyclesFunctor C c i ⟶ homologyFunctor C c i where
   app K := K.homologyπ i
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.homologyι i : K.homology i ⟶ K.opcycles i`
 for all `K : HomologicalComplex C c`. -/
 @[simps]
@@ -655,6 +680,10 @@ lemma ExactAt.of_iso (hK : K.ExactAt i) {L : HomologicalComplex C c} (e : K ≅ 
   rw [exactAt_iff] at hK ⊢
   exact ShortComplex.exact_of_iso ((shortComplexFunctor C c i).mapIso e) hK
 
+variable {K i} in
+lemma ExactAt.of_isZero (h : IsZero (K.X i)) : K.ExactAt i :=
+  ShortComplex.exact_of_isZero_X₂ _ h
+
 lemma exactAt_iff' (hi : c.prev j = i) (hk : c.next j = k) :
     K.ExactAt j ↔ (K.sc' i j k).Exact :=
   ShortComplex.exact_iff_of_iso (K.isoSc' i j k hi hk)
@@ -689,6 +718,14 @@ namespace ChainComplex
 variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : ChainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
 
+instance isIso_iCycles₀ : IsIso (K.iCycles 0) :=
+  K.isIso_iCycles 0 0 (by simp) (by simp)
+
+/-- The canonical isomorphism `K.cycles 0 ≅ K.X 0` for a chain complex `K`
+indexed by `ℕ`. -/
+noncomputable abbrev cycles₀Iso : K.cycles 0 ≅ K.X 0 :=
+  K.iCyclesIso 0 0 (by simp) (by simp)
+
 instance isIso_homologyι₀ :
     IsIso (K.homologyι 0) :=
   K.isIso_homologyι 0 _ rfl (by simp)
@@ -715,6 +752,14 @@ namespace CochainComplex
 variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : CochainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
 
+instance isIso_pOpcycles₀ : IsIso (K.pOpcycles 0) :=
+  K.isIso_pOpcycles 0 0 (by simp) (by simp)
+
+/-- The canonical isomorphism `K.X 0 ≅ K.opcycles 0` for a cochain complex `K`
+indexed by `ℕ`. -/
+noncomputable abbrev opcycles₀Iso : K.X 0 ≅ K.opcycles 0 :=
+  K.pOpcyclesIso 0 0 (by simp) (by simp)
+
 instance isIso_homologyπ₀ :
     IsIso (K.homologyπ 0) :=
   K.isIso_homologyπ _ 0 rfl (by simp)
@@ -739,7 +784,7 @@ end CochainComplex
 namespace HomologicalComplex
 
 variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
-  {K L : HomologicalComplex C c} {f g : K ⟶ L}
+  {K L : HomologicalComplex C c}
 
 variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
 
@@ -824,6 +869,7 @@ by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def cyclesIsoSc' : K.cycles j ≅ (K.sc' i j k).cycles :=
   ShortComplex.cyclesMapIso (K.isoSc' i j k hi hk)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_hom_iCycles :
@@ -833,6 +879,7 @@ lemma cyclesIsoSc'_hom_iCycles :
     natIsoSc'_hom_app_τ₂, comp_id]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_inv_iCycles :
@@ -851,6 +898,7 @@ by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def opcyclesIsoSc' : K.opcycles j ≅ (K.sc' i j k).opcycles :=
   ShortComplex.opcyclesMapIso (K.isoSc' i j k hi hk)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesIsoSc'_inv :
@@ -860,6 +908,7 @@ lemma pOpcycles_opcyclesIsoSc'_inv :
     natIsoSc'_inv_app_τ₂, id_comp]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesIsoSc'_hom :

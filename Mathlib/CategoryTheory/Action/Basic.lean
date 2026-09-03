@@ -72,7 +72,7 @@ section
 @[simps]
 def trivial (X : V) : Action V G := { V := X, ρ := 1 }
 
-instance inhabited' : Inhabited (Action (Type*) G) :=
+instance inhabited' : Inhabited (Action Type* G) :=
   ⟨⟨PUnit, 1⟩⟩
 
 instance : Inhabited (Action AddCommGrpCat G) :=
@@ -108,6 +108,9 @@ instance (M : Action V G) : Inhabited (Action.Hom M M) :=
 @[simps]
 def comp {M N K : Action V G} (p : Action.Hom M N) (q : Action.Hom N K) : Action.Hom M K where
   hom := p.hom ≫ q.hom
+  comm := by
+    intro g
+    simp_all only [comm_assoc, comm, Category.assoc]
 
 end Hom
 
@@ -195,6 +198,8 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
     { hom := f.app PUnit.unit
       comm := fun g => f.naturality g }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
@@ -214,6 +219,7 @@ open FunctorCategoryEquivalence
 
 variable (V G)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The category of actions of `G` in the category `V`
 is equivalent to the functor category `SingleObj G ⥤ V`.
 -/
@@ -258,7 +264,7 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
     [ConcreteCategory V FV] (M N : Action V G) :
     FunLike (HomSubtype V G M N) (CV M.V) (CV N.V) where
   coe f := f.1
-  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+  coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] : ConcreteCategory (Action V G) (HomSubtype V G) where
@@ -297,6 +303,7 @@ theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
       rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Actions/representations of the trivial monoid are just objects in the ambient category. -/
 def actionPUnitEquivalence : Action V PUnit ≌ V where
@@ -310,8 +317,6 @@ def actionPUnitEquivalence : Action V PUnit ≌ V where
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
-
-@[deprecated (since := "2026-02-08")] alias actionPunitEquivalence := actionPUnitEquivalence
 
 variable (V)
 
@@ -329,6 +334,8 @@ def res {G H : Type*} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Acti
     { hom := p.hom
       comm := fun g => p.comm (f g) }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism from restriction along the identity homomorphism to
 the identity functor on `Action V G`.
 -/
@@ -336,6 +343,8 @@ the identity functor on `Action V G`.
 def resId {G : Type*} [Monoid G] : res V (MonoidHom.id G) ≅ 𝟭 (Action V G) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism from the composition of restrictions along homomorphisms
 to the restriction along the composition of homomorphism.
 -/
@@ -344,12 +353,15 @@ def resComp {G H K : Type*} [Monoid G] [Monoid H] [Monoid K]
     (f : G →* H) (g : H →* K) : res V g ⋙ res V f ≅ res V (g.comp f) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Restricting scalars along equal maps is naturally isomorphic. -/
 @[simps! hom inv]
 def resCongr {G H : Type*} [Monoid G] [Monoid H] {f f' : G →* H} (h : f = f') :
     Action.res V f ≅ Action.res V f' :=
   NatIso.ofComponents (fun _ ↦ Action.mkIso (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Restricting scalars along a monoid isomorphism induces an equivalence of categories. -/
 @[simps! functor inverse]
 def resEquiv {G H : Type*} [Monoid G] [Monoid H] (f : G ≃* H) :
@@ -372,6 +384,7 @@ instance : (res V f).Faithful where
     ext
     rw [← res_map_hom _ f g₁, ← res_map_hom _ f g₂, h]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor from `Action V H` to `Action V G` induced by a monoid homomorphism
 `f : G →* H` is full if `f` is surjective. -/
@@ -415,6 +428,7 @@ instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] : (F.mapAction G).Fai
     apply_fun (fun f ↦ f.hom) at eq
     exact F.map_injective eq
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 A fully faithful functor between categories induces a fully faithful functor between
 the categories of `G`-actions within those categories. -/
@@ -430,12 +444,15 @@ instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] [F.Full] : (F.mapActi
 
 variable (G : Type*) [Monoid G]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `Functor.mapAction` is functorial in the functor. -/
 @[simps! hom inv]
 def mapActionComp {T : Type*} [Category* T] (F : V ⥤ W) (F' : W ⥤ T) :
     (F ⋙ F').mapAction G ≅ F.mapAction G ⋙ F'.mapAction G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Functor.mapAction` preserves isomorphisms of functors. -/
 @[simps! hom inv]
@@ -445,6 +462,8 @@ def mapActionCongr {F F' : V ⥤ W} (e : F ≅ F') :
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories induces an equivalence of
 the categories of `G`-actions within those categories. -/
 @[simps functor inverse]

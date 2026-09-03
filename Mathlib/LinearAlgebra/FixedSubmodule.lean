@@ -6,12 +6,10 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Tactic.NormNum
 
 /-!
 # The fixed submodule of a linear map
@@ -23,8 +21,6 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 @[expose] public section
 
 namespace LinearMap
-
-open Pointwise Submodule MulAction
 
 variable {R : Type*} [Semiring R]
   {U V : Type*} [AddCommMonoid U] [AddCommMonoid V]
@@ -57,13 +53,14 @@ theorem fixedSubmodule_inf_fixedSubmodule_le_comp (f g : V →ₗ[R] V) :
   intro; simp_all
 
 theorem fixedSubmodule_comp_inf_fixedSubmodule_le (f g : V →ₗ[R] V) :
-    (f ∘ₗ g).fixedSubmodule ⊓ g.fixedSubmodule ≤ f.fixedSubmodule := by  intro; aesop
+    (f ∘ₗ g).fixedSubmodule ⊓ g.fixedSubmodule ≤ f.fixedSubmodule := by intro; aesop
 
 end LinearMap
 
 namespace LinearEquiv
 
-open Pointwise LinearMap Submodule MulAction
+open scoped Pointwise
+open LinearMap Submodule MulAction
 
 variable {R : Type*} [Semiring R]
   {U V : Type*} [AddCommMonoid U] [AddCommMonoid V]
@@ -104,10 +101,9 @@ theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
     rwa [← hv', he w hv]
   · refine ⟨v, hv, he v hv⟩
 
-open Pointwise MulAction
-
 variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `u : V ≃ₗ[R] V` maps a submodule `W` into itself,
 this is the induced linear equivalence of `V ⧸ W`, as a group homomorphism. -/
 def reduce (W : Submodule R V) : stabilizer (V ≃ₗ[R] V) W →* (V ⧸ W) ≃ₗ[R] (V ⧸ W) where

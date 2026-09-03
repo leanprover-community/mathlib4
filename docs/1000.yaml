@@ -71,6 +71,7 @@ Q172298:
 
 Q174955:
   title: Mihăilescu's theorem
+  comment: "Previously known as the Catalan conjecture. The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/Catalan.lean#L34"
 
 Q179208:
   title: Cayley's theorem
@@ -241,6 +242,7 @@ Q225973:
 
 Q226014:
   title: Poincaré recurrence theorem
+  decl: MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem
 
 Q230848:
   title: Lamé’s theorem
@@ -322,9 +324,10 @@ Q282331:
 
 Q282649:
   title: Pentagonal number theorem
-  url: https://github.com/wwylele/PentagonalNumberTheorem
+  decls:
+    - PowerSeries.WithPiTopology.hasProd_one_sub_X_pow
+    - hasProd_eulerFunction
   authors: Weiyi Wang
-  comment: Formal power series only. Missing power series over complex numbers.
   date: 2025-08-24
 
 Q283690:
@@ -365,6 +368,7 @@ Q332465:
 
 Q338886:
   title: Divergence theorem
+  decl: MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable
 
 Q339495:
   title: Symphonic theorem
@@ -546,7 +550,7 @@ Q544369:
 
 Q550402:
   title: Dirichlet's theorem on arithmetic progressions
-  decl: Nat.infinite_setOf_prime_and_eq_mod
+  decl: Nat.infinite_setOfPred_prime_and_eq_mod
   authors: David Loeffler, Michael Stoll
 
 Q552367:
@@ -577,8 +581,10 @@ Q579515:
 
 Q583147:
   title: Sard's theorem
-  # exists a statement in Lean, WIP formalisations in https://github.com/urkud/SardMoreira
-  # and https://github.com/fpvandoorn/sard (manifold version)
+  url: https://github.com/urkud/SardMoreira
+  authors: Yury Kudryashov
+  date: 2025-12-16
+  comment: the manifold version is in progress by Michael Rothgang at https://github.com/fpvandoorn/sard
 
 Q586051:
   title: Haag–Łopuszański–Sohnius theorem
@@ -588,6 +594,9 @@ Q587081:
 
 Q588218:
   title: Koebe 1/4 theorem
+  url: https://github.com/girving/ray/blob/main/Ray/Koebe/Koebe.lean
+  authors: Geoffrey Irving
+  date: 2025-09-02
 
 Q594571:
   title: Van Aubel's theorem
@@ -660,7 +669,8 @@ Q646523:
 
 Q649469:
   title: Modularity theorem
-  comment: "https://imperialcollegelondon.github.io/FLT is proving a special case"
+  comment: "Variously known as the Taniyama–Shimura conjecture, Taniyama–Shimura–Weil conjecture, or modularity conjecture for elliptic curves prior to its proof. https://imperialcollegelondon.github.io/FLT is proving a special case. The statement of this theorem is also formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/448f15c51a9e89aced922f36259dd8ddc0c1bd20/FormalConjectures/Wikipedia/ModularityConjecture.lean#L85-L87"
+
 
 Q649977:
   title: Shirshov–Cohn theorem
@@ -676,7 +686,7 @@ Q656176:
 
 Q656198:
   title: Maschke's theorem
-  # `RepresentationTheory/Maschke` comes very close, but doesn't prove the standard form yet...
+  decl: MonoidAlgebra.Submodule.exists_isCompl
 
 Q656645:
   title: Hilbert's basis theorem
@@ -723,7 +733,7 @@ Q670235:
   decls:
     - Nat.primeFactorsList_unique
     - Int.euclideanDomain
-    - EuclideanDomain.to_principal_ideal_domain
+    - EuclideanDomain.instIsPrincipalIdealRing
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
   authors: Chris Hughes
@@ -740,6 +750,7 @@ Q679800:
 
 Q681406:
   title: Euler's rotation theorem
+  url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/Mathematics/SO3/Basic.lean#L161
 
 Q685437:
   title: Titchmarsh theorem
@@ -791,13 +802,17 @@ Q733081:
 
 Q737851:
   title: Banach–Tarski theorem
-  # WIP formalisation at https://github.com/Bergschaf/banach-tarski
+  url: https://github.com/aetilley/banach-tarski/blob/a920deea0a3f3207049f8201fc1e7a0bb8cf4c93/BanachTarski/Basic.lean#L2577
+  comment: "Note that this statement of the paradox allows reflections in the set of isometries"
 
 Q737892:
   title: Bendixson–Dulac theorem
 
 Q739403:
   title: Stewart's theorem
+  decl: EuclideanGeometry.dist_sq_mul_dist_add_dist_sq_mul_dist
+  authors: Manuel Candales
+  date: 2021
 
 Q740093:
   title: Peano existence theorem
@@ -901,9 +916,8 @@ Q830513:
 
 Q834025:
   title: Cauchy integral theorem
-  decl: Complex.circleIntegral_div_sub_of_differentiable_on_off_countable
-  authors: Yury Kudryashov
-  date: 2021
+  comment: We have `DiffContOnCl.circleIntegral_eq_zero` for circle contours
+  url: https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Complex/CauchyIntegral.html#DiffContOnCl.circleIntegral_eq_zero
 
 Q834211:
   title: Wallace–Bolyai–Gerwien theorem
@@ -948,6 +962,7 @@ Q848810:
 
 Q850495:
   title: Wick's theorem
+  url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/QFT/PerturbationTheory/WickAlgebra/WicksTheorem.lean#L82
 
 Q851166:
   title: Pappus's hexagon theorem
@@ -1005,9 +1020,14 @@ Q869647:
 
 Q872088:
   title: Boolean prime ideal theorem
+  decl: DistribLattice.prime_ideal_of_disjoint_filter_ideal
+  comment: "This is the prime ideal separation theorem for (bounded) distributive lattices, of which the Boolean prime ideal theorem is a special case."
 
 Q877489:
   title: Apollonius's theorem
+  decl: EuclideanGeometry.dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq
+  authors: Manuel Candales
+  date: 2021
 
 Q890875:
   title: Bohr–van Leeuwen theorem
@@ -1061,6 +1081,7 @@ Q922012:
 
 Q922367:
   title: Master theorem (analysis of algorithms)
+  comment: "Generalized by the Akra–Bazzi theorem `AkraBazziRecurrence.isTheta_asympBound`"
 
 Q925224:
   title: Sonnenschein–Mantel–Debreu Theorem
@@ -1174,7 +1195,7 @@ Q1008566:
   decls:
     - Polynomial.rootSet_derivative_subset_convexHull_rootSet
     - Polynomial.eq_centerMass_of_eval_derivative_eq_zero
-  authors: Yury Kudryashov, Aristotle AI
+  authors: Yury Kudryashov
 
 Q1032886:
   title: Hales–Jewett theorem
@@ -1296,6 +1317,7 @@ Q1068976:
 
 Q1075398:
   title: Jung's theorem
+  url: https://github.com/michelsol/bounding-sphere-math/blob/ba35028924776ad7e175b424c3ba681ac9736567/BoundingSphere/Jung.lean#L381
 
 Q1076274:
   title: Choquet–Bishop–de Leeuw theorem
@@ -1390,6 +1412,7 @@ Q1139524:
 
 Q1140119:
   title: Morera's theorem
+  decl: Complex.isConservativeOn_and_continuousOn_iff_isDifferentiableOn
 
 Q1140200:
   title: PCP theorem
@@ -1499,6 +1522,8 @@ Q1196538:
 
 Q1196729:
   title: Mertens's theorems
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/58e860034029b94547abe9bd2065f5b3e3f82ebb/PrimeNumberTheoremAnd/RosserSchoenfeldPrime.lean#L788
+  comment: "This link is to a proof of Mertens' second theorem"
 
 Q1202608:
   title: De Gua's theorem
@@ -1568,6 +1593,9 @@ Q1307676:
 
 Q1308502:
   title: Church–Rosser theorem
+  authors: Chris Henson, Maximiliano Onofre Martínez
+  url: https://github.com/leanprover/cslib/
+  comment: "CSLib has a few variants for untyped terms, including β-, η-, and βη-reduction."
 
 Q1315949:
   title: Mittag-Leffler's theorem
@@ -1672,8 +1700,8 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
-  decl: exists_wellOrder
-  authors: Mario Carneiro, Chris Hughes, Violeta Hernández
+  decl: exists_wellFoundedLT
+  authors: Mario Carneiro, Chris Hughes, Violeta Hernández Palacios
   date: 2017
 
 Q1471282:
@@ -1716,7 +1744,7 @@ Q1542114:
   title: Bézout's theorem
 
 Q1543149:
-  title: Sokhatsky–Weierstrass theorem
+  title: Sokhotski–Plemelj theorem
 
 Q1547975:
   title: Mermin–Wagner theorem
@@ -1799,7 +1827,7 @@ Q1683356:
 Q1687147:
   title: Sprague–Grundy theorem
   url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
-  authors: Fox Thomson
+  authors: Fox Thomson, Julia Markus Himmel, Violeta Hernández Palacios
   date: 2020
 
 Q1694565:
@@ -1995,6 +2023,7 @@ Q2190744:
 
 Q2197859:
   title: Nicomachus's theorem
+  comment: "Nicomachus's theorem states that the sum of the first n cubes is the square of the nth triangular number. This follows from Faulhaber's formula, formalized in mathlib as `sum_Ico_pow`, which provides a geeneral formula for sums of powers using Bernoulli numbers."
 
 Q2222575:
   title: Shell theorem
@@ -2072,7 +2101,7 @@ Q2226803:
   title: Tennenbaum's theorem
 
 Q2226807:
-  title: Vantieghems theorem
+  title: Vantieghem's theorem
 
 Q2226855:
   title: Sharkovskii's theorem
@@ -2082,6 +2111,9 @@ Q2226855:
 
 Q2226868:
   title: Geometric mean theorem
+  decl: EuclideanGeometry.dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two
+  authors: Daniel Liao
+  date: 2026
 
 Q2226962:
   title: Weierstrass–Casorati theorem
@@ -2232,6 +2264,9 @@ Q2621667:
 
 Q2631152:
   title: Carathéodory's extension theorem
+  decls:
+    - MeasureTheory.AddContent.measure
+    - MeasureTheory.AddContent.measure_eq
 
 Q2635326:
   title: Structured program theorem
@@ -2250,6 +2285,7 @@ Q2734084:
 
 Q2793600:
   title: Stark–Heegner theorem
+  comment: "The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/ClassNumberProblem.lean#L46"
 
 Q2799491:
   title: Ringel–Youngs theorem
@@ -2424,6 +2460,7 @@ Q3527088:
 
 Q3527091:
   title: Gromov's theorem on groups of polynomial growth
+  comment: "The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/GromovPolynomialGrowth.lean#L58"
 
 Q3527093:
   title: Hilbert–Speiser theorem
@@ -2468,7 +2505,7 @@ Q3527162:
 
 Q3527166:
   title: Steinhaus theorem
-  # not difficult, but seemingly missing
+  decl: MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 
 Q3527171:
   title: Synge's theorem
@@ -2518,6 +2555,9 @@ Q3527226:
 
 Q3527230:
   title: Von Staudt–Clausen theorem
+  decl: Bernoulli.vonStaudt_clausen
+  authors: Seewoo Lee
+  date: 2026
 
 Q3527233:
   title: Kolmogorov's three-series theorem
@@ -2915,6 +2955,9 @@ Q4958233:
 
 Q4971339:
   title: British flag theorem
+  decl: EuclideanGeometry.dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_of_angle_eq_pi_div_two
+  authors: Daniel Liao
+  date: 2026
 
 Q4975963:
   title: Brown's representability theorem
@@ -3503,7 +3546,7 @@ Q6799039:
 
 Q6813106:
   title: Mellin inversion theorem
-  decl: mellin_inversion
+  decl: mellinInv_mellin_eq
 
 Q6859627:
   title: Milliken's tree theorem
@@ -3620,7 +3663,6 @@ Q7208500:
   title: Poisson limit theorem
   decls:
     - ProbabilityTheory.tendsto_choose_mul_pow_of_tendsto_mul_atTop
-    - ProbabilityTheory.binomial_tendsto_poissonPMFReal_atTop
   authors: Yi Yuan
   date: 2026
 
@@ -3633,9 +3675,9 @@ Q7245073:
 Q7249519:
   title: Prokhorov's theorem
   decls:
-    - isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
-    - isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le
-    - isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le
+    - isCompact_setOfPred_finiteMeasure_mass_le_compl_isCompact_le
+    - isCompact_setOfPred_finiteMeasure_mass_eq_compl_isCompact_le
+    - isCompact_setOfPred_probabilityMeasure_mass_eq_compl_isCompact_le
     - isCompact_closure_of_isTightMeasureSet
 
 Q7255475:
@@ -3891,6 +3933,7 @@ Q7849521:
 
 Q7853325:
   title: Tunnell's theorem
+  comment: "The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/CongruentNumber.lean#L89-L109"
 
 Q7856599:
   title: Turán–Kubilius theorem
@@ -4141,6 +4184,7 @@ Q20278711:
 
 Q20971632:
   title: Lie's theorem
+  decl: LieModule.exists_nontrivial_weightSpace_of_isSolvable
 
 Q22952648:
   title: Uncountability of the continuum

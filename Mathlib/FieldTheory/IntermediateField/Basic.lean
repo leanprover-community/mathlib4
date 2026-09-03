@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Field.Subfield.Basic
@@ -286,7 +287,7 @@ def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : Inte
     by_cases hx0 : x = 0
     · rw [hx0, inv_zero]
       exact S.zero_mem
-    letI hS' := hS.toField
+    let hS' := hS.toField
     obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.coe_ne_coe.1 hx0)
     rw [Subtype.ext_iff, S.coe_mul, S.coe_one, Subtype.coe_mk, mul_eq_one_iff_inv_eq₀ hx0] at hy
     exact hy.symm ▸ y.2
@@ -327,11 +328,11 @@ instance toField : Field S :=
 
 @[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) :=
-  AddSubmonoidClass.coe_finset_sum f Finset.univ
+  AddSubmonoidClass.coe_finsetSum f Finset.univ
 
 @[norm_cast]
 theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) :=
-  SubmonoidClass.coe_finset_prod f Finset.univ
+  SubmonoidClass.coe_finsetProd f Finset.univ
 
 /-!
 `IntermediateField`s inherit structure from their `Subfield` coercions.
@@ -408,6 +409,12 @@ instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : Interm
     [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
   inferInstanceAs (Algebra R' S.toSubalgebra)
 
+-- Over `ℚ`, the algebra structure inherited from the ambient field and the one coming from the
+-- `DivisionRing` structure of the intermediate field are the same instance.
+example {L : Type*} [Field L] [CharZero L] (S : IntermediateField ℚ L) :
+    (S.algebra' : Algebra ℚ S) = DivisionRing.toRatAlgebra := by
+  with_implicit rfl
+
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=
   inferInstanceAs (IsScalarTower R K S.toSubalgebra)
@@ -435,8 +442,6 @@ instance isScalarTower_mid' : IsScalarTower K S L :=
 instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebra S.toSubalgebra E)
 
 section shortcut_instances
-
-set_option backward.isDefEq.respectTransparency false
 
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
 
@@ -497,6 +502,7 @@ theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L�
     (E.map f).map g = E.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
+@[gcongr]
 theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
     S.map f ≤ T.map f :=
   SetLike.coe_mono (Set.image_mono h)
@@ -542,13 +548,25 @@ theorem coe_fieldRange : ↑f.fieldRange = Set.range f :=
 theorem fieldRange_toSubfield : f.fieldRange.toSubfield = (f : L →+* L').fieldRange :=
   rfl
 
-variable {f}
-
+variable {f} in
 @[simp]
 theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
 
+/-- The isomorphism from `L` to the field range of the `AlgHom` `f`, sending `x` to `f x`. -/
+@[simps! apply_coe]
+noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
+  .ofBijective f.rangeRestrict ⟨f.rangeRestrict.injective, fun ⟨_, ⟨x, hx⟩⟩ ↦ ⟨x, Subtype.ext hx⟩⟩
+
+@[deprecated (since := "2026-06-20")] alias equivFieldRange_apply := equivFieldRange_apply_coe
+
 end AlgHom
+
+variable (K L L') in
+@[simp]
+theorem IsScalarTower.toAlgHom_fieldRange [Algebra L L'] [IsScalarTower K L L'] :
+    (IsScalarTower.toAlgHom K L L').fieldRange = Set.range (algebraMap L L') := by
+  ext; simp
 
 namespace IntermediateField
 
@@ -900,9 +918,12 @@ theorem lift_restrict : lift (restrict h) = F := by
 /--
 `F` is equivalent to `F` as an intermediate field of `E / K`.
 -/
-noncomputable def restrict_algEquiv :
+noncomputable def restrictAlgEquiv :
     F ≃ₐ[K] ↥(IntermediateField.restrict h) :=
   AlgEquiv.ofInjectiveField _
+
+@[deprecated (since := "2026-07-25")]
+alias restrict_algEquiv := restrictAlgEquiv
 
 end Restrict
 

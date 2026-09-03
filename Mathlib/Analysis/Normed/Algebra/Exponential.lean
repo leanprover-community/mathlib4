@@ -134,7 +134,7 @@ noncomputable irreducible_def exp (x : 𝔸) : 𝔸 :=
 /-- The junk value when `𝔸` can't be equipped with a `ℚ`-algebra structure. -/
 @[simp]
 theorem exp_of_isEmpty_algebra_rat [IsEmpty (Algebra ℚ 𝔸)] (x : 𝔸) : exp x = 1 := by
-  rw [exp, dif_neg (not_nonempty_iff.mpr ‹_›)]
+  rw [exp, dite_eq_right (not_nonempty_iff.mpr ‹_›)]
 
 theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by simp [expSeries]
@@ -157,7 +157,7 @@ theorem expSeries_eq_expSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
 variable (𝕂) in
 theorem exp_eq_expSeries_sum [CharZero 𝕂] : exp = (expSeries 𝕂 𝔸).sum := by
   ext x
-  rw [exp, dif_pos ⟨RestrictScalars.algebra ℚ 𝕂 𝔸⟩, ← @expSeries_sum_eq_rat (𝕂 := 𝕂)]
+  rw [exp, dite_eq_left ⟨RestrictScalars.algebra ℚ 𝕂 𝔸⟩, ← @expSeries_sum_eq_rat (𝕂 := 𝕂)]
 
 variable (𝕂) in
 theorem exp_eq_tsum [CharZero 𝕂] : exp = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : 𝕂) • x ^ n := by
@@ -352,7 +352,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : Invertible (exp x)
     where
@@ -377,7 +377,7 @@ theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp x)] :
     ⅟(exp x) = exp (-x) := by
-  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟(exp x) = _)
+  let := invertibleExpOfMemBall hx; convert! (rfl : ⅟(exp x) = _)
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp_of_mem_ball [Algebra 𝕂 𝔹] [CharZero 𝕂] {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹]
@@ -522,7 +522,7 @@ theorem exp_add_of_commute {x y : 𝔸} (hxy : Commute x y) : exp (x + y) = exp 
     ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
   invertibleExpOfMemBall <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
@@ -542,13 +542,25 @@ theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸]
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
     neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 
+lemma _root_.SemiconjBy.exp_right {x a b : 𝔸} (h : SemiconjBy x a b) :
+    SemiconjBy x (exp a) (exp b) := by
+  rw [exp_eq_tsum ℚ]
+  apply SemiconjBy.tsum_right x (expSeries_summable' _) (expSeries_summable' _)
+  exact fun _ ↦ h.pow_right _ |>.smul_right _
+
+lemma _root_.SemiconjBy.exp_neg_mul_mul_exp_eq_self {x a b : 𝔸} (h : SemiconjBy x a b) :
+    exp (-b) * x * exp a = x := by
+  let := invertibleExp b
+  simpa [← invOf_exp, mul_assoc, invOf_mul_eq_iff_eq_mul_left] using! h.exp_right
+
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if a family of elements `f i` mutually
 commute then `NormedSpace.exp (∑ i, f i) = ∏ i, NormedSpace.exp (f i)`. -/
 theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp := by
+      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.forall₂ hi hj).exp := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -556,7 +568,7 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_
-    exact h.of_refl (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
+    exact h.forall₂ (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
 
 theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp (n • x) = exp x ^ n := by
   induction n with
@@ -673,13 +685,10 @@ theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
     (expSeries 𝕂 𝔸 n fun _ => x) = expSeries 𝕂' 𝔸 n fun _ => x := by
   rw [expSeries_apply_eq, expSeries_apply_eq, inv_natCast_smul_eq 𝕂 𝕂']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Complex.ofReal_exp` for `NormedSpace.exp` instead of `Complex.exp` -/
 @[simp, norm_cast]
 theorem ofReal_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
   map_exp (algebraMap ℝ ℂ) (continuous_algebraMap _ _) r
-
-@[deprecated (since := "2025-11-13")] alias of_real_exp_ℝ_ℝ := ofReal_exp_ℝ_ℝ
 
 end ScalarTower
 

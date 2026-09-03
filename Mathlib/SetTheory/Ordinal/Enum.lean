@@ -49,7 +49,7 @@ theorem enumOrd_le_of_forall_lt (ha : a ∈ s) (H : ∀ b < o, enumOrd s b < a) 
 private theorem enumOrd_nonempty (hs : ¬ BddAbove s) (o : Ordinal) :
     (s ∩ { b | ∀ c, c < o → enumOrd s c < b }).Nonempty := by
   rw [not_bddAbove_iff] at hs
-  obtain ⟨a, ha⟩ := bddAbove_of_small (enumOrd s '' Iio o)
+  obtain ⟨a, ha⟩ := bddAbove_of_small (s := enumOrd s '' Iio o)
   obtain ⟨b, hb, hba⟩ := hs a
   exact ⟨b, hb, fun c hc ↦ (ha (mem_image_of_mem _ hc)).trans_lt hba⟩
 
@@ -123,7 +123,7 @@ theorem eq_enumOrd (f : Ordinal → Ordinal) (hs : ¬ BddAbove s) :
   · rintro rfl
     exact ⟨enumOrd_strictMono hs, range_enumOrd hs⟩
   · rintro ⟨h₁, h₂⟩
-    rwa [← (enumOrd_strictMono hs).range_inj h₁, range_enumOrd hs, eq_comm]
+    rwa [← (enumOrd_strictMono hs).range_inj_of_wellFoundedLT h₁, range_enumOrd hs, eq_comm]
 
 theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (range f) = f :=
   (eq_enumOrd _ hf.not_bddAbove_range_of_wellFoundedLT).2 ⟨hf, rfl⟩
@@ -136,7 +136,7 @@ theorem isNormal_enumOrd (H : ∀ t ⊆ s, t.Nonempty → BddAbove t → sSup t 
   trans ⨆ b : Iio o, enumOrd s b
   · refine enumOrd_le_of_forall_lt ?_ (fun b hb ↦ (enumOrd_strictMono hs (lt_succ b)).trans_le ?_)
     · have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
-      apply H _ _ (range_nonempty _) (bddAbove_of_small _)
+      apply H _ _ (range_nonempty _) bddAbove_of_small
       rintro _ ⟨c, rfl⟩
       exact enumOrd_mem hs c
     · exact Ordinal.le_iSup _ (⟨_, ho.succ_lt hb⟩ : Iio o)

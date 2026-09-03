@@ -18,7 +18,7 @@ public import Mathlib.Tactic.Bound.Attribute
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
 
-open Function Int
+open Function
 
 variable {α M R : Type*}
 
@@ -55,7 +55,7 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
           add_assoc (x * x ^ n) (x * y ^ n), add_comm (x * y ^ n) (y * y ^ n), ← add_assoc]
       _ ≤ (x + y) ^ (n + 1) := by
         rw [pow_succ' _ n]
-        exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
+        gcongr; exact ih (Nat.succ_ne_zero k)
 
 attribute [bound] pow_le_one₀ one_le_pow₀
 
@@ -77,13 +77,20 @@ section LinearOrderedSemiring
 
 section IsOrderedRing
 
-variable [Semiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R] {m n : ℕ}
+variable [Semiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R] {n : ℕ}
 
 protected lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
 
 lemma pow_four_le_pow_two_of_pow_two_le {a b : R} (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left₀ (sq_nonneg a) h 2
+
+lemma pow_add_pow_eq_zero_iff_of_even [NoZeroDivisors R]
+    {n : ℕ} (hn : n ≠ 0) (hn' : Even n) (x y : R) :
+    x ^ n + y ^ n = 0 ↔ x = 0 ∧ y = 0 := by
+  obtain ⟨m, rfl⟩ := hn'
+  simp only [pow_add]
+  grind [mul_self_add_mul_self_eq_zero, pow_eq_zero_iff]
 
 end IsOrderedRing
 
@@ -96,11 +103,10 @@ def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α
 /-!
 ### Lemmas for canonically linear ordered semirings or linear ordered rings
 
-The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
+The slightly unusual typeclass assumptions `[IsStrictOrderedRing R] [ExistsAddOfLE R]` cover two
 more familiar settings:
-* `[LinearOrderedRing R]`, e.g. `ℤ`, `ℚ` or `ℝ`
-* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), e.g. `ℕ`,
-  `ℚ≥0` or `ℝ≥0`
+* linearly ordered rings, e.g. `ℤ`, `ℚ` or `ℝ`
+* canonically ordered semirings, e.g. `ℕ`, `ℚ≥0` or `ℝ≥0`
 -/
 
 variable [ExistsAddOfLE R]
@@ -131,8 +137,8 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
         gcongr _ * (_ + _ + ?_)
         · exact pow_nonneg zero_le_two _
         obtain hab | hba := le_total a b
-        · exact mul_add_mul_le_mul_add_mul (by gcongr; exact ha) hab
-        · exact mul_add_mul_le_mul_add_mul' (by gcongr; exact hb) hba
+        · exact mul_add_mul_le_mul_add_mul (by gcongr) hab
+        · exact mul_add_mul_le_mul_add_mul' (by gcongr) hba
       _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
 
 protected lemma Even.add_pow_le (hn : Even n) :

@@ -67,15 +67,11 @@ theorem iff_formallyUnramified_and_formallySmooth :
     FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ⟨inferInstance, inferInstance⟩⟩
 
-@[deprecated (since := "2025-11-03")]
-alias iff_unramified_and_smooth := iff_formallyUnramified_and_formallySmooth
-
 theorem of_formallyUnramified_and_formallySmooth [FormallyUnramified R A]
     [FormallySmooth R A] : FormallyEtale R A :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr ⟨‹_›, ‹_›⟩
 
-@[deprecated (since := "2025-11-03")]
-alias of_unramified_and_smooth := of_formallyUnramified_and_formallySmooth
+instance : FormallyEtale R R := of_formallyUnramified_and_formallySmooth
 
 variable (R A) in
 lemma comp_bijective [FormallyEtale R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
@@ -134,9 +130,6 @@ lemma _root_.Algebra.FormallySmooth.iff_restrictScalars [FormallyEtale R A] :
     Algebra.FormallySmooth R B ↔ Algebra.FormallySmooth A B :=
   ⟨fun _ ↦ .of_restrictScalars R _ _, fun _ ↦ .comp _ A _⟩
 
-@[deprecated (since := "2025-12-09")]
-alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
-
 end Comp
 
 lemma iff_of_surjective
@@ -146,12 +139,8 @@ lemma iff_of_surjective
   rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
     and_iff_right (FormallyUnramified.of_surjective (Algebra.ofId R S) h)]
 
-@[deprecated (since := "2025-12-09")]
-alias Algebra.FormallyEtale.iff_of_surjective := iff_of_surjective
-
 section BaseChange
 
-open scoped TensorProduct
 
 instance [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
   .of_formallyUnramified_and_formallySmooth
@@ -200,8 +189,8 @@ theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
 
 /-- The localization of a formally étale map is formally étale. -/
 theorem localization_map [FormallyEtale R S] : FormallyEtale Rₘ Sₘ := by
-  haveI : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
-  haveI : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
+  have : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
+  have : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
   exact FormallyEtale.localization_base M
 
 end Localization
@@ -212,11 +201,16 @@ section
 
 variable (R A) in
 /-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation. -/
-@[stacks 00U1 "Note that this is a different definition from this Stacks entry, but
+@[mk_iff, stacks 00U1 "Note that this is a different definition from this Stacks entry, but
 <https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent to the definition here."]
 class Etale : Prop where
   formallyEtale : FormallyEtale R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance
+
+lemma Etale.iff_formallyUnramified_and_smooth :
+    Etale R A ↔ FormallyUnramified R A ∧ Smooth R A := by
+  rw [etale_iff, FormallyEtale.iff_formallyUnramified_and_formallySmooth, smooth_iff]
+  tauto
 
 end
 
@@ -224,7 +218,11 @@ namespace Etale
 
 attribute [instance] formallyEtale finitePresentation
 
+instance : Etale R R where
+
 instance [Etale R A] : Smooth R A where
+
+instance (priority := low) [Etale R A] : Unramified R A where
 
 /-- Being étale is transported via algebra isomorphisms. -/
 theorem of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
@@ -243,6 +241,11 @@ theorem comp [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale A B] : Etale
 /-- Étale is stable under base change. -/
 instance baseChange [Etale R A] : Etale B (B ⊗[R] A) where
 
+lemma of_restrictScalars [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale R B] :
+    Etale A B where
+  finitePresentation := .of_restrict_scalars_finitePresentation R A B
+  formallyEtale := .of_restrictScalars (R := R)
+
 end Comp
 
 /-- Localization at an element is étale. -/
@@ -252,7 +255,23 @@ theorem of_isLocalizationAway (r : R) [IsLocalization.Away r A] : Etale R A wher
 
 instance (s : A) [Algebra.Etale R A] : Algebra.Etale R (Localization.Away s) where
 
-@[deprecated (since := "2025-11-03")] alias of_isLocalization_Away := of_isLocalizationAway
+instance (R S : Type u) [CommRing R] [CommRing S] :
+    letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
+    Algebra.Etale (R × S) S := by
+  algebraize [RingHom.snd R S]
+  exact Algebra.Etale.of_isLocalizationAway (0, 1)
+
+instance (S : Type*) [CommRing S] :
+    letI : Algebra (R × S) R := (RingHom.fst R S).toAlgebra
+    Algebra.Etale (R × S) R := by
+  algebraize [RingHom.fst R S]
+  exact Algebra.Etale.of_isLocalizationAway (1, 0)
+
+instance (S : Type*) [CommRing S] :
+    letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
+    Algebra.Etale (R × S) S := by
+  algebraize [RingHom.snd R S]
+  exact Algebra.Etale.of_isLocalizationAway (0, 1)
 
 end Etale
 

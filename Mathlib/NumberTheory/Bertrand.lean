@@ -82,8 +82,9 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     · apply ConcaveOn.add
       · exact strictConcaveOn_log_Ioi.concaveOn.subset
           (Set.Ioi_subset_Ioi (by norm_num)) (convex_Ioi 0.5)
-      convert ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
-        ((2 : ℝ) • LinearMap.id))) using 1
+      convert!
+        ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap ((2 : ℝ) • LinearMap.id)))
+        using 1
       ext x
       simp only [Set.mem_Ioi, Set.mem_preimage, LinearMap.smul_apply,
         LinearMap.id_coe, id_eq, smul_eq_mul]
@@ -168,7 +169,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
   let f x := x ^ n.centralBinom.factorization x
   have : ∏ x ∈ S, f x = ∏ x ∈ Finset.range (2 * n / 3 + 1), f x := by
     refine Finset.prod_filter_of_ne fun p _ h => ?_
-    contrapose! h; dsimp only [f]
+    contrapose h; dsimp only [f]
     rw [factorization_eq_zero_of_not_prime n.centralBinom h, _root_.pow_zero]
   rw [centralBinom_factorization_small n n_large no_prime, ← this, ←
     Finset.prod_filter_mul_prod_filter_not S (· ≤ sqrt (2 * n))]

@@ -17,7 +17,7 @@ theorem foo [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
 
 set_option linter.unusedDecidableInType false
 
--- Overrideable
+-- Overridable
 /--
 warning: `foo'` does not use the following hypothesis in its type:
   • [DecidablePred Nonempty] (#1)
@@ -47,7 +47,7 @@ theorem foo [Fintype Bool] [Fintype (Nat → Nat)] :
 
 set_option linter.unusedFintypeInType false
 
--- Overrideable
+-- Overridable
 /--
 warning: `foo'` does not use the following hypothesis in its type:
   • [Fintype Bool] (#1)

@@ -46,8 +46,8 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
 
 ## References
 
-* [Manfred Stern, *Semimodular lattices. {Theory} and applications*][stern2009]
-* [Wikipedia, *Modular Lattice*][https://en.wikipedia.org/wiki/Modular_lattice]
+* [Manfred Stern, *Semimodular lattices. Theory and applications*][stern2009]
+* [Wikipedia, Modular Lattice](https://en.wikipedia.org/wiki/Modular_lattice)
 
 ## TODO
 
@@ -220,9 +220,10 @@ theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ
   wellFounded_lt_exact_sequence (α := αᵒᵈ) (β := γᵒᵈ) (γ := βᵒᵈ)
     K g₁ g₂ f₁ f₂ gi.dual gci.dual hg hf
 
-/-- The diamond isomorphism between the intervals `[a ⊓ b, a]` and `[b, a ⊔ b]` -/
+set_option backward.isDefEq.respectTransparency false in
+/-- The diamond isomorphism between the closed intervals `[a ⊓ b, a]` and `[b, a ⊔ b]` -/
 @[simps]
-def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ b) where
+def infIccOrderIsoIccSup (a b : α) : Icc (a ⊓ b) a ≃o Icc b (a ⊔ b) where
   toFun x := ⟨x ⊔ b, ⟨le_sup_right, sup_le_sup_right x.prop.2 b⟩⟩
   invFun x := ⟨a ⊓ x, ⟨inf_le_inf_left a x.prop.1, inf_le_left⟩⟩
   left_inv x :=
@@ -243,13 +244,19 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
       sup_eq_right.2 y.prop.1, inf_sup_assoc_of_le _ y.prop.2, sup_comm b]
     exact inf_le_inf_left _ h
 
+/-- The diamond isomorphism between the closed intervals `[a ⊓ b, b]` and `[a, a ⊔ b]` -/
+@[simps!]
+def infIccOrderIsoIccSup' (a b : α) : Icc (a ⊓ b) b ≃o Icc a (a ⊔ b) :=
+  (Set.orderIsoOfEq _ _ (by rw [inf_comm])).trans <| (infIccOrderIsoIccSup b a).trans <|
+    Set.orderIsoOfEq _ _ (by rw [sup_comm])
+
 theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c => a ⊓ c) (Icc b (a ⊔ b)) :=
-  StrictMono.of_restrict (infIccOrderIsoIccSup a b).symm.strictMono
+  StrictMono.of_domRestrict (infIccOrderIsoIccSup a b).symm.strictMono
 
 theorem sup_strictMonoOn_Icc_inf {a b : α} : StrictMonoOn (fun c => c ⊔ b) (Icc (a ⊓ b) a) :=
-  StrictMono.of_restrict (infIccOrderIsoIccSup a b).strictMono
+  StrictMono.of_domRestrict (infIccOrderIsoIccSup a b).strictMono
 
-/-- The diamond isomorphism between the intervals `]a ⊓ b, a[` and `}b, a ⊔ b[`. -/
+/-- The diamond isomorphism between the open intervals `(a ⊓ b, a)` and `(b, a ⊔ b)`. -/
 @[simps]
 def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
   toFun c :=
@@ -274,6 +281,12 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
     @OrderIso.le_iff_le _ _ _ _ (infIccOrderIsoIccSup _ _) ⟨c.1, Ioo_subset_Icc_self c.2⟩
       ⟨d.1, Ioo_subset_Icc_self d.2⟩
 
+/-- The diamond isomorphism between the open intervals `(a ⊓ b, b)` and `(a, a ⊔ b)`. -/
+@[simps!]
+def infIooOrderIsoIooSup' (a b : α) : Ioo (a ⊓ b) b ≃o Ioo a (a ⊔ b) :=
+  (Set.orderIsoOfEq _ _ (by rw [inf_comm])).trans <| (infIooOrderIsoIooSup b a).trans <|
+    Set.orderIsoOfEq _ _ (by rw [sup_comm])
+
 -- See note [lower instance priority]
 instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerModularLattice α :=
   ⟨fun {a b} => by
@@ -297,10 +310,10 @@ variable [Lattice α] [BoundedOrder α] [IsModularLattice α]
 
 /-- The diamond isomorphism between the intervals `Set.Iic a` and `Set.Ici b`. -/
 def IicOrderIsoIci {a b : α} (h : IsCompl a b) : Set.Iic a ≃o Set.Ici b :=
-  (OrderIso.setCongr (Set.Iic a) (Set.Icc (a ⊓ b) a)
+  (Set.orderIsoOfEq (Set.Iic a) (Set.Icc (a ⊓ b) a)
         (h.inf_eq_bot.symm ▸ Set.Icc_bot.symm)).trans <|
     (infIccOrderIsoIccSup a b).trans
-      (OrderIso.setCongr (Set.Icc b (a ⊔ b)) (Set.Ici b) (h.sup_eq_top.symm ▸ Set.Icc_top))
+      (Set.orderIsoOfEq (Set.Icc b (a ⊔ b)) (Set.Ici b) (h.sup_eq_top.symm ▸ Set.Icc_top))
 
 end IsCompl
 
@@ -417,7 +430,7 @@ instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
   exists_isCompl := fun ⟨x, hx⟩ => by
     simp_rw [Set.Ici.isCompl_iff]
     obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
-    exact ⟨⟨y, inf_le_right⟩, rfl, hcodisjoint⟩
+    exact ⟨⟨y, inf_le_right⟩, hcodisjoint, rfl⟩
 
 /-- A disjoint element can be enlarged to a complementary element. -/
 @[to_dual /-- A codisjoint element can be shrunk to a complementary element. -/]

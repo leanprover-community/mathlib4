@@ -47,7 +47,6 @@ expression of the fact that `L` acts by linear endomorphisms. It simplifies the 
 def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
   (toEnd R L M x).rTensor N + (toEnd R L N x).lTensor M
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two Lie modules is a Lie ring module. -/
 instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x
@@ -187,7 +186,6 @@ variable [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable (I : LieIdeal R L) (N : LieSubmodule R L M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A useful alternative characterisation of Lie ideal operations on Lie submodules.
 
 Given a Lie ideal `I ⊆ L` and a Lie submodule `N ⊆ M`, by tensoring the inclusion maps and then

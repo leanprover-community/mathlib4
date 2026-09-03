@@ -28,11 +28,6 @@ open scoped NNReal
 
 public noncomputable section
 
--- backward-compatibility fixes
-instance : MeasureSpace ℂ := inferInstance
-
-instance : FiniteDimensional ℝ ℂ := inferInstance
-
 namespace UpperHalfPlane
 
 instance : MeasurableSpace ℍ := .comap UpperHalfPlane.coe inferInstance
@@ -42,7 +37,7 @@ instance : BorelSpace ℍ := ⟨borel_comap.symm⟩
 lemma measurableEmbedding_coe : MeasurableEmbedding UpperHalfPlane.coe :=
   isOpenEmbedding_coe.measurableEmbedding
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_coe : Measurable UpperHalfPlane.coe :=
   measurableEmbedding_coe.measurable
 
@@ -94,7 +89,7 @@ lemma volume_eq_lintegral (s : Set ℍ) :
 instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
   -- It suffices to show `volume (g • s) = volume s` for measurable sets `s`. First
   -- we write this as a lintegral over subsets of `ℂ`.
-  refine ((smulInvariantMeasure_tfae _ _).out 2 0).mp fun g s hs ↦ ?_
+  refine ((smulInvariantMeasure_tfae _ _).out 3 1).mp fun g s hs ↦ ?_
   rw [volume_eq_lintegral, volume_eq_lintegral, ← Set.image_smul, Set.image_image]
   -- We want to apply the Jacobian change-of-variable formula.
   have hinj : Set.InjOn (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (UpperHalfPlane.coe '' s) :=
@@ -105,7 +100,7 @@ instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
         (hasStrictFDerivAt_smul g _).hasFDerivAt.hasFDerivWithinAt)
       hinj
       (fun z ↦ ↑((1 / ‖z.im‖₊) ^ 2 : NNReal))
-  convert main using 1
+  convert! main using 1
   · simp [Set.image_image]
   · apply setLIntegral_congr_fun (measurableEmbedding_coe.measurableSet_image.mpr hs)
     rintro _ ⟨τ, -, rfl⟩

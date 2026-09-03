@@ -6,6 +6,7 @@ Authors: Jiedong Jiang, Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
+public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
 
@@ -27,7 +28,7 @@ morphism of finite presentation is étale.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -37,7 +38,7 @@ universe u
 
 namespace AlgebraicGeometry
 
-variable {W X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- A morphism is weakly étale if it is flat and the diagonal map is flat. -/
 @[mk_iff, stacks 094P]
@@ -57,33 +58,41 @@ theorem weaklyEtale_eq_flat_inf_diagonal_flat :
 /-- Etale morphisms are weakly étale. -/
 instance (priority := 900) [Etale f] : WeaklyEtale f where
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : MorphismProperty.RespectsIso @WeaklyEtale := by
   rw [weaklyEtale_eq_flat_inf_diagonal_flat]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : MorphismProperty.IsMultiplicative @WeaklyEtale := by
   rw [weaklyEtale_eq_flat_inf_diagonal_flat]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [WeaklyEtale f] [WeaklyEtale g] : WeaklyEtale (f ≫ g) :=
   MorphismProperty.comp_mem _ f g inferInstance inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : MorphismProperty.IsStableUnderBaseChange @WeaklyEtale := by
   rw [weaklyEtale_eq_flat_inf_diagonal_flat]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsZariskiLocalAtSource @WeaklyEtale := by
   rw [weaklyEtale_eq_flat_inf_diagonal_flat]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsZariskiLocalAtTarget @WeaklyEtale := by
   rw [weaklyEtale_eq_flat_inf_diagonal_flat]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [WeaklyEtale g] :
     WeaklyEtale (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [WeaklyEtale f] :
     WeaklyEtale (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
@@ -95,10 +104,11 @@ instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [WeaklyEtale f] :
     WeaklyEtale (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance
 
-/- This proof is by `inferInstance` and the argument goes through
+/-- This proof is by `inferInstance` and the argument goes through
 `IsImmersion (diagonal f) → Mono (diagonal f) → IsIso (diagonal (diagonal f))`. -/
 instance (f : X ⟶ Y) [WeaklyEtale f] : WeaklyEtale (pullback.diagonal f) where
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 0951]
 instance : MorphismProperty.HasOfPostcompProperty @WeaklyEtale @WeaklyEtale := by
   rw [MorphismProperty.hasOfPostcompProperty_iff_le_diagonal]

@@ -38,6 +38,8 @@ the action of `S = [[0, -1], [1, 0]]`.
 * **`E2_slash_action`**: The normalized version:
   `E₂|[2] γ = E₂ - (1/(2ζ(2))) D₂(γ)`
 
+* **`E2_periodic`**: as a consequence of invariance under `T`, `E2` is `1`-periodic.
+
 ## Proof Strategy
 
 The proof of `G2_S_transform` is the heart of this file. The strategy is:
@@ -66,7 +68,9 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
 
 open UpperHalfPlane hiding I
 
-open ModularForm ModularGroup Filter Complex MatrixGroups Set SummationFilter
+open ModularForm ModularGroup Filter Complex Set SummationFilter
+
+open scoped MatrixGroups
 
 open scoped Real Topology
 
@@ -76,10 +80,10 @@ namespace EisensteinSeries
 
 /-- This is an auxiliary correction term for proving how E2 transforms. It allows us to work with
 nicer indexing sets for our infinite sums. The key is the `aux_identity` below. -/
-def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0, -1] then 2 else 0
+def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0, 0] then 1 else if x = ![0, -1] then 2 else 0
 
 @[simp]
-lemma δ_eq : δ ![0,0] = 1 := by simp [δ]
+lemma δ_eq : δ ![0, 0] = 1 := by simp [δ]
 
 @[simp]
 lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
@@ -111,7 +115,7 @@ lemma aux_identity (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ * (((b :
   · simp only [not_and] at h
     by_cases hb : b = 0
     · by_cases hn : n = -1
-      · simp [hb,  hn, δ_eq_two]
+      · simp [hb, hn, δ_eq_two]
         ring
       · have hn0 : (n : ℂ) ≠ 0 := by aesop
         have hn1 : (n : ℂ) + 1 ≠ 0 := by norm_cast; grind
@@ -136,7 +140,7 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := b
       exact tsum_congr (fun b ↦ by simp [eisSummand, G2Term, aux_identity z a b, zpow_ofNat])
     · simpa only [tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z, add_zero]
         using (G2Term_prod_summable z).prod
-  · grind [(G2Term_prod_summable z).prod.congr]
+  · exact (G2Term_prod_summable z).prod
   · exact summable_zero.congr
       fun b ↦ by simp [← tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z b]
 
@@ -151,13 +155,13 @@ lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z)
         Matrix.cons_val_fin_one, mul_inv_rev]
       nth_rw 1 [← aux_identity z M N]
       ring
-    · simpa using linear_left_summable (ne_zero z) N le_rfl
-    · simpa [add_assoc] using summable_left_one_div_linear_sub_one_div_linear z N (N + 1)
+    · simpa using! linear_left_summable (ne_zero z) N le_rfl
+    · simpa [add_assoc] using! summable_left_one_div_linear_sub_one_div_linear z N (N + 1)
   · apply HasSum.summable (a := (z.1 ^ 2)⁻¹ * G2 (S • z))
     rw [hasSum_symmetricIco_int_iff]
     apply (tendsto_double_sum_S_act z).congr (fun x ↦ ?_)
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
-    simpa using linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
+    simpa using! linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
   · apply HasSum.summable (a := -2 * π * I / z)
     rw [hasSum_symmetricIco_int_iff, ← tendsto_comp_val_Ioi_atTop]
     exact tendsto_tsum_one_div_linear_sub_succ_eq z
@@ -180,19 +184,20 @@ lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     exact H.prod_factor
 
 
-@[expose] public section
+public section
 
 section transform
 
 /-- This is the key identity for how `G2` transforms under the slash action by `S`. -/
 lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z := by
-  rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z , ← tsum_G2Term_eq_tsum',
+  rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z, ← tsum_G2Term_eq_tsum',
   tsum_G2Term_eq_tsum]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
   simp_rw [SL_slash_def, modular_T_smul z]
-  simp [G2_eq_tsum_cexp,  T, denom_apply,  ← exp_periodic.nat_mul 1 (2 * π * I * z)]
+  simp [G2_eq_tsum_cexp, T, denom_apply, ← exp_periodic.nat_mul 1 (2 * π * I * z)]
   grind
 
 lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by
@@ -212,7 +217,7 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := b
       rw [D2_mul, SlashAction.slash_mul, ig, sub_eq_add_neg, SlashAction.add_slash, ih]
       grind [SlashAction.neg_slash, SL_slash]
   | inv g _ ig =>
-      have H1 : (G2 ∣[(2 : ℤ)] g)∣[(2 : ℤ)] g⁻¹ = (G2 - D2 g)∣[(2 : ℤ)] g⁻¹ := by
+      have H1 : (G2 ∣[(2 : ℤ)] g) ∣[(2 : ℤ)] g⁻¹ = (G2 - D2 g) ∣[(2 : ℤ)] g⁻¹ := by
         rw [ig]
       simp_rw [← SlashAction.slash_mul, sub_eq_add_neg, SlashAction.add_slash, mul_inv_cancel,
         SlashAction.slash_one, SL_slash, SlashAction.neg_slash] at H1
@@ -224,6 +229,18 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := b
 lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * riemannZeta 2)) • D2 γ := by
   ext z
   simp [E2, SL_smul_slash, G2_slash_action γ, mul_sub]
+
+/-- `E2` is invariant under the weight-2 slash action of `T`, since the defect `D2 T` vanishes. -/
+lemma E2_T_transform : E2 ∣[(2 : ℤ)] T = E2 := by
+  simp [E2_slash_action, D2_T]
+
+/-- `E2` is invariant under `z ↦ z + 1` (the action of `T`). -/
+lemma E2_T_smul (z : ℍ) : E2 (T • z) = E2 z := by
+  simpa [denom_apply, SL_slash_apply] using congrFun E2_T_transform z
+
+/-- `E2 ∘ ofComplex` has period `1`. -/
+lemma E2_periodic : Function.Periodic (E2 ∘ ofComplex) 1 :=
+  periodic_comp_ofComplex fun _ ↦ by rw [← modular_T_smul, E2_T_smul]
 
 end transform
 

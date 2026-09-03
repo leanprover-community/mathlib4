@@ -3,9 +3,11 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.NumberTheory.ArithmeticFunction.Misc
-import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+public import Mathlib.NumberTheory.LucasLehmer
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Perfect Numbers
@@ -24,6 +26,7 @@ Euler proved the converse, that if `n` is even and perfect, then there exists `k
 https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
 -/
 
+public section
 
 namespace Theorems100
 
@@ -62,7 +65,7 @@ theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k *
   refine ⟨hm, ?_⟩
   rw [even_iff_two_dvd]
   have hg := h.not_pow_dvd_of_multiplicity_lt (Nat.lt_succ_self _)
-  contrapose! hg
+  contrapose hg
   rcases hg with ⟨k, rfl⟩
   apply Dvd.intro k
   rw [pow_succ, mul_assoc, ← hm]
@@ -105,7 +108,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
         apply ne_of_lt _ jcon2
         rw [mersenne, ← Nat.pred_eq_sub_one, Nat.lt_pred_iff, ← pow_one (Nat.succ 1)]
         apply pow_lt_pow_right₀ (Nat.lt_succ_self 1) (Nat.succ_lt_succ k.succ_pos)
-    contrapose! hm
+    contrapose hm
     simp [hm]
 
 /-- The Euclid-Euler theorem characterizing even perfect numbers -/

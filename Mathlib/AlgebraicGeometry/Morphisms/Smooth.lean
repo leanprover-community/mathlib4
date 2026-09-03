@@ -66,8 +66,6 @@ class Smooth (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.smooth_appLE := Smooth.smooth_appLE
 
-@[deprecated (since := "2026-02-09")] alias IsSmooth := Smooth
-
 /-- The property of scheme morphisms `Smooth` is associated with the ring
 homomorphism property `Smooth`. -/
 instance : HasRingHomProperty @Smooth RingHom.Smooth where
@@ -86,7 +84,7 @@ lemma Smooth.iff_forall_exists_isStandardSmooth (f : X ⟶ Y) :
       ∀ (x : X), ∃ (U : Y.Opens) (_ : IsAffineOpen U) (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V)
         (e : V ≤ f ⁻¹ᵁ U), (f.appLE U V e).hom.IsStandardSmooth := by
   have : HasRingHomProperty @Smooth.{u} (Locally IsStandardSmooth) := by
-    convert (inferInstance : HasRingHomProperty @Smooth.{u} RingHom.Smooth)
+    convert! (inferInstance : HasRingHomProperty (@Smooth.{u}) RingHom.Smooth)
     ext f
     rw [RingHom.smooth_iff_locally_isStandardSmooth]
   rw [HasRingHomProperty.iff_exists_appLE_locally (P := @Smooth)]
@@ -122,9 +120,6 @@ instance : MorphismProperty.Respects @Smooth @IsOpenImmersion :=
     (RingHom.Smooth.stableUnderComposition.stableUnderCompositionWithLocalizationAway
       RingHom.Smooth.holdsForLocalizationAway).1
 
-@[deprecated (since := "2026-02-09")]
-alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
-
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth of relative dimension `n` if for each `x : X` there
 exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
@@ -137,17 +132,12 @@ class SmoothOfRelativeDimension : Prop where
     (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V) (e : V ≤ f ⁻¹ᵁ U),
     IsStandardSmoothOfRelativeDimension n (f.appLE U V e).hom
 
-@[deprecated (since := "2026-02-09")] alias IsSmoothOfRelativeDimension := SmoothOfRelativeDimension
-
 /-- If `f` is smooth of any relative dimension, it is smooth. -/
 lemma SmoothOfRelativeDimension.smooth [SmoothOfRelativeDimension n f] : Smooth f := by
   rw [Smooth.iff_forall_exists_isStandardSmooth]
   intro x
   obtain ⟨U, hU, V, hV, hx, e, hf⟩ := exists_isStandardSmoothOfRelativeDimension (n := n) (f := f) x
   exact ⟨U, hU, V, hV, hx, e, hf.isStandardSmooth⟩
-
-@[deprecated (since := "2026-02-09")]
-alias IsSmoothOfRelativeDimension.isSmooth := SmoothOfRelativeDimension.smooth
 
 /-- The property of scheme morphisms `SmoothOfRelativeDimension n` is associated with the ring
 homomorphism property `Locally (IsStandardSmoothOfRelativeDimension n)`. -/
@@ -169,10 +159,6 @@ lemma smoothOfRelativeDimension_isStableUnderBaseChange :
     isStandardSmoothOfRelativeDimension_respectsIso
     (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n)
 
-@[deprecated (since := "2026-02-09")]
-alias isSmoothOfRelativeDimension_isStableUnderBaseChange :=
-  smoothOfRelativeDimension_isStableUnderBaseChange
-
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :=
   HasRingHomProperty.of_isOpenImmersion
@@ -183,14 +169,17 @@ instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :
 instance (priority := 900) [IsOpenImmersion f] : Smooth f :=
   SmoothOfRelativeDimension.smooth 0 f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth g] :
     Smooth (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth f] :
     Smooth (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [Smooth f] : Smooth (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -220,7 +209,7 @@ instance smoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
         g.appLE_map_assoc, Scheme.Hom.appLE_comp_appLE]
     refine ⟨U₂, hU₂, X.basicOpen s, hV₁'.basicOpen s, hx₁, e, heq ▸ ?_⟩
     apply IsStandardSmoothOfRelativeDimension.comp ?_ hf₂
-    haveI : IsLocalization.Away r Γ(Y, Y.basicOpen r) := hV₂.isLocalization_basicOpen r
+    have : IsLocalization.Away r Γ(Y, Y.basicOpen r) := hV₂.isLocalization_basicOpen r
     exact (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).left
       _ r _ hf₁
 
@@ -246,17 +235,19 @@ lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
     letI := (f.appLE U V hVU).hom.toAlgebra
     (f.stalkMap x).hom.FormallySmooth ↔
       hV.primeIdealOf ⟨x, hx⟩ ∈ Algebra.smoothLocus Γ(Y, U) Γ(X, V) := by
-  letI := (f.appLE U V hVU).hom.toAlgebra
-  have : (hV.primeIdealOf ⟨x, hx⟩).asIdeal.LiesOver (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal :=
+  let := (f.appLE U V hVU).hom.toAlgebra
+  let p := (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal
+  let q := (hV.primeIdealOf ⟨x, hx⟩).asIdeal
+  have : q.LiesOver p :=
     ⟨congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).1).symm⟩
-  trans Algebra.FormallySmooth
-    (Localization.AtPrime (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal)
-    (Localization.AtPrime (hV.primeIdealOf ⟨x, hx⟩).asIdeal)
+  let := Localization.AtPrime.algebraOfLiesOver p q
+  trans Algebra.FormallySmooth (Localization.AtPrime p) (Localization.AtPrime q)
   · rw [← formallySmooth_algebraMap]
     exact RingHom.FormallySmooth.respectsIso.arrow_mk_iso_iff
       (IsAffineOpen.arrowStalkMapIso f U hU V hV hVU hx)
   · exact Algebra.FormallySmooth.iff_restrictScalars.symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_smooth_of_formallySmooth_stalk
     (f : X ⟶ Y) [LocallyOfFinitePresentation f]
@@ -278,8 +269,9 @@ lemma exists_smooth_of_formallySmooth_stalk
       IsAffineOpen.isoSpec_hom, IsAffineOpen.toSpecΓ_fromSpec] at hrx
   · have := hV.isLocalization_basicOpen r
     rw [← RingHom.smooth_algebraMap] at hr
-    convert RingHom.Smooth.propertyIsLocal.respectsIso.1 _
-      (IsLocalization.algEquiv (.powers r) _ Γ(X, X.basicOpen r)).toRingEquiv hr
+    convert!
+      RingHom.Smooth.propertyIsLocal.respectsIso.1 _
+        (IsLocalization.algEquiv (.powers r) _ Γ(X, X.basicOpen r)).toRingEquiv hr
     ext
     dsimp
     simp only [IsScalarTower.algebraMap_apply Γ(Y, U) Γ(X, V) (Localization _),
@@ -302,7 +294,6 @@ def Scheme.Hom.smoothLocus (f : X ⟶ Y) [LocallyOfFinitePresentation f] : X.Ope
 lemma Scheme.Hom.mem_smoothLocus {f : X ⟶ Y} [LocallyOfFinitePresentation f] {x : X} :
     x ∈ f.smoothLocus ↔ (f.stalkMap x).hom.FormallySmooth := .rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
     f.smoothLocus = ⊤ := by
   rw [← top_le_iff]
@@ -316,6 +307,7 @@ lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
   rw [Scheme.Hom.mem_smoothLocus, formallySmooth_stalkMap_iff U hU V hV hVU hxV]
   exact inferInstanceAs (Algebra.IsSmoothAt _ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.smoothLocus_eq_top_iff {f : X ⟶ Y} [LocallyOfFinitePresentation f] :
     f.smoothLocus = ⊤ ↔ Smooth f := by
   refine ⟨fun H ↦ ?_, fun _ ↦ f.smoothLocus_eq_top⟩
@@ -356,10 +348,7 @@ lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_perfectField
       (L := (Spec.structureSheaf K).presheaf.stalk (f (genericPoint X)))
   exact Algebra.FormallySmooth.of_perfectField
 
-instance {X : Scheme} [IsReduced X] (U : X.Opens) : IsReduced U :=
-  isReduced_of_isOpenImmersion U.ι
-
-
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.dense_smoothLocus_of_perfectField
     {K : Type u} [Field K] [PerfectField K] [IsReduced X]
     (f : X ⟶ Spec (.of K)) [LocallyOfFinitePresentation f] : Dense (f.smoothLocus : Set X) := by
@@ -378,10 +367,10 @@ lemma Scheme.Hom.dense_smoothLocus_of_perfectField
   let U : X.Opens :=
     ⟨(⋃₀ (irreducibleComponents X \ {irreducibleComponent x}))ᶜ, by
       rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
-      exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.diff.isClosed_biUnion
+      exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.sdiff.isClosed_biUnion
         fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1⟩
   have hU : closure U = irreducibleComponent x :=
-    closure_sUnion_irreducibleComponents_diff_singleton
+    closure_sUnion_irreducibleComponents_sdiff_singleton
       TopologicalSpace.NoetherianSpace.finite_irreducibleComponents
       _ (irreducibleComponent_mem_irreducibleComponents x)
   have : AlgebraicGeometry.IsIntegral U :=

@@ -98,11 +98,14 @@ def coconeIsColimit : IsColimit P.cocone :=
 set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
 ind-object presentation of `B`. -/
-@[simps!]
-noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B) [IsIso η] :
-    IndObjectPresentation B :=
+@[simps! +dsimpLhs]
+noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B)
+    [IsIso η] : IndObjectPresentation B :=
   .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso η)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical comparison functor between the indexing category of the presentation and the
 comma category `CostructuredArrow yoneda A`. This functor is always final. -/
 @[simps! obj_left obj_right_as obj_hom map_left]
@@ -112,6 +115,7 @@ def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
 instance : P.toCostructuredArrow.Final :=
   Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Representable presheaves are (trivially) ind-objects. -/
 @[simps]
 def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
@@ -143,7 +147,8 @@ variable {A : Cᵒᵖ ⥤ Type v}
 theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
   | ⟨⟨P⟩⟩ => ⟨⟨P.extend η⟩⟩
 
-theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
+theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] :
+    IsIndObject A ↔ IsIndObject B :=
   ⟨.map η, .map (inv η)⟩
 
 instance : ObjectProperty.IsClosedUnderIsomorphisms (IsIndObject (C := C)) where

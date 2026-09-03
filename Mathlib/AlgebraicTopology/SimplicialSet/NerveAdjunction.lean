@@ -40,8 +40,10 @@ that it fails to preserve infinite products.
 
 universe u
 
-open CategoryTheory Nerve Simplicial SimplicialObject.Truncated
+open CategoryTheory Nerve SimplicialObject.Truncated
   SimplexCategory.Truncated Opposite Limits
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -64,7 +66,6 @@ variable {n : ℕ} {X Y : Truncated.{u} 2} (f₀ : X _⦋0⦌₂ → Y _⦋0⦌�
 
 namespace liftOfStrictSegal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def f₂ (x : X _⦋2⦌₂) : Y _⦋2⦌₂ :=
   (hY.spineEquiv 2).symm
@@ -72,7 +73,7 @@ def f₂ (x : X _⦋2⦌₂) : Y _⦋2⦌₂ :=
       (Y.spine 1 (by simp) (f₁ (X.map (δ₂ 0).op x))) (by
         simp only [spine_vertex]
         rw [← δ₂_one_eq_const, ← δ₂_zero_eq_const, ← hδ₁, ← hδ₀]
-        simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_δ₂_two]))
+        simp only [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_δ₂_two]))
 
 @[simp]
 lemma spineEquiv_f₂_arrow_zero (x : X _⦋2⦌₂) :
@@ -108,14 +109,14 @@ lemma hσ'₀ (x : X _⦋1⦌₂) :
   · dsimp
     rw [spineEquiv_f₂_arrow_zero]
     dsimp [StrictSegal.spineEquiv]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero, op_comp,
-      FunctorToTypes.map_comp_apply, hσ, SimplexCategory.mkOfSucc_zero_eq_δ,
-      ← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero,
-      op_comp, FunctorToTypes.map_comp_apply, hδ₁]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero, op_comp,
+      Functor.map_comp_apply, hσ, SimplexCategory.mkOfSucc_zero_eq_δ,
+      ← Functor.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero,
+      op_comp, Functor.map_comp_apply, hδ₁]
   · dsimp
     rw [spineEquiv_f₂_arrow_one]
     simp [StrictSegal.spineEquiv, SimplexCategory.mkOfSucc_one_eq_δ,
-      ← FunctorToTypes.map_comp_apply, ← op_comp]
+      ← Functor.map_comp_apply, ← op_comp]
 
 include hσ in
 lemma hσ'₁ (x : X _⦋1⦌₂) :
@@ -126,23 +127,22 @@ lemma hσ'₁ (x : X _⦋1⦌₂) :
   · dsimp
     rw [spineEquiv_f₂_arrow_zero]
     simp [StrictSegal.spineEquiv, SimplexCategory.mkOfSucc_zero_eq_δ,
-      ← FunctorToTypes.map_comp_apply, ← op_comp]
+      ← Functor.map_comp_apply, ← op_comp]
   · dsimp
     rw [spineEquiv_f₂_arrow_one]
     dsimp [StrictSegal.spineEquiv]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one, op_comp,
-      FunctorToTypes.map_comp_apply, hσ, SimplexCategory.mkOfSucc_one_eq_δ,
-      ← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one,
-      op_comp, FunctorToTypes.map_comp_apply, hδ₀]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one, op_comp,
+      Functor.map_comp_apply, hσ, SimplexCategory.mkOfSucc_one_eq_δ,
+      ← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one,
+      op_comp, Functor.map_comp_apply, hδ₀]
 
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
-  obtain ⟨n, hn⟩ := n
-  induction n using SimplexCategory.rec with | _ n
+  obtain ⟨⟨n⟩, hn⟩ := n
   match n with
-  | 0 => exact f₀
-  | 1 => exact f₁
-  | 2 => exact f₂ f₀ f₁ hδ₁ hδ₀ hY
+  | 0 => exact ↾f₀
+  | 1 => exact ↾f₁
+  | 2 => exact ↾(f₂ f₀ f₁ hδ₁ hδ₀ hY)
 
 /-- The property of morphisms in `SimplexCategory.Truncated 2` for
 which `liftOfStrictSegal.app` is natural. -/
@@ -184,11 +184,11 @@ def liftOfStrictSegal : X ⟶ Y where
 
 @[simp]
 lemma liftOfStrictSegal_app_0 :
-    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = f₀ := rfl
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = ↾f₀ := rfl
 
 @[simp]
 lemma liftOfStrictSegal_app_1 :
-    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = f₁ := rfl
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = ↾f₁ := rfl
 
 end liftOfStrictSegal
 
@@ -202,7 +202,7 @@ a morphism `X ⟶ (truncation 2).obj (nerve C)`. -/
 def descOfTruncation (φ : X ⟶ (truncation 2).obj (nerve C)) :
     X.HomotopyCategory ⥤ C :=
   lift (fun x ↦ nerveEquiv (φ.app _ x)) (fun e ↦ nerve.homEquiv (e.map φ))
-    (fun x ↦ by simpa using nerve.homEquiv_id (φ.app _ x))
+    (fun x ↦ by simpa using! nerve.homEquiv_id (φ.app _ x))
       (fun h ↦ nerve.homEquiv_comp (h.map φ))
 
 @[simp]
@@ -215,11 +215,15 @@ lemma descOfTruncation_map_homMk (φ : X ⟶ (truncation 2).obj (nerve C))
     (descOfTruncation φ).map (homMk e) = nerve.homEquiv (e.map φ) :=
   Category.id_comp _
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma descOfTruncation_comp {X' : Truncated.{u} 2} (ψ : X ⟶ X')
     (φ : X' ⟶ (truncation 2).obj (nerve C)) :
     descOfTruncation (ψ ≫ φ) = mapHomotopyCategory ψ ⋙ descOfTruncation φ :=
   functor_ext (fun _ ↦ by simp) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the morphism `X ⟶ (truncation 2).obj (nerve C)` corresponding
 to a functor `X.HomotopyCategory ⥤ C`. -/
@@ -273,6 +277,7 @@ lemma homToNerveMk_app_edge (F : X.HomotopyCategory ⥤ C) {x y : X _⦋0⦌₂}
   exact ComposableArrows.arrowEquiv.injective
     (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the bijection between morphism `X.HomotopyCategory ⥤ C`
@@ -296,10 +301,10 @@ def functorEquiv :
         descOfTruncation_map_homMk]
       refine ComposableArrows.ext₁ ?_ ?_ rfl
       · dsimp [nerveEquiv, ComposableArrows.right]
-        simp only [← f.src_eq, FunctorToTypes.naturality]
+        simp only [← f.src_eq, NatTrans.naturality_apply]
         rfl
       · dsimp [nerveEquiv, ComposableArrows.right]
-        simp only [← f.tgt_eq, FunctorToTypes.naturality]
+        simp only [← f.tgt_eq, NatTrans.naturality_apply]
         rfl)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -310,7 +315,7 @@ lemma homToNerveMk_comp {D : Type u} [SmallCategory D]
   IsStrictSegal.hom_ext (fun s ↦ by
     obtain ⟨x₀, x₁, f, rfl⟩ := Edge.exists_of_simplex s
     dsimp
-    simp only [homToNerveMk_app_edge, Functor.comp_obj, Functor.comp_map]
+    simp only [homToNerveMk_app_edge, Functor.comp_map]
     exact ComposableArrows.ext₁ rfl rfl (by aesop))
 
 end HomotopyCategory
@@ -333,6 +338,7 @@ namespace nerve
 
 variable {C D : Type u} [SmallCategory C] [SmallCategory D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `C ⥤ D` that is reconstructed for a morphism
 between the `2`-truncated nerves. -/
 @[simps]
@@ -448,12 +454,11 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
     (Presheaf.isColimitTautologicalCocone' X)
 
-set_option backward.isDefEq.respectTransparency false in
-instance isIso_prodComparison (X Y : SSet) :
-    IsIso (prodComparison hoFunctor.{u} X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
+instance isIso_prodComparison (X Y : SSet.{u}) :
+    IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
-  · ext <;> simp [← Functor.map_comp]
+  · simp [↓map_braiding_hom_comp_prodComparison_assoc]
   suffices IsIso (prodComparison hoFunctor Δ[m] X) by infer_instance
   exact isIso_prodComparison_of_stdSimplex _ (isIso_prodComparison_stdSimplex _)
 

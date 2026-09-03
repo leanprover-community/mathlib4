@@ -25,7 +25,9 @@ category of simplicial sets.
 
 universe u
 
-open CategoryTheory Simplicial MonoidalCategory CartesianMonoidalCategory
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -64,13 +66,14 @@ variable {A B φ} (f g : RelativeMorphism A B φ)
 
 lemma map_eq_of_mem {n : SimplexCategoryᵒᵖ} (a : X.obj n) (ha : a ∈ A.obj n) :
     f.map.app n a = φ.app n ⟨a, ha⟩ :=
-  congr_fun (congr_app f.comm n) ⟨a, ha⟩
+  ConcreteCategory.congr_hom (congr_app f.comm n) ⟨a, ha⟩
 
 @[simp]
 lemma map_coe {n : SimplexCategoryᵒᵖ} (a : A.obj n) :
     f.map.app n a = φ.app n a :=
   map_eq_of_mem _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma image_le : A.image f.map ≤ B := by
   rintro n _ ⟨a, ha, rfl⟩
   have := f.map_coe ⟨a, ha⟩

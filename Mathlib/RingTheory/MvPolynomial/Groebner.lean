@@ -96,16 +96,16 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
       m.degree ((monomial (m.degree f - m.degree b)) (hb.unit⁻¹ * m.leadingCoeff f)) +
         m.degree b := by
     classical
-    rw [degree_monomial, if_neg]
+    rw [degree_monomial, ite_eq_right]
     · ext d
       rw [tsub_add_cancel_of_le hbf]
     · simp only [Units.mul_right_eq_zero, leadingCoeff_eq_zero_iff]
       intro hf0
       apply hf
       simp [hf0]
-  have H' : coeff (m.degree f) (m.reduce hb f) = 0 := by
+  have H' : (m.reduce hb f).coeff (m.degree f) = 0 := by
     simp only [reduce, coeff_sub, sub_eq_zero]
-    nth_rewrite 2 [H]
+    nth_rewrite 3 [H]
     rw [coeff_mul_of_degree_add (m := m), leadingCoeff_monomial, mul_comm, ← mul_assoc,
       IsUnit.mul_val_inv, one_mul, ← leadingCoeff]
   rw [lt_iff_le_and_ne]
@@ -198,7 +198,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · intro c hc i
         by_cases hc' : c ∈ r'.support
         · exact H'.2.2 c hc' i
-        · convert hf i
+        · convert! hf i
           classical
           have := MvPolynomial.support_add hc
           rw [Finset.mem_union, Classical.or_iff_not_imp_left] at this
@@ -210,15 +210,15 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       exact bot_le
     · exact (div hb) (m.subLTerm f)
 termination_by WellFounded.wrap
-  ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
+  ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wellFoundedLT_syn) (m.toSyn (m.degree f))
 decreasing_by
-· exact deg_reduce
-· apply degree_sub_LTerm_lt
-  intro hf0
-  apply hf'0
-  simp only [subLTerm, sub_eq_zero]
-  nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
-  simp
+  · exact deg_reduce
+  · apply degree_sub_LTerm_lt
+    intro hf0
+    apply hf'0
+    simp only [subLTerm, sub_eq_zero]
+    nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
+    simp
 
 /-!
 Module doc as workaround for a parser error that prevents using `set_option`

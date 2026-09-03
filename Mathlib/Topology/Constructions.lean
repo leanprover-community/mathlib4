@@ -13,6 +13,7 @@ public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.WithTopology
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -47,7 +48,7 @@ open scoped Set.Notation
 
 universe u v u' v'
 
-variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
+variable {X : Type u} {Y : Type v} {Z : Type*}
 
 section Constructions
 
@@ -196,7 +197,6 @@ theorem continuous_map_sInf {α : Type*} [TopologicalSpace α]
     {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : Continuous (Setoid.map_sInf h) :=
   continuous_coinduced_rng
 
-set_option backward.isDefEq.respectTransparency false in
 instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) :=
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
@@ -207,6 +207,14 @@ instance Sum.discreteTopology [TopologicalSpace X] [TopologicalSpace Y] [h : Dis
 instance Sigma.discreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
     [h : ∀ i, DiscreteTopology (Y i)] : DiscreteTopology (Sigma Y) :=
   ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
+
+instance Prod.indiscreteTopology [TopologicalSpace X] [TopologicalSpace Y]
+    [h : IndiscreteTopology X] [hY : IndiscreteTopology Y] : IndiscreteTopology (X × Y) :=
+  ⟨inf_eq_top_iff.2 <| by simp [h.eq_top, hY.eq_top]⟩
+
+instance Pi.indiscreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
+    [h : ∀ i, IndiscreteTopology (Y i)] : IndiscreteTopology ((i : ι) → Y i) :=
+  ⟨iInf_eq_top.2 fun _ => by simp only [(h _).eq_top, induced_top]⟩
 
 @[simp] lemma comap_nhdsWithin_range {α β} [TopologicalSpace β] (f : α → β) (y : β) :
     comap f (𝓝[range f] y) = comap f (𝓝 y) := comap_inf_principal_range
@@ -265,19 +273,9 @@ lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨infe
 
 end IsDiscrete
 
-/-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
-finite complements. -/
-def CofiniteTopology (X : Type*) := X
-
-namespace CofiniteTopology
-
-/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
-def of : X ≃ CofiniteTopology X :=
-  Equiv.refl X
-
-instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
-
-instance : TopologicalSpace (CofiniteTopology X) where
+/-- Cofinite topology. A set is open if it's empty or cofinite. -/
+@[implicit_reducible]
+protected def TopologicalSpace.cofinite {X : Type*} : TopologicalSpace X where
   IsOpen s := s.Nonempty → Set.Finite sᶜ
   isOpen_univ := by simp
   isOpen_inter s t := by
@@ -289,8 +287,22 @@ instance : TopologicalSpace (CofiniteTopology X) where
     rw [compl_sUnion]
     exact Finite.sInter (mem_image_of_mem _ hts) (h t hts ⟨x, hzt⟩)
 
-theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite :=
-  Iff.rfl
+/-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
+finite complements. -/
+abbrev CofiniteTopology (X : Type*) :=
+  WithTopology X .cofinite
+
+namespace CofiniteTopology
+
+/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
+def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
+
+instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
+
+theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by
+  simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
+    WithTopology.preimage_toTopology, image_nonempty,
+    finite_image_iff (WithTopology.ofTopology_injective _).injOn]
 
 theorem isOpen_iff' {s : Set (CofiniteTopology X)} : IsOpen s ↔ s = ∅ ∨ sᶜ.Finite := by
   simp only [isOpen_iff, nonempty_iff_ne_empty, or_iff_not_imp_left]
@@ -300,7 +312,7 @@ theorem isClosed_iff {s : Set (CofiniteTopology X)} : IsClosed s ↔ s = univ �
 
 theorem nhds_eq (x : CofiniteTopology X) : 𝓝 x = pure x ⊔ cofinite := by
   ext U
-  rw [mem_nhds_iff]
+  simp_rw [mem_nhds_iff, isOpen_iff]
   constructor
   · rintro ⟨V, hVU, V_op, haV⟩
     exact mem_sup.mpr ⟨hVU haV, mem_of_superset (V_op ⟨_, haV⟩) hVU⟩
@@ -380,9 +392,11 @@ theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
 theorem IsOpen.isOpenMap_subtype_val {s : Set X} (hs : IsOpen s) : IsOpenMap ((↑) : s → X) :=
   hs.isOpenEmbedding_subtypeVal.isOpenMap
 
-theorem IsOpenMap.restrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : IsOpen s) :
-    IsOpenMap (s.restrict f) :=
+theorem IsOpenMap.domRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : IsOpen s) :
+    IsOpenMap (s.domRestrict f) :=
   hf.comp hs.isOpenMap_subtype_val
+
+@[deprecated (since := "2026-07-19")] alias IsOpenMap.restrict := IsOpenMap.domRestrict
 
 @[fun_prop]
 lemma IsClosed.isClosedEmbedding_subtypeVal {s : Set X} (hs : IsClosed s) :
@@ -392,9 +406,11 @@ theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
     IsClosedMap ((↑) : s → X) :=
   hs.isClosedEmbedding_subtypeVal.isClosedMap
 
-theorem IsClosedMap.restrict {f : X → Y} (hf : IsClosedMap f) {s : Set X} (hs : IsClosed s) :
-    IsClosedMap (s.restrict f) :=
+theorem IsClosedMap.domRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set X}
+    (hs : IsClosed s) : IsClosedMap (s.domRestrict f) :=
   hf.comp hs.isClosedMap_subtype_val
+
+@[deprecated (since := "2026-07-19")] alias IsClosedMap.restrict := IsClosedMap.domRestrict
 
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
@@ -403,12 +419,12 @@ theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f
 
 theorem IsOpenMap.subtype_mk {f : Y → X} (hf : IsOpenMap f) (hp : ∀ x, p (f x)) :
     IsOpenMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
-  convert (hf u hu).preimage continuous_subtype_val
+  convert! (hf u hu).preimage continuous_subtype_val
   exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
 
 theorem IsClosedMap.subtype_mk {f : Y → X} (hf : IsClosedMap f) (hp : ∀ x, p (f x)) :
     IsClosedMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
-  convert (hf u hu).preimage continuous_subtype_val
+  convert! (hf u hu).preimage continuous_subtype_val
   exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
 
 @[fun_prop]
@@ -521,6 +537,13 @@ theorem Continuous.codRestrict {f : X → Y} {s : Set Y} (hf : Continuous f) (hs
     Continuous (s.codRestrict f hs) :=
   hf.subtype_mk hs
 
+theorem continuous_codRestrict_iff {f : X → Y} {s : Set Y} (hs : ∀ a, f a ∈ s) :
+    Continuous (codRestrict f s hs) ↔ Continuous f := by
+  refine ⟨?_, fun hf ↦ hf.codRestrict hs⟩
+  simp_rw [continuous_def]
+  intro hf t ht
+  exact hf (Subtype.val ⁻¹' t) (isOpen_induced ht)
+
 theorem IsOpenMap.codRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set Y} (hs : ∀ a, f a ∈ s) :
     IsOpenMap (s.codRestrict f hs) :=
   hf.subtype_mk hs
@@ -536,16 +559,22 @@ theorem Continuous.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f
 
 lemma IsOpenMap.mapsToRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y}
     (hs : IsOpen s) (ht : MapsTo f s t) : IsOpenMap ht.restrict :=
-  (hf.restrict hs).codRestrict _
+  (hf.domRestrict hs).codRestrict _
 
 lemma IsClosedMap.mapsToRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
     (hs : IsClosed s) (ht : MapsTo f s t) : IsClosedMap ht.restrict :=
-  (hf.restrict hs).codRestrict _
+  (hf.domRestrict hs).codRestrict _
 
 @[continuity, fun_prop]
 theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f) :
     Continuous (s.restrictPreimage f) :=
   h.restrict _
+
+@[fun_prop]
+lemma Topology.IsInducing.restrict {f : X → Y}
+    (hf : IsInducing f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) :
+    IsInducing H.restrict :=
+  .of_comp (hf.continuous.restrict H) continuous_subtype_val (hf.comp .subtypeVal)
 
 @[fun_prop]
 lemma Topology.IsEmbedding.restrict {f : X → Y}
@@ -646,6 +675,10 @@ open scoped Set.Notation
 lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
 
+lemma IsOpen.image_val {s : Set X} {t : Set s} (ht : IsOpen t) :
+    ∃ c, IsOpen c ∧ Subtype.val '' t = c ∩ s := by
+  simpa using IsInducing.subtypeVal.image_eq_isOpen_inter_range ht
+
 /-- If `s` is dense in `X` and `u` is open and dense in `s`, then `u = v ∩ s` for some `v` that is
 open and dense in `X`. -/
 lemma exists_open_dense_of_open_dense_subtype (hs : Dense s) {u : Set s} (huo : IsOpen u)
@@ -663,6 +696,10 @@ lemma exists_open_dense_of_open_dense_subtype (hs : Dense s) {u : Set s} (huo : 
 
 lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
+
+lemma IsClosed.image_val {s : Set X} {t : Set s} (ht : IsClosed t) :
+    ∃ c, IsClosed c ∧ Subtype.val '' t = c ∩ s := by
+  simpa using IsInducing.subtypeVal.image_eq_isClosed_inter_range ht
 
 @[simp] lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
     IsOpen (s ↓∩ t) ↔ IsOpen (s ∩ t) :=
@@ -694,6 +731,12 @@ theorem continuous_quot_mk : Continuous (@Quot.mk X r) :=
 theorem continuous_quot_lift {f : X → Y} (hr : ∀ a b, r a b → f a = f b) (h : Continuous f) :
     Continuous (Quot.lift f hr : Quot r → Y) :=
   continuous_coinduced_dom.2 h
+
+@[continuity, fun_prop]
+theorem continuous_quot_map {r' : Y → Y → Prop} {f : X → Y} (hr : ∀ a b, r a b → r' (f a) (f b))
+    (h : Continuous f) :
+    Continuous (Quot.map f hr : Quot r → Quot r') :=
+  continuous_quot_lift _ (continuous_quot_mk.comp h)
 
 theorem isQuotientMap_quotient_mk' : IsQuotientMap (@Quotient.mk' X s) :=
   isQuotientMap_quot_mk
@@ -730,6 +773,7 @@ theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i :=
 theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
   continuous_pi_iff.2 h
 
+/-- The projection maps out of the product topology are continuous. -/
 @[continuity, fun_prop]
 theorem continuous_apply (i : ι) : Continuous fun p : ∀ i, A i => p i :=
   continuous_iInf_dom continuous_induced_dom
@@ -832,13 +876,17 @@ def Homeomorph.piCurry {X Y Z : Type*}
   continuous_toFun := continuous_pi (fun i ↦ Pi.continuous_precomp (Prod.mk i))
 
 @[continuity, fun_prop]
-lemma Pi.continuous_restrict (S : Set ι) :
-    Continuous (S.restrict : (∀ i : ι, A i) → (∀ i : S, A i)) :=
+lemma Pi.continuous_domRestrict (S : Set ι) :
+    Continuous (S.domRestrict : (∀ i : ι, A i) → (∀ i : S, A i)) :=
   Pi.continuous_precomp' ((↑) : S → ι)
 
+@[deprecated (since := "2026-07-19")] alias Pi.continuous_restrict := Pi.continuous_domRestrict
+
 @[continuity, fun_prop]
-lemma Pi.continuous_restrict₂ {s t : Set ι} (hst : s ⊆ t) : Continuous (restrict₂ (π := A) hst) :=
-  continuous_pi fun _ ↦ continuous_apply _
+lemma Pi.continuous_domRestrict₂ {s t : Set ι} (hst : s ⊆ t) :
+    Continuous (domRestrict₂ (π := A) hst) := continuous_pi fun _ ↦ continuous_apply _
+
+@[deprecated (since := "2026-07-19")] alias Pi.continuous_restrict₂ := Pi.continuous_domRestrict₂
 
 @[continuity, fun_prop]
 theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (π := A)) :=
@@ -852,13 +900,19 @@ theorem Finset.continuous_restrict₂ {s t : Finset ι} (hst : s ⊆ t) :
 variable [TopologicalSpace Z]
 
 @[continuity, fun_prop]
-theorem Pi.continuous_restrict_apply (s : Set X) {f : X → Z} (hf : Continuous f) :
-    Continuous (s.restrict f) := hf.comp continuous_subtype_val
+theorem Pi.continuous_domRestrict_apply (s : Set X) {f : X → Z} (hf : Continuous f) :
+    Continuous (s.domRestrict f) := hf.comp continuous_subtype_val
+
+@[deprecated (since := "2026-07-19")]
+alias Pi.continuous_restrict_apply := Pi.continuous_domRestrict_apply
 
 @[continuity, fun_prop]
-theorem Pi.continuous_restrict₂_apply {s t : Set X} (hst : s ⊆ t)
+theorem Pi.continuous_domRestrict₂_apply {s t : Set X} (hst : s ⊆ t)
     {f : t → Z} (hf : Continuous f) :
-    Continuous (restrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
+    Continuous (domRestrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
+
+@[deprecated (since := "2026-07-19")]
+alias Pi.continuous_restrict₂_apply := Pi.continuous_domRestrict₂_apply
 
 @[continuity, fun_prop]
 theorem Finset.continuous_restrict_apply (s : Finset X) {f : X → Z} (hf : Continuous f) :
@@ -869,16 +923,21 @@ theorem Finset.continuous_restrict₂_apply {s t : Finset X} (hst : s ⊆ t)
     {f : t → Z} (hf : Continuous f) :
     Continuous (restrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
 
-lemma Pi.induced_restrict (S : Set ι) :
-    induced (S.restrict) Pi.topologicalSpace =
+lemma Pi.induced_domRestrict (S : Set ι) :
+    induced (S.domRestrict) Pi.topologicalSpace =
     ⨅ i ∈ S, induced (eval i) (T i) := by
   simp +unfoldPartialApp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
-    restrict]
+    domRestrict]
 
-lemma Pi.induced_restrict_sUnion (𝔖 : Set (Set ι)) :
-    induced (⋃₀ 𝔖).restrict (Pi.topologicalSpace (Y := fun i : (⋃₀ 𝔖) ↦ A i)) =
-    ⨅ S ∈ 𝔖, induced S.restrict Pi.topologicalSpace := by
-  simp_rw [Pi.induced_restrict, iInf_sUnion]
+@[deprecated (since := "2026-07-19")] alias Pi.induced_restrict := Pi.induced_domRestrict
+
+lemma Pi.induced_domRestrict_sUnion (𝔖 : Set (Set ι)) :
+    induced (⋃₀ 𝔖).domRestrict (Pi.topologicalSpace (Y := fun i : (⋃₀ 𝔖) ↦ A i)) =
+    ⨅ S ∈ 𝔖, induced S.domRestrict Pi.topologicalSpace := by
+  simp_rw [Pi.induced_domRestrict, iInf_sUnion]
+
+@[deprecated (since := "2026-07-19")]
+alias Pi.induced_restrict_sUnion := Pi.induced_domRestrict_sUnion
 
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter Y} {f : Y → ∀ i, A i} {x : ∀ i, A i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : Y → A i} {xi : A i} (hg : Tendsto g l (𝓝 xi)) :
@@ -902,7 +961,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
-@[to_additive (attr := continuity) /-- `Pi.single i x` is continuous in `x`. -/]
+@[to_additive (attr := continuity, fun_prop) /-- `Pi.single i x` is continuous in `x`. -/]
 theorem continuous_mulSingle [∀ i, One (A i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, A i) :=
   continuous_const.update _ continuous_id
@@ -1035,10 +1094,10 @@ theorem isOpen_pi_iff {s : Set (∀ a, A a)} :
     refine ⟨I, fun a => ite (a ∈ I) (t a) univ, fun i => ?_, ?_⟩
     · by_cases hi : i ∈ I
       · use t i
-        simp_rw [if_pos hi]
+        simp_rw [ite_eq_left hi]
         exact ⟨Subset.rfl, (h1 i) hi⟩
       · use univ
-        simp_rw [if_neg hi]
+        simp_rw [ite_eq_right hi]
         exact ⟨Subset.rfl, isOpen_univ, mem_univ _⟩
     · rw [← univ_pi_ite]
       simp only [← ite_and, ← Finset.mem_coe, and_self_iff, univ_pi_ite, h2]
@@ -1104,7 +1163,7 @@ theorem pi_generateFrom_eq {A : ι → Type*} {g : ∀ a, Set (Set (A a))} :
   refine le_antisymm ?_ ?_
   · apply le_generateFrom
     rintro _ ⟨s, i, hi, rfl⟩
-    letI := fun a => generateFrom (g a)
+    let := fun a => generateFrom (g a)
     exact isOpen_set_pi i.finite_toSet (fun a ha => GenerateOpen.basic _ (hi a ha))
   · classical
     refine le_iInf fun i => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => ?_
@@ -1117,7 +1176,7 @@ theorem pi_eq_generateFrom :
         { g | ∃ (s : ∀ a, Set (A a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
   _ = @Pi.topologicalSpace ι A fun _ => generateFrom { s | IsOpen s } := by
-    simp +instances only [generateFrom_setOf_isOpen]
+    simp +instances only [generateFrom_setOfPred_isOpen]
   _ = _ := pi_generateFrom_eq
 
 theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))} [Finite ι]
@@ -1129,7 +1188,7 @@ theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))
   refine le_antisymm (generateFrom_anti ?_) (le_generateFrom ?_)
   · exact fun s ⟨t, ht, Eq⟩ => ⟨t, Finset.univ, by simp [ht, Eq]⟩
   · rintro s ⟨t, i, ht, rfl⟩
-    letI := generateFrom { t | ∃ s : ∀ a, Set (X a), (∀ a, s a ∈ g a) ∧ t = pi univ s }
+    let := generateFrom { t | ∃ s : ∀ a, Set (X a), (∀ a, s a ∈ g a) ∧ t = pi univ s }
     refine isOpen_iff_forall_mem_open.2 fun f hf => ?_
     choose c hcg hfc using fun a => sUnion_eq_univ_iff.1 (hg a) (f a)
     refine ⟨pi i t ∩ pi ((↑i)ᶜ : Set ι) c, inter_subset_left, ?_, ⟨hf, fun a _ => hfc a⟩⟩
@@ -1239,8 +1298,10 @@ theorem continuous_sigma_iff {f : Sigma σ → X} :
   rw [continuous_iSup_dom]
   exact forall_congr' fun _ => continuous_coinduced_dom
 
+-- NB. This is a bad `fun_prop` theorem: because of its hypotheses, this would be classified as a
+-- transition theorem, and most likely never fire.
 /-- A map out of a sum type is continuous if its restriction to each summand is. -/
-@[continuity, fun_prop]
+@[continuity]
 theorem continuous_sigma {f : Sigma σ → X} (hf : ∀ i, Continuous fun a => f ⟨i, a⟩) :
     Continuous f :=
   continuous_sigma_iff.2 hf

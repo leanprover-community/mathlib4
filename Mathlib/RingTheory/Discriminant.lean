@@ -54,7 +54,7 @@ universe u v w z
 
 open scoped Matrix
 
-open Matrix Module Fintype Polynomial Finset IntermediateField
+open Matrix Module Fintype Polynomial Finset
 
 namespace Algebra
 
@@ -83,12 +83,11 @@ section Basic
 
 @[simp]
 theorem discr_reindex (b : Basis ι A B) (f : ι ≃ ι') : discr A (b ∘ ⇑f.symm) = discr A b := by
-  classical rw [← Basis.coe_reindex, discr_def, traceMatrix_reindex, det_reindex_self, ← discr_def]
+  rw [← Basis.coe_reindex, discr_def, traceMatrix_reindex, det_reindex_self, ← discr_def]
 
 /-- If `b` is not linear independent, then `Algebra.discr A b = 0`. -/
 theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
     (hli : ¬LinearIndependent A b) : discr A b = 0 := by
-  classical
   obtain ⟨g, hg, i, hi⟩ := Fintype.not_linearIndependent_iff.1 hli
   have : (traceMatrix A b) *ᵥ g = 0 := by
     ext i
@@ -186,9 +185,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i => i, sum_range_id]
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
-    -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
-    -- deprecated?
-    exact Fintype.card_congr e.symm
+    exact card_congr e.symm
   have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
@@ -203,7 +200,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
       (-1) ^ (n * (n - 1) / 2) *
       norm K (aeval pb.gen (minpoly K pb.gen).derivative) := by
   let E := AlgebraicClosure L
-  letI := fun a b : E => Classical.propDecidable (Eq a b)
+  let := fun a b : E => Classical.propDecidable (Eq a b)
   have e : Fin pb.dim ≃ (L →ₐ[K] E) := by
     refine equivOfCardEq ?_
     rw [Fintype.card_fin, AlgHom.card]
@@ -246,7 +243,6 @@ variable {R : Type z} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R 
 /-- If `K` and `L` are fields and `IsScalarTower R K L`, and `b : ι → L` satisfies
 ` ∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`. -/
 theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsIntegral R (discr K b) := by
-  classical
   rw [discr_def]
   exact IsIntegral.det fun i j ↦ isIntegral_trace ((h i).mul (h j))
 
@@ -299,7 +295,7 @@ section Int
 /-- Two (finite) ℤ-bases have the same discriminant. -/
 theorem discr_eq_discr (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
     Algebra.discr ℤ b = Algebra.discr ℤ b' := by
-  convert Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
+  convert! Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
   · rw [Basis.toMatrix_map_vecMul]
   · suffices IsUnit (b'.toMatrix b).det by
       rw [Int.isUnit_iff, ← sq_eq_one_iff] at this
