@@ -203,7 +203,7 @@ variable {B}
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
 def algHomEquivSigma :
     (C →ₐ[A] D) ≃ Σ f : B →ₐ[A] D,
-      @AlgHom B B _ _ (.id B) C D _ _ _ (f.restrictDomain B).toRingHom.toAlgebra where
+      @AlgHom B B _ _ (.id B) C D _ _ _ (f.domRestrict B).toRingHom.toAlgebra where
   toFun f := ⟨f.domRestrict B, f.extendScalars B⟩
   invFun fg :=
     let _ := fg.1.toRingHom.toAlgebra
