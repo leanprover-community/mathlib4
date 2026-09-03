@@ -52,6 +52,11 @@ noncomputable instance moduleEndRight : Module (End G) (Ext A G n) where
     simp only [smul_end_def]
     rw [show mk₀ (r + s) = mk₀ r + mk₀ s from mk₀_add r s, comp_add]
 
+lemma smul_comp_mk₀_of_comm {G' : C} (φ : G ⟶ G') (α : End G) (β : End G')
+    (h : α ≫ φ = φ ≫ β) (x : Ext A G n) :
+    (α • x).comp (mk₀ φ) (add_zero n) = β • x.comp (mk₀ φ) (add_zero n) := by
+  simp only [smul_end_def, comp_assoc_of_third_deg_zero, mk₀_comp_mk₀, h]
+
 end End
 
 section Ring
@@ -126,11 +131,9 @@ section CommRing
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
-@[simp]
-lemma algebraMap_end_smul {R : Type t} [CommRing R] [Linear R C] {X Y : C} {n : ℕ}
-    (r : R) (x : Ext X Y n) : (algebraMap R (End Y)) r • x = r • x := by
-  rw [smul_end_def, smul_eq_comp_mk₀]
-  congr 2
+noncomputable instance {R : Type t} [CommRing R] [Linear R C] {X Y : C} {n : ℕ} :
+    IsScalarTower R (End Y) (Ext X Y n) where
+  smul_assoc r s x := by rw [smul_end_def, smul_end_def, mk₀_smul, comp_smul]
 
 /-- The composition of `Ext`, as a bilinear map. -/
 @[simps!]
