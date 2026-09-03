@@ -36,6 +36,8 @@ parameters the order is maximal, that is, is the integral closure of `ℤ` in
   `ℤ` iff its trace and its norm are integers.
 * `QuadraticAlgebra.Int.isIntegralClosure_iff`: `QuadraticAlgebra ℤ a b` is the integral closure
   of `ℤ` in `QuadraticAlgebra ℚ a b` iff `discr a b` is a fundamental discriminant.
+* `QuadraticAlgebra.Int.isIntegrallyClosed_iff`: `QuadraticAlgebra ℤ a b` is integrally closed iff
+  `discr a b` is a fundamental discriminant.
 
 ## Tags
 
@@ -354,6 +356,15 @@ theorem isIntegralClosure_iff :
     Int.isFundamentalDiscr_iff_forall_prime, Nat.forall_prime_iff_two_and_odd, saturated_two_iff,
     saturated_iff_of_odd, Nat.cast_ofNat]
   exact (and_iff_right (discr_emod_four a b)).symm
+
+/-- The order `QuadraticAlgebra ℤ a b` is integrally closed iff `discr a b` is a fundamental
+discriminant. -/
+theorem isIntegrallyClosed_iff :
+    IsIntegrallyClosed (QuadraticAlgebra ℤ a b) ↔ Int.IsFundamentalDiscr (discr a b) := by
+  rw [← isIntegralClosure_iff, isIntegrallyClosed_iff_isIntegrallyClosedIn
+    (K := QuadraticAlgebra ℚ a b)]
+  exact ⟨fun _ ↦ IsIntegralClosure.of_isIntegrallyClosedIn,
+    fun _ ↦ IsIntegrallyClosedIn.of_isIntegralClosure ℤ⟩
 
 /-- When `discr a b` is a fundamental discriminant, `QuadraticAlgebra ℤ a b` is isomorphic, as a
 `ℤ`-algebra, to the integral closure of `ℤ` in `QuadraticAlgebra ℚ a b`. -/
