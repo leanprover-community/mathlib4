@@ -611,9 +611,6 @@ theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
     congr_arg (Ideal.quotientEquivAlgOfEq R (pow_one p))
       (equivQuotMaximalIdealPow_symm_apply_mk_mul p Rₚ 1 x s)
 
-@[deprecated (since := "2025-11-13")] alias _root_.equivQuotMaximalIdealOfIsLocalization :=
-  equivQuotMaximalIdeal
-
 variable {Sₚ : Type*} [CommRing S] [Algebra R S] [CommRing Sₚ] [Algebra S Sₚ] [Algebra R Sₚ]
 variable [Algebra Rₚ Sₚ] [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
 variable [IsScalarTower R S Sₚ]
