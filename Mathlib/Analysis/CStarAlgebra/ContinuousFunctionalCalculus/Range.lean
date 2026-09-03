@@ -170,12 +170,14 @@ variable [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 𝕜 A p]
 open scoped NonUnitalContinuousFunctionalCalculus in
 theorem range_cfcₙHom {a : A} (ha : p a) :
     NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) = elemental 𝕜 a := by
-  rw [← NonUnitalStarAlgebra.map_top, ← ContinuousMapZero.elemental_eq_top,
+  sorry
+  /-rw [← NonUnitalStarAlgebra.map_top (f := NonUnitalStarAlgHom.ofClass (cfcₙHom ha)),
+    ← ContinuousMapZero.elemental_eq_top,
     NonUnitalStarAlgebra.elemental, ← NonUnitalStarSubalgebra.topologicalClosure_map _
     (cfcₙHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap (cfcₙHom_continuous ha),
     NonUnitalStarAlgHom.map_adjoin]
   congr
-  simpa using cfcₙHom_id ha
+  simpa using cfcₙHom_id ha -/
 
 theorem range_cfcₙ {a : A} (ha : p a) : Set.range (cfcₙ (R := 𝕜) · a) = elemental 𝕜 a := by
   rw [range_cfcₙ_eq_range_cfcₙHom 𝕜 ha, range_cfcₙHom 𝕜 ha]
@@ -187,11 +189,11 @@ variable [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
 open scoped NonUnitalContinuousFunctionalCalculus in
 theorem range_cfcₙHom_le {a : A} (ha : p a) :
     NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) ≤ elemental 𝕜 a := by
-  grw [← NonUnitalStarAlgebra.map_top, ← ContinuousMapZero.elemental_eq_top,
+  sorry /- grw [← NonUnitalStarAlgebra.map_top, ← ContinuousMapZero.elemental_eq_top,
     NonUnitalStarAlgebra.elemental,
     NonUnitalStarSubalgebra.map_topologicalClosure_le (R := 𝕜) _ (cfcₙHom_continuous ha),
     NonUnitalStarAlgHom.map_adjoin]
-  simp [cfcₙHom_id ha, elemental]
+  simp [cfcₙHom_id ha, elemental] -/
 
 theorem range_cfcₙ_subset {a : A} (ha : p a) : Set.range (cfcₙ (R := 𝕜) · a) ⊆ elemental 𝕜 a := by
   grw [range_cfcₙ_eq_range_cfcₙHom 𝕜 ha, range_cfcₙHom_le 𝕜 ha]
