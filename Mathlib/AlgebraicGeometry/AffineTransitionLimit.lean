@@ -221,8 +221,8 @@ This is the underlying cone, and it is limiting as witnessed by `isLimitOpensCon
 def opensCone (i : I) (U : (D.obj i).Opens) : Cone (opensDiagram D i U) where
   pt := c.π.app i ⁻¹ᵁ U
   π.app j := (c.π.app j.left).resLE _ _ (by rw [← Scheme.Hom.comp_preimage, c.w])
-  π.naturality _ k f := by
-    change 𝟙 _ ≫ (c.π.app k.left).resLE (D.map k.hom ⁻¹ᵁ U) _ _ = _ ≫ (D.map f.left).resLE _ _ _
+  π.naturality _ _ f := by
+    dsimp only [opensDiagram, Functor.const_obj_map]
     simp
 
 instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
@@ -230,8 +230,8 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     IsAffineHom ((opensDiagram D i U).map f) := by
   have he : D.map j.hom ⁻¹ᵁ U = D.map f.left ⁻¹ᵁ D.map k.hom ⁻¹ᵁ U := by
     rw [← Scheme.Hom.comp_preimage, ← D.map_comp, Over.w f]
-  change IsAffineHom ((D.map f.left).resLE _ _ _)
-  rw [Scheme.Hom.resLE_congr _ _ rfl he @IsAffineHom, Scheme.Hom.resLE_eq_morphismRestrict]
+  refine (Scheme.Hom.resLE_congr _ _ rfl he @IsAffineHom).mpr ?_
+  rw [Scheme.Hom.resLE_eq_morphismRestrict]
   exact MorphismProperty.IsStableUnderBaseChange.of_isPullback
     (isPullback_morphismRestrict (D.map f.left) _).flip inferInstance
 
@@ -245,9 +245,8 @@ noncomputable def isLimitOpensCone (i : I) (U : (D.obj i).Opens) : IsLimit (open
   refine isLimitOfIsPullbackOfIsConnected (opensDiagramι D i U) _ _ ?_ (fun j ↦ ?_)
     ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
   · exact { hom := (c.π.app i ⁻¹ᵁ U).ι, w j := ((c.π.app j.left).resLE_comp_ι _).symm }
-  · refine IsOpenImmersion.isPullback _ (c.π.app i ⁻¹ᵁ U).ι _ _
+  · refine IsOpenImmersion.isPullback _ (c.π.app i ⁻¹ᵁ U).ι (D.map j.hom ⁻¹ᵁ U).ι _
       ((c.π.app j.left).resLE_comp_ι _).symm ?_
-    change c.π.app j.left ⁻¹ᵁ (D.map j.hom ⁻¹ᵁ U).ι.opensRange = (c.π.app i ⁻¹ᵁ U).ι.opensRange
     simp
 
 include hc in
@@ -270,16 +269,12 @@ lemma exists_map_preimage_le_map_preimage (hU : IsCompact (U : Set (D.obj i)))
     exact .trans (by simp) (Scheme.Hom.preimage_mono _ H)
   obtain ⟨j, fji, hj⟩ := exists_map_eq_top _ _ (isLimitOpensCone D c hc i U) (i := .mk (𝟙 i))
     (((Scheme.isoOfEq _ (by simp)).hom ≫ U.ι) ⁻¹ᵁ V)
-    (by change (c.π.app i).resLE (D.map (𝟙 i) ⁻¹ᵁ U) (c.π.app i ⁻¹ᵁ U) _ ⁻¹ᵁ
-          (((D.obj i).isoOfEq (by simp)).hom ≫ U.ι) ⁻¹ᵁ V = ⊤
+    (by dsimp only [opensCone, opensDiagram]
         simpa [← Scheme.Hom.comp_preimage, -Scheme.Hom.comp_base])
   refine ⟨j.left, j.hom, ?_⟩
-  revert hj
-  change (D.map fji.left).resLE (D.map (𝟙 i) ⁻¹ᵁ U) (D.map j.hom ⁻¹ᵁ U) _ ⁻¹ᵁ
-      (((D.obj i).isoOfEq (by simp)).hom ≫ U.ι) ⁻¹ᵁ V = ⊤ → _
-  intro hj
+  dsimp only [opensDiagram] at hj
   replace hj : (D.map j.hom ⁻¹ᵁ U).ι ⁻¹ᵁ D.map fji.left ⁻¹ᵁ V = ⊤ := by
-    simpa [← Scheme.Hom.comp_preimage, -Scheme.Hom.comp_base] using hj
+    simpa [← Scheme.Hom.comp_preimage, -Scheme.Hom.comp_base] using! hj
   replace hj : (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ D.map fji.left ⁻¹ᵁ V := Set.image_subset_iff.mpr hj.ge
   simpa [show fji.left = j.hom by simpa using fji.w] using hj
 
@@ -769,9 +764,9 @@ lemma exists_app_map_eq_zero_of_isLimit
           ((D.map (𝟙 i) ⁻¹ᵁ W).topIso.inv (TopCat.Presheaf.restrictOpen s _ hle)) = 0 :=
       exists_appTop_map_eq_zero_of_isAffine_of_isLimit _ _ (isLimitOpensCone D c hc i W)
         (.mk (𝟙 i)) _ (by
-          change ((c.π.app i).resLE (D.map (𝟙 i) ⁻¹ᵁ W) (c.π.app i ⁻¹ᵁ W) (by simp)).appTop _ = 0
-          simp only [Scheme.Hom.resLE_appTop_apply, Iso.inv_hom_id_apply,
-            Scheme.Hom.appLE_restrict, h0, map_zero])
+          refine (Scheme.Hom.resLE_appTop_apply (c.π.app i) _ _).trans ?_
+          simp only [Over.mk_hom, Iso.inv_hom_id_apply, Scheme.Hom.appLE_restrict, h0, map_zero]
+          rfl)
     have hv' : v.left = j.hom := by simpa using Over.w v
     exact ⟨j.left, j.hom, by
       simpa only [Scheme.Hom.resLE_appTop_apply, Iso.inv_hom_id_apply, hv',
@@ -910,8 +905,7 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsQuasiAffine c.pt] :
       rwa [basicOpen_res, eq_comm, inf_eq_right, Functor.map_comp,
         elementwise_of% Hom.comp_appTop, ← preimage_basicOpen_top, Functor.map_comp,
         Hom.comp_preimage]
-    · change x ∈ c.π.app l ⁻¹ᵁ (D.obj l).basicOpen _
-      rwa [preimage_basicOpen_top, ← elementwise_of% Hom.comp_appTop, Cone.w]
+    · rwa [← Hom.mem_preimage, preimage_basicOpen_top, ← elementwise_of% Hom.comp_appTop, Cone.w]
   choose i f hf hi using this
   obtain ⟨σ, hσ⟩ := CompactSpace.elim_nhds_subcover
     (fun x ↦ (((c.π.app (i x)) ⁻¹ᵁ (D.obj (i x)).basicOpen (f x)).1))
@@ -922,8 +916,7 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsQuasiAffine c.pt] :
   obtain ⟨k, fkj, hk⟩ := exists_map_eq_top D c hc
     (⨆ k, D.map (fj _ (Finset.mem_image_of_mem i (hσiσ k))) ⁻¹ᵁ (D.obj (i _)).basicOpen (f _)) (by
       refine top_le_iff.mp fun x _ ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨x, ?_⟩
-      change (c.π.app j ≫ D.map _).base x ∈ (D.obj (i (σi x))).basicOpen (f (σi x))
-      rw [Cone.w]
+      rw [← Hom.mem_preimage, ← Hom.comp_preimage, Cone.w]
       exact hσi _)
   refine ⟨k, .of_forall_exists_mem_basicOpen _ fun x ↦ ?_⟩
   obtain ⟨y, hy⟩ := TopologicalSpace.Opens.mem_iSup.mp (hk.ge (Set.mem_univ x))
@@ -1096,8 +1089,8 @@ private lemma exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffineOp
     let τ : opensDiagram D i' (D.map u ⁻¹ᵁ U j) ⟶ (Functor.const (Over i')).obj (W j) :=
       { app k := (t.app k.left).resLE _ _ ((Hom.preimage_mono _ hu).trans_eq
           (by simp only [← Hom.comp_preimage, hnat]))
-        naturality k l v := by
-          change (D.map v.left).resLE _ _ _ ≫ (t.app l.left).resLE (W j : S.Opens) _ _ = _ ≫ 𝟙 _
+        naturality _ _ v := by
+          dsimp only [opensDiagram, Functor.const_obj_map]
           simp [hnat] }
     obtain ⟨k, g, hg, hg'⟩ : ∃ (k : Over i') (g : _ ⟶ (V j : X.Opens).toScheme),
         (c.π.app k.left).resLE _ (c.π.app i' ⁻¹ᵁ D.map u ⁻¹ᵁ U j) (by simp) ≫ g =
@@ -1106,8 +1099,7 @@ private lemma exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffineOp
         _ τ (f.resLE _ _ (hVW j)) _ (isLimitOpensCone D c hc i' _)
         (a.resLE _ _ (by simpa using hUV j)) (by
           ext k
-          change (c.π.app k.left).resLE _ _ _ ≫ (t.app k.left).resLE (W j : S.Opens) _ _ =
-            a.resLE (V j : X.Opens) _ _ ≫ f.resLE (W j : S.Opens) _ _
+          dsimp only [τ, opensCone, opensDiagram]
           simp [hπ])
     have e : D.map (k.hom ≫ u) ⁻¹ᵁ U j ≤ D.map k.hom ⁻¹ᵁ D.map u ⁻¹ᵁ U j := by simp
     refine ⟨k.left, k.hom ≫ u, Scheme.homOfLE _ e ≫ g ≫ (V j : X.Opens).ι, ?_, fun O h ↦ ?_⟩
