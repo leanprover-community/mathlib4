@@ -123,13 +123,13 @@ def certifyImplication (holds : Bool) (p : Q(Prop)) (certifier : (q : Q(Prop)) �
     have hyp : Q(Prop) := dom
     mkAppOptM ``Not.elim #[none, some body, ← mkDecideProofQ q(¬ $hyp)]
 
-/-- Prove a cell whose two sides reduce to the same recorded entry. -/
-def certifyRflCell (p : Q(Prop)) : MetaM Q($p) := do
+/-- Prove a defeq `p` by `rfl`. -/
+def certifyDefEq (p : Q(Prop)) : MetaM Q($p) := do
   match_expr p with
   | Eq _ lhs _ => mkEqRefl lhs
   | _ => throwError "expected an equation:{indentExpr p}"
 
-/-- Prove that a recorded `entry` is nonzero, by having `leaf` refute its equation with
+/-- Prove that a recorded `entry` is nonzero by having `leaf` refute its equation with
 `zero`; `site` names the entry in errors. -/
 def certifyNonzeroEntry {u : Level} {α : Q(Type u)} (leaf : LeafCertifier) (entry zero : Q($α))
     (site : MessageData) : MetaM Q($entry ≠ $zero) := do
@@ -151,7 +151,7 @@ def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommR
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
   -- the unfolded guard is `toDual j < toDual i`, which is `i < j` in the original order
   certifyForallFin q(($L).IsLowerTriangular) fun i gi => do
-    certifyForallFin gi fun j cell => certifyImplication (i < j) cell certifyRflCell
+    certifyForallFin gi fun j cell => certifyImplication (i < j) cell certifyDefEq
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot`: the two conditions on the pivot
 function mention no entry and are decided, while the entry conditions are built from the
@@ -174,7 +174,7 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
           -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
           let col? := if h : i < pivots.size then some pivots[i] else none
           let hz ← certifyForallFin zeros fun j cell =>
-            certifyImplication (col?.all (j < ·)) cell certifyRflCell
+            certifyImplication (col?.all (j < ·)) cell certifyDefEq
           let hn ← certifyForallFin nonzeros fun c cell =>
             certifyImplication (col? == some c) cell fun _ =>
               certifyNonzeroEntry leaf (entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
@@ -200,7 +200,7 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fi
       q(∀ i : Fin $m, (fun j : Fin $n => $A ($σ i) (id j)) = $rows i) fun i _ => do
     let iN ← mkFinNumeral m i
     mkAppM ``funext #[← certifyForallFin
-      q(∀ j : Fin $n, $A ($σ $iN) (id j) = $rows $iN j) fun _ cell => certifyRflCell cell]
+      q(∀ j : Fin $n, $A ($σ $iN) (id j) = $rows $iN j) fun _ cell => certifyDefEq cell]
   have wrap : Q((Fin $m → Fin $n → $α) → Matrix (Fin $m) (Fin $n) $α) :=
     q(fun g => Matrix.of g)
   mkExpectedTypeHint (← mkAppM ``congrArg #[wrap, ← mkAppM ``funext #[rowEq]])
