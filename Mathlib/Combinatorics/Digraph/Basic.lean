@@ -128,7 +128,7 @@ protected def IsSubgraph (x y : Digraph V) : Prop :=
 instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 
 @[grind =] theorem le_iff {G H : Digraph V} :
-    G ≤ H ↔ G.verts ⊆ H.verts ∧ ∀ ⦃v w⦄, G.Adj v w → H.Adj v w := Iff.rfl
+    G ≤ H ↔ G.verts ⊆ H.verts ∧ ∀ ⦃v w⦄, G.Adj v w → H.Adj v w := .rfl
 
 @[simp]
 theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Prop) = (· ≤ ·) := rfl
@@ -152,7 +152,7 @@ instance : Max (Digraph V) where
 theorem sup_verts (x y : Digraph V) : (x ⊔ y).verts = x.verts ∪ y.verts := rfl
 
 @[grind =]
-theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w := Iff.rfl
+theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w := .rfl
 
 /-- The infimum of two digraphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
 instance : Min (Digraph V) where
@@ -187,7 +187,7 @@ instance sdiff : SDiff (Digraph V) where
   }
 
 @[simp]
-theorem sdiff_adj (x y : Digraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w := Iff.rfl
+theorem sdiff_adj (x y : Digraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w := .rfl
 
 instance supSet : SupSet (Digraph V) where
   sSup s := {
@@ -202,10 +202,10 @@ instance infSet : InfSet (Digraph V) where
   }
 
 @[simp]
-theorem sSup_adj {s : Set (Digraph V)} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
+theorem sSup_adj {s : Set (Digraph V)} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := .rfl
 
 @[simp]
-theorem sInf_adj {s : Set (Digraph V)} : (sInf s).Adj a b ↔ ∀ G ∈ s, Adj G a b := Iff.rfl
+theorem sInf_adj {s : Set (Digraph V)} : (sInf s).Adj a b ↔ ∀ G ∈ s, Adj G a b := .rfl
 
 @[simp]
 theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).Adj a b := by simp [iSup]
@@ -241,7 +241,7 @@ instance {G : Digraph V} : PartialOrder G.SpanningSubgraph :=
 
 @[grind =] theorem SpanningSubgraph.le_iff {G : Digraph V}
     {H K : G.SpanningSubgraph} :
-    H ≤ K ↔ H.val ≤ K.val := Iff.rfl
+    H ≤ K ↔ H.val ≤ K.val := .rfl
 
 
 /-- The adjacency relation of a spanning subgraph, restricted to the edges of the ambient
@@ -302,22 +302,22 @@ instance {G : Digraph V} : SDiff G.SpanningSubgraph where
   sdiff H K := H ⊓ Kᶜ
 
 @[simp] theorem SpanningSubgraph.sSup_val_adj {G : Digraph V} (s : Set G.SpanningSubgraph)
-    (v w : V) : (sSup s).val.Adj v w ↔ ∃ H ∈ s, H.val.Adj v w := Iff.rfl
+    (v w : V) : (sSup s).val.Adj v w ↔ ∃ H ∈ s, H.val.Adj v w := .rfl
 
 @[simp] theorem SpanningSubgraph.sInf_val_adj {G : Digraph V} (s : Set G.SpanningSubgraph)
     (v w : V) : (sInf s).val.Adj v w ↔
-      (∀ H ∈ s, H.val.Adj v w) ∧ G.Adj v w := Iff.rfl
+      (∀ H ∈ s, H.val.Adj v w) ∧ G.Adj v w := .rfl
 
 @[simp] theorem SpanningSubgraph.compl_val_adj {G : Digraph V} (H : G.SpanningSubgraph)
-    (v w : V) : (Hᶜ).val.Adj v w ↔ G.Adj v w ∧ ¬H.val.Adj v w := Iff.rfl
+    (v w : V) : (Hᶜ).val.Adj v w ↔ G.Adj v w ∧ ¬H.val.Adj v w := .rfl
 
 @[simp] theorem SpanningSubgraph.himp_val_adj {G : Digraph V} (H K : G.SpanningSubgraph)
     (v w : V) : (H ⇨ K).val.Adj v w ↔
-      (G.Adj v w ∧ ¬H.val.Adj v w) ∨ K.val.Adj v w := Iff.rfl
+      (G.Adj v w ∧ ¬H.val.Adj v w) ∨ K.val.Adj v w := .rfl
 
 @[simp] theorem SpanningSubgraph.sdiff_val_adj {G : Digraph V} (H K : G.SpanningSubgraph)
     (v w : V) : (H \ K).val.Adj v w ↔
-      H.val.Adj v w ∧ (G.Adj v w ∧ ¬K.val.Adj v w) := Iff.rfl
+      H.val.Adj v w ∧ (G.Adj v w ∧ ¬K.val.Adj v w) := .rfl
 
 @[grind =]
 theorem SpanningSubgraph.adj_le_adj_iff {G : Digraph V}
@@ -387,7 +387,7 @@ instance Bot : Bot (Digraph V) where
 
 @[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
 
-@[simp] theorem bot_adj (v w : V) : (⊥ : Digraph V).Adj v w ↔ False := Iff.rfl
+@[simp] theorem bot_adj (v w : V) : (⊥ : Digraph V).Adj v w ↔ False := .rfl
 
 @[simp] theorem completeDigraph_eq_top (V : Type*) : Digraph.completeDigraph V = ⊤ := rfl
 
