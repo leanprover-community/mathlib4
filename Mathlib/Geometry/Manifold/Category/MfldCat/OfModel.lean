@@ -33,7 +33,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-- The category of `C^n` manifolds modeled on a fixed model with corners `I`. -/
 structure MfldCat (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying type. -/
   carrier : Type u
   [topologicalSpace : TopologicalSpace carrier]
@@ -54,8 +54,6 @@ instance : CoeSort (MfldCat I n) (Type u) := ⟨MfldCat.carrier⟩
 
 attribute [coe] MfldCat.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object of `ModelWithCorners.MfldCat I n` associated to a `C^n` manifold `X` modeled on `I`.
 
 This is the preferred way to construct a term of `ModelWithCorners.MfldCat I n`. -/
@@ -68,22 +66,18 @@ lemma coe_of : (of (I := I) (n := n) X : Type u) = X := rfl
 /-- The type of morphisms in `ModelWithCorners.MfldCat I n`. -/
 @[ext]
 structure Hom (M N : MfldCat.{u} I n) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `C^n` map. -/
   hom' : ContMDiffMap I I M N n
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (MfldCat I n) where
   Hom M N := Hom M N
   id M := ⟨.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (MfldCat I n) (fun M N => ContMDiffMap I I M N n) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `ModelWithCorners.MfldCat` back into a `ContMDiffMap`. -/
 abbrev Hom.hom (f : Hom M N) := ConcreteCategory.hom (C := MfldCat I n) f
