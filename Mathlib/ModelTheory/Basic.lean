@@ -109,9 +109,7 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
   fun _ => instIsEmptySum
 
 @[simp]
-theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_eq_zero]
-
-instance isEmpty_empty : IsEmpty Language.empty.Symbols := inferInstance
+theorem card_empty : Language.empty.card = 0 := by simp [card]
 
 instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
