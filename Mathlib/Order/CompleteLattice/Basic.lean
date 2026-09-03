@@ -47,7 +47,7 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 
 section
 
-variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
+variable [CompleteSemilatticeSup α] {s t : Set α} {a : α}
 
 @[to_dual]
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
@@ -313,8 +313,6 @@ theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
 @[to_dual]
 lemma sSup_lowerBounds_eq_sInf (s : Set α) : sSup (lowerBounds s) = sInf s :=
   (isLUB_sSup _).unique (isGLB_sInf _).isLUB
-
-@[deprecated (since := "2026-02-01")] alias sInf_upperBounds_eq_csSup := sInf_upperBounds_eq_sSup
 
 @[to_dual map_iInf_le]
 theorem Monotone.le_map_iSup [CompleteLattice β] {f : α → β} (hf : Monotone f) :
@@ -701,7 +699,9 @@ end le
 ### `iSup` and `iInf` under `Type`
 -/
 
-@[to_dual iInf_of_isEmpty]
+/-- This `simp` lemma goes well with `sSup_empty` in a complete lattice. -/
+@[to_dual (attr := simp) iInf_of_isEmpty
+/-- This `simp` lemma goes well with `sInf_empty` in a complete lattice. -/]
 theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
 
@@ -811,7 +811,12 @@ instance Prop.instCompleteLattice : CompleteLattice Prop where
   sInf s := ∀ a ∈ s, a
   isGLB_sInf _ := ⟨fun a h p ↦ p a h, fun _ h p _ hb ↦ h hb p⟩
 
-noncomputable instance Prop.instCompleteLinearOrder : CompleteLinearOrder Prop where
+/-- The order on `Prop` is a `CompleteLinearOrder`.
+
+This is not an instance since `CompleteLinearOrder` includes decidability instances, which we want
+to avoid for `Prop`. -/
+@[expose, instance_reducible]
+noncomputable def Prop.completeLinearOrder : CompleteLinearOrder Prop where
   __ := Prop.instCompleteLattice
   __ := Prop.linearOrder
   __ := BooleanAlgebra.toBiheytingAlgebra
