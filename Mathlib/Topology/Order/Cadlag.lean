@@ -32,7 +32,7 @@ because of `to_dual`. -/
 /-- A function `f` is *right-continuous* if for any `a`, `f x → f a` when `x → a` and `x > a`. -/
 @[to_dual /-- A function `f` is *left-continuous* if for any `a`, `f x → f a` when `x → a`
 and `x < a`. -/]
-abbrev IsRightContinuous (f : X → Y) :=
+def IsRightContinuous (f : X → Y) :=
   ∀ a, ContinuousWithinAt f (Set.Ioi a) a
 
 @[to_dual]
