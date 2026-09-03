@@ -114,30 +114,29 @@ def normNumLeaf : LeafProver := fun p => do
   let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
   return (b, prf)
 
-/-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `head i`
+/-- Prove the quantified statement `p` over `Fin n` from proofs of its instances, `proofAt i`
 proving it at index `i`. The proof recurses on the index list `List.finRange n`, so the
 motive is spelled once rather than once per index. -/
-def mkListForall (n : Nat) (p : Q(Prop)) (head : Nat → (q : Q(Prop)) → MetaM Q($q)) :
-    MetaM Q($p) := do
-  let .forallE nm dom body bi := p
-    | throwError "expected a quantified statement:{indentExpr p}"
-  let motive : Expr := .lam nm dom body bi
-  have fin : Q(Type) := q(Fin $n)
-  let mut acc : Expr := mkConst ``True.intro
-  for k in 0...n do
-    let i := n - 1 - k
-    let h ← head i (mkApp motive (← mkNumeral fin i)).headBeta
-    -- the conjunction takes its statement from the proofs, so that the one defeq check
-    -- against the quantified goal is left to the kernel rather than run here as well
-    acc ← if k == 0 then pure h else mkAppM ``And.intro #[h, acc]
-  have range : Q(List (Fin $n)) := q(List.finRange $n)
-  let hAll ← mkAppM ``Iff.mp
-    #[← mkAppOptM ``List.forall_iff_forall_mem #[none, some motive, some range],
-      ← mkExpectedTypeHint acc (← mkAppM ``List.Forall #[motive, range])]
-  withLocalDeclD `i fin fun i => do
-    let body := mkApp2 hAll i (← mkAppM ``List.mem_finRange #[i])
-    mkExpectedTypeHint (← mkLambdaFVars #[i] body)
-      (← mkForallFVars #[i] (mkApp motive i).headBeta)
+def mkForallFin (n : Nat) (p : Q(Prop)) (proofAt : Nat → (q : Q(Prop)) → MetaM Q($q)) :
+    MetaM Q($p) :=
+  forallBoundedTelescope p (some 1) fun is body => do
+    let #[i] := is
+      | throwError "expected a quantified statement:{indentExpr p}"
+    let motive ← mkLambdaFVars is body
+    have fin : Q(Type) := q(Fin $n)
+    let mut acc : Expr := mkConst ``True.intro
+    for k in 0...n do
+      let j := n - 1 - k
+      let h ← proofAt j (mkApp motive (← mkNumeral fin j)).headBeta
+      -- the conjunction takes its statement from the proofs, so that the one defeq check
+      -- against the quantified goal is left to the kernel rather than run here as well
+      acc ← if k == 0 then pure h else mkAppM ``And.intro #[h, acc]
+    have range : Q(List (Fin $n)) := q(List.finRange $n)
+    let hAll ← mkAppM ``Iff.mp
+      #[← mkAppOptM ``List.forall_iff_forall_mem #[none, some motive, some range],
+        ← mkExpectedTypeHint acc (← mkAppM ``List.Forall #[motive, range])]
+    mkExpectedTypeHint
+      (← mkLambdaFVars is (mkApp2 hAll i (← mkAppM ``List.mem_finRange #[i]))) p
 
 /-- Unfold `p` until its head is a quantifier, as `Matrix.IsLowerTriangular` has to be
 before its entry conditions are reachable. -/
@@ -150,17 +149,17 @@ partial def unfoldToForall (p : Q(Prop)) : MetaM Q(Prop) := do
     unfoldToForall p'.headBeta
 
 /-- Prove an implication `P → Q` where the caller already knows from the recorded data
-whether `P` holds, so that neither side is discovered by reduction: when it holds, `prove`
+whether `P` holds, so that neither side is discovered by reduction: when it holds, `proof`
 supplies `Q` and the hypothesis is discarded, and otherwise `P` is refuted and the
 implication is vacuous. -/
-def mkImplication (holds : Bool) (p : Q(Prop)) (prove : (q : Q(Prop)) → MetaM Q($q)) :
+def mkImplication (holds : Bool) (p : Q(Prop)) (proof : (q : Q(Prop)) → MetaM Q($q)) :
     MetaM Q($p) := do
   let .forallE nm dom body bi := p
     | throwError "expected an implication:{indentExpr p}"
   if body.hasLooseBVars then -- shouldn't happen, but a safety check
     throwError "the conclusion depends on the hypothesis:{indentExpr p}"
   if holds then
-    return .lam nm dom (← prove body) bi
+    return .lam nm dom (← proof body) bi
   else
     have hyp : Q(Prop) := dom
     mkAppOptM ``Not.elim #[none, some body, ← certifyCondition "an index guard" q(¬ $hyp)]
@@ -187,7 +186,7 @@ def mkDiagCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Q($α))) (leaf : LeafProver) :
     MetaM Q(∀ i, ($L).diag i ≠ 0) := do
   let zero : Q($α) ← mkNumeral α 0
-  mkListForall m q(∀ i, ($L).diag i ≠ 0) fun i _ =>
+  mkForallFin m q(∀ i, ($L).diag i ≠ 0) fun i _ =>
     proveNonzeroEntry leaf (entries[i]!)[i]! zero m!"the diagonal entry of the transform at {i}"
 
 /-- Prove `L.IsLowerTriangular`: above the diagonal the elimination emitted zero, and at
@@ -196,8 +195,8 @@ def mkLowerCond {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
   let rows ← unfoldToForall q(($L).IsLowerTriangular)
   -- the unfolded guard is `toDual j < toDual i`, which is `i < j` in the original order
-  mkListForall m rows fun i gi => do
-    mkListForall m gi fun j cell => mkImplication (i < j) cell proveRflCell
+  mkForallFin m rows fun i gi => do
+    mkForallFin m gi fun j cell => mkImplication (i < j) cell proveRflCell
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot`: the two conditions on the pivot
 function mention no entry and are decided, while the entry conditions are built from the
@@ -213,14 +212,14 @@ def mkPivotCond {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
   | And mono rest =>
     match_expr rest with
     | And strict cells =>
-      let entryConds ← mkListForall m cells fun i gi => do
+      let entryConds ← mkForallFin m cells fun i gi => do
         match_expr gi with
         | And zeros nonzeros =>
           -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
           let col? := if h : i < pivots.size then some pivots[i] else none
-          let hz ← mkListForall n zeros fun j cell =>
+          let hz ← mkForallFin n zeros fun j cell =>
             mkImplication (col?.all (j < ·)) cell proveRflCell
-          let hn ← mkListForall n nonzeros fun c cell =>
+          let hn ← mkForallFin n nonzeros fun c cell =>
             mkImplication (col? == some c) cell fun _ =>
               proveNonzeroEntry leaf (entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
           mkAppM ``And.intro #[hz, hn]
@@ -245,11 +244,11 @@ def mkPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m)
   have reindexed : Q(Fin $m → Fin $n → $α) := q(fun i j => $A ($σ i) (id j))
   have rowStmt : Q(Prop) := ← withLocalDeclD `i q(Fin $m) fun i => do
     mkForallFVars #[i] (← mkEq (mkApp reindexed i).headBeta (mkApp rows i))
-  let rowEq ← mkListForall m rowStmt fun i _ => do
+  let rowEq ← mkForallFin m rowStmt fun i _ => do
     let iN ← mkFinNumeral m i
     have colStmt : Q(Prop) := ← withLocalDeclD `j q(Fin $n) fun j => do
       mkForallFVars #[j] (← mkEq (mkApp2 reindexed iN j).headBeta (mkApp2 rows iN j))
-    mkAppM ``funext #[← mkListForall n colStmt fun _ cell => proveRflCell cell]
+    mkAppM ``funext #[← mkForallFin n colStmt fun _ cell => proveRflCell cell]
   have wrap : Q((Fin $m → Fin $n → $α) → Matrix (Fin $m) (Fin $n) $α) :=
     q(fun g => Matrix.of g)
   mkExpectedTypeHint (← mkAppM ``congrArg #[wrap, ← mkAppM ``funext #[rowEq]])
@@ -278,8 +277,8 @@ def mkProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     unless b do
       throwError "the product of the transform does not match the echelon form at ({i}, {j})"
     return prf
-  return q(Matrix.ext $(← mkListForall m q(∀ i j, ($L * $Aσ) i j = $U i j) fun i gi => do
-    mkListForall n gi fun j _ => cell i j))
+  return q(Matrix.ext $(← mkForallFin m q(∀ i j, ($L * $Aσ) i j = $U i j) fun i gi => do
+    mkForallFin n gi fun j _ => cell i j))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
 `entries`, the parsed entries of `A`, deciding every condition in the kernel unless `leaf?`
