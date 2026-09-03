@@ -96,6 +96,9 @@ instance : Zero (ι →ᵇᵃ[I₀] M) :=
 instance : Inhabited (ι →ᵇᵃ[I₀] M) :=
   ⟨0⟩
 
+instance : IsZeroApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
+  zero_apply _ := rfl
+
 instance : Add (ι →ᵇᵃ[I₀] M) :=
   ⟨fun f g =>
     ⟨f + g, fun I hI π hπ => by
@@ -109,12 +112,11 @@ instance {R} [Monoid R] [DistribMulAction R M] : SMul R (ι →ᵇᵃ[I₀] M) :
 instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
   Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
 
-@[simp]
-lemma add_apply (f g : ι →ᵇᵃ[I₀] M) (J : Box ι) : (f + g) J = f J + g J := rfl
+instance : IsAddApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
+  add_apply _ _ _ := rfl
 
-@[simp]
-lemma smul_apply {R : Type*} [Monoid R] [DistribMulAction R M]
-    (c : R) (f : ι →ᵇᵃ[I₀] M) (J : Box ι) : (c • f) J = c • (f J) := rfl
+instance {R} [Monoid R] [DistribMulAction R M] : IsSMulApply R (ι →ᵇᵃ[I₀] M) (Box ι) M where
+  smul_apply _ _ _ := rfl
 
 /-! ### Constructions and combinators -/
 
@@ -186,26 +188,21 @@ section AddCommGroup
 
 variable {M : Type*} [AddCommGroup M]
 
-instance : Neg (ι →ᵇᵃ[I₀] M) :=
-  ⟨fun f ↦
-    ⟨-(f : Box ι → M), fun I hI π hπ ↦ by
-      simp only [Pi.neg_apply, Finset.sum_neg_distrib, sum_partition_boxes _ hI hπ]⟩⟩
+instance : Neg (ι →ᵇᵃ[I₀] M) where
+  neg f := ⟨-(f : Box ι → M), fun I hI π hπ ↦ by
+    simp only [Pi.neg_apply, Finset.sum_neg_distrib, sum_partition_boxes _ hI hπ]⟩
 
-instance : Sub (ι →ᵇᵃ[I₀] M) :=
-  ⟨fun f g ↦
-    ⟨(f : Box ι → M) - g, fun I hI π hπ ↦ by
-      simp only [Pi.sub_apply, Finset.sum_sub_distrib, sum_partition_boxes _ hI hπ]⟩⟩
+instance : IsNegApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
+  neg_apply _ _ := rfl
 
-instance : AddCommGroup (ι →ᵇᵃ[I₀] M) :=
-  Function.Injective.addCommGroup _ DFunLike.coe_injective
-    rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+instance : Sub (ι →ᵇᵃ[I₀] M) where
+  sub f g := ⟨(f : Box ι → M) - g, fun I hI π hπ ↦ by
+    simp only [Pi.sub_apply, Finset.sum_sub_distrib, sum_partition_boxes _ hI hπ]⟩
 
-@[simp]
-lemma neg_apply (f : ι →ᵇᵃ[I₀] M) (J : Box ι) : (-f) J = -(f J) := rfl
+instance : IsSubApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
+  sub_apply _ _ _ := rfl
 
-@[simp]
-lemma sub_apply (f g : ι →ᵇᵃ[I₀] M) (J : Box ι) : (f - g) J = f J - g J := rfl
+instance : AddCommGroup (ι →ᵇᵃ[I₀] M) := FunLike.addCommGroup
 
 end AddCommGroup
 
