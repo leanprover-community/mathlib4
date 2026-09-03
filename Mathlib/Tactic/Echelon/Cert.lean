@@ -94,14 +94,13 @@ def certifyForallFin (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) → MetaM 
     let_expr Fin nE := fin | throwError "expected a quantifier over `Fin`:{indentExpr p}"
     let some n ← getNatValue? nE
       | throwError "expected a literal `Fin` domain:{indentExpr p}"
-    let hs ← Array.ofFnM (n := n) fun j => do
-      certifier j (mkApp motive (← mkNumeral fin j)).headBeta
     -- the conjunction takes its statement from the proofs, so that the one defeq check
     -- against the quantified goal is left to the kernel rather than run here as well; its
     -- innermost conjunct is the last proof itself, as `List.Forall` ends without a `True`
-    let acc ← match hs.back? with
-      | none => pure q(True.intro)
-      | some last => hs.pop.foldrM (fun h acc => mkAppM ``And.intro #[h, acc]) last
+    let rec go (j : Nat) : MetaM Expr := do
+      let h ← certifier j (mkApp motive (← mkNumeral fin j)).headBeta
+      if j + 1 < n then mkAppM ``And.intro #[h, ← go (j + 1)] else pure h
+    let acc ← if n == 0 then pure q(True.intro) else go 0
     have nQ : Q(ℕ) := nE
     have motiveQ : Q(Fin $nQ → Prop) := motive
     have forAll : Q((List.finRange $nQ).Forall $motiveQ) := acc
