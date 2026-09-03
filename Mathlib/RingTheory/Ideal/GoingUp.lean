@@ -186,6 +186,9 @@ theorem isMaximal_of_isIntegral_of_isMaximal_comap (f : R →+* S) (hf : f.IsInt
   have : Algebra.IsIntegral R S := ⟨hf⟩
   isMaximal_of_isIntegral_of_isMaximal_under (R := R) (S := S) I hI
 
+@[deprecated (since := "2026-09-03")] alias isMaximal_of_isIntegral_of_isMaximal_comap' :=
+  isMaximal_of_isIntegral_of_isMaximal_comap
+
 variable [Algebra R S]
 
 theorem under_ne_bot_of_algebraic_mem [IsDomain S] {x : S} (x_ne_zero : x ≠ 0) (x_mem : x ∈ I)
