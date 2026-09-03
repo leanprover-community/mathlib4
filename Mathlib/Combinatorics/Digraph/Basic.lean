@@ -248,9 +248,6 @@ digraph. -/
 @[simp] def SpanningSubgraph.Adj {G : Digraph V} (H : G.SpanningSubgraph) :
     {e : V × V // G.Adj e.1 e.2} → Prop := fun e ↦ H.val.Adj e.1.1 e.1.2
 
-/-- The join/union of two spanning subgraphs. -/
-instance {G : Digraph V} : Max G.SpanningSubgraph where
-  max H₁ H₂ := ⟨max H₁.val H₂.val, by grind⟩
 
 /-- The top subgraph `⊤` -/
 instance : OrderTop G.SpanningSubgraph where
@@ -268,6 +265,10 @@ instance {G : Digraph V} : Compl G.SpanningSubgraph where
       verts := H.val.verts
       Adj v w := G.Adj v w ∧ ¬H.val.Adj v w
     }, by grind⟩
+
+/-- The join/union of two spanning subgraphs. -/
+instance {G : Digraph V} : Max G.SpanningSubgraph where
+  max H₁ H₂ := ⟨max H₁.val H₂.val, by grind⟩
 
 /-- The meet/intersection of two spanning subgraphs. -/
 instance : Min G.SpanningSubgraph where
