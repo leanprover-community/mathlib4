@@ -170,7 +170,10 @@ lemma Algebra.FormallySmooth.of_algebraicIndependent_of_isSeparable
 variable (K L) in
 lemma Algebra.FormallySmooth.of_isSeparablyGenerated [Algebra.IsSeparablyGenerated K L] :
     Algebra.FormallySmooth K L := by
-  rcases ‹Algebra.IsSeparablyGenerated K L› with ⟨ι, f, isT, sep⟩
+  rcases ‹Algebra.IsSeparablyGenerated K L› with ⟨s, isT, sep⟩
+  have : Algebra.IsSeparable (IntermediateField.adjoin K (Set.range ((↑) : s → L))) L := by
+    convert sep
+    <;> simp
   exact Algebra.FormallySmooth.of_algebraicIndependent_of_isSeparable isT.1
 
 instance (priority := low) Algebra.FormallySmooth.of_perfectField
