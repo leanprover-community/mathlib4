@@ -263,7 +263,7 @@ lemma subcomplex_eq_top_iff (A : (Δ[p] ⊗ Δ[q] : SSet.{u}).Subcomplex)
   rw [Subcomplex.eq_top_iff_contains_nonDegenerate]
   intro d x hx
   obtain ⟨y, hy⟩ := exists_nonDegenerate_max_dim (x := ⟨x, hx⟩) hn
-  exact (Subcomplex.ofSimplex_le_iff ..).2 (hA y.prop) _ hy
+  exact (Subcomplex.ofSimplex_le_iff ..).mpr (hA y.prop) _ hy
 
 end prodStdSimplex
 
