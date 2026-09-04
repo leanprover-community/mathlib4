@@ -39,8 +39,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
-  [Category* D] [Category* D'] [Category* H] [Category* H']
+variable {C D H H' : Type _} [Category* C] [Category* D] [Category* H] [Category* H']
   (LF'' LF' LF : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α'' : L ⋙ LF'' ⟶ F'') (α' : L ⋙ LF' ⟶ F') (α : L ⋙ LF ⟶ F) (α'₂ : L ⋙ LF' ⟶ F)
   (W : MorphismProperty C)
@@ -59,7 +58,7 @@ lemma isLeftDerivedFunctor_iff_isRightKanExtension [L.IsLocalization W] :
   · exact fun _ => IsLeftDerivedFunctor.isRightKanExtension LF α W
   · exact fun h => ⟨h⟩
 
-variable {RF RF'} in
+variable {LF LF'} in
 lemma isLeftDerivedFunctor_iff_of_iso (α' : L ⋙ LF' ⟶ F) (W : MorphismProperty C)
     [L.IsLocalization W] (e : LF ≅ LF') (comm : whiskerLeft L e.hom ≫ α' = α) :
     LF.IsLeftDerivedFunctor α W ↔ LF'.IsLeftDerivedFunctor α' W := by

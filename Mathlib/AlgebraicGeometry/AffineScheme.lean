@@ -614,7 +614,7 @@ theorem basicOpen :
 
 lemma Spec_basicOpen {R : CommRingCat} (f : R) :
     IsAffineOpen (X := Spec R) (PrimeSpectrum.basicOpen f) :=
-  basicOpen_eq_of_affine f ▸ (isAffineOpen_top (Spec <| .of R)).basicOpen _
+  basicOpen_eq_of_affine f ▸ (isAffineOpen_top (Spec ↧R)).basicOpen _
 
 instance [IsAffine X] (r : Γ(X, ⊤)) : IsAffine (X.basicOpen r) :=
   (isAffineOpen_top X).basicOpen _
@@ -1246,7 +1246,7 @@ scheme-theoretic image of `f` and `f` factors as
 `specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f)`
 (see `specTargetImageFactorization_comp`). -/
 def specTargetImage (f : X ⟶ Spec A) : CommRingCat :=
-  CommRingCat.of (A ⧸ specTargetImageIdeal f)
+  ↧(A ⧸ specTargetImageIdeal f)
 
 /-- If `f : X ⟶ Spec A` is a morphism of schemes, then `f` factors via
 the inclusion of `Spec (specTargetImage f)` into `X`. -/
@@ -1288,7 +1288,7 @@ variable (R) (x : PrimeSpectrum R) in
 /-- The stalk of `Spec R` at `x` is isomorphic to `Rₚ`,
 where `p` is the prime corresponding to `x`. -/
 noncomputable
-def Spec.stalkIso : (Spec R).presheaf.stalk x ≅ .of (Localization.AtPrime x.asIdeal) :=
+def Spec.stalkIso : (Spec R).presheaf.stalk x ≅ ↧(Localization.AtPrime x.asIdeal) :=
   (StructureSheaf.stalkIso ..).toCommRingCatIso.symm
 
 @[reassoc (attr := simp)]
@@ -1329,3 +1329,13 @@ def Scheme.arrowStalkMapSpecIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Prime
 
 end Stalks
 end AlgebraicGeometry
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AlgebraicGeometry.AffineScheme.of X` as `↧X`. -/
+@[app_delab AlgebraicGeometry.AffineScheme.of]
+meta def AlgebraicGeometry.AffineScheme.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

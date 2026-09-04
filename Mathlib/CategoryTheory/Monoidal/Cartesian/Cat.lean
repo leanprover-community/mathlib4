@@ -25,7 +25,7 @@ open Limits
 
 attribute [local instance] uliftCategory in
 /-- The chosen terminal object in `Cat`. -/
-abbrev chosenTerminal : Cat.{v, u} := Cat.of (ULift (ULiftHom (Discrete Unit)))
+abbrev chosenTerminal : Cat.{v, u} := ↧(ULift (ULiftHom (Discrete Unit)))
 
 attribute [local instance] uliftCategory in
 /-- The chosen terminal object in `Cat` is terminal. -/
@@ -47,9 +47,8 @@ def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal �
 
 /-- The chosen product of categories `C × D` yields a product cone in `Cat`. -/
 def prodCone (C D : Cat.{v, u}) : BinaryFan C D :=
-  .mk (P := .of (C × D)) (Prod.fst _ _).toCatHom (Prod.snd _ _).toCatHom
+  .mk (P := ↧(C × D)) (Prod.fst _ _).toCatHom (Prod.snd _ _).toCatHom
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The product cone in `Cat` is indeed a product. -/
 def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
   (fun S => (S.fst.toFunctor.prod' S.snd.toFunctor).toCatHom) (fun _ => rfl)

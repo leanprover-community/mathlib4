@@ -46,8 +46,13 @@ instance : CoeSort PartialFun Type* :=
 def of : Type* → PartialFun :=
   id
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `PartialFun.of X` as `↧X`. -/
+@[app_delab PartialFun.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : Inhabited PartialFun.{u} :=
-  ⟨PartialFun.of PUnit⟩
+  ⟨↧PUnit⟩
 
 -- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
 set_option backward.isDefEq.respectTransparency.types false in
@@ -88,7 +93,7 @@ set_option backward.isDefEq.respectTransparency false in
 This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps obj map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
-  obj X := PartialFun.of { x : X // x ≠ X.point }
+  obj X := ↧{ x : X // x ≠ X.point }
   map f := PFun.toSubtype _ f.toFun ∘ Subtype.val
   map_id _ :=
     PFun.ext fun _ b =>

@@ -66,7 +66,6 @@ instance :
 variable (A)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The right derived functor commutes with the shift. -/
 @[implicit_reducible]
 noncomputable def commShift : RF.CommShift A where

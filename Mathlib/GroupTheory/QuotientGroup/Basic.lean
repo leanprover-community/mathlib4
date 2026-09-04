@@ -319,7 +319,6 @@ instance map_normal : (M.map (QuotientGroup.mk' N)).Normal :=
 
 variable (h : N ≤ M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map from the third isomorphism theorem for groups: `(G / N) / (M / N) → G / M`. -/
 @[to_additive /-- The map from the third isomorphism theorem for additive groups:
 `(A / N) / (M / N) → A / M`. -/]
@@ -327,7 +326,7 @@ def quotientQuotientEquivQuotientAux : (G ⧸ N) ⧸ M.map (mk' N) →* G ⧸ M 
   lift (M.map (mk' N)) (map N M (MonoidHom.id G) h)
     (by
       rintro _ ⟨x, hx, rfl⟩
-      rw [mem_ker, map_mk' N M _ _ x]
+      rw [mem_ker, map_mk' N M (MonoidHom.id G) (by simpa) x]
       exact (QuotientGroup.eq_one_iff _).mpr hx)
 
 @[to_additive (attr := simp)]
@@ -340,15 +339,23 @@ theorem quotientQuotientEquivQuotientAux_mk_mk (x : G) :
     quotientQuotientEquivQuotientAux N M h (x : G ⧸ N) = x :=
   QuotientGroup.lift_mk' (M.map (mk' N)) _ x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Noether's third isomorphism theorem** for groups: `(G / N) / (M / N) ≃* G / M`. -/
 @[to_additive
 /-- **Noether's third isomorphism theorem** for additive groups: `(A / N) / (M / N) ≃+ A / M`. -/]
 def quotientQuotientEquivQuotient : (G ⧸ N) ⧸ M.map (QuotientGroup.mk' N) ≃* G ⧸ M :=
   MonoidHom.toMulEquiv (quotientQuotientEquivQuotientAux N M h)
     (QuotientGroup.map _ _ (QuotientGroup.mk' N) (Subgroup.le_comap_map _ _))
-    (by ext; simp)
-    (by ext; simp)
+    (by ext; simp [map_mk N M (MonoidHom.id G) (by simpa)])
+    (by ext; simp [map_mk N M (MonoidHom.id G) (by simpa)])
+
+@[to_additive (attr := simp)]
+lemma quotientQuotientEquivQuotient_symm_mk (x : G) :
+    (quotientQuotientEquivQuotient N M h).symm (x : G ⧸ M) = (x : G ⧸ N) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma quotientQuotientEquivQuotient_apply_mk (x : G) :
+    quotientQuotientEquivQuotient N M h (x : G ⧸ N) = (x : G ⧸ M) := rfl
 
 end ThirdIsoThm
 

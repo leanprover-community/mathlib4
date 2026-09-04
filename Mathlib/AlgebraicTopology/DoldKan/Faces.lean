@@ -29,7 +29,9 @@ on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Category
-  CategoryTheory.Preadditive CategoryTheory.SimplicialObject Simplicial
+  CategoryTheory.Preadditive CategoryTheory.SimplicialObject
+
+open scoped Simplicial
 
 namespace AlgebraicTopology
 

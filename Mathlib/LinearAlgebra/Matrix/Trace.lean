@@ -241,7 +241,7 @@ end Fin
 
 section single
 
-variable {l m n : Type*} {R α : Type*} [DecidableEq l] [DecidableEq m] [DecidableEq n]
+variable {m n : Type*} {R α : Type*} [DecidableEq m] [DecidableEq n]
 variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
