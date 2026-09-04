@@ -402,4 +402,13 @@ theorem Adj.encard_commonNeighbors_lt_edegree_right (hadj : G.Adj u v)
     (hfin : (G.commonNeighbors u v).Finite) : (G.commonNeighbors u v).encard < G.edegree v :=
   hfin.encard_lt_encard hadj.commonNeighbors_ssubset_neighborSet_right
 
+theorem edegree_map_apply (f : V ↪ W) : (G.map f).edegree (f v) = G.edegree v := by
+  simp_rw [← encard_neighborSet, neighborSet_map, f.injective.encard_image]
+
+variable {G H v} in
+theorem Embedding.edegree_eq_of_neighborSet_subset_range {f : G ↪g H}
+    (h : H.neighborSet (f v) ⊆ Set.range f) : H.edegree (f v) = G.edegree v := by
+  simp_rw [← encard_neighborSet, ← f.injective.encard_image, ← f.preimage_neighborSet,
+    Set.image_preimage_eq_inter_range, Set.inter_eq_left.mpr h]
+
 end SimpleGraph
