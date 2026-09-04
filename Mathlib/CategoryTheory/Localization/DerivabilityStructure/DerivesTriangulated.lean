@@ -12,6 +12,10 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
 /-!
 # Triangulated derived functors using derivability structures
 
+This file provides lemmas in order to show that derived functors are triangulated
+when they are "derived" by a left or right derivability structure whose underlying
+functor is triangulated.
+
 -/
 
 @[expose] public section
