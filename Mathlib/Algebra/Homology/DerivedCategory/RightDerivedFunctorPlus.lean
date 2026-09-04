@@ -112,6 +112,7 @@ omit [HasDerivedCategory C] [EnoughInjectives C] in
 lemma _root_.CochainComplex.Plus.localizerMorphism_derives_mapCochainComplexPlus :
     (CochainComplex.Plus.localizerMorphism C).Derives
       (F.mapCochainComplexPlus ⋙ DerivedCategory.Plus.Q) :=
+  -- TODO: add some API which would allow providing a better proof
   .of_comp_of_reflectsIsomorphisms DerivedCategory.Plus.ι (by
     let e : (((InjectiveObject.ι C).mapCochainComplexPlus ⋙ F.mapCochainComplexPlus ⋙
       DerivedCategory.Plus.Q) ⋙ DerivedCategory.Plus.ι) ≅
@@ -162,15 +163,12 @@ example (K : CochainComplex.Plus (InjectiveObject C)) :
   infer_instance
 
 lemma isIso_rightDerivedFunctorPlusUnit_app_of_injective (K : CochainComplex.Plus C)
-    (n : ℤ) (hK : K.obj.IsStrictlyGE n := by infer_instance)
+    (n : ℤ) (_ : K.obj.IsStrictlyGE n := by infer_instance)
     (hK' : ∀ (q : ℤ), Injective (K.obj.X q)) :
     IsIso (F.rightDerivedFunctorPlusUnit.app K) := by
-  sorry
-
-lemma isIso_rightDerivedFunctorPlusUnit_app_of_isKInjective (K : CochainComplex.Plus C)
-    (hK : K.obj.IsKInjective := by infer_instance) :
-    IsIso (F.rightDerivedFunctorPlusUnit.app K) := by
-  sorry
+  obtain ⟨L, ⟨e⟩⟩ := K.mem_essImage_mapCochainComplexPlus_injectiveObjectι_iff.mpr hK'
+  rw [← NatTrans.isIso_app_iff_of_iso _ e]
+  infer_instance
 
 end Functor
 

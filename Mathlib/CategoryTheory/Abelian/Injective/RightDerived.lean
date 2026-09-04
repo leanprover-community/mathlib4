@@ -59,9 +59,8 @@ instance (n : ℕ) : (F.rightDerived n).Additive := by
 instance (X : C) (n : ℤ) [Injective X] :
     IsIso (F.rightDerivedFunctorPlusUnit.app
       ((CochainComplex.Plus.singleFunctor C n).obj X)) :=
-  isIso_rightDerivedFunctorPlusUnit_app_of_isKInjective _ _ (by
-    dsimp [CochainComplex.Plus.singleFunctor, ObjectProperty.lift]
-    infer_instance)
+  isIso_rightDerivedFunctorPlusUnit_app_of_injective _ _ n (by dsimp;infer_instance)
+    (by dsimp; infer_instance)
 
 noncomputable def toRightDerived₀ : F ⟶ F.rightDerived 0 :=
   F.rightUnitor.inv ≫
