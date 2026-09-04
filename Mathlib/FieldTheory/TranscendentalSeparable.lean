@@ -597,7 +597,7 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) 
     exact isReduced_of_injective _ (IsLocalization.algEquiv qc'
       (AdjoinPthRoots k ⊗[k] Localization.AtPrime q) (Localization qc')).injective
   have sep : Algebra.IsTranscendentalSeparable k (Localization.AtPrime q) :=
-    ((Algebra.isTranscendentalSeparable_tfae k (Localization.AtPrime q) p hp).out 0 2).mpr h
+    ((Algebra.isTranscendentalSeparable_tfae k (Localization.AtPrime q) p hp).out 1 3).mpr h
   have : IsReduced (Localization.AtPrime q ⊗[k] K) :=
     tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced k _ K
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K _).injective
