@@ -148,7 +148,7 @@ public def elabFastInstance : TermElab
   | _, _ => Elab.throwUnsupportedSyntax
 
 /-- `inferInstanceAs% A` is shorthand for `fast_instance% _root_.inferInstanceAs A`.
-This is preferred over the `inferInstanceAs` elaborator when the instance can be reduced to
+This is preferred over `_root_.inferInstanceAs` when the instance can be reduced to
 constructor applications. In that case, the parameters of the constructors will be filled in
 using the expected type, so that the instance will unfold nicely during unification. -/
 macro "inferInstanceAs% " source:term : term =>
