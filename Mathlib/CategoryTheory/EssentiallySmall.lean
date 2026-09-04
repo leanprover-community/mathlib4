@@ -302,7 +302,7 @@ instance [Small.{w} C] [LocallySmall.{w} C]
     Small.{w} (C ⥤ D) := by
   refine small_of_injective (f := fun F (f : Arrow C) ↦ Arrow.mk (F.map f.hom))
     (fun F G h ↦ Functor.ext (fun X ↦ ?_) (fun X Y f ↦ ?_))
-  · exact congr(Comma.left ($h (Arrow.mk (𝟙 X))))
+  · congrm Comma.left ($h (Arrow.mk (𝟙 X)))
   · have : Arrow.mk (F.map f) = Arrow.mk (G.map f) := congr($h (Arrow.mk f))
     rw [Arrow.mk_eq_mk_iff] at this
     tauto

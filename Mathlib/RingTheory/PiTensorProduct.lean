@@ -130,7 +130,7 @@ protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
         LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact congr($this x y z)
+    congrm $this x y z
   ext x y z
   dsimp [← mul_def]
   simpa only [tprod_mul_tprod] using congr(tprod R $(mul_assoc x y z))

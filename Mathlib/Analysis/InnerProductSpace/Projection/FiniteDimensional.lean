@@ -285,7 +285,7 @@ theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Sub
     simp_rw [map_zero, Finset.sum_const_zero]
   | add x y _ _ hx hy =>
     simp_rw [map_add, Finset.sum_add_distrib]
-    exact congr($hx + $hy)
+    congrm $hx + $hy
 
 /-- If a family of submodules is orthogonal, then the `orthogonalProjection` on a direct sum
 is just the coefficient of that direct sum. -/
@@ -305,7 +305,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
       exact hV.isOrtho hij.symm x.prop
   | add x y hx hy =>
     simp_rw [map_add]
-    exact congr($hx + $hy)
+    congrm $hx + $hy
 
 /-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal
 projection provides a means to decompose the space into its submodules.

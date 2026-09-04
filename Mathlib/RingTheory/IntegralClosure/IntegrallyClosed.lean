@@ -141,11 +141,11 @@ variable {C : Type*} [SetLike C A] [SubringClass C A] {S : C}
 protected theorem isIntegrallyClosedIn_iff :
     IsIntegrallyClosedIn S A ↔ ∀ ⦃x : A⦄, IsIntegral S x → x ∈ S := by
   rw [isIntegrallyClosedIn_iff, and_iff_right (FaithfulSMul.algebraMap_injective _ _)]
-  exact congr(∀ _ _, _ ∈ $Subtype.range_val)
+  congrm ∀ _ _, _ ∈ $Subtype.range_val
 
 protected theorem isIntegrallyClosed_iff [IsFractionRing S A] :
     IsIntegrallyClosed S ↔ ∀ ⦃x : A⦄, IsIntegral S x → x ∈ S := by
-  rw [isIntegrallyClosed_iff A]; exact congr(∀ _ _, _ ∈ $Subtype.range_val)
+  rw [isIntegrallyClosed_iff A]; congrm ∀ _ _, _ ∈ $Subtype.range_val
 
 theorem integralClosure_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
     (integralClosure R A).toSubring ≤ T ↔ ∀ r, algebraMap R A r ∈ T where

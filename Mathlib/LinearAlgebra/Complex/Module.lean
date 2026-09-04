@@ -424,11 +424,11 @@ theorem imaginaryPart_I_smul (a : A) : ℑ (I • a) = ℜ a := by
   simp [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm I (2⁻¹ : ℝ), smul_smul I]
 
 theorem realPart_smul (z : ℂ) (a : A) : ℜ (z • a) = z.re • ℜ a - z.im • ℑ a := by
-  have := by congrm (ℜ ($((re_add_im z).symm) • a))
+  have := congr(ℜ ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul, sub_eq_add_neg]
 
 theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + z.im • ℜ a := by
-  have := by congrm (ℑ ($((re_add_im z).symm) • a))
+  have := congr(ℑ ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul]
 
 lemma skewAdjointPart_eq_I_smul_imaginaryPart (x : A) :

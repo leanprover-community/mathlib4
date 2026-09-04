@@ -61,7 +61,7 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
     emultiplicity m n = #(Ico 1 <| multiplicity m n + 1) := by
       simp [fin.emultiplicity_eq_multiplicity]
     _ = #{i ∈ Ico 1 b | m ^ i ∣ n} := by
-      refine congr(card $(Finset.ext fun i => ?_))
+      congrm card $(Finset.ext fun i => ?_)
       simp only [mem_Ico, Nat.lt_succ_iff, ← fin.pow_dvd_iff_le_multiplicity, mem_filter, and_assoc,
         and_congr_right_iff, iff_and_self]
       intro hi h

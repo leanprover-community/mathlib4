@@ -472,7 +472,7 @@ instance : (rootSystem H).IsReduced where
     simp only [rootSystem_root_apply, ne_eq, not_not] at e
     obtain ⟨u, hu⟩ := e
     obtain (h | h) := eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u
-      (by ext x; exact congr($hu.symm x))
+      (by ext x; congrm $hu.symm x)
     · right; ext x; simpa [neg_eq_iff_eq_neg] using congr($h.symm x)
     · left; ext x; simpa using congr($h.symm x)
 

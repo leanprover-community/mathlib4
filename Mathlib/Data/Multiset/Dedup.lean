@@ -115,7 +115,7 @@ theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedu
 theorem Subset.dedup_add_right {s t : Multiset α} (h : s ⊆ t) :
     dedup (s + t) = dedup t := by
   induction s, t using Quot.induction_on₂
-  exact congr($(List.Subset.dedup_append_right h))
+  congrm $(List.Subset.dedup_append_right h)
 
 theorem Subset.dedup_add_left {s t : Multiset α} (h : t ⊆ s) :
     dedup (s + t) = dedup s := by

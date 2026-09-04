@@ -218,7 +218,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   have : ∀ j, x * f j = f.sum fun i y ↦ a i j • y := by
     intro j
     apply b.repr.injective
-    exact congr($this j)
+    congrm $this j
   -- Since `∑ₛ fⱼbⱼ = 1`, `x = ∑ₛ aᵢⱼfᵢbⱼ` is indeed in the span of `{ fᵢbⱼ | i, j ∈ s }`.
   rw [← mul_one x, ← @lmul_elem R, hf, map_finsuppSum, Finsupp.sum, Finset.mul_sum]
   simp only [TensorProduct.lmul'_apply_tmul, Finset.coe_image₂, ← mul_assoc, this,

@@ -137,8 +137,8 @@ noncomputable def spectralObject (X : C) : SpectralObject C EInt where
   δ'.naturality {D D'} φ := by
     obtain ⟨a, b, c, f, g, rfl⟩ := mk₂_surjective D
     obtain ⟨a', b', c', f', g', rfl⟩ := mk₂_surjective D'
-    exact congr($(t.ω₁δ_naturality a b c (leOfHom f) (leOfHom g)
-      a' b' c' (leOfHom f') (leOfHom g') φ).app X)
+    congrm $(t.ω₁δ_naturality a b c (leOfHom f) (leOfHom g)
+     a' b' c' (leOfHom f') (leOfHom g') φ).app X
   distinguished' D := by
     obtain ⟨a, b, c, f, g, rfl⟩ := mk₂_surjective D
     exact t.triangleω₁δ_distinguished a b c (leOfHom f) (leOfHom g) X

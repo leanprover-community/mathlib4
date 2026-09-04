@@ -61,7 +61,7 @@ instance : Fintype (π C (· ∈ s)) := by
   intro ⟨_, x, hx, rfl⟩ ⟨_, y, hy, rfl⟩ h
   ext i
   by_cases hi : i ∈ s
-  · exact congr($h ⟨i, hi⟩)
+  · congrm $h ⟨i, hi⟩
   · simp only [Proj, ite_eq_right hi]
 
 open scoped Classical in

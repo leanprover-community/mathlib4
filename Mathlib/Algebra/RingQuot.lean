@@ -340,7 +340,7 @@ theorem ringQuot_ext [NonAssocSemiring T] {r : R → R → Prop} (f g : RingQuot
     (w : f.comp (mkRingHom r) = g.comp (mkRingHom r)) : f = g := by
   ext x
   rcases mkRingHom_surjective r x with ⟨x, rfl⟩
-  exact congr($w x)
+  congrm $w x
 
 variable [Semiring T]
 
@@ -485,7 +485,7 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
     (w : f.comp (mkAlgHom S s) = g.comp (mkAlgHom S s)) : f = g := by
   ext x
   rcases mkAlgHom_surjective S s x with ⟨x, rfl⟩
-  exact congr($w x)
+  congrm $w x
 
 irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   (h : ∀ ⦃x y⦄, s x y → f x = f y) : RingQuot s →ₐ[S] B :=

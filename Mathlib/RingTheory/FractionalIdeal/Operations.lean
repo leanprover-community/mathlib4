@@ -797,7 +797,7 @@ instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Alg
   use (algebraMap R K a)⁻¹ * algebraMap R K (generator aI)
   suffices I = spanSingleton R⁰ ((algebraMap R K a)⁻¹ * algebraMap R K (generator aI)) by
     rw [spanSingleton] at this
-    exact congr($(this).val)
+    congrm $(this).val
   conv_lhs => rw [ha, ← span_singleton_generator aI]
   rw [Ideal.submodule_span_eq, coeIdeal_span_singleton (generator aI),
     spanSingleton_mul_spanSingleton]

@@ -104,7 +104,7 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
     | succ n ih =>
       rcases m with - | m
       · simp_all
-      · refine congr($(ih ?_).succ)
+      · congrm $(ih ?_).succ
         simp_all [funext_iff]⟩
 
 variable [∀ a : α, Fintype (β a)]

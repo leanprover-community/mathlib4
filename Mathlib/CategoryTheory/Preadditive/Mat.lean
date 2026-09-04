@@ -592,7 +592,7 @@ instance : (equivalenceSingleObjInverse R).Faithful where
   map_injective w := by
     ext
     apply_fun MulOpposite.unop using MulOpposite.unop_injective
-    exact congr($w _ _)
+    congrm $w _ _
 
 instance : (equivalenceSingleObjInverse R).Full where
   map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩

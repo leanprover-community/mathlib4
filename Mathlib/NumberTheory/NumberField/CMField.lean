@@ -329,7 +329,7 @@ The action of `unitsMulComplexConjInv` of the torsion is the same as the 2-power
 theorem map_unitsMulComplexConjInv_torsion :
     Subgroup.map (unitsMulComplexConjInv K) (torsion K) = (powMonoidHom 2).range := by
   rw [← MonoidHom.domRestrict_range]
-  exact congr(MonoidHom.range $(MonoidHom.ext fun ζ ↦ by simp))
+  congrm MonoidHom.range $(MonoidHom.ext fun ζ ↦ by simp)
 
 /--
 The kernel of `unitsMulComplexConjInv` is the subgroup of real units.

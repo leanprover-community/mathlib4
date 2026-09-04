@@ -67,14 +67,14 @@ theorem toTypes_isSheaf (T : X → Type*) : (presheafToTypes X T).IsSheaf :=
       -- we may have used the axiom of choice to pick a different `j` with `x ∈ U j`
       -- when defining the function.
       -- Thus we'll need to use the fact that the restrictions are compatible.
-      exact congr($(hsf (index ⟨x, _⟩) i) ⟨x, ⟨index_spec ⟨x.1, _⟩, x.2⟩⟩)
+      congrm $(hsf (index ⟨x, _⟩) i) ⟨x, ⟨index_spec ⟨x.1, _⟩, x.2⟩⟩
     · -- Now we just need to check that the lift we picked was the only possible one.
       -- So we suppose we had some other gluing `t` of our sections
       intro t ht
       -- and observe that we need to check that it agrees with our choice
       -- for each `x ∈ ↑(iSup U)`.
       funext x
-      exact congr($(ht (index x)) ⟨x.1, index_spec x⟩)
+      congrm $(ht (index x)) ⟨x.1, index_spec x⟩
 
 -- We verify that the non-dependent version is an immediate consequence:
 /-- The presheaf of not-necessarily-continuous functions to

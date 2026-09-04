@@ -147,7 +147,7 @@ theorem tfae_universallyInjective :
     let g₂ := (X.SpecToEquivOfField _).symm ⟨_, CommRingCat.ofHom σ₂.toRingHom⟩
     suffices X.SpecToEquivOfField _ g₁ = X.SpecToEquivOfField _ g₂ by
       rw [Equiv.apply_symm_apply, Equiv.apply_symm_apply] at this
-      exact congr($(this).2.hom)
+      congrm $(this).2.hom
     let q := pullback.lift (f := f) (g := f) g₁ g₂ <| by
       simp only [g₁, g₂, Scheme.SpecToEquivOfField_symm_apply, AlgHom.toRingHom_eq_coe,
         Category.assoc, ← f.SpecMap_residueFieldMap_fromSpecResidueField x, ← Spec.map_comp_assoc]

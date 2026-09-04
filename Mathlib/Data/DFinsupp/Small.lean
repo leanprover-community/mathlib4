@@ -28,7 +28,7 @@ section Small
 
 instance DFinsupp.small [Small.{w} ι] [∀ (i : ι), Small.{w} (π i)] :
     Small.{w} (DFinsupp π) :=
-  small_of_injective (f := fun x j ↦ x j) (fun f f' eq ↦ by ext j; exact congr($eq j))
+  small_of_injective (f := fun x j ↦ x j) (fun f f' eq ↦ by ext j; congrm $eq j)
 
 instance Finsupp.small {σ : Type*} {R : Type*} [Zero R]
     [Small.{u} R] [Small.{u} σ] :

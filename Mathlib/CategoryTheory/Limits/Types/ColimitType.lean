@@ -201,7 +201,7 @@ lemma funext {T : Type w₂} {f g : c.pt → T}
     (h : ∀ j, f.comp (c.ι j) = g.comp (c.ι j)) : f = g := by
   funext y
   obtain ⟨j, x, rfl⟩ := hc.ι_jointly_surjective y
-  exact congr($(h j) x)
+  congrm $(h j) x
 
 lemma exists_desc (c' : CoconeTypes.{w₂} F) :
     ∃ (f : c.pt → c'.pt), ∀ (j : J), f.comp (c.ι j) = c'.ι j :=
@@ -301,7 +301,7 @@ def precompose (hc : IsColimitCore.{w₂} c)
   funext {T f g} h := hc.funext (fun j ↦ by
     ext x
     obtain ⟨y, rfl⟩ := (e j).surjective x
-    exact congr($(h j) y))
+    congrm $(h j) y)
 
 end IsColimitCore
 

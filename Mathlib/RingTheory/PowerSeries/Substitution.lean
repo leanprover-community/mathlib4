@@ -300,7 +300,7 @@ lemma coeff_subst_single {σ : Type*} [DecidableEq σ] (s : σ) (f : R⟦X⟧) (
 @[simp]
 theorem X_subst (f : R⟦X⟧) : f.subst (X : R⟦X⟧) = f := by
   rw [← map_algebraMap_eq_subst_X (S := R), Algebra.algebraMap_self]
-  exact congr($map_id f)
+  congrm $map_id f
 
 theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) : (p : PowerSeries R) =
     ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) :=

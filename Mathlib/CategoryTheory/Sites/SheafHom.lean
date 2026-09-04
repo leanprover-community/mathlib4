@@ -225,10 +225,10 @@ def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
   map f := ↾((J.overMapPullback A f.unop).map)
   map_id X := by
     ext φ : 4
-    exact congr($((presheafHom F.1 G.1).map_id X) φ.1)
+    congrm $((presheafHom F.1 G.1).map_id X) φ.1
   map_comp f g := by
     ext φ : 4
-    exact congr($((presheafHom F.1 G.1).map_comp f g) φ.1)
+    congrm $((presheafHom F.1 G.1).map_comp f g) φ.1
 
 /-- The canonical isomorphism `sheafHom' F G ≅ presheafHom F.1 G.1`. -/
 def sheafHom'Iso (F G : Sheaf J A) :

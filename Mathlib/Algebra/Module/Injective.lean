@@ -435,7 +435,7 @@ lemma Module.injective_of_ulift_injective
       (by exact ULift.moduleEquiv.symm.injective.comp <| hf.comp eX.injective)
       (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ eX.toLinearMap)
     ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,
-      fun x ↦ by exact congr(ULift.down $(hg' ⟨x⟩))⟩
+      fun x ↦ by congrm ULift.down $(hg' ⟨x⟩)⟩
 
 variable (M) [Small.{v} R]
 
@@ -473,7 +473,7 @@ instance Module.Injective.pi
     choose l hl using fun i ↦ extension_property R _ _ _ f hf ((LinearMap.proj i).comp g)
     refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
     ext i
-    exact congr($(hl i) x)⟩
+    congrm $(hl i) x⟩
 
 set_option backward.isDefEq.respectTransparency false in
 universe u' in

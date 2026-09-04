@@ -301,7 +301,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     rw [← this, cmem.mul_eq]
     simp
   · rw [← cmem.card_mul_card]
-    refine congr($(?_) * $(?_)) <;>
+    congrm ?_ * ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
 /-- Given two subgroups `H' ⊆ H`, there exists a right transversal to `H'` inside `H`. -/
@@ -318,7 +318,7 @@ lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     simp
   · have : Nat.card H'' * Nat.card S = Nat.card H := cmem.card_mul_card
     rw [← this]
-    refine congr($(?_) * $(?_)) <;>
+    congrm ?_ * ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
 namespace IsComplement

@@ -62,7 +62,7 @@ theorem Submodule.traceDual_le_span_map_traceDual [Module.Free A R₂]
     exact ⟨_, rfl⟩
   have h : Set.range B₁.traceDual =
       Set.range (IsScalarTower.toAlgHom A F₂ L ∘ b₂.traceDual) := by
-    refine congr(Set.range $(B₁.traceDual_eq_iff.mpr fun i j ↦ ?_))
+    congrm Set.range $(B₁.traceDual_eq_iff.mpr fun i j ↦ ?_)
     rw [LinearDisjoint.basisOfBasisRight_apply, traceForm_apply, Function.comp_apply,
       IsScalarTower.coe_toAlgHom', ← map_mul, h₁.trace_algebraMap h₂, b₂.trace_traceDual_mul,
       MonoidWithZeroHom.map_ite_one_zero]

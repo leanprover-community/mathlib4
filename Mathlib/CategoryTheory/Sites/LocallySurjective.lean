@@ -370,7 +370,7 @@ instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J (Type w)} (φ : F₁ �
     have h₂ := congr($(f₂.hom.naturality f.op) x)
     dsimp at h₁ h₂
     rw [← h₁, ← h₂, ← hs]
-    exact congr($((sheafToPresheaf J _).congr_map h).app (op Y) s)
+    congrm $((sheafToPresheaf J _).congr_map h).app (op Y) s
 
 instance epi_of_isLocallySurjective [IsLocallySurjective φ] : Epi φ :=
   (sheafCompose J (forget A)).epi_of_epi_map inferInstance

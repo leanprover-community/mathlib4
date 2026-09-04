@@ -87,7 +87,7 @@ lemma isSeparating : ObjectProperty.IsSeparating (freeYoneda R) := by
   intro M N f₁ f₂ h
   ext ⟨X⟩ m
   obtain ⟨g, rfl⟩ := freeYonedaEquiv.surjective m
-  exact congr(freeYonedaEquiv $(h _ ⟨X⟩ g))
+  congrm freeYonedaEquiv $(h _ ⟨X⟩ g)
 
 lemma isDetecting : ObjectProperty.IsDetecting (freeYoneda R) :=
   (isSeparating R).isDetecting

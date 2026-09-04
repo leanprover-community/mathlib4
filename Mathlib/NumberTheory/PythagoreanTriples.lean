@@ -435,7 +435,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let q := (circleEquivGen hQ).symm ⟨⟨v, w⟩, hp⟩
   have ht4 : v = 2 * q / (1 + q ^ 2) ∧ w = (1 - q ^ 2) / (1 + q ^ 2) := by
     apply Prod.mk.inj
-    exact congr($(((circleEquivGen hQ).apply_symm_apply ⟨⟨v, w⟩, hp⟩).symm).val)
+    congrm $(((circleEquivGen hQ).apply_symm_apply ⟨⟨v, w⟩, hp⟩).symm).val
   let m := (q.den : ℤ)
   let n := q.num
   have hm0 : m ≠ 0 := by

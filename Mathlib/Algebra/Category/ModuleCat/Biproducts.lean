@@ -109,7 +109,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
   isLimit :=
     { lift := lift.{_, v} f
       fac := fun _ _ => rfl
-      uniq s m w := by ext x j; exact congr($(w ⟨j⟩) x) }
+      uniq s m w := by ext x j; congrm $(w ⟨j⟩) x }
 
 end HasLimit
 

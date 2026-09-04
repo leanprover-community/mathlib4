@@ -86,7 +86,7 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
     simp [Algebra.smul_def, e, ofId, mul_comm]
   have hf₁ : f 1 • (1 : A ⧸ IsLocalRing.maximalIdeal A) = 1 := by
     rw [← algebraMap_eq_smul_one]
-    exact congr($hf 1)
+    congrm $hf 1
   have hf₂ : 1 - f 1 ∈ IsLocalRing.maximalIdeal A := by
     rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one, ← Ideal.Quotient.algebraMap_eq,
      algebraMap_eq_smul_one, hf₁, sub_self]

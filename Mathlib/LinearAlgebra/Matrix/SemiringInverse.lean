@@ -267,7 +267,7 @@ theorem detp_mul :
     simp_rw [hι]
   rw [h, h, neg_neg, add_assoc]
   conv_rhs => rw [add_assoc]
-  refine congr($(sum_congr rfl fun σ hσ ↦ ?_) + $(add_comm ..))
+  congrm $(sum_congr rfl fun σ hσ ↦ ?_) + $(add_comm ..)
   replace hσ : ¬ Function.Injective σ := by
     contrapose hσ
     rw [notMem_compl, mem_map, ofSign_disjUnion]

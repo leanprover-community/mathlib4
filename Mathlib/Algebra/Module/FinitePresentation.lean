@@ -138,8 +138,8 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
     exact ⟨y, rfl⟩
   choose σ hσ using this
   have hπ : Subtype.val ∘ π = l ∘ b := rfl
-  have hσ₁ : π ∘ σ = id := by ext i; exact congr($(hσ i).val)
-  have hσ₂ : l ∘ b ∘ σ = Subtype.val := by ext i; exact congr($(hσ i).val)
+  have hσ₁ : π ∘ σ = id := by ext i; congrm $(hσ i).val
+  have hσ₂ : l ∘ b ∘ σ = Subtype.val := by ext i; congrm $(hσ i).val
   refine ⟨(Set.finite_range (l ∘ b)).toFinset,
     by simpa [Set.range_comp, LinearMap.range_eq_top], ?_⟩
   let f : M →ₗ[R] (Set.finite_range (l ∘ b)).toFinset →₀ R :=

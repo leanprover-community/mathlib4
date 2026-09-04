@@ -112,7 +112,7 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   apply p.congr (Composition.ones_blocksFun _ _)
   intro j hjn hj1
   obtain rfl : j = 0 := by lia
-  refine congr(v $(?_))
+  congrm v ?_
   rw [Fin.ext_iff, Fin.val_castLE, Composition.ones_embedding, Fin.val_mk]
 
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
@@ -382,7 +382,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     apply p.congr (Composition.ones_length n)
     intros
     rw [applyComposition_ones]
-    refine congr(v $(?_))
+    congrm v ?_
     rw [Fin.ext_iff, Fin.val_castLE, Fin.val_mk]
   · change
     ∀ b : Composition n,
@@ -1058,7 +1058,7 @@ theorem sigma_pi_composition_eq_iff
   · simp only [heq_eq_eq, ofFn_inj] at H ⊢
     ext1 i
     ext1
-    exact congr($H i)
+    congrm $H i
 
 /-- When `a` is a composition of `n` and `b` is a composition of `a.length`, `a.gather b` is the
 composition of `n` obtained by gathering all the blocks of `a` corresponding to a block of `b`.
@@ -1281,7 +1281,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   intro k hk1 hk2
   -- finally, check that the coordinates of `v` one is using are the same. Based on
   -- `sizeUpTo_sizeUpTo_add`.
-  refine congr(v $(Fin.ext ?_))
+  congrm v $(Fin.ext ?_)
   dsimp [Composition.embedding]
   rw [← add_assoc, ← sizeUpTo_sizeUpTo_add _ _ hi1 hj1]
 

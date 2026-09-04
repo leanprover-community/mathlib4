@@ -166,7 +166,7 @@ theorem toLieHom_comp : (g.comp f : A →ₗ⁅R⁆ C) = (g : B →ₗ⁅R⁆ C)
   rfl
 
 theorem toLieHom_injective {f g : A →ₐ[R] B} (h : (f : A →ₗ⁅R⁆ B) = (g : A →ₗ⁅R⁆ B)) : f = g := by
-  ext a; exact congr($h a)
+  ext a; congrm $h a
 
 end AlgHom
 
