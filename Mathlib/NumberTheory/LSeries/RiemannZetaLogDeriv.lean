@@ -47,5 +47,5 @@ theorem logDeriv_riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) (hz :
     exact riemannZeta_one_sub (fun n h ↦ hz (-n) (by simp [h])) (by grind [hz 1])
   have := (logDeriv_congr_nhds this).eq_of_nhds
   rw [logDeriv_comp, logDeriv_fun_mul, logDeriv_fun_mul, logDeriv_fun_mul, logDeriv_fun_mul,
-    (by rfl : (fun z ↦ cos (π * z / 2)) = cos ∘ _), logDeriv_comp, ← digamma_def] at this
+    logDeriv_fun_comp (f := cos), ← digamma_def] at this
   <;> first | fun_prop | simp_all <;> grind [differentiableAt_riemannZeta, Gamma_ne_zero, hs 0]
