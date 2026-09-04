@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Hom.Lattice
-public import Mathlib.Tactic.Order
 
 /-!
 # Lattice Congruences

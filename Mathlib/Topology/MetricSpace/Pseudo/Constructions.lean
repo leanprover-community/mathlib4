@@ -140,7 +140,7 @@ lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
     Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
   by_cases! c_pos : 0 < c
   · convert! NNReal.ball_zero_eq_Ico' (NNReal.mk c c_pos.le)
-    simp [Real.toNNReal, c_pos.le]
+    ext; simp [c_pos.le]
   simp [c_pos]
 
 lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
@@ -149,7 +149,7 @@ lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
 lemma NNReal.closedBall_zero_eq_Icc {c : ℝ} (c_nn : 0 ≤ c) :
     Metric.closedBall (0 : ℝ≥0) c = Set.Icc 0 c.toNNReal := by
   convert! NNReal.closedBall_zero_eq_Icc' (NNReal.mk c c_nn)
-  simp [Real.toNNReal, c_nn]
+  ext; simp [c_nn]
 
 end NNReal
 

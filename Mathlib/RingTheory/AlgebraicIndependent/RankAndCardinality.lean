@@ -82,11 +82,7 @@ theorem IntermediateField.rank_sup_le
   have := Algebra.Transcendental.infinite F B
   simp_rw [Algebra.Transcendental.rank_eq_cardinalMk]
   rw [sup_def, mul_mk_eq_max, ← Cardinal.lift_le.{u}]
-  refine (lift_cardinalMk_adjoin_le _ _).trans ?_
-  calc
-    _ ≤ Cardinal.lift.{v} #F ⊔ Cardinal.lift.{u} (#A ⊔ #B) ⊔ ℵ₀ := by
-      gcongr
-      rw [Cardinal.lift_le]
-      exact (mk_union_le _ _).trans_eq (by simp)
-    _ = _ := by
-      simp [lift_mk_le_lift_mk_of_injective (algebraMap F A).injective]
+  grw [lift_cardinalMk_adjoin_le, mk_union_le]
+  simp only [SetLike.coe_sort_coe, add_mk_eq_max]
+  rw [sup_of_le_left (by simp), sup_of_le_right ?_]
+  grw [lift_mk_le_lift_mk_of_injective (algebraMap F A).injective, ← le_max_left]
