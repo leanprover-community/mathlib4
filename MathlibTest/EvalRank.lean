@@ -193,7 +193,7 @@ example : Matrix.rank (R := Zsqrtd 5)
 end Binet
 
 
-/-! ## Behavior inside `simp` -/
+/-! ## Mixed element types -/
 
 -- mixed element types in one goal: both literals are rewritten, the ℝ one by building the
 -- certificate with the `norm_num` entry certifier
@@ -202,15 +202,8 @@ example :
   simp only [norm_rank]
 
 -- a symbolic entry fails the closed-literal check, so the matrix is skipped without an
--- error, while a supported literal in the same goal is rewritten. The second row is twice
--- the first, so the rank is one, but the tactic cannot see that
-example (x : ℝ) :
-    Matrix.rank (R := ℤ) !![1, 2; 2, 4] + Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] =
-      1 + Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] := by
-  simp only [norm_rank]
-
--- testing that the tactic doesn't hard commit to the first occurrence of `Matrix.rank`:
--- here the skipped literal comes first
+-- error, while a supported literal in the same goal is rewritten; the skipped literal
+-- comes first, so the tactic must not hard commit to the first occurrence
 example (x : ℝ) :
     Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] + Matrix.rank (R := ℤ) !![1, 2; 2, 4] =
       Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] + 1 := by
@@ -290,7 +283,7 @@ example : Matrix.rank (R := ZMod 4) !![1, 2; 3, 4] = 2 := by eval_rank
 
 Rejected today; extensions of the tactic could support these inputs. -/
 
--- Requires computable polynomial ops in the kernel
+-- Requires computable polynomial ops in the kernel or as an extension
 open Polynomial in
 /--
 error: `eval_rank` made no progress.
