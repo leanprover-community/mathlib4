@@ -29,6 +29,16 @@ on:
         required: false
         type: string
         default: 'bench'
+      mode:
+        description: bench (micro-benchmarks) or build (clean full mathlib build)
+        required: false
+        type: string
+        default: 'bench'
+      build_ref:
+        description: mathlib commit to build in build mode
+        required: false
+        type: string
+        default: ''
       reps:
         description: repetitions of each arm
         required: false
@@ -42,7 +52,7 @@ jobs:
   bench:
     name: ci (dev branch)
     # For sanity and intentionality, only trigger this from branches ci-dev/*
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
+    if: ${{ inputs.mode == 'bench' && github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 30
     steps:
@@ -78,12 +88,7 @@ jobs:
           echo "== kernel cmdline =="; cat /proc/cmdline 2>/dev/null
           echo "== cpu mhz =="; grep -m2 -E "cpu MHz" /proc/cpuinfo 2>/dev/null || true
           echo "== syscall cost: 1e6 getpid via raw syscall =="
-          python3 -c "
-import ctypes,time
-l=ctypes.CDLL('libc.so.6')
-t=time.perf_counter()
-for _ in range(1000000): l.syscall(39)
-print('RESULT facts syscall_1e6_getpid %.3f' % (time.perf_counter()-t))"
+          python3 -c "import ctypes,time;l=ctypes.CDLL('libc.so.6');t=time.perf_counter();[l.syscall(39) for _ in range(1000000)];print('RESULT facts syscall_1e6_getpid %.3f'%(time.perf_counter()-t))" || true
           echo "== tool versions (cross-fleet CPU numbers are only comparable if these match) =="
           python3 --version; openssl version; bash --version | head -1
 
@@ -112,3 +117,61 @@ print('RESULT facts syscall_1e6_getpid %.3f' % (time.perf_counter()-t))"
         if: always()
         shell: bash
         run: echo "Collect the RESULT lines from the log above."
+
+  fullbuild:
+    name: ci (dev branch) full build
+    if: ${{ inputs.mode == 'build' && github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 150
+    env:
+      # Lake's own cloud-build cache is incompatible with Mathlib's `cache`.
+      LAKE_NO_CACHE: true
+    steps:
+      - name: machine facts
+        shell: bash
+        run: |
+          set -uo pipefail
+          echo "runner=${RUNNER_NAME:-?} label=${{ inputs.runs_on }}"
+          uname -a; nproc
+          lscpu 2>/dev/null | grep -E "Model name|Socket|Core\(s\)|Thread\(s\)|MHz|L3|Hypervisor" || true
+          free -g | head -2
+
+      - name: checkout mathlib at the commit under test
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.build_ref }}
+          fetch-depth: 1
+          path: build-src
+
+      - name: install the toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd build-src
+          TIMEFORMAT='TIMED toolchain real=%3R user=%3U sys=%3S'
+          time {
+            if ! command -v elan >/dev/null; then
+              curl -sSfL https://elan.lean-lang.org/elan-init.sh | sh -s -- -y --default-toolchain none
+            fi
+            export PATH="$HOME/.elan/bin:$PATH"
+            elan toolchain install "$(cat lean-toolchain)"
+          }
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: clean full build of Mathlib
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd build-src
+          echo "commit: $(git rev-parse HEAD)"
+          echo "toolchain: $(cat lean-toolchain)"
+          echo "modules: $(grep -c '^import' Mathlib.lean || echo '?')"
+          # No `cache get`: every olean is compiled here, on both fleets.
+          TIMEFORMAT='TIMED lakebuild real=%3R user=%3U sys=%3S'
+          time lake build Mathlib
+          echo "oleans: $(find .lake/build/lib -name '*.olean' 2>/dev/null | wc -l)"
+
+      - name: report
+        if: always()
+        shell: bash
+        run: echo "Effective cores = (user+sys)/real from the TIMED lines above."
