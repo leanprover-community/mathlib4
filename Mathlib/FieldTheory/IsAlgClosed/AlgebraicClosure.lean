@@ -102,7 +102,7 @@ theorem spanCoeffs_ne_top : spanCoeffs k ≠ ⊤ := by
     Finsupp.mem_span_image_iff_linearCombination]
   rintro ⟨v, _, hv⟩
   classical
-  replace hv := congr_arg (toSplittingField <| v.support.image Prod.fst) hv
+  replace hv := congr((toSplittingField <| v.support.image Prod.fst) $hv)
   rw [map_one, Finsupp.linearCombination_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
   · exact zero_ne_one hv
   intro j hj
@@ -160,10 +160,10 @@ instance instField : Field (AlgebraicClosure k) where
   nnratCast_def q := by change algebraMap k _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
   ratCast_def q := by
     change algebraMap k _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
-  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
+  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr(Quotient.mk'' $(by
+    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]))
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr(Quotient.mk'' $(by
+    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]))
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Monics.map_eq_prod {f : Monics k} :

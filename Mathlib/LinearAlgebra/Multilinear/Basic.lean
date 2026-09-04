@@ -136,10 +136,10 @@ theorem coe_mk (f : (∀ i, M₁ i) → M₂) (h₁ h₂) : ⇑(⟨f, h₁, h₂
   rfl
 
 theorem congr_fun {f g : MultilinearMap R M₁ M₂} (h : f = g) (x : ∀ i, M₁ i) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 nonrec theorem congr_arg (f : MultilinearMap R M₁ M₂) {x y : ∀ i, M₁ i} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 theorem coe_injective : Injective ((↑) : MultilinearMap R M₁ M₂ → (∀ i, M₁ i) → M₂) :=
   DFunLike.coe_injective
@@ -277,7 +277,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
         simpa [update_eq_const_of_subsingleton] using! f.map_update_add 0 i x y
       map_smul' := fun c x ↦ by
         simpa [update_eq_const_of_subsingleton] using! f.map_update_smul 0 i c x }
-  right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
+  right_inv f := by ext x; congrm f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}
 
@@ -1357,7 +1357,7 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M�
     f (s.piecewise a v) - f (s.piecewise b v) = ∑ i ∈ s, f
       fun j ↦ if j ∈ s then if j < i then a j else if j = i then a j - b j else b j else v j := by
   rw [← s.piecewise_idem_right b a, map_sub_map_piecewise]
-  refine Finset.sum_congr rfl fun i hi ↦ congr_arg f <| funext fun j ↦ ?_
+  refine Finset.sum_congr rfl fun i hi ↦ congr(f $(funext fun j ↦ ?_))
   by_cases hjs : j ∈ s
   · rw [ite_eq_left hjs]; by_cases hji : j < i
     · rw [ite_eq_left fun _ ↦ hji, ite_eq_left hji, s.piecewise_eq_of_mem _ _ hjs]

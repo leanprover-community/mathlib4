@@ -223,7 +223,7 @@ theorem universally_isZariskiLocalAtTarget (P : MorphismProperty Scheme)
       simpa using @hU (i₂ x) trivial
     · rintro i
       refine H _ ((X'.isoOfEq ?_).hom ≫ i₁ ∣_ _) (i₂ ∣_ _) _ ?_
-      · exact congr($(h.1.1) ⁻¹ᵁ U i)
+      · congrm $(h.1.1) ⁻¹ᵁ U i
       · rw [← (isPullback_morphismRestrict f _).paste_vert_iff]
         · simp only [Category.assoc, morphismRestrict_ι, Scheme.isoOfEq_hom_ι_assoc]
           exact (isPullback_morphismRestrict f' (i₂ ⁻¹ᵁ U i)).paste_vert h

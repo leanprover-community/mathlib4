@@ -73,8 +73,8 @@ theorem r.isEquiv : IsEquiv _ (r S M) :=
     trans := fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨m3, s3⟩ ⟨u1, hu1⟩ ⟨u2, hu2⟩ => by
       use u1 * u2 * s2
       -- Put everything in the same shape, sorting the terms using `simp`
-      have hu1' := congr_arg ((u2 * s3) • ·) hu1.symm
-      have hu2' := congr_arg ((u1 * s1) • ·) hu2.symm
+      have hu1' := congr((u2 * s3) • $hu1.symm)
+      have hu2' := congr((u1 * s1) • $hu2.symm)
       simp only [← mul_smul, mul_comm, mul_left_comm] at hu1' hu2' ⊢
       rw [hu2', hu1']
     symm := fun ⟨_, _⟩ ⟨_, _⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
@@ -102,7 +102,7 @@ abbrev mk (m : M) (s : S) : LocalizedModule S M := m /ₒ s
 
 theorem mk_eq {m m' : M} {s s' : S} : mk m s = mk m' s' ↔ ∃ u : S, u • s' • m = u • s • m' := by
   rw [mk, mk, OreLocalization.oreDiv_eq_iff]
-  exact congr($(oreEqv_eq_r S M) ⟨m, s⟩ ⟨m', s'⟩)
+  congrm $(oreEqv_eq_r S M) ⟨m, s⟩ ⟨m', s'⟩
 
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 theorem induction_on {β : LocalizedModule S M → Prop} (h : ∀ (m : M) (s : S), β (mk m s)) :
@@ -907,7 +907,7 @@ theorem iso_symm_comp : (iso S f).symm.toLinearMap.comp f = LocalizedModule.mkLi
 
 @[simp]
 lemma iso_symm_apply (x) : (iso S f).symm (f x) = LocalizedModule.mk x 1 :=
-  DFunLike.congr_fun (iso_symm_comp S f) x
+  congr($(iso_symm_comp S f) x)
 
 /--
 If `M'` is a localized module and `g` is a linear map `M → M''` such that all scalar multiplication
@@ -935,7 +935,7 @@ lemma lift_comp_iso (h : ∀ (x : S), IsUnit ((algebraMap R (Module.End R M'')) 
 
 @[simp]
 theorem lift_apply (g : M →ₗ[R] M'') (h) (x) :
-    lift S f g h (f x) = g x := LinearMap.congr_fun (lift_comp S f g h) x
+    lift S f g h (f x) = g x := congr($(lift_comp S f g h) x)
 
 theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     (l : M' →ₗ[R] M'') (hl : l.comp f = g) : lift S f g h = l := by
@@ -1012,7 +1012,7 @@ include f in
 lemma isRegular_of_smul_left_injective {m : M'} (inj : Function.Injective fun r : R ↦ r • m)
     (s : S) : IsRegular (s : R) :=
   (Commute.isRegular_iff (Commute.all _)).mpr fun r r' eq ↦ by
-    have := congr_arg (· • m) eq
+    have := congr($eq • m)
     simp_rw [mul_smul, ← Submonoid.smul_def, smul_inj f] at this
     exact inj this
 

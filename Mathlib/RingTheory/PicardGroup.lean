@@ -189,7 +189,7 @@ private theorem finite_projective : Module.Finite R M ∧ Projective R M := by
   let g' : M →ₗ[R] S →₀ R := aux ∘ₗ g.lTensor M ∘ₗ (TensorProduct.rid R M).symm
   have : Function.Surjective f' := by simpa [f'] using LinearMap.lTensor_surjective _ this
   refine ⟨.of_surjective f' this, .of_split g' f' <| LinearMap.ext fun m ↦ ?_⟩
-  simp [f', g', show f (g 1) = 1 from DFunLike.congr_fun hg 1]
+  simp [f', g', show f (g 1) = 1 from congr($hg 1)]
 
 instance : Module.Finite R M := (finite_projective R M).1
 instance : Projective R M := (finite_projective R M).2
@@ -500,11 +500,11 @@ theorem mk_eq_one [Free R M] : Pic.mk R M = 1 := mk_eq_one_iff_free.mpr ‹_›
 instance : Free R (1 : Pic R) := mk_eq_one_iff_free.mp mk_eq_self
 
 theorem mk_tensor : Pic.mk R (M ⊗[R] N) = Pic.mk R M * Pic.mk R N :=
-  congr_arg (equivShrink _) <| Units.ext <| by
+  congr(equivShrink _ $(Units.ext <| by
     simp_rw [Pic.mk, Equiv.toFun_as_coe, Equiv.symm_apply_apply]
     refine (Quotient.sound ?_).trans (Skeleton.toSkeleton_tensorObj ..)
     exact ⟨(Finite.reprEquivₛ R _ ≪≫ₗ TensorProduct.congr
-      (Finite.reprEquivₛ R M).symm (Finite.reprEquivₛ R N).symm).toModuleIsoₛ⟩
+      (Finite.reprEquivₛ R M).symm (Finite.reprEquivₛ R N).symm).toModuleIsoₛ⟩))
 
 theorem mk_dual : Pic.mk R (Dual R M) = (Pic.mk R M)⁻¹ :=
   congr_arg (equivShrink _) <| Units.ext <| by
@@ -644,7 +644,7 @@ theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl .. := by
 
 variable {R M} in
 theorem tmul_comm {m₁ m₂ : M} : m₁ ⊗ₜ[R] m₂ = m₂ ⊗ₜ m₁ :=
-  DFunLike.congr_fun (tensorProductComm_eq_refl ..) (m₂ ⊗ₜ m₁)
+  congr($(tensorProductComm_eq_refl ..) (m₂ ⊗ₜ m₁))
 
 end Module.Invertible
 

@@ -90,7 +90,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
   refine eq_zero_of_pow_eq_zero ((hlF _).symm.trans ?_)
   convert! map_zero (algebraMap F E)
-  exact congr($h i)
+  congrm $h i
 
 variable {F K} in
 /-- If `K / E / F` is a field extension tower such that `E / F` is purely inseparable,

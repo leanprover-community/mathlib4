@@ -148,7 +148,7 @@ lemma toPrefunctor_injective {F G : C ⥤ D} (h : F.toPrefunctor = G.toPrefuncto
     F = G := by
   obtain ⟨obj, map, _, _⟩ := F
   obtain ⟨obj', map', _, _⟩ := G
-  obtain rfl : obj = obj' := congr_arg Prefunctor.obj h
+  obtain rfl : obj = obj' := congr(Prefunctor.obj $h)
   obtain rfl : @map = @map' := by simpa [Functor.toPrefunctor] using h
   rfl
 

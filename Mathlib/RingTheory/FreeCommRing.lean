@@ -152,7 +152,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
       rw [← Function.comp_def (fun x => F' x) (fun x => {x}), ← Multiset.map_map,
         ← AddMonoidHom.map_multiset_sum]
-      exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
+      congrm F $(Multiset.sum_map_singleton x')
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

@@ -104,7 +104,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
       ← Algebra.TensorProduct.includeRight.comp_algebraMap, comap_comp_apply,
       Subsingleton.elim (α := PrimeSpectrum x.asIdeal.ResidueField) (comap _ _) ⊥]
     ext a
-    exact congr(a ∈ $(Ideal.ker_algebraMap_residueField _))
+    congrm a ∈ $(Ideal.ker_algebraMap_residueField _)
 
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `D(f) ⊆ Spec S`

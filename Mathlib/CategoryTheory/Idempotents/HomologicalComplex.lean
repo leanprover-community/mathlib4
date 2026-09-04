@@ -39,21 +39,21 @@ variable {P Q : Karoubi (HomologicalComplex C c)} (f : P ⟶ Q) (n : ι)
 
 @[simp, reassoc]
 theorem p_comp_d : P.p.f n ≫ f.f.f n = f.f.f n :=
-  HomologicalComplex.congr_hom (p_comp f) n
+  congr($(p_comp f).f n)
 
 @[simp, reassoc]
 theorem comp_p_d : f.f.f n ≫ Q.p.f n = f.f.f n :=
-  HomologicalComplex.congr_hom (comp_p f) n
+  congr($(comp_p f).f n)
 
 @[reassoc]
 theorem p_comm_f : P.p.f n ≫ f.f.f n = f.f.f n ≫ Q.p.f n :=
-  HomologicalComplex.congr_hom (p_comm f) n
+  congr($(p_comm f).f n)
 
 variable (P)
 
 @[simp, reassoc]
 theorem p_idem : P.p.f n ≫ P.p.f n = P.p.f n :=
-  HomologicalComplex.congr_hom P.idem n
+  congr($(P.idem).f n)
 
 end HomologicalComplex
 
@@ -71,7 +71,7 @@ on objects. -/
 def obj (P : Karoubi (HomologicalComplex C c)) : HomologicalComplex (Karoubi C) c where
   X n :=
     ⟨P.X.X n, P.p.f n, by
-      simpa only [HomologicalComplex.comp_f] using HomologicalComplex.congr_hom P.idem n⟩
+      simpa only [HomologicalComplex.comp_f] using congr($(P.idem).f n)⟩
   d i j := { f := P.p.f i ≫ P.X.d i j }
   shape i j hij := by simp only [hom_eq_zero_iff]; cat_disch
 

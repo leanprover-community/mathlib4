@@ -273,8 +273,8 @@ theorem map_obj_hom' (X : Comma L R) :
 instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful where
   map_injective {X Y} f g h := by
     ext
-    · exact F₁.map_injective (congr_arg CommaMorphism.left h)
-    · exact F₂.map_injective (congr_arg CommaMorphism.right h)
+    · exact F₁.map_injective congr($(h).left)
+    · exact F₂.map_injective congr($(h).right)
 
 @[to_dual self (reorder := A B, 2 4, A' B', 8 10, L R, L' R', F₁ F₂, α β, 23 24, 25 26)]
 instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where

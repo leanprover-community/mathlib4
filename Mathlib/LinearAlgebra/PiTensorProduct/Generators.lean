@@ -135,7 +135,7 @@ lemma _root_.MultilinearMap.ext_of_span_eq_top
     φ = φ' := by
   suffices lift φ = lift φ' by
     ext m
-    simpa using DFunLike.congr_fun this (tprod _ m)
+    simpa using congr($this (tprod _ m))
   exact PiTensorProduct.ext_of_span_eq_top hg (fun j ↦ by simpa using h j)
 
 end AddCommMonoid

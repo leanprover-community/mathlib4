@@ -36,7 +36,7 @@ namespace IsFixedPt
 /-- If `x` is a fixed point of `f` and `g`, then it is a fixed point of `f ∘ g`. -/
 protected theorem comp (hf : IsFixedPt f x) (hg : IsFixedPt g x) : IsFixedPt (f ∘ g) x :=
   calc
-    f (g x) = f x := congr_arg f hg
+    f (g x) = f x := congr(f $hg)
     _ = x := hf
 
 /-- If `x` is a fixed point of `f`, then it is a fixed point of `f^[n]`. -/
@@ -46,14 +46,14 @@ protected theorem iterate (hf : IsFixedPt f x) (n : ℕ) : IsFixedPt f^[n] x :=
 /-- If `x` is a fixed point of `f ∘ g` and `g`, then it is a fixed point of `f`. -/
 theorem left_of_comp (hfg : IsFixedPt (f ∘ g) x) (hg : IsFixedPt g x) : IsFixedPt f x :=
   calc
-    f x = f (g x) := congr_arg f hg.symm
+    f x = f (g x) := congr(f $hg.symm)
     _ = x := hfg
 
 /-- If `x` is a fixed point of `f` and `g` is a left inverse of `f`, then `x` is a fixed
 point of `g`. -/
 theorem to_leftInverse (hf : IsFixedPt f x) (h : LeftInverse g f) : IsFixedPt g x :=
   calc
-    g x = g (f x) := congr_arg g hf.symm
+    g x = g (f x) := congr(g $hf.symm)
     _ = x := h x
 
 /-- If `g` (semi)conjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
@@ -62,7 +62,7 @@ protected theorem map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semico
     IsFixedPt fb (g x) :=
   calc
     fb (g x) = g (fa x) := (h.eq x).symm
-    _ = g x := congr_arg g hx
+    _ = g x := congr(g $hx)
 
 protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert! hx
 

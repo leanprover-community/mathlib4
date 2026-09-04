@@ -105,7 +105,7 @@ def liftedConeIsLimit : IsLimit (liftedCone D c t) where
     ext1
     apply t.hom_ext
     intro j
-    simpa [t.fac ((forget T).mapCone s) j] using congr_arg Algebra.Hom.f (J j)
+    simpa [t.fac ((forget T).mapCone s) j] using congr($(J j).f)
 
 end ForgetCreatesLimits
 
@@ -224,7 +224,7 @@ noncomputable def liftedCoconeIsColimit : IsColimit (liftedCocone c t) where
     ext1
     apply t.hom_ext
     intro j
-    simpa using congr_arg Algebra.Hom.f (J j)
+    simpa using congr($(J j).f)
 
 end ForgetCreatesColimits
 
@@ -451,7 +451,7 @@ def liftedCoconeIsColimit : IsColimit (liftedCocone D c t) where
     ext1
     apply t.hom_ext
     intro j
-    simpa [t.fac ((forget T).mapCocone s) j] using congr_arg Coalgebra.Hom.f (J j)
+    simpa [t.fac ((forget T).mapCocone s) j] using congr($(J j).f)
 
 end ForgetCreatesColimits'
 
@@ -560,7 +560,7 @@ noncomputable def liftedConeIsLimit : IsLimit (liftedCone c t) where
     ext1
     apply t.hom_ext
     intro j
-    simpa using congr_arg Coalgebra.Hom.f (J j)
+    simpa using congr($(J j).f)
 
 end ForgetCreatesLimits'
 

@@ -168,7 +168,7 @@ lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter 
   rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]
 
 lemma LSeries_modOne_eq : L ↗χ₁ = L 1 :=
-  congr_arg L modOne_eq_one
+  congr(L $modOne_eq_one)
 
 /-- The L-series of a Dirichlet character mod `N > 0` does not converge absolutely at `s = 1`. -/
 lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ N) :
@@ -370,7 +370,7 @@ to an equality of complex sequences. -/
 lemma convolution_vonMangoldt_zeta : ↗Λ ⍟ ↗ζ = ↗Complex.log := by
   ext n
   simpa [apply_ite, LSeries.convolution_def, -vonMangoldt_mul_zeta]
-    using congr_arg (ofReal <| · n) vonMangoldt_mul_zeta
+    using congr(ofReal <| $vonMangoldt_mul_zeta n)
 
 lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
   (convolution_one_eq_convolution_zeta _).trans convolution_vonMangoldt_zeta

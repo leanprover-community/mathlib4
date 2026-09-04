@@ -81,7 +81,7 @@ theorem Subfunctor.eq_sheafify (h : Presieve.IsSheaf J F) (hG : Presieve.IsSheaf
     exact ((hG _ hs).amalgamate _ (G.family_of_elements_compatible s)).2
   apply (h _ hs).isSeparatedFor.ext
   intro V i hi
-  exact (congr_arg Subtype.val ((hG _ hs).valid_glue (G.family_of_elements_compatible s) _ hi) :)
+  congrm $((hG _ hs).valid_glue (G.family_of_elements_compatible s) _ hi).val
 
 set_option backward.defeqAttrib.useBackward true in
 theorem Subfunctor.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
@@ -100,14 +100,13 @@ theorem Subfunctor.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
     have hi'' : S' (i' ≫ i) := ⟨_, _, _, hi, hi', rfl⟩
     have := H _ hi''
     rw [op_comp, F.map_comp] at this
-    exact this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
+    exact this.trans congr($(hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')).val)
   have : x''.Compatible := by
     intro V₁ V₂ V₃ g₁ g₂ g₃ g₄ S₁ S₂ e
     rw [← comp_apply, ← Functor.map_comp, ← comp_apply, Functor.map_comp]
     simpa using!
-      congr_arg Subtype.val
-        (hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
-        (by simp only [Category.assoc, h₂, e]))
+      congr($(hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
+        (by simp only [Category.assoc, h₂, e])).val)
   obtain ⟨t, ht, ht'⟩ := hF _ (J.bind_covering hS fun V i hi => (x i hi).2) _ this
   refine ⟨⟨t, _⟩, H ⟨t, ?_⟩ ht⟩
   refine J.superset_covering ?_ (J.bind_covering hS fun V i hi => (x i hi).2)
@@ -174,7 +173,7 @@ theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
   rintro V i hi
   dsimp
   rw [← dsimp% l₁.naturality_apply, ← dsimp% l₂.naturality_apply]
-  exact ConcreteCategory.congr_hom (congr_app e <| op V) ⟨_, hi⟩
+  congrm $(e).app (op V) ⟨_, hi⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem Subfunctor.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
@@ -243,7 +242,7 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   rw [← NatTrans.naturality, ← NatTrans.naturality]
   have E : (Sheaf.toImage f).hom.app (op V) y = (Sheaf.image f).obj.map i.op ⟨s, hx⟩ :=
     Subtype.ext e'
-  have := congr_arg (fun f : F ⟶ G' => f.hom.app _ y) e
+  have := congr($(e).hom.app _ y)
   simp only [ObjectProperty.FullSubcategory.comp_hom, Sheaf.toImage_hom,
     NatTrans.comp_app, comp_apply, op_unop] at this E ⊢
   convert this <;> exact E.symm

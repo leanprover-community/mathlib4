@@ -132,7 +132,7 @@ private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq 
   rw [← RingHom.map_det, IsFractionRing.to_map_eq_zero_iff] at this
   refine Iff.trans ?_ this; constructor <;> rintro ⟨v, hv, mul_eq⟩
   · refine ⟨fun i => algebraMap _ _ (v i), mt (fun h => funext fun i => ?_) hv, ?_⟩
-    · exact IsFractionRing.to_map_eq_zero_iff.mp (congr_fun h i)
+    · exact IsFractionRing.to_map_eq_zero_iff.mp congr($h i)
     · ext i
       refine (RingHom.map_mulVec _ _ _ i).symm.trans ?_
       rw [mul_eq, Pi.zero_apply, map_zero, Pi.zero_apply]
@@ -143,7 +143,7 @@ private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq 
     refine
       ⟨fun i => f _ (Finset.mem_image.mpr ⟨i, Finset.mem_univ i, rfl⟩),
         mt (fun h => funext fun i => ?_) hv, ?_⟩
-    · have := congr_arg (algebraMap A K) (congr_fun h i)
+    · have := congr(algebraMap A K ($h i))
       rw [hf, Subtype.coe_mk, Pi.zero_apply, map_zero, Algebra.smul_def, mul_eq_zero,
         IsFractionRing.to_map_eq_zero_iff] at this
       exact this.resolve_left (nonZeroDivisors.ne_zero hb)
@@ -248,7 +248,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
     · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
       refine ⟨j₀, ?_⟩
       rw [← mul_le_mul_iff_right₀ (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
-      rw [show 0 = ∑ i, v i * A i j₀ from (congrFun h_vA j₀).symm]
+      rw [show 0 = ∑ i, v i * A i j₀ from congr($h_vA j₀).symm]
       refine Finset.sum_le_sum (fun i hi => ?_)
       by_cases h : i = j₀
       · rw [h]

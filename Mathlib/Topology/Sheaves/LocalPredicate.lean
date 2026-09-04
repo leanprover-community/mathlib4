@@ -250,7 +250,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     let sf' (i : ι) : (presheafToTypes X T).obj (op (U i)) := (sf i).val
     -- Since our original family is compatible, this one is as well
     have sf'_comp : (presheafToTypes X T).IsCompatible U sf' := fun i j ↦
-      congr_arg Subtype.val (sf_comp i j)
+      congr($(sf_comp i j).val)
     -- So, we can obtain a unique gluing
     obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf'
       -- `by exact` to help Lean infer the `ConcreteCategory` instance
@@ -273,7 +273,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     · exact fun i ↦ Subtype.ext (gl_spec i)
     · intro gl' hgl'
       refine Subtype.ext ?_
-      exact gl_uniq gl'.1 fun i ↦ congr_arg Subtype.val (hgl' i)
+      exact gl_uniq gl'.1 fun i ↦ congr($(hgl' i).val)
 
 end subpresheafToTypes
 

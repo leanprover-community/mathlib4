@@ -136,7 +136,7 @@ lemma mk_eq_mk_iff {X Y X' Y' : T} (f : X ⟶ Y) (f' : X' ⟶ Y') :
       ∃ (hX : X = X') (hY : Y = Y'), f = eqToHom hX ≫ f' ≫ eqToHom hY.symm := by
   constructor
   · intro h
-    refine ⟨congr_arg Arrow.left h, congr_arg Arrow.right h, ?_⟩
+    refine ⟨congr($(h).left), congr($(h).right), ?_⟩
     simpa [eqToHom_left, eqToHom_right] using! iso_w (eqToIso h.symm)
   · rintro ⟨rfl, rfl, h⟩
     simp only [eqToHom_refl, Category.comp_id, Category.id_comp] at h
@@ -443,7 +443,7 @@ that the induced maps `Arrow C → Arrow D` coincide. -/
 lemma Arrow.functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
     F.mapArrow.obj (Arrow.mk f) = G.mapArrow.obj (Arrow.mk f)) :
     F = G :=
-  Functor.ext (fun X ↦ congr_arg Comma.left (h (𝟙 X))) (fun X Y f ↦ by
+  Functor.ext (fun X ↦ congr($(h (𝟙 X)).left)) (fun X Y f ↦ by
     have := h f
     simp only [Functor.mapArrow_obj, mk_eq_mk_iff] at this
     tauto)

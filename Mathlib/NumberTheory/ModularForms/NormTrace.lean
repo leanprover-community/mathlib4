@@ -133,8 +133,7 @@ lemma ModularForm.norm_eq_zero_iff [ℋ.HasDetPlusMinusOne] [ModularFormClass F 
   · contrapose! hn
     exact norm_ne_zero ℋ hn
   · ext τ
-    simpa [Finset.prod_eq_zero_iff, QuotientGroup.exists_mk]
-      using ⟨1, by simpa using congr_fun hf τ⟩
+    simpa [Finset.prod_eq_zero_iff, QuotientGroup.exists_mk] using ⟨1, by simpa using congr($hf τ)⟩
 
 open scoped MatrixGroups
 

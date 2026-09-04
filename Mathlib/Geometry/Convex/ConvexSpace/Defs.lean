@@ -143,7 +143,7 @@ theorem mk_single (x : X) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
   mpr := by rintro rfl; simp
 
 lemma single_injective : Function.Injective (single (R := R) (X := X)) :=
-  fun _ _ h ↦ by simpa using congr_arg (Finsupp.support ∘ weights) h
+  fun _ _ h ↦ by simpa using congr((Finsupp.support ∘ weights) $h)
 
 @[simp]
 lemma weights_apply_le_one
@@ -529,7 +529,7 @@ lemma iConvexComb_id (w : StdSimplex R X) : w.iConvexComb id = w.sConvexComb := 
 @[congr] lemma iConvexComb_congr {w : StdSimplex R I} {f g : I → X}
     (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
     w.iConvexComb f = w.iConvexComb g := by
-  refine congr(sConvexComb $(?_))
+  congrm sConvexComb ?_
   ext i
   simp only [weights_map]
   -- TODO: This should just be `congr! 2 with i hi`.

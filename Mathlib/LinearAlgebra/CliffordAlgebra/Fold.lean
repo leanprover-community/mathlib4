@@ -92,7 +92,7 @@ def foldl (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x
 @[simp]
 theorem foldl_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
     foldl Q f hf n (reverse x) = foldr Q f hf n x :=
-  DFunLike.congr_arg (foldr Q f hf n) <| reverse_reverse _
+  congr(foldr Q f hf n $(reverse_reverse _))
 
 @[simp]
 theorem foldr_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
@@ -166,11 +166,9 @@ def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :
     { toFun := fun m => (l m).prod (f m)
       map_add' := fun v₂ v₂ =>
         LinearMap.ext fun x =>
-          Prod.ext (LinearMap.congr_fun (l.map_add _ _) x) (LinearMap.congr_fun (f.map_add _ _) x)
-      map_smul' := fun c v =>
-        LinearMap.ext fun x =>
-          Prod.ext (LinearMap.congr_fun (l.map_smul _ _) x)
-            (LinearMap.congr_fun (f.map_smul _ _) x) }
+          Prod.ext congr($(l.map_add _ _) x) congr($(f.map_add _ _) x)
+      map_smul' c v := LinearMap.ext fun x =>
+        Prod.ext congr($(l.map_smul _ _) x) congr($(f.map_smul _ _) x) }
 
 theorem foldr'Aux_apply_apply (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) (m : M) (x_fx) :
     foldr'Aux Q f m x_fx = (ι Q m * x_fx.1, f m x_fx) :=

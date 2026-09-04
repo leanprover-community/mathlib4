@@ -722,7 +722,7 @@ lemma QuasispectrumRestricts.spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [Norm
   have := algebraMap_isometry 𝕜₁ 𝕜₂ |>.nnnorm_map_of_map_zero (map_zero _)
   apply le_antisymm
   all_goals apply iSup₂_le fun x hx ↦ ?_
-  · refine congr_arg ((↑) : ℝ≥0 → ℝ≥0∞) (this x) |>.symm.trans_le <| le_iSup₂ (α := ℝ≥0∞) _ ?_
+  · refine congr(($(this x) : ℝ≥0∞)) |>.symm.trans_le <| le_iSup₂ (α := ℝ≥0∞) _ ?_
     exact (quasispectrum.algebraMap_mem_iff _).mpr hx
   · have ⟨y, hy, hy'⟩ := h.algebraMap_image.symm ▸ hx
     subst hy'

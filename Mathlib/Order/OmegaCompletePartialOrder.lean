@@ -410,7 +410,7 @@ variable {f : γ → ∀ x, β x}
 
 lemma ωScottContinuous.apply₂ (hf : ωScottContinuous f) (a : α) : ωScottContinuous (f · a) :=
   ωScottContinuous.of_monotone_map_ωSup
-    ⟨fun _ _ h ↦ hf.monotone h a, fun c ↦ congr_fun (hf.map_ωSup c) a⟩
+    ⟨fun _ _ h ↦ hf.monotone h a, fun c ↦ congr($(hf.map_ωSup c) a)⟩
 
 @[fun_prop]
 lemma ωScottContinuous.apply (x : α) : ωScottContinuous (fun f : ∀ x, β x ↦ f x) :=
@@ -534,10 +534,10 @@ def ofFun (f : α → β) (hf : ωScottContinuous f := by fun_prop) : α →𝒄
   map_ωSup' := hf.map_ωSup
 
 protected theorem congr_fun {f g : α →𝒄 β} (h : f = g) (x : α) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f y :=
-  congr_arg f h
+  congr(f $h)
 
 protected theorem monotone (f : α →𝒄 β) : Monotone f :=
   f.monotone'

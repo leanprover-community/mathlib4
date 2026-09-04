@@ -209,7 +209,7 @@ instance (c : isotypicComponents R M) : IsSemisimpleModule R c := by
 variable {S} in
 theorem LinearEquiv.isotypicComponent_eq (e : N ≃ₗ[R] S) :
     isotypicComponent R M N = isotypicComponent R M S :=
-  congr_arg sSup <| Set.ext fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)
+  congr(sSup $(Set.ext fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)))
 
 section SimpleSubmodule
 

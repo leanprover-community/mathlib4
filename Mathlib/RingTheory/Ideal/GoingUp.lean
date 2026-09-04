@@ -317,10 +317,10 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
         bot_le)
   refine ⟨Q'.comap _, le_trans (le_of_eq mk_ker.symm) (ker_le_comap _), ⟨comap_isPrime _ Q', ?_⟩⟩
   rw [comap_comap]
-  refine _root_.trans ?_ (_root_.trans (congr_arg (comap (Ideal.Quotient.mk
-    (comap (algebraMap R S) I))) hQ') ?_)
+  refine _root_.trans ?_ (_root_.trans congr(comap (Ideal.Quotient.mk
+    (comap (algebraMap R S) I)) $hQ') ?_)
   · rw [comap_comap]
-    exact congr_arg (comap · Q') (RingHom.ext fun r => rfl)
+    congrm comap $(RingHom.ext fun r => rfl) Q'
   · refine _root_.trans (comap_map_of_surjective _ Quotient.mk_surjective _) (sup_eq_left.2 ?_)
     simpa [← RingHom.ker_eq_comap_bot] using hIP
 

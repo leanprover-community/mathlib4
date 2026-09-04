@@ -689,13 +689,13 @@ theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
     Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 variable (X) in
-theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg X h).mp := by
+theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable congr(X $h).mp := by
   cases h
   exact measurable_id
 
 variable (X) in
 theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → X i}
-    (hf : Measurable f) : Measurable fun x => (congr_arg X h).mp (f x) :=
+    (hf : Measurable f) : Measurable fun x => congr(X $h).mp (f x) :=
   (measurable_eq_mp X h).comp hf
 
 @[fun_prop]

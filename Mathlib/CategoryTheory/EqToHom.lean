@@ -231,13 +231,13 @@ theorem eqToIso_trans {X Y Z : C} (p : X = Y) (q : Y = Z) :
     eqToIso p ≪≫ eqToIso q = eqToIso (p.trans q) := by ext; simp
 
 @[simp, to_dual none]
-theorem eqToHom_op {X Y : C} (h : X = Y) : (eqToHom h).op = eqToHom (congr_arg op h.symm) := by
+theorem eqToHom_op {X Y : C} (h : X = Y) : (eqToHom h).op = eqToHom congr(op $h.symm) := by
   cases h
   rfl
 
 @[simp, to_dual none]
 theorem eqToHom_unop {X Y : Cᵒᵖ} (h : X = Y) :
-    (eqToHom h).unop = eqToHom (congr_arg unop h.symm) := by
+    (eqToHom h).unop = eqToHom congr(unop $h.symm) := by
   cases h
   rfl
 
@@ -341,7 +341,7 @@ In some files it may be appropriate to use `attribute [local simp] eqToHom_map`,
 -/
 @[to_dual none]
 theorem eqToHom_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
-    F.map (eqToHom p) = eqToHom (congr_arg F.obj p) := by cases p; simp
+    F.map (eqToHom p) = eqToHom congr(F.obj $p) := by cases p; simp
 
 @[to_dual none, reassoc (attr := simp)]
 theorem eqToHom_map_comp (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
@@ -350,7 +350,7 @@ theorem eqToHom_map_comp (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
 /-- See the note on `eqToHom_map` regarding using this as a `simp` lemma.
 -/
 theorem eqToIso_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
-    F.mapIso (eqToIso p) = eqToIso (congr_arg F.obj p) := by ext; cases p; simp
+    F.mapIso (eqToIso p) = eqToIso congr(F.obj $p) := by ext; cases p; simp
 
 @[simp]
 theorem eqToIso_map_trans (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
@@ -372,7 +372,7 @@ theorem eq_conj_eqToHom {X Y : C} (f : X ⟶ Y) : f = eqToHom rfl ≫ f ≫ eqTo
 
 @[to_dual none]
 theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j : ι} (h : i = j) :
-    α i = eqToHom (congr_arg F h) ≫ α j ≫ eqToHom (congr_arg G h.symm) := by
+    α i = eqToHom congr(F $h) ≫ α j ≫ eqToHom congr(G $h.symm) := by
   subst h
   simp
 

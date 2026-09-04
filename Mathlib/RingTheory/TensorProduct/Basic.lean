@@ -160,7 +160,7 @@ unseal mul in
 theorem _root_.SemiconjBy.tmul {a₁ a₂ a₃ : A} {b₁ b₂ b₃ : B}
     (ha : SemiconjBy a₁ a₂ a₃) (hb : SemiconjBy b₁ b₂ b₃) :
     SemiconjBy (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) (a₃ ⊗ₜ[R] b₃) :=
-  congr_arg₂ (· ⊗ₜ[R] ·) ha.eq hb.eq
+  congr($ha.eq ⊗ₜ[R] $hb.eq)
 
 nonrec theorem _root_.Commute.tmul {a₁ a₂ : A} {b₁ b₂ : B}
     (ha : Commute a₁ a₂) (hb : Commute b₁ b₂) :
@@ -236,9 +236,9 @@ protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul 
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
         LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
+    congrm $this x y z
   ext xa xb ya yb za zb
-  exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
+  congrm $(mul_assoc xa ya za) ⊗ₜ $(mul_assoc xb yb zb)
 
 instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
   mul_assoc := Algebra.TensorProduct.mul_assoc
@@ -356,7 +356,7 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
     f = g := by
   apply AlgHom.toLinearMap_injective
   ext a b
-  have := congr_arg₂ HMul.hMul (AlgHom.congr_fun ha a) (AlgHom.congr_fun hb b)
+  have := congr(($ha a) * ($hb b))
   dsimp at *
   rwa [← map_mul, ← map_mul, tmul_mul_tmul, one_mul, mul_one] at this
 

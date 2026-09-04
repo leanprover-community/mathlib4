@@ -70,7 +70,7 @@ end
 
 theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
     (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
-  (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
+  congr($(s.sum_apply i g) j).trans (s.sum_apply j _)
 
 end Matrix
 

@@ -50,7 +50,7 @@ theorem zeroLocus_anti_mono {I J : Ideal (MvPolynomial σ k)} (h : I ≤ J) :
 
 @[simp]
 theorem zeroLocus_bot : zeroLocus K (⊥ : Ideal (MvPolynomial σ k)) = ⊤ :=
-  eq_top_iff.2 fun x _ _ hp => Trans.trans (congr_arg (aeval x) (mem_bot.1 hp)) (eval x).map_zero
+  eq_top_iff.2 fun x _ _ hp => Trans.trans congr(aeval x $(mem_bot.1 hp)) (eval x).map_zero
 
 @[simp]
 theorem zeroLocus_top : zeroLocus K (⊤ : Ideal (MvPolynomial σ k)) = ⊥ :=

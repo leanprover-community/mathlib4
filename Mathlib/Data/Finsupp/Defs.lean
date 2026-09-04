@@ -311,7 +311,7 @@ bundled (defined in `Mathlib/Data/Finsupp/Basic.lean`):
 -/
 def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
   onFinset g.support (f ∘ g) fun a => by
-    rw [mem_support_iff, not_imp_not]; exact fun H => (congr_arg f H).trans hf
+    rw [mem_support_iff, not_imp_not]; exact fun H => congr(f $H).trans hf
 
 @[simp, grind =]
 theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :

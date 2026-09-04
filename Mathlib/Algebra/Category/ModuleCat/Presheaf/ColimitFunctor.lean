@@ -83,8 +83,7 @@ noncomputable def coconeSMul :
   ι.app U := ↾fun ⟨(r : R.obj U), (m : M.obj U)⟩ ↦ by exact cM.ι.app U (r • m)
   ι.naturality V U f := by
     ext ⟨r, m⟩
-    exact (ConcreteCategory.congr_arg (cM.ι.app U)
-      (M.map_smul f r m).symm).trans (ConcreteCategory.congr_hom (cM.w f) _)
+    exact congr(cM.ι.app U $((M.map_smul f r m).symm)).trans congr($(cM.w f) _)
 
 noncomputable instance : SMul cR.pt (ModuleColimit hcR hcM) where
   smul :=
@@ -103,8 +102,8 @@ noncomputable abbrev ιM {U : Cᵒᵖ} : M.obj U →+ ModuleColimit hcR hcM :=
 @[simp]
 lemma smul_eq {U : Cᵒᵖ} (r : R.obj U) (m : M.obj U) :
     ιR cR r • ιM (hcR := hcR) (hcM := hcM) m = ιM (r • m) :=
-  ConcreteCategory.congr_hom (((isColimitOfPreserves (forget _) hcR).tensor
-    (isColimitOfPreserves (forget _) hcM)).fac (coconeSMul hcR hcM) U) ⟨r, m⟩
+  congr($(((isColimitOfPreserves (forget _) hcR).tensor
+    (isColimitOfPreserves (forget _) hcM)).fac (coconeSMul hcR hcM) U) ⟨r, m⟩)
 
 variable {hcR hcM} in
 lemma ιM_jointly_surjective (m : ModuleColimit hcR hcM) :
@@ -219,7 +218,7 @@ omit [LocallySmall.{w, v, u} C] [IsCofiltered C] [InitiallySmall C] in
 lemma homEquiv'_symm_apply {N : ModuleCat.{w} cR.pt}
     (β : M.presheaf ⟶ (Functor.const _).obj (.of N)) {X : Cᵒᵖ} (x : M.obj X) :
     (homEquiv' hcR hcM).symm β (cM.ι.app X x) = β.app X x :=
-  ConcreteCategory.congr_hom (hcM.ι_app_homEquiv_symm β X) x
+  congr($(hcM.ι_app_homEquiv_symm β X) x)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma map_smul_homEquiv'_iff {N : ModuleCat.{w} cR.pt}
@@ -294,8 +293,8 @@ noncomputable def map (f : M ⟶ M') :
   map_smul' r m := by
     obtain ⟨U, r, m, rfl, rfl⟩ := ModuleColimit.jointly_surjective₂ r m
     let c := (Cocone.precompose ((toPresheaf _).map f)).obj cM'
-    have h₁ := ConcreteCategory.congr_hom (hcM.fac c U) (r • m)
-    have h₂ := ConcreteCategory.congr_hom (hcM.fac c U) m
+    have h₁ := congr($(hcM.fac c U) (r • m))
+    have h₂ := congr($(hcM.fac c U) m)
     dsimp [c] at h₁ h₂ ⊢
     rw [ModuleColimit.smul_eq]
     erw [h₁, h₂, ModuleColimit.smul_eq, ← (f.app U).hom.map_smul]
@@ -304,7 +303,7 @@ noncomputable def map (f : M ⟶ M') :
 @[simp]
 lemma map_apply (f : M ⟶ M') {U : Cᵒᵖ} (m : M.obj U) :
     dsimp% map hcR hcM hcM' f (ιM m) = ιM (f.app _ m) :=
-  ConcreteCategory.congr_hom (hcM.fac ((Cocone.precompose ((toPresheaf _).map f)).obj cM') U) m
+  congr($(hcM.fac ((Cocone.precompose ((toPresheaf _).map f)).obj cM') U) m)
 
 @[simp]
 lemma map_id : map hcR hcM hcM (𝟙 M) = .id := by

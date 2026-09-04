@@ -283,12 +283,12 @@ relevant compatibilities.
 def ofBifunctor : F.LaxMonoidal where
   ε := ε
   μ X Y := (μ.app X).app Y
-  μ_natural_left f X := NatTrans.congr_app (μ.naturality f) X
+  μ_natural_left f X := congr($(μ.naturality f).app X)
   μ_natural_right X f := (μ.app X).naturality f
   associativity X Y Z :=
-    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app associativity X) Y) Z
-  left_unitality X := NatTrans.congr_app left_unitality X
-  right_unitality X := NatTrans.congr_app right_unitality X
+    congr((($(associativity).app X).app Y).app Z)
+  left_unitality X := congr($(left_unitality).app X)
+  right_unitality X := congr($(right_unitality).app X)
 
 end LaxMonoidal
 
@@ -476,12 +476,12 @@ relevant compatibilities.
 def ofBifunctor : F.OplaxMonoidal where
   η := η
   δ X Y := (δ.app X).app Y
-  δ_natural_left f X := (NatTrans.congr_app (δ.naturality f) X).symm
+  δ_natural_left f X := congr($(δ.naturality f).app X).symm
   δ_natural_right X f := ((δ.app X).naturality f).symm
   oplax_associativity X Y Z :=
-    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app oplax_associativity X) Y) Z
-  oplax_left_unitality X := NatTrans.congr_app oplax_left_unitality X
-  oplax_right_unitality X := NatTrans.congr_app oplax_right_unitality X
+    congr((($(oplax_associativity).app X).app Y).app Z)
+  oplax_left_unitality X := congr($(oplax_left_unitality).app X)
+  oplax_right_unitality X := congr($(oplax_right_unitality).app X)
 
 end OplaxMonoidal
 
@@ -526,8 +526,8 @@ def ofBifunctor (ε_η : ε ≫ η = 𝟙 _) (η_ε : η ≫ ε = 𝟙 _) (μ_δ
   toOplaxMonoidal := .ofBifunctor η δ oplax_associativity oplax_left_unitality oplax_right_unitality
   ε_η := ε_η
   η_ε := η_ε
-  μ_δ X Y := NatTrans.congr_app ((NatTrans.congr_app μ_δ) X) Y
-  δ_μ X Y := NatTrans.congr_app ((NatTrans.congr_app δ_μ) X) Y
+  μ_δ X Y := congr(($(μ_δ).app X).app Y)
+  δ_μ X Y := congr(($(δ_μ).app X).app Y)
 
 end Monoidal
 
@@ -555,11 +555,10 @@ relevant compatibilities.
 def ofBifunctor : F.CoreMonoidal where
   εIso := ε
   μIso X Y := (μ.app X).app Y
-  μIso_hom_natural_left f X := NatTrans.congr_app (μ.hom.naturality f) X
+  μIso_hom_natural_left f X := congr($(μ.hom.naturality f).app X)
   μIso_hom_natural_right X f := (μ.hom.app X).naturality f
-  associativity X Y Z :=
-    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app associativity X) Y) Z
-  left_unitality X := NatTrans.congr_app left_unitality X
-  right_unitality X := NatTrans.congr_app right_unitality X
+  associativity X Y Z := congr((($(associativity).app X).app Y).app Z)
+  left_unitality X := congr($(left_unitality).app X)
+  right_unitality X := congr($(right_unitality).app X)
 
 end CategoryTheory.Functor.CoreMonoidal

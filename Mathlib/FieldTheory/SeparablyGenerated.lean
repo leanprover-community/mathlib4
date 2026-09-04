@@ -76,7 +76,7 @@ theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : I
         (renameEquiv k d).trans <| H.aevalEquiv.trans
         (Subalgebra.equivOfEq _ _ congr(Algebra.adjoin k $hc.symm)))
   rw [Polynomial.coe_mapAlgEquiv, Polynomial.coe_mapAlgHom]
-  refine congrFun (congrArg Polynomial.map ?_) _
+  congrm Polynomial.map ?_ _
   ext <;> simp [d]
 
 -- Suppose `F` has minimal total degree among the relations of `a`.

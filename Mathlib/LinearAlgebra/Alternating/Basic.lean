@@ -110,10 +110,10 @@ theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
   rfl
 
 protected theorem congr_fun {f g : M [⋀^ι]→ₗ[R] N} (h : f = g) (x : ι → M) : f x = g x :=
-  congr_arg (fun h : M [⋀^ι]→ₗ[R] N => h x) h
+  congr($h x)
 
 protected theorem congr_arg (f : M [⋀^ι]→ₗ[R] N) {x y : ι → M} (h : x = y) : f x = f y :=
-  congr_arg (fun x : ι → M => f x) h
+  congr(f $h)
 
 theorem coe_injective : Injective ((↑) : M [⋀^ι]→ₗ[R] N → (ι → M) → N) :=
   DFunLike.coe_injective
@@ -931,4 +931,4 @@ def AlternatingMap.constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' 
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f 0
-  right_inv f := ext fun _ => AlternatingMap.congr_arg f <| Subsingleton.elim _ _
+  right_inv f := ext fun _ => congr(f $(Subsingleton.elim _ _))

@@ -49,7 +49,7 @@ bijection with `F ⊗ A ⟶ G`. -/
 def homObjEquiv (F G A : C ⥤ Type w) : (HomObj F G A) ≃ (F ⊗ A ⟶ G) where
   toFun a := ⟨fun X ↦ ↾fun ⟨x, y⟩ ↦ a.app X y x, fun X Y f ↦ by
     ext ⟨x, y⟩
-    simpa using! ConcreteCategory.congr_hom (a.naturality f y) x⟩
+    simpa using! congr($(a.naturality f y) x)⟩
   invFun a := ⟨fun X y ↦ ↾fun x ↦ a.app X (x, y), fun φ y ↦ by
     ext x
     simpa using! (a.naturality_apply φ) (x, y)⟩
@@ -97,7 +97,7 @@ def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type (max w v' u) where
       naturality := fun {X Y} φ a ↦ by
         rw [← HomObj.naturality]
         congr 2
-        exact ConcreteCategory.congr_hom (f.unop.naturality φ) a }
+        congrm $(f.unop.naturality φ) a }
 
 /-- Composition of `homObjFunctor` with the co-Yoneda embedding, i.e. Hom(F ⊗ coyoneda(-), G).
 When `F G : C ⥤ Type max v' v u`, this is the internal hom of `F` and `G`: see
@@ -120,7 +120,7 @@ def functorHomEquiv (A : C ⥤ Type (max u v v')) : (A ⟶ F.functorHom G) ≃ H
     { app := fun X a ↦ (φ.app X a).app X (𝟙 _)
       naturality := fun {X Y} f a => by
         rw [← (φ.app X a).naturality f (𝟙 _)]
-        have := HomObj.congr_app (ConcreteCategory.congr_hom (φ.naturality f) a) Y (𝟙 _)
+        have := HomObj.congr_app congr($(φ.naturality f) a) Y (𝟙 _)
         simp_all [-NatTrans.naturality, functorHom, homObjFunctor] }
   invFun x :=
     { app X := ↾fun a ↦ { app := fun Y f => x.app Y (A.map f a) }
@@ -129,8 +129,8 @@ def functorHomEquiv (A : C ⥤ Type (max u v v')) : (A ⟶ F.functorHom G) ≃ H
         simp [functorHom, homObjFunctor] }
   left_inv φ := by
     ext X a Y f
-    exact (HomObj.congr_app (ConcreteCategory.congr_hom (φ.naturality f) a) Y (𝟙 _)).trans
-      (congr_arg ((φ.app X a).app Y) (by simp))
+    exact (HomObj.congr_app congr($(φ.naturality f) a) Y (𝟙 _)).trans
+      congr((φ.app X a).app Y $(by simp))
   right_inv x := by simp [functorHom, homObjFunctor]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -144,13 +144,13 @@ def natTransEquiv : (𝟙_ (C ⥤ Type (max v' v u)) ⟶ F.functorHom G) ≃ (F 
     intro X Y φ
     rw [← (f.app X (PUnit.unit)).naturality φ]
     congr 1
-    have := HomObj.congr_app (ConcreteCategory.congr_hom (f.naturality φ) PUnit.unit) Y (𝟙 Y)
+    have := HomObj.congr_app congr($(f.naturality φ) PUnit.unit) Y (𝟙 Y)
     dsimp [functorHom, homObjFunctor] at this
     aesop ⟩
   invFun f := { app _ := ↾fun _ ↦ HomObj.ofNatTrans f }
   left_inv f := by
     ext X a Y φ
-    have := HomObj.congr_app (ConcreteCategory.congr_hom (f.naturality φ) PUnit.unit) Y (𝟙 Y)
+    have := HomObj.congr_app congr($(f.naturality φ) PUnit.unit) Y (𝟙 Y)
     dsimp [functorHom, homObjFunctor] at this
     aesop
 

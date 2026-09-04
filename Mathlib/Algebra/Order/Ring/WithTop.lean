@@ -34,10 +34,10 @@ instance : MulZeroClass (WithTop α) where
     | ⊤, (b : α) => if b = 0 then 0 else ⊤
     | ⊤, ⊤ => ⊤
   mul_zero
-    | (a : α) => congr_arg some <| mul_zero _
+    | (a : α) => congr(some $(mul_zero _))
     | ⊤ => ite_eq_left rfl
   zero_mul
-    | (b : α) => congr_arg some <| zero_mul _
+    | (b : α) => congr(some $(zero_mul _))
     | ⊤ => ite_eq_left rfl
 
 @[to_dual (attr := simp, norm_cast)]
@@ -236,7 +236,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
       by_cases hc : c = 0; · simp [hc]
       simp only [mul_coe_eq_bind hc]
       cases a <;> cases b <;> try rfl
-      exact congr_arg some (add_mul _ _ _)
+      congrm some $(add_mul ..)
   left_distrib c a b := by
     cases c with
     | top =>
@@ -249,7 +249,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
       by_cases hc : c = 0; · simp [hc]
       simp only [coe_mul_eq_bind hc]
       cases a <;> cases b <;> try rfl
-      exact congr_arg some (mul_add _ _ _)
+      congrm some $(mul_add ..)
 
 @[to_dual]
 instance instNonAssocSemiring [NonAssocSemiring α] [Subsingleton (AddUnits α)]

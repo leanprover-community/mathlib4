@@ -204,9 +204,7 @@ theorem card_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1) (hd : G.IsRegu
     (Fintype.card V : ZMod p) = 1 := by
   have hpos : 0 < Fintype.card V := Fintype.card_pos_iff.mpr inferInstance
   rw [← Nat.succ_pred_eq_of_pos hpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
-  simp only [add_eq_right, Nat.cast_add, Nat.cast_one]
-  have h := congr_arg (fun n : ℕ => (n : ZMod p)) (card_of_regular hG hd)
-  revert h; simp [dmod]
+  simpa [dmod] using congr(($(card_of_regular hG hd) : ZMod p))
 
 end Nonempty
 

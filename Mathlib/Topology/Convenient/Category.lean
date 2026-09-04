@@ -204,7 +204,7 @@ instance : (toTopCat.{v} X).IsLeftAdjoint := adj.isLeftAdjoint
 instance : (TopCat.toContinuousGeneratedByCat.{v} X).IsRightAdjoint := adj.isRightAdjoint
 
 instance : (TopCat.toContinuousGeneratedByCat.{v} X).Faithful where
-  map_injective h := by ext x; exact ConcreteCategory.congr_hom h x
+  map_injective h := by ext x; congrm $h x
 
 instance : IsIso (adj.{v} (X := X)).unit := inferInstanceAs (IsIso adjUnitIso.hom)
 
@@ -311,7 +311,7 @@ instance (Z : TopCat.{v}) :
     (ContinuousGeneratedByCat.adj.counit.app Z)))
 
 instance : (TopCat.toGeneratedByTopCat.{v} (X := X)).Faithful where
-  map_injective h := by ext x; exact ConcreteCategory.congr_hom h x
+  map_injective h := by ext x; congrm $h x
 
 /-- The category of `X`-generated spaces is coreflective in the category of topological spaces. -/
 instance : Coreflective (toTopCat.{v} (X := X)) where

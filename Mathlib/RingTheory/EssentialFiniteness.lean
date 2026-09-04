@@ -236,10 +236,10 @@ lemma EssFiniteType.iff_of_algEquiv (f : S ≃ₐ[R] T) :
 variable {R S} in
 lemma EssFiniteType.algHom_ext [EssFiniteType R S]
     (f g : S →ₐ[R] T) (H : ∀ s ∈ finset R S, f s = g s) : f = g := by
-  suffices f.toRingHom = g.toRingHom by ext; exact RingHom.congr_fun this _
+  suffices f.toRingHom = g.toRingHom by ext; congrm $this _
   apply IsLocalization.ringHom_ext (EssFiniteType.submonoid R S)
   suffices f.comp (IsScalarTower.toAlgHom R _ S) = g.comp (IsScalarTower.toAlgHom R _ S) by
-    ext; exact AlgHom.congr_fun this _
+    ext; congrm $this _
   apply AlgHom.ext_of_adjoin_eq_top (s := { x | x.1 ∈ finset R S })
   · exact adjoin_mem_finset R S
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
@@ -283,7 +283,7 @@ lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
     (h₁ : g₁.comp f = g₂.comp f) (h₂ : ∀ x ∈ hf.finset, g₁ x = g₂ x) : g₁ = g₂ := by
   algebraize [f, g₁.comp f]
   ext x
-  exact DFunLike.congr_fun (Algebra.EssFiniteType.algHom_ext T
-    ⟨g₁, fun _ ↦ rfl⟩ ⟨g₂, DFunLike.congr_fun h₁.symm⟩ h₂) x
+  congrm $(Algebra.EssFiniteType.algHom_ext T
+   ⟨g₁, fun _ ↦ rfl⟩ ⟨g₂, DFunLike.congr_fun h₁.symm⟩ h₂) x
 
 end RingHom

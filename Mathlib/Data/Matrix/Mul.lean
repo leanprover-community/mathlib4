@@ -918,7 +918,7 @@ lemma mul_right_injective_iff_mulVec_injective [Fintype m] [Nonempty n] {A : Mat
   -- `replicateRow` is not available yet
   suffices (of fun i j => v i) = (of fun i j => w i) from
     funext fun i => congrFun₂ this i (default : n)
-  exact ha <| ext fun _ _ => congrFun hvw _
+  exact ha <| ext fun _ _ => congr($hvw _)
 
 lemma mul_left_injective_iff_vecMul_injective [Nonempty l] [Fintype m] {A : Matrix m n α} :
     Function.Injective (fun B : Matrix l m α => B * A) ↔ Function.Injective A.vecMul := by
@@ -927,7 +927,7 @@ lemma mul_left_injective_iff_vecMul_injective [Nonempty l] [Fintype m] {A : Matr
   --  `replicateCol` is not available yet
   suffices (of fun i j => v j) = (of fun i j => w j) from
     funext fun j => congrFun₂ this (default : l) j
-  exact ha <| ext fun _ _ => congrFun hvw _
+  exact ha <| ext fun _ _ => congr($hvw _)
 
 lemma isLeftRegular_iff_mulVec_injective [Fintype m] {A : Matrix m m α} :
     IsLeftRegular A ↔ Function.Injective A.mulVec := by
@@ -960,14 +960,14 @@ lemma ext_of_mulVec_single [DecidableEq n] [Fintype n] {M N : Matrix m n α}
     M = N := by
   ext i j
   simp_rw [mulVec_single_one] at h
-  exact congrFun (h j) i
+  congrm $(h j) i
 
 lemma ext_of_single_vecMul [DecidableEq m] [Fintype m] {M N : Matrix m n α}
     (h : ∀ i, Pi.single i 1 ᵥ* M = Pi.single i 1 ᵥ* N) :
     M = N := by
   ext i j
   simp_rw [single_one_vecMul] at h
-  exact congrFun (h i) j
+  congrm $(h i) j
 
 theorem mulVec_injective [Fintype n] : (mulVec : Matrix m n α → _).Injective := by
   intro A B h

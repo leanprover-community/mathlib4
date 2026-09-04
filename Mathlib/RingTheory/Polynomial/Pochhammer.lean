@@ -137,7 +137,7 @@ theorem ascPochhammer_succ_comp_X_add_one (n : ℕ) :
       ascPochhammer S (n + 1) + (n + 1) • (ascPochhammer S n).comp (X + 1) := by
   suffices (ascPochhammer ℕ (n + 1)).comp (X + 1) =
       ascPochhammer ℕ (n + 1) + (n + 1) * (ascPochhammer ℕ n).comp (X + 1)
-    by simpa [map_comp] using congr_arg (Polynomial.map (Nat.castRingHom S)) this
+    by simpa [map_comp] using congr(Polynomial.map (Nat.castRingHom S) $this)
   nth_rw 2 [ascPochhammer_succ_left]
   rw [← add_mul, ascPochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, natCast_comp,
     add_comm, ← add_assoc]
@@ -229,7 +229,7 @@ theorem ascPochhammer_nat_eval_succ (r : ℕ) :
 theorem ascPochhammer_eval_succ (r n : ℕ) :
     (n : S) * (ascPochhammer S r).eval (n + 1 : S) =
     (n + r) * (ascPochhammer S r).eval (n : S) :=
-  mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
+  mod_cast congr(Nat.cast $(ascPochhammer_nat_eval_succ r n))
 
 namespace Nat
 variable (a b : ℕ)
@@ -355,7 +355,7 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
       descPochhammer R (n + 1) - (n + (1 : R[X])) • (descPochhammer R n).comp (X - 1) := by
   suffices (descPochhammer ℤ (n + 1)).comp (X - 1) =
       descPochhammer ℤ (n + 1) - (n + 1) * (descPochhammer ℤ n).comp (X - 1)
-    by simpa [map_comp] using congr_arg (Polynomial.map (Int.castRingHom R)) this
+    by simpa [map_comp] using congr(Polynomial.map (Int.castRingHom R) $this)
   nth_rw 2 [descPochhammer_succ_left]
   rw [← sub_mul, descPochhammer_succ_right ℤ n, mul_comp, mul_comm, sub_comp, X_comp, natCast_comp]
   ring

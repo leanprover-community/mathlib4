@@ -96,7 +96,7 @@ protected abbrev Repr.ι (_repr : Repr R a ι) : Type _ := ι
 @[simp]
 theorem coassoc_apply (a : A) :
     TensorProduct.assoc R A A A (comul.rTensor A (comul a)) = comul.lTensor A (comul a) :=
-  LinearMap.congr_fun coassoc a
+  congr($coassoc a)
 
 @[simp]
 theorem coassoc_symm_apply (a : A) :
@@ -111,11 +111,11 @@ theorem coassoc_symm :
 
 @[simp]
 theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] a :=
-  LinearMap.congr_fun rTensor_counit_comp_comul a
+  congr($rTensor_counit_comp_comul a)
 
 @[simp]
 theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
-  LinearMap.congr_fun lTensor_counit_comp_comul a
+  congr($lTensor_counit_comp_comul a)
 
 @[simp]
 lemma sum_counit_tmul_eq (repr : Repr R a ι) :

@@ -466,7 +466,7 @@ theorem orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜
     [U.HasOrthogonalProjection] : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 ↔ U ⟂ V := by
   refine ⟨fun h u hu v hv ↦ ?_, Submodule.IsOrtho.orthogonalProjectionOnto_comp_subtypeL⟩
   convert starProjection_inner_eq_zero v u hu
-  have : U.orthogonalProjectionOnto v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
+  have : U.orthogonalProjectionOnto v = 0 := congr($h ⟨_, hv⟩)
   rw [starProjection_apply, this, Submodule.coe_zero, sub_zero]
 
 @[deprecated (since := "2026-05-05")]

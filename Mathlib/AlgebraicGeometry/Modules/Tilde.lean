@@ -78,7 +78,7 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
       .of_algebraMap_smul fun _ _ ↦ rfl
     exact (IsLocalization.linearMap_compatibleSMul (.powers (M := R) r)
       Γ(Spec R, basicOpen r) Γ(M, basicOpen r) Γ(N, basicOpen r)).map_smul
-      (f.hom.app _).hom _ _⟩, fun i ↦ by ext x; exact congr($(f.1.naturality i).hom x)⟩
+      (f.hom.app _).hom _ _⟩, fun i ↦ by ext x; congrm $(f.1.naturality i).hom x⟩
   map_preimage f := rfl
   preimage_map f := rfl
 
@@ -206,17 +206,16 @@ protected noncomputable def map {M N : ModuleCat R} (f : M ⟶ N) : tilde M ⟶ 
 @[simp, reassoc]
 protected lemma map_id {M : ModuleCat R} : tilde.map (𝟙 M) = 𝟙 _ := by
   ext p x
-  exact Subtype.ext (funext fun y ↦ DFunLike.congr_fun (LocalizedModule.map_id _) _)
+  exact Subtype.ext (funext fun y ↦ congr($(LocalizedModule.map_id _) _))
 
 @[simp, reassoc]
 protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
     tilde.map (f ≫ g) = tilde.map f ≫ tilde.map g := by
   ext p x
-  exact Subtype.ext (funext
-    fun y ↦ DFunLike.congr_fun (IsLocalizedModule.map_comp' y.1.asIdeal.primeCompl
+  exact Subtype.ext (funext fun y ↦ congr($(IsLocalizedModule.map_comp' y.1.asIdeal.primeCompl
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl M)
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl N)
-      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl P) _ _) _)
+      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl P) _ _) _))
 
 @[reassoc (attr := simp)]
 lemma toOpen_map_app {M N : ModuleCat R} (f : M ⟶ N)
@@ -447,7 +446,7 @@ def presentationTilde (s : Set M) (hs : Submodule.span R s = ⊤)
     simp only [Category.assoc, Iso.hom_inv_id_assoc, Preadditive.IsIso.comp_left_eq_zero]
     rw [← tilde.map_comp, ← ModuleCat.ofHom_comp]
     convert! tilde.map_zero
-    exact congr(ModuleCat.ofHom $(H₁.linearMap_comp_eq_zero))) ?_
+    congrm ModuleCat.ofHom $H₁.linearMap_comp_eq_zero) ?_
   letI h₁ := ModuleCat.isColimitCokernelCofork _ _ H₁
     (by simp [← LinearMap.range_eq_top, Finsupp.range_linearCombination, hs])
   refine IsCokernel.ofIso _ (CokernelCofork.mapIsColimit _ h₁ (tilde.functor R)) _ (tildeFinsupp t)

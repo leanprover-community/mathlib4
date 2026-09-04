@@ -68,8 +68,8 @@ noncomputable abbrev desc (s : Cocone X.functorN) : X ⟶ s.pt :=
             (s.ι.app u).app _ ⟨t.simplex, h⟩ =
             (s.ι.app t).app _ ⟨t.simplex, Subcomplex.mem_ofSimplex_obj _⟩ :=
           ConcreteCategory.congr_hom
-            (NatTrans.congr_app (s.w (homOfLE (by
-              rwa [N.le_iff, Subcomplex.ofSimplex_le_iff]))) _)
+            congr($(s.w (homOfLE (by
+              rwa [N.le_iff, Subcomplex.ofSimplex_le_iff]))).app _)
             ⟨t.simplex, Subcomplex.mem_ofSimplex_obj _⟩
         refine le_antisymm (Subfunctor.equalizer_le _ _) ?_
         rw [Subcomplex.le_iff_contains_nonDegenerate]

@@ -129,14 +129,14 @@ theorem ofRat_intCast (z : ℤ) : (ofRat z : Cauchy abv) = z :=
 
 theorem ofRat_add (x y : β) :
     ofRat (x + y) = (ofRat x + ofRat y : Cauchy abv) :=
-  congr_arg mk (const_add _ _)
+  congr(mk $(const_add ..))
 
 theorem ofRat_neg (x : β) : ofRat (-x) = (-ofRat x : Cauchy abv) :=
-  congr_arg mk (const_neg _)
+  congr(mk $(const_neg _))
 
 theorem ofRat_mul (x y : β) :
     ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
-  congr_arg mk (const_mul _ _)
+  congr(mk $(const_mul ..))
 
 theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h => by
   simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
@@ -157,7 +157,7 @@ def ofRatRingHom : β →+* (Cauchy abv) where
   map_mul' := ofRat_mul
 
 theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
-  congr_arg mk (const_sub _ _)
+  congr(mk $(const_sub ..))
 
 noncomputable instance Cauchy.instNonTrivial [Nontrivial β] : Nontrivial (Cauchy abv) :=
   ofRat_injective.nontrivial
@@ -204,11 +204,11 @@ noncomputable instance : Inv (Cauchy abv) :=
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
-  congr_arg mk <| by rw [dite_eq_left] <;> [rfl; exact zero_limZero]
+  congr(mk $(by rw [dite_eq_left] <;> [rfl; exact zero_limZero]))
 
 @[simp]
 theorem inv_mk {f} (hf) : (mk (abv := abv) f)⁻¹ = mk (inv f hf) :=
-  congr_arg mk <| by rw [dite_eq_right]
+  congr(mk $(by rw [dite_eq_right]))
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h ↦
   have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
@@ -230,8 +230,8 @@ protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1
     exact Quotient.sound (CauSeq.mul_inv_cancel hf)
 
 theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
-  congr_arg mk <| by split_ifs with h <;>
-    [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]
+  congr(mk $(by split_ifs with h <;>
+    [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]))
 
 noncomputable instance instDivInvMonoid : DivInvMonoid (Cauchy abv) where
 
@@ -246,8 +246,8 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   qsmul := (· • ·)
   nnratCast_def q := by simp_rw [← ofRat_nnratCast, NNRat.cast_def, ofRat_div, ofRat_natCast]
   ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
-  nnqsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ NNRat.smul_def _ _
-  qsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ Rat.smul_def _ _
+  nnqsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr(mk $(ext fun _ ↦ NNRat.smul_def ..))
+  qsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr(mk $(ext fun _ ↦ Rat.smul_def ..))
 
 /-- Show the first 10 items of a representative of this equivalence class of Cauchy sequences.
 

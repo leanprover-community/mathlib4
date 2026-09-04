@@ -110,7 +110,7 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
-    using! congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
+    using! congr(J.yonedaEquiv $(h _ (J.yonedaEquiv.symm x)))
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -211,7 +211,7 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
-    using! congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
+    using! congr(J.uliftYonedaEquiv $(h _ (J.uliftYonedaEquiv.symm x)))
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -280,7 +280,7 @@ noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan 
       TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
       ← heq s (g ≫ Sieve.ofArrows.h u.2)
       (Sieve.ofArrows.h <| Sieve.downward_closed _ u.2 g) (by simp)]
-    exact ConcreteCategory.congr_hom ((s.inj _).hom.naturality g.op) _
+    congrm $((s.inj _).hom.naturality g.op) _
   · ext : 1
     let u (j : ι) : CategoryTheory.yoneda.obj (X j) ⟶ (Sieve.ofArrows _ c.inj).functor :=
       (Sieve.ofArrows _ c.inj).toFunctor (c.inj j) (Sieve.ofArrows_mk _ _ j)

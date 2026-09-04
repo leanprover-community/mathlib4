@@ -177,7 +177,7 @@ family of linear maps `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` ind
 def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j h = f' i j h ∘ₗ g i) :
     DirectLimit G f →ₗ[R] DirectLimit G' f' :=
   lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ by
-    have eq1 := LinearMap.congr_fun (hg i j h) g
+    have eq1 := congr($(hg i j h) g)
     simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
     rw [eq1, of_f]
 
@@ -381,7 +381,7 @@ def map (g : (i : ι) → G i →+ G' i)
     (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i)) :
     DirectLimit G f →+ DirectLimit G' f' :=
   lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
-    have eq1 := DFunLike.congr_fun (hg i j h) g
+    have eq1 := congr($(hg i j h) g)
     simp only [AddMonoidHom.coe_comp, Function.comp_apply] at eq1 ⊢
     rw [eq1, of_f]
 
@@ -417,7 +417,7 @@ def congr (e : (i : ι) → G i ≃+ G' i)
     DirectLimit G f ≃+ DirectLimit G' f' :=
   AddMonoidHom.toAddEquiv (map (e ·) he)
     (map (fun i ↦ (e i).symm) fun i j h ↦ DFunLike.ext _ _ fun x ↦ by
-      have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
+      have eq1 := congr($(he i j h) ((e i).symm x))
       simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, Function.comp_apply,
         AddMonoidHom.coe_coe, AddEquiv.apply_symm_apply] at eq1 ⊢
       simp [← eq1])

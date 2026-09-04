@@ -178,7 +178,7 @@ theorem Matrix.det_det [Fintype m] [Fintype n] (f : S →+* Matrix n n R) :
           grind [Fintype.card_subtype_compl, Fintype.card_unique])
       rw [polyToMatrix_cornerAddX, ← charpoly]
       exact (Matrix.charpoly_monic _).mem_nonZeroDivisors
-    rw [← eval_zero_det_det, congr_arg (eval 0) this, eval_zero_comp_det]
+    rw [← eval_zero_det_det, congr(eval 0 $this), eval_zero_comp_det]
 
 variable [Algebra R S] [Module.Free R S]
 

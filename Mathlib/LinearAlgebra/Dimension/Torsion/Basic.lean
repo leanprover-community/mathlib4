@@ -40,7 +40,7 @@ theorem rank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup 
 theorem finrank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
     {M' : Submodule R M} (hN : M' ≤ torsion R M) :
     Module.finrank R (M ⧸ M') = Module.finrank R M :=
-  congr_arg Cardinal.toNat (rank_quotient_eq_of_le_torsion hN)
+  congr($(rank_quotient_eq_of_le_torsion hN).toNat)
 
 /-- Quotienting an additive commutative group by its torsion subgroup does not change its
 `ℤ`-`finrank`. -/

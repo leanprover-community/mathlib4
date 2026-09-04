@@ -103,8 +103,8 @@ theorem domCoprod.summand_eq_zero_of_smul_invariant (a : Mᵢ [⋀^ιa]→ₗ[R'
   rcases hi : σ⁻¹ i with i' | i' <;> rcases hj : σ⁻¹ j with j' | j' <;>
     rw [Perm.inv_eq_iff_eq] at hi hj <;> subst hi hj
   -- the term pairs with and cancels another term
-  case inl.inr => simpa using Equiv.congr_fun hσ (Sum.inl i')
-  case inr.inl => simpa using Equiv.congr_fun hσ (Sum.inr i')
+  case inl.inr => simpa using congr($hσ (Sum.inl i'))
+  case inr.inl => simpa using congr($hσ (Sum.inr i'))
   -- the term does not pair but is zero
   case inl.inl =>
     suffices (a fun i ↦ v (σ (Sum.inl i))) = 0 by simp_all

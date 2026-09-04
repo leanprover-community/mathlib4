@@ -485,7 +485,7 @@ theorem one_tmul_eq_zero_iff {A : Type*} [Ring A] [Algebra R A] [FaithfullyFlat 
   · rintro rfl; rw [tmul_zero]
   intro h
   let f : R →ₗ[R] M := (LinearMap.lsmul R M).flip m
-  suffices f = 0 by simpa [f] using DFunLike.congr_fun this 1
+  suffices f = 0 by simpa [f] using congr($this 1)
   rw [Module.FaithfullyFlat.zero_iff_lTensor_zero R A]
   ext a
   apply_fun (a • ·) at h

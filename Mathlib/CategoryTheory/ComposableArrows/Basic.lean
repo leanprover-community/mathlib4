@@ -669,9 +669,9 @@ lemma ext₂_of_arrow {f g : ComposableArrows C 2}
     (h₁₂ : Arrow.mk (f.map' 1 2) = Arrow.mk (g.map' 1 2)) : f = g := by
   obtain ⟨x₀, x₁, x₂, f, f', rfl⟩ := mk₂_surjective f
   obtain ⟨y₀, y₁, y₂, g, g', rfl⟩ := mk₂_surjective g
-  obtain rfl : x₀ = y₀ := congr_arg Arrow.leftFunc.obj h₀₁
-  obtain rfl : x₁ = y₁ := congr_arg Arrow.rightFunc.obj h₀₁
-  obtain rfl : x₂ = y₂ := congr_arg Arrow.rightFunc.obj h₁₂
+  obtain rfl : x₀ = y₀ := congr(Arrow.leftFunc.obj $h₀₁)
+  obtain rfl : x₁ = y₁ := congr(Arrow.rightFunc.obj $h₀₁)
+  obtain rfl : x₂ = y₂ := congr(Arrow.rightFunc.obj $h₁₂)
   obtain rfl : f = g := by rwa [← Arrow.mk_inj]
   obtain rfl : f' = g' := by rwa [← Arrow.mk_inj]
   rfl

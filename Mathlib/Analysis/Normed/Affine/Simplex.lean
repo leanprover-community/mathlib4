@@ -105,11 +105,11 @@ def Regular (s : Simplex R P n) : Prop :=
   · rcases h ((e.symm.trans σ).trans e) with ⟨x, hx⟩
     refine ⟨x, ?_⟩
     ext i
-    simpa using congrFun hx (e i)
+    simpa using congr($hx (e i))
   · rcases h ((e.trans σ).trans e.symm) with ⟨x, hx⟩
     refine ⟨x, ?_⟩
     ext i
-    simpa using congrFun hx (e.symm i)
+    simpa using congr($hx (e.symm i))
 
 lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral := by
   refine ⟨dist (s.points 0) (s.points 1), fun i j hij ↦ ?_⟩

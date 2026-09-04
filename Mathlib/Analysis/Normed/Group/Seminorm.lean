@@ -336,7 +336,7 @@ an additive group seminorm. -/]
 def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F where
   toFun x := p (f x)
   map_one' := by simp_rw [f.map_one, map_one_eq_zero p]
-  mul_le' _ _ := (congr_arg p <| f.map_mul _ _).trans_le <| map_mul_le_add p _ _
+  mul_le' _ _ := congr(p $(f.map_mul ..)).trans_le <| map_mul_le_add p _ _
   inv' x := by simp_rw [map_inv, map_inv_eq_map p]
 
 @[to_additive (attr := simp)]

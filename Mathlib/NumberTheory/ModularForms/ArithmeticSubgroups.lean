@@ -125,7 +125,7 @@ instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinu
     IsArithmetic.is_commensurable.2.relIndex_ne_zero hg
   suffices |(g.det ^ n).val| = 1 by simpa [← abs_pow, abs_pow_eq_one _ (Nat.ne_zero_of_lt hn)]
   obtain ⟨t, ht⟩ := hgn.1
-  have := congr_arg Matrix.GeneralLinearGroup.det ht.symm
+  have := congr(Matrix.GeneralLinearGroup.det $ht.symm)
   rw [Matrix.SpecialLinearGroup.det_mapGL, map_pow] at this
   simp [this]
 

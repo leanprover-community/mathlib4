@@ -180,8 +180,8 @@ variable {X Y Z : BialgCat.{v} R}
 def toBialgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => BialgHom.congr_fun (congr_arg BialgCat.Hom.toBialgHom i.3) x
-    right_inv := fun x => BialgHom.congr_fun (congr_arg BialgCat.Hom.toBialgHom i.4) x }
+    left_inv := fun x => congr($(i.3).toBialgHom x)
+    right_inv := fun x => congr($(i.4).toBialgHom x) }
 
 @[simp] theorem toBialgEquiv_toBialgHom (i : X ≅ Y) :
     (i.toBialgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl

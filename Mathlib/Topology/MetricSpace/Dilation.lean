@@ -103,10 +103,10 @@ theorem coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : α →ᵈ β) = f :=
   rfl
 
 protected theorem congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 @[ext]
 theorem ext {f g : α →ᵈ β} (h : ∀ x, f x = g x) : f = g :=

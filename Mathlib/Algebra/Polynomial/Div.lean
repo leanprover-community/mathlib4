@@ -72,7 +72,7 @@ theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degr
           hr0, not_false_eq_true]
     have hnp : 0 < natDegree p := Nat.cast_lt.1 <| by
       rw [← degree_eq_natDegree hp0]; exact hp
-    have := congr_arg natDegree hr
+    have := congr(natDegree $hr)
     rw [natDegree_mul' hpnr0, natDegree_pow' hpn0', add_mul, add_assoc] at this
     exact
       ne_of_lt

@@ -123,7 +123,7 @@ lemma toIntertwiningMap_injective {π₁ : ContRepresentation R G V}
 
 lemma toFun_injective {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toFun := fun f g h ↦ by
-  ext x; exact congr_fun h x
+  ext x; congrm $h x
 
 instance {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     FunLike (π₁ →ⁱL π₂) V W where

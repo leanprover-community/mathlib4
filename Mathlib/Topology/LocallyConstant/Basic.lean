@@ -229,10 +229,10 @@ theorem coe_mk (f : X → Y) (h) : ⇑(⟨f, h⟩ : LocallyConstant X Y) = f :=
   rfl
 
 protected theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑) := fun _ _ =>
   DFunLike.ext'
@@ -413,7 +413,7 @@ lemma comap_injective (f : C(X, Y)) (hfs : f.1.Surjective) :
   intro a b h
   ext y
   obtain ⟨x, hx⟩ := hfs y
-  simpa [← hx] using LocallyConstant.congr_fun h x
+  simpa [← hx] using congr($h x)
 
 end Comap
 

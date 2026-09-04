@@ -63,7 +63,7 @@ noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj
     exact ((φ.hom.app X).hom.map_mul _ _).symm)
   val.naturality f := by
     ext
-    exact ConcreteCategory.congr_hom (φ.hom.naturality f) _
+    congrm $(φ.hom.naturality f) _
 
 lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.obj.obj X) :
     (unitToPushforwardObjUnit φ).val.app X a = φ.hom.app X a := rfl

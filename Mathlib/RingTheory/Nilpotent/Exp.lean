@@ -229,7 +229,7 @@ theorem commute_exp_left_of_commute
   replace hfM : fM ^ kl = 0 := pow_eq_zero_of_le (by omega) hfM
   replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by omega) hfN
   have (i : ℕ) : (fN ^ i) (g m) = g ((fM ^ i) m) := by
-    simpa using LinearMap.congr_fun (Module.End.commute_pow_left_of_commute h i) m
+    simpa using congr($(Module.End.commute_pow_left_of_commute h i) m)
   simp [exp_eq_sum hfM, exp_eq_sum hfN, this, map_rat_smul]
 
 theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing B]
@@ -244,7 +244,7 @@ theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing 
   have h_comm : Commute DL DR := by ext; simp [DL, DR]
   set m : B ⊗[R] B →ₗ[R] B := LinearMap.mul' R B with hm
   have h₁ : exp D (x * y) = m (exp (DL + DR) (x ⊗ₜ[R] y)) := by
-    suffices exp D ∘ₗ m = m ∘ₗ exp (DL + DR) by simpa using! LinearMap.congr_fun this (x ⊗ₜ[R] y)
+    suffices exp D ∘ₗ m = m ∘ₗ exp (DL + DR) by simpa using! congr($this (x ⊗ₜ[R] y))
     apply commute_exp_left_of_commute (h_comm.isNilpotent_add h_nilL h_nilR) h_nil
     ext
     simp [DL, DR, hm, h_der]

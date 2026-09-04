@@ -361,8 +361,8 @@ This is the affine version of `LinearMap.GeneralLinearGroup.generalLinearEquiv`.
 def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ where
   toFun e :=
     { val := e, inv := e.symm,
-      val_inv := congr_arg toAffineMap e.symm_trans_self
-      inv_val := congr_arg toAffineMap e.self_trans_symm }
+      val_inv := congr(toAffineMap $e.symm_trans_self)
+      inv_val := congr(toAffineMap $e.self_trans_symm) }
   invFun u :=
     { toFun := (u : P₁ →ᵃ[k] P₁)
       invFun := (↑u⁻¹ : P₁ →ᵃ[k] P₁)

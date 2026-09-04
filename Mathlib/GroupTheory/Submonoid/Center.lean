@@ -162,7 +162,7 @@ def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.
 @[to_additive]
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
     Function.Injective (unitsCenterToCenterUnits M) :=
-  fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
+  fun _a _b h => Units.ext <| Subtype.ext congr((Units.val ∘ Subtype.val) $h)
 
 section congr
 
@@ -196,7 +196,7 @@ def Submonoid.centerCongr [MulOneClass M] [MulOneClass N] (e : M ≃* N) : cente
 def Subsemigroup.centerToMulOpposite [Mul M] : center M ≃* center Mᵐᵒᵖ where
   toFun r := ⟨_, MulOpposite.op_mem_center_iff.mpr r.2⟩
   invFun r := ⟨_, MulOpposite.unop_mem_center_iff.mpr r.2⟩
-  map_mul' r _ := Subtype.ext (congr_arg MulOpposite.op <| r.2.1 _)
+  map_mul' r _ := Subtype.ext congr(MulOpposite.op $(r.2.1 _))
 
 /-- The center of a monoid is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps!)

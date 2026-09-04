@@ -69,8 +69,8 @@ lemma Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap
     (P₁ P₂ : Ideal (R' ⊗[R] S)) [P₁.IsPrime] [P₂.IsPrime] [P₁.LiesOver q] [P₂.LiesOver q]
     (H₂ : P₁.comap Algebra.TensorProduct.includeRight.toRingHom =
       P₂.comap Algebra.TensorProduct.includeRight.toRingHom) : P₁ = P₂ := by
-  refine congr_arg Subtype.val ((Ideal.fiberIsoOfBijectiveResidueField
-  (S := S) H).injective (a₁ := ⟨P₁, ‹_›, ‹_›⟩) (a₂ := ⟨P₂, ‹_›, ‹_›⟩) (by ext1; simpa))
+  congrm $((Ideal.fiberIsoOfBijectiveResidueField
+  (S := S) H).injective (a₁ := ⟨P₁, ‹_›, ‹_›⟩) (a₂ := ⟨P₂, ‹_›, ‹_›⟩) (by ext1; simpa)).val
 
 end BijectiveResidueField
 
@@ -431,9 +431,9 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
       _).residueFieldMap_bijective _ _ _
   · intro P'' _ _ hP''
     have : P''.LiesOver P := .trans _ Pf _
-    refine congr($(PrimeSpectrum.localization_comap_injective (R := R' ⊗[R] S)
-      (Localization.Away f ⊗[R] S) (.powers (f ⊗ₜ 1)) (a₁ := ⟨P'', ‹_›⟩)
-      (a₂ := ⟨P'f, ‹_›⟩) (PrimeSpectrum.ext ?_)).1)
+    congrm $(PrimeSpectrum.localization_comap_injective (R := R' ⊗[R] S)
+     (Localization.Away f ⊗[R] S) (.powers (f ⊗ₜ 1)) (a₁ := ⟨P'', ‹_›⟩)
+     (a₂ := ⟨P'f, ‹_›⟩) (PrimeSpectrum.ext ?_)).1
     exact (H (P''.under _) inferInstance inferInstance hP'').trans (P'f.over_def P')
 
 open TensorProduct
@@ -563,7 +563,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
     obtain ⟨e'', he'', he''e'⟩ := CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
       (Ideal.Quotient.mk (Ideal.span {φ e})) (I := Fin (n + 1)) (φ e) (he.map φ) (by simp)
       (e₁ ∘ e') (he'.map e₁.toRingHom) (fun _ ↦ Ideal.Quotient.mk_surjective _)
-    have he''e'' (i : _) : e₁ (e' i) = e'' i := congr_fun he''e' i
+    have he''e'' (i : _) : e₁ (e' i) = e'' i := congr($he''e' i)
     have hψe'' (i : _) : (e' i) = e₁.symm (e'' i) := e₁.eq_symm_apply.mpr (he''e'' i)
     refine exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux p q R' P e P'
       hP'q heP' hpP (fun P'' h₁ h₂ heP'' ↦ H P'' h₁ h₂ heP'') R'' Q n _

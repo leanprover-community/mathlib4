@@ -51,7 +51,7 @@ are equal after a canonical reindexing. -/
 @[ext (iff := false)]
 theorem gradedMonoid_eq_of_reindex_cast {ιι : Type*} {ι : ιι → Type*} :
     ∀ {a b : GradedMonoid fun ii => ⨂[R] _ : ι ii, M} (h : a.fst = b.fst),
-      reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg ι h) a.snd = b.snd → a = b
+      reindex R (fun _ ↦ M) (Equiv.cast <| congr(ι $h)) a.snd = b.snd → a = b
   | ⟨ai, a⟩, ⟨bi, b⟩ => fun (hi : ai = bi) (h : reindex R (fun _ ↦ M) _ a = b) => by
     subst hi
     simp_all
@@ -103,7 +103,7 @@ theorem cast_tprod {i j} (h : i = j) (a : Fin i → M) :
 
 @[simp]
 theorem cast_refl {i} (h : i = i) : cast R M h = LinearEquiv.refl _ _ :=
-  (congr_arg (reindex R fun _ ↦ M) <| finCongr_refl h).trans reindex_refl
+  congr((reindex R fun _ ↦ M) $(finCongr_refl h)).trans reindex_refl
 
 @[simp]
 theorem cast_symm {i j} (h : i = j) : (cast R M h).symm = cast R M h.symm :=
@@ -152,7 +152,7 @@ theorem one_mul {n} (a : ⨂[R]^n M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a :
     rw [TensorProduct.tmul_smul, map_smul, map_smul, ← gMul_def, tprod_mul_tprod, cast_tprod]
     congr 2 with i
     rw [Fin.elim0_append]
-    refine congr_arg a (Fin.ext ?_)
+    congrm a $(Fin.ext ?_)
     simp
   | add x y hx hy =>
     rw [TensorProduct.tmul_add, map_add, map_add, hx, hy]

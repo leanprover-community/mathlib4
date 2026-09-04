@@ -471,7 +471,7 @@ def representableByUliftFunctorEquiv {F : Cᵒᵖ ⥤ Type v} {X : C} :
     (F ⋙ uliftFunctor.{w}).RepresentableBy X ≃ F.RepresentableBy X where
   toFun R :=
     { homEquiv {Y} := R.homEquiv.trans Equiv.ulift
-      homEquiv_comp f g := congr($(R.homEquiv_comp _ _).down) }
+      homEquiv_comp f g := congr($(R.homEquiv_comp ..).down) }
   invFun R :=
     { homEquiv {Y} := R.homEquiv.trans Equiv.ulift.symm
       homEquiv_comp f g := by simp [R.homEquiv_comp] }
@@ -484,7 +484,7 @@ def corepresentableByUliftFunctorEquiv {F : C ⥤ Type v} {X : C} :
     (F ⋙ uliftFunctor.{w}).CorepresentableBy X ≃ F.CorepresentableBy X where
   toFun R :=
     { homEquiv {Y} := R.homEquiv.trans Equiv.ulift
-      homEquiv_comp f g := congr($(R.homEquiv_comp _ _).down) }
+      homEquiv_comp f g := congr($(R.homEquiv_comp ..).down) }
   invFun R :=
     { homEquiv {Y} := R.homEquiv.trans Equiv.ulift.symm
       homEquiv_comp f g := by simp [R.homEquiv_comp] }
@@ -795,7 +795,7 @@ lemma hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v₁} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
-    using! congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
+    using! congr(yonedaEquiv $(h _ (yonedaEquiv.symm x)))
 
 variable (C)
 

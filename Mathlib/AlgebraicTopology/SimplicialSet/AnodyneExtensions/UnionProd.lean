@@ -474,7 +474,7 @@ lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] �
     (hu : IsType₂ u) (i : Fin (d + 2))
     (hu' : S.mk u.simplex = S.mk (((Δ[m + 1] ⊗ Δ[n])).δ i (x.cast hd).simplex)) :
     i = l.castSucc ∨ i = l.succ := by
-  obtain rfl : u.dim = d := congr_arg S.dim hu'
+  obtain rfl : u.dim = d := congr(S.dim $hu')
   rw [S.ext_iff] at hu'
   obtain hi | rfl | hi := lt_trichotomy i l.castSucc
   · obtain ⟨l, rfl⟩ := Fin.eq_succ_of_ne_zero (i := l) (by grind)
@@ -539,7 +539,7 @@ lemma IsIndex.δ_injective
     x = y := by
   have h₁ := hl.isType₂_δ.type₁_eq_of_δ_eq hl'.type₁ h.symm rfl
   have h₂ := hl.isType₂_δ.type₁_eq_of_δ_eq hl.type₁ rfl rfl
-  exact congr_arg Type₁.x (h₂.symm.trans h₁)
+  congrm Type₁.x $(h₂.symm.trans h₁)
 
 end pairingCore
 
@@ -624,7 +624,7 @@ noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
       let Sδ := finset hs.δ rfl
       replace hδ (i : Fin (d + 1)) :
           s.1 (is.castSucc.succAbove i) = t.1 (it.succ.succAbove i) :=
-        DFunLike.congr_fun (congr_arg Prod.fst hδ.symm) i
+        congr($(hδ.symm).fst i)
       have hSs (i : Fin (d + 1)) : i ∈ Sδ ↔ is.castSucc.succAbove i ∈ Ss := by
         simp [Sδ, Ss, stdSimplex.δ_apply]
       have hSt (i : Fin (d + 1)) : i ∈ Sδ ↔ it.succ.succAbove i ∈ St := by

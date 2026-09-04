@@ -139,7 +139,7 @@ theorem map_comp : hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) = hg.map hp i
 
 theorem map_map (x : M) :
     hg.map hp i₁ i₂ ((hf.map hg j₁ j₂) x) = hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) x :=
-  DFunLike.congr_fun (hf.map_comp hg hp i₁ j₁ i₂ j₂).symm x
+  congr($((hf.map_comp hg hp i₁ j₁ i₂ j₂).symm) x)
 
 @[simp]
 theorem map_id :
@@ -436,7 +436,7 @@ lemma IsBaseChange.iff_of_equiv_comm (eM : M ≃ₗ[R] P) (eN : N ≃ₗ[S] Q)
     (comm : f'.comp eM.toLinearMap = (eN.restrictScalars R).comp f) :
     IsBaseChange S f ↔ IsBaseChange S f' := by
   simp only [IsBaseChange]
-  have (m : M) : f' (eM m) = eN (f m) := LinearMap.congr_fun comm m
+  have (m : M) : f' (eM m) = eN (f m) := congr($comm m)
   refine ⟨fun ist ↦ ?_, fun ist ↦ ?_⟩
   · convert! (ist.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
     ext s m'
@@ -739,7 +739,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
   · intro s s' e
     rw [Algebra.smul_def, map_mul, map_mul, e]
     congr 1
-    exact (AlgHom.congr_fun h₂ s :)
+    exact (congr($h₂ s) :)
   · intro s₁ s₂ e₁ e₂
     rw [map_add, map_add, e₁, e₂]
 
@@ -781,7 +781,7 @@ lemma Algebra.IsPushout.of_equiv [h : IsPushout R R' S S']
     IsPushout R R' S T := by
   rw [isPushout_iff] at h ⊢
   refine IsBaseChange.of_equiv (h.equiv ≪≫ₗ e.toLinearEquiv) fun x ↦ ?_
-  simpa [h.equiv_tmul] using DFunLike.congr_fun he x
+  simpa [h.equiv_tmul] using congr($he x)
 
 namespace Algebra
 

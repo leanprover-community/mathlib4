@@ -413,7 +413,7 @@ abbrev toMonoidHom (f : LocalizationMap S N) : M →* N where
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N → M →* N) :=
-  fun f g ↦ by cases f; congr! with eq; ext; exact congr($eq _)
+  fun f g ↦ by cases f; congr! with eq; ext; congrm $eq _
 
 @[to_additive] instance : FunLike (LocalizationMap S N) M N where
   coe f := f.toMonoidHom
@@ -460,7 +460,7 @@ theorem surj₂ (f : LocalizationMap S N) (z w : N) : ∃ z' w' : M, ∃ d : S,
 theorem eq_iff_exists (f : LocalizationMap S N) {x y} :
     f x = f y ↔ ∃ c : S, c * x = c * y := Iff.intro f.2.3
   fun ⟨c, h⟩ ↦ by
-    replace h := congr_arg f h
+    replace h := congr(f $h)
     rw [map_mul, map_mul] at h
     exact (f.map_units c).mul_right_inj.mp h
 
@@ -691,7 +691,7 @@ theorem mk'_mul_cancel_left (x) (y : S) : f.mk' ((y : M) * x) y = f x := by
 @[to_additive]
 theorem isUnit_comp (j : N →* P) (y : S) : IsUnit (j.comp f.toMonoidHom y) :=
   ⟨Units.map j <| IsUnit.liftRight (f.toMonoidHom.domRestrict S) f.map_units y, show j _ = j _ from
-      congr_arg j (IsUnit.coe_liftRight (f.toMonoidHom.domRestrict S) f.map_units _)⟩
+      congr(j $(IsUnit.coe_liftRight (f.toMonoidHom.domRestrict S) f.map_units _))⟩
 
 @[to_additive]
 theorem epic_of_localizationMap {P : Type*} [Monoid P] {j k : N →* P}
@@ -901,7 +901,7 @@ abbrev cancelCommMonoid {M N} [CancelCommMonoid M] {S : Submonoid M}
   allEq x y := by
     obtain ⟨mx, sx, rfl⟩ := f.mk'_surjective x
     obtain ⟨my, sy, rfl⟩ := f.mk'_surjective y
-    exact congr(f.mk' $(Subsingleton.elim ..) $(Subsingleton.elim ..))
+    congrm f.mk' $(Subsingleton.elim ..) $(Subsingleton.elim ..)
 
 instance [Subsingleton M] : Subsingleton (Localization S) :=
   (Localization.monoidOf S).subsingleton_of_subsingleton

@@ -113,9 +113,9 @@ lemma OrthogonalIdempotents.option (he : OrthogonalIdempotents e) [Fintype I] (x
     rcases i with - | i <;> rcases j with - | j
     · cases ne rfl
     · simpa only [mul_assoc, Finset.sum_mul, he.mul_eq, Finset.sum_ite_eq', Finset.mem_univ,
-        ↓reduceIte, zero_mul] using! congr_arg (· * e j) hx₁
+        ↓reduceIte, zero_mul] using! congr($hx₁ * e j)
     · simpa only [Option.elim_some, Option.elim_none, ← mul_assoc, Finset.mul_sum, he.mul_eq,
-        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, mul_zero] using! congr_arg (e i * ·) hx₂
+        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, mul_zero] using! congr(e i * $hx₂)
     · exact he.ortho (Option.some_inj.ne.mp ne)
 
 variable [Fintype I]
@@ -259,7 +259,7 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker_aux
   | zero => refine ⟨0, ⟨finZeroElim, finZeroElim⟩, funext finZeroElim⟩
   | succ n IH =>
     obtain ⟨e', h₁, h₂⟩ := IH (he.embedding (Fin.succEmb n)) (fun i ↦ he' _)
-    have h₂' (i) : f (e' i) = e i.succ := congr_fun h₂ i
+    have h₂' (i) : f (e' i) = e i.succ := congr($h₂ i)
     obtain ⟨e₀, h₃, h₄, h₅, h₆⟩ :=
       exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent f h _ (he' 0) (he.idem 0) _
       h₁.isIdempotentElem_sum
@@ -279,7 +279,7 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker [Finite I]
   obtain ⟨e', h₁, h₂⟩ := lift_of_isNilpotent_ker_aux f h
     (he.embedding (Fintype.equivFin I).symm.toEmbedding) (fun _ ↦ he' _)
   refine ⟨_, h₁.embedding (Fintype.equivFin I).toEmbedding,
-    by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
+    by ext x; simpa using congr($h₂ (Fintype.equivFin I x))⟩
 
 lemma CompleteOrthogonalIdempotents.pair_iff {x y : R} :
     CompleteOrthogonalIdempotents ![x, y] ↔ IsIdempotentElem x ∧ y = 1 - x := by
@@ -316,7 +316,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
   obtain ⟨e', h₁, h₂⟩ := OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.1 he'
   refine ⟨_, (equiv (finSuccEquiv n)).mpr
     (CompleteOrthogonalIdempotents.option (h₁.embedding (Fin.succEmb _))), funext fun i ↦ ?_⟩
-  have (i : _) : f (e' i) = e i := congr_fun h₂ i
+  have (i : _) : f (e' i) = e i := congr($h₂ i)
   cases i using Fin.cases with
   | zero => simp [this, Fin.sum_univ_succ, ← he.complete]
   | succ i => simp [this]
@@ -329,7 +329,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
   obtain ⟨e', h₁, h₂⟩ := lift_of_isNilpotent_ker_aux f h
     ((equiv (Fintype.equivFin I).symm).mpr he) (fun _ ↦ he' _)
   refine ⟨_, ((equiv (Fintype.equivFin I)).mpr h₁),
-    by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
+    by ext x; simpa using congr($h₂ (Fintype.equivFin I x))⟩
 
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}
     (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂))
@@ -356,7 +356,7 @@ theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent_of_isMulCentral
     ext i
     refine eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute
       (he _) (h₁.idem _) (h _ ?_) ((he' i).comm _)
-    simpa [RingHom.mem_ker, sub_eq_zero] using congr_fun h₂.symm i
+    simpa [RingHom.mem_ker, sub_eq_zero] using congr($h₂.symm i)
   exact h₁
 
 end Ring
@@ -507,7 +507,7 @@ lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
   · have : f e₀ = 0 := by simpa using hfe₀.ge (Ideal.mem_span_singleton_self _)
     aesop
   · dsimp [IsIdempotentElem]
-    linear_combination congr($(he₀.eq) * ((e' i) ^ 2 - k i) + (1 - e₀) * $(hk i))
+    linear_combination congr($he₀.eq * (e' i ^ 2 - k i) + (1 - e₀) * $(hk i))
 
 end CommRing
 

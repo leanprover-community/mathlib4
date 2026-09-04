@@ -99,8 +99,7 @@ lemma gammaSet_div_gcd_to_gammaSet10_bijection (r : ℕ) [NeZero r] :
     exact finGcdMap_div _ hx.2
   · intro x hx v hv hv2
     ext i
-    exact (Int.ediv_left_inj (gammaSet_div_gcd hx i) (gammaSet_div_gcd hv i)).mp
-      (congr_fun hv2 i)
+    exact (Int.ediv_left_inj (gammaSet_div_gcd hx i) (gammaSet_div_gcd hv i)).mp congr($hv2 i)
   · intro x hx
     use r • x
     simp only [nsmul_eq_mul, divIntMap, Int.cast_natCast]

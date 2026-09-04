@@ -135,7 +135,7 @@ theorem _root_.Relator.BiUnique.forall₂ (hr : BiUnique R) : BiUnique (Forall�
 
 theorem Forall₂.length_eq : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → length l₁ = length l₂
   | _, _, Forall₂.nil => rfl
-  | _, _, Forall₂.cons _ h₂ => congr_arg succ (Forall₂.length_eq h₂)
+  | _, _, Forall₂.cons _ h₂ => congr(succ $(Forall₂.length_eq h₂))
 
 theorem Forall₂.get :
     ∀ {x : List α} {y : List β}, Forall₂ R x y →

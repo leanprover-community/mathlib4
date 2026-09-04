@@ -731,7 +731,7 @@ lemma isSheafFor_iff_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ �
 theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSheafFor P R) :
     IsSheafFor P' R :=
   isSheafFor_of_nat_equiv (fun X ↦ (i.app (op X)).toEquiv)
-    (fun _ _ f x ↦ ConcreteCategory.congr_hom (i.hom.naturality f.op) x) hP
+    (fun _ _ f x ↦ congr($(i.hom.naturality f.op) x)) hP
 
 theorem isSheafFor_iff_of_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') :
     IsSheafFor P R ↔ IsSheafFor P' R :=
@@ -863,7 +863,7 @@ theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
   rw [isSheafFor_arrows_iff]
   refine ⟨fun h ↦ ⟨fun x₁ x₂ hx ↦
       (h _ (Arrows.toCompatible P π x₁).property).unique (fun _ ↦ rfl)
-        (congr_fun (congr_arg Subtype.val hx.symm)),
+        (congr_fun congr($(hx.symm).val)),
       fun ⟨y, hy⟩ ↦ ?_⟩, fun h x hx ↦ ?_⟩
   · obtain ⟨x, hx, _⟩ := h y hy
     exact ⟨x, by ext; apply hx⟩
@@ -914,7 +914,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
             rw [reassoc_of% h, this])) (by cat_disch)
         let φ : Z ⟶ (Over.map p).obj (Over.mk (g₁.left ≫ (f i₁).left ≫ X.hom)) :=
           Over.homMk (𝟙 _) (by simpa using Over.w g₁)
-        replace this := congr_arg (P.map φ.op) this
+        replace this := congr(P.map φ.op $this)
         dsimp at this
         simp only [← comp_apply, ← Functor.map_comp, ← op_comp] at this
         convert! this <;> cat_disch⟩

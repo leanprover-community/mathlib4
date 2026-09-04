@@ -133,11 +133,11 @@ theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ
 
 /-- Consider using `congr($H x)` instead. -/
 protected theorem congr_fun {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : f₁ = f₂) (x : A) : f₁ x = f₂ x :=
-  DFunLike.congr_fun H x
+  congr($H x)
 
 /-- Consider using `congr(f $h)` instead. -/
 protected theorem congr_arg (f : 𝒜 →ₐᵍ[R] ℬ) {x y : A} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 @[ext]
 theorem ext {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : ∀ x, f₁ x = f₂ x) : f₁ = f₂ :=

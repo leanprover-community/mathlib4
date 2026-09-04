@@ -685,7 +685,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
     simp only [← Functor.map_inv, inv_eqToHom, Scheme.Hom.appLE_map, ← Scheme.Hom.app_eq_appLE,
       Scheme.Hom.fromNormalization_app _ hV, IsIso.Iso.inv_inv, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
-    exact congr(CommRingCat.ofHom $(ψ.comp_algebraMap.symm))
+    congrm CommRingCat.ofHom $ψ.comp_algebraMap.symm
 
 end Smooth
 

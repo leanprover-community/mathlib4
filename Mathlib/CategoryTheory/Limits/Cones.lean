@@ -512,7 +512,7 @@ instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full whe
 @[to_dual]
 instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
-    ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
+    ConeMorphism.ext f g <| G.map_injective congr(ConeMorphism.hom $h)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an

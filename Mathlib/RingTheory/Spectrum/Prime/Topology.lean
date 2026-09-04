@@ -179,7 +179,7 @@ theorem isClosed_singleton_iff_isMaximal (x : PrimeSpectrum R) :
       vanishingIdeal_singleton]
   constructor <;> intro H
   · rcases x.asIdeal.exists_le_maximal x.2.1 with ⟨m, hm, hxm⟩
-    exact (congr_arg asIdeal (@H ⟨m, hm.isPrime⟩ hxm)) ▸ hm
+    exact congr(asIdeal $(@H ⟨m, hm.isPrime⟩ hxm)) ▸ hm
   · exact fun p hp ↦ PrimeSpectrum.ext (H.eq_of_le p.2.1 hp).symm
 
 theorem isRadical_vanishingIdeal (s : Set (PrimeSpectrum R)) : (vanishingIdeal s).IsRadical := by
@@ -342,7 +342,7 @@ variable (S)
 theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Function.Injective (comap (algebraMap R S)) := by
   intro p q h
-  replace h := _root_.congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
+  replace h := congr(Ideal.map (algebraMap R S) $(h).asIdeal)
   dsimp only [comap] at h
   rw [IsLocalization.map_under M S, IsLocalization.map_under M S] at h
   ext1
@@ -1115,7 +1115,7 @@ def mulZeroAddOneEquivClopens :
     (fun e ↦ ⟨basicOpen e.1.1, isClopen_iff_mul_add.mpr ⟨_, _, e.2.1, e.2.2, rfl⟩⟩) <| by
       refine ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ eq ↦ mul_eq_zero_add_eq_one_ext_left ?_, fun s ↦ ?_⟩
       · exact basicOpen_injOn_isIdempotentElem (IsIdempotentElem.of_mul_add hx.1 hx.2).1
-          (IsIdempotentElem.of_mul_add hy.1 hy.2).1 <| SetLike.ext' (congr_arg (·.1) eq)
+          (IsIdempotentElem.of_mul_add hy.1 hy.2).1 <| SetLike.ext' congr($(eq).1)
       · have ⟨e, f, mul, add, eq⟩ := isClopen_iff_mul_add.mp s.2
         exact ⟨⟨(e, f), mul, add⟩, SetLike.ext' eq.symm⟩
   map_rel_iff' {a b} := show basicOpen _ ≤ basicOpen _ ↔ _ by
@@ -1406,7 +1406,7 @@ def isIdempotentElemEquivClopens :
 
 lemma basicOpen_isIdempotentElemEquivClopens_symm (s) :
     basicOpen (isIdempotentElemEquivClopens (R := R).symm s).1 = s.toOpens :=
-  Opens.ext <| congr_arg (·.1) (isIdempotentElemEquivClopens.apply_symm_apply s)
+  Opens.ext congr($(isIdempotentElemEquivClopens.apply_symm_apply s).1)
 
 lemma coe_isIdempotentElemEquivClopens_apply (e) :
     (isIdempotentElemEquivClopens e : Set (PrimeSpectrum R)) = basicOpen (e.1 : R) := rfl

@@ -593,7 +593,7 @@ open scoped Classical in
 noncomputable def isSuccPrelimitRecOn : motive b :=
   if hb : IsSuccPrelimit b then isSuccPrelimit b hb else
     haveI H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 hb)
-    cast (congr_arg motive H.2) (succ _ H.1)
+    cast congr(motive $(H.2)) (succ _ H.1)
 
 @[to_dual]
 theorem isSuccPrelimitRecOn_of_isSuccPrelimit (hb : IsSuccPrelimit b) :
@@ -701,7 +701,7 @@ noncomputable def prelimitRecOn : motive b :=
   wellFounded_lt.fix
     (fun a IH ↦ if h : IsSuccPrelimit a then isSuccPrelimit a h IH else
       haveI H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 h)
-      cast (congr_arg motive H.2) (succ _ H.1 <| IH _ <| H.2.subst <| lt_succ_of_not_isMax H.1))
+      cast congr(motive $(H.2)) (succ _ H.1 <| IH _ <| H.2.subst <| lt_succ_of_not_isMax H.1))
     b
 
 @[to_dual (attr := simp)]
@@ -726,7 +726,7 @@ theorem prelimitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
   have H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 h)
   rw [prelimitRecOn, WellFounded.fix_eq, dite_eq_right h]
   have {a c : α} {ha hc} {x : ∀ a, motive a} (h : a = c) :
-    cast (congr_arg (motive ∘ Order.succ) h) (succ a ha (x a)) = succ c hc (x c) := by subst h; rfl
+    cast congr(motive <| Order.succ $h) (succ a ha (x a)) = succ c hc (x c) := by subst h; rfl
   exact this <| (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
 
 @[to_dual (attr := simp)]

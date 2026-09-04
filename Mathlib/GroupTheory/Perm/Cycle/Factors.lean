@@ -793,7 +793,7 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
       (∀ τ : Perm β, τ ∈ l → τ.IsCycle) → l.Pairwise Disjoint → P l.prod by
     classical
       let x := σ.truncCycleFactors.out
-      exact (congr_arg P x.2.1).mp (this x.1 x.2.2.1 x.2.2.2)
+      exact congr(P $(x.2.1)).mp (this x.1 x.2.2.1 x.2.2.2)
   intro l
   induction l with
   | nil => exact fun _ _ => base_one

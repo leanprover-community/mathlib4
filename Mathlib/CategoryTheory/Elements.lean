@@ -167,7 +167,7 @@ variable (F) in
 @[simps obj map_hom, simps -isSimp map, implicit_reducible]
 def fromStructuredArrow : StructuredArrow PUnit F ⥤ F.Elements where
   obj X := Functor.elementsMk _ X.right (X.hom .unit)
-  map f := ⟨f.right, by simp [ConcreteCategory.congr_hom f.w.symm .unit]; dsimp⟩
+  map f := ⟨f.right, by simp [congr($f.w.symm .unit)]; dsimp⟩
 
 variable (F) in
 /-- The equivalence between the category of elements `F.Elements`

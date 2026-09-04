@@ -282,8 +282,8 @@ lemma isIndecomposable_iff_blockTriangular_const [Nontrivial α] [Finite m] [Zer
     contrapose! ha₁₂
     obtain ⟨a, ha⟩ := h b hBT
     rw [hb] at ha
-    obtain rfl : a₁ = a := by simpa using congr_fun ha <| e <| .inl <| Nonempty.some ⟨⟨0, by lia⟩⟩
-    obtain rfl : a₂ = a₁ := by simpa using congr_fun ha <| e <| .inr <| Nonempty.some ⟨⟨0, by lia⟩⟩
+    obtain rfl : a₁ = a := by simpa using congr($ha (e <| .inl <| Nonempty.some ⟨⟨0, by lia⟩⟩))
+    obtain rfl : a₂ = a₁ := by simpa using congr($ha (e <| .inr <| Nonempty.some ⟨⟨0, by lia⟩⟩))
     exact le_refl _
 
 end LinearOrder

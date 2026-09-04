@@ -242,7 +242,7 @@ theorem getElem_eq_getElem_rotate (l : List α) (n : ℕ) (k : Nat) (hk : k < l.
     l[k] = ((l.rotate n)[(l.length - n % l.length + k) % l.length]'
       ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_eq (length_rotate _ _).symm)) := by
   rw [getElem_rotate]
-  refine congr_arg l.get (Fin.eq_of_val_eq ?_)
+  congrm l.get $(Fin.eq_of_val_eq ?_)
   simp only [mod_add_mod]
   rw [← add_mod_mod, Nat.add_right_comm, Nat.sub_add_cancel, add_mod_left, mod_eq_of_lt]
   exacts [hk, (mod_lt _ (k.zero_le.trans_lt hk)).le]
@@ -339,7 +339,7 @@ theorem Nodup.rotate_congr {l : List α} (hl : l.Nodup) (hn : l ≠ []) (i j : �
     (h : l.rotate i = l.rotate j) : i % l.length = j % l.length := by
   rw [← rotate_mod l i, ← rotate_mod l j] at h
   simpa only [head?_rotate, mod_lt, length_pos_of_ne_nil hn, getElem?_eq_getElem, Option.some_inj,
-    hl.getElem_inj_iff, Fin.ext_iff] using congr_arg head? h
+    hl.getElem_inj_iff, Fin.ext_iff] using congr(head? $h)
 
 theorem Nodup.rotate_congr_iff {l : List α} (hl : l.Nodup) {i j : ℕ} :
     l.rotate i = l.rotate j ↔ i % l.length = j % l.length ∨ l = [] := by
@@ -535,7 +535,7 @@ theorem length_cyclicPermutations_of_ne_nil (l : List α) (h : l ≠ []) :
 
 @[simp]
 theorem cyclicPermutations_ne_nil : ∀ l : List α, cyclicPermutations l ≠ []
-  | a::l, h => by simpa using congr_arg length h
+  | a::l, h => by simpa using congr(length $h)
 
 @[simp]
 theorem getElem_cyclicPermutations (l : List α) (n : Nat) (h : n < length (cyclicPermutations l)) :
@@ -562,7 +562,7 @@ theorem head?_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = 
   rw [head?_eq_some_head (cyclicPermutations_ne_nil l), head_cyclicPermutations]
 
 theorem cyclicPermutations_injective : Function.Injective (@cyclicPermutations α) := fun l l' h ↦ by
-  simpa using congr_arg head? h
+  simpa using congr(head? $h)
 
 @[simp]
 theorem cyclicPermutations_inj {l l' : List α} :

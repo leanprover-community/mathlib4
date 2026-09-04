@@ -614,8 +614,8 @@ lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   rw [← funext_iff, Basis.traceDual_eq_iff]
   intro i j
   apply (algebraMap K (AlgebraicClosure K)).injective
-  have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
-    pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
+  have := congr(coeff $(sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
+    pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop)) i)
   simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, finsetSum_coeff, coeff_smul,
     coeff_map, smul_eq_mul, coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]

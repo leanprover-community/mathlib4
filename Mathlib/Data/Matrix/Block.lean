@@ -569,13 +569,13 @@ and zero elsewhere.
 This is the dependently-typed version of `Matrix.blockDiagonal`. -/
 def blockDiagonal' (M : ∀ i, Matrix (m' i) (n' i) α) : Matrix (Σ i, m' i) (Σ i, n' i) α :=
   of <|
-    (fun ⟨k, i⟩ ⟨k', j⟩ => if h : k = k' then M k i (cast (congr_arg n' h.symm) j) else 0 :
+    (fun ⟨k, i⟩ ⟨k', j⟩ => if h : k = k' then M k i (cast congr(n' $h.symm) j) else 0 :
       (Σ i, m' i) → (Σ i, n' i) → α)
 
 -- TODO: set as an equation lemma for `blockDiagonal'`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem blockDiagonal'_apply' (M : ∀ i, Matrix (m' i) (n' i) α) (k i k' j) :
     blockDiagonal' M ⟨k, i⟩ ⟨k', j⟩ =
-      if h : k = k' then M k i (cast (congr_arg n' h.symm) j) else 0 :=
+      if h : k = k' then M k i (cast congr(n' $h.symm) j) else 0 :=
   rfl
 
 theorem blockDiagonal'_eq_blockDiagonal (M : o → Matrix m n α) {k k'} (i j) :
@@ -589,7 +589,7 @@ theorem blockDiagonal'_submatrix_eq_blockDiagonal (M : o → Matrix m n α) :
 
 theorem blockDiagonal'_apply (M : ∀ i, Matrix (m' i) (n' i) α) (ik jk) :
     blockDiagonal' M ik jk =
-      if h : ik.1 = jk.1 then M ik.1 ik.2 (cast (congr_arg n' h.symm) jk.2) else 0 := rfl
+      if h : ik.1 = jk.1 then M ik.1 ik.2 (cast congr(n' $h.symm) jk.2) else 0 := rfl
 
 @[simp]
 theorem blockDiagonal'_apply_eq (M : ∀ i, Matrix (m' i) (n' i) α) (k i j) :

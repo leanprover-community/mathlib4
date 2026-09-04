@@ -52,7 +52,7 @@ def IsRowEchelon [LT m] [LT n] (A : Matrix m n R) : Prop :=
 theorem IsRowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : A.IsRowEchelon)
     (hlt : i₁ < i₂) (h0 : A i₁ = 0) : A i₂ = 0 := by
   funext j
-  exact he hlt fun j₁ _ => congrFun h0 j₁
+  exact he hlt fun j₁ _ => congr($h0 j₁)
 
 /-! ### Leading entries -/
 
@@ -62,7 +62,7 @@ def IsLeadingEntry [LT n] (A : Matrix m n R) (i : m) (c : n) : Prop :=
 
 theorem IsLeadingEntry.row_ne_zero [LT n] {i : m} {c : n} (hc : A.IsLeadingEntry i c) :
     A i ≠ 0 :=
-  fun contra => hc.2 (congrFun contra c)
+  fun contra => hc.2 congr($contra c)
 
 theorem row_ne_zero_iff_exists_isLeadingEntry [LT n] [WellFoundedLT n] {i : m} :
     A i ≠ 0 ↔ ∃ c, A.IsLeadingEntry i c := by

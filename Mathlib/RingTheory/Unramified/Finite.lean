@@ -185,9 +185,8 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
       not_not] at hj
     simp only [Finsupp.sum]
     trans b.repr (f.support.sum (fun _ ↦ 0))
-    · refine congr_arg b.repr (Finset.sum_congr rfl ?_)
-      simp only [Finsupp.mem_support_iff]
-      intro i hi
+    · congr! with i hi
+      rw [Finsupp.mem_support_iff] at hi
       rw [hj i hi, zero_smul]
     · simp only [Finset.sum_const_zero, map_zero]
   -- And `G` such that `∑ₛ aᵢⱼfᵢ = ∑ Gᵢⱼbⱼ`, where `aᵢⱼ` are the coefficients `bᵢx = ∑ aᵢⱼbⱼ`.
@@ -219,7 +218,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   have : ∀ j, x * f j = f.sum fun i y ↦ a i j • y := by
     intro j
     apply b.repr.injective
-    exact DFunLike.congr_fun this j
+    congrm $this j
   -- Since `∑ₛ fⱼbⱼ = 1`, `x = ∑ₛ aᵢⱼfᵢbⱼ` is indeed in the span of `{ fᵢbⱼ | i, j ∈ s }`.
   rw [← mul_one x, ← @lmul_elem R, hf, map_finsuppSum, Finsupp.sum, Finset.mul_sum]
   simp only [TensorProduct.lmul'_apply_tmul, Finset.coe_image₂, ← mul_assoc, this,

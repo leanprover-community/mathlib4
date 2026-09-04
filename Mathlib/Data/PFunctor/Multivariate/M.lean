@@ -245,7 +245,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     cases h'.symm.trans e₁'
     cases h'.symm.trans e₂')
   | root x a f h' i c =>
-    exact congr_fun (congr_fun e₃ i) c
+    congrm $e₃ i c
   | child x a f h' i c p IH =>
     exact IH _ _ (h'' _)
 
@@ -267,13 +267,13 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   subst ay
   simp only [heq_eq_eq] at h₁
   have Hdrop : dropFun fx = dropFun fy := by
-    replace h₁ := congr_arg dropFun h₁
+    replace h₁ := congr(dropFun $h₁)
     simpa using! h₁
   exists ax, dropFun fx, lastFun fx, lastFun fy
   rw [split_dropFun_lastFun, Hdrop, split_dropFun_lastFun]
   simp only [true_and]
   intro i
-  replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
+  replace h₁ := congr($h₁ Fin2.fz i)
   simp only [TypeVec.comp, appendFun, splitFun] at h₁
   replace h₁ := Quot.eqvGen_exact h₁
   rw [h₀.eqvGen_iff] at h₁

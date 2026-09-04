@@ -104,8 +104,8 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
     .induced (UniformFun.ofFun ∘ s.domRestrict ∘ φ) (UniformFun.topologicalSpace s E)
   set φ' : H →ₗ[𝕜] (s → E) :=
     { toFun := s.domRestrict ∘ φ,
-      map_smul' := fun c x ↦ by exact congr_arg s.domRestrict (map_smul φ c x),
-      map_add' := fun x y ↦ by exact congr_arg s.domRestrict (map_add φ x y) }
+      map_smul' := fun c x ↦ by congrm s.domRestrict $(map_smul φ c x),
+      map_add' := fun x y ↦ by congrm s.domRestrict $(map_add φ x y) }
   refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
   simpa only [Set.image_eq_range] using! h u s hs
 

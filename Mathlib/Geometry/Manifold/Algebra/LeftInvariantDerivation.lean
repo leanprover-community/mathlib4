@@ -219,8 +219,8 @@ instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) w
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
       ext f
-      have hX := Derivation.congr_fun (left_invariant' g X) (Y f)
-      have hY := Derivation.congr_fun (left_invariant' g Y) (X f)
+      have hX := congr($(left_invariant' g X) (Y f))
+      have hY := congr($(left_invariant' g Y) (X f))
       rw [hfdifferential_apply, fdifferential_apply, Derivation.evalAt_apply] at hX hY ⊢
       rw [comp_L] at hX hY
       rw [Derivation.commutator_apply, ContMDiffMap.coe_sub, Pi.sub_apply, coe_derivation]

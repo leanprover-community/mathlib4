@@ -415,8 +415,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
         induction j using SimplexCategory.rec with | _ j
         dsimp
         ext i : 2
-        exact congr_arg Subtype.val
-          (e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩) }
+        congrm $(e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩).val }
   homEquiv_comp f g := by aesop
 
 /-- If a simplicial set `X` is representable by `⦋m⦌` for some `m : ℕ`, then this is the
@@ -635,7 +634,7 @@ private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
     apply SimplexCategory.Hom.ext
     rw [← OrderHom.range_eq_iff h₁ h₂]
     ext x
-    simpa using congr_fun (congrArg Membership.mem h₃) x
+    simpa using congr(x ∈ $h₃)
   · intro ⟨S, hS⟩
     dsimp at hS
     let e := monoEquivOfFin S (k := m + 1) (by simpa using hS)
