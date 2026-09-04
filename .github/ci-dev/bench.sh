@@ -74,6 +74,15 @@ openssl dgst -sha256 "$work/cpu.bin" >/dev/null
 t5=$(now)
 emit cpu_sha256_512MiB_1x "$(elapsed "$t4" "$t5")"
 
+# gzip is plain integer work with no special CPU instruction behind it, so it
+# is a fairer cross-vendor comparison than sha256, which AMD Zen accelerates
+# with SHA-NI and older Intel server parts do not.
+t5=$(now)
+head -c 268435456 /dev/urandom > "$work/gz.bin"
+gzip -1 -c "$work/gz.bin" > /dev/null
+t5b=$(now)
+emit cpu_gzip_256MiB_1x "$(elapsed "$t5" "$t5b")"
+
 ncpu=$(nproc)
 t5=$(now)
 for _ in $(seq 1 "$ncpu"); do openssl dgst -sha256 "$work/cpu.bin" >/dev/null & done

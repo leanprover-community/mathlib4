@@ -24,6 +24,11 @@ on:
         required: false
         type: string
         default: '3'
+      work_root:
+        description: directory the benchmark writes in (bench = container disk, /dev/shm = tmpfs)
+        required: false
+        type: string
+        default: 'bench'
       reps:
         description: repetitions of each arm
         required: false
@@ -73,20 +78,20 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          mkdir -p bench
+          ROOT="${{ inputs.work_root }}"; mkdir -p "$ROOT"
           # A hoskinson container starts cold: these paths exist only on the
           # Hetzner hosts, where they are bind-mounted warm stores. landrun
           # refuses to build a ruleset for a missing path, so create them and
           # keep the sandbox flags identical to the real workflow's.
           mkdir -p /home/lean/.elan /home/lean/.cache/mathlib
           N="${{ inputs.files }}"; C="${{ inputs.cpu_seconds }}"; R="${{ inputs.reps }}"
-          LR="landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw bench/ --env PATH --env HOME --env CI --"
+          LR=(landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw "$ROOT" --env PATH --env HOME --env CI --)
           for i in $(seq 1 "$R"); do
             echo "::group::rep $i — plain shell"
-            bash .github/ci-dev/bench.sh "plain$i" "$N" "$C" bench
+            bash .github/ci-dev/bench.sh "plain$i" "$N" "$C" "$ROOT"
             echo "::endgroup::"
             echo "::group::rep $i — under landrun"
-            $LR bash .github/ci-dev/bench.sh "landrun$i" "$N" "$C" bench
+            "${LR[@]}" bash .github/ci-dev/bench.sh "landrun$i" "$N" "$C" "$ROOT"
             echo "::endgroup::"
           done
 
