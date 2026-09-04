@@ -68,33 +68,27 @@ def eqDetermines (a x y : Expr) : Bool :=
 This is a fast version that quickly returns `none` when the simproc
 is not applicable. -/
 partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
-    MetaM <| Option Path := do
+    OptionT MetaM Path := do
   match_expr P with
   | Eq _ x y =>
     if eqDetermines a x y then
-      return some []
+      return []
     if eqDetermines a y x then
-      return some []
-    return none
+      return []
+    failure
   | And L R =>
-    if let some path ← findEqPath a L then
-      return some (.andLeft :: path)
-    if let some path ← findEqPath a R then
-      return some (.andRight :: path)
-    return none
+    ((.andLeft :: ·) <$> findEqPath a L) <|> ((.andRight :: ·) <$> findEqPath a R)
   | Exists tb pb =>
     if !(tb.containsFVar a.fvarId!) then
-      let .lam _ _ body _ := pb | return none
-      let some path ← findEqPath a body | return none
-      return some (.existsBody :: path)
-    -- This quantifier cannot be moved outside, but the equation may be hidden in `tb` itself.
-    -- It make sense only when `tb` is a `Prop`. We don't check it here but if it's not,
-    -- `tb` will not match anything in `match_expr` above
-    -- TODO: should we check?
-    let some path ← findEqPath a tb | return none
-    return some (.existsType :: path)
-
-  | _ => return none
+      let .lam _ _ body _ := pb | failure
+      (.existsBody :: ·) <$> findEqPath a body
+    else
+      -- This quantifier cannot be moved outside, but the equation may be hidden in `tb` itself.
+      -- It makes sense only when `tb` is a `Prop`. We don't check it here, but if it's not,
+      -- `tb` will not match anything in the `match_expr` above.
+      -- TODO: should we check?
+      (.existsType :: ·) <$> findEqPath a tb
+  | _ => failure
 
 /-- Assuming `T'` is `T` with existential quantifiers removed and abstracted as `exs` this function
 proves the original `T` from `h : T'`. This is used when we hoist binders from inside `P` in
@@ -102,20 +96,20 @@ proves the original `T` from `h : T'`. This is used when we hoist binders from i
 partial def proveFromHoisted {T T' : Q(Prop)} (h : Q($T')) (exs : List VarQ) (path : Path) :
     MetaM Q($T) := do
   if path.all (· != .existsBody) then
-    have : $T' =Q $T := ⟨⟩
+    let _ : $T' =Q $T := ⟨⟩
     return q($h)
   match path with
   | [] => panic! "`path` is empty"
   | .andLeft :: tl =>
     let ~q($L ∧ $R) := T | panic! "path starts with `andLeft`, but `T` is not `And`"
     let ~q($L' ∧ $R') := T' | panic! "path starts with `andLeft`, but `T'` is not `And`"
-    have : $R' =Q $R := ⟨⟩
+    let _ : $R' =Q $R := ⟨⟩
     let pfL : Q($L) ← proveFromHoisted q(And.left $h) exs tl
     return q(And.intro $pfL (And.right $h))
   | .andRight :: tl =>
     let ~q($L ∧ $R) := T | panic! "path starts with `andRight`, but `T` is not `And`"
     let ~q($L' ∧ $R') := T' | panic! "path starts with `andRight`, but `T'` is not `And`"
-    have : $L' =Q $L := ⟨⟩
+    let _ : $L' =Q $L := ⟨⟩
     let pfR : Q($R) ← proveFromHoisted q(And.right $h) exs tl
     return q(And.intro (And.left $h) $pfR)
   | .existsBody :: tl =>
@@ -124,7 +118,7 @@ partial def proveFromHoisted {T T' : Q(Prop)} (h : Q($T')) (exs : List VarQ) (pa
     | ⟨v, γ, e⟩ :: exsTl =>
     let ~q(@Exists.{v} $β $pb) := T
       | panic! "path starts with `existsBody`, but `T` is not `Exists`"
-    have : $γ =Q $β := ⟨⟩
+    let _ : $γ =Q $β := ⟨⟩
     let pf : Q($pb $e) ← proveFromHoisted h exsTl tl
     return q(Exists.intro $e $pf)
   | .existsType :: tl =>
@@ -199,8 +193,7 @@ def mkNestedExists (fvars : List VarQ) (body : Q(Prop)) : MetaM Q(Prop) := do
   | [] => pure body
   | ⟨_, β, b⟩ :: tl =>
     let res ← mkNestedExists tl body
-    let name := (← getLCtx).findFVar? b |>.get!.userName
-    let p : Q($β → Prop) ← Impl.mkLambdaQ name b res
+    let p : Q($β → Prop) ← mkLambdaFVars #[b] res
     pure q(Exists $p)
 
 /-- The path to the equation in the result formula: the quantifiers entered along `path` are moved
@@ -226,7 +219,7 @@ partial def destruct {P goal : Q(Prop)} (h : Q($P)) (exs : List VarQ) (path : Pa
     | ⟨v, γ, e⟩ :: exsTl =>
     let ~q(@Exists.{v} $β $pb) := P
       | panic! "path starts with `existsBody`, but `P` is not `Exists`"
-    have : $γ =Q $β := ⟨⟩
+    let _ : $γ =Q $β := ⟨⟩
     withLocalDeclQ .anonymous .default q($pb $e) fun h' => do
       let pf ← destruct h' exsTl tl acc k
       let f : Q(∀ e, $pb e → $goal) ← mkLambdaFVars #[e, h'] pf
@@ -263,7 +256,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
   match path with
   | [] =>
     let ~q($x = $y) := goal | panic! "path is empty, but the goal is not an equation"
-    have : $x =Q $y := ⟨⟩
+    let _ : $x =Q $y := ⟨⟩
     return q(rfl)
   | .existsBody :: tl =>
     match exs with
@@ -271,7 +264,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     | ⟨v, γ, e⟩ :: exsTl =>
     let ~q(@Exists.{v} $β $pb) := goal
       | panic! "path starts with `existsBody`, but the goal is not `Exists`"
-    have : $γ =Q $β := ⟨⟩
+    let _ : $γ =Q $β := ⟨⟩
     let pf : Q($pb $e) ← construct exsTl tl leaves
     return q(Exists.intro $e $pf)
   | .andRight :: tl =>
@@ -280,7 +273,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     match leaves with
     | [] => panic! "path starts with `andRight`, but `leaves` is empty"
     | ⟨T, leaf⟩ :: leavesTl =>
-    have : $T =Q $L := ⟨⟩
+    let _ : $T =Q $L := ⟨⟩
     have leaf : Q($L) := leaf
     let pf : Q($R) ← construct exs tl leavesTl
     return q(And.intro $leaf $pf)
@@ -290,7 +283,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     match leaves with
     | [] => panic! "path starts with `andLeft`, but `leaves` is empty"
     | ⟨T, leaf⟩ :: leavesTl =>
-    have : $T =Q $R := ⟨⟩
+    let _ : $T =Q $R := ⟨⟩
     have leaf : Q($R) := leaf
     let pf : Q($L) ← construct exs tl leavesTl
     return q(And.intro $pf $leaf)
@@ -302,7 +295,7 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     | ⟨B, leaf⟩ :: leavesTl =>
     let w : Q($β) ← construct exs tl leavesTl
     -- the leaf proves the body at `w` by proof irrelevance
-    have : $B =Q $pb $w := ⟨⟩
+    let _ : $B =Q $pb $w := ⟨⟩
     have leaf : Q($pb $w) := leaf
     return q(Exists.intro $w $leaf)
 
@@ -352,8 +345,7 @@ def mkBeforeToAfter {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
           let e := fvarSubst.apply leaf
           return ⟨← inferType e, e⟩
         goal'.assign (← construct (goal := P') fvars path.forResult leaves)
-      have pf : Q($P') := ← instantiateMVars goal
-      return pf
+      instantiateMVars goal
     let pf2 : Q(∀ a : $α, $p a → $P') ← mkLambdaFVars #[a, ha] pf1
     let pf3 : Q($P') := q(Exists.elim $h $pf2)
     mkLambdaFVars #[h] pf3
@@ -390,7 +382,7 @@ def mkAfterToBefore {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
     MetaM <| Q($P' → (∃ a, $p a)) := do
   withLocalDeclQ .anonymous .default P' fun (h : Q($P')) => do
     let pf : Q(∃ a, $p a) ← destruct h fvars path.forResult [] fun leaves _ => do
-      let pf1 : Q($p $a') ← construct (goal := q($p $a')) fvars path leaves
+      let pf1 : Q($p $a') ← construct fvars path leaves
       return q(Exists.intro $a' $pf1)
     mkLambdaFVars #[h] pf
 
@@ -400,26 +392,21 @@ substitutes the metavariables back into the resulting `Simp.Step`. In some cases
 built by `substCore` can only be instantiated when the goal contains none.
 
 The abstraction is done by `abstractMVars`, so that metavariables occurring in the types of other
-metavariables (as in `?f : α → ?β`) are handled consistently. -/
-def withMVarsAsFVars (e : Expr) (k : Expr → MetaM Simp.Step) : MetaM Simp.Step := do
+metavariables (as in `?f : α → ?β`) are handled consistently.
+
+TODO: this is a general simproc infrastructure, should we moved somewhere else?
+-/
+def withAbstractMVars (e : Expr) (k : Expr → MetaM Simp.Step) : MetaM Simp.Step := do
   let e ← instantiateMVars e
   if !e.hasMVar then
     return ← k e
-  let r ← abstractMVars e
-  lambdaTelescope r.expr fun xs e' => do
-    let step ← k e'
-    -- reopen the abstraction with fresh metavariables and unify them with the original ones
-    let us ← r.paramNames.mapM fun _ => mkFreshLevelMVar
-    let (ms, _, body) ←
-      lambdaMetaTelescope (r.expr.instantiateLevelParamsArray r.paramNames us) (some r.numMVars)
-    unless ← isDefEq body e do
-      throwError "existsAndEq: failed to restore the metavariables of{indentExpr e}"
-    let restore (t : Expr) : MetaM Expr := do
-      let t ← mkLambdaFVars xs t
-      instantiateMVars <| (t.instantiateLevelParamsArray r.paramNames us).beta ms
-    let subst (res : Simp.Result) : MetaM Simp.Result :=
+  let r ← abstractMVars e (levels := false)
+  lambdaBoundedTelescope r.expr r.numMVars fun xs e' => do
+    let restore (t : Expr) : MetaM Expr :=
+      instantiateMVars <| t.replaceFVars xs r.mvars
+    let subst (res : Simp.Result) : MetaM Simp.Result := do
       return { res with expr := ← restore res.expr, proof? := ← res.proof?.mapM restore }
-    match step with
+    match ← k e' with
     | .done res => return .done (← subst res)
     | .visit res => return .visit (← subst res)
     | .continue res? => return .continue (← res?.mapM subst)
@@ -427,7 +414,7 @@ def withMVarsAsFVars (e : Expr) (k : Expr → MetaM Simp.Step) : MetaM Simp.Step
 /-- The implementation of `existsAndEq`, for an expression without metavariables. -/
 def existsAndEqCore (e : Expr) : MetaM Simp.Step := do
   let_expr f@Exists α p := e | return .continue
-  lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => withNewMCtxDepth do
+  lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => do
     let some u := f.constLevels![0]? | unreachable!
     have α : Q(Sort $u) := α; have p : Q($α → Prop) := p
     let some (a : Q($α)) := xs[0]? | return .continue
@@ -446,7 +433,7 @@ for `a`. If so, replaces `a` with `a'` and removes quantifier.
 
 It looks through nested quantifiers and conjunctions searching for a `a = a'`
 or `a' = a` subexpression. -/
-simproc ↓ existsAndEq (Exists _) := fun e => withMVarsAsFVars e existsAndEqCore
+simproc ↓ existsAndEq (Exists _) := fun e => withAbstractMVars e existsAndEqCore
 
 end ExistsAndEq
 

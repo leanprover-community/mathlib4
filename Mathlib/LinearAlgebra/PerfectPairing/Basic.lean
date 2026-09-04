@@ -105,6 +105,16 @@ lemma IsPerfPair.of_bijective (p : M →ₗ[R] N →ₗ[R] R) [IsReflexive R N] 
     (LinearEquiv.ofBijective p h : M →ₗ[R] N →ₗ[R] R)
     (LinearEquiv.refl R N : N →ₗ[R] N)).IsPerfPair
 
+lemma IsPerfPair.separatingLeft {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
+    p.SeparatingLeft :=
+  separatingLeft_iff_ker_eq_bot.mpr (ker_eq_bot_of_injective hp.bijective_left.injective)
+
+lemma IsPerfPair.separatingRight {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
+    p.SeparatingRight := hp.flip.separatingLeft
+
+lemma IsPerfPair.nondegenerate {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
+    p.Nondegenerate := ⟨hp.separatingLeft, hp.separatingRight⟩
+
 end CommSemiring
 
 section Field

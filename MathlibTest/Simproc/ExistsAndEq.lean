@@ -69,8 +69,7 @@ example (P Q : α × β → Prop) (a : α × β) :
     (∃ b : (α × β), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
   simp
 
-
--- ### Goals with metavariables
+-- # Metavariables in goals
 
 -- The simproc must return a closed proof even when the goal contains metavariables, which is what
 -- `aesop` presents to it: here the goal is `∃ a : Nat, a = Nat.succ ?b ∧ 0 < ?b`.
@@ -96,7 +95,7 @@ example : ∃ (β : Type) (f : Nat → β), ∃ b, f 0 = b := by
   · exact Nat
   · exact id
 
--- ### Equations in binder types of dependent quantifiers
+-- # Equations in binder types of dependent quantifiers
 
 example (a' : α) (P : (a : α) → a = a' → Prop) :
     (∃ a : α, ∃ (h : a = a'), P a h) ↔ ∃ (h : a' = a'), P a' h := by
