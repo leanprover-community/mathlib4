@@ -19,8 +19,8 @@ individual entries supplied by a leaf certifier.
 ## Main definitions
 
 - `certifyDecomposition`: build the `Echelon.Decomposition` certificate of a matrix literal.
-- `mkPerm`, `mkPivotLit`, `mkRowsLit`, `mkMatrixLit`: elaborate the row permutation, the
-  pivot function, and a matrix literal unwrapped or wrapped in `Matrix.of`.
+- `mkPerm`, `mkPivotLit`, `mkMatrixLit`: elaborate the row permutation, the pivot
+  function, and a matrix literal.
 
 ## Implementation notes
 
@@ -50,17 +50,13 @@ namespace Mathlib.Tactic.Echelon
 def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
   mkNumeral q(Fin $n) i
 
-/-- Build the row-function literal `![![a, b], ![c, d]]` of the row-major entries `rows`,
-the function that a matrix literal wraps in `Matrix.of`. -/
-def mkRowsLit {u : Level} (α : Q(Type u)) (m n : Nat) (rows : Array (Array Q($α))) :
-    Q(Fin $m → Fin $n → $α) :=
-  PiFin.mkLiteralQ (α := q(Fin $n → $α)) (n := m) fun i =>
-    PiFin.mkLiteralQ (α := α) (n := n) fun j => (rows[i]!)[j]!
-
-/-- Build the matrix literal of the row-major entries `rows`. -/
+/-- Build the matrix literal `Matrix.of ![![a, b], ![c, d]]` of the row-major entries
+`rows`. -/
 def mkMatrixLit {u : Level} (α : Q(Type u)) (m n : Nat) (rows : Array (Array Q($α))) :
     Q(Matrix (Fin $m) (Fin $n) $α) :=
-  have elems := mkRowsLit α m n rows
+  have elems : Q(Fin $m → Fin $n → $α) :=
+    PiFin.mkLiteralQ (α := q(Fin $n → $α)) (n := m) fun i =>
+      PiFin.mkLiteralQ (α := α) (n := n) fun j => (rows[i]!)[j]!
   q(Matrix.of $elems)
 
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
@@ -187,13 +183,16 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     | _ => throwError "unexpected second conjunct in `Matrix.isPivotedBy_iff`:{indentExpr rest}"
   | _ => throwError "unexpected statement of `Matrix.isPivotedBy_iff`:{indentExpr rhs}"
 
-/-- Prove the row arrangement `A.submatrix σ id = Aσ`, with `Aσ` the literal `Matrix.of $rows`,
-by proving the reindexing functions equal and lifting that with `congrArg`. Directly
-constructing the goal with `.submatrix` causes some exponential explosion in kernel
+/-- Prove the row arrangement `A.submatrix σ id = Aσ`, with `Aσ` a `Matrix.of` literal, by
+proving the reindexing functions equal below the wrapper and lifting that with `congrArg`.
+Directly constructing the goal with `.submatrix` causes some exponential explosion in kernel
 unfolds. -/
 def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A Aσ : Q(Matrix (Fin $m) (Fin $n) $α))
-    (rows : Q(Fin $m → Fin $n → $α)) (σ : Q(Equiv.Perm (Fin $m))) :
-    MetaM Q(($A).submatrix $σ id = $Aσ) := do
+    (σ : Q(Equiv.Perm (Fin $m))) : MetaM Q(($A).submatrix $σ id = $Aσ) := do
+  let_expr DFunLike.coe _ _ _ _ f rowsE := Aσ
+    | throwError "expected a `Matrix.of` literal:{indentExpr Aσ}"
+  let_expr Matrix.of _ _ _ := f | throwError "expected a `Matrix.of` literal:{indentExpr Aσ}"
+  have rows : Q(Fin $m → Fin $n → $α) := rowsE
   -- every cell is an equation between two spellings of one entry of `A`, so all of them
   -- close by `rfl` and none consults a leaf certifier
   let rowEq ← certifyForallFin
@@ -244,15 +243,14 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have L := mkMatrixLit α m m data.L
   have U := mkMatrixLit α m n data.U
   let aEntries := data.rowOrder.map (entries[·]!)
-  have aRows : Q(Fin $m → Fin $n → $α) := mkRowsLit α m n aEntries
-  have Aσ : Q(Matrix (Fin $m) (Fin $n) $α) := q(Matrix.of $aRows)
+  have Aσ := mkMatrixLit α m n aEntries
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
   let dispatch (p : Q(Prop)) (certifier : LeafCertifier → MetaM Q($p)) : MetaM Q($p) :=
     match leaf? with
     | none => mkDecideProofQ p
     | some leaf => certifier leaf
-  let hperm ← dispatch q(($A).submatrix $σ id = $Aσ) fun _ => certifyPermEq A Aσ aRows σ
+  let hperm ← dispatch q(($A).submatrix $σ id = $Aσ) fun _ => certifyPermEq A Aσ σ
   let hprod ← dispatch q($L * $Aσ = $U) fun leaf =>
     certifyProductEq _cr L data.L Aσ aEntries U data.U leaf
   have hU : Q($L * ($A).submatrix $σ id = $U) := q($hperm ▸ $hprod)
