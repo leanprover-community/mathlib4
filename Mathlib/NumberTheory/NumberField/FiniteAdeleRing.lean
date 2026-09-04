@@ -91,7 +91,8 @@ theorem tprod_norm_eq_finprod_of_isUnit {x : 𝔸ᶠ[R, K]} (hx : IsUnit x) :
   rw [tprod_eq_finprod]
   exact hasFiniteMulSupport_norm hx.unit
 
-theorem tprod_norm_eq_finprod_of_unit (x : 𝔸ᶠ[R, K]ˣ) : ∏' v, ‖x.1 v‖ = ∏ᶠ v, ‖(x : 𝔸ᶠ[R, K]) v‖ :=
+theorem tprod_norm_eq_finprod_of_unit (x : 𝔸ᶠ[R, K]ˣ) :
+    ∏' v, ‖(x : 𝔸ᶠ[R, K]) v‖ = ∏ᶠ v, ‖(x : 𝔸ᶠ[R, K]) v‖ :=
   tprod_norm_eq_finprod_of_isUnit x.isUnit
 
 theorem tprod_eq_zero_of_not_isUnit {x : 𝔸ᶠ[R, K]} (hx : ¬ IsUnit x) :
@@ -106,7 +107,7 @@ noncomputable instance : Norm 𝔸ᶠ[R, K] where norm x := ∏' v, ‖x v‖
 
 theorem norm_def (x : 𝔸ᶠ[R, K]) : ‖x‖ = ∏' v, ‖x v‖ := rfl
 
-theorem norm_eq_finprod_of_unit (x : 𝔸ᶠ[R, K]ˣ) : ‖x.1‖ = ∏ᶠ v, ‖x.1 v‖ :=
+theorem norm_eq_finprod_of_unit (x : 𝔸ᶠ[R, K]ˣ) : ‖(x : 𝔸ᶠ[R, K])‖ = ∏ᶠ v, ‖(x : 𝔸ᶠ[R, K]) v‖ :=
   tprod_norm_eq_finprod_of_unit x
 
 theorem norm_eq_zero_of_not_isUnit {x : 𝔸ᶠ[R, K]} (hx : ¬IsUnit x) : ‖x‖ = 0 :=
@@ -115,16 +116,17 @@ theorem norm_eq_zero_of_not_isUnit {x : 𝔸ᶠ[R, K]} (hx : ¬IsUnit x) : ‖x�
 variable [NumberField K]
 
 theorem unitEmbedding_norm_apply (x : Kˣ) :
-    ‖(unitEmbedding (𝓞 K) K x).1‖ = ∏ᶠ v, FinitePlace.mk v x.1 := norm_eq_finprod_of_unit _
+    ‖(unitEmbedding (𝓞 K) K x : 𝔸ᶠ[𝓞 K, K])‖ = ∏ᶠ v, FinitePlace.mk v (x : K) :=
+      norm_eq_finprod_of_unit _
 
 theorem unitEmbedding_norm_apply_eq_finprod_finitePlace (x : Kˣ) :
-    ‖(unitEmbedding (𝓞 K) K x).1‖ = ∏ᶠ v : FinitePlace K, v x := by
+    ‖(unitEmbedding (𝓞 K) K x : 𝔸ᶠ[𝓞 K, K])‖ = ∏ᶠ v : FinitePlace K, v x := by
   rw [unitEmbedding_norm_apply, ← finprod_comp FinitePlace.equivHeightOneSpectrum.invFun
     FinitePlace.equivHeightOneSpectrum.symm.bijective]
   exact finprod_congr fun _ ↦ rfl
 
 theorem unitEmbedding_norm_eq_inv_abs_norm (x : Kˣ) :
-    ‖(unitEmbedding (𝓞 K) K x).1‖ = |Algebra.norm ℚ x.1|⁻¹ := by
+    ‖(unitEmbedding (𝓞 K) K x : 𝔸ᶠ[𝓞 K, K])‖ = |Algebra.norm ℚ (x : K)|⁻¹ := by
   rw [← FinitePlace.prod_eq_inv_abs_norm x.ne_zero, unitEmbedding_norm_apply_eq_finprod_finitePlace]
 
 theorem coe_norm_eq_inv_abs_norm {x : K} (hx : x ≠ 0) :
