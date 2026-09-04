@@ -69,6 +69,7 @@ theorem edegree_ne_top_iff_finite_neighborSet : G.edegree v ≠ ⊤ ↔ (G.neigh
 theorem edegree_ne_top_of_finite [Finite V] (G : SimpleGraph V) (v : V) : G.edegree v ≠ ⊤ :=
   edegree_ne_top_iff_finite_neighborSet.mpr <| Set.toFinite _
 
+@[simp]
 theorem coe_degree_eq_edegree [Fintype <| G.neighborSet v] : G.degree v = G.edegree v := by
   simp [encard_neighborSet, ← ncard_neighborSet]
 
