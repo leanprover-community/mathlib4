@@ -113,6 +113,8 @@ lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
 
 end
 
+open TensorProduct
+
 lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
     (p : Ideal S) (min : p ∈ minimalPrimes S) :
     letI := min.isPrime
@@ -161,7 +163,7 @@ lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field 
     Module.Flat.lTensor_preserves_injective_linearMap _ (Subalgebra.inclusion_injective le)
   exact isReduced_of_injective _ this
 
-variable (k : Type u) [Field k] (K : Type v) [Field K] [Algebra k K]
+variable (k : Type*) [Field k] (K : Type*) [Field K] [Algebra k K]
 
 open scoped Polynomial
 
@@ -248,7 +250,7 @@ noncomputable def quotientPolynomialTensorProductEquiv (f : K[X]) :
 
 open IntermediateField.algebraAdjoinAdjoin in
 lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain [IsDomain S]
-    {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
+    {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] :
     IsReduced (TensorProduct k K S) := by
@@ -300,7 +302,7 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_isDomain [IsDomain S]
   exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain k K S ((↑) : s → K) isT
 
 lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced [IsReduced S]
-    [Algebra.FiniteType k S] {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
+    [Algebra.FiniteType k S] {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] :
     IsReduced (TensorProduct k K S) := by
