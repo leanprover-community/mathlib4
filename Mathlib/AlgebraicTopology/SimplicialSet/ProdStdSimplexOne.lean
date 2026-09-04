@@ -107,8 +107,7 @@ lemma filtration_last :
   rw [prodStdSimplex.subcomplex_eq_top_iff _ rfl]
   intro x hx
   obtain ⟨i, hi⟩ := nonDegenerateEquiv.surjective ⟨x, hx⟩
-  rw [Subtype.ext_iff] at hi
-  subst hi
+  obtain rfl : ↑(nonDegenerateEquiv i) = x := by rwa [Subtype.ext_iff] at hi
   rw [← Subcomplex.ofSimplex_le_iff]
   exact ofSimplex_le_filtration i.le_last
 
