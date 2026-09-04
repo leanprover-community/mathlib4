@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Data.ENat.Basic
-public import Mathlib.Tactic.ENatToNat
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Basify
 

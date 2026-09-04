@@ -11,8 +11,6 @@ public import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.NatCard
 import Mathlib.Tactic.Basify
 
-import Mathlib.Tactic.ENatToNat
-
 /-!
 # Vertex cover
 
