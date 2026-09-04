@@ -49,7 +49,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
 | `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
 | `put!`      | Same as `put`, overwriting files the server already holds             |
-| `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`, under the same path contract. CI uploads with this command; `MATHLIB_CACHE_UPLOADER` selects its transfer engine. |
+| `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `MATHLIB_CACHE_UPLOADER` selects its transfer engine. |
 
 The upload commands write with the same URL construction `get` reads, so
 uploads and reads follow one path contract. Uploading needs a writer
@@ -91,13 +91,6 @@ rclone copy ./cache-out remote:my-bucket/my-prefix/f/
 # Point readers at the endpoint:
 MATHLIB_CACHE_GET_URL=https://cache.example.org/my-prefix lake exe cache get
 ```
-
-To make that endpoint the default for everyone who clones your repo, set it
-in the environment: a [`direnv`](https://direnv.net) `.envrc` with
-`export MATHLIB_CACHE_GET_URL=...` (each machine opts in with
-`direnv allow`), and the same variable in your CI configuration. The cache
-tool reads no endpoints from the working tree; see
-[`SECURITY.md`](./SECURITY.md#no-routing-configuration-from-the-working-tree).
 
 ### Arguments
 
@@ -180,11 +173,8 @@ The variable is intended as a troubleshooting fallback and it might be retired a
 |---------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
 
-Run `lake exe cache --help` for the full list, including the flat-endpoint
-overrides `MATHLIB_CACHE_GET_URL` / `MATHLIB_CACHE_PUT_URL`, the
-`MATHLIB_CACHE_FROM` read-chain override, and `put`'s credential variables
-(the S3 triple and the Azure bearer token) with the
-`MATHLIB_CACHE_PUT_BASE_URL` destination override.
+Run `lake exe cache --help` for the full list of environment variables,
+including the upload credentials and destination overrides.
 
 ## How It Works
 

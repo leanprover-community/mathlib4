@@ -74,13 +74,10 @@ outside the one container the credential grants.
 ### 2. Isolation of the cache binary
 
 The cache binary is built from a trusted branch, never from the PR's checkout,
-so the PR's toolchain never reaches the compiler that produces it. Reads and
-uploads share one binary: `put` writes with the same URL construction `get`
-reads, so the write path always matches the read contract. Isolation comes
-from the job split, not from separate binaries. The binary runs in two
-separate jobs — one that fetches and packs artifacts, one that uploads
-them — and each job builds its own copy from the trusted source. The PR's own
-build writes only its artifacts, which the trusted binary later packs.
+so the PR's toolchain never reaches the compiler that produces it. The binary
+runs in two separate jobs — one that fetches and packs artifacts, one that
+uploads them — and each job builds its own copy from the trusted source. The
+PR's own build writes only its artifacts, which the trusted binary later packs.
 
 The two jobs also run on different runner pools, and the upload token is minted
 only in the upload job, so it never reaches the build host; a compromised build
@@ -135,31 +132,6 @@ produced those fork artifacts — the per-commit namespace bounds *replay*, not
 the trust decision itself — so both forms print the non-default-scope security
 notice before reading. Neither runs in CI; CI routing (above) is loaded from
 the trusted branch.
-
-## No routing configuration from the working tree
-
-The tool reads no endpoint and no lookup chain from the working tree — there
-is no repo-local cache configuration file, and changes must not add one. The
-reasons:
-
-In CI, the read-side binary is built from a trusted branch and run against
-the PR's tree; the lookup policy loads from the trusted branch, never from
-the PR. A tree-sourced configuration file would let PR-controlled bytes
-choose where that trusted binary reads. A read endpoint serves unverified
-artifacts that Lean loads, so endpoint choice is code execution. A committed
-file also persists and propagates in a way an environment variable does not:
-one merged line redirects every future clone, developer, and CI run of that
-repository.
-
-The lakefile can already execute arbitrary code, but only for a user who
-deliberately builds an untrusted branch. The CI consumer above never opts
-in, so a tree-sourced endpoint would expose more than the lakefile does.
-
-A project sets a default endpoint through the environment, not through tool
-configuration: a `direnv` `.envrc` (guarded by direnv's per-machine
-`direnv allow`) or a CI variable, setting `MATHLIB_CACHE_GET_URL`. The
-environment is invoker-owned and per-invocation; the tree never names an
-endpoint.
 
 ## Explicitly out of scope
 

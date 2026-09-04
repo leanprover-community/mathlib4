@@ -41,14 +41,12 @@ Commands:
   put          Run 'pack', then upload the files this build links from the
                local cache. The build graph scopes the upload: nothing else
                in the shared cache directory leaves the machine. Uploads to
-               the selected --container with the same path contract 'get'
-               reads; a scope adds the per-commit namespace and its marker.
-               Needs an upload credential; see below.
+               the selected --container; a scope adds the per-commit
+               namespace and its marker. Needs an upload credential; see below.
   put!         Same as 'put', overwriting files the server already holds.
   put-staged   Upload the *.ltar files in the staging directory to the
-               selected --container, under the same path contract. CI
-               uploads with this command; MATHLIB_CACHE_UPLOADER selects
-               its transfer engine.
+               selected --container. CI uploads with this command;
+               MATHLIB_CACHE_UPLOADER selects its transfer engine.
 
 Uploading needs a writer credential, which normally only CI holds. Anyone
 operating their own cache endpoint does not need 'put': 'stage' the
@@ -253,9 +251,7 @@ def main (args : List String) : IO Unit := do
     IO.eprintln "Usage: cache query [REF]"
     Process.exit 1
   -- `put-staged` uploads the staging directory: it needs no hash memo, so it
-  -- dispatches here, with `query`, before the expensive build below. The
-  -- upload uses the same URL construction as the reads, so both sides follow
-  -- one path contract.
+  -- dispatches here, with `query`, before the expensive build below.
   | ["put-staged"] =>
     let some stagingDir := stagingDir? | do
       IO.eprintln "put-staged requires --staging-dir= (it uploads a staged set; \
@@ -267,8 +263,6 @@ def main (args : List String) : IO Unit := do
       IO.eprintln "--staging-dir must be a directory"
       Process.exit 1
     let repo := repo?.getD MATHLIBREPO
-    -- One destination resolution feeds every upload: the artifact puts and
-    -- the per-SHA marker, on every engine, address {base}/{prefix}/{name}.
     let dest ← stagedUploadDest container? repo
     -- The marker is written when the upload is SHA-scoped into a container:
     -- it lets `cache query` discover cached commits with a cheap HEAD probe.
