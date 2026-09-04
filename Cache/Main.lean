@@ -283,7 +283,8 @@ def main (args : List String) : IO Unit := do
         (overwrite := false) auth markerSha?
     return
   | "put-staged" :: _ =>
-    IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] [--repo=OWNER/REPO]"
+    IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] \
+      [--repo=OWNER/REPO] [--scope=REF] [--uploader=NAME]"
     Process.exit 1
   | "put-unpacked" :: _ | "commit" :: _ | "commit!" :: _ =>
     IO.eprintln "This command is retired: `put` packs and uploads the files this \
