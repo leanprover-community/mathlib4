@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
@@ -73,12 +74,6 @@ variable [LE α] {a b c : α}
 @[to_dual self] protected lemma LE.le.ge (h : a ≤ b) : b ≥ a := h
 @[to_dual self] protected lemma GE.ge.le (h : a ≥ b) : b ≤ a := h
 
-@[deprecated le_of_eq_of_le (since := "2025-11-29")]
-theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c := flip le_of_eq_of_le
-
-@[deprecated le_of_le_of_eq (since := "2025-11-29")]
-theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c := flip le_of_le_of_eq
-
 @[to_dual trans_eq'] alias LE.le.trans_eq := le_of_le_of_eq
 @[to_dual trans_ge] alias Eq.trans_le := le_of_eq_of_le
 
@@ -90,12 +85,6 @@ variable [LT α] {a b c : α}
 
 @[to_dual self] protected lemma LT.lt.gt (h : a < b) : b > a := h
 @[to_dual self] protected lemma GT.gt.lt (h : a > b) : b < a := h
-
-@[deprecated lt_of_eq_of_lt (since := "2025-11-29")]
-theorem lt_of_lt_of_eq' : b < c → a = b → a < c := flip lt_of_eq_of_lt
-
-@[deprecated lt_of_lt_of_eq (since := "2025-11-29")]
-theorem lt_of_eq_of_lt' : b = c → a < b → a < c := flip lt_of_lt_of_eq
 
 @[to_dual trans_eq'] alias LT.lt.trans_eq := lt_of_lt_of_eq
 @[to_dual trans_gt] alias Eq.trans_lt := lt_of_eq_of_lt
@@ -187,6 +176,11 @@ theorem ge_imp_ge_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a ≥ b → c 
 @[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
 theorem gt_imp_gt_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d :=
   fun hab ↦ (h₂.trans_lt hab).trans_le h₁
+
+attribute [gcongr strict] lt_of_lt_of_le lt_of_lt_of_le'
+
+@[to_dual (attr := gcongr strict) ge_imp_gt_of_lt']
+theorem ge_imp_gt_of_lt (h : a < b) : a ≥ c → b > c := lt_of_lt_of_le' h
 
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
@@ -519,15 +513,16 @@ lemma LinearOrder.ext_lt {A B : LinearOrder α} (H : ∀ x y : α, (haveI := A; 
 instance Prop.instCompl : Compl Prop :=
   ⟨Not⟩
 
+@[to_dual instHNot]
 instance Pi.instCompl [∀ i, Compl (π i)] : Compl (∀ i, π i) :=
   ⟨fun x i ↦ (x i)ᶜ⟩
 
-@[push ←]
+@[to_dual (attr := push ←) hnot_def]
 theorem Pi.compl_def [∀ i, Compl (π i)] (x : ∀ i, π i) :
     xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp) hnot_apply]
 theorem Pi.compl_apply [∀ i, Compl (π i)] (x : ∀ i, π i) (i : ι) :
     xᶜ i = (x i)ᶜ :=
   rfl
@@ -548,15 +543,6 @@ instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
   simp [compl]
 
 /-! ### Order instances on the function space -/
-
-
-instance Pi.hasLe [∀ i, LE (π i)] :
-    LE (∀ i, π i) where le x y := ∀ i, x i ≤ y i
-
-@[to_dual self]
-theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
-    x ≤ y ↔ ∀ i, x i ≤ y i :=
-  Iff.rfl
 
 instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
   __ := (inferInstance : LE (∀ i, π i))
@@ -653,15 +639,16 @@ theorem lt_update_self_iff : x < update x i a ↔ x i < a := by simp [lt_iff_le_
 
 end Function
 
-instance Pi.sdiff [∀ i, SDiff (π i)] : SDiff (∀ i, π i) :=
+@[to_dual instHImp]
+instance Pi.instSDiff [∀ i, SDiff (π i)] : SDiff (∀ i, π i) :=
   ⟨fun x y i ↦ x i \ y i⟩
 
-@[push ←]
+@[to_dual (attr := push ←) himp_def]
 theorem Pi.sdiff_def [∀ i, SDiff (π i)] (x y : ∀ i, π i) :
     x \ y = fun i ↦ x i \ y i :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp) himp_apply]
 theorem Pi.sdiff_apply [∀ i, SDiff (π i)] (x y : ∀ i, π i) (i : ι) :
     (x \ y) i = x i \ y i :=
   rfl
@@ -989,6 +976,13 @@ theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
     ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a := by
   simp_rw [and_comm]; exact dense
 
+/-- `DenselyOrdered.mk'` is the dual of `DenselyOrdered.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
+@[to_dual existing mk]
+lemma DenselyOrdered.mk' [LT α] (dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a) :
+    DenselyOrdered α where
+  dense := by simpa [and_comm] using dense
+
 @[to_dual exists_between']
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=
   DenselyOrdered.dense _ _
@@ -1097,14 +1091,6 @@ instance : DenselyOrdered PUnit :=
 end PUnit
 
 section «Prop»
-
-/-- Propositions form a complete Boolean algebra, where the `≤` relation is given by implication. -/
-instance Prop.le : LE Prop :=
-  ⟨(· → ·)⟩
-
-@[simp]
-theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (· → ·) :=
-  rfl
 
 theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r ≤ s :=
   Iff.rfl

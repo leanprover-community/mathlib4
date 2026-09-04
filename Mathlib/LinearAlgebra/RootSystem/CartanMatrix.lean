@@ -8,8 +8,12 @@ module
 public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Algebra.Module.Submodule.Union
 public import Mathlib.Data.Int.Star
+public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Cartan
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+public import Mathlib.LinearAlgebra.Matrix.ZMatrix
 public import Mathlib.LinearAlgebra.RootSystem.Base
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
@@ -182,7 +186,7 @@ lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem
       (2 : ℤ) • (P.posRootForm ℤ).posForm.toMatrix b.toWeightBasisInt := by
   ext i j
   apply algebraMap_injective ℤ R
-  simp only [mul_diagonal, map_mul, algebraMap_rootFormIn, posRootForm_eq, smul_apply,
+  simp only [mul_diagonal, map_mul, algebraMap_rootFormIn, posRootForm_eq, Matrix.smul_apply,
     LinearMap.BilinForm.toMatrix_apply, Int.zsmul_eq_mul]
   simpa [← algebraMap_pairingIn P ℤ i j] using
     congr_fun₂ (cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j
@@ -206,6 +210,21 @@ lemma exists_cartanMatrix_diagaonal_mul_posDef [DecidableEq ι] [P.IsRootSystem]
   obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagaonal_posDef
   refine ⟨d, hd, ?_⟩
   rw [← PosDef.transpose_iff] at hd'
+  aesop
+
+open LinearMap Module.End in
+lemma det_four_sub_cartanMatrix_ne_zero [DecidableEq ι] [P.IsRootSystem] :
+    (4 - b.cartanMatrix).det ≠ 0 := by
+  suffices ¬ HasEigenvalue b.cartanMatrix.toLin' 4 by
+    have aux : (4 - b.cartanMatrix).toLin' = - (b.cartanMatrix.toLin' - (4 : ℤ) • 1) := by ext; simp
+    rwa [ne_eq, ← det_toLin', det_eq_zero_iff_ker_ne_bot, aux, ker_neg, ← eigenspace_def,
+      ← hasEigenvalue_iff]
+  obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagaonal_mul_posDef
+  have aux (i j : b.support) : b.cartanMatrix i j ≤ if i = j then 2 else 0 := by
+    rcases eq_or_ne i j with rfl | hij
+    · simp
+    · simpa [hij] using cartanMatrix_le_zero_of_ne b i j hij
+  have := b.cartanMatrix.lt_two_mul_of_mul_diagonal_posDef_of_for_le_of_hasEigen d hdS hd 2 4 aux
   aesop
 
 /-- A characterisation of the connectedness of the Dynkin diagram for irreducible root pairings. -/
@@ -246,6 +265,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
 
 -- TODO Derive from `LinearIndependent.injective`
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Matrix in
 lemma injective_pairingIn {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic]
     (b : P.Base) :
@@ -356,6 +376,45 @@ def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
   Equiv.mk' P P₂ (b.toWeightBasis.equiv b₂.toWeightBasis e) e' he'
 
 end Uniqueness
+
+omit [IsDomain R] [Finite ι] in
+lemma map_equiv_cartanMatrix {ι₂ M₂ N₂ : Type*} [DecidableEq ι₂]
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    {P₂ : RootPairing ι₂ R M₂ N₂} [P₂.IsCrystallographic]
+    (e : P.Equiv P₂) :
+    (b.map e).cartanMatrix =
+      b.cartanMatrix.reindex (b.supportMapEquiv e) (b.supportMapEquiv e) := by
+  ext ⟨i, -⟩ ⟨j, -⟩
+  apply FaithfulSMul.algebraMap_injective ℤ R
+  simp only [cartanMatrix, cartanMatrixIn_def, reindex_apply, submatrix_apply,
+    supportMapEquiv_symm_apply_coe, algebraMap_pairingIn]
+  suffices ∀ i j, P₂.pairing (e.indexEquiv i) (e.indexEquiv j) = P.pairing i j by
+    simpa using this (e.indexEquiv.symm i) (e.indexEquiv.symm j)
+  simp
+
+lemma cartanMatrix_isIndecomposable [P.IsReduced] [P.IsIrreducible] :
+    b.cartanMatrix.IsIndecomposable := by
+  intro i j A B D e he
+  by_contra! ⟨hi, hj⟩
+  suffices range e.symm ⊆ range Sum.inl by
+    replace this : range Sum.inr ⊆ range Sum.inl := subset_trans (by simp) this
+    specialize this <| mem_range_self <| Nonempty.some ⟨⟨0, Nat.pos_of_ne_zero hj⟩⟩
+    aesop
+  rintro - ⟨k, rfl⟩
+  let a : Fin i := Nonempty.some ⟨⟨0, Nat.pos_of_ne_zero hi⟩⟩
+  let p (k : b.support) : Prop := ∃ a, Sum.inl a = e.symm k
+  have pa : p (e (Sum.inl a)) := ⟨a, by simp⟩
+  refine b.induction_on_cartanMatrix p pa fun u v ⟨a, ha⟩ huv ↦ ?_
+  rcases hv : e.symm v with a' | d'
+  · aesop
+  · simp [he, hv, ← ha] at huv
+
+lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
+    b.cartanMatrix.IsFiniteCartan where
+  diag i := b.cartanMatrix_apply_same i
+  offDiag_nonpos i j hij := b.cartanMatrix_le_zero_of_ne i j hij
+  zero_comm _ _ := b.cartanMatrix_apply_eq_zero_iff_symm
+  exists_posDef := b.exists_cartanMatrix_diagaonal_mul_posDef
 
 end IsCrystallographic
 

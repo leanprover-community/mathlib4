@@ -172,6 +172,7 @@ theorem eqvGen_of_π_eq
     colimit.isoColimitCocone_ι_hom, Category.id_comp] at this
   exact Quot.eq.1 this
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     𝖣.ι i x = 𝖣.ι j y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   constructor
@@ -184,7 +185,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h :)
+    refine Relation.EqvGen.mono ?_ _ _ (D.eqvGen_of_π_eq h :)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
@@ -359,7 +360,7 @@ variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
-      U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
+      U := fun i => (Opens.toTopCat ↧α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
       t := fun i j => ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
       V_id := fun i => by simp
@@ -371,7 +372,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
 This map is an open embedding (`fromOpenSubsetsGlue_isOpenEmbedding`),
 and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
-def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
+def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ ↧α :=
   Multicoequalizer.desc _ _ (fun _ => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
 
 @[simp, elementwise nosimp]
@@ -379,6 +380,7 @@ theorem ι_fromOpenSubsetsGlue (i : J) :
     (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion' _ :=
   Multicoequalizer.π_desc _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue U) := by
   intro x y e
   obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
@@ -395,11 +397,11 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   rw [isOpen_iff_forall_mem_open]
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
-  use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion' (TopCat.of α) (U i))
+  use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion' ↧α (U i))
   use Set.inter_subset_left
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
-    apply (Opens.isOpenEmbedding (X := TopCat.of α) (U i)).isOpenMap
+    apply (Opens.isOpenEmbedding (X := ↧α) (U i)).isOpenMap
     convert! hs i using 1
     rw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
     congr! 1
@@ -412,6 +414,7 @@ theorem fromOpenSubsetsGlue_isOpenEmbedding : IsOpenEmbedding (fromOpenSubsetsGl
   .of_continuous_injective_isOpenMap (ContinuousMap.continuous_toFun _)
     (fromOpenSubsetsGlue_injective U) (fromOpenSubsetsGlue_isOpenMap U)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (U i : Set α) := by
   ext
   constructor

@@ -40,7 +40,7 @@ measurable equivalence, measurable embedding
 @[expose] public section
 
 
-open Set Function Equiv MeasureTheory
+open Set Function Equiv
 
 universe uι
 
@@ -106,9 +106,9 @@ theorem measurable_rangeSplitting (hf : MeasurableEmbedding f) :
 theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β → γ} (hg : Measurable g)
     (hg' : Measurable g') : Measurable (extend f g g') := by
   refine measurable_of_restrict_of_restrict_compl hf.measurableSet_range ?_ ?_
-  · rw [restrict_extend_range]
+  · rw [domRestrict_extend_range]
     simpa only [rangeSplitting] using! hg.comp hf.measurable_rangeSplitting
-  · rw [restrict_extend_compl_range]
+  · rw [domRestrict_extend_compl_range]
     exact hg'.comp measurable_subtype_coe
 
 theorem exists_measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} (hg : Measurable g)
@@ -293,6 +293,12 @@ theorem self_trans_symm (e : α ≃ᵐ β) : e.trans e.symm = refl α :=
 theorem trans_symm (e₁ : α ≃ᵐ β) (e₂ : β ≃ᵐ γ) : (e₁.trans e₂).symm = e₂.symm.trans (e₁.symm) :=
   rfl
 
+theorem symm_apply_eq (e : α ≃ᵐ β) {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : α ≃ᵐ β) {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
+
 protected theorem surjective (e : α ≃ᵐ β) : Surjective e :=
   e.toEquiv.surjective
 
@@ -471,19 +477,17 @@ equivalent to the type of functions `∀ a, {b : β a // p a b}`. -/
 def subtypePiEquivPi {p : (a : δ') → π a → Prop} :
     { f : (a : δ') → π a // ∀ (a : δ'), p a (f a) } ≃ᵐ ((a : δ') → { b : π a // p a b }) where
   toEquiv := .subtypePiEquivPi
-  measurable_toFun := measurable_pi_lambda _ (fun a =>
+  measurable_toFun := .of_eval (fun a =>
     ((measurable_pi_apply a).comp measurable_subtype_coe).subtype_mk)
-  measurable_invFun := (measurable_pi_lambda _ (fun a =>
+  measurable_invFun := (Measurable.of_eval (fun a =>
     measurable_subtype_coe.comp (measurable_pi_apply a))).subtype_mk
 
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
   between `Π a, β₁ a` and `Π a, β₂ a`. -/
 def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π' a where
   toEquiv := .piCongrRight fun a => (e a).toEquiv
-  measurable_toFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_toFun.comp (measurable_pi_apply i)
-  measurable_invFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
+  measurable_toFun := .of_eval fun i => (e i).measurable_toFun.comp (measurable_pi_apply i)
+  measurable_invFun := .of_eval fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
 
 variable (π) in
 /-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
@@ -638,13 +642,26 @@ def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α �
 @[simp] theorem ofInvolutive_symm (f : α → α) (hf : Involutive f) (hf' : Measurable f) :
     (ofInvolutive f hf hf').symm = ofInvolutive f hf hf' := rfl
 
-/-- `setOf` as a `MeasurableEquiv`. -/
+/-- `Set.ofPred` as a `MeasurableEquiv`. -/
 @[simps]
-protected def setOf {α : Type*} : (α → Prop) ≃ᵐ Set α where
+protected def setOfPred {α : Type*} : (α → Prop) ≃ᵐ Set α where
   toFun p := {a | p a}
   invFun s a := a ∈ s
 
-@[simp, norm_cast] lemma coe_setOf {α : Type*} : ⇑MeasurableEquiv.setOf = setOf (α := α) := rfl
+@[deprecated (since := "2026-07-09")]
+protected alias setOf := MeasurableEquiv.setOfPred
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_apply := MeasurableEquiv.setOfPred_apply
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_symm_apply := MeasurableEquiv.setOfPred_symm_apply
+
+@[simp, norm_cast] lemma coe_setOfPred {α : Type*} :
+    ⇑MeasurableEquiv.setOfPred = Set.ofPred (α := α) := rfl
+
+@[deprecated (since := "2026-07-09")]
+alias coe_setOf := coe_setOfPred
 
 end MeasurableEquiv
 
@@ -747,6 +764,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   apply hx
   exact ⟨y, h, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
     hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
@@ -762,13 +780,13 @@ lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
 /-- The left-inverse of a `MeasurableEmbedding` -/
 protected noncomputable
 def invFun [Nonempty α] (hf : MeasurableEmbedding f) (x : β) : α :=
-  open Classical in
+  open scoped Classical in
   if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
 
 @[fun_prop]
 lemma measurable_invFun [Nonempty α] (hf : MeasurableEmbedding f) :
     Measurable (hf.invFun : β → α) :=
-  open Classical in
+  open scoped Classical in
   Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
 
 lemma leftInverse_invFun [Nonempty α] (hf : MeasurableEmbedding f) : hf.invFun.LeftInverse f := by

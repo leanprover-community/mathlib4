@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 # Smoothness of charts and local structomorphisms
@@ -45,19 +45,22 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Atlas
 
-theorem contMDiff_model : ContMDiff I 𝓘(𝕜, E) n I := by
+set_option backward.isDefEq.respectTransparency false in
+variable (I) in
+theorem ModelWithCorners.contMDiff : ContMDiff I 𝓘(𝕜, E) n I := by
   intro x
   refine contMDiffAt_iff.mpr ⟨I.continuousAt, ?_⟩
-  simp only [mfld_simps]
-  refine contDiffWithinAt_id.congr_of_eventuallyEq ?_ ?_
-  · exact Filter.eventuallyEq_of_mem self_mem_nhdsWithin fun x₂ => I.right_inv
-  simp_rw [Function.comp_apply, I.left_inv, Function.id_def]
+  simpa using contDiffWithinAt_id.congr (fun y hy ↦ by simp [hy]) (by simp)
+@[deprecated (since := "2026-06-16")] alias contMDiff_model := ModelWithCorners.contMDiff
 
-theorem contMDiffOn_model_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) := by
-  rw [contMDiffOn_iff]
-  refine ⟨I.continuousOn_symm, fun x y => ?_⟩
-  simp only [mfld_simps]
-  exact contDiffOn_id.congr fun x' => I.right_inv
+set_option backward.isDefEq.respectTransparency false in
+variable (I) in
+theorem ModelWithCorners.contMDiffOn_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) := by
+  intro x hx
+  apply contMDiffWithinAt_iff.mpr ⟨by fun_prop, ?_⟩
+  simpa using contDiffWithinAt_id.congr (fun y hy ↦ by simp [hy]) (by simp [hx])
+@[deprecated (since := "2026-06-16")]
+alias contMDiffOn_model_symm := ModelWithCorners.contMDiffOn_symm
 
 /-- An atlas member is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_maximalAtlas (h : e ∈ maximalAtlas I n M) :
@@ -87,17 +90,18 @@ theorem contMDiffOn_chart_symm [IsManifold I n M] :
     ContMDiffOn I I n (chartAt H x).symm (chartAt H x).target :=
   contMDiffOn_symm_of_mem_maximalAtlas <| chart_mem_maximalAtlas x
 
-theorem contMDiffAt_extend {x : M} (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
+theorem OpenPartialHomeomorph.contMDiffAt_extend {x : M}
+    (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
     ContMDiffAt I 𝓘(𝕜, E) n (e.extend I) x :=
-  (contMDiff_model _).comp x <| contMDiffAt_of_mem_maximalAtlas he hx
+  (I.contMDiff _).comp x <| contMDiffAt_of_mem_maximalAtlas he hx
 
-theorem contMDiffOn_extend (he : e ∈ maximalAtlas I n M) :
+theorem OpenPartialHomeomorph.contMDiffOn_extend (he : e ∈ maximalAtlas I n M) :
     ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) e.source :=
-  fun _x' hx' ↦ (contMDiffAt_extend he hx').contMDiffWithinAt
+  fun _x' hx' ↦ (e.contMDiffAt_extend he hx').contMDiffWithinAt
 
 theorem contMDiffAt_extChartAt' [IsManifold I n M] {x' : M} (h : x' ∈ (chartAt H x).source) :
     ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x' :=
-  contMDiffAt_extend (chart_mem_maximalAtlas x) h
+  (chartAt H x).contMDiffAt_extend (chart_mem_maximalAtlas x) h
 
 theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x := by
   rw [contMDiffAt_iff_source]
@@ -107,12 +111,12 @@ theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) 
 
 theorem contMDiffOn_extChartAt [IsManifold I n M] :
     ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
-  contMDiffOn_extend (chart_mem_maximalAtlas x)
+  (chartAt H x).contMDiffOn_extend (chart_mem_maximalAtlas x)
 
 theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I n M) :
     ContMDiffOn 𝓘(𝕜, E) I n (e.extend I).symm (I '' e.target) := by
   refine (contMDiffOn_symm_of_mem_maximalAtlas he).comp
-    (contMDiffOn_model_symm.mono <| image_subset_range _ _) ?_
+    (I.contMDiffOn_symm.mono <| image_subset_range _ _) ?_
   simp_rw [image_subset_iff, PartialEquiv.restr_coe_symm, I.toPartialEquiv_coe_symm,
     preimage_preimage, I.left_inv, preimage_id']; rfl
 
@@ -154,6 +158,54 @@ theorem contMDiffWithinAt_extChartAt_symm_range_self (x : M) :
 theorem contMDiffOn_of_mem_contDiffGroupoid {e' : OpenPartialHomeomorph H H}
     (h : e' ∈ contDiffGroupoid n I) : ContMDiffOn I I n e' e'.source :=
   (contDiffWithinAt_localInvariantProp n).liftPropOn_of_mem_groupoid contDiffWithinAtProp_id h
+
+lemma OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn [IsManifold I n M]
+    (φ : OpenPartialHomeomorph M H) (hφ : ContMDiffOn I I n φ φ.source)
+    (hφ' : ContMDiffOn I I n φ.symm φ.target) :
+    φ ∈ maximalAtlas I n M := by
+  simp only [mfld_simps, IsManifold.mem_maximalAtlas_iff, StructureGroupoid.maximalAtlas,
+    contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid,
+    ← contMDiffOn_iff_contDiffOn]
+  intro e he
+  have he' := contMDiffOn_of_mem_maximalAtlas (I := I) (n := n)
+    (StructureGroupoid.subset_maximalAtlas _ he)
+  have he'' := contMDiffOn_symm_of_mem_maximalAtlas (I := I) (n := n)
+    (StructureGroupoid.subset_maximalAtlas _ he)
+  refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+  all_goals apply I.contMDiff.comp_contMDiffOn
+  · apply he'.comp (hφ'.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
+  · apply hφ.comp (he''.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
+  · exact hφ.comp (he''.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
+  · exact he'.comp (hφ'.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
+
+lemma symm_trans_trans_mem_maximalAtlas_of_contMDiffOn
+    {ϕ ϕ' : OpenPartialHomeomorph M H} (hϕ : ϕ ∈ maximalAtlas I n M) (hϕ' : ϕ' ∈ maximalAtlas I n M)
+    {f : OpenPartialHomeomorph M M} (hf : ContMDiffOn I I n f f.source)
+    (hf' : ContMDiffOn I I n f.symm f.target) :
+    ϕ.symm.trans (f.trans ϕ') ∈ maximalAtlas I n H := by
+  refine (ϕ.symm.trans (f.trans ϕ')).mem_maximalAtlas_of_contMDiffOn ?_ ?_
+  · exact (contMDiffOn_of_mem_maximalAtlas hϕ').comp
+      (hf.comp ((contMDiffOn_symm_of_mem_maximalAtlas hϕ).mono fun z hz ↦ hz.1) fun z hz ↦ hz.2.1)
+      fun z hz ↦ hz.2.2
+  · exact (contMDiffOn_of_mem_maximalAtlas hϕ).comp
+      (hf'.comp ((contMDiffOn_symm_of_mem_maximalAtlas hϕ').mono fun z hz ↦ hz.1.1)
+        fun z hz ↦ hz.1.2)
+      fun z hz ↦ hz.2
+
+lemma symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
+    {ϕ ϕ' : OpenPartialHomeomorph M H} (hϕ : ϕ ∈ maximalAtlas I n M) (hϕ' : ϕ' ∈ maximalAtlas I n M)
+    {f : OpenPartialHomeomorph M M} (hf : ContMDiffOn I I n f f.source)
+    (hf' : ContMDiffOn I I n f.symm f.target) :
+    ϕ.symm.trans (f.trans ϕ') ∈ contDiffGroupoid n I := by
+  simpa [OpenPartialHomeomorph.refl_trans, OpenPartialHomeomorph.refl_symm] using
+    compatible_of_mem_maximalAtlas (subset_maximalAtlas (chartedSpaceSelf_atlas.mpr rfl))
+      (symm_trans_trans_mem_maximalAtlas_of_contMDiffOn hϕ hϕ' hf hf')
+
+lemma IsManifold.mem_maximalAtlas_iff_contMDiffOn [IsManifold I n M]
+    (φ : OpenPartialHomeomorph M H) :
+    φ ∈ maximalAtlas I n M ↔ ContMDiffOn I I n φ φ.source ∧ ContMDiffOn I I n φ.symm φ.target :=
+  ⟨fun h ↦ ⟨contMDiffOn_of_mem_maximalAtlas h, contMDiffOn_symm_of_mem_maximalAtlas h⟩,
+   fun ⟨hφ, hφ'⟩ ↦ φ.mem_maximalAtlas_of_contMDiffOn hφ hφ'⟩
 
 end Atlas
 
@@ -331,6 +383,6 @@ theorem OpenPartialHomeomorph.contMDiffOn_writtenInExtend_iff
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
   refine (contMDiffWithinAt_congr_set ?_).trans
     (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) hmaps)
-  rw [← nhdsWithin_eq_iff_eventuallyEq, ← φ.map_extend_nhdsWithin_eq_image_of_subset,
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet, ← φ.map_extend_nhdsWithin_eq_image_of_subset,
     ← φ.map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]

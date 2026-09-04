@@ -80,11 +80,23 @@ theorem le_prod_of_submultiplicative_of_nonneg {M : Type*} [CommMonoid M]
 
 end OrderedCommSemiring
 
-theorem sum_mul_self_eq_zero_iff [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
-    [ExistsAddOfLE R] (s : Finset ι)
-    (f : ι → R) : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
+section StrictOrderedRing
+
+variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R]
+    (s : Finset ι) (f : ι → R)
+
+theorem sum_mul_self_eq_zero_iff : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
   rw [sum_eq_zero_iff_of_nonneg fun _ _ ↦ mul_self_nonneg _]
   simp
+
+theorem sum_sq_eq_zero_iff : ∑ i ∈ s, f i ^ 2 = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  grind [sq_nonneg, Finset.sum_eq_zero_iff_of_nonneg, pow_eq_zero_iff]
+
+theorem sum_pow_eq_zero_iff_of_even {n : ℕ} (hn : n ≠ 0) (heven : Even n) :
+    ∑ i ∈ s, f i ^ n = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  grind [Even.pow_nonneg, Finset.sum_eq_zero_iff_of_nonneg, pow_eq_zero_iff]
+
+end StrictOrderedRing
 
 lemma abs_prod [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (s : Finset ι) (f : ι → R) :
     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=
@@ -225,7 +237,8 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.pro
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.prod _ _]
-meta def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetProd : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match e with
   | ~q(@Finset.prod $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
@@ -233,7 +246,7 @@ meta def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     let rbody ← core zα pα body
     let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
     -- Try to show that the product is positive
-    let p_pos : Option Q(0 < $e) := ← do
+    let p_pos : Option Q(0 < $e) ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       -- TODO(https://github.com/leanprover-community/quote4/issues/38):
       -- We must name the following, else `assertInstancesCommute` loops.
@@ -242,19 +255,19 @@ meta def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       let .some _instαnontriv ← trySynthInstanceQ q(Nontrivial $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
-      return some q(prod_pos fun i _ ↦ $pr i)
+      pure <| some q(prod_pos fun i _ ↦ $pr i)
     if let some p_pos := p_pos then return .positive p_pos
     -- Try to show that the product is nonnegative
-    let p_nonneg : Option Q(0 ≤ $e) := ← do
+    let p_nonneg : Option Q(0 ≤ $e) ← do
       let some pbody := rbody.toNonneg
-        | return none -- Fail if the body is not provably nonnegative
+        | pure none -- Fail if the body is not provably nonnegative
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
       -- TODO(https://github.com/leanprover-community/quote4/issues/38):
       -- We must name the following, else `assertInstancesCommute` loops.
       let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
       let .some _instαposmul ← trySynthInstanceQ q(PosMulMono $α) | pure none
       assertInstancesCommute
-      return some q(prod_nonneg fun i _ ↦ $pr i)
+      pure <| some q(prod_nonneg fun i _ ↦ $pr i)
     if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
     -- Fall back to showing that the product is nonzero
     let pbody ← rbody.toNonzero
