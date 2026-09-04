@@ -95,10 +95,10 @@ namespace MvPolynomial
 
 variable (R m n t)
 
+open Classical in
 /-- The finite set of all `t × t` minors of the generic `m × n` matrix. -/
-noncomputable def determinantalMinorFinset : Finset (MvPolynomial (Fin m × Fin n) R) := by
-  classical
-  exact Finset.univ.image fun I : (Fin t ↪o Fin m) × (Fin t ↪o Fin n) =>
+noncomputable def determinantalMinorFinset : Finset (MvPolynomial (Fin m × Fin n) R) :=
+  Finset.univ.image fun I : (Fin t ↪o Fin m) × (Fin t ↪o Fin n) =>
     Matrix.mvPolynomialMinor R I.1 I.2
 
 variable {R m n t}
