@@ -333,28 +333,23 @@ def UniformSpace.generateFilter (f : Filter (α × α)) : UniformSpace α :=
       ∀ n, seq n ∈ f ⊔ map Prod.swap f ⊔ 𝓟 SetRel.id ∧ seq (n + 1) ○ seq (n + 1) ⊆ seq n }
     uniformity.univ_sets := ⟨fun _ => univ, by simp⟩
     uniformity.sets_of_superset := by
-      intro x y hx hxy
-      obtain ⟨seq, rfl, hseq⟩ := hx
+      rintro x y ⟨seq, rfl, hseq⟩ hxy
       refine ⟨fun n => Nat.casesOn n y (fun n => seq (n + 1)), rfl,
         fun n => Nat.casesOn n ⟨?_, ?_⟩ (fun n => hseq (n + 1))⟩
       · exact mem_of_superset (hseq 0).1 hxy
       · exact (hseq 0).2.trans hxy
     uniformity.inter_sets := by
-      intro x y hx hy
-      obtain ⟨seqx, rfl, hseqx⟩ := hx
-      obtain ⟨seqy, rfl, hseqy⟩ := hy
+      rintro x y ⟨seqx, rfl, hseqx⟩ ⟨seqy, rfl, hseqy⟩
       refine ⟨fun n => seqx n ∩ seqy n, rfl, fun n => ⟨?_, ?_⟩⟩
       · exact inter_mem (hseqx n).1 (hseqy n).1
       · apply subset_inter
         · exact subset_trans (SetRel.comp_subset_comp (by simp) (by simp)) (hseqx n).2
         · exact subset_trans (SetRel.comp_subset_comp (by simp) (by simp)) (hseqy n).2
     refl := by
-      intro U hU
-      obtain ⟨seq, rfl, hseq⟩ := hU
+      rintro U ⟨seq, rfl, hseq⟩
       exact (hseq 0).1.2
     symm := by
-      intro U hU
-      obtain ⟨seq, rfl, hseq⟩ := hU
+      rintro U ⟨seq, rfl, hseq⟩
       refine ⟨fun n => Prod.swap ⁻¹' seq n, rfl, fun n => ⟨?_, ?_⟩⟩
       · rw [← mem_map, map_sup, map_principal, image_swap_eq_preimage_swap, ← SetRel.inv,
           SetRel.inv_id, sup_comm f, map_sup, map_map, Prod.swap_swap_eq, map_id]
@@ -363,8 +358,7 @@ def UniformSpace.generateFilter (f : Filter (α × α)) : UniformSpace α :=
         rw [← SetRel.inv, ← SetRel.inv, ← SetRel.inv_comp]
         exact SetRel.inv_mono (hseq n).2
     comp := by
-      intro U hU
-      obtain ⟨seq, rfl, hseq⟩ := hU
+      rintro U ⟨seq, rfl, hseq⟩
       refine mem_of_superset ?_ (hseq 0).2
       apply mem_lift'
       exact ⟨fun n => seq (n + 1), rfl, fun n => hseq (n + 1)⟩ }
