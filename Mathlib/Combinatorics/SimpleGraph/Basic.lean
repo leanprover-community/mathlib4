@@ -5,9 +5,9 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
+public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Rel
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
@@ -1052,6 +1052,15 @@ theorem notMem_support_iff_isIsolated : v ∉ G.support ↔ G.IsIsolated v := by
 variable {G} in
 theorem exists_adj_iff_not_isIsolated : (∃ u, G.Adj v u) ↔ ¬G.IsIsolated v := by
   simp [IsIsolated]
+
+variable {G} in
+theorem isIsolated_iff_forall_edgeSet_notMem : G.IsIsolated v ↔ ∀ e ∈ G.edgeSet, v ∉ e :=
+  ⟨fun hv _ he ⟨u, heq⟩ ↦ hv u (heq ▸ he :), fun h u hvu ↦ h s(v, u) hvu <| Sym2.mem_mk_left v u⟩
+
+variable {G} in
+theorem not_isIsolated_iff_exists_edgeSet_mem : ¬G.IsIsolated v ↔ ∃ e ∈ G.edgeSet, v ∈ e := by
+  contrapose!
+  exact isIsolated_iff_forall_edgeSet_notMem
 
 @[simp]
 theorem IsIsolated.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
