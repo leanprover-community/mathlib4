@@ -93,9 +93,8 @@ theorem coe_apply {x y : ZFSet.{u}} : x ∈ (y : Class.{u}).toSet ↔ x ∈ y :=
   Iff.rfl
 
 @[ext]
-theorem ext {x y : Class.{u}} (h : ∀ z : ZFSet.{u}, (z : Class.{u}) ∈ x ↔ (z : Class.{u}) ∈ y) :
-    x = y :=
-  Set.ext fun z => coe_mem.symm.trans ((h z).trans coe_mem)
+theorem ext {x y : Class.{u}} (h : ∀ z : ZFSet.{u}, z ∈ x.toSet ↔ z ∈ y.toSet) : x = y :=
+  Set.ext h
 
 -- Porting note: this used to be a `deriving HasSep Set` instance,
 -- it should probably be turned into notation.
@@ -195,33 +194,33 @@ theorem coe_subset (x y : ZFSet.{u}) : (x : Class.{u}) ⊆ y ↔ x ⊆ y :=
 @[simp, norm_cast]
 theorem coe_sep (p : ZFSet.{u} → Prop) (x : ZFSet.{u}) :
     (ZFSet.sep p x : Class) = { y ∈ x | p y } :=
-  Set.ext fun _ => ZFSet.mem_sep
+  ext fun _ => ZFSet.mem_sep
 
 @[simp, norm_cast]
 theorem coe_empty : ↑(∅ : ZFSet.{u}) = (∅ : Class.{u}) :=
-  Set.ext fun y => iff_false _ ▸ ZFSet.notMem_empty y
+  ext fun y => iff_false _ ▸ ZFSet.notMem_empty y
 
 @[simp, norm_cast]
 theorem coe_insert (x y : ZFSet.{u}) : ↑(insert x y) = @insert ZFSet.{u} Class.{u} _ x y :=
-  Set.ext fun _ => ZFSet.mem_insert_iff
+  ext fun _ => ZFSet.mem_insert_iff
 
 @[simp, norm_cast]
 theorem coe_union (x y : ZFSet.{u}) : ↑(x ∪ y) = (x : Class.{u}) ∪ y :=
-  Set.ext fun _ => ZFSet.mem_union
+  ext fun _ => ZFSet.mem_union
 
 @[simp, norm_cast]
 theorem coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (x : Class.{u}) ∩ y :=
-  Set.ext fun _ => ZFSet.mem_inter
+  ext fun _ => ZFSet.mem_inter
 
 @[simp, norm_cast]
 theorem coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (x : Class.{u}) \ y :=
-  Set.ext fun _ => ZFSet.mem_sdiff
+  ext fun _ => ZFSet.mem_sdiff
 
 @[deprecated (since := "2026-06-03")] alias coe_diff := coe_sdiff
 
 @[simp, norm_cast]
 theorem coe_powerset (x : ZFSet.{u}) : ↑x.powerset = powerset.{u} x :=
-  Set.ext fun _ => ZFSet.mem_powerset
+  ext fun _ => ZFSet.mem_powerset
 
 @[simp]
 theorem powerset_apply {A : Class.{u}} {x : ZFSet.{u}} : x ∈ (powerset A).toSet ↔ ↑x ⊆ A :=
@@ -238,7 +237,7 @@ theorem sUnion_apply {x : Class.{u}} {y : ZFSet.{u}} :
 open scoped ZFSet in
 @[simp, norm_cast]
 theorem coe_sUnion (x : ZFSet.{u}) : ↑(⋃₀ x : ZFSet) = ⋃₀ (x : Class.{u}) :=
-  Set.ext fun y =>
+  ext fun y =>
     ZFSet.mem_sUnion.trans (sUnion_apply.trans <| by rfl).symm
 
 @[simp]
@@ -258,7 +257,7 @@ theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} :
 open scoped ZFSet in
 @[simp, norm_cast]
 theorem coe_sInter {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : Class.{u}) :=
-  Set.ext fun _ => (ZFSet.mem_sInter h).trans sInter_apply.symm
+  ext fun _ => (ZFSet.mem_sInter h).trans sInter_apply.symm
 
 theorem mem_of_mem_sInter {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   obtain ⟨w, rfl, hw⟩ := hy
@@ -299,7 +298,7 @@ def iota (A : Class) : Class :=
   ⋃₀ ({ x | ∀ y : ZFSet, ↑y ∈ A ↔ y = x } : Class)
 
 theorem iota_val (A : Class) (x : ZFSet) (H : ∀ y : ZFSet, ↑y ∈ A ↔ y = x) : iota A = ↑x :=
-  Set.ext fun y =>
+  ext fun y =>
     ⟨fun ⟨_, ⟨x', rfl, h⟩, yx'⟩ => by rwa [← (H x').1 <| (h x').2 rfl], fun yx =>
       ⟨_, ⟨x, rfl, H⟩, yx⟩⟩
 
@@ -310,7 +309,7 @@ theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
   mem_univ.2 <|
     Or.elim (Classical.em <| ∃ x : ZFSet, ∀ y : ZFSet, ↑y ∈ A ↔ y = x)
       (fun ⟨x, h⟩ => ⟨x, Eq.symm <| iota_val A x h⟩) fun hn =>
-      ⟨∅, Set.ext fun _ => coe_empty.symm ▸ ⟨False.rec, fun ⟨_, ⟨x, rfl, H⟩, _⟩ => hn ⟨x, H⟩⟩⟩
+      ⟨∅, ext fun _ => coe_empty.symm ▸ ⟨False.rec, fun ⟨_, ⟨x, rfl, H⟩, _⟩ => hn ⟨x, H⟩⟩⟩
 
 /-- Function value -/
 def fval (F A : Class.{u}) : Class.{u} :=
@@ -382,12 +381,11 @@ noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} 
 /-- The **Burali-Forti paradox**: ordinals form a proper class. -/
 theorem isOrdinal_notMem_univ : {x | IsOrdinal x} ∉ Class.univ.{u} := by
   rintro ⟨x, hx, -⟩
-  have H : ∀ y : ZFSet, y ∈ x ↔ y.IsOrdinal := fun y => by
-    rw [← Class.coe_apply, hx, Set.mem_ofPred_eq]
   suffices IsOrdinal x by
     apply Class.mem_irrefl (x : Class.{u})
-    rwa [Class.coe_mem, Class.coe_apply, H]
-  refine ⟨fun y hy z hz ↦ (H z).2 <| ((H y).1 hy).mem hz,
-    @fun y z w hyz hzw hwx ↦ ((H w).1 hwx).mem_trans hyz hzw⟩
+    rwa [Class.coe_mem, hx, Set.mem_ofPred_eq]
+  refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;>
+    rw [← Class.coe_apply, hx, Set.mem_ofPred_eq] at *
+  exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet

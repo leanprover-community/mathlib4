@@ -121,9 +121,7 @@ lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     ext t
     rw [mem_ofPred_eq, mul_comm _ a⁻¹, ← smul_eq_mul, mem_inv_smul_set_iff₀ ha,
       smul_inv_smul₀ ha]
-  have h2 := hγ.comp_mul a⁻¹
-  rw [hs] at h2
-  convert! h2
+  convert! hs ▸ hγ.comp_mul a⁻¹
   · ext t
     simp only [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · ext t

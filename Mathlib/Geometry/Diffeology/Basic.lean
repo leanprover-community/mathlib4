@@ -206,13 +206,9 @@ end Defs
 @[ext]
 protected theorem _root_.DiffeologicalSpace.ext {X : Type*} {d₁ d₂ : DiffeologicalSpace X}
     (h : @IsPlot _ d₁ = @IsPlot _ d₂) : d₁ = d₂ := by
-  have hp : d₁.plots = d₂.plots := by
-    funext n
-    ext p
-    exact iff_of_eq (congrFun (congrFun h n) p)
   obtain ⟨p₁, _, _, _, t₁, h₁⟩ := d₁
   obtain ⟨p₂, _, _, _, t₂, h₂⟩ := d₂
-  obtain rfl : p₁ = p₂ := hp
+  obtain rfl : p₁ = p₂ := funext fun n ↦ Set.ext fun p ↦ iff_of_eq (congrFun (congrFun h n) p)
   congr 1
   ext s
   exact (@h₁ s).trans (@h₂ s).symm

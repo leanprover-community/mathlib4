@@ -756,13 +756,9 @@ theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected
     IsPreconnected {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} := by
   rw [← isEmbedding_coe.isPreconnected_image]
   have himg : SetLike.coe '' {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧
-      ↑K ⊆ s} = {t : Set α | t.Nonempty ∧ t.Finite ∧ t ⊆ s} := by
-    ext t
-    constructor
-    · rintro ⟨K, hK, rfl⟩
-      exact hK
-    · intro ht
-      exact ⟨⟨t, ht.2.1.isCompact⟩, ht, rfl⟩
+      ↑K ⊆ s} = {t : Set α | t.Nonempty ∧ t.Finite ∧ t ⊆ s} :=
+    subset_antisymm (image_subset_iff.mpr fun K hK => hK)
+      (fun t ht => ⟨⟨t, ht.2.1.isCompact⟩, ht, rfl⟩)
   rw [himg]
   exact vietoris.isPreconnected_nonempty_finite_subsets hs
 
@@ -1081,13 +1077,9 @@ theorem isPreconnected_finite_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} := by
   rw [← isEmbedding_toCompacts.isPreconnected_image]
   have himg : toCompacts '' {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} =
-      {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} := by
-    ext K
-    constructor
-    · rintro ⟨L, hL, rfl⟩
-      exact ⟨L.nonempty, hL⟩
-    · intro hK
-      exact ⟨⟨K, hK.1⟩, hK.2, rfl⟩
+      {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} :=
+    subset_antisymm (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
+      (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
   rw [himg]
   exact Compacts.isPreconnected_nonempty_finite_subsets hs
 
@@ -1095,13 +1087,9 @@ theorem isPreconnected_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {K : NonemptyCompacts α | ↑K ⊆ s} := by
   rw [← isEmbedding_toCompacts.isPreconnected_image]
   have himg : toCompacts '' {K : NonemptyCompacts α | ↑K ⊆ s} =
-      {K : Compacts α | (K : Set α).Nonempty ∧ ↑K ⊆ s} := by
-    ext K
-    constructor
-    · rintro ⟨L, hL, rfl⟩
-      exact ⟨L.nonempty, hL⟩
-    · intro hK
-      exact ⟨⟨K, hK.1⟩, hK.2, rfl⟩
+      {K : Compacts α | (K : Set α).Nonempty ∧ ↑K ⊆ s} :=
+    subset_antisymm (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
+      (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
   rw [himg]
   exact Compacts.isPreconnected_nonempty_subsets hs
 

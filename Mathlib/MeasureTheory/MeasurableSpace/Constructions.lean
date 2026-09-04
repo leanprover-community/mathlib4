@@ -951,12 +951,9 @@ lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s :=
   (measurable_pi_apply a).comp (comap_measurable _)
 
 instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) where
-  measurableSet_singleton s := by
-    have h : ({s} : Set (Set α)) = {t | ∀ a, a ∈ t ↔ a ∈ s} := by
-      ext t
-      simp [Set.ext_iff]
-    rw [h]
-    exact measurableSet_setOfPred.2 <| .forall fun a ↦ .iff (measurable_set_mem a) measurable_const
+  measurableSet_singleton s :=
+    have h : ({s} : Set (Set α)) = {t | ∀ a, a ∈ t ↔ a ∈ s} := Set.ext fun t ↦ by simp [Set.ext_iff]
+    h ▸ measurableSet_setOfPred.2 (.forall fun a ↦ .iff (measurable_set_mem a) measurable_const)
 
 lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a

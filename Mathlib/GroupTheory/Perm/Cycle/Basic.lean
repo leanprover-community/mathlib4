@@ -732,11 +732,9 @@ protected theorem IsCycleOn.subtypePerm (hf : f.IsCycleOn s) :
   obtain hs | hs := s.subsingleton_or_nontrivial
   · have := hs.coe_sort
     exact isCycleOn_of_subsingleton _ _
-  have h : { x : s | (f.subtypePerm fun _ => hf.apply_mem_iff : Perm s) x ≠ x } =
-      _root_.Set.univ := by
-    rw [Set.eq_univ_iff_forall]
-    exact fun x => ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
-  exact h ▸ (hf.isCycle_subtypePerm hs).isCycleOn
+  convert! (hf.isCycle_subtypePerm hs).isCycleOn using 1
+  rw [eq_comm, Set.eq_univ_iff_forall]
+  exact fun x => ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
 
 -- TODO: Theory of order of an element under an action
 theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) {n : ℕ} :
@@ -817,7 +815,8 @@ theorem IsCycleOn.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ S
 protected theorem IsCycleOn.countable (hs : f.IsCycleOn s) : s.Countable := by
   obtain rfl | ⟨a, ha⟩ := s.eq_empty_or_nonempty
   · exact Set.countable_empty
-  · exact (Set.countable_range fun n : ℤ => (⇑(f ^ n) : α → α) a).mono fun y hy => hs.2 ha hy
+  · have hsub : s ⊆ Set.range fun n : ℤ => (f ^ n) a := fun y hy => hs.2 ha hy
+    exact (Set.countable_range fun n : ℤ => (⇑(f ^ n) : α → α) a).mono hsub
 
 
 end IsCycleOn
@@ -852,8 +851,8 @@ theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
   refine ⟨s.toList.formPerm, ?_, fun x hx => by
     simpa using List.mem_of_formPerm_apply_ne (Perm.mem_support.1 hx)⟩
-  have h : { a | a ∈ s.toList } = ↑s := by ext a; simp
-  exact h ▸ s.nodup_toList.isCycleOn_formPerm
+  convert! s.nodup_toList.isCycleOn_formPerm using 1
+  simp
 
 end Finset
 
@@ -865,11 +864,10 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
     ∃ f : Perm α, f.IsCycleOn s ∧ { x | f x ≠ x } ⊆ s := by
   classical
   obtain hs' | hs' := s.finite_or_infinite
-  · obtain ⟨t, rfl⟩ : ∃ t : Finset α, ↑t = s := ⟨hs'.toFinset, hs'.coe_toFinset⟩
-    refine ⟨t.toList.formPerm, ?_, fun x hx => by
+  · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
       simpa using List.mem_of_formPerm_apply_ne hx⟩
-    have h : { a | a ∈ t.toList } = ↑t := by ext a; simp
-    exact h ▸ t.nodup_toList.isCycleOn_formPerm
+    convert! hs'.toFinset.nodup_toList.isCycleOn_formPerm using 1
+    simp
   · have := hs.to_subtype
     have := hs'.to_subtype
     obtain ⟨f⟩ : Nonempty (ℤ ≃ s) := inferInstance
