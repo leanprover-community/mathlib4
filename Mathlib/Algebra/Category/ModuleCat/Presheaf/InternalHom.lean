@@ -191,7 +191,7 @@ lemma internalHomEv_app_tmul (F G : PresheafOfModulesOfCommRing.{u} R)
 section and applying a morphism out of `F ⊗ M`. -/
 def internalHomCurryHom (f : F ⊗ M ⟶ G) (U : Cᵒᵖ) (m : M.obj U) :
     F.over U.unop ⟶ G.over U.unop :=
-  mkHom (fun W ↦ ModuleCat.ofHom
+  homMk (fun W ↦ ModuleCat.ofHom
     { toFun x := f.app _ (x ⊗ₜ M.map W.unop.hom.op m)
       map_add' := by intro x y; simp +instances [TensorProduct.add_tmul]
       map_smul' := by intro r x; simp +instances [← TensorProduct.smul_tmul'] })
@@ -215,7 +215,7 @@ lemma internalHomCurryHom_app_apply (f : F ⊗ M ⟶ G) (U : Cᵒᵖ) (m : M.obj
 
 /-- Currying a morphism out of a tensor product of presheaves of modules. -/
 def internalHomCurry (f : F ⊗ M ⟶ G) : M ⟶ internalHom F G :=
-  mkHom (fun U ↦ ModuleCat.ofHom (R := R.obj U)
+  homMk (fun U ↦ ModuleCat.ofHom (R := R.obj U)
     { toFun := internalHomCurryHom f U
       map_add' := by
         intro m n

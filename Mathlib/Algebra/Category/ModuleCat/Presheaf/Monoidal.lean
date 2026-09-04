@@ -49,16 +49,15 @@ noncomputable def tensorObjMap {X Y : Cᵒᵖ} (f : X ⟶ Y) : M₁.obj X ⊗ M�
   ModuleCat.MonoidalCategory.tensorLift (fun m₁ m₂ ↦ M₁.map f m₁ ⊗ₜ M₂.map f m₂)
     (by
       intro m₁ m₁' m₂
-      dsimp +instances
+      dsimp
       rw [map_add, TensorProduct.add_tmul])
     (by intro a m₁ m₂; dsimp; erw [M₁.map_smul]; rfl)
     (by
       intro m₁ m₂ m₂'
-      dsimp +instances
+      dsimp
       rw [map_add, TensorProduct.tmul_add])
     (by intro a m₁ m₂; dsimp; erw [M₂.map_smul, TensorProduct.tmul_smul (r := R.map f a)]; rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two presheaves of modules. -/
 @[simps obj]
@@ -80,7 +79,7 @@ variable {M₁ M₂ M₃ M₄}
 lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
     DFunLike.coe (α := (M₁.obj X ⊗ M₂.obj X :))
       (β := fun _ ↦ (ModuleCat.restrictScalars (R.map f).hom).obj (M₁.obj Y ⊗ M₂.obj Y))
-      (ModuleCat.Hom.hom (R := ↑(R.obj X)) ((tensorObj M₁ M₂).map f)) (m₁ ⊗ₜ[R.obj X] m₂) =
+      (ModuleCat.Hom.hom ((tensorObj M₁ M₂).map f)) (m₁ ⊗ₜ[R.obj X] m₂) =
     M₁.map f m₁ ⊗ₜ[R.obj Y] M₂.map f m₂ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
@@ -89,14 +88,11 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) :
     tensorObj M₁ M₃ ⟶ tensorObj M₂ M₄ :=
-  mkHom (fun X ↦ f.app X ⊗ₘ g.app X)
+  homMk (fun X ↦ f.app' X ⊗ₘ g.app' X)
     (fun φ ↦ ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₃ ↦ by
       dsimp
-      rw [tensorObj_map_tmul]
-      -- Need `erw` because of the type mismatch in `map` and the tensor product.
-      erw [ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul]
-      erw [PresheafOfModules.naturality_apply, PresheafOfModules.naturality_apply]
-      simp))
+      rw [tensorObj_map_tmul, ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul,
+        naturality_apply, naturality_apply]))
 
 end Monoidal
 
@@ -146,7 +142,7 @@ open BraidedCategory
 noncomputable instance symmetricCategory :
     SymmetricCategory (PresheafOfModulesOfCommRing.{u} R) where
   braiding M₁ M₂ :=
-    isoMk (fun X ↦ braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X))
+    isoMk (fun X ↦ braiding (M₁.obj X) (M₂.obj X))
       (fun _ _ f ↦ ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl))
   braiding_naturality_right _ _ _ _ := by
     ext : 1
@@ -169,71 +165,69 @@ section
 variable (M₁ M₂ M₃ M₄ : PresheafOfModulesOfCommRing.{u} R)
 
 lemma tensorObj_obj (X : Cᵒᵖ) :
-    (M₁ ⊗ M₂).obj X =
-      MonoidalCategory.tensorObj (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X) := rfl
+    (M₁ ⊗ M₂).obj X = MonoidalCategory.tensorObj (M₁.obj X) (M₂.obj X) := rfl
 
 attribute [local simp] tensorObj_obj
 
 variable {M₂ M₃} in
 @[simp]
 lemma whiskerLeft_app (f : M₂ ⟶ M₃) (X : Cᵒᵖ) :
-    dsimp% (M₁ ◁ f).app X = whiskerLeft (C := ModuleCat (R.obj X)) (M₁.obj X) (f.app X) :=
-  rfl
+    dsimp% (M₁ ◁ f).app' X = whiskerLeft (M₁.obj X) (f.app' X) := rfl
 
 variable {M₁ M₂} in
 @[simp]
 lemma whiskerRight_app (f : M₁ ⟶ M₂) (M₃ : PresheafOfModulesOfCommRing.{u} R)
     (X : Cᵒᵖ) :
-    dsimp% (f ▷ M₃).app X = whiskerRight (C := ModuleCat (R.obj X)) (f.app X) (M₃.obj X) := rfl
+    dsimp% (f ▷ M₃).app' X = whiskerRight (f.app' X) (M₃.obj X) := rfl
 
 variable {M₁ M₂ M₃ M₄} in
 @[simp]
 lemma tensorHom_app (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) (X : Cᵒᵖ) :
-    dsimp% (f ⊗ₘ g).app X =
-      MonoidalCategory.tensorHom (C := ModuleCat (R.obj X)) (f.app X) (g.app X) := rfl
+    dsimp% (f ⊗ₘ g).app' X =
+      MonoidalCategory.tensorHom (f.app' X) (g.app' X) := rfl
 
 @[simp]
 lemma leftUnitor_hom_app (X : Cᵒᵖ) :
-    dsimp% (λ_ M₁).hom.app X = (leftUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).hom :=
+    dsimp% (λ_ M₁).hom.app' X = (leftUnitor (M₁.obj X)).hom :=
   rfl
 
 @[simp]
 lemma leftUnitor_inv_app (X : Cᵒᵖ) :
-    dsimp% (λ_ M₁).inv.app X = (leftUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).inv := by
+    dsimp% (λ_ M₁).inv.app' X = (leftUnitor (M₁.obj X)).inv := by
   rfl
 
 @[simp]
 lemma rightUnitor_hom_app (X : Cᵒᵖ) :
-    dsimp% (ρ_ M₁).hom.app X = (rightUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).hom :=
+    dsimp% (ρ_ M₁).hom.app' X = (rightUnitor (M₁.obj X)).hom :=
   rfl
 
 @[simp]
 lemma rightUnitor_inv_app (X : Cᵒᵖ) :
-    dsimp% (ρ_ M₁).inv.app X = (rightUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).inv :=
+    dsimp% (ρ_ M₁).inv.app' X = (rightUnitor (M₁.obj X)).inv :=
   rfl
 
 @[simp]
 lemma associator_hom_app (X : Cᵒᵖ) :
-    (α_ M₁ M₂ M₃).hom.app X =
-      (associator (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X) (M₃.obj X)).hom :=
+    (α_ M₁ M₂ M₃).hom.app' X =
+      (associator (M₁.obj X) (M₂.obj X) (M₃.obj X)).hom :=
   rfl
 
 @[simp]
 lemma associator_inv_app (X : Cᵒᵖ) :
-    (α_ M₁ M₂ M₃).inv.app X =
-      (associator (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X) (M₃.obj X)).inv :=
+    (α_ M₁ M₂ M₃).inv.app' X =
+      (associator (M₁.obj X) (M₂.obj X) (M₃.obj X)).inv :=
   rfl
 
 @[simp]
 lemma braiding_hom_app (X : Cᵒᵖ) :
-    dsimp% (braiding M₁ M₂).hom.app X =
-      (braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X)).hom := by
+    dsimp% (braiding M₁ M₂).hom.app' X =
+      (braiding (M₁.obj X) (M₂.obj X)).hom := by
   rfl
 
 @[simp]
 lemma braiding_inv_app (X : Cᵒᵖ) :
-    dsimp% (braiding M₁ M₂).inv.app X =
-      (braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X)).inv := rfl
+    dsimp% (braiding M₁ M₂).inv.app' X =
+      (braiding (M₁.obj X) (M₂.obj X)).inv := rfl
 
 end
 
@@ -260,7 +254,7 @@ variable (f : ∀ (X : Cᵒᵖ), M₁.obj X → M₂.obj X → M₃.obj X)
 /-- A family of bilinear maps compatible with restriction induces a morphism out of the
 tensor product of two presheaves of modules. -/
 noncomputable def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
-  mkHom (fun X ↦ ModuleCat.MonoidalCategory.tensorLift (f X)
+  homMk (fun X ↦ ModuleCat.MonoidalCategory.tensorLift (f X)
     (hadd₁ X) (hsmul₁ X) (hadd₂ X) (hsmul₂ X)) (fun g ↦
       ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₂ ↦ hnat g m₁ m₂))
 
