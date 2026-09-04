@@ -244,6 +244,11 @@ theorem Complex.deriv_const_cpow (hf : DifferentiableAt ℂ f x) (c : ℂ) :
   rw [← derivWithin_univ, derivWithin_const_cpow, derivWithin_univ]
   rwa [differentiableWithinAt_univ]
 
+@[simp]
+theorem Complex.deriv_const_cpow_id (c : ℂ) (x : ℂ) :
+    deriv (fun z ↦ c ^ z) x = log c * c ^ x := by
+  simpa using Complex.deriv_const_cpow (differentiableAt_id (x := x)) c
+
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect.
 See `hasDerivAt_ofReal_cpow_const` for an alternate formulation. -/
@@ -328,6 +333,21 @@ theorem isBigO_deriv_ofReal_cpow_const_atTop (c : ℂ) :
   obtain rfl | hc := eq_or_ne c 0
   · simp_rw [cpow_zero, deriv_const', Asymptotics.isBigO_zero]
   · exact (isTheta_deriv_ofReal_cpow_const_atTop hc).1
+
+/-- The logarithmic derivative of `z ↦ a ^ z` is the constant `log a`. -/
+@[simp]
+theorem Complex.logDeriv_const_cpow {a : ℂ} (ha : a ≠ 0) :
+    logDeriv (fun z : ℂ ↦ a ^ z) = fun _ ↦ Complex.log a := by
+  ext
+  simp [logDeriv_apply, Complex.cpow_ne_zero_iff.mpr (Or.inl ha), field]
+
+/-- The logarithmic derivative of `z ↦ a ^ (-z)` is the constant `-log a`. -/
+@[simp]
+theorem Complex.logDeriv_const_cpow_neg {a : ℂ} (ha : a ≠ 0) :
+    logDeriv (fun z : ℂ ↦ a ^ (-z)) = fun _ ↦ -Complex.log a := by
+  ext z
+  have := (Complex.cpow_ne_zero_iff (y := -z)).mpr (Or.inl ha)
+  simp [logDeriv_apply, deriv_comp_neg, field]
 
 end deriv
 
@@ -743,6 +763,13 @@ theorem deriv_const_rpow (ha : 0 < a) (hf : DifferentiableAt ℝ f x) :
 theorem deriv_const_rpow_id (ha : 0 < a) :
     deriv (a ^ ·) x = Real.log a * a ^ x := by
   rw [deriv_const_rpow ha differentiableAt_fun_id, deriv_id'', mul_one]
+
+/-- The logarithmic derivative of `z ↦ a ^ z` (real `rpow`, `a > 0`) is the constant `log a`. -/
+@[simp]
+theorem Real.logDeriv_const_rpow (ha : 0 < a) :
+    logDeriv (fun x : ℝ ↦ a ^ x) = fun _ ↦ Real.log a := by
+  ext
+  simp [logDeriv_apply, ha, field]
 
 end deriv
 
