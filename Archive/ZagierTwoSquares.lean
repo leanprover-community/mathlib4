@@ -159,5 +159,4 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
   rw [card_fixedPoints_mangle_eq_one, Nat.ModEq] at q
   replace q : 0 < Fintype.card (@swap k).fixedPoints := by lia
   rw [Fintype.card_pos_iff, nonempty_subtype] at q
-  obtain ⟨T, sT⟩ := q
-  exact sq_add_sq_of_swap_eq_self _ sT
+  exact sq_add_sq_of_swap_eq_self _ q.choose_spec
