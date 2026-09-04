@@ -352,8 +352,7 @@ theorem squarefree_and_primeFactors_card_two_iff (n : ℕ) :
     · exact this n ⟨sq, nc⟩ sq nc q p pq.symm (by grind) (by grind)
     refine ⟨p, q, pq', prime_of_mem_primeFactors (n := n) (by grind),
       prime_of_mem_primeFactors (n := n) (by grind), ?_⟩
-    conv_rhs => rw [← prod_primeFactors_of_squarefree sq]
-    grind [Finset.eq_min'_max'_of_card_two nc]
+    grind [prod_primeFactors_of_squarefree sq, Finset.eq_min'_max'_of_card_two nc]
   · rw [← hn, squarefree_mul <| (coprime_primes hp hq).mpr pq.ne,
       primeFactors_mul hp.ne_zero hq.ne_zero, hp.primeFactors, hq.primeFactors]
     exact ⟨⟨(prime_iff.mp hp).squarefree, (prime_iff.mp hq).squarefree⟩, by grind⟩
