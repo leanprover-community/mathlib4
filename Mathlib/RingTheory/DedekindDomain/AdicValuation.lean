@@ -677,14 +677,14 @@ noncomputable def valuation : Valuation (adicCompletion K v) ℤᵐ⁰ :=
 
 theorem valueGroup_eq :
     valueGroup (.ofClass (valuation K v)) =
-      valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) := by
+      valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion _)) := by
   simp [valuation, valueGroup, valueMonoid, ← (toCompletion_surjective K v).range_comp]; rfl
 
 /-- The multiplicative equivalence between the value group of the completion's valuation, pulled
 back along `equiv`, and that of the completion. -/
 def valueGroupEquiv :
     valueGroup (.ofClass (valuation K v)) ≃*
-      valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
+      valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion _)) where
   __ := Set.equivOfEq (by rw [valueGroup_eq K v])
   map_mul' _ _ := rfl
 
@@ -695,7 +695,7 @@ def valueGroupEquiv :
 valuation, pulled back along `equiv`, and that of the completion. -/
 noncomputable def valueGroupOrderIso :
     ValueGroup₀ (.ofClass (valuation K v)) ≃*o
-      ValueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
+      ValueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion _)) where
   toFun := WithZero.map' (valueGroupEquiv K v)
   invFun := WithZero.map' (valueGroupEquiv K v).symm
   left_inv x := by match x with | 0 => simp | .coe a => simp
@@ -720,9 +720,58 @@ theorem embedding_valueGroupOrderIso (g : ValueGroup₀ (.ofClass (valuation K v
 
 theorem valueGroupOrderIso_restrict (x : adicCompletion K v) :
     valueGroupOrderIso K v ((valuation K v).restrict x) =
-      Valued.v.restrict (toCompletion x) := by
+      (Valued.v : Valuation (v.valuation K).Completion _).restrict (toCompletion x) := by
   apply embedding_strictMono.injective
   rw [embedding_valueGroupOrderIso, embedding_restrict, embedding_restrict]; rfl
+
+theorem valueGroup_eq' :
+    valueGroup (.ofClass (valuation K v)) =
+      valueGroup (.ofClass (Valuation.extension (WithVal.valuation (v.valuation K)))) := by
+  simp [valuation, valueGroup, valueMonoid, ← (toCompletion_surjective K v).range_comp]; rfl
+
+/-- The multiplicative equivalence between the value group of the completion's valuation, pulled
+back along `equiv`, and that of the completion. -/
+def valueGroupEquiv' :
+    valueGroup (.ofClass (valuation K v)) ≃*
+      valueGroup (.ofClass (Valuation.extension (WithVal.valuation (v.valuation K)))) where
+  __ := Set.equivOfEq (by rw [valueGroup_eq' K v])
+  map_mul' _ _ := rfl
+
+@[simp] theorem coe_valueGroupEquiv' (a : valueGroup (.ofClass (valuation K v))) :
+    ((valueGroupEquiv' K v a : _) : ℤᵐ⁰ˣ) = a := rfl
+
+/-- The order-preserving multiplicative equivalence between the `ValueGroup₀` of the completion's
+valuation, pulled back along `equiv`, and that of the completion. -/
+noncomputable def valueGroupOrderIso' :
+    ValueGroup₀ (.ofClass (valuation K v)) ≃*o
+      ValueGroup₀ (.ofClass (Valuation.extension (WithVal.valuation (v.valuation K)))) where
+  toFun := WithZero.map' (valueGroupEquiv' K v)
+  invFun := WithZero.map' (valueGroupEquiv' K v).symm
+  left_inv x := by match x with | 0 => simp | .coe a => simp
+  right_inv y := by match y with | 0 => simp | .coe b => simp
+  map_mul' := by simp
+  map_le_map_iff' {a b} := by
+    match a, b with
+    | 0, 0 => simp
+    | 0, .coe _ => simp
+    | .coe _, 0 => simp
+    | .coe a, .coe b => simp [← Subtype.coe_le_coe]
+
+@[simp] theorem coe_valueGroupOrderIso_coe' (a : valueGroup (.ofClass (valuation K v))) :
+    valueGroupOrderIso' K v (a : ValueGroup₀ _) = (valueGroupEquiv' K v a : ValueGroup₀ _) := by
+  simp [valueGroupOrderIso']
+
+theorem embedding_valueGroupOrderIso' (g : ValueGroup₀ (.ofClass (valuation K v))) :
+    embedding (valueGroupOrderIso' K v g) = embedding g := by
+  match g with
+  | 0 => simp [valueGroupOrderIso']
+  | .coe a => simp [coe_valueGroupOrderIso_coe', embedding_apply, coe_valueGroupEquiv']
+
+theorem valueGroupOrderIso_restrict' (x : adicCompletion K v) :
+    valueGroupOrderIso' K v ((valuation K v).restrict x) =
+      (Valuation.extension (WithVal.valuation (v.valuation K))).restrict (toCompletion x) := by
+  apply embedding_strictMono.injective
+  rw [embedding_valueGroupOrderIso', embedding_restrict, embedding_restrict]; rfl
 
 noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
   v := valuation K v
@@ -745,14 +794,27 @@ noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
 instance : ValuativeRel (v.adicCompletion K) := .ofValuation (valuation K v)
 instance : (valuation K v).Compatible := .ofValuation (valuation K v)
 
-instance : IsValuativeTopology (v.adicCompletion K) where
-  mem_nhds_iff {s x} := by
-    simp only [Valued.mem_nhds, Set.image_add_left, Set.preimage_ofPred_eq]
-    let e := ValuativeRel.ValueGroupWithZero.orderMonoidIso (valuation K v)
-    apply e.unitsCongr.symm.exists_congr fun a ↦ ?_
-    simp [-OrderMonoidIso.val_unitsCongr_symm_apply, OrderMonoidIso.unitsCongr_symm_apply,
-      e.lt_symm_apply, e, ← Valuation.restrict_def, sub_eq_neg_add]
-    rfl
+open ValuativeRel in
+instance : IsValuativeTopology (v.adicCompletion K) := by
+  let w := Valuation.extension (WithVal.valuation (v.valuation K))
+  refine .of_mem_nhds_zero_iff_vle (adicCompletion.valuation K v) ?_
+  intro s
+  rw [(isUniformInducing_toCompletion K v).isInducing.nhds_eq_comap 0, toCompletion_zero,
+      Filter.mem_comap]
+  refine ⟨fun ⟨t, ht, hts⟩ ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
+  · obtain ⟨δ, hδ⟩ := (IsValuativeTopology.mem_nhds_zero_iff t).1 ht
+    let δ' := Units.mapEquiv (ValueGroupWithZero.orderMonoidIso w).toMulEquiv δ
+    refine ⟨.mapEquiv (valueGroupOrderIso' K v).symm.toMulEquiv δ', fun x hx ↦ hts (hδ ?_)⟩
+    simpa [← map_lt_map_iff (valueGroupOrderIso' K v), valueGroupOrderIso_restrict', δ', w]
+      using hx
+  · refine ⟨{y | w.restrict y < ↑(Units.mapEquiv (valueGroupOrderIso' K v).toMulEquiv γ)}, ?_,
+      fun x hx ↦ hγ ?_⟩
+    · rw [IsValuativeTopology.mem_nhds_zero_iff]
+      let γ' := Units.mapEquiv (valueGroupOrderIso' K v).toMulEquiv γ
+      exact ⟨.mapEquiv (ValueGroupWithZero.orderMonoidIso w).symm.toMulEquiv γ', by simp [γ']⟩
+    · rw [Set.mem_ofPred_eq, ← map_lt_map_iff (valueGroupOrderIso' K v),
+        valueGroupOrderIso_restrict']
+      simpa using hx
 
 noncomputable instance : CompleteSpace (adicCompletion K v) :=
   ((isUniformInducing_toCompletion K v).completeSpace_congr (toCompletion_surjective K v)).mpr
