@@ -607,8 +607,6 @@ theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x
       grw [hR.out]
       exact (absorbent_ball_zero hr').mono ball_subset_closedBall
 
-
-#exit
 theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤ ‖x‖ := by
   obtain hr | hr := le_or_gt r 0
   · exact (mul_nonpos_of_nonpos_of_nonneg hr <| gauge_nonneg _).trans (norm_nonneg _)
