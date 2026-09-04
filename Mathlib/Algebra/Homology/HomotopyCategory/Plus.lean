@@ -239,6 +239,19 @@ instance :
     exact ⟨K.precylinder, Precylinder.LeftHomotopy.fullSubcategoryEquiv.symm
       { h := cylinder.desc _ _ hf }, ⟨cylinder.homotopyEquiv _ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩⟩)
 
+open HomologicalComplex in
+instance {H : Type*} [Category* H] (L : Plus A ⥤ H) [L.IsLocalization (quasiIso A)] :
+    (quotient A ⋙ L).IsLocalization (CochainComplex.Plus.quasiIso A) := by
+  refine Functor.IsLocalization.comp _ _
+    ((homotopyEquivalences A (.up ℤ)).inverseImage (CochainComplex.Plus.ι A))
+    (quasiIso A) _ ?_ ?_ ?_
+  · intro _ _ f hf
+    refine Localization.inverts L (quasiIso A) _ ?_
+    simpa [quasiIso, quotient_map_mem_quasiIso_iff]
+  · intro K L f hf
+    exact homotopyEquivalences_le_quasiIso _ _ _ hf
+  · rw [quasiIso_map_quotient_eq_quasiIso]
+
 /-- The collection of all single functors `C ⥤ HomotopyCategory.Plus C` for `n : ℤ`
 along with their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
