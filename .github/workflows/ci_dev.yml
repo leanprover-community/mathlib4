@@ -168,13 +168,38 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
+          BENCH="$PWD/.github/ci-dev"
           cd build-src
           echo "commit:    $(git rev-parse HEAD)"
           echo "toolchain: $(cat lean-toolchain)"
+
+          # This machine may host a second runner, so account for whole-machine
+          # CPU across the build. /proc/stat is not namespaced, so it sees every
+          # core on the host. own_share well under 1.0 means a neighbour was
+          # competing and this wall clock is not comparable to the other fleets.
+          bash "$BENCH/contention.sh" sample /tmp/load.txt 15 &
+          sampler=$!
+          before=$(bash "$BENCH/contention.sh" busy)
+          start=$(date +%s.%N)
+          # `times` must run in THIS shell, not a subshell, or the children
+          # accounting is empty. Redirecting a builtin keeps it in-process.
+          times > /tmp/times_before.txt
+
           # No `cache get`: every olean is compiled here, on every fleet.
           TIMEFORMAT='TIMED lakebuild real=%3R user=%3U sys=%3S'
           time lake build Mathlib
+
+          times > /tmp/times_after.txt
+          end=$(date +%s.%N)
+          after=$(bash "$BENCH/contention.sh" busy)
+          kill "$sampler" 2>/dev/null || true
+
           echo "oleans:    $(find .lake/build/lib -name '*.olean' 2>/dev/null | wc -l)"
+          wall=$(awk -v a="$start" -v b="$end" 'BEGIN{printf "%.1f", b-a}')
+          own=$(bash "$BENCH/contention.sh" cputimes /tmp/times_before.txt /tmp/times_after.txt)
+          bash "$BENCH/contention.sh" report "$before" "$after" "$own" "$wall"
+          echo "--- load samples ---"; tail -40 /tmp/load.txt 2>/dev/null || true
+          exit 0
 
       - name: how to read this
         if: always()
