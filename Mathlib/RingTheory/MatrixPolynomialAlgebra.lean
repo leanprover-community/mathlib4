@@ -133,7 +133,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
       (eval₂AlgHom (AlgHom.id R _) (scalar n r)
         fun x => (scalar_commute _ (Commute.all _) _).symm) from
-    DFunLike.congr_fun this M
+    congr($this M)
   ext : 1
   · ext M : 1
     simp [Function.comp_def]
@@ -159,7 +159,7 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
 theorem eval_det {R : Type*} [CommRing R] (M : Matrix n n R[X]) (r : R) :
     Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by
   rw [Polynomial.eval, ← coe_eval₂RingHom, RingHom.map_det]
-  exact congr_arg det <| ext fun _ _ ↦ matPolyEquiv_eval _ _ _ _ |>.symm
+  exact congr(det $(ext fun _ _ ↦ matPolyEquiv_eval _ _ _ _ |>.symm))
 
 lemma eval_det_add_X_smul {R : Type*} [CommRing R] (A : Matrix n n R[X]) (M : Matrix n n R) :
     (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by

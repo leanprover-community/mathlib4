@@ -97,7 +97,7 @@ def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F
 
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
 instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
-  map_injective e := NatTrans.congr_app e (Classical.arbitrary J)
+  map_injective e := congr($(e).app (Classical.arbitrary J))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism

@@ -332,7 +332,7 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
   have hy : IsIntegral R y := by
     refine ⟨X ^ n - C x, monic_X_pow_sub_C _ hn, ?_⟩
     simp only [y, eval₂_sub, eval₂_X_pow, div_pow, eval₂_C]
-    replace hx := congr_arg (algebraMap R K) hx
+    replace hx := congr(algebraMap R K $hx)
     rw [map_pow] at hx
     simp [hx, ha]
   obtain ⟨k, hk⟩ := algebraMap_eq_of_integral hy

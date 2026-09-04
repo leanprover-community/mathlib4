@@ -642,8 +642,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣
 @[simp]
 theorem morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
     ((f ∣_ U) x).1 = f x.1 :=
-  congr_arg (fun f => (Scheme.Hom.toLRSHom f).base x)
-    (morphismRestrict_ι f U)
+  congr((Scheme.Hom.toLRSHom $(morphismRestrict_ι f U)).base x)
 
 theorem morphismRestrict_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     ⇑(f ∣_ U) = U.1.restrictPreimage f :=
@@ -874,7 +873,7 @@ lemma Scheme.Hom.isPullback_resLE
     IsPullback (g.resLE UX UY (by simp [*])) (iY.resLE UT UY (by simp [*]))
       (iX.resLE US UX hUSX) (f.resLE US UT hUST) := by
   refine .paste_horiz (v₁₂ := iY.resLE _ _
-    ((g.preimage_mono hUSX).trans_eq congr(($H.w) ⁻¹ᵁ US) :)) ?_ ?_
+    ((g.preimage_mono hUSX).trans_eq congr($H.w ⁻¹ᵁ US) :)) ?_ ?_
   · refine (IsOpenImmersion.isPullback _ _ _ _ (by simp) ?_).flip
     simp only [Scheme.opensRange_homOfLE, ← Scheme.Hom.comp_preimage, Scheme.Hom.resLE_comp_ι]
     rw [Scheme.Hom.comp_preimage, ← (g ⁻¹ᵁ UX).ι.image_injective.eq_iff]

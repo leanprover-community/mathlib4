@@ -182,7 +182,7 @@ theorem ContMDiffFiberwiseLinear.locality_aux₂
     ext v
     have h1 : e (y, v) = (y, φ p y v) := heuφ _ ⟨(id hyp : (y, v).fst ∈ u p), trivial⟩
     have h2 : e (y, v) = (y, φ p' y v) := heuφ _ ⟨(id hyp' : (y, v).fst ∈ u p'), trivial⟩
-    exact congr_arg Prod.snd (h1.symm.trans h2)
+    exact congr($(h1.symm.trans h2).snd)
   have hUu' : U = ⋃ i, u i := by
     ext x
     rw [mem_iUnion]

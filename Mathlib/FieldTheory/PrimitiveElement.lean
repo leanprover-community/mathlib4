@@ -288,7 +288,7 @@ theorem exists_primitive_element_of_finite_intermediateField
   have := FiniteDimensional.of_finite_intermediateField F E
   rcases finite_or_infinite F with (_ | _)
   · obtain ⟨α, h⟩ := exists_primitive_element_of_finite_bot F K
-    exact ⟨α, by simpa only [lift_adjoin_simple, lift_top] using congr_arg lift h⟩
+    exact ⟨α, by simpa only [lift_adjoin_simple, lift_top] using congr(lift $h)⟩
   · apply induction_on_adjoin (fun K ↦ ∃ α : E, F⟮α⟯ = K) ⟨0, adjoin_zero⟩
     rintro K β ⟨α, rfl⟩
     simp_rw [adjoin_simple_adjoin_simple, eq_comm]
@@ -373,7 +373,7 @@ theorem primitive_element_iff_minpoly_natDegree_eq (α : E) :
     F⟮α⟯ = ⊤ ↔ (minpoly F α).natDegree = finrank F E := by
   rw [← adjoin.finrank (IsIntegral.of_finite F α), ← finrank_top F E]
   refine ⟨fun h => ?_, fun h => eq_of_le_of_finrank_eq le_top h⟩
-  exact congr_arg (fun K : IntermediateField F E => finrank F K) h
+  exact congr(finrank F $h)
 
 theorem primitive_element_iff_minpoly_degree_eq (α : E) :
     F⟮α⟯ = ⊤ ↔ (minpoly F α).degree = finrank F E := by

@@ -771,7 +771,7 @@ lemma hasDerivAt_fourier
     apply ContinuousLinearMap.ext_ring
     rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.flip_apply,
       ContinuousLinearMap.mul_apply', one_mul, map_smul]
-    exact congr_arg (fun x ↦ v • x) (one_smul ℝ (f v)).symm
+    exact congr(v • $((one_smul ℝ (f v)).symm))
   convert! (VectorFourier.hasFDerivAt_fourierIntegral L hf hf'' w).hasDerivAt using 1
   rw [fourierIntegral_continuousLinearMap_apply' h_int, VectorFourier.fourierIntegral,
     fourier_real_eq]

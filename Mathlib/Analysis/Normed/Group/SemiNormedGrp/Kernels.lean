@@ -75,8 +75,7 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
               simp)
             fun _ _ w =>
             SemiNormedGrp₁.hom_ext <| Subtype.ext
-              (NormedAddGroupHom.lift_unique f.1.range _ _ _
-                (congr_arg Subtype.val (congr_arg Hom.hom w))) }
+              (NormedAddGroupHom.lift_unique f.1.range _ _ _ congr($(w).hom.val)) }
 
 -- Sanity check
 example : HasCokernels SemiNormedGrp₁ := by infer_instance
@@ -111,7 +110,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
           have := fun (c : Fork f g) =>
             show NormedAddGroupHom.compHom (f - g).hom c.ι.hom = 0 by
               rw [hom_sub, map_sub, AddMonoidHom.sub_apply, sub_eq_zero]
-              exact congr_arg Hom.hom c.condition
+              exact congr($(c.condition).hom)
           Fork.IsLimit.mk _
             (fun c => ofHom <|
               NormedAddGroupHom.ker.lift (Fork.ι c).hom _ <| this c)
@@ -157,7 +156,7 @@ def isColimitCokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
       change (f ≫ s.π) b = 0
       simp)
     fun _ _ w => SemiNormedGrp.hom_ext <| NormedAddGroupHom.lift_unique f.hom.range _ _ _ <|
-      congr_arg Hom.hom w
+      congr($(w).hom)
 
 instance : HasCokernels SemiNormedGrp.{u} where
   has_colimit f :=

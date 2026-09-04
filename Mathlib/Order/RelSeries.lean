@@ -984,11 +984,11 @@ theorem exists_relSeries_covBy_and_head_eq_bot_and_last_eq_bot
   wlog h₁ : s.head = ⊥
   · obtain ⟨t, i, hi, ht⟩ := this (s.cons ⊥ (bot_lt_iff_ne_bot.mpr h₁)) rfl
     exact ⟨t, ⟨fun j ↦ i (j.succ.cast (by simp)), fun _ _ ↦ by simp⟩,
-      funext fun j ↦ (congr_fun hi _).trans (RelSeries.cons_cast_succ _ _ _ _), ht⟩
+      funext fun j ↦ congr($hi _).trans (RelSeries.cons_cast_succ _ _ _ _), ht⟩
   wlog h₂ : s.last = ⊤
   · obtain ⟨t, i, hi, ht⟩ := this (s.snoc ⊤ (lt_top_iff_ne_top.mpr h₂)) (by simp [h₁]) (by simp)
     exact ⟨t, ⟨fun j ↦ i (.cast (by simp) j.castSucc), fun _ _ ↦ by simp⟩,
-      funext fun j ↦ (congr_fun hi _).trans (RelSeries.snoc_cast_castSucc _ _ _ _), ht⟩
+      funext fun j ↦ congr($hi _).trans (RelSeries.snoc_cast_castSucc _ _ _ _), ht⟩
   obtain ⟨t, i, hit, hi₁, hi₂⟩ := s.exists_relSeries_covBy
   refine ⟨t, i, hit, ?_, ?_⟩
   · rw [← h₁, RelSeries.head, RelSeries.head, ← hi₁, ← hit, Function.comp]

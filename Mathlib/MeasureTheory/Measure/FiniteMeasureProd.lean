@@ -64,7 +64,7 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
 @[simp] lemma mass_prod : (μ.prod ν).mass = μ.mass * ν.mass := by
   simp only [coeFn_def, mass, univ_prod_univ.symm, toMeasure_prod]
   rw [← ENNReal.toNNReal_mul]
-  exact congr_arg ENNReal.toNNReal (Measure.prod_prod univ univ)
+  exact congr($(Measure.prod_prod univ univ).toNNReal)
 
 @[simp] lemma zero_prod : (0 : FiniteMeasure α).prod ν = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, zero_mul]

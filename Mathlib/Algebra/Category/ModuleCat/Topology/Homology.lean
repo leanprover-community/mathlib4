@@ -120,7 +120,7 @@ instance : CategoryWithHomology (TopModuleCat R) := by
       intro x y hy e
       obtain ⟨z, hz⟩ := (Submodule.Quotient.eq _).mp e
       obtain rfl := eq_sub_iff_add_eq.mp hz
-      simpa [show S.g (S.f z) = 0 from ConcreteCategory.congr_hom S.zero z] using hy
+      simpa [show S.g (S.f z) = 0 from congr($S.zero z)] using hy
   rw [← isIso_iff_of_reflects_iso _ (forget₂ (TopModuleCat R) TopCat),
     TopCat.isIso_iff_isHomeomorph, isHomeomorph_iff_isEmbedding_surjective]
   exact ⟨hF', hF.2⟩

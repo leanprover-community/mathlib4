@@ -537,8 +537,7 @@ def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
 
 lemma Complex.coe_selfAdjointEquiv (z : selfAdjoint ℂ) :
     (selfAdjointEquiv z : ℂ) = z := by
-  simpa [selfAdjointEquiv_symm_apply]
-    using (congr_arg Subtype.val <| Complex.selfAdjointEquiv.left_inv z)
+  simpa [selfAdjointEquiv_symm_apply] using congr($(Complex.selfAdjointEquiv.left_inv z).val)
 
 @[simp]
 lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
@@ -562,8 +561,7 @@ lemma star_mul_self_add_self_mul_star (a : A) :
     star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
   calc
-    star a * a + a * star a = _ :=
-      congr((star $(a_eq)) * $(a_eq) + $(a_eq) * (star $(a_eq)))
+    star a * a + a * star a = _ := congr((star $a_eq) * $a_eq + $a_eq * star $a_eq)
     _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
       simp [mul_add, add_mul, smul_smul, mul_smul_comm,
         smul_mul_assoc]
@@ -573,8 +571,7 @@ lemma star_mul_self_sub_self_mul_star (a : A) :
     star a * a - a * star a = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
   calc
-    star a * a - a * star a = _ :=
-      congr((star $(a_eq)) * $(a_eq) - $(a_eq) * (star $(a_eq)))
+    star a * a - a * star a = _ := congr((star $a_eq) * $a_eq - $a_eq * star $a_eq)
     _ = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) := by
       simp [mul_add, add_mul, mul_smul_comm, smul_mul_assoc, smul_smul]
       module

@@ -77,7 +77,7 @@ theorem toPiLocalization_injective : Function.Injective (toPiLocalization R) := 
   rw [← one_mul r, ← one_mul r']
   by_contra ne
   have ⟨I, mI, hI⟩ := (Module.eqIdeal R r r').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
-  have ⟨s, hs⟩ := (IsLocalization.eq_iff_exists I.primeCompl _).mp (congr_fun eq ⟨I, mI⟩)
+  have ⟨s, hs⟩ := (IsLocalization.eq_iff_exists I.primeCompl _).mp congr($eq ⟨I, mI⟩)
   exact s.2 (hI hs)
 
 theorem toPiLocalization_apply_apply {r I} : toPiLocalization R r I = algebraMap R _ r := rfl
@@ -128,13 +128,13 @@ theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
   have ⟨J, max, notMem⟩ := PrimeSpectrum.exists_maximal_notMem_range_sigmaToPi_of_infinite R
   obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max⟩ 1)
   have : r = 0 := funext fun i ↦ toPiLocalization_injective _ <| funext fun I ↦ by
-    replace hr := congr_fun hr ⟨_, I.2.comap_piEvalRingHom⟩
+    replace hr := congr($hr ⟨_, I.2.comap_piEvalRingHom⟩)
     dsimp only [toPiLocalization_apply_apply, Subtype.coe_mk] at hr
     simp_rw [toPiLocalization_apply_apply,
       ← Localization.AtPrime.mapPiEvalRingHom_algebraMap_apply, hr]
     rw [Function.update_of_ne]; · simp_rw [Pi.zero_apply, map_zero]
     exact fun h ↦ notMem ⟨⟨i, I.1, I.2.isPrime⟩, PrimeSpectrum.ext congr($h.1)⟩
-  replace hr := congr_fun hr ⟨J, max⟩
+  replace hr := congr($hr ⟨J, max⟩)
   rw [this, map_zero, Function.update_self] at hr
   exact zero_ne_one hr
 
@@ -171,7 +171,7 @@ def toPiLocalization : R →ₐ[R] PiLocalization R := Algebra.ofId R (PiLocaliz
 
 theorem toPiLocalization_injective : Function.Injective (toPiLocalization R) :=
   fun _ _ eq ↦ MaximalSpectrum.toPiLocalization_injective R <|
-    funext fun I ↦ congr_fun eq I.toPrimeSpectrum
+    funext fun I ↦ congr($eq I.toPrimeSpectrum)
 
 /-- The projection from the product of localizations at primes to the product of
 localizations at maximal ideals. -/

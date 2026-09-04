@@ -163,7 +163,7 @@ theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K
   constructor
   · rintro ⟨⟨m, hm⟩, hm'⟩
     choose f hf using hm'
-    exact ⟨m, ⟨fun v hv => ⟨f ⟨v, hv⟩, congr_arg ((↑) : W → V) (hf ⟨v, hv⟩)⟩, hm⟩⟩
+    exact ⟨m, ⟨fun v hv => ⟨f ⟨v, hv⟩, congr($(hf ⟨v, hv⟩))⟩, hm⟩⟩
   · rintro ⟨a, ⟨h, ha⟩⟩
     choose f hf using h
     exact ⟨⟨a, ha⟩, fun v => ⟨f v.1 v.2, Subtype.ext (hf v.1 v.2)⟩⟩
@@ -248,7 +248,7 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
     obtain ⟨h1⟩ := h1
     obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
       Finsupp.uniqueLinearEquiv _ _ default).symm).surjective ⟨x, hx⟩
-    exact ⟨y, congr(Subtype.val $(hy))⟩
+    exact ⟨y, congr($(hy).val)⟩
   have := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ Cardinal.lt_one_iff.1 (h.lt_of_ne h1))
   have := b.repr.toEquiv.subsingleton
   exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))

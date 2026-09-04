@@ -75,7 +75,7 @@ theorem eq_of_forall_π_app_eq (a b : C)
   specialize h ({i} : Finset ι)
   rw [Subtype.ext_iff] at h
   simp only [π_app, ContinuousMap.precomp, ContinuousMap.coe_mk] at h
-  exact congr_fun h ⟨i, Finset.mem_singleton.mpr rfl⟩
+  exact congr($h ⟨i, Finset.mem_singleton.mpr rfl⟩)
 
 end IndexFunctor
 

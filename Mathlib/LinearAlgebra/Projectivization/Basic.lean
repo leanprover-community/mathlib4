@@ -169,7 +169,7 @@ noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // finrank K 
     rw [submodule_mk, SetLike.ext'_iff, Submodule.span_singleton_eq_range]
     refine (Set.range_subset_iff.2 fun _ ↦ H.smul_mem _ v.2).antisymm fun x hx ↦ ?_
     rcases hv ⟨x, hx⟩ with ⟨c, hc⟩
-    exact ⟨c, congr_arg Subtype.val hc⟩
+    exact ⟨c, congr($(hc).val)⟩
 
 variable {K V}
 
@@ -179,7 +179,7 @@ noncomputable def mk'' (H : Submodule K V) (h : finrank K H = 1) : ℙ K V :=
 
 @[simp]
 theorem submodule_mk'' (H : Submodule K V) (h : finrank K H = 1) : (mk'' H h).submodule = H :=
-  congr_arg Subtype.val <| (equivSubmodule K V).apply_symm_apply ⟨H, h⟩
+  congr($((equivSubmodule K V).apply_symm_apply ⟨H, h⟩).val)
 
 @[simp]
 theorem mk''_submodule (v : ℙ K V) : mk'' v.submodule v.finrank_submodule = v :=

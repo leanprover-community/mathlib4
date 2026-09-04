@@ -82,11 +82,11 @@ namespace Hom
     {P : RootPairing ι R M N} {Q : RootPairing ι₂ R M₂ N₂} (f : Hom P Q) {i j : ι} :
     Q.pairing (f.indexEquiv i) (f.indexEquiv j) = P.pairing i j := by
   have hi : f.weightMap (P.root i) = Q.root (f.indexEquiv i) := by
-    simpa using congr_fun f.root_weightMap i
+    simpa using congr($f.root_weightMap i)
   have hj : f.coweightMap (Q.coroot (f.indexEquiv j)) = P.coroot j := by
-    simpa using congr_fun f.coroot_coweightMap (f.indexEquiv j)
+    simpa using congr($f.coroot_coweightMap (f.indexEquiv j))
   simpa  [← root_coroot_eq_pairing, ← hi, ← hj] using
-    LinearMap.congr_fun₂ f.weight_coweight_transpose (Q.coroot (f.indexEquiv j)) (P.root i)
+    congr($f.weight_coweight_transpose (Q.coroot (f.indexEquiv j)) (P.root i))
 
 lemma weight_coweight_transpose_apply {ι₂ M₂ N₂ : Type*}
     [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
@@ -213,13 +213,13 @@ def weightHom (P : RootPairing ι R M N) : End P →* (Module.End R M) where
 lemma weightHom_injective (P : RootPairing ι R M N) : Injective (weightHom P) := by
   intro f g hfg
   ext x
-  · exact LinearMap.congr_fun hfg x
+  · exact congr($hfg x)
   · refine LinearEquiv.injective P.flip.toPerfPair ?_
     simp_rw [← weight_coweight_transpose_apply]
-    exact congrFun (congrArg DFunLike.coe (congrArg LinearMap.dualMap hfg)) (P.flip.toPerfPair x)
+    exact congr($(hfg).dualMap (P.flip.toPerfPair x))
   · refine Embedding.injective P.root ?_
     simp_rw [← root_weightMap_apply]
-    exact congrFun (congrArg DFunLike.coe hfg) (P.root x)
+    exact congr($hfg (P.root x))
 
 /-- The coweight space representation of endomorphisms -/
 def coweightHom (P : RootPairing ι R M N) : End P →* (N →ₗ[R] N)ᵐᵒᵖ where
@@ -522,7 +522,7 @@ variable (e : P.Equiv Q) (i : ι) (x : M) (y : N) (i₂ : ι₂) (x₂ : M₂) (
 
 lemma toLinearMap_weightEquiv :
     Q.toLinearMap (e.weightEquiv x) y₂ = P.toLinearMap x (e.coweightEquiv y₂) := by
-  simpa using LinearMap.congr_fun (e.weight_coweight_transpose_apply P Q y₂) x
+  simpa using congr($(e.weight_coweight_transpose_apply P Q y₂) x)
 
 lemma coroot'_weightEquiv :
     Q.coroot' (e.indexEquiv i) (e.weightEquiv x) = P.coroot' i x := by
@@ -732,7 +732,7 @@ instance : DistribMulAction P.Aut M where
 
 @[simp] lemma root_indexEquiv_eq_smul (i : ι) (g : P.Aut) :
     P.root (g.indexEquiv i) = g • P.root i := by
-  simpa using! (congr_fun g.root_weightMap i).symm
+  simpa using! congr($g.root_weightMap i).symm
 
 open MulOpposite in
 instance : DistribMulAction P.Autᵐᵒᵖ N where

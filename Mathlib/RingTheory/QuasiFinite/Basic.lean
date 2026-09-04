@@ -379,7 +379,7 @@ lemma QuasiFiniteAt.baseChange (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p]
   let g : A ⊗[R] S →ₐ[A] A ⊗[R] Localization.AtPrime p :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   have : f.comp g = IsScalarTower.toAlgHom _ _ _ := by ext; simp [f, g]
-  replace this (x : _) : f (g x) = algebraMap _ _ x := DFunLike.congr_fun this x
+  replace this (x : _) : f (g x) = algebraMap _ _ x := congr($this x)
   refine .of_forall_exists_mul_mem_range f fun x ↦ ?_
   obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq q.primeCompl x
   refine ⟨g s, this s ▸ IsLocalization.map_units _ ⟨s, hs⟩, ?_⟩

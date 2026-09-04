@@ -225,7 +225,7 @@ noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
   MonCat.ext fun x =>
-    ConcreteCategory.congr_hom ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
+    congr($((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit monoid. -/
@@ -266,7 +266,7 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) wh
   fac t j := rfl
   uniq t m h := MonCat.ext fun y ↦ by
     obtain ⟨j, y, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y
-    exact ConcreteCategory.congr_hom (h j) y
+    exact congr($(h j) y)
 
 @[to_additive]
 instance forget_preservesFilteredColimits :
