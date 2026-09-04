@@ -404,6 +404,22 @@ instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
 lemma le_def [LE Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} :
     D₁ ≤ D₂ ↔ (D₁ : X → Y) ≤ (D₂ : X → Y) := ⟨(·),(·)⟩
 
+/--
+If `D₁` is supported within `t` and `D₂` is nonnegative outside of `t`, then `D₁ ≤ D₂` can be
+checked on `t` alone.
+-/
+lemma le_iff_of_support_subset [LE Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {t : Set X}
+    (hD₁ : D₁.support ⊆ t) (hD₂ : ∀ z ∈ tᶜ, 0 ≤ D₂ z) :
+    D₁ ≤ D₂ ↔ ∀ z ∈ t, D₁ z ≤ D₂ z := by
+  peel with z
+  refine ⟨by tauto, fun m ↦ ?_⟩
+  by_cases o : z ∈ t
+  · exact m o
+  simp only [support_subset_iff, ne_eq] at hD₁
+  by_cases hz : D₁ z = 0
+  · simp_all
+  exact m <| hD₁ z hz
+
 lemma single_nonneg [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
     0 ≤ single x y ↔ 0 ≤ y := by
   simp only [le_def, coe_single]
@@ -572,6 +588,69 @@ lemma exists_single_le_pos [DecidableEq X] {D : locallyFinsupp X ℤ} (h : 0 < D
   · simpa [he, single_apply] using! h.le e
 
 end LinearOrder
+
+/-!
+## Filtering
+
+Setting a function with locally finite support to zero outside of a given set, without changing its
+domain. This is the analogue of `Finsupp.filter`; see `Function.locallyFinsuppWithin.restrict` for
+the operation that also shrinks the domain.
+-/
+
+/--
+`D.filter t` is the function with locally finite support that agrees with `D` on `t` and is zero
+outside of `t`.
+
+In contrast to `Function.locallyFinsuppWithin.restrict`, the domain `U` is unchanged, so the result
+still has locally finite support within all of `U`.
+-/
+noncomputable def filter [Zero Y] (D : locallyFinsuppWithin U Y) (t : Set X) :
+    locallyFinsuppWithin U Y where
+  toFun := t.indicator D
+  supportWithinDomain' :=
+    (Set.support_indicator (s := t) (f := (D : X → Y))).le.trans <|
+      inter_subset_right.trans D.supportWithinDomain
+  supportLocallyFiniteWithinDomain' z hz := by
+    obtain ⟨V, hV⟩ := D.supportLocallyFiniteWithinDomain z hz
+    exact ⟨V, hV.1, hV.2.subset <| inter_subset_inter_right _ (by simp)⟩
+
+lemma coe_filter [Zero Y] (D : locallyFinsuppWithin U Y) (t : Set X) :
+    ⇑(D.filter t) = t.indicator D := rfl
+
+open scoped Classical in
+lemma filter_apply [Zero Y] (D : locallyFinsuppWithin U Y) (t : Set X) (z : X) :
+    D.filter t z = if z ∈ t then D z else 0 := Set.indicator_apply t D z
+
+@[simp]
+lemma filter_apply_of_mem [Zero Y] (D : locallyFinsuppWithin U Y) {t : Set X} {z : X}
+    (hz : z ∈ t) : D.filter t z = D z := Set.indicator_of_mem hz D
+
+@[simp]
+lemma filter_apply_of_notMem [Zero Y] (D : locallyFinsuppWithin U Y) {t : Set X} {z : X}
+    (hz : z ∉ t) : D.filter t z = 0 := Set.indicator_of_notMem hz D
+
+@[simp]
+lemma filter_apply_eq_zero_iff [Zero Y] (D : locallyFinsuppWithin U Y) (t : Set X) {z : X} :
+    D.filter t z = 0 ↔ z ∈ t → D z = 0 := Set.indicator_apply_eq_zero
+
+lemma filter_eqOn [Zero Y] (D : locallyFinsuppWithin U Y) (t : Set X) :
+    Set.EqOn (D.filter t) D t := Set.eqOn_indicator
+
+lemma filter_eqOn_compl [Zero Y] (D : locallyFinsuppWithin U Y) (t : Set X) :
+    Set.EqOn (D.filter t) 0 tᶜ := Set.eqOn_indicator'
+
+@[simp]
+lemma support_filter [Zero Y] (D : locallyFinsuppWithin U Y) (t : Set X) :
+    (D.filter t).support = D.support ∩ t := by
+  rw [support, coe_filter, Set.support_indicator, inter_comm]
+
+@[simp]
+lemma filter_univ [Zero Y] (D : locallyFinsuppWithin U Y) : D.filter univ = D :=
+  DFunLike.coe_injective <| Set.indicator_univ _
+
+@[simp]
+lemma filter_zero [Zero Y] (t : Set X) : (0 : locallyFinsuppWithin U Y).filter t = 0 :=
+  DFunLike.coe_injective (Set.indicator_zero' Y)
 
 /-!
 ## Restriction
