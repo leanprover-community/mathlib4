@@ -63,7 +63,7 @@ def State.getMatch (state : State α) (e : Expr) : MetaM (Array α) := state.tre
 environment extension is named after the declaration in which this function is called. -/
 def initializeEnvExt (typeName : Name)
     (envExtName : Name := by exact decl_name%) : IO (EnvExt α) := do
-  -- we only need this to deduplicate entries in the DiscrTree
+  -- we prevent any deduplication in the DiscrTree
   have : BEq α := ⟨fun _ _ ↦ false⟩
   let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertKeyValue ks v) dt
   registerScopedEnvExtension {
