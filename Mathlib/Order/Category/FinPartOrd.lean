@@ -47,6 +47,11 @@ attribute [instance] FinPartOrd.isFintype
 abbrev of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FinPartOrd.of X` as `↧X`. -/
+@[app_delab FinPartOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : Inhabited FinPartOrd :=
   ⟨of PUnit⟩
 
@@ -60,7 +65,7 @@ instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
   inferInstanceAs <| HasForget₂ (InducedCategory _ toPartOrd) _
 
 instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := FintypeCat.homMk f.hom
 
 /-- Typecheck a `OrderHom` as a morphism in `FinPartOrd`. -/
