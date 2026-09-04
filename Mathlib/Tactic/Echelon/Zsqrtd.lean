@@ -71,6 +71,6 @@ equality `decide` settles, so the certificate conditions carry no leaf certifier
     let_expr Zsqrtd dE := R | return none
     let some d ← getIntValue? dE | return none
     have dQ : Q(ℤ) := dE
-    return some { producer := zsqrtdProducer dQ d, leafCertifier? := none }
+    return some { producer := zsqrtdProducer dQ d }
 
 end Mathlib.Tactic.Echelon

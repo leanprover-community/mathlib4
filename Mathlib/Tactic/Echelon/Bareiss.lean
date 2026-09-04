@@ -23,7 +23,7 @@ The elimination itself is the model-parameterized `bareissDecomp` in
 - `mkBareissDecomposition`: produce and elaborate the decomposition of a matrix literal.
 - `BareissResult`: the elaborated certificate together with the computed decomposition data.
 - `checkBareissApplicable`: the applicability check of the Bareiss method.
-- `checkDecideEq`: check that `decide` settles equality in a ring.
+- `checkDecideEq`: check whether `decide` settles equality in a ring.
 - `normNumCertifier`: `norm_num`'s core as a leaf certifier.
 - `modelFor`: select the computation model for a ring.
 -/
@@ -39,15 +39,13 @@ namespace Mathlib.Tactic.Echelon
 /-- Check whether the equality with zero in `α` directly reduces to a verdict by `decide`.
 Note that ℝ has a `DecidableEq` instance via classical that isn't usable, so a mere instance
 synthesis check is insufficient. -/
-def checkDecideEq {u : Level} (α : Q(Type u)) : MetaM Unit := do
+def checkDecideEq {u : Level} (α : Q(Type u)) : MetaM Bool := do
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass
-  let some inst ← synthInstance? q(Decidable (((1 : ℤ) : $α) = 0))
-    | throwError "equality with zero in the element type is not decidable{indentExpr α}"
-  unless (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
-      (·.isAppOf ``Decidable.isFalse) do
-    throwError "`decide` cannot settle equality in the element type{indentExpr α}"
+  let some inst ← synthInstance? q(Decidable (((1 : ℤ) : $α) = 0)) | return false
+  return (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
+    (·.isAppOf ``Decidable.isFalse)
 
 /-- `norm_num`'s core as a leaf certifier. -/
 def normNumCertifier : LeafCertifier := fun p => do
@@ -75,14 +73,13 @@ def modelFor {u : Level} (α : Q(Type u)) : MetaM Model := do
       trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr α}"
       return m
   -- fallback model (rational literals)
-  let leaf? ← try
-      checkDecideEq α
-      pure none
-    catch _ =>
+  let leaf? ← do
+    if ← checkDecideEq α then pure none
+    else
       trace[Tactic.evalRank] "`decide` cannot settle equality in the element type; \
         using `norm_num` leaves{indentExpr α}"
       pure (some normNumCertifier)
-  return { producer := ← ratProducer α, leafCertifier? := leaf? }
+  return { producer := ← ratProducer (u := u) α, leafCertifier? := leaf? }
 
 /-- The result of producing a decomposition by Bareiss. -/
 structure BareissResult where

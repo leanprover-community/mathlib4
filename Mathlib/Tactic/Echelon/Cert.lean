@@ -6,6 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
+public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Util.Qq
 
@@ -56,10 +57,8 @@ structure MatrixViews (u : Level) (m n : ℕ) (α : Q(Type u)) where
 /-- Build the `MatrixViews` of the row-major entries `rows`. -/
 def MatrixViews.ofEntries {u : Level} (α : Q(Type u)) (m n : Nat) (rows : Array (Array Q($α))) :
     MatrixViews u m n α :=
-  have elems : Q(Fin $m → Fin $n → $α) :=
-    PiFin.mkLiteralQ (α := q(Fin $n → $α)) (n := m) fun i =>
-      PiFin.mkLiteralQ (α := α) (n := n) fun j => (rows[i]!)[j]!
-  { matrix := q(Matrix.of $elems), entries := rows }
+  { matrix := Matrix.mkLiteralQ (m := m) (n := n) (.of fun i j => (rows[i]!)[j]!),
+    entries := rows }
 
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
@@ -159,43 +158,34 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     (U : MatrixViews u m n α) (pivot : Q(Fin $m → WithTop (Fin $n))) (pivots : Array Nat)
     (leaf : LeafCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy $pivot) := do
   let zero : Q($α) ← mkNumeral α 0
-  let iff ← mkAppOptM ``Matrix.isPivotedBy_iff
-    #[none, none, none, none, some U.matrix, some pivot, none, none]
-  let rhs := (← whnfR (← inferType iff)).appArg!
-  match_expr rhs with
-  | And mono rest =>
-    match_expr rest with
-    | And strict cells =>
-      let entryConds ← certifyForallFin cells fun i gi => do
-        match_expr gi with
-        | And zeros nonzeros =>
-          -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
-          let col? := if h : i < pivots.size then some pivots[i] else none
-          let hz ← certifyForallFin zeros fun j cell =>
-            certifyImplication (col?.all (j < ·)) cell certifyDefEq
-          let hn ← certifyForallFin nonzeros fun c cell =>
-            certifyImplication (col? == some c) cell fun _ =>
-              certifyNonzeroEntry leaf (U.entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
-          mkAppM ``And.intro #[hz, hn]
-        | _ => throwError "unexpected shape of the pivot entry conditions:{indentExpr gi}"
-      let hMono ← mkDecideProofQ mono
-      let hStrict ← mkDecideProofQ strict
-      mkAppM ``Iff.mpr
-        #[iff, ← mkAppM ``And.intro #[hMono, ← mkAppM ``And.intro #[hStrict, entryConds]]]
-    | _ => throwError "unexpected second conjunct in `Matrix.isPivotedBy_iff`:{indentExpr rest}"
-  | _ => throwError "unexpected statement of `Matrix.isPivotedBy_iff`:{indentExpr rhs}"
+  let entryConds ← certifyForallFin
+      q(∀ i, (∀ j : Fin $n, (j : WithTop (Fin $n)) < $pivot i → $(U.matrix) i j = 0) ∧
+        ∀ c : Fin $n, $pivot i = c → $(U.matrix) i c ≠ 0) fun i gi => do
+    match_expr gi with
+    | And zeros nonzeros =>
+      -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
+      let col? := if h : i < pivots.size then some pivots[i] else none
+      let hz ← certifyForallFin zeros fun j cell =>
+        certifyImplication (col?.all (j < ·)) cell certifyDefEq
+      let hn ← certifyForallFin nonzeros fun c cell =>
+        certifyImplication (col? == some c) cell fun _ =>
+          certifyNonzeroEntry leaf (U.entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
+      mkAppM ``And.intro #[hz, hn]
+    | _ => throwError "unexpected shape of the pivot entry conditions:{indentExpr gi}"
+  let hMono ← mkDecideProofQ q(Monotone $pivot)
+  let hStrict ← mkDecideProofQ q(StrictMonoOn $pivot {i | $pivot i ≠ ⊤})
+  return q(Matrix.isPivotedBy_iff.mpr ⟨$hMono, $hStrict, $entryConds⟩)
 
 /-- Prove the row arrangement `A.submatrix σ id = Aσ.matrix`, by proving the reindexing
-functions equal below the `Matrix.of` wrapper and lifting that with `congrArg`. Directly
-constructing the goal with `.submatrix` causes some exponential explosion in kernel
-unfolds. -/
+functions equal below the `Matrix.of` wrapper and lifting that with `congrArg`.
+The equations must compare the bare function literals as stating them through the wrapped
+matrix terms causes an exponential growth in kernel unfold steps.
+-/
 def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
     (Aσ : MatrixViews u m n α) (σ : Q(Equiv.Perm (Fin $m))) :
     MetaM Q(($A).submatrix $σ id = $(Aσ.matrix)) := do
-  let_expr DFunLike.coe _ _ _ _ f rowsE := Aσ.matrix
-    | throwError "expected a `Matrix.of` literal:{indentExpr Aσ.matrix}"
-  let_expr Matrix.of _ _ _ := f | throwError "expected a `Matrix.of` literal:{indentExpr Aσ.matrix}"
-  have rows : Q(Fin $m → Fin $n → $α) := rowsE
+  -- extract the subterm from the `Matrix.of` application
+  have rows : Q(Fin $m → Fin $n → $α) := Aσ.matrix.appArg!
   -- every cell is an equation between two spellings of one entry of `A`, so all of them
   -- close by `rfl` and none consults a leaf certifier
   let rowEq ← certifyForallFin
@@ -208,8 +198,8 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m
   mkExpectedTypeHint (← mkAppM ``congrArg #[wrap, ← mkAppM ``funext #[rowEq]])
     q(($A).submatrix $σ id = $(Aσ.matrix))
 
-/-- Prove the product `L * Aσ = U` entrywise from the literals' recorded entries,
-At concrete indices the product reduces to the fold of its terms, which `leaf` settles
+/-- Prove the product `L * Aσ = U` entrywise from the literals' recorded entries. At
+concrete indices the product reduces to the fold of its terms, which `leaf` settles
 against the entry of `U`. -/
 def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) (Aσ U : MatrixViews u m n α) (leaf : LeafCertifier) :

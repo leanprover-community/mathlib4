@@ -4,6 +4,7 @@ import Mathlib.Tactic.NormRank
 
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Basic.Complex.Basic
 import Mathlib.Basic.Real.Basic
 import Mathlib.LinearAlgebra.Matrix.Cartan
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
@@ -200,9 +201,9 @@ example :
     Matrix.rank (R := ℤ) !![1, 2; 2, 4] = Matrix.rank (R := ℝ) !![1, 0; 0, 1] - 1 := by
   simp only [norm_rank]
 
--- an entry no leaf certifier can settle is skipped, without an error, while a supported
--- literal in the same goal is rewritten. The second row is twice the first, so the rank is
--- one, but the tactic cannot see that
+-- a symbolic entry fails the closed-literal check, so the matrix is skipped without an
+-- error, while a supported literal in the same goal is rewritten. The second row is twice
+-- the first, so the rank is one, but the tactic cannot see that
 example (x : ℝ) :
     Matrix.rank (R := ℤ) !![1, 2; 2, 4] + Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] =
       1 + Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] := by
