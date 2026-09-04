@@ -68,7 +68,7 @@ instance [PerfectField k] [Algebra.EssFiniteType k K] : Algebra.IsSeparablyGener
 
 /-- A field extension is transcendental separable if every finitely generated subextension is
 separably generated. -/
-@[mk_iff, stacks 030O "Part 2"]
+@[mk_iff, stacks 030O "Part 2, called separable in the Stacks project."]
 class Algebra.IsTranscendentalSeparable : Prop where
   forall_isSeparablyGenerated : ∀ (L : IntermediateField k K),
     Algebra.EssFiniteType k L → Algebra.IsSeparablyGenerated k L
