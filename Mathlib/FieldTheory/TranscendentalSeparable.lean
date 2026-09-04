@@ -73,7 +73,7 @@ class Algebra.IsSeparablyGenerated : Prop where
     Algebra.IsSeparable (IntermediateField.adjoin k s) K
 
 variable {k K} in
-lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type*} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
+lemma AlgEquiv.isSeparablyGenerated {K' : Type*} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
     [Algebra.IsSeparablyGenerated k K] : Algebra.IsSeparablyGenerated k K' := by
   rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨s, isT, sep⟩
   refine ⟨e '' s, (e.isTranscendenceBasis isT).to_subtype_range' (by simp [Set.range_comp]), ?_⟩
@@ -95,9 +95,16 @@ lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
     have := IntermediateField.isSeparable_bot k K
     exact Algebra.IsSeparable.trans k (⊥ : IntermediateField k K) K
 
+instance (priority := low) [Algebra.IsSeparable k K] : Algebra.IsSeparablyGenerated k K :=
+  ((Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k K).mp ‹_›).1
+
+instance [PerfectField k] [Algebra.EssFiniteType k K] : Algebra.IsSeparablyGenerated k K := by
+  rcases exists_isTranscendenceBasis_and_isSeparable_of_perfectField k K with ⟨s, isT, sep⟩
+  exact ⟨s, isT, sep⟩
+
 /-- A field extension is transcendental separable if every finitely generated subextension is
 separably generated. -/
-@[mk_iff, stacks 030O "Part 2"]
+@[mk_iff, stacks 030O "Part 2, called separable in the Stacks project."]
 class Algebra.IsTranscendentalSeparable : Prop where
   forall_isSeparablyGenerated : ∀ (L : IntermediateField k K),
     Algebra.EssFiniteType k L → Algebra.IsSeparablyGenerated k L
@@ -105,15 +112,17 @@ class Algebra.IsTranscendentalSeparable : Prop where
 lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
     Algebra.IsSeparable k K ↔
       (Algebra.IsTranscendentalSeparable k K ∧ Algebra.IsAlgebraic k K) := by
-  refine ⟨fun h ↦ ⟨⟨fun L hL ↦ ?_⟩, inferInstance⟩, fun ⟨sep, alg⟩ ↦ ?_⟩
-  · exact ((Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mp inferInstance).1
-  · refine Algebra.isSeparable_iff.mpr fun x ↦ ⟨IsIntegral.isIntegral x, ?_⟩
-    let L := IntermediateField.adjoin k {x}
-    have fin : EssFiniteType k L := IntermediateField.essFiniteType_iff.mpr
-      (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton x))
-    have sep' := (Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mpr
-      ⟨sep.forall_isSeparablyGenerated L fin, inferInstance⟩
-    exact Subalgebra.isSeparable_iff.mp sep' x (by simp [L])
+  refine ⟨fun h ↦ ⟨⟨fun _ _ ↦ inferInstance⟩, inferInstance⟩, fun ⟨sep, alg⟩ ↦ ?_⟩
+  refine Algebra.isSeparable_iff.mpr fun x ↦ ⟨IsIntegral.isIntegral x, ?_⟩
+  let L := IntermediateField.adjoin k {x}
+  have fin : EssFiniteType k L := IntermediateField.essFiniteType_iff.mpr
+    (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton x))
+  have sep' := (Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mpr
+    ⟨sep.forall_isSeparablyGenerated L fin, inferInstance⟩
+  exact Subalgebra.isSeparable_iff.mp sep' x (by simp [L])
+
+instance (priority := low) [Algebra.IsSeparable k K] : Algebra.IsTranscendentalSeparable k K :=
+  ((Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic k K).mp ‹_›).1
 
 end
 
@@ -525,7 +534,7 @@ lemma Algebra.isTranscendentalSeparable_iff_isSeparablyGenerated_of_essFiniteTyp
     Algebra.IsTranscendentalSeparable k K ↔ Algebra.IsSeparablyGenerated k K := by
   refine ⟨fun h ↦ ?_, fun _ ↦ Algebra.isTranscendentalSeparable_of_isSeparablyGenerated k K⟩
   have := h.1 ⊤ (IntermediateField.essFiniteType_iff.mpr (IntermediateField.fg_top_iff.mpr ‹_›))
-  exact Algebra.isSeparablyGenerated_of_equiv IntermediateField.topEquiv
+  exact IntermediateField.topEquiv.isSeparablyGenerated
 
 @[stacks 030Y "Equivalence to the alternative definition."]
 lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k] :
