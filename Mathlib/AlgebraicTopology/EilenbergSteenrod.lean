@@ -253,14 +253,14 @@ instance : IsClosedUnderIsomorphisms (isAdditive.{u} C c) where
 class HasPairSequence where
   /-- Exactness of the sequence `H i X.fst ⟶ Hₚ i X ⟶ H j X.snd.` -/
   exact_pair (X : TopPair) (i j : ι) (hij : c.Rel i j) :
-      (ComposableArrows.mk₂ ((HP.Hₚ i).map X.j) ((HP.δ i j).app _)).Exact := by cat_disch
+      (ComposableArrows.mk₂ ((HP.Hₚ i).map X.j) ((HP.δ i j).app _)).Exact
   /-- Exactness of the sequence `Hₚ i X ⟶ H j X.snd ⟶ H j X.fst`. -/
   exact_snd (X : TopPair) (i j : ι) (hij : c.Rel i j) :
-      (ComposableArrows.mk₂ ((HP.δ i j).app _) ((HP.H j).map X.map)).Exact := by cat_disch
+      (ComposableArrows.mk₂ ((HP.δ i j).app _) ((HP.H j).map X.map)).Exact
   /-- Exactness of the sequence `H i X.snd ⟶ H i X.fst ⟶ Hₚ i X`. -/
   exact_fst (X : TopPair) (i : ι) :
       (ComposableArrows.mk₂ ((HP.H i).map X.map) ((HP.iso i).hom.app _
-      ≫ (HP.Hₚ i).map X.j)).Exact := by cat_disch
+      ≫ (HP.Hₚ i).map X.j)).Exact
 
 export HasPairSequence (exact_pair exact_snd exact_fst)
 
