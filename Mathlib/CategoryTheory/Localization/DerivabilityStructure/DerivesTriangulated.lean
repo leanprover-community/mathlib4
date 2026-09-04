@@ -71,16 +71,16 @@ lemma isTriangulated_of_isLeftDerivedFunctor
     (α : L ⋙ LF ⟶ F) [NatTrans.CommShift α ℤ]
     [LF.IsLeftDerivedFunctor α W₂] :
     LF.IsTriangulated :=
-  Functor.isTriangulated_of_rightExtension _ α (fun X Y f ↦ by
+  Functor.isTriangulated_of_rightExtension _ α fun X Y f ↦ by
     obtain ⟨φ, ⟨eφ⟩⟩ := Functor.EssSurj.mem_essImage (F := L.mapArrow) (Arrow.mk f)
     let R : Φ.arrow.LeftResolution φ := Classical.arbitrary _
     obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle R.X₁.hom
     refine ⟨_, Φ.functor.map_distinguished _ hT,
       hF.isIso' _ _, hF.isIso' _ _, hF.isIso' _ _,
-        ⟨?_ ≪≫ eφ⟩⟩
+      ⟨?_ ≪≫ eφ⟩⟩
     exact Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
       (Localization.isoOfHom L _ _ R.hw.2)
-      (by simp [← Functor.map_comp]))
+      (by simp [← Functor.map_comp])
 
 end LocalizerMorphism.Derives
 
