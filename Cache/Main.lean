@@ -83,11 +83,13 @@ Options:
                      exclusive with --scope; always prints a security notice.
   --unsafe-window=N  Number of cached fork commits --unsafe will try (default
                      1). Implies --unsafe.
-  --uploader=NAME    For 'put-staged': the transfer engine. 'curl' (the
-                     default), 'rclone' (a system rclone, required), or 'auto'
-                     (rclone when available and the credentials are the S3
-                     pair; curl otherwise). The tool passes rclone the S3
-                     credentials through its environment. See Cache/README.md.
+  --uploader=NAME    For 'put', 'put!' and 'put-staged': the transfer engine.
+                     'curl' (the default), 'rclone' (a system rclone,
+                     required), or 'auto' (rclone when available and the
+                     credentials are the S3 pair; curl otherwise). Both
+                     engines upload only the command's file list. The tool
+                     passes rclone the S3 credentials through its environment.
+                     See Cache/README.md.
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' skip no files: use them manually when a hot-fix
@@ -268,15 +270,16 @@ def main (args : List String) : IO Unit := do
     -- it lets `cache query` discover cached commits with a cheap HEAD probe.
     let markerSha? ← if container?.isSome then getRepoScope else pure none
     let auth ← getUploadAuth
+    let files ← getFilesWithExtension stagingDir "ltar"
     -- `--uploader` selects the transfer engine; the rclone engine carries
     -- the S3 credentials it signs with.
     match ← resolveUploadEngine uploaderStr? auth with
     | .rclone keyId secret sessionToken? =>
       putStagedViaRclone dest keyId secret sessionToken? markerSha? stagingDir
+        (files.map (·.fileName.get!)) (overwrite := false)
     | .curl =>
       discard validateCurl
-      let fileSet ← getFilesWithExtension stagingDir "ltar"
-      putStagedViaCurl dest fileSet (tempConfigFilePath := stagingDir / "curl.config")
+      putStagedViaCurl dest files (tempConfigFilePath := stagingDir / "curl.config")
         (overwrite := false) auth markerSha?
     return
   | "put-staged" :: _ =>
@@ -330,24 +333,27 @@ def main (args : List String) : IO Unit := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   -- `pack`-and-upload: the hash memo scopes the file list to what this
   -- checkout's build links, so nothing else in the shared per-user cache
-  -- directory leaves the machine. It shares `put-staged`'s destination and
-  -- credential resolution but always uploads with the built-in curl engine;
-  -- `--uploader` applies only to `put-staged`.
+  -- directory leaves the machine. It shares `put-staged`'s destination,
+  -- credential, and engine resolution; both engines upload only the listed
+  -- files, so the build-scoped guarantee holds on either one.
   let put (overwrite := false) := do
-    if uploaderStr?.isSome then
-      IO.eprintln "put uploads its build-scoped file list with the built-in \
-        engine; --uploader applies to `put-staged`"
-      Process.exit 1
     let repo := repo?.getD MATHLIBREPO
     let dest ← stagedUploadDest container? repo
-    -- Credentials resolve before the pack, so a missing credential fails
-    -- fast instead of after the expensive packing pass.
+    -- Credentials and engine resolve before the pack, so a misconfiguration
+    -- fails fast instead of after the expensive packing pass.
     let auth ← getUploadAuth
+    let engine ← resolveUploadEngine uploaderStr? auth
     -- The marker is written when the upload is SHA-scoped into a container:
     -- it lets `cache query` discover cached commits with a cheap HEAD probe.
     let markerSha? ← if container?.isSome then getRepoScope else pure none
-    let files := (← pack overwrite (verbose := true)).map fun (f : String) => IO.CACHEDIR / f
-    putStagedViaCurl dest files IO.CURLCFG overwrite auth markerSha?
+    let fileNames ← pack overwrite (verbose := true)
+    match engine with
+    | .rclone keyId secret sessionToken? =>
+      putStagedViaRclone dest keyId secret sessionToken? markerSha? IO.CACHEDIR
+        fileNames overwrite
+    | .curl =>
+      let files := fileNames.map fun (f : String) => IO.CACHEDIR / f
+      putStagedViaCurl dest files IO.CURLCFG overwrite auth markerSha?
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do

@@ -1516,14 +1516,18 @@ def test_rcloneArgs : IO Unit := do
   IO.println "rcloneArgs:"
   if let .ok dest := stagedUploadDestFrom none (some "https://acct.example/devbucket")
       (some .forks) "alice/mathlib4" (some "abc1") then
-    let files := rcloneFilesArgs "devbucket" dest "staging"
+    let files := rcloneFilesArgs "devbucket" dest "staging" "tmp/files-from.txt"
+      (overwrite := false)
     assertEq "files copy remote matches the destination contract"
       s!":s3:devbucket/{dest.filesPrefix}" files[2]!
     assertTrue "files copy is a copy" (files[0]! == "copy")
-    assertTrue "files copy filters to ltar"
-      ((files.toList.zip files.toList.tail).contains ("--include", "*.ltar"))
-    assertTrue "files copy skips existing objects"
+    assertTrue "files copy is restricted to the caller's file list"
+      ((files.toList.zip files.toList.tail).contains ("--files-from", "tmp/files-from.txt"))
+    assertTrue "a non-overwrite copy skips existing objects"
       (files.contains "--ignore-existing")
+    assertTrue "an overwrite copy replaces existing objects"
+      (!(rcloneFilesArgs "devbucket" dest "staging" "tmp/files-from.txt"
+        (overwrite := true)).contains "--ignore-existing")
     assertTrue "files copy skips the bucket-creation probe"
       (files.contains "--s3-no-check-bucket")
     let marker := rcloneMarkerArgs "devbucket" dest "tmp/abc1" "abc1"
@@ -1576,6 +1580,13 @@ def test_putStagedViaRclone : IO Unit := do
       "#!/bin/sh\n" ++
       s!"printf '%s\\n' \"$@\" > \"{dir}/args-$1\"\n" ++
       s!"env | grep '^RCLONE_S3_\\|^HOME=' | sort > \"{dir}/env-$1\"\n" ++
+      -- The files-from list is a temp file the tool deletes after the run, so
+      -- the fake preserves its content for the assertions below.
+      "prev=''\n" ++
+      "for a in \"$@\"; do\n" ++
+      s!"  if [ \"$prev\" = --files-from ]; then cp \"$a\" \"{dir}/files-from-copy\"; fi\n" ++
+      "  prev=\"$a\"\n" ++
+      "done\n" ++
       "if [ \"$1\" = copyto ]; then exit 3; fi\n" ++
       "exit 0\n"
     discard <| IO.runCmd "chmod" #["+x", fake.toString]
@@ -1583,12 +1594,14 @@ def test_putStagedViaRclone : IO Unit := do
         (some .forks) "alice/mathlib4" (some "abc1")
       | assertTrue "rclone destination resolves" false
     putStagedViaRclone dest "AK" "SK" (some "tok") (some "abc1") staging
-      (rclone := fake.toString)
+      #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
     let copyArgs ← IO.FS.readFile (dir / "args-copy")
     assertTrue "files copy targets the staging dir"
       ((copyArgs.splitOn "\n").any (· == staging.toString))
     assertTrue "files copy addresses the resolved remote"
       ((copyArgs.splitOn "\n").any (· == s!":s3:devbucket/{dest.filesPrefix}"))
+    assertEq "the files-from list holds exactly the caller's file names"
+      "aa.ltar\n" (← IO.FS.readFile (dir / "files-from-copy"))
     let copyEnv ← IO.FS.readFile (dir / "env-copy")
     assertTrue "the credentials travel in the child environment"
       ((copyEnv.splitOn "\n").contains "RCLONE_S3_ACCESS_KEY_ID=AK" &&

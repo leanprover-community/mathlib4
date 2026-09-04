@@ -58,7 +58,7 @@ variables in `lake exe cache --help`.
 
 #### The rclone engine
 
-`put-staged` uploads with curl by default. `--uploader` selects
+The upload commands use curl by default. `--uploader` selects
 the transfer engine:
 
 - `curl` (the default): the built-in engine. Parallel PUTs, each signed per
@@ -66,9 +66,11 @@ the transfer engine:
 - `rclone`: a system [rclone](https://rclone.org). The tool resolves the
   same destination the curl engine addresses and hands rclone the S3
   credentials through its environment (`RCLONE_S3_*`); this engine requires
-  the S3 credential pair. rclone schedules transfers for large staged sets
-  and verifies each object's checksum after upload. `--ignore-existing`
-  replaces `If-None-Match`.
+  the S3 credential pair. The tool restricts the transfer to the command's
+  file list (`--files-from`), so `put`'s build-scoped guarantee holds on
+  this engine. rclone schedules transfers for large staged sets and verifies
+  each object's checksum after upload. `--ignore-existing` replaces
+  `If-None-Match` on a non-overwrite put.
 - `auto`: `rclone` when the binary is available on PATH and the credentials
   are the S3 pair; `curl` otherwise.
 

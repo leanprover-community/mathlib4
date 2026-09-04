@@ -381,15 +381,18 @@ skips the bucket-creation probe a scoped credential cannot pass. -/
 def rcloneCommonFlags : Array String := #["--s3-no-check-bucket", "--retries", "5"]
 
 /--
-The rclone invocation for the staged `.ltar` files: a directory copy into the
-files prefix. `--ignore-existing` skips objects the destination already
-holds, matching the curl engine's `If-None-Match: *`; artifact names are
-content hashes, so a skipped re-put loses nothing.
+The rclone invocation for the `.ltar` files: a copy from `srcDir` into the
+files prefix, restricted to the `--files-from` list, so only the files the
+caller names leave the machine. A non-overwrite put passes
+`--ignore-existing`, which skips objects the destination already holds,
+matching the curl engine's `If-None-Match: *`; artifact names are content
+hashes, so a skipped re-put loses nothing.
 -/
 def rcloneFilesArgs (bucketPath : String) (dest : StagedUploadDest)
-    (stagingDir : FilePath) : Array String :=
-  #["copy", stagingDir.toString, s!":s3:{bucketPath}/{dest.filesPrefix}",
-    "--include", "*.ltar", "--ignore-existing", "--transfers", "16"] ++ rcloneCommonFlags
+    (srcDir filesFrom : FilePath) (overwrite : Bool) : Array String :=
+  #["copy", srcDir.toString, s!":s3:{bucketPath}/{dest.filesPrefix}",
+    "--files-from", filesFrom.toString, "--transfers", "16"] ++
+    (if overwrite then #[] else #["--ignore-existing"]) ++ rcloneCommonFlags
 
 /--
 The rclone invocation for the per-SHA marker: a single-file copy to the
@@ -423,27 +426,39 @@ def rcloneEnv (keyId secret : String) (sessionToken? : Option String)
 
 /--
 The staged put on a system rclone: the tool resolves the destination and hands
-rclone the S3 credentials through its environment. Files first; then the
-per-SHA marker, mirroring the curl engine. A files failure exits 1; a marker
-failure only warns (see `uploadMarkerWith`). The `rclone` parameter names the
-binary and exists for the tests; production callers use the default.
+rclone the S3 credentials through its environment. `srcDir` holds the files
+and `fileNames` lists the ones to upload; the list travels as a `--files-from`
+file, so only the named files leave the machine — `put`'s build-scoped list
+and `put-staged`'s staging directory both take this engine. Files first; then
+the per-SHA marker, mirroring the curl engine. A files failure exits 1; a
+marker failure only warns (see `uploadMarkerWith`). The `rclone` parameter
+names the binary and exists for the tests; production callers use the default.
 -/
 def putStagedViaRclone (dest : StagedUploadDest) (keyId secret : String)
     (sessionToken? : Option String) (markerSha? : Option String)
-    (stagingDir : FilePath) (rclone : String := "rclone") : IO Unit := do
+    (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
+    (rclone : String := "rclone") : IO Unit := do
   let (endpoint, bucketPath) ← IO.ofExcept (s3EndpointSplit dest.base)
   let provider := (← getEnvNonEmpty "RCLONE_S3_PROVIDER").getD "Other"
   let env := rcloneEnv keyId secret sessionToken? endpoint provider
   let run (args : Array String) : IO UInt32 := do
     let child ← IO.Process.spawn { cmd := rclone, args, env }
     child.wait
-  let count := (← IO.getFilesWithExtension stagingDir "ltar").size
-  IO.println s!"Uploading {count} staged file(s) via rclone to \
-    {dest.base}/{dest.filesPrefix}"
-  let code ← run (rcloneFilesArgs bucketPath dest stagingDir)
-  if code != 0 then
-    IO.eprintln s!"rclone upload failed with exit code {code}"
-    IO.Process.exit 1
+  if fileNames.isEmpty then
+    IO.println "No files to upload"
+  else
+    IO.println s!"Uploading {fileNames.size} file(s) via rclone to \
+      {dest.base}/{dest.filesPrefix}"
+    let dir ← IO.FS.createTempDir
+    let code ← try
+      let filesFrom := dir / "files-from.txt"
+      IO.FS.writeFile filesFrom ("\n".intercalate fileNames.toList ++ "\n")
+      run (rcloneFilesArgs bucketPath dest srcDir filesFrom overwrite)
+    finally
+      IO.FS.removeDirAll dir
+    if code != 0 then
+      IO.eprintln s!"rclone upload failed with exit code {code}"
+      IO.Process.exit 1
   if let some sha := markerSha? then
     uploadMarkerWith dest sha fun file => do
       let code ← run (rcloneMarkerArgs bucketPath dest file sha)
