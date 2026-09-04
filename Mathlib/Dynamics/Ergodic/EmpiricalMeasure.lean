@@ -5,6 +5,7 @@ Authors: Jeremy Parker
 -/
 module
 
+public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
@@ -16,10 +17,17 @@ import Mathlib.MeasureTheory.Measure.Prokhorov
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
-# Krylov-Bogolyubov theorem
+# Empirical measures and the Krylov–Bogolyubov theorem
 
-The Krylov–Bogolyubov (or Krylov–Bogoliubov) theorem asserts the existence of invariant Borel
-probability measures for continuous dynamics on compact metrizable spaces.
+
+
+This allows us to prove the Krylov–Bogolyubov (or Krylov–Bogoliubov) theorem, which asserts the
+existence of invariant Borel probability measures for continuous dynamics on compact metrizable
+spaces.
+
+## Main definitions
+
+- `empiricalMeasure`: an empirical measure for `n` iterations of a map `f` starting at a point `x`.
 
 ## Main results
 
@@ -28,70 +36,71 @@ probability measures for continuous dynamics on compact metrizable spaces.
   probability measure defined over a (not necessarily compact) ambient space, supported on a
   compact, forward invariant subset
 
-## Implementation notes
-
-In order to minimise public imports, the details of the proof are contained in private lemmas.
-We define a sequence of empirical orbit measures for the system starting from a given point,
-and show that the cluster points of this sequence give an invariant measure if the space is compact.
-
-We do not assume that the space is metrizable; it is sufficient to assume it is Hausdorff.
-
 ## TODO
 
 - When the `Measurable` requirement of `MeasurePreserving` is relaxed,
   `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` can be generalized.
 -/
 
+public section
+
 namespace MeasureTheory
 
 open Filter
 open scoped BoundedContinuousFunction
+open scoped Topology
 
 variable {X : Type*} [MeasurableSpace X]
 
-noncomputable def orbitMeasure (f : X → X) (x : X) (n : ℕ) : ProbabilityMeasure X :=
-  ⟨(n + 1 : ENNReal)⁻¹ • ∑ k ∈ Finset.range (n + 1), Measure.dirac (f^[k] x),
-    ⟨by simp [ENNReal.inv_mul_cancel]⟩⟩
+noncomputable def empiricalMeasure (f : X → X) (x : X) (n : ℕ) : ProbabilityMeasure X :=
+  ⟨birkhoffAverage NNReal f Measure.dirac (n + 1) x, ⟨by
+    simp only [birkhoffAverage, birkhoffSum, Measure.smul_apply]
+    rw [ENNReal.smul_def, smul_eq_mul, ENNReal.coe_inv (by positivity)]
+    simpa using ENNReal.inv_mul_cancel (by simp) (by simp)⟩⟩
 
 section Integrals
 
-variable [TopologicalSpace X] [BorelSpace X] [T2Space X]
-variable (f : X → X) (g : X →ᵇ ℝ) (x : X)
+variable (f : X → X) (g : X → ℝ) (x : X)
+variable [MeasurableSingletonClass X]
 
-lemma integral_orbitMeasure (n : ℕ) :
-    ∫ y, g y ∂(orbitMeasure f x n : Measure X) =
-      (n + 1 : ℝ)⁻¹ * ∑ k ∈ Finset.range (n + 1), g (f^[k] x) := by
-  simp only [orbitMeasure, ProbabilityMeasure.coe_mk, integral_smul_measure,
-    ENNReal.toReal_inv]
+lemma integral_empiricalMeasure_eq_birkhoffaverage (n : ℕ) :
+    ∫ y, g y ∂(empiricalMeasure f x n : Measure X) = birkhoffAverage NNReal f g (n + 1) x := by
+  simp only [empiricalMeasure, ProbabilityMeasure.toMeasure, birkhoffAverage, birkhoffSum]
   have h : ∀ k ∈ Finset.range (n + 1), Integrable g (Measure.dirac (f^[k] x)) := by
-    simp [BoundedContinuousFunction.integrable]
-  rw [integral_finsetSum_measure h]
+    intro k hk
+    exact integrable_dirac (by simp)
+  rw [integral_smul_nnreal_measure, integral_finsetSum_measure h]
   congr
   simp
 
-lemma integral_comp_sub_integral_orbitMeasure (n : ℕ) (hf : Continuous f) :
-    (∫ y, g (f y) ∂(orbitMeasure f x n)) - ∫ y, g y ∂(orbitMeasure f x n) =
+lemma integral_comp_sub_integral_empiricalMeasure (n : ℕ) :
+    (∫ y, g (f y) ∂(empiricalMeasure f x n)) - ∫ y, g y ∂(empiricalMeasure f x n) =
         (n + 1 : ℝ)⁻¹ * (g (f^[n + 1] x) - g x) := by
-  change (∫ (y : X), (g.compContinuous ⟨f, hf⟩) y ∂↑(orbitMeasure f x n)) - _ = _
-  rw [integral_orbitMeasure, integral_orbitMeasure,
-    ← mul_sub, ← Finset.sum_sub_distrib]
+  simp only [integral_empiricalMeasure_eq_birkhoffaverage, birkhoffAverage, birkhoffSum]
+  rw [← smul_sub]
+  simp only [Nat.cast_add, Nat.cast_one, Function.iterate_succ, Function.comp_apply]
+  have : (∑ x_1 ∈ Finset.range (n + 1), (g (f (f^[x_1] x)) - g (f^[x_1] x))) =
+      (g (f^[n] (f x)) - g x) := by
+    simpa [← Function.iterate_succ_apply'] using Finset.sum_range_sub (fun k ↦ g (f^[k] x)) (n + 1)
+  rw [← this, Finset.sum_sub_distrib]
   congr
-  simpa [BoundedContinuousFunction.compContinuous_apply, Function.iterate_succ_apply'] using
-    (Finset.sum_range_sub (fun k ↦ g (f^[k] x)) (n + 1))
 
-lemma tendsto_integral_comp_sub_integral_orbitMeasure (hf : Continuous f) :
-    Tendsto (fun n ↦ (∫ y, g (f y) ∂(orbitMeasure f x n)) - ∫ y, g y ∂(orbitMeasure f x n))
-      atTop (nhds 0) := by
-  simp only [integral_comp_sub_integral_orbitMeasure _ _ _ _ hf, ← div_eq_inv_mul]
-  apply tendsto_bdd_div_atTop_nhds_zero (B := 2 * ‖g‖) (b := -2 * ‖g‖)
-  · apply Eventually.of_forall
+lemma tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBoundedUnder
+    (hfg : ∃ C : ℝ, ∀ n : ℕ, ‖g (f^[n] x)‖ ≤ C) :
+    Tendsto (fun n ↦ (∫ y, g (f y) ∂(empiricalMeasure f x n)) - ∫ y, g y ∂(empiricalMeasure f x n))
+      atTop (𝓝 0) := by
+  have hcoeff : Tendsto (fun n : ℕ ↦ ((n : ℝ) + 1)⁻¹) atTop (𝓝 0) :=
+    (tendsto_atTop_add_const_right atTop 1 tendsto_natCast_atTop_atTop).inv_tendsto_atTop
+  have hbound : IsBoundedUnder (· ≤ ·) atTop (fun n ↦ ‖g (f^[n + 1] x) - g x‖) := by
+    rcases hfg with ⟨C, hC⟩
+    apply Filter.isBoundedUnder_of
+    refine ⟨C + C, ?_⟩
     intro n
-    linarith [g.neg_norm_le_apply (f^[n + 1] x), g.apply_le_norm x]
-  · apply Eventually.of_forall
-    intro n
-    linarith [g.apply_le_norm (f^[n + 1] x), g.neg_norm_le_apply x]
-  · simpa using
-      (tendsto_atTop_add_const_right atTop (1 : ℝ) tendsto_natCast_atTop_atTop)
+    calc
+      ‖g (f^[n + 1] x) - g x‖ ≤ ‖g (f^[n + 1] x)‖ + ‖g x‖ := norm_sub_le _ _
+      _ ≤ C + C := add_le_add (hC (n + 1)) (by simpa using hC 0)
+  simpa [integral_comp_sub_integral_empiricalMeasure]
+    using hcoeff.zero_smul_isBoundedUnder_le hbound
 
 end Integrals
 
@@ -99,13 +108,13 @@ lemma ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt
     [TopologicalSpace X] [BorelSpace X]
     {α : Type*} {F : Filter α} {f : X → X} (hf : Continuous f)
     {u : α → ProbabilityMeasure X} {μ : ProbabilityMeasure X} (hμ : MapClusterPt μ F u)
-    (h : ∀ g : X →ᵇ ℝ, Tendsto (fun t ↦ (∫ y, g (f y) ∂(u t)) - ∫ y, g y ∂(u t)) F (nhds 0)) :
+    (h : ∀ g : X →ᵇ ℝ, Tendsto (fun t ↦ (∫ y, g (f y) ∂(u t)) - ∫ y, g y ∂(u t)) F (𝓝 0)) :
     ∀ g : X →ᵇ ℝ, ∫ y, g (f y) ∂μ = ∫ y, g y ∂μ := by
   rcases (mapClusterPt_iff_ultrafilter.mp hμ) with ⟨U, hUl, hUμ⟩
   intro g
-  have hgf : Tendsto (fun t ↦ ∫ y, g (f y) ∂(u t)) U (nhds (∫ y, g (f y) ∂μ)) :=
+  have hgf : Tendsto (fun t ↦ ∫ y, g (f y) ∂(u t)) U (𝓝 (∫ y, g (f y) ∂μ)) :=
     (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ) (g.compContinuous ⟨f, hf⟩)
-  have hgf' : Tendsto (fun t ↦ ∫ y, g (f y) ∂(u t)) U (nhds (∫ y, g y ∂μ)) := by
+  have hgf' : Tendsto (fun t ↦ ∫ y, g (f y) ∂(u t)) U (𝓝 (∫ y, g y ∂μ)) := by
     simpa using ((h g).mono_left hUl).add
       ((ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ) g)
   exact tendsto_nhds_unique hgf hgf'
@@ -115,12 +124,10 @@ for a continuous function on a nonempty, compact, Hausdorff space. -/
 public theorem exists_measurePreserving_probabilityMeasure
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
     [CompactSpace X] [Nonempty X] {f : X → X} (hf : Continuous f) :
-    ∃ μ : ProbabilityMeasure X, MeasurePreserving f μ μ ∧ Measure.Regular (μ : Measure X) := by
+    ∃ μ : Measure X, MeasurePreserving f μ μ ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ := by
   obtain ⟨x⟩ := ‹Nonempty X›
   obtain ⟨μ, _, hμ⟩ := isCompact_univ.exists_mapClusterPt
-    (u := fun n ↦ orbitMeasure f x n) (f := atTop) (by simp)
-  have hμinv := ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hμ
-    (tendsto_integral_comp_sub_integral_orbitMeasure f (hf := hf) (x := x))
+    (u := fun n ↦ empiricalMeasure f x n) (f := atTop) (by simp)
   obtain ⟨ν, hνreg, hνfin, hμν⟩ := (μ : Measure X).exists_regular_eq_of_compactSpace
   have hprob : ν Set.univ = 1 := by
     rw [← ENNReal.toReal_eq_one_iff]
@@ -132,29 +139,36 @@ public theorem exists_measurePreserving_probabilityMeasure
   have hmap : ν.map f = ν := by
     apply Measure.ext_of_integral_eq_on_compactlySupported
     intro g
-    rw [integral_map hf.aemeasurable] --
+    rw [integral_map hf.aemeasurable]
     · simp_rw [← g.toBoundedContinuousFunction_apply]
       rw [← ContinuousMap.coe_mk f hf]
       simp_rw [← g.toBoundedContinuousFunction.compContinuous_apply ⟨f,hf⟩, ← hμν]
-      exact hμinv g.toBoundedContinuousFunction
+      refine ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hμ ?_
+        g.toBoundedContinuousFunction
+      intro g'
+      refine tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBoundedUnder f g' x ?_
+      exact ⟨‖g'‖, fun n ↦ g'.norm_coe_le_norm (f^[n] x)⟩
     · exact g.continuous.aestronglyMeasurable
-  use ⟨ν, ⟨hprob⟩⟩
-  exact ⟨⟨hf.measurable, hmap⟩, hνreg⟩
+  use ν
+  exact ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩⟩
 
-/-- **Krylov-Boboglyubov theorem** for forward invariant compact sets. -/
-public theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
+/-- **Krylov-Bogoblyubov theorem** for forward invariant compact sets. -/
+theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
     {K : Set X} (hcomp : IsCompact K) (hnonempty : K.Nonempty)
     {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K)
     (hfmeas : Measurable f) : -- TODO: relax this
-    ∃ μ : ProbabilityMeasure X,
-      MeasurePreserving f μ μ ∧ Measure.Regular (μ : Measure X) ∧ Measure.support μ ⊆ K := by
+    ∃ μ : Measure X, MeasurePreserving f μ μ
+      ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ ∧ Measure.support μ ⊆ K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp hcomp
   have : Nonempty K := hnonempty.to_subtype
   let f' : K → K := Set.MapsTo.restrict f K K hfinv
   let ι : K → X := Subtype.val
-  obtain ⟨μ, hμ, hμreg⟩ := exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
-  have : IsFiniteMeasure (μ : Measure K) := inferInstance
+  obtain ⟨μm, hμ, hμmreg, hμprob⟩ :=
+    exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
+  let μ : ProbabilityMeasure K := ⟨μm, hμprob⟩
+  have hμreg : (μ : Measure K).Regular := hμmreg
+  have : IsFiniteMeasure (μm : Measure K) := inferInstance
   have hιmeas : Measurable ι :=  measurable_subtype_coe
   let ν := μ.map hιmeas.aemeasurable
   use ν
@@ -166,7 +180,7 @@ public theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInv
   have hsemi : Function.Semiconj ι f' f := by
     intro
     rfl
-  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, ?_⟩
+  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, inferInstance, ?_⟩
   -- Now we prove that the invariant measure is supported on the forward invariant set
   apply Measure.support_subset_of_isClosed hcomp.isClosed
   rw [MeasureTheory.mem_ae_iff]
