@@ -473,23 +473,6 @@ lemma Connected.exists_isTree_le (h : G.Connected) : ∃ T ≤ G, IsTree T := by
   obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic bot_le isAcyclic_bot
   grind [IsTree, Connected, preconnected_iff_reachable_eq_top]
 
-theorem connected_iff_card_connectedComponent_eq_one :
-    G.Connected ↔ Nat.card G.ConnectedComponent = 1 := by
-  have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
-  simp_rw [connected_iff, preconnected_iff_reachable_eq_top, Nat.card_eq_one_iff_unique, this,
-    nonempty_quotient_iff, Quotient.subsingleton_iff, reachableSetoid, Setoid.mk_eq_top]
-
-variable (G) in
-theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
-    ∑ c : G.ConnectedComponent, c.supp.ncard = Nat.card V := by
-  rw [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma]
-  rfl
-
-variable (G) in
-theorem sum_connectedComponent_ncard_edgeSet [Finite V] [Fintype G.ConnectedComponent] :
-    ∑ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet.ncard = G.edgeSet.ncard := by
-  simpa [Nat.card_sigma] using Nat.card_congr G.edgeSetEquivSigmaConnectedComponent.symm
-
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
 lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card V ≤ Nat.card G.edgeSet + 1 := by

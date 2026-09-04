@@ -454,9 +454,28 @@ protected theorem «forall» {p : G.ConnectedComponent → Prop} :
     (∀ c : G.ConnectedComponent, p c) ↔ ∀ v, p (G.connectedComponentMk v) :=
   Quot.mk_surjective.forall
 
-theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
-    Subsingleton G.ConnectedComponent :=
-  ⟨ConnectedComponent.ind₂ fun v w => ConnectedComponent.sound (h v w)⟩
+theorem _root_.SimpleGraph.nonempty_connectedComponent_iff :
+    Nonempty G.ConnectedComponent ↔ Nonempty V :=
+  nonempty_quotient_iff G.reachableSetoid
+
+theorem _root_.SimpleGraph.isEmpty_connectedComponent_iff :
+    IsEmpty G.ConnectedComponent ↔ IsEmpty V := by
+  contrapose!
+  exact nonempty_connectedComponent_iff
+
+theorem _root_.SimpleGraph.preconnected_iff_subsingleton_connectedComponent :
+    G.Preconnected ↔ Subsingleton G.ConnectedComponent := by
+  have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
+  simp [preconnected_iff_reachable_eq_top, this, reachableSetoid]
+
+alias ⟨_root_.SimpleGraph.Preconnected.subsingleton_connectedComponent, _⟩ :=
+  preconnected_iff_subsingleton_connectedComponent
+
+theorem _root_.SimpleGraph.connected_iff_card_connectedComponent_eq_one :
+    G.Connected ↔ Nat.card G.ConnectedComponent = 1 := by
+  have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
+  simp_rw [connected_iff, preconnected_iff_subsingleton_connectedComponent,
+    Nat.card_eq_one_iff_unique, this, nonempty_quotient_iff]
 
 /-- This is `Quot.recOn` specialized to connected components.
 For convenience, it strengthens the assumptions in the hypothesis
@@ -718,6 +737,17 @@ variable (G) in
 def edgeSetEquivSigmaConnectedComponent :
     G.edgeSet ≃ Σ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet :=
   .sigmaQuotFromRel G.symm <| .ofLE fun _ _ ↦ Adj.reachable
+
+variable (G) in
+theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.supp.ncard = Nat.card V := by
+  rw [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma]
+  rfl
+
+variable (G) in
+theorem sum_connectedComponent_ncard_edgeSet [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet.ncard = G.edgeSet.ncard := by
+  simpa [Nat.card_sigma] using Nat.card_congr G.edgeSetEquivSigmaConnectedComponent.symm
 
 /-- Given graph homomorphisms from each connected component of `G` to `H`, this is the graph
 homomorphism from `G` to `H`. -/
