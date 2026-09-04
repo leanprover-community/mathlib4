@@ -458,7 +458,7 @@ private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| SemimoduleCat
 /-- The class of an invertible module in the Picard group. -/
 protected noncomputable def mk : Pic R := equivShrink _ <|
   letI M' := Finite.reprₛ R M
-  .mkOfMulEqOne ⟦.of R M'⟧ ⟦.of R (Dual R M')⟧ <| by
+  .mkOfMulEqOne ⟦↧M'⟧ ⟦↧(Dual R M')⟧ <| by
     rw [← toSkeleton, ← toSkeleton, mul_comm, ← Skeleton.toSkeleton_tensorObj]
     exact Quotient.sound ⟨(Invertible.linearEquiv R _).toModuleIsoₛ⟩
 
@@ -467,7 +467,7 @@ set_option backward.privateInPublic.warn false in
 /-- `mk R M` is indeed the class of `M`. -/
 noncomputable def mk.linearEquiv : Pic.mk R M ≃ₗ[R] M :=
   equivShrinkLinearEquiv R _ ≪≫ₗ (Quotient.mk_out (s := isIsomorphicSetoid _)
-    (SemimoduleCat.of R (Finite.reprₛ R M))).some.toLinearEquivₛ ≪≫ₗ Finite.reprEquivₛ R M
+    ↧(Finite.reprₛ R M)).some.toLinearEquivₛ ≪≫ₗ Finite.reprEquivₛ R M
 
 variable {R M N}
 
@@ -602,7 +602,7 @@ theorem mapRingHom_id_apply {M : Pic R} : mapRingHom (.id R) M = M :=
 /-- Picard group as a functor from the category of commutative semirings to
 the category of abelian groups. -/
 noncomputable def functor : CommSemiRingCat.{u} ⥤ CommGrpCat.{u} where
-  obj R := .of (Pic R)
+  obj R := ↧(Pic R)
   map f := CommGrpCat.ofHom (mapRingHom f.hom)
   map_id _ := CommGrpCat.Hom.ext mapRingHom_id
   map_comp _ _ := CommGrpCat.Hom.ext mapRingHom_comp_mapRingHom.symm

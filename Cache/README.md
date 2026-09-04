@@ -101,6 +101,28 @@ lake exe cache get --cache-from=master,forks
 
 Uploads target a single container via `--container=NAME`.
 
+## Public cache endpoint
+
+`cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts.
+
+### Troubleshooting
+
+The public cache endpoint has been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before this endpoint was available, for troubleshooting any issues that might arise in the transition to this new endpoint:
+
+```bash
+# bash, zsh, Git Bash
+MATHLIB_CACHE_DEBUG_USE_LEGACY=1 lake exe cache get
+
+# PowerShell
+$env:MATHLIB_CACHE_DEBUG_USE_LEGACY = 1; lake exe cache get
+
+# Windows CMD
+set MATHLIB_CACHE_DEBUG_USE_LEGACY=1
+lake exe cache get
+```
+
+The variable is intended as a troubleshooting fallback and it might be retired at any time.
+
 ## Environment Variables
 
 | Variable            | Description                        | Default                                         |
