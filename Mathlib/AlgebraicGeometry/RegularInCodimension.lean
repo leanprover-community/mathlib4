@@ -6,6 +6,7 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 /-!
@@ -76,7 +77,7 @@ lemma isRegularInCodimensionLE_iff_ringKrullDim :
   rw [ringKrullDim_stalk_eq_coheight]
   norm_cast
 
-lemma IsRegularInCodimensionLE.mono {m n : ℕ} (h : m ≤ n) (X : Scheme.{u})
+lemma IsRegularInCodimensionLE.anti {m n : ℕ} (h : m ≤ n) (X : Scheme.{u})
     [IsRegularInCodimensionLE n X] : IsRegularInCodimensionLE m X :=
   ⟨fun x hx ↦ isRegularLocalRing_stalk x <| hx.trans (by exact_mod_cast h)⟩
 
@@ -90,7 +91,8 @@ lemma IsRegularInCodimensionLE.isDiscreteValuationRing_stalk [IsRegularInCodimen
   have hreg := isRegularLocalRing_stalk (n := 1) x hx.le
   rw [← IsLocalRing.finrank_CotangentSpace_eq_one_iff]
   have hdim : ringKrullDim (X.presheaf.stalk x) = 1 := by
-    rw [ringKrullDim_stalk_eq_coheight x, hx]; rfl
+    rw [ringKrullDim_stalk_eq_coheight x, hx]
+    norm_num
   have := (IsRegularLocalRing.iff_finrank_cotangentSpace (X.presheaf.stalk x)).mp hreg
   rw [hdim] at this
   exact_mod_cast this
