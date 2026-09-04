@@ -104,7 +104,8 @@ def coheightZeroSetOrderIsoIrreducibleComponents [QuasiSober X] [T0Space X] :
     { Equiv.subtypeUnivEquiv fun _ ↦ trivial with map_rel_iff' := Iff.rfl }
   have : {x : X | coheight x = 0} = {x : X | Maximal ⊤ x} := by simp [maximal_iff_isMax]
   rw [irreducibleComponents_eq_maximals_closed, this]
-  exact OrderIso.mapSetOfPredMaximal <| OrderIso.trans
+  exact OrderIso.mapSetOfPredMaximal (s := Set.univ)
+      (t := {s : Set X | IsClosed s ∧ IsIrreducible s}) <| OrderIso.trans
     (OrderIso.trans univIso (irreducibleSetEquivPoints (α := X)).symm) <|
     TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' X
 
@@ -118,7 +119,7 @@ lemma QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one [QuasiSober X] [Irre
     {x ∈ p | coheight x = 1} ⊆ Subtype.val '' {x : p | coheight x = 0} := by
   have hsm : StrictMono (WithTop.recTopCoe (genericPoint X) (Subtype.val : p → X)) :=
     WithTop.strictMono_iff.mpr
-      ⟨Subtype.strictMono_coe p, QuasiSober.val_lt_genericPoint_of_closure_ne_univ hp⟩
+      ⟨Subtype.strictMono_coe (· ∈ p), QuasiSober.val_lt_genericPoint_of_closure_ne_univ hp⟩
   rintro x ⟨hx, kx⟩
   exact ⟨⟨x, hx⟩, coheight_zero_of_coheight_one_of_strictMono _ hsm ⟨x, hx⟩
     (by simpa using kx), rfl⟩
