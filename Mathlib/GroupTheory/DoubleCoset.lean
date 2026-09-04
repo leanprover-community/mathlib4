@@ -129,6 +129,12 @@ lemma eq {H K : Subgroup G} {a b : G} :
 lemma out_eq' {H K : Subgroup G} (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
 
+@[deprecated "Use `eq.mp (out_eq' (mk H K g))` instead." (since := "2026-09-04")]
+lemma mk_out_eq_mul (H K : Subgroup G) (g : G) :
+    ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out = h * g * k := by
+  obtain ⟨h ,hh, k, hk, heq⟩ := eq.mp (out_eq' (mk H K g)).symm
+  exact ⟨h, k, hh, hk, by simp [heq]⟩
+
 lemma mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
     (h : doubleCoset a H K = doubleCoset b H K) : mk H K a = mk H K b := by
   rw [eq]
