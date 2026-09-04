@@ -76,20 +76,23 @@ instance [IsEmpty α] [IsEmpty β] : IsEmpty (α ⊕' β) :=
 instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (α ⊕ β) :=
   ⟨fun x ↦ Sum.rec IsEmpty.false IsEmpty.false x⟩
 
-/-- subtypes of an empty type are empty -/
+/-- Subtypes of an empty type are empty. -/
 instance [IsEmpty α] (p : α → Prop) : IsEmpty (Subtype p) :=
   ⟨fun x ↦ IsEmpty.false x.1⟩
 
-/-- subtypes by an all-false predicate are false. -/
+/-- Subtypes by an all-false predicate are empty. -/
 theorem Subtype.isEmpty_of_false {p : α → Prop} (hp : ∀ a, ¬p a) : IsEmpty (Subtype p) :=
   ⟨fun x ↦ hp _ x.2⟩
 
-/-- subtypes by false are false. -/
+/-- Subtypes by `False` are empty. -/
 instance Subtype.isEmpty_false : IsEmpty { _a : α // False } :=
   Subtype.isEmpty_of_false fun _ ↦ id
 
 instance Sigma.isEmpty_left {α} [IsEmpty α] {E : α → Type v} : IsEmpty (Sigma E) :=
   Function.isEmpty Sigma.fst
+
+instance Sigma.isEmpty_fibers {α} {E : α → Type v} [∀ a, IsEmpty (E a)] : IsEmpty (Sigma E) :=
+  ⟨fun x ↦ IsEmpty.false x.2⟩
 
 example [h : Nonempty α] [IsEmpty β] : IsEmpty (α → β) := by infer_instance
 

@@ -405,6 +405,9 @@ lemma of_isIso [IsIso τ] [NatTrans.CommShift τ A] :
 variable (F₁) in
 instance id : NatTrans.CommShift (𝟙 F₁) A where
 
+instance isoRefl_hom : NatTrans.CommShift (Iso.refl F₁).hom A := by
+  dsimp; infer_instance
+
 attribute [local simp] Functor.commShiftIso_comp_hom_app
   shift_app_comm shift_app_comm_assoc
 
@@ -427,6 +430,18 @@ instance associator : CommShift (Functor.associator F₁ G H).hom A where
 instance leftUnitor : CommShift F₁.leftUnitor.hom A where
 
 instance rightUnitor : CommShift F₁.rightUnitor.hom A where
+
+variable {A τ} in
+lemma of_comp_faithful [G.Faithful]
+    (h : NatTrans.CommShift (Functor.whiskerRight τ G) A := by infer_instance) :
+    τ.CommShift A where
+  shift_comm a := by
+    ext X
+    apply G.map_injective
+    dsimp
+    simp only [Functor.map_comp]
+    simp [dsimp% (Functor.whiskerRight τ G).app_shift a X,
+      Functor.commShiftIso_comp_inv_app, ← Functor.map_comp]
 
 end CommShift
 
