@@ -46,7 +46,7 @@ Commands:
   put!         Same as 'put', overwriting files the server already holds.
   put-staged   Upload the *.ltar files in the staging directory to the
                selected --container. CI uploads with this command;
-               MATHLIB_CACHE_UPLOADER selects its transfer engine.
+               --uploader selects its transfer engine.
 
 Uploading needs a writer credential, which normally only CI holds. Anyone
 operating their own cache endpoint does not need 'put': 'stage' the
@@ -83,6 +83,11 @@ Options:
                      exclusive with --scope; always prints a security notice.
   --unsafe-window=N  Number of cached fork commits --unsafe will try (default
                      1). Implies --unsafe.
+  --uploader=NAME    For 'put-staged': the transfer engine. 'curl' (the
+                     default), 'rclone' (a system rclone, required), or 'auto'
+                     (rclone when available and the credentials are the S3
+                     pair; curl otherwise). The tool passes rclone the S3
+                     credentials through its environment. See Cache/README.md.
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' skip no files: use them manually when a hot-fix
@@ -138,12 +143,6 @@ Upload destination overrides for 'put':
                           path policy. CI uses it to select the upload storage.
 * MATHLIB_CACHE_PUT_URL   Upload to this single URL as a flat namespace. Any
                           set value counts, an empty one included.
-* MATHLIB_CACHE_UPLOADER  Transfer engine for 'put-staged':
-                          'curl' (the default), 'rclone' (a system rclone,
-                          required), or 'auto' (rclone when available and the
-                          credentials are the S3 pair; curl otherwise). The
-                          tool passes rclone the S3 credentials through its
-                          environment. See Cache/README.md.
 
 An empty value means unset for the URL, container-list, and credential
 variables above, except MATHLIB_CACHE_PUT_URL, where any set value counts.
@@ -183,6 +182,7 @@ def main (args : List String) : IO Unit := do
   let scopeStr? ← parseNamedOpt "scope" options
   let unsafeFlag := parseFlagOpt "unsafe" options
   let unsafeWindowStr? ← parseNamedOpt "unsafe-window" options
+  let uploaderStr? ← parseNamedOpt "uploader" options
 
   -- Resolve `--unsafe` / `--unsafe-window=N` into an optional SHA window.
   -- `some n` means unsafe mode is on with window `n`; `none` means off. Passing
@@ -268,9 +268,9 @@ def main (args : List String) : IO Unit := do
     -- it lets `cache query` discover cached commits with a cheap HEAD probe.
     let markerSha? ← if container?.isSome then getRepoScope else pure none
     let auth ← getUploadAuth
-    -- MATHLIB_CACHE_UPLOADER selects the transfer engine; the rclone engine
-    -- carries the S3 credentials it signs with.
-    match ← resolveUploadEngine auth with
+    -- `--uploader` selects the transfer engine; the rclone engine carries
+    -- the S3 credentials it signs with.
+    match ← resolveUploadEngine uploaderStr? auth with
     | .rclone keyId secret sessionToken? =>
       putStagedViaRclone dest keyId secret sessionToken? markerSha? stagingDir
     | .curl =>
@@ -332,13 +332,14 @@ def main (args : List String) : IO Unit := do
   -- checkout's build links, so nothing else in the shared per-user cache
   -- directory leaves the machine. It shares `put-staged`'s destination and
   -- credential resolution but always uploads with the built-in curl engine;
-  -- MATHLIB_CACHE_UPLOADER applies only to `put-staged`.
+  -- `--uploader` applies only to `put-staged`.
   let put (overwrite := false) := do
+    if uploaderStr?.isSome then
+      IO.eprintln "put uploads its build-scoped file list with the built-in \
+        engine; --uploader applies to `put-staged`"
+      Process.exit 1
     let repo := repo?.getD MATHLIBREPO
     let dest ← stagedUploadDest container? repo
-    if (← getEnvNonEmpty "MATHLIB_CACHE_UPLOADER").isSome then
-      IO.println "note: put uploads its build-scoped file list with the built-in \
-        engine; MATHLIB_CACHE_UPLOADER applies to `put-staged`"
     -- Credentials resolve before the pack, so a missing credential fails
     -- fast instead of after the expensive packing pass.
     let auth ← getUploadAuth

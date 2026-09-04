@@ -49,7 +49,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
 | `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
 | `put!`      | Same as `put`, overwriting files the server already holds             |
-| `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `MATHLIB_CACHE_UPLOADER` selects its transfer engine. |
+| `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `--uploader` selects its transfer engine. |
 
 The upload commands write with the same URL construction `get` reads, so
 uploads and reads follow one path contract. Uploading needs a writer
@@ -58,7 +58,7 @@ variables in `lake exe cache --help`.
 
 #### The rclone engine
 
-`put-staged` uploads with curl by default. `MATHLIB_CACHE_UPLOADER` selects
+`put-staged` uploads with curl by default. `--uploader` selects
 the transfer engine:
 
 - `curl` (the default): the built-in engine. Parallel PUTs, each signed per

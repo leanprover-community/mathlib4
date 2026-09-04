@@ -20,7 +20,7 @@ namespace Cache.Cli
 
 /-- The named options supported by the CLI. -/
 def knownNamedOpts : List String :=
-  ["repo", "staging-dir", "cache-from", "container", "scope", "unsafe-window"]
+  ["repo", "staging-dir", "cache-from", "container", "scope", "unsafe-window", "uploader"]
 
 /-- The flag options supported by the CLI. -/
 def knownFlagOpts : List String := ["help", "unsafe"]

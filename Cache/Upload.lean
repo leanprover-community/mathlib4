@@ -308,7 +308,7 @@ inductive UploadEngine where
   deriving DecidableEq, Repr, BEq
 
 /--
-Resolve the transfer engine from `MATHLIB_CACHE_UPLOADER` (`uploader?`):
+Resolve the transfer engine from the `--uploader=` option (`uploader?`):
 
 * unset or `curl`: the built-in curl engine.
 * `rclone`: a system rclone, required — a missing binary or non-S3
@@ -317,8 +317,8 @@ Resolve the transfer engine from `MATHLIB_CACHE_UPLOADER` (`uploader?`):
   pair; the curl engine otherwise. rclone signs S3 requests only, so the
   Azure mechanisms always take the curl engine.
 
-Pure so the policy is testable; `resolveUploadEngine` wires the environment
-and the availability probe in.
+Pure so the policy is testable; `resolveUploadEngine` wires the availability
+probe in.
 -/
 def uploadEngineFrom (uploader? : Option String) (auth : UploadAuth)
     (rcloneAvailable : Bool) : Except String UploadEngine :=
@@ -329,14 +329,14 @@ def uploadEngineFrom (uploader? : Option String) (auth : UploadAuth)
   | none | some "curl" => .ok .curl
   | some "rclone" =>
     match rclone? with
-    | none => .error "MATHLIB_CACHE_UPLOADER=rclone signs uploads with the S3 credential pair, \
+    | none => .error "--uploader=rclone signs uploads with the S3 credential pair, \
         and the environment provides a different upload mechanism"
     | some engine =>
       if rcloneAvailable then .ok engine
-      else .error "MATHLIB_CACHE_UPLOADER=rclone, but no working rclone was found on PATH"
+      else .error "--uploader=rclone, but no working rclone was found on PATH"
   | some "auto" => .ok (if rcloneAvailable then rclone?.getD .curl else .curl)
   | some other =>
-    .error s!"unknown MATHLIB_CACHE_UPLOADER value '{other}' (known: curl, rclone, auto)"
+    .error s!"unknown --uploader value '{other}' (known: curl, rclone, auto)"
 
 /-- Whether a working rclone is available on PATH. -/
 def rcloneAvailable : IO Bool := do
@@ -347,11 +347,11 @@ def rcloneAvailable : IO Bool := do
     return false
 
 /--
-`uploadEngineFrom` on the environment. The availability probe runs only for
-the `MATHLIB_CACHE_UPLOADER` values whose outcome depends on it.
+`uploadEngineFrom` with the availability probe wired in. The probe runs only
+for the `--uploader` values whose outcome depends on it.
 -/
-def resolveUploadEngine (auth : UploadAuth) : IO UploadEngine := do
-  let uploader? ← getEnvNonEmpty "MATHLIB_CACHE_UPLOADER"
+def resolveUploadEngine (uploader? : Option String) (auth : UploadAuth) :
+    IO UploadEngine := do
   let available ←
     if uploader? == some "rclone" || uploader? == some "auto" then rcloneAvailable
     else pure false

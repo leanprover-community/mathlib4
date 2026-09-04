@@ -953,6 +953,7 @@ def test_isKnownOpt : IO Unit := do
   assertTrue "--container=master is known"   (isKnownOpt "--container=master")
   assertTrue "--staging-dir=/tmp is known"   (isKnownOpt "--staging-dir=/tmp")
   assertTrue "--unsafe-window=5 is known" (isKnownOpt "--unsafe-window=5")
+  assertTrue "--uploader=rclone is known"    (isKnownOpt "--uploader=rclone")
 
   -- Empty value passes recognition (parseNamedOpt returns the empty string
   -- for these — callers decide whether to treat that as an error).
@@ -1462,7 +1463,7 @@ def test_uploadAuthArgs : IO Unit := do
     (s3Static.all (!·.startsWith "x-amz-security-token"))
   assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
 
-/-- The transfer-engine policy for `put` (`MATHLIB_CACHE_UPLOADER`): curl by
+/-- The transfer-engine policy for `put-staged` (`--uploader`): curl by
 default, rclone required when named, availability- and credential-gated under
 `auto`. rclone signs S3 requests only, so non-S3 credentials never select it,
 and a selected rclone engine carries the credentials it signs with. -/
