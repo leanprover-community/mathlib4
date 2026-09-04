@@ -67,6 +67,13 @@ structure IsTree : Prop extends
 
 variable {G G'}
 
+theorem isAcyclic_iff : G.IsAcyclic ↔ ∀ ⦃v : V⦄ (c : G.Walk v v), ¬c.IsCycle :=
+  .rfl
+
+theorem not_isAcyclic_iff : ¬G.IsAcyclic ↔ ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
+  contrapose!
+  rfl
+
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
 /-- A graph that has an injective homomorphism to an acyclic graph is acyclic. -/
@@ -513,10 +520,8 @@ theorem IsAcyclic.ncard_edgeSet_add_one_le_card [Finite V] [Nonempty V] (h : G.I
 
 /-- A graph on `n` vertices with at least `n` edges has a cycle. -/
 theorem exists_isCycle_of_card_le [Finite V] [Nonempty V]
-    (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
-  suffices ¬G.IsAcyclic by grind [IsAcyclic]
-  apply mt IsAcyclic.ncard_edgeSet_add_one_le_card
-  lia
+    (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle :=
+  not_isAcyclic_iff.mp <| mt IsAcyclic.ncard_edgeSet_add_one_le_card <| by lia
 
 /-- A graph on `n` vertices is a tree iff it is acyclic and has exactly `n - 1` edges. -/
 theorem isTree_iff_isAcyclic_and_ncard_edgeSet_add_one_eq_card [Finite V] :
