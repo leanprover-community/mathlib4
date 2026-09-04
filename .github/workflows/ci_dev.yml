@@ -1,52 +1,91 @@
 name: ci dev
 
+# Runner-fleet micro-benchmark. Targets one label per dispatch:
+#   ephemeral -> a hoskinson box, pr / bors -> a Hetzner box.
+# Each run measures the same work twice on the SAME machine, once under
+# landrun and once under a plain shell, so the sandbox cost is a paired
+# within-machine difference with no hardware confound.
+
 on:
   workflow_dispatch:
     inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
+      runs_on:
+        description: runner label (ephemeral = hoskinson, pr/bors = hetzner)
         required: false
         type: string
-        default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
+        default: 'pr'
+      files:
+        description: number of small files in the file-operation benchmark
         required: false
         type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
-        required: false
-        type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
+        default: '20000'
+      cpu_seconds:
+        description: seconds per openssl speed measurement
         required: false
         type: string
-        default: 'master'
+        default: '3'
+      reps:
+        description: repetitions of each arm
+        required: false
+        type: string
+        default: '2'
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
-  id-token: write
-  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
 
 jobs:
-  build:
+  bench:
     name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
+    # For sanity and intentionality, only trigger this from branches ci-dev/*
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
-      cache_environment: cache-upload-forks
-      runs_on: pr
-    secrets: inherit
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 30
+    steps:
+      - name: checkout the benchmark script only
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: .github
+
+      - name: machine facts
+        shell: bash
+        run: |
+          set -uo pipefail
+          echo "runner=${RUNNER_NAME:-?} label=${{ inputs.runs_on }}"
+          echo "== kernel =="; uname -a
+          echo "== cpu =="; nproc
+          lscpu 2>/dev/null | grep -E "Model name|Vendor|Socket|Core\(s\)|Thread\(s\)|^CPU\(s\)|MHz|BogoMIPS|L3|Hypervisor|Virtual" || true
+          echo "== memory =="; free -g 2>/dev/null | head -2
+          echo "== filesystem for the workspace =="
+          df -hT . 2>/dev/null
+          echo "== warm-cache mounts =="
+          df -hT /home/lean/.elan /home/lean/.cache/mathlib 2>/dev/null || echo "(not separate mounts)"
+          mount 2>/dev/null | grep -E "overlay|/home/lean" | head -10 || true
+          echo "== landrun =="
+          command -v landrun || echo "landrun NOT on PATH"
+          landrun --version 2>&1 | head -3 || true
+          echo "== landlock ABI supported by this kernel =="
+          python3 -c "import ctypes;l=ctypes.CDLL('libc.so.6');print('landlock_abi =', l.syscall(444, None, ctypes.c_size_t(0), ctypes.c_uint32(1)))" || true
+          echo "== tool versions (cross-fleet CPU numbers are only comparable if these match) =="
+          python3 --version; openssl version; bash --version | head -1
+
+      - name: run the benchmark, plain shell vs landrun
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p bench
+          N="${{ inputs.files }}"; C="${{ inputs.cpu_seconds }}"; R="${{ inputs.reps }}"
+          LR="landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw bench/ --env PATH --env HOME --env CI --"
+          for i in $(seq 1 "$R"); do
+            echo "::group::rep $i — plain shell"
+            bash .github/ci-dev/bench.sh "plain$i" "$N" "$C" bench
+            echo "::endgroup::"
+            echo "::group::rep $i — under landrun"
+            $LR bash .github/ci-dev/bench.sh "landrun$i" "$N" "$C" bench
+            echo "::endgroup::"
+          done
+
+      - name: summary
+        if: always()
+        shell: bash
+        run: echo "Collect the RESULT lines from the log above."
