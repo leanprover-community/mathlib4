@@ -197,7 +197,7 @@ theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) 
     rw [Set.image_subset_iff, preimage_iUnion] at ht
     refine ⟨ht, ENNReal.tsum_le_tsum fun n => ?_⟩
     rcases h with hl | hr
-    exacts [hl (image_preimage_subset _ _), (congr_arg m (hr.image_preimage (t n))).le]
+    exacts [hl (image_preimage_subset _ _), congr(m $(hr.image_preimage (t n))).le]
 
 theorem map_ofFunction_le {β} (f : α → β) :
     map f (OuterMeasure.ofFunction m m_empty) ≤
@@ -442,11 +442,11 @@ theorem restrict_iInf_restrict {ι} (s : Set α) (m : ι → OuterMeasure α) :
   calc restrict s (⨅ i, restrict s (m i))
     _ = restrict (range ((↑) : s → α)) (⨅ i, restrict s (m i)) := by rw [Subtype.range_coe]
     _ = map ((↑) : s → α) (⨅ i, comap (↑) (m i)) := (map_iInf Subtype.coe_injective _).symm
-    _ = restrict s (⨅ i, m i) := congr_arg (map ((↑) : s → α)) (comap_iInf _ _).symm
+    _ = restrict s (⨅ i, m i) := congr(map ((↑) : s → α) $((comap_iInf ..).symm))
 
 theorem restrict_iInf {ι} [Nonempty ι] (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨅ i, m i) = ⨅ i, restrict s (m i) :=
-  (congr_arg (map ((↑) : s → α)) (comap_iInf _ _)).trans (map_iInf_comap _)
+  congr(map ((↑) : s → α) $(comap_iInf ..)).trans (map_iInf_comap _)
 
 theorem restrict_biInf {ι} {I : Set ι} (hI : I.Nonempty) (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨅ i ∈ I, m i) = ⨅ i ∈ I, restrict s (m i) := by

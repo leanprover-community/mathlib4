@@ -162,8 +162,8 @@ variable {X Y Z : CoalgCat.{v} R}
 def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   { i.hom.toCoalgHom with
     invFun := i.inv.toCoalgHom
-    left_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.3) x
-    right_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.4) x }
+    left_inv := fun x => congr($(i.3).toCoalgHom x)
+    right_inv := fun x => congr($(i.4).toCoalgHom x) }
 
 @[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
     i.toCoalgEquiv = i.hom.toCoalgHom := rfl

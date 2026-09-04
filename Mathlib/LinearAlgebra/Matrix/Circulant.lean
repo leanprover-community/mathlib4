@@ -55,7 +55,7 @@ def circulant [Sub n] (v : n → α) : Matrix n n α :=
 theorem circulant_apply [Sub n] (v : n → α) (i j) : circulant v i j = v (i - j) := rfl
 
 theorem circulant_col_zero_eq [SubtractionMonoid n] (v : n → α) (i : n) : circulant v i 0 = v i :=
-  congr_arg v (sub_zero _)
+  congr(v $(sub_zero _))
 
 theorem circulant_injective [SubtractionMonoid n] :
     Injective (circulant : (n → α) → Matrix n n α) := by

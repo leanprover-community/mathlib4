@@ -153,7 +153,7 @@ lemma preservesProduct_of_isSheafFor
   refine IsIso.comp_isIso' inferInstance ?_
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
-  exact fun b ↦ hF' b (ConcreteCategory.congr_hom (firstMap_eq_secondMap F hF hI c hd) b)
+  exact fun b ↦ hF' b congr($(firstMap_eq_secondMap F hF hI c hd) b)
 
 include hc hd hF hI in
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔

@@ -219,7 +219,7 @@ which is separable, then `L` is equal to `k`. A corollary of `IsSepClosed.algebr
 theorem IntermediateField.eq_bot_of_isSepClosed_of_isSeparable [IsSepClosed k] [Algebra k K]
     (L : IntermediateField k K) [Algebra.IsSeparable k L] : L = ⊥ := bot_unique fun x hx ↦ by
   obtain ⟨y, hy⟩ := IsSepClosed.algebraMap_surjective k L ⟨x, hx⟩
-  exact ⟨y, congr_arg (algebraMap L K) hy⟩
+  exact ⟨y, congr(algebraMap L K $hy)⟩
 
 variable (k) (K)
 

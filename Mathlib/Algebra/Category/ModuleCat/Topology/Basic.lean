@@ -432,8 +432,8 @@ This is left adjoint to the forgetful functor. -/
 def free : TopCat.{v} ⥤ TopModuleCat.{max v u} R :=
   { obj := freeObj R
     map f := freeMap R f
-    map_id M := by ext x; exact DFunLike.congr_fun (Finsupp.lmapDomain_id _ _) x
-    map_comp f g := by ext; exact DFunLike.congr_fun (Finsupp.lmapDomain_comp _ _ f.hom g.hom) _ }
+    map_id M := by ext x; exact congr($(Finsupp.lmapDomain_id _ _) x)
+    map_comp f g := by ext; exact congr($(Finsupp.lmapDomain_comp _ _ f.hom g.hom) _) }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

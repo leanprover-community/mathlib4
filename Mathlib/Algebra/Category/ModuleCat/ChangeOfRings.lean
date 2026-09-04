@@ -102,7 +102,7 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).Faithful where
   map_injective h := by
     ext x
-    simpa only using! DFunLike.congr_fun (ModuleCat.hom_ext_iff.mp h) x
+    simpa only using! congr($(ModuleCat.hom_ext_iff.mp h) x)
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).PreservesMonomorphisms where
@@ -334,7 +334,7 @@ namespace Algebra
 
 instance {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
     (f : R →ₐ[R₀] S) : (restrictScalars f.toRingHom).Linear R₀ where
-  map_smul {M N} g r₀ := by ext m; exact congr_arg (· • g.hom m) (f.commutes r₀).symm
+  map_smul {M N} g r₀ := by ext m; exact congr($((f.commutes r₀).symm) • g.hom m)
 
 instance restrictScalarsEquivalenceOfRingEquiv_linear
     {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]

@@ -82,7 +82,7 @@ noncomputable def limitCone : Cone F :=
     π :=
     { app j := ofHom (limitπMonoidHom F j)
       naturality := fun _ _ f => MonCat.ext fun x =>
-        ConcreteCategory.congr_hom ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) x } }
+        congr($((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) x) } }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -237,9 +237,8 @@ noncomputable instance forget₂CreatesLimit : CreatesLimit F (forget₂ CommMon
         { pt := CommMonCat.of (Types.Small.limitCone (F ⋙ forget CommMonCat)).pt
           π :=
             { app j := ofHom (MonCat.limitπMonoidHom (F ⋙ forget₂ CommMonCat.{u} MonCat.{u}) j)
-              naturality _ _ j := ext <| fun x => ConcreteCategory.congr_hom
-                ((MonCat.HasLimits.limitCone
-                  (F ⋙ forget₂ CommMonCat MonCat.{u})).π.naturality j) x } }
+              naturality _ _ j := ext <| fun x => congr($((MonCat.HasLimits.limitCone
+                  (F ⋙ forget₂ CommMonCat MonCat.{u})).π.naturality j) x) } }
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ CommMonCat MonCat.{u})

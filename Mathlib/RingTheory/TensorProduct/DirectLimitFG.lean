@@ -129,7 +129,7 @@ theorem Submodule.FG.rTensor.directLimit_apply [DecidableEq {P : Submodule R M /
       (Module.DirectLimit.of R {P : Submodule R M // P.FG} (fun P ↦ P.val ⊗[R] N)
         (fun _ _ hPQ ↦ rTensor N (Submodule.inclusion hPQ)) P)
       = rTensor N (Submodule.subtype P.val) by
-    exact DFunLike.congr_fun this u
+    exact congr($this u)
   ext p n
   simp [Submodule.FG.rTensor.directLimit, Submodule.FG.directLimit]
 
@@ -183,7 +183,7 @@ theorem Submodule.FG.lTensor.directLimit_apply [DecidableEq {P : Submodule R N /
       (Module.DirectLimit.of R {Q : Submodule R N // Q.FG} (fun Q ↦ M ⊗[R] Q.val)
         (fun _ _ hPQ ↦ lTensor M (inclusion hPQ)) Q)
       = lTensor M (Submodule.subtype Q.val) by
-    exact DFunLike.congr_fun this u
+    exact congr($this u)
   ext p n
   simp [Submodule.FG.lTensor.directLimit, Submodule.FG.directLimit]
 

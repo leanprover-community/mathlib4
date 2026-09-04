@@ -158,7 +158,7 @@ instance : IsFractionRing A K where
     rcases A.mem_or_inv_mem z with hh | hh
     · use (⟨z, hh⟩, 1); simp
     · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel₀ h⟩
-      exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp (congr_arg Subtype.val c))
+      exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp congr($(c).val))
   exists_of_eq {a b} h := ⟨1, by ext; simpa using h⟩
 
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
@@ -399,7 +399,7 @@ instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
 open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
   le_total := (le_total_ideal A).1
-  max_def a b := congr_fun₂ sup_eq_maxDefault a b
+  max_def a b := congr($sup_eq_maxDefault a b)
   toDecidableLE := _
 
 section

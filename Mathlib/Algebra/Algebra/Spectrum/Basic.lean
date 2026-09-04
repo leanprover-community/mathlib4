@@ -325,7 +325,7 @@ theorem singleton_sub_eq (a : A) (r : R) : {r} - σ a = σ (↑ₐ r - a) := by
   rw [sub_eq_add_neg, neg_eq, singleton_add_eq, sub_eq_add_neg]
 
 theorem sub_singleton_eq (a : A) (r : R) : σ a - {r} = σ (a - ↑ₐ r) := by
-  simpa only [neg_sub, neg_eq] using congr_arg Neg.neg (singleton_sub_eq a r)
+  simpa only [neg_sub, neg_eq] using congr(-$(singleton_sub_eq a r))
 
 end ScalarRing
 

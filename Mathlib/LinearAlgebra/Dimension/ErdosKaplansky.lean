@@ -75,7 +75,7 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
   simp_rw [← rep_e, Finset.sum_apply, Pi.smul_apply, Finset.smul_sum]
   rw [Finset.sum_comm]
   refine Finset.sum_eq_zero fun i hi ↦ ?_
-  replace eq0 := congr_arg L.subtype (congr_fun eq0 ⟨i, hi⟩)
+  replace eq0 := congr(L.subtype ($eq0 ⟨i, hi⟩))
   rw [Finset.sum_apply, map_sum] at eq0
   have : SMulCommClass Lᵐᵒᵖ K K := ⟨fun _ _ _ ↦ mul_assoc _ _ _⟩
   simp_rw [smul_comm _ (c i), ← Finset.smul_sum]

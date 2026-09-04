@@ -228,7 +228,7 @@ theorem serreDerivative_slash_equivariant {k : ℤ} {F : ℍ → ℂ} (hF : MDif
   have hLHS : (serreDerivative (k : ℂ) F ∣[k + 2] γ) z =
       (D F ∣[k + 2] γ) z - ↑k * 12⁻¹ * ((EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z * (F ∣[k] γ) z) := by
     grind [ModularForm.SL_slash_apply, serreDerivative_apply, Pi.mul_apply,
-      congrFun (ModularForm.mul_slash_SL2 2 k γ EisensteinSeries.E2 F) z]
+      congr($(ModularForm.mul_slash_SL2 2 k γ EisensteinSeries.E2 F) z)]
   have hDz : (D (F ∣[k] γ)) z = (D F ∣[k + 2] γ) z -
       (k * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
     simp [normalizedDerivOfComplex_SL_slash hF]

@@ -361,7 +361,7 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
         rw [leftRel_apply]
         change ((f b)⁻¹ * b)⁻¹ * ((f c)⁻¹ * c) ∈ s
         have key : f b = f c :=
-          congr_arg f (Quotient.sound' (leftRel_apply.mpr (h_le (leftRel_apply.mp h))))
+          congr(f $(Quotient.sound' (leftRel_apply.mpr (h_le (leftRel_apply.mp h)))))
         rwa [key, mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left, ← leftRel_apply]⟩
   invFun a := by
     refine a.2.map' (fun (b : { x // x ∈ t}) => f a.1 * b) fun b c h => by

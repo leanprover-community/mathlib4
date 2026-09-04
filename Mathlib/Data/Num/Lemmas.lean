@@ -61,9 +61,7 @@ theorem cast_to_int [AddGroupWithOne α] (n : PosNum) : ((n : ℤ) : α) = n := 
 theorem succ_to_nat : ∀ n, (succ n : ℕ) = n + 1
   | 1 => rfl
   | bit0 _ => rfl
-  | bit1 p =>
-    (congr_arg (fun n ↦ n + n) (succ_to_nat p)).trans <|
-      show ↑p + 1 + ↑p + 1 = ↑p + ↑p + 1 + 1 by simp [add_left_comm]
+  | bit1 p => by simp [succ, succ_to_nat]; lia
 
 theorem one_add (n : PosNum) : 1 + n = succ n := by cases n <;> rfl
 
@@ -73,12 +71,12 @@ theorem add_one (n : PosNum) : n + 1 = succ n := by cases n <;> rfl
 theorem add_to_nat : ∀ m n, ((m + n : PosNum) : ℕ) = m + n
   | 1, b => by rw [one_add b, succ_to_nat, add_comm, cast_one]
   | a, 1 => by rw [add_one a, succ_to_nat, cast_one]
-  | bit0 a, bit0 b => (congr_arg (fun n ↦ n + n) (add_to_nat a b)).trans <| add_add_add_comm _ _ _ _
+  | bit0 a, bit0 b => congr((fun n ↦ n + n) $(add_to_nat a b)).trans <| add_add_add_comm _ _ _ _
   | bit0 a, bit1 b =>
-    (congr_arg (fun n ↦ (n + n) + 1) (add_to_nat a b)).trans <|
+    congr((fun n ↦ (n + n) + 1) $(add_to_nat a b)).trans <|
       show (a + b + (a + b) + 1 : ℕ) = a + a + (b + b + 1) by simp [add_left_comm]
   | bit1 a, bit0 b =>
-    (congr_arg (fun n ↦ (n + n) + 1) (add_to_nat a b)).trans <|
+    congr((fun n ↦ (n + n) + 1) $(add_to_nat a b)).trans <|
       show (a + b + (a + b) + 1 : ℕ) = a + a + 1 + (b + b) by simp [add_comm, add_left_comm]
   | bit1 a, bit1 b =>
     show (succ (a + b) + succ (a + b) : ℕ) = a + a + 1 + (b + b + 1) by
@@ -86,16 +84,16 @@ theorem add_to_nat : ∀ m n, ((m + n : PosNum) : ℕ) = m + n
 
 theorem add_succ : ∀ m n : PosNum, m + succ n = succ (m + n)
   | 1, b => by simp [one_add]
-  | bit0 a, 1 => congr_arg bit0 (add_one a)
-  | bit1 a, 1 => congr_arg bit1 (add_one a)
+  | bit0 a, 1 => congr(bit0 $(add_one a))
+  | bit1 a, 1 => congr(bit1 $(add_one a))
   | bit0 _, bit0 _ => rfl
-  | bit0 a, bit1 b => congr_arg bit0 (add_succ a b)
+  | bit0 a, bit1 b => congr(bit0 $(add_succ a b))
   | bit1 _, bit0 _ => rfl
-  | bit1 a, bit1 b => congr_arg bit1 (add_succ a b)
+  | bit1 a, bit1 b => congr(bit1 $(add_succ a b))
 
 theorem bit0_of_bit0 : ∀ n, n + n = bit0 n
   | 1 => rfl
-  | bit0 p => congr_arg bit0 (bit0_of_bit0 p)
+  | bit0 p => congr(bit0 $(bit0_of_bit0 p))
   | bit1 p => show bit0 (succ (p + p)) = _ by rw [bit0_of_bit0 p, succ]
 
 theorem bit1_of_bit1 (n : PosNum) : (n + n) + 1 = bit1 n :=
@@ -193,15 +191,15 @@ theorem add_one : ∀ n : Num, n + 1 = succ n
 theorem add_succ : ∀ m n : Num, m + succ n = succ (m + n)
   | 0, n => by simp [zero_add]
   | pos p, 0 => show pos (p + 1) = succ (pos p + 0) by rw [PosNum.add_one, add_zero, succ, succ']
-  | pos _, pos _ => congr_arg pos (PosNum.add_succ _ _)
+  | pos _, pos _ => congr(pos $(PosNum.add_succ ..))
 
 theorem bit0_of_bit0 : ∀ n : Num, n + n = n.bit0
   | 0 => rfl
-  | pos p => congr_arg pos p.bit0_of_bit0
+  | pos p => congr(pos $p.bit0_of_bit0)
 
 theorem bit1_of_bit1 : ∀ n : Num, (n + n) + 1 = n.bit1
   | 0 => rfl
-  | pos p => congr_arg pos p.bit1_of_bit1
+  | pos p => congr(pos $p.bit1_of_bit1)
 
 @[simp]
 theorem ofNat'_zero : Num.ofNat' 0 = 0 := by simp [Num.ofNat']

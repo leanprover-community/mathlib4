@@ -46,7 +46,7 @@ theorem of_isSeparable [Algebra.IsSeparable K L] : FormallyUnramified K L := by
   intro B _ _ I hI f₁ f₂ e
   ext x
   have : f₁ x - f₂ x ∈ I := by
-    simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using AlgHom.congr_fun e x
+    simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using congr($e x)
   have := Polynomial.eval_add_of_sq_eq_zero ((minpoly K x).map (algebraMap K B)) (f₂ x)
     (f₁ x - f₂ x) (show (f₁ x - f₂ x) ^ 2 ∈ ⊥ from hI ▸ Ideal.pow_mem_pow this 2)
   simp only [add_sub_cancel, eval_map_algebraMap, aeval_algHom_apply, minpoly.aeval, map_zero,
@@ -86,7 +86,7 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
     simp [Algebra.smul_def, e, ofId, mul_comm]
   have hf₁ : f 1 • (1 : A ⧸ IsLocalRing.maximalIdeal A) = 1 := by
     rw [← algebraMap_eq_smul_one]
-    exact LinearMap.congr_fun hf 1
+    exact congr($hf 1)
   have hf₂ : 1 - f 1 ∈ IsLocalRing.maximalIdeal A := by
     rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one, ← Ideal.Quotient.algebraMap_eq,
      algebraMap_eq_smul_one, hf₁, sub_self]
@@ -185,10 +185,10 @@ theorem range_eq_top_of_isPurelyInseparable
     let b : S := ⟨x, h.subset_extend _ (by simp)⟩
     have hb : Basis.extend h b = x := by simp [b]
     by_cases e : a = b
-    · obtain rfl : 1 = x := congr_arg Subtype.val e
+    · obtain rfl : 1 = x := congr($(e).val)
       exact ⟨1, map_one _⟩
     have := DFunLike.congr_fun
-      (DFunLike.congr_arg ((Basis.extend h).tensorProduct (Basis.extend h)).repr H) (a, b)
+      congr(((Basis.extend h).tensorProduct (Basis.extend h)).repr $H) (a, b)
     simp only [Basis.tensorProduct_repr_tmul_apply, ← ha, ← hb, Basis.repr_self, smul_eq_mul,
       Finsupp.single_apply, e, Ne.symm e, ↓reduceIte, mul_one, mul_zero, one_ne_zero] at this
   · rw [LinearIndependent.pair_iff] at h'

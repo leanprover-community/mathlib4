@@ -201,7 +201,7 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     rw [Function.iterate_succ, Function.comp_apply, add_assoc, ← hn]
     congr 2
     rw [Nat.one_add]
-    exact congr(ofCoeff R $(Finsupp.mapDomain_single))
+    exact congr(ofCoeff R $Finsupp.mapDomain_single)
 
 @[simp]
 theorem monomial_smul_lsingle (i : ℕ) (r : R) (j : ℕ) (m : M) :

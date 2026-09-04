@@ -60,8 +60,8 @@ private lemma isLocallyBijective_iff_isIso' :
       apply h₁
       have eq₁ := NatTrans.naturality_apply f.hom g₁.op (t f₁ hf₁)
       have eq₂ := NatTrans.naturality_apply f.hom g₂.op (t f₂ hf₂)
-      have eq₃ := congr_arg (G.obj.map g₁.op) (Presheaf.app_localPreimage f.hom s _ hf₁)
-      have eq₄ := congr_arg (G.obj.map g₂.op) (Presheaf.app_localPreimage f.hom s _ hf₂)
+      have eq₃ := congr(G.obj.map g₁.op $(Presheaf.app_localPreimage f.hom s _ hf₁))
+      have eq₄ := congr(G.obj.map g₂.op $(Presheaf.app_localPreimage f.hom s _ hf₂))
       refine eq₁.trans (eq₃.trans (Eq.trans ?_ (eq₄.symm.trans eq₂.symm)))
       rw [← Functor.map_comp_apply, ← Functor.map_comp_apply]
       simp only [← op_comp, w]

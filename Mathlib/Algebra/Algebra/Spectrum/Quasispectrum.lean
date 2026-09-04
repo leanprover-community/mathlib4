@@ -125,7 +125,7 @@ def unitsFstOne : Subgroup (Unitization R A)ˣ where
   one_mem' := rfl
   mul_mem' {x} {y} (hx : x.val.fst = 1) (hy : y.val.fst = 1) := by simp [hx, hy]
   inv_mem' {x} (hx : x.val.fst = 1) := by
-    simpa [-Units.mul_inv, hx] using congr(fstHom R A $(x.mul_inv))
+    simpa [-Units.mul_inv, hx] using congr(fstHom R A $x.mul_inv)
 
 @[simp]
 lemma mem_unitsFstOne {x : (Unitization R A)ˣ} : x ∈ unitsFstOne R A ↔ x.val.fst = 1 := Iff.rfl
@@ -210,14 +210,14 @@ lemma IsQuasiregular.map {F R S : Type*} [NonUnitalSemiring R] [NonUnitalSemirin
     IsQuasiregular (f x) := by
   rw [isQuasiregular_iff] at hx ⊢
   obtain ⟨y, hy₁, hy₂⟩ := hx
-  exact ⟨f y, by simpa using And.intro congr(f $(hy₁)) congr(f $(hy₂))⟩
+  exact ⟨f y, by simpa using And.intro congr(f $hy₁) congr(f $hy₂)⟩
 
 lemma IsQuasiregular.isUnit_one_add {R : Type*} [Semiring R] {x : R} (hx : IsQuasiregular x) :
     IsUnit (1 + x) := by
   obtain ⟨y, hy₁, hy₂⟩ := isQuasiregular_iff.mp hx
   refine ⟨⟨1 + x, 1 + y, ?_, ?_⟩, rfl⟩
-  · convert congr(1 + $(hy₁)) <;> [noncomm_ring; simp]
-  · convert congr(1 + $(hy₂)) <;> [noncomm_ring; simp]
+  · convert congr(1 + $hy₁) <;> [noncomm_ring; simp]
+  · convert congr(1 + $hy₂) <;> [noncomm_ring; simp]
 
 lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
     IsQuasiregular x ↔ IsUnit (1 + x) := by
@@ -225,8 +225,8 @@ lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
   rw [isQuasiregular_iff]
   use hx.unit⁻¹ - 1
   constructor
-  case' h.left => have := congr($(hx.mul_val_inv) - 1)
-  case' h.right => have := congr($(hx.val_inv_mul) - 1)
+  case' h.left => have := congr($hx.mul_val_inv - 1)
+  case' h.right => have := congr($hx.val_inv_mul - 1)
   all_goals
     rw [← sub_add_cancel (↑hx.unit⁻¹ : R) 1, sub_self] at this
     convert this
@@ -359,7 +359,7 @@ lemma isQuasiregular_inr_iff (a : A) :
   refine ⟨fun ha ↦ ?_, IsQuasiregular.map (inrNonUnitalAlgHom R A)⟩
   rw [isQuasiregular_iff] at ha ⊢
   obtain ⟨y, hy₁, hy₂⟩ := ha
-  lift y to A using by simpa using congr(fstHom R A $(hy₁))
+  lift y to A using by simpa using congr(fstHom R A $hy₁)
   refine ⟨y, ?_, ?_⟩ <;> exact inr_injective (R := R) <| by simpa
 
 lemma zero_mem_spectrum_inr (R S : Type*) {A : Type*} [CommSemiring R]

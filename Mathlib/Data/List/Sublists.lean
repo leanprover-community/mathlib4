@@ -264,7 +264,7 @@ theorem length_of_sublistsLen :
     rw [sublistsLen_succ_cons, mem_append, mem_map] at h
     rcases h with (h | ⟨l', h, rfl⟩)
     · exact length_of_sublistsLen h
-    · exact congr_arg (· + 1) (length_of_sublistsLen h)
+    · exact congr($(length_of_sublistsLen h) + 1)
 
 theorem mem_sublistsLen_self {l l' : List α} (h : l' <+ l) :
     l' ∈ sublistsLen (length l') l := by

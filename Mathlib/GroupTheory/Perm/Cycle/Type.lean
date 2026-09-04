@@ -116,7 +116,7 @@ theorem one_lt_of_mem_cycleType {σ : Perm α} {n : ℕ} (h : n ∈ σ.cycleType
   two_le_of_mem_cycleType h
 
 theorem IsCycle.cycleType {σ : Perm α} (hσ : IsCycle σ) : σ.cycleType = {#σ.support} :=
-  cycleType_eq [σ] (mul_one σ) (fun _τ hτ => (congr_arg IsCycle (List.mem_singleton.mp hτ)).mpr hσ)
+  cycleType_eq [σ] (mul_one σ) (fun _τ hτ => congr(IsCycle $(List.mem_singleton.mp hτ)).mpr hσ)
     (List.pairwise_singleton Disjoint σ)
 
 theorem card_cycleType_eq_one {σ : Perm α} : Multiset.card σ.cycleType = 1 ↔ σ.IsCycle := by
@@ -199,7 +199,7 @@ theorem orderOf_cycleOf_dvd_orderOf (f : Perm α) (x : α) : orderOf (cycleOf f 
     · simp [(isCycle_cycleOf _ hx).orderOf]
 
 theorem two_dvd_card_support {σ : Perm α} (hσ : σ ^ 2 = 1) : 2 ∣ #σ.support :=
-  (congr_arg (Dvd.dvd 2) σ.sum_cycleType).mp
+  congr(Dvd.dvd 2 $σ.sum_cycleType).mp
     (Multiset.dvd_sum fun n hn => by
       rw [_root_.le_antisymm
           (Nat.le_of_dvd zero_lt_two <|
@@ -413,7 +413,7 @@ theorem isCycle_of_prime_order' {σ : Perm α} (h1 : (orderOf σ).Prime)
 
 theorem isCycle_of_prime_order'' {σ : Perm α} (h1 : (Fintype.card α).Prime)
     (h2 : orderOf σ = Fintype.card α) : σ.IsCycle :=
-  isCycle_of_prime_order' ((congr_arg Nat.Prime h2).mpr h1) <| by
+  isCycle_of_prime_order' (congr(Nat.Prime $h2).mpr h1) <| by
     rw [← one_mul (Fintype.card α), ← h2, mul_lt_mul_iff_left₀ (orderOf_pos σ)]
     exact one_lt_two
 
@@ -436,7 +436,7 @@ theorem zero_eq : vectorsProdEqOne G 0 = {Vector.nil} :=
 theorem one_eq : vectorsProdEqOne G 1 = {Vector.nil.cons 1} := by
   simp_rw [Set.eq_singleton_iff_unique_mem, mem_iff, List.Vector.toList_singleton,
     List.prod_singleton, List.Vector.head_cons, true_and]
-  exact fun v hv => v.cons_head_tail.symm.trans (congr_arg₂ Vector.cons hv v.tail.eq_nil)
+  exact fun v hv => v.cons_head_tail.symm.trans congr(Vector.cons $hv $v.tail.eq_nil)
 
 instance zeroUnique : Unique (vectorsProdEqOne G 0) := by
   rw [zero_eq]
@@ -457,9 +457,9 @@ def vectorEquiv : List.Vector G n ≃ vectorsProdEqOne G (n + 1) where
   right_inv v := Subtype.ext <|
     calc
       v.1.tail.toList.prod⁻¹ ::ᵥ v.1.tail = v.1.head ::ᵥ v.1.tail :=
-        congr_arg (· ::ᵥ v.1.tail) <| Eq.symm <| eq_inv_of_mul_eq_one_left <| by
+        congr((· ::ᵥ v.1.tail) $(Eq.symm <| eq_inv_of_mul_eq_one_left <| by
           rw [← List.prod_cons, ← Vector.toList_cons, v.1.cons_head_tail]
-          exact v.2
+          exact v.2))
       _ = v.1 := v.1.cons_head_tail
 
 /-- Given a vector `v` of length `n` whose product is 1, make a vector of length `n - 1`,

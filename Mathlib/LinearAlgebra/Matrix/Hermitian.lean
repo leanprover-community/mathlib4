@@ -60,7 +60,7 @@ theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) �
   intro h; ext i j; exact h i j
 
 theorem IsHermitian.apply {A : Matrix n n α} (h : A.IsHermitian) (i j : n) : star (A j i) = A i j :=
-  congr_fun (congr_fun h _) _
+  congr($h _ _)
 
 theorem IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, star (A j i) = A i j :=
   ⟨IsHermitian.apply, IsHermitian.ext⟩
@@ -85,7 +85,7 @@ theorem IsHermitian.of_subsingleton {A : Matrix n n α} [Subsingleton α] : A.Is
 
 theorem IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsHermitian := by
   rw [IsHermitian, conjTranspose, transpose_map]
-  exact congr_arg Matrix.transpose h
+  exact congr($(h).transpose)
 
 @[simp]
 theorem isHermitian_transpose_iff {A : Matrix n n α} : Aᵀ.IsHermitian ↔ A.IsHermitian :=
@@ -155,8 +155,7 @@ theorem isHermitian_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : 
     {D : Matrix n n α} :
     (A.fromBlocks B C D).IsHermitian ↔ A.IsHermitian ∧ Bᴴ = C ∧ Cᴴ = B ∧ D.IsHermitian :=
   ⟨fun h =>
-    ⟨congr_arg toBlocks₁₁ h, congr_arg toBlocks₂₁ h, congr_arg toBlocks₁₂ h,
-      congr_arg toBlocks₂₂ h⟩,
+    ⟨congr(toBlocks₁₁ $h), congr(toBlocks₂₁ $h), congr(toBlocks₁₂ $h), congr(toBlocks₂₂ $h)⟩,
     fun ⟨hA, hBC, _hCB, hD⟩ => IsHermitian.fromBlocks hA hBC hD⟩
 
 end InvolutiveStar

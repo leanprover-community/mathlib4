@@ -264,7 +264,7 @@ theorem exists_algHom_adjoin_of_splits' :
       let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
       refine Eq.trans congr($hφ y) ?_
       simp only [AlgHom.coe_comp, Function.comp_apply, f']
-      exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
+      exact congr(f $(AlgEquiv.symm_apply_apply ..))
   let : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
@@ -272,7 +272,7 @@ theorem exists_algHom_adjoin_of_splits' :
   ext
   simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
     AlgHom.coe_comp, Function.comp_apply, f']
-  exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
+  exact congr(f $(AlgEquiv.symm_apply_apply ..))
 
 include hK in
 theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :
@@ -325,7 +325,7 @@ theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] 
   rw [isAlgebraic_iff_isIntegral, isIntegral_iff] at ix
   obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix).symm
     ⟨y, mem_aroots.mpr ⟨minpoly.ne_zero ix, hy⟩⟩) (adjoin_simple_le_iff.mpr hx)
-  exact ⟨φ, (DFunLike.congr_fun hφ <| AdjoinSimple.gen F x).trans <|
+  exact ⟨φ, congr($hφ (AdjoinSimple.gen F x)).trans <|
     algHomAdjoinIntegralEquiv_symm_apply_gen F ix _⟩
 
 include hS in

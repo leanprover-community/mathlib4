@@ -120,7 +120,7 @@ theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
   obtain ⟨m, c, hc, hcm⟩ := WittVector.verschiebung_nonzero ha
   obtain ⟨b, rfl⟩ := (frobenius_bijective p k).surjective.iterate m c
   rw [WittVector.iterate_frobenius_coeff] at hc
-  have := congr_fun (WittVector.verschiebung_frobenius_comm.comp_iterate m) b
+  have := congr($(WittVector.verschiebung_frobenius_comm.comp_iterate m) b)
   simp only [Function.comp_apply] at this
   rw [← this] at hcm
   refine ⟨m, b, ?_, ?_⟩

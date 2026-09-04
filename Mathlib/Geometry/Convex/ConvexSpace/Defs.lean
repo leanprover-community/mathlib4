@@ -143,7 +143,7 @@ theorem mk_single (x : X) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
   mpr := by rintro rfl; simp
 
 lemma single_injective : Function.Injective (single (R := R) (X := X)) :=
-  fun _ _ h ↦ by simpa using congr_arg (Finsupp.support ∘ weights) h
+  fun _ _ h ↦ by simpa using congr((Finsupp.support ∘ weights) $h)
 
 @[simp]
 lemma weights_apply_le_one

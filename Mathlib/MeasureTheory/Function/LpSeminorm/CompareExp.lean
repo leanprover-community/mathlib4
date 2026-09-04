@@ -241,7 +241,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm {p q r : ℝ≥0∞}
   obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
   obtain ⟨hq₁, hq₂⟩ := ENNReal.toReal_pos_iff.mp hq
   have hpqr' : 1 / r.toReal = 1 / p.toReal + 1 / q.toReal := by
-    have := congr(ENNReal.toReal $(hpqr))
+    have := congr($(hpqr).toReal)
     rw [ENNReal.toReal_add (by simpa using hp₁.ne') (by simpa using hq₁.ne')] at this
     simpa
   have hr : 0 < r.toReal := one_div_pos.mp <| by rw [hpqr']; positivity

@@ -210,7 +210,7 @@ theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by s
 
 theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H
-  simpa [card_support_ne_one] using congr_arg length H
+  simpa [card_support_ne_one] using congr(length $H)
 
 theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
     2 ≤ length (toList p x) ↔ x ∈ p.support := by simp

@@ -512,7 +512,7 @@ lemma fromSpec_toSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
 lemma toSpec_injective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     Function.Injective (toSpec 𝒜 f) := by
   intro x₁ x₂ h
-  have := congr_arg (FromSpec.toFun f_deg hm) h
+  have := congr(FromSpec.toFun f_deg hm $h)
   rwa [fromSpec_toSpec, fromSpec_toSpec] at this
 
 lemma toSpec_surjective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :

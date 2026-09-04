@@ -335,7 +335,7 @@ theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
     · apply Order.le_of_lt_add_one
       rw [← not_le, ← Nat.cast_one, ← Nat.cast_add, ← pow_dvd_iff_le_emultiplicity]
       rintro ⟨ψ, H⟩
-      have := congr_arg (coeff n) H
+      have := congr(coeff n $H)
       rw [X_pow_mul, coeff_mul_of_lt_order, ← hn] at this
       · exact coeff_order hφ this
       · rw [X_pow_eq, order_monomial]

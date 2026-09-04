@@ -97,7 +97,7 @@ instance : FunLike (CentroidHom α) α α where
     cases f
     cases g
     congr with x
-    exact congrFun h x
+    exact congr($h x)
 
 instance : CentroidHomClass (CentroidHom α) α where
   map_zero f := f.map_zero'
@@ -121,7 +121,7 @@ theorem toAddMonoidHom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
 
 theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
   fun _f _g h => ext fun a ↦
-    haveI := DFunLike.congr_fun h a
+    haveI := congr($h a)
     this
 
 /-- Turn a centroid homomorphism into an additive monoid endomorphism. -/
@@ -174,9 +174,9 @@ theorem id_apply (a : α) : CentroidHom.id α a = a :=
 /-- Composition of `CentroidHom`s as a `CentroidHom`. -/
 def comp (g f : CentroidHom α) : CentroidHom α :=
   { g.toAddMonoidHom.comp f.toAddMonoidHom with
-    map_mul_left' := fun _a _b ↦ (congr_arg g <| f.map_mul_left' _ _).trans <| g.map_mul_left' _ _
+    map_mul_left' := fun _a _b ↦ congr(g $(f.map_mul_left' ..)).trans <| g.map_mul_left' _ _
     map_mul_right' := fun _a _b ↦
-      (congr_arg g <| f.map_mul_right' _ _).trans <| g.map_mul_right' _ _ }
+      congr(g $(f.map_mul_right' ..)).trans <| g.map_mul_right' _ _ }
 
 @[simp, norm_cast]
 theorem coe_comp (g f : CentroidHom α) : ⇑(g.comp f) = g ∘ f :=
@@ -205,7 +205,7 @@ theorem id_comp (f : CentroidHom α) : (CentroidHom.id α).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ f : CentroidHom α} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun a ↦ congrFun (congrArg comp a) f⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun a ↦ congr(comp $a f)⟩
 
 @[simp]
 theorem cancel_left {g f₁ f₂ : CentroidHom α} (hg : Injective g) :
@@ -266,13 +266,13 @@ instance hasNPowNat : Pow (CentroidHom α) ℕ :=
         | zero => rfl
         | succ n ih =>
           rw [pow_succ']
-          exact (congr_arg f.toEnd ih).trans (f.map_mul_left' _ _)
+          exact congr(f.toEnd $ih).trans (f.map_mul_left' _ _)
       map_mul_right' := fun a b ↦ by
         induction n with
         | zero => rfl
         | succ n ih =>
           rw [pow_succ']
-          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)}⟩
+          exact congr(f.toEnd $ih).trans (f.map_mul_right' _ _)}⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : CentroidHom α) = 0 :=
@@ -469,7 +469,7 @@ instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
     cases f
     cases g
     congr with x
-    exact congrFun h x
+    exact congr($h x)
 
 lemma centerToCentroidCenter_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroidCenter z) a = z * a := rfl

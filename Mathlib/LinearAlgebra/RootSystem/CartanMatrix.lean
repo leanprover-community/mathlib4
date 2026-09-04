@@ -189,7 +189,7 @@ lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem
   simp only [mul_diagonal, map_mul, algebraMap_rootFormIn, posRootForm_eq, Matrix.smul_apply,
     LinearMap.BilinForm.toMatrix_apply, Int.zsmul_eq_mul]
   simpa [← algebraMap_pairingIn P ℤ i j] using
-    congr_fun₂ (cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j
+    congr($(cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j)
 
 lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem] :
     ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (b.cartanMatrix * diagonal d).PosDef := by
@@ -279,7 +279,7 @@ lemma injective_pairingIn {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCryst
   suffices f' = g' by
     rw [← P.root.apply_eq_iff_eq, hf, hg]
     refine Finset.sum_congr rfl fun k hk ↦ ?_
-    replace this : f k = g k := congr_fun this ⟨k, hk⟩
+    replace this : f k = g k := congr($this ⟨k, hk⟩)
     rw [this]
   replace hf : (fun k : b.support ↦ P.pairingIn ℤ i k) = f' ᵥ* b.cartanMatrix := by
     suffices ∀ k, P.pairingIn ℤ i k = ∑ l ∈ b.support, f l * P.pairingIn ℤ l k by
@@ -344,14 +344,14 @@ lemma apply_mem_range_root_of_cartanMatrixEq
       exact b.toWeightBasis.ext fun j ↦ by simpa using this j
     intro j
     suffices P₂.pairing (e j) (e k) = P.pairing j k by simp [reflection_apply, hf, this]
-    simpa only [cartanMatrixIn_def, algebraMap_pairingIn] using congr_arg (algebraMap ℤ R) (he j k)
+    simpa only [cartanMatrixIn_def, algebraMap_pairingIn] using congr(algebraMap ℤ R $(he j k))
   obtain ⟨i, rfl⟩ := hm
   apply b.induction_reflect i
   · exact fun j ⟨k, hk⟩ ↦ ⟨P₂.reflectionPerm k k, by simpa⟩
   · exact fun j hj ↦ ⟨e ⟨j, hj⟩, (hf _).symm⟩
   · intro j k ⟨l, hl⟩ hk
     replace this : f (P.reflection k (P.root j)) = (P₂.reflection (e ⟨k, hk⟩)) (f (P.root j)) := by
-      simpa using LinearEquiv.congr_fun (this ⟨k, hk⟩) (P.root j)
+      simpa using congr($(this ⟨k, hk⟩) (P.root j))
     rw [root_reflectionPerm, this, ← hl, ← root_reflectionPerm]
     exact mem_range_self _
 

@@ -324,7 +324,7 @@ theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : K) = ofNat(n) :=
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
 
 theorem conj_eq_re_sub_im (z : K) : conj z = re z - im z * I :=
-  (congr_arg conj (re_add_im z).symm).trans <| by
+  congr(conj $((re_add_im z).symm)).trans <| by
     rw [map_add, map_mul, conj_I, conj_ofReal, conj_ofReal, mul_neg, sub_eq_add_neg]
 
 theorem sub_conj (z : K) : z - conj z = 2 * im z * I :=
@@ -565,7 +565,7 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 @[simp 1100, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
 
 instance (priority := 100) : CStarRing K where
-  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
+  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr($(norm_conj _) * ‖x‖)).symm
 
 instance : StarModule ℝ K where
   star_smul r a := by
@@ -709,7 +709,7 @@ theorem im_le_norm (z : K) : im z ≤ ‖z‖ :=
 
 theorem im_eq_zero_of_le {a : K} (h : ‖a‖ ≤ re a) : im a = 0 := by
   simpa only [mul_self_norm a, normSq_apply, left_eq_add, mul_self_eq_zero]
-    using congr_arg (fun z => z * z) ((re_le_norm a).antisymm h)
+    using congr((fun z => z * z) $((re_le_norm a).antisymm h))
 
 theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
   rw [← conj_eq_iff_re, conj_eq_iff_im, im_eq_zero_of_le h]

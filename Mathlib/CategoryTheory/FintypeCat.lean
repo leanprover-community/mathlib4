@@ -79,11 +79,11 @@ lemma hom_apply {X Y : FintypeCat} (f : X ⟶ Y) (x : X) :
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  ConcreteCategory.congr_hom f.hom_inv_id x
+  congr($f.hom_inv_id x)
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  ConcreteCategory.congr_hom f.inv_hom_id y
+  congr($f.inv_hom_id y)
 
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g :=
@@ -110,7 +110,7 @@ lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
   constructor
   · intro h
     ext x
-    exact ConcreteCategory.congr_hom h x
+    exact congr($h x)
   · rintro rfl
     rfl
 
@@ -120,7 +120,7 @@ lemma homMk_eq_comp_iff {X Y Z : FintypeCat} (f : X → Y) (g : Y → Z) (h : X 
   constructor
   · intro h
     ext x
-    exact ConcreteCategory.congr_hom h x
+    exact congr($h x)
   · rintro rfl
     rfl
 

@@ -166,7 +166,7 @@ theorem toLieHom_comp : (g.comp f : A →ₗ⁅R⁆ C) = (g : B →ₗ⁅R⁆ C)
   rfl
 
 theorem toLieHom_injective {f g : A →ₐ[R] B} (h : (f : A →ₗ⁅R⁆ B) = (g : A →ₗ⁅R⁆ B)) : f = g := by
-  ext a; exact LieHom.congr_fun h a
+  ext a; exact congr($h a)
 
 end AlgHom
 
@@ -335,7 +335,7 @@ lemma toEnd_pow_comp_lieHom :
 
 lemma toEnd_pow_apply_map (m : M) :
     (toEnd R L M₂ x ^ k) (f m) = f ((toEnd R L M x ^ k) m) :=
-  LinearMap.congr_fun (toEnd_pow_comp_lieHom f k x) m
+  congr($(toEnd_pow_comp_lieHom f k x) m)
 
 end LieModule
 

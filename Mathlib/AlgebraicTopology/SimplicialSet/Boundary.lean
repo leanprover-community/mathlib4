@@ -202,7 +202,7 @@ lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (∂Δ[n + 1] : SSet) ⟶ X}
   simp only [boundary_eq_iSup, stdSimplex.face_singleton_compl, Subfunctor.iSup_obj,
     Set.mem_iUnion, Subcomplex.mem_ofSimplex_obj_iff, op_unop] at hx
   obtain ⟨i, ⟨y, rfl⟩⟩ := hx
-  exact ConcreteCategory.congr_hom (congr_app (h i) _) _
+  exact congr($(h i).app _ _)
 
 @[ext]
 lemma hom_ext₀ {X : SSet.{u}} {f g : (∂Δ[0] : SSet) ⟶ X} : f = g := by

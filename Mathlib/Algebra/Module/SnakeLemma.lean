@@ -64,7 +64,7 @@ variable {R : Type*} [CommRing R] {M₁ M₂ M₃ N₁ N₂ N₃ : Type*}
 include hg hρ h₂ hσ hι₃ in
 lemma SnakeLemma.δ_aux (x : K₃) : g₁ (ρ (i₂ (σ (ι₃ x)))) = i₂ (σ (ι₃ x)) := by
   obtain ⟨d, hd⟩ : i₂ (σ (ι₃ x)) ∈ range g₁ := by
-    rw [← hg.linearMap_ker_eq, mem_ker, show g₂ (i₂ _) = i₃ (f₂ _) from DFunLike.congr_fun h₂ _,
+    rw [← hg.linearMap_ker_eq, mem_ker, show g₂ (i₂ _) = i₃ (f₂ _) from congr($h₂ _),
       ← @comp_apply _ _ _ f₂ σ, hσ, id_eq, ← i₃.comp_apply,
       hι₃.linearMap_comp_eq_zero, zero_apply]
   rw [← hd, ← ρ.comp_apply, hρ, id_eq]
@@ -123,7 +123,7 @@ def SnakeLemma.δ : K₃ →ₗ[R] C₁ :=
 
 lemma SnakeLemma.δ_eq (x : K₃) (y) (hy : f₂ y = ι₃ x) (z) (hz : g₁ z = i₂ y) :
     δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁ x = π₁ z :=
-  eq_of_eq i₁ i₂ f₁ f₂ hf g₁ h₁ ρ hρ ι₃ π₁ hπ₁ x _ (congr_fun hσ _) _
+  eq_of_eq i₁ i₂ f₁ f₂ hf g₁ h₁ ρ hρ ι₃ π₁ hπ₁ x _ congr($hσ _) _
     (δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃ _) y hy z hz
 
 include hι₂ in

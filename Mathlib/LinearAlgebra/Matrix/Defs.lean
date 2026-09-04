@@ -638,12 +638,12 @@ section
 /-- Two matrices agree if their rows agree. -/
 @[local ext]
 lemma ext_row {A B : Matrix m n α} (h : ∀ i, A.row i = B.row i) : A = B :=
-  ext fun i j => congr_fun (h i) j
+  ext fun i j => congr($(h i) j)
 
 /-- Two matrices agree if their columns agree. -/
 @[local ext]
 lemma ext_col {A B : Matrix m n α} (h : ∀ j, A.col j = B.col j) : A = B :=
-  ext fun i j => congr_fun (h j) i
+  ext fun i j => congr($(h j) i)
 
 end
 

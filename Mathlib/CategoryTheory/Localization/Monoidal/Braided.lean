@@ -82,8 +82,8 @@ lemma braidingNatIso_hom_app_naturality_μ_right (X Y Z : C) :
       (L').obj Z ◁ (Functor.LaxMonoidal.μ (L') X Y) =
         (Functor.LaxMonoidal.μ (L') X Y) ▷ (L').obj Z ≫
           ((braidingNatIso L W ε).hom.app ((L').obj (X ⊗ Y))).app ((L').obj Z) :=
-  (NatTrans.congr_app ((braidingNatIso L W ε).hom.naturality
-    ((Functor.LaxMonoidal.μ (L') X Y))) ((L').obj Z)).symm
+  congr($((braidingNatIso L W ε).hom.naturality
+    (Functor.LaxMonoidal.μ (L') X Y)).app ((L').obj Z)).symm
 
 @[reassoc]
 lemma map_hexagon_forward (X Y Z : C) :

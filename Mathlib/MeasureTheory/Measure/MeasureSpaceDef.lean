@@ -475,7 +475,7 @@ variable {δ : Type*} {X : δ → Type*} {mX : ∀ a, MeasurableSpace (X a)}
 protected theorem AEMeasurable.eval {g : α → Π a, X a} (hg : AEMeasurable g μ) (a : δ) :
     AEMeasurable (fun x ↦ g x a) μ := by
   use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
-  exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
+  exact hg.ae_eq_mk.mono fun _ h ↦ congr($h _)
 
 variable [Countable δ]
 

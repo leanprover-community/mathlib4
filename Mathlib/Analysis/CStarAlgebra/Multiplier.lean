@@ -395,7 +395,7 @@ instance instStar : Star 𝓜(𝕜, A) where
           ((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A)
       central := fun x y => by
         simpa only [star_mul, star_star]
-          using! (congr_arg star (a.central (star y) (star x))).symm }
+          using! congr(star $(a.central (star y) (star x))).symm }
 
 @[simp]
 theorem star_fst (a : 𝓜(𝕜, A)) (b : A) : (star a).fst b = star (a.snd (star b)) :=

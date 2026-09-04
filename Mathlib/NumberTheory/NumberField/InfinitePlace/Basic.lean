@@ -79,7 +79,7 @@ namespace InfinitePlace
 
 instance : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
+  coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr($h x))
 
 lemma coe_apply (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
@@ -116,7 +116,7 @@ theorem norm_embedding_eq (w : InfinitePlace K) (x : K) :
 
 variable (K) in
 theorem embedding_injective : (embedding (K := K)).Injective :=
-  fun _ _ h ↦ by simpa using congr_arg mk h
+  fun _ _ h ↦ by simpa using congr(mk $h)
 
 @[simp]
 theorem embedding_inj {v₁ v₂ : InfinitePlace K} : v₁.embedding = v₂.embedding ↔ v₁ = v₂ :=
@@ -370,7 +370,7 @@ variable [NumberField K]
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
-  convert! (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
+  convert! congr(‖$(Algebra.norm_eq_prod_embeddings ℚ ℂ x)‖).symm
   · rw [norm_prod, ← Fintype.prod_equiv (RingHom.equivRatAlgHom K ℂ) (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
@@ -409,12 +409,12 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
     cases h₃ with
     | inl hw =>
       rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
-      exact congr_arg RingHom.toRatAlgHom main
+      exact congr($(main).toRatAlgHom)
     | inr hw =>
-      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_ge ?_)
+      refine congr($(main.resolve_right fun h' ↦ hw.not_ge ?_).toRatAlgHom)
       have : (embedding w x).im = 0 := by
         rw [← Complex.conj_eq_iff_im]
-        have := RingHom.congr_fun h' x
+        have := congr($h' x)
         simp only [ComplexEmbedding.conjugate_coe_eq, AlgHom.toRingHom_eq_coe,
           RingHom.coe_coe] at this
         rw [this]

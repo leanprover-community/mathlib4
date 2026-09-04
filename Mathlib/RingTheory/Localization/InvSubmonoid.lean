@@ -92,7 +92,7 @@ theorem toInvSubmonoid_eq_mk' (x : M) : (toInvSubmonoid M S x : S) = mk' S 1 x :
 theorem mem_invSubmonoid_iff_exists_mk' (x : S) :
     x ∈ invSubmonoid M S ↔ ∃ m : M, mk' S 1 m = x := by
   simp_rw [← toInvSubmonoid_eq_mk']
-  exact ⟨fun h => ⟨_, congr_arg Subtype.val (toInvSubmonoid_surjective M S ⟨x, h⟩).choose_spec⟩,
+  exact ⟨fun h => ⟨_, congr($((toInvSubmonoid_surjective M S ⟨x, h⟩).choose_spec).val)⟩,
     fun h => h.choose_spec ▸ (toInvSubmonoid M S h.choose).prop⟩
 
 variable (S)

@@ -382,9 +382,9 @@ instance : Mono (H1InfRes A S).f := by
   simp_all only [H1InfRes_X₂, H1InfRes_X₁, H1InfRes_f, H1π_comp_map_apply (QuotientGroup.mk' S)]
   rcases (H1π_eq_zero_iff _).1 hx with ⟨y, hy⟩
   refine (H1π_eq_zero_iff _).2 ⟨⟨y, fun s => ?_⟩, funext fun g => QuotientGroup.induction_on g
-    fun g => Subtype.ext <| by simpa [-SetLike.coe_eq_coe] using! congr_fun hy g⟩
+    fun g => Subtype.ext <| by simpa [-SetLike.coe_eq_coe] using! congr($hy g)⟩
   simpa [coe_mapCocycles₁ (x := x), sub_eq_zero, (QuotientGroup.eq_one_iff s.1).2 s.2] using!
-    congr_fun hy s.1
+    congr($hy s.1)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

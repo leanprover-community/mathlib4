@@ -288,7 +288,7 @@ note [partially-applied ext lemmas]. -/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single R φ i) = g.comp (single R φ i)) : f = g := by
   refine pi_ext fun i x => ?_
-  convert! LinearMap.congr_fun (h i) x
+  convert! congr($(h i) x)
 
 end Ext
 
@@ -441,14 +441,14 @@ variable [Semiring R]
 lemma ker_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
     LinearMap.ker (f.compLeft I) = Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.ker f) :=
-  Submodule.ext fun _ => ⟨fun (hx : _ = _) i _ => congr_fun hx i,
+  Submodule.ext fun _ => ⟨fun (hx : _ = _) i _ => congr($hx i),
     fun hx => funext fun i => hx i trivial⟩
 
 lemma range_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
     LinearMap.range (f.compLeft I) =
       Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.range f) :=
-  Submodule.ext fun _ => ⟨fun ⟨y, hy⟩ i _ => ⟨y i, congr_fun hy i⟩, fun hx => by
+  Submodule.ext fun _ => ⟨fun ⟨y, hy⟩ i _ => ⟨y i, congr($hy i)⟩, fun hx => by
     choose y hy using hx
     exact ⟨fun i => y i trivial, funext fun i => hy i trivial⟩⟩
 

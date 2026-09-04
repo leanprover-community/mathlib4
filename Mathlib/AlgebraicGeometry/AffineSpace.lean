@@ -55,8 +55,8 @@ lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g 
       g.hom.comp (MvPolynomial.mapEquiv _ ULift.ringEquiv.symm).toRingHom by
     ext x
     · obtain ⟨x⟩ := x
-      simpa [-map_intCast, -eq_intCast] using! DFunLike.congr_fun this (C x)
-    · simpa [-map_intCast, -eq_intCast] using! DFunLike.congr_fun this (X x)
+      simpa [-map_intCast, -eq_intCast] using! congr($this (C x))
+    · simpa [-map_intCast, -eq_intCast] using! congr($this (X x))
   ext1
   · exact RingHom.ext_int _ _
   · simpa using! h _

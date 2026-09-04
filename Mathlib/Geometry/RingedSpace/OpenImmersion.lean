@@ -369,7 +369,7 @@ set_option backward.defeqAttrib.useBackward true in
 def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
   base :=
     pullback.lift s.fst.base s.snd.base
-      (congr_arg (fun x => PresheafedSpace.Hom.base x) s.condition)
+      congr($(s.condition).base)
   c :=
     { app := fun U =>
         s.snd.c.app _ ≫
@@ -379,7 +379,7 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                 dsimp only [Opens.map_def, IsOpenMap.functor, Functor.op]
                 congr 2
                 let s' : PullbackCone f.base g.base :=
-                  PullbackCone.mk s.fst.base s.snd.base (congr_arg Hom.base s.condition)
+                  PullbackCone.mk s.fst.base s.snd.base congr($(s.condition).base)
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
                   rw [← this]
@@ -900,8 +900,8 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
   ext x
   apply iff_false_intro
   rintro ⟨y, hy, eq⟩
-  replace eq := ConcreteCategory.congr_arg (preservesColimitIso (SheafedSpace.forget C) F ≪≫
-    HasColimit.isoOfNatIso Discrete.natIsoFunctor ≪≫ TopCat.sigmaIsoSigma.{v, v} _).hom eq
+  replace eq := congr((preservesColimitIso (SheafedSpace.forget C) F ≪≫
+    HasColimit.isoOfNatIso Discrete.natIsoFunctor ≪≫ TopCat.sigmaIsoSigma.{v, v} _).hom $eq)
   simp_rw [CategoryTheory.Iso.trans_hom, ← TopCat.comp_app, ← PresheafedSpace.comp_base] at eq
   rw [ι_preservesColimitIso_inv] at eq
   change
@@ -915,7 +915,7 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
   rw [ι_preservesColimitIso_hom_assoc, ι_preservesColimitIso_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     TopCat.sigmaIsoSigma_hom_ι, TopCat.sigmaIsoSigma_hom_ι] at eq
-  convert! h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
+  convert! h congr(Discrete.mk $(eq).fst)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -950,8 +950,8 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     rintro ⟨j⟩ hj
     dsimp
     convert! (F.obj j).sheaf.isTerminalOfEmpty using 3
-    convert! image_preimage_is_empty F i j (fun h => hj (congr_arg op h.symm)) U using 6
-    exact congr_arg PresheafedSpace.Hom.base h₁
+    convert! image_preimage_is_empty F i j (fun h => hj congr(op $h.symm)) U using 6
+    exact congr($(h₁).base)
 
 set_option backward.defeqAttrib.useBackward true in
 instance sigma_ι_isOpenImmersion {ι : Type w} [Small.{v} ι]
@@ -1019,8 +1019,7 @@ set_option backward.isDefEq.respectTransparency false in
 def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
     refine ⟨LocallyRingedSpace.Hom.mk (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
-        f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.toHom s.condition))) ?_,
-      LocallyRingedSpace.Hom.ext'
+        f.1 g.1 (PullbackCone.mk _ _ congr($(s.condition).toHom))) ?_, LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_fst f.1 g.1 _),
       LocallyRingedSpace.Hom.ext'
           (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1 _), ?_⟩
@@ -1028,8 +1027,7 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
       have :=
         PresheafedSpace.stalkMap.congr_hom _ _
           (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1
-            (PullbackCone.mk s.fst.1 s.snd.1
-              (congr_arg LocallyRingedSpace.Hom.toHom s.condition)))
+            (PullbackCone.mk s.fst.1 s.snd.1 congr($(s.condition).toHom)))
           x
       change _ = _ ≫ s.snd.1.stalkMap x at this
       rw [PresheafedSpace.stalkMap.comp, ← IsIso.eq_inv_comp] at this

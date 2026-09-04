@@ -159,7 +159,7 @@ def equivSigmaTuple : List α ≃ Σ n, Fin n → α where
 This can be used with `induction l using List.ofFnRec`. -/
 @[elab_as_elim]
 def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) (l : List α) : C l :=
-  cast (congr_arg C l.ofFn_get) <|
+  cast congr(C $l.ofFn_get) <|
     h l.length l.get
 
 @[simp]

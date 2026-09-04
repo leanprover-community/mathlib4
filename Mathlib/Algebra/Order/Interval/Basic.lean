@@ -533,30 +533,30 @@ instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (Interval α) where
   sub_eq_add_neg := by
-    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (sub_eq_add_neg _ _)
-  neg_neg := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (neg_neg _)
+    rintro (_ | s) (_ | t) <;> first | rfl | exact congr(WithBot.some $(sub_eq_add_neg ..))
+  neg_neg := by rintro (_ | s) <;> first | rfl | exact congr(WithBot.some $(neg_neg _))
   neg_add_rev := by
-    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (neg_add_rev _ _)
+    rintro (_ | s) (_ | t) <;> first | rfl | exact congr(WithBot.some $(neg_add_rev ..))
   neg_eq_of_add := by
     rintro (_ | s) (_ | t) h <;>
       first
         | cases h
-        | exact congr_arg WithBot.some (neg_eq_of_add_eq_zero_right <| WithBot.coe_injective h)
+        | exact congr(WithBot.some $(neg_eq_of_add_eq_zero_right <| WithBot.coe_injective h))
   -- TODO: use a better defeq
   zsmul := zsmulRec
 
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) where
   div_eq_mul_inv := by
-    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (div_eq_mul_inv _ _)
-  inv_inv := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (inv_inv _)
+    rintro (_ | s) (_ | t) <;> first | rfl | exact congr(WithBot.some $(div_eq_mul_inv ..))
+  inv_inv := by rintro (_ | s) <;> first | rfl | exact congr(WithBot.some $(inv_inv _))
   mul_inv_rev := by
-    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (mul_inv_rev _ _)
+    rintro (_ | s) (_ | t) <;> first | rfl | exact congr(WithBot.some $(mul_inv_rev ..))
   inv_eq_of_mul := by
     rintro (_ | s) (_ | t) h <;>
       first
         | cases h
-        | exact congr_arg WithBot.some (inv_eq_of_mul_eq_one_right <| WithBot.coe_injective h)
+        | exact congr(WithBot.some $(inv_eq_of_mul_eq_one_right <| WithBot.coe_injective h))
 
 end Interval
 

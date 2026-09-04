@@ -416,11 +416,11 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
 
 -- Porting note: temporary theorem to solve diamond issue
 private theorem DecEq_eq [DecidableEq α] :
-    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
-  congr_arg BEq.mk <| by
-    funext l₁ l₂
-    change (l₁ == l₂) = _
-    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
+    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList := by
+  refine congr(BEq.mk $(?_))
+  funext l₁ l₂
+  change (l₁ == l₂) = _
+  rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
@@ -446,7 +446,7 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
   intro s t h
   apply insertIdx_injective s.length x
   dsimp
-  have hl : s.length = t.length := by simpa using congr_arg length h
+  have hl : s.length = t.length := by simpa using congr(length $h)
   rw [← get_permutations'Aux s x s.length (by simp),
     ← get_permutations'Aux t x s.length (by simp [hl])]
   simp only [get_eq_getElem, h, hl]

@@ -17,11 +17,11 @@ variable {R : Type*} [Mul R] [StarMul R] {a : R} {s : Set R}
 
 theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R where
   comm := by simpa only [star_mul, star_star] using! fun g =>
-    congr_arg star ((mem_center_iff.1 ha).comm <| star g).symm
+    congr(star $(((mem_center_iff.1 ha).comm <| star g).symm))
   left_assoc b c := by
-    simpa only [star_mul, star_star] using congr_arg star (ha.right_assoc (star c) (star b))
+    simpa only [star_mul, star_star] using congr(star $(ha.right_assoc (star c) (star b)))
   right_assoc b c := by
-    simpa only [star_mul, star_star] using congr_arg star (ha.left_assoc (star c) (star b))
+    simpa only [star_mul, star_star] using congr(star $(ha.left_assoc (star c) (star b)))
 
 theorem Set.star_centralizer : star s.centralizer = (star s).centralizer := by
   simp_rw [centralizer, ← commute_iff_eq]
@@ -37,7 +37,7 @@ theorem Set.union_star_self_comm (hcomm : ∀ x ∈ s, ∀ y ∈ s, y * x = x * 
   exact ⟨⟨hcomm, hcomm_star⟩, ⟨hcomm_star, hcomm⟩⟩
 
 theorem Set.star_mem_centralizer' (h : ∀ a : R, a ∈ s → star a ∈ s) (ha : a ∈ Set.centralizer s) :
-    star a ∈ Set.centralizer s := fun y hy => by simpa using congr_arg star (ha _ (h _ hy)).symm
+    star a ∈ Set.centralizer s := fun y hy => by simpa using congr(star $((ha _ (h _ hy)).symm))
 
 open scoped Pointwise
 

@@ -70,7 +70,7 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
   have key : ∀ x y : G',
       QuotientGroup.leftRel (H.comap f) x y ↔ QuotientGroup.leftRel H (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
-    exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
+    exact fun x y => iff_of_eq congr($(by rw [f.map_mul, f.map_inv]) ∈ H)
   refine Nat.card_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
   · simp_rw [← Quotient.eq''] at key
     refine Quotient.ind' fun x => ?_
@@ -78,12 +78,12 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
     exact (key x y).mpr
   · refine Quotient.ind' fun x => ?_
     obtain ⟨y, hy⟩ := hf x
-    exact ⟨y, (Quotient.map'_mk'' f _ y).trans (congr_arg Quotient.mk'' hy)⟩
+    exact ⟨y, (Quotient.map'_mk'' f _ y).trans congr(Quotient.mk'' $hy)⟩
 
 @[to_additive]
 theorem index_comap (f : G' →* G) :
     (H.comap f).index = H.relIndex f.range :=
-  Eq.trans (congr_arg index (by rfl))
+  .trans congr(index $(by rfl))
     ((H.subgroupOf f.range).index_comap_of_surjective f.rangeRestrict_surjective)
 
 @[to_additive]
@@ -463,7 +463,7 @@ theorem index_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
 theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
   ⟨fun h =>
     QuotientGroup.subgroup_eq_top_of_subsingleton H (Nat.card_eq_one_iff_unique.mp h).1,
-    fun h => (congr_arg index h).trans index_top⟩
+    fun h => congr(index $h).trans index_top⟩
 
 @[to_additive (attr := simp) relIndex_eq_one]
 theorem relIndex_eq_one : H.relIndex K = 1 ↔ K ≤ H :=

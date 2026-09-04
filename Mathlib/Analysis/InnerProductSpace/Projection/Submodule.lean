@@ -116,8 +116,7 @@ theorem isCompl_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.HasOrthogonalProjection]
     [L.HasOrthogonalProjection] : Kᗮ = Lᗮ ↔ K = L :=
-  ⟨fun h ↦ by simpa using congr(Submodule.orthogonal $(h)),
-    fun h ↦ congr(Submodule.orthogonal $(h))⟩
+  ⟨fun h ↦ by simpa using congr($(h).orthogonal), fun h ↦ congr($(h).orthogonal)⟩
 
 @[simp]
 theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = ⊤ := by

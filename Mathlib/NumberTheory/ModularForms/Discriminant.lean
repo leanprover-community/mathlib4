@@ -80,7 +80,7 @@ lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
       logDeriv_mul _ (by simp [sqrt, ne_zero z]) (eta_ne_zero z.2)
       (differentiableAt_sqrt (mem_slitPlane z))
       (differentiableAt_eta_of_mem_upperHalfPlaneSet z.2), logDeriv_apply sqrt]
-  have hE2 := congrFun (E2_slash_action ModularGroup.S) z
+  have hE2 := congr($(E2_slash_action ModularGroup.S) z)
   simp only [one_div, SL_slash_def, modular_S_smul, ModularGroup.denom_S,
     Int.reduceNeg, zpow_neg, riemannZeta_two, mul_inv_rev, inv_div, Pi.sub_apply, Pi.smul_apply,
     D2, ModularGroup.denom_S, smul_eq_mul] at hE2

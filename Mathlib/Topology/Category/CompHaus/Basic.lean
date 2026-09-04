@@ -102,7 +102,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
   right_inv := by
     rintro ⟨f, hf : Continuous f⟩
     ext
-    exact congr_fun (stoneCechExtend_extends hf) _
+    exact congr($(stoneCechExtend_extends hf) _)
 
 /-- The Stone-Cech compactification functor from topological spaces to compact Hausdorff spaces,
 left adjoint to the inclusion functor.

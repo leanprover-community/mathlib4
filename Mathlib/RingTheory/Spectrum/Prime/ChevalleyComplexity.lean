@@ -267,7 +267,7 @@ private lemma induction_structure (n : ℕ)
       · intro j; simpa using degree_map_le
       simp only [coe_mapRingHom, ne_eq]
       intro h_eq
-      replace h_eq := congr_fun h_eq i
+      replace h_eq := congr($h_eq i)
       simp only [Ideal.Quotient.algebraMap_eq, comp_apply, degree_map_eq_iff,
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
@@ -814,7 +814,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
   let σ : MvPolynomial (Fin m) R →+* MvPolynomial (Fin m) (MvPolynomial (Fin n) R) :=
     map (algebraMap _ _)
   have hσ : g.comp σ = .id _ := by ext : 2 <;> simp [g, σ]
-  have hσ' (x) : g (σ x) = x := DFunLike.congr_fun hσ x
+  have hσ' (x) : g (σ x) = x := congr($hσ x)
   have hg' : Surjective g := LeftInverse.surjective hσ'
   let S' : ConstructibleSetData (MvPolynomial (Fin m) (MvPolynomial (Fin n) R)) := S.image
     fun ⟨fk, k, gk⟩ ↦ ⟨σ fk, k + n, fun s ↦ (finSumFinEquiv.symm s).elim (σ ∘ gk)

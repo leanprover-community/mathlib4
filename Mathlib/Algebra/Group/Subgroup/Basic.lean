@@ -283,13 +283,13 @@ theorem characteristic_iff_comap_eq : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.
 theorem characteristic_iff_comap_le : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.comap ϕ.toMonoidHom ≤ H :=
   characteristic_iff_comap_eq.trans
     ⟨fun h ϕ => le_of_eq (h ϕ), fun h ϕ =>
-      le_antisymm (h ϕ) fun g hg => h ϕ.symm ((congr_arg (· ∈ H) (ϕ.symm_apply_apply g)).mpr hg)⟩
+      le_antisymm (h ϕ) fun g hg => h ϕ.symm (congr($(ϕ.symm_apply_apply g) ∈ H).mpr hg)⟩
 
 @[to_additive]
 theorem characteristic_iff_le_comap : H.Characteristic ↔ ∀ ϕ : G ≃* G, H ≤ H.comap ϕ.toMonoidHom :=
   characteristic_iff_comap_eq.trans
     ⟨fun h ϕ => ge_of_eq (h ϕ), fun h ϕ =>
-      le_antisymm (fun g hg => (congr_arg (· ∈ H) (ϕ.symm_apply_apply g)).mp (h ϕ.symm hg)) (h ϕ)⟩
+      le_antisymm (fun g hg => congr($(ϕ.symm_apply_apply g) ∈ H).mp (h ϕ.symm hg)) (h ϕ)⟩
 
 @[to_additive]
 theorem characteristic_iff_map_eq : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.map ϕ.toMonoidHom = H := by
@@ -377,7 +377,7 @@ def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G 
 instance characteristic_of_characteristic_of_characteristic [H.Characteristic]
     {K : Subgroup H} [hK : K.Characteristic] : (K.map H.subtype).Characteristic := by
   refine characteristic_iff_map_eq.2 fun φ ↦ ?_
-  have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)
+  have := congr(map H.subtype $(characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)))
   simpa [Subgroup.map_map, MulAut.characteristic]
 
 variable (H)
@@ -716,8 +716,8 @@ subgroup of `G` contained in `H`, as shown by `AddSubgroup.normalCore_eq_iSup`. 
 def normalCore (H : Subgroup G) : Subgroup G where
   carrier := { a : G | ∀ b : G, b * a * b⁻¹ ∈ H }
   one_mem' a := by rw [mul_one, mul_inv_cancel]; exact H.one_mem
-  inv_mem' {_} h b := (congr_arg (· ∈ H) conj_inv).mp (H.inv_mem (h b))
-  mul_mem' {_ _} ha hb c := (congr_arg (· ∈ H) conj_mul).mp (H.mul_mem (ha c) (hb c))
+  inv_mem' {_} h b := congr($conj_inv ∈ H).mp (H.inv_mem (h b))
+  mul_mem' {_ _} ha hb c := congr($conj_mul ∈ H).mp (H.mul_mem (ha c) (hb c))
 
 @[to_additive]
 theorem normalCore_le (H : Subgroup G) : H.normalCore ≤ H := fun a h => by

@@ -61,7 +61,7 @@ instance instLinearMapClass : LinearMapClass (B₁ →bᵢ B₂) R M₁ M₂ whe
 
 theorem toLinearMap_injective :
     Function.Injective (Isometry.toLinearMap : (B₁ →bᵢ B₂) → M₁ →ₗ[R] M₂) := fun _f _g h =>
-  DFunLike.coe_injective (congr_arg DFunLike.coe h :)
+  DFunLike.coe_injective congr($h)
 
 @[ext]
 theorem ext ⦃f g : B₁ →bᵢ B₂⦄ (h : ∀ x, f x = g x) : f = g :=

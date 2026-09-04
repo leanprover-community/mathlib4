@@ -98,7 +98,7 @@ theorem reduce.not {p : Prop} :
     | nil =>
       dsimp; intro h
       exfalso
-      have := congr_arg List.length h
+      have := congr($(h).length)
       grind
     | cons hd tail =>
       obtain ⟨y, c⟩ := hd

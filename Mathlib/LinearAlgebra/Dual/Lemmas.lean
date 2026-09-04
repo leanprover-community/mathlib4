@@ -144,12 +144,12 @@ instance dual_free [Free R M] : Free R (Dual R M) :=
 
 instance dual_projective [Projective R M] : Projective R (Dual R M) :=
   have ⟨_, f, g, _, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
-  .of_split f.dualMap g.dualMap (congr_arg dualMap hfg)
+  .of_split f.dualMap g.dualMap congr(dualMap $hfg)
 
 instance dual_finite [Projective R M] : Module.Finite R (Dual R M) :=
   have ⟨n, f, g, _, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
   have := Finite.of_basis (Free.chooseBasis R <| Fin n → R).dualBasis
-  .of_surjective _ (surjective_of_comp_eq_id f.dualMap g.dualMap <| congr_arg dualMap hfg)
+  .of_surjective _ (surjective_of_comp_eq_id f.dualMap g.dualMap congr(dualMap $hfg))
 
 end Module
 
@@ -423,7 +423,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
   rw [← p.liftQ_mkQ K h]
   ext x
-  convert! LinearMap.congr_fun hK' (p.mkQ x)
+  convert! congr($hK' (p.mkQ x))
   simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
     smul_eq_mul]
 
@@ -487,7 +487,7 @@ variable {W : Subspace K V}
 
 @[simp]
 theorem dualLift_of_subtype {φ : Module.Dual K W} (w : W) : W.dualLift φ (w : V) = φ w :=
-  congr_arg φ <| LinearMap.leftInverse_apply_of_inj W.ker_subtype _
+  congr(φ $(LinearMap.leftInverse_apply_of_inj W.ker_subtype _))
 
 theorem dualLift_of_mem {φ : Module.Dual K W} {w : V} (hw : w ∈ W) : W.dualLift φ w = φ ⟨w, hw⟩ :=
   dualLift_of_subtype ⟨w, hw⟩
@@ -935,7 +935,7 @@ namespace LinearMap
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
-  rw [congr_arg dualMap (show f = (range f).subtype.comp f.rangeRestrict by rfl),
+  rw [congr(dualMap $(show f = (range f).subtype.comp f.rangeRestrict by rfl)),
     ← dualMap_comp_dualMap, range_comp,
     range_eq_top.mpr (dualMap_surjective_of_injective (range f).injective_subtype),
     Submodule.map_top, finrank_range_of_inj, Subspace.dual_finrank_eq]

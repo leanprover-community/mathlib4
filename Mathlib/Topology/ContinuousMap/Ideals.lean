@@ -90,7 +90,7 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
   add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, add_zero]
   zero_mem' _ _ := rfl
-  smul_mem' c _ hf x hx := mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
+  smul_mem' c _ hf x hx := mul_zero (c x) ▸ congr(c x * $(hf x hx))
 
 theorem idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
@@ -351,7 +351,7 @@ theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] 
   have h : (idealOfSet 𝕜 (setOfIdeal I)).IsMaximal :=
     (idealOfSet_ofIdeal_isClosed (inferInstance : IsClosed (I : Set C(X, 𝕜)))).symm ▸ hI
   obtain ⟨x, hx⟩ := Opens.isCoatom_iff.1 ((idealOfSet_isMaximal_iff 𝕜 (opensOfIdeal I)).1 h)
-  exact ⟨x, congr_arg (fun (s : Opens X) => (s : Set X)) hx⟩
+  exact ⟨x, congr($hx)⟩
 
 theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 𝕜))] :
     I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 {x}ᶜ = I := by
@@ -364,7 +364,7 @@ theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 
   exact
     ⟨x, by
       simpa only [idealOfSet_ofIdeal_eq_closure, I.closure_eq_of_isClosed hI] using
-        congr_arg (idealOfSet 𝕜) hx.symm⟩
+        congr(idealOfSet 𝕜 $hx.symm)⟩
 
 end RCLike
 

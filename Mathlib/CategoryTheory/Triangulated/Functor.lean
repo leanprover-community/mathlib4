@@ -55,9 +55,9 @@ def mapTriangle : Triangle C ⥤ Triangle D where
 instance [Faithful F] : Faithful F.mapTriangle where
   map_injective {X Y} f g h := by
     ext <;> apply F.map_injective
-    · exact congr_arg TriangleMorphism.hom₁ h
-    · exact congr_arg TriangleMorphism.hom₂ h
-    · exact congr_arg TriangleMorphism.hom₃ h
+    · exact congr(TriangleMorphism.hom₁ $h)
+    · exact congr(TriangleMorphism.hom₂ $h)
+    · exact congr(TriangleMorphism.hom₃ $h)
 
 set_option backward.defeqAttrib.useBackward true in
 instance [Full F] [Faithful F] : Full F.mapTriangle where

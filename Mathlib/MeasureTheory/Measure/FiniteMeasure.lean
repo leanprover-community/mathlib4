@@ -135,7 +135,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : FiniteMeasure Ω → M
 instance instFunLike : FunLike (FiniteMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
   coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
-    simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
+    simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr($h s)
 
 lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
 
@@ -224,7 +224,7 @@ theorem eq_of_forall_toMeasure_apply_eq (μ ν : FiniteMeasure Ω)
 theorem eq_of_forall_apply_eq (μ ν : FiniteMeasure Ω)
     (h : ∀ s : Set Ω, MeasurableSet s → μ s = ν s) : μ = ν := by
   ext1 s s_mble
-  simpa [ennreal_coeFn_eq_coeFn_toMeasure] using congr_arg ((↑) : ℝ≥0 → ℝ≥0∞) (h s s_mble)
+  simpa [ennreal_coeFn_eq_coeFn_toMeasure] using congr(($(h s s_mble) : ℝ≥0∞))
 
 instance instInhabited : Inhabited (FiniteMeasure Ω) := ⟨0⟩
 
@@ -596,7 +596,7 @@ lemma injective_toWeakDualBCNN :
   intro μ ν hμν
   apply ext_of_forall_lintegral_eq
   intro f
-  have key := congr_fun (congrArg DFunLike.coe hμν) f
+  have key := congr($hμν f)
   apply (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp key
   · exact (lintegral_lt_top_of_nnreal μ f).ne
   · exact (lintegral_lt_top_of_nnreal ν f).ne

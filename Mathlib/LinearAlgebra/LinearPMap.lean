@@ -288,9 +288,9 @@ instance semilatticeInf : SemilatticeInf (E →ₛₗ.[σ] F) where
       ⟨fg_le hx, fh_le hx,
       (fg_eq (x := ⟨x, hx⟩) rfl).symm.trans (fh_eq rfl)⟩,
       fun x ⟨y, yg, hy⟩ h => fg_eq h⟩
-  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr_arg f <| Subtype.ext <| h⟩
+  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr(f $(Subtype.ext <| h))⟩
   inf_le_right _ g :=
-    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.ext <| h⟩
+    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans congr(g $(Subtype.ext <| h))⟩
 
 instance orderBot : OrderBot (E →ₛₗ.[σ] F) where
   bot_le f :=

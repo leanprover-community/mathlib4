@@ -60,7 +60,7 @@ lemma toLinearMap_injective : Function.Injective fun f : IntertwiningMap ρ σ �
 lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.toLinearMap.toFun := by
   intro f g h
   ext x
-  exact congrFun h x
+  exact congr($h x)
 
 instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toFun

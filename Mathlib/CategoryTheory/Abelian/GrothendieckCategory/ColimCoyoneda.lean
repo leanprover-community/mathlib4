@@ -127,7 +127,7 @@ lemma injectivity₀ {j₀ : J} (y : X ⟶ Y.obj j₀) (hy : y ≫ c.ι.app j₀
   dsimp at h
   refine ⟨j.right, j.hom, ?_⟩
   simpa only [← cancel_epi ((kernel.ι (g y)).app j), comp_zero]
-    using! NatTrans.congr_app (kernel.condition (g y)) j
+    using! congr($(kernel.condition (g y)).app j)
 
 lemma injectivity (j₀ : J) (y₁ y₂ : X ⟶ Y.obj j₀)
     (hy : y₁ ≫ c.ι.app j₀ = y₂ ≫ c.ι.app j₀) :

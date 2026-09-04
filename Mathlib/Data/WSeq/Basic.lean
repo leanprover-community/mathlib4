@@ -277,7 +277,7 @@ theorem dropn_think (s : WSeq α) (n) : drop (think s) n = (drop s n).think := b
 
 theorem dropn_add (s : WSeq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
-  | n + 1 => congr_arg tail (dropn_add s m n)
+  | n + 1 => congr(tail $(dropn_add s m n))
 
 theorem dropn_tail (s : WSeq α) (n) : drop (tail s) n = drop s (n + 1) := by
   rw [Nat.add_comm]
@@ -285,10 +285,10 @@ theorem dropn_tail (s : WSeq α) (n) : drop (tail s) n = drop s (n + 1) := by
   apply dropn_add
 
 theorem get?_add (s : WSeq α) (m n) : get? s (m + n) = get? (drop s m) n :=
-  congr_arg head (dropn_add _ _ _)
+  congr(head $(dropn_add ..))
 
 theorem get?_tail (s : WSeq α) (n) : get? (tail s) n = get? s (n + 1) :=
-  congr_arg head (dropn_tail _ _)
+  congr(head $(dropn_tail ..))
 
 @[simp]
 theorem join_nil : join nil = (nil : WSeq α) :=
@@ -434,7 +434,7 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
   revert s
   apply Computation.memRecOn h <;> [skip; intro c IH] <;> intro s m <;>
     induction s using WSeq.recOn <;>
-    have := congr_arg Computation.destruct m
+    have := congr(Computation.destruct $m)
   case h1.nil | h1.think | h2.nil | h2.cons => simp at this
   case h2.think => simp at this; simp [IH this]
   case h1.cons =>
@@ -714,7 +714,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
   · intro b ss o s S ej m
     induction s using WSeq.recOn <;>
       [induction S using WSeq.recOn; skip; skip] <;>
-      have := congr_arg Seq.destruct ej
+      have := congr(Seq.destruct $ej)
     case nil.nil | nil.cons | nil.think | think => simp at this
     case cons =>
       simp only [cons_append, seq_destruct_cons, Option.some.injEq, Prod.mk.injEq] at this
@@ -730,7 +730,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
   · intro ss IH s S ej m
     induction s using WSeq.recOn <;>
       [induction S using WSeq.recOn; skip; skip] <;>
-      have := congr_arg Seq.destruct ej
+      have := congr(Seq.destruct $ej)
     case nil.cons | nil.think | think => simp at this; simp_all
     case nil.nil | cons => simp at this
 

@@ -143,8 +143,8 @@ theorem relrank_map_map {L : Type v} [Field L] (f : E →+* L) :
 
 theorem lift_relrank_comap (f : L →+* E) (B : Subfield L) :
     lift.{v} (relrank (A.comap f) B) = lift.{w} (relrank A (B.map f)) :=
-  (lift_relrank_map_map _ _ f).symm.trans <| congr_arg lift <| relrank_eq_of_inf_eq <| by
-    rw [map_comap_eq, f.fieldRange_eq_map, inf_assoc, ← map_inf, top_inf_eq]
+  (lift_relrank_map_map _ _ f).symm.trans congr(lift $(relrank_eq_of_inf_eq <| by
+    rw [map_comap_eq, f.fieldRange_eq_map, inf_assoc, ← map_inf, top_inf_eq]))
 
 theorem relrank_comap {L : Type v} [Field L] (f : L →+* E)
     (B : Subfield L) : relrank (A.comap f) B = relrank A (B.map f) := by

@@ -148,7 +148,7 @@ theorem exists_forall_apply_eq_pow (l : Type*) [Field l] [Algebra k l] [Finite l
     (algEquivExtension k p n l rfl).symm.trans (g.trans (algEquivExtension k p n l rfl))
   refine ⟨i, fun x ↦ ?_⟩
   simpa using (AlgEquiv.congr_arg (f := (algEquivExtension k p n l rfl).symm) <|
-    AlgEquiv.congr_fun hi (algEquivExtension k p n l rfl x)).symm
+    congr($hi (algEquivExtension k p n l rfl x))).symm
 
 end FiniteField
 

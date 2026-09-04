@@ -1397,8 +1397,8 @@ instance instGCDMonoid : GCDMonoid (Associates α) where
     rintro ⟨a⟩ ⟨b⟩
     rw [associated_iff_eq]
     exact Quotient.sound <| gcd_mul_lcm _ _
-  lcm_zero_left := by rintro ⟨a⟩; exact congr_arg Associates.mk <| lcm_zero_left _
-  lcm_zero_right := by rintro ⟨a⟩; exact congr_arg Associates.mk <| lcm_zero_right _
+  lcm_zero_left := by rintro ⟨a⟩; exact congr(Associates.mk $(lcm_zero_left _))
+  lcm_zero_right := by rintro ⟨a⟩; exact congr(Associates.mk $(lcm_zero_right _))
 
 theorem gcd_mk_mk {a b : α} : gcd (Associates.mk a) (Associates.mk b) = Associates.mk (gcd a b) :=
   rfl

@@ -168,11 +168,11 @@ theorem dropFun_splitFun {α α' : TypeVec (n + 1)} (f : drop α ⟹ drop α') (
 
 /-- turn an equality into an arrow -/
 def Arrow.mp {α β : TypeVec n} (h : α = β) : α ⟹ β
-  | _ => Eq.mp (congr_fun h _)
+  | _ => Eq.mp congr($h _)
 
 /-- turn an equality into an arrow, with reverse direction -/
 def Arrow.mpr {α β : TypeVec n} (h : α = β) : β ⟹ α
-  | _ => Eq.mpr (congr_fun h _)
+  | _ => Eq.mpr congr($h _)
 
 /-- decompose a vector into its prefix appended with its last element -/
 def toAppend1DropLast {α : TypeVec (n + 1)} : α ⟹ (drop α ::: last α) :=

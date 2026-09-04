@@ -369,7 +369,7 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
   · intro r f
     rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
     apply congr_arg
-    exact MultilinearMap.congr_fun H f
+    exact congr($H f)
 
 /-- The pure tensors (i.e. the elements of the image of `PiTensorProduct.tprod`) span
 the tensor product. -/
@@ -707,13 +707,13 @@ theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : MultilinearMap R s E) :
 theorem lift_reindex
     (e : ι ≃ ι₂) (φ : MultilinearMap R (fun i ↦ s (e.symm i)) E) (x : ⨂[R] i, s i) :
     lift φ (reindex R s e x) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) x :=
-  LinearMap.congr_fun (lift_comp_reindex e φ) x
+  congr($(lift_comp_reindex e φ) x)
 
 @[simp]
 theorem lift_reindex_symm
     (e : ι ≃ ι₂) (φ : MultilinearMap R s E) (x : ⨂[R] i, s (e.symm i)) :
     lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R R s _ e φ) x :=
-  LinearMap.congr_fun (lift_comp_reindex_symm e φ) x
+  congr($(lift_comp_reindex_symm e φ) x)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -728,7 +728,7 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
 
 theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i, s i) :
     reindex R _ e' (reindex R s e x) = reindex R s (e.trans e') x :=
-  LinearEquiv.congr_fun (reindex_trans e e' : _ = reindex R s (e.trans e')) x
+  congr($((reindex_trans e e' : _ = reindex R s (e.trans e'))) x)
 
 /-- This lemma is impractical to state in the dependent case. -/
 @[simp]
@@ -756,7 +756,7 @@ theorem map_comp_reindex_eq (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
 
 theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
     map (fun i ↦ f (e.symm i)) (reindex R s e x) = reindex R t e (map f x) :=
-  DFunLike.congr_fun (map_comp_reindex_eq _ _) _
+  congr($(map_comp_reindex_eq _ _) _)
 
 theorem map_comp_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
     map f ∘ₗ (reindex R s e).symm = (reindex R t e).symm ∘ₗ map (fun i => f (e.symm i)) := by
@@ -767,7 +767,7 @@ theorem map_comp_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
 
 theorem map_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s (e.symm i)) :
     map f ((reindex R s e).symm x) = (reindex R t e).symm (map (fun i ↦ f (e.symm i)) x) :=
-  DFunLike.congr_fun (map_comp_reindex_symm _ _) _
+  congr($(map_comp_reindex_symm _ _) _)
 
 variable (ι)
 

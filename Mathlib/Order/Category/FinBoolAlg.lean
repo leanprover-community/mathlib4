@@ -83,7 +83,7 @@ instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
 instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful where
   map_injective h := by
     ext x
-    exact CategoryTheory.congr_fun h x
+    exact congr($h x)
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/

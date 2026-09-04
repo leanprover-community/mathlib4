@@ -169,7 +169,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
   induction η' with
   | vcomp _ _ _ _ => apply Eq.trans <;> assumption
   | whisker_left _ _ ih => funext; apply congr_fun ih
-  | whisker_right _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
+  | whisker_right _ _ ih => funext; apply congr_arg₂ _ congr($ih _) rfl
   | _ => funext; rfl
 
 set_option backward.defeqAttrib.useBackward true in

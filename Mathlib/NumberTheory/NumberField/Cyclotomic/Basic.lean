@@ -806,8 +806,7 @@ theorem isIntegralClosure_adjoin_singleton {ζ : K} [hcycl : IsCyclotomicExtensi
   constructor
   · exact FaithfulSMul.algebraMap_injective _ K
   · intro _
-    have := congr_arg (Subalgebra.map (IsScalarTower.toAlgHom ℤ (𝓞 K) K))
-      (adjoin_singleton_eq_top hζ)
+    have := congr(Subalgebra.map (IsScalarTower.toAlgHom ℤ (𝓞 K) K) $(adjoin_singleton_eq_top hζ))
     simp only [AlgHom.map_adjoin_singleton, IsScalarTower.coe_toAlgHom', RingOfIntegers.map_mk,
       Algebra.map_top] at this
     simp [IsIntegralClosure.isIntegral_iff (A := 𝓞 K), this, ← SetLike.mem_coe]

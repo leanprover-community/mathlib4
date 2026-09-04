@@ -639,7 +639,7 @@ theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [Finit
     refine mem_bot.mp <| (IsGalois.mem_bot_iff_fixed _).mpr fun φ ↦ ?_
     rw [← restrictRestrictAlgEquivMapHom_apply K L φ ⟨x, hx₁⟩]
     rw [mem_fixedField_iff] at hx₂
-    exact congr_arg ((↑) : K → E) <| hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩
+    exact congr($(hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩))
   obtain ⟨z, rfl⟩ : y ∈ (⊥ : IntermediateField F E) := h ▸ mem_inf.mpr ⟨hx₁, hy⟩
   exact mem_bot.mp ⟨z, rfl⟩
 

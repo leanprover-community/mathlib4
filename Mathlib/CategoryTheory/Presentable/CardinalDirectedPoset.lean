@@ -71,7 +71,7 @@ lemma isCardinalFiltered_pt (hF : ∀ j, IsCardinalFiltered (F.obj j) κ) :
   let j := IsCardinalFiltered.max j₀ hK
   let x₁ (k : K) : F.obj j := F.map (IsCardinalFiltered.toMax j₀ hK k) (x₀ k)
   have hx₁ (k : K) : c.ι.app j (x₁ k) = c.ι.app (j₀ k) (x₀ k) :=
-    ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j₀ hK k)) _
+    congr($(c.w (IsCardinalFiltered.toMax j₀ hK k)) _)
   refine ⟨(cocone hc).ι.app j (IsCardinalFiltered.max x₁ hK),
     fun k ↦ ?_⟩
   rw [← hx₀, ← hx₁]
@@ -341,7 +341,7 @@ protected lemma isCardinalPresentable_iff (h : κ ≤ κ') :
       (ObjectProperty.homMk (PartOrdEmb.ofHom WithTop.coeOrderHom))
   replace hf : OrderEmbedding.subtype (· ∈ X.1) ∘ f = WithTop.coeOrderHom := by
     ext x
-    exact ConcreteCategory.congr_hom hf x
+    exact congr($hf x)
   refine X.2.1.of_injective f (Function.Injective.of_comp
     (f := OrderEmbedding.subtype (· ∈ X.1)) ?_)
   dsimp at hf ⊢

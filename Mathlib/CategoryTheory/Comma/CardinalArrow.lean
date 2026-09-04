@@ -65,7 +65,7 @@ instance (X : Type u) [Finite X] : Finite (Arrow (Discrete X)) :=
 
 lemma small_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     Small.{w} C :=
-  small_of_injective (f := fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
+  small_of_injective (f := fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr($(h).left))
 
 lemma locallySmall_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     LocallySmall.{w} C where
@@ -110,7 +110,7 @@ lemma hasCardinalLT_arrow_shrink_iff (C : Type u) [Category.{v} C] [Small.{w'} C
 lemma hasCardinalLT_of_hasCardinalLT_arrow
     {C : Type u} [Category.{v} C] {κ : Cardinal.{w}} (h : HasCardinalLT (Arrow C) κ) :
     HasCardinalLT C κ :=
-  h.of_injective (fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
+  h.of_injective (fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr($(h).left))
 
 lemma hasCardinalLT_arrow_iff_of_isThin (C : Type u) [Category.{v} C]
     [Quiver.IsThin C] (κ : Cardinal.{w}) (hκ : Cardinal.aleph0 ≤ κ) :

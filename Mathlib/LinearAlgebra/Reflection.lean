@@ -199,7 +199,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     have S_eval_t_sq_add_S_eval_t_sq (k : ℤ) :
         (S R k).eval t ^ 2 + (S R (k + 1)).eval t ^ 2 - t * (S R k).eval t * (S R (k + 1)).eval t
         = 1 := by
-      simpa using congr_arg (Polynomial.eval t) (S_sq_add_S_sq R k)
+      simpa using congr(Polynomial.eval t $(S_sq_add_S_sq R k))
     -- Apply the inductive hypothesis.
     rw [pow_succ', LinearEquiv.mul_apply, ih, LinearEquiv.mul_apply]
     -- Expand out all the reflections and use `hf`, `hg`.
@@ -453,6 +453,6 @@ lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [IsAddTorsionFree M]
     exact eq_of_mapsTo_reflection_of_mem (f := c i) (g := c j) hfin (h_two i) (h_two j)
       (by rw [← this, h_two]) (by rw [this, h_two]) (h_mapsTo i) (h_mapsTo j) (mem_range_self j)
   intro k
-  simpa using LinearMap.congr_fun hij ⟨r k, Submodule.subset_span (mem_range_self k)⟩
+  simpa using congr($hij ⟨r k, Submodule.subset_span (mem_range_self k)⟩)
 
 end Module

@@ -221,7 +221,7 @@ nonrec def symm (e : A ≃⋆* B) : B ≃⋆* A :=
   { e.symm with
     map_star' := fun b => by
       simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using!
-        congr_arg (EquivLike.inv e) (map_star e (EquivLike.inv e b)).symm }
+        congr(EquivLike.inv e $((map_star e (EquivLike.inv e b)).symm)) }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply (e : A ≃⋆* B) : A → B := e

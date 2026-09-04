@@ -207,7 +207,7 @@ lemma tendstoUniformly_congr_inseparable {F' : ι → α → β}
 
 lemma tendstoUniformly_congr {F' : ι → α → β} (hF : F =ᶠ[p] F') :
     TendstoUniformly F f p ↔ TendstoUniformly F' f p :=
-  tendstoUniformly_congr_inseparable (hF.mono fun _ hx y => .of_eq (congrFun hx y))
+  tendstoUniformly_congr_inseparable (hF.mono fun _ hx y => .of_eq congr($hx y))
 
 theorem TendstoUniformlyOn.congr_inseparable_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
     (hfg : ∀ x ∈ s, Inseparable (f x) (g x)) : TendstoUniformlyOn F g p s := by

@@ -39,7 +39,7 @@ variable (X : DifferentialObject ℤ (GradedObjectWithShift b V))
 is used to aid the simplifier. -/
 abbrev objEqToHom {i j : β} (h : i = j) :
     X.obj i ⟶ X.obj j :=
-  eqToHom (congr_arg X.obj h)
+  eqToHom congr(X.obj $h)
 
 @[simp]
 theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
@@ -53,7 +53,7 @@ theorem objEqToHom_d {x y : β} (h : x = y) :
     X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; simp
 
 @[reassoc (attr := simp)]
-theorem d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
+theorem d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr($X.d_squared _)
 
 -- Removing `@[simp]`, because it is in the opposite direction of `eqToHom_naturality`.
 -- Having both causes an infinite loop in the simpNF linter.
@@ -72,7 +72,7 @@ variable (V : Type*) [Category* V] [HasZeroMorphisms V]
 
 @[reassoc]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
-    X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
+    X.d x y ≫ eqToHom congr(X.X $h) = X.d x z := by cases h; simp
 
 set_option backward.defeqAttrib.useBackward true in
 open scoped Classical in
@@ -95,7 +95,7 @@ def dgoToHomologicalComplex :
       comm' := fun i j h => by
         dsimp at h ⊢
         subst h
-        have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
+        have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := congr($f.comm i).symm
         simp only [dite_true, Category.assoc, eqToHom_f', reassoc_of% this] }
 
 /-- The functor from homological complexes to differential graded objects.

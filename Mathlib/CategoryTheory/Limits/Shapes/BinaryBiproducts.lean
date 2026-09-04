@@ -151,7 +151,7 @@ instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full w
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
-    BinaryBiconeMorphism.ext f g <| F.map_injective <| congr_arg BinaryBiconeMorphism.hom h
+    BinaryBiconeMorphism.ext f g <| F.map_injective congr(BinaryBiconeMorphism.hom $h)
 
 end BinaryBicones
 

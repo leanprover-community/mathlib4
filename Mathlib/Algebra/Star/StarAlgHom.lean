@@ -742,7 +742,7 @@ nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
   { e.symm with
     map_smul' := fun r b => by
       simpa only [apply_inv_apply, inv_apply_apply] using!
-        congr_arg (inv e) (map_smul e r (inv e b)).symm }
+        congr(inv e $((map_smul e r (inv e b)).symm)) }
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : A ≃⋆ₐ[R] B) : B → A :=

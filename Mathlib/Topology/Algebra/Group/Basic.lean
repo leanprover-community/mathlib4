@@ -243,11 +243,11 @@ variable (G)
 
 @[to_additive]
 theorem nhds_one_symm : comap Inv.inv (𝓝 (1 : G)) = 𝓝 (1 : G) :=
-  ((Homeomorph.inv G).comap_nhds_eq _).trans (congr_arg 𝓝 inv_one)
+  ((Homeomorph.inv G).comap_nhds_eq _).trans congr(𝓝 $inv_one)
 
 @[to_additive]
 theorem nhds_one_symm' : map Inv.inv (𝓝 (1 : G)) = 𝓝 (1 : G) :=
-  ((Homeomorph.inv G).map_nhds_eq _).trans (congr_arg 𝓝 inv_one)
+  ((Homeomorph.inv G).map_nhds_eq _).trans congr(𝓝 $inv_one)
 
 @[to_additive]
 theorem inv_mem_nhds_one {S : Set G} (hS : S ∈ (𝓝 1 : Filter G)) : S⁻¹ ∈ 𝓝 (1 : G) := by

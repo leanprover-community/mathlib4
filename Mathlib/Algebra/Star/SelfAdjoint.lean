@@ -122,7 +122,7 @@ lemma commute_of_mul_eq_isSelfAdjoint {R : Type*} [Mul R] [StarMul R] (x y z : R
 @[aesop 10% apply]
 theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
     {x : R} (f : F) (hx : IsSelfAdjoint x) : IsSelfAdjoint (f x) :=
-  show star (f x) = f x from map_star f x ▸ congr_arg f hx
+  show star (f x) = f x from map_star f x ▸ congr(f $hx)
 
 lemma of_map {F R S : Type*} [Star R] [Star S]
     [FunLike F R S] [StarHomClass F R S] (f : F)
@@ -667,7 +667,7 @@ protected instance val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStarNormal (x : R
 protected instance map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
     IsStarNormal (f r) where
-  star_comm_self := by simpa [map_star] using! congr(f $(hr.star_comm_self))
+  star_comm_self := by simpa [map_star] using! congr(f $hr.star_comm_self)
 
 protected instance smul {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
     [StarModule R A] [SMulCommClass R A A] [IsScalarTower R A A]

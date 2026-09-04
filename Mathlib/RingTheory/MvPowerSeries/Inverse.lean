@@ -172,7 +172,7 @@ induced by a local ring hom `A → B` is local -/
 theorem map.isLocalHom : IsLocalHom (map (σ := σ) f) :=
   ⟨by
     rintro φ ⟨ψ, h⟩
-    replace h := congr_arg constantCoeff h
+    replace h := congr(constantCoeff $h)
     rw [constantCoeff_map] at h
     have : IsUnit (constantCoeff ψ.val) := isUnit_constantCoeff _ ψ.isUnit
     rw [h] at this
@@ -209,7 +209,7 @@ theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_inv, ite_eq_left rfl]
 
 protected theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
-  ⟨fun h => by simpa using congr_arg constantCoeff h, fun h =>
+  ⟨fun h => by simpa using congr(constantCoeff $h), fun h =>
     ext fun n => by
       classical
       rw [coeff_inv]

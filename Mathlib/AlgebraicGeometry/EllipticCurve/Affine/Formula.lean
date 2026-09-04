@@ -497,8 +497,8 @@ lemma map_slope [DecidableEq F] [DecidableEq K] (f : F →+* K) (x₁ x₂ y₁ 
     (W.map f).slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W.slope x₁ x₂ y₁ y₂) := by
   by_cases hx : x₁ = x₂
   · by_cases hy : y₁ = W.negY x₂ y₂
-    · rw [slope_of_Y_eq (congr_arg f hx) <| by rw [hy, map_negY], slope_of_Y_eq hx hy, map_zero]
-    · rw [slope_of_Y_ne (congr_arg f hx) <| map_negY f x₂ y₂ ▸ fun h => hy <| f.injective h,
+    · rw [slope_of_Y_eq congr(f $hx) <| by rw [hy, map_negY], slope_of_Y_eq hx hy, map_zero]
+    · rw [slope_of_Y_ne congr(f $hx) <| map_negY f x₂ y₂ ▸ fun h => hy <| f.injective h,
         map_negY, slope_of_Y_ne hx hy]
       map_simp
   · rw [slope_of_X_ne fun h => hx <| f.injective h, slope_of_X_ne hx]

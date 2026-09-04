@@ -191,7 +191,7 @@ theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
   rw [ray_eq_iff, SameRay.sameRay_comm]
   intro h
   simpa using
-    congr_arg AlternatingMap.constLinearEquivOfIsEmpty.symm (eq_zero_of_sameRay_self_neg h)
+    congr(AlternatingMap.constLinearEquivOfIsEmpty.symm $(eq_zero_of_sameRay_self_neg h))
 
 /-- The volume form on an oriented real inner product space can be evaluated as the determinant with
 respect to any orthonormal basis of the space compatible with the orientation. -/
@@ -288,7 +288,7 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
 orthonormal basis is ±1. -/
 theorem abs_volumeForm_apply_of_orthonormal (v : OrthonormalBasis (Fin n) ℝ E) :
     |o.volumeForm v| = 1 := by
-  simpa [o.volumeForm_robust' v v] using congr_arg abs v.toBasis.det_self
+  simpa [o.volumeForm_robust' v v] using congr(abs $v.toBasis.det_self)
 
 theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [Fact (finrank ℝ F = n)] (φ : E ≃ₗᵢ[ℝ] F) (x : Fin n → F) :

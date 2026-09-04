@@ -290,7 +290,7 @@ theorem nnnorm_zero : ‖(0 : Lp E p μ)‖₊ = 0 := by
 
 @[simp]
 theorem norm_zero : ‖(0 : Lp E p μ)‖ = 0 :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) nnnorm_zero
+  congr($nnnorm_zero)
 
 @[simp]
 theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ = 0 := by
@@ -319,7 +319,7 @@ theorem nnnorm_neg (f : Lp E p μ) : ‖-f‖₊ = ‖f‖₊ := by
 
 @[simp]
 theorem norm_neg (f : Lp E p μ) : ‖-f‖ = ‖f‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) (nnnorm_neg f)
+  congr($(nnnorm_neg f))
 
 theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : ‖f‖₊ ≤ c * ‖g‖₊ := by
@@ -580,7 +580,7 @@ theorem coeFn_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f �
 @[simp]
 theorem norm_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
     ‖compMeasurePreserving f hf g‖ = ‖g‖ :=
-  congr_arg ENNReal.toReal <| g.1.eLpNorm_compMeasurePreserving hf
+  congr($(g.1.eLpNorm_compMeasurePreserving hf).toReal)
 
 theorem isometry_compMeasurePreserving [Fact (1 ≤ p)] (hf : MeasurePreserving f μ μb) :
     Isometry (compMeasurePreserving f hf : Lp E p μb → Lp E p μ) :=
