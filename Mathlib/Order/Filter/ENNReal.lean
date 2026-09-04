@@ -88,7 +88,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
     NNReal.exists]
   constructor
   · rintro ⟨b, hb⟩
-    exact ⟨b.toNNReal, by simp, fun x _ ↦ by simpa [*] using hb _⟩
+    exact ⟨b.toNNReal, by simp, fun x _ ↦ by simpa [Real.coe_toNNReal', *] using hb _⟩
   · rintro ⟨b, hb₀, hb⟩
     exact ⟨b, fun x hx ↦ hb _ (hx.exists.choose_spec.trans' (by simp)) hx⟩
 

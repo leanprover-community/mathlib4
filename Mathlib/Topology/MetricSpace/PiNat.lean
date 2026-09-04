@@ -1129,10 +1129,11 @@ lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
   obtain ⟨n, hn⟩ := denseRange_iff.mp (denseRange_denseSeq X) x (ε / 2)
     (by simp_all [ε, ← IsClosed.notMem_iff_infDist_pos, mem_interior_iff_mem_nhds])
   refine ⟨n, ball 0 (ε / 2), isOpen_ball.mem_nhds ?_, ?_⟩
-  · simp [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, hn]
+  · simp [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, sup_of_le_right, hn]
   · intro y hy
     replace hy : dist y (denseSeq X n) < ε / 2 := by
-      simpa [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, not_lt_of_ge, ε, div_le_iff₀] using hy
+      simpa [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, sup_of_le_right, not_lt_of_ge, ε,
+        div_le_iff₀] using hy
     have : dist x y < infDist x (closure Cᶜ) :=
       ((dist_triangle_right x y (denseSeq X n)).trans_lt (add_lt_add hn hy)).trans_le (by simp [ε])
     simpa using notMem_of_notMem_closure (mt infDist_le_dist_of_mem this.not_ge)
