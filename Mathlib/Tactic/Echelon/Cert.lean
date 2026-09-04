@@ -5,6 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Mathlib.Data.Fin.Tuple.Reflection  -- shake: keep (Qq dependency)
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Tactic.Echelon.Core
@@ -27,9 +28,13 @@ individual entries supplied by an entry certifier.
 
 The elimination records its echelon form `U`, making the product a certificate obligation
 of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`. On the
-certifier path this is built one entry at a time, but should eventually be replaced by a dedicated
-matrix mult normalising tactic. `norm_num` does close it today (via @[simp] rewrites), but is
-several times slower and does not handle some edge cases (e.g. 0x0).
+certifier path this is built one entry at a time. `norm_num` does close it today (via
+@[simp] rewrites), but is several times slower and does not handle some edge cases
+(e.g. 0x0).
+
+Once a list-based matrix multiplication exists, the better route is to prove the product
+condition of the list representation and bridge it to the matrix-based version, leaving only
+the per-entry arithmetic evidence to the certifier.
 -/
 
 public meta section
@@ -172,26 +177,13 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   let hStrict ← mkDecideProofQ q(StrictMonoOn $pivot {i | $pivot i ≠ ⊤})
   return q(Matrix.isPivotedBy_iff.mpr ⟨$hMono, $hStrict, $entryConds⟩)
 
-/-- Prove the row arrangement `A.submatrix σ id = Aσ.matrix`, by proving the reindexing
-functions equal below the `Matrix.of` wrapper and lifting that with `congrArg`.
-The equations must compare the bare function literals as stating them through the wrapped
-matrix terms causes an exponential growth in kernel unfold steps.
--/
+/-- Prove the row arrangement `A.submatrix σ id = Aσ` by reflection using `FinVec.etaExpand_eq`. -/
 def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
-    (Aσ : MatrixViews u m n α) (σ : Q(Equiv.Perm (Fin $m))) :
-    MetaM Q(($A).submatrix $σ id = $(Aσ.matrix)) := do
-  -- extract the subterm from the `Matrix.of` application
-  have rows : Q(Fin $m → Fin $n → $α) := Aσ.matrix.appArg!
-  -- every cell is an equation between two spellings of one entry of `A`, so all of them
-  -- close by `rfl` and none consults an entry certifier
-  let rowEq ← certifyForallFin
-      q(∀ i : Fin $m, (fun j : Fin $n => $A ($σ i) (id j)) = $rows i) fun i _ => do
-    let iN ← mkFinNumeral m i
-    let colEq ← certifyForallFin
-      q(∀ j : Fin $n, $A ($σ $iN) (id j) = $rows $iN j) fun _ cell => certifyDefEq cell
-    return (q(funext $colEq) : Expr)
-  mkExpectedTypeHint q(congrArg (fun f => Matrix.of f) (funext $rowEq))
-    q(($A).submatrix $σ id = $(Aσ.matrix))
+    (Aσ : Q(Matrix (Fin $m) (Fin $n) $α)) (σ : Q(Equiv.Perm (Fin $m))) :
+    MetaM Q(($A).submatrix $σ id = $Aσ) := do
+  mkExpectedTypeHint
+    q(congrArg (fun f => Matrix.of f) (FinVec.etaExpand_eq (fun i => $A ($σ i))).symm)
+    q(($A).submatrix $σ id = $Aσ)
 
 /-- Prove the product `L * Aσ = U` entrywise from the literals' recorded entries. At
 concrete indices the product reduces to the fold of its terms, which `certifier` settles
@@ -238,7 +230,7 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have Lm := L.matrix
   have Aσm := Aσ.matrix
   have Um := U.matrix
-  let hperm ← dispatch q(($A).submatrix $σ id = $Aσm) fun _ => certifyPermEq A Aσ σ
+  let hperm ← dispatch q(($A).submatrix $σ id = $Aσm) fun _ => certifyPermEq A Aσm σ
   let hprod ← dispatch q($Lm * $Aσm = $Um) fun certifier =>
     certifyProductEq _cr L Aσ U certifier
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
