@@ -196,12 +196,12 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
   let g : {w // w ≠ w₂} ≃ Fin (rank K) :=
     (Equiv.subtypeEquiv f.symm (fun _ ↦ by simp [f])).trans
       (finSuccAboveEquiv (f.symm w₂)).symm
-  have h_col := congr_arg abs <| det_permute (g.trans e₂.symm)
-    (of fun i w : {w // w ≠ w₂} ↦ (mult w.val : ℝ) * (w.val (u (e₂ i) : K)).log)
+  have h_col := congr(abs $(det_permute (g.trans e₂.symm)
+    (of fun i w : {w // w ≠ w₂} ↦ (mult w.val : ℝ) * (w.val (u (e₂ i) : K)).log)))
   rw [abs_mul, ← Int.cast_abs, Equiv.Perm.sign_abs, Int.cast_one, one_mul] at h_col
   rw [← h_col]
-  have h := congr_arg abs <| submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det'
-    (of fun i w ↦ (mult (f w) : ℝ) * ((f w) (u i)).log) ?_ 0 (f.symm w₂)
+  have h := congr(abs $(submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det'
+    (of fun i w ↦ (mult (f w) : ℝ) * (f w (u i)).log) ?_ 0 (f.symm w₂)))
   · rw [← det_reindex_self e₁, ← det_reindex_self g]
     · rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
       convert! h

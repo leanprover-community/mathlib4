@@ -111,12 +111,12 @@ section spineToSimplex
 @[simp]
 lemma spine_spineToSimplex_apply (m : ℕ) (h : m ≤ n + 1) (f : Path X m) :
     X.spine m h (sx.spineToSimplex m h f) = f :=
-  congr_fun (sx.spine_spineToSimplex m h) f
+  congr($(sx.spine_spineToSimplex m h) f)
 
 @[simp]
 lemma spineToSimplex_spine_apply (m : ℕ) (h : m ≤ n + 1) (Δ : X _⦋m⦌ₙ₊₁) :
     sx.spineToSimplex m h (X.spine m h Δ) = Δ :=
-  congr_fun (sx.spineToSimplex_spine m h) Δ
+  congr($(sx.spineToSimplex_spine m h) Δ)
 
 section autoParam
 
@@ -303,12 +303,12 @@ instance [X.IsStrictSegal] (n : ℕ) :
 @[simp]
 lemma spine_spineToSimplex_apply {n : ℕ} (f : Path X n) :
     X.spine n (sx.spineToSimplex f) = f :=
-  congr_fun (sx.spine_spineToSimplex n) f
+  congr($(sx.spine_spineToSimplex n) f)
 
 @[simp]
 lemma spineToSimplex_spine_apply {n : ℕ} (Δ : X _⦋n⦌) :
     sx.spineToSimplex (X.spine n Δ) = Δ :=
-  congr_fun (sx.spineToSimplex_spine n) Δ
+  congr($(sx.spineToSimplex_spine n) Δ)
 
 /-- The fields of `StrictSegal` define an equivalence between `X _⦋n⦌`
 and `Path X n`. -/
@@ -528,8 +528,7 @@ def strictSegal : StrictSegal (nerve C) :=
       δ₀_concat f s h := rfl
       injective {f g} h h₀ :=
         ComposableArrows.ext_succ (Functor.congr_obj h 0) h₀
-          ((Arrow.mk_eq_mk_iff _ _).1
-            (DFunLike.congr_arg ComposableArrows.arrowEquiv h)).2.2 })
+          ((Arrow.mk_eq_mk_iff _ _).1 congr(ComposableArrows.arrowEquiv $h)).2.2 })
 
 instance isStrictSegal : IsStrictSegal (nerve C) :=
   strictSegal C |>.isStrictSegal

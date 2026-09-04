@@ -131,7 +131,7 @@ lemma Module.exists_surjective_quotient_of_finite :
   let f := (LinearMap.toSpanSingleton R _ x).quotKerEquivOfSurjective
     (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
   refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
-  obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
+  obtain rfl : x = 0 := by simpa using congr($(LinearMap.ker_eq_top.mp e) 1)
   have : Nontrivial (M ⧸ N) := by rwa [Submodule.Quotient.nontrivial_iff]
   simp at hx
 

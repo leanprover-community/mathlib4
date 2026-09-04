@@ -263,7 +263,7 @@ theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass
     f = g := by
   apply DFunLike.ext
   intro m
-  exact DFunLike.congr_fun h m
+  exact congr($h m)
 
 /-- Identity map as a `LinearMap` -/
 @[instance_reducible]
@@ -314,7 +314,7 @@ protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
 
 /-- If two linear maps are equal, they are equal at each point. -/
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 @[simp] lemma mk_coe (f : M →ₛₗ[σ] M₃) (h) : (mk f h : M →ₛₗ[σ] M₃) = f := rfl
 @[simp] lemma mk_coe' (f : M →ₛₗ[σ] M₃) (h) : (mk f.toAddHom h : M →ₛₗ[σ] M₃) = f := rfl
@@ -643,7 +643,7 @@ theorem toLinearMap_injective {f g : M →ₑ+[σ.toMonoidHom] M₂}
     (h : (f : M →ₛₗ[σ] M₂) = (g : M →ₛₗ[σ] M₂)) :
     f = g := by
   ext m
-  exact LinearMap.congr_fun h m
+  exact congr($h m)
 
 end DistribMulActionHom
 
@@ -708,7 +708,7 @@ theorem AddMonoidHom.toNatLinearMap_injective [AddCommMonoid M] [AddCommMonoid M
     Function.Injective (@AddMonoidHom.toNatLinearMap M M₂ _ _) := by
   intro f g h
   ext x
-  exact LinearMap.congr_fun h x
+  exact congr($h x)
 
 @[simp]
 theorem AddMonoidHom.coe_toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) :
@@ -725,7 +725,7 @@ theorem AddMonoidHom.toIntLinearMap_injective [AddCommGroup M] [AddCommGroup M�
     Function.Injective (@AddMonoidHom.toIntLinearMap M M₂ _ _) := by
   intro f g h
   ext x
-  exact LinearMap.congr_fun h x
+  exact congr($h x)
 
 @[simp]
 theorem AddMonoidHom.coe_toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) :

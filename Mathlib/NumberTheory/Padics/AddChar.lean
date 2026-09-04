@@ -72,9 +72,9 @@ noncomputable def addChar_of_value_at_one (r : R) (hr : Tendsto (r ^ ·) atTop (
       rw [mahlerSeries_apply_nat hr le_rfl, (Commute.one_right _).add_pow]
       refine Finset.sum_congr rfl fun i hi ↦ ?_
       rw [one_pow, mul_one, nsmul_eq_mul, Nat.cast_comm]
-    refine congr_fun ((denseRange_natCast.prodMap denseRange_natCast).equalizer
+    refine congr($((denseRange_natCast.prodMap denseRange_natCast).equalizer
       ((map_continuous F).comp continuous_add)
-      (continuous_mul.comp (map_continuous <| F.prodMap F)) (funext fun ⟨m, n⟩ ↦ ?_)) (a, b)
+      (continuous_mul.comp (map_continuous <| F.prodMap F)) (funext fun ⟨m, n⟩ ↦ ?_)) (a, b))
     simp [← Nat.cast_add, hF, ContinuousMap.prodMap_apply, pow_add]
 
 @[fun_prop]

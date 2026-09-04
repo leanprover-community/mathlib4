@@ -37,7 +37,7 @@ lemma FG.of_restrictScalars {K L E : Type*} [Field K] [Field L] [Field E]
   obtain ⟨s, hs⟩ := H
   refine ⟨s, le_antisymm ?_ ?_⟩
   · rw [adjoin_le_iff]
-    exact (subset_adjoin K _).trans_eq congr(($hs : Set E))
+    exact (subset_adjoin K _).trans_eq congr($hs)
   · rw [← restrictScalars_le_iff K, ← hs, adjoin_le_iff]
     exact subset_adjoin L _
 
@@ -310,7 +310,7 @@ protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := b
 
 @[simp]
 theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
-  congr(Cardinal.toNat $(rank_bot'))
+  congr($(rank_bot').toNat)
 
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
@@ -680,7 +680,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     rw [RingHom.map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
     apply hg (AdjoinRoot f)
     rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
-  have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr_arg natDegree h
+  have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr(natDegree $h)
   have H₂ : ¬ IsUnit (f.comp g) := fun h ↦
     by simpa [hf', hg', natDegree_comp] using natDegree_eq_zero_of_isUnit h
   have ⟨p, hp₁, hp₂⟩ := WfDvdMonoid.exists_irreducible_factor H₂ H₁

@@ -283,7 +283,7 @@ theorem Derivation.liftKaehlerDifferential_comp (D : Derivation R S M) :
 @[simp]
 theorem Derivation.liftKaehlerDifferential_comp_D (D' : Derivation R S M) (x : S) :
     D'.liftKaehlerDifferential (KaehlerDifferential.D R S x) = D' x :=
-  Derivation.congr_fun D'.liftKaehlerDifferential_comp x
+  congr($D'.liftKaehlerDifferential_comp x)
 
 @[ext]
 theorem Derivation.liftKaehlerDifferential_unique (f f' : Ω[S⁄R] →ₗ[S] M)
@@ -294,7 +294,7 @@ theorem Derivation.liftKaehlerDifferential_unique (f f' : Ω[S⁄R] →ₗ[S] M)
   have : x ∈ Submodule.span S (Set.range <| KaehlerDifferential.D R S) := by
     rw [KaehlerDifferential.span_range_derivation]; trivial
   refine Submodule.span_induction ?_ ?_ ?_ ?_ this
-  · rintro _ ⟨x, rfl⟩; exact congr_arg (fun D : Derivation R S M => D x) hf
+  · rintro _ ⟨x, rfl⟩; exact congr($hf x)
   · rw [map_zero, map_zero]
   · intro x y _ _ hx hy; rw [map_add, map_add, hx, hy]
   · intro a x _ e; simp [e]
@@ -428,7 +428,7 @@ theorem KaehlerDifferential.ideal_fg [EssFiniteType R S] :
       refine Ideal.subset_span ?_
       simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe]
       exact ⟨a, ha, rfl⟩
-    simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using AlgHom.congr_fun this x
+    simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using congr($this x)
 
 instance KaehlerDifferential.finite [EssFiniteType R S] :
     Module.Finite S Ω[S⁄R] := by
@@ -560,13 +560,11 @@ noncomputable def KaehlerDifferential.quotKerTotalEquiv :
       intro x
       obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
       exact
-        LinearMap.congr_fun
-          (KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination R S :) x
+        congr($((KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination R S :)) x)
     right_inv := by
       intro x
       obtain ⟨x, rfl⟩ := KaehlerDifferential.linearCombination_surjective R S x
-      have := LinearMap.congr_fun
-        (KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination R S) x
+      have := congr($(KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination R S) x)
       rw [LinearMap.comp_apply] at this
       rw [this]
       rfl }
@@ -668,7 +666,7 @@ theorem KaehlerDifferential.map_compDer :
 theorem KaehlerDifferential.map_D (x : A) :
     KaehlerDifferential.map R S A B (KaehlerDifferential.D R A x) =
       KaehlerDifferential.D S B (algebraMap A B x) :=
-  Derivation.congr_fun (KaehlerDifferential.map_compDer R S A B) x
+  congr($(KaehlerDifferential.map_compDer R S A B) x)
 
 theorem KaehlerDifferential.ker_map :
     LinearMap.ker (KaehlerDifferential.map R S A B) =
@@ -819,7 +817,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     simp only [map_sum, Finsupp.linearCombination_single]
     have : ∑ i ∈ x.support with algebraMap A B i = c, x i ∈ RingHom.ker (algebraMap A B) := by
       simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finsetSum_apply, RingHom.mem_ker,
-        Finsupp.single_apply, ← Finset.sum_filter] using DFunLike.congr_fun hx c
+        Finsupp.single_apply, ← Finset.sum_filter] using congr($hx c)
     obtain ⟨a, ha⟩ := h c
     use ∑ i ∈ {i ∈ x.support | algebraMap A B i = c}.attach, x i • Ideal.toCotangent _ ⟨i - a, ?_⟩
     · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_toCotangent, map_sub]

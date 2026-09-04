@@ -160,7 +160,7 @@ def tensorCotangentInvFun
     clear x hx
     rintro a ha b -
     obtain ⟨x, hx⟩ := e.surjective ⟨a, ha⟩
-    obtain rfl : (e x).1 = a := congr_arg Subtype.val hx
+    obtain rfl : (e x).1 = a := congr($(hx).val)
     obtain ⟨y, rfl⟩ := e.surjective b
     simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_coe, map_smul,
       LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
@@ -263,7 +263,7 @@ def tensorH1CotangentOfFormallyEtale [alg : Algebra P.Ring Q.Ring]
         ext x; obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x; dsimp
         simp only [CotangentSpace.map_tmul,
           map_one, Hom.toAlgHom_apply, one_smul, cotangentComplex_mk]
-      exact (DFunLike.congr_fun this _).trans (DFunLike.congr_arg Q.cotangentComplex
+      exact congr($this _).trans (DFunLike.congr_arg Q.cotangentComplex
         ((tensorCotangent f halg H₂).apply_symm_apply x.1)))
     refine ⟨a, Subtype.ext (.trans ?_ ((LinearEquiv.eq_symm_apply _).mp ha))⟩
     change (h1Cotangentι ∘ₗ (H1Cotangent.map f).liftBaseChange T) _ =

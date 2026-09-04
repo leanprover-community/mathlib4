@@ -368,7 +368,7 @@ lemma coroot'_reflectionPerm {i j : ι} :
 
 lemma coroot'_reflection {i j : ι} (y : M) :
     P.coroot' j (P.reflection i y) = P.coroot' (P.reflectionPerm i j) y :=
-  (LinearMap.congr_fun P.coroot'_reflectionPerm y).symm
+  congr($P.coroot'_reflectionPerm y).symm
 
 lemma pairing_reflectionPerm (i j k : ι) :
     P.pairing j (P.reflectionPerm i k) = P.pairing (P.reflectionPerm i j) k := by
@@ -414,7 +414,7 @@ lemma ne_neg [NeZero (2 : R)] [IsDomain R] :
     i ≠ -i := by
   have := Module.IsReflexive.of_isPerfPair P.toLinearMap
   intro contra
-  replace contra : P.root i = -P.root i := by simpa using congr_arg P.root contra
+  replace contra : P.root i = -P.root i := by simpa using congr(P.root $contra)
   simp [eq_neg_iff_add_eq_zero, ← two_smul R, NeZero.out, P.ne_zero i] at contra
 
 variable {i j} in

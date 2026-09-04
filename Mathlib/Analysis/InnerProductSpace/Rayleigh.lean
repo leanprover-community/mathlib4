@@ -247,7 +247,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     linear_combination (norm := match_scalars <;> field) b⁻¹ • h₂
   set c : ℝ := -b⁻¹ * a
   convert hc
-  simpa [field, inner_smul_left, mul_comm a] using! congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
+  simpa [field, inner_smul_left, mul_comm a] using! congr(⟪$hc, x₀⟫_ℝ)
 
 end Real
 

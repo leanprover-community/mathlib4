@@ -740,7 +740,7 @@ abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
   let := invertibleOfInvertibleFst x
-  convert! congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟x)
+  convert! congr(TrivSqZeroExt.snd (R := R) (M := M) $((_ : _ = ⅟x)))
   convert! rfl
 
 /-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`

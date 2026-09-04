@@ -131,7 +131,7 @@ lemma pairingDual_apply_apply_eq_one_zero (a b : Fin n ↪o ι) (h : a ≠ b) :
     simp only [lt_self_iff_false] at h
   obtain rfl : σ = 1 := by
     ext i : 1
-    exact DFunLike.congr_fun (Subsingleton.elim (σ.toOrderIso hσ hσ') (OrderIso.refl _)) i
+    exact congr($(Subsingleton.elim (σ.toOrderIso hσ hσ') (OrderIso.refl _)) i)
   ext
   apply congr_fun this
 

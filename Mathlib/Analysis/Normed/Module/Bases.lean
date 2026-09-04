@@ -151,7 +151,7 @@ theorem linearIndependent : LinearIndependent 𝕜 b := by
   classical
   refine linearIndependent_iff.mpr (fun l hl ↦ l.ext ?_)
   simpa [l.linearCombination_apply, Finsupp.sum, b.ortho, Pi.single_apply] using
-    fun i ↦ congr_arg (b.coord i) hl
+    fun i ↦ congr(b.coord i $hl)
 
 /-- Projection onto a finite set of basis vectors. -/
 def proj (A : Finset β) : X →L[𝕜] X := ∑ i ∈ A, (b.coord i).smulRight (b i)

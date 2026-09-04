@@ -695,7 +695,7 @@ theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
   induction s using recOn with intro h | pure a | think s'
   · simp only [ret_bind] at h
     exact ⟨_, _, _, results_pure _, h, rfl⟩
-  · have := congr_arg head (eq_thinkN h)
+  · have := congr(head $(eq_thinkN h))
     contradiction
   · simp only [ret_bind] at h
     exact ⟨_, _, n + 1, results_pure _, h, rfl⟩

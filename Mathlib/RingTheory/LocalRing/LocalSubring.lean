@@ -59,7 +59,7 @@ def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S :=
 /-- The range of a ring homomorphism from a local ring as a `LocalSubring`. -/
 @[simps! toSubring]
 def range [IsLocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S :=
-  .copy (map f (mk ⊤)) f.range (by ext x; exact congr(x ∈ $(Set.image_univ.symm)))
+  .copy (map f (mk ⊤)) f.range (by ext x; exact congr(x ∈ $Set.image_univ.symm))
 
 /--
 The domination order on local subrings.

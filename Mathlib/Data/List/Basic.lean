@@ -699,7 +699,7 @@ theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ 
 
 theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
     l.flatMap f = l.flatMap g :=
-  (congr_arg List.flatten <| map_congr_left h :)
+  congr(List.flatten $(map_congr_left h))
 
 theorem infix_flatMap_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
     f a <:+: as.flatMap f :=
@@ -924,7 +924,7 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
       have : (filterMap f l).length = l.length + 1 := by grind
       grind
     · simp +contextual [ha, ih]
-  mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
+  mpr h := Eq.trans (filterMap_congr <| by simpa) congr($filterMap_eq_map _)
 
 @[simp]
 lemma filterMap_none (l : List α) :

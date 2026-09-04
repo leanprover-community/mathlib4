@@ -170,7 +170,7 @@ theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y)
     ℱ'.1.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
   have {X Y} (i : X ⟶ Y) (x) :
       ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
-    exact ConcreteCategory.congr_hom (α.naturality i.op).symm x
+    exact congr($((α.naturality i.op).symm) x)
   refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
   simp only [← Functor.map_comp_apply, ← op_comp, ← e, this]
 
@@ -345,7 +345,7 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
       naturality := fun X Y f => by simpa using! congr_app (α.naturality f) U }
   naturality U V i := by
     ext X x
-    exact ConcreteCategory.congr_hom (((sheafCoyonedaHom α).app X).naturality i) x
+    exact congr($(((sheafCoyonedaHom α).app X).naturality i) x)
 
 /--
 Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,

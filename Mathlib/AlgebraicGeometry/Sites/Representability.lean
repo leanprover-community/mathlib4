@@ -128,7 +128,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
     dsimp% (yonedaGluedToSheaf hf).hom.app (op V) (γ ≫ α) =
       F.obj.map γ.op ((yonedaGluedToSheaf hf).hom.app (op U) α) :=
-  ConcreteCategory.congr_hom ((yonedaGluedToSheaf hf).hom.naturality γ.op) α
+  congr($((yonedaGluedToSheaf hf).hom.naturality γ.op) α)
 
 instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=

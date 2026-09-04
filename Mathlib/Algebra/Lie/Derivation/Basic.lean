@@ -95,7 +95,7 @@ theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
   DFunLike.ext _ _ H
 
 theorem congr_fun (h : D1 = D2) (a : L) : D1 a = D2 a :=
-  DFunLike.congr_fun h a
+  congr($h a)
 
 @[simp]
 lemma apply_lie_eq_sub (D : LieDerivation R L M) (a b : L) :
@@ -418,7 +418,7 @@ lemma exp_apply (h : IsNilpotent D.toLinearMap) :
 
 lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
     exp D h l = IsNilpotent.exp D.toLinearMap l :=
-  DFunLike.congr_fun (exp_apply D h) l
+  congr($(exp_apply D h) l)
 
 end ExpNilpotent
 

@@ -195,7 +195,7 @@ lemma map_comp (f : Hom P P') (g : Hom P' P'') :
 
 lemma map_comp_apply (f : Hom P P') (g : Hom P' P'') (x) :
     CotangentSpace.map (g.comp f) x = .map g (.map f x) :=
-  DFunLike.congr_fun (map_comp f g) x
+  congr($(map_comp f g) x)
 
 lemma map_cotangentComplex (f : Hom P P') (x) :
     CotangentSpace.map f (P.cotangentComplex x) = P'.cotangentComplex (.map f x) := by

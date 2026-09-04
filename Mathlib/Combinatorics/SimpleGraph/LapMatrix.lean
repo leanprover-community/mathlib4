@@ -250,7 +250,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   rw [h] at h0
   intro c
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
-  exact h' ▸ congrFun h0 i
+  exact h' ▸ congr($h0 i)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :

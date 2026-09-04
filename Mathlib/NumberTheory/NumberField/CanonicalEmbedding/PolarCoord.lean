@@ -454,7 +454,7 @@ theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral [NumberField K]
       exact ha₁.2 w
   rw [volume_eq_two_pow_mul_volume_plusPart hA₁ hm, volume_eq_two_pi_pow_mul_integral hA₃
     (measurableSet_plusPart hm), ← mul_assoc]
-  refine congr_arg (_ * _ * ·) <| setLIntegral_congr ?_
+  refine congr(_ * _ * $(setLIntegral_congr ?_))
   rw [← volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux hA]
   refine inter_ae_eq_left_of_ae_eq_univ <| ae_eq_univ.mpr
     <| Set.compl_iInter _ ▸ measure_iUnion_null_iff.mpr fun w ↦ ?_

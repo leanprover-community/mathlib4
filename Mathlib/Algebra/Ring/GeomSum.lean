@@ -238,7 +238,7 @@ lemma mul_geom_sum (x : R) (n : ℕ) : ((x - 1) * ∑ i ∈ range n, x ^ i) = x 
   op_injective <| by simpa using geom_sum_mul (op x) n
 
 lemma geom_sum_mul_neg (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (1 - x) = 1 - x ^ n := by
-  have := congr_arg Neg.neg (geom_sum_mul x n)
+  have := congr(-$(geom_sum_mul x n))
   rw [neg_sub, ← mul_neg, neg_sub] at this
   exact this
 

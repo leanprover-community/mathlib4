@@ -184,7 +184,7 @@ lemma ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure
 
 @[simp]
 lemma ultrafilter_extend_pure (f : α → γ) (a : α) : Ultrafilter.extend f (pure a) = f a :=
-  congr_fun (ultrafilter_extend_extends f) a
+  congr($(ultrafilter_extend_extends f) a)
 
 variable [CompactSpace γ]
 
@@ -292,13 +292,13 @@ lemma preStoneCechExtend_extends : preStoneCechExtend hg ∘ preStoneCechUnit = 
 @[simp]
 lemma preStoneCechExtend_preStoneCechUnit (a : α) :
     preStoneCechExtend hg (preStoneCechUnit a) = g a :=
-  congr_fun (preStoneCechExtend_extends hg) a
+  congr($(preStoneCechExtend_extends hg) a)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCechUnit b) :
     g a = g b := by
   have e := ultrafilter_extend_extends g
-  rw [← congrFun e a, ← congrFun e b, Function.comp_apply, Function.comp_apply]
+  rw [← congr($e a), ← congr($e b), Function.comp_apply, Function.comp_apply]
   rw [preStoneCechUnit, preStoneCechUnit, Quot.eq] at h
   generalize (pure a : Ultrafilter α) = F at h
   generalize (pure b : Ultrafilter α) = G at h
@@ -361,7 +361,7 @@ theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g
     (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
   apply h₁.ext_on denseRange_stoneCechUnit h₂
   rintro _ ⟨x, rfl⟩
-  exact congr_fun h x
+  exact congr($h x)
 
 variable [CompactSpace β]
 
@@ -380,7 +380,7 @@ lemma stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
 
 @[simp]
 lemma stoneCechExtend_stoneCechUnit (a : α) : stoneCechExtend hg (stoneCechUnit a) = g a :=
-  congr_fun (stoneCechExtend_extends hg) a
+  congr($(stoneCechExtend_extends hg) a)
 
 theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hg) :=
   continuous_coinduced_dom.mpr (continuous_preStoneCechExtend hg)

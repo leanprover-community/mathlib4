@@ -392,7 +392,7 @@ lemma pullbackObjIso_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpe
       ((Opens.map f).op.leftKanExtensionUnit 𝒢)).coconeAt (op U)).ι.app j := by
     dsimp [pullback]
     simp only [Category.assoc, NatTrans.naturality]
-    have := NatTrans.congr_app ((Opens.map f).op.lanUnit.naturality u) j.left
+    have := congr($((Opens.map f).op.lanUnit.naturality u).app j.left)
     dsimp [lanUnit] at this
     rw [reassoc_of% this]
     rfl

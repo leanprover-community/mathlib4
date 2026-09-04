@@ -122,7 +122,7 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
     obtain ⟨a, rfl⟩ := c.exists_mem_SL2 ℤ
     refine ⟨_, ⟨a * ModularGroup.T * a⁻¹, rfl⟩, ?_, ?_⟩
     · suffices (mapGL ℝ ModularGroup.T).IsParabolic by simpa
-      refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr_fun₂ ha 0 1), ?_⟩
+      refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr($ha 0 1)), ?_⟩
       simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
       norm_num
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
@@ -302,7 +302,7 @@ lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ :
   ext x
   simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix,
     map_apply_coe]
-  refine ⟨fun ⟨g, _, hg⟩ ↦ ⟨g 0 1, by simpa using congr_fun₂ hg 0 1⟩, ?_⟩
+  refine ⟨fun ⟨g, _, hg⟩ ↦ ⟨g 0 1, by simpa using congr($hg 0 1)⟩, ?_⟩
   rintro ⟨m, rfl⟩
   refine ⟨ModularGroup.T ^ m, zpow_mem hΓ m, ?_⟩
   ext i j
@@ -461,7 +461,7 @@ set_option backward.isDefEq.respectTransparency.types false in
   simp only [this, mem_strictPeriods_iff, Subgroup.mem_map, Gamma_mem]
   constructor
   · rintro ⟨g, ⟨-, hg, -, -⟩, hx⟩
-    rw [show x = g 0 1 by simpa using congr_arg (· 0 1) hx.symm]
+    rw [show x = g 0 1 by simpa using congr($hx.symm 0 1)]
     apply AddSubgroup.mem_map_of_mem
     rwa [Int.mem_zmultiples_iff, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
   · simp only [AddSubgroup.mem_map, AddSubgroup.mem_zmultiples_iff, existsAndEq, true_and,

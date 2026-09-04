@@ -81,7 +81,7 @@ protected lemma isNilpotent_iff :
       obtain ⟨k, hk⟩ := hpr
       replace hp : eval 0 p = 0 := by rwa [coeff_zero_eq_aeval_zero] at hp₀
       refine isNilpotent_C_iff.mpr ⟨k, ?_⟩
-      simpa [coeff_zero_eq_aeval_zero, hp] using congr_arg (fun q ↦ coeff q 0) hk
+      simpa [coeff_zero_eq_aeval_zero, hp] using congr(coeff $hk 0)
     rcases i with - | i
     · simpa [hp₀] using hr
     simp only [coeff_add, coeff_C_succ, add_zero]

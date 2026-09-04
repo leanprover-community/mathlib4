@@ -670,7 +670,7 @@ theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 
   have := expChar_of_injective_ringHom (C_injective (R := E)) q
   refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_pow_mem q).2 ?_⟩
   · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
-    have hx := congr_arg (Polynomial.aeval x) h.symm
+    have hx := congr(Polynomial.aeval x $h.symm)
     rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero, eq_comm] at hx
     use n
     rw [h, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, hx, map_pow,

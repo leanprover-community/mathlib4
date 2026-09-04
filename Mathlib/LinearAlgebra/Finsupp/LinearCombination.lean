@@ -157,7 +157,7 @@ theorem linearCombination_embDomain (f : α ↪ α') (l : α →₀ R) :
 @[simp]
 theorem linearCombination_mapDomain (f : α → α') (l : α →₀ R) :
     (linearCombination R v') (mapDomain f l) = (linearCombination R (v' ∘ f)) l :=
-  LinearMap.congr_fun (linearCombination_comp_lmapDomain _ _) l
+  congr($(linearCombination_comp_lmapDomain _ _) l)
 
 @[simp]
 theorem linearCombination_equivMapDomain (f : α ≃ α') (l : α →₀ R) :

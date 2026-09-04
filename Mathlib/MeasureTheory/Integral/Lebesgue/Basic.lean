@@ -655,7 +655,7 @@ theorem lintegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measur
   have hm : MeasurableSet { x | f x ≤ g x } := measurableSet_le hf hg
   rw [← lintegral_add_compl (fun x => max (f x) (g x)) hm]
   simp only [← compl_ofPred, ← not_le]
-  refine congr_arg₂ (· + ·) (setLIntegral_congr_fun hm ?_) (setLIntegral_congr_fun hm.compl ?_)
+  refine congr($(setLIntegral_congr_fun hm ?_) + $(setLIntegral_congr_fun hm.compl ?_))
   exacts [fun x => max_eq_right (a := f x) (b := g x),
     fun x (hx : ¬ f x ≤ g x) => max_eq_left (not_le.1 hx).le]
 

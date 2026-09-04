@@ -160,7 +160,7 @@ protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 
 protected theorem congr_fun (h : e = e') (x : A) : e x = e' x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 end
 

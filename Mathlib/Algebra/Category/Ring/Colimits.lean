@@ -231,7 +231,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | refl => rfl
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
-    | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
+    | map j j' f x => exact congr($(s.ι.naturality f).hom x)
     | zero j => simp +instances
     | one j => simp +instances
     | neg j x => simp +instances
@@ -280,7 +280,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     | one => simp
     | neg x ih => simp [ih]
     | of j x =>
-      exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
+      exact congr($(w j) x)
     | add x y ih_x ih_y => simp [ih_x, ih_y]
     | mul x y ih_x ih_y => simp [ih_x, ih_y]
 
@@ -531,7 +531,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | refl => rfl
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
-    | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
+    | map j j' f x => exact congr($(s.ι.naturality f).hom x)
     | zero j => simp +instances
     | one j => simp +instances
     | neg j x => simp +instances
@@ -581,7 +581,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     | one => simp
     | neg x ih => simp [ih]
     | of j x =>
-      exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
+      exact congr($(w j) x)
     | add x y ih_x ih_y => simp [ih_x, ih_y]
     | mul x y ih_x ih_y => simp [ih_x, ih_y]
 

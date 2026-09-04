@@ -102,7 +102,7 @@ def CAlgHom : A →ₐ[R] A[X] where
 theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hC : f.comp CAlgHom = g.comp CAlgHom)
     (hX : f X = g X) : f = g :=
-  AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
+  AlgHom.coe_ringHom_injective (ringHom_ext' congr($(hC).toRingHom) hX)
 
 set_option backward.defeqAttrib.useBackward true in
 variable (R) in
@@ -401,7 +401,7 @@ theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
   algHom_ext <| aeval_X X
 
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
-  AlgHom.congr_fun (@aeval_X_left R _) p
+  congr($(@aeval_X_left R _) p)
 
 lemma aeval_X_left_eq_map [CommSemiring S] [Algebra R S] (p : R[X]) :
     aeval X p = map (algebraMap R S) p :=
@@ -732,7 +732,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   suffices ∀ i, P.coeff i • Q = 0 by
     rw [← leadingCoeff_eq_zero]
     apply h
-    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr_arg (·.coeff Q.natDegree) (this i)
+    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr($(this i).coeff Q.natDegree)
   apply Nat.strong_decreasing_induction
   · use P.natDegree
     intro i hi

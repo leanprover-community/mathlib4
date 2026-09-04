@@ -817,8 +817,8 @@ theorem isBigOWith_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ 
       rwa [ContinuousAt, e.rightInvOn hb] at this,
     fun h =>
     (h.comp_tendsto (e.continuousAt_symm hb)).congr' rfl
-      ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg f hx)
-      ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg g hx)⟩
+      ((e.eventually_right_inverse hb).mono fun _ hx => congr(f $hx))
+      ((e.eventually_right_inverse hb).mono fun _ hx => congr(g $hx))⟩
 
 /-- Transfer `IsBigO` over an `OpenPartialHomeomorph`. -/
 theorem isBigO_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}

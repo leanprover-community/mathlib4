@@ -120,10 +120,10 @@ def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
   arrow i := σ.app (op ⦋1⦌ₙ₊₁) (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
-    exact ConcreteCategory.congr_hom (σ.naturality (tr (δ 1)).op) _ |>.symm
+    exact congr($(σ.naturality (tr (δ 1)).op) _) |>.symm
   arrow_tgt i := by
     simp only [← f.arrow_tgt i]
-    exact ConcreteCategory.congr_hom (σ.naturality (tr (δ 0)).op) _ |>.symm
+    exact congr($(σ.naturality (tr (δ 0)).op) _) |>.symm
 
 /- We write this lemma manually to ensure it refers to `Path.vertex`. -/
 @[simp]

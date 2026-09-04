@@ -299,7 +299,7 @@ lemma comp_apply {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) (r : M) 
 
 @[ext]
 lemma hom_ext {M N : SemiNormedGrp₁} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext (congr_arg Subtype.val hf)
+  Hom.ext congr($(hf).val)
 
 @[simp]
 lemma hom_mkHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]

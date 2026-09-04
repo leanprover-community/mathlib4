@@ -330,7 +330,7 @@ theorem map_comp_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →*
 theorem map_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'') (g' : N' →* N'')
     (f : M →* M') (g : N →* N') (x : M ∗ N) :
     map f' g' (map f g x) = map (f'.comp f) (g'.comp g) x :=
-  DFunLike.congr_fun (map_comp_map f' g' f g) x
+  congr($(map_comp_map f' g' f g) x)
 
 variable (M N)
 
@@ -355,7 +355,7 @@ variable {M N}
 
 @[to_additive (attr := simp)]
 theorem swap_swap (x : M ∗ N) : swap N M (swap M N x) = x :=
-  DFunLike.congr_fun (swap_comp_swap _ _) x
+  congr($(swap_comp_swap _ _) x)
 
 @[to_additive]
 theorem swap_comp_map (f : M →* M') (g : N →* N') :
@@ -365,7 +365,7 @@ theorem swap_comp_map (f : M →* M') (g : N →* N') :
 @[to_additive]
 theorem swap_map (f : M →* M') (g : N →* N') (x : M ∗ N) :
     swap M' N' (map f g x) = map g f (swap M N x) :=
-  DFunLike.congr_fun (swap_comp_map f g) x
+  congr($(swap_comp_map f g) x)
 
 @[to_additive (attr := simp)] theorem swap_comp_inl : (swap M N).comp inl = inr := rfl
 @[to_additive (attr := simp)] theorem swap_inl (x : M) : swap M N (inl x) = inr x := rfl
@@ -444,7 +444,7 @@ theorem lift_comp_swap (f : M →* P) (g : N →* P) : (lift f g).comp (swap N M
 
 @[to_additive (attr := simp)]
 theorem lift_swap (f : M →* P) (g : N →* P) (x : N ∗ M) : lift f g (swap N M x) = lift g f x :=
-  DFunLike.congr_fun (lift_comp_swap f g) x
+  congr($(lift_comp_swap f g) x)
 
 @[to_additive]
 theorem comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g₂ : N →* P) :

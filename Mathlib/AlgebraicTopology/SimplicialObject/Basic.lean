@@ -793,7 +793,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma w_app {X Y : Augmented C} {η : X ⟶ Y} {n : SimplexCategory} :
     dsimp% η.left ≫ Y.hom.app n = X.hom.app n ≫ η.right.app n :=
-  NatTrans.congr_app η.w n
+  congr($(η.w).app n)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor from augmented objects to arrows. -/

@@ -131,12 +131,12 @@ def isColimitCoforkπ₀ : IsColimit X.coforkπ₀ :=
   Cofork.IsColimit.mk _
     (fun s ↦ ↾π₀.lift s.π (fun x₀ x₁ e ↦ by
       simpa only [← e.src_eq, ← e.tgt_eq] using!
-        ConcreteCategory.congr_hom s.condition e.edge))
+        congr($s.condition e.edge)))
     (fun s ↦ rfl)
     (fun s m hm ↦ by
       ext (x : π₀ X)
       induction x
-      exact ConcreteCategory.congr_hom hm _)
+      exact congr($hm _))
 
 /-- The colimit cofork exhibiting the natural transformation
 `toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor`

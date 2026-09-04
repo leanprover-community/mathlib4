@@ -174,7 +174,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   · rw [h2.choose_spec]
     exact h1
   · intro a b hh
-    have hhh := congr_fun hh a
+    have hhh := congr($hh a)
     dsimp [ι] at hhh
     rw [ite_eq_left rfl] at hhh
     split_ifs at hhh with hh1

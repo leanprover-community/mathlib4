@@ -204,10 +204,10 @@ theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) �
   CoalgHom.coe_linearMap_injective.comp coe_coalgHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
-  DFunLike.congr_fun H x
+  congr($H x)
 
 protected theorem congr_arg (φ : A →ₐc[R] B) {x y : A} (h : x = y) : φ x = φ y :=
-  DFunLike.congr_arg φ h
+  congr(φ $h)
 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₐc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=

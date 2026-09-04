@@ -101,7 +101,7 @@ theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
   DFunLike.ext _ _ H
 
 theorem congr_fun (h : D1 = D2) (a : A) : D1 a = D2 a :=
-  DFunLike.congr_fun h a
+  congr($h a)
 
 protected theorem map_add : D (a + b) = D a + D b :=
   map_add D a b

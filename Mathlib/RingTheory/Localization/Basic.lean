@@ -568,7 +568,7 @@ theorem IsLocalization.algebraMap_mk' (x : R) (y : M) :
     IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R Rₘ Sₘ,
     IsScalarTower.algebraMap_apply R Rₘ Sₘ, ← map_mul, mul_comm,
     IsLocalization.mul_mk'_eq_mk'_of_mul]
-  exact congr_arg (algebraMap Rₘ Sₘ) (IsLocalization.mk'_mul_cancel_left x y)
+  exact congr(algebraMap Rₘ Sₘ $(IsLocalization.mk'_mul_cancel_left x y))
 
 variable (M)
 
@@ -598,7 +598,7 @@ theorem IsLocalization.algebraMap_apply_eq_map_map_submonoid (x) :
     algebraMap Rₘ Sₘ x =
       map Sₘ (algebraMap R S)
         (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) x :=
-  DFunLike.congr_fun (IsLocalization.algebraMap_eq_map_map_submonoid _ _ _ _) x
+  congr($(IsLocalization.algebraMap_eq_map_map_submonoid _ _ _ _) x)
 
 theorem IsLocalization.lift_algebraMap_eq_algebraMap :
     IsLocalization.lift (M := M) (IsLocalization.map_units_map_submonoid S Sₘ) =

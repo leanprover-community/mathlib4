@@ -91,10 +91,10 @@ variable {R : Type u} {A : Type v}
 variable [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 lemma counit_mul (a b : A) : counit (R := R) (a * b) = counit a * counit b :=
-  DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_counit a) b
+  congr($mul_compr₂_counit a b)
 
 lemma comul_mul (a b : A) : comul (R := R) (a * b) = comul a * comul b :=
-  DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_comul a) b
+  congr($mul_compr₂_comul a b)
 
 attribute [simp] counit_one comul_one counit_mul comul_mul
 

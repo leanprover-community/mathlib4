@@ -300,7 +300,7 @@ theorem mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← ofCauc
 @[simp]
 theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
   rw [← mk_zero, mk_lt]
-  exact iff_of_eq (congr_arg Pos (sub_zero f))
+  exact iff_of_eq congr(Pos $(sub_zero f))
 
 lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
 
@@ -468,7 +468,7 @@ instance : DistribLattice ℝ where
     induction c using Real.ind_mk
     apply Eq.le
     simp only [← mk_sup, ← mk_inf]
-    exact congr_arg mk (CauSeq.sup_inf_distrib_left ..).symm
+    exact congr(mk $((CauSeq.sup_inf_distrib_left ..).symm))
 
 -- Extra instances to short-circuit type class resolution
 instance lattice : Lattice ℝ :=

@@ -197,7 +197,7 @@ theorem ext (H : ∀ x : M, Q x = Q' x) : Q = Q' :=
   DFunLike.ext _ _ H
 
 theorem congr_fun (h : Q = Q') (x : M) : Q x = Q' x :=
-  DFunLike.congr_fun h _
+  congr($h _)
 
 /-- Copy of a `QuadraticMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/

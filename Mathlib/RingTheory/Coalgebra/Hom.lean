@@ -79,12 +79,12 @@ instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
 
 @[simp]
 theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
-  LinearMap.congr_fun (counit_comp f) _
+  congr($(counit_comp f) _)
 
 @[simp]
 theorem map_comp_comul_apply (f : F) (x : A) :
     TensorProduct.map f f (σ₁₂ := .id _) (comul x) = comul (R := R) (f x) :=
-  LinearMap.congr_fun (map_comp_comul f) _
+  congr($(map_comp_comul f) _)
 
 end CoalgHomClass
 
@@ -162,10 +162,10 @@ theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B
   LinearMap.toAddMonoidHom_injective.comp coe_linearMap_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₗc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
-  DFunLike.congr_fun H x
+  congr($H x)
 
 protected theorem congr_arg (φ : A →ₗc[R] B) {x y : A} (h : x = y) : φ x = φ y :=
-  DFunLike.congr_arg φ h
+  congr(φ $h)
 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₗc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=

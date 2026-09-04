@@ -77,7 +77,7 @@ set_option backward.defeqAttrib.useBackward true in
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
     ext Y y
-    simpa [Subtype.ext_iff] using congr_hom (NatTrans.congr_app h Y) y⟩
+    simpa [Subtype.ext_iff] using congr_hom congr($(h).app Y) y⟩
 
 -- TODO: Show that when `f` is mono, this is right inverse to `functorInclusion` up to isomorphism.
 /-- A natural transformation to a representable functor induces a sieve. This is the left inverse of
@@ -138,7 +138,7 @@ instance uliftFunctorInclusion_is_mono (S : Sieve X) :
   ⟨fun _ _ h => by
     ext Y y
     refine ULift.ext _ _ (Subtype.ext_iff.2 ?_)
-    simpa using congr_hom (NatTrans.congr_app h Y) y⟩
+    simpa using congr_hom congr($(h).app Y) y⟩
 
 /-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/
 @[simps]

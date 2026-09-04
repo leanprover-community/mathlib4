@@ -134,8 +134,8 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
     let ψ : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A := comp (inrRangeEquiv 𝕜 A).symm <|
       codRestrict (cfcₙAux hp₁ a ha) _ (cfcₙAux_mem_range_inr hp₁ a ha)
     have coe_ψ (f : C(σₙ 𝕜 a, 𝕜)₀) : ψ f = cfcₙAux hp₁ a ha f :=
-      congr_arg Subtype.val <| (inrRangeEquiv 𝕜 A).apply_symm_apply
-        ⟨cfcₙAux hp₁ a ha f, cfcₙAux_mem_range_inr hp₁ a ha f⟩
+      congr($((inrRangeEquiv 𝕜 A).apply_symm_apply
+        ⟨cfcₙAux hp₁ a ha f, cfcₙAux_mem_range_inr hp₁ a ha f⟩).val)
     refine ⟨ψ, ?continuous, ?injective, ?map_id, fun f ↦ ?map_spec, fun f ↦ ?isStarNormal⟩
     case continuous =>
       rw [isometry_inr (𝕜 := 𝕜) |>.isEmbedding.continuous_iff]

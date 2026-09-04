@@ -445,7 +445,7 @@ def commAlgEquiv : MvPolynomial S₁ (MvPolynomial S₂ R) ≃ₐ[R] MvPolynomia
 @[simp] lemma commAlgEquiv_C (p) : commAlgEquiv R S₁ S₂ (.C p) = .map C p := by
   suffices (commAlgEquiv R S₁ S₂).toAlgHom.comp
       (IsScalarTower.toAlgHom R (MvPolynomial S₂ R) _) = mapAlgHom (Algebra.ofId _ _) by
-    exact DFunLike.congr_fun this p
+    exact congr($this p)
   ext; simp [commAlgEquiv, mapAlgHom, X, C, monomial, AddMonoidAlgebra.one_def]
 
 lemma commAlgEquiv_C_X (i) : commAlgEquiv R S₁ S₂ (.C (.X i)) = .X i := by simp [map, X, monomial]
@@ -856,7 +856,7 @@ lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Op
   suffices (finSuccEquiv R n).toRingEquiv.toRingHom.comp (rename ((Equiv.optionCongr e).trans
         (_root_.finSuccEquiv n).symm)).toRingHom =
       (Polynomial.mapRingHom (rename e).toRingHom).comp (optionEquivLeft R σ) by
-    exact DFunLike.congr_fun this φ
+    exact congr($this φ)
   apply ringHom_ext
   · simp [Polynomial.algebraMap_apply, algebraMap_eq, finSuccEquiv_apply, optionEquivLeft_apply]
   · rintro (i | i) <;> simp [finSuccEquiv_apply, optionEquivLeft_apply]
@@ -912,7 +912,7 @@ lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :
 @[simp]
 lemma MvPolynomial.eval_toMvPolynomial (f : σ → R) (i : σ) (p : R[X]) :
     eval f (p.toMvPolynomial i) = Polynomial.eval (f i) p :=
-  DFunLike.congr_fun (eval_comp_toMvPolynomial ..) p
+  congr($(eval_comp_toMvPolynomial ..) p)
 
 @[simp]
 lemma MvPolynomial.aeval_comp_toMvPolynomial (f : σ → S) (i : σ) :
@@ -923,7 +923,7 @@ lemma MvPolynomial.aeval_comp_toMvPolynomial (f : σ → S) (i : σ) :
 @[simp]
 lemma MvPolynomial.aeval_toMvPolynomial (f : σ → S) (i : σ) (p : R[X]) :
     aeval f (p.toMvPolynomial i) = Polynomial.aeval (f i) p :=
-  DFunLike.congr_fun (aeval_comp_toMvPolynomial ..) p
+  congr($(aeval_comp_toMvPolynomial ..) p)
 
 @[simp]
 lemma MvPolynomial.rename_comp_toMvPolynomial (f : σ → τ) (a : σ) :
@@ -934,6 +934,6 @@ lemma MvPolynomial.rename_comp_toMvPolynomial (f : σ → τ) (a : σ) :
 @[simp]
 lemma MvPolynomial.rename_toMvPolynomial (f : σ → τ) (a : σ) (p : R[X]) :
     (rename (R := R) f) (p.toMvPolynomial a) = p.toMvPolynomial (f a) :=
-  DFunLike.congr_fun (rename_comp_toMvPolynomial ..) p
+  congr($(rename_comp_toMvPolynomial ..) p)
 
 end toMvPolynomial

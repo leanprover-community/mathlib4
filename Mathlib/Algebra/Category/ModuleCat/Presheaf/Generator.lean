@@ -87,7 +87,7 @@ lemma isSeparating : ObjectProperty.IsSeparating (freeYoneda R) := by
   intro M N f₁ f₂ h
   ext ⟨X⟩ m
   obtain ⟨g, rfl⟩ := freeYonedaEquiv.surjective m
-  exact congr_arg freeYonedaEquiv (h _ ⟨X⟩ g)
+  exact congr(freeYonedaEquiv $(h _ ⟨X⟩ g))
 
 lemma isDetecting : ObjectProperty.IsDetecting (freeYoneda R) :=
   (isSeparating R).isDetecting
@@ -169,8 +169,7 @@ lemma ι_fromFreeYonedaCoproduct (m : M.Elements) :
 lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.freeYoneda.obj X) :
     M.fromFreeYonedaCoproduct.app X ((M.ιFreeYonedaCoproduct m).app X x) =
       m.fromFreeYoneda.app X x :=
-  ConcreteCategory.congr_hom
-    ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x
+  congr($((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]

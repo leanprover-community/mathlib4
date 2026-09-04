@@ -518,8 +518,8 @@ namespace Iso
 def connectedComponentEquiv (φ : G ≃g G') : G.ConnectedComponent ≃ G'.ConnectedComponent where
   toFun := ConnectedComponent.map φ
   invFun := ConnectedComponent.map φ.symm
-  left_inv C := C.ind (fun v => congr_arg G.connectedComponentMk (Equiv.left_inv φ.toEquiv v))
-  right_inv C := C.ind (fun v => congr_arg G'.connectedComponentMk (Equiv.right_inv φ.toEquiv v))
+  left_inv C := C.ind fun v => congr(G.connectedComponentMk $(φ.left_inv v))
+  right_inv C := C.ind fun v => congr(G'.connectedComponentMk $(φ.right_inv v))
 
 @[simp]
 theorem connectedComponentEquiv_refl :

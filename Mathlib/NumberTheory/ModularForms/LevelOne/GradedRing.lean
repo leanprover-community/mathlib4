@@ -69,10 +69,10 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq (z : ℍ) :
       CuspForm.discriminant
     rw [hcΔ, hgE] at hgΔ
     simpa [PowerSeries.coeff_smul, discriminant_qExpansion_coeff_one,
-      E₄CubeSubE₆SqForm_qExpansion_coeff_one] using (congr_arg (·.coeff 1) hgΔ).symm
+      E₄CubeSubE₆SqForm_qExpansion_coeff_one] using congr($(hgΔ).coeff 1).symm
   have h1728 : (1728 : ℂ) * discriminant z = E₄ z ^ 3 - E₆ z ^ 2 := by
     rw [← hc_eq, show c * discriminant z = (c • CuspForm.discriminant) z from rfl, hc,
-      congr_fun hgE z, E₄CubeSubE₆SqForm_apply]
+      congr($hgE z), E₄CubeSubE₆SqForm_apply]
   linear_combination h1728 / 1728
 
 /-- The modular discriminant equals `(E₄³ - E₆²) / 1728` in the graded ring

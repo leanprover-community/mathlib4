@@ -109,7 +109,7 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
     f = g :=
   DFunLike.ext _ _ fun
     | 0 => (map_zero f).trans (map_zero g).symm
-    | (g : α) => DFunLike.congr_fun h g
+    | (g : α) => congr($h g)
 
 /-- The (multiplicative) universal property of `WithZero`. -/
 @[simps! symm_apply_apply]
@@ -197,10 +197,10 @@ instance instMonoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
   npow n a := a ^ n
   npow_zero
     | 0 => rfl
-    | some _ => congr_arg some (pow_zero _)
+    | some _ => congr(some $(pow_zero _))
   npow_succ
     | n, 0 => by simp only [mul_zero]; rfl
-    | n, some _ => congr_arg some <| pow_succ _ _
+    | n, some _ => congr(some $(pow_succ ..))
 
 instance instCommMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
   { WithZero.instMonoidWithZero, WithZero.instCommSemigroup with }
@@ -247,17 +247,17 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
   div_eq_mul_inv
     | none, _ => rfl
     | some _, none => rfl
-    | some a, some b => congr_arg some (div_eq_mul_inv a b)
+    | some a, some b => congr(some $(div_eq_mul_inv a b))
   zpow n a := a ^ n
   zpow_zero'
     | none => rfl
-    | some _ => congr_arg some (zpow_zero _)
+    | some _ => congr(some $(zpow_zero _))
   zpow_succ'
     | n, none => by change 0 ^ _ = 0 ^ _ * 0; simp only [mul_zero]; rfl
-    | n, some _ => congr_arg some (DivInvMonoid.zpow_succ' _ _)
+    | n, some _ => congr(some $(DivInvMonoid.zpow_succ' ..))
   zpow_neg'
     | n, none => rfl
-    | n, some _ => congr_arg some (DivInvMonoid.zpow_neg' _ _)
+    | n, some _ => congr(some $(DivInvMonoid.zpow_neg' ..))
 
 instance instDivInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
 
@@ -270,11 +270,11 @@ instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) w
     | none, none => rfl
     | none, some _ => rfl
     | some _, none => rfl
-    | some _, some _ => congr_arg some (mul_inv_rev _ _)
+    | some _, some _ => congr(some $(mul_inv_rev ..))
   inv_eq_of_mul
     | none, none, _ => rfl
     | some _, some _, h =>
-      congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h
+      congr(some $(inv_eq_of_mul_eq_one_right <| Option.some_injective _ h))
 
 instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) where
 

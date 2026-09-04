@@ -60,22 +60,22 @@ lemma δ_objMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i ≤
     Δ[1].δ j (objMk₁.{u} i) =
       objMk₁.{u} (i.castPred (Fin.ne_last_of_lt (lt_of_le_of_lt h j.castSucc_lt_succ))) := by
   ext k : 1
-  exact ConcreteCategory.congr_hom (SimplexCategory.δ_comp_toMk₁_of_le _ _ h) k
+  exact congr($(SimplexCategory.δ_comp_toMk₁_of_le _ _ h) k)
 
 lemma δ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j.castSucc < i) :
     Δ[1].δ j (objMk₁.{u} i) = objMk₁.{u} (i.pred (Fin.ne_zero_of_lt h)) := by
   ext k : 1
-  exact ConcreteCategory.congr_hom (SimplexCategory.δ_comp_toMk₁_of_lt _ _ h) k
+  exact congr($(SimplexCategory.δ_comp_toMk₁_of_lt _ _ h) k)
 
 lemma σ_objMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :
     Δ[1].σ j (objMk₁.{u} i) = objMk₁ i.castSucc := by
   ext k : 1
-  exact ConcreteCategory.congr_hom (SimplexCategory.σ_comp_toMk₁_of_le _ _ h) k
+  exact congr($(SimplexCategory.σ_comp_toMk₁_of_le _ _ h) k)
 
 lemma σ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.castSucc < i) :
     Δ[1].σ j (objMk₁.{u} i) = objMk₁ i.succ := by
   ext k : 1
-  exact ConcreteCategory.congr_hom (SimplexCategory.σ_comp_toMk₁_of_lt _ _ h) k
+  exact congr($(SimplexCategory.σ_comp_toMk₁_of_lt _ _ h) k)
 
 lemma objMk₁_bijective {n : ℕ} : Function.Bijective (objMk₁.{u} (n := n)) :=
   ((SimplexCategory.toMk₁Equiv (n := n)).trans objEquiv.symm).bijective

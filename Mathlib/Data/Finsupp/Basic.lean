@@ -466,7 +466,7 @@ theorem mapDomain_mapRange [AddCommMonoid N] (f : α → β) (v : α →₀ M) (
     { toFun := g
       map_zero' := h0
       map_add' := hadd }
-  DFunLike.congr_fun (mapDomain.addMonoidHom_comp_mapRange f g') v
+  congr($(mapDomain.addMonoidHom_comp_mapRange f g') v)
 
 theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
     (g : ι → α → β) (hg : ∀ i, g i 0 = 0)

@@ -82,7 +82,7 @@ theorem commute_transvections_iff_of_basis
   have h_allEq (i j : ι) : b.coord i (f (b i)) = b.coord j (f (b j)) := by
     by_cases hij : j = i
     · simp [hij]
-    simpa using congr_arg (b.coord i) (hcomm j i hij 1)
+    simpa using congr(b.coord i $(hcomm j i hij 1))
   replace hcomm (i : ι) (r : R) : r • f (b i) = b.coord i (f (b i)) • r • b i := by
     obtain ⟨j, hji⟩ := exists_ne i
     simpa [h_allEq j i] using hcomm j i hji r

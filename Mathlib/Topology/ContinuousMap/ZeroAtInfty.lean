@@ -392,7 +392,7 @@ variable (α) (β)
 
 theorem toBCF_injective : Function.Injective (toBCF : C₀(α, β) → α →ᵇ β) := fun f g h => by
   ext x
-  simpa only using! DFunLike.congr_fun h x
+  simpa only using! congr($h x)
 
 end
 

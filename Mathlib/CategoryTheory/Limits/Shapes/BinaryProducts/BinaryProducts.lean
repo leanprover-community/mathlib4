@@ -265,9 +265,9 @@ instance prod.map_mono {C : Type*} [Category* C] {W X Y Z : C} (f : W ⟶ Y) (g 
   ⟨fun i₁ i₂ h => by
     ext
     · rw [← cancel_mono f]
-      simpa using congr_arg (fun f => f ≫ prod.fst) h
+      simpa using congr($h ≫ prod.fst)
     · rw [← cancel_mono g]
-      simpa using congr_arg (fun f => f ≫ prod.snd) h⟩
+      simpa using congr($h ≫ prod.snd)⟩
 
 @[reassoc]
 theorem prod.diag_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
@@ -373,9 +373,9 @@ instance coprod.map_epi {C : Type*} [Category* C] {W X Y Z : C} (f : W ⟶ Y) (g
   ⟨fun i₁ i₂ h => by
     ext
     · rw [← cancel_epi f]
-      simpa using congr_arg (fun f => coprod.inl ≫ f) h
+      simpa using congr(coprod.inl ≫ $h)
     · rw [← cancel_epi g]
-      simpa using congr_arg (fun f => coprod.inr ≫ f) h⟩
+      simpa using congr(coprod.inr ≫ $h)⟩
 
 @[reassoc]
 theorem coprod.map_codiag {X Y : C} (f : X ⟶ Y) [HasBinaryCoproduct X X] [HasBinaryCoproduct Y Y] :

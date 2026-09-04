@@ -76,17 +76,17 @@ instance : Group (DihedralGroup n) where
   one := one
   one_mul := by
     rintro (a | a)
-    · exact congr_arg r (zero_add a)
-    · exact congr_arg sr (sub_zero a)
+    · exact congr(r $(zero_add a))
+    · exact congr(sr $(sub_zero a))
   mul_one := by
     rintro (a | a)
-    · exact congr_arg r (add_zero a)
-    · exact congr_arg sr (add_zero a)
+    · exact congr(r $(add_zero a))
+    · exact congr(sr $(add_zero a))
   inv := inv
   inv_mul_cancel := by
     rintro (a | a)
-    · exact congr_arg r (neg_add_cancel a)
-    · exact congr_arg r (sub_self a)
+    · exact congr(r $(neg_add_cancel a))
+    · exact congr(r $(sub_self a))
 
 @[simp]
 theorem r_mul_r (i j : ZMod n) : r i * r j = r (i + j) :=

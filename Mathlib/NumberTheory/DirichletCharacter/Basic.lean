@@ -382,7 +382,7 @@ theorem primitiveCharacter_changeLevel_apply [Nontrivial R] {m : ℕ} [NeZero m]
   by_cases ha : IsCoprime a χ.conductor
   · suffices changeLevel (dvd_of_eq <| conductor_changeLevel ..)
         (changeLevel hm χ).primitiveCharacter = χ.primitiveCharacter by
-      have := DFunLike.congr_fun this (a : ZMod _)
+      have := congr($this ((a : ZMod _)))
       rwa [changeLevel_eq_cast_of_dvd' _ _ ha] at this
     apply changeLevel_injective (χ.conductor_dvd_level.trans hm)
     rw [← changeLevel_trans, changeLevel_primitiveCharacter,

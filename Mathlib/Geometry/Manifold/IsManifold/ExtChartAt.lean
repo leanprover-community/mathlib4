@@ -221,7 +221,7 @@ theorem map_extend_nhdsWithin_eq_image {y : M} (hy : y ∈ f.source) :
   set e := f.extend I
   calc
     map e (𝓝[s] y) = map e (𝓝[e.source ∩ s] y) :=
-      congr_arg (map e) (nhdsWithin_inter_of_mem (extend_source_mem_nhdsWithin f hy)).symm
+      congr(map e $((nhdsWithin_inter_of_mem (extend_source_mem_nhdsWithin f hy)).symm))
     _ = 𝓝[e '' (e.source ∩ s)] e y :=
       ((f.extend I).leftInvOn.mono inter_subset_left).map_nhdsWithin_eq
         ((f.extend I).left_inv <| by rwa [f.extend_source])

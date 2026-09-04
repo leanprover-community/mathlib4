@@ -467,7 +467,7 @@ lemma get_append_left (h : n < x.length) : (x ++ₛ a).get n = x[n] := by
 @[simp] lemma get_append_length : (x ++ₛ a).get x.length = a.get 0 := get_append_right 0 x a
 
 lemma append_right_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
-  ext n; replace h := congr_arg (fun a ↦ a.get (x.length + n)) h; simpa using h
+  ext n; replace h := congr($(h).get (x.length + n)); simpa using h
 
 @[simp] lemma append_right_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
   ⟨append_right_injective x a b, by simp +contextual⟩

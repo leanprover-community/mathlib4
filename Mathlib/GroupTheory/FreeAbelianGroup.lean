@@ -127,7 +127,7 @@ theorem lift_apply_of (x : α) : lift f (of x) = f x := by
 
 theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
-  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
+  congr($(lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _)
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -496,7 +496,7 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
           exact f.map_mul _ _
         | neg L1 ih =>
           simp_rw [neg_mul, map_neg, neg_mul]
-          exact congr_arg Neg.neg ih
+          exact congr(-$ih)
         | add x1 x2 ih1 ih2 => simp only [add_mul, map_add, ih1, ih2]
       | neg L2 ih => rw [mul_neg, map_neg, map_neg, mul_neg, ih]
       | add y1 y2 ih1 ih2 => rw [mul_add, map_add, map_add, mul_add, ih1, ih2] }

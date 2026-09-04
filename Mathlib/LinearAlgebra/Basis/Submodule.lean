@@ -177,7 +177,7 @@ theorem restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
   suffices
     Finsupp.mapRange.linearMap (Algebra.linearMap R S) ∘ₗ (b.restrictScalars R).repr.toLinearMap =
       ((b.repr : M →ₗ[S] ι →₀ S).restrictScalars R).domRestrict _
-    by exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
+    by exact congr($this m i)
   refine Basis.ext (b.restrictScalars R) fun _ => ?_
   simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
     Basis.repr_self, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
@@ -225,7 +225,7 @@ theorem addSubgroupOfClosure_repr_apply (h : A = .closure (Set.range b)) (x : A)
   suffices Finsupp.mapRange.linearMap (Algebra.linearMap ℤ R) ∘ₗ
       (b.addSubgroupOfClosure A h).repr.toLinearMap =
         ((b.repr : M →ₗ[R] ι →₀ R).restrictScalars ℤ).domRestrict A.toIntSubmodule by
-    exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
+    exact congr($this x i)
   exact (b.addSubgroupOfClosure A h).ext fun _ ↦ by simp
 
 end AddSubgroup

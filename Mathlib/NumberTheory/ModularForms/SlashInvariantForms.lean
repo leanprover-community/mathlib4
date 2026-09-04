@@ -92,7 +92,7 @@ theorem slash_action_eqn' {k : ℤ} [Γ.HasDetOne] [SlashInvariantFormClass F Γ
     f (γ • z) = (γ 1 0 * z + γ 1 1) ^ k * f z := by
   have : f (γ • z) = f z * denom γ z ^ k := by
     simpa [slash_def, σ, mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ (denom_ne_zero _ _)),
-      Subgroup.HasDetOne.det_eq hγ] using congr_fun (slash_action_eqn f γ hγ) z
+      Subgroup.HasDetOne.det_eq hγ] using congr($(slash_action_eqn f γ hγ) z)
   rw [this, denom, mul_comm]
 
 /-- Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/
@@ -284,7 +284,7 @@ noncomputable def translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fi
   toFun := f ∣[k] g
   slash_action_eq' j hj := by
     rw [map_inv, Γ.mem_inv_pointwise_smul_iff, toConjAct_smul] at hj
-    simpa [← SlashAction.slash_mul] using congr_arg (· ∣[k] g) (slash_action_eqn f _ hj)
+    simpa [← SlashAction.slash_mul] using congr($(slash_action_eqn f _ hj) ∣[k] g)
 
 @[simp]
 lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :

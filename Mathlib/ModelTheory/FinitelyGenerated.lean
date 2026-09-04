@@ -229,7 +229,7 @@ theorem FG.countable_hom (N : Type*) [L.Structure N] [Countable N] (h : FG L M) 
     intro f f' h
     apply Hom.eq_of_eqOn_dense closure_S
     intro x x_in_S
-    exact congr_fun h ⟨x, x_in_S⟩
+    exact congr($h ⟨x, x_in_S⟩)
   have : Finite ↑S := (S.finite_coe_iff).2 finite_S
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
@@ -321,7 +321,7 @@ theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
     intro S S' h
     apply Subtype.ext
     rw [(Exists.choose_spec S.prop).symm, (Exists.choose_spec S'.prop).symm]
-    exact congr_arg (closure L ∘ SetLike.coe) h
+    exact congr(closure L $h)
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
 instance Substructure.instCountable_fg_substructures_of_countable [Countable M] :

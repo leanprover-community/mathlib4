@@ -86,7 +86,7 @@ namespace Hom
 
 open scoped Classical in
 /-- The identity matrix consists of identity morphisms on the diagonal, and zeros elsewhere. -/
-def id (M : Mat_ C) : Hom M M := fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0
+def id (M : Mat_ C) : Hom M M := fun i j => if h : i = j then eqToHom congr(M.X $h) else 0
 
 /-- Composition of matrices using matrix multiplication. -/
 def comp {M N K : Mat_ C} (f : Hom M N) (g : Hom N K) : Hom M K := fun i k =>
@@ -294,7 +294,7 @@ def embedding : C ⥤ Mat_ C where
 namespace Embedding
 
 instance : (embedding C).Faithful where
-  map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
+  map_injective h := congr($h PUnit.unit PUnit.unit)
 
 instance : (embedding C).Full where map_surjective f := ⟨f PUnit.unit PUnit.unit, rfl⟩
 
@@ -592,7 +592,7 @@ instance : (equivalenceSingleObjInverse R).Faithful where
   map_injective w := by
     ext
     apply_fun MulOpposite.unop using MulOpposite.unop_injective
-    exact congr_fun (congr_fun w _) _
+    exact congr($w _ _)
 
 instance : (equivalenceSingleObjInverse R).Full where
   map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩

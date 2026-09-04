@@ -110,7 +110,7 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
-    LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
+    LinearEquiv.toLinearMap_injective <| by ext; exact congr($h _)
 
 @[simp]
 theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
@@ -619,14 +619,14 @@ def equiv' (f : M → M') (g : M' → M) (hf : ∀ i, f (b i) ∈ range b') (hg 
           Exists.elim (hf i) fun i' hi' => by
             rw [LinearMap.comp_apply, b.constr_basis, Function.comp_apply, ← hi', b'.constr_basis,
               Function.comp_apply, hi', hgf, LinearMap.id_apply]
-      fun x => congr_arg (fun h : M →ₗ[R] M => h x) this
+      fun x => congr($this x)
     right_inv :=
       have : (constr (M' := M') b R (f ∘ b)).comp (constr (M' := M) b' R (g ∘ b')) = LinearMap.id :=
         b'.ext fun i =>
           Exists.elim (hg i) fun i' hi' => by
             rw [LinearMap.comp_apply, b'.constr_basis, Function.comp_apply, ← hi', b.constr_basis,
               Function.comp_apply, hi', hfg, LinearMap.id_apply]
-      fun x => congr_arg (fun h : M' →ₗ[R] M' => h x) this }
+      fun x => congr($this x) }
 
 @[simp]
 theorem equiv'_apply (f : M → M') (g : M' → M) (hf hg hgf hfg) (i : ι) :

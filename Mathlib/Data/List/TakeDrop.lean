@@ -116,16 +116,16 @@ variable [Inhabited α]
 @[simp]
 theorem takeI_length : ∀ n l, length (@takeI α _ n l) = n
   | 0, _ => rfl
-  | _ + 1, _ => congr_arg succ (takeI_length _ _)
+  | _ + 1, _ => congr(succ $(takeI_length ..))
 
 @[simp]
 theorem takeI_nil : ∀ n, takeI n (@nil α) = replicate n default
   | 0 => rfl
-  | _ + 1 => congr_arg (cons _) (takeI_nil _)
+  | _ + 1 => congr(cons _ $(takeI_nil _))
 
 theorem takeI_eq_take : ∀ {n} {l : List α}, n ≤ length l → takeI n l = take n l
   | 0, _, _ => rfl
-  | _ + 1, _ :: _, h => congr_arg (cons _) <| takeI_eq_take <| le_of_succ_le_succ h
+  | _ + 1, _ :: _, h => congr(cons _ $(takeI_eq_take <| le_of_succ_le_succ h))
 
 @[simp]
 theorem takeI_left (l₁ l₂ : List α) : takeI (length l₁) (l₁ ++ l₂) = l₁ :=
@@ -142,13 +142,13 @@ section TakeD
 @[simp]
 theorem takeD_length : ∀ n l a, length (@takeD α n l a) = n
   | 0, _, _ => rfl
-  | _ + 1, _, _ => congr_arg succ (takeD_length _ _ _)
+  | _ + 1, _, _ => congr(succ $(takeD_length ..))
 
 -- `takeD_nil` is already in batteries
 
 theorem takeD_eq_take : ∀ {n} {l : List α} a, n ≤ length l → takeD n l a = take n l
   | 0, _, _, _ => rfl
-  | _ + 1, _ :: _, a, h => congr_arg (cons _) <| takeD_eq_take a <| le_of_succ_le_succ h
+  | _ + 1, _ :: _, a, h => congr(cons _ $(takeD_eq_take a <| le_of_succ_le_succ h))
 
 @[simp]
 theorem takeD_left (l₁ l₂ : List α) (a : α) : takeD (length l₁) (l₁ ++ l₂) a = l₁ :=

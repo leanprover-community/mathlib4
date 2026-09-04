@@ -92,7 +92,7 @@ theorem exists_approx_polynomial_aux [Ring Fq] {d : ℕ} {m : ℕ} (hm : Fintype
       rwa [tsub_lt_iff_tsub_lt hd hbj] at this
   have : j = b.natDegree - (natDegree b - j.succ).succ := by
     rw [← Nat.succ_sub hbj, Nat.succ_sub_succ, tsub_tsub_cancel_of_le hbj.le]
-  convert! congr_fun i_eq.symm ⟨natDegree b - j.succ, hj⟩
+  convert! congr($i_eq.symm ⟨natDegree b - j.succ, hj⟩)
 
 variable [Field Fq]
 

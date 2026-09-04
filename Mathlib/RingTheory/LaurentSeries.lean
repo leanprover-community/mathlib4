@@ -1131,8 +1131,8 @@ theorem valuation_compare (f : K⸨X⸩) :
   have raw_surj : Function.Surjective (Valued.v : (polynomialValuationX K).Completion → ℤᵐ⁰) :=
     Valued.valuedCompletion_surjective_iff.mpr <| .of_comp ((idealX K).valuation_surjective K⟮X⟯)
   rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare ratfuncAdicComplPkg _]
-  · exact congr_fun (ratfuncAdicComplPkg.isDenseInducing.extend_unique
-      Valued.valuedCompletion_apply (Valued.continuous_valuation_of_surjective raw_surj)).symm _
+  · exact congr($((ratfuncAdicComplPkg.isDenseInducing.extend_unique
+      Valued.valuedCompletion_apply (Valued.continuous_valuation_of_surjective raw_surj)).symm) _)
   · refine Valued.continuous_valuation_of_surjective (fun x ↦ ?_)
     obtain ⟨y, rfl⟩ := RatFunc.valuation_surjective K x
     exact ⟨.toVal _ y, rfl⟩

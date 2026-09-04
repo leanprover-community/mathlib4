@@ -41,6 +41,6 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
     ext M (x : M)
     have w := CategoryTheory.congr_fun
       (φ.hom.naturality (ModuleCat.ofHom (LinearMap.toSpanSingleton R M x))) (1 : R)
-    exact w.symm.trans (congr_arg (φ.hom.app M) (one_smul R x))
+    exact w.symm.trans congr(φ.hom.app M $(one_smul R x))
   map_add' := by cat_disch
   map_mul' := by cat_disch

@@ -113,8 +113,8 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     erw [pullbackAwayιIso_inv_fst]
     congr 1
     ext x : 2
-    exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeLeft
-      (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
+    exact congr($((Algebra.TensorProduct.lift_comp_includeLeft
+      (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm) x)
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
       limit.lift_π, PullbackCone.mk_π_app, pullbackSpecIso_inv_snd,
       ← Spec.map_comp, e₂, e₁]
@@ -122,8 +122,8 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     erw [pullbackAwayιIso_inv_snd]
     congr 1
     ext x : 2
-    exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeRight
-      (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
+    exact congr($((Algebra.TensorProduct.lift_comp_includeRight
+      (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm) x)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01MC]
@@ -357,11 +357,11 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     congr 1
     ext x
     apply IsFractionRing.injective O K
-    refine (DFunLike.congr_fun hφ'' (fromZeroRingHom 𝒜 _ _)).trans ?_
+    refine congr($hφ'' (fromZeroRingHom 𝒜 _ _)).trans ?_
     simp only [RingHom.coe_comp, Function.comp_apply]
     rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 (hxd i₀ i₀.2) rfl,
       ← RingHom.comp_apply, hφ]
-    exact congr($(H.symm) x)
+    exact congr($H.symm x)
 
 instance [Algebra.FiniteType (𝒜 0) A] : UniversallyClosed (Proj.toSpecZero 𝒜) := by
   rw [UniversallyClosed.eq_valuativeCriterion]

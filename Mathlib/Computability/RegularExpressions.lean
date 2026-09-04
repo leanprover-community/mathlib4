@@ -122,8 +122,7 @@ theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches
 theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' = P.matches' ^ n
   | 0 => matches'_epsilon
   | n + 1 => (matches'_mul _ _).trans <| Eq.trans
-      (congrFun (congrArg HMul.hMul (matches'_pow P n)) (matches' P))
-      (pow_succ _ n).symm
+      congr($(matches'_pow P n) * (matches' P)) (pow_succ _ n).symm
 
 theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'∗ :=
   rfl
@@ -335,7 +334,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by unfold map; rfl
-  | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) :)
+  | n + 1 => congr($(RegularExpression.map_pow f P n) * map f P)
 
 @[simp]
 theorem map_id : ∀ P : RegularExpression α, P.map id = P

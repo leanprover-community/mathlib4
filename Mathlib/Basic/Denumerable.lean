@@ -80,7 +80,7 @@ instance (priority := 100) : Infinite α :=
 def mk' {α} (e : α ≃ ℕ) : Denumerable α where
   encode := e
   decode := some ∘ e.symm
-  encodek _ := congr_arg some (e.symm_apply_apply _)
+  encodek _ := congr(some $(e.symm_apply_apply _))
   decode_inv _ := ⟨_, rfl, e.apply_symm_apply _⟩
 
 /-- Denumerability is conserved by equivalences. This is transitivity of equivalence the denumerable
