@@ -169,21 +169,17 @@ lemma sym2x_some_some {x y x' y' : R} (h : W'.Nonsingular x y) (h' : W'.Nonsingu
     (some x y h).sym2x (some x' y' h') = ![x * x', x + x', 1] := by
   simp [sym2x]
 
-/-- `sym2x` in terms of the projective `xRep` coordinates. -/
-lemma sym2x_eq (P Q : W'.Point) :
-    P.sym2x Q = ![P.xRep 0 * Q.xRep 0, P.xRep 0 * Q.xRep 1 + P.xRep 1 * Q.xRep 0,
-      P.xRep 1 * Q.xRep 1] := by
-  cases P <;> cases Q <;> simp [sym2x, xRep]
-
 lemma sym2x_ne_zero [Nontrivial R] (P Q : W'.Point) : P.sym2x Q ≠ 0 := by
   cases P <;> cases Q <;> simp [sym2x, xRep]
 
 lemma sym2x_comm (P Q : W'.Point) : P.sym2x Q = Q.sym2x P := by
   cases P <;> cases Q <;> simp [← zero_def, mul_comm, add_comm]
 
+@[simp]
 lemma sym2x_neg_left (P Q : W'.Point) : (-P).sym2x Q = P.sym2x Q := by
   simp [sym2x]
 
+@[simp]
 lemma sym2x_neg_right (P Q : W'.Point) : P.sym2x (-Q) = P.sym2x Q := by
   simp [sym2x]
 
@@ -191,45 +187,51 @@ open Nat in
 lemma sym2x_self_eq_addSubMap (P : W'.Point) :
     sym2x P P = (addSubMap W' · |>.eval <| sym2x P 0) := by
   match P with
-  | 0 =>
-    simp only [sym2x_zero_zero, succ_eq_add_one, reduceAdd, addSubMap, Fin.isValue]
-    ext i : 1
-    fin_cases i <;> simp
-  | some .. =>
-    simp only [sym2x_some_some, succ_eq_add_one, reduceAdd, sym2x_some_zero, addSubMap, Fin.isValue]
-    ext i : 1
-    fin_cases i <;> simp [pow_two, two_mul]
+  | 0 => ext i : 1; fin_cases i <;> simp [addSubMap]
+  | some .. => ext i : 1; fin_cases i <;> simp [pow_two, two_mul, addSubMap]
 
 section Field
 
-variable {F : Type*} [Field F] [DecidableEq F] {W : Affine F}
+variable {F : Type*} [Field F] {W : Affine F}
+
+/- The explicit evaluation of `addSubMap` on `sym2x` of two nonzero points. -/
+lemma addSubMap_sym2x_some_some {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) :
+    (addSubMap W · |>.eval <| sym2x (some xP yP hP) (some xQ yQ hQ)) =
+      ![(xP * xQ) ^ 2 - W.b₄ * (xP * xQ) - W.b₆ * (xP + xQ) - W.b₈,
+        2 * (xP + xQ) * (xP * xQ) + W.b₂ * (xP * xQ) + W.b₄ * (xP + xQ) + W.b₆, (xP - xQ) ^ 2] := by
+  ext i : 1
+  fin_cases i <;> simp [addSubMap]
+  ring
+
+/- The explicit evaluation of `addSubMap` on `sym2x` of two equal nonzero points.
+The result involves the numerator and denominator of the duplication map on `x`-coordinates. -/
+lemma addSubMap_sym2x_some_self {x y : F} (h : W.Nonsingular x y) :
+    (addSubMap W · |>.eval <| sym2x (some x y h) (some x y h)) =
+      ![x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈,
+        4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆, 0] := by
+  rw [addSubMap_sym2x_some_some]
+  ext i : 1
+  fin_cases i <;> dsimp <;> ring
+
+variable [DecidableEq F]
 
 /- This lemma can be deduced easily from the more general result that follows (it is used in its
 proof for the special case `P = Q`), so can be private. -/
 private lemma sym2x_add_self_zero (P : W.Point) :
     ∃ t : F, t ≠ 0 ∧ t • sym2x (P + P) 0 = (addSubMap W · |>.eval <| sym2x P P) := by
   match P with
-  | 0 =>
-    refine ⟨1, one_ne_zero, ?_⟩
-    rw [add_zero, sym2x_zero_zero, one_smul, addSubMap]
-    ext i : 1
-    fin_cases i <;> simp
+  | 0 => exact ⟨1, one_ne_zero, by ext i : 1; fin_cases i <;> simp [addSubMap]⟩
   | some x y h =>
     have Heq := (W.equation_iff x y).mp h.1
-    have Hrs : (addSubMap W · |>.eval <| (some x y h).sym2x (some x y h)) =
-          ![x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈,
-            4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆, 0] := by
-      ext i : 1
-      fin_cases i <;> simp [addSubMap] <;> ring
-    rw [Hrs]
-    by_cases! H : y = W.negY x y
+    rw [addSubMap_sym2x_some_self]
+    by_cases H : y = W.negY x y
     · have H' := (den_duplication_eq_zero_iff h.1).mpr H
       rw [H', add_self_of_Y_eq H, sym2x_zero_zero]
       refine ⟨_, den_duplication_ne_zero_or_num_duplication_ne_zero h |>.neg_resolve_left H', ?_⟩
       simp
     · have H' := (den_duplication_eq_zero_iff h.1).not.mpr H
-      refine ⟨_, H', ?_⟩
-      simp [sym2x_eq, xRep_add_self_of_Y_ne h H, mul_div_cancel₀ _ H']
+      exact ⟨_, H', by simp [sym2x, xRep_add_self_of_Y_ne h H, mul_div_cancel₀ _ H']⟩
 
 /-- `sym2x (P + Q) (P - Q)` is equal, up to scaling by a nonzero constant, to `addSubMap W`
 applied to `sym2x P Q`. -/
@@ -238,27 +240,21 @@ lemma sym2x_add_sub_eq_addSubMap_sym2x (P Q : W.Point) :
   rcases eq_or_ne P Q with rfl | hPQ
   · simpa using P.sym2x_add_self_zero
   rcases eq_or_ne Q (-P) with rfl | hPQ'
-  · simpa [sym2x_neg_right, sym2x_comm 0] using P.sym2x_add_self_zero
+  · simpa [sym2x_comm] using P.sym2x_add_self_zero
   match P, Q with
   | P, 0 =>  exact ⟨1, one_ne_zero, by simpa using P.sym2x_self_eq_addSubMap⟩
   | 0, Q =>
     refine ⟨1, one_ne_zero, ?_⟩
-    simpa [sym2x_neg_right, sym2x_comm _ Q] using Q.sym2x_self_eq_addSubMap
+    simpa [sym2x_comm] using Q.sym2x_self_eq_addSubMap
   | some xP yP hP, some xQ yQ hQ =>
     have hxPQ : xP ≠ xQ := fun Heq ↦ by grind only [X_eq_iff.mp Heq]
-    have Hrs : (addSubMap W · |>.eval <| (some xP yP hP).sym2x (some xQ yQ hQ)) =
-        ![(xP * xQ) ^ 2 - W.b₄ * (xP * xQ) - W.b₆ * (xP + xQ) - W.b₈,
-          2 * (xP + xQ) * (xP * xQ) + W.b₂ * (xP * xQ) + W.b₄ * (xP + xQ) + W.b₆,
-          (xP - xQ) ^ 2] := by
-      ext i : 1
-      fin_cases i <;> simp [addSubMap]
-      ring
     refine ⟨(xP - xQ) ^ 2, pow_ne_zero 2 (sub_ne_zero_of_ne hxPQ), ?_⟩
+    rw [addSubMap_sym2x_some_some, sym2x, xRep_add_of_X_ne hP hQ hxPQ,
+      xRep_sub_of_X_ne hP hQ hxPQ, b₂, b₄, b₆, b₈]
+    ext i : 1
     -- The following relations are needed for the `grobner` calls below.
     have HeqP := (W.equation_iff xP yP).mp hP.1
     have HeqQ := (W.equation_iff xQ yQ).mp hQ.1
-    rw [Hrs, sym2x_eq, xRep_add_of_X_ne hP hQ hxPQ, xRep_sub_of_X_ne hP hQ hxPQ, b₂, b₄, b₆, b₈]
-    ext i : 1
     fin_cases i <;> simp [field] <;> grobner
 
 end Field
