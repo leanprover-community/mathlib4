@@ -20,8 +20,8 @@ individual entries supplied by a leaf certifier.
 ## Main definitions
 
 - `certifyDecomposition`: build the `Echelon.Decomposition` certificate of a matrix literal.
-- `mkPerm`, `mkPivotLit`, `MatrixViews.ofEntries`: elaborate the row permutation, the pivot
-  function, and a matrix literal.
+- `mkMatrixViews`: elaborate a matrix literal together with its entry view.
+- `mkPerm`, `mkPivotLit`: elaborate the row permutation and the pivot function.
 
 ## Implementation notes
 
@@ -31,9 +31,8 @@ path this is built one entry at a time, but should eventually be replaced by a d
 matrix mult normalising tactic. `norm_num` does close it today (via @[simp] rewrites), but is
 several times slower and does not handle some edge cases (e.g. 0x0).
 
-A quantifier over `Fin n` is discharged through `List.Forall` over `List.finRange n`, where
-the motive is spelled once, rather than by chaining `Fin.forall_fin_succ`, which respells it
-at every index.
+A quantifier over `Fin n` is discharged through `List.Forall` over `List.finRange n` to save
+redundant motives.
 -/
 
 public meta section
@@ -55,7 +54,7 @@ structure MatrixViews (u : Level) (m n : ℕ) (α : Q(Type u)) where
   entries : Array (Array Q($α))
 
 /-- Build the `MatrixViews` of the row-major entries `rows`. -/
-def MatrixViews.ofEntries {u : Level} (α : Q(Type u)) (m n : Nat) (rows : Array (Array Q($α))) :
+def mkMatrixViews {u : Level} (α : Q(Type u)) (m n : Nat) (rows : Array (Array Q($α))) :
     MatrixViews u m n α :=
   { matrix := Matrix.mkLiteralQ (m := m) (n := n) (.of fun i j => (rows[i]!)[j]!),
     entries := rows }
@@ -232,10 +231,10 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
     MetaM Q(Echelon.Decomposition $A) := withDefault do
   -- `withDefault`: the ambient transparency inside `simp` is `reducible`, which does not
   -- reduce a matrix literal at a concrete index, so no entry would be recognised as zero
-  have L := MatrixViews.ofEntries α m m data.L
-  have U := MatrixViews.ofEntries α m n data.U
+  have L := mkMatrixViews α m m data.L
+  have U := mkMatrixViews α m n data.U
   let aEntries := data.rowOrder.map (entries[·]!)
-  have Aσ := MatrixViews.ofEntries α m n aEntries
+  have Aσ := mkMatrixViews α m n aEntries
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
   let dispatch (p : Q(Prop)) (certifier : LeafCertifier → MetaM Q($p)) : MetaM Q($p) :=
