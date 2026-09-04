@@ -142,8 +142,8 @@ so every entry condition closes by `rfl`. -/
 def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
   -- the unfolded guard is `toDual j < toDual i`, which is `i < j` in the original order
-  certifyForallFin q(($L).IsLowerTriangular) fun i gi => do
-    certifyForallFin gi fun j cell => certifyImplication (i < j) cell certifyDefEq
+  certifyForallFin q(($L).IsLowerTriangular) fun i p => do
+    certifyForallFin p fun j cell => certifyImplication (i < j) cell certifyDefEq
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot` via `isPivotedBy_iff`.
 The first two conditions are decidable. The entry conditions require equality check against 0
@@ -154,19 +154,18 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   let zero : Q($α) ← mkNumeral α 0
   let entryConds ← certifyForallFin
       q(∀ i, (∀ j : Fin $n, (j : WithTop (Fin $n)) < $pivot i → $(U.matrix) i j = 0) ∧
-        ∀ c : Fin $n, $pivot i = c → $(U.matrix) i c ≠ 0) fun i gi => do
-    match_expr gi with
-    | And zeros nonzeros =>
-      -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
-      let col? := if h : i < pivots.size then some pivots[i] else none
-      let hz ← certifyForallFin zeros fun j cell =>
-        certifyImplication (col?.all (j < ·)) cell certifyDefEq
-      let hn ← certifyForallFin nonzeros fun c cell =>
-        certifyImplication (col? == some c) cell fun _ =>
-          certifyNonzeroEntry certifier (U.entries[i]!)[c]! zero
-            m!"the pivot entry at ({i}, {c})"
-      mkAppM ``And.intro #[hz, hn]
-    | _ => throwError "unexpected shape of the pivot entry conditions:{indentExpr gi}"
+        ∀ c : Fin $n, $pivot i = c → $(U.matrix) i c ≠ 0) fun i p => do
+    let_expr And zeros nonzeros := p
+      | throwError "unexpected shape of the pivot entry conditions:{indentExpr p}"
+    -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
+    let col? := if h : i < pivots.size then some pivots[i] else none
+    let hz ← certifyForallFin zeros fun j cell =>
+      certifyImplication (col?.all (j < ·)) cell certifyDefEq
+    let hn ← certifyForallFin nonzeros fun c cell =>
+      certifyImplication (col? == some c) cell fun _ =>
+        certifyNonzeroEntry certifier (U.entries[i]!)[c]! zero
+          m!"the pivot entry at ({i}, {c})"
+    mkAppM ``And.intro #[hz, hn]
   let hMono ← mkDecideProofQ q(Monotone $pivot)
   let hStrict ← mkDecideProofQ q(StrictMonoOn $pivot {i | $pivot i ≠ ⊤})
   return q(Matrix.isPivotedBy_iff.mpr ⟨$hMono, $hStrict, $entryConds⟩)
@@ -215,8 +214,8 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
       throwError "the product of the transform does not match the echelon form at ({i}, {j})"
     return prf
   return q(Matrix.ext $(← certifyForallFin
-      q(∀ i j, ($(L.matrix) * $(Aσ.matrix)) i j = $(U.matrix) i j) fun i gi => do
-    certifyForallFin gi fun j _ => cell i j))
+      q(∀ i j, ($(L.matrix) * $(Aσ.matrix)) i j = $(U.matrix) i j) fun i p => do
+    certifyForallFin p fun j _ => cell i j))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
 `entries`, the parsed entries of `A`, proving every condition by `decide` unless `certifier?`
