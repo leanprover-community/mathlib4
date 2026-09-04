@@ -42,15 +42,11 @@ public section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {f : E → ℝ} {s : Set E} {x y : E}
 
-private theorem lineMap_eq_add_smul_sub (x y : E) (t : ℝ) :
-    AffineMap.lineMap x y t = x + t • (y - x) := by
-  rw [AffineMap.lineMap_apply_module']; abel
-
 /-- The 1D restriction `t ↦ f (x + t • (y - x))` of a function convex on `s`, where `x, y ∈ s`,
 is convex on `Icc 0 1` (the segment from `x` to `y` lies in `s` by convexity of `s`). -/
 theorem ConvexOn.lineRestriction (hc : ConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) :
     ConvexOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
-  simpa only [Function.comp_def, lineMap_eq_add_smul_sub] using
+  simpa only [Function.comp_def, AffineMap.lineMap_apply_module', add_comm] using
     (hc.comp_affineMap (AffineMap.lineMap x y)).subset
       (fun t ht => hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht)) (convex_Icc _ _)
 
@@ -66,8 +62,9 @@ theorem StrictConvexOn.lineRestriction (hc : StrictConvexOn ℝ s f) (hx : x ∈
     (hxy : x ≠ y) :
     StrictConvexOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
   refine ⟨convex_Icc _ _, fun t₁ ht₁ t₂ ht₂ ht_ne a b ha hb hab => ?_⟩
-  have hmem : ∀ t ∈ Set.Icc (0 : ℝ) 1, x + t • (y - x) ∈ s := fun t ht =>
-    lineMap_eq_add_smul_sub x y t ▸ hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht)
+  have hmem : ∀ t ∈ Set.Icc (0 : ℝ) 1, x + t • (y - x) ∈ s := fun t ht => by
+    simpa only [AffineMap.lineMap_apply_module', add_comm] using
+      hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht)
   have hp_ne : x + t₁ • (y - x) ≠ x + t₂ • (y - x) := fun h =>
     ht_ne (smul_left_injective ℝ (sub_ne_zero.mpr hxy.symm) (add_left_cancel h))
   simpa only [show a • (x + t₁ • (y - x)) + b • (x + t₂ • (y - x))
