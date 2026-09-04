@@ -76,7 +76,7 @@ instance inhabited' : Inhabited (Action Type* G) :=
   ⟨⟨PUnit, 1⟩⟩
 
 instance : Inhabited (Action AddCommGrpCat G) :=
-  ⟨trivial G <| AddCommGrpCat.of PUnit⟩
+  ⟨trivial G ↧PUnit⟩
 
 end
 

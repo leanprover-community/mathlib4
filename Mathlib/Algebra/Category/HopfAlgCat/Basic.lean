@@ -52,6 +52,11 @@ abbrev of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgCat R where
   carrier := X
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `HopfAlgCat.of R X` as `↧X`. -/
+@[app_delab HopfAlgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [HopfAlgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
@@ -105,12 +110,12 @@ lemma hom_ext {X Y : HopfAlgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toB
 
 instance hasForgetToBialgebra : HasForget₂ (HopfAlgCat R) (BialgCat R) where
   forget₂ :=
-    { obj := fun X => BialgCat.of R X
+    { obj := fun X => ↧X
       map := fun {_ _} f => BialgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_bialgebra_obj (X : HopfAlgCat R) :
-    (forget₂ (HopfAlgCat R) (BialgCat R)).obj X = BialgCat.of R X :=
+    (forget₂ (HopfAlgCat R) (BialgCat R)).obj X = ↧X :=
   rfl
 
 @[simp]
