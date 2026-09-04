@@ -533,31 +533,24 @@ elab_rules : tactic
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 /--
-Filter the items of a tactic config syntax, keeping only those satisfying `p`.
+Filter out `minimize` options from the config syntax.
 Items that cannot be interpreted as configuration items are conservatively kept.
 -/
-private def filterConfigM {m : Type → Type} [Monad m] [MonadRef m]
-    (p : ConfigEval.ConfigItem → Bool) (cfg : TSyntax ``Lean.Parser.Tactic.optConfig) :
+private def filterMinimizeFromLinarithConfig {m : Type → Type} [Monad m] [MonadRef m]
+    (cfg : TSyntax ``Lean.Parser.Tactic.optConfig) :
     m (TSyntax ``Lean.Parser.Tactic.optConfig) := do
   -- `foldConfigM` unwraps the `configItem` node, so we re-wrap the kept items.
   let wrap (stx : Syntax) : TSyntax ``Lean.Parser.Tactic.configItem :=
     if stx.isOfKind ``Lean.Parser.Tactic.configItem then ⟨stx⟩
     else ⟨mkNode ``Lean.Parser.Tactic.configItem #[stx]⟩
-  -- Implement filter as a fold.
   let items : TSyntaxArray ``Lean.Parser.Tactic.configItem ←
     ConfigEval.foldConfigM (init := #[]) cfg.raw
-      (fun items item => pure <| if p item then items.push (wrap item.ref) else items)
-      -- Conservatively keep any item we cannot interpret.
+      -- Keep any item that is not `minimize`.
+      (fun items item =>
+        pure <| if item.origOptionName != `minimize then items.push (wrap item.ref) else items)
+      -- Keep any item we cannot interpret.
       (fun items stx => pure <| items.push (wrap stx))
   return mkOptConfig items
-
-/--
-Filter out `minimize` options from the config syntax.
--/
-private def filterMinimizeFromLinarithConfig {m : Type → Type} [Monad m] [MonadRef m]
-    (cfg : TSyntax ``Lean.Parser.Tactic.optConfig) :
-    m (TSyntax ``Lean.Parser.Tactic.optConfig) :=
-  filterConfigM (·.origOptionName != `minimize) cfg
 
 private meta partial def minimize (cfg : Linarith.LinarithConfig) (st : Tactic.SavedState)
     (g : MVarId) (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
