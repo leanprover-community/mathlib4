@@ -5,12 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.FieldTheory.SeparableDegree
 public import Mathlib.FieldTheory.SeparablyGenerated
-public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
-public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
-public import Mathlib.RingTheory.EssentialFiniteness
 
 /-!
 # Transcendental separable extensions
