@@ -90,6 +90,17 @@ lemma finite_primesOver [QuasiFinite R S] (I : Ideal R) : (I.primesOver S).Finit
     obtain ⟨J, h₁, ⟨rfl⟩⟩ := this
     exact h inferInstance
 
+open Ideal in
+instance (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime] [QuasiFinite R S] :
+    IsArtinianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q))) := by
+  have : p.IsPrime := isPrime_of_liesOver q p
+  let Sq := Localization.AtPrime q
+  let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
+  have : q = r.1.comap Algebra.TensorProduct.includeRight := by
+    rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
+  let := Localization.AtPrime.algebraOfLiesOver p (r.1.comap Algebra.TensorProduct.includeRight)
+  convert (Fiber.localizationAlgEquivQuotient p r.1).toRingEquiv.isArtinianRing
+
 lemma finite_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)} (hs : s.Finite) :
     (PrimeSpectrum.comap (algebraMap R S) ⁻¹' s).Finite :=
   hs.preimage' fun _ _ ↦ finite_comap_preimage_singleton _
