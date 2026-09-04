@@ -501,7 +501,7 @@ instance isSymm_inv_comp : (R.inv ○ R).IsSymm := isSymm_comp_inv
 
 instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSymm_comp_inv
 
-lemma mem_comp_comp {U V W : SetRel α α} [U.IsSymm] [W.IsSymm] {p : α × α} :
+lemma mem_comp_comp {U V W : SetRel α α} [U.IsSymm] {p : α × α} :
     p ∈ U ○ V ○ W ↔ (U.ball p.1 ×ˢ W.ball p.2 ∩ V).Nonempty := by
   grind [Set.nonempty_def, Prod.exists]
 

@@ -98,7 +98,7 @@ lemma isDynCoverOf_zero (T : X → X) (F : Set X) (U : SetRel X X) (h : s.Nonemp
 lemma isDynCoverOf_univ (T : X → X) (F : Set X) (n : ℕ) (h : s.Nonempty) :
     IsDynCoverOf T F univ n s := by simp [IsDynCoverOf, h]
 
-lemma IsDynCoverOf.nonempty_inter [U.IsSymm] {s : Finset X} (h : IsDynCoverOf T F U n s) :
+lemma IsDynCoverOf.nonempty_inter {s : Finset X} (h : IsDynCoverOf T F U n s) :
     ∃ t : Finset X, IsDynCoverOf T F U n t ∧ #t ≤ #s ∧
       ∀ x ∈ t, ((dynEntourage T U n).ball x ∩ F).Nonempty := by
   classical
@@ -309,7 +309,7 @@ lemma coverMincard_finite_of_isCompact_invariant [UniformSpace X] (F_comp : IsCo
 /-- All dynamical balls of a minimal dynamical cover of `F` intersect `F`. This lemma is the key
   to relate Bowen-Dinaburg's definition of topological entropy with covers and their definition
   of topological entropy with nets. -/
-lemma nonempty_inter_of_coverMincard [U.IsSymm] {s : Finset X} (h : IsDynCoverOf T F U n s)
+lemma nonempty_inter_of_coverMincard {s : Finset X} (h : IsDynCoverOf T F U n s)
     (h' : #s = coverMincard T F U n) :
     ∀ x ∈ s, (F ∩ (dynEntourage T U n).ball x).Nonempty := by
   -- Otherwise, there is a ball which does not intersect `F`. Removing it yields a smaller cover.
