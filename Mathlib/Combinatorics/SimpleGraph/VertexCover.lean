@@ -9,6 +9,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.NatCard
+import Mathlib.Tactic.Basify
 
 import Mathlib.Tactic.ENatToNat
 
@@ -142,7 +143,7 @@ theorem vertexCoverNum_ne_top_of_finite [Finite V] : vertexCoverNum G ≠ ⊤ :=
 theorem vertexCoverNum_lt_card [Nonempty V] [Finite V] : vertexCoverNum G < ENat.card V := by
   refine (ENat.add_one_le_iff vertexCoverNum_ne_top_of_finite).mp ?_
   grw [vertexCoverNum_le_card_sub_one, ENat.card_eq_coe_natCard]
-  enat_to_nat
+  basify
   exact Nat.add_le_of_le_sub (Order.one_le_iff_pos.mpr Nat.card_pos) (le_refl _)
 
 theorem vertexCoverNum_le_encard_edgeSet : vertexCoverNum G ≤ G.edgeSet.encard := by

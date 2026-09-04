@@ -9,6 +9,7 @@ public import Mathlib.Data.Seq.Defs
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.Tactic.ENatToNat
 public import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Basify
 
 /-!
 # Basic properties of sequences (possibly infinite lists)
@@ -536,7 +537,7 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
       simp only [drop_succ_cons, length'_cons, Nat.cast_add, Nat.cast_one]
       convert! drop_length' using 1
       generalize s.length' = m
-      enat_to_nat
+      basify
       lia
 
 theorem take_drop {s : Seq α} {n m : ℕ} :
@@ -941,7 +942,7 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     apply_fun length' at ha'
     simp only [drop_length', length'_of_terminates ha, tsub_self, length'_cons] at ha'
     generalize a_tl.length' = u at ha'
-    enat_to_nat
+    basify
     lia
 
 instance : Functor Seq where map := @map
