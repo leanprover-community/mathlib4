@@ -141,23 +141,6 @@ def internalHomFunctor : PresheafOfModulesOfCommRing.{u} R ⥤
           map_add' := by simp }
     }
 
-/-- Internal version of the co-Yoneda functor `CategoryTheory.coyoneda` -/
-@[simps]
-def internalHomCoyoneda :
-    (PresheafOfModulesOfCommRing.{u} R)ᵒᵖ ⥤
-      PresheafOfModulesOfCommRing.{u} R ⥤
-      PresheafOfModulesOfCommRing.{max u u₁ v₁} R where
-  obj F := internalHomFunctor (unop F)
-  map φ :=
-    { app G :=
-      { app V := ModuleCat.ofHom
-          { toFun s := overHom φ.unop (unop V) ≫ s
-            map_add' := by simp
-            map_smul' := by simp
-          }
-      }
-    }
-
 end PresheafOfModulesOfCommRing
 
 section Monoidal
@@ -333,16 +316,13 @@ def internalHomAdjunction (F : PresheafOfModulesOfCommRing.{u} R) :
         ext x
         rfl }
 
-@[simp]
 lemma internalHomAdjunction_homEquiv (F M G : PresheafOfModulesOfCommRing.{u} R) :
     (internalHomAdjunction F).homEquiv M G = internalHomEquiv F M G := by
   simp [internalHomAdjunction]
 
-@[simp]
 lemma internalHomAdjunction_unit_app (F M : PresheafOfModulesOfCommRing.{u} R) :
     (internalHomAdjunction F).unit.app M = internalHomCoev F M := rfl
 
-@[simp]
 lemma internalHomAdjunction_counit_app (F G : PresheafOfModulesOfCommRing.{u} R) :
     (internalHomAdjunction F).counit.app G = internalHomEv F G := by
   simp [internalHomAdjunction, internalHomEquiv, internalHomUncurry]
