@@ -235,9 +235,8 @@ set_option backward.isDefEq.respectTransparency false in
 -/
 @[simp]
 theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
-    DFunLike.coe
-      (F := ((↧(Module.Dual K V) ⊗ V.obj).carrier →ₗ[K] (𝟙_ (ModuleCat K))))
-      (FGModuleCatEvaluation K V).hom.hom (f ⊗ₜ x) = f.toFun x :=
+    (FGModuleCatEvaluation K V).hom.hom (A := ↧(Dual K V) ⊗ V.obj) (B := 𝟙_ (ModuleCat K)) (f ⊗ₜ x)
+      = f.toFun x :=
   contractLeft_apply f x
 
 set_option backward.privateInPublic true in
