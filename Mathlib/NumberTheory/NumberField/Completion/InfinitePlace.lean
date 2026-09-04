@@ -88,11 +88,6 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- Prevents `toCompletion v x` being printed as `{ ofCompletion := x }`
-by `delabStructureInstance`. -/
-@[app_delab Completion.toCompletion]
-meta def Completion.delabToCompletion : Delab := delabApp
-
 /-- Prevents `ofCompletion v x` being printed as `{ toCompletion := x }`
 by `delabStructureInstance`. -/
 @[app_delab Completion.ofCompletion]
