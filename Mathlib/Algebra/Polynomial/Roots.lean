@@ -610,6 +610,13 @@ theorem rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra
     (p.rootSet S).Finite :=
   Set.toFinite _
 
+variable (T R) in
+@[simp]
+theorem rootSet_map [CommRing S] (p : S[X]) [Algebra S T] [Algebra T R] [Algebra S R]
+    [IsScalarTower S T R] : (p.map (algebraMap S T)).rootSet R = p.rootSet R := by
+  classical
+  rw [rootSet_def, rootSet_def, aroots_map]
+
 /-- The set of roots of all polynomials of bounded degree and having coefficients in a finite set
 is finite. -/
 theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S] [DecidableEq S]

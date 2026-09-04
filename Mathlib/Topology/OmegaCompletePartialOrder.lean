@@ -54,6 +54,7 @@ def IsOpen (s : Set α) : Prop :=
 theorem isOpen_univ : IsOpen α univ := @CompleteLattice.ωScottContinuous.top α Prop _ _
 
 theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
+  let := Prop.completeLinearOrder
   CompleteLattice.ωScottContinuous.inf
 
 set_option backward.isDefEq.respectTransparency false in

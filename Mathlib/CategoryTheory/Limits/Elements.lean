@@ -24,8 +24,6 @@ the category of elements of `A` has limits of shape `I` and the forgetful functo
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 universe w v₁ v u₁ u
@@ -36,7 +34,9 @@ open Limits Opposite ConcreteCategory
 
 variable {C : Type u} [Category.{v} C]
 
-namespace CategoryOfElements
+namespace Functor.Elements
+
+section
 
 variable {A : C ⥤ Type w} {I : Type u₁} [Category.{v₁} I] [Small.{w} I]
 
@@ -44,7 +44,6 @@ namespace CreatesLimitsAux
 
 variable (F : I ⥤ A.Elements)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `lim_i A(Fi)`. -/
 noncomputable def liftedConeElement' : limit ((F ⋙ π A) ⋙ A) :=
   Types.Limit.mk _ (fun i => (F.obj i).2) (by simp)
@@ -62,26 +61,23 @@ noncomputable def liftedConeElement : A.obj (limit (F ⋙ π A)) :=
 
 @[simp]
 lemma map_lift_mapCone (c : Cone F) :
-    dsimp% A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd = liftedConeElement F := by
+    dsimp% A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.val = liftedConeElement F := by
   apply (preservesLimitIso A (F ⋙ π A)).toEquiv.injective
   ext i
-  have h₁ := congr_hom (preservesLimitIso_hom_π A (F ⋙ π A) i)
-    (A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd)
-  have h₂ := (c.π.app i).property
+  have h₂ := (c.π.app i).map_val
   simpa [-Functor.comp_obj, ← comp_apply, ← Functor.map_comp, liftedConeElement, liftedConeElement']
 
 @[simp]
 lemma map_π_liftedConeElement (i : I) :
-    dsimp% A.map (limit.π (F ⋙ π A) i) (liftedConeElement F) = (F.obj i).snd := by
-  have := congr_hom
+    dsimp% A.map (limit.π (F ⋙ π A) i) (liftedConeElement F) = (F.obj i).val := by
+  have := ConcreteCategory.congr_hom
     (preservesLimitIso_inv_π A (F ⋙ π A) i) (liftedConeElement' F)
   simp [liftedConeElement, ← comp_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (implementation) The constructed limit cone. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def liftedCone : Cone F where
-  pt := ⟨_, liftedConeElement F⟩
+  pt := .mk (liftedConeElement F)
   π :=
     { app := fun i => ⟨limit.π (F ⋙ π A) i, by simp⟩
       naturality := fun i i' f => by ext; simpa using! (limit.w _ _).symm }
@@ -90,12 +86,10 @@ noncomputable def liftedCone : Cone F where
 noncomputable def isValidLift : (π A).mapCone (liftedCone F) ≅ limit.cone (F ⋙ π A) :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (implementation) The constructed limit cone is a limit cone. -/
 noncomputable def isLimit : IsLimit (liftedCone F) where
-  lift s := ⟨limit.lift (F ⋙ π A) ((π A).mapCone s), by simp⟩
-  uniq s m h := ext _ _ _ <| limit.hom_ext
-    fun i => by simpa using congrArg Subtype.val (h i)
+  lift s := homMk (limit.lift (F ⋙ π A) ((π A).mapCone s))
+  uniq s m h := hom_ext <| limit.hom_ext (by simp [← h])
 
 end CreatesLimitsAux
 
@@ -125,25 +119,22 @@ instance {F : C ⥤ Type*} [F.IsCorepresentable] : HasInitial F.Elements :=
 
 end Initial
 
-end CategoryOfElements
+end
 
-namespace Functor.Elements
 
 /-- An initial object in the category `F.Elements` of a covariant functor defines a
 corepresentation for that functor. -/
 def corepresentableByOfIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsInitial E) :
-    CorepresentableBy F E.fst where
+    CorepresentableBy F E.obj where
   homEquiv :=
-    { toFun f := F.map f E.snd
-      invFun y := (he.to ⟨_, y⟩).val
-      left_inv f := Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
-      right_inv y := (he.to ⟨_, y⟩).prop }
+    { toFun f := F.map f E.val
+      invFun y := (he.to (.mk y)).hom
+      left_inv f := congr_arg Hom.hom (he.hom_ext (he.to (.mk (F.map f E.val))) ⟨f, rfl⟩)
+      right_inv y := (he.to (.mk y)).map_val }
 
 lemma isCorepresentable_of_hasInitial (F : C ⥤ Type w) [HasInitial (Elements F)] :
     IsCorepresentable F where
-  has_corepresentation :=
-    ⟨(⊥_ F.Elements).fst,
-      (Nonempty.intro (corepresentableByOfIsInitial initialIsInitial))⟩
+  has_corepresentation := ⟨_, ⟨corepresentableByOfIsInitial initialIsInitial⟩⟩
 
 theorem hasInitial_iff_isCorepresentable (F : C ⥤ Type w) :
     HasInitial (Elements F) ↔ IsCorepresentable F where
@@ -153,21 +144,17 @@ theorem hasInitial_iff_isCorepresentable (F : C ⥤ Type w) :
 /-- An initial object in the category `F.Elements` of a contravariant functor defines a
 representation for that functor. -/
 def representableByOfIsInitial {F : Cᵒᵖ ⥤ Type w} {E : Elements F} (he : IsInitial E) :
-    RepresentableBy F (E.fst.unop) where
+    RepresentableBy F (E.obj.unop) where
   homEquiv :=
-    { toFun f := F.map f.op E.snd
-      invFun y := (he.to ⟨_, y⟩).val.unop
-      left_inv f := by
-        have :=
-          Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f.op E.snd⟩) ⟨f.op, rfl⟩)
-        simp only [this, Quiver.Hom.unop_op]
-      right_inv y := (he.to ⟨_, y⟩).prop }
+    { toFun f := F.map f.op E.val
+      invFun y := (he.to (.mk y)).hom.unop
+      left_inv f := Quiver.Hom.op_inj
+        (congr_arg Hom.hom (he.hom_ext (he.to (.mk (F.map f.op E.val))) (homMk f.op)))
+      right_inv y := (he.to (.mk y)).map_val }
 
 lemma isRepresentable_of_hasInitial (F : Cᵒᵖ ⥤ Type w) [HasInitial (Elements F)] :
     IsRepresentable F where
-  has_representation :=
-    ⟨(⊥_ F.Elements).fst.unop,
-      (Nonempty.intro (representableByOfIsInitial initialIsInitial))⟩
+  has_representation := ⟨_, ⟨(representableByOfIsInitial initialIsInitial)⟩⟩
 
 theorem hasInitial_iff_isRepresentable (F : Cᵒᵖ ⥤ Type w) :
     HasInitial (Elements F) ↔ IsRepresentable F where
@@ -175,5 +162,26 @@ theorem hasInitial_iff_isRepresentable (F : Cᵒᵖ ⥤ Type w) :
   mpr _ := inferInstance
 
 end Functor.Elements
+
+namespace CategoryOfElements.CreatesLimitsAux
+
+@[deprecated (since := "2026-08-30")] alias liftedConeElement' :=
+  Functor.Elements.CreatesLimitsAux.liftedConeElement'
+@[deprecated (since := "2026-08-30")] alias π_liftedConeElement' :=
+  Functor.Elements.CreatesLimitsAux.π_liftedConeElement'
+@[deprecated (since := "2026-08-30")] alias liftedConeElement :=
+  Functor.Elements.CreatesLimitsAux.liftedConeElement
+@[deprecated (since := "2026-08-30")] alias map_lift_mapCone :=
+  Functor.Elements.CreatesLimitsAux.map_lift_mapCone
+@[deprecated (since := "2026-08-30")] alias map_π_liftedConeElement :=
+  Functor.Elements.CreatesLimitsAux.map_π_liftedConeElement
+@[deprecated (since := "2026-08-30")] alias liftedCone :=
+  Functor.Elements.CreatesLimitsAux.liftedCone
+@[deprecated (since := "2026-08-30")] alias isValidLift :=
+  Functor.Elements.CreatesLimitsAux.isValidLift
+@[deprecated (since := "2026-08-30")] alias isLimit :=
+  Functor.Elements.CreatesLimitsAux.isLimit
+
+end CategoryOfElements.CreatesLimitsAux
 
 end CategoryTheory
