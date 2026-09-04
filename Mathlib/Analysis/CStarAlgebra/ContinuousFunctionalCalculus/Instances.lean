@@ -200,7 +200,7 @@ lemma isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts {a : A} :
     rw [isSelfAdjoint_iff]
     nth_rw 2 [← cfcₙ_id ℂ a]
     rw [← cfcₙ_star_id a (R := ℂ)]
-    refine cfcₙ_congr fun x hx ↦ ?_
+    congr! 1 with x hx
     obtain ⟨x, -, rfl⟩ := ha₂.algebraMap_image.symm ▸ hx
     exact Complex.conj_ofReal _
 
@@ -264,7 +264,7 @@ lemma CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts {A : Type*} [No
         using fun x _ ↦ Real.sqrt_nonneg x
   · rw [← cfcₙ_mul ..]
     nth_rw 2 [← cfcₙ_id ℝ a]
-    apply cfcₙ_congr fun x hx ↦ ?_
+    congr! 1 with x hx
     rw [QuasispectrumRestricts.nnreal_iff] at ha₂
     apply ha₂ x at hx
     simp [← sq, Real.sq_sqrt hx]
@@ -358,7 +358,7 @@ lemma cfc_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ spectru
     (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc f a = cfc (fun x : ℝ ↦ (f x).re) a := by
   rw [cfc_real_eq_complex ..]
-  refine cfc_congr fun x hx ↦ ?_
+  congr! 1 with x hx
   simp_rw [RCLike.star_def, RCLike.conj_eq_iff_re, RCLike.re_eq_complex_re,
     RCLike.ofReal_eq_complex_ofReal] at hf_real
   rw [← SpectrumRestricts.real_iff.mp ha.spectrumRestricts _ hx, hf_real _ hx]
@@ -385,7 +385,7 @@ lemma cfcₙ_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ σ�
     (ha : IsSelfAdjoint a := by cfc_tac) :
     cfcₙ f a = cfcₙ (fun x : ℝ ↦ (f x).re) a := by
   rw [cfcₙ_real_eq_complex ..]
-  refine cfcₙ_congr fun x hx ↦ ?_
+  congr! 1 with x hx
   simp_rw [RCLike.star_def, RCLike.conj_eq_iff_re, RCLike.re_eq_complex_re,
     RCLike.ofReal_eq_complex_ofReal] at hf_real
   rw [← QuasispectrumRestricts.real_iff.mp ha.quasispectrumRestricts _ hx, hf_real _ hx]
@@ -414,7 +414,7 @@ lemma cfc_nnreal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by c
 lemma cfc_real_eq_nnreal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ spectrum ℝ a, 0 ≤ f x)
     (ha : 0 ≤ a := by cfc_tac) : cfc f a = cfc (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
   rw [cfc_nnreal_eq_real ..]
-  refine cfc_congr fun x hx ↦ ?_
+  congr! 1 with x hx
   rw [x.coe_toNNReal (spectrum_nonneg_of_nonneg ha hx), (f x).coe_toNNReal (hf_nonneg x hx)]
 
 end NNRealEqReal
@@ -441,7 +441,7 @@ lemma cfcₙ_nnreal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := b
 lemma cfcₙ_real_eq_nnreal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ σₙ ℝ a, 0 ≤ f x)
     (ha : 0 ≤ a := by cfc_tac) : cfcₙ f a = cfcₙ (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
   rw [cfcₙ_nnreal_eq_real ..]
-  refine cfcₙ_congr fun x hx ↦ ?_
+  congr! 1 with x hx
   rw [x.coe_toNNReal (quasispectrum_nonneg_of_nonneg _ ha _ hx),
     (f x).coe_toNNReal (hf_nonneg x hx)]
 
