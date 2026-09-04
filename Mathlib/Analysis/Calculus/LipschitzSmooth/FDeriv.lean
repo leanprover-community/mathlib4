@@ -12,7 +12,7 @@ import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
 
 /-!
-# Quantitative consequences of Lipschitz smoothness
+# Lipschitz smoothness via the Fréchet derivative
 
 This file develops quantitative consequences of Lipschitz smoothness in terms of the Fréchet
 derivative: variation along a chord and, for real-valued functions, the upper and lower quadratic
@@ -76,7 +76,7 @@ end Real
 
 end LipschitzSmoothWith
 
-/-! ### Descent lemma -/
+/-! ### From a Lipschitz Fréchet derivative -/
 
 open AffineMap MeasureTheory
 
@@ -126,8 +126,8 @@ theorem DifferentiableOn.lipschitzSmoothOnWith_of_lipschitzOnWith [CompleteSpace
       intervalIntegral.integral_const_mul _ _
     _ = K / 2 * dist x y ^ 2 := by rw [integral_id]; ring
 
-/-- **Descent lemma.** If `f` is differentiable and its Fréchet derivative is
-`K`-Lipschitz, then `f` is `K`-smooth (without convexity assumption). -/
+/-- **Descent lemma.** A differentiable function with `K`-Lipschitz Fréchet derivative is
+`K`-smooth. -/
 theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith [CompleteSpace F]
     (hf : Differentiable ℝ f) (hL : LipschitzWith K (fderiv ℝ f)) :
     LipschitzSmoothWith ℝ K f :=

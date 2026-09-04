@@ -34,21 +34,17 @@ theorem lipschitzSmoothWith_iff_inner_gradient :
     exact fun ⟨hf, hbound⟩ ↦ ⟨hf, by
       simpa only [inner_gradient_left, dist_eq_norm'] using hbound⟩
 
-/-! ### Descent lemma -/
+/-! ### From a Lipschitz gradient -/
 
-/-- **Descent lemma in gradient form on a set.** If `f : F → ℝ` is differentiable on a convex set
-in a Hilbert space and its gradient within the set is `K`-Lipschitz there, then `f` is `K`-smooth
-on the set. -/
+/-- Gradient version of `DifferentiableOn.lipschitzSmoothOnWith_of_lipschitzOnWith`. -/
 theorem DifferentiableOn.lipschitzSmoothOnWith_of_lipschitzOnWith_gradientWithin
     (hf : DifferentiableOn ℝ f s) (hs : Convex ℝ s)
     (hL : LipschitzOnWith K (gradientWithin f s) s) : LipschitzSmoothOnWith ℝ K f s :=
   hf.lipschitzSmoothOnWith_of_lipschitzOnWith hs
     (lipschitzOnWith_fderivWithin_iff_lipschitzOnWith_gradientWithin.mpr hL)
 
-/-- **Descent lemma in gradient form.** If `f : F → ℝ` is differentiable on a Hilbert space and
-its gradient is `K`-Lipschitz, then `f` is `K`-smooth. -/
+/-- Gradient version of `Differentiable.lipschitzSmoothWith_of_lipschitzWith`. -/
 theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith_gradient
     (hf : Differentiable ℝ f) (hL : LipschitzWith K (∇ f)) : LipschitzSmoothWith ℝ K f :=
-  lipschitzSmoothOnWith_univ.mp
-    (hf.differentiableOn.lipschitzSmoothOnWith_of_lipschitzOnWith_gradientWithin convex_univ
-      (by simpa only [gradientWithin_univ, lipschitzOnWith_univ] using hL))
+  hf.lipschitzSmoothWith_of_lipschitzWith
+    (lipschitzWith_fderiv_iff_lipschitzWith_gradient.mpr hL)
