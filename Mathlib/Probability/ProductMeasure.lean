@@ -444,7 +444,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
       simpa using Set.pi_mono' (by simp) (Set.image_mono h)
     · exact ⟨{Nonempty.some s_ne}, by simp⟩
   · rw [ENNReal.tprod_eq_iInf_prod (by simp [prob_le_one])]
-    exact tendsto_atTop_iInf (prod_anti_set_of_le_one' (by simp [prob_le_one]))
+    exact tendsto_atTop_iInf (prod_anti_set_of_le_one (by simp [prob_le_one]))
 
 lemma infinitePi_pi_univ [Countable ι] {t : (i : ι) → Set (X i)}
     (mt : ∀ i : ι, MeasurableSet (t i)) :
@@ -482,8 +482,6 @@ lemma infinitePi_map_eval (i : ι) :
 lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
     (hf : ∀ i, Measurable (f i)) :
     (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
-  have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
-    isProbabilityMeasure_map (hf i).aemeasurable
   refine eq_infinitePi _ fun s t ht ↦ ?_
   rw [map_apply (by fun_prop) (.pi s.countable_toSet fun _ _ ↦ ht _)]
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =

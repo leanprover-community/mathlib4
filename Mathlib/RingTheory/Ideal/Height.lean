@@ -197,6 +197,23 @@ lemma Ideal.exists_isMaximal_height [FiniteRingKrullDim R] :
   · norm_cast
     exact height_mono hle
 
+/-- For all `n ≤ dim R`, there exists a prime ideal `p` with `n ≤ ht p`. -/
+lemma Ideal.exists_isPrime_le_height {n : ℕ} (h : n ≤ ringKrullDim R) :
+    ∃ (p : Ideal R), p.IsPrime ∧ n ≤ p.height := by
+  obtain ⟨l, rfl⟩ := Order.le_krullDim_iff.mp h
+  refine ⟨l.last, PrimeSpectrum.isPrime _, ?_⟩
+  grw [PrimeSpectrum.height_eq_orderHeight, ← Order.length_le_height_last]
+
+theorem Ideal.ringKrullDim_eq_top_iff :
+    ringKrullDim R = ⊤ ↔ ∀ n : ℕ, ∃ I : Ideal R, I ≠ ⊤ ∧ n ≤ I.height := by
+  rw [ENat.WithBot.eq_top_iff_forall_ge]
+  refine ⟨fun h n ↦ ?_, fun h m ↦ ?_⟩
+  · obtain ⟨p, hp₁, hp₂⟩ := Ideal.exists_isPrime_le_height (h n)
+    exact ⟨p, IsPrime.ne_top', hp₂⟩
+  · obtain ⟨I, h₁, h₂⟩ := h m
+    grw [← Ideal.height_le_ringKrullDim_of_ne_top h₁]
+    norm_cast
+
 instance (priority := 900) Ideal.finiteHeight_of_finiteRingKrullDim {I : Ideal R}
     [FiniteRingKrullDim R] : I.FiniteHeight := by
   rw [finiteHeight_iff, or_iff_not_imp_left, ← lt_top_iff_ne_top, ← WithBot.coe_lt_coe]
@@ -495,13 +512,11 @@ lemma Ideal.sup_height_eq_ringKrullDim [Nontrivial R] :
     · simp [h, ringKrullDim_nonneg_of_nontrivial]
     · simp [h, height_le_ringKrullDim_of_ne_top]
   · refine iSup_le fun p => WithBot.coe_le_coe.mpr (le_trans (b := p.last.asIdeal.height) ?_ ?_)
-    · rw [height_eq_primeHeight]
-      apply le_trans (b := ⨆ (_ : p.last ≤ p.last), ↑p.length)
-      · exact le_iSup (fun _ => (↑p.length : ℕ∞)) le_rfl
-      · exact le_iSup (fun p' => (⨆ _, p'.length : ℕ∞)) p
-    · apply le_trans (b := ⨆ (_ : (p.last).asIdeal ≠ ⊤), p.last.asIdeal.height)
-      · exact le_iSup_of_le p.last.isPrime.ne_top' le_rfl
-      · exact le_iSup (fun I => ⨆ _, I.height) p.last.asIdeal
+    · rw [height_eq_primeHeight, primeHeight, Order.height]
+      grw [← le_iSup₂]
+      rfl
+    · grw [← le_iSup₂]
+      exact p.last.isPrime.ne_top'
 
 /-- In a nontrivial commutative ring `R`, the supremum of heights of all prime ideals is
 equal to the Krull dimension of `R`. -/

@@ -165,13 +165,13 @@ theorem withDensity_tsum [Countable ι] (κ : Kernel α β) [IsSFiniteKernel κ]
   · have : Function.uncurry (∑' n, f n) = ∑' n, Function.uncurry (f n) := by
       ext1 p
       simp only [Function.uncurry_def]
-      rw [tsum_apply h_sum, tsum_apply (h_sum_a _), tsum_apply]
+      rw [Pi.tsum_apply h_sum, Pi.tsum_apply (h_sum_a _), Pi.tsum_apply]
       exact Pi.summable.mpr fun p => ENNReal.summable
     rw [this]
     fun_prop
   have : ∫⁻ b in s, (∑' n, f n) a b ∂κ a = ∫⁻ b in s, ∑' n, (fun b => f n a b) b ∂κ a := by
     congr with b
-    rw [tsum_apply h_sum, tsum_apply (h_sum_a a)]
+    rw [Pi.tsum_apply h_sum, Pi.tsum_apply (h_sum_a a)]
   rw [this, lintegral_tsum fun n => by fun_prop]
   congr with n
   rw [Kernel.withDensity_apply' _ (hf n) a s]
@@ -218,7 +218,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     have h_sum_a : ∀ a, Summable fun n => fs n a :=
       fun _ => Pi.summable.mpr fun _ => ENNReal.summable
     ext a b : 2
-    rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
+    rw [Pi.tsum_apply (Pi.summable.mpr h_sum_a), Pi.tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
     have h_finsetSum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := fun n ↦ by
       induction n with

@@ -476,8 +476,7 @@ private theorem edist_apply_le_edist_aux (x y : PiLp p β) (i : ι) :
       edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
         simp [← ENNReal.rpow_mul, cancel, -one_div]
       _ ≤ (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
-        gcongr
-        exact Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)
+        grw [← Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)]
 
 private lemma lipschitzWith_ofLp_aux : LipschitzWith 1 (@ofLp p (∀ i, β i)) :=
   .of_edist_le fun x y => by
