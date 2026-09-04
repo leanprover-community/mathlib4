@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.LipschitzSmooth.Basic
 
+import Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv
+import Mathlib.Analysis.Normed.Operator.Mul
+
 /-!
 # Lipschitz smoothness in one dimension
 
@@ -30,3 +33,28 @@ theorem lipschitzSmoothWith_iff_deriv :
   constructor <;>
     exact fun ⟨hf, hbound⟩ ↦ ⟨hf, by
       simpa only [fderiv_eq_smul_deriv, dist_eq_norm, norm_sub_rev] using hbound⟩
+
+/-! ### Lipschitz constants of `fderiv` versus `deriv` -/
+
+section Real
+
+variable {K : NNReal} {f : ℝ → ℝ}
+
+/-- For `f : ℝ → ℝ`, the Lipschitz constants of `fderiv ℝ f` and `deriv f` coincide:
+`deriv f` is the composition of `fderiv ℝ f` with the isometry
+`(ContinuousLinearMap.toSpanSingletonLIE ℝ ℝ).symm` (evaluation at `1`). -/
+theorem lipschitzWith_fderiv_iff_lipschitzWith_deriv :
+    LipschitzWith K (fderiv ℝ f) ↔ LipschitzWith K (deriv f) :=
+  ((ContinuousLinearMap.toSpanSingletonLIE ℝ ℝ).symm.isometry.lipschitzWith_iff K).symm
+
+/-! ### Descent lemma -/
+
+/-- **Descent lemma in one dimension.** If `f : ℝ → ℝ` is differentiable and its derivative is
+`K`-Lipschitz, then `f` is `K`-smooth. -/
+theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith_deriv
+    (hf : Differentiable ℝ f) (hL : LipschitzWith K (deriv f)) :
+    LipschitzSmoothWith ℝ K f :=
+  hf.lipschitzSmoothWith_of_lipschitzWith
+    (lipschitzWith_fderiv_iff_lipschitzWith_deriv.mpr hL)
+
+end Real

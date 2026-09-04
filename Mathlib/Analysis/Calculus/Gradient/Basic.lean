@@ -31,6 +31,7 @@ This file develops the following aspects of the theory of gradients:
 * translating between `HasGradientAtFilter` and `HasFDerivAtFilter`,
   `HasGradientWithinAt` and `HasFDerivWithinAt`, `HasGradientAt` and `HasFDerivAt`,
   `gradient` and `fderiv`.
+* equivalence of Lipschitz bounds for the gradient and Fréchet derivative.
 * uniqueness of gradients.
 * translating between `HasGradientAtFilter` and `HasDerivAtFilter`,
   `HasGradientAt` and `HasDerivAt`, `gradient` and `deriv` when `F = 𝕜`.
@@ -137,6 +138,12 @@ lemma toDual_comp_gradientWithin :
 @[simp]
 lemma toDual_comp_gradient : (toDual 𝕜 F) ∘ ∇ f = fderiv 𝕜 f :=
   funext fun _ => toDual_gradient
+
+/-- The Riesz isomorphism identifies the Lipschitz constants of the Fréchet derivative and the
+gradient. -/
+theorem lipschitzWith_fderiv_iff_lipschitzWith_gradient {K : NNReal} :
+    LipschitzWith K (fderiv 𝕜 f) ↔ LipschitzWith K (∇ f) :=
+  toDual_comp_gradient (𝕜 := 𝕜) (f := f) ▸ (toDual 𝕜 F).isometry.lipschitzWith_iff K
 
 theorem HasGradientAt.unique {gradf gradg : F}
     (hf : HasGradientAt f gradf x) (hg : HasGradientAt f gradg x) :

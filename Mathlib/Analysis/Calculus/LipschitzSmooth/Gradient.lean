@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Calculus.Gradient.Basic
 public import Mathlib.Analysis.Calculus.LipschitzSmooth.Basic
 
+import Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv
+
 /-!
 # Lipschitz smoothness on a Hilbert space via the gradient
 
@@ -31,3 +33,11 @@ theorem lipschitzSmoothWith_iff_inner_gradient :
   constructor <;>
     exact fun ⟨hf, hbound⟩ ↦ ⟨hf, by
       simpa only [inner_gradient_left, dist_eq_norm'] using hbound⟩
+
+/-! ### Descent lemma -/
+
+/-- **Descent lemma in gradient form.** If `f : F → ℝ` is differentiable on a Hilbert space and
+its gradient is `K`-Lipschitz, then `f` is `K`-smooth. -/
+theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith_gradient
+    (hf : Differentiable ℝ f) (hL : LipschitzWith K (∇ f)) : LipschitzSmoothWith ℝ K f :=
+  hf.lipschitzSmoothWith_of_lipschitzWith (lipschitzWith_fderiv_iff_lipschitzWith_gradient.mpr hL)
