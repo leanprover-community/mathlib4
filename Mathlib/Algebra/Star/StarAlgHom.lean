@@ -77,12 +77,14 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 into an actual `NonUnitalStarAlgHom`. This is declared as the default coercion from `F` to
 `A →⋆ₙₐ[R] B`. -/
 @[coe]
-def toNonUnitalStarAlgHom [StarHomClass F A B] (f : F) : A →⋆ₙₐ[R] B :=
+def _root_.NonUnitalStarAlgHom.ofClass [StarHomClass F A B] (f : F) : A →⋆ₙₐ[R] B :=
   { (f : A →ₙₐ[R] B) with
     map_star' := map_star f }
 
+@[deprecated (since := "2026-09-02")] alias toNonUnitalStarAlgHom := NonUnitalStarAlgHom.ofClass
+
 instance [StarHomClass F A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
-  ⟨toNonUnitalStarAlgHom⟩
+  ⟨.ofClass⟩
 
 instance [StarHomClass F A B] : NonUnitalStarRingHomClass F A B :=
   NonUnitalStarRingHomClass.mk
@@ -307,12 +309,14 @@ variable [StarHomClass F A B]
 /-- Turn an element of a type `F` satisfying `AlgHomClass F R A B` and `StarHomClass F A B` into an
 actual `StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
 @[coe]
-def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
+def _root_.StarAlgHom.ofClass (f : F) : A →⋆ₐ[R] B :=
   { (AlgHomClass.toAlgHom f) with
     map_star' := map_star f }
 
+@[deprecated (since := "2026-09-02")] alias toStarAlgHom := StarAlgHom.ofClass
+
 instance : CoeTC F (A →⋆ₐ[R] B) :=
-  ⟨toStarAlgHom⟩
+  ⟨.ofClass⟩
 
 end StarAlgHomClass
 
@@ -661,26 +665,25 @@ instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     AlgEquivClass F R A B :=
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
-namespace StarAlgEquivClass
-
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
 @[coe]
-def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
-    [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B]
-    (f : F) : A ≃⋆ₐ[R] B :=
+def StarAlgEquiv.ofClass {F R A B : Type*}
+    [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
+    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] (f : F) : A ≃⋆ₐ[R] B :=
   { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f
     map_smul' := map_smul f }
 
+@[deprecated (since := "2026-09-02")] alias StarAlgEquivClass.toStarAlgEquiv := StarAlgEquiv.ofClass
+
 /-- Any type satisfying `AlgEquivClass` and `StarHomClass` can be cast into `StarAlgEquiv` via
 `StarAlgEquivClass.toStarAlgEquiv`. -/
-instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
-    [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] :
+instance StarAlgEquivClass.instCoeHead {F R A B : Type*}
+    [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
+    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] :
     CoeHead F (A ≃⋆ₐ[R] B) :=
-  ⟨toStarAlgEquiv⟩
-
-end StarAlgEquivClass
+  ⟨.ofClass⟩
 
 namespace StarAlgEquiv
 
@@ -712,11 +715,12 @@ instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective
 
-@[simp]
-theorem toStarRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = e := rfl
+theorem toStarRingEquiv_eq_ofClass (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = .ofClass e := rfl
+@[deprecated (since := "2026-09-03")] alias toStarRingEquiv_eq_coe := toStarRingEquiv_eq_ofClass
 
-theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
+theorem toRingEquiv_eq_ofClass (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = StarRingEquiv.ofClass e :=
   rfl
+@[deprecated (since := "2026-09-03")] alias toRingEquiv_eq_coe := toRingEquiv_eq_ofClass
 
 @[ext]
 theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
@@ -787,10 +791,11 @@ theorem refl_symm : (StarAlgEquiv.refl R A).symm = .refl R A :=
   rfl
 
 @[simp]
-theorem toStarRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃⋆+* A) = (e : A ≃⋆+* B).symm := rfl
+theorem toStarRingEquiv_symm (e : A ≃⋆ₐ[R] B) : e.symm.toStarRingEquiv = e.toStarRingEquiv.symm :=
+  rfl
 
 @[simp]
-theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e : A ≃⋆+* B).symm = (e : A ≃+* B).symm := rfl
+theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv.symm = (e.toRingEquiv).symm := rfl
 
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
