@@ -204,7 +204,7 @@ end Basic
 section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
-variable {A B C : Type*}
+variable {A B : Type*}
 variable [NonUnitalNonAssocSemiring A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [StarAddMonoid B]
 

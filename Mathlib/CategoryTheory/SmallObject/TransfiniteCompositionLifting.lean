@@ -103,7 +103,6 @@ attribute [reassoc (attr := simp)] w₁ w₂
 
 variable {c p f g} {j : J} (sq' : SqStruct c p f g j)
 
-set_option backward.isDefEq.respectTransparency false in
 include sq' in
 @[reassoc]
 lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
@@ -169,6 +168,7 @@ lemma liftHom_fac (i : J) (hi : i < j) :
     F.map (homOfLE hi.le) ≫ liftHom hj s = (s.1 ⟨⟨i, hi⟩⟩).f' :=
   (F.isColimitOfIsWellOrderContinuous j hj).fac _ ⟨i, hi⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `transfiniteComposition.wellOrderInductionData`. -/
 @[simps]
@@ -259,7 +259,6 @@ namespace MorphismProperty
 variable (W : MorphismProperty C)
   (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
 
-set_option backward.isDefEq.respectTransparency false in
 instance isStableUnderTransfiniteCompositionOfShape_llp :
     W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
   rw [isStableUnderTransfiniteCompositionOfShape_iff]
