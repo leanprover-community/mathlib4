@@ -9,9 +9,7 @@ module
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Algebra.Ring.Associator
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.Data.DFinsupp.BigOperators
 
 /-!
 # Category algebra of a linear category
