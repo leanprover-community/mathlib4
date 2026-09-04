@@ -253,7 +253,7 @@ theorem IsClosed.cylinder [∀ i, TopologicalSpace (α i)] (s : Finset ι) {S : 
 theorem _root_.MeasurableSet.cylinder [∀ i, MeasurableSpace (α i)] (s : Finset ι)
     {S : Set (∀ i : s, α i)} (hS : MeasurableSet S) :
     MeasurableSet (cylinder s S) :=
-  measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS
+  Measurable.of_eval (fun _ ↦ measurable_pi_apply _) hS
 
 /-- The indicator of a cylinder only depends on the variables whose the cylinder depends on. -/
 theorem dependsOn_cylinder_indicator_const {M : Type*} [Zero M] {I : Finset ι}
@@ -324,8 +324,8 @@ theorem inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
     Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∩
       {f | Finset.restrict₂ Finset.subset_union_right f ∈ S₂}, ?_, ?_⟩
   · refine MeasurableSet.inter ?_ ?_
-    · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₁
-    · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₂
+    · exact Measurable.of_eval (fun _ ↦ measurable_pi_apply _) hS₁
+    · exact Measurable.of_eval (fun _ ↦ measurable_pi_apply _) hS₂
   · exact inter_cylinder _ _ _ _
 
 theorem isPiSystem_measurableCylinders : IsPiSystem (measurableCylinders α) :=

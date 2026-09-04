@@ -6,6 +6,7 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
 /-!
@@ -421,6 +422,24 @@ end TopologicalSpace
 end Valuation
 
 namespace IsValuativeTopology
+
+/-- The topology on the ring of integers of a ring `R` carrying a valuative topology is linear:
+the open balls `Valuation.ltIdeal (valuation R) γ` form a basis of neighborhoods of zero
+made of ideals. -/
+instance [TopologicalSpace R] [IsValuativeTopology R] :
+    IsLinearTopology (valuation R).integer (valuation R).integer := by
+  refine IsLinearTopology.mk_of_hasBasis _
+    (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True) (s := (valuation R).ltIdeal) ?_
+  rw [nhds_subtype_eq_comap]
+  exact (IsValuativeTopology.hasBasis_nhds_zero R).comap _
+
+/-- The topology on a ring `R` carrying a valuative topology is linear over its ring of integers:
+the open balls `Valuation.ltSubmodule (valuation R) γ` form a basis of neighborhoods of zero
+made of `(valuation R).integer`-submodules. -/
+instance [TopologicalSpace R] [IsValuativeTopology R] :
+    IsLinearTopology (valuation R).integer R :=
+  IsLinearTopology.mk_of_hasBasis _ (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True)
+    (s := (valuation R).ltSubmodule) (IsValuativeTopology.hasBasis_nhds_zero R)
 
 @[deprecated (since := "2026-03-17")] alias isOpen_ball := Valuation.isOpen_ball
 @[deprecated (since := "2026-03-17")] alias isClosed_ball := Valuation.isClosed_ball

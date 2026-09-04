@@ -51,13 +51,6 @@ open Function Rat Set
 
 open scoped Pointwise
 
-/-- A field which is both linearly ordered and conditionally complete with respect to the order.
-This axiomatizes the reals. -/
-@[deprecated "Use `[Field α] [ConditionallyCompleteLinearOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2026-02-23")]
-structure ConditionallyCompleteLinearOrderedField (α : Type*) extends
-    Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
-
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
 scoped instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
@@ -319,50 +312,3 @@ scoped instance uniqueOrderRingIso : Unique (β ≃+*o γ) :=
 end InducedMap
 
 end ConditionallyCompleteLinearOrderedField
-
-namespace LinearOrderedField
-
-@[deprecated (since := "2026-02-24")]
-alias inducedMap := ConditionallyCompleteLinearOrderedField.inducedMap
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_mono := ConditionallyCompleteLinearOrderedField.inducedMap_mono
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_rat := ConditionallyCompleteLinearOrderedField.inducedMap_rat
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_zero := ConditionallyCompleteLinearOrderedField.inducedMap_zero
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_one := ConditionallyCompleteLinearOrderedField.inducedMap_one
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_nonneg := ConditionallyCompleteLinearOrderedField.inducedMap_nonneg
-@[deprecated (since := "2026-02-24")]
-alias coe_lt_inducedMap_iff := ConditionallyCompleteLinearOrderedField.coe_lt_inducedMap_iff
-@[deprecated (since := "2026-02-24")]
-alias lt_inducedMap_iff := ConditionallyCompleteLinearOrderedField.lt_inducedMap_iff
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_self := ConditionallyCompleteLinearOrderedField.inducedMap_self
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_inducedMap := ConditionallyCompleteLinearOrderedField.inducedMap_inducedMap
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_inv_self := ConditionallyCompleteLinearOrderedField.inducedMap_inv_self
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_add := ConditionallyCompleteLinearOrderedField.inducedMap_add
-@[deprecated (since := "2026-02-24")]
-alias le_inducedMap_mul_self_of_mem_cutMap :=
-  ConditionallyCompleteLinearOrderedField.le_inducedMap_mul_self_of_mem_cutMap
-@[deprecated (since := "2026-02-24")]
-alias exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self :=
-  ConditionallyCompleteLinearOrderedField.exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self
-@[deprecated (since := "2026-02-24")]
-alias inducedAddHom := ConditionallyCompleteLinearOrderedField.inducedAddHom
-@[deprecated (since := "2026-02-24")]
-alias inducedOrderRingHom := ConditionallyCompleteLinearOrderedField.inducedOrderRingHom
-@[deprecated (since := "2026-02-24")]
-alias inducedOrderRingIso := ConditionallyCompleteLinearOrderedField.inducedOrderRingIso
-@[deprecated (since := "2026-02-24")]
-alias coe_inducedOrderRingIso := ConditionallyCompleteLinearOrderedField.coe_inducedOrderRingIso
-@[deprecated (since := "2026-02-24")]
-alias inducedOrderRingIso_symm := ConditionallyCompleteLinearOrderedField.inducedOrderRingIso_symm
-@[deprecated (since := "2026-02-24")]
-alias inducedOrderRingIso_self := ConditionallyCompleteLinearOrderedField.inducedOrderRingIso_self
-
-end LinearOrderedField

@@ -110,7 +110,7 @@ theorem image_tan_Ioo : tan '' Ioo (-(π / 2)) (π / 2) = univ :=
 /-- `Real.tan` as an `OrderIso` between `(-(π / 2), π / 2)` and `ℝ`. -/
 def tanOrderIso : Ioo (-(π / 2)) (π / 2) ≃o ℝ :=
   (strictMonoOn_tan.orderIso _ _).trans <|
-    (OrderIso.Set.congr _ _ image_tan_Ioo).trans OrderIso.Set.univ
+    (Set.orderIsoOfEq _ _ image_tan_Ioo).trans OrderIso.Set.univ
 
 /-- Inverse of the `tan` function, returns values in the range `-π / 2 < arctan x` and
 `arctan x < π / 2` -/
