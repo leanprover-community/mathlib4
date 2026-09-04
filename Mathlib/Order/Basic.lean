@@ -976,6 +976,13 @@ theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
     ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a := by
   simp_rw [and_comm]; exact dense
 
+/-- `DenselyOrdered.mk'` is the dual of `DenselyOrdered.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
+@[to_dual existing mk]
+lemma DenselyOrdered.mk' [LT α] (dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a) :
+    DenselyOrdered α where
+  dense := by simpa [and_comm] using dense
+
 @[to_dual exists_between']
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=
   DenselyOrdered.dense _ _
