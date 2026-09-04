@@ -618,8 +618,6 @@ lemma degree_lt_card_sub_one [DecidableRel G.Adj] (v : V) :
 
 end Finite
 
-section LocallyFiniteOrder
-
 /-- `G ≤ H` is decidable when adjacency is decidable on both sides. -/
 instance [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj] : Decidable (G ≤ H) :=
   inferInstanceAs <| Decidable <| ∀ v w, G.Adj v w → H.Adj v w
@@ -629,8 +627,6 @@ noncomputable instance [Finite V] : LocallyFiniteOrder (SimpleGraph V) :=
   open scoped Classical in
   letI := Fintype.ofFinite (SimpleGraph V)
   Fintype.toLocallyFiniteOrder
-
-end LocallyFiniteOrder
 
 namespace Iso
 
