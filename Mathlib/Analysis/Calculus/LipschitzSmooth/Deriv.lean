@@ -36,25 +36,20 @@ theorem lipschitzSmoothWith_iff_deriv :
 
 /-! ### Lipschitz constants of `fderiv` versus `deriv` -/
 
-section Real
-
-variable {K : NNReal} {f : ℝ → ℝ}
-
-/-- For `f : ℝ → ℝ`, the Lipschitz constants of `fderiv ℝ f` and `deriv f` coincide:
-`deriv f` is the composition of `fderiv ℝ f` with the isometry
-`(ContinuousLinearMap.toSpanSingletonLIE ℝ ℝ).symm` (evaluation at `1`). -/
+/-- For `f : 𝕜 → F`, the Lipschitz constants of `fderiv 𝕜 f` and `deriv f` coincide:
+`deriv f` is the composition of `fderiv 𝕜 f` with the isometry
+`(ContinuousLinearMap.toSpanSingletonLIE 𝕜 F).symm` (evaluation at `1`). -/
 theorem lipschitzWith_fderiv_iff_lipschitzWith_deriv :
-    LipschitzWith K (fderiv ℝ f) ↔ LipschitzWith K (deriv f) :=
-  ((ContinuousLinearMap.toSpanSingletonLIE ℝ ℝ).symm.isometry.lipschitzWith_iff K).symm
+    LipschitzWith K (fderiv 𝕜 f) ↔ LipschitzWith K (deriv f) :=
+  ((ContinuousLinearMap.toSpanSingletonLIE 𝕜 F).symm.isometry.lipschitzWith_iff K).symm
 
 /-! ### Descent lemma -/
 
-/-- **Descent lemma in one dimension.** If `f : ℝ → ℝ` is differentiable and its derivative is
+/-- **Descent lemma in one dimension.** If `f : ℝ → F` is differentiable and its derivative is
 `K`-Lipschitz, then `f` is `K`-smooth. -/
 theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith_deriv
+    {f : ℝ → F} [NormedSpace ℝ F] [CompleteSpace F]
     (hf : Differentiable ℝ f) (hL : LipschitzWith K (deriv f)) :
     LipschitzSmoothWith ℝ K f :=
   hf.lipschitzSmoothWith_of_lipschitzWith
     (lipschitzWith_fderiv_iff_lipschitzWith_deriv.mpr hL)
-
-end Real

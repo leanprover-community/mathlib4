@@ -79,8 +79,6 @@ end LipschitzSmoothWith
 
 open AffineMap MeasureTheory
 
-section
-
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable {K : NNReal} {f : E → F}
@@ -91,27 +89,16 @@ theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith [CompleteSpace F]
     (hf : Differentiable ℝ f) (hL : LipschitzWith K (fderiv ℝ f)) :
     LipschitzSmoothWith ℝ K f := by
   refine ⟨hf, fun x y ↦ ?_⟩
-  have h_integrable : IntervalIntegrable
-      (fun t ↦ (fderiv ℝ f (lineMap x y t) - fderiv ℝ f x) (y - x)) volume 0 1 :=
-    curveIntegrable_segment.mp <|
-      (hL.continuous.curveIntegrable_segment).sub (curveIntegrable_segment_const _ x y)
+  have h_curve : CurveIntegrable (fderiv ℝ f) (.segment x y) :=
+    hL.continuous.curveIntegrable_segment
+  have h_const := curveIntegrable_segment_const (fderiv ℝ f x) x y
+  have h_integrable := curveIntegrable_segment.mp (h_curve.sub h_const)
+  rw [← curveIntegral_fderiv_segment (fun z _ ↦ hf z) hL.continuous.continuousOn,
+    ← curveIntegral_segment_const, ← curveIntegral_fun_sub h_curve h_const,
+    curveIntegral_segment]
   calc
-    ‖f y - f x - fderiv ℝ f x (y - x)‖ =
-        ‖∫ᶜ z in .segment x y, (fderiv ℝ f z - fderiv ℝ f x)‖ := by
-      congr 1
-      calc
-        f y - f x - fderiv ℝ f x (y - x) =
-            (∫ᶜ z in .segment x y, fderiv ℝ f z) -
-              ∫ᶜ _ in .segment x y, fderiv ℝ f x := by
-          rw [curveIntegral_fderiv_segment (fun z _ ↦ hf z) hL.continuous.continuousOn,
-            curveIntegral_segment_const]
-        _ = ∫ᶜ z in .segment x y, (fderiv ℝ f z - fderiv ℝ f x) :=
-          (curveIntegral_fun_sub (hL.continuous.curveIntegrable_segment)
-            (curveIntegrable_segment_const _ x y)).symm
-    _ = ‖∫ t in (0 : ℝ)..1,
-        (fderiv ℝ f (lineMap x y t) - fderiv ℝ f x) (y - x)‖ := by
-      rw [curveIntegral_segment]
-    _ ≤ ∫ t in (0 : ℝ)..1,
+    ‖∫ t in (0 : ℝ)..1,
+        (fderiv ℝ f (lineMap x y t) - fderiv ℝ f x) (y - x)‖ ≤ ∫ t in (0 : ℝ)..1,
         ‖(fderiv ℝ f (lineMap x y t) - fderiv ℝ f x) (y - x)‖ :=
       intervalIntegral.norm_integral_le_integral_norm zero_le_one
     _ ≤ ∫ t in (0 : ℝ)..1, K * dist x y ^ 2 * t :=
@@ -131,5 +118,3 @@ theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith [CompleteSpace F]
     _ = K * dist x y ^ 2 * ∫ t in (0 : ℝ)..1, t :=
       intervalIntegral.integral_const_mul _ _
     _ = K / 2 * dist x y ^ 2 := by rw [integral_id]; ring
-
-end
