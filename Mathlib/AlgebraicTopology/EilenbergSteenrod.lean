@@ -370,10 +370,10 @@ lemma isEilenbergSteenrod_iff :
     isEilenbergSteenrod C HP ↔ HP.IsEilenbergSteenrod := .rfl
 
 instance : IsClosedUnderIsomorphisms (isEilenbergSteenrod.{u} C) where
-  of_iso e h := {
-    1 := instIsClosedUnderIsomorphismsIsExtraordinaryEilenbergSteenrod.of_iso e h.1
-    hasDimensionAxiom :=
-      instIsClosedUnderIsomorphismsNatDownHasDimensionAxiom.of_iso e h.hasDimensionAxiom
+  of_iso e _ := {
+    toIsExtraordinaryEilenbergSteenrod :=
+      (isExtraordinaryEilenbergSteenrod.{u} _ _).prop_of_iso e inferInstance
+    hasDimensionAxiom := (hasDimensionAxiom.{u} _).prop_of_iso e inferInstance
   }
 
 end HomologyPretheory
