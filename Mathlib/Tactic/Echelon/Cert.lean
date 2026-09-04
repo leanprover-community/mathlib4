@@ -185,11 +185,10 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m
   let rowEq ← certifyForallFin
       q(∀ i : Fin $m, (fun j : Fin $n => $A ($σ i) (id j)) = $rows i) fun i _ => do
     let iN ← mkFinNumeral m i
-    mkAppM ``funext #[← certifyForallFin
-      q(∀ j : Fin $n, $A ($σ $iN) (id j) = $rows $iN j) fun _ cell => certifyDefEq cell]
-  have wrap : Q((Fin $m → Fin $n → $α) → Matrix (Fin $m) (Fin $n) $α) :=
-    q(fun g => Matrix.of g)
-  mkExpectedTypeHint (← mkAppM ``congrArg #[wrap, ← mkAppM ``funext #[rowEq]])
+    let colEq ← certifyForallFin
+      q(∀ j : Fin $n, $A ($σ $iN) (id j) = $rows $iN j) fun _ cell => certifyDefEq cell
+    return (q(funext $colEq) : Expr)
+  mkExpectedTypeHint q(congrArg (fun g => Matrix.of g) (funext $rowEq))
     q(($A).submatrix $σ id = $(Aσ.matrix))
 
 /-- Prove the product `L * Aσ = U` entrywise from the literals' recorded entries. At
