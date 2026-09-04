@@ -67,19 +67,15 @@ variable {R} in
 /-- The type of morphisms in `SemiRingCat`. -/
 @[ext]
 structure Hom (R S : SemiRingCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category SemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -153,9 +149,6 @@ instance : Inhabited SemiRingCat :=
 unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
   R ≟ R' ⊢
   (forget SemiRingCat).obj R ≟ SemiRingCat.carrier R'
-
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
   inferInstanceAs <| Semiring R.carrier
@@ -232,19 +225,15 @@ variable {R} in
 /-- The type of morphisms in `RingCat`. -/
 @[ext]
 structure Hom (R S : RingCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category RingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -322,9 +311,6 @@ An example where this is needed is in applying
 unif_hint forget_obj_eq_coe (R R' : RingCat) where
   R ≟ R' ⊢
   (forget RingCat).obj R ≟ RingCat.carrier R'
-
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
   inferInstanceAs <| Ring R.carrier
@@ -406,19 +392,15 @@ variable {R} in
 /-- The type of morphisms in `CommSemiRingCat`. -/
 @[ext]
 structure Hom (R S : CommSemiRingCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category CommSemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -494,14 +476,9 @@ unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
   R ≟ R' ⊢
   (forget CommSemiRingCat).obj R ≟ CommSemiRingCat.carrier R'
 
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
-
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
   inferInstanceAs <| CommSemiring R.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ ⟨R⟩
@@ -578,19 +555,15 @@ variable {R} in
 /-- The type of morphisms in `CommRingCat`. -/
 @[ext]
 structure Hom (R S : CommRingCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category CommRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -659,9 +632,6 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
-
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 

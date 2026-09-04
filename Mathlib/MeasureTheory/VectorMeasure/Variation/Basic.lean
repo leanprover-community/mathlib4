@@ -6,7 +6,8 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Relations
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 /-!

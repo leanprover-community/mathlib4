@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Edward van de Meent
 -/
 module
 
-public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Infinite sums in extended nonnegative reals
@@ -28,8 +28,9 @@ public section
 
 open Set Function
 
-open Filter Function Metric Set Topology
-open scoped Finset ENNReal NNReal
+open Filter Function Metric Set
+
+open scoped Topology Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -240,7 +241,7 @@ theorem tendsto_tsum_compl_atTop_zero {α : Type*} {f : α → ℝ≥0∞} (hf :
 
 protected theorem tsum_apply {ι α : Type*} {f : ι → α → ℝ≥0∞} {x : α} :
     (∑' i, f i) x = ∑' i, f i x :=
-  tsum_apply <| Pi.summable.mpr fun _ => ENNReal.summable
+  Pi.tsum_apply <| Pi.summable.mpr fun _ => ENNReal.summable
 
 theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : ∑' i, g i ≠ ∞) (h₂ : g ≤ f) :
     ∑' i, (f i - g i) = ∑' i, f i - ∑' i, g i :=

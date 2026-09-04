@@ -71,33 +71,29 @@ end MagmaCat
 /-- The type of morphisms in `AddMagmaCat R`. -/
 @[ext]
 structure AddMagmaCat.Hom (A B : AddMagmaCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
 /-- The type of morphisms in `MagmaCat R`. -/
 @[to_additive, ext]
 structure MagmaCat.Hom (A B : MagmaCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
 
 namespace MagmaCat
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category MagmaCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MulHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory MagmaCat (· →ₙ* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `MagmaCat` back into a `MulHom`. -/
 @[to_additive /-- Turn a morphism in `AddMagmaCat` back into an `AddHom`. -/]
@@ -126,8 +122,6 @@ lemma coe_id {X : MagmaCat} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : MagmaCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MagmaCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -232,33 +226,29 @@ end Semigrp
 /-- The type of morphisms in `AddSemigrp R`. -/
 @[ext]
 structure AddSemigrp.Hom (A B : AddSemigrp.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
 /-- The type of morphisms in `Semigrp R`. -/
 @[to_additive, ext]
 structure Semigrp.Hom (A B : Semigrp.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
 
 namespace Semigrp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category Semigrp.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MulHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory Semigrp (· →ₙ* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Semigrp` back into a `MulHom`. -/
 @[to_additive /-- Turn a morphism in `AddSemigrp` back into an `AddHom`. -/]
@@ -287,8 +277,6 @@ lemma coe_id {X : Semigrp} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : Semigrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : Semigrp} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

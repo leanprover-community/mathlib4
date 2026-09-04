@@ -56,7 +56,9 @@ metric space, Hausdorff distance
 
 noncomputable section
 
-open NNReal ENNReal Topology Set Filter Pointwise Bornology
+open NNReal ENNReal Set Filter Pointwise Bornology
+
+open scoped Topology
 
 universe u v w
 
