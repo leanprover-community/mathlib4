@@ -47,7 +47,8 @@ macro_rules
   | `(tactic| dyadic_interval $cfg:optConfig [$args,*]) =>
       `(tactic| inclusion $cfg [core, interval_dyadic_real, $args,*])
 
-/-- `dyadic_interval?` checks whether `dyadic_interval` can prove the goal without closing it. -/
+/-- `dyadic_interval?` is a proof writing aid that quickly checks if `dyadic_interval` would close
+the goal, without doing the expensive kernel computation that actually closes the goal. -/
 syntax (name := dyadicInterval?) "dyadic_interval?" (" [" inclusionArg,* "]")? : tactic
 
 macro_rules
