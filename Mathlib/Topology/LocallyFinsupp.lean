@@ -317,9 +317,6 @@ def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
     (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
-  zero := mk_of_mem_addSubmonoid 0 <| zero_mem _
-
 instance [AddMonoid Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem_addSubmonoid (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
 
