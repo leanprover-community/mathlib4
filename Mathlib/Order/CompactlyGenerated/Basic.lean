@@ -5,14 +5,15 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Basic.Finite.Set
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Order.OrderIsoNat
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
-public import Mathlib.Data.Finset.Order
-public import Mathlib.Order.Interval.Set.OrderIso
-public import Mathlib.Data.Finite.Set
 public import Mathlib.Tactic.TFAE
 
 /-!
@@ -448,30 +449,6 @@ lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
     contradiction
   simp_rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot, ← disjoint_iff]
   intro s hs
-  rw [← Finset.sup_erase_bot]
-  set t := s.erase ⊥
-  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by
-    refine hf ?_ ?_ hij <;> aesop (add norm simp [t])
-  have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
-    ext a
-    simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq,
-      Finset.erase_insert_eq_erase, Finset.mem_image, t]
-    refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
-    obtain ⟨j, hj, rfl⟩ := hs has
-    exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
-  rw [← this, Finset.sup_image]
-  specialize h (insert i (t.preimage _ hf))
-  rw [Finset.supIndep_iff_disjoint_erase] at h
-  exact h i (Finset.mem_insert_self i _)
-
-@[deprecated iSupIndep_iff_supIndep (since := "2026-02-18")]
-lemma iSupIndep_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
-    (hf : InjOn f {i | f i ≠ ⊥}) :
-    iSupIndep f ↔ ∀ (s : Finset ι), s.SupIndep f := by
-  refine ⟨fun h ↦ h.supIndep', fun h ↦ iSupIndep_def'.mpr fun i ↦ ?_⟩
-  simp_rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot, ← disjoint_iff]
-  intro s hs
-  classical
   rw [← Finset.sup_erase_bot]
   set t := s.erase ⊥
   replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by

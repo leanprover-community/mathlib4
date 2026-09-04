@@ -62,7 +62,14 @@ lemma isSMulRegular_map [SMul R M] [SMul S M] (f : R → S) (smul : ∀ m : M, f
 
 protected alias ⟨IsSMulRegular.of_map, IsSMulRegular.map⟩ := isSMulRegular_map
 
+theorem isAddTorsionFree_iff' [AddMonoid M] : IsAddTorsionFree M ↔ ∀ n ≠ 0, IsSMulRegular M n :=
+  isAddTorsionFree_iff M
+
 namespace IsSMulRegular
+
+theorem nat_of_isAddTorsionFree [AddMonoid M] [IsAddTorsionFree M] {n : ℕ} (h : n ≠ 0) :
+    IsSMulRegular M n :=
+  isAddTorsionFree_iff'.mp ‹_› n h
 
 @[simp] theorem natAbs_iff [SubtractionMonoid M] {n : ℤ} :
     IsSMulRegular M n.natAbs ↔ IsSMulRegular M n := by
@@ -137,8 +144,7 @@ variable (M)
 @[simp]
 theorem one : IsSMulRegular M (1 : R) := fun a b ab => by
   dsimp only [Function.comp_def] at ab
-  rw [one_smul, one_smul] at ab
-  assumption
+  rwa [one_smul, one_smul] at ab
 
 variable {M}
 

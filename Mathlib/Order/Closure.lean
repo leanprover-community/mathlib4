@@ -240,6 +240,12 @@ section SemilatticeSup
 
 variable [SemilatticeSup α] (c : ClosureOperator α)
 
+theorem sup_closure_le (x y : α) : x ⊔ c y ≤ c (x ⊔ y) :=
+  sup_le (le_sup_left.trans (c.le_closure _)) (c.monotone le_sup_right)
+
+theorem closure_sup_le (x y : α) : c x ⊔ y ≤ c (x ⊔ y) :=
+  sup_le (c.monotone le_sup_left) (le_sup_right.trans (c.le_closure _))
+
 theorem closure_sup_closure_le (x y : α) : c x ⊔ c y ≤ c (x ⊔ y) :=
   c.monotone.le_map_sup _ _
 

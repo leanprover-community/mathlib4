@@ -9,7 +9,7 @@ public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.ContinuousOn
 
 /-!
-### Locally finite families of sets
+# Locally finite families of sets
 
 We say that a family of sets in a topological space is *locally finite* if at every point `x : X`,
 there is a neighborhood of `x` which meets only finitely many sets in the family.

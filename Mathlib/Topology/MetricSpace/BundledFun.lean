@@ -6,8 +6,8 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Basic.Rel
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Rel
 
 /-!
 # Pseudometrics as bundled functions

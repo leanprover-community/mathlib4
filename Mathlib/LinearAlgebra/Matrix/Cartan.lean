@@ -9,6 +9,7 @@ public import Mathlib.Data.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Tactic.NormDet
 
@@ -18,6 +19,8 @@ import Mathlib.Tactic.NormDet
 This file defines Cartan matrices for simple Lie algebras, both the exceptional types
 (E₆, E₇, E₈, F₄, G₂) and the classical infinite families (A, B, C, D), as well as the
 generalized Eₙ family obtained by continuing the E-type Dynkin diagram.
+
+It also defines the predicate that a matrix is a finite-type Cartan matrix `Matrix.IsFiniteCartan`.
 
 ## Main definitions
 
@@ -454,5 +457,13 @@ theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by decide
 end Properties
 
 end CartanMatrix
+
+/-- The proposition that a matrix is a finite-type Cartan matrix. -/
+structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (M : Matrix ι ι ℤ) : Prop where
+  diag : ∀ i, M i i = 2
+  offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
+  zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
+  exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
 
 end

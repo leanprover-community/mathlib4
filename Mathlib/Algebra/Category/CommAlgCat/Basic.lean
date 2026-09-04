@@ -28,7 +28,7 @@ variable {R : Type u} [CommRing R]
 variable (R) in
 /-- The category of R-algebras and their morphisms. -/
 structure CommAlgCat where
-  private mk ::
+  _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
   [commRing : CommRing carrier]
@@ -47,8 +47,6 @@ instance : CoeSort (CommAlgCat R) (Type v) := ⟨carrier⟩
 attribute [coe] carrier
 
 variable (R) in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `CommAlgCat R`. -/
 abbrev of (X : Type v) [CommRing X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
@@ -59,22 +57,18 @@ lemma coe_of (X : Type v) [CommRing X] [Algebra R X] : (of R X : Type v) = X := 
 /-- The type of morphisms in `CommAlgCat R`. -/
 @[ext]
 structure Hom (A B : CommAlgCat.{v} R) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying algebra map. -/
   hom' : A →ₐ[R] B
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (CommAlgCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id R A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (CommAlgCat.{v} R) (· →ₐ[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommAlgCat` back into an `AlgHom`. -/
 abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := CommAlgCat R) f
@@ -146,6 +140,17 @@ instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgCat.{v} R) wher
 
 @[simp] lemma forget₂_algCat_map (f : A ⟶ B) :
     (forget₂ (CommAlgCat.{v} R) (AlgCat.{v} R)).map f = AlgCat.ofHom f.hom := rfl
+
+variable (A B) in
+/-- The bijection between the set of morphisms `A ⟶ B` in `CommAlgCat` and the set of morphisms
+`A ⟶ B` in `CommRingCat` commuting with the corresponding algebra maps `R → A` and `R → B`. -/
+@[simps]
+def homEquivCommRingCat :
+    (A ⟶ B) ≃ {f : CommRingCat.of A ⟶ .of B // f.hom.comp (algebraMap R A) = algebraMap R B} where
+  toFun f := ⟨CommRingCat.ofHom f.hom, congr($f.hom.comp_algebraMap)⟩
+  invFun f := CommAlgCat.ofHom ⟨f.val.hom, fun r ↦ congr($f.prop r)⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- Build an isomorphism in the category `CommAlgCat R` from an `AlgEquiv` between commutative
 `Algebra`s. -/

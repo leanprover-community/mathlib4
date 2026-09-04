@@ -28,7 +28,7 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of R-algebras and their morphisms. -/
 structure AlgCat where
-  private mk ::
+  _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
   [isRing : Ring carrier]
@@ -45,8 +45,6 @@ instance : CoeSort (AlgCat R) (Type v) :=
 
 attribute [coe] AlgCat.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `AlgCat R`. -/
 abbrev of (X : Type v) [Ring X] [Algebra R X] : AlgCat.{v} R :=
@@ -59,22 +57,18 @@ variable {R} in
 /-- The type of morphisms in `AlgCat R`. -/
 @[ext]
 structure Hom (A B : AlgCat.{v} R) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying algebra map. -/
   hom' : A →ₐ[R] B
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (AlgCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id R A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (AlgCat.{v} R) (· →ₐ[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 variable {R} in
 /-- Turn a morphism in `AlgCat` back into an `AlgHom`. -/

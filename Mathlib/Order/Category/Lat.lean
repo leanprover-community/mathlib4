@@ -51,22 +51,18 @@ abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 /-- The type of morphisms in `Lat R`. -/
 @[ext]
 structure Hom (X Y : Lat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `LatticeHom`. -/
   hom' : LatticeHom X Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category Lat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨LatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Lat (LatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Lat` back into a `LatticeHom`. -/
 abbrev Hom.hom {X Y : Lat.{u}} (f : Hom X Y) :=

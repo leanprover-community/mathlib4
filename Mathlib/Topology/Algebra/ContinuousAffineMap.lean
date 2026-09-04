@@ -14,11 +14,11 @@ public import Mathlib.Topology.Algebra.Affine
 
 This file defines a type of bundled continuous affine maps.
 
-## Main definitions:
+## Main definitions
 
 * `ContinuousAffineMap`
 
-## Notation:
+## Notation
 
 We introduce the notation `P →ᴬ[R] Q` for `ContinuousAffineMap R P Q` (not to be confused with the
 notation `A →A[R] B` for `ContinuousAlgHom`). Note that this is parallel to the notation `E →L[R] F`

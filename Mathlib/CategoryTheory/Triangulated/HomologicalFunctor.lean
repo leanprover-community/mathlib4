@@ -176,17 +176,14 @@ noncomputable def homologySequenceδ
     (F.shift n₀).obj T.obj₃ ⟶ (F.shift n₁).obj T.obj₁ :=
   F.shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
 
-variable {T T'}
-
 @[reassoc]
 lemma homologySequenceδ_naturality
-    [F.ShiftSequence ℤ] (T T' : Triangle C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    [F.ShiftSequence ℤ] {T T' : Triangle C} (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (F.shift n₀).map φ.hom₃ ≫ F.homologySequenceδ T' n₀ n₁ h =
       F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map φ.hom₁ := by
   dsimp only [homologySequenceδ]
   rw [← shiftMap_comp', ← φ.comm₃, shiftMap_comp]
 
-variable (T)
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C] [Abelian A] [F.IsHomological]
 variable [F.ShiftSequence ℤ] (T : Triangle C) (hT : T ∈ distTriang C)

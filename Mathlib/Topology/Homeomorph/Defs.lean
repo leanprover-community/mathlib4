@@ -358,6 +358,37 @@ theorem comp_isOpenQuotientMap_iff (e : Y ≃ₜ Z) {f : X → Y} :
   ⟨fun h ↦ by simpa [← Function.comp_assoc] using e.symm.isOpenQuotientMap.comp h,
     fun hf ↦ e.isOpenQuotientMap.comp hf⟩
 
+@[simp]
+theorem isEmbedding_comp_iff (e : X ≃ₜ Y) {f : Y → Z} : IsEmbedding (f ∘ e) ↔ IsEmbedding f :=
+  ⟨fun h ↦ by simpa [Function.comp_assoc] using h.comp e.symm.isEmbedding,
+    fun hf ↦ hf.comp e.isEmbedding⟩
+
+@[simp]
+theorem comp_isEmbedding_iff (e : Y ≃ₜ Z) {f : X → Y} : IsEmbedding (e ∘ f) ↔ IsEmbedding f :=
+  e.isEmbedding.of_comp_iff
+
+@[simp]
+theorem isOpenEmbedding_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
+    IsOpenEmbedding (f ∘ e) ↔ IsOpenEmbedding f :=
+  ⟨fun h ↦ by simpa [Function.comp_assoc] using h.comp e.symm.isOpenEmbedding,
+    fun hf ↦ hf.comp e.isOpenEmbedding⟩
+
+@[simp]
+theorem comp_isOpenEmbedding_iff (e : Y ≃ₜ Z) {f : X → Y} :
+    IsOpenEmbedding (e ∘ f) ↔ IsOpenEmbedding f :=
+  e.isOpenEmbedding.of_comp_iff f
+
+@[simp]
+theorem isClosedEmbedding_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
+    IsClosedEmbedding (f ∘ e) ↔ IsClosedEmbedding f :=
+  ⟨fun h ↦ by simpa [Function.comp_assoc] using h.comp e.symm.isClosedEmbedding,
+    fun hf ↦ hf.comp e.isClosedEmbedding⟩
+
+@[simp]
+theorem comp_isClosedEmbedding_iff (e : Y ≃ₜ Z) {f : X → Y} :
+    IsClosedEmbedding (e ∘ f) ↔ IsClosedEmbedding f :=
+  e.isClosedEmbedding.of_comp_iff
+
 variable (X Y) in
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/
 @[simps!]

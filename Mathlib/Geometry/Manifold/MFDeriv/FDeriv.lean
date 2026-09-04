@@ -102,7 +102,6 @@ theorem mdifferentiable_iff_differentiable : MDiff f ↔ Differentiable 𝕜 f :
 alias ⟨MDifferentiable.differentiable, Differentiable.mdifferentiable⟩ :=
   mdifferentiable_iff_differentiable
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide -/
 @[simp]
 theorem mfderivWithin_eq_fderivWithin :

@@ -609,7 +609,7 @@ protected theorem MDifferentiableAt.mvfderiv {f : M → E'} (h : MDiffAt f x) :
 /-! ## Composition lemmas for `mvfderiv(Within)` -/
 section
 
-variable {f : M' → M} {g : M → 𝕜} {x : M'} {y : M} {u : Set M} {s : Set M'}
+variable {f : M' → M} {g : M → F} {x : M'} {y : M} {u : Set M} {s : Set M'}
 
 theorem mvfderivWithin_comp (x : M') (hg : MDiffAt[u] g (f x)) (hf : MDiffAt[s] f x)
     (h : s ⊆ f ⁻¹' u) (hxs : UniqueMDiffAt[s] x) :

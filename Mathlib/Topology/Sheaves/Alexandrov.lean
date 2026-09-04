@@ -10,6 +10,7 @@ public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
+# Sheaves on the Alexandrov topology of a preorder
 
 Let `X` be a preorder `≤`, and consider the associated Alexandrov topology on `X`.
 Given a functor `F : X ⥤ C` to a complete category, we can extend `F` to a

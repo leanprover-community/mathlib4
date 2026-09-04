@@ -367,9 +367,9 @@ given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` 
 when `p` is not prime. -/
 def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers (p + 1) :=
-  ((prodCongrRight fun _ ↦ setCongr <| smoothNumbers_eq_factoredNumbers p).trans <|
+  ((prodCongrRight fun _ ↦ Set.equivOfEq <| smoothNumbers_eq_factoredNumbers p).trans <|
     equivProdNatFactoredNumbers hp Finset.notMem_range_self).trans <|
-    setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
+    Set.equivOfEq <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
 
 @[simp]
 lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :

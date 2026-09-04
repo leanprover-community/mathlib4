@@ -7,7 +7,7 @@ Authors: Gaëtan Serré
 module
 
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
 /-!
 

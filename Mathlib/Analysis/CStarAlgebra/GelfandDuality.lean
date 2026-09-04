@@ -148,7 +148,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     self-adjoint, so also do their norms. Applying the C⋆-property of the norm and taking square
     roots shows that the norm is preserved. -/
   have : spectralRadius ℂ (gelfandTransform ℂ A (star a * a)) = spectralRadius ℂ (star a * a) := by
-    unfold spectralRadius; rw [spectrum.gelfandTransform_eq]
+    simp only [spectralRadius_eq_of_unital, spectrum.gelfandTransform_eq]
   rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
   simp only [ENNReal.coe_inj, CStarRing.nnnorm_star_mul_self, ← sq] at this

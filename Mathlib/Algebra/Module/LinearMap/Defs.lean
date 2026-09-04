@@ -174,7 +174,9 @@ variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Mod
   (f : F) [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
-abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
+abbrev _root_.LinearMap.ofClass : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
+
+@[deprecated (since := "2026-09-03")] alias linearMap := LinearMap.ofClass
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 instance instCoeToLinearMap : CoeHead F (M₁ →ₗ[R] M₂) where

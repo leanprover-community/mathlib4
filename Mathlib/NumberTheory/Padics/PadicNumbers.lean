@@ -82,8 +82,14 @@ def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
 def Int.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℤ ℤᵐ⁰ :=
   (Rat.padicValuation p).comap (Int.castRingHom ℚ)
 
+@[simp]
 lemma Rat.padicValuation_cast (p : ℕ) [Fact p.Prime] (x : ℤ) :
-    Rat.padicValuation p (Int.cast x) = Int.padicValuation p x :=
+    Rat.padicValuation p x = Int.padicValuation p x :=
+  rfl
+
+@[simp]
+lemma Rat.padicValuation_natCast (p : ℕ) [Fact p.Prime] (x : ℕ) :
+    Rat.padicValuation p x = Int.padicValuation p x :=
   rfl
 
 lemma Rat.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
@@ -95,7 +101,6 @@ lemma Int.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
     Int.padicValuation p x = 0 ↔ x = 0 := by
   simp [← Rat.padicValuation_cast]
 
-@[simp]
 lemma Rat.padicValuation_self (p : ℕ) [Fact p.Prime] :
     Rat.padicValuation p p = exp (-1) := by
   simp [Rat.padicValuation, Nat.Prime.ne_zero Fact.out]
@@ -103,7 +108,7 @@ lemma Rat.padicValuation_self (p : ℕ) [Fact p.Prime] :
 @[simp]
 lemma Int.padicValuation_self (p : ℕ) [Fact p.Prime] :
     Int.padicValuation p p = exp (-1) := by
-  simp [← Rat.padicValuation_cast]
+  rw [← Rat.padicValuation_natCast, Rat.padicValuation_self]
 
 lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
     Int.padicValuation p x ≤ 1 := by
@@ -1197,6 +1202,21 @@ lemma comap_mulValuation_eq_int_padicValuation :
 lemma norm_eq_zpow_log_mulValuation {x : ℚ_[p]} (hx : x ≠ 0) :
     ‖x‖ = (p : ℝ) ^ (log (mulValuation x)) := by
   simp [norm_eq_zpow_neg_valuation, hx]
+
+lemma norm_lt_zpow_iff_mulValuation_lt_exp {x : ℚ_[p]} {m : ℤ} :
+    ‖x‖ < (p : ℝ) ^ m ↔ mulValuation x < exp m := by
+  have h1p : (1 : ℝ) < p := mod_cast hp.out.one_lt
+  by_cases hx : x = 0
+  · simpa [hx] using zpow_pos (by positivity) m
+  · rw [norm_eq_zpow_neg_valuation hx, zpow_lt_zpow_iff_right₀ h1p, mulValuation_toFun,
+      ite_eq_right hx, exp_lt_exp]
+
+lemma norm_lt_norm_iff_mulValuation_lt {x y : ℚ_[p]} :
+    ‖x‖ < ‖y‖ ↔ mulValuation x < mulValuation y := by
+  by_cases hy : y = 0
+  · simp [hy]
+  rw [norm_eq_zpow_log_mulValuation hy, norm_lt_zpow_iff_mulValuation_lt_exp,
+    exp_log (mulValuation.ne_zero_iff.mpr hy)]
 
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
 def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=

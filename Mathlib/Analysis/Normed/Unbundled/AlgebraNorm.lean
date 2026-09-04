@@ -77,6 +77,10 @@ instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S where
 
 theorem toFun_eq_coe (p : AlgebraNorm R S) : p.toFun = p := rfl
 
+@[simp]
+theorem toRingNorm_apply (p : AlgebraNorm R S) (x : S) : p.toRingNorm x = p x :=
+  rfl
+
 @[ext]
 theorem ext {p q : AlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
@@ -165,6 +169,10 @@ instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S wher
   map_smul_eq_mul f := f.smul'
 
 theorem toFun_eq_coe (p : MulAlgebraNorm R S) : p.toFun = p := rfl
+
+@[simp]
+theorem toMulRingNorm_apply (p : MulAlgebraNorm R S) (x : S) : p.toMulRingNorm x = p x :=
+  rfl
 
 @[ext]
 theorem ext {p q : MulAlgebraNorm R S} : (∀ x, p x = q x) → p = q :=

@@ -52,22 +52,18 @@ abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddD
 /-- The type of morphisms in `FinBddDistLat R`. -/
 @[ext]
 structure Hom (X Y : FinBddDistLat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category FinBddDistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory FinBddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `FinBddDistLat` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : FinBddDistLat.{u}} (f : Hom X Y) :=

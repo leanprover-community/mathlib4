@@ -740,6 +740,16 @@ simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
   simpa only [succ_zero_eq_one, val_zero, zero_succAbove, succ_one_eq_two]
     using succ_succAbove_succ (0 : Fin (n + 2)) (0 : Fin (n + 1))
 
+@[simp]
+lemma succAbove_le_iff {n : ℕ} (p : Fin (n + 1)) (i : Fin n) :
+    p.succAbove i ≤ p ↔ i.castSucc < p := by
+  grind [Fin.succAbove]
+
+@[simp]
+lemma succAbove_lt_iff {n : ℕ} (p : Fin (n + 1)) (i : Fin n) :
+    p.succAbove i < p ↔ i.castSucc < p := by
+  grind [Fin.succAbove]
+
 end SuccAbove
 
 section PredAbove

@@ -93,7 +93,6 @@ theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
   grind [Std.Irrefl]
 
 @[deprecated (since := "2026-06-30")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
-@[deprecated (since := "2026-02-12")] alias irreflexive_iff_subrelation_ne := irrefl_iff_le_ne
 
 protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
   ⟨symm_of r, symm_of r⟩
@@ -134,8 +133,6 @@ instance Std.Symm.comap [Std.Symm r] (f : α → β) : Std.Symm (r on f) where
 
 instance IsTrans.comap [IsTrans β r] (f : α → β) : IsTrans α (r on f) where
   trans _ _ _ := trans_of r
-
-@[deprecated (since := "2026-02-21")] alias Transitive.comap := IsTrans.comap
 
 instance IsEquiv.comap [IsEquiv β r] (f : α → β) : IsEquiv α (r on f) where
 
@@ -185,11 +182,7 @@ theorem comp_iff {r : α → Prop → Prop} : r ∘r (· ↔ ·) = r := by
   grind [comp_eq]
 
 theorem comp_assoc : (r ∘r p) ∘r q = r ∘r p ∘r q := by
-  funext a d
-  apply propext
-  constructor
-  · exact fun ⟨c, ⟨b, hab, hbc⟩, hcd⟩ ↦ ⟨b, hab, c, hbc, hcd⟩
-  · exact fun ⟨b, hab, c, hbc, hcd⟩ ↦ ⟨c, ⟨b, hab, hbc⟩, hcd⟩
+  grind [Comp]
 
 theorem flip_comp : flip (r ∘r p) = flip p ∘r flip r := by
   funext c a
@@ -239,11 +232,12 @@ related by `r`.
 protected def Map (r : α → β → Prop) (f : α → γ) (g : β → δ) : γ → δ → Prop := fun c d ↦
   ∃ a b, r a b ∧ f a = c ∧ g b = d
 
+@[grind =]
 lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b = d := Iff.rfl
 
 @[simp] lemma map_map (r : α → β → Prop) (f₁ : α → γ) (g₁ : β → δ) (f₂ : γ → ε) (g₂ : δ → ζ) :
     Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
-  grind [Relation.Map]
+  grind
 
 @[simp]
 lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → Prop) (a : α) (b : β) :
@@ -272,12 +266,9 @@ instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → �
 
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
-  refine ⟨fun _ _ _ ⟨x, y, hxy, hx, hy⟩ ⟨y', z, hyz, hy', hz⟩ ↦ ?_⟩
-  exact ⟨x, z, trans_of r hxy <| trans_of r (hf y y' <| hy' ▸ hy) hyz, hx, hz⟩
+  grind [isTrans_def]
 
 @[deprecated (since := "2026-03-27")] alias isTrans_map := IsTrans.map
-
-@[deprecated (since := "2026-02-21")] alias map_transitive := isTrans_map
 
 lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β) (hf : f.Surjective)
     (hf_ker : ∀ x y, f x = f y → r x y) : Equivalence (Relation.Map r f f) where
@@ -291,7 +282,7 @@ lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : r
 
 lemma le_onFun_map {r : α → α → Prop} (f : α → β) : r ≤ (Relation.Map r f f on f) := by
   unfold Pi.hasLe Prop.le
-  grind [Relation.Map]
+  grind
 
 lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj : f.Injective) :
     (Relation.Map r f f on f) = r := by
@@ -300,26 +291,24 @@ lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj :
 
 lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Relation.Map (r on f) f f ≤ r := by
   unfold Pi.hasLe Prop.le
-  grind [Relation.Map]
+  grind
 
 lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : f.Surjective) :
     Relation.Map (r on f) f f = r := by
   ext x y
-  have _ := hsurj x
-  have _ := hsurj y
-  grind [Relation.Map]
+  grind [hsurj x, hsurj y]
 
 lemma map_onFun_map_eq_map {r : α → α → Prop} (f : α → β) :
     Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f := by
-  grind [Relation.Map]
+  grind
 
 lemma onFun_map_onFun_eq_onFun {r : β → β → Prop} (f : α → β) :
     (Relation.Map (r on f) f f on f) = (r on f) := by
-  grind [Relation.Map]
+  grind
 
 lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} (f : α → β) (a₁ a₂ : α) :
     Relation.Map (r on f) f f (f a₁) (f a₂) ↔ r (f a₁) (f a₂) := by
-  grind [Relation.Map]
+  grind
 
 end Map
 
@@ -383,12 +372,7 @@ instance stdSymm [Std.Symm r] : Std.Symm (ReflGen r) where
 @[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
 instance [IsTrans α r] : IsPreorder α (ReflGen r) where
-  trans a b c h₁ h₂ := by
-    obtain (rfl | h₂) := h₂
-    · exact h₁
-    obtain (rfl | h₁) := h₁
-    · exact single h₂
-    exact single (trans_of r h₁ h₂)
+  trans := by grind [isTrans_def]
 
 end ReflGen
 
@@ -495,15 +479,7 @@ theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflT
 
 theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a b)
     (ac : ReflTransGen r a c) : ReflTransGen r b c ∨ ReflTransGen r c b := by
-  induction ab with
-  | refl => exact Or.inl ac
-  | tail _ bd IH =>
-    rcases IH with (IH | IH)
-    · rcases cases_head IH with (rfl | ⟨e, be, ec⟩)
-      · exact Or.inr (single bd)
-      · cases U bd be
-        exact Or.inl ec
-    · exact Or.inr (IH.tail bd)
+  induction ab with grind [→ cases_head, Relator.RightUnique]
 
 end ReflTransGen
 
@@ -647,9 +623,6 @@ theorem transGen_eq_self [IsTrans α r] : TransGen r = r :=
       | single hc => exact hc
       | tail _ hcd hac => exact IsTrans.trans _ _ _ hac hcd, TransGen.single⟩
 
-@[deprecated inferInstance (since := "2026-02-21")]
-theorem transitive_transGen : IsTrans α (TransGen r) := inferInstance
-
 @[deprecated transGen_eq_self (since := "2026-03-27"), grind =]
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self
@@ -735,9 +708,6 @@ instance : IsPreorder α (ReflTransGen r) where
 
 @[deprecated inferInstance (since := "2026-03-27")]
 theorem reflexive_reflTransGen : Std.Refl (ReflTransGen r) := inferInstance
-
-@[deprecated inferInstance (since := "2026-02-21")]
-theorem transitive_reflTransGen : IsTrans α (ReflTransGen r) := inferInstance
 
 @[deprecated reflTransGen_eq_self (since := "2026-03-27"), grind =]
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
@@ -929,12 +899,8 @@ protected instance Join.refl [Std.Refl r] : Std.Refl (Join r) where
 @[deprecated (since := "2026-06-10")] alias reflexive_join := Join.refl
 
 theorem isTrans_join [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
-    IsTrans α (Join r) :=
-  ⟨fun _a b _c ⟨x, hax, hbx⟩ ⟨y, hby, hcy⟩ ↦
-  let ⟨z, hxz, hyz⟩ := h b x y hbx hby
-  ⟨z, trans_of r hax hxz, trans_of r hcy hyz⟩⟩
-
-@[deprecated (since := "2026-02-21")] alias transitive_join := isTrans_join
+    IsTrans α (Join r) := by
+  grind [isTrans_def, Join]
 
 theorem equivalence_join [IsPreorder α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
     Equivalence (Join r) :=
@@ -958,9 +924,6 @@ theorem reflTransGen_le_of_le {r' : α → α → Prop} [Std.Refl r] [IsTrans α
 @[deprecated (since := "2026-06-30")]
 alias reflTransGen_of_isTrans_reflexive := reflTransGen_le_of_le
 
-@[deprecated (since := "2026-02-21")]
-alias reflTransGen_of_transitive_reflexive := reflTransGen_le_of_le
-
 theorem reflTransGen_le_of_equivalence_of_le {r' : α → α → Prop} (hr : Equivalence r) :
     r' ≤ r → ReflTransGen r' ≤ r :=
   @reflTransGen_le_of_le _ _ _ hr.stdRefl hr.isTrans
@@ -983,23 +946,10 @@ theorem Quot.eqvGen_exact (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
     (Quot.lift (Quotient.mk (EqvGen.setoid r)) (fun x y h ↦ Quot.sound (EqvGen.rel x y h))) H)
 
 theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
-  EqvGen.rec
-    (fun _ _ h ↦ Quot.sound h)
-    (fun _ ↦ rfl)
-    (fun _ _ _ IH ↦ Eq.symm IH)
-    (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
-    H
+  H.rec (fun _ _ ↦ Quot.sound) (fun _ ↦ rfl) (fun _ _ _ ↦ .symm) (fun _ _ _ _ _ ↦ .trans)
 
 theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
-  Iff.intro
-    (by
-      intro h
-      induction h with
-      | rel => assumption
-      | refl => exact h.1 _
-      | symm => apply h.symm; assumption
-      | trans _ _ _ _ _ hab hbc => exact h.trans hab hbc)
-    (EqvGen.rel a b)
+  ⟨fun h ↦ by induction h <;> grind [Equivalence], .rel a b⟩
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff

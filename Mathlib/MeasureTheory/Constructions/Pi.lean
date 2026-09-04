@@ -390,8 +390,7 @@ lemma pi_map_pi {X Y : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (
   refine (pi_eq fun s hs ↦ ?_).symm
   rw [map_apply_of_aemeasurable _ (.univ_pi hs)]
   swap
-  · exact aemeasurable_pi_lambda _
-      fun i ↦ (hf i).comp_quasiMeasurePreserving (quasiMeasurePreserving_eval _ i)
+  · exact .of_eval fun i ↦ (hf i).comp_quasiMeasurePreserving (quasiMeasurePreserving_eval _ i)
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' (Set.univ.pi s) =
       Set.univ.pi (fun i ↦ (f i) ⁻¹' (s i)) := by ext x; simp
   rw [this, pi_pi]

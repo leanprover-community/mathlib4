@@ -5,7 +5,7 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Topology.Instances.ENat
 import Mathlib.Algebra.Order.Floor.Extended
 public import Mathlib.Algebra.Order.Module.Field
