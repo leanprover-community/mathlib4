@@ -240,6 +240,7 @@ public import Mathlib.Algebra.Category.Ring.EqualizerPushout
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.Algebra.Category.Ring.FinitePresentation
 public import Mathlib.Algebra.Category.Ring.Instances
+public import Mathlib.Algebra.Category.Ring.LiftingProperties
 public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.Algebra.Category.Ring.LinearAlgebra
 public import Mathlib.Algebra.Category.Ring.Small
@@ -2885,10 +2886,13 @@ public import Mathlib.CategoryTheory.Join.Pseudofunctor
 public import Mathlib.CategoryTheory.Join.Sum
 public import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 public import Mathlib.CategoryTheory.LiftingProperties.Basic
+public import Mathlib.CategoryTheory.LiftingProperties.Diagonal
 public import Mathlib.CategoryTheory.LiftingProperties.Limits
 public import Mathlib.CategoryTheory.LiftingProperties.Over
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.LiftingProperties.PushoutProduct
+public import Mathlib.CategoryTheory.LiftingProperties.Unique
+public import Mathlib.CategoryTheory.LiftingProperties.UniqueLimits
 public import Mathlib.CategoryTheory.Limits.Bicones
 public import Mathlib.CategoryTheory.Limits.Chosen.End
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
@@ -3291,6 +3295,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Local
 public import Mathlib.CategoryTheory.MorphismProperty.LocalClosure
 public import Mathlib.CategoryTheory.MorphismProperty.LocalEpi
 public import Mathlib.CategoryTheory.MorphismProperty.OfObjectProperty
+public import Mathlib.CategoryTheory.MorphismProperty.Orthogonal
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 public import Mathlib.CategoryTheory.MorphismProperty.Representable
@@ -3557,6 +3562,7 @@ public import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+public import Mathlib.CategoryTheory.SmallObject.UniqueTransfiniteCompositionLifting
 public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 public import Mathlib.CategoryTheory.SmallRepresentatives
 public import Mathlib.CategoryTheory.Square

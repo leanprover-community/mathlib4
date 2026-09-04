@@ -16,6 +16,8 @@ shows basic properties of this notion.
 
 ## Main results
 - `HasLiftingProperty`: the definition of the lifting property
+- `isIso_of_hasLiftingProperty_self`: a morphism with the lifting property against itself
+  is an isomorphism
 
 ## Tags
 lifting property
@@ -118,6 +120,13 @@ theorem iff_of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
   exacts [of_arrow_iso_left e p, of_arrow_iso_left e.symm p]
 
 end HasLiftingProperty
+
+/-- A morphism with the (ordinary, not necessarily unique) lifting property against itself is an
+isomorphism. -/
+@[to_dual self]
+lemma isIso_of_hasLiftingProperty_self (f : X ⟶ Y) [HasLiftingProperty f f] : IsIso f :=
+  have sq : CommSq (𝟙 X) f f (𝟙 Y) := ⟨by rw [id_comp, comp_id]⟩
+  ⟨sq.lift, sq.fac_left, sq.fac_right⟩
 
 @[to_dual]
 lemma RetractArrow.rightLiftingProperty
