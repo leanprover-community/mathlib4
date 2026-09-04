@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Rel
+public import Mathlib.Basic.Rel
 public import Mathlib.Order.Filter.SmallSets
-public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Basic results on uniform spaces
@@ -39,8 +39,9 @@ But it makes a more systematic use of the filter library.
 
 @[expose] public section
 
-open Set Filter Topology
-open scoped SetRel Uniformity
+open Set Filter
+
+open scoped Topology SetRel Uniformity
 
 universe u v ua ub uc ud
 
@@ -429,7 +430,6 @@ lemma ball_preimage {f : α → β} {U : SetRel β β} {x : α} :
   ext : 1
   simp only [UniformSpace.ball, mem_preimage, Prod.map_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
   ext : 2
@@ -680,7 +680,7 @@ theorem UniformContinuous.subtype_map [UniformSpace α] [UniformSpace β] {p : �
   (hf.comp uniformContinuous_subtype_val).subtype_mk _
 
 theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α} :
-    UniformContinuousOn f s ↔ UniformContinuous (s.restrict f) := by
+    UniformContinuousOn f s ↔ UniformContinuous (s.domRestrict f) := by
   delta UniformContinuousOn UniformContinuous
   rw [← map_uniformity_set_coe, tendsto_map'_iff]; rfl
 
@@ -697,7 +697,7 @@ theorem tendsto_of_uniformContinuous_subtype [UniformSpace α] [UniformSpace β]
 theorem UniformContinuousOn.continuousOn [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α}
     (h : UniformContinuousOn f s) : ContinuousOn f s := by
   rw [uniformContinuousOn_iff_restrict] at h
-  rw [continuousOn_iff_continuous_restrict]
+  rw [continuousOn_iff_continuous_domRestrict]
   exact h.continuous
 
 instance [UniformSpace α] [(𝓤 α).IsCountablyGenerated] (s : Set α) : (𝓤 s).IsCountablyGenerated :=

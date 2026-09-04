@@ -87,12 +87,12 @@ lemma cross_mk {v w : Fin 3 → F} (hv : v ≠ 0) (hw : w ≠ 0) :
 lemma cross_mk_of_cross_eq_zero {v w : Fin 3 → F} (hv : v ≠ 0) (hw : w ≠ 0)
     (h : crossProduct v w = 0) :
     cross (mk F v hv) (mk F w hw) = mk F v hv := by
-  rw [cross_mk, dif_pos h]
+  rw [cross_mk, dite_eq_left h]
 
 lemma cross_mk_of_cross_ne_zero {v w : Fin 3 → F} (hv : v ≠ 0) (hw : w ≠ 0)
     (h : crossProduct v w ≠ 0) :
     cross (mk F v hv) (mk F w hw) = mk F (crossProduct v w) h := by
-  rw [cross_mk, dif_neg h]
+  rw [cross_mk, dite_eq_right h]
 
 lemma cross_self (v : ℙ F (Fin 3 → F)) : cross v v = v := by
   induction v with | h v hv =>
