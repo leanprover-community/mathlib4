@@ -477,7 +477,6 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp.coeff i = f.coeff i := rfl
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
   simp [monomial, Finsupp.single_apply]
 
-@[simp]
 theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
   Finsupp.single_eq_same
 
@@ -504,7 +503,6 @@ theorem coeff_X_one : coeff (X : R[X]) 1 = 1 :=
 theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 :=
   coeff_monomial
 
-@[simp]
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp
 
 @[aesop simp]
@@ -537,16 +535,13 @@ theorem coeff_C_of_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, 
 @[simp]
 lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
 
-@[simp]
 theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
-@[simp]
 theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
     coeff (ofNat(a) : R[X]) 0 = ofNat(a) :=
   coeff_monomial
 
-@[simp]
 theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
     coeff (ofNat(a) : R[X]) (n + 1) = 0 := by
   rw [← Nat.cast_ofNat]
