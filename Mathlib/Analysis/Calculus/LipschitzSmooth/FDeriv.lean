@@ -17,7 +17,8 @@ import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
 This file develops quantitative consequences of Lipschitz smoothness in terms of the Fréchet
 derivative: variation along a chord and, for real-valued functions, the upper and lower quadratic
 bounds usually called the descent lemma and, sometimes, the ascent lemma. It also proves that a
-differentiable function with Lipschitz Fréchet derivative is Lipschitz smooth.
+differentiable function with Lipschitz Fréchet derivative is Lipschitz smooth, globally or on a
+convex set.
 -/
 
 public section
@@ -79,42 +80,57 @@ end LipschitzSmoothWith
 
 open AffineMap MeasureTheory
 
+open scoped Convex
+
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
-variable {K : NNReal} {f : E → F}
+variable {K : NNReal} {f : E → F} {s : Set E}
 
-/-- **Descent lemma.** If `f` is differentiable and its Fréchet derivative is
-`K`-Lipschitz, then `f` is `K`-smooth (without convexity assumption). -/
-theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith [CompleteSpace F]
-    (hf : Differentiable ℝ f) (hL : LipschitzWith K (fderiv ℝ f)) :
-    LipschitzSmoothWith ℝ K f := by
-  refine ⟨hf, fun x y ↦ ?_⟩
-  have h_curve : CurveIntegrable (fderiv ℝ f) (.segment x y) :=
-    hL.continuous.curveIntegrable_segment
-  have h_const := curveIntegrable_segment_const (fderiv ℝ f x) x y
+/-- **Descent lemma on a set.** If `f` is differentiable on a convex set and its Fréchet derivative
+within the set is `K`-Lipschitz there, then `f` is `K`-smooth on the set. -/
+theorem DifferentiableOn.lipschitzSmoothOnWith_of_lipschitzOnWith [CompleteSpace F]
+    (hf : DifferentiableOn ℝ f s) (hs : Convex ℝ s)
+    (hL : LipschitzOnWith K (fderivWithin ℝ f s) s) : LipschitzSmoothOnWith ℝ K f s := by
+  refine ⟨hf, fun x hx y hy ↦ ?_⟩
+  have hseg : [x -[ℝ] y] ⊆ s := hs.segment_subset hx hy
+  have hLseg := hL.mono hseg
+  have h_curve : CurveIntegrable (fderivWithin ℝ f s) (.segment x y) :=
+    hLseg.continuousOn.curveIntegrable_segment
+  have h_const := curveIntegrable_segment_const (fderivWithin ℝ f s x) x y
   have h_integrable := curveIntegrable_segment.mp (h_curve.sub h_const)
-  rw [← curveIntegral_fderiv_segment (fun z _ ↦ hf z) hL.continuous.continuousOn,
+  rw [← curveIntegral_fderivWithin_segment hseg (fun z hz ↦ hf z (hseg hz)) hLseg.continuousOn,
     ← curveIntegral_segment_const, ← curveIntegral_fun_sub h_curve h_const,
     curveIntegral_segment]
   calc
     ‖∫ t in (0 : ℝ)..1,
-        (fderiv ℝ f (lineMap x y t) - fderiv ℝ f x) (y - x)‖ ≤ ∫ t in (0 : ℝ)..1,
-        ‖(fderiv ℝ f (lineMap x y t) - fderiv ℝ f x) (y - x)‖ :=
+        (fderivWithin ℝ f s (lineMap x y t) - fderivWithin ℝ f s x) (y - x)‖ ≤
+        ∫ t in (0 : ℝ)..1,
+          ‖(fderivWithin ℝ f s (lineMap x y t) - fderivWithin ℝ f s x) (y - x)‖ :=
       intervalIntegral.norm_integral_le_integral_norm zero_le_one
     _ ≤ ∫ t in (0 : ℝ)..1, K * dist x y ^ 2 * t :=
       intervalIntegral.integral_mono_on zero_le_one h_integrable.norm
         (Continuous.intervalIntegrable (by fun_prop) _ _) fun t ht ↦ by
           calc
-            ‖(fderiv ℝ f (lineMap x y t) - fderiv ℝ f x) (y - x)‖ ≤
-                ‖fderiv ℝ f (lineMap x y t) - fderiv ℝ f x‖ * ‖y - x‖ :=
+            ‖(fderivWithin ℝ f s (lineMap x y t) - fderivWithin ℝ f s x) (y - x)‖ ≤
+                ‖fderivWithin ℝ f s (lineMap x y t) - fderivWithin ℝ f s x‖ * ‖y - x‖ :=
               ContinuousLinearMap.le_opNorm _ _
-            _ = dist (fderiv ℝ f x) (fderiv ℝ f (lineMap x y t)) * dist x y := by
-              simp only [← dist_eq_norm']
+            _ = dist (fderivWithin ℝ f s x) (fderivWithin ℝ f s (lineMap x y t)) *
+                dist x y := by simp only [← dist_eq_norm']
             _ ≤ K * dist x (lineMap x y t) * dist x y :=
-              mul_le_mul_of_nonneg_right (hL.dist_le_mul _ _) dist_nonneg
+              mul_le_mul_of_nonneg_right
+                (hL.dist_le_mul x hx _ (hs.lineMap_mem hx hy ht)) dist_nonneg
             _ = K * dist x y ^ 2 * t := by
               rw [dist_left_lineMap, Real.norm_of_nonneg ht.1]
               ring
     _ = K * dist x y ^ 2 * ∫ t in (0 : ℝ)..1, t :=
       intervalIntegral.integral_const_mul _ _
     _ = K / 2 * dist x y ^ 2 := by rw [integral_id]; ring
+
+/-- **Descent lemma.** If `f` is differentiable and its Fréchet derivative is
+`K`-Lipschitz, then `f` is `K`-smooth (without convexity assumption). -/
+theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith [CompleteSpace F]
+    (hf : Differentiable ℝ f) (hL : LipschitzWith K (fderiv ℝ f)) :
+    LipschitzSmoothWith ℝ K f :=
+  lipschitzSmoothOnWith_univ.mp
+    (hf.differentiableOn.lipschitzSmoothOnWith_of_lipschitzOnWith convex_univ
+      (by simpa only [fderivWithin_univ, lipschitzOnWith_univ] using hL))

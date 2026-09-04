@@ -23,7 +23,7 @@ Taylor bound becomes
 public section
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
-variable {K : NNReal} {f : F → ℝ}
+variable {K : NNReal} {f : F → ℝ} {s : Set F}
 
 open scoped Gradient RealInnerProductSpace
 
@@ -36,8 +36,19 @@ theorem lipschitzSmoothWith_iff_inner_gradient :
 
 /-! ### Descent lemma -/
 
+/-- **Descent lemma in gradient form on a set.** If `f : F → ℝ` is differentiable on a convex set
+in a Hilbert space and its gradient within the set is `K`-Lipschitz there, then `f` is `K`-smooth
+on the set. -/
+theorem DifferentiableOn.lipschitzSmoothOnWith_of_lipschitzOnWith_gradientWithin
+    (hf : DifferentiableOn ℝ f s) (hs : Convex ℝ s)
+    (hL : LipschitzOnWith K (gradientWithin f s) s) : LipschitzSmoothOnWith ℝ K f s :=
+  hf.lipschitzSmoothOnWith_of_lipschitzOnWith hs
+    (lipschitzOnWith_fderivWithin_iff_lipschitzOnWith_gradientWithin.mpr hL)
+
 /-- **Descent lemma in gradient form.** If `f : F → ℝ` is differentiable on a Hilbert space and
 its gradient is `K`-Lipschitz, then `f` is `K`-smooth. -/
 theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith_gradient
     (hf : Differentiable ℝ f) (hL : LipschitzWith K (∇ f)) : LipschitzSmoothWith ℝ K f :=
-  hf.lipschitzSmoothWith_of_lipschitzWith (lipschitzWith_fderiv_iff_lipschitzWith_gradient.mpr hL)
+  lipschitzSmoothOnWith_univ.mp
+    (hf.differentiableOn.lipschitzSmoothOnWith_of_lipschitzOnWith_gradientWithin convex_univ
+      (by simpa only [gradientWithin_univ, lipschitzOnWith_univ] using hL))
