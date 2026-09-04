@@ -260,7 +260,7 @@ end GeneralizedBooleanAlgebra
 
 /-! ### UV-compression on finsets -/
 
-open FinsetFamily
+open scoped FinsetFamily
 
 variable [DecidableEq α] {𝒜 : Finset (Finset α)} {u v : Finset α} {r : ℕ}
 
