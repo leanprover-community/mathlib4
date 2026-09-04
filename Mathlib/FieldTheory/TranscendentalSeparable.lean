@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.SeparableDegree
+public import Mathlib.FieldTheory.SeparablyGenerated
 public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.EssentialFiniteness
@@ -63,6 +64,13 @@ lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
     have := IntermediateField.isSeparable_bot k K
     exact Algebra.IsSeparable.trans k (⊥ : IntermediateField k K) K
 
+instance (priority := low) [Algebra.IsSeparable k K] : Algebra.IsSeparablyGenerated k K :=
+  ((Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k K).mp ‹_›).1
+
+instance [PerfectField k] [Algebra.EssFiniteType k K] : Algebra.IsSeparablyGenerated k K := by
+  rcases exists_isTranscendenceBasis_and_isSeparable_of_perfectField k K with ⟨s, isT, sep⟩
+  exact ⟨s, isT, sep⟩
+
 /-- A field extension is transcendental separable if every finitely generated subextension is
 separably generated. -/
 @[mk_iff, stacks 030O "Part 2"]
@@ -82,5 +90,8 @@ lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
     have sep' := (Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mpr
       ⟨sep.forall_isSeparablyGenerated L fin, inferInstance⟩
     exact Subalgebra.isSeparable_iff.mp sep' x (by simp [L])
+
+instance (priority := low) [Algebra.IsSeparable k K] : Algebra.IsTranscendentalSeparable k K :=
+  ((Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic k K).mp ‹_›).1
 
 end
