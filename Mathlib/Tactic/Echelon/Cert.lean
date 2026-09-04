@@ -30,9 +30,6 @@ of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`. 
 path this is built one entry at a time, but should eventually be replaced by a dedicated
 matrix mult normalising tactic. `norm_num` does close it today (via @[simp] rewrites), but is
 several times slower and does not handle some edge cases (e.g. 0x0).
-
-A quantifier over `Fin n` is discharged through `List.Forall` over `List.finRange n` to save
-redundant motives.
 -/
 
 public meta section
@@ -46,11 +43,11 @@ def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
   mkNumeral q(Fin $n) i
 
 /-- Two views of one matrix literal: `matrix` the elaborated term, and `entries` the
-row-major leaves it was built from. -/
+row-major entries it was built from. -/
 structure MatrixViews (u : Level) (m n : ℕ) (α : Q(Type u)) where
-  /-- The matrix literal `Matrix.of ![![a, b], ![c, d]]`. -/
+  /-- The matrix literal. -/
   matrix : Q(Matrix (Fin $m) (Fin $n) $α)
-  /-- The row-major entries, the leaves of the literal. -/
+  /-- The row-major entries. -/
   entries : Array (Array Q($α))
 
 /-- Build the `MatrixViews` of the row-major entries `rows`. -/
@@ -104,9 +101,7 @@ def certifyForallFin (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) → MetaM 
       q(fun i => List.forall_iff_forall_mem.mp $forAll i (List.mem_finRange i)) p
 
 /-- Prove an implication `P → Q` where the caller already knows from the recorded data
-whether `P` holds, so that neither side is discovered by reduction: when it holds,
-`certifier` supplies `Q` and the hypothesis is discarded, and otherwise `P` is refuted and
-the implication is vacuous. -/
+whether `P` holds, which saves a decision on `P` again. -/
 def certifyImplication (holds : Bool) (p : Q(Prop)) (certifier : (q : Q(Prop)) → MetaM Q($q)) :
     MetaM Q($p) := do
   let .forallE nm dom body bi := p
