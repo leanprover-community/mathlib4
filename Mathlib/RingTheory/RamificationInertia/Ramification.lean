@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Ramification index
@@ -57,12 +58,12 @@ noncomputable def ramificationIdx : ℕ :=
 theorem ramificationIdx_def [q.IsPrime] :
     letI Sq := Localization.AtPrime q
     q.ramificationIdx R = (Module.length Sq (Sq ⧸ (q.under R).map (algebraMap R Sq))).toNat :=
-  dif_pos _
+  dite_eq_left _
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_def := ramificationIdx_def
 
 theorem ramificationIdx_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx R = 0 :=
-  dif_neg hq
+  dite_eq_right hq
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_of_not_isPrime :=
   ramificationIdx_of_not_isPrime
@@ -76,14 +77,9 @@ theorem ramificationIdx_pos [q.IsPrime] [Module.Finite R S] : 0 < q.ramification
       IsScalarTower.algebraMap_eq R S, ← map_map, ← lt_top_iff_ne_top]
     grw [map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal]
     exact (IsLocalRing.maximalIdeal.isMaximal _).lt_top
-  · let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
-    have : q = r.1.comap Algebra.TensorProduct.includeRight := by
-      rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
-    let := Localization.AtPrime.algebraOfLiesOver p (r.1.comap Algebra.TensorProduct.includeRight)
-    have : IsArtinianRing (Sq ⧸ map (algebraMap R Sq) p) := by
-      convert (Fiber.localizationAlgEquivQuotient p r.1).toRingEquiv.isArtinianRing
-    rwa [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
+  · rw [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
       Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength]
+    infer_instance
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_pos := ramificationIdx_pos
 
@@ -200,7 +196,7 @@ end IsDedekindDomain
 /-- See `ramificationIdx_tower` for a version that does not assume primality. -/
 theorem ramificationIdx_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
     [Algebra (Localization.AtPrime q) (Localization.AtPrime r)]
-    [Localization.AtPrime.IsLiesOverAlgebra q r]
+    [IsScalarTower S (Localization.AtPrime q) (Localization.AtPrime r)]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
     r.ramificationIdx R = q.ramificationIdx R * r.ramificationIdx S := by
   have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)

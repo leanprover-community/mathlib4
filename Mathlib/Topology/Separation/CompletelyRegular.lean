@@ -152,7 +152,6 @@ lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     specialize hfsU i (by tauto_set)
     exists i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma completelyRegularSpace_inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (ht₁ : @CompletelyRegularSpace X t₁) (ht₂ : @CompletelyRegularSpace X t₂) :
     @CompletelyRegularSpace X (t₁ ⊓ t₂) := by
@@ -214,9 +213,7 @@ theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_conti
   let R := Set.range f
   have hR : lift.{u, 0} (Cardinal.mk R) < lift.{0, u} continuum := by
     simpa [R] using mk_range_le_lift.trans_lt (lift_strictMono hX)
-  rw [lift_continuum, ← lift_continuum.{u, 0}, lift_lt, ← mk_Icc_real zero_lt_one, ← unitInterval]
-    at hR
-  obtain ⟨r, hr⟩ : ∃ r : I, r ∈ Rᶜ := compl_nonempty_of_mk_lt_mk hR
+  obtain ⟨r, hr⟩ : ∃ r : I, r ∈ Rᶜ := compl_nonempty_of_mk_lt_mk (by simpa using hR)
   have hr' : ∀ (x : X), f x ≠ r := by simpa [R] using hr
   have hrclopen : f ⁻¹' Iio r = f ⁻¹' Iic r := by
     ext; simp [le_iff_lt_or_eq, hr']

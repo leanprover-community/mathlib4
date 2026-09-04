@@ -52,7 +52,7 @@ impose here that the `ℕ`-multiplication field from the module structure is def
 from the `isAddCommMonoid` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
 structure SemimoduleCat where
-  private mk ::
+  _mkInternal ::
   /-- the underlying type of an object in `SemimoduleCat R` -/
   carrier : Type v
   [isAddCommMonoid : AddCommMonoid carrier]
@@ -68,8 +68,6 @@ instance : CoeSort (SemimoduleCat.{v} R) (Type v) :=
 
 attribute [coe] SemimoduleCat.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`. -/
 abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
@@ -195,11 +193,6 @@ definitional equality issues. -/
 lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj M : Type _) = M :=
   rfl
 
-@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-02-25")]
-lemma forget_map {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
-    (forget (SemimoduleCat.{v} R)).map f = (f : _ → _) :=
-  rfl
-
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
   forget₂ :=
     { obj := fun M => .of M
@@ -263,7 +256,7 @@ namespace CategoryTheory.Iso
 
 /-- Build a `LinearEquiv` from an isomorphism in the category `SemimoduleCat R`. -/
 def toLinearEquivₛ {X Y : SemimoduleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y :=
-  LinearEquiv.ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+  LinearEquiv.ofLinearMap i.hom.hom i.inv.hom (by aesop) (by aesop)
 
 end CategoryTheory.Iso
 
@@ -298,10 +291,6 @@ instance : SMul ℕ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
-
--- There is no `ℤ`-smul operation on a general semimodule!
-@[deprecated (since := "2026-01-06")]
-alias hom_zsmul := hom_nsmul
 
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
