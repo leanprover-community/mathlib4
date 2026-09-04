@@ -26,183 +26,138 @@ For a geometric interpretation of the piecewise involution (`Zagier.complexInvo`
 see [Moritz Firsching's MathOverflow answer](https://mathoverflow.net/a/299696).
 -/
 
-@[expose] public section
+public section
 
 namespace Zagier
 
-section Sets
+open Finset
 
-open Set
-
-variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
-
-/-- The set of all triples of natural numbers `(x, y, z)` satisfying
+/-- A structure holding a triple of natural numbers `(x, y, z)` satisfying
 `x * x + 4 * y * z = 4 * k + 1`. -/
-def zagierSet : Set (ℕ × ℕ × ℕ) := {t | t.1 * t.1 + 4 * t.2.1 * t.2.2 = 4 * k + 1}
+@[ext]
+structure Triple (k : ℕ) where
+  /-- First number -/
+  x : ℕ
+  /-- Second number -/
+  y : ℕ
+  /-- Third number -/
+  z : ℕ
+  /-- The specified equation -/
+  eqn : x * x + 4 * y * z = 4 * k + 1
+deriving DecidableEq
 
-lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < x ∧ 0 < y ∧ 0 < z := by
-  rw [zagierSet, mem_ofPred_eq] at h
-  refine ⟨?_, ?_, ?_⟩
-  all_goals
-    by_contra q
-    rw [not_lt, nonpos_iff_eq_zero] at q
-    simp only [q, mul_zero, zero_mul, zero_add, add_zero] at h
-  · apply_fun (· % 4) at h
-    simp [mul_assoc, Nat.add_mod] at h
-  all_goals
-    rcases (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e | e
-    all_goals
-      simp only [e, right_eq_add, ne_eq, add_eq_zero, and_false, not_false_eq_true,
-        mul_eq_left₀, reduceCtorEq] at h
-      simp only [h, zero_add] at hk
-      exact Nat.not_prime_one hk.out
+namespace Triple
 
-lemma zagierSet_upper_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
-    x ≤ k + 1 ∧ y ≤ k ∧ z ≤ k := by
-  obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
-  rw [zagierSet, mem_ofPred_eq] at h
-  refine ⟨?_, ?_, ?_⟩ <;> nlinarith
+variable {k : ℕ} [hk : Fact (4 * k + 1).Prime] (T : Triple k)
 
-lemma zagierSet_subset : zagierSet k ⊆ Ioc 0 (k + 1) ×ˢ Ioc 0 k ×ˢ Ioc 0 k := by
-  intro x h
-  have lb := zagierSet_lower_bound k h
-  have ub := zagierSet_upper_bound k h
-  exact ⟨⟨lb.1, ub.1⟩, ⟨lb.2.1, ub.2.1⟩, ⟨lb.2.2, ub.2.2⟩⟩
+omit hk in
+lemma x_ne_zero : T.x ≠ 0 := by
+  obtain ⟨x, y, z, h⟩ := T
+  rintro rfl
+  apply_fun (· % 4) at h
+  simp [mul_assoc] at h
 
-noncomputable instance : Fintype (zagierSet k) :=
-  (((finite_Ioc 0 (k + 1)).prod ((finite_Ioc 0 k).prod (finite_Ioc 0 k))).subset
-    (zagierSet_subset k)).fintype
+lemma y_ne_zero : T.y ≠ 0 := by
+  obtain ⟨x, y, z, h⟩ := T
+  rintro rfl
+  have con : IsSquare (4 * k + 1) := ⟨_, by simpa using h.symm⟩
+  exact absurd hk.out.prime con.not_prime
 
-end Sets
+lemma z_ne_zero : T.z ≠ 0 := by
+  obtain ⟨x, y, z, h⟩ := T
+  rintro rfl
+  have con : IsSquare (4 * k + 1) := ⟨_, by simpa using h.symm⟩
+  exact absurd hk.out.prime con.not_prime
 
-section Involutions
+omit hk in
+lemma x_bound : T.x ∈ Icc 1 (k + 1) := by
+  have nx := T.x_ne_zero
+  obtain ⟨x, y, z, h⟩ := T
+  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
 
-open Function
+lemma y_bound : T.y ∈ Icc 1 k := by
+  have ny := T.y_ne_zero
+  have nz : 0 < T.z := by grind [T.z_ne_zero]
+  obtain ⟨x, y, z, h⟩ := T
+  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
 
-variable (k : ℕ)
+lemma z_bound : T.z ∈ Icc 1 k := by
+  have ny : 0 < T.y := by grind [T.y_ne_zero]
+  have nz := T.z_ne_zero
+  obtain ⟨x, y, z, h⟩ := T
+  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
+
+instance : Fintype (Triple k) where
+  elems := (univ : Finset {t : Icc 1 (k + 1) ×ˢ Icc 1 k ×ˢ Icc 1 k //
+    t.1.1 * t.1.1 + 4 * t.1.2.1 * t.1.2.2 = 4 * k + 1}).image fun s ↦ ⟨_, _, _, s.2⟩
+  complete T := by
+    simp_rw [mem_image, mem_univ, true_and]
+    refine ⟨⟨⟨(T.x, T.y, T.z), ?_⟩, T.eqn⟩, by ext <;> rfl⟩
+    simp only [mem_product]
+    exact ⟨T.x_bound, T.y_bound, T.z_bound⟩
 
 /-- The obvious involution `(x, y, z) ↦ (x, z, y)`. -/
-def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨x, z, y⟩, by
-  simp only [zagierSet, Set.mem_ofPred_eq] at h ⊢
-  linarith [h]⟩
+def swap : Triple k where
+  x := T.x
+  y := T.z
+  z := T.y
+  eqn := by grind [T.eqn]
 
-theorem obvInvo_sq : obvInvo k ^ 2 = 1 := rfl
+omit hk in
+lemma involutive_swap : (@swap k).Involutive := fun _ ↦ rfl
 
-/-- If `obvInvo k` has a fixed point, a representation of `4 * k + 1` as a sum of two squares
-can be extracted from it. -/
-theorem sq_add_sq_of_nonempty_fixedPoints (hn : (fixedPoints (obvInvo k)).Nonempty) :
-    ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
-  simp only [sq]
-  obtain ⟨⟨⟨x, y, z⟩, he⟩, hf⟩ := hn
-  have := mem_fixedPoints_iff.mp hf
-  simp only [obvInvo, Subtype.mk.injEq, Prod.mk.injEq, true_and] at this
-  simp only [zagierSet, Set.mem_ofPred_eq] at he
-  use x, (2 * y)
-  rw [show 2 * y * (2 * y) = 4 * y * y by linarith, ← he, this.1]
+omit hk in
+/-- Fixed points of `swap` yield decompositions of `4 * k + 1` into two squares. -/
+lemma sq_add_sq_of_swap_eq_self (sT : T.swap = T) : ∃ a b, a ^ 2 + b ^ 2 = 4 * k + 1 :=
+  ⟨T.x, 2 * T.y, by grind [swap]⟩
 
 /-- The complicated involution, defined piecewise according to how `x` compares with
 `y - z` and `2 * y`. -/
-def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
-  ⟨if x + z < y then ⟨x + 2 * z, z, y - x - z⟩ else
-   if 2 * y < x then ⟨x - 2 * y, x + z - y, y⟩ else
-                     ⟨2 * y - x, y, x + z - y⟩, by
-  split_ifs with less more <;> simp only [zagierSet, Set.mem_ofPred_eq] at h ⊢
-  · -- less: `x + z < y` (`x < y - z` as stated by Zagier)
-    rw [Nat.sub_sub]; zify [less.le] at h ⊢; linarith [h]
-  · -- more: `2 * y < x`
-    push Not at less; zify [less, more.le] at h ⊢; linarith [h]
-  · -- middle: `x` is neither less than `y - z` or more than `2 * y`
-    push Not at less more; zify [less, more] at h ⊢; linarith [h]⟩
+def mangle : Triple k where
+  x := if T.x + T.z < T.y then T.x + 2 * T.z else
+    if 2 * T.y < T.x then T.x - 2 * T.y else 2 * T.y - T.x
+  y := if T.x + T.z < T.y then T.z else if 2 * T.y < T.x then T.x + T.z - T.y else T.y
+  z := if T.x + T.z < T.y then T.y - T.x - T.z else if 2 * T.y < T.x then T.y else T.x + T.z - T.y
+  eqn := by
+    rw [← T.eqn]
+    split_ifs with less more
+    · rw [Nat.sub_sub]; zify [less]; lia
+    · push Not at less; zify [less, more]; lia
+    · push Not at less more; zify [less, more]; lia
 
-variable [hk : Fact (4 * k + 1).Prime]
+lemma involutive_mangle : (@mangle k).Involutive := fun T ↦ by
+  ext <;> grind [mangle, T.x_ne_zero, T.z_ne_zero]
 
-set_option backward.isDefEq.respectTransparency false in
-/-- `complexInvo k` is indeed an involution. -/
-theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
-  change complexInvo k ∘ complexInvo k = id
-  funext ⟨⟨x, y, z⟩, h⟩
-  rw [comp_apply]
-  obtain ⟨xb, _, _⟩ := zagierSet_lower_bound k h
-  conv_lhs => arg 2; simp only [complexInvo]
-  split_ifs with less more <;> rw [complexInvo, Subtype.mk.injEq, id_eq]
-  · -- less
-    simp only [show ¬(x + 2 * z + (y - x - z) < z) by linarith [less], ite_false,
-      lt_add_iff_pos_left, xb, add_tsub_cancel_right, ite_true]
-    rw [Nat.sub_sub, two_mul, ← tsub_add_eq_add_tsub (by linarith), ← add_assoc,
-      Nat.add_sub_cancel, add_comm (x + z), Nat.sub_add_cancel less.le]
-  · -- more
-    push Not at less
-    simp only [show x - 2 * y + y < x + z - y by zify [less, more.le]; linarith, ite_true]
-    rw [Nat.sub_add_cancel more.le, Nat.sub_right_comm, Nat.sub_sub _ _ y, ← two_mul, add_comm,
-      Nat.add_sub_assoc more.le, Nat.add_sub_cancel]
-  · -- middle
-    push Not at less more
-    simp only [show ¬(2 * y - x + (x + z - y) < y) by zify [less, more]; linarith,
-      show ¬(2 * y < 2 * y - x) by zify [more]; linarith, ite_false]
-    rw [tsub_tsub_assoc (2 * y).le_refl more, tsub_self, zero_add,
-      ← Nat.add_sub_assoc less, ← add_assoc, Nat.sub_add_cancel more, Nat.sub_sub _ _ y,
-      ← two_mul, add_comm, Nat.add_sub_cancel]
+/-- The only fixed point of `mangle` is `(1, 1, k)`. -/
+lemma eq_of_mangle_eq_self (mT : T.mangle = T) : T = ⟨1, 1, k, by lia⟩ := by
+  have xy : T.x = T.y := by grind [mangle]
+  have eqn : T.x * (T.x + 4 * T.z) = 4 * k + 1 := by grind [mangle]
+  obtain ⟨_, _⟩ | ⟨_, _⟩ := Nat.prime_mul_iff.mp (eqn ▸ hk.out)
+  · grind [T.z_ne_zero]
+  · ext <;> grind
 
-set_option backward.isDefEq.respectTransparency false in
-/-- Any fixed point of `complexInvo k` must be `(1, 1, k)`. -/
-theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
-    t.val = (1, 1, k) := by
-  obtain ⟨⟨x, y, z⟩, h⟩ := t
-  obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
-  rw [mem_fixedPoints_iff, complexInvo, Subtype.mk.injEq] at mem
-  split_ifs at mem with less more <;>
-    -- less (completely handled by the pre-applied `simp_all only`)
-    simp_all only [not_lt, Prod.mk.injEq, add_eq_left, mul_eq_zero, false_or,
-      lt_self_iff_false, reduceCtorEq]
-  · -- more
-    obtain ⟨_, _, _⟩ := mem; simp_all
-  · -- middle (the one fixed point falls under this case)
-    simp only [zagierSet, Set.mem_ofPred_eq] at h
-    replace mem := mem.1
-    rw [tsub_eq_iff_eq_add_of_le more, ← two_mul] at mem
-    replace mem := (mul_left_cancel₀ two_ne_zero mem).symm
-    subst mem
-    rw [show x * x + 4 * x * z = x * (x + 4 * z) by linarith] at h
-    rcases (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e | e
-    · rw [e, mul_one] at h
-      simp_all [show z = 0 by linarith [e]]
-    · simp only [e, mul_left_eq_self₀, add_eq_zero, and_false, or_false, reduceCtorEq] at h
-      simp only [h, true_and]
-      linarith [e]
+lemma card_fixedPoints_mangle_eq_one : Fintype.card (@mangle k).fixedPoints = 1 := by
+  rw [Fintype.card_eq_one_iff]
+  exact ⟨⟨⟨1, 1, k, by lia⟩, (by grind [mangle] : mangle _ = _)⟩,
+    fun ⟨T, mT⟩ ↦ Subtype.ext (eq_of_mangle_eq_self _ mT)⟩
 
-/-- The singleton containing `(1, 1, k)`. -/
-def singletonFixedPoint : Finset (zagierSet k) :=
-  {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_ofPred_eq]; linarith)⟩}
-
-set_option backward.isDefEq.respectTransparency false in
-/-- `complexInvo k` has exactly one fixed point. -/
-theorem card_fixedPoints_eq_one : Fintype.card (fixedPoints (complexInvo k)) = 1 := by
-  rw [show 1 = Finset.card (singletonFixedPoint k) by rfl, ← Set.toFinset_card]
-  congr
-  rw [singletonFixedPoint, Finset.eq_singleton_iff_unique_mem]
-  constructor
-  · simp [IsFixedPt, complexInvo]
-  · intro _ mem
-    simp only [Set.mem_toFinset] at mem
-    replace mem := eq_of_mem_fixedPoints k mem
-    congr!
-
-end Involutions
+end Triple
 
 end Zagier
 
-open Zagier
+open Zagier.Triple
 
 /-- **Fermat's theorem on sums of two squares** (Wiedijk #20).
 Every prime congruent to 1 mod 4 is the sum of two squares, proved using Zagier's involutions. -/
 theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
-    ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
+    ∃ a b, a ^ 2 + b ^ 2 = p := by
   rw [← div_add_mod p 4, hp] at h ⊢
-  let k := p / 4
-  apply sq_add_sq_of_nonempty_fixedPoints
-  have key := (Equiv.Perm.card_fixedPoints_modEq (p := 2) (n := 1) (obvInvo_sq k)).symm.trans
-    (Equiv.Perm.card_fixedPoints_modEq (p := 2) (n := 1) (complexInvo_sq k))
-  contrapose key
-  rw [Set.not_nonempty_iff_eq_empty] at key
-  simp_rw [k, key, Fintype.card_eq_zero, card_fixedPoints_eq_one]
-  decide
+  set k := p / 4
+  have s2 : swap (k := k)^[2 ^ 1] = id := funext fun T ↦ involutive_swap T
+  have m2 : mangle (k := k)^[2 ^ 1] = id := funext fun T ↦ involutive_mangle T
+  have q := (Equiv.Perm.card_fixedPoints_modEq s2).symm.trans (Equiv.Perm.card_fixedPoints_modEq m2)
+  rw [card_fixedPoints_mangle_eq_one, Nat.ModEq] at q
+  replace q : 0 < Fintype.card (@swap k).fixedPoints := by lia
+  rw [Fintype.card_pos_iff, nonempty_subtype] at q
+  obtain ⟨T, sT⟩ := q
+  exact sq_add_sq_of_swap_eq_self _ sT
