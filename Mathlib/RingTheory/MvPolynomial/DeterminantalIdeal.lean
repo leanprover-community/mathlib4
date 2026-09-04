@@ -149,11 +149,9 @@ theorem mvPolynomialMinor_mem_determinantalIdeal
   exact Ideal.subset_span (mem_determinantalMinorFinset.2 ⟨row, col, rfl⟩)
 
 /-- A determinantal ideal is contained in `J` iff every generating minor belongs to `J`. -/
-theorem determinantalIdeal_le_iff
-    {J : Ideal (MvPolynomial (Fin m × Fin n) R)} :
-    determinantalIdeal R m n t ≤ J
-      ↔ ∀ (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n),
-        Matrix.mvPolynomialMinor R row col ∈ J := by
+theorem determinantalIdeal_le_iff {J : Ideal (MvPolynomial (Fin m × Fin n) R)} :
+    determinantalIdeal R m n t ≤ J ↔
+      ∀ (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n), Matrix.mvPolynomialMinor R row col ∈ J := by
   constructor
   · intro h row col
     exact h (mvPolynomialMinor_mem_determinantalIdeal row col)
