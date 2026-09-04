@@ -127,40 +127,40 @@ partial def evalMinFac.core (n : Q(ℕ)) (nn : Q(ℕ)) (pn : Q(IsNat $n $nn))
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let rec aux (ek : Q(ℕ)) (prf : Q(MinFacHelper $nn $ek)) :
       (c : Q(ℕ)) × Q(IsNat (Nat.minFac $n) $c) :=
-      let k := ek.natLit!
-      -- remark: `deriveBool q($nn < $ek * $ek)` is 2x slower than the following test.
-      if n' < k * k then
-        let r : Q(Nat.ble ($ek * $ek) $nn = false) := (q(Eq.refl false) : Expr)
-        ⟨nn, q(isNat_minFac_4 $pn $prf $r)⟩
+    let k := ek.natLit!
+    -- remark: `deriveBool q($nn < $ek * $ek)` is 2x slower than the following test.
+    if n' < k * k then
+      let r : Q(Nat.ble ($ek * $ek) $nn = false) := (q(Eq.refl false) : Expr)
+      ⟨nn, q(isNat_minFac_4 $pn $prf $r)⟩
+    else
+      let d : ℕ := k.minFac
+      -- the following branch is not necessary for the correctness,
+      -- but makes the algorithm 2x faster
+      if d < k then
+        have ek' : Q(ℕ) := mkRawNatLit <| k + 2
+        let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
+        let pd := deriveNotPrime k d ek
+        aux ek' q(minFacHelper_2 $pk' $pd $prf)
+      -- remark: `deriveBool q($nn % $ek = 0)` is 5x slower than the following test
+      else if n' % k = 0 then
+        let r : Q(nat_lit 0 = $nn % $ek) := (q(Eq.refl 0) : Expr)
+        let r' : Q(IsNat (minFac $n) $ek) := q(isNat_minFac_3 _ $pn $prf $r)
+        ⟨ek, r'⟩
       else
-        let d : ℕ := k.minFac
-        -- the following branch is not necessary for the correctness,
-        -- but makes the algorithm 2x faster
-        if d < k then
-          have ek' : Q(ℕ) := mkRawNatLit <| k + 2
-          let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
-          let pd := deriveNotPrime k d ek
-          aux ek' q(minFacHelper_2 $pk' $pd $prf)
-        -- remark: `deriveBool q($nn % $ek = 0)` is 5x slower than the following test
-        else if n' % k = 0 then
-          let r : Q(nat_lit 0 = $nn % $ek) := (q(Eq.refl 0) : Expr)
-          let r' : Q(IsNat (minFac $n) $ek) := q(isNat_minFac_3 _ $pn $prf $r)
-          ⟨ek, r'⟩
-        else
-          let r : Q(Nat.beq ($nn % $ek) 0 = false) := (q(Eq.refl false) : Expr)
-          have ek' : Q(ℕ) := mkRawNatLit <| k + 2
-          let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
-          aux ek' q(minFacHelper_3 $pk' $r $prf)
-    if n' = 1 then
-      let pn : Q(IsNat $n (nat_lit 1)) := pn
-      return .isNat sℕ q(nat_lit 1) q(isNat_minFac_1 $pn)
-    if n' % 2 = 0 then
-      let pq : Q($nn % 2 = 0) := (q(Eq.refl 0) : Expr)
-      return .isNat sℕ q(nat_lit 2) q(isNat_minFac_2 $pn $pq)
-    let pp : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
-    let pq : Q(1 = $nn % 2) := (q(Eq.refl (nat_lit 1)) : Expr)
-    let ⟨c, pc⟩ := aux q(nat_lit 3) q(minFacHelper_0 $nn $pp $pq)
-    return .isNat sℕ c pc
+        let r : Q(Nat.beq ($nn % $ek) 0 = false) := (q(Eq.refl false) : Expr)
+        have ek' : Q(ℕ) := mkRawNatLit <| k + 2
+        let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
+        aux ek' q(minFacHelper_3 $pk' $r $prf)
+  if n' = 1 then
+    let pn : Q(IsNat $n (nat_lit 1)) := pn
+    return .isNat sℕ q(nat_lit 1) q(isNat_minFac_1 $pn)
+  if n' % 2 = 0 then
+    let pq : Q($nn % 2 = 0) := (q(Eq.refl 0) : Expr)
+    return .isNat sℕ q(nat_lit 2) q(isNat_minFac_2 $pn $pq)
+  let pp : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
+  let pq : Q(1 = $nn % 2) := (q(Eq.refl (nat_lit 1)) : Expr)
+  let ⟨c, pc⟩ := aux q(nat_lit 3) q(minFacHelper_0 $nn $pp $pq)
+  return .isNat sℕ c pc
 
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac : NormNumExt where eval {_ _} e := do
