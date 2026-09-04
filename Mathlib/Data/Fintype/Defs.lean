@@ -214,8 +214,8 @@ instance decidableExistsFintype {p : α → Prop} [DecidablePred p] [Fintype α]
     Decidable (∃ a, p a) :=
   decidable_of_iff (∃ a ∈ @univ α _, p a) (by simp)
 
-instance Pi.instDecidableLE {α} {β : α → Type*} [∀ i, LE (β i)] [∀ i, DecidableLE (β i)]
-  [Fintype α] : DecidableLE (∀ i, β i) := fun _ _ ↦ decidable_of_iff _ Pi.le_def.symm
+instance Pi.instDecidableLE {α} {β : α → Type*} [∀ a, LE (β a)] [∀ i, DecidableLE (β a)]
+  [Fintype α] : DecidableLE (∀ a, β a) := fun _ _ ↦ decidable_of_iff _ Pi.le_def.symm
 
 instance decidableMemRangeFintype [Fintype α] [DecidableEq β] (f : α → β) :
     DecidablePred (· ∈ Set.range f) := fun _ => Fintype.decidableExistsFintype
