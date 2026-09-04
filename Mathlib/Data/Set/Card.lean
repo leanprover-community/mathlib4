@@ -216,6 +216,11 @@ theorem encard_sdiff_add_encard_inter (s t : Set α) :
     (s \ t).encard + (s ∩ t).encard = s.encard := by
   rw [← encard_union_eq disjoint_sdiff_inter, sdiff_union_inter]
 
+/-- `encard` of a difference with no subset assumption -/
+@[simp]
+theorem encard_sdiff' (h : (t ∩ s).Finite) : (t \ s).encard = t.encard - (t ∩ s).encard := by
+  simp [← t.encard_sdiff_add_encard_inter s, h.encard_lt_top.ne]
+
 @[deprecated (since := "2026-06-03")]
 alias encard_diff_add_encard_inter := encard_sdiff_add_encard_inter
 
@@ -305,8 +310,12 @@ theorem tsub_encard_le_encard_sdiff (s t : Set α) : s.encard - t.encard ≤ (s 
 @[deprecated (since := "2026-06-03")]
 alias tsub_encard_le_encard_diff := tsub_encard_le_encard_sdiff
 
-theorem encard_add_encard_compl (s : Set α) : s.encard + sᶜ.encard = (univ : Set α).encard := by
-  rw [← encard_union_eq disjoint_compl_right, union_compl_self]
+theorem encard_add_encard_compl (s : Set α) : s.encard + sᶜ.encard = ENat.card α := by
+  simp [← encard_union_eq disjoint_compl_right]
+
+@[simp]
+theorem encard_compl {s : Set α} (hs : s.Finite) : sᶜ.encard = ENat.card α - s.encard := by
+  simp [← encard_add_encard_compl s, hs.encard_lt_top.ne]
 
 end Lattice
 
@@ -744,6 +753,12 @@ theorem ncard_le_ncard_insert (a : α) (s : Set α) : s.ncard ≤ (insert a s).n
 theorem ncard_pair {a b : α} (h : a ≠ b) : ({a, b} : Set α).ncard = 2 := by
   simp [h]
 
+@[simp]
+theorem ncard_pair_iff {a b : α} : Set.ncard {a, b} = 2 ↔ a ≠ b := by
+  refine ⟨fun h ↦ ?_, (by simp [·])⟩
+  by_contra!
+  simp [this] at h
+
 -- removing `@[simp]` because the LHS is not in simp normal form
 theorem ncard_sdiff_singleton_add_one {a : α} (h : a ∈ s)
     (hs : s.Finite := by toFinite_tac) : (s \ {a}).ncard + 1 = s.ncard := by
@@ -752,15 +767,6 @@ theorem ncard_sdiff_singleton_add_one {a : α} (h : a ∈ s)
 
 @[deprecated (since := "2026-06-03")]
 alias ncard_diff_singleton_add_one := ncard_sdiff_singleton_add_one
-
-@[simp] theorem ncard_sdiff_singleton_of_mem {a : α} (h : a ∈ s) :
-    (s \ {a}).ncard = s.ncard - 1 := by
-  rcases s.infinite_or_finite with hs | hs
-  · simp_all [ncard, Infinite.sdiff hs (finite_singleton a)]
-  · exact eq_tsub_of_add_eq (ncard_sdiff_singleton_add_one h hs)
-
-@[deprecated (since := "2026-06-03")]
-alias ncard_diff_singleton_of_mem := ncard_sdiff_singleton_of_mem
 
 theorem ncard_sdiff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := by toFinite_tac) :
     (s \ {a}).ncard < s.ncard := by
@@ -776,16 +782,6 @@ theorem ncard_sdiff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.n
   exact (hs.sdiff (by simp)).ncard
 
 @[deprecated (since := "2026-06-03")] alias ncard_diff_singleton_le := ncard_sdiff_singleton_le
-
-theorem pred_ncard_le_ncard_sdiff_singleton (s : Set α) (a : α) :
-    s.ncard - 1 ≤ (s \ {a}).ncard := by
-  by_cases h : a ∈ s
-  · rw [ncard_sdiff_singleton_of_mem h]
-  rw [sdiff_singleton_eq_self h]
-  apply Nat.pred_le
-
-@[deprecated (since := "2026-06-03")]
-alias pred_ncard_le_ncard_diff_singleton := pred_ncard_le_ncard_sdiff_singleton
 
 theorem ncard_exchange {a b : α} (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).ncard = s.ncard :=
   congr_arg ENat.toNat <| encard_exchange ha hb
@@ -1117,6 +1113,31 @@ theorem exists_mem_notMem_of_ncard_lt_ncard (h : s.ncard < t.ncard)
 @[deprecated (since := "2026-06-03")]
 alias ncard_inter_add_ncard_diff_eq_ncard := ncard_inter_add_ncard_sdiff_eq_ncard
 
+/-- `ncard` of a difference with no subset assumption -/
+@[simp]
+theorem ncard_sdiff'' (h : (t ∩ s).Finite := by toFinite_tac) :
+    (t \ s).ncard = t.ncard - (t ∩ s).ncard := by
+  rcases t.finite_or_infinite with ht | ht
+  · simp [← ncard_inter_add_ncard_sdiff_eq_ncard t s ht]
+  · rw [ht.ncard, ← sdiff_self_inter, ht.sdiff h |>.ncard]
+    simp
+
+theorem ncard_sdiff_singleton_of_mem {a : α} (h : a ∈ s) : (s \ {a}).ncard = s.ncard - 1 := by
+  simp [h]
+
+@[deprecated (since := "2026-06-03")]
+alias ncard_diff_singleton_of_mem := ncard_sdiff_singleton_of_mem
+
+theorem pred_ncard_le_ncard_sdiff_singleton (s : Set α) (a : α) :
+    s.ncard - 1 ≤ (s \ {a}).ncard := by
+  by_cases h : a ∈ s
+  · rw [ncard_sdiff_singleton_of_mem h]
+  rw [sdiff_singleton_eq_self h]
+  apply Nat.pred_le
+
+@[deprecated (since := "2026-06-03")]
+alias pred_ncard_le_ncard_diff_singleton := pred_ncard_le_ncard_sdiff_singleton
+
 theorem ncard_eq_ncard_iff_ncard_sdiff_eq_ncard_sdiff (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) : s.ncard = t.ncard ↔ (s \ t).ncard = (t \ s).ncard := by
   rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs, ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht,
@@ -1149,14 +1170,21 @@ theorem ncard_compl_add_ncard (s : Set α) (hs : s.Finite := by toFinite_tac)
     (hsc : sᶜ.Finite := by toFinite_tac) : sᶜ.ncard + s.ncard = Nat.card α := by
   rw [add_comm, ncard_add_ncard_compl s hs hsc]
 
-theorem ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
-    (hsc : sᶜ.Finite := by toFinite_tac) : sᶜ.ncard = Nat.card α - s.ncard := by
-  rw [← ncard_add_ncard_compl s hs hsc, Nat.add_sub_cancel_left]
+@[simp]
+theorem ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac) :
+    sᶜ.ncard = Nat.card α - s.ncard := by
+  rcases sᶜ.finite_or_infinite with hsc | hsc
+  · rw [← ncard_add_ncard_compl s hs hsc, Nat.add_sub_cancel_left]
+  · simp [hsc.ncard, hsc.to_type]
 
-theorem ncard_compl_of_ncard_eq_add [Finite α] (s : Set α) {n : ℕ}
+theorem ncard_compl_of_ncard_eq_add (s : Set α) (hs : s.Finite := by toFinite_tac) {n : ℕ}
     (h : Nat.card α = n + s.ncard) :
     sᶜ.ncard = n := by
-  rwa [← ncard_compl_add_ncard s, Nat.add_right_cancel_iff] at h
+  rcases sᶜ.finite_or_infinite with hsc | hsc
+  · rwa [← ncard_compl_add_ncard s hs hsc, Nat.add_right_cancel_iff] at h
+  · have := hsc.to_type
+    rw [Nat.card_eq_zero_of_infinite] at h
+    rw [hsc.ncard, Nat.eq_zero_of_add_eq_zero_right h.symm]
 
 theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
     s = univ ↔ ncard s = Nat.card α := by
@@ -1169,6 +1197,13 @@ lemma even_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α)
 lemma odd_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) :
     Odd sᶜ.ncard ↔ Odd s.ncard := by
   rw [← Nat.not_even_iff_odd, even_ncard_compl_iff heven, Nat.not_even_iff_odd]
+
+lemma even_ncard_compl_iff' (h : Odd (Nat.card α)) (s : Set α) : Even sᶜ.ncard ↔ Odd s.ncard := by
+  have : Finite α := Nat.finite_of_card_ne_zero <| Nat.ne_of_odd_add h
+  rwa [iff_comm, ← Nat.odd_add, ncard_add_ncard_compl]
+
+lemma odd_ncard_compl_iff' (h : Odd (Nat.card α)) (s : Set α) : Odd sᶜ.ncard ↔ Even s.ncard := by
+  rw [← Nat.not_even_iff_odd, even_ncard_compl_iff' h, Nat.not_odd_iff_even]
 
 theorem nonempty_inter_of_lt_ncard_add_ncard [Finite α]
     (h : Nat.card α < s.ncard + t.ncard) : (s ∩ t).Nonempty := by

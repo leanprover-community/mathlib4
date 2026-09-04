@@ -832,6 +832,9 @@ theorem infinite_univ_iff : (@univ α).Infinite ↔ Infinite α := by
 theorem infinite_univ [h : Infinite α] : (@univ α).Infinite :=
   infinite_univ_iff.2 h
 
+theorem Infinite.to_type (hs : s.Infinite) : Infinite α :=
+  infinite_univ_iff.mp <| hs.mono s.subset_univ
+
 lemma Infinite.exists_notMem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
   by_contra! h; exact hs <| ht.subset h
 
