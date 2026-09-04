@@ -347,18 +347,13 @@ theorem squarefree_and_primeFactors_card_two_iff (n : ℕ) :
     Squarefree n ∧ (primeFactors n).card = 2
       ↔ ∃ p q : ℕ, p < q ∧ p.Prime ∧ q.Prime ∧ p * q = n := by
   refine ⟨fun ⟨sq, nc⟩ ↦ ?_, fun ⟨p, q, pq, hp, hq, hn⟩ ↦ ?_⟩
-  · have nn : n.primeFactors.Nonempty := by
-      contrapose! nc
-      simp [nc]
-    refine ⟨(primeFactors n).min' nn, (primeFactors n).max' nn, ?_⟩
-    refine ⟨?_, ?_, ?_, ?_⟩
-    · apply lt_of_le_of_ne
-      · exact min'_le_max' n.primeFactors nn
-      · exact (n.primeFactors.min'_lt_max'_of_card (by grind)).ne
-    · exact prime_of_mem_primeFactors <| min'_mem n.primeFactors nn
-    · exact prime_of_mem_primeFactors <| max'_mem n.primeFactors nn
-    · conv_rhs => rw [← prod_primeFactors_of_squarefree sq]
-      grind [Finset.eq_min'_max'_of_card_two nc]
+  · obtain ⟨p, q, pq, eq⟩ := Finset.card_eq_two.mp nc
+    wlog pq' : p < q
+    · exact this n ⟨sq, nc⟩ sq nc q p pq.symm (by grind) (by grind)
+    refine ⟨p, q, pq', prime_of_mem_primeFactors (n := n) (by grind),
+      prime_of_mem_primeFactors (n := n) (by grind), ?_⟩
+    conv_rhs => rw [← prod_primeFactors_of_squarefree sq]
+    grind [Finset.eq_min'_max'_of_card_two nc]
   · rw [← hn, squarefree_mul <| (coprime_primes hp hq).mpr pq.ne,
       primeFactors_mul hp.ne_zero hq.ne_zero, hp.primeFactors, hq.primeFactors]
     exact ⟨⟨(prime_iff.mp hp).squarefree, (prime_iff.mp hq).squarefree⟩, by grind⟩
