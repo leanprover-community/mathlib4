@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Topology.Sheaves.LocalPredicate
+public import Mathlib.Tactic.ModuleNF
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
@@ -476,7 +477,9 @@ theorem exists_le_iSup_basicOpen_and_smul_eq_smul_and_eq_const
     have : n i j + 1 ≤ N := (t ×ˢ t).le_sup (f := fun x ↦ n x.1 x.2 + 1) (b := ⟨_, _⟩) (by simp)
     rw [← Nat.sub_add_cancel this, pow_add, mul_smul, mul_smul]
     congr 1
-    convert! (hn i j).symm using 1 <;> module
+    have h := (hn i j).symm
+    module_nf at h ⊢
+    exact h
   · convert! congr((structureSheafInType R M).presheaf.map (homOfLE ?_).op $((H i).symm)) using 1
     · refine Subtype.ext <| funext fun x ↦ LocalizedModule.mk_eq.mpr ⟨1, ?_⟩
       simp [Submonoid.smul_def, pow_succ', mul_smul]
@@ -553,8 +556,6 @@ public lemma algebraMap_germ
   dsimp [toStalk]
   rw [← (structurePresheafInCommRingCat R).germ_res (homOfLE (le_top : U ≤ ⊤)) _ hxU]
   rfl
-
-@[deprecated (since := "2026-02-10")] public alias toOpen_germ := algebraMap_germ
 
 public
 instance (x : PrimeSpectrum.Top R) : Algebra R ((structurePresheafInCommRingCat R).stalk x) :=
@@ -890,19 +891,11 @@ def _root_.AlgebraicGeometry.Spec.structureSheaf : Sheaf CommRingCat (PrimeSpect
 
 open Spec (structureSheaf)
 
-/-- The canonical ring homomorphism interpreting an element of `R` as
-a section of the structure sheaf. -/
-@[deprecated "algebraMap" (since := "2026-02-10")]
-def toOpen (U : Opens (PrimeSpectrum.Top R)) :
-    CommRingCat.of R ⟶ (structureSheaf R).1.obj (op U) := CommRingCat.ofHom (algebraMap _ _)
-
 @[simp]
 theorem algebraMap_self_map (U V : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (i : V ⟶ U) :
     CommRingCat.ofHom (algebraMap R _) ≫ (Spec.structureSheaf R).1.map i =
       CommRingCat.ofHom (algebraMap R _) :=
   rfl
-
-@[deprecated (since := "2026-02-10")] alias toOpen_res := algebraMap_self_map
 
 instance stalkAlgebra (p : PrimeSpectrum R) : Algebra R ((structureSheaf R).presheaf.stalk p) :=
   (toStalk R p).hom.toAlgebra

@@ -43,22 +43,18 @@ attribute [coe] PartOrd.carrier
 /-- The type of morphisms in `PartOrd R`. -/
 @[ext]
 structure Hom (X Y : PartOrd.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category PartOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory PartOrd (· →o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `PartOrd` back into a `OrderHom`. -/
 abbrev Hom.hom {X Y : PartOrd.{u}} (f : Hom X Y) :=
@@ -82,8 +78,6 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 lemma coe_id {X : PartOrd} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : PartOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[ext]
 lemma ext {X Y : PartOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
