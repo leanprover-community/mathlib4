@@ -109,7 +109,7 @@ lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 @[to_additive (attr := simp)] lemma oneLePart_inv (a : α) : a⁻¹⁺ᵐ = a⁻ᵐ := rfl
 
 @[to_additive] lemma oneLePart_max (a b : α) : (max a b)⁺ᵐ = max a⁺ᵐ b⁺ᵐ := by
-  simp [oneLePart, sup_sup_distrib_right]
+  simp_rw [oneLePart_def, ← sup_sup_distrib_right]
 
 end DivInvMonoid
 
@@ -183,7 +183,7 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
     oneLePart_div_leOnePart, leOnePart_eq_inv_inf_one, inv_inv]
 
 @[to_additive] lemma leOnePart_min (a b : α) : (min a b)⁻ᵐ = max a⁻ᵐ b⁻ᵐ := by
-  simp [leOnePart, inv_inf, sup_sup_distrib_right]
+  simp_rw [leOnePart_def, inv_inf, ← sup_sup_distrib_right]
 
 end MulRightMono
 

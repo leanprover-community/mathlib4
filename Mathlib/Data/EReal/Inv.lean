@@ -189,10 +189,10 @@ lemma exists_nat_ge_mul {a : EReal} (ha : a ≠ ⊤) (n : ℕ) :
 /-! ### Min and Max -/
 
 lemma min_neg_neg (x y : EReal) : min (-x) (-y) = -max x y := by
-  rcases le_total x y with (h | h) <;> simp_all
+  grind [neg_le_neg_iff]
 
 lemma max_neg_neg (x y : EReal) : max (-x) (-y) = -min x y := by
-  rcases le_total x y with (h | h) <;> simp_all
+  grind [neg_le_neg_iff]
 
 /-! ### Inverse -/
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Hom.Lattice
+public import Mathlib.Tactic.Order
 
 /-!
 # Lattice Congruences
@@ -43,6 +44,8 @@ structure LatticeCon extends Setoid α where
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
 namespace LatticeCon
+
+attribute [local simp] sup_of_le_left sup_of_le_right inf_of_le_left inf_of_le_right
 
 @[simp]
 lemma r_inf_sup_iff (c : LatticeCon α) {x y : α} : c.r (x ⊓ y) (x ⊔ y) ↔ c.r x y where
