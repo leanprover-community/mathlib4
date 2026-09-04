@@ -497,4 +497,11 @@ lemma cons_swap (a : α) (x : Fin n → α) (i j : Fin n) :
 
 end swap
 
+@[simp]
+lemma injective_pair_iff_ne {x y : α} : Function.Injective ![x, y] ↔ x ≠ y := by
+  simp [Function.Injective, Fin.forall_fin_two, eq_comm]
+
+@[deprecated Matrix.injective_pair_iff_ne (since := "2026-09-04")]
+alias _root_.injective_pair_iff_ne := injective_pair_iff_ne
+
 end Matrix
