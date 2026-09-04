@@ -60,14 +60,14 @@ lemma x_ne_zero : T.x ≠ 0 := by
 lemma y_ne_zero : T.y ≠ 0 := by
   obtain ⟨x, y, z, h⟩ := T
   rintro rfl
-  have con : IsSquare (4 * k + 1) := ⟨_, by simpa using h.symm⟩
-  exact absurd hk.out.prime con.not_prime
+  have sq : IsSquare (4 * k + 1) := ⟨_, by simpa using h.symm⟩
+  exact sq.not_prime.elim hk.out.prime
 
 lemma z_ne_zero : T.z ≠ 0 := by
   obtain ⟨x, y, z, h⟩ := T
   rintro rfl
-  have con : IsSquare (4 * k + 1) := ⟨_, by simpa using h.symm⟩
-  exact absurd hk.out.prime con.not_prime
+  have sq : IsSquare (4 * k + 1) := ⟨_, by simpa using h.symm⟩
+  exact sq.not_prime.elim hk.out.prime
 
 omit hk in
 lemma x_bound : T.x ∈ Icc 1 (k + 1) := by
