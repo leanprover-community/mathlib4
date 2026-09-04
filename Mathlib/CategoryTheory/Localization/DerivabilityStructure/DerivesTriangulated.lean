@@ -18,7 +18,7 @@ functor is triangulated.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
