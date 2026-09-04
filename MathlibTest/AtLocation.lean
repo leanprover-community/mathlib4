@@ -63,3 +63,21 @@ example (b : Bool) (_h : b = b) : True := by
 #guard_msgs in
 example (h : True) : True := by
   visit_none
+
+/-- Collect the types at each location visited by `mapNondepPropLocation`. -/
+elab "collect_nondep_prop" loc:(location)? : tactic => do
+  let loc := expandOptLocation (mkOptionalNode loc)
+  let tys ← mapNondepPropLocation loc (fun fvarId => fvarId.getType) getMainTarget
+  logInfo m!"collected: {tys}"
+
+/-- info: collected: [True, _b = true] -/
+#guard_msgs in
+example (_b : Bool) (_f : _b = true) : True := by
+  collect_nondep_prop at *
+  trivial
+
+/-- info: collected: [Bool, _b = true, True] -/
+#guard_msgs in
+example (_b : Bool) (_f : _b = true) : True := by
+  collect_nondep_prop at _b _f ⊢
+  trivial

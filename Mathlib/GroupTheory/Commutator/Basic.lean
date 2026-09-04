@@ -469,7 +469,7 @@ variable {G} in
 @[to_additive]
 lemma Subgroup.map_subtype_commutator (H : Subgroup G) :
     (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
-  rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
+  rw [_root_.commutator_def, map_commutator, Subgroup.map_top, H.range_subtype]
 
 variable {G} in
 @[to_additive]
@@ -587,8 +587,8 @@ theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgro
   apply Function.Surjective.isMulCommutative (f := φ) _ hH
   -- We have to prove that `MonoidHom.range φ = ⊤`
   have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
-    rw [← MonoidHom.range_eq_map, MonoidHom.range_eq_top]
+    rw [Subgroup.map_top, MonoidHom.range_eq_top]
     exact QuotientGroup.mk'_surjective N
   rw [MulHom.coe_coe, ← MonoidHom.range_eq_top, MonoidHom.range_eq_map, ← Subgroup.map_map, ← this,
-    Subgroup.map_eq_map_iff, QuotientGroup.ker_mk', sup_comm, ← hHN, ← MonoidHom.range_eq_map]
+    Subgroup.map_eq_map_iff, QuotientGroup.ker_mk', sup_comm, ← hHN, Subgroup.map_top]
   simp

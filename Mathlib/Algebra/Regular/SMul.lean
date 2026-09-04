@@ -144,8 +144,7 @@ variable (M)
 @[simp]
 theorem one : IsSMulRegular M (1 : R) := fun a b ab => by
   dsimp only [Function.comp_def] at ab
-  rw [one_smul, one_smul] at ab
-  assumption
+  rwa [one_smul, one_smul] at ab
 
 variable {M}
 
