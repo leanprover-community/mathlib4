@@ -314,14 +314,12 @@ protected inductive WithBot.LE : WithBot α → WithBot α → Prop
   | protected bot_le (x : WithBot α) : WithBot.LE ⊥ x
   | protected coe_le_coe {a b : α} : a ≤ b → WithBot.LE a b
 
-set_option linter.translate.warnInvalid false in
 /-- The order on `WithTop`. -/
 @[to_dual (reorder := 3 4)]
 protected inductive WithTop.LE : WithTop α → WithTop α → Prop
   | protected le_top (x : WithTop α) : WithTop.LE x ⊤
   | protected coe_le_coe {a b : α} : a ≤ b → WithTop.LE a b
 
-attribute [to_dual existing le_top] WithBot.LE.bot_le
 attribute [to_dual existing (reorder := motive (1 2), 4 5, coe_le_coe (1 2))] WithBot.LE.casesOn
 
 /-- The order on `WithBot α`, defined by `⊥ ≤ y` and `a ≤ b → ↑a ≤ ↑b`.
@@ -357,14 +355,12 @@ protected inductive WithBot.LT [LT α] : WithBot α → WithBot α → Prop
   | protected bot_lt (b : α) : WithBot.LT ⊥ b
   | protected coe_lt_coe {a b : α} : a < b → WithBot.LT a b
 
-set_option linter.translate.warnInvalid false in
 /-- The order on `WithTop`. -/
 @[to_dual (reorder := 3 4)]
 protected inductive WithTop.LT [LT α] : WithTop α → WithTop α → Prop
   | protected lt_top (a : α) : WithTop.LT a ⊤
   | protected coe_lt_coe {a b : α} : a < b → WithTop.LT a b
 
-attribute [to_dual existing lt_top] WithBot.LT.bot_lt
 attribute [to_dual existing (reorder := motive (1 2), 4 5, coe_lt_coe (1 2))] WithBot.LT.casesOn
 
 /-- The order on `WithBot α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`.
