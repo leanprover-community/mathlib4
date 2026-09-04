@@ -62,21 +62,24 @@ t4=$(now)
 emit delete_"$n"_files "$(elapsed "$t3" "$t4")"
 
 # --- CPU benchmarks ------------------------------------------------------
-# Pure compute, almost no syscalls. Landlock should cost nothing here; this is
-# the internal control for the file-operation numbers above.
+# Fixed work (hash a fixed buffer), timed by wall clock, so the number is a
+# speed. Almost no syscalls, so Landlock should cost nothing here: this is the
+# internal control for the file-operation numbers above.
 mkdir -p "$work"
+head -c 536870912 /dev/zero > "$work/cpu.bin"
+cat "$work/cpu.bin" > /dev/null   # warm the page cache
+
 t4=$(now)
-openssl speed -seconds "$cpusec" sha256 >"$work/ossl1.txt" 2>&1
+openssl dgst -sha256 "$work/cpu.bin" >/dev/null
 t5=$(now)
-emit cpu_single_thread "$(elapsed "$t4" "$t5")"
-grep -E "^sha256" "$work/ossl1.txt" | tail -1 | sed "s/^/RESULT-RAW $label single /"
+emit cpu_sha256_512MiB_1x "$(elapsed "$t4" "$t5")"
 
 ncpu=$(nproc)
 t5=$(now)
-openssl speed -multi "$ncpu" -seconds "$cpusec" sha256 >"$work/ossln.txt" 2>&1
+for _ in $(seq 1 "$ncpu"); do openssl dgst -sha256 "$work/cpu.bin" >/dev/null & done
+wait
 t6=$(now)
-emit cpu_"$ncpu"_threads "$(elapsed "$t5" "$t6")"
-grep -E "^sha256" "$work/ossln.txt" | tail -1 | sed "s/^/RESULT-RAW $label multi /"
+emit cpu_sha256_512MiB_"$ncpu"x "$(elapsed "$t5" "$t6")"
 
 # --- sequential disk write ----------------------------------------------
 t6=$(now)

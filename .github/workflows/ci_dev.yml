@@ -18,7 +18,7 @@ on:
         description: number of small files in the file-operation benchmark
         required: false
         type: string
-        default: '20000'
+        default: '100000'
       cpu_seconds:
         description: seconds per openssl speed measurement
         required: false
@@ -74,6 +74,11 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p bench
+          # A hoskinson container starts cold: these paths exist only on the
+          # Hetzner hosts, where they are bind-mounted warm stores. landrun
+          # refuses to build a ruleset for a missing path, so create them and
+          # keep the sandbox flags identical to the real workflow's.
+          mkdir -p /home/lean/.elan /home/lean/.cache/mathlib
           N="${{ inputs.files }}"; C="${{ inputs.cpu_seconds }}"; R="${{ inputs.reps }}"
           LR="landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw bench/ --env PATH --env HOME --env CI --"
           for i in $(seq 1 "$R"); do
