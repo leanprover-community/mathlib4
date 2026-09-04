@@ -28,6 +28,8 @@ namespace CategoryTheory
 
 variable {C D : Type*} [Category* C] [Category* D]
 
+/-- An accessible functor between accessible categories satisfies the solution set condition.
+This is corollary 2.45 in [Adamek_Rosicky_1994]. -/
 lemma SolutionSetCondition.of_isCardinalAccessible
     [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
     (F : C ⥤ D) [Functor.IsAccessible.{w} F] :
