@@ -25,7 +25,9 @@ standard formula for computing the Laplacian in terms of orthonormal bases of `E
 
 @[expose] public section
 
-open Filter TensorProduct Topology
+open Filter TensorProduct
+
+open scoped Topology
 
 section secondDerivativeAPI
 
@@ -42,7 +44,6 @@ variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 variable (𝕜) in
 /--

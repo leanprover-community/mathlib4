@@ -38,7 +38,7 @@ Explicit binary fan in `CompHausLike P`, given that the predicate `P` is preserv
 type-theoretic products.
 -/
 def productCone : BinaryFan X Y :=
-  BinaryFan.mk (P := CompHausLike.of P (X × Y))
+  BinaryFan.mk (P := ↧(X × Y))
     (ofHom _ { toFun := Prod.fst }) (ofHom _ { toFun := Prod.snd })
 
 /--
@@ -76,10 +76,9 @@ variable [HasProp P (X ⊕ Y)]
 Explicit binary cofan in `CompHausLike P`, given that the predicate `P` is preserved under taking
 type-theoretic sums.
 -/
-def coproductCocone : BinaryCofan X Y := BinaryCofan.mk (P := CompHausLike.of P (X ⊕ Y))
+def coproductCocone : BinaryCofan X Y := BinaryCofan.mk (P := ↧(X ⊕ Y))
   (ofHom _ { toFun := Sum.inl }) (ofHom _ { toFun := Sum.inr })
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 When the predicate `P` is preserved under taking type-theoretic sums, that sum is a
 category-theoretic coproduct in `CompHausLike P`.

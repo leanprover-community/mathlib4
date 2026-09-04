@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Countable.Small
+public import Mathlib.Basic.Countable.Small
 public import Mathlib.Data.Fintype.EquivFin
 
 /-!

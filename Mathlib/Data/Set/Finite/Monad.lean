@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Data.Set.Functor
 
@@ -25,7 +25,7 @@ open Set
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v}
 
 namespace Set
 
