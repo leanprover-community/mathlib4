@@ -70,19 +70,19 @@ theorem edegree_ne_top_of_finite [Finite V] (G : SimpleGraph V) (v : V) : G.edeg
   edegree_ne_top_iff_finite_neighborSet.mpr <| Set.toFinite _
 
 @[simp]
-theorem coe_degree_eq_edegree [Fintype <| G.neighborSet v] : G.degree v = G.edegree v := by
+theorem natCast_degree_eq_edegree [Fintype <| G.neighborSet v] : G.degree v = G.edegree v := by
   simp [encard_neighborSet, ← ncard_neighborSet]
 
 variable {G v} in
-theorem edegree_eq_coe_iff [Fintype <| G.neighborSet v] {n : ℕ} :
+theorem edegree_eq_natCast_iff [Fintype <| G.neighborSet v] {n : ℕ} :
     G.edegree v = n ↔ G.degree v = n := by
-  simp [← coe_degree_eq_edegree]
+  simp [← natCast_degree_eq_edegree]
 
 @[simp]
 theorem toNat_edegree [Fintype <| G.neighborSet v] : (G.edegree v).toNat = G.degree v := by
-  simp [← coe_degree_eq_edegree]
+  simp [← natCast_degree_eq_edegree]
 
-theorem coe_toNat_edegree_eq_self :
+theorem natCast_toNat_edegree_eq_self :
     (G.edegree v).toNat = G.edegree v ↔ (G.neighborSet v).Finite := by
   simp [edegree_ne_top_iff_finite_neighborSet]
 
@@ -126,7 +126,7 @@ theorem edegree_bot : edegree ⊥ v = 0 := by
 variable {G} in
 theorem IsRegularOfDegree.edegree_eq [G.LocallyFinite] {d : ℕ} (h : G.IsRegularOfDegree d) (v : V) :
     G.edegree v = d :=
-  edegree_eq_coe_iff.mpr <| h.degree_eq v
+  edegree_eq_natCast_iff.mpr <| h.degree_eq v
 
 /-- The maximum extended degree of all vertices, or `0` if there are no vertices -/
 noncomputable def maxEDegree : ℕ∞ :=
@@ -219,45 +219,45 @@ theorem minEDegree_ne_top_of_finite [Nonempty V] [Finite V] (G : SimpleGraph V) 
   have ⟨v⟩ := ‹Nonempty V›
   exact ⟨v, G.edegree_ne_top_of_finite v⟩
 
-theorem coe_maxDegree_eq_maxEDegree [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] :
+theorem natCast_maxDegree_eq_maxEDegree [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] :
     G.maxDegree = G.maxEDegree := by
   cases isEmpty_or_nonempty V
   · simp
   rw [maxEDegree_eq_iSup, maxDegree, ← Finset.coe_max' <| by simp, Finset.max'_eq_sup',
     Finset.sup'_image, Finset.sup'_univ_eq_ciSup]
-  simpa [← coe_degree_eq_edegree] using ENat.natCast_iSup <| Set.finite_range _ |>.bddAbove
+  simpa [← natCast_degree_eq_edegree] using ENat.natCast_iSup <| Set.finite_range _ |>.bddAbove
 
-theorem coe_minDegree_eq_minEDegree [Nonempty V] [Fintype V] (G : SimpleGraph V)
+theorem natCast_minDegree_eq_minEDegree [Nonempty V] [Fintype V] (G : SimpleGraph V)
     [DecidableRel G.Adj] : G.minDegree = G.minEDegree := by
   rw [minEDegree_eq_iInf, minDegree, ← Finset.coe_min' <| by simp, Finset.min'_eq_inf',
     Finset.inf'_image, Finset.inf'_univ_eq_ciInf]
-  simpa [← coe_degree_eq_edegree] using! ENat.natCast_iInf
+  simpa [← natCast_degree_eq_edegree] using! ENat.natCast_iInf
 
-theorem maxEDegree_eq_coe_iff [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj] {n : ℕ} :
+theorem maxEDegree_eq_natCast_iff [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj] {n : ℕ} :
     G.maxEDegree = n ↔ G.maxDegree = n := by
-  simp [← coe_maxDegree_eq_maxEDegree]
+  simp [← natCast_maxDegree_eq_maxEDegree]
 
-theorem minEDegree_eq_coe_iff [Nonempty V] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+theorem minEDegree_eq_natCast_iff [Nonempty V] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
     {n : ℕ} : G.minEDegree = n ↔ G.minDegree = n := by
-  simp [← coe_minDegree_eq_minEDegree]
+  simp [← natCast_minDegree_eq_minEDegree]
 
-theorem minEDegree_eq_coe_iff_of_neZero [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj] {n : ℕ}
-    [NeZero n] : G.minEDegree = n ↔ G.minDegree = n := by
+theorem minEDegree_eq_natCast_iff_of_neZero [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+    {n : ℕ} [NeZero n] : G.minEDegree = n ↔ G.minDegree = n := by
   cases isEmpty_or_nonempty V
   · simpa using NeZero.ne' n
-  simp [← coe_minDegree_eq_minEDegree]
+  simp [← natCast_minDegree_eq_minEDegree]
 
 @[simp]
 theorem toNat_maxEDegree [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] :
     G.maxEDegree.toNat = G.maxDegree := by
-  simp [← coe_maxDegree_eq_maxEDegree]
+  simp [← natCast_maxDegree_eq_maxEDegree]
 
 @[simp]
 theorem toNat_minEDegree [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] :
     G.minEDegree.toNat = G.minDegree := by
   cases isEmpty_or_nonempty V
   · simp
-  simp [← coe_minDegree_eq_minEDegree]
+  simp [← natCast_minDegree_eq_minEDegree]
 
 variable {G H} in
 theorem IsContained.maxEDegree_le (h : G ⊑ H) : G.maxEDegree ≤ H.maxEDegree := by
