@@ -387,23 +387,20 @@ theorem mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p 
 instance : CanLift (AffineSubspace k V) (Submodule k V) (·) (0 ∈ ·) :=
   ⟨fun _ hs => ⟨_, direction_eq_self_iff_zero_mem.mpr hs⟩⟩
 
-/-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
-theorem ext_of_direction_eq {s₁ s₂ : AffineSubspace k P} (hd : s₁.direction = s₂.direction)
-    (hn : ((s₁ : Set P) ∩ s₂).Nonempty) : s₁ = s₂ := by
-  ext p
+theorem le_of_direction_le {s₁ s₂ : AffineSubspace k P} (hd : s₁.direction ≤ s₂.direction)
+    (hn : ((s₁ : Set P) ∩ s₂).Nonempty) : s₁ ≤ s₂ := by
+  intro p hp
   have hq1 := Set.mem_of_mem_inter_left hn.some_mem
   have hq2 := Set.mem_of_mem_inter_right hn.some_mem
-  constructor
-  · intro hp
-    rw [← vsub_vadd p hn.some]
-    refine vadd_mem_of_mem_direction ?_ hq2
-    rw [← hd]
-    exact vsub_mem_direction hp hq1
-  · intro hp
-    rw [← vsub_vadd p hn.some]
-    refine vadd_mem_of_mem_direction ?_ hq1
-    rw [hd]
-    exact vsub_mem_direction hp hq2
+  rw [← vsub_vadd p hn.some]
+  refine vadd_mem_of_mem_direction ?_ hq2
+  grw [← hd]
+  exact vsub_mem_direction hp hq1
+
+/-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
+theorem ext_of_direction_eq {s₁ s₂ : AffineSubspace k P} (hd : s₁.direction = s₂.direction)
+    (hn : ((s₁ : Set P) ∩ s₂).Nonempty) : s₁ = s₂ :=
+  le_antisymm (le_of_direction_le hd.le hn) (le_of_direction_le hd.ge (inter_comm .. ▸ hn))
 
 /-- Two affine subspaces with nonempty intersection are equal if and only if their directions are
 equal. -/
