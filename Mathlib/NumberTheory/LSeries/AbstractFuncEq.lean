@@ -484,7 +484,7 @@ lemma symm_Λ_eq : P.symm.Λ = mellin P.g := hP.symm.Λ_eq
 
 /-- The Mellin transform of `f` is well-defined and equal to `P.Λ s`, for all `s`. -/
 theorem hasMellin (s : ℂ) : HasMellin P.f s (P.Λ s) :=
-  ⟨hP.mellinConvergent s, congr_fun hP.Λ_eq.symm s⟩
+  ⟨hP.mellinConvergent s, congr($hP.Λ_eq.symm s)⟩
 
 /-- If `P` is a strong FE pair, then `P.Λ` is entire. -/
 theorem differentiable_Λ : Differentiable ℂ P.Λ :=

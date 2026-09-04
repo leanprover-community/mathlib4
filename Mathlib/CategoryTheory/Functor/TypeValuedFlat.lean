@@ -53,8 +53,7 @@ lemma Functor.isCofiltered_elements
     let h' := (Types.equalizerLimit (g := F.map f.hom) (h := F.map g.hom)).isLimit
     refine ⟨.mk ((h'.conePointUniqueUpToIso h).hom ⟨x.val, by simp⟩),
       Elements.homMk (equalizer.ι f.hom g.hom)
-        (ConcreteCategory.congr_hom
-        (h'.conePointUniqueUpToIso_hom_comp h .zero) ⟨x.val, by simp⟩),
+        congr($(h'.conePointUniqueUpToIso_hom_comp h .zero) ⟨x.val, by simp⟩),
       by ext; exact equalizer.condition f.hom g.hom⟩
 
 namespace FunctorToTypes

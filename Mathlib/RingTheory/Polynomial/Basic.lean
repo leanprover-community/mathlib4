@@ -547,7 +547,7 @@ theorem _root_.Polynomial.not_isField : ¬IsField R[X] := by
   obtain ⟨p, hp⟩ := hR.mul_inv_cancel X_ne_zero
   have hp0 : p ≠ 0 := right_ne_zero_of_mul_eq_one hp
   have := degree_lt_degree_mul_X hp0
-  rw [← X_mul, congr_arg degree hp, degree_one, Nat.WithBot.lt_zero_iff, degree_eq_bot] at this
+  rw [← X_mul, congr(degree $hp), degree_one, Nat.WithBot.lt_zero_iff, degree_eq_bot] at this
   exact hp0 this
 
 @[deprecated (since := "2026-08-01")]
@@ -843,7 +843,7 @@ theorem disjoint_ker_aeval_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : 
   rcases hpq with ⟨p', q', hpq'⟩
   simpa [LinearMap.mem_ker.1 (Submodule.mem_inf.1 hv).1,
     LinearMap.mem_ker.1 (Submodule.mem_inf.1 hv).2] using
-    congr_arg (fun p : R[X] => aeval f p v) hpq'.symm
+    congr(aeval f $hpq'.symm v)
 
 theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :
     LinearMap.range (aeval f p) ⊔ LinearMap.range (aeval f q) = ⊤ := by
@@ -856,7 +856,7 @@ theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hp
   use aeval f (q * q') v
   use LinearMap.mem_range.2 ⟨aeval f q' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
   simpa only [mul_comm p p', mul_comm q q', aeval_one, aeval_add] using!
-    congr_arg (fun p : R[X] => aeval f p v) hpq'
+    congr(aeval f $hpq' v)
 
 theorem sup_ker_aeval_le_ker_aeval_mul {f : M →ₗ[R] M} {p q : R[X]} :
     LinearMap.ker (aeval f p) ⊔ LinearMap.ker (aeval f q) ≤ LinearMap.ker (aeval f (p * q)) := by
@@ -889,7 +889,7 @@ theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X
     ⟨aeval f (q * q') v, LinearMap.mem_ker.1 h_eval₂_pqq', aeval f (p * p') v,
       LinearMap.mem_ker.1 h_eval₂_qpp', ?_⟩
   rw [add_comm, mul_comm p p', mul_comm q q']
-  simpa only [map_add, map_mul, aeval_one] using! congr_arg (fun p : R[X] => aeval f p v) hpq'
+  simpa only [map_add, map_mul, aeval_one] using! congr(aeval f $hpq' v)
 
 end Polynomial
 
@@ -942,7 +942,7 @@ theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommSemiring S] [Finite σ]
     (ϕ : MvPolynomial σ R →+* S) (p : MvPolynomial σ R) :
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
   cases nonempty_fintype σ
-  refine Trans.trans (congr_arg ϕ (MvPolynomial.as_sum p)) ?_
+  refine Trans.trans congr(ϕ $(MvPolynomial.as_sum p)) ?_
   rw [MvPolynomial.eval₂_eq', map_sum ϕ]
   congr
   ext

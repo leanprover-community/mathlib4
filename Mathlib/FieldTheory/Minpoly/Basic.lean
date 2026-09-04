@@ -101,7 +101,7 @@ theorem aeval_algHom (f : B →ₐ[A] B') (x : B) : (Polynomial.aeval (f x)) (mi
 theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   intro h
   refine (one_ne_zero : (1 : B) ≠ 0) ?_
-  simpa using congr_arg (Polynomial.aeval x) h
+  simpa using congr(Polynomial.aeval x $h)
 
 theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A →+* R) :
     (minpoly A x).map f ≠ 1 := by
@@ -148,7 +148,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   · exact (h <| (aeval_modByMonic_eq_self_of_root hp).trans <| aeval A x).elim
   obtain ⟨r, hr⟩ := (modByMonic_eq_zero_iff_dvd hm).1 h
   rw [hr]
-  have hlead := congr_arg leadingCoeff hr
+  have hlead := congr(leadingCoeff $hr)
   rw [mul_comm, leadingCoeff_mul_monic hm, (monic hx).leadingCoeff] at hlead
   have : natDegree r ≤ 0 := by
     have hr0 : r ≠ 0 := by
@@ -270,7 +270,7 @@ theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   refine (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => ?_
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
   by_contra! h
-  have heval := congr_arg (Polynomial.aeval x) he
+  have heval := congr(Polynomial.aeval x $he)
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
   rcases heval with heval | heval
   · exact aeval_ne_zero_of_dvdNotUnit_minpoly hx hf ⟨hf.ne_zero, g, h.2, he.symm⟩ heval

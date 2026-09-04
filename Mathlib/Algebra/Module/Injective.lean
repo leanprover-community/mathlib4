@@ -123,7 +123,7 @@ theorem ExtensionOf.dExt {a b : ExtensionOf i f} (domain_eq : a.domain = b.domai
 theorem ExtensionOf.dExt_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
-  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
+  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr(a.toFun $(mod_cast h))⟩, fun ⟨h1, h2⟩ =>
     ExtensionOf.dExt h1 h2⟩
 
 theorem ExtensionOf.toLinearPMap_injective :
@@ -189,12 +189,12 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
       toFun :=
         { toFun := fun x => f x.2.choose
           map_add' := fun x y => by
-            have eq1 : _ + _ = (x + y).1 := congr_arg₂ (· + ·) x.2.choose_spec y.2.choose_spec
+            have eq1 : _ + _ = (x + y).1 := congr($(x.2.choose_spec) + $(y.2.choose_spec))
             rw [← map_add, ← (x + y).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
           map_smul' := fun r x => by
-            have eq1 : r • _ = (r • x).1 := congr_arg (r • ·) x.2.choose_spec
+            have eq1 : r • _ = (r • x).1 := congr(r • $(x.2.choose_spec))
             rw [← map_smul, ← (r • x).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_smul] }
@@ -394,7 +394,7 @@ protected theorem extension_property (h : Module.Baer R Q)
 theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
     (f : M →+ N) (hf : Function.Injective f) (g : M →+ Q) : ∃ h : N →+ Q, h.comp f = g :=
   have ⟨g', hg'⟩ := h.extension_property f.toIntLinearMap hf g.toIntLinearMap
-  ⟨g', congr(LinearMap.toAddMonoidHom $hg')⟩
+  ⟨g', congr($(hg').toAddMonoidHom)⟩
 
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
 linear map from an ideal can be extended, then the module is injective. -/
@@ -473,7 +473,7 @@ instance Module.Injective.pi
     choose l hl using fun i ↦ extension_property R _ _ _ f hf ((LinearMap.proj i).comp g)
     refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
     ext i
-    exact DFunLike.congr_fun (hl i) x⟩
+    exact congr($(hl i) x)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 universe u' in

@@ -754,7 +754,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 /-- Construct an algebra isomorphism from an equality of intermediate fields. -/
 @[simps! apply]
 def equivOfEq {S T : IntermediateField F E} (h : S = T) : S ≃ₐ[F] T :=
-  Subalgebra.equivOfEq _ _ (congr_arg toSubalgebra h)
+  Subalgebra.equivOfEq _ _ congr(toSubalgebra $h)
 
 @[simp]
 theorem equivOfEq_symm {S T : IntermediateField F E} (h : S = T) :

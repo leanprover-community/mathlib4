@@ -157,7 +157,7 @@ lemma injective_embSigma (n : ℕ) : Injective (embSigma n) := by
   subst this
   simp_all only [Sigma.mk.inj_iff, heq_eq_eq, true_and, and_true]
   ext i
-  exact mk.inj_iff.mp (congr_fun hpq.1 i)
+  exact mk.inj_iff.mp congr($(hpq.1) i)
 
 /-- The best proof would probably to establish the bijection with Finpartitions, but we opt
 for a direct argument, embedding `OrderedPartition n` in a type which is obviously finite. -/

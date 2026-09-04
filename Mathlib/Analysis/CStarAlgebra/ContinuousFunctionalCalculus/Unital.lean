@@ -272,7 +272,7 @@ theorem cfcHom_comp [UniqueHom R A] (f : C(spectrum R a, R))
     cfcHom ha (g.comp f') = cfcHom (cfcHom_predicate ha f) g := by
   let φ : C(spectrum R (cfcHom ha f), R) →⋆ₐ[R] A :=
     (cfcHom ha).comp <| ContinuousMap.compStarAlgHom' R R f'
-  suffices cfcHom (cfcHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
+  suffices cfcHom (cfcHom_predicate ha f) = φ from congr($this.symm g)
   refine cfcHom_eq_of_continuous_of_map_id (cfcHom_predicate ha f) φ ?_ ?_
   · exact cfcHom_continuous ha |>.comp f'.continuous_precomp
   · simp only [φ, StarAlgHom.comp_apply, ContinuousMap.compStarAlgHom'_apply]

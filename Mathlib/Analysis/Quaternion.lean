@@ -92,8 +92,7 @@ instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
 
 instance : CStarRing ℍ where
-  norm_mul_self_le x :=
-    le_of_eq <| Eq.symm <| (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
+  norm_mul_self_le x := ge_of_eq <| (norm_mul _ _).trans congr($(norm_star x) * ‖x‖)
 
 /-- Coercion from `ℂ` to `ℍ`. -/
 @[coe] def coeComplex (z : ℂ) : ℍ := ⟨z.re, z.im, 0, 0⟩

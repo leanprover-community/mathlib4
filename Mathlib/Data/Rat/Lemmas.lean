@@ -28,7 +28,7 @@ theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   rw [Rat.mk_eq_divInt, divInt_eq_divInt_iff b0 (mod_cast h)] at e
   refine Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <|
     c.dvd_of_dvd_mul_right ?_
-  have := congr_arg Int.natAbs e
+  have := congr($(e).natAbs)
   simp only [Int.natAbs_mul, Int.natAbs_natCast] at this; simp [this]
 
 theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by

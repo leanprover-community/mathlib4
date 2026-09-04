@@ -179,7 +179,7 @@ theorem traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
   rfl
 
 theorem traceForm_isSymm : (traceForm R S).IsSymm :=
-  ⟨fun _ _ => congr_arg (trace R S) (mul_comm _ _)⟩
+  ⟨fun _ _ => congr(trace R S $(mul_comm ..))⟩
 
 theorem traceForm_toMatrix [DecidableEq ι] (b : Basis ι R S) (i j) :
     (traceForm R S).toMatrix b i j = trace R S (b i * b j) := by

@@ -75,7 +75,7 @@ theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective 
     Function.Injective (comap f) := fun x y h =>
   PrimeSpectrum.ext
     (Ideal.comap_injective_of_surjective f hf
-      (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
+      (congr(PrimeSpectrum.asIdeal $h) : (comap f x).asIdeal = (comap f y).asIdeal))
 
 instance [Algebra R S] (p : PrimeSpectrum S) :
     p.asIdeal.LiesOver (p.comap <| algebraMap R S).asIdeal where
@@ -123,7 +123,7 @@ theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q�
   classical
   obtain rfl | ne := eq_or_ne i j
   · congr; ext x
-    simpa using congr_arg (Function.update (0 : ∀ i, R i) i x ∈ ·.asIdeal) eq
+    simpa using congr(Function.update (0 : ∀ i, R i) i x ∈ $(eq).asIdeal)
   · refine (p.1.ne_top_iff_one.mp p.2.ne_top ?_).elim
     have : Function.update (1 : ∀ i, R i) j 0 ∈ (sigmaToPi R ⟨j, q⟩).asIdeal := by simp
     simpa [← eq, Function.update_of_ne ne]
@@ -149,7 +149,7 @@ theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
     -- take a maximal ideal I containing J
     rintro ⟨x, hx⟩
     have ⟨i, hi⟩ := x.support.exists_notMem
-    simpa [DFinsupp.coeFnAddMonoidHom, DFinsupp.notMem_support_iff.mp hi] using congr_fun hx i
+    simpa [DFinsupp.coeFnAddMonoidHom, DFinsupp.notMem_support_iff.mp hi] using congr($hx i)
   refine ⟨I, max, fun ⟨⟨i, p⟩, eq⟩ ↦ ?_⟩
   -- then I is not in the range of `sigmaToPi`
   have : ⇑(DFinsupp.single i 1) ∉ (sigmaToPi R ⟨i, p⟩).asIdeal := by

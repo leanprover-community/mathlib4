@@ -58,7 +58,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       constructor; swap
       · exact ofHom
           { toFun := fun x =>
-              ⟨⟨S.fst x, S.snd x⟩, by simpa using! ConcreteCategory.congr_hom S.condition x⟩
+              ⟨⟨S.fst x, S.snd x⟩, by simpa using! congr($S.condition x)⟩
             continuous_toFun := by fun_prop }
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
@@ -72,8 +72,8 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext x`.
         apply Subtype.ext
         apply Prod.ext
-        · simpa using! ConcreteCategory.congr_hom h₁ x
-        · simpa using! ConcreteCategory.congr_hom h₂ x)
+        · simpa using! congr($h₁ x)
+        · simpa using! congr($h₂ x))
 
 /-- The pullback of two maps can be identified as a subspace of `X × Y`. -/
 def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -89,7 +89,7 @@ theorem pullbackIsoProdSubtype_inv_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
 theorem pullbackIsoProdSubtype_inv_fst_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     pullback.fst f g ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).fst :=
-  ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_fst f g) x
+  congr($(pullbackIsoProdSubtype_inv_fst f g) x)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -100,7 +100,7 @@ theorem pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
 theorem pullbackIsoProdSubtype_inv_snd_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     pullback.snd f g ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).snd :=
-  ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_snd f g) x
+  congr($(pullbackIsoProdSubtype_inv_snd f g) x)
 
 theorem pullbackIsoProdSubtype_hom_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).hom ≫ pullbackFst f g = pullback.fst _ _ := by

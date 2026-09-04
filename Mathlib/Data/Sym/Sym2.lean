@@ -202,7 +202,7 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
     Quot.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
       exacts [rfl, f.prop _ _]
-  invFun F := ⟨fun a b ↦ F s(a, b), fun _ _ => congr_arg F eq_swap⟩
+  invFun F := ⟨fun a b ↦ F s(a, b), fun _ _ => congr(F $eq_swap)⟩
   right_inv _ := funext <| Sym2.ind fun _ _ => rfl
 
 @[simp]
@@ -229,7 +229,7 @@ def lift₂ :
   invFun F :=
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
-      exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
+      exacts [congr(F $eq_swap _), congr(F _ $eq_swap)]⟩
   right_inv _ := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 
 @[simp]

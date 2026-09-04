@@ -186,7 +186,7 @@ instance instMonoid [Semigroup α] : Monoid (WithOne α) where
 @[to_additive]
 instance instCommMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
   mul_comm
-    | (a : α), (b : α) => congr_arg some (mul_comm a b)
+    | (a : α), (b : α) => congr(some $(mul_comm a b))
     | (_ : α), 1 => rfl
     | 1, (_ : α) => rfl
     | 1, 1 => rfl

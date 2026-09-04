@@ -123,7 +123,7 @@ theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {
   rcases h.1 with ⟨S, hSc, hSq, hS⟩
   choose! V hpV hV using fun s hs ↦ hpq s (hSq s hs)
   refine ⟨⟨V '' S, hSc.image _, forall_mem_image.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
-  refine congr_arg Subtype.val (hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_)
+  refine congr($(hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_).val)
   rw [← hV U hU]
   exact h _ (mem_image_of_mem _ hU)
 

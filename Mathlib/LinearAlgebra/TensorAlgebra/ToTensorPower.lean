@@ -98,12 +98,12 @@ theorem ofDirectSum_comp_toDirectSum :
 @[simp]
 theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
     ofDirectSum (TensorAlgebra.toDirectSum x) = x :=
-  AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
+  congr($ofDirectSum_comp_toDirectSum x)
 
 @[simp]
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
-    (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg Fin h) x) =
+    (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr(Fin $h)) x) =
     GradedMonoid.mk n x :=
   Eq.symm (PiTensorProduct.gradedMonoid_eq_of_reindex_cast h rfl)
 
@@ -151,7 +151,7 @@ theorem toDirectSum_comp_ofDirectSum :
 @[simp]
 theorem toDirectSum_ofDirectSum (x : ⨁ n, ⨂[R]^n M) :
     TensorAlgebra.toDirectSum (ofDirectSum x) = x :=
-  AlgHom.congr_fun toDirectSum_comp_ofDirectSum x
+  congr($toDirectSum_comp_ofDirectSum x)
 
 /-- The tensor algebra is isomorphic to a direct sum of tensor powers. -/
 @[simps!]

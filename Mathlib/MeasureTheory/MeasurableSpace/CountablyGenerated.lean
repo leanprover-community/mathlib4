@@ -424,7 +424,7 @@ theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
   apply separating_of_generateFrom (range (natGeneratingSequence _))
   rintro - ⟨n, rfl⟩
   rw [← decide_eq_decide]
-  exact congr_fun hxy n
+  exact congr($hxy n)
 
 /-- If a measurable space is countably generated and separates points, it is measure equivalent
 to some subset of the Cantor space `ℕ → Bool` (equipped with the product sigma algebra).

@@ -320,7 +320,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
 theorem Complex.Gamma_one_half_eq : Complex.Gamma (1 / 2) = (π : ℂ) ^ (1 / 2 : ℂ) := by
-  convert! congr_arg ((↑) : ℝ → ℂ) Real.Gamma_one_half_eq
+  convert! congr(($Real.Gamma_one_half_eq : ℂ))
   · simpa only [one_div, ofReal_inv, ofReal_ofNat] using Gamma_ofReal (1 / 2)
   · rw [sqrt_eq_rpow, ofReal_cpow pi_pos.le, ofReal_div, ofReal_ofNat, ofReal_one]
 

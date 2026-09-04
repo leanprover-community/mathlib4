@@ -132,7 +132,7 @@ lemma Ideal.comap_surjective_of_faithfullyFlat :
 lemma Ideal.map_injective_of_faithfullyFlat :
     Function.Injective (map (algebraMap A B)) :=
   fun _ _ h ↦ by simpa [comap_map_eq_self_of_faithfullyFlat]
-    using congr_arg (Ideal.comap (algebraMap A B) ·) h
+    using congr(Ideal.comap (algebraMap A B) $h)
 
 /-- If `B` is faithfully flat over `A`, every prime of `A` comes from a prime of `B`. -/
 lemma Ideal.exists_isPrime_liesOver_of_faithfullyFlat (p : Ideal A) [p.IsPrime] :

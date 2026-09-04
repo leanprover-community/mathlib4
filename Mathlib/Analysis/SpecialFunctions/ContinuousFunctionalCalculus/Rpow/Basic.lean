@@ -171,8 +171,8 @@ lemma nnrpow_inv_nnrpow (a : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by
 
 lemma nnrpow_inv_eq (a b : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by cfc_tac)
     (hb : 0 ≤ b := by cfc_tac) : a ^ x⁻¹ = b ↔ b ^ x = a :=
-  ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($(h) ^ x).symm,
-    fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($(h) ^ x⁻¹).symm⟩
+  ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($h ^ x).symm,
+    fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($h ^ x⁻¹).symm⟩
 
 section prod
 

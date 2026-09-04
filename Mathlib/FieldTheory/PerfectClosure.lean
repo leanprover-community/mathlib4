@@ -163,16 +163,16 @@ instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
     one := mk K p (0, 1)
     one_mul := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
-        congr_arg (Quot.mk _) <| by
-          simp only [iterate_map_one, iterate_zero_apply, one_mul, zero_add]
+        congr(Quot.mk _ $(by
+          simp only [iterate_map_one, iterate_zero_apply, one_mul, zero_add]))
     mul_one := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
-        congr_arg (Quot.mk _) <| by
-          simp only [iterate_map_one, iterate_zero_apply, mul_one, add_zero]
+        congr(Quot.mk _ $(by
+          simp only [iterate_map_one, iterate_zero_apply, mul_one, add_zero]))
     mul_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
-          congr_arg (Quot.mk _) <| by simp only [add_comm, mul_comm] }
+          congr(Quot.mk _ $(by simp only [add_comm, mul_comm])) }
 
 theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
   rfl
@@ -271,19 +271,19 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
             simp only [iterate_map_add, ← iterate_add_apply, add_assoc, add_comm s _]
     zero_add := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
-        congr_arg (Quot.mk _) <| by
-          simp only [iterate_map_zero, iterate_zero_apply, zero_add]
+        congr(Quot.mk _ $(by
+          simp only [iterate_map_zero, iterate_zero_apply, zero_add]))
     add_zero := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
-        congr_arg (Quot.mk _) <| by
-          simp only [iterate_map_zero, iterate_zero_apply, add_zero]
+        congr(Quot.mk _ $(by
+          simp only [iterate_map_zero, iterate_zero_apply, add_zero]))
     sub_eq_add_neg := fun _ _ => rfl
     neg_add_cancel := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ => by
         simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, neg_add_cancel, mk_zero_right]
     add_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
-        Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm]
+        Quot.inductionOn f fun ⟨n, y⟩ => congr(Quot.mk _ $(by simp only [add_comm]))
     nsmul := nsmulRec
     zsmul := zsmulRec }
 
@@ -489,7 +489,7 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
     refine (eq_iff K p _ _).2 ?_
     simp only [iterate_map_one, iterate_map_zero, iterate_zero_apply, ← iterate_map_mul] at this ⊢
     rw [mul_inv_cancel₀ this, iterate_map_one]
-  inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
+  inv_zero := congr(Quot.mk (R K p) $(by rw [inv_zero]))
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _

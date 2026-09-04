@@ -174,7 +174,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
 lemma CotangentSpace.compEquiv_symm_zero (x) :
     (compEquiv Q P).symm (0, x) =
         (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T x :=
-  DFunLike.congr_fun (compEquiv_symm_inr Q P) x
+  congr($(compEquiv_symm_inr Q P) x)
 
 lemma CotangentSpace.fst_compEquiv :
     LinearMap.fst T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ
@@ -195,7 +195,7 @@ lemma CotangentSpace.fst_compEquiv :
 
 lemma CotangentSpace.fst_compEquiv_apply (x) :
     (compEquiv Q P x).1 = Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom x :=
-  DFunLike.congr_fun (fst_compEquiv Q P) x
+  congr($(fst_compEquiv Q P) x)
 
 lemma CotangentSpace.map_toComp_injective :
     Function.Injective

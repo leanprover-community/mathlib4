@@ -69,7 +69,7 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_comp_D (σ) :
 lemma KaehlerDifferential.mvPolynomialBasis_repr_D (σ) (x) :
     (mvPolynomialBasis R σ).repr (D _ _ x) =
       MvPolynomial.mkDerivation R (Finsupp.single · (1 : MvPolynomial σ R)) x :=
-  Derivation.congr_fun (mvPolynomialBasis_repr_comp_D R σ) x
+  congr($(mvPolynomialBasis_repr_comp_D R σ) x)
 
 @[simp]
 lemma KaehlerDifferential.mvPolynomialBasis_repr_D_X (σ) (i) :
@@ -131,7 +131,7 @@ lemma KaehlerDifferential.polynomialEquiv_comp_D :
 @[simp]
 lemma KaehlerDifferential.polynomialEquiv_D (P) :
     polynomialEquiv R (D R R[X] P) = derivative P :=
-  Derivation.congr_fun (polynomialEquiv_comp_D R) P
+  congr($(polynomialEquiv_comp_D R) P)
 
 @[simp]
 lemma KaehlerDifferential.polynomialEquiv_symm (P) :

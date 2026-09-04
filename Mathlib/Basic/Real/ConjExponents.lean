@@ -152,13 +152,13 @@ theorem sub_one_pos : 0 < p - 1 := sub_pos.2 h.lt
 theorem sub_one_ne_zero : p - 1 ≠ 0 := h.sub_one_pos.ne'
 
 theorem conjugate_eq : q = p / (p - 1) := by
-  convert! inv_inv q ▸ congr($(h.symm.inv_sub_inv_eq_inv.symm)⁻¹) using 1
+  convert! inv_inv q ▸ congr($h.symm.inv_sub_inv_eq_inv.symm⁻¹) using 1
   field [h.ne_zero]
 
 lemma conjExponent_eq : conjExponent p = q := h.conjugate_eq.symm
 
 lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := sub_eq_of_eq_add h.symm.inv_add_inv_eq_one.symm
-lemma inv_sub_one : p⁻¹ - 1 = -q⁻¹ := by simpa using congr(-$(h.one_sub_inv))
+lemma inv_sub_one : p⁻¹ - 1 = -q⁻¹ := by simpa using congr(-$h.one_sub_inv)
 
 theorem sub_one_mul_conj : (p - 1) * q = p :=
   mul_comm q (p - 1) ▸ (eq_div_iff h.sub_one_ne_zero).1 h.conjugate_eq
@@ -346,7 +346,7 @@ theorem sub_one_mul_conj : (p - 1) * q = p :=
   mul_comm q (p - 1) ▸ (eq_div_iff h.sub_one_ne_zero).1 h.conjugate_eq
 
 theorem mul_eq_add : p * q = p + q := by
-  simpa [mul_add, add_mul, h.ne_zero, h.symm.ne_zero, add_comm q] using congr(p * $(h.inv_eq) * q)
+  simpa [mul_add, add_mul, h.ne_zero, h.symm.ne_zero, add_comm q] using congr(p * $h.inv_eq * q)
 
 theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
@@ -443,7 +443,7 @@ namespace HolderTriple
 lemma _root_.Real.HolderTriple.ennrealOfReal {p q r : ℝ} (h : p.HolderTriple q r) :
     HolderTriple (ENNReal.ofReal p) (ENNReal.ofReal q) (ENNReal.ofReal r) := by
   simpa [holderTriple_iff, ofReal_inv_of_pos, h.pos, h.symm.pos, h.pos', ofReal_add, h.nonneg,
-    h.symm.nonneg] using congr(ENNReal.ofReal $(h.inv_add_inv_eq_inv))
+    h.symm.nonneg] using congr(ENNReal.ofReal $h.inv_add_inv_eq_inv)
 
 lemma _root_.Real.HolderConjugate.ennrealOfReal {p q : ℝ} (h : p.HolderConjugate q) :
     HolderConjugate (ENNReal.ofReal p) (ENNReal.ofReal q) := by
@@ -462,7 +462,7 @@ lemma toReal_iff (hp : 0 < p.toReal) (hq : 0 < q.toReal) :
   refine ⟨of_toReal, fun h ↦ ⟨?_, hp, hq⟩⟩
   rw [toReal_pos_iff] at hp hq
   simpa [toReal_add, Finiteness.inv_ne_top, hp.1.ne', hq.1.ne']
-    using congr(ENNReal.toReal $(h.inv_add_inv_eq_inv))
+    using congr($(h.inv_add_inv_eq_inv).toReal)
 
 variable (r) in
 lemma toReal (hp : 0 < p.toReal) (hq : 0 < q.toReal) [HolderTriple p q r] :

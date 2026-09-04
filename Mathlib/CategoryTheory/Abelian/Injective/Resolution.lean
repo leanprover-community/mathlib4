@@ -108,13 +108,13 @@ theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
 lemma desc_commutes_zero {Y Z : C} (f : Z ⟶ Y)
     (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.ι.f 0 ≫ (desc f I J).f 0 = f ≫ I.ι.f 0 :=
-  (HomologicalComplex.congr_hom (desc_commutes f I J) 0).trans (by simp)
+  congr($(desc_commutes f I J).f 0).trans (by simp)
 
 -- Now that we've checked this property of the descent, we can seal away the actual definition.
 /-- An auxiliary definition for `descHomotopyZero`. -/
 def descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = 0) : I.cocomplex.X 1 ⟶ J.cocomplex.X 0 :=
-  I.exact₀.descToInjective (f.f 0) (congr_fun (congr_arg HomologicalComplex.Hom.f comm) 0)
+  I.exact₀.descToInjective (f.f 0) congr($(comm).f 0)
 
 @[reassoc (attr := simp)]
 lemma comp_descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}

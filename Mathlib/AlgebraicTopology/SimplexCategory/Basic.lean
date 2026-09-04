@@ -553,7 +553,7 @@ instance : skeletalFunctor.Full where
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
     ext : 3
-    exact CategoryTheory.congr_fun h _
+    exact congr($h _)
 
 instance : skeletalFunctor.EssSurj where
   mem_essImage X :=
@@ -669,8 +669,7 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                   apply not_le.mpr h'
                   convert! f.toOrderHom.monotone (le_of_not_ge h'')
                   all_goals
-                    exact (ConcreteCategory.congr_hom (Iso.inv_hom_id
-                      (asIso ((forget SimplexCategory).map f))) _).symm
+                    exact congr($(Iso.inv_hom_id (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }
         hom_inv_id := by
           ext x : 3
@@ -714,9 +713,9 @@ def orderIsoOfIso {x y : SimplexCategory} (e : x ≅ y) : Fin (x.len + 1) ≃o F
     { toFun := e.hom.toOrderHom
       invFun := e.inv.toOrderHom
       left_inv := fun i => by
-        simpa only using! congr_arg (fun φ => (Hom.toOrderHom φ) i) e.hom_inv_id
+        simpa only using! congr($(e.hom_inv_id).toOrderHom i)
       right_inv := fun i => by
-        simpa only using! congr_arg (fun φ => (Hom.toOrderHom φ) i) e.inv_hom_id }
+        simpa only using! congr($(e.inv_hom_id).toOrderHom i) }
     e.hom.toOrderHom.monotone e.inv.toOrderHom.monotone
 
 theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := by
@@ -725,10 +724,10 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
   ext : 4
-  exact DFunLike.congr_fun (eq₁.trans eq₂.symm) _
+  exact congr($(eq₁.trans eq₂.symm) _)
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
-  congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
+  congr($(iso_eq_iso_refl (asIso f)).hom)
 
 set_option backward.defeqAttrib.useBackward true in
 theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')

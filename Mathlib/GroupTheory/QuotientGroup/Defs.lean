@@ -136,7 +136,7 @@ theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
 theorem ker_le_range_iff [MulOneClass I] (f : G →* H) [f.range.Normal] (g : H →* I) :
     g.ker ≤ f.range ↔ (mk' f.range).comp g.ker.subtype = 1 :=
   ⟨fun h => MonoidHom.ext fun ⟨_, hx⟩ => (eq_one_iff _).mpr <| h hx,
-    fun h x hx => (eq_one_iff _).mp <| by exact DFunLike.congr_fun h ⟨x, hx⟩⟩
+    fun h x hx => (eq_one_iff _).mp <| by exact congr($h ⟨x, hx⟩)⟩
 
 @[to_additive (attr := simp)]
 theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
@@ -151,7 +151,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 -- for commutative groups we don't need normality assumption
 @[to_additive]
 instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) where
-  mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b)
+  mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr(mk $(mul_comm a b))
 
 local notation " Q" => G ⧸ N
 
@@ -366,7 +366,7 @@ section Pointwise
 open Set
 
 @[to_additive (attr := simp)] lemma image_coe : ((↑) : G → Q) '' N = 1 :=
-  congr_arg ((↑) : Subgroup Q → Set Q) <| map_mk'_self N
+  congr($(map_mk'_self N))
 
 @[to_additive]
 lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N * s := by

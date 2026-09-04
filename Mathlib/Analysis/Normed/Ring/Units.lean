@@ -231,6 +231,6 @@ theorem IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
 
 /-- Maximal ideals in normed rings with summable geometric series are closed. -/
 instance IsMaximal.isClosed {I : Ideal R} [hI : I.IsMaximal] : IsClosed (I : Set R) :=
-  isClosed_of_closure_subset <| Eq.subset <| congr_arg ((↑) : Ideal R → Set R) hI.closure_eq
+  isClosed_of_closure_subset <| Eq.subset congr($hI.closure_eq)
 
 end Ideal

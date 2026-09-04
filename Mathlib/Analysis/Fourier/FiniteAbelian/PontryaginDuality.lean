@@ -65,7 +65,7 @@ lemma zmod_injective : Injective (zmod n) := by
   rintro x y h
   have hn : (n : ℝ) ≠ 0 := NeZero.ne _
   simpa [pi_ne_zero, exp_inj, hn, CharP.intCast_eq_intCast (ZMod n) n] using
-    (zmod_intCast ..).symm.trans <| (DFunLike.congr_fun h ((1 : ℤ) : ZMod n)).trans <|
+    (zmod_intCast ..).symm.trans <| congr($h (((1 : ℤ) : ZMod n))).trans <|
       zmod_intCast ..
 
 @[simp] lemma zmod_inj {x y : ZMod n} : zmod n x = zmod n y ↔ x = y := zmod_injective.eq_iff
@@ -142,8 +142,8 @@ lemma exists_apply_ne_zero : (∃ ψ : AddChar α ℂ, ψ a ≠ 1) ↔ a ≠ 0 :
   classical
   by_contra! h
   let f : α → ℂ := fun b ↦ if a = b then 1 else 0
-  have h₀ := congr_fun ((complexBasis α).sum_repr f) 0
-  have h₁ := congr_fun ((complexBasis α).sum_repr f) a
+  have h₀ := congr($((complexBasis α).sum_repr f) 0)
+  have h₁ := congr($((complexBasis α).sum_repr f) a)
   simp only [complexBasis_apply, Fintype.sum_apply, Pi.smul_apply, h, smul_eq_mul, mul_one,
     map_zero_eq_one, ite_eq_left rfl, ite_eq_right ha, f] at h₀ h₁
   exact one_ne_zero (h₁.symm.trans h₀)
@@ -153,7 +153,7 @@ lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
 
 lemma doubleDualEmb_injective : Injective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) :=
   doubleDualEmb.ker_eq_bot_iff.1 <| eq_bot_iff.2 fun a ha ↦
-    forall_apply_eq_zero.1 fun ψ ↦ by simpa using! DFunLike.congr_fun ha (Additive.ofMul ψ)
+    forall_apply_eq_zero.1 fun ψ ↦ by simpa using! congr($ha (Additive.ofMul ψ))
 
 lemma doubleDualEmb_bijective : Bijective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) := by
   cases nonempty_fintype α

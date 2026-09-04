@@ -67,12 +67,12 @@ lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surj
   intro x
   obtain ⟨y, hy⟩ := hi₃ (g₂ x)
   obtain ⟨a, rfl⟩ : y ∈ Set.range f₂ := (hf₂ _).mp <| by
-    simpa [hy, hg₂.apply_apply_eq_one, map_eq_one_iff _ hi₄] using (DFunLike.congr_fun hc₃ y).symm
+    simpa [hy, hg₂.apply_apply_eq_one, map_eq_one_iff _ hi₄] using congr($hc₃ y).symm
   obtain ⟨b, hb⟩ : x / i₂ a ∈ Set.range g₁ := (hg₁ _).mp <| by
-    simp [← hy, show g₂ (i₂ a) = i₃ (f₂ a) by simpa using DFunLike.congr_fun hc₂ a]
+    simp [← hy, show g₂ (i₂ a) = i₃ (f₂ a) by simpa using congr($hc₂ a)]
   obtain ⟨o, rfl⟩ := hi₁ b
   use f₁ o * a
-  simp [← show g₁ (i₁ o) = i₂ (f₁ o) by simpa using DFunLike.congr_fun hc₁ o, hb]
+  simp [← show g₁ (i₁ o) = i₂ (f₁ o) by simpa using congr($hc₁ o), hb]
 
 include hf₁ hg₁ hc₁ hc₂ in
 -- Need to remove hybrid addition/multiplication instances on `Unit` so that `to_additive` can
@@ -100,11 +100,11 @@ lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjec
   intro m hm
   obtain ⟨x, rfl⟩ := (hf₂ m).mp <| by
     suffices h : i₄ (f₃ m) = 1 by rwa [map_eq_one_iff _ hi₄] at h
-    simp [← show g₃ (i₃ m) = i₄ (f₃ m) by simpa using DFunLike.congr_fun hc₃ m, hm]
+    simp [← show g₃ (i₃ m) = i₄ (f₃ m) by simpa using congr($hc₃ m), hm]
   obtain ⟨y, hy⟩ := (hg₁ _).mp <| by
-    rwa [show g₂ (i₂ x) = i₃ (f₂ x) by simpa using DFunLike.congr_fun hc₂ x]
+    rwa [show g₂ (i₂ x) = i₃ (f₂ x) by simpa using congr($hc₂ x)]
   obtain ⟨a, rfl⟩ := hi₁ y
-  rw [show g₁ (i₁ a) = i₂ (f₁ a) by simpa using DFunLike.congr_fun hc₁ a] at hy
+  rw [show g₁ (i₁ a) = i₂ (f₁ a) by simpa using congr($hc₁ a)] at hy
   apply hi₂ at hy
   subst hy
   rw [hf₁.apply_apply_eq_one]
@@ -190,9 +190,9 @@ lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surj
   AddMonoidHom.surjective_of_surjective_of_surjective_of_injective
     f₁.toAddMonoidHom f₂.toAddMonoidHom f₃.toAddMonoidHom g₁.toAddMonoidHom g₂.toAddMonoidHom
     g₃.toAddMonoidHom i₁.toAddMonoidHom i₂.toAddMonoidHom i₃.toAddMonoidHom i₄.toAddMonoidHom
-    (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₁ x)
-    (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₂ x)
-    (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₃ x) hf₂ hg₁ hg₂ hi₁ hi₃ hi₄
+    (AddMonoidHom.ext fun x ↦ congr($hc₁ x))
+    (AddMonoidHom.ext fun x ↦ congr($hc₂ x))
+    (AddMonoidHom.ext fun x ↦ congr($hc₃ x)) hf₂ hg₁ hg₂ hi₁ hi₃ hi₄
 
 include hf₁ hg₁ hc₁ hc₂ in
 /-- A special case of one four lemma such that the left-most term is zero in terms of modules.
@@ -214,9 +214,9 @@ lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjec
   AddMonoidHom.injective_of_surjective_of_injective_of_injective
     f₁.toAddMonoidHom f₂.toAddMonoidHom f₃.toAddMonoidHom g₁.toAddMonoidHom g₂.toAddMonoidHom
     g₃.toAddMonoidHom i₁.toAddMonoidHom i₂.toAddMonoidHom i₃.toAddMonoidHom i₄.toAddMonoidHom
-    (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₁ x)
-    (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₂ x)
-    (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₃ x) hf₁ hf₂ hg₁ hi₁ hi₂ hi₄
+    (AddMonoidHom.ext fun x ↦ congr($hc₁ x))
+    (AddMonoidHom.ext fun x ↦ congr($hc₂ x))
+    (AddMonoidHom.ext fun x ↦ congr($hc₃ x)) hf₁ hf₂ hg₁ hi₁ hi₂ hi₄
 
 include hf₁ hg₁ hc₁ hc₂ in
 /-- A special case of one four lemma such that the right-most term is zero in terms of (additive)

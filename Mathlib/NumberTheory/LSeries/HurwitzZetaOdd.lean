@@ -73,7 +73,7 @@ lemma jacobiTheta₂''_add_left (z τ : ℂ) : jacobiTheta₂'' (z + 1) τ = jac
   generalize jacobiTheta₂' (z * τ) τ = J'
   -- clear denominator
   simp_rw [div_add' _ _ _ two_pi_I_ne_zero, ← mul_div_assoc]
-  refine congr_arg (· / (2 * π * I)) ?_
+  refine congr($(?_) / (2 * π * I))
   -- get all exponential terms to left
   rw [mul_left_comm _ (cexp _), ← mul_add, mul_assoc (cexp _), ← mul_add, ← mul_assoc (cexp _),
     ← Complex.exp_add]

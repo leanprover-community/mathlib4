@@ -44,11 +44,11 @@ instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
     SMulInvariantMeasure M α (μ + ν) :=
   ⟨fun c _s hs =>
     show _ + _ = _ + _ from
-      congr_arg₂ (· + ·) (measure_preimage_smul c hs) (measure_preimage_smul c hs)⟩
+      congr($(measure_preimage_smul c hs) + $(measure_preimage_smul c hs))⟩
 
 @[to_additive]
 instance smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
-  ⟨fun a _s hs => show c • _ = c • _ from congr_arg (c • ·) (measure_preimage_smul a hs)⟩
+  ⟨fun a _s hs => show c • _ = c • _ from congr(c • $(measure_preimage_smul a hs))⟩
 
 @[to_additive]
 instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvariantMeasure M α (c • μ) :=

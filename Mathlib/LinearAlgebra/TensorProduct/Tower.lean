@@ -96,8 +96,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext high]
 nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>
-  LinearMap.restrictScalars_injective R <|
-    curry_injective <| (congr_arg (LinearMap.restrictScalars R) h :)
+  LinearMap.restrictScalars_injective R <| curry_injective congr(LinearMap.restrictScalars R $h)
 
 theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   curry_injective <| LinearMap.ext₂ H
@@ -321,8 +320,8 @@ variable {R A B M N P Q}
 /-- Heterobasic version of `TensorProduct.congr` -/
 def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinearMap (map f g) (map f.symm g.symm)
-    (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.apply_symm_apply _) (g.apply_symm_apply _))
-    (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.symm_apply_apply _) (g.symm_apply_apply _))
+    (ext fun _m _n => congr($(f.apply_symm_apply _) ⊗ₜ $(g.apply_symm_apply _)))
+    (ext fun _m _n => congr($(f.symm_apply_apply _) ⊗ₜ $(g.symm_apply_apply _)))
 
 @[simp]
 theorem congr_refl : congr (.refl A M) (.refl R N) = .refl A _ :=

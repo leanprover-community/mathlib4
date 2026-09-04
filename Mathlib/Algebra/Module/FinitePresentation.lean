@@ -138,8 +138,8 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
     exact ⟨y, rfl⟩
   choose σ hσ using this
   have hπ : Subtype.val ∘ π = l ∘ b := rfl
-  have hσ₁ : π ∘ σ = id := by ext i; exact congr_arg Subtype.val (hσ i)
-  have hσ₂ : l ∘ b ∘ σ = Subtype.val := by ext i; exact congr_arg Subtype.val (hσ i)
+  have hσ₁ : π ∘ σ = id := by ext i; exact congr($(hσ i).val)
+  have hσ₂ : l ∘ b ∘ σ = Subtype.val := by ext i; exact congr($(hσ i).val)
   refine ⟨(Set.finite_range (l ∘ b)).toFinset,
     by simpa [Set.range_comp, LinearMap.range_eq_top], ?_⟩
   let f : M →ₗ[R] (Set.finite_range (l ∘ b)).toFinset →₀ R :=
@@ -432,7 +432,7 @@ lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
     ∃ (s : S), s • g₁ = s • g₂ := by
   classical
   have : ∀ x, ∃ s : S, s • g₁ x = s • g₂ x := fun x ↦
-    IsLocalizedModule.exists_of_eq (S := S) (f := f) (LinearMap.congr_fun h x)
+    IsLocalizedModule.exists_of_eq (S := S) (f := f) congr($h x)
   choose s hs using this
   obtain ⟨σ, hσ⟩ := hM
   use σ.prod s
@@ -572,7 +572,7 @@ instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentat
     rw [Module.End.isUnit_iff]
     have := (Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units (S := S) (f := g) s)
     constructor
-    · exact fun _ _ e ↦ LinearMap.ext fun m ↦ this.left (LinearMap.congr_fun e m)
+    · exact fun _ _ e ↦ LinearMap.ext fun m ↦ this.left congr($e m)
     · intro h
       use ((IsLocalizedModule.map_units (S := S) (f := g) s).unit⁻¹).1 ∘ₗ h
       ext x
@@ -586,7 +586,7 @@ instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentat
   · intro h₁ h₂ e
     apply Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule S g
     ext x
-    simpa using LinearMap.congr_fun e (f x)
+    simpa using congr($e (f x))
 
 instance Module.FinitePresentation.isLocalizedModule_mapExtendScalars
     (Rₛ) [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']

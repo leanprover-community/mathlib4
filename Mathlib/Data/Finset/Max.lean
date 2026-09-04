@@ -193,12 +193,12 @@ theorem max'_union {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.N
 @[to_dual]
 theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
   rw [min_eq_inf_withTop, inf_image]
-  exact congr_fun WithTop.map_id _
+  exact congr($WithTop.map_id _)
 
 @[to_dual]
 theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
   rw [min_eq_inf_withTop, inf_image]
-  exact congr_fun WithTop.map_id _
+  exact congr($WithTop.map_id _)
 
 @[to_dual]
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :

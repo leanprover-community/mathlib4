@@ -106,7 +106,7 @@ private lemma map_aux_pos [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f�
     (e₁ : ι ≃ ι₂) (e₂ : M ≃ₗ[R] M₂) (he : f₂ ∘ e₁ = e₂ ∘ f) {i : ι₂}
     (hi : f (e₁.symm i) ∈ AddSubmonoid.closure (f '' s)) :
     f₂ i ∈ AddSubmonoid.closure (f₂ '' (s.image e₁)) := by
-  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr_fun he (e₁.symm i); simp_all
+  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr($he (e₁.symm i)); simp_all
   have aux₂ : AddSubmonoid.closure (f₂ '' e₁ '' s) = (AddSubmonoid.closure (f '' s)).map e₂ := by
     rw [AddMonoidHom.map_mclosure, ← image_comp, ← image_comp, he]
   aesop
@@ -115,7 +115,7 @@ private lemma map_aux_neg [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f�
     (e₁ : ι ≃ ι₂) (e₂ : M ≃ₗ[R] M₂) (he : f₂ ∘ e₁ = e₂ ∘ f) {i : ι₂}
     (hi : -f (e₁.symm i) ∈ AddSubmonoid.closure (f '' s)) :
     -f₂ i ∈ AddSubmonoid.closure (f₂ '' (s.image e₁)) := by
-  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr_fun he (e₁.symm i); simp_all
+  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr($he (e₁.symm i)); simp_all
   have aux₂ : AddSubmonoid.closure (f₂ '' e₁ '' s) = (AddSubmonoid.closure (f '' s)).map e₂ := by
     rw [AddMonoidHom.map_mclosure, ← image_comp, ← image_comp, he]
   aesop
@@ -235,7 +235,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
   have hg : P.coroot i = linearCombination R (fun k : b.support ↦ P.coroot k) g := by simp [g]
   rw [hg] at hf
   have : Injective (linearCombination R fun k : b.support ↦ P.coroot k) := b.linearIndepOn_coroot
-  simpa [g, linearEquivFunOnFinite, mul_comm t] using (DFunLike.congr_fun (this hf) ⟨i, h⟩).symm
+  simpa [g, linearEquivFunOnFinite, mul_comm t] using congr($(this hf) ⟨i, h⟩).symm
 
 variable [CharZero R]
 
@@ -249,7 +249,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
     simpa only [coroot_eq_smul_coroot_iff.mpr hj, smul_smul, hz, one_smul] using mem_range_self j
   obtain ⟨w, hw⟩ := b.flip.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h _ ht
   have : (z : R) * w = 1 := by
-    simpa [mul_mul_mul_comm _ t, mul_comm t, mul_comm _ (z : R), hz] using congr_arg₂ (· * ·) hz hw
+    simpa [mul_mul_mul_comm _ t, mul_comm t, mul_comm _ (z : R), hz] using congr($hz * $hw)
   suffices z = 1 ∨ z = -1 by
     rcases this with rfl | rfl
     · left; simpa using hz

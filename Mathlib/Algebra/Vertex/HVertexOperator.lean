@@ -78,7 +78,7 @@ theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
 theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W →ₗ[R] Γ → (V →ₗ[R] W)) := by
   intro _ _ h
   ext v n
-  exact congrFun (congrArg DFunLike.coe (congrFun h n)) v
+  exact congr($h n v)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support

@@ -110,13 +110,13 @@ Throughout this section, some `Monoid` and `Semiring` arguments are specified wi
 
 theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
     (hk : IsSMulRegular M k) : IsSMulRegular (α →₀ M) k :=
-  fun _ _ h => ext fun i => hk (DFunLike.congr_fun h i)
+  fun _ _ h => ext fun i => hk congr($h i)
 
 instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R M] :
     FaithfulSMul R (α →₀ M) where
   eq_of_smul_eq_smul h :=
     let ⟨a⟩ := ‹Nonempty α›
-    eq_of_smul_eq_smul fun m : M => by simpa using DFunLike.congr_fun (h (single a m)) a
+    eq_of_smul_eq_smul fun m : M => by simpa using congr($(h (single a m)) a)
 
 variable (α M)
 

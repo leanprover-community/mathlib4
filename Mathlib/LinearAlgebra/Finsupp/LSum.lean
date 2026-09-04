@@ -277,7 +277,7 @@ theorem splittingOfFinsuppSurjective_splits (f : M →ₗ[R] α →₀ R) (s : S
 
 theorem leftInverse_splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     LeftInverse f (splittingOfFinsuppSurjective f s) := fun g =>
-  LinearMap.congr_fun (splittingOfFinsuppSurjective_splits f s) g
+  congr($(splittingOfFinsuppSurjective_splits f s) g)
 
 theorem splittingOfFinsuppSurjective_injective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     Injective (splittingOfFinsuppSurjective f s) :=

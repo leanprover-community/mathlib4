@@ -233,7 +233,7 @@ lemma LSeries_eq_iff_of_abscissaOfAbsConv_lt_top {f g : ℕ → ℂ} (hf : absci
     LSeries f = LSeries g ↔ ∀ n ≠ 0, f n = g n := by
   refine ⟨fun H n hn ↦ ?_, fun H ↦ funext (LSeries_congr fun {n} ↦ H n)⟩
   refine eq_of_LSeries_eventually_eq hf hg ?_ hn
-  exact Filter.Eventually.of_forall fun x ↦ congr_fun H x
+  exact Filter.Eventually.of_forall fun x ↦ congr($H x)
 
 /-- The map `f ↦ LSeries f` is injective on functions `f` such that `f 0 = 0` and the L-series
 of `f` converges somewhere. -/

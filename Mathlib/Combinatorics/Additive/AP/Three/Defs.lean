@@ -103,7 +103,7 @@ theorem ThreeGPFree.prod {t : Set β} (hs : ThreeGPFree s) (ht : ThreeGPFree t) 
 theorem threeGPFree_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {s : ∀ i, Set (α i)}
     (hs : ∀ i, ThreeGPFree (s i)) : ThreeGPFree ((univ : Set ι).pi s) :=
   fun _ ha _ hb _ hc h ↦
-  funext fun i => hs i (ha i trivial) (hb i trivial) (hc i trivial) <| congr_fun h i
+  funext fun i => hs i (ha i trivial) (hb i trivial) (hc i trivial) congr($h i)
 
 end Monoid
 
@@ -189,7 +189,7 @@ variable [CommMonoid α] [IsCancelMul α] {s : Set α} {a : α}
 @[to_additive]
 theorem ThreeGPFree.smul_set (hs : ThreeGPFree s) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
-  exact congr_arg (a • ·) <| hs hb hc hd <| by simpa [mul_mul_mul_comm _ _ a] using h
+  exact congr(a • $(hs hb hc hd <| by simpa [mul_mul_mul_comm _ _ a] using h))
 
 @[to_additive] lemma threeGPFree_smul_set : ThreeGPFree (a • s) ↔ ThreeGPFree s where
   mp hs b hb c hc d hd h := mul_left_cancel
@@ -219,7 +219,7 @@ variable [CommMonoidWithZero α] [IsCancelMulZero α] [NoZeroDivisors α] {s : S
 
 lemma ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
-  exact congr_arg (a • ·) <| hs hb hc hd <| by simpa [mul_mul_mul_comm _ _ a, ha] using h
+  exact congr(a • $(hs hb hc hd <| by simpa [mul_mul_mul_comm _ _ a, ha] using h))
 
 theorem threeGPFree_smul_set₀ (ha : a ≠ 0) : ThreeGPFree (a • s) ↔ ThreeGPFree s :=
   ⟨fun hs b hb c hc d hd h ↦

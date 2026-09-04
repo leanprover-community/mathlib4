@@ -148,7 +148,7 @@ theorem toComplex_involute (c : CliffordAlgebra Q) :
   have : toComplex (involute (ι Q 1)) = conj (toComplex (ι Q 1)) := by
     simp only [involute_ι, toComplex_ι, map_neg, one_smul, Complex.conj_I]
   suffices toComplex.comp involute = Complex.conjAe.toAlgHom.comp toComplex by
-    exact AlgHom.congr_fun this c
+    exact congr($this c)
   ext : 2
   exact this
 
@@ -171,7 +171,7 @@ theorem toComplex_comp_ofComplex : toComplex.comp ofComplex = AlgHom.id ℝ ℂ 
 
 @[simp]
 theorem toComplex_ofComplex (c : ℂ) : toComplex (ofComplex c) = c :=
-  AlgHom.congr_fun toComplex_comp_ofComplex c
+  congr($toComplex_comp_ofComplex c)
 
 @[simp]
 theorem ofComplex_comp_toComplex : ofComplex.comp toComplex = AlgHom.id ℝ (CliffordAlgebra Q) := by
@@ -182,7 +182,7 @@ theorem ofComplex_comp_toComplex : ofComplex.comp toComplex = AlgHom.id ℝ (Cli
 
 @[simp]
 theorem ofComplex_toComplex (c : CliffordAlgebra Q) : ofComplex (toComplex c) = c :=
-  AlgHom.congr_fun ofComplex_comp_toComplex c
+  congr($ofComplex_comp_toComplex c)
 
 /-- The clifford algebras over `CliffordAlgebraComplex.Q` is isomorphic as an `ℝ`-algebra to `ℂ`. -/
 @[simps!]
@@ -301,7 +301,7 @@ theorem ofQuaternion_comp_toQuaternion :
 @[simp]
 theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :
     ofQuaternion (toQuaternion c) = c :=
-  AlgHom.congr_fun ofQuaternion_comp_toQuaternion c
+  congr($ofQuaternion_comp_toQuaternion c)
 
 @[simp]
 theorem toQuaternion_comp_ofQuaternion :
@@ -310,7 +310,7 @@ theorem toQuaternion_comp_ofQuaternion :
 
 @[simp]
 theorem toQuaternion_ofQuaternion (q : ℍ[R,c₁,0,c₂]) : toQuaternion (ofQuaternion q) = q :=
-  AlgHom.congr_fun toQuaternion_comp_ofQuaternion q
+  congr($toQuaternion_comp_ofQuaternion q)
 
 /-- The clifford algebra over `CliffordAlgebraQuaternion.Q c₁ c₂` is isomorphic as an `R`-algebra
 to `ℍ[R,c₁,c₂]`. -/

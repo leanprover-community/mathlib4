@@ -78,7 +78,7 @@ variable (F) in
 lemma isColimit_sigma : Functor.CoconeTypes.IsColimit (sigma F) :=
   isColimit_mk _ (by aesop)
     (fun _ _ _ h ↦ by rw [Sigma.ext_iff] at h; simpa using h)
-    (fun _ _ _ _ h ↦ congr_arg Sigma.fst h)
+    (fun _ _ _ _ h ↦ congr($(h).fst))
 
 variable (F) in
 /-- Given a cofan of a functor to types, this is a canonical map
@@ -131,7 +131,7 @@ lemma inj_injective_of_isColimit (i : C) :
 lemma eq_of_inj_apply_eq_of_isColimit
     {i₁ i₂ : C} (y₁ : F i₁) (y₂ : F i₂) (h : c.inj i₁ y₁ = c.inj i₂ y₂) :
     i₁ = i₂ :=
-  congr_arg Sigma.fst ((equivOfIsColimit hc).injective (a₁ := ⟨i₁, y₁⟩) (a₂ := ⟨i₂, y₂⟩) h)
+  congr($((equivOfIsColimit hc).injective (a₁ := ⟨i₁, y₁⟩) (a₂ := ⟨i₂, y₂⟩) h).fst)
 
 lemma inj_apply_eq_iff_of_isColimit
     {i₁ i₂ : C} (y₁ : F i₁) (y₂ : F i₂) :
@@ -234,7 +234,7 @@ def binaryCoproductColimit (X Y : Type u) : IsColimit (binaryCoproductCocone X Y
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq _ _ w := by
     ext ⟨⟩
-    exacts [ConcreteCategory.congr_hom (w ⟨left⟩) _, ConcreteCategory.congr_hom (w ⟨right⟩) _]
+    exacts [congr($(w ⟨left⟩) _), congr($(w ⟨right⟩) _)]
 
 /-- The category of types has `X ⊕ Y`,
 as the binary coproduct of `X` and `Y`.
@@ -342,7 +342,7 @@ def coproductColimitCocone {J : Type v} (F : J → Type (max v u)) :
     { desc := fun s => ↾fun x => s.ι.app ⟨x.1⟩ x.2
       uniq := fun s m w => by
         ext ⟨j, x⟩
-        exact ConcreteCategory.congr_hom (w ⟨j⟩) x }
+        exact congr($(w ⟨j⟩) x) }
 
 /-- The categorical coproduct in `Type u` is the type-theoretic coproduct `Σ j, F j`. -/
 noncomputable def coproductIso {J : Type v} (F : J → Type (max v u)) :

@@ -403,7 +403,7 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
   have : β (coroot α) = 0 := by
     by_cases hα : α.IsZero
     · simp [coroot_eq_zero_iff.mpr hα]
-    simpa [root_apply_coroot hα, mul_two] using congr_fun (sub_eq_zero.mp e) (coroot α)
+    simpa [root_apply_coroot hα, mul_two] using congr($(sub_eq_zero.mp e) (coroot α))
   have : reflectRoot α β = β := by ext; simp [reflectRoot, this]
   exact hβ (this ▸ e)
 
@@ -417,7 +417,7 @@ def rootSystem :
     .id
     { toFun := (↑)
       inj' := by
-        intro α β h; ext x; simpa using LinearMap.congr_fun h x }
+        intro α β h; ext x; simpa using congr($h x) }
     { toFun := coroot ∘ (↑)
       inj' := by rintro ⟨α, hα⟩ ⟨β, hβ⟩ h; simpa using h }
     (fun ⟨α, hα⟩ ↦ by simpa using root_apply_coroot <| by simpa using hα)
@@ -472,9 +472,9 @@ instance : (rootSystem H).IsReduced where
     simp only [rootSystem_root_apply, ne_eq, not_not] at e
     obtain ⟨u, hu⟩ := e
     obtain (h | h) := eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u
-      (by ext x; exact DFunLike.congr_fun hu.symm x)
-    · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
-    · left; ext x; simpa using DFunLike.congr_fun h.symm x
+      (by ext x; exact congr($hu.symm x))
+    · right; ext x; simpa [neg_eq_iff_eq_neg] using congr($h.symm x)
+    · left; ext x; simpa using congr($h.symm x)
 
 variable {H}
 

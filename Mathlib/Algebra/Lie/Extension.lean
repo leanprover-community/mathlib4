@@ -413,9 +413,9 @@ noncomputable def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →
       simpa [← map_sub, ← map_add, ← twoCochain_val_apply, Subtype.ext_iff, twoCocycleAux, aux]
     have hjac := lie_lie (s x) (s y) (s z)
     rw [← lie_skew, neg_eq_iff_eq_neg] at hjac
-    have hja := congr_arg s (lie_lie x y z)
+    have hja := congr(s $(lie_lie x y z))
     rw [← lie_skew, map_neg, neg_eq_iff_eq_neg] at hja
-    have hj := congr_arg s (lie_lie y x z)
+    have hj := congr(s $(lie_lie y x z))
     rw [← lie_skew, map_neg, neg_eq_iff_eq_neg] at hj
     rw [hjac, hj, hja, ← lie_skew y z, ← lie_skew _ (s (-⁅z, y⁆)), ← lie_skew (s ⁅x, z⁆),
       ← lie_skew (s ⁅x, y⁆), ← lie_skew x z]

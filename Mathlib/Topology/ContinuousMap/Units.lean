@@ -43,8 +43,7 @@ def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
       inv_val := ext fun _ => Units.inv_mul _ }
   invFun f :=
     { toFun := fun x =>
-        ⟨(f : C(X, M)) x, (↑f⁻¹ : C(X, M)) x,
-          ContinuousMap.congr_fun f.mul_inv x, ContinuousMap.congr_fun f.inv_mul x⟩
+        ⟨(f : C(X, M)) x, (↑f⁻¹ : C(X, M)) x, congr($f.mul_inv x), congr($f.inv_mul x)⟩
       continuous_toFun := continuous_induced_rng.2 <|
         (f : C(X, M)).continuous.prodMk <|
         MulOpposite.continuous_op.comp (↑f⁻¹ : C(X, M)).continuous }

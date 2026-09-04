@@ -267,7 +267,7 @@ variable (iter : Φ.Iteration j)
 
 lemma obj_succ (i : J) (hi : i < j) :
     iter.F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ = Φ.succ (iter.F.obj ⟨i, hi.le⟩) :=
-  congr_arg Comma.right (iter.arrowSucc_eq i hi)
+  congr($(iter.arrowSucc_eq i hi).right)
 
 lemma prop_map_succ (i : J) (hi : i < j) :
     Φ.prop (iter.F.map (homOfLE (Order.le_succ i) :
@@ -277,7 +277,7 @@ lemma prop_map_succ (i : J) (hi : i < j) :
 lemma obj_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     letI := hasColimitsOfShape_of_isSuccLimit C i hi
     iter.F.obj ⟨i, hij⟩ = colimit (restrictionLT iter.F hij) :=
-  congr_arg Comma.right (iter.arrowMap_limit i hi hij ⊥ (Order.IsSuccLimit.bot_lt hi))
+  congr($(iter.arrowMap_limit i hi hij ⊥ (Order.IsSuccLimit.bot_lt hi)).right)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -323,10 +323,10 @@ variable {k₁ k₂ h₁₂ h₂} (h : MapEq F G k₁ k₂ h₁₂ h₂)
 include h
 
 lemma src : F.obj ⟨k₁, h₁₂.trans h₂⟩ = G.obj ⟨k₁, h₁₂.trans h₂⟩ :=
-  congr_arg Comma.left h
+  congr($(h).left)
 
 lemma tgt : F.obj ⟨k₂, h₂⟩ = G.obj ⟨k₂, h₂⟩ :=
-  congr_arg Comma.right h
+  congr($(h).right)
 
 lemma w :
     F.map (homOfLE h₁₂ : ⟨k₁, h₁₂.trans h₂⟩ ⟶ ⟨k₂, h₂⟩) =

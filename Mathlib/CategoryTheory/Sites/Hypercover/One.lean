@@ -496,7 +496,7 @@ lemma congrIndexOneOfEq_congrFun
     (h₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
       u₁ k = F.congrIndexOneOfEq (by simp [h₀]) (by simp [h₀]) (v₁ k))
     {i j : E.I₀} (k : E.I₁ i j) :
-    F.congrIndexOneOfEq (congrFun h₀.symm _) (congrFun h₀.symm _) (v₁ k) = u₁ k := by
+    F.congrIndexOneOfEq congr($h₀.symm _) congr($h₀.symm _) (v₁ k) = u₁ k := by
   subst h₀
   simp [h₁]
 
@@ -588,7 +588,7 @@ lemma Hom.ext' {E F : PreOneHypercover S} {f g : E.Hom F}
       f.s₁ k = F.congrIndexOneOfEq (by simp [hs₀]) (by simp [hs₀]) (g.s₁ k))
     (hh₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
       f.h₁ k = g.h₁ k ≫
-        (F.congrIndexOneOfEqIso (congrFun hs₀.symm i) (congrFun hs₀.symm j) (g.s₁ k)).inv ≫
+        (F.congrIndexOneOfEqIso congr($hs₀.symm i) congr($hs₀.symm j) (g.s₁ k)).inv ≫
         eqToHom (by rw [PreOneHypercover.congrIndexOneOfEq_congrFun hs₀ hs₁])) :
     f = g := by
   obtain ⟨toHomf, fs₁, fh₁⟩ := f
@@ -609,7 +609,7 @@ lemma Hom.ext'_iff {E F : PreOneHypercover S} {f g : E.Hom F} :
         f.s₁ k = F.congrIndexOneOfEq (by simp [hs₀]) (by simp [hs₀]) (g.s₁ k)),
       ∀ (i j : E.I₀) (k : E.I₁ i j),
         f.h₁ k = g.h₁ k ≫
-          (F.congrIndexOneOfEqIso (congrFun hs₀.symm i) (congrFun hs₀.symm j) (g.s₁ k)).inv ≫
+          (F.congrIndexOneOfEqIso congr($hs₀.symm i) congr($hs₀.symm j) (g.s₁ k)).inv ≫
           eqToHom (by rw [PreOneHypercover.congrIndexOneOfEq_congrFun hs₀ hs₁]) := by
   refine ⟨fun h ↦ ?_, fun ⟨hs₀, hh₀, hs₁, hh₁⟩ ↦ Hom.ext' hs₀ hh₀ hs₁ hh₁⟩
   subst h

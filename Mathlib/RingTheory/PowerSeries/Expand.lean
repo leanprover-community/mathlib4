@@ -47,7 +47,7 @@ theorem expand_mul_eq_comp (q : ℕ) (hq : q ≠ 0) :
 
 theorem expand_mul (q : ℕ) (hq : q ≠ 0) (φ : PowerSeries R) :
     φ.expand (p * q) (p.mul_ne_zero hp hq) = (φ.expand q hq).expand p hp :=
-  DFunLike.congr_fun (expand_mul_eq_comp p hp q hq) φ
+  congr($(expand_mul_eq_comp p hp q hq) φ)
 
 theorem expand_smul (a : R) (φ : PowerSeries R) :
     expand p hp (a • φ) = a • φ.expand p hp := AlgHom.map_smul_of_tower _ _ _

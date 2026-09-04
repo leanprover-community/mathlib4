@@ -145,7 +145,7 @@ theorem localized₀_iSup {ι : Type*} (g : ι → Submodule R M) :
     (⨆ i, g i).localized₀ p f = ⨆ i, (g i).localized₀ p f := by
   let : Module (Localization p) N := IsLocalizedModule.module p f
   have : IsScalarTower R (Localization p) N := IsLocalizedModule.isScalarTower_module p f
-  simpa using! congr_arg (restrictScalars R) (localized'_iSup (Localization p) p f g)
+  simpa using! congr(restrictScalars R $(localized'_iSup (Localization p) p f g))
 
 /-- `localized₀` as a `FrameHom`. -/
 noncomputable def localized₀FrameHom : FrameHom (Submodule R M) (Submodule R N) where
@@ -222,7 +222,7 @@ instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
     simp_rw [Module.End.isUnit_iff]
     constructor
     · exact fun _ _ e ↦ Subtype.ext
-        (IsLocalizedModule.smul_injective f x (congr_arg Subtype.val e))
+        (IsLocalizedModule.smul_injective f x congr($(e).val))
     · rintro ⟨_, m, hm, s, rfl⟩
       refine ⟨⟨IsLocalizedModule.mk' f m (s * x), ⟨_, hm, _, rfl⟩⟩, Subtype.ext ?_⟩
       rw [Module.algebraMap_end_apply, SetLike.val_smul_of_tower,
@@ -231,7 +231,7 @@ instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
     rintro ⟨y, x, hx, s, rfl⟩
     exact ⟨⟨⟨x, hx⟩, s⟩, by ext; simp⟩
   exists_of_eq e := by simpa [Subtype.ext_iff] using
-      IsLocalizedModule.exists_of_eq (S := p) (f := f) (congr_arg Subtype.val e)
+      IsLocalizedModule.exists_of_eq (S := p) (f := f) congr($(e).val)
 
 instance isLocalizedModule : IsLocalizedModule p (M'.toLocalized' S p f) :=
   inferInstanceAs (IsLocalizedModule p (M'.toLocalized₀ p f))

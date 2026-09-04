@@ -338,7 +338,7 @@ lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
   let := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
   let φ' : K →ₐ[k] ℂ := { star φ with
-    commutes' := fun r ↦ by simpa using! RingHom.congr_fun hφ.2 r }
+    commutes' := fun r ↦ by simpa using! congr($(hφ.2) r) }
   have : ComplexEmbedding.IsConj φ (AlgHom.restrictNormal' φ' K) :=
     (RingHom.ext <| AlgHom.restrictNormal_commutes φ' K).symm
   exact hφ.1 (H _ this ▸ this)
@@ -350,8 +350,7 @@ lemma mem_stabilizer_mk_iff (φ : K →+* ℂ) (σ : Gal(K/k)) :
   simp only [MulAction.mem_stabilizer_iff, smul_mk, mk_eq_iff]
   rw [← ComplexEmbedding.isConj_symm, ComplexEmbedding.conjugate, star_eq_iff_star_eq]
   refine or_congr ⟨fun H ↦ ?_, fun H ↦ H ▸ rfl⟩ Iff.rfl
-  exact congr_arg AlgEquiv.symm
-    (AlgEquiv.ext (g := AlgEquiv.refl) fun x ↦ φ.injective (RingHom.congr_fun H x))
+  exact congr(AlgEquiv.symm $(AlgEquiv.ext (g := AlgEquiv.refl) fun x ↦ φ.injective congr($H x)))
 
 lemma IsUnramified.stabilizer_eq_bot (h : IsUnramified k w) : Stab w = ⊥ := by
   rw [eq_bot_iff, ← mk_embedding w, SetLike.le_def]

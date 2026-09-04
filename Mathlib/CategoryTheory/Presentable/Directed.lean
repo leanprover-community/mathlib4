@@ -362,7 +362,7 @@ lemma eq_id_of_D₂_W (hD : ∀ {i : ι}, ¬ (D i).P m) {f : m ⟶ m} (hf : (D�
   · rfl
   · rw [MorphismProperty.ofHoms_iff] at hf
     obtain ⟨⟨i, j, hj⟩, hi⟩ := hf
-    obtain rfl : m = j := congr_arg Arrow.leftFunc.obj hi
+    obtain rfl : m = j := congr(Arrow.leftFunc.obj $hi)
     exact (hD hj).elim
 
 end
@@ -475,7 +475,7 @@ lemma final_functor : (functor J κ).Final := by
     · rfl
     · rw [MorphismProperty.ofHoms_iff] at hf
       obtain ⟨⟨j, hj⟩, hf⟩ := hf
-      obtain rfl : m₁ = j := congr_arg Arrow.leftFunc.obj hf
+      obtain rfl : m₁ = j := congr(Arrow.leftFunc.obj $hf)
       exact (h₁ hj).elim
   let hm₁ : (D₄ D φ).IsTerminal m₁ :=
     .ofExistsUnique (Or.inl (Or.inr ⟨⟨⟩⟩)) (by

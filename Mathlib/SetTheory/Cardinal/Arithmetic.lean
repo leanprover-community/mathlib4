@@ -453,7 +453,7 @@ theorem aleph_add_aleph (o₁ o₂ : Ordinal) : ℵ_ o₁ + ℵ_ o₂ = ℵ_ (ma
   rw [Cardinal.add_eq_max (aleph0_le_aleph o₁), aleph_max]
 
 theorem add_right_inj_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < aleph0) : α + γ = β + γ ↔ α = β :=
-  ⟨fun h => Cardinal.eq_of_add_eq_add_right h γ₀, fun h => congr_arg (· + γ) h⟩
+  ⟨fun h => Cardinal.eq_of_add_eq_add_right h γ₀, fun h => congr($h + γ)⟩
 
 @[simp]
 theorem add_nat_inj {α β : Cardinal} (n : ℕ) : α + n = β + n ↔ α = β :=
@@ -694,7 +694,7 @@ theorem mk_embedding_eq_arrow_of_lift_le (lle : lift.{u} #β' ≤ lift.{v} #α) 
     conv_rhs => rw [← (Equiv.embeddingCongr (.refl _)
       (Cardinal.eq.mp <| mul_eq_self <| aleph0_le_mk α).some).cardinal_eq]
     obtain ⟨e⟩ := lift_mk_le'.mp lle
-    exact ⟨⟨fun f ↦ ⟨fun b ↦ ⟨e b, f b⟩, fun _ _ h ↦ e.injective congr(Prod.fst $h)⟩,
+    exact ⟨⟨fun f ↦ ⟨fun b ↦ ⟨e b, f b⟩, fun _ _ h ↦ e.injective congr($(h).fst)⟩,
       fun f g h ↦ funext fun b ↦ congr(Prod.snd <| $h b)⟩⟩
 
 theorem mk_embedding_eq_arrow_of_le (le : #β ≤ #α) : #(β ↪ α) = #(β → α) :=
@@ -708,7 +708,7 @@ theorem mk_surjective_eq_arrow_of_lift_le (lle : lift.{u} #β' ≤ lift.{v} #α)
       exact add_eq_left (aleph0_le_lift.mpr <| aleph0_le_mk α) lle
     ⟨⟨fun f ↦ ⟨fun a ↦ (e a).elim f id, fun b ↦ ⟨e.symm (.inr b), congr_arg _ (e.right_inv _)⟩⟩,
       fun f g h ↦ funext fun a ↦ by
-        simpa only [e.apply_symm_apply] using! congr_fun (Subtype.ext_iff.mp h) (e.symm <| .inl a)⟩⟩
+        simpa only [e.apply_symm_apply] using! congr($(Subtype.ext_iff.mp h) (e.symm <| .inl a))⟩⟩
 
 theorem mk_surjective_eq_arrow_of_le (le : #β ≤ #α) : #{f : α → β | Surjective f} = #(α → β) :=
   mk_surjective_eq_arrow_of_lift_le (lift_le.mpr le)
@@ -791,7 +791,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     dsimp only
     rw [dite_eq_left this]
     congr
-    suffices Classical.choose this = ⟨x, h⟩ from congr_arg Subtype.val this
+    suffices Classical.choose this = ⟨x, h⟩ from congr($(this).val)
     apply g.2
     exact Classical.choose_spec this
 
