@@ -275,13 +275,12 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, Units.val_mk0,
       coe_nnnorm]
-    intro x hx
-    have : ‖_‖ ≤ _ := hfor x hx
-    simp [this]
+    grw [← Real.le_coe_toNNReal]
+    exact hfor
   · simp only [Finset.mem_attach, Subtype.exists, ←
-      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnnorm]
-    obtain ⟨ζ, hζ, hhζ : ‖_‖ < _⟩ := hex
-    exact ⟨ζ, hζ, by simp [hhζ]⟩
+      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0, coe_nnnorm, true_and, exists_prop]
+    grw [← Real.le_coe_toNNReal]
+    exact hex
 
 theorem cyclotomic_eval_le_add_one_pow_totient {q : ℝ} (hq' : 1 < q) :
     ∀ n, (cyclotomic n ℝ).eval q ≤ (q + 1) ^ totient n

@@ -89,7 +89,7 @@ lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLinearOrder ι] {u : �
     hittingBtwn u .univ n m = fun _ ↦ min n m := by
   ext ω
   simp only [hittingBtwn_def, Set.mem_Icc, Set.mem_univ, and_true, Set.ofPred_true, Set.inter_univ]
-  by_cases hnm : n ≤ m <;> simp [hnm] <;> grind
+  by_cases hnm : n ≤ m <;> simp [min_eq_left, hnm] <;> grind
 
 @[simp]
 lemma hittingAfter_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n : ι) :

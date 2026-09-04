@@ -188,7 +188,7 @@ theorem i_fourteenSet : i fourteenSet = Ioo 0 1 ∪ Ioo 1 2 := by
 
 theorem k_fourteenSet : k fourteenSet = Icc 0 2 ∪ {3} ∪ Icc 4 5 := by
   simp_rw [fourteenSet, closure_union]
-  rw [closure_Ioo, closure_Ioo, k_Icc_4_5_inter_rat, Icc_union_Icc'] <;> simp
+  rw [closure_Ioo, closure_Ioo, k_Icc_4_5_inter_rat, Icc_union_Icc_eq_Icc] <;> simp
 
 theorem kc_fourteenSet : k fourteenSetᶜ = (Ioo 0 1 ∪ Ioo 1 2)ᶜ := by
   rw [closure_compl, compl_inj_iff, i_fourteenSet]

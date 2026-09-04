@@ -445,7 +445,7 @@ theorem negPart_divisor_add_of_analyticNhdOn_right {f₁ f₂ : 𝕜 → E} (hf�
   · suffices -(meromorphicOrderAt (f₁ + f₂) x).untop₀ ⊔ 0 = -(meromorphicOrderAt f₁ x).untop₀ ⊔ 0 by
       simpa [negPart_def, hx, hf₁, hf₁.add hf₂.meromorphicOn]
     by_cases h : 0 ≤ meromorphicOrderAt f₁ x
-    · suffices 0 ≤ meromorphicOrderAt (f₁ + f₂) x by simp_all
+    · suffices 0 ≤ meromorphicOrderAt (f₁ + f₂) x by simp [max_eq_right, *]
       calc 0
       _ ≤ min (meromorphicOrderAt f₁ x) (meromorphicOrderAt f₂ x) :=
         le_inf h (hf₂ x hx).meromorphicOrderAt_nonneg
