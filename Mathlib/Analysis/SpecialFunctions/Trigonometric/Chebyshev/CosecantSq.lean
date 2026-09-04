@@ -12,6 +12,17 @@ public import Mathlib.Algebra.Polynomial.Splits
 /-!
 # The cosecant-squared identity
 
+This is a small, self-contained companion to the existing Chebyshev API: it
+turns the real roots of `U n` into finite trigonometric sums without introducing
+new analytic infrastructure.  The proof is intended to be useful on its own,
+and the cotangent corollaries make the classical connection with the elementary
+proof of the Basel sum explicit.
+
+**Resumen en español.** Este archivo añade una consecuencia finita y autónoma
+de las raíces reales de `U n`. La identidad de cosecantes y sus dos corolarios
+de cotangentes quedan expresados directamente con la API existente de
+Chebyshev, sin redefinir objetos ni añadir maquinaria analítica paralela.
+
 This file proves the classical identity
 $$\sum_{k=1}^{N-1} \csc^2\!\left(\frac{k\pi}{N}\right) = \frac{N^2 - 1}{3},$$
 stated over `Real.sin` as
@@ -154,3 +165,90 @@ theorem Real.sum_inv_sin_sq_pi_div (N : ℕ) (hN : 1 ≤ N) :
   push_cast
   rw [← hsin, ← hfin]
   exact hsum
+
+/-! ## Cotangent-squared identities -/
+
+/-- The full finite cotangent-squared sum, obtained termwise from the
+cosecant-squared identity and `cot² x = csc² x - 1`. -/
+theorem Real.sum_cot_sq_pi_div (N : ℕ) (hN : 2 ≤ N) :
+    ∑ k ∈ Finset.Ico 1 N, Real.cot ((k : ℝ) * π / N) ^ 2 =
+      ((N : ℝ) - 1) * ((N : ℝ) - 2) / 3 := by
+  have hpoint (k : ℕ) (hk : k ∈ Finset.Ico 1 N) :
+      Real.cot ((k : ℝ) * π / N) ^ 2 =
+        (Real.sin ((k : ℝ) * π / N))⁻¹ ^ 2 - 1 := by
+    have hk' := Finset.mem_Ico.mp hk
+    have hkpos : (0 : ℝ) < k := by exact_mod_cast hk'.1
+    have hNpos : (0 : ℝ) < N := by exact_mod_cast (Nat.zero_lt_of_lt hN)
+    have hθpos : 0 < (k : ℝ) * π / N := by positivity
+    have hθlt : (k : ℝ) * π / N < π := by
+      rw [div_lt_iff₀ (by positivity : (0 : ℝ) < N)]
+      have hklt : (k : ℝ) < N := by exact_mod_cast hk'.2
+      nlinarith [pi_pos]
+    have hsin : Real.sin ((k : ℝ) * π / N) ≠ 0 :=
+      ne_of_gt (sin_pos_of_pos_of_lt_pi hθpos hθlt)
+    rw [Real.cot_eq_cos_div_sin]
+    field_simp [hsin]
+    nlinarith [Real.sin_sq_add_cos_sq ((k : ℝ) * π / N)]
+  calc
+    ∑ k ∈ Finset.Ico 1 N, Real.cot ((k : ℝ) * π / N) ^ 2 =
+        ∑ k ∈ Finset.Ico 1 N,
+          ((Real.sin ((k : ℝ) * π / N))⁻¹ ^ 2 - 1) := by
+      exact Finset.sum_congr rfl hpoint
+    _ = (∑ k ∈ Finset.Ico 1 N,
+          (Real.sin ((k : ℝ) * π / N))⁻¹ ^ 2) -
+        ∑ _k ∈ Finset.Ico 1 N, (1 : ℝ) := by
+      rw [Finset.sum_sub_distrib]
+    _ = ((N : ℝ) - 1) * ((N : ℝ) - 2) / 3 := by
+      rw [Real.sum_inv_sin_sq_pi_div N (by omega)]
+      simp only [Finset.sum_const, Nat.card_Ico, nsmul_eq_mul, mul_one]
+      rw [Nat.cast_sub (by omega : 1 ≤ N)]
+      push_cast
+      ring
+
+/-- The half cotangent-squared sum for an odd denominator.  This is the
+arithmetic identity used in the classical elementary proof of the Basel sum. -/
+theorem Real.sum_cot_sq_pi_div_two_mul_add_one (m : ℕ) (hm : 1 ≤ m) :
+    ∑ k ∈ Finset.Ico 1 (m + 1),
+        Real.cot ((k : ℝ) * π / (2 * m + 1)) ^ 2 =
+      (m : ℝ) * (2 * (m : ℝ) - 1) / 3 := by
+  let N := 2 * m + 1
+  let f : ℕ → ℝ := fun k => Real.cot ((k : ℝ) * π / N) ^ 2
+  have hN : 2 ≤ N := by dsimp [N]; omega
+  have hfull := Real.sum_cot_sq_pi_div N hN
+  have hsplit :
+      (∑ k ∈ Finset.Ico 1 (m + 1), f k) +
+          ∑ k ∈ Finset.Ico (m + 1) N, f k =
+        ∑ k ∈ Finset.Ico 1 N, f k :=
+    Finset.sum_Ico_consecutive f (by omega) (by dsimp [N]; omega)
+  have hsymm (k : ℕ) (hk : k ∈ Finset.Ico (m + 1) N) : f (N - k) = f k := by
+    have hk' := Finset.mem_Ico.mp hk
+    have hangle :
+        ((N - k : ℕ) : ℝ) * π / N = π - (k : ℝ) * π / N := by
+      rw [Nat.cast_sub (by omega : k ≤ N)]
+      have hN0 : (N : ℝ) ≠ 0 := by positivity
+      field_simp [hN0]
+    dsimp [f]
+    rw [hangle]
+    simp [Real.cot_eq_cos_div_sin, Real.sin_pi_sub, Real.cos_pi_sub]
+    ring
+  have himage :
+      (Finset.Ico (m + 1) N).image (fun k => N - k) = Finset.Ico 1 (m + 1) := by
+    dsimp [N]
+    rw [Nat.Ico_image_const_sub_eq_Ico (by omega)]
+    congr <;> omega
+  have hinj : Set.InjOn (fun k => N - k) (Finset.Ico (m + 1) N) := by
+    intro a ha b hb hab
+    have ha' := Finset.mem_Ico.mp ha
+    have hb' := Finset.mem_Ico.mp hb
+    dsimp [N] at ha' hb' hab ⊢
+    omega
+  have hupper :
+      (∑ k ∈ Finset.Ico (m + 1) N, f k) =
+        ∑ k ∈ Finset.Ico 1 (m + 1), f k := by
+    rw [← himage, Finset.sum_image hinj]
+    exact Finset.sum_congr rfl fun k hk => (hsymm k hk).symm
+  rw [hupper] at hsplit
+  rw [← hsplit] at hfull
+  dsimp [f, N] at hfull ⊢
+  push_cast at hfull
+  nlinarith
