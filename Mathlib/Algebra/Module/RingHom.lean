@@ -26,11 +26,11 @@ semimodule, module, vector space
 
 assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
-open Function Set
+open Function
 
 universe u v
 
-variable {R S M M₂ : Type*}
+variable {R S M : Type*}
 
 section AddCommMonoid
 

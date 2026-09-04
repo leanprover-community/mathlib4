@@ -21,7 +21,7 @@ disconnected.
 
 * `ProfiniteGrp` is the category of profinite groups.
 
-* `ProfiniteGrp.pi` : The pi-type of profinite groups is also a profinite group.
+* `ProfiniteGrp.pi` : An arbitrary product of profinite groups is also a profinite group.
 
 * `ofFiniteGrp` : A `FiniteGrp` when given the discrete topology can be considered as a
   profinite group.
@@ -34,7 +34,7 @@ disconnected.
 
 universe u v
 
-open CategoryTheory Topology
+open CategoryTheory
 
 /--
 The category of profinite groups. A term of this type consists of a profinite
@@ -47,7 +47,7 @@ structure ProfiniteGrp where
   /-- The group structure. -/
   [group : Group toProfinite]
   /-- The above data together form a topological group. -/
-  [topologicalGroup : IsTopologicalGroup toProfinite]
+  [isTopologicalGroup : IsTopologicalGroup toProfinite]
 
 /--
 The category of profinite additive groups. A term of this type consists of a profinite
@@ -68,7 +68,7 @@ attribute [to_additive] ProfiniteGrp
 instance : CoeSort ProfiniteGrp (Type u) where
   coe G := G.toProfinite
 
-attribute [instance] ProfiniteGrp.group ProfiniteGrp.topologicalGroup
+attribute [instance] ProfiniteGrp.group ProfiniteGrp.isTopologicalGroup
     ProfiniteAddGrp.addGroup ProfiniteAddGrp.topologicalAddGroup
 
 /-- Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
@@ -83,7 +83,7 @@ abbrev ProfiniteGrp.of (G : Type u) [Group G] [TopologicalSpace G] [IsTopologica
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp.{u} where
   toProfinite := .of G
   group := ‹_›
-  topologicalGroup := ‹_›
+  isTopologicalGroup := ‹_›
 
 @[to_additive]
 lemma ProfiniteGrp.coe_of (G : Type u) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
@@ -93,27 +93,23 @@ lemma ProfiniteGrp.coe_of (G : Type u) [Group G] [TopologicalSpace G] [IsTopolog
 /-- The type of morphisms in `ProfiniteAddGrp`. -/
 @[ext]
 structure ProfiniteAddGrp.Hom (A B : ProfiniteAddGrp.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `ContinuousAddMonoidHom`. -/
   hom' : A →ₜ+ B
 
 /-- The type of morphisms in `ProfiniteGrp`. -/
 @[to_additive existing (attr := ext)]
 structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `ContinuousMonoidHom`. -/
   hom' : A →ₜ* B
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category ProfiniteGrp where
   Hom A B := ProfiniteGrp.Hom A B
   id A := ⟨ContinuousMonoidHom.id A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory ProfiniteGrp (fun X Y => X →ₜ* Y) where
   hom f := f.hom'
@@ -215,7 +211,7 @@ def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   let pitype := Profinite.pi fun (a : α) => (β a).toProfinite
   letI (a : α) : Group (β a).toProfinite := (β a).group
   letI : Group pitype := Pi.group
-  letI : IsTopologicalGroup pitype := Pi.topologicalGroup
+  letI : IsTopologicalGroup pitype := Pi.isTopologicalGroup
   ofProfinite pitype
 
 /-- A `FiniteGrp` when given the discrete topology can be considered as a profinite group. -/
@@ -329,8 +325,6 @@ instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGr
   inferInstanceAs (IsTopologicalGroup (limitConePtAux F))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The explicit limit cone in `ProfiniteGrp`. -/
 @[to_additive /-- The explicit limit cone in `ProfiniteAddGrp`. -/]
 abbrev limitCone : Limits.Cone F where

@@ -95,7 +95,7 @@ variable [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
 
 @[to_dual]
 theorem map_sup (hf : LeftOrdContinuous f) (x y : α) : f (x ⊔ y) = f x ⊔ f y :=
-  (hf (insert_nonempty ..) isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
+  (hf (insert_nonempty ..) isLUB_pair).unique <| by simpa using isLUB_pair
 
 @[to_dual]
 theorem le_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x ≤ f y ↔ x ≤ y := by

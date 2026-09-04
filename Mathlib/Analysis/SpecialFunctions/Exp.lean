@@ -199,7 +199,7 @@ end RealContinuousExpComp
 
 namespace Real
 
-variable {α : Type*} {x y z : ℝ} {l : Filter α}
+variable {α : Type*} {x y : ℝ} {l : Filter α}
 
 theorem exp_half (x : ℝ) : exp (x / 2) = √(exp x) := by
   rw [eq_comm, sqrt_eq_iff_eq_sq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le

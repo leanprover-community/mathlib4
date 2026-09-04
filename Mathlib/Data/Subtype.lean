@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 
 /-!
 # Subtypes
@@ -34,8 +34,6 @@ namespace Subtype
 variable {α β γ : Sort*} {p q : α → Prop}
 
 attribute [coe] Subtype.val
-
-initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
   instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. -/

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Tactic.ApplyFun
 
-import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Kernel and range of group homomorphisms
@@ -53,7 +52,7 @@ assert_not_exists IsOrderedMonoid Multiset Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
+variable {G G' : Type*} [Group G] [Group G']
 variable {A : Type*} [AddGroup A]
 
 namespace MonoidHom
@@ -81,6 +80,11 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 
 @[to_additive]
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
+
+/-- The image of `⊤` under a group homomorphism equals its range. -/
+@[to_additive]
+theorem _root_.Subgroup.map_top (f : G →* N) : (⊤ : Subgroup G).map f = f.range :=
+  (range_eq_map f).symm
 
 @[to_additive (attr := simp)]
 theorem comap_range_self (f : G →* N) : f.range.comap f = ⊤ := by
@@ -634,6 +638,6 @@ open MonoidHom in
 lemma map_range_powMonoidHom (e : M ≃* N) (n : ℕ) :
     (powMonoidHom (α := M) n).range.map e = (powMonoidHom (α := N) n).range := by
   have H : (e : M →* N).comp (powMonoidHom n) = (powMonoidHom n).comp e := by ext : 1; simp
-  rw [map_range, H, range_comp, e.range_eq_top, ← range_eq_map]
+  rw [map_range, H, range_comp, e.range_eq_top, Subgroup.map_top]
 
 end MulEquiv
