@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Nilpotent.GeometricallyReduced
 public import Mathlib.RingTheory.TensorProduct.Pi
-public import Mathlib.FieldTheory.SeparablyGenerated
 
 /-!
 # Transcendental separable extensions
@@ -531,7 +530,7 @@ lemma Algebra.isTranscendentalSeparable_iff_isSeparablyGenerated_of_essFiniteTyp
     Algebra.IsTranscendentalSeparable k K ↔ Algebra.IsSeparablyGenerated k K := by
   refine ⟨fun h ↦ ?_, fun _ ↦ Algebra.isTranscendentalSeparable_of_isSeparablyGenerated k K⟩
   have := h.1 ⊤ (IntermediateField.essFiniteType_iff.mpr (IntermediateField.fg_top_iff.mpr ‹_›))
-  exact Algebra.isSeparablyGenerated_of_equiv IntermediateField.topEquiv
+  exact IntermediateField.topEquiv.isSeparablyGenerated
 
 @[stacks 030Y "Equivalence to the alternative definition."]
 lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k] :
