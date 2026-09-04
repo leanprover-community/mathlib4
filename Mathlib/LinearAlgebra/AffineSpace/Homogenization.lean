@@ -6,7 +6,7 @@ Authors: Attila Gáspár
 module
 
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.RingTheory.Finiteness.Defs
 
 import Mathlib.Algebra.Module.Submodule.EqLocus
@@ -33,6 +33,10 @@ Note that the homogenization is isomorphic to `V × R`, where `V` is the vector 
 * `Homogenization.ofVector`: the canonical embedding of the vector space.
 * `Homogenization.lift f`: the linear map obtained by extending the affine map `f` taking values in
   a vector space.
+* `AffineSubspace.homogenize`: the homogenization of an affine subspace of `P`, as a linear subspace
+  of `Homogenization R P`.
+* `Submodule.dehomogenize`: the intersection of a linear subspace with the canonical embedding of
+  `P`, as an affine subspace of `P`.
 
 ## References
 
@@ -285,6 +289,12 @@ theorem weight_surjective : Function.Surjective (weight (R := R) (P := P)) :=
   have ⟨p⟩ : Nonempty P := inferInstance
   fun c => ⟨c • ofPoint p, by simp⟩
 
+theorem ofPoint_ne_ofVector [Nontrivial R] (p : P) (v : V) : ofPoint (R := R) p ≠ ofVector v :=
+  ne_of_apply_ne weight <| by simp
+
+theorem ofPoint_ne_zero [Nontrivial R] (p : P) : ofPoint (R := R) p ≠ 0 := by
+  simpa using ofPoint_ne_ofVector p 0
+
 /-- An affine map between two affine spaces extends to a linear map between their homogenizations.
 -/
 @[expose]
@@ -407,3 +417,289 @@ instance [Module.Finite R V] : Module.Finite R (Homogenization R P) :=
   .equiv (toProd.symm ≪≫ₗ congr (.vaddConst R x))
 
 end Homogenization
+
+open Homogenization
+
+/-- The homogenization of an affine subspace, as a linear subspace of the homogenization. -/
+@[expose]
+def AffineSubspace.homogenize (s : AffineSubspace R P) : Submodule R (Homogenization R P) :=
+  .span R (ofPoint '' s)
+
+/-- The dehomogenization of a linear subspace of `Homogenization k P` is its intersection
+with the canonical embedding of `P`, as an affine subspace of `P`. -/
+@[expose]
+def Submodule.dehomogenize (s : Submodule R (Homogenization R P)) : AffineSubspace R P :=
+  s.toAffineSubspace.comap ofPoint
+
+theorem AffineSubspace.homogenize_le_iff {s : AffineSubspace R P}
+    {t : Submodule R (Homogenization R P)} : s.homogenize ≤ t ↔ s ≤ t.dehomogenize := by
+  rw [homogenize, Submodule.span_le, Set.image_subset_iff, ← Submodule.coe_toAffineSubspace,
+    ← AffineSubspace.coe_comap, Submodule.dehomogenize, SetLike.coe_subset_coe]
+
+theorem AffineSubspace.gc_homogenize :
+    GaloisConnection (α := AffineSubspace R P) AffineSubspace.homogenize Submodule.dehomogenize :=
+  fun _ _ => homogenize_le_iff
+
+namespace Submodule
+
+open AffineSubspace (gc_homogenize)
+
+@[simp]
+theorem mem_dehomogenize {p : P} {s : Submodule R (Homogenization R P)} :
+    p ∈ s.dehomogenize ↔ ofPoint p ∈ s :=
+  .rfl
+
+@[gcongr]
+theorem monotone_dehomogenize : Monotone (dehomogenize (R := R) (P := P)) :=
+  gc_homogenize.monotone_u
+
+@[simp]
+theorem dehomogenize_top : (⊤ : Submodule R (Homogenization R P)).dehomogenize = ⊤ :=
+  AffineSubspace.gc_homogenize.u_top
+
+@[simp]
+theorem dehomogenize_ker_weight [Nontrivial R] :
+    (weight (R := R) (P := P)).ker.dehomogenize = ⊥ := by
+  ext; simp [AffineSubspace.notMem_bot]
+
+@[simp]
+theorem dehomogenize_bot [Nontrivial R] :
+    (⊥ : Submodule R (Homogenization R P)).dehomogenize = ⊥ := by
+  grw [eq_bot_iff, show ⊥ ≤ weight.ker from bot_le, dehomogenize_ker_weight]
+
+theorem dehomogenize_eq_bot_iff {R V P : Type*} [DivisionRing R] [AddCommGroup V] [Module R V]
+    [AddTorsor V P] {s : Submodule R (Homogenization R P)} :
+    s.dehomogenize = ⊥ ↔ s ≤ weight.ker where
+  mp h := by
+    rcases Ideal.eq_bot_or_top (s.map weight) with h' | h'
+    · rw [LinearMap.ker, ← map_le_iff_le_comap, h']
+    · rw [Ideal.eq_top_iff_one] at h'
+      obtain ⟨p, hp, hp'⟩ := h'
+      obtain ⟨p, rfl⟩ := weight_eq_one_iff.mp hp'
+      rw [SetLike.mem_coe, ← mem_dehomogenize, h] at hp
+      contradiction
+  mpr h := by grw [eq_bot_iff, h, dehomogenize_ker_weight]
+
+theorem dehomogenize_inf (s t : Submodule R (Homogenization R P)) :
+    (s ⊓ t).dehomogenize = s.dehomogenize ⊓ t.dehomogenize :=
+  gc_homogenize.u_inf
+
+theorem dehomogenize_sInf (s : Set (Submodule R (Homogenization R P))) :
+    (sInf s).dehomogenize = ⨅ t ∈ s, t.dehomogenize :=
+  gc_homogenize.u_sInf
+
+theorem dehomogenize_iInf {ι : Type*} (s : ι → Submodule R (Homogenization R P)) :
+    (⨅ i, s i).dehomogenize = ⨅ i, (s i).dehomogenize :=
+  gc_homogenize.u_iInf
+
+theorem map_dehomogenize (f : P₁ →ᵃ[R] P₂) (s : Submodule R (Homogenization R P₁)) :
+    s.dehomogenize.map f = (s.map (Homogenization.map f)).dehomogenize := by
+  apply le_antisymm
+  · rw [AffineSubspace.map_le_iff_le_comap]
+    exact fun p hp => ⟨ofPoint p, hp, map_apply_ofPoint ..⟩
+  · intro p ⟨x, hx, h⟩
+    obtain ⟨q, rfl⟩ := weight_eq_one_iff.mp <| show weight x = 1 by simpa using congr(weight $h)
+    rw [map_apply_ofPoint, ofPoint_injective.eq_iff] at h
+    exact ⟨q, hx, h⟩
+
+theorem comap_dehomogenize (f : P₁ →ᵃ[R] P₂) (s : Submodule R (Homogenization R P₂)) :
+    s.dehomogenize.comap f = (s.comap (Homogenization.map f)).dehomogenize := by
+  ext; simp
+
+theorem homogenize_dehomogenize_le (s : Submodule R (Homogenization R P)) :
+    s.dehomogenize.homogenize ≤ s :=
+  gc_homogenize.l_u_le s
+
+theorem direction_dehomogenize_le (s : Submodule R (Homogenization R P)) :
+    s.dehomogenize.direction ≤ s.comap ofVector := by
+  grw [dehomogenize, AffineSubspace.direction_comap_le, toAffineSubspace_direction,
+    ofPoint_linear]
+
+theorem direction_dehomogenize {s : Submodule R (Homogenization R P)} (h : s.dehomogenize ≠ ⊥) :
+    s.dehomogenize.direction = s.comap ofVector := by
+  refine le_antisymm s.direction_dehomogenize_le (fun v hv => ?_)
+  obtain ⟨p, hp⟩ := s.dehomogenize.nonempty_iff_ne_bot.mpr h
+  rw [← vadd_vsub v p]
+  refine AffineSubspace.vsub_mem_direction ?_ hp
+  rw [mem_dehomogenize, AffineMap.map_vadd, ofPoint_linear]
+  exact add_mem hv hp
+
+@[simp]
+theorem mem_direction_dehomogenize {v : V} {s : Submodule R (Homogenization R P)}
+    (h : s.dehomogenize ≠ ⊥) : v ∈ s.dehomogenize.direction ↔ ofVector v ∈ s := by
+  simp [direction_dehomogenize h]
+
+end Submodule
+
+namespace AffineSubspace
+
+@[gcongr]
+theorem monotone_homogenize : Monotone (homogenize (R := R) (P := P)) :=
+  gc_homogenize.monotone_l
+
+@[simp]
+theorem homogenize_top : (⊤ : AffineSubspace R P).homogenize = ⊤ := by
+  rw [homogenize, top_coe, Set.image_univ, span_range_ofPoint]
+
+@[simp]
+theorem homogenize_bot : (⊥ : AffineSubspace R P).homogenize = ⊥ :=
+  gc_homogenize.l_bot
+
+theorem homogenize_sup (s t : AffineSubspace R P) :
+    (s ⊔ t).homogenize = s.homogenize ⊔ t.homogenize :=
+  gc_homogenize.l_sup
+
+theorem homogenize_sSup (s : Set (AffineSubspace R P)) :
+    (sSup s).homogenize = ⨆ t ∈ s, t.homogenize :=
+  gc_homogenize.l_sSup
+
+theorem homogenize_iSup {ι : Type*} (s : ι → AffineSubspace R P) :
+    (⨆ i, s i).homogenize = ⨆ i, (s i).homogenize :=
+  gc_homogenize.l_iSup
+
+theorem homogenize_map (f : P₁ →ᵃ[R] P₂) (s : AffineSubspace R P₁) :
+    (s.map f).homogenize = s.homogenize.map (Homogenization.map f) := by
+  apply le_antisymm
+  · grw [homogenize_le_iff, ← Submodule.map_dehomogenize, ← gc_homogenize.le_u_l]
+  · grw [Submodule.map_le_iff_le_comap, homogenize_le_iff, ← Submodule.comap_dehomogenize,
+      ← gc_homogenize.le_u_l, ← le_comap_map]
+
+theorem homogenize_comap_le (f : P₁ →ᵃ[R] P₂) (s : AffineSubspace R P₂) :
+    (s.comap f).homogenize ≤ s.homogenize.comap (Homogenization.map f) := by
+  grw [homogenize_le_iff, ← Submodule.comap_dehomogenize, ← gc_homogenize.le_u_l]
+
+theorem ofPoint_mem_homogenize_of_mem {p : P} {s : AffineSubspace R P} (h : p ∈ s) :
+    ofPoint p ∈ s.homogenize :=
+  Submodule.mem_span_of_mem <| Set.mem_image_of_mem _ h
+
+theorem homogenize_eq_of_mem {s : AffineSubspace R P} {p : P} (hp : p ∈ s) :
+    s.homogenize = s.direction.map ofVector ⊔ R ∙ ofPoint p := by
+  apply le_antisymm
+  · rw [homogenize_le_iff]
+    intro q hq
+    rw [Submodule.mem_dehomogenize, ← vsub_vadd q p, AffineMap.map_vadd, ofPoint_linear,
+      vadd_eq_add]
+    exact Submodule.add_mem_sup
+      (Submodule.mem_map_of_mem <| s.vsub_mem_direction hq hp)
+      (Submodule.mem_span_singleton_self _)
+  · simp_rw [sup_le_iff, Submodule.span_singleton_le_iff_mem, Submodule.map_le_iff_le_comap,
+      direction, vectorSpan, Submodule.span_le, Set.vsub_subset_iff, SetLike.mem_coe,
+      Submodule.mem_comap, ofVector_vsub]
+    grind [sub_mem, ofPoint_mem_homogenize_of_mem]
+
+theorem comap_ofVector_homogenize (s : AffineSubspace R P) :
+    s.homogenize.comap ofVector = s.direction := by
+  rcases s.eq_bot_or_nonempty with rfl | ⟨p, hp⟩
+  · simp [LinearMap.ker_eq_bot_of_injective ofVector_injective]
+  rw [homogenize_eq_of_mem hp, Submodule.comap_map_sup_of_comap_le ?_]
+  intro v h
+  obtain ⟨c, h⟩ := Submodule.mem_span_singleton.mp h
+  rw [show c = 0 by simpa using congr(weight $h), zero_smul, eq_comm,
+    map_eq_zero_iff _ ofVector_injective] at h
+  rw [h]
+  exact zero_mem _
+
+@[simp]
+theorem ofVector_mem_homogenize {v : V} {s : AffineSubspace R P} :
+    ofVector v ∈ s.homogenize ↔ v ∈ s.direction := by
+  simp [← comap_ofVector_homogenize]
+
+theorem homogenize_sInf {s : Set (AffineSubspace R P)} (h : sInf s ≠ ⊥) :
+    (sInf s).homogenize = ⨅ t ∈ s, t.homogenize := by
+  refine le_antisymm monotone_homogenize.map_sInf_le (fun x hx => ?_)
+  obtain ⟨p, hp⟩ := (nonempty_iff_ne_bot _).mpr h
+  cases x using induction_of_point p with | _ v c =>
+  refine add_mem ?_ <| Submodule.smul_mem _ _ <| ofPoint_mem_homogenize_of_mem hp
+  rw [SetLike.mem_coe, mem_sInf_iff] at hp
+  rw [add_mem_cancel_right <| Submodule.smul_mem _ _ <| by
+    grind [Submodule.mem_iInf, ofPoint_mem_homogenize_of_mem]] at hx
+  simpa [direction_sInf_of_mem _ p hp] using hx
+
+theorem homogenize_iInf {ι : Type*} {s : ι → AffineSubspace R P} (h : ⨅ i, s i ≠ ⊥) :
+    (⨅ i, s i).homogenize = ⨅ i, (s i).homogenize := by
+  rw [← sInf_range] at h ⊢
+  rw [homogenize_sInf h, iInf_range]
+
+theorem homogenize_inf {s t : AffineSubspace R P} (h : s ⊓ t ≠ ⊥) :
+    (s ⊓ t).homogenize = s.homogenize ⊓ t.homogenize := by
+  simp_rw [inf_eq_iInf] at h ⊢
+  simp_rw [homogenize_iInf h, Bool.apply_cond]
+
+theorem homogenize_comap {f : P₁ →ᵃ[R] P₂} {s : AffineSubspace R P₂}
+    (h : s.comap f ≠ ⊥) : (s.comap f).homogenize = s.homogenize.comap (Homogenization.map f) := by
+  refine le_antisymm (homogenize_comap_le f s) (fun x hx => ?_)
+  obtain ⟨p, hp⟩ := (nonempty_iff_ne_bot _).mpr h
+  cases x using induction_of_point p with | _ v c =>
+  refine add_mem (ofVector_mem_homogenize.mpr ?_)
+    (Submodule.smul_mem _ _ <| ofPoint_mem_homogenize_of_mem hp)
+  rw [Submodule.mem_comap, map_add, map_apply_ofVector, map_smul, map_apply_ofPoint,
+    add_mem_cancel_right <| s.homogenize.smul_mem c <| ofPoint_mem_homogenize_of_mem hp,
+    ofVector_mem_homogenize] at hx
+  simpa [direction_comap h] using hx
+
+variable [Nontrivial R]
+
+/-- `AffineSubspace.homogenize` and `Submodule.dehomogenize` form a Galois coinsertion. -/
+@[expose]
+def gciHomogenize :
+    GaloisCoinsertion (α := AffineSubspace R P) AffineSubspace.homogenize Submodule.dehomogenize :=
+  gc_homogenize.toGaloisCoinsertion fun s => by
+    rcases s.eq_bot_or_nonempty with rfl | h
+    · simp
+    apply le_of_direction_le
+    · grw [Submodule.direction_dehomogenize_le, s.comap_ofVector_homogenize]
+    · rwa [Set.inter_eq_right.mpr <| gc_homogenize.le_u_l s]
+
+@[simp]
+theorem dehomogenize_homogenize (s : AffineSubspace R P) : s.homogenize.dehomogenize = s :=
+  gciHomogenize.u_l_eq s
+
+@[simp]
+theorem ofPoint_mem_homogenize {p : P} {s : AffineSubspace R P} :
+    ofPoint p ∈ s.homogenize ↔ p ∈ s := by
+  rw [← Submodule.mem_dehomogenize, s.dehomogenize_homogenize]
+
+@[simp]
+theorem homogenize_le_homogenize {s t : AffineSubspace R P} : s.homogenize ≤ t.homogenize ↔ s ≤ t :=
+  gciHomogenize.l_le_l_iff
+
+theorem homogenize_injective : Function.Injective (homogenize (R := R) (P := P)) :=
+  gciHomogenize.l_injective
+
+end AffineSubspace
+
+namespace Submodule
+
+@[simp]
+theorem homogenize_dehomogenize {s : Submodule R (Homogenization R P)} (hs : s.dehomogenize ≠ ⊥) :
+    s.dehomogenize.homogenize = s := by
+  obtain ⟨p, hp⟩ := s.dehomogenize.nonempty_iff_ne_bot.mpr hs
+  refine le_antisymm s.homogenize_dehomogenize_le (fun x hx => ?_)
+  cases x using induction_of_point p with | _ v c =>
+  rw [add_mem_cancel_right <| smul_mem s c hp] at hx
+  refine add_mem ?_ <| smul_mem _ _ <| AffineSubspace.ofPoint_mem_homogenize_of_mem ?_
+  · rwa [AffineSubspace.ofVector_mem_homogenize, mem_direction_dehomogenize hs]
+  · rwa [mem_dehomogenize]
+
+theorem dehomogenize_iSup [Nontrivial R] {ι : Type*} {s : ι → Submodule R (Homogenization R P)}
+    (h : ∀ i, dehomogenize (s i) ≠ ⊥) : (⨆ i, s i).dehomogenize = ⨆ i, (s i).dehomogenize := by
+  cases isEmpty_or_nonempty ι
+  · simp
+  inhabit ι
+  have : (⨆ i, s i).dehomogenize ≠ ⊥ :=
+    ne_bot_of_le_ne_bot (h default) <| monotone_dehomogenize <| le_iSup _ default
+  simp_rw [← AffineSubspace.homogenize_injective.eq_iff, homogenize_dehomogenize this,
+    AffineSubspace.homogenize_iSup, homogenize_dehomogenize (h _)]
+
+theorem dehomogenize_sSup [Nontrivial R] {s : Set (Submodule R (Homogenization R P))}
+    (h : ∀ t ∈ s, t.dehomogenize ≠ ⊥) : (sSup s).dehomogenize = ⨆ t ∈ s, t.dehomogenize := by
+  rw [Subtype.forall'] at h
+  rw [sSup_eq_iSup', dehomogenize_iSup h, iSup_subtype]
+
+theorem dehomogenize_sup {s t : Submodule R (Homogenization R P)} (hs : s.dehomogenize ≠ ⊥)
+    (ht : t.dehomogenize ≠ ⊥) : (s ⊔ t).dehomogenize = s.dehomogenize ⊔ t.dehomogenize := by
+  nontriviality R using Subsingleton.elim _ ⊤
+  simp_rw [sup_eq_iSup, ← Bool.apply_cond]
+  exact dehomogenize_iSup <| Bool.rec ht hs
+
+end Submodule
