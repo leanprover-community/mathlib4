@@ -1177,9 +1177,8 @@ theorem ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac) :
   · rw [← ncard_add_ncard_compl s hs hsc, Nat.add_sub_cancel_left]
   · simp [hsc.ncard, hsc.to_type]
 
-theorem ncard_compl_of_ncard_eq_add (s : Set α) (hs : s.Finite := by toFinite_tac) {n : ℕ}
-    (h : Nat.card α = n + s.ncard) :
-    sᶜ.ncard = n := by
+theorem ncard_compl_of_ncard_eq_add (s : Set α) {n : ℕ} (h : Nat.card α = n + s.ncard)
+    (hs : s.Finite := by toFinite_tac) : sᶜ.ncard = n := by
   rcases sᶜ.finite_or_infinite with hsc | hsc
   · rwa [← ncard_compl_add_ncard s hs hsc, Nat.add_right_cancel_iff] at h
   · have := hsc.to_type
