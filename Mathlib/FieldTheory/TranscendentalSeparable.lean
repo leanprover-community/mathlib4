@@ -60,7 +60,7 @@ lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
   · have h := Set.isEmpty_coe_sort.mp (isT.isEmpty_iff_isAlgebraic.mpr alg)
     have : IntermediateField.adjoin k s = ⊥ := IntermediateField.adjoin_eq_bot_iff.mpr (by simp [h])
     rw [this] at sep
-    have := AlgEquiv.Algebra.isSeparable (IntermediateField.botEquiv k K).symm
+    have := IntermediateField.isSeparable_bot k K
     exact Algebra.IsSeparable.trans k (⊥ : IntermediateField k K) K
 
 /-- A field extension is transcendental separable if every finitely generated subextension is
