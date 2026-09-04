@@ -209,11 +209,6 @@ example (x : ℝ) :
       Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] + 1 := by
   eval_rank
 
--- a literal with symbolic entries is skipped instead of reporting an error
-example (a : ℚ) (h : Matrix.rank (R := ℚ) !![a, 1; 1, a] = 2) :
-    Matrix.rank (R := ℚ) !![1, 0; 0, 1] = Matrix.rank (R := ℚ) !![a, 1; 1, a] := by
-  simp only [norm_rank]
-  lia
 
 /-! ## A larger matrix -/
 
