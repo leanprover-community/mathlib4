@@ -51,7 +51,6 @@ structure Total.Hom (k l : Total P) where
 set_option backward.isDefEq.respectTransparency false in -- This is needed below
 attribute [reassoc] Total.Hom.w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Composition of morphisms in the `Total` category. -/
 @[simps]
 def Total.Hom.comp {k l m : Total P} (f : k.Hom l) (g : l.Hom m) : k.Hom m where
@@ -121,7 +120,6 @@ instance [IsFiltered J] [∀ j, IsFiltered (I j)]
       simp [← Functor.map_comp, ← IsFiltered.coeq_condition]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is a colimit presentation over `J` of `X` and for every `j` we are given a colimit
 presentation `Qⱼ` over `I j` of the `P.diag.obj j`, this is the refined colimit presentation of `X`
 over `Total Q`. -/

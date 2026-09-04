@@ -154,18 +154,17 @@ theorem smul_ae (c : G) : c • ae μ = ae μ := by
   simp only [mem_smul_filter, preimage_smul, smul_mem_ae]
 
 @[to_additive (attr := simp)]
-theorem eventuallyConst_smul_set_ae (c : G) {s : Set α} :
-    EventuallyConst (c • s : Set α) (ae μ) ↔ EventuallyConst s (ae μ) := by
-  rw [← preimage_smul_inv, eventuallyConst_preimage, Filter.map_smul, smul_ae]
+theorem eventuallyEmptyOrUniv_smul_set_ae (c : G) {s : Set α} :
+    EventuallyEmptyOrUniv (c • s : Set α) (ae μ) ↔ EventuallyEmptyOrUniv s (ae μ) := by
+  rw [← preimage_smul_inv, eventuallyEmptyOrUniv_preimage, Filter.map_smul, smul_ae]
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s ≤ᵐ[μ] t := by
   simp only [ae_le_set, ← smul_set_sdiff, measure_smul_eq_zero_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
-  simp only [Filter.eventuallyLE_antisymm_iff, smul_set_ae_le]
+  simp only [Filter.eventuallySubset_antisymm_iff, smul_set_ae_le]
 
 end AE
 

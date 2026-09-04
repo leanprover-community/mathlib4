@@ -5,6 +5,8 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -12,8 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Products
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Finite.Sigma
 
 /-!
 # (Co)limits in the category of finite types
@@ -81,7 +81,6 @@ noncomputable def productEquiv {ι : Type*} [Finite ι] (X : ι → FintypeCat.{
   let e : (∀ i, X i) ≃ Shrink.{u} (∀ i, X i) := equivShrink _
   (equivEquivIso.symm is₁).trans ((equivEquivIso.symm is₂).trans e.symm)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma productEquiv_apply {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
     (x : (∏ᶜ X : FintypeCat)) (i : ι) : productEquiv X x i = Pi.π X i x := by
