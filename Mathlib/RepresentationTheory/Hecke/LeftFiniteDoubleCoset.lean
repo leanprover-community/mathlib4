@@ -27,34 +27,32 @@ open DoubleCoset Pointwise
 namespace DoubleCoset
 
 /-- Given a double coset `x`, the set of left cosets `{gH₂ | H₁gH₂ = x}`. -/
-def Quotient.LeftDecomposition (x : Quotient (H₁ : Set G) (H₂ : Set G)) :
+def Quotient.leftDecomposition (x : Quotient (H₁ : Set G) (H₂ : Set G)) :
     Set (G ⧸ H₂) :=
   (Quotient.lift (fun g : G => mk H₁ H₂ g) (fun a b hab => by
-    obtain h := QuotientGroup.leftRel_apply.mp hab
     rw [DoubleCoset.eq]
-    exact ⟨1, H₁.one_mem, a⁻¹ * b, h, by simp⟩)) ⁻¹' {x}
+    exact ⟨1, H₁.one_mem, _, QuotientGroup.leftRel_apply.mp hab, by simp⟩)) ⁻¹' {x}
 
 @[simp]
-lemma mem_LeftDecomposition_mk (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
-    (g : G ⧸ H₂) ∈ x.LeftDecomposition ↔ DoubleCoset.mk H₁ H₂ g = x := by
-  simp [Quotient.LeftDecomposition]
+lemma mem_leftDecomposition_mk {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)} :
+    (g : G ⧸ H₂) ∈ x.leftDecomposition ↔ DoubleCoset.mk H₁ H₂ g = x := by
+  simp [Quotient.leftDecomposition]
 
 instance (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
-    MulAction H₁ x.LeftDecomposition where
+    MulAction H₁ x.leftDecomposition where
   smul h q := ⟨h • (q : G ⧸ H₂), by
     rw [← QuotientGroup.out_eq' q.1, MulAction.subgroup_smul_def, MulAction.Quotient.smul_mk,
-      mem_LeftDecomposition_mk, smul_eq_mul, mk_mem_mul]
-    simp [← mem_LeftDecomposition_mk]⟩
+      mem_leftDecomposition_mk, smul_eq_mul, mk_mem_mul]
+    simp [← mem_leftDecomposition_mk]⟩
   one_smul q := Subtype.ext <| one_smul H₁ (q : G ⧸ H₂)
   mul_smul h h' q := Subtype.ext <| mul_smul h h' (q : G ⧸ H₂)
 
 @[simp]
-lemma coe_smul_LeftDecomposition {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)} (h : H₁)
-    (y : x.LeftDecomposition) :
-    ((h • y : x.LeftDecomposition) : G ⧸ H₂) = (h : G) • (y : G ⧸ H₂) :=
+lemma coe_smul_leftDecomposition {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)} (h : H₁)
+    (y : x.leftDecomposition) :
+    ((h • y : x.leftDecomposition) : G ⧸ H₂) = (h : G) • (y : G ⧸ H₂) :=
   rfl
 
-@[simp]
 lemma stabilizer_leftCoset :
     MulAction.stabilizer H₁ (g : G ⧸ H₂) = (ConjAct.toConjAct g • H₂).subgroupOf H₁ := by
   ext h
@@ -66,22 +64,22 @@ lemma stabilizer_leftCoset :
 
 variable (H₁ H₂ g) in
 /-- The quotient `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` indexing the left cosets `h₁gH₂` inside the double coset
-`H₁gH₂`. -/
-abbrev LeftDecompQuotient := H₁ ⧸ MulAction.stabilizer H₁ (g : G ⧸ H₂)
+`H₁gH₂`. See also `DoubleCoset.stabilizer_leftCoset`. -/
+abbrev leftDecompQuotient := H₁ ⧸ MulAction.stabilizer H₁ (g : G ⧸ H₂)
 
-namespace LeftDecompQuotient
+namespace leftDecompQuotient
 
 /-- The map sending `⟦h₁⟧` to `h₁gH₂`. -/
 def toLeftCoset :
-    LeftDecompQuotient H₁ H₂ g → G ⧸ H₂ :=
+    leftDecompQuotient H₁ H₂ g → G ⧸ H₂ :=
   MulAction.ofQuotientStabilizer H₁ (g : G ⧸ H₂)
 
 @[simp]
 lemma toLeftCoset_mk (h : H₁) :
-    toLeftCoset (h : LeftDecompQuotient H₁ H₂ g) = ((h : G) * g : G ⧸ H₂) := by
+    toLeftCoset (h : leftDecompQuotient H₁ H₂ g) = ((h : G) * g : G ⧸ H₂) := by
   simp [toLeftCoset, MulAction.subgroup_smul_def]
 
-lemma toLeftCoset_apply (x : LeftDecompQuotient H₁ H₂ g) :
+lemma toLeftCoset_apply (x : leftDecompQuotient H₁ H₂ g) :
     toLeftCoset x = ((x.out : G) * g : G ⧸ H₂) := by
   rw [← QuotientGroup.out_eq' x, toLeftCoset_mk, QuotientGroup.out_eq']
 
@@ -94,21 +92,20 @@ lemma mem_range_toLeftCoset_iff :
   constructor
   · intro ⟨h, heq⟩
     rw [toLeftCoset_apply, QuotientGroup.eq] at heq
-    exact (DoubleCoset.eq H₁ H₂ g g').mpr ⟨_, h.out.prop, _, heq, by simp [mul_assoc]⟩
+    exact DoubleCoset.eq.mpr ⟨_, h.out.prop, _, heq, by simp [mul_assoc]⟩
   · intro h
-    obtain ⟨h₁, hh₁, h₂, hh₂, rfl⟩ := (DoubleCoset.eq H₁ H₂ g g').mp h
+    obtain ⟨h₁, hh₁, h₂, hh₂, rfl⟩ := DoubleCoset.eq.mp h
     exact ⟨QuotientGroup.mk ⟨h₁, hh₁⟩, by simp [hh₂]⟩
 
 /-- The equivalence between `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` and `{xH₂ | H₁xH₂ = H₁gH₂}`. -/
 @[simps! apply]
 noncomputable def toLeftDecompositionEquiv :
-    LeftDecompQuotient H₁ H₂ g ≃ (mk H₁ H₂ g).LeftDecomposition :=
-  (Equiv.ofInjective toLeftCoset toLeftCoset_injective).trans
-    (Set.equivOfEq (by
+    leftDecompQuotient H₁ H₂ g ≃ (mk H₁ H₂ g).leftDecomposition :=
+  (Equiv.ofInjective toLeftCoset toLeftCoset_injective).trans (Set.equivOfEq (by
       ext x
       rw [← QuotientGroup.out_eq' x, Set.mem_range, mem_range_toLeftCoset_iff,
-        mem_LeftDecomposition_mk, eq_comm]))
+        mem_leftDecomposition_mk, eq_comm]))
 
-end LeftDecompQuotient
+end leftDecompQuotient
 
 end DoubleCoset
