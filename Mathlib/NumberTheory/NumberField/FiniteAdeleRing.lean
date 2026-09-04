@@ -69,7 +69,7 @@ private theorem hasProd_zero_subset_lt_one_valued {x : 𝔸ᶠ[R, K]} (hx : ¬Is
       have (v : _) (h : v ∈ S) : 2 ≤ ‖(x v)⁻¹‖ := by
         apply FinitePlace.two_le_norm_of_one_lt_norm
         grind [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ (Valued.v.pos_iff.2 (hx₀ v))]
-      simpa [Finset.prod_const] using (Finset.prod_le_prod (by grind) this).trans (by simp)
+      simpa [Finset.prod_const] using (Finset.prod_le_prod₀ (by grind) this).trans (by simp)
     apply tendsto_atTop_mono h_le ((tendsto_pow_atTop_atTop_of_one_lt (by norm_num)).comp ?_)
     apply Filter.tendsto_atTop_atTop_of_monotone Finset.card_mono fun N ↦ ?_
     obtain ⟨t, ht, _⟩ := hx_inf.exists_subset_card_eq N

@@ -48,6 +48,14 @@ def ConvexSpace.ofModule : ConvexSpace R M where
     simp [Finsupp.sum_mapDomain_index, add_smul, Finsupp.sum_sum_index, Finsupp.sum_smul_index,
       mul_smul, Finsupp.smul_sum]
 
+/-- An ordered ring `R` is a convex space over itself with the convex combination operation being
+the weighted sum.
+
+Note that the convex hull of `0` and `1` will only be `[0, 1]` when `R` satisfies `ExistsAddOfLE`.
+Ordered rings that do not satisfy this predicate are considered pathological for the purpose of
+convexity as we develop it here, although they do admit a perfectly reasonable convexity structure
+given by intervals (abstract convexity structures do not exist in Mathlib at the time of writing).
+-/
 instance convexSpaceSelf : ConvexSpace R R := .ofModule
 
 variable (R M) [ConvexSpace R M] in
@@ -62,7 +70,7 @@ attribute [simp] sConvexComb_eq_sum
 alias _root_.convexCombination_eq_sum := sConvexComb_eq_sum
 
 attribute [local instance] ConvexSpace.ofModule in
-instance IsModuleConvexSpace.ofModule : IsModuleConvexSpace R M where
+instance IsModuleConvexSpace.of_module : IsModuleConvexSpace R M where
   sConvexComb_eq_sum _ := rfl
 
 @[deprecated "Implied by `IsModuleConvexSpace.ofModule`" (since := "2026-07-02")]
@@ -146,7 +154,7 @@ lemma IsStarConvexSet.add (hs : IsStarConvexSet R x s) (ht : IsStarConvexSet R y
 end IsModuleConvexSpace
 
 variable (R I) in
-lemma StdSimplex.isAffineMap_weights : IsAffineMap R (weights (R := R) (M := I)) where
+lemma StdSimplex.isAffineMap_weights : IsAffineMap R (weights (R := R) (X := I)) where
   map_sConvexComb s := by simp [sConvexComb_eq_sum, Finsupp.sum_mapDomain_index, add_smul]
 
 end AddCommMonoid
