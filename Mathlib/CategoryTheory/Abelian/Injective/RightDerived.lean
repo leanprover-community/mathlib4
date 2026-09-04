@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.RightDerivedFunctorPlus
+public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
@@ -16,7 +17,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory Limits Pretriangulated
 
 -- to be moved
 section
@@ -31,13 +32,29 @@ noncomputable def DerivedCategory.Plus.singleFunctorIso (n : ℤ) :
     CochainComplex.Plus.singleFunctor C n ⋙ DerivedCategory.Plus.Q ≅ singleFunctor C n :=
   Iso.refl _
 
+namespace CategoryTheory.ShortComplex.ShortExact
+
+variable {S : ShortComplex C} (hS : S.ShortExact)
+
+/-- The (distinguished) triangle in the bounded below derived category of `C` given by a
+short exact short complex in `C`. -/
+noncomputable abbrev singleTrianglePlus : Triangle (DerivedCategory.Plus C) :=
+  ObjectProperty.liftTriangle _ hS.singleTriangle ⟨0, by dsimp; infer_instance⟩
+    ⟨0, by dsimp; infer_instance⟩ ⟨0, by dsimp; infer_instance⟩
+
+lemma singleTrianglePlus_distinguished :
+    hS.singleTrianglePlus ∈ distTriang (DerivedCategory.Plus C) :=
+  ObjectProperty.liftTriangle_distinguished _ _ _ _ _ hS.singleTriangle_distinguished
+
+end CategoryTheory.ShortComplex.ShortExact
+
 end
+
 
 namespace CategoryTheory
 
 variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
-  [HasDerivedCategory C] [HasDerivedCategory D]
-  [EnoughInjectives C]
+  [HasDerivedCategory C] [HasDerivedCategory D] [EnoughInjectives C]
 
 namespace Functor
 
@@ -77,29 +94,64 @@ instance (X : C) [Injective X] : IsIso (F.toRightDerived₀.app X) := by
   dsimp [toRightDerived₀]
   infer_instance
 
-end Functor
+variable {S : ShortComplex C} (hS : S.ShortExact)
 
-namespace ShortComplex.ShortExact
-
-variable {S : ShortComplex C} (hS : S.ShortExact) (F : C ⥤ D) [F.Additive]
+noncomputable def rightDerivedδ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
+    (F.rightDerived n₀).obj S.X₃ ⟶ (F.rightDerived n₁).obj S.X₁ :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequenceδ
+    (F.rightDerivedFunctorPlus.mapTriangle.obj (hS.singleTrianglePlus)) n₀ n₁ (by lia)
 
 include hS in
 lemma mono_rightDerived_map_f :
-    Mono ((F.rightDerived 0).map S.f) := by
-  have := hS
-  sorry
+    Mono ((F.rightDerived 0).map S.f) :=
+  ((DerivedCategory.Plus.homologyFunctor D 0).homologySequence_exact₁ _
+    (F.rightDerivedFunctorPlus.map_distinguished _
+      hS.singleTrianglePlus_distinguished) (-1) 0 (by simp)).mono_g
+        (IsZero.eq_of_src (by
+          -- needs the addition of some API about left t-exact functors
+          sorry) _ _)
 
-end ShortComplex.ShortExact
+include hS in
+lemma rightDerived_exact₂ (n : ℕ) :
+    (ShortComplex.mk ((F.rightDerived n).map S.f) ((F.rightDerived n).map S.g)
+      (by rw [← Functor.map_comp, S.zero, Functor.map_zero])).Exact :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequence_exact₂ _
+    (F.rightDerivedFunctorPlus.map_distinguished _
+      hS.singleTrianglePlus_distinguished) _
 
-namespace Functor
+@[reassoc (attr := simp)]
+lemma rightDerivedδ_comp (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
+    F.rightDerivedδ hS n₀ n₁ h ≫ (F.rightDerived n₁).map S.f = 0 :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequenceδ_comp
+    _ (F.rightDerivedFunctorPlus.map_distinguished _
+      hS.singleTrianglePlus_distinguished) _ _ _
 
-variable (F : C ⥤ D) [F.Additive]
+@[reassoc (attr := simp)]
+lemma comp_rightDerivedδ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
+    (F.rightDerived n₀).map S.g ≫ F.rightDerivedδ hS n₀ n₁ h = 0 :=
+  (DerivedCategory.Plus.homologyFunctor D 0).comp_homologySequenceδ
+    _ (F.rightDerivedFunctorPlus.map_distinguished _
+      hS.singleTrianglePlus_distinguished) _ _ _
+
+lemma rightDerived_exact₁ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
+    (ShortComplex.mk (F.rightDerivedδ hS n₀ n₁ h) ((F.rightDerived n₁).map S.f)
+      (by simp)).Exact :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequence_exact₁ _
+    (F.rightDerivedFunctorPlus.map_distinguished _
+      hS.singleTrianglePlus_distinguished) _ _ _
+
+lemma rightDerived_exact₃ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
+    (ShortComplex.mk ((F.rightDerived n₀).map S.g) (F.rightDerivedδ hS n₀ n₁ h)
+      (by simp)).Exact :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequence_exact₃ _
+    (F.rightDerivedFunctorPlus.map_distinguished _
+      hS.singleTrianglePlus_distinguished) _ _ _
 
 instance : (F.rightDerived 0).PreservesMonomorphisms where
   preserves f _ := by
     have : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact :=
       { exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _) }
-    exact this.mono_rightDerived_map_f F
+    simpa using F.mono_rightDerived_map_f this
 
 variable [PreservesFiniteLimits F]
 

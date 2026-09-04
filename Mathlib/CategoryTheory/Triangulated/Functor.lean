@@ -37,7 +37,7 @@ variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 /-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
 which commutes with shift by `ℤ`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapTriangle : Triangle C ⥤ Triangle D where
   obj T := Triangle.mk (F.map T.mor₁) (F.map T.mor₂)
     (F.map T.mor₃ ≫ (F.commShiftIso (1 : ℤ)).hom.app T.obj₁)
