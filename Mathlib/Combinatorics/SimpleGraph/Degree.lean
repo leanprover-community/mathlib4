@@ -219,6 +219,7 @@ theorem minEDegree_ne_top_of_finite [Nonempty V] [Finite V] (G : SimpleGraph V) 
   have ⟨v⟩ := ‹Nonempty V›
   exact ⟨v, G.edegree_ne_top_of_finite v⟩
 
+@[simp]
 theorem natCast_maxDegree_eq_maxEDegree [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] :
     G.maxDegree = G.maxEDegree := by
   cases isEmpty_or_nonempty V
@@ -227,6 +228,7 @@ theorem natCast_maxDegree_eq_maxEDegree [Fintype V] (G : SimpleGraph V) [Decidab
     Finset.sup'_image, Finset.sup'_univ_eq_ciSup]
   simpa [← natCast_degree_eq_edegree] using ENat.natCast_iSup <| Set.finite_range _ |>.bddAbove
 
+@[simp]
 theorem natCast_minDegree_eq_minEDegree [Nonempty V] [Fintype V] (G : SimpleGraph V)
     [DecidableRel G.Adj] : G.minDegree = G.minEDegree := by
   rw [minEDegree_eq_iInf, minDegree, ← Finset.coe_min' <| by simp, Finset.min'_eq_inf',
