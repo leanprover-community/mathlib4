@@ -42,43 +42,27 @@ public section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {f : E → ℝ} {s : Set E} {x y : E}
 
-/-- The 1D restriction `t ↦ f (x + t • (y - x))` of a function convex on `s`, where `x, y ∈ s`,
-is convex on `Icc 0 1` (the segment from `x` to `y` lies in `s` by convexity of `s`). -/
-theorem ConvexOn.lineRestriction (hc : ConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) :
-    ConvexOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
-  simpa only [Function.comp_def, AffineMap.lineMap_apply_module', add_comm] using
-    (hc.comp_affineMap (AffineMap.lineMap x y)).subset
-      (fun t ht => hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht)) (convex_Icc _ _)
+/-- A convex function on `s` is convex on the segment between any two points of `s`. -/
+theorem ConvexOn.segment (hc : ConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) :
+    ConvexOn ℝ (segment ℝ x y) f :=
+  hc.subset (hc.1.segment_subset hx hy) (convex_segment x y)
 
-/-- The 1D restriction `t ↦ f (x + t • (y - x))` of a function concave on `s`, where `x, y ∈ s`,
-is concave on `Icc 0 1`. -/
-theorem ConcaveOn.lineRestriction (hc : ConcaveOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) :
-    ConcaveOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
-  simpa [Pi.neg_def] using (hc.neg.lineRestriction hx hy).neg
+/-- A concave function on `s` is concave on the segment between any two points of `s`. -/
+theorem ConcaveOn.segment (hc : ConcaveOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) :
+    ConcaveOn ℝ (segment ℝ x y) f :=
+  hc.subset (hc.1.segment_subset hx hy) (convex_segment x y)
 
-/-- The 1D restriction `t ↦ f (x + t • (y - x))` of a function strictly convex on `s`, with
-`x ≠ y` both in `s`, is strictly convex on `Icc 0 1`. -/
-theorem StrictConvexOn.lineRestriction (hc : StrictConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s)
-    (hxy : x ≠ y) :
-    StrictConvexOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
-  refine ⟨convex_Icc _ _, fun t₁ ht₁ t₂ ht₂ ht_ne a b ha hb hab => ?_⟩
-  have hmem : ∀ t ∈ Set.Icc (0 : ℝ) 1, x + t • (y - x) ∈ s := fun t ht => by
-    simpa only [AffineMap.lineMap_apply_module', add_comm] using
-      hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht)
-  have hp_ne : x + t₁ • (y - x) ≠ x + t₂ • (y - x) := fun h =>
-    ht_ne (smul_left_injective ℝ (sub_ne_zero.mpr hxy.symm) (add_left_cancel h))
-  simpa only [show a • (x + t₁ • (y - x)) + b • (x + t₂ • (y - x))
-        = x + (a • t₁ + b • t₂) • (y - x) by rw [show b = 1 - a by linarith]; module]
-    using hc.2 (hmem t₁ ht₁) (hmem t₂ ht₂) hp_ne ha hb hab
+/-- A strictly convex function on `s` is strictly convex on the segment between any two points
+of `s`. -/
+theorem StrictConvexOn.segment (hc : StrictConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) :
+    StrictConvexOn ℝ (segment ℝ x y) f :=
+  hc.subset (hc.1.segment_subset hx hy) (convex_segment x y)
 
-/-- The 1D restriction `t ↦ f (x + t • (y - x))` of a function strictly concave on `s`, with
-`x ≠ y` both in `s`, is strictly concave on `Icc 0 1`. -/
-theorem StrictConcaveOn.lineRestriction (hc : StrictConcaveOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s)
-    (hxy : x ≠ y) :
-    StrictConcaveOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
-  have hneg : StrictConvexOn ℝ (Set.Icc 0 1) (fun t : ℝ => -f (x + t • (y - x))) := by
-    simpa using hc.neg.lineRestriction hx hy hxy
-  simpa [Pi.neg_def] using hneg.neg
+/-- A strictly concave function on `s` is strictly concave on the segment between any two points
+of `s`. -/
+theorem StrictConcaveOn.segment (hc : StrictConcaveOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) :
+    StrictConcaveOn ℝ (segment ℝ x y) f :=
+  hc.subset (hc.1.segment_subset hx hy) (convex_segment x y)
 
 namespace ConvexOn
 
@@ -87,7 +71,11 @@ the first-order inequality `f x + f' ≤ f y` holds. -/
 theorem add_hasLineDerivAt_le (hc : ConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s)
     {f' : ℝ} (hf : HasLineDerivAt ℝ f f' x (y - x)) :
     f x + f' ≤ f y := by
-  simpa using (hc.lineRestriction hx hy).add_hasDerivAt_mul_le
+  have hline : ConvexOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
+    simpa only [Function.comp_def, AffineMap.lineMap_apply_module', add_comm] using
+      ((hc.segment hx hy).comp_affineMap (AffineMap.lineMap x y)).subset
+        (fun _ ht => lineMap_mem_segment ℝ x y ht) (convex_Icc _ _)
+  simpa using hline.add_hasDerivAt_mul_le
     (Set.left_mem_Icc.mpr zero_le_one) (Set.right_mem_Icc.mpr zero_le_one)
     zero_lt_one hf
 
@@ -121,9 +109,9 @@ the reverse first-order inequality `f y ≤ f x + f'` holds. -/
 theorem le_add_hasLineDerivAt (hc : ConcaveOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s)
     {f' : ℝ} (hf : HasLineDerivAt ℝ f f' x (y - x)) :
     f y ≤ f x + f' := by
-  simpa using (hc.lineRestriction hx hy).le_add_hasDerivAt_mul
-    (Set.left_mem_Icc.mpr zero_le_one) (Set.right_mem_Icc.mpr zero_le_one)
-    zero_lt_one hf
+  have h := hc.neg.add_hasLineDerivAt_le hx hy hf.neg
+  simp only [Pi.neg_apply] at h
+  linarith
 
 /-- For a concave function `f` line-differentiable at `x` in direction `y - x`,
 the reverse first-order inequality `f y ≤ f x + lineDeriv ℝ f x (y - x)` holds. -/
@@ -141,7 +129,18 @@ namespace StrictConvexOn
 theorem add_hasLineDerivAt_lt (hc : StrictConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y)
     {f' : ℝ} (hf : HasLineDerivAt ℝ f f' x (y - x)) :
     f x + f' < f y := by
-  simpa using (hc.lineRestriction hx hy hxy).add_hasDerivAt_mul_lt
+  have hline : StrictConvexOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
+    refine ⟨convex_Icc _ _, fun t₁ ht₁ t₂ ht₂ ht_ne a b ha hb hab => ?_⟩
+    have hmem : ∀ t ∈ Set.Icc (0 : ℝ) 1, x + t • (y - x) ∈ _root_.segment ℝ x y :=
+      fun t ht => by
+      simpa only [AffineMap.lineMap_apply_module', add_comm] using
+        lineMap_mem_segment ℝ x y ht
+    have hp_ne : x + t₁ • (y - x) ≠ x + t₂ • (y - x) := fun h =>
+      ht_ne (smul_left_injective ℝ (sub_ne_zero.mpr hxy.symm) (add_left_cancel h))
+    simpa only [show a • (x + t₁ • (y - x)) + b • (x + t₂ • (y - x))
+          = x + (a • t₁ + b • t₂) • (y - x) by rw [show b = 1 - a by linarith]; module]
+      using (hc.segment hx hy).2 (hmem t₁ ht₁) (hmem t₂ ht₂) hp_ne ha hb hab
+  simpa using hline.add_hasDerivAt_mul_lt
     (Set.left_mem_Icc.mpr zero_le_one) (Set.right_mem_Icc.mpr zero_le_one)
     zero_lt_one hf
 
@@ -161,9 +160,9 @@ derivative `f'` at `x` in direction `y - x`, assuming `x ≠ y`: `f y < f x + f'
 theorem lt_add_hasLineDerivAt (hc : StrictConcaveOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y)
     {f' : ℝ} (hf : HasLineDerivAt ℝ f f' x (y - x)) :
     f y < f x + f' := by
-  simpa using (hc.lineRestriction hx hy hxy).lt_add_hasDerivAt_mul
-    (Set.left_mem_Icc.mpr zero_le_one) (Set.right_mem_Icc.mpr zero_le_one)
-    zero_lt_one hf
+  have h := hc.neg.add_hasLineDerivAt_lt hx hy hxy hf.neg
+  simp only [Pi.neg_apply] at h
+  linarith
 
 /-- Strict variant of the reverse first-order inequality for strictly concave `f`: when `x ≠ y`
 and `f` is line-differentiable at `x` in direction `y - x`, the inequality is strict. -/
