@@ -145,7 +145,7 @@ theorem LinearMap.dualMap_injective_of_surjective {f : M₁ →ₗ[R] M₂} (hf 
   intro φ ψ h
   ext x
   obtain ⟨y, rfl⟩ := hf x
-  exact congr($h y)
+  congrm $h y
 
 /-- The `LinearEquiv` version of `LinearMap.dualMap`. -/
 def LinearEquiv.dualMap (f : M₁ ≃ₗ[R] M₂) : Dual R M₂ ≃ₗ[R] Dual R M₁ where
@@ -294,7 +294,7 @@ lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
     let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) := e.symm.dualMap.dualMap
     have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
       ext m f
-      exact congr(f $((e.apply_symm_apply m).symm))
+      congrm f $((e.apply_symm_apply m).symm)
     simp only [this,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)

@@ -87,7 +87,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     have hxV : x ∈ (V : Set M) := by
       obtain ⟨x₀, hxx₀⟩ := hxV₀
       convert! x₀.2
-      exact congr($(hxx₀.symm).val)
+      congrm $(hxx₀.symm).val
     have hVf : ∀ y : V, f (Set.inclusion hUV y) ≠ 0 :=
       fun y ↦ hV₀f (Set.inclusion hUV y) (Set.mem_range_self y)
     -- Let `g` be the pointwise inverse of `f` on `V`, which is smooth since `f` is nonzero there
@@ -207,7 +207,7 @@ instance (U : Opens M) :
     rw [ConcreteCategory.isIso_iff_bijective]
     refine ⟨fun a b hab ↦ Subtype.ext ?_, fun ⟨g, hg⟩ ↦ ?_⟩
     · ext ⟨x, y, hy, rfl⟩
-      exact congr($(hab).1 ⟨y, ⟨y, hy, rfl⟩⟩)
+      congrm $(hab).1 ⟨y, ⟨y, hy, rfl⟩⟩
     · let a : TopCat.of U ⟶ TopCat.of M := TopCat.ofHom ⟨Subtype.val, continuous_subtype_val⟩
       have ha : IsOpenEmbedding a.hom := U.isOpenEmbedding'
       let V' : Opens U := (Opens.map a).obj (ha.isOpenMap.functor.obj V)
@@ -218,7 +218,7 @@ instance (U : Opens M) :
         rw [← ContMDiff.subtypeVal_comp_iff]
         convert! contMDiff_subtype_val
         ext x
-        exact congr($(b.apply_symm_apply x).1)
+        congrm $(b.apply_symm_apply x).1
       · change g _ = _
         congr
         apply b.symm_apply_apply

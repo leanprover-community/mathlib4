@@ -279,7 +279,7 @@ equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
   refine e.toLinearEquiv fun c a ↦ ?_
   convert! e.toAddMonoidHom.map_zsmul c a using 1
-  · exact congr(e $(int_smul_eq_zsmul ..))
+  · congrm e $(int_smul_eq_zsmul ..)
   · exact int_smul_eq_zsmul ..
 
 @[simp]

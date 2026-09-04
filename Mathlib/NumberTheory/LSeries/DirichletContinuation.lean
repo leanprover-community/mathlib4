@@ -157,8 +157,8 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
       (differentiable_LFunction h).continuous.mul <| continuous_finsetProd _ fun p hp ↦ by
         have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
         fun_prop
-    exact congr($((differentiable_LFunction hχ).continuous.ext_on
-      (dense_compl_singleton 1) h' (fun _ h ↦ LFunction_changeLevel_aux hMN χ h)) s)
+    congrm $((differentiable_LFunction hχ).continuous.ext_on
+     (dense_compl_singleton 1) h' (fun _ h ↦ LFunction_changeLevel_aux hMN χ h)) s
   · exact LFunction_changeLevel_aux hMN χ h
 
 /-!

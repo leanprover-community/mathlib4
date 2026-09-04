@@ -266,7 +266,7 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) wh
   fac t j := rfl
   uniq t m h := MonCat.ext fun y ↦ by
     obtain ⟨j, y, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y
-    exact congr($(h j) y)
+    congrm $(h j) y
 
 @[to_additive]
 instance forget_preservesFilteredColimits :

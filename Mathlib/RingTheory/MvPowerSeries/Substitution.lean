@@ -396,7 +396,7 @@ theorem comp_substAlgHom
     ε.comp (substAlgHom ha) = aeval (ha.hasEval.map hε) := by
   ext f
   simp only [AlgHom.coe_comp, substAlgHom_eq_aeval ha]
-  exact congr($(comp_aeval ha.hasEval hε) f)
+  congrm $(comp_aeval ha.hasEval hε) f
 
 theorem comp_subst [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
     (ha : HasSubst a) (hε : Continuous ε) :

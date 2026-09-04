@@ -130,7 +130,7 @@ lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R
     (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
   rw [LinearMap.isSymm_iff_eq_flip]
   ext x₁ x₂ y₁ y₂
-  exact congr($(hB₂.eq x₂ y₂) • $(hB₁.eq x₁ y₁))
+  congrm $(hB₂.eq x₂ y₂) • $(hB₁.eq x₁ y₁)
 
 variable (A) in
 /-- The base change of a bilinear form. -/

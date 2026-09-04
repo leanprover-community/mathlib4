@@ -102,7 +102,7 @@ abbrev mk (m : M) (s : S) : LocalizedModule S M := m /ₒ s
 
 theorem mk_eq {m m' : M} {s s' : S} : mk m s = mk m' s' ↔ ∃ u : S, u • s' • m = u • s • m' := by
   rw [mk, mk, OreLocalization.oreDiv_eq_iff]
-  exact congr($(oreEqv_eq_r S M) ⟨m, s⟩ ⟨m', s'⟩)
+  congrm $(oreEqv_eq_r S M) ⟨m, s⟩ ⟨m', s'⟩
 
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 theorem induction_on {β : LocalizedModule S M → Prop} (h : ∀ (m : M) (s : S), β (mk m s)) :

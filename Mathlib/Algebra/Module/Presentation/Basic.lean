@@ -344,7 +344,7 @@ lemma postcomp_injective {f f' : M →ₗ[A] N}
   suffices f.comp solution.fromQuotient = f'.comp solution.fromQuotient by
     ext x
     obtain ⟨y, rfl⟩ := h.bijective.2 x
-    exact congr($this y)
+    congrm $this y
   ext g
   simpa using congr_var h' g
 

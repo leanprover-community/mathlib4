@@ -136,7 +136,7 @@ def isColimitCoforkπ₀ : IsColimit X.coforkπ₀ :=
     (fun s m hm ↦ by
       ext (x : π₀ X)
       induction x
-      exact congr($hm _))
+      congrm $hm _)
 
 /-- The colimit cofork exhibiting the natural transformation
 `toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor`

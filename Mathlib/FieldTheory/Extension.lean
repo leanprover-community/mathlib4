@@ -264,7 +264,7 @@ theorem exists_algHom_adjoin_of_splits' :
       let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
       refine Eq.trans congr($hφ y) ?_
       simp only [AlgHom.coe_comp, Function.comp_apply, f']
-      exact congr(f $(AlgEquiv.symm_apply_apply ..))
+      congrm f $(AlgEquiv.symm_apply_apply ..)
   let : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
@@ -272,7 +272,7 @@ theorem exists_algHom_adjoin_of_splits' :
   ext
   simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
     AlgHom.coe_comp, Function.comp_apply, f']
-  exact congr(f $(AlgEquiv.symm_apply_apply ..))
+  congrm f $(AlgEquiv.symm_apply_apply ..)
 
 include hK in
 theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :

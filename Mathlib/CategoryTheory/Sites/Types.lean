@@ -115,7 +115,7 @@ theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s :
     ← Functor.map_comp, ← op_comp]
   congr
   ext x
-  exact congr(f $((Classical.choose_spec hf x).symm))
+  congrm f $((Classical.choose_spec hf x).symm)
 
 /-- Given a sheaf `S`, construct an equivalence `S(α) ≃ (α → S(*))`. -/
 @[simps]

@@ -525,7 +525,7 @@ theorem completedLFunction_one_sub_odd (hΦ : Φ.Odd) (s : ℂ) :
     using completedLFunction_one_sub_of_one_lt_odd hΦ ht
   -- now apply the big hammer to finish
   rw [← analyticOnNhd_univ_iff_differentiable] at hF hG
-  exact congr($(hF.eq_of_eventuallyEq hG hFG) s)
+  congrm $(hF.eq_of_eventuallyEq hG hFG) s
 
 end signed
 

@@ -178,9 +178,9 @@ lemma OrderHom.range_eq_iff {α β : Type*} [LinearOrder α] [PartialOrder β]
     Set.range f = Set.range g ↔ f = g := by
   refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
   ext : 2
-  exact congr($((OrderEmbedding.range_eq_iff
-    (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
-    (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg))).1 (by simpa)) _)
+  congrm $((OrderEmbedding.range_eq_iff
+   (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
+   (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg))).1 (by simpa)) _
 
 lemma OrderHom.eq_id_of_injective {α : Type*} [LinearOrder α] [Finite α] (f : α →o α)
     (hf : Function.Injective f) :

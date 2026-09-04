@@ -97,7 +97,7 @@ def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type (max w v' u) where
       naturality := fun {X Y} φ a ↦ by
         rw [← HomObj.naturality]
         congr 2
-        exact congr($(f.unop.naturality φ) a) }
+        congrm $(f.unop.naturality φ) a }
 
 /-- Composition of `homObjFunctor` with the co-Yoneda embedding, i.e. Hom(F ⊗ coyoneda(-), G).
 When `F G : C ⥤ Type max v' v u`, this is the internal hom of `F` and `G`: see

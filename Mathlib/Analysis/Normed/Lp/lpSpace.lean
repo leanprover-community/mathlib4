@@ -1206,7 +1206,7 @@ theorem ext_continuousAddMonoidHom
   have := lp.hasSum_single hp x
   rw [← (this.map f f.continuous).tsum_eq, ← (this.map g g.continuous).tsum_eq]
   congr! 2 with i
-  exact congr($(h i) (x i))
+  congrm $(h i) (x i)
 
 /-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
 

@@ -51,7 +51,7 @@ theorem Monic.as_sum (hp : p.Monic) :
     p = X ^ p.natDegree + ∑ i ∈ range p.natDegree, C (p.coeff i) * X ^ i := by
   conv_lhs => rw [p.as_sum_range_C_mul_X_pow, sum_range_succ_comm]
   suffices C (p.coeff p.natDegree) = 1 by rw [this, one_mul]
-  exact congr(C $hp)
+  congrm C $hp
 
 theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) :=
   subsingleton_or_nontrivial S |>.elim (·.elim ..) fun _ ↦

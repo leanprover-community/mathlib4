@@ -100,7 +100,7 @@ theorem birkhoffSum_apply_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘
     birkhoffSum f φ n x = n • φ x := by
   suffices ∀ k, φ (f^[k] x) = φ x by simp [birkhoffSum, this]
   intro k
-  exact congr($(iterate_invariant h k) x)
+  congrm $(iterate_invariant h k) x
 
 /-- If a function `φ` is invariant under a function `f` (i.e., `φ ∘ f = φ`), then the Birkhoff sum
 of `φ` over `f` for `n` iterations is equal to `n • φ`. -/

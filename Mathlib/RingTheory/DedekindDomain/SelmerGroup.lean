@@ -185,7 +185,7 @@ theorem valuation_ker_eq :
   constructor
   · intro hx' v _
     by_cases hv : v ∈ S
-    · exact congr($hx' ⟨v, hv⟩)
+    · congrm $hx' ⟨v, hv⟩
     · exact hx v hv
   · exact fun hx' => funext fun v => hx' v <| Set.notMem_empty v
 

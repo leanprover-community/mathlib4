@@ -80,7 +80,7 @@ noncomputable def quotientTensorQuotientEquiv (m : Submodule R M) (n : Submodule
         ext x y
         · simp [f, Submodule.Quotient.mk_eq_zero _ |>.2 x.2]
         · simp [g, Submodule.Quotient.mk_eq_zero _ |>.2 y.2]
-      exact congr($eq (a, b)))
+      congrm $eq (a, b))
     (by ext; simp) (by ext; simp)
 
 @[simp]

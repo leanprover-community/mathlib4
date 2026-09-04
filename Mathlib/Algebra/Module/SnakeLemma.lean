@@ -158,7 +158,7 @@ lemma SnakeLemma.exact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ 
   · intro H
     obtain ⟨y, hy⟩ := (hπ₁ _).mp H
     obtain ⟨k, hk⟩ : σ (ι₃ x) - f₁ y ∈ Set.range ι₂ := by
-      rw [← hι₂, map_sub, ← H₂, ← hy, sub_eq_zero]; exact congr($h₁ y)
+      rw [← hι₂, map_sub, ← H₂, ← hy, sub_eq_zero]; congrm $h₁ y
     refine ⟨k, h ?_⟩
     rw [← ι₃.comp_apply, ← hF, f₂.comp_apply, hk, map_sub, H₁, hf.apply_apply_eq_zero, sub_zero]
   · rintro ⟨y, rfl⟩

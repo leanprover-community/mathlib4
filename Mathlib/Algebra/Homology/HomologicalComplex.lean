@@ -347,7 +347,7 @@ def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   map f := f.f
 
 instance : (forget V c).Faithful where
-  map_injective h := by ext i; exact congr($h i)
+  map_injective h := by ext i; congrm $h i
 
 /-- Forgetting the differentials than picking out the `i`-th object is the same as
 just picking out the `i`-th object. -/

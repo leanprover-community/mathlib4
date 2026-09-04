@@ -182,7 +182,7 @@ theorem ext_of_iInf [FormallyUnramified R A] (hI : ⨅ i, I ^ i = ⊥) {g₁ g�
   rw [← sub_eq_zero, ← Ideal.mem_bot, ← hI, Ideal.mem_iInf]
   intro i
   rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero]
-  exact congr($(this i) x)
+  congrm $(this i) x
 
 end
 
@@ -236,7 +236,7 @@ theorem of_restrictScalars [FormallyUnramified R B] : FormallyUnramified A B := 
   refine AlgHom.restrictScalars_injective R ?_
   refine FormallyUnramified.ext I ⟨2, e⟩ ?_
   intro x
-  exact congr($e' x)
+  congrm $e' x
 
 end Comp
 
@@ -255,7 +255,7 @@ theorem of_surjective [FormallyUnramified R A] (f : A →ₐ[R] B) (H : Function
   rw [← AlgHom.comp_apply, ← AlgHom.comp_apply]
   congr 1
   apply FormallyUnramified.comp_injective I hI
-  ext x; exact congr($e (f x))
+  ext x; congrm $e (f x)
 
 instance quotient {A} [CommRing A] [Algebra R A] [FormallyUnramified R A] (I : Ideal A) :
     FormallyUnramified R (A ⧸ I) :=

@@ -496,7 +496,7 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
           exact f.map_mul _ _
         | neg L1 ih =>
           simp_rw [neg_mul, map_neg, neg_mul]
-          exact congr(-$ih)
+          congrm -$ih
         | add x1 x2 ih1 ih2 => simp only [add_mul, map_add, ih1, ih2]
       | neg L2 ih => rw [mul_neg, map_neg, map_neg, mul_neg, ih]
       | add y1 y2 ih1 ih2 => rw [mul_add, map_add, map_add, mul_add, ih1, ih2] }

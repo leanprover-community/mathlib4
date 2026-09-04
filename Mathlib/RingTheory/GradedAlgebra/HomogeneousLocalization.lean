@@ -368,7 +368,7 @@ instance : Neg (HomogeneousLocalization 𝒜 x) where
   neg := Quotient.map' Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_neg, den_neg, ← Localization.neg_mk]
-    exact congr(-$h)
+    congrm -$h
 
 @[simp] lemma mk_neg (i : NumDenSameDeg 𝒜 x) : mk (-i) = -mk i := rfl
 

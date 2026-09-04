@@ -159,7 +159,7 @@ theorem DividedPowers.ext (hI : DividedPowers I) (hI' : DividedPowers I)
 theorem DividedPowers.coe_injective :
     Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
   ext n x
-  exact congr($h n x)
+  congrm $h n x
 
 end DividedPowersDefinition
 

@@ -702,7 +702,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
     f.ker.ideal U = RingHom.ker (f.app U).hom := by
   let I : IdealSheafData Y := ⟨fun U ↦ RingHom.ker (f.app U).hom, ?_, _, rfl⟩
-  · exact congr($(ofIdeals_ideal I).ideal U)
+  · congrm $(ofIdeals_ideal I).ideal U
   intro U s
   apply le_antisymm
   · refine Ideal.map_le_iff_le_comap.mpr fun x hx ↦ ?_

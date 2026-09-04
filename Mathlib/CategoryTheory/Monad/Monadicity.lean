@@ -66,7 +66,7 @@ instance main_pair_reflexive (A : adj.toMonad.Algebra) :
     IsReflexivePair (F.map A.a) (adj.counit.app (F.obj A.A)) := by
   apply IsReflexivePair.mk' (F.map (adj.unit.app _)) _ _
   · rw [← F.map_comp, ← F.map_id]
-    exact congr(F.map $A.unit)
+    congrm F.map $A.unit
   · dsimp
     rw [adj.left_triangle_components]
 

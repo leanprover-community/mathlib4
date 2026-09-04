@@ -119,7 +119,7 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
   | k + 1 => by
     rw [antidiagonalTuple, antidiagonal_zero, List.flatMap_singleton,
       antidiagonalTuple_zero_right k, List.map_singleton]
-    exact congr([$Matrix.cons_zero_zero])
+    congrm [$Matrix.cons_zero_zero]
 
 @[simp]
 theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by

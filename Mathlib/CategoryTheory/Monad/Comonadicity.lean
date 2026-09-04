@@ -67,7 +67,7 @@ instance main_pair_coreflexive (A : adj.toComonad.Coalgebra) :
     IsCoreflexivePair (G.map A.a) (adj.unit.app (G.obj A.A)) := by
   apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _
   · rw [← G.map_comp, ← G.map_id]
-    exact congr(G.map $A.counit)
+    congrm G.map $A.counit
   · rw [adj.right_triangle_components]
     rfl
 
@@ -402,7 +402,7 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
           (adj.unit.app (G.obj (F.obj Y))) := by
         apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _
         · rw [← G.map_comp, ← G.map_id]
-          exact congr(G.map $(adj.left_triangle_components Y))
+          congrm G.map $(adj.left_triangle_components Y)
         · rw [← G.map_id]
           simp
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_

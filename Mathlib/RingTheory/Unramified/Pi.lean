@@ -42,7 +42,7 @@ theorem pi_iff :
     have hf : ∀ x, f₁ x - f₂ x ∈ J := by
       intro g
       rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero]
-      exact congr($e g)
+      congrm $e g
     let e : ∀ i, f i := Pi.single x 1
     have he : IsIdempotentElem e := by simp [IsIdempotentElem, e, ← Pi.single_mul]
     have h₁ : (f₁ e) * (1 - f₂ e) = 0 := by

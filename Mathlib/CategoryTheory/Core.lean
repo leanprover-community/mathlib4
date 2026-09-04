@@ -271,7 +271,7 @@ def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] :
     Core (Type u₁) ⥤ Core (Type u₂) where
   obj x := .mk <| m x.of
   map f := .mk <| (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
-  map_id α := by ext x; exact congr($(EquivFunctor.map_refl' _) x)
+  map_id α := by ext x; congrm $(EquivFunctor.map_refl' _) x
   map_comp f g := by
     ext
     simp [Equiv.toIso, EquivFunctor.map_trans']

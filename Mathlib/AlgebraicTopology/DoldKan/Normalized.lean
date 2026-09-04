@@ -108,7 +108,7 @@ instance : Mono (inclusionOfMooreComplexMap X) :=
     ext n
     dsimp
     ext
-    exact congr($(hf).f n)⟩
+    congrm $(hf).f n⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `inclusionOfMooreComplexMap X` is a split mono. -/

@@ -151,7 +151,7 @@ theorem lift_unique (φ : C ⥤ G) (Φ : FreeGroupoid C ⥤ G) (hΦ : of C ⋙ �
     Φ = lift φ := by
   apply Quotient.lift_unique
   apply Quiver.FreeGroupoid.lift_unique
-  exact congr($(hΦ).toPrefunctor)
+  congrm $(hΦ).toPrefunctor
 
 lemma lift_unique' {Φ Φ' : FreeGroupoid C ⥤ G} (h : of C ⋙ Φ = of C ⋙ Φ') : Φ = Φ' := by
   trans lift (of C ⋙ Φ')

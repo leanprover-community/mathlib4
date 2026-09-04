@@ -360,11 +360,11 @@ set_option backward.privateInPublic.warn false in
 theorem xz_sub {m n} (h : n ≤ m) :
     xz a1 (m - n) = xz a1 m * xz a1 n - d a1 * yz a1 m * yz a1 n := by
   rw [sub_eq_add_neg, ← mul_neg]
-  exact congr($(pellZd_sub a1 h).re)
+  congrm $(pellZd_sub a1 h).re
 
 theorem yz_sub {m n} (h : n ≤ m) : yz a1 (m - n) = xz a1 n * yz a1 m - xz a1 m * yz a1 n := by
   rw [sub_eq_add_neg, ← mul_neg, mul_comm, add_comm]
-  exact congr($(pellZd_sub a1 h).im)
+  congrm $(pellZd_sub a1 h).im
 
 theorem xy_coprime (n) : (xn a1 n).Coprime (yn a1 n) :=
   Nat.coprime_of_dvd' fun k _ kx ky => by

@@ -75,7 +75,7 @@ theorem equalizerCondition_yonedaPresheaf
     ext x
     obtain ⟨y, hy⟩ := (hq Z B π).surjective x
     rw [← hy]
-    exact congr($h y)
+    congrm $h y
   · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom,
       TypeCat.Fun.coe_mk, mk.injEq, Set.mem_ofPred_eq] at ha
     simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,
