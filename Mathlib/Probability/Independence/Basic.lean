@@ -849,8 +849,7 @@ theorem iIndepFun.map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     constructor
     · congr with x
       rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
-    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
-        (.univ_pi hm)]
+    · rw [Measure.map_apply_of_aemeasurable (.of_eval fun x ↦ hf x) (.univ_pi hm)]
       congr with x
       simp
   refine (Measure.pi_eq fun h' hm ↦ ?_).symm
@@ -870,16 +869,14 @@ theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     constructor
     · congr with x
       rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
-    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
-        (.univ_pi hm)]
+    · rw [Measure.map_apply_of_aemeasurable (.of_eval fun x ↦ hf x) (.univ_pi hm)]
       congr with x
       simp
   intro h S s hs
   specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
     fun i ↦ by split_ifs with hiS <;> simp [hiS, hs]
   simp only [apply_ite, preimage_univ, measure_univ, Finset.prod_ite_mem, Finset.univ_inter,
-    Finset.prod_ite, Finset.filter_univ_mem, iInter_ite, iInter_univ, inter_univ, h,
-    Measure.pi_pi] at h₀
+    iInter_ite, iInter_univ, inter_univ, h, Measure.pi_pi] at h₀
   rw [h₀.2, ← h₀.1]
 
 variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}

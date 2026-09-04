@@ -396,7 +396,8 @@ def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β
 -- Due to the reordering of arguments, the equation theorem of the dual has a different shape,
 -- so we get this warning.
 /--
-warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to `universeTest1''._to_dual_1.eq_1`. Please silence this warning and add a translation manually. Error:
+warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to any of `[universeTest1''._to_dual_1.eq_1]`.
+Please silence this warning and add a translation manually. Errors:
 
 `to_dual` validation failed: expected
   universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α
@@ -452,3 +453,20 @@ structure HasLimitsOfSize where
 @[to_dual]
 structure HasColimitsOfSize where
   cofoo : ∀ _ : Type u, True
+
+-- The `simps` attribute is applied after `implicit_reducible`,
+-- which allows the `simps` lemmas to be `@[defeq]`
+@[to_dual (attr := simps, implicit_reducible) MyLE']
+def MyLE : Preorder α where
+  le := (· ≤ ·)
+  lt := (· < ·)
+  le_refl := le_refl
+  le_trans _ _ _ := le_trans
+  lt_iff_le_not_ge _ _ := lt_iff_le_not_ge
+
+/--
+info: @[defeq] theorem MyLE_le : ∀ {α : Type} [inst : PartialOrder α] (x1 x2 : α), (x1 ≤ x2) = (x1 ≤ x2) :=
+fun {α} [PartialOrder α] x1 x2 => Eq.refl (x1 ≤ x2)
+-/
+#guard_msgs in
+#print MyLE_le

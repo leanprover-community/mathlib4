@@ -34,7 +34,7 @@ public section
 
 open Polynomial TensorProduct PrimeSpectrum
 
-variable {R M A} [CommRing R] [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A]
+variable {R A} [CommRing R] [CommRing A] [Algebra R A]
 
 /-- If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
 prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`. -/
@@ -208,7 +208,7 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     congr!
     ext
     · simp [scalarRTensorAlgEquiv, e, Algebra.smul_def]
-    · simp [e, scalarRTensorAlgEquiv, coeff, map, X, monomial]
+    · simp [e, scalarRTensorAlgEquiv, map, X, monomial]
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :
