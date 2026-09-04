@@ -170,10 +170,6 @@ theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V} {p
   apply IsEulerian.card_filter_odd_degree ht
   simp
 
--- #40624
-set_option warn.sorry false in set_option linter.style.longLine false in
-omit [DecidableEq V] in @[simp] theorem ncard_neighborSet (v) [Fintype <| G.neighborSet v] : (G.neighborSet v).ncard = G.degree v := sorry
-
 -- #41524
 set_option warn.sorry false in set_option linter.style.longLine false in
 theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected) (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (v : V) : ∃ p : G.Walk v v, p.IsEulerian := sorry
