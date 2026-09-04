@@ -622,9 +622,9 @@ end Finite
 instance [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj] : Decidable (G ≤ H) :=
   inferInstanceAs <| Decidable <| ∀ v w, G.Adj v w → H.Adj v w
 
-/-- For non-subsingleton `V`, a computable `LocallyFiniteOrder (SimpleGraph V)` instance
-would imply decidability of all propositions. We therefore provide a noncomputable instance
-requiring only `Finite V`, which enables `Finset.sum` notation such as
+/-- For nontrivial `V`, no computable `LocallyFiniteOrder (SimpleGraph V)` instance exists,
+since one would decide all propositions. We therefore provide a noncomputable instance requiring
+only `Finite V`, which enables `Finset.sum` notation such as
 `∑ H ≤ G, H.edgeSet.ncard`. -/
 noncomputable instance [Finite V] : LocallyFiniteOrder (SimpleGraph V) :=
   open scoped Classical in
