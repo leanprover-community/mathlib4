@@ -297,9 +297,6 @@ theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minF
   · exact fun m2 _ => n1.symm ▸ le_trans (by simp) m2
   · apply (minFac_has_prop n1).2.2
 
-theorem minFac_lt {n a : ℕ} (ha : 2 ≤ a) (an : a ∣ n) (ne : n.minFac ≠ a) : n.minFac < a :=
-  lt_of_le_of_ne (minFac_le_of_dvd ha an) ne
-
 theorem minFac_pos (n : ℕ) : 0 < minFac n := by
   by_cases n1 : n = 1
   · simp [n1]

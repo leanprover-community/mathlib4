@@ -381,9 +381,10 @@ theorem squarefree_and_primeFactors_card_two_iff (n : ℕ) :
     have pf : n.primeFactors = {n.minFac, n / n.minFac} :=
       primeFactors_of_squarefree_of_card_two sq nc
     refine ⟨?_, ?_, ?_, ?_⟩
-    · apply minFac_lt
-      · exact (prime_of_mem_primeFactors (n := n) (by simp [pf])).two_le
-      · exact div_dvd_of_dvd <| minFac_dvd n
+    · apply Nat.lt_of_le_of_ne
+      · apply minFac_le_of_dvd
+        · exact (prime_of_mem_primeFactors (n := n) (by simp [pf])).two_le
+        · exact div_dvd_of_dvd <| minFac_dvd n
       · contrapose! sq
         have : n = n.minFac ^ 2 := by
           rw [pow_two, sq]
