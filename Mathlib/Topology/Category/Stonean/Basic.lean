@@ -59,9 +59,7 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   let B' : CompHaus := CompHaus.of B
   let f' : X ⟶ B' := CompHausLike.ofHom _ ⟨f, hf⟩
   let g' : A' ⟶ B' := CompHausLike.ofHom _ ⟨g,hg⟩
-  have : Epi g' := by
-    rw [CompHaus.epi_iff_surjective]
-    assumption
+  have : Epi g' := by rwa [CompHaus.epi_iff_surjective]
   obtain ⟨h, hh⟩ := Projective.factors f' g'
   refine ⟨h, h.hom.hom.2, ?_⟩
   ext t
@@ -141,13 +139,13 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     ext x
     apply ULift.ext -- why is `ext` not doing this automatically?
     change 1 = ite _ _ _ -- why is `dsimp` not getting me here?
-    rw [if_neg]
+    rw [ite_eq_right]
     refine mt (hVU ·) ?_ -- what would be an idiomatic tactic for this step?
     simpa only [U, Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
       using! exists_apply_eq_apply f x
   apply_fun fun e => (e y).down at H
   change 1 = ite _ _ _ at H -- why is `dsimp at H` not getting me here?
-  rw [if_pos hyV] at H
+  rw [ite_eq_left hyV] at H
   exact one_ne_zero H
 
 /-- Every Stonean space is projective in `CompHaus` -/

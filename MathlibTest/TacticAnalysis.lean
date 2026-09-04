@@ -37,6 +37,55 @@ example : List.sum ([1,2,3].map fun x ↦ x + 1) = 9 := by
 
 end terminalReplacement
 
+section rwaSuggestion
+
+-- Preserve an `at` location.
+/--
+info: Try this:
+  [apply] rwa [hab] at h
+-/
+#guard_msgs in
+example (P : ℕ → Prop) (a b : ℕ) (hab : a = b) (h : P a) : P b := by
+  rw [hab] at h
+  assumption
+
+-- Preserve multiple rewrite rules.
+/--
+info: Try this:
+  [apply] rwa [h₁, ← h₂]
+-/
+#guard_msgs in
+example (a b c d : ℕ) (h₁ : a = b) (h₂ : c = b) (h₃ : c = d) : a = d := by
+  rw [h₁, ← h₂]
+  assumption
+
+-- `rw` and `assumption` are not adjacent, so don't suggest `rwa`.
+#guard_msgs in
+example (a b c : ℕ) (h₁ : a = b) (h₂ : c = b) : a = c := by
+  rw [h₁]
+  symm
+  assumption
+
+-- Tactics in nested `by` blocks should also be analyzed.
+/--
+info: Try this:
+  [apply] rwa [h₁]
+-/
+#guard_msgs in
+example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
+  have h : a = c := by
+    rw [h₁]
+    assumption
+  exact h
+
+-- `rwa` doesn't support `(config := ...)`, so the linter must not fire here.
+#guard_msgs in
+example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
+  rw (occs := .pos [1]) [h₁]
+  assumption
+
+end rwaSuggestion
+
 section rwMerge
 
 set_option linter.tacticAnalysis.rwMerge true
@@ -363,7 +412,7 @@ info: `skip` (+1 later steps) can be replaced with `grind`
 ---
 info: `rfl` can be replaced with `grind`
 ---
-warning: 'skip' tactic does nothing
+warning: Unused tactic linter: `skip` does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
