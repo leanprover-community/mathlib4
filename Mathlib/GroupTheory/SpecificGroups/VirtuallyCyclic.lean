@@ -98,9 +98,8 @@ theorem IsVirtuallyCyclic.of_injective (f : G →* G') (hf : Function.Injective 
     [IsVirtuallyCyclic G'] : IsVirtuallyCyclic G := by
   obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G'›.exists_isCyclic_and_finiteIndex
   exact ⟨H.comap f,
-    isCyclic_of_injective (f.subgroupComap H)
-      (f.subgroupComap_injective_of_injective H hf),
-    hfi.comap f⟩
+    isCyclic_of_injective (f.subgroupComap H) (f.subgroupComap_injective H hf),
+    inferInstance⟩
 
 /-- Every subgroup of a virtually cyclic group is virtually cyclic. -/
 @[to_additive]

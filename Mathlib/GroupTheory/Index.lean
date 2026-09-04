@@ -785,7 +785,7 @@ instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
   ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relIndex_eq_zero h⟩
 
 @[to_additive]
-theorem FiniteIndex.comap {G' : Type*} [Group G'] {H : Subgroup G'} (hfi : H.FiniteIndex)
+instance FiniteIndex.comap {G' : Type*} [Group G'] (H : Subgroup G') [H.FiniteIndex]
     (f : G →* G') : (H.comap f).FiniteIndex where
   index_ne_zero := by
     rw [index_comap]
