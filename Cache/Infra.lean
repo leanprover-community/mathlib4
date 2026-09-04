@@ -138,22 +138,24 @@ def flatPath (c : Container) (repo : String) : Bool :=
 end Container
 
 /--
-The path prefix between `f/` and the file name, per the container's layout
-policy (`Container.flatPath`): empty for a flat container, `{repo}/` for a
-repo-namespaced one, `{repo}/{scope}/` when a per-SHA scope applies. `repo` is
-lowercased via `normalizeRepo`. `mkFileURL` and `stagedUploadDestFrom` both
-build on this, so reads and uploads share one path contract.
+Blob path of the directory that holds the cache artifacts, per the container's
+layout policy (`Container.flatPath`): `f` for a flat container, `f/{repo}` for
+a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. `repo`
+is lowercased via `normalizeRepo`. A file lives at
+`{fileDirPath container repo scope}/{fileName}`; `mkFileURL` and
+`stagedUploadDestFrom` both build on this, so reads and uploads share one path
+contract. Like `markerDirPath`, the path carries no trailing slash.
 -/
-def filePathPrefix (container : Option Container) (repo : String)
+def fileDirPath (container : Option Container) (repo : String)
     (repoScope : Option String) : String :=
   let repo := normalizeRepo repo
   let flat := match container with
     | some c => c.flatPath repo
     | none => repo == MATHLIBREPO
-  if flat then ""
+  if flat then "f"
   else match repoScope with
-    | some s => s!"{repo}/{s}/"
-    | none => s!"{repo}/"
+    | some s => s!"f/{repo}/{s}"
+    | none => s!"f/{repo}"
 
 /--
 Blob path of the directory that holds a repo's per-SHA markers: `m/{repo}`,

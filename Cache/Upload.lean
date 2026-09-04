@@ -15,12 +15,13 @@ This module holds everything that moves staged bytes to a cache destination:
   environment;
 * the one destination resolution every upload consumes
   (`StagedUploadDest`, `stagedUploadDest`);
-* the transfer engines: the built-in curl engine (`putFilesAbsolute`) and a
-  system rclone (`putStagedViaRclone`);
-* the per-SHA marker upload (`uploadMarker`).
+* the transfer engines — the built-in curl engine (`putStagedViaCurl`) and a
+  system rclone (`putStagedViaRclone`) — and the policy that picks one
+  (`UploadEngine`, `resolveUploadEngine`);
+* the per-SHA marker upload both engines share (`uploadMarkerWith`).
 
 The read side (`Cache/Requests.lean`) shares the path contract through
-`filePathPrefix` and `markerDirPath` (`Cache/Infra.lean`), so every upload
+`fileDirPath` and `markerDirPath` (`Cache/Infra.lean`), so every upload
 engine addresses the URLs the readers probe.
 -/
 
@@ -75,42 +76,38 @@ def uploadAuthFrom (s3KeyId? s3Secret? s3Session? bearer? sas? : Option String) 
 
 /-- Retrieves upload credentials from the environment via `uploadAuthFrom`. -/
 def getUploadAuth : IO UploadAuth := do
-  let auth := uploadAuthFrom
+  IO.ofExcept <| uploadAuthFrom
     (← getEnvNonEmpty "MATHLIB_CACHE_S3_ACCESS_KEY_ID")
     (← getEnvNonEmpty "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY")
     (← getEnvNonEmpty "MATHLIB_CACHE_S3_SESSION_TOKEN")
     (← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN")
     (← getEnvNonEmpty "MATHLIB_CACHE_SAS")
-  match auth with
-  | .ok auth => return auth
-  | .error e => throw <| IO.userError e
-
-
-/-- The misconfiguration the upload-destination resolver reports for a put
-base without a container. -/
-def uploadBaseNoContainerError : String :=
-  "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
-  pass --container=NAME to name the container."
-
-/-- The warning the upload-destination resolver prints when an upload names
-no container and no endpoint override, and falls back to `legacy`. -/
-def warnUploadLegacyFallback : IO Unit :=
-  IO.eprintln <|
-    "Warning: cache upload without --container=NAME; defaulting to the\n" ++
-    "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
-    "         explicitly to choose a trust-level container."
 
 /--
 The resolved destination of a staged (`put`) upload: `base` is the upload base
 the operator configured, and the prefixes are relative to it, with no trailing
 slash. Every staged file lands under `filesPrefix` with its base name kept;
-the per-SHA marker lands under `markerPrefix` with the SHA as its name.
+the per-SHA marker lands under `markerPrefix` with the SHA as its name
+(`fileURL`, `markerURL`). `label` names the destination in progress and
+warning messages: the container name, or a note that an endpoint override
+applies.
 -/
 structure StagedUploadDest where
   base : String
+  label : String
   filesPrefix : String
   markerPrefix : String
   deriving Repr, BEq
+
+/-- Upload URL of a staged file: `{base}/{filesPrefix}/{fileName}`. Every
+engine addresses this URL (rclone through its `:s3:` remote syntax). -/
+def StagedUploadDest.fileURL (dest : StagedUploadDest) (fileName : String) : String :=
+  s!"{dest.base}/{dest.filesPrefix}/{fileName}"
+
+/-- Upload URL of the per-SHA marker: `{base}/{markerPrefix}/{sha}`. Every
+engine addresses this URL (rclone through its `:s3:` remote syntax). -/
+def StagedUploadDest.markerURL (dest : StagedUploadDest) (sha : String) : String :=
+  s!"{dest.base}/{dest.markerPrefix}/{sha}"
 
 /--
 Pure core of `stagedUploadDest`: resolve the upload base and the shared
@@ -129,36 +126,30 @@ relative prefixes for a staged set. The precedence:
 4. With none of them, the `legacy` container on the Azure account; the IO
    wrapper warns.
 
-The prefixes build on `filePathPrefix` and `markerDirPath`, the same policies
+The prefixes build on `fileDirPath` and `markerDirPath`, the same policies
 the reads use, so every upload path follows the read-side path contract.
 -/
 def stagedUploadDestFrom (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :
     Except String StagedUploadDest :=
-  let filesRel := fun (c? : Option Container) =>
-    let pre := filePathPrefix c? repo scope?
-    -- `filePathPrefix` is empty or `/`-terminated; the prefixes carry no
-    -- trailing slash.
-    if pre.isEmpty then "f" else s!"f/{(pre.dropEnd 1).copy}"
-  let markerRel := markerDirPath repo
-  let under := fun (c : Container) (rel : String) => s!"{c.pathSegment}/{rel}"
   if let some url := putUrl? then
     -- A user-supplied URL carries no container policy; the prefix follows the
     -- repo alone, flat for `MATHLIBREPO` and repo-namespaced otherwise.
-    .ok { base := url, filesPrefix := filesRel none, markerPrefix := markerRel }
+    .ok { base := url, label := "(env override)",
+          filesPrefix := fileDirPath none repo scope?,
+          markerPrefix := markerDirPath repo }
   else
+    let containerDest (base : String) (c : Container) : StagedUploadDest :=
+      { base, label := c.name,
+        filesPrefix := s!"{c.pathSegment}/{fileDirPath (some c) repo scope?}",
+        markerPrefix := s!"{c.pathSegment}/{markerDirPath repo}" }
     match normalizeBaseURL putBase?, container? with
-    | some base, some c =>
-      .ok { base, filesPrefix := under c (filesRel (some c)),
-            markerPrefix := under c markerRel }
-    | some _, none => .error uploadBaseNoContainerError
-    | none, some c =>
-      .ok { base := azureAccountURL, filesPrefix := under c (filesRel (some c)),
-            markerPrefix := under c markerRel }
-    | none, none =>
-      .ok { base := azureAccountURL,
-            filesPrefix := under .legacy (filesRel (some .legacy)),
-            markerPrefix := under .legacy markerRel }
+    | some base, some c => .ok (containerDest base c)
+    | some _, none => .error
+        "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
+        pass --container=NAME to name the container."
+    | none, some c => .ok (containerDest azureAccountURL c)
+    | none, none => .ok (containerDest azureAccountURL .legacy)
 
 /--
 `stagedUploadDestFrom`, resolved from the environment. The one destination
@@ -170,10 +161,40 @@ def stagedUploadDest (container? : Option Container) (repo : String) :
   let putUrl? ← IO.getEnv "MATHLIB_CACHE_PUT_URL"
   let putBase? ← IO.getEnv "MATHLIB_CACHE_PUT_BASE_URL"
   if putUrl?.isNone && (normalizeBaseURL putBase?).isNone && container?.isNone then
-    warnUploadLegacyFallback
-  match stagedUploadDestFrom putUrl? putBase? container? repo (← getRepoScope) with
-  | .error e => throw <| IO.userError e
-  | .ok dest => return dest
+    IO.eprintln <|
+      "Warning: cache upload without --container=NAME; defaulting to the\n" ++
+      "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
+      "         explicitly to choose a trust-level container."
+  IO.ofExcept <| stagedUploadDestFrom putUrl? putBase? container? repo (← getRepoScope)
+
+/--
+Write the marker file for `sha` and hand it to `transfer`, which moves it to
+`{markerPrefix}/{sha}` of the resolved destination — the marker mechanics both
+engines share. The blob content is the SHA itself, as a debugging aid;
+existence is the signal. A marker overwrites freely (its content is its own
+name), so a re-upload of an already-marked commit does not fail here.
+
+Runs after the `.ltar` artifact uploads complete, and a `transfer` failure
+warns instead of throwing: the artifacts are already uploaded — the only loss
+is that `cache query` will not find this commit.
+
+A marker applies only to its own destination: it records that the writing
+`put` completed there. When several destinations receive uploads
+independently, one destination's marker does not say that the destination
+holds a commit's full transitive closure; the infrastructure documentation
+governs when a destination's markers may be trusted for completeness.
+-/
+def uploadMarkerWith (dest : StagedUploadDest) (sha : String)
+    (transfer : FilePath → IO Unit) : IO Unit := do
+  let dir ← IO.FS.createTempDir
+  try
+    let file := dir / sha
+    IO.FS.writeFile file s!"{sha}\n"
+    transfer file
+  catch e =>
+    IO.eprintln s!"warning: marker upload to {dest.markerURL sha} failed: {e}"
+  finally
+    IO.FS.removeDirAll dir
 
 def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
 
@@ -217,28 +238,27 @@ def uploadAuthArgs (auth : UploadAuth) (overwrite : Bool) : IO (Array String) :=
       "-H", "x-amz-content-sha256: UNSIGNED-PAYLOAD"] ++ sessionArgs ++ ifNoneMatch
 
 /-- Formats the config file for `curl`, containing the list of files to be
-uploaded: each staged file lands at `{base}/{filesPrefix}/{fileName}`, with
-the destination resolved once by `stagedUploadDest`. The response body goes
+uploaded: each staged file lands at its `StagedUploadDest.fileURL`, with the
+destination resolved once by `stagedUploadDest`. The response body goes
 to the null device: stdout must carry only the per-transfer JSON reports that
 `monitorCurl` parses. -/
 def mkPutConfigContent (dest : StagedUploadDest) (files : Array FilePath) : String :=
   let l := files.toList.map fun file : FilePath =>
-    s!"-T {file.toString}\nurl = {dest.base}/{dest.filesPrefix}/{file.fileName.get!}\n\
+    s!"-T {file.toString}\nurl = {dest.fileURL file.fileName.get!}\n\
       -o {IO.nullDevice}"
   "\n".intercalate l
 
 /-- Calls `curl` to send a set of files to the already-resolved destination
-(see `stagedUploadDest`). `target` names the destination in the progress
-message: the container name, or a note that an endpoint override applies. -/
-def putFilesAbsolute
-  (dest : StagedUploadDest) (target : String)
-  (files : Array FilePath) (tempConfigFilePath : FilePath)
-  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
+(see `stagedUploadDest`). Exits with code 1 when any file fails to upload. -/
+def putFilesViaCurl
+    (dest : StagedUploadDest) (files : Array FilePath) (tempConfigFilePath : FilePath)
+    (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let size := files.size
   if size > 0 then
     IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files)
-    IO.println s!"Attempting to upload {size} file(s) under {dest.filesPrefix} (container: {target})"
+    IO.println
+      s!"Attempting to upload {size} file(s) under {dest.filesPrefix} (container: {dest.label})"
     let args ← uploadAuthArgs auth overwrite
     -- A retry after a PUT that landed is safe: a non-overwrite put answers
     -- it with 409/412, which `classifyUpload` excuses, and an overwrite
@@ -261,49 +281,31 @@ def putFilesAbsolute
   else IO.println "No files to upload"
 
 /--
-Upload a tiny marker blob to `{markerPrefix}/{sha}` of the already-resolved
-destination (see `stagedUploadDest`), so the marker lands at the same
-destination as the artifacts. The blob content is the SHA itself, as a
-debugging aid; existence is the signal.
-
-Called from `cache put` after the `.ltar` artifact uploads complete. A marker
-overwrites freely (its content is its own name), so a re-upload of an
-already-marked commit does not fail here. If this PUT fails the artifacts are
-already uploaded — the only loss is that `cache query` will not find this
-commit — so failures here are logged but not fatal.
-
-A marker applies only to its own destination: it records that the writing
-`put` completed there. When several destinations receive uploads
-independently, one destination's marker does not say that the destination
-holds a commit's full transitive closure; the infrastructure documentation
-governs when a destination's markers may be trusted for completeness.
+The staged put on the built-in curl engine: the artifact files, then the
+per-SHA marker when `markerSha?` names one. A files failure exits 1; a marker
+failure only warns (see `uploadMarkerWith`).
 -/
-def uploadMarker (dest : StagedUploadDest) (sha : String) (auth : UploadAuth) :
-    IO Unit := do
-  let url := s!"{dest.base}/{dest.markerPrefix}/{sha}"
-  let path := IO.CACHEDIR / s!"marker-{sha}"
-  IO.FS.createDirAll IO.CACHEDIR
-  IO.FS.writeFile path s!"{sha}\n"
-  try
-    let args := (← uploadAuthArgs auth (overwrite := true)) ++
-      #["-X", "PUT", "-T", path.toString, url]
-    -- The argument list carries the credential; keep it out of the failure message.
-    discard <| IO.runCurl args (showArgsOnError := false)
-  catch e =>
-    IO.eprintln s!"warning: marker upload to {url} failed: {e}"
-  IO.FS.removeFile path
+def putStagedViaCurl (dest : StagedUploadDest) (files : Array FilePath)
+    (tempConfigFilePath : FilePath) (overwrite : Bool) (auth : UploadAuth)
+    (markerSha? : Option String) : IO Unit := do
+  putFilesViaCurl dest files tempConfigFilePath overwrite auth
+  if let some sha := markerSha? then
+    uploadMarkerWith dest sha fun file => do
+      let args := (← uploadAuthArgs auth (overwrite := true)) ++
+        #["-X", "PUT", "-T", file.toString, dest.markerURL sha]
+      -- The argument list carries the credential; keep it out of the failure message.
+      discard <| IO.runCurl args (showArgsOnError := false)
 
-/-- The transfer engine `put` uses: the built-in curl engine, or a system
-rclone. -/
+/--
+The transfer engine `put` uses, resolved together with the credentials it
+signs with: the built-in curl engine works with every credential mechanism,
+while rclone signs S3 requests only, so its constructor carries the S3
+credentials — an rclone engine holding a non-S3 credential is unrepresentable.
+-/
 inductive UploadEngine where
   | curl
-  | rclone
+  | rclone (keyId secret : String) (sessionToken? : Option String)
   deriving DecidableEq, Repr, BEq
-
-/-- Whether the credentials are the S3 pair (the mechanism rclone signs with). -/
-def UploadAuth.isS3 : UploadAuth → Bool
-  | .s3 .. => true
-  | _ => false
 
 /--
 Resolve the transfer engine from `MATHLIB_CACHE_UPLOADER` (`uploader?`):
@@ -318,19 +320,21 @@ Resolve the transfer engine from `MATHLIB_CACHE_UPLOADER` (`uploader?`):
 Pure so the policy is testable; `resolveUploadEngine` wires the environment
 and the availability probe in.
 -/
-def uploadEngineFrom (uploader? : Option String) (authIsS3 rcloneAvailable : Bool) :
-    Except String UploadEngine :=
+def uploadEngineFrom (uploader? : Option String) (auth : UploadAuth)
+    (rcloneAvailable : Bool) : Except String UploadEngine :=
+  let rclone? : Option UploadEngine := match auth with
+    | .s3 keyId secret sessionToken? => some (.rclone keyId secret sessionToken?)
+    | .azureBearer _ => none
   match uploader? with
-  | none => .ok .curl
-  | some "curl" => .ok .curl
+  | none | some "curl" => .ok .curl
   | some "rclone" =>
-    if !authIsS3 then
-      .error "MATHLIB_CACHE_UPLOADER=rclone signs uploads with the S3 credential pair, \
+    match rclone? with
+    | none => .error "MATHLIB_CACHE_UPLOADER=rclone signs uploads with the S3 credential pair, \
         and the environment provides a different upload mechanism"
-    else if !rcloneAvailable then
-      .error "MATHLIB_CACHE_UPLOADER=rclone, but no working rclone was found on PATH"
-    else .ok .rclone
-  | some "auto" => .ok (if authIsS3 && rcloneAvailable then .rclone else .curl)
+    | some engine =>
+      if rcloneAvailable then .ok engine
+      else .error "MATHLIB_CACHE_UPLOADER=rclone, but no working rclone was found on PATH"
+  | some "auto" => .ok (if rcloneAvailable then rclone?.getD .curl else .curl)
   | some other =>
     .error s!"unknown MATHLIB_CACHE_UPLOADER value '{other}' (known: curl, rclone, auto)"
 
@@ -351,9 +355,7 @@ def resolveUploadEngine (auth : UploadAuth) : IO UploadEngine := do
   let available ←
     if uploader? == some "rclone" || uploader? == some "auto" then rcloneAvailable
     else pure false
-  match uploadEngineFrom uploader? auth.isS3 available with
-  | .ok engine => return engine
-  | .error e => throw <| IO.userError e
+  IO.ofExcept <| uploadEngineFrom uploader? auth available
 
 /--
 Split an S3 upload base into the endpoint origin and the bucket path:
@@ -420,21 +422,19 @@ def rcloneEnv (keyId secret : String) (sessionToken? : Option String)
     ("RCLONE_S3_REGION", some "auto")]
 
 /--
-`put` through a system rclone: the tool resolves the destination and hands
+The staged put on a system rclone: the tool resolves the destination and hands
 rclone the S3 credentials through its environment. Files first; then the
 per-SHA marker, mirroring the curl engine. A files failure exits 1; a marker
-failure only warns. The `rclone` parameter names the binary and exists for
-the tests; production callers use the default.
+failure only warns (see `uploadMarkerWith`). The `rclone` parameter names the
+binary and exists for the tests; production callers use the default.
 -/
 def putStagedViaRclone (dest : StagedUploadDest) (keyId secret : String)
     (sessionToken? : Option String) (markerSha? : Option String)
     (stagingDir : FilePath) (rclone : String := "rclone") : IO Unit := do
-  let (endpoint, bucketPath) ← match s3EndpointSplit dest.base with
-    | .ok parts => pure parts
-    | .error e => throw <| IO.userError e
+  let (endpoint, bucketPath) ← IO.ofExcept (s3EndpointSplit dest.base)
   let provider := (← getEnvNonEmpty "RCLONE_S3_PROVIDER").getD "Other"
   let env := rcloneEnv keyId secret sessionToken? endpoint provider
-  let run := fun (args : Array String) => do
+  let run (args : Array String) : IO UInt32 := do
     let child ← IO.Process.spawn { cmd := rclone, args, env }
     child.wait
   let count := (← IO.getFilesWithExtension stagingDir "ltar").size
@@ -445,14 +445,9 @@ def putStagedViaRclone (dest : StagedUploadDest) (keyId secret : String)
     IO.eprintln s!"rclone upload failed with exit code {code}"
     IO.Process.exit 1
   if let some sha := markerSha? then
-    let dir ← IO.FS.createTempDir
-    try
-      let markerFile := dir / sha
-      IO.FS.writeFile markerFile s!"{sha}\n"
-      let code ← run (rcloneMarkerArgs bucketPath dest markerFile sha)
-      if code != 0 then
-        IO.eprintln s!"warning: marker upload via rclone failed (exit code {code})"
-    finally
-      IO.FS.removeDirAll dir
+    uploadMarkerWith dest sha fun file => do
+      let code ← run (rcloneMarkerArgs bucketPath dest file sha)
+      unless code == 0 do
+        throw <| IO.userError s!"rclone exited with code {code}"
 
 end Cache.Requests

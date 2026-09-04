@@ -20,17 +20,9 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-Upload-side URL for the per-SHA marker blob, under an already-resolved upload
-base (see `stagedUploadDest`). Read probes build their URL from
-`Container.getURL` instead (see `probeContainerForSHA`).
--/
-def markerUploadURL (uploadBase repo sha : String) : String :=
-  s!"{uploadBase}/{markerPath repo sha}"
-
-/--
 Read-side URL for the per-SHA marker blob: probes follow the read base
-(`Container.getURL`), unlike `markerUploadURL`, which follows the resolved
-upload destination.
+(`Container.getURL`), unlike marker writes, which follow the resolved
+upload destination (`StagedUploadDest.markerURL`).
 -/
 def markerReadURL (container : Container) (repo sha : String) : IO String := do
   return s!"{← container.getURL}/{markerPath repo sha}"

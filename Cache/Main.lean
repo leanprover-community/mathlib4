@@ -268,19 +268,16 @@ def main (args : List String) : IO Unit := do
     -- it lets `cache query` discover cached commits with a cheap HEAD probe.
     let markerSha? ← if container?.isSome then getRepoScope else pure none
     let auth ← getUploadAuth
-    -- MATHLIB_CACHE_UPLOADER selects the transfer engine. The rclone engine
-    -- requires the S3 credential pair (`resolveUploadEngine` enforces this);
-    -- every other combination uses the curl engine below.
-    match ← resolveUploadEngine auth, auth with
-    | .rclone, .s3 keyId secret sessionToken? =>
+    -- MATHLIB_CACHE_UPLOADER selects the transfer engine; the rclone engine
+    -- carries the S3 credentials it signs with.
+    match ← resolveUploadEngine auth with
+    | .rclone keyId secret sessionToken? =>
       putStagedViaRclone dest keyId secret sessionToken? markerSha? stagingDir
-    | _, _ =>
+    | .curl =>
       discard validateCurl
       let fileSet ← getFilesWithExtension stagingDir "ltar"
-      putFilesAbsolute dest (container?.map Container.name |>.getD "(env override)")
-        fileSet (tempConfigFilePath := stagingDir / "curl.config") (overwrite := false) auth
-      if let some sha := markerSha? then
-        uploadMarker dest sha auth
+      putStagedViaCurl dest fileSet (tempConfigFilePath := stagingDir / "curl.config")
+        (overwrite := false) auth markerSha?
     return
   | "put-staged" :: _ =>
     IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] [--repo=OWNER/REPO]"
@@ -345,13 +342,11 @@ def main (args : List String) : IO Unit := do
     -- Credentials resolve before the pack, so a missing credential fails
     -- fast instead of after the expensive packing pass.
     let auth ← getUploadAuth
-    let fileNames ← pack overwrite (verbose := true)
-    let files := fileNames.map (fun (f : String) => IO.CACHEDIR / f)
-    putFilesAbsolute dest (container?.map Container.name |>.getD "(env override)")
-      files IO.CURLCFG overwrite auth
-    if container?.isSome then
-      if let some sha ← getRepoScope then
-        uploadMarker dest sha auth
+    -- The marker is written when the upload is SHA-scoped into a container:
+    -- it lets `cache query` discover cached commits with a cheap HEAD probe.
+    let markerSha? ← if container?.isSome then getRepoScope else pure none
+    let files := (← pack overwrite (verbose := true)).map fun (f : String) => IO.CACHEDIR / f
+    putStagedViaCurl dest files IO.CURLCFG overwrite auth markerSha?
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do

@@ -355,7 +355,7 @@ def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
 Construct the URL for the cache file `fileName` in repo `repo`, against the
 container reachable at `containerURL`.
 
-The `f/` prefix marks files (commits use `c/`). Whether the rest of the path is
+The `f/` prefix marks files. Whether the rest of the path is
 flat (`/f/<fileName>`) or repo-namespaced (`/f/<repo>/<fileName>`) follows the
 container (see `Container.flatPath`), not the repo: the same hash under
 `repo = MATHLIBREPO` lands flat in `master` and prefixed in `forks`.
@@ -369,7 +369,7 @@ case-insensitive in the GitHub owner/repo name.
 -/
 def mkFileURL (container : Option Container) (repo containerURL fileName : String)
     (repoScope : Option String := none) : String :=
-  s!"{containerURL}/f/{filePathPrefix container repo repoScope}{fileName}"
+  s!"{containerURL}/{fileDirPath container repo repoScope}/{fileName}"
 
 /--
 Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
