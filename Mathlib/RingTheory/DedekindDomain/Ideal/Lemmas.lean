@@ -991,19 +991,16 @@ theorem emultiplicity_span_eq_emultiplicity {a b : R} :
   rw [emultiplicity_eq_emultiplicity_iff]
   simp [span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.emultiplicity_eq_emultiplicity_span := emultiplicity_span_eq_emultiplicity
-
 @[deprecated (since := "2026-09-04")]
 alias emultiplicity_eq_emultiplicity_span := emultiplicity_span_eq_emultiplicity
+
+@[deprecated (since := "2026-04-16")]
+alias _root_.emultiplicity_eq_emultiplicity_span := emultiplicity_span_eq_emultiplicity
 
 variable {R} in
 theorem multiplicity_span_eq_multiplicity {a b : R} :
     multiplicity (span {a}) (span ({b} : Set R)) = multiplicity a b :=
   multiplicity_eq_of_emultiplicity_eq emultiplicity_span_eq_emultiplicity
-
-@[deprecated (since := "2026-09-04")]
-alias multiplicity_eq_multiplicity_span := multiplicity_span_eq_multiplicity
 
 end Ideal
 
