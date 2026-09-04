@@ -1,62 +1,199 @@
 name: ci dev
 
-# Runner-fleet micro-benchmark. Targets one label per dispatch:
-#   ephemeral -> a hoskinson box, pr / bors -> a Hetzner box.
-# Each run measures the same work twice on the SAME machine, once under
-# landrun and once under a plain shell, so the sandbox cost is a paired
-# within-machine difference with no hardware confound.
+# Runner-fleet benchmark. Targets one label per dispatch:
+#   ephemeral -> a hoskinson box, pr / bors -> a Hetzner box,
+#   or any label an operator has attached to a specific runner.
+#
+# mode=full is the one-shot comprehensive run: facts, a filesystem matrix,
+# syscall and CPU benchmarks, then a clean full Mathlib build, all in a
+# single job so one scheduling opportunity yields every number.
 
 on:
   workflow_dispatch:
     inputs:
       runs_on:
-        description: runner label (ephemeral = hoskinson, pr/bors = hetzner)
+        description: runner label (ephemeral = hoskinson, pr/bors = hetzner, or a hand-attached label)
         required: false
         type: string
         default: 'pr'
+      mode:
+        description: bench (micro only) | build (clean build only) | full (everything, one job)
+        required: false
+        type: string
+        default: 'full'
       files:
-        description: number of small files in the file-operation benchmark
+        description: file count for the deep file-operation benchmark
         required: false
         type: string
         default: '100000'
+      matrix_files:
+        description: file count for the per-filesystem matrix (must fit in /dev/shm, 64 MB)
+        required: false
+        type: string
+        default: '20000'
       cpu_seconds:
-        description: seconds per openssl speed measurement
+        description: seconds per CPU measurement
         required: false
         type: string
         default: '3'
-      work_root:
-        description: directory the benchmark writes in (bench = container disk, /dev/shm = tmpfs)
-        required: false
-        type: string
-        default: 'bench'
-      mode:
-        description: bench (micro-benchmarks) or build (clean full mathlib build)
-        required: false
-        type: string
-        default: 'bench'
-      build_ref:
-        description: mathlib commit to build in build mode
-        required: false
-        type: string
-        default: ''
       reps:
         description: repetitions of each arm
         required: false
         type: string
         default: '2'
+      work_root:
+        description: bench mode only — directory to write in
+        required: false
+        type: string
+        default: 'bench'
+      build_ref:
+        description: mathlib commit to build in build/full mode
+        required: false
+        type: string
+        default: ''
+      skip_build:
+        description: full mode — set true to skip the clean build
+        required: false
+        type: string
+        default: 'false'
 
 permissions:
   contents: read
 
 jobs:
+  # ---------------------------------------------------------------- full ---
+  fullbench:
+    name: ci (dev branch) full characterisation
+    # For sanity and intentionality, only trigger this from branches ci-dev/*
+    if: ${{ inputs.mode == 'full' && github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 180
+    env:
+      # Lake's own cloud-build cache is incompatible with Mathlib's `cache`.
+      LAKE_NO_CACHE: true
+    steps:
+      - name: checkout the benchmark scripts only
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: .github
+
+      - name: machine facts
+        continue-on-error: true
+        shell: bash
+        run: |
+          echo "label requested: ${{ inputs.runs_on }}"
+          bash .github/ci-dev/fullbench.sh
+
+      # The centrepiece. The same file benchmark on three filesystems the job
+      # can reach, so the container's overlay2 upper layer is isolated from
+      # the host store and from RAM. A large workspace-vs-hoststore gap is the
+      # direct case for moving the unpacked olean tree onto a bind mount.
+      - name: filesystem matrix
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          N="${{ inputs.matrix_files }}"
+          run_fs() { # name, path
+            if [ -d "$2" ] && [ -w "$2" ]; then
+              mkdir -p "$2/cidev-bench" 2>/dev/null || { echo "SKIP $1 (mkdir failed)"; return; }
+              bash .github/ci-dev/bench.sh "fs-$1" "$N" 0 "$2/cidev-bench" files
+              rm -rf "$2/cidev-bench"
+            else
+              echo "SKIP $1 ($2 missing or not writable)"
+            fi
+          }
+          for i in $(seq 1 "${{ inputs.reps }}"); do
+            echo "::group::rep $i — workspace (container overlay2 upper)"
+            run_fs "workspace$i" "$PWD"
+            echo "::endgroup::"
+            echo "::group::rep $i — hoststore (bind-mounted warm cache store)"
+            run_fs "hoststore$i" /home/lean/.cache/mathlib
+            echo "::endgroup::"
+            echo "::group::rep $i — tmpfs (RAM)"
+            run_fs "tmpfs$i" /dev/shm
+            echo "::endgroup::"
+          done
+
+      - name: deep file benchmark, syscall and CPU
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p bench
+          for i in $(seq 1 "${{ inputs.reps }}"); do
+            echo "::group::rep $i — deep, on the workspace"
+            bash .github/ci-dev/bench.sh "deep$i" "${{ inputs.files }}" "${{ inputs.cpu_seconds }}" bench all
+            echo "::endgroup::"
+          done
+          # Sequential write on the host store too, for comparison with the
+          # workspace figure above.
+          if [ -w /home/lean/.cache/mathlib ]; then
+            mkdir -p /home/lean/.cache/mathlib/cidev-dd
+            bash .github/ci-dev/bench.sh "hoststore-dd" 0 0 /home/lean/.cache/mathlib/cidev-dd dd
+            rm -rf /home/lean/.cache/mathlib/cidev-dd
+          fi
+
+      # Last, so a build failure cannot cost us the measurements above.
+      - name: checkout mathlib at the commit under test
+        if: ${{ inputs.skip_build != 'true' }}
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.build_ref }}
+          fetch-depth: 1
+          path: build-src
+
+      - name: install the toolchain
+        if: ${{ inputs.skip_build != 'true' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd build-src
+          TIMEFORMAT='TIMED toolchain real=%3R user=%3U sys=%3S'
+          time {
+            if ! command -v elan >/dev/null; then
+              curl -sSfL https://elan.lean-lang.org/elan-init.sh | sh -s -- -y --default-toolchain none
+            fi
+            export PATH="$HOME/.elan/bin:$PATH"
+            elan toolchain install "$(cat lean-toolchain)"
+          }
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: clean full build of Mathlib
+        if: ${{ inputs.skip_build != 'true' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd build-src
+          echo "commit:    $(git rev-parse HEAD)"
+          echo "toolchain: $(cat lean-toolchain)"
+          # No `cache get`: every olean is compiled here, on every fleet.
+          TIMEFORMAT='TIMED lakebuild real=%3R user=%3U sys=%3S'
+          time lake build Mathlib
+          echo "oleans:    $(find .lake/build/lib -name '*.olean' 2>/dev/null | wc -l)"
+
+      - name: how to read this
+        if: always()
+        shell: bash
+        run: |
+          echo "Effective cores  = (user+sys)/real from the TIMED lakebuild line."
+          echo "Container tax    = fs-workspace / fs-hoststore on create_*_files."
+          echo "Filesystem tax   = fs-hoststore / fs-tmpfs."
+          echo "Compare across fleets: cpu_gzip_256MiB_1x (fair integer),"
+          echo "syscall_1e6_getpid, create_100000_files, and the build wall clock."
+
+  # --------------------------------------------------------------- bench ---
   bench:
     name: ci (dev branch)
-    # For sanity and intentionality, only trigger this from branches ci-dev/*
     if: ${{ inputs.mode == 'bench' && github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 30
     steps:
-      - name: checkout the benchmark script only
+      - name: checkout the benchmark scripts only
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
@@ -64,33 +201,7 @@ jobs:
 
       - name: machine facts
         shell: bash
-        run: |
-          set -uo pipefail
-          echo "runner=${RUNNER_NAME:-?} label=${{ inputs.runs_on }}"
-          echo "== kernel =="; uname -a
-          echo "== cpu =="; nproc
-          lscpu 2>/dev/null | grep -E "Model name|Vendor|Socket|Core\(s\)|Thread\(s\)|^CPU\(s\)|MHz|BogoMIPS|L3|Hypervisor|Virtual" || true
-          echo "== memory =="; free -g 2>/dev/null | head -2
-          echo "== filesystem for the workspace =="
-          df -hT . 2>/dev/null
-          echo "== warm-cache mounts =="
-          df -hT /home/lean/.elan /home/lean/.cache/mathlib 2>/dev/null || echo "(not separate mounts)"
-          mount 2>/dev/null | grep -E "overlay|/home/lean" | head -10 || true
-          echo "== landrun =="
-          command -v landrun || echo "landrun NOT on PATH"
-          landrun --version 2>&1 | head -3 || true
-          echo "== landlock ABI supported by this kernel =="
-          python3 -c "import ctypes;l=ctypes.CDLL('libc.so.6');print('landlock_abi =', l.syscall(444, None, ctypes.c_size_t(0), ctypes.c_uint32(1)))" || true
-          echo "== speculative-execution mitigations (a syscall-path tax) =="
-          for f in /sys/devices/system/cpu/vulnerabilities/*; do
-            printf '%s: %s\n' "$(basename "$f")" "$(cat "$f" 2>/dev/null)"
-          done
-          echo "== kernel cmdline =="; cat /proc/cmdline 2>/dev/null
-          echo "== cpu mhz =="; grep -m2 -E "cpu MHz" /proc/cpuinfo 2>/dev/null || true
-          echo "== syscall cost: 1e6 getpid via raw syscall =="
-          python3 -c "import ctypes,time;l=ctypes.CDLL('libc.so.6');t=time.perf_counter();[l.syscall(39) for _ in range(1000000)];print('RESULT facts syscall_1e6_getpid %.3f'%(time.perf_counter()-t))" || true
-          echo "== tool versions (cross-fleet CPU numbers are only comparable if these match) =="
-          python3 --version; openssl version; bash --version | head -1
+        run: bash .github/ci-dev/fullbench.sh
 
       - name: run the benchmark, plain shell vs landrun
         shell: bash
@@ -106,31 +217,25 @@ jobs:
           LR=(landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw "$ROOT" --env PATH --env HOME --env CI --)
           for i in $(seq 1 "$R"); do
             echo "::group::rep $i — plain shell"
-            bash .github/ci-dev/bench.sh "plain$i" "$N" "$C" "$ROOT"
+            bash .github/ci-dev/bench.sh "plain$i" "$N" "$C" "$ROOT" all
             echo "::endgroup::"
             echo "::group::rep $i — under landrun"
-            "${LR[@]}" bash .github/ci-dev/bench.sh "landrun$i" "$N" "$C" "$ROOT"
+            "${LR[@]}" bash .github/ci-dev/bench.sh "landrun$i" "$N" "$C" "$ROOT" all
             echo "::endgroup::"
           done
 
-      - name: summary
-        if: always()
-        shell: bash
-        run: echo "Collect the RESULT lines from the log above."
-
+  # --------------------------------------------------------------- build ---
   fullbuild:
     name: ci (dev branch) full build
     if: ${{ inputs.mode == 'build' && github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 150
     env:
-      # Lake's own cloud-build cache is incompatible with Mathlib's `cache`.
       LAKE_NO_CACHE: true
     steps:
       - name: machine facts
         shell: bash
         run: |
-          set -uo pipefail
           echo "runner=${RUNNER_NAME:-?} label=${{ inputs.runs_on }}"
           uname -a; nproc
           lscpu 2>/dev/null | grep -E "Model name|Socket|Core\(s\)|Thread\(s\)|MHz|L3|Hypervisor" || true
@@ -165,13 +270,6 @@ jobs:
           cd build-src
           echo "commit: $(git rev-parse HEAD)"
           echo "toolchain: $(cat lean-toolchain)"
-          echo "modules: $(grep -c '^import' Mathlib.lean || echo '?')"
-          # No `cache get`: every olean is compiled here, on both fleets.
           TIMEFORMAT='TIMED lakebuild real=%3R user=%3U sys=%3S'
           time lake build Mathlib
           echo "oleans: $(find .lake/build/lib -name '*.olean' 2>/dev/null | wc -l)"
-
-      - name: report
-        if: always()
-        shell: bash
-        run: echo "Effective cores = (user+sys)/real from the TIMED lines above."
