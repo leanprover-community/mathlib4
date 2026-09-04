@@ -54,10 +54,11 @@ protected theorem down_up (s : Set α) : s.up.down = s :=
 protected theorem up_down (s : SetSemiring α) : s.down.up = s :=
   rfl
 
--- TODO: These lemmas should be tagged `simp`
+@[simp]
 theorem up_le_up {s t : Set α} : s.up ≤ t.up ↔ s ⊆ t :=
   Iff.rfl
 
+@[simp]
 theorem up_lt_up {s t : Set α} : s.up < t.up ↔ s ⊂ t :=
   Iff.rfl
 
