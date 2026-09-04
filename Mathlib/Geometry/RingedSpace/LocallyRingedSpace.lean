@@ -150,7 +150,7 @@ def forgetToSheafedSpace : LocallyRingedSpace.{u} ⥤ SheafedSpace CommRingCat.{
 instance : forgetToSheafedSpace.Faithful where
   map_injective h := by
     ext : 1
-    exact congr($(h).hom)
+    congrm $(h).hom
 
 /-- Constructor for morphisms in `LocallyRingedSpace`. -/
 @[simps toHom]

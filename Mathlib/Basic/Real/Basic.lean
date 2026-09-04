@@ -468,7 +468,7 @@ instance : DistribLattice ℝ where
     induction c using Real.ind_mk
     apply Eq.le
     simp only [← mk_sup, ← mk_inf]
-    exact congr(mk $((CauSeq.sup_inf_distrib_left ..).symm))
+    congrm mk $((CauSeq.sup_inf_distrib_left ..).symm)
 
 -- Extra instances to short-circuit type class resolution
 instance lattice : Lattice ℝ :=

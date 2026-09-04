@@ -398,7 +398,7 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
     apply ContinuousLinearEquiv.coe_injective
     refine lp.ext_continuousLinearMap (ENNReal.ofNat_ne_top (n := nat_lit 2)) fun i => ?_
     ext
-    exact congr($h i)
+    congrm $h i
 
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :

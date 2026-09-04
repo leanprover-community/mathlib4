@@ -47,7 +47,7 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
     refine hc.hom_ext (fun j ↦ ?_)
     ext x
     erw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
-    exact congr($eq (Quot.ι F j x))
+    congrm $eq (Quot.ι F j x)
   · set c' : Cocone F :=
       { pt := AddCommGrpCat.of (ULift (AddCircle (1 : ℚ)))
         ι :=

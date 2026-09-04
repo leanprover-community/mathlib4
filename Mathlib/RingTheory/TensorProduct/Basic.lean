@@ -236,9 +236,9 @@ protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul 
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
         LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact congr($this x y z)
+    congrm $this x y z
   ext xa xb ya yb za zb
-  exact congr($(mul_assoc xa ya za) ⊗ₜ $(mul_assoc xb yb zb))
+  congrm $(mul_assoc xa ya za) ⊗ₜ $(mul_assoc xb yb zb)
 
 instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
   mul_assoc := Algebra.TensorProduct.mul_assoc

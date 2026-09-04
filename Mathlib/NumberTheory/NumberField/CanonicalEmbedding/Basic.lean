@@ -775,7 +775,7 @@ theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
   rw [show Set.range (fractionalIdealLatticeBasis K I) =
         (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (basisOfFractionalIdeal K I)) by
       rw [← Set.range_comp]
-      exact congr(Set.range $(funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i)))]
+      congrm Set.range $(funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) by
         ext; simp [mem_span_basisOfFractionalIdeal]]

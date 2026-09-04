@@ -328,6 +328,6 @@ end IsQuotientCoveringMap
       have := h.2.2.2.1
       apply IsCancelSMul.right_cancel _ _ x.1
       simp_rw [← eq, one_smul]
-      refine congr($(H.injective <| Prod.ext (Subtype.ext ?_) <| hy.trans hx.symm))
+      congrm $(H.injective <| Prod.ext (Subtype.ext ?_) <| hy.trans hx.symm)
       simp_rw [hH]
       exact h.2.2.2.2.mpr ⟨_, eq.symm⟩⟩⟩

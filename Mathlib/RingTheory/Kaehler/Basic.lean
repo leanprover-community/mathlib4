@@ -294,7 +294,7 @@ theorem Derivation.liftKaehlerDifferential_unique (f f' : Ω[S⁄R] →ₗ[S] M)
   have : x ∈ Submodule.span S (Set.range <| KaehlerDifferential.D R S) := by
     rw [KaehlerDifferential.span_range_derivation]; trivial
   refine Submodule.span_induction ?_ ?_ ?_ ?_ this
-  · rintro _ ⟨x, rfl⟩; exact congr($hf x)
+  · rintro _ ⟨x, rfl⟩; congrm $hf x
   · rw [map_zero, map_zero]
   · intro x y _ _ hx hy; rw [map_add, map_add, hx, hy]
   · intro a x _ e; simp [e]

@@ -463,7 +463,7 @@ def pullbackConeIsLimit (f : A ⟶ C) (g : B ⟶ C) :
   · intro s
     refine ofHom ((s.fst.hom.prod s.snd.hom).codRestrict _ ?_)
     intro x
-    exact congr($(s.condition).hom x)
+    congrm $(s.condition).hom x
   · intro s
     ext x
     rfl

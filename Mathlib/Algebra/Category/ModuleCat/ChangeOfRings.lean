@@ -334,7 +334,7 @@ namespace Algebra
 
 instance {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
     (f : R →ₐ[R₀] S) : (restrictScalars f.toRingHom).Linear R₀ where
-  map_smul {M N} g r₀ := by ext m; exact congr($((f.commutes r₀).symm) • g.hom m)
+  map_smul {M N} g r₀ := by ext m; congrm $((f.commutes r₀).symm) • g.hom m
 
 instance restrictScalarsEquivalenceOfRingEquiv_linear
     {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]

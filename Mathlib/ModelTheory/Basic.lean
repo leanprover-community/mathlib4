@@ -591,7 +591,7 @@ theorem coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M �
   rfl
 
 theorem injective_toEmbedding : Function.Injective (toEmbedding : (M ≃[L] N) → M ↪[L] N) := by
-  intro _ _ h; apply DFunLike.coe_injective; exact congr((DFunLike.coe ∘ Embedding.toHom) $h)
+  intro _ _ h; apply DFunLike.coe_injective; congrm (DFunLike.coe ∘ Embedding.toHom) $h
 
 theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
   DFunLike.coe_injective

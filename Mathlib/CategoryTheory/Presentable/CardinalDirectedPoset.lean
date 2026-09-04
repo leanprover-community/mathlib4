@@ -341,7 +341,7 @@ protected lemma isCardinalPresentable_iff (h : κ ≤ κ') :
       (ObjectProperty.homMk (PartOrdEmb.ofHom WithTop.coeOrderHom))
   replace hf : OrderEmbedding.subtype (· ∈ X.1) ∘ f = WithTop.coeOrderHom := by
     ext x
-    exact congr($hf x)
+    congrm $hf x
   refine X.2.1.of_injective f (Function.Injective.of_comp
     (f := OrderEmbedding.subtype (· ∈ X.1)) ?_)
   dsimp at hf ⊢

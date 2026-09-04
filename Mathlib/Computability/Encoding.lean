@@ -116,7 +116,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   | bit1 m hm =>
     rw [hm]
     exact ite_eq_right (encodePosNum_nonempty m)
-  | bit0 m hm => exact congr(PosNum.bit0 $hm)
+  | bit0 m hm => congrm PosNum.bit0 $hm
 
 @[simp] theorem decode_encodeNum (n) : decodeNum (encodeNum n) = n := by
   obtain - | n := n <;> unfold encodeNum decodeNum
@@ -127,7 +127,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
 
 @[simp] theorem decode_encodeNat (n) : decodeNat (encodeNat n) = n := by
   conv_rhs => rw [← Num.to_of_nat n]
-  exact congr($(decode_encodeNum n))
+  congrm $(decode_encodeNum n)
 
 /-- A binary `Encoding` of `ℕ` in `Bool`. -/
 def encodingNatBool : Encoding ℕ Bool where

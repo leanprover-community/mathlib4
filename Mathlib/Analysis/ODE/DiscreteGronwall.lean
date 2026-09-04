@@ -58,7 +58,7 @@ theorem discrete_gronwall_prod_general {n₀ : ℕ} (hu : ∀ n ≥ n₀, u (n +
     have heq : c k * ∑ j ∈ Ico n₀ k, b j * ∏ i ∈ Ico (j + 1) k, c i + b k =
         ∑ j ∈ Ico n₀ (k + 1), b j * ∏ i ∈ Ico (j + 1) (k + 1), c i := by
       rw [sum_Ico_succ_top hk, mul_sum, Ico_self, prod_empty, mul_one]
-      refine congr($(sum_congr rfl fun j hj ↦ ?_) + b k)
+      congrm $(sum_congr rfl fun j hj ↦ ?_) + b k
       rw [prod_Ico_succ_top (by have := mem_Ico.mp hj; omega)]; ring
     calc u (k + 1)
       _ ≤ c k * u k + b k := hu k hk

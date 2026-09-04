@@ -231,7 +231,7 @@ theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) 
   apply Complex.ext
   · rfl
   · rw [ofReal_im, eq_comm, ← Complex.conj_eq_iff_im]
-    exact congr($hφ x)
+    congrm $hφ x
 
 lemma IsReal.comp (f : k →+* K) {φ : K →+* ℂ} (hφ : IsReal φ) :
     IsReal (φ.comp f) := by ext1 x; simpa using congr($hφ (f x))

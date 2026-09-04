@@ -125,7 +125,7 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
       Hd _ ⟨hx.1, fun h => hx.2 ⟨h, hx.1⟩⟩
   rw [continuousOn_pi] at Hc
   refine (A.unique B).trans (sum_congr rfl fun i _ => ?_)
-  refine congr($(?_) - $(?_))
+  congrm ?_ - ?_
   · have := Box.continuousOn_face_Icc (Hc i) (Set.right_mem_Icc.2 (I.lower_le_upper i))
     have := (this.integrableOn_compact (μ := volume) (Box.isCompact_Icc _)).mono_set
       Box.coe_subset_Icc

@@ -417,7 +417,7 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
 -- Porting note: temporary theorem to solve diamond issue
 private theorem DecEq_eq [DecidableEq α] :
     List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList := by
-  refine congr(BEq.mk $(?_))
+  congrm BEq.mk ?_
   funext l₁ l₂
   change (l₁ == l₂) = _
   rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]

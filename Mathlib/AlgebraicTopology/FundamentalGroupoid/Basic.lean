@@ -304,7 +304,7 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
   obj x := ⟨f x.as⟩
   map p := p.map f
   map_id _ := rfl
-  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr(Quotient.mk'' $(p.map_trans q f.continuous))
+  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; congrm Quotient.mk'' $(p.map_trans q f.continuous)
 
 @[simp]
 protected theorem map_id : map (.id X) = 𝟭 _ := by

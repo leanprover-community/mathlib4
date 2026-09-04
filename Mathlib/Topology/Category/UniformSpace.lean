@@ -230,7 +230,7 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : toUniformSpace (CpltSepUniformSpace.of (Completion X)) ⟶ toUniformSpace Y) :
     (extensionHom (completionHom X ≫ f)).hom = f := by
   ext x
-  exact congr($(Completion.extension_comp_coe f.hom.property) x)
+  congrm $(Completion.extension_comp_coe f.hom.property) x
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/

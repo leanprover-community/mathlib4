@@ -350,7 +350,7 @@ lemma mem_stabilizer_mk_iff (φ : K →+* ℂ) (σ : Gal(K/k)) :
   simp only [MulAction.mem_stabilizer_iff, smul_mk, mk_eq_iff]
   rw [← ComplexEmbedding.isConj_symm, ComplexEmbedding.conjugate, star_eq_iff_star_eq]
   refine or_congr ⟨fun H ↦ ?_, fun H ↦ H ▸ rfl⟩ Iff.rfl
-  exact congr(AlgEquiv.symm $(AlgEquiv.ext (g := AlgEquiv.refl) fun x ↦ φ.injective congr($H x)))
+  congrm AlgEquiv.symm $(AlgEquiv.ext (g := AlgEquiv.refl) fun x ↦ φ.injective congr($H x))
 
 lemma IsUnramified.stabilizer_eq_bot (h : IsUnramified k w) : Stab w = ⊥ := by
   rw [eq_bot_iff, ← mk_embedding w, SetLike.le_def]

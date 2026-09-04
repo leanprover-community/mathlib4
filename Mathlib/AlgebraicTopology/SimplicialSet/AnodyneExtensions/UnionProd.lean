@@ -539,7 +539,7 @@ lemma IsIndex.δ_injective
     x = y := by
   have h₁ := hl.isType₂_δ.type₁_eq_of_δ_eq hl'.type₁ h.symm rfl
   have h₂ := hl.isType₂_δ.type₁_eq_of_δ_eq hl.type₁ rfl rfl
-  exact congr(Type₁.x $(h₂.symm.trans h₁))
+  congrm Type₁.x $(h₂.symm.trans h₁)
 
 end pairingCore
 

@@ -110,7 +110,7 @@ lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
   constructor
   · intro h
     ext x
-    exact congr($h x)
+    congrm $h x
   · rintro rfl
     rfl
 
@@ -120,7 +120,7 @@ lemma homMk_eq_comp_iff {X Y Z : FintypeCat} (f : X → Y) (g : Y → Z) (h : X 
   constructor
   · intro h
     ext x
-    exact congr($h x)
+    congrm $h x
   · rintro rfl
     rfl
 

@@ -574,15 +574,15 @@ lemma toLaxMonoidal_injective : Function.Injective
     (@Monoidal.toLaxMonoidal _ _ _ _ _ _ _ : F.Monoidal → F.LaxMonoidal) := by
   intro a b eq
   ext1
-  · exact congr(($eq).ε)
-  · exact congr(($eq).μ)
+  · congrm ($eq).ε
+  · congrm ($eq).μ
   · rw [← cancel_epi (εIso _).hom]
     rw [εIso_hom, ε_η, ← @ε_η _ _ _ _ _ _ _ a, ← εIso_hom]
-    exact congr(($eq.symm).ε ≫ _)
+    congrm ($eq.symm).ε ≫ _
   · ext
     rw [← cancel_epi (μIso F _ _).hom]
     rw [μIso_hom, μ_δ, ← @μ_δ _ _ _ _ _ _ _ a, ← μIso_hom]
-    exact congr(($eq.symm).μ _ _ ≫ _)
+    congrm ($eq.symm).μ _ _ ≫ _
 
 lemma toOplaxMonoidal_injective : Function.Injective
     (@Monoidal.toOplaxMonoidal _ _ _ _ _ _ _ : F.Monoidal → F.OplaxMonoidal) := by
@@ -590,13 +590,13 @@ lemma toOplaxMonoidal_injective : Function.Injective
   ext1
   · rw [← cancel_mono (εIso _).inv]
     rw [εIso_inv, ε_η, ← @ε_η _ _ _ _ _ _ _ a, ← εIso_inv]
-    exact congr(_ ≫ ($eq.symm).η)
+    congrm _ ≫ ($eq.symm).η
   · ext
     rw [← cancel_mono (μIso F _ _).inv]
     rw [μIso_inv, μ_δ, ← @μ_δ _ _ _ _ _ _ _ a, ← μIso_inv]
-    exact congr(_ ≫ ($eq.symm).δ _ _)
-  · exact congr(($eq).η)
-  · exact congr(($eq).δ)
+    congrm _ ≫ ($eq.symm).δ _ _
+  · congrm ($eq).η
+  · congrm ($eq).δ
 
 /-- Copy of a monoidal structure on a functor `F` with new `ε`, `μ`, `η` and `δ` fields equal to the
 old ones.

@@ -185,7 +185,7 @@ def productLimitCone {J : Type v} (F : J → Type (max v u)) :
     { lift := fun s => ↾fun x j => s.π.app ⟨j⟩ x
       uniq := fun _ _ w => by
         ext x j
-        exact congr($(w ⟨j⟩) x) }
+        congrm $(w ⟨j⟩) x }
 
 /-- The categorical product in `Type max v u` is the type-theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → Type (max v u)) :

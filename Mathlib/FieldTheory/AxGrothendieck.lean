@@ -78,7 +78,7 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
     intro x y hxy
     ext i
     simp only [Subtype.ext_iff, funext_iff] at hxy
-    exact congr($(hinj x.2 y.2 (funext hxy)) i)
+    congrm $(hinj x.2 y.2 (funext hxy)) i
   rcases hres_surj ⟨fun i => ⟨v i, hv i⟩, hvS⟩ with ⟨⟨w, hwS'⟩, hw⟩
   refine ⟨fun i => w i, hwS', ?_⟩
   simpa [Subtype.ext_iff, funext_iff] using hw

@@ -80,7 +80,7 @@ def typeToPartialFun : Type u ⥤ PartialFun where
 instance : typeToPartialFun.Faithful where
   map_injective h := by
     ext x
-    exact congr($(PFun.lift_injective h) x)
+    congrm $(PFun.lift_injective h) x
 
 -- b ∈ PFun.toSubtype (fun x ↦ x ≠ X.point) Subtype.val a ↔ b ∈ Part.some a
 set_option backward.isDefEq.respectTransparency false in

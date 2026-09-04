@@ -159,7 +159,7 @@ instance instProjectiveCompHausCompHaus (X : Stonean) : Projective (toCompHaus.o
       hf
     use ofHom _ ⟨f', h.left⟩
     ext
-    exact congr($h.right _)
+    congrm $h.right _
 
 /-- Every Stonean space is projective in `Profinite` -/
 instance (X : Stonean) : Projective (toProfinite.obj X) where
@@ -172,7 +172,7 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
       hf
     use ofHom _ ⟨f', h.left⟩
     ext
-    exact congr($h.right _)
+    congrm $h.right _
 
 /-- Every Stonean space is projective in `Stonean`. -/
 instance (X : Stonean) : Projective X where
@@ -185,7 +185,7 @@ instance (X : Stonean) : Projective X where
       hf
     use ofHom _ ⟨f', h.left⟩
     ext
-    exact congr($h.right _)
+    congrm $h.right _
 
 end Stonean
 

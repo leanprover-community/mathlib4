@@ -97,7 +97,7 @@ instance : FunLike (CentroidHom α) α α where
     cases f
     cases g
     congr with x
-    exact congr($h x)
+    congrm $h x
 
 instance : CentroidHomClass (CentroidHom α) α where
   map_zero f := f.map_zero'
@@ -469,7 +469,7 @@ instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
     cases f
     cases g
     congr with x
-    exact congr($h x)
+    congrm $h x
 
 lemma centerToCentroidCenter_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroidCenter z) a = z * a := rfl

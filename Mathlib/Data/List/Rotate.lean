@@ -242,7 +242,7 @@ theorem getElem_eq_getElem_rotate (l : List α) (n : ℕ) (k : Nat) (hk : k < l.
     l[k] = ((l.rotate n)[(l.length - n % l.length + k) % l.length]'
       ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_eq (length_rotate _ _).symm)) := by
   rw [getElem_rotate]
-  refine congr(l.get $(Fin.eq_of_val_eq ?_))
+  congrm l.get $(Fin.eq_of_val_eq ?_)
   simp only [mod_add_mod]
   rw [← add_mod_mod, Nat.add_right_comm, Nat.sub_add_cancel, add_mod_left, mod_eq_of_lt]
   exacts [hk, (mod_lt _ (k.zero_le.trans_lt hk)).le]

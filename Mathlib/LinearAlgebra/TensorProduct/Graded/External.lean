@@ -207,7 +207,7 @@ set_option backward.defeqAttrib.useBackward true in
 theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) x = r • x := by
   suffices gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) = DistribSMul.toLinearMap R _ r by
-    exact congr($this x)
+    congrm $this x
   ext ia a ib b
   dsimp
   erw [tmul_of_gradedMul_of_tmul]
@@ -223,7 +223,7 @@ set_option backward.defeqAttrib.useBackward true in
 theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R) :
     gradedMul R 𝒜 ℬ x (algebraMap R _ r ⊗ₜ 1) = r • x := by
   suffices (gradedMul R 𝒜 ℬ).flip (algebraMap R _ r ⊗ₜ 1) = DistribSMul.toLinearMap R _ r by
-    exact congr($this x)
+    congrm $this x
   ext
   dsimp
   erw [tmul_of_gradedMul_of_tmul]
@@ -244,7 +244,7 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   suffices LinearMap.llcomp R _ _ _ mA ∘ₗ mA =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
         LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
-    exact congr($this x y z)
+    congrm $this x y z
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
   dsimp [mA]
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, ← Int.cast_smul_eq_zsmul R,

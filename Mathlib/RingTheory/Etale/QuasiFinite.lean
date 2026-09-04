@@ -69,8 +69,8 @@ lemma Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap
     (P₁ P₂ : Ideal (R' ⊗[R] S)) [P₁.IsPrime] [P₂.IsPrime] [P₁.LiesOver q] [P₂.LiesOver q]
     (H₂ : P₁.comap Algebra.TensorProduct.includeRight.toRingHom =
       P₂.comap Algebra.TensorProduct.includeRight.toRingHom) : P₁ = P₂ := by
-  refine congr($((Ideal.fiberIsoOfBijectiveResidueField
-  (S := S) H).injective (a₁ := ⟨P₁, ‹_›, ‹_›⟩) (a₂ := ⟨P₂, ‹_›, ‹_›⟩) (by ext1; simpa)).val)
+  congrm $((Ideal.fiberIsoOfBijectiveResidueField
+  (S := S) H).injective (a₁ := ⟨P₁, ‹_›, ‹_›⟩) (a₂ := ⟨P₂, ‹_›, ‹_›⟩) (by ext1; simpa)).val
 
 end BijectiveResidueField
 
@@ -431,9 +431,9 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
       _).residueFieldMap_bijective _ _ _
   · intro P'' _ _ hP''
     have : P''.LiesOver P := .trans _ Pf _
-    refine congr($(PrimeSpectrum.localization_comap_injective (R := R' ⊗[R] S)
-      (Localization.Away f ⊗[R] S) (.powers (f ⊗ₜ 1)) (a₁ := ⟨P'', ‹_›⟩)
-      (a₂ := ⟨P'f, ‹_›⟩) (PrimeSpectrum.ext ?_)).1)
+    congrm $(PrimeSpectrum.localization_comap_injective (R := R' ⊗[R] S)
+     (Localization.Away f ⊗[R] S) (.powers (f ⊗ₜ 1)) (a₁ := ⟨P'', ‹_›⟩)
+     (a₂ := ⟨P'f, ‹_›⟩) (PrimeSpectrum.ext ?_)).1
     exact (H (P''.under _) inferInstance inferInstance hP'').trans (P'f.over_def P')
 
 open TensorProduct

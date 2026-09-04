@@ -342,7 +342,7 @@ def coproductColimitCocone {J : Type v} (F : J → Type (max v u)) :
     { desc := fun s => ↾fun x => s.ι.app ⟨x.1⟩ x.2
       uniq := fun s m w => by
         ext ⟨j, x⟩
-        exact congr($(w ⟨j⟩) x) }
+        congrm $(w ⟨j⟩) x }
 
 /-- The categorical coproduct in `Type u` is the type-theoretic coproduct `Σ j, F j`. -/
 noncomputable def coproductIso {J : Type v} (F : J → Type (max v u)) :

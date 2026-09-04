@@ -58,7 +58,7 @@ theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f
   intro a b h
   ext i hi
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
-  exact congr($h i)
+  congrm $h i
 
 theorem support_indicator_subset : (indicator s f).support ⊆ s := by
   intro i hi

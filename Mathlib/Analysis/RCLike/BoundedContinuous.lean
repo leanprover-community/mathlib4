@@ -40,7 +40,7 @@ theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     ext a
     simp only [toContinuousMapStarₐ_apply_apply, AlgHom.compLeftContinuousBounded_apply_apply,
       ofRealAm_coe, AlgHom.compLeftContinuous_apply_apply, algebraMap.coe_inj]
-    exact congr($hxg a)
+    congrm $hxg a
   · intro ⟨x, hxA, hxg⟩
     have hg_apply (a : E) := congr($hxg a)
     simp only [toContinuousMapStarₐ_apply_apply, AlgHom.compLeftContinuous_apply_apply,

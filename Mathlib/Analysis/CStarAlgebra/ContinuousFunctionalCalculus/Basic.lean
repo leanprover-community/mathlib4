@@ -148,7 +148,7 @@ theorem IsStarNormal.instContinuousFunctionalCalculus :
         C(spectrum ℂ a, ℂ) →⋆ₐ[ℂ] A) :=
       isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     refine ⟨_, this.continuous, this.injective, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
-    case hom_id => exact congr($(continuousFunctionalCalculus_map_id a).val)
+    case hom_id => congrm $(continuousFunctionalCalculus_map_id a).val
     case hom_map_spectrum =>
       intro f
       simp only [StarAlgHom.comp_apply, StarAlgHom.coe_coe, StarSubalgebra.coe_subtype]

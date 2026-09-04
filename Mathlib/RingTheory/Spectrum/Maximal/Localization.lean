@@ -229,11 +229,11 @@ theorem mapPiLocalization_naturality :
   rfl
 
 theorem mapPiLocalization_id : mapPiLocalization (.id R) = .id _ := by
-  ext; exact congr($(Localization.localRingHom_id _) _)
+  ext; congrm $(Localization.localRingHom_id _) _
 
 theorem mapPiLocalization_comp (g : S →+* P) :
     mapPiLocalization (g.comp f) = (mapPiLocalization g).comp (mapPiLocalization f) := by
-  ext; exact congr($(Localization.localRingHom_comp _ _ _ _ rfl _ rfl) _)
+  ext; congrm $(Localization.localRingHom_comp _ _ _ _ rfl _ rfl) _
 
 theorem mapPiLocalization_bijective (hf : Function.Bijective f) :
     Function.Bijective (mapPiLocalization f) := by

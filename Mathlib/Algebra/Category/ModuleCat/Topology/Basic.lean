@@ -228,7 +228,7 @@ def ofCocone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
   pt := coinduced c.ι.app
   ι :=
   { app := toCoinduced c.ι.app,
-    naturality {X Y} f := by ext x; exact congr($(c.ι.naturality f).hom x) }
+    naturality {X Y} f := by ext x; congrm $(c.ι.naturality f).hom x }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a colimit cocone over the underlying modules, equipping the cocone point with
@@ -245,12 +245,12 @@ def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
       (c.ι.app i ≫ hc.desc ((forget₂ _ (ModuleCat R)).mapCocone s)).hom
     rw [hc.fac]
     exact (s.ι.app i).hom.2⟩
-  fac s i := by ext x; exact congr($(hc.fac ((forget₂ _ _).mapCocone s) i).hom x)
+  fac s i := by ext x; congrm $(hc.fac ((forget₂ _ _).mapCocone s) i).hom x
   uniq s m H := by
     ext x
-    refine congr($(hc.uniq ((forget₂ _ _).mapCocone s) ((forget₂ _ _).map m) fun j ↦ ?_).hom x)
+    congrm $(hc.uniq ((forget₂ _ _).mapCocone s) ((forget₂ _ _).map m) fun j ↦ ?_).hom x
     ext y
-    exact congr($(H j).hom y)
+    congrm $(H j).hom y
 
 instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     [HasColimit (F ⋙ forget₂ _ (ModuleCat R))] : HasColimit F :=
@@ -291,7 +291,7 @@ def ofCone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
   pt := induced c.π.app
   π :=
   { app := fromInduced c.π.app,
-    naturality {X Y} f := by ext x; exact congr($(c.π.naturality f).hom x) }
+    naturality {X Y} f := by ext x; congrm $(c.π.naturality f).hom x }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a limit cone over the underlying modules, equipping the cone point with
@@ -307,12 +307,12 @@ def isLimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
       (hc.lift ((forget₂ _ (ModuleCat R)).mapCone s) ≫ c.π.app i).hom
     rw [hc.fac]
     exact (s.π.app i).hom.2⟩
-  fac s i := by ext x; exact congr($(hc.fac ((forget₂ _ _).mapCone s) i).hom x)
+  fac s i := by ext x; congrm $(hc.fac ((forget₂ _ _).mapCone s) i).hom x
   uniq s m H := by
     ext x
-    refine congr($(hc.uniq ((forget₂ _ _).mapCone s) ((forget₂ _ _).map m) fun j ↦ ?_).hom x)
+    congrm $(hc.uniq ((forget₂ _ _).mapCone s) ((forget₂ _ _).map m) fun j ↦ ?_).hom x
     ext y
-    exact congr($(H j).hom y)
+    congrm $(H j).hom y
 
 instance hasLimit_of_hasLimit_forget₂ {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     [HasLimit (F ⋙ forget₂ _ (ModuleCat.{v} R))] : HasLimit F :=
@@ -432,8 +432,8 @@ This is left adjoint to the forgetful functor. -/
 def free : TopCat.{v} ⥤ TopModuleCat.{max v u} R :=
   { obj := freeObj R
     map f := freeMap R f
-    map_id M := by ext x; exact congr($(Finsupp.lmapDomain_id _ _) x)
-    map_comp f g := by ext; exact congr($(Finsupp.lmapDomain_comp _ _ f.hom g.hom) _) }
+    map_id M := by ext x; congrm $(Finsupp.lmapDomain_id _ _) x
+    map_comp f g := by ext; congrm $(Finsupp.lmapDomain_comp _ _ f.hom g.hom) _ }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

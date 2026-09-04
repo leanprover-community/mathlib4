@@ -148,7 +148,7 @@ theorem toComplex_involute (c : CliffordAlgebra Q) :
   have : toComplex (involute (ι Q 1)) = conj (toComplex (ι Q 1)) := by
     simp only [involute_ι, toComplex_ι, map_neg, one_smul, Complex.conj_I]
   suffices toComplex.comp involute = Complex.conjAe.toAlgHom.comp toComplex by
-    exact congr($this c)
+    congrm $this c
   ext : 2
   exact this
 

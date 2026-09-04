@@ -274,7 +274,7 @@ def cocone : Cocone F where
         conv_rhs => rw [h₂]
         conv_rhs at h => rw [h₁]
         simpa [← hl₁, ← hl₂] using h }
-  ι.naturality _ _ f := by ext x; exact congr($(c.w f) x)
+  ι.naturality _ _ f := by ext x; congrm $(c.w f) x
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -317,7 +317,7 @@ def isColimitCocone : IsColimit (cocone hc) where
   desc s := ofHom (CoconePt.desc hc s)
   fac s j := by
     ext x
-    exact congr($(hc.fac ((forget _).mapCocone s) j) x)
+    congrm $(hc.fac ((forget _).mapCocone s) j) x
   uniq s m hm := by
     ext x
     obtain ⟨j, x, rfl⟩ := Types.jointly_surjective_of_isColimit hc x

@@ -529,7 +529,7 @@ lemma iConvexComb_id (w : StdSimplex R X) : w.iConvexComb id = w.sConvexComb := 
 @[congr] lemma iConvexComb_congr {w : StdSimplex R I} {f g : I → X}
     (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
     w.iConvexComb f = w.iConvexComb g := by
-  refine congr(sConvexComb $(?_))
+  congrm sConvexComb ?_
   ext i
   simp only [weights_map]
   -- TODO: This should just be `congr! 2 with i hi`.

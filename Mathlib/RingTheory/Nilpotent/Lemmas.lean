@@ -124,7 +124,7 @@ lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
   simp_rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero] at hn ⊢
   rw [Module.End.pow_restrict, LinearMap.restrict_apply] at hn ⊢
   ext
-  exact congr($(hn).val)
+  congrm $(hn).val
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent.restrict

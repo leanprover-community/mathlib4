@@ -131,7 +131,7 @@ instance list : Primcodable (List α) :=
         · rfl
         · injection IH
         · injection IH
-        · exact congr((Nat.pair (encode a) $(Nat.succ.inj IH)).succ.succ)⟩
+        · congrm (Nat.pair (encode a) $(Nat.succ.inj IH)).succ.succ⟩
 end Primcodable
 
 namespace Primrec

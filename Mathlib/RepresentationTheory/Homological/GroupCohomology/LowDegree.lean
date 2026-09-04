@@ -753,7 +753,7 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   intro (x : A) (hx : d₀₁ _ x = 0)
   refine ⟨⟨x, fun g => ?_⟩, rfl⟩
   rw [← sub_eq_zero]
-  exact congr($hx g)
+  congrm $hx g
 
 /-- The arrow `A --d₀₁--> Fun(G, A)` is isomorphic to the differential
 `(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
