@@ -5070,6 +5070,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Ceva
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
+public import Mathlib.LinearAlgebra.AffineSpace.Dimension
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.LinearAlgebra.AffineSpace.Homogenization
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
