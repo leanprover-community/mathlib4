@@ -74,14 +74,11 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
   return acc
 
 /-- Prove the quantified statement `p` over a literal `Fin` domain from proofs of its
-instances, `certifier i` proving it at index `i`, unfolding `p` when its quantifier is behind
-a definition. The proof recurses on the index list `List.finRange n`, so the motive is
-spelled once rather than once per index. -/
+instances, `certifier i` proving it at index `i`. The proof recurses on the index list
+`List.finRange n`, so the motive is spelled once rather than once per index. -/
 def certifyForallFin (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) → MetaM Q($q)) :
     MetaM Q($p) :=
-  -- `withDefault`: the ambient transparency inside `simp` is `reducible`, which cannot
-  -- unfold a statement behind a definition (`IsLowerTriangular`) to reach its quantifier
-  withDefault <| forallBoundedTelescope p (some 1) (whnfType := true) fun is body => do
+  forallBoundedTelescope p (some 1) fun is body => do
     let #[i] := is
       | throwError "expected a quantified statement:{indentExpr p}"
     let motive ← mkLambdaFVars is body
@@ -143,9 +140,12 @@ def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
 so every entry condition closes by `rfl`. -/
 def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
-  -- the unfolded guard is `toDual j < toDual i`, which is `i < j` in the original order
-  certifyForallFin q(($L).IsLowerTriangular) fun i p => do
+  -- `BlockTriangular` spelled out (`toDual j < toDual i` is `i < j`), as the `reducible`
+  -- ambient inside `simp` cannot unfold it
+  let prf ← certifyForallFin
+      q(∀ i j : Fin $m, OrderDual.toDual j < OrderDual.toDual i → $L i j = 0) fun i p => do
     certifyForallFin p fun j cell => certifyImplication (i < j) cell certifyDefEq
+  return q($prf)
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot` via `isPivotedBy_iff`.
 The first two conditions are decidable. The entry conditions require equality check against 0
