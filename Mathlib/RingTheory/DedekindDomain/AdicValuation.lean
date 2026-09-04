@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 
 /-!
 # Adic valuations on Dedekind domains
@@ -672,7 +673,7 @@ instance : IsUniformAddGroup (adicCompletion K v) :=
 /-- The `v`-adic valuation on `adicCompletion K v`, transported from the completion along `equiv`.
 -/
 noncomputable def valuation : Valuation (adicCompletion K v) ℤᵐ⁰ :=
-  Valued.v.comap (equiv K v).toRingHom
+  (Valuation.extension (WithVal.valuation (v.valuation K))).comap (equiv K v).toRingHom
 
 theorem valueGroup_eq :
     valueGroup (.ofClass (valuation K v)) =
@@ -741,6 +742,18 @@ noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
           valueGroupOrderIso_restrict]
         simpa using hx
 
+instance : ValuativeRel (v.adicCompletion K) := .ofValuation (valuation K v)
+instance : (valuation K v).Compatible := .ofValuation (valuation K v)
+
+instance : IsValuativeTopology (v.adicCompletion K) where
+  mem_nhds_iff {s x} := by
+    simp only [Valued.mem_nhds, Set.image_add_left, Set.preimage_ofPred_eq]
+    let e := ValuativeRel.ValueGroupWithZero.orderMonoidIso (valuation K v)
+    apply e.unitsCongr.symm.exists_congr fun a ↦ ?_
+    simp [-OrderMonoidIso.val_unitsCongr_symm_apply, OrderMonoidIso.unitsCongr_symm_apply,
+      e.lt_symm_apply, e, ← Valuation.restrict_def, sub_eq_neg_add]
+    rfl
+
 noncomputable instance : CompleteSpace (adicCompletion K v) :=
   ((isUniformInducing_toCompletion K v).completeSpace_congr (toCompletion_surjective K v)).mpr
     inferInstance
@@ -764,6 +777,14 @@ theorem valuedAdicCompletion_def {x : adicCompletion K v} :
 
 @[simp] theorem valued_ofCompletion (y : (v.valuation K).Completion) :
     Valued.v (ofCompletion y : adicCompletion K v) = Valued.v y := rfl
+
+@[simp] theorem valuation_toCompletion (x : adicCompletion K v) :
+    (Valuation.extension (WithVal.valuation (v.valuation K))) x.toCompletion = (valuation K v) x :=
+  rfl
+
+@[simp] theorem valuation_ofCompletion (y : (v.valuation K).Completion) :
+    valuation K v (ofCompletion y) = (Valuation.extension (WithVal.valuation (v.valuation K))) y :=
+  rfl
 
 theorem valued_coe (k : K) :
     Valued.v (↑k : adicCompletion K v) = v.valuation K k := by
@@ -848,7 +869,7 @@ lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Val
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
-  Valued.v.valuationSubring
+  (adicCompletion.valuation K v).valuationSubring
 
 instance : Inhabited (adicCompletionIntegers K v) :=
   ⟨0⟩
