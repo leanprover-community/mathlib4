@@ -13,7 +13,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne
 
 In this file, we define a bijection `SSet.prodStdSimplex₁.nonDegenerateEquiv`
 between `Fin (p + 1)` and the type of nondegenerate `(p + 1)`-simplices
-of `Δ[p] ⊗ Δ[1]`.
+of `Δ[p] ⊗ Δ[1]`. We use this enumeration of the nondegenerate simplices
+in order to define a filtration `SSet.prodStdSimplex₁.filtration`
+of `Δ[p] ⊗ Δ[1]` by subcomplexes.
 
 -/
 
