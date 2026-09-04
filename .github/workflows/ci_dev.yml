@@ -71,6 +71,19 @@ jobs:
           landrun --version 2>&1 | head -3 || true
           echo "== landlock ABI supported by this kernel =="
           python3 -c "import ctypes;l=ctypes.CDLL('libc.so.6');print('landlock_abi =', l.syscall(444, None, ctypes.c_size_t(0), ctypes.c_uint32(1)))" || true
+          echo "== speculative-execution mitigations (a syscall-path tax) =="
+          for f in /sys/devices/system/cpu/vulnerabilities/*; do
+            printf '%s: %s\n' "$(basename "$f")" "$(cat "$f" 2>/dev/null)"
+          done
+          echo "== kernel cmdline =="; cat /proc/cmdline 2>/dev/null
+          echo "== cpu mhz =="; grep -m2 -E "cpu MHz" /proc/cpuinfo 2>/dev/null || true
+          echo "== syscall cost: 1e6 getpid via raw syscall =="
+          python3 -c "
+import ctypes,time
+l=ctypes.CDLL('libc.so.6')
+t=time.perf_counter()
+for _ in range(1000000): l.syscall(39)
+print('RESULT facts syscall_1e6_getpid %.3f' % (time.perf_counter()-t))"
           echo "== tool versions (cross-fleet CPU numbers are only comparable if these match) =="
           python3 --version; openssl version; bash --version | head -1
 
