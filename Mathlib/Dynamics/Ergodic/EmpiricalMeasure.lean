@@ -19,8 +19,7 @@ import Mathlib.Topology.ContinuousMap.Bounded.Basic
 /-!
 # Empirical measures and the Krylov–Bogolyubov theorem
 
-
-
+This module introduces orbit empirical measures for an iterated map.
 This allows us to prove the Krylov–Bogolyubov (or Krylov–Bogoliubov) theorem, which asserts the
 existence of invariant Borel probability measures for continuous dynamics on compact metrizable
 spaces.
