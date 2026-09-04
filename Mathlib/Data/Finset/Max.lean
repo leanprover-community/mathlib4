@@ -260,6 +260,12 @@ theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
   rcases one_lt_card.1 h₂ with ⟨a, ha, b, hb, hab⟩
   exact s.min'_lt_max' ha hb hab
 
+theorem eq_min'_max'_of_card_two {s : Finset α} (hs : s.card = 2) :
+    s = {s.min' (Finset.card_pos.mp (by grind)), s.max' (Finset.card_pos.mp (by grind))} := by
+  refine ((Finset.subset_iff_eq_of_card_le ?_).mp ?_).symm
+  · simp [hs, (card_pair_eq_two_iff.mpr (min'_lt_max'_of_card s (by grind)).ne).symm.le]
+  · grind [Finset.min'_mem, Finset.max'_mem]
+
 theorem max'_union {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
     (s₁ ∪ s₂).max' (h₁.mono subset_union_left) = s₁.max' h₁ ⊔ s₂.max' h₂ := sup'_union h₁ h₂ id
 
