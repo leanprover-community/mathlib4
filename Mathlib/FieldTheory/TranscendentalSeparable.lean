@@ -37,7 +37,7 @@ class Algebra.IsSeparablyGenerated : Prop where
     Algebra.IsSeparable (IntermediateField.adjoin k s) K
 
 variable {k K} in
-lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type*} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
+lemma AlgEquiv.isSeparablyGenerated {K' : Type*} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
     [Algebra.IsSeparablyGenerated k K] : Algebra.IsSeparablyGenerated k K' := by
   rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨s, isT, sep⟩
   refine ⟨e '' s, (e.isTranscendenceBasis isT).to_subtype_range' (by simp [Set.range_comp]), ?_⟩
