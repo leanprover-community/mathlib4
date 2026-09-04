@@ -118,6 +118,10 @@ instance [CategoryWithHomology C] : (quasiIso C).IsStableUnderRetracts := by
   dsimp [quasiIso]
   infer_instance
 
+@[implicit_reducible, simps! obj_obj map]
+noncomputable def singleFunctor [HasZeroObject C] (n : ℤ) : C ⥤ CochainComplex.Plus C :=
+  ObjectProperty.lift _ (HomologicalComplex.single C (.up ℤ) n) (fun _ ↦ ⟨n, inferInstance⟩)
+
 end
 
 instance [Preadditive C] : (CochainComplex.plus C).IsStableUnderShift ℤ where
@@ -140,7 +144,7 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
 
 /-- The functor on categories of bounded below cochain complexes that
 is induced by a functor (which preserves zero morphisms). -/
-@[implicit_reducible, simps!]
+@[implicit_reducible, simps! obj_obj map]
 def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
     obtain ⟨i, hi⟩ := K.2
@@ -155,6 +159,22 @@ is a functor which preserves zero morphisms -/
 def mapCochainComplexPlusCompι :
     F.mapCochainComplexPlus ⋙ CochainComplex.Plus.ι D ≅
       CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _ := Iso.refl _
+
+section
+
+variable [HasZeroObject C] [HasZeroObject D]
+
+open HomologicalComplex in
+@[simps! hom_app_hom inv_app_hom]
+noncomputable def singleMapCochainComplexPlus (n : ℤ) :
+    CochainComplex.Plus.singleFunctor C n ⋙ F.mapCochainComplexPlus ≅
+      F ⋙ CochainComplex.Plus.singleFunctor D n :=
+  NatIso.ofComponents (fun X ↦ ObjectProperty.isoMk _
+    ((singleMapHomologicalComplex F _ _).app X)) (fun f ↦ by
+      ext : 1
+      apply (singleMapHomologicalComplex F (.up ℤ) n).hom.naturality)
+
+end
 
 end
 

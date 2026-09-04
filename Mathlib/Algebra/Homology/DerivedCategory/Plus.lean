@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
+public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
@@ -149,14 +150,19 @@ noncomputable def singleFunctorιIso (n : ℤ) :
     singleFunctor C n ⋙ Plus.ι ≅ DerivedCategory.singleFunctor C n :=
   Iso.refl _
 
-instance (n : ℤ) : (singleFunctor C n).Additive := by
-  dsimp [singleFunctor, singleFunctors]
-  sorry--infer_instance
+instance (n : ℤ) : (singleFunctor C n).Additive :=
+  have : (singleFunctor C n ⋙ Plus.ι).Additive :=
+    Functor.additive_of_iso (singleFunctorιIso C n).symm
+  Functor.additive_of_comp_faithful _ Plus.ι
 
 /-- The homology functor `DerivedCategory.Plus C ⥤ C` in degree `n : ℤ`. -/
 noncomputable def homologyFunctor (n : ℤ) : Plus C ⥤ C :=
   Plus.ι ⋙ DerivedCategory.homologyFunctor C n
 deriving Functor.IsHomological
+
+noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
+    singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 _ :=
+  DerivedCategory.singleFunctorCompHomologyFunctorIso ..
 
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _

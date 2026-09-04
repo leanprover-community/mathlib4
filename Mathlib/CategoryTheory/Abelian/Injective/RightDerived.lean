@@ -23,16 +23,6 @@ section
 
 variable {C : Type*} [Category* C]
 
-namespace CochainComplex.Plus
-
-variable [HasZeroMorphisms C] [HasZeroObject C]
-
-variable (C) in
-noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ CochainComplex.Plus C :=
-  ObjectProperty.lift _ (HomologicalComplex.single C (.up ℤ) n) (fun _ ↦ ⟨n, inferInstance⟩)
-
-end CochainComplex.Plus
-
 variable [Abelian C] [HasDerivedCategory C]
 
 variable (C) in
@@ -74,12 +64,19 @@ instance (X : C) (n : ℤ) [Injective X] :
     infer_instance)
 
 noncomputable def toRightDerived₀ : F ⟶ F.rightDerived 0 :=
-  sorry ≫ whiskerLeft (CochainComplex.Plus.singleFunctor C 0)
-    (whiskerRight F.rightDerivedFunctorPlusUnit (DerivedCategory.Plus.homologyFunctor D 0)) ≫
-    whiskerLeft _ (associator _ _ _).hom ≫ (associator _ _ _).inv ≫
-    whiskerRight (DerivedCategory.Plus.singleFunctorIso C 0).hom _
+  F.rightUnitor.inv ≫
+  whiskerLeft _ ((DerivedCategory.Plus.singleFunctorCompHomologyFunctorIso D 0).inv ≫
+    whiskerRight (DerivedCategory.Plus.singleFunctorIso D 0).inv _ ≫ (associator _ _ _).hom) ≫
+  (associator _ _ _).inv ≫ whiskerRight (F.singleMapCochainComplexPlus 0).inv _ ≫
+  (associator _ _ _).inv ≫ whiskerRight (associator _ _ _).hom _ ≫
+  (associator _ _ _).hom ≫ whiskerLeft (CochainComplex.Plus.singleFunctor C 0)
+  (whiskerRight F.rightDerivedFunctorPlusUnit (DerivedCategory.Plus.homologyFunctor D 0)) ≫
+  whiskerLeft _ (associator _ _ _).hom ≫ (associator _ _ _).inv ≫
+  whiskerRight (DerivedCategory.Plus.singleFunctorIso C 0).hom _
 
-instance (X : C) [Injective X] : IsIso (F.toRightDerived₀.app X) := sorry
+instance (X : C) [Injective X] : IsIso (F.toRightDerived₀.app X) := by
+  dsimp [toRightDerived₀]
+  infer_instance
 
 end Functor
 

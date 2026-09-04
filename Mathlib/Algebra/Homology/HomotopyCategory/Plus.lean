@@ -360,8 +360,8 @@ lemma whiskerRight_quotientCompMapHomotopyCategoryPlusIso_hom_ι :
     mapHomotopyCategoryPlusCompι_hom_app, HomotopyCategory.Plus.quotientCompιIso_hom_app,
     mapCochainComplexPlusCompι_inv_app, HomotopyCategory.Plus.quotientCompιIso_inv_app,
     Category.comp_id, Category.id_comp, comp_obj,
+    mapCochainComplexPlus_obj_obj,
     (F.mapHomotopyCategory (.up ℤ)).map_id ((HomotopyCategory.quotient C (.up ℤ)).obj K.obj),
-    (HomotopyCategory.quotient D (.up ℤ)).map_id (F.mapCochainComplexPlus.obj K).obj,
     Functor.mapHomotopyCategoryFactors_hom_app]
   change 𝟙 _ = 𝟙 _ ≫ 𝟙 _ ≫ 𝟙 _
   simp
