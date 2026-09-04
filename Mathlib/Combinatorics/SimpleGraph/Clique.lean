@@ -743,12 +743,7 @@ private lemma finite_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsN
   rw [← syc.right]
   exact Finset.card_le_card (Finset.subset_univ s)
 
-@[deprecated "use `IsClique.card_le_cliqueNum'`" (since := "2026-09-02")]
-lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} {tc : G.IsClique t} :
-    #t ≤ G.cliqueNum := by
-  exact le_csSup G.finite_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
-
-lemma IsClique.card_le_cliqueNum' [Finite α] {t : Finset α} (tc : G.IsClique t) :
+lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} (tc : G.IsClique t) :
     #t ≤ G.cliqueNum := by
   exact le_csSup G.finite_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
 
