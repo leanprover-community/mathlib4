@@ -54,7 +54,9 @@ accumulation point, perfect set, dense-in-itself, cantor-bendixson.
 @[expose] public section
 
 
-open Topology Filter Set TopologicalSpace
+open Filter Set TopologicalSpace
+
+open scoped Topology
 
 section Basic
 

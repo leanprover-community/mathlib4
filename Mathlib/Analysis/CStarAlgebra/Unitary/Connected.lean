@@ -133,7 +133,7 @@ lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ �
   simp only [Set.image_image, coe_algebraMap, smul_eq_mul, mul_comm I, ← exp_eq_exp_ℂ,
     exp_ofReal_mul_I_re]
   refine ⟨?_, ?_⟩
-  · cases CStarAlgebra.norm_or_neg_norm_mem_spectrum x.2 with
+  · cases CStarAlgebra.norm_or_neg_norm_mem_spectrum x.1 with
     | inl h => exact ⟨_, h, rfl⟩
     | inr h => exact ⟨_, h, by simp⟩
   · rintro - ⟨y, hy, rfl⟩

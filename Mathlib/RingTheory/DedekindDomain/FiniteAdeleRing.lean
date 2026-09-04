@@ -104,17 +104,20 @@ instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion 
   coe a := a.1
   coe_injective _ _ := Subtype.ext
 
-variable {R K} in
-theorem finite_valued_one_lt (a : FiniteAdeleRing R K) : {v | 1 < Valued.v (a v)}.Finite := by
-  have := a.2
-  simp only [SetLike.mem_coe, mem_adicCompletionIntegers, Filter.eventually_cofinite,
-    not_le] at this
-  exact this
-
 namespace FiniteAdeleRing
 
 /-- `𝔸ᶠ[R, K]` is notation for `IsDedekindDomain.FiniteAdeleRing R K`. -/
 scoped notation:max "𝔸ᶠ[" R ", " K "]" => FiniteAdeleRing R K
+
+variable {R K}
+
+lemma cofinite_mem_adicCompletionIntegers (a : FiniteAdeleRing R K) : ∀ᶠ v in Filter.cofinite,
+    a v ∈ v.adicCompletionIntegers K := a.2
+
+theorem finite_valued_one_lt (a : FiniteAdeleRing R K) : {v | 1 < Valued.v (a v)}.Finite := by
+  simpa [mem_adicCompletionIntegers] using a.cofinite_mem_adicCompletionIntegers
+
+variable (R K)
 
 /--
 The canonical map from `K` to the finite adeles of `K`.
@@ -181,6 +184,11 @@ theorem infinite_valued_ne_one_of_not_isUnit {a : 𝔸ᶠ[R, K]} (ha₀ : ∀ v,
   rw [isUnit_iff]
   exact ⟨ha₀, ha⟩
 
+theorem hasFiniteMulSupport_valued (a : 𝔸ᶠ[R, K]ˣ) :
+    (fun v ↦ Valued.v (a.1 v)).HasFiniteMulSupport := by
+  simp only [Function.HasFiniteMulSupport, Function.mulSupport, ne_eq]
+  exact FiniteAdeleRing.unitsEquiv_finite_valued_eq_one _
+
 variable (R)
 
 variable (K) in
@@ -188,6 +196,15 @@ variable (K) in
 def unitEmbedding : Kˣ →* 𝔸ᶠ[R, K]ˣ := Units.map (algebraMap K 𝔸ᶠ[R, K])
 
 @[simp] theorem unitEmbedding_apply (k : Kˣ) : unitEmbedding R K k = algebraMap K 𝔸ᶠ[R, K] k := rfl
+
+variable {R}
+
+variable (K) in
+/-- The embedding of the completion `Kᵥ` at a finite place `v` into the finite adele ring. -/
+@[simps!]
+def ofAdicCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* FiniteAdeleRing R K :=
+  letI := Classical.decEq (HeightOneSpectrum R)
+  RestrictedProduct.mulSingleMonoidHom (fun w ↦ w.adicCompletionIntegers K) v
 
 end Units
 
