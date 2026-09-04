@@ -18,7 +18,9 @@ pointwise dominated by a fixed function. This file provides a few variants of th
 
 public section
 
-open Filter ENNReal Topology
+open Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -104,8 +106,7 @@ theorem tendsto_lintegral_filter_of_dominated_convergence' {ι} {l : Filter ι}
   · refine h_lim.mono fun a h_lim => ?_
     apply @Tendsto.comp _ _ _ (fun n => x (n + k)) fun n => F n a
     · assumption
-    rw [tendsto_add_atTop_iff_nat]
-    assumption
+    rwa [tendsto_add_atTop_iff_nat]
 
 /-- **Dominated convergence theorem** for filters with a countable basis. -/
 theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}

@@ -82,7 +82,6 @@ lemma piContent_cylinder {I : Finset ι} {S : Set (Π i : I, X i)} (hS : Measura
     piContent μ (cylinder I S) = Measure.pi (fun i : I ↦ μ i) S :=
   projectiveFamilyContent_cylinder _ hS
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem piContent_eq_measure_pi [Fintype ι] {s : Set (Π i, X i)} (hs : MeasurableSet s) :
     piContent μ s = Measure.pi μ s := by
   let e : @Finset.univ ι _ ≃ ι :=
@@ -242,8 +241,6 @@ open Measure
 variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
   (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product in the sense that it coincides with `piContent μ` over
 measurable cylinders. See `infinitePi_map_piCongrLeft` for a general version. -/
@@ -259,7 +256,6 @@ lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i
   any_goals fun_prop
   exact hS.preimage (by fun_prop)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- This is the key theorem to build the product of an arbitrary family of probability measures:
 the `piContent` of a decreasing sequence of cylinders with empty intersection converges to `0`.
 
@@ -486,8 +482,6 @@ lemma infinitePi_map_eval (i : ι) :
 lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
     (hf : ∀ i, Measurable (f i)) :
     (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
-  have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
-    isProbabilityMeasure_map (hf i).aemeasurable
   refine eq_infinitePi _ fun s t ht ↦ ?_
   rw [map_apply (by fun_prop) (.pi s.countable_toSet fun _ _ ↦ ht _)]
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =

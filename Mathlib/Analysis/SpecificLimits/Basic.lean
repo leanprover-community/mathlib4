@@ -28,7 +28,9 @@ assert_not_exists Module.Basis NormedSpace
 
 noncomputable section
 
-open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
+open Set Function Filter Finset Metric Nat uniformity NNReal ENNReal
+
+open scoped Topology
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
