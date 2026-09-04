@@ -13,6 +13,11 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
 
 This file constructs the internal hom for presheaves of modules over a presheaf of
 commutative rings and proves that it is right adjoint to tensoring on the left.
+
+The equivalence `PresheafOfModulesOfCommRing.internalHomEquiv` is given by currying and
+uncurrying. The unit and counit of `internalHomAdjunction` are the coevaluation and
+evaluation morphisms `PresheafOfModulesOfCommRing.internalHomCoev` and
+`PresheafOfModulesOfCommRing.internalHomEv`.
 -/
 
 @[expose] public noncomputable section
@@ -28,33 +33,11 @@ variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
 /-- Restrict a presheaf of modules to the over category of an object. -/
 abbrev over (M : PresheafOfModulesOfCommRing.{v} R) (X : C) :
     PresheafOfModulesOfCommRing.{v} ((Over.forget X).op ⋙ R) :=
-  (pushforward.{v} (𝟙 _)).obj M
+  (pushforward₀.{v} (Over.forget X) R).obj M
 
 /-- Restrict a morphism of presheaves of modules to an over category. -/
 abbrev overHom {M N : PresheafOfModulesOfCommRing.{v} R} (φ : M ⟶ N)
-    (X : C) : M.over X ⟶ N.over X := (pushforward.{v} (𝟙 _)).map φ
-
-variable (F : (PresheafOfModulesOfCommRing R))
-
-open ConcreteCategory in
-abbrev smulOver' (U : Cᵒᵖ) (F G : (PresheafOfModulesOfCommRing ((Over.forget U.unop).op ⋙ R))) :
-    SMul (R.obj U) (F ⟶ G) where
-  smul a φ := by
-    fapply PresheafOfModulesOfCommRing.mkHom
-    · intro V
-      fapply ModuleCat.ofHom
-      exact {
-        toFun s := (R.map V.unop.hom.op a) • φ.app _ s
-        map_add' := by simp
-        map_smul' b s := by simp [smul_smul, mul_comm]
-      }
-    · intro U V f
-      dsimp
-      ext x
-      dsimp +instances
-
-      sorry
-
+    (X : C) : M.over X ⟶ N.over X := (pushforward₀.{v} (Over.forget X) R).map φ
 
 @[simps -isSimp]
 instance smulOver (U : Cᵒᵖ) (F G : (PresheafOfModulesOfCommRing ((Over.forget U.unop).op ⋙ R))) :
@@ -66,13 +49,16 @@ instance smulOver (U : Cᵒᵖ) (F G : (PresheafOfModulesOfCommRing ((Over.forge
       map_smul' b s := by
         simp [smul_smul, mul_comm]
     }
-    naturality f := by
+    naturality {V W} f := by
       ext x
       dsimp
-      rw [PresheafOfModules.naturality_apply, G.map_smul]
+      rw [naturality_apply, G.map_smul]
       congr 1
-      change R.map _ a = R.map f.unop.left.op (R.map _ a)
-      rw [← comp_apply, ← R.map_comp, ← op_comp, f.unop.w]
+      calc
+        R.map W.unop.hom.op a = R.map (V.unop.hom.op ≫ f.unop.left.op) a := by
+          rw [← op_comp, f.unop.w]
+        _ = R.map f.unop.left.op (R.map V.unop.hom.op a) :=
+          ConcreteCategory.congr_hom (R.map_comp _ _) a
   }
 
 lemma over_smul_app_apply
@@ -179,284 +165,174 @@ section Monoidal
 open PresheafOfModulesOfCommRing PresheafOfModules MonoidalCategory Opposite
 
 variable {C : Type u} [Category.{u} C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
-  (F : PresheafOfModulesOfCommRing.{u} R)
 
 set_option backward.isDefEq.respectTransparency false
 set_option backward.defeqAttrib.useBackward true
 
 variable {F G M : PresheafOfModulesOfCommRing.{u} R}
 
-open ModuleCat.MonoidalCategory
+namespace PresheafOfModulesOfCommRing
 
-@[simp]
-lemma overMap_obj_mk_id {U V : C} (f : V ⟶ U) :
-    (Over.map f).obj (Over.mk (𝟙 V)) = Over.mk f := by
-  change Over.mk (𝟙 V ≫ f) = Over.mk f
-  simp
+/-- Restricting an internal hom and evaluating at the identity gives its component
+at the restriction morphism. -/
+lemma internalHomMap_app_mkId {U V : C} (f : V ⟶ U) (φ : F.over U ⟶ G.over U)
+    (x : F.obj (op V)) :
+    (F.internalHomMap G f φ).app (op (Over.mk (𝟙 V))) x =
+      φ.app (op (Over.mk f)) x :=
+  congrArg (β := G.obj (op V))
+    (fun g : V ⟶ U ↦ φ.app (op (Over.mk g)) x) (Category.id_comp f)
 
-lemma overMap_obj_mk_id_hom {U : C} (W : Over U) :
-    (Over.map W.hom).obj (Over.mk (𝟙 W.left)) = W := by
-  change Over.mk (𝟙 W.left ≫ W.hom) = W
-  rw [Category.id_comp]
-  cases W
-  rfl
-
-lemma over_map_homMk_id_apply (M : PresheafOfModulesOfCommRing.{u} R)
-    {U V : Cᵒᵖ} (f : U ⟶ V) (m : M.obj U) :
-    (M.over U.unop).map
-        (Over.homMk f.unop :
-          (Over.map f.unop).obj (Over.mk (𝟙 V.unop)) ⟶ Over.mk (𝟙 U.unop)).op m =
-      M.map f m := rfl
-
-lemma over_hom_op_eq_comp {U : C} {W W' : (Over U)ᵒᵖ} (g : W ⟶ W') :
-    W'.unop.hom.op = W.unop.hom.op ≫ (Over.forget U).op.map g := by
-  apply Quiver.Hom.unop_inj
-  cat_disch
-
-lemma internalHomMap_app_mk_id_apply {U V : C} (f : V ⟶ U)
-    (φ : F.over U ⟶ G.over U) (x : F.obj (op V)) :
-    (internalHomMap F G f φ).app (op (Over.mk (𝟙 V))) x =
-      φ.app (op (Over.mk f)) x := by
-  dsimp [internalHomMap]
-  congr
-  exact overMap_obj_mk_id f
-
-lemma internalHomMap_app_mk_id_hom_apply {U : C} (W : (Over U)ᵒᵖ)
-    (φ : F.over U ⟶ G.over U) (x : (F.over U).obj W) :
-    (internalHomMap F G W.unop.hom φ).app (op (Over.mk (𝟙 W.unop.left))) x =
-      φ.app W x := by
-  dsimp [internalHomMap]
-  congr
-  exact overMap_obj_mk_id_hom W.unop
-
-/-- The coevaluation map for the closed structure on presheaves of modules. -/
-noncomputable def internalHomCoev' (F M : PresheafOfModulesOfCommRing.{u} R) :
-    M ⟶ internalHom F (F ⊗ M) := by
-  fapply PresheafOfModulesOfCommRing.mkHom
-  · intro U
-    apply ModuleCat.ofHom (R := R.obj U)
-    fconstructor
-    · fconstructor
-      · intro m
-        fapply PresheafOfModulesOfCommRing.mkHom
-        · intro W
-          have := (unop W).1
-          change (F.over (unop U)).obj W ⟶ (F ⊗ M).obj (op (unop W).1)
-          sorry
-        sorry
-      sorry
-
-    sorry
-  sorry
-
-/-- The coevaluation map for the closed structure on presheaves of modules. -/
-noncomputable def internalHomCoev (F M : PresheafOfModulesOfCommRing.{u} R) :
-    M ⟶ internalHom F (F ⊗ M) where
-  app U :=
-    letI : Module ((R ⋙ forget₂ CommRingCat RingCat).obj U)
-        (F.over U.unop ⟶ (F ⊗ M).over U.unop) :=
-      inferInstanceAs (Module (R.obj U) (F.over U.unop ⟶ (F ⊗ M).over U.unop))
-    ModuleCat.ofHom
-    { toFun := fun m =>
-        { app W :=
-            letI : CommRing (((Over.forget U.unop).op ⋙ R ⋙
-                forget₂ CommRingCat RingCat).obj W) :=
-              inferInstanceAs (CommRing (R.obj (op W.unop.left)))
-            ModuleCat.ofHom
-              { toFun := fun x =>
-                (show F.obj (op W.unop.left) from x) ⊗ₜ[
-                  ((Over.forget U.unop).op ⋙ R ⋙ forget₂ CommRingCat RingCat).obj W]
-                  (show M.obj (op W.unop.left) from M.map W.unop.hom.op m)
-                map_add' := by simp [TensorProduct.add_tmul]
-                map_smul' := by
-                  intro r x
-                  rfl }
-          naturality := by
-            intro W W' g
-            ext x
-            dsimp
-            erw [PresheafOfModules.Monoidal.tensorObj_map_tmul]
-            change (F.map ((Over.forget U.unop).op.map g) x) ⊗ₜ[
-                R.obj ((Over.forget U.unop).op.obj W')]
-                  (M.map W'.unop.hom.op m) =
-              (F.map ((Over.forget U.unop).op.map g) x) ⊗ₜ[
-                R.obj ((Over.forget U.unop).op.obj W')]
-                  (M.map ((Over.forget U.unop).op.map g) (M.map W.unop.hom.op m))
-            congr 1
-            calc
-              M.map W'.unop.hom.op m =
-                  M.map (W.unop.hom.op ≫ (Over.forget U.unop).op.map g) m := by
-                rw [over_hom_op_eq_comp g]
-                rfl
-              _ = M.map ((Over.forget U.unop).op.map g) (M.map W.unop.hom.op m) :=
-                M.map_comp_apply _ _ _ }
-      map_add' := by
-        intro m₁ m₂
-        apply PresheafOfModules.hom_ext
-        intro W
-        ext x
-        change (show F.obj (op W.unop.left) from x) ⊗ₜ[R.obj (op W.unop.left)]
-            (M.map W.unop.hom.op (m₁ + m₂)) =
-          (show F.obj (op W.unop.left) from x) ⊗ₜ[R.obj (op W.unop.left)]
-              (M.map W.unop.hom.op m₁) +
-            (show F.obj (op W.unop.left) from x) ⊗ₜ[R.obj (op W.unop.left)]
-              (M.map W.unop.hom.op m₂)
-        rw [_root_.map_add, TensorProduct.tmul_add]
-      map_smul' := by
-        intro r m
-        apply PresheafOfModules.hom_ext
-        intro W
-        ext x
-        erw [over_smul_app_apply]
-        change (show F.obj (op W.unop.left) from x) ⊗ₜ[
-            (R ⋙ forget₂ CommRingCat RingCat).obj (op W.unop.left)]
-            (M.map W.unop.hom.op (r • m)) =
-          (((R ⋙ forget₂ CommRingCat RingCat).map W.unop.hom.op) r) •
-            ((show F.obj (op W.unop.left) from x) ⊗ₜ[
-              (R ⋙ forget₂ CommRingCat RingCat).obj (op W.unop.left)]
-              (M.map W.unop.hom.op m))
-        erw [M.map_smul]
-        rw [TensorProduct.tmul_smul]
-        rfl }
-  naturality := by
-    intro U V f
-    ext m
-    apply PresheafOfModules.hom_ext
-    intro W
-    ext x
-    change (show F.obj (op W.unop.left) from x) ⊗ₜ[R.obj (op W.unop.left)]
-        (M.map W.unop.hom.op (M.map f m)) =
-      (show F.obj (op W.unop.left) from x) ⊗ₜ[R.obj (op W.unop.left)]
-        (M.map (f ≫ W.unop.hom.op) m)
-    congr 1
-    exact (M.map_comp_apply f W.unop.hom.op m).symm
-
-/-- The component of the evaluation map for the closed structure on presheaves of modules. -/
-noncomputable def internalHomEvApp (F G : PresheafOfModulesOfCommRing.{u} R)
-    (U : Cᵒᵖ) : (F ⊗ internalHom F G).obj U ⟶ G.obj U :=
-  tensorLift
-    (fun x φ => φ.app (op (Over.mk (𝟙 U.unop))) x)
-    (by intros; dsimp +instances; simp)
-    (by intros; simp)
-    (by intros; simp)
+/-- The evaluation morphism for the internal hom of presheaves of modules. -/
+def internalHomEv (F G : PresheafOfModulesOfCommRing.{u} R) :
+    F ⊗ internalHom F G ⟶ G :=
+  tensorLift (fun U x φ ↦ φ.app (op (Over.mk (𝟙 U.unop))) x)
+    (by intros; exact map_add _ _ _)
+    (by intros; exact map_smul _ _ _)
+    (by intros; rfl)
     (by
-      intro r x φ
+      intro U a x φ
       rw [over_smul_app_apply]
       simp)
+    (by
+      intro U V f x φ
+      refine (internalHomMap_app_mkId f.unop φ (F.map f x)).trans ?_
+      exact naturality_apply φ
+        (Over.homMk (U := Over.mk f.unop) (V := Over.mk (𝟙 U.unop)) f.unop).op x)
 
 @[simp]
-lemma internalHomEvApp_tmul (F G : PresheafOfModulesOfCommRing.{u} R)
-    (U : Cᵒᵖ) (x : F.obj U) (φ : (internalHom F G).obj U) :
-    internalHomEvApp F G U (x ⊗ₜ[R.obj U] φ) =
-      φ.app (op (Over.mk (𝟙 U.unop))) x := rfl
-
-@[simp]
-lemma internalHomEvApp_map_tmul {U V : Cᵒᵖ} (f : U ⟶ V)
-    (x : F.obj U) (φ : (internalHom F G).obj U) :
-    internalHomEvApp F G V
-        ((F.map f x) ⊗ₜ[R.obj V] (internalHomMap F G f.unop φ)) =
-      G.map f (internalHomEvApp F G U (x ⊗ₜ[R.obj U] φ)) := by
-  erw [internalHomEvApp_tmul]
-  erw [internalHomEvApp_tmul]
-  have hφ := ConcreteCategory.congr_hom
-    (φ.naturality
-      (Over.homMk f.unop :
-        (Over.map f.unop).obj (Over.mk (𝟙 V.unop)) ⟶ Over.mk (𝟙 U.unop)).op) x
-  dsimp [internalHomMap] at hφ ⊢
-  change ((internalHomMap F G f.unop φ).app (op (Over.mk (𝟙 V.unop)))) (F.map f x) =
-    G.map f (φ.app (op (Over.mk (𝟙 U.unop))) x)
-  rw [← over_map_homMk_id_apply F f x,
-    ← over_map_homMk_id_apply G f (φ.app (op (Over.mk (𝟙 U.unop))) x)]
-  exact hφ
-
-/-- The evaluation map for the closed structure on presheaves of modules. -/
-noncomputable def internalHomEv (F G : PresheafOfModulesOfCommRing.{u} R) :
-    F ⊗ internalHom F G ⟶ G where
-  app U := internalHomEvApp F G U
-  naturality := by
-    intro U V f
-    apply tensor_ext
-    intro x φ
-    have htensor := PresheafOfModules.Monoidal.tensorObj_map_tmul
-      (M₁ := F) (M₂ := internalHom F G) f x φ
-    change internalHomEvApp F G V (((F ⊗ internalHom F G).map f) (x ⊗ₜ φ)) =
-      G.map f (internalHomEvApp F G U (x ⊗ₜ φ))
-    erw [htensor]
-    exact internalHomEvApp_map_tmul (F := F) (G := G) f x φ
-
-@[simp, nolint simpNF]
-lemma internalHomCoev_app_apply_app_apply
-    (F M : PresheafOfModulesOfCommRing.{u} R) (U : Cᵒᵖ)
-    (m : M.obj U) (W : (Over U.unop)ᵒᵖ) (x : (F.over U.unop).obj W) :
-    ((internalHomCoev F M).app U m).app W x =
-      (show F.obj (op W.unop.left) from x) ⊗ₜ
-        (show M.obj (op W.unop.left) from M.map W.unop.hom.op m) := rfl
-
-lemma internalHomEvApp_coev_tmul (F M : PresheafOfModulesOfCommRing.{u} R)
-    (U : Cᵒᵖ) (x : F.obj U) (m : M.obj U) :
-    internalHomEvApp F (F ⊗ M) U
-        (x ⊗ₜ[R.obj U] ((internalHomCoev F M).app U m)) =
-      x ⊗ₜ[R.obj U] m := by
-  erw [internalHomEvApp_tmul]
-  rw [internalHomCoev_app_apply_app_apply]
-  congr
-  exact ConcreteCategory.congr_hom (M.map_id U) m
-
-@[simp, nolint simpNF]
 lemma internalHomEv_app_tmul (F G : PresheafOfModulesOfCommRing.{u} R)
     (U : Cᵒᵖ) (x : F.obj U) (φ : (internalHom F G).obj U) :
     (internalHomEv F G).app U (x ⊗ₜ[R.obj U] φ) =
-      φ.app (op (Over.mk (𝟙 U.unop))) x := internalHomEvApp_tmul F G U x φ
+      φ.app (op (Over.mk (𝟙 U.unop))) x := rfl
+
+/-- A section of `M` over `U` induces a morphism on `Over U.unop` by restricting the
+section and applying a morphism out of `F ⊗ M`. -/
+def internalHomCurryHom (f : F ⊗ M ⟶ G) (U : Cᵒᵖ) (m : M.obj U) :
+    F.over U.unop ⟶ G.over U.unop :=
+  mkHom (fun W ↦ ModuleCat.ofHom
+    { toFun x := f.app _ (x ⊗ₜ M.map W.unop.hom.op m)
+      map_add' := by intro x y; simp +instances [TensorProduct.add_tmul]
+      map_smul' := by intro r x; simp +instances [← TensorProduct.smul_tmul'] })
+    (fun {W W'} g ↦ by
+      ext x
+      calc
+        f.app (op W'.unop.left) (F.map g.unop.left.op x ⊗ₜ
+            M.map W'.unop.hom.op m) =
+            f.app (op W'.unop.left) (F.map g.unop.left.op x ⊗ₜ
+              M.map g.unop.left.op (M.map W.unop.hom.op m)) := by
+          congr 2
+          exact (M.congr_map_apply (congrArg Quiver.Hom.op g.unop.w).symm m).trans
+            (M.map_comp_apply W.unop.hom.op g.unop.left.op m)
+        _ = _ := naturality_apply f g.unop.left.op (x ⊗ₜ M.map W.unop.hom.op m))
+
+@[simp]
+lemma internalHomCurryHom_app_apply (f : F ⊗ M ⟶ G) (U : Cᵒᵖ) (m : M.obj U)
+    (W : (Over U.unop)ᵒᵖ) (x : (F.over U.unop).obj W) :
+    (internalHomCurryHom f U m).app W x =
+      f.app _ (x ⊗ₜ[R.obj (op W.unop.left)] M.map W.unop.hom.op m) := rfl
+
+/-- Currying a morphism out of a tensor product of presheaves of modules. -/
+def internalHomCurry (f : F ⊗ M ⟶ G) : M ⟶ internalHom F G :=
+  mkHom (fun U ↦ ModuleCat.ofHom (R := R.obj U)
+    { toFun := internalHomCurryHom f U
+      map_add' := by
+        intro m n
+        ext W x
+        dsimp [internalHomCurryHom]
+        simp +instances [TensorProduct.tmul_add]
+        rfl
+      map_smul' := by
+        intro r m
+        ext W x
+        simp only [internalHomCurryHom_app_apply, over_smul_app_apply]
+        simp })
+    (fun g ↦ by
+      ext m
+      apply PresheafOfModules.hom_ext
+      intro W
+      ext x
+      exact congrArg (fun n ↦ f.app (op W.unop.left) (x ⊗ₜ n))
+        (M.map_comp_apply g W.unop.hom.op m).symm)
+
+@[simp]
+lemma internalHomCurry_app_apply_app_apply (f : F ⊗ M ⟶ G) (U : Cᵒᵖ) (m : M.obj U)
+    (W : (Over U.unop)ᵒᵖ) (x : (F.over U.unop).obj W) :
+    ((internalHomCurry f).app U m).app W x =
+      f.app _ (x ⊗ₜ[R.obj (op W.unop.left)] M.map W.unop.hom.op m) := rfl
+
+/-- Uncurrying a morphism into the internal hom of presheaves of modules. -/
+def internalHomUncurry (f : M ⟶ internalHom F G) : F ⊗ M ⟶ G :=
+  F ◁ f ≫ internalHomEv F G
+
+@[simp]
+lemma internalHomUncurry_app_tmul (f : M ⟶ internalHom F G)
+    (U : Cᵒᵖ) (x : F.obj U) (m : M.obj U) :
+    (internalHomUncurry f).app U (x ⊗ₜ[R.obj U] m) =
+      (f.app U m).app (op (Over.mk (𝟙 U.unop))) x := rfl
+
+@[simp]
+lemma internalHomUncurry_curry (f : F ⊗ M ⟶ G) :
+    internalHomUncurry (internalHomCurry f) = f := by
+  apply tensor_ext
+  intro U x m
+  rw [internalHomUncurry_app_tmul, internalHomCurry_app_apply_app_apply]
+  simp
+
+@[simp]
+lemma internalHomCurry_uncurry (f : M ⟶ internalHom F G) :
+    internalHomCurry (internalHomUncurry f) = f := by
+  ext U m
+  apply PresheafOfModules.hom_ext
+  intro W
+  ext x
+  rw [internalHomCurry_app_apply_app_apply, internalHomUncurry_app_tmul]
+  rw [naturality_apply]
+  exact internalHomMap_app_mkId W.unop.hom (f.app U m) x
+
+/-- The tensor–internal hom equivalence for presheaves of modules. -/
+@[simps apply symm_apply]
+def internalHomEquiv (F M G : PresheafOfModulesOfCommRing.{u} R) :
+    (F ⊗ M ⟶ G) ≃ (M ⟶ internalHom F G) where
+  toFun := internalHomCurry
+  invFun := internalHomUncurry
+  left_inv := internalHomUncurry_curry
+  right_inv := internalHomCurry_uncurry
+
+/-- The coevaluation morphism for the internal hom of presheaves of modules. -/
+def internalHomCoev (F M : PresheafOfModulesOfCommRing.{u} R) :
+    M ⟶ internalHom F (F ⊗ M) :=
+  internalHomCurry (𝟙 (F ⊗ M))
+
+@[simp]
+lemma internalHomCoev_app_apply_app_apply (F M : PresheafOfModulesOfCommRing.{u} R)
+    (U : Cᵒᵖ) (m : M.obj U) (W : (Over U.unop)ᵒᵖ) (x : (F.over U.unop).obj W) :
+    ((internalHomCoev F M).app U m).app W x =
+      x ⊗ₜ[R.obj (op W.unop.left)] M.map W.unop.hom.op m := rfl
+
+end PresheafOfModulesOfCommRing
 
 /-- The adjunction `F ⊗ - ⊣ internalHom F -` for presheaves of modules. -/
-noncomputable def internalHomAdjunction (F : PresheafOfModulesOfCommRing.{u} R) :
-    MonoidalCategory.tensorLeft F ⊣ internalHomFunctor F where
-  unit :=
-    { app := fun M => internalHomCoev F M
-      naturality := by
-        intro X Y f
+def internalHomAdjunction (F : PresheafOfModulesOfCommRing.{u} R) :
+    MonoidalCategory.tensorLeft F ⊣ internalHomFunctor F :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := internalHomEquiv F
+      homEquiv_naturality_left_symm := by
+        intros
+        apply PresheafOfModulesOfCommRing.tensor_ext
+        intros
+        rfl
+      homEquiv_naturality_right := by
+        intros
         ext U m
         apply PresheafOfModules.hom_ext
         intro W
         ext x
-        change (show F.obj (op W.unop.left) from x) ⊗ₜ[R.obj (op W.unop.left)]
-            (Y.map W.unop.hom.op (f.app U m)) =
-          (show F.obj (op W.unop.left) from x) ⊗ₜ[R.obj (op W.unop.left)]
-            (f.app (op W.unop.left) (X.map W.unop.hom.op m))
-        congr 1
-        exact (naturality_apply f W.unop.hom.op (show X.obj U from m)).symm }
-  counit :=
-    { app := fun G => internalHomEv F G
-      naturality := by
-        intro X Y f
-        ext U z
-        induction z using TensorProduct.induction_on with
-        | zero => simp
-        | tmul x φ =>
-            change internalHomEvApp F Y U
-                (x ⊗ₜ (((internalHomFunctor F).map f).app U φ)) =
-              f.app U (internalHomEvApp F X U (x ⊗ₜ φ))
-            erw [internalHomEvApp_tmul]
-        | add z₁ z₂ hz₁ hz₂ =>
-            rw [_root_.map_add, _root_.map_add, hz₁, hz₂] }
-  left_triangle_components M := by
-    ext U z
-    induction z using TensorProduct.induction_on with
-    | zero => simp
-    | tmul x m =>
-        change internalHomEvApp F (F ⊗ M) U
-            (x ⊗ₜ ((internalHomCoev F M).app U m)) = x ⊗ₜ m
-        exact internalHomEvApp_coev_tmul F M U x m
-    | add z₁ z₂ hz₁ hz₂ =>
-        rw [_root_.map_add, _root_.map_add, hz₁, hz₂]
-  right_triangle_components G := by
-    ext U φ
-    apply PresheafOfModules.hom_ext
-    intro W
-    ext x
-    change ((internalHomMap F G W.unop.hom φ).app (op (Over.mk (𝟙 W.unop.left)))) x =
-      φ.app W x
-    simpa using internalHomMap_app_mk_id_hom_apply (F := F) (G := G) W φ x
+        rfl }
+
+@[simp]
+lemma internalHomAdjunction_homEquiv (F M G : PresheafOfModulesOfCommRing.{u} R) :
+    (internalHomAdjunction F).homEquiv M G = internalHomEquiv F M G := by
+  simp [internalHomAdjunction]
 
 @[simp]
 lemma internalHomAdjunction_unit_app (F M : PresheafOfModulesOfCommRing.{u} R) :
@@ -464,6 +340,48 @@ lemma internalHomAdjunction_unit_app (F M : PresheafOfModulesOfCommRing.{u} R) :
 
 @[simp]
 lemma internalHomAdjunction_counit_app (F G : PresheafOfModulesOfCommRing.{u} R) :
-    (internalHomAdjunction F).counit.app G = internalHomEv F G := rfl
+    (internalHomAdjunction F).counit.app G = internalHomEv F G := by
+  simp [internalHomAdjunction, internalHomEquiv, internalHomUncurry]
+
+noncomputable instance : MonoidalClosed (PresheafOfModulesOfCommRing.{u} R) where
+  closed F := {
+    rightAdj := internalHomFunctor F
+    adj := internalHomAdjunction F
+  }
+
+namespace PresheafOfModulesOfCommRing
+
+@[simp]
+lemma ihom_obj (F G : PresheafOfModulesOfCommRing.{u} R) :
+    (ihom F).obj G = internalHom F G := rfl
+
+@[simp]
+lemma ihom_map (F : PresheafOfModulesOfCommRing.{u} R) (f : G ⟶ M) :
+    (ihom F).map f = (internalHomFunctor F).map f := rfl
+
+@[simp]
+lemma ihom_adjunction (F : PresheafOfModulesOfCommRing.{u} R) :
+    ihom.adjunction F = internalHomAdjunction F := rfl
+
+@[simp]
+lemma ihom_ev_app (F G : PresheafOfModulesOfCommRing.{u} R) :
+    (ihom.ev F).app G = internalHomEv F G :=
+  internalHomAdjunction_counit_app F G
+
+@[simp]
+lemma ihom_coev_app (F M : PresheafOfModulesOfCommRing.{u} R) :
+    (ihom.coev F).app M = internalHomCoev F M := rfl
+
+@[simp]
+lemma monoidalClosed_curry (f : F ⊗ M ⟶ G) :
+    MonoidalClosed.curry f = internalHomCurry f := by
+  simp [MonoidalClosed.curry]
+
+@[simp]
+lemma monoidalClosed_uncurry (f : M ⟶ (ihom F).obj G) :
+    MonoidalClosed.uncurry f = internalHomUncurry f := by
+  simp [MonoidalClosed.uncurry]
+
+end PresheafOfModulesOfCommRing
 
 end Monoidal

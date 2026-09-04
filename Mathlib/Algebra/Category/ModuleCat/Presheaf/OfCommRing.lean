@@ -80,6 +80,12 @@ abbrev mkHom {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
   app := app
   naturality := naturality
 
+/-- A morphism of presheaves of modules over commutative rings commutes with restriction. -/
+lemma naturality_apply {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R} (φ : M₁ ⟶ M₂)
+    {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M₁.obj X) :
+    φ.app Y (M₁.map f x) = M₂.map f (φ.app X x) :=
+  PresheafOfModules.naturality_apply φ f x
+
 /-- Construct an isomorphism of presheaves of modules over a presheaf of commutative rings. -/
 abbrev isoMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
     (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
