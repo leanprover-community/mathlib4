@@ -21,6 +21,11 @@ direct product of the infinite adele ring and the finite adele ring.
 
 - `NumberField.AdeleRing K` is the adele ring of a number field `K`.
 - `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
+- `NumberField.AdeleRing.instNorm` is the norm on the adele ring.
+
+## Main results
+
+- `NumberField.AdeleRing.norm_algebraMap_eq_one_of_unit/isUnit` is the idelic product formula.
 
 ## References
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
@@ -142,48 +147,44 @@ end IdeleClassGroup
 
 section norm
 
-variable {K : Type*} [Field K] [NumberField K]
+variable {R K : Type*} [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
+  [IsFractionRing R K]
 
 namespace AdeleRing
 
-theorem isUnit_iff {x : 𝔸[K]} : IsUnit x ↔ (∀ v, x.1 v ≠ 0) ∧ (∀ v, x.2 v ≠ 0) ∧
+theorem isUnit_iff {x : 𝔸[R, K]} : IsUnit x ↔ (∀ v, x.1 v ≠ 0) ∧ (∀ v, x.2 v ≠ 0) ∧
     ∀ᶠ v in Filter.cofinite, Valued.v (x.2 v) = 1 := by
   erw [Prod.isUnit_iff, Pi.isUnit_iff]
   rw [FiniteAdeleRing.isUnit_iff]
   simp_rw [isUnit_iff_ne_zero]
 
-instance : Norm 𝔸[K] where norm x := ‖x.1‖ * ‖x.2‖
+variable [NumberField K] [Ring.HasFiniteQuotients R] [Infinite R]
 
-theorem norm_def (x : 𝔸[K]) : ‖x‖ = ‖x.1‖ * ‖x.2‖ := rfl
+/-- The norm on the adele ring is the product of all the local norms. If a adele is
+a unit, then this is a finite product in disguise. Otherwise, it is zero (and not the junk
+`tprod` value of `1`). -/
+instance : Norm 𝔸[R, K] where norm x := ‖x.1‖ * ‖x.2‖
 
-theorem norm_def_unit (x : 𝔸[K]ˣ) :
-    ‖x.1‖ = ‖x.1.1‖ * ‖(MulEquiv.prodUnits x).2.1‖ := rfl
+theorem norm_def (x : 𝔸[R, K]) : ‖x‖ = ‖x.1‖ * ‖x.2‖ := rfl
 
-theorem norm_apply_unit (x : 𝔸[K]ˣ) :
-    ‖x.1‖ = (∏ v, ‖x.1.1 v‖ ^ v.mult) * ∏ᶠ v, ‖(MulEquiv.prodUnits x).2.1 v‖ := by
-  rw [norm_def_unit, FiniteAdeleRing.norm_def_unit]
-  rfl
+theorem norm_apply_of_unit (x : 𝔸[R, K]ˣ) :
+    ‖(x : 𝔸[R, K])‖ = (∏ v, ‖(x : 𝔸[R, K]).1 v‖ ^ v.mult) * ∏ᶠ v, ‖(x : 𝔸[R, K]).2 v‖ := by
+  rw [norm_def, FiniteAdeleRing.norm_eq_finprod_of_isUnit ((Prod.isUnit_iff.1 x.isUnit).2),
+    InfiniteAdeleRing.norm_def]
 
-theorem norm_eq_zero_of_not_isUnit {x : 𝔸[K]} (hx : ¬IsUnit x) : ‖x‖ = 0 := by
+theorem norm_eq_zero_of_not_isUnit {x : 𝔸[R, K]} (hx : ¬IsUnit x) : ‖x‖ = 0 := by
   rcases not_and_or.1 <| Prod.isUnit_iff.not.1 hx with hi | hf
   · simp [norm_def, InfiniteAdeleRing.norm_eq_zero_of_not_isUnit hi]
   · simp [norm_def, FiniteAdeleRing.norm_eq_zero_of_not_isUnit hf]
 
-variable (K) in
-/-- The global embedding of the units of `K` into the units of `AdeleRing (𝓞 K) K`. -/
-def unitEmbedding : Kˣ →* 𝔸[K]ˣ := Units.map (algebraMap K 𝔸[K])
-
-@[simp] theorem unitEmbedding_apply (k : Kˣ) :
-    unitEmbedding K k = algebraMap K 𝔸[K] k := rfl
-
-theorem unitEmbedding_prodUnits_apply (k : Kˣ) :
-    (MulEquiv.prodUnits (unitEmbedding K k)).2 = FiniteAdeleRing.unitEmbedding _ _ k := rfl
-
-theorem unitEmbedding_norm_eq_one {x : Kˣ} :
-    ‖(unitEmbedding K x).1‖ = 1 := by
-  rw [norm_def_unit, unitEmbedding_apply, algebraMap_fst_def, unitEmbedding_prodUnits_apply,
-    InfiniteAdeleRing.coe_norm_eq_abs_norm, FiniteAdeleRing.unitEmbedding_norm_eq_inv_abs_norm]
+theorem norm_algebraMap_eq_one_of_unit (x : Kˣ) :
+    ‖algebraMap K 𝔸[K] (x : K)‖ = 1 := by
+  rw [norm_def, algebraMap_fst_def, algebraMap_snd_def, InfiniteAdeleRing.coe_norm_eq_abs_norm,
+    FiniteAdeleRing.coe_norm_eq_inv_abs_norm x.ne_zero]
   simp
+
+theorem norm_algebraMap_eq_one_of_isUnit {x : K} (hx : x ≠ 0) :
+    ‖algebraMap K 𝔸[K] x‖ = 1 := norm_algebraMap_eq_one_of_unit (.mk0 x hx)
 
 end AdeleRing
 
