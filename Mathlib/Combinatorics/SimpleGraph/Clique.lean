@@ -735,14 +735,14 @@ private lemma finite_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsN
   exact Finset.card_le_card (Finset.subset_univ s)
 
 -- TODO: generalize from `Finite α` to `Finite G.edgeSet`
-lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} {tc : G.IsClique t} : #t ≤ G.cliqueNum :=
+lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
   le_csSup G.finite_cliqueNum_bddAbove ⟨t, tc, rfl⟩
 
 -- TODO: generalize from `Finite α` to `Finite G.edgeSet`
 variable (G) in
 theorem cliqueNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.cliqueNum ≠ 0 := by
   refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
-  exact IsClique.card_le_cliqueNum (t := {Classical.arbitrary α}) (tc := by simp)
+  exact IsClique.card_le_cliqueNum (t := {Classical.arbitrary α}) <| by simp
 
 lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
