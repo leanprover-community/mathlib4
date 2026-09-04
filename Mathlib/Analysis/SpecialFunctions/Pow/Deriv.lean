@@ -334,20 +334,17 @@ theorem isBigO_deriv_ofReal_cpow_const_atTop (c : ℂ) :
   · simp_rw [cpow_zero, deriv_const', Asymptotics.isBigO_zero]
   · exact (isTheta_deriv_ofReal_cpow_const_atTop hc).1
 
-/-- The logarithmic derivative of `z ↦ a ^ z` is the constant `log a`. -/
 @[simp]
 theorem Complex.logDeriv_const_cpow {a : ℂ} (ha : a ≠ 0) :
-    logDeriv (fun z : ℂ ↦ a ^ z) = fun _ ↦ Complex.log a := by
+    logDeriv (fun z : ℂ ↦ a ^ z) = fun _ ↦ a.log := by
   ext
-  simp [logDeriv_apply, Complex.cpow_ne_zero_iff.mpr (Or.inl ha), field]
+  simp [logDeriv_apply, a.cpow_ne_zero_iff.mpr (Or.inl ha), field]
 
-/-- The logarithmic derivative of `z ↦ a ^ (-z)` is the constant `-log a`. -/
 @[simp]
 theorem Complex.logDeriv_const_cpow_neg {a : ℂ} (ha : a ≠ 0) :
-    logDeriv (fun z : ℂ ↦ a ^ (-z)) = fun _ ↦ -Complex.log a := by
+    logDeriv (fun z : ℂ ↦ a ^ (-z)) = fun _ ↦ -a.log := by
   ext z
-  have := (Complex.cpow_ne_zero_iff (y := -z)).mpr (Or.inl ha)
-  simp [logDeriv_apply, deriv_comp_neg, field]
+  simpa [field] using congrFun (a.logDeriv_const_cpow ha) (-z)
 
 end deriv
 
@@ -764,12 +761,17 @@ theorem deriv_const_rpow_id (ha : 0 < a) :
     deriv (a ^ ·) x = Real.log a * a ^ x := by
   rw [deriv_const_rpow ha differentiableAt_fun_id, deriv_id'', mul_one]
 
-/-- The logarithmic derivative of `z ↦ a ^ z` (real `rpow`, `a > 0`) is the constant `log a`. -/
 @[simp]
 theorem Real.logDeriv_const_rpow (ha : 0 < a) :
-    logDeriv (fun x : ℝ ↦ a ^ x) = fun _ ↦ Real.log a := by
+    logDeriv (fun x : ℝ ↦ a ^ x) = fun _ ↦ a.log := by
   ext
   simp [logDeriv_apply, ha, field]
+
+@[simp]
+theorem Real.logDeriv_const_rpow_neg (ha : 0 < a) :
+    logDeriv (fun x : ℝ ↦ a ^ (-x)) = fun _ ↦ -a.log := by
+  ext x
+  simpa using congrFun (a.logDeriv_const_rpow ha) (-x)
 
 end deriv
 

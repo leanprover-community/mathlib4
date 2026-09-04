@@ -37,11 +37,8 @@ theorem logDeriv_riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) (hz :
   have : s ≠ 1 := mod_cast hs 1
   have : cos (π * s / 2) ≠ 0 :=
     mt cos_eq_zero_iff.mp fun ⟨k, _⟩ ↦ hs (2 * k + 1) (mod_cast by grind)
-  have : logDeriv (fun z ↦ cos (π * z / 2)) s = -(π / 2 * tan (π * s / 2)) := by
-    have : HasDerivAt (fun z : ℂ ↦ π * z / 2) (π / 2) s := by
-      simpa using ((hasDerivAt_id s).const_mul (π : ℂ)).div_const 2
-    rw [(by rfl : (fun _ ↦ _) = Complex.cos ∘ (fun z ↦ π * z / 2)), logDeriv_comp]
-    <;> first | fun_prop | simp [field]
+  have : HasDerivAt (fun z : ℂ ↦ π * z / 2) (π / 2) s := by
+    simpa using ((hasDerivAt_id s).const_mul (π : ℂ)).div_const 2
   have := (hasDerivAt_neg' s).differentiableAt.const_cpow (Or.inl h2π)
   have : riemannZeta ∘ (1 - ·) =ᶠ[𝓝 s]
       fun z ↦ 2 * (2 * π) ^ (-z) * Gamma z * cos (π * z / 2) * riemannZeta z := by
@@ -50,5 +47,5 @@ theorem logDeriv_riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) (hz :
     exact riemannZeta_one_sub (fun n h ↦ hz (-n) (by simp [h])) (by grind [hz 1])
   have := (logDeriv_congr_nhds this).eq_of_nhds
   rw [logDeriv_comp, logDeriv_fun_mul, logDeriv_fun_mul, logDeriv_fun_mul, logDeriv_fun_mul,
-    ← digamma_def] at this
+    (by rfl : (fun z ↦ cos (π * z / 2)) = cos ∘ _), logDeriv_comp, ← digamma_def] at this
   <;> first | fun_prop | simp_all <;> grind [differentiableAt_riemannZeta, Gamma_ne_zero, hs 0]
