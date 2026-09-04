@@ -312,10 +312,8 @@ Resolve the transfer engine from the `--uploader=` option (`uploader?`):
 
 * unset or `curl`: the built-in curl engine.
 * `rclone`: a system rclone, required — a missing binary or non-S3
-  credentials error rather than silently changing engines.
-* `auto`: rclone when the binary is available and the credentials are the S3
-  pair; the curl engine otherwise. rclone signs S3 requests only, so the
-  Azure mechanisms always take the curl engine.
+  credentials error rather than silently changing engines. rclone signs S3
+  requests only, so the Azure mechanisms always take the curl engine.
 
 Pure so the policy is testable; `resolveUploadEngine` wires the availability
 probe in.
@@ -334,9 +332,8 @@ def uploadEngineFrom (uploader? : Option String) (auth : UploadAuth)
     | some engine =>
       if rcloneAvailable then .ok engine
       else .error "--uploader=rclone, but no working rclone was found on PATH"
-  | some "auto" => .ok (if rcloneAvailable then rclone?.getD .curl else .curl)
   | some other =>
-    .error s!"unknown --uploader value '{other}' (known: curl, rclone, auto)"
+    .error s!"unknown --uploader value '{other}' (known: curl, rclone)"
 
 /-- Whether a working rclone is available on PATH. -/
 def rcloneAvailable : IO Bool := do
@@ -348,13 +345,11 @@ def rcloneAvailable : IO Bool := do
 
 /--
 `uploadEngineFrom` with the availability probe wired in. The probe runs only
-for the `--uploader` values whose outcome depends on it.
+when `--uploader=rclone` asks for the binary.
 -/
 def resolveUploadEngine (uploader? : Option String) (auth : UploadAuth) :
     IO UploadEngine := do
-  let available ←
-    if uploader? == some "rclone" || uploader? == some "auto" then rcloneAvailable
-    else pure false
+  let available ← if uploader? == some "rclone" then rcloneAvailable else pure false
   IO.ofExcept <| uploadEngineFrom uploader? auth available
 
 /--

@@ -71,8 +71,6 @@ the transfer engine:
   this engine. rclone schedules transfers for large staged sets and verifies
   each object's checksum after upload. `--ignore-existing` replaces
   `If-None-Match` on a non-overwrite put.
-- `auto`: `rclone` when the binary is available on PATH and the credentials
-  are the S3 pair; `curl` otherwise.
 
 The tool sets the rclone credentials, endpoint, provider (`Other` unless the
 environment names one), and region; every other `RCLONE_S3_*` option
@@ -116,6 +114,7 @@ When arguments are provided, only the specified files and their transitive impor
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
 | `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`/`put-staged`: the staging directory. |
 | `--container=NAME`  | For `put`/`put!`/`put-staged`: the target container. |
+| `--uploader=NAME`   | For `put`/`put!`/`put-staged`: the transfer engine, `curl` (the default) or `rclone` (see [The rclone engine](#the-rclone-engine)). |
 
 Container names (for `--cache-from` and `--container`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 

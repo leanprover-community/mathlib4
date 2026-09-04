@@ -83,13 +83,11 @@ Options:
                      exclusive with --scope; always prints a security notice.
   --unsafe-window=N  Number of cached fork commits --unsafe will try (default
                      1). Implies --unsafe.
-  --uploader=NAME    For 'put', 'put!' and 'put-staged': the transfer engine.
-                     'curl' (the default), 'rclone' (a system rclone,
-                     required), or 'auto' (rclone when available and the
-                     credentials are the S3 pair; curl otherwise). Both
-                     engines upload only the command's file list. The tool
-                     passes rclone the S3 credentials through its environment.
-                     See Cache/README.md.
+  --uploader=NAME    For 'put', 'put!' and 'put-staged': the transfer engine,
+                     'curl' (the default) or 'rclone' (a system rclone,
+                     required). Both engines upload only the command's file
+                     list. The tool passes rclone the S3 credentials through
+                     its environment. See Cache/README.md.
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' skip no files: use them manually when a hot-fix

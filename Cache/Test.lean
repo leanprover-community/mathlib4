@@ -1463,10 +1463,10 @@ def test_uploadAuthArgs : IO Unit := do
     (s3Static.all (!·.startsWith "x-amz-security-token"))
   assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
 
-/-- The transfer-engine policy for `put-staged` (`--uploader`): curl by
-default, rclone required when named, availability- and credential-gated under
-`auto`. rclone signs S3 requests only, so non-S3 credentials never select it,
-and a selected rclone engine carries the credentials it signs with. -/
+/-- The transfer-engine policy (`--uploader`): curl by default, rclone
+required when named. rclone signs S3 requests only, so non-S3 credentials
+never select it, and a selected rclone engine carries the credentials it
+signs with. -/
 def test_uploadEngineFrom : IO Unit := do
   IO.println "uploadEngineFrom:"
   let s3 : UploadAuth := .s3 "AK" "SK" (some "ST")
@@ -1482,15 +1482,10 @@ def test_uploadEngineFrom : IO Unit := do
     (uploadEngineFrom (some "rclone") s3 false matches .error _)
   assertTrue "rclone without S3 credentials errors"
     (uploadEngineFrom (some "rclone") bearer true matches .error _)
-  assertTrue "auto selects rclone when available and S3"
-    ((uploadEngineFrom (some "auto") s3 true).toOption ==
-      some (.rclone "AK" "SK" (some "ST")))
-  assertTrue "auto falls back to curl without the binary"
-    ((uploadEngineFrom (some "auto") s3 false).toOption == some .curl)
-  assertTrue "auto falls back to curl without S3 credentials"
-    ((uploadEngineFrom (some "auto") bearer true).toOption == some .curl)
   assertTrue "an unknown value errors"
     (uploadEngineFrom (some "wget") s3 true matches .error _)
+  assertTrue "auto is not a value"
+    (uploadEngineFrom (some "auto") s3 true matches .error _)
 
 /-- The endpoint/bucket split the rclone engine builds its remote from. -/
 def test_s3EndpointSplit : IO Unit := do
