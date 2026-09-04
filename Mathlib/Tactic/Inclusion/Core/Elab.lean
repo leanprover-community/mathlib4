@@ -326,12 +326,12 @@ in the kernel, in other words, something that can be solved `by decide`.
 
 `inclusion` is very flexible and intended as a building block for other tactics with a more
 specific ambition, for example `dyadic_interval`.
- 
+
 An inclusion family is declared using `registerInclusionFamily` and can be extended using the
 `inclusion_op` and `hypothesis_op` attributes.
 The `core` family provides reasoning about logical operators `∧`, `∨`, `¬` and `=`. This family
 is recommented to be included by default.
- 
+
 
 * `inclusion [fam₁, x := e]` sets the parameter named `x` to the value of the term `e`.
   All the families in an `inclusion` call can access this parameter.
