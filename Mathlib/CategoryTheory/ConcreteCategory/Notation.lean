@@ -20,7 +20,6 @@ from the expected type. The name `FooCat.of` is looked up in the environment rat
 typeclass, so `↧X` is syntactically the same as `FooCat.of`. It also provides a corresponding
 delaborator `CategoryTheory.delabOf` that must be manually registered for every concrete category.
 
-
 ## Implementation notes
 
 A typeclass cannot mediate this notation while keeping the elaborated term syntactically
