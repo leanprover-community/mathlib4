@@ -508,7 +508,7 @@ theorem sSupIndep.disjoint_sSup_sSup [IsModularLattice α] {s t u : Set α} (hs 
     Disjoint (sSup t) (sSup u) := by
   have hsub {v : Set α} (hvs : v ⊆ s) : v ⊆ Set.range (Subtype.val (p := (· ∈ s))) :=
     fun x hx => ⟨⟨x, hvs hx⟩, rfl⟩
-  rw [←biSup_preimage (hsub hts), ←biSup_preimage (hsub hus)]
+  rw [← biSup_preimage (hsub hts), ← biSup_preimage (hsub hus)]
   exact (sSupIndep_iff s |>.mp hs).disjoint_biSup_biSup (hdisj.preimage _)
 
 end

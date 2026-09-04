@@ -612,7 +612,7 @@ theorem sSup_image {s : Set β} {f : β → α} : sSup (f '' s) = ⨆ a ∈ s, f
 @[to_dual]
 theorem biSup_preimage {s : Set α} {f : β → α} (hf : s ⊆ Set.range f) :
     ⨆ a ∈ f ⁻¹' s, f a = sSup s := by
-  rw [←sSup_image, s.image_preimage_eq_of_subset hf]
+  rw [← sSup_image, s.image_preimage_eq_of_subset hf]
 
 @[to_dual]
 theorem OrderIso.map_sSup_eq_sSup_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
