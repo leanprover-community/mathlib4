@@ -4515,10 +4515,10 @@ public import Mathlib.Dynamics.Ergodic.Action.Regular
 public import Mathlib.Dynamics.Ergodic.AddCircle
 public import Mathlib.Dynamics.Ergodic.AddCircleAdd
 public import Mathlib.Dynamics.Ergodic.Conservative
+public import Mathlib.Dynamics.Ergodic.EmpiricalMeasure
 public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.Dynamics.Ergodic.Extreme
 public import Mathlib.Dynamics.Ergodic.Function
-public import Mathlib.Dynamics.Ergodic.EmpiricalMeasure
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Dynamics.Ergodic.RadonNikodym
 public import Mathlib.Dynamics.FixedPoints.Basic
