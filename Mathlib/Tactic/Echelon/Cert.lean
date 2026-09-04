@@ -79,7 +79,9 @@ a definition. The proof recurses on the index list `List.finRange n`, so the mot
 spelled once rather than once per index. -/
 def certifyForallFin (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) → MetaM Q($q)) :
     MetaM Q($p) :=
-  forallBoundedTelescope p (some 1) (whnfType := true) fun is body => do
+  -- `withDefault`: the ambient transparency inside `simp` is `reducible`, which cannot
+  -- unfold a statement behind a definition (`IsLowerTriangular`) to reach its quantifier
+  withDefault <| forallBoundedTelescope p (some 1) (whnfType := true) fun is body => do
     let #[i] := is
       | throwError "expected a quantified statement:{indentExpr p}"
     let motive ← mkLambdaFVars is body
@@ -188,7 +190,7 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m
     let colEq ← certifyForallFin
       q(∀ j : Fin $n, $A ($σ $iN) (id j) = $rows $iN j) fun _ cell => certifyDefEq cell
     return (q(funext $colEq) : Expr)
-  mkExpectedTypeHint q(congrArg (fun g => Matrix.of g) (funext $rowEq))
+  mkExpectedTypeHint q(congrArg (fun f => Matrix.of f) (funext $rowEq))
     q(($A).submatrix $σ id = $(Aσ.matrix))
 
 /-- Prove the product `L * Aσ = U` entrywise from the literals' recorded entries. At
@@ -222,9 +224,7 @@ supplies a certifier for the entry ones. -/
 def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
     (data : BareissData Expr) (certifier? : Option EntryCertifier) :
-    MetaM Q(Echelon.Decomposition $A) := withDefault do
-  -- `withDefault`: the ambient transparency inside `simp` is `reducible`, which does not
-  -- reduce a matrix literal at a concrete index, so no entry would be recognised as zero
+    MetaM Q(Echelon.Decomposition $A) := do
   have L := mkMatrixViews α m m data.L
   have U := mkMatrixViews α m n data.U
   let aEntries := data.rowOrder.map (entries[·]!)
