@@ -59,9 +59,7 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   let B' : CompHaus := CompHaus.of B
   let f' : X ⟶ B' := CompHausLike.ofHom _ ⟨f, hf⟩
   let g' : A' ⟶ B' := CompHausLike.ofHom _ ⟨g,hg⟩
-  have : Epi g' := by
-    rw [CompHaus.epi_iff_surjective]
-    assumption
+  have : Epi g' := by rwa [CompHaus.epi_iff_surjective]
   obtain ⟨h, hh⟩ := Projective.factors f' g'
   refine ⟨h, h.hom.hom.2, ?_⟩
   ext t
