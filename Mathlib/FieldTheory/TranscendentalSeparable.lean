@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.EssentialFiniteness
 In this file we introduce the concept of separably generated field extensions and
 transcendental separable field extensions.
 
-# Main definitions and results
+## Main definitions and results
 
 * `Algebra.IsSeparablyGenerated` : A field extension is separably generated if there exists
   a transcendence basis such that the extension above it is separable.
@@ -29,8 +29,6 @@ transcendental separable field extensions.
 
 @[expose] public section
 
-open TensorProduct
-
 section
 
 variable (k : Type*) (K : Type*) [Field k] [Field K] [Algebra k K]
@@ -39,7 +37,7 @@ variable (k : Type*) (K : Type*) [Field k] [Field K] [Algebra k K]
 the extension above it is separable. -/
 @[mk_iff, stacks 030O "Part 1"]
 class Algebra.IsSeparablyGenerated : Prop where
-  isSeparable' : ∃ (s : Set K), IsTranscendenceBasis k ((↑) : s → K) ∧
+  isSeparable : ∃ (s : Set K), IsTranscendenceBasis k ((↑) : s → K) ∧
     Algebra.IsSeparable (IntermediateField.adjoin k s) K
 
 variable {k K} in
@@ -58,7 +56,7 @@ lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
     refine ⟨isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.mpr ⟨?_, ?_⟩, ?_⟩
     · simpa using RingHom.injective _
     · simpa [← IntermediateField.isAlgebraic_adjoin_iff_top] using h.isAlgebraic.tower_top _
-    · exact Algebra.isSeparable_tower_top_of_isSeparable k _  K
+    · exact Algebra.isSeparable_tower_top_of_isSeparable k _ K
   · have h := Set.isEmpty_coe_sort.mp (isT.isEmpty_iff_isAlgebraic.mpr alg)
     have : IntermediateField.adjoin k s = ⊥ := IntermediateField.adjoin_eq_bot_iff.mpr (by simp [h])
     rw [this] at sep
@@ -69,8 +67,8 @@ lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
 separably generated. -/
 @[mk_iff, stacks 030O "Part 2"]
 class Algebra.IsTranscendentalSeparable : Prop where
-  forall_isSeparablyGenerated : ∀ (A' : IntermediateField k K),
-    Algebra.EssFiniteType k A' → Algebra.IsSeparablyGenerated k A'
+  forall_isSeparablyGenerated : ∀ (L : IntermediateField k K),
+    Algebra.EssFiniteType k L → Algebra.IsSeparablyGenerated k L
 
 lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
     Algebra.IsSeparable k K ↔
