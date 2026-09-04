@@ -296,17 +296,17 @@ variable [NormedSpace ℂ F]
 variable {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
 
 /-- Every unbundled Sobolev tempered distribution defines an element in `H^{s, p}`. -/
-def MemSobolev.toBesselPotentialSpace {f : 𝓢'(E, F)} (hf : MemSobolev s p f) : H^{s, p}(E, F) where
+def MemSobolev.toBesselPotentialSpace {f : 𝓢'(E, F)} (hf : f.MemSobolev s p) : H^{s, p}(E, F) where
   toDistr := f
   toLp := hf.choose
   bessel_toDistr_eq_toLp := hf.choose_spec
 
 @[simp]
-theorem MemSobolev.toBesselPotentialSpace_toDistr {f : 𝓢'(E, F)} (hf : MemSobolev s p f) :
+theorem MemSobolev.toBesselPotentialSpace_toDistr {f : 𝓢'(E, F)} (hf : f.MemSobolev s p) :
     hf.toBesselPotentialSpace.toDistr = f := by rfl
 
-theorem MemSobolev.toBesselPotentialSpace_injective {f g : 𝓢'(E, F)} (hf : MemSobolev s p f)
-    (hg : MemSobolev s p g) (h : hf.toBesselPotentialSpace = hg.toBesselPotentialSpace) :
+theorem MemSobolev.toBesselPotentialSpace_injective {f g : 𝓢'(E, F)} (hf : f.MemSobolev s p)
+    (hg : g.MemSobolev s p) (h : hf.toBesselPotentialSpace = hg.toBesselPotentialSpace) :
     f = g := by
   rw [← hf.toBesselPotentialSpace_toDistr, ← hg.toBesselPotentialSpace_toDistr, h]
 
