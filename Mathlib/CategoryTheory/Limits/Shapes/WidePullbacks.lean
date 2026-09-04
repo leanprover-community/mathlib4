@@ -92,7 +92,7 @@ open Lean Elab Tactic
 /- Pointing note: experimenting with manual scoping of aesop tactics. Attempted to define
 aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 /-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-meta def evalCasesBash : TacticM Unit := do
+private meta def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
       (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)))
