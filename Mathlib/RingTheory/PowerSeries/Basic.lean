@@ -273,6 +273,14 @@ theorem coeff_C_mul (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff n (C a * φ) = a *
 @[simp] lemma coeff_ofNat_mul {φ : R⟦X⟧} {a n : ℕ} [Nat.AtLeastTwo a] :
     coeff n (ofNat(a) * φ) = ofNat(a) * coeff n φ := coeff_C_mul _ _ _
 
+@[simp] lemma coeff_mul_intCast {R : Type*} [Ring R] {φ : R⟦X⟧} {a : ℤ} {n : ℕ} :
+    coeff n (φ * (a : R⟦X⟧)) = coeff n φ * a := by
+  simpa using coeff_mul_C n φ a
+
+@[simp] lemma coeff_intCast_mul {R : Type*} [Ring R] {φ : R⟦X⟧} {a : ℤ} {n : ℕ} :
+    coeff n ((a : R⟦X⟧) * φ) = a * coeff n φ := by
+  simpa using coeff_C_mul n φ a
+
 @[simp]
 theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSeries S) (a : R) :
     coeff n (a • φ) = a • coeff n φ :=
