@@ -571,7 +571,6 @@ lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal = ofNat(n) ↔ r = OfNat.ofNat n :=
   toNNReal_eq_natCast (NeZero.ne n)
 
-@[simp]
 theorem toNNReal_le_toNNReal_iff {r p : ℝ} (hp : 0 ≤ p) :
     toNNReal r ≤ toNNReal p ↔ r ≤ p := by
   grind [← coe_le_coe, coe_toNNReal']
@@ -671,6 +670,7 @@ theorem toNNReal_le_toNNReal {r p : ℝ} (h : r ≤ p) : Real.toNNReal r ≤ Rea
 theorem toNNReal_add_le {r p : ℝ} : Real.toNNReal (r + p) ≤ Real.toNNReal r + Real.toNNReal p :=
   NNReal.coe_le_coe.1 <| max_le (add_le_add (le_max_left _ _) (le_max_left _ _)) NNReal.zero_le_coe
 
+@[simp]
 theorem toNNReal_le_iff_le_coe {r : ℝ} {p : ℝ≥0} : toNNReal r ≤ p ↔ r ≤ ↑p :=
   NNReal.gi.gc r p
 

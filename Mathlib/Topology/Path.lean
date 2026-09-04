@@ -583,7 +583,7 @@ theorem truncate_const_continuous_family {a b : X} (γ : Path a b)
 theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
     γ.truncate t t = (Path.refl <| γ.extend t).cast (by rw [min_self]) rfl := by
   ext x
-  by_cases hx : x ≤ t <;> simp [truncate]
+  by_cases hx : x ≤ t <;> simp [truncate, inf_of_le_right]
 
 theorem truncate_zero_zero {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
@@ -595,7 +595,7 @@ theorem truncate_one_one {a b : X} (γ : Path a b) :
 
 @[simp]
 theorem truncate_zero_one {a b : X} (γ : Path a b) :
-    γ.truncate 0 1 = γ.cast (by simp) (by simp) := by
+    γ.truncate 0 1 = γ.cast (by grind) (by simp) := by
   ext x
   rw [cast_coe]
   have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.2

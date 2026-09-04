@@ -110,6 +110,7 @@ lemma «exists» {p : ℚ≥0 → Prop} : (∃ q, p q) ↔ ∃ q hq, p ⟨q, hq�
 def _root_.Rat.toNNRat (q : ℚ) : ℚ≥0 :=
   ⟨max q 0, le_max_right _ _⟩
 
+@[simp]
 theorem _root_.Rat.coe_toNNRat (q : ℚ) (hq : 0 ≤ q) : (q.toNNRat : ℚ) = q :=
   max_eq_left hq
 
@@ -265,7 +266,6 @@ theorem toNNRat_eq_zero : toNNRat q = 0 ↔ q ≤ 0 := by
 
 alias ⟨_, toNNRat_of_nonpos⟩ := toNNRat_eq_zero
 
-@[simp]
 theorem toNNRat_le_toNNRat_iff (hp : 0 ≤ p) : toNNRat q ≤ toNNRat p ↔ q ≤ p := by
   grind [← coe_le_coe, coe_toNNRat']
 
@@ -286,6 +286,7 @@ theorem toNNRat_add (hq : 0 ≤ q) (hp : 0 ≤ p) : toNNRat (q + p) = toNNRat q 
 theorem toNNRat_add_le : toNNRat (q + p) ≤ toNNRat q + toNNRat p :=
   coe_le_coe.1 <| max_le (add_le_add (le_max_left _ _) (le_max_left _ _)) <| coe_nonneg _
 
+@[simp]
 theorem toNNRat_le_iff_le_coe {p : ℚ≥0} : toNNRat q ≤ p ↔ q ≤ ↑p :=
   NNRat.gi.gc q p
 
