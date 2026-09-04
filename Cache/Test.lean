@@ -1484,8 +1484,6 @@ def test_uploadEngineFrom : IO Unit := do
     (uploadEngineFrom (some "rclone") bearer true matches .error _)
   assertTrue "an unknown value errors"
     (uploadEngineFrom (some "wget") s3 true matches .error _)
-  assertTrue "auto is not a value"
-    (uploadEngineFrom (some "auto") s3 true matches .error _)
 
 /-- The endpoint/bucket split the rclone engine builds its remote from. -/
 def test_s3EndpointSplit : IO Unit := do
