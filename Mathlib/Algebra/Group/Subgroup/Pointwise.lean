@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Action.End
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
@@ -42,6 +42,11 @@ variable {α G A S : Type*}
 @[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
   Set.ext fun _ => inv_mem_iff
+
+@[to_additive (attr := simp)]
+theorem IsSelfInv.of_invMemClass [InvolutiveInv G] [SetLike S G] [InvMemClass S G] (H : S) :
+    IsSelfInv (H : Set G) :=
+  inv_coe_set
 
 @[to_additive (attr := simp)]
 lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :

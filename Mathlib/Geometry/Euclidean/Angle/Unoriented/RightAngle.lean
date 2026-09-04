@@ -334,6 +334,17 @@ theorem dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two (p₁ p₂ p₃ :
     dist_eq_norm_vsub V p₂ p₃, angle, ← norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two,
     vsub_sub_vsub_cancel_right p₁, ← neg_vsub_eq_vsub_rev p₂ p₃, norm_neg]
 
+/-- The angle at `p₂` is at least `π / 2` if and only if the square of the opposite side is at
+least the sum of the squares of the other two sides. -/
+theorem dist_sq_add_dist_sq_le_dist_sq_iff_pi_div_two_le_angle {p₁ p₂ p₃ : P} :
+    dist p₁ p₂ * dist p₁ p₂ + dist p₃ p₂ * dist p₃ p₂ ≤ dist p₁ p₃ * dist p₁ p₃ ↔
+      π / 2 ≤ ∠ p₁ p₂ p₃ := by
+  rw [angle, ← inner_nonpos_iff_pi_div_two_le_angle, dist_eq_norm_vsub V p₁ p₃,
+    dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₃ p₂,
+    show (p₁ -ᵥ p₃ : V) = (p₁ -ᵥ p₂) - (p₃ -ᵥ p₂) from (vsub_sub_vsub_cancel_right p₁ p₃ p₂).symm,
+    norm_sub_mul_self_real]
+  constructor <;> intro h <;> linarith
+
 /-- An angle in a right-angled triangle expressed using `arccos`. -/
 theorem angle_eq_arccos_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2) :
     ∠ p₂ p₃ p₁ = Real.arccos (dist p₃ p₂ / dist p₁ p₃) := by
