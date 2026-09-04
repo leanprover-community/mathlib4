@@ -17,8 +17,8 @@ distributions `u` such that `𝓕⁻ (1 + ‖ξ‖ ^ 2) ^ (s / 2) 𝓕 u` is an 
 
 In `Mathlib.Analysis.Distribution.Sobolev` the unbundled version `TemperedDistribution.MemSobolev`
 is defined as `∃ v : Lp, besselPotential E F s u = v`. While it would be possible to define
-the bundled space in the same way, the eliminating the existence quantifier makes proving theorems
-more involved and hence we bundle the `Lp` function `v` into the structure.
+the bundled space in the same way, the existence quantifier makes proving theorems more involved and
+hence we bundle the `Lp` function `v` into the structure.
 
 We also note that since every `Lp` function uniquely defines a distribution via
 `u = besselPotential E F (-s) v`, it would be possible to define the Bessel potential space
@@ -49,7 +49,7 @@ structure BesselPotentialSpace [NormedSpace ℂ F] (s : ℝ) (p : ℝ≥0∞) [h
   toDistr : 𝓢'(E, F)
   /-- The underlying `Lp` function -/
   toLp : Lp F p (volume : Measure E)
-  /-- The Sobolev function is given by applying the Bessel potential operator to the distribution -/
+  /-- The `Lp` is obtained by applying the Bessel potential operator to the distribution -/
   bessel_toDistr_eq_toLp : besselPotential E F s toDistr = toLp
 
 attribute [coe] BesselPotentialSpace.toDistr
@@ -189,7 +189,7 @@ instance : AddCommGroup H^{s, p}(E, F) :=
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 variable (E F s p) in
-/-- Coercion as an additive homomorphism. -/
+/-- Coercion to tempered distributions as an additive homomorphism. -/
 def coeAddMonoidHom : H^{s, p}(E, F) →+ 𝓢'(E, F) where
   toFun f := f
   map_zero' := rfl
@@ -241,7 +241,7 @@ instance : NormedAddCommGroup H^{s, p}(E, F) :=
 @[simp]
 theorem norm_toLp_eq (f : H^{s, p}(E, F)) : ‖f.toLp‖ = ‖f‖ := by rfl
 
-instance instNormedSpace : NormedSpace ℂ H^{s, p}(E, F) where
+instance : NormedSpace ℂ H^{s, p}(E, F) where
   norm_smul_le c f := by
     simp [← norm_toLp_eq, ← norm_smul]
 
@@ -286,3 +286,28 @@ instance (s : ℝ) : InnerProductSpace ℂ H^{s}(E, F) where
 end InnerProductSpace
 
 end BesselPotentialSpace
+
+namespace TemperedDistribution
+
+open scoped BesselPotentialSpace
+
+variable [NormedSpace ℂ F]
+
+variable {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
+
+/-- Every unbundled Sobolev tempered distribution defines an element in `H^{s, p}`. -/
+def MemSobolev.toBesselPotentialSpace {f : 𝓢'(E, F)} (hf : MemSobolev s p f) : H^{s, p}(E, F) where
+  toDistr := f
+  toLp := hf.choose
+  bessel_toDistr_eq_toLp := hf.choose_spec
+
+@[simp]
+theorem MemSobolev.toBesselPotentialSpace_toDistr {f : 𝓢'(E, F)} (hf : MemSobolev s p f) :
+    hf.toBesselPotentialSpace.toDistr = f := by rfl
+
+theorem MemSobolev.toBesselPotentialSpace_injective {f g : 𝓢'(E, F)} (hf : MemSobolev s p f)
+    (hg : MemSobolev s p g) (h : hf.toBesselPotentialSpace = hg.toBesselPotentialSpace) :
+    f = g := by
+  rw [← hf.toBesselPotentialSpace_toDistr, ← hg.toBesselPotentialSpace_toDistr, h]
+
+end TemperedDistribution
