@@ -257,15 +257,11 @@ def Mathlib.TacticAnalysis.rwMerge : TacticAnalysis.Config := .ofComplex {
   test ctxI i ctx goal := do
     let ctxT : Array (TSyntax `Lean.Parser.Tactic.rwRule) := ctx.flatten.map (⟨·⟩)
     let tac ← `(tactic| rw [$ctxT,*])
-    let oldMessages := (← get).messages
     try
       let goals ← ctxI.runTacticCode i goal tac
       return (goals, ctxT.map (↑·))
     catch _e => -- rw throws an error if it fails to pattern-match.
       return ([goal], ctxT.map (↑·))
-    finally
-      -- Drop any messages, since they will appear as if they are genuine errors.
-      modify fun s => { s with messages := oldMessages }
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if new.1.isEmpty then
       m!"Try this: rw {new.2}"
@@ -694,13 +690,11 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
             then
               continue
 
-            -- Verify suggestion works (suppress any messages from verification)
-            let savedMessages2 := (← get).messages
+            -- Verify suggestion works
             let verifyGoals ← try
               i.runTacticCode goal suggestedTac
             catch _e =>
               pure [goal]  -- Treat exception as failure
-            modify fun s => { s with messages := savedMessages2 }
 
             if !verifyGoals.isEmpty then
               logWarningAt i.tacI.stx
