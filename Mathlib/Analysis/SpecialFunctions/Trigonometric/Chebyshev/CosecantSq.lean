@@ -10,53 +10,25 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.RootsExt
 public import Mathlib.Algebra.Polynomial.Splits
 
 /-!
-# The cosecant-squared identity
-
-This is a small, self-contained companion to the existing Chebyshev API: it
-turns the real roots of `U n` into finite trigonometric sums without introducing
-new analytic infrastructure.  The proof is intended to be useful on its own,
-and the cotangent corollaries make the classical connection with the elementary
-proof of the Basel sum explicit.
-
-**Resumen en español.** Este archivo añade una consecuencia finita y autónoma
-de las raíces reales de `U n`. La identidad de cosecantes y sus dos corolarios
-de cotangentes quedan expresados directamente con la API existente de
-Chebyshev, sin redefinir objetos ni añadir maquinaria analítica paralela.
+# Finite cosecant-squared and cotangent-squared sums
 
 This file proves the classical identity
-$$\sum_{k=1}^{N-1} \csc^2\!\left(\frac{k\pi}{N}\right) = \frac{N^2 - 1}{3},$$
-stated over `Real.sin` as
-`∑ k ∈ Finset.Ico 1 N, (Real.sin (k * π / N))⁻¹ ^ 2 = (N ^ 2 - 1) / 3` for `1 ≤ N`.
+$$\sum_{k=1}^{N-1} \csc^2\!\bigl(\tfrac{k\pi}{N}\bigr) = \frac{N^2 - 1}{3}$$
+and the two cotangent-squared corollaries used in the elementary proof of the Basel problem.
 
-The proof uses the Chebyshev polynomial of the second kind `U (N-1)`, whose roots are exactly
-`cos (k * π / N)` for `k = 1, …, N-1`. It splits over `ℝ`, so its logarithmic derivative at
-`x = 1` sums `1 / (1 - z)` over those roots and evaluates to `(N ^ 2 - 1) / 3`
-(`Polynomial.Splits.eval_derivative_div_eval_of_ne_zero` and `derivative_U_eval_one_eq_div`).
-The roots are symmetric about `0` (`roots_U_real_map_neg`), so `∑ 1 / (1 + z) = ∑ 1 / (1 - z)`;
-averaging the two gives `∑ 1 / (1 - z ^ 2)`, and `1 - cos ^ 2 = sin ^ 2` turns that into the
-statement.
+## Main declarations
 
-## Main statements
-
-* `Polynomial.Chebyshev.splits_U_real`: `U ℝ n` splits over `ℝ`.
-* `Polynomial.Chebyshev.roots_U_real_map_neg`: the real roots of `U ℝ n` are symmetric about `0`.
-* `Polynomial.Chebyshev.abs_lt_one_of_mem_roots_U_real`: every real root of `U ℝ n` lies in
-  `(-1, 1)`.
-* `Polynomial.Chebyshev.sum_one_div_one_sub_sq_roots_U_real`: `∑ 1 / (1 - z ^ 2)` over the real
-  roots of `U ℝ n` equals `((n + 1) ^ 2 - 1) / 3`.
 * `Real.sum_inv_sin_sq_pi_div`: the cosecant-squared identity.
+* `Real.sum_cot_sq_pi_div`: `∑ cot²(kπ/N) = (N-1)(N-2)/3`.
+* `Real.sum_cot_sq_pi_div_two_mul_add_one`: the half-sum `∑_{k=1}^{m} cot²(kπ/(2m+1))`.
+
+Along the way we show `U ℝ n` splits over `ℝ` (`splits_U_real`), its roots are symmetric
+about `0` (`roots_U_real_map_neg`), and lie in `(-1, 1)` (`abs_lt_one_of_mem_roots_U_real`).
 
 ## References
 
-The identity is classical (Cauchy, *Cours d'analyse*, 1821). The related sum
-`∑_{k=1}^{m} cot²(kπ/(2m+1)) = m(2m-1)/3` is the arithmetic core of the elementary evaluation of
-`∑ 1 / k ^ 2 = π ^ 2 / 6` in M. Aigner and G. M. Ziegler, *Proofs from THE BOOK*, Chapter "π²/6".
-
-## Implementation notes
-
-`splits_U_real`, `roots_U_real_map_neg` and `abs_lt_one_of_mem_roots_U_real` are facts about
-`U ℝ n` on their own and could move next to `roots_U_real` in
-`Mathlib/Analysis/SpecialFunctions/Trigonometric/Chebyshev/RootsExtrema.lean`.
+* Cauchy, *Cours d'analyse*, 1821.
+* M. Aigner, G. M. Ziegler, *Proofs from THE BOOK*, Chapter "π²/6".
 -/
 
 public section
