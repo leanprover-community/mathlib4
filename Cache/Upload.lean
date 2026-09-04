@@ -50,9 +50,9 @@ mechanism first:
    half-set credentials name.
 2. `MATHLIB_CACHE_AZURE_BEARER_TOKEN`.
 
-`MATHLIB_CACHE_SAS` (`sas?`) is retired: an environment where it is the only
-credential errors with the replacement named, rather than reading as
-missing-credential.
+`MATHLIB_CACHE_SAS` (`sas?`) is not an accepted credential: an environment
+where it is the only value set gets an error that names the accepted
+mechanisms, rather than a missing-credential error.
 
 Pure so the precedence is testable; `getUploadAuth` wires the environment in.
 -/

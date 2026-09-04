@@ -1266,8 +1266,8 @@ section UploadDestination
 /-- `uploadAuthFrom` picks the upload credential mechanism: the S3 pair (with
 its optional session token) first, then the Azure bearer token. A half-set S3
 pair errors instead of falling through, so a misconfigured job cannot
-silently upload to a different backend than the one its credentials name; the
-retired MATHLIB_CACHE_SAS errors with the replacement named. -/
+silently upload to a different backend than the one its credentials name; a
+lone MATHLIB_CACHE_SAS errors with the accepted mechanisms named. -/
 def test_uploadAuthFrom : IO Unit := do
   IO.println "uploadAuthFrom:"
   assertTrue "S3 pair with a session token"
