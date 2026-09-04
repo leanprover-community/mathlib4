@@ -60,26 +60,36 @@ theorem natCast_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
 @[deprecated (since := "2026-07-17")] alias coe_inj := natCast_inj
 
+@[basify_op ←]
 theorem natCast_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_zero := natCast_zero
 
+@[basify_op ←]
 theorem natCast_one : ((1 : ℕ) : ℕ∞) = 1 :=
   rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_one := natCast_one
 
+@[basify_op ←]
 theorem natCast_add (m n : ℕ) : ↑(m + n) = (m + n : ℕ∞) :=
   rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_add := natCast_add
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op ←]
 theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
   rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_sub := natCast_sub
+
+/-- `Nat.cast_ofNat` specialised to `ℕ∞`, so that `basify` can register the numeral as an
+operation; the generic lemma is stated over a variable type and carries no usable head symbol. -/
+@[basify_op]
+theorem ofNat_eq_natCast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (OfNat.ofNat n : ℕ∞) = ((OfNat.ofNat n : ℕ) : ℕ∞) :=
+  rfl
 
 @[simp, basify_simp]
 lemma natCast_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=

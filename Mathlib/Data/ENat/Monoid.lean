@@ -29,7 +29,7 @@ namespace ENat
 
 variable {a b c m n : ℕ∞}
 
-@[simp] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
+@[simp, basify_op ←] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_mul := natCast_mul
 

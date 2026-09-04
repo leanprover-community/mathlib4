@@ -107,7 +107,7 @@ similar structures on `ℕ`. Most of these behave in a completely
 obvious way, but there are a few things to be said about
 subtraction, division and powers.
 -/
-@[simp, norm_cast]
+@[simp, norm_cast, basify_simp ←]
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
   Subtype.ext_iff.symm
 
@@ -235,6 +235,7 @@ theorem lt_succ_self (a : ℕ+) : a < succPNat a := Nat.lt_add_one a
 instance instSub : Sub ℕ+ :=
   ⟨fun a b => toPNat' (a - b : ℕ)⟩
 
+@[basify_op]
 theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
   change (toPNat' _ : ℕ) = ite _ _ _
   split_ifs with h

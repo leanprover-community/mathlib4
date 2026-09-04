@@ -107,7 +107,7 @@ variable [Preorder α] [OrderTop α] {a b : α}
 theorem isMax_top : IsMax (⊤ : α) :=
   isTop_top.isMax
 
-@[to_dual (attr := simp) not_lt_bot]
+@[to_dual (attr := simp, basify_simp) not_lt_bot, basify_simp]
 theorem not_top_lt : ¬⊤ < a :=
   isMax_top.not_lt
 
