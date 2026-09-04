@@ -91,7 +91,16 @@ fi
 if want cpu; then
   ncpu=$(nproc)
 
-  head -c 268435456 /dev/urandom > "$work/gz.bin" 2>/dev/null
+  # Deterministic corpus: AES-CTR over zeros with a fixed key and IV gives the
+  # same bytes on every machine and every run, so gzip does identical work.
+  # /dev/urandom would change the match-finding effort between runs, which made
+  # earlier cross-fleet gzip numbers incomparable.
+  head -c 268435456 /dev/zero 2>/dev/null \
+    | openssl enc -aes-256-ctr -nosalt \
+        -K 0000000000000000000000000000000000000000000000000000000000000042 \
+        -iv 00000000000000000000000000000042 \
+        > "$work/gz.bin" 2>/dev/null
+  echo "RESULT-RAW $label gzcorpus_sha256 $(openssl dgst -sha256 "$work/gz.bin" 2>/dev/null | awk '{print $NF}')"
   if [ -s "$work/gz.bin" ]; then
     t=$(now); gzip -1 -c "$work/gz.bin" > /dev/null; t2=$(now)
     emit cpu_gzip_256MiB_1x "$(elapsed "$t" "$t2")"
