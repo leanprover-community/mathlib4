@@ -139,8 +139,8 @@ def codimOneSimplex (j : Fin (p + 2)) : (Δ[p] ⊗ Δ[1] : SSet.{u}).nonDegenera
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_castSucc_nonDegenerateEquiv (j : Fin (p + 1)) :
-    (Δ[p] ⊗ Δ[1]).δ j.castSucc (nonDegenerateEquiv.{u} j).1 =
-      (codimOneSimplex j.castSucc).1 := by
+    (Δ[p] ⊗ Δ[1]).δ j.castSucc (nonDegenerateEquiv.{u} j).val =
+      (codimOneSimplex j.castSucc).val := by
   apply Prod.ext
   · exact stdSimplex.objEquiv.injective SimplexCategory.δ_comp_σ_self
   · dsimp
