@@ -149,9 +149,7 @@ theorem IsCarmichael.primeFactors_card_ge_three (h : IsCarmichael n) :
   · simp_all
     grind [h.two_lt]
   · rw [← isPrimePow_iff_card_primeFactors_eq_one] at hn
-    apply h.not_prime
-    rw [← Nat.squarefree_and_prime_pow_iff_prime]
-    exact ⟨h.squarefree, hn⟩
+    exact h.not_prime <| squarefree_and_prime_pow_iff_prime.mp ⟨h.squarefree, hn⟩
   obtain ⟨p, q, pq, hp, hq, pqn⟩ :=
     (squarefree_and_primeFactors_card_two_iff n).mp ⟨h.squarefree, hn⟩
   rw [← pqn] at h
