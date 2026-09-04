@@ -15,7 +15,7 @@ public import Mathlib.Util.Qq
 
 `certifyDecomposition` builds the `Echelon.Decomposition` certificate from the decomposition
 data, proving each certificate condition by `decide`, or from proofs of the
-individual entries supplied by a leaf certifier.
+individual entries supplied by an entry certifier.
 
 ## Main definitions
 
@@ -26,8 +26,8 @@ individual entries supplied by a leaf certifier.
 ## Implementation notes
 
 The elimination records its echelon form `U`, making the product a certificate obligation
-of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`. On the leaf
-path this is built one entry at a time, but should eventually be replaced by a dedicated
+of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`. On the
+certifier path this is built one entry at a time, but should eventually be replaced by a dedicated
 matrix mult normalising tactic. `norm_num` does close it today (via @[simp] rewrites), but is
 several times slower and does not handle some edge cases (e.g. 0x0).
 -/
@@ -120,37 +120,37 @@ def certifyDefEq (p : Q(Prop)) : MetaM Q($p) := do
   | Eq _ lhs _ => mkEqRefl lhs
   | _ => throwError "expected an equation:{indentExpr p}"
 
-/-- Prove that a recorded `entry` is nonzero by having `leaf` refute its equation with
+/-- Prove that a recorded `entry` is nonzero by having `certifier` refute its equation with
 `zero`; `site` names the entry in errors. -/
-def certifyNonzeroEntry {u : Level} {α : Q(Type u)} (leaf : LeafCertifier) (entry zero : Q($α))
-    (site : MessageData) : MetaM Q($entry ≠ $zero) := do
-  let (b, prf) ← leaf q($entry = $zero)
+def certifyNonzeroEntry {u : Level} {α : Q(Type u)} (certifier : EntryCertifier)
+    (entry zero : Q($α)) (site : MessageData) : MetaM Q($entry ≠ $zero) := do
+  let (b, prf) ← certifier q($entry = $zero)
   if b then throwError "{site} is zero"
   return prf
 
 /-- Prove `∀ i, L.diag i ≠ 0` from the recorded entries of `L`. -/
 def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (L : MatrixViews u m m α) (leaf : LeafCertifier) :
+    (L : MatrixViews u m m α) (certifier : EntryCertifier) :
     MetaM Q(∀ i, ($(L.matrix)).diag i ≠ 0) := do
   let zero : Q($α) ← mkNumeral α 0
   certifyForallFin q(∀ i, ($(L.matrix)).diag i ≠ 0) fun i _ =>
-    certifyNonzeroEntry leaf (L.entries[i]!)[i]! zero
+    certifyNonzeroEntry certifier (L.entries[i]!)[i]! zero
       m!"the diagonal entry of the transform at {i}"
 
-/-- Prove `L.IsLowerTriangular`: above the diagonal the elimination emitted zero, and at
-the remaining index pairs the triangularity guard is refutable. -/
+/-- Prove `L.IsLowerTriangular`: the elimination emits literal zeros above the diagonal,
+so every entry condition closes by `rfl`. -/
 def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
   -- the unfolded guard is `toDual j < toDual i`, which is `i < j` in the original order
   certifyForallFin q(($L).IsLowerTriangular) fun i gi => do
     certifyForallFin gi fun j cell => certifyImplication (i < j) cell certifyDefEq
 
-/-- Prove the characterisation of `U.IsPivotedBy pivot`: the two conditions on the pivot
-function mention no entry and are decided, while the entry conditions are built from the
-recorded entries of `U`. -/
+/-- Prove the characterisation of `U.IsPivotedBy pivot` via `isPivotedBy_iff`.
+The first two conditions are decidable. The entry conditions require equality check against 0
+and need to invoke the entry certifier to construct the non-zero proofs. -/
 def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : MatrixViews u m n α) (pivot : Q(Fin $m → WithTop (Fin $n))) (pivots : Array Nat)
-    (leaf : LeafCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy $pivot) := do
+    (certifier : EntryCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy $pivot) := do
   let zero : Q($α) ← mkNumeral α 0
   let entryConds ← certifyForallFin
       q(∀ i, (∀ j : Fin $n, (j : WithTop (Fin $n)) < $pivot i → $(U.matrix) i j = 0) ∧
@@ -163,7 +163,8 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
         certifyImplication (col?.all (j < ·)) cell certifyDefEq
       let hn ← certifyForallFin nonzeros fun c cell =>
         certifyImplication (col? == some c) cell fun _ =>
-          certifyNonzeroEntry leaf (U.entries[i]!)[c]! zero m!"the pivot entry at ({i}, {c})"
+          certifyNonzeroEntry certifier (U.entries[i]!)[c]! zero
+            m!"the pivot entry at ({i}, {c})"
       mkAppM ``And.intro #[hz, hn]
     | _ => throwError "unexpected shape of the pivot entry conditions:{indentExpr gi}"
   let hMono ← mkDecideProofQ q(Monotone $pivot)
@@ -181,7 +182,7 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m
   -- extract the subterm from the `Matrix.of` application
   have rows : Q(Fin $m → Fin $n → $α) := Aσ.matrix.appArg!
   -- every cell is an equation between two spellings of one entry of `A`, so all of them
-  -- close by `rfl` and none consults a leaf certifier
+  -- close by `rfl` and none consults an entry certifier
   let rowEq ← certifyForallFin
       q(∀ i : Fin $m, (fun j : Fin $n => $A ($σ i) (id j)) = $rows i) fun i _ => do
     let iN ← mkFinNumeral m i
@@ -193,10 +194,10 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m
     q(($A).submatrix $σ id = $(Aσ.matrix))
 
 /-- Prove the product `L * Aσ = U` entrywise from the literals' recorded entries. At
-concrete indices the product reduces to the fold of its terms, which `leaf` settles
+concrete indices the product reduces to the fold of its terms, which `certifier` settles
 against the entry of `U`. -/
 def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (L : MatrixViews u m m α) (Aσ U : MatrixViews u m n α) (leaf : LeafCertifier) :
+    (L : MatrixViews u m m α) (Aσ U : MatrixViews u m n α) (certifier : EntryCertifier) :
     MetaM Q($(L.matrix) * $(Aσ.matrix) = $(U.matrix)) := do
   have zero : Q($α) := ← mkNumeral α 0
   -- synthesised once, so that every cell references one instance node rather than rebuilding
@@ -209,7 +210,7 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     -- the fold must reproduce what `(L * Aσ) i j` expands to
     have sum : Q($α) := terms.foldr (fun t acc => q($t + $acc)) zero
     have entry : Q($α) := (U.entries[i]!)[j]!
-    let (b, prf) ← leaf q($sum = $entry)
+    let (b, prf) ← certifier q($sum = $entry)
     unless b do
       throwError "the product of the transform does not match the echelon form at ({i}, {j})"
     return prf
@@ -218,11 +219,11 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     certifyForallFin gi fun j _ => cell i j))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
-`entries`, the parsed entries of `A`, proving every condition by `decide` unless `leaf?`
+`entries`, the parsed entries of `A`, proving every condition by `decide` unless `certifier?`
 supplies a certifier for the entry ones. -/
 def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
-    (data : BareissData Expr) (leaf? : Option LeafCertifier) :
+    (data : BareissData Expr) (certifier? : Option EntryCertifier) :
     MetaM Q(Echelon.Decomposition $A) := withDefault do
   -- `withDefault`: the ambient transparency inside `simp` is `reducible`, which does not
   -- reduce a matrix literal at a concrete index, so no entry would be recognised as zero
@@ -232,20 +233,22 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have Aσ := mkMatrixViews α m n aEntries
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
-  let dispatch (p : Q(Prop)) (certifier : LeafCertifier → MetaM Q($p)) : MetaM Q($p) :=
-    match leaf? with
+  let dispatch (p : Q(Prop)) (certify : EntryCertifier → MetaM Q($p)) : MetaM Q($p) :=
+    match certifier? with
     | none => mkDecideProofQ p
-    | some leaf => certifier leaf
+    | some certifier => certify certifier
   have Lm := L.matrix
   have Aσm := Aσ.matrix
   have Um := U.matrix
   let hperm ← dispatch q(($A).submatrix $σ id = $Aσm) fun _ => certifyPermEq A Aσ σ
-  let hprod ← dispatch q($Lm * $Aσm = $Um) fun leaf => certifyProductEq _cr L Aσ U leaf
+  let hprod ← dispatch q($Lm * $Aσm = $Um) fun certifier =>
+    certifyProductEq _cr L Aσ U certifier
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
-  let hpivot ← dispatch q(($Um).IsPivotedBy $pivot) fun leaf =>
-    certifyPivotedBy _cr U pivot data.pivot leaf
+  let hpivot ← dispatch q(($Um).IsPivotedBy $pivot) fun certifier =>
+    certifyPivotedBy _cr U pivot data.pivot certifier
   let hlower ← dispatch q(($Lm).IsLowerTriangular) fun _ => certifyLowerTriangular _cr Lm
-  let hdiag ← dispatch q(∀ i, ($Lm).diag i ≠ 0) fun leaf => certifyNonzeroDiag _cr L leaf
+  let hdiag ← dispatch q(∀ i, ($Lm).diag i ≠ 0) fun certifier =>
+    certifyNonzeroDiag _cr L certifier
   return q(⟨$Lm, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
 
 end Mathlib.Tactic.Echelon

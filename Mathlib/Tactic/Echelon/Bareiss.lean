@@ -24,7 +24,7 @@ The elimination itself is the model-parameterized `bareissDecomp` in
 - `BareissResult`: the elaborated certificate together with the computed decomposition data.
 - `checkBareissApplicable`: the applicability check of the Bareiss method.
 - `checkDecideEq`: check whether `decide` settles equality in a ring.
-- `normNumCertifier`: `norm_num`'s core as a leaf certifier.
+- `normNumCertifier`: `norm_num`'s core as an entry certifier.
 - `modelFor`: select the computation model for a ring.
 -/
 
@@ -47,8 +47,8 @@ def checkDecideEq {u : Level} (α : Q(Type u)) : MetaM Bool := do
   return (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
     (·.isAppOf ``Decidable.isFalse)
 
-/-- `norm_num`'s core as a leaf certifier. -/
-def normNumCertifier : LeafCertifier := fun p => do
+/-- `norm_num`'s core as an entry certifier. -/
+def normNumCertifier : EntryCertifier := fun p => do
   let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
   return (b, prf)
 
@@ -64,7 +64,7 @@ def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
 
 /-- Select the computation model for the element type `α`: the first registered
 `bareiss_ext` extension that handles it, or the rational fallback. The fallback serves
-many rings, so it also probes for its leaf certifier: none where `decide` settles
+many rings, so it also probes for its entry certifier: none where `decide` settles
 equality, so every certificate condition is decided outright, and `norm_num`
 otherwise. -/
 def modelFor {u : Level} (α : Q(Type u)) : MetaM Model := do
@@ -73,13 +73,13 @@ def modelFor {u : Level} (α : Q(Type u)) : MetaM Model := do
       trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr α}"
       return m
   -- fallback model (rational literals)
-  let leaf? ← do
+  let certifier? ← do
     if ← checkDecideEq α then pure none
     else
       trace[Tactic.evalRank] "`decide` cannot settle equality in the element type; \
-        using `norm_num` leaves{indentExpr α}"
+        using the `norm_num` entry certifier{indentExpr α}"
       pure (some normNumCertifier)
-  return { producer := ← ratProducer (u := u) α, leafCertifier? := leaf? }
+  return { producer := ← ratProducer (u := u) α, entryCertifier? := certifier? }
 
 /-- The result of producing a decomposition by Bareiss. -/
 structure BareissResult where
@@ -96,6 +96,6 @@ def mkBareissDecomposition {u : Level} (A : Expr) (m n : Nat) (α : Q(Type u))
   let d ← model.producer entries
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
-  return { cert := ← certifyDecomposition _cr A entries d model.leafCertifier?, data := d }
+  return { cert := ← certifyDecomposition _cr A entries d model.entryCertifier?, data := d }
 
 end Mathlib.Tactic.Echelon

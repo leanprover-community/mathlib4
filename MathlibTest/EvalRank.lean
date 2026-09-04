@@ -196,7 +196,7 @@ end Binet
 /-! ## Behavior inside `simp` -/
 
 -- mixed element types in one goal: both literals are rewritten, the ℝ one by building the
--- certificate from `norm_num` leaves
+-- certificate with the `norm_num` entry certifier
 example :
     Matrix.rank (R := ℤ) !![1, 2; 2, 4] = Matrix.rank (R := ℝ) !![1, 0; 0, 1] - 1 := by
   simp only [norm_rank]
@@ -296,7 +296,7 @@ open Polynomial in
 error: `eval_rank` made no progress.
 Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.evalRank] `decide` cannot settle equality in the element type; using `norm_num` leaves
+trace: [Tactic.evalRank] `decide` cannot settle equality in the element type; using the `norm_num` entry certifier
       ℚ[X]
 [Tactic.evalRank] the following entry cannot be simplified to a numeral
       X
