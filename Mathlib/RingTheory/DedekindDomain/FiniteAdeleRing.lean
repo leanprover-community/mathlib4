@@ -184,6 +184,11 @@ theorem infinite_valued_ne_one_of_not_isUnit {a : 𝔸ᶠ[R, K]} (ha₀ : ∀ v,
   rw [isUnit_iff]
   exact ⟨ha₀, ha⟩
 
+theorem hasFiniteMulSupport_valued (a : 𝔸ᶠ[R, K]ˣ) :
+    (fun v ↦ Valued.v (a.1 v)).HasFiniteMulSupport := by
+  simp only [Function.HasFiniteMulSupport, Function.mulSupport, ne_eq]
+  exact FiniteAdeleRing.unitsEquiv_finite_valued_eq_one _
+
 variable (R)
 
 variable (K) in

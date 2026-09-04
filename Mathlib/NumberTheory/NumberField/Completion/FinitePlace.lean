@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
-
 /-!
 # Finite places of number fields
 
@@ -306,8 +305,8 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
   rw [norm_embedding]
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
 
-lemma FinitePlace.two_le_norm_of_one_lt_norm {v : HeightOneSpectrum R}
-    (x : v.adicCompletion K) (h : 1 < ‖x‖) : 2 ≤ ‖x‖ := by
+variable {v} in
+lemma FinitePlace.two_le_norm_of_one_lt_norm (x : v.adicCompletion K) (h : 1 < ‖x‖) : 2 ≤ ‖x‖ := by
   rw [FinitePlace.norm_def, WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero v) (by aesop)]
   apply (two_le_absNorm_nnreal v).trans
   conv_lhs => rw [← zpow_one (v.asIdeal.absNorm : NNReal)]
