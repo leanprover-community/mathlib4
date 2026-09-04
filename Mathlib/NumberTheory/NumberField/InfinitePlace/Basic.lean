@@ -409,9 +409,9 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
     cases h₃ with
     | inl hw =>
       rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
-      exact congr($(main).toRatAlgHom)
+      congrm $(main).toRatAlgHom
     | inr hw =>
-      refine congr($(main.resolve_right fun h' ↦ hw.not_ge ?_).toRatAlgHom)
+      congrm $(main.resolve_right fun h' ↦ hw.not_ge ?_).toRatAlgHom
       have : (embedding w x).im = 0 := by
         rw [← Complex.conj_eq_iff_im]
         have := congr($h' x)

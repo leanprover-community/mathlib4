@@ -216,7 +216,7 @@ theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Pa
 
 theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
   ext t
-  exact congr(γ $(qRight_one_right t))
+  congrm γ $(qRight_one_right t)
 
 /-- This is the function on p. 475 of [serre1951], defining a homotopy from a path `γ` to the
 product path `e ∧ γ`. -/

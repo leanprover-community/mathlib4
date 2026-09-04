@@ -666,7 +666,7 @@ theorem mk_perm_eq_self_power : #(Equiv.Perm α) = #α ^ #α :=
       rwa [← power_def, power_self_eq (aleph0_le_mk α), e.permCongr.cardinal_eq]
     refine ⟨⟨fun f ↦ Involutive.toPerm (fun x ↦ ⟨x.1, xor (f x.1) x.2⟩) fun x ↦ ?_, fun f g h ↦ ?_⟩⟩
     · simp_rw [← Bool.xor_assoc, Bool.xor_self, Bool.false_xor]
-    · ext a; rw [← (f a).xor_false, ← (g a).xor_false]; exact congr(($h ⟨a, false⟩).2)
+    · ext a; rw [← (f a).xor_false, ← (g a).xor_false]; congrm ($h ⟨a, false⟩).2
 
 theorem mk_perm_eq_two_power : #(Equiv.Perm α) = 2 ^ #α := by
   rw [mk_perm_eq_self_power, power_self_eq (aleph0_le_mk α)]

@@ -76,7 +76,7 @@ instance : FunLike (r ≼i s) α β where
   coe_injective := by
     rintro ⟨f, hf⟩ ⟨g, hg⟩ h
     congr with x
-    exact congr($h x)
+    congrm $h x
 
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'

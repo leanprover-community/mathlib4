@@ -161,12 +161,12 @@ def extend (F : Homotopy f₀ f₁) : C(ℝ, C(X, Y)) :=
 theorem extend_apply_of_le_zero (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ≤ 0) (x : X) :
     F.extend t x = f₀ x := by
   rw [← F.apply_zero]
-  exact congr($(Set.IccExtend_of_le_left (zero_le_one' ℝ) F.curry ht) x)
+  congrm $(Set.IccExtend_of_le_left (zero_le_one' ℝ) F.curry ht) x
 
 theorem extend_apply_of_one_le (F : Homotopy f₀ f₁) {t : ℝ} (ht : 1 ≤ t) (x : X) :
     F.extend t x = f₁ x := by
   rw [← F.apply_one]
-  exact congr($(Set.IccExtend_of_right_le (zero_le_one' ℝ) F.curry ht) x)
+  congrm $(Set.IccExtend_of_right_le (zero_le_one' ℝ) F.curry ht) x
 
 theorem extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x = F (t, x) :=
   congr($(Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x)

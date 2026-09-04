@@ -356,8 +356,8 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
     · rw [dsimp% congr($(c.ι_b_ι).app (op ⦋n⦌) y)] at hx
       rwa [← c.preimage_map, Subcomplex.preimage_obj, Set.mem_preimage]
     · rw [Subtype.ext_iff]
-      exact congr($(c.ι_t_ι_eq_ι_l_b_ι).app _ ⟨y, _⟩)
-    · exact congr($(c.ι_l).app _ ⟨y, _⟩))⟩
+      congrm $(c.ι_t_ι_eq_ι_l_b_ι).app _ ⟨y, _⟩
+    · congrm $(c.ι_l).app _ ⟨y, _⟩)⟩
 
 set_option backward.defeqAttrib.useBackward true in
 lemma sup_range_r_range_b :

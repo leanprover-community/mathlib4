@@ -250,7 +250,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   · refine Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) ?_
     dsimp
     rw [Set.image_comp]
-    refine congr(_ '' $(?_))
+    congrm _ '' ?_
     rw [Set.eq_preimage_iff_image_eq, ← Set.image_comp]
     swap
     · exact CategoryTheory.ConcreteCategory.bijective_of_isIso (C := TopCat) _

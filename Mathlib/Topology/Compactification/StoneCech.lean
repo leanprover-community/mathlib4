@@ -361,7 +361,7 @@ theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g
     (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
   apply h₁.ext_on denseRange_stoneCechUnit h₂
   rintro _ ⟨x, rfl⟩
-  exact congr($h x)
+  congrm $h x
 
 variable [CompactSpace β]
 

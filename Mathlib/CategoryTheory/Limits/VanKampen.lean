@@ -238,7 +238,7 @@ theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J 
       (by
         ext y
         dsimp
-        exact congr(($(e).app y).app x))
+        congrm ($(e).app y).app x)
       (hα.whiskerRight _)
   constructor
   · rintro ⟨hc'⟩ j

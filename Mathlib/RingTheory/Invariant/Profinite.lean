@@ -144,7 +144,7 @@ def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
     obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
     ext g
     obtain ⟨g, rfl⟩ := Ideal.Quotient.mk_surjective g
-    exact congr($hx' (Ideal.Quotient.mk _ (Subalgebra.inclusion h g)))⟩
+    congrm $hx' (Ideal.Quotient.mk _ (Subalgebra.inclusion h g))⟩
   map_id N := by ext ⟨⟨⟨x⟩, hx⟩, hx'⟩; rfl
   map_comp f g := by ext ⟨⟨⟨x⟩, hx⟩, hx'⟩; rfl
 
@@ -206,6 +206,6 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     lift x to B' N.1.1 using fun g ↦ hN g.2
     change Ideal.Quotient.mk Q (QuotientGroup.mk (s := N) a • x).1 = _
     rw [this]
-    exact congr($((s N).2) (Ideal.Quotient.mk _ x))
+    congrm $((s N).2) (Ideal.Quotient.mk _ x)
 
 end ProfiniteGrp

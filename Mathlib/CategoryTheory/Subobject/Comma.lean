@@ -55,7 +55,7 @@ def projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T] {A : Structur
   refine Subobject.lift (fun P f hf => Subobject.mk f.right) ?_
   intro P Q f g hf hg i hi
   refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i) ?_
-  exact congr($(hi).right)
+  congrm $(hi).right
 
 @[simp]
 theorem projectSubobject_mk [HasFiniteLimits C] [PreservesFiniteLimits T]
@@ -113,7 +113,7 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
         ((cancel_mono (T.map g.right)).1 (by simp [← T.map_comp]))
     · simp
     · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right ?_
-      exact congr($(Subobject.ofMkLEMk_comp h).right)
+      congrm $(Subobject.ofMkLEMk_comp h).right
 
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/

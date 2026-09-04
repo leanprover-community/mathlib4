@@ -307,7 +307,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
         ext x
         dsimp
         rw [dite_eq_right]
-        · exact congr(g $(Equiv.ofInjective_symm_apply ..))
+        · congrm g $(Equiv.ofInjective_symm_apply ..)
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
           rwa [disjoint_iff.mp h₃.1] at this

@@ -136,7 +136,7 @@ lemma ringHom_ext {R' : Type*} [CommSemiring R'] {f g : R[ε] →+* R'}
   let g' : R[ε] →ₐ[R] R' :=
     { toRingHom := g
       commutes' r := congr($h₀ r).symm }
-  exact congr($(show f' = g' from algHom_ext hε).toRingHom)
+  congrm $(show f' = g' from algHom_ext hε).toRingHom
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
 `f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of

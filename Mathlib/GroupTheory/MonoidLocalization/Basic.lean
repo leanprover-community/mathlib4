@@ -413,7 +413,7 @@ abbrev toMonoidHom (f : LocalizationMap S N) : M →* N where
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N → M →* N) :=
-  fun f g ↦ by cases f; congr! with eq; ext; exact congr($eq _)
+  fun f g ↦ by cases f; congr! with eq; ext; congrm $eq _
 
 @[to_additive] instance : FunLike (LocalizationMap S N) M N where
   coe f := f.toMonoidHom
@@ -901,7 +901,7 @@ abbrev cancelCommMonoid {M N} [CancelCommMonoid M] {S : Submonoid M}
   allEq x y := by
     obtain ⟨mx, sx, rfl⟩ := f.mk'_surjective x
     obtain ⟨my, sy, rfl⟩ := f.mk'_surjective y
-    exact congr(f.mk' $(Subsingleton.elim ..) $(Subsingleton.elim ..))
+    congrm f.mk' $(Subsingleton.elim ..) $(Subsingleton.elim ..)
 
 instance [Subsingleton M] : Subsingleton (Localization S) :=
   (Localization.monoidOf S).subsingleton_of_subsingleton

@@ -57,7 +57,7 @@ instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
   coe := fun a x ↦ a.1 x
   coe_injective _ _ h := by
     ext
-    exact congr($h _ _)
+    congrm $h _ _
 
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
   map_add a := a.1.map_add

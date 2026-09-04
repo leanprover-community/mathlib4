@@ -553,7 +553,7 @@ instance : skeletalFunctor.Full where
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
     ext : 3
-    exact congr($h _)
+    congrm $h _
 
 instance : skeletalFunctor.EssSurj where
   mem_essImage X :=
@@ -724,7 +724,7 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
   ext : 4
-  exact congr($(eq₁.trans eq₂.symm) _)
+  congrm $(eq₁.trans eq₂.symm) _
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr($(iso_eq_iso_refl (asIso f)).hom)
@@ -907,12 +907,12 @@ lemma δ_injective {n : ℕ} : Function.Injective (δ (n := n)) := by
   intro i j hij
   rw [← Fin.succAbove_left_inj]
   ext k : 1
-  exact congr($hij k)
+  congrm $hij k
 
 lemma σ_injective {n : ℕ} : Function.Injective (σ (n := n)) := by
   intro i j hij
   rw [← Fin.predAbove_left_inj]
   ext k : 1
-  exact congr($hij k)
+  congrm $hij k
 
 end SimplexCategory

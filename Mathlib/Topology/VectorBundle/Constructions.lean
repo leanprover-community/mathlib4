@@ -171,7 +171,7 @@ theorem Bundle.Trivialization.continuousLinearEquivAt_prod {e₁ : Trivializatio
   ext v : 2
   obtain ⟨v₁, v₂⟩ := v
   rw [(e₁.prod e₂).continuousLinearEquivAt_apply 𝕜, Trivialization.prod]
-  exact congr($(prod_apply' 𝕜 hx.1 hx.2 v₁ v₂).snd)
+  congrm $(prod_apply' 𝕜 hx.1 hx.2 v₁ v₂).snd
 
 end
 

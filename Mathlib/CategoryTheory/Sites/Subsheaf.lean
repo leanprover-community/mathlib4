@@ -81,7 +81,7 @@ theorem Subfunctor.eq_sheafify (h : Presieve.IsSheaf J F) (hG : Presieve.IsSheaf
     exact ((hG _ hs).amalgamate _ (G.family_of_elements_compatible s)).2
   apply (h _ hs).isSeparatedFor.ext
   intro V i hi
-  exact congr($((hG _ hs).valid_glue (G.family_of_elements_compatible s) _ hi).val)
+  congrm $((hG _ hs).valid_glue (G.family_of_elements_compatible s) _ hi).val
 
 set_option backward.defeqAttrib.useBackward true in
 theorem Subfunctor.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
@@ -173,7 +173,7 @@ theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
   rintro V i hi
   dsimp
   rw [← dsimp% l₁.naturality_apply, ← dsimp% l₂.naturality_apply]
-  exact congr($(e).app (op V) ⟨_, hi⟩)
+  congrm $(e).app (op V) ⟨_, hi⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem Subfunctor.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)

@@ -235,7 +235,7 @@ theorem ext_addMonoidHom
   rw [matrix_eq_sum_single x]
   simp_rw [map_sum]
   congr! 2
-  exact congr($(h _ _) _)
+  congrm $(h _ _) _
 
 /-- Linear maps from finite matrices are equal if they agree on the standard basis.
 

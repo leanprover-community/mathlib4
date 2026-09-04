@@ -22,14 +22,14 @@ instance instLeftDistribClass [Mul α] [Add α] [LeftDistribClass α] :
   left_distrib a b c := by
     cases a; · rfl
     cases b <;> cases c <;> try rfl
-    exact congr(some $(left_distrib ..))
+    congrm some $(left_distrib ..)
 
 instance instRightDistribClass [Mul α] [Add α] [RightDistribClass α] :
     RightDistribClass (WithZero α) where
   right_distrib a b c := by
     cases c; · simp
     cases a <;> cases b <;> try rfl
-    exact congr(some $(right_distrib ..))
+    congrm some $(right_distrib ..)
 
 instance instDistrib [Distrib α] : Distrib (WithZero α) where
   left_distrib := left_distrib

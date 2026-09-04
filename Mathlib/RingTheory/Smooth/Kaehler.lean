@@ -145,7 +145,7 @@ lemma sectionOfRetractionKerToTensorAux_prop (x y) (h : algebraMap P S x = algeb
     x - l (1 ⊗ₜ .D _ _ x) = y - l (1 ⊗ₜ .D _ _ y) := by
   rw [sub_eq_iff_eq_add, sub_add_comm, ← sub_eq_iff_eq_add, ← Submodule.coe_sub,
     ← map_sub, ← tmul_sub, ← map_sub]
-  exact congr(($hl.symm ⟨x - y, by simp [RingHom.mem_ker, h]⟩).val)
+  congrm ($hl.symm ⟨x - y, by simp [RingHom.mem_ker, h]⟩).val
 
 variable [Algebra R S] [IsScalarTower R P S]
 variable (hf' : (RingHom.ker (algebraMap P S)) ^ 2 = ⊥)
@@ -348,14 +348,14 @@ def retractionKerCotangentToTensorEquivSection :
   · ext1 x
     rw [H] at hl
     obtain ⟨x, rfl⟩ := e₁.surjective x
-    exact congr(e₁ ($hl x))
+    congrm e₁ ($hl x)
   · ext x
     rw [H]
     apply e₁.injective
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_restrictScalars,
       Function.comp_apply, LinearEquiv.symm_apply_apply, LinearMap.id_coe, id_eq,
       LinearEquiv.apply_symm_apply]
-    exact congr($hl (e₁ x))
+    congrm $hl (e₁ x)
   · intro f
     ext x
     simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,

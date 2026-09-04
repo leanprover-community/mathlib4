@@ -44,7 +44,7 @@ def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
   invFun c :=
     { pt := c.pt
       ι j := c.ι.app j
-      ι_naturality f := by ext x; exact congr($(c.w f) x) }
+      ι_naturality f := by ext x; congrm $(c.w f) x }
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -60,10 +60,10 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
      ⟨{ desc s := ↾fun x => hc.desc (F.coconeTypesEquiv.symm s) x
         fac s j := by
           ext x
-          exact congr($(hc.fac (F.coconeTypesEquiv.symm s) j) x)
+          congrm $(hc.fac (F.coconeTypesEquiv.symm s) j) x
         uniq s m hm := by
           ext x
-          exact congr($(hc.funext fun j ↦ funext fun y ↦ by simp [← hm j]) x) }⟩
+          congrm $(hc.funext fun j ↦ funext fun y ↦ by simp [← hm j]) x }⟩
   · rintro ⟨hc⟩
     classical
     refine ⟨⟨fun x y h ↦ ?_, fun x ↦ ?_⟩⟩

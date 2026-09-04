@@ -568,7 +568,7 @@ theorem IsLocalization.algebraMap_mk' (x : R) (y : M) :
     IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R Rₘ Sₘ,
     IsScalarTower.algebraMap_apply R Rₘ Sₘ, ← map_mul, mul_comm,
     IsLocalization.mul_mk'_eq_mk'_of_mul]
-  exact congr(algebraMap Rₘ Sₘ $(IsLocalization.mk'_mul_cancel_left x y))
+  congrm algebraMap Rₘ Sₘ $(IsLocalization.mk'_mul_cancel_left x y)
 
 variable (M)
 

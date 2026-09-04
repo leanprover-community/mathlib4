@@ -74,11 +74,11 @@ def isColimitCocone : IsColimit (cocone f g) :=
       | Sum.inl x₁ => s.inl x₁
       | Sum.inr x₂ => s.inr x₂) (by
     rintro _ _ ⟨t⟩
-    exact congr($s.condition t)))) (fun _ => rfl) (fun _ => rfl)
+    congrm $s.condition t))) (fun _ => rfl) (fun _ => rfl)
       (fun s m h₁ h₂ => by
       ext ⟨x₁ | x₂⟩
-      · exact congr($h₁ x₁)
-      · exact congr($h₂ x₂))
+      · congrm $h₁ x₁
+      · congrm $h₂ x₂)
 
 @[simp]
 lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
@@ -211,8 +211,8 @@ lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone f g} (e : c ≅ 
     (x₁ : X₁) (x₂ : X₂) (h : c.inl x₁ = c.inr x₂) :
     c'.inl x₁ = c'.inr x₂ := by
   convert! congr(e.hom.hom $h)
-  · exact congr($((e.hom.w WalkingSpan.left).symm) x₁)
-  · exact congr($((e.hom.w WalkingSpan.right).symm) x₂)
+  · congrm $((e.hom.w WalkingSpan.left).symm) x₁
+  · congrm $((e.hom.w WalkingSpan.right).symm) x₂
 
 lemma pushoutCocone_inl_eq_inr_iff_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) :

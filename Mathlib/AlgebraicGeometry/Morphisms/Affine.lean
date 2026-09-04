@@ -127,7 +127,7 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
   · simp only [Opens.map_top, morphismRestrict_app]
     refine IsIso.comp_isIso' ?_ inferInstance
     convert! isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
-    exact congr(IsIso ((ΓSpec.adjunction.unit.app X).app $(by simp)))
+    congrm IsIso ((ΓSpec.adjunction.unit.app X).app $(by simp))
 
 set_option backward.isDefEq.respectTransparency false in
 /--

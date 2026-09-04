@@ -236,7 +236,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
       by_cases hc : c = 0; · simp [hc]
       simp only [mul_coe_eq_bind hc]
       cases a <;> cases b <;> try rfl
-      exact congr(some $(add_mul ..))
+      congrm some $(add_mul ..)
   left_distrib c a b := by
     cases c with
     | top =>
@@ -249,7 +249,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
       by_cases hc : c = 0; · simp [hc]
       simp only [coe_mul_eq_bind hc]
       cases a <;> cases b <;> try rfl
-      exact congr(some $(mul_add ..))
+      congrm some $(mul_add ..)
 
 @[to_dual]
 instance instNonAssocSemiring [NonAssocSemiring α] [Subsingleton (AddUnits α)]

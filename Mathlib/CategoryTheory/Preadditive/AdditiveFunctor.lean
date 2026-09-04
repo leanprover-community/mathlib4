@@ -142,7 +142,7 @@ lemma Additive.of_isZero {F : C ⥤ D} (hF : IsZero F) :
   map_add {_ _ _ _} :=
     IsZero.eq_of_tgt (by
       rw [IsZero.iff_id_eq_zero]
-      exact congr($((IsZero.iff_id_eq_zero _).1 hF).app _)) _ _
+      congrm $((IsZero.iff_id_eq_zero _).1 hF).app _) _ _
 
 instance [HasZeroObject D] : Functor.Additive (0 : C ⥤ D) :=
   .of_isZero (isZero_zero _)

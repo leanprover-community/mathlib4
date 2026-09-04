@@ -87,7 +87,7 @@ instance funLike : FunLike (RingSeminorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr($h x)
+    congrm $h x
 
 instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -231,7 +231,7 @@ instance funLike : FunLike (RingNorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr($h x)
+    congrm $h x
 
 instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -286,7 +286,7 @@ instance funLike : FunLike (MulRingSeminorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr($h x)
+    congrm $h x
 
 instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -337,7 +337,7 @@ instance funLike : FunLike (MulRingNorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr($h x)
+    congrm $h x
 
 instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_zero f := f.map_zero'

@@ -98,8 +98,8 @@ instance instFunLike : FunLike (FreeGroupBasis ι G) ι G where
   coe_injective := by
     rintro ⟨b⟩ ⟨b'⟩ hbb'
     have H : (b.symm : FreeGroup ι →* G) = (b'.symm : FreeGroup ι →* G) := by
-      ext i; exact congr($hbb' i)
-    have : b.symm = b'.symm := by ext x; exact congr($H x)
+      ext i; congrm $hbb' i
+    have : b.symm = b'.symm := by ext x; congrm $H x
     rw [ofRepr.injEq, ← MulEquiv.symm_symm b, ← MulEquiv.symm_symm b', this]
 
 @[to_additive (attr := simp)]

@@ -415,7 +415,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
         induction j using SimplexCategory.rec with | _ j
         dsimp
         ext i : 2
-        exact congr($(e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩).val) }
+        congrm $(e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩).val }
   homEquiv_comp f g := by aesop
 
 /-- If a simplicial set `X` is representable by `⦋m⦌` for some `m : ℕ`, then this is the

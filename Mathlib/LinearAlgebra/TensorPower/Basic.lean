@@ -152,7 +152,7 @@ theorem one_mul {n} (a : ⨂[R]^n M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a :
     rw [TensorProduct.tmul_smul, map_smul, map_smul, ← gMul_def, tprod_mul_tprod, cast_tprod]
     congr 2 with i
     rw [Fin.elim0_append]
-    refine congr(a $(Fin.ext ?_))
+    congrm a $(Fin.ext ?_)
     simp
   | add x y hx hy =>
     rw [TensorProduct.tmul_add, map_add, map_add, hx, hy]

@@ -623,7 +623,7 @@ abbrev shiftComm (i j : A) : X⟦i⟧⟦j⟧ ≅ X⟦j⟧⟦i⟧ :=
 @[simp]
 theorem shiftComm_symm (i j : A) : (shiftComm X i j).symm = shiftComm X j i := by
   ext
-  exact congr($(shiftFunctorComm_symm C i j).hom.app X)
+  congrm $(shiftFunctorComm_symm C i j).hom.app X
 
 variable {X Y}
 

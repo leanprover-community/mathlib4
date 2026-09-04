@@ -277,7 +277,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
         simpa [update_eq_const_of_subsingleton] using! f.map_update_add 0 i x y
       map_smul' := fun c x ↦ by
         simpa [update_eq_const_of_subsingleton] using! f.map_update_smul 0 i c x }
-  right_inv f := by ext x; refine congr(f $(?_)); exact (eq_const_of_subsingleton _ _).symm
+  right_inv f := by ext x; congrm f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}
 

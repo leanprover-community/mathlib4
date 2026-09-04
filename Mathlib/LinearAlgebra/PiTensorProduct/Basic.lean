@@ -369,7 +369,7 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
   · intro r f
     rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
     apply congr_arg
-    exact congr($H f)
+    congrm $H f
 
 /-- The pure tensors (i.e. the elements of the image of `PiTensorProduct.tprod`) span
 the tensor product. -/

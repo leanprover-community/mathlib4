@@ -245,7 +245,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     cases h'.symm.trans e₁'
     cases h'.symm.trans e₂')
   | root x a f h' i c =>
-    exact congr($e₃ i c)
+    congrm $e₃ i c
   | child x a f h' i c p IH =>
     exact IH _ _ (h'' _)
 

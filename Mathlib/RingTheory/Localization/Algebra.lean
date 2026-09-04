@@ -148,7 +148,7 @@ lemma map_eq_toLinearMap_mapₐ (f : A →ₐ[R] B) :
       (IsScalarTower.toAlgHom R B Bₚ).toLinearMap f.toLinearMap =
       (IsLocalization.mapₐ M Rₚ Aₚ Bₚ f).toLinearMap := by
   ext x
-  exact congr($(mapExtendScalars_eq_toLinearMap_mapₐ M Rₚ Aₚ Bₚ f) x)
+  congrm $(mapExtendScalars_eq_toLinearMap_mapₐ M Rₚ Aₚ Bₚ f) x
 
 lemma map_linearMap_eq_toLinearMap_mapₐ :
     IsLocalizedModule.map M (Algebra.linearMap R Rₚ) (IsScalarTower.toAlgHom R A Aₚ).toLinearMap

@@ -211,7 +211,7 @@ def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) :=
   Cofan.IsColimit.mk _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
     continuous_of_discreteTopology (α := X)⟩) (by aesop)
-    (fun _ _ h ↦ by ext x; exact congr($(h x) _))
+    (fun _ _ h ↦ by ext x; congrm $(h x) _)
 
 variable [PreservesFiniteProducts F]
 
@@ -504,7 +504,7 @@ def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) :=
   Cofan.IsColimit.mk _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
     continuous_of_discreteTopology (α := X)⟩) (by aesop)
-    (fun _ _ h ↦ by ext x; exact congr($(h x) _))
+    (fun _ _ h ↦ by ext x; congrm $(h x) _)
 
 variable [PreservesFiniteProducts F]
 

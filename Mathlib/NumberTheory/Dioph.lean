@@ -384,7 +384,7 @@ theorem dom_dioph {f : (α → ℕ) →. ℕ} (d : DiophPFun f) : Dioph f.Dom :=
   cast congr(Dioph $(Set.ext fun _ => (PFun.dom_iff_graph ..).symm)) (ex1_dioph d)
 
 theorem diophFn_iff_pFun (f : (α → ℕ) → ℕ) : DiophFn f = @DiophPFun α f := by
-  refine congr(Dioph $(Set.ext fun v => ?_)); exact PFun.lift_graph.symm
+  congrm Dioph $(Set.ext fun v => ?_); exact PFun.lift_graph.symm
 
 theorem abs_poly_dioph (p : Poly α) : DiophFn fun v => (p v).natAbs :=
   of_no_dummies _ ((p.map some - Poly.proj none) * (p.map some + Poly.proj none))

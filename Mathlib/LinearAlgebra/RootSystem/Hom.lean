@@ -213,13 +213,13 @@ def weightHom (P : RootPairing ι R M N) : End P →* (Module.End R M) where
 lemma weightHom_injective (P : RootPairing ι R M N) : Injective (weightHom P) := by
   intro f g hfg
   ext x
-  · exact congr($hfg x)
+  · congrm $hfg x
   · refine LinearEquiv.injective P.flip.toPerfPair ?_
     simp_rw [← weight_coweight_transpose_apply]
-    exact congr($(hfg).dualMap (P.flip.toPerfPair x))
+    congrm $(hfg).dualMap (P.flip.toPerfPair x)
   · refine Embedding.injective P.root ?_
     simp_rw [← root_weightMap_apply]
-    exact congr($hfg (P.root x))
+    congrm $hfg (P.root x)
 
 /-- The coweight space representation of endomorphisms -/
 def coweightHom (P : RootPairing ι R M N) : End P →* (N →ₗ[R] N)ᵐᵒᵖ where

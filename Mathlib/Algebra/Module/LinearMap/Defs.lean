@@ -263,7 +263,7 @@ theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass
     f = g := by
   apply DFunLike.ext
   intro m
-  exact congr($h m)
+  congrm $h m
 
 /-- Identity map as a `LinearMap` -/
 @[instance_reducible]
@@ -643,7 +643,7 @@ theorem toLinearMap_injective {f g : M →ₑ+[σ.toMonoidHom] M₂}
     (h : (f : M →ₛₗ[σ] M₂) = (g : M →ₛₗ[σ] M₂)) :
     f = g := by
   ext m
-  exact congr($h m)
+  congrm $h m
 
 end DistribMulActionHom
 
@@ -708,7 +708,7 @@ theorem AddMonoidHom.toNatLinearMap_injective [AddCommMonoid M] [AddCommMonoid M
     Function.Injective (@AddMonoidHom.toNatLinearMap M M₂ _ _) := by
   intro f g h
   ext x
-  exact congr($h x)
+  congrm $h x
 
 @[simp]
 theorem AddMonoidHom.coe_toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) :
@@ -725,7 +725,7 @@ theorem AddMonoidHom.toIntLinearMap_injective [AddCommGroup M] [AddCommGroup M�
     Function.Injective (@AddMonoidHom.toIntLinearMap M M₂ _ _) := by
   intro f g h
   ext x
-  exact congr($h x)
+  congrm $h x
 
 @[simp]
 theorem AddMonoidHom.coe_toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) :

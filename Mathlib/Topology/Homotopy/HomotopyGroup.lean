@@ -135,7 +135,7 @@ theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h)
 
 theorem copy_eq (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : copy f g h = f := by
   ext x
-  exact congr($h x)
+  congrm $h x
 
 theorem boundary (f : Ω^ N X x) : ∀ y ∈ Cube.boundary N, f y = x :=
   f.2
@@ -312,7 +312,7 @@ theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fr
 def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const where
   toFun := toLoop i
   invFun := fromLoop i
-  left_inv p := by ext; exact congr(p $(by dsimp; exact Equiv.apply_symm_apply ..))
+  left_inv p := by ext; congrm p $(by dsimp; exact Equiv.apply_symm_apply ..)
   right_inv := to_from i
   continuous_toFun := continuous_toLoop i
   continuous_invFun := continuous_fromLoop i
@@ -463,7 +463,7 @@ abbrev HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
 def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   toFun f := f 0
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ ↦ isEmptyElim i⟩
-  left_inv f := by ext; exact congr(f $(Subsingleton.elim ..))
+  left_inv f := by ext; congrm f $(Subsingleton.elim ..)
   continuous_invFun := ContinuousMap.const'.2.subtype_mk _
 
 /-- The homotopy "group" indexed by an empty type is in bijection with
@@ -499,7 +499,7 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
       by
       rintro y ⟨i, iH | iH⟩ <;> cases Unique.eq_default i <;> apply congr(p $iH).trans
       exacts [p.source, p.target]⟩
-  left_inv p := by ext y; exact congr(p $((eq_const_of_unique y).symm))
+  left_inv p := by ext y; congrm p $((eq_const_of_unique y).symm)
 
 /- TODO (?): deducing this from `homotopyGroupEquivFundamentalGroup` would require
   combination of `CategoryTheory.Functor.mapAut` and

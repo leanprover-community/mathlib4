@@ -156,7 +156,7 @@ instance [WellFoundedLT J] (j : J) : Subsingleton (d.Extension val₀ j) := by
     congr
     ext ⟨⟨l, hl⟩⟩
     have := hi' l hl
-    exact congr(val $(Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le)))
+    congrm val $(Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le))
 
 lemma compatibility [WellFoundedLT J]
     {j : J} (e : d.Extension val₀ j) {i : J} (e' : d.Extension val₀ i) (h : i ≤ j) :

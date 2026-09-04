@@ -667,7 +667,7 @@ lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y :
       (pointwiseLeftKanExtensionUnit L F) G α = β := by
     apply hom_ext_of_isLeftKanExtension (α := pointwiseLeftKanExtensionUnit L F)
     aesop
-  exact congr($(h).app Y)
+  congrm $(h).app Y
 
 variable {F L}
 
@@ -773,7 +773,7 @@ lemma pointwiseRightKanExtension_lift_app (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y 
       (pointwiseRightKanExtensionCounit L F) G α = β := by
     apply hom_ext_of_isRightKanExtension (α := pointwiseRightKanExtensionCounit L F)
     aesop
-  exact congr($(h).app Y)
+  congrm $(h).app Y
 
 variable {F L}
 

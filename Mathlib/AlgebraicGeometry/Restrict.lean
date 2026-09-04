@@ -260,7 +260,7 @@ lemma Scheme.homOfLE_homOfLE (X : Scheme.{u}) {U V W : X.Opens} (e₁ : U ≤ V)
 theorem Scheme.homOfLE_base {U V : X.Opens} (e : U ≤ V) :
     (X.homOfLE e).base = (Opens.toTopCat _).map (homOfLE e) := by
   ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
-  exact congr($(X.homOfLE_ι e) a)
+  congrm $(X.homOfLE_ι e) a
 
 theorem Scheme.homOfLE_apply' {U V : X.Opens} (e : U ≤ V) (x : X) (hx : x ∈ U) :
     X.homOfLE e ⟨x, hx⟩ = ⟨x, e hx⟩ := by
