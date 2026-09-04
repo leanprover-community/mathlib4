@@ -93,8 +93,8 @@ noncomputable def filtration (j : Fin (p + 1)) : (Δ[p] ⊗ Δ[1] : SSet.{u}).Su
 
 lemma ofSimplex_le_filtration {i j : Fin (p + 1)} (hij : i ≤ j) :
     .ofSimplex (nonDegenerateEquiv i).1 ≤ filtration.{u} j :=
-  le_iSup (fun (i : {i // i ≤ j}) ↦
-    Subcomplex.ofSimplex (nonDegenerateEquiv i.1).1) ⟨i, hij⟩
+  le_iSup (fun i : Set.Iic j ↦
+    Subcomplex.ofSimplex (nonDegenerateEquiv i.val).val) ⟨i, hij⟩
 
 variable (p) in
 lemma filtration_zero :
