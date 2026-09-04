@@ -83,7 +83,8 @@ A typical use case is `enat_to_nat; lia`.
 
 Deprecated in favour of more general `basify`. -/
 elab "enat_to_nat" : tactic => do
-  logWarning "`enat_to_nat` is deprecated, use `basify` instead"
+  Linter.logLintIf Linter.linter.deprecated (← getRef)
+    "`enat_to_nat` is deprecated, use `basify` instead"
   evalTactic (← `(tactic| focus (
       (repeat' cases_first_enat) <;>
       (try simp only [enat_to_nat_top, enat_to_nat_coe] at *)

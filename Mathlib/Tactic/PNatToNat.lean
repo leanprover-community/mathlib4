@@ -69,7 +69,8 @@ A typical use case is `pnat_to_nat; lia`.
 
 Deprecated in favour of more general `basify` -/
 elab "pnat_to_nat" : tactic => do
-  logWarning "`pnat_to_nat` is deprecated, use `basify` instead"
+  Linter.logLintIf Linter.linter.deprecated (← getRef)
+    "`pnat_to_nat` is deprecated, use `basify` instead"
   evalTactic (← `(tactic| focus (
     pnat_positivity;
     simp only [pnat_to_nat_coe] at *)
