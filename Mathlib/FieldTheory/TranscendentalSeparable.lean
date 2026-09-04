@@ -26,7 +26,7 @@ Let `K/k` be arbitrary field extension with characteristic `p > 0`, then TFAE
 3. `K ⊗ₖ k^{1/p}` is reduced.
 4. `K` is geometrically reduced over `k`.
 
-# Main definitions and results
+## Main definitions and results
 
 * `Algebra.IsSeparablyGenerated` : A field extension is separably generated if there exists
   a transcendence basis such that the extension above it is separable.
@@ -59,25 +59,21 @@ finitely generated field extension `K/k`.
 
 -/
 
-universe u v w
-
 @[expose] public section
-
-open TensorProduct
 
 section
 
-variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
+variable (k : Type*) (K : Type*) [Field k] [Field K] [Algebra k K]
 
 /-- A field extension is separably generated if there exists a transcendence basis such that
 the extension above it is separable. -/
 @[mk_iff, stacks 030O "Part 1"]
 class Algebra.IsSeparablyGenerated : Prop where
-  isSeparable' : ∃ (s : Set K), IsTranscendenceBasis k ((↑) : s → K) ∧
+  isSeparable : ∃ (s : Set K), IsTranscendenceBasis k ((↑) : s → K) ∧
     Algebra.IsSeparable (IntermediateField.adjoin k s) K
 
 variable {k K} in
-lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type w} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
+lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type*} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
     [Algebra.IsSeparablyGenerated k K] : Algebra.IsSeparablyGenerated k K' := by
   rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨s, isT, sep⟩
   refine ⟨e '' s, (e.isTranscendenceBasis isT).to_subtype_range' (by simp [Set.range_comp]), ?_⟩
@@ -92,19 +88,19 @@ lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
     refine ⟨isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.mpr ⟨?_, ?_⟩, ?_⟩
     · simpa using RingHom.injective _
     · simpa [← IntermediateField.isAlgebraic_adjoin_iff_top] using h.isAlgebraic.tower_top _
-    · exact Algebra.isSeparable_tower_top_of_isSeparable k _  K
+    · exact Algebra.isSeparable_tower_top_of_isSeparable k _ K
   · have h := Set.isEmpty_coe_sort.mp (isT.isEmpty_iff_isAlgebraic.mpr alg)
     have : IntermediateField.adjoin k s = ⊥ := IntermediateField.adjoin_eq_bot_iff.mpr (by simp [h])
     rw [this] at sep
-    have := AlgEquiv.Algebra.isSeparable (IntermediateField.botEquiv k K).symm
+    have := IntermediateField.isSeparable_bot k K
     exact Algebra.IsSeparable.trans k (⊥ : IntermediateField k K) K
 
 /-- A field extension is transcendental separable if every finitely generated subextension is
 separably generated. -/
 @[mk_iff, stacks 030O "Part 2"]
 class Algebra.IsTranscendentalSeparable : Prop where
-  forall_isSeparablyGenerated : ∀ (A' : IntermediateField k K),
-    Algebra.EssFiniteType k A' → Algebra.IsSeparablyGenerated k A'
+  forall_isSeparablyGenerated : ∀ (L : IntermediateField k K),
+    Algebra.EssFiniteType k L → Algebra.IsSeparablyGenerated k L
 
 lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
     Algebra.IsSeparable k K ↔
@@ -120,6 +116,8 @@ lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
     exact Subalgebra.isSeparable_iff.mp sep' x (by simp [L])
 
 end
+
+open TensorProduct
 
 lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
     (p : Ideal S) (min : p ∈ minimalPrimes S) :
@@ -169,7 +167,7 @@ lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field 
     Module.Flat.lTensor_preserves_injective_linearMap _ (Subalgebra.inclusion_injective le)
   exact isReduced_of_injective _ this
 
-variable (k : Type u) [Field k] (K : Type v) [Field K] [Algebra k K]
+variable (k : Type*) [Field k] (K : Type*) [Field K] [Algebra k K]
 
 open scoped Polynomial
 
@@ -256,7 +254,7 @@ noncomputable def quotientPolynomialTensorProductEquiv (f : K[X]) :
 
 open IntermediateField.algebraAdjoinAdjoin in
 lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain [IsDomain S]
-    {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
+    {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] :
     IsReduced (TensorProduct k K S) := by
@@ -308,7 +306,7 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_isDomain [IsDomain S]
   exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain k K S ((↑) : s → K) isT
 
 lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced [IsReduced S]
-    [Algebra.FiniteType k S] {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
+    [Algebra.FiniteType k S] {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] :
     IsReduced (TensorProduct k K S) := by
