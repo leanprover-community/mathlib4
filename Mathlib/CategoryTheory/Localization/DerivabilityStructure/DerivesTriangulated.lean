@@ -47,8 +47,6 @@ variable {Φ : LocalizerMorphism W₁ W₂}
   {L : C₂ ⥤ D₂} [L.IsLocalization W₂] [L.CommShift ℤ] [L.IsTriangulated]
   [L.mapArrow.EssSurj]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 include hF in
 lemma isTriangulated_of_isRightDerivedFunctor
     [Φ.IsRightDerivabilityStructure] [Φ.arrow.HasRightResolutions]
@@ -66,8 +64,6 @@ lemma isTriangulated_of_isRightDerivedFunctor
       ⟨(Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
         (Localization.isoOfHom L _ _ R.hw.2) (by simp [← Functor.map_comp])).symm ≪≫ eφ⟩⟩)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 include hF in
 lemma isTriangulated_of_isLeftDerivedFunctor
     [Φ.IsLeftDerivabilityStructure] [Φ.arrow.HasLeftResolutions]
