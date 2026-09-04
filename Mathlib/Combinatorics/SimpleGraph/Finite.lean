@@ -625,10 +625,10 @@ instance [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj] : Decidable (G �
   inferInstanceAs <| Decidable <| ∀ v w, G.Adj v w → H.Adj v w
 
 /-- The lattice of simple graphs on a finite type is locally finite. -/
-noncomputable instance [Finite V] : LocallyFiniteOrder (SimpleGraph V) := by
-  classical
+noncomputable instance [Finite V] : LocallyFiniteOrder (SimpleGraph V) :=
+  open scoped Classical in
   letI := Fintype.ofFinite (SimpleGraph V)
-  exact Fintype.toLocallyFiniteOrder
+  Fintype.toLocallyFiniteOrder
 
 end LocallyFiniteOrder
 
