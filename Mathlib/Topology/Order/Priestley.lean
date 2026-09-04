@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.UpperLower.Basic
 public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!

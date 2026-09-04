@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.CommBialgCat
 public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
-public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 
 /-!
 # The category of commutative Hopf algebras over a commutative ring
@@ -140,7 +139,7 @@ def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : HopfAlgebra R X}
   inv := ofHom (e.symm : Y →ₐc[R] X)
 
 /-- Build a `BialgEquiv` from an isomorphism in the category `CommHopfAlgCat R`. -/
--- TODO: Make simp once `BialgEquiv.toCoalgEquiv_eq_coe` is gone.
+-- TODO: Make `BialgEquiv.toCoalgEquiv` the simp normal form so that this can be simp
 @[expose, simps -isSimp]
 def ofIso (i : A ≅ B) : A ≃ₐc[R] B where
   __ := i.hom.hom

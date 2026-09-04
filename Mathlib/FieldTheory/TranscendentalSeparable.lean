@@ -41,41 +41,30 @@ variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
 the extension above it is separable. -/
 @[mk_iff, stacks 030O "Part 1"]
 class Algebra.IsSeparablyGenerated : Prop where
-  isSeparable' : ∃ (ι : Type v) (f : ι → K),
-    IsTranscendenceBasis k f ∧
-    Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K
+  isSeparable' : ∃ (s : Set K), IsTranscendenceBasis k ((↑) : s → K) ∧
+    Algebra.IsSeparable (IntermediateField.adjoin k s) K
 
 variable {k K} in
 lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type w} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
     [Algebra.IsSeparablyGenerated k K] : Algebra.IsSeparablyGenerated k K' := by
-  rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨ι, f, isT, sep⟩
-  have : Small.{w} ι := small_of_injective (e.injective.comp isT.1.injective)
-  let g := (e ∘ f) ∘ (equivShrink ι).symm
-  use Shrink.{w} ι, g, (e.isTranscendenceBasis isT).comp_equiv (equivShrink ι).symm
-  have eq : (IntermediateField.adjoin k (Set.range f)).map e =
-      (IntermediateField.adjoin k (Set.range g)) := by
-    simp [IntermediateField.adjoin_map, g, Set.range_comp e f]
-  let e' := ((IntermediateField.adjoin k (Set.range f)).equivMap e.toAlgHom).trans
-    (IntermediateField.equivOfEq eq)
+  rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨s, isT, sep⟩
+  refine ⟨e '' s, (e.isTranscendenceBasis isT).to_subtype_range' (by simp [Set.range_comp]), ?_⟩
+  let e' := ((IntermediateField.adjoin k s).equivMap e.toAlgHom).trans
+    (IntermediateField.equivOfEq (IntermediateField.adjoin_map k s e.toAlgHom))
   exact Algebra.IsSeparable.of_equiv_equiv e'.toRingEquiv e.toRingEquiv rfl
 
 lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
     Algebra.IsSeparable k K ↔ (Algebra.IsSeparablyGenerated k K ∧ Algebra.IsAlgebraic k K) := by
-  refine ⟨fun h ↦ ⟨?_, inferInstance⟩, fun ⟨⟨ι, T, isT, sep⟩, alg⟩ ↦ ?_⟩
-  · use (∅ : Set K), fun x ↦ 0
-    have eqbot : IntermediateField.adjoin k (Set.range fun (x : (∅ : Set K)) ↦ (0 : K)) = ⊥ :=
-      IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
+  refine ⟨fun h ↦ ⟨?_, inferInstance⟩, fun ⟨⟨s, isT, sep⟩, alg⟩ ↦ ?_⟩
+  · use ∅
     refine ⟨isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.mpr ⟨?_, ?_⟩, ?_⟩
     · simpa using RingHom.injective _
-    · simpa [← IntermediateField.isAlgebraic_adjoin_iff_top, eqbot]
-        using (Algebra.isSeparable_tower_top_of_isSeparable k _  K).isAlgebraic
-    · simpa [eqbot] using Algebra.isSeparable_tower_top_of_isSeparable k _  K
-  · have := isT.isEmpty_iff_isAlgebraic.mpr alg
-    have : IntermediateField.adjoin k (Set.range T) = ⊥ :=
-      IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
+    · simpa [← IntermediateField.isAlgebraic_adjoin_iff_top] using h.isAlgebraic.tower_top _
+    · exact Algebra.isSeparable_tower_top_of_isSeparable k _  K
+  · have h := Set.isEmpty_coe_sort.mp (isT.isEmpty_iff_isAlgebraic.mpr alg)
+    have : IntermediateField.adjoin k s = ⊥ := IntermediateField.adjoin_eq_bot_iff.mpr (by simp [h])
     rw [this] at sep
-    have : Algebra.IsSeparable k (⊥ : IntermediateField k K) :=
-      AlgEquiv.Algebra.isSeparable (IntermediateField.botEquiv k K).symm
+    have := AlgEquiv.Algebra.isSeparable (IntermediateField.botEquiv k K).symm
     exact Algebra.IsSeparable.trans k (⊥ : IntermediateField k K) K
 
 /-- A field extension is transcendental separable if every finitely generated subextension is
