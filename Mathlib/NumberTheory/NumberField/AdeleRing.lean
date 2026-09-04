@@ -7,9 +7,6 @@ module
 
 public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
-public import Mathlib.NumberTheory.NumberField.ProductFormula
-public import Mathlib.Algebra.Group.Pi.Units
-public import Mathlib.RingTheory.Ideal.Int
 
 /-!
 # The adele ring of a number field
