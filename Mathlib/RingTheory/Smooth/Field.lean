@@ -120,7 +120,7 @@ lemma Algebra.h1Cotangent_subsingleton_of_subalgebra
     (MvPolynomial.rename S.val) := Algebra.Extension.ker_eq_comap_of_subalgebra S
   have zmem : z ∈ (Generators.self R S).toExtension.ker := by
     simpa [eqcomap] using! Ideal.mem_comap.mpr (hz ▸ y.2)
-  let z' : (Generators.self R ↥S).toExtension.Cotangent := Ideal.toCotangent _ ⟨z, zmem⟩
+  let z' : (Generators.self R S).toExtension.Cotangent := Ideal.toCotangent _ ⟨z, zmem⟩
   have mapeq : Extension.Cotangent.map (Generators.HomOfCommSelf R S T).toExtensionHom z' = x := by
     apply (Algebra.Extension.Cotangent.map_mk _ _).trans
     simp only [Generators.homOfComm_toExtensionHom_toAlgHom, ← hy]
@@ -172,15 +172,14 @@ lemma Algebra.FormallySmooth.of_isSeparablyGenerated [Algebra.IsSeparablyGenerat
     Algebra.FormallySmooth K L := by
   rcases ‹Algebra.IsSeparablyGenerated K L› with ⟨s, isT, sep⟩
   have : Algebra.IsSeparable (IntermediateField.adjoin K (Set.range ((↑) : s → L))) L := by
-    convert sep
-    <;> simp
+    convert sep <;> simp
   exact Algebra.FormallySmooth.of_algebraicIndependent_of_isSeparable isT.1
 
 instance (priority := low) Algebra.FormallySmooth.of_perfectField
     [PerfectField K] [Algebra.EssFiniteType K L] : Algebra.FormallySmooth K L := by
   obtain ⟨s, hs, H⟩ := exists_isTranscendenceBasis_and_isSeparable_of_perfectField K L
-  have : Algebra.IsSeparable (↥(IntermediateField.adjoin K (Set.range ((↑) : s → L)))) L := by
-    convert! H <;> simp
+  have : Algebra.IsSeparable (IntermediateField.adjoin K (Set.range ((↑) : s → L))) L := by
+    convert H <;> simp
   exact .of_algebraicIndependent_of_isSeparable hs.1
 
 variable (K L) in
