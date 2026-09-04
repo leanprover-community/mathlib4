@@ -22,25 +22,22 @@ For a prime `p` of `A`, we introduce a predicate stating that the residue field 
 ## Main results
 
 * instances deducing `Algebra.HasSeparableResidueFieldsAt` when the residue field `κ(p)` is
-  perfect, when the quotient `A ⧸ p` is finite, and when `A` has finite quotients and `p` is
-  nonzero;
+  perfect, and when `A` has finite quotients and `p` is nonzero;
 * `Algebra.HasSeparableResidueFieldsAt.isSeparable_quotient`: at a maximal prime, the predicate
   also gives the separability of the extensions of quotient rings;
-* `Algebra.HasSeparableResidueFieldsAt.tower_top`: the predicate passes to an intermediate ring.
+* `Algebra.HasSeparableResidueFieldsAt.tower_top` and
+  `Algebra.HasSeparableResidueFieldsAt.tower_bot`: the predicate passes to an intermediate ring.
 
 ## Implementation notes
 
-The condition is stated on the residue fields rather than on the quotient rings `(B ⧸ P)/(A ⧸ p)`
-since the quotients are fields only when the primes are maximal, in which case they are canonically
-isomorphic to the residue fields. This is why
-`Algebra.HasSeparableResidueFieldsAt.isSeparable_quotient` assumes that `p` and `P` are maximal,
-whereas the definition itself works at an arbitrary prime.
+The condition is on the residue fields rather than on the quotient rings `(B ⧸ P)/(A ⧸ p)` so that
+it makes sense at any prime: the quotients are fields only at maximal primes.
 
-The field `Algebra.HasSeparableResidueFieldsAt.isSeparable'` fixes one algebra structure on the
-localizations, namely `Localization.AtPrime.algebraOfLiesOver`, so that proving the predicate
-involves a single choice. The instance `Algebra.HasSeparableResidueFieldsAt.isSeparable`, which is
-the one consumers use, then generalises it to an arbitrary compatible structure; the genericity is
-paid for once, there, rather than in the definition.
+The algebra structure on `κ(P)` over `κ(p)` in the predicate is the one induced by the algebra
+structure on `Localization.AtPrime P` over `Localization.AtPrime p` given by
+`Localization.AtPrime.algebraOfLiesOver`. Any other structure making `Localization.AtPrime P` an
+algebra over `Localization.AtPrime p` in a compatible way with the action of `A` is equal to that
+one, see `Localization.AtPrime.algebraMap_eq`.
 -/
 
 @[expose] public section
@@ -49,7 +46,7 @@ open Ideal
 
 namespace Algebra
 
-section
+section Prime
 
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A) [p.IsPrime]
 
@@ -80,21 +77,13 @@ instance [PerfectField p.ResidueField] : HasSeparableResidueFieldsAt A B p where
     letI := Localization.AtPrime.algebraOfLiesOver p P
     IsAlgebraic.isSeparable_of_perfectField
 
-/-- If the quotient `A ⧸ p` is finite, the residue field extensions above `p` are separable. -/
-instance [Finite (A ⧸ p)] : HasSeparableResidueFieldsAt A B p where
-  isSeparable' P _ _ :=
-    haveI : p.IsMaximal := Ideal.Quotient.maximal_of_isField p (Finite.isField_of_domain _)
-    haveI : P.IsMaximal := IsMaximal.of_liesOver_isMaximal P p
-    letI := Localization.AtPrime.algebraOfLiesOver p P
-    instIsSeparableResidueFieldOfQuotientIdeal p P
-
 /-- If `A` has finite quotients, the residue field extensions above a nonzero prime of `A` are
 separable. -/
 instance [NeZero p] [Ring.HasFiniteQuotients A] : HasSeparableResidueFieldsAt A B p :=
   haveI : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient (NeZero.ne p)
   inferInstance
 
-end
+end Prime
 
 section Maximal
 
@@ -114,19 +103,33 @@ end Maximal
 
 section Tower
 
-variable {A R B : Type*} [CommRing A] [CommRing R] [CommRing B]
-  [Algebra A R] [Algebra R B] [Algebra A B] [IsScalarTower A R B]
-  (p : Ideal A) (𝓟 : Ideal R) [p.IsPrime] [𝓟.IsPrime] [𝓟.LiesOver p]
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+  [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+  (p : Ideal A) [p.IsPrime]
 
-/-- For a tower of rings `B/R/A` and a prime `𝓟` of `R` lying over `p`, separability of the
-residue field extensions of `B/A` above `p` gives separability of those of `B/R` above `𝓟`. -/
-theorem HasSeparableResidueFieldsAt.tower_top [HasSeparableResidueFieldsAt A B p] :
-    HasSeparableResidueFieldsAt R B 𝓟 where
-  isSeparable' P _ _ :=
-    haveI : P.LiesOver p := Ideal.LiesOver.trans P 𝓟 p
-    letI := Localization.AtPrime.algebraOfLiesOver p 𝓟
-    letI := Localization.AtPrime.algebraOfLiesOver p P
-    letI := Localization.AtPrime.algebraOfLiesOver 𝓟 P
+/-- For a tower of rings `C/B/A`, separability of the residue field extensions of `C/A` above `p`
+gives separability of those of `B/A` above `p`. -/
+theorem HasSeparableResidueFieldsAt.tower_bot [Algebra.IsIntegral B C] [FaithfulSMul B C]
+    [HasSeparableResidueFieldsAt A C p] : HasSeparableResidueFieldsAt A B p where
+  isSeparable' q _ _ := by
+    obtain ⟨r, _, _⟩ : Nonempty (q.primesOver C) := nonempty_primesOver q
+    have : r.LiesOver p := Ideal.LiesOver.trans r q p
+    let := Localization.AtPrime.algebraOfLiesOver p q
+    let := Localization.AtPrime.algebraOfLiesOver p r
+    let := Localization.AtPrime.algebraOfLiesOver q r
+    exact isSeparable_tower_bot_of_isSeparable p.ResidueField q.ResidueField r.ResidueField
+
+variable (q : Ideal B) [q.IsPrime] [q.LiesOver p]
+
+/-- For a tower of rings `C/B/A` and a prime `q` of `B` lying over `p`, separability of the
+residue field extensions of `C/A` above `p` gives separability of those of `C/B` above `q`. -/
+theorem HasSeparableResidueFieldsAt.tower_top [HasSeparableResidueFieldsAt A C p] :
+    HasSeparableResidueFieldsAt B C q where
+  isSeparable' r _ _ :=
+    haveI : r.LiesOver p := Ideal.LiesOver.trans r q p
+    letI := Localization.AtPrime.algebraOfLiesOver p q
+    letI := Localization.AtPrime.algebraOfLiesOver p r
+    letI := Localization.AtPrime.algebraOfLiesOver q r
     isSeparable_tower_top_of_isSeparable p.ResidueField _ _
 
 end Tower
