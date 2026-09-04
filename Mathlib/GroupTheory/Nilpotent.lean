@@ -954,10 +954,11 @@ theorem Group.IsNilpotent.nilpotencyClass_le_one_iff [IsNilpotent G] :
 
 /-- Abelian groups are nilpotent. -/
 @[to_additive /-- Abelian groups are nilpotent. -/]
-instance (priority := 100) CommGroup.isNilpotent {G : Type*} [CommGroup G] : IsNilpotent G := by
+instance (priority := 100) CommGroup.isNilpotent {G : Type*} [Group G] [IsMulCommutative G] :
+    IsNilpotent G := by
   use 1
   rw [upperCentralSeries_one]
-  apply CommGroup.center_eq_top
+  exact Subgroup.center_eq_top
 
 /-- Abelian groups have nilpotency class at most one. -/
 @[to_additive /-- Abelian groups have nilpotency class at most one. -/]

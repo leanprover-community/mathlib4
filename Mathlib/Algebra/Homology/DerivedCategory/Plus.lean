@@ -18,7 +18,9 @@ Let `C` be an abelian category. In this file, we show that
 the bounded below derived category `DerivedCategory.Plus C` (defined
 as a full subcategory of `DerivedCategory C`) is the localization
 of the bounded below homotopy category `HomotopyCategory.Plus C`
-with respect to quasi-isomorphisms.
+with respect to quasi-isomorphisms. We also show that it is the
+localization of the category `CochainComplex.Plus C` of bounded
+below cochain complexes with respect to quasi-isomorphisms.
 
 -/
 
@@ -59,6 +61,7 @@ variable [HasDerivedCategory C]
 namespace Plus
 
 /-- The localization functor `HomotopyCategory.Plus C ⥤ DerivedCategory.Plus C`. -/
+@[implicit_reducible]
 noncomputable def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
   t.plus.lift (HomotopyCategory.Plus.ι _ ⋙ DerivedCategory.Qh) (by
     rintro ⟨K, hK⟩
@@ -66,9 +69,8 @@ noncomputable def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
     obtain ⟨n, _⟩ := (HomotopyCategory.plus_quotient_obj_iff _).mp hK
     exact ⟨n, t.isGE_of_iso ((quotientCompQhIso C).symm.app K) n⟩)
 
-noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ := by
-  dsimp only [Qh]
-  infer_instance
+noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ :=
+  ObjectProperty.commShiftLift ..
 
 instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
   dsimp only [Qh]
@@ -104,8 +106,12 @@ variable (C)
 
 /-- The functor `DerivedCategory.Plus.Qh : HomotopyCategory.Plus C ⥤ DerivedCategory.Plus C`
 is induced by `DerivedCategory.Qh : HomotopyCategory C (.up ℤ) ⥤ DerivedCategory C`. -/
+@[simps! -isSimp]
 noncomputable def QhCompιIsoιCompQh :
     Qh ⋙ Plus.ι ≅ HomotopyCategory.Plus.ι C ⋙ DerivedCategory.Qh := Iso.refl _
+
+instance : NatTrans.CommShift (QhCompιIsoιCompQh C).hom ℤ :=
+  ObjectProperty.commShift_liftCompιIso_hom ..
 
 instance : (Qh (C := C)).EssSurj where
   mem_essImage := by
@@ -217,11 +223,66 @@ lemma isIso_iff {X Y : Plus C} (f : X ⟶ Y) :
   exact isIso_of_fully_faithful ι _
 
 /-- The localization functor `CochainComplex.Plus C ⥤ DerivedCategory.Plus C`. -/
+@[implicit_reducible]
 noncomputable def Q : CochainComplex.Plus C ⥤ DerivedCategory.Plus C :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ DerivedCategory.Q)
     (fun ⟨K, n, hn⟩ ↦ ⟨n, by dsimp; infer_instance⟩)
 
--- TODO: show that `Q` is indeed a localization functor with respect to quasi-isomorphisms
+noncomputable instance : (Q (C := C)).CommShift ℤ := ObjectProperty.commShiftLift ..
+
+variable (C) in
+/-- The localization functor `CochainComplex.Plus C ⥤ DerivedCategory.Plus C` is
+induced by `DerivedCategory.Q : CochainComplex C ℤ ⥤ DerivedCategory C`. -/
+@[simps!]
+noncomputable def QCompιIso :
+    DerivedCategory.Plus.Q ⋙ Plus.ι ≅ CochainComplex.Plus.ι C ⋙ DerivedCategory.Q :=
+  ObjectProperty.liftCompιIso ..
+
+instance : NatTrans.CommShift (QCompιIso C).hom ℤ :=
+  ObjectProperty.commShift_liftCompιIso_hom ..
+
+variable (C) in
+/-- The natural isomorphism `HomotopyCategory.Plus.quotient C ⋙ Qh ≅ Q`. -/
+@[simps!]
+noncomputable def quotientCompQhIso : HomotopyCategory.Plus.quotient C ⋙ Qh ≅ Q :=
+  NatIso.ofComponents (fun X ↦
+    ObjectProperty.isoMk _ ((DerivedCategory.quotientCompQhIso C).app X.obj)) (fun _ ↦ by
+      ext
+      apply (DerivedCategory.quotientCompQhIso C).hom.naturality)
+
+open Functor in
+@[reassoc]
+lemma whiskerRight_quotientCompQhIso_hom_ι :
+    whiskerRight (quotientCompQhIso C).hom ι =
+    (associator _ _ _).hom ≫ whiskerLeft _ (QhCompιIsoιCompQh C).hom ≫
+    (associator _ _ _).inv ≫
+    whiskerRight (HomotopyCategory.Plus.quotientCompιIso C).hom _ ≫ (associator _ _ _).hom ≫
+    whiskerLeft _ (DerivedCategory.quotientCompQhIso C).hom ≫ (QCompιIso C).inv := by
+  ext K
+  dsimp
+  simp [QCompιIso_inv_app, comp_id, id_comp,
+    QhCompιIsoιCompQh_hom_app, HomotopyCategory.Plus.quotientCompιIso_hom_app,
+    DerivedCategory.Qh.map_id ((HomotopyCategory.quotient _ (.up ℤ)).obj K.obj),
+    dsimp% Category.id_comp ((DerivedCategory.quotientCompQhIso C).hom.app K.obj)]
+
+instance : NatTrans.CommShift (quotientCompQhIso C).hom ℤ :=
+  NatTrans.CommShift.of_comp_faithful ι (by
+    rw [whiskerRight_quotientCompQhIso_hom_ι]
+    infer_instance)
+
+instance : (HomotopyCategory.Plus.quotient C ⋙ Qh).IsLocalization
+    (CochainComplex.Plus.quasiIso C) := by
+  refine Functor.IsLocalization.comp _ _
+    (((HomologicalComplex.homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C)))
+    (HomotopyCategory.Plus.quasiIso C) _ (fun _ _ f _ ↦ ?_) (fun _ _ _ hf ↦ ?_)
+    (by rw [HomotopyCategory.Plus.quasiIso_map_quotient_eq_quasiIso])
+  · refine Localization.inverts Qh (HomotopyCategory.Plus.quasiIso C) _ ?_
+    simpa [HomotopyCategory.Plus.quasiIso_iff, HomotopyCategory.quotient_map_mem_quasiIso_iff]
+  · rw [CochainComplex.Plus.quasiIso_iff]
+    exact homotopyEquivalences_le_quasiIso _ _ _ hf
+
+instance : Q.IsLocalization (CochainComplex.Plus.quasiIso C) :=
+  Functor.IsLocalization.of_iso _ (quotientCompQhIso C)
 
 end Plus
 

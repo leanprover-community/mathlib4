@@ -36,13 +36,13 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
 /-- Given `W : J ⥤ Type w` and `F : J ⥤ C`, this is the type of cones for
 the functor `CategoryOfElements.π W ⋙ F : W.Elements ⥤ C`. -/
 abbrev WeightedCone (W : J ⥤ Type w) (F : J ⥤ C) :=
-  Cone (CategoryOfElements.π W ⋙ F)
+  Cone (Functor.Elements.π W ⋙ F)
 
 /-- Given a weight `W : J ⥤ Type w` and `F : J ⥤ C`, we say that
 the `W`-weighted limit of `F` exists if the functor
 `CategoryOfElements.π W ⋙ F : W.Elements ⥤ C` has a limit. -/
 abbrev HasWeightedLimit (W : J ⥤ Type w) (F : J ⥤ C) : Prop :=
-  HasLimit (CategoryOfElements.π W ⋙ F)
+  HasLimit (Functor.Elements.π W ⋙ F)
 
 namespace WeightedCone
 
@@ -57,8 +57,8 @@ protected abbrev π (c : WeightedCone W F) {j : J} (x : W.obj j) :
 @[reassoc (attr := simp)]
 protected lemma w (c : WeightedCone W F) {i j : J} (x : W.obj i) (f : i ⟶ j) :
     c.π x ≫ F.map f = c.π (W.map f x) :=
-  Cone.w c (CategoryOfElements.homMk (Functor.elementsMk _ _ x)
-    (Functor.elementsMk _ _ (W.map f x)) f rfl)
+  Cone.w c (Functor.Elements.homMk (x := Functor.elementsMk _ _ x)
+    (y := Functor.elementsMk _ _ (W.map f x)) f rfl)
 
 variable (pt : C) (π : ∀ ⦃j : J⦄ (_ : W.obj j), pt ⟶ F.obj j)
 
@@ -69,8 +69,8 @@ def mk
       π x ≫ F.map f = π (W.map f x) := by cat_disch) :
     WeightedCone W F where
   pt := pt
-  π.app x := π x.snd
-  π.naturality x₁ x₂ f := by simpa using! (hπ x₁.snd f.val).symm
+  π.app x := π x.val
+  π.naturality x₁ x₂ f := by simpa using! (hπ x₁.val f.hom).symm
 
 @[simp]
 lemma mk_π
@@ -151,22 +151,22 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
 /-- Given a weight `W : J ⥤ Type w` and `F : J ⥤ C`, this is the `W`-weighted
 limit of `F`. -/
 noncomputable def weightedLimObjObj : C :=
-  limit (CategoryOfElements.π W ⋙ F)
+  limit (Functor.Elements.π W ⋙ F)
 
 /-- The projections from the weighted limit. -/
 @[no_expose]
 noncomputable def weightedLimObjObjπ ⦃j : J⦄ (x : W.obj j) :
     W.weightedLimObjObj F ⟶ F.obj j :=
-  limit.π (CategoryOfElements.π W ⋙ F) (Functor.elementsMk _ _ x)
+  limit.π (Functor.Elements.π W ⋙ F) (Functor.elementsMk _ _ x)
 
 @[reassoc (attr := simp)]
 lemma weightedLimObjObj_w ⦃j₁ j₂ : J⦄ (x : W.obj j₁)
     (f : j₁ ⟶ j₂) :
     W.weightedLimObjObjπ F x ≫ F.map f =
       W.weightedLimObjObjπ F (W.map f x) :=
-  limit.w (CategoryOfElements.π W ⋙ F)
-    (CategoryOfElements.homMk (Functor.elementsMk _ _ x) (Functor.elementsMk _ _
-      (W.map f x)) f rfl)
+  limit.w (Functor.Elements.π W ⋙ F)
+    (Functor.Elements.homMk (x := Functor.elementsMk _ _ x)
+      (y := Functor.elementsMk _ _ (W.map f x)) f rfl)
 
 /-- A choice of limit weighted cone. -/
 noncomputable abbrev weightedLimCone :
