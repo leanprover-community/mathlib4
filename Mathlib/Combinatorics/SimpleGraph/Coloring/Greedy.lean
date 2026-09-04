@@ -175,7 +175,7 @@ theorem greedyColoring_isClique_tfae {s : Set V} (hs : @IsLowerSet V ⟨r⟩ s) 
     rwa [h <| hs hr hv]
   tfae_have 3 → 2 := fun h v hv ↦ by
     induction v using IsWellFounded.induction r with | ind v ih
-    rw [id_eq, greedyColoring_eq_self_tfae.out 0 2 rfl]
+    rw [id_eq, greedyColoring_eq_self_tfae.out 1 3 rfl]
     refine fun u huv ↦ ⟨u, huv, h (hs huv hv) hv (irrefl v <| · ▸ huv), ?_⟩
     rw [ih u huv <| hs huv hv, id_eq]
   tfae_have 1 → 2 :=
@@ -191,7 +191,7 @@ theorem greedyColoring_eq_id_tfae :
 
 @[simp]
 theorem greedyColoring_top_eq_id : greedyColoring ⊤ r = .id :=
-  RelHom.ext <| congrFun <| greedyColoring_eq_id_tfae.out 2 1 |>.mp rfl
+  RelHom.ext <| congrFun <| greedyColoring_eq_id_tfae.out 3 2 |>.mp rfl
 
 theorem card_typein_greedyColoring_le_mk_greedyColorsBefore (v : V) :
     (typein r <| G.greedyColoring r v).card ≤ #(G.greedyColorsBefore r v) := by
@@ -209,6 +209,8 @@ theorem not_lt_enum_ord_greedyColorsBefore (v : V) (h : G.greedyColorsBefore r v
   rw [greedyColoring_eq_min]
   exact not_lt_enum_ord_mk_min_compl r h _
 
+-- `typein_enum` unfolds `_ ∈ Set.Iio` in its type, but `Set.Iio` is not implicit reducible
+set_option backward.isDefEq.respectTransparency.types false in
 theorem not_lt_enum_degree_greedyColoring (v : V) [Fintype <| G.neighborSet v] :
     ¬r (enum r ⟨G.degree v, by
       rw [Set.mem_Iio, ← card_neighborFinset_eq_degree, ← ord_natCast, ← Cardinal.mk_coe_finset]
