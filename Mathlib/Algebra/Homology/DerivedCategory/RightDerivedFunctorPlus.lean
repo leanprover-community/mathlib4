@@ -106,7 +106,7 @@ section
 open DerivedCategory.Plus.TStructure
 
 set_option backward.isDefEq.respectTransparency false in
-instance : F.rightDerivedFunctorPlus.RightTExact t t where
+instance : F.rightDerivedFunctorPlus.LeftTExact t t where
   objGE X n hX := by
     obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.Plus.exists_injective_resolution X n
     let iso :

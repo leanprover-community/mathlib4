@@ -3589,7 +3589,7 @@ public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
-public import Mathlib.CategoryTheory.Triangulated.TStructure.RightTExact
+public import Mathlib.CategoryTheory.Triangulated.TStructure.LeftTExact
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Shift
 public import Mathlib.CategoryTheory.Triangulated.TStructure.SpectralObject
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TExact

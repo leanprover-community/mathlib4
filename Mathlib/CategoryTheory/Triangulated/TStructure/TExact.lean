@@ -27,18 +27,18 @@ namespace Functor
 
 variable (F : C ⥤ D) [F.CommShift ℤ] (t₁ : TStructure C) (t₂ : TStructure D)
 
-class RightTExact [F.IsTriangulated] : Prop where
+class LeftTExact [F.IsTriangulated] : Prop where
   objGE (X : C) (n : ℤ) [t₁.IsGE X n] : t₂.IsGE (F.obj X) n
 
-class LeftTExact [F.IsTriangulated] : Prop where
+class RightTExact [F.IsTriangulated] : Prop where
   objLE (X : C) (n : ℤ) [t₁.IsLE X n] : t₂.IsLE (F.obj X) n
 
 variable [F.IsTriangulated]
 
-lemma isGE_obj (X : C) (n : ℤ) [t₁.IsGE X n] [h : F.RightTExact t₁ t₂] : t₂.IsGE (F.obj X) n :=
+lemma isGE_obj (X : C) (n : ℤ) [t₁.IsGE X n] [h : F.LeftTExact t₁ t₂] : t₂.IsGE (F.obj X) n :=
   h.objGE X n
 
-lemma isLE_obj (X : C) (n : ℤ) [t₁.IsLE X n] [h : F.LeftTExact t₁ t₂] : t₂.IsLE (F.obj X) n :=
+lemma isLE_obj (X : C) (n : ℤ) [t₁.IsLE X n] [h : F.RightTExact t₁ t₂] : t₂.IsLE (F.obj X) n :=
   h.objLE X n
 
 class TExact : Prop where
@@ -47,18 +47,18 @@ class TExact : Prop where
 
 attribute [instance] TExact.rightTExact TExact.leftTExact
 
-/-- Constructor for `RightTExact`. -/
-lemma RightTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
-    F.RightTExact t₁ t₂ where
+/-- Constructor for `LeftTExact`. -/
+lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
+    F.LeftTExact t₁ t₂ where
   objGE X n _ := by
     have := t₁.isGE_shift X n n 0 (add_zero n)
     have : t₂.IsGE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
     have : t₂.IsGE ((F.obj X)⟦n⟧) 0 := t₂.isGE_of_iso ((F.commShiftIso n).app X) 0
     exact t₂.isGE_of_shift (F.obj X) n n 0 (add_zero n)
 
-/-- Constructor for `LeftTExact`. -/
-lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
-    F.LeftTExact t₁ t₂ where
+/-- Constructor for `RightTExact`. -/
+lemma RightTExact.mk' (h : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
+    F.RightTExact t₁ t₂ where
   objLE X n _ := by
     have := t₁.isLE_shift X n n 0 (add_zero n)
     have : t₂.IsLE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
@@ -67,7 +67,7 @@ lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
 
 section
 
-variable [h : F.RightTExact t₁ t₂]
+variable [h : F.LeftTExact t₁ t₂]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -100,7 +100,7 @@ end
 
 section
 
-variable [h : F.LeftTExact t₁ t₂]
+variable [h : F.RightTExact t₁ t₂]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
