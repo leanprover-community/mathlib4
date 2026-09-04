@@ -38,8 +38,6 @@ def divisor [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) :
     AlgebraicCycle X ℤ where
   toFun z := ord f z
   supportWithinDomain' := by simp
-  -- local finiteness: away from an open set on which `f` is a unit, `ord f` vanishes, and the
-  -- remaining coheight-one points form a finite set in any affine neighbourhood of `z`.
   supportLocallyFiniteWithinDomain' z _ := by
     by_cases hf : f = 0
     · use ⊤
