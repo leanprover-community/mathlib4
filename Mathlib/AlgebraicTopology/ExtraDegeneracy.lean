@@ -338,37 +338,37 @@ given on the `0`-projection by the given section of the split epi,
 and by shifting the indices on the other projections. -/
 noncomputable def ExtraDegeneracy.s (n : ℕ) :
     f.cechNerve.obj (op ⦋n⦌) ⟶ f.cechNerve.obj (op ⦋n + 1⦌) :=
-  WidePullback.lift (WidePullback.base _)
-    (Fin.cases (WidePullback.base _ ≫ S.section_) (WidePullback.π _))
+  widePullback.lift (widePullback.base _)
+    (Fin.cases (widePullback.base _ ≫ S.section_) (widePullback.π _))
     fun i => by
       cases i using Fin.cases <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
-    dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
-      WidePullback.base (B := f.right) (objs := fun _ ↦ f.left)
+    dsimp% ExtraDegeneracy.s f S n ≫ widePullback.π _ 0 =
+      widePullback.base (B := f.right) (objs := fun _ ↦ f.left)
         (arrows := fun _ ↦ f.hom) ≫ S.section_ := by
   simp [ExtraDegeneracy.s]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
-    dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
-      WidePullback.π (B := f.right) (objs := fun _ ↦ f.left)
+    dsimp% ExtraDegeneracy.s f S n ≫ widePullback.π _ i.succ =
+      widePullback.π (B := f.right) (objs := fun _ ↦ f.left)
         (arrows := fun _ ↦ f.hom) i := by
   simp [ExtraDegeneracy.s]
 
 @[reassoc (attr := simp)]
 theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
-    dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ :=
-  WidePullback.lift_base ..
+    dsimp% ExtraDegeneracy.s f S n ≫ widePullback.base _ = widePullback.base _ :=
+  widePullback.lift_base ..
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve associated to a split epimorphism has an extra degeneracy. -/
 noncomputable def extraDegeneracy :
     SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve where
-  s' := S.section_ ≫ WidePullback.lift f.hom (fun _ ↦ 𝟙 _) (by simp)
+  s' := S.section_ ≫ widePullback.lift f.hom (fun _ ↦ 𝟙 _) (by simp)
   s n := ExtraDegeneracy.s f S n
   s₀_comp_δ₁ := by
     dsimp [SimplicialObject.δ, SimplexCategory.δ]
