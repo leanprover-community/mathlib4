@@ -62,7 +62,7 @@ theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpe
   simp only [IsOpen] at hs ⊢
   have := CompleteLattice.ωScottContinuous.sSup (s := (fun t x => x ∈ t) '' s)
     (fun f hf => by obtain ⟨t, ht, rfl⟩ := hf; exact hs t ht)
-  convert! this
+  convert this
   aesop
 
 theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone

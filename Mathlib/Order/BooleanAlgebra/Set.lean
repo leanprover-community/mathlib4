@@ -38,11 +38,7 @@ instance : HImp (Set α) where
 @[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := .rfl
 
 instance instBooleanAlgebra : BooleanAlgebra (Set α) where
-  __ := instDistribLattice
   __ := instBoundedOrder
-  compl s := sᶜ
-  sdiff s t := s \ t
-  himp s t := s ⇨ t
   inf_compl_le_bot _ _ h := h.2 h.1
   top_le_sup_compl s x _ := em (x ∈ s)
   sdiff_eq _ _ := rfl

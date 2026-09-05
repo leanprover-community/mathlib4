@@ -111,7 +111,7 @@ theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
 @[simp, norm_cast]
-theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by ext; simp
+theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by grind
 
 @[simp, norm_cast]
 theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by

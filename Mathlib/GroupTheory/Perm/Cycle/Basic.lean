@@ -732,7 +732,7 @@ protected theorem IsCycleOn.subtypePerm (hf : f.IsCycleOn s) :
   obtain hs | hs := s.subsingleton_or_nontrivial
   · have := hs.coe_sort
     exact isCycleOn_of_subsingleton _ _
-  convert! (hf.isCycle_subtypePerm hs).isCycleOn using 1
+  convert (hf.isCycle_subtypePerm hs).isCycleOn using 1
   rw [eq_comm, Set.eq_univ_iff_forall]
   exact fun x => ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
 
@@ -851,7 +851,7 @@ theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
   refine ⟨s.toList.formPerm, ?_, fun x hx => by
     simpa using List.mem_of_formPerm_apply_ne (Perm.mem_support.1 hx)⟩
-  convert! s.nodup_toList.isCycleOn_formPerm using 1
+  convert s.nodup_toList.isCycleOn_formPerm using 1
   simp
 
 end Finset
@@ -866,7 +866,7 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
   obtain hs' | hs' := s.finite_or_infinite
   · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
       simpa using List.mem_of_formPerm_apply_ne hx⟩
-    convert! hs'.toFinset.nodup_toList.isCycleOn_formPerm using 1
+    convert hs'.toFinset.nodup_toList.isCycleOn_formPerm using 1
     simp
   · have := hs.to_subtype
     have := hs'.to_subtype

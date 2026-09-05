@@ -73,8 +73,9 @@ instance : Membership α (Set α) :=
   ⟨Set.Mem⟩
 
 /-- One should always prefer the `∈` notation over `Set.Mem`. This simp lemma ensures that the
-latter is removed from the goal as early as possible if accidentally exposed. -/
-@[simp] lemma mem_iff_mem {s : Set α} {a : α} : s.Mem a ↔ a ∈ s := .rfl
+latter is removed from the goal as early as possible if accidentally exposed. We use `=` instead of
+`↔` so that `dsimp` can use it too. -/
+@[simp] lemma mem_eq_mem {s : Set α} {a : α} : s.Mem a = (a ∈ s) := rfl
 
 @[ext, grind ext]
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=

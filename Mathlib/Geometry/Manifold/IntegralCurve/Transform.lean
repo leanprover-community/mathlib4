@@ -121,7 +121,7 @@ lemma isMIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   have h2 := hγ.comp_mul a⁻¹
   rw [show {t : ℝ | t * a⁻¹ ∈ {t | t * a ∈ s}} = s by
       ext t; simp [mem_ofPred_eq, mul_assoc, inv_mul_eq_div, div_self ha]] at h2
-  convert! h2
+  convert h2
   · ext t
     simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
