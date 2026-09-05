@@ -137,7 +137,6 @@ def mkConeMorphism {t : Cone F} (lift : ∀ s : Cone F, s ⟶ t)
     have : ConeMorphism.mk m w = lift s := by apply uniq
     congrArg ConeMorphism.hom this
 
-set_option linter.translate.warnInvalid false in
 /-- Limit cones on `F` are unique up to isomorphism. -/
 @[to_dual (attr := simps) /-- Colimit cocones on `F` are unique up to isomorphism. -/]
 def uniqueUpToIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) : s ≅ t where
@@ -145,9 +144,6 @@ def uniqueUpToIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) : s ≅ t where
   inv := P.liftConeMorphism t
   hom_inv_id := P.uniq_cone_morphism
   inv_hom_id := Q.uniq_cone_morphism
-
-attribute [to_dual existing uniqueUpToIso_inv] uniqueUpToIso_hom
-attribute [to_dual existing uniqueUpToIso_hom] uniqueUpToIso_inv
 
 /-- Any cone morphism between limit cones is an isomorphism. -/
 @[to_dual (reorder := P Q) /-- Any cocone morphism between colimit cocones is an isomorphism. -/]
@@ -332,7 +328,6 @@ def equivOfNatIsoOfIso {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) (d : Cone G)
     (w : (Cone.postcompose α.hom).obj c ≅ d) : IsLimit c ≃ IsLimit d :=
   (postcomposeHomEquiv α _).symm.trans (equivIsoLimit w)
 
-set_option linter.translate.warnInvalid false in
 /-- The cone points of two limit cones for naturally isomorphic functors
 are themselves isomorphic.
 -/
@@ -347,18 +342,11 @@ def conePointsIsoOfNatIso {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit
   hom_inv_id := P.hom_ext (by simp)
   inv_hom_id := Q.hom_ext (by simp)
 
-attribute [to_dual existing coconePointsIsoOfNatIso_inv] conePointsIsoOfNatIso_hom
-attribute [to_dual existing coconePointsIsoOfNatIso_hom] conePointsIsoOfNatIso_inv
-
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 @[to_dual (attr := reassoc) comp_coconePointsIsoOfNatIso_inv]
 theorem conePointsIsoOfNatIso_hom_comp {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s)
     (Q : IsLimit t) (w : F ≅ G) (j : J) :
     (conePointsIsoOfNatIso P Q w).hom ≫ t.π.app j = s.π.app j ≫ w.hom.app j := by simp
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 @[to_dual (attr := reassoc) comp_coconePointsIsoOfNatIso_hom]
 theorem conePointsIsoOfNatIso_inv_comp {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s)
     (Q : IsLimit t) (w : F ≅ G) (j : J) :
@@ -427,7 +415,6 @@ def extendIsoEquiv {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] :
   equivOfSubsingletonOfSubsingleton (extendIso i) (ofExtendIso i)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option linter.translate.warnInvalid false in
 /-- We can prove two cone points `(s : Cone F).pt` and `(t : Cone G).pt` are isomorphic if
 * both cones are limit cones
 * their indexing categories are equivalent via some `e : J ≌ K`,
@@ -462,9 +449,6 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
     inv_hom_id := by
       apply hom_ext Q
       cat_disch }
-
-attribute [to_dual existing coconePointsIsoOfEquivalence_inv] conePointsIsoOfEquivalence_hom
-attribute [to_dual existing coconePointsIsoOfEquivalence_hom] conePointsIsoOfEquivalence_inv
 
 end Equivalence
 
@@ -638,7 +622,6 @@ def ofRepresentableBy {X : C} (h : F.cones.RepresentableBy X) : IsLimit (limitCo
     dsimp [Cone.extend]; cases s; congr with j; exact w j
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a limit cone, `F.cones` is representable by the point of the cone. -/
 def representableBy (hc : IsLimit t) : F.cones.RepresentableBy t.pt where
   homEquiv := hc.homEquiv
@@ -765,7 +748,6 @@ def ofCorepresentableBy {X : C} (h : F.cocones.CorepresentableBy X) :
     dsimp [Cocone.extend]; cases s; congr with j; exact w j
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a colimit cocone, `F.cocones` is corepresentable by the point of the cocone. -/
 def corepresentableBy (hc : IsColimit t) : F.cocones.CorepresentableBy t.pt where
   homEquiv := hc.homEquiv

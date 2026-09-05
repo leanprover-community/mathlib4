@@ -59,7 +59,7 @@ lemma posPart_mul_negPart (a : A) : a⁺ * a⁻ = 0 := by
   rw [posPart_def, negPart_def]
   by_cases ha : IsSelfAdjoint a
   · rw [← cfcₙ_mul _ _, ← cfcₙ_zero ℝ a]
-    refine cfcₙ_congr (fun x _ ↦ ?_)
+    congr! 1 with x _
     simp only [_root_.posPart_def, _root_.negPart_def]
     simpa using le_total x 0
   · simp [cfcₙ_apply_of_not_predicate a ha]
@@ -69,7 +69,7 @@ lemma negPart_mul_posPart (a : A) : a⁻ * a⁺ = 0 := by
   rw [posPart_def, negPart_def]
   by_cases ha : IsSelfAdjoint a
   · rw [← cfcₙ_mul _ _, ← cfcₙ_zero ℝ a]
-    refine cfcₙ_congr (fun x _ ↦ ?_)
+    congr! 1 with x _
     simp only [_root_.posPart_def, _root_.negPart_def]
     simpa using le_total 0 x
   · simp [cfcₙ_apply_of_not_predicate a ha]
@@ -78,8 +78,8 @@ lemma posPart_sub_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : a⁺ - 
   rw [posPart_def, negPart_def]
   rw [← cfcₙ_sub _ _]
   conv_rhs => rw [← cfcₙ_id ℝ a]
-  congr! 2 with
-  exact _root_.posPart_sub_negPart _
+  congr! 1 with x hx
+  exact _root_.posPart_sub_negPart x
 
 section Unique
 
@@ -89,7 +89,7 @@ variable [T2Space A]
 lemma posPart_neg (a : A) : (-a)⁺ = a⁻ := by
   by_cases ha : IsSelfAdjoint a
   · rw [posPart_def, negPart_def, ← cfcₙ_comp_neg _ _]
-    congr! 2
+    congr! 1
   · have ha' : ¬ IsSelfAdjoint (-a) := fun h ↦ ha (by simpa using h.neg)
     rw [posPart_def, negPart_def, cfcₙ_apply_of_not_predicate a ha,
       cfcₙ_apply_of_not_predicate _ ha']
@@ -107,7 +107,7 @@ lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   by_cases ha : IsSelfAdjoint a
   · simp only [CFC.posPart_def, NNReal.smul_def]
     rw [← cfcₙ_comp_smul .., ← cfcₙ_smul ..]
-    refine cfcₙ_congr fun x hx ↦ ?_
+    congr! 1 with x hx
     simp [_root_.posPart_def, mul_max_of_nonneg]
   · obtain (rfl | hr) := eq_or_ne r 0
     · simp
@@ -176,7 +176,7 @@ lemma posPart_eq_self (a : A) : a⁺ = a ↔ 0 ≤ a := by
   refine ⟨fun ha ↦ ha ▸ posPart_nonneg a, fun ha ↦ ?_⟩
   conv_rhs => rw [← cfcₙ_id ℝ a]
   rw [posPart_def]
-  refine cfcₙ_congr (fun x hx ↦ ?_)
+  congr! 1 with x hx
   simpa [_root_.posPart_def] using quasispectrum_nonneg_of_nonneg a ha x hx
 
 lemma negPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
@@ -192,7 +192,7 @@ lemma negPart_eq_neg (a : A) : a⁻ = -a ↔ a ≤ 0 := by
   rw [negPart_def, ← cfcₙ_neg]
   have _ : IsSelfAdjoint a := neg_neg a ▸ (IsSelfAdjoint.neg <| .of_nonneg ha)
   conv_lhs => rw [← cfcₙ_id ℝ a]
-  refine cfcₙ_congr fun x hx ↦ ?_
+  congr! 1 with x hx
   rw [Unitization.quasispectrum_eq_spectrum_inr ℝ, ← neg_neg x, ← Set.mem_neg,
     spectrum.neg_eq, ← Unitization.inr_neg, ← Unitization.quasispectrum_eq_spectrum_inr ℝ] at hx
   rw [← neg_eq_iff_eq_neg, eq_comm]
@@ -281,11 +281,12 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     Pi.add_apply, cfcₙHom_eq_cfcₙ_extend (·⁺)] at key
   symm
   calc
-    b = cfcₙ (id : ℝ → ℝ) b + cfcₙ (0 : ℝ → ℝ) (-c) := by simp [cfcₙ_id ℝ b]
+    b = cfcₙ (id : ℝ → ℝ) b + cfcₙ (0 : ℝ → ℝ) (-c) := by simp [cfcₙ_id' ℝ b]
     _ = _ := by
       congr! 1
       all_goals
-        refine cfcₙ_congr fun x hx ↦ Eq.symm ?_
+        congr! 1 with x hx
+        symm
         lift x to σₙ ℝ _ using hx
         simp only [Subtype.val_injective.extend_apply, comp_apply, coe_mk,
           ContinuousMap.coe_mk, Subtype.map_coe, id_eq, _root_.posPart_eq_self, f, Pi.zero_apply,

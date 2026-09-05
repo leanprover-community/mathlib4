@@ -49,12 +49,12 @@ def continuousMapPresheaf (T : Type v) [TopologicalSpace T] : Scheme.{u}ᵒᵖ �
 functor to `TopCat` and the yoneda embedding. -/
 def continuousMapPresheafIsoUlift :
     continuousMapPresheaf T ≅
-      Scheme.forgetToTop.op ⋙ TopCat.uliftFunctor.op ⋙ yoneda.obj (.of <| ULift T) :=
+      Scheme.forgetToTop.op ⋙ TopCat.uliftFunctor.op ⋙ yoneda.obj ↧(ULift T) :=
   NatIso.ofComponents fun U ↦ equivEquivIso <|
     (ContinuousMap.uliftEquiv U.1 T).symm.trans
     (TopCat.Hom.equivContinuousMap
       (TopCat.uliftFunctor.obj <| Scheme.forgetToTop.obj U.1)
-      (TopCat.uliftFunctor.obj (TopCat.of T))).symm
+      (TopCat.uliftFunctor.obj ↧T)).symm
 
 lemma isSheaf_zariskiTopology_continuousMapPresheaf :
     Presheaf.IsSheaf Scheme.zariskiTopology (continuousMapPresheaf T) := by
@@ -84,7 +84,6 @@ lemma isSheaf_fpqcTopology_continuousMapPresheaf :
     · intro y hy
       rwa [← ContinuousMap.cancel_right (Spec.map f).surjective, Topology.IsQuotientMap.lift_comp]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `continuousMapPresheaf` is `U ↦ C(ConnectedComponents U, T)` if `T` is totally
 disconnected. -/
 def continuousMapPresheafEquivOfTotallyDisconnectedSpace [TotallyDisconnectedSpace T]
@@ -102,7 +101,7 @@ group. -/
 def continuousMapPresheafAb (A : Type v) [TopologicalSpace A] [AddCommGroup A]
     [IsTopologicalAddGroup A] :
     Scheme.{u}ᵒᵖ ⥤ Ab.{max v u} where
-  obj U := AddCommGrpCat.of C(U.unop, A)
+  obj U := ↧C(U.unop, A)
   map {U V} f := AddCommGrpCat.ofHom (ContinuousMap.compAddMonoidHom' f.unop.base.hom)
 
 variable (A : Type v) [TopologicalSpace A] [AddCommGroup A] [IsTopologicalAddGroup A]
