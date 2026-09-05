@@ -87,6 +87,8 @@ section Group
 variable {G : Type*} [Group G] [HasForget₂ V TopCat] [TopologicalSpace G]
   [IsTopologicalGroup G]
 
+/-- If an action of a topological group on a finite set is trivial on an open subgroup,
+then it is continuous. -/
 lemma trivialOnSet_le_isContinuous (H : OpenSubgroup G) :
     trivialOnSet FintypeCat.{w} H ≤ isContinuous FintypeCat.{w} G := by
   intro R h
