@@ -66,24 +66,6 @@ open Finset Filter Real Chebyshev intervalIntegral Asymptotics MeasureTheory Top
 open ArithmeticFunction hiding log
 open scoped Nat.Prime
 
-section SumLogBounds
-
-/-!
-## The partial sum of the logarithm as a von Mangoldt sum
-
-Upper and lower bounds on the partial sum `∑ n ∈ Ioc 0 ⌊x⌋₊, log n` (via comparison with the
-integral of `log`) are provided in `Mathlib.Analysis.SpecialFunctions.Log.Sum`.  Here we record the
-identity expressing this partial sum as a weighted sum of the von Mangoldt function.
--/
-
-variable {x : ℝ}
-
-/-- The partial sum of the logarithm is equal to a weighted sum of the von Mangoldt function. -/
-theorem sum_log_eq_sum_mangoldt : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * ⌊x / d⌋₊ := by
-  simp_rw [← log_apply, ← vonMangoldt_mul_zeta, sum_Ioc_mul_zeta_eq_sum, ← floor_div_natCast]
-
-end SumLogBounds
-
 /-!
 ## An abstract theory of Mertens weights
 
@@ -586,6 +568,10 @@ noncomputable def primeFun : ℕ → ℝ := fun n ↦ if n.Prime then log n / n 
 
 private lemma sum_prime_eq' : ∑ n ∈ Ioc 0 N, primeFun n = ∑ p ∈ primesLE N, log p / p := by
   simp [primeFun, primesLE_eq_filter_Ioc_zero, sum_filter]
+
+/-- The partial sum of the logarithm is equal to a weighted sum of the von Mangoldt function. -/
+theorem sum_log_eq_sum_mangoldt {x : ℝ} : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * ⌊x / d⌋₊
+  := by simp_rw [← log_apply, ← vonMangoldt_mul_zeta, sum_Ioc_mul_zeta_eq_sum, ← floor_div_natCast]
 
 private lemma le_mul_sum_vonMangoldt {x : ℝ} (hx : 0 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * ∑ n ∈ Ioc 0 ⌊x⌋₊, vonMangoldtFun n := calc
