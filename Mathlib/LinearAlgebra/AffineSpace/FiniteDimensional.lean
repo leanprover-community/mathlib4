@@ -217,8 +217,8 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
     tsub_le_iff_right, ← hc]
   apply Finset.card_image_le
 
-lemma affineSpan_image_finset_ne_top_of_card_le [DecidableEq P] (p : ι → P) (s : Finset ι)
-    (hs : #s ≤ finrank k V) : affineSpan k (s.image p : Set P) ≠ ⊤ := by
+lemma affineSpan_image_finset_ne_top_of_card_le [DecidableEq P] {s : Set ι} (hsfin : s.Finite)
+     (hs : s.encard ≤ finrank k V) (p : ι → P) : affineSpan k (p '' s) ≠ ⊤ := by
   cases hc : #s with
   | zero => simp [Finset.card_eq_zero.mp hc]
   | succ n =>
