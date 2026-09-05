@@ -518,6 +518,21 @@ def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
     continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp
       (postcomp F e₄₃.symm.toContinuousLinearMap)).continuous }
 
+variable (F σ₁₂) in
+/-- The partly continuous semilinear map obtained by applying a continuous semilinear map
+at a given vector.
+
+See `applyₗ` for the linear version. -/
+@[simps apply_apply] def _root_.ContinuousLinearMap.applyₗ'
+    [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F] :
+    E →ₛₗ[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F where
+  toFun x :=
+    { toFun f := f x
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl }
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
 end Semilinear
 
 section Linear
@@ -564,6 +579,15 @@ theorem conjContinuousAlgEquiv_trans [IsTopologicalAddGroup E] [ContinuousConstS
     (e : E ≃L[𝕜] G) (f : G ≃L[𝕜] H) :
     (e.trans f).conjContinuousAlgEquiv = e.conjContinuousAlgEquiv.trans f.conjContinuousAlgEquiv :=
   rfl
+
+variable (𝕜 F) in
+/-- The partly continuous linear map obtained by applying a continuous linear map
+at a given vector.
+
+See `applyₗ'` for the semilinear version. -/
+@[simps! apply_apply] def _root_.ContinuousLinearMap.applyₗ [ContinuousSMul 𝕜 E]
+    [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] :
+    E →ₗ[𝕜] (E →L[𝕜] F) →L[𝕜] F := applyₗ' F (.id 𝕜)
 
 end Linear
 
