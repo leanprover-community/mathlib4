@@ -73,6 +73,18 @@ theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
 theorem toENNReal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
   toENNRealOrderEmbedding.lt_iff_lt
 
+@[simp] lemma toENNReal_le_natCast {m : ℕ∞} {n : ℕ} : toENNReal m ≤ n ↔ m ≤ n := by
+  rw [← toENNReal_le]; rfl
+
+@[simp] lemma natCast_le_toENNReal {m : ℕ} {n : ℕ∞} : m ≤ toENNReal n ↔ m ≤ n := by
+  rw [← toENNReal_le]; rfl
+
+@[simp] lemma toENNReal_lt_natCast {m : ℕ∞} {n : ℕ} : toENNReal m < n ↔ m < n := by
+  rw [← toENNReal_lt]; rfl
+
+@[simp] lemma natCast_lt_toENNReal {m : ℕ} {n : ℕ∞} : m < toENNReal n ↔ m < n := by
+  rw [← toENNReal_lt]; rfl
+
 @[simp, norm_cast]
 lemma toENNReal_lt_top : (n : ℝ≥0∞) < ∞ ↔ n < ⊤ := by simp [← toENNReal_lt]
 
@@ -97,6 +109,8 @@ theorem toENNReal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=
 @[simp, norm_cast]
 theorem toENNReal_one : ((1 : ℕ∞) : ℝ≥0∞) = 1 :=
   map_one toENNRealRingHom
+
+@[simp] lemma toENNReal_eq_one : toENNReal n = 1 ↔ n = 1 := by rw [← toENNReal_one, toENNReal_inj]
 
 @[simp, norm_cast]
 theorem toENNReal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=
