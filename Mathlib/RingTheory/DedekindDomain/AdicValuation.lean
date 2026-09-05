@@ -10,6 +10,8 @@ public import Mathlib.Data.Int.WithZero
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
+public import Mathlib.RingTheory.Valuation.Integers
+public import Mathlib.RingTheory.Valuation.IsTrivialOn
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 
@@ -454,6 +456,25 @@ theorem valuationSubring_valuation_injective :
   fun _ _ h ↦ eq_of_valuation_isEquiv_valuation ((Valuation.isEquiv_iff_valuationSubring ..).mpr h)
 
 variable {K}
+
+section IsTrivialOn
+
+variable (k : Type*) [Field k] [Algebra k R] [Algebra k K] [IsScalarTower k R K]
+
+/-- The `v`-adic valuation on `K` is trivial on any subfield of `R`. -/
+instance : (v.valuation K).IsTrivialOn k :=
+  .of_le_one _ fun a ↦ by
+    rw [IsScalarTower.algebraMap_apply k R K]
+    exact valuation_le_one v _
+
+/-- A nonzero element of a height-one prime of `R` is transcendental over any subfield of `R`. -/
+theorem transcendental_algebraMap_of_mem {a : R} (ha0 : a ≠ 0) (ha : a ∈ v.asIdeal) :
+    Transcendental k (algebraMap R K a) := by
+  refine Valuation.transcendental_of_ne_one (v := v.valuation K) k _ ?_ (ne_of_lt ?_)
+  · simpa using ha0
+  · rwa [valuation_lt_one_iff_mem]
+
+end IsTrivialOn
 
 section Localization
 
