@@ -190,7 +190,7 @@ def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 
 instance lattice : Lattice (Regular α) :=
-  { gi.liftLattice with inf := (· ⊓ ·) }
+  { gi.liftLattice with min := (· ⊓ ·) }
 
 @[simp, norm_cast]
 theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=

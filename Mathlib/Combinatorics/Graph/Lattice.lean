@@ -40,7 +40,7 @@ namespace Graph
 /-- The infimum of two graphs `G` and `H`. The edges are precisely those on which `G` and `H` agree,
 and the edge set is a subset of `E(G) ∩ E(H)`, with equality if `G` and `H` are compatible. -/
 instance : SemilatticeInf (Graph α β) where
-  inf G H := {
+  min G H := {
     vertexSet := V(G) ∩ V(H)
     edgeSet := {e ∈ E(G) ∩ E(H) | ∀ x y, G.IsLink e x y ↔ H.IsLink e x y}
     IsLink e x y := G.IsLink e x y ∧ H.IsLink e x y

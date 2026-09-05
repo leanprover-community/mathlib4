@@ -935,8 +935,6 @@ instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u + 1} :=
   { PUnit.instLinearOrder.{u} with
     top := unit,
     bot := unit,
-    sup := fun _ _ => unit,
-    inf := fun _ _ => unit,
     compl := fun _ => unit,
     sdiff := fun _ _ => unit,
     hnot := fun _ => unit,
