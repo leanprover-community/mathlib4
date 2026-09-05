@@ -41,8 +41,8 @@ assert_not_exists GroupWithZero
 
 open Set Pointwise
 
-variable {α G M R A S : Type*}
-variable [Monoid M] [AddMonoid A]
+variable {α G M S : Type*}
+variable [Monoid M]
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
@@ -127,7 +127,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- The additive submonoid with every element negated. -/]
 protected def inv : Inv (Submonoid G) where
   inv S :=
@@ -146,7 +146,7 @@ theorem mem_inv {g : G} {S : Submonoid G} : g ∈ S⁻¹ ↔ g⁻¹ ∈ S :=
   Iff.rfl
 
 /-- Inversion is involutive on submonoids. -/
-@[to_additive (attr := implicit_reducible) /-- Inversion is involutive on additive submonoids. -/]
+@[to_additive (attr := instance_reducible) /-- Inversion is involutive on additive submonoids. -/]
 def involutiveInv : InvolutiveInv (Submonoid G) :=
   SetLike.coe_injective.involutiveInv _ fun _ => rfl
 
@@ -296,6 +296,6 @@ theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO)
     IsPWO (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
   refine (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on ?_
-  exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod' fun x hx => hpos x <| hl2 x hx
+  exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod fun x hx => hpos x <| hl2 x hx
 
 end Set.IsPWO

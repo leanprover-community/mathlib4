@@ -5,6 +5,7 @@ Authors: Junyan Xu
 -/
 module
 
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.AlgebraicGeometry.Restrict
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Adjunction.Opposites
@@ -191,6 +192,7 @@ theorem toΓSpecSheafedSpace_app_eq :
     X.toΓSpecSheafedSpace.hom.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
   apply TopCat.Sheaf.extend_hom_app _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc] theorem toΓSpecSheafedSpace_app_spec (r : Γ.obj (op X)) :
     CommRingCat.ofHom (algebraMap (Γ.obj (op X)) _) ≫
         X.toΓSpecSheafedSpace.hom.c.app (op (basicOpen r)) =
@@ -252,6 +254,7 @@ lemma toΓSpec_preimage_zeroLocus_eq {X : LocallyRingedSpace.{u}}
   rw [← PrimeSpectrum.zeroLocus_iUnion₂]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f : R ⟶ Γ.obj (op X)}
     {β : X ⟶ Spec.locallyRingedSpaceObj R}
     (w : X.toΓSpec.base ≫ (Spec.locallyRingedSpaceMap f).base = β.base)
@@ -269,6 +272,7 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
   erw [toΓSpecSheafedSpace_app_spec, ← X.presheaf.map_comp]
   exact h r
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `toSpecΓ _` is an isomorphism so these are mutually two-sided inverses. -/
 theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.c.app (op ⊤) = 𝟙 _ := by
   unfold toSpecΓ
@@ -333,29 +337,33 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
       Quiver.Hom.unop_op, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app]
     exact congr_arg Quiver.Hom.op (left_triangle X)
   right_triangle_components R := by
-    simp only [Functor.id_obj, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app,
-      Spec.toLocallyRingedSpace_map]
+    simp only [Functor.id_obj, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app]
     exact right_triangle R.unop
 
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toSpecΓ_unop (R : CommRingCatᵒᵖ) :
     AlgebraicGeometry.toSpecΓ (Opposite.unop R) = CommRingCat.ofHom (algebraMap _ _) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `@[simp]`-normal form of `locallyRingedSpaceAdjunction_counit_app'`. -/
 @[simp]
 lemma toSpecΓ_of (R : Type u) [CommRing R] :
-    AlgebraicGeometry.toSpecΓ (CommRingCat.of R) = CommRingCat.ofHom (algebraMap _ _) := rfl
+    AlgebraicGeometry.toSpecΓ ↧R = CommRingCat.ofHom (algebraMap _ _) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma locallyRingedSpaceAdjunction_counit_app (R : CommRingCatᵒᵖ) :
     locallyRingedSpaceAdjunction.counit.app R =
       (CommRingCat.ofHom (algebraMap _ _)).op := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma locallyRingedSpaceAdjunction_counit_app' (R : Type u) [CommRing R] :
-    locallyRingedSpaceAdjunction.counit.app (op <| CommRingCat.of R) =
+    locallyRingedSpaceAdjunction.counit.app (op ↧R) =
       (CommRingCat.ofHom (algebraMap _ _)).op := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma unop_locallyRingedSpaceAdjunction_counit_app' (R : Type u) [CommRing R] :
-    (locallyRingedSpaceAdjunction.counit.app (op <| CommRingCat.of R)).unop =
+    (locallyRingedSpaceAdjunction.counit.app (op ↧R)).unop =
       (CommRingCat.ofHom (algebraMap _ _)) := rfl
 
 lemma locallyRingedSpaceAdjunction_homEquiv_apply
@@ -367,15 +375,15 @@ lemma locallyRingedSpaceAdjunction_homEquiv_apply
 lemma locallyRingedSpaceAdjunction_homEquiv_apply'
     {X : LocallyRingedSpace} {R : Type u} [CommRing R]
     (f : CommRingCat.of R ⟶ Γ.obj <| op X) :
-    locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) (op f) =
+    locallyRingedSpaceAdjunction.homEquiv X (op ↧R) (op f) =
       identityToΓSpec.app X ≫ Spec.locallyRingedSpaceMap f := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
     {X : LocallyRingedSpace} {R : Type u} [CommRing R]
-    (f : Γ.rightOp.obj X ⟶ op (CommRingCat.of R)) (U) :
+    (f : Γ.rightOp.obj X ⟶ op ↧R) (U) :
     CommRingCat.ofHom (algebraMap R _) ≫
-      (locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) f).c.app U =
+      (locallyRingedSpaceAdjunction.homEquiv X (op ↧R) f).c.app U =
     f.unop ≫ X.presheaf.map (homOfLE le_top).op := by
   dsimp
   rw [← StructureSheaf.algebraMap_self_map _ U _ (homOfLE le_top).op, Category.assoc,
@@ -400,11 +408,11 @@ def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
 
 /-- Given `f, g : X ⟶ Spec(R)`, if the two induced maps `R ⟶ Γ(X)` are equal, then `f = g`. -/
 lemma _root_.AlgebraicGeometry.ext_to_Spec {X : Scheme} {R : Type*} [CommRing R]
-    {f g : X ⟶ Spec (.of R)}
-    (h : (Scheme.ΓSpecIso (.of R)).inv ≫ Scheme.Γ.map f.op =
-      (Scheme.ΓSpecIso (.of R)).inv ≫ Scheme.Γ.map g.op) :
+    {f g : X ⟶ Spec ↧R}
+    (h : (Scheme.ΓSpecIso ↧R).inv ≫ Scheme.Γ.map f.op =
+      (Scheme.ΓSpecIso ↧R).inv ≫ Scheme.Γ.map g.op) :
     f = g :=
-  (ΓSpec.adjunction.homEquiv X (.op <| .of R)).symm.injective <| Opposite.unop_injective h
+  (ΓSpec.adjunction.homEquiv X (.op ↧R)).symm.injective <| Opposite.unop_injective h
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
@@ -493,7 +501,6 @@ lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat
   simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.Hom.comp_app]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
     ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = (Scheme.ΓSpecIso B).hom ≫ φ := by
   rw [← Iso.inv_comp_eq, ΓSpecIso_inv_ΓSpec_adjunction_homEquiv]
@@ -564,7 +571,7 @@ lemma Spec.map_surjective {R S : CommRingCat} :
   use Spec.preimage f
   simp
 
-/-- Spec is fully faithful -/
+/-- The `Spec` functor is fully faithful. -/
 @[simps]
 def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where
   toFun := Spec.preimage
@@ -580,6 +587,34 @@ lemma Spec.preimage_id {R : CommRingCat} : Spec.preimage (𝟙 (Spec R)) = 𝟙 
 lemma Spec.preimage_comp {R S T : CommRingCat} (f : Spec R ⟶ Spec S) (g : Spec S ⟶ Spec T) :
     Spec.preimage (f ≫ g) = Spec.preimage g ≫ Spec.preimage f :=
   Spec.map_injective (by simp)
+
+lemma Spec.preimage_injective {R S : CommRingCat} : Function.Injective (preimage : _ → (R ⟶ S)) :=
+  homEquiv.injective
+
+@[simp]
+lemma Spec.preimage_inj {R S : CommRingCat} (f g : Spec S ⟶ Spec R) :
+    preimage f = preimage g ↔ f = g :=
+  preimage_injective.eq_iff
+
+lemma Spec.preimage_surjective {R S : CommRingCat} :
+    Function.Surjective (preimage : _ → (R ⟶ S)) :=
+  homEquiv.surjective
+
+/-- A version of `AlgebraicGeometry.Spec.homEquiv` for concrete `RingHom`. -/
+@[simps! apply symm_apply]
+noncomputable def Spec.homEquivRingHom {R S : Type u} [CommRing R] [CommRing S] :
+    (Spec ↧S ⟶ Spec ↧R) ≃ (R →+* S) :=
+  homEquiv.trans <| CategoryTheory.ConcreteCategory.homEquiv.trans <| .refl _
+
+/-- The bijection between the set of scheme morphisms `Spec B ⟶ Spec A` commuting with their scheme
+morphisms to `Spec R` and the set of concrete algebra homomorphisms `A →ₐ[R] B`. -/
+noncomputable def Spec.homEquivAlgHom {R : Type u} [CommRing R] {A B : Type u} [CommRing A]
+    [CommRing B] [Algebra R A] [Algebra R B] :
+    {f : Spec ↧B ⟶ Spec ↧A // f ≫ Spec.algebraMap R A = Spec.algebraMap R B} ≃
+      (A →ₐ[R] B) :=
+  (homEquiv.subtypeEquiv fun _ ↦ by simp [← preimage_inj, ← ConcreteCategory.hom_injective.eq_iff])
+    |>.trans <| (CommAlgCat.homEquivCommRingCat ↧A ↧B).symm.trans <|
+      ConcreteCategory.homEquiv.trans <| .refl _
 
 end
 
