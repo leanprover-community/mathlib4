@@ -31,6 +31,8 @@ open Finset intervalIntegral MeasureTheory
 
 namespace Real
 
+namespace Real
+
 variable {x : ℝ} (N : ℕ)
 
 /-- The partial sum of the logarithm is equal to the log of the factorial. -/
