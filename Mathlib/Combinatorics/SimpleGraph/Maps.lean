@@ -176,11 +176,14 @@ theorem map_injective (f : V ↪ W) : Function.Injective (SimpleGraph.map f) :=
 theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap f) :=
   (leftInverse_comap_map f).surjective
 
-theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
-    G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h _ _ ha => h ⟨f.injective.ne ha.ne, _, _, ha, rfl, rfl⟩, by
-    rintro h _ _ ⟨-, u, v, ha, rfl, rfl⟩
-    exact h ha⟩
+variable {G G'} in
+theorem map_le_of_le_comap {f : V → W} (h : G ≤ G'.comap f) : G.map f ≤ G' := by
+  rintro _ _ ⟨_, u, v, ha, rfl, rfl⟩
+  exact h ha
+
+variable {G G'} in
+theorem map_le_iff_le_comap {f : V ↪ W} : G.map f ≤ G' ↔ G ≤ G'.comap f :=
+  ⟨fun h _ _ ha => h ⟨f.injective.ne ha.ne, _, _, ha, rfl, rfl⟩, map_le_of_le_comap⟩
 
 theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G := by
   rw [map_le_iff_le_comap]
@@ -414,6 +417,10 @@ protected def comap (f : V → W) (G : SimpleGraph W) : G.comap f →g G where
 
 theorem le_comap (f : H →g G) : H ≤ G.comap f :=
   fun _ _ ↦ f.map_adj
+
+@[grind .]
+theorem map_le (f : H →g G) : H.map f ≤ G :=
+  map_le_of_le_comap f.le_comap
 
 theorem nonempty_hom_iff_exists_le_comap : Nonempty (H →g G) ↔ ∃ f, H ≤ G.comap f :=
   ⟨fun ⟨f⟩ ↦ ⟨f, f.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨f, (h ·)⟩⟩
