@@ -264,7 +264,7 @@ lemma extClass_comp_extMk
     (f₂ : S.X₂ ⟶ R.cocomplex.X n) (hf₂ : Int.negOnePow m • S.f ≫ f₂ = f₁)
     (f₃ : S.X₃ ⟶ R.cocomplex.X m) (hf₃ : S.g ≫ f₃ = f₂ ≫ R.cocomplex.d n m)
     (m' : ℕ) (hm' : m + 1 = m') :
-    (hS.extClass).comp (R.extMk f₁ m hm (by simp [← reassoc_of% hf₂, ← hf₃])) (by lia) =
+    hS.extClass.comp (R.extMk f₁ m hm (by simp [← reassoc_of% hf₂, ← hf₃])) (by lia) =
     R.extMk f₃ m' hm' (by have := hS.epi_g; simp [← cancel_epi S.g, reassoc_of% hf₃]) := by
   have := HasDerivedCategory.standard C
   ext
