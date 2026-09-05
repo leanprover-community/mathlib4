@@ -219,7 +219,7 @@ def sumsq : List (Poly α) → Poly α
 
 theorem sumsq_eq_zero (x) : ∀ l, sumsq l x = 0 ↔ l.Forall fun a : Poly α => a x = 0
   | [] => eq_self_iff_true _
-  | p::ps => by simp [sumsq, add_eq_zero_iff_of_nonneg, mul_self_nonneg, sumsq_eq_zero]
+  | p::ps => by simp [sumsq, add_eq_zero_iff_of_nonneg_left, mul_self_nonneg, sumsq_eq_zero]
 
 end
 
