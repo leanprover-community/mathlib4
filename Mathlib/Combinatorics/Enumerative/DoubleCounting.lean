@@ -213,6 +213,44 @@ lemma sum_card_eq_sum_biUnion_card [Fintype α] [DecidableEq α] [DecidableEq β
   · grind [bipartiteAbove]
   · grind [bipartiteBelow]
 
+/-- Given a finite collection of finite subsets $B_1, \ldots, B_k$ such that
+each $B_i$ has at least $n$ elements. For every $x \in \bigcup_i B_i$, let $C_x$
+be the set of indices of the $B_i$’s that contain $x$. Then, if every $C_x$ contains
+at most $n$ elements, then $\bigcup_i B_i$ has at least $k$ elements. -/
+lemma card_le_card_biUnion_of_card_le_card [DecidableEq β]
+    (B : α → Finset β) (s : Finset α) (hn : 0 < n) (h_card : ∀ j ∈ s, n ≤ #(B j))
+    (h_ub : ∀ x ∈ s.biUnion B, #{j ∈ s | x ∈ B j} ≤ n) :
+    #s ≤ #(s.biUnion B) := by
+  refine Nat.le_of_mul_le_mul_right ?_ hn
+  calc
+    #s * n = ∑ j ∈ s, n := by simp
+    _ ≤ ∑ j ∈ s, #(B j) := Finset.sum_le_sum h_card
+    _ = ∑ j ∈ s, #((s.biUnion B).bipartiteAbove (fun j x ↦ x ∈ B j) j) := by
+      apply Finset.sum_congr rfl
+      intro j hj
+      rw [Finset.bipartiteAbove]
+      congr 1
+      grind
+    _ = ∑ x ∈ s.biUnion B, #(s.bipartiteBelow (fun j x ↦ x ∈ B j) x) :=
+      Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow _
+    _ ≤ ∑ x ∈ s.biUnion B, n := Finset.sum_le_sum h_ub
+    _ = #(s.biUnion B) * n := by simp
+
+/-- For a family of finsets `B` indexed by `n`, if every set `B j` is
+nonempty with size `k` and every element `x` belongs
+to at most `k` sets within any index subset `t`, then
+the cardinality of any set of indices `s` is bounded by the
+cardinality of its bipartite union `s.biUnion B`.
+
+This effectively verifies the Hall marriage condition for the family
+`B` using a double-counting argument.
+-/
+lemma card_le_card_biUnion_of_card_eq_of_card_filter_le [DecidableEq β]
+    {B : α → Finset β} (hn : 0 < n) (h₁ : ∀ j, #(B j) = n)
+    (h₂ : ∀ x, ∀ (t : Finset α), #{j ∈ t | x ∈ B j} ≤ n) (s : Finset α) : #s ≤ #(s.biUnion B) :=
+  Finset.card_le_card_biUnion_of_card_le_card B s (by grind) (fun j _ ↦ (h₁ j).ge)
+    (fun x _ ↦ h₂ x s)
+
 end Bipartite
 
 end Finset
