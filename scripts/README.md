@@ -237,8 +237,8 @@ to module `Foo.Bar` (no `srcDir` indirection).
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
 - `export_crossrefs.lean`
-  Exports a JSON dictionary of every declaration tagged with `@[wikidata]`, `@[stacks]`,
-  `@[kerodon]`, `@[lmfdb]`, or `@[dlmf]` (declaration name, source file, line number, and the cross-reference ids).
+  Exports a JSON dictionary of every declaration with a `CrossRef.Tag` attribute (eg: `@[stacks]`)
+  with declaration name, source file, line number, cross-reference ids and resolved url.
   It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
   so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
   The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded
@@ -247,6 +247,10 @@ to module `Foo.Bar` (no `srcDir` indirection).
   successful master build and publishes the result to the
   [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
   (committing only when the entries actually change).
+- [`crossrefDiff.yml`](../.github/workflows/crossrefDiff.yml)
+  Post-build workflow that diffs a PR build's `crossrefs.json` against the master build at the
+  PR's merge base, then comments on the PR with the cross-references it adds, each linked to its
+  database entry. The table is rendered by mathlib-ci's `pr_summary/crossrefsDiff.py`.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
