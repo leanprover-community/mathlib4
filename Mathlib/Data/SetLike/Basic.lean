@@ -216,7 +216,7 @@ end SetLike
 An instance of this class is automatically available on any partial order defined as
 `PartialOrder.ofSetLike`.
 -/
-class IsConcreteLE (A : Type*) (B : outParam Type*) [SetLike A B] [LE A] where
+class IsConcreteLE (A : Type*) {B : Type*} [SetLike A B] [LE A] where
   /-- The coercion from a `SetLike` type preserves the ordering. -/
   protected coe_subset_coe' {S T : A} : SetLike.coe S ⊆ SetLike.coe T ↔ S ≤ T
 
@@ -232,7 +232,7 @@ of `IsConcreteLE`.
 @[reducible] def LE.ofSetLike : LE A where
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
 
-instance : letI := LE.ofSetLike A B; IsConcreteLE A B :=
+instance : letI := LE.ofSetLike A B; IsConcreteLE A :=
   letI := LE.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
@@ -253,7 +253,7 @@ variable {A B : Type*} [SetLike A B]
 
 section LE
 
-variable [LE A] [IsConcreteLE A B] {p q : A}
+variable [LE A] [IsConcreteLE A] {p q : A}
 
 @[simp, norm_cast, gcongr] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
   IsConcreteLE.coe_subset_coe'
@@ -271,7 +271,7 @@ end LE
 
 section Preorder
 
-variable [Preorder A] [IsConcreteLE A B]
+variable [Preorder A] [IsConcreteLE A]
 
 @[gcongr, mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
@@ -280,7 +280,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
+variable [PartialOrder A] [IsConcreteLE A] {p q : A}
 
 @[simp, norm_cast, gcongr] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
