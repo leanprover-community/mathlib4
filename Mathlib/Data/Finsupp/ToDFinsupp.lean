@@ -13,7 +13,7 @@ public import Mathlib.Data.Finsupp.SMul
 # Conversion between `Finsupp` and homogeneous `DFinsupp`
 
 This module provides conversions between `Finsupp` and `DFinsupp`.
-It is in its own file since neither `Finsupp` or `DFinsupp` depend on each other.
+It is in its own file since neither `Finsupp` nor `DFinsupp` depend on each other.
 
 ## Main definitions
 
@@ -31,7 +31,7 @@ It is in its own file since neither `Finsupp` or `DFinsupp` depend on each other
 
 ## Theorems
 
-The defining features of these operations is that they preserve the function and support:
+The defining features of these operations are that they preserve the function and support:
 
 * `Finsupp.toDFinsupp_coe`
 * `Finsupp.toDFinsupp_support`

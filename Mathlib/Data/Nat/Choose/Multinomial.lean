@@ -138,8 +138,8 @@ theorem multinomial_single [DecidableEq α] :
 /-! ### Connection to binomial coefficients
 
 When `Nat.multinomial` is applied to a `Finset` of two elements `{a, b}`, the
-result a binomial coefficient. We use `binomial` in the names of lemmas that
-involves `Nat.multinomial {a, b}`.
+result is a binomial coefficient. We use `binomial` in the names of lemmas that
+involve `Nat.multinomial {a, b}`.
 -/
 
 theorem binomial_eq [DecidableEq α] (h : a ≠ b) :
