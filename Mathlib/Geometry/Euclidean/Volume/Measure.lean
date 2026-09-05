@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.Hausdorff
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
+
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!

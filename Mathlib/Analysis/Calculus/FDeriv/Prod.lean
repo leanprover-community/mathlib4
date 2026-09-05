@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Const
 public import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Topology.Algebra.Module.Equiv.Pi
 
 /-!
 # Derivative of the Cartesian product of functions
