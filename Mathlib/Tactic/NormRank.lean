@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Echelon.Parsing
 
 This module defines the `eval_rank` tactic and the `norm_rank` simproc, which compute
 the rank of a matrix literal with non-symbolic entries through an
-`Echelon.Decomposition` certificate checked by the kernel.
+`Echelon.Decomposition` certificate.
 -/
 
 public meta section
@@ -61,7 +61,7 @@ simproc_decl norm_rank (Matrix.rank _) := fun e => do
 /--
 `eval_rank` evaluates the rank of matrices with non-symbolic entries.
 
-The element type must be a commutative domain with kernel-decidable equality.
+The element type must be a commutative domain.
 Terms skipped can be viewed by using `set_option trace.Tactic.evalRank true`.
 -/
 elab (name := evalRank) "eval_rank" : tactic => do

@@ -60,9 +60,7 @@ def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
 /-- The rational model of a ring: entries evaluate to rational numerals, denominators
 are cleared by row scaling, and the elimination runs on integer values. It applies to
 every ring, as the fallback model. -/
-def ratProducer (R : Expr) : MetaM Producer := do
-  let u ← getDecLevel R
-  have α : Q(Type u) := R
+def ratProducer {u : Level} (α : Q(Type u)) : MetaM Producer := do
   -- the characteristic determines the zero test
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   let pE : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
