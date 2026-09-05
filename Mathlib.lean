@@ -3749,7 +3749,12 @@ public import Mathlib.Combinatorics.SimpleGraph.Circulant
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Constructions
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeColoring
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeLabeling
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain.Recolor
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain.Swap
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
