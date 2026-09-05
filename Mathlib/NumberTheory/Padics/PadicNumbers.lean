@@ -117,7 +117,7 @@ lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
   split_ifs
   · simp
   · rw [← le_log_iff_exp_le] <;>
-    simp_all
+    simp
 
 lemma Int.padicValuation_eq_one_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
     Int.padicValuation p x = 1 ↔ ¬ (p : ℤ) ∣ x := by
