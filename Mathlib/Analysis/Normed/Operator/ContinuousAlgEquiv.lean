@@ -30,11 +30,11 @@ The proof follows the same idea as the non-continuous version.
 open ContinuousLinearMap ContinuousLinearEquiv
 
 section
-variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V]
-  [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
-  [SeparatingDual 𝕜 W]
+variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup V] [AddCommGroup W]
+  [TopologicalSpace V] [IsTopologicalAddGroup V] [TopologicalSpace W] [IsTopologicalAddGroup W]
+  [Module 𝕜 V] [Module 𝕜 W] [SeparatingDual 𝕜 V] [SeparatingDual 𝕜 W]
+  [ContinuousSMul 𝕜 V] [ContinuousSMul 𝕜 W]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
 public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
     (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
@@ -66,7 +66,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       ContinuousLinearMap.ext_iff, not_forall, smulRight_apply, zero_apply,
       smul_eq_zero_iff_left hu]
     exact ⟨u, huv⟩
-  set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
+  set T := applyₗ 𝕜 _ z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightₗ' 𝕜 _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
     simp only [hT, ← mul_apply_eq_comp, ← map_mul]
@@ -80,14 +80,13 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       simp [← this, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
   set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
-  set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
-    smulRightL 𝕜 _ _ d
+  set T' := applyₗ _ _ u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightₗ' 𝕜 _ _ d
   set TL : V ≃L[𝕜] W := { Tₗ with
     continuous_toFun := T.continuous
     continuous_invFun := by
       change Continuous Tₗ.symm.toLinearMap
       suffices T'.toLinearMap = Tₗ.symm from this ▸ T'.continuous
-      simp [LinearMap.ext_iff, ← Tₗ.injective.eq_iff, T', this, hT, hd, Tₗ] }
+      ext; simp [← Tₗ.injective.eq_iff, T', this, hT, hd, Tₗ, LinearEquiv.ofBijective] }
   exact ⟨TL, fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
 
 variable (𝕜 V W) in
