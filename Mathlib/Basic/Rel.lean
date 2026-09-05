@@ -45,8 +45,8 @@ There is tension throughout the library between considering relations between `�
 
 The function representation is lightweight and has native support from core Lean features. It is a
 good fit when a relation is primarily applied to two arguments. The set-of-pairs representation is
-useful when the relation itself is manipulated as a mathematical object, as `R` is in the examples below, because the standard `Set`
-API applies directly. For example:
+useful when the relation itself is manipulated as a mathematical object, as `R` is in the examples
+below, because the standard `Set` API applies directly. For example:
 * the inverse relation is the preimage `Prod.swap ⁻¹' R`;
 * transporting a relation along `f : α → γ` and `g : β → δ` is the image
   `(Prod.map f g) '' R`;
