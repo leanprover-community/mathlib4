@@ -6562,6 +6562,7 @@ public import Mathlib.Probability.Process.PartitionFiltration
 public import Mathlib.Probability.Process.Predictable
 public import Mathlib.Probability.Process.Stopping
 public import Mathlib.Probability.ProductMeasure
+public import Mathlib.Probability.Quantile
 public import Mathlib.Probability.StrongLaw
 public import Mathlib.Probability.UniformOn
 public import Mathlib.RepresentationTheory.Action
