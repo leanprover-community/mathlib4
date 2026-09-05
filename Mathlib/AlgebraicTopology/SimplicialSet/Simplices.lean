@@ -32,7 +32,9 @@ not what is called "the category of simplices of `X`" in the literature
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -152,7 +154,7 @@ see `S.le_iff_nonempty_hom`.) -/
 @[simps!]
 def equivElements : X.S ≃ X.Elements where
   toFun s := X.elementsMk _ s.simplex
-  invFun := by rintro ⟨⟨⟨n⟩⟩, x⟩; exact S.mk x
+  invFun e := S.mk e.val
   left_inv _ := rfl
   right_inv _ := rfl
 

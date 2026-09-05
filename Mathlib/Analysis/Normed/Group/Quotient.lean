@@ -99,7 +99,9 @@ the previous paragraph kicks in.
 
 noncomputable section
 
-open Metric Set Topology NNReal
+open Metric Set NNReal
+
+open scoped Topology
 
 namespace QuotientGroup
 variable {M : Type*} [SeminormedCommGroup M] {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
