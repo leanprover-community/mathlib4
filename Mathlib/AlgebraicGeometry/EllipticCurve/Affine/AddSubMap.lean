@@ -150,6 +150,11 @@ noncomputable def sym2x (P Q : W'.Point) : Fin 3 → R :=
   letI Qx := Q.xRep
   ![Px 0 * Qx 0, Px 0 * Qx 1 + Px 1 * Qx 0, Px 1 * Qx 1]
 
+lemma sym2x_eq {P Q : W'.Point} :
+    sym2x P Q =
+      ![P.xRep 0 * Q.xRep 0, P.xRep 0 * Q.xRep 1 + P.xRep 1 * Q.xRep 0, P.xRep 1 * Q.xRep 1] :=
+  (rfl)
+
 @[simp]
 lemma sym2x_zero_zero : (0 : W'.Point).sym2x 0 = ![1, 0, 0] := by
   simp [sym2x]
