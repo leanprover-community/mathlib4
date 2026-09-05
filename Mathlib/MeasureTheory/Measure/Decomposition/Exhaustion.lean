@@ -236,8 +236,8 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT'_of_measurableSet [IsFini
       (f := fun (_ : SigmaFinite (μ.restrict (μ.sigmaFiniteSetWRT' ν ∪ s))) ↦ _) ?_).trans ?_
     · have := sigmaFinite_restrict_sigmaFiniteSetWRT' μ ν
       infer_instance
-    · exact le_iSup₂ (f := fun s _ ↦ ⨆ (_ : SigmaFinite (μ.restrict _)), ν s)
-        (μ.sigmaFiniteSetWRT' ν ∪ s) (measurableSet_sigmaFiniteSetWRT'.union hs)
+    · grw [← le_iSup₂ _ ?_]
+      exact measurableSet_sigmaFiniteSetWRT'.union hs
   exact h_lt.not_ge h_le
 
 /-- For all sets `s` in `(μ.sigmaFiniteSetWRT ν)ᶜ`, if `ν s ≠ 0` then `μ s = ∞`. -/
