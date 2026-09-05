@@ -251,8 +251,7 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 theorem ncard_neighborSet : (G.neighborSet v).ncard = G.degree v := by
   simp [← Set.fintypeCard_eq_ncard, card_neighborSet_eq_degree]
 
-@[simp]
-theorem encard_neighborSet : (G.neighborSet v).encard = G.degree v := by
+theorem encard_neighborSet_of_fintype_neighborSet : (G.neighborSet v).encard = G.degree v := by
   simp [← Set.coe_fintypeCard]
 
 lemma degree_eq_zero : G.degree v = 0 ↔ G.IsIsolated v := by simp [← card_neighborFinset_eq_degree]
@@ -318,8 +317,7 @@ theorem ncard_incidenceSet : (G.incidenceSet v).ncard = G.degree v := by
   classical
   simp [← Set.fintypeCard_eq_ncard, card_incidenceSet_eq_degree]
 
-@[simp]
-theorem encard_incidenceSet : (G.incidenceSet v).encard = G.degree v := by
+theorem encard_incidenceSet_of_fintype_neighborSet : (G.incidenceSet v).encard = G.degree v := by
   classical
   simp [← Set.coe_fintypeCard]
 
@@ -600,12 +598,8 @@ theorem card_commonNeighbors_lt_card_verts [DecidableRel G.Adj] (v w : V) :
 the best we can do in general. -/
 theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.Adj] {v w : V}
     (h : G.Adj v w) : Fintype.card (G.commonNeighbors v w) < G.degree v := by
-  classical
-  rw [← Set.toFinset_card]
-  refine Finset.card_lt_card <| Finset.ssubset_iff.mpr ⟨w, ?_, ?_⟩
-  · rw [Set.mem_toFinset]
-    apply notMem_commonNeighbors_right
-  · simpa [Finset.insert_subset_iff, G.commonNeighbors_subset_neighborSet_left v w]
+  rw [← card_neighborSet_eq_degree]
+  exact Set.card_lt_card h.commonNeighbors_ssubset_neighborSet_left
 
 theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
     Fintype.card (commonNeighbors ⊤ v w) = Fintype.card V - 2 := by
