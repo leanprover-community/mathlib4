@@ -113,18 +113,55 @@ lemma coe_orthogonalProjection :
       ∘ (generator H H').ker.quotientEquivOrthogonal := by
   rfl
 
+theorem range_projection : (projection H H').range = (generator H H').kerᗮ := by
+  apply SetLike.coe_injective
+  change Set.range (projection H H') = _
+  simp [projection, Set.range_comp]
+
+variable {H H'} in
+lemma mk_projection (f : H + H') :
+    Submodule.Quotient.mk (projection H H' f : WithLp 2 (H × H')) = f := by
+  rw [← quotientEquivOrthogonal_symm_eq_mk _ _ _, LinearIsometryEquiv.symm_apply_eq]
+  · simp
+  rw [← range_projection H H']
+  exact LinearMap.mem_range_self _ f
+
 variable [CompleteSpace V] in
 theorem projection_kerFun (x : X) (v : V) :
     projection H H' (kerFun (H + H') x v) = .toLp 2 ⟨kerFun H x v, kerFun H' x v⟩ := by
   simp [projection, kerFun_apply_eq_mk, kerFun_mem_orthogonal]
 
-theorem range_projection : Set.range (projection H H') = (generator H H').kerᗮ := by
-  simp [projection, Set.range_comp]
-
 variable [CompleteSpace V] in
 theorem norm_sq_kerFun_add (x : X) (v : V) :
     ‖kerFun (H + H') x v‖ ^ 2 = ‖kerFun H x v‖ ^ 2 + ‖kerFun H' x v‖ ^ 2 := by
   simp [← (projection H H').norm_map, projection_kerFun, WithLp.prod_norm_sq_eq_of_L2]
+
+theorem exists_eq_add_and_norm_sq_eq_add (f : H + H') :
+    ∃ (f₁ : H) (f₂ : H'), (⇑f = f₁ + f₂) ∧ ‖f‖ ^ 2 = ‖f₁‖ ^ 2 + ‖f₂‖ ^ 2 := by
+  let p := projection H H' f
+  have hp : projection H H' f = p := rfl
+  use p.ofLp.1, p.ofLp.2
+  constructor
+  · rw [← mk_projection f, hp]
+    ext
+    change generator H H' p _ = _
+    simp only [WithLp.ofLp_fst, WithLp.ofLp_snd, Pi.add_apply]
+    exact generator_apply p.fst p.snd _
+  · simp [← (projection H H').norm_map, hp, WithLp.prod_norm_sq_eq_of_L2]
+
+theorem norm_sq_le (f : H + H') (f₁ : H) (f₂ : H') (h : ⇑f = f₁ + f₂) :
+    ‖f‖ ^ 2 ≤ ‖f₁‖ ^ 2 + ‖f₂‖ ^ 2 := by
+  have hf : f = Submodule.Quotient.mk (WithLp.toLp 2 (f₁, f₂)) := by
+    ext
+    simp [h]
+    rfl
+  calc
+    ‖f‖ ^ 2 = ‖Submodule.Quotient.mk (p:=(generator H H').ker) (WithLp.toLp 2 (f₁, f₂))‖ ^ 2 := by
+      rw [hf]
+    _ ≤ ‖WithLp.toLp 2 (f₁, f₂)‖ ^ 2 := by
+      gcongr
+      exact Submodule.Quotient.norm_mk_le _ _
+    _ = ‖f₁‖ ^ 2 + ‖f₂‖ ^ 2 := WithLp.prod_norm_sq_eq_of_L2 _
 
 end Add'
 
