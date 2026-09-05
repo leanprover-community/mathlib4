@@ -475,4 +475,47 @@ def Equivalence.mapAction {V W : Type*} [Category* V] [Category* W] (G : Type*) 
   counitIso := (Functor.mapActionComp G _ _).symm ≪≫ Functor.mapActionCongr G E.counitIso
   functor_unitIso_comp X := by ext; simp
 
+/-- An adjunction `F ⊣ U` induces an adjunction between the categories of
+`G`-actions within those categories. -/
+def Adjunction.mapAction {V W : Type*} [Category* V] [Category* W] {F : V ⥤ W} {U : W ⥤ V}
+    (adj : F ⊣ U) (G : Type*) [Monoid G] : F.mapAction G ⊣ U.mapAction G where
+  unit :=
+    { app := fun X =>
+        { hom := adj.unit.app X.V
+          comm := fun g => adj.unit.naturality (X.ρ g) }
+      naturality := fun _ _ f => by
+        ext
+        exact adj.unit.naturality f.hom }
+  counit :=
+    { app := fun Y =>
+        { hom := adj.counit.app Y.V
+          comm := fun g => adj.counit.naturality (Y.ρ g) }
+      naturality := fun _ _ f => by
+        ext
+        exact adj.counit.naturality f.hom }
+  left_triangle_components X := by
+    ext
+    exact adj.left_triangle_components X.V
+  right_triangle_components Y := by
+    ext
+    exact adj.right_triangle_components Y.V
+
+@[simp]
+lemma Adjunction.mapAction_unit_app_hom {V W : Type*} [Category* V] [Category* W]
+    {F : V ⥤ W} {U : W ⥤ V} (adj : F ⊣ U) (G : Type*) [Monoid G] (X : Action V G) :
+    ((adj.mapAction G).unit.app X).hom = adj.unit.app X.V := rfl
+
+@[simp]
+lemma Adjunction.mapAction_counit_app_hom {V W : Type*} [Category* V] [Category* W]
+    {F : V ⥤ W} {U : W ⥤ V} (adj : F ⊣ U) (G : Type*) [Monoid G] (Y : Action W G) :
+    ((adj.mapAction G).counit.app Y).hom = adj.counit.app Y.V := rfl
+
+instance Functor.mapAction_isLeftAdjoint {V W : Type*} [Category* V] [Category* W]
+    (F : V ⥤ W) (G : Type*) [Monoid G] [F.IsLeftAdjoint] : (F.mapAction G).IsLeftAdjoint :=
+  ((Adjunction.ofIsLeftAdjoint F).mapAction G).isLeftAdjoint
+
+instance Functor.mapAction_isRightAdjoint {V W : Type*} [Category* V] [Category* W]
+    (U : V ⥤ W) (G : Type*) [Monoid G] [U.IsRightAdjoint] : (U.mapAction G).IsRightAdjoint :=
+  ((Adjunction.ofIsRightAdjoint U).mapAction G).isRightAdjoint
+
 end CategoryTheory
