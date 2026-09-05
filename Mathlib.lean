@@ -6557,11 +6557,15 @@ public import Mathlib.Probability.Process.Adapted
 public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.FiniteDimensionalLaws
 public import Mathlib.Probability.Process.HittingTime
+public import Mathlib.Probability.Process.Indistinguishable
 public import Mathlib.Probability.Process.Kolmogorov
+public import Mathlib.Probability.Process.LimitProcess
 public import Mathlib.Probability.Process.LocalProperty
 public import Mathlib.Probability.Process.PartitionFiltration
 public import Mathlib.Probability.Process.Predictable
+public import Mathlib.Probability.Process.StoppedValue
 public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Probability.Process.StronglyMeasurablePath
 public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.StrongLaw
 public import Mathlib.Probability.UniformOn
@@ -8111,6 +8115,7 @@ public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Covering.Deck
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Defs.Basic
+public import Mathlib.Topology.Defs.Cadlag
 public import Mathlib.Topology.Defs.Filter
 public import Mathlib.Topology.Defs.Induced
 public import Mathlib.Topology.Defs.Sequences
