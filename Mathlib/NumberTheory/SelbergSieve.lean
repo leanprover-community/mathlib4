@@ -159,13 +159,11 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ s.prodPrimes) (hd_ne_
       simp
 
 /-- The weight of all the elements that are a multiple of `d`. -/
-@[simp]
 def multSum (d : ℕ) : ℝ := ∑ n ∈ s.support, if d ∣ n then s.weights n else 0
 
 
 /-- The remainder term in the approximation A_d = ν (d) X + R_d. This is the degree to which `nu`
   fails to approximate the proportion of the weight that is a multiple of `d`. -/
-@[simp]
 def rem (d : ℕ) : ℝ := s.multSum d - s.nu d * s.totalMass
 
 /-- The weight of all the elements that are not a multiple of any of our finite set of primes. -/
@@ -412,7 +410,6 @@ open BoundingSieve
 variable (s : SelbergSieve)
 
 /-- The sum that appears in the main term of the fundamental theorem. -/
-@[simp]
 def selbergBoundSum : ℝ :=
   ∑ l ∈ divisors s.prodPrimes with (l : ℕ) ^ 2 ≤ s.level, s.selbergTerms l
 
@@ -426,7 +423,7 @@ theorem selbergBoundSum_pos :
   apply sum_pos
   · intro l hl
     rw [mem_filter, mem_divisors] at hl
-    · apply selbergTerms_pos (hl.1.1)
+    · exact selbergTerms_pos hl.1.1
   · simp_rw [Finset.nonempty_def, mem_filter]
     use 1
     simpa using ⟨s.prodPrimes_ne_zero, s.one_le_level⟩
@@ -500,7 +497,7 @@ theorem sum_selbergTerms_dvd_eq_mul_sum_coprime {d : ℕ} (hd : d ∣ s.prodPrim
   · intro m
     simp only [mem_filter, mem_divisors, ne_eq, and_imp]
     intro x _ _ h
-    refine s.selbergTerms_isMultiplicative.map_mul_of_coprime h.symm
+    exact s.selbergTerms_isMultiplicative.map_mul_of_coprime h.symm
   · ext m
     simp only [dvd_mul_right, cast_mul, true_and, mem_filter, mem_divisors, ne_eq, and_assoc,
       and_congr_right_iff]
