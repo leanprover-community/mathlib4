@@ -773,8 +773,7 @@ theorem direction_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₂} (h
   obtain ⟨p, hp⟩ := (nonempty_iff_ne_bot _).mpr h
   rw [← vadd_vsub v p]
   refine vsub_mem_direction ?_ hp
-  rw [mem_comap, f.map_vadd]
-  exact vadd_mem_of_mem_direction hv hp
+  simpa using vadd_mem_of_mem_direction hv hp
 
 -- lemmas about map and comap derived from the Galois connection
 theorem map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
