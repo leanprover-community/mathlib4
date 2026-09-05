@@ -160,12 +160,16 @@ theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
 lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
   rfl
 
-theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e := rfl
+theorem coe_toRingEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e := rfl
 
-@[deprecated (since := "2026-06-21")] alias coe_ringEquiv' := coe_ringEquiv
+@[deprecated (since := "2026-05-05")] alias coe_ringEquiv := coe_toRingEquiv
+@[deprecated (since := "2026-05-05")] alias coe_ringEquiv' := coe_toRingEquiv
 
-theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
+theorem coe_toRingEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
+
+@[deprecated coe_toRingEquiv_injective (since := "2026-05-05")]
+  alias coe_ringEquiv_injective := coe_toRingEquiv_injective
 
 /-- Interpret an algebra equivalence as an algebra homomorphism.
 
@@ -200,8 +204,10 @@ lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
   rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
-theorem coe_ringHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
+theorem toRingHom_toAlgHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := toRingHom_toAlgHom
 
 @[simp]
 theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
