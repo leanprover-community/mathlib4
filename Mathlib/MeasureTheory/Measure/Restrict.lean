@@ -222,14 +222,16 @@ theorem restrict_comm (hs : MeasurableSet s) :
     (μ.restrict t).restrict s = (μ.restrict s).restrict t := by
   rw [restrict_restrict hs, restrict_restrict' hs, inter_comm]
 
-theorem restrict_apply_eq_zero (ht : MeasurableSet t) : μ.restrict s t = 0 ↔ μ (t ∩ s) = 0 := by
-  rw [restrict_apply ht]
+theorem restrict_apply_eq_zero (ht : NullMeasurableSet t μ) :
+    μ.restrict s t = 0 ↔ μ (t ∩ s) = 0 := by
+  rw [restrict_apply₀ (ht.mono restrict_le_self)]
 
 theorem measure_inter_eq_zero_of_restrict (h : μ.restrict s t = 0) : μ (t ∩ s) = 0 :=
   nonpos_iff_eq_zero.1 (h ▸ le_restrict_apply _ _)
 
-theorem restrict_apply_eq_zero' (hs : MeasurableSet s) : μ.restrict s t = 0 ↔ μ (t ∩ s) = 0 := by
-  rw [restrict_apply' hs]
+theorem restrict_apply_eq_zero' (hs : NullMeasurableSet s μ) :
+    μ.restrict s t = 0 ↔ μ (t ∩ s) = 0 := by
+  rw [restrict_apply₀' hs]
 
 @[simp]
 theorem restrict_eq_zero : μ.restrict s = 0 ↔ μ s = 0 := by
@@ -289,11 +291,14 @@ theorem restrict_union' (h : Disjoint s t) (hs : MeasurableSet s) :
     μ.restrict (s ∪ t) = μ.restrict s + μ.restrict t := by
   rw [union_comm, restrict_union h.symm hs, add_comm]
 
+theorem restrict_add_restrict_compl₀ (hs : NullMeasurableSet s μ) :
+    μ.restrict s + μ.restrict sᶜ = μ := by
+  rw [← restrict_union₀ aedisjoint_compl_right hs.compl, union_compl_self, restrict_univ]
+
 @[simp]
 theorem restrict_add_restrict_compl (hs : MeasurableSet s) :
-    μ.restrict s + μ.restrict sᶜ = μ := by
-  rw [← restrict_union (@disjoint_compl_right (Set α) _ _) hs.compl, union_compl_self,
-    restrict_univ]
+    μ.restrict s + μ.restrict sᶜ = μ :=
+  restrict_add_restrict_compl₀ hs.nullMeasurableSet
 
 @[simp]
 theorem restrict_compl_add_restrict (hs : MeasurableSet s) : μ.restrict sᶜ + μ.restrict s = μ := by
@@ -703,12 +708,15 @@ lemma one_le_div_ae {β : Type*} [Group β] [LE β] [MulRightMono β] (f g : α 
 theorem le_ae_restrict : ae μ ⊓ 𝓟 s ≤ ae (μ.restrict s) := fun _s hs =>
   eventually_inf_principal.2 (ae_imp_of_ae_restrict hs)
 
-@[simp]
-theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s := by
+theorem ae_restrict_eq₀ (hs : NullMeasurableSet s μ) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s := by
   ext t
   simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_ofPred,
     Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := a ∉ t)]
   rfl
+
+@[simp]
+theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s :=
+  ae_restrict_eq₀ hs.nullMeasurableSet
 
 theorem ae_restrict_eq_bot {s} : ae (μ.restrict s) = ⊥ ↔ μ s = 0 :=
   ae_eq_bot.trans restrict_eq_zero

@@ -481,7 +481,7 @@ theorem MemLp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ �
   · intro c s hs hμs
     rw [Lp.simpleFunc.coe_indicatorConst]
     refine h_ae indicatorConstLp_coeFn.symm ?_ (h_ind c hs hμs)
-    exact memLp_indicator_const p (hm s hs) c (Or.inr hμs.ne)
+    exact memLp_indicator_const p (hm s hs).nullMeasurableSet c (Or.inr hμs.ne)
   · intro f g hf_mem hg_mem hfm hgm h_disj hfP hgP
     have hfP' : P f := h_ae hf_mem.coeFn_toLp (Lp.memLp _) hfP
     have hgP' : P g := h_ae hg_mem.coeFn_toLp (Lp.memLp _) hgP

@@ -585,7 +585,7 @@ variable (p) in
 def indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Lp.simpleFunc E p μ :=
   toLp ((SimpleFunc.const _ c).piecewise s hs (SimpleFunc.const _ 0))
-    (memLp_indicator_const p hs c (Or.inr hμs))
+    (memLp_indicator_const p hs.nullMeasurableSet c (.inr hμs))
 
 @[simp]
 theorem coe_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
@@ -627,7 +627,7 @@ protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.s
       (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
   · intro f g hfg hf hg hfg'
     obtain ⟨hf', hg'⟩ : MemLp f p μ ∧ MemLp g p μ :=
-      (memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable).mp hfg'
+      (memLp_add_of_disjoint hfg f.aestronglyMeasurable g.aestronglyMeasurable).mp hfg'
     exact add hf' hg' hfg (hf hf') (hg hg')
 
 end Induction
@@ -831,7 +831,7 @@ theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : 
       exact indicator c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
     · intro f g hfg hf hg int_fg
       rw [SimpleFunc.coe_add,
-        memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable] at int_fg
+        memLp_add_of_disjoint hfg f.aestronglyMeasurable g.aestronglyMeasurable] at int_fg
       exact add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
   have : ∀ f : Lp.simpleFunc E p μ, motive f := by
     intro f
@@ -883,7 +883,7 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
   · intro f f' hff' hf hf' δ δpos int_ff'
     obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p δpos
     rw [SimpleFunc.coe_add,
-      memLp_add_of_disjoint hff' f.stronglyMeasurable f'.stronglyMeasurable] at int_ff'
+      memLp_add_of_disjoint hff' f.aestronglyMeasurable f'.aestronglyMeasurable] at int_ff'
     rcases hf η ηpos.ne' int_ff'.1 with ⟨g, hg, Pg⟩
     rcases hf' η ηpos.ne' int_ff'.2 with ⟨g', hg', Pg'⟩
     refine ⟨g + g', ?_, h1P g g' Pg Pg'⟩
