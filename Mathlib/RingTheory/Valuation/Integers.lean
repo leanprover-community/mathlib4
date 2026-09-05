@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 The elements with valuation less than or equal to 1.
 
-TODO: Define characteristic predicate.
 -/
 
 @[expose] public section
