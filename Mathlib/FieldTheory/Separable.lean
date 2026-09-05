@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 
+import Mathlib.FieldTheory.Minpoly.Finite
+
 /-!
 
 # Separable polynomials
@@ -513,6 +515,13 @@ theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f
   · rintro ⟨⟩
   exact hf.natDegree_pos.ne'
 
+theorem _root_.Irreducible.separable_of_natCast_natDegree_ne_zero {f : F[X]} (hf : Irreducible f)
+    (h : (f.natDegree : F) ≠ 0) :
+    f.Separable := by
+  have h : IsSMulRegular F f.natDegree := by simp [isSMulRegular_iff_right_eq_zero_of_smul, h]
+  simp [separable_iff_derivative_ne_zero hf, ← degree_eq_bot.ne,
+    degree_derivative_of_isSMulRegular h]
+
 end Field
 
 end Polynomial
@@ -653,7 +662,31 @@ theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
   ⟨isSeparable_algebraMap⟩
 
-variable [IsDomain K] [Algebra.IsIntegral F K] [CharZero F]
+variable [IsDomain K] [Algebra.IsIntegral F K]
+
+theorem IsSeparable.of_integral_of_natCast_natDegree_ne_zero {x : K}
+    (h : ((minpoly F x).natDegree : F) ≠ 0) : IsSeparable F x :=
+  (minpoly.irreducible <| Algebra.IsIntegral.isIntegral x).separable_of_natCast_natDegree_ne_zero h
+
+theorem Algebra.IsSeparable.of_integral_of_finrank_lt [Module.Finite F K]
+    (h : Module.finrank F K < ringChar F) :
+    Algebra.IsSeparable F K := by
+  rw [isSeparable_def]
+  intro x
+  apply IsSeparable.of_integral_of_natCast_natDegree_ne_zero
+  rw [Ne, ringChar.spec]
+  apply Nat.not_dvd_of_pos_of_lt (minpoly.natDegree_pos <| IsIntegral.isIntegral x)
+  exact (minpoly.natDegree_le x).trans_lt h
+
+theorem Algebra.IsSeparable.of_integral_of_rank_lt (h : Module.rank F K < ringChar F) :
+    Algebra.IsSeparable F K := by
+  have : Module.Finite F K := Module.rank_lt_aleph0_iff.mp (h.trans Cardinal.natCast_lt_aleph0)
+  apply of_integral_of_finrank_lt
+  convert! Cardinal.toNat_lt_toNat h Cardinal.natCast_lt_aleph0
+  rw [Cardinal.toNat_natCast]
+
+section CharZero
+variable [CharZero F]
 
 theorem IsSeparable.of_integral (x : K) : IsSeparable F x :=
   (minpoly.irreducible <| Algebra.IsIntegral.isIntegral x).separable
@@ -663,6 +696,8 @@ variable (K) in
 /-- An integral field extension in characteristic 0 is separable. -/
 protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.IsSeparable F K :=
   ⟨_root_.IsSeparable.of_integral _⟩
+
+end CharZero
 
 end IsIntegral
 
