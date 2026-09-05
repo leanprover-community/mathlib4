@@ -83,6 +83,20 @@ recommended_spelling "vadd" for "+ᵥ" in [HVAdd.hVAdd, «term_+ᵥ_»]
 recommended_spelling "vsub" for "-ᵥ" in [VSub.vsub, «term_-ᵥ_»]
 recommended_spelling "sdiv" for "/ₛ" in [SDiv.sdiv, «term_/ₛ_»]
 
+variable {G : Type*}
+
+section Comp
+
+/-- Type class for the `∘ᶠ` notation. -/
+class FComp (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  /-- `b ∘ᶠ a` is the composition of `a : α` and `b : β`. The meaning of this notation is
+  type-dependent. -/
+  protected comp : β → α → γ
+
+@[inherit_doc] infixr:65 " ∘ᶠ " => FComp.comp
+
+end Comp
+
 section Star
 
 /-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
