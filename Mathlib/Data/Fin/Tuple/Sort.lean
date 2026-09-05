@@ -24,6 +24,9 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 
 * `Tuple.sort`: given `f : Fin n → α`, produces a permutation on `Fin n`
 * `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `Monotone`
+* `Tuple.sortDesc`: given `f : Fin n → α`, produces a permutation on `Fin n` sorting into decreasing
+  order
+* `Tuple.antitone_sortDesc`: `f ∘ Tuple.sortDesc f` is `Antitone`
 
 -/
 
@@ -94,6 +97,16 @@ theorem monotone_proj (f : Fin n → α) : Monotone (graph.proj : graph f → α
 theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   rw [self_comp_sort]
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
+
+/-- `sortDesc f` is the permutation that orders `Fin n` according to the reverse order of the
+outputs of `f`, so that `f ∘ sortDesc f` is decreasing. -/
+def sortDesc (f : Fin n → α) : Equiv.Perm (Fin n) :=
+  sort (OrderDual.toDual ∘ f)
+
+theorem antitone_sortDesc (f : Fin n → α) : Antitone (f ∘ sortDesc f) := by
+  have hmono : Monotone ((OrderDual.toDual ∘ f) ∘ sort (OrderDual.toDual ∘ f)) := monotone_sort _
+  rw [Function.comp_assoc] at hmono
+  exact monotone_toDual_comp_iff.mp hmono
 
 end Tuple
 
@@ -180,6 +193,12 @@ theorem comp_sort_eq_comp_iff_monotone : f ∘ σ = f ∘ sort f ↔ Monotone (f
 theorem comp_perm_comp_sort_eq_comp_sort : (f ∘ σ) ∘ sort (f ∘ σ) = f ∘ sort f := by
   rw [Function.comp_assoc, ← Equiv.Perm.coe_mul]
   exact unique_monotone (monotone_sort (f ∘ σ)) (monotone_sort f)
+
+/-- The sorted-descending versions of a tuple `f` and of any permutation of `f` agree. -/
+theorem comp_perm_comp_sortDesc_eq_comp_sortDesc :
+    (f ∘ σ) ∘ sortDesc (f ∘ σ) = f ∘ sortDesc f := by
+  rw [Function.comp_assoc, ← Equiv.Perm.coe_mul]
+  exact unique_antitone (antitone_sortDesc (f ∘ σ)) (antitone_sortDesc f)
 
 /-- If a permutation `f ∘ σ` of the tuple `f` is not the same as `f ∘ sort f`, then `f ∘ σ`
 has a pair of strictly decreasing entries. -/
