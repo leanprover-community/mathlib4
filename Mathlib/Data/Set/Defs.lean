@@ -234,14 +234,14 @@ instance instSingletonSet : Singleton α (Set α) := ⟨Set.singleton⟩
 Note that you should **not** use this definition directly, but instead write `s ∪ t`. -/
 protected def union (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∨ a ∈ s₂}
 
-instance : Union (Set α) := ⟨Set.union⟩
+instance : Max (Set α) := ⟨Set.union⟩
 
 /-- The intersection of two sets `s` and `t` is the set of elements contained in both `s` and `t`.
 
 Note that you should **not** use this definition directly, but instead write `s ∩ t`. -/
 protected def inter (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∧ a ∈ s₂}
 
-instance : Inter (Set α) := ⟨Set.inter⟩
+instance : Min (Set α) := ⟨Set.inter⟩
 
 /-- The complement of a set `s` is the set of elements not contained in `s`.
 

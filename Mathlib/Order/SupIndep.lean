@@ -215,7 +215,11 @@ protected theorem SupIndep.disjoint_sup_sup {s : Finset ι} {f : ι → α} {u v
   induction u using Finset.induction generalizing v with
   | empty => simp
   | insert x u hx ih =>
-    grind [= SupIndep, Disjoint.disjoint_sup_left_of_disjoint_sup_right]
+    rw [sup_insert]
+    apply Disjoint.disjoint_sup_left_of_disjoint_sup_right
+    · grind
+    · unfold SupIndep at hs
+      grind
 
 theorem supIndep_sigma_iff' {β : ι → Type*} {s : Finset ι} {g : ∀ i, Finset (β i)}
     {f : Sigma β → α} : (s.sigma g).SupIndep f ↔ (s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)

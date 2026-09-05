@@ -528,10 +528,10 @@ protected def inter (x y : ZFSet.{u}) : ZFSet.{u} :=
 protected def diff (x y : ZFSet.{u}) : ZFSet.{u} :=
   ZFSet.sep (fun z => z ∉ y) x -- { z ∈ x | z ∉ y }
 
-instance : Union ZFSet :=
+instance : Max ZFSet :=
   ⟨ZFSet.union⟩
 
-instance : Inter ZFSet :=
+instance : Min ZFSet :=
   ⟨ZFSet.inter⟩
 
 instance : SDiff ZFSet :=
