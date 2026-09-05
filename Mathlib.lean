@@ -2141,6 +2141,7 @@ public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.Matrix.Spectrum
 public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.MeanInequalitiesPow
+public import Mathlib.Analysis.MeanInequalitiesSymmetric
 public import Mathlib.Analysis.MellinInversion
 public import Mathlib.Analysis.MellinTransform
 public import Mathlib.Analysis.Meromorphic.Basic
