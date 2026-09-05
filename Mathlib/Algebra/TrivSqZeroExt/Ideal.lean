@@ -29,10 +29,9 @@ variable (R M : Type*)
 /-- The kernel of the `AlgHom` `fstHom R R M` -/
 def kerIdeal : Ideal (TrivSqZeroExt R M) := RingHom.ker (fstHom R R M)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_kerIdeal_iff_inr (x : TrivSqZeroExt R M) : x ∈ kerIdeal R M ↔ x = inr x.snd := by
   obtain ⟨r, m⟩ := x
-  simp only [kerIdeal, RingHom.mem_ker, fstHom_apply, fst_mk]
+  simp only [kerIdeal, RingHom.mem_ker, fstHom_apply]
   exact ⟨fun hr => by rw [hr]; rfl, fun hrm => by rw [← fst_mk r m, hrm, fst_inr]⟩
 
 @[simp] theorem kerIdeal_sq : kerIdeal R M ^ 2 = ⊥ := by
