@@ -217,6 +217,18 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
     tsub_le_iff_right, ← hc]
   apply Finset.card_image_le
 
+/-- A finite family with cardinality at most the dimension of the ambient space
+does not affinely span the whole space. -/
+lemma affineSpan_image_finset_ne_top_of_card_le [DecidableEq P] (p : ι → P) (s : Finset ι)
+    (hs : #s ≤ finrank k V) : affineSpan k (s.image p : Set P) ≠ ⊤ := by
+  cases hc : #s with
+  | zero => simp [Finset.card_eq_zero.mp hc]
+  | succ n =>
+      intro htop
+      have hdim := finrank_vectorSpan_image_finset_le k p s hc
+      rw [← direction_affineSpan, htop, direction_top, finrank_top] at hdim
+      lia
+
 /-- The `vectorSpan` of an indexed family of `n + 1` points has
 dimension at most `n`. -/
 theorem finrank_vectorSpan_range_le [Fintype ι] (p : ι → P) {n : ℕ} (hc : Fintype.card ι = n + 1) :
