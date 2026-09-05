@@ -76,4 +76,54 @@ lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R)
   apply Function.locallyFinsupp.map_id
   simp [mapCoeff]
 
+section WeilDivisor
+
+variable {R : Type*}
+
+/--
+A Weil divisor is an algebraic cycle supported purely in codimension one
+-/
+def IsWeilDivisor [Zero R] (D : AlgebraicCycle X R) : Prop :=
+  D.support ⊆ {x | Order.coheight x = 1}
+
+lemma isWeilDivisor_iff [Zero R] {D : AlgebraicCycle X R} :
+    IsWeilDivisor D ↔ D.support ⊆ {x | Order.coheight x = 1} := Iff.rfl
+
+lemma IsWeilDivisor.coheight_eq_one [Zero R] {D : AlgebraicCycle X R} (hD : IsWeilDivisor D)
+    {x : X} (hx : D x ≠ 0) : Order.coheight x = 1 := hD hx
+
+lemma isWeilDivisor_zero [Zero R] : IsWeilDivisor (0 : AlgebraicCycle X R) :=
+  fun _ hx => absurd rfl hx
+
+lemma IsWeilDivisor.add [AddMonoid R] {D E : AlgebraicCycle X R} (hD : IsWeilDivisor D)
+    (hE : IsWeilDivisor E) : IsWeilDivisor (D + E) :=
+  (Function.support_add _ _).trans (Set.union_subset hD hE)
+
+variable (X R) in
+/--
+The Weil divisors on `X`, as a subgroup of the algebraic cycles
+-/
+def weilDivisors [AddGroup R] : AddSubgroup (AlgebraicCycle X R) :=
+  Function.locallyFinsuppWithin.supported R Set.univ {x : X | Order.coheight x = 1}
+
+@[simp]
+lemma mem_weilDivisors [AddGroup R] {D : AlgebraicCycle X R} :
+    D ∈ weilDivisors X R ↔ IsWeilDivisor D := Iff.rfl
+
+@[simp]
+lemma isWeilDivisor_neg [AddGroup R] {D : AlgebraicCycle X R} :
+    IsWeilDivisor (-D) ↔ IsWeilDivisor D := (weilDivisors X R).neg_mem_iff
+
+lemma IsWeilDivisor.neg [AddGroup R] {D : AlgebraicCycle X R} (hD : IsWeilDivisor D) :
+    IsWeilDivisor (-D) := (weilDivisors X R).neg_mem hD
+
+lemma IsWeilDivisor.sub [AddGroup R] {D E : AlgebraicCycle X R} (hD : IsWeilDivisor D)
+    (hE : IsWeilDivisor E) : IsWeilDivisor (D - E) := (weilDivisors X R).sub_mem hD hE
+
+open Function.locallyFinsuppWithin in
+lemma isWeilDivisor_single [DecidableEq X] [Zero R] {x : X} (hx : Order.coheight x = 1) (r : R) :
+    IsWeilDivisor (single x r) := fun _ _ ↦ by simp_all
+
+end WeilDivisor
+
 end AlgebraicGeometry.AlgebraicCycle
