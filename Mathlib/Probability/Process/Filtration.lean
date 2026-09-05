@@ -170,11 +170,9 @@ noncomputable instance instPartialOrder : PartialOrder (Filtration ι m) where
 
 set_option linter.style.longLine false in
 noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
-  sup := (· ⊔ ·)
   le_sup_left _ _ _ := le_sup_left
   le_sup_right _ _ _ := le_sup_right
   sup_le _ _ _ h_fh h_gh i := sup_le (h_fh i) (h_gh _)
-  inf := (· ⊓ ·)
   inf_le_left _ _ _ := inf_le_left
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
