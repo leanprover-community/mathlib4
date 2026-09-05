@@ -13,13 +13,6 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-Resolved repository identity for cache lookups.
--/
-structure RepoInfo where
-  repo : String
-  deriving Repr, BEq
-
-/--
 Helper function to extract repository name from a git remote URL
 -/
 def extractRepoFromUrl (url : String) : Option String := do
@@ -64,61 +57,6 @@ where repoFromURL (url : String) : IO (Option String) := do
         Continuing to fetch the cache from {MATHLIBREPO}."
       return none
 
-/--
-Finds the remote name that points to `leanprover-community/mathlib4` repository.
-Returns the remote name and prints warnings if the setup doesn't follow conventions.
--/
-def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
-  let remotesInfo ← IO.Process.output
-    {cmd := "git", args := #["remote", "-v"], cwd := mathlibDepPath}
-
-  unless remotesInfo.exitCode == 0 do
-    throw <| IO.userError s!"\
-      Failed to run Git to list remotes (exit code: {remotesInfo.exitCode}).\n\
-      Ensure Git is installed.\n\
-      Stdout:\n{remotesInfo.stdout.trimAscii}\nStderr:\n{remotesInfo.stderr.trimAscii}\n"
-
-  let remoteLines := remotesInfo.stdout.splitToList (· == '\n')
-  let mut mathlibRemote : Option String := none
-  let mut originPointsToMathlib : Bool := false
-
-  for line in remoteLines do
-    let parts := line.trimAscii.copy.splitToList (· == '\t')
-    if parts.length >= 2 then
-      let remoteName := parts[0]!
-      let remoteUrl := parts[1]!.takeWhile (· != ' ') |>.copy -- Remove (fetch) or (push) suffix
-
-      -- Check if this remote points to leanprover-community/mathlib4
-      let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4"
-
-      if isMathlibRepo then
-        if remoteName == "origin" then
-          originPointsToMathlib := true
-        mathlibRemote := some remoteName
-
-  match mathlibRemote with
-  | none =>
-    throw <| IO.userError "Could not find a remote pointing to leanprover-community/mathlib4"
-  | some remoteName =>
-    if remoteName != "upstream" then
-      let mut warning := s!"Some Mathlib ecosystem tools assume that the git remote for `leanprover-community/mathlib4` is named `upstream`. You have named it `{remoteName}` instead. We recommend changing the name to `upstream`."
-      if originPointsToMathlib then
-        warning := warning ++ " Moreover, `origin` should point to your own fork of the mathlib4 repository."
-      warning := warning ++ " You can set this up with `git remote add upstream https://github.com/leanprover-community/mathlib4.git`."
-      IO.println s!"Warning: {warning}"
-    return remoteName
-
-/--
-Extracts PR number from a git ref like "refs/remotes/upstream/pr/1234"
--/
-def extractPRNumber (ref : String) : Option Nat := do
-  let parts := ref.splitToList (· == '/')
-  if parts.length >= 2 && parts[parts.length - 2]! == "pr" then
-    let prStr := parts[parts.length - 1]!
-    prStr.toNat?
-  else
-    none
-
 /-- Check if we're in a detached HEAD state at a nightly-testing tag -/
 def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
   -- Get the current commit hash and check if it's a nightly-testing tag
@@ -145,7 +83,7 @@ def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
 Inner implementation: may throw if git is unavailable or the directory has no
 git checkout. Callers should use `getRemoteRepo` instead.
 -/
-private def getRemoteRepoImpl (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
+private def getRemoteRepoImpl (mathlibDepPath : FilePath) : IO (Option String) := do
 
   -- Since currently we need to push a PR to `leanprover-community/mathlib` build a user cache,
   -- we check if we are a special branch or a branch with PR. This leaves out non-PRed fork
@@ -174,53 +112,7 @@ private def getRemoteRepoImpl (mathlibDepPath : FilePath) : IO (Option RepoInfo)
     if shouldUseNightlyTesting then
       let repo := "leanprover-community/mathlib4-nightly-testing"
       IO.println s!"Using cache from nightly-testing remote: {repo}"
-      return some {repo := repo}
-
-    -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
-    -- let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
-    --                       branchName.startsWith "nightly-testing"
-
-    -- TODO: this code is currently broken in two ways: 1. you need to write `%(refname)` in quotes and
-    -- 2. it is looking in the wrong place when in detached HEAD state.
-    -- We comment it out for now, but we should fix it later.
-    -- Check if the current commit coincides with any PR ref
-    -- if !isSpecialBranch then
-    --   let mathlibRemoteName ← findMathlibRemote mathlibDepPath
-    --   let currentCommit ← IO.Process.output
-    --     {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
-    --
-    --   if currentCommit.exitCode == 0 then
-    --     let commit := currentCommit.stdout.trim
-    --     -- Get all PR refs that contain this commit
-    --     let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
-    --     let refsInfo ← IO.Process.output
-    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
-    --     -- The code below is for debugging purposes currently
-    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
-    --     {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
-    --     let refsInfo' ← IO.Process.output
-    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
-    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
-    --     {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
-    --
-    --     if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
-    --       let prRefs := refsInfo.stdout.trim.split (· == '\n')
-    --       -- Extract PR numbers from refs like "refs/remotes/upstream/pr/1234"
-    --       for prRef in prRefs do
-    --         if let some prNumber := extractPRNumber prRef then
-    --           -- Get PR details using gh
-    --           let prInfo ← IO.Process.output
-    --             {cmd := "gh", args := #["pr", "view", toString prNumber, "--json", "headRefName,headRepositoryOwner,number"], cwd := mathlibDepPath}
-    --           if prInfo.exitCode == 0 then
-    --             if let .ok json := Lean.Json.parse prInfo.stdout.trim then
-    --               if let .ok owner := json.getObjValAs? Lean.Json "headRepositoryOwner" then
-    --                 if let .ok login := owner.getObjValAs? String "login" then
-    --                   if let .ok repoName := json.getObjValAs? String "headRefName" then
-    --                     if let .ok prNum := json.getObjValAs? Nat "number" then
-    --                       let repo := s!"{login}/mathlib4"
-    --                       IO.println s!"Using cache from PR #{prNum} source: {login}/{repoName} (commit {commit.take 8} found in PR ref)"
-    --                       let useFirst := if login != "leanprover-community" then true else false
-    --                       return {repo := repo, useFirst := useFirst}
+      return some repo
 
   -- Fall back to using the remote that the current branch is tracking
   let trackingRemote ← IO.Process.output
@@ -236,8 +128,8 @@ private def getRemoteRepoImpl (mathlibDepPath : FilePath) : IO (Option RepoInfo)
     s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
   match repo? with
   | some repo =>
-    IO.println s!"Using cache from {remoteName}: {repo?}"
-    return some {repo := repo}
+    IO.println s!"Using cache from {remoteName}: {repo}"
+    return some repo
   | none =>
     IO.println s!"Using cache from {MATHLIBREPO}."
     return none
@@ -252,11 +144,40 @@ the remote cannot be resolved. This is the expected outcome when `cache get` is
 invoked on a dependency that was fetched as an archive rather than a git clone;
 callers fall back to `MATHLIBREPO` and the master container.
 -/
-def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
+def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option String) := do
   try
     return (← getRemoteRepoImpl mathlibDepPath)
   catch _ =>
     return none
+
+/--
+Process-wide usage context (see `UsageContext`), set once by `main` from
+`UsageContext.resolve` before any read resolution runs. The `downstream`
+initial value is the fail-safe direction for a trust decision: a path that
+reads the context before `main` sets it gets the narrow public chain, never a
+silently widened one. The cost of a spurious narrow default is loud (cache
+misses); the cost of a spurious wide one is silent (work-in-progress
+artifacts served to a downstream build).
+-/
+initialize usageContext : IO.Ref UsageContext ← IO.mkRef .downstream
+
+/--
+The repo a downstream read resolves to, given what the dependency checkout's
+git remote reports.
+
+A downstream resolution honors only a canonical detection: a project whose
+mathlib dependency is the nightly-testing repo (or is pinned to a
+`nightly-testing-*` tag, which the probe also reports as that repo) keeps
+reading the nightly cache — its artifacts exist nowhere else. Everything
+else — a fork remote, or no detection at all — resolves to `MATHLIBREPO`, so a
+dependency checkout's remote can never steer a downstream read into a fork's
+artifacts. An explicit `--repo=` is the opt-in for that, and it resolves the
+context to `developer` before this function is consulted.
+-/
+def resolveDownstreamRepo (detected? : Option String) : String :=
+  match detected? with
+  | some repo => if isCanonicalRepo repo then repo else MATHLIBREPO
+  | none => MATHLIBREPO
 
 /--
 Resolve the GitHub repo for cache reads from a single `getRemoteRepo` probe.
@@ -266,7 +187,10 @@ Returns `(detectedRepo?, resolvedRepo)`:
   determined); the warning path compares it against an explicit `--repo=` to
   tell whether the user is overriding the checkout's repo.
 * `resolvedRepo` applies the override precedence `--repo=` > git remote >
-  `MATHLIBREPO`, and is what the read path uses.
+  `MATHLIBREPO`, and is what the read path uses. Downstream (see
+  `UsageContext`), the detection is filtered through `resolveDownstreamRepo`:
+  only a canonical repo is honored, so a fork remote on the dependency
+  checkout cannot steer a downstream read off the public service.
 
 `getRemoteRepo` shells out to git and prints branch/remote diagnostics;
 resolving here lets the read path, the warning, and the HEAD hint share a
@@ -274,12 +198,20 @@ single probe keyed on `mathlibDepPath`.
 -/
 def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) :
     IO (Option String × String) := do
-  let detected? := (← getRemoteRepo mathlibDepPath).map (·.repo)
+  let detected? ← getRemoteRepo mathlibDepPath
+  if (← usageContext.get) == .downstream then
+    let resolved := resolveDownstreamRepo detected?
+    -- The probe above prints "Using cache from ...: {detected}"; correct the
+    -- record when the downstream resolution discards that detection.
+    if detected?.isSome && detected? != some resolved then
+      IO.println s!"Dependency checkout points at {detected?.get!}; a project \
+        using Mathlib reads the {resolved} cache (pass --repo to override)."
+    return (detected?, resolved)
   return (detected?, repo?.getD (detected?.getD MATHLIBREPO))
 
 /--
 Process-wide override for the container fallback list, set by the `--cache-from`
-CLI flag. When `none`, downloads use `defaultContainersForRepo`; when `some cs`,
+CLI flag. When `none`, downloads use `defaultContainersFor`; when `some cs`,
 all repos use `cs` instead.
 -/
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
@@ -302,8 +234,9 @@ Precedence (most specific wins):
    how CI widens the lookup chain to match its write target without touching
    each `cache get` call. The (repo, branch) → chain mapping lives in CI config,
    not here.
-4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
-   overrides it.
+4. `defaultContainersFor context repo`: the context- and repo-level fallback
+   when nothing overrides it — the per-repo trust chain in developer use, the
+   public-only chain downstream.
 
 An empty value means unset for both variables here, as it does for
 `MATHLIB_CACHE_BASE_URL`. `nonEmptyEnvValue` holds that rule.
@@ -324,7 +257,7 @@ def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) :=
           (unrecognized container name). Known containers: \
           {", ".intercalate (Container.all.map Container.name)}."
         pure none
-  chainWithGetURLs (envOverride?.getD (defaultContainersForRepo repo))
+  chainWithGetURLs (envOverride?.getD (defaultContainersFor (← usageContext.get) repo))
 
 /--
 `curl` flags that let a cache read follow a redirect, so a read base may answer
@@ -351,20 +284,6 @@ guarantees the per-transfer JSON report fields `monitorCurl` reads. Pass
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
-/-- Authentication method used for cache upload operations. -/
-inductive UploadAuth where
-  | azureSas (token : String)
-  | azureBearer (token : String)
-
-/-- Retrieves upload credentials from the environment. -/
-def getUploadAuth : IO UploadAuth := do
-  if let some token ← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
-    return .azureBearer token
-  if let some token ← getEnvNonEmpty "MATHLIB_CACHE_SAS" then
-    return .azureSas token
-  throw <| IO.userError
-    "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
-
 /--
 Construct the URL for the cache file `fileName` in repo `repo`, against the
 container reachable at `containerURL`.
@@ -383,15 +302,7 @@ case-insensitive in the GitHub owner/repo name.
 -/
 def mkFileURL (container : Option Container) (repo containerURL fileName : String)
     (repoScope : Option String := none) : String :=
-  let repo := normalizeRepo repo
-  let flat := match container with
-    | some c => c.flatPath repo
-    | none => repo == MATHLIBREPO
-  let pre := if flat then ""
-    else match repoScope with
-      | some s => s!"{repo}/{s}/"
-      | none => s!"{repo}/"
-  s!"{containerURL}/f/{pre}{fileName}"
+  s!"{containerURL}/f/{filePathPrefix container repo repoScope}{fileName}"
 
 /--
 Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
@@ -400,14 +311,33 @@ When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`.
 initialize scopeOverride : IO.Ref (Option String) ← IO.mkRef none
 
 /--
+Whether `scope` is a well-formed per-commit scope: a nonempty run of hex
+digits, at most 64 of them (a commit SHA, abbreviated or full). The scope
+lands in URL paths and in file names — the fork namespace `f/{repo}/{scope}/`,
+the marker `m/{repo}/{scope}`, and the marker's local temp file — so anything
+else (a path separator, `..`, an unresolved ref name) is a misconfiguration
+that must fail loudly rather than leak into a path.
+-/
+def isValidScope (scope : String) : Bool :=
+  !scope.isEmpty && scope.length ≤ 64 &&
+    scope.all fun c => c.isDigit || ('a' ≤ c && c ≤ 'f') || ('A' ≤ c && c ≤ 'F')
+
+/--
 Resolved repo-scope SHA. Precedence: `--scope=` flag > `MATHLIB_CACHE_REPO_SCOPE`
 env var > `none`. Both sources mean "the user has explicitly opted into a
-SHA-scoped read"; the non-default-scope warning fires for either.
+SHA-scoped read"; the non-default-scope warning fires for either. A scope that
+is not a hex SHA (see `isValidScope`) throws: every consumer embeds the scope
+in a URL path or a file name.
 -/
 def getRepoScope : IO (Option String) := do
-  if let some s ← scopeOverride.get then
-    return some s
-  getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
+  let scope? ← do
+    if let some s ← scopeOverride.get then pure (some s)
+    else getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
+  let some scope := scope? | return none
+  unless isValidScope scope do
+    throw <| IO.userError s!"invalid cache scope '{scope}': a scope is a commit SHA (hex \
+      digits; --scope also accepts any ref `git rev-parse` can resolve from inside a git checkout)"
+  return some scope
 
 def getGitCommitHash : IO String :=
   return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
@@ -739,7 +669,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
               return msg
             let msg? := result.getObjValAs? String "errormsg"
             -- A download is named by its part file, an upload by its URL —
-            -- query-stripped: a SAS put carries its token there.
+            -- query-stripped, so a credential in the query string never prints.
             let src? : Except String String := match dir with
               | .download => fn?
               | .upload =>
@@ -786,6 +716,10 @@ private def downloadFilesFromContainer
     (scope? : Option String) (decompState : DecompState) :
     IO (TransferState × Std.HashSet UInt64) := do
   let size := hashMap.size
+  -- `legacy` answers reads with 403 once its public access is revoked ahead
+  -- of retirement; treat that as a miss so the chain stays quiet for clients
+  -- whose chain still lists it.
+  let treatForbiddenAsMiss := container == some Container.legacy
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
     let args := #["--request", "GET", "--parallel", "--silent"] ++
@@ -793,18 +727,12 @@ private def downloadFilesFromContainer
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
       #["--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-    -- `legacy` answers reads with 403 once its public access is revoked ahead
-    -- of retirement; treat that as a miss so the chain stays quiet for clients
-    -- whose chain still lists it.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
       (classifyDownload · · treatForbiddenAsMiss) (removeOnError := true)
       decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
     return (s, served)
   else
-    -- Mirror the parallel path's miss/failure split: a `legacy` 403 is a miss.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
         downloadFile container repo containerURL hash scope? treatForbiddenAsMiss) :: acc
@@ -1041,7 +969,7 @@ def checkForManifestMismatch : IO.CacheM Unit := do
 /-- Downloads missing files, and unpacks files.
 
 `repo` is the already-resolved GitHub repo (see `resolveRepo`); its
-trust-ordered container list from `defaultContainersForRepo` is the single
+trust-ordered container list from `defaultContainersFor` is the single
 source of truth for what gets tried — there's no separate outer-loop
 iteration. Master's cache reaches fork builds via `master` being in the fork
 chain (the highest-trust source, holding the bulk of any fork's deps). -/
@@ -1106,122 +1034,6 @@ def getFiles
 
 end Get
 
-section Put
-
-/--
-Resolve the upload base URL.
-
-Precedence:
-1. `MATHLIB_CACHE_PUT_URL` env var, if set. Any value counts here, an empty one
-   included: a misconfigured endpoint fails the upload rather than divert it to
-   the fallback container below. The read variables take the opposite rule,
-   where an empty value means unset.
-2. The Azure URL for the explicitly chosen `container`.
-3. With neither set, fall back to `Container.legacy` (the bare `mathlib4`
-   container) and warn. RBAC still scopes each identity to its own container,
-   so the fallback cannot reach a trust-level container it isn't entitled to;
-   the warning steers workflows toward passing `--container=NAME`.
--/
-def effectiveUploadURL (container : Option Container) :
-    IO (Option Container × String) := do
-  if let some url ← IO.getEnv "MATHLIB_CACHE_PUT_URL" then
-    -- A user-supplied URL carries no container policy, so signal `none` and let
-    -- `mkFileURL` choose the path from the repo alone.
-    return (none, url)
-  match container with
-  | none =>
-    IO.eprintln <|
-      "Warning: cache upload without --container=NAME; defaulting to the\n" ++
-      "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
-      "         explicitly to choose a trust-level container."
-    return (some Container.legacy, Container.legacy.azureURL)
-  | some c => return (some c, c.azureURL)
-
-def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
-
-def getAzureDateHeader : IO String := do
-  let out ← IO.Process.output
-    { cmd := "date", args := #["-u", "+%a, %d %b %Y %H:%M:%S GMT"] }
-  unless out.exitCode == 0 do
-    throw <| IO.userError s!"failed to produce x-ms-date header (exit code {out.exitCode})"
-  return s!"x-ms-date: {out.stdout.trimAscii.copy}"
-
-/-- Formats the config file for `curl`, containing the list of files to be uploaded.
-The destination base URL is the explicit `uploadURL` argument. `container` is
-threaded through to `mkFileURL` so the per-container URL-shape policy applies;
-it is `none` only when `MATHLIB_CACHE_PUT_URL` is overriding the endpoint. -/
-def mkPutConfigContent (container : Option Container) (repo uploadURL : String)
-    (files : Array FilePath) (auth : UploadAuth) : IO String := do
-  let scope? ← getRepoScope
-  let token := match auth with
-    | .azureSas token => s!"?{token}"
-    | _ => ""
-  let l ← files.toList.mapM fun file : FilePath => do
-    -- The response body goes to the null device: stdout must carry only the
-    -- per-transfer JSON reports that `monitorCurl` parses.
-    pure s!"-T {file.toString}\nurl = {mkFileURL container repo uploadURL file.fileName.get! scope?}{token}\n\
-      -o {IO.nullDevice}"
-  return "\n".intercalate l
-
-/-- Calls `curl` to send a set of files to the server. The destination container
-is selected by `container`; pass `none` to require `MATHLIB_CACHE_PUT_URL` to
-be set instead (otherwise this errors). -/
-def putFilesAbsolute
-  (repo : String) (container : Option Container)
-  (files : Array FilePath) (tempConfigFilePath : FilePath)
-  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
-  -- TODO: reimplement using HEAD requests?
-  let size := files.size
-  if size > 0 then
-    let (urlContainer?, uploadURL) ← effectiveUploadURL container
-    IO.FS.writeFile tempConfigFilePath
-      (← mkPutConfigContent urlContainer? repo uploadURL files auth)
-    let target := container.map Container.name |>.getD "(env override)"
-    IO.println s!"Attempting to upload {size} file(s) to {repo} cache (container: {target})"
-    let azureDateHeader ← getAzureDateHeader
-    let args := match auth with
-      | .azureSas _ =>
-        if overwrite then
-          #["-H", "x-ms-blob-type: BlockBlob"]
-        else
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-      | .azureBearer token =>
-        if overwrite then
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader, "-H",
-            azureDateHeader,
-            "--oauth2-bearer", token]
-        else
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-            azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
-    -- A retry after a PUT that landed is safe: a non-overwrite put answers
-    -- it with 409/412, which `classifyUpload` excuses, and an overwrite
-    -- put re-sends the same bytes.
-    let args := args ++ #["-X", "PUT", "--parallel"] ++
-      curlRetryArgs (supportLegacyCurl := false) ++
-      -- `%{json}` prints a JSON report for each finished transfer. The
-      -- leading newline keeps each report on its own line even if something
-      -- else reaches stdout ahead of it.
-      #["--write-out", "\n%{json}\n", "--config", tempConfigFilePath.toString]
-    let (s, _) ← monitorCurl args size "Uploaded" "speed_upload"
-      (classifyUpload · · !overwrite) (removeOnError := false) (decompConfig := none)
-    IO.FS.removeFile tempConfigFilePath
-    -- Surface genuine upload failures. Already-present blobs (409/412 on a
-    -- non-overwrite put) are excused in `monitorCurl`, so this won't trip on a
-    -- re-upload of files the server already has.
-    if s.failed > 0 then
-      IO.eprintln s!"Uploading {s.failed} file(s) failed"
-      IO.Process.exit 1
-  else IO.println "No files to upload"
-
-/-- Calls `curl` to send a set of cached files to the server. -/
-def putFiles
-  (repo : String) (container : Option Container) (fileNames : Array String)
-  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
-  -- TODO: reimplement using HEAD requests?
-  let files : Array FilePath := fileNames.map (fun (f : String) => (IO.CACHEDIR / f))
-  putFilesAbsolute repo container files IO.CURLCFG overwrite auth
-end Put
-
 section Stage
 
 def copyCmd : String := if System.Platform.isWindows then "COPY" else "cp"
@@ -1263,87 +1075,5 @@ def unstageFiles (stagingDir : FilePath) (overwrite : Bool) : IO Unit := do
     IO.println "No files to unstage"
 
 end Stage
-
-section Commit
-
-def isGitStatusClean : IO Bool :=
-  return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
-
-/--
-Sends a commit file to the server, containing the hashes of the respective committed files.
-
-The file name is the current Git hash and the `c/` prefix means that it's a commit file.
-The destination container follows the same rules as `putFiles`.
--/
-def commit (container : Option Container) (hashMap : IO.ModuleHashMap) (overwrite : Bool)
-    (auth : UploadAuth) : IO Unit := do
-  let hash ← getGitCommitHash
-  let path := IO.CACHEDIR / hash
-  IO.FS.createDirAll IO.CACHEDIR
-  IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
-  let azureDateHeader ← getAzureDateHeader
-  -- Commit files are never namespaced by repo (they always live at `/c/<hash>`),
-  -- so we only need the URL from `effectiveUploadURL`, not the URL-shape container.
-  let (_, uploadURL) ← effectiveUploadURL container
-  let args := match auth with
-    | .azureSas token =>
-      let params := if overwrite
-        then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
-        else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-      params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}?{token}"]
-    | .azureBearer token =>
-      let params := if overwrite
-        then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
-          "-H", azureDateHeader,
-          "--oauth2-bearer", token]
-        else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-          azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
-      params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}"]
-  -- The argument list carries the credential; keep it out of the failure message.
-  discard <| IO.runCurl args (showArgsOnError := false)
-  IO.FS.removeFile path
-
-end Commit
-
-section Collect
-
-inductive QueryType
-  | files | commits | all
-
-def QueryType.prefix : QueryType → String
-  | files   => "&prefix=f/"
-  | commits => "&prefix=c/"
-  | all     => ""
-
-def formatError {α : Type} : IO α :=
-  throw <| IO.userError "Invalid format for curl return"
-
-def QueryType.desc : QueryType → String
-  | files   => "hosted files"
-  | commits => "hosted commits"
-  | all     => "everything"
-
-/--
-Retrieves metadata about hosted files: their names and the timestamps of last modification.
-
-Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
--/
-def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
-  IO.println s!"Downloading info list of {q.desc}"
-  let ret ← IO.runCurl
-    #["-X", "GET", s!"{Container.master.azureURL}?comp=list&restype=container{q.prefix}"]
-  match ret.splitOn "<Name>" with
-  | [] => formatError
-  | [_] => return []
-  | _ :: parts =>
-    parts.mapM fun part => match part.splitOn "</Name>" with
-      | [name, rest] => match rest.splitOn "<Last-Modified>" with
-        | [_, rest] => match rest.splitOn "</Last-Modified>" with
-          | [date, _] => pure (name, date)
-          | _ => formatError
-        | _ => formatError
-      | _ => formatError
-
-end Collect
 
 end Cache.Requests
