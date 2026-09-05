@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov, Edison Xie
 -/
 module
 
-public import Mathlib.Data.Sign.Basic
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
