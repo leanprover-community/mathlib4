@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Data.Nat.Totient
@@ -481,6 +482,17 @@ theorem Subgroup.zpowers_zpow_sup [Group G] (g : G) (i j : ℤ) :
     exact sup_le_sup (zpowers_le_zpowers_of_dvd g (dvd_mul_right i (i.gcdA j)))
       (zpowers_le_zpowers_of_dvd g (dvd_mul_right j (i.gcdB j)))
 
+/-- In a group with a generator `g` satisfying `zpowers g = ⊤`, every subgroup `H`
+is of the form `zpowers (g ^ i)` for some `i : ℤ`. -/
+@[to_additive /-- In an additive group with a generator `g` satisfying `zmultiples g = ⊤`,
+every subgroup `H` is of the form `zmultiples (i • g)` for some `i : ℤ`. -/]
+theorem Subgroup.exists_zpowers_eq_of_zpowers_eq_top [Group G] {g : G}
+    (hg : zpowers g = ⊤) (H : Subgroup G) : ∃ i : ℤ, zpowers (g ^ i) = H := by
+  have : IsCyclic G := isCyclic_iff_exists_zpowers_eq_top.mpr ⟨g, hg⟩
+  obtain ⟨⟨x, _⟩, hx'⟩ := (isCyclic_iff_exists_zpowers_eq_top (α := H)).mp inferInstance
+  obtain ⟨i, rfl⟩ := (Subgroup.eq_top_iff' _).mp hg x
+  exact ⟨i, by simpa [Subgroup.map_top] using congr_arg (Subgroup.map H.subtype) hx'⟩
+
 section addGenerator
 variable [AddGroup G] {g : G} (hg : ∀ x, x ∈ zmultiples g) {n : ℕ} (hn : Nat.card G = n)
 
@@ -597,6 +609,21 @@ noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Group G] [Group G']
 section Infinite
 
 variable [Infinite G]
+
+/-- A nontrivial subgroup of an infinite cyclic group is infinite. -/
+@[to_additive /-- A nontrivial subgroup of an infinite additive cyclic group is infinite. -/]
+theorem IsCyclic.infinite_of_ne_bot [Group G] [hG : IsCyclic G] {H : Subgroup G}
+    (h : H ≠ ⊥) : Infinite H := by
+  obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp hG
+  have hg₀ : orderOf g = 0 := Infinite.orderOf_eq_zero_of_forall_mem_zpowers fun x ↦ hg ▸ mem_top x
+  obtain ⟨i, rfl⟩ := Subgroup.exists_zpowers_eq_of_zpowers_eq_top hg H
+  have hi : i ≠ 0 := fun hi ↦ by simp [hi] at h
+  refine Set.Infinite.to_subtype <| infinite_zpowers.mpr ?_
+  rw [← orderOf_eq_zero_iff, orderOf_zpow' _ hi, hg₀, Nat.zero_div]
+
+@[to_additive]
+instance [Group G] [IsCyclic G] {H : Subgroup G} [h : Nontrivial H] : Infinite H :=
+  IsCyclic.infinite_of_ne_bot <| (nontrivial_iff_ne_bot H).mp h
 
 lemma zpowersHom_bijective [Group G] {g : G} (hg : zpowers g = ⊤) :
     Function.Bijective (zpowersHom G g) := by
@@ -920,3 +947,41 @@ instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic (WithZero G)ˣ := by
   apply Equiv.injective
 
 end WithZero
+
+section SubgroupCard
+
+/-- In a cyclic group, `H ≤ K` iff `K.index ∣ H.index`. -/
+@[to_additive /-- In an additive cyclic group, `H ≤ K` iff `K.index ∣ H.index`. -/]
+theorem IsCyclic.subgroup_le_iff_index_dvd [Group G] [IsCyclic G] {H K : Subgroup G} :
+    H ≤ K ↔ K.index ∣ H.index := by
+  refine ⟨Subgroup.index_dvd_of_le, fun h ↦ ?_⟩
+  obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp ‹_›
+  obtain ⟨i, rfl⟩ := Subgroup.exists_zpowers_eq_of_zpowers_eq_top hg H
+  obtain ⟨j, rfl⟩ := Subgroup.exists_zpowers_eq_of_zpowers_eq_top hg K
+  rw [Subgroup.index_zpowers_zpow hg, Subgroup.index_zpowers_zpow hg] at h
+  rwa [Subgroup.zpowers_le_zpowers_iff]
+
+/-- In a cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/
+@[to_additive
+/-- In an additive cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/]
+theorem IsCyclic.subgroup_le_iff_card_dvd [Group G] [IsCyclic G] {H K : Subgroup G} [h : Finite K] :
+    H ≤ K ↔ Nat.card H ∣ Nat.card K := by
+  obtain _ | _ := subsingleton_or_nontrivial K
+  · simp [Subgroup.eq_bot_of_subsingleton]
+  · have : Finite G := by
+      contrapose! h
+      infer_instance
+    rw [subgroup_le_iff_index_dvd, Subgroup.index_eq_card_div, Subgroup.index_eq_card_div,
+      Nat.div_dvd_div_iff_left Nat.card_pos (Subgroup.card_subgroup_dvd_card K)
+      (Subgroup.card_subgroup_dvd_card H)]
+
+/-- In a cyclic group, if `H` and `K` are finite then `H = K` iff `Nat.card H = Nat.card K`. -/
+@[to_additive
+/-- In an additive cyclic group, if `H` and `K` are finite then `H = K` iff
+`Nat.card H = Nat.card K`. -/]
+theorem IsCyclic.subgroup_eq_iff_card_eq [Group G] [IsCyclic G] {H K : Subgroup G} [Finite H]
+    [Finite K] : H = K ↔ Nat.card H = Nat.card K := by
+  rw [le_antisymm_iff, IsCyclic.subgroup_le_iff_card_dvd, IsCyclic.subgroup_le_iff_card_dvd,
+    Nat.dvd_antisymm_iff]
+
+end SubgroupCard
