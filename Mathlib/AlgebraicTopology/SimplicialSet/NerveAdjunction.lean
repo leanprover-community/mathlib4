@@ -342,7 +342,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `C ⥤ D` that is reconstructed for a morphism
 between the `2`-truncated nerves. -/
 @[simps]
-def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
+def functorOfNerveMap (φ : nerveFunctor₂.obj ↧C ⟶ nerveFunctor₂.obj ↧D) :
     C ⥤ D where
   obj x := nerveEquiv (φ.app (op ⟨⦋0⦌, by simp⟩) (nerveEquiv.symm x))
   map f := nerve.homEquiv ((nerve.edgeMk f).toTruncated.map φ)
@@ -354,7 +354,7 @@ def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj 
     exact (nerve.homEquiv_comp (h.toTruncated.map φ)).symm
 
 lemma nerveFunctor₂_map_functorOfNerveMap
-    (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
+    (φ : nerveFunctor₂.obj ↧C ⟶ nerveFunctor₂.obj ↧D) :
     nerveFunctor₂.map (functorOfNerveMap φ).toCatHom = φ :=
   SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
     obtain ⟨x, y, f, rfl⟩ := ComposableArrows.mk₁_surjective f
@@ -417,7 +417,7 @@ section
 
 instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
     IsIso (prodComparison (nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor)
-      (Cat.of C) (Cat.of D)) := by
+      ↧C ↧D) := by
   let iso : nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor ≅ nerveFunctor :=
     (nerveFunctor.associator hoFunctor nerveFunctor).symm ≪≫
       Functor.isoWhiskerRight nerveFunctorCompHoFunctorIso nerveFunctor ≪≫
@@ -435,7 +435,7 @@ instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
     have : IsIso (prodComparison (hoFunctor ⋙ nerveFunctor) (nerve C) (nerve D)) :=
       IsIso.of_isIso_fac_left
         (prodComparison_comp nerveFunctor (hoFunctor ⋙ nerveFunctor)
-          (A := Cat.of C) (B := Cat.of D)).symm
+          (A := ↧C) (B := ↧D)).symm
     exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
   exact isIso_of_fully_faithful nerveFunctor _
 
