@@ -48,7 +48,7 @@ structure NormedAddGroupHom (V W : Type*) [SeminormedAddCommGroup V]
 namespace AddMonoidHom
 
 variable {V W : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
-  {f g : NormedAddGroupHom V W}
+  {f : NormedAddGroupHom V W}
 
 /-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
 
@@ -696,7 +696,7 @@ theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s := by
 
 @[simp]
 theorem range_comp_incl_top : (f.comp (incl (⊤ : AddSubgroup V₁))).range = f.range := by
-  simp [comp_range, incl_range, ← AddMonoidHom.range_eq_map]; rfl
+  simp [comp_range, incl_range, AddSubgroup.map_top]; rfl
 
 end Range
 

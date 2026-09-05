@@ -126,7 +126,7 @@ and defining `CoolerEmbeddingClass` only takes a constant amount of effort,
 instead of linearly increasing the work per `MyEmbedding`-related declaration.
 -/
 
-@[expose] public section
+public section
 
 
 /-- The class `EmbeddingLike F α β` expresses that terms of type `F` have an

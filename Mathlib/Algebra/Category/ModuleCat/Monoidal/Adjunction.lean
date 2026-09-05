@@ -17,7 +17,7 @@ Let `f : R →+* S` be a morphism of commutative rings. We show that the functor
 
 -/
 
-@[expose] public section
+public section
 
 set_option backward.defeqAttrib.useBackward true
 
@@ -40,6 +40,7 @@ lemma extendsScalars_map_rightUnitor_inv_one_tmul (M : ModuleCat R) (m : M) :
     letI := f.toAlgebra
     (extendScalars f).map (ρ_ M).inv ((1 : S) ⊗ₜ[R] m) = (1 : S) ⊗ₜ[R] (m ⊗ₜ 1) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 open ModuleCat.MonoidalCategory in
 noncomputable instance : (extendScalars f).Monoidal :=
   letI : Algebra R S := f.toAlgebra
@@ -111,7 +112,7 @@ noncomputable instance : (restrictScalars f).LaxMonoidal :=
 @[simp]
 lemma restrictScalars_η (r : R) :
     ε (restrictScalars f) r = f r := by
-  letI := f.toAlgebra
+  let := f.toAlgebra
   dsimp [Adjunction.rightAdjointLaxMonoidal_ε]
   rw [extendRestrictScalarsAdj_homEquiv_apply, extendScalars_η]
   erw [AlgebraTensorModule.rid_tmul]

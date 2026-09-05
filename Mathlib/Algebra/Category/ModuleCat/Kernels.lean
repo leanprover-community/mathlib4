@@ -64,7 +64,7 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
     (fun s => ofHom <| (LinearMap.range f.hom).liftQ (Cofork.π s).hom <|
       LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.mp <| CokernelCofork.condition s)
     (fun s => hom_ext <| (LinearMap.range f.hom).liftQ_mkQ (Cofork.π s).hom _) fun s m h => by
-    haveI : Epi (ofHom f.hom.range.mkQ) :=
+    have : Epi (ofHom f.hom.range.mkQ) :=
       (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
     apply (cancel_epi (ofHom f.hom.range.mkQ)).1
     exact h
@@ -103,7 +103,7 @@ variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 agrees with the usual module-theoretical kernel.
 -/
 noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    kernel f ≅ ModuleCat.of R f.hom.ker :=
+    kernel f ≅ ↧f.hom.ker :=
   limit.isoLimitCone ⟨_, kernelIsLimit f⟩
 
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
@@ -120,7 +120,7 @@ theorem kernelIsoKer_hom_ker_subtype :
 agrees with the usual module-theoretical quotient.
 -/
 noncomputable def cokernelIsoRangeQuotient {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    cokernel f ≅ ModuleCat.of R (H ⧸ f.hom.range) :=
+    cokernel f ≅ ↧(H ⧸ f.hom.range) :=
   colimit.isoColimitCocone ⟨_, cokernelIsColimit f⟩
 
 -- We now show this isomorphism commutes with the projection of target to the cokernel.

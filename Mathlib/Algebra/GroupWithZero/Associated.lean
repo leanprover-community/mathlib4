@@ -43,15 +43,9 @@ protected theorem refl [Monoid M] (x : M) : x ~ᵤ x :=
 protected theorem rfl [Monoid M] {x : M} : x ~ᵤ x :=
   .refl x
 
-instance [Monoid M] : @Std.Refl M Associated :=
-  ⟨Associated.refl⟩
-
 @[symm]
 protected theorem symm [Monoid M] : ∀ {x y : M}, x ~ᵤ y → y ~ᵤ x
   | x, _, ⟨u, rfl⟩ => ⟨u⁻¹, by rw [mul_assoc, Units.mul_inv, mul_one]⟩
-
-instance [Monoid M] : Std.Symm (α := M) Associated :=
-  ⟨fun _ _ => Associated.symm⟩
 
 protected theorem comm [Monoid M] {x y : M} : x ~ᵤ y ↔ y ~ᵤ x :=
   ⟨Associated.symm, Associated.symm⟩
@@ -60,8 +54,10 @@ protected theorem comm [Monoid M] {x y : M} : x ~ᵤ y ↔ y ~ᵤ x :=
 protected theorem trans [Monoid M] : ∀ {x y z : M}, x ~ᵤ y → y ~ᵤ z → x ~ᵤ z
   | x, _, _, ⟨u, rfl⟩, ⟨v, rfl⟩ => ⟨u * v, by rw [Units.val_mul, mul_assoc]⟩
 
-instance [Monoid M] : IsTrans M Associated :=
-  ⟨fun _ _ _ => Associated.trans⟩
+instance [Monoid M] : IsEquiv M Associated where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
 @[instance_reducible]
@@ -234,11 +230,27 @@ protected theorem Associated.prime [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ 
     Prime q :=
   ⟨h.ne_zero_iff.1 hp.ne_zero,
     let ⟨u, hu⟩ := h
-    ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩, by
+    ⟨fun ⟨v, hv⟩ => hp.not_isUnit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩, by
       rw [← hu]
       simp only [Units.isUnit, IsUnit.mul_right_dvd]
       intro a b
       exact hp.dvd_or_dvd⟩⟩
+
+lemma Associated.isRelPrime_left [Monoid M] {a b c : M} (assoc : Associated a b)
+    (h : IsRelPrime a c) : IsRelPrime b c :=
+  fun _ hb hc ↦ h (assoc.dvd_iff_dvd_right.mpr hb) hc
+
+lemma Associated.isRelPrime_iff_left [Monoid M] {a b c : M} (assoc : Associated a b) :
+    IsRelPrime a c ↔ IsRelPrime b c :=
+  ⟨fun h ↦ isRelPrime_left assoc h, fun h ↦ isRelPrime_left assoc.symm h⟩
+
+lemma Associated.isRelPrime_right [Monoid M] {a b c : M} (assoc : Associated a b)
+    (h : IsRelPrime c a) : IsRelPrime c b :=
+  fun _ hc hb ↦ h hc (assoc.dvd_iff_dvd_right.mpr hb)
+
+lemma Associated.isRelPrime_iff_right [Monoid M] {a b c : M} (assoc : Associated a b) :
+    IsRelPrime c a ↔ IsRelPrime c b :=
+  ⟨fun h ↦ isRelPrime_right assoc h, fun h ↦ isRelPrime_right assoc.symm h⟩
 
 theorem prime_mul_iff [CommMonoidWithZero M] [IsCancelMulZero M] {x y : M} :
     Prime (x * y) ↔ (Prime x ∧ IsUnit y) ∨ (IsUnit x ∧ Prime y) := by
@@ -390,7 +402,8 @@ end UniqueUnits₀
 /-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
   are associated iff there is a unit `u` such that `x * u = y`. There is a natural
   monoid structure on `Associates M`. -/
-abbrev Associates (M : Type*) [Monoid M] : Type _ :=
+@[implicit_reducible]
+def Associates (M : Type*) [Monoid M] : Type _ :=
   Quotient (Associated.setoid M)
 
 namespace Associates
@@ -398,24 +411,32 @@ namespace Associates
 open Associated
 
 /-- The canonical quotient map from a monoid `M` into the `Associates` of `M` -/
-protected abbrev mk {M : Type*} [Monoid M] (a : M) : Associates M :=
+@[implicit_reducible]
+protected def mk {M : Type*} [Monoid M] (a : M) : Associates M :=
   ⟦a⟧
 
 instance [Monoid M] : Inhabited (Associates M) :=
   ⟨⟦1⟧⟩
 
+@[simp]
 theorem mk_eq_mk_iff_associated [Monoid M] {a b : M} : Associates.mk a = Associates.mk b ↔ a ~ᵤ b :=
   Iff.intro Quotient.exact Quot.sound
 
+@[simp]
 theorem quotient_mk_eq_mk [Monoid M] (a : M) : ⟦a⟧ = Associates.mk a :=
   rfl
 
+@[simp]
 theorem quot_mk_eq_mk [Monoid M] (a : M) : Quot.mk Setoid.r a = Associates.mk a :=
   rfl
 
 @[simp]
-theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a := by
-  rw [← quot_mk_eq_mk, Quot.out_eq]
+theorem quotient_out [Monoid M] (a : Associates M) : Associates.mk (Quotient.out a) = a :=
+  Quotient.out_eq a
+
+@[simp]
+theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a :=
+  Quot.out_eq a
 
 theorem mk_quot_out [Monoid M] (a : M) : Quot.out (Associates.mk a) ~ᵤ a := by
   rw [← Associates.mk_eq_mk_iff_associated, Associates.quot_out]

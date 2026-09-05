@@ -18,7 +18,9 @@ theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
 
 public section
 
-open Bornology Filter Asymptotics Set Topology
+open Bornology Filter Asymptotics Set
+
+open scoped Topology
 
 section NormedField
 
@@ -138,7 +140,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
     (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => ∑ i ∈ range n, g i := by
   have A : ∀ i, ‖g i‖ = g i := fun i => Real.norm_of_nonneg (hg i)
   have B : ∀ n, ‖∑ i ∈ range n, g i‖ = ∑ i ∈ range n, g i := fun n => by
-    rwa [Real.norm_eq_abs, abs_sum_of_nonneg']
+    rw [Real.norm_eq_abs, abs_sum_of_nonneg]; exact fun _ _ ↦ hg _
   apply isLittleO_iff.2 fun ε εpos => _
   intro ε εpos
   obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ b : ℕ, N ≤ b → ‖f b‖ ≤ ε / 2 * g b := by
@@ -212,12 +214,11 @@ section boundedRange
 /-!
 ## Bounded Range versus `IsBigO` Asymptotics
 
-For a continuous function `f` into a seminormed space, defined on an unbounded linear order whose
-order topology has compact intervals, having bounded range is equivalent to being `O(1)` along both
-`atTop` and `atBot` (`Continuous.isBounded_range_iff_isBigO_atTop_atBot`). For an even function a
-single `O(1)` bound along `atTop` already suffices
-(`Continuous.isBounded_range_iff_isBigO_atTop_of_even`), since `Function.Even` transports an `atTop`
-bound to an `atBot` bound (`Function.Even.isBigO_atTop_iff_isBigO_atBot`).
+For a continuous function `f` into a seminormed space, having bounded range is equivalent to being
+`O(1)` along the cocompact filter (`Continuous.isBounded_range_iff_isBigO`). On an unbounded linear
+order whose order topology has compact intervals, this means being `O(1)` along both `atTop` and
+`atBot` (`Continuous.isBounded_range_iff_isBigO_atTop_atBot`). For an even function a single `O(1)`
+bound along `atTop` already suffices (`Continuous.isBounded_range_iff_isBigO_atTop_of_even`).
 -/
 
 variable

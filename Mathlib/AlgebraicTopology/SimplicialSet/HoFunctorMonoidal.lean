@@ -110,7 +110,7 @@ instance {n : ℕ} (d : (SimplexCategory.Truncated n)ᵒᵖ) :
 /-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
 this is the isomorphism `Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal` in `Cat`. -/
 def isoTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
-    Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal :=
+    ↧X.HomotopyCategory ≅ Cat.chosenTerminal :=
   IsTerminal.uniqueUpToIso (isTerminal _) Cat.chosenTerminalIsTerminal
 
 namespace BinaryProduct
@@ -139,6 +139,7 @@ lemma functor_map {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁)
     {y₀ y₁ : Y _⦋0⦌₂} (e' : Edge y₀ y₁) :
     (functor X Y).map (homMk (e.tensor e')) = (homMk e, homMk e') := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (X Y) in
 /-- The functor `X.HomotopyCategory ⥤ Y.HomotopyCategory ⥤ (X ⊗ Y).HomotopyCategory`
 when `X` and `Y` are `2`-truncated simplicial sets. -/
@@ -174,6 +175,7 @@ lemma inverse_map_mkHom_homMk_homMk {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x
     (inverse X Y).map (Prod.mkHom (homMk e) (homMk e')) = homMk (e.tensor e') :=
   homMk_comp_homMk ((Edge.CompStruct.compId e).tensor (Edge.CompStruct.idComp e'))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (X Y) in
 /-- Auxiliary definition for `equivalence`. -/
@@ -237,6 +239,7 @@ def iso :
   hom_inv_id := by ext; exact functor_comp_inverse X Y
   inv_hom_id := by ext; exact inverse_comp_functor X Y
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {X} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the first variable. -/
@@ -250,6 +253,7 @@ def mapHomotopyCategoryProdIdCompInverseIso (f : X ⟶ X') :
       simp
       rfl))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {Y} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the second variable. -/
@@ -290,6 +294,7 @@ def inverseCompMapHomotopyCategoryFstIso :
       obtain ⟨y, rfl⟩ := y.mk_surjective
       simp))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the second projection. -/
@@ -311,14 +316,12 @@ lemma inverse_comp_mapHomotopyCategory_snd :
     inverse X Y ⋙ mapHomotopyCategory (snd _ _) = CategoryTheory.Prod.snd _ _ :=
   Functor.ext_of_iso (inverseCompMapHomotopyCategorySndIso _ _) (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma left_unitality [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
     CategoryTheory.Prod.snd _ _ = Functor.prod (isoTerminal X).inv.toFunctor (𝟭 _) ⋙
       inverse X Y ⋙ mapHomotopyCategory (snd _ _) := by
   rw [inverse_comp_mapHomotopyCategory_snd]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
     CategoryTheory.Prod.fst _ _ = Functor.prod (𝟭 _) (isoTerminal Y).inv.toFunctor ⋙
       inverse X Y ⋙ mapHomotopyCategory (fst _ _) := by
@@ -356,6 +359,7 @@ def associativity'Iso :
         simp only [Category.comp_id, Category.id_comp, ← prod_id',
           CategoryTheory.Functor.map_id, inverse_obj, inverse_map_mkHom_homMk_id]))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {X Y Z} in
 lemma associativity'Iso_hom_app (xyz) :
     (associativity'Iso X Y Z).hom.app xyz = 𝟙 _ := by
@@ -418,7 +422,7 @@ objects of `hoFunctor.obj X`. -/
 def hoFunctor.unitHomEquiv (X : SSet.{u}) :
     (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
   (SSet.unitHomEquiv X).trans <|
-    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+    HomotopyCategory.objEquiv.symm.trans Cat.fromChosenTerminalEquiv.symm
 
 theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
     hoFunctor.unitHomEquiv X x =

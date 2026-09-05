@@ -120,14 +120,14 @@ set_option backward.privateInPublic.warn false in
 omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu : u ∈ 𝒜) (hts : t = s)
     (hus : u = insert a s) : collapse 𝒜 a f s = f t + f u := by
-  subst hts; subst hus; simp_rw [collapse_eq ha, if_pos ht, if_pos hu]
+  subst hts; subst hus; simp_rw [collapse_eq ha, ite_eq_left ht, ite_eq_left hu]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma le_collapse_of_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = s) (ht : t ∈ 𝒜) :
     f t ≤ collapse 𝒜 a f s := by
   subst hts
-  rw [collapse_eq ha, if_pos ht]
+  rw [collapse_eq ha, ite_eq_left ht]
   split_ifs
   · exact le_add_of_nonneg_right <| hf _
   · rw [add_zero]
@@ -136,7 +136,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert a s) (ht : t ∈ 𝒜) :
     f t ≤ collapse 𝒜 a f s := by
-  rw [collapse_eq ha, ← hts, if_pos ht]
+  rw [collapse_eq ha, ← hts, ite_eq_left ht]
   split_ifs
   · exact le_add_of_nonneg_left <| hf _
   · rw [zero_add]
@@ -261,8 +261,6 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
 
 variable [ExistsAddOfLE β]
 
--- In the non-terminal simp below, simp runs on four goals, but only needs `exact` once.
-set_option linter.flexible false in
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
 protected lemma Finset.four_functions_theorem (u : Finset α)
@@ -273,7 +271,11 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
   induction u using Finset.induction generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ with
   | empty =>
     simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
-    obtain rfl | rfl := h𝒜 <;> obtain rfl | rfl := hℬ <;> simp; exact h (subset_refl ∅) subset_rfl
+    obtain rfl | rfl := h𝒜
+    · simp
+    obtain rfl | rfl := hℬ
+    · simp
+    simpa using h (subset_refl ∅) subset_rfl
   | insert a u hu ih =>
     specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃)
       (collapse_nonneg h₄) (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
@@ -296,6 +298,7 @@ section DistribLattice
 variable [DistribLattice α] [CommSemiring β] [LinearOrder β] [IsStrictOrderedRing β]
   [ExistsAddOfLE β] (f f₁ f₂ f₃ f₄ g μ : α → β)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
 lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :
@@ -321,7 +324,6 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   · simpa only [← hs', ← ht', ← map_sups, ← map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
       using! this
   rintro s t
-  classical
   obtain ⟨a, rfl⟩ | hs := em (∃ a, g a = s)
   · obtain ⟨b, rfl⟩ | ht := em (∃ b, g b = t)
     · simp_rw [← sup_eq_union, ← inf_eq_inter, ← map_sup, ← map_inf, hg.extend_apply]

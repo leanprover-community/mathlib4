@@ -137,6 +137,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
         ← I.volume_face_mul i]
       ac_rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
@@ -228,7 +229,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
         (Hmaps _ Hl hy)) volume).trans ?_
       refine (mul_le_mul_of_nonneg_right ?_ (half_pos ε0).le).trans_eq (one_mul _)
       rw [Box.coe_eq_pi, measureReal_def, Real.volume_pi_Ioc_toReal (Box.lower_le_upper _)]
-      refine prod_le_one (fun _ _ => sub_nonneg.2 <| Box.lower_le_upper _ _) fun j _ => ?_
+      refine prod_le_one₀ (fun _ _ => sub_nonneg.2 <| Box.lower_le_upper _ _) fun j _ => ?_
       calc
         J.upper (i.succAbove j) - J.lower (i.succAbove j) ≤
             dist (J.upper (i.succAbove j)) (J.lower (i.succAbove j)) :=

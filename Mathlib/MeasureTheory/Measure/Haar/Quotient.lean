@@ -162,7 +162,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
   ext U _
   have meas_π : Measurable (QuotientGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
   let μ' : Measure (G ⧸ Γ) := (ν.restrict s).map π
-  haveI has_fund : HasFundamentalDomain Γ.op G ν := ⟨⟨s, fund_dom_s⟩⟩
+  have has_fund : HasFundamentalDomain Γ.op G ν := ⟨⟨s, fund_dom_s⟩⟩
   have i : QuotientMeasureEqMeasurePreimage ν μ' :=
     fund_dom_s.quotientMeasureEqMeasurePreimage_quotientMeasure
   have : μ'.IsMulLeftInvariant :=
@@ -225,7 +225,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
   obtain ⟨K⟩ := PositiveCompacts.nonempty' (α := G)
   let K' : PositiveCompacts (G ⧸ Γ) :=
     K.map π QuotientGroup.continuous_mk QuotientGroup.isOpenMap_coe
-  haveI : IsMulLeftInvariant μ :=
+  have : IsMulLeftInvariant μ :=
     MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
   rw [haarMeasure_unique μ K']
   have finiteCovol : covolume Γ.op G ν ≠ ⊤ :=
@@ -296,7 +296,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
   have c_ne_top : c ≠ ∞ := measure_inter_ne_top_of_right_ne_top h𝓕_finite
   set μ := c • haarMeasure K
   have hμK : μ K = c := by simp [μ, haarMeasure_self]
-  haveI : SigmaFinite μ := by
+  have : SigmaFinite μ := by
     clear_value c
     lift c to NNReal using c_ne_top
     exact SMul.sigmaFinite c

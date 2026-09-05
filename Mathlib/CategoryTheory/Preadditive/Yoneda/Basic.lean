@@ -43,7 +43,7 @@ object `X` to the `End Y`-module of morphisms `X ⟶ Y`.
 -/
 @[simps]
 def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
-  obj X := ModuleCat.of _ (X.unop ⟶ Y)
+  obj X := ↧(X.unop ⟶ Y)
   map f := ModuleCat.ofHom
     { toFun := fun g => f.unop ≫ g
       map_add' := fun _ _ => comp_add _ _ _ _ _ _
@@ -70,12 +70,13 @@ object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
 -/
 @[simps]
 def preadditiveCoyonedaObj (X : C) : C ⥤ ModuleCat.{v} (End X)ᵐᵒᵖ where
-  obj Y := ModuleCat.of _ (X ⟶ Y)
+  obj Y := ↧(X ⟶ Y)
   map f := ModuleCat.ofHom
     { toFun := fun g => g ≫ f
       map_add' := fun _ _ => add_comp _ _ _ _ _ _
       map_smul' := fun _ _ => Category.assoc _ _ _ }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
 object `Y` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End X`-module
 structure, see `preadditiveCoyonedaObj`.
