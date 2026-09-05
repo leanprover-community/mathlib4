@@ -795,88 +795,8 @@ lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique 
   obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
   exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
 
-#check cliqueFree_of_card_lt
-theorem cliqueFree_ge (n m : ℕ) (h : n ≤ m) : G.CliqueFree n → G.CliqueFree m := by
-  exact fun a ↦ CliqueFree.mono h a
-lemma cliqueFree_one_iff2 : G.CliqueFree 1 ↔ ∀(s : Set α), G.IsClique s ↔ s = ∅ := by
-  sorry
-lemma cliqueFree_one_iff {n : ℕ} {s : Finset α} : G.CliqueFree 1 ↔ (G.IsNClique n s ↔ s = ∅ ∧ n = 0) := by
-  #check cliqueFree_one
-  rw [cliqueFree_one]
-  have : IsEmpty α ↔ ∀(s : Finset α) , s = ∅ := by
-    -- each direction exists , but iff doesn't although it can be convenient...
-    constructor
-    · exact fun a s ↦ eq_empty_of_isEmpty s
-    · exact fun a ↦ isEmpty_of_forall_eq_empty a
-  rw [this]  
-  constructor
-  · intro h
-    simp [h]
-  · intro h s'
-    have := @isClique_empty s'
-    sorry
-lemma cliqueFree_indepnum {m : ℕ} : G.CliqueFree m → G.cliqueNum < m := by
-  intro h
-  simp_all [CliqueFree,cliqueNum]
-  have {n : ℕ}: (∃ s, G.IsNClique n s) → n < m := by {
-    intro h'
-    obtain ⟨s,h'⟩ := h'
-    have := h s
-    #check CliqueFree.mono
-    by_contra h'
-    simp at h'
-    have := CliqueFree.mono h' h
-    (expose_names; exact (iff_false_intro (this s)).mp h'_1)
-  }
-  by_contra h'
-  simp at h'
-  #check le_sSup_iff
-  #check le_sSup
-  #check sSup_empty
-  --#synth SemilatticeSup ℕ
-  let S : Set ℕ := {n | ∃ s, G.IsNClique n s}
-  have hS_bdd : BddAbove S := by
-      use m
-      intro n hn
-      exact (this hn).le
-  by_cases hh : {n | ∃ s, G.IsNClique n s} = ∅ 
-  rw [hh] at h' ; simp at h'
-  rw [h'] at h
-  have := h ∅ 
-  #check isNClique_empty
-  simp at this
-  have : Nonempty ({n | ∃ s, G.IsNClique n s}) := by
-    exact Set.nonempty_iff_ne_empty'.mpr hh
-  obtain ⟨n,this⟩ := this  
-  simp at this
-  obtain ⟨s,this⟩ := this  
-  have : n ∈ {n | ∃ s, G.IsNClique n s} := by {
-    simp ; use s 
-
-  }
-  -- not true
-  -- h' : m ≤ sInf {n | ∃ s, G.IsNClique n s} , we have clique number but whats smallest clique number
-  -- smallest number for which graph is cliqueFree , constructed using sInf not as a separate definition
-  #check CliqueFree.mono
-  have : m ≤ n := by
-    exact?
-
-  rw [le_sSup_iff (α := ℕ)] at h'
-  have : ∃ s , ∃ n ≥ m, G.IsNClique n s := by
-    exact?
-    sorry
-  sorry
 theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
-  #check cliqueFree_one
-  rw [←G.cliqueFree_one]
-  rw [G.cliqueFree_one_iff] 
-  simp only [CliqueFree,cliqueNum]
-  simp [isNClique_iff]
-   
-   
-   
-   
-  --rw [isEmpty_iff]
+  rw [isEmpty_iff]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · intro a
     have one_clique : G.IsNClique 1 {a} := by simp
