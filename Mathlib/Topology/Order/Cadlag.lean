@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Nick Kuhn, Yongxi Lin, Rohit Manokaran, Etienne Marion, 
 module
 
 public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.Order.LeftRightLim
 
 /-! # Càdlàg functions
 
@@ -32,7 +33,7 @@ because of `to_dual`. -/
 /-- A function `f` is *right-continuous* if for any `a`, `f x → f a` when `x → a` and `x > a`. -/
 @[to_dual /-- A function `f` is *left-continuous* if for any `a`, `f x → f a` when `x → a`
 and `x < a`. -/]
-abbrev IsRightContinuous (f : X → Y) :=
+def IsRightContinuous (f : X → Y) :=
   ∀ a, ContinuousWithinAt f (Set.Ioi a) a
 
 @[to_dual]
@@ -42,7 +43,7 @@ lemma Continuous.isRightContinuous (hf : Continuous f) :
 
 @[to_dual (attr := to_fun)]
 lemma IsRightContinuous.continuous_comp {Z : Type*} [TopologicalSpace Z] {g : Y → Z}
-    (hg : Continuous g) (hf : IsRightContinuous f) :
+    (hf : IsRightContinuous f) (hg : Continuous g) :
     IsRightContinuous (g ∘ f) :=
   fun x ↦ (hg.tendsto (f x)).comp (hf x)
 
@@ -54,7 +55,7 @@ lemma IsRightContinuous.continuous_comp₂ {Z T : Type*} [TopologicalSpace Z] [T
   fun x ↦ (hφ.tendsto (f x, g x)).comp ((hf x).prodMk_nhds (hg x))
 
 @[to_dual (attr := simp)]
-lemma isRightContinuous_const (c : Y) :
+lemma IsRightContinuous.const {c : Y} :
     IsRightContinuous (fun _ ↦ c : X → Y) :=
   continuous_const.isRightContinuous
 
@@ -79,7 +80,7 @@ lemma IsRightContinuous.div [GroupWithZero Y] [ContinuousInv₀ Y] [ContinuousMu
 @[to_additive (attr := to_fun (attr := to_dual))]
 lemma IsRightContinuous.inv [Inv Y] [ContinuousInv Y] (hf : IsRightContinuous f) :
     IsRightContinuous (f⁻¹) :=
-  hf.continuous_comp (g := (·⁻¹)) continuous_inv
+  hf.continuous_comp continuous_inv
 
 @[to_fun (attr := to_dual)]
 lemma IsRightContinuous.inv₀ [Zero Y] [Inv Y] [ContinuousInv₀ Y]
@@ -91,7 +92,7 @@ lemma IsRightContinuous.inv₀ [Zero Y] [Inv Y] [ContinuousInv₀ Y]
 lemma IsRightContinuous.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : R)
     (hf : IsRightContinuous f) :
     IsRightContinuous (c • f) :=
-  hf.continuous_comp (g := (c • ·)) (continuous_const_smul c)
+  hf.continuous_comp (continuous_const_smul c)
 
 /-- A function is *càglàd* if it is left-continuous and has right limits. -/
 structure IsCaglad (f : X → Y) : Prop where
@@ -111,12 +112,12 @@ lemma Continuous.isCadlag (hf : Continuous f) :
   tendsto_nhdsLT x := ⟨f x, hf.continuousAt.continuousWithinAt⟩
 
 @[to_dual (attr := simp)]
-lemma isCadlag_const (c : Y) : IsCadlag (fun _ ↦ c : X → Y) :=
+lemma IsCadlag.const {c : Y} : IsCadlag (fun _ ↦ c : X → Y) :=
   continuous_const.isCadlag
 
 @[to_dual (attr := to_fun)]
 lemma IsCadlag.continuous_comp {Z : Type*} [TopologicalSpace Z] {g : Y → Z}
-    (hg : Continuous g) (hf : IsCadlag f) :
+    (hf : IsCadlag f) (hg : Continuous g) :
     IsCadlag (g ∘ f) where
   isRightContinuous := hf.isRightContinuous.continuous_comp hg
   tendsto_nhdsLT x := by
@@ -148,9 +149,24 @@ lemma IsCadlag.div' [Div Y] [ContinuousDiv Y] (hf : IsCadlag f) (hg : IsCadlag g
 lemma IsCadlag.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : R)
     (hf : IsCadlag f) :
     IsCadlag (c • f) :=
-  hf.continuous_comp (g := (c • ·)) (continuous_const_smul c)
+  hf.continuous_comp (continuous_const_smul c)
 
 end Basic
+
+section LinearOrder
+
+variable [LinearOrder X] [TopologicalSpace Y]
+
+lemma IsCaglad.tendsto_nhdsGT_rightLim [OrderTopology X] (hf : IsCaglad f) (x : X) :
+    Tendsto f (𝓝[>] x) (𝓝 (f.rightLim x)) :=
+  tendsto_rightLim_of_tendsto (hf.tendsto_nhdsGT x)
+
+-- TODO: tag `leftLim` with `to_dual` to use `toDual` here.
+lemma IsCadlag.tendsto_nhdsLT_leftLim [OrderTopology X] (hf : IsCadlag f) (x : X) :
+    Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
+  tendsto_leftLim_of_tendsto (hf.tendsto_nhdsLT x)
+
+end LinearOrder
 
 section PseudoMetricSpace
 
