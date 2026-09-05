@@ -635,6 +635,15 @@ theorem expand_card (f : Polynomial (ZMod p)) :
 
 end ZMod
 
+/-- **Fermat's Little Theorem**: for rings of characteristic `p`. -/
+theorem CharP.pow_charP_of_nat {R : Type*} {p : ℕ} [Ring R] [CharP R p] [Fact p.Prime] (a : ℕ) :
+    (a : R) ^ p = a := by
+  norm_cast
+  apply (CharP.natCast_eq_natCast R p).mpr
+  rw [← ZMod.natCast_eq_natCast_iff]
+  push_cast
+  rw [ZMod.pow_card]
+
 /-- **Fermat's Little Theorem**: for all `a : ℤ` coprime to `p`, we have
 `a ^ (p - 1) ≡ 1 [ZMOD p]`. -/
 theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :
