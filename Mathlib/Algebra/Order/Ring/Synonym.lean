@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Ring structure on the order type synonyms
@@ -75,6 +77,10 @@ instance [NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ := inferInstanceAs <|
 instance [CommRing R] : CommRing Rᵒᵈ := inferInstanceAs <| CommRing R
 
 instance [Ring R] [IsDomain R] : IsDomain Rᵒᵈ := inferInstanceAs <| IsDomain R
+
+instance [AddMonoidWithOne R] [CharZero R] : CharZero Rᵒᵈ := inferInstanceAs <| CharZero R
+
+instance {p : ℕ} [AddMonoidWithOne R] [CharP R p] : CharP Rᵒᵈ p := inferInstanceAs <| CharP R p
 
 end OrderDual
 
@@ -158,6 +164,10 @@ instance [NonUnitalCommRing R] : NonUnitalCommRing (Lex R) := inferInstanceAs <|
 instance [CommRing R] : CommRing (Lex R) := inferInstanceAs <| CommRing R
 
 instance [Ring R] [IsDomain R] : IsDomain (Lex R) := inferInstanceAs <| IsDomain R
+
+instance [AddMonoidWithOne R] [CharZero R] : CharZero (Lex R) := inferInstanceAs <| CharZero R
+
+instance {p : ℕ} [AddMonoidWithOne R] [CharP R p] : CharP (Lex R) p := inferInstanceAs <| CharP R p
 
 end Lex
 
