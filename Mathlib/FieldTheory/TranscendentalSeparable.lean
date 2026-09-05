@@ -25,7 +25,7 @@ Let `K/k` be arbitrary field extension with characteristic `p > 0`, then TFAE
 3. `K ⊗ₖ k^{1/p}` is reduced.
 4. `K` is geometrically reduced over `k`.
 
-# Main definitions and results
+## Main definitions and results
 
 * `Algebra.IsSeparablyGenerated` : A field extension is separably generated if there exists
   a transcendence basis such that the extension above it is separable.
@@ -55,78 +55,74 @@ finitely generated field extension `K/k`.
 
 -/
 
-universe u v w
-
 @[expose] public section
-
-open TensorProduct
 
 section
 
-variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
+variable (k : Type*) (K : Type*) [Field k] [Field K] [Algebra k K]
 
 /-- A field extension is separably generated if there exists a transcendence basis such that
 the extension above it is separable. -/
 @[mk_iff, stacks 030O "Part 1"]
 class Algebra.IsSeparablyGenerated : Prop where
-  isSeparable' : ∃ (ι : Type v) (f : ι → K),
-    IsTranscendenceBasis k f ∧
-    Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K
+  isSeparable : ∃ (s : Set K), IsTranscendenceBasis k ((↑) : s → K) ∧
+    Algebra.IsSeparable (IntermediateField.adjoin k s) K
 
 variable {k K} in
-lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type w} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
+lemma AlgEquiv.isSeparablyGenerated {K' : Type*} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
     [Algebra.IsSeparablyGenerated k K] : Algebra.IsSeparablyGenerated k K' := by
-  rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨ι, f, isT, sep⟩
-  have : Small.{w} ι := small_of_injective (e.injective.comp isT.1.injective)
-  let g := (e ∘ f) ∘ (equivShrink ι).symm
-  use Shrink.{w} ι, g, (e.isTranscendenceBasis isT).comp_equiv (equivShrink ι).symm
-  have eq : (IntermediateField.adjoin k (Set.range f)).map e =
-      (IntermediateField.adjoin k (Set.range g)) := by
-    simp [IntermediateField.adjoin_map, g, Set.range_comp e f]
-  let e' := ((IntermediateField.adjoin k (Set.range f)).equivMap e.toAlgHom).trans
-    (IntermediateField.equivOfEq eq)
+  rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨s, isT, sep⟩
+  refine ⟨e '' s, (e.isTranscendenceBasis isT).to_subtype_range' (by simp [Set.range_comp]), ?_⟩
+  let e' := ((IntermediateField.adjoin k s).equivMap e.toAlgHom).trans
+    (IntermediateField.equivOfEq (IntermediateField.adjoin_map k s e.toAlgHom))
   exact Algebra.IsSeparable.of_equiv_equiv e'.toRingEquiv e.toRingEquiv rfl
 
 lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
     Algebra.IsSeparable k K ↔ (Algebra.IsSeparablyGenerated k K ∧ Algebra.IsAlgebraic k K) := by
-  refine ⟨fun h ↦ ⟨?_, inferInstance⟩, fun ⟨⟨ι, T, isT, sep⟩, alg⟩ ↦ ?_⟩
-  · use (∅ : Set K), fun x ↦ 0
-    have eqbot : IntermediateField.adjoin k (Set.range fun (x : (∅ : Set K)) ↦ (0 : K)) = ⊥ :=
-      IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
+  refine ⟨fun h ↦ ⟨?_, inferInstance⟩, fun ⟨⟨s, isT, sep⟩, alg⟩ ↦ ?_⟩
+  · use ∅
     refine ⟨isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.mpr ⟨?_, ?_⟩, ?_⟩
     · simpa using RingHom.injective _
-    · simpa [← IntermediateField.isAlgebraic_adjoin_iff_top, eqbot]
-        using (Algebra.isSeparable_tower_top_of_isSeparable k _  K).isAlgebraic
-    · simpa [eqbot] using Algebra.isSeparable_tower_top_of_isSeparable k _  K
-  · have := isT.isEmpty_iff_isAlgebraic.mpr alg
-    have : IntermediateField.adjoin k (Set.range T) = ⊥ :=
-      IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
+    · simpa [← IntermediateField.isAlgebraic_adjoin_iff_top] using h.isAlgebraic.tower_top _
+    · exact Algebra.isSeparable_tower_top_of_isSeparable k _ K
+  · have h := Set.isEmpty_coe_sort.mp (isT.isEmpty_iff_isAlgebraic.mpr alg)
+    have : IntermediateField.adjoin k s = ⊥ := IntermediateField.adjoin_eq_bot_iff.mpr (by simp [h])
     rw [this] at sep
-    have : Algebra.IsSeparable k (⊥ : IntermediateField k K) :=
-      AlgEquiv.Algebra.isSeparable (IntermediateField.botEquiv k K).symm
+    have := IntermediateField.isSeparable_bot k K
     exact Algebra.IsSeparable.trans k (⊥ : IntermediateField k K) K
+
+instance (priority := low) [Algebra.IsSeparable k K] : Algebra.IsSeparablyGenerated k K :=
+  ((Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k K).mp ‹_›).1
+
+instance [PerfectField k] [Algebra.EssFiniteType k K] : Algebra.IsSeparablyGenerated k K := by
+  rcases exists_isTranscendenceBasis_and_isSeparable_of_perfectField k K with ⟨s, isT, sep⟩
+  exact ⟨s, isT, sep⟩
 
 /-- A field extension is transcendental separable if every finitely generated subextension is
 separably generated. -/
-@[mk_iff, stacks 030O "Part 2"]
+@[mk_iff, stacks 030O "Part 2, called separable in the Stacks project."]
 class Algebra.IsTranscendentalSeparable : Prop where
-  forall_isSeparablyGenerated : ∀ (A' : IntermediateField k K),
-    Algebra.EssFiniteType k A' → Algebra.IsSeparablyGenerated k A'
+  forall_isSeparablyGenerated : ∀ (L : IntermediateField k K),
+    Algebra.EssFiniteType k L → Algebra.IsSeparablyGenerated k L
 
 lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
     Algebra.IsSeparable k K ↔
       (Algebra.IsTranscendentalSeparable k K ∧ Algebra.IsAlgebraic k K) := by
-  refine ⟨fun h ↦ ⟨⟨fun L hL ↦ ?_⟩, inferInstance⟩, fun ⟨sep, alg⟩ ↦ ?_⟩
-  · exact ((Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mp inferInstance).1
-  · refine Algebra.isSeparable_iff.mpr fun x ↦ ⟨IsIntegral.isIntegral x, ?_⟩
-    let L := IntermediateField.adjoin k {x}
-    have fin : EssFiniteType k L := IntermediateField.essFiniteType_iff.mpr
-      (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton x))
-    have sep' := (Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mpr
-      ⟨sep.forall_isSeparablyGenerated L fin, inferInstance⟩
-    exact Subalgebra.isSeparable_iff.mp sep' x (by simp [L])
+  refine ⟨fun h ↦ ⟨⟨fun _ _ ↦ inferInstance⟩, inferInstance⟩, fun ⟨sep, alg⟩ ↦ ?_⟩
+  refine Algebra.isSeparable_iff.mpr fun x ↦ ⟨IsIntegral.isIntegral x, ?_⟩
+  let L := IntermediateField.adjoin k {x}
+  have fin : EssFiniteType k L := IntermediateField.essFiniteType_iff.mpr
+    (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton x))
+  have sep' := (Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mpr
+    ⟨sep.forall_isSeparablyGenerated L fin, inferInstance⟩
+  exact Subalgebra.isSeparable_iff.mp sep' x (by simp [L])
+
+instance (priority := low) [Algebra.IsSeparable k K] : Algebra.IsTranscendentalSeparable k K :=
+  ((Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic k K).mp ‹_›).1
 
 end
+
+open TensorProduct
 
 lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
     (p : Ideal S) (min : p ∈ minimalPrimes S) :
@@ -176,7 +172,7 @@ lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field 
     Module.Flat.lTensor_preserves_injective_linearMap _ (Subalgebra.inclusion_injective le)
   exact isReduced_of_injective _ this
 
-variable (k : Type u) [Field k] (K : Type v) [Field K] [Algebra k K]
+variable (k : Type*) [Field k] (K : Type*) [Field K] [Algebra k K]
 
 open scoped Polynomial
 
@@ -263,7 +259,7 @@ noncomputable def quotientPolynomialTensorProductEquiv (f : K[X]) :
 
 open IntermediateField.algebraAdjoinAdjoin in
 lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain [IsDomain S]
-    {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
+    {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] :
     IsReduced (TensorProduct k K S) := by
@@ -307,12 +303,15 @@ open IntermediateField.algebraAdjoinAdjoin in
 lemma tensorProduct_isReduced_of_isSeparablyGenerated_isDomain [IsDomain S]
     [Algebra.IsSeparablyGenerated k K] [Algebra.EssFiniteType k K] :
     IsReduced (TensorProduct k K S) := by
-  obtain ⟨ι, f, isT, sep⟩ : Algebra.IsSeparablyGenerated k K := ‹_›
-  have := Algebra.EssFiniteType.of_comp k (IntermediateField.adjoin k (Set.range f)) K
-  exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain k K S f isT
+  obtain ⟨s, isT, sep⟩ : Algebra.IsSeparablyGenerated k K := ‹_›
+  have : Algebra.IsSeparable ((IntermediateField.adjoin k (Set.range ((↑) : s → K)))) K := by
+    convert sep
+    <;> simp
+  have := Algebra.EssFiniteType.of_comp k ((IntermediateField.adjoin k (Set.range ((↑) : s → K)))) K
+  exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain k K S ((↑) : s → K) isT
 
 lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced [IsReduced S]
-    [Algebra.FiniteType k S] {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
+    [Algebra.FiniteType k S] {ι : Type*} (f : ι → K) (isT : IsTranscendenceBasis k f)
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] :
     IsReduced (TensorProduct k K S) := by
@@ -343,9 +342,13 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFi
     [Algebra.FiniteType k S] [IsReduced S] [Algebra.IsSeparablyGenerated k K]
     [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
   classical
-  obtain ⟨ι, f, isT, sep⟩ : Algebra.IsSeparablyGenerated k K := ‹_›
-  have := Algebra.EssFiniteType.of_comp k (IntermediateField.adjoin k (Set.range f)) K
-  exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced k K S f isT
+  obtain ⟨s, isT, sep⟩ : Algebra.IsSeparablyGenerated k K := ‹_›
+  have : Algebra.IsSeparable ((IntermediateField.adjoin k (Set.range ((↑) : s → K)))) K := by
+    convert sep
+    <;> simp
+  have := Algebra.EssFiniteType.of_comp k ((IntermediateField.adjoin k (Set.range ((↑) : s → K)))) K
+  exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced k K S ((↑) : s → K) isT
+
 
 @[stacks 030U "Part 1"]
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [IsReduced S]
@@ -369,16 +372,18 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [IsReduced S]
   have : IsReduced B := isReduced_of_injective B.val Subtype.val_injective
   have : IsReduced (TensorProduct k B K) := by
     refine IsReduced.tensorProduct_of_forall_fg_intermediateField (fun L ⟨G, hG⟩ ↦ ?_)
-    rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨ι, f, isT, sep⟩
-    set M := IntermediateField.adjoin k (Set.range f)
-    let M' := IntermediateField.adjoin k ((Set.range f) ∪ (G : Set K))
+    rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨s, isT, sep⟩
+    set M := IntermediateField.adjoin k s
+    let M' := IntermediateField.adjoin k (s ∪ (G : Set K))
     have : IsReduced (TensorProduct k B M') := by
-      have mem (x : ι) : f x ∈ M' := IntermediateField.subset_adjoin _ _ (by simp)
-      let f' : ι → M' := fun x ↦ ⟨f x, mem x⟩
-      have imagef' : Subtype.val '' Set.range f' = Set.range f := (Set.range_comp _ _).symm
+      have Mle : M ≤ M' := IntermediateField.adjoin.mono _ _ _ (by simp)
+      let f' : s → M' := fun x ↦ ⟨x.1, Mle (IntermediateField.subset_adjoin _ _ x.2)⟩
+      have imagef' : Subtype.val '' Set.range f' = s := by
+        rw [← Set.range_comp]
+        ext
+        simp [f']
       have isT' : IsTranscendenceBasis k f' := isT.of_comp M'.val Subtype.val_injective
       have : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f')) M' := by
-        have Mle : M ≤ M' := IntermediateField.adjoin.mono _ _ _ (by simp)
         let := (IntermediateField.inclusion Mle).toRingHom.toAlgebra
         let : IsScalarTower M M' K := IsScalarTower.of_algebraMap_eq' rfl
         have : Algebra.IsSeparable M M' := Algebra.isSeparable_tower_bot_of_isSeparable M M' K
@@ -390,7 +395,7 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [IsReduced S]
         ext m
         have : (e.symm m).1.1 = (e (e.symm m)).1 := by simp [- AlgEquiv.apply_symm_apply, e]
         simpa only [e.apply_symm_apply] using! this
-      have : Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f')) ↥M' := by
+      have : Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f')) M' := by
         rw [← IntermediateField.fg_top_iff]
         use G.preimage M'.val Subtype.val_injective.injOn
         refine le_antisymm le_top (fun x hx ↦ ?_)
@@ -493,17 +498,17 @@ lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
       exact li''.of_comp
     rcases exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType p hp h'
       with ⟨T, isT, sep⟩
-    use T, Subtype.val, isT
-    convert sep
-    <;> simp
+    use T, isT
   tfae_finish
 
 end charp
 
 lemma Algebra.isSeparablyGenerated_of_charZero [CharZero k] : Algebra.IsSeparablyGenerated k K := by
-  rcases exists_isTranscendenceBasis' k K with ⟨ι, f, isT⟩
-  use ι, f, isT
-  have : Algebra.IsAlgebraic (IntermediateField.adjoin k (Set.range f)) K := isT.isAlgebraic_field
+  rcases exists_isTranscendenceBasis k K with ⟨s, isT⟩
+  use s, isT
+  have : Algebra.IsAlgebraic (IntermediateField.adjoin k s) K := by
+    convert isT.isAlgebraic_field
+    <;> simp
   exact Algebra.IsSeparable.of_integral _ K
 
 lemma Algebra.isTranscendentalSeparable_of_charZero [CharZero k] :
@@ -516,7 +521,7 @@ lemma Algebra.isTranscendentalSeparable_of_isSeparablyGenerated [Algebra.IsSepar
     Algebra.IsTranscendentalSeparable k K := by
   rcases CharP.exists' k with char0|⟨p, prime, charp⟩
   · exact Algebra.isTranscendentalSeparable_of_charZero k K
-  · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 0 2).mpr
+  · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 1 3).mpr
     have := tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced k K (AdjoinPthRoots k)
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ _).injective
 
@@ -525,14 +530,14 @@ lemma Algebra.isTranscendentalSeparable_iff_isSeparablyGenerated_of_essFiniteTyp
     Algebra.IsTranscendentalSeparable k K ↔ Algebra.IsSeparablyGenerated k K := by
   refine ⟨fun h ↦ ?_, fun _ ↦ Algebra.isTranscendentalSeparable_of_isSeparablyGenerated k K⟩
   have := h.1 ⊤ (IntermediateField.essFiniteType_iff.mpr (IntermediateField.fg_top_iff.mpr ‹_›))
-  exact Algebra.isSeparablyGenerated_of_equiv IntermediateField.topEquiv
+  exact IntermediateField.topEquiv.isSeparablyGenerated
 
 @[stacks 030Y "Equivalence to the alternative definition."]
 lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k] :
     Algebra.IsTranscendentalSeparable k K := by
   rcases CharP.exists' k with char0|⟨p, prime, charp⟩
   · exact Algebra.isTranscendentalSeparable_of_charZero k K
-  · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 0 2).mpr
+  · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 1 3).mpr
     have bij : Function.Bijective (Algebra.ofId k (AdjoinPthRoots k)) :=
       ⟨RingHom.injective _,
         IsPurelyInseparable.surjective_algebraMap_of_isSeparable k (AdjoinPthRoots k)⟩

@@ -75,7 +75,7 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   let := ZMod.algebra k p
   let := ((algebraMap (ZMod p) k).comp PadicInt.toZMod).toAlgebra
   let : IsLocalHom (algebraMap ℤ_[p] k) := by
-    apply ((local_hom_TFAE _).out 0 3).mpr
+    apply ((local_hom_TFAE _).out 1 4).mpr
     simp [PadicInt.maximalIdeal_eq_span_p]
   rcases exists_isLocalHom_flat (PadicInt p) k with ⟨R, _, _, _, flat, maxeq, ⟨iso⟩⟩
   simp only [PadicInt.maximalIdeal_eq_span_p, Ideal.map_span, Set.image_singleton,
@@ -126,7 +126,7 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
       exact notMem_nonZeroDivisors_of_mem_mem_minimalPrimes reg' hq
     suffices q = ⊥ from @IsDomain.of_bot_isPrime R' _ (this ▸ hq.1.1)
     have : Ideal.span {(p : R')} * q = q := by
-      refine Ideal.mul_le_left.antisymm ?_
+      refine Ideal.mul_le_right.antisymm ?_
       intro y hyp
       obtain ⟨y, rfl⟩ :=
         Ideal.mem_span_singleton.mp ((le_maximalIdeal_of_isPrime q).trans_eq maxeq' hyp)
@@ -137,7 +137,7 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   have nisf : ¬ IsField R' := by
     simpa [isField_iff_maximalIdeal_eq, maxeq'] using nonZeroDivisors.ne_zero reg'
   have : IsDiscreteValuationRing R' := by
-    apply ((IsDiscreteValuationRing.TFAE R' nisf).out 0 4).mpr
+    apply ((IsDiscreteValuationRing.TFAE R' nisf).out 1 5).mpr
     use (p : R')
   have : IsAdicComplete (maximalIdeal R') R' := AdicCompletion.isAdicComplete_of_fg maxfg
   use R', inferInstance, inferInstance
@@ -152,7 +152,6 @@ noncomputable def padicIntToIntQuotient (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ)
     PadicInt p →+* ℤ ⧸ (Ideal.span {(p ^ n : ℤ)}) :=
   (Int.quotientSpanNatEquivZMod (p ^ n)).symm.toRingHom.comp (PadicInt.toZModPow n)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma padicIntToIntQuotient_surjective (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) :
     Function.Surjective (padicIntToIntQuotient p n) := by
   simpa [padicIntToIntQuotient] using ZMod.ringHom_surjective _
@@ -161,7 +160,6 @@ lemma padicIntToIntQuotient_ker (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) :
     RingHom.ker (padicIntToIntQuotient p n) = Ideal.span {(p ^ n : ℤ_[p])} := by
   simpa [← PadicInt.ker_toZModPow, padicIntToIntQuotient] using! RingHom.ker_equiv_comp _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma padicInt_to_int_quotient_comm (p : ℕ) [Fact (Nat.Prime p)] {m n : ℕ} (hle : m ≤ n) :
     padicIntToIntQuotient p m = (Ideal.Quotient.factor
       (Ideal.span_singleton_le_span_singleton.mpr (pow_dvd_pow (p : ℤ) hle))).comp
@@ -171,7 +169,7 @@ lemma padicInt_to_int_quotient_comm (p : ℕ) [Fact (Nat.Prime p)] {m n : ℕ} (
   simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
     ← PadicInt.cast_toZModPow m n hle]
   rcases ZMod.natCast_zmod_surjective ((PadicInt.toZModPow n) x) with ⟨y, hy⟩
-  simpa [← hy, ZMod.cast_natCast (Nat.pow_dvd_pow p hle) y] using map_natCast _ _
+  simp [← hy, ZMod.cast_natCast (Nat.pow_dvd_pow p hle) y]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For complete local ring `R` with residue field of characteristic `p`, the canonical map
@@ -414,7 +412,7 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
   have : RingHom.ker ((residue R).comp f) = maximalIdeal S := by
     simp [eqe, ← RingHom.comap_ker, ← RingHom.ker_eq_comap_bot, IsLocalRing.ker_residue]
   rw [← RingHom.comap_ker, IsLocalRing.ker_residue] at this
-  have : IsLocalHom f := ((IsLocalRing.local_hom_TFAE f).out 0 4).mpr this
+  have : IsLocalHom f := ((IsLocalRing.local_hom_TFAE f).out 1 5).mpr this
   use f, ‹_›
   rw [(RingHom.cancel_right residue_surjective).mp ((ResidueField.map_comp_residue f).trans eqe)]
   exact e.bijective
@@ -433,7 +431,7 @@ lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing
   let : WithIdeal R := { i := maximalIdeal R }
   let : WithIdeal S := { i := maximalIdeal S }
   have f_cont : Continuous f := (WithIdeal.uniformContinuous_of_map_le
-    (((IsLocalRing.local_hom_TFAE f).out 0 2).mp ‹_›)).continuous
+    (((IsLocalRing.local_hom_TFAE f).out 1 3).mp ‹_›)).continuous
   have : CompleteSpace R := (IsAdic.isPrecomplete_iff (by rfl)).mp inferInstance
   have : T2Space R := (IsAdic.isHausdorff_iff (by rfl)).mp inferInstance
   rcases fg with ⟨s, hs⟩

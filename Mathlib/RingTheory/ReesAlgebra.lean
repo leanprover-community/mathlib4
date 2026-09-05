@@ -31,7 +31,7 @@ blowup in the future.
 
 universe u v
 
-variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+variable {R : Type u} [CommRing R] (I : Ideal R)
 
 open Polynomial
 
@@ -150,7 +150,7 @@ lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
       SetCoe.ext (by simpa using f.1.as_sum_support)
     rw [this]
     apply sum_mem (fun i hi ↦ ?_)
-    have {r : R} (h' : r ∈ I * I ^ i) : ⟨monomial i r, mem' i (Ideal.mul_le_left h')⟩
+    have {r : R} (h' : r ∈ I * I ^ i) : ⟨monomial i r, mem' i (Ideal.mul_le_right h')⟩
       ∈ I.map (algebraMap R (reesAlgebra I)) := by
       induction h' using Submodule.mul_induction_on' with
       | mem_mul_mem s hs t ht =>

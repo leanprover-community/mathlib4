@@ -46,12 +46,12 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 * `Submodule.torsionBy_isInternal` : a `∏ i, p i`-torsion module is the internal direct sum of its
   `p i`-torsion submodules when the `p i` are pairwise coprime. A more general version with coprime
   ideals is `Submodule.torsionBySet_isInternal`.
-* `Submodule.noZeroSMulDivisors_iff_torsion_bot` : a module over a domain has
+* `Submodule.isTorsionFree_iff_torsion_eq_bot` : a module over a domain has
   `Module.IsTorsionFree` (that is, there is no non-zero `a`, `x` such that `a • x = 0`)
   iff its torsion submodule is trivial.
 * `Submodule.QuotientTorsion.torsion_eq_bot` : quotienting by the torsion submodule makes the
   torsion submodule of the new module trivial. If `R` is a domain, we can derive an instance
-  `Submodule.QuotientTorsion.noZeroSMulDivisors : Module.IsTorsionFree R (M ⧸ torsion R M)`.
+  `Submodule.QuotientTorsion.instIsTorsionFree : Module.IsTorsionFree R (M ⧸ torsion R M)`.
 
 ## Notation
 
@@ -63,7 +63,6 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 ## TODO
 
 * Move the advanced material to a new file `RingTheory.Torsion`.
-* Replace `Module.IsTorsionFree` with `Module.IsTorsionFree`
 
 ## Tags
 
@@ -103,13 +102,16 @@ theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
   exact Submodule.mem_top
 
 @[simp]
-theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [IsDomain R] [Module.IsTorsionFree R M] (m : M) :
+theorem torsionOf_eq_bot_iff_of_isTorsionFree [IsDomain R] [Module.IsTorsionFree R M] (m : M) :
     torsionOf R M m = ⊥ ↔ m ≠ 0 := by
   refine ⟨fun h contra => ?_, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => ?_⟩
   · rw [contra, torsionOf_zero] at h
     exact bot_ne_top.symm h
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
     tauto
+
+@[deprecated (since := "2026-07-27")]
+alias torsionOf_eq_bot_iff_of_noZeroSMulDivisors := torsionOf_eq_bot_iff_of_isTorsionFree
 
 @[simp]
 theorem annihilator_span_singleton_eq_torsionOf
@@ -938,10 +940,8 @@ theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a 
 
 end Ideal.Quotient
 
-namespace AddMonoid
-
-theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
-    AddMonoid.IsTorsion M ↔ Module.IsTorsion ℕ M := by
+theorem isAddTorsion_iff_isTorsion_nat [AddCommMonoid M] :
+    IsAddTorsion M ↔ Module.IsTorsion ℕ M := by
   refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt h0⟩, hn⟩
@@ -949,8 +949,11 @@ theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
     obtain ⟨n, hn⟩ := @h x
     exact ⟨n, Nat.pos_of_ne_zero (nonZeroDivisors.coe_ne_zero _), hn⟩
 
-theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
-    AddMonoid.IsTorsion M ↔ Module.IsTorsion ℤ M := by
+@[deprecated (since := "2026-07-01")] alias AddMonoid.isTorsion_iff_isTorsion_nat :=
+  isAddTorsion_iff_isTorsion_nat
+
+theorem isAddTorsion_iff_isTorsion_int [AddCommGroup M] :
+    IsAddTorsion M ↔ Module.IsTorsion ℤ M := by
   refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact
@@ -960,7 +963,8 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     obtain ⟨n, hn⟩ := @h x
     exact ⟨_, Int.natAbs_pos.2 (nonZeroDivisors.coe_ne_zero n), natAbs_nsmul_eq_zero.2 hn⟩
 
-end AddMonoid
+@[deprecated (since := "2026-07-01")] alias AddMonoid.isTorsion_iff_isTorsion_int :=
+  isAddTorsion_iff_isTorsion_int
 
 namespace AddSubgroup
 
