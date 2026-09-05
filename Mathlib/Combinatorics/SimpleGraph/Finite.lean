@@ -310,6 +310,29 @@ instance incidenceSetFintype : Fintype (G.incidenceSet v) :=
 def incidenceFinset [Fintype (G.incidenceSet v)] : Finset (Sym2 V) :=
   (G.incidenceSet v).toFinset
 
+section
+omit [Fintype (G.neighborSet v)]
+variable [Fintype (G.incidenceSet v)]
+
+@[simp, norm_cast]
+theorem coe_incidenceFinset : (G.incidenceFinset v : Set (Sym2 V)) = G.incidenceSet v := by
+  simp [incidenceFinset]
+
+variable {G v} in
+@[simp]
+theorem mem_incidenceFinset {e : Sym2 V} : e ∈ G.incidenceFinset v ↔ e ∈ G.incidenceSet v :=
+  Set.mem_toFinset
+
+theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
+    G.incidenceFinset v = {e ∈ G.edgeFinset | v ∈ e} := by
+  ext ⟨⟨⟩⟩
+  simp [mk'_mem_incidenceSet_iff]
+
+theorem incidenceFinset_subset [Fintype G.edgeSet] : G.incidenceFinset v ⊆ G.edgeFinset :=
+  Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
+
+end
+
 theorem card_incidenceSet_eq_degree : Fintype.card (G.incidenceSet v) = G.degree v := by
   classical
   rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v), card_neighborSet_eq_degree]
@@ -324,33 +347,10 @@ theorem encard_incidenceSet : (G.incidenceSet v).encard = G.degree v := by
   classical
   simp [← Set.coe_fintypeCard]
 
-omit [Fintype (G.neighborSet v)] in
-@[simp, norm_cast]
-theorem coe_incidenceFinset [Fintype (G.incidenceSet v)] :
-    (G.incidenceFinset v : Set (Sym2 V)) = G.incidenceSet v := by
-  simp [incidenceFinset]
-
 @[simp]
 theorem card_incidenceFinset_eq_degree : #(G.incidenceFinset v) = G.degree v := by
   rw [← G.card_incidenceSet_eq_degree]
   apply Set.toFinset_card
-
-omit [Fintype (G.neighborSet v)] in
-@[simp]
-theorem mem_incidenceFinset [Fintype (G.incidenceSet v)] (e : Sym2 V) :
-    e ∈ G.incidenceFinset v ↔ e ∈ G.incidenceSet v :=
-  Set.mem_toFinset
-
-omit [Fintype (G.neighborSet v)] in
-theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] [Fintype (G.incidenceSet v)] :
-    G.incidenceFinset v = {e ∈ G.edgeFinset | v ∈ e} := by
-  ext ⟨⟨⟩⟩
-  simp [mk'_mem_incidenceSet_iff]
-
-omit [Fintype (G.neighborSet v)] in
-theorem incidenceFinset_subset [Fintype G.edgeSet] [Fintype (G.incidenceSet v)] :
-    G.incidenceFinset v ⊆ G.edgeFinset :=
-  Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
 
 theorem disjoint_incidenceFinset_of_disjoint [Fintype <| H.neighborSet v] (h : Disjoint G H) :
     Disjoint (G.incidenceFinset v) (H.incidenceFinset v) := by
