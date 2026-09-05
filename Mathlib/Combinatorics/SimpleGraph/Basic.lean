@@ -112,6 +112,12 @@ def SimpleGraph.mk' {V : Type u} :
     funext v w
     simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
 
+instance {V : Type*} (G : SimpleGraph V) : Std.Symm G.Adj :=
+  G.symm
+
+instance {V : Type*} (G : SimpleGraph V) : Std.Irrefl G.Adj :=
+  G.loopless
+
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
 instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where

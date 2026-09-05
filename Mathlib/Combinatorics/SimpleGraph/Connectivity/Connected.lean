@@ -161,8 +161,14 @@ lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
 
 variable (G)
 
+instance : IsEquiv V G.Reachable where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
+@[deprecated instIsEquivReachable (since := "2026-08-25")]
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
-  Equivalence.mk (@Reachable.refl _ G) (@Reachable.symm _ G) (@Reachable.trans _ G)
+  .of_isEquiv G.Reachable
 
 /-- Distinct vertices are not reachable in the empty graph. -/
 @[simp]
@@ -222,7 +228,7 @@ lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype 
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 @[instance_reducible]
-def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
+def reachableSetoid : Setoid V := Setoid.mk _ <| .of_isEquiv G.Reachable
 
 /-- A graph is preconnected if every pair of vertices is reachable from one another. -/
 def Preconnected : Prop := ∀ u v : V, G.Reachable u v

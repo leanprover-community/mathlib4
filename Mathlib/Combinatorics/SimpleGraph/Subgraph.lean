@@ -98,7 +98,10 @@ namespace Subgraph
 
 variable {G : SimpleGraph V} {G₁ G₂ : G.Subgraph} {a b : V}
 
-protected theorem loopless (G' : Subgraph G) : Std.Irrefl G'.Adj where
+instance (G' : Subgraph G) : Std.Symm G'.Adj :=
+  G'.symm
+
+protected instance loopless (G' : Subgraph G) : Std.Irrefl G'.Adj where
   irrefl _ hadj := G.irrefl <| G'.adj_sub hadj
 
 theorem adj_comm (G' : Subgraph G) (v w : V) : G'.Adj v w ↔ G'.Adj w v :=
