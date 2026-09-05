@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProductMeasure
-public import Mathlib.Probability.HasLaw
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
+import Mathlib.Probability.Independence.InfinitePi
 
 /-!
 # Product of bernoulli distributions on a set
@@ -70,6 +70,61 @@ variable (u) in
 
 variable (u) in
 @[simp] lemma setBernoulli_one : setBer(u, 1) = dirac u := by simp [setBernoulli_eq_map]
+
+lemma setBernoulli_mem_of_mem (p : I) (hi : i ∈ u) :
+    setBer(u, p) {s | i ∈ s} = toNNReal p := by
+  rw [setBernoulli_eq_map]
+  have h1 : {s : Set ι | i ∈ s} = (i ∈ ·) ⁻¹' {True} := by grind
+  have h2 : (fun x ↦ i ∈ x) ∘ (fun (p : ι → Prop) ↦ {j | p j}) = (fun x ↦ x i) := by grind
+  rw [h1, ← map_apply, map_map, h2, infinitePi_map_eval (fun j ↦ Ber(j ∈ u, False, p))]
+  · simp [hi]
+  any_goals fun_prop
+  simp
+
+lemma setBernoulli_real_mem_of_mem (p : I) (hi : i ∈ u) :
+    setBer(u, p).real {s | i ∈ s} = p := by
+  simp [measureReal_def, setBernoulli_mem_of_mem p hi]
+
+lemma setBernoulli_mem_of_notMem (p : I) (hi : i ∉ u) :
+    setBer(u, p) {s | i ∈ s} = 0 := by
+  rw [setBernoulli_eq_map]
+  have h1 : {s : Set ι | i ∈ s} = (i ∈ ·) ⁻¹' {True} := by grind
+  have h2 : (fun x ↦ i ∈ x) ∘ (fun (p : ι → Prop) ↦ {j | p j}) = (fun x ↦ x i) := by grind
+  rw [h1, ← map_apply, map_map, h2, infinitePi_map_eval (fun j ↦ Ber(j ∈ u, False, p))]
+  · simp [hi]
+  any_goals fun_prop
+  simp
+
+lemma setBernoulli_real_mem_of_notMem (p : I) (hi : i ∉ u) :
+    setBer(u, p).real {s | i ∈ s} = 0 := by
+  simp [measureReal_def, setBernoulli_mem_of_notMem p hi]
+
+lemma HasLaw.indicator_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι} {M : Type*} [Zero M]
+    [MeasurableSpace M] (c : M) (hS : HasLaw S setBer(u, p) P) :
+    HasLaw ({ω | i ∈ S ω}.indicator (fun _ ↦ c)) Ber(c, 0, p) P := by
+  have := hS.isProbabilityMeasure
+  have : p = ⟨P.real {ω | i ∈ S ω}, by simp⟩ := by
+    ext
+    simp only
+    rw [hS.measureReal_eq (p := (i ∈ ·)) (by measurability), ← setBernoulli_real_mem_of_mem _ hi]
+  rw [this]
+  exact hasLaw_indicator_bernoulliMeasure c
+    (hS.aemeasurable.nullMeasurableSet_preimage (s := {t | i ∈ t}) (by measurability))
+
+lemma HasLaw.indicator_one_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι} {M : Type*} [Zero M]
+    [One M] [MeasurableSpace M] (hS : HasLaw S setBer(u, p) P) :
+    HasLaw ({ω | i ∈ S ω}.indicator (1 : Ω → M)) Ber(1, 0, p) P :=
+  hS.indicator_of_setBernoulli_of_mem hi 1
+
+lemma HasLaw.indicator_of_setBernoulli_of_notMem (hi : i ∉ u) {S : Ω → Set ι} {M : Type*} [Zero M]
+    [MeasurableSpace M] [MeasurableSingletonClass M]
+    (hS : HasLaw S setBer(u, p) P) (f : Ω → M) :
+    HasLaw ({ω | i ∈ S ω}.indicator f) (dirac 0) P := by
+  have := hS.isProbabilityMeasure
+  rw [hasLaw_dirac_iff]
+  have : setBer(u, p) {s | ¬ (i ∉ s)} = 0 := by simp [setBernoulli_mem_of_notMem p hi]
+  filter_upwards [hS.ae_iff (by fun_prop) |>.2 this] with ω hω
+  grind [Set.indicator]
 
 section Countable
 variable [Countable ι]
@@ -148,7 +203,7 @@ lemma map_ncard_setBernoulli_singleton {u : Set ι} (hu : u.Finite) (p : I) (k :
     map_ncard_setBernoulli_real_singleton hu]
 
 @[simp]
-lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
+lemma setBernoulli_empty : setBer((∅ : Set ι), p) = Measure.dirac ∅ := by
   ext s hs
   rw [setBernoulli_apply_eq_apply_subsets]
   by_cases h : ∅ ∈ s
@@ -159,6 +214,39 @@ lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
     simp_all
 
 end Countable
+
+lemma HasLaw.inter {S₁ S₂ : Ω → Set ι} ()
+
+lemma HasLaw.hasLaw_indicator_infinitePi_ite_of_setBernoulli [DecidablePred (· ∈ u)]
+    {M : Type*} [MeasurableSpace M] [MeasurableSingletonClass M] [Zero M] (c : M)
+    {S : Ω → Set ι} (hS : HasLaw S setBer(u, p) P) :
+    HasLaw (fun ω i ↦ {ω' | i ∈ S ω'}.indicator (fun _ ↦ c) ω)
+      (infinitePi (fun i ↦ if i ∈ u then Ber(c, 0, p) else dirac 0)) P := by
+  classical
+  have : (fun ω i ↦ {ω' | i ∈ S ω'}.indicator (fun _ ↦ c) ω) =
+      (fun s i ↦ if i ∈ s then c else 0) ∘ S := by ext ω i; by_cases h : i ∈ S ω <;> simp [h]
+  rw [this]
+  constructor
+  · exact Measurable.comp_aemeasurable
+      (measurable_pi_lambda _ fun i ↦ .ite (by measurability) (by fun_prop) (by fun_prop))
+      hS.aemeasurable
+  have : (fun s i ↦ if i ∈ s then c else 0) ∘ (fun (p : ι → Prop) ↦ {i | p i}) =
+      fun p i ↦ if p i then c else 0 := by ext; simp
+  rw [← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map, map_map, this,
+    infinitePi_map_pi (f := fun x q ↦ if q then c else 0) (μ := fun i ↦ Ber(i ∈ u, False, p))]
+  · congr with i : 1
+    split_ifs with hi <;> simp [hi]
+  any_goals fun_prop
+  · exact (measurable_pi_lambda _ fun i ↦ .ite (by measurability) (by fun_prop) (by fun_prop))
+  · exact Measurable.aemeasurable
+      (measurable_pi_lambda _ fun i ↦ .ite (by measurability) (by fun_prop) (by fun_prop))
+
+lemma HasLaw.hasLaw_indicator_one_infinitePi_ite_of_setBernoulli [DecidablePred (· ∈ u)]
+    {M : Type*} [MeasurableSpace M] [MeasurableSingletonClass M] [Zero M] [One M]
+    {S : Ω → Set ι} (hS : HasLaw S setBer(u, p) P) :
+    HasLaw (fun ω i ↦ {ω' | i ∈ S ω'}.indicator (1 : Ω → M) ω)
+      (infinitePi (fun i ↦ if i ∈ u then Ber(1, 0, p) else dirac 0)) P :=
+  hS.hasLaw_indicator_infinitePi_ite_of_setBernoulli 1
 
 /-! ### Bernoulli random variables -/
 
