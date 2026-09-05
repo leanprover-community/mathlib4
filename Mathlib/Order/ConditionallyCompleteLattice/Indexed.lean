@@ -489,7 +489,7 @@ lemma ciSup_or (p q : Prop) (f : p ∨ q → α) :
   by_cases hq : q <;>
   simp [hp, hq]
 
-@[deprecated (since := "2026-08-03")] alias ciSup_or' := ciSup_or
+@[deprecated (since := "2026-09-05")] alias ciSup_or' := ciSup_or
 
 end ConditionallyCompleteLinearOrderBot
 
