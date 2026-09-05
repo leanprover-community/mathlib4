@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Basic.Real.Star
+public import Mathlib.Data.Int.Interval
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
@@ -42,7 +43,7 @@ order on matrices on `ℝ` or `ℂ`.
 -- assert_not_exists MonoidAlgebra
 assert_not_exists NormedGroup
 
-open Matrix
+open Function Matrix
 
 namespace Matrix
 
@@ -501,6 +502,29 @@ lemma trace_pos [Nontrivial R] [IsOrderedCancelAddMonoid R] [Nonempty n] {A : Ma
     (hA : A.PosDef) : 0 < A.trace :=
   Finset.sum_pos (fun _ _ ↦ hA.diag_pos) Finset.univ_nonempty
 
+theorem det_pos [DecidableEq n] [Nontrivial R'] [IsOrderedRing R'] [PosMulReflectLT R']
+    {A : Matrix n n R'} (hA : A.PosDef) :
+    0 < A.det := by
+  suffices ∀ k (N : Matrix (Fin k) (Fin k) R'), N.PosDef → 0 < N.det by
+    rw [← det_submatrix_equiv_self (Fintype.equivFin n).symm A]
+    exact this _ _ (hA.submatrix <| Equiv.injective _)
+  intro k
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    intro N hN
+    set M := N.submatrix Fin.succ Fin.succ with M_def
+    set v : Fin (k + 1) → R' := N.adjugate.col 0 with v_def
+    have hM : M.PosDef := hN.submatrix <| Fin.succ_injective k
+    have hvM : v 0 = M.det := by simp [M_def, v_def, adjugate_fin_succ_eq_det_submatrix]
+    replace ih : 0 < M.det := ih _ hM
+    suffices 0 < M.det * N.det from lt_of_mul_lt_mul_left (by grind) ih.le
+    have hNv : N *ᵥ v = fun i ↦ if i = 0 then N.det else 0 := by
+      ext; simp [v_def, ← col_mul_eq_mulVec_col, mul_adjugate, Matrix.one_apply]
+    have hv₀ : v ≠ 0 := fun contra ↦ ih.ne' <| by simp [← hvM, contra]
+    have hM_det : star M.det = M.det := by rw [← det_conjTranspose, hM.1]
+    simpa [hNv, dotProduct, hvM, hM_det] using hN.dotProduct_mulVec_pos hv₀
+
 section Field
 variable {K : Type*} [Field K] [PartialOrder K] [StarRing K]
 
@@ -587,6 +611,38 @@ theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
   convert! fromBlocks₁₁ Bᴴ A hD <;> simp
 
 end SchurComplement
+
+/-- The **Cauchy-Schwarz inequality** for a positive definite matrix. -/
+lemma star_dotProduct_mulVec_mul_le {R : Type*}
+    [CommRing R] [PartialOrder R] [StarRing R] [IsOrderedRing R] [PosMulReflectLE R]
+    {A : Matrix n n R} (hA : A.PosDef) (x y : n → R) :
+    letI xAy := star x ⬝ᵥ A *ᵥ y
+    letI xAa := star x ⬝ᵥ A *ᵥ x
+    letI yAy := star y ⬝ᵥ A *ᵥ y
+    (star xAy) * xAy ≤ xAa * yAy := by
+  rcases eq_or_ne y 0 with rfl | hy; · simp
+  have := hA.posSemidef.dotProduct_mulVec_nonneg
+    ((star y ⬝ᵥ A *ᵥ y) • x - star (star x ⬝ᵥ A *ᵥ y) • y)
+  refine le_of_mul_le_mul_left (sub_nonneg.mp (this.trans_eq ?_)) (hA.dotProduct_mulVec_pos hy)
+  simp [hA.isHermitian.star_dotProduct_mulVec_comm, mulVec_sub, mulVec_smul]
+  ring
+
+lemma finite_setOf_dotProduct_mulVec_le {A : Matrix n n ℤ} (hA : A.PosDef) (r : ℤ) :
+    {v | v ⬝ᵥ A *ᵥ v ≤ r}.Finite := by
+  classical
+  set B : ℤ := ∑ j, |A j j * r| with hB
+  refine Set.Finite.of_finite_image ?_ (mulVec_injective_of_det_ne_zero hA.det_pos.ne').injOn
+  refine (Set.Finite.pi fun _ : n ↦ Set.finite_Icc (-B) B).subset ?_
+  rintro - ⟨v, hv, rfl⟩ j
+  have h₁ : ((A *ᵥ v) j) ^ 2 ≤ (A j j) * (v ⬝ᵥ A *ᵥ v) := by
+    simpa [pow_two] using hA.star_dotProduct_mulVec_mul_le (Pi.single j 1) v
+  have h₂ : (A j j) * (v ⬝ᵥ A *ᵥ v) ≤ B := by
+    refine le_trans ?_ (Finset.single_le_sum (fun i _ ↦ abs_nonneg _) (Finset.mem_univ j))
+    exact le_trans (mul_le_mul_of_nonneg_left hv hA.diag_pos.le) (le_abs_self _)
+  simp_rw [Set.mem_univ, Set.mem_Icc, forall_const, ← abs_le]
+  refine le_trans ?_ (h₁.trans h₂)
+  rw [← sq_abs]
+  exact Int.le_self_sq _
 
 end PosDef
 
