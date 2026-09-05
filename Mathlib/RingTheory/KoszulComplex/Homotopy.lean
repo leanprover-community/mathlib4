@@ -5,10 +5,12 @@ Authors: Nailin Guan, Jingting Wang
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Homology.ShortComplex.Linear
-public import Mathlib.RingTheory.KoszulComplex.Complex
 public import Mathlib.RingTheory.KoszulComplex.Cocomplex
+public import Mathlib.RingTheory.KoszulComplex.Complex
+public import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
 # Homotopy on Koszul complex
@@ -27,23 +29,24 @@ section homotopy
 
 lemma contraction_wedge_zero_degree
     (x : M) (φ : M →ₗ[R] R) :
-    (koszulComplexAux φ 0).comp (koszulCocomplexAux R M x 0) = (φ x) • LinearMap.id := by
+    (koszulComplex.d φ 0).comp (koszulCocomplex.d R M x 0) = (φ x) • LinearMap.id := by
   -- Degree `0` has only the empty wedge generator, so the scalar term is the whole answer.
   apply exteriorPower.linearMap_ext
   ext v
-  have hwedge : koszulCocomplexAux R M x 0 ((exteriorPower.ιMulti R 0) v) =
+  have hwedge : koszulCocomplex.d R M x 0 ((exteriorPower.ιMulti R 0) v) =
       exteriorPower.ιMulti R 1 (Matrix.vecCons x v) := by
     apply Subtype.ext
-    simp [koszulCocomplexAux, exteriorPower.oneEquiv_symm_apply, GradedAlgebra.linearGMul_eq_mul,
+    simp [koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, GradedAlgebra.linearGMul_eq_mul,
       exteriorPower.ιMulti_apply_coe, ExteriorAlgebra.ιMulti_succ_apply]
   simp only [LinearMap.smul_compAlternatingMap, AlternatingMap.smul_apply,
-    LinearMap.compAlternatingMap_apply, LinearMap.id_apply, LinearMap.comp_apply, koszulComplexAux]
+    LinearMap.compAlternatingMap_apply, LinearMap.id_apply, LinearMap.comp_apply, koszulComplex.d]
   rw  [hwedge, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
-  simp [koszulComplexAuxAlternating, AlternatingMap.alternatizeUncurryFin_apply]
+  simp [koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply]
 
+@[stacks 0626]
 lemma contraction_wedge_cartan_formula (x : M) (φ : M →ₗ[R] R) (n : ℕ) :
-    (koszulCocomplexAux R M x n).comp (koszulComplexAux φ n) +
-      (koszulComplexAux φ (n + 1)).comp (koszulCocomplexAux R M x (n + 1)) =
+    (koszulCocomplex.d R M x n).comp (koszulComplex.d φ n) +
+      (koszulComplex.d φ (n + 1)).comp (koszulCocomplex.d R M x (n + 1)) =
         (φ x) • LinearMap.id := by
   -- Compare the two operators on the standard exterior-power generators `ιMulti`.
   apply exteriorPower.linearMap_ext
@@ -51,24 +54,24 @@ lemma contraction_wedge_cartan_formula (x : M) (φ : M →ₗ[R] R) (n : ℕ) :
   -- After expanding contraction on `x ∧ v`, the terms cancel pairwise except for `φ x`.
   simp only [LinearMap.add_compAlternatingMap, LinearMap.smul_compAlternatingMap,
     AlternatingMap.add_apply, AlternatingMap.smul_apply, LinearMap.compAlternatingMap_apply,
-    LinearMap.id_apply, koszulComplexAux]
-  have hwedge : koszulCocomplexAux R M x (n + 1) ((exteriorPower.ιMulti R (n + 1)) v) =
+    LinearMap.id_apply, koszulComplex.d]
+  have hwedge : koszulCocomplex.d R M x (n + 1) ((exteriorPower.ιMulti R (n + 1)) v) =
       exteriorPower.ιMulti R (n + 2) (Matrix.vecCons x v) := by
     apply Subtype.ext
-    simp [koszulCocomplexAux, exteriorPower.oneEquiv_symm_apply, GradedAlgebra.linearGMul_eq_mul,
+    simp [koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, GradedAlgebra.linearGMul_eq_mul,
       exteriorPower.ιMulti_apply_coe, ExteriorAlgebra.ιMulti_succ_apply]
   rw [LinearMap.comp_apply, LinearMap.comp_apply,
     exteriorPower.alternatingMapLinearEquiv_apply_ιMulti, hwedge,
     exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
-  rw [koszulComplexAuxAlternating, AlternatingMap.alternatizeUncurryFin_apply,
-      koszulComplexAuxAlternating, AlternatingMap.alternatizeUncurryFin_apply, Fin.sum_univ_succ,
+  rw [koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply,
+      koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply, Fin.sum_univ_succ,
       Fin.sum_univ_succ]
   -- Rewrite the removed tuples so both Leibniz expansions are indexed the same way.
   have hremove (i : Fin (n + 1)) :
       i.succ.removeNth (Matrix.vecCons x v) = Matrix.vecCons x (i.removeNth v) := by
     ext j
     exact Fin.cases (by simp [Fin.removeNth]) (fun j ↦ (by simp [Fin.removeNth])) j
-  simp only [koszulCocomplexAux, exteriorPower.oneEquiv_symm_apply, Int.reduceNeg,
+  simp only [koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, Int.reduceNeg,
     Fin.coe_ofNat_eq_mod, Nat.zero_mod, pow_zero, LinearMap.coe_smulRight, Fin.removeNth_zero,
     AlternatingMap.smul_apply, one_smul, Fin.val_succ, pow_succ, mul_comm, neg_mul, one_mul,
     neg_smul, Finset.sum_neg_distrib, map_add, map_smul, map_neg, map_sum,
@@ -83,9 +86,9 @@ lemma contraction_wedge_cartan_formula (x : M) (φ : M →ₗ[R] R) (n : ℕ) :
 lemma koszulCocomplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
     (((φ x) • (𝟙 (koszulCocomplex R x))).f 0) =
       dNext 0 (fun i j =>
-        if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) +
+        if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplex.d φ j) else 0) +
           prevD 0 (fun i j =>
-            if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) := by
+            if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplex.d φ j) else 0) := by
   -- In degree `0`, only the `δ_φ d_x` term survives.
   rw [Homotopy.dNext_cochainComplex, Homotopy.prevD_zero_cochainComplex]
   simp only [↓reduceDIte, HomologicalComplex.smul_f_apply, HomologicalComplex.id_f, Nat.reduceAdd,
@@ -95,26 +98,26 @@ lemma koszulCocomplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
 lemma koszulComplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
     (((φ x) • 𝟙 (koszulComplex φ)).f 0) =
       dNext 0 (fun i j =>
-        if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) +
+        if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplex.d R M x i) else 0) +
           prevD 0 (fun i j =>
-            if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) := by
+            if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplex.d R M x i) else 0) := by
   -- In degree `0`, only the `d_x δ_φ` term survives.
   rw [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex]
-  simp only [↓reduceDIte, koszulComplex.d_eq_aux, zero_add, HomologicalComplex.smul_f_apply,
+  simp only [↓reduceDIte, koszulComplex.d_eq_d, zero_add, HomologicalComplex.smul_f_apply,
     HomologicalComplex.id_f, Nat.reduceAdd]
   exact congrArg ModuleCat.ofHom (contraction_wedge_zero_degree x φ).symm
 
 lemma koszulCocomplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ) :
     (((φ x) • 𝟙 (koszulCocomplex R x)).f (i + 1)) =
       dNext (i + 1) (fun i j =>
-        if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) +
+        if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplex.d φ j) else 0) +
           prevD (i + 1) (fun i j =>
-            if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) := by
+            if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplex.d φ j) else 0) := by
   -- In positive degrees, the homotopy relation is exactly the Cartan formula.
   rw [Homotopy.dNext_cochainComplex, Homotopy.prevD_succ_cochainComplex]
   simp only [↓reduceDIte, HomologicalComplex.smul_f_apply, HomologicalComplex.id_f, d_eq_aux]
-  let A := (koszulCocomplexAux R M x i).comp (koszulComplexAux φ i)
-  let B := (koszulComplexAux φ (i + 1)).comp (koszulCocomplexAux R M x (i + 1))
+  let A := (koszulCocomplex.d R M x i).comp (koszulComplex.d φ i)
+  let B := (koszulComplex.d φ (i + 1)).comp (koszulCocomplex.d R M x (i + 1))
   have hcartan : (φ x) • LinearMap.id = B + A := by
     simpa [A, B, ← add_comm A B] using (contraction_wedge_cartan_formula x φ i).symm
   exact congrArg ModuleCat.ofHom hcartan
@@ -122,12 +125,12 @@ lemma koszulCocomplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ
 lemma koszulComplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ) :
     (((φ x) • 𝟙 (koszulComplex φ)).f (i + 1)) =
       dNext (i + 1) (fun i j =>
-        if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) +
+        if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplex.d R M x i) else 0) +
           prevD (i + 1) (fun i j =>
-            if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) := by
+            if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplex.d R M x i) else 0) := by
   -- In positive degrees, the homotopy relation is exactly the Cartan formula.
   rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex]
-  simp only [↓reduceDIte, koszulComplex.d_eq_aux, HomologicalComplex.smul_f_apply,
+  simp only [↓reduceDIte, koszulComplex.d_eq_d, HomologicalComplex.smul_f_apply,
     HomologicalComplex.id_f]
   exact congrArg ModuleCat.ofHom (contraction_wedge_cartan_formula x φ i).symm
 
@@ -136,7 +139,7 @@ defined by `x`. -/
 noncomputable def koszulCocomplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R) :
     Homotopy ((φ x) • 𝟙 (koszulCocomplex R x))
       (0 : koszulCocomplex R x ⟶ koszulCocomplex R x) where
-  hom i j := if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0
+  hom i j := if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplex.d φ j) else 0
   zero i j hij := by
     simp only [ComplexShape.up_Rel] at hij
     simp [hij]
@@ -149,7 +152,7 @@ noncomputable def koszulCocomplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R
 noncomputable def koszulComplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R) :
     Homotopy ((φ x) • 𝟙 (koszulComplex φ)) (0 : koszulComplex φ ⟶ koszulComplex φ) where
   hom := fun i j =>
-    if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0
+    if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplex.d R M x i) else 0
   zero i j hij := by
     simp only [ComplexShape.down_Rel] at hij
     simp [hij]
