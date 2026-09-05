@@ -47,12 +47,15 @@ the bundled version, see `Rel`.
   related by `r`.
 * `Relation.Join`: Join of a relation. For `r : α → α → Prop`, `Join r a b ↔ ∃ c, r a c ∧ r b c`. In
   terms of rewriting systems, this means that `a` and `b` can be rewritten to the same term.
-* `Relation.Diamond`: The diamond property. For `r : α → α → Prop`, `Diamond r` means that
-  whenever `r a b` and `r a c`, then `Join r b c`.
-* `Relation.Confluent`: Confluence. For `r : α → α → Prop`, `Confluent r` means that
-  `Diamond (ReflTransGen r)`.
-* `Relation.ChurchRosser`: The Church-Rosser property. For `r : α → α → Prop`,
-  `ChurchRosser r` means that whenever `EqvGen r a b`, then `Join (ReflTransGen r) a b`.
+* `Relation.IsDiamond`: The diamond property. If `a` is related to both `b` and `c`, then
+  there is some `d` to which both `b` and `c` are related. In terms of rewriting systems,
+  if `a` rewrites in one step to both `b` and `c`, then `b` and `c` both rewrite in one
+  step to the same term.
+* `Relation.IsConfluent`: Confluence. If `a` rewrites in zero or more steps to both `b`
+  and `c`, then there is some `d` to which both `b` and `c` can be rewritten in zero or
+  more steps.
+* `Relation.IsChurchRosser`: The Church-Rosser property. If `a` and `b` are equivalent,
+  then they can both be rewritten in zero or more steps to some `c`.
 -/
 
 @[expose] public section
@@ -864,57 +867,52 @@ theorem to_eqvGen {r : α → α → Prop} {a b : α} (h : ReflTransGen r a b) :
 
 end ReflTransGen
 
-/--
-The join of a relation on a single type is a new relation for which
+/-- The join of a relation on a single type is a new relation for which
 pairs of terms are related if there is a third term they are both
-related to. For example, if `r` is a relation representing rewrites
-in a term rewriting system, then confluence says that whenever
-`a` rewrites to both `b` and `c`, the terms `b` and `c` are joinable.
-
-This notion is used in the definitions of `Relation.Diamond`,
-`Relation.Confluent`, and `Relation.ChurchRosser`; see also
-`Relation.church_rosser`.
+related to.  For example, if `r` is a relation representing rewrites
+in a term rewriting system, then *confluence* is the property that if
+`a` rewrites to both `b` and `c`, then `join r` relates `b` and `c`
+(see `Relation.church_rosser`).
 -/
 def Join (r : α → α → Prop) : α → α → Prop := fun a b ↦ ∃ c, r a c ∧ r b c
 
-/-- The diamond property. This means that if `r a b` and `r a c`, then `Join r b c`. -/
-def Diamond (r : α → α → Prop) : Prop :=
+/-- The diamond property: If `a` is related to both `b` and `c`, then there exists a `d` that
+`b` and `c` are related to. This forms a diagram in the shape of a diamond. -/
+def IsDiamond (r : α → α → Prop) : Prop :=
   ∀ {a b c : α}, r a b → r a c → Join r b c
 
-/-- Confluence. This means that if `ReflTransGen r a b` and `ReflTransGen r a c`, then
-`Join (ReflTransGen r) b c`. -/
-def Confluent (r : α → α → Prop) : Prop :=
-  Diamond (ReflTransGen r)
+/-- A relation is confluent if, whenever `a` rewrites in zero or more steps to both `b`
+and `c`, there exists a `d` to which both `b` and `c` can be rewritten in zero or more steps. -/
+def IsConfluent (r : α → α → Prop) : Prop :=
+  IsDiamond (ReflTransGen r)
 
-/-- The Church-Rosser property. This means that if `EqvGen r a b`, then
-`Join (ReflTransGen r) a b`. -/
-def ChurchRosser (r : α → α → Prop) : Prop :=
-  ∀ {a b : α},
-    EqvGen r a b →
-    Join (ReflTransGen r) a b
+/-- A relation has the Church-Rosser property if, whenever `a` and `b` are equivalent,
+there exists a `c` to which both can be rewritten in zero or more steps. -/
+def IsChurchRosser (r : α → α → Prop) : Prop :=
+  EqvGen r ≤ Join (ReflTransGen r)
 
 namespace Join
 
-/-- Joinability by reflexive-transitive chains induces a relation in the equivalence closure. -/
-theorem to_eqvGen {r : α → α → Prop} {a b : α} (h : Join (ReflTransGen r) a b) :
-    EqvGen r a b := by
+/-- Joinability by reflexive-transitive chains is contained in the equivalence closure. -/
+theorem le_eqvGen (r : α → α → Prop) : Join (ReflTransGen r) ≤ EqvGen r := by
+  intro a b h
   rcases h with ⟨c, hac, hbc⟩
-  exact EqvGen.trans _ _ _
-    hac.to_eqvGen
-    (EqvGen.symm _ _ hbc.to_eqvGen)
+  exact hac.to_eqvGen.trans hbc.to_eqvGen.symm
 
 end Join
 
+/-- Under the Church-Rosser property, joinability by reflexive-transitive chains coincides
+with the equivalence closure. -/
+theorem IsChurchRosser.join_reflTransGen_eq_eqvGen {r : α → α → Prop} (h : IsChurchRosser r) :
+    Join (ReflTransGen r) = EqvGen r :=
+  Subrelation.antisymm (Join.le_eqvGen r) h
+
 /-- The Church-Rosser property implies confluence. -/
-theorem ChurchRosser.confluent {r : α → α → Prop} (h : ChurchRosser r) : Confluent r := by
-  intro a b c hab hac
-  apply h
-  exact EqvGen.trans _ _ _
-    (EqvGen.symm _ _ hab.to_eqvGen)
-    hac.to_eqvGen
+theorem IsChurchRosser.confluent {r : α → α → Prop} (h : IsChurchRosser r) : IsConfluent r :=
+  fun a b c hab hac ↦ h b c <| hab.to_eqvGen.symm.trans hac.to_eqvGen
 
 /-- A confluent relation has the Church-Rosser property. -/
-theorem Confluent.churchRosser {r : α → α → Prop} (h : Confluent r) : ChurchRosser r := by
+theorem IsConfluent.churchRosser {r : α → α → Prop} (h : IsConfluent r) : IsChurchRosser r := by
   intro a b hab
   induction hab with
   | rel a b hab =>
