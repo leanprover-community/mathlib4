@@ -277,11 +277,15 @@ theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
   rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, ite_eq_left (dvd_zero k),
     Nat.zero_div, coeff_zero_eq_constantCoeff]
 
+theorem constantCoeff_subst_of_constantCoeff_zero (ha : a.constantCoeff = 0) (f : PowerSeries R) :
+    MvPowerSeries.constantCoeff (subst a f) = algebraMap R S f.constantCoeff := by
+  rw [constantCoeff_subst (HasSubst.of_constantCoeff_zero ha),
+    finsum_eq_single _ 0 (fun d hd ↦ by rw [map_pow, ha, zero_pow hd, smul_zero])]
+  simp [Algebra.algebraMap_eq_smul_one, coeff_zero_eq_constantCoeff_apply]
+
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
     (hf : f.constantCoeff = 0) : MvPowerSeries.constantCoeff (subst a f) = 0 := by
-  have := MvPowerSeries.constantCoeff_subst_eq_zero
-    (hasSubst_iff.mp <| HasSubst.of_constantCoeff_zero ha) (fun _ ↦ ha) hf
-  simpa [hasSubst_iff]
+  rw [constantCoeff_subst_of_constantCoeff_zero ha, hf, map_zero]
 
 theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
@@ -396,8 +400,6 @@ lemma rescale_eq (r : R) (f : PowerSeries R) :
   ext n
   rw [coeff_rescale, coeff, MvPowerSeries.coeff_rescale]
   simp [pow_zero, Finsupp.prod_single_index]
-
-@[deprecated (since := "2026-02-27")] alias _root_.MvPowerSeries.rescaleUnit := rescale_eq
 
 lemma rescale_eq_subst (r : R) (f : PowerSeries R) :
     PowerSeries.rescale r f = PowerSeries.subst (r • X : R⟦X⟧) f := by

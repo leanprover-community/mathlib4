@@ -65,6 +65,10 @@ theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
   exact measure_mono (subset_univ s)
 
 @[simp]
+theorem dirac_real_apply_of_mem {a : α} (h : a ∈ s) : (dirac a).real s = 1 := by
+  simp [measureReal_def, h]
+
+@[simp]
 theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
     dirac a s = s.indicator 1 a := by
   by_cases h : a ∈ s; · rw [dirac_apply_of_mem h, indicator_of_mem h, Pi.one_apply]
@@ -72,6 +76,12 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
   calc
     dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.1 <| singleton_subset_iff.2 h)
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
+
+@[simp]
+theorem dirac_real_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
+    (dirac a).real s = s.indicator 1 a := by
+  simp [measureReal_def, Set.indicator]
+  split_ifs <;> simp
 
 @[simp] lemma dirac_ne_zero : dirac a ≠ 0 :=
   fun h ↦ by simpa [h] using dirac_apply_of_mem (mem_univ a)
