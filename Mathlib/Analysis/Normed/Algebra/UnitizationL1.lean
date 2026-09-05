@@ -122,20 +122,38 @@ noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitiza
   norm_mul_le x y := by
     simp_rw [unitization_norm_def, add_mul, mul_add, unitization_mul, fst_mul, snd_mul]
     rw [add_assoc, add_assoc]
-    gcongr
-    · exact norm_mul_le _ _
-    · apply (norm_add_le _ _).trans
-      gcongr
-      · simp [norm_smul]
-      · apply (norm_add_le _ _).trans
-        gcongr
-        · simp [norm_smul, mul_comm]
-        · exact norm_mul_le _ _
+    grw [norm_mul_le, norm_add_le, norm_smul, norm_add_le, norm_smul, norm_mul_le]
+    congr! 3
+    exact mul_comm ..
 
 noncomputable instance instUnitizationNormedAlgebra :
     NormedAlgebra 𝕜 (WithLp 1 (Unitization 𝕜 A)) where
   norm_smul_le r x := by
     simp_rw [unitization_norm_def, ofLp_smul, fst_smul, snd_smul, norm_smul, mul_add]
     exact le_rfl
+
+instance hasSummableGeomSeries_unitization [HasSummableGeomSeries A] :
+    HasSummableGeomSeries (WithLp 1 (Unitization 𝕜 A)) := by
+  /- Take `x = (r, a) : Unitization 𝕜 A` with `‖x‖ = ‖r‖ + ‖a‖ < 1`.
+  Then `‖r‖ < 1`, so `r ≠ 1`, and `‖b‖ < 1` where `b := (1 - r)⁻¹ • a`. By hypothesis, `-b` is
+  quasiregular, so `1 - ↑b` is invertible in `Unitization 𝕜 A`. But then
+  `1 - x = (1 - r) • (1 - ↑b)` is invertible. -/
+  rw [hasSummableGeomSeries_iff_isUnit]
+  intro x hx₁
+  let (eq := hx) (r, a) := (ofLp x).toProd
+  have hra_norm : ‖r‖ + ‖a‖ < 1 := by simpa [hx, unitization_norm_def] using hx₁
+  have hr_norm : ‖r‖ < 1 := by grind [norm_nonneg]
+  have hr₁ : 1 - r ≠ 0 := by grind [norm_one, sub_eq_zero]
+  suffices key : IsQuasiregular (-((1 - r)⁻¹ • a)) by
+    rw [← isUnit_map_iff (unitizationAlgEquiv 𝕜)]
+    convert key.isUnit' 𝕜 |>.smul <| Units.mk0 (1 - r) hr₁
+    ext <;> simp [hx, smul_inv_smul₀, hr₁]
+  exact .of_norm_lt_one <| calc
+    ‖-((1 - r)⁻¹ • a)‖ ≤ (1 - ‖r‖)⁻¹ * ‖a‖ := by
+      rw [norm_neg, norm_smul, norm_inv]
+      gcongr
+      linarith [norm_sub_norm_le 1 r, norm_one (α := 𝕜)]
+    _ < (1 - ‖r‖)⁻¹ * (1 - ‖r‖) := by gcongr; linarith
+    _ = 1 := inv_mul_cancel₀ <| by positivity
 
 end WithLp
