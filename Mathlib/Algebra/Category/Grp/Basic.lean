@@ -60,6 +60,20 @@ abbrev of (M : Type u) [Group M] : GrpCat := ⟨M⟩
 
 end GrpCat
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddGrpCat.of X` as `↧X`. -/
+@[app_delab AddGrpCat.of]
+meta def AddGrpCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `GrpCat.of X` as `↧X`. -/
+@[app_delab GrpCat.of]
+meta def GrpCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
 /-- The type of morphisms in `AddGrpCat R`. -/
 @[ext]
 structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
@@ -177,11 +191,11 @@ lemma hom_inv_apply {X Y : GrpCat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s :
 
 @[to_additive]
 instance : Inhabited GrpCat :=
-  ⟨GrpCat.of PUnit⟩
+  ⟨↧PUnit⟩
 
 @[to_additive hasForgetToAddMonCat]
 instance hasForgetToMonCat : HasForget₂ GrpCat MonCat where
-  forget₂.obj X := MonCat.of X
+  forget₂.obj X := ↧X
   forget₂.map f := MonCat.ofHom f.hom
 
 @[to_additive (attr := simp)] lemma forget₂_map_ofHom {X Y : Type u} [Group X] [Group Y]
@@ -227,7 +241,7 @@ example {R S : GrpCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h
 @[to_additive (attr := simps obj map)
   /-- Universe lift functor for additive groups. -/]
 def uliftFunctor : GrpCat.{v} ⥤ GrpCat.{max v u} where
-  obj X := GrpCat.of (ULift.{u, v} X)
+  obj X := ↧(ULift.{u, v} X)
   map {_ _} f := GrpCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -269,6 +283,20 @@ attribute [coe] AddCommGrpCat.carrier CommGrpCat.carrier
 abbrev of (M : Type u) [CommGroup M] : CommGrpCat := ⟨M⟩
 
 end CommGrpCat
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddCommGrpCat.of X` as `↧X`. -/
+@[app_delab AddCommGrpCat.of]
+meta def AddCommGrpCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `CommGrpCat.of X` as `↧X`. -/
+@[app_delab CommGrpCat.of]
+meta def CommGrpCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
 
 /-- The type of morphisms in `AddCommGrpCat R`. -/
 @[ext]
@@ -331,7 +359,7 @@ lemma ext {X Y : CommGrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g 
 
 @[to_additive]
 instance : Inhabited CommGrpCat :=
-  ⟨CommGrpCat.of PUnit⟩
+  ⟨↧PUnit⟩
 
 @[to_additive]
 -- This is not `simp` to avoid rewriting in types of terms.
@@ -391,7 +419,7 @@ lemma hom_inv_apply {X Y : CommGrpCat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) =
 
 @[to_additive]
 instance hasForgetToGroup : HasForget₂ CommGrpCat GrpCat where
-  forget₂.obj X := GrpCat.of X
+  forget₂.obj X := ↧X
   forget₂.map f := GrpCat.ofHom f.hom
 
 @[to_additive (attr := simp)] lemma forget₂_grp_map_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y]
@@ -416,7 +444,7 @@ instance : (forget₂ CommGrpCat.{u} GrpCat).Full :=
 
 @[to_additive hasForgetToAddCommMonCat]
 instance hasForgetToCommMonCat : HasForget₂ CommGrpCat CommMonCat where
-  forget₂.obj X := CommMonCat.of X
+  forget₂.obj X := ↧X
   forget₂.map f := CommMonCat.ofHom f.hom
 
 @[to_additive (attr := simp)] lemma forget₂_commMonCat_map_ofHom {X Y : Type u}
@@ -449,7 +477,7 @@ example {R S : CommGrpCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by sim
 @[to_additive (attr := simps obj map)
   /-- Universe lift functor for additive commutative groups. -/]
 def uliftFunctor : CommGrpCat.{v} ⥤ CommGrpCat.{max v u} where
-  obj X := CommGrpCat.of (ULift.{u, v} X)
+  obj X := ↧(ULift.{u, v} X)
   map {_ _} f := CommGrpCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -465,14 +493,14 @@ namespace AddCommGrpCat
 /-- Any element of an abelian group gives a unique morphism from `ℤ` sending
 `1` to that element. -/
 @[simps!]
-def asHom {G : AddCommGrpCat.{0}} (g : G) : AddCommGrpCat.of ℤ ⟶ G :=
+def asHom {G : AddCommGrpCat.{0}} (g : G) : ↧ℤ ⟶ G :=
   ofHom (zmultiplesHom G g)
 
 theorem asHom_injective {G : AddCommGrpCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
   simpa using CategoryTheory.congr_fun w 1
 
 @[ext]
-theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : AddCommGrpCat.of ℤ ⟶ G)
+theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : ↧ℤ ⟶ G)
     (w : f (1 : ℤ) = g (1 : ℤ)) : f = g :=
   hom_ext (AddMonoidHom.ext_int w)
 

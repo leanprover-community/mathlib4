@@ -82,7 +82,7 @@ lemma hom_ext {R S : BoolRing} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
 
 instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat where
   forget₂ :=
-    { obj := fun R ↦ CommRingCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ CommRingCat.ofHom f.hom }
 
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
@@ -109,12 +109,12 @@ instance {R : Type u} [BooleanRing R] :
 
 @[simps]
 instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
-  forget₂.obj X := .of (AsBoolAlg X)
+  forget₂.obj X := ↧(AsBoolAlg X)
   forget₂.map f := BoolAlg.ofHom f.hom.asBoolAlg
 
 @[simps]
 instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
-  forget₂.obj X := .of (AsBoolRing X)
+  forget₂.obj X := ↧(AsBoolRing X)
   forget₂.map f := BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f.hom
 
 /-- The equivalence between Boolean rings and Boolean algebras. This is actually an isomorphism. -/
@@ -126,3 +126,13 @@ def boolRingCatEquivBoolAlg : BoolRing ≌ BoolAlg where
     (RingEquiv.asBoolRingAsBoolAlg X).symm) fun {_ _} _ => rfl
   counitIso := NatIso.ofComponents (fun X => BoolAlg.Iso.mk <|
     OrderIso.asBoolAlgAsBoolRing X) fun {_ _} _ => rfl
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `BoolRing.of X` as `↧X`. -/
+@[app_delab BoolRing.of]
+meta def BoolRing.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

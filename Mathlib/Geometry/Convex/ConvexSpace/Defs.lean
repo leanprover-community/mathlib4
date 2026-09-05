@@ -229,11 +229,8 @@ lemma mem_range_map_iff
       nonneg x := by
         simp only [Finsupp.coe_finsetSum, Finset.sum_apply,
           Finsupp.coe_zero, Pi.zero_apply]
-        refine Finset.sum_nonneg' (fun y ↦ ?_)
-        by_cases hy : m y = x
-        · subst hy
-          simp
-        · rw [Finsupp.single_eq_of_ne' hy]
+        refine Finset.sum_nonneg fun y ↦ ?_
+        obtain rfl | hy := eq_or_ne (m y) x <;> simp [*]
       total := by
         rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp), ← s.total]
         conv_rhs => dsimp [Finsupp.sum]; rw [← Finset.sum_attach]

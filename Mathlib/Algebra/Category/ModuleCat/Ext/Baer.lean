@@ -54,7 +54,7 @@ namespace ModuleCat
 /-- The vanishing of `Ext (R ⧸ I) M 1` is equivalent to Baer's extension property
 for maps `I →ₗ[R] M`. -/
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
-    Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
+    Subsingleton (Ext ↧(Shrink.{v} (R ⧸ I)) M 1) ↔
     ∀ g : I →ₗ[R] M, ∃ g' : R →ₗ[R] M,
       ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩ := by
   -- The short complex `I → R → R ⧸ I`, with all three terms moved into universe `v`.
@@ -91,14 +91,14 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
 /-- Baer's criterion in Ext form: if `Ext (R ⧸ I) M 1` vanishes for every ideal `I`,
 then `M` is injective. -/
 lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v} R)
-    (h : ∀ (I : Ideal R), Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1)) :
+    (h : ∀ (I : Ideal R), Subsingleton (Ext ↧(Shrink.{v} (R ⧸ I)) M 1)) :
     Injective M := by
   rw [← Module.injective_iff_injective_object, ← Module.Baer.iff_injective]
   exact fun I ↦ (ext_quotient_one_subsingleton_iff M I).mp (h I)
 
 lemma injective_iff_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v} R) :
     Injective M ↔
-      ∀ (I : Ideal R), Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) :=
+      ∀ (I : Ideal R), Subsingleton (Ext ↧(Shrink.{v} (R ⧸ I)) M 1) :=
   ⟨fun _ _ ↦ Ext.subsingleton_of_injective _ M 0, injective_of_subsingleton_ext_quotient_one M⟩
 
 attribute [local instance] Ext.subsingleton_of_injective in
@@ -106,7 +106,7 @@ open Limits in
 /-- If `Ext (R ⧸ I) M (n + 1)` vanishes for every ideal `I`, then `M` has injective
 dimension at most `n`. -/
 lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
-    (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
+    (h : ∀ I : Ideal R, Subsingleton (Ext ↧(Shrink.{v} (R ⧸ I)) M (n + 1))) :
     HasInjectiveDimensionLE M n := by
   induction n generalizing M with
   | zero =>
@@ -125,7 +125,7 @@ lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
 
 /-- The zeroth Ext group from `R ⧸ ⊥` is canonically equivalent to the underlying module. -/
 private noncomputable def extQuotientBotZeroEquiv [Small.{v} R] (M : ModuleCat.{v} R) :
-    (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ (⊥ : Ideal R)))) M 0) ≃ M :=
+    (Ext ↧(Shrink.{v} (R ⧸ (⊥ : Ideal R))) M 0) ≃ M :=
   (Ext.homEquiv₀.trans ModuleCat.homEquiv).trans ((((Shrink.linearEquiv _ _).trans
     (Submodule.quotEquivOfEqBot _ rfl)).congrLeft M R).trans
       (LinearMap.ringLmapEquivSelf R R M)).toEquiv
@@ -140,7 +140,7 @@ private lemma subsingleton_of_ext_quotient_bot_zero [Small.{v} R] (M : ModuleCat
 /-- If `Ext (R ⧸ I) M n` vanishes for every ideal `I`, then `M` has injective dimension
 strictly less than `n`. -/
 lemma hasInjectiveDimensionLT_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
-    (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n)) :
+    (h : ∀ I : Ideal R, Subsingleton (Ext ↧(Shrink.{v} (R ⧸ I)) M n)) :
     HasInjectiveDimensionLT M n := by
   match n with
   | 0 =>
@@ -151,7 +151,7 @@ lemma hasInjectiveDimensionLT_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
 
 lemma hasInjectiveDimensionLT_iff_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ) :
     HasInjectiveDimensionLT M n ↔
-      ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n) :=
+      ∀ I : Ideal R, Subsingleton (Ext ↧(Shrink.{v} (R ⧸ I)) M n) :=
   ⟨fun h _ ↦ h.subsingleton M n _ (le_refl _) _, hasInjectiveDimensionLT_of_quotients M n⟩
 
 end ModuleCat
