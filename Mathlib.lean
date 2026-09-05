@@ -2034,6 +2034,7 @@ public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.FourierMultiplier
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+public import Mathlib.Analysis.Distribution.SchwartzSpace.DenseLp
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.Analysis.Distribution.Sobolev
