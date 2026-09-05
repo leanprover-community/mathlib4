@@ -82,15 +82,22 @@ def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId �
     x goal.mvarId!
 
 /-- Run tactic code, given by a piece of syntax, in the context of an infotree node.
-The optional `MetaM` argument `m` performs postprocessing on the goals produced. -/
+The optional `MetaM` argument `m` performs postprocessing on the goals produced.
+
+Messages logged by `code` (for example `Try this` suggestions) are discarded:
+use `runTacticCodeCapturingInfoTree` to inspect them. -/
 def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax)
     (m : Σ α : Type, MVarId → MetaM α := ⟨MVarId, pure⟩) :
     CommandElabM (List m.1) := do
   let termCtx ← liftTermElabM read
   let termState ← liftTermElabM get
-  ctx.runTactic i goal fun goal => do
-    let newGoals ← Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
-    newGoals.mapM m.2
+  let messages := (← get).messages
+  try
+    ctx.runTactic i goal fun goal => do
+      let newGoals ← Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
+      newGoals.mapM m.2
+  finally
+    modify fun s => { s with messages }
 
 /-- Embeds a `CoreM` action in `CommandElabM`, returning both the result and the InfoTrees produced.
 

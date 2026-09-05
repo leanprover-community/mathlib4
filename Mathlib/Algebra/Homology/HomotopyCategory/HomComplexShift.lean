@@ -568,7 +568,13 @@ lemma shiftedHomComp_equivHomShift_symm
     (g : ShiftedHom K' K b) (h : a + b = c) :
     ShiftedHom.comp g (equivHomShift.symm z) h =
       equivHomShift.symm ((equivHomShift g).comp z (by lia)) := by
-  sorry
+  ext n
+  simp [equivHomShift_symm_apply, equivHomShift_apply, shiftFunctorAdd'_inv_app_f',
+    ShiftedHom.comp,
+    Cochain.rightShift_v _ _ _ (zero_add a) (n + b) (n + b) (by lia) (n + c) (by lia),
+    Cochain.rightShift_v _ _ _ (zero_add c) n n (by lia) (n + c) (by lia),
+    Cochain.comp_v _ _ (show b + a = c by lia) n (n + b) (n + c) (by lia) (by lia),
+    Cochain.rightUnshift_v _ _ (zero_add b) n (n + b) (by lia) n (add_zero n)]
 
 /-- The additive equivalence `Cocycle K L n ≃+ Cocycle K⟦a⟧ L n'` when `n + a = n'`. -/
 @[simps]

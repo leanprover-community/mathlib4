@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Nailin Guan, Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan, Jingting Wang
+Authors: Nailin Guan, Jingting Wang, Joël Riou
 -/
 module
 
@@ -32,9 +32,14 @@ where `F` is an exact functor between abelian categories.
 * `mapExactFunctor_extClass` :
   `Ext.mapExactFunctor` commutes with `ShortComplex.ShortExact.extClass`
 
--/
+* `id_mapExactFunctor`: the identity functor acts by the identity on `Ext` groups
 
-set_option backward.defeqAttrib.useBackward true
+* `comp_mapExactFunctor`: compatibility with the composition of two exact functors
+
+* `mapExactFunctor_comp_mk₀_natTransApp`: compatibility with a natural
+transformation between two exact functors
+
+-/
 
 @[expose] public section
 
@@ -76,6 +81,7 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
   simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
     ← Functor.map_comp_assoc]
 
+--set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
@@ -198,7 +204,6 @@ end
 
 namespace Abelian.Ext
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mapExactFunctor_mk₀ [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
     (mk₀ f).mapExactFunctor F = mk₀ (F.map f) := by
   dsimp [Ext.mapExactFunctor, mk₀]
