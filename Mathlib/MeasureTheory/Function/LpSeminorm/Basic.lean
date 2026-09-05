@@ -824,9 +824,9 @@ variable {ε : Type*} [TopologicalSpace ε] [ENorm ε] [PseudoMetrizableSpace ε
 theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
   by_cases hadd : AEStronglyMeasurable f (μ + ν)
-  · have hfμ : AEStronglyMeasurable f μ := 
+  · have hfμ : AEStronglyMeasurable f μ :=
       hadd.mono_measure (Measure.le_add_right le_rfl)
-    have hfν : AEStronglyMeasurable f ν := 
+    have hfν : AEStronglyMeasurable f ν :=
       hadd.mono_measure (Measure.le_add_left le_rfl)
     rw [eLpNorm_one_eq_lintegral_enorm hadd, eLpNorm_one_eq_lintegral_enorm hfμ,
       eLpNorm_one_eq_lintegral_enorm hfν, lintegral_add_measure _ μ ν]
