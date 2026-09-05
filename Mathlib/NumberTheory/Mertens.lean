@@ -604,7 +604,7 @@ noncomputable def e₁ : ℕ → ℝ := fun p ↦ if p.Prime then log p / (p * (
 
 /-- The constant `E₁ = 0.755366...` (https://oeis.org/A138312) is defined as the sum of
 `log p / (p * (p-1))` over primes `p`. -/
-noncomputable def E₁ : ℝ := ∑' p : ℕ, e₁ p
+noncomputable def E₁ : ℝ := ∑' p, e₁ p
 
 theorem e₁_nonneg (p : ℕ) : 0 ≤ e₁ p := by
   unfold e₁
