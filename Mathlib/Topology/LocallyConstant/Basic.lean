@@ -6,6 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Sets.Closeds
 
@@ -25,7 +26,7 @@ This file sets up the theory of locally constant function from a topological spa
 
 @[expose] public section
 
-variable {X Y Z α : Type*} [TopologicalSpace X]
+variable {X Y Z α : Type*} [TopologicalSpace X] {f : X → Y}
 
 open Set Filter
 open scoped Topology
@@ -40,18 +41,21 @@ open List in
 protected theorem tfae (f : X → Y) :
     TFAE [IsLocallyConstant f,
       ∀ x, ∀ᶠ x' in 𝓝 x, f x' = f x,
+      ∀ x, (𝓝 x).EventuallyConst f,
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  tfae_have 1 → 4 := fun h y => h {y}
-  tfae_have 4 → 3 := fun h x => h (f x)
-  tfae_have 3 → 2 := fun h x => IsOpen.mem_nhds (h x) rfl
-  tfae_have 2 → 5
-  | h, x => by
+  tfae_have 1 → 5 := fun h y => h {y}
+  tfae_have 5 → 4 := fun h x => h (f x)
+  tfae_have 4 → 2 := fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 2 → 3 := fun h x ↦ ⟨{f x}, h x, Set.subsingleton_singleton⟩
+  tfae_have 3 → 2 := fun h x ↦ by
+    have ⟨s, hmem, hsub⟩ := h x
+    rwa [hsub.eq_singleton_of_mem <| Set.mem_preimage.mp <| mem_of_mem_nhds hmem] at hmem
+  tfae_have 2 → 6 := fun h x ↦ by
     rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
     exact ⟨U, hU, hx, eq⟩
-  tfae_have 5 → 1
-  | h, s => by
+  tfae_have 6 → 1 := fun h s ↦ by
     refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ?_
     rcases h x with ⟨U, hU, hxU, eq⟩
     exact ⟨U, fun x' hx' => mem_preimage.2 <| (eq x' hx').symm ▸ hx, hU, hxU⟩
@@ -72,10 +76,13 @@ theorem isClopen_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClop
 
 theorem iff_exists_open (f : X → Y) :
     IsLocallyConstant f ↔ ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
-  (IsLocallyConstant.tfae f).out 1 5
+  (IsLocallyConstant.tfae f).out 1 6
 
 theorem iff_eventually_eq (f : X → Y) : IsLocallyConstant f ↔ ∀ x, ∀ᶠ y in 𝓝 x, f y = f x :=
   (IsLocallyConstant.tfae f).out 1 2
+
+theorem iff_forall_eventuallyConst : IsLocallyConstant f ↔ ∀ x, (𝓝 x).EventuallyConst f :=
+  IsLocallyConstant.tfae f |>.out 1 3
 
 theorem exists_open {f : X → Y} (hf : IsLocallyConstant f) (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
@@ -86,10 +93,10 @@ protected theorem eventually_eq {f : X → Y} (hf : IsLocallyConstant f) (x : X)
   (iff_eventually_eq f).1 hf x
 
 theorem iff_isOpen_fiber_apply {f : X → Y} : IsLocallyConstant f ↔ ∀ x, IsOpen (f ⁻¹' {f x}) :=
-  (IsLocallyConstant.tfae f).out 1 3
+  (IsLocallyConstant.tfae f).out 1 4
 
 theorem iff_isOpen_fiber {f : X → Y} : IsLocallyConstant f ↔ ∀ y, IsOpen (f ⁻¹' {y}) :=
-  (IsLocallyConstant.tfae f).out 1 4
+  (IsLocallyConstant.tfae f).out 1 5
 
 protected theorem continuous [TopologicalSpace Y] {f : X → Y} (hf : IsLocallyConstant f) :
     Continuous f :=
