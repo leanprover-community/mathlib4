@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Daniel Liao
 -/
 module
 
@@ -19,10 +19,12 @@ This file proves properties about
 * `List.isSuffix`: `l₁` is a suffix of `l₂` if `l₂` ends with `l₁`.
 * `List.isInfix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some suffix of `l₂`.
 * `List.inits`: The list of prefixes of a list.
-* `List.tails`: The list of prefixes of a list.
+* `List.tails`: The list of suffixes of a list.
+* `List.infixes`: The list of infixes of a list, the infix analogue of `inits`/`tails`.
 * `insert` on lists
 
-All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
+The relations `isPrefix`/`isSuffix`/`isInfix` are defined in Lean core and the enumerators
+`inits`/`tails` in Batteries; `infixes` is defined in this file.
 
 ## Notation
 
@@ -324,6 +326,39 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
   apply ext_getElem <;> (simp [take_take] <;> grind)
+
+/-! ### The infix enumerator -/
+
+/-- All infixes (contiguous factors) of a list, with multiplicity: every prefix of
+every suffix. The infix analogue of the `inits`/`tails` enumerators. -/
+def infixes (l : List α) : List (List α) := l.tails.flatMap inits
+
+/-- A list is a member of `t.infixes` iff it is an infix of `t`. -/
+@[simp]
+theorem mem_infixes {s t : List α} : s ∈ t.infixes ↔ s <:+: t := by
+  simp [infixes, infix_iff_prefix_suffix, and_comm]
+
+@[simp]
+theorem infixes_nil : ([] : List α).infixes = [[]] := by simp [infixes]
+
+theorem infixes_cons (a : α) (l : List α) :
+    (a :: l).infixes = (a :: l).inits ++ l.infixes := by
+  simp [infixes, flatMap_cons]
+
+theorem length_infixes_cons (a : α) (l : List α) :
+    (a :: l).infixes.length = l.length + 2 + l.infixes.length := by
+  rw [infixes_cons, length_append, length_inits, length_cons]
+
+@[simp]
+theorem length_infixes (l : List α) :
+    l.infixes.length = (l.length + 1) * (l.length + 2) / 2 := by
+  refine (Nat.div_eq_of_eq_mul_left Nat.zero_lt_two ?_).symm
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    rw [length_infixes_cons, length_cons]
+    simp only [Nat.mul_add, Nat.add_mul, Nat.mul_one, Nat.one_mul] at ih ⊢
+    omega
 
 end InitsTails
 
