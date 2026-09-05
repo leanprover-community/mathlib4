@@ -5,12 +5,16 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
+public import Mathlib.Analysis.SpecialFunctions.Integrability.Log
 
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
-# Integral of `log ∘ sin`
+# Integrals of Functions Prominently Involving the Logarithm
+-/
+
+/-!
+## Integral of `log ∘ sin`
 
 This file computes special values of the integral of `log ∘ sin`. Given that the indefinite integral
 involves the dilogarithm, this can be seen as computing special values of `Li₂`.
