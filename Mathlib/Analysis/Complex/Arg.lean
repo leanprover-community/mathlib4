@@ -5,6 +5,7 @@ Authors: Eric Rodriguez
 -/
 module
 
+public import Mathlib.Analysis.Complex.Norm
 public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
@@ -20,6 +21,14 @@ the usual way this is considered.
   have the same argument.
 * `Complex.abs_add_eq/Complex.abs_sub_eq`: If two nonzero complex numbers have the same argument,
   then the triangle inequality is an equality.
+* `Complex.div_ofReal_eq_inv_smul`, `Complex.div_norm_eq_inv_norm_smul`: division by a real
+  scalar agrees with inverse scalar multiplication.
+* `Complex.sameRay_iff_aligned`: two nonzero complex numbers are on the same ray iff they have
+  the same phase.
+* `Complex.exists_nonneg_mul_of_sameRay`: the `*` form of `SameRay.exists_nonneg_right`.
+* `Complex.sameRay_ofReal_mul`, `Complex.aligned_of_mul_of_real_pos`: nonnegative real scaling
+  preserves `SameRay`, and positive real scaling preserves the phase.
+  See also `SameRay.inv_norm_smul_eq` in `Mathlib/Analysis/Normed/Module/Ray.lean`.
 
 -/
 
@@ -60,5 +69,40 @@ theorem norm_add_eq (h : x.arg = y.arg) : ‖x + y‖ = ‖x‖ + ‖y‖ :=
 
 theorem norm_sub_eq (h : x.arg = y.arg) : ‖x - y‖ = ‖‖x‖ - ‖y‖‖ :=
   (sameRay_of_arg_eq h).norm_sub
+
+variable {z w : ℂ} {c : ℝ}
+
+/-- Division by a real scalar agrees with inverse real scalar multiplication. -/
+lemma div_ofReal_eq_inv_smul (r : ℝ) (z : ℂ) : z / (r : ℂ) = r⁻¹ • z := by
+  simp [div_eq_inv_mul, ofReal_inv, real_smul, mul_comm]
+
+/-- `z / ‖z‖` agrees with the real scalar action of `‖z‖⁻¹`. -/
+lemma div_norm_eq_inv_norm_smul : z / (‖z‖ : ℂ) = (‖z‖)⁻¹ • z :=
+  div_ofReal_eq_inv_smul (‖z‖) z
+
+/-- Two nonzero complex numbers lie on the same closed ray iff they have the same phase. -/
+lemma sameRay_iff_aligned (hz : z ≠ 0) (hw : w ≠ 0) :
+    SameRay ℝ z w ↔ z / (‖z‖ : ℂ) = w / (‖w‖ : ℂ) := by
+  rw [div_norm_eq_inv_norm_smul, div_norm_eq_inv_norm_smul]
+  exact sameRay_iff_inv_norm_smul_eq_of_ne hz hw
+
+alias ⟨aligned_of_sameRay, _⟩ := sameRay_iff_aligned
+
+/-- A nonnegative real multiple of `w` lies on the same closed ray as `w`. -/
+lemma sameRay_ofReal_mul (hc : 0 ≤ c) : SameRay ℝ ((c : ℂ) * w) w := by
+  rw [← real_smul]
+  exact SameRay.sameRay_nonneg_smul_left w hc
+
+/-- A complex number on the same ray as a nonzero `w` is a nonnegative real multiple of `w`. -/
+lemma exists_nonneg_mul_of_sameRay (h : SameRay ℝ z w) (hw : w ≠ 0) :
+    ∃ k : ℝ, 0 ≤ k ∧ z = (k : ℂ) * w := by
+  obtain ⟨k, hk, hz⟩ := h.exists_nonneg_right hw
+  exact ⟨k, hk, by rwa [real_smul] at hz⟩
+
+/-- A positive real multiple of a nonzero `w` has the same phase as `w`. -/
+lemma aligned_of_mul_of_real_pos (hc_pos : 0 < c) (hw : w ≠ 0) :
+    ((c : ℂ) * w) / (‖(c : ℂ) * w‖ : ℂ) = w / (‖w‖ : ℂ) :=
+  aligned_of_sameRay (mul_ne_zero (ofReal_ne_zero.2 hc_pos.ne') hw) hw
+    (sameRay_ofReal_mul hc_pos.le)
 
 end Complex
