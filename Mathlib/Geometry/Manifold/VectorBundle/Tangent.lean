@@ -143,6 +143,26 @@ sets as the preferred charts of the base manifold. -/
 abbrev tangentCoordChange (x y : M) : M → E →L[𝕜] E :=
   (tangentBundleCore I M).coordChange (achart H x) (achart H y)
 
+variable (I) in
+/-- The tangent coordinate change as a linear equivalence. It is defined to be the identity away
+from the intersection of the two chart sources. -/
+noncomputable def tangentCoordChangeEquiv (x y z : M) : E ≃ₗ[𝕜] E :=
+  (((tangentBundleCore I M).localTriv (achart H x)).coordChangeL 𝕜
+    ((tangentBundleCore I M).localTriv (achart H y)) z).toLinearEquiv
+
+lemma tangentCoordChangeEquiv_apply {x y z : M}
+    (hx : z ∈ (chartAt H x).source) (hy : z ∈ (chartAt H y).source) (v : E) :
+    tangentCoordChangeEquiv I x y z v = tangentCoordChange I x y z v := by
+  apply (tangentBundleCore I M).localTriv_coordChange_eq
+  exact ⟨hx, hy⟩
+
+lemma tangentCoordChangeEquiv_toLinearMap {x y z : M}
+    (hx : z ∈ (chartAt H x).source) (hy : z ∈ (chartAt H y).source) :
+    (tangentCoordChangeEquiv I x y z).toLinearMap =
+      (tangentCoordChange I x y z).toLinearMap := by
+  ext v
+  exact tangentCoordChangeEquiv_apply hx hy v
+
 lemma tangentCoordChange_def {x y z : M} : tangentCoordChange I x y z =
     fderivWithin 𝕜 (extChartAt I y ∘ (extChartAt I x).symm) (range I) (extChartAt I x z) := rfl
 
