@@ -25,32 +25,29 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 
 namespace Functor
 
-variable (F : C ⥤ D) [F.CommShift ℤ] (t₁ : TStructure C) (t₂ : TStructure D)
+class LeftTExact (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
+    (t₁ : TStructure C) (t₂ : TStructure D) : Prop where
+  isGE_obj (F t₁ t₂) (X : C) (n : ℤ) [t₁.IsGE X n] : t₂.IsGE (F.obj X) n
 
-class LeftTExact [F.IsTriangulated] : Prop where
-  objGE (X : C) (n : ℤ) [t₁.IsGE X n] : t₂.IsGE (F.obj X) n
+class RightTExact (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
+    (t₁ : TStructure C) (t₂ : TStructure D) : Prop where
+  isLE_obj (F t₁ t₂) (X : C) (n : ℤ) [t₁.IsLE X n] : t₂.IsLE (F.obj X) n
 
-class RightTExact [F.IsTriangulated] : Prop where
-  objLE (X : C) (n : ℤ) [t₁.IsLE X n] : t₂.IsLE (F.obj X) n
+export LeftTExact (isGE_obj)
+export RightTExact (isLE_obj)
 
-variable [F.IsTriangulated]
-
-lemma isGE_obj (X : C) (n : ℤ) [t₁.IsGE X n] [h : F.LeftTExact t₁ t₂] : t₂.IsGE (F.obj X) n :=
-  h.objGE X n
-
-lemma isLE_obj (X : C) (n : ℤ) [t₁.IsLE X n] [h : F.RightTExact t₁ t₂] : t₂.IsLE (F.obj X) n :=
-  h.objLE X n
+variable (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] (t₁ : TStructure C) (t₂ : TStructure D)
 
 class TExact : Prop where
-  rightTExact : F.RightTExact t₁ t₂
-  leftTExact : F.LeftTExact t₁ t₂
+  rightTExact : F.RightTExact t₁ t₂ := by infer_instance
+  leftTExact : F.LeftTExact t₁ t₂ := by infer_instance
 
 attribute [instance] TExact.rightTExact TExact.leftTExact
 
 /-- Constructor for `LeftTExact`. -/
 lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
     F.LeftTExact t₁ t₂ where
-  objGE X n _ := by
+  isGE_obj X n _ := by
     have := t₁.isGE_shift X n n 0 (add_zero n)
     have : t₂.IsGE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
     have : t₂.IsGE ((F.obj X)⟦n⟧) 0 := t₂.isGE_of_iso ((F.commShiftIso n).app X) 0
@@ -59,7 +56,7 @@ lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
 /-- Constructor for `RightTExact`. -/
 lemma RightTExact.mk' (h : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
     F.RightTExact t₁ t₂ where
-  objLE X n _ := by
+  isLE_obj X n _ := by
     have := t₁.isLE_shift X n n 0 (add_zero n)
     have : t₂.IsLE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
     have : t₂.IsLE ((F.obj X)⟦n⟧) 0 := t₂.isLE_of_iso ((F.commShiftIso n).app X) 0
@@ -73,11 +70,11 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def truncGEComparison (n : ℤ) : F ⋙ t₂.truncGE n ⟶ t₁.truncGE n ⋙ F where
   app X :=
-    have := h.objGE ((t₁.truncGE n).obj X) n
+    have := F.isGE_obj t₁ t₂ ((t₁.truncGE n).obj X) n
     t₂.descTruncGE (F.map ((t₁.truncGEπ n).app X)) n
   naturality {X Y} f := by
-    have := h.objGE ((t₁.truncGE n).obj X) n
-    have := h.objGE ((t₁.truncGE n).obj Y) n
+    have := F.isGE_obj t₁ t₂ ((t₁.truncGE n).obj X) n
+    have := F.isGE_obj t₁ t₂ ((t₁.truncGE n).obj Y) n
     dsimp
     apply t₂.from_truncGE_obj_ext
     dsimp
@@ -93,24 +90,24 @@ lemma truncGEComparison_app_fac (X : C) (n : ℤ) :
     (t₂.truncGEπ n).app (F.obj X) ≫ (truncGEComparison F t₁ t₂ n).app X =
       F.map ((t₁.truncGEπ n).app X) := by
   dsimp
-  have := h.objGE ((t₁.truncGE n).obj X) n
+  have := h.isGE_obj ((t₁.truncGE n).obj X) n
   apply t₂.π_descTruncGE
 
 end
 
 section
 
-variable [h : F.RightTExact t₁ t₂]
+variable [F.RightTExact t₁ t₂]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def truncLEComparison (n : ℤ) : t₁.truncLE n ⋙ F ⟶ F ⋙ t₂.truncLE n where
   app X :=
-    have := h.objLE ((t₁.truncLE n).obj X) n
+    have := F.isLE_obj t₁ t₂ ((t₁.truncLE n).obj X) n
     t₂.liftTruncLE (F.map ((t₁.truncLEι n).app X)) n
   naturality {X Y} f := by
-    have := h.objLE ((t₁.truncLE n).obj X) n
-    have := h.objLE ((t₁.truncLE n).obj Y) n
+    have := F.isLE_obj t₁ t₂ ((t₁.truncLE n).obj X) n
+    have := F.isLE_obj t₁ t₂ ((t₁.truncLE n).obj Y) n
     dsimp
     apply t₂.to_truncLE_obj_ext
     dsimp
@@ -123,7 +120,7 @@ lemma truncLEComparison_app_fac (X : C) (n : ℤ) :
     (truncLEComparison F t₁ t₂ n).app X ≫ (t₂.truncLEι n).app (F.obj X) =
       F.map ((t₁.truncLEι n).app X) := by
   dsimp
-  have := h.objLE ((t₁.truncLE n).obj X) n
+  have := F.isLE_obj t₁ t₂ ((t₁.truncLE n).obj X) n
   apply t₂.liftTruncLE_ι
 
 end
