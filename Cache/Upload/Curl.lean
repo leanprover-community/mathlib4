@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Upload
+import Cache.Upload.Defs
 
 /-!
 # The curl upload engine
@@ -12,7 +12,7 @@ import Cache.Upload
 The built-in transfer engine: parallel curl PUTs against the resolved
 destination (`StagedUploadDest`), authenticated per request from the
 `UploadAuth` mechanism (`uploadAuthArgs`). `putStagedViaCurl` is the engine's
-entry point; `Cache/Uploader.lean` dispatches to it.
+entry point; `Cache/Upload.lean` dispatches to it.
 -/
 
 namespace Cache.Requests

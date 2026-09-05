@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Upload
+import Cache.Upload.Defs
 
 /-!
 # The rclone upload engine
@@ -12,7 +12,7 @@ import Cache.Upload
 An opt-in transfer engine: a system [rclone](https://rclone.org) against the
 resolved destination (`StagedUploadDest`), with the S3 credentials passed
 through its environment. `putStagedViaRclone` is the engine's entry point;
-`Cache/Uploader.lean` dispatches to it.
+`Cache/Upload.lean` dispatches to it.
 -/
 
 namespace Cache.Requests
