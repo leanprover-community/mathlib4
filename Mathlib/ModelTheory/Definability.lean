@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Aaron Anderson. All rights reserved.
+Copyright (c) 2021 Aaron Anderson, Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Alex Meiburg
 -/
 module
 
@@ -316,6 +316,21 @@ theorem Definable.singleton_of_mem {a : M} {A : Set M} (ha : a ∈ A) :
 theorem Definable.diagonal (A : Set M) :
     A.Definable₂ L (diagonal M) := by
   exists (Term.var 0).equal (Term.var 1)
+
+variable (L' : Language) [inst' : L'.Structure M]
+
+/-- Definability is transitive. Given a structure S on L and T on L', if:
+  * a set S is Definable in some M-structure on L,
+  * the realizations of all L.Functions have tupleGraph that's Definable on S,
+  * the realizations of all L.Relations are Definable on S,
+then S is Definable on T, as well. -/
+theorem Definable.trans {S : Set (α → M)} (h₁ : A.Definable L S)
+    (h₂ : ∀ {n} (g : L[[A]].Functions n), A.Definable L' (g.term.realize).tupleGraph)
+    (h₃ : ∀ {n} (g : L[[A]].Relations n), A.Definable L' (RelMap g)) :
+    A.Definable L' S :=
+  h₁.elim fun φ₁ hφ₁ ↦
+    ⟨_, hφ₁.trans <| (φ₁.substDefinitions_eq
+      (fun g ↦ (h₂ g).choose_spec.symm) (fun g ↦ (h₃ g).choose_spec.symm)).symm⟩
 
 end Set
 
