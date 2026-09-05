@@ -129,7 +129,7 @@ theorem ofMulAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction
 section
 
 /-- Shorthand notation for the quotient of `G` by `H` as a finite `G`-set. -/
-notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ H)
+notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G ↧(G ⧸ H)
 
 variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 

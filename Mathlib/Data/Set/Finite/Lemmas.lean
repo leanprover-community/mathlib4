@@ -71,27 +71,19 @@ variable {s : Set α}
 
 /-! ### Order properties -/
 
+@[to_dual]
 theorem exists_min_image [LinearOrder β] (s : Set α) (f : α → β) (h1 : s.Finite) :
     s.Nonempty → ∃ a ∈ s, ∀ b ∈ s, f a ≤ f b
   | ⟨x, hx⟩ => by
     simpa only [exists_prop, Finite.mem_toFinset] using
       h1.toFinset.exists_min_image f ⟨x, h1.mem_toFinset.2 hx⟩
 
-theorem exists_max_image [LinearOrder β] (s : Set α) (f : α → β) (h1 : s.Finite) :
-    s.Nonempty → ∃ a ∈ s, ∀ b ∈ s, f b ≤ f a
-  | ⟨x, hx⟩ => by
-    simpa only [exists_prop, Finite.mem_toFinset] using
-      h1.toFinset.exists_max_image f ⟨x, h1.mem_toFinset.2 hx⟩
-
+@[to_dual]
 theorem exists_lower_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f : α → β)
     (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f a ≤ f b := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · exact ‹Nonempty α›.elim fun a => ⟨a, fun _ => False.elim⟩
   · rcases Set.exists_min_image s f h hs with ⟨x₀, _, hx₀⟩
     exact ⟨x₀, fun x hx => hx₀ x hx⟩
-
-theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f : α → β)
-    (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f b ≤ f a :=
-  exists_lower_bound_image (β := βᵒᵈ) s f h
 
 end Set
