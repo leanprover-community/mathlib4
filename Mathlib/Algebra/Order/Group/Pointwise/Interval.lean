@@ -469,6 +469,11 @@ variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 lemma inv_uIcc (a b : α) : [[a, b]]⁻¹ = [[a⁻¹, b⁻¹]] := by
   simp only [uIcc, inv_Icc, inv_sup, inv_inf]
 
+@[to_additive]
+lemma Icc_div_Icc {a b c d : α} (hab : a ≤ b) (hcd : c ≤ d) :
+    Icc a b / Icc c d = Icc (a / d) (b / c) := by
+  simp only [div_eq_mul_inv, inv_Icc, Icc_mul_Icc hab <| inv_le_inv_iff.mpr hcd]
+
 end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
