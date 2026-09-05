@@ -233,11 +233,9 @@ lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
     simp only [ENat.natCast_ne_top, imp_false]
     rw [nonempty_subtype, not_exists] at h
     exact h
-  have key := ciInf_mem fun s : {s : Finset X // IsDynCoverOf T F U n s} ↦ (s.val.card : ℕ∞)
+  have key := exists_eq_iInf fun s : {s : Finset X // IsDynCoverOf T F U n s} ↦ (s.val.card : ℕ∞)
   rw [coverMincard, iInf_subtype'] at k_min
-  rw [← k_min, mem_range, Subtype.exists] at key
-  simp only [Nat.cast_inj, exists_prop] at key
-  exact key
+  simpa [← k_min] using key
 
 @[simp]
 lemma coverMincard_empty : coverMincard T ∅ U n = 0 := by
