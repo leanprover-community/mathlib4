@@ -172,6 +172,7 @@ lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ}
   have := IsIntegralClosure.isFractionRing_of_finite_extension ℤ ℚ K 𝒪
   have := IsIntegralClosure.finite ℤ ℚ K 𝒪
   have := CharZero.of_module (R := 𝒪) K
+  have : Ring.HasFiniteQuotients 𝒪 := .of_module_finite ℤ 𝒪
   simp_rw [← not_dvd_differentIdeal_iff]
   contrapose!
   constructor
