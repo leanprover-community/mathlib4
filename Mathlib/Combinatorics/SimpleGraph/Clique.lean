@@ -431,7 +431,7 @@ theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G
   exact (Iso.completeGraph <| equivFin α).isContained'.trans f
 
 @[simp] lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
-  fun h ↦ h ∅ <| isNClique_empty_iff.mpr rfl
+  fun h ↦ h ∅ isNClique_empty
 
 @[simp]
 theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
