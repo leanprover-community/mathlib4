@@ -186,6 +186,10 @@ instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
     s.points i ∈ affineSpan k (s.points '' fs) ↔ i ∈ fs :=
   s.independent.mem_affineSpan_iff _ _
 
+lemma mem_affineSpan_range {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.points i ∈ affineSpan k (Set.range s.points) :=
+  mem_affineSpan k (Set.mem_range_self i)
+
 lemma affineCombination_mem_affineSpan_faceOpposite_iff {n : ℕ} [NeZero n] {s : Simplex k P n}
     {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) {i : Fin (n + 1)} :
     Finset.univ.affineCombination k s.points w ∈
