@@ -800,9 +800,21 @@ theorem cliqueFree_ge (n m : ℕ) (h : n ≤ m) : G.CliqueFree n → G.CliqueFre
   exact fun a ↦ CliqueFree.mono h a
 lemma cliqueFree_one_iff2 : G.CliqueFree 1 ↔ ∀(s : Set α), G.IsClique s ↔ s = ∅ := by
   sorry
-lemma cliqueFree_one_iff : G.CliqueFree 1 ↔ ∀(s : Finset α), ∀(n: ℕ), G.IsNClique n s ↔ (s = ∅ ∧ n = 0) := by
-
-  sorry
+lemma cliqueFree_one_iff {n : ℕ} {s : Finset α} : G.CliqueFree 1 ↔ (G.IsNClique n s ↔ s = ∅ ∧ n = 0) := by
+  #check cliqueFree_one
+  rw [cliqueFree_one]
+  have : IsEmpty α ↔ ∀(s : Finset α) , s = ∅ := by
+    -- each direction exists , but iff doesn't although it can be convenient...
+    constructor
+    · exact fun a s ↦ eq_empty_of_isEmpty s
+    · exact fun a ↦ isEmpty_of_forall_eq_empty a
+  rw [this]  
+  constructor
+  · intro h
+    simp [h]
+  · intro h s'
+    have := @isClique_empty s'
+    sorry
 lemma cliqueFree_indepnum {m : ℕ} : G.CliqueFree m → G.cliqueNum < m := by
   intro h
   simp_all [CliqueFree,cliqueNum]
