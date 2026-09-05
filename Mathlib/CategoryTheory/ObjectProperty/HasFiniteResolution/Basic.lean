@@ -51,7 +51,7 @@ Rather than defining `HasFiniteResolutionOfLength` in terms of explicit exact se
 we define it inductively: `X` has a `P`-resolution of length `0` if `X` satisfies `P`, and
 it has a `P`-resolution of length `n + 1` if there exists a short exact sequence
 `0 ⟶ K ⟶ E ⟶ X ⟶ 0` such that `E` satisfies `P` and `K` has a `P`-resolution of length `n`. -/
-inductive HasFiniteResolutionOfLength (P : ObjectProperty C) : ℕ → ObjectProperty C
+inductive hasFiniteResolutionOfLength (P : ObjectProperty C) : ℕ → ObjectProperty C
   | zero (X : C) (hX : P X) : HasFiniteResolutionOfLength P 0 X
   | succ (S : ShortComplex C) (n : ℕ) (hS : S.ShortExact) (h₂ : P S.X₂)
       (h₁ : HasFiniteResolutionOfLength P n S.X₁) : HasFiniteResolutionOfLength P (n + 1) S.X₃
@@ -83,11 +83,12 @@ theorem property_of_isClosedUnderQuotients [P.IsClosedUnderQuotients] :
   | zero _ hX => hX
   | succ S _ hS h₂ _ => P.prop_X₃_of_shortExact hS h₂
 
-theorem of_iso [P.IsClosedUnderIsomorphisms] {Y : C} (e : X ≅ Y)
-    (hX : P.HasFiniteResolutionOfLength n X) : P.HasFiniteResolutionOfLength n Y :=
-  match hX with
-  | zero _ hX => HasFiniteResolutionOfLength.zero Y (P.prop_of_iso e hX)
-  | succ S n hS h₂ h₁ =>
+instance [P.IsClosedUnderIsomorphisms] :
+    (P.HasFiniteResolutionOfLength n).IsClosedUnderIsomorphisms :=
+  .mk fun {X Y} e hX ↦
+    match hX with
+    | zero _ hX => HasFiniteResolutionOfLength.zero Y (P.prop_of_iso e hX)
+    | succ S n hS h₂ h₁ =>
       let T : ShortComplex C := ShortComplex.mk S.f (S.g ≫ e.hom) (by simp)
       let eS : S ≅ T := ShortComplex.isoMk (Iso.refl _) (Iso.refl _) e (by simp [T]) (by simp [T])
       HasFiniteResolutionOfLength.succ T n (ShortComplex.shortExact_of_iso eS hS) h₂ h₁
@@ -102,7 +103,7 @@ theorem map_exactFunctor {D : Type u'} [Category.{v'} D] [HasZeroMorphisms D]
   | succ S n hS h₂ _ ih =>
       exact HasFiniteResolutionOfLength.succ (S.map F) n (hS.map_of_exact F) (hF S.X₂ h₂) ih
 
-theorem hasFiniteResolution : P.HasFiniteResolutionOfLength n ≤ P.HasFiniteResolution :=
+theorem le_hasFiniteResolution : P.HasFiniteResolutionOfLength n ≤ P.HasFiniteResolution :=
   fun _ hX ↦ ⟨n, hX⟩
 
 end HasFiniteResolutionOfLength
@@ -127,7 +128,7 @@ theorem property_of_isClosedUnderQuotients [P.IsClosedUnderQuotients] [P.HasFini
 theorem of_iso [P.IsClosedUnderIsomorphisms] [P.HasFiniteResolution X] {Y : C} (e : X ≅ Y) :
     P.HasFiniteResolution Y := by
   obtain ⟨_, hX⟩ := HasFiniteResolution.out P X
-  exact (hX.of_iso e).hasFiniteResolution
+  exact (IsClosedUnderIsomorphisms.of_iso e hX).le_hasFiniteResolution
 
 theorem of_shortExact {S : ShortComplex C} (hS : S.ShortExact) (h₂ : P S.X₂)
     [P.HasFiniteResolution S.X₁] : P.HasFiniteResolution S.X₃ := by
