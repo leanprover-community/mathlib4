@@ -35,14 +35,15 @@ This file defines the extension of a valuation on a field `K` to its uniform com
 The current approach relies on the field structure of `K`, it can be generalized to
 arbitrary commutative rings.
 
-- Upgrade `WithZeroTopology.topologicalSpace` to `WithZeroTopology.uniformSpace`.
+- Generalize `WithZeroTopology.topologicalSpace` to `LinearOrderedCommMonoidWithZero`
+and upgrade it to `WithZeroTopology.uniformSpace`.
 - Generalize `Valuation.extension` from fields to arbitrary commutative rings by first
 showing that the original valuation is uniformly continuous.
 - Split this file into two parts: one about valuation extension in general, and another
   about the theory specific to valued fields (the `DivisionRing` and `Field` sections).
 -/
 
-@[expose] public section
+public section
 
 open Valuation ValuativeRel IsValuativeTopology UniformSpace MonoidWithZeroHom ValueGroup₀
 open Set Filter Topology
@@ -51,16 +52,13 @@ variable {K Γ₀ : Type*}
 
 section DivisionRing
 
-variable [DivisionRing K]
+variable [DivisionRing K] [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
 
 section InversionEstimate
 
-variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
-
--- The following is the main technical lemma ensuring that inversion is continuous
--- in the topology induced by a valuation on a division ring (i.e. the next instance)
--- and the fact that a valued field is completable
--- [BouAC, VI.5.1 Lemme 1]
+/- The following is the main technical lemma ensuring that inversion is continuous
+in the topology induced by a valuation on a division ring (i.e. the next instance)
+and the fact that a valued field is completable [bourbaki1989b], VI.5.1 Lemme 1. -/
 theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
     (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
   have veq : v x = v y := Valuation.map_eq_of_sub_lt v (lt_of_lt_of_le h (min_le_right _ _))
@@ -73,8 +71,8 @@ theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
 theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
     (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
   refine (?_ : _ < _).trans_eq <| div_mul_cancel₀ (a := v s) (b := v r) (by simpa using hr)
-  grw [Valuation.inversion_estimate v (x := x) y_ne (γ := (.mk0 (v s / v r) (by simp_all))) h]
-  <;> simp [zero_lt_iff, hr]
+  grw [Valuation.inversion_estimate v (x := x) y_ne (γ := (.mk0 (v s / v r) (by simp_all))) h] <;>
+  simp [zero_lt_iff, hr]
 
 end InversionEstimate
 
@@ -82,20 +80,23 @@ namespace IsValuativeTopology
 
 variable [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
 
+-- This instance will be tried in all `IsTopologicalDivisionRing` synthesis, but it will
+-- never fire outside the valuation theory. Lower priority improves performance.
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
-[BouAC, VI.5.1 middle of Proposition 1] -/
-instance (priority := 100) isTopologicalDivisionRing : IsTopologicalDivisionRing K where
+[bourbaki1989b], VI.5.1 middle of Proposition 1. -/
+instance (priority := 100) : IsTopologicalDivisionRing K where
   continuousAt_inv₀ x x_ne s s_in := by
     obtain ⟨γ, hs⟩ := (valuation K).mem_nhds_iff.mp s_in
     rw [mem_map, (valuation K).mem_nhds_iff]
     let γ' := Units.mk0 (Valuation.restrict _ x) ((valuation K).restrict.ne_zero_iff.mpr x_ne)
     refine ⟨min (γ * (γ' * γ')) γ', fun y y_in ↦ hs ?_⟩
-    simp only [mem_ofPred_eq, Units.min_val, Units.val_mul] at y_in
     refine inversion_estimate (Γ₀ := (ofClass (valuation K)).ValueGroup₀) _ x_ne ?_
-    simpa +zetaDelta using y_in
+    simpa [γ'] using y_in
 
+-- This instance will be tried in all `T2Space` synthesis, but it will
+-- never fire outside the valuation theory. Lower priority improves performance.
 /-- A division ring with topology coming from a valuation is a Hausdorff space. -/
-instance (priority := 100) t2Space : T2Space K := by
+instance (priority := 100) : T2Space K := by
   refine IsTopologicalAddGroup.t2Space_of_zero_sep fun x x_ne ↦
     ⟨{ k | valuation K k < valuation K x }, ?_, fun h => lt_irrefl (valuation K x) h⟩
   rw [(valuation K).mem_nhds_iff]
@@ -103,23 +104,17 @@ instance (priority := 100) t2Space : T2Space K := by
   intro y hy
   simpa [restrict_lt_iff_lt_embedding] using hy
 
-section ContinuousAt
+variable [v.Compatible]
 
-variable [LinearOrderedCommGroupWithZero Γ₀] [TopologicalSpace Γ₀] (v : Valuation K Γ₀)
-  [v.Compatible]
-
-/-- A compatible valuation is locally constant, hence continuous, at every point where it does
+/-- A compatible valuation is continuous, at every point where it does
 not vanish, for any topology on `Γ₀`. -/
-theorem continuousAt_valuation_of_ne_zero {x : K} (h : v x ≠ 0) : ContinuousAt v x :=
+theorem continuousAt_valuation_of_ne_zero [TopologicalSpace Γ₀] {x : K} (h : v x ≠ 0) :
+    ContinuousAt v x :=
   Filter.EventuallyEq.continuousAt (y := v x) (v.locally_const h)
-
-end ContinuousAt
 
 section WithZeroTopology
 
 open WithZeroTopology
-
-variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) [v.Compatible]
 
 /-- For `y : K` with `v y ≠ 0`, the open ball `{x | v x < v y}` is a neighbourhood of `0`. -/
 theorem eventually_lt_nhds_zero {y : K} (hy : v y ≠ 0) : ∀ᶠ x in 𝓝 (0 : K), v x < v y :=
@@ -133,6 +128,8 @@ theorem continuous_valuation_of_surjective (hsurj : Function.Surjective v) : Con
   rw [ContinuousAt, map_zero, WithZeroTopology.tendsto_zero]
   exact fun γ hγ ↦ (hsurj γ).choose_spec ▸ eventually_lt_nhds_zero v <| (hsurj γ).choose_spec ▸ hγ
 
+/-- Restricting the codomain of a valuation to `ValueGroup₀` (equipped with `WithZeroTopology`)
+makes it continuous. Without this restriction, it is not continuous in general. -/
 theorem continuous_restrict : Continuous (v.restrict : K → (ValueGroup₀ (.ofClass v))) :=
   continuous_valuation_of_surjective v.restrict (restrict₀_surjective _)
 
@@ -144,9 +141,7 @@ lemma isClosedMap_restrict :
   simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
   refine (em _).imp_right fun h ↦ ?_
   obtain ⟨γ, h⟩ := hU _ h
-  simp only [sub_zero] at h
-  refine ⟨γ.1, γ.ne_zero, h.trans fun h ↦ ?_⟩
-  simp
+  exact ⟨γ.1, γ.ne_zero, h.trans fun h ↦ by simp⟩
 
 end WithZeroTopology
 
@@ -161,8 +156,7 @@ variable [Field K] [ValuativeRel K] [UniformSpace K] [IsValuativeTopology K]
 namespace IsValuativeTopology
 
 /-- A valued field is completable. -/
-instance (priority := 100) completableTopField [IsUniformAddGroup K] : CompletableTopField K where
-  __ := (inferInstance : T0Space K)
+instance (priority := 100) [IsUniformAddGroup K] : CompletableTopField K where
   nice F hF h0 := by
     obtain ⟨γ₀, M₀, M₀_in, H₀⟩ : ∃ γ₀ : (ValueGroup₀ (.ofClass (valuation K)))ˣ, ∃ M ∈ F,
         ∀ x ∈ M, (γ₀.1) ≤ (valuation K).restrict x := by
@@ -265,7 +259,7 @@ noncomputable def extension : Valuation (Completion K) Γ₀ where
       norm_cast
       exact le_max_iff.mp (v.restrict.map_add x y)
 
-lemma extension_def (x : Completion K) : v.extension x =
+private lemma extension_def (x : Completion K) : v.extension x =
     embedding (v.extensionFun x) := rfl
 
 @[simp]
@@ -326,7 +320,7 @@ lemma closure_image_coe_le : closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K
     obtain ⟨r, s, hU, hvr, hvs⟩ := v.exists_coe_mem_extension_eq₂ hU
     exact ⟨(r, s), hU, (r, s), by simpa [hvr, hvs] using h, rfl⟩
 
--- Bourbaki CA VI §5 no.3 Proposition 5 (d)
+-- [bourbaki1989b] VI §5 no.3 Proposition 5 (d)
 theorem closure_image_coe_ofPred_map_lt {r : Γ₀} (hr : r ≠ 0) :
     closure ((↑) '' { x : K | v x < r }) =
     { x : Completion K | v.extension x < r } := by
