@@ -229,6 +229,8 @@ We prove formulae about the forward difference operator applied to polynomials:
 * `fwdDiff_iter_sum_mul_pow_eq_zero` :
   The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
     sums over `range n`).
+* `sum_range_shift_eq_sum_fwdDiff_iter` :
+  A summation formula expressing `∑ k < n, f (y + k • h)` in terms of iterated forward differences.
 -/
 
 variable {R : Type*} [CommRing R]
@@ -295,3 +297,15 @@ theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
     ← Pi.smul_def, fwdDiff_iter_const_smul, ← sum_fn]
   exact sum_eq_zero fun i hi ↦ smul_eq_zero_of_right _ <| fwdDiff_iter_pow_eq_zero_of_lt
     <| mem_range.mp hi
+
+/--
+A summation formula expressing `∑ k < n, f (y + k • h)` in terms of iterated forward differences.
+-/
+theorem sum_range_shift_eq_sum_fwdDiff_iter (f : M → G) (y : M) (n : ℕ) :
+    ∑ k ∈ range n, f (y + k • h) = ∑ k ∈ range n, n.choose (k + 1) • Δ_[h]^[k] f y := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    simp_rw [sum_range_succ, IH, shift_eq_sum_fwdDiff_iter h f n y, choose_succ_succ',
+      add_smul, sum_add_distrib, sum_range_succ, choose_succ_self]
+    grind

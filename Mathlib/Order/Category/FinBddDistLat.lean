@@ -44,6 +44,11 @@ attribute [instance] FinBddDistLat.isFintype
 abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FinBddDistLat.of X` as `↧X`. -/
+@[app_delab FinBddDistLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- Construct a bundled `FinBddDistLat` from a `Nonempty` `Fintype` `DistribLattice`. -/
 abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat where
   carrier := α
@@ -52,22 +57,18 @@ abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddD
 /-- The type of morphisms in `FinBddDistLat R`. -/
 @[ext]
 structure Hom (X Y : FinBddDistLat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category FinBddDistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory FinBddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `FinBddDistLat` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : FinBddDistLat.{u}} (f : Hom X Y) :=
@@ -158,11 +159,11 @@ instance : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩
 
 instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := ConcreteCategory.ofHom (OrderHomClass.toOrderHom f.hom)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism

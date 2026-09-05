@@ -369,7 +369,7 @@ instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
     rw [ContinuousMap.norm_eq_norm_coeFn]
     refine Function.Surjective.pi_norm_comp ?_ _
     rw [← Function.Surjective.of_comp_iff'
-      (Equiv.Set.congr hA.spectrum_real_eq_range_eigenvalues).bijective]
+      (Set.equivOfEq hA.spectrum_real_eq_range_eigenvalues).bijective]
     exact Set.codRestrict_range_surjective hA.eigenvalues
 
 scoped[Matrix.Norms.L2Operator] attribute [instance]

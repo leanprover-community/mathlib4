@@ -837,7 +837,7 @@ variable {R : Type u} {S : Type v} [NonUnitalRing R] [NonUnitalRing S] {s t : No
 monoid are equal. -/
 def nonUnitalSubringCongr (h : s = t) : s ≃+* t :=
   {
-    Equiv.Set.congr <| congr_arg _ h with
+    Set.equivOfEq <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
