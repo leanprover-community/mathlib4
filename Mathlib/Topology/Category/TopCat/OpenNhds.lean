@@ -49,11 +49,11 @@ instance partialOrder (x : X) : PartialOrder (OpenNhds x) :=
 theorem le_def (U V : OpenNhds x) : U ≤ V ↔ U.val ≤ V.val := Iff.rfl
 
 instance (x : X) : Lattice (OpenNhds x) :=
-  { inf := fun U V => ⟨U.val ⊓ V.val, ⟨U.property, V.property⟩⟩
+  { min := fun U V => ⟨U.val ⊓ V.val, ⟨U.property, V.property⟩⟩
     le_inf := fun U V W => @le_inf _ _ U.val.carrier V.val.carrier W.val.carrier
     inf_le_left := fun U V => @inf_le_left _ _ U.val.carrier V.val.carrier
     inf_le_right := fun U V => @inf_le_right _ _ U.val.carrier V.val.carrier
-    sup := fun U V => ⟨U.val ⊔ V.val, Set.mem_union_left V.val.carrier U.property⟩
+    max := fun U V => ⟨U.val ⊔ V.val, Set.mem_union_left V.val.carrier U.property⟩
     sup_le := fun U V W => @sup_le _ _ U.val.carrier V.val.carrier W.val.carrier
     le_sup_left := fun U V => @le_sup_left _ _ U.val.carrier V.val.carrier
     le_sup_right := fun U V => @le_sup_right _ _ U.val.carrier V.val.carrier }
