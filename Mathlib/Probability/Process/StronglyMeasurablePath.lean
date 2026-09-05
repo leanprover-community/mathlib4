@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Topology.Defs.Cadlag
+public import Mathlib.Topology.Order.Cadlag
 public import Mathlib.Probability.Process.Adapted
 
 /-! # Strong measurability of the path map of a right-continuous process
