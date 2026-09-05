@@ -688,8 +688,8 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
       _ ≤ K * ‖x - x₀‖ + ‖f x₀‖ := by
         gcongr
         apply hl.norm_sub_le _ (mem_of_mem_nhds hs)
-        apply subset_trans _ has hx
-        exact closedBall_subset_ball <| half_lt_self ha -- this is where we need `a / 2`
+        grw [half_lt_self ha, has] at hx -- this is where we need `a / 2`
+        exact hx
       _ ≤ K * a + ‖f x₀‖ := by
         gcongr
         rw [← mem_closedBall_iff_norm]
@@ -700,10 +700,12 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
   refine ⟨ε, hε0,
     .mk (a / 2) (half_pos ha).le, (.mk (a / 2) (half_pos ha).le) / 2,
     .mk L hL0.le, K, half_pos <| half_pos ha, fun t₀ ↦ ?_⟩
-  apply of_time_independent hb <|
-    hl.mono <| subset_trans (closedBall_subset_ball (half_lt_self ha)) has
-  simp [ε, field]
-  norm_num
+  apply of_time_independent hb
+  · dsimp only [NNReal.coe_mk]
+    grw [half_lt_self ha, has]
+    exact hl
+  · simp [ε, field]
+    norm_num
 
 end
 
