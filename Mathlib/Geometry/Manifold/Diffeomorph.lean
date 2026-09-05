@@ -673,3 +673,14 @@ end disjointUnion
 end Constructions
 
 end Diffeomorph
+
+/-- The push-forward of a `ChartedSpace` along a homeomorphism `f : M ≃ₜ N` is a manifold, if `M`
+is a manifold. -/
+theorem Homeomorph.isManifold [IsManifold I n M] (φ : M ≃ₜ N) :
+  letI := φ.chartedSpace (H := H)
+  IsManifold I n N  where
+    __ := φ.chartedSpace (H := H)
+    compatible {e e'} he he' := by
+      rw [← φ.transOpenPartialHomeomorph_symm_trans]
+      exact IsManifold.compatible_of_mem_maximalAtlas
+        (φ.chartedSpace_trans_mem_maximalAtlas e he) (φ.chartedSpace_trans_mem_maximalAtlas e' he')
