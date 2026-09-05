@@ -488,7 +488,7 @@ coincides with the lower central series of `H` viewed as its own additive group,
 to `G`. -/]
 theorem top_subtype_lowerCentralSeries (H : Subgroup G) (n : ℕ) :
     (lowerCentralSeries ⊤ n).map H.subtype = H.lowerCentralSeries n := by
-  rw [map_lowerCentralSeries, ← MonoidHom.range_eq_map, subtype_range]
+  rw [map_lowerCentralSeries, Subgroup.map_top, subtype_range]
 
 /-- A subgroup is nilpotent iff its lower central series (computed in the ambient group) eventually
 vanishes. -/
@@ -954,10 +954,11 @@ theorem Group.IsNilpotent.nilpotencyClass_le_one_iff [IsNilpotent G] :
 
 /-- Abelian groups are nilpotent. -/
 @[to_additive /-- Abelian groups are nilpotent. -/]
-instance (priority := 100) CommGroup.isNilpotent {G : Type*} [CommGroup G] : IsNilpotent G := by
+instance (priority := 100) CommGroup.isNilpotent {G : Type*} [Group G] [IsMulCommutative G] :
+    IsNilpotent G := by
   use 1
   rw [upperCentralSeries_one]
-  apply CommGroup.center_eq_top
+  exact Subgroup.center_eq_top
 
 /-- Abelian groups have nilpotency class at most one. -/
 @[to_additive /-- Abelian groups have nilpotency class at most one. -/]

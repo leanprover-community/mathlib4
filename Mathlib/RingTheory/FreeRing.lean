@@ -6,7 +6,7 @@ Authors: Kenny Lau, Johan Commelin
 module
 
 public import Mathlib.Algebra.FreeMonoid.Basic
-public import Mathlib.GroupTheory.FreeAbelianGroup
+public import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Free rings
@@ -21,7 +21,7 @@ The theory of the free ring over a type.
 
 ## Implementation details
 
-`FreeRing α` is implemented as the free abelian group over the free monoid on `α`.
+`FreeRing α` is implemented as the `ℤ` monoid algebra over the free monoid on `α`.
 
 ## Tags
 
@@ -29,7 +29,7 @@ free ring
 
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 
 universe u v
@@ -52,7 +52,7 @@ One can think of `FreeRing α` as the free non-commutative polynomial ring
 with coefficients in the integers and variables indexed by `α`.
 -/
 def FreeRing (α : Type u) : Type u :=
-  FreeAbelianGroup <| FreeMonoid α
+  MonoidAlgebra ℤ <| FreeMonoid α
 deriving Ring, Inhabited, Nontrivial
 
 namespace FreeRing
@@ -61,32 +61,41 @@ variable {α : Type u}
 
 /-- The canonical map from α to `FreeRing α`. -/
 def of (x : α) : FreeRing α :=
-  FreeAbelianGroup.of (FreeMonoid.of x)
+  MonoidAlgebra.single (FreeMonoid.of x) 1
 
 theorem of_injective : Function.Injective (of : α → FreeRing α) :=
-  FreeAbelianGroup.of_injective.comp FreeMonoid.of_injective
+  MonoidAlgebra.of_injective.comp FreeMonoid.of_injective
 
 @[simp]
-theorem of_ne_zero (x : α) : of x ≠ 0 := FreeAbelianGroup.of_ne_zero _
+theorem of_ne_zero (x : α) : of x ≠ 0 := MonoidAlgebra.single_ne_zero.2 Int.one_ne_zero
 
 @[simp]
-theorem zero_ne_of (x : α) : 0 ≠ of x := FreeAbelianGroup.zero_ne_of _
+theorem zero_ne_of (x : α) : 0 ≠ of x := (of_ne_zero x).symm
 
 @[simp]
-theorem of_ne_one (x : α) : of x ≠ 1 := FreeAbelianGroup.of_injective.ne <| FreeMonoid.of_ne_one _
+theorem of_ne_one (x : α) : of x ≠ 1 := MonoidAlgebra.of_injective.ne <| FreeMonoid.of_ne_one _
 
 @[simp]
-theorem one_ne_of (x : α) : 1 ≠ of x := FreeAbelianGroup.of_injective.ne <| FreeMonoid.one_ne_of _
+theorem one_ne_of (x : α) : 1 ≠ of x := MonoidAlgebra.of_injective.ne <| FreeMonoid.one_ne_of _
 
 @[elab_as_elim, induction_eliminator]
-protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1 : C (-1))
-    (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
-    C z :=
-  have hn : ∀ x, C x → C (-x) := fun x ih => neg_one_mul x ▸ hm _ _ hn1 ih
-  have h1 : C 1 := neg_neg (1 : FreeRing α) ▸ hn _ hn1
-  FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeRing α) ▸ ha _ _ hn1 h1)
-    (fun m => List.recOn m h1 fun a _ ih => hm _ _ (hb a) ih)
-    (fun _ ih => hn _ ih) ha
+protected theorem induction_on {motive : FreeRing α → Prop} (z : FreeRing α) (neg_one : motive (-1))
+    (of : ∀ b, motive (of b)) (add : ∀ x y, motive x → motive y → motive (x + y))
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) :
+    motive z :=
+  have neg (x : FreeRing α) (hx : motive x) : motive (-x) := by simpa using mul (-1) x neg_one hx
+  have one : motive 1 := by simpa using neg (-1) neg_one
+  have nsmul (n : ℕ) (x : FreeRing α) (hx : motive x) : motive (n • x) := by
+    induction n with
+    | zero => simpa using add (-1) 1 neg_one one
+    | succ n ih => rw [succ_nsmul]; exact add (n • x) x ih hx
+  have zsmul (n : ℤ) (x : FreeRing α) (hx : motive x) : motive (n • x) := by
+    induction n using Int.negInduction with
+    | nat n => rw [natCast_zsmul]; simpa using nsmul n x hx
+    | neg ih n => rw [neg_zsmul]; exact neg _ (ih n)
+  have fmof (x : FreeMonoid α) : motive (MonoidAlgebra.of ℤ _ x) :=
+    FreeMonoid.inductionOn x one of (fun x y hx hy => by rw [map_mul]; exact mul _ _ hx hy)
+  MonoidAlgebra.induction_on z fmof add zsmul
 
 section lift
 
@@ -94,7 +103,7 @@ variable {R : Type v} [Ring R] (f : α → R)
 
 /-- The ring homomorphism `FreeRing α →+* R` induced from a map `α → R`. -/
 def lift : (α → R) ≃ (FreeRing α →+* R) :=
-  FreeMonoid.lift.trans FreeAbelianGroup.liftMonoid
+  (FreeMonoid.lift.trans (MonoidAlgebra.lift ℤ R _)).trans (RingHom.equivIntAlgHom _ _).symm
 
 @[simp]
 theorem lift_of (x : α) : lift f (of x) = f x :=

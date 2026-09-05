@@ -74,7 +74,7 @@ variable (G) in
 @[to_additive (attr := simps)
 /-- If `G` is an additive group object, then `Hom(-, G)` is a presheaf of additive groups. -/]
 def yonedaGrpObj : Cᵒᵖ ⥤ GrpCat.{v} where
-  obj X := GrpCat.of (unop X ⟶ G)
+  obj X := ↧(unop X ⟶ G)
   map φ := GrpCat.ofHom ((yonedaMonObj G).map φ).hom
 
 variable (G) in
