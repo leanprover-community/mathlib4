@@ -545,10 +545,8 @@ theorem frontier_union_subset (s t : Set X) :
     frontier (s ∪ t) ⊆ frontier s ∩ closure tᶜ ∪ closure sᶜ ∩ frontier t := by
   simpa only [frontier_compl, ← compl_union] using frontier_inter_subset sᶜ tᶜ
 
-/-- The frontier of a finite union is contained in the union of the individual frontiers. -/
 theorem Finset.frontier_biUnion_subset {ι : Type*} (s : Finset ι) (U : ι → Set X) :
     frontier (⋃ i ∈ s, U i) ⊆ ⋃ i ∈ s, frontier (U i) := by
-  -- Add one set at a time and use the binary frontier inclusion.
   classical
   induction s using Finset.induction_on with
   | empty => simp
