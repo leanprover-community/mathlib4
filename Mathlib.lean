@@ -2138,6 +2138,7 @@ public import Mathlib.Analysis.Matrix.MeasurableSpace
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.Matrix.PosDef
+public import Mathlib.Analysis.Matrix.SimultaneousDiagonalization
 public import Mathlib.Analysis.Matrix.Spectrum
 public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.MeanInequalitiesPow
