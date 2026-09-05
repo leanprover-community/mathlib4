@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.RCLike.Basic
 
@@ -416,7 +416,7 @@ theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : 
     filter_upwards [Ico_mem_nhdsLT one_pos] with r ⟨hr₀, hr₁⟩
     apply setOfPred_gauge_lt_one_subset_self hc hs₀ ha
     rw [mem_ofPred_eq, gauge_smul_of_nonneg hr₀]
-    exact mul_lt_one_of_nonneg_of_lt_one_left hr₀ hr₁ h
+    exact (mul_le_of_le_one_right hr₀ h).trans_lt hr₁
   refine mem_closure_of_tendsto ?_ this
   exact Filter.Tendsto.mono_left (Continuous.tendsto' (by fun_prop) _ _ (one_smul _ _))
     inf_le_left

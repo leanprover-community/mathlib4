@@ -274,10 +274,10 @@ define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
 theorem IsReal.mult_eq_one {w : InfinitePlace K} (hw : IsReal w) : mult w = 1 :=
-  if_pos hw
+  ite_eq_left hw
 
 theorem IsComplex.mult_eq_two {w : InfinitePlace K} (hw : IsComplex w) : mult w = 2 :=
-  if_neg (not_isReal_iff_isComplex.mpr hw)
+  ite_eq_right (not_isReal_iff_isComplex.mpr hw)
 
 @[simp]
 theorem mult_isReal (w : {w : InfinitePlace K // IsReal w}) :
@@ -371,7 +371,7 @@ theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
   convert! (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
-  · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
+  · rw [norm_prod, ← Fintype.prod_equiv (RingHom.equivRatAlgHom K ℂ) (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
     have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :
@@ -384,7 +384,7 @@ theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
   suffices (1 : ℝ) ≤ |Algebra.norm ℚ (a : K)| by
     contrapose! this
     rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
-    refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
+    refine Finset.prod_lt_prod_of_nonempty₀ (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
     · exact pow_pos (pos_iff.mpr ((Subalgebra.coe_eq_zero _).not.mpr ha)) _
     · refine pow_lt_one₀ (apply_nonneg _ _) ?_ (by rw [mult]; split_ifs <;> norm_num)
       by_cases hz : z = w

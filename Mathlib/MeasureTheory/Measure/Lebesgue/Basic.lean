@@ -153,9 +153,6 @@ theorem volume_eball (a : ℝ) (r : ℝ≥0∞) : volume (Metric.eball a r) = 2 
     rw [Metric.eball_coe, volume_ball, two_mul, ← NNReal.coe_add,
       ENNReal.ofReal_coe_nnreal, ENNReal.coe_add, two_mul]
 
-@[deprecated (since := "2026-01-24")]
-alias volume_emetric_ball := volume_eball
-
 @[simp]
 theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBall a r) = 2 * r := by
   rcases eq_or_ne r ∞ with (rfl | hr)
@@ -163,9 +160,6 @@ theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBa
   · lift r to ℝ≥0 using hr
     rw [Metric.closedEBall_coe, volume_closedBall, two_mul, ← NNReal.coe_add,
       ENNReal.ofReal_coe_nnreal, ENNReal.coe_add, two_mul]
-
-@[deprecated (since := "2026-01-24")]
-alias volume_emetric_closedBall := volume_closedEBall
 
 instance nullSingletonClass_volume : NullSingletonClass (volume : Measure ℝ) :=
   ⟨fun _ => volume_singleton⟩
@@ -293,14 +287,14 @@ theorem volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
       volume.mono <|
         Subset.trans (subset_pi_eval_image univ s) <| pi_mono fun _ _ => subset_closure
     _ = ∏ i, volume (closure <| Function.eval i '' s) := volume_pi_pi _
-    _ ≤ ∏ i : ι, ediam (Function.eval i '' s) :=
-      Finset.prod_le_prod' fun _ _ => (volume_le_diam _).trans_eq (ediam_closure _)
+    _ ≤ ∏ i : ι, ediam (Function.eval i '' s) := by
+      gcongr; exact (volume_le_diam _).trans_eq (ediam_closure _)
 
 theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ ediam s ^ Fintype.card ι :=
   calc
     volume s ≤ ∏ i : ι, ediam (Function.eval i '' s) := volume_pi_le_prod_diam s
-    _ ≤ ∏ _i : ι, (1 : ℝ≥0) * ediam s :=
-      (Finset.prod_le_prod' fun i _ => (LipschitzWith.eval i).ediam_image_le s)
+    _ ≤ ∏ _i : ι, (1 : ℝ≥0) * ediam s := by
+      gcongr with i; exact (LipschitzWith.eval i).ediam_image_le s
     _ = ediam s ^ Fintype.card ι := by
       simp only [ENNReal.coe_one, one_mul, Finset.prod_const, Fintype.card]
 
@@ -423,6 +417,8 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
   · intro A B _ _ IHA IHB
     rw [toLin'_mul, det_mul, LinearMap.coe_comp, ← Measure.map_map, IHB, Measure.map_smul, IHA,
       smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, mul_comm, mul_inv]
+    · apply Continuous.aemeasurable
+      apply LinearMap.continuous_on_pi
     · apply Continuous.measurable
       apply LinearMap.continuous_on_pi
     · apply Continuous.measurable
@@ -541,10 +537,11 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
       (μ.restrict s).prod volume
         (regionBetween (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s) := by
     apply measure_congr
-    apply EventuallyEq.rfl.inter
-    exact
-      ((quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk).comp₂ _ EventuallyEq.rfl).inter
-        (EventuallyEq.rfl.comp₂ _ <| quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk)
+    apply Filter.Eventually.set_eq
+    filter_upwards [quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk,
+      quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk] with p hp hq
+    simp only [Function.comp_apply] at hp hq
+    simp only [regionBetween, mem_ofPred_eq, hp, hq]
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
   convert! h₂ using 1
