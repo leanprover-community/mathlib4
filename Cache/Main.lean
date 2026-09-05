@@ -285,11 +285,6 @@ def main (args : List String) : IO Unit := do
     IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] \
       [--repo=OWNER/REPO] [--scope=REF] [--uploader=NAME]"
     Process.exit 1
-  | "put-unpacked" :: _ | "commit" :: _ | "commit!" :: _ =>
-    IO.eprintln "This command is retired: `put` packs and uploads the files this \
-      build links (`put!` overwrites), and `put-staged` uploads a staging \
-      directory produced by `cache stage`."
-    Process.exit 1
   | _ => pure ()
 
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
