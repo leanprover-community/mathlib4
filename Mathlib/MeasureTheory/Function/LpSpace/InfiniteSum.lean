@@ -35,7 +35,9 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
     filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
   -- the result is straightforward in `L^∞`.
   rcases eq_top_or_lt_top p with rfl | h'p
-  · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ eLpNorm (f n) ∞ μ := ae_all_iff.2 (fun n ↦ ae_le_eLpNormEssSup)
+  · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ eLpNorm (f n) ∞ μ := ae_all_iff.2 fun n ↦ by
+      rw [eLpNorm_exponent_top (hf n)]
+      exact ae_le_eLpNormEssSup
     filter_upwards [this] with x hx
     apply lt_of_le_of_lt ?_ h'f.lt_top
     gcongr with i
@@ -55,7 +57,8 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
       apply ENNReal.mul_lt_top ?_ ?_
       · apply lt_of_le_of_lt ?_ h'f.lt_top
         gcongr
-        exact Measure.restrict_le_self
+        · exact (hf i).restrict
+        · exact Measure.restrict_le_self
       · simp only [MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, ENNReal.toReal_one,
           ne_eq, one_ne_zero, not_false_eq_true, div_self, one_div]
         apply ENNReal.rpow_lt_top_of_nonneg _ h's
@@ -65,7 +68,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
         simpa
     apply lt_of_le_of_lt ?_ this
     gcongr with i
-    rw [← eLpNorm_one_eq_lintegral_enorm]
+    rw [← eLpNorm_one_eq_lintegral_enorm (hf i).restrict]
     exact eLpNorm_le_eLpNorm_mul_rpow_measure_univ hp (hf i).restrict
   /- We wish now to reduce to finite measure sets to apply the above. The function `f n` in `L^p`
   has a sigma-finite support, that we denote by `s n`. -/

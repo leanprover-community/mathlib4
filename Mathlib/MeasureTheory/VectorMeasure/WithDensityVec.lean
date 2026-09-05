@@ -136,9 +136,17 @@ lemma variation_withDensity' [CompleteSpace G]
         ∧ MemLp (⇑g) 1 μ.variation :=
       (memLp_one_iff_integrable.2 hf).exists_simpleFunc_eLpNorm_sub_lt (by simp)
         (by simpa using ρpos.ne')
+    have hfg : AEStronglyMeasurable (f - ⇑g) μ.variation :=
+      aestronglyMeasurable_of_eLpNorm_ne_top (ne_of_lt (h'g.trans_le le_top))
     refine ⟨g, ?_, gmem⟩
-    grw [variation_transpose_le]
-    rw [eLpNorm_smul_measure_of_ne_top' (by simp)]
+    have hfgc : AEStronglyMeasurable (f - ⇑g) (‖B‖₊ • μ.variation) :=
+      by simpa only using hfg.smul_measure (R := NNReal) ‖B‖₊
+    have : AEStronglyMeasurable (f - ⇑g) (μ.transpose B).variation := by
+      apply AEStronglyMeasurable.mono_measure hfgc
+      exact variation_transpose_le μ B
+    refine (eLpNorm_mono_measure _ (variation_transpose_le μ B) this).trans ?_
+    rw [eLpNorm_smul_measure_of_ne_top' (p := 1) (μ := μ.variation) (by simp)
+      ‖B‖₊ (f - ⇑g) hfg]
     grw [h'g.le]
     simp only [ENNReal.toReal_one, inv_one, NNReal.rpow_one, ENNReal.smul_def, smul_eq_mul]
     exact_mod_cast hδ
@@ -158,7 +166,8 @@ lemma variation_withDensity' [CompleteSpace G]
       gcongr
       exact Measure.restrict_le_self
     _ ≤ ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation + δ := by
-      rw [eLpNorm_one_eq_lintegral_enorm] at hg
+      rw [eLpNorm_one_eq_lintegral_enorm
+        (aestronglyMeasurable_of_eLpNorm_ne_top (ne_of_lt (hg.trans_lt ENNReal.coe_lt_top)))] at hg
       gcongr
       exact hg
   -- the integral of `‖g‖ₑ` can be rewritten as a weighted sum of measures, as `g` is a simple
@@ -275,7 +284,10 @@ lemma variation_withDensity' [CompleteSpace G]
       apply Measure.restrict_le_self
     _ ≤ ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ + δ := by
       gcongr
-      simp_rw [enorm_sub_rev, ← eLpNorm_one_eq_lintegral_enorm]
+      simp_rw [enorm_sub_rev]
+      change ∫⁻ x, ‖(f - ⇑g) x‖ₑ ∂(μ.transpose B).variation ≤ ↑δ
+      rw [← eLpNorm_one_eq_lintegral_enorm
+        (aestronglyMeasurable_of_eLpNorm_ne_top (ne_of_lt (hg.trans_lt ENNReal.coe_lt_top)))]
       exact hg
   -- register that the sum of the enorms of the integrals of `f` over the pieces `Pᵢⱼ` of the
   -- partition is bounded by the variation of `μ.withDensity f B`, by definition of the variation.

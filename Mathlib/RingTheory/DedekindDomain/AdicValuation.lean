@@ -84,7 +84,7 @@ def intValuationDef (r : R) : ℤᵐ⁰ :=
   else
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
 
-theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
+theorem intValuationDef_ite_eq_left {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
   ite_eq_left hr
 
 @[simp]
@@ -98,7 +98,7 @@ theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
 
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
 theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
-  v.intValuationDef_if_pos rfl
+  v.intValuationDef_ite_eq_left rfl
 
 /-- The `v`-adic valuation of `1 : R` equals 1. -/
 theorem intValuation.map_one' : v.intValuationDef 1 = 1 := by

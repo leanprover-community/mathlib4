@@ -104,23 +104,39 @@ theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {
 
 -- TODO: eventually, deprecate and remove the nnnorm version
 theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (p : ℝ≥0∞) : eLpNorm f p μ ≤ c • eLpNorm g p μ := by
+    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (p : ℝ≥0∞) :
+    eLpNorm f p μ ≤ c • eLpNorm g p μ := by
+  by_cases! hg : ¬ AEStronglyMeasurable g μ
+  · rw [eLpNorm_of_not_aestronglyMeasurable hg]
+    rcases eq_or_ne c 0 with rfl | hc
+    · simp only [ENNReal.coe_zero, zero_mul, nonpos_iff_eq_zero, zero_smul] at h ⊢
+      exact eLpNorm_zero_of_ae_enorm_zero hf h
+    · simp [hc, ENNReal.smul_top c]
   by_cases h0 : p = 0
-  · simp [h0]
+  · simp [h0, hf, hg]
   by_cases h_top : p = ∞
   · rw [h_top]
-    exact eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' h
-  simp_rw [eLpNorm_eq_eLpNorm' h0 h_top]
+    simpa [eLpNorm_exponent_top hf, eLpNorm_exponent_top hg, ENNReal.smul_def] using
+      eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' h
+  rw [eLpNorm_eq_eLpNorm' h0 h_top hf, eLpNorm_eq_eLpNorm' h0 h_top hg]
   exact eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' h (ENNReal.toReal_pos h0 h_top)
 
 theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) (p : ℝ≥0∞) : eLpNorm f p μ ≤ c • eLpNorm g p μ := by
+    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) (p : ℝ≥0∞) :
+    eLpNorm f p μ ≤ c • eLpNorm g p μ := by
+  by_cases! hg : ¬ AEStronglyMeasurable g μ
+  · rw [eLpNorm_of_not_aestronglyMeasurable hg]
+    rcases eq_or_ne c 0 with rfl | hc
+    · simp only [zero_mul, nonpos_iff_eq_zero, nnnorm_eq_zero] at h
+      simp [eLpNorm_congr_ae h]
+    · simp [hc, ENNReal.smul_top c]
   by_cases h0 : p = 0
-  · simp [h0]
+  · simp [h0, hf, hg]
   by_cases h_top : p = ∞
   · rw [h_top]
-    exact eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul h
-  simp_rw [eLpNorm_eq_eLpNorm' h0 h_top]
+    simpa [eLpNorm_exponent_top hf, eLpNorm_exponent_top hg] using
+      eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul h
+  rw [eLpNorm_eq_eLpNorm' h0 h_top hf, eLpNorm_eq_eLpNorm' h0 h_top hg]
   exact eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul h (ENNReal.toReal_pos h0 h_top)
 
 -- TODO: add the whole family of lemmas?
@@ -146,9 +162,9 @@ theorem eLpNorm_eq_zero_and_zero_of_ae_le_mul_neg {f : α → F} {g : α → G} 
   simp [eLpNorm_congr_ae h.1, eLpNorm_congr_ae h.2]
 
 theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ}
-    (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) (p : ℝ≥0∞) :
+    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) (p : ℝ≥0∞) :
     eLpNorm f p μ ≤ ENNReal.ofReal c * eLpNorm g p μ :=
-  eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
+  eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hf
     (h.mono fun _x hx => hx.trans <| mul_le_mul_of_nonneg_right c.le_coe_toNNReal (norm_nonneg _)) _
 
 -- TODO: eventually, deprecate and remove the nnnorm version
@@ -156,53 +172,59 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : �
 
 This version assumes `c` is finite, but requires no measurability hypothesis on `g`. -/
 theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (p : ℝ≥0∞) :
+    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (p : ℝ≥0∞) :
     eLpNorm f p μ ≤ c * eLpNorm g p μ := by
-  apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' h
+  apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hf h
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] in
 /-- If `‖f x‖ₑ ≤ c * ‖g x‖ₑ`, then `eLpNorm f p μ ≤ c * eLpNorm g p μ`.
 
 This version allows `c = ∞`, but requires `g` to be a.e. strongly measurable. -/
 theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul'' {f : α → ε} {c : ℝ≥0∞} {g : α → ε'} (p : ℝ≥0∞)
-    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) :
+    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) :
     eLpNorm f p μ ≤ c * eLpNorm g p μ := by
+  by_cases! hg : ¬ AEStronglyMeasurable g μ
+  · rw [eLpNorm_of_not_aestronglyMeasurable hg]
+    rcases eq_or_ne c 0 with rfl | hc
+    · simp only [zero_mul, nonpos_iff_eq_zero] at h ⊢
+      exact eLpNorm_zero_of_ae_enorm_zero hf h
+    · rw [ENNReal.mul_top hc]
+      exact le_top
   by_cases h₀ : p = 0
-  · simp [h₀]
-  simp only [eLpNorm, h₀, ↓reduceIte, mul_ite]
+  · simp [h₀, hf, hg]
+  simp only [eLpNorm, hf, hg, h₀, ↓reduceIte]
   by_cases hp' : p = ⊤
   · simpa [hp'] using eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' h
   · simpa [hp'] using eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul hg h (ENNReal.toReal_pos h₀ hp')
 
 theorem MemLp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : MemLp f p μ :=
-  ⟨hf, (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hfg p).trans_lt <|
-      ENNReal.mul_lt_top ENNReal.coe_lt_top (by finiteness)⟩
+  (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hf hfg p).trans_lt <|
+    ENNReal.mul_lt_top ENNReal.coe_lt_top hg
 
 theorem MemLp.of_enorm_le_mul
     {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
-  ⟨hf, (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hfg p).trans_lt <|
-      ENNReal.mul_lt_top ENNReal.coe_lt_top (by finiteness)⟩
+  (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hf hfg p).trans_lt <|
+    ENNReal.mul_lt_top ENNReal.coe_lt_top hg
 
 theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : MemLp f p μ :=
-  ⟨hf,
-    (eLpNorm_le_mul_eLpNorm_of_ae_le_mul hfg p).trans_lt <|
-      ENNReal.mul_lt_top ENNReal.ofReal_lt_top (by finiteness)⟩
+  (eLpNorm_le_mul_eLpNorm_of_ae_le_mul hf hfg p).trans_lt <|
+    ENNReal.mul_lt_top ENNReal.ofReal_lt_top hg
 
 -- TODO: eventually, deprecate and remove the nnnorm version
 theorem MemLp.of_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
-  ⟨hf, (eLpNorm_le_mul_eLpNorm_of_ae_le_mul' hfg p).trans_lt <|
-      ENNReal.mul_lt_top ENNReal.coe_lt_top (by finiteness)⟩
+  (eLpNorm_le_mul_eLpNorm_of_ae_le_mul' hf hfg p).trans_lt <|
+    ENNReal.mul_lt_top ENNReal.coe_lt_top hg
 
 end Monotonicity
 
 theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0) {s : Set α}
-    (hs : MeasurableSet s) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖₊) :
+    (hs : MeasurableSet s) (hfm : AEStronglyMeasurable f μ) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖₊) :
     C • μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
-  rw [ENNReal.smul_def, smul_eq_mul, eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp',
+  rw [ENNReal.smul_def, smul_eq_mul, eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp' hfm,
     one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
     inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne', ENNReal.rpow_one, ← setLIntegral_const,
@@ -220,15 +242,17 @@ section Star
 variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
 
 @[simp]
-theorem eLpNorm_star {p : ℝ≥0∞} {f : α → R} : eLpNorm (star f) p μ = eLpNorm f p μ :=
-  eLpNorm_congr_norm_ae <| .of_forall <| by simp
+theorem eLpNorm_star {p : ℝ≥0∞} {f : α → R} (hf : AEStronglyMeasurable f μ) :
+    eLpNorm (star f) p μ = eLpNorm f p μ :=
+  eLpNorm_congr_norm_ae hf.star hf <| .of_forall <| by simp
 
 @[simp]
 theorem AEEqFun.eLpNorm_star {p : ℝ≥0∞} {f : α →ₘ[μ] R} : eLpNorm (star f : α →ₘ[μ] R) p μ =
-    eLpNorm f p μ := eLpNorm_congr_ae (coeFn_star f) |>.trans <| by simp
+    eLpNorm f p μ :=
+  (eLpNorm_congr_ae (coeFn_star f)).trans <| MeasureTheory.eLpNorm_star f.aestronglyMeasurable
 
 protected theorem MemLp.star {p : ℝ≥0∞} {f : α → R} (hf : MemLp f p μ) : MemLp (star f) p μ :=
-  ⟨hf.1.star, by simpa using hf.2⟩
+  by simpa [MemLp, eLpNorm_star hf.aestronglyMeasurable] using hf
 
 end Star
 
@@ -236,8 +260,10 @@ section RCLike
 
 variable {𝕜 : Type*} [RCLike 𝕜] {f : α → 𝕜}
 
-@[simp] lemma eLpNorm_conj (f : α → 𝕜) (p : ℝ≥0∞) (μ : Measure α) :
-    eLpNorm (conj f) p μ = eLpNorm f p μ := by simp [← eLpNorm_norm]
+@[simp] lemma eLpNorm_conj (f : α → 𝕜) (p : ℝ≥0∞) (μ : Measure α) (hf : AEStronglyMeasurable f μ) :
+    eLpNorm (conj f) p μ = eLpNorm f p μ :=
+  eLpNorm_congr_norm_ae (RCLike.continuous_conj.comp_aestronglyMeasurable hf) hf <|
+    .of_forall fun x ↦ RCLike.norm_conj (f x)
 
 theorem MemLp.re (hf : MemLp f p μ) : MemLp (fun x => RCLike.re (f x)) p μ := by
   have : ∀ x, ‖RCLike.re (f x)‖ ≤ 1 * ‖f x‖ := by
@@ -245,7 +271,7 @@ theorem MemLp.re (hf : MemLp f p μ) : MemLp (fun x => RCLike.re (f x)) p μ := 
     rw [one_mul]
     exact RCLike.norm_re_le_norm (f x)
   refine hf.of_le_mul ?_ (Eventually.of_forall this)
-  exact RCLike.continuous_re.comp_aestronglyMeasurable hf.1
+  exact RCLike.continuous_re.comp_aestronglyMeasurable hf.aestronglyMeasurable
 
 theorem MemLp.im (hf : MemLp f p μ) : MemLp (fun x => RCLike.im (f x)) p μ := by
   have : ∀ x, ‖RCLike.im (f x)‖ ≤ 1 * ‖f x‖ := by
@@ -253,7 +279,7 @@ theorem MemLp.im (hf : MemLp f p μ) : MemLp (fun x => RCLike.im (f x)) p μ := 
     rw [one_mul]
     exact RCLike.norm_im_le_norm (f x)
   refine hf.of_le_mul ?_ (Eventually.of_forall this)
-  exact RCLike.continuous_im.comp_aestronglyMeasurable hf.1
+  exact RCLike.continuous_im.comp_aestronglyMeasurable hf.aestronglyMeasurable
 
 end RCLike
 

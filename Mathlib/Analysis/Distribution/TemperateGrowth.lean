@@ -104,7 +104,7 @@ lemma HasTemperateGrowth.of_fderiv {f : E → F}
   · exact ⟨k, C, fun x ↦ by simpa using h x⟩
   · rcases h'f.2 m with ⟨k', C', h'⟩
     refine ⟨k', C', ?_⟩
-    simpa [iteratedFDeriv_succ_eq_comp_right] using h'
+    simpa only [← norm_iteratedFDeriv_fderiv] using h'
 
 @[fun_prop]
 lemma HasTemperateGrowth.zero :
@@ -565,13 +565,20 @@ lemma _root_.integral_pow_mul_le_of_le_of_pow_mul_le
 /-- For any `HasTemperateGrowth` measure and `p`, there exists an integer power `k` such that
 `(1 + ‖x‖) ^ (-k)` is in `L^p`. -/
 theorem HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
-    {μ : Measure E} (hμ : μ.HasTemperateGrowth) :
+    {μ : Measure E} (hμ : μ.HasTemperateGrowth)
+    (hmeas : ∀ k : ℕ, AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) μ) :
     ∃ k : ℕ, eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ < ⊤ := by
   cases p with
-  | top => exact ⟨0, eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)⟩
+  | top =>
+      refine ⟨0, ?_⟩
+      rw [eLpNorm_exponent_top (hmeas 0)]
+      exact eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)
   | coe p =>
     cases eq_or_ne (p : ℝ≥0∞) 0 with
-    | inl hp => exact ⟨0, by simp [hp]⟩
+    | inl hp =>
+        refine ⟨0, ?_⟩
+        rw [hp, eLpNorm_exponent_zero (hmeas 0)]
+        exact bot_lt_top
     | inr hp =>
       have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
       have hp_pos : 0 < (p : ℝ) := by simpa [zero_lt_iff] using hp
@@ -581,7 +588,7 @@ theorem HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
       use k
       suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
         rw [hasFiniteIntegral_iff_enorm] at this
-        rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top]
+        rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top (hmeas k)]
         simp only [ENNReal.coe_toReal]
         refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
         rw [← neg_mul, Real.rpow_mul (h_one_add x).le]

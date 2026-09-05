@@ -80,44 +80,71 @@ def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
 lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
 
-/-- `ℒp` seminorm, equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
-`essSup ‖f‖ μ` for `p = ∞`. -/
-def eLpNorm {_ : MeasurableSpace α}
+/-- `ℒp` seminorm, for almost everywhere strongly measurable functions,
+equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
+`essSup ‖f‖ μ` for `p = ∞`. For not almost everywhere strongly measurable functions,
+it is defined to be ∞. -/
+def eLpNorm [TopologicalSpace ε] {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
+  open scoped Classical in
+  if AEStronglyMeasurable f μ then
   if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
+  else ∞
 
 variable {μ : Measure α}
 
-theorem eLpNorm_eq_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} :
-    eLpNorm f p μ = eLpNorm' f (ENNReal.toReal p) μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top]
+theorem eLpNorm_of_not_aestronglyMeasurable [TopologicalSpace ε]
+    {f : α → ε} {p : ℝ≥0∞} (h : ¬ AEStronglyMeasurable f μ) :
+    eLpNorm f p μ = ∞ := by
+  simp [eLpNorm, h]
 
-lemma eLpNorm_nnreal_eq_eLpNorm' {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
+theorem aestronglyMeasurable_of_eLpNorm_ne_top [TopologicalSpace ε]
+    {f : α → ε} {p : ℝ≥0∞} (h : eLpNorm f p μ ≠ ∞) : AEStronglyMeasurable f μ := by
+  contrapose! h
+  exact eLpNorm_of_not_aestronglyMeasurable h
+
+theorem eLpNorm_eq_eLpNorm' [TopologicalSpace ε]
+    (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    eLpNorm f p μ = eLpNorm' f (ENNReal.toReal p) μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top, hf]
+
+lemma eLpNorm_nnreal_eq_eLpNorm' [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
+    (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = eLpNorm' f p μ :=
-  eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top
+  eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top hf
 
-lemma eLpNorm_eq_lintegral_rpow_enorm_toReal (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} :
+lemma eLpNorm_eq_lintegral_rpow_enorm_toReal [TopologicalSpace ε]
+    (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
-  rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top, eLpNorm'_eq_lintegral_enorm]
+  rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top hf, eLpNorm'_eq_lintegral_enorm]
 
-lemma eLpNorm_nnreal_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
+@[deprecated (since := "2026-02-09")]
+alias eLpNorm_eq_lintegral_rpow_enorm := eLpNorm_eq_lintegral_rpow_enorm_toReal
+
+lemma eLpNorm_nnreal_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
+    (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
-  eLpNorm_nnreal_eq_eLpNorm' hp
+  eLpNorm_nnreal_eq_eLpNorm' hp hf
 
-theorem eLpNorm_one_eq_lintegral_enorm {f : α → ε} : eLpNorm f 1 μ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal one_ne_zero ENNReal.coe_ne_top,
+theorem eLpNorm_one_eq_lintegral_enorm [TopologicalSpace ε] {f : α → ε}
+    (hf : AEStronglyMeasurable f μ) :
+    eLpNorm f 1 μ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal one_ne_zero ENNReal.coe_ne_top hf,
     ENNReal.toReal_one, one_div_one, ENNReal.rpow_one]
 
 @[simp]
-theorem eLpNorm_exponent_top {f : α → ε} : eLpNorm f ∞ μ = eLpNormEssSup f μ := by simp [eLpNorm]
+theorem eLpNorm_exponent_top [TopologicalSpace ε] {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    eLpNorm f ∞ μ = eLpNormEssSup f μ := by simp [eLpNorm, hf]
 
 /-- The property that `f : α → E` is a.e. strongly measurable and `(∫ ‖f a‖ ^ p ∂μ) ^ (1/p)`
 is finite if `p < ∞`, or `essSup ‖f‖ < ∞` if `p = ∞`. -/
 def MemLp [TopologicalSpace ε] (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : Prop :=
-  AEStronglyMeasurable f μ ∧ eLpNorm f p μ < ∞
+  eLpNorm f p μ < ∞
+
+lemma memLp_iff [TopologicalSpace ε] {f : α → ε} : MemLp f p μ ↔ eLpNorm f p μ < ∞ := Iff.rfl
 
 theorem MemLp.aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0∞} (h : MemLp f p μ) :
     AEStronglyMeasurable f μ :=
-  h.1
+  aestronglyMeasurable_of_eLpNorm_ne_top h.ne
 
 lemma MemLp.aemeasurable [MeasurableSpace ε] [TopologicalSpace ε]
     [TopologicalSpace.PseudoMetrizableSpace ε] [BorelSpace ε]
@@ -130,9 +157,10 @@ theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
   rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
   exact hq0_lt.ne'
 
-lemma eLpNorm_nnreal_pow_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
+lemma eLpNorm_nnreal_pow_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
+    (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ := by
-  simp [eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top,
+  simp [eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top hf,
     lintegral_rpow_enorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
 
 /-- Real-valued `ℒp` seminorm, equal to `0` for `p = 0`, to `(∫ ‖f a‖^p ∂μ) ^ p⁻¹` for `0 < p < ∞`
@@ -140,7 +168,7 @@ and to `essSup ‖f‖ μ` for `p = ∞`.
 
 This is well-defined only if `MemLp f p μ`. Otherwise, it equals `0`. -/
 noncomputable def lpNorm (f : α → E) (p : ℝ≥0∞) (μ : Measure α) : ℝ :=
-  open scoped Classical in if AEStronglyMeasurable f μ then (eLpNorm f p μ).toReal else 0
+  (eLpNorm f p μ).toReal
 
 end Lp
 

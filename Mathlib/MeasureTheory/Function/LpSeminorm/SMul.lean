@@ -40,12 +40,19 @@ theorem eLpNormEssSup_const_smul_le : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ 
   eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul
     (Eventually.of_forall fun _ => by simp [nnnorm_smul_le])
 
-theorem eLpNorm_const_smul_le : eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ :=
-  eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
-    (Eventually.of_forall fun _ => by simp [nnnorm_smul_le]) _
+theorem eLpNorm_const_smul_le :
+    eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (hf.const_smul c)
+      (Eventually.of_forall fun _ => by simp [nnnorm_smul_le]) _
+  rw [eLpNorm_of_not_aestronglyMeasurable hf]
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  · rw [ENNReal.mul_top (by simpa)]
+    exact le_top
 
 theorem MemLp.const_smul (hf : MemLp f p μ) (c : 𝕜) : MemLp (c • f) p μ :=
-  ⟨hf.1.const_smul c, eLpNorm_const_smul_le.trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
+  (eLpNorm_const_smul_le).trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf)
 
 theorem MemLp.const_mul {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
   hf.const_smul c
@@ -70,13 +77,15 @@ theorem eLpNormEssSup_const_smul_le' : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ
   eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul'
     (Eventually.of_forall fun _ => by simp [enorm_smul])
 
-theorem eLpNorm_const_smul_le' : eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ :=
-  eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul'
+theorem eLpNorm_const_smul_le' (hcf : AEStronglyMeasurable (c • f) μ) :
+    eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ :=
+  eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hcf
     (Eventually.of_forall fun _ => le_of_eq (enorm_smul ..)) _
 
 theorem MemLp.const_smul' [ContinuousConstSMul 𝕜 ε] (hf : MemLp f p μ) (c : 𝕜) :
     MemLp (c • f) p μ :=
-  ⟨hf.1.const_smul c, eLpNorm_const_smul_le'.trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
+  (eLpNorm_const_smul_le' (hf.aestronglyMeasurable.const_smul c)).trans_lt
+      (ENNReal.mul_lt_top ENNReal.coe_lt_top hf)
 
 theorem MemLp.const_mul' {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
   hf.const_smul c
@@ -107,17 +116,20 @@ theorem eLpNormEssSup_const_smul (c : 𝕜) (f : α → F) :
   simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, enorm_smul,
     ENNReal.essSup_const_mul]
 
-theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Measure α) :
+theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Measure α)
+    (hcf : AEStronglyMeasurable (c • f) μ) :
     eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp
   refine le_antisymm eLpNorm_const_smul_le <| ENNReal.mul_le_of_le_div' ?_
   simpa [enorm_inv, hc, ENNReal.div_eq_inv_mul]
-    using eLpNorm_const_smul_le (c := c⁻¹) (f := c • f)
+    using eLpNorm_const_smul_le
+      (c := c⁻¹) (f := c • f)
 
-lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F) :
+lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F)
+    (hf : AEStronglyMeasurable f μ) :
     eLpNorm (n • f) p μ = n * eLpNorm f p μ := by
-  simpa [Nat.cast_smul_eq_nsmul] using eLpNorm_const_smul (n : ℝ) f ..
+  simpa [Nat.cast_smul_eq_nsmul] using eLpNorm_const_smul (n : ℝ) f p μ (hf.const_smul (n : ℝ))
 
 end NormedSpace
 

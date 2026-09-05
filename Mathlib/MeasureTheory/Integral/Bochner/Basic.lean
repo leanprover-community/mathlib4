@@ -390,8 +390,10 @@ lemma tendsto_integral_of_L1' {ι} (f : α → G) (hfi : AEStronglyMeasurable f 
     (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 μ) l (𝓝 0)) :
     Tendsto (fun i ↦ ∫ x, F i x ∂μ) l (𝓝 (∫ x, f x ∂μ)) := by
   refine tendsto_integral_of_L1 f hfi hFi ?_
-  simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
-  exact hF
+  apply hF.congr'
+  filter_upwards [hFi] with i hi
+  rw [eLpNorm_one_eq_lintegral_enorm (hi.1.sub hfi)]
+  rfl
 
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
 lemma tendsto_setIntegral_of_L1 {ι} (f : α → G) (hfi : AEStronglyMeasurable f μ) {F : ι → α → G}
@@ -401,9 +403,19 @@ lemma tendsto_setIntegral_of_L1 {ι} (f : α → G) (hfi : AEStronglyMeasurable 
     Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
   refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
   · filter_upwards [hFi] with i hi using hi.restrict
-  · simp_rw [← eLpNorm_one_eq_lintegral_enorm] at hF ⊢
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le)
-      (fun _ ↦ eLpNorm_mono_measure _ Measure.restrict_le_self)
+  · have hF' : Tendsto (fun i ↦ eLpNorm (F i - f) 1 μ) l (𝓝 0) := hF.congr' <|
+      hFi.mono fun i hi ↦ by
+        change (∫⁻ x, ‖F i x - f x‖ₑ ∂μ) = eLpNorm (F i - f) 1 μ
+        rw [eLpNorm_one_eq_lintegral_enorm (hi.1.sub hfi)]
+        rfl
+    have h_restrict : Tendsto (fun i ↦ eLpNorm (F i - f) 1 (μ.restrict s)) l (𝓝 0) :=
+      tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hF'
+        (Eventually.of_forall fun _ ↦ zero_le) <| hFi.mono fun i hi ↦
+          eLpNorm_mono_measure _ Measure.restrict_le_self (hi.1.sub hfi).restrict
+    apply h_restrict.congr'
+    filter_upwards [hFi] with i hi
+    rw [eLpNorm_one_eq_lintegral_enorm (hi.1.sub hfi).restrict]
+    rfl
 
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
 lemma tendsto_setIntegral_of_L1' {ι} (f : α → G) (hfi : AEStronglyMeasurable f μ) {F : ι → α → G}
@@ -411,8 +423,10 @@ lemma tendsto_setIntegral_of_L1' {ι} (f : α → G) (hfi : AEStronglyMeasurable
     (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 μ) l (𝓝 0)) (s : Set α) :
     Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
   refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
-  simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
-  exact hF
+  apply hF.congr'
+  filter_upwards [hFi] with i hi
+  rw [eLpNorm_one_eq_lintegral_enorm (hi.1.sub hfi)]
+  rfl
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
@@ -905,7 +919,7 @@ variable {H : Type*} [NormedAddCommGroup H]
 
 theorem L1.norm_eq_integral_norm (f : α →₁[μ] H) : ‖f‖ = ∫ a, ‖f a‖ ∂μ := by
   simp only [eLpNorm, eLpNorm'_eq_lintegral_enorm, ENNReal.toReal_one, ENNReal.rpow_one,
-    Lp.norm_def, ite_false, ENNReal.one_ne_top, one_ne_zero, _root_.div_one]
+    Lp.norm_def, Lp.aestronglyMeasurable f, ite_eq_left, ENNReal.one_ne_top, one_ne_zero, _root_.div_one]
   rw [integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall (by simp [norm_nonneg]))
       (Lp.aestronglyMeasurable f).norm]
   simp
@@ -924,12 +938,13 @@ theorem MemLp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1
     eLpNorm f p μ = ENNReal.ofReal ((∫ a, ‖f a‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹) := by
   have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^ p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖ₑ ^ p.toReal ∂μ := by
     simp_rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm]
-  simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal hp1 hp2, one_div]
+  simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal hp1 hp2 hf.aestronglyMeasurable,
+    one_div]
   rw [integral_eq_lintegral_of_nonneg_ae]; rotate_left
   · exact ae_of_all _ fun x => by positivity
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
-  exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf.2).ne
+  exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf).ne
 
 end NormedAddCommGroup
 
@@ -1152,11 +1167,11 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
     integral_eq_lintegral_of_nonneg_ae]
   rotate_left
   · exact Eventually.of_forall fun x ↦ by positivity
-  · exact (hg.1.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
+  · exact (hg.aestronglyMeasurable.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
   · exact Eventually.of_forall fun x ↦ by positivity
-  · exact (hf.1.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
+  · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
   · exact Eventually.of_forall fun x ↦ by positivity
-  · exact hf.1.norm.mul hg.1.norm
+  · exact hf.aestronglyMeasurable.norm.mul hg.aestronglyMeasurable.norm
   rw [ENNReal.toReal_rpow, ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
   -- replace norms by nnnorm
   have h_left : ∫⁻ a, ENNReal.ofReal (‖f a‖ * ‖g a‖) ∂μ =
@@ -1173,19 +1188,20 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
   refine ENNReal.toReal_mono ?_ ?_
   · refine ENNReal.mul_ne_top ?_ ?_
     · convert! hf.eLpNorm_ne_top
-      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal]
+      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal _ _ hf.aestronglyMeasurable]
       · rw [ENNReal.toReal_ofReal hpq.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.pos
       · finiteness
     · convert! hg.eLpNorm_ne_top
-      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal]
+      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal _ _ hg.aestronglyMeasurable]
       · rw [ENNReal.toReal_ofReal hpq.symm.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.symm.pos
       · finiteness
-  · exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf.1.nnnorm.aemeasurable.coe_nnreal_ennreal
-      hg.1.nnnorm.aemeasurable.coe_nnreal_ennreal
+  · exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq
+      hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_ennreal
+      hg.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_ennreal
 
 /-- Hölder's inequality for functions `α → ℝ`. The integral of the product of two nonnegative
 functions is bounded by the product of their `ℒp` and `ℒq` seminorms when `p` and `q` are conjugate

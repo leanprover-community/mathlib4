@@ -44,8 +44,8 @@ lemma lpNorm_of_not_memLp (hf' : ¬ MemLp f p μ) : lpNorm f p μ = 0 := by simp
 lemma lpNorm_eq_integral_norm_rpow_toReal (hp₀ : p ≠ 0) (hp : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) :
     lpNorm f p μ = (∫ x, ‖f x‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹ := by
-  rw [← toReal_eLpNorm hf, eLpNorm_eq_lintegral_rpow_enorm_toReal hp₀ hp, ← ENNReal.toReal_rpow,
-    ← integral_toReal]
+  rw [← toReal_eLpNorm hf, eLpNorm_eq_lintegral_rpow_enorm_toReal hp₀ hp hf,
+    ← ENNReal.toReal_rpow, ← integral_toReal]
   · simp [← ENNReal.toReal_rpow]
   · simp_rw [← ofReal_norm]
     borelize E
@@ -60,16 +60,22 @@ lemma lpNorm_one_eq_integral_norm (hf : AEStronglyMeasurable f μ) :
     lpNorm f 1 μ = ∫ x, ‖f x‖ ∂μ := by
   simp [lpNorm_eq_integral_norm_rpow_toReal one_ne_zero ENNReal.coe_ne_top hf]
 
-@[simp] lemma lpNorm_exponent_zero (f : α → E) : lpNorm f 0 μ = 0 := by simp [lpNorm]
+@[simp] lemma lpNorm_exponent_zero (f : α → E) : lpNorm f 0 μ = 0 := by
+  by_cases hf : AEStronglyMeasurable f μ <;> simp [lpNorm, hf, eLpNorm_exponent_zero]
 @[simp] lemma lpNorm_measure_zero (f : α → E) : lpNorm f p (0 : Measure α) = 0 := by simp [lpNorm]
 
 lemma ae_le_lpNorm_exponent_top (hf : MemLp f ∞ μ) : ∀ᵐ x ∂μ, ‖f x‖ ≤ lpNorm f ∞ μ := by
-  simpa only [← toReal_eLpNorm hf.aestronglyMeasurable, ← ENNReal.ofReal_le_iff_le_toReal hf.2.ne,
-    ofReal_norm] using! ae_le_eLpNormEssSup
+  have htop : eLpNormEssSup f μ ≠ ∞ := by
+    simpa only [eLpNorm_exponent_top hf.aestronglyMeasurable] using hf.eLpNorm_ne_top
+  filter_upwards [ae_le_eLpNormEssSup (f := f) (μ := μ)] with x hx
+  rw [← toReal_enorm, ← toReal_eLpNorm hf.aestronglyMeasurable,
+    eLpNorm_exponent_top hf.aestronglyMeasurable]
+  exact (ENNReal.toReal_le_toReal enorm_ne_top htop).2 hx
 
 lemma lpNorm_exponent_top_eq_essSup (hf : MemLp f ∞ μ) : lpNorm f ∞ μ = essSup (‖f ·‖) μ := by
-  simp only [← toReal_eLpNorm hf.aestronglyMeasurable, eLpNorm_exponent_top, eLpNormEssSup]
-  refine ENNReal.toReal_essSup (by simp) ⟨lpNorm f ∞ μ, ?_⟩
+  simp only [← toReal_eLpNorm hf.aestronglyMeasurable,
+    eLpNorm_exponent_top hf.aestronglyMeasurable, eLpNormEssSup]
+  refine ENNReal.toReal_essSup (.of_forall fun _ ↦ enorm_ne_top) ⟨lpNorm f ∞ μ, ?_⟩
   simpa [-toReal_enorm, lpNorm] using! ae_le_lpNorm_exponent_top hf
 
 @[simp]
@@ -82,7 +88,7 @@ lemma lpNorm_fun_zero (p : ℝ≥0∞) (μ : Measure α) : lpNorm (fun _ ↦ 0 :
 @[simp]
 lemma lpNorm_eq_zero (hf : MemLp f p μ) (hp : p ≠ 0) : lpNorm f p μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp [← toReal_eLpNorm hf.aestronglyMeasurable, ENNReal.toReal_eq_zero_iff, hf.eLpNorm_ne_top,
-    eLpNorm_eq_zero_iff hf.1 hp]
+    eLpNorm_eq_zero_iff hp]
 
 @[simp] lemma lpNorm_of_isEmpty [IsEmpty α] (f : α → E) (p : ℝ≥0∞) : lpNorm f p μ = 0 := by
   simp [Subsingleton.elim f 0]
@@ -102,7 +108,8 @@ lemma lpNorm_sub_comm (f g : α → E) (p : ℝ≥0∞) (μ : Measure α) :
 
 @[simp] lemma lpNorm_norm (hf : AEStronglyMeasurable f μ) (p : ℝ≥0∞) :
     lpNorm (fun x ↦ ‖f x‖) p μ = lpNorm f p μ := by
-  rw [← toReal_eLpNorm hf, ← toReal_eLpNorm (by fun_prop)]; simp
+  rw [← toReal_eLpNorm hf, ← toReal_eLpNorm hf.norm]
+  exact congrArg ENNReal.toReal (eLpNorm_norm f hf)
 
 @[simp] lemma lpNorm_abs {f : α → ℝ} (hf : AEStronglyMeasurable f μ) (p : ℝ≥0∞) :
     lpNorm (|f|) p μ = lpNorm f p μ := lpNorm_norm hf p
@@ -178,7 +185,7 @@ lemma lpNorm_add_le (hf : MemLp f p μ) (hp : 1 ≤ p) :
       ← ENNReal.toReal_add hf.eLpNorm_ne_top hg.eLpNorm_ne_top]
     gcongr
     exacts [ENNReal.add_ne_top.2 ⟨hf.eLpNorm_ne_top, hg.eLpNorm_ne_top⟩,
-      eLpNorm_add_le hf.aestronglyMeasurable hg.aestronglyMeasurable hp]
+      eLpNorm_add_le (hf.add hg).aestronglyMeasurable hp]
   · rw [lpNorm_of_not_memLp fun hfg ↦ hg <| by simpa using hfg.sub hf, lpNorm_of_not_memLp hg]
     simp
 
@@ -209,10 +216,10 @@ lemma lpNorm_sub_le_lpNorm_sub_add_lpNorm_sub (hf : MemLp f p μ) (hg : MemLp g 
 lemma lpNorm_sum_le {ι : Type*} {s : Finset ι} {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ)
     (hp : 1 ≤ p) : lpNorm (∑ i ∈ s, f i) p μ ≤ ∑ i ∈ s, lpNorm (f i) p μ := by
   rw [← Finset.sum_congr rfl fun i hi ↦ toReal_eLpNorm (hf i hi).aestronglyMeasurable,
-    ← ENNReal.toReal_sum fun i hi ↦ (hf i hi).2.ne,
+    ← ENNReal.toReal_sum fun i hi ↦ (hf i hi).eLpNorm_ne_top,
     ← toReal_eLpNorm (Finset.aestronglyMeasurable_sum _ fun i hi ↦ (hf i hi).aestronglyMeasurable)]
-  grw [eLpNorm_sum_le (fun i hi ↦ (hf _ hi).aestronglyMeasurable) hp]
-  simpa using fun i hi ↦ (hf i hi).2.ne
+  grw [eLpNorm_sum_le hp]
+  simpa using fun i hi ↦ (hf i hi).eLpNorm_ne_top
 
 -- TODO: Golf using `eLpNorm_expect_le` once it exists
 lemma lpNorm_expect_le [Module ℚ≥0 E] [NormedSpace ℝ E] {ι : Type*} {s : Finset ι}
@@ -228,7 +235,7 @@ lemma lpNorm_mono_real {g : α → ℝ} (hg : MemLp g p μ) (h : ∀ x, ‖f x�
     lpNorm f p μ ≤ lpNorm g p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · rw [← toReal_eLpNorm hf, ← toReal_eLpNorm hg.aestronglyMeasurable]
-    exact ENNReal.toNNReal_mono (hg.eLpNorm_ne_top) (eLpNorm_mono_real h)
+    exact ENNReal.toNNReal_mono (hg.eLpNorm_ne_top) (eLpNorm_mono_real hf h)
   · simp [hf]
 
 lemma lpNorm_smul_measure_of_ne_zero {f : α → E} {c : ℝ≥0} (hc : c ≠ 0) :

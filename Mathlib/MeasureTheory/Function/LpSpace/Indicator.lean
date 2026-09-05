@@ -37,9 +37,13 @@ namespace MeasureTheory
 for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to avoid later
 management of `ℝ≥0∞`-arithmetic. -/
 theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _ => c) p μ ≤ ε := by
+    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η →
+      NullMeasurableSet s μ →
+      eLpNorm (s.indicator fun _ => c) p μ ≤ ε := by
   rcases eq_or_ne p 0 with (rfl | h'p)
-  · exact ⟨1, zero_lt_one, fun s _ => by simp⟩
+  · exact ⟨1, zero_lt_one, fun s _ hs => by
+      have : AEStronglyMeasurable (s.indicator fun _ => c) μ := by fun_prop
+      simp [eLpNorm_exponent_zero this]⟩
   have hp₀ : 0 < p := bot_lt_iff_ne_bot.2 h'p
   have hp₀' : 0 ≤ 1 / p.toReal := div_nonneg zero_le_one ENNReal.toReal_nonneg
   have hp₀'' : 0 < p.toReal := ENNReal.toReal_pos hp₀.ne' hp
@@ -55,8 +59,9 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
     obtain ⟨η, hη, hηδ⟩ := exists_between hδ
     refine ⟨η, hη, ?_⟩
     simpa only [← ENNReal.coe_rpow_of_nonneg _ hp₀', enorm, ← ENNReal.coe_mul] using hδε' hηδ
-  refine ⟨η, hη_pos, fun s hs => ?_⟩
-  grw [eLpNorm_indicator_const_le, ← hη_le, hs]
+  refine ⟨η, hη_pos, fun s hs hsc => ?_⟩
+  grw [eLpNorm_indicator_const_le c p, ← hη_le, hs]
+  exact hsc
 
 section Topology
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
@@ -74,8 +79,10 @@ This is the `ENNReal`-valued version of `HasCompactSupport.memLp_of_bound`. -/
 theorem _root_.HasCompactSupport.memLp_of_enorm_bound {f : X → E} (hf : HasCompactSupport f)
     (h2f : AEStronglyMeasurable f μ) {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) (hC : C ≠ ⊤) :
       MemLp f p μ := by
-  have : MemLp f ∞ μ :=
-    ⟨h2f, eLpNormEssSup_le_of_ae_enorm_bound hfC |>.trans_lt hC.lt_top⟩
+  have : MemLp f ∞ μ := by
+    unfold MemLp
+    rw [eLpNorm_exponent_top h2f]
+    exact eLpNormEssSup_le_of_ae_enorm_bound hfC |>.trans_lt hC.lt_top
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_notMem_tsupport) hf.measure_ne_top le_top
 
@@ -124,8 +131,8 @@ theorem indicatorConstLp_coeFn_notMem : ∀ᵐ x : α ∂μ, x ∉ s → indicat
 theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
-    eLpNorm_indicator_const hs hp_ne_zero hp_ne_top, ENNReal.toReal_mul, measureReal_def,
-    ENNReal.toReal_rpow, toReal_enorm]
+    eLpNorm_indicator_const hs.nullMeasurableSet hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
+      measureReal_def, ENNReal.toReal_rpow, toReal_enorm]
 
 theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     ‖indicatorConstLp ∞ hs hμs c‖ = ‖c‖ := by
@@ -144,7 +151,7 @@ theorem norm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ ≤ ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [indicatorConstLp, Lp.norm_toLp]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
-  refine (eLpNorm_indicator_const_le _ _).trans_eq ?_
+  refine (eLpNorm_indicator_const_le c p hs.nullMeasurableSet).trans_eq ?_
   rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm, measureReal_def,
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   finiteness
@@ -162,7 +169,10 @@ theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμ
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
-  rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator, Lp.enorm_toLp]
+  rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ _ _
+    ((aestronglyMeasurable_const.indicator hs).sub
+      (aestronglyMeasurable_const.indicator ht))
+    (aestronglyMeasurable_const.indicator (hs.symmDiff ht)), Lp.enorm_toLp]
 
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
@@ -249,12 +259,14 @@ lemma indicatorConstLp_univ :
 theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   have := NeZero.ne μ
-  rw [← MemLp.toLp_const, Lp.norm_toLp, eLpNorm_const] <;> try assumption
+  rw [← MemLp.toLp_const, Lp.norm_toLp,
+    eLpNorm_const _ hp_zero this]
   rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const' (hp_zero : p ≠ 0) (hp_top : p ≠ ∞) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
-  rw [← MemLp.toLp_const, Lp.norm_toLp, eLpNorm_const'] <;> try assumption
+  rw [← MemLp.toLp_const, Lp.norm_toLp,
+    eLpNorm_const' _ hp_zero hp_top]
   rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by

@@ -1269,12 +1269,14 @@ variable (𝕜 F) in
 The maximum index `k` and the constant `C` depend on `p` and `μ`.
 -/
 theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
-    [hμ : μ.HasTemperateGrowth] :
+    [hμ : μ.HasTemperateGrowth] [SecondCountableTopologyEither E F] :
     ∃ (k : ℕ) (C : ℝ≥0), ∀ (f : 𝓢(E, F)), eLpNorm f p μ ≤
       C * ENNReal.ofReal ((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F) f) := by
   -- Apply Hölder's inequality `‖f‖_p ≤ ‖f₁‖_p * ‖f₂‖_∞` to obtain the `L^p` norm of `f = f₁ • f₂`
   -- using `f₁ = (1 + ‖x‖) ^ (-k)` and `f₂ = (1 + ‖x‖) ^ k • f x`.
-  rcases hμ.exists_eLpNorm_lt_top p with ⟨k, hk⟩
+  rcases hμ.exists_eLpNorm_lt_top p (fun k ↦
+    (Continuous.rpow_const (by fun_prop) (by grind [norm_nonneg])).aestronglyMeasurable) with
+        ⟨k, hk⟩
   refine ⟨k, (eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ).toNNReal * 2 ^ k, fun f ↦ ?_⟩
   have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
   calc eLpNorm (⇑f) p μ
@@ -1282,12 +1284,18 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     refine congrArg (eLpNorm · p μ) (funext fun x ↦ ?_)
     simp [(h_one_add x).ne']
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
-    refine eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ ?_
-    refine Continuous.aestronglyMeasurable ?_
-    exact .rpow_const (by fun_prop) fun x ↦ .inl (h_one_add x).ne'
+    have hpow : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) μ :=
+      ((continuous_const.add continuous_norm).rpow_const
+        fun x ↦ .inl (h_one_add x).ne').aestronglyMeasurable
+    have hf' : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ k • f x) μ :=
+      ((continuous_const.add continuous_norm).pow k).aestronglyMeasurable.smul
+        f.continuous.aestronglyMeasurable
+    exact eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ hpow hf'
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ *
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
     gcongr
+    have hf' : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ k • f x) μ := by
+      fun_prop
     refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
     rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
     simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using!
@@ -1299,7 +1307,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
 
 /-- The `L^p` norm of a Schwartz function is finite. -/
 theorem eLpNorm_lt_top (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
-    [hμ : μ.HasTemperateGrowth] : eLpNorm f p μ < ⊤ := by
+    [hμ : μ.HasTemperateGrowth] [SecondCountableTopologyEither E F] : eLpNorm f p μ < ⊤ := by
   rcases eLpNorm_le_seminorm ℝ F p μ with ⟨k, C, hC⟩
   exact lt_of_le_of_lt (hC f) (ENNReal.mul_lt_top ENNReal.coe_lt_top ENNReal.ofReal_lt_top)
 
@@ -1314,7 +1322,7 @@ theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f �
 /-- Schwartz functions are in `L^p` for any `p`. -/
 theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : MemLp f p μ :=
-  ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
+  f.eLpNorm_lt_top p μ
 
 /-- Map a Schwartz function to an `Lp` function for any `p`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
@@ -1345,6 +1353,7 @@ theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperat
     ‖f.toLp ⊤ μ‖ ≤ SchwartzMap.seminorm ℝ 0 0 f := by
   rw [norm_toLp, ← ENNReal.ofReal_le_ofReal_iff (by positivity),
     ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
+  rw [eLpNorm_exponent_top f.continuous.aestronglyMeasurable]
   exact eLpNormEssSup_le_of_ae_bound <| .of_forall <| norm_le_seminorm ℝ f
 
 theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]

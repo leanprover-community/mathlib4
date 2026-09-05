@@ -127,7 +127,7 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
     rw [covarianceBilin_apply h_Lp,
       covarianceBilin_apply h, integral_map (by fun_prop) (by fun_prop)]
     congr with z
-    rw [integral_map (by fun_prop) h_Lp.1]
+    rw [integral_map (by fun_prop) h_Lp.aestronglyMeasurable]
     simp only [id_eq]
     rw [integral_add (integrable_const _)]
     · simp

@@ -440,10 +440,10 @@ theorem eLpNorm_le_eLpNorm_fderiv_one {u : E → F} (hu : ContDiff ℝ 1 u) (h2u
     {p : ℝ≥0} (hp : NNReal.HolderConjugate (finrank ℝ E) p) :
     eLpNorm u p μ ≤ eLpNormLESNormFDerivOneConst μ p * eLpNorm (fderiv ℝ u) 1 μ := by
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
-  rw [eLpNorm_one_eq_lintegral_enorm,
+  rw [eLpNorm_one_eq_lintegral_enorm (hu.continuous_fderiv one_ne_zero).aestronglyMeasurable,
     ← ENNReal.rpow_le_rpow_iff h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
     ← ENNReal.coe_rpow_of_nonneg _ h0p.le, eLpNormLESNormFDerivOneConst, ← NNReal.rpow_mul,
-    eLpNorm_nnreal_pow_eq_lintegral hp.symm.pos.ne',
+    eLpNorm_nnreal_pow_eq_lintegral hp.symm.pos.ne' hu.continuous.aestronglyMeasurable,
     inv_mul_cancel₀ h0p.ne', NNReal.rpow_one]
   exact lintegral_pow_le_pow_lintegral_fderiv μ hu h2u hp.coe
 
@@ -473,7 +473,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   The proof requires that `x ↦ |x|^p` is smooth in the codomain, so we require that it is a
   Hilbert space. -/
   by_cases hp'0 : p' = 0
-  · simp [hp'0]
+  · simp [hp'0, eLpNorm_exponent_zero hu.continuous.aestronglyMeasurable]
   set n := finrank ℝ E
   let n' := NNReal.conjExponent n
   have h2p : (p : ℝ) < n := by
@@ -522,11 +522,12 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     simp [field, this]
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
   by_cases h3u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ = 0
-  · rw [eLpNorm_nnreal_eq_lintegral hp'0, h3u, ENNReal.zero_rpow_of_pos] <;> positivity
+  · rw [eLpNorm_nnreal_eq_lintegral hp'0 hu.continuous.aestronglyMeasurable, h3u,
+      ENNReal.zero_rpow_of_pos] <;> positivity
   have h4u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ ≠ ∞ := by
     refine lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
       ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp'0) ?_ |>.ne
-    rw [← eLpNorm_nnreal_eq_eLpNorm' hp'0]
+    rw [← eLpNorm_nnreal_eq_eLpNorm' hp'0 hu.continuous.aestronglyMeasurable]
     exact hu.continuous.memLp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
@@ -538,10 +539,11 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   set C := eLpNormLESNormFDerivOneConst μ n'
   have :=
   calc (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = eLpNorm v n' μ := by
-        rw [← h2γ, eLpNorm_nnreal_eq_lintegral hn.symm.pos.ne']
+        rw [← h2γ, eLpNorm_nnreal_eq_lintegral hn.symm.pos.ne' hv.continuous.aestronglyMeasurable]
         simp (discharger := positivity) [v, Real.enorm_rpow_of_nonneg, ENNReal.rpow_mul]
     _ ≤ C * eLpNorm (fderiv ℝ v) 1 μ := eLpNorm_le_eLpNorm_fderiv_one μ hv h2v hn
-    _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by rw [eLpNorm_one_eq_lintegral_enorm]
+    _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by
+      rw [eLpNorm_one_eq_lintegral_enorm (hv.continuous_fderiv one_ne_zero).aestronglyMeasurable]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by
       rw [mul_assoc, ← lintegral_const_mul γ]
       · gcongr
@@ -563,12 +565,14 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
       (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) := by ring
   calc
     eLpNorm u p' μ
-      = (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (p' : ℝ)) := eLpNorm_nnreal_eq_lintegral hp'0
+      = (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (p' : ℝ)) :=
+        eLpNorm_nnreal_eq_lintegral hp'0 hu.continuous.aestronglyMeasurable
     _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) := by
       rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = eLpNormLESNormFDerivOfEqInnerConst μ p * eLpNorm (fderiv ℝ u) (↑p) μ := by
       suffices (C : ℝ) * γ = eLpNormLESNormFDerivOfEqInnerConst μ p by
-        rw [eLpNorm_nnreal_eq_lintegral h0p]
+        rw [eLpNorm_nnreal_eq_lintegral h0p
+          (hu.continuous_fderiv one_ne_zero).aestronglyMeasurable]
         congr
         norm_cast at this ⊢
       simp_rw [eLpNormLESNormFDerivOfEqInnerConst, γ]
@@ -622,11 +626,14 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
       = eLpNorm (e.symm ∘ v) p' μ := by simp_rw [v, Function.comp_def, e.symm_apply_apply]
     _ ≤ C₁ • eLpNorm v p' μ := by
       apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
+      · exact (e.symm.continuous.comp hv.continuous).aestronglyMeasurable
       exact Eventually.of_forall (fun x ↦ (e.symm : F' →L[ℝ] F).le_opNNNorm _)
     _ = C₁ * eLpNorm v p' μ := rfl
     _ ≤ C₁ * C * eLpNorm (fderiv ℝ v) p μ := by rw [mul_assoc]; gcongr
     _ ≤ C₁ * C * (C₂ * eLpNorm (fderiv ℝ u) p μ) := by
-      gcongr; exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (Eventually.of_forall h4v) p
+      gcongr
+      exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
+        (hv.continuous_fderiv one_ne_zero).aestronglyMeasurable (Eventually.of_forall h4v) p
     _ = SNormLESNormFDerivOfEqConst F μ p * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [C₂, C₁, C, e, SNormLESNormFDerivOfEqConst]
       push_cast
@@ -657,7 +664,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     (hs : Bornology.IsBounded s) :
     eLpNorm u q μ ≤ eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
   by_cases hq0 : q = 0
-  · simp [hq0]
+  · simp [hq0, eLpNorm_exponent_zero hu.continuous.aestronglyMeasurable]
   let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
   have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
     rw [inv_inv, NNReal.coe_sub]
@@ -675,7 +682,8 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
   let C := SNormLESNormFDerivOfEqConst F μ p
   calc eLpNorm u q μ
-      = eLpNorm u q (μ.restrict s) := by rw [eLpNorm_restrict_eq_of_support_subset h2u]
+      = eLpNorm u q (μ.restrict s) := by
+        rw [eLpNorm_restrict_eq_of_support_subset hu.continuous.aestronglyMeasurable h2u]
     _ ≤ eLpNorm u p' (μ.restrict s) * t := by
         convert! eLpNorm_le_eLpNorm_mul_rpow_measure_univ this hu.continuous.aestronglyMeasurable
         rw [ENNReal.coe_rpow_of_nonneg]
@@ -684,7 +692,8 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
           norm_cast
           rw [hp']
           simpa using hpq
-    _ = eLpNorm u p' μ * t := by rw [eLpNorm_restrict_eq_of_support_subset h2u]
+    _ = eLpNorm u p' μ * t := by
+      rw [eLpNorm_restrict_eq_of_support_subset hu.continuous.aestronglyMeasurable h2u]
     _ ≤ (C * eLpNorm (fderiv ℝ u) p μ) * t := by
         have h2u' : HasCompactSupport u := by
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure
