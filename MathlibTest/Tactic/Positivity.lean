@@ -5,6 +5,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.Basic.ENNReal.Basic
+import Mathlib.Geometry.Euclidean.Volume.Basic
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Misc
 import Mathlib.NumberTheory.Chebyshev
@@ -667,3 +668,12 @@ example {α : Type*} [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 := by 
 
 example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ b - a := by positivity
 example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ a - b := by positivity
+
+/- ## Geometry -/
+
+variable {V P : Type*}
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+
+example {n : ℕ} [NeZero n] (s : Affine.Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
+  positivity
+example {n : ℕ} (s : Affine.Simplex ℝ P n) : 0 < s.volume := by positivity

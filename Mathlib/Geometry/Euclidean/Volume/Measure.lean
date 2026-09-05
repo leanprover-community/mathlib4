@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.Hausdorff
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+
+import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
@@ -344,3 +346,42 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
   have hx (x : ℝ) : x • v +ᵥ p = g x := by rfl
   simp_rw [(AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx,
     hm, lintegral_smul_measure, hg.lintegral_map, smul_eq_mul, hrank', AffineSubspace.direction_mk']
+
+omit [FiniteDimensional ℝ V] in
+/-- An alternative version of `EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral` that allows
+the ambient space to have a dimension larger than the measure dimension. It still requires the set
+to be contained in a subspace of the measure dimension. -/
+theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral' (p : P) {v : V} (hv : v ≠ 0)
+    {t : Set P} (ht : MeasurableSet t) {s : AffineSubspace ℝ P} (hvs : v ∈ s.direction)
+    (hts : t ⊆ s) [FiniteDimensional ℝ s.direction] :
+    μHE[finrank ℝ s.direction] t = ‖v‖ₑ * ∫⁻ (x : ℝ),
+      μHE[finrank ℝ s.direction - 1] (t ∩ AffineSubspace.mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) := by
+  open AffineSubspace in
+  by_cases! hs : s = ⊥
+  · simp_all
+  have : Nonempty s := (s.nonempty_iff_ne_bot.mpr hs).to_subtype
+  let v' : s.direction := ⟨v, hvs⟩
+  convert euclideanHausdorffMeasure_eq_lintegral (orthogonalProjection s p)
+    (show v' ≠ 0 by simpa [v'] using hv) (ht.preimage s.subtypeA.continuous.measurable) with x
+  · rw [← s.euclideanHausdorffMeasure_coe_image, coe_subtypeA,
+      Set.image_preimage_eq_of_subset (by simpa using hts)]
+  · rfl
+  · have h1 : x • v +ᵥ (orthogonalProjection s p).val ∈ mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ := by
+      rw [mem_mk', vadd_vsub_vadd_cancel_left]
+      refine SetLike.mem_of_subset ?_ (orthogonalProjection_vsub_mem_direction_orthogonal s _)
+      exact Submodule.orthogonal_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hvs)
+    have h2 : x • v +ᵥ (orthogonalProjection s p).val ∈ s :=
+      vadd_mem_of_mem_direction (Submodule.smul_mem _ _ hvs) (orthogonalProjection s p).prop
+    have h : (mk' (x • v' +ᵥ orthogonalProjection s p) (ℝ ∙ v')ᗮ).map s.subtype
+        = mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ ⊓ s := by
+      rw [map_mk']
+      apply ext_of_direction_eq
+      · ext u
+        simp [direction_inf_of_mem h1 h2, v', Submodule.mem_orthogonal_singleton_iff_inner_right]
+      · exact ⟨x • v +ᵥ (orthogonalProjection s p).val, self_mem_mk' _ _, h1, h2⟩
+    have h : Subtype.val '' (mk' (x • v' +ᵥ orthogonalProjection s p) (ℝ ∙ v')ᗮ : Set s) =
+        (mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ : Set P) ∩ (s : Set P) := by
+      simpa using congr(SetLike.coe $h)
+    rw [← s.euclideanHausdorffMeasure_coe_image, Set.image_inter Subtype.val_injective,
+      coe_subtypeA, Set.image_preimage_eq_of_subset (by simpa using hts), h, ← Set.inter_assoc,
+      Set.inter_right_comm, Set.inter_eq_left.mpr hts]
