@@ -1080,7 +1080,7 @@ theorem IsNNRat.rpow_isNNRat (a b : ℝ) (na da : ℕ) (ha : IsNNRat a na da)
 
 theorem rpow_isRat_eq_inv_rpow (a b : ℝ) (n d : ℕ) (hb : IsRat b (Int.negOfNat n) d) :
     a ^ b = (a⁻¹) ^ (n / d : ℝ) := by
-  rw [← Real.rpow_neg_eq_inv_rpow, hb.neg_to_eq rfl rfl]
+  rw [← Real.rpow_neg_eq_inv_rpow, hb.neg_to_eq rfl rfl, neg_div]
 
 open Lean in
 /-- Given proofs
