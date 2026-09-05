@@ -269,6 +269,7 @@
  ["defsWithUnderscore", "Topology.Continuous_of"],
  ["defsWithUnderscore", "Topology.IsClosed_of"],
  ["defsWithUnderscore", "Topology.IsOpen_of"],
+ ["defsWithUnderscore", "Topology.IsClopen_of"],
  ["defsWithUnderscore", "Topology.closure_of"],
  ["defsWithUnderscore", "Unitization.unitsFstOne_mulEquiv_quasiregular"],
  ["defsWithUnderscore", "Valued.valueGroup₀_equiv_extensionValuation"],
