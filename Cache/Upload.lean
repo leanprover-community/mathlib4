@@ -34,8 +34,7 @@ inductive UploadAuth where
   | azureBearer (token : String)
   /-- S3-compatible credentials for a direct bucket write, signed per request
   with SigV4 by curl. `sessionToken?` carries the session token of a temporary
-  credential — what the cache broker mints for CI against a GitHub OIDC
-  token — and is absent for a static keypair. -/
+  credential and is absent for a static keypair. -/
   | s3 (keyId secret : String) (sessionToken? : Option String)
 
 /--

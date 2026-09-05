@@ -130,8 +130,8 @@ together):
 
 * MATHLIB_CACHE_S3_ACCESS_KEY_ID, MATHLIB_CACHE_S3_SECRET_ACCESS_KEY,
   MATHLIB_CACHE_S3_SESSION_TOKEN
-                          S3 credentials (SigV4), e.g. minted by the cache
-                          broker for CI. The session token is optional.
+                          S3 credentials (SigV4). The session token is
+                          optional.
 * MATHLIB_CACHE_AZURE_BEARER_TOKEN
                           Azure OIDC bearer token.
 

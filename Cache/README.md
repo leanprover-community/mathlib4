@@ -53,8 +53,8 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 
 The upload commands write with the same URL construction `get` reads, so
 uploads and reads follow one path contract. Uploading needs a writer
-credential in the environment, which CI mints per job; see the environment
-variables in `lake exe cache --help`.
+credential in the environment; see the environment variables in
+`lake exe cache --help`.
 
 #### The rclone engine
 
