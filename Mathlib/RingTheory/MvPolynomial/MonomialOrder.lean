@@ -371,15 +371,25 @@ theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
     simp only [degree_zero, map_zero]
     apply bot_le
 
-theorem degree_add_eq_right_of_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+/-- A version of `degree_add_of_lt` where the right polynomial has larger degree. -/
+theorem degree_add_of_lt' {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
     m.degree (f + g) = m.degree g := by
   rw [add_comm]
   exact degree_add_of_lt h
+
+@[deprecated (since := "2026-08-16")]
+alias degree_add_eq_right_of_lt := degree_add_of_lt'
 
 theorem leadingCoeff_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.leadingCoeff (f + g) = m.leadingCoeff f := by
   simp only [leadingCoeff, m.degree_add_of_lt h, AddMonoidAlgebra.coeff_add, Finsupp.add_apply,
     coeff_eq_zero_of_lt h, add_zero]
+
+/-- A version of `leadingCoeff_add_of_lt` where the right polynomial has larger degree. -/
+theorem leadingCoeff_add_of_lt' {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+    m.leadingCoeff (f + g) = m.leadingCoeff g := by
+  rw [add_comm]
+  exact leadingCoeff_add_of_lt h
 
 theorem Monic.add_of_lt {f g : MvPolynomial σ R} (hf : m.Monic f) (h : m.degree g ≺[m] m.degree f) :
     m.Monic (f + g) := by
@@ -927,6 +937,12 @@ theorem leadingTerm_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m
     m.leadingTerm (f + g) = m.leadingTerm f := by
   simp [leadingTerm, h, degree_add_of_lt, leadingCoeff_add_of_lt]
 
+/-- A version of `leadingTerm_add_of_lt` where the right polynomial has larger degree. -/
+theorem leadingTerm_add_of_lt' {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+    m.leadingTerm (f + g) = m.leadingTerm g := by
+  rw [add_comm]
+  exact leadingTerm_add_of_lt h
+
 @[simp, nontriviality]
 lemma monic_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) :
     m.Monic p := by
@@ -1224,6 +1240,24 @@ theorem leadingCoeff_sub_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] 
 theorem leadingTerm_sub_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.leadingTerm (f - g) = m.leadingTerm f := by
   simp [leadingTerm, h, degree_sub_of_lt, leadingCoeff_sub_of_lt]
+
+/-- A version of `degree_sub_of_lt` where the right polynomial has larger degree. -/
+theorem degree_sub_of_lt' {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+    m.degree (f - g) = m.degree g := by
+  rw [← degree_neg, neg_sub]
+  exact degree_sub_of_lt h
+
+/-- A version of `leadingCoeff_sub_of_lt` where the right polynomial has larger degree. -/
+theorem leadingCoeff_sub_of_lt' {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+    m.leadingCoeff (f - g) = m.leadingCoeff (-g) := by
+  rw [sub_eq_add_neg]
+  apply leadingCoeff_add_of_lt'
+  simp only [degree_neg, h]
+
+/-- A version of `leadingTerm_sub_of_lt` where the right polynomial has larger degree. -/
+theorem leadingTerm_sub_of_lt' {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+    m.leadingTerm (f - g) = m.leadingTerm (-g) := by
+  simp [leadingTerm, h, degree_sub_of_lt', leadingCoeff_sub_of_lt']
 
 theorem degree_sub_leadingTerm_le (f : MvPolynomial σ R) :
     m.degree (f - m.leadingTerm f) ≼[m] m.degree f := by
