@@ -241,7 +241,7 @@ lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b 
 
 @[simp]
 lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → Prop) (a : α) (b : β) :
-    Relation.Map r f g (f a) (g b) ↔ r a b := by simp [Relation.Map, hf.eq_iff, hg.eq_iff]
+    Relation.Map r f g (f a) (g b) ↔ r a b := by grind
 
 @[simp] lemma map_id_id (r : α → β → Prop) : Relation.Map r id id = r := by ext; simp [Relation.Map]
 
@@ -309,26 +309,26 @@ theorem le_map_iff_onFun_le {r : α → α → Prop} {s : β → β → Prop} {f
   ⟨onFun_le_of_le_map hf.left, le_map_of_onFun_le hf.right⟩
 
 theorem map_le_iff_le_bicompl : Relation.Map r f g ≤ s ↔ r ≤ s.bicompl f g := by
-  simp_rw [Pi.le_def]
-  grind [Relation.Map, bicompl, le_Prop_eq]
+  unfold Pi.hasLe
+  grind [bicompl, le_Prop_eq]
 
 theorem map_le_iff_le_onFun {r : α → α → Prop} {s : β → β → Prop} {f : α → β} :
     Relation.Map r f f ≤ s ↔ r ≤ (s on f) := by
-  simp_rw [Pi.le_def]
-  grind [Relation.Map, le_Prop_eq]
+  unfold Pi.hasLe
+  grind [le_Prop_eq]
 
 variable (r) in
 theorem le_bicompl_map : r ≤ (Relation.Map r f g).bicompl f g :=
   (⟨·, ·, ·, rfl, rfl⟩)
 
 lemma le_onFun_map {r : α → α → Prop} (f : α → β) : r ≤ (Relation.Map r f f on f) := by
-  simp_rw [Pi.le_def]
-  grind [Relation.Map, le_Prop_eq]
+  unfold Pi.hasLe
+  grind [le_Prop_eq]
 
 variable (r) in
 theorem bicompl_map_eq_of_injective (hf : f.Injective) (hg : g.Injective) :
     (Relation.Map r f g).bicompl f g = r := by
-  grind [Relation.Map, bicompl]
+  grind [bicompl]
 
 lemma onFun_map_eq_of_injective (r : α → α → Prop) {f : α → β} (hf : f.Injective) :
     (Relation.Map r f f on f) = r :=
@@ -336,12 +336,12 @@ lemma onFun_map_eq_of_injective (r : α → α → Prop) {f : α → β} (hf : f
 
 variable (s f g) in
 theorem map_bicompl_le : Relation.Map (s.bicompl f g) f g ≤ s := by
-  simp_rw [Pi.le_def]
-  grind [Relation.Map, bicompl, le_Prop_eq]
+  unfold Pi.hasLe
+  grind [bicompl, le_Prop_eq]
 
 lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Relation.Map (r on f) f f ≤ r := by
-  simp_rw [Pi.le_def]
-  grind [Relation.Map, le_Prop_eq]
+  unfold Pi.hasLe
+  grind [le_Prop_eq]
 
 variable (s) in
 theorem map_bicompl_eq_of_surjective (hf : f.Surjective) (hg : g.Surjective) :
@@ -356,7 +356,7 @@ lemma map_onFun_eq_of_surjective (r : β → β → Prop) {f : α → β} (hf : 
 variable (r f g) in
 theorem map_bicompl_map_eq_map :
     Relation.Map (Relation.Map r f g |>.bicompl f g) f g = Relation.Map r f g := by
-  grind [Relation.Map, bicompl]
+  grind [bicompl]
 
 lemma map_onFun_map_eq_map (r : α → α → Prop) (f : α → β) :
     Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f :=
@@ -365,7 +365,7 @@ lemma map_onFun_map_eq_map (r : α → α → Prop) (f : α → β) :
 variable (s f g) in
 theorem bicompl_map_bicompl_eq_bicompl :
     (Relation.Map (s.bicompl f g) f g).bicompl f g = s.bicompl f g := by
-  grind [Relation.Map, bicompl]
+  grind [bicompl]
 
 lemma onFun_map_onFun_eq_onFun (r : β → β → Prop) (f : α → β) :
     (Relation.Map (r on f) f f on f) = (r on f) :=
@@ -373,7 +373,7 @@ lemma onFun_map_onFun_eq_onFun (r : β → β → Prop) (f : α → β) :
 
 theorem bicompl_map_bicompl_iff_bicompl {a b} :
     Relation.Map (s.bicompl f g) f g (f a) (g b) ↔ s (f a) (g b) := by
-  grind [Relation.Map, bicompl]
+  grind [bicompl]
 
 lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} {f : α → β} {a b : α} :
     Relation.Map (r on f) f f (f a) (f b) ↔ r (f a) (f b) :=
