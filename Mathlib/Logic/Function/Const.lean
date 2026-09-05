@@ -5,7 +5,7 @@ Authors: Martin Winter
 -/
 module
 
-public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Constant functions

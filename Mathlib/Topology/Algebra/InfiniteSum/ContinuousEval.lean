@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Hom.ContinuousEval
 
-import Mathlib.Data.FunLike.Group
+import Mathlib.Algebra.Group.FunLike
 
 /-! # Applying an infinite sum of functions
 

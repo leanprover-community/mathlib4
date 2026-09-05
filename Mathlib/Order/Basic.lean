@@ -9,13 +9,13 @@ public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.GCongr.Core
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
-public import Mathlib.Tactic.GCongr.Core
-public import Mathlib.Tactic.Attr.Register
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.Spread
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -863,8 +863,8 @@ end Subtype
 /-!
 ### Pointwise order on `α × β`
 
-The lexicographic order is defined in `Data.Prod.Lex`, and the instances are available via the
-type synonym `α ×ₗ β = α × β`.
+The lexicographic order is defined in `Order.Prod.Lex.Basic`, and the instances are available via
+the type synonym `α ×ₗ β = α × β`.
 -/
 
 

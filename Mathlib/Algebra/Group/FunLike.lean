@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Data.FunLike.IsApply
-public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.Pi.Torsion
 
 /-! # Group instances for `FunLike` types

@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Int.LeastGreatest
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
+public import Mathlib.Order.Int.LeastGreatest
 
 /-!
 ## `ℤ` forms a conditionally complete linear order

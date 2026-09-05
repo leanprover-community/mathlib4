@@ -5,9 +5,9 @@ Authors: Jake Levinson
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
 
 /-!

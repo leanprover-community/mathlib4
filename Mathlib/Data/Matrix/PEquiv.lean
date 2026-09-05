@@ -6,7 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Data.PEquiv
+public import Mathlib.Logic.PEquiv
 
 /-!
 # partial equivalences for matrices

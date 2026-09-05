@@ -31,8 +31,8 @@ Related files are:
 * `Data.Finset.CoLex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
+* `Order.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
+* `Order.Sigma.Order`: Lexicographic order on `Σ i, α i`.
 
 # TODO
 
