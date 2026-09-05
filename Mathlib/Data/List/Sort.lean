@@ -545,6 +545,7 @@ protected alias ⟨SortedGT.strictAnti, _root_.StrictAnti.sortedGT_ofFn⟩ := so
 end OfFn
 
 section Nil
+
 theorem sortedLT_nil : ([] : List α).SortedLT := by grind
 
 theorem sortedGT_nil : ([] : List α).SortedGT := by grind
