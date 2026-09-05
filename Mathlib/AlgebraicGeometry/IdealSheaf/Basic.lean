@@ -145,7 +145,7 @@ instance : OrderBot (IdealSheafData X) where
 
 set_option backward.isDefEq.respectTransparency false in
 instance : SemilatticeInf (IdealSheafData X) where
-  inf I J :=
+  min I J :=
   { ideal := I.ideal ⊓ J.ideal
     map_ideal_basicOpen U f := by
       dsimp

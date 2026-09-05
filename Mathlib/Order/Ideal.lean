@@ -388,7 +388,6 @@ instance : Max (Ideal P) :=
       lower' := fun _ _ h ⟨yi, hi, yj, hj, hxy⟩ ↦ ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
 
 instance : Lattice (Ideal P) where
-  sup := (· ⊔ ·)
   le_sup_left := fun _ J i hi ↦
     let ⟨w, hw⟩ := J.nonempty
     ⟨i, hi, w, hw, le_sup_left⟩
@@ -397,7 +396,6 @@ instance : Lattice (Ideal P) where
     ⟨w, hw, j, hj, le_sup_right⟩
   sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
     K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
-  inf := (· ⊓ ·)
   inf_le_left := fun _ _ ↦ inter_subset_left
   inf_le_right := fun _ _ ↦ inter_subset_right
   le_inf := fun _ _ _ ↦ subset_inter

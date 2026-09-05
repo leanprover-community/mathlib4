@@ -337,7 +337,7 @@ variable [PartialOrder β]
 @[to_dual /-- Lift the infima along a Galois coinsertion -/]
 abbrev liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : SemilatticeSup β :=
   { ‹PartialOrder β› with
-    sup := fun a b => l (u a ⊔ u b)
+    max := fun a b => l (u a ⊔ u b)
     le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l <| le_sup_left
     le_sup_right := fun _ b => (gi.le_l_u b).trans <| gi.gc.monotone_l <| le_sup_right
     sup_le := fun _ _ _ hac hbc =>
@@ -348,7 +348,7 @@ abbrev liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : Semil
 @[to_dual /-- Lift the suprema along a Galois coinsertion -/]
 abbrev liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : SemilatticeInf β :=
   { ‹PartialOrder β› with
-    inf := fun a b =>
+    min := fun a b =>
       gi.choice (u a ⊓ u b) <|
         le_inf (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_left)
           (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_right)

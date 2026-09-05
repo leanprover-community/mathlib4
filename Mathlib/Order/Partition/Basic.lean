@@ -242,7 +242,7 @@ Note that while finite meets of partitions can be constructed in this way, arbit
 do not exist: for example when `α` is the frame of open subsets of the Cantor space, `Partition α`
 has no bottom element. -/
 instance instSemilatticeInf {α : Type*} [Order.Frame α] (s : α) : SemilatticeInf (Partition s) where
-  inf P Q := removeBot {a | ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q} (by
+  min P Q := removeBot {a | ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q} (by
       rw [sSupIndep_iff_pairwiseDisjoint]
       intro a ha a' ha' h
       grind [Partition.eq_or_disjoint, Disjoint.inf_left, Disjoint.inf_left'])
