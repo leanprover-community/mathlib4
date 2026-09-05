@@ -148,6 +148,10 @@ lemma isUnramifiedAt_iff_map_eq :
 instance [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
   ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1
 
+lemma IsUnramifiedAt.map_eq [Algebra.IsUnramifiedAt R q] :
+    p.map (algebraMap R (Localization.AtPrime q)) = maximalIdeal _ :=
+  ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).2
+
 instance [Algebra.IsUnramifiedAt R q] : Module.Finite p.ResidueField q.ResidueField :=
   Algebra.FormallyUnramified.finite_of_free _ _
 
