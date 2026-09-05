@@ -149,7 +149,7 @@ A family of limiting binary fans on a partial order induces an inf-semilattice s
 @[instance_reducible]
 def semilatticeInfOfIsLimitBinaryFan
     (c : ∀ (X Y : C), BinaryFan X Y) (h : (X Y : C) → IsLimit (c X Y)) : SemilatticeInf C where
-  inf X Y := (c X Y).pt
+  min X Y := (c X Y).pt
   inf_le_left X Y := leOfHom (c X Y).fst
   inf_le_right X Y := leOfHom (c X Y).snd
   le_inf _ _ _ le_fst le_snd := leOfHom <| BinaryFan.IsLimit.lift (h _ _) le_fst.hom le_snd.hom
@@ -167,7 +167,7 @@ A family of colimiting binary cofans on a partial order induces a sup-semilattic
 @[instance_reducible]
 def semilatticeSupOfIsColimitBinaryCofan
     (c : ∀ (X Y : C), BinaryCofan X Y) (h : (X Y : C) → IsColimit (c X Y)) : SemilatticeSup C where
-  sup X Y := (c X Y).pt
+  max X Y := (c X Y).pt
   le_sup_left X Y := leOfHom (c X Y).inl
   le_sup_right X Y := leOfHom (c X Y).inr
   sup_le _ _ _ le_inl le_inr := leOfHom <| BinaryCofan.IsColimit.desc (h _ _) le_inl.hom le_inr.hom

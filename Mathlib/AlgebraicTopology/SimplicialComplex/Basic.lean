@@ -117,11 +117,9 @@ instance : CompleteSemilatticeInf (PreAbstractSimplicialComplex ι) where
       fun K hK _ ht ↦ ⟨Set.mem_iInter₂.mpr fun _ hL => hK hL ht, (K.isRelLowerSet_faces ht).1⟩⟩
 
 instance : CompleteLattice (PreAbstractSimplicialComplex ι) where
-  inf := min
   inf_le_left _ _ := Set.inter_subset_left
   inf_le_right _ _ := Set.inter_subset_right
   le_inf _ _ _ := Set.subset_inter
-  sup := max
   le_sup_left _ _ := Set.subset_union_left
   le_sup_right _ _ := Set.subset_union_right
   sup_le _ _ _ hK hL := Set.union_subset hK hL
@@ -290,11 +288,9 @@ instance : CompleteSemilatticeInf (AbstractSimplicialComplex ι) where
       fun K hK _ ht ↦ ⟨Set.mem_iInter₂.mpr fun _ hL => hK hL ht, (K.isRelLowerSet_faces ht).1⟩⟩
 
 instance : CompleteLattice (AbstractSimplicialComplex ι) where
-  inf := min
   inf_le_left _ _ := Set.inter_subset_left
   inf_le_right _ _ := Set.inter_subset_right
   le_inf _ _ _ := Set.subset_inter
-  sup := max
   le_sup_left _ _ := Set.subset_union_left
   le_sup_right _ _ := Set.subset_union_right
   sup_le _ _ _ := Set.union_subset
