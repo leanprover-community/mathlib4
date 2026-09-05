@@ -122,6 +122,25 @@ theorem sum_degrees_support_eq_twice_card_edges :
 
 end DegreeSum
 
+section card
+
+open scoped Cardinal
+
+lemma card_dart (G : SimpleGraph V) : #G.Dart = 2 * #G.edgeSet := by
+  let f : G.Dart → G.edgeSet := fun ⟨⟨v, w⟩, hvw⟩ => ⟨s(v, w), hvw⟩
+  suffices fib_size : ∀ e, #{d // f d = e} = 2 by
+   simp [← (Equiv.sigmaFiberEquiv f).cardinal_eq, fib_size, mul_comm]
+  rintro ⟨e, he⟩
+  obtain ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
+  have hadj : G.Adj v w := G.mem_edgeSet.mp (by simp [he, hvw])
+  set d₀ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨v, w⟩, hadj⟩, by grind⟩
+  set d₁ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨w, v⟩, hadj.symm⟩, by simp [f]; aesop⟩
+  refine (Cardinal.mk_eq_two_iff' d₀).mpr ⟨d₁, ⟨by grind [G.irrefl], fun d h₀ ↦ ?_⟩⟩
+  obtain ⟨⟨_, hadj⟩, hd⟩ := d
+  grind
+
+end card
+
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
 theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     Even #{v | Odd (G.degree v)} := by
