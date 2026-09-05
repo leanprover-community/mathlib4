@@ -1408,7 +1408,7 @@ theorem integral_mono_interval {c d} (hca : c ≤ a) (hab : a ≤ b) (hbd : b �
     (hf : 0 ≤ᵐ[μ.restrict (Ioc c d)] f) (hfi : IntervalIntegrable f μ c d) :
     (∫ x in a..b, f x ∂μ) ≤ ∫ x in c..d, f x ∂μ := by
   rw [integral_of_le hab, integral_of_le (hca.trans (hab.trans hbd))]
-  exact setIntegral_mono_set hfi.1 hf (Ioc_subset_Ioc hca hbd).eventuallyLE
+  exact setIntegral_mono_set hfi.1 hf (Ioc_subset_Ioc hca hbd).eventuallySubset
 
 theorem abs_integral_mono_interval {c d} (h : Ι a b ⊆ Ι c d) (hf : 0 ≤ᵐ[μ.restrict (Ι c d)] f)
     (hfi : IntervalIntegrable f μ c d) : |∫ x in a..b, f x ∂μ| ≤ |∫ x in c..d, f x ∂μ| :=
@@ -1416,7 +1416,7 @@ theorem abs_integral_mono_interval {c d} (h : Ι a b ⊆ Ι c d) (hf : 0 ≤ᵐ[
   calc
     |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| := abs_integral_eq_abs_integral_uIoc f
     _ = ∫ x in Ι a b, f x ∂μ := abs_of_nonneg (MeasureTheory.integral_nonneg_of_ae hf')
-    _ ≤ ∫ x in Ι c d, f x ∂μ := setIntegral_mono_set hfi.def' hf h.eventuallyLE
+    _ ≤ ∫ x in Ι c d, f x ∂μ := setIntegral_mono_set hfi.def' hf h.eventuallySubset
     _ ≤ |∫ x in Ι c d, f x ∂μ| := le_abs_self _
     _ = |∫ x in c..d, f x ∂μ| := (abs_integral_eq_abs_integral_uIoc f).symm
 
