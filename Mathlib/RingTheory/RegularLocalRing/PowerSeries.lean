@@ -40,10 +40,9 @@ lemma PowerSeries.maximalIdeal_eq_sup [IsLocalRing R] : maximalIdeal R⟦X⟧ =
       use (mk fun p ↦ (coeff (p + 1)) g)
     · rcases Ideal.mem_span_singleton'.mp h with ⟨w, hw⟩
       simp [← hw]
-  rw [maxeq, ← eqker, ← Ideal.comap_map_of_surjective' _ PowerSeries.constantCoeff_surj,
+  rw [maxeq, ← eqker, ← Ideal.comap_map_of_surjective' (S := R) _ PowerSeries.constantCoeff_surj,
     Ideal.map_map, constantCoeff_comp_C, Ideal.map_id]
 
-set_option backward.isDefEq.respectTransparency false in
 instance PowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
     IsRegularLocalRing R⟦X⟧ := by
   apply IsRegularLocalRing.of_spanFinrank_maximalIdeal_le
