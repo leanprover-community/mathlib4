@@ -56,6 +56,61 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 #guard_msgs in
 #check T% X
 
+variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  -- `F₂` model fiber
+  (V₂ : M → Type*) [TopologicalSpace (TotalSpace F₂ V₂)]
+  [∀ x, AddCommGroup (V₂ x)] [∀ x, Module 𝕜 (V₂ x)]
+  [∀ x : M, TopologicalSpace (V₂ x)] [∀ x, IsTopologicalAddGroup (V₂ x)]
+  [∀ x, ContinuousSMul 𝕜 (V₂ x)]
+  [FiberBundle F₂ V₂] [VectorBundle 𝕜 F₂ V₂]
+  -- `V₂` vector bundle
+
+variable {ϕ : Π x : M, V x →L[𝕜] V₂ x}
+
+/-- info: (T% ϕ) : M → TotalSpace (F →L[𝕜] F₂) fun x ↦ V x →L[𝕜] V₂ x -/
+#guard_msgs in
+#check T% ϕ
+
+variable {ϕ_TM : Π x : M, TangentSpace I x →L[𝕜] V x} {ϕ_TM' : Π x : M, V x →L[𝕜] TangentSpace I x}
+
+/-- info: (T% ϕ_TM) : M → TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x -/
+#guard_msgs in
+#check T% ϕ_TM
+
+section Pullback
+
+/- Declare a manifold `B` (with model `IB : HB → EB`),
+and two vector bundles `E₁`, `E₂` and over `B` (with model fibers `F₁`, `F₂`).
+-/
+variable {B F₁ F₂ : Type*}
+  {E₁ : B → Type*} [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
+  {E₂ : B → Type*} [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
+  {EB : Type*}
+  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace HB B]
+  [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+  [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
+  {b : M → B}
+
+variable {v : ∀ x, E₁ (b x)}
+
+/-- info: (T% v) : M → TotalSpace F₁ E₁-/
+#guard_msgs in
+#check T% v
+
+variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
+  {ϕ : ∀ x, (E₁ (b x) →L[𝕜] E₂ (b x))}
+
+/-- info: (T% ϕ) : M → TotalSpace (F₁ →L[𝕜] F₂) fun x ↦ E₁ x →L[𝕜] E₂ x -/
+#guard_msgs in
+#check T% ϕ
+
+end Pullback
+
 variable {x : M}
 
 -- Testing precedence.
