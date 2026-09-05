@@ -23,7 +23,7 @@ namespace MeasureTheory
 lemma eLpNorm_dirac (f : α → ε) (i : α) (hp : p ≠ 0)
     (hf : AEStronglyMeasurable f (dirac i)) :
     eLpNorm f p (dirac i) = ‖f i‖ₑ := by
-  simp_rw [eLpNorm, hf, if_true, if_neg hp]
+  simp_rw [eLpNorm, hf, ite_true, ite_eq_right hp]
   split_ifs
   · simp [eLpNormEssSup, essSup, limsup, limsSup, Set.Ici_def]
   · simp [eLpNorm', ENNReal.toReal_eq_zero_iff, *]

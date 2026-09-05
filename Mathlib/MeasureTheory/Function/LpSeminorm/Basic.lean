@@ -341,14 +341,14 @@ theorem eLpNorm_mono_enorm_ae [TopologicalSpace ε] [TopologicalSpace ε']
     {f : α → ε} {g : α → ε'} (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
-  rw [eLpNorm, if_pos hf]
+  rw [eLpNorm, ite_eq_left hf]
   by_cases hg : AEStronglyMeasurable g μ
-  · rw [eLpNorm, if_pos hg]
+  · rw [eLpNorm, ite_eq_left hg]
     split_ifs
     · exact le_rfl
     · exact eLpNormEssSup_mono_enorm_ae h
     · exact eLpNorm'_mono_enorm_ae ENNReal.toReal_nonneg h
-  · rw [eLpNorm, if_neg hg]
+  · rw [eLpNorm, ite_eq_right hg]
     exact le_top
 
 theorem eLpNorm_mono_nnnorm_ae {f : α → F} {g : α → G} (hf : AEStronglyMeasurable f μ)
@@ -523,7 +523,7 @@ theorem eLpNorm_enorm_rpow [TopologicalSpace ε] (f : α → ε)
   · simp [h0, hf, hfrpow, ENNReal.zero_rpow_of_pos hq_pos]
   by_cases hp_top : p = ∞
   · simp only [hp_top, eLpNorm_exponent_top hfrpow, ENNReal.top_mul', hq_pos.not_ge,
-      ENNReal.ofReal_eq_zero, if_false, eLpNorm_exponent_top hf,
+      ENNReal.ofReal_eq_zero, ite_false, eLpNorm_exponent_top hf,
       eLpNormEssSup_eq_essSup_enorm]
     have h_rpow : essSup (‖‖f ·‖ₑ ^ q‖ₑ) μ = essSup (‖f ·‖ₑ ^ q) μ := by congr
     rw [h_rpow]

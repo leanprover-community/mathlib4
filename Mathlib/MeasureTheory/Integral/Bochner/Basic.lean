@@ -919,7 +919,7 @@ variable {H : Type*} [NormedAddCommGroup H]
 
 theorem L1.norm_eq_integral_norm (f : α →₁[μ] H) : ‖f‖ = ∫ a, ‖f a‖ ∂μ := by
   simp only [eLpNorm, eLpNorm'_eq_lintegral_enorm, ENNReal.toReal_one, ENNReal.rpow_one,
-    Lp.norm_def, Lp.aestronglyMeasurable f, if_pos, ENNReal.one_ne_top, one_ne_zero, _root_.div_one]
+    Lp.norm_def, Lp.aestronglyMeasurable f, ite_eq_left, ENNReal.one_ne_top, one_ne_zero, _root_.div_one]
   rw [integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall (by simp [norm_nonneg]))
       (Lp.aestronglyMeasurable f).norm]
   simp
