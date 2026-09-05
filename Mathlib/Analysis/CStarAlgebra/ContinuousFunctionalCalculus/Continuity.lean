@@ -614,9 +614,8 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
   have hf := h_tendsto.continuousOn hF.frequently
-  have hf0 : f 0 = 0 := Eq.symm <|
-    tendsto_nhds_unique (tendsto_const_nhds.congr' <| .symm hF0) <|
-    h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
+  have hf0 : f 0 = 0 := tendsto_nhds_unique_of_eventuallyEq
+    (h_tendsto.tendsto_at (quasispectrum.zero_mem R a)) tendsto_const_nhds hF0
   by_cases ha : p a
   · let s : Set X := {x | ContinuousOn (F x) (quasispectrum R a) ∧ F x 0 = 0}
     have hs : s ∈ l := hF.and hF0
