@@ -577,12 +577,11 @@ section normalClosure
 variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
   [IsScalarTower k K F]
 
-/-- Let $F / K / k$ be a tower of field extensions. If $K$ is separable over $k$,
-then the normal closure of $K$ over $k$ in $F$ is separable over $k$. -/
+/-- Let `F / K / k` be a tower of field extensions. If `K` is separable over `k`,
+then the normal closure of `K/k` in `F` is separable over `k`. -/
 instance IntermediateField.normalClosure.isSeparable [Algebra.IsSeparable k K] :
     Algebra.IsSeparable k (normalClosure k K F) := by
-  rw [← le_separableClosure_iff]
-  refine normalClosure_le_iff.mpr fun f ↦ ?_
+  refine (le_separableClosure_iff _ _ _).mp <| normalClosure_le_iff.mpr fun f ↦ ?_
   have : Algebra.IsSeparable k f.fieldRange :=
     AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField f)
   exact le_separableClosure k F f.fieldRange
