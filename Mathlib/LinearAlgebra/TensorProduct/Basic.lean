@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Abel
 
 Given any bilinear map `f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂`, there is a unique semilinear map
 `TensorProduct.lift f : TensorProduct R M N →ₛₗ[σ₁₂] P₂` whose composition with the canonical
-bilinear map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
+bilinear map `TensorProduct.mk` is the given bilinear map `f`. Uniqueness is shown in the theorem
 `TensorProduct.lift.unique`.
 
 ## Tags
@@ -334,6 +334,19 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
 theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A S M N) :=
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
+
+section
+
+variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SMulCommClass A S' M]
+
+lemma toAddHom_mapOfCompatibleSMul_eq :
+    (mapOfCompatibleSMul R A S M N).toAddHom = (mapOfCompatibleSMul R A S' M N).toAddHom := rfl
+
+lemma mem_ker_mapOfCompatibleSMul_iff (x : M ⊗[A] N) :
+    x ∈ (mapOfCompatibleSMul R A S M N).ker ↔ x ∈ (mapOfCompatibleSMul R A S' M N).ker :=
+  Iff.of_eq rfl
+
+end
 
 attribute [local instance] SMulCommClass.symm
 
