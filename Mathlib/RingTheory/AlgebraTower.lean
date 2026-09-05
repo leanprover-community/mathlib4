@@ -192,7 +192,8 @@ def AlgHom.domRestrict : B →ₐ[A] D :=
 @[deprecated (since := "2026-07-19")] alias AlgHom.restrictDomain := AlgHom.domRestrict
 
 /-- Extend the scalars of an `AlgHom`. -/
-def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.domRestrict B).toRingHom.toAlgebra where
+def AlgHom.extendScalars :
+    @AlgHom B B _ _ (.id B) C D _ _ _ (f.domRestrict B).toRingHom.toAlgebra where
   __ := f
   commutes' := fun _ ↦ rfl
   __ := (f.domRestrict B).toRingHom.toAlgebra
@@ -201,7 +202,8 @@ variable {B}
 
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
 def algHomEquivSigma :
-    (C →ₐ[A] D) ≃ Σ f : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra where
+    (C →ₐ[A] D) ≃ Σ f : B →ₐ[A] D,
+      @AlgHom B B _ _ (.id B) C D _ _ _ (f.domRestrict B).toRingHom.toAlgebra where
   toFun f := ⟨f.domRestrict B, f.extendScalars B⟩
   invFun fg :=
     let _ := fg.1.toRingHom.toAlgebra

@@ -173,7 +173,7 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra E K₁] [Algebra E K₂] [
 theorem AlgHom.fieldRange_of_normal {E : IntermediateField F K} [Normal F E]
     (f : E →ₐ[F] K) : f.fieldRange = E := by
   let g := f.restrictNormal' E
-  rw [← show E.val.comp ↑g = f from DFunLike.ext_iff.mpr (f.restrictNormal_commutes E),
+  rw [← show E.val.comp g.toAlgHom = f from DFunLike.ext_iff.mpr (f.restrictNormal_commutes E),
     ← AlgHom.map_fieldRange, AlgEquiv.fieldRange_eq_top g, ← AlgHom.fieldRange_eq_map,
     IntermediateField.fieldRange_val]
 
@@ -202,7 +202,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
 theorem AlgHom.liftNormal_commutes [Normal F E] (x : K₁) :
     ϕ.liftNormal E (algebraMap K₁ E x) = algebraMap K₂ E (ϕ x) :=
   -- We have to specify one `Algebra` instance by unification, not synthesis.
-  @AlgHom.commutes K₁ E E _ _ _ _ (_) _ _
+  @AlgHom.commutes K₁ _ E E _ _ _ (_) _ _
 
 @[simp]
 theorem AlgHom.restrict_liftNormal (ϕ : K₁ →ₐ[F] K₁) [Normal F K₁] [Normal F E] :
