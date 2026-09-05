@@ -40,10 +40,12 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 * `LocalDiffeomorph.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism,
   each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
+* `IsLocalDiffeomorphAt_of_isInvertible_mderiv` (proved in `InverseFunctionTheorem.lean`): if `f` is
+  `ContMDiffOn` an open set `U` and has bijective differential at an interior point `p ∈ U`, then
+  `f` is a local diffeomorphism at `p`.
+
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
-* if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
-  `f` is a local diffeomorphism at `x` (using the inverse function theorem).
 
 ## Implementation notes
 
@@ -155,7 +157,7 @@ variable {M N}
 
 /-- `f : M → N` is called a **`C^n` local diffeomorphism at `x`** iff there exist
 open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
-def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
+@[expose] def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
 lemma PartialDiffeomorph.isLocalDiffeomorphAt (φ : PartialDiffeomorph I J M N n)
