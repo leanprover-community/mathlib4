@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2026 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning
+Authors: metakunt, Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.AdjoinRoot.Basic
+public import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
 # Algebra homomorphism between adjoining a root of unity.
@@ -15,6 +15,12 @@ public import Mathlib.RingTheory.AdjoinRoot.Basic
 The main definitions are in the `AdjoinRoot` namespace.
 
 *  `mapCyclotomic f : (X ^ r - 1 : R[X]) →ₐ[R] AdjoinRoot (X ^ r - 1 : R[X]) `,
+    an algebra homomorphism.
+*  `mapCyclotomic_injective`, the given algebra homomorphism is injective.
+
+Corresponding definitions for `IsAdjoinRoot`.
+
+*  `mapCyclotomic f : S →ₐ[R] S `,
     an algebra homomorphism.
 *  `mapCyclotomic_injective`, the given algebra homomorphism is injective.
 -/
@@ -89,3 +95,34 @@ theorem mapCyclotomic_injective (h : k.Coprime r) : Function.Injective (mapCyclo
   exact (mapCyclotomicUnitHom R r (ZMod.unitOfCoprime k h)).injective
 
 end AdjoinRoot
+
+namespace IsAdjoinRoot
+
+variable (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] (r j k : ℕ)
+variable (h : IsAdjoinRoot S (X ^ r - 1 : R[X]))
+
+/-- The algebra homomorphism taking an element to the `k`-th power. -/
+noncomputable def mapCyclotomicCongr :
+    (AdjoinRoot (X ^ r - 1 : R[X]) →ₐ[R] AdjoinRoot (X ^ r - 1 : R[X])) ≃ (S →ₐ[R] S) :=
+  (h.adjoinRootAlgEquiv).arrowCongr (h.adjoinRootAlgEquiv)
+
+/-- The algebra homomorphism taking an element to the `k`-th power. -/
+noncomputable def mapCyclotomic : S →ₐ[R] S :=
+  h.mapCyclotomicCongr R S r (AdjoinRoot.mapCyclotomic R r k)
+
+/-- The algebra homomorphism taking an element to the `k`-th power. -/
+noncomputable def mapCyclotomicHom : ZMod r →* S →ₐ[R] S where
+  toFun k := (h.mapCyclotomicCongr) (AdjoinRoot.mapCyclotomicHom R r k)
+  map_one' := by simp [mapCyclotomicCongr, AlgHom.End_toOne_one]
+  map_mul' j k := by
+    simp only [mapCyclotomicCongr, map_mul, AlgHom.End_toMul_mul, AlgEquiv.arrowCongr_apply]
+    rw [← ((AdjoinRoot.mapCyclotomicHom R r) j).comp_id]
+    nth_rw 1 [← h.adjoinRootAlgEquiv.symm_comp]
+    congr
+
+theorem mapCyclotomic_injective (hc : k.Coprime r) :
+    Function.Injective (mapCyclotomic R S r k h) := by
+  have := AdjoinRoot.mapCyclotomic_injective R r k hc
+  simpa [mapCyclotomic, mapCyclotomicCongr]
+
+end IsAdjoinRoot
