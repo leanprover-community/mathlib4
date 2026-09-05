@@ -5,11 +5,9 @@ Authors: Fernando Chu, Andrew Yang, Felix Pernegger
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Instances.Real.Lemmas
 
-import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Small inductive dimension
@@ -203,3 +201,21 @@ instance {p : X → Prop} (n : ℕ) [h : HasSmallInductiveDimensionLT X n] :
 protected theorem Homeomorph.smallInductiveDimension_congr (f : X ≃ₜ Y) :
     smallInductiveDimension X = smallInductiveDimension Y :=
   le_antisymm f.isInducing.smallInductiveDimension_le f.symm.isInducing.smallInductiveDimension_le
+
+/-- The small inductive dimension of the real numbers in 1. -/
+theorem smallInductiveDimension_real : smallInductiveDimension ℝ = 1 := by
+  apply smallInductiveDimension_eq
+  · apply HasSmallInductiveDimensionLT.succ 1 _ Real.isTopologicalBasis_Ioo_rat
+    intro U hU
+    simp only [mem_iUnion, mem_singleton_iff, exists_prop] at hU
+    obtain ⟨a, b, ab, rfl⟩ := hU
+    rw [frontier_Ioo (by simp [ab]), hasSmallInductiveDimensionLT_one_iff]
+    simp only [isClopen_discrete, ofPred_true]
+    exact discreteTopology_iff_isTopologicalBasis_univ.mp inferInstance
+  · -- TODO: adopt this once #40901 lands
+    rw [hasSmallInductiveDimensionLT_one_iff]
+    have eq : {s : Set ℝ | IsClopen s} = {∅, univ} := by
+      ext
+      simp [isClopen_iff]
+    rw [eq, ← indiscreteTopology_iff_isTopologicalBasis, not_indiscrete_iff]
+    infer_instance
