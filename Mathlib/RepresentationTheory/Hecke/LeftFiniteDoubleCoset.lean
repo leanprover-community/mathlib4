@@ -87,7 +87,7 @@ lemma mem_range_toLeftCoset_iff :
     (∃ i, toLeftCoset (H₁ := H₁) (g := g) i = (g' : G ⧸ H₂)) ↔ mk H₁ H₂ g = mk H₁ H₂ g' := by
   constructor
   · intro ⟨h, heq⟩
-    rw [toLeftCoset_apply, QuotientGroup.eq] at heq
+    rw [← QuotientGroup.out_eq' h, toLeftCoset_mk, QuotientGroup.eq] at heq
     exact DoubleCoset.eq.mpr ⟨_, h.out.prop, _, heq, by simp [mul_assoc]⟩
   · intro h
     obtain ⟨h₁, hh₁, h₂, hh₂, rfl⟩ := DoubleCoset.eq.mp h
