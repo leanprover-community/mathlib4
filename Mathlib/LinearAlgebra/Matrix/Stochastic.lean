@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
