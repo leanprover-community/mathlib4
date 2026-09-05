@@ -126,8 +126,7 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
         assumption
     -- One last goal (`k (k (k sᶜ)ᶜ)ᶜ ≠ k s`) needs some other simplifying steps:
     · apply mt (congr_arg fun s ↦ k (k sᶜ)ᶜ)
-      rw [kckckck_eq_kck]
-      assumption
+      rwa [kckckck_eq_kck]
 
 open Multiset in
 /-- `theFourteen s` contains no duplicates if and only if `theClosedSix s` has none,

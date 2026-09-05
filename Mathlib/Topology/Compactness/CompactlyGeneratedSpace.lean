@@ -190,10 +190,10 @@ instance [UCompactlyGeneratedSpace.{u} X] [UCompactlyGeneratedSpace.{v} Y] :
     refine UCompactlyGeneratedSpace.isClosed fun S ⟨f, hf⟩ ↦ ?_
   · let g : ULift.{v} S → X ⊕ Y := Sum.inl ∘ f ∘ ULift.down
     have hg : Continuous g := continuous_inl.comp <| hf.comp continuous_uliftDown
-    exact (h (CompHaus.of (ULift.{v} S)) ⟨g, hg⟩).preimage continuous_uliftUp
+    exact (h ↧(ULift.{v} S) ⟨g, hg⟩).preimage continuous_uliftUp
   · let g : ULift.{u} S → X ⊕ Y := Sum.inr ∘ f ∘ ULift.down
     have hg : Continuous g := continuous_inr.comp <| hf.comp continuous_uliftDown
-    exact (h (CompHaus.of (ULift.{u} S)) ⟨g, hg⟩).preimage continuous_uliftUp
+    exact (h ↧(ULift.{u} S) ⟨g, hg⟩).preimage continuous_uliftUp
 
 /-- The sigma type associated to a family of compactly generated spaces is compactly generated. -/
 instance {ι : Type v} {X : ι → Type w} [∀ i, TopologicalSpace (X i)]
@@ -218,7 +218,7 @@ instance (priority := 100) [SequentialSpace X] : UCompactlyGeneratedSpace.{u} X 
   apply IsClosed.mem_of_tendsto _ ((continuous_uliftUp.tendsto ∞).comp this)
   · simp only [Function.comp_apply, mem_preimage, eventually_atTop]
     exact ⟨0, fun b _ ↦ hu b⟩
-  · exact h (CompHaus.of (ULift.{u} (OnePoint ℕ))) ⟨g, by fun_prop⟩
+  · exact h ↧(ULift.{u} (OnePoint ℕ)) ⟨g, by fun_prop⟩
 
 end UCompactlyGeneratedSpace
 
@@ -255,7 +255,7 @@ lemma compactlyGeneratedSpace_of_continuous_maps
         (∀ g : K → X, Continuous g → Continuous (f ∘ g))) → Continuous f) :
     CompactlyGeneratedSpace X :=
   uCompactlyGeneratedSpace_of_continuous_maps fun f h' ↦ h f fun K _ _ _ g hg ↦
-    h' (CompHaus.of K) ⟨g, hg⟩
+    h' ↧K ⟨g, hg⟩
 
 /-- A topological space `X` is compactly generated if a set `s` is closed when `f ⁻¹' s` is
 closed for every continuous map `f : K → X`, where `K` is compact Hausdorff. -/
@@ -263,7 +263,7 @@ theorem compactlyGeneratedSpace_of_isClosed
     (h : ∀ (s : Set X), (∀ (K : Type u) [TopologicalSpace K], [CompactSpace K] → [T2Space K] →
       ∀ (f : K → X), Continuous f → IsClosed (f ⁻¹' s)) → IsClosed s) :
     CompactlyGeneratedSpace X :=
-  uCompactlyGeneratedSpace_of_isClosed fun s h' ↦ h s fun K _ _ _ f hf ↦ h' (CompHaus.of K) ⟨f, hf⟩
+  uCompactlyGeneratedSpace_of_isClosed fun s h' ↦ h s fun K _ _ _ f hf ↦ h' ↧K ⟨f, hf⟩
 
 /-- In a compactly generated space `X`, a set `s` is closed when `f ⁻¹' s` is
 closed for every continuous map `f : K → X`, where `K` is compact Hausdorff. -/
@@ -286,7 +286,7 @@ theorem compactlyGeneratedSpace_of_isOpen
     (h : ∀ (s : Set X), (∀ (K : Type u) [TopologicalSpace K], [CompactSpace K] → [T2Space K] →
       ∀ (f : K → X), Continuous f → IsOpen (f ⁻¹' s)) → IsOpen s) :
     CompactlyGeneratedSpace X :=
-  uCompactlyGeneratedSpace_of_isOpen fun s h' ↦ h s fun K _ _ _ f hf ↦ h' (CompHaus.of K) ⟨f, hf⟩
+  uCompactlyGeneratedSpace_of_isOpen fun s h' ↦ h s fun K _ _ _ f hf ↦ h' ↧K ⟨f, hf⟩
 
 /-- In a compactly generated space `X`, a set `s` is open when `f ⁻¹' s` is
 open for every continuous map `f : K → X`, where `K` is compact Hausdorff. -/

@@ -86,11 +86,16 @@ variable (R : Type u) [Ring R]
 @[simp] lemma hom_hom_id (A : FGModuleCat.{v} R) : (𝟙 A : A ⟶ A).hom.hom = LinearMap.id := rfl
 
 instance : Inhabited (FGModuleCat.{v} R) :=
-  ⟨⟨ModuleCat.of R PUnit, by unfold ModuleCat.isFG; infer_instance⟩⟩
+  ⟨⟨↧PUnit, by unfold ModuleCat.isFG; infer_instance⟩⟩
 
 /-- Lift an unbundled finitely generated module to `FGModuleCat R`. -/
 abbrev of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModuleCat R :=
-  ⟨ModuleCat.of R V, inferInstanceAs <| Module.Finite R V⟩
+  ⟨↧V, inferInstanceAs <| Module.Finite R V⟩
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FGModuleCat.of R X` as `↧X`. -/
+@[app_delab FGModuleCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 lemma of_carrier (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] :
@@ -194,14 +199,14 @@ instance : (ModuleCat.isFG K).IsMonoidalClosed where
 variable (V W : FGModuleCat K)
 
 @[simp]
-theorem ihom_obj : (ihom V).obj W = FGModuleCat.of K (V.obj ⟶ W.obj) :=
+theorem ihom_obj : (ihom V).obj W = ↧(V.obj ⟶ W.obj) :=
   rfl
 
 /-- The dual module is the dual in the rigid monoidal category `FGModuleCat K`. -/
 def FGModuleCatDual : FGModuleCat K :=
-  ⟨ModuleCat.of K (Module.Dual K V), Subspace.instModuleDualFiniteDimensional⟩
+  ⟨↧(Module.Dual K V), Subspace.instModuleDualFiniteDimensional⟩
 
-@[simp] lemma FGModuleCatDual_obj : (FGModuleCatDual K V).obj = ModuleCat.of K (Module.Dual K V) :=
+@[simp] lemma FGModuleCatDual_obj : (FGModuleCatDual K V).obj = ↧(Module.Dual K V) :=
   rfl
 @[simp] lemma FGModuleCatDual_coe : (FGModuleCatDual K V : Type u) = Module.Dual K V := rfl
 
@@ -230,9 +235,8 @@ set_option backward.isDefEq.respectTransparency false in
 -/
 @[simp]
 theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
-    DFunLike.coe
-      (F := ((ModuleCat.of K (Module.Dual K V) ⊗ V.obj).carrier →ₗ[K] (𝟙_ (ModuleCat K))))
-      (FGModuleCatEvaluation K V).hom.hom (f ⊗ₜ x) = f.toFun x :=
+    (FGModuleCatEvaluation K V).hom.hom (A := ↧(Dual K V) ⊗ V.obj) (B := 𝟙_ (ModuleCat K)) (f ⊗ₜ x)
+      = f.toFun x :=
   contractLeft_apply f x
 
 set_option backward.privateInPublic true in

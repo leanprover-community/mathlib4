@@ -103,7 +103,7 @@ variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 agrees with the usual module-theoretical kernel.
 -/
 noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    kernel f ≅ ModuleCat.of R f.hom.ker :=
+    kernel f ≅ ↧f.hom.ker :=
   limit.isoLimitCone ⟨_, kernelIsLimit f⟩
 
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
@@ -120,7 +120,7 @@ theorem kernelIsoKer_hom_ker_subtype :
 agrees with the usual module-theoretical quotient.
 -/
 noncomputable def cokernelIsoRangeQuotient {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    cokernel f ≅ ModuleCat.of R (H ⧸ f.hom.range) :=
+    cokernel f ≅ ↧(H ⧸ f.hom.range) :=
   colimit.isoColimitCocone ⟨_, cokernelIsColimit f⟩
 
 -- We now show this isomorphism commutes with the projection of target to the cokernel.
