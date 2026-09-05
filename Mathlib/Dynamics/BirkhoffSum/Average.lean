@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Birkhoff average
@@ -115,6 +116,11 @@ average of `g` over `f` for `n` iterations is equal to `g`. Requires that `0 < n
 theorem birkhoffAverage_of_comp_eq {f : α → α} {g : α → M} (h : g ∘ f = g)
     {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n = g :=
   funext <| birkhoffAverage_apply_of_comp_eq R h hn
+
+@[simp]
+theorem birkhoffAverage_const (f : α → α) (a : M) {n : ℕ} (hn : (n : R) ≠ 0 := by positivity) :
+    birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ a :=
+  birkhoffAverage_of_comp_eq _ rfl (mod_cast hn)
 
 end birkhoffAverage
 

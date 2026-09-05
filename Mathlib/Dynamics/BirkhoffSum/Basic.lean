@@ -84,8 +84,8 @@ theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedP
     (n : ℕ) : birkhoffSum f g n x = n • g x := by
   simp [birkhoffSum, (h.iterate _).eq]
 
-theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
-    (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
+theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N]
+    [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffSum f g n x) = birkhoffSum f (g' ∘ g) n x :=
   map_sum g' _ _
 
@@ -107,6 +107,11 @@ of `φ` over `f` for `n` iterations is equal to `n • φ`. -/
 theorem birkhoffSum_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘ f = φ) (n : ℕ) :
     birkhoffSum f φ n = n • φ :=
   funext <| birkhoffSum_apply_of_comp_eq h n
+
+@[simp]
+theorem birkhoffSum_const (f : α → α) (a : M) {n : ℕ} :
+    birkhoffSum f (fun _ ↦ a) n = n • fun _ ↦ a :=
+  birkhoffSum_of_comp_eq rfl n
 
 end AddCommMonoid
 
