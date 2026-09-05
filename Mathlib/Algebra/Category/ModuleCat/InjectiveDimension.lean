@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
@@ -15,23 +14,37 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 
 # Injective Dimension in ModuleCat
 
+This file deals with preservation of `injectiveDimension` in (semi) linear equivalences.
+Previously we only know this for linear equivalence within same universe level, now it works with
+all universe level where the ring `R` is small.
+
+## Main Results
+
+* `ModuleCat.hasInjectiveDimensionLE_iff_of_linearEquiv`: `HasInjectiveDimensionLE` is preserved
+  under arbitrary linear equivalence.
+
+* `ModuleCat.hasInjectiveDimensionLE_iff_of_semiLinearEquiv`: `HasInjectiveDimensionLE` is preserved
+  under arbitrary semi-linear equivalence.
+
+* `ModuleCat.injectiveDimension_eq_of_semiLinearEquiv`: `injectiveDimension` is preserved
+  under arbitrary semi-linear equivalence.
+
+* `ModuleCat.injectiveDimension_eq_of_linearEquiv`: `injectiveDimension` is preserved
+  under arbitrary linear equivalence.
+
 -/
 
 public section
 
 universe v v' u u'
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
-open CategoryTheory Abelian
+open CategoryTheory
 
 namespace ModuleCat
 
-section
-
-variable [Small.{v} R] {R' : Type u'} [CommRing R'] (e : R ≃+* R')
-
-lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux
+private lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux [Small.{v} R]
     {M : ModuleCat.{v} R} {N : ModuleCat.{max v v'} R}
     (e : M ≃ₗ[R] N) (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
   have : Small.{max v v'} R := small_lift R
@@ -54,23 +67,34 @@ lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux
       ModuleCat.shortComplexOfCompEqZero _ _ f'.exact_map_mkQ_range.linearMap_comp_eq_zero
     have exactS' := ModuleCat.shortComplex_shortExact S'
       f'.exact_map_mkQ_range injf' (Submodule.mkQ_surjective _)
-    let e : ModuleCat.of R (I ⧸ f.hom.range) ≃ₗ[R] ModuleCat.of R (I' ⧸ f'.range) :=
+    let eCoker : ModuleCat.of R (I ⧸ f.hom.range) ≃ₗ[R] ModuleCat.of R (I' ⧸ f'.range) :=
       Submodule.Quotient.equiv _ _ ULift.moduleEquiv.symm (by simp [f', LinearMap.range_comp])
-    have := exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance
-    apply (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
-      ((ih e).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
+    exact (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
+      ((ih eCoker).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
+
+lemma hasInjectiveDimensionLE_iff_of_linearEquiv [Small.{v} R] [Small.{v'} R]
+    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
+    (e : M ≃ₗ[R] N) (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
+  let eM : M ≃ₗ[R] ModuleCat.of R (ULift.{v'} M) := ULift.moduleEquiv.symm
+  rw [hasInjectiveDimensionLE_iff_of_linearEquiv_aux eM,
+    ← hasInjectiveDimensionLE_iff_of_linearEquiv_aux (e.symm.trans eM)]
+
+section SemiLinear
+
+variable [Small.{v} R] {R' : Type u'} [Ring R'] (eR : R ≃+* R')
+
+attribute [local instance] RingHomInvPair.of_ringEquiv
 
 set_option backward.isDefEq.respectTransparency.types false in
-attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
-    {M : ModuleCat.{v} R} {N : ModuleCat.{v} R'} (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N)
+private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
+    {M : ModuleCat.{v} R} {N : ModuleCat.{v} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N)
     (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
   induction n generalizing M N with
   | zero =>
     simp only [HasInjectiveDimensionLE, zero_add, ← injective_iff_hasInjectiveDimensionLT_one,
       ← Module.injective_iff_injective_object R M, ← Module.injective_iff_injective_object R' N]
-    exact ⟨fun _ ↦ Module.Injective.of_ringEquiv e e',
-      fun _ ↦ Module.Injective.of_ringEquiv e.symm e'.symm⟩
+    exact ⟨fun _ ↦ Module.Injective.of_ringEquiv eR e,
+      fun _ ↦ Module.Injective.of_ringEquiv eR.symm e.symm⟩
   | succ n ih =>
     let ⟨I', _, f', _⟩ := EnoughInjectives.presentation N
     have : Module.Injective R' I' := Module.injective_module_of_injective_object R' I'
@@ -80,72 +104,56 @@ lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
     have exactS' := ModuleCat.shortComplex_shortExact S'
       f'.hom.exact_map_mkQ_range injf' (Submodule.mkQ_surjective _)
     let I : ModuleCat.{v} R :=
-      let := Module.compHom I' e.toRingHom
+      let := Module.compHom I' eR.toRingHom
       ModuleCat.of R I'
-    let eI : I ≃ₛₗ[RingHomClass.toRingHom e] I' := {
+    let eI : I ≃ₛₗ[RingHomClass.toRingHom eR] I' := {
       __ := AddEquiv.refl I
       map_smul' r i := rfl }
     have : Injective (ModuleCat.of R I) := by
       rw [← Module.injective_iff_injective_object]
-      exact Module.Injective.of_ringEquiv e.symm eI.symm
-    let f : M →ₗ[R] I := eI.symm.toLinearMap.comp (f'.hom.comp e'.toLinearMap)
+      exact Module.Injective.of_ringEquiv eR.symm eI.symm
+    let f : M →ₗ[R] I := eI.symm.toLinearMap.comp (f'.hom.comp e.toLinearMap)
     have injf : Function.Injective f := by simpa [f]
     let S : ShortComplex (ModuleCat.{v} R) :=
       ModuleCat.shortComplexOfCompEqZero _ _ f.exact_map_mkQ_range.linearMap_comp_eq_zero
     have exactS := ModuleCat.shortComplex_shortExact S
       f.exact_map_mkQ_range injf (Submodule.mkQ_surjective _)
-    have eqmap : f'.hom.range.map eI.symm.toLinearMap = f.range := by
-      simp [f, LinearMap.range_comp]
-    let eCoker : ModuleCat.of R (I ⧸ f.range) ≃ₛₗ[RingHomClass.toRingHom e]
-      ModuleCat.of R' (I' ⧸ f'.hom.range) := {
-        __ := Submodule.mapQ _ _ eI.toLinearMap
-          (by simp [← eqmap, Submodule.map_equiv_eq_comap_symm])
-        invFun := Submodule.mapQ _ _ eI.symm.toLinearMap
-          (by simp [← eqmap, ← Submodule.map_le_iff_le_comap])
-        left_inv x := Submodule.Quotient.induction_on _ x (by simp)
-        right_inv x := Submodule.Quotient.induction_on _ x (by simp) }
+    let eCoker : ModuleCat.of R (I ⧸ f.range) ≃ₛₗ[RingHomClass.toRingHom eR]
+      ModuleCat.of R' (I' ⧸ f'.hom.range) :=
+      Submodule.Quotient.equiv _ _ eI
+        (by simp [f, ← Submodule.map_symm_eq_iff eI, LinearMap.range_comp])
     exact (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
       ((ih eCoker).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
 
-set_option backward.isDefEq.respectTransparency.types false in
-attribute [local instance] RingHomInvPair.of_ringEquiv in
+attribute [local instance] small_lift in
 lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv [Small.{v'} R']
-    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N)
+    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N)
     (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
   let eM : M ≃ₗ[R] ModuleCat.of R (ULift.{v'} M) := ULift.moduleEquiv.symm
   let eN : N ≃ₗ[R'] ModuleCat.of R' (ULift.{v} N) := ULift.moduleEquiv.symm
   rw [hasInjectiveDimensionLE_iff_of_linearEquiv_aux eM,
     hasInjectiveDimensionLE_iff_of_linearEquiv_aux eN]
-  have : Small.{max v v'} R := small_lift R
-  have : Small.{max v v'} R' := small_lift R'
-  exact hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux e ((eM.symm.trans e').trans eN) n
+  exact hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux eR ((eM.symm.trans e).trans eN) n
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma injectiveDimension_eq_of_semiLinearEquiv [Small.{v'} R']
-    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N) :
+    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N) :
     injectiveDimension M = injectiveDimension N := by
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot => simpa [injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton] using
-      e'.subsingleton_congr
+      e.subsingleton_congr
   | coe n =>
     induction n with
     | top => simp
     | coe n =>
-      norm_cast
-      simp only [injectiveDimension_le_iff]
-      exact hasInjectiveDimensionLE_iff_of_semiLinearEquiv e e' n
+      simp [injectiveDimension_le_iff, hasInjectiveDimensionLE_iff_of_semiLinearEquiv eR e n]
 
-end
-
-section
+end SemiLinear
 
 variable [Small.{v} R] [Small.{v'} R] {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
 
 lemma injectiveDimension_eq_of_linearEquiv (e : M ≃ₗ[R] N) :
     injectiveDimension M = injectiveDimension N :=
   injectiveDimension_eq_of_semiLinearEquiv.{v, v'} (M := M) (N := N) (RingEquiv.refl R) e
-
-end
 
 end ModuleCat
