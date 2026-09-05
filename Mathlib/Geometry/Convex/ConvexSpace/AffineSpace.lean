@@ -20,6 +20,8 @@ This file shows that every affine space is a convex space.
 * `AddTorsor.sConvexComb_eq_affineCombination`: The convex combination equals the affine
   combination.
 * `AddTorsor.convexCombPair_eq_lineMap`: Binary convex combinations are given by `lineMap`.
+* `Convexity.IsCancelConvexSpace.of_addTorsor`: An affine space modelled on a torsion-free module
+  over linearly ordered scalars is a cancellative convex space.
 -/
 
 public noncomputable section
@@ -191,3 +193,21 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
   simp [vsub_self]
 
 end AddTorsor
+
+namespace Convexity
+
+/-- An affine space modelled on a torsion-free module over linearly ordered scalars is a
+cancellative convex space. -/
+instance IsCancelConvexSpace.of_addTorsor {R V P : Type*} [Ring R] [LinearOrder R]
+    [IsStrictOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+    [Module.IsTorsionFree R V] [ConvexSpace R P] [IsAffineConvexSpace R V P] :
+    IsCancelConvexSpace R P where
+  convexCombPair_left_injective a b ha hb hab y x₁ x₂ hx := by
+    simp only [AddTorsor.convexCombPair_eq_lineMap, AffineMap.lineMap_apply] at hx
+    have ha' : IsRegular a :=
+      ⟨(strictMono_mul_left_of_pos ha).injective, (strictMono_mul_right_of_pos ha).injective⟩
+    have : x₁ -ᵥ y = x₂ -ᵥ y :=
+      Module.IsTorsionFree.isSMulRegular (M := V) ha' (vadd_right_cancel _ hx)
+    simpa using congr($this +ᵥ y)
+
+end Convexity

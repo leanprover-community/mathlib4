@@ -677,8 +677,18 @@ lemma StrictMono.mul [PosMulStrictMono M₀] [MulPosStrictMono M₀] (hf : Stric
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀}
-  {m n : ℕ}
+variable [LinearOrder M₀] {a b : M₀} {m n : ℕ}
+
+lemma IsLeftRegular.of_pos [PosMulStrictMono M₀] (ha : 0 < a) : IsLeftRegular a :=
+  (strictMono_mul_left_of_pos ha).injective
+
+lemma IsRightRegular.of_pos [MulPosStrictMono M₀] (ha : 0 < a) : IsRightRegular a :=
+  (strictMono_mul_right_of_pos ha).injective
+
+lemma IsRegular.of_pos [PosMulStrictMono M₀] [MulPosStrictMono M₀] (ha : 0 < a) : IsRegular a :=
+  ⟨.of_pos ha, .of_pos ha⟩
+
+variable [PosMulStrictMono M₀]
 
 lemma pow_le_pow_iff_left₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
     a ^ n ≤ b ^ n ↔ a ≤ b :=
