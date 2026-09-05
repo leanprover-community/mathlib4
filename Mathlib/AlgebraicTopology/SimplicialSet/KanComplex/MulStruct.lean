@@ -173,9 +173,10 @@ namespace RelStruct₀
 
 /-- In dimension `0`, the type `RelStruct₀` identify to a type of edges
 between `0`-simplices. -/
+@[implicit_reducible, simps]
 def equiv₀ {f g : X.PtSimplex 0 x} :
     RelStruct₀ f g ≃
-      Edge (X := X) (PtSimplex.equiv₀ x g) (PtSimplex.equiv₀ x f) where
+      X.Edge (PtSimplex.equiv₀ x g) (PtSimplex.equiv₀ x f) where
   toFun h :=
     Edge.mk (yonedaEquiv h.map)
       (by simp [← stdSimplex.yonedaEquiv_δ_comp, dsimp% h.δ_succ_map])
