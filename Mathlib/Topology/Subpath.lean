@@ -223,6 +223,20 @@ theorem concat_subpath (γ : Path a b) (t : Fin (n + 1) → I) :
       (γ.subpath (t 0) (t (last n))) :=
   ⟨Homotopy.concatSubpath γ t⟩
 
+/-- Two consecutive subpaths are homotopic to the subpath between their outer endpoints. -/
+@[simp]
+theorem subpath_trans_subpath (γ : Path a b) (s t u : I) :
+    Homotopic ((γ.subpath s t).trans (γ.subpath t u)) (γ.subpath s u) :=
+  ⟨Homotopy.subpathTransSubpath γ s t u⟩
+
+/-- Composition of consecutive subpath classes is the class of the subpath between their outer
+endpoints. -/
+@[simp]
+theorem mk_subpath_trans_subpath (γ : Path a b) (s t u : I) : (Quotient.mk (γ.subpath s t)).trans
+    (Quotient.mk (γ.subpath t u)) = Quotient.mk (γ.subpath s u) := by
+  rw [← Quotient.mk_trans]
+  exact Quotient.eq.mpr (Path.Homotopic.subpath_trans_subpath γ s t u)
+
 end Path.Homotopic
 
 end
