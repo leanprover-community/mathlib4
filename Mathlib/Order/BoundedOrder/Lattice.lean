@@ -77,17 +77,74 @@ end LinearOrder
 
 section WellFounded
 
-@[to_dual (attr := elab_as_elim)]
-theorem WellFoundedGT.induction_top [Preorder α] [WellFoundedGT α] [OrderTop α]
-    {P : α → Prop} (hexists : ∃ M, P M) (hind : ∀ N ≠ ⊤, P N → ∃ M > N, P M) : P ⊤ := by
-  contrapose! hexists
-  intro M
-  induction M using WellFoundedGT.induction with
-  | ind x IH =>
-    by_cases hx : x = ⊤
-    · exact hx ▸ hexists
-    · intro hx'
-      obtain ⟨M, hM, hM'⟩ := hind x hx hx'
-      exact IH _ hM hM'
+/-- Let `r` be a relation on `α`, let `f : α → β` be a function, let `C : β → Prop`, and
+let `bot : α`. This induction principle shows that `C (f bot)` holds, given that
+* some `a` that is accessible by `r` satisfies `C (f a)`, and
+* for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
+  satisfying `r c b` and `C (f c)`. -/
+theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : β → Prop}
+    {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) : C (f a) → C (f bot) :=
+  (@Acc.recOn _ _ (fun x _ => C (f x) → C (f bot)) _ ha) fun x _ ih' hC =>
+    (eq_or_ne (f x) (f bot)).elim (fun h => h ▸ hC) (fun h =>
+      let ⟨y, hy₁, hy₂⟩ := ih x h hC
+      ih' y hy₁ hy₂)
+
+/-- Let `r` be a relation on `α`, let `C : α → Prop` and let `bot : α`.
+This induction principle shows that `C bot` holds, given that
+* some `a` that is accessible by `r` satisfies `C a`, and
+* for each `b ≠ bot` such that `C b` holds, there is `c` satisfying `r c b` and `C c`. -/
+theorem Acc.induction_bot {α} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : α → Prop}
+    (ih : ∀ b, b ≠ bot → C b → ∃ c, r c b ∧ C c) : C a → C bot :=
+  ha.induction_bot' ih
+
+/-- Let `r` be a well-founded relation on `α`, let `f : α → β` be a function,
+let `C : β → Prop`, and let `bot : α`.
+This induction principle shows that `C (f bot)` holds, given that
+* some `a` satisfies `C (f a)`, and
+* for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
+  satisfying `r c b` and `C (f c)`. -/
+theorem WellFounded.induction_bot' {α β} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
+    {C : β → Prop} {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) :
+    C (f a) → C (f bot) :=
+  (hwf.apply a).induction_bot' ih
+
+/-- Let `r` be a well-founded relation on `α`, let `C : α → Prop`, and let `bot : α`.
+This induction principle shows that `C bot` holds, given that
+* some `a` satisfies `C a`, and
+* for each `b` that satisfies `C b`, there is `c` satisfying `r c b` and `C c`.
+
+The naming is inspired by the fact that when `r` is transitive, it follows that `bot` is
+the smallest element w.r.t. `r` that satisfies `C`. -/
+theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
+    {C : α → Prop} (ih : ∀ b, b ≠ bot → C b → ∃ c, r c b ∧ C c) : C a → C bot :=
+  hwf.induction_bot' ih
+
+/-- Let `α` be a type with well-founded `<`, let `f : α → β` be a function, and let `C : β → Prop`.
+This induction principle shows that `C (f ⊥)` holds, given that
+* some `a` satisfies `C (f a)`, and
+* for each `b` such that `f b ≠ f ⊥` and `C (f b)` holds, there is `c < b` with `C (f c)`. -/
+@[to_dual
+/-- Let `α` be a type with well-founded `>`, let `f : α → β` be a function, and let `C : β → Prop`.
+This induction principle shows that `C (f ⊤)` holds, given that
+* some `a` satisfies `C (f a)`, and
+* for each `b` such that `f b ≠ f ⊤` and `C (f b)` holds, there is `c > b` with `C (f c)`. -/]
+theorem WellFoundedLT.induction_bot' {α β} [LT α] [Bot α] [WellFoundedLT α]
+    {a : α} {C : β → Prop} {f : α → β} (ih : ∀ b, f b ≠ f ⊥ → C (f b) → ∃ c < b, C (f c)) :
+    C (f a) → C (f ⊥) :=
+  (wellFounded_lt.apply a).induction_bot' ih
+
+/-- Let `α` be a type with well-founded `<`, and let `C : β → Prop`.
+This induction principle shows that `C ⊥` holds, given that
+* some `a` satisfies `C a`, and
+* for each `b` such that `b ≠ ⊥` and `C b` holds, there is `c < b` with `C c`. -/
+@[to_dual
+/-- Let `α` be a type with well-founded `>`, and let `C : β → Prop`.
+This induction principle shows that `C ⊤` holds, given that
+* some `a` satisfies `C a`, and
+* for each `b` such that `b ≠ ⊤` and `C b` holds, there is `c > b` with `C c`. -/]
+theorem WellFoundedLT.induction_bot {α} [LT α] [Bot α] [WellFoundedLT α]
+    {a : α} {C : α → Prop} (ih : ∀ b, b ≠ ⊥ → C b → ∃ c < b, C c) :
+    C a → C ⊥ :=
+  (wellFounded_lt.apply a).induction_bot' ih
 
 end WellFounded
