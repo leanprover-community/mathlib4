@@ -90,7 +90,7 @@ theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = 
 
 theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
     piPremeasure m s ≤ piPremeasure m t :=
-  Finset.prod_le_prod' fun _ _ => measure_mono (Set.image_mono h)
+  Finset.prod_le_prod fun _ _ => measure_mono (Set.image_mono h)
 
 theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
     piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by
@@ -390,8 +390,7 @@ lemma pi_map_pi {X Y : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (
   refine (pi_eq fun s hs ↦ ?_).symm
   rw [map_apply_of_aemeasurable _ (.univ_pi hs)]
   swap
-  · exact aemeasurable_pi_lambda _
-      fun i ↦ (hf i).comp_quasiMeasurePreserving (quasiMeasurePreserving_eval _ i)
+  · exact .of_eval fun i ↦ (hf i).comp_quasiMeasurePreserving (quasiMeasurePreserving_eval _ i)
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' (Set.univ.pi s) =
       Set.univ.pi (fun i ↦ (f i) ⁻¹' (s i)) := by ext x; simp
   rw [this, pi_pi]
@@ -558,7 +557,7 @@ instance _root_.IsUnifLocDoublingMeasure.pi {ι : Type*} [Fintype ι] {X : ι �
       IsUnifLocDoublingMeasure.eventually_measure_le_doublingConstant_mul (μ i),
     eventually_mem_nhdsWithin] with r hr (hr₀ : 0 < r) x
   simpa (disch := positivity) [Finset.prod_mul_distrib, closedBall_pi, pi_pi]
-    using Fintype.prod_mono' fun i ↦ hr i (x i)
+    using Fintype.prod_mono fun i ↦ hr i (x i)
 
 instance IsUnifLocDoublingMeasure.volume_pi {ι : Type*} [Fintype ι] {X : ι → Type*}
     [∀ i, PseudoMetricSpace (X i)] [∀ i, MeasureSpace (X i)]
