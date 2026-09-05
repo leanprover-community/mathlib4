@@ -58,8 +58,8 @@ inductive hasFiniteResolutionOfLength (P : ObjectProperty C) : ℕ → ObjectPro
 
 /-- Let `C` be a category, `P : ObjectProperty C` be a property of objects in `C`.
 We say that `X : C` has a finite `P`-resolution if it has a `P`-resolution of some finite length. -/
-class HasFiniteResolution (P : ObjectProperty C) (X : C) : Prop where
-  out (P X) : ∃ n : ℕ, P.HasFiniteResolutionOfLength n X
+def hasFiniteResolution (P : ObjectProperty C) : ObjectProperty C :=
+  ⨆ n : ℕ, P.HasFiniteResolutionOfLength n
 
 variable {P Q : ObjectProperty C} {X : C} {n : ℕ}
 
