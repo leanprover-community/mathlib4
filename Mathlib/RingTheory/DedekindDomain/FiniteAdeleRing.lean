@@ -109,6 +109,16 @@ namespace FiniteAdeleRing
 /-- `𝔸ᶠ[R, K]` is notation for `IsDedekindDomain.FiniteAdeleRing R K`. -/
 scoped notation:max "𝔸ᶠ[" R ", " K "]" => FiniteAdeleRing R K
 
+variable {R K}
+
+lemma cofinite_mem_adicCompletionIntegers (a : FiniteAdeleRing R K) : ∀ᶠ v in Filter.cofinite,
+    a v ∈ v.adicCompletionIntegers K := a.2
+
+theorem finite_valued_one_lt (a : FiniteAdeleRing R K) : {v | 1 < Valued.v (a v)}.Finite := by
+  simpa [mem_adicCompletionIntegers] using a.cofinite_mem_adicCompletionIntegers
+
+variable (R K)
+
 /--
 The canonical map from `K` to the finite adeles of `K`.
 
@@ -173,6 +183,11 @@ theorem infinite_valued_ne_one_of_not_isUnit {a : 𝔸ᶠ[R, K]} (ha₀ : ∀ v,
   contrapose! ha
   rw [isUnit_iff]
   exact ⟨ha₀, ha⟩
+
+theorem hasFiniteMulSupport_valued (a : 𝔸ᶠ[R, K]ˣ) :
+    (fun v ↦ Valued.v (a.1 v)).HasFiniteMulSupport := by
+  simp only [Function.HasFiniteMulSupport, Function.mulSupport, ne_eq]
+  exact FiniteAdeleRing.unitsEquiv_finite_valued_eq_one _
 
 variable (R)
 
