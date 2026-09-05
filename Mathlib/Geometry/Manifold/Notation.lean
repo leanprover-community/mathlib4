@@ -394,6 +394,7 @@ partial def findModelInner (e : Expr) : TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "RealInterval"        fromRealInterval    then return some m
   if let some m ← tryStrategy "EuclideanSpace"      fromEuclideanSpace  then return some m
   if let some m ← tryStrategy "UpperHalfPlane"      fromUpperHalfPlane  then return some m
+  if let some m ← tryStrategy "ComplexUnitDisc"     fromUnitDisc        then return some m
   if let some m ← tryStrategy "Units of algebra"    fromUnitsOfAlgebra  then return some m
   if let some m ← tryStrategy "Complex unit circle" fromCircle          then return some m
   if let some m ← tryStrategy "Sphere"              fromSphere          then return some m
@@ -526,21 +527,28 @@ where
         -- Euclidean space, a normed space or a normed field.
         if let some m ← tryFromEuclideanSpace H then
           return m
-        else
-          trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
-          let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
-            match_expr type with
-            | NormedSpace K E _ _ =>
-              if ← withReducible (pureIsDefEq E H) then return some (inst, K)
-              else return none
-            | _ => return none
-          if let some (inst, K) := a then
-            trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
-            return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
-          trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
-            assuming it is a non-trivially normed field"
-          -- Return the trivial model with corners: this will work if `H` is a normed field.
-          mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
+        else if H.isConstOf `UpperHalfPlane || H.isConstOf `Complex.UnitDisc then
+          trace[Elab.DiffGeo.MDiff] "`{H}` is the complex upper half plane or the unit disc"
+          return ← mkAppOptM ``modelWithCornersSelf
+            #[mkConst `Complex, none, mkConst `Complex, none, none]
+        else if H.isConstOf `Circle then
+          trace[Elab.DiffGeo.MDiff] "`{H}` is the complex unit circle"
+          return ← mkAppOptM ``modelWithCornersSelf
+            #[mkConst `Real, none, ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)], none, none]
+        trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
+        let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+          match_expr type with
+          | NormedSpace K E _ _ =>
+            if ← withReducible (pureIsDefEq E H) then return some (inst, K)
+            else return none
+          | _ => return none
+        if let some (inst, K) := a then
+          trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
+          return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
+        trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
+          assuming it is a non-trivially normed field"
+        -- Return the trivial model with corners: this will work if `H` is a normed field.
+        mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
     return m
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
@@ -556,6 +564,12 @@ where
   fromEuclideanSpace : TermElabM Expr := do
     if let some m ← tryFromEuclideanSpace e then return m else
     throwError "`{e}` is not a Euclidean space, half-space or quadrant"
+  /-- Attempt to find a model with corners on the complex unit disc -/
+  fromUnitDisc : TermElabM Expr := do
+    -- We don't use `match_expr` to avoid importing `UpperHalfPlane`.
+    if (← instantiateMVars e).cleanupAnnotations.isConstOf `Complex.UnitDisc then
+      mkAppOptM ``modelWithCornersSelf #[mkConst `Complex, none, mkConst `Complex, none, none]
+    else throwError "`{e}` is not the complex unit disc"
   /-- Attempt to find a model with corners on a closed interval of real numbers,
   or on the unit interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
