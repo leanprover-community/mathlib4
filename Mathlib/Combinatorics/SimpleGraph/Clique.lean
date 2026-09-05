@@ -748,16 +748,6 @@ theorem cliqueNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.cliqueNum ≠ 
   refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
   exact IsClique.card_le_cliqueNum (t := {Classical.arbitrary α}) <| by simp
 
-theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
-  rw [isEmpty_iff]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · intro a
-    have one_clique : G.IsNClique 1 {a} := by simp
-    have : 1 ≤ G.cliqueNum := IsClique.card_le_cliqueNum one_clique.isClique
-    grind
-  · have : ∀ (s : Finset α), s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
-    simp [cliqueNum, this, exists_const]
-
 lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
   · exact Nat.sSup_mem ⟨0, by simp⟩ h
@@ -767,6 +757,14 @@ variable (G) in
 @[simp]
 theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
   Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simp [s.eq_empty_of_isEmpty, ← h.card_eq]
+
+theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
+  refine ⟨fun h ↦ ?_, fun h ↦ G.cliqueNum_of_isEmpty⟩
+  rw [isEmpty_iff]
+  intro a
+  have one_clique : G.IsNClique 1 {a} := by simp
+  have : 1 ≤ G.cliqueNum := IsClique.card_le_cliqueNum one_clique.isClique
+  grind
 
 variable (G) in
 theorem cliqueNum_le_natCard [Finite α] : G.cliqueNum ≤ Nat.card α :=
