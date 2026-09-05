@@ -1,15 +1,21 @@
 /-
 Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Kurniadi Angdinata
+Authors: David Kurniadi Angdinata, Junyan Xu
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
-public import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.Group.Int.Even
+public import Mathlib.GroupTheory.Perm.Sign
+import Mathlib.Algebra.Polynomial.Coeff
+import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.Data.Fin.Tuple.Sort
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic.FinCases
 
 /-!
 # Elliptic divisibility sequences
@@ -64,7 +70,7 @@ Some examples of EDSs include
 
 ## Main statements
 
-* TODO: prove that `normEDS` satisfies `IsEllipticDvdSequence`.
+* `IsEllipticSequence.normEDS`: `normEDS` satisfies `IsEllipticSequence`.
 * TODO: prove that a sequence satisfying `IsEllipticDvdSequence` can be normalised to a `normEDS`.
 
 ## Implementation notes
@@ -90,6 +96,7 @@ polynomials of elliptic curves, omitting a factor of the bivariate `2`-division 
 
 * K Stange, *Elliptic Nets and Elliptic Curves*
 * M Ward, *Memoir on Elliptic Divisibility Sequences*
+* J Xu, *On Elliptic Sequences over Commutative Rings*
 
 ## Tags
 
@@ -97,6 +104,8 @@ elliptic net, elliptic divisibility sequence
 -/
 
 @[expose] public section
+
+open scoped nonZeroDivisors
 
 variable {R S : Type*} [CommRing R] [CommRing S] (W : ℤ → R) {F : Type*} [FunLike F R S]
   [RingHomClass F R S] (f : F)
@@ -259,6 +268,70 @@ lemma atomRel_odd (m : ℤ) : atomRel W (2 * m + 2) (2 * m) 2 0 =
     W (2 * m + 1) * W 1 ^ 3 - W (m + 2) * W m ^ 3 + W (m - 1) * W (m + 1) ^ 3 := by
   grind only [atomRel, atom]
 
+lemma atom_mul_atomRel (m n r s c d : ℤ) : atom W c d * atomRel W m n r s =
+    atom W n d * atomRel W m r s c + atom W n c * atomRel W m r s d +
+    atom W n r * atomRel W m s c d - atom W r d * atomRel W m n s c -
+    atom W r c * atomRel W m n s d - atom W n s * atomRel W m r c d +
+    atom W s d * atomRel W m n r c + atom W s c * atomRel W m n r d +
+    atom W r s * atomRel W m n c d - 2 * atom W m d * atomRel W n r s c := by
+  unfold atomRel
+  ring1
+
+lemma atom_mul_atomRel_fst (m n r c d : ℤ) : atom W c d * atomRel W m n r c =
+    atom W r c * atomRel W m n c d - atom W n c * atomRel W m r c d +
+      atom W m c * atomRel W n r c d := by
+  unfold atomRel
+  ring1
+
+lemma atom_mul_atomRel_snd (m n r c d : ℤ) : atom W c d * atomRel W m n r d =
+    atom W r d * atomRel W m n c d - atom W n d * atomRel W m r c d +
+      atom W m d * atomRel W n r c d := by
+  unfold atomRel
+  ring1
+
+variable {W} in
+lemma atomRel_perm (odd : W.Odd) (σ : Equiv.Perm <| Fin 4) (t : Fin 4 → ℤ) : σ.sign •
+    atomRel W (t <| σ 0) (t <| σ 1) (t <| σ 2) (t <| σ 3) = atomRel W (t 0) (t 1) (t 2) (t 3) := by
+  induction Equiv.Perm.mclosure_swap_castSucc_succ 3 ▸ Submonoid.mem_top σ using
+    Submonoid.closure_induction generalizing t with
+  | mem _ h => rcases h with ⟨_ | _ | _ | -, rfl⟩ <;>
+    simp [Equiv.swap_apply_def] <;> grind only [neg_atomRel₁₂, neg_atomRel₂₃, neg_atomRel₃₄]
+  | one => simp
+  | mul σ τ _ _ hσ hτ => simpa [mul_smul] using congrArg _ (hτ (t ∘ σ)) |>.trans <| hσ t
+
+variable {W} in
+lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
+    (even : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m - 2) 2 0 = 0)
+    (odd : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m) 2 0 = 0) {a b c d : ℤ}
+    (parity : [a, b, c, d].Pairwise (· % 2 = · % 2)) : atomRel W a b c d = 0 := by
+  wlog _ : 0 ≤ a ∧ 0 ≤ b ∧ 0 ≤ c ∧ 0 ≤ d generalizing a b c d with h
+  · exact atomRel_abs neg .. ▸ h (parity.map _ (by grind)) <| by simp
+  wlog _ : d ≤ c ∧ c ≤ b ∧ b ≤ a generalizing a b c d with h
+  · erw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort ![a, b, c, d]) ![a, b, c, d],
+      smul_eq_zero_iff_eq, h <| parity.perm (Equiv.Perm.ofFn_comp_perm _ ![a, b, c, d]).symm .symm]
+    · split_ands <;> apply (fun i ↦ by fin_cases i <;> simp <;> omega : 0 ≤ ![a, b, c, d])
+    · split_ands <;> exact Tuple.monotone_sort _ <| by decide
+  wlog _ : d < c ∧ c < b ∧ b < a
+  · rcases (by omega : a = b ∨ b = c ∨ c = d) with rfl | rfl | rfl <;>
+      simp [pow_mem two 3 |>.right (W 0) <| by grind only [atomRel_same₂₃, atom, odd 1]]
+  replace parity : a % 2 = b % 2 ∧ b % 2 = c % 2 ∧ c % 2 = d % 2 := by grind
+  induction a using @Int.strongRec 0 generalizing b c d with
+  | lt => omega
+  | ge a _ ih =>
+    have ha : atom W (a % 2 + 2) (a % 2) ∈ R⁰ := by
+      rcases a.emod_two_eq_zero_or_one with _ | _ <;> grind (genLocal := 0) [atom, mul_mem]
+    wlog _ : d ≤ a % 2 + 2 generalizing b c d with h
+    · exact ha.left _ <| by rw [atom_mul_atomRel]; grind (genLocal := 0) [= (h), = (ih)]
+    wlog hd : d = a % 2 generalizing b c d with h
+    · rw [show d = a % 2 + 2 by omega]
+      exact ha.left _ <| by rw [atom_mul_atomRel_fst]; grind (genLocal := 0) [= (h), = (ih)]
+    wlog _ : c = a % 2 + 2 generalizing b c with h
+    · exact ha.left _ <| by rw [hd, atom_mul_atomRel_snd]; grind (genLocal := 0) [= (h), = (ih)]
+    by_cases a = b + 2
+    · grind (genLocal := 0) [odd <| b / 2, atomRel_neg₄ W a b c d,
+        atomRel_avg_sub W (by simp) |>.trans <| even <| a / 2]
+    · grind (genLocal := 0) [= (ih), =_ atomRel_neg₄, @atomRel_avg_sub _ _ W a b c d <| by grind]
+
 lemma map_atomRel (a b c d : ℤ) : f (atomRel W a b c d) = atomRel (f ∘ W) a b c d := by
   simp_rw [atomRel, map_add, map_sub, map_mul, map_atom]
 
@@ -332,9 +405,18 @@ protected lemma smul (h : IsEllipticNet W) (x : R) : IsEllipticNet <| x • W :=
 protected lemma comp (h : IsEllipticNet W) (f : F) : IsEllipticNet <| f ∘ W :=
   fun _ _ _ _ ↦ by rw [← map_rel, h, map_zero]
 
+/-- If a sequence satisfies the even and odd elliptic relations, then it is an elliptic net. -/
+theorem of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
+    (even : ∀ m : ℤ, rel W (m + 1) (m - 1) 1 0 = 0) (odd : ∀ m : ℤ, rel W (m + 1) m 1 0 = 0) :
+    IsEllipticNet W := fun _ _ _ _ ↦ by
+  simp_rw [rel_eq] at *
+  apply atomRel_of_even_odd <;> grind
+
 end IsEllipticNet
 
 namespace IsEllipticSequence
+
+open IsEllipticNet
 
 variable {W}
 
@@ -342,10 +424,16 @@ protected lemma id : IsEllipticSequence (id : ℤ → ℤ) :=
   IsEllipticNet.id.isEllipticSequence
 
 protected lemma smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| x • W :=
-  fun p q r ↦ by grind [IsEllipticNet.rel, h p q r, Pi.smul_apply, smul_eq_mul]
+  fun p q r ↦ by grind [rel, h p q r, Pi.smul_apply, smul_eq_mul]
 
 protected lemma comp (h : IsEllipticSequence W) (f : F) : IsEllipticSequence <| f ∘ W :=
   fun _ _ _ ↦ by rw [← IsEllipticNet.map_rel, h, map_zero]
+
+/-- If a sequence satisfies the even and odd elliptic relations, then it is an elliptic sequence. -/
+theorem of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
+    (even : ∀ m : ℤ, rel W (m + 1) (m - 1) 1 0 = 0) (odd : ∀ m : ℤ, rel W (m + 1) m 1 0 = 0) :
+    IsEllipticSequence W :=
+  IsEllipticNet.of_even_odd neg one two even odd |>.isEllipticSequence
 
 end IsEllipticSequence
 
@@ -599,8 +687,7 @@ lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
     normEDS b c d (m + 2) * normEDS b c d m ^ 3 -
       normEDS b c d (m - 1) * normEDS b c d (m + 1) ^ 3 := by
   simp_rw [normEDS, preNormEDS_odd, ite_eq_right m.not_even_two_mul_add_one, Int.even_add,
-    Int.even_sub,
-    even_two, iff_true, Int.not_even_one, iff_false]
+    Int.even_sub, even_two, iff_true, Int.not_even_one, iff_false]
   split_ifs <;> ring1
 
 lemma normEDS_atomRel_even (m : ℤ) :
@@ -610,6 +697,12 @@ lemma normEDS_atomRel_even (m : ℤ) :
 lemma normEDS_atomRel_odd (m : ℤ) :
     IsEllipticNet.atomRel (normEDS b c d) (2 * m + 2) (2 * m) 2 0 = 0 := by
   simp [IsEllipticNet.atomRel_odd, normEDS_odd]
+
+lemma normEDS_rel_even (m : ℤ) : IsEllipticNet.rel (normEDS b c d) (m + 1) (m - 1) 1 0 = 0 := by
+  simp [IsEllipticNet.rel_even, normEDS_even]
+
+lemma normEDS_rel_odd (m : ℤ) : IsEllipticNet.rel (normEDS b c d) (m + 1) m 1 0 = 0 := by
+  simp [IsEllipticNet.rel_odd, normEDS_odd]
 
 /--
 Strong recursion principle for a normalised EDS: if we have
@@ -807,3 +900,14 @@ lemma map_complEDS (k n : ℤ) : f (complEDS b c d k n) = complEDS (f b) (f c) (
   simp [complEDS]
 
 end Map
+
+open Polynomial in
+/-- The canonical normalised EDS is an elliptic net. -/
+theorem IsEllipticNet.normEDS : IsEllipticNet <| normEDS b c d := by
+  convert of_even_odd (normEDS_neg X (C c) (C d)) (by simp) (by simp [X_mem_nonZeroDivisors])
+    (normEDS_rel_even _ _ _) (normEDS_rel_odd _ _ _) |>.comp <| evalRingHom b
+  ext; simp_rw [Function.comp_apply, map_normEDS, coe_evalRingHom, eval_X, eval_C]
+
+/-- The canonical normalised EDS is an elliptic sequence. -/
+theorem IsEllipticSequence.normEDS : IsEllipticSequence <| normEDS b c d :=
+  IsEllipticNet.normEDS b c d |>.isEllipticSequence
