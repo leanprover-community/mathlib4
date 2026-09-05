@@ -54,6 +54,11 @@ instance str (C : Cat.{v, u}) : Category.{v, u} C :=
 def of (C : Type u) [Category.{v} C] : Cat.{v, u} :=
   Bundled.of C
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CategoryTheory.Cat.of X` as `↧X`. -/
+@[app_delab CategoryTheory.Cat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 section
 
 #adaptation_note /-- Removed `private`:
@@ -352,7 +357,7 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
 
 @[simp] theorem of_α (C) [Category* C] : (of C).α = C := rfl
 
-@[simp] theorem coe_of (C : Cat.{v, u}) : Cat.of C = C := rfl
+@[simp] theorem coe_of (C : Cat.{v, u}) : ↧C = C := rfl
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
@@ -399,7 +404,7 @@ This ought to be modelled as a 2-functor!
 -/
 @[simps]
 def typeToCat : Type u ⥤ Cat where
-  obj X := Cat.of (Discrete X)
+  obj X := ↧(Discrete X)
   map f := (Discrete.functor (Discrete.mk ∘ f)).toCatHom
   map_id X := by
     ext
