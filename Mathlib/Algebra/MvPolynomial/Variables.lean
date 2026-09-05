@@ -315,14 +315,28 @@ theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPo
     _ = eval₂Hom (f₂.comp C) (f₂ ∘ X) p₂ := eval₂Hom_congr' hC hv hp
     _ = f₂ p₂ := RingHom.congr_fun (by ext <;> simp) _
 
+lemma aeval_ite_mem_eq (q : MvPolynomial σ R) {s : Set σ}
+    [DecidablePred (· ∈ s)] [DecidablePred (fun (x : σ →₀ ℕ) ↦ ↑x.support ⊆ s)] :
+    MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q =
+      ∑ x ∈ q.support, if ↑x.support ⊆ s then monomial x (coeff q x) else 0 := by
+  rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
+  refine Finset.sum_congr (by simp) fun u hu ↦ ?_
+  split_ifs with hh
+  · rw [aeval_monomial, monomial_eq, algebraMap_eq, support_sum_monomial_coeff]
+    congr 1
+    exact Finsupp.prod_congr (fun _ _ ↦ by grind)
+  · rw [aeval_monomial]
+    obtain ⟨y, hy₁, hy₂⟩ := not_subset.mp hh
+    refine mul_eq_zero_of_right _ <| Finset.prod_eq_zero hy₁ ?_
+    simp [Finsupp.mem_support_iff.mp hy₁, hy₂]
+
 lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : (q.vars : Set σ) ⊆ s)
     [∀ i, Decidable (i ∈ s)] :
     MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q = q := by
-  rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
-  refine Finset.sum_congr rfl fun u hu ↦ ?_
-  rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
-  congr 1
-  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((mem_vars_iff_mem_support _).mpr ⟨u, hu, hi⟩)])
+  classical
+  rw [aeval_ite_mem_eq]
+  conv_rhs => rw [MvPolynomial.as_sum q]
+  exact Finset.sum_congr rfl (by grind [mem_vars_iff_mem_support])
 
 end EvalVars
 
