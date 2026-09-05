@@ -177,6 +177,10 @@ theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.na
     reflect (F + G) (f * g) = reflect F f * reflect G g :=
   reflect_mul_induction _ _ F G f g f.support.card.le_succ g.support.card.le_succ Ff Gg
 
+theorem map_reflect {S : Type*} [Semiring S] (φ : R →+* S) (N : ℕ) (p : R[X]) :
+    (reflect N p).map φ = reflect N (p.map φ) := by
+  ext n; simp [coeff_reflect]
+
 set_option backward.isDefEq.respectTransparency false in
 lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
     (p.reflect N).natDegree ≤ max N p.natDegree := by
