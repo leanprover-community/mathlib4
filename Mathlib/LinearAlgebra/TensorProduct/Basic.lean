@@ -335,7 +335,7 @@ theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMu
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
 
-attribute [local instance] SMulCommClass.symm
+section 
 
 variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SMulCommClass A S' M]
 
@@ -345,6 +345,10 @@ lemma toAddHom_mapOfCompatibleSMul_eq :
 lemma mem_ker_mapOfCompatibleSMul_iff (x : M ⊗[A] N) :
     x ∈ (mapOfCompatibleSMul R A S M N).ker ↔ x ∈ (mapOfCompatibleSMul R A S' M N).ker :=
   Iff.of_eq rfl
+
+end
+
+attribute [local instance] SMulCommClass.symm
 
 /-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
 then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N` as `S`-modules,
