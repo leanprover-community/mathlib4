@@ -155,6 +155,15 @@ lemma ext_of_isAffine {X Y : Scheme} [IsAffine Y] {f g : X ⟶ Y} (e : f.appTop 
     f = g := by
   rw [← cancel_mono Y.toSpecΓ, Scheme.toSpecΓ_naturality, Scheme.toSpecΓ_naturality, e]
 
+lemma exists_appTop_eq_of_isAffine {X Y : Scheme} [IsAffine Y] (φ : Γ(Y, ⊤) ⟶ Γ(X, ⊤)) :
+    ∃ f : X ⟶ Y, f.appTop = φ := by
+  have h : Y.isoSpec.inv.appTop = (Scheme.ΓSpecIso Γ(Y, ⊤)).inv := by
+    rw [← cancel_epi (Scheme.ΓSpecIso Γ(Y, ⊤)).hom, Iso.hom_inv_id, ← Scheme.toSpecΓ_appTop,
+      ← Scheme.Hom.comp_appTop, Scheme.isoSpec_inv_toSpecΓ, Scheme.Hom.id_appTop]
+  refine ⟨X.toSpecΓ ≫ Spec.map φ ≫ Y.isoSpec.inv, ?_⟩
+  rw [Scheme.Hom.comp_appTop, Scheme.Hom.comp_appTop, h, Scheme.toSpecΓ_appTop, Category.assoc,
+    Scheme.ΓSpecIso_naturality, Iso.inv_hom_id_assoc]
+
 instance (P : MorphismProperty Scheme.{u}) {S : Scheme.{u}} (𝒰 : S.AffineCover P) (i : 𝒰.I₀) :
     IsAffine (𝒰.cover.X i) :=
   inferInstanceAs <| IsAffine (Spec _)
@@ -309,6 +318,15 @@ theorem Scheme.isBasis_affineOpens (X : Scheme) : Opens.IsBasis X.affineOpens :=
   refine ⟨⟨S, X.affineBasisCover_is_basis.isOpen hS⟩, ?_, hxS, hSU⟩
   rcases hS with ⟨i, rfl⟩
   exact isAffineOpen_opensRange _
+
+theorem Scheme.isBasis_affineOpens_le_preimage {X Y : Scheme} (f : X ⟶ Y) {S : Set Y.Opens}
+    (hS : Opens.IsBasis S) :
+    Opens.IsBasis {U : X.Opens | IsAffineOpen U ∧ ∃ V ∈ S, U ≤ f ⁻¹ᵁ V} := by
+  refine Opens.isBasis_iff_nbhd.mpr fun {O x} hx ↦ ?_
+  obtain ⟨V, hV, hxV, -⟩ := Opens.isBasis_iff_nbhd.mp hS (U := ⊤) (x := f x) trivial
+  obtain ⟨U, hU, hxU, hUV⟩ := Opens.isBasis_iff_nbhd.mp X.isBasis_affineOpens
+    (U := O ⊓ f ⁻¹ᵁ V) (x := x) ⟨hx, hxV⟩
+  exact ⟨U, ⟨hU, V, hV, hUV.trans inf_le_right⟩, hxU, hUV.trans inf_le_left⟩
 
 theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : X.Opens) = ⊤ := by
   apply Opens.ext
