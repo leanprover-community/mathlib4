@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
-public import Mathlib.RingTheory.MvPowerSeries.Trunc
+public import Mathlib.RingTheory.MvPowerSeries.Equiv
 
 /-!
 # Formal partial derivatives of multivariate power series
@@ -41,7 +41,7 @@ namespace MvPowerSeries
 
 open MvPolynomial Finsupp
 
-variable {σ R : Type*}
+variable {σ τ R : Type*}
 
 section Semiring
 
@@ -161,6 +161,33 @@ theorem trunc_pderiv [DecidableEq σ] {i : σ} (f : MvPowerSeries σ R) (n : σ 
 theorem pderiv_pow {i : σ} (g : MvPowerSeries σ R) (n : ℕ) :
     pderiv R i (g ^ n) = n * g ^ (n - 1) * pderiv R i g := by
   rw [Derivation.leibniz_pow, smul_eq_mul, nsmul_eq_mul, mul_assoc]
+
+theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPowerSeries σ R} {i : σ} :
+    pderiv S i (map φ f) = map φ (pderiv R i f) := by
+  ext n
+  simp [coeff_pderiv]
+
+/-- Renaming the variables along an injective map commutes with partial differentiation. -/
+lemma pderiv_rename {f : σ → τ} (hf : Function.Injective f) [Filter.TendstoCofinite f]
+    (x : σ) (p : MvPowerSeries σ R) :
+    pderiv R (f x) (rename f p) = rename f (pderiv R x p) := by
+  classical
+  ext n
+  rw [coeff_pderiv, coeff_rename, coeff_rename, Finset.sum_mul]
+  have hle {y : σ →₀ ℕ} (hy : mapDomain f y = n + single (f x) 1) : single x 1 ≤ y := by
+    simp [← mapDomain_apply hf y x, hy]
+  refine Finset.sum_nbij' (· - single x 1) (· + single x 1) ?_ ?_ ?_ ?_ ?_
+  · intro y hy
+    simp only [Set.Finite.mem_toFinset, Set.mem_preimage, Set.mem_singleton_iff] at hy ⊢
+    rw [← add_right_cancel_iff (a := single (f x) 1), ← mapDomain_single (f := f),
+      ← mapDomain_add, tsub_add_cancel_of_le (hle hy), hy, mapDomain_single]
+  · simp [mapDomain_add]
+  · simp +contextual [tsub_add_cancel_of_le, hle]
+  · simp
+  · intro y hy
+    simp only [Set.Finite.mem_toFinset, Set.mem_preimage, Set.mem_singleton_iff] at hy
+    simp [coeff_pderiv, tsub_add_cancel_of_le (hle hy), Finsupp.tsub_apply,
+      ← mapDomain_apply hf y x, hy]
 
 end CommSemiring
 
