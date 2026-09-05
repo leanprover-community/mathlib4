@@ -23,7 +23,7 @@ namespace NumberField.LiesOver
 
 open InfinitePlace InfinitePlace.Completion
 
-variable {K L : Type*} [Field K] [Field L] [Algebra K L] {v : InfinitePlace K} {w : InfinitePlace L}
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K) (w : InfinitePlace L)
 variable [w.LiesOver v]
 
 /-- The ring homomorphism `v.Completion →+* w.Completion` induced by `algebraMap K L`, when `w`
@@ -33,17 +33,17 @@ noncomputable def completionMap : v.Completion →+* w.Completion :=
     UniformSpace.Completion.mapRingHom _ (LiesOver.isometry_algebraMap w v).continuous).comp <|
     (Completion.equiv v).toRingHom
 
-theorem continuous_completionMap : Continuous (completionMap (v := v) (w := w)) :=
+theorem continuous_completionMap : Continuous (completionMap v w) :=
   (continuous_ofCompletion w).comp <|
     UniformSpace.Completion.continuous_map.comp (continuous_toCompletion v)
 
 theorem completionMap_coe (x : WithAbs v.1) :
-    completionMap (x : v.Completion) = ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) :
-      w.Completion) :=
+    completionMap v w (x : v.Completion) =
+      ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) : w.Completion) :=
   Completion.ext <| UniformSpace.Completion.mapRingHom_coe _ x
 
 /-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
-noncomputable scoped instance : Algebra v.Completion w.Completion := completionMap.toAlgebra
+noncomputable scoped instance : Algebra v.Completion w.Completion := (completionMap v w).toAlgebra
 
 scoped instance : IsScalarTower K v.Completion w.Completion :=
   .of_algebraMap_eq fun x ↦ by
@@ -55,6 +55,6 @@ scoped instance : IsScalarTower K v.Completion w.Completion :=
     simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
 
 scoped instance : ContinuousSMul v.Completion w.Completion where
-  continuous_smul := (continuous_completionMap.comp continuous_fst).mul continuous_snd
+  continuous_smul := ((continuous_completionMap v w).comp continuous_fst).mul continuous_snd
 
 end NumberField.LiesOver
