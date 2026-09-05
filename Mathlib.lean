@@ -248,6 +248,7 @@ public import Mathlib.Algebra.Category.Ring.Under.Basic
 public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.Algebra.Category.Ring.Under.Property
 public import Mathlib.Algebra.Category.Semigrp.Basic
+public import Mathlib.Algebra.CayleyDickson
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Algebra.Central.Defs
 public import Mathlib.Algebra.Central.End
@@ -930,6 +931,7 @@ public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Algebra.Octonion
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
@@ -6050,6 +6052,7 @@ public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.NumberField.Units.Basic
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 public import Mathlib.NumberTheory.NumberField.Units.Regulator
+public import Mathlib.NumberTheory.NumberTheoreticTransform
 public import Mathlib.NumberTheory.Ostrowski
 public import Mathlib.NumberTheory.Padics.AddChar
 public import Mathlib.NumberTheory.Padics.Complex
