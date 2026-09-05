@@ -31,10 +31,6 @@ related results.
 The representation of a partition as a multiset is very handy as multisets are very flexible and
 already have a well-developed API.
 
-## TODO
-
-Link this to Young diagrams.
-
 ## Tags
 
 Partition
