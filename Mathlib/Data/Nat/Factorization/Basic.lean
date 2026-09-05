@@ -135,6 +135,15 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
   · simpa only [factorization_eq_zero_of_not_prime n pp] using! hn.bot_lt
 
 /-- An upper bound on `n.factorization p` -/
+theorem mul_factorization_le {n p : ℕ} :
+    p * n.factorization p ≤ n := by
+  obtain rfl | hp := eq_or_ne p 1
+  · simp
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  grw [Nat.mul_le_pow hp, Nat.ordProj_le _ hn]
+
+/-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by
   if hn : n = 0 then simp [hn] else
   if pp : p.Prime then
