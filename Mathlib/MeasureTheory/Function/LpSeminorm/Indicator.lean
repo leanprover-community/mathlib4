@@ -35,10 +35,15 @@ variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
   {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
   {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
 
-lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : MeasurableSet s)
-    (hfi : AEStronglyMeasurable (s.indicator f) μ)
-    (hfr : AEStronglyMeasurable f (μ.restrict s)) :
+lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by
+  have A : AEStronglyMeasurable (s.indicator f) μ ↔ AEStronglyMeasurable f (μ.restrict s) :=
+    aestronglyMeasurable_indicator_iff hs
+  by_cases hfi : AEStronglyMeasurable (s.indicator f) μ; swap
+  · have hfr : ¬ AEStronglyMeasurable f (μ.restrict s) := by
+      simp [← A, hfi]
+    simp [eLpNorm_of_not_aestronglyMeasurable, hfi, hfr]
+  have hfr : AEStronglyMeasurable f (μ.restrict s) := A.1 hfi
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero hfi, eLpNorm_exponent_zero hfr]
   by_cases hp_top : p = ∞
@@ -60,11 +65,8 @@ lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : MeasurableSet s) :
     ENNReal.essSup_indicator_eq_essSup_restrict (f := fun x ↦ ‖f x‖ₑ) hs
 
 lemma eLpNorm_restrict_le (f : α → ε') (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
-    eLpNorm f p (μ.restrict s) ≤ eLpNorm f p μ := by
-  by_cases hf : AEStronglyMeasurable f μ
-  · exact eLpNorm_mono_measure f Measure.restrict_le_self hf.restrict
-  · rw [eLpNorm_of_not_aestronglyMeasurable hf]
-    exact le_top
+    eLpNorm f p (μ.restrict s) ≤ eLpNorm f p μ :=
+  eLpNorm_mono_measure f Measure.restrict_le_self
 
 lemma eLpNorm_indicator_le (f : α → ε) (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by

@@ -140,6 +140,8 @@ is finite if `p < ∞`, or `essSup ‖f‖ < ∞` if `p = ∞`. -/
 def MemLp [TopologicalSpace ε] (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : Prop :=
   eLpNorm f p μ < ∞
 
+lemma memLp_iff [TopologicalSpace ε] {f : α → ε} : MemLp f p μ ↔ eLpNorm f p μ < ∞ := Iff.rfl
+
 theorem MemLp.aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0∞} (h : MemLp f p μ) :
     AEStronglyMeasurable f μ :=
   aestronglyMeasurable_of_eLpNorm_ne_top h.ne
@@ -166,8 +168,7 @@ and to `essSup ‖f‖ μ` for `p = ∞`.
 
 This is well-defined only if `MemLp f p μ`. Otherwise, it equals `0`. -/
 noncomputable def lpNorm (f : α → E) (p : ℝ≥0∞) (μ : Measure α) : ℝ :=
-  open scoped Classical in
-  if AEStronglyMeasurable f μ then (eLpNorm f p μ).toReal else 0
+  (eLpNorm f p μ).toReal
 
 end Lp
 
