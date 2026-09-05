@@ -437,47 +437,6 @@ theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontr
 
 end
 
-section Limit
-
-variable {E : Type*} [Zero E] [TopologicalSpace E] {ℱ : Filtration ι m} {f : ι → Ω → E}
-  {μ : Measure Ω}
-
-open scoped Classical in
-/-- Given a process `f` and a filtration `ℱ`, if `f` converges to some `g` almost everywhere and
-`g` is `⨆ n, ℱ n`-measurable, then `limitProcess f ℱ μ` chooses said `g`, else it returns 0.
-
-This definition is used to phrase the a.e. martingale convergence theorem
-`Submartingale.ae_tendsto_limitProcess` where an L¹-bounded submartingale `f` adapted to `ℱ`
-converges to `limitProcess f ℱ μ` `μ`-almost everywhere. -/
-noncomputable def limitProcess (f : ι → Ω → E) (ℱ : Filtration ι m)
-    (μ : Measure Ω) :=
-  if h : ∃ g : Ω → E,
-    StronglyMeasurable[⨆ n, ℱ n] g ∧ ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (g ω)) then
-  Classical.choose h else 0
-
-theorem stronglyMeasurable_limitProcess : StronglyMeasurable[⨆ n, ℱ n] (limitProcess f ℱ μ) := by
-  rw [limitProcess]
-  split_ifs with h
-  exacts [(Classical.choose_spec h).1, stronglyMeasurable_zero]
-
-theorem stronglyMeasurable_limit_process' : StronglyMeasurable[m] (limitProcess f ℱ μ) :=
-  stronglyMeasurable_limitProcess.mono (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _)
-
-theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
-    {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) : MemLp (limitProcess f ℱ μ) p μ := by
-  rw [limitProcess]
-  split_ifs with h
-  · refine ⟨StronglyMeasurable.aestronglyMeasurable
-      ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _)),
-      lt_of_le_of_lt (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ (Classical.choose_spec h).2)
-        (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
-    simp_rw [liminf_eq, eventually_atTop]
-    exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
-  · exact MemLp.zero
-
-end Limit
-
 section piLE
 
 /-! ### Filtration of the first events -/
