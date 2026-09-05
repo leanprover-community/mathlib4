@@ -51,7 +51,7 @@ abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPai
   MorphismProperty.Arrow.mk (P := TopCat.isEmbedding) f h
 
 /-- Constructor for a topological pair (X, A) where A ⊆ X. -/
-abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := (TopCat.of A))
+abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := ↧A)
   (X := X) (TopCat.ofHom { toFun := Subtype.val }) Topology.IsEmbedding.subtypeVal
 
 /-- Constructs the topological pair `(X, ∅)` from `X : TopCat`. -/

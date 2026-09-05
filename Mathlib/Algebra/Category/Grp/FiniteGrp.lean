@@ -62,7 +62,7 @@ instance (G : FiniteGrp) : Finite G := G.isFinite
 @[to_additive /-- Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
 finite additive group. -/]
 def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
-  toGrp := GrpCat.of G
+  toGrp := ↧G
   isFinite := ‹_›
 
 /-- The morphism in `FiniteGrp`, induced from a morphism of the category `GrpCat`. -/
@@ -77,3 +77,17 @@ lemma ofHom_apply {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : 
   rfl
 
 end FiniteGrp
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `FiniteAddGrp.of X` as `↧X`. -/
+@[app_delab FiniteAddGrp.of]
+meta def FiniteAddGrp.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `FiniteGrp.of X` as `↧X`. -/
+@[app_delab FiniteGrp.of]
+meta def FiniteGrp.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

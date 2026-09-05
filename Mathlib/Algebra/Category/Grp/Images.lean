@@ -33,8 +33,7 @@ section
 
 -- implementation details of `IsImage` for `AddCommGrpCat`; use the API, not these
 /-- the image of a morphism in `AddCommGrpCat` is just the bundling of `AddMonoidHom.range f` -/
-def image : AddCommGrpCat :=
-  AddCommGrpCat.of (AddMonoidHom.range f.hom)
+def image : AddCommGrpCat := ↧f.hom.range
 
 /-- the inclusion of `image f` into the target -/
 def image.ι : image f ⟶ H :=
@@ -102,7 +101,7 @@ noncomputable def isImage : IsImage (monoFactorisation f) where
 agrees with the usual group-theoretical range.
 -/
 noncomputable def imageIsoRange {G H : AddCommGrpCat.{0}} (f : G ⟶ H) :
-    Limits.image f ≅ AddCommGrpCat.of f.hom.range :=
+    Limits.image f ≅ ↧f.hom.range :=
   IsImage.isoExt (Image.isImage f) (isImage f)
 
 end AddCommGrpCat

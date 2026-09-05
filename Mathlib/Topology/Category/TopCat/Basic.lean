@@ -40,10 +40,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `TopCat.of X` being printed as `{ carrier := X, str := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `TopCat.of X` as `↧X`, and in particular prevents it being printed as
+`{ carrier := X, str := ... }` by `delabStructureInstance`. -/
 @[app_delab TopCat.of]
-meta def TopCat.delabOf : Delab := delabApp
+meta def TopCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -165,7 +165,7 @@ equal function coercion for a continuous map `C(X, Y)`.
 theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
     {f : C(X, Y)} {x} :
     @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
+      (fun _ ↦ (CategoryTheory.forget TopCat).obj ↧Y) ConcreteCategory.instFunLike
       (ofHom f) x =
     @DFunLike.coe C(X, Y) X
       (fun _ ↦ Y) _
@@ -173,7 +173,7 @@ theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
   rfl
 
 instance inhabited : Inhabited TopCat :=
-  ⟨TopCat.of Empty⟩
+  ⟨↧Empty⟩
 
 /-- The discrete topology on any type. -/
 def discrete : Type u ⥤ TopCat.{u} where
