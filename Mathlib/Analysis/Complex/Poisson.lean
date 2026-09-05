@@ -154,6 +154,23 @@ whenever `w` does not lie on the circle.
   exact hw hz
 
 /--
+The real part of the Herglotz–Riesz kernel `herglotzRieszKernel c w` is continuous on the circle
+`sphere c |R|` whenever `w` does not lie on the circle.
+-/
+@[fun_prop]
+theorem continuousOn_re_herglotzRieszKernel_sphere (hw : w ∉ sphere c |R|) :
+    ContinuousOn (re ∘ herglotzRieszKernel c w) (sphere c |R|) := by
+  fun_prop (disch := assumption)
+
+/-- The Herglotz–Riesz kernel `herglotzRieszKernel c w` is analytic away from its pole at `w`. -/
+theorem analyticOnNhd_herglotzRieszKernel_compl :
+    AnalyticOnNhd ℂ (herglotzRieszKernel c w) {w}ᶜ := by
+  intro x hx
+  unfold herglotzRieszKernel
+  have : x - w ≠ 0 := by grind
+  fun_prop (disch := aesop)
+
+/--
 Taking real parts commutes with the Herglotz–Riesz kernel integral of a real-valued
 circle-integrable function.
 -/
