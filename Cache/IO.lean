@@ -436,8 +436,80 @@ def readLtarHash (ltarPath : FilePath) : IO (Option UInt64) := do
     hash := hash ||| ((bytes.get! (4 + i)).toUInt64 <<< (i * 8).toUInt64)
   return some hash
 
+/--
+Path of the file that records the root hash of the last unpack.
+
+The file sits in the root project's build directory. `lake clean` removes that
+directory, so the record goes with the artifacts that it describes. An absent
+file makes the next unpack overwrite every file.
+
+The name carries the `mathlib-` prefix because Lake owns this directory. The
+prefix keeps the file clear of any name that Lake itself uses. The leading
+period keeps the file out of plain directory listings and globs.
+
+The record states the root hash of the last full unpack. It does not state the
+root hash of the checkout. A run with a module argument covers one closure
+only, so such a run does not write the record.
+
+The record makes this claim: every artifact that came from the cache directory
+is unpacked at this root hash. Files that the server lacks are outside the
+claim. They stay stale in the build directory, and the record is still safe,
+because these files are also absent from the cache directory: a later run
+downloads them, and the download pipeline overwrites every file that it
+fetches without a check.
+-/
+def rootHashFile : FilePath :=
+  ".lake" / "build" / ".mathlib-cache-roothash"
+
+/-- Read the root hash of the last unpack. Return `none` if the file is absent
+or holds no valid hash. -/
+def readUnpackedRootHash (path : FilePath := rootHashFile) : IO (Option UInt64) := do
+  let contents ← try IO.FS.readFile path catch _ => return none
+  -- The record holds 16 hex digits and nothing else. Any other content fails to
+  -- parse and reports a change, which overwrites the build directory. This is
+  -- the safe direction.
+  return contents.parseHexToUInt64?
+
+/-- Record the root hash of the last unpack.
+
+A failure here is not fatal. The next unpack overwrites every file instead of
+skipping, which is correct but slower. -/
+def writeUnpackedRootHash (rootHash : UInt64) (path : FilePath := rootHashFile) : IO Unit := do
+  try
+    if let some parent := path.parent then IO.FS.createDirAll parent
+    IO.FS.writeFile path (Nat.toHexDigits rootHash.toNat 8)
+  catch e =>
+    IO.eprintln s!"warning: cannot record the root hash in {path}: {e}"
+
+/--
+Report whether the root hash differs from the root hash of the last unpack.
+
+`needsDecompression` compares Lake dep hashes. A dep hash covers the source of
+a module and the output hashes of its imports. It does not cover the
+toolchain, the lakefile or the manifest. The mathlib cache hash covers all
+three through `rootHash` (see `Cache.Hashing.getHash`).
+
+At a fixed root hash, an equal dep hash means that the artifacts on disk
+satisfy Lake for the current checkout:
+* a change to the source of the module moves its dep hash;
+* a change to the outputs of an import moves the dep hash of this module;
+* a change to an import that keeps its outputs equal, for example a
+  proof-only change, can keep the dep hash of this module equal — the
+  artifacts on disk then stay valid, and the skip is correct;
+* a new module name gives a new trace path, so `needsDecompression` finds no
+  trace file there and unpacks the module.
+
+A change of the root hash breaks this rule: it renames every `.ltar` and can
+change every artifact, and no dep hash moves with it. So compare the root
+hash separately.
+-/
+def rootHashChanged (rootHash : UInt64) (path : FilePath := rootHashFile) : IO Bool := do
+  return (← readUnpackedRootHash path) != some rootHash
+
 /-- Check if a module's trace file indicates it is already decompressed with the correct hash.
     The hash to compare comes from the ltar file header, not the mathlib cache hash.
+    This check is blind to the toolchain, the lakefile and the manifest; see
+    `rootHashChanged` for the check that covers them.
     Returns `true` if the module needs decompression, `false` if it can be skipped. -/
 def needsDecompression (mod : Name) (mathlibHash : UInt64) : CacheM Bool := do
   -- Read the Lake depHash from the ltar file header
@@ -495,8 +567,15 @@ def prepareDecompConfig (hashMap : ModuleHashMap) (force : Bool) :
     alreadyDecompressed := cached.size - toDecomp.size
   }
 
-/-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
+/-- Decompresses build files into their respective folders.
+
+`fullRun` states that `hashMap` holds every module of the cache. Only a full
+run records the root hash; see `rootHashFile` for what the record claims. -/
+def unpackCache (hashMap : ModuleHashMap) (force : Bool) (rootHash : UInt64)
+    (fullRun : Bool := true) : CacheM Unit := do
+  -- The per-module check below cannot see a change of the toolchain, the
+  -- lakefile or the manifest. Overwrite every file when the root hash differs.
+  let force := force || (← rootHashChanged rootHash)
   let hashMap ← hashMap.filterExists true
   let totalCached := hashMap.size
   -- Unless force is set, filter to only modules that actually need decompression
@@ -518,6 +597,7 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     IO.println s!"Already decompressed {totalCached} file(s)"
   else
     IO.println "No cache files to decompress"
+  if fullRun then writeUnpackedRootHash rootHash
 
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString
