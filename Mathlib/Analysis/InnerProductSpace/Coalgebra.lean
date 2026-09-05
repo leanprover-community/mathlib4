@@ -44,7 +44,8 @@ theorem Pi.comul_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
         map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap).adjoint ∘ₗ
       (equiv n 𝕜).symm.toLinearMap := by
   ext
-  simp only [comp_apply, ← toLinearMap_congr, LinearEquiv.coe_coe, ← LinearEquiv.symm_apply_eq]
+  simp only [LinearMap.comp_apply, ← toLinearMap_congr, LinearEquiv.coe_coe,
+    ← LinearEquiv.symm_apply_eq]
   simp [TensorProduct.ext_iff_inner_left, adjoint_inner_right, inner_eq_star_dotProduct]
 
 open EuclideanSpace in
@@ -118,24 +119,24 @@ noncomputable abbrev ringOfCoalgebra :
   zero_mul x := by simp
   mul_zero x := by simp
   mul_assoc x y z := by
-    simp_rw [AlgebraOfCoalgebra.mul_def, ← rTensor_tmul, ← comp_apply, ← adjoint_rTensor,
-      ← adjoint_comp, ← coassoc_symm, adjoint_comp, adjoint_lTensor, comp_apply,
+    simp_rw [AlgebraOfCoalgebra.mul_def, ← rTensor_tmul, ← LinearMap.comp_apply, ← adjoint_rTensor,
+      ← adjoint_comp, ← coassoc_symm, adjoint_comp, adjoint_lTensor, LinearMap.comp_apply,
       ← toLinearEquiv_assocIsometry, ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     simp only [symm_symm, toLinearEquiv_assocIsometry, LinearEquiv.coe_coe, assoc_tmul,
       lTensor_tmul]
   one := adjoint (counit (R := 𝕜) (A := E)) 1
   one_mul x := by
     dsimp [OfNat.ofNat]
-    rw [← rTensor_tmul, ← comp_apply, ← adjoint_rTensor, ← adjoint_comp, rTensor_counit_comp_comul,
-      ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
-      adjoint_toLinearMap_eq_symm]
+    rw [← rTensor_tmul, ← LinearMap.comp_apply, ← adjoint_rTensor, ← adjoint_comp,
+      rTensor_counit_comp_comul, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
+      ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     exact one_smul _ _
   mul_one x := by
     dsimp [OfNat.ofNat]
-    rw [← lTensor_tmul, ← comp_apply, ← adjoint_lTensor, ← adjoint_comp, lTensor_counit_comp_comul,
-      ← toLinearMap_symm_rid, ← comm_trans_lid, ← toLinearEquiv_commIsometry,
-      ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans, ← toLinearEquiv_symm,
-      adjoint_toLinearMap_eq_symm]
+    rw [← lTensor_tmul, ← LinearMap.comp_apply, ← adjoint_lTensor, ← adjoint_comp,
+      lTensor_counit_comp_comul, ← toLinearMap_symm_rid, ← comm_trans_lid,
+      ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
+      ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     exact one_smul _ _
 
 attribute [local instance] InnerProductSpace.ringOfCoalgebra in
@@ -149,7 +150,7 @@ noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
     { toFun := adjoint (Coalgebra.counit (R := 𝕜) (A := E))
       map_one' := rfl
       map_mul' x y := by
-        simp_rw [AlgebraOfCoalgebra.mul_def, ← map_tmul, ← adjoint_map, ← comp_apply,
+        simp_rw [AlgebraOfCoalgebra.mul_def, ← map_tmul, ← adjoint_map, ← LinearMap.comp_apply,
           ← adjoint_comp, ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul,
           adjoint_comp, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
           adjoint_toLinearMap_eq_symm]
@@ -161,14 +162,14 @@ noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
   commutes' r x := by
     dsimp
     simp_rw [← rTensor_tmul, ← lTensor_tmul, ← adjoint_lTensor, ← adjoint_rTensor,
-      ← comp_apply, ← adjoint_comp, rTensor_counit_comp_comul, lTensor_counit_comp_comul,
+      ← LinearMap.comp_apply, ← adjoint_comp, rTensor_counit_comp_comul, lTensor_counit_comp_comul,
       ← toLinearMap_symm_rid, ← toLinearMap_symm_lid, ← comm_trans_lid,
       ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     simp
   smul_def' r x := by
     dsimp
-    simp_rw [← rTensor_tmul, ← adjoint_rTensor, ← comp_apply, ← adjoint_comp,
+    simp_rw [← rTensor_tmul, ← adjoint_rTensor, ← LinearMap.comp_apply, ← adjoint_comp,
       rTensor_counit_comp_comul, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     simp

@@ -127,7 +127,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] (f : 𝓢(E, F)) (g : 𝓢(E, ℂ)) :
     toTemperedDistributionCLM E F μ f g = ∫ (x : E), g x • f x ∂μ := by
-  simp [toTemperedDistributionCLM, comp_apply _]
+  simp [toTemperedDistributionCLM, ContinuousLinearMap.comp_apply _]
 
 end MeasurableSpace
 
@@ -169,8 +169,9 @@ set_option backward.isDefEq.respectTransparency false in
 theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
     (g : 𝓢(E, ℂ)) :
     toTemperedDistribution f g = ∫ (x : E), g x • f x ∂μ := by
-  simp only [toTemperedDistribution, toPointwiseConvergenceCLM_apply, comp_apply _, toLpCLM_apply,
-    lpPairing_eq_integral, lsmul_flip_apply, toSpanSingleton_apply]
+  simp only [toTemperedDistribution, toPointwiseConvergenceCLM_apply,
+    ContinuousLinearMap.comp_apply _, toLpCLM_apply, lpPairing_eq_integral, lsmul_flip_apply,
+    toSpanSingleton_apply]
   apply integral_congr_ae
   filter_upwards [g.coeFn_toLp (1 - p⁻¹)⁻¹ μ] with x hg
   rw [hg]
