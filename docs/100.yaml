@@ -219,6 +219,10 @@
   authors: mathlib
 53:
   title  : Pi is Transcendental
+  authors: Trevor Morris
+  links  :
+    result: https://github.com/gotrevor/lean-formalizations/blob/main/src/LeanFormalizations/NumberTheory/Transcendence/PiTranscendental.lean
+  note   : "formalised outside mathlib, in Lean 4; the full Lindemann assembly (analytic engine over an arbitrary conjugate polynomial plus the symmetric-function algebraic part) is built on mathlib's `exp_polynomial_approx`"
 54:
   title  : Königsberg Bridges Problem
   decl   : Konigsberg.not_isEulerian
