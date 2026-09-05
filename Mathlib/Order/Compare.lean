@@ -27,15 +27,10 @@ This file provides basic results about orderings and comparison in linear orders
 
 variable {α β : Type*}
 
-/-- Like `cmp`, but uses a `≤` on the type instead of `<`. Given two elements `x` and `y`, returns a
-three-way comparison result `Ordering`. -/
-def cmpLE {α} [LE α] [DecidableLE α] (x y : α) : Ordering :=
-  if x ≤ y then if y ≤ x then Ordering.eq else Ordering.lt else Ordering.gt
-
-theorem cmpLE_swap {α} [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x y : α) :
-    (cmpLE x y).swap = cmpLE y x := by
-  by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
-  cases not_or_intro xy yx (total_of _ _ _)
+theorem Std.LawfulLECmp.eq_cmpLE {cmp} [LE α] [DecidableLE α] [LawfulLECmp cmp] (x y : α) :
+    cmp x y = cmpLE x y := by
+  simp_rw [cmpLE, ← isLE_iff_le (cmp := cmp) (x := x), ← isGE_iff_ge (cmp := cmp)]
+  cases cmp x y <;> decide
 
 theorem cmpLE_eq_cmp {α} [Preorder α] [@Std.Total α (· ≤ ·)] [DecidableLE α] [DecidableLT α]
     (x y : α) : cmpLE x y = cmp x y := by

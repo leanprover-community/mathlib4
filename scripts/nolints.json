@@ -28,7 +28,7 @@
  ["defsWithUnderscore",
   "singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy"],
  ["defsWithUnderscore", "spectralAlgNorm_of_finiteDimensional_normal"],
- ["defsWithUnderscore", "tacticCompareOfLessAndEq_rfl"],
+ ["defsWithUnderscore", "tacticCmpLE_rfl"],
  ["defsWithUnderscore", "tacticUse_finite_instance"],
  ["defsWithUnderscore", "toAddUnits_homeomorph"],
  ["defsWithUnderscore", "toUnits_homeomorph"],
