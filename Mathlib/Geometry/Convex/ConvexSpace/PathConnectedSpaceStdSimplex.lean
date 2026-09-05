@@ -57,6 +57,8 @@ instance pathConnectedSpace
 /-- The standard one-dimensional simplex is homeomorphic to the unit interval. -/
 noncomputable def homeomorphI : StdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
   toEquiv := equivIcc
+  continuous_toFun := .subtype_mk (by fun_prop) _
+  continuous_invFun := continuous_duple ..
 
 @[local simp]
 lemma homeomorphI_apply_coe (s : StdSimplex ℝ (Fin 2)) :

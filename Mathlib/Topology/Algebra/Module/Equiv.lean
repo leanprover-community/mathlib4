@@ -439,6 +439,7 @@ variable (R M₁ M₂ M₃ M₄ : Type*) [Semiring R]
   [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]
   [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃] [TopologicalSpace M₄]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product of topological modules is four-way commutative up to continuous linear isomorphism.
 This is `LinearEquiv.prodProdProdComm` prodAssoc as a continuous linear equivalence. -/
 def prodProdProdComm : ((M₁ × M₂) × M₃ × M₄) ≃L[R] (M₁ × M₃) × M₂ × M₄ where
@@ -704,6 +705,7 @@ variable {M₁} {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R�
   [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄] {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
   [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The continuous linear equivalence between `ULift M₁` and `M₁`.
 
 This is a continuous version of `ULift.moduleEquiv`. -/
@@ -1150,6 +1152,7 @@ theorem ofSubmodule'_symm_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂
 
 end ContinuousLinearEquiv
 
+set_option fun_prop.projDefaultTransparency true in
 /-- The top submodule is continuous linearly equivalent to the module.
 This is the continuous version of `Submodule.topEquiv`. -/
 abbrev _root_.Submodule.topContEquiv {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
