@@ -49,8 +49,8 @@ structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] extends M ≃ₛₗ[σ] M₂ where
-  continuous_toFun : Continuous toFun := by first | fun_prop | eta_expand; dsimp; fun_prop | skip
-  continuous_invFun : Continuous invFun := by first | fun_prop | eta_expand; dsimp; fun_prop | skip
+  continuous_toFun : Continuous toFun := by fun_prop_simp
+  continuous_invFun : Continuous invFun := by fun_prop_simp
 
 attribute [inherit_doc ContinuousLinearEquiv] ContinuousLinearEquiv.continuous_toFun
 ContinuousLinearEquiv.continuous_invFun
@@ -385,7 +385,6 @@ theorem prodCongr_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] 
 
 variable (R₁ M₁ M₂)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Product of topological modules is commutative up to continuous linear isomorphism. -/
 @[simps! apply toLinearEquiv]
 def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
@@ -471,7 +470,6 @@ variable (R M N : Type*) [Semiring R]
   [TopologicalSpace M] [AddCommMonoid M] [TopologicalSpace N] [AddCommMonoid N]
   [Unique N] [Module R M] [Module R N]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural equivalence `M × N ≃L[R] M` for any `Unique` type `N`.
 This is `Equiv.prodUnique` as a continuous linear equivalence. -/
 def prodUnique : (M × N) ≃L[R] M where
@@ -486,7 +484,6 @@ lemma prodUnique_apply (x : M × N) : prodUnique R M N x = x.1 := rfl
 @[simp]
 lemma prodUnique_symm_apply (x : M) : (prodUnique R M N).symm x = (x, default) := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural equivalence `N × M ≃L[R] M` for any `Unique` type `N`.
 This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
 def uniqueProd : (N × M) ≃L[R] M where
@@ -940,7 +937,6 @@ variable {n : ℕ} {R : Type*} {M : Fin n.succ → Type*} {N : Type*}
 variable [Semiring R]
 variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
 
-set_option backward.defeqAttrib.useBackward true in
 variable (R M) in
 /-- `Fin.consEquiv` as a continuous linear equivalence. -/
 @[simps!]
@@ -971,6 +967,13 @@ variable [IsTopologicalAddGroup M₄]
   and `f` is a rectangular block below the diagonal. -/
 def skewProd (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) : (M × M₃) ≃L[R] M₂ × M₄ where
   __ := e.toLinearEquiv.skewProd e'.toLinearEquiv ↑f
+  continuous_invFun := by
+    /- `fun_prop_simp` does not work here because `simp` results in subtraction on `M₃`. We cannot
+    use `ContinuousAddHom.isTopologicalAddGroup` to get `[IsTopologicalAddGroup M₃]` because it is
+    defined in a downstream file. -/
+    eta_expand
+    simp only [LinearEquiv.invFun_eq_symm, LinearEquiv.skewProd_symm_apply, coe_symm_toLinearEquiv]
+    fun_prop
 
 @[simp]
 theorem skewProd_apply (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) (x) :
@@ -1046,7 +1049,6 @@ end Ring
 
 section RestrictScalars
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If M is an `R`-module and `S`-module and `R`-module structure is defined by an action of `R` on
 `S` (formally, we have two scalar towers), then any `S`-linear equivalence on `M` is an `R`-linear
 equivalence. -/
