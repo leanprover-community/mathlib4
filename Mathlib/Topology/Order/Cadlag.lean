@@ -157,6 +157,11 @@ section LinearOrder
 
 variable [LinearOrder X] [TopologicalSpace Y]
 
+lemma IsCaglad.tendsto_nhdsGT_rightLim [OrderTopology X] (hf : IsCaglad f) (x : X) :
+    Tendsto f (𝓝[>] x) (𝓝 (f.rightLim x)) :=
+  tendsto_rightLim_of_tendsto (hf.tendsto_nhdsGT x)
+
+-- TODO: tag `leftLim` with `to_dual` to use `toDual` here.
 lemma IsCadlag.tendsto_nhdsLT_leftLim [OrderTopology X] (hf : IsCadlag f) (x : X) :
     Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
   tendsto_leftLim_of_tendsto (hf.tendsto_nhdsLT x)
