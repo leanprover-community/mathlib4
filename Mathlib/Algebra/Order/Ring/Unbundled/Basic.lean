@@ -90,7 +90,7 @@ theorem mul_nonneg_of_nonpos_of_nonpos [ExistsAddOfLE R] [MulPosMono R]
 theorem mul_le_mul_of_nonneg_of_nonpos [ExistsAddOfLE R] [MulPosMono R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (hca : c ≤ a) (hbd : b ≤ d) (hc : 0 ≤ c) (hb : b ≤ 0) : a * b ≤ c * d :=
-  (mul_le_mul_of_nonpos_right hca hb).trans <| by gcongr; assumption
+  (mul_le_mul_of_nonpos_right hca hb).trans <| by gcongr
 
 theorem mul_le_mul_of_nonneg_of_nonpos' [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -297,7 +297,6 @@ lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE R] [MulPosMono R]
   obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   gcongr
-  assumption
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_le_mul_add_mul' [ExistsAddOfLE R] [MulPosMono R]
@@ -314,7 +313,6 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE R] [MulPosStrictMono R]
   obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   gcongr
-  exact hd
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE R] [MulPosStrictMono R]
@@ -676,8 +674,8 @@ variable [CommSemiring R] [LinearOrder R] {a d : R}
 lemma max_mul_mul_le_max_mul_max [PosMulMono R] [MulPosMono R] (b c : R) (ha : 0 ≤ a) (hd : 0 ≤ d) :
     max (a * b) (d * c) ≤ max a c * max d b :=
   have ba : b * a ≤ max d b * max c a := by
-    gcongr
-    exacts [ha, hd.trans <| le_max_left d b, le_max_right d b, le_max_right c a]
+    grw [← le_max_right c a, ← le_max_right]
+    exact hd.trans <| le_max_left d b
   have cd : c * d ≤ max a c * max b d :=
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)

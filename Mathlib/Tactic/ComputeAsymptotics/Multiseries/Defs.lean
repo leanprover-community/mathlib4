@@ -316,10 +316,8 @@ theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Bas
       x = cons exp coef (op c x') ∧ y = cons exp coef (op c y') ∧ motive x' y') :
     x = y := by
   apply Seq.FriendlyOperationClass.eq_of_bisim (op := op) motive base
-  peel step with x y ih h
-  obtain h | ⟨exp, coef, c, x', y', rfl, rfl, h_next⟩ := h
-  · simp [h]
-  right
+  unfold Multiseries at step
+  gconvert step using 4 with x y ih ⟨exp, coef, c, x', y', rfl, rfl, h_next⟩
   use (exp, coef), x', y', c
   simpa [cons]
 

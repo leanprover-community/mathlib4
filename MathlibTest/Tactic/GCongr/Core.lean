@@ -28,7 +28,12 @@ example (h : c → b) : (a → b → c) → (a → b → b) := by
   guard_target =ₛ (b → c) → (b → b)
   gcongr 1
 
-/-- error: gcongr did not make progress -/
+/--
+error: `gcongr` did not make progress.
+
+a b c d : Prop
+⊢ (∀ (n : Nat), 0 ≤ n) → ∀ (n : Int), 0 ≤ n
+-/
 #guard_msgs in
 example (h : ∀ n : Nat, 0 ≤ n) : ∀ n : Int, 0 ≤ n := by
   revert h
