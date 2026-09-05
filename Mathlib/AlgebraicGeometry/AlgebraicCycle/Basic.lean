@@ -117,6 +117,17 @@ open Function.locallyFinsuppWithin in
 lemma isWeilDivisor_single [DecidableEq X] [Zero R] {x : X} (hx : Order.coheight x = 1) (r : R) :
     IsWeilDivisor (single x r) := fun _ _ ↦ by simp_all
 
+variable (X R) in
+/--
+The Weil divisors on `X`, as a subgroup of the algebraic cycles
+-/
+def weilDivisors [AddGroup R] : AddSubgroup (AlgebraicCycle X R) :=
+  Function.locallyFinsuppWithin.supported R Set.univ {x : X | Order.coheight x = 1}
+
+@[simp]
+lemma mem_weilDivisors [AddGroup R] {D : AlgebraicCycle X R} :
+    D ∈ weilDivisors X R ↔ IsWeilDivisor D := Iff.rfl
+
 end WeilDivisor
 
 end AlgebraicGeometry.AlgebraicCycle

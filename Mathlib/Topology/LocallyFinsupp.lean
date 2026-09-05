@@ -398,6 +398,24 @@ instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
+variable (Y) in
+/--
+`supported Y U s` is the additive subgroup of those functions with locally finite support
+within `U` whose support is contained in `s`.
+
+This is the analogue of `Finsupp.supported`, which cannot be used here: it is a `Submodule` of
+`α →₀ M` and so requires a semiring acting on a commutative `M`, whereas `Y` is an arbitrary
+additive group.
+-/
+def supported [AddGroup Y] (U s : Set X) : AddSubgroup (locallyFinsuppWithin U Y) where
+  carrier := {D | D.support ⊆ s}
+  zero_mem' := by simp
+  add_mem' ha hb := (support_add _ _).trans (Set.union_subset ha hb)
+  neg_mem' ha := by simpa [support_neg] using ha
+
+@[simp] lemma mem_supported [AddGroup Y] {s : Set X} {D : locallyFinsuppWithin U Y} :
+    D ∈ supported Y U s ↔ D.support ⊆ s := Iff.rfl
+
 instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
   le := fun D₁ D₂ ↦ (D₁ : X → Y) ≤ D₂
 
