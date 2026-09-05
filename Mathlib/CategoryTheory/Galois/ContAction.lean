@@ -107,6 +107,8 @@ lemma trivialOnSet_le_isContinuous (H : OpenSubgroup G) :
   rw [this]
   fun_prop
 
+/-- An action of a topological group on a finite set is continuous if and only if it is trivial
+when restricted to some open subgroup. -/
 lemma isContinuous_eq_iSup :
     isContinuous FintypeCat.{w} G = ⨆ (H : OpenSubgroup G), trivialOnSet _ H := by
   refine le_antisymm (fun R (h : _) ↦ ?_) (by simpa using trivialOnSet_le_isContinuous)
