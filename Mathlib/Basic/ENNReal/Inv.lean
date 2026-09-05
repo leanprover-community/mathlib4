@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Basic.ENNReal.Operations
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Results about division in extended non-negative reals
@@ -52,7 +53,7 @@ protected theorem div_right_comm : a / b / c = a / c / b := by
 @[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
 
-@[simp] theorem inv_top : ∞⁻¹ = 0 :=
+@[simp, basify_simp] theorem inv_top : ∞⁻¹ = 0 :=
   bot_unique <| le_of_forall_gt_imp_ge_of_dense fun a (h : 0 < a) => sInf_le <| by
     simp [*, h.ne', top_mul]
 
@@ -63,7 +64,7 @@ theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
       apply NNReal.inv_le_of_le_mul
       rwa [← coe_mul, ← coe_one, coe_le_coe] at hb
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op ←]
 theorem coe_inv (hr : r ≠ 0) : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ :=
   coe_inv_le.antisymm <| sInf_le <| mem_ofPred.2 <| by rw [← coe_mul, mul_inv_cancel₀ hr, coe_one]
 
@@ -73,7 +74,7 @@ theorem coe_inv' [NeZero r] : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ := coe_inv 
 @[norm_cast]
 theorem coe_inv_two : ((2⁻¹ : ℝ≥0) : ℝ≥0∞) = 2⁻¹ := by rw [coe_inv _root_.two_ne_zero, coe_two]
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op ←]
 theorem coe_div (hr : r ≠ 0) : (↑(p / r) : ℝ≥0∞) = p / r := by
   rw [div_eq_mul_inv, div_eq_mul_inv, coe_mul, coe_inv hr]
 
@@ -330,8 +331,9 @@ theorem _root_.OrderIso.invENNReal_symm_apply (a : ℝ≥0∞ᵒᵈ) :
     OrderIso.invENNReal.symm a = (OrderDual.ofDual a)⁻¹ :=
   rfl
 
-@[simp] theorem div_top : a / ∞ = 0 := by rw [div_eq_mul_inv, inv_top, mul_zero]
+@[simp, basify_simp] theorem div_top : a / ∞ = 0 := by rw [div_eq_mul_inv, inv_top, mul_zero]
 
+@[basify_simp]
 theorem top_div : ∞ / a = if a = ∞ then 0 else ∞ := by simp [div_eq_mul_inv, top_mul']
 
 theorem top_div_of_ne_top (h : a ≠ ∞) : ∞ / a = ∞ := by simp [top_div, h]

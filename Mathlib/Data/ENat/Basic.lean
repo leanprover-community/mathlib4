@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Order.Nat
+import Mathlib.Tactic.Basify.Attr
 
 import Mathlib.Algebra.Order.Group.Nat
 
@@ -54,32 +55,43 @@ variable {a b c d m n : ℕ∞}
 
 @[deprecated (since := "2026-07-17")] alias some_eq_coe := some_eq_natCast
 
+@[basify_simp]
 theorem natCast_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
 @[deprecated (since := "2026-07-17")] alias coe_inj := natCast_inj
 
+@[basify_op ←]
 theorem natCast_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_zero := natCast_zero
 
+@[basify_op ←]
 theorem natCast_one : ((1 : ℕ) : ℕ∞) = 1 :=
   rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_one := natCast_one
 
+@[basify_op ←]
 theorem natCast_add (m n : ℕ) : ↑(m + n) = (m + n : ℕ∞) :=
   rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_add := natCast_add
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op ←]
 theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
   rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_sub := natCast_sub
 
-@[simp]
+/-- `Nat.cast_ofNat` specialised to `ℕ∞`, so that `basify` can register the numeral as an
+operation; the generic lemma is stated over a variable type and carries no usable head symbol. -/
+@[basify_op]
+theorem ofNat_eq_natCast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (OfNat.ofNat n : ℕ∞) = ((OfNat.ofNat n : ℕ) : ℕ∞) :=
+  rfl
+
+@[simp, basify_simp]
 lemma natCast_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
   WithTop.coe_lt_top n
 
@@ -163,7 +175,7 @@ theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a
     @recTopCoe C d f ofNat(x) = f (OfNat.ofNat x) :=
   rfl
 
-@[simp]
+@[simp, basify_simp]
 theorem top_ne_natCast (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
   nofun
 
@@ -176,7 +188,7 @@ theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (ofNat(a) : ℕ∞) :=
 @[simp] lemma top_ne_zero : (⊤ : ℕ∞) ≠ 0 := nofun
 @[simp] lemma top_ne_one : (⊤ : ℕ∞) ≠ 1 := nofun
 
-@[simp]
+@[simp, basify_simp]
 theorem natCast_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   nofun
 
@@ -189,7 +201,7 @@ theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
 @[simp] lemma zero_ne_top : 0 ≠ (⊤ : ℕ∞) := nofun
 @[simp] lemma one_ne_top : 1 ≠ (⊤ : ℕ∞) := nofun
 
-@[simp]
+@[simp, basify_simp]
 theorem top_sub_natCast (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
   rfl
 
@@ -211,7 +223,7 @@ theorem top_pos : (0 : ℕ∞) < ⊤ :=
 theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
   WithTop.one_lt_top
 
-@[simp] theorem sub_top (a : ℕ∞) : a - ⊤ = 0 := WithTop.sub_top
+@[simp, basify_simp] theorem sub_top (a : ℕ∞) : a - ⊤ = 0 := WithTop.sub_top
 
 theorem natCast_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
   ENat.recTopCoe le_top (fun _ => le_rfl) n
@@ -258,13 +270,13 @@ protected theorem add_lt_add_of_lt_of_le : c ≠ ⊤ → a < b → c ≤ d → a
   WithTop.add_lt_add_of_lt_of_le
 
 -- Duplicate of `Nat.cast_lt`, but requires less imports.
-@[norm_cast]
+@[norm_cast, basify_simp]
 lemma natCast_lt_natCast {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := WithTop.coe_lt_coe
 
 @[deprecated (since := "2026-07-17")] alias coe_lt_coe := natCast_lt_natCast
 
 -- Duplicate of `Nat.cast_le`, but requires less imports.
-@[norm_cast]
+@[norm_cast, basify_simp]
 lemma natCast_le_natCast {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := WithTop.coe_le_coe
 
 @[deprecated (since := "2026-07-17")] alias coe_le_coe := natCast_le_natCast
