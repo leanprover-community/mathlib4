@@ -129,4 +129,7 @@ end Northcott
 
 end WeierstrassCurve.Affine
 
+@[deprecated (since := "2026-09-05")] alias
+  WeierstrassCurve.abs_logHeight_addSubMap_sub_two_mul_logHeight_le :=
+    WeierstrassCurve.Affine.abs_logHeight_addSubMap_sub_two_mul_logHeight_le
 end
