@@ -866,7 +866,8 @@ lemma IsPushout.cancelBaseChange_symm_comp_lTensor :
       (TensorProduct.lTensor _ (IsScalarTower.toAlgHom R A C)) =
       TensorProduct.includeLeft := by
   ext
-  simp [← TensorProduct.one_def, ← TensorProduct.tmul_one_eq_one_tmul, RingHom.algebraMap_toAlgebra]
+  simp [← TensorProduct.one_def, ← TensorProduct.tmul_one_eq_one_tmul,
+    TensorProduct.right_algebraMap_apply]
 
 end Algebra
 

@@ -52,9 +52,9 @@ def tensorCotangentSpace (P : Extension.{u} R S) (T : Type*) [CommRing T] [Algeb
   letI : Algebra P.Ring (T ⊗[R] S) := Algebra.compHom _ (algebraMap P.Ring S)
   haveI : IsScalarTower R P.Ring (T ⊗[R] S) :=
     .of_algebraMap_eq fun x ↦ by
-      rw [TensorProduct.algebraMap_apply, RingHom.algebraMap_toAlgebra,
-        Algebra.TensorProduct.tmul_one_eq_one_tmul, IsScalarTower.algebraMap_apply R P.Ring]
-      rfl
+      rw [TensorProduct.algebraMap_apply, Algebra.TensorProduct.tmul_one_eq_one_tmul,
+        Algebra.compHom_algebraMap_apply, ← IsScalarTower.algebraMap_apply R P.Ring S,
+        Algebra.TensorProduct.right_algebraMap_apply]
   letI PT : Extension T (T ⊗[R] S) := P.baseChange
   haveI : IsPushout R T P.Ring PT.Ring := by
     convert! TensorProduct.isPushout (R := R) (T := P.Ring) (S := T)
@@ -62,7 +62,8 @@ def tensorCotangentSpace (P : Extension.{u} R S) (T : Type*) [CommRing T] [Algeb
   haveI : IsScalarTower P.Ring PT.Ring (T ⊗[R] S) := .of_algebraMap_eq' rfl
   (IsTensorProduct.assocOfMapSMul (TensorProduct.mk R T S) (isTensorProduct _ _ _)
     (TensorProduct.mk _ _ _) (isTensorProduct _ _ _) (by simp [Algebra.smul_def])
-    (by simp [Algebra.smul_def, RingHom.algebraMap_toAlgebra])).symm ≪≫ₗ
+    (by simp [Algebra.smul_def, Algebra.compHom_algebraMap_apply,
+      Algebra.TensorProduct.right_algebraMap_apply])).symm ≪≫ₗ
   (AlgebraTensorModule.cancelBaseChange _ PT.Ring PT.Ring _ _).symm.restrictScalars T ≪≫ₗ
   (AlgebraTensorModule.congr (LinearEquiv.refl PT.Ring (T ⊗[R] S))
     (KaehlerDifferential.tensorKaehlerEquiv R T P.Ring PT.Ring)).restrictScalars T
@@ -89,7 +90,19 @@ lemma tensorCotangentSpace_tmul_tmul (t : T) (s : S) (x : Ω[P.Ring⁄R]) :
       tmul_smul, hx, LinearMap.map_smul, ← algebraMap_smul (P.baseChange (T := T)).Ring a,
       tmul_smul]
 
-set_option backward.isDefEq.respectTransparency false in
+/-- `KaehlerDifferential.map` does not depend on the choice of the `Algebra A B` instance
+(the `IsScalarTower`/`SMulCommClass` assumptions are proofs, so they do not matter either). -/
+private lemma kaehlerDifferentialMap_congr {R S A B : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] [CommRing A] [CommRing B] [Algebra R A] [Algebra S B] [Algebra R B]
+    [IsScalarTower R S B] (i₁ i₂ : Algebra A B) (h : i₁ = i₂)
+    {t₁ : @IsScalarTower R A B _ i₁.toSMul _} {c₁ : @SMulCommClass S A B _ i₁.toSMul}
+    {t₂ : @IsScalarTower R A B _ i₂.toSMul _} {c₂ : @SMulCommClass S A B _ i₂.toSMul}
+    (w : Ω[A⁄R]) :
+    @KaehlerDifferential.map R S _ _ _ A B _ _ _ i₁ _ _ t₁ _ c₁ w =
+      @KaehlerDifferential.map R S _ _ _ A B _ _ _ i₂ _ _ t₂ _ c₂ w := by
+  subst h
+  rfl
+
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :
@@ -99,8 +112,13 @@ lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :
   | zero => rw [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero, smul_zero]
   | add x y hx hy => rw [tmul_add, LinearEquiv.map_add, LinearMap.map_add, smul_add, hx, hy]
   | tmul s y =>
-  simp [tensorCotangentSpace_tmul_tmul, CotangentSpace.map_tmul_eq_tmul_map,
-    smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra]
+  simp only [tensorCotangentSpace_tmul_tmul, CotangentSpace.map_tmul_eq_tmul_map,
+    Algebra.TensorProduct.right_algebraMap_apply, smul_tmul', smul_eq_mul, mul_one]
+  congr!
+  funext w
+  exact kaehlerDifferentialMap_congr (P.algebraBaseChange T)
+    ((toBaseChange (P := P) T).toAlgHom : P.Ring →+* (P.baseChange (T := T)).Ring).toAlgebra
+    (Algebra.algebra_ext _ _ fun _ ↦ rfl) w
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `T` is flat over `R`, there is a `T`-linear isomorphism
