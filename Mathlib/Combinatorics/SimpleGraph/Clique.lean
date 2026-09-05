@@ -256,10 +256,14 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
 
 variable {G H} {a b c : α}
 
-@[simp] lemma isNClique_empty : G.IsNClique n ∅ ↔ n = 0 := by simp [isNClique_iff, eq_comm]
+@[simp] lemma isNClique_empty_iff : G.IsNClique n ∅ ↔ n = 0 := by simp [isNClique_iff, eq_comm]
+
+lemma isNClique_empty : G.IsNClique 0 ∅ := by simp
 
 @[simp]
-lemma isNClique_singleton : G.IsNClique n {a} ↔ n = 1 := by simp [isNClique_iff, eq_comm]
+lemma isNClique_singleton_iff : G.IsNClique n {a} ↔ n = 1 := by simp [isNClique_iff, eq_comm]
+
+lemma isNClique_singleton : G.IsNClique 1 {a} := by simp
 
 theorem IsNClique.mono (h : G ≤ H) : G.IsNClique n s → H.IsNClique n s := by
   simp_rw [isNClique_iff]
@@ -429,7 +433,7 @@ theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G
   exact (Iso.completeGraph <| equivFin α).isContained'.trans f
 
 @[simp] lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
-  fun h ↦ h ∅ <| isNClique_empty.mpr rfl
+  fun h ↦ h ∅ isNClique_empty
 
 @[simp]
 theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
@@ -755,6 +759,18 @@ theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
   Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simp [s.eq_empty_of_isEmpty, ← h.card_eq]
 
 variable (G) in
+theorem isEmpty_of_cliqueNum [Finite α] (h : G.cliqueNum = 0) : IsEmpty α := by
+  contrapose! h
+  exact G.cliqueNum_ne_zero_of_finite
+
+theorem cliqueNum_eq_zero_iff [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
+  refine ⟨fun h ↦ isEmpty_of_cliqueNum G h, fun h ↦ G.cliqueNum_of_isEmpty⟩
+
+theorem cliqueNum_ne_zero_iff [Finite α] : G.cliqueNum ≠ 0 ↔ Nonempty α := by
+  contrapose!
+  exact cliqueNum_eq_zero_iff
+
+variable (G) in
 theorem cliqueNum_le_natCard [Finite α] : G.cliqueNum ≤ Nat.card α :=
   csSup_le' fun _ ⟨s, h⟩ ↦ s.card_le_natCard |>.trans_eq' h.card_eq
 
@@ -913,6 +929,10 @@ theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w)
 theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
   .rfl
 
+theorem isIndepSet_empty : G.IsIndepSet ∅ := Set.pairwise_empty _
+
+theorem isIndepSet_singleton (a : α) : G.IsIndepSet {a} := by simp
+
 /-- An independent set is a clique in the complement graph and vice versa. -/
 @[simp] theorem isClique_compl : Gᶜ.IsClique s ↔ G.IsIndepSet s := by
   rw [isIndepSet_iff, isClique_iff]; repeat rw [Set.Pairwise]
@@ -968,6 +988,19 @@ variable {n : ℕ} {s : Finset α}
 structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
   isIndepSet : G.IsIndepSet s
   card_eq : s.card = n
+
+@[simp]
+lemma isNIndepSet_empty_iff : G.IsNIndepSet n ∅ ↔ n = 0 := by
+  simp [isNIndepSet_iff, eq_comm]
+
+lemma isNIndepSet_empty : G.IsNIndepSet 0 ∅ := by simp
+
+@[simp]
+lemma isNIndepSet_singleton_iff {a : α} {n : ℕ} : G.IsNIndepSet n {a} ↔ n = 1 := by
+  simp [isNIndepSet_iff, eq_comm]
+
+lemma isNIndepSet_singleton {a : α} : G.IsNIndepSet 1 {a} := by simp
+
 
 /-- An `n`-independent set is an `n`-clique in the complement graph and vice versa. -/
 @[simp] theorem isNClique_compl : Gᶜ.IsNClique n s ↔ G.IsNIndepSet n s := by
@@ -1058,6 +1091,16 @@ theorem IsIndepSet.card_le_indepNum
   rw [← isClique_compl] at tc
   simp_rw [indepNum, ← isNClique_compl]
   exact tc.card_le_cliqueNum
+
+theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
+  rw [isEmpty_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · intro a
+    have one_indep : G.IsNIndepSet 1 {a} := by simp
+    have : 1 ≤ G.indepNum := IsIndepSet.card_le_indepNum one_indep.isIndepSet
+    grind
+  · have : ∀ (s : Finset α), s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
+    simp [indepNum, this, exists_const]
 
 lemma exists_isNIndepSet_indepNum : ∃ s, G.IsNIndepSet G.indepNum s := by
   simp_rw [indepNum, ← isNClique_compl]
