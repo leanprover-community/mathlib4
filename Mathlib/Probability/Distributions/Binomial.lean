@@ -182,6 +182,50 @@ lemma measurePreserving_ncard_setBernoulli_binomial_ncard {ι : Type*} [Countabl
     refine ext_of_singleton fun k ↦ ?_
     rw [binomial_singleton, map_ncard_setBernoulli_singleton hu]
 
+-- /-- A sum of independent binomial random variables is a binomial random variable. -/
+-- lemma iIndepFun.hasLaw_finsetSum_map_cast_binomial {ι R : Type*} {s : Finset ι} {X Y : Ω → R}
+--     [MeasurableSpace R] [AddCommMonoidWithOne R] [MeasurableSingletonClass R] [MeasurableAdd₂ R]
+--     {n1 n2 : ℕ} (p : I)
+--     (hXY : X ⟂ᵢ[P] Y) (hX : HasLaw X (Bin(R, n1, p)) P) (hY : HasLaw Y (Bin(R, n2, p)) P) :
+--     HasLaw (X + Y) Bin(R, n1 + n2, p) P := by
+--   obtain ⟨Ω', mΩ', P', S, -, hS⟩ := (setBer(Iio n1, p).prod setBer(Ico n1 (n1 + n2), p)).exists_hasLaw
+--   have := hS.isProbabilityMeasure
+--   have := hX.isProbabilityMeasure
+--   have : HasLaw (fun ω ↦ (((S ω).1.ncard : R), ((S ω).2.ncard : R)))
+--       (Bin(R, n1, p).prod Bin(R, n2, p)) P' := by
+--     refine IndepFun.hasLaw_prod ?_ ?_ ?_
+--     · convert (hasLaw_map .of_discrete).comp <|
+--         (measurePreserving_ncard_setBernoulli_binomial_ncard (finite_Iio n1)).comp_hasLaw hS.fst
+--       · simp
+--       · simp
+--     · convert (hasLaw_map .of_discrete).comp <|
+--         (measurePreserving_ncard_setBernoulli_binomial_ncard (finite_Ico n1 (n1 + n2))).comp_hasLaw hS.snd
+--       · simp
+--       · simp
+--     convert IndepFun.comp (f := fun ω ↦ (S ω).1) (g := fun ω ↦ (S ω).2)
+--       (φ := fun s : Set ℕ ↦ (s.ncard : R))
+--       (ψ := fun s : Set ℕ ↦ (s.ncard : R)) ?_ ?_ ?_
+--     · simp
+--     · simp
+--     · infer_instance
+--     · infer_instance
+--     · rw [indepFun_iff_hasLaw_prodMk_prod]
+--       · exact hS
+--       · exact hS.fst
+--       · exact hS.snd
+--     fun_prop
+--     fun_prop
+--   convert this.comp_of_hasLaw_comp
+--     (f := fun x ↦ x.1 + x.2) (Y := (fun ω ↦ (X ω, Y ω))) (by fun_prop) ?_ ?_
+--   · simp
+--   · exact hXY.hasLaw_prod hX hY
+--   have omg : ∀ᵐ ω ∂P', Disjoint (S ω).1 (S ω).2 := by
+--     filter_upwards [IsSetBernoulli.ae_subset hS.fst, IsSetBernoulli.ae_subset hS.snd] with ω h1 h2
+--     grind
+--   refine HasLaw.congr ?_ ?_ (X := fun ω ↦ (((S ω).1 ∪ (S ω).2).ncard : R))
+--   ·
+--   · simp only [← Nat.cast_add, ← ← ncard_union_eq]
+
 /-- A sum of independent Bernoulli random variables is a binomial random variable. -/
 lemma iIndepFun.hasLaw_finsetSum_map_cast_binomial {ι R : Type*} {s : Finset ι} {X : ι → Ω → R}
     [MeasurableSpace R] [AddCommMonoidWithOne R] [MeasurableSingletonClass R] [MeasurableAdd₂ R]
