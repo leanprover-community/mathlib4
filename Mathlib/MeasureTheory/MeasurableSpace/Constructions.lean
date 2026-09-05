@@ -117,7 +117,7 @@ protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Meas
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
   refine measurable_to_nat fun x => ?_
-  rw [preimage_find_eq_disjointed (fun k => {x | p x k})]
+  rw [preimage_find_eq_disjointed_to_set]
   exact MeasurableSet.disjointed hm _
 
 end Nat
