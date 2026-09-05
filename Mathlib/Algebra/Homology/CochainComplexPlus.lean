@@ -168,6 +168,12 @@ noncomputable instance : F.mapCochainComplexPlus.CommShift ℤ :=
 instance : NatTrans.CommShift F.mapCochainComplexPlusCompι.hom ℤ :=
   ObjectProperty.commShift_liftCompιIso_hom ..
 
+open HomologicalComplex in
+lemma homotopyEquivalences_mapCochainComplexPlus_map {K L : CochainComplex.Plus C} (f : K ⟶ L)
+    (hf : homotopyEquivalences C (.up ℤ) f.hom) :
+    homotopyEquivalences D (.up ℤ) (F.mapCochainComplexPlus.map f).hom :=
+  F.homotopyEquivalences_mapHomologicalComplex_map _ hf
+
 end
 
 end Functor
