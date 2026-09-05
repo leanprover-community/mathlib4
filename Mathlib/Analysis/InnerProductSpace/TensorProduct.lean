@@ -743,7 +743,7 @@ lemma toContinuousLinearMap_congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) :
 
 @[simp]
 lemma toLinearEquiv_congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) :
-    (congrL f g).toLinearEquiv = congr f g := by
+    (congrL f g).toLinearEquiv = congr f.toLinearEquiv g.toLinearEquiv := by
   ext; simp [congrL, congr]
 
 @[simp]
