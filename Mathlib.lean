@@ -3835,6 +3835,7 @@ public import Mathlib.Computability.Ackermann
 public import Mathlib.Computability.AkraBazzi.AkraBazzi
 public import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 public import Mathlib.Computability.AkraBazzi.SumTransform
+public import Mathlib.Computability.CellularAutomota
 public import Mathlib.Computability.ContextFreeGrammar
 public import Mathlib.Computability.DFA
 public import Mathlib.Computability.Encoding
