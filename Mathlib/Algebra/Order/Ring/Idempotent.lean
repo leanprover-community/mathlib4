@@ -83,7 +83,7 @@ lemma le_def : a ≤ b ↔ a.fst * b.fst = a.fst :=
   .rfl
 
 instance : SemilatticeSup (IdempotentPair R) where
-  sup a b := ⟨a.fst + a.snd * b.fst, a.snd * b.snd, by simp_rw [add_mul, mul_mul_mul_comm _ b.fst,
+  max a b := ⟨a.fst + a.snd * b.fst, a.snd * b.snd, by simp_rw [add_mul, mul_mul_mul_comm _ b.fst,
       b.mul_eq_zero, mul_zero, ← mul_assoc, a.mul_eq_zero, zero_mul, add_zero], by
     simp_rw [add_assoc, ← mul_add, b.add_eq_one, mul_one, a.add_eq_one]⟩
   le_sup_left a b := by
@@ -114,7 +114,6 @@ lemma snd_inf : (a ⊓ b).snd = a.snd + a.fst * b.snd :=
   rfl
 
 instance : SemilatticeInf (IdempotentPair R) where
-  inf := min
   inf_le_left a b := by
     simp_rw [le_def, fst_inf, mul_right_comm, a.isIdempotentElem_fst.eq]
   inf_le_right a b := by
@@ -163,7 +162,7 @@ instance {S : Type*} [CommSemigroup S] : SemilatticeInf (IdempotentElem S) where
   le_refl a := a.isIdempotentElem
   le_trans a b c hab hbc := show _ = _ by rw [← hab, mul_assoc, hbc]
   le_antisymm a b hab hba := by ext; rw [← hab, mul_comm, hba]
-  inf a b := ⟨_, a.2.mul b.2⟩
+  min a b := ⟨_, a.2.mul b.2⟩
   inf_le_left a b := show _ = _ by simp_rw [mul_right_comm]; rw [a.2]
   inf_le_right a b := show _ = _ by simp_rw [mul_assoc]; rw [b.2]
   le_inf a b c hab hac := by simp_rw [← mul_assoc]; rw [hab, hac]
@@ -190,7 +189,7 @@ section CommRing
 variable [CommRing R]
 
 instance : Lattice (IdempotentElem R) where
-  sup a b := ⟨_, a.2.add_sub_mul b.2⟩
+  max a b := ⟨_, a.2.add_sub_mul b.2⟩
   le_sup_left a b := show _ = _ by
     simp_rw [mul_sub, mul_add]; rw [← mul_assoc, a.2, add_sub_cancel_right]
   le_sup_right a b := show _ = _ by

@@ -109,16 +109,16 @@ def toSubfunctor : Subfunctor (M.presheaf ⋙ CategoryTheory.forget AddCommGrpCa
 lemma mem_toSubfunctor_obj {X : Cᵒᵖ} (r : M.obj X) :
     r ∈ N.toSubfunctor.obj X ↔ r ∈ N.obj X := Iff.rfl
 
-@[simps sup_obj inf_obj sSup_obj sInf_obj top_obj bot_obj]
+@[simps sSup_obj sInf_obj top_obj bot_obj]
 instance : CompleteLattice M.Submodule where
-  sup F G :=
+  max F G :=
     { obj X := F.obj X ⊔ G.obj X
       map f := sup_le ((F.map f).trans (Submodule.comap_mono le_sup_left))
         ((G.map f).trans (Submodule.comap_mono le_sup_right)) }
   le_sup_left _ _ _ := le_sup_left
   le_sup_right _ _ _ := le_sup_right
   sup_le _ _ _ h₁ h₂ X := sup_le (h₁ X) (h₂ X)
-  inf F G :=
+  min F G :=
     { obj X := F.obj X ⊓ G.obj X
       map f := le_inf (inf_le_left.trans (F.map f)) (inf_le_right.trans (G.map f)) }
   inf_le_left _ _ _ := inf_le_left
@@ -144,6 +144,14 @@ instance : CompleteLattice M.Submodule where
   top.obj := ⊤
   top.map _ := le_top
   le_top _ _ := le_top
+
+@[simp]
+theorem sup_obj (F G : M.Submodule) (X : Cᵒᵖ) : (F ⊔ G).obj X = F.obj X ⊔ G.obj X :=
+  rfl
+
+@[simp]
+theorem inf_obj (F G : M.Submodule) (X : Cᵒᵖ) : (F ⊓ G).obj X = F.obj X ⊓ G.obj X :=
+  rfl
 
 end Submodule
 
