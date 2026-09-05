@@ -370,23 +370,22 @@ theorem card_compl_support_modEq [DecidableEq α] {p n : ℕ} [hp : Fact p.Prime
     exact dvd_pow_self _ fun h => (one_lt_of_mem_cycleType hk).ne <| by rw [h, pow_zero]
   · exact Finset.card_le_univ _
 
-set_option backward.isDefEq.respectTransparency false in
 open Function in
 /-- The number of fixed points of a `p ^ n`-th root of the identity function over a finite set
 and the set's cardinality have the same residue modulo `p`, where `p` is a prime. -/
-theorem card_fixedPoints_modEq [DecidableEq α] {f : Function.End α} {p n : ℕ}
-    [hp : Fact p.Prime] (hf : f ^ p ^ n = 1) :
+theorem card_fixedPoints_modEq [DecidableEq α] {f : α → α} {p n : ℕ}
+    [hp : Fact p.Prime] (hf : f^[p ^ n] = id) :
     Fintype.card α ≡ Fintype.card f.fixedPoints [MOD p] := by
-  let σ : α ≃ α := ⟨f, f ^ (p ^ n - 1),
-    leftInverse_iff_comp.mpr ((pow_sub_mul_pow f (Nat.one_le_pow n p hp.out.pos)).trans hf),
-    leftInverse_iff_comp.mpr ((pow_mul_pow_sub f (Nat.one_le_pow n p hp.out.pos)).trans hf)⟩
+  have red : (p ^ n - 1).succ = p ^ n := by grind [n.one_le_pow p hp.out.pos]
+  let σ : α ≃ α := ⟨f, f^[p ^ n - 1],
+    leftInverse_iff_comp.mpr (by rwa [← iterate_succ, red]),
+    leftInverse_iff_comp.mpr (by rwa [← iterate_succ', red])⟩
   have hσ : σ ^ p ^ n = 1 := by
     rw [DFunLike.ext'_iff, coe_pow]
     exact (hom_coe_pow (fun g : Function.End α ↦ g) rfl (fun g h ↦ rfl) f (p ^ n)).symm.trans hf
   suffices Fintype.card f.fixedPoints = (support σ)ᶜ.card from
     this ▸ (card_compl_support_modEq hσ).symm
-  suffices f.fixedPoints = (support σ)ᶜ by
-    simp only [this]; apply Fintype.card_coe
+  suffices f.fixedPoints = (support σ)ᶜ by simp only [this]; apply Fintype.card_coe
   simp [σ, Set.ext_iff, IsFixedPt]
 
 theorem exists_fixed_point_of_prime {p n : ℕ} [hp : Fact p.Prime] (hα : ¬p ∣ Fintype.card α)
