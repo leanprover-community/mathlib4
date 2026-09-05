@@ -484,6 +484,31 @@ theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s)
           ((isOpen_lt continuous_const continuous_re).mem_nhds (by norm_num)) hgz)
     simpa using congrArg (starRingEnd ℂ) (heq hs)
 
+/-- **Conjugation symmetry of the completed zeta function** for `0 < re s`, where the
+relation `Λ s = ζ s * Γ_ℝ s` is available. -/
+private theorem completedRiemannZeta_conj_of_re_pos {s : ℂ} (hs : 0 < s.re) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  have hcs : 0 < (conj s).re := by rwa [conj_re]
+  have key {z : ℂ} (hz : 0 < z.re) : completedRiemannZeta z = riemannZeta z * Gammaℝ z := by
+    have hz0 : z ≠ 0 := fun h ↦ by simp [h] at hz
+    rw [riemannZeta_def_of_ne_zero hz0]
+    exact (div_mul_cancel₀ _ (Gammaℝ_ne_zero_of_re_pos hz)).symm
+  rw [key hcs, key hs, map_mul, riemannZeta_conj, Complex.Gammaℝ_conj]
+
+/-- **Conjugation symmetry of the completed zeta function**: `Λ (conj s) = conj (Λ s)`.
+
+For `0 < re s` this is `riemannZeta_conj` together with `Gammaℝ_conj`; the remaining
+half-plane follows from the functional equation `completedRiemannZeta_one_sub`. -/
+@[simp]
+theorem completedRiemannZeta_conj (s : ℂ) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  rcases lt_or_ge 0 s.re with hs | hs
+  · exact completedRiemannZeta_conj_of_re_pos hs
+  · have h1 : 0 < (1 - s).re := by simp only [sub_re, one_re]; linarith
+    have hcs : conj (1 - s) = 1 - conj s := by simp
+    have := completedRiemannZeta_conj_of_re_pos h1
+    rwa [hcs, completedRiemannZeta_one_sub, completedRiemannZeta_one_sub] at this
+
 lemma riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
   filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
   grind [riemannZeta_one_ne_zero]
