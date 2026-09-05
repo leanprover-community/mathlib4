@@ -514,7 +514,7 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
               (Equiv.trans
                 (by
                   rw [Equiv.image_eq_preimage_symm]
-                  simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_ofPred_eq, coe_ofPred]
+                  simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_ofPred, coe_ofPred]
                   exact Equiv.refl _)
                 Equiv.ulift.symm)).trans_le
         (hf b)

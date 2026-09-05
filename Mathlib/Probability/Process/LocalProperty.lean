@@ -239,7 +239,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     rw [measure_eq_zero_iff_ae_notMem]
     filter_upwards [(hσ n).tendsto_top] with ω hTop hmem
     simp_rw [WithTop.tendsto_nhds_top_iff, eventually_atTop] at hTop
-    simp only [Set.mem_iInter, Set.mem_ofPred_eq] at hmem
+    simp only [Set.mem_iInter, Set.mem_ofPred] at hmem
     obtain ⟨N, hN⟩ := hTop (T n)
     specialize hN N le_rfl
     specialize hmem N

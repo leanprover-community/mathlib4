@@ -142,7 +142,7 @@ theorem isCompact_setOfPred_finiteMeasure_le_of_compactSpace [CompactSpace E] (C
     filter_upwards [hf] with μ hμ using by simpa [o] using! hμ
   let μlim' : FiniteMeasure E := ⟨μlim, ⟨μlim_le.trans_lt (by simp)⟩⟩
   refine ⟨μlim', ?_, ?_⟩
-  · simp only [mem_ofPred_eq, FiniteMeasure.mk_apply, μlim', FiniteMeasure.mass]
+  · simp only [mem_ofPred, FiniteMeasure.mk_apply, μlim', FiniteMeasure.mass]
     rw [show C = (ENNReal.ofReal ↑C).toNNReal by simp]
     exact ENNReal.toNNReal_mono (by simp) μlim_le
   change Tendsto id f (𝓝 μlim')
@@ -510,7 +510,7 @@ lemma isCompact_setOfPred_probabilityMeasure_mass_eq_compl_isCompact_le {u : ℕ
   have : ProbabilityMeasure.toFiniteMeasure '' {μ | ∀ (n : ℕ), μ (K n)ᶜ ≤ u n}
       = {μ : FiniteMeasure E | μ.mass = 1 ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
     ext μ
-    simp only [mem_image, mem_ofPred_eq]
+    simp only [mem_image, mem_ofPred]
     refine ⟨?_, ?_⟩
     · rintro ⟨ν, hν, rfl⟩
       simpa using! hν
@@ -647,7 +647,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
   intro ε εpos
   rcases lt_or_ge 1 ε with hεbound | hεbound
   · refine ⟨∅, isCompact_empty, fun μ hμ ↦ ?_⟩
-    simp only [mem_ofPred_eq] at hμ
+    simp only [mem_ofPred] at hμ
     obtain ⟨μ', hμ', rfl⟩ := hμ
     rw [compl_empty, measure_univ]
     exact le_of_lt hεbound

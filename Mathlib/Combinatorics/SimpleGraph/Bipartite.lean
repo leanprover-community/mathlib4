@@ -106,7 +106,7 @@ theorem IsBipartiteWith.mem_of_mem_adj
 theorem isBipartiteWith_neighborSet (h : G.IsBipartiteWith s t) (hv : v ∈ s) :
     G.neighborSet v = { w ∈ t | G.Adj v w } := by
   ext w
-  rw [mem_neighborSet, Set.mem_ofPred_eq, iff_and_self]
+  rw [mem_neighborSet, Set.mem_ofPred, iff_and_self]
   exact h.mem_of_mem_adj hv
 
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor set of `v` is a subset of `t`. -/
@@ -132,7 +132,7 @@ theorem IsBipartiteWith.mem_of_mem_adj'
 theorem isBipartiteWith_neighborSet' (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
     G.neighborSet w = { v ∈ s | G.Adj v w } := by
   ext v
-  rw [mem_neighborSet, adj_comm, Set.mem_ofPred_eq, iff_and_self]
+  rw [mem_neighborSet, adj_comm, Set.mem_ofPred, iff_and_self]
   exact h.mem_of_mem_adj' hw
 
 /-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor set of `w` is a subset of `s`. -/
@@ -292,7 +292,7 @@ lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) : ∃ s t, G.IsBipa
   refine ⟨{v | c v = 0}, {v | c v = 1}, by aesop (add simp [Set.disjoint_left]), ?_⟩
   rintro v w hvw
   apply hc at hvw
-  simp [Set.mem_ofPred_eq] at hvw ⊢
+  simp [Set.mem_ofPred] at hvw ⊢
   lia
 
 /-- If a simple graph `G` has a bipartition, then it is bipartite. -/

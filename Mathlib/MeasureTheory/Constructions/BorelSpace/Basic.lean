@@ -379,7 +379,7 @@ instance Pi.opensMeasurableSpace_of_subsingleton {ι : Type*} {X : ι → Type*}
     rw [borel, MeasurableSpace.pi, ciSup_unique]
     refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
     simp +instances only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
-      Set.mem_ofPred_eq] at hs
+      Set.mem_ofPred] at hs
     obtain ⟨t, ht, rfl⟩ := hs
     exact ⟨t, ht.measurableSet, rfl⟩
 

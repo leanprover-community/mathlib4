@@ -96,7 +96,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   obtain ⟨t, ht⟩ : Set.Nonempty ({t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty}
       ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ := ((A.union B).dense_compl ℝ).nonempty
   let z := c + t • y
-  simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_ofPred_eq, not_nonempty_iff_eq_empty]
+  simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_ofPred, not_nonempty_iff_eq_empty]
     at ht
   have JA : JoinedIn sᶜ a z := by
     apply JoinedIn.of_segment_subset

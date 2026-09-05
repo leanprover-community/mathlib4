@@ -102,7 +102,7 @@ lemma range_toFun_comp_weights [Fintype X] :
     Set.range (fun t ↦ t.weights : StdSimplex R X → (X → R)) =
     (⋂ (i : X), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
   ext s
-  simp only [Set.mem_range, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  simp only [Set.mem_range, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred]
   refine ⟨?_, ?_⟩
   · rintro ⟨s, rfl⟩
     exact ⟨s.weights_nonneg, by simp⟩

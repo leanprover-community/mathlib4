@@ -202,7 +202,7 @@ theorem closure_eq_uniformity (s : Set <| α × α) :
     closure s = ⋂ V ∈ {V | V ∈ 𝓤 α ∧ SetRel.IsSymm V}, V ○ s ○ V := by
   ext ⟨x, y⟩
   simp +contextual only
-    [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_ofPred_eq,
+    [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_ofPred,
       and_imp, mem_comp_comp, ← mem_inter_iff, inter_comm, Set.Nonempty]
 
 theorem uniformity_hasBasis_closed :
@@ -785,7 +785,7 @@ theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpa
 
 theorem ball_entourageProd (u : SetRel α α) (v : SetRel β β) (x : α × β) :
     ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
-  ext p; simp only [ball, entourageProd, Set.mem_ofPred_eq, Set.mem_prod, Set.mem_preimage]
+  ext p; simp only [ball, entourageProd, Set.mem_ofPred, Set.mem_prod, Set.mem_preimage]
 
 instance IsSymm_entourageProd {u : SetRel α α} {v : SetRel β β} [u.IsSymm] [v.IsSymm] :
     (entourageProd u v).IsSymm where

@@ -362,7 +362,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
       intro s hs
       obtain ⟨a, ha⟩ := (subset_insert_iff_of_notMem hUS).mp hS1 hs
       subst hS2 ha
-      simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_ofPred_eq, mem_Iio, not_lt]
+      simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_ofPred, mem_Iio, not_lt]
     · intro b hb
       rw [mem_Ici, sSup_le_iff]
       intro c hc

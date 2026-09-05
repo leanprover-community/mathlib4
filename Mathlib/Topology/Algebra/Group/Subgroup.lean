@@ -160,7 +160,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       rw [preimage_compl, compl_compl] at H
       convert! H
       ext x
-      simp only [image_smul, mem_ofPred_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_nonempty_iff' }
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
@@ -187,7 +187,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       apply Finite.of_preimage _ (equivOp S).surjective
       convert! H using 1
       ext x
-      simp only [image_smul, mem_ofPred_eq, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_nonempty_iff }
 
 end

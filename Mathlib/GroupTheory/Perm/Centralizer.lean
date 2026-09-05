@@ -174,12 +174,12 @@ def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   carrier := {τ | ∀ c, #(τ c).val.support = #c.val.support}
   one_mem' := by simp
   mul_mem' hσ hτ := by
-    simp only [Subtype.forall, Set.mem_ofPred_eq, coe_mul, Function.comp_apply]
-    simp only [Subtype.forall, Set.mem_ofPred_eq] at hσ hτ
+    simp only [Subtype.forall, Set.mem_ofPred, coe_mul, Function.comp_apply]
+    simp only [Subtype.forall, Set.mem_ofPred] at hσ hτ
     intro c hc
     rw [hσ, hτ]
   inv_mem' hσ := by
-    simp only [Subtype.forall, Set.mem_ofPred_eq] at hσ ⊢
+    simp only [Subtype.forall, Set.mem_ofPred] at hσ ⊢
     intro c hc
     rw [← hσ _ (by simp)]
     simp
@@ -476,7 +476,7 @@ theorem nat_card_range_toPermHom :
   simp only [Fintype.card_eq_nat_card]
   congr
   ext
-  rw [mem_range_toPermHom_iff', Set.mem_ofPred_eq]
+  rw [mem_range_toPermHom_iff', Set.mem_ofPred]
 
 section Kernel
 /- Here, we describe the kernel of `g.OnCycleFactors.toPermHom` -/
@@ -650,7 +650,7 @@ theorem card_isConj_mul_eq :
   rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
   convert! MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
   · ext h
-    simp only [Set.mem_ofPred_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
+    simp only [Set.mem_ofPred, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]
 
 /-- Cardinality of a conjugacy class in `Equiv.Perm α` of a given `cycleType` -/

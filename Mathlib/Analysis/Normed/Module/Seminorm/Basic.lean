@@ -753,12 +753,12 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 theorem ball_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).ball x r = f ⁻¹' p.ball (f x) r := by
   ext
-  simp_rw [ball, mem_preimage, comp_apply, Set.mem_ofPred_eq, map_sub]
+  simp_rw [ball, mem_preimage, comp_apply, Set.mem_ofPred, map_sub]
 
 theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).closedBall x r = f ⁻¹' p.closedBall (f x) r := by
   ext
-  simp_rw [closedBall, mem_preimage, comp_apply, Set.mem_ofPred_eq, map_sub]
+  simp_rw [closedBall, mem_preimage, comp_apply, Set.mem_ofPred, map_sub]
 
 variable (p : Seminorm 𝕜 E)
 

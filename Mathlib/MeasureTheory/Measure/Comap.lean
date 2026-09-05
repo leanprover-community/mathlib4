@@ -114,11 +114,11 @@ theorem ae_eq_image_of_ae_eq_comap (f : α → β) (μ : Measure β) (hfi : Inje
   rw [EventuallyEqSet, EventuallyEq, ae_iff] at hst ⊢
   have h_eq_α : { a : α | ¬(a ∈ s) = (a ∈ t) } = s \ t ∪ t \ s := by
     ext1 x
-    simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
+    simp only [eq_iff_iff, mem_ofPred, mem_union, Set.mem_sdiff]
     tauto
   have h_eq_β : { a : β | ¬(a ∈ f '' s) = (a ∈ f '' t) } = f '' s \ f '' t ∪ f '' t \ f '' s := by
     ext1 x
-    simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
+    simp only [eq_iff_iff, mem_ofPred, mem_union, Set.mem_sdiff]
     tauto
   rw [← Set.image_sdiff hfi, ← Set.image_sdiff hfi, ← Set.image_union] at h_eq_β
   rw [h_eq_β]

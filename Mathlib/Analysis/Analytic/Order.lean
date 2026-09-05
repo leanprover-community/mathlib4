@@ -614,7 +614,7 @@ theorem isClopen_setOfPred_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) 
     conv =>
       arg 1; intro; left; right; arg 1; intro
       rw [analyticOrderAt_eq_top, eventually_nhds_iff]
-    simp only [mem_ofPred_eq] at hz
+    simp only [mem_ofPred] at hz
     rw [analyticOrderAt_eq_top, eventually_nhds_iff] at hz
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
