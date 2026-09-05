@@ -85,13 +85,13 @@ lemma multiplicity_mk_mk_mk (u v w : G) {ι κ : Type*}
     (f := fun ⟨p, hp⟩ => ⟨(σ p.1).val * u, ⟨by simp, by simp [← Set.mem_ofPred.mp hp, mul_assoc]⟩⟩)
   · intro ⟨⟨x1, x2⟩, hx⟩ ⟨⟨y1, y2⟩, hy⟩ heq
     simp only [Subtype.mk.injEq] at heq ⊢
-    -- We obtain injectivity from  `H₁/(gH₂g⁻¹ ∩ H₁) ↪ G ⧸ H₂` and `axH₃ = ayH₃ ↔ xH₃ = yH₃`
+    -- We obtain injectivity from  `H₁/(gH₂g⁻¹ ∩ H₁) ↪ G ⧸ H₂` and `axH₃ = ayH₃ ↔ xH₃ = yH₃`.
     obtain rfl : x1 = y1 := hσ.injective <| toLeftCoset_injective (by simp [heq])
     obtain rfl : x2 = y2 := hτ.injective <| toLeftCoset_injective (by
       simpa [mul_assoc] using congrArg ((σ x1 * u)⁻¹ • ·) (hx.trans hy.symm))
     rfl
   · intro ⟨d, hd, hrel⟩
-    -- We construct inverse `⟨i, j⟩` s.t. `(σ i * u)H₂ = d` `(τ j * v)H₃ = (σ i * u)⁻¹wH₃`
+    -- We construct the inverse `⟨i, j⟩` s.t. `(σ i * u)H₂ = d` `(τ j * v)H₃ = (σ i * u)⁻¹wH₃`.
     simp only [Set.mem_ofPred_eq, Subtype.mk.injEq, Subtype.exists, exists_prop, Prod.exists]
     obtain ⟨i, hi⟩ := toLeftDecompositionEquiv.surjective.comp hσ.surjective ⟨d, hd⟩
     simp only [Function.comp_apply, toLeftDecompositionEquiv_apply, toLeftCoset_mk,
