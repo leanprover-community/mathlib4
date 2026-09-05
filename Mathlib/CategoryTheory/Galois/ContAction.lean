@@ -119,6 +119,8 @@ instance : (isContinuous FintypeCat.{w} G).IsClosedUnderSubobjects := by
   rw [isContinuous_eq_iSup]
   infer_instance
 
+/-- An action of a topological group on a finite set is continuous if and only if it is trivial
+when restricted to some open subgroup. -/
 lemma exists_openSubgroup_of_isContinuous_of_finite
     {J : Type*} [Finite J] (obj : J → Action FintypeCat.{w} G)
     (property : ∀ j, isContinuous _ _ (obj j)) :
