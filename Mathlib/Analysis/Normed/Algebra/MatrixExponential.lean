@@ -7,12 +7,16 @@ module
 
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Topology.UniformSpace.Matrix
 public import Mathlib.Topology.Instances.Matrix
+
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 
 /-!
 # Lemmas about the matrix exponential
@@ -53,10 +57,6 @@ results for general rings are instead stated about `Ring.inverse`:
 * `Matrix.exp_zsmul`
 * `Matrix.exp_conj`
 * `Matrix.exp_conj'`
-
-## TODO
-
-* Show that `Matrix.det (NormedSpace.exp A) = NormedSpace.exp (Matrix.trace A)`
 
 ## References
 
@@ -121,6 +121,56 @@ theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp A).IsSymm :=
 end CommRing
 
 end Topological
+
+section Determinant
+
+open scoped Norms.Operator
+
+variable {𝕂 : Type*} [Fintype m] [DecidableEq m] [NontriviallyNormedField 𝕂]
+
+@[fun_prop]
+lemma differentiable_det : Differentiable 𝕂 (fun M : Matrix m m 𝕂 ↦ det M) := by
+  simp only [Matrix.det_apply]
+  fun_prop
+
+open Polynomial in
+/-- The Fréchet derivative of the determinant at the identity, applied to `H`, is `trace H`. -/
+lemma fderiv_det_one_apply (H : Matrix m m 𝕂) :
+    fderiv 𝕂 (fun M : Matrix m m 𝕂 ↦ det M) 1 H = trace H := by
+  set D := fderiv 𝕂 (fun M : Matrix m m 𝕂 ↦ det M) 1
+  have hcomp : HasDerivAt (det ∘ fun x ↦ 1 + id x • H) (D ((1 : 𝕂) • H)) (0 : 𝕂) := by
+    refine differentiable_det.differentiableAt.hasFDerivAt.comp_hasDerivAt_of_eq 0 ?_ (by simp)
+    exact (hasDerivAt_id (x := 0)).smul_const H |>.const_add 1
+  have hp : (fun t : 𝕂 ↦ det (1 + t • H)) =
+      fun t ↦ (det (1 + (X : Polynomial 𝕂) • H.map C)).eval t := by
+    funext t
+    simp [eval_det, ← smul_eq_mul_diagonal]
+  change HasDerivAt (fun t : 𝕂 ↦ det (1 + t • H)) (D (1 • H)) 0 at hcomp
+  rw [hp] at hcomp
+  calc
+    _ = D (1 • H) := by rw [one_smul]
+    _ = eval 0 (derivative (det (1 + (X : Polynomial 𝕂) • H.map C))) :=
+      hcomp.unique (((det (1 + (X : Polynomial 𝕂) • H.map C))).hasDerivAt 0)
+    _ = _ := Matrix.derivative_det_one_add_X_smul H
+
+/-- The Fréchet derivative of the determinant at the identity is the trace linear map. -/
+lemma fderiv_det_one : fderiv 𝕂 (fun M : Matrix m m 𝕂 ↦ det M) 1 =
+    ContinuousLinearMap.mk (traceLinearMap m 𝕂 𝕂) := by
+  ext H
+  exact fderiv_det_one_apply H
+
+/-- The determinant has the trace as its derivative at the identity. -/
+lemma hasFDerivAt_det_one : HasFDerivAt (fun M : Matrix m m 𝕂 ↦ det M)
+    (ContinuousLinearMap.mk (traceLinearMap m 𝕂 𝕂)) 1 := by
+  rw [← fderiv_det_one]
+  exact differentiable_det.differentiableAt.hasFDerivAt
+
+/-- The determinant of a matrix exponential is the exponential of its trace. -/
+theorem det_exp {𝕂 : Type*} [RCLike 𝕂] (A : Matrix m m 𝕂) : det (exp A) = exp (trace A) := by
+  convert (detMonoidHom.map_exp_of_hasFDerivAt_one (ContinuousLinearMap.mk (traceLinearMap m 𝕂 𝕂))
+    hasFDerivAt_det_one A) using 1 <;> rfl
+
+end Determinant
 
 section Normed
 
