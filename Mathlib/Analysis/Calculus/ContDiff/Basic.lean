@@ -652,3 +652,17 @@ Warning: see remarks attached to `contDiff_prodAssoc`
 -/
 theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n <| (Equiv.prodAssoc E F G).symm :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).symm.contDiff
+
+/-- The iterated derivatives up to order `m` of a smooth compactly supported function are
+uniformly bounded. -/
+lemma HasCompactSupport.exists_bound_iteratedFDeriv {E F : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
+    (hf : HasCompactSupport f) (hf' : ContDiff ℝ ∞ f) (m : ℕ) :
+    ∃ C, 0 ≤ C ∧ ∀ i ≤ m, ∀ y, ‖_root_.iteratedFDeriv ℝ i f y‖ ≤ C := by
+  have key i : ∃ C, ∀ y, ‖_root_.iteratedFDeriv ℝ i f y‖ ≤ C :=
+    (hf'.continuous_iteratedFDeriv (mod_cast le_top)).bounded_above_of_compact_support
+      (hf.iteratedFDeriv i)
+  choose A hA using key
+  refine ⟨max 0 ((Finset.range (m + 1)).sup' ⟨0, by simp⟩ A), le_max_left _ _, fun i hi y ↦ ?_⟩
+  grw [hA i y, ← le_max_right]
+  exact Finset.le_sup' A (by grind)
