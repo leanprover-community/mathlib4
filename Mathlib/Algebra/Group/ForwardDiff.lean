@@ -183,27 +183,29 @@ end newton_formulae
 
 section choose
 
-lemma fwdDiff_choose (j : ℕ) : Δ_[1] (fun x ↦ x.choose (j + 1) : ℕ → ℤ) = fun x ↦ x.choose j := by
+variable {R : Type*} [CommRing R]
+
+lemma fwdDiff_choose (j : ℕ) : Δ_[1] (fun x ↦ x.choose (j + 1) : ℕ → R) = fun x ↦ x.choose j := by
   ext n
   simp only [fwdDiff, choose_succ_succ' n j, cast_add, add_sub_cancel_right]
 
 lemma fwdDiff_iter_choose (j k : ℕ) :
-    Δ_[1]^[k] (fun x ↦ x.choose (k + j) : ℕ → ℤ) = fun x ↦ x.choose j := by
+    Δ_[1]^[k] (fun x ↦ x.choose (k + j) : ℕ → R) = fun x ↦ x.choose j := by
   induction k generalizing j with
   | zero => simp only [zero_add, iterate_zero, id_eq]
   | succ k IH =>
     simp only [iterate_succ_apply', add_assoc, add_comm 1 j, IH, fwdDiff_choose]
 
 lemma fwdDiff_iter_choose_zero (m n : ℕ) :
-    Δ_[1]^[n] (fun x ↦ x.choose m : ℕ → ℤ) 0 = if n = m then 1 else 0 := by
+    Δ_[1]^[n] (fun x ↦ x.choose m : ℕ → R) 0 = if n = m then 1 else 0 := by
   rcases lt_trichotomy m n with hmn | rfl | hnm
   · rcases Nat.exists_eq_add_of_lt hmn with ⟨k, rfl⟩
-    simp_rw [hmn.ne', if_false, (by ring : m + k + 1 = k + 1 + m), iterate_add_apply,
+    simp_rw [hmn.ne', ite_false, (by ring : m + k + 1 = k + 1 + m), iterate_add_apply,
       add_zero m ▸ fwdDiff_iter_choose 0 m, choose_zero_right, iterate_one, cast_one, fwdDiff_const,
       fwdDiff_iter_eq_sum_shift, smul_zero, sum_const_zero]
-  · simp only [if_true, add_zero m ▸ fwdDiff_iter_choose 0 m, choose_zero_right, cast_one]
+  · simp only [ite_true, add_zero m ▸ fwdDiff_iter_choose 0 m, choose_zero_right, cast_one]
   · rcases Nat.exists_eq_add_of_lt hnm with ⟨k, rfl⟩
-    simp_rw [hnm.ne, if_false, add_assoc n k 1, fwdDiff_iter_choose, choose_zero_succ, cast_zero]
+    simp_rw [hnm.ne, ite_false, add_assoc n k 1, fwdDiff_iter_choose, choose_zero_succ, cast_zero]
 
 end choose
 
@@ -227,6 +229,8 @@ We prove formulae about the forward difference operator applied to polynomials:
 * `fwdDiff_iter_sum_mul_pow_eq_zero` :
   The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
     sums over `range n`).
+* `sum_range_shift_eq_sum_fwdDiff_iter` :
+  A summation formula expressing `∑ k < n, f (y + k • h)` in terms of iterated forward differences.
 -/
 
 variable {R : Type*} [CommRing R]
@@ -293,3 +297,15 @@ theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
     ← Pi.smul_def, fwdDiff_iter_const_smul, ← sum_fn]
   exact sum_eq_zero fun i hi ↦ smul_eq_zero_of_right _ <| fwdDiff_iter_pow_eq_zero_of_lt
     <| mem_range.mp hi
+
+/--
+A summation formula expressing `∑ k < n, f (y + k • h)` in terms of iterated forward differences.
+-/
+theorem sum_range_shift_eq_sum_fwdDiff_iter (f : M → G) (y : M) (n : ℕ) :
+    ∑ k ∈ range n, f (y + k • h) = ∑ k ∈ range n, n.choose (k + 1) • Δ_[h]^[k] f y := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    simp_rw [sum_range_succ, IH, shift_eq_sum_fwdDiff_iter h f n y, choose_succ_succ',
+      add_smul, sum_add_distrib, sum_range_succ, choose_succ_self]
+    grind

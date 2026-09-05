@@ -71,7 +71,6 @@ instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
 variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-variable (ι : Type*) [DecidableEq ι]
 
 namespace SameRay
 
@@ -176,7 +175,6 @@ theorem map (f : M →ₗ[R] N) (h : SameRay R x y) : SameRay R (f x) (f y) :=
     Or.imp (fun hy => by rw [hy, map_zero]) fun ⟨r₁, r₂, hr₁, hr₂, h⟩ =>
       ⟨r₁, r₂, hr₁, hr₂, by rw [← f.map_smul, ← f.map_smul, h]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The images of two vectors under an injective linear map are on the same ray if and only if the
 original vectors are on the same ray. -/
 theorem _root_.Function.Injective.sameRay_map_iff
