@@ -73,7 +73,7 @@ abbrev pushoutProduct [HasPushouts C] [MonoidalCategory C] :
     Arrow C ⥤ Arrow C ⥤ Arrow C := (curriedTensor C).leibnizPushout
 
 /-- Notation for the pushout-product of morphisms. -/
-notation3 f " □ " g:10 => (pushoutProduct.obj f).obj g
+scoped notation3 f " □ " g:10 => (pushoutProduct.obj f).obj g
 
 /-- The Leibniz functor associated to the internal hom on a monoidal closed category. This is the
 bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from
@@ -91,7 +91,7 @@ abbrev pullbackHom [HasPullbacks C] [MonoidalCategory C] [MonoidalClosed C] :
     (Arrow C)ᵒᵖ ⥤ Arrow C ⥤ Arrow C := MonoidalClosed.internalHom.leibnizPullback
 
 /-- Notation for the pullback-hom of morphisms. -/
-notation3 f " ⋔ " g:10 => (pullbackHom.obj f).obj g
+scoped notation3 f " ⋔ " g:10 => (pullbackHom.obj f).obj g
 
 namespace PushoutProduct
 
