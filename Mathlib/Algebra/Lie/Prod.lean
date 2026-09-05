@@ -16,7 +16,7 @@ This file defines the Lie algebra structure the Product of two Lie algebras
   - `LieHom.fst` The first projection of a product is a Lie algebra map.
   - `LieHom.snd` The second projection of a product is a Lie algebra map.
   - `LieHom.prod_ext` Split equality of Lie algebra homomorphisms from a product into Lie algebra
-  homomorphism over each component,
+    homomorphism over each component,
 - products in the codomain:
   - `LieHom.inl` The left injection into a product is a Lie algebra map.
   - `LieHom.inr` The right injection into a product is a Lie algebra map.

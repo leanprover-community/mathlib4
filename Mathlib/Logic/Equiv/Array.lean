@@ -27,8 +27,8 @@ end Equiv
 `LawfulTraversable (Array α)`. These would
 
 1. be implemented directly in terms of `Array` functionality for efficiency, rather than being the
-traversal of some other type transported along an equivalence to `Array α` (as the traversable
-instance for `array` was)
+   traversal of some other type transported along an equivalence to `Array α` (as the traversable
+   instance for `array` was)
 
 2. belong in `Mathlib/Control/Traversable/Instances.lean` instead of this file. -/
 
