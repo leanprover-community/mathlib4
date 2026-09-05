@@ -68,26 +68,26 @@ variable [TopologicalSpace ι] [SecondCountableTopology ι] [OrderTopology ι]
 is separable. -/
 lemma isSeparable_iUnion_range_of_stronglyMeasurable_of_isRightContinuous [TopologicalSpace E]
     (hX : ∀ i, StronglyMeasurable (X i)) (hX_cont : ∀ ω, IsRightContinuous (X · ω)) :
-    IsSeparable (⋃ t, Set.range (X t)) := by
+    IsSeparable (⋃ t, range (X t)) := by
   obtain ⟨d, hd_count, hd_dense⟩ := exists_countable_dense ι
   let D : Set ι := d ∪ {x : ι | 𝓝[>] x = ⊥}
   have hD_count : D.Countable := hd_count.union countable_setOfPred_isolated_right
-  have hD_ne i (hi : i ∉ D) : (𝓝[>] i).NeBot := ⟨fun h ↦ hi (Set.mem_union_right _ h)⟩
-  obtain ⟨c, hc_count, hc⟩ : IsSeparable (⋃ t : D, Set.range (X t)) := by
+  have hD_ne i (hi : i ∉ D) : (𝓝[>] i).NeBot := ⟨fun h ↦ hi (mem_union_right _ h)⟩
+  obtain ⟨c, hc_count, hc⟩ : IsSeparable (⋃ t : D, range (X t)) := by
     have : Countable D := hD_count.to_subtype
     exact IsSeparable.iUnion fun t ↦ (hX t).isSeparable_range
   refine ⟨c, hc_count, fun x hx ↦ ?_⟩
   simp only [mem_iUnion, mem_range] at hx
   obtain ⟨i, ω, rfl⟩ := hx
   by_cases hi : i ∈ D
-  · exact hc (Set.mem_iUnion.2 ⟨⟨i, hi⟩, ⟨ω, rfl⟩⟩)
+  · exact hc (mem_iUnion.2 ⟨⟨i, hi⟩, ⟨ω, rfl⟩⟩)
   have := hD_ne i hi
   have : (𝓝[d ∩ Ioi i] i).NeBot := hd_dense.nhdsWithin_inter_neBot isOpen_Ioi
-  have h1 : Tendsto (X · ω) (𝓝[d ∩ Set.Ioi i] i) (𝓝 (X i ω)) :=
-    (hX_cont ω i).mono_left (nhdsWithin_mono i Set.inter_subset_right)
+  have h1 : Tendsto (X · ω) (𝓝[d ∩ Ioi i] i) (𝓝 (X i ω)) :=
+    (hX_cont ω i).mono_left (nhdsWithin_mono i inter_subset_right)
   refine isClosed_closure.mem_of_tendsto h1 ?_
   filter_upwards [self_mem_nhdsWithin] with t ht using
-    hc (Set.mem_iUnion.2 ⟨⟨t, Set.mem_union_left _ ht.1⟩, ⟨ω, rfl⟩⟩)
+    hc (mem_iUnion.2 ⟨⟨t, mem_union_left _ ht.1⟩, ⟨ω, rfl⟩⟩)
 
 variable [PseudoMetricSpace E] [AddCommMonoid E]
 
@@ -105,72 +105,55 @@ lemma stronglyMeasurable_path_of_isRightContinuous
   obtain ⟨d, hd_count, hd_dense⟩ := exists_countable_dense ι
   let D : Set ι := d ∪ {x : ι | 𝓝[>] x = ⊥}
   have hD_count : D.Countable := hd_count.union countable_setOfPred_isolated_right
-  have hD_ne i (hi : i ∉ D) : (𝓝[>] i).NeBot := ⟨fun h ↦ hi (Set.mem_union_right _ h)⟩
+  have hD_ne i (hi : i ∉ D) : (𝓝[>] i).NeBot := ⟨fun h ↦ hi (mem_union_right _ h)⟩
   let q : ℕ → ι := enumerateCountable hD_count (Classical.arbitrary ι)
-  have hDq : D ⊆ Set.range q := subset_range_enumerate hD_count _
+  have hDq : D ⊆ range q := subset_range_enumerate hD_count _
   let times : ℕ → Finset ι := fun n ↦ (Finset.range n).image q
   have hq_mem k n (hkn : k < n) : q k ∈ times n := by
-    simp only [times, Finset.mem_image, Finset.mem_range]
-    exact ⟨k, hkn, rfl⟩
+    simpa [times] using ⟨k, hkn, rfl⟩
   -- A single sequence `e` of values, dense in the set of all values taken by the process.
-  obtain ⟨c, hc_count, hc⟩ : IsSeparable (⋃ t : D, Set.range (X t)) := by
-    have : Countable D := hD_count.to_subtype
-    exact IsSeparable.iUnion fun t ↦ (hX t).isSeparable_range
+  obtain ⟨c, hc_count, hc⟩ : IsSeparable (⋃ t, range (X t)) :=
+    isSeparable_iUnion_range_of_stronglyMeasurable_of_isRightContinuous hX hX_cont
   let e : ℕ → E := enumerateCountable hc_count 0
-  have hce : c ⊆ Set.range e := subset_range_enumerate hc_count _
-  have hD_val t (ht : t ∈ D) ω : X t ω ∈ closure (Set.range e) :=
-    closure_mono hce (hc (Set.mem_iUnion.2 ⟨⟨t, ht⟩, ⟨ω, rfl⟩⟩))
+  have hce : c ⊆ range e := subset_range_enumerate hc_count _
   -- Every value of the process lies in the closure of `range e`: either the time is one of the
   -- discretization times, or right-continuity exhibits the value as a limit of such values.
-  have hXmem i ω : X i ω ∈ closure (Set.range e) := by
-    by_cases hi : i ∈ D
-    · exact hD_val i hi ω
-    · have := hD_ne i hi
-      have : (𝓝[d ∩ Ioi i] i).NeBot := hd_dense.nhdsWithin_inter_neBot isOpen_Ioi
-      have h1 : Tendsto (X · ω) (𝓝[d ∩ Set.Ioi i] i) (𝓝 (X i ω)) :=
-        (hX_cont ω i).mono_left (nhdsWithin_mono i Set.inter_subset_right)
-      refine isClosed_closure.mem_of_tendsto h1 ?_
-      filter_upwards [self_mem_nhdsWithin] with t ht using
-        hD_val t (Set.mem_union_left _ ht.1) ω
+  have hXmem i ω : X i ω ∈ closure (range e) :=
+    closure_mono hce (hc (mem_iUnion.2 ⟨i, ⟨ω, rfl⟩⟩))
   -- The approximating simple functions.
-  refine ⟨fun n ↦ pathApprox X hX_meas e (times n) n, fun ω ↦ ?_⟩
-  rw [tendsto_pi_nhds]
-  intro i
-  rw [EMetric.tendsto_atTop]
-  intro ε hε
+  refine ⟨fun n ↦ pathApprox X hX_meas e (times n) n,
+    fun ω ↦ tendsto_pi_nhds.2 fun i ↦ EMetric.tendsto_atTop.2 fun ε hε ↦ ?_⟩
   have hε3 : 0 < ε / 3 := ENNReal.div_pos hε.ne' (by norm_num)
   -- A point `e k` close to `X i ω`.
   obtain ⟨_, ⟨k, rfl⟩, hk⟩ := EMetric.mem_closure_iff.1 (hXmem i ω) (ε / 3) hε3
   -- Eventually, the smallest discretization time `≥ i` carries a value close to `X i ω`.
   obtain ⟨N₀, hN₀⟩ : ∃ N₀, ∀ n ≥ N₀, ∃ t₀, (IsLeast {u ∈ times n | i ≤ u} t₀) ∧
       edist (X t₀ ω) (X i ω) < ε / 3 := by
-    by_cases hi : i ∈ D
+    obtain hi | _ := (𝓝[>] i).eq_or_neBot
     · -- `i` is itself a discretization time, and is then its own rounding.
-      obtain ⟨ki, hki⟩ := hDq hi
+      obtain ⟨ki, hki⟩ := hDq (mem_union_right _ hi)
       exact ⟨ki + 1, fun n hn ↦ ⟨i, ⟨⟨hki ▸ hq_mem ki n hn, le_rfl⟩, fun u hu ↦ hu.2⟩,
         by simpa using hε3⟩⟩
     · -- `i` is not isolated on the right, so right-continuity applies.
-      have : (𝓝[>] i).NeBot := hD_ne i hi
       obtain ⟨u', hu'⟩ : ∃ u, i < u :=
-        Filter.nonempty_of_mem (self_mem_nhdsWithin (a := i) (s := Set.Ioi i))
-      obtain ⟨u, hiu, hu⟩ :
-          ∃ u, u ∈ Ioi i ∧ Ioo i u ⊆ (X · ω) ⁻¹' Metric.eball (X i ω) (ε / 3) :=
-        (mem_nhdsGT_iff_exists_Ioo_subset' hu').mp
+        nonempty_of_mem (self_mem_nhdsWithin (a := i) (s := Ioi i))
+      obtain ⟨u, hiu, hu, hud⟩ :
+          ∃ u > i, Ioc i u ⊆ (X · ω) ⁻¹' Metric.eball (X i ω) (ε / 3) ∧ u ∈ d := by
+        obtain ⟨v, hiv, hv⟩ := (mem_nhdsGT_iff_exists_Ioo_subset' hu').mp
           ((hX_cont ω i) (Metric.eball_mem_nhds (X i ω) hε3))
-      have hIoo : (Set.Ioo i u).Nonempty := Filter.nonempty_of_mem (Ioo_mem_nhdsGT hiu)
-      obtain ⟨v, hvo, hvd⟩ : ∃ v, v ∈ Ioo i u ∧ v ∈ d :=
-        hd_dense.inter_open_nonempty (Set.Ioo i u) isOpen_Ioo hIoo
-      obtain ⟨kv, hkv⟩ : ∃ n, q n = v := hDq (Set.mem_union_left _ hvd)
-      have hiv : i < q kv := by grind
-      have hvu : q kv < u := by grind
+        obtain ⟨u, hu⟩ := hd_dense.inter_open_nonempty (Ioo i v) isOpen_Ioo <|
+          nonempty_of_mem (Ioo_mem_nhdsGT hiv)
+        exact ⟨u, by grind⟩
+      obtain ⟨kv, hkv⟩ : ∃ n, q n = u := hDq (mem_union_left _ hud)
+      have hiv : i ≤ q kv := by grind
+      have hvu : q kv ≤ u := by grind
       refine ⟨kv + 1, fun n hn ↦ ?_⟩
       let T : Finset ι := {t ∈ times n | i ≤ t}
-      have hTne : T.Nonempty := ⟨q kv, Finset.mem_filter.2 ⟨hq_mem kv n hn, hiv.le⟩⟩
+      have hTne : T.Nonempty := ⟨q kv, Finset.mem_filter.2 ⟨hq_mem kv n hn, hiv⟩⟩
       have hit₀ : i ≤ T.min' hTne := (Finset.mem_filter.1 (T.min'_mem hTne)).2
-      have ht₀u : T.min' hTne < u :=
-        (T.min'_le _ (Finset.mem_filter.2 ⟨hq_mem kv n hn, hiv.le⟩)).trans_lt hvu
-      refine ⟨T.min' hTne, ⟨⟨(Finset.mem_filter.1 (T.min'_mem hTne)).1, hit₀⟩,
-        fun w hw ↦ T.min'_le w (Finset.mem_filter.2 ⟨hw.1, hw.2⟩)⟩, ?_⟩
+      have ht₀u : T.min' hTne ≤ u :=
+        (T.min'_le _ (Finset.mem_filter.2 ⟨hq_mem kv n hn, hiv⟩)).trans hvu
+      refine ⟨T.min' hTne, by simpa [T] using T.isLeast_min' hTne, ?_⟩
       rcases hit₀.lt_or_eq with h | h
       · exact Metric.mem_eball.1 (hu ⟨h, ht₀u⟩)
       · simpa [h] using hε3
@@ -184,8 +167,7 @@ lemma stronglyMeasurable_path_of_isRightContinuous
       gcongr
       exact SimpleFunc.edist_nearestPt_le e _ (by grind)
   _ ≤ edist (e k) (X i ω) + edist (X i ω) (X t₀ ω) + edist (X t₀ ω) (X i ω) := by
-      gcongr
-      exact edist_triangle _ _ _
+      grw [edist_triangle]
   _ < ε / 3 + ε / 3 + ε / 3 := by rw [edist_comm (X i ω), edist_comm (e k)]; gcongr
   _ = ε := by norm_num
 
