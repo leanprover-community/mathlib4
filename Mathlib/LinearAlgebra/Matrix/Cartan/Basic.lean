@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormDet
 
 /-!
@@ -47,9 +48,9 @@ cartan matrix, lie algebra, dynkin diagram
 
 @[expose] public section
 
-namespace CartanMatrix
-
 open Matrix
+
+namespace CartanMatrix
 
 /-! ### Exceptional Cartan matrices -/
 
@@ -465,5 +466,54 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
   offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
   zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
   exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
+
+namespace Matrix.IsFiniteCartan
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM : M.IsFiniteCartan)
+include hM
+
+lemma det_pos :
+    0 < M.det := by
+  obtain ⟨d, hd, hd'⟩ := hM.exists_posDef
+  replace hd : 0 < (diagonal d).det := by simpa using Finset.prod_pos fun i a ↦ hd i
+  replace hd' : 0 < (diagonal d).det * M.det := by simpa only [← det_mul] using hd'.det_pos
+  nlinarith
+
+protected lemma isUnit_map (k : Type*) [Field k] [CharZero k] :
+    IsUnit <| M.map (Int.cast : ℤ → k) := by
+  suffices IsUnit <| (Int.castRingHom k).mapMatrix M by simpa
+  rw [Matrix.isUnit_iff_isUnit_det, ← RingHom.map_det]
+  simpa using hM.det_pos.ne'
+
+protected lemma transpose :
+    Mᵀ.IsFiniteCartan := by
+  obtain ⟨d, hd_pos, hdM⟩ := hM.exists_posDef
+  set d' : ι → ℤ := fun i ↦ ∏ j ∈ Finset.univ.erase i, d j with hd'
+  have hd'_pos (i : ι) : 0 < d' i := Finset.prod_pos fun j _ ↦ hd_pos j
+  suffices (diagonal d' * Mᵀ).PosDef from
+    { diag i := by simpa using hM.diag i
+      offDiag_nonpos i j hij := by simpa using hM.offDiag_nonpos j i hij.symm
+      zero_comm i j := by simpa using hM.zero_comm j i
+      exists_posDef := ⟨d', hd'_pos, this⟩ }
+  set C : ℤ := ∏ j, d j with hC
+  have hCd (i : ι) : d i * d' i = C := Finset.mul_prod_erase _ _ (Finset.mem_univ i)
+  have hsymm (i j : ι) : d' i * M j i = d' j * M i j := by
+    apply mul_left_cancel₀ (a := d i * d j) (by simp [(hd_pos _).ne'])
+    have aux : d i * M i j = d j * M j i := by simpa using hdM.isHermitian.apply j i
+    linear_combination (d j * M j i) * hCd i - (d i * M i j) * hCd j - C * aux
+  suffices ∀ v : ι → ℤ, v ≠ 0 → 0 < star v ⬝ᵥ (diagonal d' * Mᵀ) *ᵥ v from
+    posDef_iff_dotProduct_mulVec.mpr ⟨by ext i j; simpa using (hsymm i j).symm, this⟩
+  intro v hv
+  have key : (d' * v) ⬝ᵥ (diagonal d * M) *ᵥ (d' * v) = C * (v ⬝ᵥ (diagonal d' * Mᵀ) *ᵥ v) := by
+    simp only [dotProduct, mulVec, diagonal_mul, transpose_apply, Finset.mul_sum, Pi.mul_apply]
+    refine Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_
+    linear_combination (M i j * d' j * v i * v j) * hCd i - (C * v i * v j) * hsymm i j
+  have hpos := hdM.dotProduct_mulVec_pos (x := d' * v) <|
+    fun h ↦ hv (funext fun i ↦ by simpa [(hd'_pos i).ne'] using congr_fun h i)
+  rw [star_trivial, key] at hpos
+  have hCpos : 0 < C := Finset.prod_pos fun j _ ↦ hd_pos j
+  rwa [star_trivial, ← mul_pos_iff_of_pos_left hCpos]
+
+end Matrix.IsFiniteCartan
 
 end
