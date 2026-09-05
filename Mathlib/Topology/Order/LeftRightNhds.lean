@@ -177,6 +177,48 @@ theorem countable_setOfPred_isolated_left_within [SecondCountableTopology α] {s
 @[deprecated (since := "2026-07-09")]
 alias countable_setOf_isolated_left_within := countable_setOfPred_isolated_left_within
 
+theorem exists_countable_subset_mem_closure_inter_Ici [SecondCountableTopology α] (s : Set α) :
+    ∃ d, d ⊆ s ∧ d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Ici x) := by
+  obtain ⟨d, hdc, hd⟩ := exists_countable_dense s
+  refine ⟨(↑) '' d ∪ {x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥}, by grind, ?_, fun x hxs ↦ ?_⟩
+  · exact (hdc.image _).union countable_setOfPred_isolated_right_within
+  refine mem_closure_iff.2 fun u hu hxu ↦ ?_
+  rcases (u ∩ (s ∩ Ioi x)).eq_empty_or_nonempty with h | ⟨y, hyu, hys, hyx⟩
+  · exact ⟨x, hxu, .inr ⟨hxs, empty_mem_iff_bot.1 <| h ▸ inter_mem
+      (mem_nhdsWithin_of_mem_nhds (hu.mem_nhds hxu)) self_mem_nhdsWithin⟩, le_rfl⟩
+  · obtain ⟨z, hzd, hz⟩ := hd.exists_mem_open
+      ((hu.inter isOpen_Ioi).preimage continuous_subtype_val) ⟨⟨y, hys⟩, hyu, hyx⟩
+    exact ⟨z, hz.1, .inl ⟨z, hzd, rfl⟩, hz.2.le⟩
+
+@[to_dual existing]
+theorem exists_countable_subset_mem_closure_inter_Iic [SecondCountableTopology α] (s : Set α) :
+    ∃ d, d ⊆ s ∧ d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Iic x) :=
+  exists_countable_subset_mem_closure_inter_Ici (α := αᵒᵈ) s
+
+/-- The image of a set of a second-countable linear order under a right-continuous function is a
+separable space. -/
+@[to_dual /-- The image of a set of a second-countable linear order under a left-continuous function
+is a separable space. -/]
+theorem separableSpace_image_of_continuousWithinAt_Ioi [SecondCountableTopology α] {s : Set α}
+    [TopologicalSpace β] {f : α → β} (hf : ∀ x ∈ s, ContinuousWithinAt f (s ∩ Ioi x) x) :
+    SeparableSpace (f '' s) := by
+  obtain ⟨d, hds, hdc, hd⟩ := exists_countable_subset_mem_closure_inter_Ici s
+  refine ⟨Subtype.val ⁻¹' (f '' d), (hdc.image _).preimage Subtype.val_injective, ?_⟩
+  rw [Subtype.dense_iff, Subtype.image_preimage_coe, inter_eq_self_of_subset_right (image_mono hds)]
+  rintro _ ⟨x, hxs, rfl⟩
+  refine closure_mono (s := f '' (d ∩ Ici x)) ?_ ?_
+  · exact image_mono inter_subset_left
+  · exact ((continuousWithinAt_inter_Ioi_iff_Ici.1 (hf x hxs)).mono fun _ hy ↦
+      ⟨hds hy.1, hy.2⟩).mem_closure_image (hd x hxs)
+
+/-- The range of a right-continuous function on a second-countable linear order is separable. -/
+@[to_dual /-- The range of a left-continuous function on a second-countable linear order is
+separable. -/]
+theorem separableSpace_range_of_continuousWithinAt_Ioi [SecondCountableTopology α]
+    [TopologicalSpace β] {f : α → β} (hf : ∀ x, ContinuousWithinAt f (Ioi x) x) :
+    SeparableSpace (range f) :=
+  image_univ ▸ separableSpace_image_of_continuousWithinAt_Ioi fun x _ ↦ by simpa using hf x
+
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
 theorem mem_nhdsGT_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered α] {a : α} {s : Set α} :
