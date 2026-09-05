@@ -157,15 +157,13 @@ attribute [local implicit_reducible] Bicone.toCoconeFunctor in
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit
 bicone. -/
 def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone) : t.IsBilimit :=
-  isBilimitOfTotal _ <| ht.hom_ext fun j ↦ by
-    classical simp [Bicone.toCocone_ι_app, comp_sum, ← Category.assoc, t.ι_π, dite_comp]
+  isBilimitOfTotal _ <| ht.hom_ext fun j ↦ by classical simp [comp_sum, t.ι_π_assoc, dite_comp]
 
 attribute [local implicit_reducible] Bicone.ofColimitCocone in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfColimitCoconeOfIsColimit {f : J → C} {t : Cocone (Discrete.functor f)}
     (ht : IsColimit t) : (Bicone.ofColimitCocone ht).IsBilimit :=
-  isBilimitOfIsColimit _ <| IsColimit.ofIsoColimit ht <| Cocone.ext (Iso.refl _) <| by
-    simp
+  isBilimitOfIsColimit _ <| IsColimit.ofIsoColimit ht <| Cocone.ext (Iso.refl _) <| by simp
 
 end Fintype
 

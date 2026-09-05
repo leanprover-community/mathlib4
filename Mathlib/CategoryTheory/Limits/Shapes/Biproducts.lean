@@ -67,6 +67,7 @@ structure Bicone (F : J → C) where
   ι_π : ∀ j j', ι j ≫ π j' =
     if h : j = j' then eqToHom (congrArg F h) else 0 := by aesop
 
+attribute [reassoc] Bicone.ι_π
 attribute [inherit_doc Bicone] Bicone.pt Bicone.π Bicone.ι Bicone.ι_π
 
 @[reassoc (attr := simp)]
