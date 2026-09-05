@@ -217,15 +217,21 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
     tsub_le_iff_right, ← hc]
   apply Finset.card_image_le
 
-lemma affineSpan_image_finset_ne_top_of_card_le [DecidableEq P] {s : Set ι} (hsfin : s.Finite)
-     (hs : s.encard ≤ finrank k V) (p : ι → P) : affineSpan k (p '' s) ≠ ⊤ := by
-  cases hc : #s with
-  | zero => simp [Finset.card_eq_zero.mp hc]
-  | succ n =>
-      intro htop
-      have hdim := finrank_vectorSpan_image_finset_le k p s hc
-      rw [← direction_affineSpan, htop, direction_top, finrank_top] at hdim
-      lia
+lemma affineSpan_image_finset_ne_top_of_card_le {s : Set ι} (hsfin : s.Finite)
+    (hs : s.encard ≤ finrank k V) (p : ι → P) : affineSpan k (p '' s) ≠ ⊤ := by
+  obtain rfl | ⟨i, hi⟩ := s.eq_empty_or_nonempty
+  · simp
+  set t := (· -ᵥ p i) '' p '' (s \ {i})
+  have : Fintype t := ((hsfin.sdiff.image p).image _).fintype
+  have hcard : t.toFinset.card < finrank k V := by
+    rw [← ENat.natCast_lt_natCast, ← Set.encard_eq_coe_toFinset_card]
+    calc
+    _ ≤ (s \ {i}).encard := by grind [Set.encard_image_le]
+    _ < _ := (hsfin.sdiff.encard_lt_encard (by grind)).trans_le hs
+  intro htop
+  apply (span_lt_top_of_card_lt_finrank hcard).ne
+  rw [← vectorSpan_image_eq_span_vsub_set_right_ne k p hi,
+    ← direction_affineSpan, htop, direction_top]
 
 /-- The `vectorSpan` of an indexed family of `n + 1` points has
 dimension at most `n`. -/
