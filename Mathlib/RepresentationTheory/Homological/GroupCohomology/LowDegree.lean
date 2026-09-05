@@ -68,22 +68,22 @@ section Cochains
 
 /-- The 0th object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def cochainsIso₀ : (inhomogeneousCochains A).X 0 ≅ ModuleCat.of k A.V :=
+def cochainsIso₀ : (inhomogeneousCochains A).X 0 ≅ ↧A.V :=
   (LinearEquiv.funUnique (Fin 0 → G) k A).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G, A)` as a `k`-module. -/
-def cochainsIso₁ : (inhomogeneousCochains A).X 1 ≅ ModuleCat.of k (G → A) :=
+def cochainsIso₁ : (inhomogeneousCochains A).X 1 ≅ ↧(G → A) :=
   (LinearEquiv.funCongrLeft k A (Equiv.funUnique (Fin 1) G)).toModuleIso.symm
 
 /-- The 2nd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G², A)` as a `k`-module. -/
-def cochainsIso₂ : (inhomogeneousCochains A).X 2 ≅ ModuleCat.of k (G × G → A) :=
+def cochainsIso₂ : (inhomogeneousCochains A).X 2 ≅ ↧(G × G → A) :=
   (LinearEquiv.funCongrLeft k A <| (piFinTwoEquiv fun _ => G)).toModuleIso.symm
 
 /-- The 3rd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G³, A)` as a `k`-module. -/
-def cochainsIso₃ : (inhomogeneousCochains A).X 3 ≅ ModuleCat.of k (G × G × G → A) :=
+def cochainsIso₃ : (inhomogeneousCochains A).X 3 ≅ ↧(G × G × G → A) :=
   (LinearEquiv.funCongrLeft k A <| ((Fin.consEquiv _).symm.trans
     ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso.symm
 
@@ -764,7 +764,7 @@ def dArrowIso₀₁ :
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
-def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
+def cocyclesIso₀ : cocycles A 0 ≅ ↧A.ρ.invariants :=
   KernelFork.mapIsoOfIsLimit
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dArrowIso₀₁ A)
@@ -809,7 +809,7 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
 
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₁ A`, which is a simpler type. -/
-def isoCocycles₁ : cocycles A 1 ≅ ModuleCat.of k (cocycles₁ A) :=
+def isoCocycles₁ : cocycles A 1 ≅ ↧(cocycles₁ A) :=
   cyclesMapIso' (isoShortComplexH1 A) _ (shortComplexH1 A).moduleCatLeftHomologyData
 
 set_option backward.defeqAttrib.useBackward true in
@@ -866,7 +866,7 @@ def isoShortComplexH2 :
 
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₂ A`, which is a simpler type. -/
-def isoCocycles₂ : cocycles A 2 ≅ ModuleCat.of k (cocycles₂ A) :=
+def isoCocycles₂ : cocycles A 2 ≅ ↧(cocycles₂ A) :=
   cyclesMapIso' (isoShortComplexH2 A) _ (shortComplexH2 A).moduleCatLeftHomologyData
 
 set_option backward.defeqAttrib.useBackward true in
@@ -914,7 +914,7 @@ abbrev H0 := groupCohomology A 0
 
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
-def H0Iso : H0 A ≅ ModuleCat.of k A.ρ.invariants :=
+def H0Iso : H0 A ≅ ↧A.ρ.invariants :=
   (CochainComplex.isoHomologyπ₀ _).symm ≪≫ cocyclesIso₀ A
 
 set_option backward.isDefEq.respectTransparency false in
@@ -934,7 +934,7 @@ variable [A.IsTrivial]
 
 /-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
 def H0IsoOfIsTrivial :
-    H0 A ≅ ModuleCat.of k A.V :=
+    H0 A ≅ ↧A.V :=
     H0Iso A ≪≫ (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
 
 @[simp]
@@ -961,7 +961,7 @@ defined as the 1st cohomology of the complex of inhomogeneous cochains of `A`. -
 abbrev H1 := groupCohomology A 1
 
 /-- The quotient map from the 1-cocycles of `A`, as a submodule of `G → A`, to `H¹(G, A)`. -/
-def H1π : ModuleCat.of k (cocycles₁ A) ⟶ H1 A :=
+def H1π : ↧(cocycles₁ A) ⟶ H1 A :=
   (isoCocycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1012,7 +1012,7 @@ variable [A.IsTrivial]
 /-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 def H1IsoOfIsTrivial :
-    H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
+    H1 A ≅ ↧(Additive G →+ A) :=
   (HomologicalComplex.isoHomologyπ _ 0 1 (CochainComplex.prev_nat_succ 0) <| by
     ext; simp [inhomogeneousCochains.d, Unique.eq_default (α := Fin 0 → G),
       CochainComplex.of.d, isTrivial_apply]).symm ≪≫
@@ -1042,7 +1042,7 @@ defined as the 2nd cohomology of the complex of inhomogeneous cochains of `A`. -
 abbrev H2 := groupCohomology A 2
 
 /-- The quotient map from the 2-cocycles of `A`, as a submodule of `G × G → A`, to `H²(G, A)`. -/
-def H2π : ModuleCat.of k (cocycles₂ A) ⟶ H2 A :=
+def H2π : ↧(cocycles₂ A) ⟶ H2 A :=
   (isoCocycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in

@@ -38,10 +38,10 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma map_aux ⦃X : D⦄ (R : Sieve X) (hR : R ∈ K X)
-    ⦃u : Φ.fiber.Elements⦄ (f : (CategoryOfElements.π Φ.fiber ⋙ F).obj u ⟶ X) :
+    ⦃u : Φ.fiber.Elements⦄ (f : (Functor.Elements.π Φ.fiber ⋙ F).obj u ⟶ X) :
     ∃ (Y : D) (g : Y ⟶ X) (_ : R.arrows g) (v : Φ.fiber.Elements)
-      (q : v ⟶ u) (a : F.obj v.fst ⟶ Y), a ≫ g = F.map q.1 ≫ f := by
-  obtain ⟨U, u⟩ := u
+      (q : v ⟶ u) (a : F.obj v.obj ⟶ Y), a ≫ g = F.map q.1 ≫ f := by
+  induction u with | mk u
   dsimp at f ⊢
   obtain ⟨V, g, hg, v, rfl⟩ :=
     Φ.jointly_surjective _ (F.cover_lift J K (K.pullback_stable f hR)) u
@@ -51,7 +51,7 @@ variable [LocallySmall.{w} D]
 
 /-- The image of a point of a site by a cocontinuous functor. -/
 noncomputable def map : Point.{w} K :=
-  Point.ofIsCofiltered.{w} (CategoryOfElements.π Φ.fiber ⋙ F) (Φ.map_aux F K)
+  Point.ofIsCofiltered.{w} (Functor.Elements.π Φ.fiber ⋙ F) (Φ.map_aux F K)
 
 variable {A : Type u''} [Category.{v''} A] [HasColimitsOfSize.{w, w} A]
 
@@ -69,7 +69,7 @@ lemma toPresheafFiberMap_w {X Y : C} (f : X ⟶ Y)
     P.map (F.map f).op ≫ Φ.toPresheafFiberMap F K P X x =
       Φ.toPresheafFiberMap F K P Y (Φ.fiber.map f x) :=
   toPresheafFiberOfIsCofiltered_w _ (Φ.map_aux F K)
-    (V := ⟨X, x⟩) (U := ⟨Y, Φ.fiber.map f x⟩) ⟨f, rfl⟩ P
+    (V := .mk x) (U := .mk (Φ.fiber.map f x)) ⟨f, rfl⟩ P
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toPresheafFiberMap_naturality {P Q : Dᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X) :
@@ -77,14 +77,13 @@ lemma toPresheafFiberMap_naturality {P Q : Dᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) 
       g.app _ ≫ Φ.toPresheafFiberMap F K Q X x :=
   toPresheafFiberOfIsCofiltered_naturality _ _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a cocontinuous functor `F : C ⥤ D` between sites `(C, J)` and `(D, K)`,
 `P` a presheaf on `D`, this is the (colimit) cocone which expresses
 `(Φ.map F K).presheafFiber.obj P` as a colimit of `P.obj (op (F.obj X))`
 for `X : C`, `x : Φ.fiber.obj X`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def presheafFiberMapCocone (P : Dᵒᵖ ⥤ A) :
-    Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ F.op ⋙ P) where
+    Cocone ((Functor.Elements.π Φ.fiber).op ⋙ F.op ⋙ P) where
   pt := (Φ.map F K).presheafFiber.obj P
   ι.app x := Φ.toPresheafFiberMap F K P x.unop.1 x.unop.2
 
@@ -115,7 +114,7 @@ lemma toPresheafFiberMap_presheafFiberMapObjIso_hom (P : Dᵒᵖ ⥤ A) (X : C) 
     Φ.toPresheafFiberMap F K P X x ≫ (Φ.presheafFiberMapObjIso F K P).hom =
       Φ.toPresheafFiber X x (F.op ⋙ P) :=
   IsColimit.comp_coconePointUniqueUpToIso_hom
-    (Φ.isColimitPresheafFiberMapCocone F K P) _ ⟨X, x⟩
+    (Φ.isColimitPresheafFiberMapCocone F K P) _ ⟨.mk x⟩
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
