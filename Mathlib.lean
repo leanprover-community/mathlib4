@@ -5714,6 +5714,7 @@ public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 public import Mathlib.MeasureTheory.Measure.Dirac.Def
 public import Mathlib.MeasureTheory.Measure.DiracProba
+public import Mathlib.MeasureTheory.Measure.DiscreteMeasure
 public import Mathlib.MeasureTheory.Measure.Doubling
 public import Mathlib.MeasureTheory.Measure.EverywherePos
 public import Mathlib.MeasureTheory.Measure.Filter
