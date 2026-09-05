@@ -13,9 +13,25 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 /-!
 # p-groups
 
-This file contains a proof that if `G` is a `p`-group acting on a finite set `α`,
-then the number of fixed points of the action is congruent mod `p` to the cardinality of `α`.
-It also contains proofs of some corollaries of this lemma about existence of fixed points.
+A p-group is a group in which the order of every element is a power of `p`.
+
+## Main definitions
+
+* `IsPGroup p G`: the predicate that every element of `G` has order a power of `p`.
+
+## Main results
+
+* `IsPGroup.card_modEq_card_fixedPoints`: if a p-group acts on a finite set `α`, the number of
+  fixed points is congruent to the cardinality of `α` modulo `p`;
+* `IsPGroup.nonempty_fixed_point_of_prime_not_dvd_card` and
+  `IsPGroup.exists_fixed_point_of_prime_dvd_card_of_fixed_point`: existence of fixed points;
+* `IsPGroup.center_nontrivial`: the center of a nontrivial finite p-group is nontrivial;
+* `IsPGroup.commutative_of_card_eq_prime_sq`: a group of order `p ^ 2` is commutative;
+* `IsPGroup.isCoatom_iff_index_eq_prime`: in an abelian p-group, the maximal subgroups are
+  exactly the subgroups of index `p`.
+
+The condition is also shown to pass to subgroups, quotients, images and joins, and p-groups for
+distinct primes are shown to be disjoint.
 -/
 
 @[expose] public section
@@ -480,16 +496,7 @@ theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G,
 end P2comm
 
 open Subgroup in
-/-- In an abelian `p`-group (finite or infinite), the maximal subgroups are exactly the subgroups
-of index `p`. Finiteness is unnecessary: for a maximal `M`, the quotient `G ⧸ M` is simple *and
-abelian*, hence `≅ ℤ/q` for a prime `q` (a simple abelian group is automatically finite), and being
-a quotient of a `p`-group forces `q = p`; thus `[G : M] = p`. (This fails for non-abelian infinite
-`p`-groups, e.g. Tarski monsters, whose maximal subgroups have order `p` and infinite index.)
-
-The proof goes `IsCoatom M ↔ IsSimpleGroup (G ⧸ M)` (`CommGroup.isSimpleGroup_iff_isCoatom`), then
-`CommGroup.is_simple_iff_prime_card` turns that into `(Nat.card (G ⧸ M)).Prime`, and
-`IsPGroup.card_eq_or_dvd` (for the `p`-group quotient) forces that prime to be `p`;
-`Subgroup.index_eq_card` converts card to index. -/
+/-- In an abelian p-group, the maximal subgroups are exactly the subgroups of index `p`. -/
 theorem isCoatom_iff_index_eq_prime {G : Type*} [CommGroup G] {p : ℕ} [hp : Fact p.Prime]
     (hG : IsPGroup p G) (M : Subgroup G) : IsCoatom M ↔ M.index = p := by
   rw [← CommGroup.isSimpleGroup_iff_isCoatom, CommGroup.is_simple_iff_prime_card,
@@ -499,10 +506,7 @@ theorem isCoatom_iff_index_eq_prime {G : Type*} [CommGroup G] {p : ℕ} [hp : Fa
   exact ((Nat.prime_dvd_prime_iff_eq hp.out h).mp h_dvd).symm
 
 open Subgroup in
-/-- A finite non-cyclic abelian `p`-group has two distinct subgroups of index `p`. Contrapositive
-route: if there is at most one index-`p` subgroup then, since maximal subgroups are exactly the
-index-`p` subgroups (`IsPGroup.isCoatom_iff_index_eq_prime`), there is at most one maximal
-subgroup, so `G` is cyclic (`isCyclic_of_isCoatom_subsingleton`), contradicting `hnc`. -/
+/-- A finite non-cyclic abelian p-group has two distinct subgroups of index `p`. -/
 theorem exists_index_eq_prime_ne_of_not_isCyclic {G : Type*} [CommGroup G] [Finite G]
     {p : ℕ} [Fact p.Prime] (hG : IsPGroup p G) (hnc : ¬ IsCyclic G) :
     ∃ H₁ H₂ : Subgroup G, H₁.index = p ∧ H₂.index = p ∧ H₁ ≠ H₂ := by
