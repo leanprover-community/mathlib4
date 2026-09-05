@@ -111,7 +111,7 @@ lemma isContinuous_eq_iSup :
   change ContinuousSMul G R.V.obj at h
   simp only [ObjectProperty.prop_iSup_iff]
   exact ⟨OpenSubgroup.iInfOfFinite (fun (v : R.V) ↦ ⟨_, stabilizer_isOpen G v⟩),
-    fun g hg ↦ ConcreteCategory.hom_ext _ _ (fun v ↦ OpenSubgroup.iInfOfFinite_le _ v hg)⟩
+    fun g hg ↦ ConcreteCategory.hom_ext _ _ fun v ↦ OpenSubgroup.iInfOfFinite_le _ v hg⟩
 
 instance : (isContinuous FintypeCat.{w} G).IsClosedUnderSubobjects := by
   rw [isContinuous_eq_iSup]
