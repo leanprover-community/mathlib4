@@ -987,7 +987,7 @@ structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
 
 @[simp]
 lemma isNIndepSet_empty_iff : G.IsNIndepSet n ∅ ↔ n = 0 := by
-  simp [isNIndepSet_iff,eq_comm]
+  simp [isNIndepSet_iff, eq_comm]
 
 lemma isNIndepSet_empty : G.IsNIndepSet 0 ∅ := by simp
 
