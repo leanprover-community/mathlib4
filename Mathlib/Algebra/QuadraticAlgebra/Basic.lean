@@ -433,6 +433,22 @@ theorem sq_eq_trace_smul_sub_norm :
 
 end trace
 
+section equivOfEq
+
+variable [CommSemiring R]
+
+/-- Equal parameters give isomorphic quadratic algebras. -/
+@[simps]
+def equivOfEq {a' b' : R} (ha : a = a') (hb : b = b') :
+    QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a' b' where
+  toFun z := ⟨z.re, z.im⟩
+  invFun z := ⟨z.re, z.im⟩
+  map_mul' _ _ := by ext <;> simp [ha, hb]
+  map_add' _ _ := by ext <;> simp
+  commutes' _ := by ext <;> simp
+
+end equivOfEq
+
 section changeGenerator
 
 variable [CommRing R]

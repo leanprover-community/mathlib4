@@ -6038,6 +6038,7 @@ public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 public import Mathlib.NumberTheory.NumberField.Norm
 public import Mathlib.NumberTheory.NumberField.ProductFormula
+public import Mathlib.NumberTheory.NumberField.QuadraticField.Basic
 public import Mathlib.NumberTheory.NumberField.Units.Basic
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 public import Mathlib.NumberTheory.NumberField.Units.Regulator

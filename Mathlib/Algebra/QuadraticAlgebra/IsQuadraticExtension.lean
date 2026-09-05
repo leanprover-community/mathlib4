@@ -34,15 +34,6 @@ instance instIsQuadraticExtension [StrongRankCondition R] :
     Algebra.IsQuadraticExtension R (QuadraticAlgebra R a b) where
   finrank_eq_two' := finrank_eq_two a b
 
-/-- A `QuadraticAlgebra ℚ a b` which is a field is a quadratic extension of `ℚ`
-(for its field `Algebra ℚ`-structure). -/
--- Needed in addition to `instIsQuadraticExtension`: when `QuadraticAlgebra ℚ a b` is a field, its
--- `Algebra ℚ`-structure is inferred as `algebraRat`, which is not defeq to `instAlgebra` (they
--- agree only up to the `Algebra ℚ` subsingleton), so the instance above no longer applies.
-instance instIsQuadraticExtensionRat {a b : ℚ} [Fact (∀ r : ℚ, r ^ 2 ≠ a + b * r)] :
-    Algebra.IsQuadraticExtension ℚ (QuadraticAlgebra ℚ a b) where
-  finrank_eq_two' := finrank_eq_two a b
-
 end QuadraticAlgebra
 
 namespace Algebra

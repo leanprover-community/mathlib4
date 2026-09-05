@@ -374,6 +374,14 @@ noncomputable def algEquivIntegralClosure (h : Int.IsFundamentalDiscr (discr a b
   IsIntegralClosure.equiv ℤ (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)
     (integralClosure ℤ (QuadraticAlgebra ℚ a b))
 
+/-- If `D` is a fundamental discriminant, the quadratic algebra with parameters `D / 4` and
+`D % 4` has discriminant `D`. -/
+theorem _root_.Int.IsFundamentalDiscr.discr_ediv_four_emod_four {D : ℤ}
+    (h : Int.IsFundamentalDiscr D) : discr (D / 4) (D % 4) = D := by
+  have : (D % 4) ^ 2 = D % 4 := by grind [h.1]
+  rw [discr_def, this]
+  lia
+
 end Int
 
 end QuadraticAlgebra
