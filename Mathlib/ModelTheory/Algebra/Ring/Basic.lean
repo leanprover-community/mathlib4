@@ -95,6 +95,8 @@ abbrev zeroFunc : Language.ring.Functions 0 := zero
 of `RingFunc 0` -/
 abbrev oneFunc : Language.ring.Functions 0 := one
 
+instance : Nonempty Language.ring.Constants := ⟨zeroFunc⟩
+
 instance (α : Type*) : Zero (Language.ring.Term α) :=
 { zero := Constants.term zeroFunc }
 
