@@ -80,7 +80,7 @@ inherits from the environment, so an operator can set
 Anyone operating their own cache does not need the upload commands.
 The path contract for a `MATHLIB_CACHE_GET_URL` endpoint: readers request
 `{endpoint}/f/{hash}.ltar` — the flat `f/` namespace — so the staged files
-must land under an `f/` prefix on your storage. (`stage` writes the `.ltar`
+must be stored under an `f/` prefix on your storage. (`stage` writes the `.ltar`
 files flat into the staging directory; the `f/` segment is added at upload.)
 
 ```bash

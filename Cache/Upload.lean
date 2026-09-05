@@ -85,8 +85,9 @@ def getUploadAuth : IO UploadAuth := do
 /--
 The resolved destination of a staged (`put`) upload: `base` is the upload base
 the operator configured, and the prefixes are relative to it, with no trailing
-slash. Every staged file lands under `filesPrefix` with its base name kept;
-the per-SHA marker lands under `markerPrefix` with the SHA as its name
+slash. Every staged file is uploaded under `filesPrefix` with its base name
+kept; the per-SHA marker is uploaded under `markerPrefix` with the SHA as its
+name
 (`fileURL`, `markerURL`). `label` names the destination in progress and
 warning messages: the container name, or a note that an endpoint override
 applies.
@@ -218,9 +219,8 @@ for a blob that already exists (`classifyUpload` excuses those).
   whose runners ship newer curls. A temporary credential also sends its session
   token, which SigV4 covers as an `x-amz-*` header.
 
-The token and keypair travel in the argument list, as the bearer token always
-has; callers therefore print curl failures without their argument lists
-(`showArgsOnError := false`).
+Every mechanism's secrets are passed in the argument list; callers therefore
+print curl failures without their argument lists (`showArgsOnError := false`).
 -/
 def uploadAuthArgs (auth : UploadAuth) (overwrite : Bool) : IO (Array String) := do
   let ifNoneMatch : Array String := if overwrite then #[] else #["-H", "If-None-Match: *"]
@@ -237,7 +237,7 @@ def uploadAuthArgs (auth : UploadAuth) (overwrite : Bool) : IO (Array String) :=
       "-H", "x-amz-content-sha256: UNSIGNED-PAYLOAD"] ++ sessionArgs ++ ifNoneMatch
 
 /-- Formats the config file for `curl`, containing the list of files to be
-uploaded: each staged file lands at its `StagedUploadDest.fileURL`, with the
+uploaded: each staged file is uploaded to its `StagedUploadDest.fileURL`, with the
 destination resolved once by `stagedUploadDest`. The response body goes
 to the null device: stdout must carry only the per-transfer JSON reports that
 `monitorCurl` parses. -/
@@ -421,7 +421,7 @@ def rcloneEnv (keyId secret : String) (sessionToken? : Option String)
 /--
 The staged put on a system rclone: the tool resolves the destination and hands
 rclone the S3 credentials through its environment. `srcDir` holds the files
-and `fileNames` lists the ones to upload; the list travels as a `--files-from`
+and `fileNames` lists the ones to upload; the list is passed as a `--files-from`
 file, so only the named files leave the machine — `put`'s build-scoped list
 and `put-staged`'s staging directory both take this engine. Files first; then
 the per-SHA marker, mirroring the curl engine. A files failure exits 1; a

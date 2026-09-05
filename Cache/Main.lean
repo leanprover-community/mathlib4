@@ -74,7 +74,7 @@ Options:
                      artifacts produced at that commit; `cache get` prints a
                      security notice when the scope differs from HEAD. For
                      'put': the namespace to upload under, followed by its
-                     completeness marker. Wins over the
+                     completeness marker. Takes precedence over the
                      MATHLIB_CACHE_REPO_SCOPE env var.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
                      this branch's history and try the most recent cached fork
@@ -125,7 +125,7 @@ Valid arguments are:
 * MATHLIB_CACHE_REPO_SCOPE
                           Per-commit namespace for reads and 'put' (see --scope).
 
-Upload credentials for 'put' (most specific wins; the S3 pair must be set
+Upload credentials for 'put' (the S3 pair takes precedence and must be set
 together):
 
 * MATHLIB_CACHE_S3_ACCESS_KEY_ID, MATHLIB_CACHE_S3_SECRET_ACCESS_KEY,

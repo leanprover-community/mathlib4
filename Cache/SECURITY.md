@@ -61,7 +61,7 @@ only when the workflow's identity — stamped by GitHub from the repo, event
 type, and ref — matches a pre-registered grant. The credential's scope is
 fixed when it is issued and cannot be widened afterward.
 
-Two credential shapes implement this. Azure writes mint an OIDC-federated
+Two credential mechanisms implement this. Azure writes mint an OIDC-federated
 bearer token whose RBAC role covers exactly one container. An S3-compatible
 destination takes a short-lived credential pair scoped to one container's
 namespace, and the tool signs each request with it (SigV4); CI mints the
