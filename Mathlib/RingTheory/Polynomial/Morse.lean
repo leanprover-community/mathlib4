@@ -5,10 +5,9 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.GroupTheory.Perm.ClosureSwap
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Spectrum.Maximal.Defs
+public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 
 /-!
 # Galois Groups of Morse Polynomials
@@ -25,12 +24,6 @@ polynomial whose roots have at most one collision modulo each maximal ideal.
 
 Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois].
 
-## TODO
-
-- Specialize to the case of number fields where generation by inertia subgroups is a consequence
-  of Minkowski's theorem.
-- Show that the Selmer polynomials `X ^ n - X - 1` have Galois group `S_n`.
-
 ## References
 
 * [J. P. Serre, *Topics in Galois Theory*][serre-galois], Section 4.4
@@ -38,6 +31,38 @@ Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois].
 -/
 
 public section
+
+namespace Polynomial
+
+variable {R A : Type*} [CommRing R] {f : R[X]} [CommRing A] [IsDomain A] [Algebra R A]
+
+theorem Splits.of_splits_algebraMap [FaithfulSMul R A]
+    (hf : Splits (f.map (algebraMap R A)))
+    (hi : ∀ a ∈ f.rootSet A, a ∈ (algebraMap R A).range) : Splits f := by
+  apply hf.of_splits_map_of_injective (FaithfulSMul.algebraMap_injective R A) fun a ha ↦ hi a ?_
+  rwa [mem_rootSet', ← eval_map_algebraMap, ← IsRoot.def, ← mem_roots']
+
+end Polynomial
+
+section Inertia
+
+-- #40955
+theorem NumberField.supr_inertia_primeSpectrum_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
+    [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
+    ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+  sorry
+
+theorem NumberField.supr_inertia_maximalSpectrum_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
+    [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
+    ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+  rw [eq_top_iff, ← NumberField.supr_inertia_primeSpectrum_eq_top S G, iSup_le_iff]
+  intro p
+  obtain ⟨m, hm, hpm⟩ := p.1.exists_le_maximal p.2.ne_top
+  intro x hx
+  apply Subgroup.mem_iSup_of_mem ⟨m, hm⟩
+  exact fun x ↦ hpm (hx x)
+
+end Inertia
 
 namespace Polynomial
 
@@ -93,5 +118,60 @@ theorem Splits.surjective_toPermHom_of_iSup_inertia_eq_top
     obtain ⟨m, hm⟩ := Set.mem_iUnion.mp hσ
     exact hf.toPermHom_apply_eq_one_or_isSwap_of_ncard_le_of_mem_inertia m.asIdeal (h m) σ hm
   · simpa [Subgroup.closure_iUnion]
+
+open NumberField in
+attribute [local instance] Gal.splits_ℚ_ℂ in
+/-- If the roots of an irreducible monic polynomial `f₀` have at most one collision in each
+residue field, then the Galois group surjects onto the symmetric group `S_n`.
+
+Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois]. -/
+theorem bijective_toPermHom_of_natDegree_le_ncard_rootSet_of_splits
+    (f₀ : ℤ[X]) (hif₀ : Irreducible f₀) (hmf₀ : f₀.Monic)
+    (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
+      f₀.natDegree ≤ (f₀.rootSet F).ncard + 1) :
+    Function.Bijective (Gal.galActionHom (f₀.map (algebraMap ℤ ℚ)) ℂ) := by
+  let f : ℚ[X] := f₀.map (algebraMap ℤ ℚ)
+  let K := f.SplittingField
+  let R := 𝓞 K
+  let G := f.Gal
+  suffices Function.Surjective (MulAction.toPermHom G (f.rootSet ℂ)) from
+    ⟨Gal.galActionHom_injective (f₀.map (algebraMap ℤ ℚ)) ℂ, this⟩
+  have : NumberField K := {}
+  have : IsGalois ℚ K := { to_normal := SplittingField.instNormal f }
+  have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
+  have hif : Irreducible f := hmf₀.irreducible_iff_irreducible_map_fraction_map.mp hif₀
+  have hmf : Monic f := hmf₀.map (algebraMap ℤ ℚ)
+  have hsf : (f.map (algebraMap ℚ K)).Splits := SplittingField.splits f
+  have hsf₀ : (f₀.map (algebraMap ℤ R)).Splits := by
+    rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq ℤ R K, ← map_map] at hsf
+    refine hsf.of_splits_algebraMap fun x hx ↦ ?_
+    rw [rootSet_map] at hx
+    exact IsIntegralClosure.isIntegral_iff.mp ⟨f₀, hmf₀, aeval_eq_zero_of_mem_rootSet hx⟩
+  have hφ : (algebraMap R K) '' (f₀.rootSet R) = f.rootSet K := by
+    rw [hsf₀.image_rootSet_algebraMap, rootSet_map]
+  rw [Set.image_eq_iff_surjOn_mapsTo] at hφ
+  let φ : f₀.rootSet R → f.rootSet K := hφ.2.restrict
+  replace hφ : Function.Bijective φ :=
+    Set.BijOn.bijective ⟨hφ.2, RingOfIntegers.coe_injective.injOn, hφ.1⟩
+  let e₀ : f.rootSet K ≃ f.rootSet ℂ := Gal.rootsEquivRootsAux f ℂ
+  let e : f₀.rootSet R ≃ f.rootSet ℂ := (Equiv.ofBijective φ hφ).trans e₀
+  have he (g : G) (x : f₀.rootSet R) : e (g • x) = g • e x :=
+    congrArg (fun a ↦ e₀ (g • a)) (e₀.symm_apply_apply (φ x)).symm
+  have : MulAction.IsPretransitive G (f.rootSet ℂ) := Gal.galAction_isPretransitive f ℂ hif
+  have : MulAction.IsPretransitive G (f₀.rootSet R) := by
+    refine ⟨fun x y ↦ ?_⟩
+    obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G (e x) (e y)
+    exact ⟨g, e.injective ((he g x).trans hg)⟩
+  suffices Function.Surjective (MulAction.toPermHom G (f₀.rootSet R)) by
+    intro φ
+    obtain ⟨g, hg⟩ := this (e.permCongr.symm φ)
+    exact ⟨g, by simp [Equiv.Perm.ext_iff, he, ← e.permCongr.eq_symm_apply.mp hg]⟩
+  refine hsf₀.surjective_toPermHom_of_iSup_inertia_eq_top (fun m ↦ ?_)
+    (supr_inertia_maximalSpectrum_eq_top R G)
+  let := Ideal.Quotient.field m.asIdeal
+  grw [ncard_rootSet_le]
+  apply h
+  rw [IsScalarTower.algebraMap_eq ℤ R, ← map_map]
+  apply hsf₀.map
 
 end Polynomial
