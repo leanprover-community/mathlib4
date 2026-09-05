@@ -230,6 +230,13 @@ theorem starProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection
   rw [starProjection_apply, U.norm_eq_iInf_iff_inner_eq_zero (Submodule.coe_mem _)]
   exact starProjection_inner_eq_zero _
 
+/-- The norm of the orthogonal projection of `y` onto `Uᗮ` is `Metric.infDist y U`. -/
+theorem norm_starProjection_orthogonal_eq_infDist
+    {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] (y : E) :
+    ‖Uᗮ.starProjection y‖ = Metric.infDist y U := by
+  simp [Metric.infDist_eq_iInf, U.starProjection_orthogonal_val,
+    U.starProjection_minimal, dist_eq_norm]
+
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
 theorem orthogonalProjectionOnto_mem_subspace_eq_self (v : K) :

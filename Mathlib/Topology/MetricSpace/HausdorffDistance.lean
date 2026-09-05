@@ -510,6 +510,28 @@ lemma le_infDist {r : ℝ} (hs : s.Nonempty) : r ≤ infDist x s ↔ ∀ ⦃y⦄
   simp_rw [infDist, ← ENNReal.ofReal_le_iff_le_toReal (infEDist_ne_top hs), le_infEDist,
     ENNReal.ofReal_le_iff_le_toReal (edist_ne_top _ _), ← dist_edist]
 
+/-- Suppose that the distance from `a` to `U` is attained. Then `a` can be paired with a point of
+`U` whose distance is no greater than the distance between any point in `A` and any point in `U`
+if and only if the distance from `a` to `U` is no greater than the distance from any point in `A`
+to `U`. -/
+theorem exists_forall_dist_le_iff_forall_infDist_le
+    {A U : Set α} {a : α} (hattain : ∃ u ∈ U, infDist a U = dist a u) :
+    (∃ u ∈ U, ∀ u' ∈ U, ∀ a' ∈ A, dist a u ≤ dist a' u') ↔
+      ∀ a' ∈ A, infDist a U ≤ infDist a' U := by
+  constructor
+  · rintro ⟨u, huU, hmin⟩ a' ha'A
+    rw [le_infDist ⟨u, huU⟩]
+    intro u' hu'U
+    exact (infDist_le_dist_of_mem huU).trans (hmin u' hu'U a' ha'A)
+  · intro h
+    obtain ⟨u, huU, hu⟩ := hattain
+    refine ⟨u, huU, ?_⟩
+    intro u' hu'U a' ha'A
+    calc
+      dist a u = infDist a U := hu.symm
+      _ ≤ infDist a' U := h a' ha'A
+      _ ≤ dist a' u' := infDist_le_dist_of_mem hu'U
+
 /-- The minimal distance to a set `s` is `< r` iff there exists a point in `s` at distance `< r`. -/
 theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y ∈ s, dist x y < r := by
   simp [← not_le, le_infDist hs]
