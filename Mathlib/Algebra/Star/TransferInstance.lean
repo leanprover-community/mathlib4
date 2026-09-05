@@ -15,17 +15,18 @@ This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 
 variable {R S : Type*}
 
-@[expose] public section
+public section
 
 namespace Equiv
 
 variable (e : R ≃ S)
 
+-- See note [instance transfer via equivalence]
 /-- Transfer `Star` across an `Equiv`. See note [reducible non-instances].
 
 For `star : R → R` bundled as an `Equiv`, see `Equiv.Perm.star`. -/
 protected abbrev star [Star S] : Star R where
-  star r := e.symm (star (e r))
+  star r := e.invFun (star (e.toFun r))
 
 /-- Transfer `InvolutiveStar` across an `Equiv`. See note [reducible non-instances]. -/
 protected abbrev involutiveStar [InvolutiveStar S] : InvolutiveStar R :=

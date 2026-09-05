@@ -5,12 +5,12 @@ Authors: Elazar Gershuni
 -/
 module
 
-public import Mathlib.Data.List.Basic
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Finset.Basic
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.List.Basic
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Analysis.SpecificLimits.Normed
 
@@ -25,8 +25,8 @@ This file proves the Kraft-McMillan inequality for uniquely decodable codes.
 
 ## Main results
 
-* `kraft_mcmillan_inequality`: For a uniquely decodable code `S` over an alphabet of size
-  `D`, `∑_{w ∈ S} D^{-|w|} ≤ 1`.
+* `IsUniquelyDecodable.finsetSum_one_div_card_pow_length_le_one`: For a uniquely decodable code
+  `S` over an alphabet of size `D`, `∑_{w ∈ S} D^{-|w|} ≤ 1`.
 
 The proof uses a counting argument: the `r`-th power of the Kraft sum counts concatenations of
 `r` codewords, weighted by length. Since the code is uniquely decodable, these concatenations are
@@ -57,16 +57,15 @@ end concatFn
 /-- For uniquely decodable codes, the concatenation map is injective.
 
 This is the key property: distinct tuples of codewords produce distinct concatenations. -/
-private lemma concatFn_injective_of_uniquelyDecodable {S : Finset (List α)}
-    (h : UniquelyDecodable (S : Set (List α))) (r : ℕ) :
+private lemma concatFn_injective_of_isUniquelyDecodable {S : Finset (List α)}
+    (h : IsUniquelyDecodable (S : Set (List α))) (r : ℕ) :
     Function.Injective (concatFn (S := S) (r := r)) := by
   intro w₁ w₂ hflat
   funext i
   have := List.ofFn_injective (h _ _ (by simp) (by simp) hflat)
   exact Subtype.ext (congrArg (fun f => f i) this)
 
-private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] [Nonempty α]
-    {T : Finset (List α)} {s : ℕ} :
+private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] {T : Finset (List α)} {s : ℕ} :
     (∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ x.length)
       ≤ ((Fintype.card α) ^ s) * (1 / Fintype.card α) ^ s := by
   calc
@@ -91,7 +90,6 @@ private lemma concatFn_length_mem_Icc {S : Finset (List α)}
   · -- upper bound
     exact (Finset.sum_le_sum (fun i _ => Finset.le_sup (w i).prop)).trans_eq (by simp)
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- Auxiliary bound for Kraft–McMillan.
 
 If `S` is a finite uniquely decodable code and `1 ≤ r`, then the `r`-th power of its Kraft sum
@@ -99,7 +97,7 @@ is bounded by `r * sup length`:
 
 `(∑ w ∈ S, (1 / D) ^ w.length) ^ r ≤ r * (S.sup List.length)`. -/
 private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] [Nonempty α]
-    (h : UniquelyDecodable (S : Set (List α))) (r : ℕ) (hr : r ≥ 1) :
+    (h : IsUniquelyDecodable (S : Set (List α))) (r : ℕ) (hr : r ≥ 1) :
     (∑ w ∈ S, (1 / (Fintype.card α) : ℝ) ^ w.length) ^ r ≤ r * (Finset.sup S List.length) := by
   classical
   -- We use maxLen to bound lengths of `r`-fold concatenations.
@@ -127,7 +125,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
     -- we can reindex the sum by the set `T` of words.
     _ = ∑ x ∈ T, (1 / D) ^ x.length :=
       (Finset.sum_image (f := fun x => (1 / D) ^ x.length)
-        (fun _ _ _ _ hEq => concatFn_injective_of_uniquelyDecodable h r hEq)).symm
+        (fun _ _ _ _ hEq => concatFn_injective_of_isUniquelyDecodable h r hEq)).symm
     -- Group the sum over `T` by the length `s`.
     -- The admissible lengths lie in `[r, r*maxLen]` by `hlen_maps`.
     _ = ∑ s ∈ Finset.Icc r (r * maxLen), ∑ x ∈ T with x.length = s, (1 / D) ^ x.length :=
@@ -138,16 +136,15 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   -- Summing these bounds over the interval s ∈ [r, r * maxLen] multiplies the term
   -- by the number of lengths. Since r ≥ 1, this count is at most r * maxLen.
   rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen)
-  all_goals try simp at *
-  · positivity
-  · rw [Nat.cast_sub] <;> push_cast <;> nlinarith only
+    <;> simp at * <;> norm_cast <;> simp
 
 open Filter
 
 /-- **Kraft-McMillan Inequality**: If `S` is a finite uniquely decodable code,
 then `Σ D^{-|w|} ≤ 1`. -/
-public theorem kraft_mcmillan_inequality {S : Finset (List α)} [Fintype α] [Nonempty α]
-    (h : UniquelyDecodable (S : Set (List α))) :
+public theorem IsUniquelyDecodable.finsetSum_one_div_card_pow_length_le_one
+    {S : Finset (List α)} [Fintype α] [Nonempty α]
+    (h : IsUniquelyDecodable (S : Set (List α))) :
     ∑ w ∈ S, (1 / Fintype.card α : ℝ) ^ w.length ≤ 1 := by
   have h_kraft := kraft_mcmillan_inequality_aux h
   contrapose! h_kraft
@@ -163,5 +160,9 @@ public theorem kraft_mcmillan_inequality {S : Finset (List α)} [Fintype α] [No
   have := hr (r + 1) (by linarith)
   rw [div_lt_iff₀ (by positivity)] at this
   linarith
+
+@[deprecated (since := "2026-08-16")]
+public alias kraft_mcmillan_inequality :=
+  IsUniquelyDecodable.finsetSum_one_div_card_pow_length_le_one
 
 end InformationTheory

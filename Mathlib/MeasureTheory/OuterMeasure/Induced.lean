@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.ENNReal.Action
+public import Mathlib.Basic.ENNReal.Action
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
@@ -116,7 +116,8 @@ theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     funext i
     apply extend_eq _ (h i)
   · obtain ⟨i, hi⟩ := h
-    exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
+    grw [← ENNReal.le_tsum i, extend_eq_top _ hi]
+    exact le_top
 
 end Subadditive
 
@@ -437,7 +438,7 @@ theorem trim_add (m₁ m₂ : OuterMeasure α) : (m₁ + m₂).trim = m₁.trim 
 /-- `trim` respects scalar multiplication. -/
 theorem trim_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R)
     (m : OuterMeasure α) : (c • m).trim = c • m.trim :=
-  ext <| trim_op (smul_apply c m)
+  ext <| trim_op (smul_apply m c)
 
 /-- `trim` sends the supremum of two outer measures to the supremum of the trimmed measures. -/
 theorem trim_sup (m₁ m₂ : OuterMeasure α) : (m₁ ⊔ m₂).trim = m₁.trim ⊔ m₂.trim :=

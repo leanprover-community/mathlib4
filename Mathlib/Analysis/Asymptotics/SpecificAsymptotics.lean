@@ -18,10 +18,9 @@ theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
 
 public section
 
+open Bornology Filter Asymptotics Set
 
-open Filter Asymptotics
-
-open Topology
+open scoped Topology
 
 section NormedField
 
@@ -141,7 +140,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
     (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => ∑ i ∈ range n, g i := by
   have A : ∀ i, ‖g i‖ = g i := fun i => Real.norm_of_nonneg (hg i)
   have B : ∀ n, ‖∑ i ∈ range n, g i‖ = ∑ i ∈ range n, g i := fun n => by
-    rwa [Real.norm_eq_abs, abs_sum_of_nonneg']
+    rw [Real.norm_eq_abs, abs_sum_of_nonneg]; exact fun _ _ ↦ hg _
   apply isLittleO_iff.2 fun ε εpos => _
   intro ε εpos
   obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ b : ℕ, N ≤ b → ‖f b‖ ≤ ε / 2 * g b := by
@@ -209,3 +208,65 @@ theorem Asymptotics.isEquivalent_nat_ceil :
   isEquivalent_of_tendsto_one tendsto_nat_ceil_div_atTop
 
 end NormedLinearOrderedField
+
+section boundedRange
+
+/-!
+## Bounded Range versus `IsBigO` Asymptotics
+
+For a continuous function `f` into a seminormed space, having bounded range is equivalent to being
+`O(1)` along the cocompact filter (`Continuous.isBounded_range_iff_isBigO`). On an unbounded linear
+order whose order topology has compact intervals, this means being `O(1)` along both `atTop` and
+`atBot` (`Continuous.isBounded_range_iff_isBigO_atTop_atBot`). For an even function a single `O(1)`
+bound along `atTop` already suffices (`Continuous.isBounded_range_iff_isBigO_atTop_of_even`).
+-/
+
+variable
+  {E : Type*} [SeminormedAddCommGroup E]
+  {D : Type*} [TopologicalSpace D]
+  {β : Type*} [TopologicalSpace β] [LinearOrder β] [OrderClosedTopology β] [CompactIccSpace β]
+    [NoMaxOrder β] [NoMinOrder β]
+
+/--
+A continuous function `f` has bounded range if and only if it is `O(1)` with respect to the
+cocompact filter.
+-/
+theorem Continuous.isBounded_range_iff_isBigO {f : D → E} (hf : Continuous f) :
+    IsBounded (range f) ↔ f =O[cocompact D] (1 : D → ℝ) := by
+  constructor <;> intro h
+  · rw [isBounded_iff_forall_norm_le] at h
+    obtain ⟨c, hc⟩ := h
+    simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hc
+    rw [isBigO_iff]
+    use c
+    apply Eventually.of_forall
+    simpa using hc
+  · simp_rw [isBigO_iff, Filter.Eventually, Filter.mem_cocompact] at h
+    simp only [Pi.one_apply, norm_one, mul_one] at h
+    obtain ⟨c, t, hcompact, h⟩ := h
+    rw [← Set.image_union_image_compl_eq_range (s := t)]
+    apply IsBounded.union
+    · apply (IsCompact.image hcompact hf).isBounded
+    · rw [isBounded_iff_forall_norm_le]
+      refine ⟨c, fun x hx ↦ ?_⟩
+      rw [Set.mem_image] at hx
+      obtain ⟨y, hy, rfl⟩ := hx
+      simpa using mem_of_mem_of_subset hy h
+
+/--
+A continuous function `f` on an unbounded linear order with compact intervals has bounded range if
+and only if it is `O(1)` at both `atTop` and `atBot`.
+-/
+theorem Continuous.isBounded_range_iff_isBigO_atTop_atBot {f : β → E} (hf : Continuous f) :
+    IsBounded (range f) ↔ f =O[atTop] (1 : β → ℝ) ∧ f =O[atBot] (1 : β → ℝ) := by
+  rw [hf.isBounded_range_iff_isBigO, cocompact_eq_atBot_atTop, isBigO_sup, and_comm]
+
+/-- A continuous even function has bounded range if and only if `f =O[atTop] 1`. -/
+theorem Continuous.isBounded_range_iff_isBigO_atTop_of_even [AddCommGroup β] [IsOrderedAddMonoid β]
+    {f : β → E} (hf : Continuous f) (heven : Function.Even f) :
+    IsBounded (range f) ↔ f =O[atTop] (1 : β → ℝ) :=
+  ⟨fun h ↦ (hf.isBounded_range_iff_isBigO_atTop_atBot.mp h).1,
+   fun h ↦ hf.isBounded_range_iff_isBigO_atTop_atBot.mpr
+     ⟨h, by simpa only [← neg_atTop, ← Filter.map_neg, isBigO_map, Function.comp_def, heven.eq]⟩⟩
+
+end boundedRange

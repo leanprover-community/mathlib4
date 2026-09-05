@@ -55,10 +55,15 @@ Hausdorff, totally disconnected and second countable topological space.
 -/
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] [SecondCountableTopology X] : LightProfinite :=
-  CompHausLike.of _ X
+  ↧X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `LightProfinite.of X` as `↧X`. -/
+@[app_delab LightProfinite.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 instance : Inhabited LightProfinite :=
-  ⟨LightProfinite.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 instance {X : LightProfinite} : TotallyDisconnectedSpace X :=
   X.prop.1
@@ -94,7 +99,7 @@ attribute [local instance] FintypeCat.discreteTopology
 discrete topology. -/
 @[simps! -isSimp map_hom_hom_apply obj]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
-  obj A := LightProfinite.of A
+  obj A := ↧A
   map f := CompHausLike.ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
@@ -224,12 +229,12 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
         ext x
         dsimp [g, LocallyConstant.ofIsClopen]
         rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, hom_ofHom, ContinuousMap.coe_mk,
-          Function.comp_apply, if_neg]
+          Function.comp_apply, ite_eq_right]
         refine mt (fun α => hVU α) ?_
         simp [U, C]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, ite_eq_left hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
@@ -318,7 +323,7 @@ instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
 /-- The inverse part of the equivalence `LightProfinite ≌ LightDiagram` -/
 @[simps obj map]
 def lightDiagramToLightProfinite : LightDiagram.{u} ⥤ LightProfinite.{u} where
-  obj X := LightProfinite.of X.cone.pt
+  obj X := ↧X.cone.pt
   map f := InducedCategory.homMk f.hom.hom
 
 set_option backward.defeqAttrib.useBackward true in

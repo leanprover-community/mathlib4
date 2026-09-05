@@ -28,7 +28,7 @@ Compare with `Equiv.Perm.isCoatom_stabilizer` for the case of the permutation gr
   * Formalize the other cases of the classification.
     The next one should be the *imprimitive case*.
 
-## Reference
+## References
 
 The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
@@ -175,8 +175,7 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
     (hG : stabilizer (alternatingGroup α) s ≤ G) :
     G = ⊤ := by
   obtain ⟨g, hg, hg3⟩ := exists_mem_stabilizer_isThreeCycle s h4
-  rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype,
-    ← MonoidHom.range_eq_map, Subgroup.range_subtype]
+  rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_top, Subgroup.range_subtype]
   -- By Jordan's theorem, it suffices to prove that G acts primitively
   apply alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem _ hg3
   · use ⟨g, hg3.mem_alternatingGroup⟩
@@ -260,7 +259,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le h0
       (hBsc.ssubset_of_ne (by aesop)) -- uses Step 1
       hG.le hB
- -- Step 3 : A block contained in `s` is a subsingleton
+  -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) :
       B.Subsingleton :=
     have : IsPreprimitive (stabilizer G s) s :=
@@ -268,6 +267,8 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     hB.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs
   -- Step 4 : sᶜ ⊆ B : A block which is not a subsingleton contains `sᶜ`.
   suffices IsMultiplyPretransitive (↥(alternatingGroup α)) α (s.ncard + 1) by
+    have : ¬ B ⊆ s := fun h ↦ hB' (hB_not_le_s B hB h)
+    have : ¬ B ⊆ sᶜ := fun h ↦ hB' (hB_not_le_sc B hB h)
     apply hB.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
       hG.le <;> grind
   have := isMultiplyPretransitive α
