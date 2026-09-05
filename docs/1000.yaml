@@ -2292,6 +2292,10 @@ Q2799491:
 
 Q2800071:
   title: Perfect graph theorem
+  authors: Trellis (autonomous formalization system), Wesley Pegden
+  date: 2026
+  url: https://github.com/wpegden/spgt/blob/ddf4e5312dc921017f1649ebe162d05b3be497aa/Tablet/PerfectComplement.lean#L16
+  comment: "Proved as Tablet.PerfectComplement inside the Trellis formalization of the strong perfect graph theorem."
 
 Q2862403:
   title: Schneider–Lang theorem
@@ -4081,6 +4085,10 @@ Q16251580:
 
 Q16680059:
   title: Strong perfect graph theorem
+  authors: Trellis (autonomous formalization system), Wesley Pegden
+  date: 2026
+  url: https://github.com/wpegden/spgt/blob/ddf4e5312dc921017f1649ebe162d05b3be497aa/Tablet/SPGC.lean#L16
+  comment: "Autonomous formalization by the Trellis system; the decomposition theorem it rests on is proved as Tablet.decomp at https://github.com/wpegden/spgt/blob/ddf4e5312dc921017f1649ebe162d05b3be497aa/Tablet/decomp.lean#L16"
 
 Q16978447:
   title: Grauert–Riemenschneider vanishing theorem
