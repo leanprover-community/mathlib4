@@ -76,6 +76,11 @@ lemma isRegularInCodimensionLE_iff_ringKrullDim :
   refine forall_congr' fun x ↦ ?_
   rw [ringKrullDim_stalk_eq_coheight]
   norm_cast
+lemma isRegularLocalRing_stalk (x : X) [Ring.KrullDimLE n (X.presheaf.stalk x)]
+    [IsRegularInCodimensionLE n X] : IsRegularLocalRing (X.presheaf.stalk x) := by
+  apply isRegularInCodimensionLE_iff_ringKrullDim.mp ‹_›
+  rw [← Ring.krullDimLE_iff]
+  infer_instance
 
 lemma IsRegularInCodimensionLE.anti {m n : ℕ} (h : m ≤ n) (X : Scheme.{u})
     [IsRegularInCodimensionLE n X] : IsRegularInCodimensionLE m X :=
