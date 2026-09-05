@@ -2552,6 +2552,7 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Injective.Ext
 public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
+public import Mathlib.CategoryTheory.Abelian.Injective.RightDerived
 public import Mathlib.CategoryTheory.Abelian.LeftDerived
 public import Mathlib.CategoryTheory.Abelian.Monomorphisms
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
@@ -3120,6 +3121,7 @@ public import Mathlib.CategoryTheory.Localization.Construction
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseLeftDerived
@@ -3614,6 +3616,7 @@ public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 public import Mathlib.CategoryTheory.Triangulated.TStructure.SpectralObject
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.CategoryTheory.Triangulated.TriangleShift

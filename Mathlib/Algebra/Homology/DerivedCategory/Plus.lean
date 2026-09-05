@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
+public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
@@ -132,6 +133,7 @@ instance : Qh.IsLocalization (HomotopyCategory.Plus.quasiIso C) := by
 
 /-- The single functors `C ⥤ DerivedCategory.Plus C` for all `n : ℤ` along with
 their compatibilities with shifts. -/
+@[implicit_reducible]
 noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
   SingleFunctors.lift (DerivedCategory.singleFunctors C) Plus.ι
       (fun n => t.plus.lift (DerivedCategory.singleFunctor C n)
@@ -148,14 +150,19 @@ noncomputable def singleFunctorιIso (n : ℤ) :
     singleFunctor C n ⋙ Plus.ι ≅ DerivedCategory.singleFunctor C n :=
   Iso.refl _
 
-instance (n : ℤ) : (singleFunctor C n).Additive := by
-  dsimp [singleFunctor, singleFunctors]
-  infer_instance
+instance (n : ℤ) : (singleFunctor C n).Additive :=
+  have : (singleFunctor C n ⋙ Plus.ι).Additive :=
+    Functor.additive_of_iso (singleFunctorιIso C n).symm
+  Functor.additive_of_comp_faithful _ Plus.ι
 
 /-- The homology functor `DerivedCategory.Plus C ⥤ C` in degree `n : ℤ`. -/
 noncomputable def homologyFunctor (n : ℤ) : Plus C ⥤ C :=
   Plus.ι ⋙ DerivedCategory.homologyFunctor C n
 deriving Functor.IsHomological
+
+noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
+    singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 _ :=
+  DerivedCategory.singleFunctorCompHomologyFunctorIso ..
 
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _
@@ -270,16 +277,9 @@ instance : NatTrans.CommShift (quotientCompQhIso C).hom ℤ :=
     rw [whiskerRight_quotientCompQhIso_hom_ι]
     infer_instance)
 
-instance : (HomotopyCategory.Plus.quotient C ⋙ Qh).IsLocalization
+example : (HomotopyCategory.Plus.quotient C ⋙ Qh).IsLocalization
     (CochainComplex.Plus.quasiIso C) := by
-  refine Functor.IsLocalization.comp _ _
-    (((HomologicalComplex.homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C)))
-    (HomotopyCategory.Plus.quasiIso C) _ (fun _ _ f _ ↦ ?_) (fun _ _ _ hf ↦ ?_)
-    (by rw [HomotopyCategory.Plus.quasiIso_map_quotient_eq_quasiIso])
-  · refine Localization.inverts Qh (HomotopyCategory.Plus.quasiIso C) _ ?_
-    simpa [HomotopyCategory.Plus.quasiIso_iff, HomotopyCategory.quotient_map_mem_quasiIso_iff]
-  · rw [CochainComplex.Plus.quasiIso_iff]
-    exact homotopyEquivalences_le_quasiIso _ _ _ hf
+  infer_instance
 
 instance : Q.IsLocalization (CochainComplex.Plus.quasiIso C) :=
   Functor.IsLocalization.of_iso _ (quotientCompQhIso C)

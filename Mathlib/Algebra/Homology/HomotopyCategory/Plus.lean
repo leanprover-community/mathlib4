@@ -239,6 +239,19 @@ instance :
     exact ⟨K.precylinder, Precylinder.LeftHomotopy.fullSubcategoryEquiv.symm
       { h := cylinder.desc _ _ hf }, ⟨cylinder.homotopyEquiv _ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩⟩)
 
+open HomologicalComplex in
+instance {H : Type*} [Category* H] (L : Plus A ⥤ H) [L.IsLocalization (quasiIso A)] :
+    (quotient A ⋙ L).IsLocalization (CochainComplex.Plus.quasiIso A) := by
+  refine Functor.IsLocalization.comp _ _
+    ((homotopyEquivalences A (.up ℤ)).inverseImage (CochainComplex.Plus.ι A))
+    (quasiIso A) _ ?_ ?_ ?_
+  · intro _ _ f hf
+    refine Localization.inverts L (quasiIso A) _ ?_
+    simpa [quasiIso, quotient_map_mem_quasiIso_iff]
+  · intro K L f hf
+    exact homotopyEquivalences_le_quasiIso _ _ _ hf
+  · rw [quasiIso_map_quotient_eq_quasiIso]
+
 /-- The collection of all single functors `C ⥤ HomotopyCategory.Plus C` for `n : ℤ`
 along with their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
@@ -312,6 +325,51 @@ instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
   map_injective h := by
     ext
     exact (F.mapHomotopyCategory _).map_injective ((ObjectProperty.ι _).congr_map h)
+
+/-- The functor `F.mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D`
+is induced by `F.mapHomotopyCategory (.up ℤ)`. -/
+@[simps! -isSimp]
+def mapHomotopyCategoryPlusCompι :
+    F.mapHomotopyCategoryPlus ⋙ HomotopyCategory.Plus.ι D ≅
+    HomotopyCategory.Plus.ι C ⋙ F.mapHomotopyCategory (.up ℤ) :=
+  Iso.refl _
+
+instance : NatTrans.CommShift F.mapHomotopyCategoryPlusCompι.hom ℤ :=
+  ObjectProperty.commShift_liftCompιIso_hom ..
+
+/-- The functor `F.mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D`
+is induced by `F.mapCochainComplexPlus`. -/
+@[simps! -isSimp]
+def quotientCompMapHomotopyCategoryPlusIso :
+    HomotopyCategory.Plus.quotient C ⋙ F.mapHomotopyCategoryPlus ≅
+    F.mapCochainComplexPlus ⋙ HomotopyCategory.Plus.quotient D := Iso.refl _
+
+@[reassoc]
+lemma whiskerRight_quotientCompMapHomotopyCategoryPlusIso_hom_ι :
+    whiskerRight F.quotientCompMapHomotopyCategoryPlusIso.hom (HomotopyCategory.Plus.ι D) =
+    (associator _ _ _).hom ≫
+      whiskerLeft _ F.mapHomotopyCategoryPlusCompι.hom ≫ (associator _ _ _).inv ≫
+      whiskerRight (HomotopyCategory.Plus.quotientCompιIso C).hom _ ≫
+      (associator _ _ _).hom ≫ whiskerLeft _ (F.mapHomotopyCategoryFactors (.up ℤ)).hom ≫
+      (associator _ _ _).inv ≫ whiskerRight F.mapCochainComplexPlusCompι.inv _ ≫
+      (associator _ _ _).hom ≫ whiskerLeft _ (HomotopyCategory.Plus.quotientCompιIso D).inv ≫
+      (associator _ _ _).inv := by
+  ext K
+  dsimp
+  simp only [quotientCompMapHomotopyCategoryPlusIso_hom_app_hom,
+    mapHomotopyCategoryPlusCompι_hom_app, HomotopyCategory.Plus.quotientCompιIso_hom_app,
+    mapCochainComplexPlusCompι_inv_app, HomotopyCategory.Plus.quotientCompιIso_inv_app,
+    Category.comp_id, Category.id_comp, comp_obj,
+    mapCochainComplexPlus_obj_obj,
+    (F.mapHomotopyCategory (.up ℤ)).map_id ((HomotopyCategory.quotient C (.up ℤ)).obj K.obj),
+    Functor.mapHomotopyCategoryFactors_hom_app]
+  change 𝟙 _ = 𝟙 _ ≫ 𝟙 _ ≫ 𝟙 _
+  simp
+
+instance : NatTrans.CommShift F.quotientCompMapHomotopyCategoryPlusIso.hom ℤ :=
+  NatTrans.CommShift.of_comp_faithful (HomotopyCategory.Plus.ι _) (by
+    rw [whiskerRight_quotientCompMapHomotopyCategoryPlusIso_hom_ι]
+    infer_instance)
 
 /-- Given additive functors that are related by an isomorphism `F ⋙ G ≅ H`, this is
 the corresponding isomorphism on the corresponding functor between
