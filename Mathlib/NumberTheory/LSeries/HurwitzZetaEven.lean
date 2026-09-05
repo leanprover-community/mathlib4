@@ -225,24 +225,24 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ p : ℝ, 0 < p ∧
     (evenKernel a · - (if a = 0 then 1 else 0)) =O[atTop] (rexp <| -p * ·) := by
   induction a using QuotientAddGroup.induction_on with | H b =>
-  obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_zero_sub b
+  obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_FZ_zero_sub b
   refine ⟨p, hp, (EventuallyEq.isBigO ?_).trans hp'⟩
   filter_upwards [eventually_gt_atTop 0] with t h
-  simp [← (hasSum_int_evenKernel b h).tsum_eq, HurwitzKernelBounds.F_int, HurwitzKernelBounds.f_int]
+  simp [← (hasSum_int_evenKernel b h).tsum_eq, HurwitzKernelBounds.FZ, HurwitzKernelBounds.fZ]
 
 /-- The function `cosKernel a - 1` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_cosKernel_sub (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (cosKernel a · - 1) (fun x ↦ Real.exp (-p * x)) := by
   induction a using QuotientAddGroup.induction_on with | H a =>
-  obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_nat_zero_sub zero_le_one
+  obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_zero_sub zero_le_one
   refine ⟨p, hp, (Eventually.isBigO ?_).trans (hp'.const_mul_left 2)⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
   simp only [eq_false_intro one_ne_zero, ite_false, sub_zero,
-    ← (hasSum_nat_cosKernel₀ a ht).tsum_eq, HurwitzKernelBounds.F_nat]
-  apply tsum_of_norm_bounded ((HurwitzKernelBounds.summable_f_nat 0 1 ht).hasSum.mul_left 2)
+    ← (hasSum_nat_cosKernel₀ a ht).tsum_eq, HurwitzKernelBounds.F]
+  apply tsum_of_norm_bounded ((HurwitzKernelBounds.summable_f 0 1 ht).hasSum.mul_left 2)
   intro n
   rw [norm_mul, norm_mul, norm_two, mul_assoc, mul_le_mul_iff_of_pos_left two_pos,
-    norm_of_nonneg (exp_pos _).le, HurwitzKernelBounds.f_nat, pow_zero, one_mul, Real.norm_eq_abs]
+    norm_of_nonneg (exp_pos _).le, HurwitzKernelBounds.f, pow_zero, one_mul, Real.norm_eq_abs]
   exact mul_le_of_le_one_left (exp_pos _).le (abs_cos_le_one _)
 
 end asymp
