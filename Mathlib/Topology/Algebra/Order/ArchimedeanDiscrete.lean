@@ -55,23 +55,69 @@ instance [DiscreteTopology G] : IsCyclic G := by
   exact LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered.mpr fun h ↦
     have := h.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
 
+/-- A subgroup of an archimedean linear ordered multiplicative commutative group `G` with order
+topology either is dense in `G` or is a cyclic subgroup. -/
+@[to_additive dense_or_isCyclic
+/-- An additive subgroup of an archimedean linear ordered additive commutative group `G`
+with order topology either is dense in `G` or is a cyclic subgroup. -/]
+theorem dense_or_isCyclic (H : Subgroup G) : Dense (H : Set G) ∨ IsCyclic H := by
+  refine (em _).imp (dense_of_not_isolated_one H) fun h => ?_
+  push Not at h
+  rcases h with ⟨ε, ε1, hε⟩
+  exact isCyclic_of_disjoint_Ioo_one ε1 (Set.disjoint_left.2 hε)
+
+@[to_additive (attr := deprecated (since := "2026-08-30")) dense_or_cyclic]
+alias dense_or_cyclic := dense_or_isCyclic
+
+/-- In a nontrivial densely linear ordered archimedean topological multiplicative group,
+a subgroup is either dense or is cyclic, but not both.
+
+For a non-exclusive `Or` version with weaker assumptions, see `Subgroup.dense_or_cyclic` above. -/
+@[to_additive
+/-- In a nontrivial densely linear ordered archimedean topological additive group,
+a subgroup is either dense or is cyclic, but not both.
+
+For a non-exclusive `Or` version with weaker assumptions, see `AddSubgroup.dense_or_cyclic` above.
+-/]
+theorem dense_xor_isCyclic [Nontrivial G] [DenselyOrdered G] (H : Subgroup G) :
+    Xor (Dense (H : Set G)) (IsCyclic H) := by
+  if hd : Dense (H : Set G) then
+    simp only [hd, xor_true, H.isCyclic_iff_exists_zpowers_eq_top]
+    rintro ⟨a, rfl⟩
+    exact not_denseRange_zpow hd
+  else
+    simp only [hd, xor_false]
+    exact H.dense_or_isCyclic.resolve_left hd
+
+@[to_additive (attr := deprecated (since := "2026-08-30")) dense_xor_cyclic]
+alias dense_xor_cyclic := dense_xor_isCyclic
+
+@[to_additive (attr := deprecated (since := "2026-04-27"))]
+alias dense_xor'_cyclic := dense_xor_isCyclic
+
+@[to_additive]
+theorem dense_iff_not_isCyclic [Nontrivial G] [DenselyOrdered G] {H : Subgroup G} :
+    Dense (H : Set G) ↔ ¬IsCyclic H := by
+  simp [xor_iff_iff_not.1 H.dense_xor_isCyclic]
+
+@[to_additive (attr := deprecated (since := "2026-08-30"))]
+alias dense_iff_ne_zpowers := dense_iff_not_isCyclic
+
 /-- In an Archimedean linearly ordered group (with the order topology), a subgroup is
 discrete iff it is cyclic. -/
 @[to_additive /-- In an Archimedean linearly ordered additive group (with the order topology), a
 subgroup is discrete iff it is cyclic. -/]
-lemma discrete_iff_cyclic {H : Subgroup G} : IsCyclic H ↔ DiscreteTopology H := by
-  nontriviality G using isCyclic_of_subsingleton, Subsingleton.discreteTopology
-  rw [Subgroup.isCyclic_iff_exists_zpowers_eq_top]
-  constructor
-  · rintro ⟨g, rfl⟩
+lemma isCyclic_iff_discreteTopology {H : Subgroup G} : IsCyclic H ↔ DiscreteTopology H := by
+  refine ⟨fun h ↦ ?_, fun hA ↦ H.dense_or_isCyclic.elim (fun h ↦ ?_) id⟩
+  · rcases H.isCyclic_iff_exists_zpowers_eq_top.mp h with ⟨g, rfl⟩
     infer_instance
-  · have := H.dense_or_cyclic
-    simp only [← Subgroup.zpowers_eq_closure, Eq.comm (a := H)] at this
-    refine fun hA ↦ this.elim (fun h ↦ ?_) id
-    -- remains to show a contradiction assuming `H` is both dense and discrete
+  · -- remains to show a contradiction assuming `H` is both dense and discrete
     obtain rfl : H = ⊤ := by
       rw [← coe_eq_univ, ← (dense_iff_closure_eq.mp h), H.isClosed_of_discrete.closure_eq]
     have : DiscreteTopology G := by rwa [← (Homeomorph.Set.univ G).discreteTopology_iff]
-    exact isCyclic_iff_exists_zpowers_eq_top.mp inferInstance
+    infer_instance
+
+@[to_additive (attr := deprecated (since := "2026-08-30"))]
+alias discrete_iff_cyclic := isCyclic_iff_discreteTopology
 
 end Subgroup

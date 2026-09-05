@@ -290,6 +290,11 @@ section SpecificInstances
 
 instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
 
+/-- Every subgroup of `ℤ` is cyclic. -/
+@[deprecated AddSubgroup.isAddCyclic (since := "2026-08-30")]
+theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : IsAddCyclic H :=
+  H.isAddCyclic
+
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
   isAddCyclic_of_surjective (Int.castRingHom _) ZMod.intCast_surjective
 
