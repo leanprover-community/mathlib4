@@ -6557,6 +6557,7 @@ public import Mathlib.Probability.Process.Adapted
 public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.FiniteDimensionalLaws
 public import Mathlib.Probability.Process.HittingTime
+public import Mathlib.Probability.Process.Indistinguishable
 public import Mathlib.Probability.Process.Kolmogorov
 public import Mathlib.Probability.Process.LocalProperty
 public import Mathlib.Probability.Process.PartitionFiltration
