@@ -159,6 +159,13 @@ lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
   }
   exact aux hu hr.some
 
+lemma Walk.reachable_of_mem_support {u v x y} {w : G.Walk u v} (hx : x ∈ w.support)
+    (hy : y ∈ w.support) : G.Reachable x y := by
+  induction w generalizing x y with
+  | nil => simp_all
+  | cons hadj w ih =>
+    grind [w.start_mem_support, Adj.reachable, Adj.symm, Reachable.trans]
+
 variable (G)
 
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
