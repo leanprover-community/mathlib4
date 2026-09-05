@@ -326,7 +326,7 @@ def quotientQuotientEquivQuotientAux : (G ⧸ N) ⧸ M.map (mk' N) →* G ⧸ M 
   lift (M.map (mk' N)) (map N M (MonoidHom.id G) h)
     (by
       rintro _ ⟨x, hx, rfl⟩
-      rw [mem_ker, map_mk' N M _ _ x]
+      rw [mem_ker, map_mk' N M (MonoidHom.id G) (by simpa) x]
       exact (QuotientGroup.eq_one_iff _).mpr hx)
 
 @[to_additive (attr := simp)]
@@ -345,8 +345,17 @@ theorem quotientQuotientEquivQuotientAux_mk_mk (x : G) :
 def quotientQuotientEquivQuotient : (G ⧸ N) ⧸ M.map (QuotientGroup.mk' N) ≃* G ⧸ M :=
   MonoidHom.toMulEquiv (quotientQuotientEquivQuotientAux N M h)
     (QuotientGroup.map _ _ (QuotientGroup.mk' N) (Subgroup.le_comap_map _ _))
-    (by ext; simp)
-    (by ext; simp)
+    (by ext; simp [map_mk N M (MonoidHom.id G) (by simpa)])
+    (by ext; simp [map_mk N M (MonoidHom.id G) (by simpa)])
+
+@[to_additive (attr := simp)]
+lemma quotientQuotientEquivQuotient_symm_mk (x : G) :
+    (quotientQuotientEquivQuotient N M h).symm (x : G ⧸ M) = (x : G ⧸ N) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma quotientQuotientEquivQuotient_apply_mk (x : G) :
+    quotientQuotientEquivQuotient N M h (x : G ⧸ N) = (x : G ⧸ M) := rfl
 
 end ThirdIsoThm
 
@@ -370,7 +379,7 @@ or fourth isomorphism theorem for multiplicative groups -/
 @[to_additive /-- The **correspondence theorem**, or lattice theorem,
   or fourth isomorphism theorem for additive groups -/]
 def comapMk'OrderIso (N : Subgroup G) [hn : N.Normal] :
-    Subgroup (G ⧸ N) ≃o { H : Subgroup G // N ≤ H } where
+    Subgroup (G ⧸ N) ≃o Set.Ici N where
   toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩
   invFun H := Subgroup.map (mk' N) H
   left_inv H' := Subgroup.map_comap_eq_self <| by simp
@@ -408,7 +417,7 @@ theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := b
 subgroup is the whole additive group. -/]
 theorem subgroup_eq_top_of_subsingleton (H : Subgroup G) (h : Subsingleton (G ⧸ H)) : H = ⊤ :=
   top_unique fun x _ => by
-    have this : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
+    have : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
     rwa [inv_one, one_mul] at this
 
 end trivial
@@ -438,24 +447,33 @@ of type `G →* A` and the group of homomorphisms `G ⧸ H →* A`.
 The `AddEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
 of type `G →+ A` and the group of homomorphisms `G ⧸ H →+ A`.
 -/]
-def _root_.MonoidHom.restrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup G) [H.Normal] :
-    (MonoidHom.restrictHom H A).ker ≃* (G ⧸ H →* A) where
+def _root_.MonoidHom.domRestrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup G) [H.Normal] :
+    (MonoidHom.domRestrictHom H A).ker ≃* (G ⧸ H →* A) where
   toFun := fun ⟨f, hf⟩ ↦ QuotientGroup.lift _ f
-    (by simpa [mem_ker, restrictHom_apply, restrict_eq_one_iff] using! hf)
-  invFun f := ⟨f.comp (QuotientGroup.mk' H), restrict_eq_one_iff.mpr <| le_comap_mk' H f.ker⟩
+    (by simpa [mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff] using! hf)
+  invFun f := ⟨f.comp (QuotientGroup.mk' H), domRestrict_eq_one_iff.mpr <| le_comap_mk' H f.ker⟩
   map_mul' _ _ := by ext; simp
   left_inv _ := by simp
   right_inv _ := by ext; simp
 
 @[simp]
-theorem _root_.MonoidHom.restrictHomKerEquiv_apply_coe (A : Type*) [CommGroup A] (H : Subgroup G)
-    [H.Normal] (f : (MonoidHom.restrictHom H A).ker) (g : G) :
-    restrictHomKerEquiv A H f g = f.val g := rfl
+theorem _root_.MonoidHom.domRestrictHomKerEquiv_apply_coe (A : Type*) [CommGroup A] (H : Subgroup G)
+    [H.Normal] (f : (MonoidHom.domRestrictHom H A).ker) (g : G) :
+    domRestrictHomKerEquiv A H f g = f.val g := rfl
 
 @[simp]
-theorem _root_.MonoidHom.restrictHomKerEquiv_symm_coe_apply (A : Type*) [CommGroup A]
+theorem _root_.MonoidHom.domRestrictHomKerEquiv_symm_coe_apply (A : Type*) [CommGroup A]
     (H : Subgroup G) [H.Normal] (f : G ⧸ H →* A) (g : G) :
-    ((restrictHomKerEquiv A H).symm f).val g = f g := rfl
+    ((domRestrictHomKerEquiv A H).symm f).val g = f g := rfl
+
+@[deprecated (since := "2026-07-19")]
+alias _root_.MonoidHom.restrictHomKerEquiv := _root_.MonoidHom.domRestrictHomKerEquiv
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.restrictHomKerEquiv := _root_.AddMonoidHom.domRestrictHomKerEquiv
+@[deprecated (since := "2026-07-19")] alias _root_.MonoidHom.restrictHomKerEquiv_apply_coe :=
+  _root_.MonoidHom.domRestrictHomKerEquiv_apply_coe
+@[deprecated (since := "2026-07-19")] alias _root_.MonoidHom.restrictHomKerEquiv_symm_coe_apply :=
+  _root_.MonoidHom.domRestrictHomKerEquiv_symm_coe_apply
 
 end QuotientGroup
 

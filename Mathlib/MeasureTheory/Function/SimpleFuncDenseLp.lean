@@ -64,7 +64,7 @@ namespace SimpleFunc
 section Lp
 
 variable [MeasurableSpace β] [MeasurableSpace E] [NormedAddCommGroup E] [NormedAddCommGroup F]
-  {q : ℝ} {p : ℝ≥0∞}
+  {p : ℝ≥0∞}
 
 theorem nnnorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
@@ -475,6 +475,7 @@ theorem toLp_add (f g : α →ₛ E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
 theorem toLp_neg (f : α →ₛ E) (hf : MemLp f p μ) : toLp (-f) hf.neg = -toLp f hf :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toLp_sub (f g : α →ₛ E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
     toLp (f - g) (hf.sub hg) = toLp f hf - toLp g hg := by
   simp only [sub_eq_add_neg, ← toLp_neg, ← toLp_add]
@@ -652,7 +653,7 @@ lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
   intro f
   rw [mem_closure_iff_seq_limit]
   have hfi' : MemLp f p μ := Lp.memLp f
-  haveI : SeparableSpace (range f ∪ {0} : Set E) :=
+  have : SeparableSpace (range f ∪ {0} : Set E) :=
     (Lp.stronglyMeasurable f).separableSpace_range_union_singleton
   refine
     ⟨fun n =>
@@ -717,7 +718,7 @@ variable (p μ G)
 
 /-- Coercion from nonnegative simple functions of Lp to nonnegative functions of Lp. -/
 def coeSimpleFuncNonnegToLpNonneg :
-    { g : Lp.simpleFunc G p μ // 0 ≤ g } → { g : Lp G p μ // 0 ≤ g } := fun g => ⟨g, g.2⟩
+    Nonneg (Lp.simpleFunc G p μ) → Nonneg (Lp G p μ) := fun g => ⟨g, g.2⟩
 
 theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) :
     DenseRange (coeSimpleFuncNonnegToLpNonneg p μ G) := fun g ↦ by
@@ -726,7 +727,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
   have hg_memLp : MemLp (g : α → G) p μ := Lp.memLp (g : Lp G p μ)
   have zero_mem : (0 : G) ∈ (range (g : α → G) ∪ {0} : Set G) ∩ { y | 0 ≤ y } := by
     simp only [union_singleton, mem_inter_iff, mem_insert_iff, true_or,
-      mem_setOf_eq, le_refl, and_self_iff]
+      mem_ofPred_eq, le_refl, and_self_iff]
   have : SeparableSpace ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y } : Set G) := by
     apply IsSeparable.separableSpace
     apply IsSeparable.mono _ Set.inter_subset_left

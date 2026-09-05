@@ -42,7 +42,7 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
       ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / (2 * n)!) := by
   rw [expSeries_apply_eq]
   have hq2 : q ^ 2 = -normSq q := sq_eq_neg_normSq.mpr hq
-  letI k : ℝ := ↑(2 * n)!
+  let k : ℝ := ↑(2 * n)!
   calc
     k⁻¹ • q ^ (2 * n) = k⁻¹ • (-normSq q) ^ n := by rw [pow_mul, hq2]
     _ = k⁻¹ • ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) := ?_
@@ -94,7 +94,6 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
     ext n : 1
     rw [expSeries_odd_of_imaginary hq]
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed or we get errors in later declarations.
 /-- The closed form for the quaternion exponential on imaginary quaternions. -/
 theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
     exp q = ↑(Real.cos ‖q‖) + (Real.sin ‖q‖ / ‖q‖) • q := by
@@ -103,7 +102,6 @@ theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
   simp_rw [← expSeries_apply_eq]
   exact hasSum_expSeries_of_imaginary hq (Real.hasSum_cos _) (Real.hasSum_sin _)
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed or we get errors in later declarations.
 /-- The closed form for the quaternion exponential on arbitrary quaternions. -/
 theorem exp_eq (q : Quaternion ℝ) :
     exp q = exp q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) := by

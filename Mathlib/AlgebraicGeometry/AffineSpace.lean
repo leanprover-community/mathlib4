@@ -134,6 +134,7 @@ lemma hom_ext {f g : X ⟶ 𝔸(n; S)}
   rw [toSpecMvPolyIntEquiv_comp, toSpecMvPolyIntEquiv_comp]
   exact h₂ i
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma comp_homOfVector {X Y : Scheme} (v : n → Γ(Y, ⊤)) (f : X ⟶ Y) (g : Y ⟶ S) :
     f ≫ homOfVector g v = homOfVector (f ≫ g) (f.appTop ∘ v) := by
@@ -158,6 +159,7 @@ def homOverEquiv {X : Scheme.{u}} [X.Over S] :
     · rw [homOfVector_appTop_coord]
   right_inv v := by ext i; simp [-TopologicalSpace.Opens.map_top, homOfVector_appTop_coord]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (n) in
 /--
 The affine space over an affine base is isomorphic to the spectrum of the polynomial ring.
@@ -169,7 +171,7 @@ def isoOfIsAffine [IsAffine S] :
       hom := 𝔸(n; S).toSpecΓ ≫ Spec.map (CommRingCat.ofHom
         (eval₂Hom ((𝔸(n; S) ↘ S).appTop).hom (coord S)))
       inv := homOfVector (Spec.map (CommRingCat.ofHom C) ≫ S.isoSpec.inv)
-        ((Scheme.ΓSpecIso (.of (MvPolynomial n Γ(S, ⊤)))).inv ∘ MvPolynomial.X)
+        ((Scheme.ΓSpecIso ↧(MvPolynomial n Γ(S, ⊤))).inv ∘ MvPolynomial.X)
       hom_inv_id := by
         ext1
         · simp only [Category.assoc, homOfVector_over, Category.id_comp]
@@ -208,7 +210,7 @@ lemma isoOfIsAffine_hom_appTop [IsAffine S] :
 
 @[simp]
 lemma isoOfIsAffine_inv_appTop_coord [IsAffine S] (i) :
-    (isoOfIsAffine n S).inv.appTop (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) :=
+    (isoOfIsAffine n S).inv.appTop (coord _ i) = (Scheme.ΓSpecIso ↧_).inv (.X i) :=
   homOfVector_appTop_coord _ _ _
 
 @[reassoc (attr := simp)]
@@ -233,9 +235,10 @@ lemma SpecIso_hom_appTop (R : CommRingCat.{u}) :
   ext i
   simp [SpecIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma SpecIso_inv_appTop_coord (R : CommRingCat.{u}) (i) :
-    (SpecIso n R).inv.appTop (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) := by
+    (SpecIso n R).inv.appTop (coord _ i) = (Scheme.ΓSpecIso ↧_).inv (.X i) := by
   simp only [SpecIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, Scheme.Spec_map,
     Quiver.Hom.unop_op, TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, CommRingCat.comp_apply]
   rw [isoOfIsAffine_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
@@ -281,6 +284,7 @@ lemma map_toSpecMvPoly {S T : Scheme.{u}} (f : S ⟶ T) :
 lemma map_id : map n (𝟙 S) = 𝟙 𝔸(n; S) := by
   ext1 <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc, simp]
 lemma map_comp {S S' S'' : Scheme} (f : S ⟶ S') (g : S' ⟶ S'') :
     map n (f ≫ g) = map n f ≫ map n g := by
@@ -288,6 +292,7 @@ lemma map_comp {S S' S'' : Scheme} (f : S ⟶ S') (g : S' ⟶ S'') :
   · simp
   · simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma map_SpecMap {R S : CommRingCat.{u}} (φ : R ⟶ S) :
     map n (Spec.map φ) =
       (SpecIso n S).hom ≫ Spec.map (CommRingCat.ofHom (MvPolynomial.map φ.hom)) ≫
@@ -337,11 +342,13 @@ lemma reindex_appTop_coord {n m : Type u} (i : m → n) (S : Scheme.{u}) (j : m)
 lemma reindex_id : reindex id S = 𝟙 𝔸(n; S) := by
   ext1 <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc]
 lemma reindex_comp {n₁ n₂ n₃ : Type u} (i : n₁ ⟶ n₂) (j : n₂ ⟶ n₃) (S : Scheme.{u}) :
     reindex (i ≫ j) S = reindex j S ≫ reindex i S := by
   ext k <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma map_reindex {n₁ n₂ : Type u} (i : n₁ → n₂) {S T : Scheme.{u}} (f : S ⟶ T) :
     map n₂ f ≫ reindex i T = reindex i S ≫ map n₁ f := by
@@ -358,14 +365,17 @@ def functor : (Type u)ᵒᵖ ⥤ Scheme.{u} ⥤ Scheme.{u} where
 end functorial
 section instances
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsAffineHom (𝔸(n; S) ↘ S) := MorphismProperty.pullback_fst _ _ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Surjective (𝔸(n; S) ↘ S) := MorphismProperty.pullback_fst _ _ <| by
   have := isIso_of_isTerminal specULiftZIsTerminal terminalIsTerminal (terminal.from _)
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
     MorphismProperty.cancel_right_of_respectsIso (P := @Surjective)]
   exact ⟨MvPolynomial.comap_C_surjective⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
   MorphismProperty.pullback_fst _ _ <| by
   have := isIso_of_isTerminal specULiftZIsTerminal.{u} terminalIsTerminal (terminal.from _)
@@ -393,7 +403,7 @@ instance : GeometricallyIrreducible (𝔸(n; S) ↘ S) := by
   rw [geometricallyIrreducible_iff]
   introv K h
   apply ObjectProperty.prop_of_iso _
-    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n ↧K)).symm
   infer_instance
 
 instance [IrreducibleSpace S] : IrreducibleSpace 𝔸(n; S) :=
@@ -403,9 +413,10 @@ instance : GeometricallyReduced (𝔸(n; S) ↘ S) := by
   rw [geometricallyReduced_iff]
   introv K h
   apply ObjectProperty.prop_of_iso _
-    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n ↧K)).symm
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [h : IsReduced S] : IsReduced 𝔸(n; S) := by
   wlog hS : ∃ R, S = Spec R
   · rw [IsReduced.iff_of_openCover _ (S.affineCover.pullback₁ (𝔸(n; S) ↘ S))]
@@ -421,6 +432,7 @@ instance : GeometricallyIntegral (𝔸(n; S) ↘ S) :=
 
 instance [IsIntegral S] : IsIntegral 𝔸(n; S) := isIntegral_of_irreducibleSpace_of_isReduced _
 
+set_option backward.isDefEq.respectTransparency.types false in
 open MorphismProperty in
 instance [IsEmpty n] : IsIso (𝔸(n; S) ↘ S) := pullback_fst
     (P := isomorphisms _) _ _ <| by
@@ -432,6 +444,7 @@ instance [IsEmpty n] : IsIso (𝔸(n; S) ↘ S) := pullback_fst
       ⟨C_injective n _, C_surjective _⟩⟩
   · exact isIso_of_isTerminal specULiftZIsTerminal terminalIsTerminal (terminal.from _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEmpty S ∨ IsEmpty n := by
   constructor
   · intro h
@@ -464,6 +477,7 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
 lemma not_isIntegralHom [Nonempty S] [Nonempty n] : ¬ IsIntegralHom (𝔸(n; S) ↘ S) := by
   simp [isIntegralHom_over_iff_isEmpty]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma spec_le_iff (R : CommRingCat) (p q : Spec R) : p ≤ q ↔ q.asIdeal ≤ p.asIdeal := by
   aesop (add simp PrimeSpectrum.le_iff_specializes)
 
