@@ -104,7 +104,7 @@ well-founded.
 theorem wellFounded
     {α : Type*} [LinearOrder α] [WellFoundedLT α] :
     WellFounded ((· < ·) : Colex (Finset α) → Colex (Finset α) → Prop) := by
-  haveI : Std.Trichotomous (fun x y : α => x > y) :=
+  have : Std.Trichotomous (fun x y : α => x > y) :=
     { trichotomous := by
         intro a b hab hba
         exact le_antisymm (le_of_not_gt hab) (le_of_not_gt hba) }
@@ -389,8 +389,8 @@ The support-colex order on polynomials is well-founded.
 theorem supportColexLt_wellFounded :
     WellFounded
       (m.supportColexLt : MvPolynomial σ R → MvPolynomial σ R → Prop) := by
-  letI : LinearOrder m.syn := m.linearOrderSyn
-  haveI : WellFoundedLT m.syn := m.wellFoundedLT_syn
+  let : LinearOrder m.syn := m.linearOrderSyn
+  have : WellFoundedLT m.syn := m.wellFoundedLT_syn
   exact
     InvImage.wf
       (fun f : MvPolynomial σ R => toColex (f.support.image m.toSyn))
@@ -466,7 +466,7 @@ theorem supportColexLt
     m.supportColexLt g f := by
   rcases h with ⟨t, hp, ht, s, hs, c, hc, hg⟩
   unfold MonomialOrder.supportColexLt
-  letI : LinearOrder m.syn := m.linearOrderSyn
+  let : LinearOrder m.syn := m.linearOrderSyn
   rw [Finset.Colex.toColex_lt_toColex_iff_exists_forall_lt]
   refine ⟨m.toSyn t, ?_, ?_, ?_⟩
   · exact Finset.mem_image.mpr ⟨t, ht, rfl⟩
@@ -558,7 +558,7 @@ theorem monomial_mul_reducesToPoly
                 ring
       _ = monomial u (1 : R) * f
             - monomial (u + s) c * p := by
-                rw [monomial_mul, one_mul]
+                rw [monomial_mul_monomial, one_mul]
 
 /--
 If a polynomial has degree zero, then deleting its leading term gives zero.
