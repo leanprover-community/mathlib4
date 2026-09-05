@@ -17,7 +17,6 @@ import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Analysis.SpecialFunctions.Log.Sum
 import Mathlib.Analysis.Normed.Group.Tannery
-import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.NumberTheory.Harmonic.GammaDeriv
 import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 import Mathlib.NumberTheory.SumPrimeReciprocals
