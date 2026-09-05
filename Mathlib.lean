@@ -5483,6 +5483,7 @@ public import Mathlib.Logic.Hydra
 public import Mathlib.Logic.OpClass
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Logic.Relation
+public import Mathlib.Logic.Relation.NormalForm
 public import Mathlib.Logic.Relator
 public import Mathlib.Logic.Small.Basic
 public import Mathlib.Logic.Small.Defs
@@ -7007,6 +7008,7 @@ public import Mathlib.RingTheory.MvPolynomial.IrreducibleQuadratic
 public import Mathlib.RingTheory.MvPolynomial.Localization
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+public import Mathlib.RingTheory.MvPolynomial.PolynomialReductions
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
