@@ -29,40 +29,23 @@ section OrderTop
 
 variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a : α}
 
+@[to_dual]
 theorem StrictMono.apply_eq_top_iff (hf : StrictMono f) : f a = f ⊤ ↔ a = ⊤ :=
   ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne h, congr_arg _⟩
 
+@[to_dual]
 theorem StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = ⊤ :=
   ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne' h, congr_arg _⟩
 
 end OrderTop
 
+@[to_dual]
 theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop β] {f : α → β}
     (H : StrictMono f) {a} (h_top : f a = ⊤) (x : α) : x ≤ a :=
   H.maximal_of_maximal_image
     (fun p => by
       rw [h_top]
       exact le_top)
-    x
-
-section OrderBot
-
-variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a : α}
-
-theorem StrictMono.apply_eq_bot_iff (hf : StrictMono f) : f a = f ⊥ ↔ a = ⊥ :=
-  hf.dual.apply_eq_top_iff
-
-theorem StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = ⊥ :=
-  hf.dual.apply_eq_top_iff
-
-end OrderBot
-
-theorem StrictMono.minimal_preimage_bot [LinearOrder α] [Preorder β] [OrderBot β] {f : α → β}
-    (H : StrictMono f) {a} (h_bot : f a = ⊥) (x : α) : a ≤ x :=
-  H.minimal_of_minimal_image
-    (fun p => by
-      rw [h_bot]
-      exact bot_le)
     x
 
 section Logic
