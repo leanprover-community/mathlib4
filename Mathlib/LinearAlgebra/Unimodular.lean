@@ -17,7 +17,10 @@ An element `v` of an `R`-module is *unimodular* if some linear functional takes 
 generating the unit ideal (for `M = ℤⁿ`: the gcd of the coordinates is `1`, i.e. `v` is a
 *primitive* vector).
 
-The main results are:
+## Main results
+
+* `Module.Basis.span_repr_eq_range_applyₗ`: the coordinates of `v` in a basis generate the
+  ideal of values taken at `v` by the linear functionals;
 * `Module.Basis.span_repr_eq_top_iff`: the coordinate characterisation of unimodularity in
   the free case;
 * `Module.Free.exists_basis_zero_eq`: a unimodular vector of a rank-two module can be
@@ -34,25 +37,31 @@ public section
 
 namespace Module.Basis
 
-section
+section CommSemiring
 
 variable {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
+
+/-- The coordinates of `v` in a basis `b` generate the ideal of values taken at `v` by the linear
+functionals on `M`. In particular this ideal does not depend on `b`. -/
+theorem span_repr_eq_range_applyₗ {ι : Type*} (b : Basis ι R M) (v : M) :
+    Ideal.span (Set.range (b.repr v)) = LinearMap.range (LinearMap.applyₗ v) := by
+  refine le_antisymm (Ideal.span_le.mpr ?_) ?_
+  · rintro _ ⟨i, rfl⟩
+    exact ⟨b.coord i, rfl⟩
+  · rintro _ ⟨f, rfl⟩
+    simp only [LinearMap.applyₗ_apply_apply, ← congr_arg f (b.linearCombination_repr v),
+      Finsupp.linearCombination_apply, map_finsuppSum, map_smul, smul_eq_mul]
+    exact Submodule.finsuppSum_mem R _ _ _ fun i _ ↦
+      Ideal.mul_mem_right _ _ Ideal.mem_span_range_self
 
 /-- Coordinate characterisation of unimodularity in the free case: given a basis `b`, the
 coordinates of `v` generate the unit ideal iff some linear functional takes the value `1`
 at `v` (that is, iff `v` is *unimodular*). -/
-theorem span_repr_eq_top_iff {ι : Type*} (b : Module.Basis ι R M) {v : M} :
+theorem span_repr_eq_top_iff {ι : Type*} (b : Basis ι R M) {v : M} :
     Ideal.span (Set.range (b.repr v)) = ⊤ ↔ ∃ f : M →ₗ[R] R, f v = 1 := by
-  rw [Ideal.eq_top_iff_one]
-  refine ⟨fun h ↦ ?_, fun ⟨f, hf⟩ ↦ ?_⟩
-  · obtain ⟨c, hc⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp h
-    exact ⟨c.sum fun i a ↦ a • b.coord i, by simpa using hc⟩
-  · rw [← b.linearCombination_repr v, Finsupp.linearCombination_apply, map_finsuppSum] at hf
-    simp only [← hf, map_smul, smul_eq_mul]
-    exact Submodule.finsuppSum_mem R _ _ _ fun i _ ↦
-      Ideal.mul_mem_right _ _ Ideal.mem_span_range_self
+  simp [Ideal.eq_top_iff_one, span_repr_eq_range_applyₗ]
 
-end
+end CommSemiring
 
 section Algebra
 
@@ -60,7 +69,7 @@ variable {R : Type*} [CommRing R] {A ι : Type*} [Ring A] [Nontrivial A] [Algebr
 
 /-- In a nonzero algebra that is free as a module, the coordinates of `1` in any basis generate
 the unit ideal; that is, `1` is *unimodular*. -/
-theorem span_repr_one_eq_top (e : Module.Basis ι R A) :
+theorem span_repr_one_eq_top (e : Basis ι R A) :
     Ideal.span (Set.range (e.repr 1)) = ⊤ := by
   nontriviality R
   have : Module.Free R A := .of_basis e
@@ -79,16 +88,14 @@ namespace Module.Free
 
 variable {R : Type*} [CommRing R]
 
-section
+section FinrankTwo
 
 variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Free R M]
 
 /-- A *unimodular* vector of a rank-two module can be completed to a basis: if some linear
 functional takes the value `1` at `v`, then `v` is the first vector of a basis. -/
-theorem exists_basis_zero_eq (hM : Module.finrank R M = 2) {v : M}
-    (hv : ∃ f : M →ₗ[R] R, f v = 1) :
-    ∃ e : Module.Basis (Fin 2) R M, e 0 = v := by
-  obtain ⟨f, hf⟩ := hv
+theorem exists_basis_zero_eq (hM : Module.finrank R M = 2) {v : M} {f : M →ₗ[R] R} (hf : f v = 1) :
+    ∃ e : Basis (Fin 2) R M, e 0 = v := by
   have : Nontrivial R := not_subsingleton_iff_nontrivial.mp fun _ ↦ by simp at hM
   have : Module.Finite R M := Module.finite_of_finrank_eq_succ hM
   let b := (chooseBasis R M).reindex
@@ -101,7 +108,7 @@ theorem exists_basis_zero_eq (hM : Module.finrank R M = 2) {v : M}
   refine ⟨b.map (Matrix.toLinearEquiv b N (hdet ▸ isUnit_one)), ?_⟩
   simpa [N] using (Fin.sum_univ_two fun i ↦ b.repr v i • b i).symm.trans (b.sum_repr v)
 
-end
+end FinrankTwo
 
 /-- In a nonzero algebra that is free as a module, there is a linear functional taking the
 value `1` at `1`; that is, `1` is *unimodular*. -/
