@@ -39,7 +39,6 @@ theorem oreDiv_one_surjective_of_finite_left [Finite S] :
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ ·)
   wlog! hlt : j < i generalizing i j
-  · exact this j i hne.symm heq.symm (hne.lt_of_le hlt)
   use s ^ (i - (j + 1)) • x
   rw [oreDiv_eq_iff]
   refine ⟨s ^ j, (s ^ (j + 1)).1, ?_, ?_⟩
@@ -53,7 +52,6 @@ theorem oreDiv_one_surjective_of_finite_right [Finite X] :
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ · • x)
   wlog! hlt : j < i generalizing i j
-  · exact this j i hne.symm heq.symm (hne.lt_of_le hlt)
   use s ^ (i - (j + 1)) • x
   rw [oreDiv_eq_iff]
   refine ⟨s ^ j, (s ^ (j + 1)).1, ?_, ?_⟩

@@ -75,9 +75,6 @@ lemma MonotoneOn.countable_setOfPred_two_preimages [SecondCountableTopology α]
     forall_apply_eq_imp_iff₂]
   intro c hc d hd hcd
   wlog H : c < d generalizing c d with h
-  · apply (h d hd c hc hcd.symm ?_).symm
-    have : c ≠ d := fun h ↦ hcd (congrArg x h)
-    order
   simp only [disjoint_iff_forall_ne, mem_Ioo, ne_eq, and_imp]
   rintro a xca ayc b xda ayd rfl
   rw [hfx _ hc] at ayc

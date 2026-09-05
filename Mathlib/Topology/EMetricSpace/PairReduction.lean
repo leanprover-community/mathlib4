@@ -301,7 +301,6 @@ lemma disjoint_smallBall_logSizeBallSeq (hJ : J.Nonempty) {i j : ℕ} (hij : i �
     Disjoint
       ((logSizeBallSeq J hJ a c i).smallBall c) ((logSizeBallSeq J hJ a c j).smallBall c) := by
   wlog! h : i < j generalizing i j
-  · exact Disjoint.symm <| this hij.symm <| (ne_iff_lt_iff_le.mpr h).mp hij.symm
   apply Finset.disjoint_of_subset_right
   · exact (Finset.filter_subset _ _).trans (antitone_logSizeBallSeq_add_one_subset hJ h)
   simp [finset_logSizeBallSeq_add_one, Finset.disjoint_sdiff]

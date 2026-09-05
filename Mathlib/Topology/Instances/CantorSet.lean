@@ -181,7 +181,6 @@ theorem ofDigits_zero_two_sequence_unique {a b : ℕ → Fin 3} (ha : ∀ n, a n
   generalize n0 = n1 at h1 h2
   clear h n0
   wlog h3 : a n1 = 0 ∧ b n1 = 2 generalizing a b
-  · exact this hb ha h.symm (fun n hn ↦ (h1 n hn).symm) h2.symm (by grind)
   obtain ⟨h3, h4⟩ := h3
   clear h2
   have : ∑ x ∈ Finset.range n1, ofDigitsTerm a x = ∑ x ∈ Finset.range n1, ofDigitsTerm b x := by

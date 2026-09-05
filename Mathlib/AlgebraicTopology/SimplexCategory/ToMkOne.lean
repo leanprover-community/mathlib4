@@ -123,7 +123,6 @@ lemma σ_comp_toMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j
 lemma toMk₁_injective {n : ℕ} : Function.Injective (toMk₁ (n := n)) := by
   intro i j h
   wlog hij : i < j generalizing i j
-  · grind
   have := ConcreteCategory.congr_hom h ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩
   simp [toMk₁_apply, ite_eq_left hij] at this
 

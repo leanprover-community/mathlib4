@@ -439,9 +439,6 @@ theorem LinearOrder.convexOn_of_lt (hs : Convex 𝕜 s)
     ConvexOn 𝕜 s f := by
   refine convexOn_iff_pairwise_pos.2 ⟨hs, fun x hx y hy hxy a b ha hb hab => ?_⟩
   wlog h : x < y
-  · rw [add_comm (a • x), add_comm (a • f x)]
-    rw [add_comm] at hab
-    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_gt.resolve_left h)
   exact hf hx hy h ha hb hab
 
 /-- For a function on a convex set in a linearly ordered space (where the order and the algebraic
@@ -464,9 +461,6 @@ theorem LinearOrder.strictConvexOn_of_lt (hs : Convex 𝕜 s)
     StrictConvexOn 𝕜 s f := by
   refine ⟨hs, fun x hx y hy hxy a b ha hb hab => ?_⟩
   wlog h : x < y
-  · rw [add_comm (a • x), add_comm (a • f x)]
-    rw [add_comm] at hab
-    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_gt.resolve_left h)
   exact hf hx hy h ha hb hab
 
 /-- For a function on a convex set in a linearly ordered space (where the order and the algebraic

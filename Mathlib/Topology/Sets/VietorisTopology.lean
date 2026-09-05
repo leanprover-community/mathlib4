@@ -364,7 +364,6 @@ theorem isPreconnected_sUnion {s : Set (Set α)} (hs : IsPreconnected s)
   by_cases! ht' : t ⊆ U ∨ t ⊆ V
   · -- Consider the case when one of them covers `t`, say `U`.
     wlog htU : t ⊆ U generalizing U V
-    · grind
     -- There is also some `u ∈ s` that intersects `V`.
     rintro - hV'
     rw [sUnion_eq_biUnion, iUnion₂_inter, nonempty_biUnion] at hV'
