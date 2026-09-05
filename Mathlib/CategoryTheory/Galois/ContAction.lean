@@ -100,10 +100,7 @@ lemma trivialOnSet_le_isContinuous (H : OpenSubgroup G) :
   have : (fun (x : G × ((forget₂ _ TopCat).obj R)) ↦ x.1 • x.2) = fun x ↦ φ ⟨x.1, x.2⟩ := by
     ext ⟨g, v⟩
     obtain ⟨x, eq⟩ := hs g
-    dsimp [φ]
-    rw [eq, ← smul_smul]
-    congr 1
-    exact ConcreteCategory.congr_hom (h _ x.prop).symm v
+    simp [φ, eq, ← R.ρ_apply_eq_smul, h _ x.prop]
   rw [this]
   fun_prop
 
