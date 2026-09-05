@@ -79,10 +79,6 @@ lemma toLeftCoset_mk (h : H₁) :
     toLeftCoset (h : leftDecompQuotient H₁ H₂ g) = ((h : G) * g : G ⧸ H₂) := by
   simp [toLeftCoset, MulAction.subgroup_smul_def]
 
-lemma toLeftCoset_apply (x : leftDecompQuotient H₁ H₂ g) :
-    toLeftCoset x = ((x.out : G) * g : G ⧸ H₂) := by
-  rw [← QuotientGroup.out_eq' x, toLeftCoset_mk, QuotientGroup.out_eq']
-
 lemma toLeftCoset_injective :
     Function.Injective (toLeftCoset (H₁ := H₁) (H₂ := H₂) (g := g)) :=
   MulAction.injective_ofQuotientStabilizer H₁ (g : G ⧸ H₂)
