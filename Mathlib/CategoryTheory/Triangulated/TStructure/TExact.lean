@@ -38,7 +38,7 @@ class LeftTExact (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
   isGE_obj (F t₁ t₂) (X : C) (n : ℤ) [t₁.IsGE X n] : t₂.IsGE (F.obj X) n
 
 /-- A triangulated functor `F` is right `t`-exact if `X ≤ n` implies `F.obj X ≤ n`.
- (It suffices to test this for `n := 0`, see `RightExact.mk'`.)-/
+ (It suffices to test this for `n := 0`, see `RightExact.mk'`.) -/
 class RightTExact (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
     (t₁ : TStructure C) (t₂ : TStructure D) : Prop where
   isLE_obj (F t₁ t₂) (X : C) (n : ℤ) [t₁.IsLE X n] : t₂.IsLE (F.obj X) n

@@ -107,9 +107,9 @@ lemma mono_rightDerived_map_f :
   ((DerivedCategory.Plus.homologyFunctor D 0).homologySequence_exact₁ _
     (F.rightDerivedFunctorPlus.map_distinguished _
       hS.singleTrianglePlus_distinguished) (-1) 0 (by simp)).mono_g
-        (IsZero.eq_of_src (by
-          -- needs the addition of some API about left t-exact functors
-          sorry) _ _)
+        ((DerivedCategory.Plus.isZero_homology_of_isGE
+          (F.rightDerivedFunctorPlus.obj
+            ((DerivedCategory.Plus.singleFunctor C 0).obj S.X₃)) 0 (-1) (by lia)).eq_of_src _ _)
 
 include hS in
 lemma rightDerived_exact₂ (n : ℕ) :

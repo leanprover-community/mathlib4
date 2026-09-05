@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
 
 /-!
@@ -144,6 +146,35 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_injective (K : CochainComplex.Plu
   obtain ⟨L, ⟨e⟩⟩ := K.mem_essImage_mapCochainComplexPlus_injectiveObjectι_iff.mpr hK'
   rw [← NatTrans.isIso_app_iff_of_iso _ e]
   infer_instance
+
+section
+
+open DerivedCategory.Plus.TStructure
+
+instance : F.rightDerivedFunctorPlus.LeftTExact t t where
+  isGE_obj X n hX := by
+    obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.Plus.exists_injective_nonempty_iso X n
+    let iso :
+        DerivedCategory.Plus.Q.obj
+          ((InjectiveObject.ι C ⋙ F).mapCochainComplexPlus.obj L) ≅
+        F.rightDerivedFunctorPlus.obj (DerivedCategory.Plus.Q.obj
+          ((InjectiveObject.ι C).mapCochainComplexPlus.obj L)) :=
+      asIso (F.rightDerivedFunctorPlusUnit.app
+        ((InjectiveObject.ι C).mapCochainComplexPlus.obj L))
+    rw [← t.isGE_iff_of_iso (F.rightDerivedFunctorPlus.mapIso e), ← t.isGE_iff_of_iso iso]
+    simp only [← DerivedCategory.Plus.isGE_ι_obj_iff]
+    dsimp [DerivedCategory.Plus.Q]
+    infer_instance
+
+instance (K : DerivedCategory.Plus C) (n : ℤ) [K.IsGE n] :
+    (F.rightDerivedFunctorPlus.obj K).IsGE n :=
+  F.rightDerivedFunctorPlus.isGE_obj t t K n
+
+example (X : C) (n : ℤ) :
+    (F.rightDerivedFunctorPlus.obj ((DerivedCategory.Plus.singleFunctor C n).obj X)).IsGE n := by
+  infer_instance
+
+end
 
 end Functor
 
