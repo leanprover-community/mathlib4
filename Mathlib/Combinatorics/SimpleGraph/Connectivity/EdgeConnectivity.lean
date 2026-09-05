@@ -160,7 +160,7 @@ theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ �
   refine ⟨fun h ↦ Sym2.ind (h _ · · |> ·), fun h ↦ Sym2.ind fun x y ↦ ?_⟩
   nontriviality V
   have : G.Connected := ⟨(Not.imp_symm .of_not_reachable <| h s(·, ·))⟩
-  exact (this.connected_delete_edge_of_not_isBridge (h (s(x, y)))).preconnected
+  exact this.preconnected.connected_deleteEdges_of_not_isBridge (h s(x,y)) |>.preconnected
 
 theorem not_isEdgeConnected_two : ¬G.IsEdgeConnected 2 ↔ ∃ e, G.IsBridge e := by
   contrapose!
