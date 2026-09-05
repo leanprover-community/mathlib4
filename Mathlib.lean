@@ -3727,6 +3727,7 @@ public import Mathlib.Combinatorics.Quiver.Schreier
 public import Mathlib.Combinatorics.Quiver.SingleObj
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Combinatorics.Quiver.Symmetric
+public import Mathlib.Combinatorics.Ramsey.Infinite
 public import Mathlib.Combinatorics.Schnirelmann
 public import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
@@ -3794,6 +3795,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Partition
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Prod
+public import Mathlib.Combinatorics.SimpleGraph.Ramsey
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
