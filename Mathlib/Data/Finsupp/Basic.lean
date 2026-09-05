@@ -492,6 +492,10 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
 theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : α →₀ M) :
     equivMapDomain f l = mapDomain f l := by ext x; simp
 
+lemma mapDomain_apply_eq_sum [DecidableEq β] (f : α → β) (x : α →₀ M) (b : β) :
+    x.mapDomain f b = ∑ i ∈ x.support with f i = b, x i := by
+  simp [mapDomain, sum, single_apply, Finset.sum_ite]
+
 end MapDomain
 
 /-! ### Declarations about `comapDomain` -/
@@ -727,6 +731,18 @@ variable [AddCommMonoid M]
 @[simp]
 lemma filter_add_filter_not (f : α →₀ M) (p : α → Prop) [DecidablePred p] :
     f.filter p + f.filter (¬ p ·) = f := by ext; simp [filter_apply]; split <;> simp
+
+@[simp]
+lemma filter_mapDomain (v : α →₀ M) (f : α → β) (p : β → Prop) [DecidablePred p] :
+    (v.mapDomain f).filter p = (v.filter fun a ↦ p (f a)).mapDomain f := by
+  classical
+  ext b
+  transitivity ∑ a ∈ v.support with f a = b, if p b then v a else 0
+  · simp [filter_apply, mapDomain_apply_eq_sum]
+  simp only [filter_apply, mapDomain_apply_eq_sum, support_filter, Finset.filter_filter,
+    Finset.sum_ite, Finset.sum_const_zero, add_zero]
+  congr! 2 with a
+  grind
 
 @[deprecated (since := "2026-05-04")] alias filter_pos_add_filter_neg := filter_add_filter_not
 
@@ -1428,10 +1444,6 @@ theorem mapDomain_support_of_subsingletonAddUnits [DecidableEq β] [AddCommMonoi
   refine ⟨?_, fun ⟨i, i_in, hi⟩ ↦ ?_⟩
   · simpa [mapDomain, sum, single_apply] using fun i h h' _ ↦ ⟨i, h, h'⟩
   simpa [mapDomain, sum, ← hi, single_apply] using ⟨i, by simp [mem_support_iff.mp i_in]⟩
-
-theorem mapDomain_apply_eq_sum [DecidableEq β] [AddCommMonoid M] (f : α → β)
-    (x : α →₀ M) {a : α} : (x.mapDomain f) (f a) = ∑ i ∈ x.support with f i = f a, x i := by
-  simp [mapDomain, sum, single_apply, Finset.sum_ite]
 
 theorem mapDomain_apply_eq_zero_iff_of_subsingletonAddUnits [AddCommMonoid M] (f : α → β)
     [Subsingleton (AddUnits M)] (x : α →₀ M) : mapDomain (M := M) f x = 0 ↔ x = 0 := by
