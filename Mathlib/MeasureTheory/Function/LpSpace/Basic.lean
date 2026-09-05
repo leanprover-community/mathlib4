@@ -1038,13 +1038,13 @@ lemma mul_meas_ge_le_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top
 
 /-- A version of **Markov's inequality** with elements of Lp. -/
 theorem mul_meas_ge_le_pow_enorm' (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
-    (ε : ℝ≥0∞) : ε ^ p.toReal * μ {x | ε ≤ ‖f x‖₊ } ≤ ENNReal.ofReal ‖f‖ ^ p.toReal :=
+    (ε : ℝ≥0∞) : ε ^ p.toReal * μ {x | ε ≤ ‖f x‖ₑ} ≤ ENNReal.ofReal ‖f‖ ^ p.toReal :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ε
 
 /-- A version of **Markov's inequality** with elements of Lp. -/
 theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {ε : ℝ≥0∞}
-    (hε : ε ≠ 0) : μ {x | ε ≤ ‖f x‖₊} ≤ ε⁻¹ ^ p.toReal * ENNReal.ofReal ‖f‖ ^ p.toReal :=
+    (hε : ε ≠ 0) : μ {x | ε ≤ ‖f x‖ₑ} ≤ ε⁻¹ ^ p.toReal * ENNReal.ofReal ‖f‖ ^ p.toReal :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     meas_ge_le_mul_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top hε (by simp)
 
