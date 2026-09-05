@@ -1,12 +1,12 @@
 /-
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Corijn Rudrum
 -/
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # The category of pointed types
@@ -101,6 +101,32 @@ def Iso.mk {α β : Pointed} (e : α ≃ β) (he : e α.point = β.point) : α �
   inv := ⟨e.symm, e.symm_apply_eq.2 he.symm⟩
   hom_inv_id := Pointed.Hom.ext e.symm_comp_self
   inv_hom_id := Pointed.Hom.ext e.self_comp_symm
+
+instance (X Y : Pointed) : Zero (X ⟶ Y) where
+  zero := ⟨fun _ ↦ Y.point, rfl⟩
+
+instance : Limits.HasZeroMorphisms Pointed where
+  comp_zero _ _ := rfl
+  zero_comp _ _ _ f := by ext; exact f.map_point
+
+/-- The kernel of a morphism in `Pointed`, as a pointed type. -/
+def kernelObj {X Y : Pointed} (f : X ⟶ Y) : Pointed :=
+  ⟨{ x : X // f.toFun x = Y.point }, ⟨X.point, f.map_point⟩⟩
+
+/-- The kernel cone induced by `kernelObj f`. -/
+def kernelCone {X Y : Pointed} (f : X ⟶ Y) : Limits.KernelFork f :=
+  Limits.KernelFork.ofι (⟨Subtype.val, rfl⟩ : kernelObj f ⟶ X) (by ext ⟨x, hx⟩; exact hx)
+
+/-- `kernelObj f` is a kernel of `f` in the categorical sense. -/
+def kernelIsLimit {X Y : Pointed} (f : X ⟶ Y) : Limits.IsLimit (kernelCone f) :=
+  Limits.Fork.IsLimit.mk _
+    (fun s => ⟨fun x => ⟨s.ι.toFun x, ConcreteCategory.congr_hom s.condition x⟩,
+                Subtype.ext s.ι.map_point⟩)
+    (fun s => rfl)
+    (fun s m h => by ext x; exact Subtype.ext (ConcreteCategory.congr_hom h x))
+
+instance : Limits.HasKernels Pointed where
+  has_limit f := ⟨⟨kernelCone f, kernelIsLimit f⟩⟩
 
 end Pointed
 
