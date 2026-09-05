@@ -147,25 +147,20 @@ def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.
       cases j
       simp [sum_comp, t.ι_π, comp_dite]
 
-set_option backward.defeqAttrib.useBackward true in
+attribute [local implicit_reducible] Bicone.ofLimitCone in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functor f)}
     (ht : IsLimit t) : (Bicone.ofLimitCone ht).IsBilimit :=
   isBilimitOfIsLimit _ <| IsLimit.ofIsoLimit ht <| Cone.ext (Iso.refl _) (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] Bicone.toCoconeFunctor in
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit
 bicone. -/
 def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone) : t.IsBilimit :=
-  isBilimitOfTotal _ <|
-    ht.hom_ext fun j => by
-      classical
-      cases j
-      simp_rw [Bicone.toCocone_ι_app, comp_sum, ← Category.assoc, t.ι_π, dite_comp]
-      simp
+  isBilimitOfTotal _ <| ht.hom_ext fun j ↦ by
+    classical simp [Bicone.toCocone_ι_app, comp_sum, ← Category.assoc, t.ι_π, dite_comp]
 
-set_option backward.defeqAttrib.useBackward true in
+attribute [local implicit_reducible] Bicone.ofColimitCocone in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfColimitCoconeOfIsColimit {f : J → C} {t : Cocone (Discrete.functor f)}
     (ht : IsColimit t) : (Bicone.ofColimitCocone ht).IsBilimit :=
@@ -207,7 +202,7 @@ theorem HasFiniteBiproducts.of_hasFiniteCoproducts [HasFiniteCoproducts C] :
 
 section HasBiproduct
 
-variable {J : Type} [Fintype J] {f : J → C} [HasBiproduct f]
+variable {J : Type*} [Fintype J] {f : J → C} [HasBiproduct f]
 
 /-- In any preadditive category, any biproduct satisfies
 `∑ j : J, biproduct.π f j ≫ biproduct.ι f j = 𝟙 (⨁ f)`

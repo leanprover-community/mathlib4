@@ -964,7 +964,7 @@ end πKernel
 
 section FiniteBiproducts
 
-variable {J : Type} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
+variable {J : Type*} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
   [HasZeroMorphisms C] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
 
 /-- Convert a (dependently typed) matrix to a morphism of biproducts. -/
