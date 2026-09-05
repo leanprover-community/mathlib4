@@ -62,7 +62,7 @@ theorem le_sum_log (hx : 1 ≤ x) : x * log x - x - log x + 1 ≤ ∑ n ∈ Ioc 
   calc
     _ ≥ ∫ t in 1..⌊x⌋₊, log t := by
       rw [← Icc_add_one_left_eq_Ioc, zero_add, ← add_sum_Ioc_eq_sum_Icc this, cast_one,
-      log_one, ← Ico_add_one_add_one_eq_Ioc, zero_add, ← sum_Ico_add']
+        log_one, ← Ico_add_one_add_one_eq_Ioc, zero_add, ← sum_Ico_add']
       exact_mod_cast ((strictMonoOn_log.mono (by grind)).monotoneOn.integral_le_sum_Ico this).ge
     _ = (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log t := by
       nth_rw 3 [integral_symm]
