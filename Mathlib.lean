@@ -5171,8 +5171,8 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
-public import Mathlib.LinearAlgebra.ExteriorPower.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Product
+public import Mathlib.LinearAlgebra.ExteriorPower.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
