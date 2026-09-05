@@ -218,6 +218,7 @@ instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
     change ConcreteCategory.hom (X.ρ (g * h)) x =
       ConcreteCategory.hom (X.ρ g) ((ConcreteCategory.hom (X.ρ h)) x)
     simp
+
 /-- Specialize `instMulAction` to assist typeclass inference. -/
 instance {G : Type*} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
