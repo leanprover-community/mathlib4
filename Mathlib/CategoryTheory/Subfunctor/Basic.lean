@@ -188,8 +188,6 @@ theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congrArg Subtype.val (NatTrans.naturality_apply f i x)
 
-@[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map
-
 end Subfunctor
 
 end CategoryTheory

@@ -29,7 +29,7 @@ universe w u v
 /-- The category of topological representations of a monoid `G` over a topological ring `k`, and
 their morphisms. -/
 structure TopRep (k : Type u) (G : Type v) [Ring k] [TopologicalSpace k] [Monoid G] where
-  private mk ::
+  _mkInternal ::
   /-- the underlying type of an object in `TopRep k G` -/
   V : Type w
   [hV1 : AddCommGroup V]
@@ -59,8 +59,6 @@ instance : CoeSort (TopRep k G) (Type w) := ⟨TopRep.V⟩
 attribute [coe] V
 
 variable (ρ) in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of topological representations associated to a type equipped with a
 continuous representation. This is the preferred way to construct a term of `TopRep k G`. -/
 abbrev of : TopRep k G := ⟨X, ρ⟩
@@ -74,24 +72,20 @@ lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 /-- The type of morphisms in `TopRep k G`. -/
 @[ext]
 structure Hom (A B : TopRep k G) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `G`-equivariant linear map. -/
   hom' : A.ρ →ⁱL B.ρ
 
 variable (A B C : TopRep.{w} k G)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (TopRep.{w} k G) where
   Hom A B := Hom A B
   id A := ⟨.id (π₁ := A.ρ)⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (TopRep.{w} k G) (fun A B ↦ A.ρ →ⁱL B.ρ) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 variable {A B} in
 /-- Turn a morphism in `TopRep` back into an `IntertwiningMap`. -/
