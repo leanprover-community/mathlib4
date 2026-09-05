@@ -5441,6 +5441,7 @@ public import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Transvection.Generation
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Vandermonde
+public import Mathlib.LintTest
 public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Logic.Embedding.Set
 public import Mathlib.Logic.Encodable.Basic
