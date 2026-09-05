@@ -751,4 +751,189 @@ lemma _root_.Function.locallyFinsupp.disjoint_nhdsWithin_cofinite
     Disjoint (𝓝[f.support] p) cofinite :=
   disjoint_nhdsWithin_cofinite_of_mem f p (mem_univ _)
 
+
+/-!
+### Composition a.k.a. `mapRange`
+
+See the documentation of `Finsupp.mapRange` for further explanation and a list of similar
+definitions.
+-/
+
+section MapRange
+
+variable {Y Z : Type*} [Zero Y] [Zero Z]
+
+/--
+The composition of `f : Y → Z` and `g : locallyFinsuppWithin` is `mapRange f hf g :
+locallyFinsuppWithin`, which is well-defined when `f 0 = 0`.
+-/
+def mapRange (f : Y → Z) (hf : f 0 = 0) (g : locallyFinsuppWithin U Y) :
+    locallyFinsuppWithin U Z where
+  toFun := f ∘ g
+  supportWithinDomain' x hx := by
+    by_contra
+    have : g x = 0 := by aesop
+    aesop
+  supportLocallyFiniteWithinDomain' x hx := by
+    obtain ⟨t, h₁t, h₂t⟩ := g.supportLocallyFiniteWithinDomain x hx
+    use t, h₁t
+    apply h₂t.subset
+    intro z hz
+    aesop
+
+@[simp, grind =]
+theorem mapRange_apply {f : Y → Z} {hf : f 0 = 0} {g : locallyFinsuppWithin U Y} {a : X} :
+    mapRange f hf g a = f (g a) :=
+  rfl
+
+end MapRange
+
+
+section Truncation
+
+/-!
+## Truncation of a Function with Locally Finite Support
+-/
+
+variable {Y : Type*} {y : Y} [Zero Y] [LinearOrder Y]
+
+/--
+Truncation of a function with locally finite support: the pointwise minimum with a non-negative
+constant `y`.
+-/
+noncomputable abbrev trunc (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
+    locallyFinsuppWithin U Y := D.mapRange (min · y) (min_eq_left hy)
+
+/--
+Truncation of a function with locally finite support: the pointwise minimum with the constant `1`.
+-/
+noncomputable abbrev trunc₁ [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
+    locallyFinsuppWithin U Y := D.trunc 1 zero_le_one
+
+/-- Evaluation of the truncation. -/
+@[simp] lemma trunc_apply (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) (z : X) :
+    D.trunc y hy z = min (D z) y := by simp
+
+/-- Evaluation of the truncation. -/
+@[simp] lemma trunc₁_apply [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) (z : X) :
+    D.trunc₁ z = min (D z) 1 := D.trunc_apply 1 zero_le_one z
+
+/-- Truncation of the zero function. -/
+@[simp] lemma trunc_zero {hy : 0 ≤ y} : (0 : locallyFinsuppWithin U Y).trunc y hy = 0 := by
+  ext z
+  exact min_eq_left hy
+
+/-- Truncation of the zero function. -/
+lemma trunc₁_zero [One Y] [ZeroLEOneClass Y] :
+    (0 : locallyFinsuppWithin U Y).trunc₁ = 0 := by simp
+
+/-- Truncation decreases functions. -/
+lemma trunc_le (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) : D.trunc y hy ≤ D :=
+  fun z ↦ min_le_left (D z) y
+
+/-- Truncation decreases functions. -/
+lemma trunc₁_le [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) : D.trunc₁ ≤ D :=
+  D.trunc_le 1 zero_le_one
+
+/-- Truncation is monotone. -/
+lemma trunc_mono {D₁ D₂ : locallyFinsuppWithin U Y} (y : Y) (hy : 0 ≤ y) (h : D₁ ≤ D₂) :
+    D₁.trunc y hy ≤ D₂.trunc y hy := by
+  intro z
+  simpa using min_le_min_right y ((le_def.1 h) z)
+
+/-- Truncation is monotone. -/
+lemma trunc₁_mono [One Y] [ZeroLEOneClass Y] {D₁ D₂ : locallyFinsuppWithin U Y} (h : D₁ ≤ D₂) :
+    D₁.trunc₁ ≤ D₂.trunc₁ := trunc_mono 1 zero_le_one h
+
+/-- Truncation preserves non-negativity. -/
+lemma trunc_nonneg {D : locallyFinsuppWithin U Y} (y : Y) (hy : 0 ≤ y) (h : 0 ≤ D) :
+    0 ≤ D.trunc y hy := by
+  intro z
+  simpa using le_min ((le_def.1 h) z) hy
+
+/-- Truncation preserves non-negativity. -/
+lemma trunc₁_nonneg [One Y] [ZeroLEOneClass Y] {D : locallyFinsuppWithin U Y} (h : 0 ≤ D) :
+    0 ≤ D.trunc₁ := trunc_nonneg 1 zero_le_one h
+
+/-- Truncation is idempotent. -/
+@[simp] lemma trunc_trunc (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
+    (D.trunc y hy).trunc y hy = D.trunc y hy := by
+  ext z
+  simp only [trunc_apply, min_assoc, min_self]
+
+/-- Truncation is idempotent. -/
+lemma trunc₁_trunc₁ [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
+    D.trunc₁.trunc₁ = D.trunc₁ :=
+  trunc_trunc D 1 zero_le_one
+
+/-- Truncation does not change the support. -/
+lemma support_trunc (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 < y) :
+    (D.trunc y hy.le).support = D.support := by
+  ext z
+  simp only [Function.mem_support, ne_eq, trunc_apply]
+  constructor <;> intro h₁ h₂
+  · apply h₁
+    rw [h₂]
+    exact min_eq_left hy.le
+  · rcases min_eq_iff.1 h₂ with ⟨h₂, _⟩ | ⟨h₂, _⟩
+    · exact h₁ h₂
+    · simp_all
+
+/-- Truncation does not change the support. -/
+lemma support_trunc₁ [One Y] [ZeroLEOneClass Y] [NeZero (1 : Y)] (D : locallyFinsuppWithin U Y) :
+    D.trunc₁.support = D.support := support_trunc D 1 zero_lt_one
+
+variable (U) in
+/-- Truncation as an order homomorphism. -/
+noncomputable def truncOrderHom (y : Y) (hy : 0 ≤ y) :
+    locallyFinsuppWithin U Y →o locallyFinsuppWithin U Y where
+  toFun D := D.trunc y hy
+  monotone' _ _ := trunc_mono y hy
+
+variable (U) in
+/-- Truncation as an order homomorphism. -/
+noncomputable def trunc₁OrderHom [One Y] [ZeroLEOneClass Y] :
+    locallyFinsuppWithin U Y →o locallyFinsuppWithin U Y where
+  toFun D := D.trunc₁
+  monotone' _ _ := trunc₁_mono
+
+/-- Evaluation of the order homomorphism `truncOrderHom`. -/
+@[simp] lemma truncOrderHom_apply (y : Y) (hy : 0 ≤ y) (D : locallyFinsuppWithin U Y) :
+    truncOrderHom U y hy D = D.trunc y hy := rfl
+
+/-- Evaluation of the order homomorphism `truncOrderHom`. -/
+@[simp] lemma trunc₁OrderHom_apply [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
+    trunc₁OrderHom U D = D.trunc₁ := rfl
+
+variable (U) in
+/-- Truncation as a lattice homomorphism. -/
+noncomputable def truncLatticeHom (y : Y) (hy : 0 ≤ y) :
+    LatticeHom (locallyFinsuppWithin U Y) (locallyFinsuppWithin U Y) where
+  toFun D := D.trunc y hy
+  map_sup' D₁ D₂ := by
+    ext z
+    simp only [trunc_apply, max_apply]
+    exact min_max_distrib_right ..
+  map_inf' D₁ D₂ := by
+    ext z
+    simp only [trunc_apply, min_apply]
+    conv_lhs => rw [← min_self y]
+    exact min_min_min_comm ..
+
+variable (U) in
+/-- Truncation as a lattice homomorphism. -/
+noncomputable def trunc₁LatticeHom [One Y] [ZeroLEOneClass Y] :
+    LatticeHom (locallyFinsuppWithin U Y) (locallyFinsuppWithin U Y) :=
+  truncLatticeHom U 1 zero_le_one
+
+/-- Evaluation of the lattice homomorphism `truncLatticeHom`. -/
+@[simp] lemma truncLatticeHom_apply (y : Y) (hy : 0 ≤ y) (D : locallyFinsuppWithin U Y) :
+    truncLatticeHom U y hy D = D.trunc y hy := rfl
+
+/-- Evaluation of the lattice homomorphism `truncLatticeHom`. -/
+@[simp] lemma trunc₁LatticeHom_apply [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
+    trunc₁LatticeHom U D = D.trunc₁ := rfl
+
+end Truncation
+
 end Function.locallyFinsuppWithin
