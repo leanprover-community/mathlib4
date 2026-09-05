@@ -213,13 +213,15 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
-/-- A chain in a partial order is a linear order. -/
+/-- A chain in a preorder is a linear order. -/
 @[implicit_reducible]
-def IsChain.linearOrder [PartialOrder α] [DecidableLE α] {s : Set α} (hs : IsChain (· ≤ ·) s) :
+def IsChain.linearOrder [Preorder α] [DecidableLE α] {s : Set α} (hs : IsChain (· < ·) s) :
     LinearOrder s where
-  le_total := by
-    rintro ⟨a, ha⟩ ⟨b, hb⟩
-    exact hs.total ha hb
+  le_antisymm :=
+    fun ⟨a, ha⟩ ⟨b, hb⟩ hab hba ↦
+      Subtype.ext <| not_not.mp (hs ha hb · |>.elim hba.not_gt hab.not_gt)
+  le_total :=
+    fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ eq_or_ne a b |>.elim (by simp [·]) (hs ha hb · |>.imp (·.le) (·.le))
   toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
 
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
