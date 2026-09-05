@@ -5,6 +5,8 @@ Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
+public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Int.Interval
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 public import Mathlib.RingTheory.Binomial
@@ -211,6 +213,105 @@ theorem derivative_iterate_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
     ((derivative R)^[k] f).coeff n = (descPochhammer ℤ k).smeval (n + k) • f.coeff (n + k) := by
   rw [derivative_iterate, coeff_nsmul, Pi.smul_apply, hasseDeriv_coeff,
     Ring.descPochhammer_eq_factorial_smul_choose, smul_assoc]
+
+open Finset Finset.HasAntidiagonal in
+theorem hasseDeriv_mul {R : Type*} [CommRing R] (k : ℕ) (f g : LaurentSeries R) :
+    hasseDeriv R k (f * g) =
+      ∑ ij ∈ antidiagonal k, hasseDeriv R ij.1 f * hasseDeriv R ij.2 g := by
+  classical
+  ext n
+  simp only [hasseDeriv_coeff, HahnSeries.coeff_sum, HahnSeries.coeff_mul]
+  rw [smul_sum]
+  have h1 : (∑ x ∈ antidiagonal f.isPWO_support g.isPWO_support (n + ↑k),
+      Ring.choose (n + ↑k) k • (f.coeff x.1 * g.coeff x.2)) =
+      ∑ x ∈ antidiagonal f.isPWO_support g.isPWO_support (n + ↑k),
+      ∑ ij ∈ antidiagonal k,
+        (Ring.choose x.1 ij.1 • f.coeff x.1) * (Ring.choose x.2 ij.2 • g.coeff x.2) := by
+    refine Finset.sum_congr rfl fun x hx => ?_
+    obtain ⟨-, -, hx_add⟩ := Finset.mem_antidiagonal.mp hx
+    rw [← hx_add, Ring.add_choose_eq k (Commute.all x.1 x.2), Finset.sum_smul]
+    refine Finset.sum_congr rfl fun ij hij => ?_
+    rw [smul_mul_smul_comm, mul_smul]
+  rw [h1, Finset.sum_comm]
+  refine Finset.sum_congr rfl fun ij hij => ?_
+  have h_ij_add : (ij.1 : ℤ) + (ij.2 : ℤ) = (k : ℤ) := by
+    have := List.Nat.mem_antidiagonal.mp hij
+    omega
+  let s := antidiagonal f.isPWO_support g.isPWO_support (n + ↑k)
+  let t := antidiagonal (hasseDeriv R ij.1 f).isPWO_support (hasseDeriv R ij.2 g).isPWO_support n
+  let F (x : ℤ × ℤ) : R :=
+    (Ring.choose x.1 ij.1 • f.coeff x.1) * (Ring.choose x.2 ij.2 • g.coeff x.2)
+  let G (y : ℤ × ℤ) : R := (hasseDeriv R ij.1 f).coeff y.1 * (hasseDeriv R ij.2 g).coeff y.2
+  have hs_eq : ∑ x ∈ s, F x = ∑ x ∈ s.filter (fun x => F x ≠ 0), F x := (sum_filter_ne_zero s).symm
+  have ht_eq : ∑ y ∈ t, G y = ∑ y ∈ t.filter (fun y => G y ≠ 0), G y := (sum_filter_ne_zero t).symm
+  change ∑ x ∈ s, F x = ∑ y ∈ t, G y
+  rw [hs_eq, ht_eq]
+  refine Finset.sum_bij (fun x _ => (x.1 - (ij.1 : ℤ), x.2 - (ij.2 : ℤ))) ?hi ?inj ?surj ?h
+  · -- hi
+    intro x hx
+    rw [mem_filter, Finset.mem_antidiagonal] at hx ⊢
+    obtain ⟨⟨hxf, hxg, hx_add⟩, hF_ne⟩ := hx
+    have h_sub_add : x.1 - ↑ij.1 + (x.2 - ↑ij.2) = n := by omega
+    have h_coeff1 :
+        (hasseDeriv R ij.1 f).coeff (x.1 - ↑ij.1) = Ring.choose x.1 ij.1 • f.coeff x.1 := by
+      have : x.1 - ↑ij.1 + ↑ij.1 = x.1 := sub_add_cancel x.1 ↑ij.1
+      rw [hasseDeriv_coeff, this]
+    have h_coeff2 :
+        (hasseDeriv R ij.2 g).coeff (x.2 - ↑ij.2) = Ring.choose x.2 ij.2 • g.coeff x.2 := by
+      have : x.2 - ↑ij.2 + ↑ij.2 = x.2 := sub_add_cancel x.2 ↑ij.2
+      rw [hasseDeriv_coeff, this]
+    refine ⟨⟨by rw [mem_support, h_coeff1]; intro h; exact hF_ne (by dsimp [F]; rw [h, zero_mul]),
+             by rw [mem_support, h_coeff2]; intro h; exact hF_ne (by dsimp [F]; rw [h, mul_zero]),
+             h_sub_add⟩, ?_⟩
+    dsimp [G]
+    have heq1 : x.1 - ↑ij.1 + ↑ij.1 = x.1 := sub_add_cancel x.1 ↑ij.1
+    have heq2 : x.2 - ↑ij.2 + ↑ij.2 = x.2 := sub_add_cancel x.2 ↑ij.2
+    rw [heq1, heq2]
+    exact hF_ne
+  · -- inj
+    intro x1 hx1 x2 hx2 heq
+    ext <;> have := congr_arg Prod.fst heq <;> have := congr_arg Prod.snd heq <;> omega
+  · -- surj
+    intro y hy
+    rw [mem_filter, Finset.mem_antidiagonal] at hy
+    obtain ⟨⟨hy1, hy2, hy_add⟩, hG_ne⟩ := hy
+    rw [mem_support] at hy1 hy2
+    have h_coeff1 : (hasseDeriv R ij.1 f).coeff y.1 =
+        Ring.choose (y.1 + ↑ij.1) ij.1 • f.coeff (y.1 + ↑ij.1) := by rw [hasseDeriv_coeff]
+    have h_coeff2 : (hasseDeriv R ij.2 g).coeff y.2 =
+        Ring.choose (y.2 + ↑ij.2) ij.2 • g.coeff (y.2 + ↑ij.2) := by rw [hasseDeriv_coeff]
+    rw [h_coeff1] at hy1
+    rw [h_coeff2] at hy2
+    have hf_ne : f.coeff (y.1 + ↑ij.1) ≠ 0 := by
+      intro h
+      rw [h, smul_zero] at hy1
+      exact hy1 rfl
+    have hg_ne : g.coeff (y.2 + ↑ij.2) ≠ 0 := by
+      intro h
+      rw [h, smul_zero] at hy2
+      exact hy2 rfl
+    refine ⟨(y.1 + (ij.1 : ℤ), y.2 + (ij.2 : ℤ)), ?_, ?_⟩
+    · rw [mem_filter, Finset.mem_antidiagonal]
+      refine ⟨⟨by rw [mem_support]; exact hf_ne, by rw [mem_support]; exact hg_ne, by omega⟩, ?_⟩
+      dsimp [F]
+      rw [← h_coeff1, ← h_coeff2]
+      exact hG_ne
+    · ext <;> dsimp <;> omega
+  · -- h
+    intro x hx
+    dsimp [F, G, hasseDeriv_coeff]
+    have h1 : x.1 - ↑ij.1 + ↑ij.1 = x.1 := sub_add_cancel x.1 ↑ij.1
+    have h2 : x.2 - ↑ij.2 + ↑ij.2 = x.2 := sub_add_cancel x.2 ↑ij.2
+    rw [h1, h2]
+
+open Finset Finset.HasAntidiagonal in
+theorem derivative_mul {R : Type*} [CommRing R] (f g : LaurentSeries R) :
+    derivative R (f * g) = derivative R f * g + f * derivative R g := by
+  have h := LaurentSeries.hasseDeriv_mul 1 f g
+  have h_anti : (antidiagonal 1 : Finset (ℕ × ℕ)) = {(0, 1), (1, 0)} := rfl
+  rw [h_anti, Finset.sum_pair (by decide)] at h
+  simp only [hasseDeriv_zero, LinearMap.id_coe, id_eq, ← derivative_apply] at h
+  rw [h, add_comm]
 
 end HasseDeriv
 
