@@ -133,7 +133,7 @@ instance instZero : Zero (Seminorm 𝕜 E) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with
     smul' := fun _ _ => (mul_zero _).symm }⟩
 
-instance : IsZeroApply (Seminorm 𝕜 E) E ℝ where
+instance : IsZeroApply (Seminorm 𝕜 E) where
   zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-22")] alias coe_zero := FunLike.coe_zero
@@ -154,7 +154,7 @@ instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : 
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         rw [map_smul_eq_mul, mul_left_comm] }
 
-instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : IsSMulApply R (Seminorm 𝕜 E) E ℝ where
+instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : IsSMulApply R (Seminorm 𝕜 E) where
   smul_apply _ _ _ := rfl
 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
@@ -171,7 +171,7 @@ instance instAdd : Add (Seminorm 𝕜 E) where
       toFun := fun x => p x + q x
       smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
-instance : IsAddApply (Seminorm 𝕜 E) E ℝ where
+instance : IsAddApply (Seminorm 𝕜 E) where
   add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-22")] alias coe_add := FunLike.coe_add
