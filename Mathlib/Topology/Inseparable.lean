@@ -180,6 +180,12 @@ theorem Topology.IsInducing.specializes_iff (hf : IsInducing f) : f x ⤳ f y �
 theorem subtype_specializes_iff {p : X → Prop} (x y : Subtype p) : x ⤳ y ↔ (x : X) ⤳ y :=
   IsInducing.subtypeVal.specializes_iff.symm
 
+attribute [local instance] specializationPreorder in
+/-- The specialization preorder of a subspace is the order induced from the ambient space -/
+lemma specializationPreorder_subtype (p : X → Prop) :
+    specializationPreorder (Subtype p) = Subtype.preorder p :=
+  Preorder.ext fun x y ↦ subtype_specializes_iff y x
+
 @[simp]
 theorem specializes_prod {x₁ x₂ : X} {y₁ y₂ : Y} : (x₁, y₁) ⤳ (x₂, y₂) ↔ x₁ ⤳ x₂ ∧ y₁ ⤳ y₂ := by
   simp only [Specializes, nhds_prod_eq, prod_le_prod]

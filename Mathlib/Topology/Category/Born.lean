@@ -49,3 +49,13 @@ instance : ConcreteCategory Born (LocallyBoundedMap · ·) where
   ofHom f := f
 
 end Born
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `Born.of X` as `↧X`. -/
+@[app_delab Born.of]
+meta def Born.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
