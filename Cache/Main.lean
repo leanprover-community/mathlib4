@@ -263,15 +263,9 @@ def main (args : List String) : IO Unit := do
     if !(← stagingDir.isDir) then
       IO.eprintln "--staging-dir must be a directory"
       Process.exit 1
-    let repo := repo?.getD MATHLIBREPO
-    let dest ← stagedUploadDest container? repo
-    -- The marker is written when the upload is SHA-scoped into a container:
-    -- it lets `cache query` discover cached commits with a cheap HEAD probe.
-    let markerSha? ← if container?.isSome then getRepoScope else pure none
-    let auth ← getUploadAuth
-    let engine ← resolveUploadEngine uploaderStr? auth
-    let fileNames := (← getFilesWithExtension stagingDir "ltar").map (·.fileName.get!)
-    putStaged dest auth engine stagingDir fileNames (overwrite := false) markerSha?
+    runPut container? repo? uploaderStr? stagingDir (overwrite := false)
+      (getFileNames := do
+        return (← getFilesWithExtension stagingDir "ltar").map (·.fileName.get!))
     return
   | "put-staged" :: _ =>
     IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] \
@@ -321,18 +315,9 @@ def main (args : List String) : IO Unit := do
   -- `pack`-and-upload: the hash memo scopes the file list to what this
   -- checkout's build links, so nothing else in the shared per-user cache
   -- directory leaves the machine.
-  let put (overwrite := false) := do
-    let repo := repo?.getD MATHLIBREPO
-    let dest ← stagedUploadDest container? repo
-    -- Credentials and engine resolve before the pack, so a misconfiguration
-    -- fails fast instead of after the expensive packing pass.
-    let auth ← getUploadAuth
-    let engine ← resolveUploadEngine uploaderStr? auth
-    -- The marker is written when the upload is SHA-scoped into a container:
-    -- it lets `cache query` discover cached commits with a cheap HEAD probe.
-    let markerSha? ← if container?.isSome then getRepoScope else pure none
-    let fileNames ← pack overwrite (verbose := true)
-    putStaged dest auth engine IO.CACHEDIR fileNames overwrite markerSha?
+  let put (overwrite := false) :=
+    runPut container? repo? uploaderStr? IO.CACHEDIR
+      (getFileNames := pack overwrite (verbose := true)) overwrite
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do

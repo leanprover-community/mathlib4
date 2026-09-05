@@ -84,4 +84,23 @@ def putStaged (dest : StagedUploadDest) (auth : UploadAuth) (engine : UploadEngi
   | .rclone keyId secret sessionToken? =>
     putStagedViaRclone dest keyId secret sessionToken? markerSha? srcDir fileNames overwrite
 
+/--
+The complete `put` operation, from the command inputs: resolve the
+destination, credentials, and engine, then upload the `.ltar` files
+`getFileNames` produces under `srcDir` (`putStaged`). The resolutions run
+before `getFileNames`, so a misconfiguration fails fast — before `put`'s
+expensive packing pass. The per-SHA marker is written when the upload names a
+container and a scope: it lets `cache query` discover cached commits with a
+cheap HEAD probe.
+-/
+def runPut [Monad m] [MonadLiftT IO m] (container? : Option Container)
+    (repo? uploader? : Option String) (srcDir : FilePath)
+    (getFileNames : m (Array String)) (overwrite : Bool) : m Unit := do
+  let dest ← stagedUploadDest container? (repo?.getD MATHLIBREPO)
+  let auth ← getUploadAuth
+  let engine ← resolveUploadEngine uploader? auth
+  let markerSha? ← if container?.isSome then getRepoScope else pure (none : Option String)
+  let fileNames ← getFileNames
+  putStaged dest auth engine srcDir fileNames overwrite markerSha?
+
 end Cache.Requests
