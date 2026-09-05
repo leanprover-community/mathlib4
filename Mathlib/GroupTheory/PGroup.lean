@@ -495,26 +495,30 @@ theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G,
 
 end P2comm
 
-open Subgroup in
+section CommGroup
+
+variable {A : Type*} [CommGroup A] [hp : Fact p.Prime]
+
 /-- In an abelian p-group, the maximal subgroups are exactly the subgroups of index `p`. -/
-theorem isCoatom_iff_index_eq_prime {G : Type*} [CommGroup G] {p : ℕ} [hp : Fact p.Prime]
-    (hG : IsPGroup p G) (M : Subgroup G) : IsCoatom M ↔ M.index = p := by
+theorem isCoatom_iff_index_eq_prime (hA : IsPGroup p A) (M : Subgroup A) :
+    IsCoatom M ↔ M.index = p := by
   rw [← CommGroup.isSimpleGroup_iff_isCoatom, CommGroup.is_simple_iff_prime_card,
     Subgroup.index_eq_card]
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ hp.out⟩
-  have h_dvd := (card_eq_or_dvd (hG.to_quotient M)).resolve_left h.ne_one
-  exact ((Nat.prime_dvd_prime_iff_eq hp.out h).mp h_dvd).symm
+  refine ⟨fun h ↦ ((Nat.prime_dvd_prime_iff_eq hp.out h).mp ?_).symm, fun h ↦ h ▸ hp.out⟩
+  exact (card_eq_or_dvd (hA.to_quotient M)).resolve_left h.ne_one
 
-open Subgroup in
-/-- A finite non-cyclic abelian p-group has two distinct subgroups of index `p`. -/
-theorem exists_index_eq_prime_ne_of_not_isCyclic {G : Type*} [CommGroup G] [Finite G]
-    {p : ℕ} [Fact p.Prime] (hG : IsPGroup p G) (hnc : ¬ IsCyclic G) :
-    ∃ H₁ H₂ : Subgroup G, H₁.index = p ∧ H₂.index = p ∧ H₁ ≠ H₂ := by
-  by_contra hcon
-  push Not at hcon
-  refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ => ?_)
-  exact hcon M₁ M₂ (hG.isCoatom_iff_index_eq_prime M₁ |>.mp hM₁)
-    (hG.isCoatom_iff_index_eq_prime M₂ |>.mp hM₂)
+/-- A finite abelian p-group is non-cyclic iff it has two distinct subgroups of index `p`. -/
+theorem not_isCyclic_iff_exists_index_eq_prime_ne [Finite A] (hA : IsPGroup p A) :
+    ¬ IsCyclic A ↔ ∃ H₁ H₂ : Subgroup A, H₁.index = p ∧ H₂.index = p ∧ H₁ ≠ H₂ := by
+  refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, h₁, h₂, hne⟩ hcyc ↦ ?_⟩
+  · by_contra! h
+    refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ ↦ h M₁ M₂ ?_ ?_)
+    · exact (hA.isCoatom_iff_index_eq_prime M₁).mp hM₁
+    · exact (hA.isCoatom_iff_index_eq_prime M₂).mp hM₂
+  · 
+    sorry
+
+end CommGroup
 
 end IsPGroup
 
