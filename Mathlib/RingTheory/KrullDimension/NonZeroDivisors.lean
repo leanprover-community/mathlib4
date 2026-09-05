@@ -117,7 +117,7 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
 /-- If `R` is non-trivial, a polynomial ring in an infinite number of variables has infinite height,
 i.e. `dim R[X₁, ...] = ∞`. -/
 @[simp]
-lemma ringKrullDim_of_infinite [Nontrivial R] {σ : Type*} [Infinite σ] :
+lemma ringKrullDim_mvPolynomial_of_infinite [Nontrivial R] {σ : Type*} [Infinite σ] :
     ringKrullDim (MvPolynomial σ R) = ⊤ := by
   have := ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (R := R) σ
   simpa [WithBot.coe_bot_le.mp ringKrullDim_nonneg_of_nontrivial]
