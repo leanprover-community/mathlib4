@@ -27,7 +27,7 @@ number theory (for instance in the proof of Mertens' theorems).
 @[expose] public section
 
 open Nat hiding log log_pos
-open Finset Real intervalIntegral MeasureTheory
+open Finset intervalIntegral MeasureTheory
 
 namespace Real
 
