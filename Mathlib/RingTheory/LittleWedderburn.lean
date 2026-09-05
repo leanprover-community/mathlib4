@@ -134,7 +134,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   refine map_dvd (evalRingHom ↑q) (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
   rw [← Nat.pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
-  obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
+  obtain ⟨b, -, hb⟩ := IsConcreteLE.exists_of_lt hZx.lt_top
   refine card_lt_of_injective_of_notMem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩
   exact hb b.2

@@ -658,7 +658,7 @@ lemma UniversalCoprimeFactorizationRing.exists_liesOver_residueFieldMap_bijectiv
   have : Q.LiesOver P := ⟨by rw [Ideal.under, RingHom.comap_ker, AlgHom.toRingHom_eq_coe,
       φ.comp_algebraMap, Ideal.ker_algebraMap_residueField]⟩
   let φ' : Q.ResidueField →ₐ[R] P.ResidueField := Ideal.ResidueField.liftₐ _ φ le_rfl (by
-    simp [SetLike.le_def, IsUnit.mem_submonoid_iff, Q])
+    simp [IsConcreteLE.le_iff, IsUnit.mem_submonoid_iff, Q])
   let φi : P.ResidueField →ₐ[R] Q.ResidueField :=
     Ideal.ResidueField.mapₐ _ _ (Algebra.ofId _ _) (Ideal.over_def _ _)
   let e : P.ResidueField ≃ₐ[R] Q.ResidueField :=
