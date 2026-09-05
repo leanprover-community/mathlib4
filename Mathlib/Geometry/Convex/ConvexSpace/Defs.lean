@@ -61,7 +61,7 @@ structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) 
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
-attribute [simp] StdSimplex.total
+attribute [simp] StdSimplex.total StdSimplex.nonneg
 grind_pattern StdSimplex.nonneg => self.weights
 grind_pattern StdSimplex.total => self.weights
 

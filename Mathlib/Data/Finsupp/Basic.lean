@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Data.Rat.BigOperators
+public import Mathlib.Order.Preorder.Finsupp
+
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
@@ -266,10 +270,13 @@ variable [AddCommMonoid M] {v v₁ v₂ : α →₀ M}
 /-- Given `f : α → β` and `v : α →₀ M`, `mapDomain f v : β →₀ M`
   is the finitely supported function whose value at `a : β` is the sum
   of `v x` over all `x` such that `f x = a`. -/
-def mapDomain (f : α → β) (v : α →₀ M) : β →₀ M :=
-  v.sum fun a => single (f a)
+def mapDomain (f : α → β) (x : α →₀ M) : β →₀ M :=
+  x.sum fun a => single (f a)
 
-@[simp] theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →₀ M) (a : α) :
+lemma mapDomain_apply (f : α → β) (x : α →₀ M) (b : β) :
+    mapDomain f x b = x.sum fun a m ↦ single (f a) m b := by simp [mapDomain]
+
+@[simp] theorem mapDomain_apply_of_injective {f : α → β} (hf : f.Injective) (x : α →₀ M) (a : α) :
     mapDomain f x (f a) = x a := by
   rw [mapDomain, sum_apply, sum_eq_single a, single_eq_same]
   · intro b _ hba
@@ -327,7 +334,13 @@ lemma mapDomain_sub {α β M : Type*} [AddCommGroup M] {v₁ v₂ : α →₀ M}
 theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
     mapDomain f x a = x (f.symm a) := by
   conv_lhs => rw [← f.apply_symm_apply a]
-  exact mapDomain_apply f.injective _ _
+  exact mapDomain_apply_of_injective f.injective _ _
+
+@[simp] lemma support_mapDomain_of_nonneg [PartialOrder M] [IsOrderedAddMonoid M] [DecidableEq β]
+    {x : α →₀ M} (hx : 0 ≤ x) (f : α → β) : (mapDomain f x).support = x.support.image f := by
+  ext b
+  simp [mapDomain_apply, Finsupp.sum, single_apply]
+  grind [Finset.sum_eq_zero_iff_of_nonneg, Finsupp.le_def]
 
 @[simp] lemma support_mapDomain_embedding (f : α ↪ β) (x : α →₀ M) :
     (mapDomain f x).support = x.support.map f := by
@@ -422,7 +435,7 @@ theorem embDomain_eq_mapDomain (f : α ↪ β) (v : α →₀ M) : embDomain f v
   ext a
   by_cases h : a ∈ Set.range f
   · rcases h with ⟨a, rfl⟩
-    rw [mapDomain_apply f.injective, embDomain_apply_self]
+    rw [mapDomain_apply_of_injective f.injective, embDomain_apply_self]
   · rw [mapDomain_of_notMem_range, embDomain_of_notMem_range] <;> assumption
 
 @[to_additive]
@@ -435,7 +448,7 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
   intro v₁ v₂ eq
   ext a
   have : mapDomain f v₁ (f a) = mapDomain f v₂ (f a) := by rw [eq]
-  rwa [mapDomain_apply hf, mapDomain_apply hf] at this
+  rwa [mapDomain_apply_of_injective hf, mapDomain_apply_of_injective hf] at this
 
 theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
     (mapDomain (M := M) f).Surjective := by
@@ -517,10 +530,11 @@ theorem comapDomain_apply [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.I
     (a : α) : comapDomain f l hf a = l (f a) :=
   rfl
 
-theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →₀ M) (g : β → M → N)
+@[to_additive]
+theorem prod_comapDomain [Zero M] [CommMonoid N] (f : α → β) (l : β →₀ M) (g : β → M → N)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) :
-    (comapDomain f l hf.injOn).sum (g ∘ f) = l.sum g :=
-  Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
+    (comapDomain f l hf.injOn).prod (g ∘ f) = l.prod g :=
+  Finset.prod_preimage_of_bij f _ hf fun x => g x (l x)
 
 theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
@@ -627,7 +641,7 @@ theorem mapDomain_comapDomain_nat_add_one (l : ℕ →₀ M) :
 
 theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
     comapDomain f (mapDomain f l) hf.injOn = l := by
-  ext; rw [comapDomain_apply, mapDomain_apply hf]
+  ext; rw [comapDomain_apply, mapDomain_apply_of_injective hf]
 
 lemma mem_range_mapDomain_iff (hf : Function.Injective f) (x : β →₀ M) :
     x ∈ Set.range (Finsupp.mapDomain f) ↔ ∀ b ∉ Set.range f, x b = 0 := by
