@@ -29,6 +29,7 @@ section General
 variable {α : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
+@[deprecated integral_sum_dirac (since := "2026-08-18")]
 theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeasure) :
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
@@ -44,6 +45,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
         Function.support_smul_subset_left _ _
       _ ⊆ support p := fun x h1 h2 => h1 (by simp [h2])
 
+@[deprecated integral_finsetSum_measure (since := "2026-08-18")]
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
   rw [integral_fintype .of_finite]
