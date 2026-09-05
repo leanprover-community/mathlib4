@@ -173,7 +173,7 @@ namespace RelStruct₀
 
 /-- In dimension `0`, the type `RelStruct₀` identify to a type of edges
 between `0`-simplices. -/
-@[implicit_reducible, simps]
+@[implicit_reducible, simps +dsimpLhs]
 def equiv₀ {f g : X.PtSimplex 0 x} :
     RelStruct₀ f g ≃
       X.Edge (PtSimplex.equiv₀ x g) (PtSimplex.equiv₀ x f) where
