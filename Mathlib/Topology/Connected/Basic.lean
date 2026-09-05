@@ -485,7 +485,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (X i)] {s : ∀ i, Set (
 @[simp]
 theorem isConnected_univ_pi [∀ i, TopologicalSpace (X i)] {s : ∀ i, Set (X i)} :
     IsConnected (pi univ s) ↔ ∀ i, IsConnected (s i) := by
-  simp only [IsConnected, ← univ_pi_nonempty_iff, forall_and, and_congr_right_iff]
+  simp only [IsConnected, ← univ_pi_nonempty, forall_and, and_congr_right_iff]
   refine fun hne => ⟨fun hc i => ?_, isPreconnected_univ_pi⟩
   rw [← eval_image_univ_pi hne]
   exact hc.image _ (continuous_apply _).continuousOn

@@ -302,7 +302,7 @@ instance Pi.measurableDiv₂ {ι : Type*} {α : ι → Type*} [∀ i, Div (α i)
 instance {E} [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E] [MeasurableSub₂ E] :
     MeasurableEq E := by
   constructor
-  simp_rw +singlePass [Set.diagonal, ← sub_eq_zero]
+  simp_rw +singlePass [Set.diagonalUniv, ← sub_eq_zero]
   measurability
 
 instance {β : Type*} [AddCommMonoid β] [PartialOrder β]
@@ -310,7 +310,7 @@ instance {β : Type*} [AddCommMonoid β] [PartialOrder β]
     {_ : MeasurableSpace β} [MeasurableSub₂ β] [MeasurableSingletonClass β] :
     MeasurableEq β := by
   constructor
-  simp_rw [Set.diagonal, le_antisymm_iff, ← tsub_eq_zero_iff_le]
+  simp_rw [Set.diagonalUniv, le_antisymm_iff, ← tsub_eq_zero_iff_le]
   measurability
 
 end Div

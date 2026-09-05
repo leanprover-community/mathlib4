@@ -148,7 +148,7 @@ theorem Continuous.prodMk_right (x : X) : Continuous fun y : Y => (x, y) := by f
 theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fun_prop
 
 @[continuity, fun_prop]
-theorem continuous_diag : Continuous (Function.diag : X → X × X) :=
+theorem continuous_diag : Continuous (Function.diagonal : X → X × X) :=
   continuous_id.prodMk continuous_id
 
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
@@ -505,7 +505,7 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
     IsOpen (s ×ˢ t) ↔ IsOpen s ∧ IsOpen t ∨ s = ∅ ∨ t = ∅ := by
   rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
-  · have st : s.Nonempty ∧ t.Nonempty := prod_nonempty_iff.1 h
+  · have st : s.Nonempty ∧ t.Nonempty := prod_nonempty.1 h
     constructor
     · intro (H : IsOpen (s ×ˢ t))
       refine Or.inl ⟨?_, ?_⟩

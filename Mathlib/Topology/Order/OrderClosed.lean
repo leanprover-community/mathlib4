@@ -575,7 +575,7 @@ variable [TopologicalSpace α] [PartialOrder α] [t : OrderClosedTopology α]
 -- see Note [lower instance priority]
 instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
   t2_iff_isClosed_diagonal.2 <| by
-    simpa only [diagonal, le_antisymm_iff] using!
+    simpa only [diagonalUniv, le_antisymm_iff] using!
       t.isClosed_le'.inter (isClosed_le continuous_snd continuous_fst)
 
 end PartialOrder

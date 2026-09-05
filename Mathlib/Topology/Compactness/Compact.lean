@@ -428,7 +428,7 @@ theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {X} {l : Filter X} {s :
 -- That would seem a bit more natural.
 theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
     (𝓝ˢ K) ⊓ l = ⨆ x ∈ K, 𝓝 x ⊓ l := by
-  have : ∀ f : Filter X, f ⊓ l = comap Function.diag (f ×ˢ l) := fun f ↦ by
+  have : ∀ f : Filter X, f ⊓ l = comap Function.diagonal (f ×ˢ l) := fun f ↦ by
     simpa only [comap_prod] using! congrArg₂ (· ⊓ ·) comap_id.symm comap_id.symm
   simp_rw [this, ← comap_iSup, hK.nhdsSet_prod_eq_biSup]
 
@@ -976,8 +976,8 @@ lemma Function.Surjective.compactSpace {f : X → Y} (hf : Continuous f) [Compac
     exact isCompact_range hf
 
 @[compactness .]
-theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
-  @range_diag X ▸ isCompact_range (continuous_id.prodMk continuous_id)
+theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonalUniv X) :=
+  @range_diagonal X ▸ isCompact_range (continuous_id.prodMk continuous_id)
 
 theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
     {V : ι → Set X} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set X}
