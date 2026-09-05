@@ -56,7 +56,7 @@ lemma IsIntegral.isAlmostIntegral_of_exists_smul_mem_range
     rw [← Nat.sub_add_cancel hi.le, pow_add, mul_smul, ← smul_pow]
     exact (AlgHom.range (Algebra.ofId _ _)).smul_mem (Subalgebra.pow_mem _ ht' _) _
   refine ⟨b, hb', fun n ↦ ?_⟩
-  induction n using Nat.strong_induction_on with | h n IH =>
+  induction n using Nat.strong_induction_on with | ind n IH
   obtain hn | hn := lt_or_ge n (minpoly R s).natDegree
   · exact hb _ (by simpa)
   have := minpoly.aeval R s

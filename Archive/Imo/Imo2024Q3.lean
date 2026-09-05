@@ -205,7 +205,7 @@ alias injOn_setOf_apply_add_one_eq_of_M_le := injOn_setOfPred_apply_add_one_eq_o
 lemma empty_consecutive_apply_ge_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)} = ∅ := by
   rw [Set.eq_empty_iff_forall_notMem]
   intro i
-  induction i using Nat.strong_induction_on with | h i ih =>
+  induction i using Nat.strong_induction_on with | ind i ih
   -- Let i be the first index where both `a i` and `a (i + 1)` are at least M.
   rintro ⟨hi1, hi2⟩
   have hi : ∀ j < i, M a N ≤ a j → a (j + 1) < M a N := by simp_all

@@ -77,7 +77,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
   -- We prove the claim by strong induction on the dimension of the vector space.
   suffices ∀ n, finrank K V = n → ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ by exact this _ rfl
   intro n h_dim
-  induction n using Nat.strong_induction_on generalizing V with | h n ih =>
+  induction n using Nat.strong_induction_on generalizing V with | ind n ih
   rcases n with - | n
   -- If the vector space is 0-dimensional, the result is trivial.
   · rw [← top_le_iff]
