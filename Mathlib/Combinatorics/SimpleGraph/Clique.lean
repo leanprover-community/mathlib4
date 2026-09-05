@@ -758,13 +758,17 @@ variable (G) in
 theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
   Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simp [s.eq_empty_of_isEmpty, ← h.card_eq]
 
-theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ?_, fun h ↦ G.cliqueNum_of_isEmpty⟩
-  rw [isEmpty_iff]
-  intro a
-  have one_clique : G.IsNClique 1 {a} := by simp
-  have : 1 ≤ G.cliqueNum := IsClique.card_le_cliqueNum one_clique.isClique
-  grind
+variable (G) in
+theorem isEmpty_of_cliqueNum [Finite α] (h : G.cliqueNum = 0) : IsEmpty α := by
+  contrapose! h
+  exact G.cliqueNum_ne_zero_of_finite
+
+theorem cliqueNum_eq_zero_iff [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
+  refine ⟨fun h ↦ isEmpty_of_cliqueNum G h, fun h ↦ G.cliqueNum_of_isEmpty⟩
+
+theorem cliqueNum_ne_zero_iff [Finite α] : G.cliqueNum ≠ 0 ↔ Nonempty α := by
+  contrapose!
+  exact cliqueNum_eq_zero_iff
 
 variable (G) in
 theorem cliqueNum_le_natCard [Finite α] : G.cliqueNum ≤ Nat.card α :=
