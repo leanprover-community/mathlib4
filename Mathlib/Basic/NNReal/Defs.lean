@@ -991,6 +991,26 @@ theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀
   have hs : 0 < s := hr
   exact NNReal.exists_lt_of_strictMono hf hs
 
+/-- If `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive `r : ℝ≥0` there exists
+`γ : Γ₀ˣ` such that `f δ < r` for all `δ < γ`. Compare `NNReal.exists_lt_of_strictMono`, which
+requires `Γ₀ˣ` to be nontrivial. -/
+theorem NNReal.exists_forall_lt_of_strictMono {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f) {r : ℝ≥0}
+    (hr : 0 < r) : ∃ γ : Γ₀ˣ, ∀ δ : Γ₀, δ < γ → f δ < r := by
+  rcases subsingleton_or_nontrivial Γ₀ˣ with _ | _
+  · refine ⟨1, fun δ hδ ↦ ?_⟩
+    rcases eq_or_ne δ 0 with rfl | hδ₀
+    · simpa using hr
+    · exact absurd (by simpa [Units.ext_iff] using Subsingleton.elim (Units.mk0 δ hδ₀) 1) hδ.ne
+  · obtain ⟨γ, hγ⟩ := NNReal.exists_lt_of_strictMono hf hr
+    exact ⟨γ, fun δ hδ ↦ (hf hδ).trans hγ⟩
+
+/-- If `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive real `r` there exists
+`γ : Γ₀ˣ` such that `f δ < r` for all `δ < γ`. Compare `Real.exists_lt_of_strictMono`, which
+requires `Γ₀ˣ` to be nontrivial. -/
+theorem Real.exists_forall_lt_of_strictMono {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f) {r : ℝ}
+    (hr : 0 < r) : ∃ γ : Γ₀ˣ, ∀ δ : Γ₀, δ < γ → (f δ : ℝ) < r :=
+  NNReal.exists_forall_lt_of_strictMono hf (r := ⟨r, hr.le⟩) hr
+
 end StrictMono
 
 /-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
