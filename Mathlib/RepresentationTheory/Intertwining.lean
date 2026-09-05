@@ -217,6 +217,14 @@ lemma comp_toLinearMap (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
     (comp f g).toLinearMap = f.toLinearMap.comp g.toLinearMap := rfl
 
 @[simp]
+lemma comp_zero (f : IntertwiningMap σ τ) :
+    (comp f (0 : IntertwiningMap ρ σ)) = 0 := by ext1; simp
+
+@[simp]
+lemma zero_comp (g : IntertwiningMap ρ σ) :
+    (comp (0: IntertwiningMap σ τ) g) = 0 := by ext1; simp
+
+@[simp]
 lemma comp_apply (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) (v : V) :
     comp f g v = f (g v) := rfl
 
@@ -565,6 +573,10 @@ instance instSemiring : Semiring (IntertwiningMap ρ ρ) :=
       | zero => rfl
       | succ n ih => simp [ih, pow_succ])
     (fun _ => rfl)
+
+variable {A G V : Type*} [CommRing A] [Monoid G] [AddCommGroup V] [Module A V]
+  {ρ : Representation A G V} in
+instance : Ring (Representation.IntertwiningMap ρ ρ) where
 
 instance : Algebra A (IntertwiningMap ρ ρ) :=
   Algebra.ofModule (fun a f g => rfl) (fun a f g => by ext; simp)
