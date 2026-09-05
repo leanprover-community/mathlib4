@@ -294,6 +294,7 @@ theorem subst_monomial (ha : HasSubst a) (e : σ →₀ ℕ) (r : R) :
       (algebraMap R (MvPowerSeries τ S) r) * (e.prod (fun s n ↦ (a s) ^ n)) := by
   rw [← coe_substAlgHom ha, substAlgHom_monomial]
 
+@[fun_prop]
 theorem continuous_subst (ha : HasSubst a)
     [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S] :
     Continuous (subst a : MvPowerSeries σ R → MvPowerSeries τ S) := by
