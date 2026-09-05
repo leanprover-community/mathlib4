@@ -657,11 +657,12 @@ theorem eLpNormEssSup_mono_measure (f : α → ε) (hμν : ν ≪ μ) :
   exact essSup_mono_measure hμν
 
 @[gcongr, mono]
-theorem eLpNorm_mono_measure (f : α → ε) (hμν : ν ≤ μ) (hfν : AEStronglyMeasurable f ν) :
+theorem eLpNorm_mono_measure (f : α → ε) (hμν : ν ≤ μ) :
     eLpNorm f p ν ≤ eLpNorm f p μ := by
   by_cases! hf : ¬ AEStronglyMeasurable f μ
   · rw [eLpNorm_of_not_aestronglyMeasurable hf]
     exact le_top
+  have hfν : AEStronglyMeasurable f ν := AEStronglyMeasurable.mono_measure hf hμν
   by_cases hp0 : p = 0
   · simp [hp0, hf, hfν]
   by_cases hp_top : p = ∞
@@ -672,7 +673,7 @@ theorem eLpNorm_mono_measure (f : α → ε) (hμν : ν ≤ μ) (hfν : AEStron
 
 theorem MemLp.mono_measure {f : α → ε} (hμν : ν ≤ μ) (hf : MemLp f p μ) :
     MemLp f p ν :=
-  (eLpNorm_mono_measure f hμν (hf.aestronglyMeasurable.mono_measure hμν)).trans_lt hf
+  (eLpNorm_mono_measure f hμν).trans_lt hf
 
 end ContinuousENorm
 
@@ -805,44 +806,44 @@ theorem eLpNorm_one_smul_measure {f : α → ε} (c : ℝ≥0∞) (hf : AEStrong
   simp
 
 theorem eLpNorm_le_of_measure_le_smul {c : ℝ≥0∞} {μ μ' : Measure α} (h : μ' ≤ c • μ) {f : α → ε}
-    {p : ℝ≥0∞} (hf : AEStronglyMeasurable f μ') :
+    {p : ℝ≥0∞} :
     eLpNorm f p μ' ≤ c ^ (1 / p).toReal • eLpNorm f p μ := by
-  grw [eLpNorm_mono_measure f h hf, eLpNorm_smul_measure_le c f p μ]
+  grw [eLpNorm_mono_measure f h, eLpNorm_smul_measure_le c f p μ]
 
 theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
   unfold MemLp
-  grw [eLpNorm_le_of_measure_le_smul hμ'_le
-    ((hf.aestronglyMeasurable.smul_measure c).mono_measure hμ'_le)]
+  grw [eLpNorm_le_of_measure_le_smul hμ'_le]
   exact ENNReal.mul_lt_top (Ne.lt_top (by simp [hc])) hf
 
 theorem MemLp.smul_measure {f : α → ε} {c : ℝ≥0∞} (hf : MemLp f p μ) (hc : c ≠ ∞) :
     MemLp f p (c • μ) :=
   hf.of_measure_le_smul hc le_rfl
 
-variable {ε : Type*} [TopologicalSpace ε] [ENorm ε] in
-theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) (add : AEStronglyMeasurable f (μ + ν))
-    (hfμ : AEStronglyMeasurable f μ) (hfν : AEStronglyMeasurable f ν) :
+variable {ε : Type*} [TopologicalSpace ε] [ENorm ε] [PseudoMetrizableSpace ε] in
+theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
-  rw [eLpNorm_one_eq_lintegral_enorm add, eLpNorm_one_eq_lintegral_enorm hfμ,
-    eLpNorm_one_eq_lintegral_enorm hfν]
-  rw [lintegral_add_measure _ μ ν]
+  by_cases hadd : AEStronglyMeasurable f (μ + ν)
+  · have hfμ : AEStronglyMeasurable f μ := 
+      hadd.mono_measure (Measure.le_add_right le_rfl)
+    have hfν : AEStronglyMeasurable f ν := 
+      hadd.mono_measure (Measure.le_add_left le_rfl)
+    rw [eLpNorm_one_eq_lintegral_enorm hadd, eLpNorm_one_eq_lintegral_enorm hfμ,
+      eLpNorm_one_eq_lintegral_enorm hfν, lintegral_add_measure _ μ ν]
+  · by_cases hfμ : AEStronglyMeasurable f μ
+    · have : ¬ (AEStronglyMeasurable f ν) := by
+        contrapose! hadd
+        apply hfμ.add_measure hadd
+      simp [eLpNorm_of_not_aestronglyMeasurable, hadd, this]
+    · simp [eLpNorm_of_not_aestronglyMeasurable, hadd, hfμ]
 
 theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
     eLpNorm f p μ ≤ eLpNorm f p (μ + ν) := by
-  by_cases hf : AEStronglyMeasurable f (μ + ν)
-  · grw [← Measure.le_add_right le_rfl]
-    exact hf.mono_measure <| Measure.le_add_right le_rfl
-  · rw [eLpNorm_of_not_aestronglyMeasurable hf]
-    exact le_top
+  grw [← Measure.le_add_right le_rfl]
 
 theorem eLpNorm_le_add_measure_left (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
     eLpNorm f p ν ≤ eLpNorm f p (μ + ν) := by
-  by_cases hf : AEStronglyMeasurable f (μ + ν)
-  · grw [← Measure.le_add_left le_rfl]
-    exact hf.mono_measure <| Measure.le_add_left le_rfl
-  · rw [eLpNorm_of_not_aestronglyMeasurable hf]
-    exact le_top
+  grw [← Measure.le_add_left le_rfl]
 
 variable {ε : Type*} [ENorm ε] in
 lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → ε) : eLpNormEssSup f μ = ⨆ a, ‖f a‖ₑ :=
