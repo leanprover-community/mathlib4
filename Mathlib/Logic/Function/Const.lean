@@ -131,4 +131,23 @@ theorem IsConst.injective_iff {f : α → β} (h : f.IsConst) : f.Injective ↔ 
 theorem Injective.isConst_iff {f : α → β} (h : f.Injective) : f.IsConst ↔ Subsingleton α := by
   simp [← f.isConst_and_injective_iff, h]
 
+theorem isConst_and_surjective_iff (f : α → β) :
+    f.IsConst ∧ f.Surjective ↔ IsEmpty β ∨ Nonempty α ∧ Subsingleton β where
+  mp := fun ⟨hc, hsurj⟩ ↦
+    isEmpty_or_nonempty α |>.imp (@hsurj.isEmpty α β) (⟨·, ⟨hsurj.forall₂.mpr hc.eq⟩⟩)
+  mpr h := h.elim (fun _ ↦ ⟨.of_subsingleton_codomain f, .of_isEmpty f⟩)
+    (fun ⟨_, _⟩ ↦ ⟨.of_subsingleton_codomain f, surjective_to_subsingleton f⟩)
+
+theorem isConst_and_surjective_iff' [Nonempty α] (f : α → β) :
+    f.IsConst ∧ f.Surjective ↔ Subsingleton β where
+  mp := fun ⟨hc, hsurj⟩ ↦ ⟨hsurj.forall₂.mpr hc.eq⟩
+  mpr _ := ⟨.of_subsingleton_codomain f, surjective_to_subsingleton f⟩
+
+theorem IsConst.surjective_iff [Nonempty α] {f : α → β} (h : f.IsConst) :
+    f.Surjective ↔ Subsingleton β := by
+  simp [← f.isConst_and_surjective_iff', h]
+
+theorem Surjective.isConst_iff {f : α → β} (h : f.Surjective) : IsConst f ↔ Subsingleton β :=
+  ⟨(⟨h.forall₂.mpr ·.eq⟩), fun _ ↦ .of_subsingleton_codomain f⟩
+
 end Function

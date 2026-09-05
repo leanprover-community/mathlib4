@@ -95,7 +95,7 @@ theorem Function.extend_of_isEmpty [IsEmpty α] (f : α → β) (g : α → γ) 
 
 open Relator
 
-variable {α β : Type*} (R : α → β → Prop)
+variable (R : α → β → Prop)
 
 @[simp]
 theorem leftTotal_empty [IsEmpty α] : LeftTotal R := by
