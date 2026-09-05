@@ -1889,6 +1889,7 @@ public import Mathlib.Analysis.Calculus.Taylor
 public import Mathlib.Analysis.Calculus.TaylorIntegral
 public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 public import Mathlib.Analysis.Calculus.VectorField
+public import Mathlib.Analysis.CliffordAlgebra.Euclidean
 public import Mathlib.Analysis.Complex.AbelLimit
 public import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Analysis.Complex.Angle
