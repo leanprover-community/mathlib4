@@ -34,7 +34,7 @@ variable {R ι : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
 def ofDFinsuppEquiv :
     (⨂[R] i, (Π₀ j : κ i, M i j)) ≃ₗ[R] Π₀ p : Π i, κ i, ⨂[R] i, M i (p i) :=
   LinearEquiv.ofLinearMap
-    (lift <| MultilinearMap.fromDFinsuppEquiv κ R
+    (lift <| MultilinearMap.fromDFinsuppEquiv κ _
       fun p ↦ (DFinsupp.lsingle p).compMultilinearMap (tprod R))
     (DFinsupp.lsum R fun p ↦ lift <|
       (PiTensorProduct.map fun i ↦ DFinsupp.lsingle (p i)).compMultilinearMap (tprod R))
