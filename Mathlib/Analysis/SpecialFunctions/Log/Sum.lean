@@ -29,6 +29,8 @@ number theory (for instance in the proof of Mertens' theorems).
 open Nat hiding log log_pos
 open Finset Real intervalIntegral MeasureTheory
 
+namespace Real
+
 variable {x : ℝ} (N : ℕ)
 
 /-- The partial sum of the logarithm is equal to the log of the factorial. -/
@@ -89,3 +91,5 @@ theorem le_sum_log_nat : N * log N - N ≤ ∑ n ∈ Ioc 0 N, log n := by
   have : 0 ≤ log (2 * Real.pi) := log_nonneg (by linarith [two_le_pi])
   grw [sum_log_eq_log_factorial, ← Stirling.le_log_factorial_stirling hN]
   linarith
+
+end Real
