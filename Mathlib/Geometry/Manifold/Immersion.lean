@@ -9,7 +9,9 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.ImmersionDiff
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
+--public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
@@ -564,6 +566,129 @@ lemma injective_mfderiv (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 
     Injective (mfderiv% f x) :=
   (h.isDiffImmersionAt hn).mfderiv_injective
 
+-- The hard direction, using the inverse function theorem.
+lemma of_isDiffImmersionAt [IsManifold I n M] [IsManifold J 1 N]
+    -- TODO: think about the case with boundary next
+    (hf : IsDiffImmersionAt I J f x) (hx : I.IsInteriorPoint x) :
+    IsImmersionAt I J n f x := by
+  -- Consider f' = (extChartAt J (f x)) ∘ f : M → E''.
+  let f' := (extChartAt J (f x)) ∘ f
+  have hf' : IsDiffImmersionAt I 𝓘(𝕜, E'') f' x := by
+    apply IsDiffImmersionAt.comp (I' := J) ?_ hf
+    exact .of_mfderiv_isInvertible <| isInvertible_mfderiv_extChartAt (by simp)
+  -- Choose a complement for df'_x.
+  let F₁ := LinearMap.range (mfderiv% f' x).toLinearMap
+  rw [isDiffImmersionAt_iff] at hf'
+  let F₂ := hf'.complement
+  have : SeminormedAddCommGroup hf'.complement := sorry -- TODO need to actually ensure this
+  have : NormedSpace 𝕜 hf'.complement :=
+    sorry -- TODO: need to ensure this is actually a normed space...
+  -- The map θ from the proof, or the equivalence we want to use.
+  let θ : (F₁ × F₂) ≃L[𝕜] E'' :=
+    sorry -- natural map, should be a general fact about maps with a left inverse
+
+  -- continue from here with the actual proof!
+  let h := θ.symm ∘ (mfderiv% f' x)
+
+
+
+
+
+
+
+
+  -- old attempt: should use a map from M instead, that's probably better!
+  -- have hfx : ContinuousAt f x := hf.mdifferentiableAt.continuousAt
+  -- -- XXX: will we need this? if untrue, restrict to some small set where this is true
+  -- have : IsOpen (f ⁻¹' (chartAt G (f x)).source) := sorry
+  -- -- step 1 for the chart on M: just choose a naive chart, restricted enough
+  -- let φ := (chartAt H x).restr (f ⁻¹' (chartAt G (f x)).source)
+  -- -- Consider the map f'
+  -- -- XXX: should we compose by φ instead? probably, doesn't matter much either way
+  -- let f' := writtenInExtChartAt I J x f
+  -- let x' := extChartAt I x x
+  -- replace hf : IsDiffImmersionAt 𝓘(𝕜, E) 𝓘(𝕜, E'') f' x' := by
+  --   unfold f' writtenInExtChartAt
+  --   apply IsDiffImmersionAt.comp (I' := J)
+  --   · apply IsDiffImmersionAt.of_mfderiv_isInvertible
+  --     apply isInvertible_mfderiv_extChartAt
+  --     sorry -- true if the set-up above is right
+  --   apply IsDiffImmersionAt.comp (I' := I)
+  --   · convert hf
+  --     simp [x']
+  --   · apply IsDiffImmersionAt.of_mfderiv_isInvertible
+  --     sorry -- almost true: isInvertible_mfderivWithin_extChartAt_symm, TODO think more!
+
+  -- let F₁ := LinearMap.range (mfderiv% f' x').toLinearMap
+  -- rw [isImmersedPoint_iff] at hf
+  -- let F₂ := hf.complement
+  -- have : NormedSpace 𝕜 hf.complement :=
+  --   sorry -- TODO: need to ensure this is actually a normed space...
+
+  -- -- next, Θ
+  -- let θ : (F₁ × F₂) ≃L[𝕜] E'' := sorry -- natural map
+  -- let h := θ.symm ∘ (mfderiv% f' x')
+
+  -- now, apply the Lemma to this map h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -- oldest attempt
+  -- let a : hf.complement →L[𝕜] E'' := hf.complement.subtypeL -- canonical inclusion
+  -- -- the equivalence we want.
+  -- let φ : (E × hf.complement) →L[𝕜] E'' := by refine {
+  --   -- TODO: bad defeq abuse going on here, E'' versus the tangent space
+  --   toFun z :=
+  --     letI v : E'' := mfderiv% f x z.1
+  --     letI vnew  := mfderiv% f x z.1
+  --     --letI v : E'' := mvfderiv I f x z.1
+  --     v + a z.2
+  --   map_add' z z' := by simp; sorry
+  --   map_smul' := sorry
+  -- }
+  -- let φ : (E × hf.complement) ≃L[𝕜] E'' := by
+  --   refine {
+  --     toLinearMap := φ
+  --     invFun z := by
+  --       -- second factor is just the projection we get from the complement
+  --       -- first factor is the left inverse, up to lots of defeq abuse `hf.leftInverse`
+  --       sorry
+  --     continuous_invFun := sorry
+  --     left_inv := sorry
+  --     right_inv := sorry
+  --   }
+  use hf'.complement, by infer_instance, this
+  apply IsImmersionAtOfComplement.mk_of_continuousAt --hfx (chartAt H x) sorry /- codChart -/
+      --(equiv := θ)
+  --· apply (mem_chart_source H x)
+  --· sorry -- codChart source
+  --· apply IsManifold.chart_mem_maximalAtlas
+  --· sorry -- codChart in maximal atlas
+  --· sorry -- eqon
+  all_goals sorry
+
+/-
+the complement F := hf.complement gives us a projection P : TangentSpace% I x → (range df x),
+thus P ∘ mfderiv% f x is invertible
+*somehow*, cook up a local diffeomorphism from that... that will be the inverse we want??
+
+-/
+#exit
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
