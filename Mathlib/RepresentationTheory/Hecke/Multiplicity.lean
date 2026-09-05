@@ -92,14 +92,14 @@ lemma multiplicity_mk_mk_mk (u v w : G) {ι κ : Type*}
       simpa [mul_assoc] using congrArg ((σ x1 * u)⁻¹ • ·) (hx.trans hy.symm))
     rfl
   · intro ⟨d, hd, hrel⟩
-    -- We construct inverse `⟨i, j⟩` s.t. `(σi * u)H₂ = d` `(τ j * v)H₃ = (σ i * u)⁻¹wH₃`
+    -- We construct inverse `⟨i, j⟩` s.t. `(σ i * u)H₂ = d` `(τ j * v)H₃ = (σ i * u)⁻¹wH₃`
     simp only [Set.mem_ofPred_eq, Subtype.mk.injEq, Subtype.exists, exists_prop, Prod.exists]
     obtain ⟨i, hi⟩ := toLeftDecompositionEquiv.surjective.comp hσ.surjective ⟨d, hd⟩
-    simp only [Function.comp_apply, toLeftDecompositionEquiv_mk, Subtype.ext_iff] at hi
+    simp only [Function.comp_apply, toLeftDecompositionEquiv_apply, toLeftCoset_mk,
+      Subtype.ext_iff] at hi
     obtain ⟨j, hj⟩ := toLeftDecompositionEquiv.surjective.comp hτ.surjective
       ⟨((σ i * u)⁻¹ * w : G ⧸ H₃), by rw [mem_leftDecomposition_mk, ← relPosition_mk_mk, hi, hrel]⟩
-    simp only [Function.comp_apply, toLeftDecompositionEquiv_mk, Subtype.ext_iff] at hj
-    exact ⟨i, j, by simpa [mul_assoc] using congrArg ((σ i * u) • ·) hj, hi⟩
+    exact ⟨i, j, by simpa [mul_assoc] using congrArg ((σ i * u) • ·) (Subtype.ext_iff.mp hj), hi⟩
 
 end DoubleCoset
 
