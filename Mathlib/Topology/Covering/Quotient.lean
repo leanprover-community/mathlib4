@@ -155,16 +155,13 @@ end IsQuotientCoveringMap
 
 namespace Topology.IsQuotientMap
 
-variable {f G} (hf : IsQuotientMap f)
-include hf
-
 section MulAction
 
 open Bundle
 
 variable [ContinuousConstSMul G E]
-variable (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂)
-include hfG
+variable {f G} (hf : IsQuotientMap f) (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂)
+include hf hfG
 
 /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all other
 `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
@@ -217,9 +214,48 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
   rw [← Subgroup.mem_bot, ← he]
   exact hU _ (hg.mono (by grw [interior_subset]))
 
+end MulAction
+
+end Topology.IsQuotientMap
+
+namespace IsQuotientCoveringMap
+
+@[to_additive] lemma isCoveringMap (h : IsQuotientCoveringMap f G) :
+    IsCoveringMap f :=
+  isCoveringMap_iff_isCoveringMapOn_univ.mpr <| by
+    have := h.toContinuousConstSMul
+    convert! ← h.isCoveringMapOn_of_smul_disjoint h.apply_eq_iff_mem_orbit fun e ↦ ?_
+    · refine Set.eq_univ_of_forall fun x ↦ ?_
+      obtain ⟨e, rfl⟩ := h.surjective x
+      have ⟨U, hU, hGU⟩ := h.disjoint e
+      replace hU := mem_of_mem_nhds hU
+      exact ⟨e, (Subgroup.eq_bot_iff_forall _).mpr fun g hg ↦ hGU g (⟨e, ⟨e, hU, hg⟩, hU⟩), rfl⟩
+    · have ⟨U, hU, hGU⟩ := h.disjoint e
+      exact ⟨U, hU, fun g hg ↦ by rw [hGU g hg, one_smul]⟩
+
+@[to_additive] theorem isLocalHomeomorph (h : IsQuotientCoveringMap f G) :
+    IsLocalHomeomorph f :=
+  h.isCoveringMap.isLocalHomeomorph
+
+@[to_additive] theorem isOpenQuotientMap (h : IsQuotientCoveringMap f G) :
+    IsOpenQuotientMap f where
+  surjective := h.surjective
+  continuous := h.isCoveringMap.continuous
+  isOpenMap := h.isCoveringMap.isOpenMap
+
+end IsQuotientCoveringMap
+
+namespace Topology.IsQuotientMap
+
+variable {f G} (hf : IsQuotientMap f)
+include hf
+
 section ProperlyDiscontinuousSMul
 
+variable [ContinuousConstSMul G E]
 variable [ProperlyDiscontinuousSMul G E] [LocallyCompactSpace E] [T2Space E]
+variable (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂)
+include hfG
 
 @[to_additive] lemma isCoveringMapOn_of_properlyDiscontinuousSMul :
     IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) :=
@@ -234,6 +270,10 @@ variable [ProperlyDiscontinuousSMul G E] [LocallyCompactSpace E] [T2Space E]
     have ⟨U, heU, hU⟩ := ProperlyDiscontinuousSMul.exists_nhds_image_smul_eq_self G e
     ⟨U, heU, fun g hg ↦ isCancelSMul_iff_eq_one_of_smul_eq.mp ‹_› _ _ (hU g hg)⟩
 
+@[to_additive] lemma isLocalHomeomorph_of_properlyDiscontinuousSMul [IsCancelSMul G E] :
+    IsLocalHomeomorph f :=
+  (hf.isQuotientCoveringMap_of_properlyDiscontinuousSMul hfG).isLocalHomeomorph
+
 omit hf hfG
 
 @[to_additive] lemma _root_.isCoveringMapOn_quotientMk_of_properlyDiscontinuousSMul :
@@ -245,9 +285,11 @@ omit hf hfG
     [IsCancelSMul G E] : IsQuotientCoveringMap (Quotient.mk <| MulAction.orbitRel G E) G :=
   isQuotientMap_quotient_mk'.isQuotientCoveringMap_of_properlyDiscontinuousSMul Quotient.eq''
 
-end ProperlyDiscontinuousSMul
+@[to_additive] lemma _root_.isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul
+    [IsCancelSMul G E] : IsLocalHomeomorph (Quotient.mk <| MulAction.orbitRel G E) :=
+  isQuotientMap_quotient_mk'.isLocalHomeomorph_of_properlyDiscontinuousSMul Quotient.eq''
 
-end MulAction
+end ProperlyDiscontinuousSMul
 
 @[to_additive] lemma isQuotientCoveringMap_of_subgroup [Group E] [IsTopologicalGroup E]
     (G : Subgroup E) (hG : IsDiscrete (G : Set E)) (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₂ * e₁⁻¹ ∈ G) :
@@ -291,29 +333,6 @@ end Topology.IsQuotientMap
     IsQuotientCoveringMap (QuotientGroup.mk (s := S)) S :=
   isQuotientMap_quotient_mk'.isQuotientCoveringMap_of_subgroup S hS <| Quotient.eq''.trans <|
     QuotientGroup.leftRel_apply.trans <| by rw [mul_comm]
-
-namespace IsQuotientCoveringMap
-
-@[to_additive] lemma isCoveringMap (h : IsQuotientCoveringMap f G) :
-    IsCoveringMap f :=
-  isCoveringMap_iff_isCoveringMapOn_univ.mpr <| by
-    have := h.toContinuousConstSMul
-    convert! ← h.isCoveringMapOn_of_smul_disjoint h.apply_eq_iff_mem_orbit fun e ↦ ?_
-    · refine Set.eq_univ_of_forall fun x ↦ ?_
-      obtain ⟨e, rfl⟩ := h.surjective x
-      have ⟨U, hU, hGU⟩ := h.disjoint e
-      replace hU := mem_of_mem_nhds hU
-      exact ⟨e, (Subgroup.eq_bot_iff_forall _).mpr fun g hg ↦ hGU g (⟨e, ⟨e, hU, hg⟩, hU⟩), rfl⟩
-    · have ⟨U, hU, hGU⟩ := h.disjoint e
-      exact ⟨U, hU, fun g hg ↦ by rw [hGU g hg, one_smul]⟩
-
-@[to_additive] theorem isOpenQuotientMap (h : IsQuotientCoveringMap f G) :
-    IsOpenQuotientMap f where
-  surjective := h.surjective
-  continuous := h.isCoveringMap.continuous
-  isOpenMap := h.isCoveringMap.isOpenMap
-
-end IsQuotientCoveringMap
 
 @[to_additive] theorem isQuotientCoveringMap_iff_isCoveringMap_and :
     IsQuotientCoveringMap f G ↔ IsCoveringMap f ∧ f.Surjective ∧ ContinuousConstSMul G E ∧
