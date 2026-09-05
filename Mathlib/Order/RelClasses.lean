@@ -148,6 +148,9 @@ theorem InvImage.trichotomous [Std.Trichotomous r] {f : β → α} (h : Function
 instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f) where
   asymm a b h h2 := Std.Asymm.asymm (f a) (f b) h h2
 
+instance InvImage.total [Std.Total r] (f : β → α) : Std.Total (InvImage r f) where
+  total x y := Std.Total.total (f x) (f y)
+
 /-! ### Well-order -/
 
 
