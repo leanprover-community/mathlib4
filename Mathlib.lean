@@ -2265,6 +2265,7 @@ public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.Span
+public import Mathlib.Analysis.Normed.Module.TensorProduct.ProjectiveSeminorm
 public import Mathlib.Analysis.Normed.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.MulAction
