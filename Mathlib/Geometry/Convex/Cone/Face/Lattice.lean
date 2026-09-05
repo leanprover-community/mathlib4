@@ -90,7 +90,6 @@ instance : InfSet (Face C) where
       isFaceOf := IsFaceOf.sInf _ (fun F Fs ↦ by obtain ⟨F, Fss, rfl⟩ := Fs; exact F.isFaceOf) }
 
 instance : SemilatticeInf (Face C) where
-  inf := min
   inf_le_left _ _ _ xi := xi.1
   inf_le_right _ _ _ xi := xi.2
   le_inf _ _ _ h₁₂ h₂₃ _ xi := ⟨h₁₂ xi, h₂₃ xi⟩

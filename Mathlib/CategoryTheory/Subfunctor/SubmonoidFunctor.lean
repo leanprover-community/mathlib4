@@ -72,15 +72,15 @@ instance {U : C} : CoeHead (S.toFunctor.obj U) (M.obj U) where
 instance : PartialOrder (SubmonoidFunctor M) :=
   PartialOrder.lift SubmonoidFunctor.obj fun _ _ => SubmonoidFunctor.ext
 
-@[simps! top_obj bot_obj sup_obj inf_obj sInf_obj sSup_obj]
+@[simps! top_obj bot_obj sInf_obj sSup_obj]
 instance : CompleteLattice (SubmonoidFunctor M) where
-  sup F G :=
+  max F G :=
     { obj _ := F.obj _ ⊔ G.obj _
       map i := by grw [F.map i, G.map i, (Submonoid.monotone_comap).le_map_sup] }
   le_sup_left _ _ _ := by simp
   le_sup_right _ _ _ := by simp
   sup_le F G H h₁ h₂ U := by simp [h₁ U, h₂ U]
-  inf S T :=
+  min S T :=
     { obj _ := S.obj _ ⊓ T.obj _
       map _ _ h := ⟨S.map _ h.1, T.map _ h.2⟩ }
   inf_le_left _ _ _ _ h := h.1
@@ -102,6 +102,14 @@ instance : CompleteLattice (SubmonoidFunctor M) where
   bot_le _ _ := bot_le
   top := { obj _ := ⊤ }
   le_top _ _ := le_top
+
+@[simp]
+theorem sup_obj (F G : SubmonoidFunctor M) (U : C) : (F ⊔ G).obj U = F.obj U ⊔ G.obj U :=
+  rfl
+
+@[simp]
+theorem inf_obj (F G : SubmonoidFunctor M) (U : C) : (F ⊓ G).obj U = F.obj U ⊓ G.obj U :=
+  rfl
 
 /-- The inclusion of a submonoid functor `S` to the original functor of monoids `M`. -/
 @[simps]
