@@ -23,60 +23,50 @@ every path `X · ω` is right-continuous, then that path map is strongly measura
 
 -/
 
-public section
-
 open Filter Set TopologicalSpace
 open scoped Topology
 
 namespace MeasureTheory
 
+variable {ι Ω E : Type*} [LinearOrder ι] {mΩ : MeasurableSpace Ω} {X : ι → Ω → E}
+
 section PathApprox
 
-variable {ι Ω E : Type*} [LinearOrder ι] {mΩ : MeasurableSpace Ω}
-  [MeasurableSpace E] [PseudoEMetricSpace E] [OpensMeasurableSpace E] [AddCommMonoid E]
-  {X : ι → Ω → E} {e : ℕ → E} {s : Finset ι} {n : ℕ}
+variable [MeasurableSpace E] [PseudoEMetricSpace E] [OpensMeasurableSpace E] [AddCommMonoid E]
+  {e : ℕ → E} {s : Finset ι} {n : ℕ}
 
+open scoped Classical in
 /-- The simple function sending `ω` to the step function taking at `i` the value
 `SimpleFunc.nearestPt e n (X t ω)`, where `t` is the smallest element of `s` with `i ≤ t`
 (and the value `0` if `s` has no element `≥ i`). -/
-private noncomputable def pathApprox (X : ι → Ω → E) (hX : ∀ t, Measurable (X t)) (e : ℕ → E)
+noncomputable def pathApprox (X : ι → Ω → E) (hX : ∀ t, Measurable (X t)) (e : ℕ → E)
     (s : Finset ι) (n : ℕ) :
     SimpleFunc Ω (ι → E) :=
   ∑ t ∈ s, ((SimpleFunc.nearestPt e n).comp (X t) (hX t)).map
-    fun w i ↦ if i ≤ t ∧ ∀ u ∈ s, i ≤ u → t ≤ u then w else 0
+    fun w i ↦ if IsLeast {u ∈ s | i ≤ u} t then w else 0
 
-private lemma pathApprox_apply (hX : ∀ t, Measurable (X t)) (ω : Ω) (i : ι) :
+open scoped Classical in
+lemma pathApprox_apply (hX : ∀ t, Measurable (X t)) (ω : Ω) (i : ι) :
     pathApprox X hX e s n ω i =
-      ∑ t ∈ s, if i ≤ t ∧ ∀ u ∈ s, i ≤ u → t ≤ u then SimpleFunc.nearestPt e n (X t ω) else 0 := by
+      ∑ t ∈ s, if IsLeast {u ∈ s | i ≤ u} t then SimpleFunc.nearestPt e n (X t ω) else 0 := by
   simp [pathApprox, SimpleFunc.coe_finsetSum]
 
 /-- Evaluation of `pathApprox` at a time `i` for which `t₀` is the smallest element of `s`
 that is `≥ i`. -/
-private lemma pathApprox_apply_of_isLeast (hX : ∀ t, Measurable (X t)) {ω : Ω} {i t₀ : ι}
-    (ht₀s : t₀ ∈ s) (hit₀ : i ≤ t₀) (hmin : ∀ u ∈ s, i ≤ u → t₀ ≤ u) :
+lemma pathApprox_apply_of_isLeast (hX : ∀ t, Measurable (X t)) {ω : Ω} {i t₀ : ι}
+    (h : IsLeast {u ∈ s | i ≤ u} t₀) :
     pathApprox X hX e s n ω i = SimpleFunc.nearestPt e n (X t₀ ω) := by
-  rw [pathApprox_apply hX, Finset.sum_eq_single t₀] <;> grind
+  rw [pathApprox_apply hX, Finset.sum_eq_single t₀] <;> grind [IsLeast, lowerBounds]
 
 end PathApprox
 
-section RightContinuous
+public section RightContinuous
 
-lemma nhdsWithin_inter_Ioi_neBot {ι : Type*} [LinearOrder ι] [TopologicalSpace ι]
-    [OrderTopology ι]
-    {d : Set ι} (hd : Dense d) {i : ι} (hi : (𝓝[>] i).NeBot) :
-    (𝓝[d ∩ Set.Ioi i] i).NeBot := by
-  rw [← mem_closure_iff_nhdsWithin_neBot, mem_closure_iff]
-  intro o ho hio
-  have h1 : (o ∩ Set.Ioi i).Nonempty := hi.nonempty_of_mem
-    (inter_mem (mem_nhdsWithin_of_mem_nhds (ho.mem_nhds hio)) self_mem_nhdsWithin)
-  obtain ⟨w, hwo, hwd⟩ := hd.inter_open_nonempty _ (ho.inter isOpen_Ioi) h1
-  exact ⟨w, hwo.1, hwd, hwo.2⟩
+variable [TopologicalSpace ι] [SecondCountableTopology ι] [OrderTopology ι]
 
 /-- The set of values taken by a right-continuous process with strongly measurable marginals
 is separable. -/
-lemma isSeparable_iUnion_range_of_stronglyMeasurable_of_isRightContinuous
-    {ι Ω E : Type*} [LinearOrder ι] [TopologicalSpace ι] [SecondCountableTopology ι]
-    [OrderTopology ι] [MeasurableSpace Ω] [TopologicalSpace E] {X : ι → Ω → E}
+lemma isSeparable_iUnion_range_of_stronglyMeasurable_of_isRightContinuous [TopologicalSpace E]
     (hX : ∀ i, StronglyMeasurable (X i)) (hX_cont : ∀ ω, IsRightContinuous (X · ω)) :
     IsSeparable (⋃ t, Set.range (X t)) := by
   obtain ⟨d, hd_count, hd_dense⟩ := exists_countable_dense ι
@@ -91,15 +81,15 @@ lemma isSeparable_iUnion_range_of_stronglyMeasurable_of_isRightContinuous
   obtain ⟨i, ω, rfl⟩ := hx
   by_cases hi : i ∈ D
   · exact hc (Set.mem_iUnion.2 ⟨⟨i, hi⟩, ⟨ω, rfl⟩⟩)
-  · have : (𝓝[d ∩ Ioi i] i).NeBot := nhdsWithin_inter_Ioi_neBot hd_dense (hD_ne i hi)
-    have h1 : Tendsto (X · ω) (𝓝[d ∩ Set.Ioi i] i) (𝓝 (X i ω)) :=
-      (hX_cont ω i).mono_left (nhdsWithin_mono i Set.inter_subset_right)
-    refine isClosed_closure.mem_of_tendsto h1 ?_
-    filter_upwards [self_mem_nhdsWithin] with t ht using
-      hc (Set.mem_iUnion.2 ⟨⟨t, Set.mem_union_left _ ht.1⟩, ⟨ω, rfl⟩⟩)
+  have := hD_ne i hi
+  have : (𝓝[d ∩ Ioi i] i).NeBot := hd_dense.nhdsWithin_inter_neBot isOpen_Ioi
+  have h1 : Tendsto (X · ω) (𝓝[d ∩ Set.Ioi i] i) (𝓝 (X i ω)) :=
+    (hX_cont ω i).mono_left (nhdsWithin_mono i Set.inter_subset_right)
+  refine isClosed_closure.mem_of_tendsto h1 ?_
+  filter_upwards [self_mem_nhdsWithin] with t ht using
+    hc (Set.mem_iUnion.2 ⟨⟨t, Set.mem_union_left _ ht.1⟩, ⟨ω, rfl⟩⟩)
 
-variable {ι Ω E : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
-  [SecondCountableTopology ι] {mΩ : MeasurableSpace Ω} [NormedAddCommGroup E] {X : ι → Ω → E}
+variable [PseudoMetricSpace E] [AddCommMonoid E]
 
 /-- A process whose paths are right-continuous and whose marginals `X i` are strongly measurable
 is strongly measurable as a map `Ω → (ι → E)` into the path space with the product topology. -/
@@ -135,7 +125,8 @@ lemma stronglyMeasurable_path_of_isRightContinuous
   have hXmem i ω : X i ω ∈ closure (Set.range e) := by
     by_cases hi : i ∈ D
     · exact hD_val i hi ω
-    · have : (𝓝[d ∩ Ioi i] i).NeBot := nhdsWithin_inter_Ioi_neBot hd_dense (hD_ne i hi)
+    · have := hD_ne i hi
+      have : (𝓝[d ∩ Ioi i] i).NeBot := hd_dense.nhdsWithin_inter_neBot isOpen_Ioi
       have h1 : Tendsto (X · ω) (𝓝[d ∩ Set.Ioi i] i) (𝓝 (X i ω)) :=
         (hX_cont ω i).mono_left (nhdsWithin_mono i Set.inter_subset_right)
       refine isClosed_closure.mem_of_tendsto h1 ?_
@@ -151,12 +142,12 @@ lemma stronglyMeasurable_path_of_isRightContinuous
   -- A point `e k` close to `X i ω`.
   obtain ⟨_, ⟨k, rfl⟩, hk⟩ := EMetric.mem_closure_iff.1 (hXmem i ω) (ε / 3) hε3
   -- Eventually, the smallest discretization time `≥ i` carries a value close to `X i ω`.
-  obtain ⟨N₀, hN₀⟩ : ∃ N₀, ∀ n ≥ N₀, ∃ t₀ ∈ times n, i ≤ t₀ ∧
-      (∀ w ∈ times n, i ≤ w → t₀ ≤ w) ∧ edist (X t₀ ω) (X i ω) < ε / 3 := by
+  obtain ⟨N₀, hN₀⟩ : ∃ N₀, ∀ n ≥ N₀, ∃ t₀, (IsLeast {u ∈ times n | i ≤ u} t₀) ∧
+      edist (X t₀ ω) (X i ω) < ε / 3 := by
     by_cases hi : i ∈ D
     · -- `i` is itself a discretization time, and is then its own rounding.
       obtain ⟨ki, hki⟩ := hDq hi
-      exact ⟨ki + 1, fun n hn ↦ ⟨i, hki ▸ hq_mem ki n hn, le_rfl, fun _ _ hw ↦ hw,
+      exact ⟨ki + 1, fun n hn ↦ ⟨i, ⟨⟨hki ▸ hq_mem ki n hn, le_rfl⟩, fun u hu ↦ hu.2⟩,
         by simpa using hε3⟩⟩
     · -- `i` is not isolated on the right, so right-continuity applies.
       have : (𝓝[>] i).NeBot := hD_ne i hi
@@ -178,14 +169,14 @@ lemma stronglyMeasurable_path_of_isRightContinuous
       have hit₀ : i ≤ T.min' hTne := (Finset.mem_filter.1 (T.min'_mem hTne)).2
       have ht₀u : T.min' hTne < u :=
         (T.min'_le _ (Finset.mem_filter.2 ⟨hq_mem kv n hn, hiv.le⟩)).trans_lt hvu
-      refine ⟨T.min' hTne, (Finset.mem_filter.1 (T.min'_mem hTne)).1, hit₀,
-        fun w hw hiw ↦ T.min'_le w (Finset.mem_filter.2 ⟨hw, hiw⟩), ?_⟩
+      refine ⟨T.min' hTne, ⟨⟨(Finset.mem_filter.1 (T.min'_mem hTne)).1, hit₀⟩,
+        fun w hw ↦ T.min'_le w (Finset.mem_filter.2 ⟨hw.1, hw.2⟩)⟩, ?_⟩
       rcases hit₀.lt_or_eq with h | h
       · exact Metric.mem_eball.1 (hu ⟨h, ht₀u⟩)
       · simpa [h] using hε3
   refine ⟨max k N₀, fun n hn ↦ ?_⟩
-  obtain ⟨t₀, ht₀s, hit₀, hmin, hclose⟩ := hN₀ n ((le_max_right _ _).trans hn)
-  rw [pathApprox_apply_of_isLeast hX_meas ht₀s hit₀ hmin]
+  obtain ⟨t₀, ht₀, hclose⟩ := hN₀ n ((le_max_right _ _).trans hn)
+  rw [pathApprox_apply_of_isLeast hX_meas ht₀]
   calc edist (SimpleFunc.nearestPt e n (X t₀ ω)) (X i ω)
   _ ≤ edist (SimpleFunc.nearestPt e n (X t₀ ω)) (X t₀ ω) + edist (X t₀ ω) (X i ω) :=
       edist_triangle _ _ _
