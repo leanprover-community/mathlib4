@@ -16,8 +16,6 @@ public import Mathlib.Tactic.Monotonicity.Attr
 
 public section
 
-open Function
-
 variable {β G M : Type*}
 
 section Monoid
@@ -62,7 +60,8 @@ variable [MulLeftMono M] {a : M} {n : ℕ}
 theorem pow_right_monotone (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
   monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact le_mul_of_one_le_right' ha
 
-@[to_additive (attr := gcongr) nsmul_le_nsmul_left]
+-- `gcongr low` so that we prefer `Set.pow_subset_pow` and `Finset.pow_subset_pow`
+@[to_additive (attr := gcongr low) nsmul_le_nsmul_left]
 theorem pow_le_pow_right' {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
   pow_right_monotone ha h
 
@@ -156,7 +155,7 @@ section CovariantLESwap
 
 variable [Preorder β] [MulLeftMono M] [MulRightMono M]
 
-@[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
+@[to_additive (attr := mono, gcongr, to_dual self) nsmul_le_nsmul_right]
 theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
   | 0 => by simp
   | k + 1 => by
@@ -173,7 +172,8 @@ theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monot
 @[to_additive nsmul_right_mono]
 theorem pow_left_mono (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow_const _
 
-@[to_additive (attr := gcongr)]
+-- `gcongr low` so that we prefer `Set.pow_subset_pow` and `Finset.pow_subset_pow`
+@[to_additive (attr := gcongr low)]
 lemma pow_le_pow {a b : M} (hab : a ≤ b) (ht : 1 ≤ b) {m n : ℕ} (hmn : m ≤ n) : a ^ m ≤ b ^ n :=
   (pow_le_pow_left' hab _).trans (pow_le_pow_right' ht hmn)
 

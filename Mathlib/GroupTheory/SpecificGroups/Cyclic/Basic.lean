@@ -41,7 +41,7 @@ theorem isCyclic_iff_exists_zpowers_eq_top [Group α] : IsCyclic α ↔ ∃ g : 
 protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Subgroup α) :
     IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
   rw [isCyclic_iff_exists_zpowers_eq_top]
-  simp_rw [← map_subtype_inj, ← MonoidHom.range_eq_map,
+  simp_rw [← map_subtype_inj, Subgroup.map_top,
     H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coe_subtype, exists_prop]
   exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
 
@@ -85,7 +85,7 @@ alias IsCyclic.commutative := IsCyclic.isMulCommutative
 open scoped IsMulCommutative in
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
       /-- A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`. -/]
 def IsCyclic.commGroup [Group α] [IsCyclic α] : CommGroup α :=
@@ -414,7 +414,6 @@ theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
 @[to_additive]
 lemma IsCyclic.ext [Finite G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
     (hGcard : Nat.card G = d) (h : ∀ t : G, t ^ a.val = t ^ b.val) : a = b := by
-  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
   specialize h g
   subst hGcard

@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Group.Measure
 
 /-!
 # Measure theory in the product of groups
+
 In this file we show properties about measure theory in products of measurable groups
 and properties of iterated integrals in measurable groups.
 
@@ -165,9 +166,9 @@ theorem inv_ae : (ae μ)⁻¹ = ae μ := by
   exact Filter.map_mono (quasiMeasurePreserving_inv μ).tendsto_ae
 
 @[to_additive (attr := simp)]
-theorem eventuallyConst_inv_set_ae :
-    EventuallyConst (s⁻¹ : Set G) (ae μ) ↔ EventuallyConst s (ae μ) := by
-  rw [← inv_preimage, eventuallyConst_preimage, Filter.map_inv, inv_ae]
+theorem eventuallyEmptyOrUniv_inv_set_ae :
+    EventuallyEmptyOrUniv (s⁻¹ : Set G) (ae μ) ↔ EventuallyEmptyOrUniv s (ae μ) := by
+  rw [← inv_preimage, eventuallyEmptyOrUniv_preimage, Filter.map_inv, inv_ae]
 
 @[to_additive]
 theorem inv_absolutelyContinuous : μ.inv ≪ μ :=
@@ -190,7 +191,7 @@ theorem lintegral_lintegral_mul_inv [IsMulLeftInvariant ν] (f : G → G → ℝ
   conv_rhs => rw [← (measurePreserving_mul_prod_inv μ ν).map_eq]
   symm
   exact
-    lintegral_map' (hf.mono' (measurePreserving_mul_prod_inv μ ν).map_eq.absolutelyContinuous)
+    lintegral_map' (hf.mono_ac (measurePreserving_mul_prod_inv μ ν).map_eq.absolutelyContinuous)
       h.aemeasurable
 
 @[to_additive]
