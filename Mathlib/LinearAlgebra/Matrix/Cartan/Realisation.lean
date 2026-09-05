@@ -90,7 +90,7 @@ lemma lin_ind_sRoot [CharZero R] [IsDomain R] : LinearIndependent R rl.sRoot := 
     simpa [Matrix.vecMul, dotProduct, A_def] using this
   have hdet : A.det ≠ 0 := by
     rw [← (Int.castRingHom R).map_det rl.matrix]
-    simpa using rl.isCartan.det_ne_zero
+    simpa using rl.isCartan.det_pos.ne'
   simp [Matrix.eq_zero_of_vecMul_eq_zero hdet hv]
 
 lemma lin_ind_sCoroot [CharZero R] [IsDomain R] : LinearIndependent R rl.sCoroot :=
@@ -177,7 +177,7 @@ lemma eq_iff_forall_pairing_sRoot_eq [CharZero R] [IsDomain R]
   set A := (Int.castRingHom R).mapMatrix rl.matrix with A_def
   have hdet : A.det ≠ 0 := by
     rw [← (Int.castRingHom R).map_det rl.matrix]
-    simpa using rl.isCartan.det_ne_zero
+    simpa using rl.isCartan.det_pos.ne'
   refine eq_zero_of_mulVec_eq_zero hdet (funext fun i ↦ ?_)
   simpa [A_def, Matrix.mulVec, dotProduct, mul_comm] using h i
 
@@ -525,13 +525,17 @@ lemma isRootSystem_toRootPairing
 
 lemma isIrreducible_toRootPairing [Nonempty n] {k V W : Type*} [Field k] [CharZero k]
     [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W] (rl : Realisation n k V W)
-    (hr : span k (range rl.sRoot) = ⊤) (hc : span k (range rl.sCoroot) = ⊤)
+    (hr : span k (range rl.sRoot) = ⊤)
     (hA' : rl.matrix.IsIndecomposable) :
     rl.toRootPairing.IsIrreducible := by
   classical
   inhabit n
+  have : IsReflexive k V := .of_isPerfPair rl.pairing
   have : Nontrivial V := nontrivial_of_ne (rl.sRoot default) 0 fun contra ↦ by
     simpa [contra] using rl.pairing_sRoot_sCoroot_self default
+  have hc : span k (range rl.sCoroot) = ⊤ := by
+    refine rl.lin_ind_sCoroot.span_eq_top_of_card_eq_finrank ?_
+    rw [← finrank_eq_card_basis (.mk rl.lin_ind_sRoot hr.ge), finrank_of_isPerfPair rl.pairing]
   have : rl.toRootPairing.IsRootSystem := rl.isRootSystem_toRootPairing hr hc
   refine .mk' _ fun q hq hq' ↦ ?_
   refine RootPairing.eq_top_of_mem_invtSubmodule_of_forall_eq_univ _ q hq' hq fun Φ _ hΦq hΦker ↦ ?_
@@ -604,7 +608,6 @@ instance : (hA.toRootPairing k).IsRootSystem :=
 
 lemma isIrreducible_toRootPairing [Nonempty n] (hA' : A.IsIndecomposable) :
     (hA.toRootPairing k).IsIrreducible :=
-  CartanMatrix.Realisation.isIrreducible_toRootPairing _ (hA.span_range_sRoot_eq_top k)
-    (hA.transpose.span_range_sRoot_eq_top k) hA'
+  CartanMatrix.Realisation.isIrreducible_toRootPairing _ (hA.span_range_sRoot_eq_top k) hA'
 
 end Matrix.IsFiniteCartan

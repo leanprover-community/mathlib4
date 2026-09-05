@@ -472,15 +472,18 @@ namespace Matrix.IsFiniteCartan
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM : M.IsFiniteCartan)
 include hM
 
-lemma det_ne_zero :
-    M.det ≠ 0 :=
-  fun contra ↦ by simpa [contra] using hM.exists_posDef.choose_spec.2.det_pos.ne'
+lemma det_pos :
+    0 < M.det := by
+  obtain ⟨d, hd, hd'⟩ := hM.exists_posDef
+  replace hd : 0 < (diagonal d).det := by simpa using Finset.prod_pos fun i a ↦ hd i
+  replace hd' : 0 < (diagonal d).det * M.det := by simpa only [← det_mul] using hd'.det_pos
+  nlinarith
 
 protected lemma isUnit_map (k : Type*) [Field k] [CharZero k] :
     IsUnit <| M.map (Int.cast : ℤ → k) := by
   suffices IsUnit <| (Int.castRingHom k).mapMatrix M by simpa
   rw [Matrix.isUnit_iff_isUnit_det, ← RingHom.map_det]
-  simpa using hM.det_ne_zero
+  simpa using hM.det_pos.ne'
 
 protected lemma transpose :
     Mᵀ.IsFiniteCartan := by
