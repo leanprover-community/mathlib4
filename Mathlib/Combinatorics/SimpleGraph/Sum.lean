@@ -54,15 +54,12 @@ theorem sum_adj_inr : (G ⊕g H).Adj (.inr w) (.inr w') ↔ H.Adj w w' := by
   simp
 
 theorem map_inl_sup_map_inr : G.map .inl ⊔ H.map .inr = G ⊕g H := by
-  ext
   grind
 
 theorem map_inl : G.map .inl = G ⊕g (⊥ : SimpleGraph W) := by
-  ext
   grind
 
 theorem map_inr : G.map .inr = (⊥ : SimpleGraph W) ⊕g G := by
-  ext
   grind
 
 /-- The disjoint sum is commutative up to isomorphism. `Iso.sumComm` as a graph isomorphism. -/

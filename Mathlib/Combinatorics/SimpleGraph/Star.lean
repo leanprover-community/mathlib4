@@ -85,11 +85,9 @@ lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
   simp
 
 theorem starGraph_inl_unitMk : starGraph (.inl ()) = completeBipartiteGraph Unit V := by
-  ext
   grind
 
 theorem starGraph_inr_unitMk : starGraph (.inr ()) = completeBipartiteGraph V Unit := by
-  ext
   grind
 
 end SimpleGraph
