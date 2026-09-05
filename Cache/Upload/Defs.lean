@@ -15,10 +15,10 @@ What every upload engine consumes:
   environment;
 * the one destination resolution every upload addresses
   (`StagedUploadDest`, `stagedUploadDest`);
-* the per-SHA marker upload the engines share (`uploadMarkerWith`).
 
 The engines live in `Cache/Upload/Curl.lean` and `Cache/Upload/Rclone.lean`;
-`Cache/Upload.lean` selects one and dispatches. The read side
+`Cache/Upload.lean` selects one and dispatches. The marker path contract and
+write mechanics live in `Cache/Marker.lean`. The read side
 (`Cache/Requests.lean`) shares the path contract through `fileDirPath` and
 `markerDirPath` (`Cache/Infra.lean`), so every upload engine addresses the
 URLs the readers probe.
@@ -165,34 +165,5 @@ def stagedUploadDest (container? : Option Container) (repo : String) :
       "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
       "         explicitly to choose a trust-level container."
   IO.ofExcept <| stagedUploadDestFrom putUrl? putBase? container? repo (← getRepoScope)
-
-/--
-Write the marker file for `sha` and hand it to `transfer`, which moves it to
-`{markerPrefix}/{sha}` of the resolved destination — the marker mechanics both
-engines share. The blob content is the SHA itself, as a debugging aid;
-existence is the signal. A marker overwrites freely (its content is its own
-name), so a re-upload of an already-marked commit does not fail here.
-
-Runs after the `.ltar` artifact uploads complete, and a `transfer` failure
-warns instead of throwing: the artifacts are already uploaded — the only loss
-is that `cache query` will not find this commit.
-
-A marker applies only to its own destination: it records that the writing
-`put` completed there. When several destinations receive uploads
-independently, one destination's marker does not say that the destination
-holds a commit's full transitive closure; the infrastructure documentation
-governs when a destination's markers may be trusted for completeness.
--/
-def uploadMarkerWith (dest : StagedUploadDest) (sha : String)
-    (transfer : FilePath → IO Unit) : IO Unit := do
-  let dir ← IO.FS.createTempDir
-  try
-    let file := dir / sha
-    IO.FS.writeFile file s!"{sha}\n"
-    transfer file
-  catch e =>
-    IO.eprintln s!"warning: marker upload to {dest.markerURL sha} failed: {e}"
-  finally
-    IO.FS.removeDirAll dir
 
 end Cache.Requests

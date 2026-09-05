@@ -144,7 +144,8 @@ a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. `repo`
 is lowercased via `normalizeRepo`. A file lives at
 `{fileDirPath container repo scope}/{fileName}`; `mkFileURL` and
 `stagedUploadDestFrom` both build on this, so reads and uploads share one path
-contract. Like `markerDirPath`, the path carries no trailing slash.
+contract. Like `markerDirPath` (`Cache/Marker.lean`), the path carries no
+trailing slash.
 -/
 def fileDirPath (container : Option Container) (repo : String)
     (repoScope : Option String) : String :=
@@ -156,19 +157,6 @@ def fileDirPath (container : Option Container) (repo : String)
   else match repoScope with
     | some s => s!"f/{repo}/{s}"
     | none => s!"f/{repo}"
-
-/--
-Blob path of the directory that holds a repo's per-SHA markers: `m/{repo}`,
-with `repo` lowercased via `normalizeRepo`. A marker for one commit lives at
-`{markerDirPath repo}/{sha}`; its presence signals that the writing `put`
-completed its upload to that destination.
--/
-def markerDirPath (repo : String) : String :=
-  s!"m/{normalizeRepo repo}"
-
-/-- Blob path of the per-SHA marker: `m/{repo}/{sha}` (see `markerDirPath`). -/
-def markerPath (repo sha : String) : String :=
-  s!"{markerDirPath repo}/{sha}"
 
 /--
 The public Mathlib cache endpoint. It serves the same `/{container}/{key}`

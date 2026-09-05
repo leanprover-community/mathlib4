@@ -114,7 +114,7 @@ def putStagedViaCurl (dest : StagedUploadDest) (srcDir : FilePath)
   let files := fileNames.map fun (f : String) => srcDir / f
   putFilesViaCurl dest files (srcDir / "curl.config") overwrite auth
   if let some sha := markerSha? then
-    uploadMarkerWith dest sha fun file => do
+    uploadMarkerWith (dest.markerURL sha) sha fun file => do
       let args := (← uploadAuthArgs auth (overwrite := true)) ++
         #["-X", "PUT", "-T", file.toString, dest.markerURL sha]
       -- The argument list carries the credential; keep it out of the failure message.

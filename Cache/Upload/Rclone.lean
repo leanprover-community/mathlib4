@@ -129,7 +129,7 @@ def putStagedViaRclone (dest : StagedUploadDest) (keyId secret : String)
       IO.eprintln s!"rclone upload failed with exit code {code}"
       IO.Process.exit 1
   if let some sha := markerSha? then
-    uploadMarkerWith dest sha fun file => do
+    uploadMarkerWith (dest.markerURL sha) sha fun file => do
       let code ← run (rcloneMarkerArgs bucketPath dest file sha)
       unless code == 0 do
         throw <| IO.userError s!"rclone exited with code {code}"
