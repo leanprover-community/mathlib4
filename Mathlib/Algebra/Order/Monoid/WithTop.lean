@@ -61,13 +61,13 @@ protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd �
     exact le_add_self
 
 @[simp]
-protected theorem top_add [PartialOrder α] [OrderTop α] [Add α] [CanonicallyOrderedAdd α]
+protected theorem top_add_of_ne_bot [PartialOrder α] [OrderTop α] [Add α] [CanonicallyOrderedAdd α]
     {a : WithBot α} (h : a ≠ ⊥) : ⊤ + a = ⊤ := by
   lift a to α using h
   exact WithBot.coe_inj.mpr (by simp [eq_top_iff])
 
 @[simp]
-protected theorem add_top [PartialOrder α] [OrderTop α] [Add α] [CanonicallyOrderedAdd α]
+protected theorem add_top_of_ne_bot [PartialOrder α] [OrderTop α] [Add α] [CanonicallyOrderedAdd α]
     {a : WithBot α} (h : a ≠ ⊥) : a + ⊤ = ⊤ := by
   lift a to α using h
   exact WithBot.coe_inj.mpr (by simp [eq_top_iff])
