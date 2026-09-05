@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.Module.Equiv
-public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
 # Continuous alternating multilinear maps
@@ -29,6 +29,7 @@ multilinear map, alternating map, continuous
 @[expose] public section
 
 open Function Matrix
+open scoped Nat
 
 /-- A continuous alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→L[R] N`,
 is a continuous map that is
@@ -628,6 +629,8 @@ end ContinuousAlternatingMap
 
 namespace ContinuousMultilinearMap
 
+section Semiring
+
 variable {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
   [AddCommGroup N] [Module R N] [TopologicalSpace N] [IsTopologicalAddGroup N] [Fintype ι]
   [DecidableEq ι] (f : ContinuousMultilinearMap R (fun _ : ι => M) N)
@@ -652,5 +655,40 @@ theorem alternatization_apply_toAlternatingMap :
     (alternatization f).toAlternatingMap = MultilinearMap.alternatization f.1 := by
   ext v
   simp [alternatization_apply_apply, MultilinearMap.alternatization_apply, Function.comp_def]
+
+theorem _root_.ContinuousAlternatingMap.alternatization_toContinuousMultilinearMap
+    (f : M [⋀^ι]→L[R] N) :
+    f.toContinuousMultilinearMap.alternatization = (Fintype.card ι)! • f := by
+  ext v
+  have : MultilinearMap.alternatization f.toAlternatingMap.toMultilinearMap v =
+      ((Fintype.card ι)! • f.toAlternatingMap) v := by
+    rw [AlternatingMap.coe_alternatization f.toAlternatingMap]
+  simpa only [MultilinearMap.alternatization_apply, alternatization_apply_apply] using! this
+
+end Semiring
+
+section CommSemiring
+
+variable {R M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+  [AddCommGroup N] [Module R N] [TopologicalSpace N] [IsTopologicalAddGroup N] [Fintype ι]
+  [DecidableEq ι] [ContinuousConstSMul R N]
+
+/-- Alternatization of a continuous multilinear map, as a linear map. See also `alternatizationCLM`
+for the continuous linear map version. -/
+def alternatizationₗ : ContinuousMultilinearMap R (fun _ : ι => M) N →ₗ[R] M [⋀^ι]→L[R] N where
+  __ := alternatization
+  map_smul' c g := by
+    ext v
+    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, alternatization_apply_apply,
+      smul_apply, RingHom.id_apply, ContinuousAlternatingMap.coe_smul, Pi.smul_apply,
+      Finset.smul_sum]
+    exact Finset.sum_congr rfl fun σ _ ↦ (smul_comm _ _ _).symm
+
+theorem alternatizationₗ_apply_apply
+    (f : ContinuousMultilinearMap R (fun _ : ι => M) N) (v : ι → M) :
+    alternatizationₗ f v = ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f (v ∘ σ) :=
+  alternatization_apply_apply f v
+
+end CommSemiring
 
 end ContinuousMultilinearMap
