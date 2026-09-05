@@ -65,10 +65,15 @@ lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := b
   split_ifs <;> lia
 
 /-- `pnat_to_nat` shifts all `PNat`s in the context to `Nat`, rewriting propositions about them.
-A typical use case is `pnat_to_nat; lia`. -/
-macro "pnat_to_nat" : tactic => `(tactic| focus (
-  pnat_positivity;
-  simp only [pnat_to_nat_coe] at *)
-)
+A typical use case is `pnat_to_nat; lia`.
+
+Deprecated in favour of more general `basify` -/
+elab "pnat_to_nat" : tactic => do
+  Linter.logLintIf Linter.linter.deprecated (← getRef)
+    "`pnat_to_nat` is deprecated, use `basify` instead"
+  evalTactic (← `(tactic| focus (
+    pnat_positivity;
+    simp only [pnat_to_nat_coe] at *)
+  ))
 
 end Mathlib.Tactic.PNatToNat

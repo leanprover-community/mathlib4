@@ -77,12 +77,18 @@ elab "cases_first_enat" : tactic => focus do
         (← `(tactic| cases $x:ident using ENat.recTopCoe with | top => _ | coe $x:ident => _))
     evalTactic (← `(tactic| all_goals try simp only [enat_to_nat_top] at *))
 
+open Lean Elab Tactic in
 /-- `enat_to_nat` shifts all `ENat`s in the context to `Nat`, rewriting propositions about them.
-A typical use case is `enat_to_nat; lia`. -/
-macro "enat_to_nat" : tactic => `(tactic| focus (
-    (repeat' cases_first_enat) <;>
-    (try simp only [enat_to_nat_top, enat_to_nat_coe] at *)
-  )
-)
+A typical use case is `enat_to_nat; lia`.
+
+Deprecated in favour of more general `basify`. -/
+elab "enat_to_nat" : tactic => do
+  Linter.logLintIf Linter.linter.deprecated (← getRef)
+    "`enat_to_nat` is deprecated, use `basify` instead"
+  evalTactic (← `(tactic| focus (
+      (repeat' cases_first_enat) <;>
+      (try simp only [enat_to_nat_top, enat_to_nat_coe] at *)
+    )
+  ))
 
 end Mathlib.Tactic.ENatToNat

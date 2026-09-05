@@ -7409,6 +7409,8 @@ public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.BDSimp
 public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basify
+public import Mathlib.Tactic.Basify.Attr
 public import Mathlib.Tactic.Bound
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Bound.Init
