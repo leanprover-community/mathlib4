@@ -752,24 +752,24 @@ variable {R : Type*} [Semiring R] (φ ψ : R[X])
 /-- The natural inclusion from polynomials into formal power series. -/
 @[coe]
 def toPowerSeries : R[X] → PowerSeries R := fun φ =>
-  PowerSeries.mk fun n => coeff φ n
+  PowerSeries.mk fun n => φ.coeff n
 
 /-- The natural inclusion from polynomials into formal power series. -/
 instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
   ⟨toPowerSeries⟩
 
-theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk (coeff φ) :=
+theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk ⇑φ.coeff :=
   rfl
 
 @[simp]
-theorem coeff_coe (n) : PowerSeries.coeff n φ = coeff φ n :=
-  congr_arg (coeff φ) Finsupp.single_eq_same
+theorem coeff_coe (n) : PowerSeries.coeff n φ = φ.coeff n :=
+  congr_arg φ.coeff Finsupp.single_eq_same
 
 @[simp, norm_cast]
 theorem coe_monomial (n : ℕ) (a : R) :
     (monomial n a : PowerSeries R) = PowerSeries.monomial n a := by
   ext
-  simp [coeff_coe, PowerSeries.coeff_monomial, Polynomial.coeff_monomial, eq_comm]
+  simp [coeff_coe, PowerSeries.coeff_monomial, Finsupp.single_apply, eq_comm]
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R[X]) : PowerSeries R) = 0 :=

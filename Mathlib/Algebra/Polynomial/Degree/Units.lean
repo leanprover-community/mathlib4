@@ -16,7 +16,7 @@ public section
 
 noncomputable section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 

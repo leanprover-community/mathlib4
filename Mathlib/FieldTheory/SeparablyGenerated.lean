@@ -35,7 +35,7 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 section
 
-attribute [local instance 2000] Polynomial.isScalarTower Algebra.toSMul IsScalarTower.right
+attribute [local instance 2000] Algebra.toSMul IsScalarTower.right
 
 open MvPolynomial
 open scoped IntermediateField
@@ -233,7 +233,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     (fun e ↦ (e rfl).elim) (fun _ _ _ ↦ ‹_›) hp.ne_one
   obtain ⟨g, hg, eq⟩ := (((minpoly k' (a i)).separable_or p (minpoly.irreducible
     (isAlgebraic_iff_isIntegral.mp <| isAlgebraic_adjoin_iff.mpr alg))).resolve_left Hsep).2
-  replace eq := congr(Polynomial.coeff $eq (σ i))
+  replace eq := congr(($eq).coeff (σ i))
   rwa [← minpoly.eq_of_irreducible hF₂irr ((Polynomial.aeval_map_algebraMap ..).trans
     (aeval_toPolynomialAdjoinImageCompl_eq_zero hFa i)), Polynomial.coeff_mul_C,
     Polynomial.coeff_expand hp.pos, ite_eq_right hi, eq_mul_inv_iff_mul_eq₀

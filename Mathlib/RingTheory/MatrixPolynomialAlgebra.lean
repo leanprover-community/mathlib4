@@ -19,7 +19,7 @@ def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
 ```
 which is characterized by
 ```
-coeff (matPolyEquiv m) k i j = coeff (m i j) k
+(matPolyEquiv m).coeff k i j = (m i j).coeff k
 ```
 
 We will use this algebra isomorphism to prove the Cayley-Hamilton theorem.
@@ -83,11 +83,11 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
   congr with i' <;> simp [single]
 
 theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
-    coeff (matPolyEquiv (single i j p)) k = single i j (coeff p k) := by
+    (matPolyEquiv (single i j p)).coeff k = single i j (p.coeff k) := by
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, Matrix.add_apply, single_add]
+    simp [hp, hq, Matrix.add_apply, single_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
     split_ifs <;>
@@ -96,7 +96,7 @@ theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
 
 @[simp]
 theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
-    coeff (matPolyEquiv m) k i j = coeff (m i j) k := by
+    (matPolyEquiv m).coeff k i j = (m i j).coeff k := by
   refine Matrix.induction_on' m ?_ ?_ ?_
   · simp
   · intro p q hp hq
@@ -110,7 +110,7 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
 
 @[simp]
 theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ) :
-    coeff (matPolyEquiv.symm p i j) k = coeff p k i j := by
+    (matPolyEquiv.symm p i j).coeff k = p.coeff k i j := by
   have t : p = matPolyEquiv (matPolyEquiv.symm p) := by simp
   conv_rhs => rw [t]
   simp only [matPolyEquiv_coeff_apply]
