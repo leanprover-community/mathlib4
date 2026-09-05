@@ -628,6 +628,14 @@ theorem sortedLT_iff_nodup_and_sortedLE : l.SortedLT ↔ l.Nodup ∧ l.SortedLE 
 theorem sortedGT_iff_nodup_and_sortedGE : l.SortedGT ↔ l.Nodup ∧ l.SortedGE :=
   ⟨fun h => ⟨h.nodup, h.sortedGE⟩, fun h => h.2.sortedGT_of_nodup h.1⟩
 
+theorem sortedLT_nil : ([] : List α).SortedLT := by grind
+
+theorem sortedGT_nil : ([] : List α).SortedGT := by grind
+
+theorem sortedLE_nil : ([] : List α).SortedLE := sortedLT_nil.sortedLE
+
+theorem sortedGE_nil : ([] : List α).SortedGE := sortedGT_nil.sortedGE
+
 theorem Perm.eq_of_sortedLE {l₁ l₂ : List α} (hl₁ : l₁.SortedLE)
     (hl₂ : l₂.SortedLE) : (hl₁₂ : l₁ ~ l₂) → l₁ = l₂ :=
   Perm.eq_of_pairwise' hl₁.pairwise hl₂.pairwise
