@@ -45,6 +45,11 @@ attribute [instance] ωCPO.str
 
 namespace ωCPO
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `ωCPO.of X` as `↧X`. -/
+@[app_delab ωCPO.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 open OmegaCompletePartialOrder
 
 instance : CoeSort ωCPO Type* :=
@@ -110,7 +115,7 @@ def equalizerι {α β : Type*} [OmegaCompletePartialOrder α] [OmegaCompletePar
 
 /-- A construction of the equalizer fork. -/
 def equalizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : Fork f g :=
-  Fork.ofι (P := ωCPO.of { a // f a = g a }) (equalizerι f g)
+  Fork.ofι (P := ↧{ a // f a = g a }) (equalizerι f g)
     (ContinuousHom.ext _ _ fun x => x.2)
 
 /-- The equalizer fork is a limit. -/

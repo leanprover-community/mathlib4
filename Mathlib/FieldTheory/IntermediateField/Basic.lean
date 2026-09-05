@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Field.Subfield.Basic
@@ -286,7 +287,7 @@ def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : Inte
     by_cases hx0 : x = 0
     · rw [hx0, inv_zero]
       exact S.zero_mem
-    letI hS' := hS.toField
+    let hS' := hS.toField
     obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.coe_ne_coe.1 hx0)
     rw [Subtype.ext_iff, S.coe_mul, S.coe_one, Subtype.coe_mk, mul_eq_one_iff_inv_eq₀ hx0] at hy
     exact hy.symm ▸ y.2
@@ -407,6 +408,12 @@ instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : IntermediateField K L)
     [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
   inferInstanceAs (Algebra R' S.toSubalgebra)
+
+-- Over `ℚ`, the algebra structure inherited from the ambient field and the one coming from the
+-- `DivisionRing` structure of the intermediate field are the same instance.
+example {L : Type*} [Field L] [CharZero L] (S : IntermediateField ℚ L) :
+    (S.algebra' : Algebra ℚ S) = DivisionRing.toRatAlgebra := by
+  with_implicit rfl
 
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=
@@ -911,9 +918,12 @@ theorem lift_restrict : lift (restrict h) = F := by
 /--
 `F` is equivalent to `F` as an intermediate field of `E / K`.
 -/
-noncomputable def restrict_algEquiv :
+noncomputable def restrictAlgEquiv :
     F ≃ₐ[K] ↥(IntermediateField.restrict h) :=
   AlgEquiv.ofInjectiveField _
+
+@[deprecated (since := "2026-07-25")]
+alias restrict_algEquiv := restrictAlgEquiv
 
 end Restrict
 
