@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
@@ -25,7 +26,7 @@ of the complex `R.cocomplex` and to make computations in the `Ext`-group.
 
 universe w v u
 
-open CategoryTheory CochainComplex HomComplex Abelian Localization
+open CategoryTheory Limits CochainComplex HomComplex Abelian Localization
 
 namespace CategoryTheory.InjectiveResolution
 
@@ -127,7 +128,7 @@ lemma extEquivCohomologyClass_zero :
 /-- Given an injective resolution `R` of an object `Y` of an abelian category,
 this is a constructor for elements in `Ext X Y n` which takes as an input
 a "cocycle" `f : X ⟶ R.cocomplex.X n`. -/
-noncomputable def extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+noncomputable def extMk (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) :
     Ext X Y n :=
   R.extEquivCohomologyClass.symm
@@ -135,14 +136,14 @@ noncomputable def extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n 
       m (by lia) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf])))
 
 @[simp]
-lemma extEquivCohomologyClass_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma extEquivCohomologyClass_extMk (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) :
     R.extEquivCohomologyClass (R.extMk f m hm hf) =
       (.mk (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
         m (by lia) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) := by
   simp [extMk]
 
-lemma add_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma add_extMk (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) (hg : g ≫ R.cocomplex.d n m = 0) :
     R.extMk f m hm hf + R.extMk g m hm hg =
       R.extMk (f + g) m hm (by simp [hf, hg]) := by
@@ -152,7 +153,7 @@ lemma add_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = 
     (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hg])]
   simp
 
-lemma sub_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma sub_extMk (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) (hg : g ≫ R.cocomplex.d n m = 0) :
     R.extMk f m hm hf - R.extMk g m hm hg =
       R.extMk (f - g) m hm (by simp [hf, hg]) := by
@@ -163,7 +164,7 @@ lemma sub_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = 
     (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hg])]
   simp
 
-lemma neg_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma neg_extMk (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) :
     -R.extMk f m hm hf = R.extMk (-f) m hm (by simp [hf]) := by
   dsimp [extMk]
@@ -173,12 +174,12 @@ lemma neg_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
   simp
 
 @[simp]
-lemma extMk_zero {n : ℕ} (m : ℕ) (hm : n + 1 = m) :
+lemma extMk_zero (m : ℕ) (hm : n + 1 = m) :
     R.extMk (0 : X ⟶ R.cocomplex.X n) m hm (by simp) = 0 := by
   simp [extMk]
 
 lemma extMk_hom
-    [HasDerivedCategory C] {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    [HasDerivedCategory C] (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) :
     (R.extMk f m hm hf).hom =
     (ShiftedHom.mk₀ _ rfl ((DerivedCategory.singleFunctorIsoCompQ C 0).hom.app X)).comp
@@ -214,7 +215,7 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
     by simpa [R.cochainComplex_d _ _ _ _ rfl rfl,
       ← cancel_mono (R.cochainComplexXIso m m rfl).inv] using hf, by simp [extMk]⟩
 
-lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma mk₀_comp_extMk (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) {X' : C} (g : X' ⟶ X) :
     (Ext.mk₀ g).comp (R.extMk f m hm hf) (zero_add _) =
       R.extMk (g ≫ f) m hm (by simp [hf]) := by
@@ -231,7 +232,7 @@ lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n +
   simp
 
 variable {R} in
-lemma extMk_comp_mk₀ {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma extMk_comp_mk₀ (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0)
     {Y' : C} {R' : InjectiveResolution Y'} {g : Y ⟶ Y'} (φ : Hom R R' g) :
     (R.extMk f m hm hf).comp (Ext.mk₀ g) (add_zero _) =
@@ -255,5 +256,71 @@ lemma extMk_comp_mk₀ {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n +
   congr 1
   simpa only [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq,
     Functor.map_comp] using! DerivedCategory.Q.congr_map φ.ι'_comp_hom'.symm
+
+open CochainComplex.HomComplex in
+lemma extClass_comp_extMk
+    {S : ShortComplex C} (hS : S.ShortExact) (f₁ : S.X₁ ⟶ R.cocomplex.X n)
+    (m : ℕ) (hm : n + 1 = m)
+    (f₂ : S.X₂ ⟶ R.cocomplex.X n) (hf₂ : Int.negOnePow m • S.f ≫ f₂ = f₁)
+    (f₃ : S.X₃ ⟶ R.cocomplex.X m) (hf₃ : S.g ≫ f₃ = f₂ ≫ R.cocomplex.d n m)
+    (m' : ℕ) (hm' : m + 1 = m') :
+    hS.extClass.comp (R.extMk f₁ m hm (by simp [← reassoc_of% hf₂, ← hf₃])) (by lia) =
+    R.extMk f₃ m' hm' (by have := hS.epi_g; simp [← cancel_epi S.g, reassoc_of% hf₃]) := by
+  have := HasDerivedCategory.standard C
+  ext
+  simp only [Ext.comp_hom, ShortComplex.ShortExact.extClass_hom, extMk_hom,
+    DerivedCategory.singleFunctorIsoCompQ_hom_app, ShiftedHom.mk₀_id_comp]
+  rw [← ShiftedHom.comp_assoc (a₁₂ := (m : ℤ)) _ _ _ (by lia) (by lia) (by lia)]
+  congr 1
+  have := CochainComplex.mappingCone.quasiIso_descShortComplex
+    (hS.map_of_exact (HomologicalComplex.single C (.up ℤ) 0))
+  refine (ShiftedHom.precompIsoEquiv
+    (asIso (DerivedCategory.Q.map (CochainComplex.mappingCone.descShortComplex
+    ((S.map (HomologicalComplex.single C _ 0))))))).injective ?_
+  dsimp
+  rw [← ShiftedHom.comp_assoc _ _ _ (add_zero 1) (by lia) (by lia), ShiftedHom.mk₀_comp,
+    ShortComplex.ShortExact.descShortComplex_singleδ, ← ShiftedHom.map,
+    ← ShiftedHom.map_comp, ← ShiftedHom.map_mk₀, ← ShiftedHom.map_comp,
+    Cocycle.shiftedHomComp_equivHomShift_symm, Cocycle.shiftedHomComp_equivHomShift_symm,
+    ← CohomologyClass.toShiftedHom_mk, ← CohomologyClass.toShiftedHom_mk]
+  congr 1
+  symm
+  rw [← sub_eq_zero, ← CohomologyClass.mk_sub, CohomologyClass.mk_eq_zero_iff,
+    mem_coboundaries_iff _ n (by lia)]
+  refine ⟨(mappingCone.snd _).comp ((Cochain.fromSingleEquiv (zero_add _)).symm
+    (f₂ ≫ (R.cochainComplexXIso n n rfl).inv)) (zero_add _), ?_⟩
+  dsimp
+  simp only [Cocycle.comp_coe, Cocycle.fromSingleMk_coe]
+  ext p q hpq
+  by_cases hp : p = 0 ∨ p = - 1
+  · obtain rfl | rfl := hp
+    · obtain rfl : q = m := by lia
+      simp [mappingCone.ext_from_iff _ _ _ (zero_add 1),
+        δ_v n m (by lia) _ 0 m (by lia) n 1 (by lia) (by lia),
+        Cochain.fromSingleEquiv_symm_apply,
+        Cochain.fromSingleMk_v_eq_zero _ _ _ _ _ (show 1 ≠ 0 by lia),
+        Cochain.comp_v (n₁ := 1) (n₂ := n) (n₁₂ := m) _ _ (by lia) 0 1 m (by lia) (by lia),
+        Cocycle.equivHomShift_apply, R.cochainComplex_d n m n m rfl rfl,
+        Cochain.rightUnshift_v _ _ (zero_add 0) 0 0 (by lia) 0 (by lia),
+        ShiftedHom.mk₀, shiftFunctorZero'_eq_shiftFunctorZero, shiftFunctorZero_inv_app_f,
+        dsimp% mappingCone.inl_v_descShortComplex_f_assoc
+          (S.map (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) 1 0 (by lia),
+        dsimp% mappingCone.inr_f_descShortComplex_f_assoc
+          (S.map (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) 0,
+        HomologicalComplex.single_map_f_self_assoc, reassoc_of% hf₃]
+    · obtain rfl : q = n := by lia
+      simp [mappingCone.ext_from_iff _ _ _ (neg_add_cancel 1),
+        δ_v n m (by lia) _ (-1) n (by lia) (n - 1) 0 (by lia) (by lia),
+        Cochain.fromSingleEquiv_symm_apply,
+        Cocycle.equivHomShift_apply,
+        Cochain.fromSingleMk_v_eq_zero _ _ _ _ _ (show -1 ≠ 0 by lia),
+        Cochain.comp_v (n₁ := 1) (n₂ := n) (n₁₂ := m) _ _ (by lia) (-1) 0 n (by lia) (by lia),
+        Cochain.rightUnshift_v _ _ (zero_add 1) (-1) 0 (by lia) (-1) (by lia),
+        mappingCone.inl_v_d_assoc _ 0 (-1) 1 (by lia) (by lia),
+        HomologicalComplex.single_map_f_self_assoc, ← hf₂]
+  · apply IsZero.eq_of_src
+    rw [mappingCone.isZero_X_iff]
+    constructor
+    all_goals exact HomologicalComplex.isZero_single_obj_X _ _ _ _ (by lia)
 
 end CategoryTheory.InjectiveResolution
