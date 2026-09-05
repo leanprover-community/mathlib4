@@ -129,6 +129,11 @@ instance IsStandardSmoothOfRelativeDimension.mvPolynomial_fin {n : ℕ} :
     IsStandardSmoothOfRelativeDimension n R (MvPolynomial (Fin n) R) := by
   simpa using IsStandardSmoothOfRelativeDimension.mvPolynomial R (Fin n)
 
+/-- The polynomial algebra `MvPolynomial ι R` is standard smooth over `R` when `ι` is finite. -/
+instance IsStandardSmooth.mvPolynomial [Finite ι] :
+    IsStandardSmooth R (MvPolynomial ι R) :=
+  IsStandardSmoothOfRelativeDimension.mvPolynomial R ι|>.isStandardSmooth
+
 instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
     FinitePresentation R S := by
   obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
