@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
@@ -67,5 +67,30 @@ instance : IsValuativeTopology ℚ_[p] := by
     refine ⟨p ^ log (embedding γ.val), zpow_pos (by positivity) _, fun _ hz ↦ hγ ?_⟩
     rw [mem_ball_zero_iff, norm_lt_zpow_iff_mulValuation_lt_exp, exp_log (by simp)] at hz
     simpa [restrict_lt_iff_lt_embedding] using hz
+
+lemma vle_one_iff_norm_le_one {x : ℚ_[p]} : x ≤ᵥ 1 ↔ ‖x‖ ≤ 1 :=
+  (Valuation.vle_one_iff mulValuation).trans mulValuation_le_one_iff_norm_le_one
+
+lemma valuation_le_one_iff_norm_le_one {x : ℚ_[p]} :
+    ValuativeRel.valuation ℚ_[p] x ≤ 1 ↔ ‖x‖ ≤ 1 :=
+  (Valuation.vle_one_iff _).symm.trans vle_one_iff_norm_le_one
+
+lemma integers : Valuation.Integers (ValuativeRel.valuation ℚ_[p]) ℤ_[p] where
+  hom_inj _ _ := PadicInt.ext
+  map_le_one x := valuation_le_one_iff_norm_le_one.mpr x.2
+  exists_of_le_one {r} hr := ⟨⟨r, valuation_le_one_iff_norm_le_one.mp hr⟩, rfl⟩
+
+/-- The valuative relation on `ℤ_[p]`, pulled back from `ℚ_[p]` along the inclusion. -/
+noncomputable instance : ValuativeRel ℤ_[p] :=
+  .ofValuation (mulValuation.comap (algebraMap ℤ_[p] ℚ_[p]))
+
+instance : (mulValuation.comap (algebraMap ℤ_[p] ℚ_[p])).Compatible where
+  vle_iff_le _ _ := Iff.rfl
+
+instance : ValuativeExtension ℤ_[p] ℚ_[p] where
+  vle_iff_vle _ _ := Iff.rfl
+
+instance : IsValuativeTopology ℤ_[p] :=
+  .of_integers integers Topology.IsInducing.subtypeVal
 
 end Padic
