@@ -6,7 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 /-!
 
@@ -138,6 +138,14 @@ theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
 theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
     w ∈ p.support ↔ ¬G.IsIsolated w :=
   ⟨fun hwp hw ↦ hnil <| p.nil_of_isIsolated_of_mem_support hw hwp, hp.mem_support_of_not_isIsolated⟩
+
+theorem IsEulerian.connected_of_forall_not_isIsolated (hp : p.IsEulerian)
+    (hG : ∀ v, ¬G.IsIsolated v) : G.Connected where
+  preconnected a b :=
+    have ha : a ∈ p.support := hp.mem_support_of_not_isIsolated <| hG a
+    have hb : b ∈ p.support := hp.mem_support_of_not_isIsolated <| hG b
+    ⟨p.takeUntil a ha |>.reverse.append <| p.takeUntil b hb⟩
+  nonempty := ⟨u⟩
 
 theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
