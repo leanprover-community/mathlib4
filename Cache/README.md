@@ -23,7 +23,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 
 ## Commands
 
-### No Privilege Required
+### Reading and local maintenance
 
 | Command         | Description                                                         |
 |-----------------|---------------------------------------------------------------------|
@@ -39,15 +39,58 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
 | `query`         | Find the most recent commit with cached entries on the current branch |
 
-### Privilege Required (CI/Maintainers)
+### Staging and upload (CI, and external cache operators)
 
-| Command        | Description                                               |
-|----------------|-----------------------------------------------------------|
-| `put`          | Run `pack` then upload linked files missing on the server |
-| `put!`         | Run `pack` then upload all linked files                   |
-| `put-unpacked` | `put` only files not already packed; intended for CI use  |
-| `commit`       | Write a commit on the server                              |
-| `commit!`      | Overwrite a commit on the server                          |
+| Command     | Description                                                          |
+|-------------|----------------------------------------------------------------------|
+| `stage`     | Copy files not already `pack`ed to `--staging-dir`                   |
+| `stage!`    | Copy all linked cache files to `--staging-dir`                       |
+| `unstage`   | Copy `*.ltar` files from `--staging-dir` into the local cache        |
+| `unstage!`  | Same, overwriting files that already exist in the local cache        |
+| `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
+| `put!`      | Same as `put`, overwriting files the server already holds             |
+| `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `--uploader` selects its transfer engine. |
+
+The upload commands write with the same URL construction `get` reads, so
+uploads and reads follow one path contract. Uploading needs a writer
+credential in the environment; see the environment variables in
+`lake exe cache --help`.
+
+#### The rclone engine
+
+The upload commands use curl by default. `--uploader` selects
+the transfer engine:
+
+- `curl` (the default): the built-in engine. Parallel PUTs, each signed per
+  request; an upload never replaces an existing object (`If-None-Match: *`).
+- `rclone`: a system [rclone](https://rclone.org). The tool resolves the
+  same destination the curl engine addresses and hands rclone the S3
+  credentials through its environment (`RCLONE_S3_*`); this engine requires
+  the S3 credential pair. The tool restricts the transfer to the command's
+  file list (`--files-from`), so `put`'s build-scoped guarantee holds on
+  this engine. rclone schedules transfers for large staged sets and verifies
+  each object's checksum after upload. `--ignore-existing` replaces
+  `If-None-Match` on a non-overwrite put.
+
+The tool sets the rclone credentials, endpoint, provider (`Other` unless the
+environment names one), and region; every other `RCLONE_S3_*` option
+inherits from the environment, so an operator can set
+`RCLONE_S3_PROVIDER=Cloudflare` without a tool change.
+
+Anyone operating their own cache does not need the upload commands.
+The path contract for a `MATHLIB_CACHE_GET_URL` endpoint: readers request
+`{endpoint}/f/{hash}.ltar` — the flat `f/` namespace — so the staged files
+must be stored under an `f/` prefix on your storage. (`stage` writes the `.ltar`
+files flat into the staging directory; the `f/` segment is added at upload.)
+
+```bash
+# Produce the artifact set for your endpoint:
+lake exe cache stage --staging-dir=./cache-out
+# Upload it under the endpoint's f/ prefix, with any storage client:
+rclone copy ./cache-out remote:my-bucket/my-prefix/f/
+# Point readers at the endpoint:
+MATHLIB_CACHE_GET_URL=https://cache.example.org/my-prefix lake exe cache get
+```
 
 ### Arguments
 
@@ -69,16 +112,18 @@ When arguments are provided, only the specified files and their transitive impor
 | `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Triggers the non-default-scope security notice. |
 | `--unsafe`          | For `get`/`get!`/`get-`: instead of pinning one `--scope`, automatically walk this branch's history and read the `forks` container at the most recent cached fork commit (newest first if `--unsafe-window` allows more than one), until the cache is satisfied (see [Unsafe automatic scope walk](#unsafe-automatic-scope-walk)). Mutually exclusive with `--scope`; always triggers the security notice. |
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
-| `--container=NAME`  | For `put`/`put!`/`put-unpacked`/`put-staged`/`commit`/`commit!`: target container for upload. |
+| `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`/`put-staged`: the staging directory. |
+| `--container=NAME`  | For `put`/`put!`/`put-staged`: the target container. |
+| `--uploader=NAME`   | For `put`/`put!`/`put-staged`: the transfer engine, `curl` (the default) or `rclone` (see [The rclone engine](#the-rclone-engine)). |
 
-Container names (known to both flags): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
+Container names (for `--cache-from` and `--container`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 
 ## Trust-ordered containers
 
-The cache is split across multiple Azure Blob Storage containers on the
-`lakecache` storage account. Container names accepted by `--container=NAME`
-and `--cache-from=LIST`: `master`, `forks`, `nightly-testing`,
-`pr-toolchain-tests`, `legacy`.
+The cache is split across multiple containers — logical namespaces in the URL
+contract `/{container}/{key}`, whatever backend serves them. Container names
+accepted by `--cache-from=LIST` and `--container=NAME`:
+`master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 
 `cache get` resolves a file by trying a default chain of containers in
 order, depending on the repo:
@@ -99,7 +144,7 @@ lake exe cache get --cache-from=master
 lake exe cache get --cache-from=master,forks
 ```
 
-Uploads target a single container via `--container=NAME`.
+Uploads (`put`, `put!`, `put-staged`) target a single container via `--container=NAME`.
 
 ## Public cache endpoint
 
@@ -128,6 +173,9 @@ The variable is intended as a troubleshooting fallback and it might be retired a
 | Variable            | Description                        | Default                                         |
 |---------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
+
+Run `lake exe cache --help` for the full list of environment variables,
+including the upload credentials and destination overrides.
 
 ## How It Works
 
@@ -187,19 +235,18 @@ upstream and you want to avoid waiting for CI to build everything.
 # Find the most recent cached commit on the current branch
 lake exe cache query
 
-# Example output:
-# Most recent cached commit on branch: 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
-# Repository: leanprover-community/mathlib4
-# Container: forks
+# Example output (on a fork checkout; the canonical repos have no
+# per-commit namespace and `query` says so instead):
+# Most recent cached commit on this branch for fork alice/mathlib4: 5a3c7e9a...
 #
 # To use this cache, run:
-#   lake exe cache get --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
+#   lake exe cache get --scope=5a3c7e9a...
 ```
 
 The `query` command walks your git log backwards from `HEAD`, stopping at the
 merge base with `master` or a hard cap of 50 commits (whichever comes first),
 and probes each commit for a completed SHA-scoped upload in the `forks`
-container. That signal is written by `put-staged` only after a successful
+container. That signal is written by `cache put` only after a successful
 upload, so its presence is a reliable "this commit was cached" signal. `query`
 prints the SHA to stdout (and does not auto-apply it) — you manually copy the
 result into your `cache get` command if desired.
@@ -322,9 +369,9 @@ If your system curl is too old, a static binary is downloaded automatically on L
 | `~/.cache/mathlib/*.ltar`   | Cached build artifacts       |
 | `~/.cache/mathlib/*.ltar.<pid>.part` | Downloads in flight, renamed on success |
 | `~/.cache/mathlib/curl-<pid>.cfg` | Temporary curl configuration |
-
-The cache directory is per user, not per checkout, so several `cache` runs can be
-in flight in it at once. Everything temporary is therefore named with the writing
-process's id, and one run only ever renames or removes its own files.
 | `.lake/build/lib/lean/`     | Unpacked `.olean` files      |
 | `.lake/build/ir/`           | Unpacked `.c` files          |
+
+The cache directory is per user, not per checkout, so several `cache` runs can
+be in flight in it at once. Everything temporary is therefore named with the
+writing process's id, and one run only ever renames or removes its own files.
