@@ -347,6 +347,11 @@ lemma stdSimplex.yonedaEquiv_σ_comp
     yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
   (yonedaEquiv_naturality ..).symm
 
+lemma σ_zero_eq_yonedaEquiv_const {X : SSet.{u}} (x : X _⦋0⦌) :
+    X.σ 0 x = yonedaEquiv (const x) :=
+  yonedaEquiv.symm.injective
+    (by simp [← stdSimplex.σ_comp_yonedaEquiv_symm, yonedaEquiv_symm_zero])
+
 namespace Subcomplex
 
 variable {X : SSet.{u}}
