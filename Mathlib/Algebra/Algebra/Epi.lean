@@ -99,10 +99,6 @@ lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
       rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
   cases false_of_nontrivial_of_subsingleton ((A ⧸ R') ⊗[R] (A ⧸ R'))
 
-@[deprecated (since := "2026-01-13")]
-alias _root_.RingHom.surjective_of_tmul_eq_tmul_of_finite :=
-  isEpi_iff_surjective_algebraMap_of_finite
-
 end Ring
 
 section CommSemiring

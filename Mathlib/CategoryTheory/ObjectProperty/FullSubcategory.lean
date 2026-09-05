@@ -55,6 +55,7 @@ lemma hom_ext {X Y : P.FullSubcategory} {f g : X ⟶ Y} (h : f.hom = g.hom) : f 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
 -/
+@[implicit_reducible]
 def ι : P.FullSubcategory ⥤ C :=
   inducedFunctor FullSubcategory.obj
 
@@ -76,12 +77,9 @@ lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
 lemma FullSubcategory.comp_hom {X Y Z : P.FullSubcategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
-@[deprecated (since := "2025-12-18")] alias FullSubcategory.id_def := FullSubcategory.id_hom
-@[deprecated (since := "2025-12-18")] alias FullSubcategory.comp_def := FullSubcategory.comp_hom
-
 variable {P} in
 /-- Constructor for morphisms in a full subcategory. -/
-@[simps]
+@[simps, implicit_reducible]
 def homMk {X Y : P.FullSubcategory} (f : X.obj ⟶ Y.obj) : X ⟶ Y where
   hom := f
 
@@ -131,7 +129,7 @@ variable {P' : ObjectProperty C}
 
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is
 an induced functor `P.FullSubcategory ⥤ P'.FullSubcategory`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ιOfLE (h : P ≤ P') : P.FullSubcategory ⥤ P'.FullSubcategory where
   obj X := ⟨X.1, h _ X.2⟩
   map f := homMk f.hom
@@ -157,7 +155,7 @@ variable {D : Type u'} [Category.{v'} D] (P Q : ObjectProperty D)
 
 /-- A functor which maps objects to objects satisfying a certain property induces a lift through
     the full subcategory of objects satisfying that property. -/
-@[simps]
+@[simps, implicit_reducible]
 def lift : C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
   map f := homMk (F.map f)

@@ -133,6 +133,7 @@ theorem exists_maximal_isAcyclic_of_le_isAcyclic
   · grind [sSup_le_iff]
   · exact isAcyclic_sSup_of_isAcyclic_directedOn c (by grind) hc.directedOn
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A connected component of an acyclic graph is a tree. -/
 lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComponent) :
     c.toSimpleGraph.IsTree where
@@ -293,6 +294,7 @@ theorem IsAcyclic.isPath_iff_isTrail (hG : G.IsAcyclic) {v w : V} (p : G.Walk v 
     p.IsPath ↔ p.IsTrail :=
   ⟨IsPath.isTrail, fun h ↦ hG.isPath_iff_isChain p |>.mpr <| p.isTrail_def.mp h |>.isChain⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     Finset.card G.edgeFinset + 1 = Fintype.card V := by
   have := hG.connected.nonempty
@@ -348,9 +350,8 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
   exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt
     (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
-    <| h.prop.connected_delete_edge_of_not_isBridge hbr
+    <| h.prop.preconnected.connected_deleteEdges_of_not_isBridge hbr
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   refine ⟨fun htree ↦ ⟨htree.connected, fun G' h' hle u v hadj ↦ ?_⟩, isTree_of_minimal_connected⟩
   have ⟨p, hp⟩ := h'.exists_isPath u v
@@ -400,9 +401,9 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   have : ∃ d ∈ p.darts, d.fst ∈ s ∧ d.snd ∉ s := p.exists_boundary_dart s rfl this
   rcases this with ⟨⟨⟨u', v'⟩, huv⟩, _, hu, hv⟩
   have : ¬F.Reachable v' u' := mt ConnectedComponent.sound <| s.mem_supp_iff u' |>.mp hu ▸ hv
-  suffices F ⊔ edge v' u' ≤ F by grind [Adj.reachable, sup_le_iff, le_iff_adj, edge_adj]
+  suffices F ⊔ edge v' u' ≤ F by grind [Adj.reachable, sup_le_iff, le_iff_adj]
   refine h.le_of_ge ⟨?_, h.prop.right.sup_edge_of_not_reachable this⟩ le_sup_left
-  grind [Maximal, sup_le, le_iff_adj, edge_adj, huv.symm]
+  grind [Maximal, sup_le, le_iff_adj, huv.symm]
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
@@ -477,6 +478,7 @@ lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card_eq_fintype_card, ← edgeFinset_card]
   exact Finset.card_mono <| by simpa
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
@@ -484,8 +486,8 @@ lemma isTree_iff_connected_and_card [Finite V] :
   refine ⟨fun h ↦ ⟨h.connected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
     fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
-  refine fun x y h ↦ by_contra fun hbr ↦
-    (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_gt ?_
+  refine fun x y h ↦ by_contra (h₁.preconnected.connected_deleteEdges_of_not_isBridge ·
+    |>.card_vert_le_card_edgeSet_add_one.not_gt ?_)
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
@@ -507,10 +509,25 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
 /-- A nontrivial tree has a vertex of degree one. -/
 lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (h : G.IsTree) : ∃ v, G.degree v = 1 := by
-  obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
-  use v
-  rw [← hv]
-  exact h.minDegree_eq_one_of_nontrivial
+  grind [G.exists_minimal_degree_vertex, minDegree_eq_one_of_nontrivial]
+
+/-- A nontrivial finite tree has at least two leaves. -/
+theorem IsTree.exists_ne_and_degree_eq_one [Nontrivial V] [Finite G.edgeSet] [G.LocallyFinite]
+    (h : G.IsTree) : ∃ u v, u ≠ v ∧ G.degree u = 1 ∧ G.degree v = 1 := by
+  have ⟨u, v, p, hp, hmax⟩ := exists_isPath_forall_isPath_length_le_length G
+  have ⟨u', v', hne⟩ := exists_pair_ne V
+  have ⟨p', hp'⟩ := h.connected.exists_isPath u' v'
+  have hnil : ¬p.Nil := by grind
+  refine ⟨u, v, hp.nil_iff_eq.not.mp hnil, ?_, ?_⟩ <;>
+    rw [degree_eq_one_iff_existsUnique_adj]
+  · refine ⟨_, p.adj_snd hnil, fun w hadj ↦ ?_⟩
+    apply h.isAcyclic.eq_snd_of_adj_start hp hadj
+    have : ¬(p.cons hadj.symm).IsPath := by grind [length_cons]
+    grind [hp.cons]
+  · refine ⟨_, p.adj_penultimate hnil |>.symm, fun w hadj ↦ ?_⟩
+    apply h.isAcyclic.eq_penultimate_of_adj_end hp hadj
+    have : ¬(p.concat hadj).IsPath := by grind [length_concat]
+    grind [hp.concat]
 
 /-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
 lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}

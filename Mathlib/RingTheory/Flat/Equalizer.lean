@@ -109,6 +109,7 @@ def LinearMap.tensorKerInv [Module.Flat R M] :
     (Module.Flat.lTensor_preserves_injective_linearMap (ker f).subtype
       (ker f).injective_subtype) (by simp [Module.Flat.ker_lTensor_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma LinearMap.lTensor_ker_subtype_tensorKerInv [Module.Flat R M]
     (x : ker (AlgebraTensorModule.lTensor S M f)) :
@@ -127,6 +128,7 @@ def LinearMap.tensorEqLocusInv [Module.Flat R M] :
     (Module.Flat.lTensor_preserves_injective_linearMap (eqLocus f g).subtype
       (eqLocus f g).injective_subtype) (by simp [Module.Flat.eqLocus_lTensor_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R M]
     (x : eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g)) :
@@ -137,7 +139,7 @@ private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R 
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] ker f →ₗ[R] ker (𝟙 ⊗ f)` is an isomorphism. -/
 def LinearMap.tensorKerEquiv [Module.Flat R M] :
     M ⊗[R] LinearMap.ker f ≃ₗ[S] LinearMap.ker (AlgebraTensorModule.lTensor S M f) :=
-  LinearEquiv.ofLinear (LinearMap.tensorKer S M f) (LinearMap.tensorKerInv S M f)
+  LinearEquiv.ofLinearMap (LinearMap.tensorKer S M f) (LinearMap.tensorKerInv S M f)
     (by ext x; simp)
     (by
       ext m x
@@ -162,7 +164,7 @@ def LinearMap.tensorEqLocusEquiv [Module.Flat R M] :
     M ⊗[R] eqLocus f g ≃ₗ[S]
       eqLocus (AlgebraTensorModule.lTensor S M f)
         (AlgebraTensorModule.lTensor S M g) :=
-  LinearEquiv.ofLinear (LinearMap.tensorEqLocus S M f g) (LinearMap.tensorEqLocusInv S M f g)
+  LinearEquiv.ofLinearMap (LinearMap.tensorEqLocus S M f g) (LinearMap.tensorEqLocusInv S M f g)
     (by ext; simp)
     (by
       ext m x

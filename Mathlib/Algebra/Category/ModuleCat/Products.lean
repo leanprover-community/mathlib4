@@ -29,7 +29,7 @@ section product
 
 /-- The product cone induced by the concrete product. -/
 def productCone : Fan Z :=
-  Fan.mk (ModuleCat.of R (∀ i : ι, Z i)) fun i =>
+  Fan.mk ↧(∀ i : ι, Z i) fun i =>
     ofHom (LinearMap.proj i : (∀ i : ι, Z i) →ₗ[R] Z i)
 
 /-- The concrete product cone is limiting. -/
@@ -47,7 +47,7 @@ variable [HasProduct Z]
 /-- The categorical product of a family of objects in `ModuleCat`
 agrees with the usual module-theoretical product.
 -/
-noncomputable def piIsoPi : ∏ᶜ Z ≅ ModuleCat.of R (∀ i, Z i) :=
+noncomputable def piIsoPi : ∏ᶜ Z ≅ ↧(∀ i, Z i) :=
   limit.isoLimitCone ⟨_, productConeIsLimit Z⟩
 
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
@@ -71,7 +71,7 @@ variable [DecidableEq ι]
 
 /-- The coproduct cone induced by the concrete coproduct. -/
 def coproductCocone : Cofan Z :=
-  Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
+  Cofan.mk ↧(⨁ i : ι, Z i) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The concrete coproduct cone is colimiting. -/
@@ -96,7 +96,7 @@ variable [HasCoproduct Z]
 /-- The categorical coproduct of a family of objects in `ModuleCat`
 agrees with direct sum.
 -/
-noncomputable def coprodIsoDirectSum : ∐ Z ≅ ModuleCat.of R (⨁ i, Z i) :=
+noncomputable def coprodIsoDirectSum : ∐ Z ≅ ↧(⨁ i, Z i) :=
   colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
 
 @[simp, elementwise]

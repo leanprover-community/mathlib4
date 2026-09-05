@@ -44,7 +44,7 @@ lemma ScottContinuousOn.fromProd [Preorder α] [Preorder β] [Preorder γ]
       (DirectedOn.fst hd₂) (isLUB_prod.mp hdp).1)
   ext : 1
   simp_all only [Subtype.exists, mem_image, Prod.exists,
-    exists_and_right, exists_eq_right, exists_prop, mem_setOf_eq]
+    exists_and_right, exists_eq_right, exists_prop, mem_ofPred_eq]
 
 lemma ScottContinuous.fromProd {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} (h₁ : ∀ a, ScottContinuous (fun b => f (a, b)))
