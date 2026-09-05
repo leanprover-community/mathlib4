@@ -585,8 +585,7 @@ lemma IsAcyclic.dist_ne_of_adj (hG : G.IsAcyclic) {u v w : V} (hadj : G.Adj v w)
   by_cases hw : w ∈ p.support
   · rw [hG.path_concat hq hp hadj.symm hw, q.length_concat]
     exact q.length.ne_add_one.symm
-  · have hv : v ∈ q.support := hG.mem_support_of_ne_mem_support_of_adj_of_isPath hq hp
-      hadj.symm hw
+  · have hv : v ∈ q.support := hG.mem_support_of_ne_mem_support_of_adj_of_isPath hq hp hadj.symm hw
     rw [hG.path_concat hp hq hadj hv, p.length_concat]
     exact p.length.ne_add_one
 
@@ -605,8 +604,7 @@ lemma IsTree.dist_eq_dist_add_one_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj
 
 /-- The unique two-coloring of a tree that colors the given vertex with zero -/
 noncomputable def IsTree.coloringTwoOfVert (hG : G.IsTree) (u : V) : G.Coloring (Fin 2) :=
-  Coloring.mk (fun v ↦ ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩) <| by
-    grind [dist_eq_dist_add_one_of_adj]
+  .mk (.ofNat 2 <| G.dist u ·) <| by grind [Fin.ofNat_eq_cast, dist_eq_dist_add_one_of_adj]
 
 /-- Arbitrary coloring with two colors for a tree -/
 noncomputable def IsTree.coloringTwo (hG : G.IsTree) : G.Coloring (Fin 2) :=
@@ -618,14 +616,10 @@ lemma IsTree.isBipartite (hG : G.IsTree) : G.IsBipartite :=
 /-- The unique two-coloring of a forest that colors the given vertices with zero -/
 noncomputable def IsAcyclic.coloringTwoOfVerts (hG : G.IsAcyclic) (verts : G.ConnectedComponent → V)
     (h : ∀ C, verts C ∈ C) : G.Coloring (Fin 2) where
-  toFun v :=
-    let u := verts <| G.connectedComponentMk v
-    ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩
-  map_rel' := by
-    intro u v hadj
-    have := ConnectedComponent.sound hadj.reachable
+  toFun v := .ofNat 2 <| G.dist (verts <| G.connectedComponentMk v) v
+  map_rel' hadj := by
     have := hG.dist_eq_dist_add_one_of_adj_of_reachable _ hadj <| ConnectedComponent.exact <| h _
-    grind [top_adj]
+    grind [top_adj, ConnectedComponent.sound hadj.reachable]
 
 /-- Arbitrary coloring with two colors for a forest -/
 noncomputable def IsAcyclic.coloringTwo (hG : G.IsAcyclic) : G.Coloring (Fin 2) :=
