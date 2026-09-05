@@ -1129,7 +1129,7 @@ lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndep
   simp [← isMaximumClique_compl, maximumClique_exists]
 
 @[simp]
-lemma isNIndepSet_singleton (a : α) {n : ℕ} : G.IsNIndepSet n {a} ↔ n = 1 := by
+lemma isNIndepSet_singleton {a : α} {n : ℕ} : G.IsNIndepSet n {a} ↔ n = 1 := by
   simp [isNIndepSet_iff, eq_comm]
 
 theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
