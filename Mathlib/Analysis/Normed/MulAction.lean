@@ -217,3 +217,7 @@ theorem Metric.smul_image_sphere {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
     smul_image_ball hs, smul_image_closedBall hs]
 
 end NormedDivisionRingModule
+
+open scoped ENNReal in
+instance : ENormSMulClass ℝ≥0∞ ℝ≥0∞ where
+  enorm_smul := by simp
