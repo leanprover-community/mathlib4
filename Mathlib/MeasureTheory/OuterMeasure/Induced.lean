@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.ENNReal.Action
+public import Mathlib.Basic.ENNReal.Action
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
@@ -116,7 +116,8 @@ theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     funext i
     apply extend_eq _ (h i)
   · obtain ⟨i, hi⟩ := h
-    exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
+    grw [← ENNReal.le_tsum i, extend_eq_top _ hi]
+    exact le_top
 
 end Subadditive
 

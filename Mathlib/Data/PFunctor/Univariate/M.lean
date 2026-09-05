@@ -213,22 +213,21 @@ theorem truncate_approx (x : M F) (n : ℕ) : truncate (x.approx <| n + 1) = x.a
   truncate_eq_of_agree _ _ (x.consistent _)
 
 /-- unfold an M-type -/
-def dest : M F → F (M F)
-  | x => ⟨head x, fun i => children x i⟩
+def dest : M F → F (M F) := fun x => .mk (head x) fun i => children x i
 
 namespace Approx
 
 /-- generates the approximations needed for `M.mk` -/
 protected def sMk (x : F (M F)) : ∀ n, CofixA F n
   | 0 => CofixA.continue
-  | succ n => CofixA.intro x.1 fun i => (x.2 i).approx n
+  | succ n => CofixA.intro x.fst fun i => (x.snd i).approx n
 
 protected theorem P_mk (x : F (M F)) : AllAgree (Approx.sMk x)
   | 0 => by constructor
   | succ n => by
     constructor
-    introv
-    apply (x.2 i).consistent
+    intro i
+    apply (x.snd i).consistent
 
 end Approx
 
@@ -242,37 +241,28 @@ are the same up to depth `n` -/
 inductive Agree' : ℕ → M F → M F → Prop
   | trivial (x y : M F) : Agree' 0 x y
   | step {n : ℕ} {a} (x y : F.B a → M F) {x' y'} :
-      x' = M.mk ⟨a, x⟩ → y' = M.mk ⟨a, y⟩ → (∀ i, Agree' n (x i) (y i)) → Agree' (succ n) x' y'
+      x' = M.mk (.mk a x) → y' = M.mk (.mk a y) →
+        (∀ i, Agree' n (x i) (y i)) → Agree' (succ n) x' y'
 
 @[simp]
 theorem dest_mk (x : F (M F)) : dest (M.mk x) = x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'
   intro n
   dsimp only [M.mk]
-  induction n with
-  | zero => apply @Subsingleton.elim _ CofixA.instSubsingleton
-  | succ n => ?_
-  dsimp only [Approx.sMk, dest, head]
-  rcases h : x.approx (succ n) with - | ⟨hd, ch⟩
-  have h' : hd = head' (x.approx 1) := by
-    rw [← head_succ' n, h, head']
-    apply x.consistent
-  revert ch
-  rw [h']
-  intro ch h
-  congr
-  ext a
-  dsimp only [children]
-  generalize hh : cast _ a = a''
-  rw [cast_eq_iff_heq] at hh
-  revert a''
-  rw [h]
-  intro _ hh
-  cases hh
+  induction n with | zero => apply @Subsingleton.elim _ CofixA.instSubsingleton | succ n ih
+  unfold Approx.sMk dest head
+  dsimp only [Obj.fst_mk, Obj.snd_mk]
+  cases h : x.approx (n + 1) with | intro hd ch
+  obtain rfl : hd = head' (x.approx 1) := by
+    rw [← head_succ' n 0 x.approx x.consistent, h]
+    rfl
+  refine congrArg (CofixA.intro (head' (x.approx 1))) (funext fun a => ?_)
+  unfold children
+  dsimp only
+  rw! [h]
   rfl
 
 theorem mk_inj {x y : F (M F)} (h : M.mk x = M.mk y) : x = y := by rw [← dest_mk x, h, dest_mk]
@@ -290,11 +280,11 @@ protected def casesOn {r : M F → Sort w} (x : M F) (f : ∀ x : F (M F), r (M.
 
 /-- destructor for M-types, similar to `casesOn` but also
 gives access directly to the root and subtrees on an M-type -/
-protected def casesOn' {r : M F → Sort w} (x : M F) (f : ∀ a f, r (M.mk ⟨a, f⟩)) : r x :=
-  M.casesOn x (fun ⟨a, g⟩ => f a g)
+protected def casesOn' {r : M F → Sort w} (x : M F) (f : ∀ a f, r (M.mk (.mk a f))) : r x :=
+  M.casesOn x (fun x => f x.fst x.snd)
 
 theorem approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
-    (M.mk ⟨a, f⟩).approx (succ i) = CofixA.intro a fun j => (f j).approx i :=
+    (M.mk (.mk a f)).approx (succ i) = CofixA.intro a fun j => (f j).approx i :=
   rfl
 
 @[simp]
@@ -344,26 +334,25 @@ theorem casesOn_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.
 
 @[simp]
 theorem casesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
-    (f : ∀ (a) (f : F.B a → M F), r (M.mk ⟨a, f⟩)) :
-    PFunctor.M.casesOn' (M.mk ⟨a, x⟩) f = f a x :=
-  @cases_mk F r ⟨a, x⟩ (fun ⟨a, g⟩ => f a g)
+    (f : ∀ (a) (f : F.B a → M F), r (M.mk (.mk a f))) :
+    PFunctor.M.casesOn' (M.mk (.mk a x)) f = f a x := rfl
 
 /-- `IsPath p x` tells us if `p` is a valid path through `x` -/
 inductive IsPath : Path F → M F → Prop
   | nil (x : M F) : IsPath [] x
   | cons (xs : Path F) {a} (x : M F) (f : F.B a → M F) (i : F.B a) :
-    x = M.mk ⟨a, f⟩ → IsPath xs (f i) → IsPath (⟨a, i⟩ :: xs) x
+    x = M.mk (.mk a f) → IsPath xs (f i) → IsPath (⟨a, i⟩ :: xs) x
 
 theorem isPath_cons {xs : Path F} {a a'} {f : F.B a → M F} {i : F.B a'} :
-    IsPath (⟨a', i⟩ :: xs) (M.mk ⟨a, f⟩) → a = a' := by
-  generalize h : M.mk ⟨a, f⟩ = x
+    IsPath (⟨a', i⟩ :: xs) (M.mk (.mk a f)) → a = a' := by
+  generalize h : M.mk (.mk a f) = x
   rintro (_ | ⟨_, _, _, _, rfl, _⟩)
   cases mk_inj h
   rfl
 
 theorem isPath_cons' {xs : Path F} {a} {f : F.B a → M F} {i : F.B a} :
-    IsPath (⟨a, i⟩ :: xs) (M.mk ⟨a, f⟩) → IsPath xs (f i) := by
-  generalize h : M.mk ⟨a, f⟩ = x
+    IsPath (⟨a, i⟩ :: xs) (M.mk (.mk a f)) → IsPath xs (f i) := by
+  generalize h : M.mk (.mk a f) = x
   rintro (_ | ⟨_, _, _, _, rfl, hp⟩)
   cases mk_inj h
   exact hp
@@ -407,15 +396,14 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
     · simp [*]
 
 @[simp]
-theorem head_mk (x : F (M F)) : head (M.mk x) = x.1 :=
+theorem head_mk (x : F (M F)) : head (M.mk x) = x.fst :=
   Eq.symm <|
     calc
       x.1 = (dest (M.mk x)).1 := by rw [dest_mk]
       _ = head (M.mk x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
-theorem children_mk {a} (x : F.B a → M F) (i : F.B (head (M.mk ⟨a, x⟩))) :
-    children (M.mk ⟨a, x⟩) i = x (cast (by rw [head_mk]) i) := by apply ext'; intro n; rfl
+theorem children_mk {a} (x : F.B a → M F) (i : F.B (head (M.mk (.mk a x)))) :
+    children (M.mk (.mk a x)) i = x (cast (by simp) i) := by apply ext'; intro n; rfl
 
 @[simp]
 theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F (M F)) (i : F.Idx) :
@@ -425,16 +413,17 @@ theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F (M F)) (i : F.Id
 
 @[simp]
 theorem isubtree_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F)
-    {i : F.B a} : isubtree (⟨_, i⟩ :: ps) (M.mk ⟨a, f⟩) = isubtree ps (f i) := by
+    {i : F.B a} : isubtree (⟨_, i⟩ :: ps) (M.mk (.mk a f)) = isubtree ps (f i) := by
   simp only [isubtree, dite_eq_left, isubtree, M.casesOn_mk']; rfl
 
 @[simp]
 theorem iselect_nil [DecidableEq F.A] [Inhabited (M F)] {a} (f : F.B a → M F) :
-    iselect nil (M.mk ⟨a, f⟩) = a := rfl
+    iselect nil (M.mk (.mk a f)) = a := rfl
 
 @[simp]
 theorem iselect_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F) {i} :
-    iselect (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) = iselect ps (f i) := by simp only [iselect, isubtree_cons]
+    iselect (⟨a, i⟩ :: ps) (M.mk (.mk a f)) = iselect ps (f i) := by
+  simp only [iselect, isubtree_cons]
 
 theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
   dsimp only [M.corec, M.mk]
@@ -508,9 +497,9 @@ local infixl:50 " ~ " => R
 infinite tree-like structures -/
 structure IsBisimulation : Prop where
   /-- The head of the trees are equal -/
-  head : ∀ {a a'} {f f'}, M.mk ⟨a, f⟩ ~ M.mk ⟨a', f'⟩ → a = a'
+  head : ∀ {a a'} {f f'}, M.mk (.mk a f) ~ M.mk (.mk a' f') → a = a'
   /-- The tails are equal -/
-  tail : ∀ {a} {f f' : F.B a → M F}, M.mk ⟨a, f⟩ ~ M.mk ⟨a, f'⟩ → ∀ i : F.B a, f i ~ f' i
+  tail : ∀ {a} {f f' : F.B a → M F}, M.mk (.mk a f) ~ M.mk (.mk a f') → ∀ i : F.B a, f i ~ f' i
 
 set_option backward.isDefEq.respectTransparency false in
 theorem nth_of_bisim [Inhabited (M F)] [DecidableEq F.A]
@@ -519,8 +508,8 @@ theorem nth_of_bisim [Inhabited (M F)] [DecidableEq F.A]
       IsPath ps s₁ ∨ IsPath ps s₂ →
         iselect ps s₁ = iselect ps s₂ ∧
           ∃ (a : _) (f f' : F.B a → M F),
-            isubtree ps s₁ = M.mk ⟨a, f⟩ ∧
-              isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i := by
+            isubtree ps s₁ = M.mk (.mk a f) ∧
+              isubtree ps s₂ = M.mk (.mk a f') ∧ ∀ i : F.B a, f i ~ f' i := by
   intro h₀ hh
   induction s₁ using PFunctor.M.casesOn' with | _ a f
   induction s₂ using PFunctor.M.casesOn' with | _ a' f'
@@ -570,15 +559,16 @@ theorem dest_corec (g : α → P α) (x : α) : M.dest (M.corec g x) = P.map (M.
 
 set_option backward.isDefEq.respectTransparency false in
 theorem bisim (R : M P → M P → Prop)
-    (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
+    (h : ∀ x y, R x y → ∃ a f f',
+      M.dest x = (.mk a f) ∧ M.dest y = (.mk a f') ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := by
   introv h'
   have := Inhabited.mk x.head
   apply eq_of_bisim R _ _ _ h'; clear h' x y
   constructor <;> introv ih <;> rcases h _ _ ih with ⟨a'', g, g', h₀, h₁, h₂⟩ <;> clear h
-  · replace h₀ := congr_arg Sigma.fst h₀
-    replace h₁ := congr_arg Sigma.fst h₁
-    simp only [dest_mk] at h₀ h₁
+  · replace h₀ := congr_arg Obj.fst h₀
+    replace h₁ := congr_arg Obj.fst h₁
+    simp only [dest_mk, Obj.fst_mk] at h₀ h₁
     rw [h₀, h₁]
   · simp only [dest_mk] at h₀ h₁
     cases h₀
@@ -587,8 +577,8 @@ theorem bisim (R : M P → M P → Prop)
 
 theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
     (h : ∀ x, Q x → ∃ a f f',
-          M.dest (u x) = ⟨a, f⟩
-          ∧ M.dest (v x) = ⟨a, f'⟩
+          M.dest (u x) = (.mk a f)
+          ∧ M.dest (v x) = (.mk a f')
           ∧ ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : M P => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
@@ -600,7 +590,8 @@ theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
 
 -- for the record, show M_bisim follows from _bisim'
 theorem bisim_equiv (R : M P → M P → Prop)
-    (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
+    (h : ∀ x y, R x y → ∃ a f f',
+      M.dest x = (.mk a f) ∧ M.dest y = (.mk a f') ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := fun x y Rxy =>
   let Q : M P × M P → Prop := fun p => R p.fst p.snd
   bisim' Q Prod.fst Prod.snd
@@ -615,9 +606,10 @@ theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f 
   apply bisim' (fun _ => True) _ _ _ _ trivial
   clear x
   intro x _
-  rcases gxeq : g x with ⟨a, f'⟩
-  have h₀ : M.dest (f x) = ⟨a, f ∘ f'⟩ := by rw [hyp, gxeq, PFunctor.map_eq]
-  have h₁ : M.dest (M.corec g x) = ⟨a, M.corec g ∘ f'⟩ := by rw [dest_corec, gxeq, PFunctor.map_eq]
+  cases gxeq : g x with | mk a f'
+  have h₀ : M.dest (f x) = .mk a (f ∘ f') := by rw [hyp, gxeq, PFunctor.map_eq]
+  have h₁ : M.dest (M.corec g x) = .mk a (M.corec g ∘ f') := by
+    rw [dest_corec, gxeq, PFunctor.map_eq]
   refine ⟨_, _, _, h₀, h₁, ?_⟩
   intro i
   exact ⟨f' i, trivial, rfl, rfl⟩
