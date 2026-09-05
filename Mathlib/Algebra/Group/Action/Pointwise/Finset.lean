@@ -144,20 +144,20 @@ end Semigroup
 section SMul
 variable [SMul α β] [DecidableEq β] {s t : Finset β} {a : α}
 
-theorem IsSMulRegular.smul_finset_subset_smul_finset_iff (h : IsSMulRegular β a) :
+theorem smul_finset_subset_smul_finset_iff_of_isSMulRegular (h : IsSMulRegular β a) :
     a • s ⊆ a • t ↔ s ⊆ t := image_subset_image_iff h
 
-theorem IsSMulRegular.smul_finset_inter (h : IsSMulRegular β a) :
+theorem smul_finset_inter_of_isSMulRegular (h : IsSMulRegular β a) :
     a • (s ∩ t) = a • s ∩ a • t := image_inter _ _ h
 
-theorem IsSMulRegular.smul_finset_sdiff (h : IsSMulRegular β a) :
+theorem smul_finset_sdiff_of_isSMulRegular (h : IsSMulRegular β a) :
     a • (s \ t) = a • s \ a • t := image_sdiff _ _ h
 
 open scoped symmDiff in
-theorem IsSMulRegular.smul_finset_symmDiff (h : IsSMulRegular β a) :
+theorem smul_finset_symmDiff_of_isSMulRegular (h : IsSMulRegular β a) :
     a • s ∆ t = (a • s) ∆ (a • t) := image_symmDiff _ _ h
 
-theorem IsSMulRegular.card_smul_finset (h : IsSMulRegular β a) (s : Finset β) :
+theorem card_smul_finset_of_isSMulRegular (h : IsSMulRegular β a) (s : Finset β) :
     (a • s).card = s.card := card_image_of_injective _ h
 
 end SMul
