@@ -7,7 +7,7 @@ Authors: Arthur Paulino, Jon Eugster, Marcelo Lynch
 import Cache.Cli
 import Cache.Requests
 import Cache.Marker
-import Cache.Upload
+import Cache.Uploader
 import Cache.Query
 import Cache.Warning
 
@@ -150,10 +150,10 @@ variables above, except MATHLIB_CACHE_PUT_URL, where any set value counts.
 See Cache/README.md for more details.
 "
 
-/-- Commands which (potentially) call `curl`. `put-staged` validates curl in
-its own early dispatch. -/
+/-- Commands which download with `curl`. Uploads validate curl at dispatch,
+when the curl engine is selected (`putStaged`). -/
 def curlArgs : List String :=
-  ["get", "get!", "get-", "put", "put!"]
+  ["get", "get!", "get-"]
 
 open Cache Cli IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
@@ -269,17 +269,9 @@ def main (args : List String) : IO Unit := do
     -- it lets `cache query` discover cached commits with a cheap HEAD probe.
     let markerSha? ← if container?.isSome then getRepoScope else pure none
     let auth ← getUploadAuth
-    let files ← getFilesWithExtension stagingDir "ltar"
-    -- `--uploader` selects the transfer engine; the rclone engine carries
-    -- the S3 credentials it signs with.
-    match ← resolveUploadEngine uploaderStr? auth with
-    | .rclone keyId secret sessionToken? =>
-      putStagedViaRclone dest keyId secret sessionToken? markerSha? stagingDir
-        (files.map (·.fileName.get!)) (overwrite := false)
-    | .curl =>
-      discard validateCurl
-      putStagedViaCurl dest files (tempConfigFilePath := stagingDir / "curl.config")
-        (overwrite := false) auth markerSha?
+    let engine ← resolveUploadEngine uploaderStr? auth
+    let fileNames := (← getFilesWithExtension stagingDir "ltar").map (·.fileName.get!)
+    putStaged dest auth engine stagingDir fileNames (overwrite := false) markerSha?
     return
   | "put-staged" :: _ =>
     IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] \
@@ -328,9 +320,7 @@ def main (args : List String) : IO Unit := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   -- `pack`-and-upload: the hash memo scopes the file list to what this
   -- checkout's build links, so nothing else in the shared per-user cache
-  -- directory leaves the machine. It shares `put-staged`'s destination,
-  -- credential, and engine resolution; both engines upload only the listed
-  -- files, so the build-scoped guarantee holds on either one.
+  -- directory leaves the machine.
   let put (overwrite := false) := do
     let repo := repo?.getD MATHLIBREPO
     let dest ← stagedUploadDest container? repo
@@ -342,13 +332,7 @@ def main (args : List String) : IO Unit := do
     -- it lets `cache query` discover cached commits with a cheap HEAD probe.
     let markerSha? ← if container?.isSome then getRepoScope else pure none
     let fileNames ← pack overwrite (verbose := true)
-    match engine with
-    | .rclone keyId secret sessionToken? =>
-      putStagedViaRclone dest keyId secret sessionToken? markerSha? IO.CACHEDIR
-        fileNames overwrite
-    | .curl =>
-      let files := fileNames.map fun (f : String) => IO.CACHEDIR / f
-      putStagedViaCurl dest files IO.CURLCFG overwrite auth markerSha?
+    putStaged dest auth engine IO.CACHEDIR fileNames overwrite markerSha?
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do

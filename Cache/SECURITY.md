@@ -159,7 +159,8 @@ The trust model does not attempt to defend against:
 |------------------------------------------------|------------------------------------------------------------------|
 | Container model, URL shape, per-repo defaults  | [`Cache/Infra.lean`](Infra.lean)                                 |
 | Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`)      |
-| Upload destination, credentials, and engines   | [`Cache/Upload.lean`](Upload.lean) (`stagedUploadDest`, `uploadAuthFrom`) |
+| Upload destination and credentials             | [`Cache/Upload.lean`](Upload.lean) (`stagedUploadDest`, `uploadAuthFrom`) |
+| Transfer engines and dispatch                  | [`Cache/Uploader.lean`](Uploader.lean), [`Cache/UploadCurl.lean`](UploadCurl.lean), [`Cache/UploadRclone.lean`](UploadRclone.lean) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md)   |
 | OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
