@@ -20,7 +20,6 @@ Uniform spaces are a generalization of metric spaces and topological groups.
 In this file we define a complete lattice structure on the type `UniformSpace X`
 of uniform structures on `X`, as well as the pullback (`UniformSpace.comap`) of uniform structures
 coming from the pullback of filters.
-Like distance functions, uniform structures cannot be pushed forward in general.
 
 ## Notation
 
@@ -326,6 +325,85 @@ instance : PartialOrder (UniformSpace α) :=
 
 protected theorem UniformSpace.le_def {u₁ u₂ : UniformSpace α} : u₁ ≤ u₂ ↔ 𝓤[u₁] ≤ 𝓤[u₂] := Iff.rfl
 
+set_option warn.classDefReducibility false in
+/-- The finest uniformity coarser than a given filter `f : Filter (α × α)`. -/
+def UniformSpace.generateFilter (f : Filter (α × α)) : UniformSpace α :=
+  .ofCore
+  { uniformity.sets := { U | ∃ seq : ℕ → Set (α × α), seq 0 = U ∧
+      ∀ n, seq n ∈ f ⊔ map Prod.swap f ⊔ 𝓟 SetRel.id ∧ seq (n + 1) ○ seq (n + 1) ⊆ seq n }
+    uniformity.univ_sets := ⟨fun _ => univ, by simp⟩
+    uniformity.sets_of_superset := by
+      rintro x y ⟨seq, rfl, hseq⟩ hxy
+      refine ⟨fun n => Nat.casesOn n y (fun n => seq (n + 1)), rfl,
+        fun n => Nat.casesOn n ⟨?_, ?_⟩ (fun n => hseq (n + 1))⟩
+      · exact mem_of_superset (hseq 0).1 hxy
+      · exact (hseq 0).2.trans hxy
+    uniformity.inter_sets := by
+      rintro x y ⟨seqx, rfl, hseqx⟩ ⟨seqy, rfl, hseqy⟩
+      refine ⟨fun n => seqx n ∩ seqy n, rfl, fun n => ⟨?_, ?_⟩⟩
+      · exact inter_mem (hseqx n).1 (hseqy n).1
+      · apply subset_inter
+        · exact subset_trans (SetRel.comp_subset_comp (by simp) (by simp)) (hseqx n).2
+        · exact subset_trans (SetRel.comp_subset_comp (by simp) (by simp)) (hseqy n).2
+    refl := by
+      rintro U ⟨seq, rfl, hseq⟩
+      exact (hseq 0).1.2
+    symm := by
+      rintro U ⟨seq, rfl, hseq⟩
+      refine ⟨fun n => Prod.swap ⁻¹' seq n, rfl, fun n => ⟨?_, ?_⟩⟩
+      · rw [← mem_map, map_sup, map_principal, image_swap_eq_preimage_swap, ← SetRel.inv,
+          SetRel.inv_id, sup_comm f, map_sup, map_map, Prod.swap_swap_eq, map_id]
+        exact (hseq n).1
+      · beta_reduce
+        rw [← SetRel.inv, ← SetRel.inv, ← SetRel.inv_comp]
+        exact SetRel.inv_mono (hseq n).2
+    comp := by
+      rintro U ⟨seq, rfl, hseq⟩
+      refine mem_of_superset ?_ (hseq 0).2
+      apply mem_lift'
+      exact ⟨fun n => seq (n + 1), rfl, fun n => hseq (n + 1)⟩ }
+
+theorem UniformSpace.mem_uniformity_generateFilter {f : Filter (α × α)} {s : SetRel α α} :
+    s ∈ 𝓤[generateFilter f] ↔ ∃ seq : ℕ → Set (α × α), seq 0 = s ∧
+      ∀ n, seq n ∈ f ⊔ map Prod.swap f ⊔ 𝓟 SetRel.id ∧ seq (n + 1) ○ seq (n + 1) ⊆ seq n :=
+  Iff.rfl
+
+theorem UniformSpace.gc_generateFilter_uniformity :
+    GaloisConnection (@generateFilter α) (@uniformity α) := by
+  intro f u
+  constructor
+  · intro hu U hU
+    obtain ⟨seq, rfl, hseq⟩ := hu hU
+    exact (hseq 0).1.1.1
+  · intro hf U hU
+    choose desc hdesc using (@comp_mem_uniformity_sets α u)
+    let seq (n : Nat) : 𝓤[u].sets :=
+      Nat.rec n (zero := ⟨U, hU⟩) (succ := fun n ih => ⟨desc ih.2, (hdesc ih.2).1⟩)
+    refine ⟨fun n => (seq n).1, rfl, fun n => ⟨?_, ?_⟩⟩
+    · refine ⟨⟨?_, ?_⟩, ?_⟩
+      · exact hf (seq n).2
+      · exact Filter.map_mono hf (uniformity_le_symm (seq n).2)
+      · exact refl_le_uniformity (seq n).2
+    · exact (hdesc (seq n).2).2
+
+/-- Galois insertion between `generateFilter` and `uniformity`. -/
+def UniformSpace.giGenerateFilter :
+    GaloisInsertion (@generateFilter α) (@uniformity α) where
+  choice f hf :=
+    haveI hf : 𝓤[generateFilter f] = f :=
+      le_antisymm hf (gc_generateFilter_uniformity.le_u_l f)
+    .ofCore
+    { uniformity := f
+      refl := hf ▸ @refl_le_uniformity α (_)
+      symm := hf ▸ @symm_le_uniformity α (_)
+      comp := hf ▸ @comp_le_uniformity α (_) }
+  gc := gc_generateFilter_uniformity
+  le_l_u := by
+    intro u
+    rw [UniformSpace.le_def]
+    exact gc_generateFilter_uniformity.le_u_l 𝓤[u]
+  choice_eq f hf := UniformSpace.ext (le_antisymm (gc_generateFilter_uniformity.le_u_l f) hf)
+
 instance : InfSet (UniformSpace α) :=
   ⟨fun s =>
     UniformSpace.ofCore
@@ -471,6 +549,55 @@ theorem uniformContinuous_comap {f : α → β} [u : UniformSpace β] :
 theorem uniformContinuous_comap' {f : γ → β} {g : α → γ} [v : UniformSpace β] [u : UniformSpace α]
     (h : UniformContinuous (f ∘ g)) : @UniformContinuous α γ u (UniformSpace.comap f v) g :=
   tendsto_comap_iff.2 h
+
+set_option warn.classDefReducibility false in
+/-- Given `f : α → β` and a uniformity `u` on `α`, the image of `u` under `f`
+is the finest uniformity on `β` making the map `f` uniformly continuous.
+It does not always agree with the coinduced topology. -/
+def UniformSpace.map (f : α → β) (u : UniformSpace α) : UniformSpace β :=
+  UniformSpace.generateFilter (𝓤[u].map (Prod.map f f))
+
+theorem UniformSpace.gc_map_comap (f : α → β) :
+    GaloisConnection (UniformSpace.map f) (UniformSpace.comap f) :=
+  fun _ _ =>
+    ((Filter.gc_map_comap (Prod.map f f)).compose
+      gc_generateFilter_uniformity).le_iff_le
+
+@[simp]
+theorem uniformSpace_map_id {α : Type*} : UniformSpace.map (id : α → α) = id := by
+  funext u
+  apply (UniformSpace.gc_map_comap id).l_unique GaloisConnection.id
+  simp
+
+theorem UniformSpace.map_map {α β γ} {uα : UniformSpace α} {f : α → β} {g : β → γ} :
+    UniformSpace.map (g ∘ f) uα = UniformSpace.map g (UniformSpace.map f uα) := by
+  apply (UniformSpace.gc_map_comap (g ∘ f)).l_unique
+    ((UniformSpace.gc_map_comap f).compose (UniformSpace.gc_map_comap g))
+  simp [UniformSpace.comap_comap]
+
+theorem UniformSpace.map_sup {α γ} {u₁ u₂ : UniformSpace α} {f : α → γ} :
+    (u₁ ⊔ u₂).map f = u₁.map f ⊔ u₂.map f :=
+  (UniformSpace.gc_map_comap f).l_sup
+
+theorem UniformSpace.map_iSup {ι α γ} {u : ι → UniformSpace α} {f : α → γ} :
+    (⨆ i, u i).map f = ⨆ i, (u i).map f :=
+  (UniformSpace.gc_map_comap f).l_iSup
+
+theorem UniformSpace.map_mono {α γ} {f : α → γ} :
+    Monotone fun u : UniformSpace α => u.map f :=
+  (UniformSpace.gc_map_comap f).monotone_l
+
+theorem uniformContinuous_iff_map_le {α β} {uα : UniformSpace α} {uβ : UniformSpace β}
+    {f : α → β} : UniformContinuous f ↔ uα.map f ≤ uβ := by
+  rw [uniformContinuous_iff_le_comap, (UniformSpace.gc_map_comap f).le_iff_le]
+
+theorem uniformContinuous_map {f : α → β} [u : UniformSpace α] :
+    @UniformContinuous α β u (UniformSpace.map f u) f := by
+  rw [uniformContinuous_iff_map_le]
+
+theorem uniformContinuous_map' {f : α → γ} {g : γ → β} [u : UniformSpace α] [v : UniformSpace β]
+    (h : UniformContinuous (g ∘ f)) : @UniformContinuous γ β (UniformSpace.map f u) v g := by
+  rwa [uniformContinuous_iff_map_le, ← UniformSpace.map_map, ← uniformContinuous_iff_map_le]
 
 namespace UniformSpace
 
