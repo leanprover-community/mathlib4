@@ -286,6 +286,15 @@ lemma finrank_orthogonal (hB : B.Nondegenerate) (W : Submodule K V) :
   rw [hB.ker_eq_bot, inf_bot_eq, finrank_bot, add_zero] at this
   lia
 
+/-- A subspace contained in its own orthogonal complement — a totally isotropic subspace — has
+dimension at most half the dimension of the ambient space, provided `B` is nondegenerate. -/
+lemma two_mul_finrank_le_of_le_orthogonal (hB : B.Nondegenerate) {W : Submodule K V}
+    (hW : W ≤ B.orthogonal W) : 2 * finrank K W ≤ finrank K V := by
+  have := Submodule.finrank_mono hW
+  have := finrank_orthogonal hB W
+  have := Submodule.finrank_le W
+  lia
+
 lemma orthogonal_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
     B.orthogonal (B.orthogonal W) = W := by
   apply (eq_of_le_of_finrank_le (LinearMap.BilinForm.le_orthogonal_orthogonal hB₀) _).symm
