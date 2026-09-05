@@ -49,7 +49,7 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
     [IsLocalRing R] (I : Ideal R) (hp : IsLocalRing.maximalIdeal R ∈ I.minimalPrimes) :
     IsArtinianRing (R ⧸ I) :=
   have : Ring.KrullDimLE 0 (R ⧸ I) := Ring.krullDimLE_zero_iff.mpr fun J prime ↦
-    Ideal.isMaximal_of_isIntegral_of_isMaximal_comap _ <| by
+    Ideal.isMaximal_of_isIntegral_of_isMaximal_under _ <| by
       convert! IsLocalRing.maximalIdeal.isMaximal R
       rw [Ideal.minimalPrimes, Set.mem_ofPred] at hp
       have := prime.comap (Ideal.Quotient.mk I)

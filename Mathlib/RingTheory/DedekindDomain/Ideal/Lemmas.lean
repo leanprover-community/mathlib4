@@ -1218,7 +1218,7 @@ def under {B : Type*} [CommRing B] [IsDomain B] [Algebra A B] [Algebra.IsIntegra
     (w : HeightOneSpectrum B) : HeightOneSpectrum A where
   asIdeal := w.asIdeal.under A
   isPrime := .under A w.asIdeal
-  ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
+  ne_bot := mt Ideal.eq_bot_of_under_eq_bot w.ne_bot
 
 end IsDedekindDomain.HeightOneSpectrum
 
