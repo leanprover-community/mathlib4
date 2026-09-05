@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Category.Preord
 public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # Category of partial orders

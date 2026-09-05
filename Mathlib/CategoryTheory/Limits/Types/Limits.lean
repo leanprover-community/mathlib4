@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Basic.UnivLE
 public import Mathlib.CategoryTheory.Limits.HasLimits
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # Limits in the category of types.
