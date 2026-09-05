@@ -297,28 +297,6 @@ lemma existsOpenSwelling_preservingFiniteIntersections
 
 end NormalSpace
 
-/-- An open cover of a compact normal space has a finite subcover, indexed without repetitions,
-and an open shrinking whose closures lie in the selected members. -/
-theorem TopologicalSpace.IsOpenCover.exists_finite_shrinking
-    {X : Type u} [TopologicalSpace X] [CompactSpace X] [NormalSpace X]
-    {U : ι → Opens X} (hU : IsOpenCover U) :
-    ∃ (κ : Type u) (_ : Finite κ) (V W : κ → Opens X),
-      IsOpenCover V ∧ IsOpenCover W ∧
-      Injective (fun i ↦ (V i : Set X)) ∧
-      (∀ i, V i ∈ range U) ∧ ∀ i, closure (W i : Set X) ⊆ V i := by
-  classical
-  have hU' : IsOpenCover (fun V : range U ↦ V.1) :=
-    IsOpenCover.mk ((iSup_range' id U).trans hU.iSup_eq_top)
-  obtain ⟨s, hs⟩ := hU'.exists_finite_of_compactSpace
-  let V : s → Opens X := fun i ↦ i.1.1
-  have hV : IsOpenCover V := hs
-  obtain ⟨W, hWcover, hWopen, hWV⟩ := exists_iUnion_eq_closure_subset
-    (fun i ↦ (V i).isOpen) (fun _ ↦ Set.toFinite _) hV.iSup_set_eq_univ
-  exact ⟨s, inferInstance, V, fun i ↦ ⟨W i, hWopen i⟩,
-    hV, IsOpenCover.of_sets hWopen hWcover,
-    SetLike.coe_injective.comp (Subtype.val_injective.comp Subtype.val_injective),
-    fun i ↦ i.1.2, hWV⟩
-
 section T2LocallyCompactSpace
 
 open ShrinkingLemma
