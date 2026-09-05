@@ -727,12 +727,12 @@ theorem congrL_tmul (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) (x : E) (y : G) :
     congrL f g (x ⊗ₜ y) = f x ⊗ₜ g y :=
   rfl
 
-theorem congrL_symm_tmul (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) (x : F) (y : H) :
+theorem symm_congrL_tmul (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) (x : F) (y : H) :
     (congrL f g).symm (x ⊗ₜ y) = f.symm x ⊗ₜ g.symm y :=
   rfl
 
 @[simp]
-theorem congrL_symm (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) :
+theorem symm_congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) :
     (congrL f g).symm = congrL f.symm g.symm :=
   rfl
 
@@ -754,18 +754,18 @@ section congr_congr
 variable {F₂ H₂ : Type*} [NormedAddCommGroup F₂] [InnerProductSpace 𝕜 F₂] [NormedAddCommGroup H₂]
   [InnerProductSpace 𝕜 H₂] (f₂ : F ≃L[𝕜] F₂) (g₂ : H ≃L[𝕜] H₂) (f₁ : E ≃L[𝕜] F) (g₁ : G ≃L[𝕜] H)
 
-theorem congrL_trans :
+theorem congrL_trans_trans :
     congrL (f₁.trans f₂) (g₁.trans g₂) = (congrL f₁ g₁).trans (congrL f₂ g₂) := by
   ext; simp [congrL, map_map]
 
-theorem congrL_congr (x : E ⊗[𝕜] G) :
+theorem congrL_congrL (x : E ⊗[𝕜] G) :
     congrL f₂ g₂ (congrL f₁ g₁ x) = congrL (f₁.trans f₂) (g₁.trans g₂) x :=
-  DFunLike.congr_fun (congrL_trans ..).symm x
+  DFunLike.congr_fun (congrL_trans_trans ..).symm x
 
 end congr_congr
 
-theorem congrL_mul (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (f' : E ≃L[𝕜] E) (g' : G ≃L[𝕜] G) :
-    congrL (f * f') (g * g') = congrL f g * congrL f' g' := congrL_trans ..
+theorem congrL_mul_mul (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (f' : E ≃L[𝕜] E) (g' : G ≃L[𝕜] G) :
+    congrL (f * f') (g * g') = congrL f g * congrL f' g' := congrL_trans_trans ..
 
 @[simp]
 theorem congrL_pow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℕ) :
