@@ -32,7 +32,9 @@ open Lean Meta Qq
 
 namespace ExistsAndEq
 
-/-- Type for storing the chosen branch at `And` nodes. -/
+/-- Type for storing the step taken at each node: the chosen branch at an `And` node, and, at an
+`Exists` node, whether we enter its binder type (`existsType`, and then the quantifier stays in
+place) or its body (`existsBody`, and then the quantifier is moved to the front). -/
 inductive GoTo
 | andLeft | andRight | existsType | existsBody
 deriving BEq, Inhabited
@@ -77,10 +79,58 @@ partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
   | And L R =>
     ((.andLeft :: ·) <$> findEqPath a L) <|> ((.andRight :: ·) <$> findEqPath a R)
   | Exists tb pb =>
-    guard !(tb.containsFVar a.fvarId!)
-    let .lam _ _ body _ := pb | failure
-    (.existsBody :: ·) <$> findEqPath a body
+    if !(tb.containsFVar a.fvarId!) then
+      let .lam _ _ body _ := pb | failure
+      (.existsBody :: ·) <$> findEqPath a body
+    else
+      -- This quantifier cannot be moved outside, but the equation may be hidden in `tb` itself.
+      -- It makes sense only when `tb` is a `Prop`. We don't check it here, but if it's not,
+      -- `tb` will not match anything in the `match_expr` above.
+      -- TODO: should we check?
+      (.existsType :: ·) <$> findEqPath a tb
   | _ => failure
+
+/-- Assuming `T'` is `T` with existential quantifiers removed and abstracted as `exs` this function
+proves the original `T` from `h : T'`. This is used when we hoist binders from inside `P` in
+`∃ h : P, Q h` and restore the proof `h` that `Q` consumes. -/
+partial def proveFromHoisted {T T' : Q(Prop)} (h : Q($T')) (exs : List VarQ) (path : Path) :
+    MetaM Q($T) := do
+  if path.all (· != .existsBody) then
+    let _ : $T' =Q $T := ⟨⟩
+    return q($h)
+  match path with
+  | [] => panic! "`path` is empty"
+  | .andLeft :: tl =>
+    let ~q($L ∧ $R) := T | panic! "path starts with `andLeft`, but `T` is not `And`"
+    let ~q($L' ∧ $R') := T' | panic! "path starts with `andLeft`, but `T'` is not `And`"
+    let _ : $R' =Q $R := ⟨⟩
+    let pfL : Q($L) ← proveFromHoisted q(And.left $h) exs tl
+    return q(And.intro $pfL (And.right $h))
+  | .andRight :: tl =>
+    let ~q($L ∧ $R) := T | panic! "path starts with `andRight`, but `T` is not `And`"
+    let ~q($L' ∧ $R') := T' | panic! "path starts with `andRight`, but `T'` is not `And`"
+    let _ : $L' =Q $L := ⟨⟩
+    let pfR : Q($R) ← proveFromHoisted q(And.right $h) exs tl
+    return q(And.intro (And.left $h) $pfR)
+  | .existsBody :: tl =>
+    match exs with
+    | [] => panic! "path starts with `existsBody`, but `exs` is empty"
+    | ⟨v, γ, e⟩ :: exsTl =>
+    let ~q(@Exists.{v} $β $pb) := T
+      | panic! "path starts with `existsBody`, but `T` is not `Exists`"
+    let _ : $γ =Q $β := ⟨⟩
+    let pf : Q($pb $e) ← proveFromHoisted h exsTl tl
+    return q(Exists.intro $e $pf)
+  | .existsType :: tl =>
+    let ~q(@Exists $S $c) := T | panic! "path starts with `existsType`, but `T` is not `Exists`"
+    let ~q(@Exists $S' $c') := T' | panic! "path starts with `existsType`, but `T'` is not `Exists`"
+    withLocalDeclQ .anonymous .default S' fun k => do
+    withLocalDeclQ .anonymous .default q($c' $k) fun hc => do
+      let w : Q($S) ← proveFromHoisted k exs tl
+      have hc : Q($c $w) := hc
+      let inner : Q(@Exists $S $c) := q(Exists.intro $w $hc)
+      let f : Q(∀ k, $c' k → @Exists $S $c) ← mkLambdaFVars #[k, hc] inner
+      return q(Exists.elim $h $f)
 
 /-- Given `P : Prop` and `a : α`, traverses the expression `P` to find a subexpression of
 the form `a = a'` or `a' = a` for some `a'`. It branches at each `And` and walks into
@@ -118,8 +168,18 @@ where
     let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjuction"
     let (fvars, lctx, P', a') ← go a q($R) tl
     return (fvars, lctx, q($L ∧ $P'), a')
-  | .existsType :: _ =>
-    panic! "not implemented"
+  | .existsType :: tl =>
+    let ~q(@Exists $β $pb) := P | panic! "path starts with `existsType`, but `P` is not `Exists`"
+    -- the quantifier stays in place, with its binder type (a proposition, since it contains the
+    -- equation) replaced by what remains of it
+    let (fvars, lctx, T', a') ← go a β tl
+    let node : Q(Prop) ← withLCtx' lctx do
+      withLocalDeclQ .anonymous .default T' fun h => do
+        let anchor : Q($β) ← proveFromHoisted h fvars tl
+        let body : Q(Prop) := q($pb $anchor)
+        let p' : Q($T' → Prop) ← mkLambdaFVars #[h] body
+        return q(Exists $p')
+    return (fvars, lctx, node, a')
   | .existsBody :: tl =>
     let ~q(@Exists $β $pb) := P | panic! "path starts with `existsBody`, but `P` is not `Exists`"
     lambdaBoundedTelescope pb 1 fun bs (body : Q(Prop)) => do
@@ -178,7 +238,14 @@ partial def destruct {P goal : Q(Prop)} (h : Q($P)) (exs : List VarQ) (path : Pa
       let pf ← destruct h' exs tl (acc ++ [⟨q($R), leaf⟩]) k
       let f : Q($L → $R → $goal) ← mkLambdaFVars #[h', leaf] pf
       return q(And.elim $f $h)
-  | .existsType :: _ => panic! "not implemented"
+  | .existsType :: tl =>
+    let ~q(@Exists $β $pb) := P
+      | panic! "path starts with `existsType`, but `P` is not `Exists`"
+    withLocalDeclQ .anonymous .default β fun h₀ => do
+    withLocalDeclQ .anonymous .default q($pb $h₀) fun leaf => do
+      let pf ← destruct h₀ exs tl (acc ++ [⟨q($pb $h₀), leaf⟩]) k
+      let f : Q(∀ h₀, $pb h₀ → $goal) ← mkLambdaFVars #[h₀, leaf] pf
+      return q(Exists.elim $h $f)
 
 /-- Constructs a proof of `goal` following `path`, as the chain of `refine Exists.intro … ?_` and
 `refine And.intro … ?_` in the docstring of `mkBeforeToAfter` does: at an `existsBody` step the
@@ -220,7 +287,17 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     have leaf : Q($R) := leaf
     let pf : Q($L) ← construct exs tl leavesTl
     return q(And.intro $pf $leaf)
-  | .existsType :: _ => panic! "not implemented"
+  | .existsType :: tl =>
+    let ~q(@Exists $β $pb) := goal
+      | panic! "path starts with `existsType`, but the goal is not `Exists`"
+    match leaves with
+    | [] => panic! "path starts with `existsType`, but `leaves` is empty"
+    | ⟨B, leaf⟩ :: leavesTl =>
+    let w : Q($β) ← construct exs tl leavesTl
+    -- the leaf proves the body at `w` by proof irrelevance
+    let _ : $B =Q $pb $w := ⟨⟩
+    have leaf : Q($pb $w) := leaf
+    return q(Exists.intro $w $leaf)
 
 /-- Generates a proof of `(∃ a, p a) → P'`. We assume that `fvars = [f₁, ..., fₙ]` are free
 variables and `P' = ∃ f₁ ... fₙ, newBody`, and `path` leads to `a = a'` in `∃ a, p a`.
