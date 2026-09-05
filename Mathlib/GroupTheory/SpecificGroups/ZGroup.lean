@@ -127,7 +127,7 @@ open scoped IsMulCommutative in
 instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
   have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
     ⟨Nat.prime_of_mem_primeFactors p.2⟩
-  obtain ⟨ϕ⟩ := ((Group.isNilpotent_of_finite_tfae (G := G)).out 0 4).mp hG
+  obtain ⟨ϕ⟩ := ((Group.isNilpotent_of_finite_tfae (G := G)).out 1 5).mp hG
   let _ : CommGroup G :=
     ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
   exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
@@ -256,7 +256,7 @@ theorem normalizer_le_centralizer_or_le_commutator :
     isCyclic_of_surjective _ (Subgroup.subgroupOfEquivOfLe P.le_normalizer).symm.surjective
   refine (le_center_or_le_commutator Q).imp (fun h ↦ ?_) (fun h ↦ ?_)
   · rw [← SetLike.coe_subset_coe, ← Subgroup.centralizer_eq_top_iff_subset, eq_top_iff,
-      ← Subgroup.map_subtype_le_map_subtype, ← MonoidHom.range_eq_map,
+      ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_top,
       (Subgroup.normalizer (P : Set G)).range_subtype] at h
     replace h := h.trans (Subgroup.map_centralizer_le_centralizer_image _ _)
     rwa [← Subgroup.coe_map, P.coe_subtype, ← P.coe_coe,

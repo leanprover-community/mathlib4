@@ -46,7 +46,7 @@ where `P : ProfiniteGrp`. -/
 @[to_additive /-- The functor from `OpenNormalAddSubgroup P` to `FiniteAddGrp` sending `U` to
 `P ⧸ U`, where `P : ProfiniteAddGrp`. -/]
 def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp where
-  obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
+  obj := fun H => ↧(P ⧸ H.toSubgroup)
   map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
   map_id _ := ConcreteCategory.ext <| QuotientGroup.map_id _
   map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
@@ -164,14 +164,12 @@ def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).o
       fun_prop
   }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical cone over `diagram P` with point `P`. -/
 @[to_additive (attr := simps) /-- The canonical cone over `diagram P` with point `P`. -/]
 def cone (P : ProfiniteGrp.{u}) : Limits.Cone (diagram P) where
   pt := P
   π := { app := proj }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical cone over `diagram P` is a limit cone. -/
 noncomputable def isLimitCone (P : ProfiniteGrp.{u}) : Limits.IsLimit P.cone :=
   Limits.IsLimit.ofIsoLimit (limitConeIsLimit _) <| .symm <|

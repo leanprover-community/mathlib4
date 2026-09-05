@@ -40,7 +40,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def pushforward₀Obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
     PresheafOfModules (F.op ⋙ R) :=
-  { obj X := ModuleCat.of _ (M.obj (F.op.obj X))
+  { obj X := ↧(M.obj (F.op.obj X))
     map {X Y} f := M.map (F.op.map f)
     map_id X := by
       refine ModuleCat.hom_ext
