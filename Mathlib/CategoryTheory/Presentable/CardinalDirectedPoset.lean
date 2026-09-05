@@ -112,10 +112,15 @@ abbrev CardinalDirectedPoset.ι : CardinalDirectedPoset κ ⥤ PartOrdEmb :=
 
 namespace CardinalDirectedPoset
 
-/-- Constructor for objects in `CardinalFilteredPoset κ`. -/
+/-- Constructor for objects in `CardinalDirectedPoset κ`. -/
 abbrev of (J : PartOrdEmb.{u}) [IsCardinalFiltered J κ] : CardinalDirectedPoset κ where
   obj := J
   property := inferInstance
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CategoryTheory.CardinalDirectedPoset.of X` as `↧X`. -/
+@[app_delab CategoryTheory.CardinalDirectedPoset.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 lemma Hom.injective {J₁ J₂ : CardinalDirectedPoset κ} (f : J₁ ⟶ J₂) :
     Function.Injective f := f.hom.injective
@@ -149,7 +154,7 @@ instance (J : CardinalDirectedPoset κ) (κ' : Cardinal.{u}) [Fact κ'.IsRegular
 /-- The map `CardinalDirectedPoset κ → CardinalDirectedPoset κ` which sends
 a partially ordered `κ`-filtered type `J` to `WithTop J`. -/
 abbrev withTop (J : CardinalDirectedPoset κ) : CardinalDirectedPoset κ :=
-  .of (.of (WithTop J.obj))
+  ↧↧(WithTop J.obj)
 
 section
 
@@ -202,7 +207,7 @@ instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) wh
       ULift.{u} (PLift (IsCardinalFiltered S κ))
     let (a : α) : PartialOrder a.1 := a.2.1
     let ι (a : α) : CardinalDirectedPoset κ :=
-      { obj := .of a.1
+      { obj := ↧a.1
         property := a.2.2.down.down }
     refine ⟨.ofObj ι, inferInstance, fun J ⟨hJ, _⟩ ↦ ?_⟩
     obtain ⟨f⟩ : Cardinal.mk J.obj ≤ Cardinal.mk X := by
@@ -266,7 +271,7 @@ variable (J : CardinalDirectedPoset κ)
 
 -- `@[nolint unusedArguments]` allows to setup some instances which uses
 -- the fact that `κ'` is regular.
-/-- Given `J : CardinalFilteredPoset κ` and a regular cardinal `κ'`,
+/-- Given `J : CardinalDirectedPoset κ` and a regular cardinal `κ'`,
 this is the predicate on `Set J.withTop.obj` that is satisfied by
 subsets that are of cardinality `< κ'` and contain `⊤`. -/
 @[nolint unusedArguments]
@@ -316,7 +321,7 @@ lemma exists_mem_propSetWithTop (a : J.withTop.obj) :
   | some a => exact ⟨_, propSetWithTop_pair _ a, by aesop⟩
   | none => exact ⟨_, propSetWithTop_pair _ (Classical.arbitrary _), by aesop⟩
 
-/-- If `J : CardinalFilteredPoset κ` and `κ'` is any regular cardinal,
+/-- If `J : CardinalDirectedPoset κ` and `κ'` is any regular cardinal,
 this is a colimit cocone which exhibits `J.withTop` as the `κ'`-filtered
 colimit of its subsets that are of cardinality `< κ'` and contain `⊤`. -/
 abbrev coconeWithTop : Cocone (functorOfPredicateSet (J.PropSetWithTop κ')) :=
@@ -339,11 +344,11 @@ protected lemma isCardinalPresentable_iff (h : κ ≤ κ') :
   obtain ⟨X, f, hf⟩ :=
     IsCardinalPresentable.exists_hom_of_isColimit κ' (isColimitCoconeWithTop J κ')
       (ObjectProperty.homMk (PartOrdEmb.ofHom WithTop.coeOrderHom))
-  replace hf : OrderEmbedding.subtype X.1 ∘ f = WithTop.coeOrderHom := by
+  replace hf : OrderEmbedding.subtype (· ∈ X.1) ∘ f = WithTop.coeOrderHom := by
     ext x
     exact ConcreteCategory.congr_hom hf x
   refine X.2.1.of_injective f (Function.Injective.of_comp
-    (f := OrderEmbedding.subtype X.1) ?_)
+    (f := OrderEmbedding.subtype (· ∈ X.1)) ?_)
   dsimp at hf ⊢
   rw [hf]
   exact WithTop.coe_injective
@@ -461,7 +466,7 @@ instance : IsCardinalFiltered (SetCardinalLT κ X) κ :=
 partially ordered type of subsets of `X` of cardinality `< κ`,
 as an object of the category `CardinalDirectedPoset κ`. -/
 abbrev setCardinalLT : CardinalDirectedPoset κ :=
-  .of (PartOrdEmb.of (SetCardinalLT κ X))
+  ↧↧(SetCardinalLT κ X)
 
 end CardinalDirectedPoset
 

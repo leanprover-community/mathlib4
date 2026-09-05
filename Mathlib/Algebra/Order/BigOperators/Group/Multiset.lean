@@ -40,7 +40,7 @@ lemma single_le_prod [IsOrderedMonoid α] : (∀ x ∈ s, (1 : α) ≤ x) → �
 lemma prod_le_pow_card [MulLeftMono α] (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) :
     s.prod ≤ n ^ card s := by
   induction s using Quotient.inductionOn
-  simpa using List.prod_le_pow_card _ _ h
+  simpa using List.prod_le_pow_length _ _ h
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
 lemma all_one_of_le_one_le_of_prod_eq_one {α : Type*} [CommMonoid α]
@@ -118,18 +118,22 @@ section OrderedCancelCommMonoid
 variable [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] [MulLeftStrictMono α]
   {s : Multiset ι} {f g : ι → α}
 
-@[to_additive sum_lt_sum]
-lemma prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
+@[to_additive]
+lemma prod_lt_prod (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
     (s.map f).prod < (s.map g).prod := by
   obtain ⟨l⟩ := s
   simp only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
-  exact List.prod_lt_prod' f g hle hlt
+  exact List.prod_lt_prod f g hle hlt
 
-@[to_additive sum_lt_sum_of_nonempty]
-lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :
+@[deprecated (since := "2026-09-01")] alias prod_lt_prod' := prod_lt_prod
+
+@[to_additive]
+lemma prod_lt_prod_of_nonempty (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :
     (s.map f).prod < (s.map g).prod := by
   obtain ⟨i, hi⟩ := exists_mem_of_ne_zero hs
-  exact prod_lt_prod' (fun i hi => le_of_lt (hfg i hi)) ⟨i, hi, hfg i hi⟩
+  exact prod_lt_prod (fun i hi => le_of_lt (hfg i hi)) ⟨i, hi, hfg i hi⟩
+
+@[deprecated (since := "2026-09-01")] alias prod_lt_prod_of_nonempty' := prod_lt_prod_of_nonempty
 
 end OrderedCancelCommMonoid
 
