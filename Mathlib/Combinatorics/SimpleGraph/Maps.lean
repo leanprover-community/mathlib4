@@ -68,6 +68,7 @@ theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
   dsimp [SimpleGraph.map, Relation.Map]
   grind [SimpleGraph.Adj.ne]
 
+@[grind =]
 theorem map_adj' (f : V → W) (G : SimpleGraph V) (u v : W) :
     (G.map f).Adj u v ↔ u ≠ v ∧ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
