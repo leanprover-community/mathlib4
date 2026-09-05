@@ -391,7 +391,7 @@ def rcloneFilesArgs (bucketPath : String) (dest : StagedUploadDest)
 /--
 The rclone invocation for the per-SHA marker: a single-file copy to the
 marker path. A marker overwrites freely (its content is its own name), like
-the curl engine's marker put, so no `--ignore-existing` here.
+the curl engine's marker put, so the copy omits `--ignore-existing`.
 -/
 def rcloneMarkerArgs (bucketPath : String) (dest : StagedUploadDest)
     (markerFile : FilePath) (sha : String) : Array String :=

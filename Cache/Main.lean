@@ -90,8 +90,8 @@ Options:
                      its environment. See Cache/README.md.
 
 * Linked files refer to local cache files with corresponding Lean sources
-* Commands ending with '!' skip no files: use them manually when a hot-fix
-  needs to force re-downloading, re-packing, or overwriting
+* Commands ending with '!' don't skip any files: use them manually when a
+  hot-fix needs to force re-downloading, re-packing, or overwriting
 
 # The arguments for 'get', 'get!', 'get-' and 'lookup'
 
@@ -250,8 +250,9 @@ def main (args : List String) : IO Unit := do
   | "query" :: _ =>
     IO.eprintln "Usage: cache query [REF]"
     Process.exit 1
-  -- `put-staged` uploads the staging directory: it needs no hash memo, so it
-  -- dispatches here, with `query`, before the expensive build below.
+  -- `put-staged` uploads the staging directory: it doesn't need the hash
+  -- memo, so it dispatches here, with `query`, before the expensive build
+  -- below.
   | ["put-staged"] =>
     let some stagingDir := stagingDir? | do
       IO.eprintln "put-staged requires --staging-dir= (it uploads a staged set; \
