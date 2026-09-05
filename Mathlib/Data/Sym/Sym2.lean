@@ -172,6 +172,9 @@ protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
 
 theorem mk_surjective : (Sym2.mk (α := α)).uncurry.Surjective := Quot.mk_surjective
 
+theorem mk_fiber (a b : α) : Sym2.mk.uncurry ⁻¹' {s(a, b)} = {(a, b), (b, a)} := by
+  grind
+
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
   mk_surjective.exists.trans Prod.exists
@@ -356,6 +359,9 @@ theorem out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
 
 theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
+
+theorem mk_fst_out_snd_out (z : Sym2 α) : s(z.out.fst, z.out.snd) = z :=
+  z.out_eq
 
 @[simp] lemma fst_out_mk_self : (Quot.out s(x, x)).1 = x := by simpa using out_fst_mem s(x, x)
 @[simp] lemma snd_out_mk_self : (Quot.out s(x, x)).2 = x := by simpa using out_snd_mem s(x, x)
