@@ -569,11 +569,11 @@ theorem Integrable.sup {β}
   rw [← memLp_one_iff_integrable] at hf hg ⊢
   exact hf.sup hg
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem Integrable.abs {β}
     [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
     {f : α → β} (hf : Integrable f μ) :
-    Integrable (fun a => |f a|) μ := by
+    Integrable (|f|) μ := by
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.abs
 
@@ -1173,6 +1173,7 @@ section restrict
 variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] {f : α → ε}
 
 /-- One should usually use `MeasureTheory.Integrable.integrableOn` instead. -/
+@[fun_prop]
 lemma Integrable.restrict (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 

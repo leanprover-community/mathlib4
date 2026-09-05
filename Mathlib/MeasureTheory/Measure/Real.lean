@@ -89,6 +89,16 @@ theorem map_measureReal_apply [MeasurableSpace β] {f : α → β} (hf : Measura
     μ.real s₁ ≤ μ.real s₂ :=
   ENNReal.toReal_mono h₂ (measure_mono h)
 
+/-- If `s₁ ⊆ s₂` modulo a set of measure `0`, then `μ.real s₁ ≤ μ.real s₂`.
+
+This is not tagged `@[gcongr]`, as `measure_mono_ae` is not either: it would compete with
+`measureReal_mono` and make `gcongr` produce `≤ᵐ[μ]` side goals where `⊆` ones are expected. -/
+theorem measureReal_mono_ae (h : s₁ ≤ᵐ[μ] s₂) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
+    μ.real s₁ ≤ μ.real s₂ :=
+  ENNReal.toReal_mono h₂ (measure_mono_ae h)
+
+alias _root_.Filter.EventuallyLE.measureReal_le := measureReal_mono_ae
+
 theorem measureReal_eq_measureReal_iff {m : MeasurableSpace β} {ν : Measure β} {t : Set β}
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : ν t ≠ ∞ := by finiteness) :
     μ.real s = ν.real t ↔ μ s = ν t := by
