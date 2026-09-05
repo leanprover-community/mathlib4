@@ -4713,6 +4713,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
+public import Mathlib.Geometry.Convex.Extreme
 public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Geometry.Convex.Star

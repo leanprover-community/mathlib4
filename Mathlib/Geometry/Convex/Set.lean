@@ -162,6 +162,13 @@ lemma subtypeVal_convexCombPair (s : Set X) (hs : IsConvexSet R s) (a b : R) (ha
   letI : ConvexSpace R s := .subtype s hs
   (isAffineMap_subtypeVal ..).map_convexCombPair ..
 
+/-- A convex subset of a cancellative convex space is a cancellative convex space. -/
+lemma IsCancelConvexSpace.subtype [IsCancelConvexSpace R X] (s : Set X) (hs : IsConvexSet R s) :
+    letI : ConvexSpace R s := .subtype s hs
+    IsCancelConvexSpace R s :=
+  letI : ConvexSpace R s := .subtype s hs
+  .of_injective (isAffineMap_subtypeVal s hs) Subtype.val_injective
+
 protected lemma IsConvexSet.prod {Y : Type*} [ConvexSpace R Y] {t : Set Y}
     (hs : IsConvexSet R s) (ht : IsConvexSet R t) : IsConvexSet R (s ×ˢ t) := by
   classical
