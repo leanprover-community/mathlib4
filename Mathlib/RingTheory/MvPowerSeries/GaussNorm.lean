@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
 /-!
 # Gauss norm for multivariate power series
@@ -60,6 +62,10 @@ noncomputable def gaussNorm : ℝ :=
 /-- We say `f` HasGaussNorm if the values `v (coeff t f) * ∏ i : t.support, c i` is bounded above,
   that is `gaussNorm f` is finite. -/
 abbrev HasGaussNorm := BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) * t.prod (c · ^ ·))))
+
+/-- Predicate for when the gaussNorm is achieved by an index. -/
+abbrev AchievesGaussNorm (i : σ →₀ ℕ) : Prop :=
+  v (coeff i f) * i.prod (c · ^ ·) = gaussNorm v c f
 
 @[simp]
 theorem gaussNorm_zero (vZero : v 0 = 0) : gaussNorm v c 0 = 0 := by simp [gaussNorm, vZero]
@@ -162,13 +168,82 @@ lemma gaussNorm_mul_le (f g : MvPowerSeries σ R) (hc : 0 ≤ c) (vNonneg : ∀ 
       (mul_nonneg (vNonneg _) (c_prod_nonneg c hc k.2)) (gaussNorm_nonneg v c f vNonneg))
   · exact mul_nonneg (gaussNorm_nonneg v c f vNonneg) (gaussNorm_nonneg v c g vNonneg)
 
+lemma hasGaussNorm_of_finite_support (vZero : v 0 = 0) {f : MvPowerSeries σ R}
+    (hf : (Function.support fun t ↦ coeff t f).Finite) : HasGaussNorm v c f := by
+  refine ((hf.image fun t ↦ v (coeff t f) * t.prod (c · ^ ·)).union
+    (Set.finite_singleton 0)).bddAbove.mono ?_
+  rintro x ⟨t, rfl⟩
+  by_cases ht : coeff t f = 0
+  · exact Or.inr (by simp [ht, vZero])
+  · exact Or.inl ⟨t, Function.mem_support.mpr ht, rfl⟩
+
+lemma hasGaussNorm_monomial (vZero : v 0 = 0) (t : σ →₀ ℕ) (r : R) :
+    HasGaussNorm v c (monomial t r) :=
+  hasGaussNorm_of_finite_support v c vZero <| (Set.finite_singleton t).subset fun s hs ↦ by
+    by_contra h
+    exact Function.mem_support.mp hs (coeff_monomial_ne h r)
+
+lemma gaussNorm_monomial_of_nonneg (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0) (t : σ →₀ ℕ)
+    (r : R) (hprod : 0 ≤ t.prod (c · ^ ·)) :
+    gaussNorm v c (monomial t r) = v r * t.prod (c · ^ ·) := by
+  refine le_antisymm (ciSup_le fun s ↦ ?_) ?_
+  · rcases eq_or_ne s t with rfl | hs
+    · rw [coeff_monomial_same]
+    · rw [coeff_monomial_ne hs, vZero, zero_mul]
+      exact mul_nonneg (vNonneg r) hprod
+  · simpa [coeff_monomial_same] using
+      le_gaussNorm v c (monomial t r) (hasGaussNorm_monomial v c vZero t r) t
+
+lemma gaussNorm_monomial (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0) (hc : 0 ≤ c) (t : σ →₀ ℕ)
+    (r : R) : gaussNorm v c (monomial t r) = v r * t.prod (c · ^ ·) :=
+  gaussNorm_monomial_of_nonneg v c vZero vNonneg t r <|
+    Finset.prod_nonneg fun i _ ↦ pow_nonneg (hc i) (t i)
+
+lemma gaussNorm_C (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0) (r : R) :
+    gaussNorm v c (C r) = v r := by
+  simpa using gaussNorm_monomial_of_nonneg v c vZero vNonneg 0 r (by simp)
+
+lemma gaussNorm_one (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0) :
+    gaussNorm v c 1 = v 1 := by
+  simpa using gaussNorm_C v c vZero vNonneg 1
+
+lemma gaussNorm_X (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0) (s : σ) (hc : 0 ≤ c s) :
+    gaussNorm v c (X s) = v 1 * c s := by
+  simpa [X_def] using gaussNorm_monomial_of_nonneg v c vZero vNonneg (Finsupp.single s 1) 1
+    (by aesop)
+
+lemma gaussNorm_zero_right (vNonneg : ∀ a, v a ≥ 0) (f : MvPowerSeries σ R) :
+    gaussNorm v 0 f = v (coeff 0 f) := by
+  classical
+  have hprod (t : σ →₀ ℕ) : t.prod ((0 : σ → ℝ) · ^ ·) = if t = 0 then 1 else 0 := by
+    split_ifs with h
+    · simp [h]
+    · obtain ⟨i, hi⟩ := Finsupp.ne_iff.mp h
+      have hi' : t i ≠ 0 := by simpa using hi
+      exact Finset.prod_eq_zero (Finsupp.mem_support_iff.mpr hi') (by simp [zero_pow hi'])
+  have hbdd : HasGaussNorm v (0 : σ → ℝ) f := by
+    refine ((Set.finite_singleton (v (coeff 0 f))).union
+      (Set.finite_singleton 0)).bddAbove.mono ?_
+    rintro x ⟨t, rfl⟩
+    rcases eq_or_ne t 0 with rfl | ht
+    · exact Or.inl (by simp only [Set.mem_singleton_iff]; rw [hprod, ite_eq_left rfl, mul_one])
+    · exact Or.inr (by simp only [Set.mem_singleton_iff]; rw [hprod, ite_eq_right ht, mul_zero])
+  refine le_antisymm (ciSup_le fun t ↦ ?_) ?_
+  · rw [hprod]
+    rcases eq_or_ne t 0 with rfl | ht
+    · rw [ite_eq_left rfl, mul_one]
+    · rw [ite_eq_right ht, mul_zero]
+      exact vNonneg _
+  · simpa using le_gaussNorm v 0 f hbdd 0
+
+lemma gaussNorm_map {S : Type*} [Semiring S] (w : S → ℝ) (φ : R →+* S)
+    (hφ : ∀ a, w (φ a) = v a) (f : MvPowerSeries σ R) :
+    gaussNorm w c (map φ f) = gaussNorm v c f := by
+  simp only [gaussNorm, coeff_map, hφ]
+
 end Semiring
 
 variable [Ring R]
-
-/-- Predicate for when the gaussNorm is achieved by an index. -/
-abbrev AchievesGaussNorm (i : σ →₀ ℕ) : Prop :=
-  v (coeff i f) * i.prod (c · ^ ·) = gaussNorm v c f
 
 lemma gaussNorm_neg (vNeg : ∀ x, v (-x) = v x) (f : MvPowerSeries σ R) :
     gaussNorm v c (-f) = gaussNorm v c f  := by
@@ -261,6 +336,46 @@ lemma gaussNorm_mul_eq_mul (f g : MvPowerSeries σ R) (hf : HasGaussNorm v c f)
   constructor
   · exact gaussNorm_le_mul v c f g vMulEq vNA (by grind) hfg hdom
   · exact gaussNorm_mul_le v c f g (StrongLT.le hc) vNonneg (by grind) vNA vZero hf hg
+
+-- consumer lemma for `hdom` in `gaussNorm_mul_eq_mul`
+lemma exists_achievesGaussNorm_dominant (vNonneg : ∀ a, v a ≥ 0)
+    (vMul : ∀ a b, v (a * b) ≤ v a * v b) (hc : 0 ≤ c) {f g : MvPowerSeries σ R}
+    (hbf : HasGaussNorm v c f) (hbg : HasGaussNorm v c g)
+    (hf_fin : {a | AchievesGaussNorm v c f a}.Finite)
+    (hg_fin : {a | AchievesGaussNorm v c g a}.Finite)
+    (hf_ex : ∃ a, AchievesGaussNorm v c f a) (hg_ex : ∃ a, AchievesGaussNorm v c g a)
+    (hf0 : gaussNorm v c f ≠ 0) (hg0 : gaussNorm v c g ≠ 0) :
+    ∃ i j, AchievesGaussNorm v c f i ∧ AchievesGaussNorm v c g j ∧
+      (∀ p ∈ Finset.antidiagonal (i + j), p ≠ (i, j) →
+        v (coeff p.1 f * coeff p.2 g) < v (coeff i f) * v (coeff j g)) := by
+  obtain ⟨i, hi, j, hj, hij⟩ := UniqueSums.uniqueAdd_of_nonempty (hf_ex.imp fun _ ha ↦
+    hf_fin.mem_toFinset.mpr ha) (hg_ex.imp fun _ ha ↦ hg_fin.mem_toFinset.mpr ha)
+  rw [Set.Finite.mem_toFinset] at hi hj
+  refine ⟨i, j, hi, hj, fun p hp hpne ↦ ?_⟩
+  · -- the unique-sum pair strictly dominates every other pair on the antidiagonal
+    have hmul_strict :
+        (v (coeff p.1 f) * p.1.prod (c · ^ ·)) * (v (coeff p.2 g) * p.2.prod (c · ^ ·)) <
+        (v (coeff i f) * i.prod (c · ^ ·)) * (v (coeff j g) * j.prod (c · ^ ·)) := by
+      rcases ((le_gaussNorm v c f hbf p.1).trans_eq hi.symm).lt_or_eq with h1 | h1eq
+      · exact mul_lt_mul_of_lt_of_le_of_nonneg_of_pos h1
+          ((le_gaussNorm v c g hbg p.2).trans_eq hj.symm)
+          (mul_nonneg (vNonneg _) (Finset.prod_nonneg fun i _ ↦ pow_nonneg (hc i) (p.1 i)))
+          (((gaussNorm_nonneg v c g vNonneg).lt_of_ne' hg0).trans_eq hj.symm)
+      rcases ((le_gaussNorm v c g hbg p.2).trans_eq hj.symm).lt_or_eq with h2 | h2eq
+      · exact mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
+          ((le_gaussNorm v c f hbf p.1).trans_eq hi.symm) h2 (mul_nonneg (vNonneg _)
+          (Finset.prod_nonneg fun i _ ↦ pow_nonneg (hc i) (p.2 i)))
+          (((gaussNorm_nonneg v c f vNonneg).lt_of_ne' hf0).trans_eq hi.symm)
+      obtain ⟨h1, h2⟩ := hij (hf_fin.mem_toFinset.mpr (h1eq.trans hi))
+        (hg_fin.mem_toFinset.mpr (h2eq.trans hj)) (Finset.mem_antidiagonal.1 hp)
+      exact absurd (Prod.ext h1 h2) hpne
+    have hprod : p.1.prod (c · ^ ·) * p.2.prod (c · ^ ·) = i.prod (c · ^ ·) * j.prod (c · ^ ·) := by
+      simp only [← Finsupp.prod_add_index' (h := (c · ^ ·)) (fun _ ↦ pow_zero _)
+        (fun _ _ _ ↦ pow_add _ _ _), Finset.mem_antidiagonal.1 hp]
+    rw [mul_mul_mul_comm, mul_mul_mul_comm (v (coeff i f)), hprod] at hmul_strict
+    exact (vMul _ _).trans_lt (lt_of_mul_lt_mul_right hmul_strict
+      (mul_nonneg (Finset.prod_nonneg fun a _ ↦ pow_nonneg (hc a) (i a))
+      (Finset.prod_nonneg fun a _ ↦ pow_nonneg (hc a) (j a))))
 
 end absoluteValue
 
