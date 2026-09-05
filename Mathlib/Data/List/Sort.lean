@@ -544,6 +544,18 @@ protected alias ⟨SortedGT.strictAnti, _root_.StrictAnti.sortedGT_ofFn⟩ := so
 
 end OfFn
 
+section Nil
+
+theorem sortedLT_nil : ([] : List α).SortedLT := by grind
+
+theorem sortedGT_nil : ([] : List α).SortedGT := by grind
+
+theorem sortedLE_nil : ([] : List α).SortedLE := sortedLT_nil.sortedLE
+
+theorem sortedGE_nil : ([] : List α).SortedGE := sortedGT_nil.sortedGE
+
+end Nil
+
 section Reverse
 
 @[simp] theorem sortedLE_reverse : l.reverse.SortedLE ↔ l.SortedGE := by grind
