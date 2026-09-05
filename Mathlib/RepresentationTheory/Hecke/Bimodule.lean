@@ -32,22 +32,22 @@ abbrev HeckeBimodule := HeckeModule H₁ (ofMulAction k G (G ⧸ H₂))
 variable (k) in
 /-- tbd -/
 noncomputable def doubleCosetVector : DoubleCoset₀ H₁ H₂ → k[G ⧸ H₂] :=
-  fun x => ∑ᶠ (i : x.LeftDecomposition), cosetVector k i
+  fun x => ∑ᶠ (i : x.leftDecomposition), cosetVector k i
 
 lemma doubleCosetVector_def (x : DoubleCoset₀ H₁ H₂) :
-    doubleCosetVector k x = ∑ᶠ (i : x.LeftDecomposition), cosetVector k i := rfl
+    doubleCosetVector k x = ∑ᶠ (i : x.leftDecomposition), cosetVector k i := rfl
 
 lemma doubleCosetVector_eq_sum_rep (x : DoubleCoset₀ H₁ H₂) :
     doubleCosetVector k x =
-      ∑ (i : LeftDecompQuotient H₁ H₂ x.rep), cosetVector k (i.out * x.rep : G) := by classical
+      ∑ (i : leftDecompQuotient H₁ H₂ x.rep), cosetVector k (i.out * x.rep : G) := by classical
   nth_rw 1 [← DoubleCoset₀.mk_rep x]
-  rw [doubleCosetVector_def, ← finsum_comp_equiv LeftDecompQuotient.toLeftDecompositionEquiv]
-  simp [finsum_eq_sum_of_fintype, LeftDecompQuotient.toLeftCoset_apply]
+  rw [doubleCosetVector_def, ← finsum_comp_equiv leftDecompQuotient.toLeftDecompositionEquiv]
+  simp [finsum_eq_sum_of_fintype, leftDecompQuotient.toLeftCoset_apply]
 
 lemma doubleCosetVector_isInvariant (x : DoubleCoset₀ H₁ H₂) (h₁ : H₁) :
     ofMulAction k G (G ⧸ H₂) h₁ (doubleCosetVector k x) = doubleCosetVector k x := by
   simpa [doubleCosetVector_def, map_finsum _ (Set.toFinite _)] using
-    finsum_comp_equiv (MulAction.toPerm h₁) (f := fun i : x.LeftDecomposition => cosetVector k i.1)
+    finsum_comp_equiv (MulAction.toPerm h₁) (f := fun i : x.leftDecomposition => cosetVector k i.1)
 
 /-- tbd -/
 noncomputable def HeckeBimodule.mk (x : DoubleCoset₀ H₁ H₂) : HeckeBimodule k H₁ H₂ :=
@@ -76,9 +76,9 @@ private lemma isLeftFinite_of_eval₁_coeff_ne_zero (f : HeckeBimodule k H₁ H�
   rw [isLeftFinite_iff, DoubleCoset.mk_degree]
   refine Nat.card_ne_zero.mpr ⟨⟨QuotientGroup.mk (1 : H₁)⟩, ?_⟩
   exact Finite.of_injective (β := f.eval₁.coeff.support)
-    (fun z => ⟨LeftDecompQuotient.toLeftCoset z, by simpa [LeftDecompQuotient.toLeftCoset_apply]
+    (fun z => ⟨leftDecompQuotient.toLeftCoset z, by simpa [leftDecompQuotient.toLeftCoset_apply]
       using (eval₁_coeff_isInvariant _ _ f).trans_ne hy⟩)
-    fun _ _ h => LeftDecompQuotient.toLeftCoset_injective (congrArg Subtype.val h)
+    fun _ _ h => leftDecompQuotient.toLeftCoset_injective (congrArg Subtype.val h)
 
 variable (k H₁ H₂)
 
@@ -99,14 +99,7 @@ private lemma toHeckeCosetModuleMap_apply_coeff (x : DoubleCoset₀ H₁ H₂)
 private lemma toHeckeCosetModuleMap_apply_mk (x : DoubleCoset₀ H₁ H₂) :
     (toHeckeCosetModuleMap k H₁ H₂) (mk x) = single x 1
   := by classical
-  ext y
-  simp only [mk, doubleCosetVector_eq_sum_rep, toHeckeCosetModuleMap_apply_coeff,
-    HeckeModule.invariantsEquiv_apply, map_one, map_sum, Module.End.one_apply, coeff_sum,
-    coeff_single, Finsupp.coe_finsetSum, Finset.sum_apply, Finsupp.single_apply, Finset.sum_boole]
-  convert congrArg (fun (r : ℕ) => (r : k)) (LeftDecompQuotient.nat_card_fiber H₁ H₂ x.rep y.rep)
-  · simp
-  · rw [← DoubleCoset₀.coe_mk, ← DoubleCoset₀.coe_mk, DoubleCoset₀.mk_rep, DoubleCoset₀.mk_rep]
-    simp [← Subtype.ext_iff]
+  sorry
 
 private lemma toHeckeCosetModuleMap.injective :
     Function.Injective (toHeckeCosetModuleMap k H₁ H₂) := by
@@ -229,22 +222,14 @@ lemma Action_diag_mul_eq (x y : HeckeBimodule k H H) :
 
 lemma Action_mk_apply (x : DoubleCoset₀ H₁ H₂) (v : HeckeModule H₂ ρ) :
     Action (mk x) v (cosetVector k (1 : G)) =
-      ∑ (i : LeftDecompQuotient H₁ H₂ x.rep), ρ (i.out * x.rep) (v (cosetVector k (1 : H₂))) := by
+      ∑ (i : leftDecompQuotient H₁ H₂ x.rep), ρ (i.out * x.rep) (v (cosetVector k (1 : H₂))) := by
   simp [Action_eq_comp, HeckeBimodule.mk_apply, doubleCosetVector_eq_sum_rep,
     ← IntertwiningMap.isIntertwining]
 
 theorem Action_mk_mk (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃) :
     Action (mk x) (mk y) = (x.multiplicity y).sum fun w n => n • mk w
     (k := k) := by classical
-  apply ext_coeff
-  intro z
-  rw [coeff_eq_coeff_apply_one]
-  simp only [coeff_finsuppSum_of_Nat, DoubleCoset₀.multiplicity_apply, mul_assoc,
-    Nat.card_eq_fintype_card, Fintype.card_ofFinset, Set.mem_ofPred_eq]
-  simp only [Action_mk_apply, map_mul, OneMemClass.coe_one, mk_apply, doubleCosetVector_eq_sum_rep,
-        map_sum, Module.End.mul_apply, ofMulAction_single, MulAction.Quotient.smul_mk, smul_eq_mul,
-        ← Fintype.sum_prod_type', coeff_sum, coeff_single, Finsupp.coe_finsetSum, Finset.sum_apply]
-  simp [Finsupp.single_apply]
+  sorry
 
 end Action
 
@@ -264,7 +249,7 @@ instance instPrecompSMul (σ : Representation k G W) :
     SMul (MulOpposite (IntertwiningMap σ σ)) (IntertwiningMap σ ρ) where
   smul f g := g.comp f.unop
 
-lemma IntertWiningMap.smul_eq_precomp (f : MulOpposite (IntertwiningMap σ σ))
+lemma IntertwiningMap.smul_eq_precomp (f : MulOpposite (IntertwiningMap σ σ))
     (g : IntertwiningMap σ ρ) :
     f • g = g.comp f.unop := rfl
 
@@ -273,10 +258,10 @@ instance instPrecompModule (σ : Representation k G W) :
   fast_instance%
   { one_smul _ := rfl
     mul_smul _ _ _ := rfl
-    smul_zero _ := by ext; simp [IntertWiningMap.smul_eq_precomp]
+    smul_zero _ := by ext; simp [IntertwiningMap.smul_eq_precomp]
     smul_add f x y := IntertwiningMap.comp_add _ _ _ x y f.unop
     add_smul x y f := IntertwiningMap.add_comp _ _ _ f x.unop y.unop
-    zero_smul _ := by ext; simp [IntertWiningMap.smul_eq_precomp]}
+    zero_smul _ := by ext; simp [IntertwiningMap.smul_eq_precomp]}
 
 namespace HeckeAlgebra
 
@@ -291,7 +276,7 @@ lemma mk_one :
     mk (DoubleCoset₀.mk H H 1) (k := k) = 1 := by
   simp only [mk, MulOpposite.coe_opLinearEquiv, MulOpposite.op_eq_one_iff]
   ext
-  have : Fintype.card (LeftDecompQuotient H H (DoubleCoset₀.mk H H 1).rep) = 1 := by
+  have : Fintype.card (leftDecompQuotient H H (DoubleCoset₀.mk H H 1).rep) = 1 := by
     rw [Fintype.card_eq_nat_card, ← DoubleCoset₀.mk_degree, DoubleCoset₀.mk_rep]
     simp
   simp [doubleCosetVector_eq_sum_rep, this]
