@@ -73,6 +73,12 @@ theorem powerset_empty : (∅ : Finset α).powerset = {∅} :=
 theorem powerset_eq_singleton_empty : s.powerset = {∅} ↔ s = ∅ := by
   rw [← powerset_empty, powerset_inj]
 
+@[simp]
+theorem powerset_inter [DecidableEq α] (s t : Finset α) :
+    (s ∩ t).powerset = s.powerset ∩ t.powerset := by
+  ext
+  simp [subset_inter_iff]
+
 theorem image_injOn_powerset_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : Set.InjOn f s) :
     Set.InjOn (α := Finset α) (·.image f) s.powerset := by
   have {z a} (_ : z ⊆ s) (_ : a ∈ s) : a ∈ z ↔ f a ∈ z.image f := by grind [H.eq_iff]
