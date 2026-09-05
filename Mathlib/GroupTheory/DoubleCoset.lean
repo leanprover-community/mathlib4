@@ -129,11 +129,11 @@ lemma eq {H K : Subgroup G} {a b : G} :
 lemma out_eq' {H K : Subgroup G} (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
 
+@[deprecated "Use `eq.mp (out_eq' (mk H K g))` instead." (since := "2026-09-04")]
 lemma mk_out_eq_mul (H K : Subgroup G) (g : G) :
     ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out = h * g * k := by
-  obtain ⟨h, h_h, k, hk, T⟩ := eq.mp (out_eq' (mk H K g))
-  refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
-  rw [← mul_assoc, ← T]
+  obtain ⟨h, hh, k, hk, heq⟩ := eq.mp (out_eq' (mk H K g)).symm
+  exact ⟨h, k, hh, hk, by simp [heq]⟩
 
 lemma mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
     (h : doubleCoset a H K = doubleCoset b H K) : mk H K a = mk H K b := by
@@ -169,10 +169,7 @@ lemma iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K
   ext x
   simp only [Set.mem_iUnion, quotToDoubleCoset, mem_doubleCoset, SetLike.mem_coe, Set.mem_univ,
     iff_true]
-  use mk H K x
-  obtain ⟨h, k, h3, h4, h5⟩ := mk_out_eq_mul H K x
-  refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
-  simp only [h5, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
+  exact ⟨mk H K x, eq.mp (out_eq' (mk H K x))⟩
 
 @[deprecated (since := "2026-04-03")]
 alias union_quotToDoubleCoset := iUnion_quotToDoubleCoset
