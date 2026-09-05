@@ -261,7 +261,9 @@ variable {G H} {a b c : α}
 lemma isNClique_empty : G.IsNClique 0 ∅ := by simp
 
 @[simp]
-lemma isNClique_singleton : G.IsNClique n {a} ↔ n = 1 := by simp [isNClique_iff, eq_comm]
+lemma isNClique_singleton_iff : G.IsNClique n {a} ↔ n = 1 := by simp [isNClique_iff, eq_comm]
+
+lemma isNClique_singleton : G.IsNClique 1 {a} := by simp
 
 theorem IsNClique.mono (h : G ≤ H) : G.IsNClique n s → H.IsNClique n s := by
   simp_rw [isNClique_iff]
@@ -746,6 +748,16 @@ theorem cliqueNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.cliqueNum ≠ 
   refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
   exact IsClique.card_le_cliqueNum (t := {Classical.arbitrary α}) <| by simp
 
+theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
+  rw [isEmpty_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · intro a
+    have one_clique : G.IsNClique 1 {a} := by simp
+    have : 1 ≤ G.cliqueNum := IsClique.card_le_cliqueNum one_clique.isClique
+    grind
+  · have : ∀ (s : Finset α), s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
+    simp [cliqueNum, this, exists_const]
+
 lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
   · exact Nat.sSup_mem ⟨0, by simp⟩ h
@@ -842,16 +854,6 @@ lemma maximumClique_card_eq_cliqueNum [Finite α] (s : Finset α) (sm : G.IsMaxi
 lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique s := by
   obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
   exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
-
-theorem cliqueNum_eq_zero [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
-  rw [isEmpty_iff]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · intro a
-    have one_clique : G.IsNClique 1 {a} := by simp
-    have : 1 ≤ G.cliqueNum := IsClique.card_le_cliqueNum one_clique.isClique
-    grind
-  · have : ∀ (s : Finset α), s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
-    simp [cliqueNum, this, exists_const]
 
 end CliqueNumber
 
@@ -991,6 +993,13 @@ lemma isNIndepSet_empty_iff : G.IsNIndepSet n ∅ ↔ n = 0 := by
 
 lemma isNIndepSet_empty : G.IsNIndepSet 0 ∅ := by simp
 
+@[simp]
+lemma isNIndepSet_singleton_iff {a : α} {n : ℕ} : G.IsNIndepSet n {a} ↔ n = 1 := by
+  simp [isNIndepSet_iff, eq_comm]
+
+lemma isNIndepSet_singleton {a : α} : G.IsNIndepSet 1 {a} := by simp
+
+
 /-- An `n`-independent set is an `n`-clique in the complement graph and vice versa. -/
 @[simp] theorem isNClique_compl : Gᶜ.IsNClique n s ↔ G.IsNIndepSet n s := by
   rw [isNIndepSet_iff]
@@ -1081,6 +1090,16 @@ theorem IsIndepSet.card_le_indepNum
   simp_rw [indepNum, ← isNClique_compl]
   exact tc.card_le_cliqueNum
 
+theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
+  rw [isEmpty_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · intro a
+    have one_indep : G.IsNIndepSet 1 {a} := by simp
+    have : 1 ≤ G.indepNum := IsIndepSet.card_le_indepNum one_indep.isIndepSet
+    grind
+  · have : ∀ (s : Finset α), s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
+    simp [indepNum, this, exists_const]
+
 lemma exists_isNIndepSet_indepNum : ∃ s, G.IsNIndepSet G.indepNum s := by
   simp_rw [indepNum, ← isNClique_compl]
   exact exists_isNClique_cliqueNum
@@ -1127,20 +1146,6 @@ theorem maximumIndepSet_card_eq_indepNum
 
 lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndepSet s := by
   simp [← isMaximumClique_compl, maximumClique_exists]
-
-@[simp]
-lemma isNIndepSet_singleton {a : α} {n : ℕ} : G.IsNIndepSet n {a} ↔ n = 1 := by
-  simp [isNIndepSet_iff, eq_comm]
-
-theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
-  rw [isEmpty_iff]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · intro a
-    have one_indep : G.IsNIndepSet 1 {a} := by simp
-    have : 1 ≤ G.indepNum := IsIndepSet.card_le_indepNum one_indep.isIndepSet
-    grind
-  · have : ∀ (s : Finset α), s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
-    simp [indepNum, this, exists_const]
 
 end IndepNumber
 
