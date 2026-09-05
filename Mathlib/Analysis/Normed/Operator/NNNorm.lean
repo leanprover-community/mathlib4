@@ -19,7 +19,6 @@ public section
 
 suppress_compilation
 
-open Bornology
 open Filter hiding map_smul
 open scoped NNReal Topology Uniformity ENNReal
 open Metric ContinuousLinearMap
@@ -40,7 +39,7 @@ namespace ContinuousLinearMap
 theorem nnnorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ } := by
   ext
   rw [NNReal.coe_sInf, coe_nnnorm, norm_def, NNReal.coe_image]
-  simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnnorm, mem_setOf_eq, NNReal.coe_mk,
+  simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnnorm, mem_ofPred_eq, NNReal.coe_mk,
     exists_prop]
 
 @[simp, nontriviality]
@@ -120,16 +119,22 @@ theorem nndist_le_opNNNorm (f : E →SL[σ₁₂] F) (x y : E) : nndist (f x) (f
   dist_le_opNorm f x y
 
 /-- continuous linear maps are Lipschitz continuous. -/
-theorem lipschitz (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f :=
+theorem lipschitzWith (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f :=
   AddMonoidHomClass.lipschitz_of_bound_nnnorm f _ f.le_opNNNorm
 
+/-- continuous linear maps are Lipschitz continuous. -/
+@[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
+
 /-- Evaluation of a continuous linear map `f` at a point is Lipschitz continuous in `f`. -/
-theorem lipschitz_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁₂] F => f x :=
+theorem lipschitzWith_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁₂] F => f x :=
   lipschitzWith_iff_norm_sub_le.2 fun f g => ((f - g).le_opNorm x).trans_eq (mul_comm _ _)
+
+/-- Evaluation of a continuous linear map `f` at a point is Lipschitz continuous in `f`. -/
+@[deprecated (since := "2026-08-16")] alias lipschitz_apply := lipschitzWith_apply
 
 theorem exists_mul_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x, r * ‖x‖₊ < ‖f x‖₊ := by
-  simpa only [not_forall, not_le, Set.mem_setOf] using
+  simpa only [not_forall, not_le, Set.mem_ofPred] using
     notMem_of_lt_csInf (nnnorm_def f ▸ hr : r < sInf { c : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ })
       (OrderBot.bddBelow _)
 
@@ -143,8 +148,10 @@ end ContinuousLinearMap
 namespace ContinuousLinearEquiv
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 
-protected theorem lipschitz (e : E ≃SL[σ₁₂] F) : LipschitzWith ‖(e : E →SL[σ₁₂] F)‖₊ e :=
-  (e : E →SL[σ₁₂] F).lipschitz
+protected theorem lipschitzWith (e : E ≃SL[σ₁₂] F) : LipschitzWith ‖(e : E →SL[σ₁₂] F)‖₊ e :=
+  (e : E →SL[σ₁₂] F).lipschitzWith
+
+@[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
 
 end ContinuousLinearEquiv
 

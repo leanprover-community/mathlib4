@@ -328,7 +328,7 @@ theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     PrimeSpectrum.isBasis_basic_opens.of_isInducing
       (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).isInducing using 1
   ext V
-  simp only [Set.mem_range, exists_exists_eq_and, Set.mem_setOf,
+  simp only [Set.mem_range, exists_exists_eq_and, Set.mem_ofPred,
     ← Opens.coe_inj (V := V), ← Scheme.toSpecΓ_preimage_basicOpen]
   rfl
 
@@ -614,7 +614,7 @@ theorem basicOpen :
 
 lemma Spec_basicOpen {R : CommRingCat} (f : R) :
     IsAffineOpen (X := Spec R) (PrimeSpectrum.basicOpen f) :=
-  basicOpen_eq_of_affine f ▸ (isAffineOpen_top (Spec <| .of R)).basicOpen _
+  basicOpen_eq_of_affine f ▸ (isAffineOpen_top (Spec ↧R)).basicOpen _
 
 instance [IsAffine X] (r : Γ(X, ⊤)) : IsAffine (X.basicOpen r) :=
   (isAffineOpen_top X).basicOpen _
@@ -703,7 +703,6 @@ lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (hU : IsA
     RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp,
     ← CommRingCat.hom_comp, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma app_basicOpen_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
     (hU : IsAffineOpen U) (h : IsAffineOpen (f ⁻¹ᵁ U)) (r : Γ(Y, U)) :
     haveI := hU.isLocalization_basicOpen r
@@ -950,7 +949,7 @@ theorem iSup_basicOpen_eq_self_iff {s : Set Γ(X, U)} :
   · simp only [Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [← Set.compl_iInter, Set.compl_univ_iff, ← PrimeSpectrum.zeroLocus_iUnion, ←
       PrimeSpectrum.zeroLocus_empty_iff_eq_top, PrimeSpectrum.zeroLocus_span]
-    simp only [Set.iUnion_singleton_eq_range, Subtype.range_val_subtype, Set.setOf_mem_eq]
+    simp only [Set.iUnion_singleton_eq_range, Subtype.range_val_subtype, Set.ofPred_mem_eq]
 
 include hU in
 theorem self_le_iSup_basicOpen_iff {s : Set Γ(X, U)} :
@@ -1247,7 +1246,7 @@ scheme-theoretic image of `f` and `f` factors as
 `specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f)`
 (see `specTargetImageFactorization_comp`). -/
 def specTargetImage (f : X ⟶ Spec A) : CommRingCat :=
-  CommRingCat.of (A ⧸ specTargetImageIdeal f)
+  ↧(A ⧸ specTargetImageIdeal f)
 
 /-- If `f : X ⟶ Spec A` is a morphism of schemes, then `f` factors via
 the inclusion of `Spec (specTargetImage f)` into `X`. -/
@@ -1285,12 +1284,11 @@ section Stalks
 
 variable {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) (x : PrimeSpectrum R)
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (R) (x : PrimeSpectrum R) in
 /-- The stalk of `Spec R` at `x` is isomorphic to `Rₚ`,
 where `p` is the prime corresponding to `x`. -/
 noncomputable
-def Spec.stalkIso : (Spec R).presheaf.stalk x ≅ .of (Localization.AtPrime x.asIdeal) :=
+def Spec.stalkIso : (Spec R).presheaf.stalk x ≅ ↧(Localization.AtPrime x.asIdeal) :=
   (StructureSheaf.stalkIso ..).toCommRingCatIso.symm
 
 @[reassoc (attr := simp)]
@@ -1331,3 +1329,13 @@ def Scheme.arrowStalkMapSpecIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Prime
 
 end Stalks
 end AlgebraicGeometry
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AlgebraicGeometry.AffineScheme.of X` as `↧X`. -/
+@[app_delab AlgebraicGeometry.AffineScheme.of]
+meta def AlgebraicGeometry.AffineScheme.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Denumerable
 public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Lattice.Nat
@@ -168,7 +168,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) := by
         intro n
         have h := hm _ (Nat.le_add_left m n)
-        simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
+        simp only [bad, exists_prop, not_not, Set.mem_ofPred_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         refine ⟨n + n' - n - m, by lia, ?_⟩
         convert! hn2
@@ -295,7 +295,7 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.wf.not_lt_min _ (Set.mem_univ _), ?_⟩
   have cov n (hn : ¬ IsMax (a n)) : a n ⋖ a (n + 1) := by
     change a n ⋖ if ha : IsMax (a n) then a n else _
-    rw [dif_neg hn]
+    rw [dite_eq_right hn]
     exact hnext hn
   have H : ∃ n, IsMax (a n) := by
     by_contra!

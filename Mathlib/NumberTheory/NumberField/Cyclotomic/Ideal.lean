@@ -324,7 +324,7 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
   · apply emultiplicity_le_one_of_separable
     · exact isUnit_iff_degree_eq_zero.not.mpr (Irreducible.degree_pos h₂.1).ne'
     · exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot.separable_minpoly_mod hm
-  · rw [ENat.coe_one]
+  · rw [ENat.natCast_one]
     exact Order.one_le_iff_pos.mpr <| emultiplicity_pos_of_dvd h₂.2.2
 
 theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :

@@ -87,7 +87,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
     (by
       rintro ⟨x, i⟩
       simp_rw [Finset.mem_disjiUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
-        Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_setOf_eq]
+        Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_ofPred_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (by lia))
 

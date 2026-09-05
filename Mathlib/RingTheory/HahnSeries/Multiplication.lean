@@ -186,7 +186,7 @@ instance instSMul : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
             { a : Γ' | (VAddAntidiagonal a (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support
               ((of R).symm y).isPWO_support a)).Nonempty } := by
           intro a ha
-          simp only [Set.mem_setOf_eq]
+          simp only [Set.mem_ofPred_eq]
           contrapose! ha
           simp [ha]
         (isPWO_support_vaddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support).mono h }
@@ -346,7 +346,7 @@ theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
   refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd
     fun a ↦ Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support ((of R).symm y).isPWO_support a)
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   contrapose! hx
   simp [coeff_smul, hx]
 
@@ -530,9 +530,6 @@ theorem orderTop_mul_of_ne_zero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadin
     ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
-@[deprecated (since := "2026-01-02")]
-alias orderTop_mul_of_nonzero := orderTop_mul_of_ne_zero
-
 @[simp]
 theorem orderTop_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
     (x * y).orderTop = x.orderTop + y.orderTop := by
@@ -543,7 +540,7 @@ theorem orderTop_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
 
 theorem orderTop_add_le_mul {x y : R⟦Γ⟧} : x.orderTop + y.orderTop ≤ (x * y).orderTop := by
   rw [← smul_eq_mul]
-  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
+  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j : Γ ↦ rfl
 
 theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by
@@ -557,15 +554,9 @@ theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
-@[deprecated (since := "2026-01-02")]
-alias order_mul_of_nonzero := order_mul_of_ne_zero
-
 theorem leadingCoeff_mul_of_ne_zero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
     (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
   simp only [leadingCoeff_eq, order_mul_of_ne_zero h, coeff_mul_order_add_order]
-
-@[deprecated (since := "2026-01-02")]
-alias leadingCoeff_mul_of_nonzero := leadingCoeff_mul_of_ne_zero
 
 @[simp]
 theorem leadingCoeff_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
@@ -679,7 +670,7 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
     intro x y hx hy
     obtain (_ | _) := subsingleton_or_nontrivial R
     · simp
-    · simp_all only [Set.mem_setOf_eq, orderTop_self_sub_one_pos_iff]
+    · simp_all only [Set.mem_ofPred_eq, orderTop_self_sub_one_pos_iff]
       have h1 : x.val.leadingCoeff * y.val.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
       constructor
       · rw [Units.val_mul, orderTop_mul_of_ne_zero (by simp [h1]), hx.1, hy.1, add_zero]
@@ -1004,7 +995,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
       rintro b c - hxb hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq
-        (Set.IsWF.min_le this hyz ((Set.mem_setOf (p := fun a => y.coeff a ≠ z.coeff a)).mpr hbc'))
+        (Set.IsWF.min_le this hyz ((Set.mem_ofPred (p := fun a => y.coeff a ≠ z.coeff a)).mpr hbc'))
         (order_le_of_coeff_ne_zero hxb), eq_comm]
     · simp +contextual [← or_and_right]
     · simp +contextual [← or_and_right]
