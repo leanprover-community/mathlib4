@@ -140,7 +140,7 @@ lemma isSemilinearSet_formula_realize_semilinear (φ : presburger[[A]].Formula �
   let e := Equiv.sumEmpty α (Fin 0)
   convert! (isSemilinearSet_boundedFormula_realize φ).image (LinearMap.funLeft ℕ ℕ e.symm)
   ext x
-  simp only [mem_ofPred_eq, mem_image]
+  simp only [mem_iff_mem, mem_ofPred_eq, mem_image]
   rw [(e.arrowCongr (.refl ℕ)).exists_congr_left]
   simp [Formula.Realize, Unique.eq_default, Function.comp_def, LinearMap.funLeft, e]
 
@@ -164,8 +164,8 @@ theorem mul_not_definable : ¬ A.Definable presburger {v : Fin 3 → ℕ | v 0 =
   have hsqr : A.Definable₁ presburger {x * x | x : ℕ} := by
     rw [Definable₁]
     convert! (hmul.preimage_comp (β := Fin 2) ![0, 1, 1]).image_comp ![0]
-    ext
-    simpa [funext_iff, Fin.exists_fin_succ_pi] using exists_congr fun _ => Eq.comm
+    simpa [mem_iff_mem, funext_iff, Fin.exists_fin_succ_pi] using
+      exists_congr fun _ => Eq.comm
   rw [definable₁_iff_ultimately_periodic] at hsqr
   rcases hsqr with ⟨k, p, hp, h⟩
   specialize h ((max k p) * (max k p)) ((Nat.le_mul_self _).trans' (le_max_left _ _))

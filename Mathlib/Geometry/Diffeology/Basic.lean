@@ -208,8 +208,10 @@ protected theorem _root_.DiffeologicalSpace.ext {X : Type*} {d₁ d₂ : Diffeol
     (h : @IsPlot _ d₁ = @IsPlot _ d₂) : d₁ = d₂ := by
   obtain ⟨p₁, _, _, _, t₁, h₁⟩ := d₁
   obtain ⟨p₂, _, _, _, t₂, h₂⟩ := d₂
-  congr 1; ext s
-  exact ((show p₁ = p₂ from h) ▸ @h₁ s).trans (@h₂ s).symm
+  obtain rfl : p₁ = p₂ := funext fun n ↦ Set.ext fun p ↦ iff_of_eq (congrFun (congrFun h n) p)
+  congr 1
+  ext s
+  exact (@h₁ s).trans (@h₂ s).symm
 
 @[fun_prop]
 lemma isPlot_const {n : ℕ} {x : X} : IsPlot (fun _ ↦ x : 𝔼ⁿ → X) :=
