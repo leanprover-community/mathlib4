@@ -10,8 +10,9 @@ public import Mathlib.CategoryTheory.Category.Basic
 public meta import Mathlib.Tactic.ToDual
 
 /-!
-The `check_compositions` tactic,
-which checks the typing of categorical compositions in the goal,
+# The `check_compositions` tactic
+
+`check_compositions` checks the typing of categorical compositions in the goal,
 reporting discrepancies at "instances and reducible" transparency.
 
 Reports from this tactic do not necessarily indicate a problem,
