@@ -24,9 +24,15 @@ well-behaved subtraction.
 
 ## Implementation details
 
-A `GlobalPreprocessor` is a function `List Expr → TacticM (List Expr)`. Users can add custom
+A `GlobalPreprocessor` is a function `List TaggedProof → MetaM (List TaggedProof)`, where a
+`TaggedProof` is a proof term paired with the indices of the hypotheses it was derived from.
+Users can add custom
 preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.defaultPreprocessors`
 is the main list, and generally none of these should be skipped unless you know what you're doing.
+
+Preprocessors must propagate provenance, since the oracle's certificate indexes the preprocessed
+facts rather than the user's hypotheses and `linarith?` has to report the latter. See
+`Linarith.Origin`.
 -/
 
 public meta section
@@ -38,7 +44,7 @@ namespace Mathlib.Tactic.Linarith
 open Lean
 open Elab Tactic Meta
 open Qq
-open Std (TreeSet)
+open Std (TreeSet TreeMap)
 
 /-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
 partial def splitConjunctions : Preprocessor where
@@ -118,38 +124,40 @@ If `h` is an equality or inequality between natural numbers,
 `natToInt` lifts this inequality to the integers.
 It also adds the facts that the integers involved are nonnegative.
 To avoid adding the same nonnegativity facts many times, it is a global preprocessor.
+
+Lifting a hypothesis preserves its origin; the nonnegativity facts are tagged with the origins of
+every hypothesis the cast was found in. See `Linarith.Origin`.
 -/
 def natToInt : GlobalBranchingPreprocessor where
   description := "move nats to ints"
   transform g l := do
-    let l ← l.mapM fun h => do
+    let l : List TaggedProof ← l.mapM fun ⟨h, o⟩ => do
       let t ← whnfR (← instantiateMVars (← inferType h))
-      if ← isNatProp t then
-        let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
-          | throwError "zifyProof failed on {h}"
-        if ← succeeds t'.ineqOrNotIneq? then
-          pure h'
-        else
-          -- `zifyProof` turned our comparison into something that wasn't a comparison
-          -- probably replacing `n = n` with `True`, because of
-          -- https://github.com/leanprover-community/mathlib4/issues/741
-          -- so we just keep the original hypothesis.
-          pure h
+      unless ← isNatProp t do return ⟨h, o⟩
+      let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
+        | throwError "zifyProof failed on {h}"
+      if ← succeeds t'.ineqOrNotIneq? then
+        pure ⟨h', o⟩
       else
-        pure h
+        -- `zifyProof` turned our comparison into something that wasn't a comparison
+        -- probably replacing `n = n` with `True`, because of
+        -- https://github.com/leanprover-community/mathlib4/issues/741
+        -- so we just keep the original hypothesis.
+        pure ⟨h, o⟩
     withNewMCtxDepth <| AtomM.run .reducible do
-    let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Nat × Nat) lexOrd.compare) h => do
-      try
-        let (_, _, a, b) ← (← inferType h).ineq?
-        let getIndices (p : Expr × Expr) : AtomM (ℕ × ℕ) := do
-          return ((← AtomM.addAtom p.1).1, (← AtomM.addAtom p.2).1)
-        let indices_a ← (getNatComparisons a).mapM getIndices
-        let indices_b ← (getNatComparisons b).mapM getIndices
-        pure <| (es.insertMany indices_a).insertMany indices_b
-      catch _ => pure es
-    let atoms : Array Expr := (← get).atoms
-    let nonnegProofs : List Expr ← nonnegs.toList.filterMapM fun p => do
-      mkNatCastNonnegProof? (atoms[p.1]!, atoms[p.2]!)
+    -- Keyed by atom indices, so the nonnegativity facts are generated in a deterministic order.
+    let nonnegs ← l.foldlM (init := (∅ : TreeMap (Nat × Nat) (Expr × Expr × Origin) lexOrd.compare))
+      fun es ⟨h, o⟩ => do
+        try
+          let (_, _, a, b) ← (← inferType h).ineq?
+          (getNatComparisons a ++ getNatComparisons b).foldlM (init := es) fun es c => do
+            -- Store the canonical form of the atoms, i.e. the first occurrence encountered.
+            let (i₁, c₁) ← AtomM.addAtom c.1
+            let (i₂, c₂) ← AtomM.addAtom c.2
+            return es.alter (i₁, i₂) fun p? => some (c₁, c₂, ((p?.map (·.2.2)).getD []).union o)
+        catch _ => pure es
+    let nonnegProofs : List TaggedProof ← nonnegs.values.filterMapM fun (e, target, o) => do
+      return (← mkNatCastNonnegProof? (e, target)).map (⟨·, o⟩)
     pure [(g, nonnegProofs ++ l)]
 
 end natToInt
@@ -272,48 +280,58 @@ partial def findSquares (s : TreeSet (Nat × Bool) lexOrd.compare) (e : Expr) :
       e.foldlM findSquares s
   | _ => e.foldlM findSquares s
 
-/-- Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls` -/
-private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) :=
+/--
+Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls`.
+
+Each proof is tagged with the origins of the hypotheses the square was found in, as with the
+nonnegativity facts added by `natToInt`. See `Linarith.Origin`.
+-/
+private def nlinarithGetSquareProofs (ls : List TaggedProof) : MetaM (List TaggedProof) :=
   withTraceNode `linarith (fun _ => return m!" finding squares") do
   -- find the squares in `AtomM` to ensure deterministic behavior
   let s ← AtomM.run .reducible do
-    let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h))) ∅
-    si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
-  let new_es ← s.filterMapM fun (e, is_sq) =>
-    observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
+    let m ← ls.foldrM (init := (∅ : TreeMap (Nat × Bool) Origin lexOrd.compare))
+      fun ⟨h, o⟩ m => do
+        let si ← findSquares ∅ (← instantiateMVars (← inferType h))
+        return si.foldl (fun m k => m.alter k fun o? => some ((o?.getD []).union o)) m
+    let atoms := (← get).atoms
+    return m.toList.map fun ((i, is_sq), o) => (atoms[i]!, is_sq, o)
+  let new_es : List TaggedProof ← s.filterMapM fun (e, is_sq, o) => do
+    return (← observing? <|
+      mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]).map (⟨·, o⟩)
   let new_es ← compWithZero.globalize.transform new_es
-  trace[linarith] "found:{indentD <| toMessageData s}"
-  linarithTraceProofs "so we added proofs" new_es
+  trace[linarith] "found:{indentD <| toMessageData (s.map fun (e, is_sq, _) => (e, is_sq))}"
+  linarithTraceProofs "so we added proofs" (new_es.map (·.proof))
   return new_es
 
 /--
-Get proofs for products of inequalities from `ls`.
+Get proofs for products of inequalities from `ls`. Each product is attributed to the union of the
+origins of its two factors.
 
 Note that the length of the resulting list is proportional to `ls.length^2`, which can make a large
 amount of work for the linarith oracle.
 -/
-private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) :=
+private def nlinarithGetProductsProofs (ls : List TaggedProof) : MetaM (List TaggedProof) :=
   withTraceNode `linarith (fun _ => return m!" adding product terms") do
-  let with_comps ← ls.mapM (fun e => do
-    let tp ← inferType e
+  let with_comps ← ls.mapM (fun ⟨e, o⟩ => do
     try
-      let ⟨ine, _⟩ ← parseCompAndExpr tp
-      pure (ine, e)
-    catch _ => pure (Ineq.lt, e))
-  let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
-    try
-      (some <$> match posa, posb with
-        | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
-        | _, Ineq.eq => mkAppM ``mul_zero_eq #[a, b]
-        | Ineq.lt, Ineq.lt => mkAppM ``mul_pos_of_neg_of_neg #[a, b]
-        | Ineq.lt, Ineq.le => do
-            let a ← mkAppM ``le_of_lt #[a]
-            mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
-        | Ineq.le, Ineq.lt => do
-            let b ← mkAppM ``le_of_lt #[b]
-            mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
-        | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b])
-    catch _ => pure none
+      let ⟨ine, _⟩ ← parseCompAndExpr (← inferType e)
+      pure (ine, e, o)
+    catch _ => pure (Ineq.lt, e, o))
+  let products : List (Option TaggedProof) ← with_comps.mapDiagM
+    fun (⟨posa, a, oa⟩ : Ineq × Expr × Origin) ⟨posb, b, ob⟩ =>
+      try
+        let pf ← match posa, posb with
+          | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
+          | _, Ineq.eq => mkAppM ``mul_zero_eq #[a, b]
+          | Ineq.lt, Ineq.lt => mkAppM ``mul_pos_of_neg_of_neg #[a, b]
+          | Ineq.lt, Ineq.le =>
+              mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[← mkAppM ``le_of_lt #[a], b]
+          | Ineq.le, Ineq.lt =>
+              mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, ← mkAppM ``le_of_lt #[b]]
+          | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
+        pure (some ⟨pf, oa.union ob⟩)
+      catch _ => pure none
   compWithZero.globalize.transform products.reduceOption
 
 /--
@@ -336,22 +354,24 @@ end nlinarith
 
 section removeNe
 /--
-`removeNeAux` case splits on any proof `h : a ≠ b` in the input,
-turning it into `a < b ∨ a > b`, provided the type has a `LinearOrder` instance.
-This produces `2^n` branches when there are `n` such hypotheses in the input.
+`removeNeAux` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`,
+provided the type has a `LinearOrder` instance. This produces `2^n` branches when there are `n` such
+hypotheses in the input.
+
+The hypothesis introduced in each branch inherits the origin of the `≠` hypothesis it came from.
 -/
-partial def removeNeAux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
-  let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
-    let some (α, a, b) := (← instantiateMVars (← inferType e)).ne?' | return none
+partial def removeNeAux : MVarId → List TaggedProof → MetaM (List Branch) := fun g hs => do
+  let some (⟨e, o⟩, α, a, b) ← hs.findSomeM? (fun f : TaggedProof => do
+    let some (α, a, b) := (← instantiateMVars (← inferType f.proof)).ne?' | return none
     unless (← synthInstance? (← mkAppM ``LinearOrder #[α])).isSome do return none
-    return some (e, α, a, b)) | return [(g, hs)]
+    return some (f, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
   let do_goal : MVarId → MetaM (List Branch) := fun g => do
     let (f, h) ← g.intro1
     h.withContext do
-      let ls ← removeNeAux h <| hs.removeAll [e]
-      return ls.map (fun b : Branch => (b.1, (.fvar f)::b.2))
+      let ls ← removeNeAux h <| hs.filter (·.proof != e)
+      return ls.map fun b : Branch => (b.1, (⟨.fvar f, o⟩ : TaggedProof) :: b.2)
   return ((← do_goal ng1) ++ (← do_goal ng2))
 
 @[deprecated (since := "2026-06-06")] alias removeNe_aux := removeNeAux
@@ -367,13 +387,17 @@ def removeNe : GlobalBranchingPreprocessor where
 end removeNe
 
 /-- Definition overridden in `Mathlib.Tactic.Linarith.NNRealPreprocessor`. -/
-initialize nnrealToRealTransform : IO.Ref (List Expr → MetaM (List Expr)) ← IO.mkRef pure
+initialize nnrealToRealTransform : IO.Ref (List TaggedProof → MetaM (List TaggedProof)) ←
+  IO.mkRef pure
 
 /--
 If `h` is an equality or inequality between NNReals, `nnrealToReal` lifts this inequality to the
 Reals. It also adds the facts that the reals involved are nonnegative. To avoid adding the same
 nonnegativity facts many times, it is a global preprocessor. This preprocessor does nothing unless
-`Mathlib.Tactic.Linarith.NNRealPreprocessor` is imported -/
+`Mathlib.Tactic.Linarith.NNRealPreprocessor` is imported.
+
+The override must preserve origins itself rather than being lifted with `Linarith.untagged`, since
+the default here is the identity. -/
 def nnrealToReal : GlobalPreprocessor where
   description := "move nnreals to reals"
   transform l := do (← nnrealToRealTransform.get) l
@@ -386,13 +410,14 @@ def defaultPreprocessors : List GlobalBranchingPreprocessor :=
     compWithZero, cancelDenoms]
 
 /--
-`preprocess pps l` takes a list `l` of proofs of propositions.
+`preprocess pps l` takes a list `l` of facts: proofs of propositions, each tagged with the
+hypotheses it was derived from.
 It maps each preprocessor `pp ∈ pps` over this list.
 The preprocessors are run sequentially: each receives the output of the previous one.
 Note that a preprocessor may produce multiple or no expressions from each input expression,
 so the size of the list may change.
 -/
-def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
+def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List TaggedProof) :
     MetaM (List Branch) := do
   withTraceNode `linarith (fun _ => return m!"Running preprocessors") <|
     g.withContext <|

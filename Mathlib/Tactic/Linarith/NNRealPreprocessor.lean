@@ -62,20 +62,26 @@ def mkToRealNonnegProof? (e : Expr) : MetaM (Option Expr) :=
 
 @[deprecated (since := "2026-05-27")] alias mk_toReal_nonneg_prf := mkToRealNonnegProof?
 
+/-
+Nonnegativity facts are tagged with the origins of every hypothesis their coercion was found in, as
+in `natToInt`. See the `nnrealToReal` docstring for why this cannot use `Linarith.untagged`.
+-/
 initialize nnrealToRealTransform.set fun l => do
-  let l ← l.mapM fun e => do
+  let l : List TaggedProof ← l.mapM fun ⟨e, o⟩ => do
     let t ← whnfR (← instantiateMVars (← inferType e))
-    if ← isNNRealProp t then
-      return (← Rify.rifyProof e t).1
-    else
-      return e
-  let atoms : List Expr ← withNewMCtxDepth <| AtomM.run .reducible do
-    for e in l do
+    if ← isNNRealProp t then return ⟨(← Rify.rifyProof e t).1, o⟩ else return ⟨e, o⟩
+  -- Keyed by atom index, so this visits the coercions in order of first appearance.
+  let coes ← withNewMCtxDepth <| AtomM.run .reducible do
+    let mut origins : Std.TreeMap Nat (Expr × Origin) := ∅
+    for ⟨e, o⟩ in l do
       let (_, _, a, b) ← (← inferType e).ineq?
-      discard <| (getNNRealCoes a).mapM AtomM.addAtom
-      discard <| (getNNRealCoes b).mapM AtomM.addAtom
-    return (← get).atoms.toList
-  let nonnegProofs : List Expr ← atoms.filterMapM mkToRealNonnegProof?
+      for c in getNNRealCoes a ++ getNNRealCoes b do
+        -- Store the canonical form of the atom, i.e. the first occurrence encountered.
+        let (i, c) ← AtomM.addAtom c
+        origins := origins.alter i fun p? => some (c, ((p?.map (·.2)).getD []).union o)
+    return origins.values
+  let nonnegProofs : List TaggedProof ← coes.filterMapM fun (c, o) => do
+    return (← mkToRealNonnegProof? c).map (⟨·, o⟩)
   return nonnegProofs ++ l
 
 end  Mathlib.Tactic.Linarith

@@ -25,3 +25,24 @@ example {a b c d : ℝ≥0} (h1 : a + b ≤ c) (h2 : c ≤ d / 2) : a ≤ d / 2 
 
 example {a b c d : ℝ≥0} (h1 : a + b ≤ 2 * c + 3) (h2 : c ≤ d) : a ≤ 2 * d + 3 := by
   linarith
+
+-- `linarith?` attributes facts lifted to `ℝ` back to the `ℝ≥0` hypotheses they came from
+/--
+info: Try this:
+  [apply] linarith only [h]
+-/
+#guard_msgs in
+set_option linter.unusedVariables false in
+example {a b : ℝ≥0} (h : a < b) (junk : b < b + 1) : a ≤ b := by
+  linarith?
+
+-- the certificate uses the nonnegativity fact `0 ≤ (b : ℝ)`, which is tagged with every
+-- hypothesis `b` appears in; minimization then drops `junk`
+/--
+info: Try this:
+  [apply] linarith only [h]
+-/
+#guard_msgs in
+set_option linter.unusedVariables false in
+example {a b : ℝ≥0} (h : a + b ≤ 0) (junk : b < b + 1) : a ≤ 0 := by
+  linarith?
