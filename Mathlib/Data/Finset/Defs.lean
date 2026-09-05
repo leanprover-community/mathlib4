@@ -287,7 +287,7 @@ theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x �
   Set.exists_of_ssubset h
 
 instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
-  Subrelation.isWellFounded (InvImage _ _) val_lt_iff.2
+  .anti (r := InvImage _ _) fun _ _ ↦ val_lt_iff.2
 
 instance wellFoundedLT : WellFoundedLT (Finset α) :=
   Finset.isWellFounded_ssubset

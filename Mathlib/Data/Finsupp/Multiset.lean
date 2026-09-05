@@ -220,7 +220,7 @@ variable (ι)
 
 /-- The order on `ι →₀ ℕ` is well-founded. -/
 theorem lt_wf : WellFounded (@LT.lt (ι →₀ ℕ) _) :=
-  Subrelation.wf (sum_id_lt_of_lt _ _) <| InvImage.wf _ Nat.lt_wfRel.2
+  InvImage.wf _ Nat.lt_wfRel.wf |>.anti sum_id_lt_of_lt
 
 -- TODO: generalize to `[WellFoundedRelation α] → WellFoundedRelation (ι →₀ α)`
 instance : WellFoundedRelation (ι →₀ ℕ) where

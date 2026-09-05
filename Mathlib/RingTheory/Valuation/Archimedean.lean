@@ -40,7 +40,7 @@ namespace Valuation.Integers
 open scoped Function in
 lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
     WfDvdMonoid O ↔ WellFounded ((· > ·) on (v ∘ algebraMap O F)) := by
-  refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ ⟨h.mono ?_⟩⟩ <;>
+  refine ⟨fun _ ↦ wellFounded_dvdNotUnit.anti fun _ _ ↦ ?_, fun h ↦ ⟨h.anti fun _ _ ↦ ?_⟩⟩ <;>
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
 open scoped Function WithZero in
