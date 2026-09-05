@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 
 /-!
 
@@ -138,6 +139,9 @@ theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
 theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
     w ∈ p.support ↔ ¬G.IsIsolated w :=
   ⟨fun hwp hw ↦ hnil <| p.nil_of_isIsolated_of_mem_support hw hwp, hp.mem_support_of_not_isIsolated⟩
+
+theorem IsEulerian.isChordless {u v : V} {p : G.Walk u v} (hp : p.IsEulerian) : p.IsChordless :=
+  fun _ ⟨hadj, hnmem, _⟩ ↦ hnmem <| hp.mem_edges_iff.mpr hadj
 
 theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
