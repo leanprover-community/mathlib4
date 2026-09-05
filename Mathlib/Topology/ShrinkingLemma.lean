@@ -19,12 +19,10 @@ For finite or countable coverings this lemma can be proved without the axiom of 
 [ncatlab](https://ncatlab.org/nlab/show/shrinking+lemma) for details. We only formalize the most
 general result that works for any covering but needs the axiom of choice.
 
-We prove the following versions of the lemma:
+We prove two versions of the lemma:
 
 * `exists_subset_iUnion_closure_subset` deals with a covering of a closed set in a normal space;
 * `exists_iUnion_eq_closure_subset` deals with a covering of the whole space.
-* `TopologicalSpace.IsOpenCover.exists_finite_shrinking` gives a finite subcover without
-  repetitions and an open shrinking for an open cover of a compact normal space.
 
 ## Tags
 
