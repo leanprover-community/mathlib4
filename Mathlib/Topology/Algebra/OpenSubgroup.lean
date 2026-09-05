@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -308,6 +309,80 @@ lemma quotient_finite_of_isOpen' [IsTopologicalGroup G] [CompactSpace G] (U : Su
 instance [IsTopologicalGroup G] [CompactSpace G] (U : OpenSubgroup G) (K : OpenSubgroup U) :
     Finite (U ⧸ K.toSubgroup) :=
   quotient_finite_of_isOpen' U.toSubgroup K.toSubgroup U.isOpen K.isOpen
+
+section LocallyClosed
+
+variable [IsTopologicalGroup G]
+
+open Topology in
+@[to_additive]
+lemma isClosed_of_isLocallyClosed (U : Subgroup G)
+    (h : IsLocallyClosed (U : Set G)) :
+    IsClosed (U : Set G) := by
+  -- Since `U` is locally closed, it is open, hence closed, in the closed subgroup
+  -- `U.topologicalClosure`. Hence it is closed in `G`.
+  set V : Subgroup U.topologicalClosure := U.subgroupOf U.topologicalClosure with V_def
+  have V_closed : IsClosed (V : Set U.topologicalClosure) :=
+    V.isClosed_of_isOpen h.isOpen_preimage_val_closure
+  have clemb : IsClosedEmbedding U.topologicalClosure.subtype :=
+    U.isClosed_topologicalClosure.isClosedEmbedding_subtypeVal
+  rwa [clemb.isClosed_iff_image_isClosed, ← coe_map, V_def,
+    map_subgroupOf_eq_of_le U.le_topologicalClosure] at V_closed
+
+open Topology in
+@[to_additive]
+lemma isClosed_of_isLocallyClosedAt (U : Subgroup G) {x : G} (hx : x ∈ U)
+    (h : IsLocallyClosedAt U x) :
+    IsClosed (U : Set G) := by
+  -- By `isClosed_of_isLocallyClosed`, it suffices to show that `U` is locally closed at each
+  -- of its points.
+  refine U.isClosed_of_isLocallyClosed <| isLocallyClosed_iff_isLocallyClosedAt.mpr
+    fun y (hy : y ∈ U) ↦ ?_
+  -- It is then just a matter of translating things around.
+  set f : G → G := fun z ↦ x * y⁻¹ * z
+  have : x = f y := by simp [f]
+  rw [this] at h
+  have : U = f ⁻¹' U := by ext z; simp [f, U.mul_mem_cancel_left (mul_mem hx (inv_mem hy))]
+  rw [this]
+  exact h.preimage (by fun_prop)
+
+@[to_additive]
+lemma isClosed_of_isDiscrete [T1Space G] (U : Subgroup G)
+    (h : IsDiscrete (U : Set G)) : IsClosed (U : Set G) :=
+  U.isClosed_of_isLocallyClosed h.isLocallyClosed
+
+@[to_additive]
+instance isClosed_of_discreteTopology [T1Space G] {U : Subgroup G}
+    [DiscreteTopology U] :
+    IsClosed (U : Set G) :=
+  U.isClosed_of_isDiscrete <| isDiscrete_iff_discreteTopology.mpr ‹_›
+
+@[to_additive (attr := deprecated (since := "2026-09-01"))]
+alias isClosed_of_discrete := isClosed_of_discreteTopology
+
+open Filter in
+@[to_additive]
+lemma tendsto_coe_cofinite_of_isDiscrete [T1Space G] (H : Subgroup G)
+    (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
+  IsClosed.tendsto_coe_cofinite_of_isDiscrete (H.isClosed_of_isDiscrete hH) hH
+
+@[to_additive (attr := deprecated (since := "2026-09-01"))]
+alias tendsto_coe_cofinite_of_discrete := tendsto_coe_cofinite_of_isDiscrete
+
+open Filter in
+@[to_additive]
+lemma _root_.MonoidHom.tendsto_coe_cofinite_of_isDiscrete [T1Space G]
+    {H : Type*} [Group H] {f : H →* G} (hf : Function.Injective f)
+    (hf' : IsDiscrete (f.range : Set G)) :
+    Tendsto f cofinite (cocompact _) := by
+  replace hf : Function.Injective f.rangeRestrict := by simpa
+  exact (f.range.tendsto_coe_cofinite_of_isDiscrete hf').comp hf.tendsto_cofinite
+
+@[to_additive (attr := deprecated (since := "2026-09-01"))]
+alias _root_.MonoidHom.tendsto_coe_cofinite_of_discrete :=
+  MonoidHom.tendsto_coe_cofinite_of_isDiscrete
+
+end LocallyClosed
 
 end Subgroup
 
