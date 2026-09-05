@@ -6674,6 +6674,7 @@ public import Mathlib.RingTheory.Coalgebra.Convolution
 public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.Hom
+public import Mathlib.RingTheory.Coalgebra.IsFrobenius
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
 public import Mathlib.RingTheory.Coalgebra.Primitive
