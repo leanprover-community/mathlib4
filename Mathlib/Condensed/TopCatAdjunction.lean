@@ -84,6 +84,7 @@ namespace CondensedSet
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
+@[simps!]
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
   TopCat.ofHom
   { toFun x := x.1 PUnit.unit
@@ -91,16 +92,6 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet
       rw [continuous_coinduced_dom]
       continuity }
 
-set_option backward.isDefEq.respectTransparency.types false in
-/-- `simp`-normal form of the lemma that `@[simps]` would generate. -/
-@[simp] lemma topCatAdjunctionCounit_hom_apply (X : TopCat) (x) :
-    -- We have to specify here to not infer the `TopologicalSpace` instance on `C(PUnit, X)`,
-    -- which suggests type synonyms are being unfolded too far somewhere.
-    DFunLike.coe (F := @ContinuousMap C(PUnit, X) X (_) _)
-        (TopCat.Hom.hom (topCatAdjunctionCounit X)) x =
-      x PUnit.unit := rfl
-
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
 -/
@@ -143,7 +134,6 @@ noncomputable def topCatAdjunction : condensedSetToTopCat.{u} ⊣ topCatToConden
     change Y.obj.map (𝟙 _) _ = _
     simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
   rw [TopCat.epi_iff_surjective]
   exact (topCatAdjunctionCounit_bijective _).2

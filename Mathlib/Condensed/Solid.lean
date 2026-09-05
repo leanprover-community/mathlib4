@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.Condensed.Functors
 public import Mathlib.Condensed.Limits
 
@@ -31,7 +30,7 @@ universe u
 
 variable (R : Type (u + 1)) [Ring R]
 
-open CategoryTheory Limits Profinite Condensed
+open CategoryTheory Profinite Condensed
 
 noncomputable section
 
