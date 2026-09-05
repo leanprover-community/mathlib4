@@ -128,8 +128,8 @@ theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
     V_ o = ⋃ a : Set.Iio o, vonNeumann a :=
   ext fun z ↦ by simpa [mem_vonNeumann] using h.lt_iff_exists_lt
 
-theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
-  Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
+theorem iUnion_vonNeumann : ⋃ o, (V_ o : ZFClass) = .univ :=
+  Set.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
 
 theorem _root_.Ordinal.toZFSet_subset_vonNeumann (o : Ordinal) : o.toZFSet ⊆ V_ o := by
   simp [subset_vonNeumann]
