@@ -798,8 +798,29 @@ meta def ErrorContext.isValid_parse?_error_context (ec : ErrorContext) : Bool :=
   lineNumber := 1234, path := "Mathlib/Tactic/Measurability/Init.lean"}
 
 #guard ErrorContext.isValid_parse?_error_context {
+  error := .missingSpaceAfterLeftArrow,
+  lineNumber := 1234, path := "Mathlib/Tactic/Measurability/Init.lean"}
+
+#guard ErrorContext.isValid_parse?_error_context {
   error := .unwantedUnicode '\u1234',
-  lineNumber := 1234, path:="./MYFILE.lean"}
+  lineNumber := 1234, path:"./MYFILE.lean"}
+
+#guard StyleError.errorCode (.missingSpaceAfterLeftArrow) == "ERR_ARR"
+
+#guard (leftArrowSpacingLinter (default : LinterOptions) #![
+    "example : True := by",
+    "  exact (show True from ←trivial)"
+  ]).1 == #[(StyleError.missingSpaceAfterLeftArrow, 2)]
+
+#guard (leftArrowSpacingLinter (default : LinterOptions) #![
+    "example : True := by",
+    "  exact (show True from ←% (by trivial))"
+  ]).1 == #[]
+
+#guard (leftArrowSpacingLinter (default : LinterOptions) #![
+    "example : True := by",
+    "  exact (show True from ←`(by trivial))"
+  ]).1 == #[]
 
 #guard ErrorContext.isValid_parse?_error_context {
   error := .unwantedUnicode '\u00a0',
