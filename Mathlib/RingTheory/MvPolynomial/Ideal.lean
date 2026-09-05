@@ -84,8 +84,16 @@ variable (σ R) in
 noncomputable abbrev idealOfVars : Ideal (MvPolynomial σ R) := .span (.range X)
 
 variable (σ R) in
-lemma idealOfVars_fg [Finite σ] : (idealOfVars σ R).FG :=
+lemma fg_idealOfVars [Finite σ] : (idealOfVars σ R).FG :=
   Submodule.fg_span <| Set.finite_range _
+
+@[deprecated (since := "2026-09-05")]
+alias idealOfVars_fg := fg_idealOfVars
+
+variable (σ R) in
+lemma isPrime_idealOfVars [IsCancelAdd R] [IsDomain R] : (idealOfVars σ R).IsPrime := by
+  rw [idealOfVars, ← Set.image_univ]
+  exact span_X_image_isPrime _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma idealOfVars_eq_restrictSupportIdeal :
