@@ -222,3 +222,40 @@ instance convCommRing : CommRing (WithConv (C →ₗ[R] A)) where
 
 end CommRing
 end LinearMap
+
+open LinearMap
+
+namespace AlgHom
+variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+  [AddCommMonoid C] [Module R C] [Coalgebra R C]
+
+/-- Post-composition by an algebra homomorphism, as a homomorphism of convolution semirings. -/
+@[simps]
+def convCompRight (h : A →ₐ[R] B) : WithConv (C →ₗ[R] A) →+* WithConv (C →ₗ[R] B) where
+  toFun f := toConv (h.toLinearMap.comp f.ofConv)
+  map_one' := WithConv.ext (by ext; simp)
+  map_mul' f g := WithConv.ext (algHom_comp_convMul_distrib h f g)
+  map_zero' := WithConv.ext (by ext; simp)
+  map_add' f g := WithConv.ext (by ext; simp)
+
+end AlgHom
+
+namespace CoalgHom
+variable [Semiring A] [Algebra R A] [AddCommMonoid B] [Module R B] [Coalgebra R B]
+  [AddCommMonoid C] [Module R C] [Coalgebra R C]
+
+/-- Pre-composition by a coalgebra homomorphism, as a homomorphism of convolution semirings. -/
+@[simps]
+def convCompLeft (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →+* WithConv (B →ₗ[R] A) where
+  toFun f := toConv (f.ofConv.comp h.toLinearMap)
+  map_one' := WithConv.ext (by ext; simp)
+  map_mul' f g := WithConv.ext (convMul_comp_coalgHom_distrib f g h)
+  map_zero' := WithConv.ext (by ext; simp)
+  map_add' f g := WithConv.ext (by ext; simp)
+
+/-- Pre-composition by a surjective coalgebra homomorphism is injective on convolutions. -/
+lemma convCompLeft_injective {h : B →ₗc[R] C} (hh : Function.Surjective h) :
+    Function.Injective (convCompLeft h (A := A)) := fun _ _ e ↦
+  WithConv.ext <| (cancel_right hh).1 congr(($e).ofConv)
+
+end CoalgHom
