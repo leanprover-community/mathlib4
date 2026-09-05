@@ -173,6 +173,14 @@ instance instUnique [Subsingleton R] : Unique R[M] := fast_instance% coeffEquiv.
 instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
   coeffEquiv.decidableEq
 
+@[to_additive] instance : Zero R[M] := ⟨⟨0⟩⟩
+
+@[no_expose, to_additive] instance : Add R[M] := coeffEquiv.add
+
+@[to_additive (dont_translate := S R)]
+instance [SMulZeroClass S R] : SMul S R[M] where
+  smul a x := ofCoeff (a • x.coeff)
+
 @[to_additive instAddMonoid]
 instance instAddMonoid : AddMonoid R[M] := fast_instance% coeffEquiv.addMonoid
 
@@ -186,7 +194,8 @@ instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
 /-- `MonoidAlgebra.coeff` as an `AddEquiv`. -/
 @[to_additive (attr := simps! apply symm_apply)
 /-- `AddMonoidAlgebra.coeff` as an `AddEquiv`. -/]
-def coeffAddEquiv : R[M] ≃+ (M →₀ R) := coeffEquiv.addEquiv
+def coeffAddEquiv : R[M] ≃+ (M →₀ R) :=
+  { coeffEquiv with map_add' := by simp [Equiv.add_def] }
 
 @[to_additive (attr := simp)] lemma coeff_zero : coeff (0 : R[M]) = 0 := rfl
 @[to_additive (attr := simp)] lemma ofCoeff_zero : (ofCoeff 0 : R[M]) = 0 := rfl
@@ -195,10 +204,10 @@ def coeffAddEquiv : R[M] ≃+ (M →₀ R) := coeffEquiv.addEquiv
   ofCoeff_inj
 
 @[to_additive (attr := simp)]
-lemma coeff_add (x y : R[M]) : coeff (x + y) = coeff x + coeff y := rfl
+lemma coeff_add (x y : R[M]) : coeff (x + y) = coeff x + coeff y := (rfl)
 
 @[to_additive (attr := simp)]
-lemma ofCoeff_add (x y : M →₀ R) : ofCoeff (x + y) = ofCoeff x + ofCoeff y := rfl
+lemma ofCoeff_add (x y : M →₀ R) : ofCoeff (x + y) = ofCoeff x + ofCoeff y := (rfl)
 
 @[to_additive (attr := simp)]
 lemma coeff_sum (s : Finset ι) (f : ι → R[M]) :
@@ -357,7 +366,7 @@ lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r�
   ext; simp
 
 @[to_additive (attr := deprecated coeff_add (since := "2026-06-18"))]
-lemma coe_add (f g : R[M]) : ⇑(f + g).coeff = f.coeff + g.coeff := rfl
+lemma coe_add (f g : R[M]) : ⇑(f + g).coeff = f.coeff + g.coeff := (rfl)
 
 @[to_additive (attr := simp)]
 lemma single_add_erase (m : M) (x : R[M]) : single m (x.coeff m) + x.erase m = x := by
@@ -478,30 +487,17 @@ end One
 section Mul
 variable [Mul M]
 
-/-- The multiplication in an additive monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[no_expose]
-def _root_.AddMonoidAlgebra.mul' [Add M] (x y : AddMonoidAlgebra R M) : AddMonoidAlgebra R M :=
-  x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ .single (m₁ + m₂) (r₁ * r₂)
-/-- The multiplication in a monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[to_additive existing mul', no_expose]
-def mul' (x y : R[M]) : R[M] :=
-  x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
-
 /-- The product of `x y : R[M]` is the finitely supported function whose value at `m`
 is the sum of `x m₁ * y m₂` over all pairs `m₁, m₂` such that `m₁ * m₂ = m`. -/
-@[to_additive instMul
+@[no_expose, to_additive (dont_translate := R) instMul
 /-- The product of `x y : R[M]` is the finitely supported function whose value at `m`
 is the sum of `x m₁ * y m₂` over all pairs `m₁, m₂` such that `m₁ + m₂ = m`. -/]
-instance instMul : Mul R[M] where mul := mul'
+instance instMul : Mul R[M] where
+  mul x y := x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
 
 @[to_additive (dont_translate := R) mul_def]
 lemma mul_def (x y : R[M]) :
-    x * y = x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂) := by
-  with_unfolding_all rfl
+    x * y = x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂) := (rfl)
 
 @[to_additive (dont_translate := R)]
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[M] where
@@ -773,11 +769,11 @@ def curryAddEquiv : R[M × N] ≃+ R[N][M] :=
     (Finsupp.mapRange.addEquiv coeffAddEquiv.symm) coeffAddEquiv.symm
 
 @[to_additive (attr := simp)]
-lemma curryAddEquiv_single (m : M) (n : N) (r : R) :
+lemma curryAddEquiv_single {M : Type*} (m : M) (n : N) (r : R) :
     curryAddEquiv (single (m, n) r) = single m (single n r) := by simp [curryAddEquiv]
 
 @[to_additive (attr := simp)]
-lemma curryAddEquiv_symm_single (m : M) (n : N) (r : R) :
+lemma curryAddEquiv_symm_single {M : Type*} (m : M) (n : N) (r : R) :
     curryAddEquiv.symm (single m <| single n r) = (single (m, n) r) := by simp [curryAddEquiv]
 
 /-- A product monoid algebra is a nested monoid algebra. -/
@@ -882,20 +878,23 @@ end CommSemiring
 section Ring
 variable [Ring R]
 
+@[no_expose, to_additive] instance : Neg R[M] := coeffEquiv.Neg
+@[no_expose, to_additive] instance : Sub R[M] := coeffEquiv.sub
+
 @[to_additive (dont_translate := R) addCommGroup]
 instance addCommGroup : AddCommGroup R[M] := fast_instance% coeffEquiv.addCommGroup
 
 @[to_additive (attr := simp)]
-lemma coeff_neg (x : R[M]) : coeff (-x) = -coeff x := rfl
+lemma coeff_neg (x : R[M]) : coeff (-x) = -coeff x := (rfl)
 
 @[to_additive (attr := simp)]
-lemma ofCoeff_neg (x : M →₀ R) : ofCoeff (-x) = -ofCoeff x := rfl
+lemma ofCoeff_neg (x : M →₀ R) : ofCoeff (-x) = -ofCoeff x := (rfl)
 
 @[to_additive (attr := simp)]
-lemma coeff_sub (x y : R[M]) : coeff (x - y) = coeff x - coeff y := rfl
+lemma coeff_sub (x y : R[M]) : coeff (x - y) = coeff x - coeff y := (rfl)
 
 @[to_additive (attr := simp)]
-lemma ofCoeff_sub (x y : M →₀ R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y := rfl
+lemma ofCoeff_sub (x y : M →₀ R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y := (rfl)
 
 @[to_additive (attr := simp) (dont_translate := R)]
 lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := by ext; simp
@@ -922,7 +921,7 @@ lemma intCast_def [MulOneClass M] (z : ℤ) : (z : R[M]) = single 1 (z : R) := r
 instance ring [Monoid M] : Ring R[M] where
 
 @[deprecated coeff_neg (since := "2026-06-18")]
-lemma neg_apply (m : M) (x : R[M]) : (-x).coeff m = -x.coeff m := rfl
+lemma neg_apply (m : M) (x : R[M]) : (-x).coeff m = -x.coeff m := (rfl)
 
 end Ring
 
