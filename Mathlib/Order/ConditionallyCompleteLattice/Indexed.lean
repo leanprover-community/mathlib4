@@ -320,6 +320,11 @@ theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih �
 theorem ciSup_and {p q : Prop} {f : p ∧ q → α} : ⨆ ih, f ih = ⨆ (h₁) (h₂), f ⟨h₁, h₂⟩ := by
   by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq, iSup_of_empty']
 
+@[to_dual le_ciInf_or]
+lemma ciSup_or_le (p q : Prop) (f : p ∨ q → α) :
+    ⨆ (h : p ∨ q), f h ≤ (⨆ h : p, f (.inl h)) ⊔ (⨆ h : q, f (.inr h)) := by
+  by_cases hp : p <;> simp [hp]
+
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
@@ -478,11 +483,13 @@ theorem ciSup_ciSup_eq_right {b : β} {f : ∀ x : β, b = x → α} :
     ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
   le_antisymm (ciSup₂_le' fun _ h ↦ h ▸ le_refl (f b rfl)) le_ciSup_ciSup_eq_right
 
-lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
+lemma ciSup_or (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
   by_cases hp : p <;>
   by_cases hq : q <;>
   simp [hp, hq]
+
+@[deprecated (since := "2026-09-05")] alias ciSup_or' := ciSup_or
 
 end ConditionallyCompleteLinearOrderBot
 
