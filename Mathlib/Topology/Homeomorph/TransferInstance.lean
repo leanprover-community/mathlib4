@@ -25,7 +25,7 @@ namespace Equiv
 /-- Transfer a `TopologicalSpace` across an `Equiv` -/
 protected abbrev topologicalSpace [TopologicalSpace β] (e : α ≃ β) :
     TopologicalSpace α :=
-  .induced e.toFun ‹_›
+  .coinduced e.invFun ‹_›
 
 /-- An equivalence `e : α ≃ β` gives a homeomorphism `α ≃ₜ β` where the topological space structure
 on `α` is the one obtained by transporting the topological space structure on `β` back along `e`. -/
@@ -34,11 +34,11 @@ def homeomorph [TopologicalSpace β] (e : α ≃ β) :
     α ≃ₜ β :=
   letI := e.topologicalSpace
   { e with
-    continuous_toFun := continuous_induced_dom
-    continuous_invFun := by
-      simp only [Equiv.invFun_as_coe]
-      convert! continuous_coinduced_rng
-      rw [e.coinduced_symm]
+    continuous_invFun := continuous_coinduced_rng
+    continuous_toFun := by
+      simp only [Equiv.toFun_as_coe]
+      convert! continuous_induced_dom
+      rw [← e.coinduced_symm]
       rfl }
 
 end Equiv

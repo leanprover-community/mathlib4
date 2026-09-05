@@ -45,9 +45,21 @@ end Equiv
 /-- Transfer `NormedSpace` across an `AddEquiv` -/
 protected abbrev AddEquiv.normedSpace (𝕜 : Type*) [NormedField 𝕜]
     [AddCommGroup α] [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] (e : α ≃+ β) :
-    letI : SeminormedAddCommGroup α := .induced _ _ e
+    letI : SeminormedAddCommGroup α :=
+      letI := e.pseudometricSpace
+      fast_instance%
+      { SeminormedAddCommGroup.induced α β e with
+        toPseudoMetricSpace := e.pseudometricSpace }
     NormedSpace 𝕜 α :=
+  letI : SeminormedAddCommGroup α :=
+    letI := e.pseudometricSpace
+    fast_instance%
+    { SeminormedAddCommGroup.induced α β e with
+      toPseudoMetricSpace := e.pseudometricSpace }
   letI := e.module 𝕜
-  .induced _ _ _ (e.linearEquiv _)
+  { norm_smul_le a b := by
+      change norm (e (a • b)) ≤ norm a * norm (e b)
+      rw [← norm_smul, ← e.linearEquiv_apply (R := 𝕜),
+        ← e.linearEquiv_apply (R := 𝕜), map_smul] }
 
 @[deprecated (since := "2026-07-30")] alias Equiv.normedSpace := AddEquiv.normedSpace
