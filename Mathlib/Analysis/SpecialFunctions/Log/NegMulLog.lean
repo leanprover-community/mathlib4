@@ -41,6 +41,29 @@ lemma self_sub_one_le_mul_log {x : ℝ} (h0 : 0 ≤ x) : x - 1 ≤ x * x.log := 
   · simp
   · exact le_of_lt (self_sub_one_lt_mul_log h0 h1)
 
+/-- The identity `a * log (a / b) = a * log a - a * log b`. It remains valid at `b = 0` under the
+hypothesis that `b = 0` forces `a = 0`, which rules out the case `b = 0 < a` where the junk value
+`log 0 = 0` makes the two sides differ. No positivity assumption is needed. -/
+lemma mul_log_div {a b : ℝ} (hab : b = 0 → a = 0) :
+    a * log (a / b) = a * log a - a * log b := by
+  rcases eq_or_ne b 0 with hb | hb
+  · simp [hb, hab hb]
+  · rcases eq_or_ne a 0 with ha | ha
+    · simp [ha]
+    · rw [log_div ha hb, mul_sub]
+
+/-- A quotient form of `self_sub_one_le_mul_log`: `a - b ≤ a * log (a / b)` for `0 ≤ a` and
+`0 ≤ b` such that `b = 0` forces `a = 0`. Taking `b = 1` recovers `self_sub_one_le_mul_log`. -/
+lemma sub_le_mul_log_div {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : b = 0 → a = 0) :
+    a - b ≤ a * log (a / b) := by
+  rcases hb.eq_or_lt with hb0 | hb0
+  · simp [hab hb0.symm, ← hb0]
+  · have hb' : b ≠ 0 := hb0.ne'
+    calc a - b = b * (a / b - 1) := by field_simp
+      _ ≤ b * (a / b * log (a / b)) :=
+          mul_le_mul_of_nonneg_left (self_sub_one_le_mul_log (by positivity)) hb0.le
+      _ = a * log (a / b) := by field_simp
+
 @[fun_prop]
 lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   rw [continuous_iff_continuousAt]
