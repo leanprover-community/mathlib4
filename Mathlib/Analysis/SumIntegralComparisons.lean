@@ -330,7 +330,7 @@ theorem AntitoneOn.integral_le_tsum_comp_add (N : ℕ) (anti : AntitoneOn f (Ici
   filter_upwards with M
   calc
     _ ≤ ∑ n ∈ Finset.Ico N (N + M), f n := by
-      convert!  AntitoneOn.integral_le_sum_Ico _ _ using 2 <;> grind [anti.mono]
+      convert! AntitoneOn.integral_le_sum_Ico _ (anti.mono _) using 2 <;> grind
     _ = _ := by
       rw [Finset.sum_Ico_eq_sum_range]
       grind
