@@ -275,17 +275,17 @@ variable (R) in
 /-- The canonical `MultilinearMap R s (⨂[R] i, s i)`.
 
 `tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
-def tprod : MultilinearMap R s (⨂[R] i, s i) where
+def tprod : MultilinearMap (.id R) s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
   map_update_smul' {_ f} i r x := by
-    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
+    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self, RingHom.id_apply]
 
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 theorem tprod_eq_tprodCoeff_one :
-    ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
+    ⇑(tprod R : MultilinearMap (.id R) s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
 
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z • tprod R f := by
@@ -393,7 +393,7 @@ section lift
 /-- Auxiliary function to constructing a linear map `(⨂[R] i, s i) → E` given a
 `MultilinearMap R s E` with the property that its composition with the canonical
 `MultilinearMap R s (⨂[R] i, s i)` is the given multilinear map. -/
-def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
+def liftAux (φ : MultilinearMap (.id R) s E) : (⨂[R] i, s i) →+ E :=
   liftAddHom (fun p : R × Π i, s i ↦ p.1 • φ p.2)
     (fun z f i hf ↦ by simp_rw [map_coord_zero φ i hf, smul_zero])
     (fun f ↦ by simp_rw [zero_smul])
@@ -401,7 +401,8 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
     (fun z₁ z₂ f ↦ by rw [← add_smul])
     fun z f i r ↦ by simp [φ.map_update_smul, smul_smul, mul_comm]
 
-theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (tprod R f) = φ f := by
+theorem liftAux_tprod (φ : MultilinearMap (.id R) s E) (f : Π i, s i) :
+    liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
   -- The end of this proof was very different before https://github.com/leanprover/lean4/pull/2644:
   -- rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
@@ -411,10 +412,10 @@ theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (
   conv_lhs => apply AddCon.lift_coe
   simp
 
-theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : Π i, s i) :
+theorem liftAux_tprodCoeff (φ : MultilinearMap (.id R) s E) (z : R) (f : Π i, s i) :
     liftAux φ (tprodCoeff R z f) = z • φ f := rfl
 
-theorem liftAux.smul {φ : MultilinearMap R s E} (r : R) (x : ⨂[R] i, s i) :
+theorem liftAux.smul {φ : MultilinearMap (.id R) s E} (r : R) (x : ⨂[R] i, s i) :
     liftAux φ (r • x) = r • liftAux φ x := by
   refine PiTensorProduct.induction_on' x ?_ ?_
   · intro z f
@@ -425,7 +426,7 @@ theorem liftAux.smul {φ : MultilinearMap R s E} (r : R) (x : ⨂[R] i, s i) :
 /-- Constructing a linear map `(⨂[R] i, s i) → E` given a `MultilinearMap R s E` with the
 property that its composition with the canonical `MultilinearMap R s E` is
 the given multilinear map `φ`. -/
-def lift : MultilinearMap R s E ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
+def lift : MultilinearMap (.id R) s E ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
   toFun φ := { liftAux φ with map_smul' := liftAux.smul }
   invFun φ' := φ'.compMultilinearMap (tprod R)
   left_inv φ := by
@@ -441,7 +442,7 @@ def lift : MultilinearMap R s E ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
     ext
     simp [liftAux_tprod]
 
-variable {φ : MultilinearMap R s E}
+variable {φ : MultilinearMap (.id R) s E}
 
 @[simp]
 theorem lift.tprod (f : Π i, s i) : lift φ (tprod R f) = φ f :=
@@ -460,7 +461,7 @@ theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) : lift.symm φ' = φ'.comp
   rfl
 
 @[simp]
-theorem lift_tprod : lift (tprod R : MultilinearMap R s _) = LinearMap.id :=
+theorem lift_tprod : lift (tprod R : MultilinearMap _ s _) = LinearMap.id :=
   Eq.symm <| lift.unique' rfl
 
 end lift
@@ -506,7 +507,7 @@ theorem map_comp : map (fun (i : ι) ↦ g i ∘ₗ f i) = map g ∘ₗ map f :=
   ext
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.coe_comp, Function.comp_apply]
 
-theorem lift_comp_map (h : MultilinearMap R t E) :
+theorem lift_comp_map (h : MultilinearMap (.id R) t E) :
     lift h ∘ₗ map f = lift (h.compLinearMap f) := by
   ext
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, Function.comp_apply,
@@ -556,7 +557,7 @@ protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →
     map (update f i (c • u)) = c • map (update f i u) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
-    MultilinearMap.map_update_smul]
+    MultilinearMap.map_update_smul, RingHom.id_apply]
 
 variable (R s t)
 
@@ -565,7 +566,7 @@ the family.
 -/
 @[simps]
 noncomputable def mapMultilinear :
-    MultilinearMap R (fun (i : ι) ↦ s i →ₗ[R] t i) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
+    MultilinearMap (.id R) (fun (i : ι) ↦ s i →ₗ[R] t i) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
   toFun := map
   map_update_smul' _ _ _ _ := PiTensorProduct.map_update_smul _ _ _ _
   map_update_add' _ _ _ _ := PiTensorProduct.map_update_add _ _ _ _
@@ -677,8 +678,8 @@ variable (R M)
 variable (s) in
 /-- Re-index the components of the tensor power by `e`. -/
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
-  let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
-  let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
+  let f := domDomCongrLinearEquiv' R s (⨂[R] (i : ι₂), s (e.symm i)) _ e
+  let g := domDomCongrLinearEquiv' R s (⨂[R] (i : ι), s i) _ e
   LinearEquiv.ofLinearMap (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 
 end
@@ -692,27 +693,27 @@ theorem reindex_tprod (e : ι ≃ ι₂) (f : Π i, s i) :
 @[simp]
 theorem reindex_comp_tprod (e : ι ≃ ι₂) :
     (reindex R s e).compMultilinearMap (tprod R) =
-    (domDomCongrLinearEquiv' R R s _ e).symm (tprod R) :=
+    (domDomCongrLinearEquiv' R s _ _ e).symm (tprod R) :=
   MultilinearMap.ext <| reindex_tprod e
 
-theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun i ↦ s (e.symm i)) E) :
-    lift φ ∘ₗ (reindex R s e) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) := by
+theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap (.id R) (fun i ↦ s (e.symm i)) E) :
+    lift φ ∘ₗ (reindex R s e) = lift ((domDomCongrLinearEquiv' R s _ _ e).symm φ) := by
   ext; simp [reindex]
 
 @[simp]
-theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : MultilinearMap R s E) :
-    lift φ ∘ₗ (reindex R s e).symm = lift (domDomCongrLinearEquiv' R R s _ e φ) := by
+theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : MultilinearMap (.id R) s E) :
+    lift φ ∘ₗ (reindex R s e).symm = lift (domDomCongrLinearEquiv' R s _ _ e φ) := by
   ext; simp [reindex]
 
 theorem lift_reindex
-    (e : ι ≃ ι₂) (φ : MultilinearMap R (fun i ↦ s (e.symm i)) E) (x : ⨂[R] i, s i) :
-    lift φ (reindex R s e x) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) x :=
+    (e : ι ≃ ι₂) (φ : MultilinearMap (.id R) (fun i ↦ s (e.symm i)) E) (x : ⨂[R] i, s i) :
+    lift φ (reindex R s e x) = lift ((domDomCongrLinearEquiv' R s _ _ e).symm φ) x :=
   LinearMap.congr_fun (lift_comp_reindex e φ) x
 
 @[simp]
 theorem lift_reindex_symm
-    (e : ι ≃ ι₂) (φ : MultilinearMap R s E) (x : ⨂[R] i, s (e.symm i)) :
-    lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R R s _ e φ) x :=
+    (e : ι ≃ ι₂) (φ : MultilinearMap (.id R) s E) (x : ⨂[R] i, s (e.symm i)) :
+    lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R s _ _ e φ) x :=
   LinearMap.congr_fun (lift_comp_reindex_symm e φ) x
 
 set_option backward.isDefEq.respectTransparency false in
@@ -775,7 +776,7 @@ attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
 def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
-  toFun := lift (constOfIsEmpty R _ 1)
+  toFun := lift (constOfIsEmpty _ _ 1)
   invFun r := r • tprod R (@isEmptyElim _ _ _)
   left_inv x := by
     refine x.induction_on ?_ ?_
