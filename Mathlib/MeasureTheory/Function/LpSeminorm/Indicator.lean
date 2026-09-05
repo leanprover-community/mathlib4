@@ -154,17 +154,7 @@ lemma MemLp.indicator {f : α → ε} (hs : MeasurableSet s) (hf : MemLp f p μ)
 
 lemma memLp_indicator_iff_restrict {f : α → ε} (hs : MeasurableSet s) :
     MemLp (s.indicator f) p μ ↔ MemLp f p (μ.restrict s) := by
-  constructor
-  · intro h
-    have hfr := (aestronglyMeasurable_indicator_iff hs).1 h.aestronglyMeasurable
-    unfold MemLp
-    rw [← eLpNorm_indicator_eq_eLpNorm_restrict hs h.aestronglyMeasurable hfr]
-    exact h
-  · intro h
-    have hfi := (aestronglyMeasurable_indicator_iff hs).2 h.aestronglyMeasurable
-    unfold MemLp
-    rw [eLpNorm_indicator_eq_eLpNorm_restrict hs hfi h.aestronglyMeasurable]
-    exact h
+  simp_rw [memLp_iff, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
 lemma memLp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (hμsc : c = 0 ∨ μ s ≠ ∞) :
     MemLp (s.indicator fun _ => c) p μ := by
@@ -264,8 +254,7 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
           hf.aestronglyMeasurable).1 hf).ne
       · simp [*]
     refine ⟨s, hsm, hs, ?_⟩
-    rwa [eLpNorm_indicator_eq_eLpNorm_restrict hsm.compl
-      (hf.aestronglyMeasurable.indicator hsm.compl) hf.aestronglyMeasurable.restrict,
+    rwa [eLpNorm_indicator_eq_eLpNorm_restrict hsm.compl,
       eLpNorm_eq_lintegral_rpow_enorm_toReal hp₀ hp_top hf.aestronglyMeasurable.restrict, one_div,
       ENNReal.rpow_inv_lt_iff]
     simp [ENNReal.toReal_pos, *]

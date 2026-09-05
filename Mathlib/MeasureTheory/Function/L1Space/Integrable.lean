@@ -23,7 +23,7 @@ is easier to use, and show that it is equivalent to `MemLp 1`.
 
 * Let `f : α → β` be a function, where `α` is a `MeasureSpace` and `β` a `NormedAddCommGroup`
   which also a `MeasurableSpace`. Then `f` is called `Integrable` if
-  `f` is `Measurable` and `HasFiniteIntegral f` holds.
+  `f` is `AEStronglyMeasurable` and `HasFiniteIntegral f` holds.
 
 ## Implementation notes
 
@@ -265,13 +265,9 @@ theorem Integrable.of_measure_le_smul {ε} [TopologicalSpace ε] [ESeminormedAdd
 theorem Integrable.add_measure [PseudoMetrizableSpace ε]
     {f : α → ε} (hμ : Integrable f μ) (hν : Integrable f ν) :
     Integrable f (μ + ν) := by
-  simp_rw [← memLp_one_iff_integrable] at hμ hν ⊢
-  unfold MemLp
+  simp_rw [← memLp_one_iff_integrable, memLp_iff] at hμ hν ⊢
   rw [eLpNorm_one_add_measure, ENNReal.add_lt_top]
-  · exact ⟨hμ.eLpNorm_lt_top, hν.eLpNorm_lt_top⟩
-  · simp [hν.aestronglyMeasurable, hμ.aestronglyMeasurable]
-  · exact hμ.aestronglyMeasurable
-  · exact hν.aestronglyMeasurable
+  simp [hμ, hν]
 
 theorem Integrable.left_of_add_measure {f : α → ε} (h : Integrable f (μ + ν)) : Integrable f μ := by
   rw [← memLp_one_iff_integrable] at h ⊢

@@ -944,9 +944,6 @@ private lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
   simp only [Lp.enorm_def]
   rw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]
   apply eLpNorm_le_of_measure_le_smul h
-  have := (Lp.aestronglyMeasurable f).mono_ac (Measure.smul_absolutelyContinuous (c := 1))
-  simp only [one_smul] at this
-  exact (this.smul_measure c).mono_measure h
 
 private lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
     (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
