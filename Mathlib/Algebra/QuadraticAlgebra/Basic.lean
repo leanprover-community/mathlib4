@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.DualNumber
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Tactic.FieldSimp.Lemmas
@@ -483,6 +484,21 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
 @[deprecated (since := "2026-08-14")] alias mapEquiv := changeGeneratorEquiv
 
 end changeGenerator
+
+section dualNumber
+
+open scoped DualNumber
+
+/-- `QuadraticAlgebra R 0 0` is the algebra of dual numbers, with `ω` the nilpotent `ε`. -/
+def algEquivDualNumber (R : Type*) [CommRing R] :
+    QuadraticAlgebra R 0 0 ≃ₐ[R] DualNumber R :=
+  AlgEquiv.ofAlgHom (lift ⟨ε, by simp⟩)
+    (DualNumber.lift ⟨(Algebra.ofId R _, ω), by ext <;> simp,
+      fun _ ↦ Commute.all _ _⟩)
+    (by apply DualNumber.algHom_ext; simp)
+    (by apply algHom_ext; simp)
+
+end dualNumber
 
 section field
 
