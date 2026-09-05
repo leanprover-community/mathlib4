@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
 
 /-!
 # Completion of continuous (semi-)linear maps:
@@ -107,3 +108,8 @@ def toComplL : α →L[S] Completion α where
 @[simp] lemma toAddMonoidHom_toComplL : ((toComplL : α →L[S] _) : α →+ _) = toCompl := rfl
 
 end UniformSpace.Completion
+
+open UniformSpace.Completion in
+@[simp] lemma ContinuousLinearMap.extend_completionToComplL [T0Space β] [CompleteSpace β]
+    (f : α →SL[σ] β) : f.extend toComplL = f.fromCompletion :=
+  extend_unique _ denseRange_coe (isUniformInducing_coe α) _ (by ext; simp)
