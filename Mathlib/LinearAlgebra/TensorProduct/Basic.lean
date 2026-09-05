@@ -335,7 +335,7 @@ theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMu
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
 
-section 
+section
 
 variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SMulCommClass A S' M]
 
