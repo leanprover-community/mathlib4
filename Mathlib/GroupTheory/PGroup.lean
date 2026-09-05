@@ -508,15 +508,15 @@ theorem isCoatom_iff_index_eq_prime (hA : IsPGroup p A) (M : Subgroup A) :
   exact (card_eq_or_dvd (hA.to_quotient M)).resolve_left h.ne_one
 
 /-- A finite abelian p-group is non-cyclic iff it has two distinct subgroups of index `p`. -/
-theorem not_isCyclic_iff_exists_index_eq_prime_ne [Finite A] (hA : IsPGroup p A) :
+theorem not_isCyclic_iff_exists_index_eq_prime_and_ne [Finite A] (hA : IsPGroup p A) :
     ¬ IsCyclic A ↔ ∃ H₁ H₂ : Subgroup A, H₁.index = p ∧ H₂.index = p ∧ H₁ ≠ H₂ := by
-  refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, h₁, h₂, hne⟩ hcyc ↦ ?_⟩
+  refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, h₁, h₂, hne⟩ hcyc ↦ hne ?_⟩
   · by_contra! h
     refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ ↦ h M₁ M₂ ?_ ?_)
     · exact (hA.isCoatom_iff_index_eq_prime M₁).mp hM₁
     · exact (hA.isCoatom_iff_index_eq_prime M₂).mp hM₂
-  · 
-    sorry
+  · rw [IsCyclic.subgroup_eq_iff_card_eq, ← mul_right_inj' (a := H₁.index)
+      Subgroup.index_ne_zero_of_finite, Subgroup.index_mul_card, h₁, ← h₂, Subgroup.index_mul_card]
 
 end CommGroup
 
