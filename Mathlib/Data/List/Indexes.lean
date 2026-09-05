@@ -45,6 +45,12 @@ theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
   | nil => simp
   | cons _ _ IH => simp [IH]
 
+theorem mapIdx_replicate (f : ℕ → α → β) (n : ℕ) (a : α) :
+    mapIdx f (replicate n a) = map (fun n ↦ f n a) (range n) := by
+  induction n with
+  | zero => simp
+  | succ n hn => simp [replicate_succ', mapIdx_append, range_succ, hn]
+
 end MapIdx
 
 section MapIdxM'
