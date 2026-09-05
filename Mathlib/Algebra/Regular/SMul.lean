@@ -222,15 +222,17 @@ end CommSemigroup
 
 end IsSMulRegular
 
+/-- If scalar multiplication is left cancellative, every element is regular. -/
+theorem IsLeftCancelSMul.isSMulRegular {M N : Type*} [SMul M N] [IsLeftCancelSMul M N] (a : M) :
+    IsSMulRegular N a := fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+
 section Group
 
 variable {G : Type*} [Group G]
 
-/-- An element of a group acting on a Type is regular. This relies on the availability
-of the inverse given by groups, since there is no `LeftCancelSMul` typeclass. -/
-theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g := by
-  intro x y h
-  convert congr_arg (g⁻¹ • ·) h <;> simp [← smul_assoc]
+/-- An element of a group acting on a type is regular. -/
+theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g :=
+  IsLeftCancelSMul.isSMulRegular g
 
 end Group
 
