@@ -1193,6 +1193,7 @@ public import Mathlib.Algebra.Polynomial.Homogenize
 public import Mathlib.Algebra.Polynomial.Identities
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.Algebra.Polynomial.Laurent.Roots
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.Algebra.Polynomial.Mirror
 public import Mathlib.Algebra.Polynomial.Module.AEval
