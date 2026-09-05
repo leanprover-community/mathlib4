@@ -153,13 +153,23 @@ Precedence: the explicit `--repo=` flag (if passed) > the cwd's git remote
 > `MATHLIBREPO`. Defaulting to the git remote is intentional for `query` —
 the typical user is asking "what's cached for *my* commits", not for
 canonical mathlib's commits.
+
+Downstream (see `UsageContext`), the cwd is the downstream project's own
+checkout, whose remote and commits name no mathlib fork; probing its markers
+would answer "not cached" for a namespace nothing writes. `query` there
+requires an explicit `--repo=` and errors out with that guidance otherwise.
 -/
 def resolveQueryRepo (repoExplicit? : Option String) : IO String := do
   match repoExplicit? with
   | some r => pure r
   | none =>
+    if (← usageContext.get) == .downstream then
+      IO.eprintln "`cache query` locates a mathlib fork's per-commit cache, and this \
+        project's own commits name none. Run it from a mathlib checkout, or pass \
+        --repo=OWNER/REPO to name the fork to query."
+      IO.Process.exit 1
     match ← getRemoteRepo "." with
-    | some info => pure info.repo
+    | some repo => pure repo
     | none => pure MATHLIBREPO
 
 /--
