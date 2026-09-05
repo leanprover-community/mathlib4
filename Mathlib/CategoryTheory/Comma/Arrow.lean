@@ -161,7 +161,7 @@ lemma arrow_mk_eqToHom_comp {X' X Y : T} (f : X ⟶ Y) (h : X' = X) :
 
 /-- A morphism in the arrow category is a commutative square connecting two objects of the arrow
     category. -/
-@[simps]
+@[simps, implicit_reducible]
 def homMk {f g : Arrow T} (u : f.left ⟶ g.left) (v : f.right ⟶ g.right)
     (w : u ≫ g.hom = f.hom ≫ v := by cat_disch) : f ⟶ g where
   left := u
@@ -362,9 +362,8 @@ universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor `C ⥤ D` induces a functor between the corresponding arrow categories. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
   obj a := Arrow.mk (F.map a.hom)
   map {X Y} f := Arrow.homMk (F.map f.left) (F.map f.right) (by simp [← Functor.map_comp])
@@ -373,11 +372,9 @@ attribute [to_dual self (reorder := X Y)] mapArrow_map
 
 variable (C D)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` which sends
 a functor `F : C ⥤ D` to `F.mapArrow`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
   obj F := F.mapArrow
   map {X Y} τ := { app f := Arrow.homMk (τ.app _) (τ.app _) }
@@ -387,7 +384,6 @@ attribute [to_dual self (reorder := X Y)] mapArrowFunctor_map_app
 variable {C D}
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `Arrow C ≌ Arrow D` induced by an equivalence `C ≌ D`. -/
 @[simps]
 def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
