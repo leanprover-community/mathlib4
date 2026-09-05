@@ -8,6 +8,8 @@ module
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 
+import Mathlib.Logic.Equiv.Set
+
 /-!
 # (Pre)images of set intervals under `Fin` operations
 
