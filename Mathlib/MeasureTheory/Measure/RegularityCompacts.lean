@@ -115,11 +115,11 @@ theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
         h_basis : (uniformity α).HasAntitoneBasis t⟩ :=
       (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
     choose htu hto _ using ht
-    let f : ℕ → ℕ → Set α := fun n m ↦ UniformSpace.ball (seq m) (t n)
+    let f : ℕ → ℕ → Set α := fun n m ↦ (t n).ball (seq m)
     have h_univ n : (⋃ m, f n m) = univ := hseq_dense.iUnion_uniformity_ball (htu n)
     have h3 n (ε : ℝ≥0∞) (hε : 0 < ε) : ∃ m, P (⋂ m' ≤ m, (f n m')ᶜ) < ε := by
       refine exists_measure_iInter_lt (fun m ↦ ?_) hε ⟨0, measure_ne_top P _⟩ ?_
-      · exact (measurable_prodMk_left (hto n).measurableSet).compl.nullMeasurableSet
+      · exact (measurable_prodMk_right (hto n).measurableSet).compl.nullMeasurableSet
       · rw [← compl_iUnion, h_univ, compl_univ]
     choose! s' s'bound using h3
     rcases ENNReal.exists_pos_sum_of_countable' (ne_of_gt hε) ℕ with ⟨δ, hδ1, hδ2⟩
@@ -128,8 +128,8 @@ theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
     rw [interUnionBalls, Set.compl_iInter]
     refine ((measure_iUnion_le _).trans ?_).trans_lt hδ2
     refine ENNReal.tsum_le_tsum (fun n ↦ ?_)
-    have h'' n : Prod.swap ⁻¹' t n = t n := by ext; exact (t n).comm
-    simp only [h'', compl_iUnion, ge_iff_le]
+    have h'' m : f n m = (t n).ball (seq m) := rfl
+    simp only [← h'', compl_iUnion, ge_iff_le]
     exact (s'bound n (δ n) (hδ1 n)).le
 
 theorem innerRegularWRT_isCompact_closure [TopologicalSpace α]

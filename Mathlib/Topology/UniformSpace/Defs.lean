@@ -41,7 +41,7 @@ constructor.
 
 The dictionary with metric spaces includes:
 * an upper bound for `dist x y` translates into `(x, y) ∈ V` for some `V ∈ 𝓤 X`
-* a ball `ball x r` roughly corresponds to `UniformSpace.ball x V := {y | (x, y) ∈ V}`
+* a ball `ball x r` roughly corresponds to `V.ball x := {y | (y, x) ∈ V}`
   for some `V ∈ 𝓤 X`, but the later is more general (it includes in
   particular both open and closed balls for suitable `V`).
   In particular we have:
@@ -429,63 +429,70 @@ namespace UniformSpace
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
 used for `V ∈ 𝓤 β`, but this is not needed for the definition. Recovers the
 notions of metric space ball when `V = {p | dist p.1 p.2 < r }`. -/
-def ball (x : β) (V : Set (β × β)) : Set β := Prod.mk x ⁻¹' V
+@[deprecated SetRel.ball (since := "2026-09-01")]
+protected def ball (x : β) (V : Set (β × β)) : Set β := Prod.mk x ⁻¹' V
 
 open UniformSpace (ball)
 
+set_option linter.deprecated false in
+@[deprecated SetRel.refl (since := "2026-09-01")]
 lemma mem_ball_self (x : α) {V : SetRel α α} : V ∈ 𝓤 α → x ∈ ball x V := refl_mem_uniformity
 
-/-- The triangle inequality for `UniformSpace.ball` -/
+set_option linter.deprecated false in
+/-- The triangle inequality for `SetRel.ball` -/
+@[deprecated SetRel.prodMk_mem_comp (since := "2026-09-01")]
 theorem mem_ball_comp {V W : Set (β × β)} {x y z} (h : y ∈ ball x V) (h' : z ∈ ball y W) :
     z ∈ ball x (V ○ W) :=
   SetRel.prodMk_mem_comp h h'
 
-theorem ball_subset_of_comp_subset {V W : Set (β × β)} {x y} (h : x ∈ ball y W) (h' : W ○ W ⊆ V) :
-    ball x W ⊆ ball y V := fun _z z_in => h' (mem_ball_comp h z_in)
+@[deprecated (since := "2026-09-01")]
+alias ball_subset_of_comp_subset := SetRel.ball_subset_ball_of_comp_subset
 
+set_option linter.deprecated false in
+@[deprecated SetRel.ball_mono (since := "2026-09-01")]
 theorem ball_mono {V W : Set (β × β)} (h : V ⊆ W) (x : β) : ball x V ⊆ ball x W :=
   preimage_mono h
 
+set_option linter.deprecated false in
+@[deprecated SetRel.ball_inter (since := "2026-09-01")]
 theorem ball_inter (x : β) (V W : Set (β × β)) : ball x (V ∩ W) = ball x V ∩ ball x W :=
   preimage_inter
 
+set_option linter.deprecated false in
+@[deprecated SetRel.ball_mono (since := "2026-09-01")]
 theorem ball_inter_left (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x V :=
   ball_mono inter_subset_left x
 
+set_option linter.deprecated false in
+@[deprecated SetRel.ball_mono (since := "2026-09-01")]
 theorem ball_inter_right (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x W :=
   ball_mono inter_subset_right x
 
+set_option linter.deprecated false in
+@[deprecated SetRel.ball_iInter (since := "2026-09-01")]
 theorem ball_iInter {x : β} {V : ι → Set (β × β)} : ball x (⋂ i, V i) = ⋂ i, ball x (V i) :=
   preimage_iInter
 
+set_option linter.deprecated false in
+@[deprecated SetRel.symm (since := "2026-09-01")]
 theorem mem_ball_symmetry {V : SetRel β β} [V.IsSymm] {x y} : x ∈ ball y V ↔ y ∈ ball x V := V.comm
 
-theorem ball_eq_of_symmetry {V : SetRel β β} [V.IsSymm] {x} : ball x V = { y | (y, x) ∈ V } := by
-  ext y
-  rw [mem_ball_symmetry]
-  exact Iff.rfl
+@[deprecated SetRel.inv_eq_self (since := "2026-09-01")]
+theorem ball_eq_of_symmetry {V : SetRel β β} [V.IsSymm] {x} : V.inv.ball x = V.ball x := by
+  rw [V.inv_eq_self]
 
+set_option linter.deprecated false in
+@[deprecated SetRel.prodMk_mem_comp (since := "2026-09-01")]
 theorem mem_comp_of_mem_ball {V W : SetRel β β} {x y z : β} [V.IsSymm] (hx : x ∈ ball z V)
     (hy : y ∈ ball z W) : (x, y) ∈ V ○ W := by
   rw [mem_ball_symmetry] at hx
   exact ⟨z, hx, hy⟩
 
-theorem mem_comp_comp {V W M : SetRel β β} [W.IsSymm] {p : β × β} :
-    p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
-  obtain ⟨x, y⟩ := p
-  constructor
-  · rintro ⟨z, ⟨w, hpw, hwz⟩, hzy⟩
-    exact ⟨(w, z), ⟨hpw, by rwa [mem_ball_symmetry]⟩, hwz⟩
-  · rintro ⟨⟨w, z⟩, ⟨w_in, z_in⟩, hwz⟩
-    rw [mem_ball_symmetry] at z_in
-    exact ⟨z, ⟨w, w_in, hwz⟩, z_in⟩
+@[deprecated (since := "2026-09-01")]
+alias mem_comp_comp := SetRel.mem_comp_comp
 
-lemma isCover_iff_subset_iUnion_ball {U : SetRel β β} [U.IsSymm] {s N : Set β} :
-    U.IsCover s N ↔ s ⊆ ⋃ y ∈ N, ball y U := by
-  simp [SetRel.IsCover, subset_def, ball, U.comm]
-
-alias ⟨_root_.SetRel.IsCover.subset_iUnion_ball, _root_.SetRel.IsCover.of_subset_iUnion_ball⟩ :=
-  isCover_iff_subset_iUnion_ball
+@[deprecated (since := "2026-09-01")]
+alias isCover_iff_subset_iUnion_ball := SetRel.isCover_iff_subset_iUnion_ball
 
 end UniformSpace
 
@@ -493,7 +500,7 @@ end UniformSpace
 ### Neighborhoods in uniform spaces
 -/
 
-open UniformSpace
+open SetRel
 
 theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.1 = x → p.2 ∈ s } ∈ 𝓤 α := by
@@ -512,17 +519,13 @@ theorem nhdsWithin_eq_comap_uniformity {x : α} (S : Set α) :
     𝓝[S] x = (𝓤 α ⊓ 𝓟 (univ ×ˢ S)).comap (Prod.mk x) :=
   nhdsWithin_eq_comap_uniformity_of_mem (mem_univ _) S
 
-/-- See also `isOpen_iff_isOpen_ball_subset`. -/
-theorem isOpen_iff_ball_subset {s : Set α} : IsOpen s ↔ ∀ x ∈ s, ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
-  simp_rw [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap, ball]
-
 theorem nhds_basis_uniformity' {p : ι → Prop} {s : ι → SetRel α α} (h : (𝓤 α).HasBasis p s)
-    {x : α} : (𝓝 x).HasBasis p fun i => ball x (s i) := by
+    {x : α} : (𝓝 x).HasBasis p fun i => (s i).inv.ball x := by
   rw [nhds_eq_comap_uniformity]
   exact h.comap (Prod.mk x)
 
 theorem nhds_basis_uniformity {p : ι → Prop} {s : ι → SetRel α α} (h : (𝓤 α).HasBasis p s)
-    {x : α} : (𝓝 x).HasBasis p fun i => { y | (y, x) ∈ s i } := by
+    {x : α} : (𝓝 x).HasBasis p fun i => (s i).ball x := by
   replace h := h.comap Prod.swap
   rw [comap_swap_uniformity] at h
   exact nhds_basis_uniformity' h
@@ -530,69 +533,84 @@ theorem nhds_basis_uniformity {p : ι → Prop} {s : ι → SetRel α α} (h : (
 theorem nhds_eq_comap_uniformity' {x : α} : 𝓝 x = (𝓤 α).comap fun y => (y, x) :=
   (nhds_basis_uniformity (𝓤 α).basis_sets).eq_of_same_basis <| (𝓤 α).basis_sets.comap _
 
-theorem UniformSpace.mem_nhds_iff {x : α} {s : Set α} : s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
-  rw [nhds_eq_comap_uniformity, mem_comap]
-  simp_rw [ball]
+theorem nhdsWithin_eq_comap_uniformity_of_mem' {x : α} {T : Set α} (hx : x ∈ T) (S : Set α) :
+    𝓝[S] x = (𝓤 α ⊓ 𝓟 (S ×ˢ T)).comap fun y => (y, x) := by
+  simp [nhdsWithin, nhds_eq_comap_uniformity', hx]
 
-theorem UniformSpace.ball_mem_nhds (x : α) ⦃V : SetRel α α⦄ (V_in : V ∈ 𝓤 α) : ball x V ∈ 𝓝 x := by
+theorem UniformSpace.mem_nhds_iff {x : α} {s : Set α} :
+    s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, SetRel.ball V x ⊆ s := by
+  rw [nhds_eq_comap_uniformity', mem_comap]
+  simp_rw [ball, Set.preimage]
+
+/-- See also `isOpen_iff_isOpen_ball_subset`. -/
+theorem isOpen_iff_ball_subset {s : Set α} :
+    IsOpen s ↔ ∀ x ∈ s, ∃ V ∈ 𝓤 α, SetRel.ball V x ⊆ s := by
+  simp_rw [isOpen_iff_mem_nhds, UniformSpace.mem_nhds_iff]
+
+theorem SetRel.ball_mem_nhds (x : α) ⦃V : SetRel α α⦄ (V_in : V ∈ 𝓤 α) : V.ball x ∈ 𝓝 x := by
   rw [UniformSpace.mem_nhds_iff]
   exact ⟨V, V_in, Subset.rfl⟩
 
-theorem UniformSpace.ball_mem_nhdsWithin {x : α} {S : Set α} ⦃V : SetRel α α⦄ (x_in : x ∈ S)
-    (V_in : V ∈ 𝓤 α ⊓ 𝓟 (S ×ˢ S)) : ball x V ∈ 𝓝[S] x := by
+theorem SetRel.ball_mem_nhdsWithin {x : α} {S : Set α} ⦃V : SetRel α α⦄ (x_in : x ∈ S)
+    (V_in : V ∈ 𝓤 α ⊓ 𝓟 (S ×ˢ S)) : V.ball x ∈ 𝓝[S] x := by
+  rw [nhdsWithin_eq_comap_uniformity_of_mem' x_in, mem_comap]
+  exact ⟨V, V_in, Subset.rfl⟩
+
+theorem SetRel.inv_ball_mem_nhdsWithin {x : α} {S : Set α} ⦃V : SetRel α α⦄ (x_in : x ∈ S)
+    (V_in : V ∈ 𝓤 α ⊓ 𝓟 (S ×ˢ S)) : V.inv.ball x ∈ 𝓝[S] x := by
   rw [nhdsWithin_eq_comap_uniformity_of_mem x_in, mem_comap]
   exact ⟨V, V_in, Subset.rfl⟩
 
 theorem UniformSpace.mem_nhds_iff_symm {x : α} {s : Set α} :
-    s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, SetRel.IsSymm V ∧ ball x V ⊆ s := by
+    s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, SetRel.IsSymm V ∧ SetRel.ball V x ⊆ s := by
   rw [UniformSpace.mem_nhds_iff]
   constructor
   · rintro ⟨V, V_in, V_sub⟩
     use SetRel.symmetrize V, symmetrize_mem_uniformity V_in, inferInstance
-    exact Subset.trans (ball_mono SetRel.symmetrize_subset_self x) V_sub
+    exact Subset.trans (SetRel.ball_mono SetRel.symmetrize_subset_self x) V_sub
   · rintro ⟨V, V_in, _, V_sub⟩
     exact ⟨V, V_in, V_sub⟩
 
 theorem UniformSpace.hasBasis_nhds (x : α) :
-    HasBasis (𝓝 x) (fun s : SetRel α α => s ∈ 𝓤 α ∧ SetRel.IsSymm s) fun s => ball x s :=
+    HasBasis (𝓝 x) (fun s : SetRel α α => s ∈ 𝓤 α ∧ s.IsSymm) fun s => s.ball x :=
   ⟨fun t => by simp [UniformSpace.mem_nhds_iff_symm, and_assoc]⟩
 
 open UniformSpace
 
 theorem UniformSpace.mem_closure_iff_symm_ball {s : Set α} {x} :
-    x ∈ closure s ↔ ∀ {V}, V ∈ 𝓤 α → SetRel.IsSymm V → (s ∩ ball x V).Nonempty := by
+    x ∈ closure s ↔ ∀ {V : SetRel α α}, V ∈ 𝓤 α → V.IsSymm → (s ∩ V.ball x).Nonempty := by
   simp [mem_closure_iff_nhds_basis (hasBasis_nhds x), Set.Nonempty]
 
 theorem UniformSpace.mem_closure_iff_ball {s : Set α} {x} :
-    x ∈ closure s ↔ ∀ {V}, V ∈ 𝓤 α → (ball x V ∩ s).Nonempty := by
-  simp [mem_closure_iff_nhds_basis' (nhds_basis_uniformity' (𝓤 α).basis_sets)]
-
-theorem UniformSpace.closure_subset_preimage
-    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.preimage s := by
-  intro x hx
-  obtain ⟨y, hxy, hy⟩ := mem_closure_iff_ball.mp hx hU
-  exact ⟨y, hy, hxy⟩
+    x ∈ closure s ↔ ∀ {V : SetRel α α}, V ∈ 𝓤 α → (V.ball x ∩ s).Nonempty := by
+  simp [mem_closure_iff_nhds_basis' (nhds_basis_uniformity (𝓤 α).basis_sets)]
 
 theorem UniformSpace.closure_subset_image
-    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.image s :=
-  closure_subset_preimage (symm_le_uniformity hU) s
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.image s := by
+  intro x hx
+  obtain ⟨y, hyx, hy⟩ := mem_closure_iff_ball.mp hx hU
+  exact ⟨y, hy, hyx⟩
 
-theorem nhds_eq_uniformity {x : α} : 𝓝 x = (𝓤 α).lift' (ball x) :=
+theorem UniformSpace.closure_subset_preimage
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.preimage s :=
+  closure_subset_image (symm_le_uniformity hU) s
+
+theorem nhds_eq_uniformity {x : α} : 𝓝 x = (𝓤 α).lift' fun s : SetRel α α => s.inv.ball x :=
   (nhds_basis_uniformity' (𝓤 α).basis_sets).eq_biInf
 
-theorem nhds_eq_uniformity' {x : α} : 𝓝 x = (𝓤 α).lift' fun s => { y | (y, x) ∈ s } :=
+theorem nhds_eq_uniformity' {x : α} : 𝓝 x = (𝓤 α).lift' fun s : SetRel α α => s.ball x :=
   (nhds_basis_uniformity (𝓤 α).basis_sets).eq_biInf
 
-theorem mem_nhds_left (x : α) {s : SetRel α α} (h : s ∈ 𝓤 α) : { y : α | (x, y) ∈ s } ∈ 𝓝 x :=
-  ball_mem_nhds x h
-
 theorem mem_nhds_right (y : α) {s : SetRel α α} (h : s ∈ 𝓤 α) : { x : α | (x, y) ∈ s } ∈ 𝓝 y :=
-  mem_nhds_left _ (symm_le_uniformity h)
+  ball_mem_nhds y h
+
+theorem mem_nhds_left (x : α) {s : SetRel α α} (h : s ∈ 𝓤 α) : { y : α | (x, y) ∈ s } ∈ 𝓝 x :=
+  mem_nhds_right _ (symm_le_uniformity h)
 
 theorem exists_mem_nhds_ball_subset_of_mem_nhds {a : α} {U : Set α} (h : U ∈ 𝓝 a) :
-    ∃ V ∈ 𝓝 a, ∃ t ∈ 𝓤 α, ∀ a' ∈ V, UniformSpace.ball a' t ⊆ U :=
-  let ⟨t, ht, htU⟩ := comp_mem_uniformity_sets (mem_nhds_uniformity_iff_right.1 h)
-  ⟨_, mem_nhds_left a ht, t, ht, fun a₁ h₁ a₂ h₂ => @htU (a, a₂) ⟨a₁, h₁, h₂⟩ rfl⟩
+    ∃ V ∈ 𝓝 a, ∃ t ∈ 𝓤 α, ∀ a' ∈ V, SetRel.ball t a' ⊆ U :=
+  let ⟨t, ht, htU⟩ := comp_mem_uniformity_sets (mem_nhds_uniformity_iff_left.1 h)
+  ⟨_, mem_nhds_right a ht, t, ht, fun a₁ h₁ a₂ h₂ => @htU (a₂, a) ⟨a₁, h₂, h₁⟩ rfl⟩
 
 theorem tendsto_right_nhds_uniformity {a : α} : Tendsto (fun a' => (a', a)) (𝓝 a) (𝓤 α) := fun _ =>
   mem_nhds_right a
@@ -601,26 +619,26 @@ theorem tendsto_left_nhds_uniformity {a : α} : Tendsto (fun a' => (a, a')) (�
   mem_nhds_left a
 
 theorem lift_nhds_left {x : α} {g : Set α → Filter β} (hg : Monotone g) :
-    (𝓝 x).lift g = (𝓤 α).lift fun s : SetRel α α => g (ball x s) := by
+    (𝓝 x).lift g = (𝓤 α).lift fun s : SetRel α α => g (s.inv.ball x) := by
   rw [nhds_eq_comap_uniformity, comap_lift_eq2 hg]
-  simp_rw [ball, Function.comp_def]
+  rfl
 
 theorem lift_nhds_right {x : α} {g : Set α → Filter β} (hg : Monotone g) :
-    (𝓝 x).lift g = (𝓤 α).lift fun s : SetRel α α => g { y | (y, x) ∈ s } := by
+    (𝓝 x).lift g = (𝓤 α).lift fun s : SetRel α α => g (s.ball x) := by
   rw [nhds_eq_comap_uniformity', comap_lift_eq2 hg]
-  simp_rw [Function.comp_def, preimage]
+  rfl
 
 theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
     𝓝 a ×ˢ 𝓝 b = (𝓤 α).lift fun s : SetRel α α =>
-      (𝓤 α).lift' fun t => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ t } := by
+      (𝓤 α).lift' fun t : SetRel α α => s.ball a ×ˢ t.inv.ball b := by
   rw [nhds_eq_uniformity', nhds_eq_uniformity, prod_lift'_lift']
-  exacts [rfl, monotone_preimage, monotone_preimage]
+  exacts [fun _ _ h ↦ SetRel.ball_mono h a, fun _ _ h ↦ SetRel.ball_mono (SetRel.inv_mono h) b]
 
 theorem Filter.HasBasis.biInter_biUnion_ball {p : ι → Prop} {U : ι → SetRel α α}
     (h : HasBasis (𝓤 α) p U) (s : Set α) :
-    (⋂ (i) (_ : p i), ⋃ x ∈ s, ball x (U i)) = closure s := by
+    (⋂ (i) (_ : p i), ⋃ x ∈ s, (U i).ball x) = closure s := by
   ext x
-  simp [mem_closure_iff_nhds_basis (nhds_basis_uniformity h), ball]
+  simp [mem_closure_iff_nhds_basis (nhds_basis_uniformity' h), ball]
 
 /-! ### Uniform continuity -/
 

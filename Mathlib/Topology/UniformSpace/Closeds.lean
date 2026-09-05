@@ -156,7 +156,7 @@ theorem isOpen_inter_nonempty_of_isOpen {U : Set α} (hU : IsOpen U) :
   obtain ⟨V, hV, hVU⟩ := hx₂
   rw [mem_nhds_iff]
   refine ⟨_, Filter.mem_lift' hV, ?_⟩
-  rintro s' ⟨hs', -⟩
+  rintro s' ⟨-, hs'⟩
   obtain ⟨y, hy, hxy⟩ := hs' hx₁
   exact ⟨y, hy, hVU hxy⟩
 
@@ -311,7 +311,7 @@ theorem TotallyBounded.nhds_vietoris_le_nhds_hausdorff {s : Set α} (hs : Totall
   obtain ⟨t, ht₁, ht₂⟩ := hs.exists_prodMk_finset_mem_hausdorffEntourage hV₁
   dsimp only at ht₁ ht₂
   filter_upwards [(Filter.eventually_all_finset t).mpr fun x hx =>
-    isOpen_inter_nonempty_of_isOpen (isOpen_ball x hV₂) |>.eventually_mem (ht₁ hx)]
+    isOpen_inter_nonempty_of_isOpen (isOpen_ball x hV₂.relInv) |>.eventually_mem (ht₁ hx)]
     with u (hu : ↑t ⊆ V.preimage ↑u)
   grw [ht₂, ← SetRel.preimage_eq_image, hu, ← hVU, SetRel.preimage_comp]
 
@@ -324,8 +324,8 @@ theorem IsCompact.nhds_hausdorff_eq_nhds_vietoris {s : Set α} (hs : IsCompact s
   rintro _ ⟨hs', (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)⟩
   · obtain ⟨V : SetRel α α, hV₁, hV₂⟩ :=
       hs.nhdsSet_basis_uniformity (𝓤 α).basis_sets |>.mem_iff.mp (hU.mem_nhdsSet.mpr hs')
-    filter_upwards [UniformSpace.ball_mem_nhds _ (Filter.mem_lift' hV₁)]
-      with t ⟨_, ht⟩
+    filter_upwards [SetRel.ball_mem_nhds _ (Filter.mem_lift' hV₁)]
+      with t ⟨ht, _⟩
     exact ht.trans fun x ⟨y, hy, hxy⟩ => hV₂ <| Set.mem_biUnion hy hxy
   · exact (UniformSpace.hausdorff.isOpen_inter_nonempty_of_isOpen hU).mem_nhds hs'
 
@@ -620,7 +620,7 @@ instance [CompleteSpace α] : CompleteSpace (Compacts α) := by
   simp_rw [Set.mem_preimage, Prod.map, id, mem_hausdorffEntourage]
   constructor
   · intro x hx
-    set lx := l ⊓ 𝓟 (UniformSpace.ball x U) with le_def
+    set lx := l ⊓ 𝓟 (U.inv.ball x) with le_def
     have hlx : lx.TotallyBounded := hl.mono inf_le_left
     have : lx.NeBot := by
       rw [le_def, Filter.lift'_inf_principal_eq, Filter.lift'_neBot_iff fun _ _ h =>
@@ -631,8 +631,9 @@ instance [CompleteSpace α] : CompleteSpace (Compacts α) := by
       exact ⟨y, Set.mem_iUnion₂_of_mem h₂ hy, hxy⟩
     obtain ⟨y, hy⟩ := hlx.exists_clusterPt
     have hy₁ : ClusterPt y l := .of_inf_left hy
-    have hy₂ : ClusterPt y (𝓟 (UniformSpace.ball x U)) := .of_inf_right hy
-    rw [← mem_closure_iff_clusterPt, (UniformSpace.isClosed_ball x hU₂).closure_eq] at hy₂
+    have hy₂ : ClusterPt y (𝓟 (U.inv.ball x)) := .of_inf_right hy
+    rw [← mem_closure_iff_clusterPt,
+      (UniformSpace.isClosed_ball x hU₂.relInv).closure_eq] at hy₂
     exact ⟨y, hy₁, hy₂⟩
   · intro x (hx : ClusterPt x l)
     rw [← (hU₂.relImage_of_isCompact K.isCompact).closure_eq, mem_closure_iff_clusterPt]

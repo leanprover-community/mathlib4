@@ -115,25 +115,24 @@ theorem eventually_uniformity_comp_subset {s : SetRel α α} (hs : s ∈ 𝓤 α
 
 namespace UniformSpace
 
-open UniformSpace (ball)
+lemma isOpen_ball (x : α) {V : SetRel α α} (hV : IsOpen V) : IsOpen (V.ball x) :=
+  hV.preimage <| .prodMk_left _
 
-lemma isOpen_ball (x : α) {V : SetRel α α} (hV : IsOpen V) : IsOpen (ball x V) :=
-  hV.preimage <| .prodMk_right _
-
-lemma isClosed_ball (x : α) {V : SetRel α α} (hV : IsClosed V) : IsClosed (ball x V) :=
-  hV.preimage <| .prodMk_right _
+lemma isClosed_ball (x : α) {V : SetRel α α} (hV : IsClosed V) : IsClosed (V.ball x) :=
+  hV.preimage <| .prodMk_left _
 
 /-!
 ### Neighborhoods in uniform spaces
 -/
 
 theorem hasBasis_nhds_prod (x y : α) :
-    HasBasis (𝓝 (x, y)) (fun s => s ∈ 𝓤 α ∧ SetRel.IsSymm s) fun s => ball x s ×ˢ ball y s := by
+    HasBasis (𝓝 (x, y)) (fun s => s ∈ 𝓤 α ∧ SetRel.IsSymm s)
+      fun s => SetRel.ball s x ×ˢ SetRel.ball s y := by
   rw [nhds_prod_eq]
   apply (hasBasis_nhds x).prod_same_index (hasBasis_nhds y)
   rintro U V ⟨U_in, U_symm⟩ ⟨V_in, V_symm⟩
-  exact ⟨U ∩ V, ⟨(𝓤 α).inter_sets U_in V_in, inferInstance⟩, ball_inter_left x U V,
-    ball_inter_right y U V⟩
+  exact ⟨U ∩ V, ⟨(𝓤 α).inter_sets U_in V_in, inferInstance⟩,
+    SetRel.ball_mono inter_subset_left x, SetRel.ball_mono inter_subset_right y⟩
 
 end UniformSpace
 
@@ -141,11 +140,10 @@ open UniformSpace
 
 theorem nhds_eq_uniformity_prod {a b : α} :
     𝓝 (a, b) =
-      (𝓤 α).lift' fun s : SetRel α α => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ s } := by
+      (𝓤 α).lift' fun s : SetRel α α => s.ball a ×ˢ s.inv.ball b := by
   rw [nhds_prod_eq, nhds_nhds_eq_uniformity_uniformity_prod, lift_lift'_same_eq_lift']
-  · exact fun s => monotone_const.set_prod monotone_preimage
-  · refine fun t => Monotone.set_prod ?_ monotone_const
-    exact monotone_preimage (f := fun y => (y, a))
+  · exact fun s => monotone_const.set_prod fun _ _ h ↦ SetRel.ball_mono (SetRel.inv_mono h) b
+  · exact fun t => Monotone.set_prod (fun _ _ h ↦ SetRel.ball_mono h a) monotone_const
 
 theorem nhdset_of_mem_uniformity {d : SetRel α α} (s : SetRel α α) (hd : d ∈ 𝓤 α) :
     ∃ t : SetRel α α, IsOpen t ∧ s ⊆ t ∧
@@ -168,12 +166,13 @@ theorem nhdset_of_mem_uniformity {d : SetRel α α} (s : SetRel α α) (hd : d �
 theorem nhds_le_uniformity (x : α) : 𝓝 (x, x) ≤ 𝓤 α := by
   intro V V_in
   rcases comp_symm_mem_uniformity_sets V_in with ⟨w, w_in, w_symm, w_sub⟩
-  have : ball x w ×ˢ ball x w ∈ 𝓝 (x, x) := by
+  have : SetRel.ball w x ×ˢ SetRel.ball w x ∈ 𝓝 (x, x) := by
     rw [nhds_prod_eq]
-    exact prod_mem_prod (ball_mem_nhds x w_in) (ball_mem_nhds x w_in)
+    have hw : SetRel.ball w x ∈ 𝓝 x := SetRel.ball_mem_nhds x w_in
+    exact prod_mem_prod hw hw
   apply mem_of_superset this
   rintro ⟨u, v⟩ ⟨u_in, v_in⟩
-  exact w_sub (mem_comp_of_mem_ball u_in v_in)
+  exact w_sub (SetRel.prodMk_mem_comp u_in (SetRel.symm w v_in))
 
 /-- Entourages are neighborhoods of the diagonal. -/
 theorem iSup_nhds_le_uniformity : ⨆ x : α, 𝓝 (x, x) ≤ 𝓤 α :=
@@ -203,7 +202,7 @@ theorem closure_eq_uniformity (s : Set <| α × α) :
   ext ⟨x, y⟩
   simp +contextual only
     [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_ofPred_eq,
-      and_imp, mem_comp_comp, ← mem_inter_iff, inter_comm, Set.Nonempty]
+      and_imp, SetRel.mem_comp_comp, ← mem_inter_iff, inter_comm, Set.Nonempty]
 
 theorem uniformity_hasBasis_closed :
     HasBasis (𝓤 α) (fun V : SetRel α α => V ∈ 𝓤 α ∧ IsClosed V) id := by
@@ -258,31 +257,32 @@ theorem mem_uniformity_isClosed {s : SetRel α α} (h : s ∈ 𝓤 α) : ∃ t �
   ⟨t, ht_mem, htc, hts⟩
 
 theorem isOpen_iff_isOpen_ball_subset {s : Set α} :
-    IsOpen s ↔ ∀ x ∈ s, ∃ V ∈ 𝓤 α, IsOpen V ∧ ball x V ⊆ s := by
+    IsOpen s ↔ ∀ x ∈ s, ∃ V ∈ 𝓤 α, IsOpen V ∧ SetRel.ball V x ⊆ s := by
   rw [isOpen_iff_ball_subset]
   constructor <;> intro h x hx
   · obtain ⟨V, hV, hV'⟩ := h x hx
     exact
       ⟨interior V, interior_mem_uniformity hV, isOpen_interior,
-        (ball_mono interior_subset x).trans hV'⟩
+        (SetRel.ball_mono interior_subset x).trans hV'⟩
   · obtain ⟨V, hV, -, hV'⟩ := h x hx
     exact ⟨V, hV, hV'⟩
 
-theorem closure_ball_subset {x : α} {V : SetRel α α} : closure (ball x V) ⊆ ball x (closure V) :=
-  (Continuous.prodMk_right x).closure_preimage_subset V
+theorem closure_ball_subset {x : α} {V : SetRel α α} :
+    closure (V.ball x) ⊆ SetRel.ball (closure V) x :=
+  (Continuous.prodMk_left x).closure_preimage_subset V
 
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : SetRel α α} (hs : Dense s) (hU : U ∈ 𝓤 α) :
-    ⋃ x ∈ s, ball x U = univ := by
+    ⋃ x ∈ s, U.ball x = univ := by
   refine iUnion₂_eq_univ_iff.2 fun y => ?_
-  rcases hs.inter_nhds_nonempty (mem_nhds_right y hU) with ⟨x, hxs, hxy : (x, y) ∈ U⟩
+  rcases hs.inter_nhds_nonempty (mem_nhds_left y hU) with ⟨x, hxs, hxy : (y, x) ∈ U⟩
   exact ⟨x, hxs, hxy⟩
 
 /-- The uniform neighborhoods of all points of a dense indexed collection cover the whole space. -/
 lemma DenseRange.iUnion_uniformity_ball {ι : Type*} {xs : ι → α}
     (xs_dense : DenseRange xs) {U : SetRel α α} (hU : U ∈ uniformity α) :
-    ⋃ i, UniformSpace.ball (xs i) U = univ := by
-  rw [← biUnion_range (f := xs) (g := fun x ↦ UniformSpace.ball x U)]
+    ⋃ i, U.ball (xs i) = univ := by
+  rw [← biUnion_range (f := xs) (g := fun x ↦ U.ball x)]
   exact Dense.biUnion_uniformity_ball xs_dense hU
 
 /-!
@@ -426,9 +426,9 @@ theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :
   rfl
 
 lemma ball_preimage {f : α → β} {U : SetRel β β} {x : α} :
-    UniformSpace.ball x (Prod.map f f ⁻¹' U) = f ⁻¹' UniformSpace.ball (f x) U := by
+    SetRel.ball (Prod.map f f ⁻¹' U) x = f ⁻¹' U.ball (f x) := by
   ext : 1
-  simp only [UniformSpace.ball, mem_preimage, Prod.map_apply]
+  simp only [SetRel.ball, mem_preimage, Prod.map_apply, Set.mem_ofPred_eq]
 
 @[simp]
 theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
@@ -784,8 +784,9 @@ theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpa
   rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap hu) (preimage_mem_comap hv)
 
 theorem ball_entourageProd (u : SetRel α α) (v : SetRel β β) (x : α × β) :
-    ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
-  ext p; simp only [ball, entourageProd, Set.mem_ofPred_eq, Set.mem_prod, Set.mem_preimage]
+    (entourageProd u v).ball x = u.ball x.1 ×ˢ v.ball x.2 := by
+  ext p
+  simp only [SetRel.mem_ball, mem_entourageProd, Set.mem_prod]
 
 instance IsSymm_entourageProd {u : SetRel α α} {v : SetRel β β} [u.IsSymm] [v.IsSymm] :
     (entourageProd u v).IsSymm where

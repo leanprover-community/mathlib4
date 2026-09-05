@@ -897,7 +897,7 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   simp only [UniformSpace.mem_closure_iff_symm_ball, Set.mem_univ, iff_true, Set.Nonempty,
     Set.mem_inter_iff, Set.mem_range, exists_exists_eq_and]
   intro V hV h_symm
-  rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
+  rw [uniformity_eq_comap_neg_add_nhds_zero] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
   have := (embedding γ.1)
