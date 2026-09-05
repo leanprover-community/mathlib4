@@ -184,6 +184,12 @@ theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g 
     prod (equivMapDomain f l) g = prod l (fun a m => g (f a) m) := by
   simp [prod, equivMapDomain]
 
+theorem range_equivMapDomain (f : α ≃ β) (l : α →₀ M) :
+    Set.range (equivMapDomain f l) = Set.range l := by
+  ext x
+  simp only [Set.mem_range, equivMapDomain_apply]
+  exact ⟨fun ⟨y, hy⟩ ↦ ⟨f.symm y, hy⟩, fun ⟨y, hy⟩ ↦ ⟨f y, by rwa [Equiv.symm_apply_apply]⟩⟩
+
 /-- Given `f : α ≃ β`, the finitely supported function spaces are also in bijection:
 `(α →₀ M) ≃ (β →₀ M)`.
 
@@ -491,6 +497,9 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
 
 theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : α →₀ M) :
     equivMapDomain f l = mapDomain f l := by ext x; simp
+
+theorem range_mapDomain_of_equiv (f : α ≃ β) : Set.range (mapDomain f v) = Set.range v := by
+  rw [← equivMapDomain_eq_mapDomain, range_equivMapDomain]
 
 end MapDomain
 
