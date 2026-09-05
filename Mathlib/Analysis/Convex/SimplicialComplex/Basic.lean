@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicTopology.SimplicialComplex.Basic
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.Order.UpperLower.Relative
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Simplicial complexes
@@ -56,7 +57,7 @@ namespace Geometry
 Note that the textbook meaning of "glue nicely" is given in
 `Geometry.SimplicialComplex.disjoint_or_exists_inter_eq_convexHull`. It is mostly useless, as
 `Geometry.SimplicialComplex.convexHull_inter_convexHull` is enough for all purposes. -/
-@[ext]
+@[ext, wikidata Q994399]
 structure SimplicialComplex extends PreAbstractSimplicialComplex E where
   /-- the vertices in each face are affine independent: this is an implementation detail -/
   indep : ∀ {s}, s ∈ faces → AffineIndependent 𝕜 ((↑) : s → E)
