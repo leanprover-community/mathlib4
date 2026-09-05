@@ -361,7 +361,8 @@ def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] M' i).compContinuousMultilinearMap f
 
 /-- An equivalence of the index set defines an equivalence between the spaces of continuous
-multilinear maps. This is the forward map of this equivalence. -/
+multilinear maps. This is the forward map of this equivalence. See also `domDomCongrL` for the
+continuous linear map version, and `domDomCongrEquiv` for the equiv version. -/
 @[simps! toMultilinearMap apply]
 nonrec def domDomCongr {ι' : Type*} (e : ι ≃ ι')
     (f : ContinuousMultilinearMap R (fun _ : ι => M₂) M₃) :
