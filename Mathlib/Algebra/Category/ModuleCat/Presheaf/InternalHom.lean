@@ -149,8 +149,6 @@ open PresheafOfModulesOfCommRing PresheafOfModules MonoidalCategory Opposite
 
 variable {C : Type u} [Category.{u} C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
 
-set_option backward.isDefEq.respectTransparency false
-
 variable {F G M : PresheafOfModulesOfCommRing.{u} R}
 
 namespace PresheafOfModulesOfCommRing
@@ -164,6 +162,7 @@ lemma internalHomMap_app_mkId {U V : C} (f : V ⟶ U) (φ : F.over U ⟶ G.over 
   congrArg (β := G.obj (op V))
     (fun g : V ⟶ U ↦ φ.app (op (Over.mk g)) x) (Category.id_comp f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The evaluation morphism for the internal hom of presheaves of modules. -/
 def internalHomEv (F G : PresheafOfModulesOfCommRing.{u} R) :
     F ⊗ internalHom F G ⟶ G :=
@@ -187,6 +186,8 @@ lemma internalHomEv_app_tmul (F G : PresheafOfModulesOfCommRing.{u} R)
     dsimp% (internalHomEv F G).app U (x ⊗ₜ[R.obj U] φ) =
       φ.app (op (Over.mk (𝟙 U.unop))) x := rfl
 
+
+set_option backward.isDefEq.respectTransparency false in
 /-- A section of `M` over `U` induces a morphism on `Over U.unop` by restricting the
 section and applying a morphism out of `F ⊗ M`. -/
 def internalHomCurryHom (f : F ⊗ M ⟶ G) (U : Cᵒᵖ) (m : M.obj U) :
@@ -213,6 +214,7 @@ lemma internalHomCurryHom_app_apply (f : F ⊗ M ⟶ G) (U : Cᵒᵖ) (m : M.obj
     dsimp% (internalHomCurryHom f U m).app W x =
       f.app _ (x ⊗ₜ[R.obj (op W.unop.left)] M.map W.unop.hom.op m) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Currying a morphism out of a tensor product of presheaves of modules. -/
 def internalHomCurry (f : F ⊗ M ⟶ G) : M ⟶ internalHom F G :=
   homMk (fun U ↦ ModuleCat.ofHom (R := R.obj U)
@@ -255,6 +257,7 @@ lemma internalHomUncurry_app_tmul (f : M ⟶ internalHom F G)
     dsimp% (internalHomUncurry f).app U (x ⊗ₜ[R.obj U] m) =
       (f.app U m).app (op (Over.mk (𝟙 U.unop))) x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma internalHomUncurry_curry (f : F ⊗ M ⟶ G) :
     internalHomUncurry (internalHomCurry f) = f := by
@@ -316,6 +319,7 @@ def internalHomAdjunction (F : PresheafOfModulesOfCommRing.{u} R) :
         ext x
         rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 lemma internalHomAdjunction_homEquiv (F M G : PresheafOfModulesOfCommRing.{u} R) :
     (internalHomAdjunction F).homEquiv M G = internalHomEquiv F M G := by
   simp [internalHomAdjunction]
@@ -323,6 +327,7 @@ lemma internalHomAdjunction_homEquiv (F M G : PresheafOfModulesOfCommRing.{u} R)
 lemma internalHomAdjunction_unit_app (F M : PresheafOfModulesOfCommRing.{u} R) :
     (internalHomAdjunction F).unit.app M = internalHomCoev F M := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma internalHomAdjunction_counit_app (F G : PresheafOfModulesOfCommRing.{u} R) :
     (internalHomAdjunction F).counit.app G = internalHomEv F G := by
   simp [internalHomAdjunction, internalHomEquiv, internalHomUncurry]
@@ -367,6 +372,7 @@ lemma ihom_coev_app_app_apply_app_apply (F M : PresheafOfModulesOfCommRing.{u} R
       x ⊗ₜ[R.obj (op W.unop.left)] M.map W.unop.hom.op m :=
   internalHomCoev_app_apply_app_apply F M U m W x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma monoidalClosed_curry_app_apply_app_apply (f : F ⊗ M ⟶ G)
     (U : Cᵒᵖ) (m : M.obj U) (W : (Over U.unop)ᵒᵖ) (x : (F.over U.unop).obj W) :
@@ -376,6 +382,7 @@ lemma monoidalClosed_curry_app_apply_app_apply (f : F ⊗ M ⟶ G)
     internalHomAdjunction_homEquiv]
   exact internalHomCurry_app_apply_app_apply f U m W x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma monoidalClosed_uncurry_app_tmul (f : M ⟶ (ihom F).obj G)
     (U : Cᵒᵖ) (x : F.obj U) (m : M.obj U) :
