@@ -4840,6 +4840,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
 public import Mathlib.Geometry.Manifold.WhitneyEmbedding
+public import Mathlib.Geometry.PlaneCurves
 public import Mathlib.Geometry.Polygon.Basic
 public import Mathlib.Geometry.RingedSpace.Basic
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
