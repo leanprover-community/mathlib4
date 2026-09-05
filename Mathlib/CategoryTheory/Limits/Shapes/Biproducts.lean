@@ -67,6 +67,7 @@ structure Bicone (F : J → C) where
   ι_π : ∀ j j', ι j ≫ π j' =
     if h : j = j' then eqToHom (congrArg F h) else 0 := by aesop
 
+attribute [reassoc] Bicone.ι_π
 attribute [inherit_doc Bicone] Bicone.pt Bicone.π Bicone.ι Bicone.ι_π
 
 @[reassoc (attr := simp)]
@@ -964,7 +965,7 @@ end πKernel
 
 section FiniteBiproducts
 
-variable {J : Type} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
+variable {J : Type*} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
   [HasZeroMorphisms C] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
 
 /-- Convert a (dependently typed) matrix to a morphism of biproducts. -/
