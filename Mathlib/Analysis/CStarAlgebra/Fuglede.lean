@@ -184,25 +184,33 @@ public lemma IsStarNormal.commute_star_left (ha : IsStarNormal a) (h : Commute a
     Commute (star a) x :=
   ha.commute_star_right h.symm |>.symm
 
+public lemma Set.Pairwise.commute_star_right {s : Set A}
+    (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
+    s.Pairwise (Commute · <| star ·) :=
+  fun _ hx _ hy hxy ↦ (hs' _ hy).commute_star_right (hs hx hy hxy)
+
+public lemma Set.Pairwise.commute_star_left {s : Set A}
+    (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
+    s.Pairwise (fun x y ↦ Commute (star x) y) :=
+  fun _ hx _ hy hxy ↦ (hs' _ hx).commute_star_left (hs hx hy hxy)
+
+public lemma Set.Pairwise.commute_union_star_self_iff_of_isStarNormal {s : Set A}
+    (hs : ∀ x ∈ s, IsStarNormal x) :
+    (s ∪ star s).Pairwise Commute ↔ s.Pairwise Commute := by
+  rw [commute_union_star_self_iff, and_iff_left_iff_imp]
+  exact fun hs' ↦ ⟨hs'.commute_star_right hs, hs⟩
+
 open NonUnitalStarAlgebra
 
 public lemma CStarAlgebra.isMulCommutative_nonUnital_adjoin {s : Set A}
     (hs : ∀ x ∈ s, IsStarNormal x) (hs' : s.Pairwise Commute) :
-    IsMulCommutative (adjoin ℂ s) := by
-  apply NonUnitalStarAlgebra.isMulCommutative_adjoin
-  · intro x hx y hy
-    obtain (rfl | hxy) := eq_or_ne x y
-    · rfl
-    · exact hs' hx hy hxy
-  · intro x hx y hy
-    obtain (rfl | hxy) := eq_or_ne x y
-    · exact (hs x hx).star_comm_self.symm.eq
-    · exact (hs y hy).commute_star_right (hs' hx hy hxy) |>.eq
+    IsMulCommutative (adjoin ℂ s) :=
+  isMulCommutative_adjoin ℂ hs hs' (hs'.commute_star_right hs)
 
 public lemma CStarAlgebra.isMulCommutative_nonUnital_adjoin_pair {x y : A} (h : Commute x y)
     (hx : IsStarNormal x := by cfc_tac) (hy : IsStarNormal y := by cfc_tac) :
     IsMulCommutative (adjoin ℂ {x, y}) :=
-  isMulCommutative_nonUnital_adjoin (by grind) (by grind [Set.Pairwise])
+  isMulCommutative_nonUnital_adjoin (by grind) (Set.pairwise_pair_of_symm_of_refl.mpr h)
 
 end NonUnital
 
@@ -214,20 +222,12 @@ open StarAlgebra
 
 public lemma CStarAlgebra.isMulCommutative_adjoin {s : Set A} (hs : ∀ x ∈ s, IsStarNormal x)
     (hs' : s.Pairwise Commute) :
-    IsMulCommutative (adjoin ℂ s) := by
-  apply StarAlgebra.isMulCommutative_adjoin
-  · intro x hx y hy
-    obtain (rfl | hxy) := eq_or_ne x y
-    · rfl
-    · exact hs' hx hy hxy
-  · intro x hx y hy
-    obtain (rfl | hxy) := eq_or_ne x y
-    · exact (hs x hx).star_comm_self.symm.eq
-    · exact (hs y hy).commute_star_right (hs' hx hy hxy) |>.eq
+    IsMulCommutative (adjoin ℂ s) :=
+  StarAlgebra.isMulCommutative_adjoin ℂ hs hs' (hs'.commute_star_right hs)
 
 public lemma CStarAlgebra.isMulCommutative_adjoin_pair {x y : A} (h : Commute x y)
     (hx : IsStarNormal x := by cfc_tac) (hy : IsStarNormal y := by cfc_tac) :
     IsMulCommutative (adjoin ℂ {x, y}) :=
-  isMulCommutative_adjoin (by grind) (by grind [Set.Pairwise])
+  isMulCommutative_adjoin (by grind) (Set.pairwise_pair_of_symm_of_refl.mpr h)
 
 end Unital
