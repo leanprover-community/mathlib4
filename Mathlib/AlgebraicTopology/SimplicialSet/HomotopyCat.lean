@@ -150,7 +150,6 @@ def OneTruncation₂.ofNerve₂.natIso :
       simp only [comp_id, id_comp]
       rfl))
 
-set_option backward.privateInPublic true in
 private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
@@ -189,31 +188,25 @@ def δ1₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 1
 /-- The 2nd face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
 def δ2₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 2
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 0th face of a 2-simplex. -/
 def ev12₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev1₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ0₂.op φ,
-    map_map_of_eq V (InducedCategory.hom_ext
+    private map_map_of_eq V (InducedCategory.hom_ext
       (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm),
-    map_map_of_eq V rfl⟩
+    private map_map_of_eq V rfl⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 1st face of a 2-simplex. -/
 def ev02₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev2₂ φ :=
-  ⟨V.map δ1₂.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
+  ⟨V.map δ1₂.op φ, private map_map_of_eq V rfl, private map_map_of_eq V rfl⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 2nd face of a 2-simplex. -/
 def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
   ⟨V.map δ2₂.op φ,
-    map_map_of_eq V (InducedCategory.hom_ext (SimplexCategory.δ_comp_δ (j := 1) le_rfl)),
-    map_map_of_eq V rfl⟩
+    private map_map_of_eq V (InducedCategory.hom_ext (SimplexCategory.δ_comp_δ (j := 1) le_rfl)),
+    private map_map_of_eq V rfl⟩
 
 end Truncated
 
