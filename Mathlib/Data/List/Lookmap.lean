@@ -8,7 +8,7 @@ module
 public import Batteries.Data.List.Basic
 public import Mathlib.Init
 
-/-! ### lookmap -/
+/-! # `List.lookmap` -/
 
 public section
 
