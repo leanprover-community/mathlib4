@@ -12,7 +12,7 @@ public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Lattice.Nat
-public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
@@ -389,9 +389,6 @@ theorem IsContained.not_cliqueFree {n : ℕ} (h : completeGraph (Fin n) ⊑ G) :
   rw [Fintype.card_fin] at this
   exact (· _ this)
 
-@[deprecated (since := "2026-02-21")]
-alias not_cliqueFree_of_top_embedding := IsContained.not_cliqueFree
-
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
 noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     completeGraph (Fin n) ↪g G := by
@@ -406,23 +403,30 @@ theorem not_cliqueFree_iff_top_isContained (n : ℕ) : ¬G.CliqueFree n ↔ comp
 
 @[deprecated (since := "2026-03-23")] alias not_cliqueFree_iff := not_cliqueFree_iff_top_isContained
 
-theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (Copy (completeGraph <| Fin n) G) := by
+theorem cliqueFree_iff_free_top_fin : G.CliqueFree n ↔ (completeGraph (Fin n)).Free G :=
+  not_cliqueFree_iff_top_isContained n |>.not_right
+
+alias ⟨CliqueFree.free_top_fin, _⟩ := cliqueFree_iff_free_top_fin
+
+theorem cliqueFree_iff_isEmpty_copy_top_fin {n : ℕ} :
+    G.CliqueFree n ↔ IsEmpty (Copy (completeGraph <| Fin n) G) := by
   contrapose!
   exact not_cliqueFree_iff_top_isContained n
 
+@[deprecated (since := "2026-07-04")] alias cliqueFree_iff := cliqueFree_iff_isEmpty_copy_top_fin
+
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
-theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
+theorem cliqueFree_card_iff_free_top {β : Type*} [Fintype β] :
     G.CliqueFree (card β) ↔ (⊤ : SimpleGraph β).Free G := by
   rw [← not_iff_not, not_free, not_cliqueFree_iff_top_isContained,
     isContained_congr (Iso.completeGraph (equivFin β)) Iso.refl]
+
+@[deprecated (since := "2026-07-04")] alias cliqueFree_iff_top_free := cliqueFree_card_iff_free_top
 
 theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G) :
     ¬G.CliqueFree (card α) := by
   rw [not_cliqueFree_iff_top_isContained]
   exact (Iso.completeGraph <| equivFin α).isContained'.trans f
-
-@[deprecated (since := "2026-02-21")]
-alias not_cliqueFree_card_of_top_embedding := IsContained.not_cliqueFree_card
 
 @[simp] lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
   fun h ↦ h ∅ <| isNClique_empty.mpr rfl
@@ -461,15 +465,15 @@ theorem CliqueFree.comap {H : SimpleGraph β} (hle : H ⊑ G) (h : G.CliqueFree 
 
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
-  rw [cliqueFree_iff]
+  rw [cliqueFree_iff_free_top_fin]
   contrapose! hc
   simpa only [Fintype.card_fin] using card_le_of_embedding hc.some.toEmbedding
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
 theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
     (hc : card ι < n) : (completeMultipartiteGraph V).CliqueFree n := by
-  rw [cliqueFree_iff, isEmpty_iff]
-  intro f
+  rw [cliqueFree_iff_free_top_fin]
+  intro ⟨f⟩
   obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (Sigma.fst ∘ f) (by simp [hc])
   rw [← top_adj, ← f.topEmbedding.map_adj_iff, comap_adj, top_adj] at hn
   exact absurd he hn
@@ -489,7 +493,7 @@ def topEmbedding (f : ∀ (i : ι), V i) :
 
 theorem not_cliqueFree_of_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n ≤ card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=
-  fun hf ↦ (cliqueFree_iff.1 <| hf.mono hc).elim' <|
+  fun hf ↦ (cliqueFree_iff_isEmpty_copy_top_fin.1 <| hf.mono hc).elim' <|
     topEmbedding V f |>.toCopy.comp (Iso.completeGraph (equivFin ι).symm).toCopy
 
 theorem not_cliqueFree_of_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
@@ -721,6 +725,7 @@ variable {α : Type*} {G : SimpleGraph α}
 /-- The maximum number of vertices in a clique of a graph `G`. -/
 noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
 
+-- TODO: generalize from `Finite α` to `Finite G.edgeSet`
 private lemma finite_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
   have := ofFinite α
   use card α
@@ -729,14 +734,69 @@ private lemma finite_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsN
   rw [← syc.right]
   exact Finset.card_le_card (Finset.subset_univ s)
 
-lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} {tc : G.IsClique t} :
-    #t ≤ G.cliqueNum := by
-  exact le_csSup G.finite_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
+-- TODO: generalize from `Finite α` to `Finite G.edgeSet`
+lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
+  le_csSup G.finite_cliqueNum_bddAbove ⟨t, tc, rfl⟩
+
+-- TODO: generalize from `Finite α` to `Finite G.edgeSet`
+variable (G) in
+theorem cliqueNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.cliqueNum ≠ 0 := by
+  refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
+  exact IsClique.card_le_cliqueNum (t := {Classical.arbitrary α}) <| by simp
 
 lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
   · exact Nat.sSup_mem ⟨0, by simp⟩ h
   · simp [cliqueNum, h]
+
+variable (G) in
+@[simp]
+theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
+  Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simp [s.eq_empty_of_isEmpty, ← h.card_eq]
+
+variable (G) in
+theorem cliqueNum_le_natCard [Finite α] : G.cliqueNum ≤ Nat.card α :=
+  csSup_le' fun _ ⟨s, h⟩ ↦ s.card_le_natCard |>.trans_eq' h.card_eq
+
+variable (G) in
+theorem cliqueNum_le_enatCard : G.cliqueNum ≤ ENat.card α := by
+  cases finite_or_infinite α
+  · grw [ENat.card_eq_coe_natCard, Nat.cast_le, cliqueNum_le_natCard]
+  · simp
+
+variable (α) in
+@[simp]
+theorem cliqueNum_top : (⊤ : SimpleGraph α).cliqueNum = Nat.card α := by
+  cases finite_or_infinite α
+  · have := Fintype.ofFinite α
+    apply cliqueNum_le_natCard _ |>.antisymm
+    grw [Nat.card_eq_fintype_card, ← Finset.card_univ, IsClique.card_le_cliqueNum]
+    apply IsClique.top
+  · rw [Nat.card_eq_zero_of_infinite]
+    apply Set.Infinite.Nat.sSup_eq_zero
+    rw [Set.eq_univ_of_forall (Finset.exists_card_eq · |>.imp fun _ hn ↦ ⟨.top _, hn⟩)]
+    exact Set.infinite_univ
+
+-- TODO: generalize from `Finite α` to `Finite G.edgeSet`
+variable (α) in
+@[simp]
+theorem cliqueNum_bot [Nonempty α] [Finite α] : (⊥ : SimpleGraph α).cliqueNum = 1 := by
+  refine le_antisymm (csSup_le' fun n ⟨s, h⟩ ↦ ?_) (cliqueNum_ne_zero_of_finite ⊥).pos
+  by_contra!
+  have ⟨a, ha, b, hb, hne⟩ := s.one_lt_card.mp <| this.trans_eq h.card_eq.symm
+  exact h.isClique ha hb hne
+
+-- TODO: generalize from `Finite α` to `Finite G.edgeSet`
+@[simp]
+theorem cliqueNum_eq_natCard [Finite α] : G.cliqueNum = Nat.card α ↔ G = ⊤ := by
+  refine ⟨fun h ↦ ?_, (· ▸ cliqueNum_top α)⟩
+  have ⟨s, hs⟩ := G.exists_isNClique_cliqueNum
+  suffices s = @Set.univ α from isClique_univ.mp <| this ▸ hs.isClique
+  simp [Set.eq_univ_iff_ncard, h, hs.card_eq]
+
+theorem eq_top_of_enatCard_le_cliqueNum (h : ENat.card α ≤ G.cliqueNum) : G = ⊤ := by
+  have := ENat.card_lt_top.mp <| h.trans_lt <| ENat.natCast_lt_top _
+  simpa [ENat.card_eq_coe_natCard] using cliqueNum_le_enatCard G |>.antisymm h
 
 theorem cliqueNum_induce_le [Finite α] (s : Set α) :
     (G.induce s).cliqueNum ≤ G.cliqueNum := by

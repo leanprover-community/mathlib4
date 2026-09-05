@@ -36,10 +36,10 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
 
 variable (R A X) in
 @[to_additive]
-instance instCoalgebra : Coalgebra R A[X] := coeffEquiv.coalgebra _
+instance instCoalgebra : Coalgebra R A[X] := (coeffLinearEquiv R).coalgebra _
 
 @[to_additive]
-instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := coeffEquiv.coalgebraIsCocomm _
+instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := (coeffLinearEquiv R).coalgebraIsCocomm _
 
 @[to_additive (attr := simp)]
 lemma counit_single (x : X) (a : A) :

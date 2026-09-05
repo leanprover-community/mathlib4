@@ -181,6 +181,19 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
     (↑ₕf) z = (↑ₕf) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
+theorem periodic_comp_ofComplex {f : ℍ → ℂ} {h : ℝ} (hf : ∀ τ : ℍ, f (h +ᵥ τ) = f τ) :
+    Periodic (f ∘ ofComplex) h := by
+  intro w
+  by_cases hw : 0 < w.im
+  · have hwh : 0 < (w + h).im := by simp [hw]
+    simp only [comp_apply, ofComplex_apply_of_im_pos hwh, ofComplex_apply_of_im_pos hw]
+    convert hf ⟨w, hw⟩ using 2
+    ext
+    simp [add_comm]
+  · have : (w + h).im ≤ 0 := by simpa using not_lt.mp hw
+    simp [comp_apply, ofComplex_apply_of_im_nonpos this,
+      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
+
 lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
