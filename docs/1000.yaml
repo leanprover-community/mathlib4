@@ -1368,9 +1368,6 @@ Q1130846:
 Q1131601:
   title: Sklar's theorem
 
-Q1132952:
-  title: Euler's theorem on homogeneous functions
-
 Q1134296:
   title: Supporting hyperplane theorem
 
@@ -4205,6 +4202,15 @@ Q25304301:
 
 Q25345219:
   title: Decomposition theorem of Beilinson, Bernstein and Deligne
+
+Q25378679:
+  title: Euler's theorem on homogeneous functions
+  decls:
+    - HasFDerivAt.apply_self_eq_smul_of_eventuallyEq
+    - HasFDerivAt.apply_self_eq_smul_of_homogeneous
+    - HasFDerivAt.apply_self_eq_nsmul_of_homogeneous
+  authors: Yi Yuan
+  comment: The converse stated in the English Wikipedia article is not yet formalized.
 
 Q25378690:
   title: Ionescu-Tulcea theorem
