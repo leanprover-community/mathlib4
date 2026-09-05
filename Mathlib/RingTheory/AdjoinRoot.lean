@@ -99,6 +99,12 @@ lemma nontrivial_iff_of_monic (monic : f.Monic) : Nontrivial (AdjoinRoot f) ↔ 
 def mk : R[X] →+* AdjoinRoot f :=
   Ideal.Quotient.mk _
 
+variable {f} in
+@[simp] lemma mk_ker : RingHom.ker (mk f) = span {f} := Ideal.mk_ker
+
+variable {f} in
+theorem mk_surjective : Function.Surjective (mk f) := Ideal.Quotient.mk_surjective
+
 @[elab_as_elim]
 theorem induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p : R[X], C (mk f p)) :
     C x :=
@@ -408,6 +414,19 @@ def map (f : R →+* S) (p : R[X]) (q : S[X]) (h : q ∣ p.map f) : AdjoinRoot p
 @[simp] lemma map_root (f : R →+* S) (p : R[X]) (q : S[X]) (h) : map f p q h (root p) = root q := by
   simp [map]
 
+@[simp] lemma map_mk {f : R →+* S} {p r : R[X]} {q : S[X]} (h : q ∣ p.map f) :
+    map f _ _ h (mk p r) = mk q (r.map f) := by
+  induction r using Polynomial.induction_on with
+  | C a => simp
+  | add p q hp hq => simp [hp, hq]
+  | monomial n a _ => simp
+
+lemma map_surjective_of_surjective {f : R →+* S} (hf : Function.Surjective f)
+    {p : R[X]} {q : S[X]} (h : q ∣ p.map f) : Function.Surjective (map f p q h) := by
+  intro s; obtain ⟨s, rfl⟩ := mk_surjective s
+  obtain ⟨r, rfl⟩ := mem_lifts_of_surjective hf s
+  use mk p r; simp
+
 lemma map_comp_map (f : R →+* S) (g : S →+* T) (p : R[X]) (q : S[X]) (r : T[X]) (hf hg) :
     (map g q r hg).comp (map f p q hf) =
       map (g.comp f) p r
@@ -618,9 +637,6 @@ theorem mk_leftInverse (hg : g.Monic) : Function.LeftInverse (mk g) (modByMonicH
   induction f using AdjoinRoot.induction_on
   rw [modByMonicHom_mk hg, mk_eq_mk, modByMonic_eq_sub_mul_div, sub_sub_cancel_left, dvd_neg]
   apply dvd_mul_right
-
-theorem mk_surjective : Function.Surjective (mk g) :=
-  Ideal.Quotient.mk_surjective
 
 /-- The elements `1, root g, ..., root g ^ (d - 1)` form a basis for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
