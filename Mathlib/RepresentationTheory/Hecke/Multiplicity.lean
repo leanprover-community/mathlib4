@@ -6,6 +6,7 @@ Authors: Jiaxi Mo
 module
 
 public import Mathlib.RepresentationTheory.Hecke.LeftFiniteDoubleCoset
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Multiplicity of the convolution product
@@ -13,7 +14,6 @@ public import Mathlib.RepresentationTheory.Hecke.LeftFiniteDoubleCoset
 This file defines the multiplicity for a triple of double cosets: the coefficient with which the
 third occurs in the convolution product of the first two. We also provide a flexible computation
 lemma `multiplicity_mk_mk_mk` that allows arbitrary representatives to be chosen.
-
 -/
 
 @[expose] public section
