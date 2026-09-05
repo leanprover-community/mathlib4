@@ -418,6 +418,7 @@ protected def comap (f : V → W) (G : SimpleGraph W) : G.comap f →g G where
 theorem le_comap (f : H →g G) : H ≤ G.comap f :=
   fun _ _ ↦ f.map_adj
 
+@[grind .]
 theorem map_le (f : H →g G) : H.map f ≤ G :=
   map_le_of_le_comap f.le_comap
 
