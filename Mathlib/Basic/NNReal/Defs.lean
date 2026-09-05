@@ -155,6 +155,7 @@ protected theorem «exists» {p : ℝ≥0 → Prop} :
 def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
   .mk (max r 0) (le_max_right _ _)
 
+@[simp]
 theorem _root_.Real.coe_toNNReal (r : ℝ) (hr : 0 ≤ r) : (Real.toNNReal r : ℝ) = r :=
   max_eq_left hr
 
@@ -534,7 +535,6 @@ namespace Real
 
 section ToNNReal
 
-@[simp]
 theorem coe_toNNReal' (r : ℝ) : (Real.toNNReal r : ℝ) = max r 0 :=
   rfl
 
@@ -546,7 +546,7 @@ theorem toNNReal_one : Real.toNNReal 1 = 1 := NNReal.eq <| coe_toNNReal _ zero_l
 
 @[simp]
 theorem toNNReal_pos {r : ℝ} : 0 < Real.toNNReal r ↔ 0 < r := by
-  simp [← NNReal.coe_lt_coe]
+  simp [← NNReal.coe_lt_coe, coe_toNNReal']
 
 @[simp]
 theorem toNNReal_eq_zero {r : ℝ} : Real.toNNReal r = 0 ↔ r ≤ 0 := by
@@ -571,9 +571,9 @@ lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal = ofNat(n) ↔ r = OfNat.ofNat n :=
   toNNReal_eq_natCast (NeZero.ne n)
 
-@[simp]
 theorem toNNReal_le_toNNReal_iff {r p : ℝ} (hp : 0 ≤ p) :
-    toNNReal r ≤ toNNReal p ↔ r ≤ p := by simp [← NNReal.coe_le_coe, hp]
+    toNNReal r ≤ toNNReal p ↔ r ≤ p := by
+  grind [← coe_le_coe, coe_toNNReal']
 
 @[simp]
 lemma toNNReal_le_one {r : ℝ} : r.toNNReal ≤ 1 ↔ r ≤ 1 := by
@@ -658,7 +658,7 @@ lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [n.AtLeastTwo] :
 @[simp]
 theorem toNNReal_add {r p : ℝ} (hr : 0 ≤ r) (hp : 0 ≤ p) :
     Real.toNNReal (r + p) = Real.toNNReal r + Real.toNNReal p :=
-  NNReal.eq <| by simp [hr, hp, add_nonneg]
+  NNReal.eq <| by simp [coe_toNNReal, hr, hp, add_nonneg]
 
 theorem toNNReal_add_toNNReal {r p : ℝ} (hr : 0 ≤ r) (hp : 0 ≤ p) :
     Real.toNNReal r + Real.toNNReal p = Real.toNNReal (r + p) :=
@@ -670,6 +670,7 @@ theorem toNNReal_le_toNNReal {r p : ℝ} (h : r ≤ p) : Real.toNNReal r ≤ Rea
 theorem toNNReal_add_le {r p : ℝ} : Real.toNNReal (r + p) ≤ Real.toNNReal r + Real.toNNReal p :=
   NNReal.coe_le_coe.1 <| max_le (add_le_add (le_max_left _ _) (le_max_left _ _)) NNReal.zero_le_coe
 
+@[simp]
 theorem toNNReal_le_iff_le_coe {r : ℝ} {p : ℝ≥0} : toNNReal r ≤ p ↔ r ≤ ↑p :=
   NNReal.gi.gc r p
 
@@ -694,8 +695,9 @@ theorem toNNReal_zpow {x : ℝ} (hx : 0 ≤ x) (n : ℤ) : (x ^ n).toNNReal = x.
   rw [← coe_inj, NNReal.coe_zpow, Real.coe_toNNReal _ (zpow_nonneg hx _), Real.coe_toNNReal x hx]
 
 theorem toNNReal_mul {p q : ℝ} (hp : 0 ≤ p) :
-    Real.toNNReal (p * q) = Real.toNNReal p * Real.toNNReal q :=
-  NNReal.eq <| by simp [mul_max_of_nonneg, hp]
+    Real.toNNReal (p * q) = Real.toNNReal p * Real.toNNReal q := by
+  ext
+  simp [coe_toNNReal', mul_max_of_nonneg, hp]
 
 end ToNNReal
 

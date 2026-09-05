@@ -310,7 +310,7 @@ theorem stieltjesIntegrable_iff_integrable_of_gt (hab : b < a) :
 
 lemma StieltjesIntegrable.iff_min_max :
     StieltjesIntegrable a b B f g ↔ StieltjesIntegrable (min a b) (max a b) B f g := by
-  rcases le_total a b with h | h <;> simp [h, symm_iff]
+  rcases le_total a b with h | h <;> grind [symm_iff]
 
 /-- Uniqueness: the Riemann–Stieltjes integral, when it exists, is unique. -/
 theorem HasStieltjesIntegral.unique

@@ -237,7 +237,7 @@ theorem mabs_cases (a : G) : |a|ₘ = a ∧ 1 ≤ a ∨ |a|ₘ = a⁻¹ ∧ a < 
 @[to_additive (attr := simp)]
 theorem max_one_mul_max_inv_one_eq_mabs_self (a : G) : max a 1 * max a⁻¹ 1 = |a|ₘ := by
   symm
-  rcases le_total 1 a with (ha | ha) <;> simp [ha]
+  rcases le_total 1 a with (ha | ha) <;> simp [ha, sup_of_le_left, sup_of_le_right]
 
 end LinearOrderedCommGroup
 

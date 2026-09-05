@@ -594,7 +594,8 @@ theorem power_nat_le_max {c : Cardinal.{u}} {n : ℕ} : c ^ (n : Cardinal.{u}) �
   · exact le_max_of_le_right (power_lt_aleph0 hc natCast_lt_aleph0).le
 
 lemma power_le_aleph0 {a b : Cardinal.{u}} (ha : a ≤ ℵ₀) (hb : b < ℵ₀) : a ^ b ≤ ℵ₀ := by
-  lift b to ℕ using hb; simpa [ha] using power_nat_le_max (c := a)
+  lift b to ℕ using hb
+  grw [power_nat_le_max, ha, max_self]
 
 theorem powerlt_aleph0 {c : Cardinal} (h : ℵ₀ ≤ c) : c ^< ℵ₀ = c := by
   apply le_antisymm

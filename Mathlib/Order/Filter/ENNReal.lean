@@ -69,7 +69,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
   simp only [IsBoundedUnder, IsBounded, eventually_map, ← coe_le_coe, NNReal.exists, coe_mk]
   constructor
   · rintro ⟨b, hb⟩
-    exact ⟨b.toNNReal, by simp, by filter_upwards [hb]; simp +contextual⟩
+    exact ⟨b.toNNReal, by simp, by grw [← Real.le_coe_toNNReal]; exact hb⟩
   · rintro ⟨b, -, hb⟩
     exact ⟨b, hb⟩
 
@@ -78,7 +78,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
   simp only [IsBoundedUnder, IsBounded, eventually_map, ← coe_le_coe, NNReal.exists, coe_mk]
   constructor
   · rintro ⟨b, hb⟩
-    exact ⟨b.toNNReal, by simp, by simpa⟩
+    exact ⟨b.toNNReal, by simp, by simpa [Real.toNNReal_le_iff_le_coe]⟩
   · rintro ⟨b, -, hb⟩
     exact ⟨b, hb⟩
 
@@ -88,7 +88,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
     NNReal.exists]
   constructor
   · rintro ⟨b, hb⟩
-    exact ⟨b.toNNReal, by simp, fun x _ ↦ by simpa [*] using hb _⟩
+    exact ⟨b.toNNReal, by simp, fun x _ ↦ by simpa [Real.coe_toNNReal', *] using hb _⟩
   · rintro ⟨b, hb₀, hb⟩
     exact ⟨b, fun x hx ↦ hb _ (hx.exists.choose_spec.trans' (by simp)) hx⟩
 

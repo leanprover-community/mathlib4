@@ -231,7 +231,7 @@ theorem isClosed_and_discrete_iff {S : Set X} :
   · by_cases hx : x ∈ S
     exacts [H.2 hx, (H.1 hx).mono_left nhdsWithin_le_nhds]
   · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
-    simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
+    simpa [disjoint_iff, nhdsWithin, inf_assoc, inf_of_le_right, hx] using H
 
 /-- The filter of sets with no accumulation points inside a set `S : Set X`, implemented
 as the supremum over all punctured neighborhoods within `S`. -/

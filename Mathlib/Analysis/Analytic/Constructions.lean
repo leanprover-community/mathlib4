@@ -702,14 +702,14 @@ exponent is nonnegative. -/
 lemma AnalyticWithinAt.zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     (hf : AnalyticWithinAt 𝕜 f s z) (hn : 0 ≤ n) :
     AnalyticWithinAt 𝕜 (f ^ n) s z := by
-  simpa [← zpow_natCast, hn] using hf.pow n.toNat
+  simpa [← zpow_natCast, sup_of_le_left hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed division algebra over `𝕜`) are analytic if the
 exponent is nonnegative. -/
 @[to_fun]
 lemma AnalyticAt.zpow_nonneg {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
     AnalyticAt 𝕜 (f ^ n) z := by
-  simpa [← zpow_natCast, hn] using hf.pow n.toNat
+  simpa [← zpow_natCast, sup_of_le_left hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed division algebra over `𝕜`) are analytic if the
 exponent is nonnegative. -/
@@ -717,7 +717,7 @@ exponent is nonnegative. -/
 lemma AnalyticOn.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s)
     (hn : 0 ≤ n) :
     AnalyticOn 𝕜 (f ^ n) s := by
-  simpa [← zpow_natCast, hn] using hf.pow n.toNat
+  simpa [← zpow_natCast, sup_of_le_left hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed division algebra over `𝕜`) are analytic if the
 exponent is nonnegative. -/

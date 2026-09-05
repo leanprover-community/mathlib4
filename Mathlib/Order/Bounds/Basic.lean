@@ -409,7 +409,7 @@ then `min a b` is the least element of `s ∪ t`. -/
 then `max a b` is the greatest element of `s ∪ t`. -/]
 theorem IsLeast.union [LinearOrder γ] {a b : γ} {s t : Set γ} (ha : IsLeast s a)
     (hb : IsLeast t b) : IsLeast (s ∪ t) (min a b) :=
-  ⟨by rcases le_total a b with h | h <;> simp [h, ha.1, hb.1], (ha.isGLB.union hb.isGLB).1⟩
+  ⟨by rcases le_total a b with h | h <;> grind [ha.1, hb.1], (ha.isGLB.union hb.isGLB).1⟩
 
 @[to_dual]
 theorem IsLUB.inter_Ici_of_mem [LinearOrder γ] {s : Set γ} {a b : γ} (ha : IsLUB s a) (hb : b ∈ s) :

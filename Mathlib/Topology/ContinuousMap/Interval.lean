@@ -47,7 +47,7 @@ def IccExtendCM : C(C(Icc a b, E), C(α, E)) where
 @[simp]
 theorem IccExtendCM_of_mem {f : C(Icc a b, E)} {x : α} (hx : x ∈ Icc a b) :
     IccExtendCM f x = f ⟨x, hx⟩ := by
-  simp [IccExtendCM, projIccCM, projIcc, hx.1, hx.2]
+  simp [IccExtendCM, projIccCM, projIcc_of_mem, hx]
 
 /-- The concatenation of two continuous maps defined on adjacent intervals. If the values of the
 functions on the common bound do not agree, this is defined as an arbitrarily chosen constant
@@ -75,7 +75,7 @@ theorem concat_comp_IccInclusionRight (hb : f ⊤ = g ⊥) :
   obtain rfl | hxb := eq_or_ne x b
   · simpa [concat, IccInclusionRight, IccExtendCM, projIccCM, inclusion, hb]
   · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_ge
-    simp [concat, hb, IccInclusionRight, h, IccExtendCM, projIccCM, projIcc, inclusion, hx.2, hx.1]
+    simp [concat, hb, IccInclusionRight, h, IccExtendCM, projIccCM, projIcc_of_mem, inclusion, hx]
 
 @[simp]
 theorem concat_left (hb : f ⊤ = g ⊥) {t : Icc a c} (ht : t ≤ b) :
@@ -106,21 +106,21 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
     rw [← concat_comp_IccInclusionLeft hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : z ≤ b)⟩, rfl⟩, rfl⟩
-    simpa [projIccCM, projIcc, h2, hz.1] using! h1
+    simpa [projIccCM, projIcc_of_mem, h2, hz.1] using! h1
   have hgU : MapsTo g K₂ U := by
     rw [← concat_comp_IccInclusionRight hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : b ≤ z)⟩, rfl⟩, rfl⟩
-    simpa [projIccCM, projIcc, h2, hz.2] using! h1
+    simpa [projIccCM, projIcc_of_mem, h2, hz.2] using! h1
   filter_upwards [hf K₁ hK₁ U hU hfU, hg K₂ hK₂ U hU hgU, hfg] with i hf hg hfg x hx
   by_cases! hxb : x ≤ b
   · rw [concat_left hfg hxb]
     refine hf ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
-    simp [projIccCM, projIcc, hxb, x.2.1]
+    simp [projIccCM, projIcc_of_mem, hxb, x.2.1]
   · replace hxb : b ≤ x := hxb.le
     rw [concat_right hfg hxb]
     refine hg ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
-    simp [projIccCM, projIcc, hxb, x.2.2]
+    simp [projIccCM, projIcc_of_mem, hxb, x.2.2]
 
 /-- The concatenation of compatible pairs of continuous maps on adjacent intervals, defined as a
 `ContinuousMap` on a subtype of the product. -/

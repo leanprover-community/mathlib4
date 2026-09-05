@@ -727,7 +727,8 @@ theorem integral_non_aestronglyMeasurable_of_le (h : a ≤ b)
 
 theorem norm_integral_min_max (f : ℝ → E) :
     ‖∫ x in min a b..max a b, f x ∂μ‖ = ‖∫ x in a..b, f x ∂μ‖ := by
-  cases le_total a b <;> simp [*, integral_symm a b]
+  cases le_total a b <;>
+    simp [min_eq_left, min_eq_right, max_eq_left, max_eq_right, *, integral_symm b a]
 
 theorem norm_integral_eq_norm_integral_uIoc (f : ℝ → E) :
     ‖∫ x in a..b, f x ∂μ‖ = ‖∫ x in Ι a b, f x ∂μ‖ := by
@@ -1078,9 +1079,9 @@ variable {a b c d : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
 /-- If two functions are equal in the relevant interval, their interval integrals are also equal. -/
 theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ := by
-  rcases le_total a b with hab | hab <;>
-    simpa [hab, integral_of_le, integral_of_ge] using
-      setIntegral_congr_fun measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
+  rcases le_total a b with hab | hab
+    <;> simp only [integral_of_le hab, integral_of_ge hab, neg_inj]
+    <;> exact setIntegral_congr_fun measurableSet_Ioc (h.mono (by grind [uIcc]))
 
 theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :

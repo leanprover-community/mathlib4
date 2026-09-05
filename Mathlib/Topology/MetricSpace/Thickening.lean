@@ -227,7 +227,9 @@ theorem cthickening_zero (E : Set α) : cthickening 0 E = closure E :=
   cthickening_of_nonpos le_rfl E
 
 theorem cthickening_max_zero (δ : ℝ) (E : Set α) : cthickening (max 0 δ) E = cthickening δ E := by
-  cases le_total δ 0 <;> simp [cthickening_of_nonpos, *]
+  rcases le_total δ 0 with (h | h)
+  · simp [cthickening_of_nonpos, h]
+  · rw [sup_of_le_right h]
 
 /-- The closed thickening `Metric.cthickening δ E` of a fixed subset `E` is an increasing function
 of the thickening radius `δ`. -/

@@ -256,7 +256,7 @@ theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
           rw [sup_inf_self, sup_sdiff_left, ← sup_assoc, sup_inf_left, sdiff_sup_self',
             inf_sup_right, sup_comm y, inf_sdiff_sup_right, inf_sup_left x z y]
       _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ (x ⊓ y ⊔ x \ y))) := by ac_rfl
-      _ = x := by simp
+      _ = x := by grw [sup_inf_sdiff, inf_eq_left, ← le_sup_right, ← le_sup_right]
   · calc
       x ⊓ y \ z ⊓ (z ⊓ x ⊔ x \ y) = x ⊓ y \ z ⊓ (z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by rw [inf_sup_left]
       _ = x ⊓ (y \ z ⊓ z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by ac_rfl
@@ -365,7 +365,7 @@ theorem sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :
     calc
       x \ y ⊔ y \ x ⊔ x ⊓ y = (x \ y ⊔ y \ x ⊔ x) ⊓ (x \ y ⊔ y \ x ⊔ y) := by rw [sup_inf_left]
       _ = (x \ y ⊔ x ⊔ y \ x) ⊓ (x \ y ⊔ (y \ x ⊔ y)) := by ac_rfl
-      _ = x ⊔ y := by simp
+      _ = x ⊔ y := by simp [sup_sdiff_right]
 
 theorem sup_lt_of_lt_sdiff_left (h : y < z \ x) (hxz : x ≤ z) : x ⊔ y < z := by
   rw [← sup_sdiff_cancel_right hxz]

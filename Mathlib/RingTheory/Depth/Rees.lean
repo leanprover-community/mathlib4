@@ -52,7 +52,7 @@ private lemma smul_top_quotSMulTop_ne_top_of_smul_top_ne_top {M : Type*} [AddCom
   absurd congrArg (Submodule.comap (Submodule.mkQ _)) eq
   simpa [Submodule.comap_smul_top_of_surjective I _ (Submodule.mkQ_surjective _),
     Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hr),
-    ← Submodule.ideal_span_singleton_smul] using hI
+    ← Submodule.ideal_span_singleton_smul, sup_of_le_left] using hI
 
 namespace ModuleCat
 

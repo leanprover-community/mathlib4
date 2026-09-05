@@ -702,18 +702,15 @@ lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) {a : ℝ} (ha : 0 ≤ a) :
   ext x
   simp only [nnrealPart_apply, coe_smul, Pi.smul_apply, Real.coe_toNNReal', smul_eq_mul,
     NNReal.coe_mul, ha, sup_of_le_left]
-  rcases le_total 0 (f x) with hfx | hfx
-  · simp [ha, hfx, mul_nonneg]
-  · simp [mul_nonpos_iff, ha, hfx]
+  rw [mul_max_of_nonneg _ _ ha, mul_zero]
 
 lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
     (a • f).nnrealPart = (-a).toNNReal • (-f).nnrealPart := by
   ext x
   simp only [nnrealPart_apply, coe_smul, Pi.smul_apply, smul_eq_mul, Real.coe_toNNReal', coe_neg,
     Pi.neg_apply, NNReal.coe_mul]
-  rcases le_total 0 (f x) with hfx | hfx
-  · simp [mul_nonpos_iff, ha, hfx]
-  · simp [ha, hfx, mul_nonneg_of_nonpos_of_nonpos]
+  rw [sup_of_le_left (show 0 ≤ -a by simpa), mul_max_of_nonneg _ _ (by simpa)]
+  simp
 
 lemma nnrealPart_add_le_add_nnrealPart (f g : C_c(α, ℝ)) :
     (f + g).nnrealPart ≤ f.nnrealPart + g.nnrealPart := by
@@ -746,7 +743,7 @@ noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
 
 @[simp]
 lemma nnrealPart_sub_nnrealPart_neg (f : C_c(α, ℝ)) :
-    (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp
+    (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp [Real.coe_toNNReal']
 
 /-- The map `toReal` defined as a `ℝ≥0`-linear map. -/
 noncomputable def toRealLinearMap : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ) where
@@ -810,7 +807,7 @@ noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] �
         rcases le_total 0 a with ha | ha
         · rw [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_pos f ha,
             nnrealPart_smul_pos (-f) ha]
-          simp [sup_of_le_left ha, mul_sub]
+          simp [Real.coe_toNNReal, ha, mul_sub]
         · simp only [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f),
             nnrealPart_smul_neg f ha, nnrealPart_smul_neg (-f) ha, map_smul,
             NNReal.coe_mul, Real.coe_toNNReal', neg_neg, sup_of_le_left (neg_nonneg.mpr ha)]

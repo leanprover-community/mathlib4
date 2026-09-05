@@ -79,7 +79,7 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
         rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le hab]
         convert!
           hg.monotoneOn (Icc a (b + (n : ℝ)⁻¹)) |>.intervalIntegral_slope_le hab (by simp) using 2
-        simp [g]
+        simp [g, min_eq_right]
       _ = ENNReal.ofReal (f b - f a) := by grind
 
 /-- If `f` is monotone on `a..b`, then `f'` is interval integrable on `a..b`. -/

@@ -132,11 +132,11 @@ theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 
 @[to_dual]
 theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
-  rcases le_total a b with h | h <;> simp [h, hf h]
+  rcases le_total a b with h | h <;> grind [hf h]
 
 @[to_dual]
 theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
-  rcases le_total a b with h | h <;> simp [h, hf h]
+  rcases le_total a b with h | h <;> grind [hf h]
 
 @[to_dual]
 theorem min_choice (a b : α) : min a b = a ∨ min a b = b := by cases le_total a b <;> simp [*]

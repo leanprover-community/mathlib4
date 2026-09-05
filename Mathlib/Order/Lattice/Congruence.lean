@@ -44,6 +44,8 @@ structure LatticeCon extends Setoid α where
 
 namespace LatticeCon
 
+attribute [local simp] sup_of_le_left sup_of_le_right inf_of_le_left inf_of_le_right
+
 @[simp]
 lemma r_inf_sup_iff (c : LatticeCon α) {x y : α} : c.r (x ⊓ y) (x ⊔ y) ↔ c.r x y where
   mp h := c.trans (by simpa using c.inf (c.refl x) (c.symm h)) (by simpa using c.inf h (c.refl y))

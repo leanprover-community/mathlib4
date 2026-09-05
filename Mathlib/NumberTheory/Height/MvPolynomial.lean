@@ -260,7 +260,7 @@ private lemma hasFiniteMulSupport_iSup_max_iSup_one (h : Nonempty ι') (p : ι' 
       ⨆ j, max (⨆ s : (p j).support, v.val ((p j).coeff s.val)) 1).HasFiniteMulSupport := by
   refine HasFiniteMulSupport.iSup fun j ↦ ?_
   rcases isEmpty_or_nonempty (p j).support with hs₀ | hs₀
-  · simp [hasFiniteMulSupport_one]
+  · simp [sup_of_le_right, hasFiniteMulSupport_one]
   have H (s : (p j).support) : (p j).coeff s.val ≠ 0 := mem_support_iff.mp s.prop
   fun_prop (disch := simp [H])
 
