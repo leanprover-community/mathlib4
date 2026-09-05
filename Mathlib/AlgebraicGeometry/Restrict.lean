@@ -140,6 +140,9 @@ lemma nonempty_iff : Nonempty U.toScheme ↔ (U : Set X).Nonempty := by
   simp only [toScheme_carrier, SetLike.coe_sort_coe, nonempty_subtype]
   rfl
 
+instance [Nonempty X] : Nonempty (⊤ : X.Opens).toScheme :=
+  (nonempty_iff ⊤).mpr <| by simp
+
 attribute [-simp] eqToHom_op in
 /-- The global sections of the restriction is isomorphic to the sections on the open set. -/
 @[simps!]
