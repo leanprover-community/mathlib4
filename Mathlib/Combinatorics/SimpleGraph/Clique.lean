@@ -258,9 +258,7 @@ variable {G H} {a b c : α}
 
 @[simp] lemma isNClique_empty_iff : G.IsNClique n ∅ ↔ n = 0 := by simp [isNClique_iff, eq_comm]
 
-lemma isNClique_empty' : G.IsNClique 0 ∅ := by simp
-
-@[deprecated (since := "2026-09-01")] alias isNClique_empty := isNClique_empty_iff
+lemma isNClique_empty : G.IsNClique 0 ∅ := by simp
 
 @[simp]
 lemma isNClique_singleton : G.IsNClique n {a} ↔ n = 1 := by simp [isNClique_iff, eq_comm]
