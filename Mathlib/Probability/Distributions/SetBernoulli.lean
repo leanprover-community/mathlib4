@@ -215,6 +215,8 @@ lemma setBernoulli_empty : setBer((∅ : Set ι), p) = Measure.dirac ∅ := by
 
 end Countable
 
+lemma HasLaw.inter {S₁ S₂ : Ω → Set ι} ()
+
 lemma HasLaw.hasLaw_indicator_infinitePi_ite_of_setBernoulli [DecidablePred (· ∈ u)]
     {M : Type*} [MeasurableSpace M] [MeasurableSingletonClass M] [Zero M] (c : M)
     {S : Ω → Set ι} (hS : HasLaw S setBer(u, p) P) :
