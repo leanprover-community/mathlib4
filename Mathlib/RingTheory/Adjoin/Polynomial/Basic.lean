@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
@@ -72,6 +73,21 @@ theorem adjoin_eq_exists_aeval (a : R[x]) :
   set y := (a : A) with h
   rw [Algebra.adjoin_singleton_eq_range_aeval] at this
   simp_all
+
+lemma adjoin_mem_exists_aeval' {R A σ : Type*}
+    [CommSemiring R] [CommSemiring A] [Algebra R A]
+    {S : Set A} {a : A} {f : σ → A} (hS : S ⊆ Set.range f)
+    (ha : a ∈ adjoin R S) : ∃ p : MvPolynomial σ R, p.aeval f = a := by
+  rw [← AlgHom.mem_range]
+  revert a ha
+  rw [← SetLike.le_def, adjoin_le_iff, AlgHom.coe_range]
+  exact hS.trans (Set.range_subset_range_iff_exists_comp.2 ⟨MvPolynomial.X, funext (by simp)⟩)
+
+lemma adjoin_eq_exists_aeval' {R A σ : Type*}
+    [CommSemiring R] [CommSemiring A] [Algebra R A]
+    {S : Set A} {f : σ → A} (hS : S ⊆ Set.range f)
+    (a : adjoin R S) : ∃ p : MvPolynomial σ R, p.aeval f = a :=
+  adjoin_mem_exists_aeval' hS a.2
 
 /--
 Proving a fact about `a : adjoin R {x}` is the same as proving it for
