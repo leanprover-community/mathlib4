@@ -370,33 +370,38 @@ end LimitExtraction
 /-! ### Passage to the limit -/
 
 /-- Every composition of a Tonelli approximation with its delayed input is continuous. -/
-lemma continuousOn_tonelliApproximation_delayedInput (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+lemma continuousOn_tonelliApproximation_delayedInput
+    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
     ContinuousOn
-      (fun t ↦ tonelliApproximation f t₀ x₀ n (delayedInput t₀ (n + 1) t))
+      (fun t ↦ tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t))
       (Icc t₀ tmax) :=
   (lipschitzOnWith_tonelliApproximation hf n).continuousOn.comp
-    (lipschitzWith_delayedInput t₀ _).continuous.continuousOn (mapsTo_delayedInput t₀ _)
+    (lipschitzWith_delayedInput _).continuous.continuousOn
+      (mapsTo_delayedInput _ hf.t₀_mem.2)
 
 /-- Every Tonelli approximation composed with its delayed input stays in the cylinder. -/
-lemma mapsTo_tonelliApproximation_delayedInput (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+lemma mapsTo_tonelliApproximation_delayedInput
+    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
     MapsTo
-      (fun t ↦ tonelliApproximation f t₀ x₀ n (delayedInput t₀ (n + 1) t))
+      (fun t ↦ tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t))
       (Icc t₀ tmax) (closedBall x₀ r) :=
-  (mapsTo_tonelliApproximation_closedBall hf n).comp (mapsTo_delayedInput t₀ _)
+  (mapsTo_tonelliApproximation_closedBall hf n).comp
+    (mapsTo_delayedInput _ hf.t₀_mem.2)
 
 /-- Every composition of the vector field `f` with a delayed Tonelli approximation is continuous. -/
 lemma continuousOn_comp_tonelliApproximation_delayedInput
-    (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
     ContinuousOn
-      (fun t ↦ f (t, tonelliApproximation f t₀ x₀ n (delayedInput t₀ (n + 1) t)))
+      (fun t ↦ f (t, tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t)))
       (Icc t₀ tmax) := by
   apply hf.continuousOn.comp
     (ContinuousOn.prodMk continuousOn_id (continuousOn_tonelliApproximation_delayedInput hf n))
   intro s hs
-  exact ⟨mem_Icc.mp (Icc_t0_subset_Icc hs), mapsTo_tonelliApproximation_delayedInput hf n hs⟩
+  exact ⟨mem_Icc.mp (Icc_t0_subset_Icc hf.t₀_mem hs),
+    mapsTo_tonelliApproximation_delayedInput hf n hs⟩
 
-private lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀.val tmax)
-    (hs : s ∈ uIoc t₀.val t) : s ∈ Icc t₀.val tmax :=
+private lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀ tmax)
+    (hs : s ∈ uIoc t₀ t) : s ∈ Icc t₀ tmax :=
   Icc_subset_Icc_right ht.2 (Ioc_subset_Icc_self (uIoc_of_le ht.1 ▸ hs))
 
 variable [FiniteDimensional ℝ E]
@@ -404,9 +409,10 @@ variable [FiniteDimensional ℝ E]
 /-! ### Existence of integral and differential solutions -/
 
 /-- There exists a solution of the integral equation on the interval forward in time. -/
-lemma exists_eq_forall_mem_Icc_eq_integral_forward (hf : IsPeano f t₀ x₀ r L) :
+lemma exists_eq_forall_mem_Icc_eq_integral_forward
+    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
     ∃ α : ℝ → E, ContinuousOn α (Icc t₀ tmax) ∧ MapsTo α (Icc t₀ tmax) (closedBall x₀ r) ∧
-      ∀ t ∈ Icc t₀.val tmax, α t = x₀ + ∫ s in t₀..t, f (s, α s) := by
+      ∀ t ∈ Icc t₀ tmax, α t = x₀ + ∫ s in t₀..t, f (s, α s) := by
   obtain ⟨α, φ, hφ_mono, hα_cont, hα_maps, hα_tendsto⟩ :=
     exists_tendstoUniformlyOn_subseq_tonelliApproximation hf
   refine ⟨α, hα_cont, hα_maps, fun t ht ↦ tendsto_nhds_unique
@@ -422,7 +428,7 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward (hf : IsPeano f t₀ x₀ r L
   · filter_upwards with n
     filter_upwards with s hs
     have hs := mem_Icc_of_mem_uIoc ht hs
-    apply hf.norm_le s (Icc_t0_subset_Icc hs)
+    apply hf.norm_le s (Icc_t0_subset_Icc hf.t₀_mem hs)
     exact mapsTo_tonelliApproximation_delayedInput hf (φ n) hs
   · have h_lim :=
       tendsto_tonelliApproximation_delayedInput_of_tendstoUniformlyOn_tonelliApproximation
@@ -434,10 +440,10 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward (hf : IsPeano f t₀ x₀ r L
         ⟨Tendsto.prodMk_nhds tendsto_const_nhds (h_lim s hs), ?_⟩
       apply Eventually.of_forall
       exact fun n ↦ mem_prod.mpr
-        ⟨Icc_t0_subset_Icc hs,
+        ⟨Icc_t0_subset_Icc hf.t₀_mem hs,
           MapsTo.comp (mapsTo_tonelliApproximation_closedBall hf _)
-            (mapsTo_delayedInput t₀ _) hs⟩
-    · refine ⟨Icc_t0_subset_Icc hs, ?_⟩
+            (mapsTo_delayedInput _ hf.t₀_mem.2) hs⟩
+    · refine ⟨Icc_t0_subset_Icc hf.t₀_mem hs, ?_⟩
       apply IsClosed.mem_of_tendsto isClosed_closedBall (hα_tendsto.tendsto_at hs)
       exact Eventually.of_forall (fun n ↦ mapsTo_tonelliApproximation_closedBall hf (φ n) hs)
 
