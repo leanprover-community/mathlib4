@@ -387,6 +387,18 @@ theorem prod_primeFactors_sdiff_of_squarefree {n : ℕ} (hn : Squarefree n) {t :
 
 end Nat
 
+namespace Int
+
+-- TODO: state this uniformly in a `NormalizationMonoid`, quantifying over normalized primes, so
+-- that this version and the one for monic polynomials over a field both follow from it.
+/-- An integer is squarefree iff no prime square divides it. -/
+theorem squarefree_iff_prime_sq_not_dvd {n : ℤ} :
+    Squarefree n ↔ ∀ p : ℕ, p.Prime → ¬ (p : ℤ) ^ 2 ∣ n := by
+  simp [← Int.squarefree_natAbs, Nat.squarefree_iff_prime_squarefree, ← Int.natCast_dvd,
+    pow_two]
+
+end Int
+
 -- Porting note: comment out NormNum tactic, to be moved to another file.
 /-
 

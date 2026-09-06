@@ -23,6 +23,9 @@ These tests cover the pure logic of the cache system, including:
   non-default-scope security warning it triggers
 - Decompression-pipeline carry across download rounds (`DecompState`,
   `finalizeDecomp`, `monitorCurl`)
+- Transfer classification (`classifyDownload`/`classifyUpload`): delivered,
+  miss, skip, or failed, per HTTP status and curl exit code
+- The two retry-flag tiers (`curlRetryArgs`)
 - Utility functions (URL extraction, filename hashing, etc.)
 
 Anything that touches the network is left to CI, which exercises the
@@ -181,43 +184,58 @@ def test_envValueNormalization : IO Unit := do
     (shown (normalizeBaseURL (some "https://cache.example.org///")))
   assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
 
-/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set
-and falls back to the Azure account when it is not. `getBaseURLFrom` is pure,
-so this test covers both branches; the environment-reading wrapper
+/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set.
+Without it, reads address `publicCacheEndpoint`, and address the Azure account when
+`MATHLIB_CACHE_DEBUG_USE_LEGACY` selects the legacy read host. `getBaseURLFrom` is
+pure, so this test covers every branch; the environment-reading wrapper
 (`getBaseURL`) adds no logic of its own. -/
 def test_getBaseURLFrom : IO Unit := do
   IO.println "getBaseURLFrom:"
-  assertEq "no override → the Azure account"
-    defaultGetBaseURL (getBaseURLFrom none)
+  assertEq "no override → the read endpoint"
+    "https://cache.mathlib.org" (getBaseURLFrom none false)
+  assertEq "legacy → the storage account"
+    "https://lakecache.blob.core.windows.net" (getBaseURLFrom none true)
+  -- The legacy base is the host the container URLs (`azureURL`) are built on.
+  assertEq "the legacy base matches the container URLs"
+    azureAccountURL (getBaseURLFrom none true)
   assertEq "override → the given base"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org"))
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") false)
+  assertEq "override wins over legacy"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") true)
   -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
   -- undefined, so an empty value must keep the default.
   assertEq "empty value counts as unset"
-    defaultGetBaseURL (getBaseURLFrom (some ""))
+    publicCacheEndpoint (getBaseURLFrom (some "") false)
   assertEq "whitespace-only value counts as unset"
-    defaultGetBaseURL (getBaseURLFrom (some " \n"))
+    publicCacheEndpoint (getBaseURLFrom (some " \n") false)
   assertEq "override is trimmed"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n"))
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n") false)
   -- A base written with a trailing slash must not double the separator in
   -- `{base}/{container}/{key}`.
   assertEq "trailing slash is stripped"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org/"))
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org/") false)
 
 /-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
-`azureURL`, under whichever base `MATHLIB_CACHE_BASE_URL` selects. With no
-override, reads address Azure directly and the two URL families coincide. -/
+`azureURL`, under whichever base the environment selects. Without a base-URL
+override, both positions of the legacy switch are pinned: the endpoint by
+default, `azureURL` under legacy. -/
 def test_Container_getURL : IO Unit := do
   IO.println "Container.getURL:"
   let base ← getBaseURL
   assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
   assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
   assertEq "legacy read URL" s!"{base}/mathlib4" (← Container.legacy.getURL)
-  -- The effective base drives this guard, so an empty variable reaches the
-  -- assertions below: it means unset, and the Azure host answers for it.
-  if base == defaultGetBaseURL then
-    assertEq "default read URL matches azureURL"
+  -- A base-URL override answers for both switch positions, so the pinned
+  -- assertions run only without one.
+  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
+    let ambient ← useLegacy.get
+    useLegacy.set false
+    assertEq "default read URL is on the endpoint"
+      s!"{publicCacheEndpoint}/mathlib4-master" (← Container.master.getURL)
+    useLegacy.set true
+    assertEq "legacy read URL matches azureURL"
       Container.master.azureURL (← Container.master.getURL)
+    useLegacy.set ambient
 
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
 repo (`/f/<repo>/<hash>`). The layout is fixed per container so that all of a
@@ -609,7 +627,9 @@ def test_markerURL : IO Unit := do
     (markerURL .forks "Alice/Mathlib4" "abc123")
 
 /-- Marker probes read through the base URL; marker writes address Azure
-directly (`markerURL`). The two URLs agree only under the default base. -/
+directly (`markerURL`). Without a base-URL override, both positions of the
+legacy switch are pinned: probes address the endpoint by default, and under
+legacy they match the write URL. -/
 def test_markerReadURL : IO Unit := do
   IO.println "markerReadURL:"
   let base ← getBaseURL
@@ -619,12 +639,17 @@ def test_markerReadURL : IO Unit := do
   assertEq "probe repo is lowercased in the path"
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     (← markerReadURL .forks "Alice/Mathlib4" "abc123")
-  -- The effective base drives this guard, so an empty variable reaches the
-  -- assertions below: it means unset, and the Azure host answers for it.
-  if base == defaultGetBaseURL then
-    assertEq "default probe URL matches the write URL"
+  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
+    let ambient ← useLegacy.get
+    useLegacy.set false
+    assertEq "default probe URL is on the endpoint"
+      s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
+      (← markerReadURL .forks "alice/mathlib4" "abc123")
+    useLegacy.set true
+    assertEq "legacy probe URL matches the write URL"
       (markerURL .forks "alice/mathlib4" "abc123")
       (← markerReadURL .forks "alice/mathlib4" "abc123")
+    useLegacy.set ambient
 
 end Marker
 
@@ -1017,6 +1042,45 @@ def test_parseFlagOpt : IO Unit := do
   -- Lookalike: `--help-me` isn't the `--help` flag.
   assertTrue "lookalike prefix doesn't match" (!parseFlagOpt "help" ["--help-me"])
 
+/-- A boolean environment variable is on for `1` and `true`, off for `0` and
+`false`, and `ifUnset` for an absent or blank value.
+`MATHLIB_CACHE_DEBUG_USE_LEGACY` reads this way with `ifUnset := false`.
+
+`ifUnset` decides the unset case alone: a variable that defaults on still reads
+`0` as off, and a value the parser cannot read warns and falls back to
+`ifUnset`. -/
+def test_parseEnvFlag : IO Unit := do
+  IO.println "parseEnvFlag:"
+  let shown (flag : Bool) : String := if flag then "on" else "off"
+  -- The variable name only reaches the warning, so any name serves the rest.
+  let parse (value? : Option String) (ifUnset : Bool) : IO String := do
+    return shown (← withSuppressedOutput (parseEnvFlag "FLAG" value? ifUnset))
+  assertEq "absent value takes ifUnset" "off" (← parse none false)
+  assertEq "empty value takes ifUnset" "off" (← parse (some "") false)
+  assertEq "whitespace-only value takes ifUnset" "off" (← parse (some " \n") false)
+  assertEq "1 is on" "on" (← parse (some "1") false)
+  assertEq "true is on" "on" (← parse (some "true") false)
+  assertEq "case does not matter" "on" (← parse (some "TRUE") false)
+  assertEq "surrounding space does not matter" "on" (← parse (some " true ") false)
+  assertEq "0 is off" "off" (← parse (some "0") false)
+  assertEq "false is off" "off" (← parse (some "false") false)
+  assertEq "an unreadable value falls back to ifUnset" "off" (← parse (some "yes") false)
+  assertEq "a number other than 0 or 1 is unreadable" "off" (← parse (some "2") false)
+  -- A default-on variable: `ifUnset` moves the unset case and nothing else.
+  assertEq "absent value takes an on default" "on" (← parse none true)
+  assertEq "empty value takes an on default" "on" (← parse (some "") true)
+  assertEq "0 is off against an on default" "off" (← parse (some "0") true)
+  assertEq "false is off against an on default" "off" (← parse (some "false") true)
+  assertEq "1 is on against an on default" "on" (← parse (some "1") true)
+  assertEq "an unreadable value takes an on default" "on" (← parse (some "yes") true)
+  -- The warning names the variable and the value it rejected, and it fires only
+  -- for a value the parser cannot read.
+  let (warning, _) ← IO.FS.withIsolatedStreams (parseEnvFlag "MY_FLAG" (some "yes") false)
+  assertTrue "the warning names the variable and the value"
+    ((warning.splitOn "MY_FLAG=yes").length == 2)
+  let (quiet, _) ← IO.FS.withIsolatedStreams (parseEnvFlag "MY_FLAG" (some "0") false)
+  assertEq "a readable value warns about nothing" "" quiet
+
 end CliOptions
 
 section ReadRedirects
@@ -1033,6 +1097,43 @@ def test_curlFollowRedirectArgs : IO Unit := do
     (" ".intercalate curlFollowRedirectArgs.toList)
 
 end ReadRedirects
+
+section RetryFlags
+
+/-- Only a path with a curl 7.71 floor may pass `--retry-all-errors`; an older
+curl rejects the whole command. The legacy tier serves the serial download
+path, so it must stay free of that flag. -/
+def test_curlRetryArgs : IO Unit := do
+  IO.println "curlRetryArgs:"
+  assertEq "legacy tier" "--retry 5"
+    (" ".intercalate (curlRetryArgs (supportLegacyCurl := true)).toList)
+  assertEq "full tier" "--retry 5 --retry-all-errors"
+    (" ".intercalate (curlRetryArgs (supportLegacyCurl := false)).toList)
+
+end RetryFlags
+
+section RunCmdErrors
+
+/-- With `showArgsOnError := false` a failing command's error names only the
+command: the argument list can carry a credential (the marker uploads pass
+`--oauth2-bearer` and SAS-tokened URLs). The default keeps the argument list
+in the message. -/
+def test_runCmd_showArgsOnError : IO Unit := do
+  IO.println "runCmd showArgsOnError:"
+  let secret := "hunter2-credential"
+  let hidden ← try
+      discard <| IO.runCmd "curl" #["--not-a-curl-flag", secret] (showArgsOnError := false)
+      pure "no failure"
+    catch e => pure (toString e)
+  assertTrue "the failure throws" (hidden != "no failure")
+  assertTrue "the message hides the arguments" ((hidden.splitOn secret).length == 1)
+  let shown ← try
+      discard <| IO.runCmd "curl" #["--not-a-curl-flag", secret]
+      pure "no failure"
+    catch e => pure (toString e)
+  assertTrue "the default shows the arguments" ((shown.splitOn secret).length == 2)
+
+end RunCmdErrors
 
 section CacheMissStatus
 
@@ -1076,6 +1177,72 @@ def test_isAlreadyPresentStatus : IO Unit := do
   assertTrue "500 is not already-present" (!isAlreadyPresentStatus 500)
 
 end AlreadyPresentStatus
+
+section TransferClassification
+
+/-- `classifyDownload` is the decision table shared by the parallel and serial
+download paths. The clean-exit rows guard against renaming a truncated body: a
+transport error that outlives the retries reports `http_code: 200` with a
+nonzero `exitcode`. -/
+def test_classifyDownload : IO Unit := do
+  IO.println "classifyDownload:"
+  -- A clean 200/201 delivers.
+  assertTrue "200 + exit 0 delivers"
+    (classifyDownload (some 200) 0 false matches .delivered)
+  assertTrue "201 + exit 0 delivers"
+    (classifyDownload (some 201) 0 false matches .delivered)
+  -- A 200 with a nonzero exit code carries a truncated body.
+  assertTrue "200 + exit 18 fails"
+    (classifyDownload (some 200) 18 false matches .failed)
+  assertTrue "201 + exit 18 fails"
+    (classifyDownload (some 201) 18 false matches .failed)
+  -- The status alone decides a miss.
+  assertTrue "404 is a miss"
+    (classifyDownload (some 404) 0 false matches .miss)
+  assertTrue "404 + nonzero exit is still a miss"
+    (classifyDownload (some 404) 18 false matches .miss)
+  assertTrue "403 is a miss with treatForbiddenAsMiss"
+    (classifyDownload (some 403) 0 true matches .miss)
+  assertTrue "403 fails otherwise"
+    (classifyDownload (some 403) 0 false matches .failed)
+  assertTrue "409 fails on a read"
+    (classifyDownload (some 409) 0 false matches .failed)
+  -- No usable status is a failure (a connection error reports `000`).
+  assertTrue "status 0 fails"
+    (classifyDownload (some 0) 0 false matches .failed)
+  assertTrue "no status fails"
+    (classifyDownload none 0 false matches .failed)
+
+/-- The put config discards every response body: stdout must carry only the
+per-transfer JSON reports (`--write-out '%{json}'`) that `monitorCurl`
+parses. -/
+def test_mkPutConfigContent : IO Unit := do
+  IO.println "mkPutConfigContent:"
+  let cfg ← mkPutConfigContent (some .master) MATHLIBREPO "https://example.invalid"
+    #["/tmp/00000000deadbeef.ltar"] (.azureSas "tok")
+  assertTrue "uploads the file" ((cfg.splitOn "-T /tmp/00000000deadbeef.ltar").length == 2)
+  assertTrue "discards the response body" ((cfg.splitOn s!"-o {IO.nullDevice}").length == 2)
+
+/-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
+non-overwrite put, and every other answer — a 404 included — is a failure. -/
+def test_classifyUpload : IO Unit := do
+  IO.println "classifyUpload:"
+  assertTrue "201 + exit 0 delivers"
+    (classifyUpload (some 201) 0 false matches .delivered)
+  assertTrue "201 + exit 18 fails"
+    (classifyUpload (some 201) 18 false matches .failed)
+  assertTrue "409 skips on a non-overwrite put"
+    (classifyUpload (some 409) 0 true matches .skip)
+  assertTrue "412 skips on a non-overwrite put"
+    (classifyUpload (some 412) 0 true matches .skip)
+  assertTrue "409 fails on an overwrite put"
+    (classifyUpload (some 409) 0 false matches .failed)
+  assertTrue "404 fails"
+    (classifyUpload (some 404) 0 true matches .failed)
+  assertTrue "no status fails"
+    (classifyUpload none 0 true matches .failed)
+
+end TransferClassification
 
 section UnsafeRounds
 
@@ -1191,7 +1358,8 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
     decompressed := 42
     decompFailed := 1 }
   let (s, served) ← withSuppressedOutput <|
-    monitorCurl #["--version"] 1 "Downloaded" "speed_download" (decompState := carried)
+    monitorCurl #["--version"] 1 "Downloaded" "speed_download"
+      (classifyDownload · · false) (decompState := carried)
   assertTrue "no transfers → an empty served set" served.isEmpty
   assertTrue "pending files survive the round" (s.decomp.pending.size == 1)
   assertTrue "the in-flight task survives the round" s.decomp.currentTask.isSome
@@ -1229,20 +1397,29 @@ def runAll : IO Unit := do
   test_findRecentSHAsWithCache
   test_getRemoteRepo_gitFallback
   test_headIsAncestorOfMaster_gitFallback
+  test_parseEnvFlag
   test_isKnownOpt
   test_parseNamedOpt
   test_parseFlagOpt
   test_curlFollowRedirectArgs
+  test_curlRetryArgs
+  test_runCmd_showArgsOnError
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
+  test_classifyDownload
+  test_classifyUpload
+  test_mkPutConfigContent
   test_expandDownloadRounds
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
 
 end Cache.Test
 
-open Cache.Test in
+open Cache Cache.Test Cache.Requests in
 def main : IO UInt32 := do
+  -- Resolve the legacy switch the way the tool's `main` does, so the read-base
+  -- assertions see the setting the environment names.
+  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
   runAll
   let n ← failures.get
   if n == 0 then

@@ -457,8 +457,6 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
 abbrev pemptyToPUnit : @emptyRelation PEmpty ≺i @emptyRelation PUnit :=
   (@ofIsEmpty _ _ emptyRelation _ _ PUnit.unit) fun _ => not_false
 
-@[deprecated (since := "2026-02-08")] alias pemptyToPunit := pemptyToPUnit
-
 protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   (f : r ≼i s).acc a
 
@@ -563,6 +561,13 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
         exact ⟨Sum.inl <| (f.symm.trans g.subrelIso).toInitialSeg⟩
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
           (fun a => _root_.trans (g.lt_top a) h) h).transRelIso f.subrelIso⟩
+
+/-- For any two well orders, one is a principal segment of the other, or they are isomorphic. -/
+noncomputable def PrincipalSeg.trichotomy (r s) [IsWellOrder α r] [IsWellOrder β s] :
+    (r ≺i s) ⊕ (r ≃r s) ⊕ (s ≺i r) :=
+  match InitialSeg.total r s with
+  | .inl f => f.principalSumRelIso.elim .inl (.inr ∘ .inl)
+  | .inr g => g.principalSumRelIso.elim (.inr ∘ .inr) (.inr ∘ .inl ∘ .symm)
 
 /-! ### Initial or principal segments with `<` -/
 

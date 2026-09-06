@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.CharP.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.NormNum.Basic
 
@@ -42,8 +42,7 @@ def scaleRowsIntegral (ratRows : Array (Array Rat)) : Array (Array Int) × Array
 /-- The restoration for `scaleRowsIntegral`: fold the row scales into the transform,
 scaling column `j` by the factor of the row that ends up in position `j`. -/
 def restoreScaling (scales : Array Nat) (d : BareissData Int) : BareissData Int :=
-  let order := d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b)
-    (Array.range d.L.size)
+  let order := d.rowOrder
   { d with L := d.L.map fun row =>
       row.mapIdx fun j a => a * scales.getD (order.getD j 0) 1 }
 

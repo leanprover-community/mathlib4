@@ -5,9 +5,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Logic.Basic
+public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Data.Nat.Init
-public import Mathlib.Logic.Basic
-public import Mathlib.Logic.Nontrivial.Defs
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Tactic.GCongr.Core
 
@@ -118,6 +118,10 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
   set_induction_bounded hb h_ind (zero_le n)
 
 /-! ### `mod`, `dvd` -/
+
+/-- Two natural numbers dividing each other are equal. -/
+protected lemma dvd_antisymm_iff : m = n ↔ m ∣ n ∧ n ∣ m :=
+  ⟨by simp +contextual, fun ⟨h₁, h₂⟩ ↦ Nat.dvd_antisymm h₁ h₂⟩
 
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
