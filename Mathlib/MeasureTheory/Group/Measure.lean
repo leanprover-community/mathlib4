@@ -926,7 +926,7 @@ instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : Sig
 @[to_additive]
 instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
     {H : Type*} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
-    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite μ] [SFinite ν]
+    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 
 /-- If the neutral element of a group is not isolated, then a Haar measure on this group has value
