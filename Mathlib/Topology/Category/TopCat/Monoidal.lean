@@ -117,7 +117,7 @@ protected theorem lift_apply {X Y Z : TopCat.{u}} {f : X ⟶ Y} {g : X ⟶ Z} {x
 
 /-- The unit interval, as an object of `TopCat`. -/
 @[implicit_reducible]
-def I : TopCat.{u} := TopCat.of (ULift unitInterval)
+def I : TopCat.{u} := ↧(ULift unitInterval)
 
 instance : LocallyCompactSpace I :=
   inferInstanceAs (LocallyCompactSpace (ULift unitInterval))

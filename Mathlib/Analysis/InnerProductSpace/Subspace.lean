@@ -221,8 +221,7 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       intro s₁ hs₁ s₂ hs₂
       rw [← Finset.sum_sdiff_sub_sum_sdiff]
       refine (abs_sub _ _).trans_lt ?_
-      have : ∀ i, 0 ≤ ‖f i‖ ^ 2 := fun i : ι => sq_nonneg _
-      simp only [Finset.abs_sum_of_nonneg' this]
+      simp only [sq_nonneg, implies_true, Finset.abs_sum_of_nonneg]
       have : ((∑ i ∈ s₁ \ s₂, ‖f i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖f i‖ ^ 2) < √ε ^ 2 := by
         rw [← hV.norm_sq_sdiff_sum, sq_lt_sq, abs_of_nonneg (sqrt_nonneg _),
           abs_of_nonneg (norm_nonneg _)]
@@ -240,15 +239,11 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       have Hs₁ : ∑ x ∈ s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
         convert! H _ hs₁ _ has
         have : s₁ ⊓ s₂ ⊆ s₁ := Finset.inter_subset_left
-        rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
-        · simp
-        · exact fun i => sq_nonneg _
+        simp [← Finset.sum_sdiff this, Finset.abs_sum_of_nonneg]
       have Hs₂ : ∑ x ∈ s₂ \ s₁, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
         convert! H _ hs₂ _ has
         have : s₁ ⊓ s₂ ⊆ s₂ := Finset.inter_subset_right
-        rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
-        · simp
-        · exact fun i => sq_nonneg _
+        simp [← Finset.sum_sdiff this, Finset.abs_sum_of_nonneg]
       linarith
 
 end

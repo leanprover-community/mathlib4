@@ -2055,6 +2055,7 @@ public import Mathlib.Analysis.Fourier.Notation
 public import Mathlib.Analysis.Fourier.PoissonSummation
 public import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
 public import Mathlib.Analysis.Fourier.ZMod
+public import Mathlib.Analysis.FunctionalSpaces.BesselPotentialSpace
 public import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
 public import Mathlib.Analysis.Hofer
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
@@ -3393,6 +3394,7 @@ public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Retracts
 public import Mathlib.CategoryTheory.Presentable.SharplyLT.Basic
 public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
+public import Mathlib.CategoryTheory.Presentable.SolutionSetCondition
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.Presentable.Uniformization
@@ -4692,6 +4694,7 @@ public import Mathlib.FieldTheory.SeparablyGenerated
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.FieldTheory.Tower
+public import Mathlib.FieldTheory.TranscendentalSeparable
 public import Mathlib.Geometry.Convex.Cone.Basic
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.DualFinite
@@ -4985,6 +4988,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.GroupTheory.QuotientGroup.Finite
 public import Mathlib.GroupTheory.QuotientGroup.ModEq
+public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.RegularWreathProduct
 public import Mathlib.GroupTheory.ResiduallyFinite
@@ -6029,6 +6033,7 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.ExistsRamified
+public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.FinitePlaces
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.House
@@ -6245,6 +6250,7 @@ public import Mathlib.Order.Filter.Subsingleton
 public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.Order.Filter.Ultrafilter.Basic
+public import Mathlib.Order.Filter.Ultrafilter.Cardinality
 public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 public import Mathlib.Order.Fin.Basic
@@ -7682,7 +7688,6 @@ public import Mathlib.Tactic.Relation.Symm
 public import Mathlib.Tactic.Rename
 public import Mathlib.Tactic.RenameBVar
 public import Mathlib.Tactic.Replace
-public import Mathlib.Tactic.RewriteSearch
 public import Mathlib.Tactic.Rify
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Ring.Basic
