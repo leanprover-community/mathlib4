@@ -18,7 +18,7 @@ public section
 
 open MeasureTheory
 
-/-- Helper for Theorem 50.4: every positive-radius ball contains a point outside
+/-- Every positive-radius ball contains a point outside
 the affine spans of all small subfamilies of a fixed finite family. -/
 lemma exists_mem_ball_avoiding_small_affineSpans
     {ι : Type*} {N : ℕ} (z : ι → EuclideanSpace ℝ (Fin N))
@@ -40,9 +40,9 @@ lemma exists_mem_ball_avoiding_small_affineSpans
   -- A positive-measure ball cannot be contained in the null forbidden union.
   have hnot_subset : ¬ Metric.ball c ε ⊆ forbidden := by
     intro hsubset
-    have hmono : μ (Metric.ball c ε) ≤ μ forbidden := measure_mono hsubset
-    rw [hforbidden_zero] at hmono
-    exact (not_lt_of_ge hmono) (Metric.measure_ball_pos μ c hε)
+    have : μ (Metric.ball c ε) ≤ μ forbidden := measure_mono hsubset
+    have := Metric.measure_ball_pos μ c hε
+    grind
   obtain ⟨p, hp_ball, hp_forbidden⟩ := Set.not_subset.mp hnot_subset
   refine ⟨p, hp_ball, ?_⟩
   intro u hus hcard hp_span
@@ -53,7 +53,7 @@ lemma exists_mem_ball_avoiding_small_affineSpans
   refine ⟨⟨u, Finset.mem_filter.mpr ⟨Finset.mem_powerset.mpr hus, hcard⟩⟩, hp_span⟩
 
 open scoped Classical in
-/-- Helper for Theorem 50.4: adjoining a fresh updated point outside the old
+/-- Adjoining a fresh updated point outside the old
 affine span preserves affine independence on the enlarged finset. -/
 lemma affineIndependent_insert_update
     {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -73,18 +73,13 @@ lemma affineIndependent_insert_update
         Function.update z i p j.1.1) := by
     convert hs.comp_embedding old using 1
     ext j
-    change Function.update z i p j.1.1 = z j.1.1
     exact Function.update_of_ne (fun h : j.1.1 = i ↦ hi (h ▸ hmem j)) _ _
   apply hold.affineIndependent_of_notMem_span
   simp only [inserted, Function.update_self]
-  apply fun h ↦ hp (affineSpan_mono ℝ ?_ h)
-  rintro _ ⟨j, hj, rfl⟩
-  have hji : j.1 ≠ i := fun h ↦ hj (Subtype.ext h)
-  exact ⟨j.1, (Finset.mem_insert.mp j.2).resolve_left hji,
-    (Function.update_of_ne hji _ _).symm⟩
+  exact fun h ↦ hp (affineSpan_mono ℝ (by grind [Function.update_of_ne]) h)
 
 open scoped Classical in
-/-- Helper for Theorem 50.4: a finite Euclidean family admits a pointwise small
+/-- A finite Euclidean family admits a pointwise small
 perturbation whose subfamilies of size at most the ambient dimension plus one
 are affinely independent. -/
 lemma existsNearbyBoundedAffineIndependentFamily
@@ -105,13 +100,10 @@ lemma existsNearbyBoundedAffineIndependentFamily
     intro s
     induction s using Finset.induction_on with
     | empty =>
-        refine ⟨v, ?_, ?_⟩
-        · intro i hi
-          exact (Finset.notMem_empty i hi).elim
-        · intro t ht _
-          have ht_empty : t = ∅ := Finset.subset_empty.mp ht
-          subst t
-          exact affineIndependent_of_subsingleton ℝ _
+        refine ⟨v, by simp, ?_⟩
+        intro t ht _
+        obtain rfl := Finset.subset_empty.mp ht
+        exact affineIndependent_of_subsingleton ℝ _
     | @insert i s hi ih =>
         obtain ⟨z, hz_close, hz_independent⟩ := ih
         obtain ⟨p, hp_ball, hp_avoid⟩ :=
@@ -119,10 +111,7 @@ lemma existsNearbyBoundedAffineIndependentFamily
         let z' : ι → EuclideanSpace ℝ (Fin N) := Function.update z i p
         refine ⟨z', ?_, ?_⟩
         · intro j hj
-          rcases Finset.mem_insert.mp hj with rfl | hjs
-          · simpa [z'] using Metric.mem_ball.mp hp_ball
-          · have hji : j ≠ i := fun h ↦ hi (h ▸ hjs)
-            simpa [z', Function.update_of_ne hji] using hz_close j hjs
+          grind [Function.update_apply, Metric.mem_ball]
         · intro t ht hcard
           by_cases hit : i ∈ t
           · let u := t.erase i

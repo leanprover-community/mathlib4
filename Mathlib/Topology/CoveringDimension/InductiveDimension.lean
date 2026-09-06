@@ -19,7 +19,7 @@ open TopologicalSpace
 
 universe u
 
-/-- Helper for Definition 50.8: a covering-dimension bound separates a closed set from the
+/-- A covering-dimension bound separates a closed set from the
 complement of an open neighborhood by an open set with lower-dimensional frontier. -/
 lemma exists_open_between_frontier_of_hasCoveringDimensionLE
     {X : Type u} [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] {n : ℕ}
@@ -29,13 +29,10 @@ lemma exists_open_between_frontier_of_hasCoveringDimensionLE
       IsOpen V ∧ K ⊆ V ∧ closure V ⊆ U ∧
         HasCoveringDimensionLT ↥(frontier V) n := by
   -- Apply the closed-pair partition theorem to `K` and the closed complement of `U`.
-  obtain ⟨V, hVopen, hKV, hVclosure, hVfrontier⟩ :=
-    existsOpenPartition_of_hasCoveringDimensionLE h hK hU.isClosed_compl
-      hKU.disjoint_compl_right
-  refine ⟨V, hVopen, hKV, ?_, hVfrontier⟩
-  simpa only [compl_compl] using hVclosure
+  simpa only [compl_compl] using
+    existsOpenPartition_of_hasCoveringDimensionLE h hK hU.isClosed_compl hKU.disjoint_compl_right
 
-/-- Helper for Definition 50.8: finitely many locally controlled neighborhoods cover a closed
+/-- Finitely many locally controlled neighborhoods cover a closed
 compact set while their union still has closure inside the prescribed ambient open set. -/
 lemma existsFiniteLocalFrontierCover
     {X : Type u} [TopologicalSpace X] [CompactSpace X] {n : ℕ}
@@ -74,7 +71,7 @@ lemma existsFiniteLocalFrontierCover
   · -- The union frontier lies in the finite union of the selected controlled frontiers.
     exact s.frontier_biUnion_subset V
 
-/-- Helper for Definition 50.8: a finite open cover decomposes away from its
+/-- A finite open cover decomposes away from its
 frontiers into pairwise disjoint open cores, each contained in its original member. -/
 lemma existsPairwiseDisjointOpenCores
     {X ι : Type*} [TopologicalSpace X] [Finite ι]
@@ -98,13 +95,8 @@ lemma existsPairwiseDisjointOpenCores
     exact Set.sdiff_subset
   · -- The later core omits the closure of every earlier cover member.
     intro i j hij
-    rcases lt_or_gt_of_ne hij with hijlt | hjilt
-    · refine Set.disjoint_left.mpr ?_
-      intro x hxi hxj
-      exact hxj.2 <| Set.mem_iUnion.mpr ⟨⟨i, hijlt⟩, subset_closure hxi.1⟩
-    · refine Set.disjoint_left.mpr ?_
-      intro x hxi hxj
-      exact hxi.2 <| Set.mem_iUnion.mpr ⟨⟨j, hjilt⟩, subset_closure hxj.1⟩
+    simp only [D, Set.disjoint_left, Set.mem_sdiff, Set.mem_iUnion, Subtype.exists]
+    grind [subset_closure]
   · -- Choose the least cover member containing the point; off all frontiers, no earlier closure
     -- can contain it, because closure minus frontier is the open set itself.
     intro x hxfrontier
@@ -121,7 +113,7 @@ lemma existsPairwiseDisjointOpenCores
       exact interior_subset (closure_sdiff_frontier (s := (V j.1 : Set X)) ▸ ⟨hxj, hxnotFrontier⟩)
     exact (not_lt_of_ge (himin j.1 hxjOpen)) j.2
 
-/-- Helper for Definition 50.8: every controlled closed-pair partition yields the corresponding
+/-- Every controlled closed-pair partition yields the corresponding
 covering-dimension bound on a compact metrizable space. -/
 lemma hasCoveringDimensionLE_of_openPartitions
     {X : Type u} [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] {n : ℕ}
@@ -230,7 +222,7 @@ lemma hasCoveringDimensionLE_of_openPartitions
       · simpa only [F, Set.Sum.elim_range] using
           hEorder.union (Set.hasOrderLE_one_iff.mpr hDdisjoint.range_pairwise)
 
-/-- Helper for Definition 50.8: local frontier control produces a controlled partition between
+/-- Local frontier control produces a controlled partition between
 any two disjoint closed subsets. -/
 lemma existsOpenPartition_of_localFrontier
     {X : Type u} [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] {n : ℕ}
@@ -253,14 +245,12 @@ lemma existsOpenPartition_of_localFrontier
   have hunion : HasCoveringDimensionLT (⋃ i, Y i) n :=
     hasCoveringDimensionLT_finiteUnionClosedSubtypes Y hYclosed hYdim
   have hfrontierUnion : frontier (⋃ x ∈ s, V x) ⊆ ⋃ i, Y i := by
-    intro x hx
-    obtain ⟨y, hyS, hxy⟩ := Set.mem_iUnion₂.mp (hfrontier hx)
-    exact Set.mem_iUnion.mpr ⟨⟨y, hyS⟩, hxy⟩
+    simpa only [Y, ι, Set.iUnion_subtype] using hfrontier
   have hfrontierDim : HasCoveringDimensionLT ↥(frontier (⋃ x ∈ s, V x)) n :=
     hunion.closedSubset hfrontierUnion isClosed_frontier
   exact ⟨⋃ x ∈ s, V x, hopen, hKcover, hclosure, hfrontierDim⟩
 
-/-- Helper for Definition 50.8: locally available neighborhoods with lower-dimensional
+/-- Locally available neighborhoods with lower-dimensional
 frontiers imply the corresponding covering-dimension bound. -/
 lemma hasCoveringDimensionLE_of_local_frontier
     {X : Type u} [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] {n : ℕ}
@@ -275,7 +265,7 @@ lemma hasCoveringDimensionLE_of_local_frontier
   intro K F hK hF hKF
   exact existsOpenPartition_of_localFrontier hlocal hK hF hKF
 
-/-- Helper for Definition 50.8: a local supply of open neighborhoods with controlled frontiers
+/-- A local supply of open neighborhoods with controlled frontiers
 forms a topological basis. -/
 lemma frontierControlledBasis_of_local_frontier
     {X : Type u} [TopologicalSpace X] {n : ℕ}
@@ -299,23 +289,20 @@ lemma frontierControlledBasis_of_local_frontier
   intro U hUs
   exact hUs.2
 
-/-- Helper for Definition 50.8: a frontier-bounded basis gives the corresponding covering
+/-- A frontier-bounded basis gives the corresponding covering
 dimension bound on a compact metrizable space. -/
 lemma hasCoveringDimensionLE_of_basis_frontier
     {X : Type u} [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] {n : ℕ}
     (s : Set (Set X)) (hs : IsTopologicalBasis s)
     (hfrontier : ∀ U ∈ s, HasCoveringDimensionLT ↥(frontier U) n) :
     HasCoveringDimensionLE X n := by
-  -- First shrink the requested neighborhood, then choose a basis member inside the shrink.
+  -- Use the closure-controlled neighborhood basis of a regular space.
   apply hasCoveringDimensionLE_of_local_frontier
   intro x U hxU hU
-  obtain ⟨W, hWopen, hxW, hWclosure⟩ :=
-    normal_exists_closure_subset isClosed_singleton hU (Set.singleton_subset_iff.mpr hxU)
-  obtain ⟨V, hVs, hxV, hVW⟩ := hs.exists_subset_of_mem_open (hxW rfl) hWopen
-  refine ⟨V, hs.isOpen hVs, hxV, ?_, hfrontier V hVs⟩
-  exact (closure_mono hVW).trans hWclosure
+  obtain ⟨V, hVs, hxV, hVU⟩ := hs.exists_closure_subset (hU.mem_nhds hxU)
+  exact ⟨V, hs.isOpen hVs, hxV, hVU, hfrontier V hVs⟩
 
-/-- Helper for Definition 50.8: a covering dimension bound on a compact metrizable space yields
+/-- A covering dimension bound on a compact metrizable space yields
 a basis whose frontiers satisfy the preceding strict bound. -/
 lemma exists_basis_frontier_of_hasCoveringDimensionLE
     {X : Type u} [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] {n : ℕ}
@@ -330,7 +317,7 @@ lemma exists_basis_frontier_of_hasCoveringDimensionLE
       (Set.singleton_subset_iff.mpr hxU)
   exact ⟨V, hVopen, hxV rfl, hVclosure, hVfrontier⟩
 
-/-- Helper for Definition 50.8: strict small inductive and covering dimension bounds agree on
+/-- Strict small inductive and covering dimension bounds agree on
 compact metrizable spaces. -/
 lemma hasSmallInductiveDimensionLT_iff_hasCoveringDimensionLT
     (X : Type u) [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] (k : ℕ) :
@@ -358,8 +345,8 @@ lemma hasSmallInductiveDimensionLT_iff_hasCoveringDimensionLT
           isCompact_iff_compactSpace.mp isClosed_frontier.isCompact
         exact (ih ↥(frontier U)).mpr (hfrontier U hU)
 
-/-- Definition 50.8 (4). On compact metrizable spaces, the small inductive dimension has the same
-value as the covering dimension of Definition 50.3, including the value `⊥` for the empty space. -/
+/-- On compact metrizable spaces, the small inductive dimension has the same
+value as the covering dimension, including the value `⊥` for the empty space. -/
 theorem smallInductiveDimension_eq_coveringDimension
     (X : Type u) [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] :
     smallInductiveDimension X = coveringDimension X := by

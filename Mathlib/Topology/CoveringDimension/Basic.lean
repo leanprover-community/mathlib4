@@ -28,7 +28,7 @@ We also prove invariance under homeomorphisms and monotonicity for closed subspa
 
 ## References
 
-* James R. Munkres, *Topology*, Section 50.
+* James R. Munkres, *Topology*.
 -/
 
 public section
@@ -267,14 +267,12 @@ theorem coveringDimension_eq_bot_iff (X : Type u) [TopologicalSpace X] :
     obtain ⟨d, hd_bounds, hd_zero⟩ := sInf_lt_iff.mp hdim_zero
     exact hd_bounds 0 hd_zero
   · intro hX
-    apply le_antisymm
-    · rw [coveringDimension]
-      apply sInf_le
-      intro n _
-      cases n with
-      | zero => exact hX
-      | succ n => exact hasCoveringDimensionLE_of_isEmpty hX n
-    · exact bot_le
+    apply bot_unique
+    apply sInf_le
+    intro n _
+    cases n with
+    | zero => exact hX
+    | succ n => exact hasCoveringDimensionLE_of_isEmpty hX n
 
 /-- Finite covering dimension is equivalent to the numerical covering dimension being different
 from `⊤`. -/
@@ -296,15 +294,15 @@ theorem Homeomorph.hasCoveringDimensionLE_of
     (e : A ≃ₜ B) {n : ℕ} (h : HasCoveringDimensionLE A n) :
     HasCoveringDimensionLE B n := by
   rw [hasCoveringDimensionLE_iff] at h ⊢
-  intro 𝒠 h𝒠open h𝒠cover
-  let 𝒠' : Set (Set A) := (fun U : Set B ↦ e ⁻¹' U) '' 𝒠
-  have h𝒠'open : ∀ U ∈ 𝒠', IsOpen U := by
+  intro ℰ hℰopen hℰcover
+  let ℰ' : Set (Set A) := (fun U : Set B ↦ e ⁻¹' U) '' ℰ
+  have hℰ'open : ∀ U ∈ ℰ', IsOpen U := by
     rintro U ⟨V, hV, rfl⟩
-    exact (h𝒠open V hV).preimage e.continuous
-  have h𝒠'cover : ⋃₀ 𝒠' = (_root_.Set.univ : Set A) := by
-    simp only [𝒠', Set.sUnion_image, ← Set.preimage_sUnion, h𝒠cover,
+    exact (hℰopen V hV).preimage e.continuous
+  have hℰ'cover : ⋃₀ ℰ' = (_root_.Set.univ : Set A) := by
+    simp only [ℰ', Set.sUnion_image, ← Set.preimage_sUnion, hℰcover,
       Set.preimage_univ]
-  obtain ⟨𝒯, h𝒯refines, h𝒯open, h𝒯cover, h𝒯order⟩ := h 𝒠' h𝒠'open h𝒠'cover
+  obtain ⟨𝒯, h𝒯refines, h𝒯open, h𝒯cover, h𝒯order⟩ := h ℰ' hℰ'open hℰ'cover
   let 𝒯' : Set (Set B) := (fun U : Set A ↦ e '' U) '' 𝒯
   refine ⟨𝒯', ?_, ?_, ?_, ?_⟩
   · rintro V ⟨U, hU, rfl⟩
@@ -390,10 +388,8 @@ end HasCoveringDimensionLE
 theorem IsClosed.finiteCoveringDimension
     {X : Type u} [TopologicalSpace X] {Y : Set X}
     (hY : IsClosed Y) (hX : FiniteCoveringDimension X) :
-    FiniteCoveringDimension Y := by
-  rw [finiteCoveringDimension_iff] at hX ⊢
-  obtain ⟨n, hn⟩ := hX
-  exact ⟨n, hn.closedSubtype hY⟩
+    FiniteCoveringDimension Y :=
+  hX.imp fun _ hn ↦ hn.closedSubtype hY
 
 namespace HasCoveringDimensionLT
 
@@ -417,7 +413,7 @@ theorem IsClosed.coveringDimension_le
   intro d hd n hdn
   exact (hd n hdn).closedSubtype hY
 
-/-- Helper for Definition 50.8: a closed subspace of a space with a strict
+/-- A closed subspace of a space with a strict
 covering-dimension bound inherits that bound. -/
 lemma HasCoveringDimensionLT.closedSubset
     {X : Type u} [TopologicalSpace X] {Y Z : Set X} {n : ℕ}

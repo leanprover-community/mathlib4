@@ -23,7 +23,7 @@ open Set TopologicalSpace
 
 universe u
 
-/-- Helper for Definition 50.8: an order-bounded open refinement of a compact metrizable
+/-- An order-bounded open refinement of a compact metrizable
 space can be represented by finitely many indexed opens together with a closure-controlled
 shrinking and explicit parents in the original cover. -/
 lemma existsFiniteIndexedShrinkingRefinement
@@ -52,7 +52,7 @@ lemma existsFiniteIndexedShrinkingRefinement
   obtain ⟨j, hj⟩ := hBmem i
   exact ⟨j, congrArg (fun U : Opens X ↦ (U : Set X)) hj⟩
 
-/-- Helper for Definition 50.8: a real-valued map has a buffered fine zero cover of order
+/-- A real-valued map has a buffered fine zero cover of order
 `q` when one finite open family has order at most `q` throughout a neighborhood of its zero
 fiber and all of its members have diameter less than `δ`. -/
 def HasBufferedFineZeroCover {X : Type*} [PseudoMetricSpace X]
@@ -64,7 +64,7 @@ def HasBufferedFineZeroCover {X : Type*} [PseudoMetricSpace X]
       (∀ x, |f x| < ε → Set.encard {U ∈ 𝒰 | x ∈ U} ≤ q) ∧
       ∀ U ∈ 𝒰, ∀ x ∈ U, ∀ y ∈ U, dist x y < δ
 
-/-- Helper for Definition 50.8: buffered fine zero covers persist under sufficiently small
+/-- Buffered fine zero covers persist under sufficiently small
 uniform perturbations of the real-valued map. -/
 lemma isOpen_setOf_hasBufferedFineZeroCover
     {X : Type*} [PseudoMetricSpace X] [CompactSpace X] (q : ℕ) (δ : ℝ) :
@@ -77,18 +77,12 @@ lemma isOpen_setOf_hasBufferedFineZeroCover
   have hsmall (x : X) (hx : |g x| < ε / 2) : |f x| < ε := by
     have hdist : dist (g x) (f x) < ε / 2 :=
       lt_of_le_of_lt (ContinuousMap.dist_apply_le_dist x) (Metric.mem_ball.mp hg)
-    have hdistAbs : |f x - g x| < ε / 2 := by
-      simpa only [Real.dist_eq, abs_sub_comm] using hdist
-    calc
-      |f x| ≤ |f x - g x| + |g x| := by
-        nth_rw 1 [← sub_add_cancel (f x) (g x)]
-        exact abs_add_le _ _
-      _ < ε / 2 + ε / 2 := add_lt_add hdistAbs hx
-      _ = ε := by ring
+    rw [Real.dist_eq] at hdist
+    grind [abs_lt]
   exact ⟨ε / 2, half_pos hε, 𝒰, h𝒰finite, h𝒰open,
     fun x hx ↦ h𝒰cover x (hsmall x hx), fun x hx ↦ h𝒰order x (hsmall x hx), h𝒰diameter⟩
 
-/-- Helper for Definition 50.8: a sufficiently small weighted sum of nonzero real vertices has
+/-- A sufficiently small weighted sum of nonzero real vertices has
 an active vertex of each sign. -/
 lemma exists_active_vertices_of_bothSigns
     {ι : Type*} [Fintype ι] (w z : ι → ℝ) {ε : ℝ}
@@ -111,7 +105,7 @@ lemma exists_active_vertices_of_bothSigns
     (by simpa only [Pi.neg_apply, mul_neg, Finset.sum_neg_distrib, neg_lt_neg_iff]
       using (abs_lt.mp hsmall).2)
 
-/-- Helper for Definition 50.8: maps with a buffered fine zero cover of order `n` are dense
+/-- Maps with a buffered fine zero cover of order `n` are dense
 when the compact metric domain has covering dimension at most `n`. -/
 lemma dense_setOf_hasBufferedFineZeroCover
     {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty X] {n : ℕ}
@@ -140,23 +134,11 @@ lemma dense_setOf_hasBufferedFineZeroCover
     exact ⟨i⟩
   let i₀ : ι := Classical.choice hιnonempty
   let z : ι → ℝ := fun i ↦ if f (c i) = 0 then r / 4 else f (c i)
-  have hznonzero : ∀ i, z i ≠ 0 := by
-    intro i
-    simp only [z]
-    split_ifs with hi
-    · have hfour : (4 : ℝ) ≠ 0 := by norm_num
-      exact div_ne_zero (ne_of_gt hr) hfour
-    · exact hi
+  have hznonzero : ∀ i, z i ≠ 0 := by grind
   have hzcenter : ∀ i, dist (z i) (f (c i)) < r / 2 := by
     intro i
-    simp only [z]
-    split_ifs with hi
-    · rw [hi, Real.dist_eq]
-      simp only [sub_zero, abs_div, abs_of_pos hr]
-      norm_num
-      linarith
-    · rw [dist_self]
-      linarith
+    dsimp [z]
+    split_ifs with hi <;> simp [hi, abs_of_pos hr] <;> linarith
   have hBcoverSet : (Set.univ : Set X) ⊆ ⋃ i, (B i : Set X) := by
     rw [hBcover.iSup_set_eq_univ]
   obtain ⟨ρ, hρ⟩ := PartitionOfUnity.exists_isSubordinate isClosed_univ
@@ -222,9 +204,7 @@ lemma dense_setOf_hasBufferedFineZeroCover
       ⟨⟨j, rfl⟩, hρ j (subset_tsupport (ρ j) hjρ)⟩
     have hjS : (B j : Set X) ∉ S := by
       rintro ⟨⟨i, hiz, hBi⟩, _⟩
-      have hji : j = i := hBinjective hBi.symm
-      rw [← hji] at hiz
-      exact (not_lt_of_ge hjz.le) hiz
+      grind [hBinjective hBi]
     have hproper : S ⊂ T := (Set.ssubset_iff_of_subset hST).mpr ⟨B j, hjT, hjS⟩
     have hlt : Set.encard S < Set.encard T :=
       (h𝒰finite.subset fun U hU ↦ hU.1).encard_lt_encard hproper
@@ -236,7 +216,7 @@ lemma dense_setOf_hasBufferedFineZeroCover
   exact ⟨g, Metric.mem_ball.mpr hgclose,
     ε, hεpositive, 𝒰, h𝒰finite, h𝒰open, h𝒰cover, h𝒰order, h𝒰diameter⟩
 
-/-- Helper for Definition 50.8: buffered fine zero covers at every metric scale give the
+/-- Buffered fine zero covers at every metric scale give the
 corresponding covering-dimension bound on every closed subset of the zero fiber. -/
 lemma hasCoveringDimensionLE_closedSubset_zeroFiber
     {X : Type u} [MetricSpace X] [CompactSpace X] {f : C(X, ℝ)} {L : Set X} {q : ℕ}
@@ -252,29 +232,24 @@ lemma hasCoveringDimensionLE_closedSubset_zeroFiber
     lebesgue_number_lemma_of_metric_sUnion isCompact_univ h𝒜open (by simp [h𝒜cover])
   obtain ⟨k, hk⟩ := exists_nat_one_div_lt hδ
   obtain ⟨ε, hε, 𝒰, _, h𝒰open, h𝒰cover, h𝒰order, h𝒰diameter⟩ := hfine k
+  have hsmall (z : L) : |f z.1| < ε := by rwa [hLzero z.2, abs_zero]
   let ℬ : Set (Set L) :=
     {V | V.Nonempty ∧ ∃ U ∈ 𝒰, V = (Subtype.val : L → X) ⁻¹' U}
   refine ⟨ℬ, ?_, ?_, ?_, ?_⟩
-  · intro V hV
-    obtain ⟨⟨z, hzV⟩, U, hU𝒰, hV⟩ := hV
+  · rintro V ⟨⟨z, hzV⟩, U, hU𝒰, rfl⟩
     obtain ⟨O, hO𝒜, hzO⟩ := hLebesgue z (Set.mem_univ z)
-    have hzU : z.1 ∈ U := (Set.ext_iff.mp hV z).mp hzV
     refine ⟨O, hO𝒜, ?_⟩
-    rw [hV]
     intro y hy
     apply hzO
     apply Metric.mem_ball.mpr
     simpa only [Subtype.dist_eq, dist_comm] using
-      (h𝒰diameter U hU𝒰 z.1 hzU y.1 hy).trans hk
+      (h𝒰diameter U hU𝒰 z.1 hzV y.1 hy).trans hk
   · intro V hV
     obtain ⟨_, U, hU𝒰, rfl⟩ := hV
     exact (h𝒰open U hU𝒰).preimage continuous_subtype_val
   · apply Set.eq_univ_of_forall
     intro z
-    have hzsmall : |f z.1| < ε := by
-      rw [hLzero z.2]
-      simpa using hε
-    obtain ⟨U, hU𝒰, hzU⟩ := Set.mem_sUnion.mp (h𝒰cover z.1 hzsmall)
+    obtain ⟨U, hU𝒰, hzU⟩ := Set.mem_sUnion.mp (h𝒰cover z.1 (hsmall z))
     exact Set.mem_sUnion.mpr
       ⟨(Subtype.val : L → X) ⁻¹' U, ⟨⟨z, hzU⟩, U, hU𝒰, rfl⟩, hzU⟩
   · rw [Set.hasOrderLE_iff]
@@ -282,21 +257,15 @@ lemma hasCoveringDimensionLE_closedSubset_zeroFiber
     let pullback : Set X → Set L := fun U ↦ (Subtype.val : L → X) ⁻¹' U
     have hincident : {V ∈ ℬ | z ∈ V} ⊆
         pullback '' {U ∈ 𝒰 | z.1 ∈ U} := by
-      intro V hV
-      obtain ⟨⟨_, U, hU𝒰, hV⟩, hzV⟩ := hV
-      have hzU : z.1 ∈ U := (Set.ext_iff.mp hV z).mp hzV
-      exact ⟨U, ⟨hU𝒰, hzU⟩, hV.symm⟩
+      rintro V ⟨⟨_, U, hU𝒰, rfl⟩, hzV⟩
+      exact ⟨U, ⟨hU𝒰, hzV⟩, rfl⟩
     calc
       Set.encard {V ∈ ℬ | z ∈ V}
           ≤ Set.encard (pullback '' {U ∈ 𝒰 | z.1 ∈ U}) := Set.encard_mono hincident
       _ ≤ Set.encard {U ∈ 𝒰 | z.1 ∈ U} := Set.encard_image_le pullback _
-      _ ≤ q + 1 := by
-        have hzsmall : |f z.1| < ε := by
-          rw [hLzero z.2]
-          simpa only [abs_zero] using hε
-        exact h𝒰order z.1 hzsmall
+      _ ≤ q + 1 := h𝒰order z.1 (hsmall z)
 
-/-- Helper for Definition 50.8: a compact metric space of covering dimension at most `n`
+/-- A compact metric space of covering dimension at most `n`
 admits a real separator whose zero fiber has buffered fine covers of order `n` at every scale. -/
 lemma exists_zeroFiberSeparator_with_fineCovers
     {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty X] {n : ℕ}
@@ -341,7 +310,7 @@ lemma exists_zeroFiberSeparator_with_fineCovers
     have := (abs_lt.mp hpoint).1
     linarith
 
-/-- Helper for Definition 50.8: a covering-dimension bound gives a controlled open partition
+/-- A covering-dimension bound gives a controlled open partition
 between two disjoint closed subsets of a compact metrizable space. -/
 lemma existsOpenPartition_of_hasCoveringDimensionLE
     {X : Type u} [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] {n : ℕ}

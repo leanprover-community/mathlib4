@@ -37,7 +37,7 @@ lemma isOpen_setOf_mapsTo_compl_diagonal
     (isClosed_diagonal (X := E)).isOpen_compl).preimage hc
 
 open scoped Classical in
-/-- Helper for Theorem 50.4: covering dimension supplies a finite open cover
+/-- Covering dimension supplies a finite open cover
 whose members are small both in the domain and under a prescribed map. -/
 private lemma existsFiniteControlledOpenCover
     {X E : Type*} [MetricSpace X] [CompactSpace X] [MetricSpace E]
@@ -108,7 +108,7 @@ private lemma existsFiniteControlledOpenCover
     exact Metric.ball_half_subset (f z) (Metric.mem_ball_comm.mp (hUA hyU).2) (hUA hxU).2
 
 open scoped Classical in
-/-- Helper for Theorem 50.4: bounded affine independence of the vertices makes
+/-- Bounded affine independence of the vertices makes
 the associated barycentric map separate points at the controlled scale. -/
 private lemma barycentricMap_mapsTo_compl_diagonal
     {X ι E : Type*} [PseudoMetricSpace X] [Fintype ι]
@@ -128,16 +128,13 @@ private lemma barycentricMap_mapsTo_compl_diagonal
   let t := (Finset.univ.filter fun i ↦ ρ i x ≠ 0) ∪
     (Finset.univ.filter fun i ↦ ρ i y ≠ 0)
   have htcard : t.card ≤ 2 * m + 2 := by
-    calc
-      t.card ≤ _ := Finset.card_union_le _ _
-      _ ≤ (m + 1) + (m + 1) := Nat.add_le_add (hactive x) (hactive y)
-      _ = 2 * m + 2 := by omega
+    have := Finset.card_union_le
+      (Finset.univ.filter fun i ↦ ρ i x ≠ 0) (Finset.univ.filter fun i ↦ ρ i y ≠ 0)
+    grind [hactive x, hactive y]
   have hx_support : ∀ i, ρ i x ≠ 0 → i ∈ t := by
-    intro i hi
-    exact Finset.mem_union_left _ (Finset.mem_filter.mpr ⟨Finset.mem_univ i, hi⟩)
+    simp +contextual [t]
   have hy_support : ∀ i, ρ i y ≠ 0 → i ∈ t := by
-    intro i hi
-    exact Finset.mem_union_right _ (Finset.mem_filter.mpr ⟨Finset.mem_univ i, hi⟩)
+    simp +contextual [t]
   -- Restrict both barycentric expressions to the active union and use affine
   -- independence to identify every coefficient.
   have hsum (a : X) (ha : ∀ i, ρ i a ≠ 0 → i ∈ t) :
@@ -169,7 +166,7 @@ private lemma barycentricMap_mapsTo_compl_diagonal
     exact hρ i (subset_tsupport (ρ i) hiy)
   exact (not_lt_of_ge hxy) (hdomain i x hixU y hiyU)
 
-/-- Helper for Theorem 50.4: on a nonempty compact metric space of covering
+/-- On a nonempty compact metric space of covering
 dimension at most `m`, reciprocal-scale separating Euclidean maps are dense. -/
 lemma dense_setOf_mapsTo_compl_diagonal_of_nonempty
     {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty X]
@@ -208,11 +205,6 @@ lemma dense_setOf_mapsTo_compl_diagonal_of_nonempty
   have ha_mem : ∀ i, a i ∈ i.1 := fun i ↦ Classical.choose_spec (hnonempty i.1 i.2)
   obtain ⟨z, hz_close, hz_affine⟩ :=
     existsNearbyBoundedAffineIndependentFamily (fun i ↦ f (a i)) hrhalf
-  have hz_affine' : ∀ t : Finset {U : Set X // U ∈ s}, t.card ≤ 2 * m + 2 →
-      AffineIndependent ℝ (fun i : {i // i ∈ t} ↦ z i.1) := by
-    intro t ht
-    apply hz_affine t
-    omega
   -- Form the finite barycentric sum as a continuous map.
   let g : C(X, EuclideanSpace ℝ (Fin (2 * m + 1))) :=
     ⟨fun x ↦ ∑ i, ρ i x • z i,
@@ -239,10 +231,10 @@ lemma dense_setOf_mapsTo_compl_diagonal_of_nonempty
       ρ.finsum_smul_mem_convex (g := fun i _ ↦ z i) (Set.mem_univ x)
         (fun i hi ↦ Metric.mem_ball.mpr (hz_pointwise i x hi)) (convex_ball (f x) r)
   · -- Coefficient uniqueness on the union of two active supports gives scale separation.
-    exact barycentricMap_mapsTo_compl_diagonal ρ (fun U ↦ U.1) hρ z g hg hactive hz_affine'
+    exact barycentricMap_mapsTo_compl_diagonal ρ (fun U ↦ U.1) hρ z g hg hactive hz_affine
       (fun i ↦ hdomain i.1 i.2)
 
-/-- Helper for Theorem 50.4: at every positive reciprocal scale, the separating
+/-- At every positive reciprocal scale, the separating
 continuous maps form an open dense subset of the uniform-metric function space. -/
 lemma isOpen_dense_setOf_mapsTo_compl_diagonal
     {X : Type u} [MetricSpace X] [CompactSpace X]
@@ -278,14 +270,10 @@ theorem existsEuclideanEmbedding_of_hasCoveringDimensionLE
     fun n ↦ {f | Set.MapsTo (Prod.map f f)
       {p : X × X | 1 / (n + 1 : ℝ) ≤ dist p.1 p.2}
       (Set.diagonal (EuclideanSpace ℝ (Fin (2 * m + 1))))ᶜ}
-  have hopen : ∀ n, IsOpen (separatingMaps n) := by
-    intro n
-    exact (isOpen_dense_setOf_mapsTo_compl_diagonal hdim n).1
-  have hdense : ∀ n, Dense (separatingMaps n) := by
-    intro n
-    exact (isOpen_dense_setOf_mapsTo_compl_diagonal hdim n).2
   -- Baire's theorem supplies one continuous map separating at every reciprocal scale.
-  obtain ⟨f, hf⟩ := (BaireSpace.baire_property separatingMaps hopen hdense).nonempty
+  obtain ⟨f, hf⟩ := (BaireSpace.baire_property separatingMaps
+    (fun n ↦ (isOpen_dense_setOf_mapsTo_compl_diagonal hdim n).1)
+    (fun n ↦ (isOpen_dense_setOf_mapsTo_compl_diagonal hdim n).2)).nonempty
   have hinj : Function.Injective f := by
     intro x y hxy
     by_contra hne
@@ -295,7 +283,7 @@ theorem existsEuclideanEmbedding_of_hasCoveringDimensionLE
   -- A continuous injection from a compact space to a Hausdorff space is an embedding.
   exact ⟨f, (f.continuous.isClosedEmbedding hinj).isEmbedding⟩
 
-/-- Theorem 50.4. Every compact metrizable space of covering dimension `m` embeds in
+/-- Every compact metrizable space of covering dimension `m` embeds in
 `EuclideanSpace ℝ (Fin (2 * m + 1))`. -/
 theorem existsEuclideanEmbedding_of_coveringDimension_eq
     {X : Type u} [TopologicalSpace X] [CompactSpace X]
@@ -331,7 +319,7 @@ theorem existsEuclideanEmbedding_of_finiteCoveringDimension
   obtain ⟨f, hf⟩ := existsEuclideanEmbedding_of_hasCoveringDimensionLE hm
   exact ⟨2 * m + 1, f, hf⟩
 
-/-- Corollary 50.9. A compact metrizable space embeds in some finite-dimensional real
+/-- A compact metrizable space embeds in some finite-dimensional real
 Euclidean space if and only if it has finite covering dimension. -/
 theorem existsEuclideanEmbedding_iff_finiteCoveringDimension
     {X : Type u} [TopologicalSpace X] [CompactSpace X]

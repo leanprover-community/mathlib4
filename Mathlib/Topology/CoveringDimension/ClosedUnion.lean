@@ -18,7 +18,7 @@ open scoped CoveringDimension
 
 universe u v
 
-/-- Helper for Theorem 50.2: an open cover can be refined with controlled order at
+/-- An open cover can be refined with controlled order at
 the points of a closed subspace whose covering dimension is bounded. -/
 private lemma existsOpenRefinementWithOrderOnClosedSet
     {X : Type u} [TopologicalSpace X] {S : Set X} {n : ℕ} {ι : Type v}
@@ -80,7 +80,7 @@ private lemma existsOpenRefinementWithOrderOnClosedSet
 
 namespace HasCoveringDimensionLE
 
-/-- Helper for Theorem 50.2: a common covering-dimension bound on two closed
+/-- A common covering-dimension bound on two closed
 subspaces covering `X` is also a bound on `X`. -/
 theorem unionClosed
     {X : Type u} [TopologicalSpace X] {Y Z : Set X} {n : ℕ}
@@ -182,7 +182,7 @@ theorem unionClosed
 
 end HasCoveringDimensionLE
 
-/-- Theorem 50.2. If two closed subspaces cover `X`, then the covering dimension
+/-- If two closed subspaces cover `X`, then the covering dimension
 of `X` is the maximum of their covering dimensions. -/
 theorem coveringDimension_union_closed
     {X : Type u} [TopologicalSpace X] {Y Z : Set X}
@@ -192,15 +192,9 @@ theorem coveringDimension_union_closed
   cases d with
   | bot =>
       rw [le_bot_iff, le_bot_iff, max_eq_bot, coveringDimension_eq_bot_iff,
-        coveringDimension_eq_bot_iff, coveringDimension_eq_bot_iff]
-      constructor
-      · intro hX
-        exact ⟨⟨fun y ↦ hX.false y.1⟩, ⟨fun z ↦ hX.false z.1⟩⟩
-      · rintro ⟨hYempty, hZempty⟩
-        refine ⟨fun x ↦ ?_⟩
-        rcases (show x ∈ Y ∪ Z from hcover.symm ▸ Set.mem_univ x) with hx | hx
-        · exact hYempty.false ⟨x, hx⟩
-        · exact hZempty.false ⟨x, hx⟩
+        coveringDimension_eq_bot_iff, coveringDimension_eq_bot_iff,
+        Set.isEmpty_coe_sort, Set.isEmpty_coe_sort, ← Set.union_empty_iff,
+        hcover, Set.univ_eq_empty_iff]
   | coe d =>
       cases d with
       | top => simp
@@ -213,13 +207,13 @@ theorem coveringDimension_union_closed
 
 /-! ### Finite closed unions -/
 
-/-- Helper for Corollary 50.3: the covering dimension of the union of two
+/-- The covering dimension of the union of two
 closed subsets is the maximum of their covering dimensions. -/
 private lemma coveringDimension_closedUnion
     {X : Type u} [TopologicalSpace X] {S T : Set X}
     (hS : IsClosed S) (hT : IsClosed T) :
     dim (S ∪ T : Set X) = max (dim S) (dim T) := by
-  -- Apply Theorem 50.2 inside the union subtype and hide its nested-subtype pieces.
+  -- Apply the closed-union formula inside the union subtype and hide its nested-subtype pieces.
   let U : Set X := S ∪ T
   let S' : Set U := (Subtype.val : U → X) ⁻¹' S
   let T' : Set U := (Subtype.val : U → X) ⁻¹' T
@@ -237,7 +231,7 @@ private lemma coveringDimension_closedUnion
       (Topology.IsEmbedding.subtypeVal.homeomorphOfSubsetRange
         (by simpa using hTsub)).coveringDimension_congr
 
-/-- Helper for Corollary 50.3: covering dimension turns a finite union of
+/-- Covering dimension turns a finite union of
 closed subsets into the finite supremum of their dimensions. -/
 private lemma coveringDimension_finset_iUnion_closed
     {X : Type u} [TopologicalSpace X] {I : Type v}
@@ -263,7 +257,7 @@ theorem coveringDimension_iUnion_of_isClosed
   rw [← hunion, coveringDimension_finset_iUnion_closed Y Finset.univ (fun i _ ↦ hclosed i),
     Finset.sup_univ_eq_iSup]
 
-/-- Corollary 50.3. The covering dimension of a finite closed cover is the
+/-- The covering dimension of a finite closed cover is the
 maximum of the covering dimensions of its members. -/
 theorem coveringDimension_iUnion_closed
     {X : Type u} [TopologicalSpace X] {ι : Type v} [Fintype ι]
@@ -273,7 +267,7 @@ theorem coveringDimension_iUnion_closed
   rw [Finset.sup_univ_eq_iSup, ← coveringDimension_iUnion_of_isClosed Y hclosed, hcover]
   exact (Homeomorph.Set.univ X).coveringDimension_congr.symm
 
-/-- Helper for Definition 50.8: a finite closed cover inherits the common
+/-- A finite closed cover inherits the common
 covering-dimension bound. -/
 lemma HasCoveringDimensionLE.finite_iUnion_closed
     {X : Type u} [TopologicalSpace X] {ι : Type v} [Finite ι] {n : ℕ}
@@ -289,7 +283,7 @@ lemma HasCoveringDimensionLE.finite_iUnion_closed
   intro i _
   exact (coveringDimension_le_iff (Y i) n).mpr (hdim i)
 
-/-- Helper for Definition 50.8: a finite union of closed subspaces with a common
+/-- A finite union of closed subspaces with a common
 covering-dimension bound has that same bound. -/
 lemma HasCoveringDimensionLE.finiteUnionClosedSubtypes
     {X : Type u} [TopologicalSpace X] {ι : Type v} [Finite ι] {n : ℕ}
@@ -299,7 +293,7 @@ lemma HasCoveringDimensionLE.finiteUnionClosedSubtypes
   rw [← coveringDimension_le_iff, coveringDimension_iUnion_of_isClosed Y hclosed, iSup_le_iff]
   exact fun i ↦ (coveringDimension_le_iff (Y i) n).mpr (hdim i)
 
-/-- Helper for Definition 50.8: the strict covering-dimension bound is preserved by finite
+/-- The strict covering-dimension bound is preserved by finite
 unions of closed subspaces. -/
 lemma hasCoveringDimensionLT_finiteUnionClosedSubtypes
     {X : Type u} [TopologicalSpace X] {ι : Type v} [Finite ι] {n : ℕ}

@@ -23,12 +23,12 @@ open Set
 
 universe u
 
-/-- Helper for Theorem 50.6: the fractional translation used for one phase of the
+/-- The fractional translation used for one phase of the
 Euclidean grid. -/
 private noncomputable def euclideanCoverPhaseShift (N : ℕ) (c : Fin (N + 1)) : ℝ :=
   (c : ℝ) / (N + 1)
 
-/-- Helper for Theorem 50.6: an open box in one translated Euclidean grid. -/
+/-- An open box in one translated Euclidean grid. -/
 private def shiftedEuclideanBox (N : ℕ) (a : ℝ) (c : Fin (N + 1))
     (p : Fin N → ℤ) : Set (EuclideanSpace ℝ (Fin N)) :=
   (PiLp.homeomorph 2 (fun _ : Fin N ↦ ℝ)) ⁻¹' Set.pi Set.univ
@@ -36,12 +36,12 @@ private def shiftedEuclideanBox (N : ℕ) (a : ℝ) (c : Fin (N + 1))
       (a * ((p i : ℝ) + euclideanCoverPhaseShift N c))
       (a * ((p i : ℝ) + 1 + euclideanCoverPhaseShift N c)))
 
-/-- Helper for Theorem 50.6: the family of all boxes in one translated grid. -/
+/-- The family of all boxes in one translated grid. -/
 private def shiftedEuclideanBoxFamily (N : ℕ) (a : ℝ) (c : Fin (N + 1)) :
     Set (Set (EuclideanSpace ℝ (Fin N))) :=
   Set.range (shiftedEuclideanBox N a c)
 
-/-- Helper for Theorem 50.6: membership in a shifted Euclidean box is coordinatewise
+/-- Membership in a shifted Euclidean box is coordinatewise
 membership in its defining intervals. -/
 private lemma mem_shiftedEuclideanBox_iff {N : ℕ} {a : ℝ} {c : Fin (N + 1)}
     {p : Fin N → ℤ} {x : EuclideanSpace ℝ (Fin N)} :
@@ -53,7 +53,7 @@ private lemma mem_shiftedEuclideanBox_iff {N : ℕ} {a : ℝ} {c : Fin (N + 1)}
   simp only [shiftedEuclideanBox, Set.mem_preimage, Set.mem_pi, Set.mem_univ, true_implies]
   rfl
 
-/-- Helper for Theorem 50.6: a real coordinate lies on the boundary grid of at most
+/-- A real coordinate lies on the boundary grid of at most
 one of the `N + 1` phases. -/
 private lemma euclideanGridBoundary_phase_unique {N : ℕ} {a x : ℝ} (ha : 0 < a)
     {c d : Fin (N + 1)}
@@ -78,7 +78,7 @@ private lemma euclideanGridBoundary_phase_unique {N : ℕ} {a x : ℝ} (ha : 0 <
   simp only [Int.mul_add_emod_self_right, hcmod, hdmod] at hmod
   exact Fin.ext (by exact_mod_cast hmod)
 
-/-- Helper for Theorem 50.6: among `N + 1` translated grids, one phase avoids the
+/-- Among `N + 1` translated grids, one phase avoids the
 boundary grid in all `N` coordinates. -/
 private lemma exists_phase_avoiding_euclideanGridBoundaries {N : ℕ} {a : ℝ}
     (ha : 0 < a) (x : EuclideanSpace ℝ (Fin N)) :
@@ -94,12 +94,7 @@ private lemma exists_phase_avoiding_euclideanGridBoundaries {N : ℕ} {a : ℝ}
     exact euclideanGridBoundary_phase_unique ha hc hd
   by_contra hnone
   have hall : (Set.univ : Set (Fin (N + 1))) ⊆ ⋃ i, bad i := by
-    intro c _
-    by_contra hc
-    apply hnone
-    refine ⟨c, ?_⟩
-    intro i hi
-    exact hc (Set.mem_iUnion.2 ⟨i, hi⟩)
+    simpa [Set.subset_def, bad] using not_exists.mp hnone
   have hcard : ((N + 1 : ℕ) : ℕ∞) ≤ N := by
     calc
       ((N + 1 : ℕ) : ℕ∞) = Set.encard (Set.univ : Set (Fin (N + 1))) := by simp
@@ -111,7 +106,7 @@ private lemma exists_phase_avoiding_euclideanGridBoundaries {N : ℕ} {a : ℝ}
     exact_mod_cast hcard
   omega
 
-/-- Helper for Theorem 50.6: avoiding every coordinate boundary selects a containing
+/-- Avoiding every coordinate boundary selects a containing
 shifted Euclidean box. -/
 private lemma mem_shiftedEuclideanBox_of_phaseAvoidance {N : ℕ} {a : ℝ}
     (ha : 0 < a) (x : EuclideanSpace ℝ (Fin N)) (c : Fin (N + 1))
@@ -132,48 +127,30 @@ private lemma mem_shiftedEuclideanBox_of_phaseAvoidance {N : ℕ} {a : ℝ}
     field_simp [ha.ne'] at heq ⊢
     nlinarith
   have hupp := Int.lt_floor_add_one (x i / a - euclideanCoverPhaseShift N c)
-  constructor
-  · field_simp [ha.ne'] at hstrict hupp ⊢
-    nlinarith
-  · field_simp [ha.ne'] at hstrict hupp ⊢
-    nlinarith
+  constructor <;> field_simp [ha.ne'] at hstrict hupp ⊢ <;> nlinarith
 
-/-- Helper for Theorem 50.6: two overlapping coordinate intervals in one translated
-grid have the same integer index. -/
-private lemma shiftedEuclideanInterval_index_unique {N : ℕ} {a z : ℝ} (ha : 0 < a)
-    (c : Fin (N + 1)) {n m : ℤ}
-    (hn : z ∈ Ioo
-      (a * ((n : ℝ) + euclideanCoverPhaseShift N c))
-      (a * ((n : ℝ) + 1 + euclideanCoverPhaseShift N c)))
-    (hm : z ∈ Ioo
-      (a * ((m : ℝ) + euclideanCoverPhaseShift N c))
-      (a * ((m : ℝ) + 1 + euclideanCoverPhaseShift N c))) :
-    n = m := by
-  -- Cross the lower endpoint of each interval with the other interval's upper endpoint.
-  have hnm : (n : ℝ) < m + 1 := by
-    nlinarith [hn.1, hm.2]
-  have hmn : (m : ℝ) < n + 1 := by
-    nlinarith [hm.1, hn.2]
-  norm_cast at hnm hmn
-  omega
-
-/-- Helper for Theorem 50.6: boxes in one translated grid are pointwise unique. -/
+/-- Boxes in one translated grid are pointwise unique. -/
 private lemma shiftedEuclideanBoxFamily_pointwiseUnique {N : ℕ} {a : ℝ} (ha : 0 < a)
     (c : Fin (N + 1)) (x : EuclideanSpace ℝ (Fin N))
     {V W : Set (EuclideanSpace ℝ (Fin N))}
     (hV : V ∈ shiftedEuclideanBoxFamily N a c)
     (hW : W ∈ shiftedEuclideanBoxFamily N a c)
     (hxV : x ∈ V) (hxW : x ∈ W) : V = W := by
-  -- Recover both integer index functions and compare them coordinate by coordinate.
+  -- Each grid index is the floor of its translated, rescaled coordinate.
   obtain ⟨p, rfl⟩ := hV
   obtain ⟨q, rfl⟩ := hW
   rw [mem_shiftedEuclideanBox_iff] at hxV hxW
-  have hpq : p = q := by
-    funext i
-    exact shiftedEuclideanInterval_index_unique ha c (hxV i) (hxW i)
-  rw [hpq]
+  have hfloor (i : Fin N) (k : ℤ)
+      (hk : x i ∈ Ioo (a * (k + euclideanCoverPhaseShift N c))
+        (a * (k + 1 + euclideanCoverPhaseShift N c))) :
+      ⌊x i / a - euclideanCoverPhaseShift N c⌋ = k := by
+    rw [Int.floor_eq_iff, le_sub_iff_add_le, le_div_iff₀ ha,
+      sub_lt_iff_lt_add, div_lt_iff₀ ha]
+    constructor <;> nlinarith [hk.1, hk.2]
+  exact congrArg (shiftedEuclideanBox N a c)
+    (funext fun i ↦ (hfloor i (p i) (hxV i)).symm.trans (hfloor i (q i) (hxW i)))
 
-/-- Helper for Theorem 50.6: the distance between two points of one shifted box is at
+/-- The distance between two points of one shifted box is at
 most `Real.sqrt N * a`. -/
 private lemma shiftedEuclideanBox_dist_le {N : ℕ} {a : ℝ} (ha : 0 < a)
     (c : Fin (N + 1)) (p : Fin N → ℤ)
@@ -185,9 +162,7 @@ private lemma shiftedEuclideanBox_dist_le {N : ℕ} {a : ℝ} (ha : 0 < a)
   rw [mem_shiftedEuclideanBox_iff] at hx hy
   have hcoord (i : Fin N) : dist (x i) (y i) < a := by
     rw [Real.dist_eq, abs_lt]
-    constructor
-    · nlinarith [(hx i).1, (hx i).2, (hy i).1, (hy i).2]
-    · nlinarith [(hx i).1, (hx i).2, (hy i).1, (hy i).2]
+    constructor <;> nlinarith [(hx i).1, (hx i).2, (hy i).1, (hy i).2]
   have hsum : ∑ i, dist (x i) (y i) ^ 2 ≤ (N : ℝ) * a ^ 2 := by
     calc
       ∑ i, dist (x i) (y i) ^ 2 ≤ ∑ _i : Fin N, a ^ 2 := by
@@ -195,18 +170,10 @@ private lemma shiftedEuclideanBox_dist_le {N : ℕ} {a : ℝ} (ha : 0 < a)
         intro i _
         nlinarith [dist_nonneg (x := x i) (y := y i), hcoord i]
       _ = (N : ℝ) * a ^ 2 := by simp
-  have hNnonneg : 0 ≤ (N : ℝ) := by
-    positivity
-  rw [EuclideanSpace.dist_eq]
-  calc
-    Real.sqrt (∑ i, dist (x i) (y i) ^ 2)
-        ≤ Real.sqrt ((N : ℝ) * a ^ 2) := Real.sqrt_le_sqrt hsum
-    _ = Real.sqrt N * Real.sqrt (a ^ 2) := by
-      rw [Real.sqrt_mul hNnonneg]
-    _ = Real.sqrt N * a := by
-      rw [Real.sqrt_sq_eq_abs, abs_of_pos ha]
+  simpa only [EuclideanSpace.dist_eq, Real.sqrt_mul (Nat.cast_nonneg N),
+    Real.sqrt_sq_eq_abs, abs_of_pos ha] using Real.sqrt_le_sqrt hsum
 
-/-- Helper for Theorem 50.6: there is a uniformly fine open cover of `N`-dimensional
+/-- There is a uniformly fine open cover of `N`-dimensional
 Euclidean space with pointwise order at most `N + 1`. -/
 private lemma exists_euclideanOpenCover_order {N : ℕ} (ε : ℝ) (hε : 0 < ε) :
     ∃ 𝒸 : Set (Set (EuclideanSpace ℝ (Fin N))),
@@ -218,7 +185,6 @@ private lemma exists_euclideanOpenCover_order {N : ℕ} (ε : ℝ) (hε : 0 < ε
   have hsqrt : 0 ≤ Real.sqrt (N : ℝ) := Real.sqrt_nonneg _
   have hdenom : 0 < Real.sqrt (N : ℝ) + 1 := by linarith
   have ha : 0 < a := by
-    dsimp [a]
     exact div_pos hε hdenom
   have haε : Real.sqrt N * a < ε := by
     dsimp [a]
@@ -249,9 +215,9 @@ private lemma exists_euclideanOpenCover_order {N : ℕ} (ε : ℝ) (hε : 0 < ε
     let throughPhase : Fin (N + 1) → Set (Set (EuclideanSpace ℝ (Fin N))) :=
       fun c ↦ {V ∈ shiftedEuclideanBoxFamily N a c | x ∈ V}
     have hsub : {V ∈ 𝒸 | x ∈ V} ⊆ ⋃ c, throughPhase c := by
-      intro V hV
-      obtain ⟨c, hc⟩ := Set.mem_iUnion.1 hV.1
-      exact Set.mem_iUnion.2 ⟨c, ⟨hc, hV.2⟩⟩
+      change (⋃ c, shiftedEuclideanBoxFamily N a c) ∩ {V | x ∈ V} ⊆ _
+      rw [Set.iUnion_inter]
+      rfl
     have hphase (c : Fin (N + 1)) : Set.encard (throughPhase c) ≤ 1 := by
       rw [Set.encard_le_one_iff]
       intro V W hV hW
@@ -272,7 +238,7 @@ private lemma exists_euclideanOpenCover_order {N : ℕ} (ε : ℝ) (hε : 0 < ε
     exact ⟨Metric.isBounded_iff.mpr ⟨_, hdist⟩,
       (Metric.diam_le_of_forall_dist_le (mul_nonneg hsqrt ha.le) hdist).trans_lt haε⟩
 
-/-- Helper for Theorem 50.6: restricting a uniformly fine Euclidean cover to a
+/-- Restricting a uniformly fine Euclidean cover to a
 subtype gives a nonempty uniformly fine cover of the same order. -/
 lemma exists_subtypeEuclideanCover_order {N : ℕ}
     (X : Set (EuclideanSpace ℝ (Fin N))) (ε : ℝ) (hε : 0 < ε) :
@@ -333,7 +299,7 @@ theorem compactSubset_euclideanSpace_hasCoveringDimensionLE {N : ℕ}
   obtain ⟨U, hBU⟩ := hLebesgue B (hℬsmall B hB).1 (hℬsmall B hB).2.2.le
   exact ⟨U.1, U.2, hBU⟩
 
-/-- Theorem 50.6. Every compact subspace of `EuclideanSpace ℝ (Fin N)` has
+/-- Every compact subspace of `EuclideanSpace ℝ (Fin N)` has
 covering dimension at most `N`. -/
 theorem compactSubset_euclideanSpace_coveringDimension_le {N : ℕ}
     (X : Set (EuclideanSpace ℝ (Fin N))) (hX : IsCompact X) :
