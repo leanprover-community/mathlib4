@@ -299,6 +299,12 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
         simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
           Real.sqrt_mul_self (norm_nonneg x)]
 
+theorem norm_self_comp_adjoint (A : E →L[𝕜] F) :
+    ‖A ∘L A†‖ = ‖A‖ * ‖A‖ := by
+  simp_rw +singlePass [← LinearIsometryEquiv.norm_map adjoint]
+  rw [← norm_adjoint_comp_self (adjoint A)]
+  simp
+
 @[simp] theorem adjoint_comp_self_eq_zero_iff {A : E →L[𝕜] F} :
     adjoint A ∘L A = 0 ↔ A = 0 := by rw [← norm_eq_zero]; simp [norm_adjoint_comp_self]
 
