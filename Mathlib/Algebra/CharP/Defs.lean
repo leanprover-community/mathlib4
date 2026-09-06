@@ -9,7 +9,7 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Int.Cast.Basic
-public import Mathlib.Order.Lattice
+public import Mathlib.Data.Int.Order.Basic
 
 /-!
 # Characteristic of semirings
