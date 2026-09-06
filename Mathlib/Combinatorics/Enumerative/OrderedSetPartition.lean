@@ -202,6 +202,6 @@ theorem card_orderedPartitions {k : ℕ} (A : Finset α) (c : Fin k → ℕ)
     (hc : ∑ i, c i = A.card) :
     (A.orderedPartitions c).card = A.card ! / ∏ i, (c i)! := by
   rw [← card_orderedPartitions_mul_prod_factorial A c hc, Nat.mul_div_cancel]
-  exact Finset.prod_pos fun i _ => Nat.factorial_pos _
+  positivity
 
 end Finset
