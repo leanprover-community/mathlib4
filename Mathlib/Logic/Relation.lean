@@ -902,19 +902,19 @@ end Join
 
 /-- Under the Church-Rosser property, joinability by reflexive-transitive chains coincides
 with the equivalence closure. -/
-theorem IsChurchRosser.join_reflTransGen_eq_eqvGen {r : α → α → Prop} (h : IsChurchRosser r) :
+theorem IsChurchRosser.join_reflTransGen_eq_eqvGen {r : α → α → Prop} [IsChurchRosser r] :
     Join (ReflTransGen r) = EqvGen r :=
-  Subrelation.antisymm (Join.le_eqvGen r) h.churchRosser
+  Subrelation.antisymm (Join.le_eqvGen r) IsChurchRosser.churchRosser
 
 /-- The Church-Rosser property implies confluence. -/
-theorem IsChurchRosser.confluent {r : α → α → Prop} (h : IsChurchRosser r) : IsConfluent r where
+theorem IsChurchRosser.confluent {r : α → α → Prop} [IsChurchRosser r] : IsConfluent r where
   diamond := by
     intro a b c hab hac
-    apply h.churchRosser
+    apply IsChurchRosser.churchRosser
     exact EqvGen.trans b a c (EqvGen.symm a b hab.to_eqvGen) hac.to_eqvGen
 
 /-- A confluent relation has the Church-Rosser property. -/
-theorem IsConfluent.churchRosser {r : α → α → Prop} (h : IsConfluent r) : IsChurchRosser r where
+theorem IsConfluent.churchRosser {r : α → α → Prop} [IsConfluent r] : IsChurchRosser r where
   churchRosser := by
     intro a b hab
     induction hab with
@@ -928,7 +928,7 @@ theorem IsConfluent.churchRosser {r : α → α → Prop} (h : IsConfluent r) : 
     | trans a b c _ _ hab hbc =>
         rcases hab with ⟨u, hau, hbu⟩
         rcases hbc with ⟨v, hbv, hcv⟩
-        rcases h.diamond hbu hbv with ⟨w, huw, hvw⟩
+        rcases IsDiamond.diamond hbu hbv with ⟨w, huw, hvw⟩
         exact ⟨w, hau.trans huw, hcv.trans hvw⟩
 
 section Join
