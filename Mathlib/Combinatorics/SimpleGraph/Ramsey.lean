@@ -61,9 +61,8 @@ open Finset
 
 namespace SimpleGraph
 
-variable {α : Type*} [DecidableEq α] (G : SimpleGraph α)
+variable {α : Type*} (G : SimpleGraph α)
 
-omit [DecidableEq α] in
 /-- A singleton is a `1`-independent set. -/
 theorem isNIndepSet_singleton (a : α) : G.IsNIndepSet 1 {a} := by
   refine ⟨?_, by simp⟩
@@ -72,7 +71,7 @@ theorem isNIndepSet_singleton (a : α) : G.IsNIndepSet 1 {a} := by
 /-- Adding a vertex nonadjacent to (and distinct from) every element of an independent set
 gives a larger independent set. This is the independent-set analogue of
 `SimpleGraph.IsNClique.insert`. -/
-theorem IsNIndepSet.insert {G : SimpleGraph α} {n : ℕ} {s : Finset α} {a : α}
+theorem IsNIndepSet.insert [DecidableEq α] {G : SimpleGraph α} {n : ℕ} {s : Finset α} {a : α}
     (hs : G.IsNIndepSet n s)
     (h : ∀ b ∈ s, a ≠ b ∧ ¬ G.Adj a b) : G.IsNIndepSet (n + 1) (insert a s) := by
   rw [← isNClique_compl] at hs ⊢
@@ -161,6 +160,7 @@ size `t`. Equivalently, the Ramsey number satisfies `R(s, t) ≤ (s + t - 2).cho
 theorem ramsey {s t : ℕ} (hs : 1 ≤ s) (ht : 1 ≤ t) (V : Finset α)
     (hV : (s + t - 2).choose (s - 1) ≤ #V) :
     (∃ A ⊆ V, G.IsNClique s A) ∨ (∃ B ⊆ V, G.IsNIndepSet t B) := by
+  classical
   obtain ⟨a, rfl⟩ : ∃ a, s = a + 1 := ⟨s - 1, by omega⟩
   obtain ⟨b, rfl⟩ : ∃ b, t = b + 1 := ⟨t - 1, by omega⟩
   refine G.exists_isNClique_or_isNIndepSet a b V ?_
@@ -173,6 +173,7 @@ then the graph `G` has a clique of size `s` or an independent set of size `t`. -
 theorem ramsey_univ [Fintype α] {s t : ℕ} (hs : 1 ≤ s) (ht : 1 ≤ t)
     (hcard : (s + t - 2).choose (s - 1) ≤ Fintype.card α) :
     (∃ A : Finset α, G.IsNClique s A) ∨ (∃ B : Finset α, G.IsNIndepSet t B) := by
+  classical
   have := G.ramsey hs ht Finset.univ (by simpa [Finset.card_univ] using hcard)
   rcases this with ⟨A, _, hA⟩ | ⟨B, _, hB⟩
   · exact Or.inl ⟨A, hA⟩
@@ -182,6 +183,7 @@ theorem ramsey_univ [Fintype α] {s t : ℕ} (hs : 1 ≤ s) (ht : 1 ≤ t)
 `4 ^ (s - 1)` contains a clique or an independent set of size `s`. -/
 theorem ramsey_diagonal {s : ℕ} (hs : 1 ≤ s) (V : Finset α) (hV : 4 ^ (s - 1) ≤ #V) :
     (∃ A ⊆ V, G.IsNClique s A) ∨ (∃ B ⊆ V, G.IsNIndepSet s B) := by
+  classical
   refine G.ramsey hs hs V (le_trans ?_ hV)
   obtain ⟨a, rfl⟩ : ∃ a, s = a + 1 := ⟨s - 1, by omega⟩
   rw [show a + 1 + (a + 1) - 2 = 2 * a by omega, show a + 1 - 1 = a by omega]
