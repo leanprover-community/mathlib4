@@ -3,12 +3,14 @@ Copyright (c) 2026 Haoyu Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoyu Chen
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.Data.Fintype.Card
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # The Graham–Pollak theorem
@@ -48,6 +50,8 @@ bicliques.  Hence `v = 0`, the map is injective, and `card V ≤ card κ + 1`.
   is exactly `n`.
 -/
 
+@[expose] public section
+
 open Finset
 
 namespace GrahamPollak
@@ -57,9 +61,10 @@ variable {V κ : Type*}
 /-! ### An algebraic identity -/
 
 /-- Splitting `(∑ i, v i)^2` into its diagonal and off-diagonal contributions. -/
-lemma sq_sum_eq [Fintype V] [DecidableEq V] (v : V → ℝ) :
+lemma sq_sum_eq [Fintype V] (v : V → ℝ) :
     (∑ i, v i) ^ 2
       = (∑ i, v i ^ 2) + ∑ p ∈ (Finset.univ : Finset V).offDiag, v p.1 * v p.2 := by
+  classical
   have hprod : (∑ i, v i) ^ 2 = ∑ p ∈ (Finset.univ : Finset V) ×ˢ Finset.univ,
       v p.1 * v p.2 := by
     rw [sq, Finset.sum_mul_sum, ← Finset.sum_product']
@@ -98,19 +103,19 @@ structure BicliquePartition (V κ : Type*) where
 
 namespace BicliquePartition
 
-variable [DecidableEq V] (B : BicliquePartition V κ)
+variable (B : BicliquePartition V κ)
 
 /-- The set of *ordered* pairs of vertices joined by the `k`-th biclique. -/
-def edges (k : κ) : Finset (V × V) := (B.X k ×ˢ B.Y k) ∪ (B.Y k ×ˢ B.X k)
+def edges [DecidableEq V] (k : κ) : Finset (V × V) := (B.X k ×ˢ B.Y k) ∪ (B.Y k ×ˢ B.X k)
 
-lemma mem_edges {k : κ} {p : V × V} :
+lemma mem_edges [DecidableEq V] {k : κ} {p : V × V} :
     p ∈ B.edges k ↔
       (p.1 ∈ B.X k ∧ p.2 ∈ B.Y k) ∨ (p.2 ∈ B.X k ∧ p.1 ∈ B.Y k) := by
   simp only [edges, Finset.mem_union, Finset.mem_product]
   tauto
 
 /-- The two endpoints of an edge of a biclique are distinct, since its sides are disjoint. -/
-lemma ne_of_mem_edges {k : κ} {i j : V} (h : (i, j) ∈ B.edges k) : i ≠ j := by
+lemma ne_of_mem_edges [DecidableEq V] {k : κ} {i j : V} (h : (i, j) ∈ B.edges k) : i ≠ j := by
   rw [B.mem_edges] at h
   rintro rfl
   rcases h with ⟨hi, hj⟩ | ⟨hi, hj⟩
@@ -118,10 +123,10 @@ lemma ne_of_mem_edges {k : κ} {i j : V} (h : (i, j) ∈ B.edges k) : i ≠ j :=
   · exact (Finset.disjoint_left.mp (B.disj k) hi) hj
 
 /-- The bicliques of a biclique partition are pairwise disjoint as sets of ordered pairs. -/
-lemma pairwise_disjoint_edges [Fintype κ] :
+lemma pairwise_disjoint_edges [DecidableEq V] [Fintype κ] :
     ((Finset.univ : Finset κ) : Set κ).PairwiseDisjoint B.edges := by
   intro k _ l _ hkl
-  show Disjoint (B.edges k) (B.edges l)
+  change Disjoint (B.edges k) (B.edges l)
   rw [Finset.disjoint_left]
   rintro ⟨i, j⟩ hk hl
   have hij : i ≠ j := B.ne_of_mem_edges hk
@@ -130,7 +135,7 @@ lemma pairwise_disjoint_edges [Fintype κ] :
   exact hkl ((hk₀ k hk).trans (hk₀ l hl).symm)
 
 /-- The bicliques of a biclique partition cover every ordered pair of distinct vertices. -/
-lemma biUnion_edges [Fintype V] [Fintype κ] :
+lemma biUnion_edges [DecidableEq V] [Fintype V] [Fintype κ] :
     (Finset.univ : Finset κ).biUnion B.edges = (Finset.univ : Finset V).offDiag := by
   ext p
   obtain ⟨i, j⟩ := p
@@ -152,7 +157,7 @@ variable (v : V → ℝ)
 
 /-- The sum of `v i * v j` over the ordered pairs covered by the `k`-th biclique is
 twice the product of the two side-sums. -/
-lemma sum_edges (k : κ) :
+lemma sum_edges [DecidableEq V] (k : κ) :
     ∑ p ∈ B.edges k, v p.1 * v p.2 = 2 * ((∑ i ∈ B.X k, v i) * (∑ j ∈ B.Y k, v j)) := by
   have hdisj : Disjoint (B.X k ×ˢ B.Y k) (B.Y k ×ˢ B.X k) := by
     rw [Finset.disjoint_left]
@@ -169,6 +174,7 @@ exactly once, in one of its two orders. -/
 lemma key_identity [Fintype V] [Fintype κ] :
     ∑ p ∈ (Finset.univ : Finset V).offDiag, v p.1 * v p.2
       = 2 * ∑ k, (∑ i ∈ B.X k, v i) * (∑ j ∈ B.Y k, v j) := by
+  classical
   rw [← B.biUnion_edges, Finset.sum_biUnion B.pairwise_disjoint_edges, Finset.mul_sum]
   exact Finset.sum_congr rfl fun k _ => B.sum_edges v k
 
@@ -185,12 +191,13 @@ noncomputable def toLin [Fintype V] : (V → ℝ) →ₗ[ℝ] (κ → ℝ) × �
   map_smul' c v := by
     ext k <;> simp [Finset.mul_sum]
 
-omit [DecidableEq V] in
 lemma toLin_apply [Fintype V] (v : V → ℝ) :
     B.toLin v = (fun k => ∑ i ∈ B.X k, v i, ∑ i, v i) := rfl
 
 /-- The core of Witsenhausen's argument: the map `toLin` is injective. -/
-lemma toLin_injective [Fintype V] [Fintype κ] : Function.Injective B.toLin := by
+lemma toLin_injective [Fintype V] [Finite κ] : Function.Injective B.toLin := by
+  cases nonempty_fintype κ
+  classical
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro v hv
   have hX : ∀ k, ∑ i ∈ B.X k, v i = 0 := by
@@ -235,7 +242,7 @@ def biclique (X Y : Finset V) : SimpleGraph V where
   symm := ⟨fun _ _ h => ⟨h.1.symm, h.2.symm⟩⟩
   loopless := ⟨fun _ h => h.1 rfl⟩
 
-@[simp] lemma biclique_adj [DecidableEq V] {X Y : Finset V} {i j : V} :
+@[simp] lemma biclique_adj {X Y : Finset V} {i j : V} :
     (biclique X Y).Adj i j ↔ i ≠ j ∧ ((i ∈ X ∧ j ∈ Y) ∨ (j ∈ X ∧ i ∈ Y)) :=
   Iff.rfl
 
@@ -246,10 +253,11 @@ If `biclique (X k) (Y k)`, `k : κ`, is a family of complete bipartite graphs on
 vertex type `V` such that every edge of the complete graph on `V` is an edge of exactly
 one of them, then `card V ≤ card κ + 1`.
 -/
-theorem card_le_of_biclique_cover [Fintype V] [DecidableEq V] [Fintype κ]
+theorem card_le_of_biclique_cover [Fintype V] [Fintype κ]
     (X Y : κ → Finset V) (hd : ∀ k, Disjoint (X k) (Y k))
     (hcov : ∀ i j : V, i ≠ j → ∃! k, (biclique (X k) (Y k)).Adj i j) :
     Fintype.card V ≤ Fintype.card κ + 1 := by
+  classical
   refine BicliquePartition.card_le
     { X := X, Y := Y, disj := hd, covers := fun i j hij => ?_ }
   obtain ⟨k, hk, huniq⟩ := hcov i j hij
@@ -262,11 +270,12 @@ If the complete bipartite graphs `biclique (X k) (Y k)`, `k : κ`, are pairwise
 edge-disjoint and their supremum is the complete graph `⊤` on the finite vertex type `V`
 (that is, they partition the edge set of `K_V`), then `card V ≤ card κ + 1`.
 -/
-theorem card_le_of_edge_partition [Fintype V] [DecidableEq V] [Fintype κ]
+theorem card_le_of_edge_partition [Fintype V] [Fintype κ]
     (X Y : κ → Finset V) (hd : ∀ k, Disjoint (X k) (Y k))
     (hsup : ⨆ k, biclique (X k) (Y k) = ⊤)
     (hpd : Pairwise fun k l => Disjoint (biclique (X k) (Y k)) (biclique (X l) (Y l))) :
     Fintype.card V ≤ Fintype.card κ + 1 := by
+  classical
   refine card_le_of_biclique_cover X Y hd fun i j hij => ?_
   have hex : ∃ k, (biclique (X k) (Y k)).Adj i j := by
     rw [← SimpleGraph.iSup_adj, hsup, SimpleGraph.top_adj]
