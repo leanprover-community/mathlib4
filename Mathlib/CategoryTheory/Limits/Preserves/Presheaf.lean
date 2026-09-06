@@ -61,7 +61,7 @@ One direction of Proposition 3.3.13 of [Kashiwara2006].
 theorem isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits
     [PreservesFiniteLimits A] : IsFiltered (CostructuredArrow yoneda A) := by
   suffices IsCofiltered A.Elements from
-    IsFiltered.of_equivalence (CategoryOfElements.costructuredArrowYonedaEquivalence _)
+    IsFiltered.of_equivalence (Functor.Elements.costructuredArrowYonedaEquivalence _)
   suffices HasFiniteLimits A.Elements from IsCofiltered.of_hasFiniteLimits A.Elements
   exact ⟨fun J _ _ => inferInstance⟩
 

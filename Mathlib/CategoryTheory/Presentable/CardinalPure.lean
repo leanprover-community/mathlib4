@@ -15,7 +15,8 @@ In this file, we define the notion of `κ`-pure morphisms (`IsCardinalPure`)
 in a category `C`, where `κ` is a regular cardinal. This class contains
 split monomorphisms and is stable under `κ`-filtered colimits.
 When `C` is a `κ`-accessible category, we show that `κ`-pure
-morphisms are monomorphisms.
+morphisms are monomorphisms, and that a `κ`-accessible functor
+`F : C ⥤ D` preserves `κ`-pure morphisms.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -30,7 +31,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category* C]
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 /-- Given a regular cardinal `κ`, we say that a morphism `f : X ⟶ Y`
 is `κ`-pure if for any commutative square:
@@ -139,5 +140,57 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
   have := hf j'
   obtain ⟨ρ, _⟩ := IsCardinalPure.exists_of_commSq κ sq'
   exact ⟨ρ ≫ c₁.ι.app j', by cat_disch⟩
+
+/-- If `F : C ⥤ D` is a `κ`-accessible functor (with `C` a `κ`-accessible category),
+then `F` maps `κ`-pure morphisms to `κ`-morphisms.
+(This is proposition 2.38 in [Adamek_Rosicky_1994], without the unnecessary
+assumption that `F` preserves `κ`-presentable objects.) -/
+instance IsCardinalPure.map
+    [IsCardinalAccessibleCategory C κ] [F.IsCardinalAccessible κ]
+    {X Y : C} (f : X ⟶ Y) [IsCardinalPure κ f] :
+    IsCardinalPure κ (F.map f) where
+  exists_of_commSq {X' Y' t l r _ _ } sq := by
+    /- Write X and Y as κ-filtered colimits of κ-presentable objects `X ≅ colimᵢ pXᵢ` and
+    `Y ≅ colimⱼ pYⱼ`. -/
+    obtain ⟨I, _, _, ⟨pX⟩⟩ :=
+      (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape X
+    obtain ⟨J, _, _, ⟨pY⟩⟩ :=
+      (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape Y
+    -- `F` is κ-accessible so the presentations of `X` and `Y` are preserved by `F`.
+    have := F.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ I
+    have := F.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ J
+    -- `X'` is κ-presentable so `l : X' ⟶ F.obj X` factors through some `F.obj pXᵢ`.
+    obtain ⟨i, l', hl'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
+      (isColimitOfPreserves F pX.isColimit) l
+    have : isCardinalPresentable C κ (pX.diag.obj i) := pX.prop_diag_obj i
+    /- `Y'` is also κ-presentable so `l : Y' ⟶ F.obj Y` factors through some `F.obj pYⱼ₀`,
+    and the composite `pXᵢ ⟶ X ⟶ Y` also lifts to some pYⱼ₁, taking the filtered max, one gets an
+    index `j` such that `l` factors through `F.obj pYⱼ` and a lift `pXᵢ ⟶ pYⱼ` of `f`. -/
+    obtain ⟨j, r', a, hr', ha⟩ :
+        ∃ (j : J) (r' : Y' ⟶ F.obj (pY.diag.obj j)) (a : pX.diag.obj i ⟶ pY.diag.obj j),
+          r' ≫ F.map (pY.ι.app j) = r ∧ a ≫ pY.ι.app j = pX.ι.app i ≫ f := by
+      obtain ⟨j₀, r', hr'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
+        (isColimitOfPreserves F pY.isColimit) r
+      obtain ⟨j₁, a, ha⟩ :=
+        IsCardinalPresentable.exists_hom_of_isColimit κ pY.isColimit (pX.ι.app i ≫ f)
+      have := isFiltered_of_isCardinalFiltered J κ
+      refine ⟨IsFiltered.max j₀ j₁, r' ≫ F.map (pY.diag.map (IsFiltered.leftToMax j₀ j₁)),
+        a ≫ pY.diag.map (IsFiltered.rightToMax j₀ j₁), ?_, ?_⟩
+      all_goals simpa [← Functor.map_comp, pY.w]
+    /- Using again that `X'` is κ-presentable, the composites `X' ⟶ Y' ⟶ F.obj pYⱼ` and
+    `X' ⟶ F.obj pXᵢ ⟶ F.obj pYⱼ` are equalized for some index `k ≥ j`. -/
+    obtain ⟨k, b, hb⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
+      (isColimitOfPreserves F pY.isColimit) (t ≫ r') (l' ≫ F.map a) (by
+        dsimp
+        rw [Category.assoc, Category.assoc, hr', ← Functor.map_comp, ha,
+          Functor.map_comp, reassoc_of% dsimp% hl', sq.w])
+    have : isCardinalPresentable C κ (pY.diag.obj k) := pY.prop_diag_obj k
+    /- Now one can use purity of `f` to get a morphism `pYₖ ⟶ X`, and the composite
+    `Y' ⟶ F.obj pYₖ ⟶ F.obj X` is the desired lift. -/
+    obtain ⟨ρ, hρ⟩ := IsCardinalPure.exists_of_commSq κ (f := f) (t := a ≫ pY.diag.map b)
+      (l := pX.ι.app i) (r := pY.ι.app k) ⟨by simpa [pY.w]⟩
+    simp only [Category.assoc] at hb hρ
+    refine ⟨r' ≫ F.map (pY.diag.map b) ≫ F.map ρ, ?_⟩
+    rw [reassoc_of% hb, ← Functor.map_comp, ← Functor.map_comp, hρ, dsimp% hl']
 
 end CategoryTheory
