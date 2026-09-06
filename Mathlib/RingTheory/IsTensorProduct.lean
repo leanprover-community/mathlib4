@@ -606,7 +606,7 @@ theorem IsBaseChange.map_id_lsmul_eq_lsmul_algebraMap
     {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R) :
     hf.map hf LinearMap.id (LinearMap.lsmul R M x) = LinearMap.lsmul S N (algebraMap R S x) := by
   ext y
-  refine IsTensorProduct.inductionOn hf y (by simp) ?_ (fun _ _ ha hb ↦ by simp [ha, hb])
+  refine IsTensorProduct.inductionOn hf y ?_ (fun _ _ ha hb ↦ by simp [ha, hb])
   intro s m
   rw [hf.map_eq hf]
   simpa using smul_comm x s (f m)
