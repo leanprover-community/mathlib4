@@ -199,14 +199,14 @@ such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`
           match e' with
           | ~q(@LE.le.{u} $β $le $lo $hi) =>
             let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
-            let .defEq _ ← isDefEqQ q($le) q(($pα).toLE) | return .none
+            let .defEq _ ← withImplicit <| isDefEqQ q($le) q(($pα).toLE) | return .none
             let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
             let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
             let _ ← synthInstanceQ q(AddRightMono $α)
             return .nonnegative q(sub_nonneg_of_le $p)
           | ~q(@LT.lt.{u} $β $lt $lo $hi) =>
             let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
-            let .defEq _ ← isDefEqQ q($lt) q(($pα).toLT) | return .none
+            let .defEq _ ← withImplicit <| isDefEqQ q($lt) q(($pα).toLT) | return .none
             let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
             let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
             let _i ← synthInstanceQ q(AddRightStrictMono $α)
