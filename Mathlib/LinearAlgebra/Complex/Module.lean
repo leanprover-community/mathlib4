@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Data.Complex.Basic
-public import Mathlib.Data.Real.Star
+public import Mathlib.Basic.Complex.Basic
+public import Mathlib.Basic.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.Monoid.Submonoid
