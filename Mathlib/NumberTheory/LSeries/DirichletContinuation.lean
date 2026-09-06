@@ -215,6 +215,14 @@ lemma Odd.gammaFactor_def {χ : DirichletCharacter ℂ N} (hχ : χ.Odd) (s : �
     gammaFactor χ s = Gammaℝ (s + 1) := by
   simp [gammaFactor, hχ.not_even]
 
+lemma gammaFactor_eq_zero_even {χ : DirichletCharacter ℂ N} (hχ : χ.Even) {s : ℂ} :
+    gammaFactor χ s = 0 ↔ ∃ n : ℕ, s = -(2 * n) := by
+  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
+
+lemma gammaFactor_eq_zero_odd {χ : DirichletCharacter ℂ N} (hχ : χ.Odd) {s : ℂ} :
+    gammaFactor χ s = 0 ↔ ∃ n : ℕ, s + 1 = -(2 * n) := by
+  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
+
 end gammaFactor
 
 /--

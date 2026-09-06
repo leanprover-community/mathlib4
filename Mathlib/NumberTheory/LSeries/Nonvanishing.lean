@@ -26,9 +26,10 @@ These results are prerequisites for the **Prime Number Theorem** and
 **Dirichlet's Theorem** on primes in arithmetic progressions.
 
 Using the functional equation, these results are extended to the left half-plane in
-`LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, excluding negative
-integers and negative even integers respectively. TODO: a parity analysis of L-functions to
-refine the former to negative even or odd integers.
+`LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, which describe the
+zeros there in terms of the archimedean Gamma factor (the negative even integers for `ζ`).
+TODO: a parity analysis of L-functions to make the former fully explicit (negative even or odd
+integers according to the parity of `χ`).
 
 As a byproduct of the above analysis, non-vanishing theorems for the root number or Gauss sum
 associated to a Dirichlet L-function are also provided.
@@ -468,54 +469,42 @@ theorem norm_gaussSum_stdAddChar (hχ : χ.IsPrimitive) :
   suffices ‖gaussSum χ ZMod.stdAddChar‖ / .sqrt N = ‖rootNumber χ‖ by grind [norm_rootNumber]
   simp [rootNumber, -pow_ite, norm_natCast_cpow_of_pos, NeZero.pos N, Real.sqrt_eq_rpow]
 
-omit [NeZero N] in
-theorem gammaFactor_eq_zero_even (hχ : χ.Even) {s : ℂ} :
-    χ.gammaFactor s = 0 ↔ ∃ n : ℕ, s = -(2 * n) := by
-  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
-
-omit [NeZero N] in
-theorem gammaFactor_eq_zero_odd (hχ : χ.Odd) {s : ℂ} :
-    χ.gammaFactor s = 0 ↔ ∃ n : ℕ, s + 1 = -(2 * n) := by
-  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
-
-/-- **A primitive Dirichlet `L`-function does not vanish in the closed left half-plane away from
-the non-positive integers.** -/
-theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) (hχ1 : χ ≠ 1) {s : ℂ} (h0 : s ≠ 0)
-    (hs : s.re ≤ 0) : LFunction χ s = 0 ↔ χ.gammaFactor s = 0 := by
+/-- **The zeros of a primitive Dirichlet `L`-function in the closed left half-plane are exactly
+those of its archimedean Gamma factor**, with the sole exception of `s = 0` for the trivial
+character (where `gammaFactor` vanishes but `L` does not). -/
+theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ}
+    (hχs : χ ≠ 1 ∨ s ≠ 0) (hs : s.re ≤ 0) : LFunction χ s = 0 ↔ χ.gammaFactor s = 0 := by
+  have hN : s ≠ 0 ∨ N ≠ 1 := hχs.symm.imp_right fun h hN ↦ h (level_one' χ hN)
   suffices completedLFunction χ s ≠ 0 by grind [LFunction_eq_completed_div_gammaFactor]
   obtain ⟨w, rfl⟩ : ∃ w, s = 1 - w := ⟨1 - s, by ring⟩
   rw [hχ.completedLFunction_one_sub]
   refine mul_ne_zero (mul_ne_zero ?_ (rootNumber_ne_zero hχ)) ?_
   · grind [cpow_eq_zero_iff, Nat.cast_eq_zero, NeZero.ne N]
-  · grind [completedLFunction_ne_zero_of_one_le_re, sub_re, one_re, inv_eq_one]
+  · refine completedLFunction_ne_zero_of_one_le_re χ⁻¹ ?_ (by grind [sub_re, one_re])
+    grind [inv_eq_one, sub_ne_zero]
 
 end nonvanishing
 
 end DirichletCharacter
 
-/-- `ζ` has no non-trivial zeros in the closed left half-plane. -/
-theorem riemannZeta_ne_zero_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0)
-    (h : ∀ n : ℕ, s ≠ -2 * (n + 1)) : riemannZeta s ≠ 0 := by
-  rcases eq_or_ne s 0 with rfl | hs0
-  · norm_num [riemannZeta_zero]
-  obtain ⟨w, rfl⟩ : ∃ w : ℂ, s = 1 - w := ⟨1 - s, by ring⟩
-  have : 1 ≤ w.re := by grind [sub_re, one_re]
-  have : (Real.pi : ℂ) ≠ 0 := mod_cast Real.pi_ne_zero
-  have (n : ℕ) : w ≠ -n := by grind [neg_re, natCast_re]
-  have : cos (Real.pi * w / 2) ≠ 0 := by
-    rw [Ne, cos_eq_zero_iff]
-    rintro ⟨k, _⟩
-    have : w = 2 * (k : ℂ) + 1 := by grind
-    rcases lt_trichotomy k 0 with _ | rfl | _
-    · simp_all; grind
-    · grind
-    · obtain ⟨m, rfl⟩ : ∃ m : ℕ, k = (m : ℤ) + 1 := ⟨(k - 1).toNat, by omega⟩
-      exact h m (by simp_all)
-  rw [riemannZeta_one_sub ‹_› (by grind)]
-  apply_rules [mul_ne_zero, two_ne_zero, Gamma_ne_zero, riemannZeta_ne_zero_of_one_le_re]
-  grind [cpow_eq_zero_iff]
-
-/-- **The zeros of `ζ` in the closed left half-plane are exactly the trivial ones.** -/
+open DirichletCharacter in
+/-- **The zeros of `ζ` in the closed left half-plane are exactly the trivial ones**, i.e. the
+negative even integers. This is the special case of `LFunction_eq_zero_iff_of_re_nonpos` for the
+trivial character modulo `1`, whose Gamma factor is `Gammaℝ`. -/
 theorem riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
     riemannZeta s = 0 ↔ ∃ n : ℕ, s = -2 * (n + 1) := by
-  grind [riemannZeta_ne_zero_of_re_nonpos, riemannZeta_neg_two_mul_nat_add_one]
+  rcases eq_or_ne s 0 with rfl | h0
+  · grind [riemannZeta_zero]
+  · have he : (1 : DirichletCharacter ℂ 1).Even := by
+      unfold DirichletCharacter.Even
+      simp [Subsingleton.elim (-1 : ZMod 1) 1, map_one]
+    rw [← LFunction_modOne_eq (χ := 1),
+      LFunction_eq_zero_iff_of_re_nonpos isPrimitive_one_level_one (.inr h0) hs,
+      gammaFactor_eq_zero_even he]
+    constructor
+    · rintro ⟨n, rfl⟩
+      obtain ⟨m, rfl⟩ : ∃ m : ℕ, n = m + 1 := by cases n with
+        | zero => simp at h0
+        | succ m => exact ⟨m, rfl⟩
+      exact ⟨m, by push_cast; ring⟩
+    · rintro ⟨n, rfl⟩; exact ⟨n + 1, by push_cast; ring⟩
