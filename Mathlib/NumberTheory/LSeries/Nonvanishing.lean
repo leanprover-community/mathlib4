@@ -26,7 +26,7 @@ These results are prerequisites for the **Prime Number Theorem** and
 **Dirichlet's Theorem** on primes in arithmetic progressions.
 
 Using the functional equation, these results are extended to the left half-plane in
-`LFunction_ne_zero_of_re_nonpos` and `riemannZeta_ne_zero_of_re_nonpos`, excluding negative
+`LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, excluding negative
 integers and negative even integers respectively. TODO: a parity analysis of L-functions to
 refine the former to negative even or odd integers.
 
@@ -468,20 +468,26 @@ theorem norm_gaussSum_stdAddChar (hχ : χ.IsPrimitive) :
   suffices ‖gaussSum χ ZMod.stdAddChar‖ / .sqrt N = ‖rootNumber χ‖ by grind [norm_rootNumber]
   simp [rootNumber, -pow_ite, norm_natCast_cpow_of_pos, NeZero.pos N, Real.sqrt_eq_rpow]
 
+omit [NeZero N] in
+theorem gammaFactor_eq_zero_even (hχ : χ.Even) {s : ℂ} :
+    χ.gammaFactor s = 0 ↔ ∃ n : ℕ, s = -(2 * n) := by
+  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
+
+omit [NeZero N] in
+theorem gammaFactor_eq_zero_odd (hχ : χ.Odd) {s : ℂ} :
+    χ.gammaFactor s = 0 ↔ ∃ n : ℕ, s + 1 = -(2 * n) := by
+  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
+
 /-- **A primitive Dirichlet `L`-function does not vanish in the closed left half-plane away from
 the non-positive integers.** -/
-theorem LFunction_ne_zero_of_re_nonpos (hχ : χ.IsPrimitive) (hχ1 : χ ≠ 1) {s : ℂ}
-    (hs : s.re ≤ 0) (h : ∀ n : ℕ, s ≠ -n) : LFunction χ s ≠ 0 := by
-  rw [LFunction_eq_completed_div_gammaFactor χ s (by grind [h 0])]
-  apply div_ne_zero
-  · obtain ⟨w, rfl⟩ : ∃ w, s = 1 - w := ⟨1 - s, by ring⟩
-    rw [hχ.completedLFunction_one_sub]
-    refine mul_ne_zero (mul_ne_zero ?_ (rootNumber_ne_zero hχ)) ?_
-    · grind [cpow_eq_zero_iff, Nat.cast_eq_zero, NeZero.ne N]
-    · grind [completedLFunction_ne_zero_of_one_le_re, sub_re, one_re, inv_eq_one]
-  · rcases χ.even_or_odd with heo | heo <;> rw [heo.gammaFactor_def, Ne, Gammaℝ_eq_zero_iff]
-    · rintro ⟨n, _⟩; grind [h (2 * n)]
-    · rintro ⟨n, _⟩; grind [h (2 * n + 1)]
+theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) (hχ1 : χ ≠ 1) {s : ℂ} (h0 : s ≠ 0)
+    (hs : s.re ≤ 0) : LFunction χ s = 0 ↔ χ.gammaFactor s = 0 := by
+  suffices completedLFunction χ s ≠ 0 by grind [LFunction_eq_completed_div_gammaFactor]
+  obtain ⟨w, rfl⟩ : ∃ w, s = 1 - w := ⟨1 - s, by ring⟩
+  rw [hχ.completedLFunction_one_sub]
+  refine mul_ne_zero (mul_ne_zero ?_ (rootNumber_ne_zero hχ)) ?_
+  · grind [cpow_eq_zero_iff, Nat.cast_eq_zero, NeZero.ne N]
+  · grind [completedLFunction_ne_zero_of_one_le_re, sub_re, one_re, inv_eq_one]
 
 end nonvanishing
 
