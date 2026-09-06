@@ -213,7 +213,7 @@ theorem TopEdgeLabeling.labelGraph_toTopEdgeLabeling [DecidableEq V]
 namespace EdgeLabeling
 
 /-- The predicate `C.MonochromaticBetween X Y k` says every edge between `X` and `Y` is labelled
-`k` by the labeling `C`. -/
+`k` by the labelling `C`. -/
 def MonochromaticBetween (C : EdgeLabeling G K) (X Y : Set V) (k : K) : Prop :=
   ∀ ⦃x⦄, x ∈ X → ∀ ⦃y⦄, y ∈ Y → (h : G.Adj x y) → C.get x y h = k
 
