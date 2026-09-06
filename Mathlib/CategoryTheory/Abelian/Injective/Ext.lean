@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
@@ -178,6 +179,11 @@ lemma extMk_zero (m : ℕ) (hm : n + 1 = m) :
     R.extMk (0 : X ⟶ R.cocomplex.X n) m hm (by simp) = 0 := by
   simp [extMk]
 
+lemma smul_extMk (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) {A : Type*} [Ring A] [Linear A C] (a : A) :
+    a • R.extMk f m hm hf = R.extMk (a • f) m hm (by simp [hf]) := by
+  sorry
+
 lemma extMk_hom
     [HasDerivedCategory C] (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) :
@@ -322,5 +328,18 @@ lemma extClass_comp_extMk
     rw [mappingCone.isZero_X_iff]
     constructor
     all_goals exact HomologicalComplex.isZero_single_obj_X _ _ _ _ (by lia)
+
+lemma δ_extMk
+    {S : ShortComplex C} (hS : S.ShortExact) (f₁ : S.X₁ ⟶ R.cocomplex.X n)
+    (m : ℕ) (hm : n + 1 = m)
+    (f₂ : S.X₂ ⟶ R.cocomplex.X n) (hf₂ : S.f ≫ f₂ = f₁)
+    (f₃ : S.X₃ ⟶ R.cocomplex.X m) (hf₃ : S.g ≫ f₃ = f₂ ≫ R.cocomplex.d n m)
+    (m' : ℕ) (hm' : m + 1 = m') :
+    Ext.δ hS n m hm (R.extMk f₁ m hm (by simp [← reassoc_of% hf₂, ← hf₃])) =
+    R.extMk f₃ m' hm' (by have := hS.epi_g; simp [← cancel_epi S.g, reassoc_of% hf₃]) := by
+  have hf₁ : f₁ ≫ R.cocomplex.d n m = 0 := by simp [← hf₂, ← hf₃]
+  rw [← R.extClass_comp_extMk hS (Int.negOnePow m • f₁) m hm f₂ (by simp [hf₂]) f₃ hf₃ m' hm',
+    Ext.δ_apply]
+  obtain h | h := Int.units_eq_one_or (Int.negOnePow m) <;> simp [h, ← neg_extMk _ _ _ _ hf₁]
 
 end CategoryTheory.InjectiveResolution
