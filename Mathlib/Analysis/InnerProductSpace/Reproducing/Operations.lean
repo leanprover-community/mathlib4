@@ -68,6 +68,10 @@ instance : RKHS 𝕜 (H + H') X V where
     refine (Function.Injective.eq_iff ?_).mp hfg
     simp [← LinearMap.ker_eq_bot, ker_liftQ_eq_bot]
 
+omit [CompleteSpace V] in
+lemma mk_eq (f : WithLp 2 (H × H')) :
+    Submodule.Quotient.mk (p:=(generator H H').ker) f = generator H H' f := rfl
+
 lemma kerFun_apply_eq_mk (x : X) (v : V) :
     kerFun (H + H') x v = Submodule.Quotient.mk (WithLp.toLp 2 (kerFun H x v, kerFun H' x v)) := by
   rw [← quotientEquivOrthogonal_symm_eq_mk (generator H H').ker _
@@ -76,8 +80,7 @@ lemma kerFun_apply_eq_mk (x : X) (v : V) :
   intro f
   rw [(generator H H').ker.quotientEquivOrthogonal.inner_map_eq_flip,
     (generator H H').ker.quotientEquivOrthogonal_symm_eq_mk, kerFun_inner]
-  simp only [coe_inner, WithLp.prod_inner_apply, WithLp.ofLp_fst, kerFun_inner, WithLp.ofLp_snd]
-  change ⟪v, generator H H' (↑f) x⟫_𝕜 = _
+  simp [coe_inner, WithLp.prod_inner_apply, WithLp.ofLp_fst, kerFun_inner, WithLp.ofLp_snd, mk_eq]
   simp [generator, inner_add_right]
 
 theorem kernel_sum_eq_sum_of_kernel : kernel (H + H') = kernel H + kernel H' := by
@@ -145,8 +148,7 @@ theorem exists_eq_add_and_norm_sq_eq_add (f : H + H') :
   constructor
   · rw [← mk_projection f, hp]
     ext
-    change generator H H' p _ = _
-    simp only [WithLp.ofLp_fst, WithLp.ofLp_snd, Pi.add_apply]
+    simp only [WithLp.ofLp_fst, WithLp.ofLp_snd, Pi.add_apply, mk_eq]
     exact generator_apply p.fst p.snd _
   · simp [← (projection H H').norm_map, hp, WithLp.prod_norm_sq_eq_of_L2]
 
@@ -156,8 +158,7 @@ theorem norm_sq_le (f : H + H') (f₁ : H) (f₂ : H') (h : ⇑f = f₁ + f₂) 
     ‖f‖ ^ 2 = ‖Submodule.Quotient.mk (p:=(generator H H').ker) (WithLp.toLp 2 (f₁, f₂))‖ ^ 2 := by
       congr
       ext
-      simp [h]
-      rfl
+      simp [h, mk_eq]
     _ ≤ ‖WithLp.toLp 2 (f₁, f₂)‖ ^ 2 := by
       gcongr
       exact Submodule.Quotient.norm_mk_le _ _
