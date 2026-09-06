@@ -135,8 +135,7 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
   · simpa only [factorization_eq_zero_of_not_prime n pp] using! hn.bot_lt
 
 /-- An upper bound on `n.factorization p` -/
-theorem mul_factorization_le {n p : ℕ} :
-    p * n.factorization p ≤ n := by
+theorem mul_factorization_le {n p : ℕ} : p * n.factorization p ≤ n := by
   obtain rfl | hp := eq_or_ne p 1
   · simp
   obtain rfl | hn := eq_or_ne n 0
