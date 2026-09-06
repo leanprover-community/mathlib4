@@ -146,7 +146,7 @@ variable (k l : ℕ) (hkl : k + l = finrank K V)
 
 /-- The linear equivalence induced by wedging with `vol` in complementary degrees. -/
 public noncomputable def wedgePairingEquiv :
-    ⋀[K]^l V ≃ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
+    ⋀[K]^l V ≃ₗ[K] Dual K (⋀[K]^k V) :=
   LinearEquiv.ofBijective (wedgePairing vol hvol hkl)
     (bijective_wedgePairing vol hvol hkl)
 
