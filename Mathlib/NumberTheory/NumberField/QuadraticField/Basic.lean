@@ -26,7 +26,10 @@ zero which is a quadratic extension of `ℚ` in the sense of `Algebra.IsQuadrati
 * `NumberField.QuadraticField.nonempty_algEquiv_iff_discr_eq`: the discriminant is a complete
   invariant of quadratic fields;
 * `NumberField.QuadraticField.discr_quadraticAlgebra`: every fundamental discriminant other
-  than `1` is the discriminant of a quadratic field.
+  than `1` is the discriminant of a quadratic field;
+* `NumberField.QuadraticField.isTotallyReal_iff_discr_pos` and
+  `NumberField.QuadraticField.isTotallyComplex_iff_discr_neg`: a quadratic field is totally real,
+  resp. totally complex, iff its discriminant is positive, resp. negative.
 
 ## Implementation notes
 
@@ -194,5 +197,54 @@ theorem discr_half {d : ℤ} [Fact (¬ IsSquare (d : ℚ))]
   discr_quadraticAlgebra (Int.isFundamentalDiscr_iff_squarefree.mpr (Or.inl ⟨h, hd⟩)) hd1
 
 end discr
+
+section embeddings
+
+/-- The complex embeddings of `ℚ(√d)` correspond to the two square roots of `d` in `ℂ`. -/
+noncomputable def embeddingEquiv (d : ℚ) :
+    (QuadraticAlgebra ℚ d 0 →+* ℂ) ≃ {z : ℂ // z ^ 2 = d} :=
+  (RingHom.equivRatAlgHom _ _).trans <| QuadraticAlgebra.lift.symm.trans
+    <| Equiv.subtypeEquivRight <| by simp [pow_two]
+
+@[simp]
+theorem embeddingEquiv_symm_apply (d : ℚ) (z : {z : ℂ // z ^ 2 = d}) (x y : ℚ) :
+    (embeddingEquiv d).symm z (x • 1 + y • ω) = x + y * z := by
+  simp [embeddingEquiv, Rat.smul_def]
+
+@[simp]
+theorem embeddingEquiv_symm_apply_omega (d : ℚ) (z : {z : ℂ // z ^ 2 = d}) :
+    (embeddingEquiv d).symm z ω = z := by
+  simp [embeddingEquiv]
+
+/-- An embedding of `ℚ(√d)` is real exactly when `d` is nonnegative. -/
+theorem isReal_embeddingEquiv_symm_iff (d : ℚ) [Fact (¬ IsSquare d)] (z : {z : ℂ // z ^ 2 = d}) :
+    ComplexEmbedding.IsReal ((embeddingEquiv d).symm z) ↔ 0 ≤ d := by
+  simp [ComplexEmbedding.isReal_iff, ← (RingHom.equivRatAlgHom _ _).injective.eq_iff,
+    QuadraticAlgebra.algHom_ext_iff, Complex.conj_eq_iff_im, ← Complex.sq_nonneg_iff, z.prop,
+    ← Complex.ofReal_ratCast]
+
+variable (K)
+
+/-- A quadratic field is totally real iff its discriminant is positive. -/
+theorem isTotallyReal_iff_discr_pos : IsTotallyReal K ↔ 0 < discr K := by
+  rw [Int.lt_iff_le_and_ne, and_iff_left (discr_ne_zero K).symm]
+  have : Fact (¬ IsSquare (discr K : ℚ)) :=
+    ⟨Rat.isSquare_intCast_iff.not.mpr <| not_isSquare_discr K⟩
+  obtain ⟨e⟩ := nonempty_algEquiv_quadraticAlgebra_discr K
+  rw [isTotallyReal_iff_ofRingEquiv e.toRingEquiv, isTotallyReal_iff,
+    (InfinitePlace.mk_surjective _).forall]
+  obtain ⟨z, hz⟩ := IsAlgClosed.exists_pow_nat_eq (discr K : ℂ) two_pos
+  simp +contextual only [InfinitePlace.isReal_mk_iff, (embeddingEquiv _).forall_congr_left,
+    isReal_embeddingEquiv_symm_iff, Int.cast_nonneg_iff, Subtype.forall, Rat.cast_intCast]
+  exact Set.Nonempty.forall_const ⟨z, hz⟩
+
+/-- A quadratic field is totally complex iff its discriminant is negative. -/
+theorem isTotallyComplex_iff_discr_neg : IsTotallyComplex K ↔ discr K < 0 := by
+  convert_to ¬ IsTotallyReal K ↔ _
+  · rw [← nrRealPlaces_eq_zero_iff, ← nrComplexPlaces_eq_zero_iff]
+    grind [h.finrank_eq_two ▸ InfinitePlace.card_add_two_mul_card_eq_rank K]
+  rw [isTotallyReal_iff_discr_pos, not_lt_eq, Int.lt_iff_le_and_ne, and_iff_left (discr_ne_zero K)]
+
+end embeddings
 
 end NumberField.QuadraticField
