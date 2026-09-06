@@ -36,7 +36,7 @@ of digraphs on `V`.
 
 @[expose] public section
 
-open Finset Function
+open Function
 
 /--
 A digraph is a relation `Adj` on a vertex type `V`.

@@ -76,7 +76,6 @@ class IsTrivial (ρ : Representation k G V) : Prop where
 
 instance : IsTrivial (trivial k G V) where
 
-@[simp]
 theorem isTrivial_def (ρ : Representation k G V) [IsTrivial ρ] (g : G) :
     ρ g = LinearMap.id := IsTrivial.out g
 
@@ -224,7 +223,6 @@ we have `Module k[G] (restrictScalars k k[G] M)`.
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofModule_asAlgebraHom_apply_apply (r : k[G])
     (m : RestrictScalars k k[G] M) :
@@ -310,7 +308,6 @@ section Subrepresentation
 variable {k G V : Type*} [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
   (ρ : Representation k G V)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
 restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
 @[simps]
@@ -346,9 +343,8 @@ variable (ρ : Representation k G V) (S : Subgroup G)
 lemma apply_eq_of_coe_eq [IsTrivial (ρ.comp S.subtype)] (g h : G) (hgh : (g : G ⧸ S) = h) :
     ρ g = ρ h := by
   ext x
-  apply (ρ.apply_bijective g⁻¹).1
-  simpa [← Module.End.mul_apply, ← map_mul, -isTrivial_def] using
-    (congr($(isTrivial_def (ρ.comp S.subtype) ⟨g⁻¹ * h, QuotientGroup.eq.1 hgh⟩) x)).symm
+  refine (apply_bijective ρ g⁻¹).injective.eq_iff.1 ?_
+  simpa using (isTrivial_apply (ρ.comp S.subtype) ⟨g⁻¹ * h, QuotientGroup.eq.1 hgh⟩ x).symm
 
 variable [S.Normal]
 
@@ -359,8 +355,8 @@ def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
   (QuotientGroup.con S).lift ρ <| by
     rintro x y ⟨⟨z, hz⟩, rfl⟩
     ext w
-    change ρ (_ * z.unop) _ = _
-    exact congr($(apply_eq_of_coe_eq ρ S _ _ (by simp_all)) w)
+    simp only [Subgroup.mk_smul, MulOpposite.smul_eq_mul_unop]
+    exact congr($(ρ.apply_eq_of_coe_eq S _ _ (by simpa)) w)
 
 @[simp]
 lemma ofQuotient_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :
@@ -470,8 +466,7 @@ section Group
 
 section
 
-variable {k G V : Type*} [Semiring k] [Group G] [AddCommMonoid V] [Module k V]
-  (ρ : Representation k G V)
+variable {k G : Type*} [Semiring k] [Group G]
 @[simp]
 theorem coeff_ofMulAction {H : Type*} [MulAction G H] (g : G) (f : k[H]) (h : H) :
     (ofMulAction k G H g f).coeff h = f.coeff (g⁻¹ • h) := by
@@ -632,7 +627,6 @@ local notation ρV " ⊗ " ρW => tprod ρV ρW
 theorem tprod_apply (g : G) : (ρV ⊗ ρW) g = TensorProduct.map (ρV g) (ρW g) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_tprod_one_asModule (r : k[G]) (x : V) (y : W) :
     r • (show (ρV.tprod 1).asModule from x ⊗ₜ y) = (r • show ρV.asModule from x) ⊗ₜ y := by
   change asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
@@ -641,7 +635,6 @@ theorem smul_tprod_one_asModule (r : k[G]) (x : V) (y : W) :
   simp only [Finsupp.sum, TensorProduct.sum_tmul]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_one_tprod_asModule (r : k[G]) (x : V) (y : W) :
     r • (show (1 ⊗ ρW).asModule from x ⊗ₜ y) = x ⊗ₜ (r • show ρW.asModule from y) := by
   change asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
@@ -702,9 +695,8 @@ end LinearHom
 
 section
 
-variable {k G : Type*} [CommSemiring k] [Monoid G] {α A B : Type*}
+variable {k G : Type*} [CommSemiring k] [Monoid G] {α A : Type*}
   [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
-  [AddCommMonoid B] [Module k B] (τ : Representation k G B)
 
 open Finsupp
 
@@ -736,7 +728,6 @@ lemma free_single_single (g h : G) (i : α) (r : k) :
 
 variable (k G) (α : Type*)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`. -/
 noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (free k G α).asModule where
   toAddEquiv := (asModuleEquiv _).symm.toAddEquiv

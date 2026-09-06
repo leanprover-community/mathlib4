@@ -146,14 +146,14 @@ theorem isDiscrete_tfae (M : CondensedMod.{u} R) :
       CompHaus.isTerminalPUnit _).symm
   tfae_have 7 → 1 := by
     intro h
-    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6 :)]
+    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 1 7 :)]
     intro S
     let : PreservesFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
       preservesFilteredColimitsOfSize_shrink.{u, u + 1, u, u + 1} _
     exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
   tfae_have 1 → 7 := by
     intro h S
-    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6 :)] at h
+    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 1 7 :)] at h
     let : ReflectsFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
       reflectsFilteredColimitsOfSize_shrink.{u, u + 1, u, u + 1} _
     exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩
@@ -250,14 +250,14 @@ theorem isDiscrete_tfae (M : LightCondMod.{u} R) :
     Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit (adjunction R) _
   tfae_have 6 → 1 := by
     intro h
-    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5 :)]
+    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 1 6 :)]
     intro S
     let : PreservesFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
       preservesFilteredColimitsOfSize_shrink.{0, u, 0, u} _
     exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
   tfae_have 1 → 6 := by
     intro h S
-    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5 :)] at h
+    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 1 6 :)] at h
     let : ReflectsFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
       reflectsFilteredColimitsOfSize_shrink.{0, u, 0, u} _
     exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩

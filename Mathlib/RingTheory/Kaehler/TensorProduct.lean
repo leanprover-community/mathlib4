@@ -215,8 +215,6 @@ lemma tensorKaehlerEquivBase_tmul [Algebra.IsPushout R S A B] (a b) :
     tensorKaehlerEquivBase R S A B (a ⊗ₜ b) = a • map R S A B b :=
   LinearMap.liftBaseChange_tmul _ _ _ _
 
-@[deprecated (since := "2026-01-01")] alias tensorKaehlerEquiv_tmul := tensorKaehlerEquivBase_tmul
-
 /--
 If `B` is the tensor product of `S` and `A` over `R`,
 then `Ω[B⁄S]` is the base change of `Ω[A⁄R]` along `R → S`.

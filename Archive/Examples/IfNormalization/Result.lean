@@ -3,15 +3,19 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Archive.Examples.IfNormalization.Statement
-import Mathlib.Data.List.AList
-import Mathlib.Tactic.Recall
+module
+
+public import Archive.Examples.IfNormalization.Statement
+public import Mathlib.Data.List.AList
+public import Mathlib.Tactic.Recall
 
 /-!
 # A solution to the if normalization challenge in Lean.
 
 See `Statement.lean` for background.
 -/
+
+@[expose] public section
 
 local macro "◾" : tactic => `(tactic| aesop)
 local macro "◾" : term => `(term| by aesop)
@@ -46,8 +50,6 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
   | var _ => 1
   | .ite i t e => 2 * normSize i + max (normSize t) (normSize e) + 1
 
-set_option linter.flexible false in
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Normalizes the expression at the same time as assigning all variables in
 `e` to the literal Booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
@@ -73,11 +75,11 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         · -- eval = eval
           simp only [apply_ite, eval_ite_var, ite_eq_iff']
           cases hfv : f v
-          · simp_all
+          · simp_all only [cond_eq_ite, Bool.false_eq_true, ↓reduceIte, imp_and_neg_imp_iff]
             congr
             ext w
             by_cases w = v <;> ◾
-          · simp [h, ht₁]
+          · simp only [ht₁, h, Option.elim_none, cond_eq_ite, ↓reduceIte, imp_and_neg_imp_iff]
             congr
             ext w
             by_cases w = v <;> ◾

@@ -35,7 +35,7 @@ lemma cast_pow (p : ℚ) (n : ℕ) : ↑(p ^ n) = (p ^ n : α) := by
 theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   rcases n with - | n
   · simp
-  rw [cast_def, inv_natCast_num, inv_natCast_den, if_neg n.succ_ne_zero,
+  rw [cast_def, inv_natCast_num, inv_natCast_den, ite_eq_right n.succ_ne_zero,
     Int.sign_eq_one_of_pos (Int.ofNat_succ_pos n), Int.cast_one, one_div]
 
 @[simp]
