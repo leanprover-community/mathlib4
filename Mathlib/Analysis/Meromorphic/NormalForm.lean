@@ -43,16 +43,19 @@ variable
 -/
 
 variable (f x) in
-/-- A function is 'meromorphic in normal form' at `x` if it vanishes around `x`
-or if it can locally be written as `fun z ↦ (z - x) ^ n • g` where `g` is
-analytic and does not vanish at `x`. -/
+/--
+A function is **meromorphic in normal form** at `x` if it vanishes around `x` or if it can locally
+be written as `fun z ↦ (z - x) ^ n • g` where `g` is analytic and does not vanish at `x`.
+-/
 @[fun_prop]
 def MeromorphicNFAt :=
   f =ᶠ[𝓝 x] 0 ∨
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ f =ᶠ[𝓝 x] (· - x) ^ n • g
 
-/-- A meromorphic function has normal form at `x` iff it is either analytic
-there, or if it has a pole at `x` and takes the default value `0`. -/
+/--
+A meromorphic function has normal form at `x` iff it is either analytic there, or if it has a pole
+at `x` and takes the default value `0`.
+-/
 theorem meromorphicNFAt_iff_analyticAt_or :
     MeromorphicNFAt f x ↔
       AnalyticAt 𝕜 f x ∨ (MeromorphicAt f x ∧ meromorphicOrderAt f x < 0 ∧ f x = 0) := by
@@ -104,7 +107,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
 -/
 
 /-- If a function is meromorphic in normal form at `x`, then it is meromorphic at `x`. -/
-theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
+@[fun_prop] theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
     MeromorphicAt f x := by
   rw [meromorphicNFAt_iff_analyticAt_or] at hf
   rcases hf with h | h
@@ -112,8 +115,10 @@ theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
   · obtain ⟨hf, _⟩ := h
     exact hf
 
-/-- If a function is meromorphic in normal form at `x`, then it has non-negative order iff it is
-analytic. -/
+/--
+If a function is meromorphic in normal form at `x`, then it has non-negative order iff it is
+analytic.
+-/
 theorem MeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt (hf : MeromorphicNFAt f x) :
     0 ≤ meromorphicOrderAt f x ↔ AnalyticAt 𝕜 f x := by
   constructor <;> intro h₂f
@@ -126,12 +131,13 @@ theorem MeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt (hf : Meromorph
     simp
 
 /-- Analytic functions are meromorphic in normal form. -/
-theorem AnalyticAt.meromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
+@[fun_prop] theorem AnalyticAt.meromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
     MeromorphicNFAt f x := by
   simp [meromorphicNFAt_iff_analyticAt_or, hf]
 
-/-- Meromorphic functions have normal form outside of a discrete subset in the domain of
-meromorphicity. -/
+/--
+Meromorphic functions have normal form outside of a discrete subset in the domain of meromorphicity.
+-/
 theorem MeromorphicOn.meromorphicNFAt_mem_codiscreteWithin {U : Set 𝕜}
     (hf : MeromorphicOn f U) :
     { x | MeromorphicNFAt f x } ∈ Filter.codiscreteWithin U := by
@@ -142,10 +148,11 @@ theorem MeromorphicOn.meromorphicNFAt_mem_codiscreteWithin {U : Set 𝕜}
 ### Vanishing and order
 -/
 
-/-- If `f` is meromorphic in normal form at `x`, then `f` has order zero iff it does not vanish at
-`x`.
+/--
+If `f` is meromorphic in normal form at `x`, then `f` has order zero iff it does not vanish at `x`.
 
-See `AnalyticAt.order_eq_zero_iff` for an analogous statement about analytic functions. -/
+See `AnalyticAt.order_eq_zero_iff` for an analogous statement about analytic functions.
+-/
 theorem MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (hf : MeromorphicNFAt f x) :
     meromorphicOrderAt f x = 0 ↔ f x ≠ 0 := by
   constructor
@@ -172,11 +179,12 @@ theorem MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (hf : MeromorphicNFAt f x
 ### Local nature of the definition and local identity theorem
 -/
 
-/-- **Local identity theorem**: two meromorphic functions in normal form agree in a
-neighborhood iff they agree in a pointed neighborhood.
+/--
+**Local identity theorem**: two meromorphic functions in normal form agree in a neighborhood iff
+they agree in a pointed neighborhood.
 
-See `ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE` for the analogous
-statement for continuous functions.
+See `ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE` for the analogous statement for
+continuous functions.
 -/
 theorem MeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds {g : 𝕜 → E}
     (hf : MeromorphicNFAt f x) (hg : MeromorphicNFAt g x) :
@@ -213,9 +221,10 @@ theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
 ### Criteria to guarantee normal form
 -/
 
-/-- Helper lemma for `meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic`: if
-`f` is meromorphic in normal form at `x` and `g` is analytic without zero at
-`x`, then `g • f` is meromorphic in normal form at `x`. -/
+/--
+If `f` is meromorphic in normal form at `x` and `g` is analytic without zero at `x`, then `g • f` is
+meromorphic in normal form at `x`.
+-/
 lemma MeromorphicNFAt.smul_analytic (hf : MeromorphicNFAt f x)
     (h₁g : AnalyticAt 𝕜 g x) (h₂g : g x ≠ 0) :
     MeromorphicNFAt (g • f) x := by
@@ -232,8 +241,17 @@ lemma MeromorphicNFAt.smul_analytic (hf : MeromorphicNFAt f x)
       simp only [Pi.smul_apply', hy, Pi.pow_apply]
       rw [smul_comm]
 
-/-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
-normal form at `z₀` iff `g • f` is meromorphic in normal form at `z₀`. -/
+@[fun_prop] theorem MeromorphicNFAt.smul_const {s : 𝕜} (hf : MeromorphicNFAt f x) :
+    MeromorphicNFAt (s • f) x := by
+  by_cases h : s = 0
+  · rw [h, zero_smul]
+    fun_prop
+  exact hf.smul_analytic (by fun_prop) h
+
+/--
+If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in normal
+form at `z₀` iff `g • f` is meromorphic in normal form at `z₀`.
+-/
 theorem meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g : AnalyticAt 𝕜 g x)
     (h₂g : g x ≠ 0) :
     MeromorphicNFAt (g • f) x ↔ MeromorphicNFAt f x where
@@ -248,15 +266,19 @@ theorem meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g : AnalyticAt 𝕜 g 
     exact hprod.smul_analytic (h₁g.inv h₂g) (inv_ne_zero h₂g)
   mpr hf := hf.smul_analytic h₁g h₂g
 
-/-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
-normal form at `z₀` iff `g * f` is meromorphic in normal form at `z₀`. -/
+/--
+If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in normal
+form at `z₀` iff `g * f` is meromorphic in normal form at `z₀`.
+-/
 theorem meromorphicNFAt_mul_iff_right {f : 𝕜 → 𝕜} (h₁g : AnalyticAt 𝕜 g x)
     (h₂g : g x ≠ 0) :
     MeromorphicNFAt (g * f) x ↔ MeromorphicNFAt f x :=
   meromorphicNFAt_smul_iff_right_of_analyticAt h₁g h₂g
 
-/-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
-normal form at `z₀` iff `f * g` is meromorphic in normal form at `z₀`. -/
+/--
+If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in normal
+form at `z₀` iff `f * g` is meromorphic in normal form at `z₀`.
+-/
 theorem meromorphicNFAt_mul_iff_left {f : 𝕜 → 𝕜} (h₁g : AnalyticAt 𝕜 g x)
     (h₂g : g x ≠ 0) :
     MeromorphicNFAt (f * g) x ↔ MeromorphicNFAt f x := by
@@ -315,10 +337,18 @@ theorem meromorphicNFAt_finprod {x : 𝕜} {ι : Type*} {f : ι → 𝕜 → �
     exact meromorphicNFAt_prod (by aesop) (fun _ _ _ _ ↦ by aesop)
   · exact finprod_of_not_hasFiniteMulSupport h₃f ▸ analyticAt_const.meromorphicNFAt
 
-/--
-Integer powers of meromorphic functions in normal form are in normal form.
--/
-@[to_fun]
+/-- MeromorphicNFAt is invariant under scaling. -/
+@[to_fun (attr := simp) meromorphicNFAt_fun_const_smul_iff_meromorphicNFAt]
+theorem meromorphicNFAt_const_smul_iff_meromorphicNFAt {s : 𝕜} (hs : s ≠ 0) :
+    MeromorphicNFAt (s • f) x ↔ MeromorphicNFAt f x := by
+  constructor
+  <;> intro hf
+  · rw [((eq_inv_smul_iff₀ hs).mpr rfl : f = s⁻¹ • s • f)]
+    fun_prop
+  · fun_prop
+
+/-- Integer powers of meromorphic functions in normal form are in normal form. -/
+@[to_fun (attr := fun_prop)]
 theorem MeromorphicNFAt.zpow {f : 𝕜 → 𝕜} {n : ℤ} {x : 𝕜} (hf : MeromorphicNFAt f x) :
     MeromorphicNFAt (f ^ n) x := by
   by_cases hn : n = 0
@@ -338,10 +368,8 @@ theorem MeromorphicNFAt.zpow {f : 𝕜 → 𝕜} {n : ℤ} {x : 𝕜} (hf : Mero
     · filter_upwards [h₃g] with z hz
       simp [hz, mul_zpow, (zpow_mul' (z - x) n m).symm]
 
-/--
-If `f` is meromorphic in normal form, then so is its inverse.
--/
-theorem MeromorphicNFAt.inv {f : 𝕜 → 𝕜} (hf : MeromorphicNFAt f x) :
+/-- If `f` is meromorphic in normal form, then so is its inverse. -/
+@[fun_prop] theorem MeromorphicNFAt.inv {f : 𝕜 → 𝕜} (hf : MeromorphicNFAt f x) :
     MeromorphicNFAt f⁻¹ x := by
   rcases hf with h | ⟨n, g, h₁, h₂, h₃⟩
   · left
@@ -353,9 +381,7 @@ theorem MeromorphicNFAt.inv {f : 𝕜 → 𝕜} (hf : MeromorphicNFAt f x) :
     simp only [Pi.inv_apply, hy, Pi.smul_apply', Pi.pow_apply, smul_eq_mul, mul_inv_rev, zpow_neg]
     ring
 
-/--
-A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
--/
+/-- A function to 𝕜 is meromorphic in normal form at a point iff its inverse is. -/
 @[simp] theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
   mp hf := inv_inv f ▸ hf.inv
   mpr hf := hf.inv
@@ -371,8 +397,8 @@ theorem MeromorphicNFOn.div {f : 𝕜 → 𝕜} {g : 𝕜 → 𝕜} {x : 𝕜} (
   · grind [meromorphicNFAt_mul_iff_right, hg.inv]
 
 /--
-The composition of a meromorphic function in normal form and an analytic
-function is meromorphic in normal form.
+The composition of a meromorphic function in normal form and an analytic function is meromorphic in
+normal form.
 -/
 @[fun_prop]
 theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
@@ -581,26 +607,20 @@ lemma MeromorphicAt.toMeromorphicNFAt_eventuallyEq_nhds_iff {f g : 𝕜 → E} (
 ### Definition
 -/
 
-/--
-A function is 'meromorphic in normal form' on `U` if has normal form at every
-point of `U`.
--/
+/-- A function is 'meromorphic in normal form' on `U` if has normal form at every point of `U`. -/
 def MeromorphicNFOn (f : 𝕜 → E) (U : Set 𝕜) := ∀ ⦃z⦄, z ∈ U → MeromorphicNFAt f z
 
 /-!
 ### Relation to other properties of functions
 -/
 
-/--
-If a function is meromorphic in normal form on `U`, then it is meromorphic on
-`U`.
--/
+/-- If a function is meromorphic in normal form on `U`, then it is meromorphic on `U`. -/
 theorem MeromorphicNFOn.meromorphicOn (hf : MeromorphicNFOn f U) :
     MeromorphicOn f U := fun _ hz ↦ (hf hz).meromorphicAt
 
 /--
-If a function is meromorphic in normal form on `U`, then its divisor is
-non-negative iff it is analytic.
+If a function is meromorphic in normal form on `U`, then its divisor is non-negative iff it is
+analytic.
 -/
 theorem MeromorphicNFOn.divisor_nonneg_iff_analyticOnNhd
     (h₁f : MeromorphicNFOn f U) :
@@ -627,8 +647,8 @@ theorem AnalyticOnNhd.meromorphicNFOn (h₁f : AnalyticOnNhd 𝕜 f U) :
 -/
 
 /--
-If `f` is meromorphic in normal form on `U` and nowhere locally constant zero,
-then its zero set equals the support of the associated divisor.
+If `f` is meromorphic in normal form on `U` and nowhere locally constant zero, then its zero set
+equals the support of the associated divisor.
 -/
 theorem MeromorphicNFOn.zero_set_eq_divisor_support (h₁f : MeromorphicNFOn f U)
     (h₂f : ∀ u : U, meromorphicOrderAt f u ≠ ⊤) :
@@ -654,9 +674,8 @@ theorem MeromorphicNFOn.zero_set_eq_divisor_support (h₁f : MeromorphicNFOn f U
 -/
 
 /--
-If `f` is any function and `g` is analytic without zero on `U`, then `f` is
-meromorphic in normal form on `U` iff `g • f` is meromorphic in normal form on
-`U`.
+If `f` is any function and `g` is analytic without zero on `U`, then `f` is meromorphic in normal
+form on `U` iff `g • f` is meromorphic in normal form on `U`.
 -/
 theorem meromorphicNFOn_smul_iff_right_of_analyticOnNhd {g : 𝕜 → 𝕜} (h₁g : AnalyticOnNhd 𝕜 g U)
     (h₂g : ∀ u ∈ U, g u ≠ 0) :
@@ -668,9 +687,8 @@ theorem meromorphicNFOn_smul_iff_right_of_analyticOnNhd {g : 𝕜 → 𝕜} (h�
     exact h₂g z hz
 
 /--
-If `f` is any function and `g` is analytic without zero in `U`, then `f` is
-meromorphic in normal form on `U` iff `g * f` is meromorphic in normal form on
-`U`.
+If `f` is any function and `g` is analytic without zero in `U`, then `f` is meromorphic in normal
+form on `U` iff `g * f` is meromorphic in normal form on `U`.
 -/
 theorem meromorphicNFOn_mul_iff_right_of_analyticOnNhd {f g : 𝕜 → 𝕜} (h₁g : AnalyticOnNhd 𝕜 g U)
     (h₂g : ∀ u ∈ U, g u ≠ 0) :
@@ -679,9 +697,8 @@ theorem meromorphicNFOn_mul_iff_right_of_analyticOnNhd {f g : 𝕜 → 𝕜} (h�
   exact meromorphicNFOn_smul_iff_right_of_analyticOnNhd h₁g h₂g
 
 /--
-If `f` is any function and `g` is analytic without zero in `U`, then `f` is
-meromorphic in normal form on `U` iff `f * g` is meromorphic in normal form on
-`U`.
+If `f` is any function and `g` is analytic without zero in `U`, then `f` is meromorphic in normal
+form on `U` iff `f * g` is meromorphic in normal form on `U`.
 -/
 theorem meromorphicNFOn_mul_iff_left_of_analyticOnNhd {f g : 𝕜 → 𝕜} (h₁g : AnalyticOnNhd 𝕜 g U)
     (h₂g : ∀ u ∈ U, g u ≠ 0) :
@@ -719,24 +736,25 @@ theorem meromorphicNFOn_finprod {ι : Type*} {f : ι → 𝕜 → 𝕜} (h₁f :
   MeromorphicNFOn (∏ᶠ i, f i) U :=
   fun x hx ↦ meromorphicNFAt_finprod (h₁f · hx) (h₂f x hx)
 
-/--
-Integer powers of meromorphic functions in normal form are in normal form.
--/
+/-- MeromorphicNFOn is invariant under scaling. -/
+@[to_fun (attr := simp) meromorphicNFOn_fun_const_smul_iff_meromorphicNFOn]
+theorem meromorphicNFOn_const_smul_iff_meromorphicNFOn {s : 𝕜} (hs : s ≠ 0) :
+    MeromorphicNFOn (s • f) U ↔ MeromorphicNFOn f U :=
+  ⟨fun hf _ hx ↦ (meromorphicNFAt_const_smul_iff_meromorphicNFAt hs).mp (hf hx),
+    fun hf _ hx ↦ (meromorphicNFAt_const_smul_iff_meromorphicNFAt hs).mpr (hf hx)⟩
+
+/-- Integer powers of meromorphic functions in normal form are in normal form. -/
 @[to_fun]
 theorem MeromorphicNFOn.zpow {f : 𝕜 → 𝕜} {n : ℤ} {U : Set 𝕜} (hf : MeromorphicNFOn f U) :
     MeromorphicNFOn (f ^ n) U := fun _ hz ↦ (hf hz).zpow
 
-/--
-A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is.
--/
+/-- A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is. -/
 theorem meromorphicNFOn_inv {f : 𝕜 → 𝕜} :
     MeromorphicNFOn f⁻¹ U ↔ MeromorphicNFOn f U where
   mp h _ hx := meromorphicNFAt_inv.1 (h hx)
   mpr h _ hx := meromorphicNFAt_inv.2 (h hx)
 
-/--
-A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is.
--/
+/-- A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is. -/
 theorem meromorphicNFOn_fun_inv {f : 𝕜 → 𝕜} :
     MeromorphicNFOn (fun x ↦ (f x)⁻¹) U ↔ MeromorphicNFOn f U :=
   meromorphicNFOn_inv
@@ -785,8 +803,8 @@ theorem meromorphicNFOn_sphere_comp_sub_const_iff_meromorphicNFOn_sphere {c : �
 
 variable (f U) in
 /--
-If `f` is meromorphic on `U`, convert `f` to normal form on `U` by changing its
-values along a discrete subset within `U`. Otherwise, returns the 0 function.
+If `f` is meromorphic on `U`, convert `f` to normal form on `U` by changing its values along a
+discrete subset within `U`. Otherwise, returns the 0 function.
 -/
 noncomputable def toMeromorphicNFOn :
     𝕜 → E := by
@@ -797,26 +815,18 @@ noncomputable def toMeromorphicNFOn :
     · exact f z
   · exact 0
 
-/--
-If `f` is not meromorphic on `U`, conversion to normal form maps the function
-to `0`.
--/
+/-- If `f` is not meromorphic on `U`, conversion to normal form maps the function to `0`. -/
 @[simp] lemma toMeromorphicNFOn_of_not_meromorphicOn (hf : ¬MeromorphicOn f U) :
     toMeromorphicNFOn f U = 0 := by
   simp [toMeromorphicNFOn, hf]
 
-/--
-Conversion to normal form on `U` does not change values outside of `U`.
--/
+/-- Conversion to normal form on `U` does not change values outside of `U`. -/
 @[simp] lemma toMeromorphicNFOn_eq_self_on_compl (hf : MeromorphicOn f U) :
     Set.EqOn (toMeromorphicNFOn f U) f Uᶜ := by
   intro x hx
   simp_all [toMeromorphicNFOn]
 
-/--
-Conversion to normal form on `U` changes the value only along a discrete subset
-of `U`.
--/
+/-- Conversion to normal form on `U` changes the value only along a discrete subset of `U`. -/
 theorem toMeromorphicNFOn_eqOn_codiscrete (hf : MeromorphicOn f U) :
     f =ᶠ[Filter.codiscreteWithin U] toMeromorphicNFOn f U := by
   have : U ∈ Filter.codiscreteWithin U := by simp
@@ -824,8 +834,8 @@ theorem toMeromorphicNFOn_eqOn_codiscrete (hf : MeromorphicOn f U) :
   simp [toMeromorphicNFOn, hf, ← (toMeromorphicNFAt_eq_self.2 h₁a.meromorphicNFAt).symm]
 
 /--
-If `f` is meromorphic on `U` and `x ∈ U`, then `f` and its conversion to normal
-form on `U` agree in a punctured neighborhood of `x`.
+If `f` is meromorphic on `U` and `x ∈ U`, then `f` and its conversion to normal form on `U` agree in
+a punctured neighborhood of `x`.
 -/
 theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdsNE
     (hf : MeromorphicOn f U) (hx : x ∈ U) :
@@ -837,8 +847,8 @@ theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdsNE
     simp [toMeromorphicNFOn, ha, hf]
 
 /--
-If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
-and conversion to normal form on `U` agree in a neighborhood of `x`.
+If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x` and conversion to
+normal form on `U` agree in a neighborhood of `x`.
 -/
 theorem toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds (hf : MeromorphicOn f U)
     (hx : x ∈ U) :
@@ -848,8 +858,8 @@ theorem toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds (hf : MeromorphicOn f U)
   · simp [toMeromorphicNFOn, hf, hx]
 
 /--
-If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
-and conversion to normal form on `U` agree at `x`.
+If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x` and conversion to
+normal form on `U` agree at `x`.
 -/
 theorem toMeromorphicNFOn_eq_toMeromorphicNFAt (hf : MeromorphicOn f U)
     (hx : x ∈ U) :
@@ -858,9 +868,7 @@ theorem toMeromorphicNFOn_eq_toMeromorphicNFAt (hf : MeromorphicOn f U)
   simp [(toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds hf hx).trans]
 
 variable (f U) in
-/--
-After conversion to normal form on `U`, the function has normal form.
--/
+/-- After conversion to normal form on `U`, the function has normal form. -/
 theorem meromorphicNFOn_toMeromorphicNFOn :
     MeromorphicNFOn (toMeromorphicNFOn f U) U := by
   by_cases hf : MeromorphicOn f U
@@ -869,9 +877,7 @@ theorem meromorphicNFOn_toMeromorphicNFOn :
     exact meromorphicNFAt_toMeromorphicNFAt
   · simpa [hf] using! analyticOnNhd_const.meromorphicNFOn
 
-/--
-If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
--/
+/-- If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`. -/
 @[simp] theorem toMeromorphicNFOn_eq_self :
     toMeromorphicNFOn f U = f ↔ MeromorphicNFOn f U := by
   constructor <;> intro h
@@ -883,17 +889,13 @@ If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
       rw [toMeromorphicNFAt_eq_self.2 (h hx)]
     · simp [toMeromorphicNFOn, h.meromorphicOn, hx]
 
-/--
-Conversion of normal form does not affect orders.
--/
+/-- Conversion of normal form does not affect orders. -/
 @[simp] theorem meromorphicOrderAt_toMeromorphicNFOn (hf : MeromorphicOn f U) (hx : x ∈ U) :
     meromorphicOrderAt (toMeromorphicNFOn f U) x = meromorphicOrderAt f x := by
   apply meromorphicOrderAt_congr
   exact hf.toMeromorphicNFOn_eq_self_on_nhdsNE hx
 
-/--
-Conversion of normal form does not affect divisors.
--/
+/-- Conversion of normal form does not affect divisors. -/
 @[simp] theorem MeromorphicOn.divisor_of_toMeromorphicNFOn (hf : MeromorphicOn f U) :
     divisor (toMeromorphicNFOn f U) U = divisor f U := by
   ext z
