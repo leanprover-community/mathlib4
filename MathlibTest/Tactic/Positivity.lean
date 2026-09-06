@@ -1,14 +1,14 @@
-import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import Mathlib.Basic.ENNReal.Basic
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Misc
 import Mathlib.NumberTheory.Chebyshev
+import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic

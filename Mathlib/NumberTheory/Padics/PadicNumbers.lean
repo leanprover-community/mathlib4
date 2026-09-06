@@ -1203,6 +1203,21 @@ lemma norm_eq_zpow_log_mulValuation {x : ℚ_[p]} (hx : x ≠ 0) :
     ‖x‖ = (p : ℝ) ^ (log (mulValuation x)) := by
   simp [norm_eq_zpow_neg_valuation, hx]
 
+lemma norm_lt_zpow_iff_mulValuation_lt_exp {x : ℚ_[p]} {m : ℤ} :
+    ‖x‖ < (p : ℝ) ^ m ↔ mulValuation x < exp m := by
+  have h1p : (1 : ℝ) < p := mod_cast hp.out.one_lt
+  by_cases hx : x = 0
+  · simpa [hx] using zpow_pos (by positivity) m
+  · rw [norm_eq_zpow_neg_valuation hx, zpow_lt_zpow_iff_right₀ h1p, mulValuation_toFun,
+      ite_eq_right hx, exp_lt_exp]
+
+lemma norm_lt_norm_iff_mulValuation_lt {x y : ℚ_[p]} :
+    ‖x‖ < ‖y‖ ↔ mulValuation x < mulValuation y := by
+  by_cases hy : y = 0
+  · simp [hy]
+  rw [norm_eq_zpow_log_mulValuation hy, norm_lt_zpow_iff_mulValuation_lt_exp,
+    exp_log (mulValuation.ne_zero_iff.mpr hy)]
+
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
 def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
   AddValuation.of addValuationDef AddValuation.map_zero AddValuation.map_one AddValuation.map_add
