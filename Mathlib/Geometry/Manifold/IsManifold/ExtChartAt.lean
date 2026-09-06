@@ -426,30 +426,6 @@ lemma isInvertible_fderivWithin_extendCoordChange (hn : n ≠ 0)
 
 end ModelWithCorners
 
-namespace OpenPartialHomeomorph
-
-@[deprecated (since := "2026-02-16")]
-alias extend_coord_change_source := ModelWithCorners.extendCoordChange_source
-
-@[deprecated (since := "2026-02-16")]
-alias extend_coord_change_source_mem_nhdsWithin :=
-  ModelWithCorners.extendCoordChange_source_mem_nhdsWithin
-
-@[deprecated (since := "2026-02-16")]
-alias extend_coord_change_source_mem_nhdsWithin' :=
-  ModelWithCorners.extendCoordChange_source_mem_nhdsWithin'
-
-@[deprecated (since := "2026-02-16")]
-alias contDiffOn_extend_coord_change := ModelWithCorners.contDiffOn_extendCoordChange
-
-@[deprecated (since := "2026-02-16")]
-alias contDiffWithinAt_extend_coord_change := ModelWithCorners.contDiffWithinAt_extendCoordChange
-
-@[deprecated (since := "2026-02-16")]
-alias contDiffWithinAt_extend_coord_change' := ModelWithCorners.contDiffWithinAt_extendCoordChange'
-
-end OpenPartialHomeomorph
-
 open OpenPartialHomeomorph
 
 variable [ChartedSpace H M] [ChartedSpace H' M']
@@ -861,8 +837,6 @@ lemma writtenInExtChartAt_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
       Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
   ext p <;>
   simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
-
-@[deprecated (since := "2026-02-18")] alias writtenInExtChart_prod := writtenInExtChartAt_prod
 
 end
 

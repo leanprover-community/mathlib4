@@ -11,7 +11,6 @@ public import Mathlib.Data.Prod.Basic
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Order.Defs.LinearOrder
 
-
 /-!
 # Nontrivial types
 
@@ -23,13 +22,16 @@ Results about `Nontrivial`.
 variable {α : Type*} {β : Type*}
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
+@[to_dual self]
 theorem nontrivial_of_lt [Preorder α] (x y : α) (h : x < y) : Nontrivial α :=
   ⟨⟨x, y, ne_of_lt h⟩⟩
 
+@[to_dual none]
 theorem exists_pair_lt (α : Type*) [Nontrivial α] [LinearOrder α] : ∃ x y : α, x < y := by
   rcases exists_pair_ne α with ⟨x, y, hxy⟩
   cases lt_or_gt_of_ne hxy <;> exact ⟨_, _, ‹_›⟩
 
+@[to_dual none]
 theorem nontrivial_iff_lt [LinearOrder α] : Nontrivial α ↔ ∃ x y : α, x < y :=
   ⟨fun h ↦ @exists_pair_lt α h _, fun ⟨x, y, h⟩ ↦ nontrivial_of_lt x y h⟩
 
