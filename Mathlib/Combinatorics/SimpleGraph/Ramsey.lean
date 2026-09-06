@@ -3,8 +3,10 @@ Copyright (c) 2026 Haoyu Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoyu Chen
 -/
-import Mathlib.Combinatorics.SimpleGraph.CycleGraph
-import Mathlib.Data.Nat.Choose.Central
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
+public import Mathlib.Data.Nat.Choose.Central
 
 /-!
 # Ramsey's theorem (finite, two-colour) with the Erdős–Szekeres bound
@@ -52,6 +54,8 @@ the second case induction gives an `(a+2)`-clique or a `(b+1)`-independent set i
 * P. Erdős and G. Szekeres, *A combinatorial problem in geometry*, Compositio Math. 2 (1935).
 * F. P. Ramsey, *On a problem of formal logic*, Proc. London Math. Soc. (1930).
 -/
+
+@[expose] public section
 
 open Finset
 

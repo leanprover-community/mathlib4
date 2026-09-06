@@ -3,8 +3,10 @@ Copyright (c) 2026 Haoyu Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoyu Chen
 -/
-import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Order.Filter.Ultrafilter.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Order.Filter.Ultrafilter.Basic
 
 /-!
 # The infinite Ramsey theorem for pairs
@@ -39,6 +41,8 @@ have `x j ∈ P (i+1)`, whence `c (x i) (x j) = f (x i) = b₀`. So `Set.range x
 
 * F. P. Ramsey, *On a problem of formal logic*, Proc. London Math. Soc. (1930).
 -/
+
+@[expose] public section
 
 open Filter Set
 
