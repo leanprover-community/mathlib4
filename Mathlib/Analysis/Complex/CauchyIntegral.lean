@@ -825,33 +825,25 @@ lemma circleIntegral_one_div_sub_pow_smul_of_differentiable_on_off_countable
   have hR : 0 < R := pos_of_mem_ball hw
   have hfi : CircleIntegrable f c R :=
     (hc.mono sphere_subset_closedBall).circleIntegrable hR.le
-  let J (n : ℕ) (w : ℂ) : E :=
-    ∮ z in C(c, R), (z - w) ^ (-((n + 1 : ℕ) : ℤ)) • f z
-  have hJ (n : ℕ) (w : ℂ) (hw : w ∈ ball c R) :
-      J n w = (2 * π * I / n.factorial) • iteratedDeriv n f w := by
-    induction n generalizing w with
-    | zero =>
-        simpa [J] using
-          circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw hc hd
-    | succ n ih =>
-        have hws : w ∉ sphere c |R| := by
-          simpa only [mem_sphere, abs_of_pos hR] using (mem_ball.mp hw).ne
-        have hEq :
-            J n =ᶠ[nhds w] fun x ↦ (2 * π * I / n.factorial) • iteratedDeriv n f x :=
-          mem_of_superset (isOpen_ball.mem_nhds hw) ih
-        have hleft : HasDerivAt (J n) (((n + 1 : ℕ) : ℂ) • J (n + 1) w) w := by
-          simpa [J, sub_eq_add_neg, add_assoc, add_comm, add_left_comm] using
-            hasDerivAt_circleIntegral_sub_zpow_smul
-            (n := -((n + 1 : ℕ) : ℤ)) hfi hws
-        apply smul_right_injective E (r := ((n + 1 : ℕ) : ℂ))
-          (Nat.cast_ne_zero.mpr n.succ_ne_zero)
-        simp only
-        rw [← hleft.deriv, hEq.deriv_eq, deriv_fun_const_smul_field, ← iteratedDeriv_succ,
-          smul_smul]
-        congr 1
-        rw [Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
-        field_simp
-  simpa only [J, one_div, ← zpow_natCast, ← zpow_neg] using hJ n w hw
+  simp only [one_div, ← zpow_neg, ← zpow_natCast]
+  induction n generalizing w with
+  | zero =>
+    simpa using circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw hc hd
+  | succ n ih =>
+    let J (n : ℕ) (w : ℂ) : E :=
+      ∮ z in C(c, R), (z - w) ^ (-((n + 1 : ℕ) : ℤ)) • f z
+    apply smul_right_injective E (by norm_cast : ((n + 1 : ℕ) : ℂ) ≠ 0)
+    simp only [smul_smul, Nat.factorial_succ, Nat.cast_mul, iteratedDeriv_succ,
+      ← deriv_fun_const_smul_field]
+    have hws : w ∉ sphere c |R| := by
+      simpa only [mem_sphere, abs_of_pos hR] using (mem_ball.mp hw).ne
+    trans deriv (J n) w
+    · convert hasDerivAt_circleIntegral_sub_zpow_smul
+        (n := -((n + 1 : ℕ) : ℤ)) hfi hws |>.deriv.symm <;> norm_cast
+    · apply EventuallyEq.deriv_eq
+      filter_upwards [isOpen_ball.mem_nhds hw] with w hw
+      convert ih hw
+      field
 
 /-- **Cauchy integral formula for derivatives**, assuming `f` is continuous on a closed ball and
 differentiable on its interior away from a countable set. -/
