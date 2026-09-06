@@ -136,7 +136,7 @@ protected theorem inductionOn {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
     (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
   AddCon.induction_on z fun x =>
-    FreeAddMonoid.recOn x (by convert (tmul 0 0); simp; rfl) fun ⟨m, n⟩ y ih => by
+    FreeAddMonoid.recOn x (by simpa using! tmul 0 0) fun ⟨m, n⟩ y ih => by
       rw [AddCon.coe_add]
       exact add _ _ (tmul ..) ih
 
@@ -150,12 +150,12 @@ protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
 
 instance uniqueLeft [Subsingleton M] : Unique (M ⊗[R] N) where
   default := 0
-  uniq z := z.inductionOn (fun x y ↦ by rw [Subsingleton.elim x 0, zero_tmul]) <| by
+  uniq z := z.inductionOn (fun x y => by rw [Subsingleton.elim x 0, zero_tmul]) <| by
     rintro _ _ rfl rfl; apply add_zero
 
 instance uniqueRight [Subsingleton N] : Unique (M ⊗[R] N) where
   default := 0
-  uniq z := z.inductionOn (fun x y ↦ by rw [Subsingleton.elim y 0, tmul_zero]) <| by
+  uniq z := z.inductionOn (fun x y => by rw [Subsingleton.elim y 0, tmul_zero]) <| by
     rintro _ _ rfl rfl; apply add_zero
 
 section
