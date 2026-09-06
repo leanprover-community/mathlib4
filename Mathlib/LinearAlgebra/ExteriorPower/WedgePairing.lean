@@ -25,8 +25,7 @@ section Basis
 variable {ι : Type} [Fintype ι] (b : Basis ι K V)
 variable (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
 variable {k l : ℕ} (hkl : k + l = finrank K V)
-variable (sourceIndex : powersetCard (Fin (finrank K V)) l)
-  (targetIndex : powersetCard (Fin (finrank K V)) k)
+variable (I : powersetCard (Fin (finrank K V)) l) (J : powersetCard (Fin (finrank K V)) k)
 
 lemma disjoint_compl :
     Disjoint (complementEquiv k l hkl sourceIndex).val sourceIndex.val := by
