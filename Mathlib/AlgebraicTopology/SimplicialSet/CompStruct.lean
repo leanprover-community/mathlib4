@@ -6,6 +6,7 @@ Authors: Joël Riou, Arnoud van der Leer
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 
 /-!
 # Edges, "triangles" and isos in simplicial sets
@@ -58,6 +59,14 @@ by an edge of `X`. -/
 def toTruncated (e : Edge x₀ x₁) :
     ((truncation 2).obj X).Edge x₀ x₁ :=
   e
+
+@[simp]
+lemma toTruncated_ofTruncated (e : ((truncation 2).obj X).Edge x₀ x₁) :
+    (ofTruncated e).toTruncated = e := rfl
+
+@[simp]
+lemma ofTruncated_toTruncated (e : X.Edge x₀ x₁) :
+    ofTruncated e.toTruncated = e := rfl
 
 /-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
 a `1`-simplex with prescribed `0`-dimensional faces. -/
@@ -312,6 +321,61 @@ def ofEq {y₀ y₁ : X _⦋0⦌} {hom : Edge x₀ x₁} {hom' : Edge y₀ y₁}
   invHomId := I.invHomId.ofEq rfl hhom (by rw [← hom.tgt_eq, hhom, hom'.tgt_eq])
 
 end InvStruct
+
+/-- The opposite of an edge. -/
+def op (e : Edge x₀ x₁) :
+    Edge (opObjEquiv.symm x₁) (opObjEquiv.symm x₀) :=
+  Edge.mk (opObjEquiv.symm e.edge) (by simp) (by simp)
+
+@[simp]
+lemma op_edge (e : Edge x₀ x₁) :
+    e.op.edge = opObjEquiv.symm e.edge := rfl
+
+/-- The edge obtained from an edge in the opposite simplicial set. -/
+def unop {x₀ x₁ : X.op _⦋0⦌} (e : Edge x₀ x₁) :
+    Edge (opObjEquiv x₁) (opObjEquiv x₀) :=
+  Edge.mk (opObjEquiv e.edge) (by simp [δ_opObjEquiv]) (by simp [δ_opObjEquiv])
+
+@[simp]
+lemma unop_edge {x₀ x₁ : X.op _⦋0⦌} (e : Edge x₀ x₁) :
+    e.unop.edge = opObjEquiv e.edge := rfl
+
+@[simp]
+lemma unop_op (e : Edge x₀ x₁) :
+    e.op.unop = e := rfl
+
+@[simp]
+lemma op_unop {x₀ x₁ : X.op _⦋0⦌} (e : Edge x₀ x₁) :
+    e.unop.op = e := rfl
+
+namespace CompStruct
+
+/-- The `CompStruct` in `X.op` that is deduced from a `CompStruct` in `X`. -/
+def op {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
+    (h : CompStruct e₀₁ e₁₂ e₀₂) :
+    CompStruct e₁₂.op e₀₁.op e₀₂.op :=
+  CompStruct.mk (opObjEquiv.symm h.simplex) (by simp) (by simp) (by simp)
+
+@[simp]
+lemma op_simplex {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
+    (h : CompStruct e₀₁ e₁₂ e₀₂) :
+    h.op.simplex = opObjEquiv.symm h.simplex := rfl
+
+/-- The `CompStruct` in `X` that is deduced from a `CompStruct` in `X.op`. -/
+def unop {x₀ x₁ x₂ : X.op _⦋0⦌}
+    {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
+    (h : CompStruct e₀₁ e₁₂ e₀₂) :
+    CompStruct e₁₂.unop e₀₁.unop e₀₂.unop :=
+  CompStruct.mk (opObjEquiv h.simplex) (by simp [δ_opObjEquiv])
+    (by simp [δ_opObjEquiv]) (by simp [δ_opObjEquiv])
+
+@[simp]
+lemma unop_simplex {x₀ x₁ x₂ : X.op _⦋0⦌}
+    {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
+    (h : CompStruct e₀₁ e₁₂ e₀₂) :
+    h.unop.simplex = opObjEquiv h.simplex := rfl
+
+end CompStruct
 
 end Edge
 
