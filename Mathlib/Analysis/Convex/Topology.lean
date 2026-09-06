@@ -345,7 +345,7 @@ variable (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing �
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 open Convexity in
-attribute [local instance] ConvexSpace.ofModule IsModuleConvexSpace.ofModule in
+attribute [local instance] ConvexSpace.ofModule IsModuleConvexSpace.of_module in
 /-- Convex hull of a finite set is compact. -/
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
     IsCompact (convexHull 𝕜 s) := by
