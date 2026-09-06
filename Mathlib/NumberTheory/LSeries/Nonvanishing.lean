@@ -456,8 +456,6 @@ theorem norm_rootNumber (hχ : χ.IsPrimitive) : ‖rootNumber χ‖ = 1 := by
   have : ‖gaussSum χ ZMod.stdAddChar‖ = ‖gaussSum χ⁻¹ ZMod.stdAddChar‖ := by
     rw [← norm_star, star_gaussSum_eq, AddChar.inv_mulShift,
       (by simp : (-1 : ZMod N) = ((-1 : (ZMod N)ˣ) : ZMod N)), gaussSum_mulShift_eq]
-    have : ‖χ (-1)‖ ^ 2 = 1 := by norm_num [← norm_pow, ← map_pow]
-    have : ‖χ (-1)‖ = 1 := by nlinarith [norm_nonneg (χ (-1))]
     simp_all
   have : ‖rootNumber χ‖ = ‖rootNumber χ⁻¹‖ := by simp [rootNumber, -pow_ite, this]
   have : ‖rootNumber χ‖ * ‖rootNumber χ⁻¹‖ = 1 := by simp [← norm_mul,
