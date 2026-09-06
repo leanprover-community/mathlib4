@@ -105,7 +105,7 @@ theorem map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ �
   simp [map]
 
 @[elab_as_elim]
-theorem inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
+theorem induction_on (h : IsTensorProduct f) {motive : M → Prop} (m : M)
     (zero : motive 0) (tmul : ∀ x y, motive (f x y))
     (add : ∀ x y, motive x → motive y → motive (x + y)) : motive m := by
   rw [← h.equiv.right_inv m]
@@ -113,6 +113,21 @@ theorem inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
   change motive (TensorProduct.lift f y)
   induction y using TensorProduct.induction_on with
   | zero => rwa [map_zero]
+  | tmul _ _ =>
+    rw [TensorProduct.lift.tmul]
+    apply tmul
+  | add _ _ _ _ =>
+    rw [map_add]
+    apply add <;> assumption
+
+@[elab_as_elim]
+theorem inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
+    (tmul : ∀ x y, motive (f x y))
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive m := by
+  rw [← h.equiv.right_inv m]
+  generalize h.equiv.invFun m = y
+  change motive (TensorProduct.lift f y)
+  induction y with
   | tmul _ _ =>
     rw [TensorProduct.lift.tmul]
     apply tmul
@@ -135,7 +150,7 @@ variable {P₁ P₂ P : Type*} [AddCommMonoid P₁] [AddCommMonoid P₂]
   (i₁ : N₁ →ₗ[R] P₁) (j₁ : M₁ →ₗ[R] N₁) (i₂ : N₂ →ₗ[R] P₂) (j₂ : M₂ →ₗ[R] N₂)
 
 theorem map_comp : hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) = hg.map hp i₁ i₂ ∘ₗ hf.map hg j₁ j₂ :=
-  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
 
 theorem map_map (x : M) :
     hg.map hp i₁ i₂ ((hf.map hg j₁ j₂) x) = hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) x :=
@@ -144,7 +159,7 @@ theorem map_map (x : M) :
 @[simp]
 theorem map_id :
     hf.map hf (LinearMap.id : M₁ →ₗ[R] M₁) (LinearMap.id : M₂ →ₗ[R] M₂) = LinearMap.id :=
-  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
 
 @[simp]
 protected theorem map_one : hf.map hf (1 : M₁ →ₗ[R] M₁) (1 : M₂ →ₗ[R] M₂) = 1 :=
@@ -343,7 +358,6 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
       have hF : ∀ (s : S) (m : M), h.lift F (s • f m) = s • g m := h.lift_eq F
       change h.lift F (r • x) = r • h.lift F x
       induction x using h.inductionOn with
-      | zero => rw [smul_zero, map_zero, smul_zero]
       | tmul s m =>
         change h.lift F (r • s • f m) = r • h.lift F (s • f m)
         rw [← mul_smul, hF, hF, mul_smul]
@@ -365,7 +379,7 @@ include h
 nonrec theorem IsBaseChange.inductionOn (x : N) (motive : N → Prop) (zero : motive 0)
     (tmul : ∀ m : M, motive (f m)) (smul : ∀ (s : S) (n), motive n → motive (s • n))
     (add : ∀ n₁ n₂, motive n₁ → motive n₂ → motive (n₁ + n₂)) : motive x :=
-  h.inductionOn x zero (fun _ _ => smul _ _ (tmul _)) add
+  h.induction_on x zero (fun _ _ => smul _ _ (tmul _)) add
 
 theorem IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f x) = g₂ (f x)) : g₁ = g₂ := by
   ext x
