@@ -136,11 +136,7 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
 
 /-- An upper bound on `n.factorization p` -/
 theorem mul_factorization_le {n p : ℕ} : p * n.factorization p ≤ n := by
-  obtain rfl | hp := eq_or_ne p 1
-  · simp
-  obtain rfl | hn := eq_or_ne n 0
-  · simp
-  grw [Nat.mul_le_pow hp, Nat.ordProj_le _ hn]
+  grw [factorization_le_padicValNat, mul_padicValNat_le]
 
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by
