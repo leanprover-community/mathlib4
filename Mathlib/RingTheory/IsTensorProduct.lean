@@ -105,22 +105,6 @@ theorem map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ �
   simp [map]
 
 @[elab_as_elim]
-theorem induction_on (h : IsTensorProduct f) {motive : M → Prop} (m : M)
-    (zero : motive 0) (tmul : ∀ x y, motive (f x y))
-    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive m := by
-  rw [← h.equiv.right_inv m]
-  generalize h.equiv.invFun m = y
-  change motive (TensorProduct.lift f y)
-  induction y using TensorProduct.induction_on with
-  | zero => rwa [map_zero]
-  | tmul _ _ =>
-    rw [TensorProduct.lift.tmul]
-    apply tmul
-  | add _ _ _ _ =>
-    rw [map_add]
-    apply add <;> assumption
-
-@[elab_as_elim]
 theorem inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
     (tmul : ∀ x y, motive (f x y))
     (add : ∀ x y, motive x → motive y → motive (x + y)) : motive m := by
@@ -376,15 +360,14 @@ section
 include h
 
 @[elab_as_elim]
-nonrec theorem IsBaseChange.inductionOn (x : N) (motive : N → Prop) (zero : motive 0)
+nonrec theorem IsBaseChange.inductionOn (x : N) {motive : N → Prop}
     (tmul : ∀ m : M, motive (f m)) (smul : ∀ (s : S) (n), motive n → motive (s • n))
     (add : ∀ n₁ n₂, motive n₁ → motive n₂ → motive (n₁ + n₂)) : motive x :=
-  h.induction_on x zero (fun _ _ => smul _ _ (tmul _)) add
+  h.inductionOn x (fun _ _ => smul _ _ (tmul _)) add
 
 theorem IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f x) = g₂ (f x)) : g₁ = g₂ := by
   ext x
-  refine h.inductionOn x _ ?_ ?_ ?_ ?_
-  · rw [map_zero, map_zero]
+  refine h.inductionOn x ?_ ?_ ?_
   · assumption
   · intro s n e'
     rw [g₁.map_smul, g₂.map_smul, e']
@@ -741,7 +724,6 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
     (h₂ : f.comp (toAlgHom R S S') = g.comp (toAlgHom R S S')) : f = g := by
   ext x
   refine H.1.inductionOn x _ ?_ ?_ ?_ ?_
-  · simp only [map_zero]
   · exact AlgHom.congr_fun h₁
   · intro s s' e
     rw [Algebra.smul_def, map_mul, map_mul, e]

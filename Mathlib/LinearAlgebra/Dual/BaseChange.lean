@@ -120,7 +120,6 @@ noncomputable def toDualBaseChange :
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearEquiv.trans_apply]
   induction w using ibc.inductionOn with
-  | zero => simp
   | tmul v =>
     simp only [toDualBaseChangeAux_tmul, one_mul]
     conv_lhs => rw [← Basis.sum_equivFun b v, map_sum]

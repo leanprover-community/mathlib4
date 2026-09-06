@@ -662,7 +662,7 @@ lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMon
   refine le_antisymm ?_ fun q h ↦ Submodule.smul_induction_on h
     (fun r hr q _ ↦ ⟨⟨r, hr⟩ ⊗ₜ q, by simp⟩) (by simp +contextual [add_mem])
   rintro _ ⟨t, rfl⟩
-  exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
+  exact t.inductionOn (by simp +contextual [Submodule.smul_mem_smul])
     (by simp +contextual [add_mem])
 
 section

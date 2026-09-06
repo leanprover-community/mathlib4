@@ -115,7 +115,7 @@ unsafe instance [Repr M] [Repr N] : Repr (M ⊗[R] N) where
       (if p > 65 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) <|
         .joinSep parts f!" +{Std.Format.line}"
 
-@[elab_as_elim]
+@[deprecated "Use `TensorProduction.inductionOn` instead" (since := "2026-09-07")]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
     (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)

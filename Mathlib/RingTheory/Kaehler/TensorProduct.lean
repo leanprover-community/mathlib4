@@ -115,7 +115,6 @@ lemma map_liftBaseChange_smul [h : Algebra.IsPushout R S A B] (b : B) (x) :
     ((map R S A B).restrictScalars R).liftBaseChange S (b • x) =
     b • ((map R S A B).restrictScalars R).liftBaseChange S x := by
   induction b using h.1.inductionOn with
-  | zero => simp only [zero_smul, map_zero]
   | smul s b e => rw [smul_assoc, map_smul, e, smul_assoc]
   | add b₁ b₂ e₁ e₂ => simp only [map_add, e₁, e₂, add_smul]
   | tmul a =>
@@ -136,7 +135,6 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
     rw [Derivation.map_one_eq_zero, TensorProduct.tmul_zero]
   leibniz' a b := by
     induction a using h.out.inductionOn with
-    | zero => rw [map_zero, zero_smul, smul_zero, zero_add, zero_mul, map_zero]
     | smul x y e =>
       rw [smul_mul_assoc, map_smul, e, map_smul, smul_add,
         smul_comm x b, smul_assoc]
@@ -144,7 +142,6 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
     | tmul z =>
       dsimp
       induction b using h.out.inductionOn with
-      | zero => rw [map_zero, zero_smul, smul_zero, zero_add, mul_zero, map_zero]
       | tmul =>
         simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
           algebraMap_smul, ← map_mul]
@@ -197,7 +194,6 @@ def tensorKaehlerEquivBase [h : Algebra.IsPushout R S A B] :
       simp only [Derivation.tensorProductTo_tmul, LinearMap.map_smul,
         Derivation.liftKaehlerDifferential_comp_D, map_liftBaseChange_smul]
       induction y using h.1.inductionOn
-      · simp only [map_zero, smul_zero]
       · simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
           derivationTensorProduct_algebraMap, LinearMap.liftBaseChange_tmul,
           LinearMap.coe_restrictScalars, map_D, one_smul]
