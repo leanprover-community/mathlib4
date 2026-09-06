@@ -22,7 +22,7 @@ namespace exteriorPower
 
 section Basis
 
-variable (b : Basis (Fin (finrank K V)) K V)
+variable {ι : Type} [Fintype ι] (b : Basis ι K V)
 variable (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0)
 variable {k l : ℕ} (hkl : k + l = finrank K V)
 variable (sourceIndex : powersetCard (Fin (finrank K V)) l)
