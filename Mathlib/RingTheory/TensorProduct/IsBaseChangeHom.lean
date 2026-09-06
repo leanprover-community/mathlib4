@@ -174,7 +174,6 @@ theorem endHom_one {α : M →ₗ[R] P} (j : IsBaseChange S α) :
     j.endHom 1 = 1 := by
   ext p
   induction p using j.inductionOn with
-  | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul _ _ h => simp [h]
   | tmul m => simp [endHom_comp_apply]
