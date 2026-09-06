@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Rel
+public import Mathlib.Basic.Rel
 public import Mathlib.Order.Filter.SmallSets
-public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Basic results on uniform spaces
@@ -39,8 +39,9 @@ But it makes a more systematic use of the filter library.
 
 @[expose] public section
 
-open Set Filter Topology
-open scoped SetRel Uniformity
+open Set Filter
+
+open scoped Topology SetRel Uniformity
 
 universe u v ua ub uc ud
 

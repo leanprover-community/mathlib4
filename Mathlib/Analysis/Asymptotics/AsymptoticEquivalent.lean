@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Asymptotics.Ring
 public import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Asymptotics.Theta
 
@@ -62,13 +62,21 @@ namespace Asymptotics
 
 open Filter Function
 
-open Topology
+open scoped Topology
 
 section NormedAddCommGroup
 
 variable {α β : Type*} [NormedAddCommGroup β]
 
 variable {u v w : α → β} {l : Filter α}
+
+/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
+  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
+  when `u x - v x = o(v x)` as `x` converges along `l`. -/
+@[expose] def IsEquivalent (l : Filter α) (u v : α → β) :=
+  (u - v) =o[l] v
+
+@[inherit_doc] scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 theorem IsEquivalent.isLittleO (h : u ~[l] v) : (u - v) =o[l] v := h
 

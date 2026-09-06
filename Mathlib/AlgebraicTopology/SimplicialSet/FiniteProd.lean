@@ -21,7 +21,9 @@ public section
 
 universe u
 
-open CategoryTheory Limits MonoidalCategory Simplicial Opposite
+open CategoryTheory Limits MonoidalCategory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
