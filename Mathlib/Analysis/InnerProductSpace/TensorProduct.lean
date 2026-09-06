@@ -71,7 +71,7 @@ variable (𝕜) in
 
 @[simp] lemma inner_map_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x y : E ⊗[𝕜] F) :
     inner 𝕜 (map f.toLinearMap g.toLinearMap x) (map f.toLinearMap g.toLinearMap y) = inner 𝕜 x y :=
-  x.induction_on (by simp [inner_def]) (y.induction_on (by simp [inner_def]) (by simp)
+  x.inductionOn (y.inductionOn (by simp)
     (by simp_all [inner_def])) (by simp_all [inner_def])
 
 lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
@@ -133,7 +133,7 @@ set_option backward.privateInPublic.warn false in
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
   letI : InnerProductSpace.Core 𝕜 (E ⊗[𝕜] F) :=
   { conj_inner_symm x y :=
-      x.induction_on (by simp [inner]) (y.induction_on (by simp [inner]) (by simp)
+      x.inductionOn (y.inductionOn (by simp)
         (by simp_all [inner])) (by simp_all [inner])
     add_left _ _ _ := LinearMap.map_add₂ _ _ _ _
     smul_left _ _ _ := LinearMap.map_smulₛₗ₂ _ _ _ _
@@ -336,8 +336,8 @@ noncomputable def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F
 
 @[simp] theorem inner_comm_comm (x y : E ⊗[𝕜] F) :
     inner 𝕜 (TensorProduct.comm 𝕜 E F x) (TensorProduct.comm 𝕜 E F y) = inner 𝕜 x y :=
-  x.induction_on (by simp) (fun _ _ =>
-    y.induction_on (by simp) (by simp [mul_comm])
+  x.inductionOn (fun _ _ =>
+    y.inductionOn (by simp [mul_comm])
     fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
   fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
 
@@ -363,8 +363,8 @@ noncomputable def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
 
 @[simp] theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
     inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
-  x.induction_on (by simp) (fun _ _ =>
-    y.induction_on (by simp) (by simp [inner_smul_left, inner_smul_right, mul_assoc])
+  x.inductionOn (fun _ _ =>
+    y.inductionOn (by simp [inner_smul_left, inner_smul_right, mul_assoc])
     fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
   fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
 
@@ -422,10 +422,10 @@ lemma lidIsometry_eq_ridIsometry : lidIsometry 𝕜 𝕜 = ridIsometry 𝕜 𝕜
 
 @[simp] theorem inner_assoc_assoc (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
     inner 𝕜 (TensorProduct.assoc 𝕜 E F G x) (TensorProduct.assoc 𝕜 E F G y) = inner 𝕜 x y :=
-  x.induction_on (by simp) (fun a _ =>
-    y.induction_on (by simp) (fun c _ =>
-      a.induction_on (by simp) (fun _ _ =>
-        c.induction_on (by simp) (by simp [mul_assoc])
+  x.inductionOn (fun a _ =>
+    y.inductionOn (fun c _ =>
+      a.inductionOn (fun _ _ =>
+        c.inductionOn (by simp [mul_assoc])
         fun _ _ h1 h2 => by simp only [add_tmul, inner_add_right, map_add, h1, h2])
       fun _ _ h1 h2 => by simp only [add_tmul, inner_add_left, map_add, h1, h2])
     fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])

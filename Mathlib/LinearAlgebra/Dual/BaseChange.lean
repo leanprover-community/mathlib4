@@ -93,8 +93,7 @@ private noncomputable def toDualBaseChangeAux :
     map_add' a b := by simp [add_smul]
     map_smul' r a := by simp }).toAddHom
   map_smul' a g := by
-    induction g using TensorProduct.induction_on with
-    | zero => simp
+    induction g using TensorProduct.inductionOn with
     | add x y hx hy => aesop
     | tmul b f => simp [TensorProduct.smul_tmul', mul_smul]
 

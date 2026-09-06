@@ -76,8 +76,7 @@ lemma range_liftBaseChange (l : M →ₗ[R] N) :
     LinearMap.range (l.liftBaseChange A) = Submodule.span A (LinearMap.range l) := by
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
-    induction x using TensorProduct.induction_on
-    · simp
+    induction x using TensorProduct.inductionOn
     · rw [LinearMap.liftBaseChange_tmul]
       exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨_, rfl⟩)
     · rw [map_add]
@@ -179,9 +178,7 @@ instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
   smul_assoc r x y := by
     change r • x * y = r • (x * y)
     induction y with
-    | zero => simp [smul_zero]
     | tmul a b => induction x with
-      | zero => simp [smul_zero]
       | tmul a' b' =>
         dsimp
         rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, smul_mul_assoc]
@@ -194,9 +191,7 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
   smul_comm r x y := by
     change r • (x * y) = x * r • y
     induction y with
-    | zero => simp [smul_zero]
     | tmul a b => induction x with
-      | zero => simp [smul_zero]
       | tmul a' b' =>
         dsimp
         rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, mul_smul_comm]
@@ -212,10 +207,10 @@ variable [NonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower 
 variable [NonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp +contextual
+  refine TensorProduct.inductionOn x ?_ ?_ <;> simp +contextual
 
 protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp +contextual
+  refine TensorProduct.inductionOn x ?_ ?_ <;> simp +contextual
 
 instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
   one_mul := Algebra.TensorProduct.one_mul
@@ -369,7 +364,6 @@ lemma ringHom_ext {C : Type*} [Semiring C] {f g : A ⊗[R] B →+* C}
     (h₂ : f.comp includeRight.toRingHom = g.comp includeRight.toRingHom) : f = g := by
   ext x
   induction x with
-  | zero => simp
   | add x y _ _ => simp_all
   | tmul x y => simpa [← map_mul] using congr($h₁ x * $h₂ y)
 
@@ -435,11 +429,9 @@ variable [CommSemiring B] [Algebra R B]
 instance instCommSemiring : CommSemiring (A ⊗[R] B) where
   toSemiring := inferInstance
   mul_comm x y := by
-    refine TensorProduct.induction_on x ?_ ?_ ?_
-    · simp
+    refine TensorProduct.inductionOn x ?_ ?_
     · intro a₁ b₁
-      refine TensorProduct.induction_on y ?_ ?_ ?_
-      · simp
+      refine TensorProduct.inductionOn y ?_ ?_
       · intro a₂ b₂
         simp [mul_comm]
       · intro a₂ b₂ ha hb
@@ -508,7 +500,7 @@ instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
 lemma right_algebraMap_apply (b : B) : algebraMap B (A ⊗[R] B) b = 1 ⊗ₜ b := rfl
 
 instance : SMulCommClass A B (A ⊗[R] B) where
-  smul_comm a b x := x.induction_on (by simp)
+  smul_comm a b x := x.inductionOn
     (fun _ _ ↦ by simp [Algebra.smul_def, right_algebraMap_apply, smul_tmul'])
     fun _ _ h₁ h₂ ↦ by simpa using congr($h₁ + $h₂)
 
@@ -534,7 +526,6 @@ lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
   rw [← top_le_iff]
   rintro x -
   induction x with
-  | zero => exact zero_mem _
   | tmul x y =>
     convert_to (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
       (Algebra.TensorProduct.includeRight y) ∈ _
@@ -627,14 +618,7 @@ protected def module : Module (A ⊗[R] B) M where
     simp only [(· • ·), Algebra.TensorProduct.one_def]
     simp only [moduleAux_apply, one_smul]
   mul_smul x y m := by
-    refine TensorProduct.induction_on x ?_ ?_ ?_ <;> refine TensorProduct.induction_on y ?_ ?_ ?_
-    · simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
-    · intro a b
-      simp only [(· • ·), zero_mul, map_zero, LinearMap.zero_apply]
-    · intro z w _ _
-      simp only [(· • ·), zero_mul, map_zero, LinearMap.zero_apply]
-    · intro a b
-      simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
+    refine TensorProduct.inductionOn x ?_ ?_ <;> refine TensorProduct.inductionOn y ?_ ?_
     · intro a₁ b₁ a₂ b₂
       -- Porting note: was one `simp only`, not two
       simp only [(· • ·), Algebra.TensorProduct.tmul_mul_tmul]
@@ -644,8 +628,6 @@ protected def module : Module (A ⊗[R] B) M where
       simp only [(· • ·)] at hz hw ⊢
       simp only [moduleAux_apply, mul_add, map_add,
         LinearMap.add_apply, moduleAux_apply, hz, hw]
-    · intro z w _ _
-      simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
       simp only [(· • ·)] at hz hw ⊢
       simp only [map_add, add_mul, LinearMap.add_apply, hz, hw]
@@ -747,8 +729,8 @@ variable [StarRing R] [StarRing A] [StarRing B] [StarModule R A] [StarModule R B
 
 noncomputable instance : StarMul (A ⊗[R] B) where
   star_mul x y :=
-    x.induction_on (by simp) (fun _ _ ↦
-      y.induction_on (by simp)
+    x.inductionOn (fun _ _ ↦
+      y.inductionOn
         fun _ _ ↦ by simp
       fun _ _ h₁ h₂ ↦ by simp [add_mul, mul_add, h₁, h₂])
     fun _ _ h₁ h₂ ↦ by simp [add_mul, mul_add, h₁, h₂]

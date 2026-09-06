@@ -72,14 +72,12 @@ instance : IsScalarTower R A (S ⊗[R] Ω[A⁄R]) := by
   apply IsScalarTower.of_algebraMap_smul
   intro r x
   induction x
-  · simp only [smul_zero]
   · rw [mulActionBaseChange_smul_tmul, algebraMap_smul, tmul_smul]
   · simp only [smul_add, *]
 
 instance : SMulCommClass S A (S ⊗[R] Ω[A⁄R]) where
   smul_comm s a x := by
     induction x
-    · simp only [smul_zero]
     · rw [mulActionBaseChange_smul_tmul, smul_tmul', smul_tmul', mulActionBaseChange_smul_tmul]
     · simp only [smul_add, *]
 
@@ -122,7 +120,6 @@ lemma map_liftBaseChange_smul [h : Algebra.IsPushout R S A B] (b : B) (x) :
   | add b₁ b₂ e₁ e₂ => simp only [map_add, e₁, e₂, add_smul]
   | tmul a =>
     induction x
-    · simp only [smul_zero, map_zero]
     · simp [smul_comm]
     · simp only [map_add, smul_add, *]
 
@@ -174,7 +171,6 @@ lemma tensorKaehlerEquiv_left_inv [Algebra.IsPushout R S A B] :
   intro x y
   obtain ⟨y, rfl⟩ := tensorProductTo_surjective _ _ y
   induction y
-  · simp only [map_zero, TensorProduct.tmul_zero]
   · simp only [LinearMap.restrictScalars_comp, Derivation.tensorProductTo_tmul, LinearMap.coe_comp,
       LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.liftBaseChange_tmul, map_smul,
       map_D, LinearMap.map_smul_of_tower, Derivation.liftKaehlerDifferential_comp_D,
@@ -195,7 +191,6 @@ def tensorKaehlerEquivBase [h : Algebra.IsPushout R S A B] :
     obtain ⟨x, rfl⟩ := tensorProductTo_surjective _ _ x
     dsimp
     induction x with
-    | zero => simp
     | add x y e₁ e₂ => simp only [map_add, e₁, e₂]
     | tmul x y =>
       -- We use the specialized version of `map_smul` here for performance.
@@ -258,16 +253,13 @@ def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
   obtain ⟨m, rfl⟩ := (Algebra.IsPushout.equiv R A S B).surjective m
   dsimp
   induction m with
-  | zero => simp
   | add x y _ _ => simp only [add_smul, map_add, *]
   | tmul a b =>
   induction x with
-  | zero => simp
   | add x y _ _ => simp only [smul_add, map_add, *]
   | tmul x y =>
   obtain ⟨x, rfl⟩ := (Algebra.IsPushout.equiv R A S B).surjective x
   induction x with
-  | zero => simp
   | add x y _ _ => simp only [smul_add, map_add, *, add_tmul]
   | tmul x z =>
   suffices b • z • a • x • KaehlerDifferential.map R S A B y =
@@ -283,7 +275,6 @@ lemma tensorKaehlerEquiv_tmul_D [Algebra.IsPushout R S A B] (b a) :
   have : Algebra.IsPushout R A S B := .symm inferInstance
   obtain ⟨b, rfl⟩ := (Algebra.IsPushout.equiv R A S B).surjective b
   induction b with
-  | zero => simp
   | add x y _ _ => simp only [map_add, *, add_tmul, add_smul]
   | tmul a' s =>
   trans s • a' • D S B (algebraMap A B a)

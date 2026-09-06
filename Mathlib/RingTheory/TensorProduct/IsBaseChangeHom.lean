@@ -54,8 +54,7 @@ def linearMapRightBaseChangeHom (ε : N →ₗ[R] P) :
     map_smul' r s := by simp }).toAddHom
   map_smul' s x := by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
-    induction x using TensorProduct.induction_on with
-    | zero => simp
+    induction x using TensorProduct.inductionOn with
     | add x y hx hy => simp [smul_add, hx, hy]
     | tmul t f => simp [TensorProduct.smul_tmul', mul_smul]
 
