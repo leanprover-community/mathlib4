@@ -115,16 +115,6 @@ unsafe instance [Repr M] [Repr N] : Repr (M ⊗[R] N) where
       (if p > 65 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) <|
         .joinSep parts f!" +{Std.Format.line}"
 
-@[deprecated "Use `TensorProduction.inductionOn` instead" (since := "2026-09-07")]
-protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
-    (zero : motive 0)
-    (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
-    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
-  AddCon.induction_on z fun x =>
-    FreeAddMonoid.recOn x zero fun ⟨m, n⟩ y ih => by
-      rw [AddCon.coe_add]
-      exact add _ _ (tmul ..) ih
-
 variable (M) in
 @[simp]
 theorem zero_tmul (n : N) : (0 : M) ⊗ₜ[R] n = 0 :=
@@ -149,6 +139,14 @@ protected theorem inductionOn {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     FreeAddMonoid.recOn x (by convert (tmul 0 0); simp; rfl) fun ⟨m, n⟩ y ih => by
       rw [AddCon.coe_add]
       exact add _ _ (tmul ..) ih
+
+set_option linter.unusedVariables false
+@[deprecated "Use `TensorProduction.inductionOn` instead" (since := "2026-09-07")]
+protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
+    (zero : motive 0)
+    (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
+  TensorProduct.inductionOn z tmul add
 
 instance uniqueLeft [Subsingleton M] : Unique (M ⊗[R] N) where
   default := 0
