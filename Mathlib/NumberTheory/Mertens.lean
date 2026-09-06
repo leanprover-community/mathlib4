@@ -62,6 +62,7 @@ namespace Mertens
 
 open Nat hiding log log_pos
 open Finset Filter Real Chebyshev intervalIntegral Asymptotics MeasureTheory Topology
+  Measurable ContinuousOn
 open ArithmeticFunction hiding log
 open scoped Nat.Prime
 
@@ -219,7 +220,7 @@ lemma sum_div_log_eq : ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n = log (log
 lemma integrable_mul_E₁ {x : ℝ} (hx : 2 ≤ x) :
     IntegrableOn (fun t ↦ (t⁻¹ / (log t)^2) * E₁ t) (.Ioi x) volume := by
   apply Integrable.mono (integrable_const_div_mul_log_sq C₁ hx)
-    (Measurable.aestronglyMeasurable (by unfold E₁; fun_prop))
+    (aestronglyMeasurable (by unfold E₁; fun_prop))
   filter_upwards [ae_restrict_mem (by measurability)] with t ht
   simp only [Set.mem_Ioi, norm_mul, norm_eq_abs] at ht ⊢
   have : 0 < log t := log_pos (by linarith)
@@ -253,12 +254,12 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
       + ∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * E₁ t := by
     simp only [sum_eq', mul_add]
     apply intervalIntegral.integral_add <;> rw [intervalIntegrable_iff, Set.uIoc_of_le hx]
-    · apply (ContinuousOn.integrableOn_Icc _).mono_set Set.Ioc_subset_Icc_self
+    · apply (integrableOn_Icc _).mono_set Set.Ioc_subset_Icc_self
       fun_prop (disch := grind [log_ne_zero])
     · apply Integrable.mono (g := fun t ↦ t⁻¹ / (log 2 ^ 2) * C₁)
-      · apply (ContinuousOn.integrableOn_Icc _).mono_set Set.Ioc_subset_Icc_self
+      · apply (integrableOn_Icc _).mono_set Set.Ioc_subset_Icc_self
         fun_prop (disch := grind)
-      · exact Measurable.aestronglyMeasurable (by unfold E₁; fun_prop)
+      · exact aestronglyMeasurable (by unfold E₁; fun_prop)
       · filter_upwards [ae_restrict_mem (by measurability)] with t ht
         simp only [norm_mul, norm_eq_abs, Set.mem_Ioc] at ht ⊢
         grw [E₁_bound (by linarith), le_abs_self C₁]
@@ -266,7 +267,7 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
         gcongr; order
   have : ∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * log t = log (log x) - log (log 2) := by
     rw [← integral_inv_div_log (by norm_num) (by linarith)]
-    exact intervalIntegral.integral_congr fun _ _ ↦ by grind [Set.uIcc_of_le, log_pos]
+    exact integral_congr fun _ _ ↦ by grind [Set.uIcc_of_le, log_pos]
   rw [sum_mul_eq_sub_integral_mul₁ _ map_zero map_one x (f := fun t ↦ (log t)⁻¹)]
   · suffices ∫ t in .Ioc 2 x, deriv (fun t ↦ (log t)⁻¹) t * ∑ k ∈ Icc 0 ⌊t⌋₊, f k =
         - ∫ t in 2..x, (t⁻¹ / (log t)^2) * ∑ n ∈ Icc 0 ⌊t⌋₊, f n by linarith
@@ -275,7 +276,7 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
   · intro t _
     have : log t ≠ 0 := log_ne_zero.mpr (by grind)
     fun_prop (disch := grind)
-  · exact ContinuousOn.integrableOn_Icc (by simpa using hcont)
+  · exact integrableOn_Icc (by simpa using hcont)
 
 /-- The abstract Mertens second theorem. -/
 theorem E₂_bound {x : ℝ} (hx : 2 ≤ x) : |E₂ x| ≤ C₂ / log x := by
@@ -306,7 +307,7 @@ private theorem E₂_bound_weak {x : ℝ} (hx : 1 ≤ x) :
     positivity
   unfold E₂
   grw [abs_sub, abs_sub, sum_eq_zero, abs_zero, zero_add, le_add_iff_nonneg_right]
-  · exact div_nonneg C₂_nonneg (log_nonneg (by grind))
+  · exact div_nonneg C₂_nonneg (log_nonneg one_le_two)
   intro n hn
   grw [mem_Icc, le_floor_iff (by linarith), hx'] at hn
   rcases (by simp_all; omega : n = 0 ∨ n = 1) with rfl | rfl <;> simp
@@ -390,7 +391,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
   _ = ∫ x in .Ioi 1, ∑' n : ℕ, (log n)⁻¹ * f n * (Set.Ioi ↑n).indicator
       (fun x ↦ ((s - 1) * x ^ (-s))) x := by
     rw [integral_tsum]
-    · exact fun _ ↦ Measurable.aestronglyMeasurable (by fun_prop (disch := measurability))
+    · exact fun _ ↦ aestronglyMeasurable (by fun_prop (disch := measurability))
     · simp_rw [enorm_mul, ne_eq, ←lt_top_iff_ne_top, enorm_indicator_eq_indicator_enorm]
       calc
         _ = ∑' (i : ℕ), .ofReal (|(log i)⁻¹| * |f i| * (↑i)^(1 - s)) := by
@@ -445,7 +446,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     have : IntegrableOn (fun x ↦ E₂ x * x ^ (-s)) (.Ioi 1) := by
       refine Integrable.mono'
         (g := fun x ↦ |log (log x) * x ^ (-s)| + (|M| + C₂ / log 2) * x ^ (-s))
-        (h1.abs.add (h2 _)) (Measurable.aestronglyMeasurable (by unfold E₂; fun_prop))
+        (h1.abs.add (h2 _)) (aestronglyMeasurable (by unfold E₂; fun_prop))
         (ae_restrict_of_forall_mem measurableSet_Ioi fun x hx ↦ ?_)
       have : 0 < x := by grind
       have : 0 ≤ x ^ (-s) := by positivity
@@ -505,7 +506,7 @@ theorem sum_div_log_mul_pow_add_tendsto :
       apply log_nonpos (log_nonneg this)
       grw [h, log_two_lt_d9]
       norm_num
-  · rw [lintegral_ofReal_ne_top_iff_integrable (Measurable.aestronglyMeasurable (by fun_prop))
+  · rw [lintegral_ofReal_ne_top_iff_integrable (aestronglyMeasurable (by fun_prop))
         (Eventually.of_forall fun _ ↦ by simp only [Pi.zero_apply, rpow_neg_ofNat]; positivity)]
     simp_rw [add_assoc, add_mul _ (|M| + C₂ / log 2)]
     apply Integrable.add
@@ -1159,7 +1160,7 @@ theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) : |E₃ x| ≤ (log 4 + 3) / log x +
   have hx' := floor_mono hx
   simp only [floor_ofNat] at hx'
   have := sum_prime_inv_sub_sub_bound hx
-  rw [prime_M_eq, Nat.Primes.tsum_eq_tsum_ite fun p ↦ log (1 - 1 / p) + 1 / p,
+  rw [prime_M_eq, Primes.tsum_eq_tsum_ite fun p ↦ log (1 - 1 / p) + 1 / p,
       ← Summable.sum_add_tsum_nat_add (⌊x⌋₊ + 1)] at this
   · have h {a b c d : ℝ} (ha : |a| ≤ b) (hac : |a + c| ≤ d) : |c| ≤ b + d := by
       grw [abs_add' c a, ha, hac]
