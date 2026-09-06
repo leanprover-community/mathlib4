@@ -42,7 +42,7 @@ universe u
 
 open Order
 
-namespace AlgebraicGeometry
+namespace AlgebraicGeometry.Scheme
 
 /--
 Serre's condition `(Rₙ)`: a scheme is regular in codimension `≤ n` if all of its local rings of
@@ -54,7 +54,7 @@ assumption appears here.
 -/
 @[stacks 033Q]
 class IsRegularInCodimensionLE (n : ℕ) (X : Scheme.{u}) : Prop where
-  isRegularLocalRing_stalk (x : X) (hx : coheight x ≤ n) :
+  isRegularLocalRing_stalk_of_coheight_le (x : X) (hx : coheight x ≤ n) :
     IsRegularLocalRing (X.presheaf.stalk x)
 
 variable {n : ℕ} {X : Scheme.{u}}
@@ -76,6 +76,13 @@ lemma isRegularInCodimensionLE_iff_ringKrullDim :
   refine forall_congr' fun x ↦ ?_
   rw [ringKrullDim_stalk_eq_coheight]
   norm_cast
+
+lemma isRegularInCodimensionLE_iff_ringKrullDimLE :
+    IsRegularInCodimensionLE n X ↔
+      ∀ x : X, Ring.KrullDimLE n (X.presheaf.stalk x) →
+        IsRegularLocalRing (X.presheaf.stalk x) := by
+  simp [isRegularInCodimensionLE_iff_ringKrullDim, Ring.krullDimLE_iff]
+
 lemma isRegularLocalRing_stalk (x : X) [Ring.KrullDimLE n (X.presheaf.stalk x)]
     [IsRegularInCodimensionLE n X] : IsRegularLocalRing (X.presheaf.stalk x) := by
   apply isRegularInCodimensionLE_iff_ringKrullDim.mp ‹_›
@@ -84,7 +91,7 @@ lemma isRegularLocalRing_stalk (x : X) [Ring.KrullDimLE n (X.presheaf.stalk x)]
 
 lemma IsRegularInCodimensionLE.anti {m n : ℕ} (h : m ≤ n) (X : Scheme.{u})
     [IsRegularInCodimensionLE n X] : IsRegularInCodimensionLE m X :=
-  ⟨fun x hx ↦ isRegularLocalRing_stalk x <| hx.trans (by exact_mod_cast h)⟩
+  ⟨fun x hx ↦ isRegularLocalRing_stalk_of_coheight_le x <| hx.trans (by exact_mod_cast h)⟩
 
 /--
 TODO: Remove the `IsDomain (X.presheaf.stalk x)` hypothesis once Mathlib knows that regular local
@@ -93,7 +100,7 @@ rings are domains.
 lemma IsRegularInCodimensionLE.isDiscreteValuationRing_stalk [IsRegularInCodimensionLE 1 X] {x : X}
     [IsDomain (X.presheaf.stalk x)] (hx : coheight x = 1) :
     IsDiscreteValuationRing (X.presheaf.stalk x) := by
-  have hreg := isRegularLocalRing_stalk (n := 1) x hx.le
+  have hreg := isRegularLocalRing_stalk_of_coheight_le (n := 1) x hx.le
   rw [← IsLocalRing.finrank_CotangentSpace_eq_one_iff]
   have hdim : ringKrullDim (X.presheaf.stalk x) = 1 := by
     rw [ringKrullDim_stalk_eq_coheight x, hx]
@@ -102,4 +109,4 @@ lemma IsRegularInCodimensionLE.isDiscreteValuationRing_stalk [IsRegularInCodimen
   rw [hdim] at this
   exact_mod_cast this
 
-end AlgebraicGeometry
+end AlgebraicGeometry.Scheme
