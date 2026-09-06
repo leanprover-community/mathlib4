@@ -13,3 +13,7 @@ scripts/.rm_set_option_progress.jsonl
 
 # Output of scripts/export_crossrefs.lean
 /crossrefs.json
+
+# Personal files for developing the inclusion tactic
+/Mathlib/Tactic/Inclusion/notes.md
+/MathlibTest/Tactic/Inclusion/Scratch.lean

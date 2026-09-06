@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Tactic.Inclusion.Core.ToSet
@@ -255,6 +256,268 @@ theorem Interval.sub_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrdere
     (hx : x ∈ I.map f) (hy : y ∈ J.map f) : x - y ∈ (I.sub J).map f := by
   rw [_root_.sub_eq_add_neg, Interval.sub_eq_add_neg]
   exact Interval.add_mem f hx (Interval.neg_mem f hy)
+
+/-- Multiply two finite or infinite interval bounds. -/
+def Interval.mulBound [Mul α] [Zero α] [DecidableEq α] :
+    Option α → Option α → Option α
+  | some a, some b => some (a * b)
+  | some a, none => if a = 0 then some 0 else none
+  | none, some b => if b = 0 then some 0 else none
+  | none, none => none
+
+-- `WithBot α` and `WithTop α` are definitionally `Option α`, so `mulBound` handles both.
+/-- Multiply two intervals. -/
+def Interval.mul [Mul α] [Zero α] [LinearOrder α] (I J : Interval α) : Interval α :=
+  if 0 ≤ I.lb then
+    if 0 ≤ J.lb then
+      ⟨Interval.mulBound I.lb J.lb, Interval.mulBound I.ub J.ub⟩
+    else if J.ub ≤ 0 then
+      ⟨Interval.mulBound I.ub J.lb, Interval.mulBound I.lb J.ub⟩
+    else
+      ⟨Interval.mulBound I.ub J.lb, Interval.mulBound I.ub J.ub⟩
+  else if I.ub ≤ 0 then
+    if 0 ≤ J.lb then
+      ⟨Interval.mulBound I.lb J.ub, Interval.mulBound I.ub J.lb⟩
+    else if J.ub ≤ 0 then
+      ⟨Interval.mulBound I.ub J.ub, Interval.mulBound I.lb J.lb⟩
+    else
+      ⟨Interval.mulBound I.lb J.ub, Interval.mulBound I.lb J.lb⟩
+  else
+    if 0 ≤ J.lb then
+      ⟨Interval.mulBound I.lb J.ub, Interval.mulBound I.ub J.ub⟩
+    else if J.ub ≤ 0 then
+      ⟨Interval.mulBound I.ub J.lb, Interval.mulBound I.lb J.lb⟩
+    else
+      ⟨min (Interval.mulBound I.lb J.ub) (Interval.mulBound I.ub J.lb),
+        max (Interval.mulBound I.lb J.lb) (Interval.mulBound I.ub J.ub)⟩
+
+private theorem map_mulBound_le [Mul α] [Zero α] [DecidableEq α] [Preorder β]
+    (f : α → β) (a b : Option α) {z : β}
+    (hmul : ∀ x y, a = some x → b = some y → f (x * y) ≤ z)
+    (hzero : (a = none ∧ b = some 0 ∨ a = some 0 ∧ b = none) → f 0 ≤ z) :
+    WithBot.map f (Interval.mulBound a b : WithBot α) ≤ z := by
+  rcases a with _ | a <;> rcases b with _ | b <;>
+    simp only [Interval.mulBound] <;> try split_ifs
+  all_goals first | exact bot_le | apply WithBot.coe_le_coe.mpr
+  all_goals first
+    | exact hzero (by simp_all [WithBot.none_eq_bot]; rfl)
+    | exact hmul _ _ rfl rfl
+
+private theorem le_map_mulBound [Mul α] [Zero α] [DecidableEq α] [Preorder β]
+    (f : α → β) (a b : Option α) {z : β}
+    (hmul : ∀ x y, a = some x → b = some y → z ≤ f (x * y))
+    (hzero : (a = none ∧ b = some 0 ∨ a = some 0 ∧ b = none) → z ≤ f 0) :
+    z ≤ WithTop.map f (Interval.mulBound a b : WithTop α) := by
+  rcases a with _ | a <;> rcases b with _ | b <;>
+    simp only [Interval.mulBound] <;> try split_ifs
+  all_goals first | exact le_top | apply WithTop.coe_le_coe.mpr
+  all_goals first
+    | exact hzero (by simp_all [WithTop.none_eq_top]; rfl)
+    | exact hmul _ _ rfl rfl
+
+private theorem nonneg_of_mem_map [Preorder α] [Preorder β] [Zero α] [Zero β] (f : α ↪o β)
+    (map_zero : f 0 = 0) {x : β} {I : Interval α} (hI : 0 ≤ I.lb)
+    (hx : x ∈ I.map f) : 0 ≤ x := by
+  simpa [map_zero] using (f.monotone.withBot_map hI).trans hx.1
+
+private theorem nonpos_of_mem_map [Preorder α] [Preorder β] [Zero α] [Zero β] (f : α ↪o β)
+    (map_zero : f 0 = 0) {x : β} {I : Interval α} (hI : I.ub ≤ 0)
+    (hx : x ∈ I.map f) : x ≤ 0 := by
+  simpa [map_zero] using hx.2.trans (f.monotone.withTop_map hI)
+
+private theorem map_lb_le_of_eq [Preorder β] (f : α → β) {a : α} {x : β}
+    {I : Interval α} (hx : x ∈ I.map f) (h : I.lb = some a) : f a ≤ x := by
+  rw [Interval.map, h] at hx
+  exact WithBot.coe_le_coe.mp hx.1
+
+private theorem le_map_ub_of_eq [Preorder β] (f : α → β) {a : α} {x : β}
+    {I : Interval α} (hx : x ∈ I.map f) (h : I.ub = some a) : x ≤ f a := by
+  rw [Interval.map, h] at hx
+  exact WithTop.coe_le_coe.mp hx.2
+
+private theorem zero_le_map_lb_iff [LinearOrder α] [LinearOrder β] [Zero α] [Zero β]
+    (f : α ↪o β) (map_zero : f 0 = 0) {a : α} {I : Interval α}
+    (h : I.lb = some a) : 0 ≤ f a ↔ 0 ≤ I.lb := by
+  rw [h, ← map_zero, f.le_iff_le]
+  exact (WithBot.coe_le_coe (a := (0 : α)) (b := a)).symm
+
+private theorem map_ub_le_zero_iff [LinearOrder α] [LinearOrder β] [Zero α] [Zero β]
+    (f : α ↪o β) (map_zero : f 0 = 0) {a : α} {I : Interval α}
+    (h : I.ub = some a) : f a ≤ 0 ↔ I.ub ≤ 0 := by
+  rw [h, ← map_zero, f.le_iff_le]
+  exact (WithTop.coe_le_coe (a := (0 : α)) (b := a)).symm
+
+private theorem eq_zero_of_nonneg_of_ub_eq [PartialOrder β] [Zero α] [Zero β]
+    (f : α → β) (map_zero : f 0 = 0) {x : β} {I : Interval α} (hx0 : 0 ≤ x)
+    (hx : x ∈ I.map f) (h : I.ub = some 0) : x = 0 :=
+  le_antisymm (by simpa [map_zero] using le_map_ub_of_eq f hx h) hx0
+
+private theorem eq_zero_of_lb_eq_of_nonpos [PartialOrder β] [Zero α] [Zero β]
+    (f : α → β) (map_zero : f 0 = 0) {x : β} {I : Interval α} (hx0 : x ≤ 0)
+    (hx : x ∈ I.map f) (h : I.lb = some 0) : x = 0 :=
+  le_antisymm hx0 (by simpa [map_zero] using map_lb_le_of_eq f hx h)
+
+theorem Interval.mul_mem [Mul α] [Zero α] [LinearOrder α] [Ring β] [LinearOrder β]
+    [IsStrictOrderedRing β] (f : α ↪o β) (map_zero : f 0 = 0)
+    (map_mul : ∀ a b, f (a * b) = f a * f b) {x y : β} {I J : Interval α}
+    (hx : x ∈ I.map f) (hy : y ∈ J.map f) : x * y ∈ (I.mul J).map f := by
+  rw [Interval.mem_def]
+  have hxl {a : α} (h : I.lb = some a) : f a ≤ x := map_lb_le_of_eq f hx h
+  have hxu {a : α} (h : I.ub = some a) : x ≤ f a := le_map_ub_of_eq f hx h
+  have hyl {a : α} (h : J.lb = some a) : f a ≤ y := map_lb_le_of_eq f hy h
+  have hyu {a : α} (h : J.ub = some a) : y ≤ f a := le_map_ub_of_eq f hy h
+  by_cases hIl : 0 ≤ I.lb
+  · have hx0 := nonneg_of_mem_map f map_zero hIl hx
+    by_cases hJl : 0 ≤ J.lb
+    · have hy0 := nonneg_of_mem_map f map_zero hJl hy
+      simp only [Interval.mul, hIl, hJl, ite_true]
+      constructor
+      · apply map_mulBound_le
+        · grind [mul_le_mul, zero_le_map_lb_iff]
+        · rintro (⟨ha, -⟩ | ⟨-, hb⟩)
+          all_goals simp_all [WithBot.none_eq_bot]
+      · apply le_map_mulBound <;>
+          grind [mul_le_mul, eq_zero_of_nonneg_of_ub_eq]
+    · by_cases hJu : J.ub ≤ 0
+      · have hy0 := nonpos_of_mem_map f map_zero hJu hy
+        simp only [Interval.mul, hIl, hJl, hJu, ite_true, ite_false]
+        constructor
+        · apply map_mulBound_le
+          · grind [mul_le_mul_of_nonneg_of_nonpos]
+          · rintro (⟨-, hb⟩ | ⟨ha, -⟩) <;>
+              grind [eq_zero_of_lb_eq_of_nonpos, eq_zero_of_nonneg_of_ub_eq]
+        · apply le_map_mulBound
+          · grind [mul_le_mul_of_nonneg_of_nonpos, zero_le_map_lb_iff]
+          · rintro (⟨ha, -⟩ | ⟨-, hb⟩)
+            · simp [ha, WithBot.none_eq_bot] at hIl
+            · simp [hb, WithTop.none_eq_top] at hJu
+      · simp only [Interval.mul, hIl, hJl, hJu, ite_false]
+        constructor
+        · apply map_mulBound_le
+          · grind [mul_le_mul_of_nonneg_of_nonpos, zero_le_map_lb_iff]
+          · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+            · simp [hb, WithBot.some_eq_coe] at hJl
+            · rw [map_zero, eq_zero_of_nonneg_of_ub_eq f map_zero hx0 hx ha, zero_mul]
+        · apply le_map_mulBound
+          · intro a b ha hb
+            rw [map_mul]
+            exact (mul_le_mul_of_nonneg_left (hyu hb) hx0).trans
+              (mul_le_mul_of_nonneg_right (hxu ha)
+                (le_of_not_ge <| (map_ub_le_zero_iff f map_zero hb).not.mpr hJu))
+          · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+            · simp [hb, WithTop.some_eq_coe] at hJu
+            · rw [map_zero, eq_zero_of_nonneg_of_ub_eq f map_zero hx0 hx ha, zero_mul]
+  · by_cases hIu : I.ub ≤ 0
+    · have hx0 := nonpos_of_mem_map f map_zero hIu hx
+      by_cases hJl : 0 ≤ J.lb
+      · have hy0 := nonneg_of_mem_map f map_zero hJl hy
+        simp only [Interval.mul, hIl, hIu, hJl, ite_true, ite_false]
+        constructor
+        · apply map_mulBound_le
+          · grind [mul_le_mul_of_nonpos_of_nonneg]
+          · rintro (⟨-, hb⟩ | ⟨ha, -⟩) <;>
+              grind [eq_zero_of_nonneg_of_ub_eq, eq_zero_of_lb_eq_of_nonpos]
+        · apply le_map_mulBound
+          · grind [mul_le_mul_of_nonpos_of_nonneg, map_ub_le_zero_iff]
+          · rintro (⟨ha, -⟩ | ⟨-, hb⟩)
+            · simp [ha, WithTop.none_eq_top] at hIu
+            · simp [hb, WithBot.none_eq_bot] at hJl
+      · by_cases hJu : J.ub ≤ 0
+        · have hy0 := nonpos_of_mem_map f map_zero hJu hy
+          simp only [Interval.mul, hIl, hIu, hJl, hJu, ite_true, ite_false]
+          constructor
+          · apply map_mulBound_le
+            · grind [mul_le_mul_of_nonpos_of_nonpos', map_ub_le_zero_iff]
+            · rintro (⟨ha, -⟩ | ⟨-, hb⟩)
+              all_goals simp_all [WithTop.none_eq_top]
+          · apply le_map_mulBound
+            · grind [mul_le_mul_of_nonpos_of_nonpos]
+            · rintro (⟨-, hb⟩ | ⟨ha, -⟩) <;>
+                grind [eq_zero_of_lb_eq_of_nonpos]
+        · simp only [Interval.mul, hIl, hIu, hJl, hJu, ite_false]
+          constructor
+          · apply map_mulBound_le
+            · grind [mul_le_mul_of_nonpos_of_nonneg, map_ub_le_zero_iff]
+            · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+              · exact (hJu (hb.symm ▸ WithTop.coe_le_coe.mpr le_rfl)).elim
+              · rw [map_zero, eq_zero_of_lb_eq_of_nonpos f map_zero hx0 hx ha, zero_mul]
+          · apply le_map_mulBound
+            · grind [mul_le_mul_of_nonpos_of_nonpos', zero_le_map_lb_iff]
+            · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+              · exact (hJl (hb.symm ▸ WithBot.coe_le_coe.mpr le_rfl)).elim
+              · rw [map_zero, eq_zero_of_lb_eq_of_nonpos f map_zero hx0 hx ha, zero_mul]
+    · by_cases hJl : 0 ≤ J.lb
+      · have hy0 := nonneg_of_mem_map f map_zero hJl hy
+        simp only [Interval.mul, hIl, hIu, hJl, ite_true, ite_false]
+        constructor
+        · apply map_mulBound_le
+          · intro a b ha hb
+            rw [map_mul]
+            exact (mul_le_mul_of_nonpos_left (hyu hb)
+              (le_of_not_ge <| (zero_le_map_lb_iff f map_zero ha).not.mpr hIl)).trans
+                (mul_le_mul_of_nonneg_right (hxl ha) hy0)
+          · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+            · rw [map_zero, eq_zero_of_nonneg_of_ub_eq f map_zero hy0 hy hb, mul_zero]
+            · exact (hIl (ha.symm ▸ WithBot.coe_le_coe.mpr le_rfl)).elim
+        · apply le_map_mulBound
+          · grind [mul_le_mul, map_ub_le_zero_iff]
+          · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+            · rw [map_zero, eq_zero_of_nonneg_of_ub_eq f map_zero hy0 hy hb, mul_zero]
+            · exact (hIu (ha.symm ▸ WithTop.coe_le_coe.mpr le_rfl)).elim
+      · by_cases hJu : J.ub ≤ 0
+        · have hy0 := nonpos_of_mem_map f map_zero hJu hy
+          simp only [Interval.mul, hIl, hIu, hJl, hJu, ite_true, ite_false]
+          constructor
+          · apply map_mulBound_le
+            · grind [mul_le_mul_of_nonneg_of_nonpos', map_ub_le_zero_iff]
+            · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+              · rw [map_zero, eq_zero_of_lb_eq_of_nonpos f map_zero hy0 hy hb, mul_zero]
+              · simp [ha, WithTop.some_eq_coe] at hIu
+          · apply le_map_mulBound
+            · grind [mul_le_mul_of_nonpos_of_nonpos, zero_le_map_lb_iff]
+            · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+              · rw [map_zero, eq_zero_of_lb_eq_of_nonpos f map_zero hy0 hy hb, mul_zero]
+              · simp [ha, WithBot.some_eq_coe] at hIl
+        · simp only [Interval.mul, hIl, hIu, hJl, hJu, ite_false]
+          constructor
+          · simp only [Interval.map]
+            by_cases hy0 : 0 ≤ y
+            · refine (f.monotone.withBot_map (min_le_left _ _)).trans
+                (map_mulBound_le f I.lb J.ub ?_ ?_)
+              · intro a b ha hb
+                rw [map_mul]
+                exact (mul_le_mul_of_nonpos_left (hyu hb)
+                  (le_of_not_ge <| (zero_le_map_lb_iff f map_zero ha).not.mpr hIl)).trans
+                    (mul_le_mul_of_nonneg_right (hxl ha) hy0)
+              · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+                · simp [hb, WithTop.some_eq_coe] at hJu
+                · simp [ha, WithBot.some_eq_coe] at hIl
+            · refine (f.monotone.withBot_map (min_le_right _ _)).trans
+                (map_mulBound_le f I.ub J.lb ?_ ?_)
+              · intro a b ha hb
+                rw [map_mul]
+                by_cases hx0 : 0 ≤ x
+                · exact mul_le_mul_of_nonneg_of_nonpos (hxu ha) (hyl hb) hx0
+                    (le_of_not_ge <| (zero_le_map_lb_iff f map_zero hb).not.mpr hJl)
+                · exact (mul_nonpos_of_nonneg_of_nonpos
+                    (le_of_not_ge <| (map_ub_le_zero_iff f map_zero ha).not.mpr hIu)
+                    (le_of_not_ge <| (zero_le_map_lb_iff f map_zero hb).not.mpr hJl)).trans
+                      (mul_nonneg_of_nonpos_of_nonpos (le_of_not_ge hx0) (le_of_not_ge hy0))
+              · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+                · simp [hb, WithBot.some_eq_coe] at hJl
+                · simp [ha, WithTop.some_eq_coe] at hIu
+          · simp only [Interval.map]
+            by_cases hy0 : 0 ≤ y
+            · refine (le_map_mulBound f I.ub J.ub ?_ ?_).trans
+                (f.monotone.withTop_map (le_max_right _ _))
+              · grind [mul_le_mul, map_ub_le_zero_iff]
+              · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+                all_goals simp_all [WithTop.some_eq_coe]
+            · refine (le_map_mulBound f I.lb J.lb ?_ ?_).trans
+                (f.monotone.withTop_map (le_max_left _ _))
+              · grind [mul_le_mul_of_nonpos_of_nonpos, zero_le_map_lb_iff]
+              · rintro (⟨-, hb⟩ | ⟨ha, -⟩)
+                all_goals simp_all [WithBot.some_eq_coe]
 
 /-- Check if `r x y` is false is implied by `x ∈ I` and `y ∈ J` -/
 def Interval.orderRelFalse (r : α → α → Prop) [DecidableRel r]
