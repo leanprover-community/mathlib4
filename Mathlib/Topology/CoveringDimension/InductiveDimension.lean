@@ -108,12 +108,9 @@ lemma existsPairwiseDisjointOpenCores
   · -- Choose the least cover member containing the point; off all frontiers, no earlier closure
     -- can contain it, because closure minus frontier is the open set itself.
     intro x hxfrontier
-    have hindicesNonempty : {i : ι | x ∈ V i}.Nonempty := by
-      have hxcover : x ∈ ⋃ i, (V i : Set X) := hVcover.iSup_set_eq_univ.symm ▸ Set.mem_univ x
-      obtain ⟨i, hxi⟩ := Set.mem_iUnion.mp hxcover
-      exact ⟨i, hxi⟩
     obtain ⟨i, hxi, himin⟩ :=
-      Set.exists_min_image {i : ι | x ∈ V i} (fun i ↦ i) (Set.toFinite _) hindicesNonempty
+      Set.exists_min_image {i : ι | x ∈ V i} (fun i ↦ i) (Set.toFinite _)
+        (hVcover.exists_mem x)
     refine Set.mem_iUnion.mpr ⟨i, hxi, ?_⟩
     intro hxEarlier
     obtain ⟨j, hxj⟩ := Set.mem_iUnion.mp hxEarlier
@@ -121,10 +118,7 @@ lemma existsPairwiseDisjointOpenCores
       intro hxjfrontier
       exact hxfrontier <| Set.mem_iUnion.mpr ⟨j.1, hxjfrontier⟩
     have hxjOpen : x ∈ V j.1 := by
-      have hxInterior : x ∈ interior (V j.1 : Set X) := by
-        rw [← closure_sdiff_frontier]
-        exact ⟨hxj, hxnotFrontier⟩
-      exact interior_subset hxInterior
+      exact interior_subset (closure_sdiff_frontier (s := (V j.1 : Set X)) ▸ ⟨hxj, hxnotFrontier⟩)
     exact (not_lt_of_ge (himin j.1 hxjOpen)) j.2
 
 /-- Helper for Definition 50.8: every controlled closed-pair partition yields the corresponding
@@ -166,8 +160,7 @@ lemma hasCoveringDimensionLE_of_openPartitions
     apply IsOpenCover.of_sets
     apply Set.eq_univ_of_forall
     intro x
-    have hxC : x ∈ ⋃ i, (C i : Set X) := hCcover.iSup_set_eq_univ.symm ▸ Set.mem_univ x
-    obtain ⟨i, hxi⟩ := Set.mem_iUnion.mp hxC
+    obtain ⟨i, hxi⟩ := hCcover.exists_mem x
     exact Set.mem_iUnion.mpr ⟨i, hCV i (subset_closure hxi)⟩
   obtain ⟨D, hDopen, hDV, hDdisjoint, hDcover⟩ :=
     existsPairwiseDisjointOpenCores VO hVcover
@@ -207,10 +200,8 @@ lemma hasCoveringDimensionLE_of_openPartitions
           hRparent, hSclosure⟩ :=
         existsFiniteIndexedShrinkingRefinement hLdim A hA
       let _ : Finite κ := hκfinite
-      have hRA : ∀ j, Subtype.val '' (R j : Set L) ⊆ (B (a j) : Set X) := by
-        intro j x hx
-        obtain ⟨z, hzR, rfl⟩ := hx
-        exact hRparent j hzR
+      have hRA : ∀ j, Subtype.val '' (R j : Set L) ⊆ (B (a j) : Set X) :=
+        fun j ↦ Set.image_subset_iff.mpr (hRparent j)
       obtain ⟨E, hLE, hEclosure, hEorder⟩ :=
         existsAmbientOpenSwelling_of_closedSubtypeCover hLclosed hScover hRorder
           hRinjective hSclosure (fun j ↦ B (a j)) hRA

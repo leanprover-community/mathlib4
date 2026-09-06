@@ -225,12 +225,7 @@ private lemma coveringDimension_closedUnion
   let T' : Set U := (Subtype.val : U → X) ⁻¹' T
   have hS' : IsClosed S' := hS.preimage continuous_subtype_val
   have hT' : IsClosed T' := hT.preimage continuous_subtype_val
-  have hcover : S' ∪ T' = Set.univ := by
-    apply Set.eq_univ_of_forall
-    intro x
-    rcases x.2 with hxS | hxT
-    · exact Or.inl hxS
-    · exact Or.inr hxT
+  have hcover : S' ∪ T' = Set.univ := Set.eq_univ_of_forall fun x ↦ x.2
   have hSsub : S ⊆ U := Set.subset_union_left
   have hTsub : T ⊆ U := Set.subset_union_right
   calc
@@ -314,12 +309,8 @@ lemma hasCoveringDimensionLT_finiteUnionClosedSubtypes
   -- At zero every member is empty; at a successor use the non-strict union theorem.
   cases n with
   | zero =>
-      apply (hasCoveringDimensionLT_zero_iff _).mpr
-      constructor
-      intro z
-      have hz : z.1 ∈ ⋃ i, Y i := z.2
-      rw [Set.mem_iUnion] at hz
-      obtain ⟨i, hzi⟩ := hz
-      exact ((hasCoveringDimensionLT_zero_iff _).mp (hdim i)).false ⟨z.1, hzi⟩
+      refine ⟨fun ⟨x, hx⟩ ↦ ?_⟩
+      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
+      exact (hdim i).false ⟨x, hi⟩
   | succ n =>
       exact HasCoveringDimensionLE.finiteUnionClosedSubtypes Y hclosed hdim

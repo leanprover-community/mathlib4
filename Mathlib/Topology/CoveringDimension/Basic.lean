@@ -66,11 +66,8 @@ theorem mono {X : Type u} {𝒜 : Set (Set X)} {n k : ℕ}
 
 /-- Passing to a subfamily does not increase its order. -/
 theorem of_subset {X : Type u} {𝒜 ℬ : Set (Set X)} {n : ℕ}
-    (h : 𝒜.HasOrderLE n) (hℬ : ℬ ⊆ 𝒜) : ℬ.HasOrderLE n := by
-  intro x
-  apply (Set.encard_mono ?_).trans (h x)
-  intro U hU
-  exact ⟨hℬ hU.1, hU.2⟩
+    (h : 𝒜.HasOrderLE n) (hℬ : ℬ ⊆ 𝒜) : ℬ.HasOrderLE n :=
+  fun x ↦ (Set.encard_mono (Set.inter_subset_inter_left _ hℬ)).trans (h x)
 
 /-- The order of a union is bounded by the sum of the orders. -/
 theorem union {X : Type u} {𝒜 ℬ : Set (Set X)} {n m : ℕ}
@@ -231,15 +228,8 @@ lemma hasCoveringDimensionLT_of_bound {X : Type u} [TopologicalSpace X] {n k : �
 
 lemma hasCoveringDimensionLE_of_isEmpty {X : Type u} [TopologicalSpace X]
     (hX : IsEmpty X) (n : ℕ) : HasCoveringDimensionLE X n := by
-  rw [hasCoveringDimensionLE_iff]
-  intro 𝒜 _ _
-  refine ⟨∅, ?_, ?_, ?_, ?_⟩
-  · simp [IsCofinalFor]
-  · simp
-  · ext x
-    exact (hX.false x).elim
-  · intro x
-    exact (hX.false x).elim
+  intro ι U hU
+  exact ⟨ι, U, hU, fun _ h ↦ ⟨_, h, le_rfl⟩, fun x ↦ isEmptyElim x⟩
 
 /-- The existence-of-a-bound characterization of finite covering dimension. -/
 theorem finiteCoveringDimension_iff (X : Type u) [TopologicalSpace X] :
@@ -291,16 +281,12 @@ from `⊤`. -/
 theorem finiteCoveringDimension_iff_coveringDimension_ne_top
     (X : Type u) [TopologicalSpace X] : FiniteCoveringDimension X ↔ dim X ≠ ⊤ := by
   constructor
-  · rintro ⟨n, hn⟩ htop
-    have hdim : dim X ≤ (n : WithBot ℕ∞) := (coveringDimension_le_iff X n).mpr hn
-    rw [htop] at hdim
-    have hn_top : (n : WithBot ℕ∞) = ⊤ := by simpa using hdim
-    exact ENat.natCast_ne_top n (WithBot.coe_eq_top.mp hn_top)
+  · rintro ⟨n, hn⟩
+    exact ne_top_of_le_ne_top (fun h ↦ ENat.natCast_ne_top n (WithBot.coe_eq_top.mp h))
+      ((coveringDimension_le_iff X n).mpr hn)
   · intro hdim
-    have hnot_all : ¬ ∀ n : ℕ, n ≤ dim X := (ENat.WithBot.eq_top_iff_forall_ge.not).mp hdim
-    push Not at hnot_all
-    obtain ⟨n, hn⟩ := hnot_all
-    exact ⟨n, (coveringDimension_le_iff X n).mp hn.le⟩
+    obtain ⟨n, hn⟩ := not_forall.mp (ENat.WithBot.eq_top_iff_forall_ge.not.mp hdim)
+    exact ⟨n, (coveringDimension_le_iff X n).mp (le_of_not_ge hn)⟩
 
 /-! ### Invariance under homeomorphisms -/
 

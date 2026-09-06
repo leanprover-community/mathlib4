@@ -67,9 +67,7 @@ lemma affineIndependent_insert_update
   have hmem (j : {j : {j // j ∈ insert i s} // j ≠ inserted}) : j.1.1 ∈ s :=
     (Finset.mem_insert.mp j.1.2).resolve_left fun h ↦ j.2 (Subtype.ext h)
   let old : {j : {j // j ∈ insert i s} // j ≠ inserted} ↪ {j // j ∈ s} :=
-    ⟨fun j ↦ ⟨j.1.1, hmem j⟩, by
-      intro j k h
-      exact Subtype.ext (Subtype.ext (congrArg (fun j : {j // j ∈ s} ↦ j.1) h))⟩
+    ⟨fun j ↦ ⟨j.1.1, hmem j⟩, by grind [Function.Injective]⟩
   have hold : AffineIndependent ℝ
       (fun j : {j : {j // j ∈ insert i s} // j ≠ inserted} ↦
         Function.update z i p j.1.1) := by
@@ -128,13 +126,8 @@ lemma existsNearbyBoundedAffineIndependentFamily
         · intro t ht hcard
           by_cases hit : i ∈ t
           · let u := t.erase i
-            have hu_subset : u ⊆ s := by
-              intro j hju
-              have hjt : j ∈ t := Finset.mem_of_mem_erase hju
-              have hji : j ≠ i := Finset.ne_of_mem_erase hju
-              exact (Finset.mem_insert.mp (ht hjt)).resolve_left hji
-            have hu_card_add_one : u.card + 1 = t.card := by
-              exact Finset.card_erase_add_one hit
+            have hu_subset : u ⊆ s := by grind
+            have hu_card_add_one : u.card + 1 = t.card := Finset.card_erase_add_one hit
             have hu_card : u.card ≤ N := by omega
             have hu_independent := hz_independent u hu_subset (by omega)
             have hp_span : p ∉ affineSpan ℝ (Set.image z (u : Set ι)) := by
@@ -144,9 +137,7 @@ lemma existsNearbyBoundedAffineIndependentFamily
             have ht_eq : insert i u = t := Finset.insert_erase hit
             rw [← ht_eq]
             simpa [z', u] using hinsert
-          · have ht_subset : t ⊆ s := by
-              intro j hjt
-              exact (Finset.mem_insert.mp (ht hjt)).resolve_left fun h ↦ hit (h ▸ hjt)
+          · have ht_subset : t ⊆ s := by grind
             have ht_independent := hz_independent t ht_subset hcard
             convert ht_independent using 1
             ext j

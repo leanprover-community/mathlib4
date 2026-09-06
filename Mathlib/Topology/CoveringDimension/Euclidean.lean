@@ -154,10 +154,7 @@ private lemma shiftedEuclideanInterval_index_unique {N : ℕ} {a z : ℝ} (ha : 
     nlinarith [hn.1, hm.2]
   have hmn : (m : ℝ) < n + 1 := by
     nlinarith [hm.1, hn.2]
-  have hnmInt : n < m + 1 := by
-    exact_mod_cast hnm
-  have hmnInt : m < n + 1 := by
-    exact_mod_cast hmn
+  norm_cast at hnm hmn
   omega
 
 /-- Helper for Theorem 50.6: boxes in one translated grid are pointwise unique. -/
@@ -175,18 +172,6 @@ private lemma shiftedEuclideanBoxFamily_pointwiseUnique {N : ℕ} {a : ℝ} (ha 
     funext i
     exact shiftedEuclideanInterval_index_unique ha c (hxV i) (hxW i)
   rw [hpq]
-
-/-- Helper for Theorem 50.6: every shifted Euclidean box is open. -/
-private lemma shiftedEuclideanBox_isOpen {N : ℕ} (a : ℝ) (c : Fin (N + 1))
-    (p : Fin N → ℤ) : IsOpen (shiftedEuclideanBox N a c p) := by
-  -- The box is the homeomorphic preimage of a finite product of open intervals.
-  have hopen : IsOpen (Set.pi Set.univ (fun i : Fin N ↦ Ioo
-      (a * ((p i : ℝ) + euclideanCoverPhaseShift N c))
-      (a * ((p i : ℝ) + 1 + euclideanCoverPhaseShift N c)))) := by
-    apply isOpen_set_pi Set.finite_univ
-    intro i _
-    exact isOpen_Ioo
-  exact hopen.preimage (PiLp.homeomorph 2 (fun _ : Fin N ↦ ℝ)).continuous
 
 /-- Helper for Theorem 50.6: the distance between two points of one shifted box is at
 most `Real.sqrt N * a`. -/
@@ -221,20 +206,6 @@ private lemma shiftedEuclideanBox_dist_le {N : ℕ} {a : ℝ} (ha : 0 < a)
     _ = Real.sqrt N * a := by
       rw [Real.sqrt_sq_eq_abs, abs_of_pos ha]
 
-/-- Helper for Theorem 50.6: every shifted Euclidean box is bounded and has diameter
-at most `Real.sqrt N * a`. -/
-private lemma shiftedEuclideanBox_isBounded_diam {N : ℕ} {a : ℝ} (ha : 0 < a)
-    (c : Fin (N + 1)) (p : Fin N → ℤ) :
-    Bornology.IsBounded (shiftedEuclideanBox N a c p) ∧
-      Metric.diam (shiftedEuclideanBox N a c p) ≤ Real.sqrt N * a := by
-  -- Reuse the pairwise distance estimate for both boundedness and diameter.
-  constructor
-  · rw [Metric.isBounded_iff]
-    exact ⟨Real.sqrt N * a, fun x hx y hy ↦ shiftedEuclideanBox_dist_le ha c p hx hy⟩
-  · apply Metric.diam_le_of_forall_dist_le (mul_nonneg (Real.sqrt_nonneg _) ha.le)
-    intro x hx y hy
-    exact shiftedEuclideanBox_dist_le ha c p hx hy
-
 /-- Helper for Theorem 50.6: there is a uniformly fine open cover of `N`-dimensional
 Euclidean space with pointwise order at most `N + 1`. -/
 private lemma exists_euclideanOpenCover_order {N : ℕ} (ε : ℝ) (hε : 0 < ε) :
@@ -260,7 +231,8 @@ private lemma exists_euclideanOpenCover_order {N : ℕ} (ε : ℝ) (hε : 0 < ε
     intro V hV
     obtain ⟨c, hc⟩ := Set.mem_iUnion.1 hV
     obtain ⟨p, rfl⟩ := hc
-    exact shiftedEuclideanBox_isOpen a c p
+    exact (isOpen_set_pi Set.finite_univ fun _ _ ↦ isOpen_Ioo).preimage
+      (PiLp.homeomorph 2 (fun _ : Fin N ↦ ℝ)).continuous
   · -- Phase avoidance and coordinatewise floors place every point in a cover member.
     apply Set.eq_univ_of_forall
     intro x
@@ -296,8 +268,9 @@ private lemma exists_euclideanOpenCover_order {N : ℕ} (ε : ℝ) (hε : 0 < ε
     intro V hV
     obtain ⟨c, hc⟩ := Set.mem_iUnion.1 hV
     obtain ⟨p, rfl⟩ := hc
-    have hspec := shiftedEuclideanBox_isBounded_diam ha c p
-    exact ⟨hspec.1, hspec.2.trans_lt haε⟩
+    have hdist := fun x hx y hy ↦ shiftedEuclideanBox_dist_le ha c p (x := x) (y := y) hx hy
+    exact ⟨Metric.isBounded_iff.mpr ⟨_, hdist⟩,
+      (Metric.diam_le_of_forall_dist_le (mul_nonneg hsqrt ha.le) hdist).trans_lt haε⟩
 
 /-- Helper for Theorem 50.6: restricting a uniformly fine Euclidean cover to a
 subtype gives a nonempty uniformly fine cover of the same order. -/
@@ -335,29 +308,11 @@ lemma exists_subtypeEuclideanCover_order {N : ℕ}
     exact (h𝒸order.preimage ((↑) : X → EuclideanSpace ℝ (Fin N))).of_subset
       fun _ hB ↦ hB.1
   · -- The subtype inclusion is an isometry, so boundedness and diameter bounds descend.
-    intro B hB
-    have hBpullback : B ∈ pullback := hB.1
-    obtain ⟨V, hV𝒸, rfl⟩ := hBpullback
-    have hVsmall := h𝒸small V hV𝒸
-    have himage :
-        ((↑) : X → EuclideanSpace ℝ (Fin N)) ''
-            (((↑) : X → EuclideanSpace ℝ (Fin N)) ⁻¹' V) ⊆ V :=
-      Set.image_preimage_subset _ _
-    have hBbounded : Bornology.IsBounded
-        (((↑) : X → EuclideanSpace ℝ (Fin N)) ⁻¹' V) := by
-      apply isometry_subtype_coe.antilipschitzWith.isBounded_preimage
-      exact hVsmall.1
-    have hdiamImage :
-        Metric.diam (((↑) : X → EuclideanSpace ℝ (Fin N)) ''
-          (((↑) : X → EuclideanSpace ℝ (Fin N)) ⁻¹' V)) =
-            Metric.diam (((↑) : X → EuclideanSpace ℝ (Fin N)) ⁻¹' V) :=
-      isometry_subtype_coe.diam_image _
-    have hdiamLe :
-        Metric.diam (((↑) : X → EuclideanSpace ℝ (Fin N)) ⁻¹' V) ≤
-          Metric.diam V := by
-      rw [← hdiamImage]
-      exact Metric.diam_mono himage hVsmall.1
-    exact ⟨hB.2, hBbounded, hdiamLe.trans_lt hVsmall.2⟩
+    rintro B ⟨⟨V, hV, rfl⟩, hB⟩
+    obtain ⟨hVbounded, hVdiam⟩ := h𝒸small V hV
+    refine ⟨hB, isometry_subtype_coe.antilipschitzWith.isBounded_preimage hVbounded, ?_⟩
+    rw [← isometry_subtype_coe.diam_image]
+    exact (Metric.diam_mono (Set.image_preimage_subset _ _) hVbounded).trans_lt hVdiam
 
 /-- Every compact subspace of `EuclideanSpace ℝ (Fin N)` has covering-dimension
 bound `N`. -/

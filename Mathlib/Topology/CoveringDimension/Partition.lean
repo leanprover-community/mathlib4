@@ -136,9 +136,7 @@ lemma dense_setOf_hasBufferedFineZeroCover
   let _ : Finite ι := hιfinite
   let _ : Fintype ι := Fintype.ofFinite ι
   have hιnonempty : Nonempty ι := by
-    have hx : Classical.choice (inferInstance : Nonempty X) ∈ ⋃ i, (B i : Set X) :=
-      hBcover.iSup_set_eq_univ.symm ▸ Set.mem_univ _
-    obtain ⟨i, _⟩ := Set.mem_iUnion.mp hx
+    obtain ⟨i, _⟩ := hBcover.exists_mem (Classical.arbitrary X)
     exact ⟨i⟩
   let i₀ : ι := Classical.choice hιnonempty
   let z : ι → ℝ := fun i ↦ if f (c i) = 0 then r / 4 else f (c i)
@@ -160,10 +158,7 @@ lemma dense_setOf_hasBufferedFineZeroCover
     · rw [dist_self]
       linarith
   have hBcoverSet : (Set.univ : Set X) ⊆ ⋃ i, (B i : Set X) := by
-    intro x _
-    have hx : x ∈ ⋃ i, (B i : Set X) :=
-      hBcover.iSup_set_eq_univ.symm ▸ Set.mem_univ x
-    exact hx
+    rw [hBcover.iSup_set_eq_univ]
   obtain ⟨ρ, hρ⟩ := PartitionOfUnity.exists_isSubordinate isClosed_univ
     (fun i ↦ (B i : Set X)) (fun i ↦ (B i).2) hBcoverSet
   let g : C(X, ℝ) :=
@@ -230,23 +225,14 @@ lemma dense_setOf_hasBufferedFineZeroCover
       have hji : j = i := hBinjective hBi.symm
       rw [← hji] at hiz
       exact (not_lt_of_ge hjz.le) hiz
-    have hproper : S ⊂ T := Set.ssubset_iff_subset_ne.mpr
-      ⟨hST, fun hEq ↦ hjS (hEq ▸ hjT)⟩
+    have hproper : S ⊂ T := (Set.ssubset_iff_of_subset hST).mpr ⟨B j, hjT, hjS⟩
     have hlt : Set.encard S < Set.encard T :=
       (h𝒰finite.subset fun U hU ↦ hU.1).encard_lt_encard hproper
-    have hlt' : Set.encard S < (n + 1 : ℕ) :=
-      hlt.trans_le (Set.hasOrderLE_iff.mp hBorder x)
-    have hltSucc : Set.encard S < (n : ℕ∞) + 1 := by
-      simpa only [Nat.cast_add, Nat.cast_one] using hlt'
-    exact (ENat.lt_add_one_iff (ENat.natCast_ne_top n)).mp hltSucc
+    simpa only [Nat.cast_add, Nat.cast_one, ENat.lt_add_one_iff (ENat.natCast_ne_top n)]
+      using hlt.trans_le (Set.hasOrderLE_iff.mp hBorder x)
   have h𝒰diameter : ∀ U ∈ 𝒰, ∀ x ∈ U, ∀ y ∈ U, dist x y < δ := by
     rintro U ⟨i, _, rfl⟩ x hx y hy
-    have hxc : dist x (c i) < δ / 2 := Metric.mem_ball.mp (hBp i hx).1
-    have hcy : dist (c i) y < δ / 2 := by
-      rw [dist_comm]
-      exact Metric.mem_ball.mp (hBp i hy).1
-    have hsum : dist x (c i) + dist (c i) y < δ := by linarith
-    exact lt_of_le_of_lt (dist_triangle x (c i) y) hsum
+    exact Metric.ball_half_subset (c i) (Metric.mem_ball_comm.mp (hBp i hy).1) (hBp i hx).1
   exact ⟨g, Metric.mem_ball.mpr hgclose,
     ε, hεpositive, 𝒰, h𝒰finite, h𝒰open, h𝒰cover, h𝒰order, h𝒰diameter⟩
 

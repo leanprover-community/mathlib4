@@ -79,10 +79,7 @@ private lemma existsFiniteControlledOpenCover
     exact V.2
   refine ⟨s, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · -- Every selected member came from the open refinement.
-    intro U hUs
-    rw [Finset.mem_image] at hUs
-    obtain ⟨V, hVt, rfl⟩ := hUs
-    exact hℬ_open V.1 V.2
+    exact fun U hUs ↦ hℬ_open U (hsℬ hUs)
   · -- Empty members were discarded explicitly.
     intro U hUs
     rw [Finset.mem_image] at hUs
@@ -91,11 +88,7 @@ private lemma existsFiniteControlledOpenCover
   · -- The retained nonempty members still cover, since the member containing a
     -- given point is automatically nonempty.
     intro x
-    have hx : x ∈ ⋃ U ∈ t, U.1 := ht_cover (Set.mem_univ x)
-    rw [Set.mem_iUnion] at hx
-    obtain ⟨V, hx⟩ := hx
-    rw [Set.mem_iUnion] at hx
-    obtain ⟨hVt, hxV⟩ := hx
+    obtain ⟨V, hVt, hxV⟩ := Set.mem_iUnion₂.mp (ht_cover (Set.mem_univ x))
     refine ⟨V.1, ?_, hxV⟩
     rw [Finset.mem_image]
     exact ⟨V, Finset.mem_filter.mpr ⟨hVt, ⟨x, hxV⟩⟩, rfl⟩
@@ -108,43 +101,11 @@ private lemma existsFiniteControlledOpenCover
   · -- Refinement into one canonical neighborhood gives the domain estimate.
     intro U hUs x hxU y hyU
     obtain ⟨A, ⟨z, rfl⟩, hUA⟩ := hℬ_refines (hsℬ hUs)
-    have hxz : dist x z < δ / 2 := Metric.mem_ball.mp (hUA hxU).1
-    have hzy : dist z y < δ / 2 := by
-      rw [dist_comm]
-      exact Metric.mem_ball.mp (hUA hyU).1
-    exact lt_of_le_of_lt (dist_triangle x z y) (by linarith)
+    exact Metric.ball_half_subset z (Metric.mem_ball_comm.mp (hUA hyU).1) (hUA hxU).1
   · -- The same refinement estimate in the codomain controls image oscillation.
     intro U hUs x hxU y hyU
     obtain ⟨A, ⟨z, rfl⟩, hUA⟩ := hℬ_refines (hsℬ hUs)
-    have hxz : dist (f x) (f z) < η / 2 := Metric.mem_ball.mp (hUA hxU).2
-    have hzy : dist (f z) (f y) < η / 2 := by
-      rw [dist_comm]
-      exact Metric.mem_ball.mp (hUA hyU).2
-    exact lt_of_le_of_lt (dist_triangle (f x) (f z) (f y)) (by linarith)
-
-open scoped Classical in
-/-- Helper for Theorem 50.4: the active coefficients of a subordinate finite
-partition are bounded by the point multiplicity of the cover. -/
-private lemma activePartitionIndices_card_le
-    {X : Type*} [TopologicalSpace X] {m : ℕ} (s : Finset (Set X))
-    (hmult : ∀ x, (s.filter fun U ↦ x ∈ U).card ≤ m + 1)
-    (ρ : PartitionOfUnity {U : Set X // U ∈ s} X Set.univ)
-    (hρ : ρ.IsSubordinate fun U ↦ U.1) (x : X) :
-    (Finset.univ.filter fun i ↦ ρ i x ≠ 0).card ≤ m + 1 := by
-  classical
-  -- Send each active subtype index to its underlying cover member; subordination
-  -- places the image in the pointwise active cover finset.
-  have hcard :
-      (Finset.univ.filter fun i ↦ ρ i x ≠ 0).card ≤
-        (s.filter fun U ↦ x ∈ U).card := by
-    apply Finset.card_le_card_of_injOn (fun i ↦ i.1)
-    · intro i hi
-      have hi_active : ρ i x ≠ 0 := by simpa using hi
-      exact Finset.mem_filter.mpr
-        ⟨i.2, hρ i (subset_tsupport (ρ i) hi_active)⟩
-    · intro i hi j hj hij
-      exact Subtype.ext hij
-  exact hcard.trans (hmult x)
+    exact Metric.ball_half_subset (f z) (Metric.mem_ball_comm.mp (hUA hyU).2) (hUA hxU).2
 
 open scoped Classical in
 /-- Helper for Theorem 50.4: bounded affine independence of the vertices makes
@@ -234,8 +195,12 @@ lemma dense_setOf_mapsTo_compl_diagonal_of_nonempty
       exact Set.mem_iUnion.mpr ⟨⟨U, hU⟩, hxU⟩)
   have hactive : ∀ x,
       (Finset.univ.filter fun i ↦ ρ i x ≠ 0).card ≤ m + 1 := by
+    classical
     intro x
-    exact activePartitionIndices_card_le s hmult ρ hρ x
+    refine le_trans (Finset.card_le_card_of_injOn Subtype.val ?_
+      Subtype.val_injective.injOn) (hmult x)
+    exact fun i hi ↦ Finset.mem_filter.mpr
+      ⟨i.2, hρ i (subset_tsupport (ρ i) (Finset.mem_filter.mp hi).2)⟩
   classical
   -- Choose one representative in every nonempty cover member and perturb its
   -- image to the bounded affine-independent vertex family supplied above.
@@ -295,18 +260,10 @@ lemma isOpen_dense_setOf_mapsTo_compl_diagonal
   -- Density is vacuous on the empty domain and is the geometric approximation
   -- construction isolated in `dense_setOf_mapsTo_compl_diagonal_of_nonempty` otherwise.
   · cases isEmpty_or_nonempty X with
-    | inl hX =>
-        let _ : IsEmpty X := hX
-        rw [Metric.dense_iff]
-        intro f r hr
-        refine ⟨f, Metric.mem_ball.mpr ?_, ?_⟩
-        · rw [dist_self]
-          exact hr
-        · rintro ⟨x, y⟩
-          exact isEmptyElim x
+    | inl hX => simp [Set.MapsTo]
     | inr hX =>
-        let _ : Nonempty X := hX
-        exact dense_setOf_mapsTo_compl_diagonal_of_nonempty hdim n
+      let _ : Nonempty X := hX
+      exact dense_setOf_mapsTo_compl_diagonal_of_nonempty hdim n
 
 /-- A compact metrizable space of covering dimension at most `m` embeds in
 `EuclideanSpace ℝ (Fin (2 * m + 1))`. -/
