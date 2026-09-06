@@ -684,10 +684,8 @@ theorem exists_one_lt_of_prod_one_of_exists_ne_one [MulLeftMono M] (f : ι → M
 
 @[to_additive exists_neg_of_sum_zero_of_exists_nonzero]
 theorem exists_lt_one_of_prod_one_of_exists_ne_one [MulLeftMono M] (f : ι → M)
-    (h₁ : ∏ i ∈ s, f i = 1) (h₂ : ∃ i ∈ s, f i ≠ 1) : ∃ i ∈ s, f i < 1 := by
-  by_contra! h
-  have : ¬ ∃ x ∈ s, 1 < f x := by simp [← one_lt_prod_iff_of_one_le h, h₁]
-  grind
+    (h₁ : ∏ i ∈ s, f i = 1) (h₂ : ∃ i ∈ s, f i ≠ 1) : ∃ i ∈ s, f i < 1 :=
+  exists_one_lt_of_prod_one_of_exists_ne_one (M := Mᵒᵈ) f h₁ h₂
 
 variable [IsOrderedCancelMonoid M]
 
