@@ -26,10 +26,9 @@ These results are prerequisites for the **Prime Number Theorem** and
 **Dirichlet's Theorem** on primes in arithmetic progressions.
 
 Using the functional equation, these results are extended to the left half-plane in
-`LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, which describe the
-zeros there in terms of the archimedean Gamma factor (the negative even integers for `ζ`).
-TODO: a parity analysis of L-functions to make the former fully explicit (negative even or odd
-integers according to the parity of `χ`).
+`LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, excluding negative
+integers and negative even integers respectively. TODO: a parity analysis of L-functions to
+refine the former to negative even or odd integers.
 
 As a byproduct of the above analysis, non-vanishing theorems for the root number or Gauss sum
 associated to a Dirichlet L-function are also provided.
@@ -478,10 +477,9 @@ theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ}
   suffices completedLFunction χ s ≠ 0 by grind [LFunction_eq_completed_div_gammaFactor]
   obtain ⟨w, rfl⟩ : ∃ w, s = 1 - w := ⟨1 - s, by ring⟩
   rw [hχ.completedLFunction_one_sub]
-  refine mul_ne_zero (mul_ne_zero ?_ (rootNumber_ne_zero hχ)) ?_
+  apply_rules (transparency := .reducible) [mul_ne_zero, rootNumber_ne_zero]
   · grind [cpow_eq_zero_iff, Nat.cast_eq_zero, NeZero.ne N]
-  · refine completedLFunction_ne_zero_of_one_le_re χ⁻¹ ?_ (by grind [sub_re, one_re])
-    grind [inv_eq_one, sub_ne_zero]
+  · grind [completedLFunction_ne_zero_of_one_le_re, sub_re, one_re, inv_eq_one, sub_ne_zero]
 
 end nonvanishing
 
@@ -495,16 +493,10 @@ theorem riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
     riemannZeta s = 0 ↔ ∃ n : ℕ, s = -2 * (n + 1) := by
   rcases eq_or_ne s 0 with rfl | h0
   · grind [riemannZeta_zero]
-  · have he : (1 : DirichletCharacter ℂ 1).Even := by
-      unfold DirichletCharacter.Even
-      simp [Subsingleton.elim (-1 : ZMod 1) 1, map_one]
-    rw [← LFunction_modOne_eq (χ := 1),
+  · rw [← LFunction_modOne_eq (χ := 1),
       LFunction_eq_zero_iff_of_re_nonpos isPrimitive_one_level_one (.inr h0) hs,
-      gammaFactor_eq_zero_even he]
-    constructor
-    · rintro ⟨n, rfl⟩
-      obtain ⟨m, rfl⟩ : ∃ m : ℕ, n = m + 1 := by cases n with
-        | zero => simp at h0
-        | succ m => exact ⟨m, rfl⟩
-      exact ⟨m, by push_cast; ring⟩
-    · rintro ⟨n, rfl⟩; exact ⟨n + 1, by push_cast; ring⟩
+      gammaFactor_eq_zero_even]
+    · constructor
+      · rintro ⟨n, rfl⟩; exact ⟨n - 1, by simp_all; norm_cast; grind⟩
+      · rintro ⟨n, rfl⟩; exact ⟨n + 1, by norm_cast⟩
+    · simp [DirichletCharacter.Even, Subsingleton.elim (-1 : ZMod 1) 1]
