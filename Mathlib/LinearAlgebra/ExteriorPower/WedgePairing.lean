@@ -20,11 +20,6 @@ noncomputable section private_defs
 
 namespace exteriorPower
 
-@[simps!]
-def complementEquiv (k l : ℕ) (hkl : k + l = finrank K V) :
-    powersetCard (Fin (finrank K V)) l ≃ powersetCard (Fin (finrank K V)) k :=
-  powersetCard.compl (by simpa using hkl)
-
 section Basis
 
 variable (b : Basis (Fin (finrank K V)) K V)
