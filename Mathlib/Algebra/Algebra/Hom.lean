@@ -277,6 +277,9 @@ def toLinearMap : A →ₗ[R] B where
   map_add' := map_add _
   map_smul' := map_smul _
 
+theorem toLinearMap_eq_coe (f : A →ₐ[R] B) : f.toLinearMap = f :=
+  rfl
+
 @[simp]
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
@@ -329,7 +332,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl

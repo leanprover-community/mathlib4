@@ -14,7 +14,7 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 This file has a declaration that enables a continuous (semi-)linear map between modules to be
 lifted to a continuous semilinear map between the completions of those modules.
 
-## Main declarations:
+## Main declarations
 
 * `ContinuousLinearMap.completion`: promotes a continuous semilinear map
   from `α` to `β` to a continuous semilinear map from `Completion α` to `Completion β`.

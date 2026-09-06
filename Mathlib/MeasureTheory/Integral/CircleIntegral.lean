@@ -413,6 +413,14 @@ theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
 
 variable [NormedSpace ℂ E]
 
+/-- If `f` is circle integrable and `w` does not lie on the circle, then
+`fun z ↦ (z - w) ^ n • f z` is circle integrable for every `n : ℤ`. -/
+theorem CircleIntegrable.sub_zpow_smul {f : ℂ → E} {c w : ℂ} {R : ℝ} (n : ℤ)
+    (hf : CircleIntegrable f c R) (hw : w ∉ sphere c |R|) :
+    CircleIntegrable (fun z ↦ (z - w) ^ n • f z) c R :=
+  hf.fun_continuousOn_smul <| (continuousOn_id.sub continuousOn_const).zpow₀ n
+    fun _ hz ↦ Or.inl (sub_ne_zero.2 (ne_of_mem_of_not_mem hz hw))
+
 /-- Definition for $\oint_{|z-c|=R} f(z)\,dz$ -/
 def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
   ∫ θ : ℝ in 0..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
