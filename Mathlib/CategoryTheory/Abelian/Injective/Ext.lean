@@ -179,11 +179,6 @@ lemma extMk_zero (m : ℕ) (hm : n + 1 = m) :
     R.extMk (0 : X ⟶ R.cocomplex.X n) m hm (by simp) = 0 := by
   simp [extMk]
 
-lemma smul_extMk (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
-    (hf : f ≫ R.cocomplex.d n m = 0) {A : Type*} [Ring A] [Linear A C] (a : A) :
-    a • R.extMk f m hm hf = R.extMk (a • f) m hm (by simp [hf]) := by
-  sorry
-
 lemma extMk_hom
     [HasDerivedCategory C] (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) :
