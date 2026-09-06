@@ -132,7 +132,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 
 @[to_additive]
-instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ] {H : Type*}
+instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulLeftInvariant ν]
     [SFinite ν] : IsMulLeftInvariant (μ.prod ν) := by
   constructor
@@ -142,7 +142,7 @@ instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ
     map_mul_left_eq_self μ g, map_mul_left_eq_self ν h]
 
 @[to_additive]
-instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite μ] {H : Type*}
+instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulRightInvariant ν]
     [SFinite ν] : IsMulRightInvariant (μ.prod ν) := by
   constructor
