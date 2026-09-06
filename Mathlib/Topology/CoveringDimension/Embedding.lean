@@ -52,60 +52,55 @@ private lemma existsFiniteControlledOpenCover
       (∀ U ∈ s, ∀ x ∈ U, ∀ y ∈ U, dist (f x) (f y) < η) := by
   classical
   -- The canonical cover controls domain distance and image distance simultaneously.
-  let neighborhood : X → Set X := fun x ↦
-    Metric.ball x (δ / 2) ∩ f ⁻¹' Metric.ball (f x) (η / 2)
-  let 𝒜 : Set (Set X) := Set.range neighborhood
-  have h𝒜_open : ∀ U ∈ 𝒜, IsOpen U := by
-    rintro U ⟨x, rfl⟩
-    exact Metric.isOpen_ball.inter (Metric.isOpen_ball.preimage f.continuous)
-  have h𝒜_cover : ⋃₀ 𝒜 = Set.univ := by
+  let neighborhood : X → TopologicalSpace.Opens X := fun x ↦
+    ⟨Metric.ball x (δ / 2) ∩ f ⁻¹' Metric.ball (f x) (η / 2),
+      Metric.isOpen_ball.inter (Metric.isOpen_ball.preimage f.continuous)⟩
+  have hcover : TopologicalSpace.IsOpenCover neighborhood := by
+    apply TopologicalSpace.IsOpenCover.of_sets
     apply Set.eq_univ_of_forall
     intro x
-    rw [Set.mem_sUnion]
-    refine ⟨neighborhood x, ⟨x, rfl⟩, ?_⟩
-    constructor
+    refine Set.mem_iUnion.mpr ⟨x, ?_, ?_⟩
     · exact Metric.mem_ball.mpr (by simpa using hδ)
     · exact Metric.mem_ball.mpr (by simpa using hη)
-  obtain ⟨ℬ, hℬ_refines, hℬ_open, hℬ_cover, hℬ_order⟩ :=
-    (hasCoveringDimensionLE_iff X m).mp hdim 𝒜 h𝒜_open h𝒜_cover
-  have hℬ_subcover : Set.univ ⊆ ⋃ U : ℬ, U.1 := by
-    simp only [← Set.sUnion_eq_iUnion, hℬ_cover, Set.Subset.rfl]
-  obtain ⟨t, ht_cover⟩ := isCompact_univ.elim_finite_subcover
-    (fun U : ℬ ↦ U.1) (fun U ↦ hℬ_open U.1 U.2) hℬ_subcover
-  let s : Finset (Set X) := (t.filter fun U : ℬ ↦ U.1.Nonempty).image Subtype.val
-  have hsℬ : (s : Set (Set X)) ⊆ ℬ := by
+  obtain ⟨κ, B, hB, hBA, horder⟩ := hdim _ neighborhood hcover
+  obtain ⟨t, ht⟩ := hB.exists_finite_of_compactSpace
+  let s : Finset (Set X) :=
+    (t.filter fun i ↦ (B i : Set X).Nonempty).image fun i ↦ (B i : Set X)
+  have hsB : (s : Set (Set X)) ⊆ Set.range (fun i ↦ (B i : Set X)) := by
     rintro U hU
-    obtain ⟨V, _, rfl⟩ := Finset.mem_image.mp hU
-    exact V.2
+    obtain ⟨i, _, rfl⟩ := Finset.mem_image.mp hU
+    exact Set.mem_range_self i
   refine ⟨s, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · -- Every selected member came from the open refinement.
-    exact fun U hUs ↦ hℬ_open U (hsℬ hUs)
+    intro U hU
+    obtain ⟨i, rfl⟩ := hsB hU
+    exact (B i).isOpen
   · -- Empty members were discarded explicitly.
     intro U hUs
-    rw [Finset.mem_image] at hUs
-    obtain ⟨V, hVt, rfl⟩ := hUs
-    exact (Finset.mem_filter.mp hVt).2
-  · -- The retained nonempty members still cover, since the member containing a
-    -- given point is automatically nonempty.
+    obtain ⟨i, hit, rfl⟩ := Finset.mem_image.mp hUs
+    exact (Finset.mem_filter.mp hit).2
+  · -- A member containing a point is automatically nonempty.
     intro x
-    obtain ⟨V, hVt, hxV⟩ := Set.mem_iUnion₂.mp (ht_cover (Set.mem_univ x))
-    refine ⟨V.1, ?_, hxV⟩
-    rw [Finset.mem_image]
-    exact ⟨V, Finset.mem_filter.mpr ⟨hVt, ⟨x, hxV⟩⟩, rfl⟩
+    obtain ⟨i, hxi⟩ := ht.exists_mem x
+    exact ⟨B i, Finset.mem_image.mpr
+      ⟨i, Finset.mem_filter.mpr ⟨i.2, ⟨x, hxi⟩⟩, rfl⟩, hxi⟩
   · -- Point multiplicity can only decrease when passing to the finite subfamily.
     intro x
-    have hsubset : (s.filter (fun U ↦ x ∈ U) : Set (Set X)) ⊆ {U ∈ ℬ | x ∈ U} := by
+    have hsubset : (s.filter (fun U ↦ x ∈ U) : Set (Set X)) ⊆
+        {U ∈ Set.range (fun i ↦ (B i : Set X)) | x ∈ U} := by
       intro U hU
-      exact ⟨hsℬ (Finset.mem_filter.mp hU).1, (Finset.mem_filter.mp hU).2⟩
-    exact_mod_cast (Set.encard_mono hsubset).trans (Set.hasOrderLE_iff.mp hℬ_order x)
+      exact ⟨hsB (Finset.mem_filter.mp hU).1, (Finset.mem_filter.mp hU).2⟩
+    exact_mod_cast (Set.encard_mono hsubset).trans (Set.hasOrderLE_iff.mp horder x)
   · -- Refinement into one canonical neighborhood gives the domain estimate.
     intro U hUs x hxU y hyU
-    obtain ⟨A, ⟨z, rfl⟩, hUA⟩ := hℬ_refines (hsℬ hUs)
-    exact Metric.ball_half_subset z (Metric.mem_ball_comm.mp (hUA hyU).1) (hUA hxU).1
+    obtain ⟨i, rfl⟩ := hsB hUs
+    obtain ⟨_, ⟨z, rfl⟩, hi⟩ := hBA (Set.mem_range_self i)
+    exact Metric.ball_half_subset z (Metric.mem_ball_comm.mp (hi hyU).1) (hi hxU).1
   · -- The same refinement estimate in the codomain controls image oscillation.
     intro U hUs x hxU y hyU
-    obtain ⟨A, ⟨z, rfl⟩, hUA⟩ := hℬ_refines (hsℬ hUs)
-    exact Metric.ball_half_subset (f z) (Metric.mem_ball_comm.mp (hUA hyU).2) (hUA hxU).2
+    obtain ⟨i, rfl⟩ := hsB hUs
+    obtain ⟨_, ⟨z, rfl⟩, hi⟩ := hBA (Set.mem_range_self i)
+    exact Metric.ball_half_subset (f z) (Metric.mem_ball_comm.mp (hi hyU).2) (hi hxU).2
 
 open scoped Classical in
 /-- Bounded affine independence of the vertices makes

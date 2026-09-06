@@ -19,7 +19,7 @@ public section
 
 open scoped CoveringDimension
 
-open Set
+open Set TopologicalSpace
 
 universe u
 
@@ -286,18 +286,20 @@ theorem compactSubset_euclideanSpace_hasCoveringDimensionLE {N : ℕ}
     (X : Set (EuclideanSpace ℝ (Fin N))) (hX : IsCompact X) :
     HasCoveringDimensionLE X N := by
   -- Choose a Lebesgue number, then refine by the uniformly fine order-`N + 1` cover.
-  rw [hasCoveringDimensionLE_iff]
-  intro 𝒜 h𝒜open h𝒜cover
+  intro ι A hA
   let _ : CompactSpace X := isCompact_iff_compactSpace.mp hX
   obtain ⟨δ, hδ, hLebesgue⟩ := CompactSpace.lebesgue_number_lemma
-    (fun U : 𝒜 ↦ U.1) (fun U ↦ h𝒜open U.1 U.2)
-    (by simpa only [← Set.sUnion_eq_iUnion] using h𝒜cover)
+    (fun i ↦ (A i : Set X)) (fun i ↦ (A i).isOpen) hA.iSup_set_eq_univ
   obtain ⟨ℬ, hℬopen, hℬcover, hℬorder, hℬsmall⟩ :=
     exists_subtypeEuclideanCover_order X δ hδ
-  refine ⟨ℬ, ?_, hℬopen, hℬcover, hℬorder⟩
-  intro B hB
-  obtain ⟨U, hBU⟩ := hLebesgue B (hℬsmall B hB).1 (hℬsmall B hB).2.2.le
-  exact ⟨U.1, U.2, hBU⟩
+  let B : ℬ → Opens X := fun U ↦ ⟨U.1, hℬopen U.1 U.2⟩
+  refine ⟨ℬ, B, IsOpenCover.of_sets _
+    (by simpa only [← Set.sUnion_eq_iUnion] using hℬcover), ?_, ?_⟩
+  · rintro _ ⟨U, rfl⟩
+    obtain ⟨i, hi⟩ := hLebesgue U.1 (hℬsmall U.1 U.2).1 (hℬsmall U.1 U.2).2.2.le
+    exact ⟨A i, Set.mem_range_self i, hi⟩
+  · change (Set.range (Subtype.val : ℬ → Set X)).HasOrderLE (N + 1)
+    simpa only [Subtype.range_val] using hℬorder
 
 /-- Every compact subspace of `EuclideanSpace ℝ (Fin N)` has
 covering dimension at most `N`. -/

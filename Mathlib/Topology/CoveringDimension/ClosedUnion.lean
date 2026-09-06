@@ -90,11 +90,7 @@ theorem unionClosed
     (hZdim : HasCoveringDimensionLE Z n) :
     HasCoveringDimensionLE X n := by
   classical
-  rw [hasCoveringDimensionLE_iff]
-  intro 𝒜 h𝒜open h𝒜cover
-  let A : 𝒜 → Opens X := fun U ↦ ⟨U.1, h𝒜open U.1 U.2⟩
-  have hA : IsOpenCover A :=
-    IsOpenCover.of_sets _ (by simpa only [← Set.sUnion_eq_iUnion] using h𝒜cover)
+  intro ν A hA
   -- First control multiplicity on `Y`, then refine once more to control it on `Z`.
   obtain ⟨κ, B, hB, hBA, hℬorderY⟩ :=
     existsOpenRefinementWithOrderOnClosedSet hYclosed hYdim A hA
@@ -102,10 +98,6 @@ theorem unionClosed
     existsOpenRefinementWithOrderOnClosedSet hZclosed hZdim B hB
   let ℬ := Set.range fun i ↦ (B i : Set X)
   let 𝒞 := Set.range fun i ↦ (C i : Set X)
-  have hℬrefines : IsCofinalFor ℬ 𝒜 := by
-    rintro _ ⟨i, rfl⟩
-    obtain ⟨_, ⟨j, rfl⟩, hj⟩ := hBA (Set.mem_range_self i)
-    exact ⟨j.1, j.2, hj⟩
   have hparentExists (U : 𝒞) : ∃ V : ℬ, U.1 ⊆ V.1 := by
     obtain ⟨i, hi⟩ := U.2
     obtain ⟨_, ⟨j, rfl⟩, hj⟩ := hCB (Set.mem_range_self i)
@@ -128,17 +120,19 @@ theorem unionClosed
     intro U
     obtain ⟨i, hi⟩ := U.1.2
     exact hi ▸ (C i).isOpen
-  refine ⟨𝒟, h𝒟refinesℬ.trans hℬrefines, h𝒟open, ?_, ?_⟩
+  let D : ℬ → Opens X := fun B ↦ ⟨grouped B, h𝒟open _ (Set.mem_range_self B)⟩
+  refine ⟨ℬ, D, ?_, ?_, ?_⟩
   · -- Each second-stage member lies in the group indexed by its chosen parent.
+    apply IsOpenCover.of_sets
     apply Set.eq_univ_of_forall
     intro x
     obtain ⟨i, hxi⟩ := hC.exists_mem x
-    rw [Set.mem_sUnion]
     let j : 𝒞 := ⟨C i, Set.mem_range_self i⟩
-    have hxGrouped : x ∈ grouped (parent j) := by
-      rw [Set.mem_iUnion]
-      exact ⟨⟨j, rfl⟩, hxi⟩
-    exact ⟨grouped (parent j), ⟨parent j, rfl⟩, hxGrouped⟩
+    exact Set.mem_iUnion.mpr ⟨parent j, Set.mem_iUnion.mpr ⟨⟨j, rfl⟩, hxi⟩⟩
+  · apply IsCofinalFor.trans _ hBA
+    rintro _ ⟨B, rfl⟩
+    obtain ⟨_, ⟨i, rfl⟩, hi⟩ := h𝒟refinesℬ (Set.mem_range_self B)
+    exact ⟨_, Set.mem_range_self i, hi⟩
   · -- Over `Y` count parents; over `Z` count chosen second-stage witnesses.
     rw [Set.hasOrderLE_iff]
     intro x

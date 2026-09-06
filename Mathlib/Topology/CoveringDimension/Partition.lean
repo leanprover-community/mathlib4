@@ -224,35 +224,38 @@ lemma hasCoveringDimensionLE_closedSubset_zeroFiber
     (hfine : ∀ k : ℕ,
       HasBufferedFineZeroCover f (q + 1) (1 / (k + 1 : ℝ))) :
     HasCoveringDimensionLE L q := by
-  rw [hasCoveringDimensionLE_iff]
-  intro 𝒜 h𝒜open h𝒜cover
+  intro ι A hA
   classical
   let _ : CompactSpace L := isCompact_iff_compactSpace.mp hLclosed.isCompact
-  obtain ⟨δ, hδ, hLebesgue⟩ :=
-    lebesgue_number_lemma_of_metric_sUnion isCompact_univ h𝒜open (by simp [h𝒜cover])
+  obtain ⟨δ, hδ, hLebesgue⟩ := lebesgue_number_lemma_of_metric
+    isCompact_univ (fun i ↦ (A i).isOpen) (by simp [hA.iSup_set_eq_univ])
   obtain ⟨k, hk⟩ := exists_nat_one_div_lt hδ
   obtain ⟨ε, hε, 𝒰, _, h𝒰open, h𝒰cover, h𝒰order, h𝒰diameter⟩ := hfine k
   have hsmall (z : L) : |f z.1| < ε := by rwa [hLzero z.2, abs_zero]
   let ℬ : Set (Set L) :=
     {V | V.Nonempty ∧ ∃ U ∈ 𝒰, V = (Subtype.val : L → X) ⁻¹' U}
-  refine ⟨ℬ, ?_, ?_, ?_, ?_⟩
-  · rintro V ⟨⟨z, hzV⟩, U, hU𝒰, rfl⟩
-    obtain ⟨O, hO𝒜, hzO⟩ := hLebesgue z (Set.mem_univ z)
-    refine ⟨O, hO𝒜, ?_⟩
+  have hℬopen (V : ℬ) : IsOpen V.1 := by
+    obtain ⟨_, U, hU𝒰, hVU⟩ := V.2
+    rw [hVU]
+    exact (h𝒰open U hU𝒰).preimage continuous_subtype_val
+  let B : ℬ → Opens L := fun V ↦ ⟨V.1, hℬopen V⟩
+  refine ⟨ℬ, B, ?_, ?_, ?_⟩
+  · apply IsOpenCover.of_sets
+    apply Set.eq_univ_of_forall
+    intro z
+    obtain ⟨U, hU𝒰, hzU⟩ := Set.mem_sUnion.mp (h𝒰cover z.1 (hsmall z))
+    exact Set.mem_iUnion.mpr
+      ⟨⟨(Subtype.val : L → X) ⁻¹' U, ⟨z, hzU⟩, U, hU𝒰, rfl⟩, hzU⟩
+  · rintro _ ⟨⟨V, ⟨z, hzV⟩, U, hU𝒰, rfl⟩, rfl⟩
+    obtain ⟨i, hi⟩ := hLebesgue z (Set.mem_univ z)
+    refine ⟨A i, Set.mem_range_self i, ?_⟩
     intro y hy
-    apply hzO
+    apply hi
     apply Metric.mem_ball.mpr
     simpa only [Subtype.dist_eq, dist_comm] using
       (h𝒰diameter U hU𝒰 z.1 hzV y.1 hy).trans hk
-  · intro V hV
-    obtain ⟨_, U, hU𝒰, rfl⟩ := hV
-    exact (h𝒰open U hU𝒰).preimage continuous_subtype_val
-  · apply Set.eq_univ_of_forall
-    intro z
-    obtain ⟨U, hU𝒰, hzU⟩ := Set.mem_sUnion.mp (h𝒰cover z.1 (hsmall z))
-    exact Set.mem_sUnion.mpr
-      ⟨(Subtype.val : L → X) ⁻¹' U, ⟨⟨z, hzU⟩, U, hU𝒰, rfl⟩, hzU⟩
-  · rw [Set.hasOrderLE_iff]
+  · change (Set.range (Subtype.val : ℬ → Set L)).HasOrderLE (q + 1)
+    rw [Subtype.range_val, Set.hasOrderLE_iff]
     intro z
     let pullback : Set X → Set L := fun U ↦ (Subtype.val : L → X) ⁻¹' U
     have hincident : {V ∈ ℬ | z ∈ V} ⊆

@@ -125,19 +125,11 @@ lemma hasCoveringDimensionLE_of_openPartitions
   classical
   -- Begin with a finite shrinking of the requested cover and separate each closed shrinking from
   -- the complement of its parent open set.
-  rw [hasCoveringDimensionLE_iff]
-  intro 𝒜 h𝒜open h𝒜cover
-  let A : 𝒜 → Opens X := fun U ↦ ⟨U.1, h𝒜open U.1 U.2⟩
-  have hA : IsOpenCover A :=
-    IsOpenCover.of_sets _ (by simpa only [← Set.sUnion_eq_iUnion] using h𝒜cover)
+  intro ν A hA
   obtain ⟨ι, hιfinite, B, C, hBcover, hCcover, _, hBmem, hCclosure⟩ :=
     hA.exists_finite_shrinking
-  have hBmem' (i : ι) : (B i : Set X) ∈ 𝒜 := by
-    obtain ⟨U, hU⟩ := hBmem i
-    rw [← hU]
-    exact U.2
-  let p : ι → 𝒜 := fun i ↦ ⟨B i, hBmem' i⟩
-  have hBp (i : ι) : (B i : Set X) ⊆ p i := Set.Subset.rfl
+  choose p hp using hBmem
+  have hBp (i : ι) : (B i : Set X) ⊆ A (p i) := (hp i).ge
   let _ : Finite ι := hιfinite
   have hseparator (i : ι) :
       ∃ V : Set X,
@@ -173,45 +165,30 @@ lemma hasCoveringDimensionLE_of_openPartitions
           intro hx
           exact hLempty.false ⟨x, hx⟩
         exact hDcover hxnotL
-      refine ⟨Set.range D, ?_, ?_, ?_, ?_⟩
+      refine ⟨ι, fun i ↦ ⟨D i, hDopen i⟩,
+        IsOpenCover.of_sets hDopen hDcoverUniv, ?_, ?_⟩
       · rintro U ⟨i, rfl⟩
-        exact ⟨p i, (p i).2,
+        exact ⟨A (p i), Set.mem_range_self _,
           (hDV i).trans (subset_closure.trans (hVclosure i) |>.trans (hBp i))⟩
-      · rintro U ⟨i, rfl⟩
-        exact hDopen i
-      · rw [Set.sUnion_range]
-        exact hDcoverUniv
       · exact Set.hasOrderLE_one_iff.mpr hDdisjoint.range_pairwise
   | succ q =>
       -- Refine the traces of the original finite cover on the closed frontier locus, then swell
       -- its closed shrinking back into the ambient space without changing its nerve.
       let _ : CompactSpace L := isCompact_iff_compactSpace.mp hLclosed.isCompact
-      let A : ι → Opens L := fun i ↦ (B i).comap ⟨Subtype.val, continuous_subtype_val⟩
-      have hA : IsOpenCover A := hBcover.comap ⟨Subtype.val, continuous_subtype_val⟩
+      let A' : ι → Opens L := fun i ↦ (B i).comap ⟨Subtype.val, continuous_subtype_val⟩
+      have hA' : IsOpenCover A' := hBcover.comap ⟨Subtype.val, continuous_subtype_val⟩
       obtain ⟨κ, hκfinite, R, S, a, hRcover, hScover, hRorder, hRinjective,
           hRparent, hSclosure⟩ :=
-        existsFiniteIndexedShrinkingRefinement hLdim A hA
+        existsFiniteIndexedShrinkingRefinement hLdim A' hA'
       let _ : Finite κ := hκfinite
       have hRA : ∀ j, Subtype.val '' (R j : Set L) ⊆ (B (a j) : Set X) :=
         fun j ↦ Set.image_subset_iff.mpr (hRparent j)
       obtain ⟨E, hLE, hEclosure, hEorder⟩ :=
         existsAmbientOpenSwelling_of_closedSubtypeCover hLclosed hScover hRorder
           hRinjective hSclosure (fun j ↦ B (a j)) hRA
-      let F : Sum κ ι → Set X := Sum.elim (fun j ↦ (E j : Set X)) D
-      refine ⟨Set.range F, ?_, ?_, ?_, ?_⟩
-      · rintro U ⟨j, rfl⟩
-        cases j with
-        | inl j =>
-            exact ⟨p (a j), (p (a j)).2,
-              subset_closure.trans (hEclosure j) |>.trans (hBp (a j))⟩
-        | inr i =>
-            exact ⟨p i, (p i).2,
-              (hDV i).trans (subset_closure.trans (hVclosure i) |>.trans (hBp i))⟩
-      · rintro U ⟨j, rfl⟩
-        cases j with
-        | inl j => exact (E j).isOpen
-        | inr i => exact hDopen i
-      · rw [Set.sUnion_range]
+      let F : Sum κ ι → Opens X := Sum.elim E (fun i ↦ ⟨D i, hDopen i⟩)
+      refine ⟨Sum κ ι, F, ?_, ?_, ?_⟩
+      · apply IsOpenCover.of_sets
         apply Set.eq_univ_of_forall
         intro x
         by_cases hxL : x ∈ L
@@ -219,8 +196,19 @@ lemma hasCoveringDimensionLE_of_openPartitions
           exact Set.mem_iUnion.mpr ⟨Sum.inl j, hxj⟩
         · obtain ⟨i, hxi⟩ := Set.mem_iUnion.mp (hDcover hxL)
           exact Set.mem_iUnion.mpr ⟨Sum.inr i, hxi⟩
-      · simpa only [F, Set.Sum.elim_range] using
-          hEorder.union (Set.hasOrderLE_one_iff.mpr hDdisjoint.range_pairwise)
+      · rintro U ⟨j, rfl⟩
+        cases j with
+        | inl j =>
+            exact ⟨A (p (a j)), Set.mem_range_self _,
+              subset_closure.trans (hEclosure j) |>.trans (hBp (a j))⟩
+        | inr i =>
+            exact ⟨A (p i), Set.mem_range_self _,
+              (hDV i).trans (subset_closure.trans (hVclosure i) |>.trans (hBp i))⟩
+      · have hF : (fun j ↦ (F j : Set X)) = Sum.elim (fun j ↦ (E j : Set X)) D := by
+          funext j
+          cases j <;> rfl
+        rw [hF, Set.Sum.elim_range]
+        exact hEorder.union (Set.hasOrderLE_one_iff.mpr hDdisjoint.range_pairwise)
 
 /-- Local frontier control produces a controlled partition between
 any two disjoint closed subsets. -/

@@ -62,7 +62,7 @@ namespace HasOrderLE
 /-- An upper bound on the order remains valid after increasing the bound. -/
 theorem mono {X : Type u} {𝒜 : Set (Set X)} {n k : ℕ}
     (h : 𝒜.HasOrderLE n) (hnk : n ≤ k) : 𝒜.HasOrderLE k :=
-  fun x ↦ (h x).trans (by simpa using hnk)
+  fun x ↦ (h x).trans (by simpa)
 
 /-- Passing to a subfamily does not increase its order. -/
 theorem of_subset {X : Type u} {𝒜 ℬ : Set (Set X)} {n : ℕ}
@@ -145,8 +145,7 @@ noncomputable def coveringDimension (X : Type u) [TopologicalSpace X] : WithBot 
 
 /-- Covering dimension expressed as the infimum of its strict natural-number bounds. -/
 theorem coveringDimension_eq_sInf (X : Type u) [TopologicalSpace X] :
-    coveringDimension X =
-      sInf {d : WithBot ℕ∞ | ∀ n : ℕ, d < n → HasCoveringDimensionLT X n} := by
+    coveringDimension X = sInf {d : WithBot ℕ∞ | ∀ n : ℕ, d < n → HasCoveringDimensionLT X n} := by
   rfl
 
 namespace CoveringDimension
@@ -156,41 +155,14 @@ scoped notation "dim " X:arg => coveringDimension X
 
 end CoveringDimension
 
-/-- The characterization of `HasCoveringDimensionLE` using collections of sets. -/
+/-- The characterization of `HasCoveringDimensionLE` using indexed open covers. -/
 theorem hasCoveringDimensionLE_iff (X : Type u) [TopologicalSpace X] (n : ℕ) :
     HasCoveringDimensionLE X n ↔
-      ∀ 𝒜 : Set (Set X),
-        (∀ U ∈ 𝒜, IsOpen U) →
-        ⋃₀ 𝒜 = Set.univ →
-        ∃ ℬ : Set (Set X),
-          IsCofinalFor ℬ 𝒜 ∧ (∀ U ∈ ℬ, IsOpen U) ∧
-            ⋃₀ ℬ = Set.univ ∧ ℬ.HasOrderLE (n + 1) := by
-  constructor
-  · intro h 𝒜 hopen hcover
-    let U : 𝒜 → Opens X := fun A ↦ ⟨A.1, hopen A.1 A.2⟩
-    have hU : IsOpenCover U :=
-      IsOpenCover.of_sets _ (by simpa only [← Set.sUnion_eq_iUnion] using hcover)
-    obtain ⟨κ, V, hV, hVU, horder⟩ := h _ U hU
-    refine ⟨Set.range (fun j ↦ (V j : Set X)), ?_, ?_, ?_, horder⟩
-    · rintro _ ⟨j, rfl⟩
-      obtain ⟨_, ⟨i, rfl⟩, hi⟩ := hVU (Set.mem_range_self j)
-      exact ⟨i.1, i.2, hi⟩
-    · rintro _ ⟨j, rfl⟩
-      exact (V j).isOpen
-    · simpa only [Set.sUnion_range] using hV.iSup_set_eq_univ
-  · intro h ι U hU
-    obtain ⟨ℬ, hrefines, hopen, hcover, horder⟩ := h (Set.range fun i ↦ (U i : Set X))
-      (by rintro _ ⟨i, rfl⟩; exact (U i).isOpen)
-      (by simpa only [Set.sUnion_range] using hU.iSup_set_eq_univ)
-    let V : ℬ → Opens X := fun B ↦ ⟨B.1, hopen B.1 B.2⟩
-    refine ⟨ℬ, V, ?_, ?_, ?_⟩
-    · exact IsOpenCover.of_sets _
-        (by simpa only [← Set.sUnion_eq_iUnion] using hcover)
-    · rintro _ ⟨j, rfl⟩
-      obtain ⟨_, ⟨i, rfl⟩, hi⟩ := hrefines j.2
-      exact ⟨U i, Set.mem_range_self i, hi⟩
-    · change (Set.range (Subtype.val : ℬ → Set X)).HasOrderLE (n + 1)
-      simpa only [Subtype.range_val] using horder
+      ∀ (ι : Type u) (U : ι → Opens X), IsOpenCover U →
+        ∃ (κ : Type u) (V : κ → Opens X), IsOpenCover V ∧
+          IsCofinalFor (Set.range V) (Set.range U) ∧
+            (Set.range fun j ↦ (V j : Set X)).HasOrderLE (n + 1) := by
+  rfl
 
 namespace HasCoveringDimensionLE
 
@@ -293,27 +265,23 @@ theorem Homeomorph.hasCoveringDimensionLE_of
     {A : Type u} {B : Type v} [TopologicalSpace A] [TopologicalSpace B]
     (e : A ≃ₜ B) {n : ℕ} (h : HasCoveringDimensionLE A n) :
     HasCoveringDimensionLE B n := by
-  rw [hasCoveringDimensionLE_iff] at h ⊢
-  intro ℰ hℰopen hℰcover
-  let ℰ' : Set (Set A) := (fun U : Set B ↦ e ⁻¹' U) '' ℰ
-  have hℰ'open : ∀ U ∈ ℰ', IsOpen U := by
-    rintro U ⟨V, hV, rfl⟩
-    exact (hℰopen V hV).preimage e.continuous
-  have hℰ'cover : ⋃₀ ℰ' = (_root_.Set.univ : Set A) := by
-    simp only [ℰ', Set.sUnion_image, ← Set.preimage_sUnion, hℰcover,
-      Set.preimage_univ]
-  obtain ⟨𝒯, h𝒯refines, h𝒯open, h𝒯cover, h𝒯order⟩ := h ℰ' hℰ'open hℰ'cover
-  let 𝒯' : Set (Set B) := (fun U : Set A ↦ e '' U) '' 𝒯
-  refine ⟨𝒯', ?_, ?_, ?_, ?_⟩
-  · rintro V ⟨U, hU, rfl⟩
-    obtain ⟨W, hW, hUW⟩ := h𝒯refines hU
-    obtain ⟨Z, hZ, rfl⟩ := hW
-    exact ⟨Z, hZ, Set.image_subset_iff.mpr hUW⟩
-  · rintro V ⟨U, hU, rfl⟩
-    exact e.isOpen_image.mpr (h𝒯open U hU)
-  · simp only [𝒯', ← Set.image_sUnion, h𝒯cover, Set.image_univ,
-      e.surjective.range_eq]
-  · simpa only [𝒯', e.image_eq_preimage_symm] using h𝒯order.preimage e.symm
+  intro ι U hU
+  obtain ⟨κ, V, hV, hVU, horder⟩ :=
+    h.exists_refinement _ (hU.comap ⟨e, e.continuous⟩)
+  let W : κ → Opens B := fun j ↦ (V j).comap ⟨e.symm, e.symm.continuous⟩
+  have hW : IsOpenCover W := hV.comap ⟨e.symm, e.symm.continuous⟩
+  -- Reindex by the range to obtain an index type in the universe of `B`.
+  refine ⟨Set.range W, Subtype.val,
+    IsOpenCover.mk ((iSup_range' id W).trans hW.iSup_eq_top), ?_, ?_⟩
+  · rw [Subtype.range_val]
+    rintro _ ⟨j, rfl⟩
+    obtain ⟨_, ⟨i, rfl⟩, hi⟩ := hVU (Set.mem_range_self j)
+    refine ⟨U i, Set.mem_range_self i, ?_⟩
+    intro x hx
+    simpa using hi hx
+  · apply (horder.preimage e.symm).of_subset
+    rintro _ ⟨⟨_, ⟨j, rfl⟩⟩, rfl⟩
+    exact ⟨V j, Set.mem_range_self j, rfl⟩
 
 /-- Covering-dimension bounds are preserved by homeomorphisms. -/
 protected theorem Homeomorph.hasCoveringDimensionLE
@@ -346,41 +314,47 @@ namespace HasCoveringDimensionLE
 theorem closedSubtype {X : Type u} [TopologicalSpace X] {Y : Set X} {n : ℕ}
     (hX : HasCoveringDimensionLE X n) (hY : IsClosed Y) :
     HasCoveringDimensionLE Y n := by
-  rw [hasCoveringDimensionLE_iff] at hX ⊢
-  intro 𝒜 h𝒜open h𝒜cover
-  -- Extend the open cover to the ambient space and add the complement of `Y`.
-  let 𝒰 : Set (Set X) :=
-    {U | IsOpen U ∧ (Subtype.val : Y → X) ⁻¹' U ∈ 𝒜} ∪ {Yᶜ}
-  have h𝒰open : ∀ U ∈ 𝒰, IsOpen U := by
-    rintro U (⟨hU, _⟩ | rfl)
-    · exact hU
-    · exact hY.isOpen_compl
-  have h𝒰cover : ⋃₀ 𝒰 = Set.univ := by
+  classical
+  intro ι A hA
+  let f : C(Y, X) := ⟨Subtype.val, continuous_subtype_val⟩
+  have hlift (i : ι) : ∃ U : Opens X, U.comap f = A i := by
+    obtain ⟨U, hU, hUi⟩ := isOpen_induced_iff.mp (A i).isOpen
+    exact ⟨⟨U, hU⟩, SetLike.coe_injective hUi⟩
+  choose U hU using hlift
+  -- Extend the cover to the ambient space by adding the complement of `Y`.
+  let V : Option ι → Opens X := fun i ↦ i.elim ⟨Yᶜ, hY.isOpen_compl⟩ U
+  have hV : IsOpenCover V := by
+    apply IsOpenCover.of_sets
     apply Set.eq_univ_of_forall
     intro x
     by_cases hx : x ∈ Y
-    · obtain ⟨A, hA, hxA⟩ := Set.mem_sUnion.mp
-        (h𝒜cover.symm ▸ Set.mem_univ (⟨x, hx⟩ : Y))
-      obtain ⟨U, hU, rfl⟩ := isOpen_induced_iff.mp (h𝒜open A hA)
-      exact Set.mem_sUnion.mpr ⟨U, Or.inl ⟨hU, hA⟩, hxA⟩
-    · exact Set.mem_sUnion.mpr ⟨Yᶜ, Or.inr rfl, hx⟩
-  obtain ⟨ℬ, hℬrefines, hℬopen, hℬcover, hℬorder⟩ := hX 𝒰 h𝒰open h𝒰cover
-  -- Restrict the refinement to `Y`; discard the empty restriction of its complement.
-  refine ⟨((fun U : Set X ↦ (Subtype.val : Y → X) ⁻¹' U) '' ℬ) \ {∅},
-    ?_, ?_, ?_, hℬorder.preimage Subtype.val |>.of_subset Set.sdiff_subset⟩
-  · rintro V ⟨⟨B, hB, rfl⟩, hne⟩
-    obtain ⟨U, hU, hBU⟩ := hℬrefines hB
-    rcases hU with ⟨_, hU⟩ | rfl
-    · exact ⟨Subtype.val ⁻¹' U, hU, Set.preimage_mono hBU⟩
-    · obtain ⟨y, hy⟩ := Set.nonempty_iff_ne_empty.mpr hne
-      exact (hBU hy y.2).elim
-  · rintro V ⟨⟨B, hB, rfl⟩, _⟩
-    exact (hℬopen B hB).preimage continuous_subtype_val
-  · apply Set.eq_univ_of_forall
+    · obtain ⟨i, hi⟩ := hA.exists_mem ⟨x, hx⟩
+      exact Set.mem_iUnion.mpr ⟨some i, show (⟨x, hx⟩ : Y) ∈ (U i).comap f from
+        hU i ▸ hi⟩
+    · exact Set.mem_iUnion.mpr ⟨none, hx⟩
+  obtain ⟨κ, W, hW, hWV, horder⟩ := hX _ V hV
+  -- Discard empty traces, so no remaining member refines the complement of `Y`.
+  let κ' := {j : κ // ((W j).comap f : Set Y).Nonempty}
+  let R : κ' → Opens Y := fun j ↦ (W j.1).comap f
+  refine ⟨κ', R, ?_, ?_, ?_⟩
+  · apply IsOpenCover.of_sets
+    apply Set.eq_univ_of_forall
     intro y
-    obtain ⟨B, hB, hy⟩ := Set.mem_sUnion.mp (hℬcover.symm ▸ Set.mem_univ y.1)
-    exact Set.mem_sUnion.mpr ⟨Subtype.val ⁻¹' B,
-      ⟨⟨B, hB, rfl⟩, Set.nonempty_iff_ne_empty.mp ⟨y, hy⟩⟩, hy⟩
+    obtain ⟨j, hj⟩ := (hW.comap f).exists_mem y
+    exact Set.mem_iUnion.mpr ⟨⟨j, y, hj⟩, hj⟩
+  · rintro _ ⟨j, rfl⟩
+    obtain ⟨_, ⟨i, rfl⟩, hi⟩ := hWV (Set.mem_range_self j.1)
+    cases i with
+    | none =>
+        obtain ⟨y, hy⟩ := j.2
+        exact (hi hy y.2).elim
+    | some i =>
+        refine ⟨A i, Set.mem_range_self i, ?_⟩
+        rw [← hU i]
+        exact fun y hy ↦ hi hy
+  · apply (horder.preimage f).of_subset
+    rintro _ ⟨j, rfl⟩
+    exact ⟨W j.1, Set.mem_range_self j.1, rfl⟩
 
 end HasCoveringDimensionLE
 
