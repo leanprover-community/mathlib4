@@ -63,6 +63,9 @@ instance : RKHS 𝕜 (smulSpace H c) X V where
     refine (Function.Injective.eq_iff ?_).mp hfg
     simp [← LinearMap.ker_eq_bot, ker_liftQ_eq_bot]
 
+instance : Subsingleton (smulSpace H 0) where
+  allEq := by simp [smulSpace, Submodule.Quotient.subsingleton_iff, generator]
+
 lemma kerFun_apply_eq_mk {c} (hc : c ≠ 0) (x : X) (v : V) :
     kerFun (smulSpace H c) x v = Submodule.Quotient.mk (starRingEnd 𝕜 c • kerFun H x v) := by
   rw [Quotient.mk_smul ((generator H c)).ker ((starRingEnd 𝕜) c) ((kerFun H x) v),
@@ -79,8 +82,6 @@ lemma kerFun_apply_eq_mk {c} (hc : c ≠ 0) (x : X) (v : V) :
 theorem kernel_smul_eq_norm_sq_smul_kernel : kernel (smulSpace H c) = (‖c‖ : 𝕜) ^ 2 • kernel H := by
   by_cases hc : c = 0
   · subst c
-    have : Subsingleton (smulSpace H 0) := by
-      simp [smulSpace, Submodule.Quotient.subsingleton_iff, generator]
     have hcoe : coeCLM 𝕜 (H := smulSpace H 0) = 0 := Subsingleton.eq_zero _
     ext
     simp only [kernel_apply, kerFun_def, hcoe, ContinuousLinearMap.comp_zero, map_zero, zero_apply,
@@ -91,6 +92,27 @@ theorem kernel_smul_eq_norm_sq_smul_kernel : kernel (smulSpace H c) = (‖c‖ :
       Matrix.smul_apply, smul_apply]
     change starRingEnd 𝕜 c • generator H c (kerFun H _ _ ) _ = _
     simp [generator_apply, smul_smul, RCLike.conj_mul]
+
+omit [CompleteSpace V] [CompleteSpace H] in
+lemma generator_injective {c} (h : c ≠ 0) : Function.Injective (generator H c) := by
+  intro a b
+  simp [generator, h]
+
+omit [CompleteSpace V] [CompleteSpace H] in
+lemma ker_eq_bot {c} (h : c ≠ 0) : (generator H c).ker = ⊥ := by
+  simp [LinearMap.ker_eq_bot, generator_injective H h]
+
+/-- If `smulSpace H c` is not a `Subsingleton`, then it is continuously linearly equivalent to `H`.
+-/
+def equiv (h : c ≠ 0) : smulSpace H c ≃L[𝕜] H := ContinuousLinearEquiv.equivOfInverse'
+  ((generator H c).ker.liftQL (ContinuousLinearMap.id 𝕜 H) (by simp [ker_eq_bot H h]))
+  ((generator H c).ker.mkQL)
+  (by ext; rfl)
+  (by
+    ext1 f
+    induction f using Submodule.Quotient.induction_on with
+    | _ f => rfl
+  )
 
 end SMul
 
