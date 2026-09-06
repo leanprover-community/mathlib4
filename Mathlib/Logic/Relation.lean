@@ -897,7 +897,7 @@ namespace Join
 theorem le_eqvGen (r : α → α → Prop) : Join (ReflTransGen r) ≤ EqvGen r := by
   intro a b h
   rcases h with ⟨c, hac, hbc⟩
-  exact hac.to_eqvGen.trans hbc.to_eqvGen.symm
+  exact EqvGen.trans a c b hac.to_eqvGen (EqvGen.symm b c hbc.to_eqvGen)
 
 end Join
 
@@ -908,8 +908,10 @@ theorem IsChurchRosser.join_reflTransGen_eq_eqvGen {r : α → α → Prop} (h :
   Subrelation.antisymm (Join.le_eqvGen r) h
 
 /-- The Church-Rosser property implies confluence. -/
-theorem IsChurchRosser.confluent {r : α → α → Prop} (h : IsChurchRosser r) : IsConfluent r :=
-  fun a b c hab hac ↦ h b c <| hab.to_eqvGen.symm.trans hac.to_eqvGen
+theorem IsChurchRosser.confluent {r : α → α → Prop} (h : IsChurchRosser r) : IsConfluent r := by
+  intro a b c hab hac
+  apply h
+  exact EqvGen.trans b a c (EqvGen.symm a b hab.to_eqvGen) hac.to_eqvGen
 
 /-- A confluent relation has the Church-Rosser property. -/
 theorem IsConfluent.churchRosser {r : α → α → Prop} (h : IsConfluent r) : IsChurchRosser r := by
