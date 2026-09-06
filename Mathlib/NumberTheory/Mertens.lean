@@ -125,8 +125,7 @@ class Weight where
   C₀ : ℝ
   f_bound (n : ℕ) : |f n| ≤ C₀ * log n / n
 
-noncomputable instance instCoefn : CoeFun Weight (fun _ ↦ ℕ → ℝ) where
-  coe (w: Weight) := w.f
+noncomputable instance instCoefn : CoeFun Weight (fun _ ↦ ℕ → ℝ) where coe (w: Weight) := w.f
 
 namespace Weight
 
@@ -135,7 +134,6 @@ open intervalIntegral
 variable [Weight] (x : ℝ) (n N : ℕ) {t : ℝ}
 
 @[simp] lemma map_zero : f 0 = 0 := map_zero'
-
 @[simp] lemma map_one : f 1 = 0 := map_one'
 
 /-- The first Mertens error for a weight `f` is defined as
@@ -410,14 +408,13 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
             MeasureTheory.integral_const_mul]
             rw [setIntegral_congr_fun (g := (· ^ (- s))) (by measurability),
               integral_Ioi_rpow_of_lt (by linarith) (by positivity)]
-            · rw [← ofReal_mul (by positivity), ← ofReal_mul (by positivity),
-                abs_of_nonneg (by linarith : 0 ≤ s - 1)]
-              grind
+            · rw [← ofReal_mul, ← ofReal_mul, abs_of_nonneg (a := s - 1)]
+              <;> first | positivity | grind
             · intro x _
               have : 0 ≤ x := by grind
               exact abs_of_nonneg (by positivity)
           · apply Integrable.const_mul (integrableOn_Ioi_rpow_of_lt ..) <;> grind
-        _ ≤ ∑' (i : ℕ), ENNReal.ofReal (C₀ * (i:ℝ)^(-s)) := by
+        _ ≤ ∑' (i : ℕ), ENNReal.ofReal (C₀ * (i : ℝ)^(-s)) := by
           refine ENNReal.tsum_le_tsum fun n ↦ ofReal_le_ofReal ?_
           rcases eq_or_ne n 0 with rfl | _
           · simp [zero_rpow (by grind : -s ≠ 0)]
@@ -426,8 +423,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
           have : 0 < log n := log_pos (mod_cast (by omega))
           grw [apply_bound n, abs_of_nonneg (by positivity)]
           field_simp
-          rw [mul_assoc, ← rpow_one_add' (by positivity) (by linarith)]
-          grind
+          rw [mul_assoc, ← rpow_one_add' (by positivity)] <;> grind
         _ < ⊤ := by
           simp_rw [ofReal_mul C₀_nonneg, ENNReal.tsum_mul_left]
           suffices ∑' (i : ℕ), ENNReal.ofReal (i ^ (-s)) < ⊤ by finiteness
@@ -439,11 +435,9 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     filter_upwards [this] with x hx
     intro hx'
     calc
-      _ = ∑' (n : ℕ), Set.indicator (Icc 0 ⌊x⌋₊)
+      _ = ∑' n, Set.indicator (Icc 0 ⌊x⌋₊)
           (fun (n : ℕ) ↦ (log n)⁻¹ * f n * (s - 1) * x ^ (-s)) n := by
-        congr!
-        have : 0 ≤ x := by grind
-        grind [Set.indicator, coe_Icc, le_floor_iff this]
+        grind [Set.indicator, coe_Icc, le_floor_iff (by grind : 0 ≤ x)]
       _ = _ := by simp_rw [← sum_eq_tsum_indicator, ← sum_mul]; ring
   _ = (s - 1) * ∫ x in .Ioi 1, log (log x) * x ^ (-s) + M * x ^ (-s) + E₂ x * x ^ (-s) := by
     simp_rw [sum_div_log_eq', add_mul, ← MeasureTheory.integral_const_mul]
@@ -489,8 +483,8 @@ theorem sum_div_log_mul_pow_add_tendsto :
     apply this.congr'
     filter_upwards [eventually_mem_nhdsWithin]
     grind [sum_div_log_mul_pow_eq]
-  refine squeeze_zero_norm (fun _ ↦ norm_integral_le_lintegral_norm _) ?_
-  apply (tendsto_toReal zero_ne_top).comp
+  apply squeeze_zero_norm (fun _ ↦ norm_integral_le_lintegral_norm _)
+    ((tendsto_toReal zero_ne_top).comp _)
   convert tendsto_lintegral_filter_of_dominated_convergence (l := 𝓝[>] (1 : ℝ)) (f := 0)
     (fun x ↦ ENNReal.ofReal ((|log (log x)| + |M| + C₂ / log 2) * x ^ (-2 : ℝ)))
     ?_ ?_ ?_ ?_
@@ -768,7 +762,7 @@ lemma Weight.vonMangoldt_C₁_eq : vonMangoldt.C₁ = log 4 + 1 := by
   simp [C₁]; linarith [log_four_eq, log_two_gt_d9]
 
 @[simp]
-lemma Weight.vonMangoldt_C₂_eq : vonMangoldt.C₂ = log 4 + 3 := by simp [C₂]; linarith
+lemma Weight.vonMangoldt_C₂_eq : vonMangoldt.C₂ = log 4 + 3 := by grind [C₂]
 
 /-- The Meissel--Mertens constant for the von Mangoldt weight simplifies to the
 Euler--Mascheroni constant. -/
@@ -784,7 +778,6 @@ lemma Weight.vonMangoldt_M_eq : vonMangoldt.M = eulerMascheroniConstant := by
   rcases eq_or_ne 0 n with rfl | h <;> simp
   field_simp
   rw [mul_assoc, ← rpow_add (mod_cast (by omega))]
-  ring_nf
   grind [rpow_one]
 
 /-- The prime weight `f : ℕ → ℝ := fun n ↦ 1 / n` if `n` is prime and `0` otherwise. -/
@@ -907,13 +900,11 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
         fun_prop (disch := positivity)
       convert this.tendsto 1
       norm_cast; simp
-    · filter_upwards [eventually_mem_nhdsWithin] with s hs
-      rw [Set.mem_Ioi] at hs
+    · filter_upwards [eventually_mem_nhdsWithin] with s (hs : 1 < s)
       intro
       grw [norm_eq_abs, abs_of_nonneg (by positivity), ← hs, ← this, one_div_pow]
       norm_cast; gcongr; grind
-  · filter_upwards [eventually_mem_nhdsWithin] with s hs
-    rw [Set.mem_Ioi] at hs
+  · filter_upwards [eventually_mem_nhdsWithin] with s (hs : 1 < s)
     intro p
     rw [norm_eq_abs, abs_of_nonneg (by positivity)]
     exact tsum_inv_mul_pow_le hs.le p
@@ -981,7 +972,7 @@ theorem abs_sum_log_prime_div_sub_le_nat : |∑ p ∈ primesLE N, log p / p - lo
   rw [abs_le']; constructor
   · trans log 4
     · simpa using sum_log_prime_div_sub_le this
-    linarith [log_four_eq, log_two_lt_d9]
+    · linarith [log_four_eq, log_two_lt_d9]
   linarith [le_sum_log_prime_div_sub_nat N]
 
 theorem sum_vonMangoldt_div_sub_bounded : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x)
@@ -1274,8 +1265,7 @@ theorem prod_prime_one_minus_inv_asymp :
   simp [← exp_add] at this
   refine isEquivalent_of_tendsto_one (this.congr' ?_)
   filter_upwards [eventually_gt_atTop 1]
-  simp
-  grind [log_pos, exp_neg]
+  grind [log_pos, exp_neg, Pi.div_apply]
 
 theorem prod_prime_one_minus_inv_asymp_nat :
     (∏ p ∈ primesLE ·, (1 - (1 : ℝ) / p)) ~[atTop] (exp (-eulerMascheroniConstant) / log ·) := by
