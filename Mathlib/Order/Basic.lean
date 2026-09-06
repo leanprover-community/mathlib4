@@ -179,6 +179,9 @@ theorem gt_imp_gt_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > 
 
 attribute [gcongr strict] lt_of_lt_of_le lt_of_lt_of_le'
 
+@[to_dual (attr := gcongr strict) ge_imp_gt_of_lt']
+theorem ge_imp_gt_of_lt (h : a < b) : a ≥ c → b > c := lt_of_lt_of_le' h
+
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 
@@ -972,6 +975,13 @@ class DenselyOrdered (α : Type*) [LT α] : Prop where
 theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
     ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a := by
   simp_rw [and_comm]; exact dense
+
+/-- `DenselyOrdered.mk'` is the dual of `DenselyOrdered.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
+@[to_dual existing mk]
+lemma DenselyOrdered.mk' [LT α] (dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a) :
+    DenselyOrdered α where
+  dense := by simpa [and_comm] using dense
 
 @[to_dual exists_between']
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=

@@ -11,7 +11,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Topology.NoetherianSpace
 
 /-!
-This file proves additional properties of the prime spectrum a ring is Noetherian.
+# Prime spectra of Noetherian and Artinian rings
+
+This file proves additional properties of the prime spectrum of a Noetherian or Artinian ring.
 -/
 
 public section
@@ -28,7 +30,7 @@ section IsNoetherianRing
 variable (R : Type u) [CommSemiring R] [IsNoetherianRing R]
 
 instance : NoetherianSpace (PrimeSpectrum R) :=
-  ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr (closedsEmbedding R).dual.wellFoundedLT
+  ((noetherianSpace_TFAE <| PrimeSpectrum R).out 1 2).mpr (closedsEmbedding R).dual.wellFoundedLT
 
 lemma finite_setOfPred_isMin :
     {x : PrimeSpectrum R | IsMin x}.Finite := by

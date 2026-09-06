@@ -154,7 +154,7 @@ instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G
 
 lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
     G.comap e.symm.toEmbedding = G.map e.toEmbedding := by
-  ext; simp only [Equiv.apply_eq_iff_eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
+  ext; simp only [← Equiv.eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
     exists_eq_right_right, exists_eq_right]
 
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
@@ -189,14 +189,14 @@ theorem map_injective (f : V ↪ W) : Function.Injective (SimpleGraph.map f) :=
 theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap f) :=
   (leftInverse_comap_map f).surjective
 
-theorem map_le_of_le_comap (f : V → W) {G : SimpleGraph V} {G' : SimpleGraph W}
-    (h : G ≤ G'.comap f) : G.map f ≤ G' := by
-  rintro _ _ ⟨hne, u, v, hadj, rfl, rfl⟩
-  exact h hadj
+variable {G G'} in
+theorem map_le_of_le_comap {f : V → W} (h : G ≤ G'.comap f) : G.map f ≤ G' := by
+  rintro _ _ ⟨_, u, v, ha, rfl, rfl⟩
+  exact h ha
 
-theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
-    G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h _ _ ha => h ⟨f.injective.ne ha.ne, _, _, ha, rfl, rfl⟩, map_le_of_le_comap f⟩
+variable {G G'} in
+theorem map_le_iff_le_comap {f : V ↪ W} : G.map f ≤ G' ↔ G ≤ G'.comap f :=
+  ⟨fun h _ _ ha => h ⟨f.injective.ne ha.ne, _, _, ha, rfl, rfl⟩, map_le_of_le_comap⟩
 
 theorem comap_le_of_le_map (f : V ↪ W) {G : SimpleGraph V} {G' : SimpleGraph W} (h : G' ≤ G.map f) :
     G'.comap f ≤ G := by
@@ -215,7 +215,7 @@ theorem le_map_iff_comap_le {f : V → W} (hf : f.Bijective) {G : SimpleGraph V}
   ⟨le_map_of_comap_le hf.surjective, comap_le_of_le_map ⟨f, hf.injective⟩⟩
 
 theorem map_comap_le (f : V → W) (G : SimpleGraph W) : (G.comap f).map f ≤ G :=
-  map_le_of_le_comap f le_rfl
+  map_le_of_le_comap le_rfl
 
 theorem map_comap_eq_inf (f : W → V) : (G.comap f).map f = G ⊓ SimpleGraph.map f ⊤ := by
   ext u v
@@ -491,6 +491,7 @@ theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2
   rfl
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
+@[implicit_reducible]
 def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
 
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
@@ -527,6 +528,10 @@ protected def comap (f : V → W) (G : SimpleGraph W) : G.comap f →g G where
 
 theorem le_comap (f : H →g G) : H ≤ G.comap f :=
   fun _ _ ↦ f.map_adj
+
+@[grind .]
+theorem map_le (f : H →g G) : H.map f ≤ G :=
+  map_le_of_le_comap f.le_comap
 
 theorem nonempty_hom_iff_exists_le_comap : Nonempty (H →g G) ↔ ∃ f, H ≤ G.comap f :=
   ⟨fun ⟨f⟩ ↦ ⟨f, f.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨f, (h ·)⟩⟩
@@ -907,7 +912,6 @@ theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
     (G.map e).neighborSet w = e.symm ⁻¹' G.neighborSet (e.symm w) :=
   Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w |>.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where

@@ -43,7 +43,9 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 namespace Tactic.ComputeAsymptotics
 
-open Filter Stream' Topology
+open Filter Stream'
+
+open scoped Topology
 
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
@@ -463,7 +465,7 @@ theorem map_id {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
   Stream'.Seq.map_id ms
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp← ]
+@[simp ←]
 theorem map_comp {b₁ b₂ b₃ bs₁ bs₂ bs₃}
     (f₁ : ℝ → ℝ) (g₁ : MultiseriesExpansion bs₁ → MultiseriesExpansion bs₂)
     (f₂ : ℝ → ℝ) (g₂ : MultiseriesExpansion bs₂ → MultiseriesExpansion bs₃)

@@ -27,7 +27,9 @@ study of strong (inner) anodyne extensions.
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet.S
 
@@ -104,7 +106,6 @@ lemma unique (f : ⦋d⦌ ⟶ ⦋d + 1⦌) [Mono f]
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 include hxy in
 lemma op : (S.opEquiv.symm x).IsUniquelyCodimOneFace (S.opEquiv.symm y) := by
   obtain ⟨d, x, rfl⟩ := x.mk_surjective

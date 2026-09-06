@@ -409,10 +409,27 @@ theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
 
 end Gluing
 
+/-- `Subtype.val` as a bundled continuous map. -/
+@[simps!]
+def subtypeVal (s : Set α) : C(s, α) where
+  toFun := Subtype.val
+  continuous_toFun := continuous_subtype_val
+
 /-- `Set.inclusion` as a bundled continuous map. -/
+@[simps!]
 def inclusion {s t : Set α} (h : s ⊆ t) : C(s, t) where
   toFun := Set.inclusion h
   continuous_toFun := continuous_inclusion h
+
+@[simp]
+theorem inclusion_comp_inclusion {r s t : Set α} (hst : s ⊆ t) (hrs : r ⊆ s) :
+    (inclusion hst).comp (inclusion hrs) = inclusion (hrs.trans hst) :=
+  rfl
+
+@[simp]
+theorem subtypeVal_comp_inclusion {s t : Set α} (h : s ⊆ t) :
+    (subtypeVal t).comp (inclusion h) = subtypeVal s :=
+  rfl
 
 end ContinuousMap
 

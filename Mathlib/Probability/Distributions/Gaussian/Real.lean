@@ -223,10 +223,10 @@ def gaussianReal (μ : ℝ) (v : ℝ≥0) : Measure ℝ :=
   if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPDF μ v)
 
 lemma gaussianReal_of_var_ne_zero (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    gaussianReal μ v = volume.withDensity (gaussianPDF μ v) := if_neg hv
+    gaussianReal μ v = volume.withDensity (gaussianPDF μ v) := ite_eq_right hv
 
 @[simp]
-lemma gaussianReal_zero_var (μ : ℝ) : gaussianReal μ 0 = Measure.dirac μ := if_pos rfl
+lemma gaussianReal_zero_var (μ : ℝ) : gaussianReal μ 0 = Measure.dirac μ := ite_eq_left rfl
 
 instance instIsProbabilityMeasureGaussianReal (μ : ℝ) (v : ℝ≥0) :
     IsProbabilityMeasure (gaussianReal μ v) where
@@ -325,7 +325,6 @@ lemma gaussianReal_map_const_add (y : ℝ) :
   simp_rw [add_comm y]
   exact gaussianReal_map_add_const y
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_const_mul (c : ℝ) :
     (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v) := by
@@ -345,8 +344,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
     rw [← NNReal.coe_inj]
     simp [hc]
-  simp only [e, Homeomorph.mulLeft₀,
-    Equiv.mulLeft₀_symm_apply, Homeomorph.toMeasurableEquiv_coe, Homeomorph.homeomorph_mk_coe_symm,
+  simp only [e, Homeomorph.toMeasurableEquiv_coe, Homeomorph.mulLeft₀_symm_apply,
     gaussianPDFReal_inv_mul hc]
   congr with x
   suffices |c⁻¹| * |c| = 1 by rw [← mul_assoc, this, one_mul]
@@ -476,10 +474,9 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
 
 /-- The complex moment-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
-theorem complexMGF_gaussianReal (hX : p.map X = gaussianReal μ v) (z : ℂ) :
+theorem complexMGF_gaussianReal (hX : HasLaw X (gaussianReal μ v) p) (z : ℂ) :
     complexMGF X p z = cexp (z * μ + v * z ^ 2 / 2) := by
-  have hX_meas : AEMeasurable X p := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
-  rw [← complexMGF_id_map hX_meas, hX, complexMGF_id_gaussianReal]
+  rw [← complexMGF_id_map hX.aemeasurable, hX.map_eq, complexMGF_id_gaussianReal]
 
 /-- The characteristic function of a Gaussian distribution with mean `μ` and variance `v`
 is given by `t ↦ exp (t * μ - v * t ^ 2 / 2)`. -/
@@ -492,11 +489,11 @@ theorem charFun_gaussianReal (t : ℝ) :
 
 /-- The moment-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `t ↦ exp (μ * t + v * t ^ 2 / 2)`. -/
-theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
+theorem mgf_gaussianReal (hX : HasLaw X (gaussianReal μ v) p) (t : ℝ) :
     mgf X p t = rexp (μ * t + v * t ^ 2 / 2) := by
   suffices (mgf X p t : ℂ) = rexp (μ * t + ↑v * t ^ 2 / 2) from mod_cast this
-  have hX_meas : AEMeasurable X p := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
-  rw [← mgf_id_map hX_meas, ← complexMGF_ofReal, hX, complexMGF_id_gaussianReal, mul_comm μ]
+  rw [← mgf_id_map hX.aemeasurable, ← complexMGF_ofReal, hX.map_eq, complexMGF_id_gaussianReal,
+    mul_comm μ]
   norm_cast
 
 theorem mgf_fun_id_gaussianReal :
@@ -510,7 +507,7 @@ theorem mgf_id_gaussianReal : mgf id (gaussianReal μ v) = fun t ↦ rexp (μ * 
 
 /-- The cumulant-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `t ↦ μ * t + v * t ^ 2 / 2`. -/
-theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
+theorem cgf_gaussianReal (hX : HasLaw X (gaussianReal μ v) p) (t : ℝ) :
     cgf X p t = μ * t + v * t ^ 2 / 2 := by
   rw [cgf, mgf_gaussianReal hX t, Real.log_exp]
 
@@ -655,13 +652,12 @@ lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
 Gaussian distribution with mean `m₁ + m₂` and variance `v_1 + v_2`. -/
 lemma gaussianReal_add_gaussianReal_of_indepFun {Ω} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
     {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} {X Y : Ω → ℝ} (hXY : IndepFun X Y P)
-    (hX : P.map X = gaussianReal m₁ v₁) (hY : P.map Y = gaussianReal m₂ v₂) :
+    (hX : HasLaw X (gaussianReal m₁ v₁) P) (hY : HasLaw Y (gaussianReal m₂ v₂) P) :
     P.map (X + Y) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
-  rw [hXY.map_add_eq_map_conv_map₀', hX, hY, gaussianReal_conv_gaussianReal]
-  · apply AEMeasurable.of_map_ne_zero; simp [NeZero.ne, hX]
-  · apply AEMeasurable.of_map_ne_zero; simp [NeZero.ne, hY]
-  · rw [hX]; apply IsFiniteMeasure.toSigmaFinite
-  · rw [hY]; apply IsFiniteMeasure.toSigmaFinite
+  rw [hXY.map_add_eq_map_conv_map₀' hX.aemeasurable hY.aemeasurable, hX.map_eq, hY.map_eq,
+    gaussianReal_conv_gaussianReal]
+  · rw [hX.map_eq]; apply IsFiniteMeasure.toSigmaFinite
+  · rw [hY.map_eq]; apply IsFiniteMeasure.toSigmaFinite
 
 end GaussianReal
 

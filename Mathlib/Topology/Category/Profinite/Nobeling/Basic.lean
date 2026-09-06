@@ -153,7 +153,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 variable (J) in
 theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext ⟨x, y, hy, rfl⟩ i
-  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, if_true]
+  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, ite_true]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
@@ -189,12 +189,12 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
     · exact congr_fun h ⟨i, hi⟩
     · rcases a with ⟨_, c, hc, rfl⟩
       rcases b with ⟨_, d, hd, rfl⟩
-      simp only [Proj, if_neg hi]
+      simp only [Proj, ite_eq_right hi]
   · refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else false, ?_⟩, ?_⟩
     · rcases a with ⟨_, y, hy, rfl⟩
       exact ⟨y, hy, rfl⟩
     · ext i
-      exact dif_pos i.prop
+      exact dite_eq_left i.prop
 
 variable {C}
 
@@ -238,7 +238,7 @@ noncomputable def spanFunctorIsoIndexFunctor
         ext x
         have : iso_map C (· ∈ t) ∘ ProjRestricts C f =
             IndexFunctor.map C f ∘ iso_map C (· ∈ s) := by
-          ext _ i; exact dif_pos i.prop
+          ext _ i; exact dite_eq_left i.prop
         exact congr_fun this x)
 
 /-- `spanCone` is a limit cone. -/
@@ -249,7 +249,7 @@ def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsC
     (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cone.ext (Iso.refl _) (fun ⟨s⟩ ↦ by
       ext
       have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
-        ext _ i; exact dif_pos i.prop
+        ext _ i; exact dite_eq_left i.prop
       exact congr_fun this.symm _)))
 
 end Projections
@@ -392,7 +392,7 @@ theorem eval_eq (l : Products I) (x : C) :
     apply List.prod_eq_one
     simp only [List.mem_map, Function.comp_apply]
     rintro _ ⟨i, hi, rfl⟩
-    exact if_pos (h i hi)
+    exact ite_eq_left (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
     push Not at h
     convert! h with i
@@ -426,7 +426,7 @@ theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)
     rw [this]
     exact Submodule.zero_mem _
   ext ⟨_, _, _, rfl⟩
-  rw [eval_eq, if_neg fun h ↦ ?_, LocallyConstant.zero_apply]
+  rw [eval_eq, ite_eq_right fun h ↦ ?_, LocallyConstant.zero_apply]
   simpa [Proj, h'] using h i hi
 
 end Products

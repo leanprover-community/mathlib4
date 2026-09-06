@@ -163,9 +163,6 @@ theorem FG.restrictScalars_of_surjective [CommSemiring R] [Algebra R A] [Module 
   obtain ⟨s, rfl⟩ := hS
   exact ⟨s, .symm <| restrictScalars_span R A h _⟩
 
-@[deprecated (since := "2026-01-24")]
-alias fg_restrictScalars := FG.restrictScalars_of_surjective
-
 theorem FG.of_restrictScalars (R) [Semiring R] [Module R M] [SMul R A] [IsScalarTower R A M]
     (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS
@@ -222,7 +219,7 @@ end Submodule
 
 section ModuleAndAlgebra
 
-variable (R A B M N : Type*)
+variable (R A M N : Type*)
 
 namespace Module
 
@@ -513,7 +510,7 @@ end AlgHom
 section Ring
 variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
 
-local notation3 "R≥0" => {c : R // 0 ≤ c}
+local notation3 "R≥0" => Nonneg R
 
 private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   simp_rw [Module.finite_def, Submodule.fg_def, Submodule.eq_top_iff']

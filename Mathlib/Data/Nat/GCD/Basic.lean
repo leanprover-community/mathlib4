@@ -39,6 +39,12 @@ theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e :
 theorem gcd_right_comm (a b c : ℕ) : gcd (gcd a b) c = gcd (gcd a c) b := by
   rw [gcd_assoc, gcd_assoc, gcd_comm b c]
 
+theorem gcd_gcd_gcd_right (a b c : ℕ) : (a.gcd c).gcd (b.gcd c) = (a.gcd b).gcd c := by
+  rw [gcd_left_comm, gcd_gcd_self_left_right, gcd_left_comm, gcd_assoc]
+
+theorem gcd_gcd_gcd_left (a b c : ℕ) : (c.gcd a).gcd (c.gcd b) = c.gcd (a.gcd b) := by
+  rw [gcd_comm c a, gcd_comm c b, gcd_gcd_gcd_right, gcd_comm]
+
 /-! Lemmas where one argument consists of addition of a multiple of the other -/
 
 @[simp]
@@ -261,6 +267,17 @@ lemma div_mul_div (hkm : m ∣ k) (hkn : n ∣ m) : (k / m) * (m / n) = k / n :=
 
 lemma div_dvd_div_left (hkm : m ∣ k) (hkn : n ∣ m) : k / m ∣ k / n :=
   ⟨_, (div_mul_div hkm hkn).symm⟩
+
+/-- `k / m ∣ k / n` iff `n ∣ m`, when both `m` and `n` divide `k`. -/
+lemma div_dvd_div_iff_left (hk : 0 < k) (hmk : m ∣ k) (hnk : n ∣ k) :
+    k / m ∣ k / n ↔ n ∣ m := by
+  grind [Nat.div_div_self, div_dvd_div_left, div_dvd_of_dvd]
+
+/-- `m / k ∣ n / k` iff `m ∣ n`, when `k` divides both `m` and `n`. -/
+lemma div_dvd_div_iff_right (hkm : k ∣ m) (hkn : k ∣ n) : m / k ∣ n / k ↔ m ∣ n := by
+  rcases k.eq_zero_or_pos with rfl | hk
+  · simp_all
+  · rw [← Nat.mul_dvd_mul_iff_left hk, Nat.mul_div_cancel' hkm, Nat.mul_div_cancel' hkn]
 
 lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) = k / (m.gcd n) := by
   rw [Nat.lcm_eq_iff]

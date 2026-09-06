@@ -124,8 +124,6 @@ def Fan.IsLimit.lift {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
     (f : ∀ i, A ⟶ F i) : A ⟶ c.pt :=
   hc.lift (Fan.mk A f)
 
-@[deprecated (since := "2026-01-12")] alias Fan.IsLimit.desc := Fan.IsLimit.lift
-
 @[reassoc (attr := simp)]
 lemma Fan.IsLimit.fac {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
     (f : ∀ i, A ⟶ F i) (i : β) :
@@ -303,9 +301,6 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
 lemma Cofan.nonempty_isColimit_iff_isIso_sigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f) :
     Nonempty (IsColimit c) ↔ IsIso (Sigma.desc c.inj) :=
   (colimit.isColimit (Discrete.functor f)).nonempty_isColimit_iff_isIso_desc
-
-@[deprecated (since := "2026-01-21")]
-alias Cofan.isColimit_iff_isIso_sigmaDesc := Cofan.nonempty_isColimit_iff_isIso_sigmaDesc
 
 /-- A coproduct of coproducts is a coproduct -/
 def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
@@ -757,6 +752,8 @@ def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     naturality _ _ _ := by apply Quiver.Hom.unop_inj; cat_disch }
   left_triangle_components _ := by apply Quiver.Hom.unop_inj; cat_disch
 
+-- Note: We may consider making `sigmaConst` an abbrev in order to
+-- improve automation downstream
 /-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
 @[implicit_reducible, simps]
 def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where

@@ -316,17 +316,11 @@ theorem preimage_ofSnowflaking_eball (x : X) (r : ℝ≥0∞) :
   ext ⟨y⟩
   simp (disch := positivity) [ENNReal.rpow_lt_rpow_iff]
 
-@[deprecated (since := "2026-01-24")]
-alias preimage_ofSnowflaking_emetricBall := preimage_ofSnowflaking_eball
-
 @[simp]
 theorem image_toSnowflaking_eball (x : X) (r : ℝ≥0∞) :
     toSnowflaking '' Metric.eball x r =
       Metric.eball (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   rw [image_toSnowflaking_eq_preimage, preimage_ofSnowflaking_eball]
-
-@[deprecated (since := "2026-01-24")]
-alias image_toSnowflaking_emetricBall := image_toSnowflaking_eball
 
 @[simp]
 theorem preimage_toSnowflaking_eball (x : Snowflaking X α hα₀ hα₁) (d : ℝ≥0∞) :
@@ -334,16 +328,10 @@ theorem preimage_toSnowflaking_eball (x : Snowflaking X α hα₀ hα₁) (d : �
   rw [toSnowflaking.preimage_eq_iff_eq_image, image_toSnowflaking_eball,
     toSnowflaking_ofSnowflaking, ENNReal.rpow_inv_rpow hα₀.ne']
 
-@[deprecated (since := "2026-01-24")]
-alias preimage_toSnowflaking_emetricBall := preimage_toSnowflaking_eball
-
 @[simp]
 theorem image_ofSnowflaking_eball (x : Snowflaking X α hα₀ hα₁) (d : ℝ≥0∞) :
     ofSnowflaking '' Metric.eball x d = Metric.eball x.ofSnowflaking (d ^ α⁻¹) := by
   rw [image_ofSnowflaking_eq_preimage, preimage_toSnowflaking_eball]
-
-@[deprecated (since := "2026-01-24")]
-alias image_ofSnowflaking_emetricBall := image_ofSnowflaking_eball
 
 @[simp]
 theorem preimage_ofSnowflaking_closedEBall (x : X) (r : ℝ≥0∞) :
@@ -352,17 +340,11 @@ theorem preimage_ofSnowflaking_closedEBall (x : X) (r : ℝ≥0∞) :
   ext ⟨y⟩
   simp (disch := positivity) [ENNReal.rpow_le_rpow_iff]
 
-@[deprecated (since := "2026-01-24")]
-alias preimage_ofSnowflaking_emetricClosedBall := preimage_ofSnowflaking_closedEBall
-
 @[simp]
 theorem image_toSnowflaking_closedEBall (x : X) (r : ℝ≥0∞) :
     toSnowflaking '' Metric.closedEBall x r =
       Metric.closedEBall (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   rw [image_toSnowflaking_eq_preimage, preimage_ofSnowflaking_closedEBall]
-
-@[deprecated (since := "2026-01-24")]
-alias image_toSnowflaking_emetricClosedBall := image_toSnowflaking_closedEBall
 
 @[simp]
 theorem preimage_toSnowflaking_closedEBall (x : Snowflaking X α hα₀ hα₁) (d : ℝ≥0∞) :
@@ -370,17 +352,11 @@ theorem preimage_toSnowflaking_closedEBall (x : Snowflaking X α hα₀ hα₁) 
   rw [toSnowflaking.preimage_eq_iff_eq_image, image_toSnowflaking_closedEBall,
     toSnowflaking_ofSnowflaking, ENNReal.rpow_inv_rpow hα₀.ne']
 
-@[deprecated (since := "2026-01-24")]
-alias preimage_toSnowflaking_emetricClosedBall := preimage_toSnowflaking_closedEBall
-
 @[simp]
 theorem image_ofSnowflaking_closedEBall (x : Snowflaking X α hα₀ hα₁) (d : ℝ≥0∞) :
     ofSnowflaking '' Metric.closedEBall x d =
       Metric.closedEBall x.ofSnowflaking (d ^ α⁻¹) := by
   rw [image_ofSnowflaking_eq_preimage, preimage_toSnowflaking_closedEBall]
-
-@[deprecated (since := "2026-01-24")]
-alias image_ofSnowflaking_emetricClosedBall := image_ofSnowflaking_closedEBall
 
 @[simp]
 theorem ediam_image_ofSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
