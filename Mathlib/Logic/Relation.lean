@@ -879,16 +879,17 @@ def Join (r : α → α → Prop) : α → α → Prop := fun a b ↦ ∃ c, r a
 /-- The diamond property: If `a` is related to both `b` and `c`, then there exists a `d` that
 `b` and `c` are related to. This forms a diagram in the shape of a diamond. -/
 class IsDiamond (r : α → α → Prop) : Prop where
-  diamond : ∀ {a b c : α}, r a b → r a c → Join r b c
+  join_of_rel_of_rel : ∀ ⦃a b c : α⦄, r a b → r a c → Join r b c
 
 /-- A relation is confluent if, whenever `a` rewrites in zero or more steps to both `b`
 and `c`, there exists a `d` to which both `b` and `c` can be rewritten in zero or more steps. -/
-class IsConfluent (r : α → α → Prop) : Prop extends IsDiamond (ReflTransGen r)
+abbrev IsConfluent (r : α → α → Prop) : Prop :=
+  IsDiamond (ReflTransGen r)
 
 /-- A relation has the Church-Rosser property if, whenever `a` and `b` are equivalent,
 there exists a `c` to which both can be rewritten in zero or more steps. -/
 class IsChurchRosser (r : α → α → Prop) : Prop where
-  churchRosser : EqvGen r ≤ Join (ReflTransGen r)
+  eqvGen_le_join_reflTransGen : EqvGen r ≤ Join (ReflTransGen r)
 
 namespace Join
 
@@ -904,18 +905,18 @@ end Join
 with the equivalence closure. -/
 theorem IsChurchRosser.join_reflTransGen_eq_eqvGen {r : α → α → Prop} [IsChurchRosser r] :
     Join (ReflTransGen r) = EqvGen r :=
-  Subrelation.antisymm (Join.le_eqvGen r) IsChurchRosser.churchRosser
+  Subrelation.antisymm (Join.le_eqvGen r) IsChurchRosser.eqvGen_le_join_reflTransGen
 
 /-- The Church-Rosser property implies confluence. -/
 theorem IsChurchRosser.confluent {r : α → α → Prop} [IsChurchRosser r] : IsConfluent r where
-  diamond := by
+  join_of_rel_of_rel := by
     intro a b c hab hac
-    apply IsChurchRosser.churchRosser
+    apply IsChurchRosser.eqvGen_le_join_reflTransGen
     exact EqvGen.trans b a c (EqvGen.symm a b hab.to_eqvGen) hac.to_eqvGen
 
 /-- A confluent relation has the Church-Rosser property. -/
 theorem IsConfluent.churchRosser {r : α → α → Prop} [IsConfluent r] : IsChurchRosser r where
-  churchRosser := by
+  eqvGen_le_join_reflTransGen := by
     intro a b hab
     induction hab with
     | rel a b hab =>
@@ -928,7 +929,7 @@ theorem IsConfluent.churchRosser {r : α → α → Prop} [IsConfluent r] : IsCh
     | trans a b c _ _ hab hbc =>
         rcases hab with ⟨u, hau, hbu⟩
         rcases hbc with ⟨v, hbv, hcv⟩
-        rcases IsDiamond.diamond hbu hbv with ⟨w, huw, hvw⟩
+        rcases IsDiamond.join_of_rel_of_rel hbu hbv with ⟨w, huw, hvw⟩
         exact ⟨w, hau.trans huw, hcv.trans hvw⟩
 
 section Join
