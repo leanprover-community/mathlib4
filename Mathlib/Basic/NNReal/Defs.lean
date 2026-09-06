@@ -575,7 +575,6 @@ theorem toNNReal_le_toNNReal_iff {r p : ℝ} (hp : 0 ≤ p) :
     toNNReal r ≤ toNNReal p ↔ r ≤ p := by
   grind [← coe_le_coe, coe_toNNReal']
 
-@[simp]
 lemma toNNReal_le_one {r : ℝ} : r.toNNReal ≤ 1 ↔ r ≤ 1 := by
   simpa using toNNReal_le_toNNReal_iff zero_le_one
 
@@ -583,7 +582,6 @@ lemma toNNReal_le_one {r : ℝ} : r.toNNReal ≤ 1 ↔ r ≤ 1 := by
 lemma one_lt_toNNReal {r : ℝ} : 1 < r.toNNReal ↔ 1 < r := by
   simpa only [not_le] using toNNReal_le_one.not
 
-@[simp]
 lemma toNNReal_le_natCast {r : ℝ} {n : ℕ} : r.toNNReal ≤ n ↔ r ≤ n := by
   simpa using toNNReal_le_toNNReal_iff n.cast_nonneg
 
@@ -591,7 +589,6 @@ lemma toNNReal_le_natCast {r : ℝ} {n : ℕ} : r.toNNReal ≤ n ↔ r ≤ n := 
 lemma natCast_lt_toNNReal {r : ℝ} {n : ℕ} : n < r.toNNReal ↔ n < r := by
   simpa only [not_le] using toNNReal_le_natCast.not
 
-@[simp]
 lemma toNNReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal ≤ ofNat(n) ↔ r ≤ n :=
   toNNReal_le_natCast
