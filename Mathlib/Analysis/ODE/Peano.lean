@@ -412,10 +412,10 @@ private lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀ tmax)
     (hs : s ∈ uIoc t₀ t) : s ∈ Icc t₀ tmax :=
   Icc_subset_Icc_right ht.2 (Ioc_subset_Icc_self (uIoc_of_le ht.1 ▸ hs))
 
-private lemma forall_mem_Icc_eq_integral_of_eqOn {a b : ℝ} {β : ℝ → E} (ht₀ : t₀.val ∈ Icc a b)
+private lemma forall_mem_Icc_eq_integral_of_eqOn {a b : ℝ} {β : ℝ → E} (ht₀ : t₀ ∈ Icc a b)
     (hαβ : EqOn α β (Icc a b)) (hβ : ∀ t ∈ Icc a b, β t = x₀ + ∫ u in t₀..t, f (u, β u)) :
     ∀ t ∈ Icc a b, α t = x₀ + ∫ u in t₀..t, f (u, α u) := fun t ht ↦ by
-  have h : EqOn (fun u ↦ f (u, β u)) (fun u ↦ f (u, α u)) (uIcc t₀.val t) :=
+  have h : EqOn (fun u ↦ f (u, β u)) (fun u ↦ f (u, α u)) (uIcc t₀ t) :=
     fun u hu ↦ by simp only [hαβ (uIcc_subset_Icc ht₀ ht hu)]
   rw [hαβ ht, hβ t ht, intervalIntegral.integral_congr h]
 
@@ -464,15 +464,15 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward
 
 /-- There exists a solution of the integral equation on the interval backward in time. -/
 lemma exists_eq_forall_mem_Icc_eq_integral_backward
-    (hf : IsPeano f t₀ x₀ r L) :
+    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
     ∃ α : ℝ → E, ContinuousOn α (Icc tmin t₀) ∧ MapsTo α (Icc tmin t₀) (closedBall x₀ r) ∧
-      ∀ t ∈ Icc tmin t₀.val,
+      ∀ t ∈ Icc tmin t₀,
         α t = x₀ + ∫ s in t₀..t, f (s, α s) := by
   let g : ℝ × E → E := fun x ↦ -f (-x.1, x.2)
-  let t₀' : Icc (-tmax) (-tmin) :=
-    ⟨-t₀, neg_Icc tmin tmax ▸ (Set.neg_mem_neg.mpr t₀.2)⟩
-  have h_g : IsPeano g t₀' x₀ r L := by
+  let t₀' : ℝ := -t₀
+  have h_g : IsPeano g (-tmax) (-tmin) t₀' x₀ r L := by
     constructor
+    · exact ⟨neg_le_neg hf.t₀_mem.2, neg_le_neg hf.t₀_mem.1⟩
     · refine (ContinuousOn.neg (hf.continuousOn.comp ?_ ?_))
       · exact ContinuousOn.prodMap continuousOn_neg continuousOn_id
       · exact fun p hp ↦ ⟨⟨le_neg_of_le_neg hp.1.2, neg_le_of_neg_le hp.1.1⟩, hp.2⟩
@@ -491,15 +491,15 @@ lemma exists_eq_forall_mem_Icc_eq_integral_backward
 /-- **Peano existence theorem**, integral form. A solution exists on the full time interval and
 remains in `closedBall x₀ r`. -/
 theorem exists_eq_forall_mem_Icc_eq_integral
-    (hf : IsPeano f t₀ x₀ r L) :
+    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
     ∃ α : ℝ → E, ContinuousOn α (Icc tmin tmax) ∧ MapsTo α (Icc tmin tmax) (closedBall x₀ r) ∧
       ∀ t ∈ Icc tmin tmax, α t = x₀ + ∫ s in t₀..t, f (s, α s) := by
   obtain ⟨α₁, hα₁_cont, hα₁_maps, hα₁_eq⟩ :=
     exists_eq_forall_mem_Icc_eq_integral_forward hf
   obtain ⟨α₂, hα₂_cont, hα₂_maps, hα₂_eq⟩ :=
     exists_eq_forall_mem_Icc_eq_integral_backward hf
-  have ht₀₁ : t₀.val ∈ Icc t₀.val tmax := left_mem_Icc.mpr t₀.2.2
-  have ht₀₂ : t₀.val ∈ Icc tmin t₀.val := right_mem_Icc.mpr t₀.2.1
+  have ht₀₁ : t₀ ∈ Icc t₀ tmax := left_mem_Icc.mpr hf.t₀_mem.2
+  have ht₀₂ : t₀ ∈ Icc tmin t₀ := right_mem_Icc.mpr hf.t₀_mem.1
   have hα₁_t₀ : α₁ t₀ = x₀ := by
     simpa using hα₁_eq t₀ ht₀₁
   have hα₂_t₀ : α₂ t₀ = x₀ := by
@@ -512,26 +512,27 @@ theorem exists_eq_forall_mem_Icc_eq_integral
     · subst h
       exact (ite_eq_left le_rfl).trans (hα₁_t₀.trans hα₂_t₀.symm)
   have h_union : Icc tmin t₀ ∪ Icc t₀ tmax = Icc tmin tmax :=
-    Icc_union_Icc_eq_Icc t₀.2.1 t₀.2.2
+    Icc_union_Icc_eq_Icc hf.t₀_mem.1 hf.t₀_mem.2
   refine ⟨α, ?_, ?_, fun t ht ↦ ?_⟩
   · rw [← h_union]
     exact (hα₂_cont.congr hα_eq_α₂).union_of_isClosed (hα₁_cont.congr hα_eq_α₁)
       isClosed_Icc isClosed_Icc
   · rw [← h_union]
     exact (hα₂_maps.congr hα_eq_α₂.symm).union (hα₁_maps.congr hα_eq_α₁.symm)
-  · rcases le_total t₀.val t with h | h
+  · rcases le_total t₀ t with h | h
     · exact forall_mem_Icc_eq_integral_of_eqOn ht₀₁ hα_eq_α₁ hα₁_eq t ⟨h, ht.2⟩
     · exact forall_mem_Icc_eq_integral_of_eqOn ht₀₂ hα_eq_α₂ hα₂_eq t ⟨ht.1, h⟩
 
 /-- **Peano existence theorem**, differential form. A solution to the initial value problem exists
 on the full time interval. -/
-theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀ (hf : IsPeano f t₀ x₀ r L) :
+theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
+    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
     ∃ α : ℝ → E, α t₀ = x₀ ∧
       ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f (t, α t)) (Icc tmin tmax) t := by
   obtain ⟨α, hα_cont, hα_maps, hα_eq⟩ := exists_eq_forall_mem_Icc_eq_integral hf
   use α
   constructor
-  · simp [hα_eq t₀]
+  · simpa using hα_eq t₀ hf.t₀_mem
   · intro t ht
     apply HasDerivWithinAt.congr _ hα_eq (hα_eq t ht)
     simp only [hasDerivWithinAt_const_add_iff]
@@ -543,8 +544,8 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀ (hf : IsPeano f t₀ x₀ r
       · exact fun s hs ↦ mem_prod.mpr ⟨hs, hα_maps hs⟩
     apply intervalIntegral.integral_hasDerivWithinAt_right
     · apply (h_cont.intervalIntegrable_of_Icc _).mono_set
-      · exact (uIcc_subset_Icc t₀.2 ht).trans Icc_subset_uIcc
-      · exact t₀.2.1.trans t₀.2.2
+      · exact (uIcc_subset_Icc hf.t₀_mem ht).trans Icc_subset_uIcc
+      · exact hf.t₀_mem.1.trans hf.t₀_mem.2
     · apply h_cont.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc
     · exact h_cont.continuousWithinAt ht
 
