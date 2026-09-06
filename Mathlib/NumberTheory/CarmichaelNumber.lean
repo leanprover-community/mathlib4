@@ -140,11 +140,10 @@ theorem isCarmichael_iff_korselt :
   rw [probablePrime_iff_zmod_one n (by grind), ← ZMod.coe_unitOfCoprime b hb,
     ← Units.val_pow_eq_pow_val, hd, pow_mul, pow_carmichael, one_pow, Units.val_one]
 
-theorem IsCarmichael.primeFactors_card_ge_three (h : IsCarmichael n) :
+theorem IsCarmichael.three_le_card_primeFactors (h : IsCarmichael n) :
     3 ≤ n.primeFactors.card := by
   by_contra! h0
-  set a := n.primeFactors.card
-  have hn : n.primeFactors.card = a := rfl
+  set a := n.primeFactors.card with hn
   interval_cases a
   · simp_all
     grind [h.two_lt]
