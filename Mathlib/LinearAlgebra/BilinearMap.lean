@@ -531,11 +531,11 @@ end CommSemiring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R] [IsDomain R]
+variable {R M : Type*} [CommRing R] [NoZeroDivisors R]
 
 section AddCommGroup
 
-variable [AddCommGroup M] [Module R M]
+variable [AddCommMonoid M] [Module R M]
 
 theorem lsmul_injective [IsTorsionFree R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=

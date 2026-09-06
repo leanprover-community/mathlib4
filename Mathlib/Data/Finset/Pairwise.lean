@@ -40,7 +40,7 @@ theorem PairwiseDisjoint.elim_finset {s : Set ι} {f : ι → Finset α} (hs : s
 
 section SemilatticeInf
 
-variable [SemilatticeInf α] [OrderBot α] {s : Finset ι} {f : ι → α}
+variable [PartialOrder α] [OrderBot α] {s : Finset ι} {f : ι → α}
 
 theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f : ι → α}
     (hs : (s : Set ι).PairwiseDisjoint f) {g : ι → ι} (hf : ∀ a, f (g a) ≤ f a) :

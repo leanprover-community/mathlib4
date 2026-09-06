@@ -204,7 +204,7 @@ end CompleteLattice
 
 section CanonicallyOrderedMul
 
-variable [Monoid M] [PartialOrder M] [CanonicallyOrderedMul M]
+variable [MulOneClass M] [PartialOrder M] [CanonicallyOrderedMul M]
 
 @[to_additive]
 lemma mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=

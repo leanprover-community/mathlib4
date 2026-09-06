@@ -503,7 +503,7 @@ end Ring
 
 section IsDomain
 
-variable [Ring β] [IsDomain β] (abv : β → α) [IsAbsoluteValue abv]
+variable [Ring β] [Nontrivial β] (abv : β → α) [IsAbsoluteValue abv]
 
 theorem one_not_equiv_zero : ¬const abv 1 ≈ const abv 0 := fun h =>
   have : ∀ ε > 0, ∃ i, ∀ k, i ≤ k → abv (1 - 0) < ε := h

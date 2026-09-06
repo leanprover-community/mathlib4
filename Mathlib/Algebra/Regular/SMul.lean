@@ -211,7 +211,7 @@ end MonoidWithZero
 
 section CommSemigroup
 
-variable [CommSemigroup R] [SMul R M] [IsScalarTower R R M]
+variable [CommMagma R] [SMul R M] [IsScalarTower R R M]
 
 /-- A product is `M`-regular if and only if the factors are. -/
 theorem mul_iff : IsSMulRegular M (a * b) ↔ IsSMulRegular M a ∧ IsSMulRegular M b := by
