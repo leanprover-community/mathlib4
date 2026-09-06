@@ -308,18 +308,19 @@ section LimitExtraction
 variable [FiniteDimensional ℝ E]
 
 /-- A subsequence of Tonelli approximations converges uniformly to a continuous curve. -/
-lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation
+    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
     ∃ α : ℝ → E, ∃ φ : ℕ → ℕ, StrictMono φ ∧ ContinuousOn α (Icc t₀ tmax) ∧
       MapsTo α (Icc t₀ tmax) (closedBall x₀ r) ∧
-        TendstoUniformlyOn (tonelliApproximation f t₀ x₀ ∘ φ) α atTop (Icc t₀.val tmax) := by
+        TendstoUniformlyOn (tonelliApproximation f t₀ tmax x₀ ∘ φ) α atTop (Icc t₀ tmax) := by
   obtain ⟨β, φ, hφ_mono, hβ_tendsto⟩ := exists_tendsto_subseq_boundedTonelliApproximation hf
-  let α : ℝ → E := fun t ↦ if h : t ∈ Icc t₀.val tmax then β ⟨t, h⟩ else 0
-  have hα : ∀ t : Icc t₀.val tmax, α t = β t := fun t ↦ dite_eq_left t.2
+  let α : ℝ → E := fun t ↦ if h : t ∈ Icc t₀ tmax then β ⟨t, h⟩ else 0
+  have hα : ∀ t : Icc t₀ tmax, α t = β t := fun t ↦ dite_eq_left t.2
   have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
     BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
   refine ⟨α, φ, hφ_mono, ?_, ?_, ?_⟩
   · rw [continuousOn_iff_continuous_domRestrict,
-      show (Icc t₀.val tmax).domRestrict α = β from funext hα]
+      show (Icc t₀ tmax).domRestrict α = β from funext hα]
     exact β.continuous
   · intro t ht
     rw [hα ⟨t, ht⟩]
@@ -331,16 +332,16 @@ lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation (hf : IsPeano f t₀
 
 variable {φ : ℕ → ℕ}
 
-lemma tendsto_stepSize_zero : Tendsto (stepSize t₀) atTop (nhds 0) :=
+lemma tendsto_stepSize_zero : Tendsto (stepSize t₀ tmax) atTop (nhds 0) :=
   tendsto_const_div_atTop_nhds_zero_nat (tmax - t₀)
 
 /-- The delayed input converges to the identity. -/
-lemma tendsto_delayedInput_id (t : ℝ) (ht : t ∈ Icc t₀.val tmax) :
-    Tendsto (fun n ↦ delayedInput t₀ n t) atTop (nhds t) := by
-  have h_tendsto : Tendsto (fun n ↦ max (t - stepSize t₀ n) t₀.val) atTop
-      (nhds (max (t - 0) t₀.val)) :=
+lemma tendsto_delayedInput_id (t : ℝ) (ht : t₀ ≤ t) :
+    Tendsto (fun n ↦ delayedInput t₀ tmax n t) atTop (nhds t) := by
+  have h_tendsto : Tendsto (fun n ↦ max (t - stepSize t₀ tmax n) t₀) atTop
+      (nhds (max (t - 0) t₀)) :=
     Tendsto.max (Tendsto.sub tendsto_const_nhds tendsto_stepSize_zero) tendsto_const_nhds
-  simp only [sub_zero, max_eq_left ht.1] at h_tendsto
+  simp only [sub_zero, max_eq_left ht] at h_tendsto
   exact h_tendsto
 
 omit [FiniteDimensional ℝ E]
@@ -349,18 +350,18 @@ omit [FiniteDimensional ℝ E]
 with the corresponding delayed inputs. -/
 lemma tendsto_tonelliApproximation_delayedInput_of_tendstoUniformlyOn_tonelliApproximation
     (hφ : StrictMono φ)
-    (hα : ContinuousOn α (Icc t₀.val tmax))
-    (h_tendsto : TendstoUniformlyOn (tonelliApproximation f t₀ x₀ ∘ φ) α atTop
-      (Icc t₀.val tmax))
-    (t : ℝ) (ht : t ∈ Icc t₀.val tmax) :
+    (hα : ContinuousOn α (Icc t₀ tmax))
+    (h_tendsto : TendstoUniformlyOn (tonelliApproximation f t₀ tmax x₀ ∘ φ) α atTop
+      (Icc t₀ tmax))
+    (t : ℝ) (ht : t ∈ Icc t₀ tmax) :
     Tendsto
       (fun n ↦
-        tonelliApproximation f t₀ x₀ (φ n) (delayedInput t₀ (φ n + 1) t))
+        tonelliApproximation f t₀ tmax x₀ (φ n) (delayedInput t₀ tmax (φ n + 1) t))
       atTop (nhds (α t)) := by
   refine h_tendsto.tendsto_comp (hα t ht) (tendsto_nhdsWithin_iff.mpr ?_)
   exact
-    ⟨(tendsto_delayedInput_id t ht).comp <| (tendsto_add_atTop_nat 1).comp hφ.tendsto_atTop,
-      Eventually.of_forall (fun _ ↦ mapsTo_delayedInput _ _ ht)⟩
+    ⟨(tendsto_delayedInput_id t ht.1).comp <| (tendsto_add_atTop_nat 1).comp hφ.tendsto_atTop,
+      Eventually.of_forall (fun _ ↦ mapsTo_delayedInput _ (ht.1.trans ht.2) ht)⟩
 
 end LimitExtraction
 
