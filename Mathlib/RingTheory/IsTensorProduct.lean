@@ -723,7 +723,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
     [Algebra R A] {f g : S' →ₐ[R] A} (h₁ : f.comp (toAlgHom R R' S') = g.comp (toAlgHom R R' S'))
     (h₂ : f.comp (toAlgHom R S S') = g.comp (toAlgHom R S S')) : f = g := by
   ext x
-  refine H.1.inductionOn x _ ?_ ?_ ?_ ?_
+  refine H.1.inductionOn x ?_ ?_ ?_
   · exact AlgHom.congr_fun h₁
   · intro s s' e
     rw [Algebra.smul_def, map_mul, map_mul, e]
