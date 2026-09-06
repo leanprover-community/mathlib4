@@ -277,6 +277,9 @@ def toLinearMap : A →ₗ[R] B where
   map_add' := map_add _
   map_smul' := map_smul _
 
+theorem toLinearMap_eq_coe (f : A →ₐ[R] B) : f.toLinearMap = f :=
+  rfl
+
 @[simp]
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
