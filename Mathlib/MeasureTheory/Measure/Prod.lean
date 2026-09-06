@@ -848,15 +848,9 @@ theorem map_prod_map_of_aemeasurable {δ} [MeasurableSpace δ] {f : α → β} {
     (ha.map_map_of_aemeasurable measurable_prodMk_left.aemeasurable).symm
 
 theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (μa : Measure α)
-    (μc : Measure γ) [SFinite μa] [SFinite μc] (hf : Measurable f) (hg : Measurable g) :
-    (map f μa).prod (map g μc) = map (Prod.map f g) (μa.prod μc) := by
-  simp_rw [← sum_sfiniteSeq μa, ← sum_sfiniteSeq μc, map_sum hf.aemeasurable,
-    map_sum hg.aemeasurable, prod_sum, map_sum (hf.prodMap hg).aemeasurable]
-  congr
-  ext1 i
-  refine prod_eq fun s t hs ht => ?_
-  rw [map_apply (hf.prodMap hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
-  exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
+    (μc : Measure γ) [SFinite μc] (hf : Measurable f) (hg : Measurable g) :
+    (map f μa).prod (map g μc) = map (Prod.map f g) (μa.prod μc) :=
+  map_prod_map_of_aemeasurable μa μc hf.aemeasurable hg.aemeasurable
 
 -- `prod_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
