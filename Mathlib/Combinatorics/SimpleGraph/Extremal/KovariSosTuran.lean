@@ -3,8 +3,10 @@ Copyright (c) 2026 Haoyu Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoyu Chen
 -/
-import Mathlib.Algebra.Order.Chebyshev
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Algebra.Order.Chebyshev
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # The Kővári–Sós–Turán theorem
@@ -46,11 +48,13 @@ with the power-mean inequality `(∑ x)^s ≤ n^(s-1) * ∑ x^s`, turn this into
 * `KovariSosTuran.kovari_sos_turan_real` : the classical form with real exponents.
 -/
 
+@[expose] public section
+
 open Finset
 
 namespace KovariSosTuran
 
-variable {α β : Type*} [DecidableEq α] [DecidableEq β]
+variable {α β : Type*} [DecidableEq α]
   (A : Finset α) (B : Finset β) (r : α → β → Prop) [∀ a b, Decidable (r a b)]
 
 /-- The neighbourhood of `b : β` inside the part `A`. -/
@@ -69,13 +73,12 @@ def HasKst (s t : ℕ) : Prop :=
 
 variable {A B r} {s t : ℕ}
 
-omit [DecidableEq α] [DecidableEq β] in
+omit [DecidableEq α] in
 lemma nbhd_subset (b : β) : nbhd A r b ⊆ A := Finset.filter_subset _ _
 
-omit [DecidableEq α] [DecidableEq β] in
+omit [DecidableEq α] in
 lemma mem_nbhd {a : α} {b : β} : a ∈ nbhd A r b ↔ a ∈ A ∧ r a b := Finset.mem_filter
 
-omit [DecidableEq β] in
 /-- If the graph is `K_{s,t}`-free then every `s`-subset of `A` has at most `t - 1`
 common neighbours in `B`. -/
 lemma card_common_le (h : ¬ HasKst A B r s t) (ht : 1 ≤ t)
@@ -88,12 +91,13 @@ lemma card_common_le (h : ¬ HasKst A B r s t) (ht : 1 ≤ t)
   intro a ha b hb
   exact (mem_nbhd.mp ((Finset.mem_filter.mp (hT hb)).2 ha)).2
 
-omit [DecidableEq β] in
+omit [DecidableEq α] in
 /-- **The double-counting core of Kővári–Sós–Turán.**
 If the bipartite graph is `K_{s,t}`-free then
 `∑_{b ∈ B} C(deg b, s) ≤ (t - 1) * C(|A|, s)`. -/
 theorem sum_choose_le (h : ¬ HasKst A B r s t) (ht : 1 ≤ t) :
     ∑ b ∈ B, (deg A r b).choose s ≤ (t - 1) * A.card.choose s := by
+  classical
   have key : ∀ b ∈ B, (deg A r b).choose s
       = ((A.powersetCard s).filter fun S => S ⊆ nbhd A r b).card := by
     intro b _
@@ -126,13 +130,13 @@ theorem sum_choose_le (h : ¬ HasKst A B r s t) (ht : 1 ≤ t) :
 `s! * C(deg b, s)`. -/
 private def trunc (b : β) : ℕ := deg A r b + 1 - s
 
-omit [DecidableEq α] [DecidableEq β] in
+omit [DecidableEq α] in
 private lemma trunc_pow_le (b : β) :
     (trunc (A := A) (r := r) (s := s) b) ^ s ≤ s.factorial * (deg A r b).choose s := by
   rw [← Nat.descFactorial_eq_factorial_mul_choose]
   exact Nat.pow_sub_le_descFactorial _ _
 
-omit [DecidableEq β] in
+omit [DecidableEq α] in
 /-- **The Kővári–Sós–Turán theorem.**
 
 If the bipartite graph between `A` (of size `m`) and `B` (of size `n`) given by `r`
@@ -142,6 +146,7 @@ contains no `K_{s,t}`, then its number of edges `e` satisfies
 theorem kovari_sos_turan (hs : 1 ≤ s) (ht : 1 ≤ t) (h : ¬ HasKst A B r s t) :
     (numEdges A B r - (s - 1) * B.card) ^ s
       ≤ (t - 1) * A.card ^ s * B.card ^ (s - 1) := by
+  classical
   obtain ⟨p, rfl⟩ : ∃ p, s = p + 1 := ⟨s - 1, by omega⟩
   simp only [Nat.add_sub_cancel]
   -- Step 1: the truncated degrees sum to at least `e - p * n`.
@@ -182,7 +187,7 @@ theorem kovari_sos_turan (hs : 1 ≤ s) (ht : 1 ≤ t) (h : ¬ HasKst A B r s t)
     _ ≤ B.card ^ p * ((t - 1) * A.card ^ (p + 1)) := Nat.mul_le_mul_left _ h3
     _ = (t - 1) * A.card ^ (p + 1) * B.card ^ p := by ring
 
-omit [DecidableEq β] in
+omit [DecidableEq α] in
 /-- **The Kővári–Sós–Turán theorem, classical form.**
 
 If the bipartite graph between `A` (of size `m`) and `B` (of size `n`) given by `r` is
@@ -197,6 +202,7 @@ theorem kovari_sos_turan_real (hs : 1 ≤ s) (ht : 1 ≤ t) (h : ¬ HasKst A B r
       ≤ ((s - 1 : ℕ) : ℝ) * (B.card : ℝ)
         + ((t - 1 : ℕ) : ℝ) ^ ((s : ℝ)⁻¹) * (A.card : ℝ)
             * (B.card : ℝ) ^ (1 - (s : ℝ)⁻¹) := by
+  classical
   have hs0 : s ≠ 0 := by omega
   have hsR : (0:ℝ) < (s : ℝ) := by exact_mod_cast Nat.pos_of_ne_zero hs0
   have hsne : (s : ℝ) ≠ 0 := ne_of_gt hsR
