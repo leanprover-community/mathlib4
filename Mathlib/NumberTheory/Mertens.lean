@@ -219,7 +219,7 @@ lemma sum_div_log_eq : ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n = log (log
 lemma integrable_mul_E₁ {x : ℝ} (hx : 2 ≤ x) :
     IntegrableOn (fun t ↦ (t⁻¹ / (log t)^2) * E₁ t) (.Ioi x) volume := by
   apply Integrable.mono (integrable_const_div_mul_log_sq C₁ hx)
-  · exact Measurable.aestronglyMeasurable (by unfold E₁; fun_prop)
+    (Measurable.aestronglyMeasurable (by unfold E₁; fun_prop))
   filter_upwards [ae_restrict_mem (by measurability)] with t ht
   simp only [Set.mem_Ioi, norm_mul, norm_eq_abs] at ht ⊢
   have : 0 < log t := log_pos (by linarith)
@@ -229,7 +229,7 @@ lemma integrable_mul_E₁ {x : ℝ} (hx : 2 ≤ x) :
 theorem M_bounds :
     M ≤ upperBound / log 2 + 1 - log (log 2) ∧ lowerBound / log 2 + 1 - log (log 2) ≤ M := by
   unfold M
-  rw [← integ_div_mul_log_sq _ (by rfl), ← integ_div_mul_log_sq _ (by rfl)]
+  rw [← integ_div_mul_log_sq, ← integ_div_mul_log_sq] <;> try rfl
   have := integrable_mul_E₁ (by rfl)
   have : NullMeasurableSet (.Ioi (2 : ℝ)) volume := by measurability
   constructor <;> gcongr with t ht
@@ -252,8 +252,7 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
       (∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * log t)
       + ∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * E₁ t := by
     simp only [sum_eq', mul_add]
-    apply intervalIntegral.integral_add
-    <;> rw [intervalIntegrable_iff, Set.uIoc_of_le hx]
+    apply intervalIntegral.integral_add <;> rw [intervalIntegrable_iff, Set.uIoc_of_le hx]
     · apply (ContinuousOn.integrableOn_Icc _).mono_set Set.Ioc_subset_Icc_self
       fun_prop (disch := grind [log_ne_zero])
     · apply Integrable.mono (g := fun t ↦ t⁻¹ / (log 2 ^ 2) * C₁)
@@ -314,33 +313,30 @@ private theorem E₂_bound_weak {x : ℝ} (hx : 1 ≤ x) :
 
 theorem sum_div_log_sub_sub_bound {x : ℝ} (hx : 2 ≤ x) :
     |∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M| ≤ C₂ / log x := by
-  grw [← E₂_bound hx, sum_div_log_eq x]; ring_nf; simp
+  grw [← E₂_bound hx, sum_div_log_eq x]; grind
 
 theorem sum_div_log_sub_sub_bound_nat (hN : 2 ≤ N) :
     |∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N) - M| ≤ C₂ / log N := by
   simpa using sum_div_log_sub_sub_bound (mod_cast (by omega) : 2 ≤ (N : ℝ))
 
-theorem sum_div_log_sub_sub_isBigO :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M)
+theorem sum_div_log_sub_sub_isBigO : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M)
     =O[atTop] fun x ↦ (log x)⁻¹ := by
   simp only [isBigO_iff, norm_eq_abs, norm_inv, eventually_atTop]
   refine ⟨C₂, 2, fun x hx ↦ ?_⟩
   convert sum_div_log_sub_sub_bound hx using 1
   grind [abs_of_pos (log_pos (by linarith : 1 < x))]
 
-theorem sum_div_log_sub_sub_isBigO_nat :
-    (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N) - M)
-    =O[atTop] fun N ↦ (log N)⁻¹ := by
+theorem sum_div_log_sub_sub_isBigO_nat : (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n
+    - log (log N) - M) =O[atTop] fun N ↦ (log N)⁻¹ := by
   simpa [Function.comp_def] using
     sum_div_log_sub_sub_isBigO.comp_tendsto tendsto_natCast_atTop_atTop
 
-theorem sum_div_log_sub_sub_isLittleO :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M) =o[atTop] fun _ ↦ (1 : ℝ) :=
+theorem sum_div_log_sub_sub_isLittleO : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n
+    - log (log x) - M) =o[atTop] fun _ ↦ (1 : ℝ) :=
   sum_div_log_sub_sub_isBigO.trans_isLittleO inv_log_isLittleO_one
 
-theorem sum_div_log_sub_sub_isLittleO_nat :
-    (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N) - M)
-    =o[atTop] fun _ ↦ (1 : ℝ) := by
+theorem sum_div_log_sub_sub_isLittleO_nat : (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n
+    - log (log N) - M) =o[atTop] fun _ ↦ (1 : ℝ) := by
   simpa [Function.comp_def] using
     sum_div_log_sub_sub_isLittleO.comp_tendsto tendsto_natCast_atTop_atTop
 
@@ -356,22 +352,22 @@ theorem sum_div_log_sub_bounded_nat : ∃ C, ∀ N : ℕ, N ≥ 2 →
   obtain ⟨ C, hC ⟩ := sum_div_log_sub_bounded
   exact ⟨ C, fun N hN ↦ by simpa using hC N (mod_cast hN) ⟩
 
-theorem sum_div_log_sub_isBigO :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x)) =O[atTop] fun _ ↦ (1 : ℝ) := by
+theorem sum_div_log_sub_isBigO : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n
+    - log (log x)) =O[atTop] fun _ ↦ (1 : ℝ) := by
   simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
   obtain ⟨ C, _ ⟩ := sum_div_log_sub_bounded
   use C, 2
 
-theorem sum_div_log_sub_isBigO_nat :
-    (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N)) =O[atTop] fun _ ↦ (1 : ℝ) := by
+theorem sum_div_log_sub_isBigO_nat : (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n
+    - log (log N)) =O[atTop] fun _ ↦ (1 : ℝ) := by
   simpa [Function.comp_def] using sum_div_log_sub_isBigO.comp_tendsto tendsto_natCast_atTop_atTop
 
-theorem sum_div_log_asymp :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n) ~[atTop] fun x ↦ log (log x) :=
+theorem sum_div_log_asymp : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n) ~[atTop]
+    fun x ↦ log (log x) :=
   (sum_div_log_sub_isBigO.trans_isLittleO one_isLittleO_log_log).isEquivalent
 
-theorem sum_div_log_asymp_nat :
-    (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n) ~[atTop] fun N ↦ log (log N) := by
+theorem sum_div_log_asymp_nat : (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n) ~[atTop]
+    fun N ↦ log (log N) := by
   simpa [Function.comp_def] using sum_div_log_asymp.comp_tendsto tendsto_natCast_atTop_atTop
 
 open ENNReal
@@ -423,7 +419,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
           have : 0 < log n := log_pos (mod_cast (by omega))
           grw [apply_bound n, abs_of_nonneg (by positivity)]
           field_simp
-          rw [mul_assoc, ← rpow_one_add' (by positivity)] <;> grind
+          rw [mul_assoc, ← rpow_one_add'] <;> grind
         _ < ⊤ := by
           simp_rw [ofReal_mul C₀_nonneg, ENNReal.tsum_mul_left]
           suffices ∑' (i : ℕ), ENNReal.ofReal (i ^ (-s)) < ⊤ by finiteness
@@ -457,8 +453,8 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
       <;> grind
     rw [MeasureTheory.integral_add, MeasureTheory.integral_add, mul_add, mul_add,
         eulerMascheroniConstant_eq_neg_integral_log_log hs, MeasureTheory.integral_const_mul,
-        integral_Ioi_rpow_of_lt (by linarith) (by norm_num)]
-    · nth_rw 4 [← integral_comp_rpow_Ioi_of_pos' (by linarith : 0 < s - 1) (by norm_num)]
+        integral_Ioi_rpow_of_lt (by linarith) zero_lt_one]
+    · nth_rw 4 [← integral_comp_rpow_Ioi_of_pos' (by linarith : 0 < s - 1) zero_le_one]
       simp only [Real.one_rpow, neg_add_rev, sub_add_cancel_left, neg_neg, smul_eq_mul]
       congr
       · grind
@@ -466,10 +462,9 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
       refine setIntegral_congr_fun (by measurability) (fun x hx ↦ ?_)
       have : 0 < x := by grind
       rw [← rpow_mul this.le, ← rpow_mul this.le, mul_inv_cancel₀ (by linarith), Real.rpow_one]
-      calc
-        _ = (s - 1) * (E₂ x * (x ^ (s - 1 - 1) * x ^ ((s - 1) * -2))) := by
-          rw [← rpow_add this]; ring_nf
-        _ = _ := by ring
+      trans (s - 1) * (E₂ x * (x ^ (s - 1 - 1) * x ^ ((s - 1) * -2)))
+      · rw [← rpow_add this]; ring_nf
+      · ring
     exacts [h1, h2 M, h1.add (h2 M), ‹_›]
 
 /-- An asymptotic for the Dirichlet series associated to Mertens' second theorem. -/
@@ -1185,13 +1180,9 @@ theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) : |E₃ x| ≤ (log 4 + 3) / log x +
         · calc
             _ ≤ 1 / ((1 + i + ⌊x⌋₊ : ℕ) : ℝ) ^ 2 := by
               convert neg_inv_sub_log_sub_inv_le ⟨ _, h ⟩ <;> grind
-            _ ≤ _ := by
-              rw [inv_sub_inv (by positivity) (by positivity)]
-              push_cast; ring_nf; gcongr <;> grind
-        · simp only [neg_zero, cast_add, cast_one, sub_nonneg]; gcongr; linarith
-      _ ≤ _ := by
-        rw [sum_range_sub', add_zero, cast_add, tsub_le_iff_right, le_add_iff_nonneg_right]
-        positivity
+            _ ≤ _ := by field_simp; push_cast; grind
+        · field_simp; push_cast; grind
+      _ ≤ _ := by rw [sum_range_sub']; field_simp; push_cast; simp [field]
   · rw [← Primes.summable_iff_summable_ite]
     apply ((summable_one_div_nat_rpow.mpr (by norm_num : 1 < (2 : ℝ))).subtype _).of_norm_bounded
     intro p
@@ -1247,9 +1238,8 @@ theorem sum_primes_log_sub_add_isBigO_nat :
 theorem log_mul_prod_prime_one_minus_inv_tendsto :
     Tendsto (fun x ↦ log x * ∏ p ∈ primesLE ⌊x⌋₊, (1 - (1 : ℝ) / p)) atTop
     (𝓝 (exp (-eulerMascheroniConstant))) := by
-  have := exp_E₃_tendsto.const_mul (exp (-eulerMascheroniConstant))
-  rw [mul_one] at this
-  apply this.congr'
+  convert (exp_E₃_tendsto.const_mul (exp (-eulerMascheroniConstant))).congr' ?_
+  · simp
   filter_upwards [eventually_gt_atTop 1]
   grind [prod_prime_one_minus_inv_eq, log_pos]
 
