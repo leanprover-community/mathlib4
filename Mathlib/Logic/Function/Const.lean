@@ -139,9 +139,8 @@ theorem isConst_and_surjective_iff (f : α → β) :
     (fun ⟨_, _⟩ ↦ ⟨.of_subsingleton_codomain f, surjective_to_subsingleton f⟩)
 
 theorem isConst_and_surjective_iff_of_nonempty [Nonempty α] (f : α → β) :
-    f.IsConst ∧ f.Surjective ↔ Subsingleton β where
-  mp := fun ⟨hc, hsurj⟩ ↦ ⟨hsurj.forall₂.mpr hc.eq⟩
-  mpr _ := ⟨.of_subsingleton_codomain f, surjective_to_subsingleton f⟩
+    f.IsConst ∧ f.Surjective ↔ Subsingleton β := by
+  simp +contextual [isConst_and_surjective_iff, IsEmpty.subsingleton, ‹Nonempty α›]
 
 theorem IsConst.surjective_iff [Nonempty α] {f : α → β} (h : f.IsConst) :
     f.Surjective ↔ Subsingleton β := by

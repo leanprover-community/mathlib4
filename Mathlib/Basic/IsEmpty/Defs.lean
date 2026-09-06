@@ -130,7 +130,7 @@ theorem exists_iff {p : α → Prop} : (∃ a, p a) ↔ False :=
   iff_false_intro fun ⟨x, _⟩ ↦ IsEmpty.false x
 
 -- see Note [lower instance priority]
-instance (priority := 100) : Subsingleton α :=
+instance (priority := 100) subsingleton : Subsingleton α :=
   ⟨isEmptyElim⟩
 
 protected lemma congr_fun (f g : α → β) : f = g := funext fun a ↦ IsEmpty.elim' inferInstance a
