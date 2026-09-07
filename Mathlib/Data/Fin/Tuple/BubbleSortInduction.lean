@@ -5,10 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Fin.Tuple.Sort
-public import Mathlib.Order.WellFounded
 public import Mathlib.Order.PiLex
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Order.WellFounded
 
 /-!
 # "Bubble sort" induction

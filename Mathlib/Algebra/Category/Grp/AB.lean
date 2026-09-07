@@ -69,9 +69,9 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
   apply +allowSynthFailures hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
-      let iX : limit X ≅ AddCommGrpCat.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
+      let iX : limit X ≅ ↧((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
         (limit.isLimit _).conePointUniqueUpToIso (AddCommGrpCat.HasLimit.productLimitCone _).isLimit
-      let iY : limit Y ≅ AddCommGrpCat.of ((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
+      let iY : limit Y ≅ ↧((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
         (limit.isLimit _).conePointUniqueUpToIso (AddCommGrpCat.HasLimit.productLimitCone _).isLimit
       have : Pi.map (fun i ↦ f.app ⟨i⟩) = iX.inv ≫ lim.map f ≫ iY.hom := by
         simp only [Discrete.functor_obj_eq_as, Discrete.mk_as, Pi.isoLimit,
@@ -99,7 +99,7 @@ instance : AB4Star AddCommGrpCat.{u} where
 
 instance : HasSeparator AddCommGrpCat.{u} where
   hasSeparator := by
-    use AddCommGrpCat.of (ULift ℤ)
+    use ↧(ULift ℤ)
     intro A B f g h; simp_all only [ObjectProperty.singleton_iff, AddCommGrpCat.ext_iff,
       AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply, forall_eq', ULift.forall]
     (intro x; specialize h (AddCommGrpCat.ofHom

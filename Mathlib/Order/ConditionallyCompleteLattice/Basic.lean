@@ -445,19 +445,24 @@ open Function
 
 variable [WellFoundedLT α]
 
+@[to_dual]
 theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id s hs :=
   IsLeast.csInf_eq ⟨argminOn_mem _ _ _, fun _ ha => argminOn_le id _ ha⟩
 
+@[to_dual]
 theorem isLeast_csInf (hs : s.Nonempty) : IsLeast s (sInf s) := by
   rw [sInf_eq_argmin_on hs]
   exact ⟨argminOn_mem _ _ _, fun a ha => argminOn_le id _ ha⟩
 
-theorem le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :=
+@[to_dual csSup_le_iff_of_wellFoundedGT]
+theorem le_csInf_iff_of_wellFoundedLT (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :=
   le_isGLB_iff (isLeast_csInf hs).isGLB
 
+@[to_dual]
 theorem csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
   (isLeast_csInf hs).1
 
+@[to_dual]
 lemma csInf_eq_iff (hs : s.Nonempty) (n : α) :
      sInf s = n ↔ n ∈ s ∧ ∀ a ∈ s, n ≤ a := by
   have : OrderBot α := WellFoundedLT.toOrderBot α
@@ -467,10 +472,12 @@ lemma csInf_eq_iff (hs : s.Nonempty) (n : α) :
   · intro ⟨hn, hle⟩
     exact le_antisymm (csInf_le (OrderBot.bddBelow s) hn) (le_csInf hs hle)
 
+@[to_dual]
 theorem MonotoneOn.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
     (hf : MonotoneOn f s) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
   (hf.map_isLeast (isLeast_csInf hs)).csInf_eq.symm
 
+@[to_dual]
 theorem Monotone.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
     (hf : Monotone f) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
   (hf.map_isLeast (isLeast_csInf hs)).csInf_eq.symm
@@ -486,7 +493,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
   isLeast_univ.csInf_eq
 
@@ -518,9 +525,11 @@ theorem le_csSup_iff' {s : Set α} {a : α} (h : BddAbove s) :
     a ≤ sSup s ↔ ∀ b, b ∈ upperBounds s → a ≤ b :=
   ⟨fun h _ hb => le_trans h (csSup_le' hb), fun hb => hb _ fun _ => le_csSup h⟩
 
-theorem le_csInf_iff'' {s : Set α} {a : α} (ne : s.Nonempty) :
+theorem le_csInf_iff' {s : Set α} {a : α} (ne : s.Nonempty) :
     a ≤ sInf s ↔ ∀ b : α, b ∈ s → a ≤ b :=
   le_csInf_iff (OrderBot.bddBelow _) ne
+
+@[deprecated (since := "2026-08-25")] alias le_csInf_iff'' := le_csInf_iff'
 
 theorem csInf_le' (h : a ∈ s) : sInf s ≤ a := csInf_le (OrderBot.bddBelow _) h
 
