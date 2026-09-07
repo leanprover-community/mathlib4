@@ -242,18 +242,17 @@ theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : Joine
 theorem Inseparable.joinedIn (h : Inseparable x y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y :=
   h.specializes.joinedIn hx hy
 
-theorem JoinedIn.map_continuousOn (h : JoinedIn F x y) {f : X → Y} (hf : ContinuousOn f F) :
+theorem JoinedIn.map (h : JoinedIn F x y) {f : X → Y} (hf : ContinuousOn f F) :
     JoinedIn (f '' F) (f x) (f y) :=
   let ⟨γ, hγ⟩ := h
   ⟨γ.map' <| hf.mono (range_subset_iff.mpr hγ), fun t ↦ mem_image_of_mem _ (hγ t)⟩
 
-theorem JoinedIn.map (h : JoinedIn F x y) {f : X → Y} (hf : Continuous f) :
-    JoinedIn (f '' F) (f x) (f y) :=
-  h.map_continuousOn hf.continuousOn
+@[deprecated (since := "2026-08-08")]
+alias JoinedIn.map_continuousOn := JoinedIn.map
 
 theorem Topology.IsInducing.joinedIn_image {f : X → Y} (hf : IsInducing f) (hx : x ∈ F)
     (hy : y ∈ F) : JoinedIn (f '' F) (f x) (f y) ↔ JoinedIn F x y := by
-  refine ⟨?_, (.map · hf.continuous)⟩
+  refine ⟨?_, (.map · hf.continuous.continuousOn)⟩
   rintro ⟨γ, hγ⟩
   choose γ' hγ'F hγ' using hγ
   have h₀ : x ⤳ γ' 0 := by rw [← hf.specializes_iff, hγ', γ.source]
@@ -296,6 +295,14 @@ theorem mem_pathComponent_of_mem (h : x ∈ pathComponent y) : y ∈ pathCompone
 
 theorem pathComponent_symm : x ∈ pathComponent y ↔ y ∈ pathComponent x :=
   ⟨fun h => mem_pathComponent_of_mem h, fun h => mem_pathComponent_of_mem h⟩
+
+theorem Continuous.mapsTo_pathComponent {f : X → Y} (hf : Continuous f) (x : X) :
+    MapsTo f (pathComponent x) (pathComponent (f x)) :=
+  fun _ hy ↦ hy.map hf
+
+theorem Continuous.image_pathComponent_subset {f : X → Y} (hf : Continuous f) (x : X) :
+    f '' (pathComponent x) ⊆ pathComponent (f x) :=
+  hf.mapsTo_pathComponent x |>.image_subset
 
 theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
   ext z
@@ -441,7 +448,8 @@ theorem IsPathConnected.inv {G : Type*} [InvolutiveInv G] [TopologicalSpace G] [
     {s : Set G} (hs : IsPathConnected s) :
     IsPathConnected s⁻¹ :=
   let ⟨a, ha_mem, ha⟩ := hs
-  ⟨a⁻¹, inv_mem_inv.mpr ha_mem, fun x hx ↦ by simpa using ha (mem_inv.mp hx) |>.map continuous_inv⟩
+  ⟨a⁻¹, inv_mem_inv.mpr ha_mem,
+    fun x hx ↦ by simpa using ha (mem_inv.mp hx) |>.map continuous_inv.continuousOn⟩
 
 /-- If `f : X → Y` is an inducing map, `f(F)` is path-connected iff `F` is. -/
 nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
@@ -461,6 +469,17 @@ theorem Homeomorph.isPathConnected_image {s : Set X} (h : X ≃ₜ Y) :
 theorem Homeomorph.isPathConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
     IsPathConnected (h ⁻¹' s) ↔ IsPathConnected s := by
   rw [← Homeomorph.image_symm]; exact h.symm.isPathConnected_image
+
+/-- A homeomorphism maps path components onto path components. -/
+theorem Homeomorph.image_pathComponent (h : X ≃ₜ Y) (x : X) :
+    h '' pathComponent x = pathComponent (h x) := by
+  apply (h.continuous.image_pathComponent_subset x).antisymm
+  simpa [image_image] using
+    image_mono (f := h) <| h.symm.continuous.image_pathComponent_subset (h x)
+
+theorem Homeomorph.preimage_pathComponent (h : X ≃ₜ Y) (y : Y) :
+    h ⁻¹' pathComponent y = pathComponent (h.symm y) := by
+  rw [← h.symm.image_pathComponent, h.image_symm]
 
 theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) (y_in : y ∈ F) :
     y ∈ pathComponent x :=
@@ -594,6 +613,10 @@ theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
     {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
   rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
   exact isPathConnected_range hf'
+
+theorem Homeomorph.pathConnectedSpace [PathConnectedSpace X] (h : X ≃ₜ Y) :
+    PathConnectedSpace Y :=
+  h.surjective.pathConnectedSpace h.continuous
 
 instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=

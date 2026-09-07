@@ -157,14 +157,15 @@ lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
   have h1 : n ≠ 1 := by
     rintro rfl
     norm_num at h2
-  rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_pos h2]
+  rw [reciprocalFactors, dite_eq_right h0, dite_eq_right h1, ite_eq_left h2]
 
 lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
     reciprocalFactors n = n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
   have h0 : n ≠ 0 := by
     rintro rfl
     norm_num [← Nat.not_even_iff_odd] at h2
-  rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_neg (Nat.not_even_iff_odd.2 h2)]
+  rw [reciprocalFactors, dite_eq_right h0, dite_eq_right h1,
+    ite_eq_right (Nat.not_even_iff_odd.2 h2)]
 
 /-- A finite product of Dihedral groups. -/
 abbrev Product (l : List ℕ) : Type :=

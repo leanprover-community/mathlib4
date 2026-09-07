@@ -256,7 +256,7 @@ lemma Module.finitePresentation_of_split_exact
     Module.FinitePresentation R M := by
   have hg : Function.Surjective g := Function.LeftInverse.surjective (DFunLike.congr_fun hl)
   have := Module.Finite.of_surjective g hg
-  obtain ⟨e, rfl, rfl⟩ := ((Function.Exact.split_tfae' H).out 0 2 rfl rfl).mp
+  obtain ⟨e, rfl, rfl⟩ := ((Function.Exact.split_tfae' H).out 1 3 rfl rfl).mp
     ⟨hf, l, hl⟩
   refine Module.finitePresentation_of_surjective (LinearMap.fst _ _ _ ∘ₗ e.toLinearMap)
     (Prod.fst_surjective.comp e.surjective) ?_

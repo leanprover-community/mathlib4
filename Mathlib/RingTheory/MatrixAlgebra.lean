@@ -35,7 +35,7 @@ variable [IsScalarTower R S M]
 variable [Fintype l] [Fintype m] [Fintype n] [Fintype p]
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
 
-open Kronecker
+open scoped Kronecker
 
 variable (l m n p R S A M N)
 
@@ -209,8 +209,6 @@ variable [Fintype n] [DecidableEq n]
 -/
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
   AlgEquiv.symm { MatrixEquivTensor.toFunAlgHom n R A, MatrixEquivTensor.equiv n R A with }
-
-open MatrixEquivTensor
 
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :

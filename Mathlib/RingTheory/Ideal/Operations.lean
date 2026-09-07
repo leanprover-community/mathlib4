@@ -18,6 +18,8 @@ public import Mathlib.Tactic.Order
 # More operations on modules and ideals
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
@@ -408,12 +410,12 @@ theorem span_mul_span (S T : Set R) [(span S).IsTwoSided] :
     span S * span T = span (S * T) :=
   Submodule.span_smul_span S T
 
-theorem span_mul_span' (S T : Set R) [(span S).IsTwoSided] : span S * span T = span (S * T) :=
-  (span_mul_span S T).trans <| congr_arg span <| Set.ext <| by simp [Set.mem_mul, eq_comm]
+@[deprecated (since := "2026-08-14")]
+alias span_mul_span' := span_mul_span
 
 theorem span_singleton_mul_span_singleton (r s : R) [(span {r}).IsTwoSided] :
     span {r} * span {s} = (span {r * s} : Ideal R) := by
-  rw [span_mul_span', Set.singleton_mul_singleton]
+  rw [span_mul_span, Set.singleton_mul_singleton]
 
 theorem span_singleton_pow (s : R) [(span {s}).IsTwoSided] (n : ℕ) :
     span {s} ^ n = (span {s ^ n} : Ideal R) := by
@@ -512,7 +514,7 @@ theorem mul_top [I.IsTwoSided] : I * ⊤ = I :=
 
 theorem span_pair_mul_span_pair (w x y z : R) [(span {w, x}).IsTwoSided] :
     (span {w, x} : Ideal R) * span {y, z} = span {w * y, w * z, x * y, x * z} := by
-  rw [span_mul_span']; congr; ext r; simp [Set.mem_mul, or_assoc, eq_comm (a := r)]
+  rw [span_mul_span]; congr; ext r; simp [Set.mem_mul, or_assoc, eq_comm (a := r)]
 
 variable (R) in
 theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
@@ -1295,6 +1297,15 @@ instance uniqueUnits : Unique (Ideal R)ˣ where
   default := 1
   uniq u := Units.ext (show (u : Ideal R) = 1 by rw [isUnit_iff.mp u.isUnit, one_eq_top])
 
+/-- `span {a}` divides `span {b}` if and only if `a` divides `b`. -/
+theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
+    span {a} ∣ span ({b} : Set R) ↔ a ∣ b :=
+  ⟨fun h => span_singleton_le_span_singleton.mp (le_of_dvd h),
+   fun ⟨c, hc⟩ => ⟨span {c}, by rw [hc, span_singleton_mul_span_singleton]⟩⟩
+
+@[deprecated (since := "2026-04-16")]
+alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
+
 end Dvd
 
 end MulAndRadical
@@ -1338,7 +1349,7 @@ theorem range_finsuppTotal :
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _
-      rw [dif_pos (ha i)]
+      rw [dite_eq_left (ha i)]
     · exact fun _ => zero_smul _ _
 
 end Total

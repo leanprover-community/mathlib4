@@ -114,7 +114,6 @@ noncomputable def rTensorInv : (P ⊗[R] M →ₗ[R] Q ⊗[R] M) →ₗ[R] (P �
   ((rightCancelEquiv Q e).congrRight ≪≫ₗ (rightCancelEquiv P e).congrLeft _ R) ∘ₗ
     LinearMap.rTensorHom N
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem rTensorInv_leftInverse : Function.LeftInverse (rTensorInv P Q e) (.rTensorHom M) :=
   fun _ ↦ by
     simp_rw [rTensorInv, LinearEquiv.coe_trans, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap]
@@ -132,7 +131,6 @@ of `R`-modules. -/
   left_inv := rTensorInv_leftInverse P Q e
   right_inv _ := rTensorInv_injective P Q e (by rw [LinearMap.toFun_eq_coe, rTensorInv_leftInverse])
 
-set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 /-- If there is an `R`-isomorphism between `M ⊗[R] N` and `R`,
 the induced map `M → Nᵛ` is an isomorphism. -/
@@ -460,7 +458,7 @@ private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| SemimoduleCat
 /-- The class of an invertible module in the Picard group. -/
 protected noncomputable def mk : Pic R := equivShrink _ <|
   letI M' := Finite.reprₛ R M
-  .mkOfMulEqOne ⟦.of R M'⟧ ⟦.of R (Dual R M')⟧ <| by
+  .mkOfMulEqOne ⟦↧M'⟧ ⟦↧(Dual R M')⟧ <| by
     rw [← toSkeleton, ← toSkeleton, mul_comm, ← Skeleton.toSkeleton_tensorObj]
     exact Quotient.sound ⟨(Invertible.linearEquiv R _).toModuleIsoₛ⟩
 
@@ -469,7 +467,7 @@ set_option backward.privateInPublic.warn false in
 /-- `mk R M` is indeed the class of `M`. -/
 noncomputable def mk.linearEquiv : Pic.mk R M ≃ₗ[R] M :=
   equivShrinkLinearEquiv R _ ≪≫ₗ (Quotient.mk_out (s := isIsomorphicSetoid _)
-    (SemimoduleCat.of R (Finite.reprₛ R M))).some.toLinearEquivₛ ≪≫ₗ Finite.reprEquivₛ R M
+    ↧(Finite.reprₛ R M)).some.toLinearEquivₛ ≪≫ₗ Finite.reprEquivₛ R M
 
 variable {R M N}
 
@@ -604,7 +602,7 @@ theorem mapRingHom_id_apply {M : Pic R} : mapRingHom (.id R) M = M :=
 /-- Picard group as a functor from the category of commutative semirings to
 the category of abelian groups. -/
 noncomputable def functor : CommSemiRingCat.{u} ⥤ CommGrpCat.{u} where
-  obj R := .of (Pic R)
+  obj R := ↧(Pic R)
   map f := CommGrpCat.ofHom (mapRingHom f.hom)
   map_id _ := CommGrpCat.Hom.ext mapRingHom_id
   map_comp _ _ := CommGrpCat.Hom.ext mapRingHom_comp_mapRingHom.symm
@@ -892,9 +890,8 @@ open CommRing Pic
 
 section Ideal
 
-variable (R M N : Type*) [CommRing R]
+variable (R M : Type*) [CommRing R]
 variable [AddCommGroup M] [Module R M] [Module.Invertible R M]
-variable [AddCommGroup N] [Module R N] [Module.Invertible R N]
 
 /-- If `FractionRing R` has trivial Picard group,
 every invertible `R`-module is isomorphic to an ideal. -/
