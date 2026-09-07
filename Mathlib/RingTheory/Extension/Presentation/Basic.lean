@@ -29,6 +29,8 @@ A presentation of an `R`-algebra `S` is a distinguished family of generators and
   are finite.
 - `Algebra.Presentation.dimension`: The dimension of a presentation is the number of generators
   minus the number of relations.
+- `Algebra.Presentation.mvPolynomial`: The canonical `R`-presentation of the polynomial algebra
+  `MvPolynomial ι R`, with generators the variables `X i` for `i : ι` and no relations.
 
 We also give constructors for localization, base change and composition.
 

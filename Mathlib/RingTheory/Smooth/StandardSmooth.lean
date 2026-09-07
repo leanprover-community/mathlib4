@@ -30,6 +30,17 @@ All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 - `Algebra.IsStandardSmoothOfRelativeDimension n`: `S` is `R`-standard smooth of relative dimension
   `n` if it admits a submersive `R`-presentation of dimension `n`.
 
+## Main results
+
+- `Algebra.IsStandardSmoothOfRelativeDimension.mvPolynomial`: If `ι` is finite, the polynomial
+  algebra `MvPolynomial ι R` is `R`-standard smooth of relative dimension `Nat.card ι`.
+- Standard smoothness is stable under composition
+  (`Algebra.IsStandardSmooth.trans`), base change (`Algebra.IsStandardSmooth.baseChange`) and
+  localization away from an element (`Algebra.IsStandardSmooth.localization_away`), and similarly
+  for standard smoothness of a fixed relative dimension.
+- `Algebra.IsStandardSmooth.finitePresentation`: A standard smooth algebra is of finite
+  presentation.
+
 ## TODO
 
 - Show that locally on the target, smooth algebras are standard smooth.

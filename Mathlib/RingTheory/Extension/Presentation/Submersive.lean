@@ -27,6 +27,8 @@ All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 - `PreSubmersivePresentation`: A `Presentation` of `S` as `R`-algebra, equipped with an injective
   map `P.map` from `σ` to `ι`. This map is used to define the differential of a
   presubmersive presentation.
+- `PreSubmersivePresentation.mvPolynomial`: The canonical presentation of `MvPolynomial ι R`,
+  viewed as a presubmersive presentation via the (empty) map from its relations to its generators.
 
 For a presubmersive presentation `P` of `S` over `R` we make the following definitions:
 
