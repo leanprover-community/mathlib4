@@ -62,18 +62,15 @@ def internalConstructor : Linter where
     for t in ← getInfoTrees do
       -- Collect the warnings separately from logging them, since (compiled) `foldInfo` is faster
       -- than (interpreted, specialized) `foldInfoM`.
-      let warnings := t.foldInfo (init := #[]) fun ctx info w =>
-        match info with
-        | .ofTermInfo i => Id.run do
-          let .const n _ := i.expr.cleanupAnnotations | pure w
-          if
-            -- Putting the conjuncts in this order provides a performance benefit.
-            n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
-          then
-            pure <| w.push (n, i.stx)
-          else
-            pure w
-        | _ => w
+      let warnings := t.foldInfo (init := #[]) fun ctx info w => Id.run do
+        if let .ofTermInfo i := info then
+          if let .const n _ := i.expr.cleanupAnnotations then
+            if
+              -- Putting the conjuncts in this order provides a performance benefit.
+              n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
+            then
+              return w.push (n, i.stx)
+        return w
       for (name, stx) in warnings do
         logLintError linter.internalConstructors stx
           m!"`{.ofConstName name}` is an internal constructor and should not be used directly."
