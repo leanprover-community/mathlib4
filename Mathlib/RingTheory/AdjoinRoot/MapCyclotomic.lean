@@ -65,7 +65,7 @@ theorem mapCyclotomic_one : h.mapCyclotomic 1 = 1 :=
 @[simp]
 theorem mapCyclotomic_mul :
     h.mapCyclotomic (j * k) = h.mapCyclotomic j * h.mapCyclotomic k :=
-  h.algHom_eq_of_root (by simp [AlgHom.mul_apply, ← pow_mul])
+  h.algHom_eq_of_root (by simp [pow_mul])
 
 theorem mapCyclotomic_apply_eq {j k : ℕ} (hjk : j ≡ k [MOD r]) :
     h.mapCyclotomic j = h.mapCyclotomic k := by
