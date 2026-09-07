@@ -334,7 +334,7 @@ instance : StarHomClass (A →⋆ₐ[R] B) A B where
 
 @[simp]
 protected theorem coe_ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B]
-    (f : F) :  ⇑(ofClass f) = f :=
+    (f : F) : ⇑(ofClass f) = f :=
   rfl
 
 @[deprecated (since := "2026-09-07")] alias coe_coe := StarAlgHom.coe_ofClass
