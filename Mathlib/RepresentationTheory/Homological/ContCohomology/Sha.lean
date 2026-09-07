@@ -26,7 +26,7 @@ variety over K, and `n = 1`, this recovers the classical definition of the Tate-
 universe u
 
 variable {K V : Type u} [Field K] (f : V → Type u) [h : ∀ v : V, Field (f v)]
-  [h' : ∀ v : V, Algebra K (f v)] [TopologicalSpace K] (A : TopRep K (Field.absoluteGaloisGroup K))
+  [h' : ∀ v : V, Algebra K (f v)] (A : TopRep ℤ (Field.absoluteGaloisGroup K))
   (n : ℕ)
 
 open CategoryTheory
@@ -35,38 +35,23 @@ namespace ContinuousCohomology
 
 /-- The Tate-Shafarevich group of a continuous representation. -/
 @[simps!]
-noncomputable def tateSha : Submodule K (continuousCohomology n A) :=
-  letI (v : V) : Algebra (AlgebraicClosure K) (AlgebraicClosure (f v)) := IsAlgClosed.lift.toAlgebra
-  letI (v : V) : IsScalarTower K (AlgebraicClosure K) (AlgebraicClosure (f v)) :=
-    IsScalarTower.of_algebraMap_eq fun k ↦ (IsAlgClosed.lift.commutes k).symm
-  iInf (fun v : V ↦ (ContinuousCohomology.map (X := A)
-    (Field.absoluteGaloisGroup.mapOfAlgebra K (f v)) (𝟙 _) n).hom.ker)
+noncomputable def tateSha : AddSubgroup (continuousCohomology n A) :=
+  iInf (fun v : V ↦ (ContinuousCohomology.map (k := ℤ) (X := A)
+    (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker)
 
 lemma tateSha_eq_iInf :
-    letI (v : V) : Algebra (AlgebraicClosure K) (AlgebraicClosure (f v)) :=
-      IsAlgClosed.lift.toAlgebra
-    letI (v : V) : IsScalarTower K (AlgebraicClosure K) (AlgebraicClosure (f v)) :=
-      IsScalarTower.of_algebraMap_eq (IsAlgClosed.lift.commutes · |>.symm)
     tateSha f A n = iInf (fun v : V ↦ (ContinuousCohomology.map
-      (Field.absoluteGaloisGroup.mapOfAlgebra K (f v)) (𝟙 _) n).hom.ker) := rfl
+      (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker) := rfl
 
 lemma tateSha_eq_ker_pi :
-    letI (v : V) : Algebra (AlgebraicClosure K) (AlgebraicClosure (f v)) :=
-      IsAlgClosed.lift.toAlgebra
-    letI (v : V) : IsScalarTower K (AlgebraicClosure K) (AlgebraicClosure (f v)) :=
-      IsScalarTower.of_algebraMap_eq (IsAlgClosed.lift.commutes · |>.symm)
-    tateSha f A n = (LinearMap.pi fun v : V ↦ (ContinuousCohomology.map
-      (Field.absoluteGaloisGroup.mapOfAlgebra K (f v)) (𝟙 _) n).hom.toLinearMap).ker := by
-  rw [tateSha_eq_iInf, LinearMap.ker_pi]
+    tateSha f A n = (AddMonoidHom.pi fun v : V ↦ (ContinuousCohomology.map
+      (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom).ker := by
+  ext; simp [tateSha_eq_iInf, funext_iff]
 
 @[simp]
 lemma mem_tateSha (x : continuousCohomology n A) : x ∈ tateSha f A n ↔
-    letI (v : V) : Algebra (AlgebraicClosure K) (AlgebraicClosure (f v)) :=
-      IsAlgClosed.lift.toAlgebra
-    letI (v : V) : IsScalarTower K (AlgebraicClosure K) (AlgebraicClosure (f v)) :=
-      IsScalarTower.of_algebraMap_eq (IsAlgClosed.lift.commutes · |>.symm)
     ∀ v : V, x ∈ (ContinuousCohomology.map
-      (Field.absoluteGaloisGroup.mapOfAlgebra K (f v)) (𝟙 _) n).hom.ker := by
+      (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.ker := by
   simp [tateSha_eq_iInf]
 
 end ContinuousCohomology
