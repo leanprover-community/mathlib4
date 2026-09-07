@@ -91,6 +91,9 @@ instance Subtype.isEmpty_false : IsEmpty { _a : α // False } :=
 instance Sigma.isEmpty_left {α} [IsEmpty α] {E : α → Type v} : IsEmpty (Sigma E) :=
   Function.isEmpty Sigma.fst
 
+instance Sigma.isEmpty_fibers {α} {E : α → Type v} [∀ a, IsEmpty (E a)] : IsEmpty (Sigma E) :=
+  ⟨fun x ↦ IsEmpty.false x.2⟩
+
 example [h : Nonempty α] [IsEmpty β] : IsEmpty (α → β) := by infer_instance
 
 /-- Eliminate out of a type that `IsEmpty` (without using projection notation). -/

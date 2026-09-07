@@ -478,7 +478,7 @@ abbrev Completion := UniformSpace.Completion (WithVal v)
 
 -- lower priority so that `Coe (WithVal v) v.Completion` uses `UniformSpace.Completion.instCoe`
 instance (priority := 99) : Coe R v.Completion where
-  coe r := (WithVal.equiv v).symm r
+  coe r := toVal v r
 
 section Equivalence
 
