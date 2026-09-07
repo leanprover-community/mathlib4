@@ -1,4 +1,5 @@
-# This job merges every commit to `master` into `nightly-testing`, resolving merge conflicts in favor of `master`.
+# This job merges every commit to `master` into `nightly-testing`, resolving merge conflicts in
+# favor of `master`, except in `lean-toolchain`, which always keeps the `nightly-testing` value.
 
 name: Merge master to nightly
 
@@ -60,6 +61,13 @@ jobs:
           # If the merge goes badly, we proceed anyway via '|| true'.
           # CI will report failures on the 'nightly-testing' branch direct to Zulip.
           git merge upstream/master --strategy-option theirs --no-commit --allow-unrelated-histories || true
+          # `lean-toolchain` is the one file where master must never win: whenever master
+          # bumps its toolchain, the merge above would replace the nightly with a stable
+          # release, and the whole point of `nightly-testing` is to build against a nightly.
+          # (`nightly_bump_and_merge.yml` in the mathlib4-nightly-testing repository puts
+          # this back a few hours later, but only after a wasted CI run and a Zulip report.)
+          # The merge is `--no-commit`, so `HEAD` is still the tip of `nightly-testing`.
+          git checkout HEAD -- lean-toolchain
           # We aggressively run `lake update`, to avoid having to do this by hand.
           # When Batteries changes break Mathlib, this will likely show up on nightly-testing first.
           lake update -v
