@@ -225,7 +225,7 @@ open scoped Pointwise
 
 open scoped Pointwise
 
-/-! ### Scalar division of finsets -/
+/-! ### Scalar division and subtraction of finsets -/
 
 section SDiv
 
