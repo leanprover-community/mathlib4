@@ -22,7 +22,8 @@ The term form `real_root_count (p : ℚ[X])` proves `Fintype.card (p.rootSet ℝ
 squarefree polynomial of positive degree with integer coefficients. Hex proposes
 a signed remainder chain; `ring`, `compute_degree`, and `norm_num` check its
 identities, nonvanishing, and signs. No correctness assumption about the generator
-or its polynomial representation enters the proof.
+or its polynomial representation enters the proof. Named definitions and closed local
+`let` bindings are supported.
 -/
 
 public meta section
@@ -142,18 +143,18 @@ elab "real_root_count " pStx:term : term <= expectedType? => withRef pStx do
   let pTy ← elabType (← `(Polynomial ℚ))
   let e ← elabTermEnsuringType pStx pTy
   synthesizeSyntheticMVarsNoPostponing
-  let e ← instantiateMVars e
+  let e ← zetaReduce (← instantiateMVars e)
   if e.hasFVar || e.hasExprMVar then
     throwError "real_root_count: expected a closed polynomial"
   let names ← IO.mkRef (#[] : Array Name)
   let p ← Mathlib.Tactic.RealRootCount.Parse.parsePoly "real_root_count" true 16 e
     (fun n => names.modify (fun ns => if ns.contains n then ns else ns.push n))
   let unfolds ← (← names.get).mapM fun n => `(Parser.Tactic.simpLemma| $(mkIdent n):term)
-  elabTermEnsuringType (← emit pStx p unfolds) expectedType?
+  elabTermEnsuringType (← emit (← exprToSyntax e) p unfolds) expectedType?
 
 /-- Prove a goal `Fintype.card (p.rootSet ℝ) = n` by a checked Sturm chain.
 The polynomial must be closed, squarefree, of positive degree, and have integer coefficients. -/
-elab "real_root_count" : tactic => do
+elab "real_root_count" : tactic => Tactic.withMainContext do
   let goal ← Tactic.getMainGoal
   let target ← instantiateMVars (← goal.getType)
   let some (_, lhs, _) := target.eq? |
@@ -162,7 +163,7 @@ elab "real_root_count" : tactic => do
     throwError "real_root_count: expected a goal `Fintype.card (p.rootSet ℝ) = n`"
   let some roots := lhs.getAppArgs[0]!.find? (·.isAppOf ``Polynomial.rootSet) |
     throwError "real_root_count: expected a goal `Fintype.card (p.rootSet ℝ) = n`"
-  let p ← PrettyPrinter.delab roots.getAppArgs[2]!
+  let p ← exprToSyntax roots.getAppArgs[2]!
   let proof ← elabTermEnsuringType (← `(real_root_count $p)) (some target)
   goal.assign proof
   Tactic.replaceMainGoal []

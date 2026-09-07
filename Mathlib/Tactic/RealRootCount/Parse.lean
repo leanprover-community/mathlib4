@@ -120,12 +120,14 @@ meta partial def parsePoly (tactic : String) (isRat : Bool) (fuel : Nat)
       return (← parsePoly tactic isRat fuel a onUnfold) * (← parsePoly tactic isRat fuel b onUnfold)
   | (``Neg.neg, #[_, _, a]) => return - (← parsePoly tactic isRat fuel a onUnfold)
   | (``HPow.hPow, #[_, _, _, _, a, n]) => do
-      let base ← parsePoly tactic isRat fuel a onUnfold
-      let k ← getNat tactic n
+      let mut base ← parsePoly tactic isRat fuel a onUnfold
+      let mut k ← getNat tactic n
       let mut acc : Hex.ZPoly := Hex.DensePoly.C 1
-      for _ in [0:k] do
+      while k != 0 do
         checkSystem "polynomial exponentiation"
-        acc := acc * base
+        if k % 2 == 1 then acc := acc * base
+        k := k / 2
+        if k != 0 then base := base * base
       return acc
   | (``Polynomial.X, _) => return Hex.DensePoly.ofCoeffs #[(0 : Int), 1]
   | (``Polynomial.C, #[_, _, c]) => return Hex.DensePoly.C (← evalCoeff tactic isRat c)

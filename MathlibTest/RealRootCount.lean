@@ -77,3 +77,28 @@ example : Fintype.card (nestedPolynomial.rootSet ℝ) = 1 := by
 /-- error: real_root_count: expected a goal `Fintype.card (p.rootSet ℝ) = n` -/
 #guard_msgs in
 example : True := by real_root_count
+
+-- Closed local definitions are accepted, in both the term and tactic forms.
+example : True := by
+  let p : ℚ[X] := X ^ 3 - 2
+  have : Fintype.card (p.rootSet ℝ) = 1 := real_root_count p
+  trivial
+
+example : True := by
+  let p : ℚ[X] := X ^ 3 - 2
+  have : Fintype.card (p.rootSet ℝ) = 1 := by real_root_count
+  trivial
+
+-- Solving the first goal preserves the remaining goals and their local context.
+example (n : ℕ) : Fintype.card ((X : ℚ[X]).rootSet ℝ) = 1 ∧ n = n := by
+  constructor
+  · real_root_count
+  · rfl
+
+-- Exponentiation covers the zero, even, and odd cases, including large exponents
+-- when the base is constant.
+example : Fintype.card ((X + (1 : ℚ[X]) ^ 10000).rootSet ℝ) = 1 := by
+  real_root_count
+
+example : Fintype.card ((X + (X ^ 2 + 1) ^ 0 : ℚ[X]).rootSet ℝ) = 1 := by
+  real_root_count

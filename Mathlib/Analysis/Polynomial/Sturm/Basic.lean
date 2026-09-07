@@ -421,24 +421,17 @@ private theorem card_filter_Ioc_split (s : Multiset ℝ) {a a' b : ℝ} (h1 : a 
       = (s.filter (fun r => a < r ∧ r ≤ a')).card
         + (s.filter (fun r => a' < r ∧ r ≤ b)).card := by
   classical
-  have hand : s.filter (fun r => (a < r ∧ r ≤ a') ∧ (a' < r ∧ r ≤ b)) = 0 := by
-    rw [Multiset.filter_eq_nil]
-    rintro x _ ⟨⟨_, hxa'⟩, ha'x, _⟩
-    exact absurd ha'x (not_lt.mpr hxa')
-  have hor : s.filter (fun r => (a < r ∧ r ≤ a') ∨ (a' < r ∧ r ≤ b))
-      = s.filter (fun r => a < r ∧ r ≤ b) := by
-    apply Multiset.filter_congr
-    intro x _
-    constructor
-    · rintro (⟨h, h'⟩ | ⟨h, h'⟩)
-      · exact ⟨h, le_trans h' h2⟩
-      · exact ⟨lt_of_le_of_lt h1 h, h'⟩
-    · rintro ⟨h, h'⟩
-      rcases lt_trichotomy x a' with hx | hx | hx
-      · exact Or.inl ⟨h, hx.le⟩
-      · exact Or.inl ⟨h, hx.le⟩
-      · exact Or.inr ⟨hx, h'⟩
-  rw [← Multiset.card_add, Multiset.filter_add_filter, hand, Multiset.add_zero, hor]
+  rw [← Multiset.card_add, ← Multiset.filter_add_not (fun r => r ≤ a')
+    (s.filter (fun r => a < r ∧ r ≤ b)), Multiset.filter_filter, Multiset.filter_filter]
+  congr 2 <;> apply Multiset.filter_congr <;> intro x _ <;> constructor
+  · rintro ⟨h, hax, hxb⟩
+    exact ⟨hax, h⟩
+  · rintro ⟨hax, hxa⟩
+    exact ⟨hxa, hax, hxa.trans h2⟩
+  · rintro ⟨h, hax, hxb⟩
+    exact ⟨lt_of_not_ge h, hxb⟩
+  · rintro ⟨hax, hxb⟩
+    exact ⟨hax.not_ge, h1.trans_lt hax, hxb⟩
 
 /-- **Sturm's theorem** on a half-open interval.
 
