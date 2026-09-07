@@ -64,6 +64,11 @@ def postcomp [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] (a : F →�
   map_smul' c f := by simp
   norm_map' f := by simp [a.norm_toContinuousLinearMap_comp]
 
+@[simp]
+theorem postcomp_apply [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] (a : F →ₛₗᵢ[σ₂₃] G)
+    (f : E →SL[σ₁₂] F) : a.postcomp f = a.toContinuousLinearMap.comp f :=
+  rfl
+
 end LinearIsometry
 
 namespace LinearIsometryEquiv
