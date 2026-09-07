@@ -57,7 +57,6 @@ lemma toShiftedHom_mk (y : Cocycle K L n) :
 
 end
 
-
 section
 
 variable [HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) ℤ K L]
