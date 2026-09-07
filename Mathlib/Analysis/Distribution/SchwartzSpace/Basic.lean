@@ -1274,9 +1274,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
       C * ENNReal.ofReal ((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F) f) := by
   -- Apply Hölder's inequality `‖f‖_p ≤ ‖f₁‖_p * ‖f₂‖_∞` to obtain the `L^p` norm of `f = f₁ • f₂`
   -- using `f₁ = (1 + ‖x‖) ^ (-k)` and `f₂ = (1 + ‖x‖) ^ k • f x`.
-  rcases hμ.exists_eLpNorm_lt_top p (fun k ↦
-    (Continuous.rpow_const (by fun_prop) (by grind [norm_nonneg])).aestronglyMeasurable) with
-        ⟨k, hk⟩
+  rcases hμ.exists_eLpNorm_lt_top p with ⟨k, hk⟩
   refine ⟨k, (eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ).toNNReal * 2 ^ k, fun f ↦ ?_⟩
   have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
   have hf' : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ k • f x) μ := by fun_prop

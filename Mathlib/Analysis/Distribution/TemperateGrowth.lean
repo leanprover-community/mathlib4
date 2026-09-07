@@ -564,7 +564,7 @@ lemma _root_.integral_pow_mul_le_of_le_of_pow_mul_le
 
 /-- For any `HasTemperateGrowth` measure and `p`, there exists an integer power `k` such that
 `(1 + ‖x‖) ^ (-k)` is in `L^p`. -/
-theorem HasTemperateGrowth.exists_eLpNorm_lt_top [BorelSpace E] (p : ℝ≥0∞)
+theorem HasTemperateGrowth.exists_eLpNorm_lt_top [OpensMeasurableSpace E] (p : ℝ≥0∞)
     {μ : Measure E} (hμ : μ.HasTemperateGrowth) :
     ∃ k : ℕ, eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ < ⊤ := by
   have hmeas (k : ℕ) : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) μ :=
