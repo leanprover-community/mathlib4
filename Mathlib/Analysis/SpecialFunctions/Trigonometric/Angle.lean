@@ -791,7 +791,7 @@ theorem neg_coe_abs_toReal_of_sign_nonpos {θ : Angle} (h : θ.sign ≤ 0) : -�
   rcases h with (h | h)
   · rw [abs_of_neg (toReal_neg_iff_sign_neg.2 h), coe_neg, neg_neg, coe_toReal]
   · rw [sign_eq_zero_iff] at h
-    rcases h with (rfl | rfl) <;> simp [abs_of_pos Real.pi_pos]
+    rcases h with (rfl | rfl) <;> simp
 
 theorem eq_iff_sign_eq_and_abs_toReal_eq {θ ψ : Angle} :
     θ = ψ ↔ θ.sign = ψ.sign ∧ |θ.toReal| = |ψ.toReal| := by
