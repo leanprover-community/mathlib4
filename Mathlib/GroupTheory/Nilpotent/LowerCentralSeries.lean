@@ -148,7 +148,7 @@ coincides with the lower central series of `H` viewed as its own additive group,
 to `G`. -/]
 theorem top_subtype_lowerCentralSeries (n : ℕ) :
     (lowerCentralSeries ⊤ n).map H.subtype = H.lowerCentralSeries n := by
-  rw [map_lowerCentralSeries, ← MonoidHom.range_eq_map, subtype_range]
+  rw [map_lowerCentralSeries, map_top, subtype_range]
 
 @[to_additive]
 theorem lowerCentralSeries_le_self (n : ℕ) : H.lowerCentralSeries n ≤ H := by
