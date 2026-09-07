@@ -701,6 +701,60 @@ theorem sortedLE_insertionSort : (l.insertionSort (· ≤ ·)).SortedLE :=
 theorem sortedGE_insertionSort : (l.insertionSort (· ≥ ·)).SortedGE :=
   (pairwise_insertionSort _ _).sortedGE
 
+@[grind =]
+theorem sortedLE_append {l₁ l₂ : List α} :
+    SortedLE (l₁ ++ l₂) ↔ SortedLE l₁ ∧ SortedLE l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), a ≤ b := by
+  rw [sortedLE_iff_pairwise, sortedLE_iff_pairwise, sortedLE_iff_pairwise, pairwise_append]
+
+@[grind =]
+theorem sortedGE_append {l₁ l₂ : List α} :
+    SortedGE (l₁ ++ l₂) ↔ SortedGE l₁ ∧ SortedGE l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), b ≤ a := by
+  rw [sortedGE_iff_pairwise, sortedGE_iff_pairwise, sortedGE_iff_pairwise, pairwise_append]
+
+@[grind =]
+theorem sortedLT_append {l₁ l₂ : List α} :
+    SortedLT (l₁ ++ l₂) ↔ SortedLT l₁ ∧ SortedLT l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), a < b := by
+  rw [sortedLT_iff_pairwise, sortedLT_iff_pairwise, sortedLT_iff_pairwise, pairwise_append]
+
+@[grind =]
+theorem sortedGT_append {l₁ l₂ : List α} :
+    SortedGT (l₁ ++ l₂) ↔ SortedGT l₁ ∧ SortedGT l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), b < a := by
+  rw [sortedGT_iff_pairwise, sortedGT_iff_pairwise, sortedGT_iff_pairwise, pairwise_append]
+
+section
+
+variable {a : α}
+
+@[simp]
+theorem sortedLE_cons : SortedLE (a :: l) ↔ (∀ b ∈ l, a ≤ b) ∧ SortedLE l := by
+  simp [sortedLE_iff_pairwise]
+
+@[simp]
+theorem sortedGE_cons : SortedGE (a :: l) ↔ (∀ b ∈ l, b ≤ a) ∧ SortedGE l := by
+  simp [sortedGE_iff_pairwise]
+
+@[simp]
+theorem sortedLT_cons : SortedLT (a :: l) ↔ (∀ b ∈ l, a < b) ∧ SortedLT l := by
+  simp [sortedLT_iff_pairwise]
+
+@[simp]
+theorem sortedGT_cons : SortedGT (a :: l) ↔ (∀ b ∈ l, b < a) ∧ SortedGT l := by
+  simp [sortedGT_iff_pairwise]
+
+theorem sortedLE_concat : SortedLE (l.concat a) ↔ (∀ b ∈ l, b ≤ a) ∧ SortedLE l := by
+  grind
+
+theorem sortedGE_concat : SortedGE (l.concat a) ↔ (∀ b ∈ l, a ≤ b) ∧ SortedGE l := by
+  grind
+
+theorem sortedLT_concat : SortedLT (l.concat a) ↔ (∀ b ∈ l, b < a) ∧ SortedLT l := by
+  grind
+
+theorem sortedGT_concat : SortedGT (l.concat a) ↔ (∀ b ∈ l, a < b) ∧ SortedGT l := by
+  grind
+
+end
+
 @[simp]
 theorem SortedLT.getElem_le_getElem_iff (hl : l.SortedLT) {i j} {hi : i < l.length}
     {hj : j < l.length} : l[i] ≤ l[j] ↔ i ≤ j := hl.strictMono_get.le_iff_le
