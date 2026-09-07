@@ -187,6 +187,10 @@ protected theorem mul_inv_rev (φ ψ : k⟦X⟧) : (φ * ψ)⁻¹ = ψ⁻¹ * φ
   MvPowerSeries.mul_inv_rev _ _
 
 @[simp]
+theorem inv_pow (φ : k⟦X⟧) : ∀ n : ℕ, φ⁻¹ ^ n = (φ ^ n)⁻¹ :=
+  MvPowerSeries.inv_pow _
+
+@[simp]
 theorem C_inv (r : k) : (C r)⁻¹ = C r⁻¹ :=
   MvPowerSeries.C_inv _
 

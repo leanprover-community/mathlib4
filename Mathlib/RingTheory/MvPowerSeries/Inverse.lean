@@ -273,6 +273,11 @@ instance : InvOneClass (MvPowerSeries σ k) :=
       simp }
 
 @[simp]
+theorem inv_pow (φ : MvPowerSeries σ k) : ∀ n : ℕ, φ⁻¹ ^ n = (φ ^ n)⁻¹
+  | 0 => by rw [pow_zero, pow_zero, inv_one]
+  | n + 1 => by rw [pow_succ', pow_succ, inv_pow, MvPowerSeries.mul_inv_rev]
+
+@[simp]
 theorem C_inv (r : k) : (C (σ := σ) r)⁻¹ = C r⁻¹ := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · simp
