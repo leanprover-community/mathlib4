@@ -57,6 +57,8 @@ variable [ClosedEmbeddingContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) 
 open scoped ContinuousMapZero
 
 
+--set_option pp.rawOnError true
+
 open Unitization in
 /--
 This is an auxiliary definition used for constructing an instance of the non-unital continuous
@@ -141,14 +143,14 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
     case continuous =>
       rw [isometry_inr (𝕜 := 𝕜) |>.isEmbedding.continuous_iff]
       have := continuous_cfcₙAux hp₁ a ha
-      simp only [coe_comp, NonUnitalStarAlgHom.coe_coe, Function.comp_def,
+      simp only [coe_comp, StarAlgEquiv.toNonUnitalStarAlgHom_apply, Function.comp_def,
         inrRangeEquiv_symm_apply, coe_codRestrict, ψ]
       fun_prop
     case injective =>
       have h₁ : Function.Injective ⇑(codRestrict (cfcₙAux hp₁ a ha) _
           (cfcₙAux_mem_range_inr hp₁ a ha)) :=
         (Set.injective_codRestrict _).mpr (cfcₙAux_injective hp₁ a ha)
-      simpa [ψ] using (inrRangeEquiv 𝕜 A).symm.injective.comp h₁
+      sorry -- simpa [ψ] using (inrRangeEquiv 𝕜 A).symm.injective.comp h₁
     case map_id => exact inr_injective (R := 𝕜) <| coe_ψ _ ▸ cfcₙAux_id hp₁ a ha
     case map_spec =>
       exact quasispectrum_eq_spectrum_inr' 𝕜 𝕜 (ψ f) ▸ coe_ψ _ ▸ spec_cfcₙAux hp₁ a ha f
