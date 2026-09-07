@@ -96,9 +96,11 @@ def incl : TopCat.{u} ⥤ TopPair.{u} where
 
 /-- The functor from topological spaces to topological pairs that sends a space X to the identity
 morphism on X. -/
-abbrev diag : TopCat.{u} ⥤ TopPair.{u} where
+abbrev diagonal : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
+
+@[deprecated (since := "2026-09-06")] alias diag := diagonal
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -110,10 +112,12 @@ def inclAdjProj₁ : incl ⊣ proj₁ where
 
 /-- The projection functor to the first component is left adjoint to the diagonal functor. -/
 @[simps]
-def proj₁AdjDiag : proj₁ ⊣ diag where
+def proj₁AdjDiagonal : proj₁ ⊣ diagonal where
   unit.app X := TopPair.ofHom (𝟙 X.fst) X.map
   unit.naturality X Y f := MorphismProperty.Arrow.Hom.ext f.w (by cat_disch)
   counit.app X := 𝟙 X
+
+@[deprecated (since := "2026-09-06")] alias proj₁AdjDiag := proj₁AdjDiagonal
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The unique morphism (X, ∅) ⟶ (X, A) that is the identity on X. -/

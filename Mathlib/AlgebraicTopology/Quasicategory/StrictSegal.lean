@@ -84,7 +84,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
         ext a : 1
         fin_cases a <;> fin_cases m <;> rfl
       rw [← spine_arrow, spine_δ_arrow_eq sx _ heq, hi]
-      simp only [spineToDiagonal, diagonal, spineToSimplex_spine_apply]
+      simp only [spineToDiagonal, SimplicialObject.diagonal, spineToSimplex_spine_apply]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
       dsimp
       apply congr_arg

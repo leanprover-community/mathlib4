@@ -142,17 +142,17 @@ theorem map_gfp_comp : f (g.comp f).gfp = (f.comp g).gfp :=
   f.dual.map_lfp_comp g.dual
 
 -- Diagonal rule
-theorem lfp_lfp (h : α →o α →o α) : (lfp.comp h).lfp = h.onDiag.lfp := by
+theorem lfp_lfp (h : α →o α →o α) : (lfp.comp h).lfp = h.onDiagonal.lfp := by
   let a := (lfp.comp h).lfp
   refine (lfp_le _ ?_).antisymm (lfp_le _ (Eq.le ?_))
-  · exact lfp_le _ h.onDiag.map_lfp.le
+  · exact lfp_le _ h.onDiagonal.map_lfp.le
   have ha : (lfp ∘ h) a = a := (lfp.comp h).map_lfp
   calc
     h a a = h a (h a).lfp := congr_arg (h a) ha.symm
     _ = (h a).lfp := (h a).map_lfp
     _ = a := ha
 
-theorem gfp_gfp (h : α →o α →o α) : (gfp.comp h).gfp = h.onDiag.gfp :=
+theorem gfp_gfp (h : α →o α →o α) : (gfp.comp h).gfp = h.onDiagonal.gfp :=
   @lfp_lfp αᵒᵈ _ <| (OrderHom.dualIso αᵒᵈ αᵒᵈ).symm.toOrderEmbedding.toOrderHom.comp h.dual
 
 end Eqn

@@ -74,7 +74,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
   have h₁ :
     (∑ m ∈ range K, ∑ k ∈ range (m + 1), f k * g (m - k)) =
       ∑ m ∈ range K, ∑ n ∈ range (K - m), f m * g n := by
-    simpa using sum_range_diag_flip K fun m n ↦ f m * g n
+    simpa using sum_range_diagonal_flip K fun m n ↦ f m * g n
   have h₂ :
     (fun i ↦ ∑ k ∈ range (K - i), f i * g k) = fun i ↦ f i * ∑ k ∈ range (K - i), g k := by
     simp [Finset.mul_sum]

@@ -802,7 +802,7 @@ namespace FormalMultilinearSeries
 variable (p : FormalMultilinearSeries 𝕜 E F)
 
 open Fintype ContinuousLinearMap in
-theorem derivSeries_apply_diag (n : ℕ) (x : E) :
+theorem derivSeries_apply_diagonal (n : ℕ) (x : E) :
     derivSeries p n (fun _ ↦ x) x = (n + 1) • p (n + 1) fun _ ↦ x := by
   simp only [derivSeries, compFormalMultilinearSeries_apply, changeOriginSeries,
     compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe,
@@ -813,10 +813,12 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
   · rw [← card, card_subtype, ← Finset.powerset_univ, ← Finset.powersetCard_eq_filter,
       Finset.card_powersetCard, ← card, card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
 
+@[deprecated (since := "2026-09-06")] alias derivSeries_apply_diag := derivSeries_apply_diagonal
+
 @[simp]
 lemma derivSeries_coeff_one (p : FormalMultilinearSeries 𝕜 𝕜 F) (n : ℕ) :
     p.derivSeries.coeff n 1 = (n + 1) • p.coeff (n + 1) :=
-  p.derivSeries_apply_diag _ _
+  p.derivSeries_apply_diagonal _ _
 
 end FormalMultilinearSeries
 
@@ -828,9 +830,12 @@ variable {p : FormalMultilinearSeries 𝕜 E F} {f : E → F} {x : E} {r : ℝ�
   (h : HasFPowerSeriesOnBall f p x r) (y : E)
 
 include h in
-theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
+theorem iteratedFDeriv_zero_apply_diagonal : iteratedFDeriv 𝕜 0 f x = p 0 := by
   ext
   simpa using (coeff_zero h _).symm
+
+@[deprecated (since := "2026-09-06")]
+alias iteratedFDeriv_zero_apply_diag := iteratedFDeriv_zero_apply_diagonal
 
 open ContinuousLinearMap
 
@@ -839,8 +844,8 @@ private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCom
     {f : E → F}, HasFPowerSeriesOnBall f p x r →
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
   induction n with | zero => _ | succ n ih => _ <;> intro F _ _ _ p f h
-  · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
-  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag,
+  · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diagonal]
+  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diagonal,
       ← _root_.smul_apply, ih h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
@@ -854,8 +859,8 @@ derivative as a sum over the permutations of `Fin n`, see
 theorem factorial_smul (n : ℕ) :
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
   cases n
-  · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
-  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag,
+  · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diagonal]
+  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diagonal,
       ← _root_.smul_apply, factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 

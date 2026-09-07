@@ -54,7 +54,7 @@ lemma ιMultiDual_apply_ιMulti (s : powersetCard I n) (v : Fin n → M) :
 /-- Let `b` be a basis of `M` indexed by a linearly ordered type `I` and `s` be a finset of `I`
 of cardinality `n`. If we apply the linear form on `⋀[R]^n M` defined by `b` and `s`
 to the exterior product of the `b i` for `i ∈ s`, then we get `1`. -/
-lemma ιMultiDual_apply_diag (s : powersetCard I n) :
+lemma ιMultiDual_apply_diagonal (s : powersetCard I n) :
     ιMultiDual R n b s (ιMulti_family R n b s) = 1 := by
   rw [ιMulti_family, ιMultiDual_apply_ιMulti]
   suffices Matrix.of (fun i j => b.coord (powersetCard.ofFinEmbEquiv.symm s j)
@@ -63,11 +63,14 @@ lemma ιMultiDual_apply_diag (s : powersetCard I n) :
   ext
   simp [Matrix.one_apply, Finsupp.single_apply]
 
+@[deprecated (since := "2026-09-06")]
+alias ιMultiDual_apply_diag := ιMultiDual_apply_diagonal
+
 /-- Let `b` be a basis of `M` indexed by a linearly ordered type `I` and `s` be a finset of `I`
 of cardinality `n`. Let `t` be a finset of `I` of cardinality `n` such that `s ≠ t`. If we apply
 the linear form on `⋀[R]^n M` defined by `b` and `s` to the exterior product of the
 `b i` for `i ∈ t`, then we get `0`. -/
-lemma ιMultiDual_apply_nondiag (s t : powersetCard I n) (hst : s ≠ t) :
+lemma ιMultiDual_apply_nondiagonal (s t : powersetCard I n) (hst : s ≠ t) :
     ιMultiDual R n b s (ιMulti_family R n b t) = 0 := by
   rw [ιMulti_family, ιMultiDual_apply_ιMulti]
   obtain ⟨i, his, hit⟩ := (exists_mem_notMem_iff_ne s t).mp hst
@@ -81,14 +84,17 @@ lemma ιMultiDual_apply_nondiag (s t : powersetCard I n) (hst : s ≠ t) :
   rw [h, powersetCard.ofFinEmbEquiv_symm_apply, ← powersetCard.mem_coe_iff]
   exact Finset.orderEmbOfFin_mem t.val t.prop j
 
+@[deprecated (since := "2026-09-06")]
+alias ιMultiDual_apply_nondiag := ιMultiDual_apply_nondiagonal
+
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), then the family
 `exteriorPower.ιMulti R n b` of the `n`-fold exterior products of its elements is linearly
 independent in the `n`th exterior power of `M`. -/
 lemma ιMulti_family_linearIndependent_ofBasis :
     LinearIndependent R (ιMulti_family R n b) :=
   LinearIndependent.of_pairwise_dual_eq_zero_one _ (fun s ↦ ιMultiDual R n b s)
-    (fun _ _ h => ιMultiDual_apply_nondiag R n b _ _ h)
-    (fun _ => ιMultiDual_apply_diag _ _ _ _)
+    (fun _ _ h => ιMultiDual_apply_nondiagonal R n b _ _ h)
+    (fun _ => ιMultiDual_apply_diagonal _ _ _ _)
 
 variable {R} in
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), the basis of the `n`th
@@ -117,8 +123,8 @@ lemma basis_coord (s : powersetCard I n) :
   rintro x ⟨t, rfl⟩
   rw [Basis.coord_apply]
   by_cases! hst : s = t
-  · rw [hst, ιMultiDual_apply_diag, ← basis_apply, Basis.repr_self, Finsupp.single_eq_same]
-  · rw [ιMultiDual_apply_nondiag R n b s t hst, ← basis_apply, Basis.repr_self,
+  · rw [hst, ιMultiDual_apply_diagonal, ← basis_apply, Basis.repr_self, Finsupp.single_eq_same]
+  · rw [ιMultiDual_apply_nondiagonal R n b s t hst, ← basis_apply, Basis.repr_self,
       Finsupp.single_eq_of_ne hst]
 
 lemma basis_repr_apply (x : ⋀[R]^n M)
@@ -129,12 +135,12 @@ lemma basis_repr_apply (x : ⋀[R]^n M)
 @[simp]
 lemma basis_repr_self (s : powersetCard I n) :
     Basis.repr (b.exteriorPower n) (ιMulti_family R n b s) s = 1 := by
-  simpa [basis_repr_apply] using ιMultiDual_apply_diag R n b s
+  simpa [basis_repr_apply] using ιMultiDual_apply_diagonal R n b s
 
 @[simp]
 lemma basis_repr_ne {s t : powersetCard I n} (hst : s ≠ t) :
     Basis.repr (b.exteriorPower n) (ιMulti_family R n b s) t = 0 := by
-  simpa [basis_repr_apply] using ιMultiDual_apply_nondiag R n b t s hst.symm
+  simpa [basis_repr_apply] using ιMultiDual_apply_nondiagonal R n b t s hst.symm
 
 lemma basis_repr (s : powersetCard I n) :
     Basis.repr (b.exteriorPower n) (ιMulti_family R n b s) = Finsupp.single s 1 := by

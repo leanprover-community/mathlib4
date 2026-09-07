@@ -139,7 +139,7 @@ set_option backward.privateInPublic true in
 /-- In the presence of the strict Segal condition, a path of length `m` can be
 "composed" by taking the diagonal edge of the resulting `m`-simplex. -/
 def spineToDiagonal : Path X m → X _⦋1⦌ₙ₊₁ :=
-  X.map (tr (diag m)).op ∘ sx.spineToSimplex m h
+  X.map (tr (diagonal m)).op ∘ sx.spineToSimplex m h
 
 end autoParam
 
@@ -176,7 +176,7 @@ theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
       sx.spineToDiagonal l (by lia) (f.interval j l hjl) := by
   dsimp only [spineToDiagonal, Function.comp_apply]
   rw [← spineToSimplex_interval, ← Functor.map_comp_apply, ← op_comp,
-    ← tr_comp, diag_subinterval_eq]
+    ← tr_comp, diagonal_subinterval_eq]
 
 end spineToSimplex
 
@@ -362,7 +362,7 @@ theorem spineToSimplex_edge :
       sx.spineToDiagonal (f.interval j l hjl) := by
   dsimp only [spineToDiagonal, SimplicialObject.diagonal]
   rw [← spineToSimplex_interval, ← Functor.map_comp_apply, ← op_comp,
-    diag_subinterval_eq]
+    diagonal_subinterval_eq]
 
 end interval
 

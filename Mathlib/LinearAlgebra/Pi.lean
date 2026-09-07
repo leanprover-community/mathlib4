@@ -30,7 +30,7 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
   - `LinearMap.single`
 - pi types in the domain:
   - `LinearMap.proj`
-  - `LinearMap.diag`
+  - `LinearMap.diagonal`
 
 -/
 
@@ -329,9 +329,11 @@ end
 
 section
 
-/-- `diag i j` is the identity map if `i = j`. Otherwise it is the constant 0 map. -/
-def diag (i j : ι) : φ i →ₗ[R] φ j :=
+/-- `diagonal i j` is the identity map if `i = j`. Otherwise it is the constant 0 map. -/
+def diagonal (i j : ι) : φ i →ₗ[R] φ j :=
   @Function.update ι (fun j => φ i →ₗ[R] φ j) _ 0 i id j
+
+@[deprecated (since := "2026-09-06")] alias diag := diagonal
 
 theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
     (update f i b j) c = update (fun i => f i c) i (b c) j := by
@@ -341,16 +343,18 @@ theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι
 
 variable (R φ)
 
-theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
+theorem single_eq_pi_diagonal (i : ι) : single R φ i = pi (diagonal i) := by
   ext x j
   convert! (update_apply 0 x i j _).symm
   rfl
 
+@[deprecated (since := "2026-09-06")] alias single_eq_pi_diag := single_eq_pi_diagonal
+
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
   ker_eq_bot_of_injective <| Pi.single_injective _
 
-theorem proj_comp_single (i j : ι) : (proj i).comp (single R φ j) = diag j i := by
-  rw [single_eq_pi_diag, proj_pi]
+theorem proj_comp_single (i j : ι) : (proj i).comp (single R φ j) = diagonal j i := by
+  rw [single_eq_pi_diagonal, proj_pi]
 
 end
 
