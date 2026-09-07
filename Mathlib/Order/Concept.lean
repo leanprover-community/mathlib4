@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Wrenna Robson, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.Closure
 
 /-!

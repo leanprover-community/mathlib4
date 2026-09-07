@@ -29,7 +29,9 @@ We also show that the dimension of `Δ[p] ⊗ Δ[q]` is `≤ p + q`.
 
 universe u
 
-open CategoryTheory Simplicial MonoidalCategory
+open CategoryTheory MonoidalCategory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -253,6 +255,15 @@ lemma exists_nonDegenerate_max_dim {d : ℕ}
     obtain ⟨z, hz⟩ := hd' y (by lia)
     rw [← Subcomplex.ofSimplex_le_iff] at hz
     exact ⟨z, hz _ hy⟩
+
+lemma subcomplex_eq_top_iff (A : (Δ[p] ⊗ Δ[q] : SSet.{u}).Subcomplex)
+    {n : ℕ} (hn : p + q = n) :
+    A = ⊤ ↔ (Δ[p] ⊗ Δ[q]).nonDegenerate n ⊆ A.obj _ := by
+  refine ⟨by rintro rfl; tauto, fun hA ↦ ?_⟩
+  rw [Subcomplex.eq_top_iff_contains_nonDegenerate]
+  intro d x hx
+  obtain ⟨y, hy⟩ := exists_nonDegenerate_max_dim ⟨x, hx⟩ hn
+  exact (Subcomplex.ofSimplex_le_iff ..).mpr (hA y.prop) _ hy
 
 end prodStdSimplex
 

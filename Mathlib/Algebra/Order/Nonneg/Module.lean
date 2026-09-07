@@ -24,7 +24,7 @@ assert_not_exists Finset
 
 variable {R S M : Type*}
 
-local notation3 "R≥0" => {c : R // 0 ≤ c}
+local notation3 "R≥0" => Nonneg R
 
 namespace Nonneg
 variable [Semiring R] [PartialOrder R]

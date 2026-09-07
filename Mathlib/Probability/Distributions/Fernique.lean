@@ -607,7 +607,8 @@ theorem exists_integrable_exp_sq_of_map_rotation_eq_self [IsFiniteMeasure μ]
     calc (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4)))
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹)
         • (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) := by
-      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]
+      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul,
+        (ContinuousLinearMap.rotation (-(π / 4))).continuous.aemeasurable]
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹) • (μ.prod μ) := by rw [h_rot]
     _ = μ'.prod μ' := by
       simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]

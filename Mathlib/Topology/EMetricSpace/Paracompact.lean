@@ -32,7 +32,9 @@ public section
 
 variable {α : Type*}
 
-open ENNReal Topology Set
+open ENNReal Set
+
+open scoped Topology
 
 namespace Metric
 
