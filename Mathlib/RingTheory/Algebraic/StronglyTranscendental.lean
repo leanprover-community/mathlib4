@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # Strongly transcendental elements
