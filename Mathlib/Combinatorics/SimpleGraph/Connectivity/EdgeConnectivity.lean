@@ -185,12 +185,10 @@ theorem isEdgeReachable_top_iff_forall_nat :
   refine ⟨fun h _ ↦ h.anti le_top, fun h s h' ↦ ?_⟩
   have : s.Finite := Set.encard_lt_top_iff.mp h'
   have this2 := this
-  cases this
-  expose_names
+  have ⟨n, ⟨a⟩⟩ := this.exists_equiv_fin
   -- necessary else Fintype.card doesn't synthesize
   have : Fintype s := this2.fintype
-  have := @h (n + 1) s
-  apply this
+  apply @h (n + 1) s
   -- possibly extracted into a lemma
   -- ↑s ≃ Fin n → s.ncard = n
   simp [← s.coe_ncard_eq_encard, ← s.fintypeCard_eq_ncard, Fintype.card_congr a,
