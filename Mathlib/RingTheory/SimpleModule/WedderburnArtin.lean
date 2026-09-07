@@ -61,7 +61,7 @@ theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
   tfae_finish
 
 theorem IsSimpleRing.isSemisimpleRing_iff_isArtinianRing [IsSimpleRing R] :
-    IsSemisimpleRing R ↔ IsArtinianRing R := tfae.out 0 1
+    IsSemisimpleRing R ↔ IsArtinianRing R := tfae.out 1 2
 
 theorem isSimpleRing_isArtinianRing_iff :
     IsSimpleRing R ∧ IsArtinianRing R ↔ IsSemisimpleRing R ∧ IsIsotypic R R ∧ Nontrivial R := by

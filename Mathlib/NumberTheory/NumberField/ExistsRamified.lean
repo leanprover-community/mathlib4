@@ -8,7 +8,7 @@ module
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.RamificationInertia.Galois
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 public import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
@@ -20,7 +20,7 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 `NumberField.abs_discr_gt_two` but is placed in a separate file to avoid large imports.
 
 -/
-@[expose] public section
+public section
 
 open scoped NumberField nonZeroDivisors
 

@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Wrenna Robson
 -/
 module
 
-public import Batteries.Data.List.Pairwise
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
@@ -544,6 +543,18 @@ protected alias ⟨SortedLT.strictMono, _root_.StrictMono.sortedLT_ofFn⟩ := so
 protected alias ⟨SortedGT.strictAnti, _root_.StrictAnti.sortedGT_ofFn⟩ := sortedGT_ofFn_iff
 
 end OfFn
+
+section Nil
+
+theorem sortedLT_nil : ([] : List α).SortedLT := by grind
+
+theorem sortedGT_nil : ([] : List α).SortedGT := by grind
+
+theorem sortedLE_nil : ([] : List α).SortedLE := sortedLT_nil.sortedLE
+
+theorem sortedGE_nil : ([] : List α).SortedGE := sortedGT_nil.sortedGE
+
+end Nil
 
 section Reverse
 

@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Tactic.Simps
 import Mathlib.Lean.Exception
 import Mathlib.Logic.Equiv.Defs
@@ -357,11 +358,11 @@ run_cmd liftTermElabM do
     #[`specify.specify5_fst, `specify.specify5_snd]
 
 /--
-error: Invalid simp lemma failure1_fst_fst.
-Projection  doesn't exist, because target Nat is not a structure.
+error: Invalid simp lemma failure1_fst_bar.
+Projection bar doesn't exist, because target Nat is not a structure.
 -/
 #guard_msgs in
-@[simps fst_fst] def failure1 : ℕ × ℕ × ℕ := (1, 2, 3)
+@[simps fst_bar] def failure1 : ℕ × ℕ × ℕ := (1, 2, 3)
 
 /--
 error: Invalid simp lemma failure2_foo_fst. Structure Prod does not have projection foo.

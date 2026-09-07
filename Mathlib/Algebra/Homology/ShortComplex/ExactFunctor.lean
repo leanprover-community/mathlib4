@@ -151,7 +151,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
 lemma preservesFiniteLimits_iff_forall_exact_map_and_mono :
     PreservesFiniteLimits F ↔
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f) :=
-  (Functor.preservesFiniteLimits_tfae F).out 3 0
+  (Functor.preservesFiniteLimits_tfae F).out 4 1
 
 /--
 If a functor `F : C ⥤ D` preserves exact sequences on the right-hand side (i.e.
@@ -227,10 +227,10 @@ lemma exact_tfae : List.TFAE
   tfae_have 1 → 3
   | hF => by
     refine ⟨fun {X Y} f ↦ ?_, fun {X Y} f ↦ ?_⟩
-    · have h := (preservesFiniteLimits_tfae F |>.out 0 2 |>.1 fun S hS ↦
+    · have h := (preservesFiniteLimits_tfae F |>.out 1 3 |>.1 fun S hS ↦
         And.intro (hF S hS).exact (hF S hS).mono_f)
       exact h f
-    · have h := (preservesFiniteColimits_tfae F |>.out 0 2 |>.1 fun S hS ↦
+    · have h := (preservesFiniteColimits_tfae F |>.out 1 3 |>.1 fun S hS ↦
         And.intro (hF S hS).exact (hF S hS).epi_g)
       exact h f
   tfae_have 2 → 1
@@ -250,7 +250,7 @@ lemma exact_tfae : List.TFAE
 lemma preservesFiniteColimits_iff_forall_exact_map_and_epi :
     PreservesFiniteColimits F ↔
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g) :=
-  (Functor.preservesFiniteColimits_tfae F).out 3 0
+  (Functor.preservesFiniteColimits_tfae F).out 4 1
 
 end
 

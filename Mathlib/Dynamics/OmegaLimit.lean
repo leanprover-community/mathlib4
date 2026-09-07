@@ -6,6 +6,7 @@ Authors: Jean Lo
 module
 
 public import Mathlib.Dynamics.Flow
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # ω-limits
@@ -34,7 +35,9 @@ endowed with an order.
 @[expose] public section
 
 
-open Set Function Filter Topology
+open Set Function Filter
+
+open scoped Topology
 
 /-!
 ### Definition and notation

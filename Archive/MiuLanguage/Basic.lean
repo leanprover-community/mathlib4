@@ -3,7 +3,9 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Tactic.Linarith
 
 /-!
 # An MIU Decision Procedure in Lean
@@ -60,6 +62,7 @@ miu, derivable strings
 
 -/
 
+@[expose] public section
 
 namespace Miu
 

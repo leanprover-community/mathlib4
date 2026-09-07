@@ -26,7 +26,7 @@ public section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open IsLocalRing FiniteDimensional Module Submodule IsLocalization.AtPrime
+open IsLocalRing Module Submodule IsLocalization.AtPrime
 
 section IsLocalRing
 

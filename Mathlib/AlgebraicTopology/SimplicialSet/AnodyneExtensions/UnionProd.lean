@@ -56,7 +56,9 @@ is obtained by removing `x (l.pred _)` from the walk.
 
 universe u
 
-open CategoryTheory MonoidalCategory Simplicial
+open CategoryTheory MonoidalCategory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -404,10 +406,9 @@ lemma simplex_mem_nonDegenerate :
   exact hx.strictMono_φ hd
 
 lemma δ_simplex :
-    (Δ[m + 1] ⊗ Δ[n]).δ (min x hd).castSucc (hx.simplex hd) = (x.cast hd).simplex := by
+    dsimp% (Δ[m + 1] ⊗ Δ[n]).δ (min x hd).castSucc (hx.simplex hd) = (x.cast hd).simplex := by
   apply objEquiv.injective
   ext i : 2
-  dsimp only [simplex]
   rw [objEquiv_δ_apply, Equiv.apply_symm_apply, OrderHom.coe_mk, φ_succAbove]
 
 lemma notMem_simplex :

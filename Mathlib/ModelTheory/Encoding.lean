@@ -48,7 +48,7 @@ variable {α : Type u'}
 
 open FirstOrder Cardinal
 
-open Computability List Structure Fin
+open Computability List Fin
 
 namespace Term
 

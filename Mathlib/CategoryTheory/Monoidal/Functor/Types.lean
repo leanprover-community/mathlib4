@@ -18,7 +18,7 @@ This allows us to use Lean's `Type`-based applicative functors in category theor
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

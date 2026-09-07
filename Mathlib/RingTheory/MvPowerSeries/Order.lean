@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Data.Finsupp.Weight
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 
@@ -123,7 +123,7 @@ namespace MvPowerSeries
 
 noncomputable section
 
-open ENat WithTop Finsupp
+open ENat Finsupp
 
 variable {σ R : Type*} [Semiring R]
 

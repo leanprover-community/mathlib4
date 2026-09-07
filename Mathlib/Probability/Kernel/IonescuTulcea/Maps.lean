@@ -32,7 +32,7 @@ def IocProdIoc (a b c : ι) (x : (Π i : Ioc a b, X i) × (Π i : Ioc b c, X i))
 @[fun_prop]
 lemma measurable_IocProdIoc [∀ i, MeasurableSpace (X i)] {a b c : ι} :
     Measurable (IocProdIoc (X := X) a b c) := by
-  refine measurable_pi_lambda _ (fun i ↦ ?_)
+  refine .of_eval (fun i ↦ ?_)
   by_cases h : i ≤ b
   · simpa [IocProdIoc, h] using measurable_fst.eval
   · simpa [IocProdIoc, h] using measurable_snd.eval
@@ -82,14 +82,13 @@ variable [∀ i, MeasurableSpace (X i)]
 
 @[fun_prop]
 lemma measurable_IicProdIoc {m n : ι} : Measurable (IicProdIoc (X := X) m n) := by
-  refine measurable_pi_lambda _ (fun i ↦ ?_)
+  refine .of_eval (fun i ↦ ?_)
   by_cases h : i ≤ m
   · simpa [IicProdIoc, h] using measurable_fst.eval
   · simpa [IicProdIoc, h] using measurable_snd.eval
 
 namespace MeasurableEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Gluing `Iic a` and `Ioc a b` into `Iic b`. This version requires `a ≤ b` to get a measurable
 equivalence. -/
 def IicProdIoc {a b : ι} (hab : a ≤ b) :
@@ -104,7 +103,7 @@ def IicProdIoc {a b : ι} (hab : a ≤ b) :
   right_inv := fun x ↦ funext fun i ↦ by
     by_cases hi : i.1 ≤ a <;> simp [hi]
   measurable_toFun := by
-    refine measurable_pi_lambda _ (fun x ↦ ?_)
+    refine .of_eval (fun x ↦ ?_)
     by_cases h : x ≤ a
     · simpa [h] using measurable_fst.eval
     · simpa [h] using measurable_snd.eval
@@ -116,7 +115,6 @@ lemma coe_IicProdIoc_symm {a b : ι} (hab : a ≤ b) :
     ⇑(IicProdIoc (X := X) hab).symm =
     fun x ↦ (frestrictLe₂ hab x, restrict₂ Ioc_subset_Iic_self x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Gluing `Iic a` and `Ioi a` into `ℕ`, version as a measurable equivalence
 on dependent functions. -/
 def IicProdIoi (a : ι) :
@@ -131,7 +129,7 @@ def IicProdIoi (a : ι) :
     · simp [not_le.2 <| Set.mem_Ioi.1 i.2]
   right_inv := fun x ↦ by simp
   measurable_toFun := by
-    refine measurable_pi_lambda _ (fun i ↦ ?_)
+    refine .of_eval (fun i ↦ ?_)
     by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
     · exact measurable_fst.eval
     · exact measurable_snd.eval
@@ -144,7 +142,6 @@ section Nat
 
 variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Identifying `{a + 1}` with `Ioc a (a + 1)`, as a measurable equiv on dependent functions. -/
 def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1), X i where
   toFun x i := (Nat.mem_Ioc_succ.1 i.2).symm ▸ x
@@ -153,7 +150,7 @@ def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1
   right_inv := fun x ↦ funext fun i ↦ by cases Nat.mem_Ioc_succ' i; rfl
   measurable_toFun := by
     simp_rw [eqRec_eq_cast]
-    refine measurable_pi_lambda _ (fun i ↦ (MeasurableEquiv.cast _ ?_).measurable)
+    refine .of_eval (fun i ↦ (MeasurableEquiv.cast _ ?_).measurable)
     cases Nat.mem_Ioc_succ' i; rfl
 
 end Nat

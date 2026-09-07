@@ -144,6 +144,16 @@ theorem finite_setOfPred_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsR
 
 @[deprecated (since := "2026-07-09")] alias finite_setOf_isRoot := finite_setOfPred_isRoot
 
+/-- Nonzero polynomials have no roots away from a finite set. -/
+lemma eventually_cofinite_not_isRoot {p : R[X]} (hp : p ≠ 0) :
+    ∀ᶠ x in Filter.cofinite, ¬p.IsRoot x :=
+  (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+/-- Nonzero polynomials are nonzero away from a finite set. -/
+lemma eventually_eval_ne_zero_cofinite {p : R[X]} (hp : p ≠ 0) :
+    ∀ᶠ x in Filter.cofinite, p.eval x ≠ 0 :=
+  eventually_cofinite_not_isRoot hp
+
 theorem eq_zero_of_infinite_isRoot (p : R[X]) (h : Set.Infinite { x | IsRoot p x }) : p = 0 :=
   not_imp_comm.mp finite_setOfPred_isRoot h
 
@@ -600,6 +610,13 @@ theorem rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra
     (p.rootSet S).Finite :=
   Set.toFinite _
 
+variable (T R) in
+@[simp]
+theorem rootSet_map [CommRing S] (p : S[X]) [Algebra S T] [Algebra T R] [Algebra S R]
+    [IsScalarTower S T R] : (p.map (algebraMap S T)).rootSet R = p.rootSet R := by
+  classical
+  rw [rootSet_def, rootSet_def, aroots_map]
+
 /-- The set of roots of all polynomials of bounded degree and having coefficients in a finite set
 is finite. -/
 theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S] [DecidableEq S]
@@ -618,7 +635,7 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
     fun _ _ => Finset.finite_toSet _
 
 /-- A version of `mem_rootSet` that requires the polynomial to be non-zero after mapping
-instead of requiring it to be non-zero and `NoZeroSMulDivisors`. -/
+instead of requiring it to be non-zero and `Module.IsTorsionFree`. -/
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical

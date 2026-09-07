@@ -36,7 +36,7 @@ uniform convergence, bounded convergence
 
 @[expose] public section
 
-open Bornology Filter Function Set Topology ContinuousLinearMap
+open Filter Function Set Topology ContinuousLinearMap
 open scoped UniformConvergence Uniformity
 
 section CompactSets
