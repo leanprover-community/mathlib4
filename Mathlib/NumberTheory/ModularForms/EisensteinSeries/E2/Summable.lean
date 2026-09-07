@@ -115,10 +115,14 @@ theorem hasSum_qExpansion_E2 :
   · rw [E2_eq_tsum_cexp, tsum_pnat_eq_tsum_succ (f := fun n ↦ σ 1 n * 𝕢 z ^ n), tsum_mul_left]
     simp
 
+/-- `E2` tends to `1` at `i∞`. -/
+theorem tendsto_E2_atImInfty : Tendsto E2 atImInfty (𝓝 1) :=
+  tendsto_atImInfty_of_hasSum_qExpansion one_pos fun z ↦ by
+    simpa only [Function.Periodic.qParam, ofReal_one, div_one] using hasSum_qExpansion_E2 (z := z)
+
 /-- `E2` is bounded at `i∞`. -/
 theorem isBoundedAtImInfty_E2 : IsBoundedAtImInfty E2 :=
-  isBoundedAtImInfty_of_hasSum_qExpansion one_pos fun τ ↦ by
-    simpa only [Function.Periodic.qParam, ofReal_one, div_one] using hasSum_qExpansion_E2 (z := τ)
+  tendsto_E2_atImInfty.isBigO_one ℝ
 
 lemma tendsto_e2Summand_atTop_nhds_zero : Tendsto (e2Summand · z) atTop (𝓝 0) :=
   (summable_e2Summand_symmetricIcc z).tendsto_zero_of_even_summable_symmetricIcc (e2Summand_even _)

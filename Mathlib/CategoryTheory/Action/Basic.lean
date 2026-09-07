@@ -76,7 +76,7 @@ instance inhabited' : Inhabited (Action Type* G) :=
   ⟨⟨PUnit, 1⟩⟩
 
 instance : Inhabited (Action AddCommGrpCat G) :=
-  ⟨trivial G <| AddCommGrpCat.of PUnit⟩
+  ⟨trivial G ↧PUnit⟩
 
 end
 
@@ -247,7 +247,7 @@ variable (V G)
 Use the `CategoryTheory.forget` API provided by the `ConcreteCategory` instance below,
 rather than using this directly.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def forget : Action V G ⥤ V where
   obj M := M.V
   map f := f.hom
@@ -317,8 +317,6 @@ def actionPUnitEquivalence : Action V PUnit ≌ V where
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
-
-@[deprecated (since := "2026-02-08")] alias actionPunitEquivalence := actionPUnitEquivalence
 
 variable (V)
 
