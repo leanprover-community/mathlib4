@@ -100,7 +100,7 @@ def out (x : TruncatedWittVector p n R) : 𝕎 R :=
 
 @[simp]
 theorem coeff_out (x : TruncatedWittVector p n R) (i : Fin n) : x.out.coeff i = x.coeff i := by
-  rw [out]; dsimp only; rw [dif_pos i.is_lt, Fin.eta]
+  rw [out]; dsimp only; rw [dite_eq_left i.is_lt, Fin.eta]
 
 theorem out_injective : Injective (@out p n R _) := by
   intro x y h

@@ -5,11 +5,11 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Mathlib.Algebra.Module.Pi
 public import Batteries.Data.Fin.Lemmas
-public import Mathlib.Data.Fin.Basic
-public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Matrices
@@ -57,7 +57,7 @@ and whose columns are indexed by `n`. -/
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
+variable {l m n o : Type*}
 variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
@@ -103,6 +103,14 @@ def ofArray {m n : ℕ} (A : Array R) (hA : A.size = m * n) : Matrix (Fin m) (Fi
 @[simp]
 theorem ofArray_apply {m n : ℕ} (A : Array R) (hA : A.size = m * n) (i : Fin m) (j : Fin n) :
     ofArray A hA i j = A[Fin.mkDivMod i j] := rfl
+
+/-- The matrix constructed from the row-major array of `A`'s entries is `A`. -/
+@[simp]
+theorem ofArray_ofFn {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
+    ofArray (.ofFn fun k : Fin (m * n) ↦ A k.divNat k.modNat) Array.size_ofFn = A := by
+  ext i j
+  rw [ofArray_apply, Fin.getElem_fin, Array.getElem_ofFn, Fin.divNat_mkDivMod,
+    Fin.modNat_mkDivMod]
 
 lemma ofArray_eq_of_getD [Zero R] {m n : ℕ} (A : Array R) (hA : A.size = m * n) :
     ofArray A hA = .of fun i j ↦ A.getD (n * i.val + j.val) 0 := by

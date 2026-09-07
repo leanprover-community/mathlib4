@@ -5,7 +5,9 @@ import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.Meromorphic.Basic
+import Mathlib.Analysis.SpecialFunctions.Gamma.Digamma
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-! # Main test file for fun_prop
 
@@ -87,6 +89,40 @@ example (z : ℂ) : MeromorphicAt (fun t ↦ Complex.cosh t) z := by
 
 example (z : ℂ) : MeromorphicAt (fun t ↦ Complex.cosh (2 * t)) z := by
   fun_prop
+
+/-! ### `MeromorphicOn` -/
+
+section MeromorphicOn
+
+variable {U V : Set ℂ} {f g : ℂ → ℂ}
+
+example : MeromorphicOn (fun z ↦ z) U := by fun_prop
+
+example (c : ℂ) : MeromorphicOn (fun _ ↦ c) U := by fun_prop
+
+-- Unlike `DifferentiableOn`, meromorphic `inv` and `div` are unconditional, so no discharger.
+example (hf : MeromorphicOn f U) (hg : MeromorphicOn g U) :
+    MeromorphicOn (fun z ↦ f z * (g z)⁻¹ + f z / g z - 3 * g z ^ 2) U := by fun_prop
+
+-- Analytic leaves are reached through the `AnalyticOnNhd.meromorphicOn` transition.
+example : MeromorphicOn (fun z ↦ Complex.exp z / (z ^ 2 - 1)) U := by fun_prop
+
+example (hf : Meromorphic f) : MeromorphicOn (fun z ↦ f z + Complex.sin z) U := by fun_prop
+
+-- Composition: the outer function must be the meromorphic one.
+example (hf : Meromorphic f) : MeromorphicOn (fun z ↦ f (z ^ 2 + 1)) U := by fun_prop
+
+example (N : Finset ℕ) (F : ℕ → ℂ → ℂ) (h : ∀ n ∈ N, MeromorphicOn (F n) U) :
+    MeromorphicOn (fun z ↦ ∑ n ∈ N, F n z) U := by fun_prop
+
+example (hf : MeromorphicOn f U) : MeromorphicOn (logDeriv f) U := by fun_prop
+
+-- `Γ` and `ψ` were previously out of reach for `fun_prop` entirely.
+example : MeromorphicOn (fun z ↦ Complex.Gamma z / Complex.digamma z) U := by fun_prop
+
+example : MeromorphicOn (fun z ↦ Complex.Gamma (z ^ 2 + 1)) U := by fun_prop
+
+end MeromorphicOn
 
 private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by norm_cast
 

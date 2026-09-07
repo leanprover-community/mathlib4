@@ -15,7 +15,7 @@ public import Mathlib.Topology.UniformSpace.Compact
 
 public section
 
-open Bornology Filter Metric Set
+open Filter Metric Set
 open scoped NNReal Topology
 
 variable {ι α : Type*} [PseudoMetricSpace α]
@@ -56,7 +56,7 @@ lemma eventually_ball_subset {x : α} {u : Set α} (hu : u ∈ 𝓝 x) : ∀ᶠ 
   (eventually_closedBall_subset hu).mono fun _r hr ↦ ball_subset_closedBall.trans hr
 
 namespace Metric
-variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
+variable {x : α} {ε : ℝ} {s : Set α}
 
 lemma isClosed_closedBall : IsClosed (closedBall x ε) := isClosed_le (by fun_prop) continuous_const
 

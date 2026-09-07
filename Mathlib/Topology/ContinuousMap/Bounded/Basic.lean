@@ -21,7 +21,9 @@ assert_not_exists CStarRing
 
 noncomputable section
 
-open Topology Bornology NNReal UniformConvergence
+open Topology Bornology NNReal
+
+open scoped UniformConvergence
 
 open Set Filter Metric Function
 
@@ -620,7 +622,7 @@ trivial inconvenience, but in any case there are no obvious applications of the 
 version. -/
 
 variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β] [LipschitzAdd β]
-variable (f g : α →ᵇ β) {x : α} {C : ℝ}
+variable {x : α} {C : ℝ}
 
 instance instLipschitzAdd : LipschitzAdd (α →ᵇ β) where
   lipschitz_add :=
@@ -761,7 +763,7 @@ end DistribMulAction
 section Module
 
 variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
-variable {f g : α →ᵇ β} {x : α} {C : ℝ}
+variable {f : α →ᵇ β} {x : α} {C : ℝ}
 variable [BoundedAdd β] [ContinuousAdd β]
 
 instance instModule : Module 𝕜 (α →ᵇ β) := fast_instance%

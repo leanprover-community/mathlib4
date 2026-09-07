@@ -61,9 +61,9 @@ proof for more details.
 
 -/
 
-@[expose] public section
+public section
 
-open Topology Filter Bornology Set
+open Topology Filter Set
 open scoped Pointwise Set.Notation
 
 variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
@@ -106,11 +106,10 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   -- Let `w ∈ W` be arbitrary.
   intro w w_in_W
   -- Because `V` is a `t₁`-neighborhood of `0`, we have `c ^ n • w ∈ V` for some natural number `n`.
-  obtain ⟨n, hn⟩ : ∃ n : ℕ, c ^ n • w ∈ V := by
+  obtain ⟨n, hn⟩ : ∃ n : ℕ, c ^ n • w ∈ V :=
     let := t₁
-    have : Tendsto (fun k : ℕ ↦ c ^ k • w) atTop (𝓝 0) :=
-      zero_smul 𝕜₁ w ▸ (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁).smul_const w
-    exact this.eventually_mem V_mem |>.exists
+    tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁ |>.zero_smul_const w
+      |>.eventually_mem V_mem |>.exists
   -- We will conclude by reducing `c ^ n • w ∈ V` to `w = c ^ 0 • w ∈ V` inductively.
   suffices c ^ 0 • w ∈ V by simpa
   apply Nat.decreasingInduction (motive := fun (k : ℕ) _ ↦ c^k • w ∈ V) ?_ hn n.zero_le
@@ -148,7 +147,7 @@ lemma LinearMap.isInducing_of_restrict_nhds_zero {V : Set E}
   rw [isInducing_iff]
   -- Call `t₁` the original topology on `E`, and `t₂` the topology induced by `f`. Because
   -- `f` is linear, `t₂` is also a vector space topology.
-  have := topologicalAddGroup_induced f
+  have := isTopologicalAddGroup_induced f
   have := continuousSMul_inducedₛₗ f σ.isometry.continuous
   -- Because `Set.domRestrict V f` is an inducing, `t₁` and `t₂` induce the same topology
   -- on `V`, so we get `t₁ = t₂` from the lemmas above.

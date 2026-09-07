@@ -10,6 +10,10 @@ public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Init
 public import Lean.Elab.ConfigEval
+public meta import Lean.Elab.ConfigEval.Basic
+meta import Lean.Elab.ConfigEval.DeriveEvalExpr
+meta import Lean.Elab.ConfigEval.DeriveEvalTerm
+meta import Lean.Elab.ConfigEval.MetaInstances
 
 /-! ## Dependent rewrite tactic -/
 

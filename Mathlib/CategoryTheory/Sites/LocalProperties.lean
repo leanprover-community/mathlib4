@@ -22,7 +22,7 @@ public section
 
 namespace CategoryTheory
 
-open Limits Opposite
+open Opposite
 
 variable {C : Type*} [Category* C] {K : GrothendieckTopology C} {A : Type*} [Category* A]
 

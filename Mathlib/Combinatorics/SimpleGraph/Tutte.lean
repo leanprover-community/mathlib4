@@ -30,7 +30,7 @@ public import Mathlib.Data.Fintype.Card
 
 namespace SimpleGraph
 
-variable {V : Type*} {G G' : SimpleGraph V} {u x v' w : V}
+variable {V : Type*} {G G' : SimpleGraph V} {u x w : V}
 
 /-- A set certifying non-existence of a perfect matching -/
 def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=

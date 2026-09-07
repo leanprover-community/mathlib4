@@ -5,12 +5,10 @@ Authors: Jeremy Avigad, Wrenna Robson
 -/
 module
 
-public import Batteries.Data.List.Pairwise
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Order.Fin.Basic
-import all Init.Data.List.Sort.Basic  -- for exposing `mergeSort`
 
 /-!
 # Sorting algorithms on lists
@@ -54,10 +52,10 @@ def orderedInsert (a : α) : List α → List α
 
 theorem orderedInsert_cons_of_le {a b : α} (l : List α) (h : a ≼ b) :
     orderedInsert r a (b :: l) = a :: b :: l :=
-  dif_pos h
+  dite_eq_left h
 
 theorem orderedInsert_of_not_le {a b : α} (l : List α) (h : ¬ a ≼ b) :
-    orderedInsert r a (b :: l) = b :: orderedInsert r a l := dif_neg h
+    orderedInsert r a (b :: l) = b :: orderedInsert r a l := dite_eq_right h
 
 /-- `insertionSort l` returns `l` sorted using the insertion sort algorithm. -/
 def insertionSort : List α → List α := foldr (orderedInsert r) []
@@ -193,7 +191,7 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       · have hba := pairwise_cons.mp hb |>.left _ (mem_of_cons_sublist ‹a :: as <+ bs›)
         exact absurd (trans_of _ ‹r x b› hba) hr
       · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
-        rw [orderedInsert_cons, if_neg hr] at ih
+        rw [orderedInsert_cons, ite_eq_right hr] at ih
         exact .cons _ ih
       · simp_all
       · exact .cons_cons _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
@@ -289,9 +287,9 @@ which rather than using explicit hypotheses for transitivity and totality,
 use Mathlib order typeclasses instead.
 -/
 
-example :
-    mergeSort [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12] (fun m n => m / 10 ≤ n / 10) =
-      [5, 7, 2, 17, 12, 27, 23, 43, 95, 98, 221, 567] := by simp [mergeSort]
+set_option linter.hashCommand false in
+#guard mergeSort [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12] (fun m n => m / 10 ≤ n / 10) =
+  [5, 7, 2, 17, 12, 27, 23, 43, 95, 98, 221, 567]
 
 section MergeSort
 
@@ -546,6 +544,18 @@ protected alias ⟨SortedGT.strictAnti, _root_.StrictAnti.sortedGT_ofFn⟩ := so
 
 end OfFn
 
+section Nil
+
+theorem sortedLT_nil : ([] : List α).SortedLT := by grind
+
+theorem sortedGT_nil : ([] : List α).SortedGT := by grind
+
+theorem sortedLE_nil : ([] : List α).SortedLE := sortedLT_nil.sortedLE
+
+theorem sortedGE_nil : ([] : List α).SortedGE := sortedGT_nil.sortedGE
+
+end Nil
+
 section Reverse
 
 @[simp] theorem sortedLE_reverse : l.reverse.SortedLE ↔ l.SortedGE := by grind
@@ -690,6 +700,60 @@ theorem sortedLE_insertionSort : (l.insertionSort (· ≤ ·)).SortedLE :=
 
 theorem sortedGE_insertionSort : (l.insertionSort (· ≥ ·)).SortedGE :=
   (pairwise_insertionSort _ _).sortedGE
+
+@[grind =]
+theorem sortedLE_append {l₁ l₂ : List α} :
+    SortedLE (l₁ ++ l₂) ↔ SortedLE l₁ ∧ SortedLE l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), a ≤ b := by
+  rw [sortedLE_iff_pairwise, sortedLE_iff_pairwise, sortedLE_iff_pairwise, pairwise_append]
+
+@[grind =]
+theorem sortedGE_append {l₁ l₂ : List α} :
+    SortedGE (l₁ ++ l₂) ↔ SortedGE l₁ ∧ SortedGE l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), b ≤ a := by
+  rw [sortedGE_iff_pairwise, sortedGE_iff_pairwise, sortedGE_iff_pairwise, pairwise_append]
+
+@[grind =]
+theorem sortedLT_append {l₁ l₂ : List α} :
+    SortedLT (l₁ ++ l₂) ↔ SortedLT l₁ ∧ SortedLT l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), a < b := by
+  rw [sortedLT_iff_pairwise, sortedLT_iff_pairwise, sortedLT_iff_pairwise, pairwise_append]
+
+@[grind =]
+theorem sortedGT_append {l₁ l₂ : List α} :
+    SortedGT (l₁ ++ l₂) ↔ SortedGT l₁ ∧ SortedGT l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), b < a := by
+  rw [sortedGT_iff_pairwise, sortedGT_iff_pairwise, sortedGT_iff_pairwise, pairwise_append]
+
+section
+
+variable {a : α}
+
+@[simp]
+theorem sortedLE_cons : SortedLE (a :: l) ↔ (∀ b ∈ l, a ≤ b) ∧ SortedLE l := by
+  simp [sortedLE_iff_pairwise]
+
+@[simp]
+theorem sortedGE_cons : SortedGE (a :: l) ↔ (∀ b ∈ l, b ≤ a) ∧ SortedGE l := by
+  simp [sortedGE_iff_pairwise]
+
+@[simp]
+theorem sortedLT_cons : SortedLT (a :: l) ↔ (∀ b ∈ l, a < b) ∧ SortedLT l := by
+  simp [sortedLT_iff_pairwise]
+
+@[simp]
+theorem sortedGT_cons : SortedGT (a :: l) ↔ (∀ b ∈ l, b < a) ∧ SortedGT l := by
+  simp [sortedGT_iff_pairwise]
+
+theorem sortedLE_concat : SortedLE (l.concat a) ↔ (∀ b ∈ l, b ≤ a) ∧ SortedLE l := by
+  grind
+
+theorem sortedGE_concat : SortedGE (l.concat a) ↔ (∀ b ∈ l, a ≤ b) ∧ SortedGE l := by
+  grind
+
+theorem sortedLT_concat : SortedLT (l.concat a) ↔ (∀ b ∈ l, b < a) ∧ SortedLT l := by
+  grind
+
+theorem sortedGT_concat : SortedGT (l.concat a) ↔ (∀ b ∈ l, a < b) ∧ SortedGT l := by
+  grind
+
+end
 
 @[simp]
 theorem SortedLT.getElem_le_getElem_iff (hl : l.SortedLT) {i j} {hi : i < l.length}
