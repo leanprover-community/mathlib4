@@ -324,8 +324,9 @@ lemma mono_precomp_mk₀_of_epi (L : C) {M N : C} (g : M ⟶ N) [hg : Epi g] :
 variable {Y} in
 /-- The standard connecting homomorphism `Ext S.X₁ Y n₀ →+ Ext S.X₃ Y n₁`
 for the contravariant long sequence of `Ext` when `n₀ + 1 = n₁` and `S` is a
-short exact sequence. This definition should be consistent with [conrad2000]. It is obtained by multiplying by `(-1) ^ n₁`
-the precomposition with `hS.extClass : Ext S.X₃ X₁ 1`. -/
+short exact sequence. This definition should be consistent with [conrad2000].
+It is obtained by multiplying by `(-1) ^ n₁` the precomposition
+with `hS.extClass : Ext S.X₃ X₁ 1`. -/
 @[simps -isSimp]
 protected noncomputable def δ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
     Ext S.X₁ Y n₀ →+ Ext S.X₃ Y n₁ where
