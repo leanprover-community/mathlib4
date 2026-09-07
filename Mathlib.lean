@@ -263,7 +263,6 @@ public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Algebra.CharP.LinearMaps
 public import Mathlib.Algebra.CharP.LocalRing
-public import Mathlib.Algebra.CharP.Matrix
 public import Mathlib.Algebra.CharP.MixedCharZero
 public import Mathlib.Algebra.CharP.Pi
 public import Mathlib.Algebra.CharP.Quotient

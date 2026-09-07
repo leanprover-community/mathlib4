@@ -14,8 +14,6 @@ public import Mathlib.Algebra.Ring.Pi
 
 public section
 
-universe u v
-
 section
 variable {ι : Type*} {α : ι → Type*}
 
@@ -31,22 +29,16 @@ instance Pi.instCharZero [Nonempty ι] [Π i, AddMonoidWithOne (α i)] [Π i, Ch
 
 end
 
-namespace CharP
+section
+variable {ι : Type*} {R : Type*} [Nonempty ι] [AddMonoidWithOne R]
 
-instance pi (ι : Type u) [hi : Nonempty ι] (R : Type v) [Semiring R] (p : ℕ) [CharP R p] :
-    CharP (ι → R) p :=
-  ⟨fun x =>
-    let ⟨i⟩ := hi
-    Iff.symm <|
-      (CharP.cast_eq_zero_iff R p x).symm.trans
-        ⟨fun h =>
-          funext fun j =>
-            show Pi.evalRingHom (fun _ => R) j (↑x : ι → R) = 0 by rw [map_natCast, h],
-          fun h ↦ by rw [← map_natCast (Pi.evalRingHom (fun _ : ι => R) i) x, h, map_zero]⟩⟩
+instance Pi.instCharP (p : ℕ) [CharP R p] : CharP (ι → R) p where
+  cast_eq_zero_iff x := by
+    inhabit ι
+    simp [← CharP.cast_eq_zero_iff R p x, funext_iff]
 
--- diamonds
-instance pi' (ι : Type u) [Nonempty ι] (R : Type v) [CommRing R] (p : ℕ) [CharP R p] :
-    CharP (ι → R) p :=
-  CharP.pi ι R p
+instance Pi.instExpChar : ∀ {p} [ExpChar R p], ExpChar (ι → R) p
+  | _, @ExpChar.zero _ _ _ => .zero
+  | _, @ExpChar.prime _ _ _ _ _ => .prime ‹_›
 
-end CharP
+end
