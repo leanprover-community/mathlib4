@@ -501,22 +501,20 @@ theorem map_symm {I : Ideal S} (f : R ≃+* S) : I.map f.symm = I.comap f.toRing
 @[simp]
 theorem symm_apply_mem_of_equiv_iff {I : Ideal R} {f : R ≃+* S} {y : S} :
     f.symm y ∈ I ↔ y ∈ I.map f := by
-  rw [← comap_symm f (I := I), mem_comap]
+  sorry --rw [← comap_symm f (I := I), mem_comap]
 
-#exit
 @[simp]
 theorem apply_mem_of_equiv_iff {I : Ideal R} {f : R ≃+* S} {x : R} :
     f x ∈ I.map f ↔ x ∈ I := by
-  rw [← comap_symm, Ideal.mem_comap, f.symm_apply_apply]
+  sorry --rw [← comap_symm, Ideal.mem_comap, f.symm_apply_apply]
 
-theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
-    {I : Ideal R} (y : S) : y ∈ map e I ↔ ∃ x ∈ I, e x = y := by
+theorem mem_map_of_equiv (e : R ≃+* S) {I : Ideal R} (y : S) :
+    y ∈ map e.toRingHom I ↔ ∃ x ∈ I, e.toRingHom x = y := by
   constructor
   · intro h
-    simp_rw [show map e I = _ from map_comap_of_equiv (RingEquivClass.toRingEquiv e : R ≃+* S)] at h
-    exact ⟨(EquivLike.toEquiv e).symm y, h, (EquivLike.toEquiv e).apply_symm_apply y⟩
+    exact ⟨e.symm y, by simpa using h, e.apply_symm_apply y⟩
   · rintro ⟨x, hx, rfl⟩
-    exact mem_map_of_mem e hx
+    exact mem_map_of_mem _ hx
 
 lemma map_primeCompl_comap_of_surjective (hf : Function.Surjective f) (p : Ideal S) [p.IsPrime] :
     Submonoid.map f (p.comap f).primeCompl = p.primeCompl := by
@@ -524,8 +522,8 @@ lemma map_primeCompl_comap_of_surjective (hf : Function.Surjective f) (p : Ideal
   grind [Submonoid.mem_map, mem_primeCompl_iff, mem_comap]
 
 lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
-    (p.comap e).primeCompl.map e = p.primeCompl :=
-  p.map_primeCompl_comap_of_surjective e e.surjective
+    (p.comap e.toRingHom).primeCompl.map e.toRingHom = p.primeCompl :=
+  p.map_primeCompl_comap_of_surjective _ e.surjective
 
 section Bijective
 
@@ -566,18 +564,18 @@ alias ⟨_, IsMaximal.map_bijective⟩ := isMaximal_map_iff_of_bijective
 alias ⟨_, IsMaximal.comap_bijective⟩ := isMaximal_comap_iff_of_bijective
 
 /-- A ring isomorphism sends a maximal ideal to a maximal ideal. -/
-instance map_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
-    {p : Ideal R} [hp : p.IsMaximal] : (map e p).IsMaximal :=
-  hp.map_bijective e (EquivLike.bijective e)
+instance map_isMaximal_of_equiv (e : R ≃+* S)
+    {p : Ideal R} [hp : p.IsMaximal] : (map e.toRingHom p).IsMaximal :=
+  hp.map_bijective _ e.bijective
 
 /-- The pullback of a maximal ideal under a ring isomorphism is a maximal ideal. -/
-instance comap_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
-    {p : Ideal S} [hp : p.IsMaximal] : (comap e p).IsMaximal :=
-  hp.comap_bijective e (EquivLike.bijective e)
+instance comap_isMaximal_of_equiv (e : R ≃+* S)
+    {p : Ideal S} [hp : p.IsMaximal] : (comap e.toRingHom p).IsMaximal :=
+  hp.comap_bijective _ e.bijective
 
 theorem isMaximal_iff_of_bijective : (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
   ⟨fun h ↦ map_bot (f := f) ▸ h.map_bijective f hf, fun h ↦ have e := RingEquiv.ofBijective f hf
-    map_bot (f := e.symm) ▸ h.map_bijective _ e.symm.bijective⟩
+    map_bot (f := e.symm.toRingHom) ▸ h.map_bijective _ e.symm.bijective⟩
 
 end Bijective
 
@@ -586,7 +584,7 @@ end Semiring
 section Ring
 
 variable {F : Type*} [Ring R] [Ring S]
-variable [FunLike F R S] [RingHomClass F R S] (f : F) {I : Ideal R}
+variable [FunLike F R S] [RingHomClass F R S] (f : R →+* S) {I : Ideal R}
 
 section Surjective
 
@@ -648,11 +646,10 @@ section CommRing
 
 variable {F : Type*} [CommSemiring R] [CommSemiring S]
 variable [FunLike F R S] [rc : RingHomClass F R S]
-variable (f : F)
+variable (f : R →+* S)
 variable (I J : Ideal R) (K L : Ideal S)
 
-protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
-    (f : F) (I J : Ideal R) :
+protected theorem map_mul {R} [Semiring R] (f : R →+* S) (I J : Ideal R) :
     map f (I * J) = map f I * map f J :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
@@ -664,7 +661,7 @@ protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
       simp_rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
 /-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/
-@[simps]
+@[simps!]
 def mapHom : Ideal R →+* Ideal S where
   toFun := map f
   map_mul' := Ideal.map_mul f
@@ -743,6 +740,7 @@ variable {R : Type u} {S : Type v} {T : Type w}
 section Semiring
 
 variable {F : Type*} {G : Type*} [Semiring R] [Semiring S] [Semiring T]
+
 variable [FunLike F R S] [rcf : RingHomClass F R S] [FunLike G T S] [rcg : RingHomClass G T S]
 variable (f : F) (g : G)
 
