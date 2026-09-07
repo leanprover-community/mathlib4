@@ -142,7 +142,7 @@ lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet ht
   by_cases hp : p = 0
   · simpa [hp] using hX.aestronglyMeasurable.mono_ac (tilted_absolutelyContinuous _ _)
-  unfold MemLp
+  rw [memLp_iff]
   rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (hf :=
     hX.aestronglyMeasurable.mono_ac (tilted_absolutelyContinuous _ _))]
   rotate_left

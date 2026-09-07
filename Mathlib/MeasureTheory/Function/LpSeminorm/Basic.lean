@@ -261,7 +261,7 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
 
 theorem memLp_const_enorm {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) [IsFiniteMeasure μ] :
     MemLp (fun _ : α ↦ c) p μ := by
-  unfold MemLp
+  rw [memLp_iff]
   by_cases h0 : p = 0
   · simp [h0, aestronglyMeasurable_const]
   by_cases hμ : μ = 0
@@ -274,7 +274,7 @@ theorem memLp_const (c : E) [IsFiniteMeasure μ] : MemLp (fun _ : α => c) p μ 
 
 theorem memLp_top_const_enorm {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) :
     MemLp (fun _ : α ↦ c) ∞ μ := by
-  unfold MemLp
+  rw [memLp_iff]
   by_cases h : μ = 0 <;> simp [eLpNorm_const, h, hc.lt_top]
 
 theorem memLp_top_const (c : E) : MemLp (fun _ : α => c) ∞ μ :=
@@ -567,10 +567,10 @@ theorem memLp_congr_ae [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ]
     MemLp f p μ ↔ MemLp g p μ := by
   constructor
   · intro hf
-    unfold MemLp
+    rw [memLp_iff]
     rwa [← eLpNorm_congr_ae hfg]
   · intro hg
-    unfold MemLp
+    rw [memLp_iff]
     rwa [eLpNorm_congr_ae hfg]
 
 theorem MemLp.ae_eq [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g) (hf_Lp : MemLp f p μ) :
@@ -618,13 +618,13 @@ theorem memLp_congr_norm {f : α → E} {g : α → F} (hf : AEStronglyMeasurabl
 
 theorem memLp_top_of_bound_enorm {f : α → ε} (hf : AEStronglyMeasurable f μ) (C : ℝ≥0)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : MemLp f ∞ μ := by
-  unfold MemLp
+  rw [memLp_iff]
   rw [eLpNorm_exponent_top hf]
   exact eLpNormEssSup_lt_top_of_ae_enorm_bound hfC
 
 theorem memLp_top_of_bound {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : MemLp f ∞ μ := by
-  unfold MemLp
+  rw [memLp_iff]
   rw [eLpNorm_exponent_top hf]
   exact eLpNormEssSup_lt_top_of_ae_bound hfC
 
@@ -815,7 +815,7 @@ theorem eLpNorm_le_of_measure_le_smul {c : ℝ≥0∞} {μ μ' : Measure α} (h 
 
 theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
-  unfold MemLp
+  rw [memLp_iff]
   grw [eLpNorm_le_of_measure_le_smul hμ'_le]
   exact ENNReal.mul_lt_top (Ne.lt_top (by simp [hc])) hf
 
@@ -866,7 +866,7 @@ theorem MemLp.right_of_add_measure {f : α → ε} (h : MemLp f p (μ + ν)) :
 
 theorem MemLp.enorm {f : α → ε} (h : MemLp f p μ) : MemLp (‖f ·‖ₑ) p μ :=
   by
-    unfold MemLp
+    rw [memLp_iff]
     rw [MeasureTheory.eLpNorm_enorm _ h.aestronglyMeasurable
       h.aestronglyMeasurable.enorm.aestronglyMeasurable]
     exact h
@@ -877,14 +877,14 @@ theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖
 theorem memLp_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     MemLp (‖f ·‖ₑ) p μ ↔ MemLp f p μ :=
   ⟨fun h ↦ by
-    unfold MemLp
+    rw [memLp_iff]
     rw [← eLpNorm_enorm _ hf h.aestronglyMeasurable]
     exact h, fun h ↦ h.enorm⟩
 
 theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
   ⟨fun h ↦ by
-    unfold MemLp
+    rw [memLp_iff]
     rw [← eLpNorm_norm _ hf]
     exact h, fun h ↦ h.norm⟩
 
@@ -1055,11 +1055,11 @@ theorem _root_.MeasurableEmbedding.memLp_map_measure_iff (hf : MeasurableEmbeddi
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
   constructor
   · intro hg
-    unfold MemLp
+    rw [memLp_iff]
     rwa [← hf.eLpNorm_map_measure hg.aestronglyMeasurable]
   · intro hgf
     have hg := hf.aestronglyMeasurable_map_iff.2 hgf.aestronglyMeasurable
-    unfold MemLp
+    rw [memLp_iff]
     rwa [hf.eLpNorm_map_measure hg]
 
 theorem _root_.MeasurableEquiv.memLp_map_measure_iff (f : α ≃ᵐ β) :

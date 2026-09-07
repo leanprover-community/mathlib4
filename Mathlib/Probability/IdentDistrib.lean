@@ -223,7 +223,7 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g
 
 theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : MemLp f p μ) : MemLp g p ν := by
-  unfold MemLp
+  rw [memLp_iff]
   rw [← h.eLpNorm_eq]
   exact hf
 

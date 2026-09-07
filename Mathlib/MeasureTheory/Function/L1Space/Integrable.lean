@@ -923,7 +923,7 @@ theorem mem_L1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasu
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : MemLp (fun x ↦ (f x).toReal) 1 μ := by
   have hfm' : AEStronglyMeasurable (fun x ↦ (f x).toReal) μ :=
     (AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable
-  unfold MemLp
+  rw [memLp_iff]
   rw [eLpNorm_one_eq_lintegral_enorm hfm']
   exact hasFiniteIntegral_toReal_of_lintegral_ne_top hfi
 

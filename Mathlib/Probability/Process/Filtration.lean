@@ -471,7 +471,7 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
   · have hlim : AEStronglyMeasurable (Classical.choose h) μ :=
       StronglyMeasurable.aestronglyMeasurable
         ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _))
-    unfold MemLp
+    rw [memLp_iff]
     refine lt_of_le_of_lt
       (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ hlim (Classical.choose_spec h).2)
       (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))

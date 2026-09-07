@@ -135,7 +135,7 @@ theorem memLp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
   have hf : AEStronglyMeasurable[m] f μ :=
     mem_lpMeasSubgroup_iff_aestronglyMeasurable.mp hf_meas
   change MemLp (hf.mk f) p (μ.trim hm)
-  unfold MemLp
+  rw [memLp_iff]
   rw [eLpNorm_trim hm hf.stronglyMeasurable_mk]
   have heq : eLpNorm (hf.mk f) p μ = eLpNorm (f : α → F) p μ :=
     eLpNorm_congr_ae hf.ae_eq_mk.symm

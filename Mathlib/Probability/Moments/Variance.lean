@@ -113,7 +113,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   by_contra h
   rw [← Ne, ← lt_top_iff_ne_top] at h
   have : MemLp (fun ω => X ω - μ[X]) 2 μ := by
-    unfold MemLp
+    rw [memLp_iff]
     have hm : AEStronglyMeasurable (fun ω => X ω - μ[X]) μ :=
       (hXm.sub aestronglyMeasurable_const).congr <| by
         filter_upwards with x

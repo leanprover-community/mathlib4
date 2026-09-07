@@ -499,7 +499,7 @@ theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
     MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ := by
   have hfrpow : AEStronglyMeasurable (‖f ·‖ₑ ^ q.toReal) μ :=
     (hf.aestronglyMeasurable.enorm.pow_const q.toReal).aestronglyMeasurable
-  unfold MemLp
+  rw [memLp_iff]
   by_cases q_top : q = ∞
   · subst q
     simp only [ENNReal.toReal_top, ENNReal.rpow_zero, ENNReal.div_top,
@@ -527,7 +527,7 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
     MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ := by
   have hfrpow : AEStronglyMeasurable (fun x : α => ‖f x‖ ^ q.toReal) μ :=
     (hf.aestronglyMeasurable.norm.aemeasurable.pow_const q.toReal).aestronglyMeasurable
-  unfold MemLp
+  rw [memLp_iff]
   by_cases q_top : q = ∞
   · subst q
     simp only [ENNReal.toReal_top, Real.rpow_zero, ENNReal.div_top,

@@ -199,7 +199,7 @@ lemma integrable_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν] (n :
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ densityProcess κ ν n a x s) (ν a) := by
   rw [← memLp_one_iff_integrable]
-  unfold MemLp
+  rw [memLp_iff]
   exact (eLpNorm_densityProcess_le hκν n a hs).trans_lt (measure_lt_top _ _)
 
 lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteKernel ν]
@@ -492,7 +492,7 @@ lemma integrable_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ density κ ν a x s) (ν a) := by
   rw [← memLp_one_iff_integrable]
-  unfold MemLp
+  rw [memLp_iff]
   exact (eLpNorm_density_le hκν a hs).trans_lt (measure_lt_top _ _)
 
 lemma tendsto_setIntegral_densityProcess (hκν : fst κ ≤ ν)

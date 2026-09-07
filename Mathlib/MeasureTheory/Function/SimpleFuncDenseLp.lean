@@ -308,8 +308,7 @@ theorem memLp_of_finite_measure_preimage (p : ℝ≥0∞) {f : α →ₛ E}
   · rw [hp0, memLp_zero_iff_aestronglyMeasurable]; exact f.aestronglyMeasurable
   by_cases hp_top : p = ∞
   · rw [hp_top]; exact memLp_top f μ
-  unfold MemLp
-  rw [eLpNorm_eq_eLpNorm' hp0 hp_top f.aestronglyMeasurable, f.eLpNorm'_eq]
+  rw [memLp_iff, eLpNorm_eq_eLpNorm' hp0 hp_top f.aestronglyMeasurable, f.eLpNorm'_eq]
   refine ENNReal.rpow_lt_top_of_nonneg (by simp) (ENNReal.sum_lt_top.mpr fun y _ => ?_).ne
   by_cases hy0 : y = 0
   · simp [hy0, ENNReal.toReal_pos hp0 hp_top]
