@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.Order.Lattice
 
 /-!
@@ -476,6 +477,23 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
 end CompleteLinearOrder
 
 end IsUpper
+
+section LinearOrder
+
+variable (α : Type*) [LinearOrder α]
+
+theorem preorderTopology_le_lower_of_linearOrder : Preorder.topology α ≤ Topology.lower α :=
+  TopologicalSpace.generateFrom_anti fun s ⟨a, h⟩ ↦ ⟨a, by simp [← h]⟩
+
+theorem preorderTopology_le_upper_of_linearOrder : Preorder.topology α ≤ Topology.upper α :=
+  TopologicalSpace.generateFrom_anti fun s ⟨a, h⟩ ↦ ⟨a, by simp [← h]⟩
+
+theorem lower_inf_upper_of_linearOrder :
+    Topology.lower α ⊓ Topology.upper α = Preorder.topology α := by
+  unfold Topology.lower Topology.upper Preorder.topology
+  simp [generateFrom_union, Set.ofPred_or, exists_or, eq_comm, or_comm]
+
+end LinearOrder
 
 instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     [OrderBot α] [Preorder β] [TopologicalSpace β] [IsLower β] [OrderBot β] :
