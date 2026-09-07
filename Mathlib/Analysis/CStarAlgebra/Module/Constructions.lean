@@ -236,7 +236,7 @@ open Finset in
 noncomputable instance : CStarModule A C⋆ᵐᵒᵈ(A, Π i, E i) where
   inner x y := ∑ i, ⟪x i, y i⟫_A
   inner_add_right {x y z} := by simp [sum_add_distrib]
-  inner_self_nonneg := sum_nonneg <| fun _ _ ↦ CStarModule.inner_self_nonneg
+  inner_self_nonneg := sum_nonneg fun _ _ ↦ CStarModule.inner_self_nonneg
   inner_self {x} := by
     refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     ext i

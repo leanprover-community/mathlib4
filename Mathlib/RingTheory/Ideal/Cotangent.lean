@@ -240,7 +240,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 cotangent space `I ⧸ I ^ 2`. -/
 def lift (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
     I.Cotangent →ₗ[R] M where
-  __ := QuotientAddGroup.lift _ f.toAddMonoidHom <| fun x hx ↦ by
+  __ := QuotientAddGroup.lift _ f.toAddMonoidHom fun x hx ↦ by
     simp only [Submodule.mem_toAddSubgroup, AddMonoidHom.mem_ker] at hx ⊢
     refine Submodule.smul_induction_on hx (fun r hr y _ ↦ hf ⟨r, hr⟩ y) fun x y hx hy ↦ ?_
     simp only [map_add, hx, hy, add_zero]
@@ -272,9 +272,9 @@ end Lift
 /-- A linear isomorphism between cotangent spaces induced by an equality of ideals. -/
 def equivOfEq (I J : Ideal R) (hIJ : I = J) :
     I.Cotangent ≃ₗ[R] J.Cotangent where
-  __ := Cotangent.lift (J.toCotangent ∘ₗ LinearEquiv.ofEq I J hIJ) <| fun x y ↦ by
+  __ := Cotangent.lift (J.toCotangent ∘ₗ LinearEquiv.ofEq I J hIJ) fun x y ↦ by
     simp [toCotangent_eq_zero, ← hIJ, sq, mul_mem_mul]
-  invFun := Cotangent.lift (I.toCotangent ∘ₗ LinearEquiv.ofEq J I hIJ.symm) <| fun x y ↦ by
+  invFun := Cotangent.lift (I.toCotangent ∘ₗ LinearEquiv.ofEq J I hIJ.symm) fun x y ↦ by
     simp [toCotangent_eq_zero, hIJ, sq, mul_mem_mul]
   left_inv x := by
     subst hIJ

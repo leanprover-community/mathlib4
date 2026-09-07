@@ -525,7 +525,7 @@ theorem prod_le_prod_of_ne_one (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
 lemma one_lt_prod_iff {ι M : Type*} [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M]
     {f : ι → M} {s : Finset ι} : 1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x :=
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
-  Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le
+  Finset.one_lt_prod_iff_of_one_le fun _ _ => one_le
 
 /-- In a canonically-ordered monoid, if `S'` is contained in `(S.erase d) ∪ {d'}` and
 `f d' < f d` for some `d ∈ S`, then the product of `f` over `S'` is strictly less than over `S`. -/

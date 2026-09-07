@@ -666,7 +666,7 @@ theorem limsup_le_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
   · apply limsup_le_of_le h₁
     push +distrib Not at h'
     rcases h' with ⟨z, x_z, hz⟩
-    exact (h z x_z).mono <| fun w hw ↦ (or_iff_left (not_le_of_gt hw)).1 (hz (u w))
+    exact (h z x_z).mono fun w hw ↦ (or_iff_left (not_le_of_gt hw)).1 (hz (u w))
 
 /-- A version of `limsup_le_iff` with large inequalities in densely ordered spaces -/
 @[to_dual le_liminf_iff'
@@ -697,7 +697,7 @@ theorem le_limsup_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
   · apply le_limsup_of_frequently_le _ h₂
     push +distrib Not at h'
     rcases h' with ⟨z, z_x, hz⟩
-    exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_gt hw)).1 (hz (u w))
+    exact (h z z_x).mono fun w hw ↦ (or_iff_right (not_le_of_gt hw)).1 (hz (u w))
 
 /-- A version of `le_limsup_iff` with large inequalities in densely ordered spaces. -/
 @[to_dual liminf_le_iff'

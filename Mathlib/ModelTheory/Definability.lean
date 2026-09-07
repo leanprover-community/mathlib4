@@ -200,7 +200,7 @@ theorem definable_iff_finitely_definable :
   · simp only [definable_iff_exists_formula_sum]
     rintro ⟨φ, rfl⟩
     let A0 := (φ.freeVarFinset.toLeft).image Subtype.val
-    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.1
+    refine ⟨A0, by simp [A0], (φ.restrictFreeVar fun x => Sum.casesOn x.1
         (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.2), ?_⟩
     ext
     simp only [Formula.Realize, mem_ofPred_eq, Finset.coe_sort_coe]

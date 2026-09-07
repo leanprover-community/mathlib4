@@ -703,13 +703,13 @@ end PartialOrder
 lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] :
     krullDim α = (LTSeries.longestOf α).length :=
   le_antisymm
-    (iSup_le <| fun _ ↦ WithBot.coe_le_coe.mpr <| WithTop.coe_le_coe.mpr <|
+    (iSup_le fun _ ↦ WithBot.coe_le_coe.mpr <| WithTop.coe_le_coe.mpr <|
       RelSeries.length_le_length_longestOf _ _) <|
     le_iSup (fun (i : LTSeries _) ↦ (i.length : WithBot (WithTop ℕ))) <| LTSeries.longestOf _
 
 lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
     krullDim α = ⊤ :=
-  le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
+  le_antisymm le_top <| le_iSup_iff.mpr fun m hm ↦ match m, hm with
   | ⊥, hm => False.elim <| by
     have : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
     exact not_le_of_gt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
@@ -781,7 +781,7 @@ lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] :
   refine le_antisymm (height_le_krullDim _) ?_
   rw [krullDim_eq_length_of_finiteDimensionalOrder, height]
   norm_cast
-  exact le_iSup_iff.mpr <| fun _ h ↦ iSup_le_iff.mp (h _) le_rfl
+  exact le_iSup_iff.mpr fun _ h ↦ iSup_le_iff.mp (h _) le_rfl
 
 /--
 The Krull dimension is the supremum of the elements' heights.

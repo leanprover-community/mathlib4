@@ -333,8 +333,8 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
   obtain ⟨V, hxV, i, n, a, b, h, e⟩ := s.2 ⟨x, hxU⟩
   simp only [Subtype.forall, apply_mk] at e
   rw [stalkToFiberRingHom_germ, homogeneousLocalizationToStalk, e x hxV, Quotient.liftOn'_mk'']
-  refine Presheaf.germ_ext (C := CommRingCat) _ V hxV (homOfLE <| fun _ h' ↦ h ⟨_, h'⟩) i ?_
-  change ((Proj.structureSheaf 𝒜).presheaf.map (homOfLE <| fun _ h' ↦ h ⟨_, h'⟩).op) _ =
+  refine Presheaf.germ_ext (C := CommRingCat) _ V hxV (homOfLE fun _ h' ↦ h ⟨_, h'⟩) i ?_
+  change ((Proj.structureSheaf 𝒜).presheaf.map (homOfLE fun _ h' ↦ h ⟨_, h'⟩).op) _ =
     ((Proj.structureSheaf 𝒜).presheaf.map i.op) s
   apply Subtype.ext
   ext ⟨t, ht⟩

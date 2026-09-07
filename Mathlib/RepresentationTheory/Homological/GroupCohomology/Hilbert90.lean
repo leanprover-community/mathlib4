@@ -86,7 +86,7 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
     IsMulCoboundary₁ f := by
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux f z ≠ 0 :=
-    not_forall.1 (fun H => aux_ne_zero f <| funext <| fun x => H x)
+    not_forall.1 (fun H => aux_ne_zero f <| funext fun x => H x)
   have : aux f z = ∑ h, f h * h z := by simp [aux, Finsupp.linearCombination, Finsupp.sum_fintype]
 /- Let `β = (∑ f(h) * h(z))⁻¹.` -/
   use (Units.mk0 (aux f z) hz)⁻¹

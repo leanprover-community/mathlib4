@@ -249,7 +249,7 @@ def IsLimit.ofConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.ob
         eq_mpr_eq_cast, coneOfConeUncurry_pt, coneOfConeUncurry_π_app, S, E] at h2 ⊢
       simp [← h1, ← h2]
     uniq s f hf := P.uniq (s := S s) _ <|
-      fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
+      fun j ↦ (Q j).hom_ext fun k ↦ by simpa [S, E] using hf (j, k) }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -325,7 +325,7 @@ def IsColimit.ofCoconeUncurry {D : DiagramOfCocones F}
         eq_mpr_eq_cast, coconeOfCoconeUncurry_pt, coconeOfCoconeUncurry_ι_app, S, E] at h2 ⊢
       simp [← h1, ← h2]
     uniq s f hf := P.uniq (s := S s) _ <|
-      fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
+      fun j ↦ (Q j).hom_ext fun k ↦ by simpa [S, E] using hf (j, k) }
 
 section
 

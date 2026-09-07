@@ -141,7 +141,7 @@ section FloorDiv
 variable [FloorDiv α β] {a : α}
 
 @[simp] lemma floorDiv_one [IsOrderedRing α] [Nontrivial α] (b : β) : b ⌊/⌋ (1 : α) = b :=
-  eq_of_forall_le_iff <| fun c ↦ by simp [zero_lt_one' α]
+  eq_of_forall_le_iff fun c ↦ by simp [zero_lt_one' α]
 
 @[simp] lemma smul_floorDiv [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) (b : β) :
     a • b ⌊/⌋ a = b :=
@@ -153,7 +153,7 @@ section CeilDiv
 variable [CeilDiv α β] {a : α}
 
 @[simp] lemma ceilDiv_one [IsOrderedRing α] [Nontrivial α] (b : β) : b ⌈/⌉ (1 : α) = b :=
-  eq_of_forall_ge_iff <| fun c ↦ by simp [zero_lt_one' α]
+  eq_of_forall_ge_iff fun c ↦ by simp [zero_lt_one' α]
 
 @[simp] lemma smul_ceilDiv [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) (b : β) :
     a • b ⌈/⌉ a = b :=

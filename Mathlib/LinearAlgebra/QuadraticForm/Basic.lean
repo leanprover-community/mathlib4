@@ -787,7 +787,7 @@ variable {N' : Type*} [AddCommGroup N'] [Module R N']
 
 theorem _root_.QuadraticMap.polarBilin_comp (Q : QuadraticMap R N' N) (f : M →ₗ[R] N') :
     polarBilin (Q.comp f) = LinearMap.compl₁₂ (polarBilin Q) f f :=
-  LinearMap.ext₂ <| fun x y => by simp [polar]
+  LinearMap.ext₂ fun x y => by simp [polar]
 
 end
 

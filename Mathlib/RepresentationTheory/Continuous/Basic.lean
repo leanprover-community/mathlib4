@@ -370,7 +370,7 @@ theorem toContinuousLinearEquiv_apply (v : V) :
 open ContinuousLinearMap in
 /-- The equiv between continuous representations are symmetric. -/
 @[symm]
-def symm : Equiv σ ρ := mk φ.toContinuousLinearEquiv.symm <| fun g ↦ by
+def symm : Equiv σ ρ := mk φ.toContinuousLinearEquiv.symm fun g ↦ by
   rw [← cancel_left' (g := φ.toContinuousLinearEquiv.toContinuousLinearMap)
     φ.toContinuousLinearEquiv.injective, ← comp_assoc, ← comp_assoc]
   simp [φ.isIntertwining g, comp_assoc]
@@ -393,7 +393,7 @@ lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
 /-- Composition of two `Equiv`s. -/
 @[trans]
 def trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) : Equiv ρ τ := mk
-  (φ.toContinuousLinearEquiv.trans ψ.toContinuousLinearEquiv) <| fun g ↦ by
+  (φ.toContinuousLinearEquiv.trans ψ.toContinuousLinearEquiv) fun g ↦ by
   rw [← ContinuousLinearEquiv.comp_coe, comp_assoc,
     φ.isIntertwining, ← comp_assoc, ψ.isIntertwining, comp_assoc]
 
@@ -600,7 +600,7 @@ def coind₁ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
   subgroup of `G`. -/
 def coind₁Equivcoind : (coind₁ (.trivial R (⊥ : Subgroup G) V)).Equiv
   (coind 1 (.trivial R G V)) := .mk (Submodule.topContEquiv.symm.trans <|
-    ContinuousLinearEquiv.ofEq _ _ (by simp [SetLike.ext_iff])) <| fun g ↦ by
+    ContinuousLinearEquiv.ofEq _ _ (by simp [SetLike.ext_iff])) fun g ↦ by
     simp [Subsingleton.elim g 1, ContinuousLinearMap.one_def]
 
 section coind₁ResMap

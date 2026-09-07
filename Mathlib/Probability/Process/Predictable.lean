@@ -215,7 +215,7 @@ lemma of_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
   refine ⟨fun m ↦ SimpleFunc.mk (Y m) ?_ ?_, ?_⟩
   · intro s
     rw [(by aesop : Y m ⁻¹' {s} = ⋃ n : ℕ, {n} ×ˢ ((Function.curry (Y m) n) ⁻¹' {s}))]
-    refine MeasurableSet.iUnion <| fun n ↦ ?_
+    refine MeasurableSet.iUnion fun n ↦ ?_
     rcases n with rfl | n
     · apply measurableSet_predictable_singleton_bot_prod
       let : MeasurableSpace Ω := 𝓕 0

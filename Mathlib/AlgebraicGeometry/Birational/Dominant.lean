@@ -71,7 +71,7 @@ end PartialMap
 dominant underlying morphism. -/
 @[mk_iff, stacks 0A1Z]
 protected class RationalMap.IsDominant (f : X ⤏ Y) : Prop where
-  out : Quotient.liftOn f (fun g ↦ IsDominant g.hom) <| fun _ _ h ↦
+  out : Quotient.liftOn f (fun g ↦ IsDominant g.hom) fun _ _ h ↦
     propext (PartialMap.isDominant_hom_iff_of_equiv _ _ h)
 
 @[simp]

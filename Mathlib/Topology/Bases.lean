@@ -119,7 +119,7 @@ member of `s`, then `s` is a topological basis. -/
 theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
     (h_nhds : ∀ (a : α) (u : Set α), a ∈ u → IsOpen u → ∃ v ∈ s, a ∈ v ∧ v ⊆ u) :
     IsTopologicalBasis s :=
-  .of_hasBasis_nhds <| fun a ↦
+  .of_hasBasis_nhds fun a ↦
     (nhds_basis_opens a).to_hasBasis' (by simpa [and_assoc] using h_nhds a)
       fun _ ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
 

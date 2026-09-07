@@ -526,7 +526,7 @@ variable [Group G] {n m : ℤ}
 
 @[to_additive]
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
-  Monoid.exponent_dvd.mpr <| fun _ => orderOf_dvd_card
+  Monoid.exponent_dvd.mpr fun _ => orderOf_dvd_card
 
 @[to_additive]
 theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=

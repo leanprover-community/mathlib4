@@ -185,7 +185,7 @@ theorem isSimpleModule_iff_toSpanSingleton_surjective : IsSimpleModule R M ↔
   mpr := fun ⟨_, h⟩ ↦ (isSimpleModule_iff R M).mpr
     ⟨fun m ↦ or_iff_not_imp_left.mpr fun ne_bot ↦
       have ⟨x, hxm, hx0⟩ := m.ne_bot_iff.mp ne_bot
-      top_unique <| fun z _ ↦ by obtain ⟨y, rfl⟩ := h x hx0 z; exact m.smul_mem _ hxm⟩
+      top_unique fun z _ ↦ by obtain ⟨y, rfl⟩ := h x hx0 z; exact m.smul_mem _ hxm⟩
 
 /-- A ring is a simple module over itself iff it is a division ring. -/
 theorem isSimpleModule_self_iff_isUnit :

@@ -319,7 +319,7 @@ theorem liftPropWithinAt_indep_chart
     LiftPropWithinAt P g s x ↔
     ContinuousWithinAt g s x ∧ P (f ∘ g ∘ e.symm) (e.symm ⁻¹' s) (e x) := by
   simp only [liftPropWithinAt_iff']
-  exact and_congr_right <| fun h ↦ hG.liftPropWithinAt_indep_chart_aux' he xe hf xf h
+  exact and_congr_right fun h ↦ hG.liftPropWithinAt_indep_chart_aux' he xe hf xf h
 
 /-- A version of `liftPropWithinAt_indep_chart`, only for the source. -/
 theorem liftPropWithinAt_indep_chart_source (he : e ∈ G.maximalAtlas M) (xe : x ∈ e.source) :

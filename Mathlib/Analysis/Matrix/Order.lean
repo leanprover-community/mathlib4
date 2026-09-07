@@ -93,7 +93,7 @@ lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} := by
     ⋂ x : n →₀ 𝕜, {A | 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj} by aesop]
   refine IsClosed.inter ?_ ?_
   · exact isClosed_eq (by fun_prop) (by fun_prop)
-  · refine isClosed_iInter <| fun _ ↦ isClosed_le continuous_const ?_
+  · refine isClosed_iInter fun _ ↦ isClosed_le continuous_const ?_
     simp only [Finsupp.sum]
     fun_prop
 

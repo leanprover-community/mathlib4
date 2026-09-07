@@ -96,7 +96,7 @@ instance rTensor_nontrivial
   by_cases I_ne_top : I = ⊤
   · rw [Ideal.eq_top_iff_one, Submodule.mem_annihilator_span_singleton, one_smul] at I_ne_top
     contradiction
-  let inc : R ⧸ I →ₗ[R] N := Submodule.liftQ _ ((LinearMap.lsmul R N).flip n) <| fun r hr => by
+  let inc : R ⧸ I →ₗ[R] N := Submodule.liftQ _ ((LinearMap.lsmul R N).flip n) fun r hr => by
     simpa only [LinearMap.mem_ker, LinearMap.flip_apply, LinearMap.lsmul_apply,
       Submodule.mem_annihilator_span_singleton, I] using hr
   have injective_inc : Function.Injective inc := LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 <| by
@@ -416,8 +416,8 @@ lemma iff_exact_iff_rTensor_exact :
         Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
   ⟨fun fl _ _ _ _ _ _ _ _ _ l12 l23 => (rTensor_exact_iff_exact R M l12 l23).symm, fun iff_exact =>
     iff_flat_and_rTensor_reflects_triviality _ _ |>.2
-      ⟨Flat.iff_rTensor_exact.2 <| fun _ _ _ => iff_exact .. |>.1,
-    fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y => by
+      ⟨Flat.iff_rTensor_exact.2 fun _ _ _ => iff_exact .. |>.1,
+    fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 fun y => by
       simpa [eq_comm] using (iff_exact (0 : PUnit →ₗ[R] N) (0 : N →ₗ[R] PUnit) |>.2 fun x => by
         simpa using Subsingleton.elim _ _) y⟩⟩
 

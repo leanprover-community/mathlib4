@@ -262,7 +262,7 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
     ← Nat.sub_add_cancel (Nat.le_sub_of_add_le' <| add_one_le_of_lt hpd)]
   delta hilbertPoly
   apply natDegree_eq_of_le_of_coeff_ne_zero
-  · apply natDegree_sum_le_of_forall_le _ _ <| fun _ _ => ?_
+  · apply natDegree_sum_le_of_forall_le _ _ fun _ _ => ?_
     apply le_trans (natDegree_smul_le _ _)
     rw [natDegree_preHilbertPoly]
   · have : (fun (x : ℕ) (a : F) => a) = fun x a => a * 1 ^ x := by simp only [one_pow, mul_one]

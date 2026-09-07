@@ -440,7 +440,7 @@ theorem DenseRange.exists_seq_strictAnti_tendsto {β : Type*} [LinearOrder β] [
 theorem eventually_le_const_iff_forall_gt_eventually_lt_const [FirstCountableTopology α]
     {l : Filter γ} [CountableInterFilter l] {f : γ → α} {a : α} :
     (∀ᶠ x in l, f x ≤ a) ↔ ∀ b, a < b → ∀ᶠ x in l, f x < b where
-  mp h c hbc := h.mono <| fun x hx ↦ lt_of_le_of_lt hx hbc
+  mp h c hbc := h.mono fun x hx ↦ lt_of_le_of_lt hx hbc
   mpr h := by
     rcases exists_glb_Ioi a with ⟨d, hd⟩
     obtain rfl | H0 := glb_Ioi_eq_self_or_Ioi_eq_Ici _ hd
@@ -450,7 +450,7 @@ theorem eventually_le_const_iff_forall_gt_eventually_lt_const [FirstCountableTop
       replace h := fun n ↦ h (u n) (by grind)
       rw [← eventually_countable_forall] at h
       filter_upwards [h] with x hx
-      exact ge_of_tendsto hu_tt <| .of_forall <| fun n ↦ le_of_lt <| hx n
+      exact ge_of_tendsto hu_tt <| .of_forall fun n ↦ le_of_lt <| hx n
     · specialize h d <| by simp [← Set.mem_Ioi, H0]
       filter_upwards [h] with x hx
       rw [← Set.compl_Iic, ← Set.compl_Iio, compl_inj_iff] at H0

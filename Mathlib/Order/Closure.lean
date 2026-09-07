@@ -207,7 +207,7 @@ theorem isClosed_iff_closure_le : c.IsClosed x ↔ c x ≤ x :=
 
 theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <| by simpa [h] using c₂.closure_isGLB x
+  ext c₁ c₂ fun x => IsGLB.unique (c₁.closure_isGLB x) <| by simpa [h] using c₂.closure_isGLB x
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/

@@ -65,7 +65,7 @@ lemma ProperlyDiscontinuousSMul.ofFiniteRelIndex [MulAction Γ α] [ContinuousCo
   have hS' {g : Γ} (hg : g ∈ G) : ∃ t ∈ Subtype.val '' S, g * t⁻¹ ∈ H := by
     obtain ⟨p, hp⟩ := (hS.existsUnique ⟨g, hg⟩).exists
     aesop
-  refine (hT.biUnion <| fun t ht ↦ (this t).map fun g ↦ g * t).subset fun g ↦ ?_
+  refine (hT.biUnion fun t ht ↦ (this t).map fun g ↦ g * t).subset fun g ↦ ?_
   simp [mul_smul]
   grind
 
