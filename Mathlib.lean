@@ -6573,7 +6573,6 @@ public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Coinvariants
 public import Mathlib.RepresentationTheory.Continuous.Basic
-public import Mathlib.RepresentationTheory.Continuous.Sha
 public import Mathlib.RepresentationTheory.Continuous.TopRep
 public import Mathlib.RepresentationTheory.Equiv
 public import Mathlib.RepresentationTheory.FDRep
@@ -6582,6 +6581,7 @@ public import Mathlib.RepresentationTheory.FiniteIndex
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.LowDegree
+public import Mathlib.RepresentationTheory.Homological.ContCohomology.Sha
 public import Mathlib.RepresentationTheory.Homological.FiniteCyclic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
