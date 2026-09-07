@@ -64,6 +64,10 @@ protected theorem div_right_comm (a b c : ℕ) : a / b / c = a / c / b := by
 ### `pow`
 -/
 
+-- `Nat.pow_le_pow_right` has side condition `0 < n`, which `gcongr` discharges automatically via
+-- `positivity`, unlike the `1 ≤ a` side condition of the more general `pow_le_pow_right₀`.
+attribute [gcongr high] Nat.pow_le_pow_right
+
 lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_left hn]
 
