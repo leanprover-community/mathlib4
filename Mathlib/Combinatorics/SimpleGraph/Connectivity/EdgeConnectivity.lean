@@ -188,20 +188,13 @@ theorem isEdgeReachable_top_iff_forall_nat :
   cases this
   expose_names
   -- necessary else Fintype.card doesn't synthesize
-  have : Fintype s := by
-    exact this2.fintype
+  have : Fintype s := this2.fintype
   have := @h (n + 1) s
   apply this
-  have : Fintype.card ↑s = s.ncard := by
-    exact Set.fintypeCard_eq_ncard s
   -- possibly extracted into a lemma
   -- ↑s ≃ Fin n → s.ncard = n
-  have : s.ncard = n := by
-    calc
-      s.ncard = Fintype.card ↑s := this.symm
-      _ = Fintype.card (Fin n) := Fintype.card_congr a
-      _ = n := Fintype.card_fin n
-  simp [this, ← s.coe_ncard_eq_encard, ENat.natCast_lt_succ]
+  simp [← s.coe_ncard_eq_encard, ← s.fintypeCard_eq_ncard, Fintype.card_congr a,
+  ENat.natCast_lt_succ]
 
 theorem isEdgeConnected_top_iff_forall_nat :
     G.IsEdgeConnected ⊤ ↔ ∀ n : ℕ, G.IsEdgeConnected n := by
