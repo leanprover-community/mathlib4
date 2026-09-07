@@ -63,8 +63,8 @@ lemma toRepresentation_apply_mk {ρ' : Subrepresentation ρ} {g : G} {v w : W} {
     ρ'.toRepresentation g ⟨v, hv⟩ = ⟨w, hw⟩ ↔ ρ g v = w := by
   rw [Subtype.ext_iff]; rfl
 
-lemma toRepresentation_apply_coe {ρ' : Subrepresentation ρ} {g : G} {v w : ρ'.toSubmodule}
-    : ρ'.toRepresentation g v = w ↔ ρ g v.1 = w.1 := by
+lemma toRepresentation_apply_coe {ρ' : Subrepresentation ρ} {g : G} {v w : ρ'.toSubmodule} :
+    ρ'.toRepresentation g v = w ↔ ρ g v.1 = w.1 := by
   rw [Subtype.ext_iff]; rfl
 
 instance : Max (Subrepresentation ρ) where
