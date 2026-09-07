@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Data.Set.Functor
 
