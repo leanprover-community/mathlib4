@@ -514,6 +514,11 @@ protected lemma transpose :
   have hCpos : 0 < C := Finset.prod_pos fun j _ ↦ hd_pos j
   rwa [star_trivial, ← mul_pos_iff_of_pos_left hCpos]
 
+omit hM in
+@[simp] protected lemma transpose_iff :
+    Mᵀ.IsFiniteCartan ↔ M.IsFiniteCartan :=
+  ⟨fun h ↦ by simpa using h.transpose, IsFiniteCartan.transpose⟩
+
 end Matrix.IsFiniteCartan
 
 end

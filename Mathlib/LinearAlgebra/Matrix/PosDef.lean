@@ -627,7 +627,7 @@ lemma star_dotProduct_mulVec_mul_le {R : Type*}
   simp [hA.isHermitian.star_dotProduct_mulVec_comm, mulVec_sub, mulVec_smul]
   ring
 
-lemma finite_setOf_dotProduct_mulVec_le {A : Matrix n n ℤ} (hA : A.PosDef) (r : ℤ) :
+lemma finite_setOfPred_dotProduct_mulVec_le {A : Matrix n n ℤ} (hA : A.PosDef) (r : ℤ) :
     {v | v ⬝ᵥ A *ᵥ v ≤ r}.Finite := by
   classical
   set B : ℤ := ∑ j, |A j j * r| with hB
