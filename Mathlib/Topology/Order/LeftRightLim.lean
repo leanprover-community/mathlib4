@@ -57,11 +57,13 @@ noncomputable def Function.leftLim (f : α → β) (a : α) : β := by
 let `a : α`. The limit strictly to the right of `f` at `a`, denoted with `rightLim f a`, is defined
 by using the order topology on `α`. If `a` is isolated to its right or the function has no right
 limit, we use `f a` instead to guarantee a good behavior in most cases. -/
+@[to_dual existing]
 noncomputable def Function.rightLim (f : α → β) (a : α) : β :=
   @Function.leftLim αᵒᵈ β _ _ f a
 
 open Function
 
+@[to_dual]
 theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology α] [T2Space β]
     {f : α → β} {a : α} {y : β} [h : (𝓝[<] a).NeBot] (h' : Tendsto f (𝓝[<] a) (𝓝 y)) :
     leftLim f a = y := by

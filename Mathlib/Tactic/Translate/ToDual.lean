@@ -271,8 +271,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("rightOrdContinuous", "LeftOrdContinuous"),
   ("bihimp", "SymmDiff"),
   ("symmDiff", "Bihimp"),
-  ("leftLim", "RightLim"),
-  ("rightLim", "LeftLim"),
+  ("leftColim", "rightLim"),
+  ("rightColim", "leftLim"),
 
   -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
