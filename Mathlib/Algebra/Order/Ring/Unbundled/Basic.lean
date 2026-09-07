@@ -107,6 +107,12 @@ theorem mul_le_mul_of_nonpos_of_nonneg' [ExistsAddOfLE R] [PosMulMono R] [MulPos
     (hca : c ≤ a) (hbd : b ≤ d) (ha : 0 ≤ a) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonneg_left hbd ha).trans <| mul_le_mul_of_nonpos_right hca hd
 
+/-- Variant of `mul_le_mul_of_nonpos_of_nonneg` with sign assumptions on `a` and `d`. -/
+theorem mul_le_mul_of_nonpos_of_nonneg'' [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
+    [AddRightMono R] [AddRightReflectLE R]
+    (hac : a ≤ c) (hdb : d ≤ b) (ha : a ≤ 0) (hd : 0 ≤ d) : a * b ≤ c * d :=
+  (mul_le_mul_of_nonpos_left hdb ha).trans <| mul_le_mul_of_nonneg_right hac hd
+
 theorem mul_le_mul_of_nonpos_of_nonpos [ExistsAddOfLE R] [MulPosMono R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (hca : c ≤ a) (hdb : d ≤ b) (hc : c ≤ 0) (hb : b ≤ 0) : a * b ≤ c * d :=
