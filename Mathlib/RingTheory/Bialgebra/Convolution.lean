@@ -113,7 +113,7 @@ lemma convOne_apply (c : C) : (1 : WithConv <| C →ₐc[R] A) c = algebraMap R 
 
 @[simp]
 lemma toLinearMap_convOne :
-    toConv (SemilinearMap.ofClass (1 : WithConv <| C →ₐc[R] A).ofConv) = 1 := rfl
+    toConv (LinearMap.ofClass (1 : WithConv <| C →ₐc[R] A).ofConv) = 1 := rfl
 
 @[simp] lemma toAlgHom_convOne : toConv (1 : WithConv <| C →ₐc[R] A).ofConv.toAlgHom = 1 := rfl
 
