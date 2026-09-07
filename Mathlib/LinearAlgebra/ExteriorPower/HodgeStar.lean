@@ -27,7 +27,7 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensiona
 /-- The Hodge star associated to `B` and `vol`, in complementary degrees. -/
 @[simps!]
 noncomputable def hodgeStar (B : LinearMap.BilinForm K V) (hB : Bijective B)
-    (vol : ⋀[K]^(finrank K V) V) (hvol : vol ≠ 0) (k l : ℕ)
+    (vol : Dual K (⋀[K]^(finrank K V) V)) (hvol : Bijective vol) (k l : ℕ)
     (hkl : k + l = finrank K V) :
     ⋀[K]^k V ≃ₗ[K] ⋀[K]^l V := by
   let Bk := B.exteriorPower k
