@@ -23,7 +23,7 @@ The results are used to prove `Pi.Lex.wellFounded` and two variants, which say t
 `ι` is finite and equipped with a linear order and `(· < ·)` is well-founded on each `α i`,
 then the lexicographic `(· < ·)` is well-founded on `Π i, α i`, and the same is true for
 `Π₀ i, α i` (`DFinsupp.Lex.wellFounded_of_finite`), because `DFinsupp` is order-isomorphic
-to `pi` when `ι` is finite.
+to `Pi` when `ι` is finite.
 
 Finally, we deduce `DFinsupp.wellFoundedLT`, `Pi.wellFoundedLT`,
 `DFinsupp.wellFoundedLT_of_finite` and variants, which concern the product order
