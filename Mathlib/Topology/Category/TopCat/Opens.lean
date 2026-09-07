@@ -312,7 +312,7 @@ lemma mapMapIso_counitIso {X Y : TopCat.{u}} (H : X ≅ Y) :
 
 instance (f : X ⟶ Y) {J : Type w} [SmallCategory J] [FinCategory J] (K : J ⥤ (Opens Y)) :
     Limits.PreservesLimit K (map f) :=
-  inferInstanceAs <| Limits.PreservesLimit K (OrderHomClass.toOrderHom f.frameHom).toFunctor
+  inferInstanceAs <| Limits.PreservesLimit K (OrderHom.ofClass f.frameHom).toFunctor
 
 instance (f : X ⟶ Y) {J : Type w} [SmallCategory J] [FinCategory J] :
     Limits.PreservesLimitsOfShape J (map f) where
@@ -322,7 +322,7 @@ instance (f : X ⟶ Y) : Limits.PreservesFiniteLimits (map f) where
 
 instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] (K : J ⥤ (Opens Y)) :
     Limits.PreservesColimit K (map f) :=
-  inferInstanceAs <| Limits.PreservesColimit K (OrderHomClass.toOrderHom f.frameHom).toFunctor
+  inferInstanceAs <| Limits.PreservesColimit K (OrderHom.ofClass f.frameHom).toFunctor
 
 instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] :
     Limits.PreservesColimitsOfShape J (map f) where
