@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.Dimension.RankNullity
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.Data.Int.Interval
 public import Mathlib.Data.Int.SuccPred
-public import Mathlib.Algebra.BigOperators.Periodic
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
@@ -108,8 +107,7 @@ lemma moduleCatToCycles_range_finrank_eq
       LinearMap.range (C.sc i).moduleCatToCycles =
       (LinearMap.range (C.dTo i).hom).comap
         (LinearMap.ker (C.dFrom i).hom).subtype := by
-    rw [LinearMap.range_codRestrict]
-    congr 1
+    exact LinearMap.range_codRestrict _ _ _
   rw [range_formula]
   have h_le := range_dTo_le_ker_dFrom C i
   rw [← LinearEquiv.finrank_eq
@@ -153,7 +151,7 @@ lemma chain_dimension_decomposition
 
 private lemma finrank_eq_zero_of_isZero (M : ModuleCat k)
     (h : IsZero M) : Module.finrank k M = 0 := by
-  haveI := ModuleCat.subsingleton_of_isZero h
+  have := ModuleCat.subsingleton_of_isZero h
   exact Module.finrank_zero_of_subsingleton
 
 private lemma isZero_outside_Ico (C : ChainComplex (ModuleCat k) ℤ) (a b i : ℤ)
@@ -257,8 +255,11 @@ theorem eulerChar_eq_homologyEulerChar
           ↑(Module.finrank k ↥(LinearMap.range (C.dFrom (x + 1)).hom))
     from Finset.sum_congr rfl fun x _ => by
       rw [dFrom_succ_range_finrank_eq_dTo C x]]
-  have hw : Function.Antiperiodic (fun j : ℤ => (-1 : ℤ) ^ j.natAbs) 1 :=
+  -- Shift the second sum's index by one; the sign flips, so the two sums cancel.
+  have hw : ∀ j : ℤ, (-1 : ℤ) ^ (j + 1).natAbs = -(-1) ^ j.natAbs :=
     fun j => by simp [← Int.coe_negOnePow, Int.negOnePow_succ]
-  exact hw.sum_Ico_mul_add_sum_Ico_mul_shift_eq_zero _ a b
+  rw [← Finset.sum_Ico_add' (fun x => (-1 : ℤ) ^ x.natAbs *
+    ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom))) a b 1]
+  simp_rw [hw, neg_mul, Finset.sum_neg_distrib, neg_add_cancel]
 
 end ChainComplex
