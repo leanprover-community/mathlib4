@@ -165,6 +165,7 @@ public import Mathlib.Tactic.InferParam
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
+public import Mathlib.Tactic.IsolateRoots
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Linarith
@@ -276,6 +277,7 @@ public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Polynomial.Basic
 public import Mathlib.Tactic.Polynomial.Core
+public import Mathlib.Tactic.Polynomial.Hex
 public import Mathlib.Tactic.Polyrith
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Positivity.Basic
