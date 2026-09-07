@@ -208,13 +208,12 @@ theorem isCompactElement_finsetSup {α β : Type*} [CompleteLattice α] {f : β 
     specialize h d hemp hdir (le_trans (Finset.le_sup hps) hsup)
     simpa only [exists_prop]
 
-lemma _root_.IsCompactElement.exists_finset_eq_sup_of_eq_sSup {x : α} (hx : IsCompactElement x)
-    {s : Set α} (h : x = sSup s) : ∃ t : Finset α, ↑t ⊆ s ∧ x = t.sup id := by
-  obtain ⟨t, ht, hle⟩ := isCompactElement_iff_exists_le_sSup_of_le_sSup α x |>.mp hx s h.le
+lemma exists_finset_sup_eq_of_isCompactElement_sSup
+    {s : Set α} (h : IsCompactElement (sSup s)) : ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = sSup s := by
+  obtain ⟨t, ht, hle⟩ := isCompactElement_iff_exists_le_sSup_of_le_sSup α _ |>.mp h s le_rfl
   use t, ht
-  apply hle.antisymm
-  rw [Finset.sup_eq_sSup_image, Set.image_id]
-  exact (sSup_le_sSup ht).trans h.ge
+  rw [t.sup_id_eq_sSup] at hle ⊢
+  exact (sSup_le_sSup ht).antisymm hle
 
 theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
     IsSupFiniteCompact α := fun s => by
@@ -722,9 +721,9 @@ lemma isCompactElement_iff_of_isAtomistic [IsAtomistic α] (x : α) :
     IsCompactElement x ↔ ∃ t : Finset α, (∀ y ∈ t, IsAtom y) ∧ x = t.sup id := by
   constructor
   · intro h
-    obtain ⟨s, heq, hs⟩ := eq_sSup_atoms x
-    obtain ⟨t, ht, hsup⟩ := h.exists_finset_eq_sup_of_eq_sSup α heq
-    use t, fun y hy => hs y (ht hy), hsup
+    obtain ⟨s, rfl, hs⟩ := eq_sSup_atoms x
+    obtain ⟨t, ht, hsup⟩ := CompleteLattice.exists_finset_sup_eq_of_isCompactElement_sSup _ h
+    use t, fun y hy => hs y (ht hy), hsup.symm
   · rintro ⟨t, ht, rfl⟩
     apply CompleteLattice.isCompactElement_finsetSup t
     exact fun x hx => (ht x hx).isCompactElement
