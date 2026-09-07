@@ -37,7 +37,7 @@ open scoped Pointwise
 
 section CommRing
 
-variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
+variable {S : Type*} [CommRing S] {f : R →+* S}
 
 variable {p : Ideal R} {P : Ideal S}
 

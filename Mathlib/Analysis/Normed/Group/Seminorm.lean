@@ -5,9 +5,9 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.NNReal.Defs
-public import Mathlib.Order.ConditionallyCompleteLattice.Group
+public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Data.FunLike.Module
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Group seminorms
@@ -48,7 +48,7 @@ norm, seminorm
 
 @[expose] public section
 
-assert_not_exists Finset
+assert_not_exists Finset SeminormedGroup SeminormedAddGroup
 
 open Set
 
@@ -104,7 +104,7 @@ structure AddGroupNorm (G : Type*) [AddGroup G] extends AddGroupSeminorm G where
   /-- If the image under the seminorm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 
-/-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
+/-- A norm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` and `f x = 0 → x = 1` for all `x`. -/
 @[to_additive]
 structure GroupNorm (G : Type*) [Group G] extends GroupSeminorm G where

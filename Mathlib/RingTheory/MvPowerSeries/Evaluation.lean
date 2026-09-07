@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
@@ -46,7 +45,7 @@ Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properti
 
 namespace MvPowerSeries
 
-open Topology
+open scoped Topology
 
 open Filter MvPolynomial RingHom Set TopologicalSpace UniformSpace
 

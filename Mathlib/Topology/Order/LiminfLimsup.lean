@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.Topology.Order.Monotone
 

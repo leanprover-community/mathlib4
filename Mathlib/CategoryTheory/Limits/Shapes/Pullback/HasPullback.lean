@@ -5,6 +5,7 @@ Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Ca
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
 /-!
@@ -636,13 +637,11 @@ section
 variable {X Y : C} (f : X ⟶ Y) (Z : C) [HasBinaryProduct Y Z] [HasBinaryProduct X Z]
   [HasPullback f (prod.fst : Y ⨯ Z ⟶ _)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdFstIsoProd_hom_fst :
     (pullbackProdFstIsoProd f Z).hom ≫ prod.fst = pullback.fst _ _ := by
   simp [pullbackProdFstIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdFstIsoProd_hom_snd :
     (pullbackProdFstIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ ≫ prod.snd := by
@@ -685,13 +684,11 @@ noncomputable def pullbackProdSndIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
 variable {X Y : C} (f : X ⟶ Y) (Z : C) [HasBinaryProduct Z Y] [HasBinaryProduct Z X]
   [HasPullback (prod.snd : Z ⨯ Y ⟶ Y) f]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdSndIsoProd_hom_fst :
     (pullbackProdSndIsoProd f Z).hom ≫ prod.fst = pullback.fst _ _ ≫ prod.fst := by
   simp [pullbackProdSndIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdSndIsoProd_hom_snd :
     (pullbackProdSndIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ := by

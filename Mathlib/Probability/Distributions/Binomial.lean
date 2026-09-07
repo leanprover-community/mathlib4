@@ -5,13 +5,11 @@ Authors: Yaël Dillies, Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.SetBernoulli
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
-import Mathlib.Probability.Notation
 
 /-!
 # Binomial random variables
@@ -73,11 +71,9 @@ lemma binomial_zero : Bin(0, p) = dirac 0 := by simp [binomial]
 lemma map_cast_binomial_zero : Bin(R, 0, p) = dirac 0 := by
   simp [binomial, map_dirac' .of_discrete]
 
-instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(n, p) :=
-  isProbabilityMeasure_map <| by fun_prop
-
-instance isProbabilityMeasure_map_cast_binomial : IsProbabilityMeasure Bin(R, n, p) :=
-  isProbabilityMeasure_map .of_discrete
+instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(n, p) := by
+  rw [binomial]
+  infer_instance
 
 lemma ae_le_of_hasLaw_binomial {X : Ω → ℕ} (hX : HasLaw X Bin(n, p) P) : ∀ᵐ ω ∂P, X ω ≤ n := by
   rw [hX.ae_iff (p := (· ≤ n)) <| by fun_prop, binomial,
@@ -127,14 +123,13 @@ lemma binomial_real_self (n : ℕ) (p : I) :
 lemma map_cast_binomial_real_self [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
     Bin(R, n, p).real {(n : R)} = p ^ n := by simp [map_cast_binomial_real_singleton]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma binomial_one_eq_bernoulliMeasure (p : I) :
     Bin(1, p) = Ber(1, 0, p) := by
   refine ext_of_measureReal_singleton fun k ↦ ?_
   match k with
   | 0 | 1 => simp
-  | k + 2 => simp [binomial_real_singleton]
+  | k + 2 => simp [binomial_real_singleton, Nat.choose_eq_zero_of_lt]
 
 lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
     Bin(n, p) =
@@ -150,7 +145,7 @@ lemma map_cast_binomial_eq_sum_dirac [MeasurableSingletonClass R] (n : ℕ) (p :
       ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) •
         dirac (k : R) := by
   rw [binomial_eq_sum_dirac, Measure.map_finset_sum .of_discrete]
-  exact Finset.sum_congr rfl fun _ _ ↦ by rw [Measure.map_smul, map_dirac]
+  exact Finset.sum_congr rfl fun _ _ ↦ by rw [Measure.map_smul _ (by fun_prop), map_dirac]
 
 section Integral
 
