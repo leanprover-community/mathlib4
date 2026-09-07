@@ -182,7 +182,7 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] :
   contrapose! hvT
   simp [T, HeightOneSpectrum.Support, integer_valuation_le_one S K z hvS]
 
-/-- The ring of `S`-integers is a localization of `R` at the multiplicative set `S`. -/
+/-- When every class in the class group has finite order, the ring of `S`-integers is a localization of `R` at the multiplicative set `S`. -/
 instance IsLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
     IsLocalization (Localization.submonoid S) <| S.integer K where
   map_units := by
@@ -197,7 +197,7 @@ instance IsLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
   exists_of_eq := fun h ↦
     ⟨1, by simpa using (IsFractionRing.injective R K (congrArg Subtype.val h))⟩
 
-/-- The ring of `S`-integers is a Dedekind domain. -/
+/-- The ring of `S`-integers is a Dedekind domain when the every element in class group has finite order. -/
 instance isDedekindDomainSInteger [Fact (IsMulTorsion (ClassGroup R))] :
     IsDedekindDomain (S.integer K) :=
   IsLocalization.isDedekindDomain _

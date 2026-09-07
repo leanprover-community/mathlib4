@@ -127,7 +127,7 @@ theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
 
 /-- The elements lying outside every ideal in a set of prime ideals form a submonoid. -/
 def iInfPrimeCompl {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) : Submonoid α :=
-  ⨅ P : S, P.val.primeCompl (hp := hS P.val P.prop)
+  ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption))
 
 lemma iInfPrimeCompl_def {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) :
     iInfPrimeCompl hS = ⨅ P : S, P.val.primeCompl (hp := hS P.val P.prop) := rfl
