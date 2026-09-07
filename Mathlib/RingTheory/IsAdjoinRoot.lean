@@ -63,8 +63,6 @@ open Module Polynomial
 
 noncomputable section
 
-universe u v
-
 -- This class doesn't really make sense on a predicate
 /-- `IsAdjoinRoot S f` states that the ring `S` can be constructed by adjoining a specified root
 of the polynomial `f : R[X]` to `R`.
@@ -75,7 +73,7 @@ and `AdjoinRoot` which constructs a new type.
 
 This is not a typeclass because the choice of root given `S` and `f` is not unique.
 -/
-structure IsAdjoinRoot {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
+structure IsAdjoinRoot.{u,v} {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) : Type max u v where
   map : R[X] →ₐ[R] S
   map_surjective : Function.Surjective map
@@ -92,8 +90,8 @@ we have `IsAdjoinRootMonic.powerBasis`.
 Bundling `Monic` into this structure is very useful when working with explicit `f`s such as
 `X^2 - C a * X - C b` since it saves you carrying around the proofs of monicity.
 -/
-structure IsAdjoinRootMonic {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
-    (f : R[X]) extends IsAdjoinRoot S f where
+structure IsAdjoinRootMonic.{u,v} {R : Type u} (S : Type v) [CommSemiring R] [Semiring S]
+    [Algebra R S] (f : R[X]) extends IsAdjoinRoot S f where
   monic : Monic f
 
 section Ring
