@@ -479,7 +479,7 @@ theorem toBoolRing_symmDiff (a b : α) : toBoolRing (a ∆ b) = toBoolRing a + t
 
 @[simp]
 theorem toBoolRing_compl (a : α) : toBoolRing aᶜ = 1 + toBoolRing a := by
-  rw [← top_symmDiff, toBoolRing_symmDiff, toBoolRing_top]
+  rw [← hnot_eq_compl, ← top_symmDiff, toBoolRing_symmDiff, toBoolRing_top]
 
 @[simp]
 theorem toBoolRing_sup (a b : α) :
