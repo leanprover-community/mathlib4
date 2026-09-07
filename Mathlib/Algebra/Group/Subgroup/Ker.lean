@@ -81,6 +81,11 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 @[to_additive]
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
 
+/-- The image of `⊤` under a group homomorphism equals its range. -/
+@[to_additive]
+theorem _root_.Subgroup.map_top (f : G →* N) : (⊤ : Subgroup G).map f = f.range :=
+  (range_eq_map f).symm
+
 @[to_additive (attr := simp)]
 theorem comap_range_self (f : G →* N) : f.range.comap f = ⊤ := by
   ext
@@ -633,6 +638,6 @@ open MonoidHom in
 lemma map_range_powMonoidHom (e : M ≃* N) (n : ℕ) :
     (powMonoidHom (α := M) n).range.map e = (powMonoidHom (α := N) n).range := by
   have H : (e : M →* N).comp (powMonoidHom n) = (powMonoidHom n).comp e := by ext : 1; simp
-  rw [map_range, H, range_comp, e.range_eq_top, ← range_eq_map]
+  rw [map_range, H, range_comp, e.range_eq_top, Subgroup.map_top]
 
 end MulEquiv

@@ -29,15 +29,11 @@ contains a unique prime field: it is the smallest field contained in `K`.
 
 public section
 
-instance : Subsingleton (Subfield ℚ) := subsingleton_of_top_le_bot fun x _ ↦
-  have h := Subsingleton.elim ((⊥ : Subfield ℚ).subtype.comp (Rat.castHom _)) (.id _ : ℚ →+* ℚ)
-  (congr($h x) : _ = x) ▸ Subtype.prop _
+instance : Subsingleton (Subfield ℚ) :=
+  subsingleton_of_top_le_bot fun x _ ↦ by simpa using SubfieldClass.ratCast_mem (⊥ : Subfield ℚ) x
 
 instance (p : ℕ) [hp : Fact (Nat.Prime p)] : Subsingleton (Subfield (ZMod p)) :=
-  subsingleton_of_top_le_bot fun x _ ↦
-    have h := Subsingleton.elim ((⊥ : Subfield (ZMod p)).subtype.comp
-      (ZMod.castHom dvd_rfl _)) (.id _ : ZMod p →+* ZMod p)
-    (congr($h x) : _ = x) ▸ Subtype.prop _
+  subsingleton_of_top_le_bot fun x _ ↦ by simpa using natCast_mem (⊥ : Subfield (ZMod p)) x.val
 
 /--
 The smallest subfield of a field of characteristic `0` is (the image of) `ℚ`.

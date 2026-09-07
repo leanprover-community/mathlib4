@@ -201,7 +201,7 @@ lemma dist_orthogonalProjection_eq_iff_oangle_eq {p p' : P} {s₁ s₂ : AffineS
     (dist p (orthogonalProjection s₁ p) = dist p (orthogonalProjection s₂ p) ↔
       ∡ (orthogonalProjection s₁ p : P) p' p = ∡ p p' (orthogonalProjection s₂ p)) :=
   fun hne hp₁ hp₂ ↦ ⟨oangle_eq_of_dist_orthogonalProjection_eq hp'₁ hp'₂ hne,
-   dist_orthogonalProjection_eq_of_oangle_eq hp'₁ hp'₂ hp₁ hp₂⟩
+    dist_orthogonalProjection_eq_of_oangle_eq hp'₁ hp'₂ hp₁ hp₂⟩
 
 /-- A point `p` is equidistant to two affine subspaces (typically lines, for this version of the
 lemma) if twice the oriented angles at a point `p'` in their intersection between `p` and its
