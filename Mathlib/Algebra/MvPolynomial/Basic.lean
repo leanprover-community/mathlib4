@@ -651,7 +651,7 @@ theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : (C a * p).coeff m = a 
 
 theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ) :
     (p * q).coeff n = ∑ x ∈ Finset.antidiagonal n, p.coeff x.1 * q.coeff x.2 :=
-  AddMonoidAlgebra.coeff_mul_antidiag p q _ _ Finset.mem_antidiagonal
+  AddMonoidAlgebra.coeff_mul_antidiagonal p q _ _ Finset.mem_antidiagonal
 
 @[simp]
 theorem coeff_mul_monomial (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :

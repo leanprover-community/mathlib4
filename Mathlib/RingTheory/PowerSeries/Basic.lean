@@ -637,10 +637,10 @@ variable {R : Type*} [CommSemiring R] {ι : Type*}
 
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
-    coeff d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff (l i) (f i) := by
+    coeff d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiagonal s d, ∏ i ∈ s, coeff (l i) (f i) := by
   simp only [coeff]
   rw [MvPowerSeries.coeff_prod, ← Finsupp.uniqueAddEquiv_symm_apply _ d,
-    ← mapRange_finsuppAntidiag_eq, sum_map]
+    ← mapRange_finsuppAntidiagonal_eq, sum_map]
   rfl
 
 theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
@@ -653,7 +653,7 @@ theorem monomial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial
 
 /-- The `n`-th coefficient of the `k`-th power of a power series. -/
 lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :
-    coeff n (φ ^ k) = ∑ l ∈ finsuppAntidiag (range k) n, ∏ i ∈ range k, coeff (l i) φ := by
+    coeff n (φ ^ k) = ∑ l ∈ finsuppAntidiagonal (range k) n, ∏ i ∈ range k, coeff (l i) φ := by
   have h₁ (i : ℕ) : Function.const ℕ φ i = φ := rfl
   have h₂ (i : ℕ) : ∏ j ∈ range i, Function.const ℕ φ j = φ ^ i := by
     apply prod_range_induction (fun _ => φ) (fun i => φ ^ i) rfl i (fun _ => congrFun rfl)

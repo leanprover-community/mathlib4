@@ -675,16 +675,16 @@ set_option backward.isDefEq.respectTransparency false in
 theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) =
-      ∑ l ∈ finsuppAntidiag s d,
+      ∑ l ∈ finsuppAntidiagonal s d,
         ∏ i ∈ s, coeff (l i) (f i) := by
   induction s using Finset.induction_on generalizing d with
   | empty =>
-    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, finsuppAntidiag_empty]
+    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, finsuppAntidiagonal_empty]
     split_ifs
     · simp only [card_singleton, Nat.cast_one]
     · simp only [card_empty, Nat.cast_zero]
   | insert a s ha ih =>
-    rw [finsuppAntidiag_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
+    rw [finsuppAntidiagonal_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
       simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
       rintro u v rfl
@@ -714,10 +714,10 @@ theorem prod_monomial (f : ι → σ →₀ ℕ) (g : ι → R) (s : Finset ι) 
   | cons a s ha h => simp [h, monomial_mul_monomial]
 
 /-- The `d`th coefficient of a power of a multivariate power series
-is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients -/
+is the sum, indexed by `finsuppAntidiagonal (Finset.range n) d`, of products of coefficients -/
 theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ →₀ ℕ) :
     coeff d (f ^ n) =
-      ∑ l ∈ finsuppAntidiag (Finset.range n) d,
+      ∑ l ∈ finsuppAntidiagonal (Finset.range n) d,
         ∏ i ∈ Finset.range n, coeff (l i) f := by
   suffices f ^ n = (Finset.range n).prod fun _ ↦ f by
     rw [this, coeff_prod]
@@ -738,7 +738,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
   rw [coeff_pow]
   apply sum_eq_zero
   intro k hk
-  rw [mem_finsuppAntidiag] at hk
+  rw [mem_finsuppAntidiagonal] at hk
   set s := {i ∈ range n | k i = 0} with hs_def
   have hs : s ⊆ range n := filter_subset _ _
   have hs' (i : ℕ) (hi : i ∈ s) : coeff (k i) f = constantCoeff f := by

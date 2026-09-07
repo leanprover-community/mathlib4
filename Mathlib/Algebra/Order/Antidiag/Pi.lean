@@ -18,20 +18,20 @@ This file provides the finset of functions summing to a specific value on a fins
 should be thought of as the "antidiagonals" in the space of functions.
 
 Precisely, for a commutative monoid `μ` with antidiagonals (see `Finset.HasAntidiagonal`),
-`Finset.piAntidiag s n` is the finset of all functions `f : ι → μ` with support contained in `s` and
-such that the sum of its values equals `n : μ`.
+`Finset.piAntidiagonal s n` is the finset of all functions `f : ι → μ` with support contained in `s`
+and such that the sum of its values equals `n : μ`.
 
 We define it recursively on `s` using `Finset.HasAntidiagonal.antidiagonal : μ → Finset (μ × μ)`.
 Technically, we non-canonically identify `s` with `Fin n` where `n = s.card`, recurse on `n` using
 that `(Fin (n + 1) → μ) ≃ (Fin n → μ) × μ`, and show the end result doesn't depend on our
-identification. See `Finset.finAntidiag` for the details.
+identification. See `Finset.finAntidiagonal` for the details.
 
 ## Main declarations
 
-* `Finset.piAntidiag s n`: Finset of all functions `f : ι → μ` with support contained in `s` and
+* `Finset.piAntidiagonal s n`: Finset of all functions `f : ι → μ` with support contained in `s` and
   such that the sum of its values equals `n : μ`.
-* `Finset.finAntidiagonal d n`: Computationally efficient special case of `Finset.piAntidiag` when
-  `ι := Fin d`.
+* `Finset.finAntidiagonal d n`: Computationally efficient special case of `Finset.piAntidiagonal`
+  when `ι := Fin d`.
 
 ## TODO
 
@@ -39,7 +39,7 @@ identification. See `Finset.finAntidiag` for the details.
 
 ## See also
 
-`Finset.finsuppAntidiag` for the `Finset (ι →₀ μ)`-valued version of `Finset.piAntidiag`.
+`Finset.finsuppAntidiagonal` for the `Finset (ι →₀ μ)`-valued version of `Finset.piAntidiagonal`.
 -/
 
 @[expose] public section
@@ -103,7 +103,7 @@ choice.
 -/
 
 /-- The finset of functions `ι → μ` with support contained in `s` and sum `n`. -/
-def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
+def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι → μ) := by
   refine (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s).lift
     (fun e ↦ (finAntidiagonal s.card n).map ⟨fun f i ↦ if hi : i ∈ s then f (e ⟨i, hi⟩) else 0, ?_⟩)
     fun e₁ e₂ ↦ ?_
@@ -117,10 +117,12 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
     have := Fintype.sum_equiv (e₂.symm.trans e₁) _ g fun _ ↦ rfl
     simp_all
 
+@[deprecated (since := "2026-09-06")] alias piAntidiag := piAntidiagonal
+
 variable {s : Finset ι} {n : μ} {f : ι → μ}
 
-@[simp] lemma mem_piAntidiag : f ∈ piAntidiag s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
-  rw [piAntidiag]
+@[simp] lemma mem_piAntidiagonal : f ∈ piAntidiagonal s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
+  rw [piAntidiagonal]
   induction Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with | _ e
   simp only [Trunc.lift_mk, mem_map, mem_finAntidiagonal, Embedding.coeFn_mk]
   constructor
@@ -132,24 +134,37 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
     rw [← sum_attach s]
     exact Fintype.sum_equiv e.symm _ _ (by simp)
 
-@[simp] lemma piAntidiag_empty_zero : piAntidiag (∅ : Finset ι) (0 : μ) = {0} := by
+@[deprecated (since := "2026-09-06")] alias mem_piAntidiag := mem_piAntidiagonal
+
+@[simp] lemma piAntidiagonal_empty_zero : piAntidiagonal (∅ : Finset ι) (0 : μ) = {0} := by
   ext; simp [funext_iff]
 
-@[simp] lemma piAntidiag_empty_of_ne_zero (hn : n ≠ 0) : piAntidiag (∅ : Finset ι) n = ∅ :=
+@[deprecated (since := "2026-09-06")] alias piAntidiag_empty_zero := piAntidiagonal_empty_zero
+
+@[simp] lemma piAntidiagonal_empty_of_ne_zero (hn : n ≠ 0) : piAntidiagonal (∅ : Finset ι) n = ∅ :=
   eq_empty_of_forall_notMem (by simp [hn.symm])
 
-lemma piAntidiag_empty (n : μ) : piAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
+@[deprecated (since := "2026-09-06")]
+alias piAntidiag_empty_of_ne_zero := piAntidiagonal_empty_of_ne_zero
+
+lemma piAntidiagonal_empty (n : μ) :
+    piAntidiagonal (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
   split_ifs with hn <;> simp [*]
 
-lemma finset_congr_piAntidiag_eq_antidiag (n : μ) :
-    (Equiv.boolArrowEquivProd _).finsetCongr (piAntidiag univ n) = antidiagonal n := by
+@[deprecated (since := "2026-09-06")] alias piAntidiag_empty := piAntidiagonal_empty
+
+lemma finset_congr_piAntidiagonal_eq_antidiagonal (n : μ) :
+    (Equiv.boolArrowEquivProd _).finsetCongr (piAntidiagonal univ n) = antidiagonal n := by
   ext ⟨x₁, x₂⟩
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk,
     ← Equiv.eq_symm_apply]
   simp [add_comm]
 
+@[deprecated (since := "2026-09-06")]
+alias finset_congr_piAntidiag_eq_antidiag := finset_congr_piAntidiagonal_eq_antidiagonal
+
 @[deprecated (since := "2026-08-11")]
-alias finsetCongr_piAntidiag_eq_antidiag := finset_congr_piAntidiag_eq_antidiag
+alias finsetCongr_piAntidiag_eq_antidiag := finset_congr_piAntidiagonal_eq_antidiagonal
 
 end AddCommMonoid
 
@@ -157,22 +172,26 @@ section AddCancelCommMonoid
 variable [DecidableEq ι] [AddCancelCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {i : ι}
   {s : Finset ι}
 
-lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) :
+lemma pairwiseDisjoint_piAntidiagonal_map_addRightEmbedding (hi : i ∉ s) (n : μ) :
     (antidiagonal n : Set (μ × μ)).PairwiseDisjoint fun p ↦
-      map (addRightEmbedding fun j ↦ if j = i then p.1 else 0) (s.piAntidiag p.2) := by
+      map (addRightEmbedding fun j ↦ if j = i then p.1 else 0) (s.piAntidiagonal p.2) := by
   rintro ⟨a, b⟩ hab ⟨c, d⟩ hcd
   simp only [ne_eq, HasAntidiagonal.antidiagonal_congr' hab hcd, disjoint_left, mem_map,
-    mem_piAntidiag, addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
+    mem_piAntidiagonal, addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
   rintro hfg _ f rfl - rfl g rfl - hgf
   exact hfg <| by simpa [sum_add_distrib, hi] using congr_arg (∑ j ∈ s, · j) hgf.symm
 
-lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
-    piAntidiag (cons i s hi) n = (antidiagonal n).disjiUnion (fun p : μ × μ ↦
-      (piAntidiag s p.snd).map (addRightEmbedding fun t ↦ if t = i then p.fst else 0))
-        (pairwiseDisjoint_piAntidiag_map_addRightEmbedding hi _) := by
+@[deprecated (since := "2026-09-06")]
+alias pairwiseDisjoint_piAntidiag_map_addRightEmbedding :=
+  pairwiseDisjoint_piAntidiagonal_map_addRightEmbedding
+
+lemma piAntidiagonal_cons (hi : i ∉ s) (n : μ) :
+    piAntidiagonal (cons i s hi) n = (antidiagonal n).disjiUnion (fun p : μ × μ ↦
+      (piAntidiagonal s p.snd).map (addRightEmbedding fun t ↦ if t = i then p.fst else 0))
+        (pairwiseDisjoint_piAntidiagonal_map_addRightEmbedding hi _) := by
   ext f
-  simp only [mem_piAntidiag, sum_cons, ne_eq, mem_cons, mem_disjiUnion, mem_antidiagonal, mem_map,
-    Prod.exists]
+  simp only [mem_piAntidiagonal, sum_cons, ne_eq, mem_cons, mem_disjiUnion, mem_antidiagonal,
+    mem_map, Prod.exists]
   constructor
   · rintro ⟨hn, hf⟩
     refine ⟨_, _, hn, update f i 0, ⟨sum_update_of_notMem hi _ _, fun j ↦ ?_⟩, by aesop⟩
@@ -181,10 +200,14 @@ lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
     have := hg i
     aesop (add simp [sum_add_distrib])
 
-lemma piAntidiag_insert [DecidableEq (ι → μ)] (hi : i ∉ s) (n : μ) :
-    piAntidiag (insert i s) n = (antidiagonal n).biUnion fun p : μ × μ ↦ (piAntidiag s p.snd).image
-      (fun f j ↦ f j + if j = i then p.fst else 0) := by
-  simpa [map_eq_image, addRightEmbedding] using! piAntidiag_cons hi n
+@[deprecated (since := "2026-09-06")] alias piAntidiag_cons := piAntidiagonal_cons
+
+lemma piAntidiagonal_insert [DecidableEq (ι → μ)] (hi : i ∉ s) (n : μ) :
+    piAntidiagonal (insert i s) n = (antidiagonal n).biUnion fun p : μ × μ ↦
+      (piAntidiagonal s p.snd).image (fun f j ↦ f j + if j = i then p.fst else 0) := by
+  simpa [map_eq_image, addRightEmbedding] using! piAntidiagonal_cons hi n
+
+@[deprecated (since := "2026-09-06")] alias piAntidiag_insert := piAntidiagonal_insert
 
 end AddCancelCommMonoid
 
@@ -192,8 +215,10 @@ section CanonicallyOrderedAddCommMonoid
 variable [DecidableEq ι] [AddCommMonoid μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ] [DecidableEq μ]
 
-@[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by
+@[simp] lemma piAntidiagonal_zero (s : Finset ι) : piAntidiagonal s (0 : μ) = {0} := by
   ext; simp [funext_iff, not_imp_comm, ← forall_and]
+
+@[deprecated (since := "2026-09-06")] alias piAntidiag_zero := piAntidiagonal_zero
 
 end CanonicallyOrderedAddCommMonoid
 
@@ -202,15 +227,18 @@ variable [DecidableEq ι]
 
 open Pointwise
 
-lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
-    piAntidiag univ n = Nat.antidiagonalTuple k n := by
+lemma piAntidiagonal_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
+    piAntidiagonal univ n = Nat.antidiagonalTuple k n := by
   ext; simp [Nat.mem_antidiagonalTuple]
 
-lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    n • piAntidiag s m = {f ∈ piAntidiag s (n * m) | ∀ i ∈ s, n ∣ f i} := by
+@[deprecated (since := "2026-09-06")]
+alias piAntidiag_univ_fin_eq_antidiagonalTuple := piAntidiagonal_univ_fin_eq_antidiagonalTuple
+
+lemma nsmul_piAntidiagonal [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
+    n • piAntidiagonal s m = {f ∈ piAntidiagonal s (n * m) | ∀ i ∈ s, n ∣ f i} := by
   ext f
   refine mem_smul_finset.trans ?_
-  simp only [mem_filter, mem_piAntidiag, and_assoc]
+  simp only [mem_filter, mem_piAntidiagonal, and_assoc]
   constructor
   · rintro ⟨f, rfl, hf, rfl⟩
     simpa [← mul_sum, hn] using hf
@@ -224,28 +252,37 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
   simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
   grind
 
-lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    (piAntidiag s m).map ⟨(n • ·), nsmul_right_injective hn⟩ =
-        {f ∈ piAntidiag s (n * m) | ∀ i ∈ s, n ∣ f i} := by
-  classical rw [map_eq_image]; exact nsmul_piAntidiag _ _ hn
+@[deprecated (since := "2026-09-06")] alias nsmul_piAntidiag := nsmul_piAntidiagonal
 
-lemma nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    n • piAntidiag univ m = {f ∈ piAntidiag (univ : Finset ι) (n * m) | ∀ i, n ∣ f i} := by
-  simpa using nsmul_piAntidiag (univ : Finset ι) m hn
+lemma map_nsmul_piAntidiagonal (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
+    (piAntidiagonal s m).map ⟨(n • ·), nsmul_right_injective hn⟩ =
+        {f ∈ piAntidiagonal s (n * m) | ∀ i ∈ s, n ∣ f i} := by
+  classical rw [map_eq_image]; exact nsmul_piAntidiagonal _ _ hn
 
-lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    (piAntidiag (univ : Finset ι) m).map ⟨(n • ·), nsmul_right_injective hn⟩ =
-      {f ∈ piAntidiag (univ : Finset ι) (n * m) | ∀ i, n ∣ f i} := by
-  simpa using map_nsmul_piAntidiag (univ : Finset ι) m hn
+@[deprecated (since := "2026-09-06")] alias map_nsmul_piAntidiag := map_nsmul_piAntidiagonal
+
+lemma nsmul_piAntidiagonal_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
+    n • piAntidiagonal univ m = {f ∈ piAntidiagonal (univ : Finset ι) (n * m) | ∀ i, n ∣ f i} := by
+  simpa using nsmul_piAntidiagonal (univ : Finset ι) m hn
+
+@[deprecated (since := "2026-09-06")] alias nsmul_piAntidiag_univ := nsmul_piAntidiagonal_univ
+
+lemma map_nsmul_piAntidiagonal_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
+    (piAntidiagonal (univ : Finset ι) m).map ⟨(n • ·), nsmul_right_injective hn⟩ =
+      {f ∈ piAntidiagonal (univ : Finset ι) (n * m) | ∀ i, n ∣ f i} := by
+  simpa using map_nsmul_piAntidiagonal (univ : Finset ι) m hn
+
+@[deprecated (since := "2026-09-06")]
+alias map_nsmul_piAntidiag_univ := map_nsmul_piAntidiagonal_univ
 
 end Nat
 
-lemma map_sym_eq_piAntidiag [DecidableEq ι] (s : Finset ι) (n : ℕ) :
+lemma map_sym_eq_piAntidiagonal [DecidableEq ι] (s : Finset ι) (n : ℕ) :
     (s.sym n).map ⟨fun m a ↦ m.1.count a, Multiset.count_injective.comp Sym.coe_injective⟩ =
-      piAntidiag s n := by
+      piAntidiagonal s n := by
   ext f
   simp only [Sym.val_eq_coe, mem_map, mem_sym_iff, Embedding.coeFn_mk, funext_iff, Sym.exists,
-    Sym.mem_mk, Sym.coe_mk, exists_and_left, exists_prop, mem_piAntidiag, ne_eq]
+    Sym.mem_mk, Sym.coe_mk, exists_and_left, exists_prop, mem_piAntidiagonal, ne_eq]
   constructor
   · rintro ⟨m, hm, rfl, hf⟩
     simpa [← hf, Multiset.sum_count_eq_card hm]
@@ -253,5 +290,7 @@ lemma map_sym_eq_piAntidiag [DecidableEq ι] (s : Finset ι) (n : ℕ) :
     refine ⟨∑ a ∈ s, f a • {a}, ?_, ?_⟩
     · simp +contextual
     · simpa [Multiset.count_sum', Multiset.count_singleton, not_imp_comm, eq_comm (a := 0)] using hf
+
+@[deprecated (since := "2026-09-06")] alias map_sym_eq_piAntidiag := map_sym_eq_piAntidiagonal
 
 end Finset

@@ -521,8 +521,8 @@ lemma coeff_mul [DecidableEq M] (x y : R[M]) (m : M) :
 alias mul_apply := coeff_mul
 
 open Finset in
-@[to_additive (dont_translate := R) coeff_mul_antidiag]
-lemma coeff_mul_antidiag (x y : R[M]) (m : M) (s : Finset (M × M))
+@[to_additive (dont_translate := R) coeff_mul_antidiagonal]
+lemma coeff_mul_antidiagonal (x y : R[M]) (m : M) (s : Finset (M × M))
     (hs : ∀ {p}, p ∈ s ↔ p.1 * p.2 = m) : (x * y).coeff m = ∑ p ∈ s, x.coeff p.1 * y.coeff p.2 := by
   classical
   let F (p : M × M) : R := if p.1 * p.2 = m then x.coeff p.1 * y.coeff p.2 else 0
@@ -539,9 +539,12 @@ lemma coeff_mul_antidiag (x y : R[M]) (m : M) (s : Finset (M × M))
         · rw [h1, zero_mul]
         · rw [hp hps h1, mul_zero]
 
-@[to_additive (attr := deprecated coeff_mul_antidiag (since := "2026-06-18")) (dont_translate := R)
-  mul_apply_antidiagonal]
-alias mul_apply_antidiagonal := coeff_mul_antidiag
+@[to_additive (attr := deprecated (since := "2026-09-06")) (dont_translate := R) coeff_mul_antidiag]
+alias coeff_mul_antidiag := coeff_mul_antidiagonal
+
+@[to_additive (attr := deprecated coeff_mul_antidiagonal (since := "2026-06-18"))
+  (dont_translate := R) mul_apply_antidiagonal]
+alias mul_apply_antidiagonal := coeff_mul_antidiagonal
 
 @[to_additive (attr := simp) (dont_translate := R) single_mul_single]
 lemma single_mul_single (m₁ m₂ : M) (r₁ r₂ : R) :

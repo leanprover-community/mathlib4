@@ -32,7 +32,7 @@ private lemma coeff_linearCombination_X_pow_of_eq (a : σ →₀ R) {n : ℕ}
     ((a.linearCombination R X : MvPolynomial σ R) ^ n).coeff s =
       s.multinomial * s.prod (fun r m ↦ a r ^ m) := by
   classical
-  simp only [sum, linearCombination_apply, Finset.sum_pow_eq_sum_piAntidiag, coeff_sum,
+  simp only [sum, linearCombination_apply, Finset.sum_pow_eq_sum_piAntidiagonal, coeff_sum,
     ← C_eq_coe_nat, coeff_C_mul, smul_eq_C_mul, mul_pow, Finset.prod_mul_distrib, ← map_pow,
     ← map_prod, coeff_prod_X_pow, mul_ite, mul_one, mul_zero]
   rw [Finset.sum_eq_single (s : σ → ℕ)]
@@ -43,7 +43,7 @@ private lemma coeff_linearCombination_X_pow_of_eq (a : σ →₀ R) {n : ℕ}
       simp only [Finsupp.mem_support_iff, ne_eq, not_forall, Decidable.not_not] at hs'
       obtain ⟨i, hsi, hai⟩ := hs'
       rw [← mul_prod_erase _ i _ (by simpa), hai, zero_pow hsi, zero_mul, mul_zero]
-  · simp only [Finset.mem_piAntidiag, ne_eq, Finsupp.mem_support_iff, ite_eq_right_iff, and_imp]
+  · simp only [Finset.mem_piAntidiagonal, ne_eq, Finsupp.mem_support_iff, ite_eq_right_iff, and_imp]
     intro _ _ _ _ hed
     simp [Finsupp.ext_iff] at hed
     grind
@@ -51,7 +51,7 @@ private lemma coeff_linearCombination_X_pow_of_eq (a : σ →₀ R) {n : ℕ}
     intro hs' hs''
     rw [eq_indicator_self_iff] at hs''
     exfalso
-    rw [Finset.mem_piAntidiag, not_and_or] at hs'
+    rw [Finset.mem_piAntidiagonal, not_and_or] at hs'
     rcases hs' with hs' | hs'
     · apply hs'
       rw [← hs, sum_of_support_subset _ hs'' _ (by simp)]
@@ -61,14 +61,14 @@ private lemma coeff_linearCombination_X_pow_of_ne (a : σ →₀ R) {n : ℕ}
     (hs : s.sum (fun _ m ↦ m) ≠ n) :
     (((a.linearCombination R X : MvPolynomial σ R)) ^ n).coeff s = 0 := by
   classical
-  simp only [sum, linearCombination_apply, Finset.sum_pow_eq_sum_piAntidiag, coeff_sum, ← map_pow,
-    ← C_eq_coe_nat, coeff_C_mul, smul_eq_C_mul, mul_pow, Finset.prod_mul_distrib, ← map_prod,
-    coeff_prod_X_pow, mul_ite, mul_one, mul_zero]
+  simp only [sum, linearCombination_apply, Finset.sum_pow_eq_sum_piAntidiagonal, coeff_sum,
+    ← map_pow, ← C_eq_coe_nat, coeff_C_mul, smul_eq_C_mul, mul_pow, Finset.prod_mul_distrib,
+    ← map_prod, coeff_prod_X_pow, mul_ite, mul_one, mul_zero]
   apply Finset.sum_eq_zero (fun x hx ↦ ?_)
   rw [ite_eq_right]
   rintro ⟨rfl⟩
   apply hs
-  simp only [Finset.mem_piAntidiag] at hx
+  simp only [Finset.mem_piAntidiagonal] at hx
   rw [sum_of_support_subset _ (support_indicator_subset a.support _) _ (by simp), ← hx.1]
   congr
   ext i
