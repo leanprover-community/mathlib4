@@ -147,7 +147,7 @@ def opOp : C ⥤ Cᵒᵖᵒᵖ where
   map f := f.op.op
 
 /-- The double opposite category is equivalent to the original. -/
-@[simps]
+@[implicit_reducible, simps]
 def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
   functor := unopUnop C
   inverse := opOp C

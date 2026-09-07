@@ -638,6 +638,6 @@ open MonoidHom in
 lemma map_range_powMonoidHom (e : M ≃* N) (n : ℕ) :
     (powMonoidHom (α := M) n).range.map e = (powMonoidHom (α := N) n).range := by
   have H : (e : M →* N).comp (powMonoidHom n) = (powMonoidHom n).comp e := by ext : 1; simp
-  rw [map_range, H, range_comp, e.range_eq_top, ← range_eq_map]
+  rw [map_range, H, range_comp, e.range_eq_top, Subgroup.map_top]
 
 end MulEquiv

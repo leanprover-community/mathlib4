@@ -761,7 +761,7 @@ instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
 theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk (coeff φ) :=
   rfl
 
-@[simp, norm_cast]
+@[simp]
 theorem coeff_coe (n) : PowerSeries.coeff n φ = coeff φ n :=
   congr_arg (coeff φ) Finsupp.single_eq_same
 
