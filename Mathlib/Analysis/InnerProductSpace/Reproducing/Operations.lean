@@ -155,7 +155,7 @@ theorem exists_eq_add_and_norm_sq_eq_add (f : H + H') :
 theorem norm_sq_le (f : H + H') (f₁ : H) (f₂ : H') (h : ⇑f = f₁ + f₂) :
     ‖f‖ ^ 2 ≤ ‖f₁‖ ^ 2 + ‖f₂‖ ^ 2 := by
   calc
-    ‖f‖ ^ 2 = ‖Submodule.Quotient.mk (p:=(generator H H').ker) (WithLp.toLp 2 (f₁, f₂))‖ ^ 2 := by
+    ‖f‖ ^ 2 = ‖Submodule.Quotient.mk (p := (generator H H').ker) (WithLp.toLp 2 (f₁, f₂))‖ ^ 2 := by
       congr
       ext
       simp [h, mk_eq]
