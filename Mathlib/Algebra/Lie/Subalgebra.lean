@@ -774,6 +774,10 @@ lemma comap_lieSpan_range_eq {ι : Type*} (f : ι → K) :
     simp only [SetLike.mem_coe, mem_comap, coe_incl]
     exact subset_lieSpan <| by simp
 
+@[simp] theorem comap_incl_eq_top : K'.comap K.incl = ⊤ ↔ K ≤ K' := by
+  simp only [SetLike.ext_iff, mem_comap, coe_incl, mem_top, iff_true, le_def, Set.subset_def,
+    SetLike.mem_coe, Subtype.forall]
+
 end LieSpan
 
 end LieSubalgebra

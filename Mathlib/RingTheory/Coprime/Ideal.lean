@@ -40,7 +40,7 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
   · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true]
     refine fun a => ⟨fun i => if h : i = a then ⟨1, ?_⟩ else 0, ?_⟩
     · simp [h]
-    · simp only [dif_pos, Submodule.coe_mk]
+    · simp only [dite_eq_left, Submodule.coe_mk]
   intro a t hat h ih
   have : Std.Symm (I · ⊔ I · = ⊤) := { symm i j := sup_comm .. |>.trans }
   rw [Finset.coe_cons, Set.pairwise_insert_of_symm]
@@ -65,7 +65,8 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
       intro j hj ij
       exact this _ (Finset.subset_cons _ hj) ij
     case a3 =>
-      rw [← @if_pos _ _ h.choose_spec R (μ a) 0, ← Finset.sum_pi_single', ← Finset.sum_add_distrib]
+      rw [← @ite_eq_left _ _ h.choose_spec R (μ a) 0, ← Finset.sum_pi_single',
+        ← Finset.sum_add_distrib]
         at hμ
       convert! hμ
       rename_i i _
@@ -103,13 +104,13 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
       · exact mul_mem_right _ _ hu
       · exact mul_mem_left _ _ (this _ hj ij)
     · dsimp only
-      rw [Finset.sum_cons, dif_pos rfl, add_comm]
+      rw [Finset.sum_cons, dite_eq_left rfl, add_comm]
       rw [← mul_one u] at huv
       rw [← huv, ← hμ, Finset.mul_sum]
       congr 1
       apply Finset.sum_congr rfl
       intro j hj
-      rw [dif_neg]
+      rw [dite_eq_right]
       rintro rfl
       exact hat hj
 

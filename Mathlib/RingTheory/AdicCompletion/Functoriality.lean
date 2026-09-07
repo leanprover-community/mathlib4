@@ -40,14 +40,20 @@ variable {T : Type*} [AddCommGroup T] [Module (AdicCompletion I R) T]
 namespace LinearMap
 
 /-- The induced linear map on the quotients mod `I • ⊤`. -/
-def reduceModIdeal (f : M →ₗ[R] N) :
-    M ⧸ (I • ⊤ : Submodule R M) →ₗ[R ⧸ I] N ⧸ (I • ⊤ : Submodule R N) :=
-  LinearMap.extendScalarsOfSurjective Ideal.Quotient.mk_surjective <|
+def reduceModIdeal :
+    (M →ₗ[R] N) →ₗ[R] M ⧸ (I • ⊤ : Submodule R M) →ₗ[R ⧸ I] N ⧸ (I • ⊤ : Submodule R N) where
+  toFun f := LinearMap.extendScalarsOfSurjective Ideal.Quotient.mk_surjective <|
     Submodule.mapQ (I • ⊤ : Submodule R M) (I • ⊤ : Submodule R N) f
       (fun x hx ↦ by
         refine Submodule.smul_induction_on hx (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
         · simp [Submodule.smul_mem_smul hr Submodule.mem_top]
         · simp [Submodule.add_mem _ hx hy])
+  map_add' f g := LinearMap.ext fun x ↦ by
+    rcases Submodule.Quotient.mk_surjective _ x with ⟨x, rfl⟩
+    simp
+  map_smul' r f := LinearMap.ext fun x ↦ by
+    rcases Submodule.Quotient.mk_surjective _ x with ⟨x, rfl⟩
+    simp
 
 @[simp]
 theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
@@ -61,7 +67,6 @@ namespace AdicCompletion
 
 open LinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
     (hmn : m ≤ n) : transitionMap I N hmn ∘ₗ f.reduceModIdeal (I ^ n) =
       (f.reduceModIdeal (I ^ m) : _ →ₗ[R] _) ∘ₗ transitionMap I M hmn := by
@@ -103,15 +108,22 @@ theorem map_zero : map I (0 : M →ₗ[R] N) = 0 :=
 end AdicCauchySequence
 
 /-- A linear map induces a map on adic completions. -/
-def map (f : M →ₗ[R] N) :
-    AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N where
-  __ := AdicCompletion.lift I (fun n ↦ reduceModIdeal (I ^ n) f ∘ₗ AdicCompletion.eval I M n)
-    (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
-        comp_assoc, transitionMap_comp_eval])
-  map_smul' r x := by
-    ext
-    dsimp
-    rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, map_smul]
+def map : (M →ₗ[R] N) →ₗ[R] (AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N) where
+  toFun f :=
+    { __ := AdicCompletion.lift I (fun n ↦ reduceModIdeal (I ^ n) f ∘ₗ AdicCompletion.eval I M n)
+        (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
+          comp_assoc, transitionMap_comp_eval])
+      map_smul' r x := by
+        ext
+        dsimp
+        rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, map_smul] }
+  map_add' f g := LinearMap.ext fun _ ↦ by
+    simp only [map_add, restrictScalars_add, add_comp, ← Pi.add_def, coe_mk, coe_toAddHom,
+      add_apply]
+    rw [← LinearMap.add_apply, ← lift_add]
+  map_smul' c f := LinearMap.ext fun _ ↦ by
+    simp only [map_smul, restrictScalars_smul, coe_mk, coe_toAddHom, RingHom.id_apply, smul_apply]
+    simp_rw [← LinearMap.smul_apply, ← lift_smul, Pi.smul_def, LinearMap.smul_comp]
 
 @[simp]
 theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
@@ -178,7 +190,7 @@ theorem map_of (f : M →ₗ[R] N) (x : M) : map I f (of I M x) = of I N (f x) :
 /-- A linear equiv induces a linear equiv on adic completions. -/
 def congr (f : M ≃ₗ[R] N) :
     AdicCompletion I M ≃ₗ[AdicCompletion I R] AdicCompletion I N :=
-  LinearEquiv.ofLinear (map I f)
+  LinearEquiv.ofLinearMap (map I f)
     (map I f.symm) (by simp [map_comp]) (by simp [map_comp])
 
 @[simp]
@@ -292,7 +304,7 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/
 def sumEquivOfFintype :
     (⨁ j, (AdicCompletion I (M j))) ≃ₗ[AdicCompletion I R] AdicCompletion I (⨁ j, M j) :=
-  LinearEquiv.ofLinear (sum I M) (sumInv I M) (sum_comp_sumInv I M) (sumInv_comp_sum I M)
+  LinearEquiv.ofLinearMap (sum I M) (sumInv I M) (sum_comp_sumInv I M) (sumInv_comp_sum I M)
 
 @[simp]
 theorem sumEquivOfFintype_apply (x : ⨁ j, (AdicCompletion I (M j))) :
@@ -359,7 +371,6 @@ open Submodule
 
 variable {I}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_smodEq_pow_add_one_smul {f : M →ₗ[R] N}
     (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) {y : N} {n : ℕ}
     (hy : y ∈ (I ^ n • ⊤ : Submodule R N)) :

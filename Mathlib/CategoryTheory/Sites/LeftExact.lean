@@ -135,7 +135,6 @@ def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
     [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) :
     S.pt ⟶ (J.plusObj (limit F)).obj (op X) :=
-  let x := (J.Cover X)ᵒᵖ
   let F' := F ⋙ J.diagramFunctor D X
   let e := colimitLimitIso (F ⋙ J.diagramFunctor D X)
   let t : J.diagram (limit F) X ≅ limit (F ⋙ J.diagramFunctor D X) :=

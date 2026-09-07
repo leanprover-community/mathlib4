@@ -7,7 +7,7 @@ module
 
 public import Mathlib.GroupTheory.Commutator.Basic
 public import Mathlib.Tactic.Group
-public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 # The topological abelianization of a group.
