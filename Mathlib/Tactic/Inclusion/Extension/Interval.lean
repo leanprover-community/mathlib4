@@ -266,6 +266,8 @@ def Interval.mulBound [Mul α] [Zero α] [DecidableEq α] :
   | none, none => none
 
 /-- Show that `mulBound a b`, interpreted as a lower bound and mapped by `f`, is at most `z`. -/
+@[to_dual le_map_mulBound
+/-- Show that `mulBound a b`, interpreted as an upper bound and mapped by `f`, is at least `z`. -/]
 theorem Interval.map_mulBound_le [Mul α] [Zero α] [DecidableEq α] [LE β]
     (f : α → β) (a b : Option α) {z : β}
     (hmul : ∀ x y, a = some x → b = some y → f (x * y) ≤ z)
@@ -274,14 +276,6 @@ theorem Interval.map_mulBound_le [Mul α] [Zero α] [DecidableEq α] [LE β]
   cases a <;> cases b <;> simp only [Interval.mulBound] <;> try split_ifs
   all_goals first | exact bot_le | apply WithBot.coe_le_coe.mpr
   all_goals grind
-
-/-- Show that `mulBound a b`, interpreted as an upper bound and mapped by `f`, is at least `z`. -/
-theorem Interval.le_map_mulBound [Mul α] [Zero α] [DecidableEq α] [LE β]
-    (f : α → β) (a b : Option α) {z : β}
-    (hmul : ∀ x y, a = some x → b = some y → z ≤ f (x * y))
-    (hzero : (a = none ∧ b = some 0 ∨ a = some 0 ∧ b = none) → z ≤ f 0) :
-    z ≤ WithTop.map f (Interval.mulBound a b : WithTop α) :=
-  Interval.map_mulBound_le (β := βᵒᵈ) f a b hmul hzero
 
 -- `WithBot α` and `WithTop α` are definitionally `Option α`, so `mulBound` handles both.
 /-- Multiply two intervals. -/

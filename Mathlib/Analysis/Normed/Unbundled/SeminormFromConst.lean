@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
@@ -185,9 +186,8 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' c f) := fun x 
     apply (tendsto_seminormFromConst_seq_atTop hc hpm (x ^ m)).comp
       (tendsto_atTop_atTop_of_monotone (fun _ _ hnk ↦ mul_le_mul_right hnk m) _)
     rintro n; use n; exact le_mul_of_one_le_left' hm
-  apply tendsto_nhds_unique hlim
-  convert! (tendsto_seminormFromConst_seq_atTop hc hpm x).pow m using 1
-  ext n
+  refine tendsto_nhds_unique_of_forall hlim
+    ((tendsto_seminormFromConst_seq_atTop hc hpm x).pow m) fun n ↦ ?_
   simp only [seminormFromConst_seq, div_pow, ← hpm _ hm, ← pow_mul, mul_pow, mul_comm m n]
 
 /-- The function `seminormFromConst' c f` is bounded above by `f`. -/
@@ -261,9 +261,10 @@ end Ring
 
 section Field
 
-variable {K : Type*} [Field K]
+variable {F K : Type*} [NormedField F] [Field K] [Algebra F K]
 
 /-- If `K` is a field, the function `seminormFromConst` is a `RingNorm` on `K`. -/
+@[simps!]
 def normFromConst {k : K} {g : RingSeminorm K} (hg_k : g k ≠ 0)
     (hg_pm : IsPowMul g) : RingNorm K :=
   (seminormFromConst hg_k hg_pm).toRingNorm (RingSeminorm.ne_zero_iff.mpr
@@ -272,5 +273,23 @@ def normFromConst {k : K} {g : RingSeminorm K} (hg_k : g k ≠ 0)
 theorem seminormFromConstRingNormOfField_def {k : K} {g : RingSeminorm K}
     (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) (x : K) :
     normFromConst hg_k hg_pm x = seminormFromConst' k g x := rfl
+
+/-- If `K` is a field, `seminormFromConst` applied to an `AlgebraNorm` is an `AlgebraNorm`. -/
+@[simps!]
+def algNormFromConst {k : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
+    AlgebraNorm F K where
+  __ := normFromConst hg_k hg_pm
+  smul' x y := by
+    have hx : g (algebraMap F K x) = ‖x‖ := by
+      have hg1 : g 1 = 1 := by simpa [map_ne_zero_iff_ne_zero, sq] using hg_pm 1 one_le_two
+      rw [Algebra.algebraMap_eq_smul_one, map_smul_eq_mul, hg1, mul_one]
+    have hy y : g (algebraMap F K x * y) = g (algebraMap F K x) * g y := by
+      rw [← Algebra.smul_def, map_smul_eq_mul, hx]
+    simp [Algebra.smul_def, seminormFromConst_isMul_of_isMul hg_k hg_pm hy y,
+      seminormFromConst_apply_of_isMul hg_k hg_pm hy, hx]
+
+theorem algNormFromConst_def {k x : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
+    algNormFromConst hg_k hg_pm x = seminormFromConst hg_k hg_pm x :=
+  rfl
 
 end Field
