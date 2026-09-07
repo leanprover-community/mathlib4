@@ -112,7 +112,6 @@ protected theorem coe_ofClass {F : Type*} [FunLike F A B] [NonUnitalRingHomClass
 
 @[deprecated (since := "2026-09-08")] alias coe_coe := NonUnitalStarRingHom.coe_ofClass
 
-
 @[simp]
 theorem coe_toNonUnitalRingHom (f : A →⋆ₙ+* B) : ⇑f.toNonUnitalRingHom = f :=
   rfl
