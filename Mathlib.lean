@@ -7092,6 +7092,7 @@ public import Mathlib.RingTheory.Polynomial.GaussLemma
 public import Mathlib.RingTheory.Polynomial.GaussNorm
 public import Mathlib.RingTheory.Polynomial.Hermite.Basic
 public import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
+public import Mathlib.RingTheory.Polynomial.Hermite.Roots
 public import Mathlib.RingTheory.Polynomial.HilbertPoly
 public import Mathlib.RingTheory.Polynomial.Ideal
 public import Mathlib.RingTheory.Polynomial.IntegralNormalization
