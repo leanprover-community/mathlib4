@@ -117,7 +117,7 @@ instance IsStandardSmoothOfRelativeDimension.id :
 
 variable (R) in
 /-- The polynomial algebra `MvPolynomial ι R` is standard smooth over `R` of relative
-dimension `Nat.card ι`. -/
+dimension `Nat.card ι`, for a finite type `ι`. -/
 lemma IsStandardSmoothOfRelativeDimension.mvPolynomial [Finite ι] :
     IsStandardSmoothOfRelativeDimension (Nat.card ι) R (MvPolynomial ι R) :=
   (SubmersivePresentation.mvPolynomial.{0} R ι).isStandardSmoothOfRelativeDimension
