@@ -252,6 +252,18 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
       exact closure_mono (singleton_subset_iff.mpr hx)
     · exact isPreirreducible_iff_forall_mem_subset_closure_singleton.mp h.isPreirreducible x hx
 
+attribute [local instance] specializationPreorder in
+/--
+In a quasi-sober irreducible space, every point of a non-dense subset is a strict
+specialization of the generic point of the whole space.
+-/
+lemma QuasiSober.val_lt_genericPoint_of_closure_ne_univ [QuasiSober α] [IrreducibleSpace α]
+    {p : Set α} (hp : closure p ≠ univ) : ∀ x : p, (Subtype.val x) < genericPoint α := by
+  simp_all only [ne_eq, Subtype.forall]
+  refine fun x hx ↦ ⟨genericPoint_specializes x, fun h ↦ ?_⟩
+  have : closure {Subtype.val ⟨x, hx⟩} ⊆ closure p := closure_mono (by simp [hx])
+  simp_all [specializes_iff_closure_subset]
+
 open scoped Set.Notation in
 lemma QuasiSober.of_subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓∩ V)) (h : V ⊆ W) :
     QuasiSober V := Topology.IsClosedEmbedding.quasiSober <| .inclusion h hV

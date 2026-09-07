@@ -61,7 +61,9 @@ We then use a limit argument to cover the case when either of the sides are `0`.
 @[expose] public section
 
 
-open Set Filter Function Complex Topology
+open Set Filter Function Complex
+
+open scoped Topology
 
 namespace Complex
 namespace HadamardThreeLines

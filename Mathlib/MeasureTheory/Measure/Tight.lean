@@ -126,17 +126,15 @@ protected lemma inter (hS : IsTightMeasureSet S) (T : Set (Measure 𝓧)) :
     IsTightMeasureSet (S ∩ T) :=
   hS.subset inter_subset_left
 
-lemma map [TopologicalSpace 𝓨] [MeasurableSpace 𝓨] [OpensMeasurableSpace 𝓨] [T2Space 𝓨]
-    (hS : IsTightMeasureSet S) {f : 𝓧 → 𝓨} (hf : Continuous f) :
+lemma map [OpensMeasurableSpace 𝓧] [TopologicalSpace 𝓨] [MeasurableSpace 𝓨]
+    [BorelSpace 𝓨] [T2Space 𝓨] (hS : IsTightMeasureSet S) {f : 𝓧 → 𝓨} (hf : Continuous f) :
     IsTightMeasureSet (Measure.map f '' S) := by
   rw [isTightMeasureSet_iff_exists_isCompact_measure_compl_le] at hS ⊢
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro ε hε
   obtain ⟨K, hK_compact, hKS⟩ := hS ε hε
   refine ⟨f '' K, hK_compact.image hf, fun μ hμS ↦ ?_⟩
-  by_cases hf_meas : AEMeasurable f μ
-  swap; · simp [Measure.map_of_not_aemeasurable hf_meas]
-  rw [Measure.map_apply_of_aemeasurable hf_meas (hK_compact.image hf).measurableSet.compl]
+  rw [Measure.map_apply_of_aemeasurable hf.aemeasurable (hK_compact.image hf).measurableSet.compl]
   refine (measure_mono ?_).trans (hKS μ hμS)
   simp only [preimage_compl, compl_subset_compl]
   exact subset_preimage_image f K

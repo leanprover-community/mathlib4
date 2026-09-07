@@ -67,7 +67,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-open MeasureTheory
+open scoped MeasureTheory
 
 section
 

@@ -458,7 +458,7 @@ open scoped Bundle Manifold ContDiff
 
 open Lean Meta Elab Tactic
 
-/-- `d[s] f x` (scoped to the `Manifold` namespace) elaborates to `mvfderivWithin I J f s x`,
+/-- `d[s] f x` (scoped to the `Manifold` namespace) elaborates to `mvfderivWithin I f s x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
@@ -466,7 +466,7 @@ scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   let (srcI, _tgtI) ← findModels e none
   mkAppM ``mvfderivWithin #[srcI, e, es]
 
-/-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I J f x`,
+/-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I f x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "d%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
@@ -609,7 +609,7 @@ protected theorem MDifferentiableAt.mvfderiv {f : M → E'} (h : MDiffAt f x) :
 /-! ## Composition lemmas for `mvfderiv(Within)` -/
 section
 
-variable {f : M' → M} {g : M → 𝕜} {x : M'} {y : M} {u : Set M} {s : Set M'}
+variable {f : M' → M} {g : M → F} {x : M'} {y : M} {u : Set M} {s : Set M'}
 
 theorem mvfderivWithin_comp (x : M') (hg : MDiffAt[u] g (f x)) (hf : MDiffAt[s] f x)
     (h : s ⊆ f ⁻¹' u) (hxs : UniqueMDiffAt[s] x) :

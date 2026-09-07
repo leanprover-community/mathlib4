@@ -5,10 +5,10 @@ Authors: Bhavik Mehta, Adam Topaz
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.Data.Finite.Prod
 
 /-!
 # The category of finite types.
@@ -35,6 +35,11 @@ namespace FintypeCat
 /-- Construct a term of `FintypeCat` from a type endowed with a `Finite` instance. -/
 abbrev of (X : Type*) [Finite X] : FintypeCat :=
   ⟨X, inferInstance⟩
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FintypeCat.of X` as `↧X`. -/
+@[app_delab FintypeCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 instance instCoeSort : CoeSort FintypeCat Type* :=
   ⟨fun X ↦ X.obj⟩
@@ -206,7 +211,7 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
 
 /-- The canonical fully faithful embedding of `FintypeCat.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
-  obj X := FintypeCat.of (ULift (Fin X.len))
+  obj X := ↧(ULift (Fin X.len))
   map f := homMk f
 
 instance : incl.Full where map_surjective _ := ⟨_, rfl⟩
@@ -255,7 +260,7 @@ attribute [local instance] FintypeCat.fintype in
 `uSwitch.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
 `X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
 noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
-  obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
+  obj X := ↧(ULift.{v} (Fin (Fintype.card X)))
   map {X Y} f :=
     homMk (ULift.up ∘ Fintype.equivFin Y ∘ f.hom ∘ (Fintype.equivFin X).symm ∘ ULift.down)
 

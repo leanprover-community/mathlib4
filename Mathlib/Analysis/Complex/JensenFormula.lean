@@ -368,7 +368,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     rw [circleAverage_congr_codiscreteWithin (f₂ := 0) _ hR]
     · simp only [circleAverage, mul_inv_rev, Pi.zero_apply, intervalIntegral.integral_zero,
         smul_eq_mul, mul_zero]
-    apply Filter.codiscreteWithin_mono (U := CB) sphere_subset_closedBall
+    apply Filter.codiscreteWithin_mono (s := CB) sphere_subset_closedBall
     filter_upwards [this] with z hz
     simp_all
 
@@ -413,7 +413,7 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
   calc
   -- Bound by the sum from Jensen's formula
   _ ≤ ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹) := by
-    refine finsum_le_finsum' ?_ ?_ fun u ↦ ?_
+    refine finsum_le_finsum ?_ ?_ fun u ↦ ?_
     · exact (divisor f (closedBall c |r|)).finiteSupport (isCompact_closedBall ..) |>.subset
         fun _ _ ↦ (by simp_all)
     · exact (divisor f (closedBall c |R|)).finiteSupport (isCompact_closedBall ..) |>.subset

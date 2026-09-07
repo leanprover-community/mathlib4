@@ -69,6 +69,16 @@ lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
   fun _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
 
 @[to_dual]
+theorem IsLowerSet.supClosed_iff_directedOn (h : IsLowerSet s) :
+    SupClosed s ↔ DirectedOn (· ≤ ·) s := by
+  refine ⟨SupClosed.directedOn, fun hd a ha b hb ↦ ?_⟩
+  have ⟨c, hcs, hac, hbc⟩ := hd a ha b hb
+  exact h (sup_le hac hbc) hcs
+
+@[to_dual]
+alias ⟨_, DirectedOn.supClosed_of_isLowerSet⟩ := IsLowerSet.supClosed_iff_directedOn
+
+@[to_dual]
 lemma IsUpperSet.supClosed (hs : IsUpperSet s) : SupClosed s := fun _a _ _b ↦ hs le_sup_right
 
 @[to_dual]
@@ -363,7 +373,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
   ext
-  simp [latticeClosure, (Equiv.Set.congr toDual).surjective.forall, Equiv.image_eq_preimage_symm]
+  simp [latticeClosure, (Equiv.setCongr toDual).surjective.forall, Equiv.image_eq_preimage_symm]
 
 @[to_dual self (reorder := map_sup map_inf)]
 lemma image_latticeClosure' (s : Set α) (f : α → β)

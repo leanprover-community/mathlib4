@@ -195,7 +195,7 @@ namespace Equiv
 
 /-- Given an equivalence `e : α ≃ β` and `s : Finset β`, restrict `e` to an equivalence
 from `e ⁻¹' s` to `s`. -/
-@[simps]
+@[simps, implicit_reducible]
 def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.injective.injOn) ≃ s where
   toFun a := ⟨e a, Finset.mem_preimage.1 a.2⟩
   invFun b := ⟨e.symm b, by simp⟩
@@ -212,8 +212,6 @@ lemma image_eq_preimage_symm_of_finset [DecidableEq β] (e : α ≃ β) (s : Fin
 
 end Equiv
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
 of this `Finset` and then reindexing. -/
 lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : α ≃ β) :
