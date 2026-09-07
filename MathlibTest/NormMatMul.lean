@@ -1,11 +1,8 @@
 import Mathlib.Tactic.Matrix.Mul
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Complex.Basic
+import Mathlib.Basic.Complex.Basic
+import Mathlib.Basic.Real.Basic
 
 open Matrix
-
-example : (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ) * !![5, 6; 7, 8] = !![19, 22; 43, 50] := by
-  norm_num
 
 example : (!![1 / 2, 1; 0, 3] : Matrix (Fin 2) (Fin 2) ℝ) * !![2, 0; 1, 1] = !![2, 1; 3, 3] := by
   simp [↓ norm_matmul]

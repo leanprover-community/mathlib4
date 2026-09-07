@@ -13,11 +13,9 @@ public meta import Mathlib.LinearAlgebra.Matrix.Notation
 Parsers matching `!![…]` matrix literal expressions into their dimensions, element type,
 and entry expressions, for tactics evaluating functions of a concrete matrix.
 
-TODO: `!![…]` still elaborates to `Matrix.of` applied to `Matrix.vecCons` chains; but there is
-a wip draft PR that switches it to the merged `Matrix.ofArray`.
-
-This files needs a corresponding adaptation if that is merged -- but in the best case, the entirety
-of this file can be gone.
+TODO: `!![…]` elaborates to `Matrix.of` applied to `Matrix.vecCons` chains, which is the shape
+matched here. Once it elaborates through `Matrix.ofArray` instead, adapt this parser, or remove
+it if the array form can be read directly.
 
 ## Main definitions
 

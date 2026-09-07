@@ -27,8 +27,11 @@ reduce in the kernel to the `vecCons` form of the `!![…]` notation.
 Note that Lean's `Array` is essentially a `List` within the kernel, therefore random access is
 slow. The `List` carrier is chosen over `Array` for easier inductive operations.
 
-All conversions from the list-based version to Mathlib types ignores excessive entries and
-pads the missing entries with 0.
+`ListMatrix.transpose` is defined by recursion on the rows with explicit padding rather than
+through `List.transpose`, so that it reduces in the kernel.
+
+All conversions from the list-based version to Mathlib types ignore excessive entries and
+pad the missing entries with 0.
 -/
 
 public section
@@ -57,7 +60,7 @@ padded with `0`. -/
   match m, rows with
   | 0, _ => of ![]
   | m' + 1, [] => of (vecCons (List.toVec n []) (Matrix.ofLists m' n []))
-  | m' + 1, l :: rows' => of (vecCons (l.toVec n) (Matrix.ofLists m' n rows'))
+  | m' + 1, row :: rows' => of (vecCons (row.toVec n) (Matrix.ofLists m' n rows'))
 
 @[simp]
 theorem Matrix.ofLists_apply [Zero α] (m n : ℕ) (rows : List (List α)) (i : Fin m) :
@@ -71,6 +74,16 @@ theorem Matrix.ofLists_apply [Zero α] (m n : ℕ) (rows : List (List α)) (i : 
   ((List.zipWith (· * ·) l₁ l₂).take n).sum
 
 @[simp]
+theorem List.dotProduct_zero [Zero α] [Add α] [Mul α] (l₁ l₂ : List α) :
+    l₁.dotProduct 0 l₂ = 0 :=
+  rfl
+
+@[simp]
+theorem List.dotProduct_succ_cons_cons [Zero α] [Add α] [Mul α] (n : ℕ) (a b : α)
+    (l₁ l₂ : List α) : (a :: l₁).dotProduct (n + 1) (b :: l₂) = a * b + l₁.dotProduct n l₂ :=
+  rfl
+
+@[simp]
 theorem List.dotProduct_eq [NonUnitalNonAssocSemiring α] (n : ℕ) (l₁ l₂ : List α) :
     l₁.dotProduct n l₂ = l₁.toVec n ⬝ᵥ l₂.toVec n := by
   induction n generalizing l₁ l₂ with
@@ -78,23 +91,22 @@ theorem List.dotProduct_eq [NonUnitalNonAssocSemiring α] (n : ℕ) (l₁ l₂ :
   | succ n ih => cases l₁ <;> cases l₂ <;> simp [List.toVec, List.dotProduct, ← ih]
 
 /-- The transpose of a list of rows as `n` rows, where row `j` collects the `j`-th entries of
-the input rows padded with `0`. Unlike `List.transpose`, this reduces in the kernel. -/
+the input rows padded with `0`. -/
 @[expose] def ListMatrix.transpose [Zero α] (n : ℕ) (rows : List (List α)) : List (List α) :=
   match rows with
   | [] => List.replicate n []
-  | l :: rows => List.zipWith (· :: ·) ((l.rightpad n 0).take n) (transpose n rows)
+  | row :: rows => List.zipWith (· :: ·) ((row.rightpad n 0).take n) (transpose n rows)
 
 @[simp]
 theorem ListMatrix.length_transpose [Zero α] (n : ℕ) (rows : List (List α)) :
     (transpose n rows).length = n := by
-  induction rows <;> simp [transpose, *]
-  omega
+  induction rows <;> grind [transpose]
 
 theorem ListMatrix.getD_transpose [Zero α] {n j : ℕ} (rows : List (List α)) (i : ℕ)
     (hj : j < n) : ((transpose n rows).getD j []).getD i 0 = (rows.getD i []).getD j 0 := by
   induction rows generalizing i with
   | nil => simp [transpose, hj]
-  | cons l rows ih =>
+  | cons row rows ih =>
     rw [transpose, List.getD_eq_getElem (n := j), List.getElem_zipWith]
     · cases i with
       | zero =>
