@@ -538,7 +538,8 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 noncomputable def id : SubmersivePresentation R R PEmpty.{w + 1} PEmpty.{t + 1} :=
   ofBijectiveAlgebraMap Function.bijective_id
 
-/-- The canonical submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`. -/
+/-- The canonical submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
 noncomputable def mvPolynomial : SubmersivePresentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
   __ := PreSubmersivePresentation.mvPolynomial R ι
   jacobian_isUnit := by simp
