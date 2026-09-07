@@ -218,10 +218,12 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
 
+-- TODO: should this be renamed to `SemilinearMap.coe_ofClass`?
 @[simp, norm_cast]
-lemma coe_coe {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
-    ⇑(f : M →ₛₗ[σ] M₃) = f :=
+lemma coe_ofClass {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
+    ⇑(SemilinearMap.ofClass f) = f :=
   rfl
+@[deprecated (since := "2026-09-07")] alias coe_coe := coe_ofClass
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.toMonoidHom M M₃ :=
@@ -264,15 +266,18 @@ theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
   rfl
 
 theorem coe_semilinearMap {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] (f : F) :
-    ((f : M →ₛₗ[σ] M₃) : M → M₃) = f :=
+    ⇑(SemilinearMap.ofClass f) = f :=
   rfl
+-- TODO: is duplicate to coe_ofClass!
+--@[deprecated (since := "2026-09-07")] alias coe_semilinearMap := coe_semilinearMap
 
-theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
-    {f g : F} (h : (f : M →ₛₗ[σ] M₃) = (g : M →ₛₗ[σ] M₃)) :
+theorem ofClass_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
+    {f g : F} (h : SemilinearMap.ofClass f = SemilinearMap.ofClass g) :
     f = g := by
   apply DFunLike.ext
   intro m
   exact DFunLike.congr_fun h m
+@[deprecated (since := "2026-09-07")] alias toLinearMap_injective := ofClass_injective
 
 /-- Identity map as a `LinearMap` -/
 @[instance_reducible]
@@ -283,7 +288,7 @@ theorem id_apply (x : M) : @id R M _ _ _ x = x :=
   rfl
 
 @[simp, norm_cast]
-theorem id_coe : ((LinearMap.id : M →ₗ[R] M) : M → M) = _root_.id :=
+theorem id_coe : ⇑((LinearMap.id : M →ₗ[R] M)) = _root_.id :=
   rfl
 
 /-- A generalisation of `LinearMap.id` that constructs the identity function
@@ -298,7 +303,7 @@ def id' {σ : R →+* R} [RingHomId σ] : M →ₛₗ[σ] M where
     rfl
 
 @[simp, norm_cast]
-theorem id'_coe {σ : R →+* R} [RingHomId σ] : ((id' : M →ₛₗ[σ] M) : M → M) = _root_.id :=
+theorem id'_coe {σ : R →+* R} [RingHomId σ] : ⇑(id' : M →ₛₗ[σ] M) = _root_.id :=
   rfl
 
 end
