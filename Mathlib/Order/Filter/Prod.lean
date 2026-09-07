@@ -187,24 +187,31 @@ theorem Eventually.image_of_prod {y : α → β} {r : α → β → Prop}
 
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
 all diagonal pairs `(i, i)` -/
-theorem Eventually.diag_of_prod {p : α × α → Prop} (h : ∀ᶠ i in f ×ˢ f, p i) :
+theorem Eventually.diagonal_of_prod {p : α × α → Prop} (h : ∀ᶠ i in f ×ˢ f, p i) :
     ∀ᶠ i in f, p (i, i) :=
   h.image_of_prod (r := p.curry) tendsto_id
 
-theorem Eventually.diag_of_prod_left {f : Filter α} {g : Filter γ} {p : (α × α) × γ → Prop} :
+theorem Eventually.diagonal_of_prod_left {f : Filter α} {g : Filter γ} {p : (α × α) × γ → Prop} :
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
   intro h
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  exact (ht.diag_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2]
+  exact (ht.diagonal_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2]
 
-theorem Eventually.diag_of_prod_right {f : Filter α} {g : Filter γ} {p : α × γ × γ → Prop} :
+theorem Eventually.diagonal_of_prod_right {f : Filter α} {g : Filter γ} {p : α × γ × γ → Prop} :
     (∀ᶠ x in f ×ˢ (g ×ˢ g), p x) → ∀ᶠ x : α × γ in f ×ˢ g, p (x.1, x.2, x.2) := by
   intro h
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  exact (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
+  exact (ht.prod_mk hs.diagonal_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
 
-theorem tendsto_diag : Tendsto Function.diag f (f ×ˢ f) :=
-  tendsto_iff_eventually.mpr fun _ hpr => hpr.diag_of_prod
+theorem tendsto_diagonal : Tendsto Prod.diagonal f (f ×ˢ f) :=
+  tendsto_iff_eventually.mpr fun _ hpr => hpr.diagonal_of_prod
+
+@[deprecated (since := "2026-09-06")] alias Eventually.diag_of_prod := Eventually.diagonal_of_prod
+@[deprecated (since := "2026-09-06")]
+alias Eventually.diag_of_prod_left := Eventually.diagonal_of_prod_left
+@[deprecated (since := "2026-09-06")]
+alias Eventually.diag_of_prod_right := Eventually.diagonal_of_prod_right
+@[deprecated (since := "2026-09-06")] alias tendsto_diag := tendsto_diagonal
 
 theorem prod_iInf_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :
     (⨅ i, f i) ×ˢ g = ⨅ i, f i ×ˢ g := by

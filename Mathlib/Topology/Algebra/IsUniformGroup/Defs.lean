@@ -378,7 +378,7 @@ instance IsUniformGroup.isRightUniformGroup : IsRightUniformGroup α where
   uniformity_eq := by
     refine eq_of_forall_le_iff fun 𝓕 ↦ ?_
     rw [nhds_eq_comap_uniformity, comap_comap, ← tendsto_iff_comap,
-      ← (tendsto_diag_uniformity Prod.fst 𝓕).uniformity_mul_iff_left, ← tendsto_id']
+      ← (tendsto_diagonal_uniformity Prod.fst 𝓕).uniformity_mul_iff_left, ← tendsto_id']
     congrm Tendsto ?_ _ _
     ext <;> simp
 
@@ -387,7 +387,7 @@ instance IsUniformGroup.isLeftUniformGroup : IsLeftUniformGroup α where
   uniformity_eq := by
     refine eq_of_forall_le_iff fun 𝓕 ↦ ?_
     rw [nhds_eq_comap_uniformity, comap_comap, ← tendsto_iff_comap,
-      ← (tendsto_diag_uniformity Prod.fst 𝓕).uniformity_mul_iff_right, ← tendsto_id']
+      ← (tendsto_diagonal_uniformity Prod.fst 𝓕).uniformity_mul_iff_right, ← tendsto_id']
     congrm Tendsto ?_ _ _
     ext <;> simp
 

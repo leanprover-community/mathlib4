@@ -27,6 +27,16 @@ universe u v w x
 
 namespace Function
 
+@[deprecated (since := "2026-09-06")] protected alias diag := Prod.diagonal
+@[deprecated (since := "2026-09-06")] alias diag_def := Prod.diagonal_def
+@[deprecated (since := "2026-09-06")] alias diag_apply := Prod.diagonal_apply
+@[deprecated (since := "2026-09-06")] alias diag_injective := Prod.diagonal_injective
+@[deprecated (since := "2026-09-06")] alias fst_comp_diag := Prod.fst_comp_diagonal
+@[deprecated (since := "2026-09-06")] alias snd_comp_diag := Prod.snd_comp_diagonal
+@[deprecated (since := "2026-09-06")] alias diag_comp := Prod.diagonal_comp
+@[deprecated (since := "2026-09-06")] alias map_comp_diag := Prod.map_comp_diagonal
+@[deprecated (since := "2026-09-06")] alias swap_comp_diag := Prod.swap_comp_diagonal
+
 section
 
 variable {α β γ : Sort*} {f : α → β}

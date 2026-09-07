@@ -148,8 +148,10 @@ theorem Continuous.prodMk_right (x : X) : Continuous fun y : Y => (x, y) := by f
 theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fun_prop
 
 @[continuity, fun_prop]
-theorem continuous_diag : Continuous (Function.diag : X → X × X) :=
+theorem continuous_diagonal : Continuous (Prod.diagonal : X → X × X) :=
   continuous_id.prodMk continuous_id
+
+@[deprecated (since := "2026-09-06")] alias continuous_diag := continuous_diagonal
 
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
