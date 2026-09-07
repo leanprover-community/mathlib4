@@ -175,7 +175,6 @@ instance : (opOpEquivalence C).inverse.CommShift ℤ :=
   inferInstanceAs ((opOp C).CommShift ℤ)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : (opOpEquivalence C).CommShift ℤ :=
   Equivalence.CommShift.mk'' _ _
     { shift_comm n := by

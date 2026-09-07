@@ -343,7 +343,6 @@ theorem hasBinaryBiproduct_of_total {X Y : C} (b : BinaryBicone X Y)
     { bicone := b
       isBilimit := isBinaryBilimitOfTotal b total }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We can turn any limit cone over a pair into a bicone. -/
 @[simps]
 def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) :
@@ -388,7 +387,6 @@ theorem HasBinaryBiproduct.of_hasBinaryProduct (X Y : C) [HasBinaryProduct X Y] 
 theorem HasBinaryBiproducts.of_hasBinaryProducts [HasBinaryProducts C] : HasBinaryBiproducts C :=
   { has_binary_biproduct := fun X Y => HasBinaryBiproduct.of_hasBinaryProduct X Y }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We can turn any colimit cocone over a pair into a bicone. -/
 @[simps]
 def BinaryBicone.ofColimitCocone {X Y : C} {t : Cocone (pair X Y)} (ht : IsColimit t) :
@@ -419,7 +417,6 @@ def isBinaryBilimitOfIsColimit {X Y : C} (t : BinaryBicone X Y) (ht : IsColimit 
   isBinaryBilimitOfTotal _ <| by
     refine BinaryCofan.IsColimit.hom_ext ht ?_ ?_ <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- We can turn any colimit cocone over a pair into a bilimit bicone. -/
 def binaryBiconeIsBilimitOfColimitCoconeOfIsColimit {X Y : C} {t : Cocone (pair X Y)}
@@ -1034,7 +1031,6 @@ lemma preservesBinaryBiproduct_of_preservesBinaryProduct {X Y : C} [PreservesLim
         Cone.ext (by dsimp; rfl) fun j => by
           rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the (product-like) biproduct comparison for `F`, `X` and `Y` is a monomorphism, then
 `F` preserves the biproduct of `X` and `Y`. For the converse, see `map_biprod`. -/
 lemma preservesBinaryBiproduct_of_mono_biprodComparison {X Y : C} [HasBinaryBiproduct X Y]

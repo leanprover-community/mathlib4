@@ -96,60 +96,45 @@ section
 
 open Functor
 
-set_option backward.isDefEq.respectTransparency false in
 theorem liftp_iff {α : Type u} (p : α → Prop) (x : F α) :
-    Liftp p x ↔ ∃ a f, x = abs ⟨a, f⟩ ∧ ∀ i, p (f i) := by
+    Liftp p x ↔ ∃ a f, x = abs (.mk a f) ∧ ∀ i, p (f i) := by
   constructor
   · rintro ⟨y, hy⟩
-    rcases h : repr y with ⟨a, f⟩
-    use a, fun i => (f i).val
-    constructor
-    · rw [← hy, ← abs_repr y, h, ← abs_map]
-      rfl
-    intro i
-    apply (f i).property
-  rintro ⟨a, f, h₀, h₁⟩
-  use abs ⟨a, fun i => ⟨f i, h₁ i⟩⟩
-  rw [← abs_map, h₀]; rfl
+    cases h : repr y with | mk a f
+    refine ⟨a, fun i => (f i).val, ?_, fun i => (f i).property⟩
+    rw [← hy, ← abs_repr y, h, ← abs_map]
+    rfl
+  · rintro ⟨a, f, h₀, h₁⟩
+    refine ⟨abs (.mk a fun i => ⟨f i, h₁ i⟩), ?_⟩
+    rw [← abs_map, h₀]
+    rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
     Liftp p x ↔ ∃ u : q.P α, abs u = x ∧ ∀ i, p (u.snd i) := by
+  rw [liftp_iff]
   constructor
-  · rintro ⟨y, hy⟩
-    rcases h : repr y with ⟨a, f⟩
-    use ⟨a, fun i => (f i).val⟩
-    dsimp
-    constructor
-    · rw [← hy, ← abs_repr y, h, ← abs_map]
-      rfl
-    intro i
-    apply (f i).property
-  rintro ⟨⟨a, f⟩, h₀, h₁⟩; dsimp at *
-  use abs ⟨a, fun i => ⟨f i, h₁ i⟩⟩
-  rw [← abs_map, ← h₀]; rfl
+  · intro ⟨a, f, hx, hf⟩
+    exact ⟨.mk a f, hx.symm, hf⟩
+  · intro ⟨u, hx, hf⟩
+    cases u with | mk a f
+    exact ⟨a, f, hx.symm, hf⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : F α) :
-    Liftr r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by
+    Liftr r x y ↔ ∃ a f₀ f₁, x = abs (.mk a f₀) ∧ y = abs (.mk a f₁) ∧ ∀ i, r (f₀ i) (f₁ i) := by
   constructor
-  · rintro ⟨u, xeq, yeq⟩
-    rcases h : repr u with ⟨a, f⟩
-    use a, fun i => (f i).val.fst, fun i => (f i).val.snd
-    constructor
-    · rw [← xeq, ← abs_repr u, h, ← abs_map]
+  · rintro ⟨u, rfl, rfl⟩
+    cases h : repr u with | mk a f
+    refine ⟨a, fun i => (f i).1.1, fun i => (f i).1.2, ?_, ?_, fun i => (f i).2⟩
+    · rw [← abs_repr u, h, ← abs_map]
       rfl
-    constructor
-    · rw [← yeq, ← abs_repr u, h, ← abs_map]
+    · rw [← abs_repr u, h, ← abs_map]
       rfl
-    intro i
-    exact (f i).property
-  rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use abs ⟨a, fun i => ⟨(f₀ i, f₁ i), h i⟩⟩
-  constructor
-  · rw [xeq, ← abs_map]
-    rfl
-  rw [yeq, ← abs_map]; rfl
+  · rintro ⟨a, f₀, f₁, rfl, rfl, h⟩
+    refine ⟨abs (.mk a fun i => ⟨(f₀ i, f₁ i), h i⟩), ?_, ?_⟩
+    · rw [← abs_map]
+      rfl
+    · rw [← abs_map]
+      rfl
 
 end
 
@@ -168,17 +153,16 @@ theorem recF_eq {α : Type _} (g : F α → α) (x : q.P.W) :
   rfl
 
 theorem recF_eq' {α : Type _} (g : F α → α) (a : q.P.A) (f : q.P.B a → q.P.W) :
-    recF g ⟨a, f⟩ = g (abs (q.P.map (recF g) ⟨a, f⟩)) :=
+    recF g ⟨a, f⟩ = g (abs (q.P.map (recF g) (.mk a f))) :=
   rfl
 
 /-- two trees are equivalent if their F-abstractions are -/
 inductive Wequiv : q.P.W → q.P.W → Prop
   | ind (a : q.P.A) (f f' : q.P.B a → q.P.W) : (∀ x, Wequiv (f x) (f' x)) → Wequiv ⟨a, f⟩ ⟨a, f'⟩
   | abs (a : q.P.A) (f : q.P.B a → q.P.W) (a' : q.P.A) (f' : q.P.B a' → q.P.W) :
-      abs ⟨a, f⟩ = abs ⟨a', f'⟩ → Wequiv ⟨a, f⟩ ⟨a', f'⟩
+      abs (.mk a f) = abs (.mk a' f') → Wequiv ⟨a, f⟩ ⟨a', f'⟩
   | trans (u v w : q.P.W) : Wequiv u v → Wequiv v w → Wequiv u w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `recF` is insensitive to the representation -/
 theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
     Wequiv x y → recF u x = recF u y := by
@@ -211,9 +195,9 @@ def Wrepr : q.P.W → q.P.W :=
 
 theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
   induction x with | _ a f ih
-  apply Wequiv.trans (v := PFunctor.W.mk (q.P.map Wrepr ⟨a, f⟩))
+  apply Wequiv.trans (v := PFunctor.W.mk (q.P.map Wrepr (.mk a f)))
   · apply Wequiv.abs'
-    have : Wrepr ⟨a, f⟩ = PFunctor.W.mk (repr (abs (q.P.map Wrepr ⟨a, f⟩))) := rfl
+    have : Wrepr ⟨a, f⟩ = PFunctor.W.mk (repr (abs (q.P.map Wrepr (.mk a f)))) := rfl
     rw [this, PFunctor.W.dest_mk, abs_repr]
     rfl
   apply Wequiv.ind; exact ih
@@ -259,14 +243,14 @@ theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
     lhs
     rw [Fix.rec, Fix.mk]
     dsimp
-  rcases h : repr x with ⟨a, f⟩
+  cases h : repr x with | mk a f
   rw [PFunctor.map_eq, recF_eq, ← PFunctor.map_eq, PFunctor.W.dest_mk, PFunctor.map_map, abs_map,
     ← h, abs_repr, this]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
-    Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦⟨a, f⟩⟧ := by
-  have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦Wrepr ⟨a, f⟩⟧ := by
+    Fix.mk (abs (.mk a fun x => ⟦f x⟧)) = ⟦⟨a, f⟩⟧ := by
+  have : Fix.mk (abs (.mk a fun x => ⟦f x⟧)) = ⟦Wrepr ⟨a, f⟩⟧ := by
     apply Quot.sound; apply Wequiv.abs'
     rw [PFunctor.W.dest_mk, abs_map, abs_repr, ← abs_map, PFunctor.map_eq]
     simp only [Wrepr, recF_eq, PFunctor.W.dest_mk, abs_repr, Function.comp]
@@ -442,7 +426,7 @@ theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
   apply h'
 
 theorem Cofix.bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
-    (h : ∀ x, Q x → ∃ a f f', Cofix.dest (u x) = abs ⟨a, f⟩ ∧ Cofix.dest (v x) = abs ⟨a, f'⟩ ∧
+    (h : ∀ x, Q x → ∃ a f f', Cofix.dest (u x) = abs ⟨a, f⟩ ∧ Cofix.dest (v x) = abs (.mk a f') ∧
       ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : Cofix F => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
@@ -463,49 +447,20 @@ namespace QPF
 variable {F₂ : Type u → Type u} [q₂ : QPF F₂]
 variable {F₁ : Type u → Type u} [q₁ : QPF F₁]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- composition of qpfs gives another qpf -/
 @[instance_reducible]
 def comp : QPF (Functor.Comp F₂ F₁) where
   P := PFunctor.comp q₂.P q₁.P
-  abs {α} := by
-    dsimp [Functor.Comp]
-    intro p
-    exact abs ⟨p.1.1, fun x => abs ⟨p.1.2 x, fun y => p.2 ⟨x, y⟩⟩⟩
-  repr {α} := by
-    dsimp [Functor.Comp]
-    intro y
-    refine ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, ?_⟩
-    dsimp [PFunctor.comp]
-    intro x
-    exact (repr ((repr y).2 x.1)).snd x.2
-  abs_repr {α} := by
-    dsimp [Functor.Comp]
-    intro x
-    conv =>
-      rhs
-      rw [← abs_repr x]
-    obtain ⟨a, f⟩ := repr x
-    dsimp
-    congr with x
-    rcases h' : repr (f x) with ⟨b, g⟩
-    dsimp; rw [← h', abs_repr]
+  abs {α} p := .mk <| abs (.mk p.fst.1 fun x => abs (.mk (p.fst.2 x) fun y => p.snd ⟨x, y⟩))
+  repr {α} y :=
+    .mk (.mk (repr y.run).fst fun u => (repr ((repr y.run).snd u)).fst)
+      fun x => (repr ((repr y.run).snd x.1)).snd x.2
+  abs_repr := by simp [abs_repr]
   abs_map {α β} f := by
-    dsimp +unfoldPartialApp [Functor.Comp, PFunctor.comp]
     intro p
-    obtain ⟨a, g⟩ := p; dsimp
-    obtain ⟨b, h⟩ := a; dsimp
-    symm
-    trans
-    · symm
-      apply abs_map
-    congr
-    rw [PFunctor.map_eq]
-    dsimp [Function.comp_def]
-    congr
-    ext x
-    rw [← abs_map]
-    rfl
+    cases p with | mk a g
+    cases a with | mk b h
+    simp [functor_norm, ← abs_map, Function.comp_def]
 
 end QPF
 
@@ -548,7 +503,7 @@ open Functor (Liftp Liftr supp)
 open Set
 
 theorem mem_supp {α : Type u} (x : F α) (u : α) :
-    u ∈ supp x ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f '' univ := by
+    u ∈ supp x ↔ ∀ a f, abs (.mk a f) = x → u ∈ f '' univ := by
   rw [supp]; dsimp; constructor
   · intro h a f haf
     have : Liftp (fun u => u ∈ f '' univ) x := by
@@ -561,13 +516,13 @@ theorem mem_supp {α : Type u} (x : F α) (u : α) :
   rw [← hi]; apply h'
 
 theorem supp_eq {α : Type u} (x : F α) :
-    supp x = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f '' univ } := by
+    supp x = { u | ∀ a f, abs (.mk a f) = x → u ∈ f '' univ } := by
   ext
   apply mem_supp
 
 theorem has_good_supp_iff {α : Type u} (x : F α) :
     (∀ p, Liftp p x ↔ ∀ u ∈ supp x, p u) ↔
-      ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ a' f', abs ⟨a', f'⟩ = x → f '' univ ⊆ f' '' univ := by
+      ∃ a f, abs (.mk a f) = x ∧ ∀ a' f', abs (.mk a' f') = x → f '' univ ⊆ f' '' univ := by
   constructor
   · intro h
     have : Liftp (· ∈ supp x) x := by rw [h]; intro u; exact id
@@ -594,7 +549,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
 representing a single value all have the same range. -/
 def IsUniform : Prop :=
   ∀ ⦃α : Type u⦄ (a a' : q.P.A) (f : q.P.B a → α) (f' : q.P.B a' → α),
-    abs ⟨a, f⟩ = abs ⟨a', f'⟩ → f '' univ = f' '' univ
+    abs (.mk a f) = abs (.mk a' f') → f '' univ = f' '' univ
 
 /-- does `abs` preserve `Liftp`? -/
 def LiftpPreservation : Prop :=
@@ -605,7 +560,7 @@ def SuppPreservation : Prop :=
   ∀ ⦃α⦄ (x : q.P α), supp (abs x) = supp x
 
 theorem supp_eq_of_isUniform (h : q.IsUniform) {α : Type u} (a : q.P.A) (f : q.P.B a → α) :
-    supp (abs ⟨a, f⟩) = f '' univ := by
+    supp (abs (.mk a f)) = f '' univ := by
   ext u; rw [mem_supp]; constructor
   · intro h'
     apply h' _ _ rfl
@@ -615,41 +570,44 @@ theorem supp_eq_of_isUniform (h : q.IsUniform) {α : Type u} (a : q.P.A) (f : q.
 theorem liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : α → Prop) :
     Liftp p x ↔ ∀ u ∈ supp x, p u := by
   rw [liftp_iff, ← abs_repr x]
-  obtain ⟨a, f⟩ := repr x; constructor
+  cases repr x with | mk a f
+  constructor
   · rintro ⟨a', f', abseq, hf⟩ u
     rw [supp_eq_of_isUniform h, h _ _ _ _ abseq]
     rintro ⟨i, _, hi⟩
     rw [← hi]
     apply hf
-  intro h'
-  refine ⟨a, f, rfl, fun i => h' _ ?_⟩
-  rw [supp_eq_of_isUniform h]
-  exact ⟨i, mem_univ i, rfl⟩
+  · intro h'
+    refine ⟨a, f, rfl, fun i => h' _ ?_⟩
+    rw [supp_eq_of_isUniform h]
+    exact ⟨i, mem_univ i, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem supp_map (h : q.IsUniform) {α β : Type u} (g : α → β) (x : F α) :
     supp (g <$> x) = g '' supp x := by
-  rw [← abs_repr x]; obtain ⟨a, f⟩ := repr x; rw [← abs_map, PFunctor.map_eq]
+  rw [← abs_repr x]
+  cases repr x with | mk a f
+  rw [← abs_map, PFunctor.map_eq]
   rw [supp_eq_of_isUniform h, supp_eq_of_isUniform h, image_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform := by
   constructor
   · intro h α a a' f f' h'
     rw [← PFunctor.supp_eq, ← PFunctor.supp_eq, ← h, h', h]
-  · rintro h α ⟨a, f⟩
+  · intro h α x
+    cases x with | mk a f
     rwa [supp_eq_of_isUniform, PFunctor.supp_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpPreservation := by
   constructor <;> intro h
-  · rintro α p ⟨a, f⟩
+  · intro α p x
+    cases x with | mk a f
     have h' := h
     rw [suppPreservation_iff_uniform] at h'
     dsimp only [SuppPreservation, supp] at h
     rw [liftp_iff_of_isUniform h', supp_eq_of_isUniform h', PFunctor.liftp_iff']
     simp
-  · rintro α ⟨a, f⟩
+  · intro α x
+    cases x with | mk a f
     simp only [LiftpPreservation] at h
     simp only [supp, h]
 

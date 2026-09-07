@@ -147,7 +147,7 @@ theorem coeff_inv (n) (φ : k⟦X⟧) :
 theorem constantCoeff_inv (φ : k⟦X⟧) : constantCoeff φ⁻¹ = (constantCoeff φ)⁻¹ :=
   MvPowerSeries.constantCoeff_inv φ
 
-theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
+protected theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
   MvPowerSeries.inv_eq_zero
 
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
@@ -250,7 +250,7 @@ theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divXPowOrder f ↔ IsUnit f :=
   ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
     have : f.order = 0 := by
-      simp [order_zero_of_unit h]
+      simp [order_zero_of_isUnit h]
     conv_lhs => rw [← X_pow_order_mul_divXPowOrder (f := f), this, ENat.toNat_zero,
       pow_zero, one_mul]⟩
 

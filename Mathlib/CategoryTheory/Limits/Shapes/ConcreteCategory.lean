@@ -348,10 +348,8 @@ theorem widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j :
   obtain ⟨_ | j, y, rfl⟩ := Concrete.colimit_exists_rep _ x
   · left
     use y
-    rfl
   · right
     use j, y
-    rfl
 
 theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → C}
     (f : ∀ j : α, B ⟶ X j) [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]

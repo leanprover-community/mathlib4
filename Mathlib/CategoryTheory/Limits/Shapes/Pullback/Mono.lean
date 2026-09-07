@@ -131,7 +131,6 @@ instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullba
     Mono (pullback.snd f g) :=
   PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
 instance mono_pullback_to_prod {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] [HasBinaryProduct X Y] :

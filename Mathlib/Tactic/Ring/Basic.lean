@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.Ring.Common
 public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat -- for the `Ord Rat` instance
+public meta import Mathlib.Tactic.Ring.Common
 
 /-!
 # `ring` tactic

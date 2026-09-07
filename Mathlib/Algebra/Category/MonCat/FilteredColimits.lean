@@ -209,7 +209,7 @@ noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
 @[to_additive
   /-- The bundled additive monoid giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : MonCat.{max v u} :=
-  MonCat.of (M.{v, u} F)
+  ↧(M.{v, u} F)
 
 /-- The monoid homomorphism from a given monoid in the diagram to the colimit monoid. -/
 @[to_additive
@@ -317,7 +317,7 @@ noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
 @[to_additive
 /-- The bundled additive commutative monoid giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : CommMonCat.{max v u} :=
-  CommMonCat.of (M.{v, u} F)
+  ↧(M.{v, u} F)
 
 /-- The cocone over the proposed colimit commutative monoid. -/
 @[to_additive /-- The cocone over the proposed colimit additive commutative monoid. -/]
