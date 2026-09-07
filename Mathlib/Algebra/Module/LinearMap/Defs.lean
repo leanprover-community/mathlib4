@@ -158,29 +158,30 @@ theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
 
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
 @[coe]
-def semilinearMap : M →ₛₗ[σ] M₃ where
+def _root_.SemilinearMap.ofClass : M →ₛₗ[σ] M₃ where
   toFun := f
   map_add' := map_add f
   map_smul' := map_smulₛₗ f
 
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
 instance instCoeToSemilinearMap : CoeHead F (M →ₛₗ[σ] M₃) where
-  coe f := semilinearMap f
+  coe f := SemilinearMap.ofClass f
 
 end SemilinearMapClass
+
+@[deprecated (since := "2026-09-03")] alias SemilinearMapClass.semilinearMap :=
+  SemilinearMap.ofClass
 
 namespace LinearMapClass
 variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
   (f : F) [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
-abbrev _root_.LinearMap.ofClass : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
-
-@[deprecated (since := "2026-09-03")] alias linearMap := LinearMap.ofClass
+abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMap.ofClass f
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 instance instCoeToLinearMap : CoeHead F (M₁ →ₗ[R] M₂) where
-  coe f := SemilinearMapClass.semilinearMap f
+  coe f := SemilinearMap.ofClass f
 
 end LinearMapClass
 
