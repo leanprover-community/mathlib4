@@ -466,20 +466,23 @@ theorem norm_rootNumber (hχ : χ.IsPrimitive) : ‖rootNumber χ‖ = 1 := by
 theorem norm_gaussSum_stdAddChar (hχ : χ.IsPrimitive) :
     ‖gaussSum χ ZMod.stdAddChar‖ = .sqrt N := by
   suffices ‖gaussSum χ ZMod.stdAddChar‖ / .sqrt N = ‖rootNumber χ‖ by grind [norm_rootNumber]
-  simp [rootNumber, -pow_ite, norm_natCast_cpow_of_pos, NeZero.pos N, Real.sqrt_eq_rpow]
+  simp [rootNumber, -pow_ite, norm_natCast_cpow_of_pos, NeZero.pos, Real.sqrt_eq_rpow]
 
 /-- **The zeros of a primitive Dirichlet `L`-function in the closed left half-plane are exactly
 those of its archimedean Gamma factor**, with the sole exception of `s = 0` for the trivial
 character (where `gammaFactor` vanishes but `L` does not). -/
-theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ}
-    (hχs : χ ≠ 1 ∨ s ≠ 0) (hs : s.re ≤ 0) : LFunction χ s = 0 ↔ χ.gammaFactor s = 0 := by
-  have hN : s ≠ 0 ∨ N ≠ 1 := hχs.symm.imp_right fun h hN ↦ h (level_one' χ hN)
-  suffices completedLFunction χ s ≠ 0 by grind [LFunction_eq_completed_div_gammaFactor]
-  obtain ⟨w, rfl⟩ : ∃ w, s = 1 - w := ⟨1 - s, by ring⟩
+theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs : s.re ≤ 0) :
+    LFunction χ s = 0 ↔ χ.gammaFactor s = 0 ∧ (N ≠ 1 ∨ s ≠ 0):= by
+  have := NeZero.ne N
+  by_cases hχs : χ = 1 ∧ s = 0
+  · rw [hχs.1, hχs.2, ← changeLevel_one (d := 1), LFunction_changeLevel, gammaFactor_eq_zero_even]
+    <;> simp [LFunction_modOne_eq, riemannZeta_zero, this]
+  have : s ≠ 0 ∨ N ≠ 1 := by contrapose! hχs; simp_all [level_one']
+  suffices completedLFunction χ (1 - (1 - s)) ≠ 0 by grind [LFunction_eq_completed_div_gammaFactor]
   rw [hχ.completedLFunction_one_sub]
-  apply_rules (transparency := .reducible) [mul_ne_zero, rootNumber_ne_zero]
-  · grind [cpow_eq_zero_iff, Nat.cast_eq_zero, NeZero.ne N]
-  · grind [completedLFunction_ne_zero_of_one_le_re, sub_re, one_re, inv_eq_one, sub_ne_zero]
+  apply_rules (transparency := .reducible) [mul_ne_zero, rootNumber_ne_zero,
+    completedLFunction_ne_zero_of_one_le_re]
+  <;> grind [cpow_eq_zero_iff, Nat.cast_eq_zero, sub_re, one_re, inv_eq_one, sub_ne_zero]
 
 end nonvanishing
 
@@ -491,12 +494,8 @@ negative even integers. This is the special case of `LFunction_eq_zero_iff_of_re
 trivial character modulo `1`, whose Gamma factor is `Gammaℝ`. -/
 theorem riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
     riemannZeta s = 0 ↔ ∃ n : ℕ, s = -2 * (n + 1) := by
-  rcases eq_or_ne s 0 with rfl | h0
-  · grind [riemannZeta_zero]
-  · rw [← LFunction_modOne_eq (χ := 1),
-      LFunction_eq_zero_iff_of_re_nonpos isPrimitive_one_level_one (.inr h0) hs,
-      gammaFactor_eq_zero_even]
-    · constructor
-      · rintro ⟨n, rfl⟩; exact ⟨n - 1, by simp_all; norm_cast; grind⟩
-      · rintro ⟨n, rfl⟩; exact ⟨n + 1, by norm_cast⟩
-    · simp [DirichletCharacter.Even, Subsingleton.elim (-1 : ZMod 1) 1]
+  rw [← LFunction_modOne_eq (χ := 1), LFunction_eq_zero_iff_of_re_nonpos
+    isPrimitive_one_level_one hs, gammaFactor_eq_zero_even (by simp)]
+  constructor
+  · rintro ⟨⟨n, rfl⟩, _⟩; exact ⟨n - 1, by simp_all; norm_cast; grind⟩
+  · rintro ⟨n, rfl⟩; exact ⟨⟨n + 1, by norm_cast⟩, by grind⟩
