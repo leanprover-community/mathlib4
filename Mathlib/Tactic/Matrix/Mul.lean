@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Data.Matrix.ListMatrix
+public import Mathlib.Data.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.Parsing
 public import Mathlib.Tactic.NormNum.Core
 
@@ -29,10 +29,15 @@ namespace Mathlib.Tactic.Matrix
 proposition to `True` or `False`. -/
 abbrev Finisher := Expr → MetaM Simp.Result
 
+section
+
+-- the classes are parameters so that every quotation references the one instance term the
+-- caller synthesised, rather than rebuilding a projection path in every cell
+variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
+
 /-- The unfolding of a dot product of literals `l₁ = [a₀, …]`, `l₂ = [b₀, …]` to the fold
 `a₀ * b₀ + (a₁ * b₁ + (… + 0))`, proved by the equations of `List.dotProduct`. -/
-structure DotProductChain {u : Level} (α : Q(Type u)) (_z : Q(Zero $α)) (_add : Q(Add $α))
-    (_mul : Q(Mul $α)) where
+structure DotProductChain where
   /-- The length, as the equations leave it: `(… + 1) + 1`. -/
   n : Q(ℕ)
   /-- The first list. -/
@@ -45,16 +50,15 @@ structure DotProductChain {u : Level} (α : Q(Type u)) (_z : Q(Zero $α)) (_add 
   proof : Q(List.dotProduct $n $l₁ $l₂ = $fold)
 
 /-- Build the `DotProductChain` of the entries `as` and `bs`. -/
-def mkDotProductChain {u : Level} {α : Q(Type u)} (_z : Q(Zero $α)) (_add : Q(Add $α))
-    (_mul : Q(Mul $α)) : List Q($α) → List Q($α) → DotProductChain α _z _add _mul
+def mkDotProductChain : List Q($α) → List Q($α) → DotProductChain zα aα mα
   | a :: as, b :: bs =>
-    -- the classes are taken as arguments so that every quotation references the one instance
-    -- term the caller synthesised, rather than rebuilding a projection path in every cell
-    let ⟨n, l₁, l₂, fold, h⟩ := mkDotProductChain _z _add _mul as bs
+    let ⟨n, l₁, l₂, fold, h⟩ := mkDotProductChain as bs
     ⟨q($n + 1), q($a :: $l₁), q($b :: $l₂), q($a * $b + $fold),
       q((List.dotProduct_succ_cons_cons $n $a $b $l₁ $l₂).trans
         (congrArg (fun x => $a * $b + x) $h))⟩
   | _, _ => ⟨q(0), q([]), q([]), q(0), q(List.dotProduct_zero [] [])⟩
+
+end
 
 /-- Prove `[a₀, …] = [b₀, …]` from proofs of `aᵢ = bᵢ`. -/
 def mkListCongr (α : Expr) (hs : Array Expr) : MetaM Expr := do
@@ -69,14 +73,14 @@ def proveMul {u : Level} (finish : Finisher) (e : Expr) (l m n : ℕ) (α : Q(Ty
   let _inst ← synthInstanceQ q(NonUnitalNonAssocSemiring $α)
   -- derived from the semiring rather than synthesised afresh, so that the cells carry the
   -- instance paths `Matrix.ofLists_mul` instantiates `ListMatrix.mul` with
-  let _z : Q(Zero $α) := q(MulZeroClass.toZero)
-  let _add : Q(Add $α) := q(Distrib.toAdd)
-  let _mul : Q(Mul $α) := q(Distrib.toMul)
+  let zα : Q(Zero $α) := q(MulZeroClass.toZero)
+  let aα : Q(Add $α) := q(Distrib.toAdd)
+  let mα : Q(Mul $α) := q(Distrib.toMul)
   have mQ : Q(ℕ) := mkRawNatLit m
   let cols : Array (Array Expr) :=
     Array.ofFn (n := n) fun j => Array.ofFn (n := m) fun i => (rowsB[i]!)[j]!
   let results ← Array.ofFnM (n := l) fun i => Array.ofFnM (n := n) fun j => do
-    let ⟨_, l₁, l₂, fold, h⟩ := mkDotProductChain _z _add _mul rowsA[i]!.toList cols[j]!.toList
+    let ⟨_, l₁, l₂, fold, h⟩ := mkDotProductChain zα aα mα rowsA[i]!.toList cols[j]!.toList
     -- the cell of `ListMatrix.mul`, with the length as the literal `m`
     have dot : Q($α) := q(List.dotProduct $mQ $l₁ $l₂)
     have hDot : Q($dot = $fold) := ← mkExpectedTypeHint h q($dot = $fold)

@@ -4195,6 +4195,7 @@ public import Mathlib.Data.Matrix.DualNumber
 public import Mathlib.Data.Matrix.Invertible
 public import Mathlib.Data.Matrix.ListMatrix
 public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.Matrix.OfLists
 public import Mathlib.Data.Matrix.PEquiv
 public import Mathlib.Data.Matrix.Reflection
 public import Mathlib.Data.Multiset.AddSub
