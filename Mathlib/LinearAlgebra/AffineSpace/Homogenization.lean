@@ -89,10 +89,14 @@ instance instModule {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalar
 variable
   {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
   {T : Type*} [Semiring T] [Module T R] [Module T V] [IsScalarTower T R V]
-  [SMul S T] [IsScalarTower S T R] [IsScalarTower S T V]
 
-instance : IsScalarTower S T (Homogenization R P) :=
+instance [SMul S T] [IsScalarTower S T R] [IsScalarTower S T V] :
+    IsScalarTower S T (Homogenization R P) :=
   inferInstanceAs (IsScalarTower S T (V × R))
+
+instance [SMulCommClass S T R] [SMulCommClass S T V] :
+    SMulCommClass S T (Homogenization R P) :=
+  inferInstanceAs (SMulCommClass S T (V × R))
 
 end SMul
 
