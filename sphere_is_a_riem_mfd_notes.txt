@@ -1,0 +1,45 @@
+Here is the current status of the "sphere is a Riemannian manifold" project. We're following the proposed route by Sébastian above (and finally understand Patrick's question about why we were looking at charts). 
+
+@**Michael Rothgang** has got docs#Manifold.IsImmersionAt.injective_mfderiv into mathlib. This says that if a map between manifolds is an immersion at a point then its derivative is injective (I was taught that this was the definition of immersion but things are perhaps more subtle in the infinite-dimensional case). 
+
+As far as I know, we are missing the claim that under some finite-dimensional hypotheses, the derivative being injective at x implies that the map is an immersion at x. Michael are you planning on working on this? We have the inclusion from the sphere of norm 1 vectors in a finite-dimensional real inner product space, into the inner product space, as a function between manifolds. A lemma such as this would make the proof that it's an immersion much easier. Without it we seem to have to make more auxiliary definitions such as
+```
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+namespace Sphere
+
+variable (v : E)
+
+/-- The radial extension of the inverse of stereographic projection: it maps the hyperplane
+`(ℝ ∙ v)ᗮ` to the sphere minus `v`, and the `v`-coordinate to the radius (shifted by one). -/
+def polarMap (z : E) : E := (1 + ⟪v, z⟫) • stereoInvFunAux v (z - ⟪v, z⟫ • v)
+
+/-- The inverse of `polarMap`. -/
+def polarInv (y : E) : E := ((stereoToFun v (‖y‖⁻¹ • y) : (ℝ ∙ v)ᗮ) : E) + (‖y‖ - 1) • v
+
+/-- The source of the polar chart. -/
+def polarSource : Set E := {z : E | 0 < 1 + ⟪v, z⟫}
+
+/-- The target of the polar chart: the complement of the closed ray spanned by `v`. -/
+def polarTarget : Set E := {y : E | ⟪v, y⟫ < ‖y‖}
+```
+(building on docs#stereoInvFunAux , a function which I'm not sure was supposed to be used any more). We can assemble these definitions into a proof of `{n : ℕ} [Fact (finrank ℝ E = n + 1)] : IsImmersionOfComplement ℝ (𝓡 n) 𝓘(ℝ, E) ω ((↑) : sphere (0 : E) 1 → E)`. So in some sense we're "looking at charts" again but only because I think we have to get our hands dirty if we don't have this fact about injectivity implies immersion. It is not clear to me whether mathlib wants all these other explicit definitions when it might just be easier to prove injectivity of the map between tangent spaces and 
+
+Now it's just a case of pulling back the Riemannian structure on the inner product space E (which we have -- it's docs#instIsRiemannianManifoldModelWithCornersSelfReal ), back to the sphere along the immersion. And here we have hit a snag. Pulling back the metric looks like it should be OK (here I and J are models with corners and f : M -> N is an immersion):
+
+```
+noncomputable def RiemannianMetric.comap (hf : IsImmersion I J n f)
+    (g : RiemannianMetric (TangentSpace J : (y : N) → _)) :
+    RiemannianMetric (TangentSpace I : (x : M) → _) where ...
+```
+
+and so then we can pull back the bundle:
+
+```
+noncomputable def RiemannianBundle.comap (hf : IsImmersion I J n f)
+    (g : RiemannianBundle (fun (y : N) ↦ TangentSpace J y)) :
+    RiemannianBundle (fun (x : M) ↦ TangentSpace I x) where
+      g := RiemannianMetric.comap I J f n hf g.1
+```
+
+but now to prove `IsRiemannianManifold J N -> IsRiemannianManifold I M` 
