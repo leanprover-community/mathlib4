@@ -60,10 +60,19 @@ open Batteries.Tactic.Lint in
     -- Check if any of the constants we care about appears in the type.
     let morphismClassesAppearing :=
       constantInfo.type.getUsedConstantsAsSet.filter (morphismClassesToLint.contains ·)
+    --return s!"{morphismClassesAppearing.toArray}"
+    if morphismClassesToLint.isEmpty then return none
+    else if declName.components.getLast? == `ofClass then
+      -- heuristic: if a definition is named literally `ofClass`, don't warn.
+      return none
+    else if Lean.Linter.isDeprecated (← getEnv) declName then
+      -- We don't warn about deprecated declarations either: those will be removed soon anyway.
+      return none
+
     if !morphismClassesAppearing.isEmpty then
       let clsName := morphismClassesAppearing.toArray[0]! |>.toString.dropEnd 5
       return m!"The definition `{.ofConstName declName true}` takes a `{clsName}Class` argument.\n\
-      Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
+      Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad \
       idea:\nplease change the definition to take in a `{clsName}` argument instead."
       -- Note that this linter has false positives if a `{clsName}Class` is just coerced to a function."
     return none
