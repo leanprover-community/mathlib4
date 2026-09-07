@@ -63,6 +63,32 @@ lemma shortExact_shortComplex : h.shortComplex.ShortExact :=
   HomologicalComplex.shortExact_of_degreewise_shortExact _
     (fun n ↦ (h.splitting n).shortExact)
 
+lemma extMk_comp_extClass'_aux
+    {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n) {m : ℕ}
+    (hx₃ : x₃ ≫ R₃.cocomplex.d n m = 0) (m' : ℕ) :
+    (x₃ ≫ (h.splitting n).s ≫ R₂.cocomplex.d n m ≫ (h.splitting m).r) ≫
+      R₁.cocomplex.d m m' = 0 := by
+  have := (h.splitting m').shortExact.mono_f
+  let x₂ := x₃ ≫ (h.splitting n).s
+  let x₁ := x₂ ≫ R₂.cocomplex.d n m ≫ (h.splitting m).r
+  have hx₂ : x₂ ≫ h.g.f n = x₃ := by simp [x₂, (h.splitting n).s_g]
+  have hx₁ : x₁ ≫ h.f.f m = x₂ ≫ R₂.cocomplex.d n m := by
+    dsimp [x₁]
+    simp [(h.splitting m).r_f, ← HomologicalComplex.Hom.comm_assoc, reassoc_of% hx₂,
+      reassoc_of% hx₃]
+  have : x₁ ≫ R₁.cocomplex.d m m' = 0 := by
+    simp [← cancel_mono (h.f.f m'), ← HomologicalComplex.Hom.comm, reassoc_of% hx₁]
+  simpa [x₁, x₂] using this
+
+lemma extMk_comp_extClass'
+    [HasExt.{w} C] {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hx₃ : x₃ ≫ R₃.cocomplex.d n m = 0) (m' : ℕ) (hm' : m + 1 = m') :
+    -- hopefully, there should be no sign here
+    (R₃.extMk x₃ m hm hx₃).comp hS.extClass hm =
+    R₁.extMk (x₃ ≫ (h.splitting n).s ≫ R₂.cocomplex.d n m ≫ (h.splitting m).r) m' hm'
+      (h.extMk_comp_extClass'_aux x₃ hx₃ m') := by
+  sorry
+
 lemma extMk_comp_extClass
     [HasExt.{w} C] {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n)
     (x₂ : X ⟶ R₂.cocomplex.X n) (hx₂ : x₂ ≫ h.g.f n = x₃)
@@ -70,11 +96,20 @@ lemma extMk_comp_extClass
     (x₁ : X ⟶ R₁.cocomplex.X m) (hx₁ : x₁ ≫ h.f.f m = x₂ ≫ R₂.cocomplex.d n m)
     (m' : ℕ) (hm' : m + 1 = m') :
     (R₃.extMk x₃ m hm (by simp [← hx₂, ← reassoc_of% hx₁])).comp hS.extClass hm =
-    -- in principle, there should be no sign here
     R₁.extMk x₁ m' hm' (by
       have := (h.splitting m').shortExact.mono_f
       simp [← cancel_mono (h.f.f m'), ← HomologicalComplex.Hom.comm, reassoc_of% hx₁]) := by
-  sorry
+  have hx₃ : x₃ ≫ R₃.cocomplex.d n m = 0 := by simp [← hx₂, ← reassoc_of% hx₁]
+  rw [h.extMk_comp_extClass' x₃ m hm hx₃ m' hm',
+    ← sub_eq_zero, sub_extMk, extMk_eq_zero_iff _ _ _ _ _ _ hm]
+  obtain ⟨u, rfl⟩ :
+      ∃ (u : X ⟶ R₁.cocomplex.X n), x₂ = u ≫ h.f.f n + x₃ ≫ (h.splitting n).s :=
+    ⟨x₂ ≫ (h.splitting n).r, by simpa [← hx₂] using x₂ ≫= (h.splitting n).id.symm⟩
+  refine ⟨-u, ?_⟩
+  have := (h.splitting m).shortExact.mono_f
+  simp [← cancel_mono (h.f.f m),
+    (h.splitting m).r_f, ← HomologicalComplex.Hom.comm_assoc, (h.splitting n).s_g_assoc,
+    hx₁, reassoc_of% hx₃]
 
 end Horseshoe
 
