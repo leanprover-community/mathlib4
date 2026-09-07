@@ -202,6 +202,7 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
 lemma coe_ofClass {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
     ⇑(ofClass f) = f :=
   rfl
+
 @[deprecated (since := "2026-09-07")] alias coe_coe := coe_ofClass
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
