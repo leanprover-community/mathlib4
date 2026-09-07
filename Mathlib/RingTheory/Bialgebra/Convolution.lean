@@ -131,7 +131,7 @@ lemma convMul_def (f g : WithConv <| C →ₐc[R] A) :
 
 private lemma convPow_succ (f : WithConv <| C →ₐc[R] A) (n : ℕ) : f ^ (n + 1) = (f ^ n) * f := rfl
 
--- TODO: Make simp once `SemilinearMap.ofClass` is not simp nf anymore.
+-- TODO: Make simp once `LinearMap.ofClass` is not simp nf anymore.
 -- @[simp]
 lemma toLinearMap_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toLinearMap = toConv f.ofConv.toLinearMap * toConv g.ofConv.toLinearMap :=
@@ -142,7 +142,7 @@ lemma toAlgHom_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toAlgHom = toConv f.ofConv.toAlgHom * toConv g.ofConv.toAlgHom :=
   rfl
 
--- TODO: Make simp once `SemilinearMap.ofClass` is not simp nf anymore.
+-- TODO: Make simp once `LinearMap.ofClass` is not simp nf anymore.
 -- @[simp]
 lemma toLinearMap_convPow (f : WithConv <| C →ₐc[R] A) :
     ∀ n, toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n
