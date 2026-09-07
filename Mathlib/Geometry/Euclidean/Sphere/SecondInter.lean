@@ -110,8 +110,8 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
 lemma Sphere.eq_or_eq_secondInter_iff_mem_of_mem_affineSpan_pair {s : Sphere P} {p q : P}
     (hp : p ∈ s) {p' : P} (hp' : p' ∈ line[ℝ, p, q]) :
     p' = p ∨ p' = s.secondInter p (q -ᵥ p) ↔ p' ∈ s := by
-  convert s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
-  convert hp'
+  convert! s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
+  convert! hp'
   rw [AffineSubspace.eq_iff_direction_eq_of_mem (AffineSubspace.self_mem_mk' p _)
     (left_mem_affineSpan_pair _ _ _)]
   simp [direction_affineSpan, vectorSpan_pair_rev]
@@ -140,8 +140,8 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   simp only [Sphere.secondInter, vadd_vsub_assoc, vadd_vadd, inner_add_right, inner_smul_right,
     div_mul_cancel₀ _ hv']
   rw [← @vsub_eq_zero_iff_eq V, vadd_vsub, ← add_smul, ← add_div]
-  convert zero_smul ℝ _
-  convert zero_div (G₀ := ℝ) _
+  convert! zero_smul ℝ _
+  convert! zero_div (G₀ := ℝ) _
   ring
 
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
@@ -232,13 +232,13 @@ lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior {s : Sphere P}
       (s.secondInter (sx.points i) (p' -ᵥ (sx.points i))) by
     rwa [hp', s.secondInter_smul _ _ hrpos.ne'] at this
   refine s.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite hi hsx ?_
-  simp_rw [p', ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ (sx.points)
+  simp_rw [p', ← Finset.univ.affineCombination_piSingle ℝ (sx.points)
     (Finset.mem_univ i), AffineMap.lineMap_apply, Finset.affineCombination_vsub,
     ← LinearMap.map_smul, Finset.weightedVSub_vadd_affineCombination,
     Affine.Simplex.faceOpposite]
   rw [Affine.Simplex.affineCombination_mem_interior_face_iff_pos]
   · simp only [Finset.mem_compl, Finset.mem_singleton, Pi.add_apply, Pi.smul_apply, Pi.sub_apply,
-      smul_eq_mul, Decidable.not_not, forall_eq, Finset.affineCombinationSingleWeights_apply_self]
+      smul_eq_mul, Decidable.not_not, forall_eq, Pi.single_eq_same]
     refine ⟨fun j hj ↦ ?_, by grind⟩
     simp [hj, hrpos, (hw01 j).1]
   · simp [Finset.sum_add_distrib, ← Finset.mul_sum, hw]

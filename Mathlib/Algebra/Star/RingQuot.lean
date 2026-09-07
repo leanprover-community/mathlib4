@@ -9,7 +9,7 @@ public import Mathlib.Algebra.RingQuot
 public import Mathlib.Algebra.Star.Basic
 
 /-!
-# The *-ring structure on suitable quotients of a *-ring.
+# The \*-ring structure on suitable quotients of a \*-ring.
 -/
 
 public section

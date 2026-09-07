@@ -8,7 +8,6 @@ module -- shake: keep-all
 
 public import Lean.Expr
 public import Mathlib.Util.MemoFix
-public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # ReplaceRec
@@ -18,8 +17,6 @@ replacing a subexpression. We completely mimic the implementation of `Expr.repla
 -/
 
 deprecated_module (since := "2026-01-26")
-
-set_option linter.deprecated false
 
 @[expose] public section
 

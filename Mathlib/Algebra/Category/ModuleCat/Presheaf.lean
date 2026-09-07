@@ -59,7 +59,7 @@ namespace PresheafOfModules
 attribute [simp] map_id map_comp
 attribute [reassoc] map_comp
 
-#adaptation_note /-- lean-pr-testing-12564
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/12564
 This is required for `Algebra.Category.ModuleCat.Differentials.Presheaf` -/
 instance {R : Cᵒᵖ ⥤ CommRingCat.{u}} (X : Cᵒᵖ) (M : PresheafOfModules.{v} (R ⋙ forget₂ _ _)) :
     Module (R.obj X) (M.obj X) := (M.obj X).isModule
@@ -76,6 +76,19 @@ lemma congr_map_apply {X Y : Cᵒᵖ} {f g : X ⟶ Y} (h : f = g) (m : M.obj X) 
 lemma map_comp_apply {U V W : Cᵒᵖ} (i : U ⟶ V) (j : V ⟶ W) (x) :
     M.map (i ≫ j) x = M.map j (M.map i x) := by
   rw [M.map_comp]; rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The restriction map `M.map f` of a presheaf of modules `M`, bundled as a semilinear map
+along the ring map `R.map f`. -/
+noncomputable def restrictₛₗ {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    M.obj X →ₛₗ[(R.map f).hom] M.obj Y where
+  toFun m := M.map f m
+  map_add' := map_add (M.map f).hom
+  map_smul' r m := M.map_smul f r m
+
+@[simp]
+lemma restrictₛₗ_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : M.obj X) :
+    M.restrictₛₗ f m = M.map f m := rfl
 
 /-- A morphism of presheaves of modules consists of a family of linear maps which
 satisfy the naturality condition. -/
@@ -140,6 +153,13 @@ lemma presheaf_obj_coe (X : Cᵒᵖ) :
 lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
     DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f).hom x = M.map f x := rfl
 
+@[reassoc]
+lemma smul_map {U V : Cᵒᵖ} (f : U ⟶ V) (r : R.obj U) :
+    dsimp% ModuleCat.smul _ r ≫ M.presheaf.map f =
+      M.presheaf.map f ≫ ModuleCat.smul _ (R.map f r) := by
+  ext x
+  exact (M.map f).hom.map_smul r x
+
 instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
     Module (R.obj X) (M.presheaf.obj X) :=
   inferInstanceAs (Module (R.obj X) (M.obj X))
@@ -164,7 +184,7 @@ lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
     ext X x
-    exact congr_fun (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
+    exact ConcreteCategory.congr_hom (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
 
 section
 
@@ -270,6 +290,7 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
 
 instance (X : Cᵒᵖ) : (evaluation.{v} R X).Additive where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
 @[simps]
@@ -331,6 +352,7 @@ lemma sectionsMap_comp {M N P : PresheafOfModules.{v} R} (f : M ⟶ N) (g : N �
 lemma sectionsMap_id {M : PresheafOfModules.{v} R} (s : M.sections) :
     sectionsMap (𝟙 M) s = s := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
 @[simps! apply_coe]

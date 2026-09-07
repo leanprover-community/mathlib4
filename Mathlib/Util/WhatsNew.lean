@@ -108,7 +108,7 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
       diffs := diffs.push (← printIdCore c i)
 
   for ext in ← persistentEnvExtensionsRef.get do
-    if let some diff := ← diffExtension old new ext then
+    if let some diff ← diffExtension old new ext then
       diffs := diffs.push diff
 
   if diffs.isEmpty then return "no new constants"

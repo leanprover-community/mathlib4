@@ -308,7 +308,8 @@ theorem eq_zero_of_subset_zero {s : Multiset α} (h : s ⊆ 0) : s = 0 :=
 @[simp] lemma subset_zero : s ⊆ 0 ↔ s = 0 :=
   ⟨eq_zero_of_subset_zero, fun xeq => xeq.symm ▸ Subset.refl 0⟩
 
-@[simp] lemma zero_ssubset : 0 ⊂ s ↔ s ≠ 0 := by simp [ssubset_iff_subset_not_subset]
+@[simp] lemma zero_ssubset : 0 ⊂ s ↔ s ≠ 0 := by
+  simp [(right_iff_left_not_left : 0 ⊂ s ↔ 0 ⊆ s ∧ ¬s ⊆ 0)]
 
 @[simp] lemma singleton_subset : {a} ⊆ s ↔ a ∈ s := by simp [subset_iff]
 
@@ -465,6 +466,11 @@ theorem card_eq_four {s : Multiset α} : card s = 4 ↔ ∃ x y z w, s = {x, y, 
       (List.length_eq_four.mp h).imp fun _a =>
         Exists.imp fun _b => Exists.imp fun _c => Exists.imp fun _d => congr_arg _,
     fun ⟨_a, _b, _c, _d, e⟩ => e.symm ▸ rfl⟩
+
+theorem card_eq_succ_iff {s : Multiset α} {n : ℕ} :
+    card s = n + 1 ↔ ∃ a t, a ::ₘ t = s ∧ card t = n := by
+  refine ⟨?_, by aesop⟩
+  induction s using Multiset.induction generalizing n with aesop
 
 /-! ### Map for partial functions -/
 

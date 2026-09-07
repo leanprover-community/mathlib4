@@ -523,7 +523,6 @@ instance [Infinite α] : Infinite (Equiv.Perm α) := by
 namespace Infinite
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → α
   | n =>
     letI := Classical.decEq α
@@ -533,7 +532,6 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
             Multiset.mem_range.1).toFinset)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h

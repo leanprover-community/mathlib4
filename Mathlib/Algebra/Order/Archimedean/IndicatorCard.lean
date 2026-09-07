@@ -14,6 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Cardinality and limit of sum of indicators
+
 This file contains results relating the cardinality of subsets of ℕ and limits,
 limsups of sums of indicators.
 

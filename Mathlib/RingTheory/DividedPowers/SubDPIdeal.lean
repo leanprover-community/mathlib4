@@ -232,7 +232,7 @@ def mk' {J : Ideal A} (hJ : hI.IsSubDPIdeal J) : hI.SubDPIdeal := ⟨J, hJ.1, hJ
 
 instance : SetLike (SubDPIdeal hI) A where
   coe s := s.carrier
-  coe_injective' p q h := by
+  coe_injective p q h := by
     rw [SetLike.coe_set_eq] at h
     cases p; cases q; congr
 
@@ -643,7 +643,7 @@ private theorem isSubDPIdeal_aux (hIJ : IsSubDPIdeal hI (J ⊓ I)) :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- When `I ⊓ J` is a sub-dp-ideal of `I`, this is the divided power structure on the ideal
- `I(A⧸J)` of the quotient. -/
+`I(A⧸J)` of the quotient. -/
 noncomputable def dividedPowers : DividedPowers (I.map (Ideal.Quotient.mk J)) :=
   DividedPowers.Quotient.OfSurjective.dividedPowers
     hI Ideal.Quotient.mk_surjective (refl _) (isSubDPIdeal_aux hI hIJ)

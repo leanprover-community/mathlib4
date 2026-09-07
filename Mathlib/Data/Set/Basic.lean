@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic properties of sets
@@ -85,9 +86,6 @@ instance instBoundedOrder : BoundedOrder (Set α) where
   bot := ∅
   top := univ
 
-instance : HasSSubset (Set α) :=
-  ⟨(· < ·)⟩
-
 @[simp]
 theorem top_eq_univ : (⊤ : Set α) = univ :=
   rfl
@@ -104,22 +102,26 @@ theorem sup_eq_union : ((· ⊔ ·) : Set α → Set α → Set α) = (· ∪ ·
 theorem inf_eq_inter : ((· ⊓ ·) : Set α → Set α → Set α) = (· ∩ ·) :=
   rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem le_eq_subset : ((· ≤ ·) : Set α → Set α → Prop) = (· ⊆ ·) :=
   rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem lt_eq_ssubset : ((· < ·) : Set α → Set α → Prop) = (· ⊂ ·) :=
   rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem le_iff_subset : s ≤ t ↔ s ⊆ t :=
   Iff.rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 
+@[deprecated "this is now a syntactic identity" (since := "2026-05-24")]
 alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 
+@[deprecated "this is now a syntactic identity" (since := "2026-05-24")]
 alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
@@ -141,7 +143,6 @@ instance (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
 theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
   rfl
 
-@[simp]
 theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
 
@@ -217,40 +218,6 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
   rfl
 
 /-! ### Subset and strict subset relations -/
-
-
-instance : @Std.Refl (Set α) (· ⊆ ·) :=
-  show Std.Refl (· ≤ ·) by infer_instance
-
-instance : IsTrans (Set α) (· ⊆ ·) :=
-  show IsTrans (Set α) (· ≤ ·) by infer_instance
-
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
-  show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
-
-instance : @Std.Antisymm (Set α) (· ⊆ ·) :=
-  show Std.Antisymm (· ≤ ·) by infer_instance
-
-instance : @Std.Irrefl (Set α) (· ⊂ ·) :=
-  show Std.Irrefl (· < ·) by infer_instance
-
-instance : IsTrans (Set α) (· ⊂ ·) :=
-  show IsTrans (Set α) (· < ·) by infer_instance
-
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (· < ·) (· < ·) (· < ·) by infer_instance
-
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
-  show Trans (· < ·) (· ≤ ·) (· < ·) by infer_instance
-
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
-
-instance : @Std.Asymm (Set α) (· ⊂ ·) :=
-  show Std.Asymm (· < ·) by infer_instance
-
-instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ => Iff.rfl⟩
 
 -- TODO(Jeremy): write a tactic to unfold specific instances of generic notation?
 @[grind =]
@@ -370,11 +337,13 @@ theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
 theorem nonempty_of_ssubset (ht : s ⊂ t) : (t \ s).Nonempty :=
   nonempty_of_not_subset ht.2
 
-theorem Nonempty.of_diff (h : (s \ t).Nonempty) : s.Nonempty :=
+theorem Nonempty.of_sdiff (h : (s \ t).Nonempty) : s.Nonempty :=
   h.imp fun _ => And.left
 
+@[deprecated (since := "2026-06-03")] alias Nonempty.of_diff := Nonempty.of_sdiff
+
 theorem nonempty_of_ssubset' (ht : s ⊂ t) : t.Nonempty :=
-  (nonempty_of_ssubset ht).of_diff
+  (nonempty_of_ssubset ht).of_sdiff
 
 theorem Nonempty.inl (hs : s.Nonempty) : (s ∪ t).Nonempty :=
   hs.imp fun _ => Or.inl
@@ -485,7 +454,7 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
-  not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
+  not_iff_not.1 <| by simpa using! nonempty_iff_ne_empty
 
 lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
   simpa using ‹IsEmpty s›
@@ -502,6 +471,14 @@ theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
 
 theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
+
+theorem Nonempty.forall_const (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
+  let ⟨x, hx⟩ := h
+  ⟨fun h ↦ h x hx, fun h _ _ ↦ h⟩
+
+@[simp]
+theorem forall_mem_const {p : Prop} [Nonempty s] : (∀ x ∈ s, p) ↔ p :=
+  (nonempty_coe_sort.mp ‹_›).forall_const
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
@@ -669,7 +646,8 @@ theorem union_subset_iff {s t u : Set α} : s ∪ t ⊆ u ↔ s ⊆ u ∧ t ⊆ 
 
 @[gcongr]
 theorem union_subset_union {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ s₂) (h₂ : t₁ ⊆ t₂) :
-    s₁ ∪ t₁ ⊆ s₂ ∪ t₂ := fun _ => Or.imp (@h₁ _) (@h₂ _)
+    s₁ ∪ t₁ ⊆ s₂ ∪ t₂ :=
+  sup_le_sup h₁ h₂
 
 theorem union_subset_union_left {s₁ s₂ : Set α} (t) (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
@@ -809,7 +787,8 @@ theorem univ_inter (a : Set α) : univ ∩ a = a := top_inf_eq _
 
 @[gcongr]
 theorem inter_subset_inter {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ t₁) (h₂ : s₂ ⊆ t₂) :
-    s₁ ∩ s₂ ⊆ t₁ ∩ t₂ := fun _ => And.imp (@h₁ _) (@h₂ _)
+    s₁ ∩ s₂ ⊆ t₁ ∩ t₂ :=
+  inf_le_inf h₁ h₂
 
 theorem inter_subset_inter_left {s t : Set α} (u : Set α) (H : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter H Subset.rfl

@@ -93,6 +93,7 @@ def projSup {ι : Type v} (Us : ι → Opens X) :
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
   map e := (ObjectProperty.homMk (homOfLE (principalOpen_le e.right.le))).op
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 /-- This is an auxiliary definition which is only meant to be used in `isLimit` below. -/
@@ -123,6 +124,7 @@ def lowerCone
         (StructuredArrow.proj _ (principals X) ⋙ F) ee).symm
   }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 This is the main construction in this file showing that the right Kan extension

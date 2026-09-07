@@ -6,7 +6,7 @@ Authors: Yi Yuan
 module
 
 public import Mathlib.Probability.Distributions.Poisson.Basic
-public import Mathlib.Probability.ProbabilityMassFunction.Binomial
+public import Mathlib.Probability.Distributions.Binomial
 
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.SpecialFunctions.Choose
@@ -91,16 +91,15 @@ Another version of Poisson Limit Theorem: convergence of `PMF.binomial` to `pois
 under the natural hypotheses (`∀ n, p n ≤ 1` and `r ≥ 0`).
 -/
 @[deprecated tendsto_choose_mul_pow_of_tendsto_mul_atTop (since := "2026-03-08")]
-lemma binomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥0} (h : ∀ n, p n ≤ 1)
-    (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
-    Tendsto (fun n ↦ PMF.binomial (p n) (h n) n (Fin.ofNat (n + 1) k))
-    atTop (𝓝 (poissonMeasure r {k})) := by
+lemma binomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → unitInterval}
+    (hr : Tendsto (fun n => n * (p n : ℝ)) atTop (𝓝 r)) :
+    Tendsto (fun n ↦ Bin(n, p n) {k}) atTop (𝓝 (poissonMeasure r {k})) := by
   have t1 : Tendsto (fun n => (ENNReal.ofReal (n.choose k * (p n) ^ k * (1 - p n) ^ (n - k) : ℝ)))
       atTop (𝓝 (poissonMeasure r {k})) := by
     simp_rw [poissonMeasure_singleton]
     exact tendsto_ofReal (tendsto_choose_mul_pow_of_tendsto_mul_atTop k (by norm_cast))
   refine Tendsto.congr' ?_ t1
   simpa only [EventuallyEq, eventually_atTop, ge_iff_le] using
-    ⟨k, fun b hb ↦ PMF.binomial_apply_of_le hb (h b)⟩
+    ⟨k, fun b hb ↦ (binomial_singleton b k (p b)).symm⟩
 
 end ProbabilityTheory

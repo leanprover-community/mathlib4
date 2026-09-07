@@ -46,6 +46,7 @@ namespace MeasureTheory.Lp
 
 variable (E F) in
 /-- The Fourier transform on `L2` as a linear isometry equivalence. -/
+@[wikidata Q6520159]
 def fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
   (fourierEquiv ℂ 𝓢(E, F)).extendOfIsometry
     (toLpCLM ℂ (E := E) F 2 volume) (toLpCLM ℂ (E := E) F 2 volume)
@@ -113,7 +114,7 @@ theorem SchwartzMap.toLp_fourierInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (
   use 1
   intro f
   rw [one_mul]
-  convert (norm_fourier_toL2_eq (𝓕⁻ f)).symm.le
+  convert! (norm_fourier_toL2_eq (𝓕⁻ f)).symm.le
   simp
 
 @[deprecated (since := "2025-12-31")]

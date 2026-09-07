@@ -51,9 +51,6 @@ abbrev IsAntisymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Antisymm r
 class IsTrans (α : Sort*) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
 
-lemma isTrans_def {α : Sort*} {r : α → α → Prop} : IsTrans α r ↔ ∀ ⦃a b c⦄, r a b → r b c → r a c :=
-  ⟨(·.trans), .mk⟩
-
 instance {α : Sort*} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
   ⟨IsTrans.trans _ _ _⟩
 
@@ -100,11 +97,24 @@ that is, `Std.Trichotomous lt` and `IsStrictOrder X lt`. -/
 class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
     extends Std.Trichotomous lt, IsStrictOrder α lt
 
+theorem Equivalence.of_isEquiv {α : Sort*} (lt : α → α → Prop) [IsEquiv α lt] : Equivalence lt where
+  refl := Std.Refl.refl; symm := Std.Symm.symm _ _; trans := IsTrans.trans _ _ _
+
+theorem IsEquiv.of_equivalence {α : Sort*} {lt : α → α → Prop} (h : Equivalence lt) :
+    IsEquiv α lt where
+  refl := h.refl; symm _ _ := h.symm; trans _ _ _ := h.trans
+
+theorem equivalence_iff_isEquiv {α : Sort*} (lt : α → α → Prop) : Equivalence lt ↔ IsEquiv α lt :=
+  ⟨.of_equivalence, fun _ => .of_isEquiv lt⟩
+
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
   symm := @Eq.symm _
   trans := @Eq.trans _
   refl := Eq.refl
+
+instance (α : Sort*) : Std.Symm (α := α) Ne where
+  symm _ _ := Ne.symm
 
 /-- `Iff` is an equivalence relation. -/
 instance iff_isEquiv : IsEquiv Prop Iff where
@@ -128,6 +138,30 @@ lemma asymm [Std.Asymm r] : a ≺ b → ¬b ≺ a := Std.Asymm.asymm _ _
 
 lemma trichotomous [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   fun _ _ ↦ Std.Trichotomous.rel_or_eq_or_rel_swap
+
+lemma irrefl_def : Std.Irrefl r ↔ ∀ ⦃a⦄, ¬r a a :=
+  ⟨(·.irrefl), .mk⟩
+
+lemma refl_def : Std.Refl r ↔ ∀ ⦃a⦄, r a a :=
+  ⟨(·.refl), .mk⟩
+
+lemma isTrans_def {α : Sort*} {r : α → α → Prop} : IsTrans α r ↔ ∀ ⦃a b c⦄, r a b → r b c → r a c :=
+  ⟨(·.trans), .mk⟩
+
+lemma symm_def : Std.Symm r ↔ ∀ ⦃a b⦄, r a b → r b a :=
+  ⟨(·.symm), .mk⟩
+
+lemma antisymm_def : Std.Antisymm r ↔ ∀ ⦃a b⦄, r a b → r b a → a = b :=
+  ⟨(·.antisymm), .mk⟩
+
+lemma asymm_def : Std.Asymm r ↔ ∀ ⦃a b⦄, r a b → ¬r b a :=
+  ⟨(·.asymm), .mk⟩
+
+lemma total_def : Std.Total r ↔ ∀ ⦃a b⦄, r a b ∨ r b a :=
+  ⟨(·.total), .mk⟩
+
+lemma trichotomous_def : Std.Trichotomous r ↔ ∀ ⦃a b⦄, ¬r a b → ¬r b a → a = b :=
+  ⟨(·.trichotomous), .mk⟩
 
 instance (priority := 90) asymm_of_isTrans_of_irrefl [IsTrans α r] [Std.Irrefl r] : Std.Asymm r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
@@ -181,9 +215,11 @@ lemma trichotomous_of [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨
 section
 
 /-- `Std.Refl` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Refl (since := "2026-03-27")]
 def Reflexive := ∀ x, x ≺ x
 
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Symm (since := "2026-06-10")]
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
@@ -202,25 +238,36 @@ def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 @[deprecated Std.Total (since := "2026-02-10")]
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
-theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
+theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
+  refl := h.refl
 
-theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
-  fun _ _ ↦ h.symm
+@[deprecated (since := "2026-03-27")] alias Equivalence.reflexive := Equivalence.stdRefl
+
+theorem Equivalence.stdSymm (h : Equivalence r) : Std.Symm r where
+  symm _ _ := h.symm
+
+@[deprecated (since := "2026-06-10")] alias Equivalence.symmetric := Equivalence.stdSymm
 
 theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
   ⟨fun _ _ _ ↦ h.trans⟩
 
 @[deprecated (since := "2026-02-20")] alias Equivalence.transitive := Equivalence.isTrans
 
+theorem Equivalence.isEquiv (h : Equivalence r) : IsEquiv α r :=
+  have := h.stdRefl
+  have := h.stdSymm
+  have := h.isTrans
+  {}
+
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-theorem InvImage.isTrans (h : IsTrans β r) : IsTrans α (InvImage r f) :=
-  ⟨fun _ _ _ ↦ h.trans _ _ _⟩
+instance InvImage.isTrans [IsTrans β r] : IsTrans α (InvImage r f) :=
+  ⟨fun _ _ _ ↦ trans_of r⟩
 
 @[deprecated (since := "2026-02-20")] alias InvImage.trans := InvImage.isTrans
 
-theorem InvImage.irrefl (h : Std.Irrefl r) : Std.Irrefl (InvImage r f) :=
-  ⟨fun (a : α) (h₁ : InvImage r f a a) ↦ h.irrefl (f a) h₁⟩
+instance InvImage.irrefl [Std.Irrefl r] : Std.Irrefl (InvImage r f) :=
+  ⟨fun (a : α) (h₁ : InvImage r f a a) ↦ irrefl_of r (f a) h₁⟩
 
 @[deprecated (since := "2026-02-12")] alias InvImage.irreflexive := InvImage.irrefl
 
@@ -320,7 +367,7 @@ structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
 
 extend_docs RelLowerSet before "The type of lower sets of an order relative to `P`."
 
-variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
+variable {α β : Sort*} {r : α → α → Prop} {s : β → β → Prop}
 
 theorem of_eq [Std.Refl r] : ∀ {a b}, a = b → r a b
   | _, _, .refl _ => refl _
@@ -419,7 +466,6 @@ theorem trans_trichotomous_right [IsTrans α r] [Std.Trichotomous r] {a b c : α
   · exact h₁
   · exact absurd h₃ h₂
 
-set_option linter.deprecated false in
 @[deprecated IsTrans.trans (since := "2026-02-20")]
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 

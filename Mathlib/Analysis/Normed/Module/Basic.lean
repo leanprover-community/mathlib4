@@ -29,9 +29,6 @@ open scoped NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
--- Here, we set a rather high priority for the instance `[NormedSpace 𝕜 E] : Module 𝕜 E`
--- to take precedence over `Semiring.toModule` as this leads to instance paths with better
--- unification properties.
 /-- A normed space over a normed field is a vector space endowed with a norm which satisfies the
 equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ ‖c‖ ‖x‖` in the definition, then prove
 `‖c • x‖ = ‖c‖ ‖x‖` in `norm_smul`.
@@ -189,8 +186,8 @@ See note [reducible non-instances] -/
 abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
-  let _ := SeminormedAddCommGroup.induced E G f
-  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
+  letI := SeminormedAddCommGroup.induced E G f
+  { norm_smul_le a b := by simpa only [← map_smul f a b] using! norm_smul_le a (f b) }
 
 section NontriviallyNormedSpace
 
@@ -338,9 +335,6 @@ theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [Se
   rw [← isCobounded_def, ← isBounded_compl_iff, isBounded_iff_forall_norm_le] at hc ⊢
   obtain ⟨s, hs⟩ := hc
   exact ⟨s, fun x hx ↦ by simpa using hs (algebraMap 𝕜 𝕜' x) hx⟩
-
-@[deprecated (since := "2025-11-04")] alias
-  algebraMap_cobounded_le_cobounded := tendsto_algebraMap_cobounded
 
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
@@ -596,7 +590,7 @@ abbrev PseudoEMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField �
     (core : SeminormedSpace.Core 𝕜 E) : PseudoEMetricSpace E :=
   (PseudoMetricSpace.ofSeminormedSpaceCore core).toPseudoEMetricSpace
 
-/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
+/-- Produces a `PseudoMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has an existing uniform space structure. This requires a proof that the uniformity induced
 by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
 abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity {𝕜 E : Type*} [NormedField 𝕜]
@@ -607,7 +601,7 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity {𝕜 E : Type*}
     PseudoMetricSpace E :=
   .replaceUniformity (.ofSeminormedSpaceCore core) H
 
-/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
+/-- Produces a `PseudoMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has an existing topology. This requires a proof that the topology induced
 by the norm is equal to the preexisting topology. See note [reducible non-instances]. -/
 abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceTopology {𝕜 E : Type*} [NormedField 𝕜]
@@ -619,7 +613,7 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceTopology {𝕜 E : Type*} [
   .replaceTopology (.ofSeminormedSpaceCore core) H
 
 open Bornology in
-/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
+/-- Produces a `PseudoMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has a preexisting uniform space structure and a preexisting bornology. This requires proofs
 that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise for
 the bornology. See note [reducible non-instances]. -/

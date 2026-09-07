@@ -204,7 +204,7 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
           ← hasCardinalLT_iff_of_equiv (equivShrink.{w} (J a))]
         exact h a
       · obtain ⟨j, rfl⟩ := (equivShrink.{w} (J a)).symm.surjective j
-        exact le_ciSup (Ordinal.bddAbove_range _) _
+        exact le_ciSup Ordinal.bddAbove_of_small _
     refine monotone_transfiniteIterate _ _
       (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J) (Order.succ_le_iff.2 hm) _ ?_
     dsimp

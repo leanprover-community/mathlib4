@@ -5,7 +5,6 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.Probability.Process.Filtration
 
 /-!

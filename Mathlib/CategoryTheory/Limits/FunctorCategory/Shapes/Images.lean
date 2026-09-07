@@ -32,16 +32,17 @@ def monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f w
   m := (Subfunctor.range f).ι
   e := Subfunctor.toRange f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The image of a natural transformation between type-valued functors satisfies the universal
 property of images -/
 noncomputable def monoFactorisationIsImage {F G : C ⥤ Type u} (f : F ⟶ G) :
     IsImage <| monoFactorisation f where
   lift H := {
-    app X := fun ⟨x, hx⟩ ↦ H.e.app _ hx.choose
+    app X := ↾fun ⟨x, hx⟩ ↦ H.e.app _ hx.choose
     naturality X Y g := by
       ext
       apply injective_of_mono (H.m.app Y)
-      simp [FunctorToTypes.naturality]
+      simp
       grind }
   lift_fac H := by
     ext

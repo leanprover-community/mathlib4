@@ -16,7 +16,7 @@ intermediate fields. The topology on intermediate fields is already defined
 in earlier file `Mathlib/Topology/Algebra/Field.lean` as the subspace topology.
 -/
 
-@[expose] public section
+public section
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
     [TopologicalSpace L] [IsTopologicalRing L]

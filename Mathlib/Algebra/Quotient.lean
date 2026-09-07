@@ -34,7 +34,7 @@ quotient, group quotient, quotient group, module quotient, quotient module, ring
 ideal quotient, quotient ring
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

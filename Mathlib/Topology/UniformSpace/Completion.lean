@@ -78,7 +78,6 @@ theorem monotone_gen : Monotone (gen : SetRel α α → _) :=
   monotone_setOf fun p => @Filter.monotone_mem _ (p.1.val ×ˢ p.2.val)
 
 -- Porting note: this was a calc proof, but I could not make it work
-set_option backward.privateInPublic true in
 private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lift' gen := by
   let f := fun s : SetRel α α =>
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
@@ -106,7 +105,6 @@ private theorem subset_gen_relComp {s t : SetRel α α} : gen s ○ gen t ⊆ ge
     fun ⟨a, b⟩ ⟨(ha : a ∈ t₁), (hb : b ∈ t₄)⟩ =>
     ⟨x, h₁ (show (a, x) ∈ t₁ ×ˢ t₂ from ⟨ha, xt₂⟩), h₂ (show (x, b) ∈ t₃ ×ˢ t₄ from ⟨xt₃, hb⟩)⟩
 
-set_option backward.privateInPublic true in
 private theorem comp_gen : ((𝓤 α).lift' gen).lift' (fun s ↦ s ○ s) ≤ (𝓤 α).lift' gen :=
   calc
         ((𝓤 α).lift' gen).lift' (fun s ↦ s ○ s)
@@ -121,15 +119,13 @@ private theorem comp_gen : ((𝓤 α).lift' gen).lift' (fun s ↦ s ○ s) ≤ (
       · exact monotone_gen
     _ ≤ (𝓤 α).lift' gen := lift'_mono comp_le_uniformity le_rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : UniformSpace (CauchyFilter α) :=
   UniformSpace.ofCore
     { uniformity := (𝓤 α).lift' gen
       refl := principal_le_lift'.2 fun _s hs ⟨a, b⟩ =>
         fun (a_eq_b : a = b) => a_eq_b ▸ a.property.right hs
-      symm := symm_gen
-      comp := comp_gen }
+      symm := by exact symm_gen
+      comp := by exact comp_gen }
 
 theorem mem_uniformity {s : Set (CauchyFilter α × CauchyFilter α)} :
     s ∈ 𝓤 (CauchyFilter α) ↔ ∃ t ∈ 𝓤 α, gen t ⊆ s :=
@@ -222,7 +218,7 @@ instance [h : Nonempty α] : Nonempty (CauchyFilter α) :=
 
 section Extend
 
-open Classical in
+open scoped Classical in
 /-- Extend a uniformly continuous function `α → β` to a function `CauchyFilter α → β`.
 Outputs junk when `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyFilter α → β :=
@@ -242,6 +238,7 @@ end T0Space
 
 variable [CompleteSpace β]
 
+@[fun_prop]
 theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) := by
   by_cases hf : UniformContinuous f
   · rw [extend, if_pos hf]
@@ -348,6 +345,7 @@ attribute [local instance]
 theorem nonempty_completion_iff : Nonempty (Completion α) ↔ Nonempty α :=
   cPkg.dense.nonempty_iff.symm
 
+@[fun_prop]
 theorem uniformContinuous_coe : UniformContinuous ((↑) : α → Completion α) :=
   cPkg.uniformContinuous_coe
 
@@ -435,6 +433,7 @@ section CompleteSpace
 
 variable [CompleteSpace β]
 
+@[fun_prop]
 theorem uniformContinuous_extension : UniformContinuous (Completion.extension f) :=
   cPkg.uniformContinuous_extend
 
@@ -478,6 +477,7 @@ variable {f : α → β}
 protected def map (f : α → β) : Completion α → Completion β :=
   cPkg.map cPkg f
 
+@[fun_prop]
 theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
   cPkg.uniformContinuous_map cPkg f
 
@@ -539,10 +539,12 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     rw [map_coe uniformContinuous_mk, extension_coe (uniformContinuous_lift' _),
       lift'_mk (uniformContinuous_coe _)]
 
+@[fun_prop]
 theorem uniformContinuous_completionSeparationQuotientEquiv :
     UniformContinuous (completionSeparationQuotientEquiv α) :=
   uniformContinuous_extension
 
+@[fun_prop]
 theorem uniformContinuous_completionSeparationQuotientEquiv_symm :
     UniformContinuous (completionSeparationQuotientEquiv α).symm :=
   uniformContinuous_map
@@ -571,6 +573,7 @@ end T0Space
 
 variable [CompleteSpace γ]
 
+@[fun_prop]
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (Completion.extension₂ f) :=
   cPkg.uniformContinuous_extension₂ cPkg f
 
@@ -584,6 +587,7 @@ open Function
 protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=
   cPkg.map₂ cPkg cPkg f
 
+@[fun_prop]
 theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (Completion.map₂ f) :=
   cPkg.uniformContinuous_map₂ cPkg cPkg f
 

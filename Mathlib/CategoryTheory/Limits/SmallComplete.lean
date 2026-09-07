@@ -26,7 +26,7 @@ we instead show that the homsets are subsingleton.
 small complete, preorder, Freyd
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

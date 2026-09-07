@@ -85,11 +85,13 @@ lemma image_val_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := image_union _
 lemma image_val_inter : (↑(D ∩ E) : Set α) = ↑D ∩ ↑E := image_inter Subtype.val_injective
 
 @[simp]
-lemma image_val_diff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_diff Subtype.val_injective _ _
+lemma image_val_sdiff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_sdiff Subtype.val_injective _ _
+
+@[deprecated (since := "2026-06-03")] alias image_val_diff := image_val_sdiff
 
 @[simp]
 lemma image_val_compl : ↑(Dᶜ) = A \ ↑D := by
-  rw [compl_eq_univ_diff, image_val_diff, image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [compl_eq_univ_sdiff, image_val_sdiff, image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
 
 @[simp]
 lemma image_val_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
@@ -134,7 +136,7 @@ lemma image_val_injective : Function.Injective ((↑) : Set A → Set α) :=
 lemma subset_of_image_val_subset_image_val (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E :=
   (image_subset_image_iff Subtype.val_injective).1 h
 
-@[mono]
+@[gcongr, mono]
 lemma image_val_mono (h : D ⊆ E) : (↑D : Set α) ⊆ ↑E :=
   (image_subset_image_iff Subtype.val_injective).2 h
 

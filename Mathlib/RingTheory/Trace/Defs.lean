@@ -93,7 +93,7 @@ theorem trace_algebraMap_of_basis (b : Basis ι R S) (x : R) :
     trace R S (algebraMap R S x) = Fintype.card ι • x := by
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
-  convert Finset.sum_const x
+  convert! Finset.sum_const x
   simp [-coe_lmul_eq_mul]
 
 

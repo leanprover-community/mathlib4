@@ -113,6 +113,7 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     isIso_of_reflects_iso _ (Condensed.forget R)
   functorIsoDiscreteAux₂ R M ≪≫ asIso ((discreteUnderlyingAdj _).counit.app ((functor R).obj M))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 `CondensedMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
@@ -153,13 +154,13 @@ instance : (functor R).Full := (fullyFaithfulFunctor R).full
 instance : (discrete (ModuleCat R)).Faithful :=
   Functor.Faithful.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Faithful :=
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat.{u + 1} R)).Faithful :=
   inferInstanceAs (discrete (ModuleCat R)).Faithful
 
 instance : (discrete (ModuleCat R)).Full :=
   Functor.Full.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Full :=
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat.{u + 1} R)).Full :=
   inferInstanceAs (discrete (ModuleCat R)).Full
 
 instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
@@ -229,6 +230,7 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     isIso_of_reflects_iso _ (LightCondensed.forget R)
   functorIsoDiscreteAux₂ R M ≪≫ asIso ((discreteUnderlyingAdj _).counit.app ((functor R).obj M))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 `LightCondMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from

@@ -21,7 +21,7 @@ The normal notation for this would be `N : P` which has already been taken by ty
 
 namespace Submodule
 
-open Pointwise
+open scoped Pointwise
 
 variable {R M : Type*}
 
@@ -147,9 +147,8 @@ theorem colon_span : N.colon (span R S) = N.colon S := by
   | add => aesop
   | smul => simp_all [smul_mem, smul_comm r]
 
-@[simp]
-theorem _root_.Ideal.colon_span {I : Ideal R} {S : Set R} : I.colon (Ideal.span S) = I.colon S :=
-  Submodule.colon_span
+theorem _root_.Ideal.colon_span {I : Ideal R} {S : Set R} : I.colon (Ideal.span S) = I.colon S := by
+  simp
 
 theorem mem_colon_span_singleton {x : M} {r : R} : r ∈ N.colon (span R {x}) ↔ r • x ∈ N := by
   simp

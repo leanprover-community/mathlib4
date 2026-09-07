@@ -178,11 +178,8 @@ lemma penultimate_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Ni
   p.notNilRec (by simp) hp h
 
 @[simp]
-lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
-    G.Adj p.penultimate w := by
-  conv => rhs; rw [← getVert_length p]
-  rw [nil_iff_length_eq] at hp
-  convert adj_getVert_succ _ _ <;> lia
+lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) : G.Adj p.penultimate w := by
+  grind [getVert_length, length_eq_zero_iff, adj_getVert_succ]
 
 lemma penultimate_mem_dropLast_support {p : G.Walk u v} (h : ¬p.Nil) :
     p.penultimate ∈ p.support.dropLast := by

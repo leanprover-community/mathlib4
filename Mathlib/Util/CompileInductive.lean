@@ -258,9 +258,6 @@ compile_inductive% Option
 compile_def% False.recOn
 compile_def% Empty.recOn
 
-set_option backward.privateInPublic true
-set_option backward.privateInPublic.warn false
-
 -- In addition to the manual implementation below, we also have to override the `Float.val` and
 -- `Float.mk` functions because these also have no implementation in core lean.
 -- Because `floatSpec.float` is an opaque type, the identity function is as good an implementation
@@ -269,7 +266,13 @@ private unsafe def Float.valUnsafe : Float → floatSpec.float := unsafeCast
 private unsafe def Float.mkUnsafe : floatSpec.float → Float := unsafeCast
 @[implemented_by Float.valUnsafe] private def Float.valImpl (x : Float) : floatSpec.float := x.1
 @[implemented_by Float.mkUnsafe] private def Float.mkImpl (x : floatSpec.float) : Float := ⟨x⟩
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem Float.val_eq : @Float.val = Float.valImpl := rfl
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem Float.mk_eq : @Float.mk = Float.mkImpl := rfl
 
 -- These types need manual implementations because the default implementation in `compileStruct`

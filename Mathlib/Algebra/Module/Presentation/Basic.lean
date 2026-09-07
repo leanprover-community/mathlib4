@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
@@ -48,10 +48,10 @@ namespace Module
 
 variable (A : Type u) [Ring A]
 
+set_option linter.checkUnivs false in
 /-- Given a ring `A`, this structure involves a family of elements (indexed by a type `R`)
 in a free module `G →₀ A`. This allows to define an `A`-module by generators and relations,
 see `Relations.Quotient`. -/
-@[nolint checkUnivs]
 structure Relations where
   /-- the index type for generators -/
   G : Type w₀
@@ -267,7 +267,7 @@ lemma injective_fromQuotient_iff_ker_π_eq_span :
 
 lemma surjective_fromQuotient_iff_surjective_π :
     Function.Surjective solution.fromQuotient ↔ Function.Surjective solution.π := by
-  simpa only [← fromQuotient_comp_toQuotient] using
+  simpa only [← fromQuotient_comp_toQuotient] using!
     (Function.Surjective.of_comp_iff (f := solution.fromQuotient)
       relations.surjective_toQuotient).symm
 
@@ -445,14 +445,14 @@ def down (h : IsPresentationCore.{max w' w''} solution) :
   desc s := ULift.moduleEquiv.toLinearMap.comp
     (h.desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
   postcomp_desc s := by
-    simpa using congr_postcomp
+    simpa using! congr_postcomp
       (h.postcomp_desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
         ULift.moduleEquiv.toLinearMap
   postcomp_injective {N _ _ f f'} h' := by
     ext x
     have := congr_postcomp h' ULift.moduleEquiv.{_, _, w'}.symm.toLinearMap
     simp only [← postcomp_comp] at this
-    simpa using DFunLike.congr_fun (h.postcomp_injective this) x
+    simpa using! DFunLike.congr_fun (h.postcomp_injective this) x
 
 lemma isPresentation {solution : relations.Solution M}
     (h : IsPresentationCore.{max u v w₀} solution) :
@@ -488,9 +488,9 @@ end Relations
 
 variable (M : Type v) [AddCommGroup M] [Module A M]
 
+set_option linter.checkUnivs false in
 /-- Given an `A`-module `M`, a term in this type is a presentation by `M` by
 generators and relations. -/
-@[nolint checkUnivs]
 structure Presentation extends Relations.{w₀, w₁} A,
   toRelations.Solution M, toSolution.IsPresentation where
 

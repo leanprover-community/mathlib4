@@ -49,6 +49,9 @@ See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lea
 
 variable {R : Type*} [CommSemiring R]
 
+instance : Coe (PrimeSpectrum R) (Ideal R) where
+  coe P := P.asIdeal
+
 instance : PartialOrder (PrimeSpectrum R) :=
   PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
 

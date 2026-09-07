@@ -13,7 +13,7 @@ public import Mathlib.Data.Int.Sqrt
 # Parity of integers
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

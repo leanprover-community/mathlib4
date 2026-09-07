@@ -167,6 +167,7 @@ class PreservesBinaryBiproducts (F : C ⥤ D) [PreservesZeroMorphisms F] : Prop 
 
 attribute [inherit_doc PreservesBinaryBiproducts] PreservesBinaryBiproducts.preserves
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
 lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)
     [PreservesZeroMorphisms F] (X Y : C) [PreservesBiproduct (pairFunction X Y) F] :
@@ -397,6 +398,7 @@ section BinaryBicone
 
 variable (X Y : C) [HasBinaryBiproduct X Y] [PreservesBinaryBiproduct X Y F] {W : C}
 
+set_option backward.defeqAttrib.useBackward true in
 theorem biprod.map_lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
     F.map (biprod.lift f g) ≫ (F.mapBiprod X Y).hom = biprod.lift (F.map f) (F.map g) := by
   ext <;> simp [mapBiprod, ← F.map_comp]
@@ -405,6 +407,7 @@ theorem biprod.lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
     biprod.lift (F.map f) (F.map g) ≫ (F.mapBiprod X Y).inv = F.map (biprod.lift f g) := by
   rw [← biprod.map_lift_mapBiprod, Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem biprod.mapBiprod_inv_map_desc (f : X ⟶ W) (g : Y ⟶ W) :
     (F.mapBiprod X Y).inv ≫ F.map (biprod.desc f g) = biprod.desc (F.map f) (F.map g) := by
   ext <;> simp [mapBiprod, ← F.map_comp]

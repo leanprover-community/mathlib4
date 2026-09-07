@@ -16,7 +16,7 @@ public import Mathlib.Data.Set.NAry
 # Finiteness of products
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
@@ -62,7 +62,7 @@ instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ 
 
 instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
   Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
-    convert DFunLike.congr_fun h using 0
+    convert! DFunLike.congr_fun h using 0
 
 instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩

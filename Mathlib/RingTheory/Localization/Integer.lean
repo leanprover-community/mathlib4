@@ -92,7 +92,7 @@ theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
   rw [map_mul, sec_spec', ← mul_assoc, ← (algebraMap R S).map_mul, ← Algebra.smul_def]
   congr 2
   refine _root_.trans ?_ (map_prod (Submonoid.subtype M) _ _).symm
-  rw [mul_comm, Submonoid.coe_finset_prod,
+  rw [mul_comm, Submonoid.coe_finsetProd,
     -- Porting note: explicitly supplied `f`
     ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.notMem_erase i),
     Finset.insert_erase hi]
@@ -132,7 +132,7 @@ noncomputable def commonDenomOfFinset (s : Finset S) : M :=
 noncomputable def finsetIntegerMultiple [DecidableEq R] (s : Finset S) : Finset R :=
   s.attach.image fun t => integerMultiple M s id t
 
-open Pointwise
+open scoped Pointwise
 
 theorem finsetIntegerMultiple_image [DecidableEq R] (s : Finset S) :
     algebraMap R S '' finsetIntegerMultiple M s = commonDenomOfFinset M s • (s : Set S) := by

@@ -97,7 +97,7 @@ instance : fppfTopology.Subcanonical :=
 lemma Hom.singleton_mem_fppfPrecoverage {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Surjective f]
     [LocallyOfFinitePresentation f] :
     Presieve.singleton f ∈ fppfPrecoverage Y := by
-  rw [← Presieve.ofArrows_pUnit.{_, _, 0}]
+  rw [← Presieve.ofArrows_pUnit.{0}]
   exact (f.cover (P := @Flat ⊓ @LocallyOfFinitePresentation) ⟨‹_›, ‹_›⟩).mem₀
 
 @[simp]

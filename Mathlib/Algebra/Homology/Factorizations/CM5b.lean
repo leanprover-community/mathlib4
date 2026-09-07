@@ -41,6 +41,7 @@ noncomputable def I : CochainComplex C ℤ where
   X n := Injective.under (K.X n)
   d _ _ := 0
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : Injective ((I K).X n) := by
   dsimp
   infer_instance
@@ -74,7 +75,6 @@ noncomputable def i : K ⟶ mappingCone (𝟙 (I K)) ⊞ L :=
         simp [HomComplex.δ_v 1 2 (by lia) _ p q hpq (p + 1) (p + 1) (by lia) rfl]))
     (HomComplex.Cochain.ofHoms (fun n => Injective.ι _)) (by cat_disch)) f
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma i_f_comp (n : ℤ) : (i f).f n ≫
     (biprod.fst : mappingCone (𝟙 (I K)) ⊞ L ⟶ _).f n ≫

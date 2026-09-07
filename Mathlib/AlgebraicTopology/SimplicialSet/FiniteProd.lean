@@ -17,7 +17,7 @@ We also show that if `X₁` and `X₂` are finite, then `X₁ ⊗ X₂` is also 
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

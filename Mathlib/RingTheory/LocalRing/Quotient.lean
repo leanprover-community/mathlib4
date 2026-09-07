@@ -124,10 +124,6 @@ lemma exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
     Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker] at hn
   exact ⟨n, hn⟩
 
-@[deprecated (since := "2025-09-27")]
-alias exists_maximalIdeal_pow_le_of_finite_quotient :=
-  exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
-
 lemma finite_quotient_iff [IsNoetherianRing R] [Finite (ResidueField R)] {I : Ideal R} :
     Finite (R ⧸ I) ↔ ∃ n, (maximalIdeal R) ^ n ≤ I := by
   refine ⟨fun _ ↦ exists_maximalIdeal_pow_le_of_isArtinianRing_quotient I, ?_⟩

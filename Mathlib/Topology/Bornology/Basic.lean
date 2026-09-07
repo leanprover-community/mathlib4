@@ -251,6 +251,17 @@ theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : 
     Disjoint l (cobounded α) ↔ ∃ i, p i ∧ Bornology.IsBounded (s i) :=
   h.disjoint_iff_left
 
+theorem Filter.disjoint_cobounded_iff [Bornology α] {l : Filter α} :
+    Disjoint l (cobounded α) ↔ ∃ s ∈ l, Bornology.IsBounded s :=
+  l.basis_sets.disjoint_cobounded_iff
+
+alias ⟨Disjoint.exists_isBounded, _⟩ := Filter.disjoint_cobounded_iff
+
+theorem Bornology.IsBounded.disjoint_cobounded [Bornology α]
+    {l : Filter α} {s : Set α} (hs : IsBounded s) (hl : s ∈ l) :
+    Disjoint l (cobounded α) :=
+  l.disjoint_cobounded_iff.mpr ⟨s, hl, hs⟩
+
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=
   Bornology.le_cofinite α hs.compl_mem_cofinite
 

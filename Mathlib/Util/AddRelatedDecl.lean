@@ -34,6 +34,8 @@ and has been factored out to avoid code duplication.
 Feel free to add features as needed for other applications.
 
 This helper:
+* throws an error if a declaration named `tgt` already exists
+  (in the current module or in an imported one),
 * calls `addDeclarationRangesFromSyntax`, so jump-to-definition works,
 * copies the `protected` status of the existing declaration, and
 * supports copying attributes.
@@ -64,6 +66,10 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
     (docstringPrefix? : Option String := none)
     (hoverInfo : Bool := false) :
     MetaM Unit := do
+  -- If `tgt` already exists in an imported module, the `addDeclarationRangesFromSyntax` call
+  -- below panics (and if it exists in the current module, `addDecl` would fail with a less
+  -- helpful message), so we check for a pre-existing declaration up front.
+  checkNotAlreadyDeclared tgt
   addDeclarationRangesFromSyntax tgt (← getRef) ref
   let info ← withoutExporting <| getConstInfo src
   let value := .const src (info.levelParams.map mkLevelParam)

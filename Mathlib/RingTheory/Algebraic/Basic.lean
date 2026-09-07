@@ -115,12 +115,12 @@ theorem transcendental_iff_ker_eq_bot {x : A} :
 theorem Algebra.isAlgebraic_of_not_injective (h : ¬ Function.Injective (algebraMap R A)) :
     Algebra.IsAlgebraic R A where
   isAlgebraic a := isAlgebraic_iff_not_injective.mpr
-    fun inj ↦ h <| by convert inj.comp C_injective; ext; simp
+    fun inj ↦ h <| by convert! inj.comp C_injective; ext; simp
 
 theorem Algebra.injective_of_transcendental [h : Algebra.Transcendental R A] :
     Function.Injective (algebraMap R A) := by
   rw [transcendental_iff_not_isAlgebraic] at h
-  contrapose! h
+  contrapose h
   exact isAlgebraic_of_not_injective h
 
 end
@@ -343,7 +343,7 @@ theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : IsAlgebraic (⊥ : Subalg
 theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
     IsAlgebraic (⊥ : Subalgebra R S) x ↔ IsAlgebraic R x :=
   isAlgebraic_ringHom_iff_of_comp_eq (Algebra.botEquivOfInjective h).symm (RingHom.id S)
-    Function.injective_id (by rfl)
+    Function.injective_id rfl
 
 variable (R S) in
 theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot_left
@@ -659,11 +659,12 @@ theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (div
 
 theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeval x p = 0)
     (coeff_zero_ne : p.coeff 0 ≠ 0) : x⁻¹ = -(aeval x (divX p) / algebraMap _ _ (p.coeff 0)) := by
-  convert inv_eq_of_aeval_divX_ne_zero (p := p) (L := L)
-    (mt (fun h => (algebraMap K L).injective ?_) coeff_zero_ne) using 1
+  convert!
+    inv_eq_of_aeval_divX_ne_zero (p := p) (L := L)
+      (mt (fun h => (algebraMap K L).injective ?_) coeff_zero_ne) using 1
   · rw [aeval_eq, zero_sub, div_neg]
   rw [RingHom.map_zero]
-  convert aeval_eq
+  convert! aeval_eq
   conv_rhs => rw [← divX_mul_X_add p]
   rw [map_add, map_mul, h, zero_mul, zero_add, aeval_C]
 

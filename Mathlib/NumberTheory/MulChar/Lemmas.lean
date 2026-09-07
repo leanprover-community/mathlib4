@@ -36,20 +36,6 @@ theorem restrict_ofUnitHom (f : Rˣ →* R'ˣ) (S : Submonoid R) :
     MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, MonoidHom.restrict_apply]
   rw [← Submonoid.val_unitsEquivUnitsType_symm_apply_coe S x, equivToUnitHom_symm_coe]
 
-variable (R')
-
-/--
-The restriction of a `MulChar` to a submonoid as an homomorphism.
--/
-@[simps]
-noncomputable def restrictHom :
-    MulChar R R' →* MulChar T R' where
-  toFun χ := χ.restrict T
-  map_one' := by
-    ext x
-    rw [restrict_apply, if_pos x.isUnit, MulChar.one_apply x.isUnit.coe, one_apply_coe]
-  map_mul' _ _ := by ext; simp
-
 end CommMonoid
 
 section Ring
@@ -65,11 +51,10 @@ instance instStarMul [StarRing R'] : StarMul (MulChar R R') where
   star := starComp
   star_involutive χ := by
     ext1
-    simp only [starComp_apply, RingHomCompTriple.comp_apply, RingHom.id_apply]
+    simp [starComp_apply]
   star_mul χ χ' := by
     ext1
-    simp only [starComp_apply, starRingEnd, coeToFun_mul, Pi.mul_apply, map_mul, RingHom.coe_coe,
-      starRingAut_apply, mul_comm]
+    simp [starComp_apply, mul_comm]
 
 @[simp]
 lemma star_apply [StarRing R'] (χ : MulChar R R') (a : R) : (star χ) a = star (χ a) :=

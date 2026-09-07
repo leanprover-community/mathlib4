@@ -158,54 +158,61 @@ private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq 
           RingHom.mapMatrix_apply, Pi.smul_apply, smul_eq_mul, Algebra.smul_def]
       · rw [mulVec_smul, mul_eq, Pi.smul_apply, Pi.zero_apply, smul_zero]
 
-theorem exists_mulVec_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
-    {M : Matrix n n A} : (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 :=
+variable {A : Type*} [CommRing A] [IsDomain A] {M N : Matrix n n A}
+
+theorem exists_mulVec_eq_zero_iff [DecidableEq n] : (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 :=
   exists_mulVec_eq_zero_iff' (FractionRing A)
 
-theorem exists_vecMul_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
-    {M : Matrix n n A} : (∃ v ≠ 0, v ᵥ* M = 0) ↔ M.det = 0 := by
+theorem exists_vecMul_eq_zero_iff [DecidableEq n] : (∃ v ≠ 0, v ᵥ* M = 0) ↔ M.det = 0 := by
   simpa only [← M.det_transpose, ← mulVec_transpose] using exists_mulVec_eq_zero_iff
 
-theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
-    {M : Matrix n n A} : Nondegenerate M ↔ M.det ≠ 0 := by
-  refine ⟨?_, nondegenerate_of_det_ne_zero⟩
-  rw [ne_eq, ← exists_vecMul_eq_zero_iff]
-  push Not
-  intro hM v hv hMv
-  obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
-  simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq] at hwMv
+theorem nondegenerate_iff_det_ne_zero [DecidableEq n] : Nondegenerate M ↔ M.det ≠ 0 := by
+  grind [nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero, exists_mulVec_eq_zero_iff,
+    exists_vecMul_eq_zero_iff]
 
-lemma separatingLeft_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
-    {M : Matrix n n A} : SeparatingLeft M ↔ M.det ≠ 0 := by
-  refine ⟨fun h hc ↦ ?_, fun h ↦ (nondegenerate_of_det_ne_zero h).1⟩
-  obtain ⟨v, hvne, hv⟩ := exists_vecMul_eq_zero_iff.mpr hc
-  refine hvne (separatingLeft_def.mp h v ?_)
-  simp [dotProduct_mulVec, hv]
+lemma separatingLeft_iff_det_ne_zero [DecidableEq n] : SeparatingLeft M ↔ M.det ≠ 0 := by
+  grind [separatingLeft_iff_forall_vecMul_eq_zero, exists_vecMul_eq_zero_iff]
 
-lemma separatingRight_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
-    {M : Matrix n n A} : SeparatingRight M ↔ M.det ≠ 0 := by
-  refine ⟨fun h hc ↦ ?_, fun h ↦ (nondegenerate_of_det_ne_zero h).2⟩
-  obtain ⟨v, hvne, hv⟩ := exists_mulVec_eq_zero_iff.mpr hc
-  refine hvne (separatingRight_def.mp h v ?_)
-  simp [hv]
+lemma separatingRight_iff_det_ne_zero [DecidableEq n] : SeparatingRight M ↔ M.det ≠ 0 := by
+  grind [separatingRight_iff_forall_mulVec_eq_zero, exists_mulVec_eq_zero_iff]
 
-theorem Nondegenerate.mul_iff_right {A : Type*} [CommRing A] [IsDomain A]
-    {M N : Matrix n n A} (h : N.Nondegenerate) :
+omit [Fintype n] in
+theorem nondegenerate_iff_separatingLeft [Finite n] : M.Nondegenerate ↔ M.SeparatingLeft := by
+  classical
+  have := Fintype.ofFinite n
+  rw [nondegenerate_iff_det_ne_zero, separatingLeft_iff_det_ne_zero]
+
+alias ⟨_, SeparatingLeft.nondegenerate⟩ := nondegenerate_iff_separatingLeft
+
+omit [Fintype n] in
+theorem nondegenerate_iff_separatingRight [Finite n] : M.Nondegenerate ↔ M.SeparatingRight := by
+  classical
+  have := Fintype.ofFinite n
+  rw [nondegenerate_iff_det_ne_zero, separatingRight_iff_det_ne_zero]
+
+alias ⟨_, SeparatingRight.nondegenerate⟩ := nondegenerate_iff_separatingRight
+
+omit [Fintype n] in
+theorem separatingLeft_iff_separatingRight [Finite n] : M.SeparatingLeft ↔ M.SeparatingRight :=
+  nondegenerate_iff_separatingLeft.symm.trans nondegenerate_iff_separatingRight
+
+alias ⟨SeparatingLeft.separatingRight, SeparatingRight.separatingLeft⟩ :=
+  separatingLeft_iff_separatingRight
+
+theorem Nondegenerate.mul_iff_right (h : N.Nondegenerate) :
     (M * N).Nondegenerate ↔ M.Nondegenerate := by
   classical
   simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
   exact mul_ne_zero_iff_right h
 
-theorem Nondegenerate.mul_iff_left {A : Type*} [CommRing A] [IsDomain A]
-    {M N : Matrix n n A} (h : M.Nondegenerate) :
+theorem Nondegenerate.mul_iff_left (h : M.Nondegenerate) :
     (M * N).Nondegenerate ↔ N.Nondegenerate := by
   classical
   simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
   exact mul_ne_zero_iff_left h
 
 omit [Fintype n] in
-theorem Nondegenerate.smul_iff [Finite n] {A : Type*} [CommRing A] [IsDomain A]
-    {M : Matrix n n A} {t : A} (h : t ≠ 0) :
+theorem Nondegenerate.smul_iff [Finite n] {t : A} (h : t ≠ 0) :
     (t • M).Nondegenerate ↔ M.Nondegenerate := by
   have := Fintype.ofFinite
   rw [nondegenerate_def, nondegenerate_def]

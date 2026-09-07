@@ -97,7 +97,6 @@ lemma eq_compactlyGenerated [t : TopologicalSpace X] [UCompactlyGeneratedSpace.{
       Sigma.forall]
     exact fun S f ↦ f.2
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     UCompactlyGeneratedSpace.{u} X where
   le_compactlyGenerated := by
@@ -215,7 +214,7 @@ instance (priority := 100) [SequentialSpace X] : UCompactlyGeneratedSpace.{u} X 
     rw [← Nat.cofinite_eq_atTop, ← cocompact_eq_cofinite, ← coclosedCompact_eq_cocompact]
     exact tendsto_coe_infty
   apply IsClosed.mem_of_tendsto _ ((continuous_uliftUp.tendsto ∞).comp this)
-  · simp only [Function.comp_apply, mem_preimage, eventually_atTop, ge_iff_le]
+  · simp only [Function.comp_apply, mem_preimage, eventually_atTop]
     exact ⟨0, fun b _ ↦ hu b⟩
   · exact h (CompHaus.of (ULift.{u} (OnePoint ℕ))) ⟨g, by fun_prop⟩
 
@@ -295,7 +294,7 @@ theorem CompactlyGeneratedSpace.isOpen' [CompactlyGeneratedSpace X] {s : Set X}
   UCompactlyGeneratedSpace.isOpen fun S ⟨f, hf⟩ ↦ hs S f hf
 
 /-- In a compactly generated space `X`, a set `s` is open when `s ∩ K` is
-closed for every open set `K`. -/
+open for every open set `K`. -/
 theorem CompactlyGeneratedSpace.isOpen [CompactlyGeneratedSpace X] {s : Set X}
     (hs : ∀ ⦃K⦄, IsCompact K → IsOpen (s ∩ K)) : IsOpen s := by
   refine isOpen' fun K _ _ _ f hf ↦ ?_
@@ -365,7 +364,7 @@ instance to_compactlyCoherentSpace [CompactlyGeneratedSpace X] : CompactlyCohere
     fun K _ _ _ f hf ↦ h K f hf
 
 /-- A compactly coherent space that is Hausdorff is compactly generated. -/
-instance of_compactlyCoherentSpace_of_t2 [T2Space X] [CompactlyCoherentSpace X] :
+instance of_compactlyCoherentSpace_of_t2 [CompactlyCoherentSpace X] :
     CompactlyGeneratedSpace X := by
   apply compactlyGeneratedSpace_of_isClosed_of_t2
   intro s hs

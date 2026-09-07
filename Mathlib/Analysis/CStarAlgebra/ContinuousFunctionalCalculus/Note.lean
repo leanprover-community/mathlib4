@@ -15,7 +15,7 @@ A library note giving advice on developing and using the continuous functional c
 as the organizational structure within Mathlib.
 -/
 
-@[expose] public section
+public section
 
 
 library_note «continuous functional calculus» /--

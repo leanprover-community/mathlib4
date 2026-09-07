@@ -127,6 +127,8 @@ of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
 -/
+@[wikidata Q1052579 "This Mathlib declaration captures 'unique factorization'.
+Use in conjunction with `IsDomain` to capture unique factorization domain."]
 class UniqueFactorizationMonoid (α : Type*) [CommMonoidWithZero α] : Prop
     extends IsCancelMulZero α, IsWellFounded α DvdNotUnit where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
@@ -172,9 +174,17 @@ end UniqueFactorizationMonoid
 namespace UniqueFactorizationMonoid
 
 variable [CommMonoidWithZero α]
+
+variable (α) in
+theorem of_subsingleton [Subsingleton α] : UniqueFactorizationMonoid α where
+  mul_left_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
+  mul_right_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
+  wf := ⟨fun a ↦ Acc.intro a fun b ⟨hb, _⟩ ↦ (hb (Subsingleton.elim b 0)).elim⟩
+  irreducible_iff_prime {a} := by simp [Subsingleton.elim a 0]
+
 variable [UniqueFactorizationMonoid α]
 
-open Classical in
+open scoped Classical in
 /-- Noncomputably determines the multiset of prime factors. -/
 noncomputable def factors (a : α) : Multiset α :=
   if h : a = 0 then 0 else Classical.choose (UniqueFactorizationMonoid.exists_prime_factors a h)

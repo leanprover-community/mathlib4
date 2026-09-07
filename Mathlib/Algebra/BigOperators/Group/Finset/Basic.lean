@@ -155,10 +155,10 @@ lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [Decidab
 
 @[to_additive]
 theorem prod_filter_xor (p q : ι → Prop) [DecidablePred p] [DecidablePred q] :
-    (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
+    (∏ x ∈ s with (Xor (p x) (q x)), f x) =
       (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
   classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
-  simp only [Xor']
+  simp only [Xor]
 
 @[to_additive]
 theorem _root_.IsCompl.prod_mul_prod [Fintype ι] {s t : Finset ι} (h : IsCompl s t) (f : ι → M) :
@@ -596,7 +596,7 @@ theorem prod_multiset_map_count [DecidableEq ι] (s : Multiset ι) {M : Type*} [
 @[to_additive]
 theorem prod_multiset_count [DecidableEq M] (s : Multiset M) :
     s.prod = ∏ m ∈ s.toFinset, m ^ s.count m := by
-  convert prod_multiset_map_count s id
+  convert! prod_multiset_map_count s id
   rw [Multiset.map_id]
 
 @[to_additive]
@@ -1107,6 +1107,13 @@ theorem prod_sum {ι : Type*} [CommMonoid M] (f : ι → Multiset M) (s : Finset
   induction s using Finset.cons_induction with grind
 
 end Multiset
+
+@[to_additive (attr := simp)]
+lemma IsUnit.multisetProd_iff [CommMonoid M] {s : Multiset M} :
+    IsUnit s.prod ↔ ∀ a ∈ s, IsUnit a := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih => simpa using fun _ ↦ ih
 
 @[to_additive (attr := simp)]
 lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :

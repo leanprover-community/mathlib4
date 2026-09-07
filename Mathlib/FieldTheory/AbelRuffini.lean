@@ -296,7 +296,7 @@ private theorem induction_step {x y z : E}
   let q := minpoly F y
   have hpq := SplittingField.splits (p * q)
   rw [Polynomial.map_mul,
-    splits_mul_iff (map_ne_zero (minpoly.ne_zero (isIntegral_of_mem_solvableByRad hx)))
+    splits_mul (map_ne_zero (minpoly.ne_zero (isIntegral_of_mem_solvableByRad hx)))
       (map_ne_zero (minpoly.ne_zero (isIntegral_of_mem_solvableByRad hy)))] at hpq
   have f : ↥F⟮x, y⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice <| nonempty_algHom_adjoin_of_splits <| by

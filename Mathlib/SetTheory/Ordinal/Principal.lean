@@ -10,22 +10,32 @@ public import Mathlib.SetTheory.Ordinal.FixedPoint
 /-!
 # Principal ordinals
 
-We define principal or indecomposable ordinals, and we prove the standard properties about them.
+If `op` is a binary operation on ordinals, we say that an ordinal `o` is `op`-principal (or
+`op`-indecomposable) whenever `a < o` and `b < o` imply `op a b < o`. Most commonly, one talks of
+additive and multiplicative principal ordinals.
+
+Additive principal ordinals were originally called "gamma numbers" by Cantor, but this term now more
+commonly refers to the values given by `Ordinal.gamma`. Likewise, multiplicative principal ordinals
+are sometimes known as "delta numbers". Exponential principal ordinals are (barring edge cases)
+equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 
 ## Main definitions and results
 
-* `IsPrincipal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
-  any other typically excluded edge cases for simplicity.
+* `IsPrincipal`: A principal (or indecomposable) ordinal under some binary operation. We include `0`
+  and other typically excluded edge cases for simplicity.
 * `not_bddAbove_setOf_isPrincipal`: Principal ordinals (under any operation) are unbounded.
-* `isPrincipal_add_iff_zero_or_omega0_opow`: The main characterization theorem for additive
-  principal ordinals.
-* `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The main characterization theorem for
-  multiplicative principal ordinals.
+* `isPrincipal_add_iff_zero_or_omega0_opow`: The additive principal ordinals are
+  `0` and the ordinal powers of `ω`.
+* `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
+  `0`, `1`, `2`, and the ordinals `ω ^ ω ^ x`.
 
 ## TODO
 
-* Prove that exponential principal ordinals are 0, 1, 2, ω, or epsilon numbers, i.e. fixed points
-  of `fun x ↦ ω ^ x`.
+* Prove that the exponential principal ordinals are `0`, `1`, `2`, `ω`, or `ε_ x`.
+
+## Tags
+
+additively indecomposable, multiplicatively indecomposable
 -/
 
 @[expose] public section
@@ -42,11 +52,10 @@ section Arbitrary
 
 variable {op : Ordinal → Ordinal → Ordinal}
 
-/-! ### Principal ordinals -/
+/-! ### Principal ordinals under an arbitrary operation -/
 
-/-- An ordinal `o` is said to be principal or indecomposable under an operation when the set of
-ordinals less than it is closed under that operation. In standard mathematical usage, this term is
-almost exclusively used for additive and multiplicative principal ordinals.
+/-- An ordinal `o` is said to be principal (or indecomposable) under an operation when `Iio o` is
+closed under that operation.
 
 For simplicity, we break usual convention and regard `0` as principal. -/
 def IsPrincipal (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Prop :=
@@ -146,8 +155,6 @@ protected alias Principal.iSup := IsPrincipal.iSup
 
 end Arbitrary
 
-/-! ### Principal ordinals are unbounded -/
-
 /-- We give an explicit construction for a principal ordinal larger or equal than `o`. -/
 private theorem isPrincipal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     IsPrincipal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2)) o) := by
@@ -178,11 +185,19 @@ theorem not_bddAbove_setOf_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
 @[deprecated (since := "2026-03-17")]
 alias not_bddAbove_principal := not_bddAbove_setOf_isPrincipal
 
-/-! #### Additive principal ordinals -/
+/-! ### Additive principal ordinals -/
 
 theorem isPrincipal_add_iff_add_self_lt : IsPrincipal (· + ·) a ↔ ∀ b < a, b + b < a :=
   isPrincipal_iff_of_monotone
     (fun x _ _ h ↦ add_le_add_right h x) (fun x _ _ h ↦ add_le_add_left h x)
+
+theorem IsPrincipal.mul_natCast_lt (ho : IsPrincipal (· + ·) o) (ha : a < o) (n : ℕ) :
+    a * n < o := by
+  induction n with
+  | zero => simpa using ha.pos
+  | succ n h =>
+    rw [Nat.cast_add_one, mul_add_one]
+    exact ho h ha
 
 theorem isPrincipal_add_one : IsPrincipal (· + ·) 1 := by simp
 
@@ -265,7 +280,7 @@ theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ 
     obtain ⟨c, hc, m, hm⟩ := (lt_omega0_opow ha').1 ha
     apply (add_lt_add_of_le_of_lt hm.le hm).trans_le
     rw [← mul_add, ← Nat.cast_add]
-    exact (omega0_opow_mul_nat_lt hc _).le
+    exact (opow_mul_lt_opow (natCast_lt_omega0 _) hc).le
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
@@ -279,29 +294,23 @@ theorem add_of_omega0_opow_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c 
 @[deprecated (since := "2026-03-18")]
 alias add_absorp := add_of_omega0_opow_le
 
+/-- For `a ≠ 0`, the largest power of `ω` which is less or equal to it is also the smallest ordinal
+`b` with `a - b < a`. -/
+theorem isLeast_sub_lt_omega0_opow_log (h : a ≠ 0) : IsLeast {b | a - b < a} (ω ^ log ω a) := by
+  refine ⟨sub_omega0_opow_log_lt h, fun c (hc : a - _ < _) ↦ ?_⟩
+  contrapose! hc
+  exact le_sub_of_add_le (add_of_omega0_opow_le hc (opow_log_le_self ω h)).le
+
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem isPrincipal_add_iff_zero_or_omega0_opow :
     IsPrincipal (· + ·) o ↔ o = 0 ∨ o ∈ Set.range (ω ^ · : Ordinal → Ordinal) := by
-  rcases eq_or_ne o 0 with (rfl | ho)
-  · simp only [isPrincipal_zero, Or.inl]
-  · rw [isPrincipal_add_iff_add_left_eq_self]
-    simp only [ho, false_or]
-    refine
-      ⟨fun H => ⟨_, ((lt_or_eq_of_le (opow_log_le_self _ ho)).resolve_left fun h => ?_)⟩,
-        fun ⟨b, e⟩ => e.symm ▸ fun a => add_omega0_opow⟩
-    have := H _ h
-    have := lt_opow_succ_log_self one_lt_omega0 o
-    rw [opow_succ, lt_mul_iff_of_isSuccLimit isSuccLimit_omega0] at this
-    rcases this with ⟨a, ao, h'⟩
-    rcases lt_omega0.1 ao with ⟨n, rfl⟩
-    clear ao
-    revert h'
-    apply not_lt_of_ge
-    suffices e : ω ^ log ω o * n + o = o by
-      simpa only [e] using le_self_add (a := ω ^ log ω o * ↑n) (b := o)
-    induction n with
-    | zero => simp [Nat.cast_zero, mul_zero, zero_add]
-    | succ n IH => simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
+  constructor
+  · rw [or_iff_not_imp_left]
+    refine fun H ho ↦ ⟨log ω o, (opow_log_le_self ω ho).eq_of_not_lt ?_⟩
+    obtain ⟨n, hn⟩ := lt_omega0_opow_succ.1 (lt_opow_succ_log_self one_lt_omega0 o)
+    exact fun h ↦ hn.not_gt <| H.mul_natCast_lt h n
+  · rintro (rfl | ⟨a, rfl⟩)
+    exacts [isPrincipal_zero, isPrincipal_add_omega0_opow a]
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_iff_zero_or_omega0_opow := isPrincipal_add_iff_zero_or_omega0_opow
@@ -340,7 +349,7 @@ theorem isPrincipal_add_mul_of_isPrincipal_add (a : Ordinal.{u}) {b : Ordinal.{u
 @[deprecated (since := "2026-03-17")]
 alias principal_add_mul_of_principal_add := isPrincipal_add_mul_of_isPrincipal_add
 
-/-! #### Multiplicative principal ordinals -/
+/-! ### Multiplicative principal ordinals -/
 
 theorem isPrincipal_mul_one : IsPrincipal (· * ·) 1 := by simp
 
@@ -383,7 +392,7 @@ theorem isPrincipal_mul_iff_mul_left_eq :
     IsPrincipal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩
   · rcases le_or_gt o 2 with ho | ho
-    · convert one_mul o
+    · convert! one_mul o
       apply le_antisymm
       · rw [← lt_add_one_iff, one_add_one_eq_two]
         exact hao.trans_le ho

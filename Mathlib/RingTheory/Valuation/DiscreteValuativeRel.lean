@@ -23,11 +23,11 @@ public section
 
 namespace ValuativeRel
 
-variable {R : Type*} [CommRing R] [ValuativeRel R]
+variable {R : Type*}
 
 open WithZero
 
-lemma nonempty_orderIso_withZeroMul_int_iff :
+lemma nonempty_orderIso_withZeroMul_int_iff [Semiring R] [ValuativeRel R] :
     Nonempty (ValueGroupWithZero R ≃*o ℤᵐ⁰) ↔
       IsDiscrete R ∧ IsNontrivial R ∧ MulArchimedean (ValueGroupWithZero R) := by
   constructor
@@ -51,8 +51,8 @@ lemma nonempty_orderIso_withZeroMul_int_iff :
     obtain ⟨y, hy, hy'⟩ := exists_between hx
     exact hy.not_ge (hx' y hy')
 
-lemma IsDiscrete.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
-    IsDiscrete R := by
+lemma IsDiscrete.of_compatible_withZeroMulInt [Ring R] [ValuativeRel R]
+    (v : Valuation R ℤᵐ⁰) [v.Compatible] : IsDiscrete R := by
   have : IsRankLeOne R := .of_compatible_mulArchimedean v
   by_cases h : IsNontrivial R
   · by_cases H : DenselyOrdered (ValueGroupWithZero R)

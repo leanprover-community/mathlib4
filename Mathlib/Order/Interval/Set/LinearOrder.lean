@@ -41,16 +41,24 @@ theorem compl_Iio : (Iio a)ᶜ = Ici a :=
   ext fun _ => not_lt
 
 @[to_dual (attr := simp)]
-theorem Ici_diff_Ici : Ici a \ Ici b = Ico a b := by rw [diff_eq, compl_Ici, Ici_inter_Iio]
+theorem Ici_sdiff_Ici : Ici a \ Ici b = Ico a b := by rw [sdiff_eq, compl_Ici, Ici_inter_Iio]
+
+@[deprecated (since := "2026-06-03")] alias Ici_diff_Ici := Ici_sdiff_Ici
 
 @[to_dual (attr := simp)]
-theorem Ici_diff_Ioi : Ici a \ Ioi b = Icc a b := by rw [diff_eq, compl_Ioi, Ici_inter_Iic]
+theorem Ici_sdiff_Ioi : Ici a \ Ioi b = Icc a b := by rw [sdiff_eq, compl_Ioi, Ici_inter_Iic]
+
+@[deprecated (since := "2026-06-03")] alias Ici_diff_Ioi := Ici_sdiff_Ioi
 
 @[to_dual (attr := simp)]
-theorem Ioi_diff_Ioi : Ioi a \ Ioi b = Ioc a b := by rw [diff_eq, compl_Ioi, Ioi_inter_Iic]
+theorem Ioi_sdiff_Ioi : Ioi a \ Ioi b = Ioc a b := by rw [sdiff_eq, compl_Ioi, Ioi_inter_Iic]
+
+@[deprecated (since := "2026-06-03")] alias Ioi_diff_Ioi := Ioi_sdiff_Ioi
 
 @[to_dual (attr := simp)]
-theorem Ioi_diff_Ici : Ioi a \ Ici b = Ioo a b := by rw [diff_eq, compl_Ici, Ioi_inter_Iio]
+theorem Ioi_sdiff_Ici : Ioi a \ Ici b = Ioo a b := by rw [sdiff_eq, compl_Ici, Ioi_inter_Iio]
+
+@[deprecated (since := "2026-06-03")] alias Ioi_diff_Ici := Ioi_sdiff_Ici
 
 @[to_dual]
 theorem Ioi_injective : Injective (Ioi : α → Set α) := fun _ _ =>
@@ -67,7 +75,7 @@ theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b�
     fun ⟨h₁, h₂⟩ => Ico_subset_Ico h₁ h₂⟩
 
 theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
-  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@Ico_toDual α _ _ _).symm
+  convert! @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@Ico_toDual α _ _ _).symm
 
 theorem Ico_eq_Ico_iff (h : a < b ∨ c < d) : Ico a b = Ico c d ↔ a = c ∧ b = d := by
   refine ⟨fun h ↦ ?_, by grind⟩
@@ -354,6 +362,7 @@ theorem Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Icc b
 
 /-! ### Two finite intervals, `I?c` and `Io?` -/
 
+@[to_dual none]
 theorem Ioo_subset_Ioc_union_Ioo : Ioo a c ⊆ Ioc a b ∪ Ioo b c := fun x hx =>
   (le_or_gt x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
 
@@ -363,10 +372,11 @@ theorem Ioc_union_Ioo_eq_Ioo (h₁ : a ≤ b) (h₂ : b < c) : Ioc a b ∪ Ioo b
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans_lt hx.1, hx.2⟩)
     Ioo_subset_Ioc_union_Ioo
 
+@[to_dual none]
 theorem Ico_subset_Icc_union_Ioo : Ico a c ⊆ Icc a b ∪ Ioo b c := fun x hx =>
   (le_or_gt x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
 
-@[simp]
+@[simp, to_dual none]
 theorem Icc_union_Ioo_eq_Ico (h₁ : a ≤ b) (h₂ : b < c) : Icc a b ∪ Ioo b c = Ico a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans hx.1.le, hx.2⟩)
@@ -402,10 +412,11 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
 
 /-! ### Two finite intervals with a common point -/
 
+@[to_dual none]
 theorem Ioo_subset_Ioc_union_Ico : Ioo a c ⊆ Ioc a b ∪ Ico b c :=
   Subset.trans Ioo_subset_Ioc_union_Ioo (union_subset_union_right _ Ioo_subset_Ico_self)
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ioc_union_Ico_eq_Ioo (h₁ : a < b) (h₂ : b < c) : Ioc a b ∪ Ico b c = Ioo a c :=
   Subset.antisymm
     (fun _ hx =>
@@ -496,12 +507,16 @@ theorem Ioo_inter_Ioc_of_right_lt (h : b₂ < b₁) : Ioo a₁ b₁ ∩ Ioc a₂
   grind
 
 @[simp]
-theorem Ico_diff_Iio : Ico a b \ Iio c = Ico (max a c) b := by
+theorem Ico_sdiff_Iio : Ico a b \ Iio c = Ico (max a c) b := by
   grind
 
+@[deprecated (since := "2026-06-03")] alias Ico_diff_Iio := Ico_sdiff_Iio
+
 @[simp]
-theorem Ioc_diff_Ioi : Ioc a b \ Ioi c = Ioc a (min b c) := by
+theorem Ioc_sdiff_Ioi : Ioc a b \ Ioi c = Ioc a (min b c) := by
   grind
+
+@[deprecated (since := "2026-06-03")] alias Ioc_diff_Ioi := Ioc_sdiff_Ioi
 
 @[simp]
 theorem Ioc_inter_Ioi : Ioc a b ∩ Ioi c = Ioc (a ⊔ c) b := by
@@ -512,21 +527,29 @@ theorem Ico_inter_Iio : Ico a b ∩ Iio c = Ico a (min b c) := by
   grind
 
 @[simp]
-theorem Ioc_diff_Iic : Ioc a b \ Iic c = Ioc (max a c) b := by
+theorem Ioc_sdiff_Iic : Ioc a b \ Iic c = Ioc (max a c) b := by
   grind
+
+@[deprecated (since := "2026-06-03")] alias Ioc_diff_Iic := Ioc_sdiff_Iic
 
 theorem compl_Ioc : (Ioc a b)ᶜ = Iic a ∪ Ioi b := by
   grind
 
-theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+theorem Iic_sdiff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
   grind
+
+@[deprecated (since := "2026-06-03")] alias Iic_diff_Ioc := Iic_sdiff_Ioc
 
 @[simp]
-theorem Ioi_diff_Ioc : Ioi a \ Ioc a b = Ioi (max a b) := by
+theorem Ioi_sdiff_Ioc : Ioi a \ Ioc a b = Ioi (max a b) := by
   grind
 
-theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
+@[deprecated (since := "2026-06-03")] alias Ioi_diff_Ioc := Ioi_sdiff_Ioc
+
+theorem Iic_sdiff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
   grind
+
+@[deprecated (since := "2026-06-03")] alias Iic_diff_Ioc_self_of_le := Iic_sdiff_Ioc_self_of_le
 
 @[simp]
 theorem Ioc_union_Ioc_right : Ioc a b ∪ Ioc a c = Ioc a (max b c) := by

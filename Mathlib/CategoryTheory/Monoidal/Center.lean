@@ -119,6 +119,7 @@ instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f :
   change IsIso (isoMk f).hom
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorObj (X Y : Center C) : Center C :=
@@ -152,6 +153,7 @@ def tensorObj (X Y : Center C) : Center C :=
             rw [HalfBraiding.naturality]; monoidal
           _ = _ := by rw [HalfBraiding.naturality]; monoidal }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) (U : C) :
     (X.1 ◁ f.f) ▷ U ≫ ((tensorObj X Y₂).2.β U).hom =
@@ -174,6 +176,7 @@ def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
   f := X.1 ◁ f.f
   comm U := whiskerLeft_comm X f U
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in -- Needed below.
 @[reassoc]
 theorem whiskerRight_comm {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) (U : C) :
@@ -214,14 +217,17 @@ section
 def tensorUnit : Center C :=
   ⟨𝟙_ C, { β := fun U => λ_ U ≪≫ (ρ_ U).symm }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
   isoMk ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
   isoMk ⟨(λ_ X.1).hom, fun U => by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
   isoMk ⟨(ρ_ X.1).hom, fun U => by simp⟩
@@ -236,6 +242,7 @@ attribute [local simp] Center.associator Center.leftUnitor Center.rightUnitor
 
 attribute [local simp] Center.whiskerLeft Center.whiskerRight Center.tensorHom
 
+set_option backward.defeqAttrib.useBackward true in
 instance : MonoidalCategory (Center C) where
   tensorObj X Y := tensorObj X Y
   tensorHom f g := tensorHom f g
@@ -328,11 +335,13 @@ variable {C}
 @[simp] lemma forget_μ (X Y : Center C) : μ (forget C) X Y = 𝟙 _ := rfl
 @[simp] lemma forget_δ (X Y : Center C) : δ (forget C) X Y = 𝟙 _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (forget C).ReflectsIsomorphisms where
   reflects f i := by dsimp at i; change IsIso (isoMk f).hom; infer_instance
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `BraidedCategory` instance on `Center C`. -/
 @[simps!]
 def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
@@ -370,6 +379,7 @@ def ofBraided : C ⥤ Center C where
     { f
       comm := fun U => braiding_naturality_left f U }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (ofBraided C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal

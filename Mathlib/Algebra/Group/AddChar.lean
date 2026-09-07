@@ -94,7 +94,7 @@ variable {A B M N : Type*} [AddMonoid A] [AddMonoid B] [Monoid M] [Monoid N] {ψ
 /-- Define coercion to a function. -/
 instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
-  coe_injective' φ ψ h := by cases φ; cases ψ; congr
+  coe_injective φ ψ h := by cases φ; cases ψ; congr
 
 initialize_simps_projections AddChar (toFun → apply) -- needs to come after FunLike instance
 
@@ -481,7 +481,7 @@ lemma mulShift_unit_eq_one_iff (ψ : AddChar R M) {u : R} (hu : IsUnit u) :
   refine ⟨fun h ↦ ?_, ?_⟩
   · ext1 y
     rw [show y = u * (hu.unit⁻¹ * y) by rw [← mul_assoc, IsUnit.mul_val_inv, one_mul]]
-    simpa only [mulShift_apply] using DFunLike.ext_iff.mp h (hu.unit⁻¹ * y)
+    simpa only [mulShift_apply] using! DFunLike.ext_iff.mp h (hu.unit⁻¹ * y)
   · solve_by_elim
 
 end Ring

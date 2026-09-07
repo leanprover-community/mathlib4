@@ -54,7 +54,6 @@ theorem fourierMultiplierCLM_apply (g : E → 𝕜) (f : 𝓢(E, F)) :
     fourierMultiplierCLM F g f = 𝓕⁻ (smulLeftCLM F g (𝓕 f)) := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem fourierMultiplierCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
     fourierMultiplierCLM F (fun x ↦ RCLike.ofReal (K := 𝕜) (g x)) f =
@@ -98,7 +97,6 @@ theorem fourierMultiplierCLM_compL_fourierMultiplierCLM {g₁ g₂ : E → 𝕜}
 
 open LineDeriv Real
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lineDeriv_eq_fourierMultiplierCLM (m : E) (f : 𝓢(E, F)) :
     ∂_{m} f = (2 * π * Complex.I) • fourierMultiplierCLM F (inner ℝ · m) f := by
   rw [fourierMultiplierCLM_apply, ← FourierTransform.fourierInv_smul, ← fourier_lineDerivOp_eq,
@@ -106,7 +104,6 @@ theorem lineDeriv_eq_fourierMultiplierCLM (m : E) (f : 𝓢(E, F)) :
 
 open Laplacian
 
-set_option backward.isDefEq.respectTransparency false in
 theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢(E, F)) :
     Δ f = -(2 * π) ^ 2 • fourierMultiplierCLM F (‖·‖ ^ 2) f := by
   let ι := Fin (Module.finrank ℝ E)
@@ -114,7 +111,7 @@ theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢(E, F)) :
   have : ∀ i (hi : i ∈ Finset.univ), (inner ℝ · (b i) ^ 2).HasTemperateGrowth := by
     fun_prop
   simp_rw [laplacian_eq_sum b, ← b.sum_sq_inner_left, fourierMultiplierCLM_sum F this,
-    ContinuousLinearMap.coe_sum', Finset.sum_apply, Finset.smul_sum]
+    _root_.sum_apply, Finset.smul_sum]
   congr 1
   ext i x
   simp_rw [smul_apply, lineDeriv_eq_fourierMultiplierCLM]
@@ -190,7 +187,6 @@ section embedding
 
 variable [CompleteSpace F]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fourierMultiplierCLM_toTemperedDistributionCLM_eq {g : E → ℂ}
     (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
     fourierMultiplierCLM F g (f : 𝓢'(E, F)) = SchwartzMap.fourierMultiplierCLM F g f := by
@@ -217,8 +213,7 @@ theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢'(E, F)) :
       (fun x ↦ Complex.ofReal (inner ℝ x (b i)) ^ 2).HasTemperateGrowth := by
     fun_prop
   simp_rw [laplacian_eq_sum b, ← b.sum_sq_inner_left, Complex.ofReal_sum, Complex.ofReal_pow,
-    fourierMultiplierCLM_sum F this, ContinuousLinearMap.coe_sum', Finset.sum_apply,
-    Finset.smul_sum]
+    fourierMultiplierCLM_sum F this, sum_apply, Finset.smul_sum]
   congr 1
   ext i x
   simp_rw [lineDeriv_eq_fourierMultiplierCLM, map_smul, smul_smul]

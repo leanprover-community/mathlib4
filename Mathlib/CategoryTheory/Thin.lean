@@ -6,10 +6,10 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Functor.Category
-public import Mathlib.CategoryTheory.Iso
 
 /-!
 # Thin categories
+
 A thin category (also known as a sparse category) is a category with at most one morphism between
 each pair of objects.
 Examples include posets, but also some indexing categories (diagrams) for special shapes of

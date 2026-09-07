@@ -43,6 +43,8 @@ section ScottContinuous
 variable [Preorder α] [Preorder β] [Preorder γ] {D D₁ D₂ : Set (Set α)}
   {f : α → β}
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 attribute [local push] Function.const_def
 
@@ -67,7 +69,7 @@ lemma ScottContinuousOn.mono (hD : D₁ ⊆ D₂) (hf : ScottContinuousOn D₂ f
 protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : ScottContinuousOn D f) : Monotone f := by
   refine fun a b hab =>
-    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
+    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair hab) ?_).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]

@@ -54,7 +54,7 @@ variable {ι : Sort*} {S T : Sublocale X} {s : Set X} {f : ι → X} {a b : X}
 
 instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
-  coe_injective' s1 s2 h := by cases s1; congr
+  coe_injective s1 s2 h := by cases s1; congr
 
 instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
 

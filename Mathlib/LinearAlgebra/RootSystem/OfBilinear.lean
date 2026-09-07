@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Root pairings made from bilinear forms
+
 A common construction of root systems is given by taking the set of all vectors in an integral
 lattice for which reflection yields an automorphism of the lattice.  In this file, we generalize
 this construction, replacing the ring of integers with an arbitrary commutative ring and the
@@ -160,8 +161,8 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
       right_inv := by
         intro y
         simp [involutive_reflection (coroot_apply_self B x.2) y] }
-  reflectionPerm_root x y := by
-    simp [Module.reflection_apply]
+  reflectionPerm_root := by
+    simp [coe_setOf, Module.reflection_apply]
   reflectionPerm_coroot x y := by
     simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.subtype_apply,
       Dual.eval_apply, Equiv.coe_fn_mk]

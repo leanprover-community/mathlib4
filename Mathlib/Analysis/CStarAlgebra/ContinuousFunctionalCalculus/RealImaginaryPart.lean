@@ -20,7 +20,6 @@ section NonUnital
 variable [NonUnitalRing A] [StarRing A] [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
   [StarModule ℂ A] [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙ_re_id (a : A) (ha : IsStarNormal a := by cfc_tac) :
     cfcₙ (re · : ℂ → ℂ) a = ℜ a := by
   conv_rhs => rw [realPart_apply_coe, ← cfcₙ_id' ℂ a, ← cfcₙ_star, ← cfcₙ_add .., ← cfcₙ_smul ..]
@@ -40,7 +39,6 @@ lemma quasispectrum_realPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
   rw [← cfcₙ_re_id a, cfcₙ_map_quasispectrum ..]
 
 -- fails to find `IsScalarTower ℝ ℂ A`.
-set_option backward.isDefEq.respectTransparency false in
 lemma quasispectrum_realPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
     quasispectrum ℝ (ℜ a : A) = re '' (quasispectrum ℂ a) := by
   simp [← (ℜ a).2.quasispectrumRestricts.image, quasispectrum_realPart a, Set.image_image]
@@ -50,7 +48,6 @@ lemma quasispectrum_imaginaryPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
   rw [← cfcₙ_im_id a, cfcₙ_map_quasispectrum ..]
 
 -- fails to find `IsScalarTower ℝ ℂ A`.
-set_option backward.isDefEq.respectTransparency false in
 lemma quasispectrum_imaginaryPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
     quasispectrum ℝ (ℑ a : A) = im '' (quasispectrum ℂ a) := by
   simp [← (ℑ a).2.quasispectrumRestricts.image, quasispectrum_imaginaryPart a, Set.image_image]
@@ -104,7 +101,6 @@ section Unital
 variable [Ring A] [StarRing A] [Algebra ℂ A] [StarModule ℂ A]
   [ContinuousFunctionalCalculus ℂ A IsStarNormal]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfc_re_id (a : A) (hp : IsStarNormal a := by cfc_tac) :
     cfc (re · : ℂ → ℂ) a = ℜ a := by
   conv_rhs => rw [realPart_apply_coe, ← cfc_id' ℂ a, ← cfc_star, ← cfc_add .., ← cfc_smul ..]
@@ -123,7 +119,6 @@ lemma spectrum_realPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
     spectrum ℂ (ℜ a : A) = (fun x ↦ (re x : ℂ)) '' (spectrum ℂ a) := by
   rw [← cfc_re_id a, cfc_map_spectrum ..]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma spectrum_realPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
     spectrum ℝ (ℜ a : A) = re '' (spectrum ℂ a) := by
   simp [← (ℜ a).2.spectrumRestricts.image, spectrum_realPart a, Set.image_image]
@@ -132,7 +127,6 @@ lemma spectrum_imaginaryPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
     spectrum ℂ (ℑ a : A) = (fun x ↦ (im x : ℂ)) '' (spectrum ℂ a) := by
   rw [← cfc_im_id a, cfc_map_spectrum ..]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma spectrum_imaginaryPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
     spectrum ℝ (ℑ a : A) = im '' (spectrum ℂ a) := by
   simp [← (ℑ a).2.spectrumRestricts.image, spectrum_imaginaryPart a, Set.image_image]

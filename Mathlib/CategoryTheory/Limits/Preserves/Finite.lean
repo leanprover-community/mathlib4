@@ -23,7 +23,7 @@ involved are abelian, or more generally, finitely (co)complete.
 
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory

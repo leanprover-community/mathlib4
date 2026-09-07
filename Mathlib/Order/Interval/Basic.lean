@@ -219,7 +219,7 @@ def coeHom : NonemptyInterval α ↪o Set α :=
 
 instance setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
-  coe_injective' := coeHom.injective
+  coe_injective := coeHom.injective
 
 @[norm_cast]
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
@@ -421,7 +421,7 @@ def coeHom : Interval α ↪o Set α :=
 
 instance setLike : SetLike (Interval α) α where
   coe := coeHom
-  coe_injective' := coeHom.injective
+  coe_injective := coeHom.injective
 
 @[norm_cast]
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
@@ -601,7 +601,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-open Classical in
+open scoped Classical in
 noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Interval α) where
   sSup := fun S =>
     if h : S ⊆ {⊥} then ⊥

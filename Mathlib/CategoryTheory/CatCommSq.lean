@@ -21,6 +21,8 @@ Future work: using this notion in the development of the localization of categor
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -46,12 +48,12 @@ namespace CatCommSq
 /-- The vertical identity `CatCommSq` -/
 @[instance_reducible, simps!]
 def vId : CatCommSq T (𝟭 C₁) (𝟭 C₂) T where
-  iso := (Functor.leftUnitor _) ≪≫ (Functor.rightUnitor _).symm
+  iso := Functor.rightUnitor _ ≪≫ (Functor.leftUnitor _).symm
 
 /-- The horizontal identity `CatCommSq` -/
 @[simps!, implicit_reducible]
 def hId : CatCommSq (𝟭 C₁) L L (𝟭 C₃) where
-  iso := (Functor.rightUnitor _) ≪≫ (Functor.leftUnitor _).symm
+  iso := Functor.leftUnitor _ ≪≫ (Functor.rightUnitor _).symm
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
@@ -110,6 +112,7 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
       associator _ _ _) ≪≫ (associator _ _ _).symm ≪≫
       isoWhiskerRight T.counitIso _ ≪≫ leftUnitor _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
     hInv T.symm R L B.symm (hInv T L R B h) = h := by

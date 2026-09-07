@@ -19,7 +19,7 @@ of presheaves which become isomorphisms after applying the sheafification functo
 
 universe w
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

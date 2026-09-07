@@ -32,6 +32,7 @@ variable (C : Type*) [Category* C] [HasShift C ℤ] [HasZeroObject C] [Preadditi
 
 namespace Opposite
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ where
   octahedron_axiom := by
@@ -53,7 +54,7 @@ scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ where
       exact congr($(Functor.map_injective _ congr($(eq₂).unop)).op).symm
     · have := op_distinguished _ o.mem
       dsimp at this
-      convert this using 2
+      convert! this using 2
       rw [Category.assoc, Functor.map_comp, Functor.map_comp,
         ← opShiftFunctorEquivalence_counitIso_hom_app_shift,
         ← opShiftFunctorEquivalence_counitIso_inv_naturality_assoc, Iso.inv_hom_id_app_assoc]

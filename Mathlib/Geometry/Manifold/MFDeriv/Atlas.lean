@@ -269,7 +269,7 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
     {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderiv% (extChartAt I x) ((extChartAt I x).symm y)) ∘L
       (mfderiv[range I] (extChartAt I x).symm y) = ContinuousLinearMap.id _ _ := by
-  have U : UniqueMDiffWithinAt 𝓘(𝕜, E) (range ↑I) y := by
+  have U : UniqueMDiffAt[range I] y := by
     apply I.uniqueMDiffOn
     exact extChartAt_target_subset_range x hy
   have h'y : (extChartAt I x).symm y ∈ (extChartAt I x).source := (extChartAt I x).map_target hy
@@ -293,7 +293,7 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm' {x : M}
     (mfderiv% (extChartAt I x) y) ∘L (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y))
     = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
-  convert mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm ((extChartAt I x).map_source hy)
+  convert! mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm ((extChartAt I x).map_source hy)
 
 /-- The composition of the derivative of the inverse of `extChartAt` with the derivative of
 `extChartAt` gives the identity.
@@ -306,7 +306,7 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
   have h'y : (extChartAt I x).symm y ∈ (extChartAt I x).source := (extChartAt I x).map_target hy
   have h''y : (extChartAt I x).symm y ∈ (chartAt H x).source := by
     rwa [← extChartAt_source (I := I)]
-  have U' : UniqueMDiffWithinAt I (extChartAt I x).source ((extChartAt I x).symm y) :=
+  have U' : UniqueMDiffAt[(extChartAt I x).source] ((extChartAt I x).symm y) :=
     (isOpen_extChartAt_source x).uniqueMDiffWithinAt h'y
   have : mfderiv% (extChartAt I x) ((extChartAt I x).symm y)
       = mfderiv[(extChartAt I x).source] (extChartAt I x) ((extChartAt I x).symm y) := by
@@ -335,7 +335,7 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'
     (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y)) ∘L (mfderiv% (extChartAt I x) y)
       = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
-  convert mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
+  convert! mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
 
 lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderiv[range I] (extChartAt I x).symm y).IsInvertible :=
@@ -396,7 +396,7 @@ lemma mfderiv_extChartAt_self :
   rw [← TangentBundle.continuousLinearMapAt_trivializationAt (by simp),
     TangentBundle.continuousLinearMapAt_trivializationAt_eq_core (by simp)]
   ext v
-  simpa using (tangentBundleCore I M).coordChange_self (achart H x) x (mem_chart_source H x) v
+  simpa using! (tangentBundleCore I M).coordChange_self (achart H x) x (mem_chart_source H x) v
 
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: should there be a version for `extChartAt`?
@@ -408,7 +408,7 @@ lemma mfderivWithin_range_extChartAt_symm :
   have hcomp := mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (I := I)
     (mem_extChartAt_source x)
   rw [mfderiv_extChartAt_self, ContinuousLinearMap.comp_id] at hcomp
-  simpa using hcomp
+  simpa using! hcomp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of the derivative of `(extChartAt I x).symm` at the chart point,

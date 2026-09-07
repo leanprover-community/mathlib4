@@ -63,22 +63,19 @@ noncomputable def Function.rightLim (f : α → β) (a : α) : β :=
 
 open Function
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology α] [T2Space β]
-    {f : α → β} {a : α} {y : β} (h : 𝓝[<] a ≠ ⊥) (h' : Tendsto f (𝓝[<] a) (𝓝 y)) :
+    {f : α → β} {a : α} {y : β} [h : (𝓝[<] a).NeBot] (h' : Tendsto f (𝓝[<] a) (𝓝 y)) :
     leftLim f a = y := by
   have h'' : ∃ y, Tendsto f (𝓝[<] a) (𝓝 y) := ⟨y, h'⟩
   rw [h'α.topology_eq_generate_intervals] at h h' h''
-  simp only [leftLim, h, h'', not_true, or_self_iff, if_false]
-  haveI := neBot_iff.2 h
+  simp only [leftLim, neBot_iff.mp h, h'', not_true, or_self_iff, if_false]
   exact lim_eq h'
 
 theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
-    {f : α → β} {a : α} {y : β} (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) :
+    {f : α → β} {a : α} {y : β} [h : (𝓝[>] a).NeBot] (h' : Tendsto f (𝓝[>] a) (𝓝 y)) :
     Function.rightLim f a = y :=
-  leftLim_eq_of_tendsto (α := αᵒᵈ) h h'
+  leftLim_eq_of_tendsto (α := αᵒᵈ) (h := h) h'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : 𝓝[<] a = ⊥) : leftLim f a = f a := by
   rw [h'α.topology_eq_generate_intervals] at h
@@ -88,7 +85,6 @@ theorem rightLim_eq_of_eq_bot [TopologicalSpace α] [OrderTopology α] (f : α �
     (h : 𝓝[>] a = ⊥) : rightLim f a = f a :=
   leftLim_eq_of_eq_bot (α := αᵒᵈ) f h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leftLim_eq_of_not_tendsto
     [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : ¬ ∃ y, Tendsto f (𝓝[<] a) (𝓝 y)) : leftLim f a = f a := by
@@ -114,16 +110,15 @@ theorem rightLim_eq_of_isTop {f : α → β} {a : α} (ha : IsTop a) :
 
 theorem ContinuousWithinAt.leftLim_eq [TopologicalSpace α] [OrderTopology α] [T2Space β]
     {f : α → β} {a : α} (hf : ContinuousWithinAt f (Iic a) a) : leftLim f a = f a := by
-  rcases eq_or_ne (𝓝[<] a) ⊥ with h' | h'
+  rcases eq_or_neBot (𝓝[<] a) with h' | h'
   · simp [leftLim_eq_of_eq_bot f h']
-  apply leftLim_eq_of_tendsto h'
+  apply leftLim_eq_of_tendsto
   exact hf.tendsto.mono_left (nhdsWithin_mono _ Iio_subset_Iic_self)
 
 theorem ContinuousWithinAt.rightLim_eq [TopologicalSpace α] [OrderTopology α] [T2Space β]
     {f : α → β} {a : α} (hf : ContinuousWithinAt f (Ici a) a) : rightLim f a = f a :=
   ContinuousWithinAt.leftLim_eq (α := αᵒᵈ) hf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_leftLim_of_tendsto [TopologicalSpace α] [h'α : OrderTopology α]
     {f : α → β} {a : α} (h : ∃ y, Tendsto f (𝓝[<] a) (𝓝 y)) :
     Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a)) := by
@@ -199,7 +194,7 @@ theorem leftLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
     {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) [h' : (𝓝[<] a).NeBot] :
     f.rightLim.leftLim a = f.leftLim a := by
   obtain ⟨b, hb⟩ : (Iio a).Nonempty := Filter.nonempty_of_mem (self_mem_nhdsWithin (a := a))
-  apply leftLim_eq_of_tendsto (neBot_iff.mp h')
+  apply leftLim_eq_of_tendsto
   apply (closed_nhds_basis (f.leftLim a)).tendsto_right_iff.2
   rintro s ⟨s_mem, s_closed⟩
   obtain ⟨u, au, hu⟩ : ∃ u, u < a ∧ Ioo u a ⊆ {x | f x ∈ s} := by
@@ -277,24 +272,23 @@ variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] 
   [OrderTopology β] {f : α → β} (hf : Monotone f) {x y : α}
 include hf
 
-theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
+theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] [(𝓝[<] x).NeBot] :
     leftLim f x = sSup (f '' Iio x) :=
-  leftLim_eq_of_tendsto h (hf.tendsto_nhdsLT x)
+  leftLim_eq_of_tendsto (hf.tendsto_nhdsLT x)
 
-theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
+theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] [(𝓝[>] x).NeBot] :
     rightLim f x = sInf (f '' Ioi x) :=
-  rightLim_eq_of_tendsto h (hf.tendsto_nhdsGT x)
+  rightLim_eq_of_tendsto (hf.tendsto_nhdsGT x)
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
-  rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
+  rcases eq_or_neBot (𝓝[<] x) with h' | h'
   · simpa [leftLim, h'] using hf h
-  haveI A : NeBot (𝓝[<] x) := neBot_iff.2 h'
-  rw [leftLim_eq_sSup hf h']
+  rw [leftLim_eq_sSup hf]
   refine csSup_le ?_ ?_
   · simp only [image_nonempty]
-    exact (forall_mem_nonempty_iff_neBot.2 A) _ self_mem_nhdsWithin
+    exact (forall_mem_nonempty_iff_neBot.2 h') _ self_mem_nhdsWithin
   · simp only [mem_image, mem_Iio, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro z hz
     exact hf (hz.le.trans h)
@@ -302,17 +296,17 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
 theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
-  rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
+  rcases eq_or_neBot (𝓝[<] y) with h' | h'
   · rw [leftLim_eq_of_eq_bot _ h']
     exact hf h.le
-  rw [leftLim_eq_sSup hf h']
+  rw [leftLim_eq_sSup hf]
   refine le_csSup ⟨f y, ?_⟩ (mem_image_of_mem _ h)
   simp only [upperBounds, mem_image, mem_Iio, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, mem_setOf_eq]
   intro z hz
   exact hf hz.le
 
-@[mono]
+@[gcongr, mono]
 protected theorem leftLim : Monotone (leftLim f) := by
   intro x y h
   rcases eq_or_lt_of_le h with (rfl | hxy)
@@ -325,7 +319,7 @@ theorem le_rightLim (h : x ≤ y) : f x ≤ rightLim f y :=
 theorem rightLim_le (h : x < y) : rightLim f x ≤ f y :=
   hf.dual.le_leftLim h
 
-@[mono]
+@[gcongr, mono]
 protected theorem rightLim : Monotone (rightLim f) := fun _ _ h => hf.dual.leftLim h
 
 theorem leftLim_le_rightLim (h : x ≤ y) : leftLim f x ≤ rightLim f y :=
@@ -360,9 +354,8 @@ theorem tendsto_rightLim_within (x : α) : Tendsto f (𝓝[>] x) (𝓝[≥] righ
 coincides with the value of the function. -/
 theorem continuousWithinAt_Iio_iff_leftLim_eq :
     ContinuousWithinAt f (Iio x) x ↔ leftLim f x = f x := by
-  rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
+  rcases eq_or_neBot (𝓝[<] x) with h' | h'
   · simp [leftLim_eq_of_eq_bot f h', ContinuousWithinAt, h']
-  haveI : (𝓝[Iio x] x).NeBot := neBot_iff.2 h'
   refine ⟨fun h => tendsto_nhds_unique (hf.tendsto_leftLim x) h.tendsto, fun h => ?_⟩
   have := hf.tendsto_leftLim x
   rwa [h] at this
@@ -405,7 +398,7 @@ theorem le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=
 theorem leftLim_le (h : x < y) : leftLim f y ≤ f x :=
   hf.dual_right.le_leftLim h
 
-@[mono]
+@[gcongr, mono]
 protected theorem leftLim : Antitone (leftLim f) :=
   hf.dual_right.leftLim
 
@@ -415,7 +408,7 @@ theorem rightLim_le (h : x ≤ y) : rightLim f y ≤ f x :=
 theorem le_rightLim (h : x < y) : f y ≤ rightLim f x :=
   hf.dual_right.rightLim_le h
 
-@[mono]
+@[gcongr, mono]
 protected theorem rightLim : Antitone (rightLim f) :=
   hf.dual_right.rightLim
 

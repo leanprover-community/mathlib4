@@ -16,6 +16,7 @@ public import Mathlib.Tactic.FastInstance
 
 /-!
 # Additive properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with coefficients
 in `R`, whose supports are partially well-ordered. With further structure on `R` and `Γ`, we can add
 further structure on `R⟦Γ⟧`.  When `R` has an addition operation, `R⟦Γ⟧` also has addition by adding
@@ -135,8 +136,8 @@ and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 -/
 @[simps -isSimp]
 def addOppositeEquiv : Rᵃᵒᵖ⟦Γ⟧ ≃+ R⟦Γ⟧ᵃᵒᵖ where
-  toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
-  invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
+  toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert! x.isPWO_support; ext; simp⟩
+  invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert! x.unop.isPWO_support; ext; simp⟩
   left_inv x := by simp
   right_inv x := by
     apply AddOpposite.unop_injective

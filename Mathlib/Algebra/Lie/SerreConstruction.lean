@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.Free
 public import Mathlib.Algebra.Lie.Quotient
-public import Mathlib.Data.Matrix.Cartan
+public import Mathlib.LinearAlgebra.Matrix.Cartan
 
 /-!
 # Serre construction of Lie algebras from Cartan matrices

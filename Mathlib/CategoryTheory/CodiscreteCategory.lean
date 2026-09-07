@@ -66,6 +66,27 @@ instance (A : Type*) : Category (Codiscrete A) where
   id _ := ⟨⟩
   comp _ _ := ⟨⟩
 
+/-- Any two objects in a codiscrete category are isomorphic. -/
+def iso {A : Type u} (x y : Codiscrete A) : x ≅ y where
+  hom := ()
+  inv := ()
+
+lemma eq_id {A : Type u} {x : Codiscrete A} (f : x ⟶ x) : f = 𝟙 _ := rfl
+
+lemma eq_iso_hom {A : Type u} {x y : Codiscrete A} (f : x ⟶ y) : f = (iso x y).hom := rfl
+
+lemma eq_iso_inv {A : Type u} {x y : Codiscrete A} (f : x ⟶ y) : f = (iso y x).inv := rfl
+
+@[simps]
+instance uniqueHom {A : Type u} (x y : Codiscrete A) : Unique (x ⟶ y) where
+  default := (iso x y).hom
+  uniq _ := rfl
+
+@[simps]
+instance uniqueIso {A : Type u} (x y : Codiscrete A) : Unique (x ≅ y) where
+  default := iso x y
+  uniq _ := rfl
+
 section
 variable {C : Type u} [Category.{v} C] {A : Type w}
 
@@ -87,8 +108,8 @@ def natIso {F G : C ⥤ Codiscrete A} : F ≅ G where
   hom := natTrans
   inv := natTrans
 
-/-- Every functor `F` to a codiscrete category is naturally isomorphic {(actually, equal)} to
-  `Codiscrete.as ∘ F.obj`. -/
+/-- Every functor `F` to a codiscrete category is naturally isomorphic (actually, equal) to
+`Codiscrete.as ∘ F.obj`. -/
 @[simps!]
 def natIsoFunctor {F : C ⥤ Codiscrete A} : F ≅ functor (Codiscrete.as ∘ F.obj) := Iso.refl _
 
@@ -124,7 +145,7 @@ def equivFunctorToCodiscrete {C : Type u} [Category.{v} C] {A : Type w} :
 /-- The functor that turns a type into a codiscrete category is right adjoint to the objects
 functor. -/
 def adj : objects ⊣ functorToCat := mkOfHomEquiv {
-  homEquiv _ _ := equivFunctorToCodiscrete.trans (Functor.equivCatHom _ _)
+  homEquiv _ _ := TypeCat.homEquiv.trans (equivFunctorToCodiscrete.trans (Functor.equivCatHom _ _))
   homEquiv_naturality_left_symm _ _ := rfl
   homEquiv_naturality_right _ _ := rfl }
 
@@ -138,7 +159,7 @@ lemma adj_unit_app (X : Cat.{0, u}) :
     adj.unit.app X = (unitApp X).toCatHom := rfl
 
 lemma adj_counit_app (A : Type u) :
-    adj.counit.app A = counitApp A := rfl
+    adj.counit.app A = ↾(counitApp A) := rfl
 
 /-- Left triangle equality of the adjunction `Cat.objects ⊣ Codiscrete.functorToCat`,
 as a universe polymorphic statement. -/

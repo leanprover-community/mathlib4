@@ -49,15 +49,7 @@ theorem Gamma_mem' {N} {γ : SL(2, ℤ)} : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
 @[simp]
 theorem Gamma_mem {N} {γ : SL(2, ℤ)} : γ ∈ Gamma N ↔ (γ 0 0 : ZMod N) = 1 ∧
     (γ 0 1 : ZMod N) = 0 ∧ (γ 1 0 : ZMod N) = 0 ∧ (γ 1 1 : ZMod N) = 1 := by
-  rw [Gamma_mem']
-  constructor
-  · intro h
-    simp [← SL_reduction_mod_hom_val N γ, h]
-  · intro h
-    ext i j
-    rw [SL_reduction_mod_hom_val N γ]
-    fin_cases i <;> fin_cases j <;> simp only
-    exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
+  simp [Gamma_mem', SpecialLinearGroup.ext_iff, and_assoc]
 
 theorem Gamma_normal : Subgroup.Normal (Gamma N) :=
   SLMOD(N).normal_ker
@@ -69,15 +61,15 @@ theorem Gamma_one_top : Gamma 1 = ⊤ := by
 lemma mem_Gamma_one (γ : SL(2, ℤ)) : γ ∈ Γ(1) := by
   simp only [Gamma_one_top, Subgroup.mem_top]
 
+/-- The GL-image of `Γ(1)` equals `𝒮ℒ` (the image of `SL(2, ℤ)` in `GL(2, ℝ)`). -/
+theorem Gamma_one_coe_eq_SL : (↑(Gamma 1) : Subgroup (GL (Fin 2) ℝ)) = 𝒮ℒ := by
+  simp [Gamma_one_top, MonoidHom.range_eq_map]
+
 theorem Gamma_zero_bot : Gamma 0 = ⊥ := rfl
 
 lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
     (ModularGroup.T ^ M) ∈ Gamma (Int.natAbs N) := by
-  simp only [Gamma_mem, Fin.isValue, ModularGroup.coe_T_zpow, of_apply, cons_val', cons_val_zero,
-    empty_val', cons_val_fin_one, Int.cast_one, cons_val_one,
-    Int.cast_zero, and_self, and_true, true_and]
-  refine Iff.mpr (ZMod.intCast_zmod_eq_zero_iff_dvd M (Int.natAbs N)) ?_
-  simp only [Int.natCast_natAbs, abs_dvd, hNM]
+  simp [ModularGroup.coe_T_zpow, hNM, ZMod.intCast_zmod_eq_zero_iff_dvd]
 
 instance instFiniteIndexGamma [NeZero N] : (Gamma N).FiniteIndex := Subgroup.finiteIndex_ker _
 
@@ -86,20 +78,12 @@ modulo `N`. -/
 def Gamma0 : Subgroup SL(2, ℤ) where
   carrier := { g | (g 1 0 : ZMod N) = 0 }
   one_mem' := by simp
-  mul_mem' := by
-    intro a b ha hb
-    simp only [Set.mem_setOf_eq]
+  mul_mem' {a} {b} ha hb := by
     have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
     simp only [coe_mul, Set.mem_setOf_eq] at *
-    rw [h]
-    simp [ha, hb]
-  inv_mem' := by
-    intro a ha
-    simp only [Set.mem_setOf_eq]
-    rw [SL2_inv_expl a]
-    simp only [cons_val_zero, cons_val_one,
-      Int.cast_neg, neg_eq_zero, Set.mem_setOf_eq] at *
-    exact ha
+    simp [h, ha, hb]
+  inv_mem' {a} ha := by
+    simpa [SL2_inv_expl a] using ha
 
 @[simp]
 theorem Gamma0_mem {N} {A : SL(2, ℤ)} : A ∈ Gamma0 N ↔ (A 1 0 : ZMod N) = 0 :=
@@ -156,7 +140,7 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
     rw [Gamma1_to_Gamma0_mem] at hx
     simp only [Subgroup.mem_top, true_and] at hxx
     rw [← hxx]
-    convert hx
+    convert! hx
   · intro ha
     simp_rw [Gamma1, Subgroup.mem_map]
     have hA : A ∈ Gamma0 N := by simp [ha.right.right, Gamma0_mem]
@@ -209,7 +193,8 @@ end CongruenceSubgroups
 
 section Conjugation
 
-open Pointwise ConjAct
+open scoped Pointwise
+open ConjAct
 
 /-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g ∈ GL(2, ℝ)`. -/
 def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ) :=
@@ -255,7 +240,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   obtain ⟨k, hk⟩ : ∃ k, y = 1 + (a₁ * a₂ * M) • k := by
     replace hy' : y.map (Int.cast : ℤ → ZMod (a₁ * a₂ * M)) = 1 := by
       rw [CongruenceSubgroup.Gamma_mem', Subtype.ext_iff] at hy'
-      simpa using hy'
+      simpa using! hy'
     use Matrix.of fun i j ↦ (y - 1) i j / (a₁ * a₂ * M)
     rw [← sub_eq_iff_eq_add']
     ext i j
@@ -264,7 +249,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     rw [← Matrix.map_one Int.cast (by simp) (by simp), ← sub_eq_zero,
       ← Matrix.map_sub _ (by simp)] at hy'
     simpa only [Matrix.zero_apply, Matrix.map_apply, ZMod.intCast_zmod_eq_zero_iff_dvd,
-      Nat.cast_mul] using congr_fun₂ hy' i j
+      Nat.cast_mul] using! congr_fun₂ hy' i j
   -- use this `k` to cook up a new integer matrix, which we will show comes from `SL(2, ℤ)`
   let z := 1 + M • (A₁.num * k * A₂.num)
   have hz_coe : z.map Int.cast = A₁ * (y.map Int.cast) * A₂ := by
@@ -273,7 +258,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     conv_rhs => rw [← A₁.inv_denom_smul_num, ← A₂.inv_denom_smul_num, Matrix.map_smul _ _ (by simp)]
     simp only [Matrix.smul_mul, Matrix.mul_smul, Matrix.map_smul (Int.cast : ℤ → ℚ) M (by simp),
       Matrix.map_mul_intCast]
-    rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← SemigroupAction.mul_smul, ← SemigroupAction.mul_smul,
+    rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← mul_smul, ← mul_smul,
       mul_comm a₁ a₂, Nat.cast_mul, Nat.cast_mul, mul_assoc _ _ (M : ℚ), mul_comm _ (M : ℚ),
       inv_mul_cancel_left₀ (mod_cast A₂.den_ne_zero),
       mul_inv_cancel_right₀ (mod_cast A₁.den_ne_zero), Nat.cast_smul_eq_nsmul]
@@ -282,12 +267,12 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     simp_rw [Matrix.det_mul, ← Int.cast_det] at this
     rwa [mul_right_comm, ← Matrix.det_mul, hA₁₂, Matrix.det_one, one_mul, hy, Int.cast_inj] at this
   refine ⟨⟨z, hz_det⟩, ?_, by simpa only [Subtype.ext_iff, Subgroup.coe_mul, Units.ext_iff,
-    Units.val_mul] using hz_coe⟩
+    Units.val_mul] using! hz_coe⟩
   rw [SetLike.mem_coe, CongruenceSubgroup.Gamma_mem', Subtype.ext_iff]
   ext i j
   simp_rw [map_apply_coe, z, map_add, map_one, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-    add_apply, map_apply, coe_one, add_eq_left, Matrix.smul_apply, nsmul_eq_mul, Int.cast_mul,
-    Int.cast_natCast, ZMod.natCast_self M, zero_mul]
+    Matrix.add_apply, map_apply, coe_one, add_eq_left, Matrix.smul_apply, nsmul_eq_mul,
+    Int.cast_mul, Int.cast_natCast, ZMod.natCast_self M, zero_mul]
 
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g Γ(N) g⁻¹ ≤ Γ(M)`. -/
 theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
@@ -300,7 +285,7 @@ theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   obtain ⟨x, hx, rfl⟩ := hy
   obtain ⟨z, hz, hz'⟩ := h x hx
   use z, hz
-  simpa only [Subtype.ext_iff, Units.ext_iff, map_mul] using
+  simpa only [Subtype.ext_iff, Units.ext_iff, map_mul] using!
     congr_arg (GeneralLinearGroup.map (Rat.castHom ℝ)) hz'
 
 open Subgroup in
@@ -315,9 +300,9 @@ lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHo
   rw [Gamma_one_top, ← MonoidHom.range_eq_map] at hN'
   suffices Γ(N) ≤ (t • 𝒮ℒ ⊓ 𝒮ℒ).comap (mapGL ℝ) by
     haveI _ : NeZero N := ⟨hN⟩
-    simpa only [index_comap] using (finiteIndex_of_le this).index_ne_zero
+    simpa only [index_comap] using! (finiteIndex_of_le this).index_ne_zero
   intro k hk
-  simpa [mem_pointwise_smul_iff_inv_smul_mem] using
+  simpa [mem_pointwise_smul_iff_inv_smul_mem] using!
     hN' <| smul_mem_pointwise_smul _ _ _ ⟨k, hk, rfl⟩
 
 /-- Conjugates of `SL(2, ℤ)` by `GL(2, ℚ)` are arithmetic subgroups. -/

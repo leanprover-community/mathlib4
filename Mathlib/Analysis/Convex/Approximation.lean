@@ -30,7 +30,7 @@ of continuous affine linear functions. We follow the proof in
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set RCLike ContinuousLinearMap
 
@@ -115,7 +115,7 @@ theorem sSup_affine_eq (hsc : IsClosed s)
   ext x
   rw [sSup_apply]
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ (fun r ⟨f, hf⟩ => ?_) (fun r hr => ?_)
-  · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 (show φ x - 1 < φ x from by grind)
+  · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 (show φ x - 1 < φ x by grind)
       hsc hφc hφcv
     exact ⟨φ x - 1, hlc.2 ▸ ⟨⟨s.restrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩⟩
   · exact hf ▸ f.2.1 x
@@ -185,10 +185,10 @@ theorem univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn �
     ext f
     refine ⟨fun ⟨hp, l, c, hlc⟩ => ⟨f ∘ Subtype.val, ⟨fun x => hp (Subtype.val x), ⟨l, c, ?_⟩⟩, ?_⟩,
       fun ⟨a, ⟨⟨h, ⟨l, c, hlc⟩⟩, hb⟩⟩ => ⟨fun x => ?_, ⟨l, c, ?_⟩⟩⟩
-    · ext x; simpa using congrFun hlc x
+    · ext x; simpa using! congrFun hlc x
     · ext; simp
-    · simpa using hb ▸ h ⟨x, trivial⟩
-    · subst hlc; simpa using hb.symm
+    · simpa using! hb ▸ h ⟨x, trivial⟩
+    · subst hlc; simpa using! hb.symm
   _ = sSup 𝓕 ∘ (Equiv.Set.univ E).symm := by ext x; rw [sSup_image', sSup_eq_iSup']; simp
   _ = φ ∘ Subtype.val ∘ (Equiv.Set.univ E).symm :=
     congrArg (fun g => g ∘ (Equiv.Set.univ E).symm) this
@@ -220,19 +220,11 @@ theorem univ_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E]
     (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
     ∃ (l : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ), (∀ i, re ∘ (l i) + const E (c i) ≤ φ)
       ∧ ⨆ i, re ∘ (l i) + const E (c i) = φ := by
-  obtain ⟨𝓕', h𝓕'⟩ := hφcv.univ_sSup_of_countable_affine_eq (𝕜 := 𝕜) hφc
-  by_cases! he : 𝓕'.Nonempty
-  · obtain ⟨f, hf⟩ := h𝓕'.1.exists_eq_range he
-    have (i : ℕ) : ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f i = re ∘ l + const E c := by simp_all
-    choose l c hlc using this
-    refine ⟨l, c, fun i => (hlc i) ▸ (h𝓕'.2.2 (f i) (hf ▸ mem_range_self i)).1, ?_⟩
-    calc
-    _ = ⨆ i, f i := by congr with i x; exact congrFun (hlc i).symm x
-    _ = _ := by rw [← sSup_range, ← hf, h𝓕'.2.1]
-  · refine ⟨fun _ => 0, fun _ => 0, fun i x => ?_, ?_⟩
-    · simp_all [← congrFun h𝓕'.2.1 x]
-    · ext x
-      simp_all [← congrFun h𝓕'.2.1 x]
+  obtain ⟨l, c, hle, hsup⟩ := hφcv.sSup_of_nat_affine_eq (𝕜 := 𝕜) (s := univ) isClosed_univ
+    (lowerSemicontinuousOn_univ_iff.2 hφc)
+  refine ⟨l, c, fun i x ↦ hle i ⟨x, trivial⟩, ?_⟩
+  ext x
+  simpa using congrFun hsup ⟨x, trivial⟩
 
 end RCLike
 

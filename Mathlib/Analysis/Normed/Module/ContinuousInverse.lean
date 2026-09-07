@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.Module.Complement
 
 /-! # Continuous linear maps with a continuous left/right inverse
 
@@ -143,14 +144,14 @@ lemma comp {g : F →L[R] G} (hg : g.HasLeftInverse) (hf : f.HasLeftInverse) :
   obtain ⟨finv, hfinv⟩ := hf
   obtain ⟨ginv, hginv⟩ := hg
   refine ⟨finv.comp ginv, fun x ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
+  simp only [comp_apply]
   rw [hginv, hfinv]
 
 lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasLeftInverse) :
     f.HasLeftInverse := by
   obtain ⟨fginv, hfginv⟩ := hfg
   refine ⟨fginv.comp g, fun y ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
+  simp only [comp_apply]
   exact hfginv y
 
 lemma comp_continuousLinearEquivalence {f₀ : F' ≃L[R] E} (hf : f.HasLeftInverse) :
@@ -211,7 +212,7 @@ lemma closedComplemented_range (hf : f.HasLeftInverse) : Submodule.ClosedComplem
   use (f.comp hf.leftInverse).codRestrict f.range (by intro y; simp)
   rintro ⟨y, x, rfl⟩
   ext
-  simp only [coe_coe, coe_codRestrict_apply, coe_comp', Function.comp_apply]
+  simp only [coe_coe, coe_codRestrict_apply, comp_apply]
   rw [hf.leftInverse_leftInverse]
 
 section
@@ -232,6 +233,7 @@ def complement (h : f.HasLeftInverse) : Submodule R F :=
 lemma isClosed_complement (h : f.HasLeftInverse) : IsClosed (X := F) h.complement :=
   h.closedComplemented_range.isClosed_complement
 
+omit [T1Space F] in
 lemma isCompl_complement (h : f.HasLeftInverse) : IsCompl f.range h.complement :=
   h.closedComplemented_range.isCompl_complement
 
@@ -255,7 +257,7 @@ lemma of_injective_of_isClosed_range_of_closedComplement_range {f : E →L[R] F}
   -- We compose the continuous inverse of `f : E → range f` with the projection `p : F → range f`.
   obtain ⟨p, hp⟩ := hf''
   refine ⟨(f.leftInverse_of_injective_of_isClosed_range hf hf').comp p, fun x ↦ ?_⟩
-  simpa [hp ⟨f x, by simp⟩] using f.rangeRestrict.leftInverse_apply_of_inj this x
+  simpa [hp ⟨f x, by simp⟩] using! f.rangeRestrict.leftInverse_apply_of_inj this x
 
 end
 
@@ -308,7 +310,7 @@ lemma comp {g : F →L[R] G} (hg : g.HasRightInverse) (hf : f.HasRightInverse) :
   obtain ⟨finv, hfinv⟩ := hf
   obtain ⟨ginv, hginv⟩ := hg
   refine ⟨finv.comp ginv, fun x ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
+  simp only [comp_apply]
   rw [hfinv, hginv]
 
 lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasRightInverse) :

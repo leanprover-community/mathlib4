@@ -14,7 +14,7 @@ public import Mathlib.Condensed.Light.Functors
 # The functor from light profinite sets to light condensed sets preserves effective epimorphisms
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory CompHausLike
 

@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.Sub
 
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
-public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.WithDensity
 
@@ -29,7 +28,7 @@ not imported in the other file: the Hahn decomposition of finite measures and me
 
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal
 

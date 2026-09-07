@@ -6,6 +6,7 @@ Authors: Johan Commelin, Jiedong Jiang, Christian Merten
 module
 
 public import Mathlib.Topology.Spectral.Basic
+public import Mathlib.Topology.WithTopology
 public import Mathlib.Topology.JacobsonSpace
 public import Mathlib.Data.Set.Card
 
@@ -43,13 +44,18 @@ def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X 
 
 /-- A type synonym for `X` that is equipped with the constructible topology of `X`. -/
 @[nolint unusedArguments]
-def WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
-  X
-
-instance : TopologicalSpace (WithConstructibleTopology X) :=
-  fast_instance% constructibleTopology X
+abbrev WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
+  WithTopology X (constructibleTopology X)
 
 open Topology
+
+lemma WithConstructibleTopology.isOpen_iff {s : Set (WithConstructibleTopology X)} :
+    IsOpen s ↔ IsOpen[constructibleTopology X] (WithTopology.toTopology _ ⁻¹' s) :=
+  WithTopology.isOpen_iff _
+
+lemma WithConstructibleTopology.isClosed_iff {s : Set (WithConstructibleTopology X)} :
+    IsClosed s ↔ IsClosed[constructibleTopology X] (WithTopology.toTopology _ ⁻¹' s) :=
+  WithTopology.isClosed_iff _
 
 lemma IsCompact.isOpen_constructibleTopology_of_isOpen {s : Set X}
     (hs : IsCompact s) (ho : IsOpen s) : IsOpen[constructibleTopology X] s := by
@@ -86,6 +92,9 @@ spaces. -/
 instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
     [PrespectralSpace X] [QuasiSeparatedSpace X] :
     CompactSpace (WithConstructibleTopology X) := by
+  suffices h : @CompactSpace X (constructibleTopology X) from
+    @Function.Surjective.compactSpace _ _ (constructibleTopology X) _ _
+      (WithTopology.continuous_toTopology _) _ (WithTopology.toTopology_surjective _)
   let 𝔅 := constructibleTopologySubbasis X
   /- It suffices to check that any subset of `𝔅` for which every finite subset has non-empty
   intersection, has non-empty intersection. We argue by contradiction and by Zorn's
@@ -149,8 +158,8 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
     apply this
     rw [Set.inter_comm]
     refine IsCompact.nonempty_inter_sInter ?_ (fun _ hb ↦ hb.2) fun F hsub hF ↦ ?_
-    · apply isCompact_sInter_of_subset_constructibleTopologySubbasis _ (hA₁'.diff.union hA₂'.diff)
+    · apply isCompact_sInter_of_subset_constructibleTopologySubbasis _ (hA₁'.sdiff.union hA₂'.sdiff)
       grind [hB.prop, Set.union_subset_iff]
     · rw [← Set.sInter_union]
-      refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.diff.union hA₂'.diff).union hF
-      grind [Set.diff_singleton_subset_iff, Set.union_subset_iff]
+      refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.sdiff.union hA₂'.sdiff).union hF
+      grind [Set.sdiff_singleton_subset_iff, Set.union_subset_iff]

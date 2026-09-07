@@ -165,7 +165,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
   rw [← eq_X_sub_C_of_separable_of_root_eq h_sep h_root h_splits h_roots]
   trans EuclideanDomain.gcd (?_ : E[X]) (?_ : E[X])
   · dsimp only [γ]
-    convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
+    convert! (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp only [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, Polynomial.map_sub,
       map_C, AdjoinSimple.algebraMap_gen, Polynomial.map_mul, map_X]
     congr
@@ -190,7 +190,7 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
     replace β_in_K := smul_mem _ β_in_K (x := (x - y)⁻¹)
     rw [smul_smul, inv_mul_eq_div, div_self (sub_ne_zero.2 hneq), one_smul] at β_in_K
     have α_in_K : α ∈ F⟮α + x • β⟯ := by
-      convert ← sub_mem αxβ_in_K (smul_mem _ β_in_K)
+      convert! ← sub_mem αxβ_in_K (smul_mem _ β_in_K)
       apply add_sub_cancel_right
     rintro x (rfl | rfl) <;> assumption
   · rw [adjoin_simple_le_iff]
@@ -320,7 +320,7 @@ theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebrai
   -- which is a monic factor of `f`
   let g : IntermediateField F E → G := fun K ↦
     ⟨(minpoly K α).map (algebraMap K E), (minpoly.monic <| .of_finite K α).map _, by
-      convert Polynomial.map_dvd (algebraMap K E) (minpoly.dvd_map_of_isScalarTower F K α)
+      convert! Polynomial.map_dvd (algebraMap K E) (minpoly.dvd_map_of_isScalarTower F K α)
       rw [Polynomial.map_map]; rfl⟩
   -- The map `K ↦ g` is injective
   have hinj : Function.Injective g := fun K K' heq ↦ by

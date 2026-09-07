@@ -18,7 +18,7 @@ public import Mathlib.Tactic.Continuity
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

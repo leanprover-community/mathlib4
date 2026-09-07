@@ -173,6 +173,7 @@ noncomputable def homAddEquiv :
 
 end CohomologyClass
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
@@ -196,12 +197,12 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
         (by
           rintro ⟨_, _⟩ ⟨q, hq, y, rfl⟩
           obtain rfl : n = q := by lia
-          simpa only [zero_comp] using ConcreteCategory.congr_hom s.condition y)))
+          simpa only [zero_comp] using! ConcreteCategory.congr_hom s.condition y)))
       (fun s ↦ rfl)
       (fun s l hl ↦ by
         ext x
         obtain ⟨y, rfl⟩ := x.mk_surjective
-        simpa using ConcreteCategory.congr_hom hl y)
+        simpa using! ConcreteCategory.congr_hom hl y)
 
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/

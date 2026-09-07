@@ -6,10 +6,10 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "v4.30.0-rc1"
-require "leanprover-community" / "Qq" @ git "v4.30.0-rc1"
-require "leanprover-community" / "aesop" @ git "v4.30.0-rc1"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.97"
+require "leanprover-community" / "batteries" @ git "main"
+require "leanprover-community" / "Qq" @ git "master"
+require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "proofwidgets" @ git "main"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
     Please report this issue on the Lean Zulip."
@@ -48,6 +48,14 @@ abbrev mathlibLeanOptions := #[
 
 package mathlib where
   testDriver := "MathlibTest"
+  lintDriver := "batteries/runLinter"
+  lintDriverArgs := #["Mathlib"]
+  -- A version of Mathlib only supports the toolchain it is built with.
+  fixedToolchain := true
+  -- Mathlib oleans are built on Linux CI and used across platforms.
+  platformIndependent := true
+  -- Mathlib currently expects artifacts to be in the build directory.
+  restoreAllArtifacts := true
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -98,6 +106,12 @@ lean_exe autolabel where
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
+
+/-- `lake exe cache-test` runs the cache tool's unit tests (container URL
+construction, per-repo trust-ordered allowlist, `--cache-from` parsing).
+Runnable standalone — does not require building Mathlib or `MathlibTest`. -/
+lean_exe «cache-test» where
+  root := `Cache.Test
 
 /-- `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe «check-yaml» where

@@ -84,7 +84,7 @@ theorem toSnowflaking.sizeOf_spec [SizeOf X] (x : X) :
     sizeOf (toSnowflaking x : Snowflaking X α hα₀ hα₁) = 1 + sizeOf x :=
   rfl
 
-attribute [nolint simpNF] mk.injEq mk.sizeOf_spec
+attribute [nolint simpNF] mk.injEq
 
 /-- This definition makes `cases x` and `induction x` use `toSnowflaking` instead of `mk`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
@@ -139,7 +139,7 @@ theorem image_ofSnowflaking_eq_preimage (s : Set (Snowflaking X α hα₀ hα₁
 
 @[simp]
 theorem image_toSnowflaking_image_ofSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
-    toSnowflaking '' (ofSnowflaking '' s) = s :=
+    toSnowflaking '' ofSnowflaking '' s = s :=
   ofSnowflaking.symm_image_image _
 
 @[simp]

@@ -21,7 +21,7 @@ We do not make `IsFiniteLength` a class, instead we use `[IsNoetherian R M] [IsA
 Finite length, Composition series
 -/
 
-@[expose] public section
+public section
 
 variable (R : Type*) [Ring R]
 

@@ -27,7 +27,7 @@ We prove the following facts:
   is bounded.
 -/
 
-@[expose] public section
+public section
 
 -- TODO assert_not_exists Cardinal
 
@@ -54,7 +54,7 @@ theorem convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
   convexOn_norm convex_univ
 
 theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dist z' z := by
-  simpa [dist_eq_norm, preimage_preimage] using
+  simpa [dist_eq_norm, preimage_preimage] using!
     (convexOn_norm (hs.translate (-z))).comp_affineMap (AffineMap.id ℝ E - AffineMap.const ℝ E z)
 
 theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
@@ -89,7 +89,7 @@ theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) 
   | top => simp [convex_univ]
   | coe r => simp [closedEBall_coe, convex_closedBall]
 
-open Pointwise in
+open scoped Pointwise in
 theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
     convexHull ℝ (sphere x r) = closedBall x r := by

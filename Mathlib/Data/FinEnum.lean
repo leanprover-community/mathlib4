@@ -60,6 +60,9 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
 def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum α :=
   ofNodupList xs.dedup (by simp [*]) (List.nodup_dedup _)
 
+lemma card_ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) :
+    (FinEnum.ofList xs h).card = xs.dedup.length := rfl
+
 /-- create an exhaustive list of the values of a given type -/
 def toList (α) [FinEnum α] : List α :=
   (List.finRange (card α)).map equiv.symm
@@ -110,11 +113,17 @@ end ULift
 instance pempty : FinEnum PEmpty :=
   ofList [] fun x => PEmpty.elim x
 
+@[simp] lemma card_pempty : FinEnum.card PEmpty = 0 := rfl
+
 instance empty : FinEnum Empty :=
   ofList [] fun x => Empty.elim x
 
+@[simp] lemma card_empty : FinEnum.card Empty = 0 := rfl
+
 instance punit : FinEnum PUnit :=
   ofList [PUnit.unit] fun x => by simp
+
+@[simp] lemma card_punit : FinEnum.card PUnit = 1 := rfl
 
 instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) :=
   ofList (toList α ×ˢ toList β) fun x => by cases x; simp
@@ -250,6 +259,56 @@ instance [Unique α] : Unique (FinEnum α) where
 sure that there aren't two definitionally differing instances around. -/
 @[implicit_reducible]
 def ofUnique [Unique α] : FinEnum α := default
+
+instance : FinEnum UInt8 where
+  card := 2 ^ 8
+  equiv := ⟨UInt8.toFin, UInt8.ofFin, by intro x; simp, by intro x; simp⟩
+
+instance : FinEnum UInt16 where
+  card := 2 ^ 16
+  equiv := ⟨UInt16.toFin, UInt16.ofFin, by intro x; simp, by intro x; simp⟩
+
+instance : FinEnum UInt32 where
+  card := 2 ^ 32
+  equiv := ⟨UInt32.toFin, UInt32.ofFin, by intro x; simp, by intro x; simp⟩
+
+instance : FinEnum UInt64 where
+  card := 2 ^ 64
+  equiv := ⟨UInt64.toFin, UInt64.ofFin, by intro x; simp, by intro x; simp⟩
+
+instance : FinEnum Int8 where
+  card := 2 ^ 8
+  equiv := ⟨BitVec.toFin ∘ Int8.toBitVec, Int8.ofBitVec ∘ BitVec.ofFin,
+    by intro x; simp, by intro x; simp⟩
+
+instance : FinEnum Int16 where
+  card := 2 ^ 16
+  equiv := ⟨BitVec.toFin ∘ Int16.toBitVec, Int16.ofBitVec ∘ BitVec.ofFin,
+    by intro x; simp, by intro x; simp⟩
+
+instance : FinEnum Int32 where
+  card := 2 ^ 32
+  equiv := ⟨BitVec.toFin ∘ Int32.toBitVec, Int32.ofBitVec ∘ BitVec.ofFin,
+    by intro x; simp, by intro x; simp⟩
+
+instance : FinEnum Int64 where
+  card := 2 ^ 64
+  equiv := ⟨BitVec.toFin ∘ Int64.toBitVec, Int64.ofBitVec ∘ BitVec.ofFin,
+    by intro x; simp, by intro x; simp⟩
+
+instance (n : ℕ) : FinEnum (BitVec n) where
+  card := 2 ^ n
+  equiv := ⟨BitVec.toFin, BitVec.ofFin, by intro x; simp, by intro x; simp⟩
+
+@[simp, grind =] lemma card_UInt8 : card UInt8 = 2 ^ 8 := rfl
+@[simp, grind =] lemma card_UInt16 : card UInt16 = 2 ^ 16 := rfl
+@[simp, grind =] lemma card_UInt32 : card UInt32 = 2 ^ 32 := rfl
+@[simp, grind =] lemma card_UInt64 : card UInt64 = 2 ^ 64 := rfl
+@[simp, grind =] lemma card_Int8 : card Int8 = 2 ^ 8 := rfl
+@[simp, grind =] lemma card_Int16 : card Int16 = 2 ^ 16 := rfl
+@[simp, grind =] lemma card_Int32 : card Int32 = 2 ^ 32 := rfl
+@[simp, grind =] lemma card_Int64 : card Int64 = 2 ^ 64 := rfl
+@[simp, grind =] lemma card_bitVec (n : ℕ) : card (BitVec n) = 2 ^ n := rfl
 
 end FinEnum
 

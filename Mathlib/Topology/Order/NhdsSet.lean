@@ -183,7 +183,7 @@ theorem hasBasis_nhdsSet_Iic_Iic (a : α) [NeBot (𝓝[>] a)] :
     (Filter.nonempty_of_mem (self_mem_nhdsWithin : Ioi a ∈ 𝓝[>] a)).to_subtype
   refine (hasBasis_nhdsSet_Iic_Iio _).to_hasBasis
     (fun c hc ↦ ?_) (fun _ h ↦ ⟨_, h, Iio_subset_Iic_self⟩)
-  simpa only [Iic_subset_Iio] using Filter.nonempty_of_mem (Ioo_mem_nhdsGT hc)
+  simpa only [Iic_subset_Iio] using! Filter.nonempty_of_mem (Ioo_mem_nhdsGT hc)
 
 @[simp]
 theorem Iic_mem_nhdsSet_Iic_iff {a b : α} [NeBot (𝓝[>] b)] : Iic a ∈ 𝓝ˢ (Iic b) ↔ b < a :=

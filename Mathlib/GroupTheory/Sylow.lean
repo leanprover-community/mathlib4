@@ -68,7 +68,7 @@ theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; 
 
 instance : SetLike (Sylow p G) G where
   coe := (↑)
-  coe_injective' _ _ h := ext (SetLike.coe_injective h)
+  coe_injective _ _ h := ext (SetLike.coe_injective h)
 
 instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G) G
 
@@ -102,6 +102,10 @@ def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
 @[simp] theorem _root_.IsPGroup.mem_toSylow [Fact p.Prime] {P : Subgroup G}
     (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) {g : G} : g ∈ hP1.toSylow hP2 ↔ g ∈ P :=
   .rfl
+
+theorem _root_.IsPGroup.le_sylow_of_normal {N : Subgroup G} [N.Normal] (h : IsPGroup p N)
+    (H : Sylow p G) : N ≤ H :=
+  sup_eq_right.mp <| H.is_maximal' (h.to_sup_of_normal_left H.isPGroup') le_sup_right
 
 /-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
 where `n` is the multiplicity of `p` in the group order. -/
@@ -197,6 +201,22 @@ theorem exists_comap_subtype_eq {H : Subgroup G} (P : Sylow p H) :
     ∃ Q : Sylow p G, Q.comap H.subtype = P :=
   P.exists_comap_eq_of_injective Subtype.coe_injective
 
+theorem iSup_of_normal {ι : Type*} (H : ι → Subgroup G) [∀ i, (H i).Normal]
+    (h : ∀ i, IsPGroup p (H i)) : IsPGroup p (⨆ i, H i : Subgroup G) :=
+  have H' := Classical.arbitrary <| Sylow p G
+  H'.isPGroup'.to_le <| iSup_le (h · |>.le_sylow_of_normal H')
+
+theorem biSup_of_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, IsPGroup p (H i))
+    (hn : ∀ i ∈ s, (H i).Normal) : IsPGroup p (⨆ i ∈ s, H i : Subgroup G) := by
+  rw [← iSup_subtype'']
+  have : ∀ i : s, (H i).Normal := fun i ↦ hn i i.property
+  exact iSup_of_normal _ fun i ↦ h i i.property
+
+theorem sSup_of_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, IsPGroup p H)
+    (hn : ∀ H ∈ Hs, H.Normal) : IsPGroup p (sSup Hs : Subgroup G) := by
+  rw [sSup_eq_iSup]
+  exact biSup_of_normal Hs id h hn
+
 /-- If the kernel of `f : H →* G` is a `p`-group,
   then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
 theorem finite_of_ker_is_pGroup {H : Type*} [Group H] {f : H →* G}
@@ -221,7 +241,7 @@ theorem finite_of_finiteIndex (P : Sylow p G) [P.FiniteIndex] : Finite (Sylow p 
   rw [QuotientGroup.ker_mk']
   exact P.isPGroup'.to_le P.normalCore_le
 
-open Pointwise
+open scoped Pointwise
 
 /-- `Subgroup.pointwiseMulAction` preserves Sylow subgroups. -/
 instance pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
@@ -522,7 +542,7 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
         have : (n⁻¹ * x)⁻¹ * x ∈ H := QuotientGroup.eq.1 (ha ⟨⟨n⁻¹, inv_mem hn⟩, rfl⟩)
         show _ ∈ H by
           rw [mul_inv_rev, inv_inv] at this
-          convert this
+          convert! this
           rw [inv_inv]),
     fun hx : ∀ n : G, n ∈ H ↔ x * n * x⁻¹ ∈ H =>
     mem_fixedPoints'.2 fun y =>
@@ -614,7 +634,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
       (comap (mk' (H.subgroupOf (normalizer H))) (Subgroup.zpowers x))) = p ^ (n + 1)
     suffices Nat.card (Subtype.val ''
       ((zpowers x).comap (mk' (H.subgroupOf (normalizer H))) : Set (normalizer H))) = p ^ (n + 1)
-      by convert this using 2
+      by convert! this using 2
     rw [Nat.card_image_of_injective Subtype.val_injective
         ((zpowers x).comap (mk' (H.subgroupOf (normalizer H))) : Set (normalizer (H : Set G))),
       pow_succ, ← hH, Nat.card_congr hequiv, ← hx, ← Nat.card_zpowers, ← Nat.card_prod]
@@ -625,7 +645,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
     refine ⟨⟨y, le_normalizer hy⟩, ⟨0, ?_⟩, rfl⟩
     dsimp only
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
-    simpa using hy⟩
+    simpa using! hy⟩
 
 /-- If `H` is a subgroup of `G` of cardinality `p ^ n`,
   then `H` is contained in a subgroup of cardinality `p ^ m`
@@ -716,6 +736,19 @@ theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow
   refine Nat.dvd_antisymm ?_ (P.pow_dvd_card_of_pow_dvd_card (Nat.ordProj_dvd _ p))
   rw [heq, ← hp.out.pow_dvd_iff_dvd_ordProj (show Nat.card G ≠ 0 from Nat.card_pos.ne'), ← heq]
   exact P.1.card_subgroup_dvd_card
+
+variable (G) in
+theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] : Nat.card G ∣ ∏ g : G, orderOf g := by
+  classical
+  refine Nat.dvd_iff_prime_pow_dvd_dvd .. |>.mpr fun p k hp h ↦ ?_
+  have := Fact.mk hp
+  have ⟨H, hH⟩ := exists_subgroup_card_pow_prime p h
+  have (g : G) (hg : g ∈ (H \ {1} : Set G).toFinset) : p ∣ orderOf g := by
+    have ⟨hg, hg1⟩ : g ∈ H ∧ g ≠ 1 := by simpa using hg
+    simpa using IsPGroup.of_card hH |>.dvd_orderOf (g := ⟨g, hg⟩) <| by simpa
+  grw [← prod_dvd_prod_of_subset _ _ _ (H \ {1} : Set G).toFinset.subset_univ,
+    ← prod_dvd_prod_of_dvd _ _ this, prod_const, k.le_sub_one_of_lt <| k.lt_pow_self hp.one_lt]
+  simp [Finset.card_sdiff, ← Nat.card_eq_fintype_card, hH]
 
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
 @[implicit_reducible]

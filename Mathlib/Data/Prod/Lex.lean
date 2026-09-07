@@ -33,6 +33,12 @@ Related files are:
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
 * `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
 * `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
+
+# TODO
+
+Some lemmas could be automatically generated with `to_dual`.
+See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r3367855484]
+
 -/
 
 @[expose] public section
@@ -53,17 +59,29 @@ theorem toLex_le_toLex [LT α] [LE β] {x y : α × β} :
     toLex x ≤ toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 ≤ y.2 :=
   Prod.lex_def
 
+@[to_dual existing toLex_le_toLex]
+theorem toLex_ge_toLex [LT α] [LE β] {x y : α × β} :
+    toLex y ≤ toLex x ↔ y.1 < x.1 ∨ x.1 = y.1 ∧ y.2 ≤ x.2 := by
+  rw [eq_comm, toLex_le_toLex]
+
 theorem toLex_lt_toLex [LT α] [LT β] {x y : α × β} :
     toLex x < toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 < y.2 :=
   Prod.lex_def
 
+@[to_dual existing toLex_lt_toLex]
+theorem toLex_gt_toLex [LT α] [LT β] {x y : α × β} :
+    toLex y < toLex x ↔ y.1 < x.1 ∨ x.1 = y.1 ∧ y.2 < x.2 := by
+  rw [eq_comm, toLex_lt_toLex]
+
+@[to_dual none]
 lemma le_iff [LT α] [LE β] {x y : α ×ₗ β} :
     x ≤ y ↔ (ofLex x).1 < (ofLex y).1 ∨ (ofLex x).1 = (ofLex y).1 ∧ (ofLex x).2 ≤ (ofLex y).2 :=
-  Prod.lex_def
+  toLex_le_toLex
 
+@[to_dual none]
 lemma lt_iff [LT α] [LT β] {x y : α ×ₗ β} :
     x < y ↔ (ofLex x).1 < (ofLex y).1 ∨ (ofLex x).1 = (ofLex y).1 ∧ (ofLex x).2 < (ofLex y).2 :=
-  Prod.lex_def
+  toLex_lt_toLex
 
 instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ×ₗ β) :=
   instIsWellFounded
@@ -90,15 +108,18 @@ variable [Preorder α] [Preorder β]
 
 theorem monotone_fst_ofLex : Monotone fun x : α ×ₗ β ↦ (ofLex x).1 := monotone_fst
 
+@[to_dual self]
 theorem _root_.WCovBy.fst_ofLex {a b : α ×ₗ β} (h : a ⩿ b) : (ofLex a).1 ⩿ (ofLex b).1 :=
   ⟨monotone_fst _ _ h.1, fun c hac hcb ↦ h.2 (c := toLex (c, a.2)) (.left _ _ hac) (.left _ _ hcb)⟩
 
+@[to_dual none]
 theorem toLex_covBy_toLex_iff {a₁ a₂ : α} {b₁ b₂ : β} :
     toLex (a₁, b₁) ⋖ toLex (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ ⋖ b₂ ∨ a₁ ⋖ a₂ ∧ IsMax b₁ ∧ IsMin b₂ := by
   simp only [CovBy, toLex_lt_toLex, toLex.surjective.forall, Prod.forall, isMax_iff_forall_not_lt,
     isMin_iff_forall_not_lt]
   grind
 
+@[to_dual none]
 theorem covBy_iff {a b : α ×ₗ β} :
     a ⋖ b ↔ (ofLex a).1 = (ofLex b).1 ∧ (ofLex a).2 ⋖ (ofLex b).2 ∨
       (ofLex a).1 ⋖ (ofLex b).1 ∧ IsMax (ofLex a).2 ∧ IsMin (ofLex b).2 :=
@@ -111,22 +132,26 @@ section PartialOrderPreorder
 variable [PartialOrder α] [Preorder β] {x y : α × β}
 
 /-- Variant of `Prod.Lex.toLex_le_toLex` for partial orders. -/
+@[to_dual none]
 lemma toLex_le_toLex' : toLex x ≤ toLex y ↔ x.1 ≤ y.1 ∧ (x.1 = y.1 → x.2 ≤ y.2) := by
   simp only [toLex_le_toLex, lt_iff_le_not_ge, le_antisymm_iff]
   tauto
 
 /-- Variant of `Prod.Lex.toLex_lt_toLex` for partial orders. -/
+@[to_dual none]
 lemma toLex_lt_toLex' : toLex x < toLex y ↔ x.1 ≤ y.1 ∧ (x.1 = y.1 → x.2 < y.2) := by
   rw [toLex_lt_toLex]
   simp only [lt_iff_le_not_ge, le_antisymm_iff]
   tauto
 
 /-- Variant of `Prod.Lex.le_iff` for partial orders. -/
+@[to_dual none]
 lemma le_iff' {x y : α ×ₗ β} :
     x ≤ y ↔ (ofLex x).1 ≤ (ofLex y).1 ∧ ((ofLex x).1 = (ofLex y).1 → (ofLex x).2 ≤ (ofLex y).2) :=
   toLex_le_toLex'
 
 /-- Variant of `Prod.Lex.lt_iff` for partial orders. -/
+@[to_dual none]
 lemma lt_iff' {x y : α ×ₗ β} :
     x < y ↔ (ofLex x).1 ≤ (ofLex y).1 ∧ ((ofLex x).1 = (ofLex y).1 → (ofLex x).2 < (ofLex y).2) :=
   toLex_lt_toLex'
@@ -165,32 +190,27 @@ instance [Ord α] [Ord β] [Std.TransOrd α] [Std.TransOrd β] : Std.TransOrd (�
   inferInstanceAs (Std.TransCmp (compareLex _ _))
 
 /-- Dictionary / lexicographic linear order for pairs. -/
-instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
-  { Prod.Lex.instPartialOrder α β with
-    le_total := total_of (Prod.Lex _ _)
-    toDecidableLE := Prod.Lex.decidable _ _
-    toDecidableLT := Prod.Lex.decidable _ _
-    toDecidableEq := instDecidableEqLex _
-    compare_eq_compareOfLessAndEq := fun a b => by
-      have : DecidableLT (α ×ₗ β) := Prod.Lex.decidable _ _
-      have : Std.LawfulBEqOrd (α ×ₗ β) := ⟨by
-        simp [compare_def, compareLex, compareOn, Ordering.then_eq_eq]⟩
-      have : Std.LawfulLTOrd (α ×ₗ β) := ⟨by
-        simp [compare_def, compareLex, compareOn, Ordering.then_eq_lt, toLex_lt_toLex,
-          compare_lt_iff_lt]⟩
-      convert Std.LawfulLTCmp.eq_compareOfLessAndEq (cmp := compare) a b }
+instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) where
+  le_total := total_of (Prod.Lex _ _)
+  toDecidableLE := Prod.Lex.decidable _ _
+  toDecidableLT := Prod.Lex.decidable _ _
+  toDecidableEq := instDecidableEqLex _
+  compare_eq_compareOfLessAndEq := fun a b => by
+    have : DecidableLT (α ×ₗ β) := Prod.Lex.decidable _ _
+    have : Std.LawfulBEqOrd (α ×ₗ β) := ⟨by
+      simp [compare_def, compareLex, compareOn, Ordering.then_eq_eq]⟩
+    have : Std.LawfulLTOrd (α ×ₗ β) := ⟨by
+      simp [compare_def, compareLex, compareOn, Ordering.then_eq_lt, toLex_lt_toLex,
+        compare_lt_iff_lt]⟩
+    convert! Std.LawfulLTCmp.eq_compareOfLessAndEq (cmp := compare) a b
 
+@[to_dual]
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
   bot := toLex ⊥
   bot_le _ := toLex_mono bot_le
 
-instance orderTop [PartialOrder α] [Preorder β] [OrderTop α] [OrderTop β] : OrderTop (α ×ₗ β) where
-  top := toLex ⊤
-  le_top _ := toLex_mono le_top
-
 instance boundedOrder [PartialOrder α] [Preorder β] [BoundedOrder α] [BoundedOrder β] :
-    BoundedOrder (α ×ₗ β) :=
-  { Lex.orderBot, Lex.orderTop with }
+    BoundedOrder (α ×ₗ β) where
 
 instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
     DenselyOrdered (α ×ₗ β) where
@@ -201,28 +221,51 @@ instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
     · obtain ⟨c, h₁, h₂⟩ := exists_between h
       exact ⟨(a, c), right _ h₁, right _ h₂⟩
 
+instance [Preorder α] [Preorder β] [NoMinOrder β] [DenselyOrdered β] :
+    DenselyOrdered (α ×ₗ β) where
+  dense x y h := by
+    cases x with | h x
+    cases y with | h y
+    simp only [Prod.Lex.toLex_lt_toLex] at h
+    rcases h with (h | h)
+    · obtain ⟨v, hv⟩ := exists_lt y.2
+      use toLex (y.1, v)
+      simp [Prod.Lex.toLex_lt_toLex, h, hv]
+    · obtain ⟨v, htv, hvu⟩ := DenselyOrdered.dense x.2 y.2 h.2
+      use toLex (x.1, v)
+      simp [Prod.Lex.toLex_lt_toLex, h.1, htv, hvu]
+
+@[to_dual existing]
+instance [Preorder α] [Preorder β] [NoMaxOrder β] [DenselyOrdered β] :
+    DenselyOrdered (α ×ₗ β) where
+  dense x y h := by
+    cases x with | h x
+    cases y with | h y
+    simp only [Prod.Lex.toLex_lt_toLex] at h
+    rcases h with (h | h)
+    · obtain ⟨v, hv⟩ := exists_gt x.2
+      use toLex (x.1, v)
+      simp [Prod.Lex.toLex_lt_toLex, h, hv]
+    · obtain ⟨v, htv, hvu⟩ := DenselyOrdered.dense x.2 y.2 h.2
+      use toLex (x.1, v)
+      simp [Prod.Lex.toLex_lt_toLex, h.1, htv, hvu]
+
+@[to_dual]
 instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α ×ₗ β) where
   exists_gt := by
-    rintro ⟨a, b⟩
+    rw [Lex.forall, Prod.forall]
+    intro a b
     obtain ⟨c, h⟩ := exists_gt a
-    exact ⟨⟨c, b⟩, left _ _ h⟩
+    use toLex (c, b)
+    simpa [lt_iff]
 
-instance noMinOrder_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α ×ₗ β) where
-  exists_lt := by
-    rintro ⟨a, b⟩
-    obtain ⟨c, h⟩ := exists_lt a
-    exact ⟨⟨c, b⟩, left _ _ h⟩
-
+@[to_dual]
 instance noMaxOrder_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α ×ₗ β) where
   exists_gt := by
-    rintro ⟨a, b⟩
+    rw [Lex.forall, Prod.forall]
+    intro a b
     obtain ⟨c, h⟩ := exists_gt b
-    exact ⟨⟨a, c⟩, right _ h⟩
-
-instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α ×ₗ β) where
-  exists_lt := by
-    rintro ⟨a, b⟩
-    obtain ⟨c, h⟩ := exists_lt b
-    exact ⟨⟨a, c⟩, right _ h⟩
+    use toLex (a, c)
+    simpa [lt_iff]
 
 end Prod.Lex

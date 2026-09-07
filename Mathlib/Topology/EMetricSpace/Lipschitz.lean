@@ -218,7 +218,7 @@ theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f 
 
 protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
     LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
-  LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_edist f g i
+  LipschitzWith.of_edist_le fun f g => by convert! edist_le_pi_edist f g i
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) : LipschitzWith K (s.restrict f) :=
@@ -250,10 +250,10 @@ protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f
   exact max_le_max (hf x y) (hg x y)
 
 protected theorem prodMk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
-  simpa only [max_eq_right zero_le_one] using (LipschitzWith.const a).prodMk LipschitzWith.id
+  simpa only [max_eq_right zero_le_one] using! (LipschitzWith.const a).prodMk LipschitzWith.id
 
 protected theorem prodMk_right (b : β) : LipschitzWith 1 fun a : α => (a, b) := by
-  simpa only [max_eq_left zero_le_one] using LipschitzWith.id.prodMk (LipschitzWith.const b)
+  simpa only [max_eq_left zero_le_one] using! LipschitzWith.id.prodMk (LipschitzWith.const b)
 
 protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ b, LipschitzWith Kα fun a => f a b)
     (hβ : ∀ a, LipschitzWith Kβ (f a)) : LipschitzWith (Kα + Kβ) (Function.uncurry f) := by
@@ -266,13 +266,13 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
 
 /-- Iterates of a Lipschitz function are Lipschitz. -/
 protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
-  | 0 => by simpa only [pow_zero] using LipschitzWith.id
+  | 0 => by simpa only [pow_zero] using! LipschitzWith.id
   | n + 1 => by rw [pow_succ]; exact (LipschitzWith.iterate hf n).comp hf
 
 theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
     edist (f^[n] x) (f^[n + 1] x) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n := by
   rw [iterate_succ, mul_comm]
-  simpa only [ENNReal.coe_pow] using (hf.iterate n) x (f x)
+  simpa only [ENNReal.coe_pow] using! (hf.iterate n) x (f x)
 
 protected theorem mul_end {f g : Function.End α} {Kf Kg} (hf : LipschitzWith Kf f)
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f * g : Function.End α) :=
@@ -282,14 +282,14 @@ protected theorem mul_end {f g : Function.End α} {Kf Kg} (hf : LipschitzWith Kf
 endomorphism. -/
 protected theorem list_prod (f : ι → Function.End α) (K : ι → ℝ≥0)
     (h : ∀ i, LipschitzWith (K i) (f i)) : ∀ l : List ι, LipschitzWith (l.map K).prod (l.map f).prod
-  | [] => by simpa using LipschitzWith.id
+  | [] => by simpa using! LipschitzWith.id
   | i::l => by
     simp only [List.map_cons, List.prod_cons]
     exact (h i).mul_end (LipschitzWith.list_prod f K h l)
 
 protected theorem pow_end {f : Function.End α} {K} (h : LipschitzWith K f) :
     ∀ n : ℕ, LipschitzWith (K ^ n) (f ^ n : Function.End α)
-  | 0 => by simpa only [pow_zero] using LipschitzWith.id
+  | 0 => by simpa only [pow_zero] using! LipschitzWith.id
   | n + 1 => by
     rw [pow_succ, pow_succ]
     exact (LipschitzWith.pow_end h n).mul_end h
@@ -399,7 +399,7 @@ protected theorem prodMk_right (b : β) : LocallyLipschitz (fun a : α => (a, b)
   (LipschitzWith.prodMk_right b).locallyLipschitz
 
 protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
-  | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
+  | 0 => by simpa only [pow_zero] using! LocallyLipschitz.id
   | n + 1 => by rw [iterate_add, iterate_one]; exact (hf.iterate n).comp hf
 
 protected theorem mul_end {f g : Function.End α} (hf : LocallyLipschitz f)
@@ -407,7 +407,7 @@ protected theorem mul_end {f g : Function.End α} (hf : LocallyLipschitz f)
 
 protected theorem pow_end {f : Function.End α} (h : LocallyLipschitz f) :
     ∀ n : ℕ, LocallyLipschitz (f ^ n : Function.End α)
-  | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
+  | 0 => by simpa only [pow_zero] using! LocallyLipschitz.id
   | n + 1 => by
     rw [pow_succ]
     exact (h.pow_end n).mul_end h

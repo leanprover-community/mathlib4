@@ -142,7 +142,7 @@ lemma toAddSubmonoid_injective :
 
 instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toAddSubmonoid_injective
+  coe_injective := SetLike.coe_injective.comp toAddSubmonoid_injective
 
 lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)

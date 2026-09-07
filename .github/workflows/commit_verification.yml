@@ -33,14 +33,14 @@ jobs:
     # This is a quick check to avoid unnecessary runs
     steps:
       - name: Checkout PR head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           # Checkout the actual PR head, not the merge commit GitHub creates
           ref: ${{ github.event.pull_request.head.sha }}
           # Fetch full history to access all PR commits
           fetch-depth: 0
       - name: Checkout local actions
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -111,7 +111,7 @@ jobs:
             }' > bridge-outputs.json
 
       - name: Emit bridge artifact
-        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        uses: leanprover-community/privilege-escalation-bridge/emit@ea7d63d1c8ece92a8e89b6a6d8fda40603167a91 # v1.3.0
         with:
           artifact: workflow-data
           outputs_file: bridge-outputs.json

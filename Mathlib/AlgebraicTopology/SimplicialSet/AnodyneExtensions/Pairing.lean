@@ -134,6 +134,94 @@ lemma ne (x : P.I) (y : P.II) :
   have : x ∈ P.I ∩ P.II := ⟨hx, hy⟩
   simp [P.inter] at this
 
+lemma le [P.IsProper] (x : P.II) :
+    x.1 ≤ (P.p x).1 :=
+  (P.isUniquelyCodimOneFace x).le
+
+lemma lt [P.IsProper] (x : P.II) :
+    x.1 < (P.p x).1 :=
+  lt_of_le_of_ne' (P.le x) (P.ne _ _)
+
+variable {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B)
+
+/-- Given an isomorphism `Y ≅ X` of simplicial sets, a pairing `P` of a subcomplex
+`A` of `X`, this is a pairing for a subcomplex `B` of `Y` if `A.preimage e.hom = B`. -/
+@[simps I II]
+def ofIso : B.Pairing where
+  I := Subcomplex.N.orderIsoOfIso e hA ⁻¹' P.I
+  II := Subcomplex.N.orderIsoOfIso e hA ⁻¹' P.II
+  inter := by simp [← Set.preimage_inter, P.inter]
+  union := by simp [← Set.preimage_union, P.union]
+  p := ((Subcomplex.N.orderIsoOfIso e hA).subtypeEquiv (by simp)).trans
+    (P.p.trans ((Subcomplex.N.orderIsoOfIso e hA).symm.subtypeEquiv (by simp)))
+
+/-- A unification hint for the type (I) simplices of `Pairing.ofIso`. -/
+unif_hint {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
+    {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B) where
+  ⊢ (P.ofIso e hA).I ≟ (N.orderIsoOfIso e hA) ⁻¹' P.I
+
+/-- A unification hint for the type (II) simplices of `Pairing.ofIso`. -/
+unif_hint {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
+    {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B) where
+  ⊢ (P.ofIso e hA).II ≟ (N.orderIsoOfIso e hA) ⁻¹' P.II
+
+set_option backward.defeqAttrib.useBackward true in
+@[simp]
+lemma ofIso_p (x : P.II) :
+    dsimp% (P.ofIso e hA).p ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩ =
+    ⟨(Subcomplex.N.orderIsoOfIso e hA).symm (P.p x), by simp⟩ := by
+  let e' := Subcomplex.N.orderIsoOfIso e hA
+  ext
+  change e'.symm (P.p ⟨e' (e'.symm x), _⟩) = e'.symm (P.p x)
+  simp
+
+set_option backward.defeqAttrib.useBackward true in
+lemma ofIso_ancestralRel_iff (x y : P.II) :
+    (P.ofIso e hA).AncestralRel
+      ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩
+      ⟨(Subcomplex.N.orderIsoOfIso e hA).symm y, by simp⟩ ↔
+    P.AncestralRel x y :=
+  and_congr (not_congr (by aesop)) (by simp)
+
+set_option backward.defeqAttrib.useBackward true in
+instance [P.IsProper] : (P.ofIso e hA).IsProper where
+  isUniquelyCodimOneFace := by
+    rintro ⟨x, hx⟩
+    obtain ⟨x, rfl⟩ := (N.orderIsoOfIso e hA).symm.surjective x
+    simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hx
+    simp only [ofIso_II, ofIso_I, dsimp% P.ofIso_p e hA ⟨x, hx⟩]
+    exact (P.isUniquelyCodimOneFace ⟨x, hx⟩).of_iso e.symm
+
+instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
+  wf := by
+    have hP := P.wf
+    rw [wellFounded_iff_isEmpty_descending_chain] at hP ⊢
+    by_contra!
+    obtain ⟨f, hf⟩ := this
+    refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
+    simpa [← P.ofIso_ancestralRel_iff e hA] using hf n
+
+@[simp]
+lemma ofIso_index (x : P.II) {d : ℕ} (hd : x.1.dim = d) [P.IsProper] :
+    ((P.ofIso e hA).isUniquelyCodimOneFace ⟨(N.orderIsoOfIso e hA).symm x, by simp⟩).index hd =
+      (isUniquelyCodimOneFace P x).index hd := by
+  rw [← (P.isUniquelyCodimOneFace x).index_of_iso e.symm hd]
+  congr
+  rw [P.ofIso_p e hA x]
+  rfl
+
+instance [P.IsProper] [P.IsInner] : (P.ofIso e hA).IsInner where
+  ne_zero := by
+    rintro ⟨b, hb⟩ d hd
+    obtain ⟨a, rfl⟩ := (N.orderIsoOfIso e hA).symm.surjective b
+    simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
+    simpa only [P.ofIso_index e hA ⟨a, hb⟩ hd] using IsInner.ne_zero ⟨a, hb⟩ hd
+  ne_last := by
+    rintro ⟨b, hb⟩ d hd
+    obtain ⟨a, rfl⟩ := (N.orderIsoOfIso e hA).symm.surjective b
+    simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
+    simpa only [P.ofIso_index e hA ⟨a, hb⟩ hd] using IsInner.ne_last ⟨a, hb⟩ hd
+
 end Pairing
 
 end SSet.Subcomplex

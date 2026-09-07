@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Function.AEEqFun
-public import Mathlib.MeasureTheory.Group.Action
-public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 /-!
 # Action of `DomMulAct` and `DomAddAct` on `α →ₘ[μ] β`
@@ -25,7 +23,7 @@ typeclass for quasi-measure-preserving actions yet.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

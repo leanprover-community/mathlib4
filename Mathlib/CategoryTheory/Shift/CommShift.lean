@@ -28,6 +28,8 @@ shift functors.)
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -158,10 +160,6 @@ variable {A}
 
 export CommShift (commShiftIso commShiftIso_zero commShiftIso_add)
 
-@[deprecated (since := "2025-11-11")] alias CommShift.iso := commShiftIso
-@[deprecated (since := "2025-11-11")] alias CommShift.zero := commShiftIso_zero
-@[deprecated (since := "2025-11-11")] alias CommShift.add := commShiftIso_add
-
 section
 
 variable [F.CommShift A]
@@ -173,13 +171,13 @@ variable [F.CommShift A]
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_hom_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
+    dsimp% F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
       (F.commShiftIso a).hom.app X ≫ (F.map f)⟦a⟧' :=
   (F.commShiftIso a).hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_inv_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
+    dsimp% (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
       (F.commShiftIso a).inv.app X ≫ F.map (f⟦a⟧') :=
   (F.commShiftIso a).inv.naturality f
 

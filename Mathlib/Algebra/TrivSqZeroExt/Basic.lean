@@ -197,11 +197,16 @@ instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M
 instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
   inferInstanceAs <| AddZeroClass (R × M)
 
-instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
-  inferInstanceAs <| AddMonoid (R × M)
+instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
+  inferInstanceAs <| SMul S (R × M)
 
-instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
-  inferInstanceAs <| AddGroup (R × M)
+instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) where
+  nsmul := letI := smul (S := ℕ) (R := R) (M := M); (· • ·)
+  __ : AddMonoid (tsze R M) := inferInstanceAs <| AddMonoid (R × M)
+
+instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) where
+  zsmul := letI := smul (S := ℤ) (R := R) (M := M); (· • ·)
+  __ : AddGroup (tsze R M) := inferInstanceAs <| AddGroup (R × M)
 
 instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
   inferInstanceAs <| AddCommSemigroup (R × M)
@@ -211,9 +216,6 @@ instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze
 
 instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
   inferInstanceAs <| AddCommGroup (R × M)
-
-instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
-  inferInstanceAs <| SMul S (R × M)
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
@@ -707,7 +709,7 @@ abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fs
 
 theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
   letI := invertibleFstOfInvertible x
-  convert (rfl : _ = ⅟x.fst)
+  convert! (rfl : _ = ⅟x.fst)
 
 theorem mul_left_eq_one (r : R) (x : tsze R M) (h : r * x.fst = 1) :
     (inl r + inr (-((r •> x.snd) <• r))) * x = 1 := by
@@ -728,17 +730,17 @@ variable [SMulCommClass R Rᵐᵒᵖ M]
 abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible x where
   invOf := (⅟x.fst, -(⅟x.fst •> x.snd <• ⅟x.fst))
   invOf_mul_self := by
-    convert mul_left_eq_one _ _ (invOf_mul_self x.fst)
+    convert! mul_left_eq_one _ _ (invOf_mul_self x.fst)
     ext <;> simp
   mul_invOf_self := by
-    convert mul_right_eq_one _ _ (mul_invOf_self x.fst)
+    convert! mul_right_eq_one _ _ (mul_invOf_self x.fst)
     ext <;> simp [smul_comm]
 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
   letI := invertibleOfInvertibleFst x
-  convert congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟x)
-  convert rfl
+  convert! congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟x)
+  convert! rfl
 
 /-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
 form an equivalence, although both sides of the equiv are subsingleton anyway. -/
@@ -788,7 +790,7 @@ protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
   rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
 protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
-  convert mul_left_eq_one _ _ (_root_.inv_mul_cancel₀ hx) using 2
+  convert mul_left_eq_one _ _ (_root_.inv_mul_cancel₀ hx)
   ext <;> simp
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
@@ -924,6 +926,7 @@ theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A
 
 variable {A : Type*} [Semiring A] [Algebra S A] [Algebra R' A]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Assemble an algebra morphism `TrivSqZeroExt R M →ₐ[S] A` from separate morphisms on `R` and `M`.
 

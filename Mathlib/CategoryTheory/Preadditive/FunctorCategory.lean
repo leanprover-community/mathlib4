@@ -35,41 +35,28 @@ instance {F G : C ⥤ D} : Neg (F ⟶ G) where
 
 instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
   homGroup F G :=
-    { nsmul := nsmulRec
-      zsmul := zsmulRec
-      sub := fun α β => { app := fun X => α.app X - β.app X }
-      add_assoc := by
-        intros
-        ext
-        apply add_assoc
-      zero_add := by
-        intros
-        ext
-        apply zero_add
-      add_zero := by
-        intros
-        ext
-        apply add_zero
-      add_comm := by
-        intros
-        ext
-        apply add_comm
-      sub_eq_add_neg := by
-        intros
-        ext
-        apply sub_eq_add_neg
-      neg_add_cancel := by
-        intros
-        ext
-        apply neg_add_cancel }
-  add_comp := by
-    intros
-    ext
-    apply add_comp
-  comp_add := by
-    intros
-    ext
-    apply comp_add
+    { nsmul n α :=
+        { app := n • α.app
+          naturality X Y f := by
+            simp only [Pi.smul_apply, comp_nsmul, NatTrans.naturality, nsmul_comp] }
+      zsmul n α :=
+        { app := n • α.app
+          naturality X Y f := by
+            simp only [Pi.smul_apply, comp_zsmul, NatTrans.naturality, zsmul_comp] }
+      sub α β := { app := fun X => α.app X - β.app X }
+      add_assoc _ _ _ := NatTrans.ext <| add_assoc _ _ _
+      zero_add _ := NatTrans.ext <| zero_add _
+      add_zero _ := NatTrans.ext <| add_zero _
+      nsmul_zero _ := NatTrans.ext <| zero_nsmul _
+      nsmul_succ _ _ := NatTrans.ext <| succ_nsmul _ _
+      sub_eq_add_neg _ _ := NatTrans.ext <| sub_eq_add_neg _ _
+      zsmul_zero' _ := NatTrans.ext <| zero_zsmul _
+      zsmul_succ' _ _ := NatTrans.ext <| SubNegMonoid.zsmul_succ' _ _
+      zsmul_neg' _ _ := NatTrans.ext <| SubNegMonoid.zsmul_neg' _ _
+      neg_add_cancel _ := NatTrans.ext <| neg_add_cancel _
+      add_comm _ _ := NatTrans.ext <| add_comm _ _ }
+  add_comp _ _ _ _ _ _ := NatTrans.ext <| funext fun _ ↦ add_comp _ _ _ _ _ _
+  comp_add _ _ _ _ _ _ := NatTrans.ext <| funext fun _ ↦ comp_add _ _ _ _ _ _
 
 namespace NatTrans
 
@@ -101,15 +88,15 @@ theorem app_neg (X : C) (α : F ⟶ G) : (-α).app X = -α.app X :=
 
 @[simp]
 theorem app_nsmul (X : C) (α : F ⟶ G) (n : ℕ) : (n • α).app X = n • α.app X :=
-  (appHom X).map_nsmul α n
+  rfl
 
 @[simp]
 theorem app_zsmul (X : C) (α : F ⟶ G) (n : ℤ) : (n • α).app X = n • α.app X :=
-  (appHom X : (F ⟶ G) →+ (F.obj X ⟶ G.obj X)).map_zsmul α n
+  rfl
 
 @[simp]
-theorem app_units_zsmul (X : C) (α : F ⟶ G) (n : ℤˣ) : (n • α).app X = n • α.app X := by
-  apply app_zsmul
+theorem app_units_zsmul (X : C) (α : F ⟶ G) (n : ℤˣ) : (n • α).app X = n • α.app X :=
+  rfl
 
 @[simp]
 theorem app_sum {ι : Type*} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :

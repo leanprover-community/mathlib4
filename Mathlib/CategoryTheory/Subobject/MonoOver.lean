@@ -119,9 +119,7 @@ instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
     intro h₁ h₂
     apply InducedCategory.hom_ext
     apply Over.OverMorphism.ext
-    rw [← cancel_mono g.arrow]
-    erw [Over.w h₁.hom]
-    erw [Over.w h₂.hom]⟩
+    rw [← cancel_mono g.arrow, Over.w h₁.hom, Over.w h₂.hom]⟩
 
 @[reassoc]
 theorem w {f g : MonoOver X} (k : f ⟶ g) : k.hom.left ≫ g.arrow = f.arrow :=
@@ -245,6 +243,7 @@ def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
     StrongEpiMonoFactorisation (Sigma.desc fun i ↦ (F.obj i).arrow) :=
   Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
 `F : J ⥤ MonoOver Y`, there is a cocone under F. -/
@@ -254,6 +253,7 @@ def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
   ι.app j := homMk (Sigma.ι (fun i ↦ (F.obj i : C)) j ≫
     (strongEpiMonoFactorisationSigmaDesc F).e)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
     CommSq (Sigma.desc fun i ↦ (c.ι.app i).hom.left) (strongEpiMonoFactorisationSigmaDesc F).e
@@ -382,6 +382,7 @@ section
 
 variable (X)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
 `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
@@ -436,7 +437,6 @@ section Image
 
 variable [HasImages C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Taking the image of a morphism gives a functor `Over X ⥤ MonoOver X`.
 -/
 @[simps]
@@ -461,7 +461,6 @@ def imageForgetAdj : image ⊣ forget X :=
     { homEquiv := fun f g =>
         { toFun := fun k => by
             apply Over.homMk (factorThruImage f.hom ≫ k.hom.left) _
-            change (factorThruImage f.hom ≫ k.hom.left) ≫ _ = f.hom
             rw [assoc, Over.w k.hom]
             apply image.fac
           invFun k :=

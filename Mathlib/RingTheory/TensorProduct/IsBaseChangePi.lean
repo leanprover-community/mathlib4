@@ -25,7 +25,7 @@ In particular, localization of modules commutes with binary and finite products.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 

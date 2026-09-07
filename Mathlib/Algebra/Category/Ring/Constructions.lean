@@ -5,12 +5,16 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Adjunctions
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+
+import Mathlib.RingTheory.FreeCommRing
+import Mathlib.Algebra.Ring.Subring.Units
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -171,7 +175,7 @@ lemma closure_range_union_range_eq_top_of_isPushout
     (H : IsPushout f g a b) :
     Subring.closure (Set.range a ∪ Set.range b) = ⊤ := by
   algebraize [f.hom, g.hom]
-  let e := ((isPushout_tensorProduct R A B).isoIsPushout _ _ H).commRingCatIsoToRingEquiv
+  let e := ((isPushout_tensorProduct R A B).isoIsPushout A B H).commRingCatIsoToRingEquiv
   rw [← Subring.comap_map_eq_self_of_injective e.symm.injective (.closure _), RingHom.map_closure,
     ← top_le_iff, ← Subring.map_le_iff_le_comap, Set.image_union]
   simp only [AlgHom.toRingHom_eq_coe, ← Set.range_comp, ← RingHom.coe_comp]
@@ -200,6 +204,7 @@ theorem coproductCocone_inl :
 theorem coproductCocone_inr :
     (coproductCocone A B).inr = ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
 @[simps]
@@ -278,6 +283,7 @@ variable (A B : CommRingCat.{u})
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The product in `CommRingCat` is the Cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
@@ -313,7 +319,7 @@ def piFan : Fan R :=
 The categorical product of rings is the Cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
-  lift s := ofHom <| Pi.ringHom fun i ↦ (s.π.1 ⟨i⟩).hom
+  lift s := ofHom <| RingHom.pi fun i ↦ (s.π.1 ⟨i⟩).hom
   fac s i := by rfl
   uniq _ _ h := hom_ext <| DFunLike.ext _ _ fun x ↦ funext fun i ↦
     DFunLike.congr_fun (congrArg Hom.hom <| h ⟨i⟩) x
@@ -332,6 +338,53 @@ noncomputable def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRin
   (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 
 end Pi
+
+namespace Limits
+
+variable {J : Type u'} [SmallCategory J] (F : J ⥤ CommRingCat.{u}) {c : Cone F}
+
+set_option backward.isDefEq.respectTransparency false in
+theorem isUnit_iff_forall_isUnit (hc : IsLimit c) (r : c.pt) : IsUnit r ↔
+    ∀ (j : J), IsUnit (c.π.app j r) := by
+  refine ⟨fun h _ ↦ h.map _, fun h ↦ ?_⟩
+  simp only [isUnit_iff_exists_inv] at h ⊢
+  choose inv h_inv using h
+  have map_inv {j k : J} (f : j ⟶ k) : F.map f (inv j) = inv k := by
+    have h := congr(F.map f $(h_inv j))
+    have : F.map f (c.π.app j r) = c.π.app k r :=
+      DFunLike.congr_fun (congr(Hom.hom $(c.w f))) r
+    rw [map_mul, map_one, this] at h
+    rw [← mul_one (F.map f (inv j)), ← h_inv k, ← mul_assoc]
+    nth_rw 2 [mul_comm]; rw [h, one_mul]
+  let inv_r : Cone F := .mk (CommRingCat.of (FreeCommRing PUnit)) {
+    app j := ConcreteCategory.ofHom (FreeCommRing.lift (fun _ ↦ inv j))
+    naturality j k f := by
+      ext1; change FreeCommRing.lift (fun _ => inv k) = _
+      ext; simp [map_inv f] }
+  use hc.lift inv_r (FreeCommRing.of PUnit.unit)
+  refine Concrete.isLimit_ext _ hc _ _ fun j ↦ ?_
+  rw [RingHom.map_mul, RingHom.map_one]; convert h_inv j
+  change (hc.lift inv_r ≫ c.π.app j) (FreeCommRing.of PUnit.unit) = inv j
+  rw [IsLimit.fac]; exact FreeCommRing.lift_of ..
+
+-- The assumption `hj` can be generalized to a zigzag-like assumption of finite steps.
+theorem π_isLocalHom (hc : IsLimit c) (j : J) (hj : ∀ (x : c.pt), IsUnit (c.π.app j x) →
+    ∀ (i : J), ∃ (k : J) (f : i ⟶ k) (g : j ⟶ k), IsLocalHom (F.map f).hom ∧
+      F.map f (c.π.app i x) = F.map g (c.π.app j x)) :
+    IsLocalHom (c.π.app j).hom := by
+  refine ⟨fun (x : c.pt) hx ↦ (?_ : IsUnit x)⟩
+  rw [isUnit_iff_forall_isUnit F hc]; intro i
+  obtain ⟨k, f, g, lh, eq⟩ := hj x hx i
+  exact lh.map_nonunit _ (eq ▸ hx.map _)
+
+theorem isLocalRing (hc : IsLimit c) (j : J) [IsLocalRing (F.obj j)]
+    (hj : ∀ (x : c.pt), IsUnit (c.π.app j x) → ∀ (i : J), ∃ (k : J) (f : i ⟶ k) (g : j ⟶ k),
+      IsLocalHom (F.map f).hom ∧ F.map f (c.π.app i x) = F.map g (c.π.app j x)) :
+    IsLocalRing c.pt := by
+  have := π_isLocalHom F hc j hj
+  apply RingHom.domain_isLocalRing (c.π.app j).hom
+
+end Limits
 
 section Equalizer
 
@@ -355,54 +408,44 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
     ext x
     exact Subtype.ext <| RingHom.congr_fun (congrArg Hom.hom hm) x
 
-instance : IsLocalHom (equalizerFork f g).ι.hom := by
-  constructor
-  rintro ⟨a, h₁ : _ = _⟩ (⟨⟨x, y, h₃, h₄⟩, rfl : x = _⟩ : IsUnit a)
-  have : y ∈ RingHom.eqLocus f.hom g.hom := by
-    apply (f.hom.isUnit_map ⟨⟨x, y, h₃, h₄⟩, rfl⟩ : IsUnit (f x)).mul_left_inj.mp
-    conv_rhs => rw [h₁]
-    rw [← f.hom.map_mul, ← g.hom.map_mul, h₄, f.hom.map_one, g.hom.map_one]
-  rw [isUnit_iff_exists_inv]
-  exact ⟨⟨y, this⟩, Subtype.ext h₃⟩
+instance : IsLocalHom (equalizerFork f g).ι.hom :=
+  inferInstanceAs <| IsLocalHom (f.hom.eqLocus g.hom).subtype
 
-@[instance]
-theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
+open WalkingParallelPair WalkingParallelPairHom Opposite
+
+instance equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F WalkingParallelPair.zero).hom := by
-  have := limMap_π (diagramIsoParallelPair F).hom WalkingParallelPair.zero
-  rw [← IsIso.comp_inv_eq] at this
-  rw [← this]
-  rw [← limit.isoLimitCone_hom_π
-      ⟨_,
-        equalizerForkIsLimit (F.map WalkingParallelPairHom.left)
-          (F.map WalkingParallelPairHom.right)⟩
-      WalkingParallelPair.zero]
-  change IsLocalHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _).hom
-  infer_instance
+  refine Limits.π_isLocalHom _ (limit.isLimit _) zero fun x hx i ↦ ?_
+  rcases i with _ | _
+  · exact ⟨zero, 𝟙 _, 𝟙 _, inferInstance, by simp⟩
+  · refine ⟨one, 𝟙 _, left, inferInstance, ?_⟩
+    simp only [CategoryTheory.Functor.map_id, hom_id, limit.cone_x, limit.cone_π, RingHom.id_apply]
+    exact (limit.w_apply F left x).symm
 
-open CategoryTheory.Limits.WalkingParallelPair Opposite
+theorem equalizer_limit_isLocalRing (F : WalkingParallelPair ⥤ CommRingCat.{u})
+    [IsLocalRing (F.obj zero)] : IsLocalRing ↑(limit F) :=
+  RingHom.domain_isLocalRing (limit.π F WalkingParallelPair.zero).hom
 
-open CategoryTheory.Limits.WalkingParallelPairHom
-
-set_option backward.isDefEq.respectTransparency false in
 instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
-    IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)).hom := by
-  have := limit.isoLimitCone_inv_π
-    ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
-        WalkingParallelPair.zero
-  dsimp at this
-  rw [← this]
-  -- note: this was not needed before https://github.com/leanprover-community/mathlib4/pull/19757
-  have : IsLocalHom (limit.π (walkingParallelPairOp ⋙ F) zero).hom := by infer_instance
-  infer_instance
+    IsLocalHom (limit.π F (op one)).hom := by
+  refine Limits.π_isLocalHom _ (limit.isLimit _) (op one) fun x hx i ↦ ?_
+  rcases i with _ | _
+  · refine ⟨op zero, 𝟙 _, op left, inferInstance, ?_⟩
+    simp only [CategoryTheory.Functor.map_id, hom_id, limit.cone_x, limit.cone_π,
+      RingHom.id_apply]
+    exact (limit.w_apply F (op left) x).symm
+  · exact ⟨op one, 𝟙 _, 𝟙 _, inferInstance, by simp⟩
 
 end Equalizer
 
 section Pullback
 
+variable {A B C : CommRingCat.{u}}
+
 /-- In the category of `CommRingCat`, the pullback of `f : A ⟶ C` and `g : B ⟶ C` is the `eqLocus`
 of the two maps `A × B ⟶ C`. This is the constructed pullback cone.
 -/
-def pullbackCone {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) : PullbackCone f g :=
+def pullbackCone (f : A ⟶ C) (g : B ⟶ C) : PullbackCone f g :=
   PullbackCone.mk
     (CommRingCat.ofHom <|
       (RingHom.fst A B).comp
@@ -415,7 +458,7 @@ def pullbackCone {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) : Pullbac
       simpa [CommRingCat.ofHom] using e)
 
 /-- The constructed pullback cone is indeed the limit. -/
-def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
+def pullbackConeIsLimit (f : A ⟶ C) (g : B ⟶ C) :
     IsLimit (pullbackCone f g) := by
   fapply PullbackCone.IsLimit.mk
   · intro s
@@ -435,6 +478,21 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
     have eq2 := (congr_arg (fun f : s.pt →+* B => f x) (congrArg Hom.hom e₂) :)
     rw [← eq1, ← eq2]
     rfl
+
+open WalkingCospan
+
+instance pullbackFst_isLocalHom (f : A ⟶ C) (g : B ⟶ C) [IsLocalHom g.hom] :
+    IsLocalHom (pullback.fst f g).hom := by
+  refine Limits.π_isLocalHom _ (limit.isLimit _) left fun x hx i ↦ ?_
+  rcases i with _ | _ | _
+  · exact ⟨one, 𝟙 _, Hom.inl, inferInstance, by simp; rfl⟩
+  · exact ⟨left, 𝟙 _, 𝟙 _, inferInstance, by simp⟩
+  · refine ⟨one, Hom.inr, Hom.inl, ‹_›, ?_⟩
+    exact DFunLike.congr_fun (congr(Hom.hom $(pullback.condition (f := f) (g := g)))) x |>.symm
+
+theorem pullback_isLocalRing (f : A ⟶ C) (g : B ⟶ C) [IsLocalHom g.hom] [IsLocalRing A] :
+    IsLocalRing ↑(pullback f g) :=
+  RingHom.domain_isLocalRing (pullback.fst f g).hom
 
 end Pullback
 

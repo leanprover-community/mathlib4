@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Algebra.Module.Submodule.Union
+public import Mathlib.Data.Int.Star
+public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
+public import Mathlib.LinearAlgebra.Matrix.PosDef
+public import Mathlib.LinearAlgebra.Matrix.ZMatrix
 public import Mathlib.LinearAlgebra.RootSystem.Base
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
@@ -33,6 +37,7 @@ noncomputable section
 
 open FaithfulSMul (algebraMap_injective)
 open Function Set
+open Matrix
 open Module.End (invtSubmodule mem_invtSubmodule)
 open Submodule (span subset_span)
 
@@ -64,9 +69,12 @@ lemma cartanMatrixIn_apply_same [FaithfulSMul S R] (i : b.support) :
     b.cartanMatrixIn S i i = 2 :=
   FaithfulSMul.algebraMap_injective S R <| by simp [cartanMatrixIn_def, map_ofNat]
 
-/- If we generalised the notion of `RootPairing.Base` to work relative to an assumption
+/- See `RootPairing.Base.cartanMatrix_mul_diagonal_eq` below for a version of this lemma in the case
+`S = ℤ`, which does not need to use `Matrix.map`.
+
+If we generalised the notion of `RootPairing.Base` to work relative to an assumption
 `[P.IsValuedIn S]` then such a base would provide basis of `P.rootSpan S` and we could avoid
-using `Matrix.map` below. -/
+using `Matrix.map` here too but this does not seem to be worth it. -/
 lemma cartanMatrixIn_mul_diagonal_eq {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsValuedIn S]
     (B : P.InvariantForm) (b : P.Base) [DecidableEq ι] :
     (b.cartanMatrixIn S).map (algebraMap S R) *
@@ -169,6 +177,54 @@ lemma cartanMatrix_nondegenerate
   let _i : Fintype ι := Fintype.ofFinite ι
   cartanMatrixIn_nondegenerate ℤ b
 
+omit [Finite ι] [IsDomain R] in
+lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem] :
+    letI d : b.support → ℤ := fun i ↦ P.RootFormIn ℤ (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ i)
+    b.cartanMatrix * diagonal d =
+      (2 : ℤ) • (P.posRootForm ℤ).posForm.toMatrix b.toWeightBasisInt := by
+  ext i j
+  apply algebraMap_injective ℤ R
+  simp only [mul_diagonal, map_mul, algebraMap_rootFormIn, posRootForm_eq, Matrix.smul_apply,
+    LinearMap.BilinForm.toMatrix_apply, Int.zsmul_eq_mul]
+  simpa [← algebraMap_pairingIn P ℤ i j] using
+    congr_fun₂ (cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j
+
+lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem] :
+    ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (b.cartanMatrix * diagonal d).PosDef := by
+  have _i : Fintype ι := Fintype.ofFinite ι
+  set d : b.support → ℤ := fun i ↦ P.RootFormIn ℤ (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ i) with hd
+  refine ⟨d, fun i ↦ ?_, ?_⟩
+  · rw [hd, ← posRootForm_eq]
+    exact RootPositiveForm.zero_lt_posForm_apply_root _ _
+  · rw [cartanMatrix_mul_diagonal_eq]
+    refine Matrix.PosDef.smul ?_ two_pos
+    have aux : (P.posRootForm ℤ).posForm.IsSymm := by
+      simpa only [posRootForm_eq, LinearMap.BilinForm.isSymm_iff] using P.rootFormIn_isSymm ℤ
+    rw [← LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix _ _ aux]
+    simpa using P.posRootForm_rootFormIn_posDef ℤ
+
+lemma exists_cartanMatrix_diagaonal_mul_posDef [DecidableEq ι] [P.IsRootSystem] :
+    ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * b.cartanMatrix).PosDef := by
+  obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagaonal_posDef
+  refine ⟨d, hd, ?_⟩
+  rw [← PosDef.transpose_iff] at hd'
+  aesop
+
+open LinearMap Module.End in
+lemma det_four_sub_cartanMatrix_ne_zero [DecidableEq ι] [P.IsRootSystem] :
+    (4 - b.cartanMatrix).det ≠ 0 := by
+  suffices ¬ HasEigenvalue b.cartanMatrix.toLin' 4 by
+    have aux : (4 - b.cartanMatrix).toLin' = - (b.cartanMatrix.toLin' - (4 : ℤ) • 1) := by ext; simp
+    rwa [ne_eq, ← det_toLin', det_eq_zero_iff_ker_ne_bot, aux, ker_neg, ← eigenspace_def,
+      ← hasEigenvalue_iff]
+  obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagaonal_mul_posDef
+  have aux (i j : b.support) : b.cartanMatrix i j ≤ if i = j then 2 else 0 := by
+    rcases eq_or_ne i j with rfl | hij
+    · simp
+    · simpa [hij] using cartanMatrix_le_zero_of_ne b i j hij
+  have := b.cartanMatrix.lt_two_mul_of_mul_diagonal_posDef_of_for_le_of_hasEigen d hdS hd 2 4 aux
+  aesop
+
 /-- A characterisation of the connectedness of the Dynkin diagram for irreducible root pairings. -/
 lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
     (p : b.support → Prop) {i j : b.support} (hi : p i)
@@ -178,7 +234,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   have hq₀ : q ≠ ⊥ := q.ne_bot_iff.mpr ⟨P.root i, subset_span <| by simpa, P.ne_zero i⟩
   have hq_mem (k : b.support) : P.root k ∈ q ↔ p k := by
     refine ⟨fun hk ↦ ?_, fun hk ↦ subset_span <| by simpa⟩
-    contrapose! hk
+    contrapose hk
     exact b.linearIndepOn_root.linearIndependent.notMem_span_image hk
   have hq_notMem (k : b.support) (hk : P.root k ∉ q) : q ≤ LinearMap.ker (P.coroot' k) := by
     refine fun x hx ↦ LinearMap.mem_ker.mpr ?_

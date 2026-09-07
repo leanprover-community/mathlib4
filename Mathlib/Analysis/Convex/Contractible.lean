@@ -15,7 +15,7 @@ In this file we prove that a (star) convex set in a real topological vector spac
 topological space.
 -/
 
-@[expose] public section
+public section
 
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E]

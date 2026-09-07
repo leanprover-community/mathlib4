@@ -81,10 +81,10 @@ lemma supNorm_X [NormOneClass A] : (X : A[X]).supNorm = 1 := by
   rw [← monomial_one_one_eq_X, supNorm_monomial, norm_one]
 
 lemma le_supNorm (i : ℕ) : ‖p.coeff i‖ ≤ p.supNorm := by
-  simpa using le_gaussNorm (SeminormedRing.toRingSeminorm A) p (by norm_num : (0 : ℝ) ≤ 1) i
+  simpa using! le_gaussNorm (SeminormedRing.toRingSeminorm A) p (by norm_num : (0 : ℝ) ≤ 1) i
 
 lemma exists_eq_supNorm : ∃ i : ℕ, p.supNorm = ‖p.coeff i‖ := by
-  simpa using p.exists_eq_gaussNorm (SeminormedRing.toRingSeminorm A) 1
+  simpa using! p.exists_eq_gaussNorm (SeminormedRing.toRingSeminorm A) 1
 
 lemma isGreatest_supNorm : IsGreatest (Set.range (‖p.coeff ·‖)) p.supNorm :=
   ⟨by simpa [eq_comm] using exists_eq_supNorm p, by simpa [mem_upperBounds] using le_supNorm p⟩

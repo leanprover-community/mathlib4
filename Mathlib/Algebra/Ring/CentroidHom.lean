@@ -93,7 +93,7 @@ variable [NonUnitalNonAssocSemiring α]
 
 instance : FunLike (CentroidHom α) α α where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr with x
@@ -465,7 +465,7 @@ def centerToCentroidCenter :
 
 instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
   coe f := f.val.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr with x

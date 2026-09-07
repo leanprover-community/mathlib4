@@ -44,12 +44,20 @@ variable (x y : ∀ i, f i) (i : I)
 namespace Pi
 
 @[to_additive]
+instance isMulCommutative [∀ i, Mul (f i)] [∀ i, IsMulCommutative (f i)] :
+    IsMulCommutative (∀ i, f i) where
+  is_comm.comm _ _ := by ext; apply mul_comm'
+
+@[to_additive]
+instance commMagma [∀ i, CommMagma (f i)] : CommMagma (∀ i, f i) where
+  mul_comm _ _ := by ext; apply mul_comm
+
+@[to_additive]
 instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
   mul_assoc := by intros; ext; exact mul_assoc _ _ _
 
 @[to_additive]
 instance commSemigroup [∀ i, CommSemigroup (f i)] : CommSemigroup (∀ i, f i) where
-  mul_comm := by intros; ext; exact mul_comm _ _
 
 @[to_additive]
 instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
@@ -69,8 +77,7 @@ instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   npow_succ := by intros; ext; exact Monoid.npow_succ _ _
 
 @[to_additive]
-instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
-  { monoid, commSemigroup with }
+instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) where
 
 @[to_additive Pi.subNegMonoid]
 instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where

@@ -101,6 +101,9 @@ variable {K V}
 lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
 @[simp] lemma toLp_ofLp (x : WithLp p V) : toLp p (ofLp x) = x := rfl
 
+lemma ext_iff {x y : WithLp p V} : x = y ↔ x.ofLp = y.ofLp :=
+  (WithLp.equiv p V).injective.eq_iff.symm
+
 lemma ofLp_surjective : Function.Surjective (@ofLp p V) :=
   Function.RightInverse.surjective <| ofLp_toLp _
 
@@ -177,17 +180,13 @@ end AddCommGroup
 
 @[to_additive]
 instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
-    IsScalarTower K K' (WithLp p V) where
-  smul_assoc x y z := by
-    change toLp p ((x • y) • (ofLp z)) = toLp p (x • y • ofLp z)
-    simp
+    IsScalarTower K K' (WithLp p V) :=
+  (WithLp.equiv p V).isScalarTower K K'
 
 @[to_additive]
 instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
-    SMulCommClass K K' (WithLp p V) where
-  smul_comm x y z := by
-    change toLp p (x • y • ofLp z) = toLp p (y • x • ofLp z)
-    rw [smul_comm]
+    SMulCommClass K K' (WithLp p V) :=
+  (WithLp.equiv p V).smulCommClass K K'
 
 variable (K V)
 

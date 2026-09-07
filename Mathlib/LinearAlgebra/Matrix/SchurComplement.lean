@@ -5,7 +5,7 @@ Authors: Alexander Bentkamp, Eric Wieser, Jeremy Avigad, Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Matrix.Invertible
+public import Mathlib.LinearAlgebra.Matrix.Invertible
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-! # 2×2 block matrices and the Schur complement
@@ -97,13 +97,13 @@ theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (
     [Invertible A] [Invertible D] [Invertible (fromBlocks A B 0 D)] :
     ⅟(fromBlocks A B 0 D) = fromBlocks (⅟A) (-(⅟A * B * ⅟D)) 0 (⅟D) := by
   letI := fromBlocksZero₂₁Invertible A B D
-  convert (rfl : ⅟(fromBlocks A B 0 D) = _)
+  convert! (rfl : ⅟(fromBlocks A B 0 D) = _)
 
 theorem invOf_fromBlocks_zero₁₂_eq (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A 0 C D)] :
     ⅟(fromBlocks A 0 C D) = fromBlocks (⅟A) 0 (-(⅟D * C * ⅟A)) (⅟D) := by
   letI := fromBlocksZero₁₂Invertible A C D
-  convert (rfl : ⅟(fromBlocks A 0 C D) = _)
+  convert! (rfl : ⅟(fromBlocks A 0 C D) = _)
 
 /-- Both diagonal entries of an invertible upper-block-triangular matrix are invertible (by reading
 off the diagonal entries of the inverse). -/
@@ -227,7 +227,6 @@ section Block
 /-! #### General 2×2 block matrices -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A block matrix is invertible if the bottom right corner and the corresponding Schur complement
 is. -/
 @[implicit_reducible]
@@ -235,8 +234,10 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟D * C)] :
     Invertible (fromBlocks A B C D) := by
   -- factor `fromBlocks` via `fromBlocks_eq_of_invertible₂₂`, and state the inverse we expect
-  convert Invertible.copy' _ _ (fromBlocks (⅟(A - B * ⅟D * C)) (-(⅟(A - B * ⅟D * C) * B * ⅟D))
-    (-(⅟D * C * ⅟(A - B * ⅟D * C))) (⅟D + ⅟D * C * ⅟(A - B * ⅟D * C) * B * ⅟D))
+  convert!
+    Invertible.copy' _ _
+      (fromBlocks (⅟(A - B * ⅟D * C)) (-(⅟(A - B * ⅟D * C) * B * ⅟D))
+        (-(⅟D * C * ⅟(A - B * ⅟D * C))) (⅟D + ⅟D * C * ⅟(A - B * ⅟D * C) * B * ⅟D))
       (fromBlocks_eq_of_invertible₂₂ _ _ _ _) _
   · -- the product is invertible because all the factors are
     letI : Invertible (1 : Matrix n n α) := invertibleOne
@@ -280,7 +281,7 @@ theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
       fromBlocks (⅟(A - B * ⅟D * C)) (-(⅟(A - B * ⅟D * C) * B * ⅟D))
         (-(⅟D * C * ⅟(A - B * ⅟D * C))) (⅟D + ⅟D * C * ⅟(A - B * ⅟D * C) * B * ⅟D) := by
   letI := fromBlocks₂₂Invertible A B C D
-  convert (rfl : ⅟(fromBlocks A B C D) = _)
+  convert! (rfl : ⅟(fromBlocks A B C D) = _)
 
 theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] [Invertible (D - C * ⅟A * B)]
@@ -289,7 +290,7 @@ theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
       fromBlocks (⅟A + ⅟A * B * ⅟(D - C * ⅟A * B) * C * ⅟A) (-(⅟A * B * ⅟(D - C * ⅟A * B)))
         (-(⅟(D - C * ⅟A * B) * C * ⅟A)) (⅟(D - C * ⅟A * B)) := by
   letI := fromBlocks₁₁Invertible A B C D
-  convert (rfl : ⅟(fromBlocks A B C D) = _)
+  convert! (rfl : ⅟(fromBlocks A B C D) = _)
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
 Schur complement. -/

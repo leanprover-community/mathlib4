@@ -45,7 +45,7 @@ theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α
   obtain ⟨q, q_mem, rfl⟩ := Multiset.mem_map.mp q_mem'
   replace hdq := hd.dvd_of_dvd_pow hdq
   have : p ∣ q := dvd_trans (hd.irreducible.dvd_symm hp.irreducible hdp) hdq
-  convert q_mem using 0
+  convert! q_mem using 0
   rw [Finset.mem_val,
     is_coprime _ (Finset.mem_insert_self p s) _ (Finset.mem_insert_of_mem q_mem) this]
 
@@ -83,7 +83,7 @@ theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}
   by_cases ha0 : a = 0
   · rwa [ha0]
   haveI : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
-  letI : NormalizationMonoid α := UniqueFactorizationMonoid.normalizationMonoid
+  letI : StrongNormalizationMonoid α := UniqueFactorizationMonoid.strongNormalizationMonoid
   refine P_of_associated (prod_normalizedFactors ha0) ?_
   rw [← (normalizedFactors a).map_id, Finset.prod_multiset_map_count]
   refine induction_on_prime_power _ _ ?_ ?_ @h1 @hpr @hcp <;> simp only [Multiset.mem_toFinset]
@@ -130,7 +130,7 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
       _ = f a * f (b * 1) := by simp only [h1 isUnit_one, hf1, mul_zero]
       _ = f a * f b := by rw [mul_one]
   haveI : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
-  letI : NormalizationMonoid α := UniqueFactorizationMonoid.normalizationMonoid
+  letI : StrongNormalizationMonoid α := UniqueFactorizationMonoid.strongNormalizationMonoid
   suffices
       f (∏ p ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
         p ^ ((normalizedFactors a).count p + (normalizedFactors b).count p)) =

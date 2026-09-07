@@ -55,7 +55,7 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat G}
       calc (X.ρ g⁻¹ ≫ f.hom) x
           = ((Y.ρ g⁻¹ * Y.ρ g)).hom y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
         _ = y.val := by
-          simp [← map_mul, inv_mul_cancel, Action.ρ_one])
+          simp [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_hom])
     map_one' := by aesop
     map_mul' := by aesop
   }
@@ -85,6 +85,7 @@ noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat G)) :=
 instance : PreGaloisCategory (Action FintypeCat G) where
   hasQuotientsByFiniteGroups _ _ _ := inferInstance
   monoInducesIsoOnDirectSummand {_ _} i _ :=
+    haveI : Mono ((forget (Action FintypeCat G)).map i) := map_mono (forget _) i
     ⟨Action.imageComplement G i, Action.imageComplementIncl G i,
      ⟨isColimitOfReflects (Action.forget _ _ ⋙ FintypeCat.incl) <|
       (isColimitMapCoconeBinaryCofanEquiv (forget _) i _).symm
@@ -112,7 +113,8 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     connectedness, the orbit equals `X.V`. -/
     let T : Set X.V := MulAction.orbit G x
     have : Fintype T := Fintype.ofFinite T
-    letI : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G ↑(MulAction.orbit G x)
+    letI : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G
+      ↑(MulAction.orbit G x)
     let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
     let i : T' ⟶ X := ⟨FintypeCat.homMk Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)

@@ -11,6 +11,7 @@ public import Mathlib.Data.Set.Insert
 
 /-!
 # Set enumeration
+
 This file allows enumeration of sets given a choice function.
 The definition does not assume `sel` actually is a choice function, i.e. `sel s ∈ s` and
 `sel s = none ↔ s = ∅`. These assumptions are added to the lemmas needing them.

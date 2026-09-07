@@ -41,9 +41,9 @@ instance finite [Finite Mˣ] [IsDomain R] : Finite (MulChar M R) := .of_equiv _ 
 lemma exists_apply_ne_one_iff_exists_monoidHom (a : Mˣ) :
     (∃ χ : MulChar M R, χ a ≠ 1) ↔ ∃ φ : Mˣ →* Rˣ, φ a ≠ 1 := by
   refine ⟨fun ⟨χ, hχ⟩ ↦ ⟨χ.toUnitHom, ?_⟩, fun ⟨φ, hφ⟩ ↦ ⟨ofUnitHom φ, ?_⟩⟩
-  · contrapose! hχ
+  · contrapose hχ
     rwa [Units.ext_iff, coe_toUnitHom] at hχ
-  · contrapose! hφ
+  · contrapose hφ
     simpa only [ofUnitHom_eq, equivToUnitHom_symm_coe, Units.val_eq_one] using hφ
 
 variable (M R)
@@ -57,7 +57,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity [Nontrivial R] {a : M} (ha 
   by_cases hu : IsUnit a
   · refine (exists_apply_ne_one_iff_exists_monoidHom hu.unit).mpr ?_
     refine CommGroup.exists_apply_ne_one_of_hasEnoughRootsOfUnity Mˣ R ?_
-    contrapose! ha
+    contrapose ha
     rw [← hu.unit_spec, ha, Units.val_eq_one]
   · exact ⟨1, by simpa only [map_nonunit _ hu] using zero_ne_one⟩
 
@@ -76,7 +76,7 @@ lemma card_eq_card_units_of_hasEnoughRootsOfUnity : Nat.card (MulChar M R) = Nat
 
 
 /--
-Let `N` be a submonoid of `M` group and let R` be a ring with enough roots of unity.
+Let `N` be a submonoid of `M` group and let `R` be a ring with enough roots of unity.
 Then any `R`-value multiplicative character of `N` can be extended to a multiplicative
 character of `M`.
 -/
@@ -132,5 +132,13 @@ theorem mem_subgroupOrderIsoSubgroupMulChar_iff {H : Subgroup Mˣ} {χ : MulChar
 theorem mem_subgroupOrderIsoSubgroupMulChar_symm_iff {X : Subgroup (MulChar M R)} {m : Mˣ} :
     m ∈ (subgroupOrderIsoSubgroupMulChar M R).symm (OrderDual.toDual X) ↔ ∀ χ ∈ X, χ m = 1 := by
   simp [subgroupOrderIsoSubgroupMulChar, ← Units.val_eq_one]
+
+/-- The cardinality of the dual subgroup of `MulChar M R` associated to a subgroup `H` of `Mˣ`
+equals the index of `H` in `Mˣ`. -/
+theorem card_subgroupOrderIsoSubgroupMulChar {H : Subgroup Mˣ} :
+    Nat.card (subgroupOrderIsoSubgroupMulChar M R H).ofDual = Nat.card (Mˣ ⧸ H) := by
+  rw [subgroupOrderIsoSubgroupMulChar, OrderIso.trans_apply, OrderIso.dual_apply,
+    OrderDual.ofDual_toDual, Subgroup.card_mapSubgroup,
+    CommGroup.card_subgroupOrderIsoSubgroupMonoidHom]
 
 end MulChar

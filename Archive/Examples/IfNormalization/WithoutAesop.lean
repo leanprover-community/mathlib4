@@ -65,13 +65,13 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             · congr
               ext w
               by_cases h : w = v
-              · substs h
+              · subst h
                 simp_all
               · simp_all
             · congr
               ext w
               by_cases h : w = v
-              · substs h
+              · subst h
                 simp_all
               · simp_all
           · simp only [cond_true, h, ht₁]
@@ -79,13 +79,13 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             · congr
               ext w
               by_cases h : w = v
-              · substs h
+              · subst h
                 simp_all
               · simp_all
             · congr
               ext w
               by_cases h : w = v
-              · substs h
+              · subst h
                 simp_all
               · simp_all
         · have := ht₃ v

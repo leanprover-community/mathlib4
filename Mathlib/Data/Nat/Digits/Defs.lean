@@ -227,14 +227,14 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         exact List.mem_cons_of_mem _ m
       · intro h
         rw [List.getLast_cons h] at w₂
-        convert w₂
+        convert! w₂
     · exact w₁ d List.mem_cons_self
     · by_cases h' : L = []
       · rcases h' with rfl
         left
         simpa using w₂
       · right
-        contrapose! w₂
+        contrapose w₂
         refine digits_zero_of_eq_zero h.ne_bot w₂ _ ?_
         rw [List.getLast_cons h']
         exact List.getLast_mem h'
@@ -275,7 +275,7 @@ theorem digits_eq_nil_iff_eq_zero {b n : ℕ} : digits b n = [] ↔ n = 0 := by
   constructor
   · intro h
     have : ofDigits b (digits b n) = ofDigits b [] := by rw [h]
-    convert this
+    convert! this
     rw [ofDigits_digits]
   · rintro rfl
     simp
@@ -383,7 +383,7 @@ theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : 
 
 /-- Any number m is less than (b+2)^(number of digits in the base b + 2 representation of m) -/
 theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m).length := by
-  convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
+  convert! @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
   rw [ofDigits_digits (b + 2) m]
 
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/
@@ -407,7 +407,7 @@ theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
 
-@[mono]
+@[gcongr, mono]
 theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p L ≤ ofDigits q L := by
   induction L with
   | nil => rfl
@@ -455,8 +455,9 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 -/
 lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
-  convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
-    (fun l hl ↦ digits_lt_base h hl)
+  convert!
+    ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
+      (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
 /-- Interpreting as a base `p` number and modulo `p^i` is the same as taking the first `i` digits.
@@ -484,8 +485,9 @@ lemma ofDigits_mod_pow_eq_ofDigits_take
 -/
 lemma self_mod_pow_eq_ofDigits_take {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n % p ^ i = ofDigits p ((p.digits n).take i) := by
-  convert ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
-    (fun l hl ↦ digits_lt_base h hl)
+  convert!
+    ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
+      (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
 /-! ### `Nat.toDigits` length -/
@@ -533,7 +535,7 @@ lemma toDigitsCore_length (b f n e : Nat) (h_e_pos : 0 < e) (hlt : n < b ^ e) :
       | succ e =>
         specialize ih (n / b) _ (add_one_pos e) (Nat.div_lt_of_lt_mul <| by rwa [← pow_add_one'])
         split_ifs
-        · simp only [List.length_singleton, _root_.zero_le, succ_le_succ]
+        · simp
         · simp only [toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b),
             Nat.succ_le_succ_iff, ih]
 

@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.Associator
 
 This module provides a set of heterogeneous typeclasses for defining a multiplicative structure
 over `⨁ i, A i` such that `(*) : A i → A j → A (i + j)`; that is to say, `A` forms an
-additively-graded ring. The typeclasses are:
+additively-graded ring. The five typeclasses are:
 
 * `DirectSum.GNonUnitalNonAssocSemiring A`
 * `DirectSum.GSemiring A`
@@ -22,7 +22,7 @@ additively-graded ring. The typeclasses are:
 * `DirectSum.GCommSemiring A`
 * `DirectSum.GCommRing A`
 
-Respectively, these imbue the external direct sum `⨁ i, A i` with:
+Respectively, these five typeclasses imbue the external direct sum `⨁ i, A i` with:
 
 * `DirectSum.nonUnitalNonAssocSemiring`, `DirectSum.nonUnitalNonAssocRing`
 * `DirectSum.semiring`
@@ -30,19 +30,18 @@ Respectively, these imbue the external direct sum `⨁ i, A i` with:
 * `DirectSum.commSemiring`
 * `DirectSum.commRing`
 
-the base ring `A 0` with:
+the base ring `A 0` with instances of these types:
 
-* `DirectSum.GradeZero.nonUnitalNonAssocSemiring`,
-  `DirectSum.GradeZero.nonUnitalNonAssocRing`
-* `DirectSum.GradeZero.semiring`
-* `DirectSum.GradeZero.ring`
-* `DirectSum.GradeZero.commSemiring`
-* `DirectSum.GradeZero.commRing`
+* `NonUnitalNonAssocSemiring (A 0)`, `NonUnitalNonAssocRing (A 0)`
+* `Semiring (A 0)`
+* `Ring (A 0)`
+* `CommSemiring (A 0)`
+* `CommRing (A 0)`
 
-and the `i`th grade `A i` with `A 0`-actions (`•`) defined as left-multiplication:
+and the `i`th grade `A i` with `A 0`-actions (`•`) of these types:
 
-* `DirectSum.GradeZero.smul (A 0)`, `DirectSum.GradeZero.smulWithZero (A 0)`
-* `DirectSum.GradeZero.module (A 0)`
+* `SMulWithZero (A 0) (A i)`
+* `Module (A 0) (A i)`
 * (nothing)
 * (nothing)
 * (nothing)
@@ -68,6 +67,11 @@ instances for:
 
 If `sSupIndep A`, these provide a gradation of `⨆ i, A i`, and the mapping `⨁ i, A i →+ ⨆ i, A i`
 can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
+
+## Implementation details
+
+The instances on `A 0` are scoped to the `DirectSum` namespace, because they have
+very general discriminantion tree keys.
 
 ## Tags
 
@@ -230,6 +234,7 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   rw [flip_apply, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
 
+set_option backward.defeqAttrib.useBackward true in
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices AddMonoidHom.mulLeft₃ = AddMonoidHom.mulRight₃ by
@@ -355,6 +360,12 @@ end CommRing
 
 The various `G*` instances are enough to promote the `AddCommMonoid (A 0)` structure to various
 types of multiplicative structure.
+
+Implementation detail: Note that these instances on `A 0` have very general discrimination
+tree keys (e.g. `DirectSum.instRingOfNat` has discrimination tree key `Ring _` and often
+sends typeclass inference on a wild goose chase with any goal of the form `Ring (F X)`),
+so we scope these instances to the `DirectSum` namespace.
+
 -/
 
 
@@ -382,11 +393,16 @@ theorem of_zero_smul {i} (a : A 0) (b : A i) : of _ _ (a • b) = of _ _ a * of 
 theorem of_zero_mul (a b : A 0) : of _ 0 (a * b) = of _ 0 a * of _ 0 b :=
   of_zero_smul A a b
 
-instance (priority := 900) GradeZero.nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A 0) :=
+/-- The `NonUnitalNonAssocSemiring` structure on the grade zero part
+of a `GNonUnitalNonAssocSemiring`. -/
+scoped instance (priority := 900) :
+    NonUnitalNonAssocSemiring (A 0) :=
   Function.Injective.nonUnitalNonAssocSemiring (of A 0) DFinsupp.single_injective (of A 0).map_zero
     (of A 0).map_add (of_zero_mul A) (map_nsmul _)
 
-instance GradeZero.smulWithZero (i : ι) : SMulWithZero (A 0) (A i) := by
+/-- The `SMulWithZero` structure on the grade zero part
+of a `GNonUnitalNonAssocSemiring`. -/
+scoped instance (i : ι) : SMulWithZero (A 0) (A i) := by
   letI := SMulWithZero.compHom (⨁ i, A i) (of A 0).toZeroHom
   exact Function.Injective.smulWithZero (of A i).toZeroHom DFinsupp.single_injective
     (of_zero_smul A)
@@ -403,7 +419,8 @@ theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
   -- Porting note: Lean doesn't think this terminates if we only use `of_zero_pow` alone
   | n + 1 => by rw [pow_succ, pow_succ, of_zero_mul, of_zero_pow _ n]
 
-instance (priority := 900) : NatCast (A 0) :=
+/-- The `NatCast` instance on `A 0`, given `GSemiring A`. -/
+scoped instance (priority := 900) : NatCast (A 0) :=
   ⟨GSemiring.natCast⟩
 
 
@@ -418,7 +435,7 @@ theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
   of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
-instance (priority := 900) GradeZero.semiring : Semiring (A 0) :=
+scoped instance (priority := 900) : Semiring (A 0) :=
   Function.Injective.semiring (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ (of A 0).map_nsmul _ _)
     (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
@@ -432,7 +449,7 @@ def ofZeroRingHom : A 0 →+* ⨁ i, A i :=
 /-- Each grade `A i` derives an `A 0`-module structure from `GSemiring A`. Note that this results
 in an overall `Module (A 0) (⨁ i, A i)` structure via `DirectSum.module`.
 -/
-instance GradeZero.module {i} : Module (A 0) (A i) :=
+scoped instance {i} : Module (A 0) (A i) :=
   letI := Module.compHom (⨁ i, A i) (ofZeroRingHom A)
   DFinsupp.single_injective.module (A 0) (of A i) fun a => of_zero_smul A a
 
@@ -443,7 +460,7 @@ section CommSemiring
 variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 
 /-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
-instance (priority := 900) GradeZero.commSemiring : CommSemiring (A 0) :=
+scoped instance (priority := 900) : CommSemiring (A 0) :=
   Function.Injective.commSemiring (of A 0) DFinsupp.single_injective (of A 0).map_zero
     (of_zero_one A) (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ map_nsmul _ _ _)
     (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
@@ -455,7 +472,7 @@ section Ring
 variable [∀ i, AddCommGroup (A i)] [AddZeroClass ι] [GNonUnitalNonAssocSemiring A]
 
 /-- The `NonUnitalNonAssocRing` derived from `GNonUnitalNonAssocSemiring A`. -/
-instance (priority := 900) GradeZero.nonUnitalNonAssocRing : NonUnitalNonAssocRing (A 0) :=
+scoped instance (priority := 900) : NonUnitalNonAssocRing (A 0) :=
   Function.Injective.nonUnitalNonAssocRing (of A 0) DFinsupp.single_injective (of A 0).map_zero
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
     (fun _ _ ↦ map_zsmul _ _ _)
@@ -466,7 +483,8 @@ section Ring
 
 variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 
-instance (priority := 900) : IntCast (A 0) :=
+/-- The `IntCast` instance on `A 0`, given `GRing A`. -/
+scoped instance (priority := 900) : IntCast (A 0) :=
   ⟨GRing.intCast⟩
 
 @[simp]
@@ -474,7 +492,7 @@ theorem of_intCast (n : ℤ) : of A 0 n = n := by
   rfl
 
 /-- The `Ring` derived from `GSemiring A`. -/
-instance (priority := 900) GradeZero.ring : Ring (A 0) :=
+scoped instance (priority := 900) : Ring (A 0) :=
   Function.Injective.ring (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
     (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
@@ -486,7 +504,7 @@ section CommRing
 variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 
 /-- The `CommRing` derived from `GCommSemiring A`. -/
-instance (priority := 900) GradeZero.commRing : CommRing (A 0) :=
+scoped instance (priority := 900) : CommRing (A 0) :=
   Function.Injective.commRing (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
     (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)

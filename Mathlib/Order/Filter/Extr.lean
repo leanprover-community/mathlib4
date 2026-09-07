@@ -9,6 +9,7 @@ public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a set
@@ -114,6 +115,7 @@ def IsMaxOn :=
   IsMaxFilter f (𝓟 s) a
 
 /-- `IsExtrOn f s a` means `IsMinOn f s a` or `IsMaxOn f s a` -/
+@[wikidata Q845060]
 def IsExtrOn : Prop :=
   IsExtrFilter f (𝓟 s) a
 
@@ -136,7 +138,7 @@ theorem isMaxOn_univ_iff : IsMaxOn f univ a ↔ ∀ x, f x ≤ f a :=
 
 theorem IsMinOn.bddBelow (h : IsMinOn f s a) :
     BddBelow (f '' s) :=
-  ⟨f a, by simpa [mem_lowerBounds] using h⟩
+  ⟨f a, by simpa [mem_lowerBounds] using! h⟩
 
 theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
     IsGLB {f x | x ∈ s} (f a) := by
@@ -151,7 +153,7 @@ theorem IsMaxOn.isLUB (ha : a ∈ s) (hfsa : IsMaxOn f s a) :
 
 theorem IsMaxOn.bddAbove (h : IsMaxOn f s a) :
     BddAbove (f '' s) :=
-  ⟨f a, by simpa [mem_upperBounds] using h⟩
+  ⟨f a, by simpa [mem_upperBounds] using! h⟩
 
 theorem IsMinFilter.tendsto_principal_Ici (h : IsMinFilter f l a) : Tendsto f l (𝓟 <| Ici (f a)) :=
   tendsto_principal.2 h
@@ -376,7 +378,7 @@ theorem IsExtrOn.on_preimage (g : δ → α) {b : δ} (hf : IsExtrOn f s (g b)) 
 
 theorem IsMinOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMinOn f s a) (hg : MapsTo g t s)
     (ha : g b = a) : IsMinOn (f ∘ g) t b := fun y hy => by
-  simpa only [ha, (· ∘ ·)] using hf (hg hy)
+  simpa only [ha, (· ∘ ·)] using! hf (hg hy)
 
 theorem IsMaxOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMaxOn f s a) (hg : MapsTo g t s)
     (ha : g b = a) : IsMaxOn (f ∘ g) t b :=

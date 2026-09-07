@@ -100,6 +100,55 @@ instance Pi.instIsOrderBornology {ι : Type*} {α : ι → Type*} [∀ i, Preord
 
 end Preorder
 
+section LinearOrder
+
+variable [Nonempty α] [LinearOrder α] [IsOrderBornology α]
+
+lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology.cobounded α := by
+  intro s
+  rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s,
+    Filter.atTop_basis_Ioi.mem_iff]
+  intro ⟨_, b, hb⟩
+  rw [mem_upperBounds_iff_subset_Iic, ← compl_compl (Iic b), compl_subset_compl, compl_Iic] at hb
+  use b
+
+-- TODO (khw): Generate this in the future with `to_dual`
+-- See https://github.com/leanprover-community/mathlib4/pull/37738
+lemma IsOrderBornology.atBot_le_cobounded [NoMinOrder α] : .atBot ≤ Bornology.cobounded α :=
+  atTop_le_cobounded (α := αᵒᵈ)
+
+lemma IsOrderBornology.cobounded_le_atBot_sup_atTop :
+    cobounded α ≤ .atBot ⊔ .atTop := by
+  intro s
+  rw [Filter.mem_sup, Filter.atTop_basis.mem_iff, Filter.atBot_basis.mem_iff,
+    ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
+  intro ⟨⟨b, _, hb⟩, ⟨a, _, ha⟩⟩
+  refine ⟨⟨b, fun x hx ↦ ?_⟩, ⟨a, fun x hx ↦ ?_⟩⟩ <;> by_contra! hx'
+  · exact hx (hb hx'.le)
+  · exact hx (ha hx'.le)
+
+@[simp]
+lemma IsOrderBornology.cobounded_eq [NoMaxOrder α] [NoMinOrder α] :
+    Bornology.cobounded α = .atBot ⊔ .atTop :=
+  cobounded_le_atBot_sup_atTop.antisymm <|
+    sup_le IsOrderBornology.atBot_le_cobounded IsOrderBornology.atTop_le_cobounded
+
+lemma IsOrderBornology.cobounded_eq_atTop [NoMaxOrder α] [OrderBot α] :
+    Bornology.cobounded α = .atTop := by
+  refine atTop_le_cobounded.antisymm' fun s ↦ ?_
+  rw [Filter.atTop_basis.mem_iff,
+    ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
+  refine fun ⟨b, _, hb⟩ ↦ ⟨⟨⊥, fun x hx ↦ by simp⟩, ⟨b, fun x hx ↦ ?_⟩⟩
+  by_contra! hx'
+  exact hx (hb hx'.le)
+
+-- TODO (khw): Generate this in the future with `to_dual`
+-- See https://github.com/leanprover-community/mathlib4/pull/37738
+lemma IsOrderBornology.cobounded_eq_atBot [NoMinOrder α] [OrderTop α] :
+    Bornology.cobounded α = .atBot := cobounded_eq_atTop (α := αᵒᵈ)
+
+end LinearOrder
+
 section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α] [IsOrderBornology α] {s : Set α}
 

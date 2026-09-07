@@ -27,7 +27,7 @@ instance : IsFractionRing (SqZeroExtQuotMax R) (SqZeroExtQuotMax R) :=
     have := hx.1 (.inr <| .single ⟨M, hM⟩ 1) <| by
       ext1; · simp
       simpa [-DFinsupp.single_apply, ← DFinsupp.single_smul, DFinsupp.single_eq_zero]
-        using (Ideal.Quotient.mk_eq_mk_iff_sub_mem ..).mpr (by simpa)
+        using! (Ideal.Quotient.mk_eq_mk_iff_sub_mem ..).mpr (by simpa)
     simpa using congr(($this).snd)
 
 /-- R as an algebra over `SqZeroExtQuotMax R`. -/

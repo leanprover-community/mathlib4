@@ -48,6 +48,6 @@ def cokernelIsColimit : IsColimit <| cokernelCocone f :=
       congr_arg Hom.hom (CokernelCofork.condition s))
     (fun _ => rfl)
     (fun _ _ h => have : Epi (cokernelCocone f).π := (epi_iff_surjective _).mpr <| mk'_surjective _
-      (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using h)
+      (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using! h)
 
 end AddCommGrpCat

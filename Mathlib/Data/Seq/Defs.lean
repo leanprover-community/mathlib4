@@ -457,7 +457,7 @@ def Terminates (s : Seq α) : Prop :=
 def length (s : Seq α) (h : s.Terminates) : ℕ :=
   Nat.find h
 
-open Classical in
+open scoped Classical in
 /-- The `ENat`-valued length of a sequence. For non-terminating sequences, it is `⊤`. -/
 noncomputable def length' (s : Seq α) : ℕ∞ :=
   if h : s.Terminates then s.length h else ⊤

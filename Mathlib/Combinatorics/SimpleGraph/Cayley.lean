@@ -64,7 +64,6 @@ instance [Fintype M] [DecidableEq M] [DecidablePred (· ∈ s)] :
     DecidableRel (mulCayley s).Adj := fun u v =>
   decidable_of_iff (u ≠ v ∧ ∃ g ∈ s, u * g = v ∨ u = v * g) (mulCayley_adj' s u v).symm
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- `mulCayley` is a left (order-)adjoint. -/
 @[to_additive]
@@ -81,7 +80,6 @@ theorem mulCayley_monotone : Monotone (mulCayley (M := M) ·) :=
 theorem mulCayley_mono {U V : Set M} (hUV : U ⊆ V) : mulCayley U ≤ mulCayley V :=
   mulCayley_monotone hUV
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem mulCayley_empty : mulCayley (∅ : Set M) = ⊥ := (mulCayley_gc M).l_bot
 
@@ -90,10 +88,6 @@ theorem mulCayley_union (s₁ s₂ : Set M) : mulCayley (s₁ ∪ s₂) = mulCay
   (mulCayley_gc M).l_sup
 
 end Mul
-
-section MulCommClass
-end MulCommClass
-
 
 section Semigroup
 variable [Semigroup M]
@@ -110,7 +104,7 @@ variable [MulOneClass M]
 
 @[to_additive (attr := simp)]
 theorem mulCayley_erase_one : mulCayley (s \ {1}) = mulCayley s := by
-  nth_rw 2 [← Set.diff_union_inter s {1}]
+  nth_rw 2 [← Set.sdiff_union_inter s {1}]
   rw [mulCayley_union]
   ext u v
   simp +contextual [mulCayley_adj']
@@ -121,7 +115,7 @@ theorem mulCayley_insert_one : mulCayley (insert 1 s) = mulCayley s := by
 
 @[to_additive (attr := simp)]
 theorem mulCayley_singleton_one : mulCayley ({1} : Set M) = ⊥ := by
-  rw [← mulCayley_erase_one, Set.diff_self, mulCayley_empty]
+  rw [← mulCayley_erase_one, Set.sdiff_self, mulCayley_empty]
 
 end MulOneClass
 section Group
@@ -149,7 +143,7 @@ theorem mulCayley_univ : mulCayley (Set.univ : Set M) = ⊤ := by
 
 @[to_additive (attr := simp)]
 theorem mulCayley_compl_singleton_one : mulCayley ({1}ᶜ : Set M) = ⊤ := by
-  simp [Set.compl_eq_univ_diff]
+  simp [Set.compl_eq_univ_sdiff]
 
 end Group
 

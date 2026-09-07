@@ -108,7 +108,7 @@ theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i 
 @[simp]
 theorem sum_apply {α} (s : Finset α) (g : α → ⨁ i, β i) (i : ι) :
     (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
-  DFinsupp.finset_sum_apply s g i
+  DFinsupp.finsetSum_apply s g i
 
 section DecidableEq
 
@@ -154,7 +154,7 @@ theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i
 @[simp]
 theorem support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (i : ι) (x : β i) (h : x ≠ 0) :
     (of _ i x).support = {i} :=
-  DFinsupp.support_single_ne_zero h
+  DFinsupp.support_single h
 
 theorem support_of_subset [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] {i : ι} {b : β i} :
     (of _ i b).support ⊆ {i} :=

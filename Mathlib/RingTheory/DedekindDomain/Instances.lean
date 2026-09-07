@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Instances for Dedekind domains
+
 This file contains various instances to work with localization of a ring extension.
 
 A very common situation in number theory is to have an extension of (say) Dedekind domains `R` and
@@ -28,7 +29,7 @@ special case of *the* localization at a prime ideal is useful in working with De
 
 -/
 
-@[expose] public section
+public section
 
 open nonZeroDivisors IsLocalization Algebra Module IsFractionRing IsScalarTower
 
@@ -74,7 +75,7 @@ theorem FractionRing.isSeparable_of_isLocalization (hM : M ≤ R⁰) :
     (FractionRing.algEquiv Sₘ L).symm.toRingEquiv
   apply ringHom_ext R⁰
   ext
-  simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp,
+  simp only [RingHom.coe_comp,
       RingHom.coe_coe, Function.comp_apply, ← algebraMap_apply]
   rw [algebraMap_apply R Rₘ (FractionRing R), AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
     algebraMap_apply R S L, algebraMap_apply S Sₘ L, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes]
@@ -144,10 +145,12 @@ instance : IsScalarTower Rₚ Sₚ L := by
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq,
     ← IsScalarTower.algebraMap_eq]
 
+set_option linter.overlappingInstances false in
 instance [IsDedekindDomain S] : IsDedekindDomain Sₚ :=
   isDedekindDomain S
     (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ P.primeCompl_le_nonZeroDivisors) _
 
+set_option linter.overlappingInstances false in
 instance [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S] [hP : NeZero P] :
     IsPrincipalIdealRing Sₚ :=
   IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P (fun h ↦ hP.1 h)

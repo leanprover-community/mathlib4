@@ -106,7 +106,6 @@ lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X �
   ext x
   exact re_complexMGF_ofReal x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma complexMGF_id_mul_I {μ : Measure ℝ} (t : ℝ) :
     complexMGF id μ (t * I) = charFun μ t := by
   simp only [complexMGF, id_eq, charFun, RCLike.inner_apply, conj_trivial, ofReal_mul]
@@ -159,18 +158,17 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     · positivity
     · exact lt_of_lt_of_le (by simp [ht]) (le_abs_self _)
   · refine ae_of_all _ fun ω ε hε ↦ ?_
-    simp only
     simp_rw [pow_succ, mul_assoc]
     refine HasDerivAt.const_mul _ ?_
     simp_rw [← smul_eq_mul, Complex.exp_eq_exp_ℂ]
-    convert hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
+    convert! hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
     rw [smul_eq_mul, mul_comm]
 
 /-- For all `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`,
 `complexMGF X μ` is differentiable at `z` with derivative `μ[X * exp (z * X)]`. -/
 theorem hasDerivAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
     HasDerivAt (complexMGF X μ) μ[fun ω ↦ X ω * cexp (z * X ω)] z := by
-  convert hasDerivAt_integral_pow_mul_exp hz 0
+  convert! hasDerivAt_integral_pow_mul_exp hz 0
   · simp [complexMGF]
   · simp
 
@@ -315,7 +313,6 @@ section ext
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the complex moment-generating functions of two random variables `X` and `Y` with respect to
 the finite measures `μ`, `μ'`, respectively, coincide, then `μ.map X = μ'.map Y`. In other words,
 complex moment-generating functions separate the distributions of random variables. -/

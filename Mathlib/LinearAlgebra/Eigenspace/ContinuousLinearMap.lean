@@ -6,7 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Eigenspaces of continuous linear maps
@@ -16,7 +16,7 @@ This file provides some basic properties of eigenspaces of continuous linear map
 These results are in a separate file to avoid heavy topology imports.
 -/
 
-@[expose] public section
+public section
 
 namespace ContinuousLinearMap
 
@@ -26,7 +26,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [TopologicalSp
 open Module End
 
 instance isClosed_genEigenspace : IsClosed (genEigenspace (f : End R M) μ n : Set M) := by
-  rw [genEigenspace_nat, one_eq_id, ← coe_id, ← coe_smul, ← coe_sub, ← coe_pow]
+  rw [genEigenspace_nat, one_eq_id, ← coe_id, ← toLinearMap_smul, ← toLinearMap_sub, ← coe_pow]
   apply isClosed_ker
 
 instance isClosed_eigenspace : IsClosed (eigenspace (f : End R M) μ : Set M) :=

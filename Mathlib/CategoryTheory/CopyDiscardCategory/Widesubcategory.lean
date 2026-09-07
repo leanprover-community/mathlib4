@@ -18,7 +18,7 @@ that this condition `P. IsStableUnderComonoid` holds for all objects `c : C`, we
 `WideSubcategory P` is also a copy-discard category.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.MorphismProperty
 
