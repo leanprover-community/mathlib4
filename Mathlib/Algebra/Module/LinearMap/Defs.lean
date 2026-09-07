@@ -200,9 +200,10 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
   map_smulₛₗ := LinearMap.map_smul'
 
 @[simp, norm_cast]
-lemma coe_coe {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
-    ⇑(f : M →ₛₗ[σ] M₃) = f :=
+lemma coe_ofClass {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
+    ⇑(ofClass f) = f :=
   rfl
+@[deprecated (since := "2026-09-07")] alias coe_coe := coe_ofClass
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.toMonoidHom M M₃ :=
@@ -244,16 +245,15 @@ theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
   rfl
 
-theorem coe_semilinearMap {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] (f : F) :
-    ((f : M →ₛₗ[σ] M₃) : M → M₃) = f :=
-  rfl
+@[deprecated (since := "2026-09-07")] alias coe_semilinearMap := coe_ofClass
 
-theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
-    {f g : F} (h : (f : M →ₛₗ[σ] M₃) = (g : M →ₛₗ[σ] M₃)) :
-    f = g := by
+theorem ofClass_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
+    {f g : F} (h : ofClass f = ofClass g) : f = g := by
   apply DFunLike.ext
   intro m
   exact DFunLike.congr_fun h m
+
+@[deprecated (since := "2026-09-07")] alias toLinearMap_injective := ofClass_injective
 
 /-- Identity map as a `LinearMap` -/
 @[instance_reducible]
