@@ -230,7 +230,7 @@ lemma upperMinkowskiDim_union (s t : Set X) :
     filter_upwards [h₁, h₂, eventually_rpow_neg_le_rpow_neg (le_max_left d₁ d₂),
       eventually_rpow_neg_le_rpow_neg (le_max_right d₁ d₂)] with ε hεs hεt hm₁ hm₂
     calc (externalCoveringNumber ε (s ∪ t) : ℝ≥0∞)
-        ≤ (externalCoveringNumber ε s : ℝ≥0∞) + (externalCoveringNumber ε t : ℝ≥0∞) := 
+        ≤ (externalCoveringNumber ε s : ℝ≥0∞) + (externalCoveringNumber ε t : ℝ≥0∞) :=
           mod_cast externalCoveringNumber_union_le ε s t
       _ ≤ (ε : ℝ≥0∞) ^ (-((max d₁ d₂ : ℝ≥0) : ℝ)) + (ε : ℝ≥0∞) ^ (-((max d₁ d₂ : ℝ≥0) : ℝ)) :=
           add_le_add (hεs.trans hm₁) (hεt.trans hm₂)
@@ -252,7 +252,7 @@ private lemma tsum_ediam_closedEBall_rpow_le {C : Set Y} {ε : ℝ≥0} (hε : 0
     _ ≤ (ε : ℝ≥0∞) ^ (-(d : ℝ)) * ((2 : ℝ≥0∞) * (ε : ℝ≥0∞)) ^ (d : ℝ) := by gcongr
     _ = (2 : ℝ≥0∞) ^ (d : ℝ) := by
         rw [ENNReal.mul_rpow_of_nonneg _ _ (by positivity), ← mul_assoc,
-          mul_right_comm, ← ENNReal.rpow_add _ _ (mod_cast hε.ne') ENNReal.coe_ne_top, 
+          mul_right_comm, ← ENNReal.rpow_add _ _ (mod_cast hε.ne') ENNReal.coe_ne_top,
           neg_add_cancel, ENNReal.rpow_zero, one_mul]
 
 /-- If, frequently as `ε → 0⁺`, the set `s` can be covered by at most `ε ^ (-d : ℝ)` closed
