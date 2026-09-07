@@ -64,9 +64,9 @@ instance instStarModule {S : Type*} (R : Type*) {M : Type*} [Star R] [Star M] [S
 
 end StarMemClass
 
-universe u u' v v' w w' w''
+universe u u' v w w' w''
 
-variable {F : Type v'} {R' : Type u'} {R : Type u}
+variable {R' : Type u'} {R : Type u}
 variable {A : Type v} {B : Type w} {C : Type w'}
 
 namespace NonUnitalStarSubalgebraClass
@@ -110,10 +110,9 @@ add_decl_doc NonUnitalStarSubalgebra.toNonUnitalSubalgebra
 namespace NonUnitalStarSubalgebra
 
 variable [CommSemiring R]
-variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
-variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
-variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
+  [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
+  [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
+  [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
 
 instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
@@ -204,15 +203,15 @@ protected def copy (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S)
       rw [hs] at hx ⊢
       exact S.star_mem' hx }
 
+variable (S : NonUnitalStarSubalgebra R A)
+
 @[simp, norm_cast]
-theorem coe_copy (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S) :
+theorem coe_copy (s : Set A) (hs : s = ↑S) :
     (S.copy s hs : Set A) = s :=
   rfl
 
-theorem copy_eq (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s hs = S :=
+theorem copy_eq (s : Set A) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
-
-variable (S : NonUnitalStarSubalgebra R A)
 
 /-- A non-unital star subalgebra over a ring is also a `Subring`. -/
 @[reducible]
@@ -439,10 +438,9 @@ end NonUnitalSubalgebra
 namespace NonUnitalStarAlgHom
 
 variable [CommSemiring R]
-variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
-variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
-variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
+  [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
+  [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
+  [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
 
 /-- Range of an `NonUnitalAlgHom` as a `NonUnitalStarSubalgebra`. -/
 protected def range (φ : A →⋆ₙₐ[R] B) : NonUnitalStarSubalgebra R B where
@@ -517,10 +515,9 @@ end NonUnitalStarAlgHom
 
 namespace StarAlgEquiv
 variable [CommSemiring R]
-variable [NonUnitalSemiring A] [Module R A] [Star A]
-variable [NonUnitalSemiring B] [Module R B] [Star B]
-variable [NonUnitalSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
+  [NonUnitalSemiring A] [Module R A] [Star A]
+  [NonUnitalSemiring B] [Module R B] [Star B]
+  [NonUnitalSemiring C] [Module R C] [Star C]
 
 /-- Restrict a non-unital star algebra homomorphism with a left inverse to an algebra isomorphism
 to its range.
@@ -566,8 +563,8 @@ namespace NonUnitalSubalgebra
 open scoped Pointwise
 
 variable [CommSemiring R] [StarRing R]
-variable [NonUnitalSemiring A] [StarRing A] [Module R A]
-variable [StarModule R A]
+  [NonUnitalSemiring A] [StarRing A] [Module R A]
+  [StarModule R A]
 
 /-- The pointwise `star` of a non-unital subalgebra is a non-unital subalgebra. -/
 instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A) where
@@ -597,9 +594,9 @@ theorem coe_star (S : NonUnitalSubalgebra R A) : star S = star (S : Set A) :=
 theorem star_mono : Monotone (star : NonUnitalSubalgebra R A → NonUnitalSubalgebra R A) :=
   fun _ _ h _ hx => h hx
 
-variable (R)
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 
+variable (R) in
 /-- The star operation on `NonUnitalSubalgebra` commutes with `NonUnitalAlgebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) :
     star (NonUnitalAlgebra.adjoin R s) = NonUnitalAlgebra.adjoin R (star s) :=
@@ -608,8 +605,6 @@ theorem star_adjoin_comm (s : Set A) :
     NonUnitalAlgebra.adjoin_le fun _ hx => NonUnitalAlgebra.subset_adjoin R hx
   le_antisymm (by simpa only [star_star] using NonUnitalSubalgebra.star_mono (this (star s)))
     (this s)
-
-variable {R}
 
 /-- The `NonUnitalStarSubalgebra` obtained from `S : NonUnitalSubalgebra R A` by taking the
 smallest non-unital subalgebra containing both `S` and `star S`. -/
@@ -650,9 +645,8 @@ end NonUnitalSubalgebra
 namespace NonUnitalStarAlgebra
 
 variable [CommSemiring R] [StarRing R]
-variable [NonUnitalSemiring A] [StarRing A] [Module R A]
-variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
+  [NonUnitalSemiring A] [StarRing A] [Module R A]
+  [NonUnitalSemiring B] [StarRing B] [Module R B]
 
 section StarSubAlgebraA
 
@@ -906,9 +900,8 @@ namespace NonUnitalStarSubalgebra
 open NonUnitalStarAlgebra
 
 variable [CommSemiring R]
-variable [NonUnitalSemiring A] [StarRing A] [Module R A]
-variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
+  [NonUnitalSemiring A] [StarRing A] [Module R A]
+  [NonUnitalSemiring B] [StarRing B] [Module R B]
 variable (S : NonUnitalStarSubalgebra R A)
 
 section StarSubalgebra
