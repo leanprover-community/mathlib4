@@ -5,7 +5,7 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
-public import Mathlib.Data.Finite.Sum
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.ModelTheory.FinitelyGenerated
 public import Mathlib.ModelTheory.Quotients

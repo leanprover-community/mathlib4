@@ -120,10 +120,6 @@ theorem isSuccLimit_toDual_iff : IsSuccLimit (toDual a) ↔ IsPredLimit a := by
 theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
   rw [isSuccLimit_iff, not_and_or, not_not]
 
-@[deprecated IsPredLimit.isPredPrelimit (since := "2026-02-22")]
-theorem not_isPredLimit_of_not_isPredPrelimit : ¬ IsPredPrelimit a → ¬ IsPredLimit a :=
-  mt IsPredLimit.isPredPrelimit
-
 set_option linter.existingAttributeWarning false in
 @[to_dual, deprecated IsSuccLimit.mk (since := "2026-04-19")]
 theorem IsSuccPrelimit.isSuccLimit_of_not_isMin (h : IsSuccPrelimit a) (ha : ¬ IsMin a) :
