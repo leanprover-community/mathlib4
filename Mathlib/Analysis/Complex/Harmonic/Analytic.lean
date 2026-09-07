@@ -20,7 +20,7 @@ holomorphic on the ball.  This implies in particular that harmonic functions are
 
 public section
 
-open Complex InnerProductSpace Metric Set Topology
+open Complex InnerProductSpace Metric Set
 
 variable
   {f : ℂ → ℝ} {x : ℂ}

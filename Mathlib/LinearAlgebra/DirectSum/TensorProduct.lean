@@ -49,7 +49,7 @@ variable [Module S M₁'] [IsScalarTower R S M₁']
 "tensor product distributes over direct sum". -/
 protected def directSum :
     ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[S] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
-  refine LinearEquiv.ofLinear ?toFun ?invFun ?left ?right
+  refine LinearEquiv.ofLinearMap ?toFun ?invFun ?left ?right
   · exact AlgebraTensorModule.lift <|
       toModule S _ _ fun i₁ => flip <| toModule R _ _ fun i₂ => flip <| AlgebraTensorModule.curry <|
       DirectSum.lof S (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
@@ -105,7 +105,6 @@ theorem directSumLeft_symm_lof_tmul (i : ι₁) (x : M₁ i) (y : M₂') :
       DirectSum.lof S _ _ i x ⊗ₜ[R] y := by
   rw [LinearEquiv.symm_apply_eq, directSumLeft_tmul_lof]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
     directSumLeft R S M₁ M₂' (m ⊗ₜ[R] n) i = (m i) ⊗ₜ[R] n := by
@@ -160,7 +159,6 @@ lemma directSumRight_tmul (m : M₁') (n : ⨁ i, M₂ i) (i : ι₂) :
 variable (S₀ : Type*) [CommSemiring S₀] [Algebra R S₀] [Algebra S₀ S]
   [Module S₀ M₁'] [IsScalarTower R S₀ M₁'] [IsScalarTower S₀ S M₁']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrictScalar_directSumRight :
     (directSumRight R S M₁' M₂).restrictScalars S₀ = directSumRight R S₀ M₁' M₂ :=
   LinearEquiv.restrictScalars_injective R <| LinearEquiv.toLinearMap_injective <| by ext; simp [lof]

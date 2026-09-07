@@ -231,12 +231,12 @@ lemma one_apply_def {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass 
 lemma one_apply_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
     (1 : M₀ →*₀ N₀) 0 = 0 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 lemma one_apply_of_ne_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] {x : M₀} (hx : x ≠ 0) :
     (1 : M₀ →*₀ N₀) x = 1 :=
-  if_neg hx
+  ite_eq_right hx
 
 @[simp]
 lemma one_apply_eq_zero_iff {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]

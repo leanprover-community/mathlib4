@@ -173,7 +173,7 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
     equivMapDomain f (single a b) = single (f a) b := by
   classical
     ext x
-    simp only [single_apply, Equiv.apply_eq_iff_eq_symm_apply, equivMapDomain_apply]
+    simp only [single_apply, ← Equiv.eq_symm_apply, equivMapDomain_apply]
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
@@ -291,19 +291,18 @@ theorem mapDomain_of_notMem_range {f : α → β} (x : α →₀ M) (a : β) (h 
 lemma mem_range_of_mapDomain_ne_zero {f : α → β} {x : α →₀ M} {b : β} (h : mapDomain f x b ≠ 0) :
     b ∈ Set.range f := by contrapose! h; exact mapDomain_of_notMem_range _ _ h
 
-@[simp]
-theorem mapDomain_id : mapDomain id v = v :=
-  sum_single _
+@[to_fun mapDomain_fun_id]
+lemma mapDomain_id : mapDomain id v = v := sum_single _
+
+attribute [simp↓] mapDomain_id
+attribute [simp] mapDomain_fun_id
+
+lemma mapDomain_fun_comp (f : α → β) (g : β → γ) :
+    mapDomain (fun a ↦ g (f a)) v = mapDomain g (mapDomain f v) := by
+  simp [mapDomain, sum_sum_index]
 
 theorem mapDomain_comp {f : α → β} {g : β → γ} :
-    mapDomain (g ∘ f) v = mapDomain g (mapDomain f v) := by
-  refine ((sum_sum_index ?_ ?_).trans ?_).symm
-  · intro
-    exact single_zero _
-  · intro
-    exact single_add _
-  refine sum_congr fun _ _ => sum_single_index ?_
-  exact single_zero _
+    mapDomain (g ∘ f) v = mapDomain g (mapDomain f v) := mapDomain_fun_comp f g
 
 @[simp]
 theorem mapDomain_single {f : α → β} {a : α} {b : M} : mapDomain f (single a b) = single (f a) b :=
@@ -313,7 +312,7 @@ theorem mapDomain_single {f : α → β} {a : α} {b : M} : mapDomain f (single 
 theorem mapDomain_zero {f : α → β} : mapDomain f (0 : α →₀ M) = (0 : β →₀ M) :=
   sum_zero_index
 
-theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
+@[congr] theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
     v.mapDomain f = v.mapDomain g :=
   Finset.sum_congr rfl fun _ H => by simp only [h _ H]
 
@@ -378,12 +377,12 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     rw [mapDomain, sum_apply, sum]
     simp_rw [single_apply]
     by_cases hax : a ∈ x.support
-    · rw [← Finset.add_sum_erase _ _ hax, if_pos rfl]
+    · rw [← Finset.add_sum_erase _ _ hax, ite_eq_left rfl]
       convert! add_zero (x a)
-      refine Finset.sum_eq_zero fun i hi => if_neg ?_
+      refine Finset.sum_eq_zero fun i hi => ite_eq_right ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [notMem_support_iff.1 hax]
-      refine Finset.sum_eq_zero fun i hi => if_neg ?_
+      refine Finset.sum_eq_zero fun i hi => ite_eq_right ?_
       exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
 
 theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →₀ M)
@@ -443,6 +442,10 @@ theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
   intro x
   use mapDomain (surjInv hf) x
   rw [← mapDomain_comp, (rightInverse_surjInv hf).id, mapDomain_id]
+
+lemma mapDomain_fintype [Fintype α] (f : α → β) (g : α →₀ M) :
+    Finsupp.mapDomain f g = ∑ (a : α), .single (f a) (g a) :=
+  Finsupp.sum_fintype _ _ (by simp)
 
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
@@ -679,10 +682,10 @@ theorem filter_eq_self_iff : f.filter p = f ↔ ∀ x, f x ≠ 0 → p x := by
     not_imp_comm]
 
 @[simp]
-theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := if_pos h
+theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := ite_eq_left h
 
 @[simp]
-theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
+theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := ite_eq_right h
 
 @[simp]
 theorem support_filter : (f.filter p).support = {x ∈ f.support | p x} := rfl
@@ -1009,8 +1012,6 @@ def curryEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   left_inv := uncurry_curry
   right_inv := curry_uncurry
 
-@[deprecated (since := "2026-01-03")] noncomputable alias finsuppProdEquiv := curryEquiv
-
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
   ext a b
@@ -1073,7 +1074,7 @@ lemma sumElim_eq_add [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
 
 @[simp] lemma mapDomain_swap_sumElim [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
     mapDomain Sum.swap (sumElim f g) = sumElim g f := by
-  simp [sumElim_eq_add, mapDomain_add, ← mapDomain_comp, Function.comp_def, add_comm]
+  simp [sumElim_eq_add, mapDomain_add, ← mapDomain_fun_comp, add_comm]
 
 @[to_additive]
 lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
@@ -1207,12 +1208,12 @@ def piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) : α →₀ 
 @[simp]
 theorem subtypeDomain_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) :
     subtypeDomain P (f.piecewise g) = f :=
-  Finsupp.ext fun a => dif_pos a.prop
+  Finsupp.ext fun a => dite_eq_left a.prop
 
 @[simp]
 theorem subtypeDomain_not_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) :
     subtypeDomain (¬P ·) (f.piecewise g) = g :=
-  Finsupp.ext fun a => dif_neg a.prop
+  Finsupp.ext fun a => dite_eq_right a.prop
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -1265,7 +1266,6 @@ the type of finitely supported functions from `s`. -/
     letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
   right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma restrictSupportEquiv_symm_apply_coe (s : Set α) (M : Type*) [AddCommMonoid M]
     [DecidablePred (· ∈ s)] (f : s →₀ M) :
     (restrictSupportEquiv s M).symm f = f.extendDomain := by

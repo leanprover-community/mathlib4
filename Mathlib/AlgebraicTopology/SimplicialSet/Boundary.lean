@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
 /-!
 # The boundary of the standard simplex
@@ -27,7 +28,9 @@ a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 universe u
 
-open CategoryTheory Simplicial Opposite
+open CategoryTheory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -91,7 +94,7 @@ lemma boundary_obj_eq_univ (m n : ℕ) (h : m < n := by lia) :
 @[simp]
 lemma boundary_zero : boundary.{u} 0 = ⊥ := by
   ext m x
-  simp only [boundary, Nat.reduceAdd, Set.mem_ofPred_eq, Subfunctor.bot_obj, Set.bot_eq_empty,
+  simp only [boundary, Nat.reduceAdd, Set.mem_ofPred_eq, Subfunctor.bot_obj,
     Set.mem_empty_iff_false, iff_false, Decidable.not_not]
   intro x
   exact ⟨0, by subsingleton⟩

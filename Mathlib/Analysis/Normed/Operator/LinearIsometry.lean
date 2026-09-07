@@ -32,18 +32,13 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 
 open Function Set Topology
 
-variable {R R₂ R₃ R₄ E E₂ E₃ E₄ F 𝓕 : Type*} [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-  {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} {σ₁₃ : R →+* R₃} {σ₃₁ : R₃ →+* R} {σ₁₄ : R →+* R₄}
-  {σ₄₁ : R₄ →+* R} {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} {σ₂₄ : R₂ →+* R₄} {σ₄₂ : R₄ →+* R₂}
-  {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+variable {R R₂ R₃ E E₂ E₃ F 𝓕 : Type*} [Semiring R] [Semiring R₂] [Semiring R₃]
+  {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} {σ₁₃ : R →+* R₃} {σ₃₁ : R₃ →+* R}
+  {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
   [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃] [RingHomInvPair σ₂₃ σ₃₂]
-  [RingHomInvPair σ₃₂ σ₂₃] [RingHomInvPair σ₁₄ σ₄₁] [RingHomInvPair σ₄₁ σ₁₄]
-  [RingHomInvPair σ₂₄ σ₄₂] [RingHomInvPair σ₄₂ σ₂₄] [RingHomInvPair σ₃₄ σ₄₃]
-  [RingHomInvPair σ₄₃ σ₃₄] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
-  [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
-  [RingHomCompTriple σ₄₂ σ₂₁ σ₄₁] [RingHomCompTriple σ₄₃ σ₃₂ σ₄₂] [RingHomCompTriple σ₄₃ σ₃₁ σ₄₁]
+  [RingHomInvPair σ₃₂ σ₂₃] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
   [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [SeminormedAddCommGroup E₃]
-  [SeminormedAddCommGroup E₄] [Module R E] [Module R₂ E₂] [Module R₃ E₃] [Module R₄ E₄]
+  [Module R E] [Module R₂ E₂] [Module R₃ E₃]
   [NormedAddCommGroup F] [Module R F]
 
 /-- A `σ₁₂`-semilinear isometric embedding of a normed `R`-module into an `R₂`-module,
@@ -101,11 +96,11 @@ theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x 
   NNReal.eq <| norm_map f x
 
 protected theorem lipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).lipschitz
+  (SemilinearIsometryClass.isometry f).lipschitzWith
 
 protected theorem antilipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
     AntilipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).antilipschitz
+  (SemilinearIsometryClass.isometry f).antilipschitzWith
 
 theorem ediam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
     Metric.ediam (f '' s) = Metric.ediam s :=
@@ -238,10 +233,10 @@ theorem map_ne {x y : F} (h : x ≠ y) : f₁ x ≠ f₁ y :=
   f₁.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  f.isometry.lipschitz
+  f.isometry.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  f.isometry.antilipschitz
+  f.isometry.antilipschitzWith
 
 @[continuity]
 protected theorem continuous : Continuous f :=
@@ -335,9 +330,17 @@ theorem id_comp : (id : E₂ →ₗᵢ[R₂] E₂).comp f = f :=
 theorem comp_id : f.comp id = f :=
   ext fun _ => rfl
 
+section assoc
+
+variable {R₄ E₄ : Type*} [Semiring R₄] [SeminormedAddCommGroup E₄] [Module R₄ E₄]
+  {σ₁₄ : R →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₃₄ : R₃ →+* R₄}
+  [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+
 theorem comp_assoc (f : E₃ →ₛₗᵢ[σ₃₄] E₄) (g : E₂ →ₛₗᵢ[σ₂₃] E₃) (h : E →ₛₗᵢ[σ₁₂] E₂) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
+
+end assoc
 
 instance instMonoid : Monoid (E →ₗᵢ[R] E) where
   one := id
@@ -365,7 +368,7 @@ theorem coe_pow (f : E →ₗᵢ[R] E) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
 
 section submoduleMap
 
-variable {R R₁ R₂ M M₁ : Type*}
+variable {R M M₁ : Type*}
 variable [Ring R] [SeminormedAddCommGroup M] [SeminormedAddCommGroup M₁]
 variable [Module R M] [Module R M₁]
 
@@ -771,9 +774,21 @@ theorem coe_symm_trans (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃�
     ⇑(e₁.trans e₂).symm = e₁.symm ∘ e₂.symm :=
   rfl
 
+section assoc
+
+variable {R₄ E₄ : Type*} [Semiring R₄] [SeminormedAddCommGroup E₄] [Module R₄ E₄]
+  {σ₁₄ : R →+* R₄} {σ₄₁ : R₄ →+* R} {σ₂₄ : R₂ →+* R₄} {σ₄₂ : R₄ →+* R₂}
+  {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
+  [RingHomInvPair σ₁₄ σ₄₁] [RingHomInvPair σ₄₁ σ₁₄] [RingHomInvPair σ₂₄ σ₄₂]
+  [RingHomInvPair σ₄₂ σ₂₄] [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+  [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+  [RingHomCompTriple σ₄₂ σ₂₁ σ₄₁] [RingHomCompTriple σ₄₃ σ₃₂ σ₄₂] [RingHomCompTriple σ₄₃ σ₃₁ σ₄₁]
+
 theorem trans_assoc (eEE₂ : E ≃ₛₗᵢ[σ₁₂] E₂) (eE₂E₃ : E₂ ≃ₛₗᵢ[σ₂₃] E₃) (eE₃E₄ : E₃ ≃ₛₗᵢ[σ₃₄] E₄) :
     eEE₂.trans (eE₂E₃.trans eE₃E₄) = (eEE₂.trans eE₂E₃).trans eE₃E₄ :=
   rfl
+
+end assoc
 
 instance instGroup : Group (E ≃ₗᵢ[R] E) where
   mul e₁ e₂ := e₂.trans e₁
@@ -892,10 +907,10 @@ theorem map_ne {x y : E} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 e :=
-  e.isometry.lipschitz
+  e.isometry.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
-  e.isometry.antilipschitz
+  e.isometry.antilipschitzWith
 
 theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
   e.toLinearEquiv.image_eq_preimage_symm s
@@ -962,7 +977,7 @@ theorem coe_ofSurjective (f : F →ₛₗᵢ[σ₁₂] E₂) (hfr : Function.Sur
 def ofLinearIsometry (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ →ₛₗ[σ₂₁] E)
     (h₁ : f.toLinearMap.comp g = LinearMap.id) (h₂ : g.comp f.toLinearMap = LinearMap.id) :
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
-  { toLinearEquiv := LinearEquiv.ofLinear f.toLinearMap g h₁ h₂
+  { toLinearEquiv := LinearEquiv.ofLinearMap f.toLinearMap g h₁ h₂
     norm_map' := fun x => f.norm_map x }
 
 @[simp]
@@ -1050,7 +1065,7 @@ theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 
 section submoduleMap
 
-variable {R R₁ R₂ M M₂ : Type*}
+variable {R R₂ M M₂ : Type*}
 variable [Ring R] [Ring R₂] [SeminormedAddCommGroup M] [SeminormedAddCommGroup M₂]
 variable [Module R M] [Module R₂ M₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}

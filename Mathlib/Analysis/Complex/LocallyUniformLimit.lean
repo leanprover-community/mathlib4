@@ -26,7 +26,7 @@ subset of the complex plane.
 @[expose] public section
 
 
-open Set Metric MeasureTheory Filter Complex intervalIntegral
+open Set Metric Filter Complex
 
 open scoped Real Topology
 

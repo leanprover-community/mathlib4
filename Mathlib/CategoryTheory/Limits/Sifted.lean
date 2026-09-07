@@ -181,7 +181,6 @@ lemma factorization_prodComparison_colim :
 
 variable [IsSifted C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is sifted, the canonical product comparison map for the `colim` functor
 `(C ⥤ Type) ⥤ Type` is an isomorphism. -/
 instance : IsIso (CartesianMonoidalCategory.prodComparison colim X Y) := by

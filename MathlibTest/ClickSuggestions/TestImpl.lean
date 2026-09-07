@@ -48,7 +48,7 @@ where
 /- Wait until the state has finished refreshing, and the return the final HTML.
 This is useful for inspecting `Html` from within Lean. -/
   getFinalHtml (info : RefreshRef) : BaseIO Html := do
-  let { curr, next, .. } ← info.ref.get
+  let { curr, next, .. } ← info.ref.atomically get
   if next.get.isNone then
     return curr.get
   getFinalHtml info

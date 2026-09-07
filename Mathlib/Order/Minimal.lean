@@ -388,7 +388,7 @@ end Subset
 
 section Set
 
-variable {s t : Set α}
+variable {s : Set α}
 section Preorder
 
 variable [Preorder α]

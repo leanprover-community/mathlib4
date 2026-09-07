@@ -14,7 +14,7 @@ public import Mathlib.Data.Fin.Init
 This file generalizes basic lemmas about the `^^^` operator across numeric types.
 -/
 
-@[expose] public section
+public section
 
 /-- A typeclass indicating that the xor operation, `^^^`, is lawful. -/
 class LawfulXor (α : Type*) [XorOp α] [Zero α] where

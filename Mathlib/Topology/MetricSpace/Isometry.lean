@@ -74,11 +74,15 @@ variable {f : α → β} {x : α}
 theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=
   hf x y
 
-theorem lipschitz (h : Isometry f) : LipschitzWith 1 f :=
+theorem lipschitzWith (h : Isometry f) : LipschitzWith 1 f :=
   LipschitzWith.of_edist_le fun x y => (h x y).le
 
-theorem antilipschitz (h : Isometry f) : AntilipschitzWith 1 f := fun x y => by
+@[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
+
+theorem antilipschitzWith (h : Isometry f) : AntilipschitzWith 1 f := fun x y => by
   simp only [h x y, ENNReal.coe_one, one_mul, le_refl]
+
+@[deprecated (since := "2026-08-16")] alias antilipschitz := antilipschitzWith
 
 /-- Any map on a subsingleton is an isometry -/
 @[nontriviality]
@@ -127,11 +131,11 @@ lemma postcomp_pi [Fintype α] {g : β → γ} (hg : Isometry g) : Isometry (fun
 
 /-- An isometry from a metric space is a uniform continuous map -/
 protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
-  hf.lipschitz.uniformContinuous
+  hf.lipschitzWith.uniformContinuous
 
 /-- An isometry from a metric space is a uniform inducing map -/
 theorem isUniformInducing (hf : Isometry f) : IsUniformInducing f :=
-  hf.antilipschitz.isUniformInducing hf.uniformContinuous
+  hf.antilipschitzWith.isUniformInducing hf.uniformContinuous
 
 theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
@@ -139,7 +143,7 @@ theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filte
 
 /-- An isometry is continuous. -/
 protected theorem continuous (hf : Isometry f) : Continuous f :=
-  hf.lipschitz.continuous
+  hf.lipschitzWith.continuous
 
 /-- The right inverse of an isometry is an isometry. -/
 theorem right_inv {f : α → β} {g : β → α} (h : Isometry f) (hg : RightInverse g f) : Isometry g :=
@@ -150,16 +154,10 @@ theorem preimage_closedEBall (h : Isometry f) (x : α) (r : ℝ≥0∞) :
   ext y
   simp [h.edist_eq]
 
-@[deprecated (since := "2026-01-24")]
-alias preimage_emetric_closedBall := preimage_closedEBall
-
 theorem preimage_eball (h : Isometry f) (x : α) (r : ℝ≥0∞) :
     f ⁻¹' Metric.eball (f x) r = Metric.eball x r := by
   ext y
   simp [h.edist_eq]
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_emetric_ball := preimage_eball
 
 /-- Isometries preserve the diameter in pseudoemetric spaces. -/
 theorem ediam_image (hf : Isometry f) (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
@@ -173,15 +171,9 @@ theorem mapsTo_eball (hf : Isometry f) (x : α) (r : ℝ≥0∞) :
     MapsTo f (Metric.eball x r) (Metric.eball (f x) r) :=
   (hf.preimage_eball x r).ge
 
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_ball := mapsTo_eball
-
 theorem mapsTo_closedEBall (hf : Isometry f) (x : α) (r : ℝ≥0∞) :
     MapsTo f (Metric.closedEBall x r) (Metric.closedEBall (f x) r) :=
   (hf.preimage_closedEBall x r).ge
-
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_closedBall := mapsTo_closedEBall
 
 /-- The injection from a subtype is an isometry -/
 theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) := fun _ _ => rfl
@@ -205,11 +197,11 @@ variable [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
 
 /-- An isometry from an emetric space is injective -/
 protected theorem injective (h : Isometry f) : Injective f :=
-  h.antilipschitz.injective
+  h.antilipschitzWith.injective
 
 /-- An isometry from an emetric space is a uniform embedding -/
 lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
-  hf.antilipschitz.isUniformEmbedding hf.lipschitz.uniformContinuous
+  hf.antilipschitzWith.isUniformEmbedding hf.lipschitzWith.uniformContinuous
 
 /-- An isometry from an emetric space is an embedding -/
 theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.isEmbedding
@@ -217,7 +209,7 @@ theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.i
 /-- An isometry from a complete emetric space is a closed embedding -/
 theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
     IsClosedEmbedding f :=
-  hf.antilipschitz.isClosedEmbedding hf.lipschitz.uniformContinuous
+  hf.antilipschitzWith.isClosedEmbedding hf.lipschitzWith.uniformContinuous
 
 end EMetricIsometry
 
@@ -316,10 +308,10 @@ protected theorem continuous : Continuous f :=
   (IsometryClass.isometry f).continuous
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  (IsometryClass.isometry f).lipschitz
+  (IsometryClass.isometry f).lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  (IsometryClass.isometry f).antilipschitz
+  (IsometryClass.isometry f).antilipschitzWith
 
 theorem ediam_image (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
   (IsometryClass.isometry f).ediam_image s
@@ -518,32 +510,20 @@ theorem preimage_eball (h : α ≃ᵢ β) (x : β) (r : ℝ≥0∞) :
     h ⁻¹' Metric.eball x r = Metric.eball (h.symm x) r := by
   rw [← h.isometry.preimage_eball (h.symm x) r, h.apply_symm_apply]
 
-@[deprecated (since := "2026-01-24")]
-alias preimage_emetric_ball := preimage_eball
-
 @[simp]
 theorem preimage_closedEBall (h : α ≃ᵢ β) (x : β) (r : ℝ≥0∞) :
     h ⁻¹' Metric.closedEBall x r = Metric.closedEBall (h.symm x) r := by
   rw [← h.isometry.preimage_closedEBall (h.symm x) r, h.apply_symm_apply]
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_emetric_closedBall := preimage_closedEBall
 
 @[simp]
 theorem image_eball (h : α ≃ᵢ β) (x : α) (r : ℝ≥0∞) :
     h '' Metric.eball x r = Metric.eball (h x) r := by
   rw [← h.preimage_symm, h.symm.preimage_eball, symm_symm]
 
-@[deprecated (since := "2026-01-24")]
-alias image_emetric_ball := image_eball
-
 @[simp]
 theorem image_closedEBall (h : α ≃ᵢ β) (x : α) (r : ℝ≥0∞) :
     h '' Metric.closedEBall x r = Metric.closedEBall (h x) r := by
   rw [← h.preimage_symm, h.symm.preimage_closedEBall, symm_symm]
-
-@[deprecated (since := "2026-01-24")]
-alias image_emetric_closedBall := image_closedEBall
 
 /-- The (bundled) homeomorphism associated to an isometric isomorphism. -/
 @[simps toEquiv]
@@ -741,6 +721,19 @@ lemma Isometry.lipschitzWith_iff {α β γ : Type*} [PseudoEMetricSpace α] [Pse
     [PseudoEMetricSpace γ] {f : α → β} {g : β → γ} (K : ℝ≥0) (h : Isometry g) :
     LipschitzWith K (g ∘ f) ↔ LipschitzWith K f := by
   simp [LipschitzWith, h.edist_eq]
+
+/-- If `f` is locally Lipschitz on `s` after precomposition with an isometry `g`, then `f` is
+locally Lipschitz on `g '' s`. -/
+lemma Isometry.locallyLipschitzOn_image {α β γ : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace γ] {g : α → β} {h : β → γ} {s : Set α} (hg : Isometry g)
+    (hL : LocallyLipschitzOn s (h ∘ g)) : LocallyLipschitzOn (g '' s) h := by
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨K, t, ht, hK⟩ := hL hx
+  refine ⟨K, g '' t, ?_, ?_⟩
+  · rw [← hg.isEmbedding.map_nhdsWithin_eq]
+    exact Filter.image_mem_map ht
+  · rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+    simpa [hg.edist_eq] using hK ha hb
 
 namespace IsometryClass
 
