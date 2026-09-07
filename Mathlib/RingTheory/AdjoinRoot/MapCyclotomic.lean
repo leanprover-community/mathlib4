@@ -57,7 +57,7 @@ theorem mapCyclotomic_map_eq_map (f : R[X]) :
   simp
 
 @[simp]
-theorem mapCyclotomic_root_eq_pow : h.mapCyclotomic k h.root = h.root ^ k := liftHom_root h _
+theorem mapCyclotomic_root_eq_pow : h.mapCyclotomic k h.root = h.root ^ k := h.liftHom_root _
 
 @[simp]
 theorem mapCyclotomic_one : h.mapCyclotomic 1 = 1 :=
@@ -80,7 +80,7 @@ theorem mapCyclotomic_apply_eq {j k : ℕ} (hjk : j ≡ k [MOD r]) :
 
 @[simp]
 theorem mapCyclotomic_mod : h.mapCyclotomic (k % r) = h.mapCyclotomic k :=
-  mapCyclotomic_apply_eq h (Nat.mod_modEq k r)
+  h.mapCyclotomic_apply_eq (Nat.mod_modEq k r)
 
 /-- The algebra homomorphism taking an element to the `k`-th power, as a monoid homomorphism
 from `ZMod r`. -/
@@ -98,6 +98,6 @@ noncomputable def mapCyclotomicUnitHom : (ZMod r)ˣ →* (S ≃ₐ[R] S) where
 
 theorem mapCyclotomic_injective (hk : k.Coprime r) : Function.Injective (h.mapCyclotomic k) := by
   rw [← mapCyclotomic_mod, ← ZMod.val_natCast]
-  exact (mapCyclotomicUnitHom h (ZMod.unitOfCoprime k hk)).injective
+  exact (h.mapCyclotomicUnitHom (ZMod.unitOfCoprime k hk)).injective
 
 end IsAdjoinRoot
