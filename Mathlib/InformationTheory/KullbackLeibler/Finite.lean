@@ -5,76 +5,92 @@ Authors: Elazar Gershuni
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.InformationTheory.KullbackLeibler.Basic
 
 /-!
-# Kullback-Leibler divergence of finite weight functions
+# Kullback-Leibler divergence on finite spaces
 
-This file defines the Kullback-Leibler divergence `klDivFin p q` of two functions `p q : ι → ℝ`
-on a `Fintype ι` as a `Finset.sum`, and proves Gibbs' inequality for it. The two functions are
-not assumed to be normalized: `klDivFin` is defined for arbitrary nonnegative weights.
+This file expresses `klDiv` as a sum over singleton masses on a finite space.
+The formulas assume absolute continuity; otherwise `klDiv` is infinite.
+For finite measures, the formula includes the correction term `ν.real univ - μ.real univ`.
+For probability measures, it is the usual sum `∑ x, μ.real {x} * log (μ.real {x} / ν.real {x})`.
 
-## Main definitions
+## Main statements
 
-* `klDivFin p q`: the Kullback-Leibler divergence `∑ i, p i * log (p i / q i)` of `p` from `q`.
-
-## Main results
-
-* `sum_sub_sum_le_klDivFin`: the bound `(∑ i, p i) - (∑ i, q i) ≤ klDivFin p q`, which requires
-  no normalization hypothesis.
-* `klDivFin_nonneg`: **Gibbs' inequality**, `0 ≤ klDivFin p q` when `∑ i, q i ≤ ∑ i, p i`.
-
-## Implementation notes
-
-`klDivFin` uses the conventions `a / 0 = 0` and `log 0 = 0`. A term with `0 = q i < p i` therefore
-evaluates to `p i * log (p i / 0) = 0`, whereas the divergence has no finite value there. Each
-result below thus assumes absolute continuity, `hac : ∀ i, q i = 0 → p i = 0`.
+* `klDiv_eq_sum`, `toReal_klDiv_eq_sum`: sum formulas for finite measures.
+* `klDiv_eq_sum_of_isProbabilityMeasure`: the sum formula for probability measures.
+* `klDiv_sum_smul_dirac`, `toReal_klDiv_sum_smul_dirac`: formulas for weighted Dirac measures.
 
 ## References
 
 * [Wikipedia, *Gibbs' inequality*](https://en.wikipedia.org/wiki/Gibbs%27_inequality)
-* Cover and Thomas, *Elements of Information Theory*, Chapter 2.
 -/
 
-@[expose] public section
+public section
 
-open Real
+open Real MeasureTheory Set
+open scoped ENNReal NNReal
+
+variable {α : Type*} [MeasurableSpace α] [MeasurableSingletonClass α] [Fintype α]
+  {μ ν : Measure α}
+
+namespace MeasureTheory
+
+lemma integral_llr_fintype [IsFiniteMeasure μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    ∫ x, llr μ ν x ∂μ = ∑ x, μ.real {x} * log (μ.real {x} / ν.real {x}) := by
+  rw [integral_fintype Integrable.of_finite]
+  refine Finset.sum_congr rfl fun x _ ↦ ?_
+  by_cases hx : ν {x} = 0
+  · simp [measureReal_def, hμν hx]
+  · rw [smul_eq_mul, llr, Measure.rnDeriv_singleton hμν hx, ENNReal.toReal_div]
+    rfl
+
+end MeasureTheory
 
 namespace InformationTheory
 
-variable {ι : Type*} [Fintype ι] {p q : ι → ℝ}
+lemma klDiv_eq_sum [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
+    klDiv μ ν = ENNReal.ofReal
+      ((∑ x, μ.real {x} * log (μ.real {x} / ν.real {x})) + ν.real univ - μ.real univ) := by
+  rw [klDiv_of_ac_of_integrable hμν Integrable.of_finite, integral_llr_fintype hμν]
 
-/-- The Kullback-Leibler divergence `KL(p ‖ q) = ∑ i, p i * log (p i / q i)` of `p` from `q`,
-measured in Nats, i.e. using natural logarithms. -/
-noncomputable def klDivFin (p q : ι → ℝ) : ℝ := ∑ i, p i * log (p i / q i)
+lemma toReal_klDiv_eq_sum [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
+    (klDiv μ ν).toReal =
+      (∑ x, μ.real {x} * log (μ.real {x} / ν.real {x})) + ν.real univ - μ.real univ := by
+  rw [toReal_klDiv hμν Integrable.of_finite, integral_llr_fintype hμν]
 
-@[simp]
-lemma klDivFin_self (p : ι → ℝ) : klDivFin p p = 0 := by
-  refine Finset.sum_eq_zero fun i _ ↦ ?_
-  rcases eq_or_ne (p i) 0 with h | h
-  · simp [h]
-  · simp [div_self h]
+lemma klDiv_eq_sum_of_isProbabilityMeasure [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) :
+    klDiv μ ν = ENNReal.ofReal (∑ x, μ.real {x} * log (μ.real {x} / ν.real {x})) := by
+  simp [klDiv_eq_sum hμν]
 
-/-- `(∑ i, p i) - (∑ i, q i) ≤ klDivFin p q` for nonnegative `p` and `q` with `q i = 0 → p i = 0`.
-No normalization hypothesis is required. -/
-theorem sum_sub_sum_le_klDivFin (hp0 : ∀ i, 0 ≤ p i) (hq0 : ∀ i, 0 ≤ q i)
-    (hac : ∀ i, q i = 0 → p i = 0) :
-    (∑ i, p i) - (∑ i, q i) ≤ klDivFin p q := by
-  have key : ∀ i, p i - q i ≤ p i * log (p i / q i) :=
-    fun i ↦ sub_le_mul_log_div (hp0 i) (hq0 i) (hac i)
-  have hsum := Finset.sum_le_sum (s := Finset.univ) fun i _ ↦ key i
-  rwa [Finset.sum_sub_distrib] at hsum
+lemma toReal_klDiv_eq_sum_of_isProbabilityMeasure
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (hμν : μ ≪ ν) :
+    (klDiv μ ν).toReal = ∑ x, μ.real {x} * log (μ.real {x} / ν.real {x}) := by
+  simp [toReal_klDiv_eq_sum hμν]
 
-/-- Gibbs' inequality. `0 ≤ klDivFin p q` when `∑ i, q i ≤ ∑ i, p i`. -/
-theorem klDivFin_nonneg (hp0 : ∀ i, 0 ≤ p i) (hq0 : ∀ i, 0 ≤ q i)
-    (hac : ∀ i, q i = 0 → p i = 0) (hmass : ∑ i, q i ≤ ∑ i, p i) :
-    0 ≤ klDivFin p q := by
-  have h := sum_sub_sum_le_klDivFin hp0 hq0 hac
-  linarith
+lemma klDiv_sum_smul_dirac (p q : α → ℝ≥0) (hpq : ∀ x, q x = 0 → p x = 0) :
+    klDiv (Measure.sum fun x ↦ p x • Measure.dirac x)
+      (Measure.sum fun x ↦ q x • Measure.dirac x) =
+      ENNReal.ofReal ((∑ x, p x * log (p x / q x)) + ∑ x, (q x : ℝ) - ∑ x, (p x : ℝ)) := by
+  have hac : (Measure.sum fun x ↦ p x • Measure.dirac x) ≪
+      (Measure.sum fun x ↦ q x • Measure.dirac x) := by
+    simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
+      ENNReal.coe_eq_zero] using hpq
+  rw [klDiv_eq_sum hac]
+  simp only [measureReal_def, ← Measure.coe_nnreal_smul, Measure.sum_smul_dirac_singleton]
+  simp [ENNReal.toReal_sum]
 
-/-- `klDivFin` is invariant under relabeling by an equivalence. -/
-lemma klDivFin_comp_equiv {κ : Type*} [Fintype κ] (e : κ ≃ ι) (p q : ι → ℝ) :
-    klDivFin (p ∘ e) (q ∘ e) = klDivFin p q :=
-  Equiv.sum_comp e fun i ↦ p i * log (p i / q i)
+lemma toReal_klDiv_sum_smul_dirac (p q : α → ℝ≥0) (hpq : ∀ x, q x = 0 → p x = 0) :
+    (klDiv (Measure.sum fun x ↦ p x • Measure.dirac x)
+      (Measure.sum fun x ↦ q x • Measure.dirac x)).toReal =
+      (∑ x, p x * log (p x / q x)) + ∑ x, (q x : ℝ) - ∑ x, (p x : ℝ) := by
+  have hac : (Measure.sum fun x ↦ p x • Measure.dirac x) ≪
+      (Measure.sum fun x ↦ q x • Measure.dirac x) := by
+    simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
+      ENNReal.coe_eq_zero] using hpq
+  rw [toReal_klDiv_eq_sum hac]
+  simp only [measureReal_def, ← Measure.coe_nnreal_smul, Measure.sum_smul_dirac_singleton]
+  simp [ENNReal.toReal_sum]
 
 end InformationTheory
