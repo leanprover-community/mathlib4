@@ -96,9 +96,9 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (Y' : MonoOver Y) :
     IsIso ((existsPullbackAdj f).counit.app Y') := by
-  letI : Epi ((existsPullbackAdj f).counit.app Y').hom.left :=
+  let : Epi ((existsPullbackAdj f).counit.app Y').hom.left :=
     epi_of_epi_fac (factorThruImage_comp_existsPullbackAdj_counit_app_hom_left f Y')
-  letI : Mono ((existsPullbackAdj f).counit.app Y').hom.left := mono_of_mono_fac (MonoOver.w _)
+  let : Mono ((existsPullbackAdj f).counit.app Y').hom.left := mono_of_mono_fac (MonoOver.w _)
   rw [isIso_iff_isIso_hom_left]
   apply isIso_of_mono_of_epi
 
@@ -203,7 +203,7 @@ there is an order-isomorphism between subobjects of `X/Y := cokernel (Y ↪ X)` 
 containing `Y`. -/
 def cokernelOrderIso {X : C} (Y : Subobject X) :
     Subobject (cokernel Y.arrow) ≃o Set.Ici Y :=
-  (epiOrderIso (cokernel.π Y.arrow)).trans (OrderIso.setCongr _ _
+  (epiOrderIso (cokernel.π Y.arrow)).trans (Set.orderIsoOfEq _ _
     (by rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow]))
 
 end CategoryTheory.Abelian.Subobject
