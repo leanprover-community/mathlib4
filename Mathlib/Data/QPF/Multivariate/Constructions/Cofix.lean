@@ -351,11 +351,11 @@ section LiftRMap
 
 theorem liftR_map {α β : TypeVec n} {F' : TypeVec n → Type u} [MvFunctor F'] [LawfulMvFunctor F']
     (R : β ⊗ β ⟹ «repeat» n Prop) (x : F' α) (f g : α ⟹ β) (h : α ⟹ Subtype_ R)
-    (hh : subtypeVal _ ⊚ h = (f ⊗' g) ⊚ prod.diag) : LiftR' R (f <$$> x) (g <$$> x) := by
+    (hh : subtypeVal _ ⊚ h = (f ⊗' g) ⊚ prod.diagonal) : LiftR' R (f <$$> x) (g <$$> x) := by
   rw [LiftR_def]
   exists h <$$> x
-  rw [MvFunctor.map_map, comp_assoc, hh, ← comp_assoc, fst_prod_mk, comp_assoc, fst_diag]
-  rw [MvFunctor.map_map, comp_assoc, hh, ← comp_assoc, snd_prod_mk, comp_assoc, snd_diag]
+  rw [MvFunctor.map_map, comp_assoc, hh, ← comp_assoc, fst_prod_mk, comp_assoc, fst_diagonal]
+  rw [MvFunctor.map_map, comp_assoc, hh, ← comp_assoc, snd_prod_mk, comp_assoc, snd_diagonal]
   dsimp [LiftR']; constructor <;> rfl
 
 open Function
@@ -366,14 +366,14 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
     (x : F (α ::: ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
     LiftR' (RelLast' _ R) ((id ::: f) <$$> x) ((id ::: g) <$$> x) :=
   let h : ι → { x : ι' × ι' // uncurry R x } := fun x => ⟨(f x, g x), hh x⟩
-  let b : (α ::: ι) ⟹ _ := @diagSub n α ::: h
+  let b : (α ::: ι) ⟹ _ := @diagonalSub n α ::: h
   let c :
     (Subtype_ α.repeatEq ::: { x // uncurry R x }) ⟹
       ((fun i : Fin2 n => { x // ofRepeat (α.RelLast' R i.fs x) }) ::: Subtype (uncurry R)) :=
     ofSubtype _ ::: id
   have hh :
     subtypeVal _ ⊚ toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b =
-      ((id ::: f) ⊗' (id ::: g)) ⊚ prod.diag := by
+      ((id ::: f) ⊗' (id ::: g)) ⊚ prod.diagonal := by
     dsimp [b]
     apply eq_of_drop_last_eq
     · dsimp

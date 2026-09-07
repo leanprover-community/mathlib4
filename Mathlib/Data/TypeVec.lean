@@ -442,9 +442,11 @@ def prod.snd : ∀ {n} {α β : TypeVec.{u} n}, α ⊗ β ⟹ β
   | succ _, _, _, Fin2.fz => Prod.snd
 
 /-- introduce a product where both components are the same -/
-def prod.diag : ∀ {n} {α : TypeVec.{u} n}, α ⟹ α ⊗ α
-  | succ _, α, Fin2.fs _, x => @prod.diag _ (drop α) _ x
+def prod.diagonal : ∀ {n} {α : TypeVec.{u} n}, α ⟹ α ⊗ α
+  | succ _, α, Fin2.fs _, x => @prod.diagonal _ (drop α) _ x
   | succ _, _, Fin2.fz, x => (x, x)
+
+@[deprecated (since := "2026-09-06")] alias prod.diag := prod.diagonal
 
 /-- constructor for `prod` -/
 def prod.mk : ∀ {n} {α β : TypeVec.{u} n} (i : Fin2 n), α i → β i → (α ⊗ β) i
@@ -492,15 +494,19 @@ theorem snd_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β'
   | fz => rfl
   | fs _ i_ih => apply i_ih
 
-theorem fst_diag {α : TypeVec n} : TypeVec.prod.fst ⊚ (prod.diag : α ⟹ _) = id := by
+theorem fst_diagonal {α : TypeVec n} : TypeVec.prod.fst ⊚ (prod.diagonal : α ⟹ _) = id := by
   funext i; induction i with
   | fz => rfl
   | fs _ i_ih => apply i_ih
 
-theorem snd_diag {α : TypeVec n} : TypeVec.prod.snd ⊚ (prod.diag : α ⟹ _) = id := by
+@[deprecated (since := "2026-09-06")] alias fst_diag := fst_diagonal
+
+theorem snd_diagonal {α : TypeVec n} : TypeVec.prod.snd ⊚ (prod.diagonal : α ⟹ _) = id := by
   funext i; induction i with
   | fz => rfl
   | fs _ i_ih => apply i_ih
+
+@[deprecated (since := "2026-09-06")] alias snd_diag := snd_diagonal
 
 theorem repeatEq_iff_eq {α : TypeVec n} {i x y} :
     ofRepeat (repeatEq α i (prod.mk _ x y)) ↔ x = y := by
@@ -548,11 +554,13 @@ def ofSubtype' {n} {α : TypeVec.{u} n} (p : α ⊗ α ⟹ «repeat» n Prop) :
   | Fin2.fs i, x => ofSubtype' _ i x
   | Fin2.fz, x => ⟨x.val, cast (by congr) x.property⟩
 
-/-- similar to `diag` but the target vector is a `Subtype_`
+/-- similar to `diagonal` but the target vector is a `Subtype_`
 guaranteeing the equality of the components -/
-def diagSub {n} {α : TypeVec.{u} n} : α ⟹ Subtype_ (repeatEq α)
-  | Fin2.fs _, x => @diagSub _ (drop α) _ x
+def diagonalSub {n} {α : TypeVec.{u} n} : α ⟹ Subtype_ (repeatEq α)
+  | Fin2.fs _, x => @diagonalSub _ (drop α) _ x
   | Fin2.fz, x => ⟨(x, x), rfl⟩
+
+@[deprecated (since := "2026-09-06")] alias diagSub := diagonalSub
 
 theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
     TypeVec.subtypeVal ps = nilFun :=
@@ -560,11 +568,14 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
+theorem diagonal_sub_val {n} {α : TypeVec.{u} n} :
+    subtypeVal (repeatEq α) ⊚ diagonalSub = prod.diagonal := by
   ext i x
   induction i with
-  | fz => simp only [comp, subtypeVal, diagSub, prod.diag]
+  | fz => simp only [comp, subtypeVal, diagonalSub, prod.diagonal]
   | fs _ i_ih => apply @i_ih (drop α)
+
+@[deprecated (since := "2026-09-06")] alias diag_sub_val := diagonal_sub_val
 
 theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ β ⟹ _) := by
   intros
@@ -585,7 +596,9 @@ theorem append_prod_appendFun {n} {α α' β β' : TypeVec.{u} n} {φ φ' ψ ψ'
 end Liftp'
 
 @[simp]
-theorem dropFun_diag {α} : dropFun (@prod.diag (n + 1) α) = prod.diag := rfl
+theorem dropFun_diagonal {α} : dropFun (@prod.diagonal (n + 1) α) = prod.diagonal := rfl
+
+@[deprecated (since := "2026-09-06")] alias dropFun_diag := dropFun_diagonal
 
 @[simp]
 theorem dropFun_subtypeVal {α} (p : α ⟹ «repeat» (n + 1) Prop) :
