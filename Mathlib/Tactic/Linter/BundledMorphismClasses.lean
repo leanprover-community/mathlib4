@@ -37,6 +37,8 @@ open Lean Meta
 meta def morphismClassesToLint : Array Name := #[
   `LinearMapClass,
   `SemilinearMapClass,
+  `ContinuousLinearMapClass,
+  `RingHomClass, `RingEquivClass, `AlgHomClass, `AlgEquivClass,
   `StarRingHomClass,
   `StarRingEquivClass,
   `NonUnitalStarAlgHomClass,
