@@ -73,8 +73,8 @@ and `AdjoinRoot` which constructs a new type.
 
 This is not a typeclass because the choice of root given `S` and `f` is not unique.
 -/
-structure IsAdjoinRoot.{u,v} {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
-    (f : R[X]) : Type max u v where
+structure IsAdjoinRoot {R : Type*} (S : Type*) [CommSemiring R] [Semiring S] [Algebra R S]
+    (f : R[X]) where
   map : R[X] →ₐ[R] S
   map_surjective : Function.Surjective map
   ker_map : RingHom.ker map = Ideal.span {f}
@@ -90,8 +90,8 @@ we have `IsAdjoinRootMonic.powerBasis`.
 Bundling `Monic` into this structure is very useful when working with explicit `f`s such as
 `X^2 - C a * X - C b` since it saves you carrying around the proofs of monicity.
 -/
-structure IsAdjoinRootMonic.{u,v} {R : Type u} (S : Type v) [CommSemiring R] [Semiring S]
-    [Algebra R S] (f : R[X]) extends IsAdjoinRoot S f where
+structure IsAdjoinRootMonic {R : Type*} (S : Type*) [CommSemiring R] [Semiring S] [Algebra R S]
+    (f : R[X]) extends IsAdjoinRoot S f where
   monic : Monic f
 
 section Ring
