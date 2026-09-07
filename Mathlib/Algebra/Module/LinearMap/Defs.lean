@@ -171,7 +171,6 @@ end SemilinearMapClass
 
 @[deprecated (since := "2026-09-03")] alias SemilinearMapClass.semilinearMap :=
   LinearMap.ofClass
-@[deprecated (since := "2026-09-07")] alias SemilinearMap.ofClass := LinearMap.ofClass
 @[deprecated (since := "2026-09-03")] alias LinearMapClass.linearMap := LinearMap.ofClass
 
 namespace LinearMap
