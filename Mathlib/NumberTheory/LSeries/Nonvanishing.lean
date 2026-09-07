@@ -27,8 +27,7 @@ These results are prerequisites for the **Prime Number Theorem** and
 
 Using the functional equation, these results are extended to the left half-plane in
 `LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, excluding negative
-integers and negative even integers respectively. TODO: a parity analysis of L-functions to
-refine the former to negative even or odd integers.
+integers and negative even integers respectively. 
 
 As a byproduct of the above analysis, non-vanishing theorems for the root number or Gauss sum
 associated to a Dirichlet L-function are also provided.
@@ -470,7 +469,7 @@ theorem norm_gaussSum_stdAddChar (hχ : χ.IsPrimitive) :
 
 /-- **The zeros of a primitive Dirichlet `L`-function in the closed left half-plane are exactly
 those of its archimedean Gamma factor**, with the sole exception of `s = 0` for the trivial
-character (where `gammaFactor` vanishes but `L` does not). -/
+character. -/
 theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs : s.re ≤ 0) :
     LFunction χ s = 0 ↔ χ.gammaFactor s = 0 ∧ (N ≠ 1 ∨ s ≠ 0):= by
   have := NeZero.ne N
@@ -484,9 +483,7 @@ theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs 
     completedLFunction_ne_zero_of_one_le_re]
   <;> grind [cpow_eq_zero_iff, Nat.cast_eq_zero, sub_re, one_re, inv_eq_one, sub_ne_zero]
 
-/-- **The zeros of `ζ` in the closed left half-plane are exactly the trivial ones**, i.e. the
-negative even integers. This is the special case of `LFunction_eq_zero_iff_of_re_nonpos` for the
-trivial character modulo `1`, whose Gamma factor is `Gammaℝ`. -/
+/-- **The zeros of `ζ` in the closed left half-plane are exactly the trivial ones**. -/
 theorem _root_.riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
     riemannZeta s = 0 ↔ ∃ n : ℕ, s = -2 * (n + 1) := by
   rw [← LFunction_modOne_eq (χ := 1), LFunction_eq_zero_iff_of_re_nonpos
