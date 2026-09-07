@@ -156,7 +156,10 @@ variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
 theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp [map_smulₛₗ _]
 
-/-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
+/-- Reinterpret an element of a type of semilinear maps as a semilinear map.
+
+See `LinearMap.ofClass` for the analogous definition on *linear* maps.
+(In the linear case, both coincide.) -/
 @[coe]
 def _root_.SemilinearMap.ofClass : M →ₛₗ[σ] M₃ where
   toFun := f
@@ -176,8 +179,13 @@ namespace LinearMapClass
 variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
   (f : F) [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
 
-/-- Reinterpret an element of a type of linear maps as a linear map. -/
-abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMap.ofClass f
+/-- Reinterpret an element of a type of linear maps as a linear map.
+See `SemilinearMap.ofClass` for the analogous definition on *semilinear* maps.
+(In the linear case, both coincide.)
+-/
+abbrev _root_.LinearMap.ofClass : M₁ →ₗ[R] M₂ := SemilinearMap.ofClass f
+
+@[deprecated (since := "2026-09-03")] alias linearMap := LinearMap.ofClass
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 instance instCoeToLinearMap : CoeHead F (M₁ →ₗ[R] M₂) where
