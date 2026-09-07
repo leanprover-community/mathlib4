@@ -98,13 +98,12 @@ lemma absolutelyContinuous_sum_smul_dirac_iff [MeasurableSingletonClass α]
     (sum fun x ↦ p x • dirac x) ≪ (sum fun x ↦ q x • dirac x) ↔
       ∀ x, q x = 0 → p x = 0 := by
   constructor
-  · intro h x hx
-    simpa only [sum_smul_dirac_singleton] using
-      h (s := {x}) (by simpa only [sum_smul_dirac_singleton] using hx)
+  · intro h x
+    simpa only [sum_smul_dirac_singleton] using (h (s := {x}))
   · intro hpq
     refine absolutelyContinuous_sum_left fun x ↦ absolutelyContinuous_sum_right x ?_
     by_cases hq : q x = 0
-    · simp [hq, hpq x hq]
+    · simp [hpq x hq]
     · exact (AbsolutelyContinuous.rfl.smul_left (p x)).smul_right hq
 
 /-- A measure on a countable type is a sum of Dirac measures.

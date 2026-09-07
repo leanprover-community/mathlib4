@@ -73,24 +73,20 @@ lemma klDiv_sum_smul_dirac (p q : α → ℝ≥0) (hpq : ∀ x, q x = 0 → p x 
     klDiv (Measure.sum fun x ↦ p x • Measure.dirac x)
       (Measure.sum fun x ↦ q x • Measure.dirac x) =
       ENNReal.ofReal ((∑ x, p x * log (p x / q x)) + ∑ x, (q x : ℝ) - ∑ x, (p x : ℝ)) := by
-  have hac : (Measure.sum fun x ↦ p x • Measure.dirac x) ≪
-      (Measure.sum fun x ↦ q x • Measure.dirac x) := by
-    simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
+  rw [klDiv_eq_sum]
+  · simp only [measureReal_def, ← Measure.coe_nnreal_smul, Measure.sum_smul_dirac_singleton]
+    simp [ENNReal.toReal_sum]
+  · simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
       ENNReal.coe_eq_zero] using hpq
-  rw [klDiv_eq_sum hac]
-  simp only [measureReal_def, ← Measure.coe_nnreal_smul, Measure.sum_smul_dirac_singleton]
-  simp [ENNReal.toReal_sum]
 
 lemma toReal_klDiv_sum_smul_dirac (p q : α → ℝ≥0) (hpq : ∀ x, q x = 0 → p x = 0) :
     (klDiv (Measure.sum fun x ↦ p x • Measure.dirac x)
       (Measure.sum fun x ↦ q x • Measure.dirac x)).toReal =
       (∑ x, p x * log (p x / q x)) + ∑ x, (q x : ℝ) - ∑ x, (p x : ℝ) := by
-  have hac : (Measure.sum fun x ↦ p x • Measure.dirac x) ≪
-      (Measure.sum fun x ↦ q x • Measure.dirac x) := by
-    simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
+  rw [toReal_klDiv_eq_sum]
+  · simp only [measureReal_def, ← Measure.coe_nnreal_smul, Measure.sum_smul_dirac_singleton]
+    simp [ENNReal.toReal_sum]
+  · simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
       ENNReal.coe_eq_zero] using hpq
-  rw [toReal_klDiv_eq_sum hac]
-  simp only [measureReal_def, ← Measure.coe_nnreal_smul, Measure.sum_smul_dirac_singleton]
-  simp [ENNReal.toReal_sum]
 
 end InformationTheory

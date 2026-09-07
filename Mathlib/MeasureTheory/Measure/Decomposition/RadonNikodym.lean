@@ -343,10 +343,8 @@ lemma lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
 lemma rnDeriv_singleton [MeasurableSingletonClass α] [HaveLebesgueDecomposition μ ν]
     [SigmaFinite ν] (hμν : μ ≪ ν) {x : α} (hx : ν {x} ≠ 0) :
     μ.rnDeriv ν x = μ {x} / ν {x} := by
-  have h := setLIntegral_rnDeriv hμν {x}
-  rw [lintegral_singleton] at h
-  exact (ENNReal.eq_div_iff hx measure_singleton_lt_top.ne).mpr
-    (by simpa [mul_comm] using h)
+  apply (ENNReal.eq_div_iff hx measure_singleton_lt_top.ne).mpr
+  simpa only [lintegral_singleton, mul_comm] using setLIntegral_rnDeriv hμν {x}
 
 lemma integrableOn_toReal_rnDeriv {s : Set α} (hμs : μ s ≠ ∞) :
     IntegrableOn (fun x ↦ (μ.rnDeriv ν x).toReal) s ν := by
