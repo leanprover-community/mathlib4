@@ -27,7 +27,7 @@ These results are prerequisites for the **Prime Number Theorem** and
 
 Using the functional equation, these results are extended to the left half-plane in
 `LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, excluding negative
-integers and negative even integers respectively. 
+integers and negative even integers respectively.
 
 As a byproduct of the above analysis, non-vanishing theorems for the root number or Gauss sum
 associated to a Dirichlet L-function are also provided.
