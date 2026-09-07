@@ -312,8 +312,8 @@ end BoxProduct
 
 section TensorProduct
 
-/-- Tensor product of simple graphs. It relates `(a₁, b₁)` and `(a₂, b₂)` if `G` relates `a₁`
-and `a₂`, and `H` relates `b₁` and `b₂`. -/
+/-- Tensor product of simple graphs. `(a₁, b₁)` is adjacent to `(a₂, b₂)` if `a₁` is adjacent to
+`a₂` and `b₁` is adjacent to `b₂`. -/
 def tensorProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
   Adj x y := G.Adj x.1 y.1 ∧ H.Adj x.2 y.2
   symm.symm x y h := by rwa [adj_comm G, adj_comm H]
@@ -325,12 +325,11 @@ infixl:70 " ⊗ " => tensorProd
 @[simp]
 theorem tensorProd_adj {x y : α × β} :
     (G ⊗ H).Adj x y ↔ G.Adj x.1 y.1 ∧ H.Adj x.2 y.2 :=
-  Iff.rfl
+  .rfl
 
 theorem tensorProd_adj_left {a₁ a₂ : α} {b₁ b₂ : β} (h : (G ⊗ H).Adj (a₁, b₁) (a₂, b₂)) :
-  a₁ ≠ a₂ := by
-  rw [tensorProd_adj] at h
-  grind [Adj.ne]
+    a₁ ≠ a₂ := by
+  exact h.left.ne
 
 /-- If `(a₁, b₁)` and `(a₂, b₂)` are adjacent in the tensor product graph,
 then `a₁` and `a₂` are adjacent. -/
@@ -505,9 +504,12 @@ theorem tensorProd_le_strongProd : G ⊗ H ≤ G ⊠ H :=
   le_sup_right
 
 @[simp]
-theorem strongProd_adj {x y : α × β} :
-    (G ⊠ H).Adj x y ↔ x ≠ y ∧ (x.1 = y.1 ∨ G.Adj x.1 y.1) ∧ (x.2 = y.2 ∨ H.Adj x.2 y.2) := by
-  simp only [strongProd, sup_adj, boxProd_adj, tensorProd_adj, ne_eq]
+theorem strongProd_adj {u v : α × β} : (G ⊠ H).Adj u v ↔ ((G □ H) ⊔ G × H).Adj u v :=
+  .rfl
+
+theorem strongProd_adj' {u v : α × β} :
+    (G ⊠ H).Adj u v ↔ u ≠ v ∧ (u.1 = v.1 ∨ G.Adj u.1 v.1) ∧ (u.2 = v.2 ∨ H.Adj u.2 v.2) := by
+  simp
   grind [Adj.ne]
 
 theorem strongProd_adj_left {a₁ : α} {b : β} {a₂ : α} :
