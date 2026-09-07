@@ -21,7 +21,7 @@ This file defines Carmichael numbers and proves Korselt's criterion about them.
 
 ## Main results
 
-* `Nat.IsCarmichael_iff_korselt`: Korselt's criterion for Carmichael numbers
+* `Nat.isCarmichael_iff_korselt`: Korselt's criterion for Carmichael numbers
 * `Nat.isCarmichael_561`: `561` is a Carmichael number
 
 ## TODO
