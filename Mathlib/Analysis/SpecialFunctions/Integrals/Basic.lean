@@ -367,6 +367,21 @@ theorem integral_div_sq_add_sq {c : ℝ} :
     · rw [integral_const_mul, integral_inv_sq_add_sq hc]
       field_simp
 
+theorem integral_id_div_sq_add_sq {c : ℝ} (hc : c ≠ 0) :
+    ∫ x : ℝ in a..b, x / (c ^ 2 + x ^ 2) = (log (c ^ 2 + b ^ 2) - log (c ^ 2 + a ^ 2)) / 2 := by
+  have hcont : Continuous fun x : ℝ => x / (c ^ 2 + x ^ 2) :=
+    continuous_id.div (by fun_prop) fun x => by positivity
+  have hderiv : ∀ x ∈ [[a, b]],
+      HasDerivAt (fun t : ℝ => log (c ^ 2 + t ^ 2) / 2) (x / (c ^ 2 + x ^ 2)) x := by
+    intro x _
+    have hpos : (0 : ℝ) < c ^ 2 + x ^ 2 := by positivity
+    have h : HasDerivAt (fun t : ℝ => c ^ 2 + t ^ 2) (2 * x) x := by
+      simpa using (hasDerivAt_pow 2 x).const_add (c ^ 2)
+    have hlog := (h.log hpos.ne').div_const 2
+    rwa [show 2 * x / (c ^ 2 + x ^ 2) / 2 = x / (c ^ 2 + x ^ 2) by ring] at hlog
+  rw [integral_eq_sub_of_hasDerivAt hderiv (hcont.intervalIntegrable _ _)]
+  ring
+
 /-- The integrand is chosen to match the conclusion of `Real.deriv_log_log`. -/
 @[simp]
 theorem integral_inv_div_log (ha : 1 < a) (hb : 1 < b) :
