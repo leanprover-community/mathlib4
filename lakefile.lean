@@ -18,6 +18,13 @@ require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
+require HexBerlekampZassenhausMathlib from git
+  "https://github.com/leanprover/hex-berlekamp-zassenhaus-mathlib.git" @
+    "7e9fe433ade468dc20608ab273f7a8dc219e9fb7"
+require HexRealRootsMathlib from git
+  "https://github.com/leanprover/hex-real-roots-mathlib.git" @
+    "20609c39cb74403a3bffbfd74be5125be297d2ac"
+
 
 /-!
 ## Options for building mathlib
