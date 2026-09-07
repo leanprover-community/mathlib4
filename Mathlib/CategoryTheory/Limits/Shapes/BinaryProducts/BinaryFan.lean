@@ -145,7 +145,7 @@ def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y whe
   π := { app := fun | { as := j } => match j with | left => π₁ | right => π₂ }
 
 /-- A binary cofan with vertex `P` consists of the two inclusions `ι₁ : X ⟶ P` and `ι₂ : Y ⟶ P`. -/
-@[simps pt]
+@[simps pt, implicit_reducible]
 def BinaryCofan.mk {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : BinaryCofan X Y where
   pt := P
   ι := { app := fun | { as := j } => match j with | left => ι₁ | right => ι₂ }
@@ -172,7 +172,6 @@ theorem BinaryCofan.mk_inr {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (Binary
 def isoBinaryFanMk {X Y : C} (c : BinaryFan X Y) : c ≅ BinaryFan.mk c.fst c.snd :=
     Cone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryCofanMk {X Y : C} (c : BinaryCofan X Y) : c ≅ BinaryCofan.mk c.inl c.inr :=
     Cocone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
@@ -395,7 +394,6 @@ def BinaryFan.isLimitMapConeEquiv {X Y : C} {s : BinaryFan X Y} :
   IsLimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| ext (Iso.refl _)
     (by simp [fst]) (by simp [snd])
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `F.mapCocone s` being colimiting is the same as the induced binary cofan being colimiting. -/
 def BinaryCofan.isColimitMapConeEquiv {X Y : C} {s : BinaryCofan X Y} :
     IsColimit (F.mapCocone s) ≃ IsColimit (s.map F) :=
@@ -443,7 +441,6 @@ protected def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColi
     (fun s m h₁ h₂ ↦ Quiver.Hom.unop_inj
       (BinaryFan.IsLimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a `BinaryCofan` is a colimit, then its opposite is a limit. -/
 protected def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) : IsLimit c.op :=
   BinaryFan.isLimitMk (fun s ↦ (hc.desc s.unop).op)
@@ -459,7 +456,6 @@ protected def BinaryFan.IsLimit.unop {c : BinaryFan (op X) (op Y)} (hc : IsLimit
     (fun s m h₁ h₂ ↦ Quiver.Hom.op_inj
       (BinaryFan.IsLimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a `BinaryCofan` in the opposite category is a colimit, then its `unop` is a limit. -/
 protected def BinaryCofan.IsColimit.unop {c : BinaryCofan (op X) (op Y)} (hc : IsColimit c) :
     IsLimit c.unop :=
