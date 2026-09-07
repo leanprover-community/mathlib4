@@ -68,17 +68,25 @@ namespace ObjectProperty
 ### Interaction of the left and right orthogonal
 
 The results in this section hold under weaker assumptions than `Abelian C` (a category with
-zero morphisms suffices); they are stated here for convenience and may later be moved to
-`Mathlib/CategoryTheory/ObjectProperty/Orthogonal.lean`.
+zero morphisms suffices).
 -/
 
 section Orthogonal
 
 variable (P Q : ObjectProperty C)
 
+/-- The pair `(rightOrthogonal, leftOrthogonal)` forms a Galois connection between
+`ObjectProperty C` and its opposite order. -/
+lemma gc_rightOrthogonal_leftOrthogonal :
+    GaloisConnection (OrderDual.toDual (α := ObjectProperty C) ∘ rightOrthogonal)
+      (leftOrthogonal ∘ OrderDual.ofDual) :=
+  fun _ _ ↦ ⟨fun h _ hPX _ f hQY ↦ h _ hQY f hPX, fun h _ hQY _ f hPX ↦ h _ hPX f hQY⟩
+
 lemma le_leftOrthogonal_iff_le_rightOrthogonal :
     P ≤ Q.leftOrthogonal ↔ Q ≤ P.rightOrthogonal :=
-  ⟨fun h _ hQ _ f hP ↦ h _ hP f hQ, fun h _ hP _ f hQ ↦ h _ hQ f hP⟩
+  -- the Galois connection has `rightOrthogonal` as its left adjoint, so its two sides
+  -- appear in the opposite order
+  (gc_rightOrthogonal_leftOrthogonal P (OrderDual.toDual Q)).symm
 
 lemma le_rightOrthogonal_leftOrthogonal : P ≤ P.rightOrthogonal.leftOrthogonal :=
   fun _ hX _ f hY ↦ hY f hX
@@ -107,16 +115,16 @@ lemma rightOrthogonal_leftOrthogonal_rightOrthogonal :
 lemma rightOrthogonal_op : P.op.rightOrthogonal = P.leftOrthogonal.op := by
   ext X
   constructor
-  · intro h Z g hZ
-    simpa using congrArg Quiver.Hom.unop (h g.op hZ)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.unop (h f.op hY)
   · intro h Y f hY
     simpa using congrArg Quiver.Hom.op (h f.unop hY)
 
 lemma leftOrthogonal_op : P.op.leftOrthogonal = P.rightOrthogonal.op := by
   ext X
   constructor
-  · intro h Z g hZ
-    simpa using congrArg Quiver.Hom.unop (h g.op hZ)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.unop (h f.op hY)
   · intro h Y f hY
     simpa using congrArg Quiver.Hom.op (h f.unop hY)
 
@@ -124,19 +132,19 @@ lemma rightOrthogonal_unop (R : ObjectProperty Cᵒᵖ) :
     R.unop.rightOrthogonal = R.leftOrthogonal.unop := by
   ext X
   constructor
-  · intro h Y g hY
-    simpa using congrArg Quiver.Hom.op (h g.unop hY)
-  · intro h W f hW
-    simpa using congrArg Quiver.Hom.unop (h f.op hW)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.op (h f.unop hY)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.unop (h f.op hY)
 
 lemma leftOrthogonal_unop (R : ObjectProperty Cᵒᵖ) :
     R.unop.leftOrthogonal = R.rightOrthogonal.unop := by
   ext X
   constructor
-  · intro h Y g hY
-    simpa using congrArg Quiver.Hom.op (h g.unop hY)
-  · intro h W f hW
-    simpa using congrArg Quiver.Hom.unop (h f.op hW)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.op (h f.unop hY)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.unop (h f.op hY)
 
 end Orthogonal
 
@@ -151,7 +159,8 @@ instance (P : ObjectProperty C) : P.leftOrthogonal.IsClosedUnderExtensions where
     intro s hs hX₁ hX₃ Z k hZ
     let t : CokernelCofork s.f := CokernelCofork.ofπ k (hX₁ (s.f ≫ k) hZ)
     -- the type ascription on `l` matters: it puts the morphism at type `s.X₃ ⟶ Z` rather
-    -- than the definitionally equal `(CokernelCofork.ofπ s.g _).pt ⟶ t.pt`
+    -- than the definitionally equal `(CokernelCofork.ofπ s.g _).pt ⟶ t.pt`; without it,
+    -- `simp [← hfac, hl]` cannot close the goal because the rewrite does not fire.
     let l : s.X₃ ⟶ Z := hs.gIsCokernel.desc t
     have hl : l = 0 := hX₃ l hZ
     have hfac : s.g ≫ l = k := hs.gIsCokernel.fac t WalkingParallelPair.one
@@ -177,7 +186,8 @@ instance (P : ObjectProperty C) : P.rightOrthogonal.IsClosedUnderExtensions wher
   prop_X₂_of_shortExact := by
     intro s hs hX₁ hX₃ Z k hZ
     let t : KernelFork s.g := KernelFork.ofι k (hX₃ (k ≫ s.g) hZ)
-    -- as in the previous instance, the type ascription on `l` is essential
+    -- as in the previous instance, the type ascription on `l` is essential; without it,
+    -- `simp [← hfac, hl]` cannot close the goal because the rewrite does not fire.
     let l : Z ⟶ s.X₁ := hs.fIsKernel.lift t
     have hl : l = 0 := hX₁ l hZ
     have hfac : l ≫ s.f = k := hs.fIsKernel.fac t WalkingParallelPair.zero
@@ -229,6 +239,8 @@ lemma le_pullback_cokernel_π :
     ((Subobject.isPullback (cokernel.π A.arrow) B).lift 0 A.arrow (by simp))
     ((Subobject.isPullback (cokernel.π A.arrow) B).lift_snd 0 A.arrow (by simp))
 
+/-- The canonical inclusion of `A` into the pullback of `B` along `cokernel.π A.arrow`,
+composed with the projection `Subobject.pullbackπ` onto `B`, vanishes. -/
 lemma ofLE_comp_pullbackπ_cokernel_π :
     Subobject.ofLE A _ (le_pullback_cokernel_π B) ≫
       Subobject.pullbackπ (cokernel.π A.arrow) B = 0 := by
@@ -243,18 +255,22 @@ inclusion of `A` into the pullback of `B` along `cokernel.π A.arrow` is a kerne
 noncomputable def isLimitKernelForkPullbackπCokernelπ :
     IsLimit (KernelFork.ofι _ (ofLE_comp_pullbackπ_cokernel_π B)) := by
   let A' := (Subobject.pullback (cokernel.π A.arrow)).obj B
-  have hA := monoIsKernelOfCokernel
+  -- `A.arrow` is a kernel of `cokernel.π A.arrow`, since it is a monomorphism
+  have hker := monoIsKernelOfCokernel
     (CokernelCofork.ofπ (cokernel.π A.arrow) (cokernel.condition A.arrow))
     (cokernelIsCokernel A.arrow)
   apply KernelFork.IsLimit.ofι' _ (ofLE_comp_pullbackπ_cokernel_π B)
   intro Z f hf
-  let s : KernelFork (cokernel.π A.arrow) := KernelFork.ofι (f ≫ A'.arrow)
-    (by rw [Category.assoc, ← (Subobject.isPullback (cokernel.π A.arrow) B).toCommSq.w,
-      ← Category.assoc, hf, zero_comp])
-  refine ⟨hA.lift s, ?_⟩
+  -- a map into `A'` killed by `pullbackπ` is, after `A'.arrow`, killed by `cokernel.π A.arrow`,
+  -- so it factors through `A`; that factorization is the required lift
+  have hf' : (f ≫ A'.arrow) ≫ cokernel.π A.arrow = 0 := by
+    rw [Category.assoc, ← (Subobject.isPullback (cokernel.π A.arrow) B).toCommSq.w,
+      ← Category.assoc, hf, zero_comp]
+  let s : KernelFork (cokernel.π A.arrow) := KernelFork.ofι (f ≫ A'.arrow) hf'
+  refine ⟨hker.lift s, ?_⟩
   apply (cancel_mono A'.arrow).mp
   rw [Category.assoc, Subobject.ofLE_arrow (le_pullback_cokernel_π B)]
-  exact hA.fac s WalkingParallelPair.zero
+  exact Fork.IsLimit.lift_ι hker
 
 /-- Given a subobject `A` of `X` and a subobject `B` of `cokernel A.arrow`, the short complex
 `A ⟶ (Subobject.pullback (cokernel.π A.arrow)).obj B ⟶ B` with first map the canonical
@@ -278,13 +294,15 @@ of any object satisfies `P`; that is, every object has a largest `P`-subobject. 
 lemma prop_sSup (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] (X : C) :
-    P (Subobject.sSup {A : Subobject X | P (A : C)}) :=
-  P.prop_of_iso (Subobject.underlyingIso (Limits.image.ι (Subobject.smallCoproductDesc _))).symm
-    (P.prop_of_epi (Limits.factorThruImage _)
-      (ObjectProperty.prop_colimit _ _ fun ⟨j⟩ ↦ by
-        dsimp
-        obtain ⟨S, hS, hj⟩ := j.2
-        simpa [← hj] using hS))
+    P (Subobject.sSup {A : Subobject X | P (A : C)}) := by
+  -- `Subobject.sSup s` is the image of the canonical map out of the coproduct of the
+  -- members of `s`, so it is a quotient of a coproduct of objects satisfying `P`.
+  apply P.prop_of_iso
+    (Subobject.underlyingIso (Limits.image.ι (Subobject.smallCoproductDesc _))).symm
+  apply P.prop_of_epi (Limits.factorThruImage _)
+  apply ObjectProperty.prop_colimit
+  rintro ⟨⟨_, S, hS, rfl⟩⟩
+  simpa using hS
 
 /-- If `P` is closed under quotients, extensions, and coproducts, then for any `X`, the
 cokernel of the arrow of the largest `P`-subobject of `X` satisfies `P.rightOrthogonal`. -/
@@ -318,15 +336,20 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
       (Subobject.underlyingIso (Abelian.image.ι f)).symm
   simp [← Abelian.image.fac f, IsZero.eq_zero_of_src himf]
 
+/-- If `P` is closed under quotients, extensions, and coproducts, then
+`P.rightOrthogonal.leftOrthogonal ≤ P`. Together with
+`ObjectProperty.le_rightOrthogonal_leftOrthogonal`, this gives equality
+`rightOrthogonal_leftOrthogonal_eq_self`. -/
 lemma rightOrthogonal_leftOrthogonal_le (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
     [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
     P.rightOrthogonal.leftOrthogonal ≤ P :=
   fun X hX ↦
-    haveI : Epi (Subobject.sSup {A : Subobject X | P (A : C)}).arrow :=
+    let A : Subobject X := Subobject.sSup {A : Subobject X | P (A : C)}
+    haveI : Epi A.arrow :=
       Preadditive.epi_of_cokernel_zero (hX (cokernel.π _) (rightOrthogonal_cokernel_sSup P X))
-    P.prop_of_epi (Subobject.sSup {A : Subobject X | P (A : C)}).arrow (prop_sSup P X)
+    P.prop_of_epi A.arrow (prop_sSup P X)
 
 /-- If an object property `P` in an abelian category is closed under quotients, extensions,
 and coproducts, then `P.rightOrthogonal.leftOrthogonal = P`. -/
@@ -440,11 +463,14 @@ theorem isTorsionClass_iff (P : ObjectProperty C)
         ∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J) := by
   refine ⟨fun ⟨F, hPF⟩ ↦ ⟨hPF.torsion_isClosedUnderQuotients,
     hPF.torsion_isClosedUnderExtensions, hPF.torsion_isClosedUnderCoproducts⟩, ?_⟩
+  -- these hypotheses are consumed as instances by `rightOrthogonal_leftOrthogonal_eq_self`
   rintro ⟨hquot, hext, hcoprod⟩
   exact ⟨P.rightOrthogonal,
     { torsion_eq_leftOrthogonal := (rightOrthogonal_leftOrthogonal_eq_self P).symm
       free_eq_rightOrthogonal := rfl }⟩
 
+/-- A property of objects is a torsion-free class if and only if its opposite is a torsion
+class in the opposite category. -/
 lemma isTorsionFreeClass_iff_isTorsionClass_op (P : ObjectProperty C) :
     IsTorsionFreeClass P ↔ IsTorsionClass P.op :=
   ⟨fun ⟨T, hTP⟩ ↦ ⟨T.op, hTP.op⟩, fun ⟨Q, hQ⟩ ↦ ⟨Q.unop, hQ.unop⟩⟩
