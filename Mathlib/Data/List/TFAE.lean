@@ -14,13 +14,14 @@ public import Mathlib.Init
 
 This file allows to state that all propositions in a list are equivalent. It is used by
 `Mathlib/Tactic/Tfae.lean`.
-`TFAE l` means `∀ x ∈ l, ∀ y ∈ l, x ↔ y`. This is equivalent to `Pairwise (↔) l`.
 -/
 
 @[expose] public section
 
 
 namespace List
+
+variable {a b : Prop} {l l₁ l₂ : List Prop}
 
 /-- TFAE: The Following (propositions) Are Equivalent.
 
@@ -35,39 +36,28 @@ theorem tfae_nil : TFAE [] :=
 @[simp]
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
-theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
-  ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
-    fun _ hp _ hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
-      by
-        rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
-        · rfl
-        · exact ab.trans (H _ h _ hq)
-        · exact (ab.trans (H _ h _ hp)).symm
-        · exact H _ hp _ hq⟩
+theorem TFAE.subset (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
+  fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
-theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
-  tfae_cons_of_mem (Mem.head _)
+theorem tfae_congr (h₁₂ : l₁ ⊆ l₂) (h₂₁ : l₂ ⊆ l₁) : TFAE l₁ ↔ TFAE l₂ :=
+  ⟨fun h ↦ h.subset h₂₁, fun h ↦ h.subset h₁₂⟩
+
+theorem Perm.tfae_iff (h : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ := tfae_congr h.subset h.symm.subset
 
 @[simp]
-theorem tfae_cons_self {a} {l : List Prop} : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by
-  simp [tfae_cons_cons]
+theorem tfae_reverse : TFAE l.reverse ↔ TFAE l := (reverse_perm l).tfae_iff
 
-theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
+theorem tfae_of_forall (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
   fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
 
-theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.IsChain (· → ·) (a :: b :: l))
-    (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
-  induction l generalizing a b with
-  | nil => simp_all [tfae_cons_cons, iff_def]
-  | cons c l IH =>
-    simp only [tfae_cons_cons, getLastD_cons, isChain_cons_cons] at *
-    rcases h_chain with ⟨ab, ⟨bc, ch⟩⟩
-    have := IH ⟨bc, ch⟩ (ab ∘ h_last)
-    exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ getLastD_mem_cons).1 ∘ bc⟩, this⟩
-
-theorem TFAE.out {l} (h : TFAE l) (n₁ n₂ : Nat) {a b}
-    (h₁ : l[n₁]? = some a := by rfl)
-    (h₂ : l[n₂]? = some b := by rfl) :
+/-- `(TFAE [P₁, P₂, P₃, ...]).out i j`, where `i`, `j` are the **1-indexed** indices for TFAE
+statements, yields a proof of `Pᵢ ↔ Pⱼ`. Indices therefore must be greater than `0`. This
+convention matches the statement numbering in `tfae` tactics. -/
+theorem TFAE.out {l} (h : TFAE l) (i j : Nat) {a b}
+    (h₁ : l[i - 1]? = some a := by rfl)
+    (h₂ : l[j - 1]? = some b := by rfl)
+    (_ : i ≠ 0 := by first | decide +kernel | fail "TFAE indices start at 1.")
+    (_ : j ≠ 0 := by first | decide +kernel | fail "TFAE indices start at 1.") :
     a ↔ b :=
   h _ (List.mem_of_getElem? h₁) _ (List.mem_of_getElem? h₂)
 
@@ -109,7 +99,7 @@ theorem exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.ma
   exact exists_congr fun a ↦ H a (p₁ a) (mem_map_of_mem hp₁)
     (p₂ a) (mem_map_of_mem hp₂)
 
-theorem tfae_not_iff {l : List Prop} : TFAE (l.map Not) ↔ TFAE l := by
+theorem tfae_not_iff : TFAE (l.map Not) ↔ TFAE l := by
   classical
   simp only [TFAE, mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     Decidable.not_iff_not]

@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 
 /-!
 # Constructors for combining (co)fans
@@ -31,7 +31,7 @@ variable {C : Type u₁} [Category.{u₂} C]
 
 namespace Fan
 
-variable {ι₁ ι₂ : Type*} {X : C} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
+variable {ι₁ ι₂ : Type*} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
     (c₁ : Fan f₁) (c₂ : Fan f₂) (bc : BinaryFan c₁.pt c₂.pt)
     (h₁ : IsLimit c₁) (h₂ : IsLimit c₂) (h : IsLimit bc)
 
@@ -67,7 +67,7 @@ end Fan
 
 namespace Cofan
 
-variable {ι₁ ι₂ : Type*} {X : C} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
+variable {ι₁ ι₂ : Type*} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
     (c₁ : Cofan f₁) (c₂ : Cofan f₂) (bc : BinaryCofan c₁.pt c₂.pt)
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (h : IsColimit bc)
 

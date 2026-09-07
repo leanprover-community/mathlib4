@@ -387,6 +387,7 @@ theorem Valid'.eraseMax_aux {s l x r o₁ o₂} (H : Valid' o₁ (.node s l x r)
     rw [eraseMax, size_balanceL H.3.2.1 h.3 H.2.2.1 h.2 (Or.inr ⟨_, Or.inr e, H.3.1⟩)]
     rw [size_node, e]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Valid'.eraseMin_aux {s l} {x : α} {r o₁ o₂} (H : Valid' o₁ (.node s l x r) o₂) :
     Valid' ↑(findMin' l x) (@eraseMin α (.node' l x r)) o₂ ∧
       size (.node' l x r) = size (eraseMin (.node' l x r)) + 1 := by
@@ -459,6 +460,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
     · rw [e, add_right_comm]; rintro ⟨⟩
   intro _ _; rw [e]; unfold delta at hr₂ ⊢; lia
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) :
     Valid' o₁ (@merge α l r) o₂ ∧ size (merge l r) = size l + size r := by

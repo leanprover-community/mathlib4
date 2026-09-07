@@ -20,7 +20,7 @@ open Function
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 
@@ -36,9 +36,6 @@ theorem toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype
 theorem toFinset_offDiag {s : Set α} [Fintype s] [Fintype s.offDiag] :
     s.offDiag.toFinset = s.toFinset.offDiag :=
   Finset.ext <| by simp
-
-@[deprecated (since := "2026-01-09")]
-alias toFinset_off_diag := toFinset_offDiag
 
 end Set
 
@@ -60,6 +57,11 @@ theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
     Fintype.card (α × β) = Fintype.card α * Fintype.card β :=
   card_product _ _
 
+/-- The number of strictly ordered pairs `(a, b)` in `α` is `(Fintype.card α).choose 2`. -/
+lemma Fintype.card_product_filter_lt [Fintype α] [LinearOrder α] :
+    #{x : α × α | x.1 < x.2} = (Fintype.card α).choose 2 := by
+  simpa using Finset.card_product_filter_lt (s := univ)
+
 section
 
 attribute [local instance] Fintype.ofFinite in
@@ -70,7 +72,7 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
       H.elim (and_imp.2 <| @Prod.infinite_of_left α β) (and_imp.2 <| @Prod.infinite_of_right α β)⟩
   rw [and_comm]
   rcases Infinite.nonempty (α × β) with ⟨a, b⟩
-  contrapose! H; haveI := H.1 ⟨b⟩; haveI := H.2 ⟨a⟩
+  contrapose! H; have := H.1 ⟨b⟩; have := H.2 ⟨a⟩
   infer_instance
 
 instance Pi.infinite_of_left {ι : Sort*} {π : ι → Type*} [∀ i, Nontrivial <| π i] [Infinite ι] :

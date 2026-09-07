@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 
 /-!
@@ -36,8 +35,8 @@ instance [Small.{w} C] [LocallySmall.{w} D] : Small.{w} (StructuredArrow S T) :=
       exact ⟨⟨X, f⟩, rfl⟩)
 
 instance small_inverseImage_proj_of_locallySmall
-    {P : ObjectProperty C} [ObjectProperty.Small.{v₁} P] [LocallySmall.{v₁} D] :
-    ObjectProperty.Small.{v₁} (P.inverseImage (proj S T)) := by
+    {P : ObjectProperty C} [ObjectProperty.Small.{w} P] [LocallySmall.{w} D] :
+    ObjectProperty.Small.{w} (P.inverseImage (proj S T)) := by
   suffices P.inverseImage (proj S T) = .ofObj fun f : Σ (G : Subtype P), S ⟶ T.obj G => mk f.2 by
     rw [this]
     infer_instance
@@ -65,8 +64,8 @@ instance [Small.{w} C] [LocallySmall.{w} D] : Small.{w} (CostructuredArrow S T) 
       exact ⟨⟨X, f⟩, rfl⟩)
 
 instance small_inverseImage_proj_of_locallySmall
-    {P : ObjectProperty C} [ObjectProperty.Small.{v₁} P] [LocallySmall.{v₁} D] :
-    ObjectProperty.Small.{v₁} (P.inverseImage (proj S T)) := by
+    {P : ObjectProperty C} [ObjectProperty.Small.{w} P] [LocallySmall.{w} D] :
+    ObjectProperty.Small.{w} (P.inverseImage (proj S T)) := by
   suffices P.inverseImage (proj S T) = .ofObj fun f : Σ (G : Subtype P), S.obj G ⟶ T => mk f.2 by
     rw [this]
     infer_instance

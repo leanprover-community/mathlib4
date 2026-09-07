@@ -27,7 +27,7 @@ Angelo Vistoli
 
 namespace CategoryTheory.Pseudofunctor.CoGrothendieck
 
-open Functor Opposite Bicategory Fiber
+open CategoryTheory.Functor Opposite Bicategory Fiber
 
 variable {𝒮 : Type*} [Category* 𝒮] {F : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat}
 
@@ -44,6 +44,7 @@ abbrev cartesianLift : domainCartesianLift a f ⟶ ⟨S, a⟩ := ⟨f, 𝟙 _⟩
 instance isHomLift_cartesianLift : IsHomLift (forget F) f (cartesianLift a f) :=
   IsHomLift.map (forget F) (cartesianLift a f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {a} in
 /-- Given some lift `φ'` of `g ≫ f`, the canonical map from the domain of `φ'` to the domain of
@@ -93,6 +94,9 @@ def ι : F.obj ⟨op S⟩ ⥤ ∫ᶜ F where
     · simp [← (F.mapId ⟨op S⟩).inv.toNatTrans.naturality_assoc ψ, F.whiskerRight_mapId_inv_app,
         Strict.leftUnitor_eqToIso, ← Cat.Hom₂.comp_app]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural isomorphism encoding `comp_const`. -/
 @[simps!]
 def compIso : (ι F S) ⋙ forget F ≅ (const (F.obj ⟨op S⟩)).obj S :=

@@ -223,7 +223,7 @@ theorem ascPochhammer_nat_eval_succ (r : ℕ) :
   | 0 => by
     by_cases h : r = 0
     · simp only [h, zero_mul, zero_add]
-    · simp only [ascPochhammer_eval_zero, zero_mul, if_neg h, mul_zero]
+    · simp only [ascPochhammer_eval_zero, zero_mul, ite_eq_right h, mul_zero]
   | k + 1 => by simp only [ascPochhammer_nat_eq_ascFactorial, Nat.succ_ascFactorial, add_right_comm]
 
 theorem ascPochhammer_eval_succ (r n : ℕ) :

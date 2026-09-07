@@ -43,7 +43,7 @@ namespace CategoryTheory
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 -- morphism levels before object levels. See note [category_theory universes].
-open Sum Functor
+open Sum CategoryTheory.Functor
 
 section
 
@@ -187,11 +187,13 @@ theorem sum_obj_inl (F : A ⥤ B) (G : C ⥤ D) (a : A) : (F.sum G).obj (inl a) 
 theorem sum_obj_inr (F : A ⥤ B) (G : C ⥤ D) (c : C) : (F.sum G).obj (inr c) = inr (G.obj c) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem sum_map_inl (F : A ⥤ B) (G : C ⥤ D) {a a' : A} (f : a ⟶ a') :
     (F.sum G).map ((Sum.inl_ _ _).map f) = (Sum.inl_ _ _).map (F.map f) := by
   simp [sum]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : c ⟶ c') :
     (F.sum G).map ((Sum.inr_ _ _).map f) = (Sum.inr_ _ _).map (G.map f) := by

@@ -89,7 +89,7 @@ theorem isSatisfiable_onTheory_iff {L' : Language.{w, w'}} {φ : L →ᴸ L'} (h
     (φ.onTheory T).IsSatisfiable ↔ T.IsSatisfiable := by
   classical
     refine ⟨isSatisfiable_of_isSatisfiable_onTheory φ, fun h' => ?_⟩
-    haveI : Inhabited h'.some := Classical.inhabited_of_nonempty'
+    have : Inhabited h'.some := Classical.inhabited_of_nonempty'
     exact Model.isSatisfiable (h'.some.defaultExpansion h)
 
 theorem IsSatisfiable.isFinitelySatisfiable (h : T.IsSatisfiable) : T.IsFinitelySatisfiable :=
@@ -100,23 +100,22 @@ finitely satisfiable. -/
 theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
     T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=
   ⟨Theory.IsSatisfiable.isFinitelySatisfiable, fun h => by
-    classical
-      set M : Finset T → Type max u v := fun T0 : Finset T =>
-        (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
-      let M' := Filter.Product (Ultrafilter.of (Filter.atTop : Filter (Finset T))) M
-      have h' : M' ⊨ T := by
-        refine ⟨fun φ hφ => ?_⟩
-        rw [Ultraproduct.sentence_realize]
-        refine
-          Filter.Eventually.filter_mono (Ultrafilter.of_le _)
-            (Filter.eventually_atTop.2
-              ⟨{⟨φ, hφ⟩}, fun s h' =>
-                Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x => x ∈ T))
-                  ?_⟩)
-        simp only [Finset.coe_map, Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe,
-          Subtype.exists, exists_and_right, exists_eq_right]
-        exact ⟨hφ, h' (Finset.mem_singleton_self _)⟩
-      exact ⟨ModelType.of T M'⟩⟩
+    set M : Finset T → Type max u v := fun T0 : Finset T =>
+      (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
+    let M' := Filter.Product (Ultrafilter.of (Filter.atTop : Filter (Finset T))) M
+    have h' : M' ⊨ T := by
+      refine ⟨fun φ hφ => ?_⟩
+      rw [Ultraproduct.sentence_realize]
+      refine
+        Filter.Eventually.filter_mono (Ultrafilter.of_le _)
+          (Filter.eventually_atTop.2
+            ⟨{⟨φ, hφ⟩}, fun s h' =>
+              Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x => x ∈ T))
+                ?_⟩)
+      simp only [Finset.coe_map, Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe,
+        Subtype.exists, exists_and_right, exists_eq_right]
+      exact ⟨hφ, h' (Finset.mem_singleton_self _)⟩
+    exact ⟨ModelType.of T M'⟩⟩
 
 theorem isSatisfiable_directed_union_iff {ι : Type*} [Nonempty ι] {T : ι → L.Theory}
     (h : Directed (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
@@ -130,9 +129,9 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s
     (M : Type w') [Nonempty M] [L.Structure M] [M ⊨ T]
     (h : Cardinal.lift.{w'} #s ≤ Cardinal.lift.{w} #M) :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
-  haveI : Inhabited M := Classical.inhabited_of_nonempty inferInstance
+  have : Inhabited M := Classical.inhabited_of_nonempty inferInstance
   rw [Cardinal.lift_mk_le'] at h
-  letI : (constantsOn α).Structure M := constantsOn.structure (Function.extend (↑) h.some default)
+  let : (constantsOn α).Structure M := constantsOn.structure (Function.extend (↑) h.some default)
   have : M ⊨ (L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s := by
     refine ((LHom.onTheory_model _ _).2 inferInstance).union ?_
     rw [model_distinctConstantsTheory]
@@ -147,17 +146,16 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s
 theorem isSatisfiable_union_distinctConstantsTheory_of_infinite (T : L.Theory) (s : Set α)
     (M : Type w') [L.Structure M] [M ⊨ T] [Infinite M] :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
-  classical
-    rw [distinctConstantsTheory_eq_iUnion, Set.union_iUnion, isSatisfiable_directed_union_iff]
-    · exact fun t =>
-        isSatisfiable_union_distinctConstantsTheory_of_card_le T _ M
-          ((lift_le_aleph0.2 (finset_card_lt_aleph0 _).le).trans
-            (aleph0_le_lift.2 (aleph0_le_mk M)))
-    · apply Monotone.directed_le
-      refine monotone_const.union (monotone_distinctConstantsTheory.comp ?_)
-      simp only [Finset.coe_map, Function.Embedding.coe_subtype]
-      exact Monotone.comp (g := Set.image ((↑) : s → α)) (f := ((↑) : Finset s → Set s))
-        Set.monotone_image fun _ _ => Finset.coe_subset.2
+  rw [distinctConstantsTheory_eq_iUnion, Set.union_iUnion, isSatisfiable_directed_union_iff]
+  · exact fun t =>
+      isSatisfiable_union_distinctConstantsTheory_of_card_le T _ M
+        ((lift_le_aleph0.2 (finset_card_lt_aleph0 _).le).trans
+          (aleph0_le_lift.2 (aleph0_le_mk M)))
+  · apply Monotone.directed_le
+    refine monotone_const.union (monotone_distinctConstantsTheory.comp ?_)
+    simp only [Finset.coe_map, Function.Embedding.coe_subtype]
+    exact Monotone.comp (g := Set.image ((↑) : s → α)) (f := ((↑) : Finset s → Set s))
+      Set.monotone_image fun _ _ => Finset.coe_subset.2
 
 /-- Any theory with an infinite model has arbitrarily large models. -/
 theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) (M : Type w')
@@ -166,7 +164,7 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
   obtain ⟨N⟩ :=
     isSatisfiable_union_distinctConstantsTheory_of_infinite T (Set.univ : Set κ.out) M
   refine ⟨(N.is_model.mono Set.subset_union_left).bundled.reduct _, ?_⟩
-  haveI : N ⊨ distinctConstantsTheory _ _ := N.is_model.mono Set.subset_union_right
+  have : N ⊨ distinctConstantsTheory _ _ := N.is_model.mono Set.subset_union_right
   rw [ModelType.reduct_Carrier, coe_of]
   refine _root_.trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) ?_
   rw [← mk_univ]
@@ -176,17 +174,16 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
 
 theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type*} (T : ι → L.Theory) :
     IsSatisfiable (⋃ i, T i) ↔ ∀ s : Finset ι, IsSatisfiable (⋃ i ∈ s, T i) := by
-  classical
-    refine
-      ⟨fun h s => h.mono (Set.iUnion_mono fun _ => Set.iUnion_subset_iff.2 fun _ => refl _),
-        fun h => ?_⟩
-    rw [isSatisfiable_iff_isFinitelySatisfiable]
-    intro s hs
-    rw [Set.iUnion_eq_iUnion_finset] at hs
-    obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_biUnion (by
-      exact Monotone.directed_le fun t1 t2 (h : ∀ ⦃x⦄, x ∈ t1 → x ∈ t2) =>
-        Set.iUnion_mono fun _ => Set.iUnion_mono' fun h1 => ⟨h h1, refl _⟩) hs
-    exact (h t).mono ht
+  refine
+    ⟨fun h s => h.mono (Set.iUnion_mono fun _ => Set.iUnion_subset_iff.2 fun _ => refl _),
+      fun h => ?_⟩
+  rw [isSatisfiable_iff_isFinitelySatisfiable]
+  intro s hs
+  rw [Set.iUnion_eq_iUnion_finset] at hs
+  obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_biUnion (by
+    exact Monotone.directed_le fun t1 t2 (h : ∀ ⦃x⦄, x ∈ t1 → x ∈ t2) =>
+      Set.iUnion_mono fun _ => Set.iUnion_mono' fun h1 => ⟨h h1, refl _⟩) hs
+  exact (h t).mono ht
 
 end Theory
 
@@ -229,8 +226,8 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
         rw [← lift_le.{w'}, lift_lift, lift_lift] at h1
         exact ⟨h2, h1⟩)
       (hN0.trans (by rw [← lift_umax, lift_id]))
-  letI := (lhomWithConstants L M).reduct N
-  haveI h : N ⊨ L.elementaryDiagram M :=
+  let := (lhomWithConstants L M).reduct N
+  have h : N ⊨ L.elementaryDiagram M :=
     (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
   refine ⟨Bundled.of N, ⟨?_⟩, hN⟩
   apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
@@ -271,7 +268,7 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
   cases h with
   | intro M MI =>
     obtain ⟨N, hN, rfl⟩ := exists_elementarilyEquivalent_card_eq L M κ h1 h2
-    haveI : Nonempty N := hN.nonempty
+    have : Nonempty N := hN.nonempty
     exact ⟨hN.theory_model.bundled, rfl⟩
 
 variable (T)
@@ -328,19 +325,19 @@ theorem models_formula_iff_onTheory_models_equivSentence {φ : L.Formula α} :
     T ⊨ᵇ φ ↔ (L.lhomWithConstants α).onTheory T ⊨ᵇ Formula.equivSentence φ := by
   refine ⟨fun h => models_sentence_iff.2 (fun M => ?_),
     fun h => models_formula_iff.2 (fun M v => ?_)⟩
-  · letI := (L.lhomWithConstants α).reduct M
+  · let := (L.lhomWithConstants α).reduct M
     rw [Formula.realize_equivSentence]
     have : M ⊨ T := (LHom.onTheory_model _ _).1 M.is_model -- why isn't M.is_model inferInstance?
     let M' := Theory.ModelType.of T M
     exact h M' (fun a => (L.con a : M)) _
-  · letI : (constantsOn α).Structure M := constantsOn.structure v
+  · let : (constantsOn α).Structure M := constantsOn.structure v
     have : M ⊨ (L.lhomWithConstants α).onTheory T := (LHom.onTheory_model _ _).2 inferInstance
     exact (Formula.realize_equivSentence _ _).1 (h.realize_sentence M)
 
 theorem ModelsBoundedFormula.realize_formula {φ : L.Formula α} (h : T ⊨ᵇ φ) (M : Type*)
     [L.Structure M] [M ⊨ T] [Nonempty M] {v : α → M} : φ.Realize v := by
   rw [models_formula_iff_onTheory_models_equivSentence] at h
-  letI : (constantsOn α).Structure M := constantsOn.structure v
+  let : (constantsOn α).Structure M := constantsOn.structure v
   have : M ⊨ (L.lhomWithConstants α).onTheory T := (LHom.onTheory_model _ _).2 inferInstance
   exact (Formula.realize_equivSentence _ _).1 (h.realize_sentence M)
 
@@ -373,7 +370,7 @@ theorem models_iff_finset_models {φ : L.Sentence} :
   simp only [models_iff_not_satisfiable]
   rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
   contrapose!
-  letI := Classical.decEq (Sentence L)
+  let := Classical.decEq (Sentence L)
   constructor
   · intro h T0 hT0
     simpa using h (T0 ∪ {Formula.not φ})
@@ -414,7 +411,7 @@ theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L
 theorem eq_complete_theory (h : T.IsComplete) (M : Type*) [L.Structure M] [M ⊨ T] [Nonempty M] :
     {φ | T ⊨ᵇ φ} = L.completeTheory M := by
   ext φ
-  simp only [Set.mem_setOf_eq, L.mem_completeTheory]
+  simp only [Set.mem_ofPred_eq, L.mem_completeTheory]
   refine ⟨fun h_models => h_models.realize_sentence M, fun h_realize => ?_⟩
   cases h.2 φ with
   | inl hT => exact hT
@@ -483,7 +480,7 @@ theorem isSatisfiable [Nonempty M] : (L.completeTheory M).IsSatisfiable :=
   Theory.Model.isSatisfiable M
 
 theorem mem_or_not_mem (φ : L.Sentence) : φ ∈ L.completeTheory M ∨ φ.not ∈ L.completeTheory M := by
-  simp_rw [completeTheory, Set.mem_setOf_eq, Sentence.Realize, Formula.realize_not, or_not]
+  simp_rw [completeTheory, Set.mem_ofPred_eq, Sentence.Realize, Formula.realize_not, or_not]
 
 theorem isMaximal [Nonempty M] : (L.completeTheory M).IsMaximal :=
   ⟨isSatisfiable L M, mem_or_not_mem L M⟩
@@ -517,8 +514,8 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     by_contra! ⟨⟨MF, hMF⟩, MT, hMT⟩
     rw [Sentence.realize_not, Classical.not_not] at hMT
     refine hMF ?_
-    haveI := hT MT
-    haveI := hT MF
+    have := hT MT
+    have := hT MF
     obtain ⟨NT, MNT, hNT⟩ := exists_elementarilyEquivalent_card_eq L MT κ h1 h2
     obtain ⟨NF, MNF, hNF⟩ := exists_elementarilyEquivalent_card_eq L MF κ h1 h2
     obtain ⟨TF⟩ := h (MNT.toModel T) (MNF.toModel T) hNT hNF
