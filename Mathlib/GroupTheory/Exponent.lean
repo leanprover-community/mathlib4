@@ -624,33 +624,50 @@ section Monoid
 
 variable [Monoid G]
 
-@[to_additive]
+/-- In a monoid in which every element is its own inverse, the elements of order two are exactly
+the non-identity ones. -/
+@[to_additive /-- In an additive monoid in which every element is its own negation, the elements of
+order two are exactly the non-zero ones. -/]
+lemma IsSelfInvMonoid.orderOf_eq_two_iff [IsSelfInvMonoid G] {x : G} : orderOf x = 2 ↔ x ≠ 1 :=
+  ⟨by rintro hx rfl; norm_num at hx, orderOf_eq_prime (IsSelfInvMonoid.sq x)⟩
+
+@[to_additive (attr := deprecated IsSelfInvMonoid.orderOf_eq_two_iff (since := "2026-09-07"))]
 lemma orderOf_eq_two_iff (hG : Monoid.exponent G = 2) {x : G} :
     orderOf x = 2 ↔ x ≠ 1 :=
   ⟨by rintro hx rfl; norm_num at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
 
+/-- Every element of a monoid is its own inverse exactly when the exponent divides two. -/
+@[to_additive /-- Every element of an additive monoid is its own negation exactly when the
+exponent divides two. -/]
+lemma isSelfInvMonoid_iff_exponent_dvd_two : IsSelfInvMonoid G ↔ Monoid.exponent G ∣ 2 := by
+  simp [isSelfInvMonoid_iff, Monoid.exponent_dvd_iff_forall_pow_eq_one, pow_two]
+
 @[to_additive]
-theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣ 2) (a b : G) :
-    Commute a b := by
-  simp_rw [orderOf_dvd_iff_pow_eq_one] at h
-  rw [commute_iff_eq, ← mul_right_inj a, ← mul_left_inj b]
-  -- We avoid `group` here to minimize imports while low in the hierarchy;
-  -- typically it would be better to invoke the tactic.
-  calc
-    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp [pow_two, mul_assoc]
-    _ = 1 := by rw [h, h, mul_one]
-    _ = (a * b) ^ 2 := by rw [h]
-    _ = a * (b * a) * b := by simp [pow_two, mul_assoc]
+lemma IsSelfInvMonoid.exponent_dvd_two [IsSelfInvMonoid G] : Monoid.exponent G ∣ 2 :=
+  isSelfInvMonoid_iff_exponent_dvd_two.1 ‹_›
 
-/-- In a cancellative monoid of exponent two, all elements commute. -/
-@[to_additive /-- In a cancellative additive monoid of exponent two, all elements commute. -/]
-lemma mul_comm_of_exponent_two [IsCancelMul G] (hG : Monoid.exponent G = 2) (a b : G) :
-    a * b = b * a :=
-  Commute.of_orderOf_dvd_two (fun g => hG ▸ Monoid.order_dvd_exponent g) a b
+@[to_additive]
+alias ⟨_, IsSelfInvMonoid.of_exponent_dvd_two⟩ := isSelfInvMonoid_iff_exponent_dvd_two
 
-/-- Any cancellative monoid of exponent two is abelian. -/
-@[to_additive /-- Any additive group of exponent two is abelian. -/]
-abbrev commMonoidOfExponentTwo [IsCancelMul G] (hG : Monoid.exponent G = 2) : CommMonoid G where
+@[to_additive]
+lemma IsSelfInvMonoid.of_orderOf_dvd_two (h : ∀ g : G, orderOf g ∣ 2) : IsSelfInvMonoid G :=
+  ⟨fun a ↦ (pow_two a).symm.trans <| orderOf_dvd_iff_pow_eq_one.1 (h a)⟩
+
+@[to_additive (attr := deprecated IsSelfInvMonoid.mul_comm (since := "2026-09-07"))]
+theorem Commute.of_orderOf_dvd_two (h : ∀ g : G, orderOf g ∣ 2) (a b : G) : Commute a b :=
+  have := IsSelfInvMonoid.of_orderOf_dvd_two h
+  (commute_iff_eq a b).2 <| IsSelfInvMonoid.mul_comm a b
+
+/-- In a monoid of exponent two, all elements commute. -/
+@[to_additive /-- In an additive monoid of exponent two, all elements commute. -/]
+lemma mul_comm_of_exponent_two (hG : Monoid.exponent G = 2) (a b : G) : a * b = b * a :=
+  have := IsSelfInvMonoid.of_exponent_dvd_two hG.dvd
+  IsSelfInvMonoid.mul_comm a b
+
+/-- Any monoid of exponent two is abelian. -/
+@[to_additive (attr := deprecated IsSelfInvMonoid.toCommGroup (since := "2026-09-07"))
+  /-- Any additive monoid of exponent two is abelian. -/]
+abbrev commMonoidOfExponentTwo (hG : Monoid.exponent G = 2) : CommMonoid G where
   mul_comm := mul_comm_of_exponent_two hG
 
 end Monoid
@@ -670,10 +687,12 @@ theorem Group.exponent_quotient_dvd (H : Subgroup G) [H.Normal] :
   MonoidHom.exponent_dvd (QuotientGroup.mk'_surjective H)
 
 /-- In a group of exponent two, every element is its own inverse. -/
-@[to_additive /-- In an additive group of exponent two, every element is its own negation. -/]
+@[to_additive (attr := deprecated IsSelfInvMonoid.inv_eq (since := "2026-09-07"))
+  /-- In an additive group of exponent two, every element is its own negation. -/]
 lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :
     x⁻¹ = x :=
-  inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hG ▸ Monoid.pow_exponent_eq_one x
+  have := IsSelfInvMonoid.of_exponent_dvd_two hG.dvd
+  IsSelfInvMonoid.inv_eq x
 
 /-- If an element in a group has order two, then it is its own inverse. -/
 @[to_additive /-- If an element in an additive group has order two, then it is its own negation. -/]

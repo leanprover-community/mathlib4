@@ -37,7 +37,7 @@ theorem B_apply (x y : F × F) : B F x y = x.1 * y.2 + x.2 * y.1 :=
 theorem isSymm_B : (B F).IsSymm := ⟨fun x y => by simp [mul_comm, add_comm]⟩
 
 theorem isAlt_B [CharP F 2] : (B F).IsAlt := fun x => by
-  simp [mul_comm, CharTwo.add_self_eq_zero (x.1 * x.2)]
+  simp [mul_comm, IsSelfNegAddMonoid.add_self_eq_zero (x.1 * x.2)]
 
 theorem B_ne_zero [Nontrivial F] : B F ≠ 0 := fun h => by
   simpa using LinearMap.congr_fun₂ h (1, 0) (1, 1)
