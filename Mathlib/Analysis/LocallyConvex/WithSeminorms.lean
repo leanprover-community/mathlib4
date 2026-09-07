@@ -237,7 +237,7 @@ theorem IsBounded.of_real {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm �
     (H : ∀ i, ∃ s : Finset ι, ∃ C : ℝ, ∀ x, q i (f x) ≤ C * (s.sup p) x) :
     IsBounded p q f := by
   rw [IsBounded]
-  peel H with i s H
+  gconvert H with i s H
   obtain ⟨C, hC⟩ := H
   refine ⟨C.toNNReal, fun x ↦ show q i (f x) ≤ C.toNNReal • ((s.sup p) x) from ?_⟩
   exact (hC x).trans <| mul_le_mul_of_nonneg_right C.le_coe_toNNReal (apply_nonneg _ _)
