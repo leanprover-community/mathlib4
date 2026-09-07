@@ -5,7 +5,6 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.FieldTheory.AbelRuffini
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
@@ -95,90 +94,29 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
       exact mt Int.natCast_dvd_natCast.mp hp2b
   all_goals exact Monic.isPrimitive (monic_Phi a b)
 
-attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
-theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
-  rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
-  apply (card_rootSet_le_derivative _).trans
-    (Nat.succ_le_succ ((card_rootSet_le_derivative _).trans (Nat.succ_le_succ _)))
-  suffices (Polynomial.rootSet (C (20 : ℚ) * X ^ 3) ℝ).Subsingleton by
-    norm_num [Fintype.card_le_one_iff_subsingleton, ← mul_assoc] at *
-    exact this
-  rw [rootSet_C_mul_X_pow] <;>
-  norm_num
-
-theorem real_roots_Phi_ge_aux (hab : b < a) :
-    ∃ x y : ℝ, x ≠ y ∧ aeval x (Φ ℚ a b) = 0 ∧ aeval y (Φ ℚ a b) = 0 := by
-  let f : ℝ → ℝ := fun x : ℝ => aeval x (Φ ℚ a b)
-  have hf : f = fun x : ℝ => x ^ 5 - a * x + b := by simp [f, Φ]
-  have hc : ∀ s : Set ℝ, ContinuousOn f s := fun s => (Φ ℚ a b).continuousOn_aeval
-  have ha : (1 : ℝ) ≤ a := Nat.one_le_cast.mpr (Nat.one_le_of_lt hab)
-  have hle : (0 : ℝ) ≤ 1 := zero_le_one
-  have hf0 : 0 ≤ f 0 := by simp [hf]
-  by_cases hb : (1 : ℝ) - a + b < 0
-  · have hf1 : f 1 < 0 := by simp [hf, hb]
-    have hfa : 0 ≤ f a := by
-      simp_rw [hf, ← sq]
-      refine add_nonneg (sub_nonneg.mpr (pow_right_mono₀ ha ?_)) ?_ <;> norm_num
-    obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Ico' hle (hc _) (Set.mem_Ioc.mpr ⟨hf1, hf0⟩)
-    obtain ⟨y, ⟨hy1, -⟩, hy2⟩ := intermediate_value_Ioc ha (hc _) (Set.mem_Ioc.mpr ⟨hf1, hfa⟩)
-    exact ⟨x, y, (hx1.trans hy1).ne, hx2, hy2⟩
-  · replace hb : (b : ℝ) = a - 1 := by linarith [show (b : ℝ) + 1 ≤ a from mod_cast hab]
-    have hf1 : f 1 = 0 := by simp [hf, hb]
-    have hfa :=
-      calc
-        f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
-          norm_num [hf, ← sq, sub_eq_add_neg, add_comm, Odd.neg_pow (by decide : Odd 5)]
-        _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by gcongr <;> linarith
-        _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
-        _ ≤ 0 := by nlinarith
-    have ha' := neg_nonpos.mpr (hle.trans ha)
-    obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Icc ha' (hc _) (Set.mem_Icc.mpr ⟨hfa, hf0⟩)
-    exact ⟨x, 1, (hx1.trans_lt zero_lt_one).ne, hx2, hf1⟩
-
-theorem real_roots_Phi_ge (hab : b < a) : 2 ≤ Fintype.card ((Φ ℚ a b).rootSet ℝ) := by
-  have q_ne_zero : Φ ℚ a b ≠ 0 := (monic_Phi a b).ne_zero
-  obtain ⟨x, y, hxy, hx, hy⟩ := real_roots_Phi_ge_aux a b hab
-  have key : ↑({x, y} : Finset ℝ) ⊆ (Φ ℚ a b).rootSet ℝ := by
-    simp [Set.insert_subset, mem_rootSet_of_ne q_ne_zero, hx, hy]
-  convert! Fintype.card_le_of_embedding (Set.embeddingOfSubset _ _ key)
-  simp only [Finset.coe_sort_coe, Fintype.card_coe, Finset.card_singleton,
-    Finset.card_insert_of_notMem (mt Finset.mem_singleton.mp hxy)]
-
 theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a b).rootSet ℂ) = 5 :=
   (card_rootSet_eq_natDegree h (IsAlgClosed.splits _)).trans (natDegree_Phi a b)
 
-theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
+theorem gal_Phi (h_irred : Irreducible (Φ ℚ a b))
+    (hreal : Fintype.card ((Φ ℚ a b).rootSet ℝ) = 3) :
     Bijective (galActionHom (Φ ℚ a b) ℂ) := by
   apply galActionHom_bijective_of_prime_degree' h_irred
   · simp only [natDegree_Phi]; decide
-  · rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]
-    exact (real_roots_Phi_le a b).trans (Nat.le_succ 3)
-  · simp_rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]
-    exact real_roots_Phi_ge a b hab
+  · rw [hreal, complex_roots_Phi a b h_irred.separable]; decide
+  · rw [hreal, complex_roots_Phi a b h_irred.separable]; decide
 
-theorem not_solvable_by_rad (p : ℕ) (x : ℂ) (hx : aeval x (Φ ℚ a b) = 0) (hab : b < a)
-    (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b) (hp2b : ¬p ^ 2 ∣ b) : x ∉ solvableByRad ℚ ℂ := by
+theorem not_solvable_by_rad (p : ℕ) (x : ℂ) (hx : aeval x (Φ ℚ a b) = 0)
+    (hreal : Fintype.card ((Φ ℚ a b).rootSet ℝ) = 3) (hp : p.Prime)
+    (hpa : p ∣ a) (hpb : p ∣ b) (hp2b : ¬p ^ 2 ∣ b) : x ∉ solvableByRad ℚ ℂ := by
   have h_irred := irreducible_Phi a b p hp hpa hpb hp2b
   apply mt (isSolvable_gal_of_irreducible · h_irred hx)
   intro h
   refine Equiv.Perm.not_isSolvable _ (le_of_eq ?_)
-    (Group.isSolvable_of_surjective (gal_Phi a b hab h_irred).2)
+    (Group.isSolvable_of_surjective (gal_Phi a b h_irred hreal).2)
   rw_mod_cast [Cardinal.mk_fintype, complex_roots_Phi a b h_irred.separable]
 
 theorem not_solvable_by_rad' (x : ℂ) (hx : aeval x (Φ ℚ 4 2) = 0) : x ∉ solvableByRad ℚ ℂ := by
-  have h_irred : Irreducible (Φ ℚ 4 2) := irreducible_Phi 4 2 2 (by decide)
-    (by decide) (by decide) (by decide)
-  have hreal : Fintype.card ((Φ ℚ 4 2).rootSet ℝ) = 3 := real_root_count (Φ ℚ 4 2)
-  have hgal : Bijective (galActionHom (Φ ℚ 4 2) ℂ) := by
-    apply galActionHom_bijective_of_prime_degree' h_irred
-    · rw [natDegree_Phi]; decide
-    · rw [hreal, complex_roots_Phi 4 2 h_irred.separable]; decide
-    · rw [hreal, complex_roots_Phi 4 2 h_irred.separable]; decide
-  apply mt (isSolvable_gal_of_irreducible · h_irred hx)
-  intro h
-  refine Equiv.Perm.not_isSolvable _ (le_of_eq ?_)
-    (Group.isSolvable_of_surjective hgal.2)
-  rw_mod_cast [Cardinal.mk_fintype, complex_roots_Phi 4 2 h_irred.separable]
+  apply not_solvable_by_rad 4 2 2 x hx (by real_root_count) <;> decide
 
 /-- **Abel-Ruffini Theorem** -/
 theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ x ∉ solvableByRad ℚ ℂ := by
