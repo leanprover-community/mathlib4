@@ -736,12 +736,12 @@ theorem uniformIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ 
     set C := (Finset.univ.image fun i : ι => eLpNorm (f i) p μ).max'
       ⟨eLpNorm (f hι.some) p μ, Finset.mem_image.2 ⟨hι.some, Finset.mem_univ _, rfl⟩⟩
     refine ⟨C.toNNReal, fun i => ?_⟩
-    rw [coe_toNNReal]
-    · exact Finset.le_max' (α := ℝ≥0∞) _ _ (Finset.mem_image.2 ⟨i, Finset.mem_univ _, rfl⟩)
-    · refine ne_of_lt ((Finset.max'_lt_iff _ _).2 fun y hy => ?_)
-      rw [Finset.mem_image] at hy
-      obtain ⟨i, -, rfl⟩ := hy
-      exact hf i
+    unfold C
+    grw [coe_toNNReal ?_, ← Finset.le_max' _ _ (Finset.mem_image.2 ⟨i, Finset.mem_univ _, rfl⟩)]
+    refine ne_of_lt ((Finset.max'_lt_iff _ _).2 fun y hy => ?_)
+    rw [Finset.mem_image] at hy
+    obtain ⟨i, -, rfl⟩ := hy
+    exact hf i
   · exact ⟨0, fun i => False.elim <| hι <| Nonempty.intro i⟩
 
 /-- A single function is uniformly integrable in the probability sense. -/

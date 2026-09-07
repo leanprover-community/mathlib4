@@ -31,7 +31,7 @@ namespace SimplexCategory
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 @[simps obj map, implicit_reducible]
 noncomputable def toTop₀ : CosimplicialObject TopCat.{0} where
-  obj n := TopCat.of (StdSimplex ℝ (Fin (n.len + 1)))
+  obj n := ↧(StdSimplex ℝ (Fin (n.len + 1)))
   map f := TopCat.ofHom ⟨_, StdSimplex.continuous_map ℝ f⟩
   map_comp f g := by
     ext : 1

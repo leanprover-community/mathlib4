@@ -208,13 +208,22 @@ theorem Infinite.exists_strictMono_or_strictAnti (α : Type*) [LinearOrder α] [
     · grind
 
 /-- A linear order that is well-founded in both directions is finite. -/
-theorem Finite.of_wellFoundedLT_wellFoundedGT (α : Type*) [LinearOrder α]
-    [WellFoundedLT α] [WellFoundedGT α] : Finite α := by
+theorem Finite.of_wellFoundedLT_of_wellFoundedGT (α : Type*) [LinearOrder α] [WellFoundedLT α]
+    [WellFoundedGT α] : Finite α := by
   apply Finite.of_not_infinite
   intro
   obtain ⟨f, hStrictMono | hStrictAnti⟩ := Infinite.exists_strictMono_or_strictAnti α
   · exact not_strictMono_of_wellFoundedGT f hStrictMono
   · exact not_strictAnti_of_wellFoundedLT f hStrictAnti
+
+@[deprecated (since := "2026-08-11")]
+alias Finite.of_wellFoundedLT_wellFoundedGT := Finite.of_wellFoundedLT_of_wellFoundedGT
+
+theorem IsChain.finite_of_wellFoundedLT_of_wellFoundedGT [Preorder α] [WellFoundedLT α]
+    [WellFoundedGT α] {s : Set α} (h : IsChain (· < ·) s) : s.Finite := by
+  classical
+  let := h.linearOrder
+  exact Finite.of_wellFoundedLT_of_wellFoundedGT s
 
 /-- The **monotone chain condition**: a preorder is co-well-founded iff every increasing sequence
 contains two non-increasing indices.

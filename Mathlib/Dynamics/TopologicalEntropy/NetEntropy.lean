@@ -103,8 +103,8 @@ noncomputable def netMaxcard (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ
   ⨆ (s : Finset X) (_ : IsDynNetIn T F U n s), (s.card : ℕ∞)
 
 lemma IsDynNetIn.card_le_netMaxcard {s : Finset X} (h : IsDynNetIn T F U n s) :
-    s.card ≤ netMaxcard T F U n :=
-  le_iSup₂ (α := ℕ∞) s h
+    s.card ≤ netMaxcard T F U n := by
+  grw [netMaxcard, ← le_iSup₂ s h]
 
 lemma netMaxcard_monotone_time (T : X → X) (F : Set X) (U : SetRel X X) :
     Monotone fun n : ℕ ↦ netMaxcard T F U n :=

@@ -296,9 +296,9 @@ lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHo
   constructor
   let t := (toConjAct <| g.map <| Rat.castHom ℝ)⁻¹
   suffices (t • 𝒮ℒ ⊓ 𝒮ℒ).relIndex 𝒮ℒ ≠ 0 by
-    rwa [conjGL, index_comap, ← inf_relIndex_right, ← MonoidHom.range_eq_map]
+    rwa [conjGL, index_comap, ← inf_relIndex_right, Subgroup.map_top]
   obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g 1
-  rw [Gamma_one_top, ← MonoidHom.range_eq_map] at hN'
+  rw [Gamma_one_top, Subgroup.map_top] at hN'
   suffices Γ(N) ≤ (t • 𝒮ℒ ⊓ 𝒮ℒ).comap (mapGL ℝ) by
     have _ : NeZero N := ⟨hN⟩
     simpa only [index_comap] using! (finiteIndex_of_le this).index_ne_zero
