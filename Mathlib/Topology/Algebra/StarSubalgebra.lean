@@ -172,10 +172,10 @@ theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
     (hφ : Continuous φ) (hψ : Continuous ψ) (h : ∀ x : S,
         φ (inclusion (le_topologicalClosure S) x) = ψ ((inclusion (le_topologicalClosure S)) x)) :
     φ = ψ := by
-  have : (φ : S.topologicalClosure →⋆ₐ[R] B) = (ψ : S.topologicalClosure →⋆ₐ[R] B) := by
+  have : (.ofClass φ) = (.ofClass ψ : S.topologicalClosure →⋆ₐ[R] B) := by
     refine StarAlgHom.ext_topologicalClosure (R := R) (A := A) (B := B) hφ hψ (StarAlgHom.ext ?_)
-    simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using! h
-  rw [DFunLike.ext'_iff, ← StarAlgHom.coe_coe]
+    simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_ofClass] using! h
+  rw [DFunLike.ext'_iff, ← StarAlgHom.coe_ofClass]
   apply congrArg _ this
 
 end TopologicalStarAlgebra
