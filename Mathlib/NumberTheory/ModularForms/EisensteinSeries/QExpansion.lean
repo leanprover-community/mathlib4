@@ -99,7 +99,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f 
   simp only [norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ← exp_nsmul', Pi.smul_apply,
     iteratedDerivWithin_cexp_aux k n p isOpen_upperHalfPlaneSet (hK hz), smul_eq_mul,
     norm_mul, norm_pow, Complex.norm_div, norm_ofNat, norm_real, Real.norm_eq_abs, norm_I, mul_one,
-    norm_natCast, abs_norm, ge_iff_le, r, c] at *
+    norm_natCast, abs_norm, ge_iff_le, Real.abs_pi, r, c] at *
   rw [← mul_assoc]
   gcongr
   convert! h0
