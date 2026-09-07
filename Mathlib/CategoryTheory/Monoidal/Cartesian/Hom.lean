@@ -1,8 +1,16 @@
+/-
+Copyright (c) 2024 Abhijit A J. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Abhijit A J
+-/
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!
+Note: I was getting some error when I tried to submit a PR. Claude asked me to add
+that copyright section above - I am not sure if I am supposed to or not.
+
 In this file we shall define ring structure on `Hom A A` for an abelian
 group object `A`.
 
