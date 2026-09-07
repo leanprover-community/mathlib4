@@ -1279,23 +1279,17 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
         ⟨k, hk⟩
   refine ⟨k, (eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ).toNNReal * 2 ^ k, fun f ↦ ?_⟩
   have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
+  have hf' : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ k • f x) μ := by fun_prop
   calc eLpNorm (⇑f) p μ
   _ = eLpNorm ((fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) • fun x ↦ (1 + ‖x‖) ^ k • f x) p μ := by
     refine congrArg (eLpNorm · p μ) (funext fun x ↦ ?_)
     simp [(h_one_add x).ne']
-  _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
-    have hpow : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) μ :=
-      ((continuous_const.add continuous_norm).rpow_const
-        fun x ↦ .inl (h_one_add x).ne').aestronglyMeasurable
-    have hf' : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ k • f x) μ :=
-      ((continuous_const.add continuous_norm).pow k).aestronglyMeasurable.smul
-        f.continuous.aestronglyMeasurable
-    exact eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ hpow hf'
+  _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ :=
+    eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p hf'
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ *
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
     gcongr
-    have hf' : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ k • f x) μ := by
-      fun_prop
+    rw [eLpNorm_exponent_top hf']
     refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
     rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
     simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using!
