@@ -595,7 +595,7 @@ theorem Integrable.essSup_smul {R : Type*} [NormedRing R] [Module R β] [IsBound
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top g_aestronglyMeasurable]
   calc
     eLpNorm (fun x : α => g x • f x) 1 μ ≤ _ := by
-      simpa using! MeasureTheory.eLpNorm_smul_le_mul_eLpNorm g f (p := ∞) (q := 1) zero_lt_one
+      simpa using! MeasureTheory.eLpNorm_smul_le_mul_eLpNorm_of_pos (p := ∞) (q := 1) zero_lt_one
     _ < ∞ := ENNReal.mul_lt_top hg'.lt_top hf
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
@@ -608,7 +608,7 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZe
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top g_aestronglyMeasurable]
   calc
     eLpNorm (fun x : α => f x • g x) 1 μ ≤ _ := by
-      simpa using! MeasureTheory.eLpNorm_smul_le_mul_eLpNorm f g (p := 1) (q := ∞) zero_lt_one
+      simpa using! MeasureTheory.eLpNorm_smul_le_mul_eLpNorm_of_pos (p := 1) (q := ∞) zero_lt_one
     _ < ∞ := ENNReal.mul_lt_top hf hg'.lt_top
 
 theorem integrable_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
