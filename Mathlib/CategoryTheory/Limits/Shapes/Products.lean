@@ -592,8 +592,6 @@ variable {γ : Type w'} (ε : β ≃ γ) (f : γ → C) [HasProduct f] [HasProdu
 def Pi.reindex : piObj (f ∘ ε) ≅ piObj f :=
   HasLimit.isoOfEquivalence (Discrete.equivalence ε) (Discrete.natIso fun _ => Iso.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual (attr := reassoc (attr := simp)) ι_reindex_hom]
 theorem Pi.reindex_inv_π (b : β) : (Pi.reindex ε f).inv ≫ Pi.π (f ∘ ε) b = Pi.π f (ε b) := by
   simp [reindex]
