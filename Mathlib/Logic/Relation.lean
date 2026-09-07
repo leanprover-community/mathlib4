@@ -856,16 +856,10 @@ lemma reflTransGen_symmGen : ReflTransGen (SymmGen r) = EqvGen r := by
 
 end EqvGen
 
-namespace ReflTransGen
-
 /-- A reflexive-transitive chain induces a relation in the equivalence closure. -/
-theorem to_eqvGen {r : α → α → Prop} {a b : α} (h : ReflTransGen r a b) :
-    EqvGen r a b := by
-  induction h with
-  | refl => exact EqvGen.refl _
-  | tail _ hbc ih => exact EqvGen.trans _ _ _ ih (EqvGen.rel _ _ hbc)
-
-end ReflTransGen
+theorem ReflTransGen.to_eqvGen {r : α → α → Prop} {a b : α} :
+    ReflTransGen r a b → EqvGen r a b :=
+  EqvGen.reflTransGen_le_eqvGen r a b
 
 /-- The join of a relation on a single type is a new relation for which
 pairs of terms are related if there is a third term they are both
@@ -897,7 +891,7 @@ namespace Join
 theorem le_eqvGen (r : α → α → Prop) : Join (ReflTransGen r) ≤ EqvGen r := by
   intro a b h
   rcases h with ⟨c, hac, hbc⟩
-  exact EqvGen.trans a c b hac.to_eqvGen (EqvGen.symm b c hbc.to_eqvGen)
+  exact hac.to_eqvGen.trans a c b hbc.to_eqvGen.symm
 
 end Join
 
@@ -908,14 +902,13 @@ theorem IsChurchRosser.join_reflTransGen_eq_eqvGen {r : α → α → Prop} [IsC
   Subrelation.antisymm (Join.le_eqvGen r) IsChurchRosser.eqvGen_le_join_reflTransGen
 
 /-- The Church-Rosser property implies confluence. -/
-theorem IsChurchRosser.confluent {r : α → α → Prop} [IsChurchRosser r] : IsConfluent r where
-  join_of_rel_of_rel := by
-    intro a b c hab hac
+theorem IsChurchRosser.isConfluent {r : α → α → Prop} [IsChurchRosser r] : IsConfluent r where
+  join_of_rel_of_rel a b c hab hac := by
     apply IsChurchRosser.eqvGen_le_join_reflTransGen
-    exact EqvGen.trans b a c (EqvGen.symm a b hab.to_eqvGen) hac.to_eqvGen
+    exact hab.to_eqvGen.symm.trans b a c hac.to_eqvGen
 
 /-- A confluent relation has the Church-Rosser property. -/
-theorem IsConfluent.churchRosser {r : α → α → Prop} [IsConfluent r] : IsChurchRosser r where
+theorem IsConfluent.isChurchRosser {r : α → α → Prop} [IsConfluent r] : IsChurchRosser r where
   eqvGen_le_join_reflTransGen := by
     intro a b hab
     induction hab with
