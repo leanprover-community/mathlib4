@@ -577,7 +577,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {f : R[X]}
+variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {f : R[X]}
 
 namespace IsAdjoinRoot
 
