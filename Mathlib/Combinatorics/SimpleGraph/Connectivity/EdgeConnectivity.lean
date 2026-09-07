@@ -205,7 +205,7 @@ theorem isEdgeReachable_top_iff_forall_nat :
 
 theorem isEdgeConnected_top_iff_forall_nat :
     G.IsEdgeConnected ⊤ ↔ ∀ n : ℕ, G.IsEdgeConnected n := by
-  simp [IsEdgeConnected, isEdgeReachable_top_iff_forall_nat]
+  simp_rw [IsEdgeConnected, isEdgeReachable_top_iff_forall_nat]
   exact ⟨fun h n u v ↦ h u v n, fun h u v n ↦ h n u v⟩
 
 /-!
