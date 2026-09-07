@@ -409,7 +409,6 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
     simpa only [Subtype.ext_iff] using! e.apply_symm_apply ⟨_, hx j⟩
   · simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `S : Finset (Fin (n + 1))` is order isomorphic to `Fin (m + 1)`,
 then the face `face S` of `Δ[n]` is representable by `m`,
 i.e. `face S` is isomorphic to `Δ[m]`, see `stdSimplex.isoOfRepresentableBy`. -/
@@ -712,7 +711,6 @@ lemma face_nonDegenerateEquiv' {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate
     face (nonDegenerateEquiv' x) = Subcomplex.ofSimplex x.val :=
   face_eq_ofSimplex.{u} _ _ (orderIsoOfNonDegenerate x)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma nonDegenerateEquiv'_symm_apply_mem {n d : ℕ}
     (S : { S : Finset (Fin (n + 1)) | S.card = d + 1 }) (i : Fin (d + 1)) :
       (nonDegenerateEquiv'.{u}.symm S).val i ∈ S.val := by
@@ -901,8 +899,6 @@ lemma isIso_toOfSimplex_iff :
 
 variable [Mono (yonedaEquiv.symm x)]
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If a simplex `x : X _⦋n⦌` is such that `yonedaEquiv.symm x : Δ[n] ⟶ X` is a
 monomorphism, then `Subcomplex.ofSimplex x` is representable by `⦋n⦌`. -/
 noncomputable def ofSimplexRepresentableBy :
@@ -914,25 +910,19 @@ noncomputable def ofSimplexRepresentableBy :
         ((Iso.homCongr (α := Iso.refl (stdSimplex.obj m)) (β := e)).trans yonedaEquiv)
     homEquiv_comp {m m'} f g := by
       dsimp
-      rw [Category.id_comp, Category.id_comp]
-      rw [yonedaEquiv_symm_comp]
-      erw [Equiv.apply_symm_apply]
-      rw [yonedaEquiv_symm_comp]
-      conv_rhs => erw [Equiv.apply_symm_apply]
-      erw [NatTrans.naturality_apply]
-      rfl }
+      simp only [Iso.homCongr_apply, Iso.refl_inv,
+        Category.id_comp, Category.id_comp,
+        yonedaEquiv_symm_comp, Equiv.apply_symm_apply]
+      apply NatTrans.naturality_apply }
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofSimplexRepresentableBy_id :
     dsimp% (ofSimplexRepresentableBy x).homEquiv (𝟙 ⦋n⦌) = x := by
   dsimp [ofSimplexRepresentableBy]
-  rw [Category.id_comp, yonedaEquiv_symm_comp]
-  erw [Equiv.apply_symm_apply]
-  rw [toOfSimplex_app_objEquiv_symm]
+  simp only [Iso.homCongr_apply, Iso.refl_inv, asIso_hom,
+    Category.id_comp, yonedaEquiv_symm_comp, Equiv.apply_symm_apply,
+    toOfSimplex_app_objEquiv_symm.{u}]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaEquiv_isoOfRepresentableBy_ofSimplexRepresentableBy_hom :
     yonedaEquiv ((stdSimplex.isoOfRepresentableBy (ofSimplexRepresentableBy x)).hom ≫
