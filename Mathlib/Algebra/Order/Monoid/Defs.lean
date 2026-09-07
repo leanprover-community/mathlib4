@@ -36,6 +36,8 @@ class IsOrderedMonoid (α : Type*) [CommMonoid α] [Preorder α] where
   protected mul_le_mul_right (a b : α) : a ≤ b → ∀ c, c * a ≤ c * b := fun h c ↦ by
     rw [mul_comm c, mul_comm c]; exact mul_le_mul_left a b h c
 
+attribute [to_dual self] IsOrderedMonoid.mk IsOrderedAddMonoid.mk
+
 section IsOrderedMonoid
 variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
 

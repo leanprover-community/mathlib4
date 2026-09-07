@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.ContinuousOn
 
 /-!
-### Continuity of piecewise defined functions
+# Continuity of piecewise defined functions
 -/
 
 public section
