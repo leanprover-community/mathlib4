@@ -18,9 +18,12 @@ require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
-require HexRealRoots from git
-  "https://github.com/leanprover/hex-real-roots.git" @
-    "5ea6914dc230e7519722d237b46e02ec6e5ff2d0"
+require HexBasic from git "https://github.com/leanprover/hex-basic.git" @ "main"
+require HexArith from git "https://github.com/leanprover/hex-arith.git" @ "main"
+require HexModArith from git "https://github.com/leanprover/hex-mod-arith.git" @ "main"
+require HexPoly from git "https://github.com/leanprover/hex-poly.git" @ "main"
+require HexPolyZ from git "https://github.com/leanprover/hex-poly-z.git" @ "main"
+require HexRealRoots from git "https://github.com/leanprover/hex-real-roots.git" @ "main"
 
 
 /-!
