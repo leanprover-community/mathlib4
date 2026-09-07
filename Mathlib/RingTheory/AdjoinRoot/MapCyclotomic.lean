@@ -28,7 +28,7 @@ The main definitions are in the `IsAdjoinRoot` namespace.
 
 open Polynomial
 
-@[expose] public section
+public section
 
 namespace IsAdjoinRoot
 
