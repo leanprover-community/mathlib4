@@ -42,25 +42,26 @@ instance : CoeSort BddOrd Type* :=
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BddOrd.of X` as `↧X`. -/
+@[app_delab BddOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- The type of morphisms in `BddOrd R`. -/
 @[ext]
 structure Hom (X Y : BddOrd.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `BoundedOrderHom`. -/
   hom' : BoundedOrderHom X Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category BddOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨BoundedOrderHom.id _⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddOrd (BoundedOrderHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddOrd` back into a `BoundedOrderHom`. -/
 abbrev Hom.hom {X Y : BddOrd.{u}} (f : Hom X Y) :=
