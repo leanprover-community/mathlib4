@@ -792,8 +792,6 @@ theorem fundamentalGroupToMulOpposite_toPermFiber :
 basepoint `e` in the fiber. -/
 theorem fundamentalGroupToMulOpposite_eq [IsAddCommutative G] (e' : p ⁻¹' {x}) :
     hp.fundamentalGroupToMulOpposite e = hp.fundamentalGroupToMulOpposite e' :=
-  haveI : IsMulCommutative (Multiplicative G) :=
-    ⟨⟨fun a b ↦ add_comm' (Multiplicative.toAdd a) (Multiplicative.toAdd b)⟩⟩
   hp.toMultiplicative.fundamentalGroupToMulOpposite_eq e e'
 
 variable {e} in
@@ -823,8 +821,6 @@ def fundamentalGroupEquiv [SimplyConnectedSpace E] :
 basepoint `e` in the fiber. -/
 theorem fundamentalGroupEquiv_eq [SimplyConnectedSpace E] [IsAddCommutative G] (e' : p ⁻¹' {x}) :
     hp.fundamentalGroupEquiv e = hp.fundamentalGroupEquiv e' :=
-  haveI : IsMulCommutative (Multiplicative G) :=
-    ⟨⟨fun a b ↦ add_comm' (Multiplicative.toAdd a) (Multiplicative.toAdd b)⟩⟩
   hp.toMultiplicative.fundamentalGroupEquiv_eq e e'
 
 end IsAddQuotientCoveringMap

@@ -483,6 +483,12 @@ instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) wher
 instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
   pow_left_injective _ := nsmul_right_injective (M := α)
 
+instance [Mul α] [IsMulCommutative α] : IsAddCommutative (Additive α) where
+  is_comm := ⟨fun a b ↦ congrArg Additive.ofMul (mul_comm' a.toMul b.toMul)⟩
+
+instance [Add α] [IsAddCommutative α] : IsMulCommutative (Multiplicative α) where
+  is_comm := ⟨fun a b ↦ congrArg Multiplicative.ofAdd (add_comm' a.toAdd b.toAdd)⟩
+
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.
 
