@@ -85,6 +85,11 @@ theorem symm_zero : σ 0 = 1 :=
 theorem symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
 
+@[grind =]
+theorem symm_half : σ ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) = ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) := by
+  ext
+  norm_num [symm]
+
 @[simp, grind =]
 theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
