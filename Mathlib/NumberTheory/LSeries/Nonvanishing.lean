@@ -484,18 +484,17 @@ theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs 
     completedLFunction_ne_zero_of_one_le_re]
   <;> grind [cpow_eq_zero_iff, Nat.cast_eq_zero, sub_re, one_re, inv_eq_one, sub_ne_zero]
 
-end nonvanishing
-
-end DirichletCharacter
-
-open DirichletCharacter in
 /-- **The zeros of `ζ` in the closed left half-plane are exactly the trivial ones**, i.e. the
 negative even integers. This is the special case of `LFunction_eq_zero_iff_of_re_nonpos` for the
 trivial character modulo `1`, whose Gamma factor is `Gammaℝ`. -/
-theorem riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
+theorem _root_.riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
     riemannZeta s = 0 ↔ ∃ n : ℕ, s = -2 * (n + 1) := by
   rw [← LFunction_modOne_eq (χ := 1), LFunction_eq_zero_iff_of_re_nonpos
     isPrimitive_one_level_one hs, gammaFactor_eq_zero_even (by simp)]
   constructor
   · rintro ⟨⟨n, rfl⟩, _⟩; exact ⟨n - 1, by simp_all; norm_cast; grind⟩
   · rintro ⟨n, rfl⟩; exact ⟨⟨n + 1, by norm_cast⟩, by grind⟩
+
+end nonvanishing
+
+end DirichletCharacter
