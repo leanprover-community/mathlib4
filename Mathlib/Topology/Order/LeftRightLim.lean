@@ -47,19 +47,15 @@ variable {α β : Type*} [LinearOrder α] [TopologicalSpace β]
 let `a : α`. The limit strictly to the left of `f` at `a`, denoted with `leftLim f a`, is defined
 by using the order topology on `α`. If `a` is isolated to its left or the function has no left
 limit, we use `f a` instead to guarantee a good behavior in most cases. -/
+@[to_dual /-- Let `f : α → β` be a function from a linear order `α` to a topological space `β`, and
+let `a : α`. The limit strictly to the right of `f` at `a`, denoted with `rightLim f a`, is defined
+by using the order topology on `α`. If `a` is isolated to its right or the function has no right
+limit, we use `f a` instead to guarantee a good behavior in most cases. -/]
 noncomputable def Function.leftLim (f : α → β) (a : α) : β := by
   classical
   haveI : Nonempty β := ⟨f a⟩
   letI : TopologicalSpace α := Preorder.topology α
   exact if 𝓝[<] a = ⊥ ∨ ¬∃ y, Tendsto f (𝓝[<] a) (𝓝 y) then f a else limUnder (𝓝[<] a) f
-
-/-- Let `f : α → β` be a function from a linear order `α` to a topological space `β`, and
-let `a : α`. The limit strictly to the right of `f` at `a`, denoted with `rightLim f a`, is defined
-by using the order topology on `α`. If `a` is isolated to its right or the function has no right
-limit, we use `f a` instead to guarantee a good behavior in most cases. -/
-@[to_dual existing]
-noncomputable def Function.rightLim (f : α → β) (a : α) : β :=
-  @Function.leftLim αᵒᵈ β _ _ f a
 
 open Function
 
@@ -72,31 +68,20 @@ theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology 
   simp only [leftLim, neBot_iff.mp h, h'', not_true, or_self_iff, ite_false]
   exact lim_eq h'
 
-theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
-    {f : α → β} {a : α} {y : β} [h : (𝓝[>] a).NeBot] (h' : Tendsto f (𝓝[>] a) (𝓝 y)) :
-    Function.rightLim f a = y :=
-  leftLim_eq_of_tendsto (α := αᵒᵈ) (h := h) h'
-
+@[to_dual rightLim_eq_of_eq_bot]
 theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : 𝓝[<] a = ⊥) : leftLim f a = f a := by
   rw [h'α.topology_eq_generate_intervals] at h
   simp [leftLim, h]
 
-theorem rightLim_eq_of_eq_bot [TopologicalSpace α] [OrderTopology α] (f : α → β) {a : α}
-    (h : 𝓝[>] a = ⊥) : rightLim f a = f a :=
-  leftLim_eq_of_eq_bot (α := αᵒᵈ) f h
-
+@[to_dual]
 theorem leftLim_eq_of_not_tendsto
     [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : ¬ ∃ y, Tendsto f (𝓝[<] a) (𝓝 y)) : leftLim f a = f a := by
   rw [h'α.topology_eq_generate_intervals] at h
   simp [leftLim, h]
 
-theorem rightLim_eq_of_not_tendsto
-    [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
-    (h : ¬ ∃ y, Tendsto f (𝓝[>] a) (𝓝 y)) : rightLim f a = f a :=
-  leftLim_eq_of_not_tendsto (α := αᵒᵈ) f h
-
+@[to_dual]
 theorem leftLim_eq_of_isBot {f : α → β} {a : α} (ha : IsBot a) :
     leftLim f a = f a := by
   let A : TopologicalSpace α := Preorder.topology α
@@ -105,10 +90,7 @@ theorem leftLim_eq_of_isBot {f : α → β} {a : α} (ha : IsBot a) :
   have : Iio a = ∅ := by simp; grind [IsBot, IsMin]
   simp [this]
 
-theorem rightLim_eq_of_isTop {f : α → β} {a : α} (ha : IsTop a) :
-    rightLim f a = f a :=
-  leftLim_eq_of_isBot (α := αᵒᵈ) ha
-
+@[to_dual]
 theorem ContinuousWithinAt.leftLim_eq [TopologicalSpace α] [OrderTopology α] [T2Space β]
     {f : α → β} {a : α} (hf : ContinuousWithinAt f (Iic a) a) : leftLim f a = f a := by
   rcases eq_or_neBot (𝓝[<] a) with h' | h'
@@ -116,10 +98,7 @@ theorem ContinuousWithinAt.leftLim_eq [TopologicalSpace α] [OrderTopology α] [
   apply leftLim_eq_of_tendsto
   exact hf.tendsto.mono_left (nhdsWithin_mono _ Iio_subset_Iic_self)
 
-theorem ContinuousWithinAt.rightLim_eq [TopologicalSpace α] [OrderTopology α] [T2Space β]
-    {f : α → β} {a : α} (hf : ContinuousWithinAt f (Ici a) a) : rightLim f a = f a :=
-  ContinuousWithinAt.leftLim_eq (α := αᵒᵈ) hf
-
+@[to_dual]
 theorem tendsto_leftLim_of_tendsto [TopologicalSpace α] [h'α : OrderTopology α]
     {f : α → β} {a : α} (h : ∃ y, Tendsto f (𝓝[<] a) (𝓝 y)) :
     Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a)) := by
@@ -129,11 +108,7 @@ theorem tendsto_leftLim_of_tendsto [TopologicalSpace α] [h'α : OrderTopology �
   simp only [leftLim, neBot_iff.1 h', h, not_true_eq_false, or_self, ↓reduceIte]
   exact tendsto_nhds_limUnder h
 
-theorem tendsto_rightLim_of_tendsto [TopologicalSpace α] [OrderTopology α]
-    {f : α → β} {a : α} (h : ∃ y, Tendsto f (𝓝[>] a) (𝓝 y)) :
-    Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a)) :=
-  tendsto_leftLim_of_tendsto (α := αᵒᵈ) h
-
+@[to_dual]
 theorem mapClusterPt_leftLim [TopologicalSpace α] [OrderTopology α]
     (f : α → β) (a : α) : MapClusterPt (f.leftLim a) (𝓝[≤] a) f := by
   have A : (𝓝 (f a) ⊓ map f (𝓝[≤] a)).NeBot := by
@@ -148,10 +123,7 @@ theorem mapClusterPt_leftLim [TopologicalSpace α] [OrderTopology α]
   have : MapClusterPt (f.leftLim a) (𝓝[<] a) f := (tendsto_leftLim_of_tendsto H).mapClusterPt
   exact MapClusterPt.mono this (nhdsWithin_mono _ Iio_subset_Iic_self)
 
-theorem mapClusterPt_rightLim [TopologicalSpace α] [OrderTopology α]
-    (f : α → β) (a : α) : MapClusterPt (f.rightLim a) (𝓝[≥] a) f :=
-  mapClusterPt_leftLim (α := αᵒᵈ) _ _
-
+@[to_dual]
 theorem continuousWithinAt_leftLim_Iic [TopologicalSpace α] [OrderTopology α] [T3Space β]
     {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) :
     ContinuousWithinAt f.leftLim (Iic a) a := by
@@ -176,21 +148,13 @@ theorem continuousWithinAt_leftLim_Iic [TopologicalSpace α] [OrderTopology α] 
   apply s_closed.mem_of_tendsto (tendsto_leftLim_of_tendsto h''c)
   filter_upwards [Ioo_mem_nhdsLT_of_mem ⟨hc.1, hc.2.le⟩] with d hd using hu hd
 
+@[to_dual]
 theorem leftLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
     {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) :
     f.leftLim.leftLim a = f.leftLim a :=
   (continuousWithinAt_leftLim_Iic h).leftLim_eq
 
-theorem continuousWithinAt_rightLim_Ici [TopologicalSpace α] [OrderTopology α] [T3Space β]
-    {f : α → β} {a : α} (h : Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a))) :
-    ContinuousWithinAt f.rightLim (Ici a) a :=
-  continuousWithinAt_leftLim_Iic (α := αᵒᵈ) h
-
-theorem rightLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
-    {f : α → β} {a : α} (h : Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a))) :
-    f.rightLim.rightLim a = f.rightLim a :=
-  leftLim_leftLim (α := αᵒᵈ) h
-
+@[to_dual]
 theorem leftLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
     {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) [h' : (𝓝[<] a).NeBot] :
     f.rightLim.leftLim a = f.leftLim a := by
@@ -209,11 +173,7 @@ theorem leftLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
   apply s_closed.mem_of_tendsto (tendsto_rightLim_of_tendsto h''c)
   filter_upwards [Ioo_mem_nhdsGT_of_mem ⟨hc.1.le, hc.2⟩] with d hd using hu hd
 
-theorem rightLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
-    {f : α → β} {a : α} (h : Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a))) [h' : (𝓝[>] a).NeBot] :
-    f.leftLim.rightLim a = f.rightLim a :=
-  leftLim_rightLim (α := αᵒᵈ) h (h' := h')
-
+@[to_dual]
 theorem tendsto_atTop_of_mapClusterPt
     [TopologicalSpace α] [OrderTopology α] [T3Space β] [NoTopOrder α] {f g : α → β} {b : β}
     (h : Tendsto f atTop (𝓝 b)) (h' : ∀ᶠ x in atTop, MapClusterPt (g x) (𝓝 x) f) :
@@ -228,12 +188,7 @@ theorem tendsto_atTop_of_mapClusterPt
   apply s_closed.mem_of_mapClusterPt (hu a ha.le).1
   filter_upwards [Ici_mem_nhds ha] with y hy using (hu y hy).2
 
-theorem tendsto_atBot_of_mapClusterPt
-    [TopologicalSpace α] [OrderTopology α] [T3Space β] [NoBotOrder α] {f g : α → β} {b : β}
-    (h : Tendsto f atBot (𝓝 b)) (h' : ∀ᶠ x in atBot, MapClusterPt (g x) (𝓝 x) f) :
-    Tendsto g atBot (𝓝 b) :=
-  tendsto_atTop_of_mapClusterPt (α := αᵒᵈ) h h'
-
+@[to_dual]
 theorem tendsto_leftLim_atTop_of_tendsto
     [TopologicalSpace α] [OrderTopology α] [NoTopOrder α] [T3Space β]
     {f : α → β} {b : β} (h : Tendsto f atTop (𝓝 b)) :
@@ -241,6 +196,7 @@ theorem tendsto_leftLim_atTop_of_tendsto
   apply tendsto_atTop_of_mapClusterPt h (Eventually.of_forall (fun x ↦ ?_))
   exact MapClusterPt.mono (mapClusterPt_leftLim _ _) nhdsWithin_le_nhds
 
+@[to_dual]
 theorem tendsto_rightLim_atTop_of_tendsto [TopologicalSpace α] [OrderTopology α] [T3Space β]
     {f : α → β} {b : β} (h : Tendsto f atTop (𝓝 b)) :
     Tendsto f.rightLim atTop (𝓝 b) := by
@@ -252,17 +208,6 @@ theorem tendsto_rightLim_atTop_of_tendsto [TopologicalSpace α] [OrderTopology �
   · apply tendsto_atTop_of_mapClusterPt h (Eventually.of_forall (fun x ↦ ?_))
     exact MapClusterPt.mono (mapClusterPt_rightLim _ _) nhdsWithin_le_nhds
 
-theorem tendsto_rightLim_atBot_of_tendsto
-    [TopologicalSpace α] [OrderTopology α] [NoBotOrder α] [T3Space β]
-    {f : α → β} {b : β} (h : Tendsto f atBot (𝓝 b)) :
-    Tendsto f.rightLim atBot (𝓝 b) :=
-  tendsto_leftLim_atTop_of_tendsto (α := αᵒᵈ) h
-
-theorem tendsto_leftLim_atBot_of_tendsto [TopologicalSpace α] [OrderTopology α] [T3Space β]
-    {f : α → β} {b : β} (h : Tendsto f atBot (𝓝 b)) :
-    Tendsto f.leftLim atBot (𝓝 b) :=
-  tendsto_rightLim_atTop_of_tendsto (α := αᵒᵈ) h
-
 end
 
 open Function
@@ -273,14 +218,12 @@ variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] 
   [OrderTopology β] {f : α → β} (hf : Monotone f) {x y : α}
 include hf
 
+@[to_dual]
 theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] [(𝓝[<] x).NeBot] :
     leftLim f x = sSup (f '' Iio x) :=
   leftLim_eq_of_tendsto (hf.tendsto_nhdsLT x)
 
-theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] [(𝓝[>] x).NeBot] :
-    rightLim f x = sInf (f '' Ioi x) :=
-  rightLim_eq_of_tendsto (hf.tendsto_nhdsGT x)
-
+@[to_dual le_rightLim]
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   let : TopologicalSpace α := Preorder.topology α
   have : OrderTopology α := ⟨rfl⟩
@@ -294,6 +237,7 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
     intro z hz
     exact hf (hz.le.trans h)
 
+@[to_dual rightLim_le]
 theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   let : TopologicalSpace α := Preorder.topology α
   have : OrderTopology α := ⟨rfl⟩
@@ -307,21 +251,12 @@ theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   intro z hz
   exact hf hz.le
 
-@[gcongr, mono]
+@[to_dual (attr := gcongr, mono)]
 protected theorem leftLim : Monotone (leftLim f) := by
   intro x y h
   rcases eq_or_lt_of_le h with (rfl | hxy)
   · exact le_rfl
   · exact (hf.leftLim_le le_rfl).trans (hf.le_leftLim hxy)
-
-theorem le_rightLim (h : x ≤ y) : f x ≤ rightLim f y :=
-  hf.dual.leftLim_le h
-
-theorem rightLim_le (h : x < y) : rightLim f x ≤ f y :=
-  hf.dual.le_leftLim h
-
-@[gcongr, mono]
-protected theorem rightLim : Monotone (rightLim f) := fun _ _ h => hf.dual.leftLim h
 
 theorem leftLim_le_rightLim (h : x ≤ y) : leftLim f x ≤ rightLim f y :=
   (hf.leftLim_le le_rfl).trans (hf.le_rightLim h)
@@ -338,21 +273,19 @@ theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
 
 variable [TopologicalSpace α] [OrderTopology α]
 
+@[to_dual]
 theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) :=
   tendsto_leftLim_of_tendsto ⟨_, hf.tendsto_nhdsLT x⟩
 
+@[to_dual]
 theorem tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≤] leftLim f x) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within f (hf.tendsto_leftLim x)
   filter_upwards [@self_mem_nhdsWithin _ _ x (Iio x)] with y hy using hf.le_leftLim hy
 
-theorem tendsto_rightLim (x : α) : Tendsto f (𝓝[>] x) (𝓝 (rightLim f x)) :=
-  hf.dual.tendsto_leftLim x
-
-theorem tendsto_rightLim_within (x : α) : Tendsto f (𝓝[>] x) (𝓝[≥] rightLim f x) :=
-  hf.dual.tendsto_leftLim_within x
-
 /-- A monotone function is continuous to the left at a point if and only if its left limit
 coincides with the value of the function. -/
+@[to_dual /-- A monotone function is continuous to the right at a point if and only if its right
+limit coincides with the value of the function. -/]
 theorem continuousWithinAt_Iio_iff_leftLim_eq :
     ContinuousWithinAt f (Iio x) x ↔ leftLim f x = f x := by
   rcases eq_or_neBot (𝓝[<] x) with h' | h'
@@ -360,12 +293,6 @@ theorem continuousWithinAt_Iio_iff_leftLim_eq :
   refine ⟨fun h => tendsto_nhds_unique (hf.tendsto_leftLim x) h.tendsto, fun h => ?_⟩
   have := hf.tendsto_leftLim x
   rwa [h] at this
-
-/-- A monotone function is continuous to the right at a point if and only if its right limit
-coincides with the value of the function. -/
-theorem continuousWithinAt_Ioi_iff_rightLim_eq :
-    ContinuousWithinAt f (Ioi x) x ↔ rightLim f x = f x :=
-  hf.dual.continuousWithinAt_Iio_iff_leftLim_eq
 
 /-- A monotone function is continuous at a point if and only if its left and right limits
 coincide. -/
@@ -393,25 +320,17 @@ variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] 
   [OrderTopology β] {f : α → β} (hf : Antitone f) {x y : α}
 include hf
 
+@[to_dual rightLim_le]
 theorem le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=
   hf.dual_right.leftLim_le h
 
+@[to_dual le_rightLim]
 theorem leftLim_le (h : x < y) : leftLim f y ≤ f x :=
   hf.dual_right.le_leftLim h
 
-@[gcongr, mono]
+@[to_dual (attr := gcongr, mono)]
 protected theorem leftLim : Antitone (leftLim f) :=
   hf.dual_right.leftLim
-
-theorem rightLim_le (h : x ≤ y) : rightLim f y ≤ f x :=
-  hf.dual_right.le_rightLim h
-
-theorem le_rightLim (h : x < y) : f y ≤ rightLim f x :=
-  hf.dual_right.rightLim_le h
-
-@[gcongr, mono]
-protected theorem rightLim : Antitone (rightLim f) :=
-  hf.dual_right.rightLim
 
 theorem rightLim_le_leftLim (h : x ≤ y) : rightLim f y ≤ leftLim f x :=
   hf.dual_right.leftLim_le_rightLim h
@@ -421,29 +340,21 @@ theorem leftLim_le_rightLim (h : x < y) : leftLim f y ≤ rightLim f x :=
 
 variable [TopologicalSpace α] [OrderTopology α]
 
+@[to_dual]
 theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) :=
   hf.dual_right.tendsto_leftLim x
 
+@[to_dual]
 theorem tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≥] leftLim f x) :=
   hf.dual_right.tendsto_leftLim_within x
 
-theorem tendsto_rightLim (x : α) : Tendsto f (𝓝[>] x) (𝓝 (rightLim f x)) :=
-  hf.dual_right.tendsto_rightLim x
-
-theorem tendsto_rightLim_within (x : α) : Tendsto f (𝓝[>] x) (𝓝[≤] rightLim f x) :=
-  hf.dual_right.tendsto_rightLim_within x
-
 /-- An antitone function is continuous to the left at a point if and only if its left limit
 coincides with the value of the function. -/
+@[to_dual /-- An antitone function is continuous to the right at a point if and only if its right
+limit coincides with the value of the function. -/]
 theorem continuousWithinAt_Iio_iff_leftLim_eq :
     ContinuousWithinAt f (Iio x) x ↔ leftLim f x = f x :=
   hf.dual_right.continuousWithinAt_Iio_iff_leftLim_eq
-
-/-- An antitone function is continuous to the right at a point if and only if its right limit
-coincides with the value of the function. -/
-theorem continuousWithinAt_Ioi_iff_rightLim_eq :
-    ContinuousWithinAt f (Ioi x) x ↔ rightLim f x = f x :=
-  hf.dual_right.continuousWithinAt_Ioi_iff_rightLim_eq
 
 /-- An antitone function is continuous at a point if and only if its left and right limits
 coincide. -/
