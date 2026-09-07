@@ -51,6 +51,7 @@ meta def morphismClassesToLint : Array Name := #[
   `ContinuousAlgEquivClass, `ContinuousAlgEquivClass,
   `ContinuousLinearEquivClass, `ContinuousSemilinearEquivClass,
   `CompletelyPositiveMapClass,
+  `OrderRingHomClass, `OrderRingIsoClass,
 ]
 
 /-- For each class `FooHomClass`, generate the name `FooHomClass.toFoo`. -/
