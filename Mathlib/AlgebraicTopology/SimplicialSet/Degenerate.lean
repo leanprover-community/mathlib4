@@ -25,7 +25,9 @@ for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite
+open CategoryTheory Limits Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -77,7 +79,6 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
     exact ⟨m, hm, f, hx⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma opObjEquiv_mem_degenerate_iff (x : X.op _⦋n⦌) :
     opObjEquiv x ∈ X.degenerate n ↔ x ∈ X.op.degenerate n := by
   simp only [mem_degenerate_iff]
@@ -336,6 +337,11 @@ lemma degenerate_app_apply {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n
     f.app _ x ∈ Y.degenerate n := by
   obtain ⟨m, hm, g, y, rfl⟩ := hx
   exact ⟨m, hm, g, f.app _ y, by rw [NatTrans.naturality_apply]⟩
+
+lemma nonDegenerate_of_app_apply {n : ℕ} {x : X _⦋n⦌} (f : X ⟶ Y)
+    (hx : f.app _ x ∈ Y.nonDegenerate n) :
+    x ∈ X.nonDegenerate n :=
+  fun h ↦ hx (degenerate_app_apply h f)
 
 lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
     X.degenerate n ⊆ (f.app _) ⁻¹' (Y.degenerate n) :=

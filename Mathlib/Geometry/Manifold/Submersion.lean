@@ -314,7 +314,7 @@ mathematically, this is just the identity map; however, this is technically usef
 us to always work with `hf.smallComplement`. -/
 def smallEquiv (hf : IsSubmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
   haveI := hf.small
-  ((equivShrink F).symm.continuousLinearEquiv 𝕜).symm
+  ((Shrink.addEquiv (α := F)).continuousLinearEquiv 𝕜).symm
 
 lemma trans_F (h : IsSubmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsSubmersionAtOfComplement F' I J n f x := by
@@ -335,7 +335,6 @@ lemma _root_.isOpen_isSubmersionAtOfComplement :
     IsOpen {x | IsSubmersionAtOfComplement F I J n f x} := by
   exact IsOpen.liftSourceTargetPropertyAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
 then `f × g: M × M' → N × N'` is a submersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}

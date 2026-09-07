@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
       - name: Configure Lean
@@ -70,7 +70,7 @@ jobs:
           fi
 
       - name: Add comment to fix PR title
-        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
         if: failure() && steps.pr-title-check.outputs.errors
         with:
           header: 'PR Title Check'
@@ -120,7 +120,7 @@ jobs:
 
       - name: Add comment that PR title is fixed
         if: steps.pr-title-check.outcome == 'success'
-        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
         with:
           header: 'PR Title Check'
           # should do nothing if a 'PR Title Check' comment does not exist

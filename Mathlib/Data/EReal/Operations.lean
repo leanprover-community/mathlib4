@@ -6,7 +6,6 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
-public import Batteries.Util.ProofWanted
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -77,22 +76,21 @@ theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
   · exact top_add_coe _
   · exact top_add_top
 
-/-- For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
-if and only if `x` is not `⊥`. -/
-theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
-  constructor <;> intro h
-  · rintro rfl
-    rw [add_bot] at h
-    exact bot_ne_top h
-  · cases x with
-    | bot => contradiction
-    | top => rfl
-    | coe r => exact top_add_of_ne_bot h
-
 /-- For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`. -/
 @[simp]
 theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
   rw [add_comm, top_add_of_ne_bot h]
+
+@[grind =]
+theorem add_eq_top_iff {x y : EReal} : x + y = ⊤ ↔ (x = ⊤ ∧ y ≠ ⊥) ∨ (x ≠ ⊥ ∧ y = ⊤) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · cases x <;> cases y <;> simp_all [← coe_add]
+  · obtain ⟨rfl, h⟩ | ⟨h, rfl⟩ := h <;> simp [h]
+
+/-- For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
+if and only if `x` is not `⊥`. -/
+theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
+  simp +contextual [add_eq_top_iff]
 
 /-- For any extended real number `x`, the sum of `x` and `⊤` is equal to `⊤`
 if and only if `x` is not `⊥`. -/
@@ -173,22 +171,29 @@ lemma add_ne_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y ≠ ⊤
 
 lemma add_ne_top_iff_ne_top₂ {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ := by
-  refine ⟨?_, fun h ↦ add_ne_top h.1 h.2⟩
-  cases x <;> simp_all only [ne_eq, not_false_eq_true, top_add_of_ne_bot, not_true_eq_false,
-    IsEmpty.forall_iff]
-  cases y <;> simp_all only [not_false_eq_true, ne_eq, add_top_of_ne_bot, not_true_eq_false,
-    coe_ne_top, and_self, implies_true]
+  simp [add_eq_top_iff, *]
+
+lemma add_eq_top_iff_eq_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
+    x + y = ⊤ ↔ x = ⊤ := by
+  simp [add_eq_top_iff, *]
 
 lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
-    x + y ≠ ⊤ ↔ x ≠ ⊤ := by
-  cases x <;> simp [add_ne_top_iff_ne_top₂, hy, hy']
+    x + y ≠ ⊤ ↔ x ≠ ⊤ := add_eq_top_iff_eq_top_left hy hy' |>.ne
+
+lemma add_eq_top_iff_eq_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
+    x + y = ⊤ ↔ y = ⊤ := add_comm x y ▸ add_eq_top_iff_eq_top_left hx hx'
 
 lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
-    x + y ≠ ⊤ ↔ y ≠ ⊤ := add_comm x y ▸ add_ne_top_iff_ne_top_left hx hx'
+    x + y ≠ ⊤ ↔ y ≠ ⊤ := add_eq_top_iff_eq_top_right hx hx' |>.ne
 
-lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
-    x + y ≠ ⊤ ↔ x ≠ ⊤ := by
-  induction x <;> simp [EReal.add_ne_top_iff_ne_top₂, hy, hy']
+@[deprecated (since := "2026-07-02")] alias add_ne_top_iff_of_ne_bot_of_ne_top :=
+  add_ne_top_iff_ne_top_left
+
+@[simp] lemma add_coe_eq_top_iff {x : EReal} {y : ℝ} : x + y = ⊤ ↔ x = ⊤ := by
+  simp [add_eq_top_iff_eq_top_left]
+
+@[simp] lemma coe_add_eq_top_iff {x : ℝ} {y : EReal} : x + y = ⊤ ↔ y = ⊤ := by
+  simp [add_eq_top_iff_eq_top_right]
 
 /-! ### Negation -/
 
@@ -322,10 +327,6 @@ theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0
   have H₁ : 0 ≤ y := hy ▸ coe_ennreal_nonneg x
   obtain rfl : y.toENNReal = x := by simp [← hy]
   simp [recENNReal, H₁]
-
-proof_wanted recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
-    (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
-    recENNReal coe neg_coe (-x) = neg_coe x hx
 
 /-!
 ### Subtraction
@@ -569,16 +570,16 @@ lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le :
 @[simp] lemma bot_mul_bot : (⊥ : EReal) * ⊥ = ⊤ := rfl
 
 lemma coe_mul_top_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊤ = ⊤ :=
-  if_pos h
+  ite_eq_left h
 
 lemma coe_mul_top_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊤ = ⊥ :=
-  (if_neg h.not_gt).trans (if_neg h.ne)
+  (ite_eq_right h.not_gt).trans (ite_eq_right h.ne)
 
 lemma top_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊤ : EReal) * x = ⊤ :=
-  if_pos h
+  ite_eq_left h
 
 lemma top_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊤ : EReal) * x = ⊥ :=
-  (if_neg h.not_gt).trans (if_neg h.ne)
+  (ite_eq_right h.not_gt).trans (ite_eq_right h.ne)
 
 lemma mul_top_of_pos : ∀ {x : EReal}, 0 < x → x * ⊤ = ⊤
   | ⊥, h => absurd h not_lt_bot
@@ -605,16 +606,16 @@ lemma coe_ennreal_mul_top {x : ℝ≥0∞} (hx : x ≠ 0) : (x : EReal) * ⊤ = 
   rw [EReal.mul_comm, top_mul_coe_ennreal hx]
 
 lemma coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
-  if_pos h
+  ite_eq_left h
 
 lemma coe_mul_bot_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊥ = ⊤ :=
-  (if_neg h.not_gt).trans (if_neg h.ne)
+  (ite_eq_right h.not_gt).trans (ite_eq_right h.ne)
 
 lemma bot_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊥ : EReal) * x = ⊥ :=
-  if_pos h
+  ite_eq_left h
 
 lemma bot_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊥ : EReal) * x = ⊤ :=
-  (if_neg h.not_gt).trans (if_neg h.ne)
+  (ite_eq_right h.not_gt).trans (ite_eq_right h.ne)
 
 lemma mul_bot_of_pos : ∀ {x : EReal}, 0 < x → x * ⊥ = ⊥
   | ⊥, h => absurd h not_lt_bot

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Subset
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.Compactness.Compact
@@ -27,7 +27,7 @@ to clopen sets.
 
 @[expose] public section
 
-open Set Function Topology TopologicalSpace Relation
+open Set Function Topology TopologicalSpace
 
 universe u v
 

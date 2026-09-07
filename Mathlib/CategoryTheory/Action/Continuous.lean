@@ -29,7 +29,7 @@ of `HasForget₂` instances.
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable (V : Type*) [Category* V] {FV : V → V → Type*} {CV : V → Type*}
     [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] [HasForget₂ V TopCat]
@@ -69,9 +69,13 @@ end Action
 
 open Action
 
+/-- When we have `HasForget₂ V TopCat`, this is the property of the objects
+in `Action V G` where the induced action is continuous. -/
+abbrev Action.isContinuous : ObjectProperty (Action V G) := IsContinuous
+
 /-- For `HasForget₂ V TopCat`, this is the full subcategory of `Action V G` where the induced
 action is continuous. -/
-abbrev ContAction : Type _ := ObjectProperty.FullSubcategory (IsContinuous (V := V) (G := G))
+abbrev ContAction : Type _ := ObjectProperty.FullSubcategory (isContinuous V G)
 
 namespace ContAction
 

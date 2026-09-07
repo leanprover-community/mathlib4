@@ -303,7 +303,7 @@ lemma Ideal.height_le_iff_exists_minimalPrimes (p : Ideal R) [p.IsPrime]
   constructor
   · intro h
     obtain ⟨I, hI, e₁, e₂⟩ := exists_spanRank_eq_and_height_eq p (IsPrime.ne_top ‹_›)
-    refine ⟨I, Ideal.mem_minimalPrimes_of_height_eq hI e₂.ge, e₁.symm ▸ ?_⟩
+    refine ⟨I, Ideal.mem_minimalPrimes_of_height_le hI e₂.ge, e₁.symm ▸ ?_⟩
     norm_cast
   · rintro ⟨I, hp, hI⟩
     exact le_trans

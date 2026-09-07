@@ -12,7 +12,6 @@ public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.AdaptationNote
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Free constructions
@@ -319,7 +318,7 @@ inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
   | left : ∀ w x y z, AddMagma.AssocRel α (w + (x + y + z)) (w + (x + (y + z)))
 
 /-- Associativity relations for a magma. -/
-@[to_additive AddMagma.AssocRel /-- Associativity relations for an additive magma. -/]
+@[to_additive AddMagma.AssocRel]
 inductive Magma.AssocRel (α : Type u) [Mul α] : α → α → Prop
   | intro : ∀ x y z, Magma.AssocRel α (x * y * z) (x * (y * z))
   | left : ∀ w x y z, Magma.AssocRel α (w * (x * y * z)) (w * (x * (y * z)))

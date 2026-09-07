@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Denumerable
 public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Lattice.Nat
@@ -208,13 +208,22 @@ theorem Infinite.exists_strictMono_or_strictAnti (α : Type*) [LinearOrder α] [
     · grind
 
 /-- A linear order that is well-founded in both directions is finite. -/
-theorem Finite.of_wellFoundedLT_wellFoundedGT (α : Type*) [LinearOrder α]
-    [WellFoundedLT α] [WellFoundedGT α] : Finite α := by
+theorem Finite.of_wellFoundedLT_of_wellFoundedGT (α : Type*) [LinearOrder α] [WellFoundedLT α]
+    [WellFoundedGT α] : Finite α := by
   apply Finite.of_not_infinite
   intro
   obtain ⟨f, hStrictMono | hStrictAnti⟩ := Infinite.exists_strictMono_or_strictAnti α
   · exact not_strictMono_of_wellFoundedGT f hStrictMono
   · exact not_strictAnti_of_wellFoundedLT f hStrictAnti
+
+@[deprecated (since := "2026-08-11")]
+alias Finite.of_wellFoundedLT_wellFoundedGT := Finite.of_wellFoundedLT_of_wellFoundedGT
+
+theorem IsChain.finite_of_wellFoundedLT_of_wellFoundedGT [Preorder α] [WellFoundedLT α]
+    [WellFoundedGT α] {s : Set α} (h : IsChain (· < ·) s) : s.Finite := by
+  classical
+  let := h.linearOrder
+  exact Finite.of_wellFoundedLT_of_wellFoundedGT s
 
 /-- The **monotone chain condition**: a preorder is co-well-founded iff every increasing sequence
 contains two non-increasing indices.
@@ -295,7 +304,7 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.wf.not_lt_min _ (Set.mem_univ _), ?_⟩
   have cov n (hn : ¬ IsMax (a n)) : a n ⋖ a (n + 1) := by
     change a n ⋖ if ha : IsMax (a n) then a n else _
-    rw [dif_neg hn]
+    rw [dite_eq_right hn]
     exact hnext hn
   have H : ∃ n, IsMax (a n) := by
     by_contra!

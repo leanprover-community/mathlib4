@@ -105,7 +105,7 @@ instance {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsLocallySurjective J f] :
 theorem isLocallySurjective_iff_range_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
     IsLocallySurjective J f ↔ (Subfunctor.range (whiskerRight f (forget A))).sheafify J = ⊤ := by
   simp only [Subfunctor.ext_iff, funext_iff, Set.ext_iff, Subfunctor.top_obj,
-    Set.top_eq_univ, Set.mem_univ, iff_true]
+    Set.mem_univ, iff_true]
   exact ⟨fun H _ => H.imageSieve_mem, fun H => ⟨H _⟩⟩
 
 theorem isLocallySurjective_iff_range_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :
@@ -460,7 +460,6 @@ lemma ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_shrinkYoneda_map
     exact Presheaf.imageSieve_mem J (Cofan.IsColimit.desc hc (fun i ↦ shrinkYoneda.{w}.map (f i)))
       (shrinkYonedaObjObjEquiv.symm (𝟙 S))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_uliftYoneda_map
     {S : C} {ι : Type*} [Small.{max w v} ι] {X : ι → C}
     (f : ∀ i, X i ⟶ S)
