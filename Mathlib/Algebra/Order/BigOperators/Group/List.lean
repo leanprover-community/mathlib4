@@ -87,17 +87,23 @@ lemma prod_lt_prod_of_ne_nil [Preorder M] [MulLeftStrictMono M]
   (prod_lt_prod' f g fun i hi => (hlt i hi).le) <|
     (exists_mem_of_ne_nil l hl).imp fun i hi => ⟨hi, hlt i hi⟩
 
-@[to_additive sum_le_card_nsmul]
-lemma prod_le_pow_card [Preorder M] [MulRightMono M]
+@[to_additive sum_le_length_nsmul]
+lemma prod_le_pow_length [Preorder M] [MulRightMono M]
     [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
     l.prod ≤ n ^ l.length := by
   simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
 
-@[to_additive card_nsmul_le_sum]
-lemma pow_card_le_prod [Preorder M] [MulRightMono M]
+@[to_additive (attr := deprecated (since := "2026-08-26")) sum_le_card_nsmul]
+alias prod_le_pow_card := prod_le_pow_length
+
+@[to_additive length_nsmul_le_sum]
+lemma pow_length_le_prod [Preorder M] [MulRightMono M]
     [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) :
     n ^ l.length ≤ l.prod :=
-  @prod_le_pow_card Mᵒᵈ _ _ _ _ l n h
+  @prod_le_pow_length Mᵒᵈ _ _ _ _ l n h
+
+@[to_additive (attr := deprecated (since := "2026-08-26")) card_nsmul_le_sum]
+alias pow_card_le_prod := pow_length_le_prod
 
 @[to_additive exists_lt_of_sum_lt]
 lemma exists_lt_of_prod_lt' [LinearOrder M] [MulRightMono M]
@@ -117,8 +123,7 @@ lemma exists_le_of_prod_le' [LinearOrder M] [MulLeftStrictMono M]
 @[to_additive sum_nonneg]
 lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
     (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) : 1 ≤ l.prod := by
-  -- We don't use `pow_card_le_prod` to avoid assumption
-  -- [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
+  -- We don't use `pow_length_le_prod` to avoid having to assume `[MulRightMono M]`
   induction l with
   | nil => rfl
   | cons hd tl ih =>

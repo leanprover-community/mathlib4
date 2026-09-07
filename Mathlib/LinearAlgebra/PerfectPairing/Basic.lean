@@ -27,11 +27,10 @@ to connect 1 and 2.
 open Function Module
 
 namespace LinearMap
-variable {R K M M' N N' : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup M']
-  [AddCommGroup N']
 
-section CommRing
-variable [CommRing R] [Module R M] [Module R M'] [Module R N] [Module R N']
+section CommSemiring
+variable {R M M' N N' : Type*} [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid M']
+  [AddCommMonoid N'] [CommSemiring R] [Module R M] [Module R M'] [Module R N] [Module R N']
   {p : M →ₗ[R] N →ₗ[R] R} {x : M} {y : N}
 
 /-- For a ring `R` and two modules `M` and `N`, a perfect pairing is a bilinear map `M × N → R`
@@ -106,10 +105,11 @@ lemma IsPerfPair.of_bijective (p : M →ₗ[R] N →ₗ[R] R) [IsReflexive R N] 
     (LinearEquiv.ofBijective p h : M →ₗ[R] N →ₗ[R] R)
     (LinearEquiv.refl R N : N →ₗ[R] N)).IsPerfPair
 
-end CommRing
+end CommSemiring
 
 section Field
-variable [Field K] [Module K M] [Module K N] {p : M →ₗ[K] N →ₗ[K] K}
+variable {K M N : Type*} [Field K] [AddCommGroup M] [AddCommGroup N]
+  [Module K M] [Module K N] {p : M →ₗ[K] N →ₗ[K] K}
 
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
 to check only injectivity instead of bijectivity of the bilinear pairing. -/
@@ -130,7 +130,8 @@ end LinearMap
 
 noncomputable section
 
-variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  [AddCommMonoid N] [Module R N]
 
 namespace LinearMap
 variable {p : M →ₗ[R] N →ₗ[R] R} [p.IsPerfPair]

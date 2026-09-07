@@ -154,11 +154,12 @@ theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) 
 theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
   Quot.inductionOn s fun l => by simp [List.filter_map]; rfl
 
--- TODO: rename to `map_filter` when the deprecated alias above is removed.
-lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
+lemma map_filter {f : α → β} (hf : Injective f) (s : Multiset α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [filter_map, hf.eq_iff]
+
+@[deprecated (since := "2026-08-20")] alias map_filter' := map_filter
 
 lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     card (s.filter P) ≤ n ↔ ∀ s' ≤ s, n < card s' → ∃ a ∈ s', ¬ P a := by
@@ -425,7 +426,7 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
       (s.filter fun x ↦ ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun _ ↦ mem_of_mem_filter) := by
   classical
   refine Multiset.map_injective Subtype.val_injective ?_
-  rw [map_filter' _ Subtype.val_injective]
+  rw [map_filter _ Subtype.val_injective]
   simp only [Subtype.exists, exists_and_right, exists_eq_right, attach_map_val, Subtype.map, id,
     map_map, comp]
 

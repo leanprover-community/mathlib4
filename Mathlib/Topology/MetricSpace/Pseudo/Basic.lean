@@ -12,7 +12,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Metrizable.Basic
 
 /-!
-## Pseudo-metric spaces
+# Pseudo-metric spaces
 
 Further results about pseudo-metric spaces.
 

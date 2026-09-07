@@ -21,7 +21,7 @@ disconnected.
 
 * `ProfiniteGrp` is the category of profinite groups.
 
-* `ProfiniteGrp.pi` : The pi-type of profinite groups is also a profinite group.
+* `ProfiniteGrp.pi` : An arbitrary product of profinite groups is also a profinite group.
 
 * `ofFiniteGrp` : A `FiniteGrp` when given the discrete topology can be considered as a
   profinite group.
@@ -47,7 +47,7 @@ structure ProfiniteGrp where
   /-- The group structure. -/
   [group : Group toProfinite]
   /-- The above data together form a topological group. -/
-  [topologicalGroup : IsTopologicalGroup toProfinite]
+  [isTopologicalGroup : IsTopologicalGroup toProfinite]
 
 /--
 The category of profinite additive groups. A term of this type consists of a profinite
@@ -68,7 +68,7 @@ attribute [to_additive] ProfiniteGrp
 instance : CoeSort ProfiniteGrp (Type u) where
   coe G := G.toProfinite
 
-attribute [instance] ProfiniteGrp.group ProfiniteGrp.topologicalGroup
+attribute [instance] ProfiniteGrp.group ProfiniteGrp.isTopologicalGroup
     ProfiniteAddGrp.addGroup ProfiniteAddGrp.topologicalAddGroup
 
 /-- Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
@@ -83,7 +83,7 @@ abbrev ProfiniteGrp.of (G : Type u) [Group G] [TopologicalSpace G] [IsTopologica
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp.{u} where
   toProfinite := .of G
   group := ‹_›
-  topologicalGroup := ‹_›
+  isTopologicalGroup := ‹_›
 
 @[to_additive]
 lemma ProfiniteGrp.coe_of (G : Type u) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
@@ -215,7 +215,7 @@ def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   let pitype := Profinite.pi fun (a : α) => (β a).toProfinite
   letI (a : α) : Group (β a).toProfinite := (β a).group
   letI : Group pitype := Pi.group
-  letI : IsTopologicalGroup pitype := Pi.topologicalGroup
+  letI : IsTopologicalGroup pitype := Pi.isTopologicalGroup
   ofProfinite pitype
 
 /-- A `FiniteGrp` when given the discrete topology can be considered as a profinite group. -/

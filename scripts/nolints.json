@@ -361,6 +361,7 @@
  ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNat"],
  ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNatAux"],
  ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNatTR"],
+ ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNatTR.go"],
  ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNat_aux"],
  ["defsWithUnderscore", "Mathlib.Meta.eval_expr"],
  ["defsWithUnderscore", "Mathlib.ProxyType.elab_proxy_equiv"],

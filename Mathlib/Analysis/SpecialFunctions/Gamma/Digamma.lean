@@ -23,6 +23,8 @@ proves some basic properties.
 
 * `Complex.digamma_apply_add_one`: The digamma function satisfies the functional equation
   `digamma (s + 1) = digamma s + s⁻¹`.
+* `Complex.digamma_one_sub`: Euler's reflection formula
+  `digamma (1 - s) = digamma s + π * cot (π * s)`.
 * `Complex.meromorphic_digamma`: The digamma function is meromorphic.
 
 ## TODO
@@ -56,6 +58,22 @@ theorem digamma_apply_add_one (s : ℂ) (hs : ∀ m : ℕ, s ≠ - m) :
   have hs0 : s ≠ 0 := by simpa using hs 0
   rw [digamma_def, logDeriv_apply, logDeriv_apply, deriv_Gamma_add_one s hs0, Gamma_add_one s hs0,
     add_div, div_mul_cancel_right₀ (Gamma_ne_zero hs), mul_div_mul_left _ _ hs0, add_comm]
+
+open scoped Real in
+/-- **Euler's reflection formula for the digamma function**:
+`ψ (1 - s) = ψ s + π * cot (π * s)` for `s` not an integer. -/
+theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
+    digamma (1 - s) = digamma s + π * cot (π * s) := by
+  -- The idea is to apply `logDeriv` to both sides of `Gamma_mul_Gamma_one_sub`. This produces
+  -- side conditions, which the two `have`s below allow the `<;> try ...` line to discharge.
+  have (m : ℕ) : s ≠ -m := by simpa using hs (-m)
+  have (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by push_cast; grind)
+  have := congr(logDeriv $(funext Gamma_mul_Gamma_one_sub) s)
+  rw [logDeriv_fun_mul, logDeriv_fun_div, ← Function.comp_def Gamma, ← Function.comp_def sin,
+    logDeriv_comp, logDeriv_comp] at this <;>
+    try first | fun_prop | grind [sin_eq_zero_iff, ofReal_ne_zero, Real.pi_ne_zero]
+  simp [digamma_def] at this ⊢
+  grind
 
 @[fun_prop]
 theorem meromorphic_digamma : Meromorphic digamma :=

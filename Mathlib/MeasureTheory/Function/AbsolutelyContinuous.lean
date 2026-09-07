@@ -181,6 +181,24 @@ theorem mono (hf : AbsolutelyContinuousOnInterval f a b) (habcd : uIcc c d ⊆ u
   refine le_trans (Filter.map_mono ?_) hf
   gcongr; exact disjWithin_mono habcd
 
+theorem congr (hf : AbsolutelyContinuousOnInterval f a b)
+    (hfg : Set.EqOn f g (uIcc a b)) : AbsolutelyContinuousOnInterval g a b := by
+  apply hf.congr'
+  rw [eventuallyEq_inf_principal_iff]
+  filter_upwards with (n, I) hnI
+  exact Finset.sum_congr rfl fun i hi ↦ by rw [hfg (hnI.1 i hi).1, hfg (hnI.1 i hi).2]
+
+@[refl, simp]
+protected theorem refl (f : ℝ → X) (a : ℝ) : AbsolutelyContinuousOnInterval f a a := by
+  apply tendsto_nhds_of_eventually_eq
+  rw [eventually_inf_principal]
+  filter_upwards with (n, I) hnI
+  refine Finset.sum_eq_zero fun i hi ↦ ?_
+  obtain ⟨h₁, h₂⟩ := hnI.1 i hi
+  simp_all
+
+protected theorem rfl : AbsolutelyContinuousOnInterval f a a := .refl f a
+
 variable {f g : ℝ → F}
 
 @[to_fun]
@@ -307,6 +325,29 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ ≤ K * (ε / (K + 1)) := by gcongr
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field
+
+/-- If `f` is Lipschitz on a set containing `g '' uIcc a b` and `g` is absolutely continuous on
+`uIcc a b`, then `f ∘ g` is absolutely continuous on `uIcc a b`. -/
+theorem _root_.LipschitzOnWith.comp_absolutelyContinuousOnInterval
+    {Y : Type*} [PseudoMetricSpace Y] {f : X → Y} {K : ℝ≥0} {t : Set X}
+    (hf : LipschitzOnWith K f t) {g : ℝ → X} {a b : ℝ} (hg : MapsTo g (uIcc a b) t)
+    (h : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f ∘ g) a b := by
+  apply squeeze_zero' ?_ ?_ (by simpa using Tendsto.const_mul (K : ℝ) h)
+  · exact .of_forall fun _ ↦ by positivity
+  rw [eventually_inf_principal]
+  filter_upwards with (n, I) hnI
+  rw [Finset.mul_sum]
+  exact Finset.sum_le_sum fun i hi ↦
+    hf.dist_le_mul _ (hg (hnI.left i hi).left) _ (hg (hnI.left i hi).right)
+
+/-- If `f` is Lipschitz and `g` is absolutely continuous on `uIcc a b`, then `f ∘ g` is absolutely
+continuous on `uIcc a b`. -/
+theorem _root_.LipschitzWith.comp_absolutelyContinuousOnInterval
+    {Y : Type*} [PseudoMetricSpace Y] {f : X → Y} {K : ℝ≥0} (hf : LipschitzWith K f)
+    {g : ℝ → X} {a b : ℝ} (h : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f ∘ g) a b :=
+  hf.lipschitzOnWith.comp_absolutelyContinuousOnInterval (mapsTo_univ _ _) h
 
 /-- If `f` is `C^1` on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
 theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]

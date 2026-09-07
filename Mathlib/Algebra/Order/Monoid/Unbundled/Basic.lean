@@ -32,8 +32,9 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 
 -/
 
-@[expose] public section
+set_option linter.style.longFile 1600
 
+@[expose] public section
 
 -- TODO: If possible, uniformize lemma names, taking special care of `'`,
 -- after the `ordered`-refactor is done.
@@ -381,6 +382,24 @@ theorem MulLeftStrictMono.toIsLeftCancelMul [MulLeftStrictMono α] : IsLeftCance
 @[to_additive]
 theorem MulRightStrictMono.toIsRightCancelMul [MulRightStrictMono α] : IsRightCancelMul α where
   mul_right_cancel _ _ _ h := mul_left_strictMono.injective h
+
+/-- Left multiplication is strictly monotone if and only if it is monotone and
+left-cancellative. -/
+@[to_additive /-- Left addition is strictly monotone if and only if it is monotone and
+left-cancellative. -/]
+theorem mulLeftStrictMono_iff_mulLeftMono_and_isLeftCancelMul :
+    MulLeftStrictMono α ↔ MulLeftMono α ∧ IsLeftCancelMul α where
+  mp _ := ⟨mulLeftMono_of_mulLeftStrictMono α, MulLeftStrictMono.toIsLeftCancelMul⟩
+  mpr := by rintro ⟨_, _⟩; infer_instance
+
+/-- Right multiplication is strictly monotone if and only if it is monotone and
+right-cancellative. -/
+@[to_additive /-- Right addition is strictly monotone if and only if it is monotone and
+right-cancellative. -/]
+theorem mulRightStrictMono_iff_mulRightMono_and_isRightCancelMul :
+    MulRightStrictMono α ↔ MulRightMono α ∧ IsRightCancelMul α where
+  mp _ := ⟨mulRightMono_of_mulRightStrictMono α, MulRightStrictMono.toIsRightCancelMul⟩
+  mpr := by rintro ⟨_, _⟩; infer_instance
 
 end LinearOrder
 

@@ -112,7 +112,7 @@ abbrev CardinalDirectedPoset.ι : CardinalDirectedPoset κ ⥤ PartOrdEmb :=
 
 namespace CardinalDirectedPoset
 
-/-- Constructor for objects in `CardinalFilteredPoset κ`. -/
+/-- Constructor for objects in `CardinalDirectedPoset κ`. -/
 abbrev of (J : PartOrdEmb.{u}) [IsCardinalFiltered J κ] : CardinalDirectedPoset κ where
   obj := J
   property := inferInstance
@@ -266,7 +266,7 @@ variable (J : CardinalDirectedPoset κ)
 
 -- `@[nolint unusedArguments]` allows to setup some instances which uses
 -- the fact that `κ'` is regular.
-/-- Given `J : CardinalFilteredPoset κ` and a regular cardinal `κ'`,
+/-- Given `J : CardinalDirectedPoset κ` and a regular cardinal `κ'`,
 this is the predicate on `Set J.withTop.obj` that is satisfied by
 subsets that are of cardinality `< κ'` and contain `⊤`. -/
 @[nolint unusedArguments]
@@ -316,7 +316,7 @@ lemma exists_mem_propSetWithTop (a : J.withTop.obj) :
   | some a => exact ⟨_, propSetWithTop_pair _ a, by aesop⟩
   | none => exact ⟨_, propSetWithTop_pair _ (Classical.arbitrary _), by aesop⟩
 
-/-- If `J : CardinalFilteredPoset κ` and `κ'` is any regular cardinal,
+/-- If `J : CardinalDirectedPoset κ` and `κ'` is any regular cardinal,
 this is a colimit cocone which exhibits `J.withTop` as the `κ'`-filtered
 colimit of its subsets that are of cardinality `< κ'` and contain `⊤`. -/
 abbrev coconeWithTop : Cocone (functorOfPredicateSet (J.PropSetWithTop κ')) :=

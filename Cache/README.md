@@ -287,7 +287,7 @@ Mathlib or `MathlibTest`. Exits 0 on success, non-zero on failure.
 
 The cache system automatically downloads and manages:
 
-- **curl** (>=7.70, preferably >=7.81) - for HTTP transfers
+- **curl** (>=7.75, preferably >=7.81) - for HTTP transfers
 - **leantar** - for `.ltar` compression/decompression
 
 If your system curl is too old, a static binary is downloaded automatically on Linux.

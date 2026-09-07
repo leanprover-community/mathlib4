@@ -142,7 +142,7 @@ local notation "E⟮<" i "⟯" => adjoin F (b ∘ φ '' Iio i)
 
 theorem isLeast_leastExt (i : ι) : IsLeast {k | b k ∉ E⟮<i⟯} (φ i) := by
   rw [image_eq_range, leastExt, wellFounded_lt.fix_eq]
-  exact ⟨wellFounded_lt.min_mem _ _, fun _ ↦ (wellFounded_lt.min_le ·)⟩
+  exact ⟨wellFounded_lt.min_mem _ _, fun _ ↦ (WellFoundedLT.min_le ·)⟩
 
 theorem strictMono_leastExt : StrictMono φ := fun i j h ↦ by
   have least := isLeast_leastExt (F := F) (E := E)

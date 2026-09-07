@@ -147,6 +147,13 @@ theorem integralNormalization_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (
       f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x :=
   integralNormalization_eval₂_leadingCoeff_mul_of_commute h _ _ (.all _ _) (.all _ _)
 
+lemma integralNormalization_aeval_smul {R} [CommSemiring R] [Algebra R S] {p : R[X]}
+    (h : 1 ≤ p.natDegree) (x : S) :
+    p.integralNormalization.aeval (p.leadingCoeff • x) =
+      p.leadingCoeff ^ (p.natDegree - 1) • p.aeval x := by
+  simp_rw [Algebra.smul_def, map_pow]
+  exact integralNormalization_eval₂_leadingCoeff_mul h _ _
+
 theorem integralNormalization_eval₂_eq_zero_of_commute {p : R[X]} (f : R →+* A) {z : A}
     (hz : eval₂ f z p = 0) (h₁ : Commute (f p.leadingCoeff) z) (h₂ : ∀ {r r'}, Commute (f r) (f r'))
     (inj : ∀ x : R, f x = 0 → x = 0) :

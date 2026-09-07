@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.ToIntervalMod
 public import Mathlib.Algebra.Ring.AddAut
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.GroupTheory.Divisible
+public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
@@ -23,7 +24,7 @@ We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ ℤ ∙ p`
 See also `Circle` and `Real.Angle`.  For the normed group structure on `AddCircle`, see
 `AddCircle.NormedAddCommGroup` in a later file.
 
-## Main definitions and results:
+## Main definitions and results
 
 * `AddCircle`: the additive circle `𝕜 ⧸ ℤ ∙ p` for some period `p : 𝕜`
 * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
@@ -38,7 +39,7 @@ See also `Circle` and `Real.Angle`.  For the normed group structure on `AddCircl
   and `f a = f (a + p)` for some `a`, then there is a continuous function `AddCircle p → B`
   which agrees with `f` on `Icc a (a + p)`.
 
-## Implementation notes:
+## Implementation notes
 
 Although the most important case is `𝕜 = ℝ` we wish to support other types of scalars, such as
 the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generally.
