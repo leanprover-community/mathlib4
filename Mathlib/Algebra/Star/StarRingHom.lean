@@ -109,7 +109,8 @@ initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
 protected theorem coe_ofClass {F : Type*} [FunLike F A B] [NonUnitalRingHomClass F A B]
     [NonUnitalStarRingHomClass F A B] (f : F) : ⇑(ofClass f) = f :=
   rfl
-@[deprecated (since := "2026-09-03")] alias coe_coe := NonUnitalStarRingHom.coe_ofClass
+
+@[deprecated (since := "2026-09-08")] alias coe_coe := NonUnitalStarRingHom.coe_ofClass
 
 
 @[simp]
@@ -307,7 +308,7 @@ instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective
 
-/-- A `⋆-ring equivalence` is a `⋆-ring homomorphism` -/
+/-- A ⋆-ring equivalence is a ⋆-ring homomorphism. -/
 def toNonUnitalStarRingHom {A B : Type*}
     [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] (f : A ≃⋆+* B) :
     A →⋆ₙ+* B where
