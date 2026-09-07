@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Functor.Currying
+import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 
 /-!
 # Testing the `@[defeq]` attribute on some important equalities in category theory
@@ -83,3 +84,7 @@ elab_rules : command
 /-- info: `CategoryTheory.Functor.rightUnitor_hom_app` is tagged with @[defeq] -/
 #guard_msgs in
 #ensure_defeq CategoryTheory.Functor.rightUnitor_hom_app
+
+/-- info: `SSet.mapFundamentalGroupoid_obj_mk` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq SSet.mapFundamentalGroupoid_obj_mk

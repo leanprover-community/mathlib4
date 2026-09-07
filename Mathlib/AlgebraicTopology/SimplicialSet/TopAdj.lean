@@ -211,16 +211,16 @@ lemma toSSetObj_app_const_zero :
     toSSetObjI.app (op ⦋0⦌) (const _ 0 _) = TopCat.toSSetObj₀Equiv.symm 0 := by
   apply yonedaEquiv.symm.injective
   trans stdSimplex.δ 1 ≫ toSSetObjI
-  · simp [← yonedaEquiv_symm_comp, stdSimplex.δ_one_eq_const]
-  · simp
+  · simp [← yonedaEquiv_symm_comp, stdSimplex.δ_one_eq_const, yonedaEquiv_symm_zero]
+  · simp [yonedaEquiv_symm_zero]
 
 @[simp]
 lemma toSSetObj_app_const_one :
     toSSetObjI.app (op ⦋0⦌) (const _ 1 _) = TopCat.toSSetObj₀Equiv.symm 1 := by
   apply yonedaEquiv.symm.injective
   trans stdSimplex.δ 0 ≫ toSSetObjI
-  · simp [← yonedaEquiv_symm_comp, stdSimplex.δ_zero_eq_const]
-  · simp
+  · simp [← yonedaEquiv_symm_comp, stdSimplex.δ_zero_eq_const, yonedaEquiv_symm_zero]
+  · simp [yonedaEquiv_symm_zero]
 
 open Functor.Monoidal in
 @[reassoc (attr := simp)]
