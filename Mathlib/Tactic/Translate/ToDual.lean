@@ -271,6 +271,10 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("rightOrdContinuous", "LeftOrdContinuous"),
   ("bihimp", "SymmDiff"),
   ("symmDiff", "Bihimp"),
+  ("isRightContinuous", "IsLeftContinuous"),
+  ("isLeftContinuous", "IsRightContinuous"),
+  ("isCadlag", "IsCaglad"),
+  ("isCaglad", "IsCadlag"),
   ("leftColim", "rightLim"),
   ("rightColim", "leftLim"),
 
