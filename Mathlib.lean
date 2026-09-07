@@ -1190,11 +1190,6 @@ public import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Polynomial.GroupRingAction
 public import Mathlib.Algebra.Polynomial.HasseDeriv
-public import Mathlib.Algebra.Polynomial.Hex.Basic
-public import Mathlib.Algebra.Polynomial.Hex.Euclid
-public import Mathlib.Algebra.Polynomial.Hex.Int
-public import Mathlib.Algebra.Polynomial.Hex.Irreducible
-public import Mathlib.Algebra.Polynomial.Hex.Squarefree
 public import Mathlib.Algebra.Polynomial.Homogenize
 public import Mathlib.Algebra.Polynomial.Identities
 public import Mathlib.Algebra.Polynomial.Inductions
@@ -2343,16 +2338,11 @@ public import Mathlib.Analysis.Polynomial.Basic
 public import Mathlib.Analysis.Polynomial.CauchyBound
 public import Mathlib.Analysis.Polynomial.Factorization
 public import Mathlib.Analysis.Polynomial.Fourier
-public import Mathlib.Analysis.Polynomial.Hex.Basic
-public import Mathlib.Analysis.Polynomial.Hex.IsolateRoots
-public import Mathlib.Analysis.Polynomial.Hex.Isolations
-public import Mathlib.Analysis.Polynomial.Hex.SignVariations
-public import Mathlib.Analysis.Polynomial.Hex.Squarefree
-public import Mathlib.Analysis.Polynomial.Hex.Sturm
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.Polynomial.Order
 public import Mathlib.Analysis.Polynomial.Sturm.Basic
+public import Mathlib.Analysis.Polynomial.Sturm.Certificate
 public import Mathlib.Analysis.Polynomial.Sturm.Defs
 public import Mathlib.Analysis.Quaternion
 public import Mathlib.Analysis.RCLike.Basic
@@ -7610,7 +7600,6 @@ public import Mathlib.Tactic.InferParam
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
-public import Mathlib.Tactic.IsolateRoots
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Linarith
@@ -7734,6 +7723,7 @@ public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.RSuffices
+public import Mathlib.Tactic.RealRootCount
 public import Mathlib.Tactic.Recall
 public import Mathlib.Tactic.Recover
 public import Mathlib.Tactic.ReduceModChar

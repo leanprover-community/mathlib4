@@ -8,18 +8,17 @@ module
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.FieldTheory.AbelRuffini
 public import Mathlib.RingTheory.Polynomial.GaussLemma
-public import Mathlib.Algebra.Polynomial.Hex.Irreducible
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
+public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.Tactic.ComputeDegree
-public import Mathlib.Tactic.IsolateRoots
-public import HexBerlekamp.IrreducibilityElab
-public import HexBerlekampZassenhaus.FactorTactic
-public meta import HexBerlekampZassenhaus.FactorTactic
+public import Mathlib.Tactic.RealRootCount
 
 /-!
 # Construction of an algebraic number that is not solvable by radicals
 
 The polynomial `X ^ 5 - 4 * X + 2` is irreducible and has exactly three real roots.
-Hex certifies these two computations using `irreducibility` and `isolate_roots`.
+Eisenstein’s criterion proves irreducibility; `real_root_count` checks a Sturm
+chain proposed by Hex to count the real roots.
 Its Galois group is therefore the symmetric group on five letters, which is not solvable.
 The Abel–Ruffini theorem implies that none of its roots is solvable by radicals.
 -/
@@ -41,23 +40,31 @@ private theorem quintic_monic (R : Type*) [CommRing R] [Nontrivial R] :
   monicity <;> norm_num
 
 private theorem quintic_irreducible : Irreducible (quintic ℚ) := by
-  have hc : Hex.ZPoly.Irreducible (Hex.DensePoly.ofCoeffs #[2, -4, 0, 0, 0, 1]) :=
-    irreducibility (Hex.DensePoly.ofCoeffs #[2, -4, 0, 0, 0, 1])
   have h : Irreducible (quintic ℤ) := by
-    convert (Hex.ZPoly.irreducible_iff _).mp hc using 1
-    simp [quintic, HexPolyZMathlib.toPolynomial, HexPolyMathlib.toPolynomial,
-      show (Hex.DensePoly.ofCoeffs #[2, -4, 0, 0, 0, 1] : Hex.ZPoly).size = 6 from rfl,
-      Finset.sum_range_succ, Hex.DensePoly.coeff_ofCoeffs, ← C_mul_X_pow_eq_monomial]
-    ring
+    have hd : (quintic ℤ).degree = 5 := by
+      dsimp [quintic]
+      compute_degree!
+    apply irreducible_of_eisenstein_criterion (P := Ideal.span {2})
+    · rw [Ideal.span_singleton_prime (by norm_num : (2 : ℤ) ≠ 0)]
+      norm_num [Int.prime_iff_natAbs_prime]
+      decide
+    · rw [(quintic_monic ℤ).leadingCoeff, Ideal.mem_span_singleton]
+      norm_num
+    · intro n hn
+      rw [hd] at hn
+      have hn : n < 5 := by exact_mod_cast hn
+      rw [Ideal.mem_span_singleton]
+      interval_cases n <;> norm_num [quintic, coeff_add, coeff_sub, coeff_mul, coeff_X_pow, coeff_X]
+    · rw [hd]; norm_num
+    · rw [Ideal.span_singleton_pow, Ideal.mem_span_singleton]
+      norm_num [quintic]
+    · exact (quintic_monic ℤ).isPrimitive
   simpa [quintic] using
     (IsPrimitive.Int.irreducible_iff_irreducible_map_cast
       (quintic_monic ℤ).isPrimitive).mp h
 
-private noncomputable def quintic_isolation : Hex.IsolatedRealRoots (quintic ℚ) 3 :=
-  isolate_roots (X ^ 5 - 4 * X + 2 : ℚ[X])
-
 private theorem quintic_real_roots : Fintype.card ((quintic ℚ).rootSet ℝ) = 3 :=
-  quintic_isolation.card_rootSet (quintic_monic ℚ).ne_zero
+  real_root_count (quintic ℚ)
 
 private theorem quintic_natDegree : (quintic ℚ).natDegree = 5 := by
   dsimp [quintic]
