@@ -85,8 +85,7 @@ variable [CommRing R] {a b a' b' : R}
 /-- The transformation law for an injective algebra map. -/
 theorem discr_eq_im_sq_mul_discr (hf : Function.Injective f) :
     discr a b = (f ω).im ^ 2 * discr a' b' := by
-  rw [im_sq_mul_discr (f ω), trace_algHom_omega f hf, norm_algHom_omega f hf, discr_def]
-  ring
+  grind [im_sq_mul_discr, trace_algHom_omega, norm_algHom_omega, discr]
 
 /-- `discr_eq_im_sq_mul_discr` for an `R`-algebra isomorphism `e`, for which `(e ω).im` is
 automatically a unit (`isUnit_im_omega_of_algEquiv`). -/
@@ -144,10 +143,8 @@ theorem nonempty_algEquiv_iff (h : IsRegular (2 : R)) :
       by rw [discr_eq_im_sq_mul_discr' e, IsUnit.unit_spec], ⟨(e ω).re, ?_⟩⟩
     rw [IsUnit.unit_spec, sub_eq_iff_eq_add', add_comm, mul_comm _ b', ← trace_def, eq_comm]
     exact trace_algHom_omega e.toAlgHom e.injective
-  · rw [discr_def, discr_def] at hu
-    rw [← h.left.eq_iff, mul_sub, mul_sub, ← mul_rotate, ← mul_assoc, ← mul_assoc, ← mul_assoc,
-      ← hk, ← h.left.eq_iff, mul_sub, ← mul_assoc, ← mul_assoc, ← pow_two, ← mul_pow, ← hk]
-    grind
+  · rw [← h.left.eq_iff, ← h.left.eq_iff]
+    grind [discr]
 
 /-- If `2` is invertible, the discriminant classifies quadratic algebras up to
 isomorphism, modulo squares of units. -/
@@ -167,8 +164,7 @@ theorem nonempty_algEquiv_int_iff {a b a' b' : ℤ} :
   obtain _ | _ : 2 ∣ (b + b') ∨ 2 ∣ (b - b') := by
     rw [← Prime.dvd_mul Int.prime_two, ← sq_sub_sq]
     refine ⟨2 * a' - 2 * a, ?_⟩
-    rwa [mul_sub, ← mul_assoc, ← mul_assoc, show (2 : ℤ) * 2 = 4 by norm_num,
-      sub_eq_sub_iff_add_eq_add, ← discr_def, add_comm, ← discr_def]
+    grind [discr]
   · exact ⟨-1, by simpa, by simpa⟩
   · exact ⟨1, by simpa, by simpa⟩
 
