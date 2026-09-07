@@ -98,7 +98,7 @@ structure IsAdjoinRootMonic {R : Type u} (S : Type v) [CommSemiring R] [Semiring
 
 section Ring
 
-variable {R : Type*} {S : Type*} [CommRing R] [Ring S] {f : R[X]} [Algebra R S]
+variable {R S : Type*} [CommRing R] [Ring S] {f : R[X]} [Algebra R S]
 
 namespace IsAdjoinRoot
 
@@ -577,7 +577,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {f : R[X]}
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {f : R[X]}
 
 namespace IsAdjoinRoot
 
