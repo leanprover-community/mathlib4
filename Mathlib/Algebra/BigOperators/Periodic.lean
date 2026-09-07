@@ -17,8 +17,6 @@ This file collects lemmas about `Finset` sums of `Function.Antiperiodic` functio
 
 * `Function.Antiperiodic.sum_Ico_shift`: Shifting a sum over a half-open interval `[a, b)` by
   the antiperiod `c` negates the sum.
-* `Function.Antiperiodic.sum_Ico_mul_shift`: for `w` antiperiodic, shifting the summation
-  interval of `w k * g k` by `c` negates the sum and shifts the argument of `g` by `c`.
 -/
 
 public section
@@ -36,13 +34,5 @@ theorem sum_Ico_shift [SubtractionCommMonoid R] {f : α → R} {c : α} (hf : An
     (a b : α) :
     ∑ k ∈ Ico (a + c) (b + c), f k = -∑ k ∈ Ico a b, f k := by
   rw [← Finset.map_add_right_Ico, hf.sum_map_addRightEmbedding]
-
-/-- For `w` antiperiodic with antiperiod `c`, shifting the summation interval of `w k * g k` by
-`c` negates the sum and shifts the argument of `g` by `c`. -/
-theorem sum_Ico_mul_shift [NonAssocRing R] {w : α → R} {c : α} (hw : Antiperiodic w c)
-    (g : α → R) (a b : α) :
-    ∑ k ∈ Ico (a + c) (b + c), w k * g k = -∑ k ∈ Ico a b, w k * g (k + c) := by
-  rw [← Finset.sum_Ico_add' (fun x => w x * g x) a b c]
-  simp_rw [hw _, neg_mul, Finset.sum_neg_distrib]
 
 end Function.Antiperiodic
