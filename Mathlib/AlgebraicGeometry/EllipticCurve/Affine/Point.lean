@@ -718,6 +718,33 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     some _ _ h₁ + some _ _ h₂ = -some _ _ (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
   add_of_X_ne hx
 
+/-- A nonzero affine `2`-torsion point `some x y h` of `W` (that is, `P + P = 0`) has `X`-coordinate
+a root of `W.twoTorsionPolynomial`. -/
+theorem isRoot_twoTorsionPolynomial_of_add_self {x y : F} (h : W.Nonsingular x y)
+    (hP : some x y h + some x y h = 0) : W.twoTorsionPolynomial.toPoly.IsRoot x := by
+  rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆]
+  have hy : y = W.negY x y := by
+    by_contra hne
+    rw [add_self_of_Y_ne hne] at hP
+    exact some_ne_zero _ hP
+  grind [h.left, negY, equation_iff]
+
+/-- `x` is a root of the `2`-torsion polynomial of a Weierstrass curve of characteristic
+different from `2` with nonzero discriminant if and only if it is the `X`-coordinate of a nonzero
+affine `2`-torsion point. -/
+theorem isRoot_twoTorsionPolynomial_iff (h2 : NeZero (2 : F)) (hΔ : W.Δ ≠ 0) (x : F) :
+    W.twoTorsionPolynomial.toPoly.IsRoot x ↔
+      ∃ y, ∃ h : W.Nonsingular x y, some x y h + some x y h = 0 := by
+  constructor
+  · intro hroot
+    rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆] at hroot
+    set y := (-W.a₁ * x - W.a₃) / 2
+    have heq : W.Equation x y := by grind [NeZero.out, equation_iff]
+    refine ⟨y, (equation_iff_nonsingular_of_Δ_ne_zero hΔ).mp heq, add_self_of_Y_eq ?_⟩
+    grind [negY]
+  · rintro ⟨y, hns, hP⟩
+    exact isRoot_twoTorsionPolynomial_of_add_self hns hP
+
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
 the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal class group of `F[W]`. -/
@@ -892,7 +919,56 @@ lemma xRep_eq_xRep_iff {P Q : W.Point} : P.xRep = Q.xRep ↔ P = Q ∨ P = -Q :=
   refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
   rcases H with rfl | rfl <;> simp
 
+variable [DecidableEq F]
+
+/-- We give an explicit expression for `xRep` of `P + P` when `2*P ≠ 0`. -/
+lemma xRep_add_self_of_Y_ne {x y : F} (h : W.Nonsingular x y) (hn : y ≠ W.negY x y) :
+    (some x y h + some x y h).xRep =
+      ![(x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈) /
+        (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆), 1] := by
+  simp only [add_self_of_Y_ne hn, ← addX_self_of_Y_ne h.1 hn, xRep_some]
+
+/-- We give an explicit expression for `xRep` of `P + P` when `P ≠ 0` and `2*P = 0`. -/
+lemma xRep_add_self_of_Y_eq {x y : F} (h : W.Nonsingular x y) (hn : y = W.negY x y) :
+    (some x y h + some x y h).xRep = ![1, 0] := by
+  simp only [add_self_of_Y_eq hn, xRep_zero]
+
+/-- We give an explicit expression for `xRep` of `P + Q` when `P ≠ ±Q`. -/
+lemma xRep_add_of_X_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP + some xQ yQ hQ).xRep =
+      ![((yP - yQ) ^ 2 + W.a₁ * (yP - yQ) * (xP - xQ) - (W.a₂ + xP + xQ) * (xP - xQ) ^2) /
+         (xP - xQ) ^ 2, 1] := by
+  simp only [add_of_X_ne (h₁ := hP) (h₂ := hQ) hn, xRep_some, addX_of_X_ne hn]
+
+/-- We give an explicit expression for `xRep` of `P - Q` when `P ≠ ±Q`. -/
+lemma xRep_sub_of_X_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP - some xQ yQ hQ).xRep =
+      ![((yP + yQ + W.a₁ * xQ + W.a₃) ^ 2 + W.a₁ * (yP + yQ + W.a₁ * xQ + W.a₃) * (xP - xQ)
+           - (W.a₂ + xP + xQ) * (xP - xQ) ^2) / (xP - xQ) ^ 2, 1] := by
+  simp only [sub_eq_add_neg (some ..), neg_some hQ,
+    add_of_X_ne (h₁ := hP) (h₂ := (nonsingular_neg ..).mpr hQ) hn, xRep_some,
+    addX_of_X_ne hn]
+  grind only [negY]
+
 end Point
+
+lemma finite_preimage_xRep (x : F) : {P : W.Point | P.xRep = ![x, 1]}.Finite := by
+  rcases Set.eq_empty_or_nonempty {P : W.Point | P.xRep = ![x, 1]} with h | h
+  · exact h ▸ Set.finite_empty
+  choose Q hQ using h
+  simp only [Set.mem_ofPred_eq] at hQ
+  rw [show {P | P.xRep = ![x, 1]} = {Q, -Q} by ext : 1; simp [← hQ, Point.xRep_eq_xRep_iff]]
+  simp
+
+lemma finite_preimage_xRep0 (x : F) : {P : W.Point | P.xRep 0 = x}.Finite := by
+  have : {P : W.Point | P.xRep 0 = x} ⊆ {P | P.xRep = ![x, 1]} ∪ {0} := by
+    intro P hP
+    match P with
+    | 0 => simp
+    | .some x' y h => simp_all [Point.xRep_some]
+  exact (finite_preimage_xRep x).union (Set.finite_singleton 0) |>.subset this
 
 end Affine
 

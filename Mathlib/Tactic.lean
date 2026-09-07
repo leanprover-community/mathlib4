@@ -105,6 +105,12 @@ public import Mathlib.Tactic.Determinant.Bird.Cert
 public import Mathlib.Tactic.Determinant.Bird.Meta
 public import Mathlib.Tactic.DuplicateDecls
 public import Mathlib.Tactic.ENatToNat
+public import Mathlib.Tactic.Echelon.Bareiss
+public import Mathlib.Tactic.Echelon.Cert
+public import Mathlib.Tactic.Echelon.Core
+public import Mathlib.Tactic.Echelon.Parsing
+public import Mathlib.Tactic.Echelon.Rat
+public import Mathlib.Tactic.Echelon.Zsqrtd
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eval
@@ -194,6 +200,7 @@ public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.Multigoal
@@ -217,6 +224,7 @@ public import Mathlib.Tactic.MinImports
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.ModCases
 public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Monotonicity
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.Monotonicity.Basic
@@ -253,6 +261,7 @@ public import Mathlib.Tactic.NormNum.PowMod
 public import Mathlib.Tactic.NormNum.Prime
 public import Mathlib.Tactic.NormNum.RealSqrt
 public import Mathlib.Tactic.NormNum.Result
+public import Mathlib.Tactic.NormRank
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Observe
 public import Mathlib.Tactic.OfNat
@@ -287,7 +296,6 @@ public import Mathlib.Tactic.Relation.Symm
 public import Mathlib.Tactic.Rename
 public import Mathlib.Tactic.RenameBVar
 public import Mathlib.Tactic.Replace
-public import Mathlib.Tactic.RewriteSearch
 public import Mathlib.Tactic.Rify
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Ring.Basic
@@ -303,6 +311,7 @@ public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
 public import Mathlib.Tactic.SetLike
 public import Mathlib.Tactic.SetNotationForOrder
+public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.Divisors

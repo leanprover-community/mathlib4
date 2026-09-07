@@ -5,7 +5,7 @@ Authors: Johan Commelin, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Semigroup
 public import Mathlib.Logic.Relation
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.ToDual

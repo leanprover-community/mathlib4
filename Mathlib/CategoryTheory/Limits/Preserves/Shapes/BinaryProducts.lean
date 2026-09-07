@@ -5,7 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!

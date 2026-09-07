@@ -29,7 +29,9 @@ We also show that the dimension of `Δ[p] ⊗ Δ[q]` is `≤ p + q`.
 
 universe u
 
-open CategoryTheory Simplicial MonoidalCategory
+open CategoryTheory MonoidalCategory
+
+open scoped Simplicial
 
 namespace SSet
 
