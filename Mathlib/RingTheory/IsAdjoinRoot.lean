@@ -98,7 +98,7 @@ structure IsAdjoinRootMonic {R : Type u} (S : Type v) [CommSemiring R] [Semiring
 
 section Ring
 
-variable {R : Type u} {S : Type v} [CommRing R] [Ring S] {f : R[X]} [Algebra R S]
+variable {R : Type*} {S : Type*} [CommRing R] [Ring S] {f : R[X]} [Algebra R S]
 
 namespace IsAdjoinRoot
 
@@ -142,6 +142,13 @@ for extensionality of the ring elements. -/
 @[ext]
 theorem ext (h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
   h.ext_map h' (fun x => by rw [← h.aeval_root_eq_map, ← h'.aeval_root_eq_map, eq])
+
+/-- Two `R`-algebra homomorphisms out of `S` agreeing on the root are equal. -/
+theorem algHom_eq_of_root {T : Type*} [CommRing T] [Algebra R T] {g₁ g₂ : S →ₐ[R] T}
+    (hg : g₁ h.root = g₂ h.root) : g₁ = g₂ := by
+  ext x
+  obtain ⟨p, rfl⟩ := h.map_surjective x
+  rw [← h.aeval_root_eq_map, ← aeval_algHom_apply, ← aeval_algHom_apply, hg]
 
 /-- Choose an arbitrary representative so that `h.map (h.repr x) = x`.
 

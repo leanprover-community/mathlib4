@@ -1,128 +1,103 @@
 /-
 Copyright (c) 2026 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: metakunt, Thomas Browning
+Authors: Thomas Browning, metakunt
 -/
 module
 
+public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
 # Algebra homomorphism between adjoining a root of unity.
 
+Let `S` be an `R`-algebra obtained by adjoining a root of `X ^ r - 1`, as witnessed by
+`h : IsAdjoinRoot S (X ^ r - 1 : R[X])`.
+
 ## Main definitions and results
 
-The main definitions are in the `AdjoinRoot` namespace.
+The main definitions are in the `IsAdjoinRoot` namespace.
 
-*  `mapCyclotomic f : (X ^ r - 1 : R[X]) →ₐ[R] AdjoinRoot (X ^ r - 1 : R[X]) `,
-    an algebra homomorphism.
-*  `mapCyclotomic_injective`, the given algebra homomorphism is injective.
-
-Corresponding definitions for `IsAdjoinRoot`.
-
-*  `mapCyclotomic f : S →ₐ[R] S `,
-    an algebra homomorphism.
-*  `mapCyclotomic_injective`, the given algebra homomorphism is injective.
+*  `mapCyclotomic h k : S →ₐ[R] S`, the algebra homomorphism sending the root to its `k`-th power.
+*  `mapCyclotomicHom h : ZMod r →* (S →ₐ[R] S)` and
+   `mapCyclotomicUnitHom h : (ZMod r)ˣ →* (S ≃ₐ[R] S)`, the monoid homomorphisms assembling these.
+*  `mapCyclotomic_injective`, the given algebra homomorphism is injective when `k` and `r` are
+    coprime.
 -/
 
 
-open Ideal Polynomial
+open Polynomial
 
 @[expose] public section
 
-namespace AdjoinRoot
+namespace IsAdjoinRoot
 
-variable (R : Type*) [CommRing R] (r j k : ℕ)
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {r : ℕ}
+  (h : IsAdjoinRoot S (X ^ r - 1 : R[X])) (j k : ℕ)
+
+namespace RootsOfUnity
+
+theorem root_pow_self : h.root ^ r = 1 := by
+  simpa [map_sub, sub_eq_zero] using h.aeval_root_self
+
+theorem aeval_root_pow_self : aeval (h.root ^ k) (X ^ r - 1 : R[X]) = 0 := by
+  rw [aeval_sub, map_pow, aeval_X, map_one, ← pow_mul, mul_comm, pow_mul, root_pow_self]
+  simp
+
+end RootsOfUnity
 
 /-- The algebra homomorphism taking an element to the `k`-th power. -/
-noncomputable def mapCyclotomic :
-    AdjoinRoot (X ^ r - 1 : R[X]) →ₐ[R] AdjoinRoot (X ^ r - 1 : R[X]) :=
-  quotientMapₐ _ (aeval (X ^ k))
-    (by simpa [mem_span_singleton, pow_right_comm] using sub_one_dvd_pow_sub_one (X ^ r) k)
+noncomputable def mapCyclotomic : S →ₐ[R] S :=
+  h.liftHom (h.root ^ k) (RootsOfUnity.aeval_root_pow_self h k)
 
 @[simp]
-theorem mapCyclotomic_mk_eq_mk (f : R[X]) :
-    mapCyclotomic R r k (mk (X ^ r - 1) f) = mk (X ^ r - 1) (f.comp (X ^ k)) :=
-  rfl
-
-@[simp]
-theorem mapCyclotomic_root_eq_mk :
-    mapCyclotomic R r k (root (X ^ r - 1)) = mk (X ^ r - 1) (X ^ k) := by
-  simp [← mk_X]
-
-@[simp]
-theorem mapCyclotomic_one (R : Type*) [CommRing R] (r : ℕ) : mapCyclotomic R r 1 = 1 := by
-  ext
+theorem mapCyclotomic_map_eq_map (f : R[X]) :
+    mapCyclotomic h k (h.map f) = h.map (f.comp (X ^ k)) := by
+  rw [mapCyclotomic, liftHom_map, ← h.aeval_root_eq_map, aeval_comp]
   simp
 
 @[simp]
-theorem mapCyclotomic_mul (R : Type*) [CommRing R] (r j k : ℕ) :
-    mapCyclotomic R r (j * k) = mapCyclotomic R r j * mapCyclotomic R r k := by
-  ext
-  simp [pow_mul]
-
-theorem mapCyclotomic_apply_eq {R : Type*} [CommRing R] {r j k : ℕ} (h : j ≡ k [MOD r]) :
-    mapCyclotomic R r j = mapCyclotomic R r k := by
-  ext
-  rw [mapCyclotomic_root_eq_mk, mapCyclotomic_root_eq_mk, AdjoinRoot.mk_eq_mk]
-  wlog hjk : k ≤ j generalizing j k
-  · rw [dvd_sub_comm]
-    exact this h.symm (le_of_not_ge hjk)
-  · rw [← Nat.add_sub_cancel' hjk, pow_add, ← mul_sub_one]
-    exact dvd_mul_of_dvd_right (dvd_pow_sub_one_of_dvd ((Nat.modEq_iff_dvd' hjk).mp h.symm)) (X ^ k)
+theorem mapCyclotomic_root_eq_pow : mapCyclotomic h k h.root = h.root ^ k := liftHom_root h _
 
 @[simp]
-theorem mapCyclotomic_mod : mapCyclotomic R r (k % r) = mapCyclotomic R r k  :=
-  mapCyclotomic_apply_eq (Nat.mod_modEq k r)
+theorem mapCyclotomic_one : mapCyclotomic h 1 = 1 :=
+  h.algHom_eq_of_root (by simp)
 
-/-- The algebra homomorphism taking an element to the `k`-th power. -/
-noncomputable def mapCyclotomicHom :
-    ZMod r →* AdjoinRoot (X ^ r - 1 : R[X]) →ₐ[R] AdjoinRoot (X ^ r - 1 : R[X]) where
-  toFun k := mapCyclotomic R r k.val
+@[simp]
+theorem mapCyclotomic_mul :
+    mapCyclotomic h (j * k) = mapCyclotomic h j * mapCyclotomic h k :=
+  h.algHom_eq_of_root (by simp [AlgHom.mul_apply, ← pow_mul])
+
+theorem mapCyclotomic_apply_eq {j k : ℕ} (hjk : j ≡ k [MOD r]) :
+    mapCyclotomic h j = mapCyclotomic h k := by
+  apply h.algHom_eq_of_root
+  rw [mapCyclotomic_root_eq_pow, mapCyclotomic_root_eq_pow]
+  wlog hkj : k ≤ j generalizing j k
+  · exact (this hjk.symm (le_of_not_ge hkj)).symm
+  · obtain ⟨m, hm⟩ := (Nat.modEq_iff_dvd' hkj).mp hjk.symm
+    rw [← Nat.add_sub_cancel' hkj, hm, pow_add, pow_mul, RootsOfUnity.root_pow_self h, one_pow,
+      mul_one]
+
+@[simp]
+theorem mapCyclotomic_mod : mapCyclotomic h (k % r) = mapCyclotomic h k :=
+  mapCyclotomic_apply_eq h (Nat.mod_modEq k r)
+
+/-- The algebra homomorphism taking an element to the `k`-th power, as a monoid homomorphism
+from `ZMod r`. -/
+noncomputable def mapCyclotomicHom : ZMod r →* (S →ₐ[R] S) where
+  toFun k := mapCyclotomic h k.val
   map_one' := by simp [ZMod.val_one_eq_one_mod]
   map_mul' k l := by simp [ZMod.val_mul]
 
-/-- The algebra homomorphism taking an element to the `k`-th power. -/
-noncomputable def mapCyclotomicUnitHom :
-    (ZMod r)ˣ →* AdjoinRoot (X ^ r - 1 : R[X]) ≃ₐ[R] AdjoinRoot (X ^ r - 1 : R[X]) where
-  toFun k := AlgEquiv.ofAlgHom (mapCyclotomicHom R r k) (mapCyclotomicHom R r k⁻¹)
+/-- The algebra equivalence taking an element to the `k`-th power, for `k` a unit of `ZMod r`. -/
+noncomputable def mapCyclotomicUnitHom : (ZMod r)ˣ →* (S ≃ₐ[R] S) where
+  toFun k := AlgEquiv.ofAlgHom (mapCyclotomicHom h k) (mapCyclotomicHom h k⁻¹)
     (by ext; simp [← AlgHom.mul_apply, ← map_mul]) (by ext; simp [← AlgHom.mul_apply, ← map_mul])
   map_one' := by ext; simp
   map_mul' j k := by ext; simp
 
-theorem mapCyclotomic_injective (h : k.Coprime r) : Function.Injective (mapCyclotomic R r k) := by
+theorem mapCyclotomic_injective (hk : k.Coprime r) : Function.Injective (mapCyclotomic h k) := by
   rw [← mapCyclotomic_mod, ← ZMod.val_natCast]
-  exact (mapCyclotomicUnitHom R r (ZMod.unitOfCoprime k h)).injective
-
-end AdjoinRoot
-
-namespace IsAdjoinRoot
-
-variable (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] (r j k : ℕ)
-variable (h : IsAdjoinRoot S (X ^ r - 1 : R[X]))
-
-/-- The algebra homomorphism taking an element to the `k`-th power. -/
-noncomputable def mapCyclotomicCongr :
-    (AdjoinRoot (X ^ r - 1 : R[X]) →ₐ[R] AdjoinRoot (X ^ r - 1 : R[X])) ≃ (S →ₐ[R] S) :=
-  (h.adjoinRootAlgEquiv).arrowCongr (h.adjoinRootAlgEquiv)
-
-/-- The algebra homomorphism taking an element to the `k`-th power. -/
-noncomputable def mapCyclotomic : S →ₐ[R] S :=
-  h.mapCyclotomicCongr R S r (AdjoinRoot.mapCyclotomic R r k)
-
-/-- The algebra homomorphism taking an element to the `k`-th power. -/
-noncomputable def mapCyclotomicHom : ZMod r →* S →ₐ[R] S where
-  toFun k := (h.mapCyclotomicCongr) (AdjoinRoot.mapCyclotomicHom R r k)
-  map_one' := by simp [mapCyclotomicCongr, AlgHom.End_toOne_one]
-  map_mul' j k := by
-    simp only [mapCyclotomicCongr, map_mul, AlgHom.End_toMul_mul, AlgEquiv.arrowCongr_apply]
-    rw [← ((AdjoinRoot.mapCyclotomicHom R r) j).comp_id]
-    nth_rw 1 [← h.adjoinRootAlgEquiv.symm_comp]
-    congr
-
-theorem mapCyclotomic_injective (hc : k.Coprime r) :
-    Function.Injective (mapCyclotomic R S r k h) := by
-  have := AdjoinRoot.mapCyclotomic_injective R r k hc
-  simpa [mapCyclotomic, mapCyclotomicCongr]
+  exact (mapCyclotomicUnitHom h (ZMod.unitOfCoprime k hk)).injective
 
 end IsAdjoinRoot
