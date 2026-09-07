@@ -156,42 +156,23 @@ variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
 theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp [map_smulₛₗ _]
 
-/-- Reinterpret an element of a type of semilinear maps as a semilinear map.
-
-See `LinearMap.ofClass` for the analogous definition on *linear* maps.
-(In the linear case, both coincide.) -/
+/-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
 @[coe]
-def _root_.SemilinearMap.ofClass : M →ₛₗ[σ] M₃ where
+def _root_.LinearMap.ofClass : M →ₛₗ[σ] M₃ where
   toFun := f
   map_add' := map_add f
   map_smul' := map_smulₛₗ f
 
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
 instance instCoeToSemilinearMap : CoeHead F (M →ₛₗ[σ] M₃) where
-  coe f := SemilinearMap.ofClass f
+  coe f := LinearMap.ofClass f
 
 end SemilinearMapClass
 
 @[deprecated (since := "2026-09-03")] alias SemilinearMapClass.semilinearMap :=
-  SemilinearMap.ofClass
-
-namespace LinearMapClass
-variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
-  (f : F) [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
-
-/-- Reinterpret an element of a type of linear maps as a linear map.
-See `SemilinearMap.ofClass` for the analogous definition on *semilinear* maps.
-(In the linear case, both coincide.)
--/
-abbrev _root_.LinearMap.ofClass : M₁ →ₗ[R] M₂ := SemilinearMap.ofClass f
-
+  LinearMap.ofClass
+@[deprecated (since := "2026-09-07")] alias SemilinearMap.ofClass := LinearMap.ofClass
 @[deprecated (since := "2026-09-03")] alias linearMap := LinearMap.ofClass
-
-/-- Reinterpret an element of a type of linear maps as a linear map. -/
-instance instCoeToLinearMap : CoeHead F (M₁ →ₗ[R] M₂) where
-  coe f := SemilinearMap.ofClass f
-
-end LinearMapClass
 
 namespace LinearMap
 
