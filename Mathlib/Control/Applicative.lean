@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Control.Functor
 public import Mathlib.Control.Basic
 

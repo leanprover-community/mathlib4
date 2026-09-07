@@ -48,7 +48,7 @@ def polynomialInferBase : PolynomialExt where
 
 section Lemmas
 
-variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 attribute [polynomial_post] mul_one Algebra.smul_def Polynomial.algebraMap_eq
 

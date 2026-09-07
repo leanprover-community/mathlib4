@@ -10,7 +10,7 @@ public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
 public import Mathlib.Order.Atoms
 
-import Mathlib.Data.Finite.Prod
+import Mathlib.Basic.Finite.Prod
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
@@ -50,12 +50,11 @@ We provide a few instances for concrete types:
 
 public section
 
-
 open Finset
 
 namespace Fintype
 
-variable {ι α : Type*} [Fintype ι] [Fintype α]
+variable {α : Type*} [Fintype α]
 
 section Nonempty
 
@@ -352,6 +351,14 @@ lemma map_iSup_of_antitone (f : ι → α) {g : α → β} (hg : Antitone g) :
 lemma map_iInf_of_antitone (f : ι → α) {g : α → β} (hg : Antitone g) :
     g (⨅ i, f i) = ⨆ i, g (f i) :=
   map_iInf_of_monotone (β := βᵒᵈ) f hg
+
+@[to_dual ciInf_le_iff]
+theorem le_ciSup_iff {a : α} {f : ι → α} : a ≤ ⨆ i, f i ↔ ∃ x, a ≤ f x := by
+  simpa using (Finite.isGreatest_ciSup f).le_iff
+
+@[to_dual lt_ciInf_iff]
+theorem ciSup_lt_iff {a : α} {f : ι → α} : ⨆ i, f i < a ↔ ∀ x, f x < a := by
+  simpa using (Finite.isGreatest_ciSup f).lt_iff
 
 end CCLO
 

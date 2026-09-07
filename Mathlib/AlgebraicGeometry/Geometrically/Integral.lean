@@ -32,7 +32,7 @@ open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry
 
-variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
+variable {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
 
 /-- We say that morphism `f : X ⟶ Y` is geometrically integral if for all `Spec K ⟶ Y` with `K`
 a field, `X ×[Y] Spec K` is integral. -/

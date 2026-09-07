@@ -153,9 +153,9 @@ lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) 
 
 section group
 
-variable {V W P : Type*} [AddCommMonoid V] [AddCommGroup W]
-  [AddCommGroup P] [Module A V] [Module A W] [Module A P] (ρ : Representation A G V)
-  (σ : Representation A G W) (τ : Representation A G P) (f : V →ₗ[A] W)
+variable {V W : Type*} [AddCommMonoid V] [AddCommGroup W]
+  [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W)
+  (f : V →ₗ[A] W)
 
 instance : Neg (IntertwiningMap ρ σ) :=
   ⟨fun f ↦ ⟨-f.toLinearMap, by simp [LinearMap.neg_comp, f.2]⟩⟩
@@ -382,8 +382,6 @@ def refl : Equiv ρ ρ where
 
 @[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
-lemma coe_invFun : φ.invFun = φ.symm := rfl
-
 theorem toLinearEquiv_toLinearMap :
   φ.toLinearEquiv.toLinearMap = φ.toIntertwiningMap.toLinearMap := rfl
 
@@ -410,6 +408,8 @@ lemma mk_symm {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e
     (mk e he).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he) := rfl
 
 lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
+
+lemma coe_invFun : φ.invFun = φ.symm := rfl
 
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
 

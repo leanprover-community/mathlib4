@@ -133,7 +133,7 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
     (h2 : ∀ t, P[X t] = 0) (h3 : ∀ s t, s ≤ t → cov[X s, X t; P] = s) :
     IsPreBrownianReal X P where
   hasLaw I := by
-    refine ⟨aemeasurable_pi_lambda _ fun _ ↦ h1.aemeasurable _, ?_⟩
+    refine ⟨.of_eval fun _ ↦ h1.aemeasurable _, ?_⟩
     apply (MeasurableEquiv.toLp 2 (_ → ℝ)).map_measurableEquiv_injective
     rw [MeasurableEquiv.coe_toLp, ← PiLp.coe_symm_continuousLinearEquiv 2 ℝ]
     have := (h1.hasGaussianLaw I).isGaussian_map
@@ -149,7 +149,7 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
         · simpa using h2 _
         · exact fun _ ↦ (h1.hasGaussianLaw_eval _).integrable
       any_goals fun_prop
-      exact aemeasurable_pi_lambda _ fun _ ↦ h1.aemeasurable _
+      exact .of_eval fun _ ↦ h1.aemeasurable _
     · rw [← ContinuousLinearMap.toBilinForm_inj]
       refine LinearMap.BilinForm.ext_of_isSymm isPosSemidef_covarianceBilin.isSymm
         isPosSemidef_covarianceBilin.isSymm fun x ↦ ?_
@@ -162,7 +162,7 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
           rw [min_eq_left hij]
           exact h3 i j hij
         any_goals exact Measurable.aestronglyMeasurable (by fun_prop)
-        exact aemeasurable_pi_lambda _ (fun _ ↦ h1.aemeasurable _)
+        exact .of_eval (fun _ ↦ h1.aemeasurable _)
       · exact fun i ↦ (IsGaussian.hasGaussianLaw_id.eval i).memLp_two
       · exact fun i ↦ ((h1.hasGaussianLaw I).isGaussian_map.hasGaussianLaw_id.eval i).memLp_two
 
