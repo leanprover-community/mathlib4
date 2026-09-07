@@ -1109,22 +1109,22 @@ bijection with pairs of elements with product 0 and sum 1. (By definition, `(e�
 iff `e₁ * e₂ = e₁`.) Both elements in such pairs must be idempotents, but there may exists
 idempotents that do not form such pairs (does not have a "complement"). For example, in the
 semiring `{0, 0.5, 1}` with `⊔` as `+` and `⊓` as `*`, `0.5` has no complement. -/
-def mulZeroAddOneEquivClopens :
-    {e : R × R // e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃o Clopens (PrimeSpectrum R) where
+def idempotentPairEquivClopens : IdempotentPair R ≃o Clopens (PrimeSpectrum R) where
   toEquiv := .ofBijective
-    (fun e ↦ ⟨basicOpen e.1.1, isClopen_iff_mul_add.mpr ⟨_, _, e.2.1, e.2.2, rfl⟩⟩) <| by
-      refine ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ eq ↦ mul_eq_zero_add_eq_one_ext_left ?_, fun s ↦ ?_⟩
-      · exact basicOpen_injOn_isIdempotentElem (IsIdempotentElem.of_mul_add hx.1 hx.2).1
-          (IsIdempotentElem.of_mul_add hy.1 hy.2).1 <| SetLike.ext' (congr_arg (·.1) eq)
+    (fun e ↦ ⟨basicOpen e.fst, isClopen_iff_mul_add.mpr ⟨_, _, e.mul_eq_zero, e.add_eq_one, rfl⟩⟩)
+    (by
+      refine ⟨fun x y eq ↦ IdempotentPair.fst_ext ?_, fun s ↦ ?_⟩
+      · exact basicOpen_injOn_isIdempotentElem x.isIdempotentElem_fst y.isIdempotentElem_fst <|
+          SetLike.ext' (congr_arg (·.1) eq)
       · have ⟨e, f, mul, add, eq⟩ := isClopen_iff_mul_add.mp s.2
-        exact ⟨⟨(e, f), mul, add⟩, SetLike.ext' eq.symm⟩
+        exact ⟨⟨e, f, mul, add⟩, SetLike.ext' eq.symm⟩)
   map_rel_iff' {a b} := show basicOpen _ ≤ basicOpen _ ↔ _ by
-    rw [← inf_eq_left, ← basicOpen_mul]
-    refine ⟨fun h ↦ ?_, (by rw [·])⟩
-    rw [← inf_eq_left]
-    have := (IsIdempotentElem.of_mul_add a.2.1 a.2.2).1
-    exact mul_eq_zero_add_eq_one_ext_left (basicOpen_injOn_isIdempotentElem
-      (this.mul (IsIdempotentElem.of_mul_add b.2.1 b.2.2).1) this h)
+    rw [← inf_eq_left, ← basicOpen_mul, IdempotentPair.le_def]
+    exact ⟨fun h ↦ basicOpen_injOn_isIdempotentElem
+      (a.isIdempotentElem_fst.mul b.isIdempotentElem_fst) a.isIdempotentElem_fst h, (by rw [·])⟩
+
+@[deprecated (since := "2026-09-07")]
+alias mulZeroAddOneEquivClopens := idempotentPairEquivClopens
 
 lemma isRetrocompact_zeroLocus_compl {s : Set R} (hs : s.Finite) :
     IsRetrocompact (zeroLocus s)ᶜ :=
@@ -1400,50 +1400,82 @@ open TopologicalSpace (Clopens Opens)
 /-- Clopen subsets in the prime spectrum of a commutative ring are in 1-1 correspondence
 with idempotent elements in the ring. -/
 @[stacks 00EE]
-def isIdempotentElemEquivClopens :
-    {e : R // IsIdempotentElem e} ≃o Clopens (PrimeSpectrum R) :=
-  .trans .isIdempotentElemMulZeroAddOne mulZeroAddOneEquivClopens
+def idempotentElemEquivClopens : IdempotentElem R ≃o Clopens (PrimeSpectrum R) :=
+  IdempotentElem.toIdempotentPair.trans idempotentPairEquivClopens
 
-lemma basicOpen_isIdempotentElemEquivClopens_symm (s) :
-    basicOpen (isIdempotentElemEquivClopens (R := R).symm s).1 = s.toOpens :=
-  Opens.ext <| congr_arg (·.1) (isIdempotentElemEquivClopens.apply_symm_apply s)
+lemma basicOpen_idempotentElemEquivClopens_symm (s) :
+    basicOpen (idempotentElemEquivClopens (R := R).symm s).1 = s.toOpens :=
+  Opens.ext <| congr_arg (·.1) (idempotentElemEquivClopens.apply_symm_apply s)
 
-lemma coe_isIdempotentElemEquivClopens_apply (e) :
-    (isIdempotentElemEquivClopens e : Set (PrimeSpectrum R)) = basicOpen (e.1 : R) := rfl
+lemma coe_idempotentElemEquivClopens_apply (e) :
+    (idempotentElemEquivClopens e : Set (PrimeSpectrum R)) = basicOpen (e.1 : R) := rfl
 
-lemma isIdempotentElemEquivClopens_apply_toOpens (e) :
-    (isIdempotentElemEquivClopens e).toOpens = basicOpen (e.1 : R) := rfl
+lemma idempotentElemEquivClopens_apply_toOpens (e) :
+    (idempotentElemEquivClopens e).toOpens = basicOpen (e.1 : R) := rfl
 
-lemma isIdempotentElemEquivClopens_mul (e₁ e₂ : {e : R | IsIdempotentElem e}) :
-    isIdempotentElemEquivClopens ⟨_, e₁.2.mul e₂.2⟩ =
-      isIdempotentElemEquivClopens e₁ ⊓ isIdempotentElemEquivClopens e₂ :=
+lemma idempotentElemEquivClopens_mul (e₁ e₂ : IdempotentElem R) :
+    idempotentElemEquivClopens ⟨_, e₁.2.mul e₂.2⟩ =
+      idempotentElemEquivClopens e₁ ⊓ idempotentElemEquivClopens e₂ :=
   map_inf ..
 
-lemma isIdempotentElemEquivClopens_one_sub (e : {e : R | IsIdempotentElem e}) :
-    isIdempotentElemEquivClopens ⟨_, e.2.one_sub⟩ = (isIdempotentElemEquivClopens e)ᶜ :=
+lemma idempotentElemEquivClopens_one_sub (e : IdempotentElem R) :
+    idempotentElemEquivClopens ⟨_, e.2.one_sub⟩ = (idempotentElemEquivClopens e)ᶜ :=
   map_compl ..
 
-lemma isIdempotentElemEquivClopens_symm_inf (s₁ s₂) :
-    letI e := isIdempotentElemEquivClopens (R := R).symm
+lemma idempotentElemEquivClopens_symm_inf (s₁ s₂) :
+    letI e := idempotentElemEquivClopens (R := R).symm
     e (s₁ ⊓ s₂) = ⟨_, (e s₁).2.mul (e s₂).2⟩ :=
   map_inf ..
 
-lemma isIdempotentElemEquivClopens_symm_compl (s : Clopens (PrimeSpectrum R)) :
-    isIdempotentElemEquivClopens.symm sᶜ = ⟨_, (isIdempotentElemEquivClopens.symm s).2.one_sub⟩ :=
+lemma idempotentElemEquivClopens_symm_compl (s : Clopens (PrimeSpectrum R)) :
+    idempotentElemEquivClopens.symm sᶜ = ⟨_, (idempotentElemEquivClopens.symm s).2.one_sub⟩ :=
   map_compl ..
 
-lemma isIdempotentElemEquivClopens_symm_top :
-    isIdempotentElemEquivClopens.symm ⊤ = ⟨(1 : R), .one⟩ :=
+lemma idempotentElemEquivClopens_symm_top :
+    idempotentElemEquivClopens.symm ⊤ = ⟨(1 : R), .one⟩ :=
   map_top _
 
-lemma isIdempotentElemEquivClopens_symm_bot :
-    isIdempotentElemEquivClopens.symm ⊥ = ⟨(0 : R), .zero⟩ :=
+lemma idempotentElemEquivClopens_symm_bot :
+    idempotentElemEquivClopens.symm ⊥ = ⟨(0 : R), .zero⟩ :=
   map_bot _
 
-lemma isIdempotentElemEquivClopens_symm_sup (s₁ s₂ : Clopens (PrimeSpectrum R)) :
-    letI e := isIdempotentElemEquivClopens (R := R).symm
+lemma idempotentElemEquivClopens_symm_sup (s₁ s₂ : Clopens (PrimeSpectrum R)) :
+    letI e := idempotentElemEquivClopens (R := R).symm
     e (s₁ ⊔ s₂) = ⟨_, (e s₁).2.add_sub_mul (e s₂).2⟩ :=
   map_sup ..
+
+@[deprecated (since := "2026-09-07")]
+alias isIdempotentElemEquivClopens := idempotentElemEquivClopens
+
+@[deprecated (since := "2026-09-07")]
+alias basicOpen_isIdempotentElemEquivClopens_symm := basicOpen_idempotentElemEquivClopens_symm
+
+@[deprecated (since := "2026-09-07")]
+alias coe_isIdempotentElemEquivClopens_apply := coe_idempotentElemEquivClopens_apply
+
+@[deprecated (since := "2026-09-07")]
+alias isIdempotentElemEquivClopens_apply_toOpens := idempotentElemEquivClopens_apply_toOpens
+
+@[deprecated (since := "2026-09-07")]
+alias isIdempotentElemEquivClopens_mul := idempotentElemEquivClopens_mul
+
+@[deprecated (since := "2026-09-07")]
+alias isIdempotentElemEquivClopens_one_sub := idempotentElemEquivClopens_one_sub
+
+@[deprecated (since := "2026-09-07")]
+alias isIdempotentElemEquivClopens_symm_inf := idempotentElemEquivClopens_symm_inf
+
+@[deprecated (since := "2026-09-07")]
+alias isIdempotentElemEquivClopens_symm_compl := idempotentElemEquivClopens_symm_compl
+
+@[deprecated (since := "2026-09-07")]
+alias isIdempotentElemEquivClopens_symm_top := idempotentElemEquivClopens_symm_top
+
+@[deprecated (since := "2026-09-07")]
+alias isIdempotentElemEquivClopens_symm_bot := idempotentElemEquivClopens_symm_bot
+
+@[deprecated (since := "2026-09-07")]
+alias isIdempotentElemEquivClopens_symm_sup := idempotentElemEquivClopens_symm_sup
 
 end PrimeSpectrum
 
