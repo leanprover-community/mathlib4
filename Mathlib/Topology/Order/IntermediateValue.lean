@@ -328,10 +328,9 @@ theorem mem_of_csSup_mem_of_forall_exists_gt {a b : α} {s : Set α} (hs : sSup 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and the set `s ∩ [a, b)` has no maximal point, then `b ∈ s`. -/
 theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
-    (ha : a ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : b ∈ s := by
-  replace hs : sSup (s ∩ Icc a b) ∈ s :=
-    (hs.csSup_mem ⟨_, ha, left_mem_Icc.2 hab⟩ ⟨b, fun _ hx ↦ hx.2.2⟩).1
-  exact mem_of_csSup_mem_of_forall_exists_gt hs ha hab hgt
+    (ha : a ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : b ∈ s :=
+  mem_of_csSup_mem_of_forall_exists_gt
+    (hs.csSup_mem ⟨_, ha, left_mem_Icc.2 hab⟩ ⟨b, fun _ hx ↦ hx.2.2⟩).1 ha hab hgt
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and for any `a ≤ x < y ≤ b`, `x ∈ s`, the set `s ∩ (x, y]`
