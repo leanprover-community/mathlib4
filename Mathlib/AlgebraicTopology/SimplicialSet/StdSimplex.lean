@@ -882,21 +882,18 @@ lemma toOfSimplex_app_objEquiv_symm :
 
 @[simp]
 lemma yonedaEquiv_toOfSimplex :
-    yonedaEquiv (toOfSimplex x) = ⟨x, mem_ofSimplex_obj x⟩ :=
-  yonedaEquiv.symm.injective (by cat_disch)
+    dsimp% yonedaEquiv (toOfSimplex x) = ⟨x, mem_ofSimplex_obj x⟩ := by
+  obtain ⟨x, rfl⟩ := yonedaEquiv.surjective x
+  dsimp [toOfSimplex]
+  cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 instance : Epi (toOfSimplex x) := by
   rw [← range_eq_top_iff]
   ext m ⟨_, u, rfl⟩
-  simp only [range_eq_ofSimplex, yonedaEquiv_toOfSimplex, Subfunctor.top_obj,
+  simp only [range_eq_ofSimplex, Subfunctor.toFunctor_obj,
+    yonedaEquiv_toOfSimplex, Subfunctor.top_obj,
     Set.mem_univ, iff_true]
-  refine ⟨u, ?_⟩
-  dsimp
-  ext
-  rw [← yonedaEquiv.right_inv x]
-  aesop
+  exact ⟨u, by dsimp⟩
 
 lemma isIso_toOfSimplex_iff :
     IsIso (toOfSimplex x) ↔ Mono (yonedaEquiv.symm x) := by

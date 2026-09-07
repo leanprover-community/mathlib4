@@ -224,7 +224,6 @@ instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget 
       simp only [forget_obj, mk_right, forget_map, homMk_right]
       rw [IsFiltered.coeq_condition])
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The forgetful functor of the over category on any cofiltered or empty category is initial. -/
 instance Over.initial_forget [IsCofilteredOrEmpty C] (c : C) : Initial (Over.forget c) :=

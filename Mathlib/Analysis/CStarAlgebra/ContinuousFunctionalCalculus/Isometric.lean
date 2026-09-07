@@ -535,11 +535,11 @@ namespace IsometricContinuousFunctionalCalculus
 
 lemma isGreatest_spectrum [Nontrivial A] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     IsGreatest (σ ℝ≥0 a) ‖a‖₊ := by
-  simpa [cfc_id ℝ≥0 a] using IsGreatest.nnnorm_cfc_nnreal id a
+  simpa [cfc_id' ℝ≥0 a] using IsGreatest.nnnorm_cfc_nnreal id a
 
 lemma spectrum_le (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σ ℝ≥0 a) (ha : 0 ≤ a := by cfc_tac) :
     x ≤ ‖a‖₊ := by
-  simpa [cfc_id ℝ≥0 a] using apply_le_nnnorm_cfc_nnreal id a hx
+  simpa [cfc_id' ℝ≥0 a] using apply_le_nnnorm_cfc_nnreal id a hx
 
 end IsometricContinuousFunctionalCalculus
 
@@ -603,11 +603,11 @@ namespace NonUnitalIsometricContinuousFunctionalCalculus
 
 lemma isGreatest_quasispectrum (a : A) (ha : 0 ≤ a := by cfc_tac) :
     IsGreatest (σₙ ℝ≥0 a) ‖a‖₊ := by
-  simpa [cfcₙ_id ℝ≥0 a] using IsGreatest.nnnorm_cfcₙ_nnreal id a
+  simpa [cfcₙ_id' ℝ≥0 a] using IsGreatest.nnnorm_cfcₙ_nnreal id a
 
 lemma quasispectrum_le (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σₙ ℝ≥0 a) (ha : 0 ≤ a := by cfc_tac) :
     x ≤ ‖a‖₊ := by
-  simpa [cfcₙ_id ℝ≥0 a] using apply_le_nnnorm_cfcₙ_nnreal id a hx
+  simpa [cfcₙ_id' ℝ≥0 a] using apply_le_nnnorm_cfcₙ_nnreal id a hx
 
 end NonUnitalIsometricContinuousFunctionalCalculus
 

@@ -6,7 +6,7 @@ Authors: Johan Commelin, Adam Topaz, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
@@ -21,19 +21,22 @@ This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
 
 universe u
 
-open CategoryTheory
+open CategoryTheory Convexity
 
 open scoped Simplicial
 
 namespace SimplexCategory
 
-attribute [local simp] stdSimplex.map_comp_apply in
 /-- The functor `SimplexCategory ⥤ TopCat.{0}`
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
-@[simps obj map]
+@[simps obj map, implicit_reducible]
 noncomputable def toTop₀ : CosimplicialObject TopCat.{0} where
-  obj n := TopCat.of (stdSimplex ℝ (Fin (n.len + 1)))
-  map f := TopCat.ofHom ⟨_, stdSimplex.continuous_map f⟩
+  obj n := ↧(StdSimplex ℝ (Fin (n.len + 1)))
+  map f := TopCat.ofHom ⟨_, StdSimplex.continuous_map ℝ f⟩
+  map_comp f g := by
+    ext : 1
+    simp [← StdSimplex.map_comp]
+    rfl
 
 /-- The functor `SimplexCategory ⥤ TopCat.{u}`
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
@@ -46,9 +49,9 @@ instance (n : SimplexCategory) : Nonempty (toTop₀.obj n) := by dsimp; infer_in
 
 instance (n : SimplexCategory) : Nonempty (toTop.{u}.obj n) := inferInstanceAs (Nonempty (ULift _))
 
-instance : Unique (toTop₀.obj ⦋0⦌) := inferInstanceAs (Unique (stdSimplex ℝ (Fin 1)))
+noncomputable instance : Unique (toTop₀.obj ⦋0⦌) := inferInstanceAs (Unique (StdSimplex ℝ (Fin 1)))
 
-instance : Unique (toTop.{u}.obj ⦋0⦌) := inferInstanceAs (Unique (ULift _))
+noncomputable instance : Unique (toTop.{u}.obj ⦋0⦌) := inferInstanceAs (Unique (ULift _))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
