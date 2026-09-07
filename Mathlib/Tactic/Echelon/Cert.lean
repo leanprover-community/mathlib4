@@ -51,23 +51,24 @@ instances from `Monotone` which checks all pairs. The following part defines a `
 alternative that can be decided in `O(n)`.
 -/
 
+variable {α : Type*} [Top α]
+
 /-- One step of a pivot function: strictly increasing, with `⊤` absorbing. -/
-def PivotStep {α : Type*} [LT α] [Top α] (a b : α) : Prop :=
+def PivotStep [LT α] (a b : α) : Prop :=
   a < b ∨ a = ⊤ ∧ b = ⊤
 
-instance {α : Type*} [Preorder α] [OrderTop α] : IsTrans α (PivotStep (α := α)) where
+instance [Preorder α] : IsTrans α PivotStep where
   trans a b c h₁ h₂ := by
     simp only [PivotStep] at *
     grind
 
-instance {α : Type*} [LT α] [Top α] [i : ∀ a b : α, Decidable (a < b ∨ a = ⊤ ∧ b = ⊤)] :
+instance [LT α] [i : ∀ a b : α, Decidable (a < b ∨ a = ⊤ ∧ b = ⊤)] :
     DecidableRel (PivotStep (α := α)) := i
 
-theorem isChain_ofFn_iff_monotone_and_strictMonoOn
-    {α : Type*} [PartialOrder α] [OrderTop α] {m : ℕ} (l : Fin m → α) :
+theorem isChain_ofFn_iff_monotone_and_strictMonoOn [PartialOrder α] {m : ℕ} (l : Fin m → α) :
     (List.ofFn l).IsChain PivotStep ↔ Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} := by
   rw [List.isChain_iff_pairwise, List.pairwise_ofFn]
-  simp only [PivotStep, Monotone, StrictMonoOn, Set.mem_ofPred_eq]
+  simp only [PivotStep, Monotone, StrictMonoOn]
   grind [le_of_lt, LE.le.eq_or_lt]
 
 end Mathlib.Tactic.Echelon
