@@ -275,7 +275,7 @@ instance : InvOneClass (MvPowerSeries σ k) :=
 @[simp]
 protected theorem inv_pow (φ : MvPowerSeries σ k) : ∀ n : ℕ, φ⁻¹ ^ n = (φ ^ n)⁻¹
   | 0 => by rw [pow_zero, pow_zero, inv_one]
-  | n + 1 => by rw [pow_succ', pow_succ, inv_pow, MvPowerSeries.mul_inv_rev]
+  | n + 1 => by rw [pow_succ', pow_succ, MvPowerSeries.inv_pow, MvPowerSeries.mul_inv_rev]
 
 @[simp]
 theorem C_inv (r : k) : (C (σ := σ) r)⁻¹ = C r⁻¹ := by
