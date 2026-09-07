@@ -30,8 +30,7 @@ private lemma existsOpenRefinementWithOrderOnClosedSet
           (n + 1 : ℕ) := by
   classical
   let f : C(S, X) := ⟨Subtype.val, continuous_subtype_val⟩
-  obtain ⟨κ, V, hV, hVA, hVorder⟩ :=
-    hSdim.exists_refinement (fun i ↦ (A i).comap f) (hA.comap f)
+  obtain ⟨κ, V, hV, hVA, hVorder⟩ := hSdim.exists_refinement (hA.comap f)
   -- Extend each distinct trace member inside a parent from the original cover.
   let 𝒱 := Set.range fun j ↦ (V j : Set S)
   have hlift (T : 𝒱) :

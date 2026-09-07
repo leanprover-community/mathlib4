@@ -213,7 +213,7 @@ lemma hasCoveringDimensionLE_of_openPartitions
 /-- Local frontier control produces a controlled partition between
 any two disjoint closed subsets. -/
 lemma existsOpenPartition_of_localFrontier
-    {X : Type u} [TopologicalSpace X] [CompactSpace X] [MetrizableSpace X] {n : ℕ}
+    {X : Type u} [TopologicalSpace X] [CompactSpace X] {n : ℕ}
     (hlocal : ∀ x U, x ∈ U → IsOpen U →
       ∃ V : Set X,
         IsOpen V ∧ x ∈ V ∧ closure V ⊆ U ∧
@@ -222,8 +222,6 @@ lemma existsOpenPartition_of_localFrontier
     ∃ V : Set X,
       IsOpen V ∧ K ⊆ V ∧ closure V ⊆ Fᶜ ∧
         HasCoveringDimensionLT ↥(frontier V) n := by
-  -- Select finitely many local neighborhoods around `K` inside the complement of `F`.
-  classical
   obtain ⟨s, V, hV, hKcover, hopen, hclosure, hfrontier⟩ :=
     existsFiniteLocalFrontierCover hlocal hK hF.isOpen_compl hKF.subset_compl_right
   let ι := {x : K // x ∈ s}

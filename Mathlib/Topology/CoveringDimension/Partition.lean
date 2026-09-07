@@ -38,7 +38,7 @@ lemma existsFiniteIndexedShrinkingRefinement
         ∀ i, closure (C i : Set X) ⊆ B i := by
   classical
   -- Apply the finite shrinking construction to an order-bounded refinement.
-  obtain ⟨κ, V, hVcover, hVrefines, hVorder⟩ := h.exists_refinement A hA
+  obtain ⟨κ, V, hVcover, hVrefines, hVorder⟩ := h.exists_refinement hA
   obtain ⟨ι, hι, B, C, hBcover, hCcover, hBinjective, hBmem, hCclosure⟩ :=
     hVcover.exists_finite_shrinking
   -- Choose an original-cover parent for each retained refinement member.

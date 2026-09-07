@@ -31,7 +31,6 @@ lemma exists_mem_ball_avoiding_small_affineSpans
     (Module.finBasis ℝ (EuclideanSpace ℝ (Fin N))).addHaar
   -- Each candidate affine span is proper, hence Haar-null; the finite union is null.
   have hforbidden_zero : μ forbidden = 0 := by
-    unfold forbidden
     apply measure_iUnion_null
     intro u
     exact Measure.addHaar_affineSubspace μ _

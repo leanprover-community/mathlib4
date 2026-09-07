@@ -304,7 +304,7 @@ theorem compactSubset_euclideanSpace_hasCoveringDimensionLE {N : ℕ}
 /-- Every compact subspace of `EuclideanSpace ℝ (Fin N)` has
 covering dimension at most `N`. -/
 theorem compactSubset_euclideanSpace_coveringDimension_le {N : ℕ}
-    (X : Set (EuclideanSpace ℝ (Fin N))) (hX : IsCompact X) :
+    {X : Set (EuclideanSpace ℝ (Fin N))} (hX : IsCompact X) :
     dim X ≤ N := by
   -- Translate the proved cover-refinement bound into the numerical dimension inequality.
   rw [coveringDimension_le_iff]
@@ -312,18 +312,13 @@ theorem compactSubset_euclideanSpace_coveringDimension_le {N : ℕ}
 
 /-- Every compact subset of the plane has covering dimension at most two. -/
 theorem compactSubset_euclideanPlane_coveringDimension_le_two
-    (X : Set (ℝ × ℝ)) (hX : IsCompact X) :
-    dim X ≤ 2 := by
+    (X : Set (ℝ × ℝ)) (hX : IsCompact X) : dim X ≤ 2 := by
   let e : EuclideanSpace ℝ (Fin 2) ≃ₜ ℝ × ℝ :=
     (PiLp.homeomorph 2 (fun _ : Fin 2 ↦ ℝ)).trans Homeomorph.finTwoArrow
   let Y : Set (EuclideanSpace ℝ (Fin 2)) := e ⁻¹' X
-  have hY : IsCompact Y := e.isCompact_preimage.mpr hX
-  have hImage : e '' Y = X := by
-    simp [Y]
-  let eY : Y ≃ₜ X :=
-    (Homeomorph.image e Y).trans (Homeomorph.setCongr hImage)
+  let eY : Y ≃ₜ X := (Homeomorph.image e Y).trans (Homeomorph.setCongr (by simp [Y]))
   rw [← eY.coveringDimension_congr]
-  exact compactSubset_euclideanSpace_coveringDimension_le Y hY
+  exact compactSubset_euclideanSpace_coveringDimension_le (e.isCompact_preimage.mpr hX)
 
 /-! ## Compact manifolds -/
 

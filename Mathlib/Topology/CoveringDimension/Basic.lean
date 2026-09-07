@@ -168,8 +168,7 @@ namespace HasCoveringDimensionLE
 
 /-- A covering-dimension bound applies to open covers indexed in any universe. -/
 theorem exists_refinement {X : Type u} [TopologicalSpace X] {n : ℕ}
-    (h : HasCoveringDimensionLE X n) {ι : Type v} (U : ι → Opens X)
-    (hU : IsOpenCover U) :
+    (h : HasCoveringDimensionLE X n) {ι : Type v} {U : ι → Opens X} (hU : IsOpenCover U) :
     ∃ (κ : Type u) (V : κ → Opens X), IsOpenCover V ∧
       IsCofinalFor (Set.range V) (Set.range U) ∧
         (Set.range fun j ↦ (V j : Set X)).HasOrderLE (n + 1) := by
@@ -187,7 +186,6 @@ theorem mono {X : Type u} [TopologicalSpace X] {n m : ℕ}
 
 end HasCoveringDimensionLE
 
-@[simp]
 theorem hasCoveringDimensionLT_zero_iff (X : Type u) [TopologicalSpace X] :
     HasCoveringDimensionLT X 0 ↔ IsEmpty X := by
   rfl
@@ -266,8 +264,7 @@ theorem Homeomorph.hasCoveringDimensionLE_of
     (e : A ≃ₜ B) {n : ℕ} (h : HasCoveringDimensionLE A n) :
     HasCoveringDimensionLE B n := by
   intro ι U hU
-  obtain ⟨κ, V, hV, hVU, horder⟩ :=
-    h.exists_refinement _ (hU.comap ⟨e, e.continuous⟩)
+  obtain ⟨κ, V, hV, hVU, horder⟩ := h.exists_refinement (hU.comap ⟨e, e.continuous⟩)
   let W : κ → Opens B := fun j ↦ (V j).comap ⟨e.symm, e.symm.continuous⟩
   have hW : IsOpenCover W := hV.comap ⟨e.symm, e.symm.continuous⟩
   -- Reindex by the range to obtain an index type in the universe of `B`.
@@ -277,7 +274,7 @@ theorem Homeomorph.hasCoveringDimensionLE_of
     rintro _ ⟨j, rfl⟩
     obtain ⟨_, ⟨i, rfl⟩, hi⟩ := hVU (Set.mem_range_self j)
     refine ⟨U i, Set.mem_range_self i, ?_⟩
-    intro x hx
+    intro _ hx
     simpa using hi hx
   · apply (horder.preimage e.symm).of_subset
     rintro _ ⟨⟨_, ⟨j, rfl⟩⟩, rfl⟩
@@ -301,7 +298,6 @@ protected theorem Homeomorph.hasCoveringDimensionLT
 protected theorem Homeomorph.coveringDimension_congr
     {A : Type u} {B : Type v} [TopologicalSpace A] [TopologicalSpace B]
     (e : A ≃ₜ B) : coveringDimension A = coveringDimension B := by
-  unfold coveringDimension
   apply congrArg sInf
   ext d
   exact forall_congr' fun n ↦ forall_congr' fun _ ↦ e.hasCoveringDimensionLT n
@@ -314,7 +310,6 @@ namespace HasCoveringDimensionLE
 theorem closedSubtype {X : Type u} [TopologicalSpace X] {Y : Set X} {n : ℕ}
     (hX : HasCoveringDimensionLE X n) (hY : IsClosed Y) :
     HasCoveringDimensionLE Y n := by
-  classical
   intro ι A hA
   let f : C(Y, X) := ⟨Subtype.val, continuous_subtype_val⟩
   have hlift (i : ι) : ∃ U : Opens X, U.comap f = A i := by
@@ -329,8 +324,7 @@ theorem closedSubtype {X : Type u} [TopologicalSpace X] {Y : Set X} {n : ℕ}
     intro x
     by_cases hx : x ∈ Y
     · obtain ⟨i, hi⟩ := hA.exists_mem ⟨x, hx⟩
-      exact Set.mem_iUnion.mpr ⟨some i, show (⟨x, hx⟩ : Y) ∈ (U i).comap f from
-        hU i ▸ hi⟩
+      exact Set.mem_iUnion.mpr ⟨some i, show (⟨x, hx⟩ : Y) ∈ (U i).comap f from hU i ▸ hi⟩
     · exact Set.mem_iUnion.mpr ⟨none, hx⟩
   obtain ⟨κ, W, hW, hWV, horder⟩ := hX _ V hV
   -- Discard empty traces, so no remaining member refines the complement of `Y`.
@@ -394,6 +388,6 @@ lemma HasCoveringDimensionLT.closedSubset
     (h : HasCoveringDimensionLT Z n) (hYZ : Y ⊆ Z) (hY : IsClosed Y) :
     HasCoveringDimensionLT Y n := by
   let e : ((Subtype.val : Z → X) ⁻¹' Y) ≃ₜ Y :=
-    Topology.IsEmbedding.subtypeVal.homeomorphOfSubsetRange (by simpa using hYZ)
+    Topology.IsEmbedding.subtypeVal.homeomorphOfSubsetRange (by simpa)
   exact (e.hasCoveringDimensionLT n).mp
     (h.closedSubtype (hY.preimage continuous_subtype_val))
