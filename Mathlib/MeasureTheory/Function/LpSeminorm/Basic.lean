@@ -78,11 +78,8 @@ theorem eLpNorm_exponent_zero [TopologicalSpace ε] {f : α → ε} (hf : AEStro
 
 @[simp]
 theorem memLp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} :
-    MemLp f 0 μ ↔ AEStronglyMeasurable f μ := by
-  rw [MemLp]
-  constructor
-  · exact fun h ↦ MemLp.aestronglyMeasurable h
-  · exact fun hf ↦ by simp [eLpNorm, hf]
+    MemLp f 0 μ ↔ AEStronglyMeasurable f μ :=
+  ⟨fun h ↦ MemLp.aestronglyMeasurable h, fun hf ↦ by simp [memLp_iff, eLpNorm, hf]⟩
 
 section ESeminormedAddMonoid
 
