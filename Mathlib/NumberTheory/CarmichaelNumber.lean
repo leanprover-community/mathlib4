@@ -144,13 +144,14 @@ theorem IsCarmichael.three_le_card_primeFactors (h : IsCarmichael n) :
     3 ≤ n.primeFactors.card := by
   by_contra! h0
   set a := n.primeFactors.card with hn
+  symm at hn
   interval_cases a
   · simp_all
     grind [h.two_lt]
   · rw [← isPrimePow_iff_card_primeFactors_eq_one] at hn
     exact h.not_prime <| squarefree_and_prime_pow_iff_prime.mp ⟨h.squarefree, hn⟩
   obtain ⟨p, q, pq, hp, hq, pqn⟩ :=
-    (squarefree_and_primeFactors_card_two_iff n).mp ⟨h.squarefree, hn⟩
+    (squarefree_and_primeFactors_card_eq_two_iff n).mp ⟨h.squarefree, hn⟩
   rw [← pqn] at h
   have : q ≤ p := by
     rw [← Nat.sub_add_cancel hp.one_le, ← tsub_le_iff_right]
