@@ -38,14 +38,14 @@ variable {α : Type*}
 
 section SuccOrder
 
-section Preorder
-variable [Preorder α] [SuccOrder α] {a b : α}
-
 /-!
-#### Preorders possibly with maximal elements
+#### Orders possibly with maximal elements
 
 ##### Equalities of intervals
 -/
+
+section Preorder
+variable [Preorder α] [SuccOrder α] {a b : α}
 
 @[to_dual (reorder := a b) Ioc_pred_right_eq_Ioo]
 lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b := by
@@ -58,28 +58,30 @@ lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b := by
 lemma Icc_succ_left_eq_Ioc_of_not_isMax (ha : ¬ IsMax a) (b : α) : Icc (succ a) b = Ioc a b := by
   ext x; rw [mem_Icc, mem_Ioc, succ_le_iff_of_not_isMax ha]
 
-/-!
-#### Preorders with no maximal elements
-
-##### Equalities of intervals
--/
-
-variable [NoMaxOrder α]
-
-@[to_dual (reorder := a b) Icc_pred_right_eq_Ico]
-lemma Icc_succ_left_eq_Ioc (a b : α) : Icc (succ a) b = Ioc a b :=
-  Icc_succ_left_eq_Ioc_of_not_isMax (not_isMax _) _
-
 end Preorder
+
+section LinearOrder
+variable [LinearOrder α] [SuccOrder α] {a b : α}
+
+@[to_dual Ioc_pred_left_eq_Icc_of_not_isMin]
+lemma Ico_succ_right_eq_Icc_of_not_isMax (hb : ¬ IsMax b) (a : α) : Ico a (succ b) = Icc a b := by
+  ext x; rw [mem_Ico, mem_Icc, lt_succ_iff_of_not_isMax hb]
+
+@[to_dual Ioo_pred_left_eq_Ico_of_not_isMin]
+lemma Ioo_succ_right_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) : Ioo a (succ b) = Ioc a b := by
+  ext x; rw [mem_Ioo, mem_Ioc, lt_succ_iff_of_not_isMax hb]
+
+@[to_dual]
+lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
+    Ico (succ a) (succ b) = Ioc a b := by
+  rw [Ico_succ_left_eq_Ioo, Ioo_succ_right_eq_Ioc_of_not_isMax hb]
+
+end LinearOrder
+
+/-! ##### Inserting into intervals -/
 
 section PartialOrder
 variable [PartialOrder α] [SuccOrder α] {a b : α}
-
-/-!
-#### Partial orders possibly with maximal elements
-
-##### Inserting into intervals
--/
 
 @[to_dual insert_Icc_pred_right_eq_Icc]
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b := by
@@ -98,27 +100,6 @@ end PartialOrder
 section LinearOrder
 variable [LinearOrder α] [SuccOrder α] {a b : α}
 
-/-!
-#### Linear orders possibly with maximal elements
-
-##### Equalities of intervals
--/
-
-@[to_dual Ioc_pred_left_eq_Icc_of_not_isMin]
-lemma Ico_succ_right_eq_Icc_of_not_isMax (hb : ¬ IsMax b) (a : α) : Ico a (succ b) = Icc a b := by
-  ext x; rw [mem_Ico, mem_Icc, lt_succ_iff_of_not_isMax hb]
-
-@[to_dual Ioo_pred_left_eq_Ico_of_not_isMin]
-lemma Ioo_succ_right_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) : Ioo a (succ b) = Ioc a b := by
-  ext x; rw [mem_Ioo, mem_Ioc, lt_succ_iff_of_not_isMax hb]
-
-@[to_dual]
-lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
-    Ico (succ a) (succ b) = Ioc a b := by
-  rw [Ico_succ_left_eq_Ioo, Ioo_succ_right_eq_Ioc_of_not_isMax hb]
-
-/-! ##### Inserting into intervals -/
-
 @[to_dual insert_Icc_left_eq_Icc_pred]
 lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) :
     insert (succ b) (Icc a b) = Icc a (succ b) := by
@@ -134,13 +115,25 @@ lemma insert_Ioc_right_eq_Ioc_succ_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) 
     insert (succ b) (Ioc a b) = Ioc a (succ b) := by
   ext x; simp +contextual [or_and_left, le_succ_iff_eq_or_le, lt_succ_of_le_of_not_isMax h hb]
 
+end LinearOrder
+
 /-!
-#### Linear orders with no maximal elements
+#### Orders with no maximal elements
 
 ##### Equalities of intervals
 -/
 
-variable [NoMaxOrder α]
+section Preorder
+variable [Preorder α] [SuccOrder α] [NoMaxOrder α]
+
+@[to_dual (reorder := a b) Icc_pred_right_eq_Ico]
+lemma Icc_succ_left_eq_Ioc (a b : α) : Icc (succ a) b = Ioc a b :=
+  Icc_succ_left_eq_Ioc_of_not_isMax (not_isMax _) _
+
+end Preorder
+
+section LinearOrder
+variable [LinearOrder α] [SuccOrder α] [NoMaxOrder α]
 
 @[to_dual (reorder := a b) Ioc_pred_left_eq_Icc]
 lemma Ico_succ_right_eq_Icc (a b : α) : Ico a (succ b) = Icc a b :=
@@ -154,7 +147,12 @@ lemma Ioo_succ_right_eq_Ioc (a b : α) : Ioo a (succ b) = Ioc a b :=
 lemma Ico_succ_succ_eq_Ioc (a b : α) : Ico (succ a) (succ b) = Ioc a b :=
   Ico_succ_succ_eq_Ioc_of_not_isMax (not_isMax _) _
 
+end LinearOrder
+
 /-! ##### Inserting into intervals -/
+
+section LinearOrder
+variable [LinearOrder α] [SuccOrder α] {a b : α} [NoMaxOrder α]
 
 @[to_dual insert_Ioc_left_eq_Ioc_pred]
 lemma insert_Ico_right_eq_Ico_succ (h : a ≤ b) : insert b (Ico a b) = Ico a (succ b) :=
@@ -164,12 +162,12 @@ lemma insert_Ico_right_eq_Ico_succ (h : a ≤ b) : insert b (Ico a b) = Ico a (s
 lemma insert_Ioc_right_eq_Ioc_succ (h : a ≤ b) : insert (succ b) (Ioc a b) = Ioc a (succ b) :=
   insert_Ioc_right_eq_Ioc_succ_of_not_isMax h (not_isMax _)
 
+end LinearOrder
+
 @[deprecated (since := "2026-09-02")]
 alias Ioo_pred_left_eq_Ioc_of_not_isMin := Ioo_pred_left_eq_Ico_of_not_isMin
 
 @[deprecated (since := "2026-09-02")] alias Ioo_pred_left_eq_Ioc := Ioo_pred_left_eq_Ico
-
-end LinearOrder
 
 end SuccOrder
 
