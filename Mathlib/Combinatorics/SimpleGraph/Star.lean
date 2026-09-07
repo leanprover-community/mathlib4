@@ -30,7 +30,7 @@ star graph
 
 namespace SimpleGraph
 
-variable {V : Type*}
+variable {V : Type*} {G : SimpleGraph V}
 
 /-- The star graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
 def starGraph (r : V) : SimpleGraph V :=
@@ -48,10 +48,9 @@ lemma isUniversal_starGraph_self {r : V} : (starGraph r).IsUniversal r := by
   intro _ _
   simpa
 
-variable {G} in
 theorem starGraph_le_iff {r : V} : starGraph r ≤ G ↔ G.IsUniversal r := by
   refine ⟨fun h u hne ↦ h <| by simpa, fun h a b hadj ↦ ?_⟩
-  grind [starGraph_adj, IsUniversal, Adj.symm]
+  grind [IsUniversal, Adj.symm]
 
 /-- On (starGraph r), r is adjacent to v iff v ≠ r. -/
 lemma starGraph_adj_center_iff {r v : V} : (starGraph r).Adj r v ↔ r ≠ v := by simp
@@ -92,7 +91,6 @@ lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
 theorem cliqueFree_starGraph_three (r : V) : starGraph r |>.CliqueFree 3 :=
   isAcyclic_starGraph r |>.cliqueFree_three
 
-variable {G} in
 theorem eq_starGraph_of_isUniversal_of_cliqueFree_three {v : V} (hv : G.IsUniversal v)
     (h3 : G.CliqueFree 3) : G = starGraph v := by
   by_contra! hne
