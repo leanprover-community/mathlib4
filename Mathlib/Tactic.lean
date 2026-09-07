@@ -276,7 +276,6 @@ public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Polynomial.Basic
 public import Mathlib.Tactic.Polynomial.Core
-public import Mathlib.Tactic.Polynomial.Hex
 public import Mathlib.Tactic.Polyrith
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Positivity.Basic
@@ -289,6 +288,7 @@ public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.RSuffices
 public import Mathlib.Tactic.RealRootCount
+public import Mathlib.Tactic.RealRootCount.Parse
 public import Mathlib.Tactic.Recall
 public import Mathlib.Tactic.Recover
 public import Mathlib.Tactic.ReduceModChar

@@ -12,6 +12,8 @@ public import Mathlib.Data.Rat.Defs
 public meta import Mathlib.Lean.Expr.Basic
 
 /-!
+# Interpreting closed polynomial expressions
+
 Elaboration-time interpretation of closed `Polynomial R` expressions as
 executable `Hex.ZPoly` values.
 
@@ -24,7 +26,7 @@ guard. Every entry point takes the calling tactic's name for error messages.
 
 public section
 
-namespace Mathlib.Tactic.Polynomial.Hex
+namespace Mathlib.Tactic.RealRootCount.Parse
 
 open Lean Meta
 
@@ -95,9 +97,16 @@ meta def evalCoeff (tactic : String) (isRat : Bool) (e : Expr) : MetaM Int := do
 /-- Recursive interpreter from a `Polynomial R` expression over
 `X / C / numerals (OfNat) / + / - / * / ^ (Nat) / neg`, with named local defs
 unfolded one delta step at a time under a fuel guard, to a `Hex.ZPoly` value.
-`isRat` selects the `ℚ`-style non-integer rejection. -/
+`isRat` permits evaluating closed rational coefficients, provided they are integers.
+`fuel` bounds successive unfolding of named definitions. `onUnfold` records their
+names so that callers can unfold the same definitions when checking the result. -/
 meta partial def parsePoly (tactic : String) (isRat : Bool) (fuel : Nat)
     (e : Expr) (onUnfold : Name → MetaM Unit := fun _ => pure ()) : MetaM Hex.ZPoly := do
+  match e with
+  | .mdata _ body => return ← parsePoly tactic isRat fuel body onUnfold
+  | .letE _ _ value body _ =>
+    return ← parsePoly tactic isRat fuel (body.instantiate1 value) onUnfold
+  | _ => pure ()
   -- Match structural heads on the *raw* term first: `whnf` would unfold
   -- `Polynomial.C`/`X`/numerals into their `Finsupp` normal form and defeat the
   -- match. Only if no structural head applies do we unfold once (a named local
@@ -114,7 +123,9 @@ meta partial def parsePoly (tactic : String) (isRat : Bool) (fuel : Nat)
       let base ← parsePoly tactic isRat fuel a onUnfold
       let k ← getNat tactic n
       let mut acc : Hex.ZPoly := Hex.DensePoly.C 1
-      for _ in [0:k] do acc := acc * base
+      for _ in [0:k] do
+        checkSystem "polynomial exponentiation"
+        acc := acc * base
       return acc
   | (``Polynomial.X, _) => return Hex.DensePoly.ofCoeffs #[(0 : Int), 1]
   | (``Polynomial.C, #[_, _, c]) => return Hex.DensePoly.C (← evalCoeff tactic isRat c)
@@ -134,8 +145,8 @@ meta partial def parsePoly (tactic : String) (isRat : Bool) (fuel : Nat)
     else
       match ← unfoldDefinition? e with
       | some e' =>
-          onUnfold e.getAppFn.constName!
+          if let some name := e.getAppFn.constName? then onUnfold name
           parsePoly tactic isRat (fuel - 1) e' onUnfold
       | none => throwError "{tactic}: unsupported polynomial syntax{indentExpr e}"
 
-end Mathlib.Tactic.Polynomial.Hex
+end Mathlib.Tactic.RealRootCount.Parse
