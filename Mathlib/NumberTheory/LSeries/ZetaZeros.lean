@@ -19,7 +19,7 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 
 * `riemannZetaTrivialZeros`: The trivial zeros `{-2, -4, -6, …}`.
 
-* `riemannZetaNontrivialZeros`: The zeros that are neither trivial zeros nor the point `s = 1`.
+* `riemannZetaNontrivialZeros`: The zeros that are not trivial zeros.
 
 ## Main results
 
@@ -88,16 +88,29 @@ def riemannZetaTrivialZeros : Set ℂ :=
 lemma mem_riemannZetaTrivialZeros {s : ℂ} :
     s ∈ riemannZetaTrivialZeros ↔ ∃ n : ℕ, s = -2 * ((n : ℂ) + 1) := .rfl
 
-/-- The nontrivial zeros of the Riemann zeta function: zeros that are neither trivial zeros
-nor the point `s = 1` (where `riemannZeta` has its pole removed by a junk value). -/
+/-- The point `s = 1`, where `riemannZeta` takes a junk value in place of its pole, is not a
+zero: this is `riemannZeta_one_ne_zero`. Consequently no zero set below needs to exclude it. -/
+lemma one_notMem_riemannZetaZeros : (1 : ℂ) ∉ riemannZetaZeros :=
+  riemannZeta_one_ne_zero
+
+/-- The nontrivial zeros of the Riemann zeta function: the zeros that are not trivial zeros.
+
+No `s ≠ 1` clause is needed here: `riemannZeta 1` is a junk value standing in for the pole, and
+`riemannZeta_one_ne_zero` shows it is nonzero, so `1 ∉ riemannZetaZeros` already. -/
 def riemannZetaNontrivialZeros : Set ℂ :=
-  riemannZetaZeros \ (riemannZetaTrivialZeros ∪ {1})
+  riemannZetaZeros \ riemannZetaTrivialZeros
 
 lemma mem_riemannZetaNontrivialZeros {s : ℂ} :
     s ∈ riemannZetaNontrivialZeros ↔
-      riemannZeta s = 0 ∧ s ∉ riemannZetaTrivialZeros ∧ s ≠ 1 := by
-  simp only [riemannZetaNontrivialZeros, Set.mem_sdiff, Set.mem_union, Set.mem_singleton_iff,
-    mem_riemannZetaZeros, not_or]
+      riemannZeta s = 0 ∧ s ∉ riemannZetaTrivialZeros := by
+  simp only [riemannZetaNontrivialZeros, Set.mem_sdiff, mem_riemannZetaZeros]
+
+/-- A nontrivial zero is never the pole `s = 1`, so nothing is lost by omitting that clause from
+the definition of `riemannZetaNontrivialZeros`. -/
+lemma ne_one_of_mem_riemannZetaNontrivialZeros {s : ℂ}
+    (hs : s ∈ riemannZetaNontrivialZeros) : s ≠ 1 := by
+  rintro rfl
+  exact one_notMem_riemannZetaZeros hs.1
 
 /-- Trivial zeros are indeed zeros of `ζ`. -/
 lemma riemannZetaTrivialZeros_subset_zeros :
@@ -116,10 +129,10 @@ theorem riemannHypothesis_iff_nontrivialZeros :
     RiemannHypothesis ↔ ∀ s ∈ riemannZetaNontrivialZeros, s.re = 1 / 2 := by
   constructor
   · intro hRH s hs
-    rw [mem_riemannZetaNontrivialZeros] at hs
-    obtain ⟨hzero, hnottriv, hne1⟩ := hs
-    exact hRH s hzero (fun ⟨n, hn⟩ => hnottriv ⟨n, hn⟩) hne1
-  · intro h s hzero hnottriv hne1
-    refine h s (mem_riemannZetaNontrivialZeros.mpr ⟨hzero, fun ⟨n, hn⟩ => hnottriv ⟨n, hn⟩, hne1⟩)
+    obtain ⟨hzero, hnottriv⟩ := mem_riemannZetaNontrivialZeros.mp hs
+    exact hRH s hzero (fun ⟨n, hn⟩ => hnottriv ⟨n, hn⟩)
+      (ne_one_of_mem_riemannZetaNontrivialZeros hs)
+  · intro h s hzero hnottriv _
+    exact h s (mem_riemannZetaNontrivialZeros.mpr ⟨hzero, fun ⟨n, hn⟩ => hnottriv ⟨n, hn⟩⟩)
 
 end
