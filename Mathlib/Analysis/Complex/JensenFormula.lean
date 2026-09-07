@@ -406,14 +406,14 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
   have integral_bound : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
     apply circleAverage_mono_on_of_le_circle
     · exact (h₁f.mono sphere_subset_closedBall).meromorphicOn.circleIntegrable_log_norm
-    · peel f_bound with z hz _
+    · gconvert f_bound using 2 with z hz
       obtain (h | h) := eq_zero_or_norm_pos (f z)
       · simpa [h] using log_nonneg hM
       · gcongr
   calc
   -- Bound by the sum from Jensen's formula
   _ ≤ ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹) := by
-    refine finsum_le_finsum' ?_ ?_ fun u ↦ ?_
+    refine finsum_le_finsum ?_ ?_ fun u ↦ ?_
     · exact (divisor f (closedBall c |r|)).finiteSupport (isCompact_closedBall ..) |>.subset
         fun _ _ ↦ (by simp_all)
     · exact (divisor f (closedBall c |R|)).finiteSupport (isCompact_closedBall ..) |>.subset
