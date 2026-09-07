@@ -47,7 +47,8 @@ elements. -/
 irreducible elements. -/]
 lemma Submonoid.FG.finite_irreducible_mem_submonoidClosure {S : Submonoid M} (hS : S.FG) :
     {p ∈ S | Irreducible p}.Finite := by
-  obtain ⟨T, hT⟩ := hS; exact T.finite_toSet.subset <| hT ▸ irreducible_mem_submonoidClosure_subset
+  obtain ⟨T, rfl, hT⟩ := S.fg_iff.mp hS
+  exact hT.subset irreducible_mem_submonoidClosure_subset
 
 variable [Monoid.FG M]
 
