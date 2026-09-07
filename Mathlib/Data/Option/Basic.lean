@@ -5,13 +5,15 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
-public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Logic.Relator
 public import Mathlib.Util.CompileInductive
 public import Aesop
 public import Batteries.Tactic.Lint.Simp
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Basic.IsEmpty.Defs
 
 /-!
 # Option of a type
@@ -145,18 +147,6 @@ end pmap
 @[simp]
 theorem seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f a) :=
   rfl
-
-@[deprecated "Use `Option.get` with proof of `isSome`." (since := "2026-01-05")]
-theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
-  | some _, _ => rfl
-
-@[deprecated "Use `Option.getD`." (since := "2026-01-05")]
-theorem iget_of_mem [Inhabited α] {a : α} : ∀ {o : Option α}, a ∈ o → o.iget = a
-  | _, rfl => rfl
-
-@[deprecated "Use `Option.getD` directly." (since := "2026-01-05")]
-theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
-    o.getD default = o.iget := by cases o <;> rfl
 
 @[simp, grind =]
 theorem failure_eq_none {α} : failure = (none : Option α) := rfl

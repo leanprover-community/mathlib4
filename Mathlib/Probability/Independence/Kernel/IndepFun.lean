@@ -154,11 +154,11 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
     dite (i ∈ S) (fun hi_mem => (h_meas i hi_mem).choose) fun _ => Set.univ
   have h_measβ : ∀ i ∈ S, MeasurableSet[m i] (setsβ i) := by
     intro i hi_mem
-    simp_rw [setsβ, dif_pos hi_mem]
+    simp_rw [setsβ, dite_eq_left hi_mem]
     exact (h_meas i hi_mem).choose_spec.1
   have h_preim : ∀ i ∈ S, setsΩ i = f i ⁻¹' setsβ i := by
     intro i hi_mem
-    simp_rw [setsβ, dif_pos hi_mem]
+    simp_rw [setsβ, dite_eq_left hi_mem]
     exact (h_meas i hi_mem).choose_spec.2.symm
   simp_all
 
@@ -234,8 +234,8 @@ theorem IndepFun.congr' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     IndepFun f' g' κ μ := by
   rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   filter_upwards [hf, hg, hfg _ _ ⟨_, hA, rfl⟩ ⟨_, hB, rfl⟩] with a hf' hg' hfg'
-  have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.fun_comp A
-  have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp B
+  have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.fun_comp (· ∈ A)
+  have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp (· ∈ B)
   rwa [← measure_congr h1, ← measure_congr h2, ← measure_congr (h1.inter h2)]
 
 theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
@@ -356,23 +356,23 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i)) hπS_pi hπT_pi hπS_gen hπT_gen
     ?_
   rintro _ _ ⟨s, ⟨sets_s, hs1, hs2⟩, rfl⟩ ⟨t, ⟨sets_t, ht1, ht2⟩, rfl⟩
-  simp only [Set.mem_univ_pi, Set.mem_setOf_eq] at hs1 ht1
+  simp only [Set.mem_univ_pi, Set.mem_ofPred_eq] at hs1 ht1
   rw [← hs2, ← ht2]
   classical
   let sets_s' : ∀ i : ι, Set (β i) := fun i =>
     dite (i ∈ S) (fun hi => sets_s ⟨i, hi⟩) fun _ => Set.univ
   have h_sets_s'_eq : ∀ {i} (hi : i ∈ S), sets_s' i = sets_s ⟨i, hi⟩ := by
-    intro i hi; simp_rw [sets_s', dif_pos hi]
+    intro i hi; simp_rw [sets_s', dite_eq_left hi]
   have h_sets_s'_univ : ∀ {i} (_hi : i ∈ T), sets_s' i = Set.univ := by
-    intro i hi; simp_rw [sets_s', dif_neg (Finset.disjoint_right.mp hST hi)]
+    intro i hi; simp_rw [sets_s', dite_eq_right (Finset.disjoint_right.mp hST hi)]
   let sets_t' : ∀ i : ι, Set (β i) := fun i =>
     dite (i ∈ T) (fun hi => sets_t ⟨i, hi⟩) fun _ => Set.univ
   have h_sets_t'_univ : ∀ {i} (_hi : i ∈ S), sets_t' i = Set.univ := by
-    intro i hi; simp_rw [sets_t', dif_neg (Finset.disjoint_left.mp hST hi)]
+    intro i hi; simp_rw [sets_t', dite_eq_right (Finset.disjoint_left.mp hST hi)]
   have h_meas_s' : ∀ i ∈ S, MeasurableSet (sets_s' i) := by
     intro i hi; rw [h_sets_s'_eq hi]; exact hs1 _
   have h_meas_t' : ∀ i ∈ T, MeasurableSet (sets_t' i) := by
-    intro i hi; simp_rw [sets_t', dif_pos hi]; exact ht1 _
+    intro i hi; simp_rw [sets_t', dite_eq_left hi]; exact ht1 _
   have h_eq_inter_S : (fun (ω : Ω) (i : ↥S) =>
     f (↑i) ω) ⁻¹' Set.pi Set.univ sets_s = ⋂ i ∈ S, f i ⁻¹' sets_s' i := by
     ext1 x
@@ -383,8 +383,8 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     ext1 x
     simp only [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
     constructor <;> intro h
-    · intro i hi; simp_rw [sets_t', dif_pos hi]; exact h ⟨i, hi⟩
-    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [sets_t', dif_pos hi] at h; exact h
+    · intro i hi; simp_rw [sets_t', dite_eq_left hi]; exact h ⟨i, hi⟩
+    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [sets_t', dite_eq_left hi] at h; exact h
   replace hf_Indep := hf_Indep.congr η_eq
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf_Indep
   have h_Inter_inter :

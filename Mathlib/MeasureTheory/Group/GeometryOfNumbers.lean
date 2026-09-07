@@ -106,7 +106,9 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
   -- it follows that `s` contains a nonzero point of `L`.
   have h_zero : 0 ∈ K := K.zero_mem_of_symmetric h_symm
   suffices Set.Nonempty (⋂ n, Z n) by
-    erw [← Set.iInter_inter, K.iInter_smul_eq_self h_zero] at this
+    simp_rw [Z, S, ConvexBody.coe_smul', NNReal.smul_def, ← Set.iInter_inter, NNReal.coe_add,
+      NNReal.coe_one] at this
+    rw [K.iInter_smul_eq_self h_zero] at this
     · obtain ⟨x, hx⟩ := this
       exact ⟨⟨x, by simp_all⟩, by aesop⟩
     · exact (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.2

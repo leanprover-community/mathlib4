@@ -13,10 +13,10 @@ public import Mathlib.Data.Nat.Factorization.Defs
 
 @[expose] public section
 
-open Nat Finset List Finsupp
+open Nat Finsupp
 
 namespace Nat
-variable {a b m n p : ℕ}
+variable {a b n p : ℕ}
 
 /-! ## Definitions -/
 

@@ -17,9 +17,9 @@ This file provides results about the interaction of algebra with `Finset.Ixx`.
 
 public section
 
-open Function OrderDual
+open Function
 
-variable {ι α : Type*}
+variable {α : Type*}
 
 namespace Finset
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]

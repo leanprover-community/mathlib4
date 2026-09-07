@@ -36,7 +36,7 @@ namespace CategoryTheory
 namespace Functor
 
 variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms D]
-  (F : C₁ ⥤ C₂ ⥤ D) {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
+  (F : C₁ ⥤ C₂ ⥤ D) {I₁ I₂ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
   [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -138,11 +138,11 @@ noncomputable abbrev ιMapBifunctorOrZero (i₁ : I₁) (i₂ : I₂) (j : J) :
 
 lemma ιMapBifunctorOrZero_eq (i₁ : I₁) (i₂ : I₂) (j : J)
     (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
-    ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂ j = ιMapBifunctor K₁ K₂ F c i₁ i₂ j h := dif_pos h
+    ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂ j = ιMapBifunctor K₁ K₂ F c i₁ i₂ j h := dite_eq_left h
 
 lemma ιMapBifunctorOrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (j : J)
     (h : ComplexShape.π c₁ c₂ c (i₁, i₂) ≠ j) :
-    ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂ j = 0 := dif_neg h
+    ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂ j = 0 := dite_eq_right h
 
 section
 

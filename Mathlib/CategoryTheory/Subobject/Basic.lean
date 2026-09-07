@@ -522,7 +522,6 @@ def lowerAdjunction {A : C} {B : D} {L : MonoOver A ⥤ MonoOver B} {R : MonoOve
     (h : L ⊣ R) : lower L ⊣ lower R :=
   ThinSkeleton.lowerAdjunction _ _ h
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An equivalence between `MonoOver A` and `MonoOver B` gives an equivalence
 between `Subobject A` and `Subobject B`. -/
 @[simps]
@@ -672,7 +671,6 @@ lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
 def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=
   lowerEquivalence (MonoOver.mapIso e)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- In fact, there's a type level bijection between the subobjects of isomorphic objects,
 which preserves the order. -/
 @[simps]
@@ -748,13 +746,13 @@ theorem exists_iso_map (f : X ⟶ Y) [Mono f] : «exists» f = map f :=
 
 lemma exists_eq_mk_of_mono (f : X ⟶ Y) [Mono f] (X' : Subobject X) :
     («exists» f).obj X' = mk (X'.arrow ≫ f) := by
-  slice_lhs 0 1 => rw [exists_iso_map, ← mk_arrow X']
+  conv_lhs => rw [exists_iso_map, ← mk_arrow X']
   rw [map_mk]
 
 theorem exists_le_exists_iff_of_mono (f : X ⟶ Y) [Mono f] (X₁ X₂ : Subobject X) :
     («exists» f).obj X₁ ≤ («exists» f).obj X₂ ↔ X₁ ≤ X₂ :=
-  Quotient.inductionOn₂' X₁ X₂ (fun _ _ ↦
-    ⟨fun ⟨h⟩ ↦ ⟨(MonoOver.exists f).preimage h⟩, fun ⟨h⟩ ↦ ⟨(MonoOver.exists f).map h⟩⟩)
+  Quotient.inductionOn₂' X₁ X₂ fun _ _ ↦
+    ⟨fun ⟨h⟩ ↦ ⟨(MonoOver.exists f).preimage h⟩, fun ⟨h⟩ ↦ ⟨(MonoOver.exists f).map h⟩⟩
 
 /-- `exists f : Subobject X ⥤ Subobject Y` is
 left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
@@ -777,7 +775,7 @@ theorem pullback_exists_eq_self_of_mono (f : X ⟶ Y) [Mono f] [HasPullbacks C]
 
 theorem exists_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject X) [HasPullbacks C] :
     («exists» (f ≫ g)).obj x = («exists» g).obj ((«exists» f).obj x) :=
-  Quotient.inductionOn' x (fun _ ↦ Quotient.sound ⟨(MonoOver.existsComp f g).app _⟩)
+  Quotient.inductionOn' x fun _ ↦ Quotient.sound ⟨(MonoOver.existsComp f g).app _⟩
 
 /--
 Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`

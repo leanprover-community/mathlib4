@@ -125,7 +125,7 @@ def haarProduct (K₀ : Set G) : Set (Compacts G → ℝ) :=
 @[to_additive (attr := simp)]
 theorem mem_prehaar_empty {K₀ : Set G} {f : Compacts G → ℝ} :
     f ∈ haarProduct K₀ ↔ ∀ K : Compacts G, f K ∈ Icc (0 : ℝ) (index (K : Set G) K₀) := by
-  simp only [haarProduct, Set.pi, forall_prop_of_true, mem_univ, mem_setOf_eq]
+  simp only [haarProduct, Set.pi, forall_prop_of_true, mem_univ, mem_ofPred_eq]
 
 /-- The closure of the collection of elements of the form `prehaar K₀ U`,
   for `U` open neighbourhoods of `1`, contained in `V`. The closure is taken in the space
@@ -166,7 +166,7 @@ theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
   obtain ⟨t, h1t, h2t⟩ := index_elim K₀.isCompact hV
   rw [← h2s, ← h2t, mul_comm]
   refine le_trans ?_ Finset.card_mul_le
-  apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]; refine Subset.trans h1s ?_
+  apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_ofPred_eq]; refine Subset.trans h1s ?_
   apply iUnion₂_subset; intro g₁ hg₁; rw [preimage_subset_iff]; intro g₂ hg₂
   have := h1t hg₂
   rcases this with ⟨_, ⟨g₃, rfl⟩, A, ⟨hg₃, rfl⟩, h2V⟩; rw [mem_preimage, ← mul_assoc] at h2V
@@ -199,7 +199,7 @@ theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   rcases index_elim K₂.2 hV with ⟨t, h1t, h2t⟩
   rw [← h2s, ← h2t]
   refine le_trans (Nat.sInf_le ⟨_, ?_, rfl⟩) (Finset.card_union_le _ _)
-  rw [mem_setOf_eq, Finset.set_biUnion_union]
+  rw [mem_ofPred_eq, Finset.set_biUnion_union]
   gcongr
 
 @[to_additive addIndex_union_eq]
@@ -211,7 +211,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   have (K : Set G) (hK : K ⊆ ⋃ g ∈ s, (g * ·) ⁻¹' V) :
       index K V ≤ {g ∈ s | ((g * ·) ⁻¹' V ∩ K).Nonempty}.card := by
-    apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
+    apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_ofPred_eq]
     intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
     simp only [mem_preimage] at h2g₀
     simp only [mem_iUnion]; use g₀; constructor; swap
@@ -242,7 +242,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
   rcases index_elim hK hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   apply Nat.sInf_le; rw [mem_image]
   refine ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, ?_, Finset.card_map _⟩
-  simp only [mem_setOf_eq]; refine Subset.trans (image_mono h1s) ?_
+  simp only [mem_ofPred_eq]; refine Subset.trans (image_mono h1s) ?_
   rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
   simp only [mem_preimage] at hg₁
   simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
@@ -334,7 +334,7 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
   constructor
   · apply prehaar_mem_haarProduct K₀; use 1; rwa [h1V₀.interior_eq]
   · simp only [mem_iInter]; rintro ⟨V, hV⟩ h2V; apply subset_closure
-    apply mem_image_of_mem; rw [mem_setOf_eq]
+    apply mem_image_of_mem; rw [mem_ofPred_eq]
     exact ⟨Subset.trans (iInter_subset _ ⟨V, hV⟩) (iInter_subset _ h2V), h1V₀, h2V₀⟩
 
 /-!

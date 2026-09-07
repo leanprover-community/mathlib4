@@ -22,7 +22,7 @@ but slightly different.
 
 public section
 
-open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
+open Polynomial UniqueFactorizationMonoid EuclideanDomain
 
 variable {k : Type*} [Field k] [DecidableEq k]
 
