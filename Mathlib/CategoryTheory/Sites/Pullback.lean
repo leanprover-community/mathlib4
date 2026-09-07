@@ -44,7 +44,7 @@ section GeneralUniverses
 variable {C : Type u₂} [Category.{v₂} C] {D : Type u₃} [Category.{v₃} D] (G : C ⥤ D)
   (A : Type u₁) [Category.{v₁} A]
   (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-  [Functor.IsContinuous.{v₁} G J K]
+  [Functor.IsContinuous G J K]
 
 section
 
@@ -72,7 +72,7 @@ def sheafPullback [HasWeakSheafify K A] : Sheaf J A ⥤ Sheaf K A :=
 
 /-- The constructed `sheafPullback G A J K` is left adjoint
 to `G.sheafPushforwardContinuous A J K`. -/
-def sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] [HasWeakSheafify K A] :
+def sheafAdjunctionContinuous [HasWeakSheafify K A] :
     sheafPullback G A J K ⊣ G.sheafPushforwardContinuous A J K :=
   ((G.op.lanAdjunction A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)

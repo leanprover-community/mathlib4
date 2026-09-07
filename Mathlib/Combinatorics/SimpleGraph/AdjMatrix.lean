@@ -5,9 +5,13 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
+
+import Mathlib.Algebra.GroupWithZero.Idempotent
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
 # Adjacency Matrices
@@ -22,8 +26,8 @@ properties to computational properties of the matrix.
   (2) `A` is symmetric,
   (3) every diagonal entry of `A` is `0`.
 
-* `Matrix.IsAdjMatrix.to_graph`: for `A : Matrix V V α` and `h : A.IsAdjMatrix`,
-  `h.to_graph` is the simple graph induced by `A`.
+* `Matrix.IsAdjMatrix.toGraph`: for `A : Matrix V V α` and `h : A.IsAdjMatrix`,
+  `h.toGraph` is the simple graph induced by `A`.
 
 * `Matrix.compl`: for `A : Matrix V V α`, `A.compl` is supposed to be
   the adjacency matrix of the complement graph of the graph induced by `A`.
@@ -43,7 +47,7 @@ open Matrix
 
 open Finset SimpleGraph
 
-variable {V α : Type*}
+variable {α V W : Type*}
 
 namespace Matrix
 
@@ -60,6 +64,8 @@ namespace IsAdjMatrix
 
 variable {A : Matrix V V α}
 
+@[simp] protected theorem zero [Zero α] [One α] : (0 : Matrix V V α).IsAdjMatrix where
+
 @[simp]
 theorem apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) :
     ¬A i i = 1 := by simp [h.apply_diag i]
@@ -72,25 +78,90 @@ theorem apply_ne_one_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A
 theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
     ¬A i j = 0 ↔ A i j = 1 := by rw [← apply_ne_one_iff h, Classical.not_not]
 
+@[simp]
+theorem diag_eq_zero [Zero α] [One α] (h : IsAdjMatrix A) : A.diag = 0 := by
+  ext
+  simp [h.apply_diag]
+
+protected theorem submatrix [Zero α] [One α] (h : IsAdjMatrix A) (f : W → V) :
+    A.submatrix f f |>.IsAdjMatrix where
+  zero_or_one i j := by simp [h.zero_or_one]
+  symm := h.symm.submatrix f
+  apply_diag i := by simp [h.apply_diag]
+
+theorem _root_.Matrix.isAdjMatrix_submatrix_iff [Zero α] [One α] {f : W → V} (hf : f.Surjective) :
+    (A.submatrix f f).IsAdjMatrix ↔ A.IsAdjMatrix := by
+  refine ⟨fun h ↦ ?_, (·.submatrix f)⟩
+  rw [← A.submatrix_id_id, ← f.comp_surjInv hf]
+  apply h.submatrix
+
+theorem reindex [Zero α] [One α] (h : IsAdjMatrix A) (f : V ≃ W) : A.reindex f f |>.IsAdjMatrix :=
+  h.submatrix f.symm
+
+theorem _root_.Matrix.isAdjMatrix_reindex_iff [Zero α] [One α] {f : V ≃ W} :
+    (A.reindex f f).IsAdjMatrix ↔ A.IsAdjMatrix :=
+  isAdjMatrix_submatrix_iff f.symm.surjective
+
 /-- For `A : Matrix V V α` and `h : IsAdjMatrix A`,
 `h.toGraph` is the simple graph whose adjacency matrix is `A`. -/
 @[simps]
 def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGraph V where
   Adj i j := A i j = 1
-  symm i j hij := by simp only; rwa [h.symm.apply i j]
-  loopless i := by simp [h]
+  symm.symm i j hij := by rwa [h.symm.apply i j]
 
 instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
     DecidableRel h.toGraph.Adj := by
   simp only [toGraph]
   infer_instance
 
+variable (A) in
+/-- A homomorphism of the graph of a submatrix of an adjacency matrix to the graph of the
+adjacency matrix itself -/
+@[simps]
+def toGraphSubmatrixHom [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : W → V) :
+    (h.submatrix f).toGraph →g h.toGraph where
+  toFun := f
+  map_rel' := by simp
+
+variable (A) in
+/-- An embedding of the graph of a submatrix of an adjacency matrix to the graph of the
+adjacency matrix itself, when the submatrix is given by an embedding -/
+def toGraphSubmatrixEmbedding [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : W ↪ V) :
+    (h.submatrix f).toGraph ↪g h.toGraph where
+  __ := f
+  map_rel_iff' := by simp
+
+variable (A) in
+@[simp]
+theorem toGraphSubmatrixEmbedding_apply [MulZeroOneClass α] [Nontrivial α] (h : A.IsAdjMatrix)
+    (f : W → V) (v : W) : (toGraphSubmatrixHom A h f) v = f v :=
+  rfl
+
+variable (A) in
+/-- An isomorphism of the graph of a reindexing of an adjacency matrix to the graph of the
+adjacency matrix itself -/
+@[simps!]
+def toGraphReindexIso [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : V ≃ W) :
+    (h.reindex f).toGraph ≃g h.toGraph where
+  __ := f.symm
+  map_rel_iff' := by simp
+
+@[simp] theorem hadamard_self [MulZeroOneClass α] {A : Matrix V V α} (hA : A.IsAdjMatrix) :
+    A ⊙ A = A := by ext i j; have := hA.zero_or_one i j; aesop
+
 end IsAdjMatrix
+
+theorem isAdjMatrix_iff_hadamard [DecidableEq V] [MonoidWithZero α]
+    [IsLeftCancelMulZero α] {A : Matrix V V α} :
+    A.IsAdjMatrix ↔ (A ⊙ A = A ∧ A.IsSymm ∧ 1 ⊙ A = 0) := by
+  simp only [hadamard_self_eq_self_iff, IsIdempotentElem.iff_eq_zero_or_one,
+    one_hadamard_eq_zero_iff, funext_iff, diag, Pi.zero_apply]
+  grind [IsAdjMatrix]
 
 /-- For `A : Matrix V V α`, `A.compl` is supposed to be the adjacency matrix of
 the complement graph of the graph induced by `A.adjMatrix`. -/
 def compl [Zero α] [One α] [DecidableEq α] [DecidableEq V] (A : Matrix V V α) : Matrix V V α :=
-  fun i j => ite (i = j) 0 (ite (A i j = 0) 1 0)
+  of fun i j ↦ if i = j then 0 else if A i j = 0 then 1 else 0
 
 section Compl
 
@@ -101,8 +172,12 @@ theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp
 
 @[simp]
 theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
-  unfold compl
-  split_ifs <;> simp
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `simp`. This is probably a problem at Mathlib's end rather than `grind`'s,
+  as we are relying on seeing through the definition of `Matrix`, and `of`. -/
+  simp [compl]
+  grind
 
 @[simp]
 theorem isSymm_compl [Zero α] [One α] (h : A.IsSymm) : A.compl.IsSymm := by
@@ -112,6 +187,26 @@ theorem isSymm_compl [Zero α] [One α] (h : A.IsSymm) : A.compl.IsSymm := by
 @[simp]
 theorem isAdjMatrix_compl [Zero α] [One α] (h : A.IsSymm) : IsAdjMatrix A.compl :=
   { symm := by simp [h] }
+
+theorem IsAdjMatrix.compl_inj [Zero α] [One α] {A B : Matrix V V α}
+    (hA : A.IsAdjMatrix) (hB : B.IsAdjMatrix) : A.compl = B.compl ↔ A = B :=
+  ⟨fun h ↦ ext fun i j ↦ by
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `simp`. This is probably a problem at Mathlib's end rather than `grind`'s,
+    as we are relying on seeing through the definition of `Matrix`, and `of`.
+    The original proof was: `grind [of, congr($h i j), compl, IsAdjMatrix]` -/
+    simp [compl] at h; grind [congr($h i j), IsAdjMatrix], fun h ↦ h ▸ rfl⟩
+
+@[simp] theorem IsAdjMatrix.compl_compl [Zero α] [One α] {A : Matrix V V α} (hA : A.IsAdjMatrix) :
+    A.compl.compl = A := by
+  ext
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `simp`. This is probably a problem at Mathlib's end rather than `grind`'s,
+  as we are relying on seeing through the definition of `Matrix`, and `of`. The original proof was:
+  `grind [of, compl, IsAdjMatrix]` -/
+  simp [compl]; grind [compl, IsAdjMatrix]
 
 namespace IsAdjMatrix
 
@@ -149,6 +244,17 @@ theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
   rfl
 
 @[simp]
+theorem adjMatrix_bot [Zero α] [One α] :
+    (⊥ : SimpleGraph V).adjMatrix α = 0 := by
+  ext; simp
+
+@[simp]
+theorem adjMatrix_top [DecidableEq V] [Ring α] :
+    (⊤ : SimpleGraph V).adjMatrix α = .of (fun i j ↦ if i = j then 0 else 1) := by
+  ext i j
+  cases eq_or_ne i j <;> simp [‹_›]
+
+@[simp]
 theorem transpose_adjMatrix [Zero α] [One α] : (G.adjMatrix α)ᵀ = G.adjMatrix α := by
   ext
   simp [adj_comm]
@@ -161,28 +267,83 @@ variable (α)
 
 /-- The adjacency matrix of `G` is an adjacency matrix. -/
 @[simp]
-theorem isAdjMatrix_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsAdjMatrix :=
-  { zero_or_one := fun i j => by by_cases h : G.Adj i j <;> simp [h] }
+theorem isAdjMatrix_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsAdjMatrix where
+  zero_or_one := by grind [adjMatrix_apply]
+
+theorem diag_adjMatrix [Zero α] [One α] : (G.adjMatrix α).diag = 0 := by
+  simp
 
 /-- The graph induced by the adjacency matrix of `G` is `G` itself. -/
+@[simp]
 theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
     (G.isAdjMatrix_adjMatrix α).toGraph = G := by
   ext
   simp only [IsAdjMatrix.toGraph_adj, adjMatrix_apply, ite_eq_left_iff, zero_ne_one]
   apply Classical.not_not
 
-variable {α}
+theorem compl_adjMatrix_eq_adjMatrix_compl [DecidableEq V] [DecidableEq α] [Zero α] [One α] :
+    (G.adjMatrix α).compl = Gᶜ.adjMatrix α := by aesop (add simp [Matrix.compl])
+
+variable {G} in
+@[simp]
+theorem Embedding.submatrix_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [DecidableRel H.Adj]
+    (f : G ↪g H) : (H.adjMatrix α).submatrix f f = G.adjMatrix α := by
+  ext
+  simp
+
+variable {G} in
+theorem Iso.reindex_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [DecidableRel H.Adj]
+    (f : G ≃g H) : (G.adjMatrix α).reindex f f = H.adjMatrix α :=
+  f.symm.toEmbedding.submatrix_adjMatrix α
+
+variable {G} in
+theorem IsCompl.adjMatrix_add_adjMatrix_eq_adjMatrix_completeGraph [DecidableEq V] [AddZeroClass α]
+    [One α] {H : SimpleGraph V} [DecidableRel H.Adj] (h : IsCompl G H) :
+    G.adjMatrix α + H.adjMatrix α = (completeGraph V).adjMatrix α := calc
+  _ = G.adjMatrix α + Gᶜ.adjMatrix α := by have := h.compl_eq; subst this; congr
+  _ = _ := by aesop (add simp Matrix.compl)
+
+@[simp] theorem adjMatrix_add_compl_adjMatrix_eq_adjMatrix_completeGraph [DecidableEq V]
+    [DecidableEq α] [AddZeroClass α] [One α] :
+    G.adjMatrix α + (G.adjMatrix α).compl = (completeGraph V).adjMatrix α :=
+  G.compl_adjMatrix_eq_adjMatrix_compl α ▸
+    isCompl_compl.adjMatrix_add_adjMatrix_eq_adjMatrix_completeGraph α
 
 /-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
-theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
-    [AddMonoidWithOne α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
-  ext i j
-  unfold Matrix.compl
-  rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
-  by_cases h : G.Adj i j
-  · aesop
-  · split_ifs <;> simp_all
+theorem one_add_adjMatrix_add_compl_adjMatrix_eq_of_one [DecidableEq V] [DecidableEq α]
+    [AddMonoid α] [One α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = of 1 := by
+  aesop (add simp [add_assoc])
 
+@[deprecated (since := "2026-01-30")] alias one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes :=
+  one_add_adjMatrix_add_compl_adjMatrix_eq_of_one
+
+variable (V)
+
+@[simp] theorem compl_adjMatrix_completeGraph [Zero α] [One α] [DecidableEq α] [DecidableEq V] :
+    ((completeGraph V).adjMatrix α).compl = 0 := by aesop (add simp Matrix.compl)
+
+@[simp] theorem _root_.Matrix.compl_zero [Zero α] [One α] [DecidableEq α] [DecidableEq V] :
+    (0 : Matrix V V α).compl = (completeGraph V).adjMatrix α := by simp [← IsAdjMatrix.compl_inj]
+
+theorem adjMatrix_completeGraph_eq_of_one_sub_one [AddGroup α] [One α] [DecidableEq V] :
+    (completeGraph V).adjMatrix α = of 1 - 1 := by ext; simp [one_apply, sub_ite]
+
+theorem _root_.Matrix.compl_zero_eq_of_one_sub_one [AddGroup α] [One α] [DecidableEq V]
+    [DecidableEq α] : (0 : Matrix V V α).compl = of 1 - 1 := by
+  simp [adjMatrix_completeGraph_eq_of_one_sub_one]
+
+@[simp] theorem _root_.Matrix.compl_of_one_sub_one [AddGroup α] [One α] [DecidableEq V]
+    [DecidableEq α] : (of 1 - 1 : Matrix V V α).compl = 0 := by
+  simp [← adjMatrix_completeGraph_eq_of_one_sub_one]
+
+variable {V}
+
+theorem adjMatrix_hadamard_self [MulZeroOneClass α] :
+    G.adjMatrix α ⊙ G.adjMatrix α = G.adjMatrix α := by simp
+
+variable {α}
+
+section fintype
 variable [Fintype V]
 
 @[simp]
@@ -225,6 +386,13 @@ theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
     (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [filter_true_of_mem]
 
+variable (R) in
+/-- The number of all darts in a simple finite graph is equal to the dot product of
+`G.adjMatrix α *ᵥ 1` and `1`. -/
+theorem natCast_card_dart_eq_dotProduct [NonAssocSemiring α] :
+    (Fintype.card G.Dart : α) = adjMatrix α G *ᵥ 1 ⬝ᵥ 1 := by
+  simp [G.dart_card_eq_sum_degrees, dotProduct_one]
+
 variable {G}
 
 theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
@@ -256,8 +424,46 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
 
 theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (x y : V → α) :
     x ⬝ᵥ G.adjMatrix α *ᵥ y = ∑ i : V, ∑ j : V, if G.Adj i j then x i * y j else 0 := by
-  simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
-    mul_zero]
+  simp [dotProduct, mulVec, mul_sum]
+
+end fintype
+
+section hadamard
+variable (α) [DecidableEq V] [MulZeroOneClass α]
+
+open Matrix
+
+@[simp] theorem adjMatrix_hadamard_diagonal (d : V → α) :
+    G.adjMatrix α ⊙ diagonal d = 0 := by simp [hadamard_diagonal]
+
+@[simp] theorem diagonal_hadamard_adjMatrix (d : V → α) :
+    diagonal d ⊙ G.adjMatrix α = 0 := by simp [diagonal_hadamard]
+
+@[simp] theorem adjMatrix_hadamard_natCast [NatCast α] (a : ℕ) :
+    G.adjMatrix α ⊙ a.cast = 0 := adjMatrix_hadamard_diagonal _ _ _
+
+@[simp] theorem natCast_hadamard_adjMatrix [NatCast α] (a : ℕ) :
+    a.cast ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
+
+@[simp] theorem adjMatrix_hadamard_ofNat [NatCast α] (a : ℕ) [a.AtLeastTwo] :
+    G.adjMatrix α ⊙ ofNat(a) = 0 := adjMatrix_hadamard_diagonal _ _ _
+
+@[simp] theorem ofNat_hadamard_adjMatrix [NatCast α] (a : ℕ) [a.AtLeastTwo] :
+    ofNat(a) ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
+
+@[simp] theorem adjMatrix_hadamard_intCast [IntCast α] (a : ℤ) :
+    G.adjMatrix α ⊙ a.cast = 0 := adjMatrix_hadamard_diagonal _ _ _
+
+@[simp] theorem intCast_hadamard_adjMatrix [IntCast α] (a : ℤ) :
+    a.cast ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
+
+@[simp] theorem adjMatrix_hadamard_one :
+    G.adjMatrix α ⊙ 1 = 0 := adjMatrix_hadamard_diagonal _ _ _
+
+@[simp] theorem one_hadamard_adjMatrix :
+    1 ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
+
+end hadamard
 
 end SimpleGraph
 

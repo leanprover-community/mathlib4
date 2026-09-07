@@ -9,7 +9,6 @@ public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Lean.Meta.DiscrTree
 public import Lean.Meta.LazyDiscrTree
 import all Lean.Meta.DiscrTree
-public import Lean.Meta
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s
@@ -135,8 +134,8 @@ private def etaPossibilities (e : Expr) (lambdas : List FVarId) (root : Bool)
         if isStarWithArg (.fvar fvarId) a && !f.getAppFn.isMVar then
           etaPossibilities f lambdas root entry
         else
-          return []
-      | _, _ => return [])
+          pure []
+      | _, _ => pure [])
 where
   /-- Check whether the expression is represented by `Key.star` and has `arg` as an argument. -/
   isStarWithArg (arg : Expr) : Expr → Bool

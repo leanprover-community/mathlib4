@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Fold
 public import Mathlib.Algebra.GCDMonoid.Multiset
+public import Mathlib.Algebra.GCDMonoid.Nat
 
 /-!
 # GCD and LCM operations on finsets
@@ -143,6 +144,10 @@ theorem gcd_dvd {b : β} (hb : b ∈ s) : s.gcd f ∣ f b :=
 theorem dvd_gcd {a : α} : (∀ b ∈ s, a ∣ f b) → a ∣ s.gcd f :=
   dvd_gcd_iff.2
 
+theorem gcd_cons {b : β} (h : b ∉ s) :
+    (cons b s h : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) :=
+  fold_cons h
+
 @[simp]
 theorem gcd_insert [DecidableEq β] {b : β} :
     (insert b s : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) := by
@@ -181,17 +186,9 @@ theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=
   Eq.symm <| gcd_image _
 
 theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x ∈ s, f x = 0 := by
-  rw [gcd_def, Multiset.gcd_eq_zero_iff]
-  constructor <;> intro h
-  · intro b bs
-    apply h (f b)
-    simp only [Multiset.mem_map]
-    use b
-    simp only [mem_def.1 bs, and_self]
-  · intro a as
-    rw [Multiset.mem_map] at as
-    rcases as with ⟨b, ⟨bs, rfl⟩⟩
-    apply h b (mem_def.1 bs)
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s h ih => grind [gcd_cons, _root_.gcd_eq_zero_iff]
 
 theorem gcd_ne_zero_iff : s.gcd f ≠ 0 ↔ ∃ x ∈ s, f x ≠ 0 := by
   simp [gcd_eq_zero_iff]
@@ -211,7 +208,9 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
         split_ifs with h1 <;> simp [h, h1]
     simp only [gcd_zero_left, normalize_gcd]
 
-nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
+nonrec theorem gcd_mul_left {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
+    {s : Finset β} {f : β → α} {a : α} :
+    (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
   classical
     refine s.induction_on ?_ ?_
     · simp
@@ -219,20 +218,27 @@ nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a *
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_left]
       apply ((normalize_associated a).mul_right _).gcd_eq_right
 
-nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
-  classical
-    refine s.induction_on ?_ ?_
-    · simp
-    · intro b t _ h
-      rw [gcd_insert, gcd_insert, h, ← gcd_mul_right]
-      apply ((normalize_associated a).mul_left _).gcd_eq_right
+nonrec theorem gcd_mul_right {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
+    {s : Finset β} {f : β → α} {a : α} :
+    (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
+  simp_rw [mul_comm]; exact gcd_mul_left
+
+variable (s f) in
+nonrec theorem gcd_mul_left' (a : α) : Associated (s.gcd fun x ↦ a * f x) (a * s.gcd f) := by
+  classical exact s.induction_on (by simp) fun b s hbs h ↦ by
+             simpa using .trans (.gcd .rfl h) (gcd_mul_left' ..)
+
+variable (s f) in
+nonrec theorem gcd_mul_right' (a : α) : Associated (s.gcd fun x ↦ f x * a) (s.gcd f * a) := by
+  simp_rw [mul_comm]; apply gcd_mul_left'
 
 theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
-    (hg : ∀ b ∈ s, f b = s.gcd f * g b) : s.gcd g = 1 :=
-  ((mul_right_eq_self₀ (a := s.gcd f)).1 <| by
-        conv_lhs => rw [← normalize_gcd, ← gcd_mul_left, ← gcd_congr rfl hg]).resolve_right <| by
-    contrapose! hs
-    exact gcd_eq_zero_iff.1 hs
+    (hg : ∀ b ∈ s, f b = s.gcd f * g b) : s.gcd g = 1 := by
+  rw [← normalize_gcd, normalize_eq_one, ← associated_one_iff_isUnit]
+  refine .of_mul_left (.symm <| .trans ?_ (gcd_mul_left' ..)) .rfl (a := s.gcd f) ?_
+  · simp [← gcd_congr rfl hg]
+  contrapose! hs
+  exact s.gcd_eq_zero_iff.1 hs
 
 theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
     ∃ g : β → α, (∀ b ∈ s, f b = s.gcd f * g b) ∧ s.gcd g = 1 := by
@@ -283,5 +289,16 @@ theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     exact congr_arg _ (gcd_eq_of_dvd_sub_right (h _ (mem_insert_self _ _)))
 
 end IsDomain
+
+variable {s : Finset ι}
+
+/-- The gcd of a finset of integers is nonnegative. -/
+@[grind .]
+theorem Int.finsetGcd_nonneg {f : ι → ℤ} : 0 ≤ s.gcd f := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s has ih =>
+    rw [gcd_cons, ← Int.coe_gcd]
+    grind
 
 end Finset

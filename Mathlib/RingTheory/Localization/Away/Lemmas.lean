@@ -68,3 +68,27 @@ lemma quotient_of_isIdempotentElem {e : R} (he : IsIdempotentElem e) :
   away_of_isIdempotentElem he Ideal.mk_ker Quotient.mk_surjective
 
 end IsLocalization.Away
+
+section saturated
+
+variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S]
+  [Algebra R S] (x : R) [IsLocalization.Away x S] {I J : Ideal R}
+
+lemma Ideal.le_of_map_algebraMap_le (hle : I.map (algebraMap R S) ≤ J.map (algebraMap R S))
+    (hxJ : ∀ y : R, x * y ∈ J → y ∈ J) : I ≤ J := by
+  intro y hy
+  have hin : algebraMap R S y ∈ I.map (algebraMap R S) := Ideal.mem_map_of_mem (algebraMap R S) hy
+  grw [hle, IsLocalization.algebraMap_mem_map_algebraMap_iff (Submonoid.powers x)] at hin
+  obtain ⟨m, ⟨n, hn, rfl⟩, h⟩ := hin
+  dsimp at h
+  induction n with
+  | zero => simpa using h
+  | succ n ih =>
+    rw [add_comm, pow_add, pow_one, mul_assoc] at h
+    exact ih <| hxJ _ h
+
+lemma Ideal.eq_of_map_algebraMap_le (heq : I.map (algebraMap R S) = J.map (algebraMap R S))
+    (hxI : ∀ y : R, x * y ∈ I → y ∈ I) (hxJ : ∀ y : R, x * y ∈ J → y ∈ J) : I = J :=
+  le_antisymm (le_of_map_algebraMap_le S x heq.le hxJ) (le_of_map_algebraMap_le S x heq.ge hxI)
+
+end saturated

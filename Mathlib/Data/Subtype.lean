@@ -62,14 +62,6 @@ theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x //
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
     {b : {y // q y}} (h : α = β) (h' : p ≍ q) : a ≍ b ↔ (a : α) ≍ (b : β) := by grind
 
-@[deprecated Subtype.ext (since := "2025-09-10")]
-theorem ext_val {a1 a2 : { x // p x }} : a1.1 = a2.1 → a1 = a2 :=
-  Subtype.ext
-
-@[deprecated Subtype.ext_iff (since := "2025-09-10")]
-theorem ext_iff_val {a1 a2 : { x // p x }} : a1 = a2 ↔ a1.1 = a2.1 :=
-  Subtype.ext_iff
-
 @[simp]
 theorem coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
   Subtype.ext rfl
@@ -142,6 +134,10 @@ def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α �
 
 theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Injective f) :
     Injective (coind f h) := fun x y hxy ↦ hf <| by apply congr_arg Subtype.val hxy
+
+@[simp] theorem coind_injective_iff {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) :
+    Injective (coind f h) ↔ Injective f :=
+  ⟨Subtype.coe_injective.comp, coind_injective h⟩
 
 /-- Restriction of a function to a function on subtypes. -/
 @[simps]

@@ -213,7 +213,7 @@ theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
   intro h
   set f : (M [⋀^ι]→ₗ[R] R) ≃ₗ[R] R := AlternatingMap.constLinearEquivOfIsEmpty.symm
   have H : LinearIndependent R ![f x, 1] := by
-    convert h.map' f.toLinearMap f.ker
+    convert! h.map' f.toLinearMap f.ker
     ext i
     fin_cases i <;> simp [f]
   rw [linearIndependent_iff'] at H

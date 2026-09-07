@@ -86,7 +86,7 @@ variable (G)
 
 This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]
-def DistribMulAction.toAddAut [DistribMulAction G A] : G →* AddAut A where
+def DistribMulAction.toAddAut [DistribMulAction G A] : G →* Multiplicative (AddAut A) where
   toFun := toAddEquiv _
   map_one' := AddEquiv.ext (one_smul _)
   map_mul' _ _ := AddEquiv.ext (mul_smul _ _)
@@ -99,24 +99,22 @@ def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActio
     [IsScalarTower M₀ N₀ N₀] [SMulCommClass M₀ N₀ N₀] : M₀ × N₀ →*₀ N₀ :=
   { smulMonoidHom with map_zero' := smul_zero _ }
 
-namespace AddAut
-
-/-- The tautological action by `AddAut A` on `A`.
-
-This generalizes `Function.End.applyMulAction`. -/
-instance applyDistribMulAction [AddMonoid A] : DistribMulAction (AddAut A) A where
-  smul := (· <| ·)
-  smul_zero := map_zero
-  smul_add := map_add
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-
-end AddAut
-
 lemma IsUnit.smul_sub_iff_sub_inv_smul [Group G] [Monoid R] [AddGroup R] [DistribMulAction G R]
     [IsScalarTower G R R] [SMulCommClass G R R] (r : G) (a : R) :
     IsUnit (r • (1 : R) - a) ↔ IsUnit (1 - r⁻¹ • a) := by
   rw [← isUnit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
+
+theorem div_smul_div_comm [Group G] [GroupWithZero G₀] [MulAction G G₀]
+    [IsScalarTower G G₀ G₀] [SMulCommClass G G₀ G₀] (g h : G) (a b : G₀) :
+    (g / h) • (a / b) = (g • a) / (h • b) := by
+  have (x : G) : x • (0 : G₀) = 0 := by simpa using (smul_assoc x (0 : G₀) (0 : G₀)).symm
+  by_cases hb : b = 0
+  · simp [hb, this]
+  have : h • b ≠ 0 := by
+    refine (ne_of_apply_ne (h⁻¹ • ·) ?_)
+    simpa [this]
+  rw [eq_div_iff_mul_eq this, smul_mul_smul_comm]
+  simp [hb]
 
 @[simp] theorem smul_zpow₀' [Group G] [GroupWithZero G₀] [MulDistribMulAction G G₀]
     (g : G) (x : G₀) (n : ℤ) : g • (x ^ n) = (g • x) ^ n := by

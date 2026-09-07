@@ -25,11 +25,13 @@ Similarly, `compile_def% Foo.foo` adds compiled code for definitions when missin
 This can be the case for type class projections, or definitions like `List._sizeOf_1`.
 -/
 
-public meta section
+public section
 
 namespace Mathlib.Util
 
 open Lean Meta
+
+meta section
 
 private def replaceConst (repl : AssocList Name Name) (e : Expr) : Expr :=
   e.replace fun | .const n us => repl.find? n |>.map (.const · us) | _ => none
@@ -234,6 +236,8 @@ elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
   let iv ← withRef i <| getConstInfoInduct n
   withRef tk <| compileInductive iv
 
+end
+
 end Mathlib.Util
 
 -- `Nat.rec` already has a `@[csimp]` lemma in Lean.
@@ -254,9 +258,6 @@ compile_inductive% Option
 compile_def% False.recOn
 compile_def% Empty.recOn
 
-set_option backward.privateInPublic true
-set_option backward.privateInPublic.warn false
-
 -- In addition to the manual implementation below, we also have to override the `Float.val` and
 -- `Float.mk` functions because these also have no implementation in core lean.
 -- Because `floatSpec.float` is an opaque type, the identity function is as good an implementation
@@ -265,7 +266,13 @@ private unsafe def Float.valUnsafe : Float → floatSpec.float := unsafeCast
 private unsafe def Float.mkUnsafe : floatSpec.float → Float := unsafeCast
 @[implemented_by Float.valUnsafe] private def Float.valImpl (x : Float) : floatSpec.float := x.1
 @[implemented_by Float.mkUnsafe] private def Float.mkImpl (x : floatSpec.float) : Float := ⟨x⟩
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem Float.val_eq : @Float.val = Float.valImpl := rfl
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem Float.mk_eq : @Float.mk = Float.mkImpl := rfl
 
 -- These types need manual implementations because the default implementation in `compileStruct`
@@ -284,5 +291,6 @@ run_cmd Command.liftTermElabM do
 -- were manually implemented as `noncomputable`
 compile_inductive% String
 compile_inductive% Lean.Name
+compile_def% Lean.Name.sizeOf._f
 compile_def% Lean.Name.sizeOf
 compile_def% Lean.instSizeOfName

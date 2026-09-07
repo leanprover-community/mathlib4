@@ -80,6 +80,7 @@ theorem ofEquiv_val (E : σ ≃ τ) (F : Ctop α σ) (a : τ) : F.ofEquiv E a = 
 end
 
 /-- Every `Ctop` is a topological space. -/
+@[implicit_reducible]
 def toTopsp (F : Ctop α σ) : TopologicalSpace α := TopologicalSpace.generateFrom (Set.range F.f)
 
 theorem toTopsp_isTopologicalBasis (F : Ctop α σ) :

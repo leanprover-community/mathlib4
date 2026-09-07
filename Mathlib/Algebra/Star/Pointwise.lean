@@ -24,10 +24,9 @@ if `s t : Set α`, then under suitable assumption on `α`, it is shown
 
 @[expose] public section
 
-
 namespace Set
 
-open Pointwise
+open scoped Pointwise
 
 local postfix:max "⋆" => star
 
@@ -36,6 +35,7 @@ variable {α : Type*} {s t : Set α} {a : α}
 /-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the scope `Pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
 `Set.image_star`. -/
+@[instance_reducible]
 protected def star [Star α] : Star (Set α) := ⟨preimage Star.star⟩
 
 scoped[Pointwise] attribute [instance] Set.star
@@ -89,7 +89,7 @@ instance [InvolutiveStar α] : InvolutiveStar (Set α) where
 
 @[simp]
 theorem star_subset_star [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t⋆ ↔ s ⊆ t :=
-  Equiv.star.surjective.preimage_subset_preimage_iff
+  Equiv.Perm.star.surjective.preimage_subset_preimage_iff
 
 theorem star_subset [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t ↔ s ⊆ t⋆ := by
   rw [← star_subset_star, star_star]

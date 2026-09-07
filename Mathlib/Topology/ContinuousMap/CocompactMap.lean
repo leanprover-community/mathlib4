@@ -78,7 +78,7 @@ variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [Topo
 
 instance : FunLike (CocompactMap α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr

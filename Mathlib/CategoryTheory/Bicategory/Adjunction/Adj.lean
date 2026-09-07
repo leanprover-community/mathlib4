@@ -131,23 +131,27 @@ def iso₂Mk {α β : a ⟶ b} (el : α.l ≅ β.l) (er : β.r ≅ α.r)
 
 namespace Bicategory
 
+set_option linter.dupNamespace false in
 /-- The associator in the bicategory `Adj B`. -/
 @[simps!]
 def associator (α : a ⟶ b) (β : b ⟶ c) (γ : c ⟶ d) : (α ≫ β) ≫ γ ≅ α ≫ β ≫ γ :=
   iso₂Mk (α_ _ _ _) (α_ _ _ _) (conjugateEquiv_associator_hom _ _ _)
 
+set_option linter.dupNamespace false in
 /-- The left unitor in the bicategory `Adj B`. -/
 @[simps!]
 def leftUnitor (α : a ⟶ b) : 𝟙 a ≫ α ≅ α :=
   iso₂Mk (λ_ _) (ρ_ _).symm
     (by simpa using conjugateEquiv_id_comp_right_apply α.adj α.adj (𝟙 _))
 
+set_option linter.dupNamespace false in
 /-- The right unitor in the bicategory `Adj B`. -/
 @[simps!]
 def rightUnitor (α : a ⟶ b) : α ≫ 𝟙 b ≅ α :=
   iso₂Mk (ρ_ _) (λ_ _).symm
     (by simpa using conjugateEquiv_comp_id_right_apply α.adj α.adj (𝟙 _))
 
+set_option linter.dupNamespace false in
 /-- The left whiskering in the bicategory `Adj B`. -/
 @[simps]
 def whiskerLeft (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') : α ≫ β ⟶ α ≫ β' where
@@ -156,6 +160,7 @@ def whiskerLeft (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') : α ≫ β �
   conjugateEquiv_τl := by
     simp [conjugateEquiv_whiskerLeft, Hom₂.conjugateEquiv_τl]
 
+set_option linter.dupNamespace false in
 /-- The right whiskering in the bicategory `Adj B`. -/
 @[simps]
 def whiskerRight {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) : α ≫ β ⟶ α' ≫ β where
@@ -191,7 +196,7 @@ def forget₁ : Adj B ⥤ᵖ B where
 -- TODO: define `forget₂` which sends an adjunction to its right adjoint functor
 
 /-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
-underlying isomorphisms between the left adjoints. -/
+underlying isomorphism between the left adjoints. -/
 @[simps]
 def lIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.l ≅ adj₂.l where
   hom := e.hom.τl
@@ -200,7 +205,7 @@ def lIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj�
   inv_hom_id := by rw [← comp_τl, e.inv_hom_id, id_τl]
 
 /-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
-underlying isomorphisms between the right adjoints. -/
+underlying isomorphism between the right adjoints. -/
 @[simps]
 def rIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.r ≅ adj₂.r where
   hom := e.inv.τr

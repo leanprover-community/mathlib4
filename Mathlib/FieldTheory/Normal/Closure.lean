@@ -96,6 +96,7 @@ lemma isNormalClosure_iff : IsNormalClosure F K L ↔
     simpa only [normalClosure_eq_iSup_adjoin_of_splits splits] using h
 -- TODO: IntermediateField.isNormalClosure_iff similar to IntermediateField.isSplittingField_iff
 
+set_option backward.isDefEq.respectTransparency false in
 include splits in
 /-- `normalClosure F K L` is a valid normal closure if `K/F` is algebraic
   and all minimal polynomials of `K/F` splits in `L/F`. -/
@@ -179,9 +180,8 @@ instance is_finiteDimensional [FiniteDimensional F K] :
 
 variable [Algebra K L] [IsScalarTower F K L]
 
-noncomputable instance algebra :
-    Algebra K (normalClosure F K L) :=
-  IntermediateField.algebra'
+noncomputable instance algebra : Algebra K (normalClosure F K L) :=
+  inferInstanceAs <| Algebra K
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
       algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 

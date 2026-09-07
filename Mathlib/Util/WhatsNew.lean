@@ -96,8 +96,8 @@ def diffExtension (old new : Environment)
   let oldSt := ext.toEnvExtension.getState (asyncMode := asyncMode) old
   let newSt := ext.toEnvExtension.getState (asyncMode := asyncMode) new
   if ptrAddrUnsafe oldSt == ptrAddrUnsafe newSt then return none
-  let oldEntries := ext.exportEntriesFn (← getEnv) oldSt.state .private
-  let newEntries := ext.exportEntriesFn (← getEnv) newSt.state .private
+  let oldEntries := (ext.exportEntriesFn (← getEnv) oldSt.state).private
+  let newEntries := (ext.exportEntriesFn (← getEnv) newSt.state).private
   pure m!"-- {ext.name} extension: {(newEntries.size - oldEntries.size : Int)} new entries"
 
 def whatsNew (old new : Environment) : CoreM MessageData := do
@@ -108,7 +108,7 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
       diffs := diffs.push (← printIdCore c i)
 
   for ext in ← persistentEnvExtensionsRef.get do
-    if let some diff := ← diffExtension old new ext then
+    if let some diff ← diffExtension old new ext then
       diffs := diffs.push diff
 
   if diffs.isEmpty then return "no new constants"

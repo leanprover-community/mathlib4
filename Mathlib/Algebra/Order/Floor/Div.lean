@@ -248,6 +248,7 @@ noncomputable instance instFloorDiv : FloorDiv α (ι →₀ β) where
   zero_floorDiv a := by ext; exact zero_floorDiv _
 
 lemma floorDiv_def (f : ι →₀ β) (a : α) : f ⌊/⌋ a = f.mapRange (· ⌊/⌋ a) (zero_floorDiv _) := rfl
+set_option warning.simp.otherHead false in
 @[norm_cast] lemma coe_floorDiv (f : ι →₀ β) (a : α) : f ⌊/⌋ a = fun i ↦ f i ⌊/⌋ a := rfl
 @[simp] lemma floorDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 
@@ -267,6 +268,7 @@ noncomputable instance instCeilDiv : CeilDiv α (ι →₀ β) where
   zero_ceilDiv a := by ext; exact zero_ceilDiv _
 
 lemma ceilDiv_def (f : ι →₀ β) (a : α) : f ⌈/⌉ a = f.mapRange (· ⌈/⌉ a) (zero_ceilDiv _) := rfl
+set_option warning.simp.otherHead false in
 @[norm_cast] lemma coe_ceilDiv_def (f : ι →₀ β) (a : α) : f ⌈/⌉ a = fun i ↦ f i ⌈/⌉ a := rfl
 @[simp] lemma ceilDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌈/⌉ a) i = f i ⌈/⌉ a := rfl
 

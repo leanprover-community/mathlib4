@@ -11,7 +11,7 @@ public import Mathlib.Tactic.Push
 /-!
 # The `by_cases!` tactic
 
-The `by_cases!` tactic is a variant of the `by_cases` tactic that also calls `push_neg`
+The `by_cases!` tactic is a variant of the `by_cases` tactic that also calls `push Not`
 on the generated hypothesis that is a negation.
 -/
 
@@ -22,7 +22,7 @@ open Lean.Parser.Tactic
 
 /--
 `by_cases! h : p` runs the `by_cases h : p` tactic, followed by
-`push_neg at h` in the second subgoal. For example,
+`push Not at h` in the second subgoal. For example,
 - `by_cases! h : a < b` creates one goal with hypothesis `h : a < b` and
   another with `h : b ≤ a`.
 - `by_cases! h : a ≠ b` creates one goal with hypothesis `h : a ≠ b` and
@@ -32,7 +32,7 @@ syntax (name := byCases!) "by_cases! " optConfig (atomic(ident " : "))? term : t
 
 local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 
 macro_rules
   | `(tactic| by_cases! $cfg:optConfig $e) => `(tactic| by_cases! $cfg h : $e)

@@ -88,6 +88,8 @@ end Semiring
 section NonAssocRing
 variable [NonAssocRing R] [NoZeroDivisors R] [CharZero R]
 
+-- `scoped` attribute here and below because the `simp` keys are weak
+-- (see https://github.com/leanprover-community/mathlib4/pull/15631)
 @[scoped simp] theorem CharZero.neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
   neg_eq_iff_add_eq_zero.trans add_self_eq_zero
 

@@ -44,7 +44,7 @@ name_poly_vars X, Y, Z over R
 #check Y -- Y : MvPolynomial (Fin 3) R
 ```
 -/
-syntax (name := namePolyVarsOver) "name_poly_vars " ident,+ " over " term : command
+syntax (name := namePolyVarsOver) "name_poly_vars" (ppSpace ident),+ " over " term : command
 
 @[command_elab namePolyVarsOver, inherit_doc namePolyVarsOver]
 def elabNameVariablesOver : CommandElab

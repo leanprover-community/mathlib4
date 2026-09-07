@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Basic properties of tangent cones and sets with unique differentiability property
@@ -67,7 +68,7 @@ theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
   suffices Tendsto (x + ·) (𝓝[(x + ·) ⁻¹' s] 0) (𝓝[s] x) from
     this.mono_right h |> tendsto_nhdsWithin_iff.mp |>.2
   refine .inf ?_ (mapsTo_preimage _ _).tendsto
-  exact (continuous_add_left x).tendsto' 0 x (add_zero _)
+  exact (continuous_const_add x).tendsto' 0 x (add_zero _)
 
 /-- Tangent cone of `s` at `x` depends only on `𝓝[s] x`. -/
 theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x = tangentConeAt 𝕜 t x :=
@@ -174,7 +175,7 @@ theorem tangentConeAt_subset_zero [T2Space E] (hx : ¬AccPt x (𝓟 s)) : tangen
 
 theorem AccPt.of_mem_tangentConeAt_ne_zero [T2Space E] {y : E} (hy : y ∈ tangentConeAt 𝕜 s x)
     (hy₀ : y ≠ 0) : AccPt x (𝓟 s) := by
-  contrapose! hy₀
+  contrapose hy₀
   exact tangentConeAt_subset_zero hy₀ hy
 
 theorem UniqueDiffWithinAt.accPt [T2Space E] [Nontrivial E] (h : UniqueDiffWithinAt 𝕜 s x) :

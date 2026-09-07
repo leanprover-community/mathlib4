@@ -18,7 +18,7 @@ We also provide the dual version for epimorphisms.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe v₁ v₂ u₁ u₂

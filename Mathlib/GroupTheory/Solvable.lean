@@ -10,6 +10,7 @@ public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.SetTheory.Cardinal.Order
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Solvable Groups
@@ -28,6 +29,8 @@ the derived series of a group.
 @[expose] public section
 
 open Subgroup
+
+open scoped commutatorElement
 
 variable {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
 
@@ -100,7 +103,7 @@ variable (G)
 
 /-- A group `G` is solvable if its derived series is eventually trivial. We use this definition
   because it's the most convenient one to work with. -/
-@[mk_iff isSolvable_def]
+@[mk_iff isSolvable_def, wikidata Q759832]
 class IsSolvable : Prop where
   /-- A group `G` is solvable if its derived series is eventually trivial. -/
   solvable : ∃ n : ℕ, derivedSeries G n = ⊥
@@ -137,7 +140,7 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
 
 theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
-  solvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot_iff.mpr hf).symm ▸ bot_le)
+  solvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot hf).symm ▸ bot_le)
 
 instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
   solvable_of_solvable_injective H.subtype_injective
@@ -181,7 +184,7 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
   · infer_instance
   · obtain ⟨n, hn⟩ := hH ⁅H, H⁆ (h H h')
     use n + 1
-    rw [← (map_injective (subtype_injective _)).eq_iff, Subgroup.map_bot] at hn ⊢
+    rw [← map_subtype_inj, Subgroup.map_bot] at hn ⊢
     rw [← hn]
     clear hn
     induction n with

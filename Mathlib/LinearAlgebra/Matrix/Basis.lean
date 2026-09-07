@@ -133,7 +133,6 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
   map_smul' := by
     intro c v
     ext i j
-    dsimp only []
     rw [e.toMatrix_apply, Pi.smul_apply, map_smul]
     rfl
   invFun m j := ∑ i, m i j • e i
@@ -227,9 +226,7 @@ theorem toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι R M) 
     (e : ι ≃ ι') : (b.reindex e).toMatrix v =
     Matrix.reindexAlgEquiv R R e (b.toMatrix (v ∘ e)) := by
   ext
-  simp only [Basis.toMatrix_apply, Basis.repr_reindex, Matrix.reindexAlgEquiv_apply,
-    Matrix.reindex_apply, Matrix.submatrix_apply, Function.comp_apply, e.apply_symm_apply,
-    Finsupp.mapDomain_equiv_apply]
+  simp [Basis.toMatrix_apply]
 
 omit [Fintype ι'] in
 @[simp]
@@ -258,6 +255,7 @@ theorem toMatrix_mul_toMatrix_flip [DecidableEq ι] [Fintype ι'] :
     b.toMatrix b' * b'.toMatrix b = 1 := by rw [toMatrix_mul_toMatrix, toMatrix_self]
 
 /-- A matrix whose columns form a basis `b'`, expressed w.r.t. a basis `b`, is invertible. -/
+@[implicit_reducible]
 def invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂ M₂) :
     Invertible (b.toMatrix b') :=
   ⟨b'.toMatrix b, toMatrix_mul_toMatrix_flip _ _, toMatrix_mul_toMatrix_flip _ _⟩
@@ -274,6 +272,9 @@ theorem toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N) :
     (b.map f).toMatrix v = b.toMatrix (f.symm ∘ v) := by
   ext
   simp only [toMatrix_apply, Basis.map, LinearEquiv.trans_apply, (· ∘ ·)]
+
+lemma _root_.LinearMap.toMatrix_eq_basisToMatrix [Fintype ι] [DecidableEq ι] [Finite κ] :
+    f.toMatrix b c = c.toMatrix (f ∘ b) := by ext; simp [LinearMap.toMatrix_apply, toMatrix_apply]
 
 end Module.Basis
 end MulLinearMapToMatrix

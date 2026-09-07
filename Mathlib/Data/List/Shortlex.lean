@@ -72,10 +72,7 @@ alias ⟨Shortlex.of_cons, Shortlex.cons⟩ := shortlex_cons_iff
 
 @[simp]
 theorem not_shortlex_nil_right {s : List α} : ¬ Shortlex r s [] := by
-  rw [shortlex_def]
-  rintro (h1 | h2)
-  · simp only [List.length_nil, not_lt_zero'] at h1
-  · exact List.not_lex_nil h2.2
+  simp [shortlex_def]
 
 theorem shortlex_nil_or_eq_nil : ∀ s : List α, Shortlex r [] s ∨ s = []
   | [] => .inr rfl
@@ -88,8 +85,8 @@ theorem shortlex_singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
 
 namespace Shortlex
 
-instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) :=
-  ⟨(InvImage.isTrichotomous (by simp [Function.Injective])).trichotomous⟩
+instance trichotomous [Std.Trichotomous r] : Std.Trichotomous (Shortlex r) :=
+  ⟨(InvImage.trichotomous (by simp [Function.Injective])).trichotomous⟩
 
 instance asymm [Std.Asymm r] : Std.Asymm (Shortlex r) :=
   inferInstanceAs <| Std.Asymm (InvImage _ _)

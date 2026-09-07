@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
@@ -36,7 +35,7 @@ whose complement has measure 0 such that for all `x ∈ aeSeqSet`, `f i x` is eq
 def aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : Set α :=
   (toMeasurable μ { x | (∀ i, f i x = (hf i).mk (f i) x) ∧ p x fun n => f n x }ᶜ)ᶜ
 
-open Classical in
+open scoped Classical in
 /-- A sequence of measurable functions that are equal to `f` and verify property `p` on the
 measurable set `aeSeqSet hf p`. -/
 noncomputable def aeSeq (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : ι → α → β :=
@@ -114,12 +113,8 @@ theorem aeSeq_n_eq_fun_n_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
 
 theorem iSup [SupSet β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : ⨆ n, aeSeq hf p n =ᵐ[μ] ⨆ n, f n := by
-  simp_rw [Filter.EventuallyEq, ae_iff, iSup_apply]
-  have h_ss : aeSeqSet hf p ⊆ { a : α | ⨆ i : ι, aeSeq hf p i a = ⨆ i : ι, f i a } := by
-    intro x hx
-    congr
-    exact funext fun i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
-  exact measure_mono_null (Set.compl_subset_compl.mpr h_ss) (measure_compl_aeSeqSet_eq_zero hf hp)
+  filter_upwards [aeSeq_eq_fun_ae hf hp] with x hx
+  simp [iSup_apply, hx]
 
 theorem iInf [InfSet β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n ↦ f n x) : ⨅ n, aeSeq hf p n =ᵐ[μ] ⨅ n, f n :=

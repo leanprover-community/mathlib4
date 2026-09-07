@@ -91,16 +91,20 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
 
 open Lean.Elab.Command in
 /--
-The `#find` command finds definitions & lemmas using pattern matching on the type. For instance:
+`#find t` finds definitions and theorems whose result type matches the term `t`, and prints them as
+info lines. Use holes in `t` to indicate arbitrary subexpressions, for example `#find _ ∧ _` will
+match any conjunction.
+
+`#find` is also available as a tactic, and there is also the `find` tactic which looks for lemmas
+which are `apply`able against the current goal.
+
+Examples:
 ```lean
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n
 #find (_ : Nat) + _ = _ + _
 #find Nat → Nat
 ```
-Inside tactic proofs, the `#find` tactic can be used instead.
-There is also the `find` tactic which looks for
-lemmas which are `apply`able against the current goal.
 -/
 elab "#find " t:term : command =>
   liftTermElabM do
@@ -120,29 +124,41 @@ but they will work fine in a new file!) -/
 
 open Lean.Elab.Tactic
 /--
-Display theorems (and definitions) whose result type matches the current goal,
-i.e. which should be `apply`able.
-```lean
-example : True := by find
-```
+`find` finds definitions and theorems whose result type matches the current goal exactly,
+and prints them as info lines.
+In other words, `find` lists definitions and theorems that are `apply`able against the current goal.
 `find` will not affect the goal by itself and should be removed from the finished proof.
-For a command that takes the type to search for as an argument,
-see `#find`, which is also available as a tactic.
+
+For a command or tactic that takes the type to search for as an argument, see `#find`.
+
+Example:
+```lean
+example : True := by
+  find
+  -- True.intro: True
+  -- trivial: True
+  -- ...
+```
 -/
 elab "find" : tactic => do
   findType (← getMainTarget)
 
 /--
-The `#find` tactic finds definitions & lemmas using pattern matching on the type. For instance:
+`#find t` finds definitions and theorems whose result type matches the term `t`, and prints them as
+info lines. Use holes in `t` to indicate arbitrary subexpressions, for example `#find _ ∧ _` will
+match any conjunction. `#find` is also available as a command.
+`#find` will not affect the goal by itself and should be removed from the finished proof.
+
+There is also the `find` tactic which looks for lemmas which are `apply`able against the current
+goal.
+
+Examples:
 ```lean
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n
 #find (_ : Nat) + _ = _ + _
 #find Nat → Nat
 ```
-This is the tactic equivalent to the `#find` command.
-There is also the `find` tactic which looks for
-lemmas which are `apply`able against the current goal.
 -/
 elab "#find " t:term : tactic => do
   let t ← Term.elabTerm t none

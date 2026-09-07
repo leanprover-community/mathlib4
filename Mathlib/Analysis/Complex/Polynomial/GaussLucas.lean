@@ -16,7 +16,7 @@ are included in the convex hull of the roots of the polynomial.
 -/
 
 @[expose] public section
-open scoped BigOperators Polynomial ComplexConjugate
+open scoped Polynomial ComplexConjugate
 
 namespace Polynomial
 

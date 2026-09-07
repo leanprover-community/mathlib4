@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pretransitive
 public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Homomorphisms and group actions

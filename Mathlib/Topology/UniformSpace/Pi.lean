@@ -11,7 +11,7 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 # Indexed product of uniform spaces
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -91,11 +91,11 @@ lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
 
 lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
-  simp_rw [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace, cauchy_comap_uniformSpace]
+  simp_rw +instances [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace, cauchy_comap_uniformSpace]
 
 lemma cauchy_pi_iff' {l : Filter (∀ i, α i)} [l.NeBot] :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
-  simp_rw [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace', cauchy_comap_uniformSpace]
+  simp_rw +instances [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace', cauchy_comap_uniformSpace]
 
 lemma Cauchy.pi [Nonempty ι] {l : ∀ i, Filter (α i)} (hl : ∀ i, Cauchy (l i)) :
     Cauchy (Filter.pi l) := by
@@ -115,7 +115,7 @@ lemma Pi.uniformSpace_comap_restrict_sUnion (𝔖 : Set (Set ι)) :
     ⨅ S ∈ 𝔖, UniformSpace.comap S.restrict (Pi.uniformSpace (fun i : S ↦ α i)) := by
   simp_rw [Pi.uniformSpace_comap_restrict α, iInf_sUnion]
 
-/- An infimum of complete uniformities is complete,
+/-- An infimum of complete uniformities is complete,
 as long as the whole family is bounded by some common T2 topology. -/
 protected theorem CompleteSpace.iInf {ι X : Type*} {u : ι → UniformSpace X}
     (hu : ∀ i, @CompleteSpace X (u i))

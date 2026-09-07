@@ -520,7 +520,7 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
     partialProd (contractNth a (· * ·) g) = partialProd g ∘ a.succ.succAbove := by
   ext i
   refine inductionOn i ?_ ?_
-  · simp only [partialProd_zero, Function.comp_apply, succ_succAbove_zero]
+  · simp
   · intro i hi
     simp only [Function.comp_apply, succ_succAbove_succ] at *
     rw [partialProd_succ, partialProd_succ, hi]
@@ -663,7 +663,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [Fin.val_zero, Fintype.prod_empty, Nat.div_one, mul_one, Fin.cons_zero,
           Fin.prod_univ_succ, Fin.castLE_zero, Fin.cons_zero, ← Nat.div_div_eq_div_mul,
           mul_left_comm (_ % _ : ℕ), ← mul_sum]
-        convert Nat.mod_add_div _ _
+        convert! Nat.mod_add_div _ _
         exact ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq (Fin.prod_univ_succ _)))
 
 theorem finPiFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (f : ∀ i : Fin m, Fin (n i)) :
@@ -702,7 +702,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
   by_cases him : iv < m
   · conv in Sigma.mk _ _ =>
       equals ⟨Sum.inl ⟨iv, him⟩, j⟩ => simp [Fin.addCases, him]
-    simpa using ih _
+    simpa using! ih _
   · replace him := Nat.eq_of_lt_succ_of_not_lt hi him
     subst him
     conv in Sigma.mk _ _ =>
@@ -733,11 +733,8 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → M) (i : ℕ) :
     · have : i < length (ofFn f) := by rwa [length_ofFn]
       rw [prod_take_succ _ _ this]
       have A : ({j | j.val < i + 1} : Finset (Fin n)) =
-          insert ⟨i, h⟩ ({j | Fin.val j < i} : Finset (Fin n)) := by
-        ext ⟨_, _⟩
-        simp [Nat.lt_succ_iff_lt_or_eq, or_comm]
-      rw [A, prod_insert (by simp), IH, mul_comm]
-      simp
+          insert ⟨i, h⟩ ({j | Fin.val j < i} : Finset (Fin n)) := by grind
+      grind
     · have A : (ofFn f).take i = (ofFn f).take i.succ := by
         rw [← length_ofFn (f := f)] at h
         have : length (ofFn f) ≤ i := not_lt.mp h
@@ -755,7 +752,7 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → M} : (ofFn f).prod = ∏ i, f i :=
 end CommMonoid
 
 @[to_additive]
-theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
+theorem alternatingProd_eq_finsetProd {G : Type*} [DivisionCommMonoid G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
     rw [alternatingProd, Finset.prod_eq_one]
@@ -766,9 +763,40 @@ theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
   | g::h::L =>
     calc g * h⁻¹ * L.alternatingProd
       = g * h⁻¹ * ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ) :=
-        congr_arg _ (alternatingProd_eq_finset_prod _)
+        congr_arg _ (alternatingProd_eq_finsetProd _)
     _ = ∏ i : Fin (L.length + 2), (g::h::L)[i] ^ (-1 : ℤ) ^ (i : ℕ) := by
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
           simp [pow_add]}
 
+@[deprecated (since := "2026-04-08")]
+alias alternatingSum_eq_finset_sum := alternatingSum_eq_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
+
 end List
+
+/-- This is a classic "telescoping sum" lemma. It says:
+`r₀ - (r₀ + r₁) + (r₁ + r₂) - (r₂+ r₃) + ⋯ ± (rₙ₋₁ + rₙ) ∓ rₙ = 0`.
+
+The chosen spelling, which gives definitional power over `d`, is influenced by downstream
+applications such as `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. -/
+lemma Fin.sum_neg_one_pow_eq_zero {α : Type*} [AddCommGroup α]
+    {n : ℕ} (d : Fin (n + 2) → α) (r : Fin (n + 1) → α)
+    (h_first : d 0 = r 0)
+    (h_mid : ∀ i : Fin n, d i.succ.castSucc = r i.castSucc + r i.succ)
+    (h_last : d (Fin.last _) = r (Fin.last _)) :
+    ∑ i, (-1) ^ i.val • d i = 0 := by
+  have h₁ : ∑ i : Fin (n + 2), (-1 : ℤ) ^ i.val • d i =
+      d 0 +
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • (d (Fin.castSucc i).succ) +
+      (-1 : ℤ) ^ (n + 1) • d (Fin.last (n + 1)) := by
+    rw [Fin.sum_univ_succ, Fin.sum_univ_castSucc]
+    simp [add_assoc]
+  have h₂ : ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • (r (Fin.castSucc i) + r (Fin.succ i)) =
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • r (Fin.castSucc i) +
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • r (Fin.succ i) := by
+    simp_rw [zsmul_add, Finset.sum_add_distrib]
+  have h₃ := Fin.sum_univ_castSucc fun i ↦ (-1 : ℤ) ^ i.val • r i
+  simp_all [Fin.sum_univ_succ, pow_succ']
+  grind

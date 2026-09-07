@@ -49,8 +49,7 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
 /-- The bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`. -/
-noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (w : W) :
+noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) (w : W) :
     V →ᵇ ℂ where
   toFun := fun v ↦ e (L v w)
   continuous_toFun :=
@@ -77,6 +76,7 @@ lemma char_add_eq_mul (x y : W) :
 lemma char_neg (w : W) :
     char he hL (-w) = star (char he hL w) := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `e` and `L` are non-trivial, then `char he hL w, w : W` separates points in `V`. -/
 theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) {v v' : V}
@@ -91,18 +91,24 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
     ← e.map_neg_eq_inv, ← Submonoid.coe_mul, ← e.map_add_eq_mul, OneMemClass.coe_eq_one]
   simp only [map_sub, LinearMap.sub_apply, LinearMap.zero_apply, AddChar.one_apply,
     map_smul, smul_eq_mul] at ha hw ⊢
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  ring_nf
+  field_simp
+  assumption
 
 /-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v w)`. -/
 noncomputable def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     Multiplicative W →* (V →ᵇ ℂ) where
-  toFun w := char he hL w
+  toFun w := char he hL w.toAdd
   map_one' := char_zero_eq_one
   map_mul' := char_add_eq_mul (he := he) (hL := hL)
 
 @[simp]
 lemma charMonoidHom_apply (w : Multiplicative W) (v : V) :
-    charMonoidHom he hL w v = e (L v w) := by simp [charMonoidHom]
+    charMonoidHom he hL w v = e (L v w.toAdd) := by simp [charMonoidHom]
 
 /-- Algebra homomorphism mapping `w` to `fun v ↦ e (L v w)`. -/
 noncomputable
@@ -112,12 +118,9 @@ def charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2
 
 @[simp]
 lemma charAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
-    charAlgHom he hL w v = ∑ a ∈ w.support, w a * (e (L v a) : ℂ) := by
-  simp only [charAlgHom, AddMonoidAlgebra.lift_apply]
-  rw [Finsupp.sum_of_support_subset w subset_rfl]
-  · simp only [coe_sum, coe_smul, charMonoidHom_apply, smul_eq_mul, Finset.sum_apply]
-    rfl
-  · simp
+    charAlgHom he hL w v = w.coeff.sum (fun a z ↦ z • (e (L v a) : ℂ)) := by
+  simp [charAlgHom, charMonoidHom, char, AddMonoidAlgebra.lift_apply]
+  simp [Finsupp.sum]
 
 /-- The family of `ℂ`-linear combinations of `char he hL w, w : W`, is closed under `star`. -/
 lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
@@ -125,14 +128,11 @@ lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V �
     star x ∈ (charAlgHom he hL).range := by
   simp only [AlgHom.mem_range] at hx ⊢
   obtain ⟨y, rfl⟩ := hx
-  let z := Finsupp.mapRange star (star_zero _) y
+  let z := y.map (starRingEnd _).toAddMonoidHom
   let f : W ↪ W := ⟨fun x ↦ -x, (fun _ _ ↦ neg_inj.mp)⟩
-  refine ⟨z.embDomain f, ?_⟩
-  ext1 u
-  simp only [charAlgHom_apply, Finsupp.support_embDomain, Finset.sum_map,
-    Finsupp.embDomain_apply_self, star_apply, star_sum, star_mul', Circle.star_addChar]
-  rw [Finsupp.support_mapRange_of_injective (star_zero _) y star_injective]
-  simp [z, f]
+  refine ⟨.ofCoeff <| z.coeff.embDomain f, ?_⟩
+  ext
+  simp [charAlgHom_apply, Finsupp.sum_embDomain, z, Finsupp.sum_mapRange_index, f]
 
 /-- The star-subalgebra of polynomials. -/
 noncomputable
@@ -143,19 +143,11 @@ def charPoly (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) 
 
 lemma mem_charPoly (f : V →ᵇ ℂ) :
     f ∈ charPoly he hL
-      ↔ ∃ w : AddMonoidAlgebra ℂ W, f = fun x ↦ ∑ a ∈ w.support, w a * (e (L x a) : ℂ) := by
+      ↔ ∃ w : AddMonoidAlgebra ℂ W, f = fun x ↦ w.coeff.sum (fun a z ↦ z * (e (L x a) : ℂ)) := by
   change f ∈ (charAlgHom he hL).range ↔ _
   simp [BoundedContinuousFunction.ext_iff, funext_iff, eq_comm]
 
-lemma char_mem_charPoly (w : W) : char he hL w ∈ charPoly he hL := by
-  rw [mem_charPoly]
-  refine ⟨AddMonoidAlgebra.single w 1, ?_⟩
-  ext v
-  simp only [char_apply, AddMonoidAlgebra.single]
-  rw [Finset.sum_eq_single w]
-  · simp only [Finsupp.single_eq_same, one_mul]
-  · simp [Finsupp.single_apply_ne_zero]
-  · simp
+lemma char_mem_charPoly (w : W) : char he hL w ∈ charPoly he hL := ⟨.single w 1, by ext; simp⟩
 
 /-- The family `charPoly he hL w, w : W` separates points in `V`. -/
 lemma separatesPoints_charPoly (he : Continuous e) (he' : e ≠ 1)

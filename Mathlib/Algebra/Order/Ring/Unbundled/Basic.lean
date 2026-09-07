@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
@@ -21,97 +21,14 @@ public import Mathlib.Tactic.Tauto
 This file develops the basics of ordered (semi)rings in an unbundled fashion for later use with
 the bundled classes from `Mathlib/Algebra/Order/Ring/Defs.lean`.
 
-The set of typeclass variables here comprises
-* an algebraic class (`Semiring`, `CommSemiring`, `Ring`, `CommRing`)
-* an order class (`PartialOrder`, `LinearOrder`)
-* assumptions on how both interact ((strict) monotonicity, canonicity)
-
-For short,
-* "`+` respects `≤`" means "monotonicity of addition"
-* "`+` respects `<`" means "strict monotonicity of addition"
-* "`*` respects `≤`" means "monotonicity of multiplication by a nonnegative number".
-* "`*` respects `<`" means "strict monotonicity of multiplication by a positive number".
-
-## Typeclasses found in `Algebra.Order.Ring.Defs`
-
-* `OrderedSemiring`: Semiring with a partial order such that `+` and `*` respect `≤`.
-* `StrictOrderedSemiring`: Nontrivial semiring with a partial order such that `+` and `*` respects
-  `<`.
-* `OrderedCommSemiring`: Commutative semiring with a partial order such that `+` and `*` respect
-  `≤`.
-* `StrictOrderedCommSemiring`: Nontrivial commutative semiring with a partial order such that `+`
-  and `*` respect `<`.
-* `OrderedRing`: Ring with a partial order such that `+` respects `≤` and `*` respects `<`.
-* `OrderedCommRing`: Commutative ring with a partial order such that `+` respects `≤` and
-  `*` respects `<`.
-* `LinearOrderedSemiring`: Nontrivial semiring with a linear order such that `+` respects `≤` and
-  `*` respects `<`.
-* `LinearOrderedCommSemiring`: Nontrivial commutative semiring with a linear order such that `+`
-  respects `≤` and `*` respects `<`.
-* `LinearOrderedRing`: Nontrivial ring with a linear order such that `+` respects `≤` and `*`
-  respects `<`.
-* `LinearOrderedCommRing`: Nontrivial commutative ring with a linear order such that `+` respects
-  `≤` and `*` respects `<`.
-* `CanonicallyOrderedCommSemiring`: Commutative semiring with a partial order such that `+`
-  respects `≤`, `*` respects `<`, and `a ≤ b ↔ ∃ c, b = a + c`.
-
-## Hierarchy
-
-The hardest part of proving order lemmas might be to figure out the correct generality and its
-corresponding typeclass. Here's an attempt at demystifying it. For each typeclass, we list its
-immediate predecessors and what conditions are added to each of them.
-
-* `OrderedSemiring`
-  - `OrderedAddCommMonoid` & multiplication & `*` respects `≤`
-  - `Semiring` & partial order structure & `+` respects `≤` & `*` respects `≤`
-* `StrictOrderedSemiring`
-  - `OrderedCancelAddCommMonoid` & multiplication & `*` respects `<` & nontriviality
-  - `OrderedSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedCommSemiring`
-  - `OrderedSemiring` & commutativity of multiplication
-  - `CommSemiring` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedCommSemiring`
-  - `StrictOrderedSemiring` & commutativity of multiplication
-  - `OrderedCommSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedRing`
-  - `OrderedSemiring` & additive inverses
-  - `OrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Ring` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedRing`
-  - `StrictOrderedSemiring` & additive inverses
-  - `OrderedSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedCommRing`
-  - `OrderedRing` & commutativity of multiplication
-  - `OrderedCommSemiring` & additive inverses
-  - `CommRing` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedCommRing`
-  - `StrictOrderedCommSemiring` & additive inverses
-  - `StrictOrderedRing` & commutativity of multiplication
-  - `OrderedCommRing` & `+` respects `<` & `*` respects `<` & nontriviality
-* `LinearOrderedSemiring`
-  - `StrictOrderedSemiring` & totality of the order
-  - `LinearOrderedAddCommMonoid` & multiplication & nontriviality & `*` respects `<`
-* `LinearOrderedCommSemiring`
-  - `StrictOrderedCommSemiring` & totality of the order
-  - `LinearOrderedSemiring` & commutativity of multiplication
-* `LinearOrderedRing`
-  - `StrictOrderedRing` & totality of the order
-  - `LinearOrderedSemiring` & additive inverses
-  - `LinearOrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Ring` & `IsDomain` & linear order structure
-* `LinearOrderedCommRing`
-  - `StrictOrderedCommRing` & totality of the order
-  - `LinearOrderedRing` & commutativity of multiplication
-  - `LinearOrderedCommSemiring` & additive inverses
-  - `CommRing` & `IsDomain` & linear order structure
-
 ## Generality
 
 Each section is labelled with a corresponding bundled ordered ring typeclass in mind. Mixins for
 relating the order structures and ring structures are added as needed.
 
-TODO: the mixin assumptions can be relaxed in most cases
+## TODO
 
+The mixin assumptions can be relaxed in most cases.
 -/
 
 public section
@@ -441,7 +358,7 @@ theorem nonpos_of_mul_nonpos_right [PosMulStrictMono R]
 @[simp]
 theorem mul_nonneg_iff_of_pos_left [PosMulStrictMono R]
     (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  convert mul_le_mul_iff_right₀ h
+  convert! mul_le_mul_iff_right₀ h
   simp
 
 @[simp]
@@ -581,7 +498,7 @@ theorem mul_nonneg_iff [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono 
   ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg, fun h =>
     h.elim (and_imp.2 mul_nonneg) (and_imp.2 mul_nonneg_of_nonpos_of_nonpos)⟩
 
-/-- Out of three elements of a `LinearOrderedRing`, two must have the same sign. -/
+/-- Out of three elements of a linearly ordered semiring, two must have the same sign. -/
 theorem mul_nonneg_of_three [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
     [AddLeftMono R] [AddLeftReflectLE R]
     (a b c : R) : 0 ≤ a * b ∨ 0 ≤ b * c ∨ 0 ≤ c * a := by
@@ -711,6 +628,10 @@ alias pow_two_nonneg := sq_nonneg
 lemma mul_self_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (a : R) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
+instance (priority := 100) [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
+    ZeroLEOneClass R where
+  zero_le_one := by simpa only [one_mul] using mul_self_nonneg (1 : R)
+
 /-- The sum of two squares is zero iff both elements are zero. -/
 lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
@@ -722,6 +643,22 @@ lemma eq_zero_of_mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
+
+theorem pos_of_right_mul_lt_le [ExistsAddOfLE R] [PosMulMono R]
+    [AddRightMono R] [AddRightReflectLE R]
+    (h : a * b < a * c) (hbc : b ≤ c) :
+    0 < a := by
+  by_cases! ha : 0 < a
+  · exact ha
+  · grind [mul_le_mul_of_nonpos_left hbc ha]
+
+theorem pos_of_left_mul_lt_le [ExistsAddOfLE R] [MulPosMono R]
+    [AddLeftMono R] [AddRightReflectLE R]
+    (h : b * a < c * a) (hbc : b ≤ c) :
+    0 < a := by
+  by_cases! ha : 0 < a
+  · exact ha
+  · grind [mul_le_mul_of_nonpos_right hbc ha]
 
 end LinearOrderedSemiring
 
@@ -763,13 +700,18 @@ alias four_mul_le_pow_two_add := four_mul_le_sq_add
 
 /-- Binary and division-free **arithmetic mean-geometric mean inequality**
 (aka AM-GM inequality) for linearly ordered commutative semirings. -/
+lemma two_mul_le_add_of_sq_le_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
+    [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 ≤ a * b) : 2 * r ≤ a + b := by
+  apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
+  rw [mul_mul_mul_comm, ← pow_two r, two_mul, two_add_two_eq_four]
+  grw [mul_le_mul_of_nonneg_left ht zero_le_four, ← mul_assoc, four_mul_le_sq_add a b, sq]
+
+@[deprecated two_mul_le_add_of_sq_le_mul (since := "2026-04-20")]
 lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
     [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
-    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b := by
-  apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
-  conv_rhs => rw [← pow_two]
-  convert four_mul_le_sq_add a b using 1
-  rw [mul_mul_mul_comm, two_mul, two_add_two_eq_four, ← pow_two, ht, mul_assoc]
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b :=
+  two_mul_le_add_of_sq_le_mul ha hb ht.le
 
 end LinearOrderedCommSemiring
 

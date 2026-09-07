@@ -18,7 +18,7 @@ one of the following mutually exclusive cases happens:
   - `n = 0` (then `ZMod 0 ≃+* ℤ` and the group of units is cyclic of order 2);
   - `n = 1`, `2` or `4`
   - `n` is a power `p ^ e` of an odd prime number, or twice such a power
-  (with `1 ≤ e`).
+    (with `1 ≤ e`).
 
 The individual cases are proved by `inferInstance` and are
 also directly provided by :
@@ -72,7 +72,7 @@ theorem isCyclic_units_four :
   simp only [Nat.card_eq_fintype_card, card_units_eq_totient]
   decide
 
-/- The multiplicative group of `ZMod p` is cyclic. -/
+/-- The multiplicative group of `ZMod p` is cyclic. -/
 theorem isCyclic_units_prime {p : ℕ} (hp : p.Prime) :
     IsCyclic (ZMod p)ˣ :=
   have : Fact (p.Prime) := ⟨hp⟩
@@ -181,13 +181,13 @@ theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ) (hm0 : 
 theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : ℤ)
     (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
     orderOf (1 + p * a : ZMod (p ^ (n + 1))) = p ^ n := by
-  convert orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
+  convert! orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
   · rw [pow_one]
   · have := hp.two_le; lia
 
 theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     orderOf (1 + p : ZMod (p ^ (n + 1))) = p ^ n := by
-  convert orderOf_one_add_mul_prime hp hp2 1 _ n
+  convert! orderOf_one_add_mul_prime hp hp2 1 _ n
   · simp
   · intro H
     apply hp.ne_one
@@ -242,13 +242,13 @@ theorem isCyclic_units_two_pow_iff (n : ℕ) :
 
 lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
     orderOf (1 + 4 * a : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero le_rfl a ?_ n using 1
+  convert! orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero le_rfl a ?_ n using 1
   · norm_num
   · rwa [← Int.not_even_iff_odd, even_iff_two_dvd] at ha
 
 theorem orderOf_five (n : ℕ) :
     orderOf (5 : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_four_mul 1 (by simp) n
+  convert! orderOf_one_add_four_mul 1 (by simp) n
   norm_num
 
 end PrimePow
@@ -313,7 +313,7 @@ theorem isCyclic_units_iff_of_odd {n : ℕ} (hn : Odd n) :
     refine not_isCyclic_units_of_mul_coprime _ _ (hn.of_dvd_nat this) ?_
       (hn.of_dvd_nat (Nat.div_dvd_of_dvd this)) ?_ ((Nat.coprime_ordCompl hp hn0).pow_left ..)
     · simpa [(hp.factorization_pos_of_dvd hn0 dvd).ne'] using hp.ne_one
-    · contrapose! hnp
+    · contrapose hnp
       conv_lhs => rw [← Nat.div_mul_cancel this, hnp, one_mul]
   rintro ⟨q, m, hq, -, rfl⟩
   cases (Nat.prime_dvd_prime_iff_eq hp hq).mp (hp.dvd_of_dvd_pow dvd)

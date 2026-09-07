@@ -52,8 +52,9 @@ noncomputable def ruzsaSzemerediNumber : ℕ := by
   exact Nat.findGreatest (fun m ↦ ∃ (G : SimpleGraph α) (_ : DecidableRel G.Adj),
     #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) ((card α).choose 3)
 
-open scoped Classical in
-lemma ruzsaSzemerediNumber_le : ruzsaSzemerediNumber α ≤ (card α).choose 3 := Nat.findGreatest_le _
+lemma ruzsaSzemerediNumber_le : ruzsaSzemerediNumber α ≤ (card α).choose 3 := by
+  classical
+  exact Nat.findGreatest_le _
 
 lemma ruzsaSzemerediNumber_spec :
     ∃ (G : SimpleGraph α) (_ : DecidableRel G.Adj),
@@ -183,12 +184,13 @@ lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
     (2 * n + 1) * rothNumberNat n ≤ ruzsaSzemerediNumberNat (6 * n + 3) := by
   let α := Fin (2 * n + 1)
   have : Nat.Coprime 2 (2 * n + 1) := by simp
-  haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa using (ZMod.unitOfCoprime 2 this).isUnit⟩
+  haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa
+    using! (ZMod.unitOfCoprime 2 this).isUnit⟩
   open scoped Fin.CommRing in
   calc
     (2 * n + 1) * rothNumberNat n
-    _ = Fintype.card α * addRothNumber (Iio (n : α)) := by
-      rw [Fin.addRothNumber_eq_rothNumberNat le_rfl, Fintype.card_fin]
+    _ = Fintype.card α * addRothNumber (Iio (⟨n, by lia⟩ : α)) := by
+      rw [Fin.addRothNumber_eq_rothNumberNat (by simp), Fintype.card_fin]
     _ ≤ Fintype.card α * addRothNumber (univ : Finset α) := by
       gcongr; exact subset_univ _
     _ ≤ ruzsaSzemerediNumber (Sum α (Sum α α)) := addRothNumber_le_ruzsaSzemerediNumber _
@@ -212,10 +214,9 @@ theorem rothNumberNat_le_ruzsaSzemerediNumberNat' :
         mul_le_mul_of_nonneg_right ?_ (Nat.cast_nonneg _)
       _ ≤ (ruzsaSzemerediNumberNat (6 * (n / 6) + 3) : ℝ) := ?_
       _ ≤ _ := by grw [Nat.mul_div_le]
-    · norm_num
+    · simp only [cast_add, cast_ofNat, cast_mul, cast_one, tsub_le_iff_right]
       rw [← div_add_one (three_ne_zero' ℝ), ← le_sub_iff_add_le, div_le_iff₀ (zero_lt_three' ℝ),
-        add_assoc, add_sub_assoc, add_mul, mul_right_comm]
-      norm_num
+        add_assoc, add_sub_assoc, add_mul, mul_right_comm, add_sub_cancel_left]
       norm_cast
       rw [← mul_add_one]
       exact (Nat.lt_mul_div_succ _ <| by simp).le
@@ -262,7 +263,7 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩
       simp only [neg_mul, eventually_map, Pi.sub_apply, sub_neg_eq_add, neg_add_le_iff_le_add,
-        add_zero, ofNat_pos, mul_le_mul_iff_right₀, eventually_atTop]
+        add_zero, eventually_atTop]
       refine ⟨9, fun x hx ↦ ?_⟩
       gcongr
       · simp

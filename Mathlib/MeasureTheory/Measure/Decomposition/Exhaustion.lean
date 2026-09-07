@@ -59,7 +59,7 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {s t : Set α}
 
-open Classical in
+open scoped Classical in
 /-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetWRT ν)` is sigma-finite and for all
 measurable sets `t ⊆ sᶜ`, either `ν t = 0` or `μ t = ∞`. -/
 def Measure.sigmaFiniteSetWRT (μ ν : Measure α) : Set α :=
@@ -118,7 +118,7 @@ lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure �
     exact ht.le
   · refine ⟨∅, MeasurableSet.empty, by rw [Measure.restrict_empty]; infer_instance, ?_⟩
     rw [tsub_eq_zero_of_le hC_lt]
-    exact zero_le _
+    exact zero_le
 
 /-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetGE ν n)` is sigma-finite and
 for `C` the supremum of `ν s` over all measurable sets `s` with `μ.restrict s` sigma-finite,

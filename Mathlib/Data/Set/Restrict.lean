@@ -55,7 +55,7 @@ theorem range_restrict (f : α → β) (s : Set α) : Set.range (s.restrict f) =
   (range_comp _ _).trans <| congr_arg (f '' ·) Subtype.range_coe
 
 theorem image_restrict (f : α → β) (s t : Set α) :
-    s.restrict f '' (Subtype.val ⁻¹' t) = f '' (t ∩ s) := by
+    s.restrict f '' Subtype.val ⁻¹' t = f '' (t ∩ s) := by
   rw [restrict_eq, image_comp, image_preimage_eq_inter_range, Subtype.range_coe]
 
 @[simp]
@@ -128,6 +128,21 @@ theorem range_extend {f : α → β} (hf : Injective f) (g : α → γ) (g' : β
   refine (range_extend_subset _ _ _).antisymm ?_
   rintro z (⟨x, rfl⟩ | ⟨y, hy, rfl⟩)
   exacts [⟨f x, hf.extend_apply _ _ _⟩, ⟨y, extend_apply' _ _ _ hy⟩]
+
+/-- If `g` factors through `f` and `g` is injective, then `extend f g j` is injective on the
+range of `f`. -/
+lemma _root_.Function.FactorsThrough.extend_injOn {f : α → β} {g : α → γ} {j : β → γ}
+    (hf : g.FactorsThrough f) (hg : g.Injective) :
+    (range f).InjOn (extend f g j) := by
+  rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ heq
+  rw [hf.extend_apply, hf.extend_apply] at heq
+  rw [hg heq]
+
+/-- If `f` and `g` are injective, then `extend f g j` is injective on the range of `f`. -/
+lemma _root_.Function.Injective.extend_injOn {f : α → β} {g : α → γ} {j : β → γ}
+    (hf : f.Injective) (hg : g.Injective) :
+    (range f).InjOn (extend f g j) :=
+  (hf.factorsThrough g).extend_injOn hg
 
 /-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
 has codomain `↥s` instead of `Subtype s`. -/
@@ -206,7 +221,7 @@ theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
   rfl
 
 theorem MapsTo.range_restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) :
-    range (h.restrict f s t) = Subtype.val ⁻¹' (f '' s) :=
+    range (h.restrict f s t) = Subtype.val ⁻¹' f '' s :=
   Set.range_subtype_map f h
 
 theorem mapsTo_iff_exists_map_subtype : MapsTo f s t ↔ ∃ g : s → t, ∀ x : s, f x = g x :=
@@ -227,7 +242,7 @@ variable (t)
 
 variable (f s) in
 theorem image_restrictPreimage :
-    t.restrictPreimage f '' (Subtype.val ⁻¹' s) = Subtype.val ⁻¹' (f '' s) := by
+    t.restrictPreimage f '' Subtype.val ⁻¹' s = Subtype.val ⁻¹' f '' s := by
   delta Set.restrictPreimage
   rw [← (Subtype.coe_injective).image_injective.eq_iff, ← image_comp, MapsTo.restrict_commutes,
     image_comp, Subtype.image_preimage_coe, Subtype.image_preimage_coe, image_preimage_inter]
@@ -240,12 +255,12 @@ theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻�
 theorem restrictPreimage_mk (h : a ∈ f ⁻¹' t) : t.restrictPreimage f ⟨a, h⟩ = ⟨f a, h⟩ := rfl
 
 theorem image_val_preimage_restrictPreimage {u : Set t} :
-    Subtype.val '' (t.restrictPreimage f ⁻¹' u) = f ⁻¹' (Subtype.val '' u) := by
+    Subtype.val '' t.restrictPreimage f ⁻¹' u = f ⁻¹' Subtype.val '' u := by
   ext
   simp
 
 theorem preimage_restrictPreimage {u : Set t} :
-    t.restrictPreimage f ⁻¹' u = (fun a : f ⁻¹' t ↦ f a) ⁻¹' (Subtype.val '' u) := by
+    t.restrictPreimage f ⁻¹' u = (fun a : f ⁻¹' t ↦ f a) ⁻¹' Subtype.val '' u := by
   rw [← preimage_preimage (g := f) (f := Subtype.val), ← image_val_preimage_restrictPreimage,
     preimage_image_eq _ Subtype.val_injective]
 

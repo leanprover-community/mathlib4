@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `Nat.instUniqueFactorizationMonoid`: the natural numbers have unique factorization
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

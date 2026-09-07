@@ -13,6 +13,7 @@ public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Fermat's Last Theorem for the case n = 4
+
 There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4`.
 -/
 
@@ -39,13 +40,7 @@ theorem mul {a b c k : ℤ} (hk0 : k ≠ 0) :
     Fermat42 a b c ↔ Fermat42 (k * a) (k * b) (k ^ 2 * c) := by
   delta Fermat42
   constructor
-  · intro f42
-    constructor
-    · exact mul_ne_zero hk0 f42.1
-    constructor
-    · exact mul_ne_zero hk0 f42.2.1
-    · have H : a ^ 4 + b ^ 4 = c ^ 2 := f42.2.2
-      linear_combination k ^ 4 * H
+  · grind [mul_eq_zero]
   · intro f42
     constructor
     · exact right_ne_zero_of_mul f42.1

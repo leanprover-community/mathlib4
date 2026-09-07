@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 - IsNoetherianRing.wfDvdMonoid
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommSemiring R] [IsDomain R]
 

@@ -13,7 +13,7 @@ More precisely, we introduce two morphism properties `P_δ` and `P_σ` that
 single out morphisms that are compositions of `δ i` (resp. `σ i`).
 
 The main result of this file is `exists_P_σ_P_δ_factorization`, which asserts that every
-moprhism as a decomposition of a `P_σ` followed by a `P_δ`.
+morphism as a decomposition of a `P_σ` followed by a `P_δ`.
 
 -/
 

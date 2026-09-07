@@ -1,6 +1,6 @@
 import Mathlib.Util.PrintSorries
 
-set_option pp.mvars false
+set_option pp.mvars.anonymous false
 
 /-!
 Direct use of `sorry`

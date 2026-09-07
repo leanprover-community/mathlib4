@@ -54,9 +54,7 @@ assert_not_exists MonoidWithZero
 
 universe v u
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 namespace MonCat.Colimits
 
@@ -110,20 +108,15 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
 
 /-- The setoid corresponding to monoid expressions modulo monoid relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `MonCat`.
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
-
-instance : Inhabited (ColimitType F) := by
-  dsimp [ColimitType]
-  infer_instance
+deriving Inhabited
 
 instance monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one
@@ -172,6 +165,7 @@ theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
   rw [← cocone_naturality F f]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit monoid. -/
 def colimitCocone : Cocone F where
   pt := colimit F
@@ -212,6 +206,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt :=
       induction y using Quot.inductionOn
       solve_by_elim }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s

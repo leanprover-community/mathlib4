@@ -61,6 +61,8 @@ def ULift.downFunctor : ULift.{u₂} C ⥤ C where
   obj := ULift.down
   map f := f
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The categorical equivalence between `C` and `ULift C`. -/
 @[simps]
 def ULift.equivalence : C ≌ ULift.{u₂} C where
@@ -123,6 +125,7 @@ def ULiftHom.down : ULiftHom C ⥤ C where
   obj := ULiftHom.objDown
   map f := f.down
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between `C` and `ULiftHom C`. -/
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up
@@ -172,6 +175,7 @@ theorem eqToHom_down {X Y : AsSmall C} (h : X = Y) :
   subst h
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between `C` and `AsSmall C`. -/
 @[simps]
 def AsSmall.equiv : C ≌ AsSmall C where

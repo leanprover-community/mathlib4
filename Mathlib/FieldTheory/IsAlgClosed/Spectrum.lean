@@ -88,7 +88,7 @@ theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ 
   rw [mem_iff, aeval_q_eq, ← hroot, aeval_mul]
   have hcomm := (Commute.all (C k - X) (-(q / (X - C k)))).map (aeval a : 𝕜[X] →ₐ[𝕜] A)
   apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1
-  simpa only [aeval_X, aeval_C, map_sub] using hk
+  simpa only [aeval_X, aeval_C, map_sub] using! hk
 
 /-- The *spectral mapping theorem* for polynomials.  Note: the assumption `degree p > 0`
 is necessary in case `σ a = ∅`, for then the left-hand side is `∅` and the right-hand side,
@@ -167,8 +167,19 @@ theorem IsIdempotentElem.spectrum_subset (𝕜 : Type*) {A : Type*} [Field 𝕜]
   refine fun a ha => eq_zero_or_one_of_sq_eq_self ?_
   simpa [pow_two p, hp.eq, sub_eq_zero] using ha
 
+lemma IsIdempotentElem.finite_spectrum (𝕜 : Type*) {A : Type*} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+    {p : A} (hp : IsIdempotentElem p) : (spectrum 𝕜 p).Finite :=
+  have : ({0, 1} : Set 𝕜).encard = (2 : ℕ) := Set.encard_pair (by simp)
+  Set.finite_of_encard_le_coe (this ▸ Set.encard_le_encard (hp.spectrum_subset 𝕜))
+
 open Unitization in
-theorem IsIdempotentElem.quasispectrum_subset {𝕜 A : Type*} [Field 𝕜] [NonUnitalRing A] [Module 𝕜 A]
-    [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :
+theorem IsIdempotentElem.quasispectrum_subset (𝕜 : Type*) {A : Type*} [Field 𝕜] [NonUnitalRing A]
+    [Module 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :
     quasispectrum 𝕜 p ⊆ {0, 1} :=
   quasispectrum_eq_spectrum_inr' 𝕜 𝕜 p ▸ (hp.inr _ |>.spectrum_subset _)
+
+theorem IsIdempotentElem.finite_quasispectrum (𝕜 : Type*) {A : Type*} [Field 𝕜] [NonUnitalRing A]
+    [Module 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :
+    (quasispectrum 𝕜 p).Finite :=
+  have : ({0, 1} : Set 𝕜).encard = (2 : ℕ) := Set.encard_pair (by simp)
+  Set.finite_of_encard_le_coe (this ▸ Set.encard_le_encard (hp.quasispectrum_subset 𝕜))

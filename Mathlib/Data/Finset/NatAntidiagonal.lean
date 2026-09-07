@@ -30,6 +30,8 @@ open Function
 
 namespace Finset
 
+open Finset.HasAntidiagonal
+
 namespace Nat
 
 /-- The antidiagonal of a natural number `n` is

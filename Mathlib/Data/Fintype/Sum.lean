@@ -65,6 +65,7 @@ theorem Fintype.card_sum [Fintype α] [Fintype β] :
   card_disjSum _ _
 
 /-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
+@[implicit_reducible]
 def fintypeOfFintypeNe (a : α) (_ : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective
@@ -120,25 +121,25 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     let s' : Finset α := s.toFinset
-    have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using hfst
-    have hfs' : Set.InjOn f s' := by simpa [s'] using hfs
+    have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using! hfst
+    have hfs' : Set.InjOn f s' := by simpa [s'] using! hfs
     obtain ⟨g, hg⟩ := Finset.exists_equiv_extend_of_card_eq hαt hfst' hfs'
     refine ⟨g, fun i hi => ?_⟩
     apply hg
-    simpa [s'] using hi
+    simpa [s'] using! hi
 
 theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
     [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } ≤ Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical
-    convert Fintype.card_le_of_embedding (subtypeOrLeftEmbedding p q)
+    convert! Fintype.card_le_of_embedding (subtypeOrLeftEmbedding p q)
     rw [Fintype.card_sum]
 
 theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) [Fintype { x // p x }]
     [Fintype { x // q x }] [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } = Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical
-    convert Fintype.card_congr (subtypeOrEquiv p q h)
+    convert! Fintype.card_congr (subtypeOrEquiv p q h)
     simp
 
 theorem Fintype.card_subtype_eq_or_eq_of_ne {α : Type*} [Fintype α] [DecidableEq α] {a b : α}

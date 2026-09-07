@@ -66,6 +66,7 @@ the inclusion `(kernel.ι (g y)).app j` is an isomorphism,
 which implies that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
 -/
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `X ⟶ Y.obj t.right` for `t : Under j₀`
 that is induced by `y : X ⟶ Y.obj j₀`. -/
 @[simps]
@@ -80,10 +81,12 @@ if `J` is filtered, see `epi_f`). -/
 noncomputable def f : colimit (kernel (g y)) ⟶ X :=
   IsColimit.map (colimit.isColimit _) (constCocone _ X) (kernel.ι _)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma hf (j : Under j₀) :
     colimit.ι (kernel (g y)) j ≫ f y = (kernel.ι (g y)).app j :=
   (IsColimit.ι_map _ _ _ _).trans (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 variable {y} in
 include hc hy in
 lemma epi_f [IsFiltered J] : Epi (f y) := by
@@ -92,9 +95,11 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
       (kernelIsKernel (g y)))
     (colimit.isColimit _) (isColimitConstCocone _ _)
     ((Functor.Final.isColimitWhiskerEquiv (Under.forget j₀) c).symm hc) (f y) 0
-    (fun j ↦ by simpa using hf y j)
-    (fun _ ↦ by simpa using hy.symm)).epi_f rfl
+    (fun j ↦ by simpa using! hf y j)
+    (fun _ ↦ by simpa using! hy.symm)).epi_f rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j₀`, and
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
 @[simps]
@@ -111,17 +116,19 @@ variable {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
 
 include hXκ hc
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 open injectivity₀ in
 lemma injectivity₀ {j₀ : J} (y : X ⟶ Y.obj j₀) (hy : y ≫ c.ι.app j₀ = 0) :
     ∃ (j : J) (φ : j₀ ⟶ j), y ≫ Y.map φ = 0 := by
   have := isFiltered_of_isCardinalFiltered J κ
   obtain ⟨j, h⟩ := exists_isIso_of_functor_from_monoOver (F y) hXκ _
-      (colimit.isColimit (kernel (g y))) (f y) (fun j ↦ by simpa using hf y j)
+      (colimit.isColimit (kernel (g y))) (f y) (fun j ↦ by simpa using! hf y j)
       (epi_f hc hy)
   dsimp at h
   refine ⟨j.right, j.hom, ?_⟩
   simpa only [← cancel_epi ((kernel.ι (g y)).app j), comp_zero]
-    using NatTrans.congr_app (kernel.condition (g y)) j
+    using! NatTrans.congr_app (kernel.condition (g y)) j
 
 lemma injectivity (j₀ : J) (y₁ y₂ : X ⟶ Y.obj j₀)
     (hy : y₁ ≫ c.ι.app j₀ = y₂ ≫ c.ι.app j₀) :
@@ -151,6 +158,8 @@ we deduce that `z` factors as `X ⟶ Y.obj j ⟶ c.pt` for some `j`
 (see the lemma `surjectivity`).
 -/
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `J ⥤ MonoOver X` which sends `j : J` to the inverse image by `z : X ⟶ c.pt`
 of the subobject `Y.obj j` of `c.pt`; it is defined here as the object in `MonoOver X`
 corresponding to the monomorphism
@@ -173,6 +182,8 @@ lemma hf (j : J) :
 
 include hc
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_f [IsFiltered J] : IsIso (f z) := by
   refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
     (MorphismProperty.of_isPullback
@@ -185,7 +196,7 @@ lemma isIso_f [IsFiltered J] : IsIso (f z) := by
       constCocone_ι, NatTrans.id_app, Category.comp_id]
     apply hf
   · refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).2
-      (inferInstanceAs (IsIso (𝟙 c.pt)))
+      ((inferInstance : IsIso (𝟙 c.pt)))
     exact Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit Y) hc)
       (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
         (isColimitConstCocone J c.pt))
@@ -196,6 +207,8 @@ lemma epi_f [IsFiltered J] : Epi (f z) := by
 
 end surjectivity
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 open surjectivity in
 lemma surjectivity [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]

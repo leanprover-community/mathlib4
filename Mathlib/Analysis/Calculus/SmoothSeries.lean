@@ -23,7 +23,7 @@ More specifically,
 We also give versions of these statements which are localized to a set.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Metric TopologicalSpace Function Asymptotics Filter
@@ -92,7 +92,7 @@ theorem hasDerivAt_tsum_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
     (hg' : ∀ n y, y ∈ t → ‖g' n y‖ ≤ u n) (hy₀ : y₀ ∈ t) (hg0 : Summable fun n => g n y₀)
     (hy : y ∈ t) : HasDerivAt (fun z => ∑' n, g n z) (∑' n, g' n y) y := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg ⊢
-  convert hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
+  convert! hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
   · exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 F 1).map_tsum <|
       .of_norm_bounded hu fun n ↦ hg' n y hy
   · simpa
@@ -273,8 +273,8 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
         fun x => ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
       refine (Summable.sum_add_tsum_subtype_compl ?_ T).symm
-      refine .of_norm_bounded_eventually (hv 0 (zero_le _)) ?_
-      filter_upwards [h'f 0 (zero_le _)] with i hi
+      refine .of_norm_bounded_eventually (hv 0 zero_le) ?_
+      filter_upwards [h'f 0 zero_le] with i hi
       simpa only [norm_iteratedFDeriv_zero] using hi x
     rw [this]
     apply (ContDiff.sum fun i _ => (hf i).of_le (mod_cast hm)).add

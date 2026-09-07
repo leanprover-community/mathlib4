@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Int.Notation
-public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.Push.Attr
 
 /-!

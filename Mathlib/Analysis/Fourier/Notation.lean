@@ -180,7 +180,6 @@ variable (R E) in
 /-- The Fourier transform as a continuous linear map. -/
 def fourierCLM : E →L[R] F where
   __ := fourierₗ R E
-  cont := continuous_fourier
 
 @[simp]
 lemma fourierCLM_apply (f : E) : fourierCLM R E f = 𝓕 f := rfl
@@ -209,7 +208,6 @@ def fourierInvCLM : E →L[R] F where
   toFun := 𝓕⁻
   map_add' := fourierInv_add
   map_smul' := fourierInv_smul
-  cont := continuous_fourierInv
 
 @[simp]
 lemma fourierInvCLM_apply (f : E) : fourierInvCLM R E f = 𝓕⁻ f := rfl
@@ -266,8 +264,6 @@ variable (R E) in
 /-- The Fourier transform as a continuous linear equivalence. -/
 def fourierCLE : E ≃L[R] F where
   __ := fourierEquiv R E
-  continuous_toFun := continuous_fourier
-  continuous_invFun := continuous_fourierInv
 
 @[simp]
 lemma fourierCLE_apply (f : E) : fourierCLE R E f = 𝓕 f := rfl

@@ -98,7 +98,7 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 
 ## References
 
-* [E. Aigner-Horev, J. Carmesin, J. Fröhlic, Infinite Matroid Union][aignerhorev2012infinite]
+* [E. Aigner-Horev, J. Carmesin, J. Fröhlich, Infinite Matroid Union][aignerhorev2012infinite]
 * [H. Perfect, Independence Spaces and Combinatorial Problems][perfect1969matroid]
 * [J. Oxley, Matroid Theory][oxley2011]
 -/
@@ -192,7 +192,7 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨hI, hinj⟩ := comap_indep_iff.1 h.indep
     refine ⟨hI.isBasis_of_forall_insert (image_mono h.subset) fun e he ↦ ?_, hinj, h.subset⟩
-    simp only [mem_diff, mem_image, not_exists, not_and] at he
+    simp only [mem_sdiff, mem_image, not_exists, not_and] at he
     obtain ⟨⟨e, heX, rfl⟩, he⟩ := he
     have heI : e ∉ I := fun heI ↦ (he e heI rfl)
     replace h := h.insert_dep ⟨heX, heI⟩
@@ -209,7 +209,7 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
   exact h.1.mem_of_insert_indep (mem_image_of_mem f heX)
 
 @[simp] lemma comap_isBase_iff {B : Set α} :
-    (N.comap f).IsBase B ↔ N.IsBasis (f '' B) (f '' (f ⁻¹' N.E)) ∧ B.InjOn f ∧ B ⊆ f ⁻¹' N.E := by
+    (N.comap f).IsBase B ↔ N.IsBasis (f '' B) (f '' f ⁻¹' N.E) ∧ B.InjOn f ∧ B ⊆ f ⁻¹' N.E := by
   rw [← isBasis_ground_iff, comap_isBasis_iff]; rfl
 
 @[simp] lemma comap_isBasis'_iff {I X : Set α} :
@@ -277,8 +277,8 @@ lemma comapOn_dual_eq_of_bijOn (h : BijOn f E N.E) :
     (N.comapOn E f)✶ = N✶.comapOn E f := by
   refine ext_isBase (by simp) (fun B hB ↦ ?_)
   rw [comapOn_isBase_iff_of_bijOn (by simpa), dual_isBase_iff, comapOn_isBase_iff_of_bijOn h,
-    dual_isBase_iff _, comapOn_ground_eq, and_iff_left diff_subset, and_iff_left (by simpa),
-    h.injOn.image_diff_subset (by simpa), h.image_eq]
+    dual_isBase_iff _, comapOn_ground_eq, and_iff_left sdiff_subset, and_iff_left (by simpa),
+    h.injOn.image_sdiff_subset (by simpa), h.image_eq]
   exact (h.mapsTo.mono_left (show B ⊆ E by simpa)).image_subset
 
 instance comapOn_finitary [N.Finitary] : (N.comapOn E f).Finitary := by
@@ -290,6 +290,7 @@ instance comapOn_rankFinite [N.RankFinite] : (N.comapOn E f).RankFinite := by
 end comapOn
 section mapSetEmbedding
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Map a matroid `M` to an isomorphic copy in `β` using an embedding `M.E ↪ β`. -/
 def mapSetEmbedding (M : Matroid α) (f : M.E ↪ β) : Matroid β := Matroid.ofExistsMatroid
   (E := range f)
@@ -441,7 +442,7 @@ lemma map_isBasis_iff' {I X : Set β} {hf} :
   simp only [dual_ground, map_ground, subset_image_iff, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, dual_isBase_iff']
   intro B hB
-  simp_rw [← hf.image_diff_subset hB, map_image_isBase_iff diff_subset,
+  simp_rw [← hf.image_sdiff_subset hB, map_image_isBase_iff sdiff_subset,
     map_image_isBase_iff (show B ⊆ M✶.E from hB), dual_isBase_iff hB, and_iff_left_iff_imp]
   exact fun _ ↦ ⟨B, hB, rfl⟩
 

@@ -135,10 +135,12 @@ lemma iso₁_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
 
 variable (R)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `M.exteriorPower 0 ≅ ModuleCat.of R R`. -/
 noncomputable def natIso₀ : functor.{u} R 0 ≅ (Functor.const _).obj (ModuleCat.of R R) :=
   NatIso.ofComponents iso₀
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `M.exteriorPower 1 ≅ M`. -/
 noncomputable def natIso₁ : functor.{u} R 1 ≅ 𝟭 _ :=
   NatIso.ofComponents iso₁

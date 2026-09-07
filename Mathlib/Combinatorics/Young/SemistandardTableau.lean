@@ -67,7 +67,7 @@ namespace SemistandardYoungTableau
 
 instance instFunLike {μ : YoungDiagram} : FunLike (SemistandardYoungTableau μ) ℕ (ℕ → ℕ) where
   coe := SemistandardYoungTableau.entry
-  coe_injective' T T' h := by
+  coe_injective T T' h := by
     cases T
     cases T'
     congr

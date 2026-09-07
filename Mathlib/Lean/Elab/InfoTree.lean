@@ -11,7 +11,7 @@ public import Lean.Meta.TryThis
 public import Batteries.Tactic.Lint.Misc
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header  --shake: keep
+import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Lint.Basic
 import Lean.Elab.Term.TermElabM
 
@@ -28,25 +28,23 @@ open Lean.Meta.Tactic.TryThis
 
 /--
 Collects all suggestions from all `TryThisInfo`s in `trees`.
-`trees` is visited in order and suggestions in each tree are collected in post-order.
+Does not require context - works with context-free trees.
 -/
-def collectTryThisSuggestions (trees : PersistentArray InfoTree) :
-    Array Suggestion :=
-  go.run #[] |>.2
+partial def collectTryThisSuggestions (trees : PersistentArray InfoTree) : Array Suggestion :=
+  trees.foldl (init := #[]) fun acc tree => go acc tree
 where
-  /-- Visits all trees. -/
-  go : StateM (Array Suggestion) Unit := do
-    for tree in trees do
-      tree.visitM' (postNode := visitNode)
-  /-- Visits a node in a tree. -/
-  @[nolint unusedArguments]
-  visitNode (_ctx : ContextInfo) (i : Info) (_children : PersistentArray InfoTree) :
-      StateM (Array Suggestion) Unit := do
-    let .ofCustomInfo ci := i
-      | return
-    let some tti := ci.value.get? TryThisInfo
-      | return
-    modify (·.push tti.suggestion)
+  /-- Traverses an `InfoTree` to collect `TryThisInfo` suggestions. -/
+  go (acc : Array Suggestion) : InfoTree → Array Suggestion
+    | .context _ t => go acc t
+    | .node i children =>
+      let acc := match i with
+        | .ofCustomInfo ci =>
+          match ci.value.get? TryThisInfo with
+          | some tti => acc.push tti.suggestion
+          | none => acc
+        | _ => acc
+      children.foldl (init := acc) fun acc tree => go acc tree
+    | .hole _ => acc
 
 namespace InfoTree
 
@@ -102,6 +100,17 @@ def onHighestNode? {α} (t : InfoTree) (ctx? : Option ContextInfo)
   t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
 
 /--
+Returns the context and `info` on the outermost `.node info _` which has
+context, having merged and updated contexts appropriately.
+
+If `ctx?` is `some ctx`, `ctx` is used as an initial context. A `ctx?` of `none` should **only** be
+used when operating on the first node of the entire infotree. Otherwise, it is likely that no
+context will be found.
+-/
+def getHighestInfo? (t : InfoTree) (ctx? : Option ContextInfo) : Option (ContextInfo × Info) :=
+  t.onHighestNode? ctx? fun ctx i _ => (ctx, i)
+
+/--
 Get the `parentDecl`s of every elaborated body.
 
 This includes `let rec`/`where` definitions, but excludes decls without "bodies" (such as
@@ -121,6 +130,22 @@ def getDeclsByBody (t : InfoTree) : List Name :=
       else decls
     | _ => decls
 
+/-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
+should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
+either of these conditions. -/
+def getDeclBodyInfos (t : InfoTree) : List (Syntax × ContextInfo × Info) :=
+  t.foldInfoTree (init := []) fun ctx t acc =>
+    match t with
+    | .node (.ofCustomInfo i) body => Id.run do
+      if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
+        if h : 0 < body.size then
+          -- See through `.context`s instead of just matching on `.node`:
+          let result? := body[0].getHighestInfo? ctx
+          if let some result := result? then
+            return (i.stx, result) :: acc
+      return acc
+    | _ => acc
+
 /--
 Get the declarations elaborated in the infotree `t` which are theorems according to the
 environment. This includes e.g. `instance`s of `Prop` classes in addition to declarations declared
@@ -129,4 +154,21 @@ using the keyword `theorem` directly.
 def getTheorems (t : InfoTree) (env : Environment) : List ConstantVal :=
   t.getDeclsByBody.filterMap env.findTheoremConstVal?
 
-end Lean.Elab.InfoTree
+end InfoTree
+
+namespace Info
+
+/-- Gets the local context, and the expected type of the `Info`.
+Handles `TacticInfo`s (looking at the first goal), `TermInfo`s, and `PartialTermInfo`s.
+Does not get the metavariable context; assumes that the caller has accumulated an ambient
+`ContextInfo` at this point which is sufficient. -/
+def getLCtx? : Info → Option (LocalContext × Option Expr)
+  | .ofTacticInfo i => do
+    let g ← i.goalsBefore.head?
+    let decl ← i.mctxBefore.findDecl? g
+    some (decl.lctx, decl.type)
+  | .ofTermInfo i
+  | .ofPartialTermInfo i => some (i.lctx, i.expectedType?)
+  | _ => none
+
+end Lean.Elab.Info

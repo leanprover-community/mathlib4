@@ -6,7 +6,6 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
-public import Mathlib.CategoryTheory.Functor.Trifunctor
 
 /-!
 
@@ -114,6 +113,7 @@ open scoped MonoidalLeftAction in
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ₗ f' : c ⊙ₗ d ⟶ c' ⊙ₗ d'`.
 - A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
 - A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
+
 Furthermore, we require identities that turn `- ⊙ₗ -` into a bifunctor,
 ensure naturality of `αₗ` and `λₗ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/
@@ -332,14 +332,13 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ c ⊙ₗ d` as a functor. -/
-@[simps!]
 abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ c ⊙ₗ d` as a functor. -/
-@[simps!]
 abbrev actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
@@ -349,6 +348,7 @@ def actionAssocNatIso :
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αₗ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `λₗ _` as an isomorphism of functors. -/
 @[simps!]
 def actionUnitNatIso : actionLeft D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (λₗ ·)
@@ -426,6 +426,7 @@ open scoped MonoidalRightAction in
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ᵣₘ f' : c ⊙ᵣ d ⟶ c' ⊙ᵣ d'`.
 - A structure isomorphism `αᵣ c c' d : c ⊗ c' ⊙ᵣ d ≅ c ⊙ᵣ c' ⊙ᵣ d`.
 - A structure isomorphism `ρᵣ d : (𝟙_ C) ⊙ᵣ d ≅ d`.
+
 Furthermore, we require identities that turn `- ⊙ᵣ -` into a bifunctor,
 ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/
@@ -642,14 +643,13 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
-@[simps!]
 abbrev actionRight (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
-@[simps!]
 abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
@@ -659,6 +659,7 @@ def actionAssocNatIso :
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αᵣ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `ρᵣ _` as an isomorphism of functors. -/
 @[simps!]
 def actionUnitNatIso : actionRight D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (ρᵣ ·)

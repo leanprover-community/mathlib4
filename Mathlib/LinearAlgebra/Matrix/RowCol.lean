@@ -145,6 +145,7 @@ theorem conjTranspose_replicateRow [Star α] (v : m → α) :
   ext
   rfl
 
+/-- `v ᵥ* M` is the vector whose entries are those of `replicateRow ι v * M`. -/
 theorem replicateRow_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α)
     (v : m → α) : replicateRow ι (v ᵥ* M) = replicateRow ι v * M := by
   ext
@@ -155,6 +156,7 @@ theorem replicateCol_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matr
   ext
   rfl
 
+/-- `M *ᵥ v` is the vector whose entries are those of `M * replicateCol ι v`. -/
 theorem replicateCol_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α)
     (v : n → α) : replicateCol ι (M *ᵥ v) = M * replicateCol ι v := by
   ext
@@ -327,11 +329,11 @@ theorem updateRow_comm [DecidableEq m] (A : Matrix m n α) {i i' : m} (h : i ≠
 @[simp]
 theorem updateCol_idem [DecidableEq n] (A : Matrix m n α) (j : n) (x y : m → α) :
     (A.updateCol j x).updateCol j y = A.updateCol j y := by
-  simpa only [updateRow_transpose] using congr_arg transpose <| updateRow_idem Aᵀ j x y
+  simpa only [updateRow_transpose] using! congr_arg transpose <| updateRow_idem Aᵀ j x y
 
 theorem updateCol_comm [DecidableEq n] (A : Matrix m n α) {j j' : n} (h : j ≠ j') (x y : m → α) :
     (A.updateCol j x).updateCol j' y = (A.updateCol j' y).updateCol j x := by
-  simpa only [updateRow_transpose] using congr_arg transpose <| updateRow_comm Aᵀ h x y
+  simpa only [updateRow_transpose] using! congr_arg transpose <| updateRow_comm Aᵀ h x y
 
 /-! Updating rows and columns commutes in the obvious way with reindexing the matrix. -/
 
@@ -350,7 +352,7 @@ theorem submatrix_updateRow_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m 
 theorem updateCol_submatrix_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : o)
     (c : l → α) (e : l ≃ m) (f : o ≃ n) : updateCol (A.submatrix e f) j c =
     (A.updateCol (f j) fun i => c (e.symm i)).submatrix e f := by
-  simpa only [← transpose_submatrix, updateRow_transpose] using
+  simpa only [← transpose_submatrix, updateRow_transpose] using!
     congr_arg transpose (updateRow_submatrix_equiv Aᵀ j c f e)
 
 theorem submatrix_updateCol_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : n)
@@ -450,6 +452,7 @@ theorem single_mul_eq_updateRow_zero
     single i j r * B = updateRow 0 i (r • B.row j) := by
   rw [single_eq_updateRow_zero, updateRow_mul, Matrix.zero_mul, single_vecMul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem updateRow_zero_mul_updateCol_zero
     [DecidableEq l] [DecidableEq n] [Fintype m] [NonUnitalNonAssocSemiring α]

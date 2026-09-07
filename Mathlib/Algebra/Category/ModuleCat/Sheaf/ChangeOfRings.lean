@@ -36,9 +36,9 @@ induced by a morphism of sheaves of rings `R ⟶ R'`. -/
 noncomputable def restrictScalars :
     SheafOfModules.{v} R' ⥤ SheafOfModules.{v} R where
   obj M' :=
-    { val := (PresheafOfModules.restrictScalars α.val).obj M'.val
+    { val := (PresheafOfModules.restrictScalars α.hom).obj M'.val
       isSheaf := M'.isSheaf }
-  map φ := { val := (PresheafOfModules.restrictScalars α.val).map φ.val }
+  map φ := { val := (PresheafOfModules.restrictScalars α.hom).map φ.val }
 
 instance : (restrictScalars.{v} α).Additive where
 

@@ -6,12 +6,10 @@ Authors: Mario Carneiro
 module
 
 public meta import Mathlib.Lean.Expr.Rat
-public meta import Lean.Elab.Tactic.Location
-public meta import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.NormNum.Result
-public meta import Mathlib.Tactic.ToAdditive
-public import Mathlib.Util.Qq
+public meta import Mathlib.Util.Qq
+public import Lean.Elab.Tactic.Try
 
 /-!
 ## `norm_num` core functionality
@@ -153,7 +151,7 @@ and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`
 def deriveBoolOfIff (p p' : Q(Prop)) (hp : Q($p ↔ $p')) :
     MetaM ((b : Bool) × BoolResult p' b) := do
   let ⟨b, pb⟩ ← deriveBool p
-  match b with
+  match (dependent := true) b with
   | true  => return ⟨true, q(Iff.mp $hp $pb)⟩
   | false => return ⟨false, q((Iff.not $hp).mp $pb)⟩
 
@@ -218,38 +216,36 @@ def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
   catch _ =>
     return .continue
 
-variable (ctx : Simp.Context) (useSimp := true) in
-mutual
-  /-- A discharger which calls `norm_num`. -/
-  partial def discharge (e : Expr) : SimpM (Option Expr) := do (← deriveSimp e).ofTrue
+/-- A `Methods` implementation which calls `norm_num`. -/
+def methods (useSimp := true) : Simp.Methods :=
+  if useSimp then {
+    pre := Simp.preDefault #[] >> tryNormNum
+    post := Simp.postDefault #[] >> tryNormNum (post := true)
+    discharge? := Simp.dischargeGround
+  } else {
+    pre := tryNormNum
+    post := tryNormNum (post := true)
+    discharge? := Simp.dischargeGround
+  }
 
-  /-- A `Methods` implementation which calls `norm_num`. -/
-  partial def methods : Simp.Methods :=
-    if useSimp then {
-      pre := Simp.preDefault #[] >> tryNormNum
-      post := Simp.postDefault #[] >> tryNormNum (post := true)
-      discharge? := discharge
-    } else {
-      pre := tryNormNum
-      post := tryNormNum (post := true)
-      discharge? := discharge
-    }
+/-- Traverses the given expression using simp and normalises any numbers it finds. -/
+def deriveSimp (ctx : Simp.Context) (useSimp := true) (e : Expr) : MetaM Simp.Result :=
+  (·.1) <$> Simp.main e ctx (methods := methods useSimp)
 
-  /-- Traverses the given expression using simp and normalises any numbers it finds. -/
-  partial def deriveSimp (e : Expr) : MetaM Simp.Result :=
-    (·.1) <$> Simp.main e ctx (methods := methods)
-end
+/-- A discharger which calls `norm_num`, for use in downstream tactics populating `Simp.Methods`. -/
+def discharge (useSimp := true) (e : Expr) : SimpM (Option Expr) := do
+  (← deriveSimp (← readThe Simp.Context) useSimp e).ofTrue
 
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/
 def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Context := do
-  let config ← elabSimpConfigCore cfg
+  let { config, userConfig } ← elabSimpConfigCore cfg
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
   let { ctx, .. } ←
     elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
       (← Simp.mkContext config (simpTheorems := #[simpTheorems])
-        (congrTheorems := ← getSimpCongrTheorems))
+        (congrTheorems := ← getSimpCongrTheorems) (userConfig := userConfig))
   return ctx
 
 open Elab Tactic in
@@ -266,7 +262,7 @@ def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) :
   let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let loc := expandOptLocation loc
   transformAtNondepPropLocation (fun e ctx ↦ deriveSimp ctx useSimp e) "norm_num" loc
-    (failIfUnchanged := false) (mayCloseGoalFromHyp := true) ctx
+    (ifUnchanged := .silent) (mayCloseGoalFromHyp := true) ctx
 
 end Meta.NormNum
 
@@ -279,11 +275,11 @@ open Lean.Parser.Tactic Meta.NormNum
 `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ`. In addition to evaluating numerical expressions, `norm_num` will use `simp`
 to simplify the goal. If the goal has the form `A = B`, `A ≠ B`, `A < B` or `A ≤ B`, where `A` and
 `B` are numerical expressions, `norm_num` will try to close it. It also has a relatively simple
-primality prover.
+primality prover (available if you import `Mathlib.Tactic.NormNum.Prime`).
 
 This tactic is extensible. Extensions can allow `norm_num` to evaluate more kinds of expressions, or
-to prove more kinds of propositions. See the `@[norm_num]` attribute for further information on
-extending `norm_num`.
+to prove more kinds of propositions (such as, primality of natural numbers). See the `@[norm_num]`
+attribute for further information on extending `norm_num`.
 
 * `norm_num at l` normalizes at location(s) `l`.
 * `norm_num [h1, ...]` adds the arguments `h1, ...` to the `simp` set in addition to the default

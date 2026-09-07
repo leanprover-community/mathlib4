@@ -119,11 +119,12 @@ end generators
 /-- A property is true for every morphism iff it holds for generators and is multiplicative. -/
 lemma multiplicativeClosure_isGenerator_eq_top : generators.multiplicativeClosure = ⊤ := by
   apply le_antisymm (by simp)
-  intro x y f _
-  apply CategoryTheory.Quotient.induction
-  apply Paths.induction
-  · exact generators.multiplicativeClosure.id_mem _
-  · rintro _ _ _ _ ⟨⟩ h
+  rintro x y f -
+  induction f using CategoryTheory.Quotient.induction with | _ f
+  induction f using Paths.induction with
+  | id => exact generators.multiplicativeClosure.id_mem _
+  | comp _ k h =>
+    cases k
     · exact generators.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .δ _
     · exact generators.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .σ _
 
@@ -144,13 +145,13 @@ lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
   induction hf with
   | of f h =>
     rcases h with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
-    · simpa using (comp_δ (𝟙 _) i id)
-    · simpa using (comp_σ (𝟙 _) i id)
+    · simpa using! (comp_δ (𝟙 _) i id)
+    · simpa using! (comp_σ (𝟙 _) i id)
   | id n => exact id
   | comp_of f g hf hg hrec =>
     rcases hg with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
-    · simpa using (comp_δ f i hrec)
-    · simpa using (comp_σ f i hrec)
+    · simpa using! (comp_δ f i hrec)
+    · simpa using! (comp_σ f i hrec)
 
 /-- An induction principle for reasoning about morphisms in SimplexCategoryGenRel, where we compose
 with generators on the right. -/
@@ -170,13 +171,13 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
   induction hf with
   | of f h =>
     rcases h with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
-    · simpa using (δ_comp (𝟙 _) i id)
-    · simpa using (σ_comp (𝟙 _) i id)
+    · simpa using! (δ_comp (𝟙 _) i id)
+    · simpa using! (σ_comp (𝟙 _) i id)
   | id n => exact id
   | of_comp f g hf hg hrec =>
     rcases hf with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
-    · simpa using (δ_comp g i hrec)
-    · simpa using (σ_comp g i hrec)
+    · simpa using! (δ_comp g i hrec)
+    · simpa using! (σ_comp g i hrec)
 
 /-- An induction principle for reasoning about objects in `SimplexCategoryGenRel`. This should be
 used instead of identifying an object with `mk` of its `len`. -/

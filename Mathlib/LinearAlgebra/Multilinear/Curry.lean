@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Currying of multilinear maps
+
 We register isomorphisms corresponding to currying or uncurrying variables, transforming a
 multilinear function `f` on `n+1` variables into a linear function taking values in multilinear
 functions in `n` variables, and into a multilinear function in `n` variables taking values in linear
@@ -239,8 +240,8 @@ def currySum (f : MultilinearMap R N M₂) :
     MultilinearMap R (fun i : ι ↦ N (.inl i)) (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂) where
   toFun u :=
     { toFun v := f (Sum.rec u v)
-      map_update_add' := by letI := Classical.decEq ι; aesop
-      map_update_smul' := by letI := Classical.decEq ι; aesop }
+      map_update_add' := by letI := Classical.decEq ι; simp
+      map_update_smul' := by letI := Classical.decEq ι; simp }
   map_update_add' u i x y :=
     ext fun _ ↦ by letI := Classical.decEq ι'; simp
   map_update_smul' u i c x :=

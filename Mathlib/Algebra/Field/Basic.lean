@@ -9,7 +9,12 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Invertible
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.OrderDual
+public import Mathlib.Order.Lex
+public import Mathlib.Algebra.Order.Ring.Synonym
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
+
+import Mathlib.Tactic.Tauto
 
 /-!
 # Lemmas about division (semi)rings and (semi)fields
@@ -29,10 +34,6 @@ section DivisionSemiring
 variable [DivisionSemiring K] {a b c d : K}
 
 theorem add_div (a b c : K) : (a + b) / c = a / c + b / c := by simp_rw [div_eq_mul_inv, add_mul]
-
-@[deprecated add_div (since := "2025-08-25")]
-theorem div_add_div_same (a b c : K) : a / c + b / c = (a + b) / c :=
-  (add_div _ _ _).symm
 
 theorem same_add_div (h : b ≠ 0) : (b + a) / b = 1 + a / b := by rw [← div_self h, add_div]
 
@@ -119,6 +120,14 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
     1 / a * (b - a) * (1 / b) = 1 / a - 1 / b := by
   simpa only [one_div] using (inv_sub_inv' ha hb).symm
 
+theorem inv_eq_self₀ {a : K} : a⁻¹ = a ↔ a = -1 ∨ a = 0 ∨ a = 1 := by
+  obtain rfl | ha := eq_or_ne a 0; · simp
+  rw [← mul_eq_one_iff_inv_eq₀ ha, ← pow_two, sq_eq_one_iff]
+  tauto
+
+theorem self_eq_inv₀ {a : K} : a = a⁻¹ ↔ a = -1 ∨ a = 0 ∨ a = 1 := by
+  rw [eq_comm, inv_eq_self₀]
+
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
   NoZeroDivisors.to_isDomain _
@@ -158,9 +167,8 @@ section Field
 
 variable [Field K]
 
-instance (priority := 100) Field.toGrindField [Field K] : Lean.Grind.Field K :=
+instance (priority := 100) Field.toGrindField : Lean.Grind.Field K :=
   { CommRing.toGrindCommRing K, ‹Field K› with
-    inv a := a⁻¹
     zpow := ⟨fun a n => a^n⟩
     zpow_zero a := by simp
     zpow_succ a n := by
@@ -168,7 +176,7 @@ instance (priority := 100) Field.toGrindField [Field K] : Lean.Grind.Field K :=
       · rw [← Int.natCast_add_one, zpow_natCast, zpow_natCast, pow_succ]
       · rw [zpow_add_one₀ h]
     zpow_neg a n := by simp
-    zero_ne_one := zero_ne_one' K }
+    zero_ne_one := zero_ne_one }
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 
@@ -286,11 +294,12 @@ end Function.Injective
 
 namespace OrderDual
 
-instance instRatCast [RatCast K] : RatCast Kᵒᵈ := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing Kᵒᵈ := ‹_›
-instance instSemifield [Semifield K] : Semifield Kᵒᵈ := ‹_›
-instance instField [Field K] : Field Kᵒᵈ := ‹_›
+instance [RatCast K] : RatCast Kᵒᵈ := inferInstanceAs <| RatCast K
+instance [NNRatCast K] : NNRatCast Kᵒᵈ := inferInstanceAs <| NNRatCast K
+instance [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := inferInstanceAs <| DivisionSemiring K
+instance [DivisionRing K] : DivisionRing Kᵒᵈ := inferInstanceAs <| DivisionRing K
+instance [Semifield K] : Semifield Kᵒᵈ := inferInstanceAs <| Semifield K
+instance [Field K] : Field Kᵒᵈ := inferInstanceAs <| Field K
 
 end OrderDual
 
@@ -302,11 +311,11 @@ end OrderDual
 
 namespace Lex
 
-instance instRatCast [RatCast K] : RatCast (Lex K) := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring (Lex K) := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing (Lex K) := ‹_›
-instance instSemifield [Semifield K] : Semifield (Lex K) := ‹_›
-instance instField [Field K] : Field (Lex K) := ‹_›
+instance [RatCast K] : RatCast (Lex K) := inferInstanceAs <| RatCast K
+instance [DivisionSemiring K] : DivisionSemiring (Lex K) := inferInstanceAs <| DivisionSemiring K
+instance [DivisionRing K] : DivisionRing (Lex K) := inferInstanceAs <| DivisionRing K
+instance [Semifield K] : Semifield (Lex K) := inferInstanceAs <| Semifield K
+instance [Field K] : Field (Lex K) := inferInstanceAs <| Field K
 
 end Lex
 

@@ -22,13 +22,13 @@ subgroup, subgroups
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Sort*} {G : Type*} [Group G]
 
 namespace Subgroup
 
-/- We redeclare this instance to get keys
+/-- We redeclare this instance to get keys
 `SMul (@Subtype (MulOpposite _) (@Membership.mem (MulOpposite _)
   (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
 compared to the keys for `Submonoid.smul`

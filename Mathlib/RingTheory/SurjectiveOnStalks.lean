@@ -62,7 +62,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
         IsLocalization.mk'_eq_iff_eq, IsLocalization.eq_iff_exists P.primeCompl]
       refine ⟨⟨yc, hyc⟩ * ⟨yt, hyt⟩, ?_⟩
       simp only [Submonoid.coe_mul]
-      convert congr($(ey.symm) * $(et)) using 1 <;> ring
+      convert! congr($(ey.symm) * $(et)) using 1 <;> ring
 
 lemma surjectiveOnStalks_iff_forall_ideal :
     f.SurjectiveOnStalks ↔
@@ -118,6 +118,10 @@ lemma SurjectiveOnStalks.of_comp (hg : SurjectiveOnStalks (g.comp f)) :
     RingHom.coe_comp] at this
   exact this.of_comp
 
+lemma SurjectiveOnStalks.localRingHom_surjective (hf : SurjectiveOnStalks f)
+    (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] (e : P = Q.comap f) :
+    Function.Surjective (Localization.localRingHom P Q f e) :=
+  e ▸ hf Q _
 
 open TensorProduct
 
@@ -185,8 +189,11 @@ lemma SurjectiveOnStalks.baseChange
 lemma SurjectiveOnStalks.baseChange' [Algebra R T] [Algebra R S]
     (hf : (algebraMap R S).SurjectiveOnStalks) :
     (Algebra.TensorProduct.includeRight (R := R) (A := S) (B := T)).SurjectiveOnStalks := by
-  convert (surjectiveOnStalks_of_surjective (Algebra.TensorProduct.comm R T S).surjective).comp
-    (hf.baseChange (S := T))
+  convert!
+    (surjectiveOnStalks_of_surjective (Algebra.TensorProduct.comm R T S).surjective).comp
+      (hf.baseChange (S := T))
+        -- Subsumed by `RingHom.SurjectiveOnStalks.tensorProductMap`.
+
 
 -- Subsumed by `RingHom.SurjectiveOnStalks.tensorProductMap`.
 private lemma SurjectiveOnStalks.tensorProductMap_id
@@ -207,11 +214,12 @@ lemma SurjectiveOnStalks.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) {g : T →ₐ[R] T'} (Hg : g.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f g).SurjectiveOnStalks := by
-  convert RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
-    RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+  convert!
+    RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
+      (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
+        RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|
+          (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks
+  simp only [AlgHom.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
   congr
   ext <;> simp

@@ -278,7 +278,7 @@ theorem length_permutationsAux :
   refine permutationsAux.rec (by simp) ?_
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp only [length, factorial, Nat.mul_comm, add_eq] at IH1
+  simp only [List.length_cons, factorial, Nat.mul_comm, add_eq] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, Nat.mul_comm (_ + 1),
@@ -313,6 +313,17 @@ theorem mem_permutationsAux_of_perm :
 @[simp]
 theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
+
+/-- A list is a permutation of the pair `[a, b]` if and only if it is equal to `[a, b]` or to
+`[b, a]`. -/
+theorem perm_pair {a b : α} {l : List α} : l ~ [a, b] ↔ l = [a, b] ∨ l = [b, a] := by
+  have : [a, b].permutations = [[a, b], [b, a]] := by cbv
+  grind [=_ mem_permutations]
+
+/-- The pair `[a, b]` is a permutation of a list if and only if that list is equal to `[a, b]` or
+to `[b, a]`. -/
+theorem pair_perm {a b : α} {l : List α} : [a, b] ~ l ↔ l = [a, b] ∨ l = [b, a] :=
+  perm_comm.trans perm_pair
 
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).flatMap (permutations'Aux b) ~

@@ -33,12 +33,12 @@ variable {α β : Type*} [Fintype α] [LinearOrder α] [LinearOrder β] {f : α 
 
 /-- The possible lengths of an increasing sequence which ends at `i`. -/
 private noncomputable def incSequencesTo (f : α → β) (i : α) : Finset ℕ :=
-  open Classical in
+  open scoped Classical in
   image card {t : Finset α | IsGreatest t i ∧ StrictMonoOn f t}
 
 /-- The possible lengths of a decreasing sequence which ends at `i`. -/
 private noncomputable def decSequencesTo (f : α → β) (i : α) : Finset ℕ :=
-  open Classical in
+  open scoped Classical in
   image card {t : Finset α | IsGreatest t i ∧ StrictAntiOn f t}
 
 /-- The singleton sequence is increasing, so 1 is a possible length. -/
@@ -91,7 +91,7 @@ private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
     exact (hti.2 hx).trans_lt hij
   refine ⟨insert j t, ?_, ?_, ?_⟩
   next =>
-    convert hti.insert j using 1
+    convert hti.insert j
     next => simp
     next => rw [max_eq_left hij.le]
   next =>

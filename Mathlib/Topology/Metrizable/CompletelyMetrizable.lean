@@ -74,6 +74,7 @@ instance (priority := 100) IsCompletelyPseudoMetrizableSpace.of_completeSpace_ps
 
 /-- Construct on a completely pseudometrizable space a pseudometric (compatible with the topology)
 which is complete. -/
+@[implicit_reducible]
 noncomputable def completelyPseudoMetrizableMetric (X : Type*) [TopologicalSpace X]
     [h : IsCompletelyPseudoMetrizableSpace X] : PseudoMetricSpace X :=
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
@@ -81,11 +82,12 @@ noncomputable def completelyPseudoMetrizableMetric (X : Type*) [TopologicalSpace
 theorem complete_completelyPseudoMetrizableMetric (X : Type*) [ht : TopologicalSpace X]
     [h : IsCompletelyPseudoMetrizableSpace X] :
     @CompleteSpace X (completelyPseudoMetrizableMetric X).toUniformSpace := by
-  convert h.complete.choose_spec.2
+  convert! h.complete.choose_spec.2
   exact PseudoMetricSpace.replaceTopology_eq _ _
 
 /-- This definition endows a completely pseudometrizable space with a complete pseudometric.
 Use it as: `letI := upgradeIsCompletelyPseudoMetrizable X`. -/
+@[implicit_reducible]
 noncomputable
 def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] :
@@ -185,6 +187,7 @@ instance (priority := 100) IsCompletelyMetrizableSpace.of_completeSpace_metrizab
 
 /-- Construct on a completely metrizable space a metric (compatible with the topology)
 which is complete. -/
+@[implicit_reducible]
 noncomputable def completelyMetrizableMetric (X : Type*) [TopologicalSpace X]
     [h : IsCompletelyMetrizableSpace X] : MetricSpace X :=
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
@@ -192,11 +195,12 @@ noncomputable def completelyMetrizableMetric (X : Type*) [TopologicalSpace X]
 theorem complete_completelyMetrizableMetric (X : Type*) [ht : TopologicalSpace X]
     [h : IsCompletelyMetrizableSpace X] :
     @CompleteSpace X (completelyMetrizableMetric X).toUniformSpace := by
-  convert h.complete.choose_spec.2
+  convert! h.complete.choose_spec.2
   exact MetricSpace.replaceTopology_eq _ _
 
 /-- This definition endows a completely metrizable space with a complete metric. Use it as:
 `letI := upgradeIsCompletelyMetrizable X`. -/
+@[implicit_reducible]
 noncomputable
 def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     UpgradedIsCompletelyMetrizableSpace X :=
@@ -269,7 +273,7 @@ instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
   refine ⟨m, ?_, ?_⟩
   · rw [DiscreteTopology.eq_bot (α := X)]
     refine eq_bot_of_singletons_open fun x ↦ ?_
-    convert @Metric.isOpen_ball _ _ x 1
+    convert! @Metric.isOpen_ball _ _ x 1
     refine subset_antisymm (singleton_subset_iff.2 (Metric.mem_ball_self (by simp)))
       fun y hy ↦ ?_
     simp only [Metric.mem_ball, mem_singleton_iff] at *

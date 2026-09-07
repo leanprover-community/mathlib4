@@ -5,10 +5,10 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Embedding of archimedean groups into reals
@@ -106,7 +106,7 @@ theorem ratLt_nonempty (x : M) : (ratLt x).Nonempty := by
     use Rat.mk' 1 (n + 1) (by simp) (by simp)
     simpa using hn.trans_lt <| (nsmul_lt_nsmul_iff_left hxpos).mpr (by simp)
 
-open Pointwise in
+open scoped Pointwise in
 theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
   ext a
   rw [Set.mem_add]
@@ -132,7 +132,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
     · have hk' : 1 + (k • a.num • 1 - k • a.den • y) ≤ k • a.den • x - 1 := by
         rw [smul_add, smul_sub, smul_add, le_sub_iff_add_le, ← sub_le_iff_le_add] at hk
         rw [le_sub_iff_add_le]
-        convert hk using 1
+        convert! hk using 1
         abel
       have : k • a.num • 1 - k • a.den • y < m • 1 :=
         lt_of_lt_of_le (lt_add_of_pos_left _ zero_lt_one) (by simpa using hk'.trans hm1)
@@ -151,7 +151,7 @@ theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=
 
 theorem ratLt'_nonempty (x : M) : (ratLt' x).Nonempty := Set.image_nonempty.mpr (ratLt_nonempty x)
 
-open Pointwise in
+open scoped Pointwise in
 theorem ratLt'_add (x y : M) : ratLt' (x + y) = ratLt' x + ratLt' y := by
   rw [ratLt', ratLt_add, Set.image_add]
 

@@ -27,7 +27,7 @@ theorem map_real_smul {G} [FunLike G E F] [AddMonoidHomClass G E F] (f : G) (hf 
     (c : ℝ) (x : E) :
     f (c • x) = c • f x :=
   suffices (fun c : ℝ => f (c • x)) = fun c : ℝ => c • f x from congr_fun this c
-  Rat.isDenseEmbedding_coe_real.dense.equalizer (hf.comp <| continuous_id.smul continuous_const)
+  Rat.isDenseEmbedding_coe_real.dense.equalizer (by fun_prop)
     (continuous_id.smul continuous_const) (funext fun r => map_ratCast_smul f ℝ ℝ r x)
 
 namespace AddMonoidHom
@@ -45,6 +45,7 @@ theorem coe_toRealLinearMap (f : E →+ F) (hf : Continuous f) : ⇑(f.toRealLin
 
 end AddMonoidHom
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Reinterpret a continuous additive equivalence between two real vector spaces
 as a continuous real-linear map. -/
 def AddEquiv.toRealLinearEquiv (e : E ≃+ F) (h₁ : Continuous e) (h₂ : Continuous e.symm) :

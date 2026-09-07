@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
@@ -52,7 +52,7 @@ theorem bijective_eq_sup :
 instance : (MorphismProperty.injective C).IsMultiplicative where
   id_mem X := by
     delta MorphismProperty.injective
-    convert injective_id
+    convert! injective_id
     aesop
   comp_mem f g hf hg := by
     delta MorphismProperty.injective
@@ -62,7 +62,7 @@ instance : (MorphismProperty.injective C).IsMultiplicative where
 instance : (MorphismProperty.surjective C).IsMultiplicative where
   id_mem X := by
     delta MorphismProperty.surjective
-    convert surjective_id
+    convert! surjective_id
     aesop
   comp_mem f g hf hg := by
     delta MorphismProperty.surjective
@@ -72,7 +72,7 @@ instance : (MorphismProperty.surjective C).IsMultiplicative where
 instance : (MorphismProperty.bijective C).IsMultiplicative where
   id_mem X := by
     delta MorphismProperty.bijective
-    convert bijective_id
+    convert! bijective_id
     aesop
   comp_mem f g hf hg := by
     delta MorphismProperty.bijective
@@ -114,23 +114,22 @@ end ConcreteCategory
 
 open ConcreteCategory
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- In the category of types, any map can be functorially factored as a surjective
 map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :
     FunctorialSurjectiveInjectiveFactorizationData (Type u) where
   Z :=
-    { obj := fun f => Subtype (Set.range f.hom)
-      map := fun φ y => ⟨φ.right y.1, by
+    { obj := fun f => Subtype (Set.range f.hom.hom)
+      map := fun φ => ↾fun y => ⟨φ.right y.1, by
         obtain ⟨_, x, rfl⟩ := y
-        exact ⟨φ.left x, congr_fun φ.w x⟩ ⟩ }
+        exact ⟨φ.left x, congr_hom φ.w x⟩ ⟩ }
   i :=
-    { app := fun f x => ⟨f.hom x, ⟨x, rfl⟩⟩
+    { app := fun f => ↾fun x => ⟨f.hom x, ⟨x, rfl⟩⟩
       naturality := fun f g φ => by
         ext x
-        exact congr_fun φ.w x }
+        exact congr_hom φ.w x }
   p :=
-    { app := fun _ y => y.1
+    { app := fun _ => ↾fun y => y.1
       naturality := by intros; rfl; }
   fac := rfl
   hi := by
@@ -140,7 +139,6 @@ def functorialSurjectiveInjectiveFactorizationData :
     rw [Subtype.ext_iff]
     exact h
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : HasFunctorialSurjectiveInjectiveFactorization (Type u) where
   nonempty_functorialFactorizationData :=
     ⟨functorialSurjectiveInjectiveFactorizationData⟩

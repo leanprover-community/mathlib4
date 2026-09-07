@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Order.SuccPred.IntervalSucc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 
 /-!
 # Absolutely Continuous Functions
@@ -30,24 +31,26 @@ We use the filter version to prove that absolutely continuous functions are clos
 * negation - `AbsolutelyContinuousOnInterval.neg`;
 * subtraction - `AbsolutelyContinuousOnInterval.sub`;
 * scalar multiplication - `AbsolutelyContinuousOnInterval.const_smul`,
-`AbsolutelyContinuousOnInterval.const_mul`;
+  `AbsolutelyContinuousOnInterval.const_mul`;
 * multiplication - `AbsolutelyContinuousOnInterval.smul`,
-`AbsolutelyContinuousOnInterval.mul`;
+  `AbsolutelyContinuousOnInterval.mul`;
+
 and that absolutely continuous implies uniformly continuous in
-`AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
+`AbsolutelyContinuousOnInterval.uniformContinuousOn`.
 
 We use the `ε`-`δ` definition to prove that
 * Lipschitz continuous functions are absolutely continuous -
-`LipschitzOnWith.absolutelyContinuousOnInterval`;
+  `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
-`AbsolutelyContinuousOnInterval.boundedVariationOn`.
+  `AbsolutelyContinuousOnInterval.boundedVariationOn`.
 
 We conclude that
 * absolutely continuous functions are a.e. differentiable -
-`AbsolutelyContinuousOnInterval.ae_differentiableAt`;
+  `AbsolutelyContinuousOnInterval.ae_differentiableAt`;
 * if `f` is integrable on `uIcc a b`, then for any `c` in `uIcc a b`, `fun x ↦ ∫ v in c..x, f v`
-is absolutely continuous on `uIcc a b` -
-`IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
+  is absolutely continuous on `uIcc a b` -
+  `IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
+
 ## Tags
 absolutely continuous
 -/
@@ -66,11 +69,11 @@ namespace AbsolutelyContinuousOnInterval
 function that maps the finite sequence of the intervals to the total length of the intervals.
 Details:
 1. Technically the filter is on `ℕ × (ℕ → X × X)`. A finite sequence `uIoc (a i) (b i)`, `i < n`
-is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)` for
-`i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
+   is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)`
+   for `i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
 2. For a sequence `G : ℕ → ℕ × (ℕ → X × X)`, convergence of `G` along `totalLengthFilter` means that
-the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
-tends to `0` as `j` tends to infinity.
+   the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
+   tends to `0` as `j` tends to infinity.
 -/
 def totalLengthFilter : Filter (ℕ × (ℕ → X × X)) := Filter.comap
   (fun E ↦ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2) (𝓝 0)
@@ -78,7 +81,7 @@ def totalLengthFilter : Filter (ℕ × (ℕ → X × X)) := Filter.comap
 lemma hasBasis_totalLengthFilter : totalLengthFilter.HasBasis (fun (ε : ℝ) => 0 < ε)
     (fun (ε : ℝ) =>
       {E : ℕ × (ℕ → X × X) | ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < ε}) := by
-  convert Filter.HasBasis.comap (α := ℝ) _ (nhds_basis_Ioo_pos _) using 1
+  convert! Filter.HasBasis.comap (α := ℝ) _ (nhds_basis_Ioo_pos _) using 1
   ext ε E
   simp only [mem_setOf_eq, zero_sub, zero_add, mem_preimage, mem_Ioo, iff_and_self]
   suffices 0 ≤ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 by grind
@@ -103,10 +106,7 @@ lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
 lemma uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
     (hnI : (n, I) ∈ disjWithin a b) {i : ℕ} (hi : i < n) : uIoc (I i).1 (I i).2 ⊆ uIoc a b := by
   simp only [disjWithin, Finset.mem_range, mem_setOf_eq, uIcc, mem_Icc] at hnI
-  have := hnI.left i hi
-  dsimp only [uIoc]; gcongr 1
-  · simp only [le_inf_iff]; tauto
-  · simp only [sup_le_iff]; tauto
+  grind
 
 lemma biUnion_uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
     (hnI : (n, I) ∈ disjWithin a b) :
@@ -119,7 +119,7 @@ lemma tendsto_volume_totalLengthFilter_nhds_zero :
     totalLengthFilter (𝓝 0) := by
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (h := fun E ↦ ENNReal.ofReal (∑ i ∈ Finset.range E.1, (dist (E.2 i).1 (E.2 i).2)))
-  · convert ENNReal.tendsto_ofReal (Filter.tendsto_comap)
+  · convert! ENNReal.tendsto_ofReal (Filter.tendsto_comap)
     simp
   · intro; simp
   · intro E
@@ -196,7 +196,7 @@ theorem add (hf : AbsolutelyContinuousOnInterval f a b)
 @[to_fun]
 theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (-f) a b := by
-  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf)
+  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using! hf)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
   · simp
 
@@ -220,16 +220,16 @@ theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInter
 lemma uniformity_eq_comap_totalLengthFilter :
     uniformity X = comap (fun x ↦ (1, fun _ ↦ x)) totalLengthFilter := by
   refine Filter.HasBasis.eq_of_same_basis Metric.uniformity_basis_dist ?_
-  convert hasBasis_totalLengthFilter.comap _
+  convert! hasBasis_totalLengthFilter.comap _
   simp
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is uniformly continuous on `uIcc a b`.
 -/
-theorem uniformlyContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
+theorem uniformContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     UniformContinuousOn f (uIcc a b) := by
   simp only [UniformContinuousOn, Filter.tendsto_iff_comap, uniformity_eq_comap_totalLengthFilter]
   simp only [AbsolutelyContinuousOnInterval, Filter.tendsto_iff_comap] at hf
-  convert Filter.comap_mono hf
+  convert! Filter.comap_mono hf
   · simp only [comap_inf, comap_principal]
     congr
     ext p
@@ -238,10 +238,13 @@ theorem uniformlyContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     simp
   · simp [totalLengthFilter, comap_comap, Function.comp_def]
 
+@[deprecated (since := "2026-02-03")] alias uniformlyContinuousOn :=
+  uniformContinuousOn
+
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is continuous on `uIcc a b`. -/
 theorem continuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     ContinuousOn f (uIcc a b) :=
-  hf.uniformlyContinuousOn.continuousOn
+  hf.uniformContinuousOn.continuousOn
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is bounded on `uIcc a b`. -/
 theorem exists_bound (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -305,6 +308,13 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field
 
+/-- If `f` is `C^1` on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
+theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {f : ℝ → E} (hf : ContDiffOn ℝ 1 f (uIcc a b)) :
+    AbsolutelyContinuousOnInterval f a b := by
+  obtain ⟨K, hK⟩ := hf.exists_lipschitzOnWith (by decide) (convex_Icc _ _) isCompact_Icc
+  exact hK.absolutelyContinuousOnInterval
+
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` has bounded variation on `uIcc a b`. -/
 theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     BoundedVariationOn f (uIcc a b) := by
@@ -329,7 +339,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   set δ' := (b - a) / (n + 1)
   have hδ₃ : δ' < δ := by
     dsimp only [δ']
-    convert mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
+    convert! mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
   have h_mono : Monotone fun (i : ℕ) ↦ a + ↑i * δ' := by
     apply Monotone.const_add
     apply Monotone.mul_const Nat.mono_cast
@@ -338,7 +348,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   -- The variation of `f` on `[a, b]` is the sum of the variations on these subintervals.
   have v_sum : eVariationOn f (Icc a b) =
       ∑ i ∈ Finset.range (n + 1), eVariationOn f (Icc (a + i * δ') (a + (i + 1) * δ')) := by
-    convert eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono |>.symm
+    convert! eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono |>.symm
     · simp
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field
     · norm_cast
@@ -356,10 +366,10 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           intro i hi
           constructor <;> exact this (hp₂ _)
         · rw [PairwiseDisjoint]
-          convert hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
+          convert! hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
           rw [uIoc_of_le (hp₁ (by lia)), Nat.succ_eq_succ]
       · suffices p.2.val p.1 - p.2.val 0 < δ by
-          convert this
+          convert! this
           rw [← Finset.sum_range_sub]
           congr; ext i
           rw [dist_comm, Real.dist_eq, abs_eq_self.mpr]
@@ -373,7 +383,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     have not_top : ∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i)) ≠ ⊤ := by
       simp [edist_ne_top]
     rw [← ENNReal.ofReal_toReal not_top]
-    convert ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)
+    convert! ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)
     simp
   -- Reduce to goal that the variation of `f` on each of these subintervals is finite.
   simp only [BoundedVariationOn, v_sum, ne_eq, ENNReal.sum_eq_top, Finset.mem_range, not_exists,
@@ -384,10 +394,10 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     fun hC ↦ by simp [hC] at this
   -- Verify that `[a + i * δ', a + (i + 1) * δ']` is indeed a subinterval of `[a, b]`
   apply v_each
-  · convert h_mono (show 0 ≤ i by lia); simp
-  · convert h_mono (show i ≤ i + 1 by lia); norm_cast
+  · convert! h_mono (show 0 ≤ i by lia); simp
+  · convert! h_mono (show i ≤ i + 1 by lia); norm_cast
   · rw [add_mul, ← add_assoc]; simpa
-  · convert h_mono (show i + 1 ≤ n + 1 by lia)
+  · convert! h_mono (show i + 1 ≤ n + 1 by lia)
     · norm_cast
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field
 

@@ -30,7 +30,7 @@ open MiuAtom Nat List
 
 Suppose `st : Miustr`. Then `count I st` is the number of `I`s in `st`. We'll show, if
 `Derivable st`, then `count I st` must be 1 or 2 modulo 3. To do this, it suffices to show that if
-the `en : Miustr` is derived from `st`, then `count I en` moudulo 3 is either equal to or is twice
+the `en : Miustr` is derived from `st`, then `count I en` modulo 3 is either equal to or is twice
 `count I st`, modulo 3.
 -/
 
@@ -77,8 +77,7 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
     apply mod3_eq_1_or_mod3_eq_2 h_ih; left
     rw [count_append, count_append, count_append]
     simp_rw [count_cons_self, count_nil, count_cons, beq_iff_eq, reduceCtorEq, ite_false,
-      add_right_comm, add_mod_right]
-    simp
+      add_right_comm, add_mod_right, add_zero]
   | r4 _ h_ih =>
     apply mod3_eq_1_or_mod3_eq_2 h_ih; left
     rw [count_append, count_append, count_append]
@@ -104,8 +103,7 @@ string to be derivable, namely that the string must start with an M and contain 
 -/
 def Goodm (xs : Miustr) : Prop :=
   List.headI xs = M ∧ M ∉ List.tail xs
-
-instance : DecidablePred Goodm := by unfold Goodm; infer_instance
+deriving Decidable
 
 /-- Demonstration that `"MI"` starts with `M` and has no `M` in its tail.
 -/
@@ -135,7 +133,7 @@ theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M 
   constructor
   · rfl
   · obtain ⟨mhead, mtail⟩ := h₂
-    contrapose! mtail
+    contrapose mtail
     rw [cons_append] at mtail
     exact or_self_iff.mp (mem_append.mp mtail)
 
@@ -147,7 +145,7 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs
   · cases as
     · contradiction
     exact mhead
-  · contrapose! nmtail
+  · contrapose nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
     simp_rw [cons_append] at nmtail ⊢
     simpa using nmtail
@@ -165,7 +163,7 @@ theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
   · cases as
     · contradiction
     exact mhead
-  · contrapose! nmtail
+  · contrapose nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
     simp_rw [cons_append] at nmtail ⊢
     simpa using nmtail
@@ -193,8 +191,7 @@ that `en` has no `M` in its tail. We automatically derive that this is a decidab
 -/
 def Decstr (en : Miustr) :=
   Goodm en ∧ (count I en % 3 = 1 ∨ count I en % 3 = 2)
-
-instance : DecidablePred Decstr := by unfold Decstr; infer_instance
+deriving Decidable
 
 /-- Suppose `en : Miustr`. If `en` is `Derivable`, then the condition `Decstr en` holds.
 -/

@@ -57,9 +57,9 @@ lemma contract_delete_isMinor (M : Matroid α) (C D : Set α) : M ／ C ＼ D �
 lemma IsMinor.exists_eq_contract_delete_disjoint (h : N ≤m M) :
     ∃ (C D : Set α), C ⊆ M.E ∧ D ⊆ M.E ∧ Disjoint C D ∧ N = M ／ C ＼ D := by
   obtain ⟨C, D, rfl⟩ := h
-  exact ⟨C ∩ M.E, (D ∩ M.E) \ C, inter_subset_right, diff_subset.trans inter_subset_right,
+  exact ⟨C ∩ M.E, (D ∩ M.E) \ C, inter_subset_right, sdiff_subset.trans inter_subset_right,
     disjoint_sdiff_right.mono_left inter_subset_left,
-    by simp [delete_eq_delete_iff, inter_assoc, inter_diff_assoc]⟩
+    by simp [delete_eq_delete_iff, inter_assoc, inter_sdiff_assoc]⟩
 
 /-- `N` is a strict minor of `M` if `N` is a minor of `M` and `N ≠ M`.
 Equivalently, `N` is obtained from `M` by deleting/contracting subsets of the ground set
@@ -71,7 +71,7 @@ infixl:50 " <m " => Matroid.IsStrictMinor
 
 lemma IsMinor.subset (h : N ≤m M) : N.E ⊆ M.E := by
   obtain ⟨C, D, rfl⟩ := h
-  exact diff_subset.trans diff_subset
+  exact sdiff_subset.trans sdiff_subset
 
 lemma IsMinor.refl {M : Matroid α} : M ≤m M := ⟨∅, ∅, by simp⟩
 
@@ -82,7 +82,7 @@ lemma IsMinor.trans {M₁ M₂ M₃ : Matroid α} (h : M₁ ≤m M₂) (h' : M�
 
 lemma IsMinor.eq_of_ground_subset (h : N ≤m M) (hE : M.E ⊆ N.E) : M = N := by
   obtain ⟨C, D, rfl⟩ := h
-  rw [delete_ground, contract_ground, subset_diff, subset_diff] at hE
+  rw [delete_ground, contract_ground, subset_sdiff, subset_sdiff] at hE
   rw [← contract_inter_ground_eq, hE.1.2.symm.inter_eq, contract_empty, ← delete_inter_ground_eq,
     hE.2.symm.inter_eq, delete_empty]
 

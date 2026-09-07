@@ -17,7 +17,7 @@ Let `R` have field of fractions `ℚ`. If `v : HeightOneSpectrum R`, then `v.adi
 the uniform space completion of `ℚ` with respect to the `v`-adic valuation.
 On the other hand, `ℚ_[p]` is the `p`-adic numbers, defined as the completion of `ℚ` with respect
 to the `p`-adic norm using the completion of Cauchy sequences. This file constructs continuous
-`ℚ`-algebra` isomorphisms between the two, as well as continuous `ℤ`-algebra isomorphisms for their
+`ℚ`-algebra isomorphisms between the two, as well as continuous `ℤ`-algebra isomorphisms for their
 respective rings of integers.
 
 Isomorphisms are provided in both directions, allowing traversal of the following diagram:
@@ -113,7 +113,7 @@ noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
   toFun v := ⟨natGenerator v, prime_natGenerator v⟩
   invFun p :=
     have h : Prime ((Ideal.span {(p.1 : ℤ)}).map (IsIntegralClosure.intEquiv R).symm) :=
-      map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.2]) (by simp [p.2.ne_zero])
+      Ideal.map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.2]) (by simp [p.2.ne_zero])
     .ofPrime h
   left_inv v := by
     simp only [Ideal.map_symm]
@@ -141,30 +141,34 @@ open Valuation
 noncomputable def withValEquiv (v : HeightOneSpectrum R) :
     WithVal (v.valuation ℚ) ≃ᵤ WithVal (padicValuation (primesEquiv v)) :=
   (valuation_equiv_padicValuation v).uniformEquiv
-    (exists_div_eq_of_surjective (v.valuation_surjective ℚ))
-    (exists_div_eq_of_surjective (surjective_padicValuation (primesEquiv v)))
 
 /-- The continuous `ℚ`-algebra isomorphism between `v.adicCompletion ℚ` and `ℚ_[primesEquiv v]`. -/
 noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
     v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v] where
-  __ := (mapRingEquiv _ (withValEquiv v).continuous
+  __ := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.equiv ℚ v).trans <|
+    (mapRingEquiv _ (withValEquiv v).continuous
       (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
-  __ := ((mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
+  __ := ((IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).trans <|
+    (mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
   commutes' := by simp
 
 /-- The continuous `ℤ`-algebra isomorphism between `v.adicCompletionIntegers ℚ` and
 `ℤ_[primesEquiv v]`. -/
 noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R) :
     v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v] where
-  __ := let e := (mapRingEquiv _ (withValEquiv v).continuous
+  __ := let e0 := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.equiv ℚ v).restrict
+          (v.adicCompletionIntegers ℚ)
+          (Valued.v (R := (v.valuation ℚ).Completion)).valuationSubring
+          fun _ ↦ by rw [HeightOneSpectrum.mem_adicCompletionIntegers]; rfl
+        let e := (mapRingEquiv _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
-            simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
-              (v.valuation_surjective ℚ) (surjective_padicValuation _)
-        e.trans withValIntegersRingEquiv
-  __ := let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
-          simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
-            (v.valuation_surjective ℚ) (surjective_padicValuation _)
-        (e.trans withValIntegersUniformEquiv).toHomeomorph
+            simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
+        (e0.trans e).trans withValIntegersRingEquiv
+  __ := let e0 := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).subtype
+          fun _ ↦ by rw [HeightOneSpectrum.mem_adicCompletionIntegers]; rfl
+        let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
+          simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
+        ((e0.trans e).trans withValIntegersUniformEquiv).toHomeomorph
   commutes' := by simp
 
 /-- The diagram

@@ -10,7 +10,7 @@ section delaborator
 #guard_msgs in
 #check !₂[1, 2, 3]
 
-set_option pp.mvars false in
+set_option pp.mvars.anonymous false in
 /-- info: !₀[] : WithLp 0 (Fin 0 → ?_) -/
 #guard_msgs in
 #check !₀[]

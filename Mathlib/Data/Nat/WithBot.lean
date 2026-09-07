@@ -14,7 +14,7 @@ public import Mathlib.Order.Nat
 Lemmas about the type of natural numbers with a bottom element adjoined.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat
@@ -34,7 +34,7 @@ theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := b
 
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 := by
   cases n
-  · simp only [WithBot.bot_add, WithBot.bot_ne_one, WithBot.bot_ne_zero, false_and, or_self]
+  · simp
   cases m
   · simp [WithBot.add_bot]
   simp [← WithBot.coe_add, Nat.add_eq_one_iff]

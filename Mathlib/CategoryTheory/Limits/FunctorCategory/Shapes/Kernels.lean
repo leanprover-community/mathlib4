@@ -18,12 +18,14 @@ namespace CategoryTheory.Limits
 universe u
 variable (C : Type*) [Category.{u} C] [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The kernel inclusion is itself a kernel in the functor category. -/
 noncomputable def kerIsKernel [HasKernels C] :
     IsLimit (KernelFork.ofι (ker.ι C) (ker.condition C)) :=
   evaluationJointlyReflectsLimits _ fun f ↦ (KernelFork.isLimitMapConeEquiv ..).2 <|
     (kernelIsKernel f.hom).ofIsoLimit <| Fork.ext <| .refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cokernel projection is itself a cokernel in the functor category. -/
 noncomputable def cokerIsCokernel [HasCokernels C] :
     IsColimit (CokernelCofork.ofπ (coker.π C) (coker.condition C)) :=

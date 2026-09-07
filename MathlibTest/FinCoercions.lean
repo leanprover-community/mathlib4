@@ -3,9 +3,10 @@
 -- Such coercions introduce unexpected invisible wrap-around arithmetic.
 -- `open Fin.CommRing ...` *does* introduce such a coercion.
 
+module
 import Mathlib
 
-set_option pp.mvars false
+set_option pp.mvars.anonymous false
 
 -- We first verify that there is no global coercion from `Nat` to `Fin n`.
 -- Such a coercion would frequently introduce unexpected modular arithmetic.

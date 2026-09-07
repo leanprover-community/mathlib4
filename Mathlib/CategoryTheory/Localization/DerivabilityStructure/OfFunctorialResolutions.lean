@@ -46,6 +46,7 @@ open Functor
 
 variable {Φ i}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `Φ : LocalizerMorphism W₁ W₂` corresponds to a class `W₁` that is
 the inverse image of `W₂` by the functor `Φ.functor` and that we
 have functorial right resolutions, then this is a morphism of localizers
@@ -80,6 +81,7 @@ lemma Φ_functor_map_ι_app (X₁ : C₁) :
   NatTrans.congr_app (((whiskeringRight C₁ C₁ C₂).obj Φ.functor).map_preimage
     (X := 𝟭 C₁) (Y := Φ.functor ⋙ ρ) (whiskerLeft Φ.functor i)) X₁
 
+set_option backward.isDefEq.respectTransparency false in
 include hW₁ hi in
 lemma W₁_ι_app (X₁ : C₁) : W₁ ((ι i).app X₁) := by
   simpa [hW₁] using hi (Φ.functor.obj X₁)
@@ -98,6 +100,7 @@ lemma isLocalizedEquivalence_of_functorial_right_resolutions :
 
 variable [W₂.IsMultiplicative]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isConnected_rightResolution_of_functorial_resolutions (X₂ : C₂) :
     letI : W₁.IsMultiplicative := by rw [hW₁]; infer_instance
     IsConnected (Φ.RightResolution X₂) := by

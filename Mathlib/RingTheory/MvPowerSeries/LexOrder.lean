@@ -8,9 +8,9 @@ module
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.Data.Finsupp.WellFounded
 
-/-! LexOrder of multivariate power series
+/-! # LexOrder of multivariate power series
 
-Given an ordering of `σ` such that `WellOrderGT σ`,
+Given an ordering of `σ` such that `WellFoundedGT σ`,
 the lexicographic order on `σ →₀ ℕ` is a well ordering,
 which can be used to define a natural valuation `lexOrder` on the ring `MvPowerSeries σ R`:
 the smallest exponent in the support.
@@ -33,13 +33,13 @@ variable [LinearOrder σ] [WellFoundedGT σ]
 noncomputable def lexOrder (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ ℕ))) := by
   classical
   exact if h : φ = 0 then ⊤ else by
-    have ne : Set.Nonempty (toLex '' φ.support) := by
-      simp only [Set.image_nonempty, Function.support_nonempty_iff, ne_eq, h, not_false_eq_true]
+    have ne : Set.Nonempty (toLex '' φ.support) := by simpa
     apply WithTop.some
     apply WellFounded.min _ (toLex '' φ.support) ne
     · exact Finsupp.instLTLex.lt
     · exact wellFounded_lt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     ∃ (ne : Set.Nonempty (toLex '' φ.support)),
       lexOrder φ = WithTop.some ((@wellFounded_lt (Lex (σ →₀ ℕ))
@@ -88,7 +88,7 @@ theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ �
   · rcases lexOrder_def_of_ne_zero hφ with ⟨ne, hφ'⟩
     rw [hφ', WithTop.coe_lt_coe] at h
     by_contra h'
-    exact WellFounded.not_lt_min _ (toLex '' φ.support) ne (Set.mem_image_equiv.mpr h') h
+    exact WellFounded.not_lt_min _ (toLex '' φ.support) (Set.mem_image_equiv.mpr h') h
 
 theorem lexOrder_le_of_coeff_ne_zero {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : coeff d φ ≠ 0) : lexOrder φ ≤ toLex d := by

@@ -38,6 +38,7 @@ lemma Ideal.span_eq_top_of_span_image_evalRingHom
   ext i
   simpa [Finsupp.sum_fintype] using hf i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_of_sigmaSpec_subset_of_isCompact
     (U : (Spec <| .of <| Π i, R i).Opens) (V : Set (Spec <| .of <| Π i, R i))
     (hV : ↑(sigmaSpec R).opensRange ⊆ V)
@@ -79,7 +80,7 @@ lemma isIso_of_comp_eq_sigmaSpec {V : Scheme}
     (hU' : f ≫ g = sigmaSpec R) : IsIso g := by
   have : g.coborderRange = ⊤ := by
     apply eq_top_of_sigmaSpec_subset_of_isCompact (hVU := subset_coborder)
-    · simpa only [← hU'] using Set.range_comp_subset_range f g
+    · simpa only [← hU'] using! Set.range_comp_subset_range f g
     · exact isCompact_range g.continuous
   have : IsClosedImmersion g := by
     have : IsIso g.coborderRange.ι := by rw [this, ← Scheme.topIso_hom]; infer_instance
@@ -87,7 +88,7 @@ lemma isIso_of_comp_eq_sigmaSpec {V : Scheme}
     infer_instance
   obtain ⟨I, e, rfl⟩ := IsClosedImmersion.Spec_iff.mp this
   obtain rfl := eq_bot_of_comp_quotientMk_eq_sigmaSpec R I (f ≫ e.hom) (by rwa [Category.assoc])
-  convert_to IsIso (e.hom ≫ Spec.map (RingEquiv.quotientBot _).toCommRingCatIso.inv)
+  convert_to! IsIso (e.hom ≫ Spec.map (RingEquiv.quotientBot _).toCommRingCatIso.inv)
   infer_instance
 
 variable (X : Scheme)
@@ -99,17 +100,18 @@ noncomputable
 def pointsPi : (Spec (.of <| Π i, R i) ⟶ X) → Π i, Spec (R i) ⟶ X :=
   fun f i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i)) ≫ f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi R X) := by
   rintro f g e
   have := isIso_of_comp_eq_sigmaSpec R (V := equalizer f g)
-    (equalizer.lift (sigmaSpec R) (by ext1 i; simpa using congr_fun e i))
+    (equalizer.lift (sigmaSpec R) (by ext1 i; simpa using! congr_fun e i))
     (equalizer.ι f g) (by simp)
   rw [← cancel_epi (equalizer.ι f g), equalizer.condition]
 
 lemma pointsPi_surjective_of_isAffine [IsAffine X] : Function.Surjective (pointsPi R X) := by
   rintro f
   refine ⟨Spec.map (CommRingCat.ofHom
-    (Pi.ringHom fun i ↦ (Spec.preimage (f i ≫ X.isoSpec.hom)).1)) ≫ X.isoSpec.inv, ?_⟩
+    (RingHom.pi fun i ↦ (Spec.preimage (f i ≫ X.isoSpec.hom)).1)) ≫ X.isoSpec.inv, ?_⟩
   ext i : 1
   simp only [pointsPi, ← Spec.map_comp_assoc, Iso.comp_inv_eq]
   exact Spec.map_preimage _

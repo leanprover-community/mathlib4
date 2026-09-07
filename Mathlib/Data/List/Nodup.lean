@@ -28,9 +28,6 @@ protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [Std.Irr
     Nodup l :=
   h.imp ne_of_irrefl
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.nodup := Pairwise.nodup
-
 open scoped Relator in
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
   | _, _, Forall₂.nil => by simp only [nodup_nil]
@@ -124,10 +121,6 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
-@[deprecated Nodup.idxOf_getElem (since := "2025-11-10")]
-theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) → (h : i < l.length) →
-    idxOf l[i] l = i := Nodup.idxOf_getElem
-
 -- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
 theorem get_idxOf [BEq α] [LawfulBEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
@@ -157,8 +150,6 @@ theorem getElem_bijective_iff [BEq α] [LawfulBEq α] :
 theorem count_eq_one_of_mem [BEq α] [LawfulBEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
   nodup_iff_count_eq_one.mp d a h
-
-@[deprecated (since := "2025-11-07")] alias count_eq_of_nodup := Nodup.count
 
 theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
   Nodup.sublist (sublist_append_left l₁ l₂)
@@ -230,7 +221,7 @@ theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
   grind
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
-  simpa using Pairwise.filter p
+  simpa using! Pairwise.filter p
 
 @[simp]
 theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
@@ -239,6 +230,9 @@ theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
 theorem nodup_concat (l : List α) (u : α) : (l.concat u).Nodup ↔ u ∉ l ∧ l.Nodup := by
   rw [← nodup_reverse]
   simp
+
+@[simp, grind ←] protected lemma Nodup.tail {l : List α} (h : Nodup l) : Nodup l.tail :=
+  l.tail_sublist.nodup h
 
 lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
     Nodup l.reverse.tail ↔ Nodup l.tail := by
@@ -284,7 +278,7 @@ theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
   simp only [List.flatMap, nodup_flatten, pairwise_map, and_comm, mem_map,
     exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
-      from forall_swap.trans <| forall_congr' fun _ => forall_eq']
+      from forall_comm.trans <| forall_congr' fun _ => forall_eq']
 
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
     (l₁ ×ˢ l₂).Nodup :=
@@ -323,16 +317,20 @@ theorem Nodup.union [BEq α] [LawfulBEq α] (l₁ : List α) (h : Nodup l₂) : 
 theorem Nodup.inter [BEq α] (l₂ : List α) : Nodup l₁ → Nodup (l₁ ∩ l₂) :=
   Nodup.filter _
 
-theorem Nodup.diff_eq_filter [BEq α] [LawfulBEq α] :
+theorem Nodup.sdiff_eq_filter [BEq α] [LawfulBEq α] :
     ∀ {l₁ l₂ : List α} (_ : l₁.Nodup), l₁.diff l₂ = l₁.filter (· ∉ l₂)
   | l₁, [], _ => by simp
   | l₁, a :: l₂, hl₁ => by
-    rw [diff_cons, (hl₁.erase _).diff_eq_filter, hl₁.erase_eq_filter, filter_filter]
+    rw [diff_cons, (hl₁.erase _).sdiff_eq_filter, hl₁.erase_eq_filter, filter_filter]
     simp only [decide_not, bne, Bool.and_comm, decide_mem_cons, Bool.not_or]
 
-theorem Nodup.mem_diff_iff [BEq α] [LawfulBEq α] (hl₁ : l₁.Nodup) :
+@[deprecated (since := "2026-06-03")] alias Nodup.diff_eq_filter := Nodup.sdiff_eq_filter
+
+theorem Nodup.mem_sdiff_iff [BEq α] [LawfulBEq α] (hl₁ : l₁.Nodup) :
     a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
-  rw [hl₁.diff_eq_filter, mem_filter, decide_eq_true_iff]
+  rw [hl₁.sdiff_eq_filter, mem_filter, decide_eq_true_iff]
+
+@[deprecated (since := "2026-06-03")] alias Nodup.mem_diff_iff := Nodup.mem_sdiff_iff
 
 protected theorem Nodup.set :
     ∀ {l : List α} {n : ℕ} {a : α} (_ : l.Nodup) (_ : a ∉ l), (l.set n a).Nodup

@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Products
 Typeclasses representing categories with (co)products over finite indexing types.
 -/
 
-@[expose] public section
+public section
 
 
 universe w v u

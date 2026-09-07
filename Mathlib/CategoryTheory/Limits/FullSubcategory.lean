@@ -26,14 +26,15 @@ universe w' w v v₁ v₂ u u₁ u₂
 
 open CategoryTheory
 
-namespace CategoryTheory.Limits
+namespace CategoryTheory
 
-section
+namespace Limits
 
 variable {J : Type w} [Category.{w'} J] {C : Type u} [Category.{v} C] {P : ObjectProperty C}
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a limit cone in `C` whose cone point lives
     in the full subcategory, then this defines a limit in the full subcategory. -/
+@[implicit_reducible]
 def createsLimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
     {c : Cone (F ⋙ P.ι)} (hc : IsLimit c) (h : P c.pt) :
     CreatesLimit F P.ι :=
@@ -41,6 +42,7 @@ def createsLimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a limit in `C` whose cone point lives in the
     full subcategory, then this defines a limit in the full subcategory. -/
+@[implicit_reducible]
 def createsLimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
     [HasLimit (F ⋙ P.ι)] (h : P (limit (F ⋙ P.ι))) :
     CreatesLimit F P.ι :=
@@ -48,6 +50,7 @@ def createsLimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a colimit cocone in `C` whose cocone point
     lives in the full subcategory, then this defines a colimit in the full subcategory. -/
+@[implicit_reducible]
 def createsColimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
     {c : Cocone (F ⋙ P.ι)} (hc : IsColimit c) (h : P c.pt) :
     CreatesColimit F P.ι :=
@@ -55,6 +58,7 @@ def createsColimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a colimit in `C` whose cocone point lives in
     the full subcategory, then this defines a colimit in the full subcategory. -/
+@[implicit_reducible]
 def createsColimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
     [HasColimit (F ⋙ P.ι)]
     (h : P (colimit (F ⋙ P.ι))) :
@@ -64,6 +68,7 @@ def createsColimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
 variable (P J)
 
 /-- If `P` is closed under limits of shape `J`, then the inclusion creates such limits. -/
+@[implicit_reducible]
 def createsLimitFullSubcategoryInclusionOfClosed [P.IsClosedUnderLimitsOfShape J]
     (F : J ⥤ P.FullSubcategory) [HasLimit (F ⋙ P.ι)] :
     CreatesLimit F P.ι :=
@@ -85,6 +90,7 @@ instance hasLimitsOfShape_of_closedUnderLimits [P.IsClosedUnderLimitsOfShape J]
   { has_limit := fun F => hasLimit_of_closedUnderLimits J P F }
 
 /-- If `P` is closed under colimits of shape `J`, then the inclusion creates such colimits. -/
+@[implicit_reducible]
 def createsColimitFullSubcategoryInclusionOfClosed [P.IsClosedUnderColimitsOfShape J]
     (F : J ⥤ P.FullSubcategory) [HasColimit (F ⋙ P.ι)] :
     CreatesColimit F P.ι :=
@@ -105,12 +111,42 @@ instance hasColimitsOfShape_of_closedUnderColimits [P.IsClosedUnderColimitsOfSha
     [HasColimitsOfShape J C] : HasColimitsOfShape J P.FullSubcategory :=
   { has_colimit := fun F => hasColimit_of_closedUnderColimits J P F }
 
-end
+end Limits
+
+namespace ObjectProperty
+
+open Limits
+
+variable {C : Type u} [Category.{v} C] (P : ObjectProperty C) (J : Type w) [Category.{w'} J]
+
+lemma isClosedUnderColimitsOfShape_of_preservesColimitsOfShape_ι
+    [HasColimitsOfShape J P.FullSubcategory] [P.IsClosedUnderIsomorphisms]
+    [PreservesColimitsOfShape J P.ι] :
+    P.IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    rintro X ⟨p⟩
+    exact P.prop_of_iso (IsColimit.coconePointUniqueUpToIso
+      (isColimitOfPreserves P.ι (colimit.isColimit (P.lift p.diag p.prop_diag_obj)))
+        p.isColimit) (colimit (P.lift p.diag p.prop_diag_obj)).property
+
+lemma isClosedUnderLimitsOfShape_of_preservesLimitsOfShape_ι
+    [HasLimitsOfShape J P.FullSubcategory] [P.IsClosedUnderIsomorphisms]
+    [PreservesLimitsOfShape J P.ι] :
+    P.IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := by
+    rintro X ⟨p⟩
+    exact P.prop_of_iso (IsLimit.conePointUniqueUpToIso
+      (isLimitOfPreserves P.ι (limit.isLimit (P.lift p.diag p.prop_diag_obj)))
+        p.isLimit) (limit (P.lift p.diag p.prop_diag_obj)).property
+
+end ObjectProperty
 
 variable {J : Type w} [Category.{w'} J]
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable (F : C ⥤ D)
+
+namespace Limits
 
 /-- The essential image of a functor is closed under the limits it preserves. -/
 instance [HasLimitsOfShape J C] [PreservesLimitsOfShape J F] [F.Full] [F.Faithful] :

@@ -20,27 +20,28 @@ exact.
 The usual strategy to prove the Freyd-Mitchell embedding theorem is as follows:
 
 1. Prove that if `D` is a Grothendieck abelian category and `F : C ⥤ Dᵒᵖ` is a functor from a
-small category, then there is a functor `G : Dᵒᵖ ⥤ ModuleCat R` for a suitable `R` such that `G`
-is faithful and exact and `F ⋙ G` is full.
+   small category, then there is a functor `G : Dᵒᵖ ⥤ ModuleCat R` for a suitable `R` such that `G`
+   is faithful and exact and `F ⋙ G` is full.
 2. Find a suitable Grothendieck abelian category `D` and a full, faithful and exact functor
-`F : C ⥤ Dᵒᵖ`.
+   `F : C ⥤ Dᵒᵖ`.
 
 To prove (1), we proceed as follows:
 
 1. Using the Special Adjoint Functor Theorem and the duality between subobjects and quotients in
-abelian categories, we have that Grothendieck abelian categories have all limits (this is shown in
-`Mathlib/CategoryTheory/Abelian/GrothendieckCategory/Basic.lean`).
+   abelian categories, we have that Grothendieck abelian categories have all limits (this is shown
+   in `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/Basic.lean`).
 2. Using the small object argument, it is shown that Grothendieck abelian categories have enough
-injectives (see `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/EnoughInjectives.lean`).
+   injectives (see `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/EnoughInjectives.lean`).
 3. Putting these two together, it follows that Grothendieck abelian categories have an injective
-cogenerator (see `Mathlib/CategoryTheory/Generator/Abelian.lean`).
+   cogenerator (see `Mathlib/CategoryTheory/Generator/Abelian.lean`).
 4. By taking a coproduct of copies of the injective cogenerator, we find a projective separator `G`
-in `Dᵒᵖ` such that every object in the image of `F` is a quotient of `G`. Then the additive Hom
-functor `Hom(G, ·) : Dᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful (because `G` is a separator), left
-exact (because it is a hom functor), right exact (because `G` is projective) and full (because of a
-combination of the aforementioned properties, see `Mathlib/CategoryTheory/Abelian/Yoneda.lean`).
-We put this all together in the file
-`Mathlib/CategoryTheory/Abelian/GrothendieckCategory/ModuleEmbedding/Opposite.lean`.
+   in `Dᵒᵖ` such that every object in the image of `F` is a quotient of `G`. Then the additive Hom
+   functor `Hom(G, ·) : Dᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful (because `G` is a separator), left
+   exact (because it is a hom functor), right exact (because `G` is projective) and full (because of
+   a combination of the aforementioned properties, see
+   `Mathlib/CategoryTheory/Abelian/Yoneda.lean`).
+   We put this all together in the file
+   `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/ModuleEmbedding/Opposite.lean`.
 
 To prove (2), there are multiple options.
 

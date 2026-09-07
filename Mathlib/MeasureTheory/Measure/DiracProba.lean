@@ -56,8 +56,7 @@ noncomputable def diracProba (x : X) : ProbabilityMeasure X :=
 lemma injective_diracProba {X : Type*} [MeasurableSpace X] [MeasurableSpace.SeparatesPoints X] :
     Function.Injective (fun (x : X) ↦ diracProba x) := by
   intro x y x_eq_y
-  rw [← dirac_eq_dirac_iff]
-  rwa [Subtype.ext_iff] at x_eq_y
+  simpa [diracProba, dirac_eq_dirac_iff] using congr(ProbabilityMeasure.toMeasure $x_eq_y)
 
 @[simp] lemma diracProba_toMeasure_apply' (x : X) {A : Set X} (A_mble : MeasurableSet A) :
     (diracProba x).toMeasure A = A.indicator 1 x := Measure.dirac_apply' x A_mble
@@ -79,8 +78,6 @@ lemma continuous_diracProba : Continuous (fun (x : X) ↦ diracProba x) := by
   simp only [diracProba, ProbabilityMeasure.coe_mk, lintegral_dirac' _ f_mble]
   exact (ENNReal.continuous_coe.comp f.continuous).continuousAt
 
-@[deprecated (since := "2025-08-15")] alias injective_diracProba_of_T0 := injective_diracProba
-
 lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X)
     (h : ¬ Tendsto id L (𝓝 x)) :
     ¬ Tendsto diracProba L (𝓝 (diracProba x)) := by
@@ -99,8 +96,7 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
           hU.mp (Eventually.of_forall ?_)⟩
   intro x x_notin_U
-  rw [f_vanishes_outside x
-        (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]
+  rw [f_vanishes_outside x (compl_subset_compl.mpr interior_subset x_notin_U)]
   simp only [ENNReal.coe_zero, mem_Ioi, lt_self_iff_false, not_false_eq_true]
 
 lemma tendsto_diracProba_iff_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X) :
@@ -151,7 +147,7 @@ lemma tendsto_diracProbaEquivSymm_iff_tendsto [T0Space X] [CompletelyRegularSpac
   rw [← (diracProbaEquiv (X := X)).symm_comp_self, ← tendsto_map'_iff] at key
   simp only [tendsto_map'_iff, map_map, Equiv.self_comp_symm, map_id] at key
   simp only [← key, diracProba_comp_diracProbaEquiv_symm_eq_val]
-  convert tendsto_subtype_rng.symm
+  convert! tendsto_subtype_rng.symm
   exact apply_rangeSplitting (fun x ↦ diracProba x) μ
 
 /-- In a T0 topological space, `diracProbaEquiv` is continuous. -/
