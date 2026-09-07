@@ -199,13 +199,13 @@ namespace Finpartition
 /-- The pairs of parts of a partition `P` which are not `ε`-dense in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-dense with itself. -/
 def sparsePairs (ε : 𝕜) : Finset (Finset α × Finset α) :=
-  P.parts.offDiag.filter fun (u, v) ↦ G.edgeDensity u v < ε
+  P.parts.offDiagonal.filter fun (u, v) ↦ G.edgeDensity u v < ε
 
 omit [IsStrictOrderedRing 𝕜] in
 @[simp]
 lemma mk_mem_sparsePairs (u v : Finset α) (ε : 𝕜) :
     (u, v) ∈ P.sparsePairs G ε ↔ u ∈ P.parts ∧ v ∈ P.parts ∧ u ≠ v ∧ G.edgeDensity u v < ε := by
-  rw [sparsePairs, mem_filter, mem_offDiag, and_assoc, and_assoc]
+  rw [sparsePairs, mem_filter, mem_offDiagonal, and_assoc, and_assoc]
 
 omit [IsStrictOrderedRing 𝕜] in
 lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆ P.sparsePairs G ε' :=
@@ -214,12 +214,12 @@ lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
 def nonUniforms (ε : 𝕜) : Finset (Finset α × Finset α) :=
-  P.parts.offDiag.filter fun (u, v) ↦ ¬G.IsUniform ε u v
+  P.parts.offDiagonal.filter fun (u, v) ↦ ¬G.IsUniform ε u v
 
 omit [IsStrictOrderedRing 𝕜] in
 @[simp] lemma mk_mem_nonUniforms :
     (u, v) ∈ P.nonUniforms G ε ↔ u ∈ P.parts ∧ v ∈ P.parts ∧ u ≠ v ∧ ¬G.IsUniform ε u v := by
-  rw [nonUniforms, mem_filter, mem_offDiag, and_assoc, and_assoc]
+  rw [nonUniforms, mem_filter, mem_offDiagonal, and_assoc, and_assoc]
 
 theorem nonUniforms_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.nonUniforms G ε' ⊆ P.nonUniforms G ε :=
   monotone_filter_right _ fun _ _ => mt <| SimpleGraph.IsUniform.mono h
@@ -246,7 +246,7 @@ lemma isUniform_one : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
   refine (card_filter_le _
     (fun uv => ¬SimpleGraph.IsUniform G 1 (Prod.fst uv) (Prod.snd uv))).trans ?_
-  rw [offDiag_card, Nat.mul_sub_left_distrib, mul_one]
+  rw [offDiagonal_card, Nat.mul_sub_left_distrib, mul_one]
 
 variable {P G}
 
@@ -285,8 +285,8 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
   calc
     _ ≤ ∑ UV ∈ P.sparsePairs G ε, (#(G.interedges UV.1 UV.2) : 𝕜) := mod_cast card_biUnion_le
     _ ≤ ∑ UV ∈ P.sparsePairs G ε, ε * (#UV.1 * #UV.2) := ?_
-    _ ≤ ∑ UV ∈ P.parts.offDiag, ε * (#UV.1 * #UV.2) := by gcongr; apply filter_subset
-    _ = ε * ∑ UV ∈ P.parts.offDiag, (#UV.1 * #UV.2 : 𝕜) := (mul_sum _ _ _).symm
+    _ ≤ ∑ UV ∈ P.parts.offDiagonal, ε * (#UV.1 * #UV.2) := by gcongr; apply filter_subset
+    _ = ε * ∑ UV ∈ P.parts.offDiagonal, (#UV.1 * #UV.2 : 𝕜) := (mul_sum _ _ _).symm
     _ ≤ _ := ?_
   · gcongr with ⟨U, V⟩ hUV
     simp only [mk_mem_sparsePairs, ne_eq, ← card_interedges_div_card, Rat.cast_div,
@@ -297,15 +297,16 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
   norm_cast
   gcongr
   calc
-    (_ : ℕ) ≤ _ := sum_le_card_nsmul P.parts.offDiag (fun i ↦ #i.1 * #i.2)
+    (_ : ℕ) ≤ _ := sum_le_card_nsmul P.parts.offDiagonal (fun i ↦ #i.1 * #i.2)
             ((#A / #P.parts + 1) ^ 2 : ℕ) ?_
     _ ≤ (#P.parts * (#A / #P.parts) + #P.parts) ^ 2 := ?_
     _ ≤ _ := by gcongr; apply Nat.mul_div_le
-  · simp only [Prod.forall, and_imp, mem_offDiag, sq]
+  · simp only [Prod.forall, and_imp, mem_offDiagonal, sq]
     rintro U V hU hV -
     exact_mod_cast Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
       (hP.card_part_le_average_add_one hV)
-  · rw [smul_eq_mul, offDiag_card, Nat.mul_sub_right_distrib, ← sq, ← mul_pow, mul_add_one (α := ℕ)]
+  · rw [smul_eq_mul, offDiagonal_card, Nat.mul_sub_right_distrib, ← sq, ← mul_pow,
+      mul_add_one (α := ℕ)]
     exact Nat.sub_le _ _
 
 lemma IsEquipartition.card_interedges_sparsePairs_le (hP : P.IsEquipartition) (hε : 0 ≤ ε) :
@@ -323,8 +324,8 @@ private lemma aux {i j : ℕ} (hj : 0 < j) : j * (j - 1) * (i / j + 1) ^ 2 < (i 
   gcongr
   apply Nat.mul_div_le
 
-lemma IsEquipartition.card_biUnion_offDiag_le' (hP : P.IsEquipartition) :
-    (#(P.parts.biUnion offDiag) : 𝕜) ≤ #A * (#A + #P.parts) / #P.parts := by
+lemma IsEquipartition.card_biUnion_offDiagonal_le' (hP : P.IsEquipartition) :
+    (#(P.parts.biUnion offDiagonal) : 𝕜) ≤ #A * (#A + #P.parts) / #P.parts := by
   obtain h | h := P.parts.eq_empty_or_nonempty
   · simp [h]
   calc
@@ -336,16 +337,19 @@ lemma IsEquipartition.card_biUnion_offDiag_le' (hP : P.IsEquipartition) :
     _ = _ := by rw [← div_add_same (mod_cast h.card_pos.ne'), mul_div_assoc]
   · simpa using Nat.cast_div_le
   suffices (#U - 1) * #U ≤ #A / #P.parts * (#A / #P.parts + 1) by
-    rwa [Nat.mul_sub_right_distrib, one_mul, ← offDiag_card] at this
+    rwa [Nat.mul_sub_right_distrib, one_mul, ← offDiagonal_card] at this
   have := hP.card_part_le_average_add_one hU
   refine Nat.mul_le_mul ((Nat.sub_le_sub_right this 1).trans ?_) this
   simp only [Nat.add_succ_sub_one, add_zero, le_rfl]
 
-lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquipartition)
-    (hP' : 4 / ε ≤ #P.parts) : #(P.parts.biUnion offDiag) ≤ ε / 2 * #A ^ 2 := by
+@[deprecated (since := "2026-09-06")]
+alias IsEquipartition.card_biUnion_offDiag_le' := IsEquipartition.card_biUnion_offDiagonal_le'
+
+lemma IsEquipartition.card_biUnion_offDiagonal_le (hε : 0 < ε) (hP : P.IsEquipartition)
+    (hP' : 4 / ε ≤ #P.parts) : #(P.parts.biUnion offDiagonal) ≤ ε / 2 * #A ^ 2 := by
   obtain rfl | hA : A = ⊥ ∨ _ := A.eq_empty_or_nonempty
   · simp [Subsingleton.elim P ⊥]
-  apply hP.card_biUnion_offDiag_le'.trans
+  apply hP.card_biUnion_offDiagonal_le'.trans
   rw [div_le_iff₀ (Nat.cast_pos.2 (P.parts_nonempty hA.ne_empty).card_pos)]
   have : (#A : 𝕜) + #P.parts ≤ 2 * #A := by
     rw [two_mul]; gcongr; exact P.card_parts_le_card
@@ -356,6 +360,9 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
       <;> ring
   rwa [← div_le_iff₀', one_div_div]
   positivity
+
+@[deprecated (since := "2026-09-06")]
+alias IsEquipartition.card_biUnion_offDiag_le := IsEquipartition.card_biUnion_offDiagonal_le
 
 lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP : P.IsEquipartition)
     (hG : P.IsUniform G ε) :
@@ -424,11 +431,11 @@ lemma regularityReduced_anti {δ₁ δ₂ : 𝕜} (hδ : δ₁ ≤ δ₂) :
 omit [IsStrictOrderedRing 𝕜] in
 lemma unreduced_edges_subset :
     (A ×ˢ A).filter (fun (x, y) ↦ G.Adj x y ∧ ¬ (G.regularityReduced P (ε / 8) (ε / 4)).Adj x y) ⊆
-      (P.nonUniforms G (ε / 8)).biUnion (fun (U, V) ↦ U ×ˢ V) ∪ P.parts.biUnion offDiag ∪
+      (P.nonUniforms G (ε / 8)).biUnion (fun (U, V) ↦ U ×ˢ V) ∪ P.parts.biUnion offDiagonal ∪
         (P.sparsePairs G (ε / 4)).biUnion fun (U, V) ↦ G.interedges U V := by
   rintro ⟨x, y⟩
   simp only [mem_filter, regularityReduced_adj, not_and, not_exists,
-    not_le, mem_biUnion, mem_union, mem_product, Prod.exists, mem_offDiag, and_imp,
+    not_le, mem_biUnion, mem_union, mem_product, Prod.exists, mem_offDiagonal, and_imp,
     or_assoc, and_assoc, P.mk_mem_nonUniforms, Finpartition.mk_mem_sparsePairs, mem_interedges_iff]
   intro hx hy h h'
   replace h' := h' h

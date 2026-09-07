@@ -22,7 +22,7 @@ This file contains basic results on the following notions, which are defined in 
 * `Set.prod`: Binary product of sets. For `s : Set α`, `t : Set β`, we have
   `s.prod t : Set (α × β)`. Denoted by `s ×ˢ t`.
 * `Set.diagonal`: Diagonal of a type. `Set.diagonal α = {(x, x) | x : α}`.
-* `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
+* `Set.offDiagonal`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
 -/
 
@@ -430,7 +430,7 @@ theorem preimage_coe_coe_diagonal (s : Set α) :
   simp [Set.diagonal]
 
 @[simp]
-theorem range_diag : range Function.diag = diagonal α := by
+theorem range_diag : range Prod.diagonal = diagonal α := by
   ext ⟨x, y⟩
   simp [diagonal, eq_comm]
 
@@ -441,13 +441,13 @@ theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ 
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 
 @[simp]
-theorem diag_preimage_prod (s t : Set α) : Function.diag ⁻¹' s ×ˢ t = s ∩ t :=
+theorem diag_preimage_prod (s t : Set α) : Prod.diagonal ⁻¹' s ×ˢ t = s ∩ t :=
   rfl
 
-theorem diag_preimage_prod_self (s : Set α) : Function.diag ⁻¹' s ×ˢ s = s :=
+theorem diag_preimage_prod_self (s : Set α) : Prod.diagonal ⁻¹' s ×ˢ s = s :=
   inter_self s
 
-theorem diag_image (s : Set α) : Function.diag '' s = diagonal α ∩ s ×ˢ s := by
+theorem diag_image (s : Set α) : Prod.diagonal '' s = diagonal α ∩ s ×ˢ s := by
   rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
@@ -549,70 +549,100 @@ end Pullback
 
 namespace Set
 
-section OffDiag
+section OffDiagonal
 
 variable {α : Type*} {s t : Set α} {a : α}
 
-theorem offDiag_mono : Monotone (offDiag : Set α → Set (α × α)) := fun _ _ h _ =>
+theorem offDiagonal_mono : Monotone (offDiagonal : Set α → Set (α × α)) := fun _ _ h _ =>
   And.imp (@h _) <| And.imp_left <| @h _
 
-@[simp]
-theorem offDiag_nonempty : s.offDiag.Nonempty ↔ s.Nontrivial := by
-  simp [offDiag, Set.Nonempty, Set.Nontrivial]
+@[deprecated (since := "2026-09-06")] alias offDiag_mono := offDiagonal_mono
 
 @[simp]
-theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
-  rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiag_nonempty.not]
+theorem offDiagonal_nonempty : s.offDiagonal.Nonempty ↔ s.Nontrivial := by
+  simp [offDiagonal, Set.Nonempty, Set.Nontrivial]
 
-alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
+@[deprecated (since := "2026-09-06")] alias offDiag_nonempty := offDiagonal_nonempty
 
-alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_eq_empty
+@[simp]
+theorem offDiagonal_eq_empty : s.offDiagonal = ∅ ↔ s.Subsingleton := by
+  rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiagonal_nonempty.not]
+
+alias ⟨_, Nontrivial.offDiagonal_nonempty⟩ := offDiagonal_nonempty
+
+alias ⟨_, Subsingleton.offDiagonal_eq_empty⟩ := offDiagonal_eq_empty
+
+@[deprecated (since := "2026-09-06")] alias offDiag_eq_empty := offDiagonal_eq_empty
+@[deprecated (since := "2026-09-06")]
+alias Nontrivial.offDiag_nonempty := Nontrivial.offDiagonal_nonempty
+@[deprecated (since := "2026-09-06")]
+alias Subsingleton.offDiag_eq_empty := Subsingleton.offDiagonal_eq_empty
 
 variable (s t)
 
-theorem offDiag_subset_prod : s.offDiag ⊆ s ×ˢ s := fun _ hx => ⟨hx.1, hx.2.1⟩
+theorem offDiagonal_subset_prod : s.offDiagonal ⊆ s ×ˢ s := fun _ hx => ⟨hx.1, hx.2.1⟩
 
-theorem offDiag_eq_sep_prod : s.offDiag = { x ∈ s ×ˢ s | x.1 ≠ x.2 } :=
+@[deprecated (since := "2026-09-06")] alias offDiag_subset_prod := offDiagonal_subset_prod
+
+theorem offDiagonal_eq_sep_prod : s.offDiagonal = { x ∈ s ×ˢ s | x.1 ≠ x.2 } :=
   ext fun _ => and_assoc.symm
 
-@[simp]
-theorem offDiag_empty : (∅ : Set α).offDiag = ∅ := by simp
+@[deprecated (since := "2026-09-06")] alias offDiag_eq_sep_prod := offDiagonal_eq_sep_prod
 
 @[simp]
-theorem offDiag_singleton (a : α) : ({a} : Set α).offDiag = ∅ := by simp
+theorem offDiagonal_empty : (∅ : Set α).offDiagonal = ∅ := by simp
+
+@[deprecated (since := "2026-09-06")] alias offDiag_empty := offDiagonal_empty
 
 @[simp]
-theorem offDiag_univ : (univ : Set α).offDiag = (diagonal α)ᶜ :=
+theorem offDiagonal_singleton (a : α) : ({a} : Set α).offDiagonal = ∅ := by simp
+
+@[deprecated (since := "2026-09-06")] alias offDiag_singleton := offDiagonal_singleton
+
+@[simp]
+theorem offDiagonal_univ : (univ : Set α).offDiagonal = (diagonal α)ᶜ :=
   ext <| by simp
 
+@[deprecated (since := "2026-09-06")] alias offDiag_univ := offDiagonal_univ
+
 @[simp]
-theorem prod_sdiff_diagonal : s ×ˢ s \ diagonal α = s.offDiag :=
+theorem prod_sdiff_diagonal : s ×ˢ s \ diagonal α = s.offDiagonal :=
   ext fun _ => and_assoc
 
 @[simp]
-theorem disjoint_diagonal_offDiag : Disjoint (diagonal α) s.offDiag :=
+theorem disjoint_diagonal_offDiagonal : Disjoint (diagonal α) s.offDiagonal :=
   disjoint_left.mpr fun _ hd ho => ho.2.2 hd
 
-theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
+@[deprecated (since := "2026-09-06")]
+alias disjoint_diagonal_offDiag := disjoint_diagonal_offDiagonal
+
+theorem offDiagonal_inter : (s ∩ t).offDiagonal = s.offDiagonal ∩ t.offDiagonal :=
   ext fun x => by
-    simp only [mem_offDiag, mem_inter_iff]
+    simp only [mem_offDiagonal, mem_inter_iff]
     tauto
+
+@[deprecated (since := "2026-09-06")] alias offDiag_inter := offDiagonal_inter
 
 variable {s t}
 
-theorem offDiag_union (h : Disjoint s t) :
-    (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
+theorem offDiagonal_union (h : Disjoint s t) :
+    (s ∪ t).offDiagonal = s.offDiagonal ∪ t.offDiagonal ∪ s ×ˢ t ∪ t ×ˢ s := by
   ext x
-  simp only [mem_offDiag, mem_union, ne_eq, mem_prod]
+  simp only [mem_offDiagonal, mem_union, ne_eq, mem_prod]
   constructor
   · rintro ⟨h0 | h0, h1 | h1, h2⟩ <;> simp [h0, h1, h2]
   · rintro (((⟨h0, h1, h2⟩ | ⟨h0, h1, h2⟩) | ⟨h0, h1⟩) | ⟨h0, h1⟩) <;>
       simp [*, h.ne_of_mem, Ne.symm]
 
-theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
+@[deprecated (since := "2026-09-06")] alias offDiag_union := offDiagonal_union
+
+theorem offDiagonal_insert (ha : a ∉ s) :
+    (insert a s).offDiagonal = s.offDiagonal ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   grind
 
-end OffDiag
+@[deprecated (since := "2026-09-06")] alias offDiag_insert := offDiagonal_insert
+
+end OffDiagonal
 
 /-! ### Cartesian set-indexed product of sets -/
 

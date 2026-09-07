@@ -462,7 +462,7 @@ end CartanMatrix
 structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
     (M : Matrix ι ι ℤ) : Prop where
   diag : ∀ i, M i i = 2
-  offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
+  offDiagonal_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
   zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
   exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
 
