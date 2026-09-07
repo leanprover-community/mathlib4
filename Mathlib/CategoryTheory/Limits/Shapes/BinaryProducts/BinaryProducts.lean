@@ -111,8 +111,10 @@ noncomputable abbrev prod.lift {W X Y : C} [HasBinaryProduct X Y]
   limit.lift _ (BinaryFan.mk f g)
 
 /-- diagonal arrow of the binary product in the category `fam I` -/
-noncomputable abbrev diag (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
+noncomputable abbrev prod.diagonal (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
   prod.lift (𝟙 _) (𝟙 _)
+
+@[deprecated (since := "2026-09-06")] alias diag := prod.diagonal
 
 /-- If the coproduct of `X` and `Y` exists, then every pair of morphisms `f : X ⟶ W` and
 `g : Y ⟶ W` induces a morphism `coprod.desc f g : X ⨿ Y ⟶ W`. -/
@@ -121,8 +123,10 @@ noncomputable abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y]
   colimit.desc _ (BinaryCofan.mk f g)
 
 /-- codiagonal arrow of the binary coproduct -/
-noncomputable abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
+noncomputable abbrev coprod.codiagonal (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
   coprod.desc (𝟙 _) (𝟙 _)
+
+@[deprecated (since := "2026-09-06")] alias codiag := coprod.codiagonal
 
 @[reassoc]
 theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
@@ -192,8 +196,10 @@ noncomputable section ProdLemmas
 theorem prod.comp_lift {V W X Y : C} [HasBinaryProduct X Y] (f : V ⟶ W) (g : W ⟶ X) (h : W ⟶ Y) :
     f ≫ prod.lift g h = prod.lift (f ≫ g) (f ≫ h) := by ext <;> simp
 
-theorem prod.comp_diag {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
-    f ≫ diag Y = prod.lift f f := by simp
+theorem prod.comp_diagonal {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
+    f ≫ prod.diagonal Y = prod.lift f f := by simp
+
+@[deprecated (since := "2026-09-06")] alias prod.comp_diag := prod.comp_diagonal
 
 @[reassoc (attr := simp)]
 theorem prod.map_fst {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
@@ -270,19 +276,27 @@ instance prod.map_mono {C : Type*} [Category* C] {W X Y Z : C} (f : W ⟶ Y) (g 
       simpa using congr_arg (fun f => f ≫ prod.snd) h⟩
 
 @[reassoc]
-theorem prod.diag_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
-    diag X ≫ prod.map f f = f ≫ diag Y := by simp
+theorem prod.diagonal_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
+    prod.diagonal X ≫ prod.map f f = f ≫ prod.diagonal Y := by simp
+
+@[deprecated (since := "2026-09-06")] alias prod.diag_map := prod.diagonal_map
 
 @[reassoc]
-theorem prod.diag_map_fst_snd {X Y : C} [HasBinaryProduct X Y] [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
-    diag (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
+theorem prod.diagonal_map_fst_snd {X Y : C} [HasBinaryProduct X Y]
+    [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
+    prod.diagonal (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
+
+@[deprecated (since := "2026-09-06")] alias prod.diag_map_fst_snd := prod.diagonal_map_fst_snd
 
 @[reassoc]
-theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
+theorem prod.diagonal_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
-    diag (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
+    prod.diagonal (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
 
-instance {X : C} [HasBinaryProduct X X] : IsSplitMono (diag X) :=
+@[deprecated (since := "2026-09-06")]
+alias prod.diag_map_fst_snd_comp := prod.diagonal_map_fst_snd_comp
+
+instance {X : C} [HasBinaryProduct X X] : IsSplitMono (prod.diagonal X) :=
   IsSplitMono.mk' { retraction := prod.fst }
 
 end ProdLemmas
@@ -295,8 +309,10 @@ theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g
     (h : Y ⟶ V) : coprod.desc g h ≫ f = coprod.desc (g ≫ f) (h ≫ f) := by
   ext <;> simp
 
-theorem coprod.diag_comp {X Y : C} [HasBinaryCoproduct X X] (f : X ⟶ Y) :
-    codiag X ≫ f = coprod.desc f f := by simp
+theorem coprod.diagonal_comp {X Y : C} [HasBinaryCoproduct X X] (f : X ⟶ Y) :
+    coprod.codiagonal X ≫ f = coprod.desc f f := by simp
+
+@[deprecated (since := "2026-09-06")] alias coprod.diag_comp := coprod.diagonal_comp
 
 @[reassoc (attr := simp)]
 theorem coprod.inl_map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ⟶ Y)
@@ -378,18 +394,28 @@ instance coprod.map_epi {C : Type*} [Category* C] {W X Y Z : C} (f : W ⟶ Y) (g
       simpa using congr_arg (fun f => coprod.inr ≫ f) h⟩
 
 @[reassoc]
-theorem coprod.map_codiag {X Y : C} (f : X ⟶ Y) [HasBinaryCoproduct X X] [HasBinaryCoproduct Y Y] :
-    coprod.map f f ≫ codiag Y = codiag X ≫ f := by simp
+theorem coprod.map_codiagonal {X Y : C} (f : X ⟶ Y) [HasBinaryCoproduct X X]
+    [HasBinaryCoproduct Y Y] :
+    coprod.map f f ≫ coprod.codiagonal Y = coprod.codiagonal X ≫ f := by simp
+
+@[deprecated (since := "2026-09-06")] alias coprod.map_codiag := coprod.map_codiagonal
 
 @[reassoc]
-theorem coprod.map_inl_inr_codiag {X Y : C} [HasBinaryCoproduct X Y]
+theorem coprod.map_inl_inr_codiagonal {X Y : C} [HasBinaryCoproduct X Y]
     [HasBinaryCoproduct (X ⨿ Y) (X ⨿ Y)] :
-    coprod.map coprod.inl coprod.inr ≫ codiag (X ⨿ Y) = 𝟙 (X ⨿ Y) := by simp
+    coprod.map coprod.inl coprod.inr ≫ coprod.codiagonal (X ⨿ Y) = 𝟙 (X ⨿ Y) := by simp
+
+@[deprecated (since := "2026-09-06")]
+alias coprod.map_inl_inr_codiag := coprod.map_inl_inr_codiagonal
 
 @[reassoc]
-theorem coprod.map_comp_inl_inr_codiag [HasColimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
-    (g : X ⟶ Y) (g' : X' ⟶ Y') :
-    coprod.map (g ≫ coprod.inl) (g' ≫ coprod.inr) ≫ codiag (Y ⨿ Y') = coprod.map g g' := by simp
+theorem coprod.map_comp_inl_inr_codiagonal [HasColimitsOfShape (Discrete WalkingPair) C]
+    {X X' Y Y' : C} (g : X ⟶ Y) (g' : X' ⟶ Y') :
+    coprod.map (g ≫ coprod.inl) (g' ≫ coprod.inr) ≫ coprod.codiagonal (Y ⨿ Y') =
+      coprod.map g g' := by simp
+
+@[deprecated (since := "2026-09-06")]
+alias coprod.map_comp_inl_inr_codiag := coprod.map_comp_inl_inr_codiagonal
 
 end CoprodLemmas
 

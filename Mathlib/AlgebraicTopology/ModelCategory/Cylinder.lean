@@ -232,7 +232,7 @@ variable [ModelCategory C] {A : C} (P : Cylinder A)
 section
 
 variable (h : MorphismProperty.MapFactorizationData (cofibrations C) (trivialFibrations C)
-    (codiag A))
+    (coprod.codiagonal A))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A cylinder object for `A` can be obtained from a factorization of the obvious

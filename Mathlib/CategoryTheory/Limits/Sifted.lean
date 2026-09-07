@@ -48,7 +48,7 @@ section
 variable (C : Type u) [Category.{v} C]
 
 /-- A category `C` `IsSiftedOrEmpty` if the diagonal functor `C ⥤ C × C` is final. -/
-abbrev IsSiftedOrEmpty : Prop := Final (diag C)
+abbrev IsSiftedOrEmpty : Prop := Final (diagonal C)
 
 /-- A category `C` `IsSifted` if
 1. the diagonal functor `C ⥤ C × C` is final.
@@ -69,9 +69,9 @@ variable {C}
 set_option backward.defeqAttrib.useBackward true in
 /-- Being sifted is preserved by equivalences of categories -/
 lemma isSifted_of_equiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
-  letI : Final (diag D) := by
+  letI : Final (diagonal D) := by
     let : D × D ≌ C × C := Equivalence.prod e e
-    have sq : (e.inverse ⋙ diag D ⋙ this.functor ≅ diag C) :=
+    have sq : (e.inverse ⋙ diagonal D ⋙ this.functor ≅ diagonal C) :=
         NatIso.ofComponents (fun c ↦ by dsimp [this]
                                         exact Iso.prod (e.counitIso.app c) (e.counitIso.app c))
     apply_rules [final_iff_comp_equivalence _ this.functor |>.mpr,
@@ -88,8 +88,8 @@ lemma isSifted_iff_asSmallIsSifted : IsSifted C ↔ IsSifted (AsSmall.{w} C) whe
 instance [IsSifted C] : IsConnected C :=
   isConnected_of_zigzag
     (by intro c₁ c₂
-        have X : StructuredArrow (c₁, c₂) (diag C) :=
-          letI S : Final (diag C) := by infer_instance
+        have X : StructuredArrow (c₁, c₂) (diagonal C) :=
+          letI S : Final (diagonal C) := by infer_instance
           Nonempty.some (S.out (c₁, c₂)).is_nonempty
         use [X.right, c₂]
         constructor
@@ -104,13 +104,13 @@ set_option backward.defeqAttrib.useBackward true in
 instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
     constructor
     rintro ⟨c₁, c₂⟩
-    have : _root_.Nonempty <| StructuredArrow (c₁, c₂) (diag C) :=
+    have : _root_.Nonempty <| StructuredArrow (c₁, c₂) (diagonal C) :=
       ⟨.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂))⟩
     apply isConnected_of_zigzag
     rintro ⟨_, c, f⟩ ⟨_, c', g⟩
-    dsimp only [const_obj_obj, diag_obj] at f g
+    dsimp only [const_obj_obj, diagonal_obj] at f g
     use [.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂)), .mk (g.fst, g.snd)]
-    simp only [colimit.cocone_x, diag_obj, Prod.mk.eta, List.isChain_cons_cons,
+    simp only [colimit.cocone_x, diagonal_obj, Prod.mk.eta, List.isChain_cons_cons,
       List.isChain_singleton, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
       List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
     exact ⟨⟨Zag.of_inv <| StructuredArrow.homMk <| coprod.desc f.fst f.snd,
@@ -127,7 +127,7 @@ variable {D : Type u₁} [Category.{v₁} D]
 instance [IsSiftedOrEmpty C] [IsSiftedOrEmpty D] :
     IsSiftedOrEmpty (C × D) :=
   let e : (C × C) × (D × D) ≌ (C × D) × (C × D) := prod.prodμ ..
-  final_of_natIso (Iso.refl ((Functor.diag C).prod (Functor.diag D) ⋙ e.functor))
+  final_of_natIso (Iso.refl ((Functor.diagonal C).prod (Functor.diagonal D) ⋙ e.functor))
 
 /-- The product of two sifted categories is sifted. -/
 instance prod_isSifted [IsSifted C] [IsSifted D] : IsSifted (C × D) where
@@ -144,7 +144,7 @@ variable {C : Type u} [Category.{v} C] [IsSiftedOrEmpty C] {D : Type u₁} [Cate
   {D' : Type u₂} [Category.{v₂} D'] (F : C ⥤ D) (G : C ⥤ D')
 
 instance [F.Final] [G.Final] : (F.prod' G).Final :=
-  show (diag C ⋙ F.prod G).Final from final_comp _ _
+  show (diagonal C ⋙ F.prod G).Final from final_comp _ _
 
 end
 
@@ -165,11 +165,11 @@ variable (X Y : C ⥤ Type u)
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
-`externalProductCompDiagIso`, the comparison map `colimit.pre (X ⊠ Y) (diag C)` identifies with the
-product comparison map for the colimit functor. -/
+`externalProductCompDiagonalIso`, the comparison map `colimit.pre (X ⊠ Y) (diagonal C)` identifies
+with the product comparison map for the colimit functor. -/
 lemma factorization_prodComparison_colim :
-    (HasColimit.isoOfNatIso ((externalProductCompDiagIso _ _).app (X, Y)).symm).hom ≫
-      colimit.pre (X ⊠ Y) (diag C) ≫
+    (HasColimit.isoOfNatIso ((externalProductCompDiagonalIso _ _).app (X, Y)).symm).hom ≫
+      colimit.pre (X ⊠ Y) (diagonal C) ≫
         (PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂ X Y <|
           curriedTensor <| Type u).hom =
     CartesianMonoidalCategory.prodComparison colim X Y := by
@@ -233,7 +233,7 @@ theorem isSiftedOrEmpty_of_colim_preservesBinaryProducts
     IsSiftedOrEmpty C := by
   apply final_of_colimit_comp_coyoneda_iso_pUnit
   rintro ⟨c₁, c₂⟩
-  calc colimit <| diag C ⋙ coyoneda.obj (op (c₁, c₂))
+  calc colimit <| diagonal C ⋙ coyoneda.obj (op (c₁, c₂))
     _ ≅ colimit <| _ ⋙ (coyoneda.obj _) ⊠ (coyoneda.obj _) :=
       HasColimit.isoOfNatIso <| isoWhiskerLeft _ <| .refl _
     _ ≅ colimit (_ ⊗ _) := HasColimit.isoOfNatIso <| .refl _

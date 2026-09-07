@@ -585,9 +585,10 @@ For an object `X` in a category `D`, if the diagonal morphism `X ⟶ X × X` is 
 representable, then every morphism of the form `F.obj a ⟶ X` is relatively representable with
 respect to `F`.
 -/
-lemma of_diag {X : D} (h : F.relativelyRepresentable (Limits.diag X))
+lemma of_diagonal {X : D} (h : F.relativelyRepresentable (Limits.prod.diagonal X))
     ⦃a : C⦄ (g : F.obj a ⟶ X) : F.relativelyRepresentable g := by
-  rw [(by cat_disch : Limits.diag X = pullback.lift (𝟙 X) (𝟙 X) ≫ (prodIsoPullback X X).inv)] at h
+  rw [(by cat_disch :
+    Limits.prod.diagonal X = pullback.lift (𝟙 X) (𝟙 X) ≫ (prodIsoPullback X X).inv)] at h
   intro a' g'
   obtain ⟨_, ⟨left⟩⟩ := pullback_map_diagonal_isPullback g g' (terminal.from X)
   let prodMap : F.obj (a ⨯ a') ⟶ X ⨯ X :=
@@ -601,6 +602,8 @@ lemma of_diag {X : D} (h : F.relativelyRepresentable (Limits.diag X))
   exact ⟨_, ⟨_, ⟨_, IsPullback.of_iso_pullback (fst := pbRepr.hom ≫ pullback.fst g g')
     (snd := F.map (Functor.preimage F (pbRepr.hom ≫ pullback.snd g g')))
     ⟨by simp [pullback.condition]⟩ pbRepr (by cat_disch) (by cat_disch)⟩⟩⟩
+
+@[deprecated (since := "2026-09-06")] alias of_diag := of_diagonal
 
 /-- Assume that
 1. `C` has binary products and pullbacks,
@@ -636,10 +639,11 @@ set_option backward.isDefEq.respectTransparency false in
 For an object `X` in a category `D`, if every morphism of the form `F.obj a ⟶ X` is relatively
 representable with respect to `F`, so is the diagonal morphism `X ⟶ X × X`.
 -/
-lemma diag_of_map_from_obj [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
+lemma diagonal_of_map_from_obj [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
     {X : D} (h : ∀ ⦃a : C⦄ (g : F.obj a ⟶ X), F.relativelyRepresentable g) :
-    F.relativelyRepresentable (Limits.diag X) := by
-  rw [(by cat_disch : Limits.diag X = pullback.lift (𝟙 X) (𝟙 X) ≫ (prodIsoPullback X X).inv)]
+    F.relativelyRepresentable (Limits.prod.diagonal X) := by
+  rw [(by cat_disch :
+    Limits.prod.diagonal X = pullback.lift (𝟙 X) (𝟙 X) ≫ (prodIsoPullback X X).inv)]
   suffices F.relativelyRepresentable (pullback.lift (𝟙 _) (𝟙 _)) from
     (respectsIso F).toRespectsRight.postcomp _ (inferInstance : IsIso _) _ this
   intro a g
@@ -659,6 +663,8 @@ lemma diag_of_map_from_obj [HasPullbacks C] [PreservesLimitsOfShape WalkingCospa
   exact hg ▸ ⟨_, ⟨_, ⟨_, IsPullback.of_isLimit <| pasteVertIsPullback rfl bot
     (map_preimage F topMap ▸ top).flip.isLimit'.some⟩⟩⟩
 
+@[deprecated (since := "2026-09-06")] alias diag_of_map_from_obj := diagonal_of_map_from_obj
+
 /-- Assume that
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
@@ -667,10 +673,12 @@ lemma diag_of_map_from_obj [HasPullbacks C] [PreservesLimitsOfShape WalkingCospa
 For an object `X` in a category `D`, the diagonal morphism `X ⟶ X × X` is relatively representable
 with respect to `F` if and only if so is every morphism of the form `F.obj a ⟶ X`.
 -/
-lemma diag_iff {X : D} [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F] :
-    F.relativelyRepresentable (Limits.diag X) ↔
+lemma diagonal_iff {X : D} [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F] :
+    F.relativelyRepresentable (Limits.prod.diagonal X) ↔
       ∀ ⦃a : C⦄ (g : F.obj a ⟶ X), F.relativelyRepresentable g :=
-  ⟨fun h _ g => of_diag h g, fun h => diag_of_map_from_obj h⟩
+  ⟨fun h _ g => of_diagonal h g, fun h => diagonal_of_map_from_obj h⟩
+
+@[deprecated (since := "2026-09-06")] alias diag_iff := diagonal_iff
 
 end Diagonal
 

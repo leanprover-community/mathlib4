@@ -234,7 +234,7 @@ variable [ModelCategory C] {A : C} (P : PathObject A)
 section
 
 variable (h : MorphismProperty.MapFactorizationData
-  (trivialCofibrations C) (fibrations C) (diag A))
+  (trivialCofibrations C) (fibrations C) (prod.diagonal A))
 
 /-- A path object for `A` can be obtained from a factorization of the obvious
 map `A ⟶ A ⨯ A` as a trivial cofibration followed by a fibration. -/

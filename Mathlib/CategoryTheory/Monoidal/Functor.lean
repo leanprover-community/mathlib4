@@ -813,15 +813,26 @@ instance [F.Monoidal] [G.Monoidal] : (prod F G).Monoidal where
 end Prod
 
 set_option backward.defeqAttrib.useBackward true in
-instance : (diag C).Monoidal :=
+instance : (diagonal C).Monoidal :=
   CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
 
-@[simp] lemma diag_ε : ε (diag C) = 𝟙 _ := rfl
-@[simp] lemma diag_η : η (diag C) = 𝟙 _ := rfl
-@[simp] lemma diag_μ (X Y : C) : μ (diag C) X Y = 𝟙 _ := rfl
-@[simp] lemma diag_δ (X Y : C) : δ (diag C) X Y = 𝟙 _ := rfl
+@[simp] lemma diagonal_ε : ε (diagonal C) = 𝟙 _ := rfl
+
+@[deprecated (since := "2026-09-06")] alias diag_ε := diagonal_ε
+
+@[simp] lemma diagonal_η : η (diagonal C) = 𝟙 _ := rfl
+
+@[deprecated (since := "2026-09-06")] alias diag_η := diagonal_η
+
+@[simp] lemma diagonal_μ (X Y : C) : μ (diagonal C) X Y = 𝟙 _ := rfl
+
+@[deprecated (since := "2026-09-06")] alias diag_μ := diagonal_μ
+
+@[simp] lemma diagonal_δ (X Y : C) : δ (diagonal C) X Y = 𝟙 _ := rfl
+
+@[deprecated (since := "2026-09-06")] alias diag_δ := diagonal_δ
 
 section Prod'
 
@@ -833,7 +844,7 @@ variable [F.LaxMonoidal] [G.LaxMonoidal]
 
 /-- The functor `C ⥤ D × E` obtained from two lax monoidal functors is lax monoidal. -/
 instance LaxMonoidal.prod' : (prod' F G).LaxMonoidal :=
-  inferInstanceAs (diag C ⋙ prod F G).LaxMonoidal
+  inferInstanceAs (diagonal C ⋙ prod F G).LaxMonoidal
 
 @[simp] lemma prod'_ε_fst : (ε (prod' F G)).1 = ε F := by
   change _ ≫ F.map (𝟙 _) = _
@@ -863,7 +874,7 @@ variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 
 /-- The functor `C ⥤ D × E` obtained from two oplax monoidal functors is oplax monoidal. -/
 instance OplaxMonoidal.prod' : (prod' F G).OplaxMonoidal :=
-  inferInstanceAs (diag C ⋙ prod F G).OplaxMonoidal
+  inferInstanceAs (diagonal C ⋙ prod F G).OplaxMonoidal
 
 @[simp] lemma prod'_η_fst : (η (prod' F G)).1 = η F := by
   change F.map (𝟙 _) ≫ _ = _
