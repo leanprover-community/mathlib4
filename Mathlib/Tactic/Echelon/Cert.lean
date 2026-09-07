@@ -46,9 +46,9 @@ namespace Mathlib.Tactic.Echelon
 /-! ### The pivot-function conditions in chain form
 
 The pivot certificates defined in the theory file using `Monotone` and `StrictMonoOn` have
-decidable instances but requires `O(n^2)` kernel steps, since they use the general decidable
-instances from `Monotone` which checks all pairs. The following part defines a `List.isChain`-based
-alternative that can be decided in `O(n)`.
+decidable instances but require `O(n^2)` comparisons, since they use the general decidable
+instances from `Monotone` which check all pairs. The following part defines a `List.isChain`-based
+alternative that can be decided in `O(n) comparisons`.
 -/
 
 variable {α : Type*} [Top α]
@@ -213,10 +213,10 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     mkAppM ``And.intro #[hz, hn]
   -- both pivot-function conditions are decided at once in their adjacent-pairs chain
   -- form, which reduces linearly along the list
-  let hChain ← mkDecideProofQ q((List.ofFn (n := $m) $pivot).IsChain PivotStep)
-  let hMS : Q(Monotone $pivot ∧ StrictMonoOn $pivot {i | $pivot i ≠ ⊤}) ← mkAppM ``Iff.mp
-    #[← mkAppM ``isChain_ofFn_iff_monotone_and_strictMonoOn #[pivot], hChain]
-  return q(Matrix.isPivotedBy_iff.mpr ⟨($hMS).1, ($hMS).2, $entryConds⟩)
+  let hChain ← mkDecideProofQ q((List.ofFn $pivot).IsChain PivotStep)
+  let hMonoStrict : Q(Monotone $pivot ∧ StrictMonoOn $pivot {i | $pivot i ≠ ⊤}) :=
+    q((isChain_ofFn_iff_monotone_and_strictMonoOn $pivot).mp $hChain)
+  return q(Matrix.isPivotedBy_iff.mpr ⟨($hMonoStrict).1, ($hMonoStrict).2, $entryConds⟩)
 
 /-- Prove the row arrangement `A.submatrix σ id = Aσ` by reflection using `FinVec.etaExpand_eq`. -/
 def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
