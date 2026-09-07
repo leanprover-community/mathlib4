@@ -125,7 +125,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "d1bb1fc4170e223bbf12ae13add81ac4b18f4d39",
+   "rev": "a6cc072053aeaa7cd5d7e9fc94778c4ac4c1ab0d",
    "name": "HexArith",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
