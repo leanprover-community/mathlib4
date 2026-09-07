@@ -516,6 +516,5 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       · apply ihl ⟨m, (List.isChain_cons.1 hm).2⟩ hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
-instance WellFounded.list_chain' [hwf : WellFounded r] :
-    WellFounded (List.lex_chains r) :=
-  ⟨fun _ ↦ Acc.list_chain' (fun _ _ => hwf.apply _)⟩
+instance WellFounded.list_chain' [WellFounded r] : WellFounded (List.lex_chains r) :=
+  ⟨fun _ ↦ Acc.list_chain' (fun _ _ => ‹WellFounded r›.apply _)⟩
