@@ -195,6 +195,7 @@ instance {n : ℕ} (i : Fin (n + 2)) : Mono (stdSimplex.{u}.δ i) := by
   rw [← ι_ι]
   infer_instance
 
+@[ext]
 lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (∂Δ[n + 1] : SSet) ⟶ X}
     (h : ∀ (i : Fin (n + 2)), ι i ≫ f = ι i ≫ g) :
     f = g := by
