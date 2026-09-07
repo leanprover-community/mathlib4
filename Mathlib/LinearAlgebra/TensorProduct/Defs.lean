@@ -137,8 +137,7 @@ protected theorem inductionOn {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
   AddCon.induction_on z fun x =>
     FreeAddMonoid.recOn x (by simpa using! tmul 0 0) fun ⟨m, n⟩ y ih => by
-      rw [AddCon.coe_add]
-      exact add _ _ (tmul ..) ih
+      simpa using! add _ _ (tmul ..) ih
 
 set_option linter.unusedVariables false
 @[deprecated "Use `TensorProduction.inductionOn` instead" (since := "2026-09-07")]
