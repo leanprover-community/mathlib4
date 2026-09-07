@@ -519,16 +519,17 @@ theorem two_le_chromaticNumber_iff_ne_bot : 2 ≤ G.chromaticNumber ↔ G ≠ �
 
 /-- The bicoloring of a complete bipartite graph using whether a vertex
 is on the left or on the right. -/
-def CompleteBipartiteGraph.bicoloring (V W : Type*) : (completeBipartiteGraph V W).Coloring Bool :=
-  Coloring.mk (fun v => v.isRight)
-    (by
-      intro v w
-      cases v <;> cases w <;> simp)
+def completeBipartiteGraph.coloringBool (V W : Type*) :
+    (completeBipartiteGraph V W).Coloring Bool :=
+  .mk Sum.isRight <| by rintro (_ | _) (_ | _) <;> simp
 
-theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonempty W] :
+@[deprecated (since := "2026-09-06")]
+alias CompleteBipartiteGraph.bicoloring := completeBipartiteGraph.coloringBool
+
+theorem completeBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonempty W] :
     (completeBipartiteGraph V W).chromaticNumber = 2 := by
-  rw [← Nat.cast_two, chromaticNumber_eq_iff_forall_surjective
-    (by simpa using (CompleteBipartiteGraph.bicoloring V W).colorable)]
+  rw [← Nat.cast_two, chromaticNumber_eq_iff_forall_surjective <| by
+    simpa using (completeBipartiteGraph.coloringBool V W).colorable]
   intro C b
   have v := Classical.arbitrary V
   have w := Classical.arbitrary W
@@ -538,6 +539,9 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
   by_cases he' : C (Sum.inr w) = b
   · exact ⟨_, he'⟩
   · simpa using two_lt_card_iff.2 ⟨_, _, _, C.valid h, he, he'⟩
+
+@[deprecated (since := "2026-09-06")]
+alias CompleteBipartiteGraph.chromaticNumber := completeBipartiteGraph.chromaticNumber
 
 /-! ### Cliques -/
 
