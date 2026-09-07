@@ -434,27 +434,6 @@ theorem coe_le_iff : a ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := by simp [le_if
 @[to_dual coe_le_iff]
 theorem le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := by simp [le_iff_forall]
 
-omit [LE α] in
-/-- Compare a mapped value with a finite upper bound. -/
-@[to_dual coe_le_map_iff /-- Compare a finite lower bound with a mapped value. -/]
-theorem map_le_coe_iff [LE β] (f : α → β) (a : WithBot α) (x : β) :
-    WithBot.map f a ≤ x ↔ ∀ b, Option.some b = a → f b ≤ x := by
-  cases a with
-  | bot => simp
-  | coe a => exact WithBot.coe_le_coe.trans (by simp [WithBot.some])
-
-/-- Express comparison with a finite lower bound using an order-preserving and order-reflecting
-map. -/
-@[to_dual le_coe_iff_map
-/-- Express comparison with a finite upper bound using an order-preserving and order-reflecting
-map. -/]
-theorem coe_le_iff_map [LE β] (f : α → β)
-    (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) (c : α) (a : WithBot α) :
-    (c : WithBot α) ≤ a ↔ ∃ b, Option.some b = a ∧ f c ≤ f b := by
-  refine WithBot.coe_le_iff.trans <| exists_congr fun b => and_congr ?_ ?_
-  · exact eq_comm
-  · rw [mono_iff]
-
 @[to_dual (attr := simp)]
 theorem isMax_coe_iff : IsMax (a : WithBot α) ↔ IsMax a := by
   simp [IsMax, WithBot.forall]
