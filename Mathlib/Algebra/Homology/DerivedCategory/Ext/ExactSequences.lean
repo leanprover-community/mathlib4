@@ -21,7 +21,7 @@ We first phrase these exact sequences by using the pre- or post-composition with
 the class in `Ext S.X₃ S.X₁ 1` attached to the short exact sequence.
 Our understanding is that for the covariant exact long exact sequence,
 the morphism `Ext X S.X₃ n₀ → Ext X S.X₁ n₁` we obtain in this way is the connecting
-homomorphism from the most careful references. However, for the contravariant
+homomorphism from [conrad2000]. However, for the contravariant
 long exact sequence, the precomposition `Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁` with the class
 in `Ext S.X₃ S.X₁ 1` is the standard connecting homomorphism only up to the multiplication
 with the sign `(-1) ^ n₁`. This is the reason why we introduce a definition `Ext.δ`
