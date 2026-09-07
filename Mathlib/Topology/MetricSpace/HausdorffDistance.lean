@@ -518,15 +518,12 @@ theorem exists_forall_dist_le_iff_forall_infDist_le
     {A U : Set α} {a : α} (hattain : ∃ u ∈ U, infDist a U = dist a u) :
     (∃ u ∈ U, ∀ u' ∈ U, ∀ a' ∈ A, dist a u ≤ dist a' u') ↔
       ∀ a' ∈ A, infDist a U ≤ infDist a' U := by
-  constructor
-  · rintro ⟨u, huU, hmin⟩ a' ha'A
-    rw [le_infDist ⟨u, huU⟩]
+  refine ⟨fun ⟨u, huU, hmin⟩ a' ha'A ↦ ?_, fun h ↦ ?_⟩
+  · rw [le_infDist ⟨u, huU⟩]
     intro u' hu'U
     exact (infDist_le_dist_of_mem huU).trans (hmin u' hu'U a' ha'A)
-  · intro h
-    obtain ⟨u, huU, hu⟩ := hattain
-    refine ⟨u, huU, ?_⟩
-    intro u' hu'U a' ha'A
+  · obtain ⟨u, huU, hu⟩ := hattain
+    refine ⟨u, huU, fun u' hu'U a' ha'A ↦ ?_⟩
     calc
       dist a u = infDist a U := hu.symm
       _ ≤ infDist a' U := h a' ha'A
