@@ -199,11 +199,23 @@ theorem Pi.lift_comp_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p :
     Pi.lift p ≫ Pi.π f b = p b := by
   simp only [limit.lift_π, Fan.mk_π_app]
 
+@[deprecated (since := "2026-08-17")] alias Pi.lift_π_apply := Pi.lift_comp_π_apply
+@[deprecated (since := "2026-08-17")] alias Pi.lift_π_assoc := Pi.lift_comp_π_assoc
+@[deprecated (since := "2026-08-17")] alias Sigma.ι_desc := Sigma.ι_comp_desc
+@[deprecated (since := "2026-08-17")] alias Sigma.ι_desc_apply := Sigma.ι_comp_desc_apply
+@[deprecated (since := "2026-08-17")] alias Sigma.ι_desc_assoc := Sigma.ι_comp_desc_assoc
+
 /-- A version of `Cone.ext` for `Fan`s. -/
-@[to_dual (attr := simps!) /-- A version of `Cocone.ext` for `Cofan`s. -/]
+@[to_dual (attr := simps!) extInv /-- A version of `Cocone.ext` for `Cofan`s. -/]
 def Fan.ext {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
     (w : ∀ (b : β), c₁.proj b = e.hom ≫ c₂.proj b := by cat_disch) : c₁ ≅ c₂ :=
   Cone.ext e (fun ⟨j⟩ => w j)
+
+/-- A version of `Cone.ext` for `Fan`s. -/
+@[to_dual (attr := reducible, simps! -isSimp) ext /-- A version of `Cocone.ext` for `Cofan`s. -/]
+def Fan.extInv {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
+    (w : ∀ (b : β), e.inv ≫ c₁.proj b = c₂.proj b := by cat_disch) : c₁ ≅ c₂ :=
+  Cone.extInv e (fun ⟨j⟩ => w j)
 
 /-- A fan `c` on `f` such that the induced map `c.pt ⟶ ∏ f` is an iso, is a product. -/
 @[to_dual isColimitOfIsIsoSigmaDesc
@@ -217,9 +229,6 @@ def Fan.isLimitOfIsIsoPiLift {f : β → C} [HasProduct f] (c : Fan f)
 lemma Fan.nonempty_isLimit_iff_isIso_piLift {f : β → C} [HasProduct f] (c : Fan f) :
     Nonempty (IsLimit c) ↔ IsIso (Pi.lift c.proj) :=
   (limit.isLimit (Discrete.functor f)).nonempty_isLimit_iff_isIso_lift
-
-@[deprecated (since := "2026-08-17")] alias Sigma.ι_desc := Sigma.ι_comp_desc
-@[deprecated (since := "2026-08-17")] alias Sigma.ι_desc_assoc := Sigma.ι_comp_desc_assoc
 
 /-- A coproduct of coproducts is a coproduct -/
 def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
