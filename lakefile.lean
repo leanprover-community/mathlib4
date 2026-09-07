@@ -18,9 +18,6 @@ require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
-require HexBerlekampZassenhaus from git
-  "https://github.com/leanprover/hex-berlekamp-zassenhaus.git" @
-    "5b59d167f5bac139c2bf6f7a654476881314ff23"
 require HexRealRoots from git
   "https://github.com/leanprover/hex-real-roots.git" @
     "5ea6914dc230e7519722d237b46e02ec6e5ff2d0"

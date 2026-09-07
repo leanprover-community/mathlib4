@@ -7,13 +7,13 @@ Authors: Kim Morrison
 module
 
 public meta import HexPolyZ.IntegerPolynomial
-public import Mathlib.Algebra.Polynomial.Hex.Int
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Data.Rat.Defs
+public meta import Mathlib.Lean.Expr.Basic
 
 /-!
 Elaboration-time interpretation of closed `Polynomial R` expressions as
-executable `Hex.ZPoly` values, shared by the `isolate_roots` elaborator
-(`HexRealRootsMathlib`) and the `factor_poly`/`irreducibility` `Polynomial ℤ`
-extension (`HexBerlekampZassenhausMathlib`).
+executable `Hex.ZPoly` values.
 
 The interpreter matches the structural heads `X / C / numerals / + / - / * /
 neg / ^ (Nat literal)` on the *raw* term (a `whnf` would unfold
@@ -97,21 +97,21 @@ meta def evalCoeff (tactic : String) (isRat : Bool) (e : Expr) : MetaM Int := do
 unfolded one delta step at a time under a fuel guard, to a `Hex.ZPoly` value.
 `isRat` selects the `ℚ`-style non-integer rejection. -/
 meta partial def parsePoly (tactic : String) (isRat : Bool) (fuel : Nat)
-    (e : Expr) : MetaM Hex.ZPoly := do
+    (e : Expr) (onUnfold : Name → MetaM Unit := fun _ => pure ()) : MetaM Hex.ZPoly := do
   -- Match structural heads on the *raw* term first: `whnf` would unfold
   -- `Polynomial.C`/`X`/numerals into their `Finsupp` normal form and defeat the
   -- match. Only if no structural head applies do we unfold once (a named local
   -- def) under the fuel guard.
   match e.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, a, b]) =>
-      return (← parsePoly tactic isRat fuel a) + (← parsePoly tactic isRat fuel b)
+      return (← parsePoly tactic isRat fuel a onUnfold) + (← parsePoly tactic isRat fuel b onUnfold)
   | (``HSub.hSub, #[_, _, _, _, a, b]) =>
-      return (← parsePoly tactic isRat fuel a) - (← parsePoly tactic isRat fuel b)
+      return (← parsePoly tactic isRat fuel a onUnfold) - (← parsePoly tactic isRat fuel b onUnfold)
   | (``HMul.hMul, #[_, _, _, _, a, b]) =>
-      return (← parsePoly tactic isRat fuel a) * (← parsePoly tactic isRat fuel b)
-  | (``Neg.neg, #[_, _, a]) => return - (← parsePoly tactic isRat fuel a)
+      return (← parsePoly tactic isRat fuel a onUnfold) * (← parsePoly tactic isRat fuel b onUnfold)
+  | (``Neg.neg, #[_, _, a]) => return - (← parsePoly tactic isRat fuel a onUnfold)
   | (``HPow.hPow, #[_, _, _, _, a, n]) => do
-      let base ← parsePoly tactic isRat fuel a
+      let base ← parsePoly tactic isRat fuel a onUnfold
       let k ← getNat tactic n
       let mut acc : Hex.ZPoly := Hex.DensePoly.C 1
       for _ in [0:k] do acc := acc * base
@@ -133,7 +133,9 @@ meta partial def parsePoly (tactic : String) (isRat : Bool) (fuel : Nat)
       throwError "{tactic}: unsupported polynomial syntax{indentExpr e}"
     else
       match ← unfoldDefinition? e with
-      | some e' => parsePoly tactic isRat (fuel - 1) e'
+      | some e' =>
+          onUnfold e.getAppFn.constName!
+          parsePoly tactic isRat (fuel - 1) e' onUnfold
       | none => throwError "{tactic}: unsupported polynomial syntax{indentExpr e}"
 
 end Mathlib.Tactic.Polynomial.Hex

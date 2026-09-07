@@ -165,7 +165,6 @@ public import Mathlib.Tactic.InferParam
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
-public import Mathlib.Tactic.IsolateRoots
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Linarith
@@ -289,6 +288,7 @@ public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.RSuffices
+public import Mathlib.Tactic.RealRootCount
 public import Mathlib.Tactic.Recall
 public import Mathlib.Tactic.Recover
 public import Mathlib.Tactic.ReduceModChar
