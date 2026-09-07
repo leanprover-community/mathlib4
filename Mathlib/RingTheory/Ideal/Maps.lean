@@ -1261,12 +1261,16 @@ def RingEquiv.idealComapOrderIso {R S : Type*} [Semiring R] [Semiring S] (e : R 
     Ideal S ≃o Ideal R where
   toFun I := I.comap e
   invFun I := I.map e
-  left_inv I := by
-    sorry--I.map_comap_of_surjective e.toRingHom e.surjective
-  right_inv I := I.comap_map_of_bijective _ e.bijective
+  left_inv I := by exact I.map_comap_of_surjective e.toRingHom e.surjective
+  right_inv I := by exact I.comap_map_of_bijective _ e.bijective
   map_rel_iff' := by
-    simp [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ e.surjective]
+    have : Function.Surjective e.toRingHom := e.surjective
+    simp [← Ideal.map_le_iff_le_comap]--, Ideal.map_comap_of_surjective e.toRingHom this]
+    intro a
+    rw [← Ideal.map_comap_of_surjective e.toRingHom this a]
+    simp
 #lint
+#exit
 @[simp]
 lemma RingEquiv.idealComapOrderIso_symm_apply
     {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) (I : Ideal R) :
