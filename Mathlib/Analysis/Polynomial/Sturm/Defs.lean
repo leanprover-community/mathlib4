@@ -63,6 +63,9 @@ noncomputable def signVariations (l : List ℝ) : ℕ :=
 
 @[simp] theorem signVariations_nil : signVariations [] = 0 := rfl
 
+@[simp] theorem signVariations_singleton (a : ℝ) : signVariations [a] = 0 := by
+  by_cases ha : a = 0 <;> simp [signVariations, ha]
+
 /-- Prepending a zero entry does not change the sign variations. -/
 @[simp] theorem signVariations_cons_zero (l : List ℝ) :
     signVariations (0 :: l) = signVariations l := by
