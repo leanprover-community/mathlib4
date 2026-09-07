@@ -344,8 +344,8 @@ lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFac
     List.map_id', Nat.prod_primeFactorsList hn.ne_zero]
 
 theorem squarefree_and_primeFactors_card_eq_two_iff (n : ℕ) :
-    Squarefree n ∧ (primeFactors n).card = 2
-      ↔ ∃ p q : ℕ, p < q ∧ p.Prime ∧ q.Prime ∧ p * q = n := by
+    Squarefree n ∧ (primeFactors n).card = 2 ↔
+      ∃ p q : ℕ, p < q ∧ p.Prime ∧ q.Prime ∧ p * q = n := by
   refine ⟨fun ⟨sq, nc⟩ ↦ ?_, fun ⟨p, q, pq, hp, hq, hn⟩ ↦ ?_⟩
   · obtain ⟨p, q, pq, eq⟩ := Finset.card_eq_two.mp nc
     wlog pq' : p < q
