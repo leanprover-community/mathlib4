@@ -41,8 +41,7 @@ theorem root_pow_self : h.root ^ r = 1 := by
   simpa [map_sub, sub_eq_zero] using h.aeval_root_self
 
 theorem aeval_root_pow_self : aeval (h.root ^ k) (X ^ r - 1 : R[X]) = 0 := by
-  rw [aeval_sub, map_pow, aeval_X, map_one, ← pow_mul, mul_comm, pow_mul, root_pow_self]
-  simp
+  simp [pow_right_comm, root_pow_self h]
 
 end RootsOfUnity
 
