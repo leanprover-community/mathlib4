@@ -39,16 +39,7 @@ lemma disjoint_iff_eq_compl :
       J.val ⊆ I.valᶜ ↔ Disjoint J.val I.val).symm
 
 def topVector : ⋀[K]^(k + l) V :=
-  ⟨b.ExteriorAlgebra (Finset.univ : Finset ι), by
-    rw [hkl, ExteriorAlgebra.basis_eq_coe_basis b
-      (⟨Finset.univ, by simp⟩ : powersetCard ι (Fintype.card ι))]
-    exact (b.exteriorPower _ ⟨Finset.univ, by simp⟩).property⟩
-
-lemma topVector_ne_zero [Nontrivial K] : topVector b hkl ≠ 0 := by
-  intro hzero
-  apply (b.ExteriorAlgebra).ne_zero (Finset.univ : Finset ι)
-  change (topVector b hkl : ExteriorAlgebra K V) = 0
-  simpa only [Submodule.coe_eq_zero] using hzero
+  b.exteriorPower (k + l) ⟨Finset.univ, by simpa using hkl.symm⟩
 
 lemma basis_mul_of_complement (hdisjoint : Disjoint J.val I.val) :
     DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k J)
@@ -57,9 +48,8 @@ lemma basis_mul_of_complement (hdisjoint : Disjoint J.val I.val) :
   obtain rfl := (disjoint_iff_eq_compl hkl I J).mp hdisjoint
   apply Subtype.ext
   simpa only [DirectSum.gMulLHom_apply_apply, SetLike.coe_gMul,
-    ← ExteriorAlgebra.basis_eq_coe_basis, topVector, coe_compl,
-    SetLike.mk_smul_of_tower_mk, coe_disjUnion, Finset.disjUnion_eq_union,
-    Finset.union_comm, Finset.union_compl] using
+    topVector, Submodule.coe_smul_of_tower, ← ExteriorAlgebra.basis_eq_coe_basis, coe_compl,
+    coe_disjUnion, Finset.disjUnion_eq_union, Finset.union_comm, Finset.union_compl] using
     ExteriorAlgebra.basis_mul_of_disjoint b _ I (disjoint_compl hkl I)
 
 omit [Fintype ι] in
@@ -75,76 +65,51 @@ end Basis
 
 section FiniteDimensional
 
-variable [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-variable (vol : Dual K (⋀[K]^(finrank K V) V)) (hvol : Bijective vol)
-variable {k l : ℕ} (hkl : k + l = finrank K V)
+variable [Field K] [AddCommGroup V] [Module K V]
+variable {k l : ℕ} (vol : Dual K (⋀[K]^(k + l) V)) (hvol : Bijective vol)
+variable (hkl : k + l = finrank K V)
 
-def volumeCoordinate : ⋀[K]^(k + l) V →ₗ[K] K :=
-  vol.comp
-    (LinearEquiv.cast (R := K) (M := fun n : ℕ ↦ ⋀[K]^n V) hkl).toLinearMap
-
-omit [FiniteDimensional K V] in
-@[simp]
-lemma volumeCoordinate_apply (x : ⋀[K]^(k + l) V) :
-    volumeCoordinate vol hkl x =
-      vol (LinearEquiv.cast (R := K) (M := fun n : ℕ ↦ ⋀[K]^n V) hkl x) := by
-  rfl
-
-@[simps!]
 def wedgePairing :
     ⋀[K]^l V →ₗ[K] (⋀[K]^k V →ₗ[K] K) :=
-  (LinearMap.flip (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V))).compr₂
-    (volumeCoordinate vol hkl)
+  (LinearMap.flip (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V))).compr₂ vol
 
-include hvol
-omit [FiniteDimensional K V] in
-lemma volumeCoordinate_topVector_ne_zero (b : Basis (Fin (finrank K V)) K V) :
-    volumeCoordinate vol hkl (topVector b (by simpa using hkl)) ≠ 0 := by
-  intro hzero
-  apply topVector_ne_zero (b := b) (hkl := by simpa using hkl)
-  apply (LinearEquiv.cast (R := K) (M := fun n : ℕ ↦ ⋀[K]^n V) hkl).injective
-  apply hvol.1
-  simpa [volumeCoordinate, map_zero] using hzero
-
-include hvol
 def wedgePairingBasis (b : Basis (Fin (finrank K V)) K V) :
     Basis (powersetCard (Fin (finrank K V)) l) K (⋀[K]^k V →ₗ[K] K) :=
   (((b.exteriorPower k).dualBasis.reindex
       (powersetCard.compl (by simpa using hkl)).symm).isUnitSMul
-    (fun _ ↦ isUnit_iff_ne_zero.mpr
-      (volumeCoordinate_topVector_ne_zero vol hvol hkl b))).groupSMul (fun I ↦
+    (fun _ ↦ isUnit_iff_ne_zero.mpr (show vol (topVector b (by simpa using hkl)) ≠ 0 by
+      rw [ne_eq, vol.map_eq_zero_iff hvol.injective]
+      exact (b.exteriorPower _).ne_zero _))).groupSMul (fun I ↦
       (permOfDisjoint (disjoint_compl (k := k) (l := l)
         (hkl := by simpa using hkl) I)).sign)
 
-omit [FiniteDimensional K V] in
 lemma wedgePairingBasis_apply (b : Basis (Fin (finrank K V)) K V)
     (I : powersetCard (Fin (finrank K V)) l)
     (J : powersetCard (Fin (finrank K V)) k) :
     wedgePairingBasis vol hvol hkl b I (b.exteriorPower k J) =
-      wedgePairing vol hkl (b.exteriorPower l I) (b.exteriorPower k J) := by
+      wedgePairing vol (b.exteriorPower l I) (b.exteriorPower k J) := by
   change wedgePairingBasis vol hvol hkl b I (b.exteriorPower k J) =
-    volumeCoordinate vol hkl
-      (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V)
-        (b.exteriorPower k J) (b.exteriorPower l I))
+    vol (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V)
+      (b.exteriorPower k J) (b.exteriorPower l I))
   have hdisjoint_iff :=
     disjoint_iff_eq_compl (k := k) (l := l) (hkl := by simpa using hkl) I J
   by_cases htarget : J = powersetCard.compl (by simpa using hkl) I
   · rw [basis_mul_of_complement b (k := k) (l := l)
       (hkl := by simpa using hkl) I J
       (hdisjoint_iff.mpr htarget)]
-    simp [wedgePairingBasis, htarget, volumeCoordinate, Module.Basis.isUnitSMul_apply,
+    simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply,
       Basis.reindex_apply, Basis.groupSMul_apply]
   · rw [basis_mul_of_not_disjoint b I J (hdisjoint_iff.not.mpr htarget)]
-    simp [wedgePairingBasis, htarget, volumeCoordinate, map_zero,
-      Module.Basis.isUnitSMul_apply, Basis.reindex_apply, Basis.groupSMul_apply]
+    simp [wedgePairingBasis, htarget, Module.Basis.isUnitSMul_apply,
+      Basis.reindex_apply, Basis.groupSMul_apply]
 
-include hvol
-lemma bijective_wedgePairing : Bijective (wedgePairing vol hkl) := by
+include hvol hkl in
+lemma bijective_wedgePairing [FiniteDimensional K V] : Bijective (wedgePairing vol) := by
   let basis := finBasis K V
   let basisEquiv :=
     (basis.exteriorPower l).equiv
       (wedgePairingBasis vol hvol hkl basis) (Equiv.refl _)
-  suffices basisEquiv.toLinearMap = wedgePairing vol hkl by
+  suffices basisEquiv.toLinearMap = wedgePairing vol by
     rw [← this]
     exact basisEquiv.bijective
   apply LinearMap.ext_basis (basis.exteriorPower l) (basis.exteriorPower k)
@@ -162,14 +127,18 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensiona
 variable (vol : Dual K (⋀[K]^(finrank K V) V)) (hvol : Bijective vol)
 variable (k l : ℕ) (hkl : k + l = finrank K V)
 
-/-- The linear equivalence induced by wedging with `vol` in complementary degrees. -/
+/-- The linear equivalence obtained by applying `vol` to wedge products in complementary degrees. -/
 public noncomputable def wedgePairingEquiv :
     ⋀[K]^l V ≃ₗ[K] Dual K (⋀[K]^k V) :=
-  LinearEquiv.ofBijective (wedgePairing vol hkl)
-    (bijective_wedgePairing vol hvol hkl)
+  let e := LinearEquiv.cast (R := K) (M := fun n : ℕ ↦ ⋀[K]^n V) hkl
+  LinearEquiv.ofBijective (wedgePairing (vol.comp e.toLinearMap))
+    (bijective_wedgePairing _ (hvol.comp e.bijective) hkl)
 
 @[simp]
-lemma wedgePairingEquiv_apply (source : ⋀[K]^l V) :
-    wedgePairingEquiv vol hvol k l hkl source = wedgePairing vol hkl source := rfl
+public lemma wedgePairingEquiv_apply (x : ⋀[K]^l V) (y : ⋀[K]^k V) :
+    wedgePairingEquiv vol hvol k l hkl x y =
+      vol (LinearEquiv.cast (R := K) (M := fun n : ℕ ↦ ⋀[K]^n V) hkl
+        (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) y x)) := by
+  simp [wedgePairingEquiv, wedgePairing]
 
 end exteriorPower

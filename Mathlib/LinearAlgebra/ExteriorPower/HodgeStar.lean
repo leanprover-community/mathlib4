@@ -12,8 +12,8 @@ public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
 /-!
 # Hodge star on exterior powers
 
-We construct the Hodge star associated to a bijective bilinear form and a nonzero top-degree
-element.
+We construct the Hodge star associated to a bijective bilinear form and a bijective linear form
+on the top exterior power.
 -/
 
 @[expose] public section
