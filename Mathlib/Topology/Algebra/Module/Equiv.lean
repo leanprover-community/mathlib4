@@ -644,6 +644,11 @@ theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) 
     (equivOfInverse f₁ f₂ h₁ h₂).symm = equivOfInverse f₂ f₁ h₂ h₁ :=
   rfl
 
+@[simp]
+theorem toContinuousLinearMap_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
+    (equivOfInverse f₁ f₂ h₁ h₂ : M₁ →SL[σ₁₂] M₂) = f₁ :=
+  rfl
+
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`.
 *ToDo*: Improve the naming to make it match `LinearEquiv.ofLinearMap` -/
@@ -661,6 +666,11 @@ theorem equivOfInverse'_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂
 @[simp]
 theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse' f₁ f₂ h₁ h₂).symm = equivOfInverse' f₂ f₁ h₂ h₁ :=
+  rfl
+
+@[simp]
+theorem toContinuousLinearMap_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
+    (equivOfInverse' f₁ f₂ h₁ h₂ : M₁ →SL[σ₁₂] M₂) = f₁ :=
   rfl
 
 theorem eq_comp_toContinuousLinearMap_symm (e₁₂ : M₁ ≃SL[σ₁₂] M₂) [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
