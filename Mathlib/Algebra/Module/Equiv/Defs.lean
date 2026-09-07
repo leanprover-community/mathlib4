@@ -171,7 +171,7 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add')
   map_smulₛₗ := (·.map_smul')
 
-theorem toLinearMap_eq_ofClass {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = SemilinearMap.ofClass e :=
+theorem toLinearMap_eq_ofClass {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = .ofClass e :=
   rfl
 
 @[deprecated (since := "2026-09-03")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
