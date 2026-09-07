@@ -142,26 +142,19 @@ theorem isCarmichael_iff_korselt :
 
 theorem IsCarmichael.three_le_card_primeFactors (h : IsCarmichael n) :
     3 ≤ n.primeFactors.card := by
-  by_contra! h0
-  set a := n.primeFactors.card with hn
-  symm at hn
-  interval_cases a
-  · simp_all
-    grind [h.two_lt]
-  · rw [← isPrimePow_iff_card_primeFactors_eq_one] at hn
-    exact h.not_prime <| squarefree_and_prime_pow_iff_prime.mp ⟨h.squarefree, hn⟩
-  obtain ⟨p, q, pq, hp, hq, pqn⟩ :=
-    (squarefree_and_primeFactors_card_eq_two_iff n).mp ⟨h.squarefree, hn⟩
-  rw [← pqn] at h
-  have : q ≤ p := by
-    rw [← Nat.sub_add_cancel hp.one_le, ← tsub_le_iff_right]
-    apply le_of_dvd (by simp [hp.one_lt])
-    have eq : (p * q - 1) - p * (q - 1) = p - 1 := by
-      rw [Nat.mul_sub, mul_one, Nat.sub_right_comm,
-        Nat.sub_sub_self (Nat.le_mul_of_pos_right p (zero_lt_of_lt pq))]
-    rw [← eq]
-    exact dvd_sub (h.prime_sub_one_dvd hq (dvd_mul_left q p)) (dvd_mul_left (q - 1) p)
-  order
+  obtain ⟨_, _, hs, h⟩ := isCarmichael_iff_korselt.mp h
+  have h0 : n.primeFactors.card ≠ 0 := by grind [primeFactors_eq_empty]
+  have h1 : n.primeFactors.card ≠ 1 := by
+    grind [squarefree_and_prime_pow_iff_prime, isPrimePow_iff_card_primeFactors_eq_one]
+  by_contra h3
+  have h2 : n.primeFactors.card = 2 := by grind
+  obtain ⟨p, q, pq, hp, hq, hn⟩ := (squarefree_and_primeFactors_card_eq_two_iff n).mp ⟨hs, h2⟩
+  contrapose! pq
+  have eq : p - 1 + (q - 1) * p = p * q - 1 := by zify; grind
+  rw [← tsub_le_tsub_iff_right hp.one_le]
+  refine le_of_dvd (tsub_pos_of_lt hp.one_lt) ((Nat.dvd_add_left ⟨p, rfl⟩).mp ?_)
+  rw [eq, hn]
+  exact h q hq (Dvd.intro_left p hn)
 
 /-- **Korselt's criterion** stated in a form suitable for concrete calculations. -/
 theorem isCarmichael_iff_korselt_primeFactorsList :
