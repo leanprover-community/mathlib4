@@ -25,14 +25,10 @@ well-behaved subtraction.
 ## Implementation details
 
 A `GlobalPreprocessor` is a function `List TaggedProof → MetaM (List TaggedProof)`, where a
-`TaggedProof` is a proof term paired with the indices of the hypotheses it was derived from.
-Users can add custom
-preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.defaultPreprocessors`
-is the main list, and generally none of these should be skipped unless you know what you're doing.
-
-Preprocessors must propagate provenance, since the oracle's certificate indexes the preprocessed
-facts rather than the user's hypotheses and `linarith?` has to report the latter. See
-`Linarith.Origin`.
+`TaggedProof` is a proof term tagged with the hypotheses it was derived from; see `TaggedProof`.
+Users can add custom preprocessing steps by adding them to the `LinarithConfig` object.
+`Linarith.defaultPreprocessors` is the main list, and generally none of these should be skipped
+unless you know what you're doing.
 -/
 
 public meta section
@@ -124,9 +120,6 @@ If `h` is an equality or inequality between natural numbers,
 `natToInt` lifts this inequality to the integers.
 It also adds the facts that the integers involved are nonnegative.
 To avoid adding the same nonnegativity facts many times, it is a global preprocessor.
-
-Lifting a hypothesis preserves its origin; the nonnegativity facts are tagged with the origins of
-every hypothesis the cast was found in. See `Linarith.Origin`.
 -/
 def natToInt : GlobalBranchingPreprocessor where
   description := "move nats to ints"
@@ -154,7 +147,7 @@ def natToInt : GlobalBranchingPreprocessor where
             -- Store the canonical form of the atoms, i.e. the first occurrence encountered.
             let (i₁, c₁) ← AtomM.addAtom c.1
             let (i₂, c₂) ← AtomM.addAtom c.2
-            return es.alter (i₁, i₂) fun p? => some (c₁, c₂, ((p?.map (·.2.2)).getD []).union o)
+            return es.alter (i₁, i₂) fun p? => some (c₁, c₂, ((p?.map (·.2.2)).getD []) ∪ o)
         catch _ => pure es
     let nonnegProofs : List TaggedProof ← nonnegs.values.filterMapM fun (e, target, o) => do
       return (← mkNatCastNonnegProof? (e, target)).map (⟨·, o⟩)
@@ -280,12 +273,7 @@ partial def findSquares (s : TreeSet (Nat × Bool) lexOrd.compare) (e : Expr) :
       e.foldlM findSquares s
   | _ => e.foldlM findSquares s
 
-/--
-Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls`.
-
-Each proof is tagged with the origins of the hypotheses the square was found in, as with the
-nonnegativity facts added by `natToInt`. See `Linarith.Origin`.
--/
+/-- Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls`. -/
 private def nlinarithGetSquareProofs (ls : List TaggedProof) : MetaM (List TaggedProof) :=
   withTraceNode `linarith (fun _ => return m!" finding squares") do
   -- find the squares in `AtomM` to ensure deterministic behavior
@@ -293,7 +281,7 @@ private def nlinarithGetSquareProofs (ls : List TaggedProof) : MetaM (List Tagge
     let m ← ls.foldrM (init := (∅ : TreeMap (Nat × Bool) Origin lexOrd.compare))
       fun ⟨h, o⟩ m => do
         let si ← findSquares ∅ (← instantiateMVars (← inferType h))
-        return si.foldl (fun m k => m.alter k fun o? => some ((o?.getD []).union o)) m
+        return si.foldl (fun m k => m.alter k fun o? => some (o?.getD [] ∪ o)) m
     let atoms := (← get).atoms
     return m.toList.map fun ((i, is_sq), o) => (atoms[i]!, is_sq, o)
   let new_es : List TaggedProof ← s.filterMapM fun (e, is_sq, o) => do
@@ -330,7 +318,7 @@ private def nlinarithGetProductsProofs (ls : List TaggedProof) : MetaM (List Tag
           | Ineq.le, Ineq.lt =>
               mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, ← mkAppM ``le_of_lt #[b]]
           | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
-        pure (some ⟨pf, oa.union ob⟩)
+        pure (some ⟨pf, oa ∪ ob⟩)
       catch _ => pure none
   compWithZero.globalize.transform products.reduceOption
 
@@ -394,10 +382,7 @@ initialize nnrealToRealTransform : IO.Ref (List TaggedProof → MetaM (List Tagg
 If `h` is an equality or inequality between NNReals, `nnrealToReal` lifts this inequality to the
 Reals. It also adds the facts that the reals involved are nonnegative. To avoid adding the same
 nonnegativity facts many times, it is a global preprocessor. This preprocessor does nothing unless
-`Mathlib.Tactic.Linarith.NNRealPreprocessor` is imported.
-
-The override must preserve origins itself rather than being lifted with `Linarith.untagged`, since
-the default here is the identity. -/
+`Mathlib.Tactic.Linarith.NNRealPreprocessor` is imported. -/
 def nnrealToReal : GlobalPreprocessor where
   description := "move nnreals to reals"
   transform l := do (← nnrealToRealTransform.get) l

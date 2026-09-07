@@ -62,10 +62,7 @@ def mkToRealNonnegProof? (e : Expr) : MetaM (Option Expr) :=
 
 @[deprecated (since := "2026-05-27")] alias mk_toReal_nonneg_prf := mkToRealNonnegProof?
 
-/-
-Nonnegativity facts are tagged with the origins of every hypothesis their coercion was found in, as
-in `natToInt`. See the `nnrealToReal` docstring for why this cannot use `Linarith.untagged`.
--/
+-- Nonnegativity facts are tagged with every hypothesis their coercion occurs in, as in `natToInt`.
 initialize nnrealToRealTransform.set fun l => do
   let l : List TaggedProof ← l.mapM fun ⟨e, o⟩ => do
     let t ← whnfR (← instantiateMVars (← inferType e))
@@ -78,7 +75,7 @@ initialize nnrealToRealTransform.set fun l => do
       for c in getNNRealCoes a ++ getNNRealCoes b do
         -- Store the canonical form of the atom, i.e. the first occurrence encountered.
         let (i, c) ← AtomM.addAtom c
-        origins := origins.alter i fun p? => some (c, ((p?.map (·.2)).getD []).union o)
+        origins := origins.alter i fun p? => some (c, ((p?.map (·.2)).getD []) ∪ o)
     return origins.values
   let nonnegProofs : List TaggedProof ← coes.filterMapM fun (c, o) => do
     return (← mkToRealNonnegProof? c).map (⟨·, o⟩)

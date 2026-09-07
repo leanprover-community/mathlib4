@@ -846,7 +846,7 @@ example (m n : ℕ) (h : m < n) (junk : n < n + 5) : m + 1 ≤ n := by
 -- an equality goal runs `linarith` twice
 /--
 info: Try this:
-  [apply] linarith only [h₂, h₁]
+  [apply] linarith only [h₁, h₂]
 -/
 #guard_msgs in
 example (a b : ℚ) (h₁ : a ≤ b) (h₂ : b ≤ a) (junk : a < a + 1) : a = b := by
