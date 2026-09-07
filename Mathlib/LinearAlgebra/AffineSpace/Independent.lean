@@ -77,7 +77,7 @@ theorem affineIndependent_of_subsingleton [Subsingleton ι] (p : ι → P) : Aff
   fun _ _ h _ i hi => Fintype.eq_of_subsingleton_of_sum_eq h i hi
 
 /-- A set with at most one point is affinely independent. -/
-theorem AffineIndepOn.of_subsingleton' (p : ι → P) {s : Set ι} (hs : s.Subsingleton) :
+theorem AffineIndepOn.of_setSubsingleton (p : ι → P) {s : Set ι} (hs : s.Subsingleton) :
     AffineIndepOn k p s :=
   have := (Set.subsingleton_coe s).mpr hs
   affineIndependent_of_subsingleton _ _
@@ -93,14 +93,14 @@ theorem AffineIndepOn.of_subsingleton [Subsingleton k] (p : ι → P) (s : Set �
 
 @[simp]
 lemma AffineIndepOn.singleton (p : ι → P) (i : ι) : AffineIndepOn k p {i} :=
-  .of_subsingleton' k p Set.subsingleton_singleton
+  .of_setSubsingleton k p Set.subsingleton_singleton
 
 theorem affineIndependent_empty_type [IsEmpty ι] (p : ι → P) : AffineIndependent k p :=
   affineIndependent_of_subsingleton _ _
 
 @[simp]
 theorem affineIndepOn_empty (p : ι → P) : AffineIndepOn k p ∅ :=
-  .of_subsingleton' k p Set.subsingleton_empty
+  .of_setSubsingleton k p Set.subsingleton_empty
 
 theorem affineIndependent_subtype_iff {s : Set P} :
     AffineIndependent k (Subtype.val : s → P) ↔ AffineIndepOn k id s := Iff.rfl
@@ -413,19 +413,6 @@ theorem AffineIndependent.affineIndepOn_id {p : ι → P} (h : AffineIndependent
     AffineIndepOn k id (Set.range p) :=
   h.range
 
-theorem affineIndepOn_iff_image {s : Set ι} {f : ι → P} (hf : Set.InjOn f s) :
-    AffineIndepOn k f s ↔ AffineIndepOn k id (f '' s) :=
-  affineIndependent_equiv' (Equiv.Set.imageOfInjOn _ _ hf) rfl
-
-theorem AffineIndepOn.id_image {p : ι → P} {s : Set ι} (hs : AffineIndepOn k p s) :
-    AffineIndepOn k id (p '' s) := by
-  nontriviality k
-  exact (affineIndepOn_iff_image hs.injOn).mp hs
-
-theorem affineIndepOn_iff_affineIndepOn_image_injOn [Nontrivial k] {p : ι → P} {s : Set ι} :
-    AffineIndepOn k p s ↔ AffineIndepOn k id (p '' s) ∧ Set.InjOn p s :=
-  ⟨fun h ↦ ⟨h.id_image, h.injOn⟩, fun h ↦ (affineIndepOn_iff_image h.2).mpr h.1⟩
-
 theorem AffineIndepOn.comp_of_image {ι' : Type*} {s : Set ι'} {f : ι' → ι} {p : ι → P}
     (h : AffineIndepOn k p (f '' s)) (hf : Set.InjOn f s) : AffineIndepOn k (p ∘ f) s :=
   h.comp_embedding (Equiv.Set.imageOfInjOn f s hf).toEmbedding
@@ -436,9 +423,25 @@ theorem AffineIndepOn.image_of_comp {ι' : Type*} {s : Set ι} (f : ι → ι') 
   exact (affineIndependent_equiv'
     (Equiv.Set.imageOfInjOn f s (Set.injOn_iff_injective.mpr hs.injective.of_comp)) rfl).mp hs
 
+theorem affineIndepOn_image_iff {ι' : Type*} {s : Set ι} {f : ι → ι'} (g : ι' → P)
+    (hf : Set.InjOn f s) : AffineIndepOn k g (f '' s) ↔ AffineIndepOn k (g ∘ f) s :=
+  ⟨fun h ↦ h.comp_of_image hf, fun h ↦ h.image_of_comp f g⟩
+
+theorem affineIndepOn_iff_image {s : Set ι} {f : ι → P} (hf : Set.InjOn f s) :
+    AffineIndepOn k f s ↔ AffineIndepOn k id (f '' s) :=
+  (affineIndepOn_image_iff id hf).symm
+
+theorem AffineIndepOn.id_image {p : ι → P} {s : Set ι} (hs : AffineIndepOn k p s) :
+    AffineIndepOn k id (p '' s) :=
+  hs.image_of_comp p id
+
+theorem affineIndepOn_iff_affineIndepOn_image_injOn [Nontrivial k] {p : ι → P} {s : Set ι} :
+    AffineIndepOn k p s ↔ AffineIndepOn k id (p '' s) ∧ Set.InjOn p s :=
+  ⟨fun h ↦ ⟨h.id_image, h.injOn⟩, fun h ↦ (affineIndepOn_iff_image h.2).mpr h.1⟩
+
 theorem affineIndepOn_range_iff {ι' : Type*} {f : ι → ι'} (hf : Injective f) (g : ι' → P) :
-    AffineIndepOn k g (Set.range f) ↔ AffineIndependent k (g ∘ f) :=
-  affineIndependent_equiv' (Equiv.ofInjective f hf) rfl |>.symm
+    AffineIndepOn k g (Set.range f) ↔ AffineIndependent k (g ∘ f) := by
+  simpa using affineIndepOn_image_iff g <| hf.injOn (s := .univ)
 
 alias ⟨AffineIndependent.of_affineIndepOn_range, _⟩ := affineIndepOn_range_iff
 
@@ -490,7 +493,7 @@ theorem affineIndepOn_congr {p q : ι → P} {s : Set ι} (h : Set.EqOn p q s) :
   ext x
   exact h.symm x.2
 
-theorem AffineIndepOn.congr {p q : ι → P} {s : Set ι} (hp : AffineIndepOn k p s)
+protected theorem AffineIndepOn.congr {p q : ι → P} {s : Set ι} (hp : AffineIndepOn k p s)
     (h : Set.EqOn p q s) : AffineIndepOn k q s :=
   (affineIndepOn_congr h).mp hp
 
