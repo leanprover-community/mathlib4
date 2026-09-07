@@ -106,16 +106,13 @@ theorem not_differentiableAt_Gamma_zero : ¬ DifferentiableAt ℂ Gamma 0 :=
 
 theorem not_continuousAt_Gamma_neg_nat (n : ℕ) : ¬ ContinuousAt Gamma (-n) := by
   induction n
-  case zero =>
-    rw [Nat.cast_zero, neg_zero]
-    exact not_continuousAt_Gamma_zero
+  case zero => simpa using not_continuousAt_Gamma_zero
   case succ n ih =>
     contrapose ih
-    rw [Nat.cast_add, Nat.cast_one] at ih
     suffices ContinuousAt (fun s ↦ Gamma (s - 1 + 1)) (-n) by simpa using this
     suffices ContinuousAt (fun s ↦ Gamma (s + 1)) (-n - 1) from
-      this.comp' (f := fun s ↦ s - 1) (continuous_sub_right 1).continuousAt
-    rw [← neg_add']
+      this.comp' (f := (· - 1)) (by fun_prop)
+    simp only [Nat.cast_add, Nat.cast_one, ← neg_add'] at ih ⊢
     have h0 : -(n + 1) ≠ (0 : ℂ) := neg_ne_zero.mpr n.cast_add_one_ne_zero
     exact ((continuousAt_id.mul ih).continuousWithinAt.congr Gamma_add_one
       (Gamma_add_one (-(n + 1)) h0)).continuousAt (compl_singleton_mem_nhds h0)
@@ -153,5 +150,37 @@ theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Differen
 
 theorem differentiableOn_Gamma_Ioi : DifferentiableOn ℝ Gamma (Ioi 0) :=
   fun _ h ↦ (differentiableAt_Gamma <| by bound [mem_Ioi.mp h]).differentiableWithinAt
+
+@[fun_prop]
+theorem continuousAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : ContinuousAt Gamma s :=
+  (differentiableAt_Gamma hs).continuousAt
+
+theorem not_continuousAt_Gamma_zero : ¬ ContinuousAt Gamma 0 := by
+  suffices Tendsto (fun x ↦ x * Gamma x) (𝓝[≠] 0) (𝓝 1) from
+    this.not_tendsto (by simp) ∘ continuousAt_iff_punctured_nhds.mp ∘ continuousAt_id.mul
+  convert! tendsto_nhdsWithin_congr (fun _ ↦ Gamma_add_one) (continuousAt_iff_punctured_nhds.mp ?_)
+  · simp
+  simpa [Function.comp_def] using ContinuousAt.comp (f := (· + 1))
+    (by simpa using (continuousAt_Gamma (fun m _ ↦ by linarith [m.cast_nonneg (α := ℝ)])))
+    (by fun_prop)
+
+theorem not_differentiableAt_Gamma_zero : ¬ DifferentiableAt ℝ Gamma 0 :=
+  mt DifferentiableAt.continuousAt not_continuousAt_Gamma_zero
+
+theorem not_continuousAt_Gamma_neg_nat (n : ℕ) : ¬ ContinuousAt Gamma (-n) := by
+  induction n with
+  | zero => simpa using not_continuousAt_Gamma_zero
+  | succ n ih =>
+    contrapose ih
+    suffices ContinuousAt (fun s ↦ Gamma (s - 1 + 1)) (-n) by simpa using this
+    suffices ContinuousAt (fun s ↦ Gamma (s + 1)) (-n - 1) from
+      this.comp' (f := (· - 1)) (by fun_prop)
+    simp only [Nat.cast_add, Nat.cast_one, ← neg_add'] at ih ⊢
+    have h0 : -((n : ℝ) + 1) ≠ 0 := neg_ne_zero.mpr (by positivity)
+    exact ((continuousAt_id.mul ih).continuousWithinAt.congr (fun _ ↦ Gamma_add_one)
+      (Gamma_add_one h0)).continuousAt (compl_singleton_mem_nhds h0)
+
+theorem not_differentiableAt_Gamma_neg_nat (n : ℕ) : ¬ DifferentiableAt ℝ Gamma (-n) :=
+  mt DifferentiableAt.continuousAt (not_continuousAt_Gamma_neg_nat n)
 
 end Real

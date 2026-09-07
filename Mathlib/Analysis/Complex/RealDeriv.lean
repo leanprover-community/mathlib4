@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.Deriv.Linear
+public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.Complex.Basic
 
 /-! # Real differentiability of complex-differentiable functions
@@ -108,6 +109,18 @@ theorem HasDerivWithinAt.ofReal_comp {f : ℝ → ℝ} {s : Set ℝ} {u : ℝ}
     (hf : HasDerivWithinAt f u s z) : HasDerivWithinAt (fun y : ℝ => ↑(f y) : ℝ → ℂ) u s z := by
   simpa only [Function.comp_apply, ofRealCLM_apply] using!
     ofRealCLM.hasFDerivAt.comp_hasDerivWithinAt z hf
+
+/-- The logarithmic derivative of a complex-differentiable function, restricted to the real axis,
+equals the logarithmic derivative of its restriction `ℝ → ℂ`. -/
+theorem logDeriv_comp_ofReal {g : ℂ → ℂ} {x : ℝ} (hg : DifferentiableAt ℂ g ↑x) :
+    logDeriv (fun y : ℝ ↦ g y) x = logDeriv g x := by
+  simp_rw [logDeriv_apply, hg.hasDerivAt.comp_ofReal.deriv]
+
+/-- The logarithmic derivative of a real function, viewed as a function `ℝ → ℂ`, is the coercion
+of its real logarithmic derivative. -/
+theorem logDeriv_ofReal_comp {f : ℝ → ℝ} {x : ℝ} (hf : DifferentiableAt ℝ f x) :
+    logDeriv (fun y : ℝ ↦ (f y : ℂ)) x = logDeriv f x := by
+  simp_rw [logDeriv_apply, hf.hasDerivAt.ofReal_comp.deriv, ofReal_div]
 
 @[fun_prop]
 lemma Complex.differentiable_re : Differentiable ℝ Complex.re := reCLM.differentiable
