@@ -514,6 +514,10 @@ theorem _root_.IsSelfAdjoint.norm_le_max_of_le_of_le {a b c : A}
   _ ≤ max ‖a⁻‖ ‖c⁺‖ := by grw [norm_negPart_anti hab, norm_posPart_mono hbc]
   _ ≤ max ‖a‖ ‖c‖ := by gcongr <;> simp
 
+lemma norm_sub_le_max_of_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) : ‖a - b‖ ≤ max ‖a‖ ‖b‖ := by
+  grw [IsSelfAdjoint.norm_le_max_of_le_of_le (a := -b) (c := a) (by simpa) (by simpa),
+    norm_neg, max_comm]
+
 open scoped ComplexStarModule in
 /-- A set in a non-unital C⋆-algebra which is bounded above and below is
 bounded in norm. -/
@@ -667,7 +671,7 @@ lemma pow_monotone {a : A} (ha : 1 ≤ a) : Monotone (a ^ · : ℕ → A) := by
   simp only
   rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
   rw [CFC.one_le_iff (R := ℝ) a] at ha
-  peel ha with x hx _
+  gconvert ha using 2 with x hx
   exact pow_le_pow_right₀ (ha x hx) hnm
 
 lemma pow_antitone {a : A} (ha₁ : a ≤ 1) (ha₀ : 0 ≤ a := by cfc_tac) :
@@ -676,7 +680,7 @@ lemma pow_antitone {a : A} (ha₁ : a ≤ 1) (ha₀ : 0 ≤ a := by cfc_tac) :
   simp only
   rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
   rw [CFC.le_one_iff (R := ℝ) a] at ha₁
-  peel ha₁ with x hx _
+  gconvert ha₁ using 2 with x hx
   exact pow_le_pow_of_le_one (spectrum_nonneg_of_nonneg ha₀ hx) (ha₁ x hx) hnm
 
 end CStarAlgebra
