@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Kirill Kondrashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kirill Kondrashov
+Authors: Kirill Kondrashov, Oliver Nash
 -/
 module
 
