@@ -11,6 +11,8 @@ public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Util.Qq
 
+import Mathlib.Data.List.OfFn
+
 /-!
 # Certificate construction for the Bareiss decomposition
 
@@ -36,6 +38,41 @@ Once a list-based matrix multiplication exists, the better route is to prove the
 condition of the list representation and bridge it to the matrix-based version, leaving only
 the per-entry arithmetic evidence to the certifier.
 -/
+
+@[expose] public section
+
+namespace Mathlib.Tactic.Echelon
+
+/-! ### The pivot-function conditions in chain form
+
+The pivot certificates defined in the theory file using `Monotone` and `StrictMonoOn` have
+decidable instances but requires `O(n^2)` kernel steps, since they use the general decidable
+instances from `Monotone` which checks all pairs. The following part defines a `List.isChain`-based
+alternative that can be decided in `O(n)`.
+-/
+
+/-- One step of a pivot function: strictly increasing, with `⊤` absorbing. -/
+def PivotStep {α : Type*} [LT α] [Top α] (a b : α) : Prop :=
+  a < b ∨ a = ⊤ ∧ b = ⊤
+
+instance {α : Type*} [Preorder α] [OrderTop α] : IsTrans α (PivotStep (α := α)) where
+  trans a b c h₁ h₂ := by
+    simp only [PivotStep] at *
+    grind
+
+instance {α : Type*} [LT α] [Top α] [i : ∀ a b : α, Decidable (a < b ∨ a = ⊤ ∧ b = ⊤)] :
+    DecidableRel (PivotStep (α := α)) := i
+
+theorem isChain_ofFn_iff_monotone_and_strictMonoOn
+    {α : Type*} [PartialOrder α] [OrderTop α] {m : ℕ} (l : Fin m → α) :
+    (List.ofFn l).IsChain PivotStep ↔ Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} := by
+  rw [List.isChain_iff_pairwise, List.pairwise_ofFn]
+  simp only [PivotStep, Monotone, StrictMonoOn, Set.mem_ofPred_eq]
+  grind [le_of_lt, LE.le.eq_or_lt]
+
+end Mathlib.Tactic.Echelon
+
+end
 
 public meta section
 
@@ -173,9 +210,12 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
         certifyNonzeroEntry certifier (U.entries[i]!)[c]! zero
           m!"the pivot entry at ({i}, {c})"
     mkAppM ``And.intro #[hz, hn]
-  let hMono ← mkDecideProofQ q(Monotone $pivot)
-  let hStrict ← mkDecideProofQ q(StrictMonoOn $pivot {i | $pivot i ≠ ⊤})
-  return q(Matrix.isPivotedBy_iff.mpr ⟨$hMono, $hStrict, $entryConds⟩)
+  -- both pivot-function conditions are decided at once in their adjacent-pairs chain
+  -- form, which reduces linearly along the list
+  let hChain ← mkDecideProofQ q((List.ofFn (n := $m) $pivot).IsChain PivotStep)
+  let hMS : Q(Monotone $pivot ∧ StrictMonoOn $pivot {i | $pivot i ≠ ⊤}) ← mkAppM ``Iff.mp
+    #[← mkAppM ``isChain_ofFn_iff_monotone_and_strictMonoOn #[pivot], hChain]
+  return q(Matrix.isPivotedBy_iff.mpr ⟨($hMS).1, ($hMS).2, $entryConds⟩)
 
 /-- Prove the row arrangement `A.submatrix σ id = Aσ` by reflection using `FinVec.etaExpand_eq`. -/
 def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
