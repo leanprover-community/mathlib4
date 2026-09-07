@@ -65,6 +65,8 @@ instance [Preorder α] : IsTrans α PivotStep where
 instance [LT α] [i : ∀ a b : α, Decidable (a < b ∨ a = ⊤ ∧ b = ⊤)] :
     DecidableRel (PivotStep (α := α)) := i
 
+/-- TODO: List.ofFn still brings up a O(n^2) construction. This can be improved by using a
+list bridge eventually. -/
 theorem isChain_ofFn_iff_monotone_and_strictMonoOn [PartialOrder α] {m : ℕ} (l : Fin m → α) :
     (List.ofFn l).IsChain PivotStep ↔ Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} := by
   rw [List.isChain_iff_pairwise, List.pairwise_ofFn]
