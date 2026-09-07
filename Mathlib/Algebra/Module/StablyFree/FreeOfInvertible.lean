@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
-# Invertible stably free modules are free
+# Invertible finite stably free modules are free
 
 This file proves that a finite stably free module `M` is free if it is invertible.
 -/

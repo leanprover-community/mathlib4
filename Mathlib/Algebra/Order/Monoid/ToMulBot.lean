@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
-# Adjoining a zero to a multiplicative monoid versus adjoining a bottom element
+# `WithZero (Multiplicative α)` versus `Multiplicative (WithBot α)`
 
 Making an additive monoid multiplicative then adding a zero is the same as adding a bottom
 element then making it multiplicative.
