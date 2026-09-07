@@ -32,7 +32,7 @@ The list of such classes is manually hard-coded for now.
 
 -/
 
-open Lean
+open Lean Meta
 
 meta def morphismClassesToLint : Array Name := #[
   `LinearMapClass,
@@ -52,23 +52,20 @@ open Batteries.Tactic.Lint in
   errorsFound := "FOUND definitions with a bundled morphism argument."
   test declName := do
     -- We still lint in the presence of sorries: completing a sorry should not influence this check.
+    -- We skip linting instances: an instance from one morphism class to another is totally fine.
+    if ← isInstance declName then return none
     let constantInfo := ((← getEnv).find? declName).get!
-    if !constantInfo.isDefinition then return none
-    -- TODO: can I check if `declName` is an instance, and return if so?
-
-
-    -- Attempt one at a proper check, re-using the `unusedInstancesInType` linter's logic.
-    -- let unusedInstances ← constantInfo.type.collectUnnecessaryInstanceBinderIdxsWhere (fun e ↦
-    --   morphismClassesToLint.any fun cls ↦ e.isConstOf cls)
-    -- Did not appear to work.
-
-    -- Attempt two: does any of the constants we care about appear in the type?
-    let classConstantsUsed := constantInfo.type.getUsedConstantsAsSet |>.filter (morphismClassesToLint.contains ·)
-    if !classConstantsUsed.isEmpty then
-      return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument.\n\
+    if !constantInfo.isDefinition then
+      return none
+    -- Check if any of the constants we care about appears in the type.
+    let morphismClassesAppearing :=
+      constantInfo.type.getUsedConstantsAsSet.filter (morphismClassesToLint.contains ·)
+    if !morphismClassesAppearing.isEmpty then
+      let clsName := morphismClassesAppearing.toArray[0]! |>.toString.dropEnd 5
+      return m!"The definition `{.ofConstName declName true}` takes a `{clsName}Class` argument.\n\
       Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
-      idea:\nplease the definition to take in a `LinearMap` argument instead.\n\
-      Note that this linter has false positives if a LinearMapClass is just coerced to a function."
+      idea:\nplease change the definition to take in a `{clsName}` argument instead."
+      -- Note that this linter has false positives if a `{clsName}Class` is just coerced to a function."
     return none
 
     -- return m!"unusedInstances is {unusedInstances}, constants used is {constantInfo.type.getUsedConstantsAsSet.toArray}"
