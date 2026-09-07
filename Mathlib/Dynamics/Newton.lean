@@ -31,7 +31,7 @@ as Hensel's lemma and the Jordan-Chevalley decomposition.
 
 @[expose] public section
 
-open Set Function
+open Function
 
 noncomputable section
 

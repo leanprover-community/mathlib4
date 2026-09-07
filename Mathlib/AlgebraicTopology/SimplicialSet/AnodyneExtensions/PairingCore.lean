@@ -24,7 +24,9 @@ their dimensions are respectively `dim s` or `dim s + 1` for `s : ι`.
 
 universe v u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet.Subcomplex
 
@@ -248,6 +250,7 @@ is regular. -/
 class IsRegular (h : A.PairingCore) extends h.IsProper where
   wf (h) : WellFounded h.AncestralRel
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [h.IsRegular] : h.pairing.IsRegular where
   wf := by
     have := IsRegular.wf h

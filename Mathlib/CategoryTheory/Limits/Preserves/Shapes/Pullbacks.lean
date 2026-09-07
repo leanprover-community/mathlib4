@@ -198,6 +198,7 @@ end PushoutCocone
 variable (G : C ⥤ D)
 variable {W X Y Z : C} {h : X ⟶ Z} {k : Y ⟶ Z} {f : W ⟶ X} {g : W ⟶ Y} (comm : f ≫ h = g ≫ k)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The map of a pushout cocone is a colimit iff the cofork consisting of the mapped morphisms is a
 colimit. This essentially lets us commute `PushoutCocone.mk` with `Functor.mapCocone`. -/
@@ -236,7 +237,6 @@ def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
       simp only [← G.map_comp, pushout.condition])) :=
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the pushout of `f, g`, it also preserves the pushout of `g, f`. -/
 lemma preservesPushout_symmetry : PreservesColimit (span g f) G where
   preserves {c} hc := ⟨by

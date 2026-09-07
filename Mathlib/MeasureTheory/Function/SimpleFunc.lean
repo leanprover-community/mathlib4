@@ -33,7 +33,9 @@ open Filter ENNReal
 
 open Function (support)
 
-open Topology NNReal ENNReal MeasureTheory
+open NNReal ENNReal MeasureTheory
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -227,7 +229,7 @@ def dite (s : Set α) (hs : MeasurableSet s) (f : s →ₛ β) (g : (sᶜ : Set 
   toFun x := open scoped Classical in if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩
   measurableSet_fiber' x := by
     classical
-    letI : MeasurableSpace β := ⊤
+    let : MeasurableSpace β := ⊤
     exact Measurable.dite f.measurable g.measurable hs trivial
   finite_range' := (f.finite_range.union g.finite_range).subset (by grind)
 
@@ -235,6 +237,7 @@ theorem support_indicator [Zero β] {s : Set α} (hs : MeasurableSet s) (f : α 
     Function.support (f.piecewise s hs (SimpleFunc.const α 0)) = s ∩ Function.support f :=
   Set.support_indicator
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem range_indicator {s : Set α} (hs : MeasurableSet s) (hs_nonempty : s.Nonempty)
     (hs_ne_univ : s ≠ univ) (x y : β) :
@@ -318,7 +321,7 @@ def extend [MeasurableSpace β] (f₁ : α →ₛ γ) (g : α → β) (hg : Meas
     (f₁.finite_range.union <| f₂.finite_range.subset (image_subset_range _ _)).subset
       (range_extend_subset _ _ _)
   measurableSet_fiber' := by
-    letI : MeasurableSpace γ := ⊤; haveI : MeasurableSingletonClass γ := ⟨fun _ => trivial⟩
+    let : MeasurableSpace γ := ⊤; have : MeasurableSingletonClass γ := ⟨fun _ => trivial⟩
     exact fun x => hg.measurable_extend f₁.measurable f₂.measurable (measurableSet_singleton _)
 
 @[simp]
@@ -748,13 +751,13 @@ def restrict (f : α →ₛ β) (s : Set α) : α →ₛ β :=
 
 theorem restrict_of_not_measurable {f : α →ₛ β} {s : Set α} (hs : ¬MeasurableSet s) :
     restrict f s = 0 :=
-  dif_neg hs
+  dite_eq_right hs
 
 @[simp]
 theorem coe_restrict (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
     ⇑(restrict f s) = indicator s f := by
   classical
-  rw [restrict, dif_pos hs, coe_piecewise, coe_zero, piecewise_eq_indicator]
+  rw [restrict, dite_eq_left hs, coe_piecewise, coe_zero, piecewise_eq_indicator]
 
 @[simp]
 theorem restrict_univ (f : α →ₛ β) : restrict f univ = f := by simp [restrict]
@@ -831,7 +834,7 @@ theorem approx_apply [TopologicalSpace β] [OrderClosedTopology β] [MeasurableS
   congr
   funext k
   rw [restrict_apply]
-  · simp only [coe_const, mem_setOf_eq, indicator_apply, Function.const_apply]
+  · simp only [coe_const, mem_ofPred_eq, indicator_apply, Function.const_apply]
   · exact hf measurableSet_Ici
 
 theorem monotone_approx (i : ℕ → β) (f : α → β) : Monotone (approx i f) := fun _ _ h =>
@@ -858,7 +861,7 @@ theorem iSup_approx_apply [TopologicalSpace β] [CompleteLattice β] [OrderClose
     rw [approx_apply a hf]
     have : k ∈ Finset.range (k + 1) := Finset.mem_range.2 (Nat.lt_succ_self _)
     refine le_trans (le_of_eq ?_) (Finset.le_sup this)
-    rw [if_pos hk]
+    rw [ite_eq_left hk]
 
 end Approx
 

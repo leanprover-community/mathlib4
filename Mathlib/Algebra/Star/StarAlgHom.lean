@@ -77,12 +77,14 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 into an actual `NonUnitalStarAlgHom`. This is declared as the default coercion from `F` to
 `A →⋆ₙₐ[R] B`. -/
 @[coe]
-def toNonUnitalStarAlgHom [StarHomClass F A B] (f : F) : A →⋆ₙₐ[R] B :=
+def _root_.NonUnitalStarAlgHom.ofClass [StarHomClass F A B] (f : F) : A →⋆ₙₐ[R] B :=
   { (f : A →ₙₐ[R] B) with
     map_star' := map_star f }
 
+@[deprecated (since := "2026-09-02")] alias toNonUnitalStarAlgHom := NonUnitalStarAlgHom.ofClass
+
 instance [StarHomClass F A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
-  ⟨toNonUnitalStarAlgHom⟩
+  ⟨.ofClass⟩
 
 instance [StarHomClass F A B] : NonUnitalStarRingHomClass F A B :=
   NonUnitalStarRingHomClass.mk
@@ -223,7 +225,7 @@ end Basic
 section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
-variable {R A B C D : Type*} [Monoid R]
+variable {R A B : Type*} [Monoid R]
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
@@ -307,12 +309,14 @@ variable [StarHomClass F A B]
 /-- Turn an element of a type `F` satisfying `AlgHomClass F R A B` and `StarHomClass F A B` into an
 actual `StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
 @[coe]
-def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
+def _root_.StarAlgHom.ofClass (f : F) : A →⋆ₐ[R] B :=
   { (AlgHomClass.toAlgHom f) with
     map_star' := map_star f }
 
+@[deprecated (since := "2026-09-02")] alias toStarAlgHom := StarAlgHom.ofClass
+
 instance : CoeTC F (A →⋆ₐ[R] B) :=
-  ⟨toStarAlgHom⟩
+  ⟨.ofClass⟩
 
 end StarAlgHomClass
 
@@ -544,9 +548,8 @@ end Pi
 
 section InlInr
 
-variable (R A B C : Type*) [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+variable (R A B : Type*) [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
   [StarAddMonoid A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
-  [NonUnitalNonAssocSemiring C] [DistribMulAction R C] [StarAddMonoid C]
 
 /-- The left injection into a product is a non-unital algebra homomorphism. -/
 def inl : A →⋆ₙₐ[R] A × B :=
@@ -662,26 +665,25 @@ instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     AlgEquivClass F R A B :=
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
-namespace StarAlgEquivClass
-
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
 @[coe]
-def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
-    [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B]
-    (f : F) : A ≃⋆ₐ[R] B :=
+def StarAlgEquiv.ofClass {F R A B : Type*}
+    [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
+    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] (f : F) : A ≃⋆ₐ[R] B :=
   { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f
     map_smul' := map_smul f }
 
+@[deprecated (since := "2026-09-02")] alias StarAlgEquivClass.toStarAlgEquiv := StarAlgEquiv.ofClass
+
 /-- Any type satisfying `AlgEquivClass` and `StarHomClass` can be cast into `StarAlgEquiv` via
 `StarAlgEquivClass.toStarAlgEquiv`. -/
-instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
-    [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] :
+instance StarAlgEquivClass.instCoeHead {F R A B : Type*}
+    [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
+    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] :
     CoeHead F (A ≃⋆ₐ[R] B) :=
-  ⟨toStarAlgEquiv⟩
-
-end StarAlgEquivClass
+  ⟨.ofClass⟩
 
 namespace StarAlgEquiv
 
@@ -757,6 +759,14 @@ theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
 
 @[simp]
 theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := rfl
+
+lemma symm_apply_eq (e : A ≃⋆ₐ[R] B) {x y} :
+    e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+lemma eq_symm_apply (e : A ≃⋆ₐ[R] B) {x y} :
+    y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
 
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
@@ -1063,11 +1073,10 @@ end Unital
 
 section Bijective
 
-variable {F G R A B : Type*} [Monoid R]
+variable {F R A B : Type*} [Monoid R]
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
-variable [FunLike G B A] [NonUnitalAlgHomClass G R B A] [StarHomClass G B A]
 
 /-- Promote a bijective star algebra homomorphism to a star algebra equivalence. -/
 noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆ₐ[R] B :=

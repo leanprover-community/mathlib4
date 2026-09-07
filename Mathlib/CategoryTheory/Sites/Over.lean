@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Equivalence
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Functor.Flat
 
@@ -52,6 +50,7 @@ lemma map_functorPullback_overForget {X : C} {Y : Over X} (R : Presieve Y.left) 
   le_antisymm (map_functorPullback _) fun Z g hg ↦
     map.of (u := (Over.homMk g : Over.mk (g ≫ Y.hom) ⟶ Y)) hg
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Presieve Y ≃ Presieve Y.left` for all `Y : Over X`. -/
 @[simps]
 def overEquiv {X : C} (Y : Over X) : Presieve Y ≃o Presieve Y.left where
@@ -84,6 +83,7 @@ lemma functorPushforward_functorPullback_overForget {X : C} {Y : Over X} (S : Si
   apply arrows_ext
   simp [← arrows_generate_map_eq_functorPushforward]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Sieve Y ≃ Sieve Y.left` for all `Y : Over X`. -/
 @[simps -isSimp] -- working with `overEquiv` is useful enough that we don't want `simp` unfolding it
 def overEquiv {X : C} (Y : Over X) : Sieve Y ≃o Sieve Y.left where
@@ -138,6 +138,7 @@ lemma overEquiv_ofArrows {X : C} {Y : Over X} {I : Type*} (Z : I → Over X) (g 
   simp [Sieve.overEquiv, functorPushforward_ofArrows]
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma overEquiv_preOneHypercover_sieve₁ {X : C} {Y : Over X} (E : PreOneHypercover.{w} Y)
     {i₁ i₂ : E.I₀} {W : Over X} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂) :
     overEquiv W (E.sieve₁ p₁ p₂) =
@@ -218,7 +219,6 @@ lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X 
     convert! (Sieve.overEquiv_iff _ _).mp hg
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma overEquiv_functorPushforward_post {D : Type*} [Category* D] (F : C ⥤ D) {X : C}
     (U : Over X) (S : Sieve U) :
     (Sieve.overEquiv _) (Sieve.functorPushforward (Over.post F) S) =
@@ -226,6 +226,10 @@ lemma overEquiv_functorPushforward_post {D : Type*} [Category* D] (F : C ⥤ D) 
   simp [Sieve.overEquiv, ← Sieve.functorPushforward_comp, ← Over.post_forget_eq_forget_comp]
 
 end Sieve
+
+/-- The precoverage on `Over X` for any `X : C` that is induced by a precoverage on `C`. -/
+abbrev Precoverage.over (X : C) (J : Precoverage C) : Precoverage (Over X) :=
+  J.comap (Over.forget X)
 
 variable (J : GrothendieckTopology C)
 
@@ -285,7 +289,6 @@ lemma over_map_coverPreserving {X Y : C} (f : X ⟶ Y) :
     simpa [mem_over_iff] using! hS
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
     CompatiblePreserving (J.over Y) (Over.map f) where
   compatible {F Z _ x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
@@ -350,6 +353,7 @@ instance {J : GrothendieckTopology C} (X : C) :
     rwa [GrothendieckTopology.mem_over_iff, Sieve.overEquiv_preOneHypercover_sieve₁] at this
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
     (F : C ⥤ D) (X : C) [Functor.PreservesOneHypercovers.{w} F J K] :
     Functor.PreservesOneHypercovers.{w} (Over.post F) (J.over X) (K.over _) := by
@@ -532,7 +536,7 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
   refine le_antisymm ?_ ?_
   · intro ⟨Y, right, (s : Y ⟶ X)⟩ R hR
     obtain ⟨(R : Sieve Y), rfl⟩ := (Sieve.overEquiv _).symm.surjective R
-    simp +instances only [GrothendieckTopology.mem_over_iff, OrderIso.apply_symm_apply,
+    simp only [GrothendieckTopology.mem_over_iff, OrderIso.apply_symm_apply,
       ← Precoverage.toGrothendieck_toCoverage, Coverage.mem_toGrothendieck,
       Over.left] at hR
     induction hR with

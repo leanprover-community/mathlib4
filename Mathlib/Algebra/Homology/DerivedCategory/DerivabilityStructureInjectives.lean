@@ -49,7 +49,6 @@ instance (X : HomotopyCategory.Plus (InjectiveObject C)) (n : ℤ) :
     Injective (((InjectiveObject.ι C).mapHomotopyCategoryPlus.obj X).obj.as.X n) :=
   inferInstanceAs (Injective ((InjectiveObject.ι C).obj (X.obj.as.X n)))
 
-set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex.Plus (InjectiveObject C)) :
     CochainComplex.IsKInjective
       (((InjectiveObject.ι C).mapHomologicalComplex (.up ℤ)).obj K.obj) := by
@@ -126,6 +125,7 @@ instance (K : FibrantObject (Plus C)) (n : ℤ) :
   rw [fibrantObjects, modelCategoryQuillen.isFibrant_iff] at hK
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (C) in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between `CochainComplex.Plus (InjectiveObject C)`
@@ -313,6 +313,7 @@ private def iso :
     (CochainComplex.Plus.localizerMorphism C).functor ⋙ (R C).functor ≅
     (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 open HomologicalComplex CochainComplex in
 private instance : TwoSquare.GuitartExact (iso C).hom :=

@@ -25,7 +25,9 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local notation "absR" => @abs ℝ _ _
 
-open Topology RCLike Real Filter InnerProductSpace
+open RCLike Real Filter InnerProductSpace
+
+open scoped Topology
 
 /-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
 
@@ -34,7 +36,7 @@ Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖
 theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h₁ : IsComplete K)
     (h₂ : Convex ℝ K) : ∀ u : F, ∃ v ∈ K, ‖u - v‖ = ⨅ w : K, ‖u - w‖ := fun u => by
   let δ := ⨅ w : K, ‖u - w‖
-  letI : Nonempty K := ne.to_subtype
+  let : Nonempty K := ne.to_subtype
   have zero_le_δ : 0 ≤ δ := le_ciInf fun _ => norm_nonneg _
   have δ_le : ∀ w : K, δ ≤ ‖u - w‖ := ciInf_le ⟨0, Set.forall_mem_range.2 fun _ => norm_nonneg _⟩
   have δ_le' : ∀ w ∈ K, δ ≤ ‖u - w‖ := fun w hw => δ_le ⟨w, hw⟩
@@ -78,8 +80,9 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
           2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) :=
         calc
           4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ + ‖wp - wq‖ * ‖wp - wq‖ =
-              2 * ‖u - half • (wq + wp)‖ * (2 * ‖u - half • (wq + wp)‖) + ‖wp - wq‖ * ‖wp - wq‖ :=
-            by ring
+              2 * ‖u - half • (wq + wp)‖ * (2 * ‖u - half • (wq + wp)‖) +
+              ‖wp - wq‖ * ‖wp - wq‖ := by
+            ring
           _ =
               absR 2 * ‖u - half • (wq + wp)‖ * (absR 2 * ‖u - half • (wq + wp)‖) +
                 ‖wp - wq‖ * ‖wp - wq‖ := by
@@ -137,7 +140,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
 space. -/
 theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : F} {v : F}
     (hv : v ∈ K) : (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w - v⟫_ℝ ≤ 0 := by
-  letI : Nonempty K := ⟨⟨v, hv⟩⟩
+  let : Nonempty K := ⟨⟨v, hv⟩⟩
   constructor
   · intro eq w hw
     let δ := ⨅ w : K, ‖u - w‖
@@ -229,7 +232,7 @@ This point `v` is usually called the orthogonal projection of `u` onto `K`.
 -/
 theorem exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E)) :
     ∀ u : E, ∃ v ∈ K, ‖u - v‖ = ⨅ w : (K : Set E), ‖u - w‖ := by
-  letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
+  let : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
   let K' : Submodule ℝ E := Submodule.restrictScalars ℝ K
   exact exists_norm_eq_iInf_of_complete_convex ⟨0, K'.zero_mem⟩ h K'.convex
 
@@ -284,20 +287,14 @@ for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subs
 -/
 theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
     (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w⟫ = 0 := by
-  letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
+  let : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
   let K' : Submodule ℝ E := K.restrictScalars ℝ
   constructor
   · intro H
     have A : ∀ w ∈ K, re ⟪u - v, w⟫ = 0 := (K'.norm_eq_iInf_iff_real_inner_eq_zero hv).1 H
-    intro w hw
-    apply RCLike.ext
-    · simp [A w hw]
-    · symm
-      calc
-        im (0 : 𝕜) = 0 := im.map_zero
-        _ = re ⟪u - v, (-I : 𝕜) • w⟫ := (A _ (K.smul_mem (-I) hw)).symm
-        _ = re (-I * ⟪u - v, w⟫) := by rw [inner_smul_right]
-        _ = im ⟪u - v, w⟫ := by simp
+    simp_rw [inner_eq_zero_symm, inner_eq_zero_iff_forall_re_inner_smul_left]
+    intro w hw c
+    rw [inner_re_symm, A _ (K.smul_mem c hw)]
   · intro H
     have : ∀ w ∈ K', ⟪u - v, w⟫_ℝ = 0 := by
       intro w hw

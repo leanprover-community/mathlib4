@@ -44,6 +44,7 @@ section LinearOrderedSemifield
 
 variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
 whose support is contained in the support of M.

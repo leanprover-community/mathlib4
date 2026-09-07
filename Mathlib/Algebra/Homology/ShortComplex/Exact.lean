@@ -92,12 +92,12 @@ variable {S}
 
 lemma HomologyData.exact_iff (h : S.HomologyData) :
     S.Exact ↔ IsZero h.left.H := by
-  haveI := HasHomology.mk' h
+  have := HasHomology.mk' h
   exact LeftHomologyData.exact_iff h.left
 
 lemma HomologyData.exact_iff' (h : S.HomologyData) :
     S.Exact ↔ IsZero h.right.H := by
-  haveI := HasHomology.mk' h
+  have := HasHomology.mk' h
   exact RightHomologyData.exact_iff h.right
 
 variable (S)
@@ -148,7 +148,7 @@ variable {S}
 
 lemma HomologyData.exact_iff_i_p_zero (h : S.HomologyData) :
     S.Exact ↔ h.left.i ≫ h.right.p = 0 := by
-  haveI := HasHomology.mk' h
+  have := HasHomology.mk' h
   rw [h.left.exact_iff, ← h.comm]
   constructor
   · intro z
@@ -171,8 +171,8 @@ lemma exact_iff_iCycles_pOpcycles_zero [S.HasHomology] :
 lemma exact_iff_kernel_ι_comp_cokernel_π_zero [S.HasHomology]
     [HasKernel S.g] [HasCokernel S.f] :
     S.Exact ↔ kernel.ι S.g ≫ cokernel.π S.f = 0 := by
-  haveI := HasLeftHomology.hasCokernel S
-  haveI := HasRightHomology.hasKernel S
+  have := HasLeftHomology.hasCokernel S
+  have := HasRightHomology.hasKernel S
   exact S.exact_iff_i_p_zero (LeftHomologyData.ofHasKernelOfHasCokernel S)
     (RightHomologyData.ofHasCokernelOfHasKernel S)
 
@@ -295,8 +295,8 @@ lemma exact_iff_epi [HasZeroObject C] (hg : S.g = 0) :
   · intro h
     have := h.hasHomology
     simp only [exact_iff_isZero_homology] at h
-    haveI := S.isIso_iCycles hg
-    haveI : Epi S.toCycles := epi_of_isZero_cokernel' _ S.homologyIsCokernel h
+    have := S.isIso_iCycles hg
+    have : Epi S.toCycles := epi_of_isZero_cokernel' _ S.homologyIsCokernel h
     rw [← S.toCycles_i]
     apply epi_comp
   · intro
@@ -310,14 +310,14 @@ variable {S}
 set_option backward.defeqAttrib.useBackward true in
 lemma Exact.epi_f' (hS : S.Exact) (h : LeftHomologyData S) : Epi h.f' :=
   epi_of_isZero_cokernel' _ h.hπ (by
-    haveI := hS.hasHomology
+    have := hS.hasHomology
     dsimp
     simpa only [← h.exact_iff] using hS)
 
 set_option backward.defeqAttrib.useBackward true in
 lemma Exact.mono_g' (hS : S.Exact) (h : RightHomologyData S) : Mono h.g' :=
   mono_of_isZero_kernel' _ h.hι (by
-    haveI := hS.hasHomology
+    have := hS.hasHomology
     dsimp
     simpa only [← h.exact_iff] using hS)
 
@@ -345,7 +345,6 @@ lemma RightHomologyData.exact_iff_mono_g' [S.HasHomology] (h : RightHomologyData
     simp only [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_mono h.ι, ← cancel_mono h.g',
       id_comp, h.ι_g', zero_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an exact short complex `S` and a limit kernel fork `kf` for `S.g`, this is the
 left homology data for `S` with `K := kf.pt` and `H := 0`. -/
 @[simps]
@@ -369,7 +368,6 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
     simp [IsLimit.conePointUniqueUpToIso]) (isZero_zero C)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an exact short complex `S` and a colimit cokernel cofork `cc` for `S.f`, this is the
 right homology data for `S` with `Q := cc.pt` and `H := 0`. -/
 @[simps]
@@ -676,6 +674,14 @@ noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitt
   s := 0
   s_g := hg.eq_of_src _ _
 
+/-- The obvious splitting of a short complex `S` when `S.X₁`, `S.X₂` and `S.X₃` are zero. -/
+def ofIsZero (h₁ : IsZero S.X₁) (h₂ : IsZero S.X₂) (h₃ : IsZero S.X₃) : Splitting S where
+  r := 0
+  s := 0
+  f_r := h₁.eq_of_src ..
+  s_g := h₃.eq_of_src ..
+  id := h₂.eq_of_src ..
+
 variable {S}
 
 set_option backward.defeqAttrib.useBackward true in
@@ -758,7 +764,6 @@ lemma map_of_mono_of_preservesKernel (hS : S.Exact) (F : C ⥤ D)
     (S.map F).Exact :=
   exact_of_f_is_kernel _ (KernelFork.mapIsLimit _ hS.fIsKernel F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a balanced category, if a short complex `S` is exact and `S.g` is an epi, then
 `S.X₃` is the cokernel of `S.g`. -/
 noncomputable def gIsCokernel (hS : S.Exact) [Epi S.g] :

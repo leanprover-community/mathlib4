@@ -38,7 +38,8 @@ instance [IsFilteredOrEmpty C] [∀ c, IsFilteredOrEmpty (F.obj c)] :
           ⟨coeqHom u v, coeqHom _ _⟩, ?_⟩
     · conv_rhs => rw [← Cat.Hom.comp_obj, ← F.map_comp, coeq_condition, F.map_comp,
         Cat.Hom.comp_obj]
-    · apply Grothendieck.ext _ _ (coeq_condition u v)
+    · set_option backward.isDefEq.respectTransparency.types false in
+      apply Grothendieck.ext _ _ (coeq_condition u v)
       refine Eq.trans ?_ (eqToHom _ ≫= coeq_condition _ _)
       simp
 

@@ -117,16 +117,6 @@ theorem algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
     (algebraMap S R : S →+* R) = S.subtype :=
   rfl
 
-@[deprecated coe_algebraMap_ofSubsemiring (since := "2025-11-23")]
-theorem coe_algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
-    (algebraMap S R : S → R) = Subtype.val :=
-  rfl
-
-@[deprecated algebraMap_ofSubsemiring_apply (since := "2025-11-23")]
-theorem algebraMap_ofSubring_apply {R : Type*} [CommRing R] (S : Subring R) (x : S) :
-    algebraMap S R x = x :=
-  rfl
-
 end SubsemiringAlgebra
 
 /-- Explicit characterization of the submonoid map in the case of an algebra.
@@ -497,12 +487,6 @@ lemma isTorsionFree_iff_algebraMap_injective : IsTorsionFree R A ↔ Injective (
   rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
 
 end Module
-
-@[deprecated (since := "2026-01-21")]
-alias NoZeroSMulDivisors.iff_algebraMap_injective := isTorsionFree_iff_algebraMap_injective
-
-@[deprecated (since := "2026-01-21")]
-alias NoZeroSMulDivisors.iff_faithfulSMul := isTorsionFree_iff_faithfulSMul
 
 example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=
