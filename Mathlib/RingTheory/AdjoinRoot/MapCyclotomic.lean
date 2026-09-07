@@ -35,19 +35,15 @@ namespace IsAdjoinRoot
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {r : ℕ}
   (h : IsAdjoinRoot S (X ^ r - 1 : R[X])) (j k : ℕ)
 
-namespace RootsOfUnity
-
-theorem root_pow_self : h.root ^ r = 1 := by
+theorem root_pow_self_of_X_pow_sub_one : h.root ^ r = 1 := by
   simpa [map_sub, sub_eq_zero] using h.aeval_root_self
 
-theorem aeval_root_pow_self : aeval (h.root ^ k) (X ^ r - 1 : R[X]) = 0 := by
-  simp [pow_right_comm, root_pow_self h]
-
-end RootsOfUnity
+theorem aeval_root_pow_self_X_pow_sub_one : aeval (h.root ^ k) (X ^ r - 1 : R[X]) = 0 := by
+  simp [pow_right_comm, h.root_pow_self_of_X_pow_sub_one]
 
 /-- The algebra homomorphism taking an element to the `k`-th power. -/
 noncomputable def mapCyclotomic : S →ₐ[R] S :=
-  h.liftHom (h.root ^ k) (RootsOfUnity.aeval_root_pow_self h k)
+  h.liftHom (h.root ^ k) (h.aeval_root_pow_self_X_pow_sub_one k)
 
 @[simp]
 theorem mapCyclotomic_map_eq_map (f : R[X]) :
@@ -74,7 +70,7 @@ theorem mapCyclotomic_apply_eq {j k : ℕ} (hjk : j ≡ k [MOD r]) :
   wlog hkj : k ≤ j generalizing j k
   · exact (this hjk.symm (le_of_not_ge hkj)).symm
   · obtain ⟨m, hm⟩ := (Nat.modEq_iff_dvd' hkj).mp hjk.symm
-    rw [← Nat.add_sub_cancel' hkj, hm, pow_add, pow_mul, RootsOfUnity.root_pow_self h, one_pow,
+    rw [← Nat.add_sub_cancel' hkj, hm, pow_add, pow_mul, h.root_pow_self_of_X_pow_sub_one, one_pow,
       mul_one]
 
 @[simp]
