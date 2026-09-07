@@ -34,17 +34,27 @@ The list of such classes is manually hard-coded for now.
 
 open Lean Meta
 
+/-- List of bundled morphism classes whose definitions we lint.
+TODO: replace with an auto-generated list, once the list of exceptions is shorter. -/
 meta def morphismClassesToLint : Array Name := #[
-  `LinearMapClass,
-  `SemilinearMapClass,
-  `ContinuousLinearMapClass,
+  `LinearMapClass, `SemilinearMapClass,
+  `ContinuousSemilinearMapClass, `ContinuousLinearMapClass,
   `RingHomClass, `RingEquivClass, `AlgHomClass, `AlgEquivClass,
   `StarRingHomClass,
   `StarRingEquivClass,
   `NonUnitalStarAlgHomClass,
-  `StarAlgHomClass,
-  `StarAlgEquivClass,
+  `StarAlgHomClass, `StarAlgEquivClass,
+  `AlgHomClass, `AlgEquivClass,
+  `CompletelyPositiveMapClass, `SemilinearIsometryClass,
+  `CoalgHomClass, `CoalgEquivClass,
+  `RingInvoClass,
+  `ContinuousAlgEquivClass, `ContinuousAlgEquivClass,
+  `ContinuousLinearEquivClass, `ContinuousSemilinearEquivClass,
 ]
+
+/-- For each class `FooHomClass`, generate the name `FooHomClass.toFoo`. -/
+meta def falseProjectionNames : Array Name :=
+  morphismClassesToLint.map fun n ↦ n.str <| ("to" ++ n.getString!.drop 5)
 
 open Batteries.Tactic.Lint in
 /-- Linter that checks for definitions which take a bundled morphism class (such as
@@ -62,13 +72,17 @@ open Batteries.Tactic.Lint in
     -- Check if any of the constants we care about appears in the type.
     let morphismClassesAppearing :=
       constantInfo.type.getUsedConstantsAsSet.filter (morphismClassesToLint.contains ·)
-    --return s!"{morphismClassesAppearing.toArray}"
     if morphismClassesToLint.isEmpty then return none
-    else if declName.components.getLast? == `ofClass then
-      -- heuristic: if a definition is named literally `ofClass`, don't warn.
+    else if #[`ofClass, `casesOn, `recOn].contains (declName.components.getLastD `dummy) then
+      -- Heuristic: if a definition is named literally `ofClass`, don't warn.
+      -- We also exclude auto-generated declarations `recOn` and `casesOn`.
       return none
     else if Lean.Linter.isDeprecated (← getEnv) declName then
       -- We don't warn about deprecated declarations either: those will be removed soon anyway.
+      return none
+    else if falseProjectionNames.contains declName then
+      -- If the declaration in question is named like a morphism class to morphism coercion,
+      -- we also don't error. (If anything, this should raise a different error.)
       return none
 
     if !morphismClassesAppearing.isEmpty then
@@ -78,23 +92,3 @@ open Batteries.Tactic.Lint in
       idea:\nplease change the definition to take in a `{clsName}` argument instead."
       -- Note that this linter has false positives if a `{clsName}Class` is just coerced to a function."
     return none
-
-    -- return m!"unusedInstances is {unusedInstances}, constants used is {constantInfo.type.getUsedConstantsAsSet.toArray}"
-    -- -- HACKY check: print the type and check for occurrences of `LinearMapClass`
-    -- let typeStr ← (m!"{constantInfo.type}").toString
-    -- let hackyCheck := morphismClassesToLint.any (fun cls ↦ (typeStr.contains (cls.toString.drop 1)))
-    -- if hackyCheck && classConstantsUsed.isEmpty then
-    --   return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument.\n\
-    --     Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
-    --     idea:\nplease change the definition to take in a `LinearMap` argument instead.\n\
-    --     Note that this linter has false positives if a LinearMapClass is just coerced to a function.\n\
-    --     Note: the 'proper' linter check doesn't fire here; there's still a bug to fix!"
-    -- else if classConstantsUsed.isEmpty then
-    --   if !hackyCheck then return m!"curious: proper check reports errors; hacky check succeeds:\n\
-    --     definition's type is {constantInfo.type}, proper check reports is {classConstantsUsed.toArray}"
-    --   else
-    --     return m!"The definition `{.ofConstName declName true}` takes a `LinearMapClass` argument.\n\
-    --       Per https://github.com/leanprover-community/mathlib4/issues/31365, this is (usually) a bad \
-    --       idea:\nplease the definition to take in a `LinearMap` argument instead.\n\
-    --       Note that this linter has false positives if a LinearMapClass is just coerced to a function."
-    -- return none

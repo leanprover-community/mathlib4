@@ -15,8 +15,12 @@ def LinearMap.foo (_f : M →ₗ[R] N) : ℕ := 37
 -- A hacky approach (such as looking at the printed type) could have false positives here.
 def LinearMap.bar (_f : F) : ℕ := 37
 
--- Heuristic: we don't warn on definitions `FooHom.ofClass`.
+-- Heuristic: we don't warn on definitions `FooHom.ofClass` or `FooHomClass.toFooHom`.
+-- (The latter should be renamed to the former, but we should not give a misleading error
+-- until this is complete.)
 def LinearMapFoo.ofClass (f : F) : M →ₗ[R] N := LinearMap.ofClass f
+
+def LinearMapFoo.toLinearMap (f : F) : M →ₗ[R] N := LinearMap.ofClass f
 
 -- We also exclude deprecated declarations.
 @[deprecated LinearMap.bar (since := "2026-09-07")]
@@ -33,11 +37,14 @@ instance [h : SemilinearMapClass F (RingHom.id R) M N] : LinearMapClass F R M N 
 def LinearMap.baz (f : F) : M →ₗ[R] N := f
 
 /--
-error: -- Found 1 error in 7 declarations (plus 1 automatically generated ones) in the current file with 1 linters
+error: -- Found 2 errors in 8 declarations (plus 1 automatically generated ones) in the current file with 1 linters
 
 /- The `defsWithMorphismClass` linter reports:
 FOUND definitions with a bundled morphism argument.
 This linter can be disabled with `@[nolint defsWithMorphismClass]`. -/
+#check @LinearMapFoo.toLinearMap /- The definition `LinearMapFoo.toLinearMap` takes a `LinearMapClass` argument.
+Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
+please change the definition to take in a `LinearMap` argument instead. -/
 #check @LinearMap.baz /- The definition `LinearMap.baz` takes a `LinearMapClass` argument.
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
 please change the definition to take in a `LinearMap` argument instead. -/
@@ -50,11 +57,14 @@ def bar {S F : Type*} [Semiring S] [Module S N] {σ : R →+* S}
     [FunLike F M N] [SemilinearMapClass F σ M N] (f : F) : M →ₛₗ[σ] N := f
 
 /--
-error: -- Found 2 errors in 8 declarations (plus 1 automatically generated ones) in the current file with 1 linters
+error: -- Found 3 errors in 9 declarations (plus 1 automatically generated ones) in the current file with 1 linters
 
 /- The `defsWithMorphismClass` linter reports:
 FOUND definitions with a bundled morphism argument.
 This linter can be disabled with `@[nolint defsWithMorphismClass]`. -/
+#check @LinearMapFoo.toLinearMap /- The definition `LinearMapFoo.toLinearMap` takes a `LinearMapClass` argument.
+Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
+please change the definition to take in a `LinearMap` argument instead. -/
 #check @LinearMap.baz /- The definition `LinearMap.baz` takes a `LinearMapClass` argument.
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
 please change the definition to take in a `LinearMap` argument instead. -/
