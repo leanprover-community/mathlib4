@@ -50,11 +50,13 @@ meta def morphismClassesToLint : Array Name := #[
   `RingInvoClass,
   `ContinuousAlgEquivClass, `ContinuousAlgEquivClass,
   `ContinuousLinearEquivClass, `ContinuousSemilinearEquivClass,
+  `CompletelyPositiveMapClass,
 ]
 
 /-- For each class `FooHomClass`, generate the name `FooHomClass.toFoo`. -/
 meta def falseProjectionNames : Array Name :=
-  morphismClassesToLint.map fun n ↦ n.str <| ("to" ++ n.getString!.drop 5)
+  (morphismClassesToLint.map fun n ↦ n.str <| ("to" ++ n.getString!.dropEnd 5))
+  ++ #[`CompletelyPositiveMapClass.toCompletelyPositiveLinearMap]
 
 open Batteries.Tactic.Lint in
 /-- Linter that checks for definitions which take a bundled morphism class (such as

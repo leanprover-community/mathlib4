@@ -20,7 +20,7 @@ def LinearMap.bar (_f : F) : ℕ := 37
 -- until this is complete.)
 def LinearMapFoo.ofClass (f : F) : M →ₗ[R] N := LinearMap.ofClass f
 
-def LinearMapFoo.toLinearMap (f : F) : M →ₗ[R] N := LinearMap.ofClass f
+def LinearMapClass.toLinearMap (f : F) : M →ₗ[R] N := LinearMap.ofClass f
 
 -- We also exclude deprecated declarations.
 @[deprecated LinearMap.bar (since := "2026-09-07")]
@@ -42,7 +42,7 @@ error: -- Found 2 errors in 8 declarations (plus 1 automatically generated ones)
 /- The `defsWithMorphismClass` linter reports:
 FOUND definitions with a bundled morphism argument.
 This linter can be disabled with `@[nolint defsWithMorphismClass]`. -/
-#check @LinearMapFoo.toLinearMap /- The definition `LinearMapFoo.toLinearMap` takes a `LinearMapClass` argument.
+#check @LinearMapClass.toLinearMap /- The definition `LinearMapClass.toLinearMap` takes a `LinearMapClass` argument.
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
 please change the definition to take in a `LinearMap` argument instead. -/
 #check @LinearMap.baz /- The definition `LinearMap.baz` takes a `LinearMapClass` argument.
@@ -62,7 +62,7 @@ error: -- Found 3 errors in 9 declarations (plus 1 automatically generated ones)
 /- The `defsWithMorphismClass` linter reports:
 FOUND definitions with a bundled morphism argument.
 This linter can be disabled with `@[nolint defsWithMorphismClass]`. -/
-#check @LinearMapFoo.toLinearMap /- The definition `LinearMapFoo.toLinearMap` takes a `LinearMapClass` argument.
+#check @LinearMapClass.toLinearMap /- The definition `LinearMapClass.toLinearMap` takes a `LinearMapClass` argument.
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
 please change the definition to take in a `LinearMap` argument instead. -/
 #check @LinearMap.baz /- The definition `LinearMap.baz` takes a `LinearMapClass` argument.
