@@ -54,7 +54,7 @@ variable {S : ShortComplex C}
 order-isomorphic to the subobjects of the middle object containing the first object. -/
 noncomputable def Exact.subobjectOrderIso (hS : S.Exact) [Mono S.f] [Epi S.g] :
     Subobject S.X₃ ≃o Set.Ici (Subobject.mk S.f) :=
-  (Abelian.Subobject.epiOrderIso S.g).trans (OrderIso.setCongr _ _
+  (Abelian.Subobject.epiOrderIso S.g).trans (Set.orderIsoOfEq _ _
     (by rw [← Limits.imageSubobject_mono S.f, (exact_iff_image_eq_kernel S).mp hS]))
 
 end CategoryTheory.ShortComplex
