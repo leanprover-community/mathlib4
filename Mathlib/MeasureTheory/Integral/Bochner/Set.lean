@@ -88,6 +88,11 @@ theorem setIntegral_union (hst : Disjoint s t) (ht : MeasurableSet t) (hfs : Int
     (hft : IntegrableOn f t μ) : ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ :=
   setIntegral_union₀ hst.aedisjoint ht.nullMeasurableSet hfs hft
 
+theorem setIntegral_union' (hst : Disjoint s t) (ht : MeasurableSet t)
+    (hfst : IntegrableOn f (s ∪ t) μ) :
+    ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ :=
+  setIntegral_union hst ht hfst.left_of_union hfst.right_of_union
+
 theorem setIntegral_sdiff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
     ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ - ∫ x in t, f x ∂μ := by
   rw [eq_sub_iff_add_eq, ← setIntegral_union₀, sdiff_union_of_subset hts]
