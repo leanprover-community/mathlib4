@@ -12,10 +12,25 @@ public import Mathlib.Algebra.Ring.Pi
 # Characteristic of semirings of functions
 -/
 
-public section
+@[expose] public section
 
 
 universe u v
+
+section
+variable {ι} {α : ι → Type*}
+
+theorem CharZero.pi (i : ι) [∀ i, AddMonoidWithOne (α i)] [CharZero (α i)] :
+    CharZero (Π i, α i) where
+  cast_injective _ _ h := Nat.cast_injective <| congrFun h i
+
+/-- Strictly this only needs any one component to be char-zero, but this is awkward to express. -/
+instance Pi.instCharZero [Nonempty ι] [∀ i, AddMonoidWithOne (α i)] [∀ i, CharZero (α i)] :
+    CharZero (Π i, α i) := by
+  inhabit ι
+  exact CharZero.pi default
+
+end
 
 namespace CharP
 
