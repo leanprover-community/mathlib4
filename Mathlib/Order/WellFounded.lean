@@ -212,7 +212,7 @@ theorem WellFoundedLT.min_le [WellFoundedLT β] {x : β} {s : Set β} (hx : x �
 @[deprecated WellFoundedLT.min_le (since := "2026-08-16")]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop)) {x : β} {s : Set β}
     (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
-  (show WellFoundedLT β from ⟨h⟩).min_le hx
+  WellFoundedLT.min_le hx
 
 @[to_dual]
 theorem Set.range_injOn_strictMono_of_wellFoundedLT [WellFoundedLT β] :
