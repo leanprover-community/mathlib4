@@ -409,8 +409,8 @@ and the valuation `v`. -/
 @[simps! apply symm_apply]
 def valueGroupEquiv :
     valueGroup (.ofClass (Valued.v (R := WithVal v))) ≃* valueGroup (.ofClass v) where
-  __ := Equiv.Set.congr (by simp [valueGroup_eq v])
-  map_mul' := by simp [Equiv.Set.congr, Equiv.subtypeEquivProp]
+  __ := Set.equivOfEq (by simp [valueGroup_eq v])
+  map_mul' := by simp [Set.equivOfEq, Equiv.subtypeEquivProp]
 
 theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
   fun _ _ _ ↦ by simpa

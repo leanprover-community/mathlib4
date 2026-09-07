@@ -514,6 +514,10 @@ theorem _root_.IsSelfAdjoint.norm_le_max_of_le_of_le {a b c : A}
   _ ≤ max ‖a⁻‖ ‖c⁺‖ := by grw [norm_negPart_anti hab, norm_posPart_mono hbc]
   _ ≤ max ‖a‖ ‖c‖ := by gcongr <;> simp
 
+lemma norm_sub_le_max_of_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) : ‖a - b‖ ≤ max ‖a‖ ‖b‖ := by
+  grw [IsSelfAdjoint.norm_le_max_of_le_of_le (a := -b) (c := a) (by simpa) (by simpa),
+    norm_neg, max_comm]
+
 open scoped ComplexStarModule in
 /-- A set in a non-unital C⋆-algebra which is bounded above and below is
 bounded in norm. -/
@@ -598,6 +602,35 @@ lemma inr_map_Ici_zero : inr '' (Ici (0 : A)) ⊆ Ici (0 : A⁺¹) := by
   exact Unitization.inr_nonneg_iff.mpr ha
 
 end Icc
+
+lemma nnrpow_le_nnrpow_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1) {m n : ℝ≥0}
+    (hm : m ≠ 0) (hmn : m ≤ n) : e ^ n ≤ e ^ m := by
+  have hn : n ≠ 0 := by aesop
+  rw [CFC.nnrpow_eq_cfcₙ_real e, CFC.nnrpow_eq_cfcₙ_real e]
+  refine cfcₙ_mono fun x hx ↦ ?_
+  have hx1 : x ≤ 1 := by grw [Real.le_norm_self x, quasispectrum.norm_le_norm_of_mem hx, he1]
+  exact Real.rpow_le_rpow_of_exponent_ge' (quasispectrum_nonneg_of_nonneg _ he0 _ hx) hx1
+    m.coe_nonneg (mod_cast hmn)
+
+lemma nnrpow_le_self_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1)
+    {n : ℝ≥0} (hn : 1 ≤ n) : e ^ n ≤ e := by
+  conv_rhs => rw [← CFC.nnrpow_one e]
+  exact nnrpow_le_nnrpow_of_nonneg_of_norm_le_one he0 he1 (by simp) hn
+
+/-- If `e` is an element of the nonnegative closed unit ball, then `e * e ≤ e`, with equality
+if `e` is an extreme point
+(see `isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosedBall`). -/
+lemma mul_self_le_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1) :
+    e * e ≤ e := CFC.nnrpow_two e ▸ nnrpow_le_self_of_nonneg_of_norm_le_one he0 he1 one_le_two
+
+lemma self_le_nnrpow_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1)
+    {n : ℝ≥0} (hn0 : n ≠ 0) (hn : n ≤ 1) : e ≤ e ^ n := by
+  conv_lhs => rw [← CFC.nnrpow_one e]
+  exact nnrpow_le_nnrpow_of_nonneg_of_norm_le_one he0 he1 hn0 hn
+
+lemma self_le_sqrt_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1) :
+    e ≤ CFC.sqrt e :=
+  CFC.sqrt_eq_nnrpow e ▸ self_le_nnrpow_of_nonneg_of_norm_le_one he0 he1 (by simp) (by simp)
 
 end CStarAlgebra
 

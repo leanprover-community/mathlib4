@@ -401,8 +401,6 @@ lemma rescale_eq (r : R) (f : PowerSeries R) :
   rw [coeff_rescale, coeff, MvPowerSeries.coeff_rescale]
   simp [pow_zero, Finsupp.prod_single_index]
 
-@[deprecated (since := "2026-02-27")] alias _root_.MvPowerSeries.rescaleUnit := rescale_eq
-
 lemma rescale_eq_subst (r : R) (f : PowerSeries R) :
     PowerSeries.rescale r f = PowerSeries.subst (r • X : R⟦X⟧) f := by
   rw [rescale_eq, MvPowerSeries.rescale_eq_subst, X, subst, Pi.smul_def']

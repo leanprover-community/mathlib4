@@ -131,18 +131,33 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 
 variable (k V) {p₁ p₂ : P}
 
-/-- The affine span of a single point, coerced to a set, contains just that point. -/
-@[simp]
-theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
-  ext x
-  rw [mem_coe, ← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_singleton p)) _,
-    direction_affineSpan]
-  simp
-
 /-- A point is in the affine span of a single point if and only if they are equal. -/
 @[simp]
+lemma affineSpan_singleton (x : P) : affineSpan k ({x} : Set P) = {x} := by
+  ext y
+  simp [← vsub_right_mem_direction_iff_mem (mem_affineSpan k _) _, direction_affineSpan]
+
+/-- The affine span of a single point, coerced to a set, contains just that point. -/
+@[deprecated affineSpan_singleton (since := "2026-09-01")]
+theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
+  simp
+
+@[simp]
+theorem coe_affineSpan_eq_singleton_iff (s : Set P) (x : P) : affineSpan k s = {x} ↔ s = {x} := by
+  refine ⟨fun h ↦ ?_, by simp +contextual⟩
+  refine Set.Nonempty.subset_singleton_iff ?_ |>.mp (by simpa using affineSpan_le.mp h.le)
+  exact affineSpan_nonempty k |>.mp (by simp [h])
+
 theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p₁ = p₂ := by
-  simp [← mem_coe]
+  simp
+
+@[simp]
+theorem singleton_ne_bot (x : P) : ({x} : AffineSubspace k P) ≠ ⊥ := by
+  simp [← SetLike.coe_ne_coe]
+
+@[simp]
+theorem singleton_ne_top [Nontrivial P] (x : P) : ({x} : AffineSubspace k P) ≠ ⊤ := by
+  simp [← SetLike.coe_ne_coe]
 
 instance unique_affineSpan_singleton (p : P) : Unique (affineSpan k {p}) where
   default := ⟨p, mem_affineSpan _ (Set.mem_singleton _)⟩
@@ -169,8 +184,8 @@ theorem subsingleton_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingle
     (h₂ : affineSpan k s = ⊤) : Subsingleton P := by
   obtain ⟨p, hp⟩ := AffineSubspace.nonempty_of_affineSpan_eq_top k V P h₂
   have : s = {p} := Subset.antisymm (fun q hq => h₁ hq hp) (by simp [hp])
-  rw [this, AffineSubspace.ext_iff, AffineSubspace.coe_affineSpan_singleton,
-    AffineSubspace.top_coe, eq_comm, ← subsingleton_iff_singleton (mem_univ _)] at h₂
+  rw [this, AffineSubspace.ext_iff, AffineSubspace.top_coe, eq_comm, affineSpan_singleton,
+    coe_singleton, ← subsingleton_iff_singleton (mem_univ _)] at h₂
   exact subsingleton_of_univ_subsingleton h₂
 
 theorem eq_univ_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
@@ -468,10 +483,9 @@ the subspace. -/
 theorem direction_affineSpan_insert {s : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s) :
     (affineSpan k (insert p₂ (s : Set P))).direction =
     Submodule.span k {p₂ -ᵥ p₁} ⊔ s.direction := by
-  rw [sup_comm, ← Set.union_singleton, ← coe_affineSpan_singleton k V p₂]
-  change (s ⊔ affineSpan k {p₂}).direction = _
-  rw [direction_sup hp₁ (mem_affineSpan k (Set.mem_singleton _)), direction_affineSpan]
-  simp
+  rw [sup_comm, ← Set.union_singleton, ← AffineSubspace.coe_singleton (k := k) p₂]
+  change (s ⊔ {p₂}).direction = _
+  simp [direction_sup hp₁ (mem_singleton _)]
 
 /-- Given a point `p₁` in an affine subspace `s`, and a point `p₂`, a point `p` is in the span of
 `s` with `p₂` added if and only if it is a multiple of `p₂ -ᵥ p₁` added to a point in `s`. -/
@@ -683,7 +697,7 @@ variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
 This is the affine version of `LinearEquiv.ofEq`. -/
 @[simps linear]
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
-  toEquiv := Equiv.Set.congr <| congr_arg _ h
+  toEquiv := Set.equivOfEq <| congr_arg _ h
   linear := .ofEq _ _ <| congr_arg _ h
   map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
 
